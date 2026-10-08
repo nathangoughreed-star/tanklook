@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { defaultScene, defaultSetup } from '../src/scene/defaults';
-import { IN } from '../src/scene/physics';
+import { IN, rescaleTank } from '../src/scene/physics';
 import { Store } from '../src/scene/store';
 import { parseScene } from '../src/scene/validate';
 import { tankDiff } from '../src/ui/diff';
+
+const labels = (...a: Parameters<typeof tankDiff>) => tankDiff(...a).map(d => [d[0], d[1]]);
 
 /** A v6 (pre-split) flat save. */
 const v6 = (compare: boolean) => {
@@ -73,17 +75,33 @@ describe('difference labels', () => {
   it('dimensions show numbers; details only name each side', () => {
     const [a, b] = pair();
     b.tank = { L: 36 * IN, H: 16 * IN, D: 18 * IN }; b.fish.pop(); b.water.opacity = 0.4; a.water.opacity = 0.2; b.substrate.type = 'white';
-    const d = tankDiff(a, b, 'in');
+    const d = labels(a, b, 'in');
     expect(d).toContainEqual(['24 × 12 × 12″', '36 × 16 × 18″']);
     expect(d).toContainEqual(['Stocking A', 'Stocking B']);
     expect(d).toContainEqual(['Water tint A', 'Water tint B']);
     expect(d.find(x => x[0].startsWith('Substrate:'))?.[1]).toMatch(/^Substrate: /);
     expect(d.length).toBe(4);
   });
+  it('resizing alone does not list the stocking (fish keep their relative spots)', () => {
+    const [a, b] = pair(); rescaleTank(b, { L: 48 * IN, H: 21 * IN, D: 18 * IN });
+    expect(labels(a, b, 'in')).toEqual([['24 × 12 × 12″', '48 × 21 × 18″']]);
+  });
+  it('the × makes one side match: each difference goes away, the rest stay', () => {
+    const [a, b] = pair();
+    rescaleTank(b, { L: 36 * IN, H: 16 * IN, D: 18 * IN }); b.fish.pop(); b.water.opacity = 0.4; b.substrate.type = 'white'; b.light.bright = 2;
+    a.stand.show = b.stand.show = true; b.stand.height = 24 * IN;
+    let n = tankDiff(a, b, 'in').length; expect(n).toBe(6);
+    for (const [k, side] of [[0, 0], [0, 1], [2, 0], [0, 1], [1, 0], [0, 1]] as const) {
+      const d = tankDiff(a, b, 'in')[k], [to, from] = side ? [b, a] : [a, b];
+      d[2](to, from); n--;
+      const left = labels(a, b, 'in'); expect(left.length).toBe(n); expect(left).not.toContainEqual([d[0], d[1]]);
+    }
+    expect(a.tank).toEqual(b.tank);
+  });
   it('stand height shows numbers, only when both tanks have a stand', () => {
     const [a, b] = pair(); b.stand.height = 24 * IN;
     expect(tankDiff(a, b, 'in')).toEqual([]); // neither shows a stand
     a.stand.show = b.stand.show = true;
-    expect(tankDiff(a, b, 'in')).toEqual([['Stand 30″', 'Stand 24″']]);
+    expect(labels(a, b, 'in')).toEqual([['Stand 30″', 'Stand 24″']]);
   });
 });

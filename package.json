@@ -2,7 +2,7 @@
   "name": "tanklook",
   "version": "0.2.0",
   "private": true,
-  "description": "Arium visualizer: plan an aquarium, paludarium or terrarium with true-to-scale animals in real perspective.",
+  "description": "Vivarium visualizer: plan an aquarium, paludarium or terrarium with true-to-scale animals in real perspective.",
   "type": "module",
   "scripts": {
     "dev": "vite",

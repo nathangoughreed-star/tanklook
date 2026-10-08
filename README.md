@@ -1,6 +1,6 @@
 # TankLook
 
-Arium visualizer: plan an aquarium, paludarium or terrarium with true-to-scale animals, seen in real perspective through the glass.
+Vivarium visualizer: plan an aquarium, paludarium or terrarium with true-to-scale animals, seen in real perspective through the glass.
 
 Fish are flat illustrated cards in a 3D tank (Three.js). All scene data is in millimetres. The viewer's eye sits a
 fixed physical distance from the front glass for every tank, and zoom only crops, so sizes compare fairly between

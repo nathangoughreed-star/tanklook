@@ -1,6 +1,7 @@
 // Holds the scene, the selection and undo/redo history. Every mutation goes through update().
 import { defaultScene } from './defaults';
 import { parseScene } from './validate';
+import { clearCams, eyeClear, limitOrbit } from './orbit';
 import { keepInWater } from './water';
 import type { CameraSettings, Fish, Scene, TankSetup } from './types';
 
@@ -49,7 +50,10 @@ export class Store {
   /** Move the active view's camera (not undoable). While the cameras are locked, both views move together. */
   cam(fn: (c: CameraSettings) => void) {
     this.update(s => {
-      const c = s.tanks[s.active].camera; fn(c);
+      const A = s.tanks[s.active], prev = { ...A.camera }; fn(A.camera);
+      // the eye stops at the room wall (every locked tank's wall, since they share the view)
+      const ok = (c: CameraSettings) => (s.camLock ? s.tanks : [A]).every(t => eyeClear(t, c));
+      const c = A.camera = limitOrbit(prev, A.camera, ok);
       if (s.camLock) for (const t of s.tanks) t.camera = { ...c };
     }, { kind: 'view' });
   }
@@ -77,7 +81,7 @@ export class Store {
 
   /** Lock / unlock the two cameras. Re-locking snaps the second view to the original tank's camera (Nathan 2026-10-08). */
   setCamLock(on: boolean) {
-    this.update(s => { s.camLock = on; if (on) for (const t of s.tanks) t.camera = { ...s.tanks[0].camera }; }, { kind: 'view' });
+    this.update(s => { s.camLock = on; if (on) { for (const t of s.tanks) t.camera = { ...s.tanks[0].camera }; clearCams(s.tanks, true); } }, { kind: 'view' });
   }
 
   update(fn: (s: Scene) => void, opts: UpdateOptions = {}) {
@@ -89,7 +93,7 @@ export class Store {
       this.lastKey = opts.coalesce ?? null; this.lastTime = now;
     }
     fn(this.scene);
-    if (kind === 'scene') for (const t of this.scene.tanks) keepInWater(t);
+    if (kind === 'scene') { for (const t of this.scene.tanks) keepInWater(t); clearCams(this.scene.tanks, this.scene.camLock); }
     if (this.selId != null && !this.tank.fish.some(f => f.id === this.selId)) this.selId = null;
     this.emit(kind);
   }

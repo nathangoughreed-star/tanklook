@@ -101,7 +101,7 @@ quadruped painter); **climbing is in this unit** (tree frog on glass and branche
 snakes, crabs and inverts come later.
 
 Progress (session 4, 2026-10-08):
-- Site title "TankLook: Arium Visualizer" (Nathan's pick), tagline "Arium visualizer · true-to-scale · beta".
+- Site title "TankLook: Vivarium Visualizer" (Nathan, 2026-10-08; was "Arium"), tagline "Vivarium visualizer · true-to-scale · beta".
 - Single "Add" now randomizes spot, heading, pitch, roll and bend like a school member (`randomPose`, panels.ts).
 - **Step 1 done (not pushed):** species `habitat` (resolved; snails 'both', default 'water'). `restsOnGround` (water.ts)
   decides rest vs swim: bottom / land always rest; 'both' rests where the water at its spot is shallower than its

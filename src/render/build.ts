@@ -121,10 +121,11 @@ function addStand(sc: THREE.Scene, S: TankSetup, T: Tank) {
   const W = L + 2 * t, Dp = D + 2 * t, fin = STAND_FINISHES[S.stand.finish];
   if (S.stand.style === 'frame') { addFrameStand(sc, T, W, Dp, top, h, fin.color); return; }
   const body = shadedBox(W, h, Dp, fin.color); body.position.set(L / 2, top - h / 2, -D / 2); sc.add(body);
-  // two cabinet doors: seams just proud of the front face, kick-plate line near the floor
-  const z = t + 0.6, inset = Math.min(30, h * 0.08), y0 = top - h + Math.min(70, h * 0.12), y1 = top - inset;
+  // two cabinet doors: seams just proud of the front face, kick-plate line near the floor; a peninsula is open on
+  // both long sides, so its cabinet has doors on the back too (Nathan 2026-10-08)
+  const inset = Math.min(30, h * 0.08), y0 = top - h + Math.min(70, h * 0.12), y1 = top - inset;
   const seam = fin.color === STAND_FINISHES.white.color ? 0x9a9890 : 0x111214;
-  sc.add(lines([
+  for (const z of penEnd(S) ? [t + 0.6, -D - t - 0.6] : [t + 0.6]) sc.add(lines([
     -t + inset, y1, z, L + t - inset, y1, z, L + t - inset, y1, z, L + t - inset, y0, z,
     L + t - inset, y0, z, -t + inset, y0, z, -t + inset, y0, z, -t + inset, y1, z,
     L / 2, y1, z, L / 2, y0, z,

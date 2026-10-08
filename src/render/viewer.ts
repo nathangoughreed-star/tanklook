@@ -4,7 +4,7 @@ import { fishTL, getSpecies } from '../data/species';
 import { D2R, depthRatio, floorY } from '../scene/physics';
 import type { Store } from '../scene/store';
 import type { Fish, Tank, TankSetup } from '../scene/types';
-import { HOOD_H, buildTank, disposeScene, personSpot, type BuiltTank } from './build';
+import { HOOD_H, buildTank, disposeScene, personSpot, straightOnEye, type BuiltTank } from './build';
 import { drawViewMap } from './viewmap';
 import { applyFraming, fovFor, frameBox, frameStraightOn, placeCamera, windowCentre } from './camera';
 import { roomLevel, setLightUniforms, setWaterUniforms } from './lighting';
@@ -86,12 +86,14 @@ export class Viewer {
     for (const vp of active) placeCamera(vp.cam, vp.T, vp.S.camera);
     const headroom = (S: TankSetup) => (S.lid === 'hood' ? HOOD_H + 6 : S.light.type === 'flat' ? 4 : 60 + S.light.height);
     const bottom = (S: TankSetup) => (S.stand.show ? floorY(S.tank, S.render, S.stand) : 0);
-    // the scale person: its card's corners (it turns to face the camera, so use its width both ways)
-    const extra = (vp: Viewport) => {
+    // the scale person: its card's corners as it stands facing `eye` (a w×w footprint instead put a near corner well
+    // outside the silhouette, leaving extra empty space on the person's side)
+    const extra = (vp: Viewport, eye: { x: number; z: number } = vp.cam.position) => {
       const S = vp.S;
       if (!S.person.show) return [];
       const p = personSpot(S, vp.T), pts: THREE.Vector3[] = [];
-      for (const dx of [-p.w / 2, p.w / 2]) for (const dz of [-p.w / 2, p.w / 2]) for (const y of [p.floor, p.floor + p.h]) pts.push(new THREE.Vector3(p.x + dx, y, p.z + dz));
+      const dx = eye.x - p.x, dz = eye.z - p.z, r = Math.hypot(dx, dz) || 1, px = -dz / r * p.w / 2, pz = dx / r * p.w / 2;
+      for (const k of [-1, 1]) for (const y of [p.floor, p.floor + p.h]) pts.push(new THREE.Vector3(p.x + k * px, y, p.z + k * pz));
       return pts;
     };
     for (const vp of active) {      // the person stays put and turns to face the viewer
@@ -100,20 +102,31 @@ export class Viewer {
       m.rotation.y = Math.atan2(vp.cam.position.x - m.position.x, vp.cam.position.z - m.position.z); m.updateMatrixWorld();
     }
     // lens from the straight-on view, kept at every orbit angle (see frameStraightOn)
-    const boxes = active.map(vp => frameStraightOn(vp.T, vp.S.camera, vp.w / vp.h, headroom(vp.S), bottom(vp.S), extra(vp)));
+    const boxes = active.map(vp => frameStraightOn(vp.T, vp.S.camera, vp.w / vp.h, headroom(vp.S), bottom(vp.S), extra(vp, straightOnEye(vp.S, vp.T))));
     // locked (or one tank): one FOV for all, so sizes stay directly comparable; unlocked: each view frames itself
     const shared = fovFor(Math.max(...boxes.map(b => b.t)), active[0].S.camera.zoom);
     const fovOf = (k: number) => (sc.camLock || active.length === 1 ? shared : fovFor(boxes[k].t, active[k].S.camera.zoom));
     r.setScissorTest(true);
     r.setViewport(0, 0, w, h); r.setScissor(0, 0, w, h);
     r.setClearColor(new THREE.Color(getComputedStyle(this.host).getPropertyValue('--stage-gap').trim() || '#eef0f3')); r.clear();
+    // the lens SIZE comes from the straight-on view (above), but the image window is re-centred at every orbit angle
+    // (Nathan 2026-10-08) on tank + stand + person; zooming in crops the room first and keeps the tank itself whole
+    // while it fits (windowCentre)
+    const wins = active.map(vp => ({
+      tank: frameBox(vp.cam, vp.T, vp.w / vp.h, headroom(vp.S)),
+      all: frameBox(vp.cam, vp.T, vp.w / vp.h, headroom(vp.S), bottom(vp.S), extra(vp)),
+    }));
+    // locked: one window for both, from the union of their bounds, so identical tanks and stands sit at identical
+    // pixels even when one view's fixtures hang higher (otherwise each view centres on its own headroom)
+    const union = (bs: { x0: number; x1: number; y0: number; y1: number }[]) => {
+      const x0 = Math.min(...bs.map(b => b.x0)), x1 = Math.max(...bs.map(b => b.x1)), y0 = Math.min(...bs.map(b => b.y0)), y1 = Math.max(...bs.map(b => b.y1));
+      return { x0, x1, y0, y1, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2 };
+    };
+    const lockedWin = sc.camLock && active.length > 1 ? { tank: union(wins.map(b => b.tank)), all: union(wins.map(b => b.all)) } : null;
     for (const [k, vp] of active.entries()) {
       const S = vp.S, fov = fovOf(k);
-      // the lens SIZE comes from the straight-on view (above), but the image window is re-centred at every orbit angle
-      // (Nathan 2026-10-08) on tank + stand + person; zooming in crops the room first and keeps the tank itself whole
-      // while it fits (windowCentre)
       const hy = Math.tan(fov * D2R / 2), hx = hy * vp.w / vp.h;
-      const tank = frameBox(vp.cam, vp.T, vp.w / vp.h, headroom(S)), all = frameBox(vp.cam, vp.T, vp.w / vp.h, headroom(S), bottom(S), extra(vp));
+      const { tank, all } = lockedWin ?? wins[k];
       const c = windowCentre(all, tank, hx, hy);
       applyFraming(vp.cam, fov, vp.w, vp.h, c.cx, c.cy);
       r.setViewport(vp.x, vp.y, vp.w, vp.h); r.setScissor(vp.x, vp.y, vp.w, vp.h);
@@ -122,14 +135,20 @@ export class Viewer {
       r.render(vp.scene!, vp.cam);
     }
     r.setScissorTest(false);
-    const map = document.getElementById('viewmap') as HTMLCanvasElement | null, A = this.current;
-    if (map && !map.classList.contains('off')) {
+    // one viewpoint map per view, at its bottom-left corner, drawn from that view's own camera, tank and person
+    const mapOn = (document.getElementById('mapOn') as HTMLInputElement | null)?.checked ?? true;
+    for (const k of [0, 1]) {
+      const box = document.getElementById('vmap' + k), A = active[k];
+      if (!box) continue;
+      box.classList.toggle('off', !mapOn || !A);
+      if (!mapOn || !A) continue;
+      box.style.left = (A.x + 10) + 'px';
       const eye = { x: A.cam.position.x, z: A.cam.position.z };
       // floor-plan direction through the image at NDC x (lens shift included)
       const at = (nx: number) => { const p = new THREE.Vector3(nx, 0, 0.5).unproject(A.cam); return Math.atan2(p.z - eye.z, p.x - eye.x); };
       const view = { left: at(-1), right: at(1), mid: at(0) };
       const pp = A.S.person.show ? personSpot(A.S, A.T) : null;
-      drawViewMap(map, A.S, A.T, sc.units, eye, view, pp && { x: pp.x, z: pp.z, w: pp.w });
+      drawViewMap(box.querySelector('canvas')!, A.S, A.T, sc.units, eye, view, pp && { x: pp.x, z: pp.z, w: pp.w });
     }
     for (const fn of this.drawnListeners) fn();
   }
