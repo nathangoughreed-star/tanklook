@@ -160,14 +160,20 @@ export function attachPanels(store: Store, viewer: Viewer) {
     const sz = newTL(sp);
     return { id, species: sp.id, ...spawnSnail((x, d) => groundHeight(s, s.tankA, x, d), s.tankA, sz.tl ?? sp.tl, Math.random, s.water.on ? waterY(s.tankA, s.water.level) : s.tankA.H - 10), pitch: 0, roll: 0, bend: 0, ...sz };
   };
+  /** Random heading around `dir` (0 or 180) with a little pitch, roll and bend; bottom dwellers face anywhere, level. */
+  const randomPose = (sp: Species, r: () => number, dir: number) => {
+    if (sp.zone === 'bottom') return { yaw: Math.round(r() * 360 - 180), pitch: 0, roll: 0, bend: +((r() - 0.5) * 0.8).toFixed(2) };
+    let yaw = Math.round(dir + (r() - 0.5) * 80); if (yaw > 180) yaw -= 360;
+    return { yaw, pitch: Math.round((r() - 0.5) * 16), roll: Math.round((r() - 0.5) * 10), bend: +((r() - 0.5) * 0.8).toFixed(2) };
+  };
   function addOne(sp: Species) {
     if (!S().water.on && sp.kind !== 'snail') { status('Fish need water: turn Water on first.', true); return; }
     let id = 0;
     store.update(s => {
-      const A = s.tankA, same = s.fish.filter(f => f.species === sp.id).length;
+      const A = s.tankA;
       if (sp.kind === 'snail') { s.fish.push(snailAt(s, sp, id = nextFishId(s))); return; }
-      const sz = newTL(sp), tl = sz.tl ?? sp.tl;
-      const f: Fish = { id: id = nextFishId(s), species: sp.id, x: A.L / 2 + ((same % 5) - 2) * tl * 0.6, y: waterY(A, s.water.level) / 2, depth: sp.zone === 'bottom' ? A.D * 0.3 : A.D / 2, yaw: 0, pitch: 0, roll: 0, bend: 0, ...sz };
+      const sz = newTL(sp), r = Math.random;
+      const f: Fish = { id: id = nextFishId(s), species: sp.id, x: A.L * (0.1 + r() * 0.8), y: waterY(A, s.water.level) * (0.2 + r() * 0.6), depth: A.D * (0.15 + r() * 0.7), ...randomPose(sp, r, r() < 0.5 ? 0 : 180), ...sz };
       clampFish(f, A); s.fish.push(f);
     });
     store.select(id);
@@ -184,10 +190,9 @@ export function attachPanels(store: Store, viewer: Viewer) {
         const f: Fish = {
           id: last = nextFishId(s), species: sp.id,
           x: cx + (r() - 0.5) * tl * 9, y: cy + (r() - 0.5) * tl * 4, depth: A.D * (0.15 + r() * 0.7),
-          yaw: Math.round(dir + (r() - 0.5) * 80), pitch: Math.round((r() - 0.5) * 16), roll: Math.round((r() - 0.5) * 10), bend: +((r() - 0.5) * 0.8).toFixed(2), ...sz,
+          ...randomPose(sp, r, dir), ...sz,
         };
-        if (sp.zone === 'bottom') Object.assign(f, { yaw: Math.round(r() * 360 - 180), pitch: 0, roll: 0, x: A.L * (0.1 + r() * 0.8) });
-        if (f.yaw > 180) f.yaw -= 360;
+        if (sp.zone === 'bottom') f.x = A.L * (0.1 + r() * 0.8);
         clampFish(f, A); s.fish.push(f);
       }
     });
