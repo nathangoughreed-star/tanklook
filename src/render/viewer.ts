@@ -114,9 +114,12 @@ export class Viewer {
     r.setScissorTest(false);
     const map = document.getElementById('viewmap') as HTMLCanvasElement | null, A = active[0];
     if (map && !map.classList.contains('off')) {
-      const eye = { x: A.cam.position.x, z: A.cam.position.z }, hfov = 2 * Math.atan(Math.tan(A.cam.fov * D2R / 2) * A.cam.aspect);
+      const eye = { x: A.cam.position.x, z: A.cam.position.z };
+      // floor-plan direction through the image at NDC x (lens shift included)
+      const at = (nx: number) => { const p = new THREE.Vector3(nx, 0, 0.5).unproject(A.cam); return Math.atan2(p.z - eye.z, p.x - eye.x); };
+      const view = { left: at(-1), right: at(1), mid: at(0) };
       const pp = S.person.show ? personSpot(S, A.T) : null;
-      drawViewMap(map, S, A.T, eye, hfov, pp && { x: pp.x, z: pp.z, w: pp.w });
+      drawViewMap(map, S, A.T, eye, view, pp && { x: pp.x, z: pp.z, w: pp.w });
     }
     for (const fn of this.drawnListeners) fn();
   }

@@ -5,7 +5,7 @@ import type { Scene, Tank } from '../scene/types';
 
 interface Spot { x: number; z: number; w: number }
 
-export function drawViewMap(cv: HTMLCanvasElement, S: Scene, T: Tank, eye: { x: number; z: number }, hfov: number, person: Spot | null) {
+export function drawViewMap(cv: HTMLCanvasElement, S: Scene, T: Tank, eye: { x: number; z: number }, view: { left: number; right: number; mid: number }, person: Spot | null) {
   const css = getComputedStyle(cv), v = (n: string, d: string) => css.getPropertyValue(n).trim() || d;
   const W = cv.clientWidth, H = cv.clientHeight, dpr = Math.min(devicePixelRatio, 2);
   if (!W || !H) return;
@@ -27,12 +27,14 @@ export function drawViewMap(cv: HTMLCanvasElement, S: Scene, T: Tank, eye: { x: 
     else { const x = X(S.wall.side === 'right' ? T.L + t + WALL_GAP : -t - WALL_GAP); g.moveTo(x, 4); g.lineTo(x, mapH - 4); }
     g.stroke();
   }
-  // view cone: horizontal field of view from the eye, toward the tank centre
-  const dir = Math.atan2(-T.D / 2 - eye.z, T.L / 2 - eye.x), reach = Math.hypot(T.L / 2 - eye.x, -T.D / 2 - eye.z) * 1.6;
+  // view cone: what the picture actually shows (left / right edges and centre of the shifted image window, as world
+  // directions on the floor plan), so the map matches the framing rather than assuming the tank sits in the middle
+  const dist = Math.hypot(T.L / 2 - eye.x, -T.D / 2 - eye.z), reach = dist * 1.6;
   g.fillStyle = accent; g.globalAlpha = 0.14; g.beginPath(); g.moveTo(X(eye.x), Z(eye.z));
-  for (const s of [-1, 1]) { const a = dir + s * hfov / 2; g.lineTo(X(eye.x + Math.cos(a) * reach), Z(eye.z + Math.sin(a) * reach)); }
+  for (const a of [view.left, view.right]) g.lineTo(X(eye.x + Math.cos(a) * reach), Z(eye.z + Math.sin(a) * reach));
   g.closePath(); g.fill(); g.globalAlpha = 1;
-  g.strokeStyle = accent; g.setLineDash([3, 3]); g.lineWidth = 1; g.beginPath(); g.moveTo(X(eye.x), Z(eye.z)); g.lineTo(X(T.L / 2), Z(-T.D / 2)); g.stroke(); g.setLineDash([]);
+  g.strokeStyle = accent; g.setLineDash([3, 3]); g.lineWidth = 1; g.beginPath(); g.moveTo(X(eye.x), Z(eye.z));
+  g.lineTo(X(eye.x + Math.cos(view.mid) * dist), Z(eye.z + Math.sin(view.mid) * dist)); g.stroke(); g.setLineDash([]);
   // tank (outer glass) with the front edge marked
   g.fillStyle = '#2f6f9a'; g.fillRect(X(-rim), Z(-T.D - rim), (T.L + 2 * rim) * k, (T.D + 2 * rim) * k);
   g.strokeStyle = '#8fd6bb'; g.lineWidth = 2; g.beginPath(); g.moveTo(X(-rim), Z(rim)); g.lineTo(X(T.L + rim), Z(rim)); g.stroke();

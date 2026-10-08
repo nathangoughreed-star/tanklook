@@ -126,6 +126,12 @@ Progress (session 4, 2026-10-08):
   person (`frameBox` at the current camera). Zoom no longer pulls toward a point between tank and person: `windowCentre`
   (camera.ts) keeps the bounds centre but moves just enough to keep the tank itself whole while it fits, so zooming crops
   the room first. Picture `shots/35_framing_sheet` (straight-on 1.5x, 54 deg right, 50 deg left + 20 up, 54 deg at 1x).
+- **View map shows the real framing (Nathan 2026-10-08):** the map drew the cone symmetric about the eye-to-tank-centre
+  line, ignoring the lens shift, so it claimed "centred" when the picture was not. It now unprojects the image's left /
+  right edges and centre from the actual camera (shift included). Nathan's split-view screenshot (42x17x15, 57 deg
+  right) was the OLD frozen-shift framing; with the re-centring above, single and split views both centre tank +
+  person (picture `shots/44_map_matches_view`).
+- Dev-server gotcha: the shared Vite server sometimes keeps serving a stale module after an edit; `touch` the file.
 - **Light height (Nathan 2026-10-08):** `light.height` (mm above the tank top, 20-900, default 50 = the old fixed
   `LAMP_Y`; older files load 50). Lighting is normalised with the fixture at 50 mm, so raising it dims the tank
   (falloff) and evens it out (wider footprint); the room spill source extends up to the fixture and grows up to 1.8x
