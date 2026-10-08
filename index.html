@@ -62,12 +62,12 @@
   <div class="field"><label class="flabel"><input type="checkbox" id="standOn"> Stand</label><select id="standFinish" aria-label="Stand finish"></select></div>
   <div class="row"><label for="standH">Stand height</label><input id="standH" type="range" step="5"><output id="oStandH"></output></div>
   <div class="field"><label class="flabel"><input type="checkbox" id="wallOn"> Wall</label>
-    <span class="seg"><button id="wallBack">Behind</button><button id="wallLeft">Left end</button><button id="wallRight">Right end</button></span>
+    <span class="seg"><button id="wallBack">Behind</button><button id="wallPen">Peninsula</button></span>
     <input id="wallColor" type="color" aria-label="Wall colour" title="Wall colour"></div>
   <div class="field"><label class="flabel"><input type="checkbox" id="personOn"> Person</label>
     <span class="seg"><button id="personLeft">Left</button><button id="personRight">Right</button></span></div>
   <div class="row"><label for="personH">Person height</label><input id="personH" type="range" step="10"><output id="oPersonH"></output></div>
-  <div class="hint">The stand matches the tank's footprint. <i>Left end</i> / <i>Right end</i> puts a short side against the wall (peninsula); orbit to see it.</div>
+  <div class="hint">The stand matches the tank's footprint. <i>Peninsula</i> puts the tank's end against the wall; the background moves to that end and the long back glass is clear.</div>
 
   <h2>Fish</h2>
   <input id="spSearch" type="search" placeholder="Search species (common or scientific name)" aria-label="Search species">
@@ -141,6 +141,7 @@
   <h2>Display &amp; export</h2>
   <div class="row"><label for="edge">Fish edges</label><select id="edge" class="span2">
     <option value="a2c">Smoothed, see-through fins (alpha-to-coverage)</option><option value="cutout">Crisp (cutout)</option></select></div>
+  <label><input type="checkbox" id="mapOn" checked> Viewpoint map (top view of where you stand)</label>
   <label><input type="checkbox" id="gridOn"> Grid on back wall and floor (2″ / 5 cm)</label>
   <div class="btns"><span class="flabel">Export PNG</span><button data-png="1">1×</button><button data-png="2">2×</button><button data-png="4">4×</button></div>
 
@@ -149,6 +150,7 @@
 </aside>
 <main id="view">
   <canvas id="c" aria-label="Aquarium view"></canvas>
+  <canvas id="viewmap" aria-label="Viewpoint map: where the eye is relative to the tank"></canvas>
   <div class="lab" id="labA"></div><div class="lab" id="labB"></div>
   <noscript><p class="nojs">This app needs JavaScript and WebGL.</p></noscript>
 </main>

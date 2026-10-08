@@ -66,8 +66,8 @@ describe('stand and wall settings', () => {
     expect(parseScene({ ...defaultScene(), person: { show: true, height: 5000, side: 'up' } }).scene.person).toEqual({ show: true, height: 2100, side: 'left' });
   });
   it('keeps a valid peninsula wall', () => {
-    const s = { ...defaultScene(), wall: { show: true, side: 'right', color: '#AABBCC' } };
-    expect(parseScene(s).scene.wall).toEqual({ show: true, side: 'right', color: '#aabbcc' });
+    const s = { ...defaultScene(), wall: { show: true, side: 'peninsula', color: '#AABBCC' } };
+    expect(parseScene(s).scene.wall).toEqual({ show: true, side: 'peninsula', color: '#aabbcc' });
   });
 });
 
@@ -172,5 +172,11 @@ describe('custom fish sizes', () => {
     expect(load(5).tl).toBe(Math.round(150 * 0.15));
     expect(load(900).tl).toBe(Math.round(150 * 1.3));
     expect(load('big').tl).toBeUndefined();
+  });
+});
+
+describe('wall side', () => {
+  it('loads the old left/right end walls as a peninsula', () => {
+    for (const side of ['left', 'right']) expect(parseScene({ ...defaultScene(), wall: { show: true, side, color: '#d8d2c6' } }).scene.wall.side).toBe('peninsula');
   });
 });

@@ -74,8 +74,8 @@ export interface StandSettings { show: boolean; height: number; finish: StandFin
 /** Top of the tank: open, glass canopy panels, or a classic black moulded hood (lights inside). */
 export type LidType = 'open' | 'glass' | 'hood';
 
-/** 'back' = wall behind the tank; 'left' / 'right' = a short end against the wall (peninsula). */
-export type WallSide = 'back' | 'left' | 'right';
+/** 'back' = wall behind the tank; 'peninsula' = the tank's right end against the wall (the view is symmetric, so one end is enough). */
+export type WallSide = 'back' | 'peninsula';
 export interface WallSettings { show: boolean; side: WallSide; color: string }
 
 /** Human silhouette standing beside the tank for scale. height in mm, head to toe. */

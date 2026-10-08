@@ -27,13 +27,19 @@ function lines(pts: number[], color: number, opacity: number) {
   return new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color, transparent: opacity < 1, opacity }));
 }
 
+/** Peninsula: the tank's right end stands against the room wall. */
+const isPeninsula = (S: Scene) => S.wall.show && S.wall.side === 'peninsula';
+
 function addTank(sc: THREE.Scene, S: Scene, T: Tank) {
   const { L, H, D } = T, R = S.render;
   const floor = plane(L, D, basic(0xcdb98f, { side: THREE.DoubleSide })); floor.rotation.x = -Math.PI / 2; floor.position.set(L / 2, 0, -D / 2); sc.add(floor);
-  const bg = BACKGROUNDS[R.bg], t = glassThickness(T, R.glass);
+  const bg = BACKGROUNDS[R.bg], t = glassThickness(T, R.glass), pen = isPeninsula(S);
+  // the background covers the glass that faces the room wall: the back, or the right end in a peninsula (then the
+  // long back glass is clear, since that side is viewable)
   if (bg.color !== null) {
-    const back = plane(L, H, basic(bg.color, { map: bg.gradient ? gradientTexture() : null, side: THREE.DoubleSide }));
-    back.position.set(L / 2, H / 2, -D); sc.add(back);
+    const back = plane(pen ? D : L, H, basic(bg.color, { map: bg.gradient ? gradientTexture() : null, side: THREE.DoubleSide }));
+    if (pen) { back.position.set(L, H / 2, -D / 2); back.rotation.y = -Math.PI / 2; } else back.position.set(L / 2, H / 2, -D);
+    sc.add(back);
   }
   // glass panes sit OUTSIDE the interior box; large faces nearly clear, thin edge faces tinted so thickness shows
   const faceM = basic(0xbfe0ee, { transparent: true, opacity: 0.06, depthWrite: false });
@@ -68,8 +74,9 @@ function addTank(sc: THREE.Scene, S: Scene, T: Tank) {
   if (R.grid) {
     const sub = (x: number, d: number) => substrateHeight(S.substrate, T, x, d);
     const step = S.units === 'in' ? 2 * IN : 50, w: number[] = [], f: number[] = [];
-    for (let x = step; x < L; x += step) { w.push(x, 0, -D + 0.5, x, H, -D + 0.5); f.push(x, sub(x, 0) + 0.5, 0, x, sub(x, D) + 0.5, -D); }
-    for (let y = step; y < H; y += step) w.push(0, y, -D + 0.5, L, y, -D + 0.5);
+    for (let x = step; x < L; x += step) { if (!pen) w.push(x, 0, -D + 0.5, x, H, -D + 0.5); f.push(x, sub(x, 0) + 0.5, 0, x, sub(x, D) + 0.5, -D); }
+    for (let y = step; y < H; y += step) w.push(...(pen ? [L - 0.5, y, 0, L - 0.5, y, -D] : [0, y, -D + 0.5, L, y, -D + 0.5]));
+    if (pen) for (let z = step; z < D; z += step) w.push(L - 0.5, 0, -z, L - 0.5, H, -z);
     for (let z = step; z < D; z += step) f.push(0, sub(0, z) + 0.5, -z, L, sub(L, z) + 0.5, -z);
     sc.add(lines(w, bg.light ? 0x000000 : 0xffffff, bg.light ? 0.12 : 0.16)); sc.add(lines(f, 0x000000, 0.14));
   }
@@ -171,16 +178,36 @@ function addLid(sc: THREE.Scene, S: Scene, T: Tank) {
 
 /** Silhouette card width / height. */
 export const PERSON_ASPECT = 0.34;
-/** Where the person stands: beside the tank on the chosen side, at mid-depth, 250 mm from the glass. */
-export function personPlacement(S: Scene, T: Tank) {
-  const t = glassThickness(T, S.render.glass), o = (S.render.rim ? t + 8 : t) + 250;
+/** Gap between the tank's outline (as seen from the eye) and the person's near side, mm. */
+const PERSON_GAP = 250;
+/** Straight-on eye position (horizontal), for placements that do not follow the orbit. */
+export const straightOnEye = (S: Scene, T: Tank) => ({ x: T.L / 2, z: S.camera.dist });
+/**
+ * Where the scale person stands: beside the tank on the chosen side OF THE SCREEN, at the same distance from the eye
+ * as the tank centre, so their size relative to the tank never changes while orbiting (a scale reference, not a
+ * room object; Nathan, 2026-10-08). If that spot is behind the room wall they take the other side; if both are,
+ * they stand against the wall.
+ */
+export function personPlacement(S: Scene, T: Tank, eye: { x: number; z: number }, force?: -1 | 1) {
+  const t = glassThickness(T, S.render.glass), rim = S.render.rim ? t + 8 : t;
   const h = S.person.height, w = h * PERSON_ASPECT, floor = floorY(T, S.render, S.stand);
-  const x = S.person.side === 'left' ? -o - w / 2 : T.L + o + w / 2;
-  return { x, z: -T.D / 2, w, h, floor };
+  const vx = T.L / 2 - eye.x, vz = -T.D / 2 - eye.z, r = Math.hypot(vx, vz) || 1, ux = vx / r, uz = vz / r;
+  const half = (T.L / 2 + rim) * Math.abs(uz) + (T.D / 2 + rim) * Math.abs(ux); // tank half-width across the view
+  const phi = Math.asin(Math.min(0.9, (half + PERSON_GAP + w / 2) / r));
+  // rotate eye->tank about the eye: a positive angle swings toward screen-right
+  const spot = (a: number) => ({ x: eye.x + vx * Math.cos(a) - vz * Math.sin(a), z: eye.z + vx * Math.sin(a) + vz * Math.cos(a) });
+  const wb = -T.D - t - WALL_GAP, wr = T.L + t + WALL_GAP, m = w / 2 + 5;
+  const blocked = (p: { x: number; z: number }) => S.wall.show && (S.wall.side === 'back' ? p.z - m < wb : p.x + m > wr);
+  let side: -1 | 1 = force ?? (S.person.side === 'left' ? -1 : 1), p = spot(side * phi);
+  if (!force && blocked(p)) {
+    const q = spot(-side * phi);
+    if (!blocked(q)) { p = q; side = side === 1 ? -1 : 1; } else p = S.wall.side === 'back' ? { ...p, z: wb + m } : { ...p, x: wr - m };
+  }
+  return { x: p.x, z: p.z, w, h, floor, side };
 }
 function addPerson(sc: THREE.Scene, S: Scene, T: Tank) {
   if (!S.person.show) return;
-  const p = personPlacement(S, T), g = new THREE.PlaneGeometry(p.w, p.h); g.translate(0, p.h / 2, 0);
+  const p = personPlacement(S, T, straightOnEye(S, T)), g = new THREE.PlaneGeometry(p.w, p.h); g.translate(0, p.h / 2, 0); // draw() re-places it per view
   const m = new THREE.Mesh(g, cardMaterial('person', personTexture(), 'cutout'));
   m.position.set(p.x, p.floor, p.z); m.name = 'person'; m.userData.nolight = true; sc.add(m);
 }
@@ -203,7 +230,6 @@ function addWall(sc: THREE.Scene, S: Scene, T: Tank) {
   wall.position.set(0, ROOM_H / 2, 0); wall.userData.nolight = true; g.add(wall);
   const skirt = shadedBox(SPAN, SKIRT_H, SKIRT_D, 0xf1efe9); skirt.position.set(0, SKIRT_H / 2, SKIRT_D / 2); g.add(skirt);
   if (S.wall.side === 'back') g.position.set(L / 2, fy, -D - t - WALL_GAP);
-  else if (S.wall.side === 'left') { g.position.set(-t - WALL_GAP, fy, -D / 2); g.rotation.y = Math.PI / 2; }
   else { g.position.set(L + t + WALL_GAP, fy, -D / 2); g.rotation.y = -Math.PI / 2; }
   sc.add(g);
 }

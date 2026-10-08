@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { describe, expect, it } from 'vitest';
 import { applyFraming, fovFor, frameBox, frameStraightOn, neededTan, placeCamera } from '../src/render/camera';
+import { personPlacement } from '../src/render/build';
+import { defaultScene } from '../src/scene/defaults';
 import { IN, depthRatio } from '../src/scene/physics';
 
 // Project a horizontal segment of length `len` centred at (x, y, -depth) and return its on-screen length in px.
@@ -76,5 +78,32 @@ describe('orbit keeps the lens', () => {
     const T = { L: 610, H: 305, D: 305 }, cam = new THREE.PerspectiveCamera(), C = new THREE.Vector3(305, 152.5, -152.5);
     const r = (az: number, el: number) => { placeCamera(cam, T, { dist: 1200, az, el, zoom: 1 }); return cam.position.distanceTo(C); };
     for (const [az, el] of [[0, 0], [90, 0], [-45, 30], [180, 10]]) expect(r(az, el)).toBeCloseTo(1200 + 152.5, 6);
+  });
+});
+
+describe('scale person', () => {
+  const S = defaultScene(); S.person.show = true; S.stand.show = true;
+  const T = S.tankA, C = { x: T.L / 2, z: -T.D / 2 };
+  const eyeAt = (az: number) => { const cam = new THREE.PerspectiveCamera(); placeCamera(cam, T, { ...S.camera, az, el: 0 }); return { x: cam.position.x, z: cam.position.z }; };
+  it('stands as far from the eye as the tank centre at every orbit angle, so relative scale is constant', () => {
+    for (const az of [0, -30, -60, -85, 45, 120]) {
+      const e = eyeAt(az), p = personPlacement(S, T, e);
+      expect(Math.hypot(p.x - e.x, p.z - e.z)).toBeCloseTo(Math.hypot(C.x - e.x, C.z - e.z), 6);
+    }
+  });
+  it('stays on the chosen side of the screen, and swaps sides rather than standing behind the wall', () => {
+    const e = eyeAt(0), left = personPlacement(S, T, e);
+    expect(left.x).toBeLessThan(0);
+    S.wall.show = true; S.wall.side = 'back';
+    const e2 = eyeAt(-85), p = personPlacement(S, T, e2);
+    expect(p.z - p.w / 2).toBeGreaterThanOrEqual(-T.D - 60 - 1); // never behind the back wall
+  });
+});
+
+describe('peninsula', () => {
+  it('moves the person off the wall end to the open side', () => {
+    const S = defaultScene(); S.person.show = true; S.person.side = 'right'; S.wall.show = true; S.wall.side = 'peninsula';
+    const T = S.tankA, p = personPlacement(S, T, { x: T.L / 2, z: S.camera.dist });
+    expect(p.side).toBe(-1); expect(p.x + p.w / 2).toBeLessThan(T.L);
   });
 });

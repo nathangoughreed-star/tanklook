@@ -110,7 +110,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('standH').min = String(LIMITS.stand[0]); $('standH').max = String(LIMITS.stand[1]);
   $('standH').oninput = e => store.update(s => { s.stand.height = +(e.target as HTMLInputElement).value; s.stand.show = true; }, { coalesce: 'standH' });
   $('wallOn').onchange = e => store.update(s => { s.wall.show = (e.target as HTMLInputElement).checked; });
-  for (const [id, side] of [['wallBack', 'back'], ['wallLeft', 'left'], ['wallRight', 'right']] as const)
+  for (const [id, side] of [['wallBack', 'back'], ['wallPen', 'peninsula']] as const)
     $(id).onclick = () => store.update(s => { s.wall.side = side; s.wall.show = true; });
   $('wallColor').oninput = e => store.update(s => { s.wall.color = (e.target as HTMLInputElement).value; s.wall.show = true; }, { coalesce: 'wallColor' });
 
@@ -268,6 +268,11 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('cmp').onchange = e => store.update(s => { s.compare = (e.target as HTMLInputElement).checked; });
   $<HTMLSelectElement>('edge').onchange = e => store.update(s => { s.render.edge = (e.target as HTMLSelectElement).value as Scene['render']['edge']; });
   $('gridOn').onchange = e => store.update(s => { s.render.grid = (e.target as HTMLInputElement).checked; });
+  // viewpoint map: a per-viewer display preference (browser storage), not scene data
+  const mapCb = $('mapOn'), applyMap = () => { $('viewmap').classList.toggle('off', !mapCb.checked); viewer.invalidate(); };
+  try { mapCb.checked = localStorage.getItem('tanklook.viewmap') !== 'off'; } catch { /* storage blocked: keep default */ }
+  applyMap();
+  mapCb.onchange = () => { try { localStorage.setItem('tanklook.viewmap', mapCb.checked ? 'on' : 'off'); } catch { /* ignore */ } applyMap(); };
   $<HTMLSelectElement>('layout').innerHTML = Object.entries(LAYOUTS).map(([k, l]) => `<option value="${k}">${esc(l.label)}</option>`).join('');
   $<HTMLSelectElement>('layout').onchange = e => store.update(s => { s.layout.id = (e.target as HTMLSelectElement).value as LayoutId; });
   $('layoutShuffle').onclick = () => store.update(s => { s.layout.seed = 1 + Math.floor(Math.random() * 1e6); });
@@ -304,7 +309,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     $('standOn').checked = s.stand.show; setVal('standFinish', s.stand.finish); setVal('standH', s.stand.height);
     setOut('oStandH', fmt(s.stand.height));
     $('wallOn').checked = s.wall.show; setVal('wallColor', s.wall.color);
-    for (const [id, side] of [['wallBack', 'back'], ['wallLeft', 'left'], ['wallRight', 'right']] as const)
+    for (const [id, side] of [['wallBack', 'back'], ['wallPen', 'peninsula']] as const)
       $(id).classList.toggle('on', s.wall.show && s.wall.side === side);
 
     $('personOn').checked = s.person.show; setVal('personH', s.person.height); setOut('oPersonH', fmtHeight(s.person.height, u));
