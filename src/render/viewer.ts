@@ -7,7 +7,7 @@ import type { Fish, Tank } from '../scene/types';
 import { HOOD_H, buildTank, disposeScene, personPlacement, straightOnEye, type BuiltTank } from './build';
 import { drawViewMap } from './viewmap';
 import { applyFraming, fovFor, frameStraightOn, placeCamera } from './camera';
-import { setLightUniforms } from './lighting';
+import { roomLevel, setLightUniforms } from './lighting';
 import { setMaxAnisotropy } from './textures';
 
 export interface Viewport extends Partial<BuiltTank> {
@@ -103,7 +103,7 @@ export class Viewer {
       const k = 1 / Math.max(1, S.camera.zoom);
       applyFraming(vp.cam, fov, vp.w, vp.h, boxes[i].cx * k, boxes[i].cy * k);
       r.setViewport(vp.x, vp.y, vp.w, vp.h); r.setScissor(vp.x, vp.y, vp.w, vp.h);
-      r.setClearColor(0xd9dde2); r.clear();
+      r.setClearColor(new THREE.Color(0xd9dde2).multiplyScalar(0.06 + 0.94 * roomLevel(S.light.room))); r.clear(); // the space beyond the room dims with the room light
       setLightUniforms(vp.T, S.light);
       r.render(vp.scene!, vp.cam);
     }

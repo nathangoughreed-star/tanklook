@@ -3,6 +3,8 @@
 // Brightness at a point = room light + sum(beam cone x distance falloff x surface facing), normalised so every
 // fixture type gives the same mean at mid-height; only the distribution differs. Fish/plant cards ignore facing
 // (they would be edge-on to a light straight above and turn black), so they just take the light level there.
+// Room surfaces (wall, floor, stand, hood, person) are lit by the room light, plus light spilling out of the tank:
+// with the room light off, the tank is the only light in the room (Nathan, 2026-10-08).
 import * as THREE from 'three';
 import { D2R, clamp } from '../scene/physics';
 import type { LightSettings, LightType, Tank } from '../scene/types';
@@ -38,6 +40,14 @@ export function lightSum(E: Emitter[], p: [number, number, number], cone: [numbe
 }
 
 /** Tanner Helland approximation, scaled to unit luminance so temperature doesn't change brightness. */
+/**
+ * Room brightness (0..1) from the Room light setting: 0 = lights off, full from 0.3 up. Eased, so the dim end of
+ * the slider has room to work; the default 0.15 reads as a slightly dimmed room.
+ */
+export const roomLevel = (room: number) => 1 - (1 - clamp(room / 0.3, 0, 1)) ** 2;
+/** How far (mm) the tank's light carries into the room before it falls to half. */
+export const spillReach = (T: Tank) => 0.35 * Math.max(T.L, T.H, T.D) + 120;
+
 export function kelvinRGB(K: number): [number, number, number] {
   const t = K / 100; let r: number, g: number, b: number;
   if (t <= 66) { r = 255; g = 99.4708025861 * Math.log(t) - 161.1195681661; b = t <= 19 ? 0 : 138.5177312231 * Math.log(t - 10) - 305.0447927307; }
@@ -52,9 +62,17 @@ export const LU = {
   uEm: { value: Array.from({ length: AQ_MAX }, () => new THREE.Vector4()) }, uEmN: { value: 0 }, uMode: { value: 0 },
   uAmb: { value: 0.25 }, uBright: { value: 1 }, uNorm: { value: 1 }, uConeIn: { value: 0.9 }, uConeOut: { value: 0.8 },
   uRef: { value: REF }, uLCol: { value: new THREE.Color(1, 1, 1) },
+  uRoomK: { value: 1 }, uSpill: { value: new THREE.Color(1, 1, 1) }, uSpillR: { value: 500 },
+  uTankMin: { value: new THREE.Vector3() }, uTankMax: { value: new THREE.Vector3() },
 };
 export function setLightUniforms(T: Tank, l: LightSettings) {
-  const on = l.type !== 'flat'; LU.uMode.value = on ? 1 : 0; if (!on) return;
+  const on = l.type !== 'flat'; LU.uMode.value = on ? 1 : 0;
+  LU.uRoomK.value = roomLevel(l.room); LU.uSpillR.value = spillReach(T);
+  LU.uTankMin.value.set(0, 0, -T.D); LU.uTankMax.value.set(T.L, T.H, 0);
+  // the spill shows most in a dark room (in a lit room the eye adapts and it barely registers)
+  const spill = 0.9 * (1 - 0.75 * roomLevel(l.room));
+  if (on) LU.uSpill.value.setRGB(...kelvinRGB(l.kelvin)).multiplyScalar(spill * l.bright); else LU.uSpill.value.setRGB(spill, spill, spill);
+  if (!on) return;
   const E = emitters(T, l), cone = CONES[l.type as Exclude<LightType, 'flat'>];
   E.forEach((e, i) => LU.uEm.value[i].set(...e)); LU.uEmN.value = E.length;
   let avg = 0, k = 0; // sample a mid-height plane across the tank
@@ -66,6 +84,7 @@ export function setLightUniforms(T: Tank, l: LightSettings) {
 const AQ_VERT = 'varying vec3 vAqP; varying vec3 vAqN;';
 const AQ_FRAG = `
 uniform vec4 uEm[${AQ_MAX}]; uniform int uEmN; uniform float uMode, uAmb, uBright, uNorm, uConeIn, uConeOut, uRef, uCard, uSub; uniform vec3 uLCol;
+uniform float uRoomMat, uRoomK, uSpillR; uniform vec3 uSpill, uTankMin, uTankMax;
 varying vec3 vAqP; varying vec3 vAqN;
 float aqHash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float aqNoise(vec2 p) {
@@ -73,6 +92,12 @@ float aqNoise(vec2 p) {
   return mix(mix(aqHash(i), aqHash(i + vec2(1, 0)), f.x), mix(aqHash(i + vec2(0, 1)), aqHash(i + vec2(1, 1)), f.x), f.y);
 }
 vec3 aqLight() {
+  if (uRoomMat > 0.5) {  // room surface: room light + light leaving the tank (nearest point of the tank box)
+    vec3 q = clamp(vAqP, uTankMin, uTankMax), tl = q - vAqP; float d = length(tl);
+    vec3 ld = d > 1.0 ? tl / d : vec3(0.0, 1.0, 0.0); float r = d / uSpillR;
+    float facing = uCard > 0.5 ? 0.6 : 0.3 + 0.7 * max(dot(normalize(vAqN), ld), 0.0);
+    return vec3(uRoomK) + uSpill * (facing / (1.0 + r * r));
+  }
   if (uMode < 0.5) return vec3(1.0);
   float sum = 0.0; vec3 n = normalize(vAqN);
   for (int i = 0; i < ${AQ_MAX}; i++) {
@@ -99,7 +124,7 @@ const AQ_MAP = `#ifdef USE_MAP
 #endif`;
 
 function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithUniforms) {
-  Object.assign(shader.uniforms, LU, { uCard: { value: this.userData.card ? 1 : 0 }, uSub: { value: this.userData.sub ? 1 : 0 } });
+  Object.assign(shader.uniforms, LU, { uCard: { value: this.userData.card ? 1 : 0 }, uSub: { value: this.userData.sub ? 1 : 0 }, uRoomMat: { value: this.userData.room ? 1 : 0 } });
   shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\n' + AQ_VERT)
     .replace('#include <begin_vertex>', '#include <begin_vertex>\nvAqP = (modelMatrix * vec4(transformed, 1.0)).xyz; vAqN = normalize(mat3(modelMatrix) * normal);');
   shader.fragmentShader = shader.fragmentShader.replace('#include <common>', '#include <common>\n' + AQ_FRAG)
@@ -109,7 +134,7 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
     .replace('#include <map_fragment>', AQ_MAP);
 }
 // one cache key per material kind keeps one compiled program per kind
-const progKey = function (this: THREE.Material) { return 'aq' + (this.userData.card ? 'c' : '') + (this.userData.sub ? 's' : ''); };
+const progKey = function (this: THREE.Material) { return 'aq' + (this.userData.card ? 'c' : '') + (this.userData.sub ? 's' : '') + (this.userData.room ? 'r' : ''); };
 
 /** Light every opaque surface inside the tank (substrate, background, fish, plant); glass, rim, lines and the fixture stay unlit. */
 export function applyLighting(sc: THREE.Scene) {
@@ -118,6 +143,7 @@ export function applyLighting(sc: THREE.Scene) {
     if (!mesh.isMesh || o.userData.nolight) return;
     for (const m of ([] as THREE.Material[]).concat(mesh.material)) {
       if (!(m as THREE.MeshBasicMaterial).isMeshBasicMaterial || (m.transparent && !m.userData.cached) || m.userData.aq) continue;
+      if (o.userData.room) m.userData.room = true;
       if (!mesh.geometry.attributes.normal) mesh.geometry.computeVertexNormals();
       m.userData.aq = true; m.userData.card = !!m.userData.cached;
       m.onBeforeCompile = aqPatch; m.customProgramCacheKey = progKey; m.needsUpdate = true;

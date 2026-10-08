@@ -88,11 +88,11 @@ export const STAND_FINISHES: Record<Scene['stand']['finish'], { label: string; c
   oak: { label: 'Oak', color: 0xa77b4f },
 };
 
-/** Box faces in BoxGeometry order (+x, -x, +y, -y, +z, -z), shaded so an unlit box still reads as 3D. */
+/** Box faces in BoxGeometry order (+x, -x, +y, -y, +z, -z), shaded so it reads as 3D; lit as a room surface. */
 function shadedBox(w: number, h: number, d: number, color: number) {
   const c = new THREE.Color(color), k = [0.78, 0.78, 1.08, 0.5, 0.95, 0.7];
   const mats = k.map(f => basic(c.clone().multiplyScalar(f)));
-  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mats); m.userData.nolight = true;
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mats); m.userData.room = true;
   return m;
 }
 
@@ -141,7 +141,7 @@ function addHood(sc: THREE.Scene, S: Scene, T: Tank) {
     cols.push(base3.r * k, base3.g * k, base3.b * k);
   }
   geo.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
-  const hood = new THREE.Mesh(geo, basic(0xffffff, { vertexColors: true })); hood.userData.nolight = true; sc.add(hood);
+  const hood = new THREE.Mesh(geo, basic(0xffffff, { vertexColors: true })); hood.userData.room = true; sc.add(hood);
   // feeding hatch: a rectangle on the top, front-centre, following the dome
   const topY = (u: number) => {                             // height of the top curve at u (sampled Bezier)
     let best = hb, err = Infinity;
@@ -209,7 +209,7 @@ function addPerson(sc: THREE.Scene, S: Scene, T: Tank) {
   if (!S.person.show) return;
   const p = personPlacement(S, T, straightOnEye(S, T)), g = new THREE.PlaneGeometry(p.w, p.h); g.translate(0, p.h / 2, 0); // draw() re-places it per view
   const m = new THREE.Mesh(g, cardMaterial('person', personTexture(), 'cutout'));
-  m.position.set(p.x, p.floor, p.z); m.name = 'person'; m.userData.nolight = true; sc.add(m);
+  m.position.set(p.x, p.floor, p.z); m.name = 'person'; m.userData.room = true; sc.add(m);
 }
 
 /** Plain room floor under the stand/wall, so the room doesn't float in a void. One-sided (invisible from below). */
@@ -217,7 +217,7 @@ function addFloor(sc: THREE.Scene, S: Scene, T: Tank) {
   if (!S.stand.show && !S.wall.show && !S.person.show) return;
   const f = new THREE.Mesh(new THREE.PlaneGeometry(8000, 8000), basic(0xb3aca1));
   f.rotation.x = -Math.PI / 2; f.position.set(T.L / 2, floorY(T, S.render, S.stand) - 0.5, -T.D / 2);
-  f.userData.nolight = true; sc.add(f);
+  f.userData.room = true; sc.add(f);
 }
 
 /** Room wall behind the tank or against a short end (peninsula). One-sided, so it vanishes when viewed from behind. */
@@ -227,7 +227,7 @@ function addWall(sc: THREE.Scene, S: Scene, T: Tank) {
   const ROOM_H = 2700, SPAN = 6000, SKIRT_H = 90, SKIRT_D = 14;
   const g = new THREE.Group();
   const wall = new THREE.Mesh(new THREE.PlaneGeometry(SPAN, ROOM_H), basic(S.wall.color)); // normal +z, toward the tank
-  wall.position.set(0, ROOM_H / 2, 0); wall.userData.nolight = true; g.add(wall);
+  wall.position.set(0, ROOM_H / 2, 0); wall.userData.room = true; g.add(wall);
   const skirt = shadedBox(SPAN, SKIRT_H, SKIRT_D, 0xf1efe9); skirt.position.set(0, SKIRT_H / 2, SKIRT_D / 2); g.add(skirt);
   if (S.wall.side === 'back') g.position.set(L / 2, fy, -D - t - WALL_GAP);
   else { g.position.set(L + t + WALL_GAP, fy, -D / 2); g.rotation.y = -Math.PI / 2; }

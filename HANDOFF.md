@@ -128,6 +128,10 @@ no licensing, but stays illustrated).
   the wall; old left/right saves load as peninsula). In a peninsula the background panel and grid move to the wall
   end and the long back glass is clear.
 - Nathan likes the look at the max viewing distance (3 m); whether to change the default (1.2 m) is open.
+- **Room light lights the room (Nathan, 2026-10-08):** wall, floor, stand, hood and person are room surfaces
+  (`userData.room`): brightness = `roomLevel(room)` (0 at 0, full from 0.3, eased; default 0.15 = 0.75) + light
+  spilling from the tank (nearest point of the tank box, falloff over `spillReach`, facing term, fixture colour x
+  brightness; fades as the room brightens). The void beyond the room dims too. At 0 the tank is the only light.
 - **Fish drag plane follows the view:** front-ish = parallel to glass; >45° from above = floor plan (sets depth);
   side-on = side plane.
 - **Substrate:** four corner depths, bilinear surface, physical thickness (not scaled between tanks), mm-sized grain;

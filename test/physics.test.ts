@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { kelvinRGB } from '../src/render/lighting';
+import { kelvinRGB, roomLevel } from '../src/render/lighting';
 import { IN, WATERLINE_GAP, floorY, fmtDims, glassThickness, mapToTank, rescaleTankA, spawnSnail, substrateHeight, tankUnderside, volume } from '../src/scene/physics';
 import { rng } from '../src/art/paint';
 import { defaultScene } from '../src/scene/defaults';
@@ -84,5 +84,13 @@ describe('snail spawning', () => {
       expect(r.x).toBeGreaterThanOrEqual(0); expect(r.x).toBeLessThanOrEqual(T.L);
       expect(r.y).toBeGreaterThanOrEqual(25 - 1e-9); expect(r.y).toBeLessThanOrEqual(T.H - WATERLINE_GAP);
     }
+  });
+});
+
+describe('room light', () => {
+  it('maps the Room light setting to room brightness: off at 0, full from 0.3, eased between', () => {
+    expect(roomLevel(0)).toBe(0); expect(roomLevel(0.3)).toBe(1); expect(roomLevel(0.8)).toBe(1);
+    expect(roomLevel(0.15)).toBeCloseTo(0.75, 6);
+    expect(roomLevel(0.05)).toBeLessThan(roomLevel(0.1));
   });
 });
