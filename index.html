@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TankLook: aquarium visualizer</title>
+<meta name="description" content="Plan an aquarium with true-to-scale fish, seen in real perspective through the glass.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='7' width='26' height='19' rx='2' fill='%2315395a' stroke='%237fc0e3' stroke-width='2'/%3E%3Cpath d='M10 17c3-4 8-4 11 0-3 4-8 4-11 0zm11 0 4-3v6z' fill='%23ffb347'/%3E%3C/svg%3E">
+</head>
+<body>
+<div id="app">
+<aside id="side">
+  <header class="top">
+    <div>
+      <h1>TankLook</h1>
+      <div class="sub">Aquarium visualizer · true-to-scale fish · beta</div>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <button id="undo" title="Undo (Ctrl+Z)" aria-label="Undo">↶ Undo</button>
+    <button id="redo" title="Redo (Ctrl+Shift+Z)" aria-label="Redo">↷ Redo</button>
+    <span class="grow"></span>
+    <button id="newScene" title="Start a new, empty tank">New</button>
+    <button id="openScene" title="Open a saved .json scene">Open…</button>
+    <button id="saveScene" title="Download this scene as a .json file">Save…</button>
+    <input id="fileIn" type="file" accept=".json,application/json" hidden>
+  </div>
+  <div class="namerow"><input id="sceneName" type="text" maxlength="80" aria-label="Scene name"><span id="saveState" class="hint"></span></div>
+  <div id="status" class="status" role="status" hidden></div>
+
+  <details class="help"><summary>How to use</summary>
+    <ul class="hint">
+      <li><b>Drag empty space</b> to look around the tank; <b>wheel</b> zooms; <b>double-click</b> empty space for straight-on.</li>
+      <li><b>Drag a fish</b> to move it: parallel to the glass when viewed from the front, across the floor plan from above, front/back from the side.</li>
+      <li><b>Shift + wheel</b> moves the selected fish forward/back. <b>Del</b> deletes, <b>F</b> flips, <b>Ctrl+D</b> duplicates, <b>Ctrl+Z</b> undoes.</li>
+      <li>Fish are drawn at adult size. A fish further back looks smaller exactly as it would through real glass at the viewing distance below.</li>
+      <li>Your tank is saved in this browser automatically. Use <i>Save…</i> to keep a file or share it.</li>
+    </ul>
+  </details>
+
+  <h2>Tank</h2>
+  <div class="btns">
+    <select id="presetA" aria-label="Tank A preset"></select>
+    <span class="grow"></span>
+    <span class="seg"><button id="uIn">in</button><button id="uCm">cm</button></span>
+  </div>
+  <div class="dims">
+    <div><label for="aL">Length</label><input id="aL" type="number" step="0.5" min="0"></div>
+    <div><label for="aH">Height</label><input id="aH" type="number" step="0.5" min="0"></div>
+    <div><label for="aD">Depth</label><input id="aD" type="number" step="0.5" min="0"></div>
+  </div>
+  <div class="hint" id="volA"></div>
+  <div class="field"><span class="flabel">Style</span><span class="seg"><button id="rimY">Rimmed</button><button id="rimN">Rimless</button></span></div>
+  <div class="field"><span class="flabel">Lid</span><span class="seg"><button id="lidOpen">Open top</button><button id="lidGlass">Glass top</button><button id="lidHood">Hood</button></span></div>
+  <div class="field"><label class="flabel" for="bgSel">Background</label><select id="bgSel"></select></div>
+  <div class="field"><label class="flabel" for="glassSel">Glass</label><select id="glassSel"></select>
+    <select id="glassType" aria-label="Glass type"><option value="standard">Standard</option><option value="lowiron">Low-iron (ultra clear)</option></select></div>
+  <div class="hint" id="glassHint"></div>
+
+  <h2>Room</h2>
+  <div class="field"><label class="flabel"><input type="checkbox" id="standOn"> Stand</label><select id="standFinish" aria-label="Stand finish"></select></div>
+  <div class="row"><label for="standH">Stand height</label><input id="standH" type="range" step="5"><output id="oStandH"></output></div>
+  <div class="field"><label class="flabel"><input type="checkbox" id="wallOn"> Wall</label>
+    <span class="seg"><button id="wallBack">Behind</button><button id="wallLeft">Left end</button><button id="wallRight">Right end</button></span>
+    <input id="wallColor" type="color" aria-label="Wall colour" title="Wall colour"></div>
+  <div class="field"><label class="flabel"><input type="checkbox" id="personOn"> Person</label>
+    <span class="seg"><button id="personLeft">Left</button><button id="personRight">Right</button></span></div>
+  <div class="row"><label for="personH">Person height</label><input id="personH" type="range" step="10"><output id="oPersonH"></output></div>
+  <div class="hint">The stand matches the tank's footprint. <i>Left end</i> / <i>Right end</i> puts a short side against the wall (peninsula); orbit to see it.</div>
+
+  <h2>Fish</h2>
+  <input id="spSearch" type="search" placeholder="Search species (common or scientific name)" aria-label="Search species">
+  <div id="spResults" class="results" role="listbox" aria-label="Species"></div>
+  <div class="btns">
+    <button id="addFish" class="primary">Add</button>
+    <button id="addSchool">Add school ×</button><input id="schoolN" type="number" min="2" max="60" value="12" aria-label="School size" class="narrow">
+    <span class="grow"></span>
+    <button id="delAll">Delete all</button>
+  </div>
+  <div id="list" class="chips"></div>
+  <div id="selBox">
+    <div class="row"><label for="fX">Across (X)</label><input id="fX" type="range" step="1"><output id="oX"></output></div>
+    <div class="row"><label for="fY">Up (Y)</label><input id="fY" type="range" step="1"><output id="oY"></output></div>
+    <div class="row"><label for="fZ">Depth (Z)</label><input id="fZ" type="range" step="1"><output id="oZ"></output></div>
+    <div class="btns indent"><button data-d="0.05">Front</button><button data-d="0.5">Middle</button><button data-d="0.95">Back</button></div>
+    <div class="row"><label for="fYaw">Turn</label><input id="fYaw" type="range" min="-180" max="180" step="1"><output id="oYaw"></output></div>
+    <div class="row"><label for="fPitch">Nose up/down</label><input id="fPitch" type="range" min="-30" max="30" step="1"><output id="oPitch"></output></div>
+    <div class="row"><label for="fRoll">Roll</label><input id="fRoll" type="range" min="-30" max="30" step="1"><output id="oRoll"></output></div>
+    <div class="row"><label for="fBend">Body bend</label><input id="fBend" type="range" min="-1" max="1" step="0.05"><output id="oBend"></output></div>
+    <div class="btns"><button id="flip">Flip (F)</button><button id="dup">Duplicate</button><button id="del">Delete</button></div>
+    <div class="readout" id="ro"></div>
+  </div>
+
+  <h2>Substrate</h2>
+  <div class="field"><label class="flabel"><input type="checkbox" id="subOn"> Show</label><select id="subType" aria-label="Substrate type"></select></div>
+  <div class="hint">Depth at each corner, laid out as seen from above (back at the top):</div>
+  <div class="row"><label for="subBL">Back left</label><input id="subBL" type="range" step="1" min="0"><output id="oSubBL"></output></div>
+  <div class="row"><label for="subBR">Back right</label><input id="subBR" type="range" step="1" min="0"><output id="oSubBR"></output></div>
+  <div class="row"><label for="subFL">Front left</label><input id="subFL" type="range" step="1" min="0"><output id="oSubFL"></output></div>
+  <div class="row"><label for="subFR">Front right</label><input id="subFR" type="range" step="1" min="0"><output id="oSubFR"></output></div>
+  <div class="btns"><button id="subLevel">Level</button><button id="subFB">Slope to back</button><button id="subLR">Slope to right</button><button id="subCorner">Back-left high</button></div>
+
+  <h2>Lighting</h2>
+  <div class="row"><label for="lType">Fixture</label><select id="lType" class="span2">
+    <option value="flat">None (flat, even light)</option><option value="spot">Spot bulbs / pucks</option>
+    <option value="tube">Tube lights (T5/T8)</option><option value="led">LED array (full-length bar)</option></select></div>
+  <div class="row" id="lCountRow"><label id="lCountLab" for="lCount">Count</label><input id="lCount" type="range" min="1" max="6" step="1"><output id="oCount"></output></div>
+  <div class="row"><label for="lBright">Brightness</label><input id="lBright" type="range" min="0.2" max="2.5" step="0.05"><output id="oBright"></output></div>
+  <div class="row"><label for="lK">Colour temp</label><input id="lK" type="range" min="2700" max="14000" step="100"><output id="oK"></output></div>
+  <div class="row"><label for="lRoom">Room light</label><input id="lRoom" type="range" min="0" max="0.8" step="0.01"><output id="oRoom"></output></div>
+  <div class="hint">A visual approximation: light falls off with distance and beam angle from fixtures above the water. No real optics, shadows or ripples.</div>
+
+  <h2>Viewer</h2>
+  <div class="row"><label for="cDist">Distance</label><input id="cDist" type="range" min="400" max="3000" step="10"><output id="oDist"></output></div>
+  <div class="row"><label for="cAz">Left / right</label><input id="cAz" type="range" min="-180" max="180" step="1"><output id="oAz"></output></div>
+  <div class="row"><label for="cEl">From above</label><input id="cEl" type="range" min="-20" max="85" step="1"><output id="oEl"></output></div>
+  <div class="row"><label for="cZoom">Zoom</label><input id="cZoom" type="range" min="0.5" max="4" step="0.05"><output id="oZoom"></output></div>
+  <div class="hint" id="camHint"></div>
+  <div class="btns"><button id="camReset">Straight on</button></div>
+
+  <h2>Compare</h2>
+  <label><input type="checkbox" id="cmp"> Show a second tank side by side</label>
+  <div id="bBox">
+    <select id="presetB" aria-label="Tank B preset"></select>
+    <div class="dims">
+      <div><label for="bL">Length</label><input id="bL" type="number" step="0.5" min="0"></div>
+      <div><label for="bH">Height</label><input id="bH" type="number" step="0.5" min="0"></div>
+      <div><label for="bD">Depth</label><input id="bD" type="number" step="0.5" min="0"></div>
+    </div>
+    <div class="hint">Tank B shows the same fish at the same <i>relative</i> positions. Both views use one viewer distance and one field of view, so sizes are directly comparable.</div>
+  </div>
+
+  <h2>Display &amp; export</h2>
+  <div class="row"><label for="edge">Fish edges</label><select id="edge" class="span2">
+    <option value="cutout">Crisp (cutout)</option><option value="a2c">Smoothed (alpha-to-coverage)</option></select></div>
+  <label><input type="checkbox" id="gridOn"> Grid on back wall and floor (2″ / 5 cm)</label>
+  <label><input type="checkbox" id="plantOn"> Sample plant</label>
+  <div class="row"><label for="pX">Plant across</label><input id="pX" type="range" step="1" min="0"><output id="opX"></output></div>
+  <div class="row"><label for="pZ">Plant depth</label><input id="pZ" type="range" step="1" min="0"><output id="opZ"></output></div>
+  <div class="btns"><span class="flabel">Export PNG</span><button data-png="1">1×</button><button data-png="2">2×</button><button data-png="4">4×</button></div>
+
+  <details><summary>Scene data (JSON, physical mm)</summary><pre id="json"></pre></details>
+  <footer class="hint">Placeholder fish art. Sizes are adult total length.</footer>
+</aside>
+<main id="view">
+  <canvas id="c" aria-label="Aquarium view"></canvas>
+  <div class="lab" id="labA"></div><div class="lab" id="labB"></div>
+  <noscript><p class="nojs">This app needs JavaScript and WebGL.</p></noscript>
+</main>
+</div>
+<script type="module" src="./src/main.ts"></script>
+</body>
+</html>

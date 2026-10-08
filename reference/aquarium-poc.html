@@ -1,0 +1,852 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aquarium 2.5D Prototype</title>
+<style>
+:root{--bg:#eef0f3;--panel:#fff;--ink:#1d2330;--muted:#5d6676;--line:#dde1e7;--accent:#1f6feb;--warn:#a85f00;--bad:#c62828;--ok:#2e7d32;--chip:#f3f5f8}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#15181e;--panel:#1d2129;--ink:#e6e9ef;--muted:#9aa3b2;--line:#2f3540;--accent:#5b9bff;--warn:#f0a43a;--bad:#ff6b6b;--ok:#66bb6a;--chip:#262b35}}
+:root[data-theme="dark"]{--bg:#15181e;--panel:#1d2129;--ink:#e6e9ef;--muted:#9aa3b2;--line:#2f3540;--accent:#5b9bff;--warn:#f0a43a;--bad:#ff6b6b;--ok:#66bb6a;--chip:#262b35}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:13px/1.4 system-ui,"Segoe UI",sans-serif}
+#app{display:flex;height:100%}
+#side{width:340px;flex:none;overflow-y:auto;background:var(--panel);border-right:1px solid var(--line);padding:10px 14px 40px}
+#view{flex:1;position:relative;min-width:0;min-height:300px}
+#c{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+#c.dragging{cursor:grabbing}
+h1{font-size:15px;margin:2px 0 2px}
+.sub{color:var(--muted);font-size:12px;margin-bottom:8px}
+h2{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:16px 0 6px;border-top:1px solid var(--line);padding-top:10px}
+.row{display:grid;grid-template-columns:86px 1fr 72px;gap:6px;align-items:center;margin:4px 0}
+.row label{color:var(--muted)}
+.row output{text-align:right;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%}
+.dims{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.dims label{font-size:11px;color:var(--muted);display:block}
+.dims input{width:100%;padding:3px 4px;background:var(--chip);color:var(--ink);border:1px solid var(--line);border-radius:4px}
+select,button{font:inherit;color:var(--ink);background:var(--chip);border:1px solid var(--line);border-radius:5px;padding:3px 8px}
+button{cursor:pointer}button:hover{border-color:var(--accent)}
+button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btns{display:flex;flex-wrap:wrap;gap:5px;margin:5px 0}
+.hint{font-size:11.5px;color:var(--muted)}
+.warn{color:var(--warn)}.bad{color:var(--bad)}.ok{color:var(--ok)}
+#list{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}
+#list button{font-size:11.5px;padding:2px 6px}
+.readout{background:var(--chip);border:1px solid var(--line);border-radius:6px;padding:8px;font-variant-numeric:tabular-nums;font-size:12px}
+.readout div{display:flex;justify-content:space-between;gap:8px}
+.readout b{font-weight:600}
+details summary{cursor:pointer;color:var(--muted)}
+pre{font-size:10.5px;max-height:220px;overflow:auto;background:var(--chip);padding:6px;border-radius:5px}
+.lab{position:absolute;top:8px;font-size:12px;background:rgba(0,0,0,.55);color:#fff;padding:3px 7px;border-radius:4px;pointer-events:none;white-space:nowrap}
+ol{padding-left:18px;margin:6px 0}ol li{margin:3px 0}
+@media (max-width:760px){#app{flex-direction:column}#side{width:100%;height:50%;border-right:0;border-bottom:1px solid var(--line)}}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"}}</script>
+</head>
+<body>
+<div id="app">
+<aside id="side">
+  <h1>Aquarium 2.5D: Phase 1 prototype</h1>
+  <div class="sub">Three.js · flat fish cards · real mm coordinates · placeholder art</div>
+  <details open><summary>What to test</summary>
+    <ol class="hint">
+      <li><b>Depth size:</b> the three neons are at front / middle / back. Check that the on-screen ratio matches the simple formula in the readout.</li>
+      <li><b>Fair comparison:</b> turn on <i>Compare</i> (24×12×12 vs 24×12×24). The same mid-depth fish should be smaller in the deeper tank.</li>
+      <li><b>Card limits:</b> drag <i>Yaw</i> and the camera angle. Note where the angelfish starts to look like paper (the readout flags it).</li>
+      <li><b>Overlap:</b> the plant is in front of the angelfish. Move depths past each other and check that overlap is pixel-correct. Try each <i>Edge mode</i>.</li>
+      <li><b>School:</b> add a test school and judge whether cards read as fish en masse.</li>
+    </ol>
+    <div class="hint"><b>Drag empty space to rotate the tank</b>; mouse wheel zooms; double-click empty space to return to straight-on. Drag a fish to move it (parallel to the glass; from above it moves across the floor plan; from the side it moves front/back). Shift + wheel moves the selected fish forward/back. Del deletes, F flips.</div>
+  </details>
+
+  <h2>Tank A</h2>
+  <div class="btns">
+    <select id="presetA"></select>
+    <span style="flex:1"></span>
+    <button id="uIn" class="on">in</button><button id="uCm">cm</button>
+  </div>
+  <div class="dims">
+    <div><label>Length</label><input id="aL" type="number" step="0.5"></div>
+    <div><label>Height</label><input id="aH" type="number" step="0.5"></div>
+    <div><label>Depth</label><input id="aD" type="number" step="0.5"></div>
+  </div>
+
+  <div class="btns" style="margin-top:8px"><span class="hint" style="align-self:center;width:86px">Style</span><button id="rimY">Rimmed</button><button id="rimN">Rimless</button></div>
+  <div class="btns"><span class="hint" style="align-self:center;width:86px">Background</span>
+    <select id="bgSel">
+      <option value="black">Black</option><option value="blue">Deep blue</option><option value="gradient">Blue gradient</option>
+      <option value="grey">Charcoal grey</option><option value="frosted">Frosted white</option><option value="none">None (clear glass)</option>
+    </select></div>
+  <div class="btns"><span class="hint" style="align-self:center;width:86px">Glass</span>
+    <select id="glassSel"><option value="auto">Auto (by height)</option>
+      <option value="4">4 mm</option><option value="5">5 mm</option><option value="6">6 mm</option><option value="8">8 mm</option><option value="10">10 mm</option><option value="12">12 mm</option><option value="15">15 mm</option><option value="19">19 mm</option></select>
+    <select id="glassType"><option value="standard">Standard</option><option value="lowiron">Low-iron (ultra clear)</option></select></div>
+  <div class="hint" id="glassHint"></div>
+
+  <h2>Substrate</h2>
+  <label><input type="checkbox" id="subOn"> Substrate</label>
+  <select id="subType" style="margin-left:8px">
+    <option value="gravel">Natural gravel</option><option value="black">Black sand</option><option value="white">White sand</option>
+  </select>
+  <div class="hint" style="margin-top:4px">Depth at each corner, laid out as seen from above (back at the top):</div>
+  <div class="row"><label>Back left</label><input id="subBL" type="range" step="1"><output id="oSubBL"></output></div>
+  <div class="row"><label>Back right</label><input id="subBR" type="range" step="1"><output id="oSubBR"></output></div>
+  <div class="row"><label>Front left</label><input id="subFL" type="range" step="1"><output id="oSubFL"></output></div>
+  <div class="row"><label>Front right</label><input id="subFR" type="range" step="1"><output id="oSubFR"></output></div>
+  <div class="btns"><button id="subLevel">Level</button><button id="subFB">Slope to back</button><button id="subLR">Slope to right</button><button id="subCorner">Back-left high</button></div>
+  <div class="hint">The surface is blended smoothly between the four corners (bilinear interpolation). Depths are physical, so Tank B gets the same thickness, not a proportional one. The plant sits on the surface; fish placed below it are hidden by it.</div>
+
+  <h2>Compare</h2>
+  <label><input type="checkbox" id="cmp"> Show Tank B side by side</label>
+  <div id="bBox" style="display:none;margin-top:6px">
+    <select id="presetB"></select>
+    <div class="dims" style="margin-top:6px">
+      <div><label>Length</label><input id="bL" type="number" step="0.5"></div>
+      <div><label>Height</label><input id="bH" type="number" step="0.5"></div>
+      <div><label>Depth</label><input id="bD" type="number" step="0.5"></div>
+    </div>
+    <div class="hint" style="margin-top:4px">Tank B shows the same fish at the same <i>relative</i> positions (fractions of L/H/D). Both views use one camera rule and one field of view, so pixel sizes are directly comparable.</div>
+  </div>
+
+  <h2>Camera (the viewer)</h2>
+  <div class="row"><label>Distance</label><input id="cDist" type="range" min="400" max="3000" step="10"><output id="oDist"></output></div>
+  <div class="row"><label>Left / right</label><input id="cAz" type="range" min="-180" max="180" step="1"><output id="oAz"></output></div>
+  <div class="row"><label>From above</label><input id="cEl" type="range" min="-20" max="85" step="1"><output id="oEl"></output></div>
+  <div class="row"><label>Zoom</label><input id="cZoom" type="range" min="0.5" max="4" step="0.05"><output id="oZoom"></output></div>
+  <div class="hint" id="camHint">Distance is measured from the eye to the centre of the front glass and is the same for every tank. Zoom only crops; it doesn't change perspective.</div>
+  <div class="btns"><button id="camReset">Straight on</button></div>
+
+  <h2>Fish</h2>
+  <div class="btns">
+    <select id="spSel"></select>
+    <button id="addFish">Add</button>
+    <button id="ladder">Depth ladder ×3</button>
+    <button id="school">Test school ×20</button>
+    <button id="delAll">Delete all fish</button>
+  </div>
+  <div id="list"></div>
+  <div id="selBox">
+    <div class="row"><label>Across (X)</label><input id="fX" type="range" step="1"><output id="oX"></output></div>
+    <div class="row"><label>Up (Y)</label><input id="fY" type="range" step="1"><output id="oY"></output></div>
+    <div class="row"><label>Depth (Z)</label><input id="fZ" type="range" step="1"><output id="oZ"></output></div>
+    <div class="btns" style="margin-left:92px"><button data-d="0.05">Front</button><button data-d="0.5">Middle</button><button data-d="0.95">Back</button></div>
+    <div class="row"><label>Yaw (turn)</label><input id="fYaw" type="range" min="-180" max="180" step="1"><output id="oYaw"></output></div>
+    <div class="row"><label>Pitch (nose)</label><input id="fPitch" type="range" min="-30" max="30" step="1"><output id="oPitch"></output></div>
+    <div class="row"><label>Roll</label><input id="fRoll" type="range" min="-30" max="30" step="1"><output id="oRoll"></output></div>
+    <div class="row"><label>Body bend</label><input id="fBend" type="range" min="-1" max="1" step="0.05"><output id="oBend"></output></div>
+    <div class="btns"><button id="flip">Flip (F)</button><button id="dup">Duplicate</button><button id="del">Delete (Del)</button></div>
+    <div class="readout" id="ro"></div>
+  </div>
+
+  <h2>Lighting</h2>
+  <div class="row"><label>Fixture</label>
+    <select id="lType" style="grid-column:span 2">
+      <option value="flat">None (flat, even light)</option><option value="spot">Spot bulbs / pucks</option>
+      <option value="tube">Tube lights (T5/T8)</option><option value="led">LED array (full-length bar)</option>
+    </select></div>
+  <div class="row" id="lCountRow"><label id="lCountLab">Count</label><input id="lCount" type="range" min="1" max="6" step="1"><output id="oCount"></output></div>
+  <div class="row"><label>Brightness</label><input id="lBright" type="range" min="0.2" max="2.5" step="0.05"><output id="oBright"></output></div>
+  <div class="row"><label>Colour temp</label><input id="lK" type="range" min="2700" max="14000" step="100"><output id="oK"></output></div>
+  <div class="row"><label>Room light</label><input id="lRoom" type="range" min="0" max="0.8" step="0.01"><output id="oRoom"></output></div>
+  <div class="hint">A visual approximation: light falls off with distance and beam angle from fixtures above the water. No real optics, shadows or ripples.</div>
+
+  <h2>Rendering</h2>
+  <div class="row"><label>Edge mode</label>
+    <select id="edge" style="grid-column:span 2">
+      <option value="cutout">Cutout (alpha test): hard edge</option>
+      <option value="a2c">Alpha-to-coverage: smoothed edge</option>
+      <option value="soft">Soft blend: shows the problem</option>
+    </select></div>
+  <label><input type="checkbox" id="plantOn"> Plant card</label>
+  <div class="row"><label>Plant X</label><input id="pX" type="range" step="1"><output id="opX"></output></div>
+  <div class="row"><label>Plant depth</label><input id="pZ" type="range" step="1"><output id="opZ"></output></div>
+  <label><input type="checkbox" id="gridOn"> Grid (2″ / 5 cm) on back wall and floor</label><br>
+  <div class="btns"><button id="png2">Export PNG 2×</button><button id="png4">Export PNG 4×</button></div>
+
+  <h2>Scene data</h2>
+  <details><summary>Scene JSON (the saved format: physical mm, no pixels)</summary><pre id="json"></pre></details>
+</aside>
+<main id="view"><canvas id="c"></canvas><div class="lab" id="labA"></div><div class="lab" id="labB"></div></main>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+
+const IN = 25.4, D2R = Math.PI / 180;
+const $ = id => document.getElementById(id);
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+
+// ---------- Species (placeholder art; card width == adult total length) ----------
+const SPECIES = {
+  neon:    { name: 'Neon tetra',    sci: 'Paracheirodon innesi', tl: 35,  aspect: 0.34, draw: drawTetra },
+  gourami: { name: 'Pearl gourami', sci: 'Trichopodus leerii',   tl: 120, aspect: 0.60, draw: drawGourami },
+  angel:   { name: 'Angelfish',     sci: 'Pterophyllum scalare', tl: 150, aspect: 1.30, draw: drawAngel },
+};
+const PRESETS = [
+  ['24×12×12 (example A)', 24, 12, 12], ['24×12×24 (example B)', 24, 12, 24],
+  ['20 long 30×12×12', 30, 12, 12], ['29 gal 30×18×12', 30, 18, 12],
+  ['40 breeder 36×16×18', 36, 16, 18], ['55 gal 48×21×13', 48, 21, 13],
+  ['75 gal 48×21×18', 48, 21, 18], ['125 gal 72×22×18', 72, 22, 18],
+];
+
+// ---------- Scene data: the single source of truth (all mm, tank-A space) ----------
+const S = {
+  version: 1,
+  units: 'in',
+  tankA: { L: 24 * IN, H: 12 * IN, D: 12 * IN },
+  tankB: { L: 24 * IN, H: 12 * IN, D: 24 * IN },
+  compare: false,
+  camera: { dist: 1200, az: 0, el: 0, zoom: 1 },
+  render: { edge: 'cutout', grid: true, rim: true, bg: 'blue', glass: 'auto', glassType: 'standard' },
+  light: { type: 'flat', count: 2, bright: 1, kelvin: 6500, room: 0.15 },
+  substrate: { show: true, type: 'gravel', fl: 1 * IN, fr: 1 * IN, bl: 3 * IN, br: 3 * IN },
+  plant: { show: true, x: 0.40 * 24 * IN, depth: 0.30 * 12 * IN },
+  fish: [],
+};
+let nextId = 1, selId = null;
+function addFish(species, x, y, depth, extra = {}) {
+  const f = { id: nextId++, species, x, y, depth, yaw: 0, pitch: 0, roll: 0, bend: 0, ...extra };
+  S.fish.push(f); return f;
+}
+{ const A = S.tankA;
+  selId = addFish('angel', 0.45 * A.L, 0.55 * A.H, 0.5 * A.D).id;
+  addFish('neon', 0.80 * A.L, 0.22 * A.H, 0.05 * A.D);
+  addFish('neon', 0.80 * A.L, 0.34 * A.H, 0.50 * A.D);
+  addFish('neon', 0.80 * A.L, 0.46 * A.H, 0.95 * A.D);
+}
+
+// ---------- Placeholder illustrations (drawn on canvas, hard silhouettes) ----------
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+// closed smooth path through midpoints; points tagged 'c' are sharp corners (used for nose/tail tips so calibration is exact)
+function shape(ctx, P, pts) {
+  const n = pts.length, m = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+  const q = pts.map(p => [...P(p[0], p[1]), p[2]]);
+  ctx.beginPath(); const s = m(q[n - 1], q[0]); ctx.moveTo(s[0], s[1]);
+  for (let i = 0; i < n; i++) {
+    const p = q[i], mid = m(p, q[(i + 1) % n]);
+    if (p[2] === 'c') { ctx.lineTo(p[0], p[1]); ctx.lineTo(mid[0], mid[1]); }
+    else ctx.quadraticCurveTo(p[0], p[1], mid[0], mid[1]);
+  }
+  ctx.closePath();
+}
+const OUT = '#1b2028';
+function fillStroke(ctx, fill, w) { ctx.fillStyle = fill; ctx.fill(); ctx.strokeStyle = OUT; ctx.lineWidth = w; ctx.stroke(); }
+function eye(ctx, P, u, v, r, W) { const [x, y] = P(u, v); ctx.beginPath(); ctx.arc(x, y, r * W, 0, 7); ctx.fillStyle = '#f4f4ee'; ctx.fill(); ctx.strokeStyle = OUT; ctx.lineWidth = 3; ctx.stroke(); ctx.beginPath(); ctx.arc(x, y, r * W * 0.55, 0, 7); ctx.fillStyle = '#111'; ctx.fill(); }
+
+function drawTetra(ctx, P, W) {
+  shape(ctx, P, [[0.58, -0.10], [0.52, -0.165, 'c'], [0.45, -0.09]]); fillStroke(ctx, '#b7c2bd', 5);
+  shape(ctx, P, [[0.47, 0.09], [0.38, 0.145, 'c'], [0.27, 0.06]]); fillStroke(ctx, '#b7c2bd', 5);
+  const body = [[1.0, 0.0, 'c'], [0.93, -0.07], [0.72, -0.115], [0.45, -0.10], [0.24, -0.045], [0.17, -0.04], [0.0, -0.15, 'c'], [0.09, 0.0], [0.0, 0.15, 'c'], [0.17, 0.04], [0.24, 0.045], [0.45, 0.10], [0.72, 0.115], [0.93, 0.07]];
+  shape(ctx, P, body); ctx.fillStyle = '#c3cbc4'; ctx.fill();
+  ctx.save(); ctx.clip();
+  let [x0, y0] = P(0.15, -0.2), [x1, y1] = P(1, -0.06); ctx.fillStyle = '#6f7f5e'; ctx.fillRect(x0, y0, x1 - x0, y1 - y0);   // olive back
+  [x0, y0] = P(0.2, -0.065); [x1, y1] = P(0.95, -0.006); ctx.fillStyle = '#0fb6ff'; ctx.fillRect(x0, y0, x1 - x0, y1 - y0);      // electric-blue line
+  [x0, y0] = P(0.17, -0.006); [x1, y1] = P(0.6, 0.13); ctx.fillStyle = '#ff2533'; ctx.fillRect(x0, y0, x1 - x0, y1 - y0);        // red lower rear
+  ctx.restore(); shape(ctx, P, body); ctx.strokeStyle = OUT; ctx.lineWidth = 6; ctx.stroke();
+  eye(ctx, P, 0.9, -0.025, 0.024, W);
+}
+function drawAngel(ctx, P, W) {
+  shape(ctx, P, [[0.74, 0.22], [0.58, 0.63, 'c'], [0.70, 0.24]]); fillStroke(ctx, '#e8e4d6', 4);
+  const body = [[0.99, 0.0, 'c'], [0.92, -0.12], [0.78, -0.27], [0.62, -0.36], [0.50, -0.50], [0.40, -0.64, 'c'], [0.36, -0.40], [0.27, -0.12], [0.22, -0.08], [0.10, -0.22], [0.0, -0.25, 'c'], [0.04, 0.0], [0.0, 0.25, 'c'], [0.10, 0.22], [0.22, 0.08], [0.27, 0.12], [0.36, 0.40], [0.40, 0.64, 'c'], [0.50, 0.50], [0.62, 0.34], [0.78, 0.24], [0.92, 0.10]];
+  shape(ctx, P, body); ctx.fillStyle = '#dcd8c8'; ctx.fill();
+  ctx.save(); ctx.clip();
+  ctx.fillStyle = '#2b2a28';
+  for (const [u, w] of [[0.86, 0.045], [0.64, 0.06], [0.42, 0.05]]) { const [x] = P(u - w / 2, 0), [x2] = P(u + w / 2, 0); ctx.fillRect(x, 0, x2 - x, 99999); }
+  ctx.restore(); shape(ctx, P, body); ctx.strokeStyle = OUT; ctx.lineWidth = 6; ctx.stroke();
+  eye(ctx, P, 0.875, -0.07, 0.03, W);
+}
+function drawGourami(ctx, P, W) {
+  shape(ctx, P, [[0.76, 0.15], [0.38, 0.29, 'c'], [0.73, 0.17]]); fillStroke(ctx, '#e3a35c', 4);
+  const body = [[1.0, 0.0, 'c'], [0.95, -0.08], [0.80, -0.17], [0.55, -0.20], [0.42, -0.27], [0.20, -0.25, 'c'], [0.18, -0.12], [0.10, -0.18], [0.0, -0.15, 'c'], [0.0, 0.15, 'c'], [0.10, 0.18], [0.18, 0.12], [0.20, 0.25, 'c'], [0.45, 0.25], [0.66, 0.17], [0.85, 0.13], [0.95, 0.07]];
+  shape(ctx, P, body); ctx.fillStyle = '#b9a685'; ctx.fill();
+  ctx.save(); ctx.clip();
+  let [x, y] = P(0.78, 0.13); ctx.beginPath(); ctx.ellipse(x, y, 0.16 * W, 0.08 * W, 0, 0, 7); ctx.fillStyle = '#d9702b'; ctx.fill();
+  const r = rng(7); ctx.fillStyle = '#f4ecd9';
+  for (let i = 0; i < 260; i++) { const [px, py] = P(0.05 + r() * 0.85, -0.27 + r() * 0.5); ctx.beginPath(); ctx.arc(px, py, (0.006 + r() * 0.006) * W, 0, 7); ctx.fill(); }
+  ctx.strokeStyle = '#2f281f'; ctx.lineWidth = 0.014 * W; ctx.beginPath();
+  for (let i = 0; i <= 14; i++) { const [px, py] = P(0.88 - i * 0.05, (i % 2 ? 0.012 : -0.012)); i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); } ctx.stroke();
+  ctx.restore(); shape(ctx, P, body); ctx.strokeStyle = OUT; ctx.lineWidth = 6; ctx.stroke();
+  eye(ctx, P, 0.9, -0.035, 0.026, W);
+}
+// back-wall options; color null = no background (back glass only); light = use dark grid lines
+const BACKGROUNDS = {
+  black:    { color: 0x0b0c0e },
+  blue:     { color: 0x15395a },
+  gradient: { color: 0xffffff, gradient: true },
+  grey:     { color: 0x3a3e44 },
+  frosted:  { color: 0xe6ecee, light: true },
+  none:     { color: null, light: true },
+};
+const SUBSTRATES = {
+  gravel: { base: '#7d6c55', shades: ['#a08a6c', '#5e5040', '#8f8576', '#b8a68a', '#4a4239'], size: [5, 11], tile: 90 },
+  black:  { base: '#222225', shades: ['#38383c', '#151517', '#4a4a50'], size: [1.5, 3.5], tile: 40 },
+  white:  { base: '#ddd2bb', shades: ['#efe7d6', '#c9bc9f', '#f7f2e6'], size: [1.5, 3.5], tile: 40 },
+};
+function drawSubstrate(ctx, W, type) {
+  const t = SUBSTRATES[type], r = rng(11); ctx.fillStyle = t.base; ctx.fillRect(0, 0, W, W);
+  const n = Math.round(W * W / (t.size[1] * t.size[1] * 2.2));
+  for (let i = 0; i < n; i++) {
+    const x = r() * W, y = r() * W, rx = t.size[0] + r() * (t.size[1] - t.size[0]), ry = rx * (0.6 + r() * 0.4), a = r() * 3;
+    ctx.fillStyle = t.shades[i % t.shades.length];
+    for (const dx of [-W, 0, W]) for (const dy of [-W, 0, W]) { ctx.beginPath(); ctx.ellipse(x + dx, y + dy, rx, ry, a, 0, 7); ctx.fill(); }  // wraps -> seamless tile
+  }
+}
+function drawPlant(ctx, W, H) {
+  const r = rng(3), greens = ['#3f8a3a', '#56a043', '#2f7031', '#6bb04e'];
+  for (let i = 0; i < 9; i++) {
+    const bx = W * (0.3 + 0.4 * i / 8), tx = bx + (r() - 0.5) * W * 0.7, ty = H * (0.02 + r() * 0.3), bw = W * 0.05;
+    const cx = (bx + tx) / 2 + (r() - 0.5) * W * 0.4;
+    ctx.beginPath(); ctx.moveTo(bx - bw / 2, H); ctx.quadraticCurveTo(cx - bw / 2, H * 0.55, tx, ty);
+    ctx.quadraticCurveTo(cx + bw / 2, H * 0.55, bx + bw / 2, H); ctx.closePath();
+    ctx.fillStyle = greens[i % 4]; ctx.fill(); ctx.strokeStyle = '#173a17'; ctx.lineWidth = 4; ctx.stroke();
+  }
+}
+
+// ---------- Renderer, textures, materials ----------
+const canvas = $('c'), view = $('view');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+const ANISO = renderer.capabilities.getMaxAnisotropy();
+
+const texCache = {};
+function texture(key) {
+  if (texCache[key]) return texCache[key];
+  const c = document.createElement('canvas'), ctx = c.getContext('2d');
+  if (key === 'bg-gradient') {
+    c.width = 4; c.height = 256; const g = ctx.createLinearGradient(0, 0, 0, 256);
+    g.addColorStop(0, '#7fc0e3'); g.addColorStop(0.55, '#2f7fb3'); g.addColorStop(1, '#123a5e'); ctx.fillStyle = g; ctx.fillRect(0, 0, 4, 256);
+  } else if (key.startsWith('sub-')) { c.width = c.height = 512; drawSubstrate(ctx, 512, key.slice(4)); }
+  else if (key === 'plant') { c.width = 512; c.height = 1382; drawPlant(ctx, c.width, c.height); }
+  else {
+    const sp = SPECIES[key], W = 1024, H = Math.round(W * sp.aspect); c.width = W; c.height = H;
+    ctx.lineJoin = 'round'; sp.draw(ctx, (u, v) => [u * W, H / 2 + v * W], W);
+  }
+  const t = new THREE.CanvasTexture(c); if (key.startsWith('sub-')) t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = ANISO;
+  return texCache[key] = t;
+}
+const matCache = {};
+function cardMat(key) {
+  const k = key + '|' + S.render.edge; if (matCache[k]) return matCache[k];
+  const o = { map: texture(key), side: THREE.DoubleSide };
+  if (S.render.edge === 'cutout') o.alphaTest = 0.5;
+  else if (S.render.edge === 'a2c') o.alphaToCoverage = true;
+  else o.transparent = true;            // naive blending: halos + order-dependent errors
+  const m = new THREE.MeshBasicMaterial(o); m.userData.cached = true; return matCache[k] = m;
+}
+function cardGeometry(w, h, bend) {
+  const g = new THREE.PlaneGeometry(w, h, 16, 1);
+  if (bend) { const p = g.attributes.position; for (let i = 0; i < p.count; i++) { const u = p.getX(i) / (w / 2); p.setZ(i, bend * w * 0.14 * (1 - u * u)); } g.computeBoundingSphere(); }
+  return g;
+}
+
+// ---------- Scene build (rebuilt from S on every change; cheap at this scale) ----------
+const vps = [{ key: 'A', cam: new THREE.PerspectiveCamera(40, 1, 10, 40000) }, { key: 'B', cam: new THREE.PerspectiveCamera(40, 1, 10, 40000) }];
+function mapper(T) { const A = S.tankA; return f => ({ x: f.x * T.L / A.L, y: f.y * T.H / A.H, depth: f.depth * T.D / A.D }); }
+function basic(color, extra = {}) { return new THREE.MeshBasicMaterial({ color, ...extra }); }
+function plane(w, h, mat) { return new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat); }
+function lines(pts, color, opacity) {
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
+  return new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color, transparent: opacity < 1, opacity }));
+}
+// glass thickness (mm) for a tank: explicit choice, or typical commercial thickness by interior height
+function glassT(T) {
+  if (S.render.glass !== 'auto') return +S.render.glass;
+  const h = T.H / IN; return h <= 13 ? 5 : h <= 17 ? 6 : h <= 21 ? 8 : h <= 25 ? 10 : h <= 30 ? 12 : 15;
+}
+function addTank(sc, T) {
+  const { L, H, D } = T;
+  const floor = plane(L, D, basic(0xcdb98f, { side: THREE.DoubleSide })); floor.rotation.x = -Math.PI / 2; floor.position.set(L / 2, 0, -D / 2); sc.add(floor);
+  const bg = BACKGROUNDS[S.render.bg], t = glassT(T);
+  if (T === S.tankA) glassHint();
+  if (bg.color !== null) {
+    const back = plane(L, H, basic(bg.color, { map: bg.gradient ? texture('bg-gradient') : null, side: THREE.DoubleSide }));
+    back.position.set(L / 2, H / 2, -D); sc.add(back);
+  }
+  // glass panes sit OUTSIDE the interior box; large faces nearly clear, thin edge faces tinted so thickness shows
+  const faceM = basic(0xbfe0ee, { transparent: true, opacity: 0.06, depthWrite: false });
+  const edgeM = S.render.glassType === 'lowiron' ? basic(0xcfe6ea, { transparent: true, opacity: 0.5, depthWrite: false }) : basic(0x3f8f72, { transparent: true, opacity: 0.85, depthWrite: false });
+  const pane = (w, h, d, x, y, z, big, ro) => {   // big = axis index (0 x, 1 y, 2 z) of the large faces
+    const m = [edgeM, edgeM, edgeM, edgeM, edgeM, edgeM]; m[big * 2] = faceM; m[big * 2 + 1] = faceM;
+    const g = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); g.position.set(x, y, z); g.renderOrder = ro; sc.add(g);
+  };
+  pane(L + 2 * t, t, D + 2 * t, L / 2, -t / 2, -D / 2, 1, 5);
+  pane(L + 2 * t, H, t, L / 2, H / 2, t / 2, 2, 6);
+  pane(L + 2 * t, H, t, L / 2, H / 2, -D - t / 2, 2, 5);
+  pane(t, H, D, -t / 2, H / 2, -D / 2, 0, 5); pane(t, H, D, L + t / 2, H / 2, -D / 2, 0, 5);
+  const box = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(L, H, D)), new THREE.LineBasicMaterial({ color: S.render.rim ? 0x55636f : 0x7fb5a6, transparent: true, opacity: 0.35 }));
+  box.position.set(L / 2, H / 2, -D / 2); sc.add(box);
+  if (S.render.rim) {
+    const rm = basic(0x1a1d21), r = t + 8, h = 20;
+    for (const [w, d, x, z] of [[L + 2 * r, r, L / 2, r / 2], [L + 2 * r, r, L / 2, -D - r / 2], [r, D, -r / 2, -D / 2], [r, D, L + r / 2, -D / 2]]) {
+      const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), rm); b.position.set(x, H - h / 2 + 2, z); sc.add(b);
+      const b2 = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), rm); b2.position.set(x, -t - 2 + h / 2, z); sc.add(b2);
+    }
+  }
+  if (S.render.grid) {
+    const step = S.units === 'in' ? 2 * IN : 50, w = [], f = [];
+    for (let x = step; x < L; x += step) { w.push(x, 0, -D + 0.5, x, H, -D + 0.5); f.push(x, subH(T, x, 0) + 0.5, 0, x, subH(T, x, D) + 0.5, -D); }
+    for (let y = step; y < H; y += step) w.push(0, y, -D + 0.5, L, y, -D + 0.5);
+    for (let z = step; z < D; z += step) f.push(0, subH(T, 0, z) + 0.5, -z, L, subH(T, L, z) + 0.5, -z);
+    sc.add(lines(w, bg.light ? 0x000000 : 0xffffff, bg.light ? 0.12 : 0.16)); sc.add(lines(f, 0x000000, 0.14));
+  }
+}
+// substrate surface height (mm above the tank floor) at (x, depth): bilinear blend of the four corner depths.
+// Bilinear is straight along any line parallel to a tank wall, so the edges and grid lines stay straight;
+// only the diagonals curve, which is why the top surface is subdivided below.
+function subH(T, x, depth) {
+  const s = S.substrate; if (!s.show) return 0;
+  const cap = T.H * 0.6, c = k => Math.min(s[k], cap), u = clamp(x / T.L, 0, 1), v = clamp(depth / T.D, 0, 1);
+  return (c('fl') * (1 - u) + c('fr') * u) * (1 - v) + (c('bl') * (1 - u) + c('br') * u) * v;
+}
+function addSubstrate(sc, T) {
+  if (!S.substrate.show) return;
+  const { L, D } = T, tile = SUBSTRATES[S.substrate.type].tile * 2, h = (x, d) => subH(T, x, d);
+  // top surface as a 16x16 grid, front face (seen through the glass) and two side faces; UVs from physical mm so grain size is constant
+  const top = [], side = [], N = 16;
+  const quad = (arr, pts, uv) => { for (const i of [0, 1, 2, 0, 2, 3]) arr.push(pts[i], uv(pts[i])); };
+  const P = (i, j) => { const x = L * i / N, d = D * j / N; return [x, h(x, d), -d]; };
+  // cheap slope shading: brightness from each cell's tilt toward a light above, front and left, so slopes read without real lighting
+  const light = new THREE.Vector3(-0.35, 1, 0.45).normalize(), topCol = [];
+  for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+    const q = [P(i, j), P(i + 1, j), P(i + 1, j + 1), P(i, j + 1)];
+    const a = new THREE.Vector3(...q[1]).sub(new THREE.Vector3(...q[0])), b = new THREE.Vector3(...q[3]).sub(new THREE.Vector3(...q[0]));
+    const n = new THREE.Vector3().crossVectors(a, b).normalize(); if (n.y < 0) n.negate();
+    const k = clamp(0.55 + 0.6 * n.dot(light), 0, 1.15) / 1.15;
+    quad(top, q, p => [p[0] / tile, -p[2] / tile]); for (let v = 0; v < 6; v++) topCol.push(k, k, k);
+  }
+  quad(side, [[0, 0, 0], [L, 0, 0], [L, h(L, 0), 0], [0, h(0, 0), 0]], p => [p[0] / tile, p[1] / tile]);
+  for (const x of [0, L]) quad(side, [[x, 0, 0], [x, 0, -D], [x, h(x, D), -D], [x, h(x, 0), 0]], p => [-p[2] / tile, p[1] / tile]);
+  const mk = (arr, shade, cols) => {
+    const g = new THREE.BufferGeometry(); if (cols) g.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
+    g.setAttribute('position', new THREE.Float32BufferAttribute(arr.filter((_, i) => i % 2 === 0).flat(), 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(arr.filter((_, i) => i % 2 === 1).flat(), 2));
+    const m = new THREE.MeshBasicMaterial({ map: texture('sub-' + S.substrate.type), color: shade, vertexColors: !!cols, side: THREE.DoubleSide });
+    m.userData.sub = true; sc.add(new THREE.Mesh(g, m));
+  };
+  mk(top, 0xffffff, topCol); mk(side, 0xb4b4b4);   // front/sides a touch darker so the layer reads through the glass
+}
+function disposeScene(sc) { sc?.traverse(o => { o.geometry?.dispose(); if (o.material) [].concat(o.material).forEach(m => { if (!m.userData.cached) m.dispose(); }); }); }
+function build() {
+  for (const vp of vps) {
+    disposeScene(vp.scene);
+    const T = vp.key === 'A' ? S.tankA : S.tankB, sc = new THREE.Scene(), map = mapper(T);
+    vp.T = T; vp.scene = sc; vp.fishMeshes = []; vp.meshById = {};
+    addTank(sc, T); addSubstrate(sc, T);
+    if (S.plant.show) {
+      const ph = Math.min(380, T.H * 0.92), pw = ph / 2.7, g = new THREE.PlaneGeometry(pw, ph); g.translate(0, ph / 2, 0);
+      const m = new THREE.Mesh(g, cardMat('plant')); const p = map({ x: S.plant.x, y: 0, depth: S.plant.depth });
+      m.position.set(p.x, subH(T, p.x, p.depth) - 4, -p.depth); sc.add(m);
+    }
+    for (const f of S.fish) {
+      const sp = SPECIES[f.species], w = sp.tl, h = sp.tl * sp.aspect, p = map(f);
+      const m = new THREE.Mesh(cardGeometry(w, h, f.bend), cardMat(f.species));
+      m.position.set(p.x, p.y, -p.depth); m.rotation.set(f.roll * D2R, f.yaw * D2R, f.pitch * D2R, 'YXZ');
+      m.userData.id = f.id;
+      if (f.id === selId) {
+        const r = lines([-w / 2, -h / 2, 0, w / 2, -h / 2, 0, w / 2, -h / 2, 0, w / 2, h / 2, 0, w / 2, h / 2, 0, -w / 2, h / 2, 0, -w / 2, h / 2, 0, -w / 2, -h / 2, 0], 0x3d8bff, 1);
+        r.material.depthTest = false; r.renderOrder = 10; m.add(r);
+      }
+      sc.add(m); vp.fishMeshes.push(m); vp.meshById[f.id] = m;
+    }
+    addFixture(sc, T); applyLighting(sc);
+    sc.updateMatrixWorld(true);
+  }
+}
+
+// ---------- Lighting: a cheap top-down light model injected into the unlit materials ----------
+// Each fixture is a set of emitters above the water (points for spots/LEDs, line segments for tubes).
+// Brightness at a point = room light + sum(beam cone x distance falloff x surface facing), normalised so every
+// fixture type gives the same average at mid-height; only the distribution differs. Fish/plant cards ignore
+// facing (they would be edge-on to a light straight above and turn black), so they just take the light level there.
+const AQ_MAX = 48, LAMP_Y = 50, REF = 320;
+const CONES = { spot: [Math.cos(18 * D2R), Math.cos(34 * D2R)], tube: [0.45, -0.15], led: [Math.cos(45 * D2R), Math.cos(75 * D2R)] };
+const LU = {
+  uEm: { value: Array.from({ length: AQ_MAX }, () => new THREE.Vector4()) }, uEmN: { value: 0 }, uMode: { value: 0 },
+  uAmb: { value: 0.25 }, uBright: { value: 1 }, uNorm: { value: 1 }, uConeIn: { value: 0.9 }, uConeOut: { value: 0.8 },
+  uRef: { value: REF }, uLCol: { value: new THREE.Color(1, 1, 1) },
+};
+function emitters(T) {
+  const { L, H, D } = T, y = H + LAMP_Y, n = S.light.count, E = [];
+  if (S.light.type === 'spot') for (let i = 0; i < n; i++) E.push([L * (i + 0.5) / n, y, -D / 2, 0]);
+  if (S.light.type === 'tube') for (let i = 0; i < n; i++) E.push([L / 2, y, -D * (i + 0.5) / n, L * 0.45]);
+  if (S.light.type === 'led') { const cols = clamp(Math.round(L * 0.9 / 45), 2, 24); for (const r of [0.38, 0.62]) for (let c = 0; c < cols; c++) E.push([L * (0.05 + 0.9 * (c + 0.5) / cols), y, -D * r, 0]); }
+  return E;
+}
+function lightSum(E, p, cone) {   // JS twin of the shader loop (card mode: no facing term); used for normalisation
+  let sum = 0;
+  for (const e of E) {
+    const qx = e[3] > 0 ? clamp(p[0], e[0] - e[3], e[0] + e[3]) : e[0], dx = qx - p[0], dy = e[1] - p[1], dz = e[2] - p[2];
+    const d = Math.hypot(dx, dy, dz), ly = dy / Math.max(d, 1);
+    const c = THREE.MathUtils.smoothstep(ly, cone[1], cone[0]), r = d / REF;
+    sum += c * (e[3] > 0 ? 1 / (1 + r) : 1 / (1 + r * r));
+  }
+  return sum;
+}
+function kelvinRGB(K) {   // Tanner Helland approximation, scaled to unit luminance so temperature doesn't change brightness
+  const t = K / 100; let r, g, b;
+  if (t <= 66) { r = 255; g = 99.4708025861 * Math.log(t) - 161.1195681661; b = t <= 19 ? 0 : 138.5177312231 * Math.log(t - 10) - 305.0447927307; }
+  else { r = 329.698727446 * Math.pow(t - 60, -0.1332047592); g = 288.1221695283 * Math.pow(t - 60, -0.0755148492); b = 255; }
+  [r, g, b] = [r, g, b].map(v => clamp(v, 0, 255) / 255); const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  return new THREE.Color(r / lum, g / lum, b / lum);
+}
+function setLightUniforms(T) {   // per viewport, because Tank A and Tank B have different fixtures
+  const l = S.light, on = l.type !== 'flat'; LU.uMode.value = on ? 1 : 0; if (!on) return;
+  const E = emitters(T), cone = CONES[l.type];
+  E.forEach((e, i) => LU.uEm.value[i].set(...e)); LU.uEmN.value = E.length;
+  let avg = 0, k = 0;   // sample a mid-height plane across the tank
+  for (let i = 1; i <= 5; i++) for (let j = 1; j <= 5; j++) { avg += lightSum(E, [T.L * i / 6, T.H * 0.5, -T.D * j / 6], cone); k++; }
+  LU.uNorm.value = k / Math.max(avg, 1e-6); [LU.uConeIn.value, LU.uConeOut.value] = cone;
+  LU.uAmb.value = l.room; LU.uBright.value = l.bright; LU.uLCol.value.copy(kelvinRGB(l.kelvin));
+}
+const AQ_VERT = 'varying vec3 vAqP; varying vec3 vAqN;';
+const AQ_FRAG = `
+uniform vec4 uEm[${AQ_MAX}]; uniform int uEmN; uniform float uMode, uAmb, uBright, uNorm, uConeIn, uConeOut, uRef, uCard, uSub; uniform vec3 uLCol;
+varying vec3 vAqP; varying vec3 vAqN;
+float aqHash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float aqNoise(vec2 p) {   // smooth value noise, 0..1
+  vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(aqHash(i), aqHash(i + vec2(1, 0)), f.x), mix(aqHash(i + vec2(0, 1)), aqHash(i + vec2(1, 1)), f.x), f.y);
+}
+vec3 aqLight() {
+  if (uMode < 0.5) return vec3(1.0);
+  float sum = 0.0; vec3 n = normalize(vAqN);
+  for (int i = 0; i < ${AQ_MAX}; i++) {
+    if (i >= uEmN) break;
+    vec4 e = uEm[i];
+    vec3 q = e.w > 0.0 ? vec3(clamp(vAqP.x, e.x - e.w, e.x + e.w), e.y, e.z) : e.xyz;
+    vec3 tl = q - vAqP; float d = length(tl); vec3 ld = tl / max(d, 1.0);
+    float cone = smoothstep(uConeOut, uConeIn, ld.y), r = d / uRef;
+    float fall = e.w > 0.0 ? 1.0 / (1.0 + r) : 1.0 / (1.0 + r * r);
+    float facing = uCard > 0.5 ? 1.0 : 0.3 + 0.9 * abs(dot(n, ld));
+    sum += cone * fall * facing;
+  }
+  return vec3(uAmb) + uLCol * (uBright * uNorm * sum);
+}`;
+// substrate anti-tiling: two copies of the texture (rotated + rescaled) blended by low-frequency noise, plus soft light/dark patches
+const AQ_MAP = `#ifdef USE_MAP
+  vec4 aqTex = texture2D(map, vMapUv);
+  if (uSub > 0.5) {
+    vec2 uv2 = mat2(0.8, -0.6, 0.6, 0.8) * vMapUv * 0.77 + vec2(0.31, 0.57);
+    aqTex = mix(aqTex, texture2D(map, uv2), smoothstep(0.3, 0.7, aqNoise(vMapUv * 0.45)));
+    aqTex.rgb *= 0.82 + 0.36 * aqNoise(vMapUv * 0.9 + 7.0);
+  }
+  diffuseColor *= aqTex;
+#endif`;
+function aqPatch(shader) {   // `this` is the material; one shared function keeps one compiled program per material type
+  Object.assign(shader.uniforms, LU, { uCard: { value: this.userData.card ? 1 : 0 }, uSub: { value: this.userData.sub ? 1 : 0 } });
+  shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\n' + AQ_VERT)
+    .replace('#include <begin_vertex>', '#include <begin_vertex>\nvAqP = (modelMatrix * vec4(transformed, 1.0)).xyz; vAqN = normalize(mat3(modelMatrix) * normal);');
+  shader.fragmentShader = shader.fragmentShader.replace('#include <common>', '#include <common>\n' + AQ_FRAG)
+    .replace('#include <opaque_fragment>', 'outgoingLight *= aqLight();\n' +
+      'if (uCard > 0.5) { float aqL = dot(outgoingLight, vec3(0.2126, 0.7152, 0.0722)); outgoingLight = max(mix(vec3(aqL), outgoingLight, 1.35), 0.0); }\n' +
+      'float aqM = max(max(outgoingLight.r, outgoingLight.g), outgoingLight.b); if (aqM > 1.0) outgoingLight /= aqM;\n#include <opaque_fragment>')
+    .replace('#include <map_fragment>', AQ_MAP);
+}
+// light every opaque surface inside the tank (substrate, background, fish, plant); glass, rim, lines and the fixture stay unlit
+function applyLighting(sc) {
+  sc.traverse(o => {
+    if (!o.isMesh || o.userData.nolight) return;
+    for (const m of [].concat(o.material)) {
+      if (!m.isMeshBasicMaterial || (m.transparent && !m.userData.cached) || m.userData.aq) continue;
+      if (!o.geometry.attributes.normal) o.geometry.computeVertexNormals();
+      m.userData.aq = true; m.userData.card = !!m.userData.cached; m.onBeforeCompile = aqPatch; m.needsUpdate = true;
+    }
+  });
+}
+function addFixture(sc, T) {
+  const l = S.light; if (l.type === 'flat') return;
+  const { L, H, D } = T, y = H + LAMP_Y, glow = basic(kelvinRGB(l.kelvin).multiplyScalar(0.7).addScalar(0.35)), dark = basic(0x2a2e33);
+  const add = (geo, mat, x, yy, z) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, yy, z); m.userData.nolight = true; sc.add(m); return m; };
+  if (l.type === 'spot') for (const e of emitters(T)) {
+    add(new THREE.CylinderGeometry(32, 40, 45, 24), dark, e[0], y + 22, e[2]);
+    add(new THREE.CylinderGeometry(30, 30, 2, 24), glow, e[0], y - 1, e[2]);
+  }
+  if (l.type === 'tube') {
+    add(new THREE.BoxGeometry(L * 0.98, 14, D * 0.9), dark, L / 2, y + 16, -D / 2);
+    for (const e of emitters(T)) { const t = add(new THREE.CylinderGeometry(9, 9, e[3] * 2, 12), glow, e[0], y, e[2]); t.rotation.z = Math.PI / 2; }
+  }
+  if (l.type === 'led') {
+    add(new THREE.BoxGeometry(L * 0.96, 12, D * 0.45), dark, L / 2, y + 8, -D / 2);
+    for (const e of emitters(T)) add(new THREE.BoxGeometry(10, 2, 10), glow, e[0], y + 1, e[2]);
+  }
+}
+const lKeys = { lCount: 'count', lBright: 'bright', lK: 'kelvin', lRoom: 'room' };
+for (const id in lKeys) $(id).oninput = e => { S.light[lKeys[id]] = +e.target.value; syncLight(); changed(); };
+$('lType').onchange = e => { S.light.type = e.target.value; syncLight(); changed(); };
+function syncLight() {
+  const l = S.light; $('lType').value = l.type; for (const id in lKeys) $(id).value = l[lKeys[id]];
+  $('oCount').textContent = l.count; $('oBright').textContent = '×' + l.bright.toFixed(2); $('oK').textContent = l.kelvin + ' K'; $('oRoom').textContent = l.room.toFixed(2);
+  $('lCountRow').style.display = l.type === 'spot' || l.type === 'tube' ? '' : 'none';
+  $('lCountLab').textContent = l.type === 'tube' ? 'Tubes' : 'Bulbs';
+}
+syncLight();
+
+// ---------- Camera: fixed physical viewer distance; framing by field of view only ----------
+function placeCamera(vp) {
+  // orbit about the tank centre; radius chosen so that straight-on the eye is exactly `dist` from the front glass
+  const c = S.camera, az = c.az * D2R, el = c.el * D2R, T = vp.T, P = new THREE.Vector3(T.L / 2, T.H / 2, -T.D / 2), r = c.dist + T.D / 2;
+  vp.cam.position.set(P.x + r * Math.sin(az) * Math.cos(el), P.y + r * Math.sin(el), P.z + r * Math.cos(az) * Math.cos(el));
+  vp.cam.lookAt(P); vp.cam.updateMatrixWorld();
+}
+function neededTan(vp, aspect) {
+  const { L, H, D } = vp.T, inv = vp.cam.matrixWorldInverse, v = new THREE.Vector3(); let t = 0;
+  for (const x of [-12, L + 12]) for (const y of [0, H + (S.light.type === 'flat' ? 4 : 110)]) for (const z of [12, -D - 12]) {
+    v.set(x, y, z).applyMatrix4(inv); const d = -v.z; if (d > 1) t = Math.max(t, Math.abs(v.y) / d, Math.abs(v.x) / d / aspect);
+  }
+  return t;
+}
+
+// ---------- Draw ----------
+let dirty = true;
+const bgColor = new THREE.Color();
+function layout() {
+  const w = view.clientWidth, h = view.clientHeight, gap = 8;
+  if (!S.compare) return [{ ...vpRect(0, 0, w, h) }];
+  const hw = (w - gap) / 2; return [vpRect(0, 0, hw, h), vpRect(hw + gap, 0, hw, h)];
+}
+function vpRect(x, y, w, h) { return { x, y, w, h }; }
+function draw() {
+  const w = view.clientWidth, h = view.clientHeight; renderer.setSize(w, h, false);
+  const rects = layout(), active = vps.slice(0, rects.length);
+  active.forEach((vp, i) => { Object.assign(vp, rects[i]); placeCamera(vp); });
+  const t = Math.max(...active.map(vp => neededTan(vp, vp.w / vp.h)));
+  const fov = 2 * Math.atan(t * 1.06 / S.camera.zoom) / D2R;
+  bgColor.set(getComputedStyle(document.body).backgroundColor);
+  renderer.setScissorTest(true);
+  renderer.setViewport(0, 0, w, h); renderer.setScissor(0, 0, w, h); renderer.setClearColor(bgColor); renderer.clear();
+  for (const vp of active) {
+    vp.cam.fov = fov; vp.cam.aspect = vp.w / vp.h; vp.cam.updateProjectionMatrix();
+    renderer.setViewport(vp.x, vp.y, vp.w, vp.h); renderer.setScissor(vp.x, vp.y, vp.w, vp.h);
+    renderer.setClearColor(0xd9dde2); renderer.clear(); setLightUniforms(vp.T); renderer.render(vp.scene, vp.cam);
+  }
+  renderer.setScissorTest(false);
+  for (const [i, id] of [[0, 'labA'], [1, 'labB']]) {
+    const el = $(id), vp = active[i]; el.style.display = vp ? '' : 'none';
+    if (vp) { el.style.left = (vp.x + 8) + 'px'; el.textContent = `Tank ${vp.key}: ${fmtDims(vp.T)}`; }
+  }
+  readout(active);
+}
+function loop() { if (dirty) { dirty = false; draw(); } requestAnimationFrame(loop); }
+new ResizeObserver(() => dirty = true).observe(view);
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => dirty = true);
+
+// ---------- Readout: verifies the perspective model numerically ----------
+function toPx(v, vp) { const p = v.clone().project(vp.cam); return new THREE.Vector2((p.x + 1) / 2 * vp.w, (1 - p.y) / 2 * vp.h); }
+function screenLen(vp, f) {
+  const m = vp.meshById[f.id], tl = SPECIES[f.species].tl;
+  const a = new THREE.Vector3(-tl / 2, 0, 0).applyMatrix4(m.matrixWorld), b = new THREE.Vector3(tl / 2, 0, 0).applyMatrix4(m.matrixWorld);
+  // reference: the identical fish (same pose) slid forward to the front glass, so the ratio isolates depth
+  const shift = new THREE.Vector3(0, 0, -m.position.z), ra = a.clone().add(shift), rb = b.clone().add(shift);
+  return { len: toPx(a, vp).distanceTo(toPx(b, vp)), ref: toPx(ra, vp).distanceTo(toPx(rb, vp)) };
+}
+function offSideOn(vp, f) {
+  const m = vp.meshById[f.id], n = new THREE.Vector3(0, 0, 1).applyQuaternion(m.quaternion);
+  const v = vp.cam.position.clone().sub(m.position).normalize();
+  return Math.acos(Math.min(1, Math.abs(n.dot(v)))) / D2R;
+}
+function readout(active) {
+  const f = sel(), ro = $('ro'); if (!f) { ro.innerHTML = '<span class="hint">Select a fish.</span>'; return; }
+  const sp = SPECIES[f.species], A = active[0], sA = screenLen(A, f), ang = offSideOn(A, f);
+  const simple = S.camera.dist / (S.camera.dist + f.depth);
+  const angCls = ang < 40 ? 'ok' : ang < 55 ? 'warn' : 'bad', angTxt = ang < 40 ? 'reads fine' : ang < 55 ? 'marginal: ¾ art would help' : 'too thin: card looks flat';
+  let html = `<div><span><b>${sp.name}</b> <i>${sp.sci}</i></span><span>TL ${fmt(sp.tl)}</span></div>
+    <div><span>Depth behind glass</span><span>${fmt(f.depth)}</span></div>
+    <div><span>On screen (Tank A)</span><span>${sA.len.toFixed(0)} px</span></div>
+    <div><span>Same pose at front glass</span><span>${sA.ref.toFixed(0)} px</span></div>
+    <div><span>Measured ratio</span><span>×${(sA.len / sA.ref).toFixed(3)}</span></div>
+    <div><span>Formula d ÷ (d + z)</span><span>×${simple.toFixed(3)}</span></div>
+    <div><span>Angle off side-on</span><span class="${angCls}">${ang.toFixed(0)}°: ${angTxt}</span></div>`;
+  if (active[1]) {
+    const sB = screenLen(active[1], f);
+    html += `<div style="margin-top:4px"><span>Same fish in Tank B</span><span>${sB.len.toFixed(0)} px (depth ${fmt(mapper(S.tankB)(f).depth)})</span></div>`;
+  }
+  ro.innerHTML = html + `<div class="hint" style="margin-top:4px">Measured and formula match exactly when viewed straight on. With the camera angled they drift apart a little; that's real perspective (the formula is the straight-on shortcut), not error.</div>`;
+}
+
+// ---------- Units & formatting ----------
+function fmt(mm) { return S.units === 'in' ? (mm / IN).toFixed(1) + '″' : (mm / 10).toFixed(1) + ' cm'; }
+function fmtDims(T) { const k = S.units === 'in' ? IN : 10, u = S.units === 'in' ? '″' : ' cm'; return `${+(T.L / k).toFixed(1)} × ${+(T.H / k).toFixed(1)} × ${+(T.D / k).toFixed(1)}${u} (L×H×D)`; }
+const toUnit = mm => +(mm / (S.units === 'in' ? IN : 10)).toFixed(2), fromUnit = v => v * (S.units === 'in' ? IN : 10);
+
+// ---------- UI wiring ----------
+const sel = () => S.fish.find(f => f.id === selId);
+function changed(rebuildList = false) { build(); if (rebuildList) renderList(); dirty = true; $('json').textContent = JSON.stringify(S, null, 1); }
+
+for (const [id, T] of [['presetA', 'tankA'], ['presetB', 'tankB']]) {
+  const s = $(id); s.innerHTML = '<option value="">Presets…</option>' + PRESETS.map((p, i) => `<option value="${i}">${p[0]}</option>`).join('');
+  s.onchange = () => { if (s.value === '') return; const p = PRESETS[s.value]; setTank(T, p[1] * IN, p[2] * IN, p[3] * IN); s.value = ''; };
+}
+function setTank(key, L, H, D) {
+  const old = { ...S.tankA }; S[key] = { L, H, D };
+  if (key === 'tankA') {   // keep fish at the same relative spot when tank A changes
+    for (const f of S.fish) { f.x = f.x * L / old.L; f.y = f.y * H / old.H; f.depth = f.depth * D / old.D; }
+    S.plant.x *= L / old.L; S.plant.depth *= D / old.D;
+  }
+  syncInputs(); changed();
+}
+for (const k of ['L', 'H', 'D']) {
+  $('a' + k).onchange = () => { const T = { ...S.tankA }; T[k] = Math.max(50, fromUnit(+$('a' + k).value)); setTank('tankA', T.L, T.H, T.D); };
+  $('b' + k).onchange = () => { const T = { ...S.tankB }; T[k] = Math.max(50, fromUnit(+$('b' + k).value)); setTank('tankB', T.L, T.H, T.D); };
+}
+function setUnits(u) { S.units = u; $('uIn').classList.toggle('on', u === 'in'); $('uCm').classList.toggle('on', u === 'cm'); syncInputs(); changed(); }
+$('uIn').onclick = () => setUnits('in'); $('uCm').onclick = () => setUnits('cm');
+$('cmp').onchange = e => { S.compare = e.target.checked; $('bBox').style.display = S.compare ? '' : 'none'; changed(); };
+
+const camKeys = { cDist: 'dist', cAz: 'az', cEl: 'el', cZoom: 'zoom' };
+for (const id in camKeys) $(id).oninput = e => { S.camera[camKeys[id]] = +e.target.value; syncCam(); dirty = true; $('json').textContent = JSON.stringify(S, null, 1); };
+$('camReset').onclick = () => { Object.assign(S.camera, { az: 0, el: 0, zoom: 1 }); syncCam(); dirty = true; };
+function syncCam() {
+  const c = S.camera; $('cDist').value = c.dist; $('cAz').value = c.az; $('cEl').value = c.el; $('cZoom').value = c.zoom;
+  $('oDist').textContent = fmt(c.dist); $('oAz').textContent = c.az + '°'; $('oEl').textContent = c.el + '°'; $('oZoom').textContent = '×' + c.zoom.toFixed(2);
+  const beyond = Math.abs(c.az) > 30 || c.el > 25 || c.el < 0;
+  $('oAz').className = Math.abs(c.az) > 30 ? 'warn' : ''; $('oEl').className = c.el > 25 || c.el < 0 ? 'warn' : '';
+  $('camHint').innerHTML = beyond ? '<span class="warn">Beyond the proposed v1 limits (±30° left/right, 0–25° from above).</span> Explore freely and note what breaks.'
+    : 'Distance is measured from the eye to the centre of the front glass and is the same for every tank. Zoom only crops; it doesn\'t change perspective.';
+}
+
+$('spSel').innerHTML = Object.entries(SPECIES).map(([k, s]) => `<option value="${k}">${s.name} (${fmt(s.tl)})</option>`).join('');
+$('addFish').onclick = () => { const A = S.tankA; selId = addFish($('spSel').value, A.L / 2, A.H / 2, A.D / 2).id; syncSel(); changed(true); };
+$('ladder').onclick = () => {
+  const A = S.tankA, x = sel() ? sel().x : A.L / 2, sp = $('spSel').value, dy = SPECIES[sp].tl * SPECIES[sp].aspect * 1.4;
+  [0.05, 0.5, 0.95].forEach((d, i) => selId = addFish(sp, x, clamp(A.H * 0.3 + i * dy, 0, A.H), d * A.D).id); syncSel(); changed(true);
+};
+$('school').onclick = () => {
+  const A = S.tankA, sp = $('spSel').value, tl = SPECIES[sp].tl, r = Math.random, cx = A.L * (0.3 + r() * 0.4), cy = A.H * (0.4 + r() * 0.3);
+  const dir = r() < 0.5 ? 0 : 180;
+  for (let i = 0; i < 20; i++) selId = addFish(sp, clamp(cx + (r() - 0.5) * tl * 9, 0, A.L), clamp(cy + (r() - 0.5) * tl * 4, 0, A.H), clamp(A.D * (0.15 + r() * 0.7), 0, A.D),
+    { yaw: dir + (r() - 0.5) * 80, pitch: Math.round((r() - 0.5) * 16), roll: Math.round((r() - 0.5) * 10), bend: +((r() - 0.5) * 0.8).toFixed(2) }).id;
+  syncSel(); changed(true);
+};
+function renderList() {
+  const counts = {}; $('list').innerHTML = '';
+  for (const f of S.fish) {
+    counts[f.species] = (counts[f.species] || 0) + 1;
+    const b = document.createElement('button'); b.textContent = `${SPECIES[f.species].name} ${counts[f.species]}`;
+    if (f.id === selId) b.className = 'on'; b.onclick = () => { selId = f.id; syncSel(); changed(true); }; $('list').append(b);
+  }
+  $('selBox').style.opacity = sel() ? 1 : 0.4;
+}
+const fishKeys = { fX: 'x', fY: 'y', fZ: 'depth', fYaw: 'yaw', fPitch: 'pitch', fRoll: 'roll', fBend: 'bend' };
+for (const id in fishKeys) $(id).oninput = e => { const f = sel(); if (!f) return; f[fishKeys[id]] = +e.target.value; syncSelLabels(); changed(); };
+document.querySelectorAll('[data-d]').forEach(b => b.onclick = () => { const f = sel(); if (!f) return; f.depth = +b.dataset.d * S.tankA.D; syncSel(); changed(); });
+const flip = () => { const f = sel(); if (!f) return; f.yaw = f.yaw > 0 ? f.yaw - 180 : f.yaw + 180; syncSel(); changed(); };
+const del = () => { const i = S.fish.findIndex(f => f.id === selId); if (i < 0) return; S.fish.splice(i, 1); selId = S.fish[Math.max(0, i - 1)]?.id ?? null; syncSel(); changed(true); };
+let delArm = null;
+$('delAll').onclick = () => {
+  const b = $('delAll'); if (!S.fish.length) return;
+  if (!delArm) { b.textContent = `Click again: delete ${S.fish.length}`; b.classList.add('on'); delArm = setTimeout(() => { delArm = null; b.textContent = 'Delete all fish'; b.classList.remove('on'); }, 3000); return; }
+  clearTimeout(delArm); delArm = null; b.textContent = 'Delete all fish'; b.classList.remove('on');
+  S.fish = []; selId = null; syncSel(); changed(true);
+};
+$('flip').onclick = flip; $('del').onclick = del;
+$('dup').onclick = () => { const f = sel(); if (!f) return; const n = addFish(f.species, clamp(f.x + SPECIES[f.species].tl * 0.9, 0, S.tankA.L), f.y, f.depth, { yaw: f.yaw, pitch: f.pitch, roll: f.roll, bend: f.bend }); selId = n.id; syncSel(); changed(true); };
+addEventListener('keydown', e => { if (e.target.tagName === 'INPUT' && e.target.type !== 'range') return; if (e.key === 'Delete') del(); if (e.key === 'f' || e.key === 'F') flip(); });
+
+function syncSel() {
+  const f = sel(), A = S.tankA;
+  $('fX').max = A.L; $('fY').max = A.H; $('fZ').max = A.D; $('fX').min = $('fY').min = $('fZ').min = 0;
+  if (f) for (const id in fishKeys) $(id).value = f[fishKeys[id]];
+  syncSelLabels();
+}
+function syncSelLabels() {
+  const f = sel(); if (!f) return;
+  $('oX').textContent = fmt(f.x); $('oY').textContent = fmt(f.y); $('oZ').textContent = fmt(f.depth);
+  $('oYaw').textContent = f.yaw + '°'; $('oPitch').textContent = f.pitch + '°'; $('oRoll').textContent = f.roll + '°'; $('oBend').textContent = f.bend.toFixed(2);
+}
+
+$('edge').onchange = e => { S.render.edge = e.target.value; changed(); };
+$('plantOn').onchange = e => { S.plant.show = e.target.checked; changed(); };
+$('gridOn').onchange = e => { S.render.grid = e.target.checked; changed(); };
+const setRim = v => { S.render.rim = v; $('rimY').classList.toggle('on', v); $('rimN').classList.toggle('on', !v); changed(); };
+$('bgSel').onchange = e => { S.render.bg = e.target.value; changed(); };
+function glassHint() { const t = glassT(S.tankA), e = $('glassHint'); if (e) e.textContent = (S.render.glass === 'auto' ? 'Auto: ' : 'Glass: ') + t + ' mm (' + fmt(t) + ')'; }
+$('glassSel').onchange = e => { S.render.glass = e.target.value; glassHint(); changed(); };
+$('glassType').onchange = e => { S.render.glassType = e.target.value; changed(); };
+$('rimY').onclick = () => setRim(true); $('rimN').onclick = () => setRim(false);
+$('subOn').onchange = e => { S.substrate.show = e.target.checked; changed(); };
+$('subType').onchange = e => { S.substrate.type = e.target.value; changed(); };
+const SUBK = { subFL: 'fl', subFR: 'fr', subBL: 'bl', subBR: 'br' };
+for (const id in SUBK) $(id).oninput = e => { S.substrate[SUBK[id]] = +e.target.value; syncSub(); changed(); };
+const subSet = (fl, fr, bl, br) => { Object.assign(S.substrate, { show: true, fl: fl * IN, fr: fr * IN, bl: bl * IN, br: br * IN }); syncSub(); changed(); };
+$('subLevel').onclick = () => subSet(2, 2, 2, 2);
+$('subFB').onclick = () => subSet(1, 1, 3, 3);
+$('subLR').onclick = () => subSet(1, 3, 1, 3);
+$('subCorner').onclick = () => subSet(1, 1, 4, 1);
+function syncSub() {
+  const s = S.substrate, max = Math.round(S.tankA.H * 0.5);
+  for (const id in SUBK) { const k = SUBK[id], o = 'o' + id.slice(0, 1).toUpperCase() + id.slice(1); $(id).max = max; s[k] = Math.min(s[k], max); $(id).value = s[k]; $(o).textContent = fmt(s[k]); }
+  $('subOn').checked = s.show; $('subType').value = s.type;
+}
+$('pX').oninput = e => { S.plant.x = +e.target.value; syncPlant(); changed(); };
+$('pZ').oninput = e => { S.plant.depth = +e.target.value; syncPlant(); changed(); };
+function syncPlant() { const A = S.tankA; $('pX').max = A.L; $('pZ').max = A.D; $('pX').value = S.plant.x; $('pZ').value = S.plant.depth; $('opX').textContent = fmt(S.plant.x); $('opZ').textContent = fmt(S.plant.depth); }
+function syncInputs() {
+  for (const k of ['L', 'H', 'D']) { $('a' + k).value = toUnit(S.tankA[k]); $('b' + k).value = toUnit(S.tankB[k]); }
+  for (const s of ['presetA', 'presetB']) $(s).value = '';
+  $('spSel').querySelectorAll('option').forEach(o => o.textContent = `${SPECIES[o.value].name} (${fmt(SPECIES[o.value].tl)})`);
+  syncCam(); syncSel(); syncPlant(); syncSub();
+}
+
+// ---------- Export (validates the "render bigger, then save" approach) ----------
+function exportPNG(mult) {
+  const dpr = renderer.getPixelRatio(); renderer.setPixelRatio(dpr * mult); draw();
+  const url = canvas.toDataURL('image/png'); renderer.setPixelRatio(dpr); draw();
+  const a = document.createElement('a'); a.href = url; a.download = `aquarium-poc-${mult}x.png`; a.click();
+}
+$('png2').onclick = () => exportPNG(2); $('png4').onclick = () => exportPNG(4);
+
+// ---------- Pointer: pick a card, drag it on a plane parallel to the front glass ----------
+const ray = new THREE.Raycaster(); let drag = null;
+function vpAt(e) {
+  const r = view.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+  const vp = vps.slice(0, S.compare ? 2 : 1).find(v => x >= v.x && x <= v.x + v.w); if (!vp) return null;
+  return { vp, ndc: new THREE.Vector2((x - vp.x) / vp.w * 2 - 1, -(y / vp.h) * 2 + 1) };
+}
+canvas.addEventListener('pointerdown', e => {
+  const hit = vpAt(e); if (!hit) return; ray.setFromCamera(hit.ndc, hit.vp.cam);
+  const h = ray.intersectObjects(hit.vp.fishMeshes, false)[0];
+  try { canvas.setPointerCapture(e.pointerId); } catch { } canvas.classList.add('dragging');
+  if (!h) { orbit = { x: e.clientX, y: e.clientY, az: S.camera.az, el: S.camera.el }; return; }
+  const m = h.object; selId = m.userData.id;
+  // drag plane follows the view: front-on -> parallel to glass; from above -> floor plan; from the side -> side plane
+  const c = S.camera, sideOn = Math.abs(Math.sin(c.az * D2R)) > 0.82, mode = Math.abs(c.el) > 45 ? 'top' : sideOn ? 'side' : 'front';
+  const n = mode === 'top' ? new THREE.Vector3(0, 1, 0) : mode === 'side' ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 0, 1);
+  const pl = new THREE.Plane().setFromNormalAndCoplanarPoint(n, m.position), p = new THREE.Vector3(); ray.ray.intersectPlane(pl, p);
+  drag = { vp: hit.vp, plane: pl, mode, off: p.sub(m.position) }; syncSel(); changed(true);
+});
+let orbit = null;
+canvas.addEventListener('pointermove', e => {
+  if (orbit) {
+    S.camera.az = Math.round(((orbit.az - (e.clientX - orbit.x) * 0.4) + 540) % 360 - 180);
+    S.camera.el = Math.round(clamp(orbit.el + (e.clientY - orbit.y) * 0.4, -20, 85));
+    syncCam(); dirty = true; return;
+  }
+  if (!drag) return; const hit = vpAt(e); if (!hit || hit.vp !== drag.vp) return; ray.setFromCamera(hit.ndc, drag.vp.cam);
+  const p = new THREE.Vector3(); if (!ray.ray.intersectPlane(drag.plane, p)) return; p.sub(drag.off);
+  const f = sel(), T = drag.vp.T, A = S.tankA;
+  if (drag.mode !== 'side') f.x = clamp(p.x, 0, T.L) * A.L / T.L;
+  if (drag.mode !== 'top') f.y = clamp(p.y, 0, T.H) * A.H / T.H;
+  if (drag.mode !== 'front') f.depth = clamp(-p.z, 0, T.D) * A.D / T.D;
+  syncSel(); changed();
+});
+canvas.addEventListener('pointerup', () => { if (orbit) $('json').textContent = JSON.stringify(S, null, 1); drag = orbit = null; canvas.classList.remove('dragging'); });
+canvas.addEventListener('dblclick', e => {
+  const hit = vpAt(e); if (!hit) return; ray.setFromCamera(hit.ndc, hit.vp.cam);
+  if (ray.intersectObjects(hit.vp.fishMeshes, false).length) return;
+  Object.assign(S.camera, { az: 0, el: 0, zoom: 1 }); syncCam(); dirty = true;
+});
+canvas.addEventListener('wheel', e => {
+  const f = sel();
+  if (!e.shiftKey) { e.preventDefault(); S.camera.zoom = +clamp(S.camera.zoom * (e.deltaY > 0 ? 1 / 1.1 : 1.1), 0.5, 4).toFixed(2); syncCam(); dirty = true; return; }
+  if (!f) return; e.preventDefault();
+  f.depth = clamp(f.depth + Math.sign(e.deltaY || e.deltaX) * S.tankA.D * 0.03, 0, S.tankA.D); syncSel(); changed();
+}, { passive: false });
+
+// ---------- Start ----------
+$('plantOn').checked = S.plant.show; $('gridOn').checked = S.render.grid; setRim(S.render.rim); $('bgSel').value = S.render.bg; $('glassSel').value = S.render.glass; $('glassType').value = S.render.glassType; glassHint();
+syncInputs(); changed(true); loop();
+</script>
+</body>
+</html>

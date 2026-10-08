@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "note": "Card width == adult total length (tl, mm). aspect = card height / width. art = key of a placeholder drawing in src/art/placeholder.ts, or later an image path.",
+  "species": [
+    { "id": "neon", "name": "Neon tetra", "sci": "Paracheirodon innesi", "tl": 35, "aspect": 0.34, "art": "tetra" },
+    { "id": "gourami", "name": "Pearl gourami", "sci": "Trichopodus leerii", "tl": 120, "aspect": 0.6, "art": "gourami" },
+    { "id": "angel", "name": "Angelfish", "sci": "Pterophyllum scalare", "tl": 150, "aspect": 1.3, "art": "angel" }
+  ]
+}

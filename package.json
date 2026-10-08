@@ -1,0 +1,24 @@
+{
+  "name": "tanklook",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Aquarium visualizer: plan a tank with true-to-scale fish in real perspective.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "build:single": "npm run build && node scripts/build-single.mjs"
+  },
+  "dependencies": {
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.170.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.3"
+  }
+}
