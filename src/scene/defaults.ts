@@ -13,7 +13,7 @@ export function defaultScene(): Scene {
     tankA: A,
     tankB: { L: 24 * IN, H: 12 * IN, D: 24 * IN },
     compare: false,
-    camera: { dist: 1200, az: 0, el: 0, zoom: 1 },
+    camera: { dist: 3000, az: 0, el: 0, zoom: 1 },
     render: { edge: 'a2c', grid: true, rim: true, bg: 'blue', glass: 'auto', glassType: 'standard' },
     light: { type: 'flat', count: 2, bright: 1, kelvin: 6500, room: 0.15 },
     substrate: { show: true, type: 'gravel', fl: 1 * IN, fr: 1 * IN, bl: 3 * IN, br: 3 * IN },

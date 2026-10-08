@@ -105,7 +105,7 @@ no licensing, but stays illustrated).
 - **Rendering: Three.js, fish as flat textured cards ("planes") in a simple 3D box tank.** Not a 2D canvas with
   hand-rolled projection, and not Konva. Reason: perspective, occlusion, camera moves, picking and export come free;
   the custom-2D route re-implements a mini 3D engine.
-- **Perspective rule:** the eye is a fixed physical distance from the front glass (default 1200 mm), the same for every
+- **Perspective rule:** the eye is a fixed physical distance from the front glass (default 3000 mm since 2026-10-08, was 1200; range 400-5000), the same for every
   tank; zoom only changes field of view (crop), never perspective. Comparison view uses one FOV for both tanks so pixel
   sizes are directly comparable. Verified: measured on-screen ratio = d / (d + z) exactly, straight-on.
 - **Units:** all scene data in mm. Coordinates: x along length 0..L, y up 0..H, depth z = mm behind the front glass
@@ -127,7 +127,7 @@ no licensing, but stays illustrated).
 - **Wall: back | peninsula (Nathan, 2026-10-08).** Left/right end merged into one 'peninsula' (right end against
   the wall; old left/right saves load as peninsula). In a peninsula the background panel and grid move to the wall
   end and the long back glass is clear.
-- Nathan likes the look at the max viewing distance (3 m); whether to change the default (1.2 m) is open.
+- **Default viewing distance 3 m (Nathan, 2026-10-08)**, max raised to 5 m. Fish look smaller until zoomed; less perspective distortion; the room reads as Nathan wanted.
 - **Room light lights the room (Nathan, 2026-10-08):** wall, floor, stand, hood and person are room surfaces
   (`userData.room`): brightness = `roomLevel(room)` (0 at 0, full from 0.3, eased; default 0.15 = 0.75) + light
   spilling from the tank (nearest point of the tank box, falloff over `spillReach`, facing term, fixture colour x

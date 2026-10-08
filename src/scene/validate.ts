@@ -11,7 +11,7 @@ const isObj = (v: unknown): v is Obj => typeof v === 'object' && v !== null && !
 
 export const LIMITS = {
   tankMin: 50, tankMax: 5000,     // mm, per interior dimension
-  dist: [400, 3000] as const,
+  dist: [400, 5000] as const,
   az: [-180, 180] as const,
   el: [-20, 85] as const,
   zoom: [0.5, 4] as const,
