@@ -24,7 +24,7 @@ export function drawViewMap(cv: HTMLCanvasElement, S: Scene, T: Tank, eye: { x: 
   if (S.wall.show) {            // room wall: a thick line across the map
     g.strokeStyle = muted; g.lineWidth = 3; g.beginPath();
     if (S.wall.side === 'back') { const z = Z(-T.D - t - WALL_GAP); g.moveTo(4, z); g.lineTo(W - 4, z); }
-    else { const x = X(T.L + t + WALL_GAP); g.moveTo(x, 4); g.lineTo(x, mapH - 4); }
+    else { const x = X(S.wall.side === 'right' ? T.L + t + WALL_GAP : -t - WALL_GAP); g.moveTo(x, 4); g.lineTo(x, mapH - 4); }
     g.stroke();
   }
   // view cone: horizontal field of view from the eye, toward the tank centre

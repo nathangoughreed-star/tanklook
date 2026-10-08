@@ -101,8 +101,13 @@ describe('scale person', () => {
 
 describe('peninsula', () => {
   it('moves the person off the wall end to the open side', () => {
-    const S = defaultScene(); S.person.show = true; S.person.side = 'right'; S.wall.show = true; S.wall.side = 'peninsula';
+    const S = defaultScene(); S.person.show = true; S.person.side = 'right'; S.wall.show = true; S.wall.side = 'right';
     const T = S.tankA, p = personPlacement(S, T, { x: T.L / 2, z: S.camera.dist });
     expect(p.side).toBe(-1); expect(p.x + p.w / 2).toBeLessThan(T.L);
+  });
+  it('mirrors for the left end against the wall', () => {
+    const S = defaultScene(); S.person.show = true; S.person.side = 'left'; S.wall.show = true; S.wall.side = 'left';
+    const T = S.tankA, p = personPlacement(S, T, { x: T.L / 2, z: S.camera.dist });
+    expect(p.side).toBe(1); expect(p.x - p.w / 2).toBeGreaterThan(0);
   });
 });

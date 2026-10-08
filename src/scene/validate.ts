@@ -154,7 +154,7 @@ export function parseScene(input: unknown): { scene: Scene; warnings: string[] }
       side: pick(pe.side, ['left', 'right'] as const, d.person.side),
     },
     wall: {
-      show: bool(w.show, d.wall.show), side: pick(w.side === 'left' || w.side === 'right' ? 'peninsula' : w.side, ['back', 'peninsula'] as const, d.wall.side), // left/right end: before 2026-10-08
+      show: bool(w.show, d.wall.show), side: pick(w.side === 'peninsula' ? 'right' : w.side, ['back', 'left', 'right'] as const, d.wall.side), // 'peninsula' (session 3) was the right end
       color: typeof w.color === 'string' && /^#[0-9a-f]{6}$/i.test(w.color) ? w.color.toLowerCase() : d.wall.color,
     },
     fish,

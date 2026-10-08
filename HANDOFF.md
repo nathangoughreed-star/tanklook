@@ -116,6 +116,11 @@ Progress (session 4, 2026-10-08):
   choice at the top of the substrate list (still `substrate.show = false`; the last type is kept). Depth sliders
   disabled while bare. The tan backing plane under the substrate is no longer drawn on a bare bottom, so the stand
   top or the room shows through the bottom pane (picture `shots/27_bare_bottom`).
+- **Substrate back face (Nathan 2026-10-08):** the substrate mesh had front and end faces only, so from behind (clear back
+  glass in a peninsula) you saw into it and onto the tan backing. Back face added. Picture `shots/28_terrain_from_back`.
+- **Peninsula end is the user's choice again (Nathan 2026-10-08, reversing session 3):** `wall.side` = back | left |
+  right; Room buttons Behind / Left end / Right end. Session-3 files with 'peninsula' load as 'right'. Background plane,
+  grid lines, person placement, wall and view map all follow the chosen end. Picture `shots/29_peninsula_left`. Tests 69/69.
 - Next: revise art per Nathan, then sizes review, then climbing.
 - Lesson (session 4): editing index.html makes Vite do a full page reload, which drops the undo stack. Before
   test edits in Nathan's dev scene, copy `localStorage['tanklook.scene']` to a file (not a page variable) and

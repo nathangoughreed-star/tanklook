@@ -114,7 +114,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('standH').min = String(LIMITS.stand[0]); $('standH').max = String(LIMITS.stand[1]);
   $('standH').oninput = e => store.update(s => { s.stand.height = +(e.target as HTMLInputElement).value; s.stand.show = true; }, { coalesce: 'standH' });
   $('wallOn').onchange = e => store.update(s => { s.wall.show = (e.target as HTMLInputElement).checked; });
-  for (const [id, side] of [['wallBack', 'back'], ['wallPen', 'peninsula']] as const)
+  for (const [id, side] of [['wallBack', 'back'], ['wallLeft', 'left'], ['wallRight', 'right']] as const)
     $(id).onclick = () => store.update(s => { s.wall.side = side; s.wall.show = true; });
   $('wallColor').oninput = e => store.update(s => { s.wall.color = (e.target as HTMLInputElement).value; s.wall.show = true; }, { coalesce: 'wallColor' });
 
@@ -388,7 +388,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     $('standOn').checked = s.stand.show; setVal('standFinish', s.stand.finish); setVal('standStyle', s.stand.style); setVal('standH', s.stand.height);
     setOut('oStandH', fmt(s.stand.height));
     $('wallOn').checked = s.wall.show; setVal('wallColor', s.wall.color);
-    for (const [id, side] of [['wallBack', 'back'], ['wallPen', 'peninsula']] as const)
+    for (const [id, side] of [['wallBack', 'back'], ['wallLeft', 'left'], ['wallRight', 'right']] as const)
       $(id).classList.toggle('on', s.wall.show && s.wall.side === side);
 
     $('personOn').checked = s.person.show; setVal('personH', s.person.height); setOut('oPersonH', fmtHeight(s.person.height, u));

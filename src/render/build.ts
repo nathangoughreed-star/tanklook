@@ -29,8 +29,8 @@ function lines(pts: number[], color: number, opacity: number) {
   return new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color, transparent: opacity < 1, opacity }));
 }
 
-/** Peninsula: the tank's right end stands against the room wall. */
-const isPeninsula = (S: Scene) => S.wall.show && S.wall.side === 'peninsula';
+/** Peninsula: the end of the tank against the room wall ('left' / 'right'), else null. */
+const penEnd = (S: Scene) => (S.wall.show && S.wall.side !== 'back' ? S.wall.side : null);
 
 function addTank(sc: THREE.Scene, S: Scene, T: Tank) {
   const { L, H, D } = T, R = S.render;
@@ -38,12 +38,12 @@ function addTank(sc: THREE.Scene, S: Scene, T: Tank) {
   if (S.substrate.show || S.layout.id === 'swamp' || S.terrain.on) {
     const floor = plane(L, D, basic(0xcdb98f, { side: THREE.DoubleSide })); floor.rotation.x = -Math.PI / 2; floor.position.set(L / 2, 0, -D / 2); sc.add(floor);
   }
-  const bg = BACKGROUNDS[R.bg], t = glassThickness(T, R.glass), pen = isPeninsula(S);
+  const bg = BACKGROUNDS[R.bg], t = glassThickness(T, R.glass), pen = penEnd(S), ex = pen === 'left' ? 0 : L; // ex: x of the end against the wall
   // the background covers the glass that faces the room wall: the back, or the right end in a peninsula (then the
   // long back glass is clear, since that side is viewable)
   if (bg.color !== null) {
     const back = plane(pen ? D : L, H, basic(bg.color, { map: bg.gradient ? gradientTexture() : null, side: THREE.DoubleSide }));
-    if (pen) { back.position.set(L, H / 2, -D / 2); back.rotation.y = -Math.PI / 2; } else back.position.set(L / 2, H / 2, -D);
+    if (pen) { back.position.set(ex, H / 2, -D / 2); back.rotation.y = -Math.PI / 2; } else back.position.set(L / 2, H / 2, -D);
     sc.add(back);
   }
   // glass panes sit OUTSIDE the interior box; large faces nearly clear, thin edge faces tinted so thickness shows
@@ -80,8 +80,8 @@ function addTank(sc: THREE.Scene, S: Scene, T: Tank) {
     const sub = (x: number, d: number) => groundHeight(S, T, x, d);
     const step = S.units === 'in' ? 2 * IN : 50, w: number[] = [], f: number[] = [];
     for (let x = step; x < L; x += step) { if (!pen) w.push(x, 0, -D + 0.5, x, H, -D + 0.5); f.push(x, sub(x, 0) + 0.5, 0, x, sub(x, D) + 0.5, -D); }
-    for (let y = step; y < H; y += step) w.push(...(pen ? [L - 0.5, y, 0, L - 0.5, y, -D] : [0, y, -D + 0.5, L, y, -D + 0.5]));
-    if (pen) for (let z = step; z < D; z += step) w.push(L - 0.5, 0, -z, L - 0.5, H, -z);
+    for (let y = step; y < H; y += step) w.push(...(pen ? [Math.abs(ex - 0.5), y, 0, Math.abs(ex - 0.5), y, -D] : [0, y, -D + 0.5, L, y, -D + 0.5]));
+    if (pen) for (let z = step; z < D; z += step) w.push(Math.abs(ex - 0.5), 0, -z, Math.abs(ex - 0.5), H, -z);
     for (let z = step; z < D; z += step) f.push(0, sub(0, z) + 0.5, -z, L, sub(L, z) + 0.5, -z);
     sc.add(lines(w, bg.light ? 0x000000 : 0xffffff, bg.light ? 0.12 : 0.16)); sc.add(lines(f, 0x000000, 0.14));
   }
@@ -236,12 +236,12 @@ export function personPlacement(S: Scene, T: Tank, eye: { x: number; z: number }
   const phi = Math.asin(Math.min(0.9, (half + PERSON_GAP + w / 2) / r));
   // rotate eye->tank about the eye: a positive angle swings toward screen-right
   const spot = (a: number) => ({ x: eye.x + vx * Math.cos(a) - vz * Math.sin(a), z: eye.z + vx * Math.sin(a) + vz * Math.cos(a) });
-  const wb = -T.D - t - WALL_GAP, wr = T.L + t + WALL_GAP, m = w / 2 + 5;
-  const blocked = (p: { x: number; z: number }) => S.wall.show && (S.wall.side === 'back' ? p.z - m < wb : p.x + m > wr);
+  const wb = -T.D - t - WALL_GAP, wr = T.L + t + WALL_GAP, wl = -t - WALL_GAP, m = w / 2 + 5, ws = S.wall.side;
+  const blocked = (p: { x: number; z: number }) => S.wall.show && (ws === 'back' ? p.z - m < wb : ws === 'right' ? p.x + m > wr : p.x - m < wl);
   let side: -1 | 1 = S.person.side === 'left' ? -1 : 1, p = spot(side * phi);
   if (blocked(p)) {
     const q = spot(-side * phi);
-    if (!blocked(q)) { p = q; side = side === 1 ? -1 : 1; } else p = S.wall.side === 'back' ? { ...p, z: wb + m } : { ...p, x: wr - m };
+    if (!blocked(q)) { p = q; side = side === 1 ? -1 : 1; } else p = ws === 'back' ? { ...p, z: wb + m } : ws === 'right' ? { ...p, x: wr - m } : { ...p, x: wl + m };
   }
   return { x: p.x, z: p.z, w, h, floor, side };
 }
@@ -270,7 +270,8 @@ function addWall(sc: THREE.Scene, S: Scene, T: Tank) {
   wall.position.set(0, ROOM_H / 2, 0); wall.userData.room = true; g.add(wall);
   const skirt = shadedBox(SPAN, SKIRT_H, SKIRT_D, 0xf1efe9); skirt.position.set(0, SKIRT_H / 2, SKIRT_D / 2); g.add(skirt);
   if (S.wall.side === 'back') g.position.set(L / 2, fy, -D - t - WALL_GAP);
-  else { g.position.set(L + t + WALL_GAP, fy, -D / 2); g.rotation.y = -Math.PI / 2; }
+  else if (S.wall.side === 'right') { g.position.set(L + t + WALL_GAP, fy, -D / 2); g.rotation.y = -Math.PI / 2; }
+  else { g.position.set(-t - WALL_GAP, fy, -D / 2); g.rotation.y = Math.PI / 2; }
   sc.add(g);
 }
 
@@ -296,10 +297,11 @@ function addSubstrate(sc: THREE.Scene, S: Scene, T: Tank) {
     const c = [k * (1 - dry * (0.42 + 0.12 * mo)), k * (1 - dry * (0.3 - 0.12 * mo)), k * (1 - dry * (0.62 + 0.05 * mo))];
     quad(top, q, p => [p[0] / tile, -p[2] / tile]); for (let v = 0; v < 6; v++) topCol.push(...c);
   }
-  // front and end faces in N strips, so their top edge follows the ground (swamp banks are not straight)
+  // front, back and end faces in N strips, so their top edge follows the ground (swamp banks are not straight);
+  // the back face shows through clear back glass (peninsula, orbiting round the back)
   for (let i = 0; i < N; i++) {
     const x0 = L * i / N, x1 = L * (i + 1) / N, d0 = D * i / N, d1 = D * (i + 1) / N;
-    quad(side, [[x0, 0, 0], [x1, 0, 0], [x1, h(x1, 0), 0], [x0, h(x0, 0), 0]], p => [p[0] / tile, p[1] / tile]);
+    for (const d of [0, D]) quad(side, [[x0, 0, -d], [x1, 0, -d], [x1, h(x1, d), -d], [x0, h(x0, d), -d]], p => [p[0] / tile, p[1] / tile]);
     for (const x of [0, L]) quad(side, [[x, 0, -d1], [x, 0, -d0], [x, h(x, d0), -d0], [x, h(x, d1), -d1]], p => [-p[2] / tile, p[1] / tile]);
   }
   const mk = (arr: number[][], shade: number, cols?: number[]) => {
