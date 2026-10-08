@@ -31,6 +31,17 @@ export function frameBox(cam: THREE.PerspectiveCamera, T: Tank, aspect: number, 
 export const neededTan = (...a: Parameters<typeof frameBox>) => frameBox(...a).t;
 
 /**
+ * The lens is fixed by the STRAIGHT-ON view and kept while orbiting: walking around a tank changes the angle,
+ * never the eye distance or the focal length. (Framing each angle afresh widened the lens whenever the stand or
+ * the scale person came near the eye, so the tank shrank as if the viewer had stepped back.)
+ */
+const refCam = new THREE.PerspectiveCamera();
+export function frameStraightOn(T: Tank, c: CameraSettings, aspect: number, headroom: number, bottom = 0, extra: THREE.Vector3[] = []) {
+  placeCamera(refCam, T, { ...c, az: 0, el: 0 });
+  return frameBox(refCam, T, aspect, headroom, bottom, extra);
+}
+
+/**
  * Apply one shared FOV, then shift the image window (a lens shift, like a view camera) so the framed bounds sit
  * centred. The eye point and orientation do not move, so perspective is unchanged.
  */

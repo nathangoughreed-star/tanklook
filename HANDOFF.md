@@ -115,6 +115,11 @@ no licensing, but stays illustrated).
   or baked shadows. Alpha-to-coverage is the smoother option.
 - **Camera:** free orbit by dragging empty space (pivot = tank centre, radius chosen so straight-on eye distance is exact).
   Proposed release limits still ±30° left/right, 0-25° from above (sliders flag beyond). Not yet decided whether to enforce.
+- **Orbit keeps the lens (Nathan, 2026-10-08):** FOV and lens shift come from the straight-on framing
+  (`frameStraightOn`) and stay fixed while orbiting; only the angle changes. Before, each angle was re-framed, and the
+  stand/person near the eye widened the lens so the tank shrank as if the viewer stepped back. Zoom (0.5-4x) is the
+  only lens control. Side effect: orbiting toward the scale person can put them between eye and tank (physically
+  right, unhelpful); auto-hiding the person when it blocks the view is offered, not built.
 - **Fish drag plane follows the view:** front-ish = parallel to glass; >45° from above = floor plan (sets depth);
   side-on = side plane.
 - **Substrate:** four corner depths, bilinear surface, physical thickness (not scaled between tanks), mm-sized grain;

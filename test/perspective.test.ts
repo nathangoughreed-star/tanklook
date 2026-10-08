@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { describe, expect, it } from 'vitest';
-import { applyFraming, fovFor, frameBox, neededTan, placeCamera } from '../src/render/camera';
+import { applyFraming, fovFor, frameBox, frameStraightOn, neededTan, placeCamera } from '../src/render/camera';
 import { IN, depthRatio } from '../src/scene/physics';
 
 // Project a horizontal segment of length `len` centred at (x, y, -depth) and return its on-screen length in px.
@@ -60,5 +60,21 @@ describe('perspective rule', () => {
     expect(fovFor(t, 2)).toBeLessThan(fovFor(t, 1));
     placeCamera(cam, T, { dist: 1200, az: 0, el: 0, zoom: 3 });
     expect(cam.position.distanceTo(before)).toBeCloseTo(0, 9);
+  });
+});
+
+describe('orbit keeps the lens', () => {
+  it('frames from the straight-on view, so FOV and lens shift do not change with the orbit angle', () => {
+    const T = { L: 610, H: 305, D: 305 }, base = { dist: 1200, az: 0, el: 0, zoom: 1 };
+    const person = [new THREE.Vector3(-400, -800, -150), new THREE.Vector3(-400, 950, -150)];
+    const a = frameStraightOn(T, base, 16 / 9, 4, -800, person);
+    for (const [az, el] of [[60, 0], [-85, 10], [30, 25], [0, 60]]) {
+      expect(frameStraightOn(T, { ...base, az, el }, 16 / 9, 4, -800, person)).toEqual(a);
+    }
+  });
+  it('keeps the eye at the same distance from the tank centre at every angle', () => {
+    const T = { L: 610, H: 305, D: 305 }, cam = new THREE.PerspectiveCamera(), C = new THREE.Vector3(305, 152.5, -152.5);
+    const r = (az: number, el: number) => { placeCamera(cam, T, { dist: 1200, az, el, zoom: 1 }); return cam.position.distanceTo(C); };
+    for (const [az, el] of [[0, 0], [90, 0], [-45, 30], [180, 10]]) expect(r(az, el)).toBeCloseTo(1200 + 152.5, 6);
   });
 });

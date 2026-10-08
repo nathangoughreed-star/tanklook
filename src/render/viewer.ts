@@ -5,7 +5,7 @@ import { D2R, depthRatio, floorY, mapToTank } from '../scene/physics';
 import type { Store } from '../scene/store';
 import type { Fish, Tank } from '../scene/types';
 import { HOOD_H, buildTank, disposeScene, personPlacement, type BuiltTank } from './build';
-import { applyFraming, fovFor, frameBox, placeCamera } from './camera';
+import { applyFraming, fovFor, frameStraightOn, placeCamera } from './camera';
 import { setLightUniforms } from './lighting';
 import { setMaxAnisotropy } from './textures';
 
@@ -85,7 +85,8 @@ export class Viewer {
       const m = vp.scene?.getObjectByName('person');
       if (m) { m.rotation.y = Math.atan2(vp.cam.position.x - m.position.x, vp.cam.position.z - m.position.z); m.updateMatrixWorld(); }
     }
-    const boxes = active.map(vp => frameBox(vp.cam, vp.T, vp.w / vp.h, headroom, bottom(vp.T), extra(vp.T)));
+    // lens from the straight-on view, kept at every orbit angle (see frameStraightOn)
+    const boxes = active.map(vp => frameStraightOn(vp.T, S.camera, vp.w / vp.h, headroom, bottom(vp.T), extra(vp.T)));
     const fov = fovFor(Math.max(...boxes.map(b => b.t)), S.camera.zoom); // one FOV for all: sizes stay comparable
     r.setScissorTest(true);
     r.setViewport(0, 0, w, h); r.setScissor(0, 0, w, h);
