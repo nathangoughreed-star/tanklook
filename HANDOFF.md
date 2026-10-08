@@ -53,7 +53,7 @@ Note: another chat's dev server may already hold port 5173 (same folder, HMR wor
 - Tests 55/55. Deployed 2026-10-08 (session 3, `8fddff8`). HTTPS on tanklook.com still serves the github.io
   certificate (curl: wrong principal); http works. Nathan to check Settings -> Pages and tick Enforce HTTPS.
 
-## Custom terrain (Nathan's idea, 2026-10-08; built session 3, NOT yet pushed)
+## Custom terrain (Nathan's idea, 2026-10-08; built and deployed session 3, `2e9ce54`)
 
 - **Scene v6** `terrain { on, cols, rows, h[] }`: a grid of ground heights (mm, Tank A, physical like the substrate)
   spread evenly over the floor, corners included. When on it replaces the corner slopes and the swamp land
@@ -71,14 +71,14 @@ Note: another chat's dev server may already hold port 5173 (same folder, HMR wor
   rebuilds on every drag step (fine so far).
 - Pictures: `shots/22_terrain_dots`, `23_terrain_pulled`, `24_terrain_result`. Tests 60/60.
 
-## Dry tank / terrarium (Nathan 2026-10-08: "TankLook, not AquariumLook"; built session 3, NOT yet pushed)
+## Dry tank / terrarium (Nathan 2026-10-08: "TankLook, not AquariumLook"; built and deployed session 3, `2e9ce54`)
 
 - `water.on` (scene v6, default true; older files load with water). Off: no tint, no surface, water controls disabled,
   fish (everything not a snail) **hidden but kept in the data** and not clamped; Add / Add school disabled for fish
   with a hint; status line says how many are hidden. Snails stay (read as land snails) and may use the whole glass.
 - Verified in the dev page: 7 fish hidden, back on water -> 7 shown. Picture `shots/25_dry_terrarium`. Tests 61/61.
 
-## Approximate tank weight (Nathan 2026-10-08; built session 3, NOT yet pushed)
+## Approximate tank weight (Nathan 2026-10-08; built and deployed session 3, `2e9ce54`)
 
 - `scene/weight.ts` `tankWeight(S)`: water = water depth over the ground integrated on a 60x60 floor grid (so level,
   slopes, terrain and swamp land count; dry = 0); substrate = ground volume x 1.6 kg/L bulk + 0.35 kg/L pore water
@@ -91,7 +91,12 @@ Note: another chat's dev server may already hold port 5173 (same folder, HMR wor
 
 ## NEXT WORK UNIT: land + semi-aquatic species (Nathan 2026-10-08: "mixed land and water animals in the same tank")
 
-Proposed (confirm with Nathan, with pictures, before building):
+Decided (Nathan 2026-10-08, session 4): sizes are **total length** (nose to tail tip, like the fish); first batch =
+**frogs, newts, axolotl** only (dart frog, White's tree frog, fire-bellied toad, fire-bellied newt, axolotl: one
+quadruped painter); **climbing is in this unit** (tree frog on glass and branches from the start). Lizards, turtle,
+snakes, crabs and inverts come later.
+
+Original proposal:
 - species.json `habitat: 'water' | 'land' | 'both'` (default water; snails 'both'). Land animals rest on ground
   above the water line (any ground when dry), like bottom dwellers (rest offset, drag slides along the ground);
   'both' (frogs, newts, turtles, crabs) may be on land or in the water. Add the rule to `fitFish` / `nearestWater`
