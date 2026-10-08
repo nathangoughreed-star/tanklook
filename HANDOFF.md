@@ -2,32 +2,56 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
-## Status (2026-10-08)
+## Status (2026-10-08, end of session 2)
 
-Phase 1 proof of concept: done and accepted. Kept at `reference/aquarium-poc.html` (reference only).
+**Live at tanklook.com** (GitHub Pages, push to `main` = test + deploy in ~1-2 min; last deploy `80a860d`).
+Repo: github.com/nathangoughreed-star/tanklook (public; commits use the GitHub no-reply email via repo-local git
+config, never the work address). `gh` is not installed. HTTPS: check the Pages certificate, then tick Enforce HTTPS.
+**Domain: tanklook.com** (bought by Nathan 2026-10-08 at Namecheap, 1 year; personal learning project).
+Phase 1 PoC kept at `reference/aquarium-poc.html`. Vite + TypeScript, see README.md. `npm test` 45/45, build clean.
 
-**Phase 2 build: done locally, not yet deployed.** Vite + TypeScript project at the repo root (see README.md for
-layout). Verified: `npm test` 24/24 (perspective ratio = d/(d+z) straight on, same pixel size across tank depths,
-zoom never moves the eye, glass table, bilinear substrate, v1→v2 migration, clamping, undo coalescing, storage);
-`npm run build` clean; production build exercised in the browser: add, drag, undo/redo (buttons + Ctrl+Z/Shift+Z),
-compare + LED lighting, orbit, PNG 2× export, JSON save/open, bad-file rejection, autosave + restore on reload,
-375 px phone layout with no sideways scroll.
+Shipped by end of session 2: restyled fish art, 37 species (generated body plans), bottom dwellers, snails on
+floor/glass, aquascape presets, custom fish sizes, fixed orbit lens, scale person (stays put), viewpoint map,
+peninsula wall, room lighting with tank spill, default eye distance 3 m. Details in the sections below.
 
-Shipped features: species search (common/scientific, accent-insensitive), add / add school / drag / duplicate /
-flip / delete / delete-all (armed), save/load (localStorage autosave + JSON file), PNG export 1×/2×/4×, undo/redo
-(200 steps; slider and pointer drags coalesce into one step; camera moves are saved but not undoable), interior
-volume readout, more tank presets.
+Verification method for looks: dev page + `window.__gb = {store, viewer}`; `viewer.exportPNG(n)` POSTed to a
+throwaway local python sink (port 4199) writing `shots/` (gitignored); pictures sent to Nathan with SendUserFile.
+Note: another chat's dev server may already hold port 5173 (same folder, HMR works): open http://localhost:5173.
 
-Next: **create the public GitHub repo, first commit + push, enable Pages (Settings → Pages → Source: GitHub
-Actions)**, then check the live URL.
-**Domain: tanklook.com** (bought by Nathan 2026-10-08 at Namecheap, 1 year; personal learning project). **LIVE 2026-10-08** over
-http at tanklook.com (DNS done: 4 A records + www CNAME). Pending: GitHub HTTPS certificate, then tick Enforce HTTPS;
-the www check was still yellow from cached parking DNS. Custom domain must be set in Settings (Actions deploys ignore
-public/CNAME).
-Repo: github.com/nathangoughreed-star/tanklook (public; Pages source = GitHub Actions; commits use the GitHub no-reply
-email, repo-local git config, never the work address). Push to `main` = test + deploy in ~2 min. `gh` is not installed.
+## Next work unit: water level + water colour (requested by Nathan 2026-10-08)
 
-## Next work unit: fish art style (agreed 2026-10-08)
+Nathan: "Water level, as well as water color. Be able to create swampy tanks with land rising above the water level
+creating pocket(s) of water. This restricts where fish spawn to the actual water. Default water level 'full' with a
+slider to bring it down. Colour: default = clear water, plus an opacity slider and a continuous colour picker."
+
+Proposed design (confirm the open points with Nathan, with pictures, before building):
+- **Scene v5** `water: { level: number (mm above the tank floor; default = full), color: '#rrggbb', opacity: 0..1 }`.
+  "Full" = interior height minus a small gap (reuse `WATERLINE_GAP` = 25 mm, which snails already use). Slider in
+  the user's units; migration: older files get full / clear.
+- **Render:**
+  - water surface: a horizontal plane at the level, seen from above or when orbiting;
+  - tint below the level: a colour mix in the lighting shader for in-tank materials (`vAqP.y < level`), stronger
+    with distance through water (front glass to the point), scaled by opacity;
+  - the glass above the line stays clear; a faint meniscus line on the panes;
+  - default "clear" = barely visible blue-green at opacity ~0.
+- **Fish:** spawn and drag clamp to the water: fish y + half card height <= level. Where land rises above the water,
+  add / add school / drag must pick spots with water above the substrate (sample x/depth where
+  `substrateHeight < level - fish height`). Bottom dwellers only on submerged substrate. Snails: glass spawning
+  bounded by the water line (pass the level into `spawnSnail` instead of `WATERLINE_GAP`); decide whether snails
+  may sit on emerged land (real snails do).
+- **Swamp terrain (the big open point):** the substrate today is 4 corner depths, bilinear, capped at 60 % of H; it
+  cannot make pockets. Options:
+  (a) a new **layout preset "Swamp / paludarium"**: a noise heightfield with land masses above the water and 1-2
+      water pockets, seeded + Shuffle like the other layouts (fits "no custom hardscape design yet");
+  (b) a **substrate heightfield** setting ("terrain: flat slope | islands | bank"), independent of layouts.
+  Recommendation: (a), and make the substrate mesh and `substrateHeight()` read a heightfield so fish placement and
+  bottom dwellers follow it. Emerged land needs its own look (moss, soil, emersed plants) vs submerged gravel.
+- Open: does the light fixture move down with the level (no, it sits on the tank); colour presets (tannin/blackwater,
+  green) as quick picks next to the picker?
+- Tests to add: v4->v5 migration, fish clamping to the level, spawn never on land / above the line, heightfield
+  `substrateHeight` matches the mesh.
+
+## Fish art style (done 2026-10-08)
 
 Problem (Nathan): fish read as cartoons next to the tank render. Goal: not photoreal, but matching the tank's style
 (no outlines, textures, soft shading, muted natural colour).
