@@ -4,7 +4,8 @@ import * as THREE from 'three';
 import { SUBSTRATES } from '../art/placeholder';
 import { snailAspect } from '../art/snails';
 import { fishTL, getSpecies, type Species } from '../data/species';
-import { D2R, IN, WALL_GAP, clamp, floorY, glassThickness, mapToTank, RIM_DROP, RIM_H, substrateHeight, tankUnderside } from '../scene/physics';
+import { D2R, IN, WALL_GAP, clamp, floorY, glassThickness, mapToTank, RIM_DROP, RIM_H, tankUnderside, waterY } from '../scene/physics';
+import { groundHeight } from '../scene/terrain';
 import type { Background, Fish, Scene, Tank } from '../scene/types';
 import { addFixture, applyLighting } from './lighting';
 import { layoutGroup } from './layouts';
@@ -72,7 +73,7 @@ function addTank(sc: THREE.Scene, S: Scene, T: Tank) {
     }
   }
   if (R.grid) {
-    const sub = (x: number, d: number) => substrateHeight(S.substrate, T, x, d);
+    const sub = (x: number, d: number) => groundHeight(S, T, x, d);
     const step = S.units === 'in' ? 2 * IN : 50, w: number[] = [], f: number[] = [];
     for (let x = step; x < L; x += step) { if (!pen) w.push(x, 0, -D + 0.5, x, H, -D + 0.5); f.push(x, sub(x, 0) + 0.5, 0, x, sub(x, D) + 0.5, -D); }
     for (let y = step; y < H; y += step) w.push(...(pen ? [L - 0.5, y, 0, L - 0.5, y, -D] : [0, y, -D + 0.5, L, y, -D + 0.5]));
@@ -80,6 +81,18 @@ function addTank(sc: THREE.Scene, S: Scene, T: Tank) {
     for (let z = step; z < D; z += step) f.push(0, sub(0, z) + 0.5, -z, L, sub(L, z) + 0.5, -z);
     sc.add(lines(w, bg.light ? 0x000000 : 0xffffff, bg.light ? 0.12 : 0.16)); sc.add(lines(f, 0x000000, 0.14));
   }
+}
+
+/**
+ * The water surface (seen from above or when orbiting; edge-on straight on) and a faint meniscus line where it meets
+ * the glass. The colour of the water itself is a tint in the lighting shader (see aqWaterPath).
+ */
+function addWater(sc: THREE.Scene, S: Scene, T: Tank) {
+  const { L, D } = T, y = waterY(T, S.water.level), c = new THREE.Color(0xd8eef2).lerp(new THREE.Color(S.water.color), 0.25 + 0.5 * S.water.opacity);
+  const surf = plane(L, D, basic(c, { transparent: true, opacity: 0.1 + 0.25 * S.water.opacity, depthWrite: false, side: THREE.DoubleSide }));
+  surf.rotation.x = -Math.PI / 2; surf.position.set(L / 2, y, -D / 2); surf.renderOrder = 4; surf.userData.nolight = true; sc.add(surf);
+  const e = 0.6, line = lines([e, y, -e, L - e, y, -e, L - e, y, -e, L - e, y, -D + e, L - e, y, -D + e, e, y, -D + e, e, y, -D + e, e, y, -e], 0xe8f6fa, 0.45);
+  line.renderOrder = 4; sc.add(line);
 }
 
 export const STAND_FINISHES: Record<Scene['stand']['finish'], { label: string; color: number }> = {
@@ -101,6 +114,7 @@ function addStand(sc: THREE.Scene, S: Scene, T: Tank) {
   if (!S.stand.show) return;
   const { L, D } = T, t = glassThickness(T, S.render.glass), top = tankUnderside(T, S.render), h = S.stand.height;
   const W = L + 2 * t, Dp = D + 2 * t, fin = STAND_FINISHES[S.stand.finish];
+  if (S.stand.style === 'frame') { addFrameStand(sc, T, W, Dp, top, h, fin.color); return; }
   const body = shadedBox(W, h, Dp, fin.color); body.position.set(L / 2, top - h / 2, -D / 2); sc.add(body);
   // two cabinet doors: seams just proud of the front face, kick-plate line near the floor
   const z = t + 0.6, inset = Math.min(30, h * 0.08), y0 = top - h + Math.min(70, h * 0.12), y1 = top - inset;
@@ -110,6 +124,26 @@ function addStand(sc: THREE.Scene, S: Scene, T: Tank) {
     L + t - inset, y0, z, -t + inset, y0, z, -t + inset, y0, z, -t + inset, y1, z,
     L / 2, y1, z, L / 2, y0, z,
   ], seam, 0.8));
+}
+
+/** Steel tube size for the open frame stand (mm): 1.5" square tube, the common size for welded aquarium stands. */
+const TUBE = 38;
+
+/**
+ * Open welded steel stand: square-tube legs at the corners, a top frame the tank sits on, a bottom frame just above
+ * the floor, and extra legs (with their rails) every ~90 cm on long tanks. Nothing in between: the room shows through.
+ */
+function addFrameStand(sc: THREE.Scene, T: Tank, W: number, Dp: number, top: number, h: number, color: number) {
+  const s = Math.min(TUBE, h / 6), x0 = T.L / 2 - W / 2 + s / 2, x1 = T.L / 2 + W / 2 - s / 2, z0 = -T.D / 2 + Dp / 2 - s / 2, z1 = -T.D / 2 - Dp / 2 + s / 2;
+  const bar = (w: number, hh: number, d: number, x: number, y: number, z: number) => { const b = shadedBox(w, hh, d, color); b.position.set(x, y, z); sc.add(b); };
+  const n = Math.max(1, Math.round((W - s) / 900)), xs = Array.from({ length: n + 1 }, (_, i) => x0 + (x1 - x0) * i / n);
+  const foot = 12, yLow = top - h + foot + s / 2, yTop = top - s / 2;
+  for (const x of xs) for (const z of [z0, z1]) bar(s, h - foot, s, x, top - (h - foot) / 2, z);  // legs (on small levelling feet)
+  for (const x of xs) for (const z of [z0, z1]) bar(s * 0.7, foot, s * 0.7, x, top - h + foot / 2, z);
+  for (const y of [yTop, yLow]) {
+    for (const z of [z0, z1]) bar(x1 - x0 - s, s, s, (x0 + x1) / 2, y, z);                          // long rails
+    for (const x of xs) bar(s, s, z0 - z1 - s, x, y, (z0 + z1) / 2);                                  // cross rails
+  }
 }
 
 /** Hood height at the back (mm), above the rim top. */
@@ -236,12 +270,13 @@ function addWall(sc: THREE.Scene, S: Scene, T: Tank) {
 }
 
 function addSubstrate(sc: THREE.Scene, S: Scene, T: Tank) {
-  if (!S.substrate.show) return;
-  const { L, D } = T, tile = SUBSTRATES[S.substrate.type].tile * 2, h = (x: number, d: number) => substrateHeight(S.substrate, T, x, d);
+  const swamp = S.layout.id === 'swamp';
+  if (!S.substrate.show && !swamp) return;
+  const { L, D } = T, tile = SUBSTRATES[S.substrate.type].tile * 2, h = (x: number, d: number) => groundHeight(S, T, x, d);
   // top surface as a 16x16 grid (bilinear surfaces curve along diagonals), front face and two side faces;
   // UVs from physical mm so grain size is constant
   type V3 = [number, number, number];
-  const top: number[][] = [], side: number[][] = [], N = 16;
+  const top: number[][] = [], side: number[][] = [], N = swamp ? 72 : 16, wy = waterY(T, S.water.level);
   const quad = (arr: number[][], pts: V3[], uv: (p: V3) => number[]) => { for (const i of [0, 1, 2, 0, 2, 3]) arr.push(pts[i], uv(pts[i])); };
   const P = (i: number, j: number): V3 => { const x = L * i / N, d = D * j / N; return [x, h(x, d), -d]; };
   // cheap slope shading: brightness from each cell's tilt toward a light above, front and left
@@ -251,10 +286,17 @@ function addSubstrate(sc: THREE.Scene, S: Scene, T: Tank) {
     const a = new THREE.Vector3(...q[1]).sub(new THREE.Vector3(...q[0])), b = new THREE.Vector3(...q[3]).sub(new THREE.Vector3(...q[0]));
     const n = new THREE.Vector3().crossVectors(a, b).normalize(); if (n.y < 0) n.negate();
     const k = clamp(0.55 + 0.6 * n.dot(light), 0, 1.15) / 1.15;
-    quad(top, q, p => [p[0] / tile, -p[2] / tile]); for (let v = 0; v < 6; v++) topCol.push(k, k, k);
+    // emerged ground reads as damp soil and moss (mottled), not aquarium gravel
+    const my = (q[0][1] + q[2][1]) / 2, dry = clamp((my - wy) / 12, 0, 1), mo = 0.5 + 0.5 * Math.sin(q[0][0] * 0.045 + Math.sin(q[0][2] * 0.05) * 2.4);
+    const c = [k * (1 - dry * (0.42 + 0.12 * mo)), k * (1 - dry * (0.3 - 0.12 * mo)), k * (1 - dry * (0.62 + 0.05 * mo))];
+    quad(top, q, p => [p[0] / tile, -p[2] / tile]); for (let v = 0; v < 6; v++) topCol.push(...c);
   }
-  quad(side, [[0, 0, 0], [L, 0, 0], [L, h(L, 0), 0], [0, h(0, 0), 0]], p => [p[0] / tile, p[1] / tile]);
-  for (const x of [0, L]) quad(side, [[x, 0, 0], [x, 0, -D], [x, h(x, D), -D], [x, h(x, 0), 0]], p => [-p[2] / tile, p[1] / tile]);
+  // front and end faces in N strips, so their top edge follows the ground (swamp banks are not straight)
+  for (let i = 0; i < N; i++) {
+    const x0 = L * i / N, x1 = L * (i + 1) / N, d0 = D * i / N, d1 = D * (i + 1) / N;
+    quad(side, [[x0, 0, 0], [x1, 0, 0], [x1, h(x1, 0), 0], [x0, h(x0, 0), 0]], p => [p[0] / tile, p[1] / tile]);
+    for (const x of [0, L]) quad(side, [[x, 0, -d1], [x, 0, -d0], [x, h(x, d0), -d0], [x, h(x, d1), -d1]], p => [-p[2] / tile, p[1] / tile]);
+  }
   const mk = (arr: number[][], shade: number, cols?: number[]) => {
     const g = new THREE.BufferGeometry(); if (cols) g.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
     g.setAttribute('position', new THREE.Float32BufferAttribute(arr.filter((_, i) => i % 2 === 0).flat(), 3));
@@ -289,7 +331,7 @@ export interface BuiltTank {
 
 export function buildTank(S: Scene, T: Tank, selId: number | null): BuiltTank {
   const sc = new THREE.Scene(), fishMeshes: THREE.Mesh[] = [], meshById = new Map<number, THREE.Mesh>();
-  addTank(sc, S, T); addSubstrate(sc, S, T); addStand(sc, S, T); addWall(sc, S, T); addPerson(sc, S, T); addFloor(sc, S, T);
+  addTank(sc, S, T); addWater(sc, S, T); addSubstrate(sc, S, T); addStand(sc, S, T); addWall(sc, S, T); addPerson(sc, S, T); addFloor(sc, S, T);
   const lay = layoutGroup(S, T); if (lay) sc.add(lay);
   const register = (f: Fish, m: THREE.Mesh, w: number, h: number) => {
     m.userData.id = f.id; if (f.id === selId) m.add(outline(w, h));
@@ -301,7 +343,7 @@ export function buildTank(S: Scene, T: Tank, selId: number | null): BuiltTank {
     const w = fishTL(f, sp), h = w * sp.aspect, p = mapToTank(S.tankA, T, f);
     const m = new THREE.Mesh(cardGeometry(w, h, f.bend), cardMaterial('fish:' + f.species, fishTexture(f.species), S.render.edge));
     // bottom dwellers rest on the substrate wherever they are (their stored height is ignored)
-    const y = sp.zone === 'bottom' ? substrateHeight(S.substrate, T, p.x, p.depth) + sp.rest * w - 1 : p.y;
+    const y = sp.zone === 'bottom' ? groundHeight(S, T, p.x, p.depth) + sp.rest * w - 1 : Math.min(p.y, Math.max(0, waterY(T, S.water.level) - h / 2));
     m.position.set(p.x, y, -p.depth); m.rotation.set(f.roll * D2R, f.yaw * D2R, f.pitch * D2R, 'YXZ');
     register(f, m, w, h);
   }
@@ -323,7 +365,7 @@ const PANE_Y = { front: 0, back: Math.PI, left: -Math.PI / 2, right: Math.PI / 2
  */
 function snailMeshes(S: Scene, T: Tank, f: Fish, sp: Species): [THREE.Mesh, number, number][] {
   const p = mapToTank(S.tankA, T, f), surf = f.surface ?? 'floor', w = fishTL(f, sp), edge = S.render.edge;
-  const sub = (x: number, d: number) => substrateHeight(S.substrate, T, x, d);
+  const sub = (x: number, d: number) => groundHeight(S, T, x, d);
   if (surf === 'floor') {
     const h = w * sp.aspect, m = new THREE.Mesh(cardGeometry(w, h, 0), cardMaterial(`snail:${sp.art}:side`, snailTexture(sp.art, 'side'), edge));
     m.position.set(p.x, sub(p.x, p.depth) + sp.rest * w - 0.5, -p.depth); m.rotation.set(0, f.yaw * D2R, 0, 'YXZ');
@@ -331,7 +373,7 @@ function snailMeshes(S: Scene, T: Tank, f: Fish, sp: Species): [THREE.Mesh, numb
   }
   const h = w * snailAspect(sp.art, 'foot'), x = surf === 'left' ? PANE_GAP : surf === 'right' ? T.L - PANE_GAP : p.x;
   const d = surf === 'front' ? PANE_GAP : surf === 'back' ? T.D - PANE_GAP : p.depth;
-  const y = clamp(p.y, sub(x, d) + h / 2, T.H - h / 2);
+  const y = clamp(p.y, sub(x, d) + h / 2, Math.max(sub(x, d) + h / 2, waterY(T, S.water.level) - w / 2));
   const foot = new THREE.Mesh(new THREE.PlaneGeometry(w, h), cardMaterial(`snail:${sp.art}:foot`, snailTexture(sp.art, 'foot'), edge, THREE.FrontSide));
   const sg = new THREE.PlaneGeometry(w, h).rotateY(Math.PI), uv = sg.attributes.uv; // face into the tank, texture not mirrored
   for (let i = 0; i < uv.count; i++) uv.setX(i, 1 - uv.getX(i));

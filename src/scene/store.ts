@@ -1,6 +1,7 @@
 // Holds the scene, the selection and undo/redo history. Every mutation goes through update().
 import { defaultScene } from './defaults';
 import { parseScene } from './validate';
+import { keepInWater } from './water';
 import type { Fish, Scene } from './types';
 
 /** 'scene' = 3D content changed (rebuild), 'view' = camera only (redraw), 'select' = selection only. */
@@ -46,6 +47,7 @@ export class Store {
       this.lastKey = opts.coalesce ?? null; this.lastTime = now;
     }
     fn(this.scene);
+    if (kind === 'scene') keepInWater(this.scene);
     if (this.selId != null && !this.scene.fish.some(f => f.id === this.selId)) this.selId = null;
     this.emit(kind);
   }

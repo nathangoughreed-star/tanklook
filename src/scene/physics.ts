@@ -42,16 +42,21 @@ export function substrateHeight(s: SubstrateSettings, T: Tank, x: number, depth:
   return (c(s.fl) * (1 - u) + c(s.fr) * u) * (1 - v) + (c(s.bl) * (1 - u) + c(s.br) * u) * v;
 }
 
-/** Snails stay this far below the interior top (the water line). */
+/** A full tank's water line sits this far below the interior top (mm). */
 export const WATERLINE_GAP = 25;
 
+/** Height of the water surface above the tank floor (mm): `level` is the fraction of a full tank. */
+export const waterY = (T: Tank, level: number) => clamp(level, 0, 1) * (T.H - WATERLINE_GAP);
+
+/** Tint strength per mm of water for an opacity (the share of the water colour after 300 mm). */
+export const waterK = (opacity: number) => -Math.log(1 - clamp(opacity, 0, 0.97)) / 300;
+
 /**
- * A random spot for a snail of crawling length `size`: every point of the substrate and of the inside of the four
- * glass panes (below the water line) is equally likely, so each surface is chosen in proportion to its area.
+ * A random spot for a snail on ground `h` of crawling length `size`: every point of the substrate and of the inside of the four
+ * glass panes (below the water line, `top`) is equally likely, so each surface is chosen in proportion to its area.
  * On glass, yaw is the heading within the pane.
  */
-export function spawnSnail(sub: SubstrateSettings, T: Tank, size: number, r: () => number) {
-  const top = T.H - WATERLINE_GAP, h = (x: number, d: number) => substrateHeight(sub, T, x, d);
+export function spawnSnail(h: (x: number, depth: number) => number, T: Tank, size: number, r: () => number, top = T.H - WATERLINE_GAP) {
   const meanSub = (h(0, 0) + h(T.L, 0) + h(0, T.D) + h(T.L, T.D)) / 4, hw = Math.max(0, top - meanSub);
   const areas: [Surface, number][] = [['floor', T.L * T.D], ['front', T.L * hw], ['back', T.L * hw], ['left', T.D * hw], ['right', T.D * hw]];
   let k = r() * areas.reduce((a, [, v]) => a + v, 0), surface: Surface = 'floor';

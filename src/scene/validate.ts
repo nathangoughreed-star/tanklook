@@ -2,6 +2,7 @@
 import { getSpecies, hasSpecies } from '../data/species';
 import { defaultScene } from './defaults';
 import { clamp } from './physics';
+import { keepInWater } from './water';
 import { SCENE_VERSION, type Fish, type Scene, type Tank } from './types';
 
 export class SceneError extends Error {}
@@ -26,9 +27,11 @@ export const LIMITS = {
   stand: [12 * 25.4, 48 * 25.4] as const, // mm
   person: [900, 2100] as const,            // mm
   size: [0.15, 1.3] as const,              // custom fish length, fraction of the adult length
+  level: [0.1, 1] as const,                // water level, fraction of full
+  opacity: [0, 0.95] as const,             // water tint after 300 mm
 };
 export const SURFACES = ['floor', 'front', 'back', 'left', 'right'] as const;
-export const LAYOUT_IDS = ['none', 'stones', 'driftwood', 'planted', 'iwagumi'] as const;
+export const LAYOUT_IDS = ['none', 'stones', 'driftwood', 'planted', 'iwagumi', 'swamp'] as const;
 export const GLASS_CHOICES = [4, 5, 6, 8, 10, 12, 15, 19];
 
 /** Upgrade older saved shapes to the current version, in place. */
@@ -49,6 +52,7 @@ function migrate(raw: Obj, warn: (m: string) => void): Obj {
     raw.layout = { id: p.show === false ? 'none' : 'planted', seed: 1 };
     delete raw.plant;
   }
+  // v5 adds water (level, colour); older files get the default: full, clear
   raw.version = SCENE_VERSION;
   return raw;
 }
@@ -75,7 +79,7 @@ export function parseScene(input: unknown): { scene: Scene; warnings: string[] }
 
   const tankA = tank(raw.tankA, d.tankA), tankB = tank(raw.tankB, d.tankB);
   const c = sub('camera'), r = sub('render'), l = sub('light'), s = sub('substrate'), lay = sub('layout');
-  const st = sub('stand'), w = sub('wall'), pe = sub('person');
+  const wa = sub('water'), st = sub('stand'), w = sub('wall'), pe = sub('person');
   const glass = r.glass === 'auto' ? 'auto' : typeof r.glass === 'number' && GLASS_CHOICES.includes(r.glass) ? r.glass : 'auto';
   const subMax = tankA.H * 0.5;
 
@@ -127,10 +131,15 @@ export function parseScene(input: unknown): { scene: Scene; warnings: string[] }
       bl: num(s.bl, d.substrate.bl, 0, subMax), br: num(s.br, d.substrate.br, 0, subMax),
     },
     layout: { id: pick(lay.id, LAYOUT_IDS, d.layout.id), seed: Math.round(num(lay.seed, 1, 1, 1e9)) },
+    water: {
+      level: num(wa.level, d.water.level, ...LIMITS.level), opacity: num(wa.opacity, d.water.opacity, ...LIMITS.opacity),
+      color: typeof wa.color === 'string' && /^#[0-9a-f]{6}$/i.test(wa.color) ? wa.color.toLowerCase() : d.water.color,
+    },
     lid: pick(raw.lid, ['open', 'glass', 'hood'] as const, d.lid),
     stand: {
       show: bool(st.show, d.stand.show), height: num(st.height, d.stand.height, ...LIMITS.stand),
       finish: pick(st.finish, ['black', 'white', 'oak'] as const, d.stand.finish),
+      style: pick(st.style, ['cabinet', 'frame'] as const, d.stand.style),
     },
     person: {
       show: bool(pe.show, d.person.show), height: num(pe.height, d.person.height, ...LIMITS.person),
@@ -142,6 +151,7 @@ export function parseScene(input: unknown): { scene: Scene; warnings: string[] }
     },
     fish,
   };
+  keepInWater(scene);
   return { scene, warnings };
 }
 

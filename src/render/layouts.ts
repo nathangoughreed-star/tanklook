@@ -6,7 +6,8 @@ import * as THREE from 'three';
 import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng } from '../art/paint';
 import { PLANT_ASPECT, type PlantType } from '../art/plants';
-import { clamp, substrateHeight } from '../scene/physics';
+import { clamp } from '../scene/physics';
+import { groundHeight, swampLand } from '../scene/terrain';
 import type { LayoutId, Scene, Tank } from '../scene/types';
 import { cardMaterial, plantTexture } from './textures';
 
@@ -16,6 +17,7 @@ export const LAYOUTS: Record<LayoutId, { label: string; hint: string }> = {
   driftwood: { label: 'Driftwood', hint: 'Branchy wood with java fern and anubias.' },
   planted: { label: 'Dense planted', hint: 'Stem plants and grasses at the back, swords, a carpet in front.' },
   iwagumi: { label: 'Iwagumi', hint: 'Angular stones on a low carpet.' },
+  swamp: { label: 'Swamp / paludarium', hint: 'Land rising out of the water around one or two pools; fish stay in the water. Lowers the water when chosen.' },
 };
 
 type R = () => number;
@@ -91,7 +93,7 @@ function plant(S: Scene, type: PlantType, x: number, y: number, depth: number, h
 }
 
 function build(S: Scene, T: Tank, id: LayoutId, seed: number): THREE.Group {
-  const out = new THREE.Group(), { L, H, D } = T, sub = (x: number, d: number) => substrateHeight(S.substrate, T, x, d);
+  const out = new THREE.Group(), { L, H, D } = T, sub = (x: number, d: number) => groundHeight(S, T, x, d);
   const r = rng(seed * 7919 + id.length * 104729);
   const room = (x: number, d: number, y = sub(x, d)) => H - y - 15; // headroom to the water line
   // Crossed cards reach half a card width in both x and depth whatever their turn, so the whole card must fit
@@ -171,6 +173,20 @@ function build(S: Scene, T: Tank, id: LayoutId, seed: number): THREE.Group {
     }
     for (const fx of [0.08, 0.92]) addPlant('anubias', L * fx, D * 0.32, clamp(H * 0.22, 60, 130));
     carpet(0.04, 0.34);
+  } else if (id === 'swamp') {
+    // land: emersed grasses, swords, ferns and a few stones; pools: stems and grass growing up out of the water
+    const land = (x: number, d: number) => swampLand(T, seed, x, d) > H * 0.3;
+    const MUD = ['#5d5245', '#6e6457', '#4f4a42'];
+    for (let x = 25; x < L - 25; x += 45 + r() * 35) for (let d = D * 0.08; d < D * 0.97; d += 50 + r() * 30) {
+      const xx = x + (r() - 0.5) * 30, dd = d + (r() - 0.5) * 25, k = r();
+      if (land(xx, dd)) {
+        if (k < 0.45) addPlant('grass', xx, dd, clamp(H * (0.15 + r() * 0.2), 40, 160));
+        else if (k < 0.6) addPlant('fern', xx, dd, clamp(H * (0.15 + r() * 0.1), 50, 140));
+        else if (k < 0.7) addPlant('anubias', xx, dd, clamp(H * 0.1, 35, 90));
+        else if (k < 0.78) addPlant('sword', xx, dd, clamp(H * (0.2 + r() * 0.1), 60, 200));
+        else if (k < 0.84) { const s = 14 + r() * 26; addStone(xx, dd, s * 0.6, s * 0.35, s * 0.5, MUD[Math.floor(r() * 3)]); }
+      } else if (k < 0.3) addPlant(r() < 0.5 ? 'stem' : 'grass', xx, dd, (H - sub(xx, dd)) * (0.6 + r() * 0.3));
+    }
   }
   return out;
 }

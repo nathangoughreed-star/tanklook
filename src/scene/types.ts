@@ -3,7 +3,7 @@
 // Tank L/H/D are INTERIOR dimensions; glass is added outside. Fish positions live in Tank A space;
 // Tank B shows the same fish at the same relative positions (fractions of L/H/D).
 
-export const SCENE_VERSION = 4;
+export const SCENE_VERSION = 5;
 
 export type Units = 'in' | 'cm';
 export type EdgeMode = 'cutout' | 'a2c';
@@ -64,12 +64,21 @@ export interface SubstrateSettings {
 }
 
 /** Preset aquascape (rocks, wood, plants), generated from the tank size and a seed; not hand-placed. */
-export type LayoutId = 'none' | 'stones' | 'driftwood' | 'planted' | 'iwagumi';
+export type LayoutId = 'none' | 'stones' | 'driftwood' | 'planted' | 'iwagumi' | 'swamp';
 export interface LayoutSettings { id: LayoutId; seed: number }
 
+/**
+ * Water: level as a fraction of a full tank (1 = full, i.e. WATERLINE_GAP below the interior top), so Tank B and a
+ * resized tank keep the same fill. Colour tints what is seen through the water; opacity = how much of that colour
+ * shows after 300 mm of water (physical: a deeper tank looks more tinted). Opacity 0 = clear water.
+ */
+export interface WaterSettings { level: number; color: string; opacity: number }
+
 export type StandFinish = 'black' | 'white' | 'oak';
-/** Cabinet under the tank: same footprint as the tank's outer glass, adjustable height (mm, floor to tank bottom). */
-export interface StandSettings { show: boolean; height: number; finish: StandFinish }
+/** 'cabinet' = closed box with doors; 'frame' = open welded steel skeleton (square tube legs and rails). */
+export type StandStyle = 'cabinet' | 'frame';
+/** Stand under the tank: same footprint as the tank's outer glass, adjustable height (mm, floor to tank bottom). */
+export interface StandSettings { show: boolean; height: number; finish: StandFinish; style: StandStyle }
 
 /** Top of the tank: open, glass canopy panels, or a classic black moulded hood (lights inside). */
 export type LidType = 'open' | 'glass' | 'hood';
@@ -93,6 +102,7 @@ export interface Scene {
   light: LightSettings;
   substrate: SubstrateSettings;
   layout: LayoutSettings;
+  water: WaterSettings;
   lid: LidType;
   stand: StandSettings;
   wall: WallSettings;

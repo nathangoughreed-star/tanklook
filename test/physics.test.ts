@@ -49,8 +49,8 @@ describe('stand and floor', () => {
   it('stand top is the tank underside; floor is a stand-height below it', () => {
     expect(tankUnderside(T, R)).toBe(-7);
     expect(tankUnderside(T, { ...R, rim: false })).toBe(-5);
-    expect(floorY(T, R, { show: true, height: 30 * IN, finish: 'black' })).toBeCloseTo(-7 - 762, 6);
-    expect(floorY(T, R, { show: false, height: 30 * IN, finish: 'black' })).toBe(-7);
+    expect(floorY(T, R, { show: true, height: 30 * IN, finish: 'black', style: 'cabinet' })).toBeCloseTo(-7 - 762, 6);
+    expect(floorY(T, R, { show: false, height: 30 * IN, finish: 'black', style: 'cabinet' })).toBe(-7);
   });
 });
 
@@ -66,7 +66,7 @@ describe('colour temperature', () => {
 
 describe('snail spawning', () => {
   const T = { L: 24 * IN, H: 12 * IN, D: 12 * IN }, sub = { ...defaultScene().substrate, fl: 25, fr: 25, bl: 25, br: 25 };
-  const runs = Array.from({ length: 20000 }, (_, i) => spawnSnail(sub, T, 25, rng(i + 1)));
+  const runs = Array.from({ length: 20000 }, (_, i) => spawnSnail((x, d) => substrateHeight(sub, T, x, d), T, 25, rng(i + 1)));
   it('picks each surface in proportion to its area', () => {
     const hw = T.H - WATERLINE_GAP - 25, total = T.L * T.D + 2 * T.L * hw + 2 * T.D * hw;
     const share = (s: string) => runs.filter(r => r.surface === s).length / runs.length;

@@ -7,9 +7,11 @@ import { LAYOUTS } from '../render/layouts';
 import type { Viewer } from '../render/viewer';
 import { defaultScene, TANK_PRESETS } from '../scene/defaults';
 import {
-  IN, clamp, clampFish, fmtDims, fmtLen, fromUnit, glassThickness, rescaleTankA, spawnSnail, toUnit, volume,
+  IN, clamp, clampFish, fmtDims, fmtLen, fromUnit, glassThickness, rescaleTankA, spawnSnail, toUnit, volume, waterY,
 } from '../scene/physics';
 import type { Store } from '../scene/store';
+import { SWAMP_LEVEL, groundHeight } from '../scene/terrain';
+import { setWaterLevel } from '../scene/water';
 import type { Fish, LayoutId, Scene, Tank } from '../scene/types';
 import { GLASS_CHOICES, LIMITS, SceneError, nextFishId, parseScene } from '../scene/validate';
 
@@ -107,6 +109,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $<HTMLSelectElement>('standFinish').innerHTML = Object.entries(STAND_FINISHES).map(([k, f]) => `<option value="${k}">${esc(f.label)}</option>`).join('');
   $('standOn').onchange = e => store.update(s => { s.stand.show = (e.target as HTMLInputElement).checked; });
   $<HTMLSelectElement>('standFinish').onchange = e => store.update(s => { s.stand.finish = (e.target as HTMLSelectElement).value as Scene['stand']['finish']; s.stand.show = true; });
+  $<HTMLSelectElement>('standStyle').onchange = e => store.update(s => { s.stand.style = (e.target as HTMLSelectElement).value as Scene['stand']['style']; s.stand.show = true; });
   $('standH').min = String(LIMITS.stand[0]); $('standH').max = String(LIMITS.stand[1]);
   $('standH').oninput = e => store.update(s => { s.stand.height = +(e.target as HTMLInputElement).value; s.stand.show = true; }, { coalesce: 'standH' });
   $('wallOn').onchange = e => store.update(s => { s.wall.show = (e.target as HTMLInputElement).checked; });
@@ -152,7 +155,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   /** A snail at a random spot on the substrate or the inside of a pane (area-weighted). */
   const snailAt = (s: Scene, sp: Species, id: number): Fish => {
     const sz = newTL(sp);
-    return { id, species: sp.id, ...spawnSnail(s.substrate, s.tankA, sz.tl ?? sp.tl, Math.random), pitch: 0, roll: 0, bend: 0, ...sz };
+    return { id, species: sp.id, ...spawnSnail((x, d) => groundHeight(s, s.tankA, x, d), s.tankA, sz.tl ?? sp.tl, Math.random, waterY(s.tankA, s.water.level)), pitch: 0, roll: 0, bend: 0, ...sz };
   };
   function addOne(sp: Species) {
     let id = 0;
@@ -160,7 +163,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
       const A = s.tankA, same = s.fish.filter(f => f.species === sp.id).length;
       if (sp.kind === 'snail') { s.fish.push(snailAt(s, sp, id = nextFishId(s))); return; }
       const sz = newTL(sp), tl = sz.tl ?? sp.tl;
-      const f: Fish = { id: id = nextFishId(s), species: sp.id, x: A.L / 2 + ((same % 5) - 2) * tl * 0.6, y: A.H / 2, depth: sp.zone === 'bottom' ? A.D * 0.3 : A.D / 2, yaw: 0, pitch: 0, roll: 0, bend: 0, ...sz };
+      const f: Fish = { id: id = nextFishId(s), species: sp.id, x: A.L / 2 + ((same % 5) - 2) * tl * 0.6, y: waterY(A, s.water.level) / 2, depth: sp.zone === 'bottom' ? A.D * 0.3 : A.D / 2, yaw: 0, pitch: 0, roll: 0, bend: 0, ...sz };
       clampFish(f, A); s.fish.push(f);
     });
     store.select(id);
@@ -171,7 +174,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     const n = clamp(Math.round(+$('schoolN').value || 12), 2, 60);
     let last = 0;
     store.update(s => {
-      const A = s.tankA, sz = newTL(sp), tl = sz.tl ?? sp.tl, r = Math.random, cx = A.L * (0.3 + r() * 0.4), cy = A.H * (0.4 + r() * 0.3), dir = r() < 0.5 ? 0 : 180;
+      const A = s.tankA, sz = newTL(sp), tl = sz.tl ?? sp.tl, r = Math.random, cx = A.L * (0.3 + r() * 0.4), cy = waterY(A, s.water.level) * (0.4 + r() * 0.3), dir = r() < 0.5 ? 0 : 180;
       for (let i = 0; i < n && s.fish.length < LIMITS.maxFish; i++) {
         if (sp.kind === 'snail') { s.fish.push(snailAt(s, sp, last = nextFishId(s))); continue; }
         const f: Fish = {
@@ -254,6 +257,18 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('subLR').onclick = () => subSet(1, 3, 1, 3);
   $('subCorner').onclick = () => subSet(1, 1, 4, 1);
 
+  // ---------- Water ----------
+  $('wLevel').oninput = e => store.update(s => setWaterLevel(s, +(e.target as HTMLInputElement).value), { coalesce: 'wLevel' });
+  $('wOpac').oninput = e => store.update(s => { s.water.opacity = +(e.target as HTMLInputElement).value; }, { coalesce: 'wOpac' });
+  $('wColor').oninput = e => store.update(s => {
+    s.water.color = (e.target as HTMLInputElement).value;
+    if (s.water.opacity < 0.05) s.water.opacity = 0.3; // picking a colour on clear water should show it
+  }, { coalesce: 'wColor' });
+  const waterPreset = (color: string, opacity: number) => store.update(s => { Object.assign(s.water, { color, opacity }); });
+  $('wClear').onclick = () => waterPreset('#7fb8a8', 0);
+  $('wTannin').onclick = () => waterPreset('#6b3d14', 0.6);
+  $('wGreen').onclick = () => waterPreset('#5d8a2e', 0.5);
+
   // ---------- Lighting ----------
   const lKeys = { lCount: 'count', lBright: 'bright', lK: 'kelvin', lRoom: 'room' } as const;
   for (const [id, k] of Object.entries(lKeys)) $(id).oninput = e => store.update(s => { s.light[k] = +(e.target as HTMLInputElement).value; }, { coalesce: id });
@@ -274,7 +289,10 @@ export function attachPanels(store: Store, viewer: Viewer) {
   applyMap();
   mapCb.onchange = () => { try { localStorage.setItem('tanklook.viewmap', mapCb.checked ? 'on' : 'off'); } catch { /* ignore */ } applyMap(); };
   $<HTMLSelectElement>('layout').innerHTML = Object.entries(LAYOUTS).map(([k, l]) => `<option value="${k}">${esc(l.label)}</option>`).join('');
-  $<HTMLSelectElement>('layout').onchange = e => store.update(s => { s.layout.id = (e.target as HTMLSelectElement).value as LayoutId; });
+  $<HTMLSelectElement>('layout').onchange = e => store.update(s => {
+    s.layout.id = (e.target as HTMLSelectElement).value as LayoutId;
+    if (s.layout.id === 'swamp' && s.water.level > SWAMP_LEVEL) setWaterLevel(s, SWAMP_LEVEL); // land needs to stand out of the water
+  });
   $('layoutShuffle').onclick = () => store.update(s => { s.layout.seed = 1 + Math.floor(Math.random() * 1e6); });
   document.querySelectorAll<HTMLButtonElement>('[data-png]').forEach(b => b.onclick = async () => {
     const mult = +b.dataset.png!;
@@ -306,7 +324,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     const t = glassThickness(A, s.render.glass);
     $('glassHint').textContent = (s.render.glass === 'auto' ? 'Auto: ' : 'Glass: ') + t + ' mm (' + fmtLen(t, u, 2) + ')';
 
-    $('standOn').checked = s.stand.show; setVal('standFinish', s.stand.finish); setVal('standH', s.stand.height);
+    $('standOn').checked = s.stand.show; setVal('standFinish', s.stand.finish); setVal('standStyle', s.stand.style); setVal('standH', s.stand.height);
     setOut('oStandH', fmt(s.stand.height));
     $('wallOn').checked = s.wall.show; setVal('wallColor', s.wall.color);
     for (const [id, side] of [['wallBack', 'back'], ['wallPen', 'peninsula']] as const)
@@ -334,7 +352,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     const f = sel();
     $('selBox').classList.toggle('off', !f);
     for (const id of ['fX', 'fY', 'fZ']) $(id).min = '0';
-    $('fX').max = String(A.L); $('fY').max = String(A.H); $('fZ').max = String(A.D);
+    $('fX').max = String(A.L); $('fY').max = String(waterY(A, s.water.level)); $('fZ').max = String(A.D);
     const fsp = f && getSpecies(f.species);
     $('fY').disabled = !!fsp && restsOnFloor(fsp, f!.surface);
     if (f) {
@@ -348,6 +366,10 @@ export function attachPanels(store: Store, viewer: Viewer) {
     const sub = s.substrate, smax = Math.round(A.H * 0.5);
     $('subOn').checked = sub.show; setVal('subType', sub.type);
     for (const [id, k] of Object.entries(SUBK)) { $(id).max = String(smax); setVal(id, sub[k]); setOut('o' + id[0].toUpperCase() + id.slice(1), fmt(sub[k])); }
+
+    const wa = s.water;
+    setVal('wLevel', wa.level); setOut('oLevel', wa.level >= 1 ? 'Full' : `${fmt(waterY(A, wa.level))} high`);
+    setVal('wOpac', wa.opacity); setOut('oOpac', wa.opacity < 0.01 ? 'Clear' : Math.round(wa.opacity * 100) + '%'); setVal('wColor', wa.color);
 
     const l = s.light; setVal('lType', l.type);
     for (const [id, k] of Object.entries(lKeys)) setVal(id, l[k]);

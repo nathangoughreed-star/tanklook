@@ -18,8 +18,9 @@ export function defaultScene(): Scene {
     light: { type: 'flat', count: 2, bright: 1, kelvin: 6500, room: 0.15 },
     substrate: { show: true, type: 'gravel', fl: 1 * IN, fr: 1 * IN, bl: 3 * IN, br: 3 * IN },
     layout: { id: 'planted', seed: 1 },
+    water: { level: 1, color: '#7fb8a8', opacity: 0 },
     lid: 'open',
-    stand: { show: false, height: 30 * IN, finish: 'black' },
+    stand: { show: false, height: 30 * IN, finish: 'black', style: 'cabinet' },
     wall: { show: false, side: 'back', color: '#d8d2c6' },
     person: { show: false, height: 1750, side: 'left' },
     fish: [

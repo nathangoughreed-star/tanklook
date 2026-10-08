@@ -3,6 +3,9 @@ import { SPECIES, getSpecies, searchSpecies } from '../src/data/species';
 import { defaultScene } from '../src/scene/defaults';
 import { Store } from '../src/scene/store';
 import { SCENE_VERSION } from '../src/scene/types';
+import { setWaterLevel } from '../src/scene/water';
+import { SWAMP_LEVEL, groundHeight } from '../src/scene/terrain';
+import { WATERLINE_GAP, spawnSnail, substrateHeight, waterK, waterY } from '../src/scene/physics';
 import { SceneError, parseScene } from '../src/scene/validate';
 
 describe('parseScene', () => {
@@ -51,7 +54,7 @@ describe('stand and wall settings', () => {
     expect(scene.stand.show).toBe(false); expect(scene.wall.show).toBe(false);
     const bad = { ...defaultScene(), stand: { show: true, height: 5, finish: 'gold' }, wall: { show: true, side: 'ceiling', color: 'red' } };
     const r = parseScene(bad).scene;
-    expect(r.stand).toEqual({ show: true, height: 12 * 25.4, finish: 'black' });
+    expect(r.stand).toEqual({ show: true, height: 12 * 25.4, finish: 'black', style: 'cabinet' });
     expect(r.wall).toEqual({ show: true, side: 'back', color: '#d8d2c6' });
   });
   it('lid defaults to open for older files and keeps valid choices', () => {
@@ -178,5 +181,91 @@ describe('custom fish sizes', () => {
 describe('wall side', () => {
   it('loads the old left/right end walls as a peninsula', () => {
     for (const side of ['left', 'right']) expect(parseScene({ ...defaultScene(), wall: { show: true, side, color: '#d8d2c6' } }).scene.wall.side).toBe('peninsula');
+  });
+});
+
+describe('water (scene v5)', () => {
+  it('migrates a v4 file to a full tank of clear water', () => {
+    const v4 = { ...defaultScene(), version: 4 } as Record<string, unknown>;
+    delete v4.water;
+    const { scene } = parseScene(v4);
+    expect(scene.version).toBe(5);
+    expect(scene.water).toEqual(defaultScene().water);
+    expect(scene.water.level).toBe(1);
+    expect(scene.water.opacity).toBe(0);
+  });
+  it('clamps water settings on load', () => {
+    const s = defaultScene() as unknown as Record<string, any>;
+    s.water = { level: -3, color: 'red', opacity: 7 };
+    const { scene } = parseScene(s);
+    expect(scene.water).toEqual({ level: 0.1, color: defaultScene().water.color, opacity: 0.95 });
+  });
+  it('keeps swimmers below the surface when the level drops, and leaves bottom dwellers alone', () => {
+    const st = new Store(defaultScene());
+    st.update(s => { s.fish.push({ id: 99, species: 'bronzecory', x: 100, y: 250, depth: 50, yaw: 0, pitch: 0, roll: 0, bend: 0 }); });
+    st.update(s => { s.water.level = 0.4; });
+    const top = waterY(st.scene.tankA, 0.4);
+    for (const f of st.scene.fish) {
+      const sp = getSpecies(f.species)!;
+      if (sp.zone === 'bottom') { expect(f.y).toBe(250); continue; }
+      expect(f.y + sp.tl * sp.aspect / 2).toBeLessThanOrEqual(top + 1e-9);
+    }
+  });
+  it('lowering the level moves swimmers with it (proportionally), so schools keep their shape', () => {
+    const s = defaultScene(), ys = s.fish.map(f => f.y), k = waterY(s.tankA, 0.5) / waterY(s.tankA, 1);
+    setWaterLevel(s, 0.5);
+    s.fish.forEach((f, i) => expect(f.y).toBeCloseTo(ys[i] * k));
+  });
+  it('clamps a fish dragged above the water line', () => {
+    const st = new Store(defaultScene()), id = st.scene.fish[0].id;
+    st.update(s => { s.water.level = 0.5; s.fish[0].y = s.tankA.H; });
+    const f = st.scene.fish.find(f => f.id === id)!, sp = getSpecies(f.species)!;
+    expect(f.y).toBeCloseTo(waterY(st.scene.tankA, 0.5) - sp.tl * sp.aspect / 2);
+  });
+  it('full = the water line WATERLINE_GAP below the interior top; tint 0 = clear', () => {
+    const T = { L: 600, H: 300, D: 300 };
+    expect(waterY(T, 1)).toBe(300 - WATERLINE_GAP);
+    expect(waterK(0)).toBeCloseTo(0);
+    expect(1 - Math.exp(-waterK(0.5) * 300)).toBeCloseTo(0.5);
+  });
+  it('glass snails spawn below a lowered water line', () => {
+    const sub = defaultScene().substrate, T = { L: 600, H: 300, D: 300 }, top = 150;
+    let seed = 7; const r = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    for (let i = 0; i < 2000; i++) { const p = spawnSnail((x, d) => substrateHeight(sub, T, x, d), T, 20, r, top); if (p.surface !== 'floor') expect(p.y).toBeLessThanOrEqual(top - 10 + 1e-9); }
+  });
+});
+
+describe('swamp terrain', () => {
+  const swampScene = (seed: number) => {
+    const s = defaultScene(); s.layout = { id: 'swamp', seed }; setWaterLevel(s, SWAMP_LEVEL); return s;
+  };
+  it('has land above the water and a pool open to the front glass, for many seeds', () => {
+    for (let seed = 1; seed <= 50; seed++) {
+      const s = swampScene(seed), A = s.tankA, top = waterY(A, s.water.level);
+      let land = 0, frontWet = 0;
+      for (let i = 0; i <= 20; i++) for (let j = 0; j <= 20; j++) if (groundHeight(s, A, A.L * i / 20, A.D * j / 20) > top) land++;
+      for (let i = 0; i <= 20; i++) if (groundHeight(s, A, A.L * i / 20, 2) < top - 40) frontWet++;
+      expect(land).toBeGreaterThan(441 * 0.25);
+      expect(frontWet).toBeGreaterThan(2);
+    }
+  });
+  it('moves swimmers and bottom dwellers off the land into the water, with room for their card', () => {
+    for (let seed = 1; seed <= 20; seed++) {
+      const st = new Store(swampScene(seed));
+      st.update(s => {
+        for (let i = 0; i < 30; i++) s.fish.push({ id: 100 + i, species: i % 3 ? 'neon' : 'bronzecory', x: s.tankA.L * (i / 30), y: s.tankA.H * 0.9, depth: s.tankA.D * 0.9, yaw: 0, pitch: 0, roll: 0, bend: 0 });
+      });
+      const s = st.scene, A = s.tankA, top = waterY(A, s.water.level);
+      for (const f of s.fish) {
+        const sp = getSpecies(f.species)!, h = sp.tl * sp.aspect, g = groundHeight(s, A, f.x, f.depth);
+        if (f.species === 'angel') { expect(g).toBeLessThan(top); continue; } // taller than the deepest pool: sits in the deepest water
+        expect(g + h).toBeLessThanOrEqual(top + 1e-6);
+        if (sp.zone !== 'bottom') { expect(f.y - h / 2).toBeGreaterThanOrEqual(g - 1e-6); expect(f.y + h / 2).toBeLessThanOrEqual(top + 1e-6); }
+      }
+    }
+  });
+  it('the ground is the substrate everywhere outside the swamp layout', () => {
+    const s = defaultScene(), A = s.tankA;
+    expect(groundHeight(s, A, 100, 100)).toBe(substrateHeight(s.substrate, A, 100, 100));
   });
 });

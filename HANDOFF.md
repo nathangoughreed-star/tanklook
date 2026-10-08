@@ -18,6 +18,40 @@ Verification method for looks: dev page + `window.__gb = {store, viewer}`; `view
 throwaway local python sink (port 4199) writing `shots/` (gitignored); pictures sent to Nathan with SendUserFile.
 Note: another chat's dev server may already hold port 5173 (same folder, HMR works): open http://localhost:5173.
 
+## Water level + colour + swamp + frame stand: built and deployed (session 3, 2026-10-08)
+
+- **Scene v5** `water { level, color, opacity }`. Deviation from the proposal below: `level` is a **fraction of full**
+  (0.1-1; 1 = `WATERLINE_GAP` below the top), not mm, so Tank B and a resized tank keep the same fill (fish map by
+  fraction too). `waterY(T, level)` in physics.ts. v4 files load full / clear.
+- **Tint** (lighting.ts `aqWaterPath`): every lit material blends toward the lit water colour by
+  `1 - exp(-k * path)`, path = length of the eye-to-point sightline inside the water box (slab test), so it works for
+  fish, plants, substrate, the background and the room seen through the tank; nothing above the water is tinted.
+  `opacity` = share of the colour after 300 mm (`waterK`): physical, so a deeper tank looks more tinted.
+- Surface: a faint transparent plane at the level + a meniscus line round the glass (edge-on straight on).
+- **Fish in the water**: `scene/water.ts`. `keepInWater` runs after every 'scene' store update and on load (swimmers:
+  centre <= surface - half card height; glass snails below the line; bottom dwellers / floor snails untouched).
+  The level slider uses `setWaterLevel`, which scales swimmers' heights with the water so schools keep their shape.
+  Render also clamps per tank (Tank B). New fish / schools spawn relative to the water; snail spawn takes the line.
+- UI: Water section (Level, Tint, colour picker, quick picks Clear / Blackwater #6b3d14 60 % / Green #5d8a2e 50 %;
+  picking a colour on clear water sets tint 30 %). Tests 52/52.
+- Pictures: `shots/12_water_full_clear` .. `17_blackwater_low_orbit`.
+- **Swamp (Nathan 2026-10-08: no preference between layout and terrain setting -> built as the recommended layout
+  preset; snails may sit on land too).** `scene/terrain.ts`: `groundHeight(S, T, x, d)` = substrate, or swamp land
+  where higher; it replaced `substrateHeight(S.substrate, ...)` everywhere in the renderer. Land ~62 % of H (gentle
+  waves, a bit lower at the front), 1-2 elliptical pools with smooth banks; pool 1 always opens onto the front glass.
+  Fractions of L/D/H, so Tank B matches. Land is fixed (physical): raising the water floods it. Choosing the layout
+  drops the water to 42 % if it is higher. Substrate mesh 72x72 for swamp; front/end faces follow the ground; emerged
+  ground tinted soil/moss by vertex colour. Plants: grass, fern, anubias, sword, mud stones on land; stems and grass
+  growing out of the pools. Substrate "Show" off still draws swamp land.
+- `fitFish` (water.ts) now also keeps swimmers above the ground, and moves any fish over land (or bottom dweller on
+  emerged ground) to the nearest spot with enough water for its card (`nearestWater`, 41x41 grid); a fish taller than
+  the deepest pool goes to the deepest spot (it then pokes into the bank; seen with an angel in a 16" swamp).
+- Pictures: `shots/18_swamp_straight`, `19_swamp_orbit`, `20_swamp_top`.
+- **Open metal frame stand (Nathan 2026-10-08)**: `stand.style: cabinet | frame` (scene v5, default cabinet). Frame =
+  38 mm square tube legs, top and bottom rails, levelling feet, extra legs every ~90 cm on long tanks; the finish
+  colour applies. Picture `shots/21_frame_stand`.
+- Tests 55/55. Deployed 2026-10-08 (session 3).
+
 ## Next work unit: water level + water colour (requested by Nathan 2026-10-08)
 
 Nathan: "Water level, as well as water color. Be able to create swampy tanks with land rising above the water level

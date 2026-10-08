@@ -59,7 +59,7 @@
   <div class="hint" id="glassHint"></div>
 
   <h2>Room</h2>
-  <div class="field"><label class="flabel"><input type="checkbox" id="standOn"> Stand</label><select id="standFinish" aria-label="Stand finish"></select></div>
+  <div class="field"><label class="flabel"><input type="checkbox" id="standOn"> Stand</label><select id="standStyle" aria-label="Stand type"><option value="cabinet">Cabinet</option><option value="frame">Open metal frame</option></select><select id="standFinish" aria-label="Stand finish"></select></div>
   <div class="row"><label for="standH">Stand height</label><input id="standH" type="range" step="5"><output id="oStandH"></output></div>
   <div class="field"><label class="flabel"><input type="checkbox" id="wallOn"> Wall</label>
     <span class="seg"><button id="wallBack">Behind</button><button id="wallPen">Peninsula</button></span>
@@ -103,6 +103,13 @@
   <div class="row"><label for="subFL">Front left</label><input id="subFL" type="range" step="1" min="0"><output id="oSubFL"></output></div>
   <div class="row"><label for="subFR">Front right</label><input id="subFR" type="range" step="1" min="0"><output id="oSubFR"></output></div>
   <div class="btns"><button id="subLevel">Level</button><button id="subFB">Slope to back</button><button id="subLR">Slope to right</button><button id="subCorner">Back-left high</button></div>
+
+  <h2>Water</h2>
+  <div class="row"><label for="wLevel">Level</label><input id="wLevel" type="range" min="0.1" max="1" step="0.01"><output id="oLevel"></output></div>
+  <div class="row"><label for="wOpac">Tint</label><input id="wOpac" type="range" min="0" max="0.95" step="0.01"><output id="oOpac"></output></div>
+  <div class="field"><input id="wColor" type="color" aria-label="Water colour" title="Water colour">
+    <div class="btns"><button id="wClear">Clear</button><button id="wTannin">Blackwater</button><button id="wGreen">Green</button></div></div>
+  <div class="hint">Tint is how much of the colour shows through 30 cm (12″) of water, so a deeper tank looks more tinted. Fish stay below the surface.</div>
 
   <h2>Aquascape</h2>
   <div class="field"><select id="layout" aria-label="Aquascape layout"></select><button id="layoutShuffle" title="Same style, new arrangement">Shuffle</button></div>

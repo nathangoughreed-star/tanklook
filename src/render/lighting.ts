@@ -7,7 +7,8 @@
 // with the room light off, the tank is the only light in the room (Nathan, 2026-10-08).
 import * as THREE from 'three';
 import { D2R, clamp } from '../scene/physics';
-import type { LightSettings, LightType, Tank } from '../scene/types';
+import type { LightSettings, LightType, Tank, WaterSettings } from '../scene/types';
+import { waterK, waterY } from '../scene/physics';
 
 export const AQ_MAX = 48, LAMP_Y = 50, REF = 320;
 export const CONES: Record<Exclude<LightType, 'flat'>, [number, number]> = {
@@ -64,7 +65,13 @@ export const LU = {
   uRef: { value: REF }, uLCol: { value: new THREE.Color(1, 1, 1) },
   uRoomK: { value: 1 }, uSpill: { value: new THREE.Color(1, 1, 1) }, uSpillR: { value: 500 },
   uTankMin: { value: new THREE.Vector3() }, uTankMax: { value: new THREE.Vector3() },
+  uWater: { value: new THREE.Vector4() }, uWCol: { value: new THREE.Color() },
 };
+/** Water box (L, surface y, D) and tint per mm; set per viewport like the light. */
+export function setWaterUniforms(T: Tank, w: WaterSettings) {
+  LU.uWater.value.set(T.L, waterY(T, w.level), T.D, waterK(w.opacity));
+  LU.uWCol.value.set(w.color);
+}
 export function setLightUniforms(T: Tank, l: LightSettings) {
   const on = l.type !== 'flat'; LU.uMode.value = on ? 1 : 0;
   LU.uRoomK.value = roomLevel(l.room); LU.uSpillR.value = spillReach(T);
@@ -84,12 +91,21 @@ export function setLightUniforms(T: Tank, l: LightSettings) {
 const AQ_VERT = 'varying vec3 vAqP; varying vec3 vAqN;';
 const AQ_FRAG = `
 uniform vec4 uEm[${AQ_MAX}]; uniform int uEmN; uniform float uMode, uAmb, uBright, uNorm, uConeIn, uConeOut, uRef, uCard, uSub; uniform vec3 uLCol;
-uniform float uRoomMat, uRoomK, uSpillR; uniform vec3 uSpill, uTankMin, uTankMax;
+uniform float uRoomMat, uRoomK, uSpillR; uniform vec3 uSpill, uTankMin, uTankMax; uniform vec4 uWater; uniform vec3 uWCol;
 varying vec3 vAqP; varying vec3 vAqN;
 float aqHash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float aqNoise(vec2 p) {
   vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
   return mix(mix(aqHash(i), aqHash(i + vec2(1, 0)), f.x), mix(aqHash(i + vec2(0, 1)), aqHash(i + vec2(1, 1)), f.x), f.y);
+}
+// length (mm) of the eye-to-point sightline that runs through the water box (slab test, clipped to the segment)
+float aqWaterPath() {
+  vec3 o = cameraPosition, dv = vAqP - o;
+  dv = mix(dv, vec3(1e-3), step(abs(dv), vec3(1e-3)));
+  vec3 t0 = (vec3(0.0, 0.0, -uWater.z) - o) / dv, t1 = (vec3(uWater.x, uWater.y, 0.0) - o) / dv;
+  vec3 tn = min(t0, t1), tf = max(t0, t1);
+  float a = max(max(tn.x, tn.y), max(tn.z, 0.0)), b = min(min(tf.x, tf.y), min(tf.z, 1.0));
+  return max(b - a, 0.0) * length(vAqP - o);
 }
 vec3 aqLight() {
   if (uRoomMat > 0.5) {  // room surface: room light + light leaving the tank (nearest point of the tank box)
@@ -128,9 +144,12 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
   shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\n' + AQ_VERT)
     .replace('#include <begin_vertex>', '#include <begin_vertex>\nvAqP = (modelMatrix * vec4(transformed, 1.0)).xyz; vAqN = normalize(mat3(modelMatrix) * normal);');
   shader.fragmentShader = shader.fragmentShader.replace('#include <common>', '#include <common>\n' + AQ_FRAG)
-    .replace('#include <opaque_fragment>', 'outgoingLight *= aqLight();\n' +
+    .replace('#include <opaque_fragment>', 'vec3 aqLt = aqLight(); outgoingLight *= aqLt;\n' +
       'if (uCard > 0.5) { float aqL = dot(outgoingLight, vec3(0.2126, 0.7152, 0.0722)); outgoingLight = max(mix(vec3(aqL), outgoingLight, 1.35), 0.0); }\n' +
-      'float aqM = max(max(outgoingLight.r, outgoingLight.g), outgoingLight.b); if (aqM > 1.0) outgoingLight /= aqM;\n#include <opaque_fragment>')
+      'float aqM = max(max(outgoingLight.r, outgoingLight.g), outgoingLight.b); if (aqM > 1.0) outgoingLight /= aqM;\n' +
+      // water colour: blend toward the lit water colour by how much water the sightline crosses
+      'if (uWater.w > 0.0) { float aqF = 1.0 - exp(-uWater.w * aqWaterPath()); outgoingLight = mix(outgoingLight, uWCol * min(dot(aqLt, vec3(0.2126, 0.7152, 0.0722)), 1.0), aqF); }\n' +
+      '#include <opaque_fragment>')
     .replace('#include <map_fragment>', AQ_MAP);
 }
 // one cache key per material kind keeps one compiled program per kind
