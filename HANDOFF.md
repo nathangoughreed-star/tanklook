@@ -121,7 +121,33 @@ Progress (session 4, 2026-10-08):
 - **Peninsula end is the user's choice again (Nathan 2026-10-08, reversing session 3):** `wall.side` = back | left |
   right; Room buttons Behind / Left end / Right end. Session-3 files with 'peninsula' load as 'right'. Background plane,
   grid lines, person placement, wall and view map all follow the chosen end. Picture `shots/29_peninsula_left`. Tests 69/69.
+- **Orbit framing (Nathan 2026-10-08: "tank and person should be centred"):** the lens SIZE still comes from the
+  straight-on view (unchanged decision), but the image window is re-centred at every orbit angle on tank + stand +
+  person (`frameBox` at the current camera). Zoom no longer pulls toward a point between tank and person: `windowCentre`
+  (camera.ts) keeps the bounds centre but moves just enough to keep the tank itself whole while it fits, so zooming crops
+  the room first. Picture `shots/35_framing_sheet` (straight-on 1.5x, 54 deg right, 50 deg left + 20 up, 54 deg at 1x).
 - Next: revise art per Nathan, then sizes review, then climbing.
+
+## NEXT WORK UNIT: split tanks (Nathan 2026-10-08) - build in a fresh session
+
+Nathan: "the comparison is strongest when you can compare literally any variable. Let the user split their current tank
+and then edit them separately by selecting either viewport, which changes which is being edited on the left." And:
+"have a tab at the top of each viewport that the user can choose to exit that tank from."
+Today Tank B is only a size (`tankB`); it mirrors Tank A's contents at the same relative positions.
+Design so far:
+- **Split** copies the current tank into a second, independent tank. Clicking a viewport makes it the active one (clear
+  highlight); the whole left panel edits the active tank. Fish drags act on the tank they are in.
+- **Each viewport gets a tab at the top** (its name / size, e.g. "A · 36x16x18") with an x to close that tank; closing one
+  leaves the other as the single tank. (Answers the "which tank stays" question.)
+- **Per tank vs shared: NOT confirmed** (Nathan dismissed the question). Recommended: per tank = size, style/rim, lid,
+  glass, background, light fixture, stand, substrate, terrain, layout, water, animals; shared = camera / viewpoint (one
+  eye distance and angle so sizes compare), units, room wall, scale person, room light. Confirm first, with pictures.
+- Data: scene v7 `tanks: [TankSetup, TankSetup?]` + `active`; migrate v6 (tankA + global contents; tankB + compare ->
+  a second setup copied from A at tankB's size, fish mapped by fraction as today). Everything that reads `S.tankA` /
+  global contents (panels, physics helpers, water.ts, terrain.ts, weight.ts, build.ts, pointer.ts, validate.ts, tests)
+  takes a tank setup instead. Undo stays one stack over the whole scene.
+- Open: does the old "same setup, different size" mirror mode survive (e.g. a "linked" toggle)? Recommended: no; split
+  is a copy, and editing one leaves the other alone.
 - Lesson (session 4): editing index.html makes Vite do a full page reload, which drops the undo stack. Before
   test edits in Nathan's dev scene, copy `localStorage['tanklook.scene']` to a file (not a page variable) and
   restore it from there afterwards.

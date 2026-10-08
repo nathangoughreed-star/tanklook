@@ -25,8 +25,8 @@ export function frameBox(cam: THREE.PerspectiveCamera, T: Tank, aspect: number, 
     v.copy(p).applyMatrix4(inv); const d = -v.z; if (d <= 1) continue;
     x0 = Math.min(x0, v.x / d); x1 = Math.max(x1, v.x / d); y0 = Math.min(y0, v.y / d); y1 = Math.max(y1, v.y / d);
   }
-  if (!Number.isFinite(x0)) return { t: 1, cx: 0, cy: 0 };
-  return { t: Math.max((y1 - y0) / 2, (x1 - x0) / 2 / aspect), cx: (x0 + x1) / 2, cy: (y0 + y1) / 2 };
+  if (!Number.isFinite(x0)) return { t: 1, cx: 0, cy: 0, x0: -1, x1: 1, y0: -1, y1: 1 };
+  return { t: Math.max((y1 - y0) / 2, (x1 - x0) / 2 / aspect), cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, x0, x1, y0, y1 };
 }
 export const neededTan = (...a: Parameters<typeof frameBox>) => frameBox(...a).t;
 
@@ -50,6 +50,16 @@ export function applyFraming(cam: THREE.PerspectiveCamera, fov: number, w: numbe
   const tanHalf = Math.tan(fov * D2R / 2);
   cam.setViewOffset(w, h, (cx / (tanHalf * cam.aspect)) * w / 2, (-cy / tanHalf) * h / 2, w, h);
   cam.updateProjectionMatrix();
+}
+
+/**
+ * Image-window centre (tan units) for a lens of half-size (hx, hy): the centre of `all` (tank + stand + person), moved
+ * just enough to keep `tank` (the tank and its fixture headroom) wholly in frame; if the tank itself is bigger than the window, its centre.
+ * So zooming in crops the room first and the tank last.
+ */
+export function windowCentre(all: { cx: number; cy: number }, tank: { x0: number; x1: number; y0: number; y1: number }, hx: number, hy: number) {
+  const keep = (c: number, a: number, b: number, h: number) => (b - a >= 2 * h ? (a + b) / 2 : Math.min(Math.max(c, b - h), a + h));
+  return { cx: keep(all.cx, tank.x0, tank.x1, hx), cy: keep(all.cy, tank.y0, tank.y1, hy) };
 }
 
 /** One FOV for all viewports, so pixel sizes are directly comparable between tanks. */

@@ -6,7 +6,7 @@ import type { Store } from '../scene/store';
 import type { Fish, Tank } from '../scene/types';
 import { HOOD_H, buildTank, disposeScene, personSpot, type BuiltTank } from './build';
 import { drawViewMap } from './viewmap';
-import { applyFraming, fovFor, frameStraightOn, placeCamera } from './camera';
+import { applyFraming, fovFor, frameBox, frameStraightOn, placeCamera, windowCentre } from './camera';
 import { roomLevel, setLightUniforms, setWaterUniforms } from './lighting';
 import { setMaxAnisotropy } from './textures';
 
@@ -98,10 +98,14 @@ export class Viewer {
     r.setScissorTest(true);
     r.setViewport(0, 0, w, h); r.setScissor(0, 0, w, h);
     r.setClearColor(new THREE.Color(getComputedStyle(this.host).getPropertyValue('--stage-gap').trim() || '#eef0f3')); r.clear();
-    for (const [i, vp] of active.entries()) {
-      // at zoom 1 the whole bounds (tank + stand) are centred; zooming in closes on the tank centre (the view axis)
-      const k = 1 / Math.max(1, S.camera.zoom);
-      applyFraming(vp.cam, fov, vp.w, vp.h, boxes[i].cx * k, boxes[i].cy * k);
+    for (const vp of active) {
+      // the lens SIZE comes from the straight-on view (above), but the image window is re-centred at every orbit angle
+      // (Nathan 2026-10-08) on tank + stand + person; zooming in crops the room first and keeps the tank itself whole
+      // while it fits (windowCentre)
+      const hy = Math.tan(fov * D2R / 2), hx = hy * vp.w / vp.h;
+      const tank = frameBox(vp.cam, vp.T, vp.w / vp.h, headroom), all = frameBox(vp.cam, vp.T, vp.w / vp.h, headroom, bottom(vp.T), extra(vp));
+      const c = windowCentre(all, tank, hx, hy);
+      applyFraming(vp.cam, fov, vp.w, vp.h, c.cx, c.cy);
       r.setViewport(vp.x, vp.y, vp.w, vp.h); r.setScissor(vp.x, vp.y, vp.w, vp.h);
       r.setClearColor(new THREE.Color(0xd9dde2).multiplyScalar(0.06 + 0.94 * roomLevel(S.light.room))); r.clear(); // the space beyond the room dims with the room light
       setLightUniforms(vp.T, S.light); setWaterUniforms(vp.T, S.water);
