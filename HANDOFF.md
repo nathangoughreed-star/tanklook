@@ -139,10 +139,14 @@ Design so far:
   highlight); the whole left panel edits the active tank. Fish drags act on the tank they are in.
 - **Each viewport gets a tab at the top** (its name / size, e.g. "A · 36x16x18") with an x to close that tank; closing one
   leaves the other as the single tank. (Answers the "which tank stays" question.)
-- **Per tank vs shared: NOT confirmed** (Nathan dismissed the question). Recommended: per tank = size, style/rim, lid,
-  glass, background, light fixture, stand, substrate, terrain, layout, water, animals; shared = camera / viewpoint (one
-  eye distance and angle so sizes compare), units, room wall, scale person, room light. Confirm first, with pictures.
-- Data: scene v7 `tanks: [TankSetup, TankSetup?]` + `active`; migrate v6 (tankA + global contents; tankB + compare ->
+- **Fully independent tanks (Nathan 2026-10-08):** "two totally independent tanks; let the user change whatever they want
+  between them." Every setting is per tank: size, hardware, stand, room (wall, person, room light), contents AND the
+  camera. Only app preferences stay global (units, quality / edge mode).
+- **Camera lock toggle (Nathan 2026-10-08):** orbit + zoom are linked between the two views today ("cool") but must be
+  switchable: an on/off lock button overlaid on the divider between the two views (padlock style; default locked).
+  Locked: dragging / zooming either view moves both (same az, el, dist, zoom). Unlocked: each view has its own camera.
+  Keep the one-FOV rule while locked so sizes stay directly comparable; when unlocked each view frames itself.
+- Data: scene v7 `tanks: [TankSetup, TankSetup?]` + `active` + `camLock`, each setup holding its own camera; migrate v6 (tankA + global contents; tankB + compare ->
   a second setup copied from A at tankB's size, fish mapped by fraction as today). Everything that reads `S.tankA` /
   global contents (panels, physics helpers, water.ts, terrain.ts, weight.ts, build.ts, pointer.ts, validate.ts, tests)
   takes a tank setup instead. Undo stays one stack over the whole scene.
