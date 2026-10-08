@@ -146,6 +146,8 @@ Design so far:
   switchable: an on/off lock button overlaid on the divider between the two views (padlock style; default locked).
   Locked: dragging / zooming either view moves both (same az, el, dist, zoom). Unlocked: each view has its own camera.
   Keep the one-FOV rule while locked so sizes stay directly comparable; when unlocked each view frames itself.
+  Re-locking after the views were moved apart snaps the second tank's camera (orbit angle, eye distance, zoom) to the
+  ORIGINAL tank's (the one that existed before the split, `tanks[0]`), not to whichever view is active (Nathan 2026-10-08).
 - Data: scene v7 `tanks: [TankSetup, TankSetup?]` + `active` + `camLock`, each setup holding its own camera; migrate v6 (tankA + global contents; tankB + compare ->
   a second setup copied from A at tankB's size, fish mapped by fraction as today). Everything that reads `S.tankA` /
   global contents (panels, physics helpers, water.ts, terrain.ts, weight.ts, build.ts, pointer.ts, validate.ts, tests)
