@@ -499,7 +499,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   viewer.onDrawn(() => {
     const g = G(), active = viewer.active, split = active.length > 1;
     const diff = split ? tankDiff(g.tanks[0], g.tanks[1], g.units) : [];
-    const sig = JSON.stringify([diff, g.units, g.active, active.map(v => [v.x, v.w]), split || fmtDims(g.tanks[0].tank, g.units)]);
+    const sig = JSON.stringify([diff, g.units, g.active, g.camLock, active.map(v => [v.x, v.w]), split || fmtDims(g.tanks[0].tank, g.units)]);
     if (sig !== tabSig) {
       tabSig = sig;
       for (const [i, id] of [[0, 'labA'], [1, 'labB']] as const) {
@@ -519,7 +519,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
       if (split) {
         lock.style.left = (active[1].x - 4) + 'px';
         lock.classList.toggle('on', g.camLock);
-        lock.textContent = g.camLock ? '🔒' : '🔓';
+        lock.innerHTML = padlock(g.camLock); lock.setAttribute('aria-pressed', String(g.camLock));
+        lock.setAttribute('aria-label', g.camLock ? 'Cameras locked together' : 'Cameras unlocked');
         lock.title = g.camLock ? 'Views move together (one field of view). Click to move each view on its own.' : 'Views move separately. Click to lock them together again (Tank B snaps to Tank A’s view).';
       }
       // the active view gets a frame
@@ -570,6 +571,13 @@ export function attachPanels(store: Store, viewer: Viewer) {
   renderResults();
   sync();
   return { status };
+}
+
+/** Padlock icon: closed shackle (views move together) or swung open (each view on its own). */
+function padlock(locked: boolean) {
+  const shackle = locked ? 'M8 11V8a4 4 0 0 1 8 0v3' : 'M8 11V8a4 4 0 0 1 7.6-1.8';
+  return `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">` +
+    `<path d="${shackle}"/><rect x="5" y="11" width="14" height="10" rx="2" fill="currentColor" stroke="none"/></svg>`;
 }
 
 function slug(name: string) { return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'tank'; }

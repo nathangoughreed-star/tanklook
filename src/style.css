@@ -110,7 +110,9 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 #vpFrame { position: absolute; top: 0; bottom: 0; border: 2px solid var(--accent); pointer-events: none; box-sizing: border-box }
 #vpFrame[hidden], #camLock[hidden], .editing[hidden] { display: none }
 #camLock { position: absolute; top: 50%; transform: translate(-50%, -50%); z-index: 2; width: 30px; height: 30px; padding: 0; border-radius: 50%; border: 1px solid var(--line); background: var(--panel); font-size: 14px; line-height: 1; cursor: pointer; box-shadow: 0 1px 4px rgba(0, 0, 0, .3) }
-#camLock:not(.on) { opacity: .85 }
+#camLock { display: grid; place-items: center; color: var(--accent) }
+#camLock:not(.on) { color: var(--muted) }
+#camLock svg { display: block }
 .editing { margin: 6px 0; padding: 5px 8px; border-left: 3px solid var(--accent); font-size: 12px; color: var(--ink); background: color-mix(in srgb, var(--accent) 10%, transparent) }
 footer { margin-top: 18px }
 .nojs { padding: 20px }

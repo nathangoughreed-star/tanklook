@@ -161,7 +161,8 @@ As built (the design notes below still hold, with these specifics):
   id exists there (true right after a split).
 - UI: Compare section = "Split tank" button (Tank B size box removed; the Tank section sizes the active tank). Panel shows
   "Editing Tank A/B". Pressing (or wheeling) in a view activates it first; the active view gets an accent frame.
-  Padlock button on the divider (🔒 / 🔓). Locked = one shared FOV; unlocked = each view frames itself.
+  Padlock button on the divider (SVG, shackle swings open when unlocked; the tab refresh key includes `camLock`, which
+  it first forgot, so the icon lagged a toggle). Locked = one shared FOV; unlocked = each view frames itself.
 - **Viewport tabs (Nathan 2026-10-08):** `ui/diff.ts` `tankDiff(a, b, units)` lists only differing SETTINGS (a size
   change alone does not list auto glass or a full tank's depth); numbers for dimension-like values, "X A" / "X B" for
   details (Stocking, Water tint, Wall colour, Terrain, Arrangement, Substrate slope). Nothing different = no labels,
