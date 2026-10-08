@@ -1,6 +1,6 @@
 {
  "version": 2,
- "note": "Card width == typical adult total length (tl, mm) in aquaria; snails: crawling length. aspect = card height / width (computed from the art when omitted). art = a drawing key in src/art (placeholder.ts hand-drawn, fishgen.ts generated, snails.ts). zone 'bottom' rests on the substrate; kind 'snail' clings to the floor or a glass pane.",
+ "note": "Card width == typical adult total length (tl, mm) in aquaria; snails: crawling length. aspect = card height / width (computed from the art when omitted). art = a drawing key in src/art (placeholder.ts hand-drawn, fishgen.ts generated, snails.ts). zone 'bottom' rests on the substrate; kind 'snail' clings to the floor or a glass pane. habitat 'land' rests on ground above the water, 'both' on land or in water deep enough (default 'water'). Lengths are total length, nose to tail tip (Nathan 2026-10-08).",
  "species": [
   {"id": "neon", "name": "Neon tetra", "sci": "Paracheirodon innesi", "tl": 35, "art": "tetra", "aspect": 0.34},
   {"id": "cardinal", "name": "Cardinal tetra", "sci": "Paracheirodon axelrodi", "tl": 45, "art": "cardinal"},
@@ -38,6 +38,11 @@
   {"id": "nerite", "name": "Nerite snail (zebra)", "sci": "Neritina natalensis", "tl": 25, "kind": "snail", "art": "nerite"},
   {"id": "mystery", "name": "Mystery snail", "sci": "Pomacea diffusa", "tl": 55, "kind": "snail", "art": "mystery"},
   {"id": "ramshorn", "name": "Ramshorn snail", "sci": "Planorbella duryi", "tl": 20, "kind": "snail", "art": "ramshorn"},
-  {"id": "trumpet", "name": "Malaysian trumpet snail", "sci": "Melanoides tuberculata", "tl": 25, "kind": "snail", "art": "trumpet"}
+  {"id": "trumpet", "name": "Malaysian trumpet snail", "sci": "Melanoides tuberculata", "tl": 25, "kind": "snail", "art": "trumpet"},
+  {"id": "dartfrog", "name": "Dyeing dart frog", "sci": "Dendrobates tinctorius", "tl": 45, "habitat": "land", "art": "dartfrog", "aspect": 0.62},
+  {"id": "treefrog", "name": "White's tree frog", "sci": "Ranoidea caerulea", "tl": 100, "habitat": "land", "art": "treefrog", "aspect": 0.62},
+  {"id": "firetoad", "name": "Fire-bellied toad", "sci": "Bombina orientalis", "tl": 45, "habitat": "both", "art": "firetoad", "aspect": 0.55},
+  {"id": "firenewt", "name": "Chinese fire-bellied newt", "sci": "Cynops orientalis", "tl": 90, "habitat": "both", "art": "firenewt", "aspect": 0.2},
+  {"id": "axolotl", "name": "Axolotl", "sci": "Ambystoma mexicanum", "tl": 230, "zone": "bottom", "art": "axolotl", "aspect": 0.26}
  ]
 }

@@ -3,7 +3,8 @@
 import * as THREE from 'three';
 import { SUBSTRATES } from '../art/placeholder';
 import { snailAspect } from '../art/snails';
-import { fishTL, getSpecies, type Species } from '../data/species';
+import { fishTL, getSpecies, needsWater, type Species } from '../data/species';
+import { restsOnGround } from '../scene/water';
 import { D2R, IN, WALL_GAP, clamp, floorY, glassThickness, mapToTank, RIM_DROP, RIM_H, tankUnderside, waterY } from '../scene/physics';
 import { groundHeight, terrainPoint } from '../scene/terrain';
 import type { Background, Fish, Scene, Tank } from '../scene/types';
@@ -371,11 +372,11 @@ export function buildTank(S: Scene, T: Tank, selId: number | null, edit?: { hot:
   for (const f of S.fish) {
     const sp = getSpecies(f.species); if (!sp) continue;
     if (sp.kind === 'snail') { for (const [m, w, h] of snailMeshes(S, T, f, sp)) register(f, m, w, h); continue; }
-    if (!S.water.on) continue; // dry tank: fish stay in the scene data, hidden until the water is back
+    if (!S.water.on && needsWater(sp)) continue; // dry tank: fish stay in the scene data, hidden until the water is back
     const w = fishTL(f, sp), h = w * sp.aspect, p = mapToTank(S.tankA, T, f);
     const m = new THREE.Mesh(cardGeometry(w, h, f.bend), cardMaterial('fish:' + f.species, fishTexture(f.species), S.render.edge));
-    // bottom dwellers rest on the substrate wherever they are (their stored height is ignored)
-    const y = sp.zone === 'bottom' ? groundHeight(S, T, p.x, p.depth) + sp.rest * w - 1 : Math.min(p.y, Math.max(0, waterY(T, S.water.level) - h / 2));
+    // bottom dwellers and animals on land rest on the ground wherever they are (their stored height is ignored)
+    const y = restsOnGround(S, T, sp, p.x, p.depth, h) ? groundHeight(S, T, p.x, p.depth) + sp.rest * w - 1 : Math.min(p.y, Math.max(0, waterY(T, S.water.level) - h / 2));
     m.position.set(p.x, y, -p.depth); m.rotation.set(f.roll * D2R, f.yaw * D2R, f.pitch * D2R, 'YXZ');
     register(f, m, w, h);
   }

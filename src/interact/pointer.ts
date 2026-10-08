@@ -2,7 +2,8 @@
 // shift + wheel moves the selected fish forward/back; double-click empty space returns to straight-on.
 // Bottom dwellers and floor snails slide along the floor; snails on glass stay in their pane.
 import * as THREE from 'three';
-import { getSpecies, restsOnFloor } from '../data/species';
+import { fishTL, getSpecies, restsOnFloor } from '../data/species';
+import { restsOnGround } from '../scene/water';
 import { D2R, clamp } from '../scene/physics';
 import type { Store } from '../scene/store';
 import type { Viewer, Viewport } from '../render/viewer';
@@ -40,7 +41,8 @@ export function attachPointer(viewer: Viewer, store: Store) {
     const c = store.scene.camera, f = store.scene.fish.find(q => q.id === hit.fishId), sp = f && getSpecies(f.species);
     // the drag plane: the floor or the snail's pane for animals that cling to a surface, else it follows the view
     const surf = f?.surface ?? 'floor';
-    const mode: DragMode = sp && restsOnFloor(sp, surf) ? 'top' : sp?.kind === 'snail' ? (surf === 'left' || surf === 'right' ? 'side' : 'front') : dragModeFor(c.az, c.el);
+    const onGround = !!sp && !!f && (restsOnFloor(sp, surf) || (sp.kind !== 'snail' && restsOnGround(store.scene, store.scene.tankA, sp, f.x, f.depth, fishTL(f, sp) * sp.aspect)));
+    const mode: DragMode = onGround ? 'top' : sp?.kind === 'snail' ? (surf === 'left' || surf === 'right' ? 'side' : 'front') : dragModeFor(c.az, c.el);
     const n = mode === 'top' ? new THREE.Vector3(0, 1, 0) : mode === 'side' ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 0, 1);
     const pl = new THREE.Plane().setFromNormalAndCoplanarPoint(n, hit.mesh.position), p = new THREE.Vector3();
     if (!hit.ray.intersectPlane(pl, p)) return;

@@ -1,4 +1,4 @@
-# TankLook (aquarium visualizer): handoff
+# TankLook (arium visualizer): handoff
 
 Living file. Project state and dated decisions go here; update in place.
 
@@ -95,6 +95,20 @@ Decided (Nathan 2026-10-08, session 4): sizes are **total length** (nose to tail
 **frogs, newts, axolotl** only (dart frog, White's tree frog, fire-bellied toad, fire-bellied newt, axolotl: one
 quadruped painter); **climbing is in this unit** (tree frog on glass and branches from the start). Lizards, turtle,
 snakes, crabs and inverts come later.
+
+Progress (session 4, 2026-10-08):
+- Site title "TankLook: Arium Visualizer" (Nathan's pick), tagline "Arium visualizer · true-to-scale · beta".
+- Single "Add" now randomizes spot, heading, pitch, roll and bend like a school member (`randomPose`, panels.ts).
+- **Step 1 done (not pushed):** species `habitat` (resolved; snails 'both', default 'water'). `restsOnGround` (water.ts)
+  decides rest vs swim: bottom / land always rest; 'both' rests where the water at its spot is shallower than its
+  card height, or in a dry tank. `fitFish`: land animals go to `nearestLand` (terrain.ts; left in place if the tank
+  has no land), 'both' swimmers clamp between ground and surface. Dry tank hides only 'water' species. Add / Add
+  school blocked with a reason (`blocked`) for fish in a dry tank and land animals with no land; land spawns use
+  `randomLand`, amphibians land half the time. Drag slides resting animals along the ground; list tags land /
+  amphibious. Five species in species.json (sizes provisional, Nathan to review with pictures): dart frog 45, White's
+  tree frog 100, fire-bellied toad 45, fire-bellied newt 90, axolotl 230 (water, bottom). Art keys exist but have no
+  painter yet. Tests 68/68.
+- Next: step 2 quadruped painter (dartfrog, treefrog, firetoad, firenewt, axolotl), then sizes review, then climbing.
 
 Original proposal:
 - species.json `habitat: 'water' | 'land' | 'both'` (default water; snails 'both'). Land animals rest on ground

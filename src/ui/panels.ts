@@ -1,7 +1,7 @@
 // Sidebar wiring. Inputs write through store.update(); one sync() pulls every control back from the scene,
 // so undo/redo, file open and pointer drags all refresh the panels the same way.
 import { SUBSTRATES } from '../art/placeholder';
-import { fishTL, getSpecies, restsOnFloor, searchSpecies, type Species } from '../data/species';
+import { fishTL, getSpecies, needsWater, restsOnFloor, searchSpecies, speciesTag, type Species } from '../data/species';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { LAYOUTS } from '../render/layouts';
 import type { Viewer } from '../render/viewer';
@@ -10,8 +10,8 @@ import {
   IN, clamp, clampFish, fmtDims, fmtLen, fromUnit, glassThickness, rescaleTankA, spawnSnail, toUnit, volume, waterY,
 } from '../scene/physics';
 import type { Store } from '../scene/store';
-import { SWAMP_LEVEL, groundHeight, sampleTerrain } from '../scene/terrain';
-import { setWaterLevel } from '../scene/water';
+import { SWAMP_LEVEL, groundHeight, nearestLand, randomLand, sampleTerrain } from '../scene/terrain';
+import { restsOnGround, setWaterLevel } from '../scene/water';
 import { tankWeight } from '../scene/weight';
 import type { Fish, LayoutId, Scene, Tank } from '../scene/types';
 import { GLASS_CHOICES, LIMITS, SceneError, nextFishId, parseScene } from '../scene/validate';
@@ -135,16 +135,16 @@ export function attachPanels(store: Store, viewer: Viewer) {
       const b = document.createElement('button');
       b.setAttribute('role', 'option'); b.setAttribute('aria-selected', String(sp.id === pickId));
       b.className = sp.id === pickId ? 'on' : '';
-      const tag = sp.kind === 'snail' ? '<b class="tag">snail</b>' : sp.zone === 'bottom' ? '<b class="tag">bottom</b>' : '';
+      const tag = speciesTag(sp) ? `<b class="tag">${speciesTag(sp)}</b>` : '';
       b.innerHTML = `<span>${esc(sp.name)} ${tag}<i>${esc(sp.sci)}</i></span><span>${fmt(sp.tl)}</span>`;
       if (sp.note) b.title = sp.note;
       b.onclick = () => { pickId = sp.id; renderResults(); };
       b.ondblclick = () => addOne(sp);
       results.append(b);
     }
-    const dry = !S().water.on && getSpecies(pickId)?.kind !== 'snail'; // fish need water
-    $<HTMLButtonElement>('addFish').disabled = $<HTMLButtonElement>('addSchool').disabled = !list.length || dry;
-    $('addFish').title = dry ? 'Fish need water: turn Water on (Water section)' : '';
+    const pick = getSpecies(pickId), why = pick ? blocked(pick) : '';
+    $<HTMLButtonElement>('addFish').disabled = $<HTMLButtonElement>('addSchool').disabled = !list.length || !!why;
+    $('addFish').title = why;
     setOut('oAddSize', sizeLabel(addPct(), getSpecies(pickId)));
   }
   search.oninput = renderResults;
@@ -166,14 +166,31 @@ export function attachPanels(store: Store, viewer: Viewer) {
     let yaw = Math.round(dir + (r() - 0.5) * 80); if (yaw > 180) yaw -= 360;
     return { yaw, pitch: Math.round((r() - 0.5) * 16), roll: Math.round((r() - 0.5) * 10), bend: +((r() - 0.5) * 0.8).toFixed(2) };
   };
+  /** Water surface for placement: the water line, or -1 in a dry tank (all ground counts as land). */
+  const surfaceY = (s: Scene) => (s.water.on ? waterY(s.tankA, s.water.level) : -1);
+  /** Why this species cannot be added right now ('' = it can). */
+  function blocked(sp: Species): string {
+    const s = S();
+    if (!s.water.on && needsWater(sp)) return 'Fish need water: turn Water on (Water section).';
+    if (sp.habitat === 'land' && !nearestLand(s, s.tankA, surfaceY(s), 0, 0))
+      return 'Land animals need ground above the water: lower the water, or use the Swamp layout or Custom terrain.';
+    return '';
+  }
+  /** Put a land or amphibious animal on a random spot of land (amphibians: half the time in the water if there is any). */
+  function placeOnLand(s: Scene, sp: Species, f: Fish, r: () => number) {
+    if (sp.habitat === 'both' && s.water.on && r() < 0.5) return;
+    const p = randomLand(s, s.tankA, surfaceY(s), r); if (!p) return;
+    f.x = p.x; f.depth = p.depth; f.y = groundHeight(s, s.tankA, p.x, p.depth);
+  }
   function addOne(sp: Species) {
-    if (!S().water.on && sp.kind !== 'snail') { status('Fish need water: turn Water on first.', true); return; }
+    const why = blocked(sp); if (why) { status(why, true); renderResults(); return; }
     let id = 0;
     store.update(s => {
       const A = s.tankA;
       if (sp.kind === 'snail') { s.fish.push(snailAt(s, sp, id = nextFishId(s))); return; }
       const sz = newTL(sp), r = Math.random;
       const f: Fish = { id: id = nextFishId(s), species: sp.id, x: A.L * (0.1 + r() * 0.8), y: waterY(A, s.water.level) * (0.2 + r() * 0.6), depth: A.D * (0.15 + r() * 0.7), ...randomPose(sp, r, r() < 0.5 ? 0 : 180), ...sz };
+      if (sp.habitat !== 'water') placeOnLand(s, sp, f, r);
       clampFish(f, A); s.fish.push(f);
     });
     store.select(id);
@@ -181,6 +198,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('addFish').onclick = () => { const sp = getSpecies(pickId); if (sp) addOne(sp); };
   $('addSchool').onclick = () => {
     const sp = getSpecies(pickId); if (!sp) return;
+    const why = blocked(sp); if (why) { status(why, true); renderResults(); return; }
     const n = clamp(Math.round(+$('schoolN').value || 12), 2, 60);
     let last = 0;
     store.update(s => {
@@ -193,6 +211,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
           ...randomPose(sp, r, dir), ...sz,
         };
         if (sp.zone === 'bottom') f.x = A.L * (0.1 + r() * 0.8);
+        if (sp.habitat !== 'water') placeOnLand(s, sp, f, r);
         clampFish(f, A); s.fish.push(f);
       }
     });
@@ -290,7 +309,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('wOn').onchange = e => {
     const on = (e.target as HTMLInputElement).checked;
     store.update(s => { s.water.on = on; });
-    const n = S().fish.filter(f => getSpecies(f.species)?.kind !== 'snail').length;
+    const n = S().fish.filter(f => { const sp = getSpecies(f.species); return sp && needsWater(sp); }).length;
     if (!on && n) status(`${n} fish hidden while the tank is dry. Turn Water back on to see them.`);
     renderResults();
   };
@@ -392,7 +411,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     for (const id of ['fX', 'fY', 'fZ']) $(id).min = '0';
     $('fX').max = String(A.L); $('fY').max = String(waterY(A, s.water.level)); $('fZ').max = String(A.D);
     const fsp = f && getSpecies(f.species);
-    $('fY').disabled = !!fsp && restsOnFloor(fsp, f!.surface);
+    $('fY').disabled = !!fsp && (restsOnFloor(fsp, f!.surface) || (fsp.kind !== 'snail' && restsOnGround(s, A, fsp, f!.x, f!.depth, fishTL(f!, fsp) * fsp.aspect)));
     if (f) {
       for (const [id, k] of Object.entries(fishKeys)) setVal(id, f[k]);
       setOut('oX', fmt(f.x)); setOut('oY', fmt(f.y)); setOut('oZ', fmt(f.depth));

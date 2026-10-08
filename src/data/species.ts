@@ -2,6 +2,8 @@ import { artMeta } from '../art/fishgen';
 import { snailAspect, snailRest } from '../art/snails';
 import data from './species.json';
 
+export type Habitat = 'water' | 'land' | 'both';
+
 export interface Species {
   id: string;
   name: string;
@@ -13,18 +15,22 @@ export interface Species {
   zone?: 'bottom';
   /** 'snail': clings to the substrate or a glass pane. */
   kind?: 'snail';
+  /** Where it lives: 'water' (fish; hidden in a dry tank), 'land' (rests on ground above the water line), 'both' (on land, or
+   * swimming where the water is deep enough for it). Snails are 'both'. */
+  habitat: Habitat;
   /** v (in widths, + down) of the lowest point of the drawing; a resting animal's centre sits this far above the floor. */
   rest: number;
   note?: string;
 }
 
-interface RawSpecies { id: string; name: string; sci: string; tl: number; art: string; aspect?: number; zone?: string; kind?: string; note?: string }
+interface RawSpecies { id: string; name: string; sci: string; tl: number; art: string; aspect?: number; zone?: string; kind?: string; habitat?: string; note?: string }
 
 function resolve(r: RawSpecies): Species {
   const kind = r.kind === 'snail' ? 'snail' as const : undefined, zone = r.zone === 'bottom' ? 'bottom' as const : undefined;
   const meta = kind ? { aspect: snailAspect(r.art, 'side'), rest: snailRest(r.art) } : artMeta(r.art);
   const aspect = r.aspect ?? meta?.aspect ?? 0.4, rest = meta?.rest ?? aspect / 2;
-  return { id: r.id, name: r.name, sci: r.sci, tl: r.tl, art: r.art, aspect, rest, zone, kind, note: r.note };
+  const habitat: Habitat = kind ? 'both' : r.habitat === 'land' || r.habitat === 'both' ? r.habitat : 'water';
+  return { id: r.id, name: r.name, sci: r.sci, tl: r.tl, art: r.art, aspect, rest, zone, kind, habitat, note: r.note };
 }
 
 export const SPECIES: Species[] = (data.species as RawSpecies[]).map(resolve);
@@ -34,8 +40,12 @@ export const getSpecies = (id: string) => byId.get(id);
 export const hasSpecies = (id: string) => byId.has(id);
 /** This fish's total length (mm): its custom size if set, else the species' adult length. */
 export const fishTL = (f: { tl?: number }, sp: Species) => f.tl ?? sp.tl;
-/** Rests on the substrate (bottom dwellers and floor snails). */
-export const restsOnFloor = (sp: Species, surface?: string) => sp.zone === 'bottom' || (sp.kind === 'snail' && (surface ?? 'floor') === 'floor');
+/** Always rests on the ground (bottom dwellers, land animals and floor snails); 'both' animals depend on the water at their spot. */
+export const restsOnFloor = (sp: Species, surface?: string) => sp.zone === 'bottom' || sp.habitat === 'land' || (sp.kind === 'snail' && (surface ?? 'floor') === 'floor');
+/** Needs water: hidden in a dry tank. */
+export const needsWater = (sp: Species) => sp.habitat === 'water';
+/** Short list tag: snail, bottom, land or amphibious. */
+export const speciesTag = (sp: Species) => sp.kind === 'snail' ? 'snail' : sp.zone === 'bottom' ? 'bottom' : sp.habitat === 'land' ? 'land' : sp.habitat === 'both' ? 'amphibious' : '';
 
 /** Case- and accent-insensitive search over common and scientific names; prefix matches rank first. */
 export function searchSpecies(q: string): Species[] {
@@ -44,7 +54,7 @@ export function searchSpecies(q: string): Species[] {
   if (!terms.length) return [...SPECIES].sort((a, b) => a.name.localeCompare(b.name));
   const scored: [number, Species][] = [];
   for (const s of SPECIES) {
-    const tags = (s.zone === 'bottom' ? ' bottom' : '') + (s.kind === 'snail' ? ' snail' : '');
+    const tags = ' ' + speciesTag(s);
     const hay = norm(s.name + ' ' + s.sci + ' ' + s.id + tags), words = hay.split(/\s+/);
     if (!terms.every(t => hay.includes(t))) continue;
     const prefix = terms.filter(t => words.some(w => w.startsWith(t))).length;

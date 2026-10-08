@@ -99,3 +99,25 @@ export function nearestWater(g: Ground, T: Tank, top: number, x: number, depth: 
   }
   return best ?? deep;
 }
+
+/** The nearest spot (x, depth) to the given one where the ground stands above the water surface `top`; null if none. */
+export function nearestLand(g: Ground, T: Tank, top: number, x: number, depth: number) {
+  const N = 40;
+  let best: { x: number; depth: number } | null = null, bd = Infinity;
+  for (let i = 0; i <= N; i++) for (let j = 0; j <= N; j++) {
+    const px = T.L * (0.02 + 0.96 * i / N), pd = T.D * (0.02 + 0.96 * j / N);
+    if (groundHeight(g, T, px, pd) < top) continue;
+    const dd = (px - x) ** 2 + (pd - depth) ** 2;
+    if (dd < bd) { bd = dd; best = { x: px, depth: pd }; }
+  }
+  return best;
+}
+
+/** A random spot on ground above the water surface `top` (any ground when `top` <= 0); null if there is no land. */
+export function randomLand(g: Ground, T: Tank, top: number, r: () => number) {
+  for (let k = 0; k < 400; k++) {
+    const x = T.L * (0.05 + 0.9 * r()), depth = T.D * (0.08 + 0.84 * r());
+    if (groundHeight(g, T, x, depth) >= top) return { x, depth };
+  }
+  return nearestLand(g, T, top, T.L * r(), T.D * r());
+}

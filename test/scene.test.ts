@@ -3,8 +3,8 @@ import { SPECIES, getSpecies, searchSpecies } from '../src/data/species';
 import { defaultScene } from '../src/scene/defaults';
 import { Store } from '../src/scene/store';
 import { SCENE_VERSION } from '../src/scene/types';
-import { setWaterLevel } from '../src/scene/water';
-import { SWAMP_LEVEL, groundHeight, sampleTerrain, terrainHeight } from '../src/scene/terrain';
+import { restsOnGround, setWaterLevel } from '../src/scene/water';
+import { SWAMP_LEVEL, groundHeight, nearestLand, randomLand, sampleTerrain, terrainHeight } from '../src/scene/terrain';
 import { tankWeight } from '../src/scene/weight';
 import { WATERLINE_GAP, spawnSnail, substrateHeight, waterK, waterY } from '../src/scene/physics';
 import { SceneError, parseScene } from '../src/scene/validate';
@@ -342,5 +342,45 @@ describe('approximate tank weight', () => {
     setWaterLevel(s, 0.5); expect(tankWeight(s).water).toBeLessThan(full.water * 0.6);
     s.water.on = false; const dry = tankWeight(s);
     expect(dry.water).toBe(0); expect(dry.substrate).toBeLessThan(full.substrate); // no pore water when dry
+  });
+});
+
+describe('land and amphibious animals (habitat)', () => {
+  const swamp = (seed: number) => { const s = defaultScene(); s.layout = { id: 'swamp', seed }; setWaterLevel(s, SWAMP_LEVEL); return s; };
+  const animal = (id: number, species: string, x: number, y: number, depth: number) => ({ id, species, x, y, depth, yaw: 0, pitch: 0, roll: 0, bend: 0 });
+  it('resolves habitat: fish water, snails both, frogs land, toad and newt both, axolotl a water bottom dweller', () => {
+    expect(getSpecies('neon')!.habitat).toBe('water');
+    expect(getSpecies('nerite')!.habitat).toBe('both');
+    expect(getSpecies('dartfrog')!.habitat).toBe('land');
+    expect(getSpecies('treefrog')!.habitat).toBe('land');
+    expect(getSpecies('firetoad')!.habitat).toBe('both');
+    expect(getSpecies('firenewt')!.habitat).toBe('both');
+    expect(getSpecies('axolotl')!).toMatchObject({ habitat: 'water', zone: 'bottom' });
+    expect(searchSpecies('land').map(s => s.id)).toEqual(expect.arrayContaining(['dartfrog', 'treefrog']));
+  });
+  it('moves land animals off submerged ground onto the nearest land', () => {
+    for (let seed = 1; seed <= 20; seed++) {
+      const st = new Store(swamp(seed));
+      st.update(s => { for (let i = 0; i < 20; i++) s.fish.push(animal(200 + i, 'dartfrog', s.tankA.L * (i / 20), 50, 10)); });
+      const s = st.scene, A = s.tankA, top = waterY(A, s.water.level);
+      for (const f of s.fish.filter(f => f.species === 'dartfrog')) expect(groundHeight(s, A, f.x, f.depth)).toBeGreaterThanOrEqual(top);
+    }
+  });
+  it('amphibians swim in deep water and rest on land or in the shallows', () => {
+    const s = swamp(3), A = s.tankA, top = waterY(A, s.water.level), sp = getSpecies('firetoad')!, h = sp.tl * sp.aspect;
+    const land = nearestLand(s, A, top, 0, 0)!;
+    expect(restsOnGround(s, A, sp, land.x, land.depth, h)).toBe(true);
+    let wet = 0;
+    for (let i = 0; i <= 40; i++) for (let j = 0; j <= 40; j++) {
+      const x = A.L * i / 40, d = A.D * j / 40;
+      if (top - groundHeight(s, A, x, d) >= h) { wet++; expect(restsOnGround(s, A, sp, x, d, h)).toBe(false); }
+    }
+    expect(wet).toBeGreaterThan(0);
+    expect(restsOnGround({ ...s, water: { ...s.water, on: false } }, A, sp, land.x, land.depth, h)).toBe(true);
+  });
+  it('a full aquarium has no land; a dry tank is all land', () => {
+    const s = defaultScene(), A = s.tankA;
+    expect(nearestLand(s, A, waterY(A, s.water.level), 0, 0)).toBeNull();
+    expect(randomLand(s, A, -1, Math.random)).not.toBeNull();
   });
 });
