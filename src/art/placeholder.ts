@@ -9,6 +9,7 @@ import type { SubstrateType } from '../scene/types';
 import { type Ctx, type Proj, type Pt, blob, body, eye, fin, gill, hexA, rng, soft, vgrad } from './paint';
 export { rng } from './paint';
 import { GEN_ART } from './fishgen';
+import { HERP_ART } from './herps';
 
 
 function drawTetra(ctx: Ctx, P: Proj, W: number) {
@@ -88,7 +89,7 @@ function drawGourami(ctx: Ctx, P: Proj, W: number) {
 }
 
 export const FISH_ART: Record<string, (ctx: Ctx, P: Proj, W: number) => void> = {
-  tetra: drawTetra, angel: drawAngel, gourami: drawGourami, ...GEN_ART,
+  tetra: drawTetra, angel: drawAngel, gourami: drawGourami, ...GEN_ART, ...HERP_ART,
 };
 
 /** Render a fish card (width W px, height from aspect) into a canvas. Nose points to +x (right). */

@@ -271,9 +271,13 @@ export function attachPanels(store: Store, viewer: Viewer) {
   });
 
   // ---------- Substrate ----------
-  $<HTMLSelectElement>('subType').innerHTML = Object.entries(SUBSTRATES).map(([k, t]) => `<option value="${k}">${esc(t.label)}</option>`).join('');
-  $('subOn').onchange = e => store.update(s => { s.substrate.show = (e.target as HTMLInputElement).checked; });
-  $<HTMLSelectElement>('subType').onchange = e => store.update(s => { s.substrate.type = (e.target as HTMLSelectElement).value as Scene['substrate']['type']; });
+  // 'bare' = bare-bottom glass (substrate.show off; the last type is kept for when it comes back)
+  $<HTMLSelectElement>('subType').innerHTML = '<option value="bare">Bare bottom (no substrate)</option>' +
+    Object.entries(SUBSTRATES).map(([k, t]) => `<option value="${k}">${esc(t.label)}</option>`).join('');
+  $<HTMLSelectElement>('subType').onchange = e => store.update(s => {
+    const v = (e.target as HTMLSelectElement).value;
+    s.substrate.show = v !== 'bare'; if (v !== 'bare') s.substrate.type = v as Scene['substrate']['type'];
+  });
   const SUBK = { subFL: 'fl', subFR: 'fr', subBL: 'bl', subBR: 'br' } as const;
   for (const [id, k] of Object.entries(SUBK)) $(id).oninput = e => store.update(s => { s.substrate[k] = +(e.target as HTMLInputElement).value; }, { coalesce: id });
   const subSet = (fl: number, fr: number, bl: number, br: number) => store.update(s => {
@@ -421,7 +425,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     }
 
     const sub = s.substrate, smax = Math.round(A.H * 0.5);
-    $('subOn').checked = sub.show; setVal('subType', sub.type);
+    setVal('subType', sub.show ? sub.type : 'bare');
     for (const [id, k] of Object.entries(SUBK)) { $(id).max = String(smax); setVal(id, sub[k]); setOut('o' + id[0].toUpperCase() + id.slice(1), fmt(sub[k])); }
 
     const te = s.terrain, editing = viewer.terrainEdit.on && te.on;
@@ -431,7 +435,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     $('terEdit').classList.toggle('on', editing); $('terEdit').textContent = editing ? 'Done editing' : 'Edit points';
     $('terHint').textContent = !te.on ? 'Custom terrain turns the floor into a grid of points you can push down or pull up, with a smooth surface through them. It starts from the current floor.'
       : editing ? 'Drag a dot up or down. Drag empty space to orbit; look from above to reach the back points.' : 'Corner sliders are off while custom terrain is on.';
-    for (const id of ['subBL', 'subBR', 'subFL', 'subFR', 'subLevel', 'subFB', 'subLR', 'subCorner']) ($(id) as HTMLInputElement).disabled = te.on;
+    for (const id of ['subBL', 'subBR', 'subFL', 'subFR', 'subLevel', 'subFB', 'subLR', 'subCorner']) ($(id) as HTMLInputElement).disabled = te.on || !sub.show;
 
     const wa = s.water;
     $('wOn').checked = wa.on;

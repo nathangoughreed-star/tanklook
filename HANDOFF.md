@@ -108,7 +108,17 @@ Progress (session 4, 2026-10-08):
   amphibious. Five species in species.json (sizes provisional, Nathan to review with pictures): dart frog 45, White's
   tree frog 100, fire-bellied toad 45, fire-bellied newt 90, axolotl 230 (water, bottom). Art keys exist but have no
   painter yet. Tests 68/68.
-- Next: step 2 quadruped painter (dartfrog, treefrog, firetoad, firenewt, axolotl), then sizes review, then climbing.
+- **Step 2 first pass (not pushed):** `art/herps.ts` paints sitting frogs (`drawFrog`, one design frame scaled by
+  aspect) and newts / axolotl (`drawSal`: tail to u = 0, splayed legs, axolotl tail fin + external gills), limbs as
+  tapered tubes, far legs darker. `herpMeta` gives aspect + rest (= ground line). Picture `shots/26_amphibian_cards`.
+  Awaiting Nathan's review of looks and sizes.
+- **Bare bottom (Nathan 2026-10-08):** the hidden Substrate "Show" checkbox became a "Bare bottom (no substrate)"
+  choice at the top of the substrate list (still `substrate.show = false`; the last type is kept). Depth sliders
+  disabled while bare.
+- Next: revise art per Nathan, then sizes review, then climbing.
+- Lesson (session 4): editing index.html makes Vite do a full page reload, which drops the undo stack. Before
+  test edits in Nathan's dev scene, copy `localStorage['tanklook.scene']` to a file (not a page variable) and
+  restore it from there afterwards.
 
 Original proposal:
 - species.json `habitat: 'water' | 'land' | 'both'` (default water; snails 'both'). Land animals rest on ground

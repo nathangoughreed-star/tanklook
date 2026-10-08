@@ -1,4 +1,5 @@
 import { artMeta } from '../art/fishgen';
+import { herpMeta } from '../art/herps';
 import { snailAspect, snailRest } from '../art/snails';
 import data from './species.json';
 
@@ -27,7 +28,7 @@ interface RawSpecies { id: string; name: string; sci: string; tl: number; art: s
 
 function resolve(r: RawSpecies): Species {
   const kind = r.kind === 'snail' ? 'snail' as const : undefined, zone = r.zone === 'bottom' ? 'bottom' as const : undefined;
-  const meta = kind ? { aspect: snailAspect(r.art, 'side'), rest: snailRest(r.art) } : artMeta(r.art);
+  const meta = kind ? { aspect: snailAspect(r.art, 'side'), rest: snailRest(r.art) } : artMeta(r.art) ?? herpMeta(r.art);
   const aspect = r.aspect ?? meta?.aspect ?? 0.4, rest = meta?.rest ?? aspect / 2;
   const habitat: Habitat = kind ? 'both' : r.habitat === 'land' || r.habitat === 'both' ? r.habitat : 'water';
   return { id: r.id, name: r.name, sci: r.sci, tl: r.tl, art: r.art, aspect, rest, zone, kind, habitat, note: r.note };
