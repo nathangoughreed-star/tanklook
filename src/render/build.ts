@@ -34,7 +34,10 @@ const isPeninsula = (S: Scene) => S.wall.show && S.wall.side === 'peninsula';
 
 function addTank(sc: THREE.Scene, S: Scene, T: Tank) {
   const { L, H, D } = T, R = S.render;
-  const floor = plane(L, D, basic(0xcdb98f, { side: THREE.DoubleSide })); floor.rotation.x = -Math.PI / 2; floor.position.set(L / 2, 0, -D / 2); sc.add(floor);
+  // backing under the substrate; a bare-bottom tank has none, so the stand top or the room shows through the bottom pane
+  if (S.substrate.show || S.layout.id === 'swamp' || S.terrain.on) {
+    const floor = plane(L, D, basic(0xcdb98f, { side: THREE.DoubleSide })); floor.rotation.x = -Math.PI / 2; floor.position.set(L / 2, 0, -D / 2); sc.add(floor);
+  }
   const bg = BACKGROUNDS[R.bg], t = glassThickness(T, R.glass), pen = isPeninsula(S);
   // the background covers the glass that faces the room wall: the back, or the right end in a peninsula (then the
   // long back glass is clear, since that side is viewable)

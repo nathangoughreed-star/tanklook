@@ -114,7 +114,8 @@ Progress (session 4, 2026-10-08):
   Awaiting Nathan's review of looks and sizes.
 - **Bare bottom (Nathan 2026-10-08):** the hidden Substrate "Show" checkbox became a "Bare bottom (no substrate)"
   choice at the top of the substrate list (still `substrate.show = false`; the last type is kept). Depth sliders
-  disabled while bare.
+  disabled while bare. The tan backing plane under the substrate is no longer drawn on a bare bottom, so the stand
+  top or the room shows through the bottom pane (picture `shots/27_bare_bottom`).
 - Next: revise art per Nathan, then sizes review, then climbing.
 - Lesson (session 4): editing index.html makes Vite do a full page reload, which drops the undo stack. Before
   test edits in Nathan's dev scene, copy `localStorage['tanklook.scene']` to a file (not a page variable) and
