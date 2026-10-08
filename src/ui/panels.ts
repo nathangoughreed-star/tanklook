@@ -60,9 +60,15 @@ export function attachPanels(store: Store, viewer: Viewer) {
       status(e instanceof SceneError ? e.message : 'Could not open that file.', true);
     }
   };
-  $('saveScene').onclick = () => {
-    const blob = new Blob([JSON.stringify(G(), null, 1)], { type: 'application/json' });
-    download(blob, `${slug(G().name)}.tanklook.json`);
+  const saveFile = (scene: Scene) => download(new Blob([JSON.stringify(scene, null, 1)], { type: 'application/json' }), `${slug(scene.name)}.tanklook.json`);
+  // the whole scene: with split tanks, one file holding both (opens split again)
+  $('saveScene').onclick = () => saveFile(G());
+  /** One tank of a split on its own, as an ordinary single-tank file (Nathan 2026-10-08). */
+  const saveTank = (i: number) => {
+    const g = G(), t = g.tanks[i]; if (!t) return;
+    const name = `${g.name} - Tank ${'AB'[i]}`.slice(0, 80);
+    saveFile({ ...g, name, tanks: [structuredClone(t)], active: 0, camLock: true });
+    status(`Saved Tank ${'AB'[i]} on its own as "${name}".`);
   };
   $('sceneName').onchange = () => {
     const v = $('sceneName').value.trim().slice(0, 80) || 'My tank';
@@ -481,7 +487,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
       : 'Distance is from your eye to the front glass, the same for every tank. Zoom only crops; it never changes perspective.';
 
     ($('split') as HTMLButtonElement).disabled = store.split;
-    $('splitHint').textContent = store.split ? 'Close a tank with the × at the bottom of its tab, at the top of its view.' : 'Copy this tank into a second, independent one beside it, then change anything in either.';
+    $('splitHint').textContent = store.split ? 'Each view’s tab (top of the view) can Save that tank on its own or Close it. Save… at the top saves both in one file.' : 'Copy this tank into a second, independent one beside it, then change anything in either.';
     setVal('edge', s.render.edge); $('gridOn').checked = s.render.grid; 
     setVal('layout', s.layout.id); $('layoutHint').textContent = LAYOUTS[s.layout.id].hint;
     ($('layoutShuffle') as HTMLButtonElement).disabled = s.layout.id === 'none';
@@ -505,7 +511,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
         if (!split) { el.textContent = fmtDims(vp.T, g.units); continue; }
         // only what differs (nothing = the same tank, no labels); close at the bottom
         el.innerHTML = (diff.length ? `<div class="diffs">${diff.map(d => `<span>${esc(d[i])}</span>`).join('')}</div>` : '') +
-          `<button class="close" data-close="${i}" title="Close Tank ${vp.key}" aria-label="Close Tank ${vp.key}">× Close</button>`;
+          `<div class="acts"><button class="close" data-save="${i}" title="Save Tank ${vp.key} on its own as a single-tank file">Save</button>` +
+          `<button class="close" data-close="${i}" title="Close Tank ${vp.key}" aria-label="Close Tank ${vp.key}">× Close</button></div>`;
       }
       const lock = $<HTMLButtonElement>('camLock');
       lock.hidden = !split;
@@ -523,6 +530,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
     readout();
   });
   for (const id of ['labA', 'labB']) $(id).addEventListener('click', e => {
+    const sv = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-save]');
+    if (sv) { saveTank(+sv.dataset.save!); return; }
     const b = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-close]'); if (!b) return;
     const i = +b.dataset.close!;
     store.closeTank(i); status(`Tank ${'AB'[i]} closed. Ctrl+Z brings it back.`);

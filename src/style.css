@@ -105,6 +105,7 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 .lab.tab.on { border-color: var(--accent); background: rgba(0, 0, 0, .7) }
 .lab .diffs { display: flex; flex-wrap: wrap; gap: 3px 10px; line-height: 1.35 }
 .lab .close { font: inherit; font-size: 11px; color: #fff; background: rgba(255, 255, 255, .14); border: 0; border-radius: 3px; padding: 2px 7px; cursor: pointer }
+.lab .acts { display: flex; gap: 5px }
 .lab .close:hover { background: rgba(255, 255, 255, .28) }
 #vpFrame { position: absolute; top: 0; bottom: 0; border: 2px solid var(--accent); pointer-events: none; box-sizing: border-box }
 #vpFrame[hidden], #camLock[hidden], .editing[hidden] { display: none }

@@ -167,6 +167,9 @@ As built (the design notes below still hold, with these specifics):
   details (Stocking, Water tint, Wall colour, Terrain, Arrangement, Substrate slope). Nothing different = no labels,
   only the close button. Items wrap; "× Close" sits at the bottom of the tab. Single tank: the plain size label as before.
 - The readout's "Same fish in Tank B" row is gone (the tanks are independent now).
+- **Saving (Nathan 2026-10-08):** autosave (localStorage `tanklook.scene`) and Save… hold the WHOLE scene (both tanks;
+  the file reopens split). Each split tab also has **Save** (left of × Close): that tank alone as an ordinary single-tank
+  file named "<scene> - Tank A/B".
 - Verified in a dev page (own port 5175, so Nathan's 5173 scene was not touched): tabs, frame, lock, independent orbit,
   re-lock snap, close either tank, undo. Tests 81/81 (new `test/split.test.ts`).
 
