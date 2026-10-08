@@ -17,8 +17,11 @@ export const CONES: Record<Exclude<LightType, 'flat'>, [number, number]> = {
 /** [x, y, z, halfLength]: halfLength > 0 means a line emitter along x. */
 export type Emitter = [number, number, number, number];
 
-export function emitters(T: Tank, l: LightSettings): Emitter[] {
-  const { L, H, D } = T, y = H + LAMP_Y, n = l.count, E: Emitter[] = [];
+/** Fixture height above the tank top (mm): the setting, or LAMP_Y inside a hood. */
+export const lampHeight = (l: LightSettings, lid: string) => (lid === 'hood' ? LAMP_Y : l.height ?? LAMP_Y);
+
+export function emitters(T: Tank, l: LightSettings, height = l.height ?? LAMP_Y): Emitter[] {
+  const { L, H, D } = T, y = H + height, n = l.count, E: Emitter[] = [];
   if (l.type === 'spot') for (let i = 0; i < n; i++) E.push([L * (i + 0.5) / n, y, -D / 2, 0]);
   if (l.type === 'tube') for (let i = 0; i < n; i++) E.push([L / 2, y, -D * (i + 0.5) / n, L * 0.45]);
   if (l.type === 'led') {
@@ -72,18 +75,23 @@ export function setWaterUniforms(T: Tank, w: WaterSettings) {
   LU.uWater.value.set(T.L, waterY(T, w.level), T.D, w.on ? waterK(w.opacity) : 0);
   LU.uWCol.value.set(w.color);
 }
-export function setLightUniforms(T: Tank, l: LightSettings) {
+export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open') {
   const on = l.type !== 'flat'; LU.uMode.value = on ? 1 : 0;
-  LU.uRoomK.value = roomLevel(l.room); LU.uSpillR.value = spillReach(T);
-  LU.uTankMin.value.set(0, 0, -T.D); LU.uTankMax.value.set(T.L, T.H, 0);
-  // the spill shows most in a dark room (in a lit room the eye adapts and it barely registers)
-  const spill = 0.9 * (1 - 0.75 * roomLevel(l.room));
+  const hgt = lampHeight(l, lid), up = on ? hgt : 0;
+  LU.uRoomK.value = roomLevel(l.room); LU.uSpillR.value = spillReach(T) + up * 0.5;
+  // spill leaves the tank box, extended up to the fixture: a raised light also lights the room over the rim
+  LU.uTankMin.value.set(0, 0, -T.D); LU.uTankMax.value.set(T.L, T.H + up, 0);
+  // the spill shows most in a dark room (in a lit room the eye adapts and it barely registers); a raised fixture
+  // throws more of its light past the tank (up to ~1.8x at 450 mm and above)
+  const spill = 0.9 * (1 - 0.75 * roomLevel(l.room)) * (1 + 0.8 * clamp((up - LAMP_Y) / 400, 0, 1));
   if (on) LU.uSpill.value.setRGB(...kelvinRGB(l.kelvin)).multiplyScalar(spill * l.bright); else LU.uSpill.value.setRGB(spill, spill, spill);
   if (!on) return;
-  const E = emitters(T, l), cone = CONES[l.type as Exclude<LightType, 'flat'>];
+  const E = emitters(T, l, hgt), cone = CONES[l.type as Exclude<LightType, 'flat'>];
   E.forEach((e, i) => LU.uEm.value[i].set(...e)); LU.uEmN.value = E.length;
-  let avg = 0, k = 0; // sample a mid-height plane across the tank
-  for (let i = 1; i <= 5; i++) for (let j = 1; j <= 5; j++) { avg += lightSum(E, [T.L * i / 6, T.H * 0.5, -T.D * j / 6], cone); k++; }
+  // normalised with the fixture at the standard height (sample a mid-height plane across the tank), so raising it
+  // dims the tank (distance falloff) and evens it out (wider footprint), as a real light does
+  const R = emitters(T, l, LAMP_Y); let avg = 0, k = 0;
+  for (let i = 1; i <= 5; i++) for (let j = 1; j <= 5; j++) { avg += lightSum(R, [T.L * i / 6, T.H * 0.5, -T.D * j / 6], cone); k++; }
   LU.uNorm.value = k / Math.max(avg, 1e-6); [LU.uConeIn.value, LU.uConeOut.value] = cone;
   LU.uAmb.value = l.room; LU.uBright.value = l.bright; LU.uLCol.value.setRGB(...kelvinRGB(l.kelvin));
 }
@@ -170,15 +178,21 @@ export function applyLighting(sc: THREE.Scene) {
   });
 }
 
-export function addFixture(sc: THREE.Scene, T: Tank, l: LightSettings) {
+export function addFixture(sc: THREE.Scene, T: Tank, l: LightSettings, ceiling?: number) {
   if (l.type === 'flat') return;
-  const { L, H, D } = T, y = H + LAMP_Y;
+  const { L, H, D } = T, y = H + (l.height ?? LAMP_Y);
   const glow = new THREE.MeshBasicMaterial({ color: new THREE.Color(...kelvinRGB(l.kelvin)).multiplyScalar(0.7).addScalar(0.35) });
   const dark = new THREE.MeshBasicMaterial({ color: 0x2a2e33 });
   const add = (geo: THREE.BufferGeometry, mat: THREE.Material, x: number, yy: number, z: number) => {
     const m = new THREE.Mesh(geo, mat); m.position.set(x, yy, z); m.userData.nolight = true; sc.add(m); return m;
   };
   const E = emitters(T, l);
+  // a raised fixture hangs from the ceiling on thin cables (two per bar, one per spot)
+  if (ceiling != null && (l.height ?? LAMP_Y) > 110) {
+    const top = l.type === 'spot' ? y + 45 : y + 23, len = Math.max(0, ceiling - top), wire = new THREE.MeshBasicMaterial({ color: 0x9aa0a6 });
+    const at: [number, number][] = l.type === 'spot' ? E.map(e => [e[0], e[2]]) : [[L * 0.15, -D / 2], [L * 0.85, -D / 2]];
+    for (const [x, z] of at) add(new THREE.CylinderGeometry(0.8, 0.8, len, 6), wire, x, top + len / 2, z);
+  }
   if (l.type === 'spot') for (const e of E) {
     add(new THREE.CylinderGeometry(32, 40, 45, 24), dark, e[0], y + 22, e[2]);
     add(new THREE.CylinderGeometry(30, 30, 2, 24), glow, e[0], y - 1, e[2]);

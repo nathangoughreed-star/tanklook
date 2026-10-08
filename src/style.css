@@ -82,7 +82,23 @@ details summary { cursor: pointer; color: var(--muted) }
 details { margin: 8px 0 }
 pre { font-size: 10.5px; max-height: 260px; overflow: auto; background: var(--chip); padding: 6px; border-radius: 5px }
 label input[type=checkbox] { vertical-align: -2px }
-#side > label { display: block; margin: 4px 0 }
+#side > label, .sec > label { display: block; margin: 4px 0 }
+/* collapsible sections (closed by default; open state remembered per viewer) */
+details.sec { margin: 0; border-top: 1px solid var(--line) }
+.sec > summary { list-style: none; display: flex; align-items: center; padding: 9px 0; user-select: none }
+.sec > summary::-webkit-details-marker { display: none }
+.sec > summary h2 { flex: 1; margin: 0; padding: 0; border: 0 }
+.sec > summary::after { content: '▸'; color: var(--muted); font-size: 12px; transition: transform .12s }
+.sec[open] > summary::after { transform: rotate(90deg) }
+.sec[open] { padding-bottom: 10px }
+.sec > summary:hover h2, .sec > summary:hover::after { color: var(--ink) }
+/* hide / show the whole panel for a full-screen view */
+#side { position: relative }
+.sidetog { font: inherit; cursor: pointer; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 6px; padding: 3px 9px }
+#sideClose { position: absolute; top: 10px; right: 10px; font-size: 16px; line-height: 1; padding: 3px 8px }
+#sideOpen { display: none; position: absolute; top: 10px; right: 10px; z-index: 3; box-shadow: 0 1px 4px rgba(0, 0, 0, .25) }
+#app.collapsed #side { display: none }
+#app.collapsed #sideOpen { display: block }
 #bBox { margin-top: 6px }
 #bBox[hidden] { display: none }
 .lab { position: absolute; top: 8px; font-size: 12px; background: rgba(0, 0, 0, .55); color: #fff; padding: 3px 7px; border-radius: 4px; pointer-events: none; white-space: nowrap }
@@ -92,4 +108,5 @@ footer { margin-top: 18px }
   #app { flex-direction: column-reverse }
   #side { width: 100%; height: 50%; border-right: 0; border-top: 1px solid var(--line); padding: 10px 16px 40px }
   #view { height: 50%; flex: none }
+  #app.collapsed #view { height: 100% }
 }

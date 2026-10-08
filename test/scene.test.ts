@@ -384,3 +384,22 @@ describe('land and amphibious animals (habitat)', () => {
     expect(randomLand(s, A, -1, Math.random)).not.toBeNull();
   });
 });
+
+describe('light height', () => {
+  it('older files load with the old fixed 50 mm; out-of-range heights clamp', () => {
+    const s = defaultScene() as unknown as { light: Record<string, unknown> }; delete s.light.height;
+    expect(parseScene(s).scene.light.height).toBe(50);
+    expect(parseScene({ ...defaultScene(), light: { ...defaultScene().light, height: 5000 } }).scene.light.height).toBe(900);
+  });
+  it('a raised fixture lights the tank less but more evenly', async () => {
+    const { emitters, lightSum, CONES } = await import('../src/render/lighting');
+    const T = { L: 914, H: 406, D: 457 }, l = { ...defaultScene().light, type: 'spot' as const, count: 2 }, cone = CONES.spot;
+    const stats = (h: number) => {
+      const E = emitters(T, l, h), v: number[] = [];
+      for (let i = 1; i <= 9; i++) v.push(lightSum(E, [T.L * i / 10, T.H * 0.3, -T.D / 2], cone));
+      const mean = v.reduce((a, b) => a + b) / v.length; return { mean, spread: (Math.max(...v) - Math.min(...v)) / mean };
+    };
+    const low = stats(50), high = stats(400);
+    expect(high.mean).toBeLessThan(low.mean); expect(high.spread).toBeLessThan(low.spread);
+  });
+});

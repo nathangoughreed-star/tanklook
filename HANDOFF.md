@@ -126,6 +126,14 @@ Progress (session 4, 2026-10-08):
   person (`frameBox` at the current camera). Zoom no longer pulls toward a point between tank and person: `windowCentre`
   (camera.ts) keeps the bounds centre but moves just enough to keep the tank itself whole while it fits, so zooming crops
   the room first. Picture `shots/35_framing_sheet` (straight-on 1.5x, 54 deg right, 50 deg left + 20 up, 54 deg at 1x).
+- **Light height (Nathan 2026-10-08):** `light.height` (mm above the tank top, 20-900, default 50 = the old fixed
+  `LAMP_Y`; older files load 50). Lighting is normalised with the fixture at 50 mm, so raising it dims the tank
+  (falloff) and evens it out (wider footprint); the room spill source extends up to the fixture and grows up to 1.8x
+  at 450 mm+. Above 110 mm the fixture hangs on thin cables to the ceiling (room height 2700 mm). Hood: fixed inside
+  the hood, slider disabled. Lighting slider "Height". Picture `shots/38_light_height_compare` (50 vs 450 mm). Tests 71/71.
+- **Collapsible panel (Nathan 2026-10-08):** every panel section is a `details.sec`, closed by default; open sections and
+  the hidden-panel state are per-viewer prefs (`localStorage['tanklook.ui']`). Selecting an animal opens Fish. The
+  panel hides with the ‹ button (top right of the panel); "› Edit" (top right of the view) brings it back.
 - Next: revise art per Nathan, then sizes review, then climbing.
 
 ## NEXT WORK UNIT: split tanks (Nathan 2026-10-08) - build in a fresh session

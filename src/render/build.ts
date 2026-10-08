@@ -386,7 +386,7 @@ export function buildTank(S: Scene, T: Tank, selId: number | null, edit?: { hot:
     register(f, m, w, h);
   }
   addLid(sc, S, T);
-  if (S.lid !== 'hood') addFixture(sc, T, S.light); // with a hood the fixture is inside it; its light still applies
+  if (S.lid !== 'hood') addFixture(sc, T, S.light, floorY(T, S.render, S.stand) + 2700); // ceiling: the wall's room height // with a hood the fixture is inside it; its light still applies
   const dotMeshes = edit && S.terrain.on ? addTerrainDots(sc, S, T, edit.hot) : [];
   applyLighting(sc);
   sc.updateMatrixWorld(true);

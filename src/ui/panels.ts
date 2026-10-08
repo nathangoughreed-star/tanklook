@@ -329,7 +329,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('wGreen').onclick = () => waterPreset('#5d8a2e', 0.5);
 
   // ---------- Lighting ----------
-  const lKeys = { lCount: 'count', lBright: 'bright', lK: 'kelvin', lRoom: 'room' } as const;
+  const lKeys = { lCount: 'count', lH: 'height', lBright: 'bright', lK: 'kelvin', lRoom: 'room' } as const;
   for (const [id, k] of Object.entries(lKeys)) $(id).oninput = e => store.update(s => { s.light[k] = +(e.target as HTMLInputElement).value; }, { coalesce: id });
   $<HTMLSelectElement>('lType').onchange = e => store.update(s => { s.light.type = (e.target as HTMLSelectElement).value as Scene['light']['type']; });
 
@@ -347,6 +347,20 @@ export function attachPanels(store: Store, viewer: Viewer) {
   try { mapCb.checked = localStorage.getItem('tanklook.viewmap') !== 'off'; } catch { /* storage blocked: keep default */ }
   applyMap();
   mapCb.onchange = () => { try { localStorage.setItem('tanklook.viewmap', mapCb.checked ? 'on' : 'off'); } catch { /* ignore */ } applyMap(); };
+  // panel sections start collapsed; which ones are open, and whether the panel is hidden, are per-viewer preferences
+  const secs = [...document.querySelectorAll<HTMLDetailsElement>('details.sec')];
+  const saveUI = () => { try { localStorage.setItem('tanklook.ui', JSON.stringify({ open: secs.filter(d => d.open).map(d => d.dataset.sec), hidden: $('app').classList.contains('collapsed') })); } catch { /* ignore */ } };
+  try {
+    const ui = JSON.parse(localStorage.getItem('tanklook.ui') ?? '{}') as { open?: string[]; hidden?: boolean };
+    for (const d of secs) d.open = !!ui.open?.includes(d.dataset.sec ?? '');
+    $('app').classList.toggle('collapsed', !!ui.hidden);
+  } catch { /* storage blocked: all collapsed, panel shown */ }
+  for (const d of secs) d.addEventListener('toggle', saveUI);
+  const showSide = (on: boolean) => { $('app').classList.toggle('collapsed', !on); saveUI(); viewer.invalidate(); };
+  $('sideClose').onclick = () => showSide(false);
+  $('sideOpen').onclick = () => showSide(true);
+  /** Open a section (e.g. Fish when an animal gets selected), so what the user just acted on is editable. */
+  const openSec = (key: string) => { const d = secs.find(x => x.dataset.sec === key); if (d && !d.open) d.open = true; };
   $<HTMLSelectElement>('layout').innerHTML = Object.entries(LAYOUTS).map(([k, l]) => `<option value="${k}">${esc(l.label)}</option>`).join('');
   $<HTMLSelectElement>('layout').onchange = e => store.update(s => {
     s.layout.id = (e.target as HTMLSelectElement).value as LayoutId;
@@ -363,7 +377,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // ---------- sync: scene -> controls ----------
   const setVal = (id: string, v: number | string) => { const el = $(id); if (document.activeElement !== el || el.type === 'range') el.value = String(v); };
   const setOut = (id: string, txt: string, cls = '') => { const el = $<HTMLOutputElement>(id); el.textContent = txt; el.className = cls; };
-  let listSig = '', jsonOpen = false;
+  let listSig = '', jsonOpen = false, lastSelId: number | null = store.selId; // a selection restored on load does not open Fish
   const jsonDetails = $('json').parentElement as HTMLDetailsElement;
   jsonDetails.addEventListener('toggle', () => { jsonOpen = jsonDetails.open; syncJson(); });
   const syncJson = () => { if (jsonOpen) $('json').textContent = JSON.stringify(S(), null, 1); };
@@ -411,6 +425,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
       renderResults();
     }
     const f = sel();
+    if (f && f.id !== lastSelId) openSec('fish');
+    lastSelId = f?.id ?? null;
     $('selBox').classList.toggle('off', !f);
     for (const id of ['fX', 'fY', 'fZ']) $(id).min = '0';
     $('fX').max = String(A.L); $('fY').max = String(waterY(A, s.water.level)); $('fZ').max = String(A.D);
@@ -448,6 +464,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
     setOut('oCount', String(l.count)); setOut('oBright', '×' + l.bright.toFixed(2)); setOut('oK', l.kelvin + ' K'); setOut('oRoom', l.room.toFixed(2));
     $('lCountRow').style.display = l.type === 'spot' || l.type === 'tube' ? '' : 'none';
     $('lCountLab').textContent = l.type === 'tube' ? 'Tubes' : 'Bulbs';
+    setOut('oLH', s.lid === 'hood' ? 'In hood' : fmt(l.height) + ' above');
+    $('lHRow').style.display = l.type === 'flat' ? 'none' : ''; ($('lH') as HTMLInputElement).disabled = s.lid === 'hood';
 
     const c = s.camera;
     for (const [id, k] of Object.entries(camKeys)) setVal(id, c[k]);

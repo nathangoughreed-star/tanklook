@@ -20,6 +20,7 @@ export const LIMITS = {
   bright: [0.2, 2.5] as const,
   kelvin: [2700, 14000] as const,
   room: [0, 0.8] as const,
+  lampH: [20, 900] as const,
   yaw: [-180, 180] as const,
   tilt: [-30, 30] as const,
   bend: [-1, 1] as const,
@@ -126,6 +127,7 @@ export function parseScene(input: unknown): { scene: Scene; warnings: string[] }
     light: {
       type: pick(l.type, ['flat', 'spot', 'tube', 'led'] as const, 'flat'), count: Math.round(num(l.count, 2, ...LIMITS.count)),
       bright: num(l.bright, 1, ...LIMITS.bright), kelvin: num(l.kelvin, 6500, ...LIMITS.kelvin), room: num(l.room, 0.15, ...LIMITS.room),
+      height: num(l.height, 50, ...LIMITS.lampH), // added 2026-10-08; older files: the old fixed 50 mm
     },
     substrate: {
       show: bool(s.show, d.substrate.show), type: pick(s.type, ['gravel', 'black', 'white'] as const, 'gravel'),

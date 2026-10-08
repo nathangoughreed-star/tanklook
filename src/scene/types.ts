@@ -55,6 +55,8 @@ export interface LightSettings {
   bright: number;
   kelvin: number;
   room: number;
+  /** Fixture height above the top of the tank (mm). Higher = dimmer, more even, more spill into the room. Ignored with a hood. */
+  height: number;
 }
 
 export interface SubstrateSettings {

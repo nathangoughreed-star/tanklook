@@ -78,7 +78,7 @@ export class Viewer {
     if (active.length === 1) Object.assign(active[0], { x: 0, y: 0, w, h });
     else { Object.assign(active[0], { x: 0, y: 0, w: hw, h }); Object.assign(active[1], { x: hw + GAP, y: 0, w: hw, h }); }
     for (const vp of active) placeCamera(vp.cam, vp.T, S.camera);
-    const headroom = S.lid === 'hood' ? HOOD_H + 6 : S.light.type === 'flat' ? 4 : 110;
+    const headroom = S.lid === 'hood' ? HOOD_H + 6 : S.light.type === 'flat' ? 4 : 60 + S.light.height;
     const bottom = (T: Tank) => (S.stand.show ? floorY(T, S.render, S.stand) : 0);
     // the scale person: its card's corners (it turns to face the camera, so use its width both ways)
     const extra = (vp: Viewport) => {
@@ -108,7 +108,7 @@ export class Viewer {
       applyFraming(vp.cam, fov, vp.w, vp.h, c.cx, c.cy);
       r.setViewport(vp.x, vp.y, vp.w, vp.h); r.setScissor(vp.x, vp.y, vp.w, vp.h);
       r.setClearColor(new THREE.Color(0xd9dde2).multiplyScalar(0.06 + 0.94 * roomLevel(S.light.room))); r.clear(); // the space beyond the room dims with the room light
-      setLightUniforms(vp.T, S.light); setWaterUniforms(vp.T, S.water);
+      setLightUniforms(vp.T, S.light, S.lid); setWaterUniforms(vp.T, S.water);
       r.render(vp.scene!, vp.cam);
     }
     r.setScissorTest(false);
