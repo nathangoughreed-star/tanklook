@@ -119,10 +119,10 @@ no licensing, but stays illustrated).
   (`frameStraightOn`) and stay fixed while orbiting; only the angle changes. Before, each angle was re-framed, and the
   stand/person near the eye widened the lens so the tank shrank as if the viewer stepped back. Zoom (0.5-4x) is the
   only lens control.
-- **Constant-scale person + viewpoint map (Nathan, 2026-10-08):** the person stands beside the tank on the chosen
-  side of the SCREEN, at the same horizontal distance from the eye as the tank centre (`personPlacement(S, T, eye)`),
-  so person-vs-tank scale never changes with orbit or zoom. If that spot is behind the wall they take the other
-  side (framing follows the side actually used). Viewpoint map: top-down inset (tank, wall, person, eye, view cone,
+- **Scale person stays put + viewpoint map (Nathan, 2026-10-08):** the person has one fixed spot in the room
+  (`personSpot`), chosen from the straight-on view: beside the tank on the chosen side, as far from that eye as the
+  tank centre; the open side if the chosen one is behind the wall. A first version followed the orbit to keep the
+  scale constant, but it jumped sides when the wall got in the way; at the 3 m default the scale swing is ~1.3x. Viewpoint map: top-down inset (tank, wall, person, eye, view cone,
   distance/angles), DOM overlay so never in PNG exports, toggle in Display (browser storage, not scene data).
 - **Wall: back | peninsula (Nathan, 2026-10-08).** Left/right end merged into one 'peninsula' (right end against
   the wall; old left/right saves load as peninsula). In a peninsula the background panel and grid move to the wall

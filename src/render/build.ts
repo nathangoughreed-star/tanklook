@@ -183,12 +183,13 @@ const PERSON_GAP = 250;
 /** Straight-on eye position (horizontal), for placements that do not follow the orbit. */
 export const straightOnEye = (S: Scene, T: Tank) => ({ x: T.L / 2, z: S.camera.dist });
 /**
- * Where the scale person stands: beside the tank on the chosen side OF THE SCREEN, at the same distance from the eye
- * as the tank centre, so their size relative to the tank never changes while orbiting (a scale reference, not a
- * room object; Nathan, 2026-10-08). If that spot is behind the room wall they take the other side; if both are,
- * they stand against the wall.
+ * Where the scale person stands: a fixed spot in the room, chosen from the straight-on view: beside the tank on the
+ * chosen side, as far from that eye as the tank centre (equal scale when viewed straight on). If that spot is behind
+ * the room wall they take the other side; if both are, they stand against the wall. They stay put while orbiting
+ * (Nathan, 2026-10-08: following the view made them jump sides).
  */
-export function personPlacement(S: Scene, T: Tank, eye: { x: number; z: number }, force?: -1 | 1) {
+export const personSpot = (S: Scene, T: Tank) => personPlacement(S, T, straightOnEye(S, T));
+export function personPlacement(S: Scene, T: Tank, eye: { x: number; z: number }) {
   const t = glassThickness(T, S.render.glass), rim = S.render.rim ? t + 8 : t;
   const h = S.person.height, w = h * PERSON_ASPECT, floor = floorY(T, S.render, S.stand);
   const vx = T.L / 2 - eye.x, vz = -T.D / 2 - eye.z, r = Math.hypot(vx, vz) || 1, ux = vx / r, uz = vz / r;
@@ -198,8 +199,8 @@ export function personPlacement(S: Scene, T: Tank, eye: { x: number; z: number }
   const spot = (a: number) => ({ x: eye.x + vx * Math.cos(a) - vz * Math.sin(a), z: eye.z + vx * Math.sin(a) + vz * Math.cos(a) });
   const wb = -T.D - t - WALL_GAP, wr = T.L + t + WALL_GAP, m = w / 2 + 5;
   const blocked = (p: { x: number; z: number }) => S.wall.show && (S.wall.side === 'back' ? p.z - m < wb : p.x + m > wr);
-  let side: -1 | 1 = force ?? (S.person.side === 'left' ? -1 : 1), p = spot(side * phi);
-  if (!force && blocked(p)) {
+  let side: -1 | 1 = S.person.side === 'left' ? -1 : 1, p = spot(side * phi);
+  if (blocked(p)) {
     const q = spot(-side * phi);
     if (!blocked(q)) { p = q; side = side === 1 ? -1 : 1; } else p = S.wall.side === 'back' ? { ...p, z: wb + m } : { ...p, x: wr - m };
   }
@@ -207,7 +208,7 @@ export function personPlacement(S: Scene, T: Tank, eye: { x: number; z: number }
 }
 function addPerson(sc: THREE.Scene, S: Scene, T: Tank) {
   if (!S.person.show) return;
-  const p = personPlacement(S, T, straightOnEye(S, T)), g = new THREE.PlaneGeometry(p.w, p.h); g.translate(0, p.h / 2, 0); // draw() re-places it per view
+  const p = personSpot(S, T), g = new THREE.PlaneGeometry(p.w, p.h); g.translate(0, p.h / 2, 0);
   const m = new THREE.Mesh(g, cardMaterial('person', personTexture(), 'cutout'));
   m.position.set(p.x, p.floor, p.z); m.name = 'person'; m.userData.room = true; sc.add(m);
 }

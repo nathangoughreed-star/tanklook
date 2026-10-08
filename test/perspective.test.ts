@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { describe, expect, it } from 'vitest';
 import { applyFraming, fovFor, frameBox, frameStraightOn, neededTan, placeCamera } from '../src/render/camera';
-import { personPlacement } from '../src/render/build';
+import { personPlacement, personSpot } from '../src/render/build';
 import { defaultScene } from '../src/scene/defaults';
 import { IN, depthRatio } from '../src/scene/physics';
 
@@ -85,11 +85,10 @@ describe('scale person', () => {
   const S = defaultScene(); S.person.show = true; S.stand.show = true;
   const T = S.tankA, C = { x: T.L / 2, z: -T.D / 2 };
   const eyeAt = (az: number) => { const cam = new THREE.PerspectiveCamera(); placeCamera(cam, T, { ...S.camera, az, el: 0 }); return { x: cam.position.x, z: cam.position.z }; };
-  it('stands as far from the eye as the tank centre at every orbit angle, so relative scale is constant', () => {
-    for (const az of [0, -30, -60, -85, 45, 120]) {
-      const e = eyeAt(az), p = personPlacement(S, T, e);
-      expect(Math.hypot(p.x - e.x, p.z - e.z)).toBeCloseTo(Math.hypot(C.x - e.x, C.z - e.z), 6);
-    }
+  it('stays put while orbiting: one spot, as far from the straight-on eye as the tank centre', () => {
+    const p = personSpot(S, T), e = { x: T.L / 2, z: S.camera.dist };
+    expect(Math.hypot(p.x - e.x, p.z - e.z)).toBeCloseTo(Math.hypot(C.x - e.x, C.z - e.z), 6);
+    for (const az of [-30, -85, 45]) expect(personSpot({ ...S, camera: { ...S.camera, az } }, T)).toEqual(p);
   });
   it('stays on the chosen side of the screen, and swaps sides rather than standing behind the wall', () => {
     const e = eyeAt(0), left = personPlacement(S, T, e);
