@@ -118,8 +118,7 @@ no licensing, but stays illustrated).
 - **Orbit keeps the lens (Nathan, 2026-10-08):** FOV and lens shift come from the straight-on framing
   (`frameStraightOn`) and stay fixed while orbiting; only the angle changes. Before, each angle was re-framed, and the
   stand/person near the eye widened the lens so the tank shrank as if the viewer stepped back. Zoom (0.5-4x) is the
-  only lens control. Side effect: orbiting toward the scale person can put them between eye and tank (physically
-  right, unhelpful); auto-hiding the person when it blocks the view is offered, not built.
+  only lens control.
 - **Constant-scale person + viewpoint map (Nathan, 2026-10-08):** the person stands beside the tank on the chosen
   side of the SCREEN, at the same horizontal distance from the eye as the tank centre (`personPlacement(S, T, eye)`),
   so person-vs-tank scale never changes with orbit or zoom. If that spot is behind the wall they take the other
