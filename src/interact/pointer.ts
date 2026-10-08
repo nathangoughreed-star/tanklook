@@ -1,5 +1,5 @@
 // Pointer: click a fish card to select it and drag it; drag empty space to orbit; wheel zooms (FOV only);
-// shift + wheel moves the selected fish forward/back; double-click empty space returns to straight-on.
+// shift + wheel moves the selected fish forward/back; click empty space to deselect; double-click it for straight-on.
 // With split tanks, pressing in a view makes that tank the one being edited. Bottom dwellers and floor snails slide along the floor; snails on glass stay in their pane.
 import * as THREE from 'three';
 import { fishTL, getSpecies, restsOnFloor } from '../data/species';
@@ -81,7 +81,9 @@ export function attachPointer(viewer: Viewer, store: Store) {
     d.moved = true;
   });
 
-  const end = () => {
+  const end = (e: PointerEvent) => {
+    // a plain click on empty space (no orbit drag) clears the selection, so nothing is highlighted
+    if (orbit && e.type === 'pointerup' && Math.hypot(e.clientX - orbit.x, e.clientY - orbit.y) < 4) store.select(null);
     if (drag?.moved || orbit || lift?.moved) store.seal();
     if (lift) { viewer.terrainEdit.hot = null; viewer.rebuild(); }
     drag = orbit = lift = null; canvas.classList.remove('dragging');

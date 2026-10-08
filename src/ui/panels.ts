@@ -510,7 +510,10 @@ export function attachPanels(store: Store, viewer: Viewer) {
         // top-right corner of each view (Nathan 2026-10-08); the panel's "› Edit" button has the top-left
         el.style.right = (viewer.host.clientWidth - vp.x - vp.w + 8) + 'px'; el.style.maxWidth = Math.max(80, vp.w - 16 - (vp.x === 0 && hidden ? 80 : 0)) + 'px'; // clear of "› Edit"
         el.classList.toggle('tab', split); el.classList.toggle('on', split && i === g.active);
-        if (!split) { el.textContent = fmtDims(vp.T, g.units); continue; }
+        if (!split) { // one tank: its size, and the way into a side-by-side comparison
+          el.innerHTML = `<span>${esc(fmtDims(vp.T, g.units))}</span><button class="close" data-split title="Copy this tank into a second, independent one beside it">⧉ Split to compare</button>`;
+          continue;
+        }
         // only what differs (nothing = the same tank, no labels); close at the bottom
         el.innerHTML = (diff.length ? `<div class="diffs">${diff.map(d => `<span>${esc(d[i])}</span>`).join('')}</div>` : '') +
           `<div class="acts"><button class="close" data-save="${i}" title="Save Tank ${vp.key} on its own as a single-tank file">Save</button>` +
@@ -533,6 +536,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     readout();
   });
   for (const id of ['labA', 'labB']) $(id).addEventListener('click', e => {
+    if ((e.target as HTMLElement).closest('[data-split]')) { $('split').click(); return; }
     const sv = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-save]');
     if (sv) { saveTank(+sv.dataset.save!); return; }
     const b = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-close]'); if (!b) return;

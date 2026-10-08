@@ -167,7 +167,11 @@ As built (the design notes below still hold, with these specifics):
   change alone does not list auto glass or a full tank's depth); numbers for dimension-like values, "X A" / "X B" for
   details (Stocking, Water tint, Wall colour, Terrain, Arrangement, Substrate slope). Nothing different = no labels,
   only the close button. Items wrap; "× Close" sits at the bottom of the tab. Tabs sit in each view's TOP-RIGHT corner and
-  the panel's "› Edit" button is TOP-LEFT (Nathan 2026-10-08); Tank A's tab keeps 80 px clear of Edit when the panel is hidden. Single tank: the plain size label as before.
+  the panel's "› Edit" button is TOP-LEFT (Nathan 2026-10-08); Tank A's tab keeps 80 px clear of Edit when the panel is hidden.
+  Each difference is its own quiet box (faint fill + hairline border). Single tank: the size label carries a
+  "⧉ Split to compare" button (same action as Compare -> Split tank).
+- **Deselect (Nathan 2026-10-08):** a plain click on empty space (under 4 px of movement) clears the selection; Esc did
+  already. A drag still orbits and keeps it. Single tank: the plain size label as before.
 - The readout's "Same fish in Tank B" row is gone (the tanks are independent now).
 - **Saving (Nathan 2026-10-08):** autosave (localStorage `tanklook.scene`) and Save… hold the WHOLE scene (both tanks;
   the file reopens split). Each split tab also has **Save** (left of × Close): that tank alone as an ordinary single-tank
