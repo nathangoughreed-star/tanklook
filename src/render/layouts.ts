@@ -94,9 +94,15 @@ function build(S: Scene, T: Tank, id: LayoutId, seed: number): THREE.Group {
   const out = new THREE.Group(), { L, H, D } = T, sub = (x: number, d: number) => substrateHeight(S.substrate, T, x, d);
   const r = rng(seed * 7919 + id.length * 104729);
   const room = (x: number, d: number, y = sub(x, d)) => H - y - 15; // headroom to the water line
-  const addPlant = (type: PlantType, x: number, d: number, h: number, y = sub(x, d) - 4) => {
-    x = clamp(x, 10, L - 10); d = clamp(d, 10, D - 10);
-    const hh = Math.min(h, room(x, d, y)); if (hh > 15) out.add(plant(S, type, x, y, d, hh, r));
+  // Crossed cards reach half a card width in both x and depth whatever their turn, so the whole card must fit
+  // inside the glass: a plant wider than the tank is scaled down, then its base is kept half a width from every pane.
+  const addPlant = (type: PlantType, x: number, d: number, h: number, yIn?: number) => {
+    const gap = 3, maxW = Math.min(L, D) - 2 * gap;
+    let hh = Math.min(h, maxW * PLANT_ASPECT[type]);
+    const half = hh / PLANT_ASPECT[type] / 2;
+    x = clamp(x, half + gap, L - half - gap); d = clamp(d, half + gap, D - half - gap);
+    const y = yIn ?? sub(x, d) - 4;
+    hh = Math.min(hh, room(x, d, y)); if (hh > 15) out.add(plant(S, type, x, y, d, hh, r));
   };
   const addStone = (x: number, d: number, rx: number, ry: number, rz: number, color: string, angular = false, lift = 0) => {
     const s = stone(r, rx, ry, rz, color, angular); s.position.set(x, sub(x, d) - ry * 0.12 + lift, -d); out.add(s); return s;
