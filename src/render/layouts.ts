@@ -8,7 +8,7 @@ import { rng } from '../art/paint';
 import { PLANT_ASPECT, type PlantType } from '../art/plants';
 import { clamp } from '../scene/physics';
 import { groundHeight } from '../scene/terrain';
-import type { LayoutId, Scene, Tank } from '../scene/types';
+import type { LayoutId, Tank, TankSetup } from '../scene/types';
 import { cardMaterial, plantTexture } from './textures';
 
 export const LAYOUTS: Record<LayoutId, { label: string; hint: string }> = {
@@ -83,7 +83,7 @@ function limb(r: R, pts: THREE.Vector3[], r0: number, r1: number, color: string)
 }
 
 /** Two crossed plant cards (front-facing + edge-on), base at (x, y, depth), h mm tall. */
-function plant(S: Scene, type: PlantType, x: number, y: number, depth: number, h: number, r: R) {
+function plant(S: TankSetup, type: PlantType, x: number, y: number, depth: number, h: number, r: R) {
   const w = h / PLANT_ASPECT[type], g = new THREE.PlaneGeometry(w, h); g.translate(0, h / 2, 0); g.userData.keep = true;
   const m = cardMaterial('plant:' + type, plantTexture(type), S.render.edge), grp = new THREE.Group();
   const a = new THREE.Mesh(g, m), b = new THREE.Mesh(g, m);
@@ -92,7 +92,7 @@ function plant(S: Scene, type: PlantType, x: number, y: number, depth: number, h
   return grp;
 }
 
-function build(S: Scene, T: Tank, id: LayoutId, seed: number): THREE.Group {
+function build(S: TankSetup, T: Tank, id: LayoutId, seed: number): THREE.Group {
   const out = new THREE.Group(), { L, H, D } = T, sub = (x: number, d: number) => groundHeight(S, T, x, d);
   const r = rng(seed * 7919 + id.length * 104729);
   const room = (x: number, d: number, y = sub(x, d)) => H - y - 15; // headroom to the water line
@@ -193,7 +193,7 @@ function build(S: Scene, T: Tank, id: LayoutId, seed: number): THREE.Group {
 
 const cache = new Map<string, THREE.Group>();
 /** The layout for tank T, cached by everything it depends on; returns a clone sharing geometry and materials. */
-export function layoutGroup(S: Scene, T: Tank): THREE.Group | null {
+export function layoutGroup(S: TankSetup, T: Tank): THREE.Group | null {
   const { id, seed } = S.layout; if (id === 'none') return null;
   const key = JSON.stringify([id, seed, T, S.substrate, S.terrain.on ? S.terrain : 0, S.render.edge]);
   let g = cache.get(key);

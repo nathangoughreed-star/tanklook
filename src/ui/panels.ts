@@ -6,27 +6,29 @@ import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { LAYOUTS } from '../render/layouts';
 import type { Viewer } from '../render/viewer';
 import { defaultScene, TANK_PRESETS } from '../scene/defaults';
+import { tankDiff } from './diff';
 import {
-  IN, clamp, clampFish, fmtDims, fmtLen, fromUnit, glassThickness, rescaleTankA, spawnSnail, toUnit, volume, waterY,
+  IN, clamp, clampFish, fmtDims, fmtLen, fromUnit, glassThickness, rescaleTank, spawnSnail, toUnit, volume, waterY,
 } from '../scene/physics';
 import type { Store } from '../scene/store';
 import { SWAMP_LEVEL, groundHeight, nearestLand, randomLand, sampleTerrain } from '../scene/terrain';
 import { restsOnGround, setWaterLevel } from '../scene/water';
 import { tankWeight } from '../scene/weight';
-import type { Fish, LayoutId, Scene, Tank } from '../scene/types';
+import type { Fish, LayoutId, Scene, Tank, TankSetup } from '../scene/types';
 import { GLASS_CHOICES, LIMITS, SceneError, nextFishId, parseScene } from '../scene/validate';
 
 const $ = <T extends HTMLElement = HTMLInputElement>(id: string) => document.getElementById(id) as T;
 const esc = (s: string) => s.replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 
 export function attachPanels(store: Store, viewer: Viewer) {
-  const S = () => store.scene;
-  const fmt = (mm: number) => fmtLen(mm, S().units);
+  const G = () => store.scene;   // the whole scene: name, units, the tanks
+  const S = () => store.tank;    // the tank the panel edits (the active view)
+  const fmt = (mm: number) => fmtLen(mm, G().units);
   const sel = () => store.selected;
   /** Mutate the selected fish (undoable, coalesced per control). */
-  const editSel = (fn: (f: Fish, s: Scene) => void, coalesce?: string) => {
+  const editSel = (fn: (f: Fish, s: TankSetup) => void, coalesce?: string) => {
     if (!store.selected) return;
-    store.update(s => { const f = s.fish.find(f => f.id === store.selId); if (f) fn(f, s); }, { coalesce });
+    store.edit(s => { const f = s.fish.find(f => f.id === store.selId); if (f) fn(f, s); }, { coalesce });
   };
 
   // ---------- Status line ----------
@@ -41,8 +43,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('undo').onclick = () => store.undo();
   $('redo').onclick = () => store.redo();
   $('newScene').onclick = () => {
-    const s = defaultScene(); s.fish = []; s.name = 'New tank';
-    s.camera = { ...S().camera }; s.units = S().units;
+    const s = defaultScene(); s.tanks[0].fish = []; s.name = 'New tank';
+    s.tanks[0].camera = { ...S().camera }; s.units = G().units;
     store.replace(s); status('New tank. Undo brings the previous one back.');
   };
   $('openScene').onclick = () => $('fileIn').click();
@@ -59,8 +61,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
     }
   };
   $('saveScene').onclick = () => {
-    const blob = new Blob([JSON.stringify(S(), null, 1)], { type: 'application/json' });
-    download(blob, `${slug(S().name)}.tanklook.json`);
+    const blob = new Blob([JSON.stringify(G(), null, 1)], { type: 'application/json' });
+    download(blob, `${slug(G().name)}.tanklook.json`);
   };
   $('sceneName').onchange = () => {
     const v = $('sceneName').value.trim().slice(0, 80) || 'My tank';
@@ -69,60 +71,58 @@ export function attachPanels(store: Store, viewer: Viewer) {
 
   // ---------- Tank ----------
   const presetOptions = '<option value="">Presets…</option>' + TANK_PRESETS.map((p, i) => `<option value="${i}">${esc(p[0])}</option>`).join('');
-  for (const [id, key] of [['presetA', 'tankA'], ['presetB', 'tankB']] as const) {
-    const s = $<HTMLSelectElement>(id); s.innerHTML = presetOptions;
+  {
+    const s = $<HTMLSelectElement>('presetA'); s.innerHTML = presetOptions;
     s.onchange = () => {
       if (s.value === '') return;
       const p = TANK_PRESETS[+s.value]; s.value = '';
-      setTank(key, { L: p[1] * IN, H: p[2] * IN, D: p[3] * IN });
+      setTank({ L: p[1] * IN, H: p[2] * IN, D: p[3] * IN });
     };
   }
-  function setTank(key: 'tankA' | 'tankB', T: Tank) {
-    store.update(s => {
-      if (key === 'tankA') {
-        rescaleTankA(s, T); // keep fish at the same relative spot
-        const max = T.H * 0.5;
-        for (const k of ['fl', 'fr', 'bl', 'br'] as const) s.substrate[k] = Math.min(s.substrate[k], max);
-      } else s.tankB = { ...T };
+  function setTank(T: Tank) {
+    store.edit(s => {
+      rescaleTank(s, T); // keep fish at the same relative spot
+      const max = T.H * 0.5;
+      for (const k of ['fl', 'fr', 'bl', 'br'] as const) s.substrate[k] = Math.min(s.substrate[k], max);
     });
   }
-  for (const k of ['L', 'H', 'D'] as const) for (const [p, key] of [['a', 'tankA'], ['b', 'tankB']] as const) {
-    const el = $(p + k);
+  for (const k of ['L', 'H', 'D'] as const) {
+    const el = $('a' + k);
     el.onchange = () => {
       const v = +el.value; if (!Number.isFinite(v) || v <= 0) { sync(); return; }
-      const T = { ...S()[key] }; T[k] = clamp(fromUnit(v, S().units), LIMITS.tankMin, LIMITS.tankMax);
-      setTank(key, T);
+      const T = { ...S().tank }; T[k] = clamp(fromUnit(v, G().units), LIMITS.tankMin, LIMITS.tankMax);
+      setTank(T);
     };
   }
   const setUnits = (u: Scene['units']) => store.update(s => { s.units = u; });
   $('uIn').onclick = () => setUnits('in'); $('uCm').onclick = () => setUnits('cm');
-  $('rimY').onclick = () => store.update(s => { s.render.rim = true; });
-  $('rimN').onclick = () => store.update(s => { s.render.rim = false; });
+  $('rimY').onclick = () => store.edit(s => { s.render.rim = true; });
+  $('rimN').onclick = () => store.edit(s => { s.render.rim = false; });
   const LIDS = [['lidOpen', 'open'], ['lidGlass', 'glass'], ['lidHood', 'hood']] as const;
-  for (const [id, lid] of LIDS) $(id).onclick = () => store.update(s => { s.lid = lid; });
+  for (const [id, lid] of LIDS) $(id).onclick = () => store.edit(s => { s.lid = lid; });
   $<HTMLSelectElement>('bgSel').innerHTML = Object.entries(BACKGROUNDS).map(([k, b]) => `<option value="${k}">${esc(b.label)}</option>`).join('');
-  $<HTMLSelectElement>('bgSel').onchange = e => store.update(s => { s.render.bg = (e.target as HTMLSelectElement).value as Scene['render']['bg']; });
+  $<HTMLSelectElement>('bgSel').onchange = e => store.edit(s => { s.render.bg = (e.target as HTMLSelectElement).value as TankSetup['render']['bg']; });
   $<HTMLSelectElement>('glassSel').innerHTML = '<option value="auto">Auto (by height)</option>' + GLASS_CHOICES.map(g => `<option value="${g}">${g} mm</option>`).join('');
-  $<HTMLSelectElement>('glassSel').onchange = e => store.update(s => { const v = (e.target as HTMLSelectElement).value; s.render.glass = v === 'auto' ? 'auto' : +v; });
-  $<HTMLSelectElement>('glassType').onchange = e => store.update(s => { s.render.glassType = (e.target as HTMLSelectElement).value as Scene['render']['glassType']; });
+  $<HTMLSelectElement>('glassSel').onchange = e => store.edit(s => { const v = (e.target as HTMLSelectElement).value; s.render.glass = v === 'auto' ? 'auto' : +v; });
+  $<HTMLSelectElement>('glassType').onchange = e => store.edit(s => { s.render.glassType = (e.target as HTMLSelectElement).value as TankSetup['render']['glassType']; });
 
   // ---------- Room: stand + wall ----------
   $<HTMLSelectElement>('standFinish').innerHTML = Object.entries(STAND_FINISHES).map(([k, f]) => `<option value="${k}">${esc(f.label)}</option>`).join('');
-  $('standOn').onchange = e => store.update(s => { s.stand.show = (e.target as HTMLInputElement).checked; });
-  $<HTMLSelectElement>('standFinish').onchange = e => store.update(s => { s.stand.finish = (e.target as HTMLSelectElement).value as Scene['stand']['finish']; s.stand.show = true; });
-  $<HTMLSelectElement>('standStyle').onchange = e => store.update(s => { s.stand.style = (e.target as HTMLSelectElement).value as Scene['stand']['style']; s.stand.show = true; });
+  $('standOn').onchange = e => store.edit(s => { s.stand.show = (e.target as HTMLInputElement).checked; });
+  $<HTMLSelectElement>('standFinish').onchange = e => store.edit(s => { s.stand.finish = (e.target as HTMLSelectElement).value as TankSetup['stand']['finish']; s.stand.show = true; });
+  $<HTMLSelectElement>('standStyle').onchange = e => store.edit(s => { s.stand.style = (e.target as HTMLSelectElement).value as TankSetup['stand']['style']; s.stand.show = true; });
   $('standH').min = String(LIMITS.stand[0]); $('standH').max = String(LIMITS.stand[1]);
-  $('standH').oninput = e => store.update(s => { s.stand.height = +(e.target as HTMLInputElement).value; s.stand.show = true; }, { coalesce: 'standH' });
-  $('wallOn').onchange = e => store.update(s => { s.wall.show = (e.target as HTMLInputElement).checked; });
+  $('standH').oninput = e => store.edit(s => { s.stand.height = +(e.target as HTMLInputElement).value; s.stand.show = true; }, { coalesce: 'standH' });
+  $('wallOn').onchange = e => store.edit(s => { s.wall.show = (e.target as HTMLInputElement).checked; });
   for (const [id, side] of [['wallBack', 'back'], ['wallLeft', 'left'], ['wallRight', 'right']] as const)
-    $(id).onclick = () => store.update(s => { s.wall.side = side; s.wall.show = true; });
-  $('wallColor').oninput = e => store.update(s => { s.wall.color = (e.target as HTMLInputElement).value; s.wall.show = true; }, { coalesce: 'wallColor' });
+    $(id).onclick = () => store.edit(s => { s.wall.side = side; s.wall.show = true; });
+  $('wallColor').oninput = e => store.edit(s => { s.wall.color = (e.target as HTMLInputElement).value; s.wall.show = true; }, { coalesce: 'wallColor' });
 
-  $('personOn').onchange = e => store.update(s => { s.person.show = (e.target as HTMLInputElement).checked; });
+  $('personOn').onchange = e => store.edit(s => { s.person.show = (e.target as HTMLInputElement).checked; });
   $('personH').min = String(LIMITS.person[0]); $('personH').max = String(LIMITS.person[1]);
-  $('personH').oninput = e => store.update(s => { s.person.height = +(e.target as HTMLInputElement).value; s.person.show = true; }, { coalesce: 'personH' });
+  $('personH').oninput = e => store.edit(s => { s.person.height = +(e.target as HTMLInputElement).value; s.person.show = true; }, { coalesce: 'personH' });
   const PSIDES = [['personLeft', 'left'], ['personRight', 'right']] as const;
-  for (const [id, side] of PSIDES) $(id).onclick = () => store.update(s => { s.person.side = side; s.person.show = true; });
+  for (const [id, side] of PSIDES) $(id).onclick = () => store.edit(s => { s.person.side = side; s.person.show = true; });
 
   // ---------- Species search & adding fish ----------
   let pickId = 'neon';
@@ -156,9 +156,9 @@ export function attachPanels(store: Store, viewer: Viewer) {
   const sizeLabel = (pct: number, sp?: Species) => (pct === 100 ? 'Adult' : `${pct}%${sp ? ' · ' + fmt(sp.tl * pct / 100) : ''}`);
   $('addSize').oninput = () => setOut('oAddSize', sizeLabel(addPct(), getSpecies(pickId)));
   /** A snail at a random spot on the substrate or the inside of a pane (area-weighted). */
-  const snailAt = (s: Scene, sp: Species, id: number): Fish => {
+  const snailAt = (s: TankSetup, sp: Species, id: number): Fish => {
     const sz = newTL(sp);
-    return { id, species: sp.id, ...spawnSnail((x, d) => groundHeight(s, s.tankA, x, d), s.tankA, sz.tl ?? sp.tl, Math.random, s.water.on ? waterY(s.tankA, s.water.level) : s.tankA.H - 10), pitch: 0, roll: 0, bend: 0, ...sz };
+    return { id, species: sp.id, ...spawnSnail((x, d) => groundHeight(s, s.tank, x, d), s.tank, sz.tl ?? sp.tl, Math.random, s.water.on ? waterY(s.tank, s.water.level) : s.tank.H - 10), pitch: 0, roll: 0, bend: 0, ...sz };
   };
   /** Random heading around `dir` (0 or 180) with a little pitch, roll and bend; bottom dwellers face anywhere, level. */
   const randomPose = (sp: Species, r: () => number, dir: number) => {
@@ -167,26 +167,26 @@ export function attachPanels(store: Store, viewer: Viewer) {
     return { yaw, pitch: Math.round((r() - 0.5) * 16), roll: Math.round((r() - 0.5) * 10), bend: +((r() - 0.5) * 0.8).toFixed(2) };
   };
   /** Water surface for placement: the water line, or -1 in a dry tank (all ground counts as land). */
-  const surfaceY = (s: Scene) => (s.water.on ? waterY(s.tankA, s.water.level) : -1);
+  const surfaceY = (s: TankSetup) => (s.water.on ? waterY(s.tank, s.water.level) : -1);
   /** Why this species cannot be added right now ('' = it can). */
   function blocked(sp: Species): string {
     const s = S();
     if (!s.water.on && needsWater(sp)) return 'Fish need water: turn Water on (Water section).';
-    if (sp.habitat === 'land' && !nearestLand(s, s.tankA, surfaceY(s), 0, 0))
+    if (sp.habitat === 'land' && !nearestLand(s, s.tank, surfaceY(s), 0, 0))
       return 'Land animals need ground above the water: lower the water, or use the Swamp layout or Custom terrain.';
     return '';
   }
   /** Put a land or amphibious animal on a random spot of land (amphibians: half the time in the water if there is any). */
-  function placeOnLand(s: Scene, sp: Species, f: Fish, r: () => number) {
+  function placeOnLand(s: TankSetup, sp: Species, f: Fish, r: () => number) {
     if (sp.habitat === 'both' && s.water.on && r() < 0.5) return;
-    const p = randomLand(s, s.tankA, surfaceY(s), r); if (!p) return;
-    f.x = p.x; f.depth = p.depth; f.y = groundHeight(s, s.tankA, p.x, p.depth);
+    const p = randomLand(s, s.tank, surfaceY(s), r); if (!p) return;
+    f.x = p.x; f.depth = p.depth; f.y = groundHeight(s, s.tank, p.x, p.depth);
   }
   function addOne(sp: Species) {
     const why = blocked(sp); if (why) { status(why, true); renderResults(); return; }
     let id = 0;
-    store.update(s => {
-      const A = s.tankA;
+    store.edit(s => {
+      const A = s.tank;
       if (sp.kind === 'snail') { s.fish.push(snailAt(s, sp, id = nextFishId(s))); return; }
       const sz = newTL(sp), r = Math.random;
       const f: Fish = { id: id = nextFishId(s), species: sp.id, x: A.L * (0.1 + r() * 0.8), y: waterY(A, s.water.level) * (0.2 + r() * 0.6), depth: A.D * (0.15 + r() * 0.7), ...randomPose(sp, r, r() < 0.5 ? 0 : 180), ...sz };
@@ -201,8 +201,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
     const why = blocked(sp); if (why) { status(why, true); renderResults(); return; }
     const n = clamp(Math.round(+$('schoolN').value || 12), 2, 60);
     let last = 0;
-    store.update(s => {
-      const A = s.tankA, sz = newTL(sp), tl = sz.tl ?? sp.tl, r = Math.random, cx = A.L * (0.3 + r() * 0.4), cy = waterY(A, s.water.level) * (0.4 + r() * 0.3), dir = r() < 0.5 ? 0 : 180;
+    store.edit(s => {
+      const A = s.tank, sz = newTL(sp), tl = sz.tl ?? sp.tl, r = Math.random, cx = A.L * (0.3 + r() * 0.4), cy = waterY(A, s.water.level) * (0.4 + r() * 0.3), dir = r() < 0.5 ? 0 : 180;
       for (let i = 0; i < n && s.fish.length < LIMITS.maxFish; i++) {
         if (sp.kind === 'snail') { s.fish.push(snailAt(s, sp, last = nextFishId(s))); continue; }
         const f: Fish = {
@@ -226,14 +226,14 @@ export function attachPanels(store: Store, viewer: Viewer) {
       return;
     }
     clearTimeout(delArm); delArm = 0; b.textContent = 'Delete all'; b.classList.remove('on');
-    store.update(s => { s.fish = []; });
+    store.edit(s => { s.fish = []; });
     status('All fish deleted. Ctrl+Z brings them back.');
   };
 
   // ---------- Selected fish ----------
   const fishKeys = { fX: 'x', fY: 'y', fZ: 'depth', fYaw: 'yaw', fPitch: 'pitch', fRoll: 'roll', fBend: 'bend' } as const;
   for (const [id, k] of Object.entries(fishKeys)) $(id).oninput = e => editSel(f => { f[k] = +(e.target as HTMLInputElement).value; }, id);
-  document.querySelectorAll<HTMLButtonElement>('[data-d]').forEach(b => b.onclick = () => editSel((f, s) => { f.depth = +b.dataset.d! * s.tankA.D; }));
+  document.querySelectorAll<HTMLButtonElement>('[data-d]').forEach(b => b.onclick = () => editSel((f, s) => { f.depth = +b.dataset.d! * s.tank.D; }));
   const setSize = (f: Fish, pct: number) => {
     const sp = getSpecies(f.species)!, tl = Math.round(sp.tl * clamp(pct, 15, 130) / 100);
     if (tl === sp.tl) delete f.tl; else f.tl = tl;
@@ -244,15 +244,15 @@ export function attachPanels(store: Store, viewer: Viewer) {
   const flip = () => editSel(f => { f.yaw = f.yaw > 0 ? f.yaw - 180 : f.yaw + 180; });
   const del = () => {
     const i = S().fish.findIndex(f => f.id === store.selId); if (i < 0) return;
-    store.update(s => { s.fish.splice(i, 1); });
+    store.edit(s => { s.fish.splice(i, 1); });
     store.select(S().fish[Math.max(0, i - 1)]?.id ?? null);
   };
   const dup = () => {
     const f = sel(); if (!f) return;
     let id = 0;
-    store.update(s => {
+    store.edit(s => {
       const n: Fish = { ...f, id: id = nextFishId(s), x: f.x + fishTL(f, getSpecies(f.species)!) * 0.9 };
-      clampFish(n, s.tankA); s.fish.push(n);
+      clampFish(n, s.tank); s.fish.push(n);
     });
     store.select(id);
   };
@@ -274,14 +274,14 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // 'bare' = bare-bottom glass (substrate.show off; the last type is kept for when it comes back)
   $<HTMLSelectElement>('subType').innerHTML = '<option value="bare">Bare bottom (no substrate)</option>' +
     Object.entries(SUBSTRATES).map(([k, t]) => `<option value="${k}">${esc(t.label)}</option>`).join('');
-  $<HTMLSelectElement>('subType').onchange = e => store.update(s => {
+  $<HTMLSelectElement>('subType').onchange = e => store.edit(s => {
     const v = (e.target as HTMLSelectElement).value;
-    s.substrate.show = v !== 'bare'; if (v !== 'bare') s.substrate.type = v as Scene['substrate']['type'];
+    s.substrate.show = v !== 'bare'; if (v !== 'bare') s.substrate.type = v as TankSetup['substrate']['type'];
   });
   const SUBK = { subFL: 'fl', subFR: 'fr', subBL: 'bl', subBR: 'br' } as const;
-  for (const [id, k] of Object.entries(SUBK)) $(id).oninput = e => store.update(s => { s.substrate[k] = +(e.target as HTMLInputElement).value; }, { coalesce: id });
-  const subSet = (fl: number, fr: number, bl: number, br: number) => store.update(s => {
-    const max = s.tankA.H * 0.5, c = (v: number) => Math.min(v * IN, max);
+  for (const [id, k] of Object.entries(SUBK)) $(id).oninput = e => store.edit(s => { s.substrate[k] = +(e.target as HTMLInputElement).value; }, { coalesce: id });
+  const subSet = (fl: number, fr: number, bl: number, br: number) => store.edit(s => {
+    const max = s.tank.H * 0.5, c = (v: number) => Math.min(v * IN, max);
     Object.assign(s.substrate, { show: true, fl: c(fl), fr: c(fr), bl: c(bl), br: c(br) });
   });
   $('subLevel').onclick = () => subSet(2, 2, 2, 2);
@@ -292,19 +292,19 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // ---------- Custom terrain ----------
   $('terOn').onchange = e => {
     const on = (e.target as HTMLInputElement).checked;
-    store.update(s => {
+    store.edit(s => {
       // turning on starts from the floor you see (slopes or swamp land); a grid kept from before is reused
-      if (on && !s.terrain.h.length) s.terrain = sampleTerrain(s, s.tankA, s.terrain.cols);
+      if (on && !s.terrain.h.length) s.terrain = sampleTerrain(s, s.tank, s.terrain.cols);
       s.terrain.on = on;
     });
     viewer.terrainEdit.on = on; viewer.rebuild();
   };
-  $('terCols').oninput = e => store.update(s => {
+  $('terCols').oninput = e => store.edit(s => {
     const cols = +(e.target as HTMLInputElement).value; if (cols === s.terrain.cols && s.terrain.h.length) return;
-    s.terrain = sampleTerrain(s, s.tankA, cols); // resample the current surface, so shaping survives a grid change
+    s.terrain = sampleTerrain(s, s.tank, cols); // resample the current surface, so shaping survives a grid change
   }, { coalesce: 'terCols' });
   $('terEdit').onclick = () => { viewer.terrainEdit.on = !viewer.terrainEdit.on; viewer.rebuild(); sync(); };
-  $('terFlat').onclick = () => store.update(s => {
+  $('terFlat').onclick = () => store.edit(s => {
     const t = s.terrain, avg = t.h.reduce((a, v) => a + v, 0) / Math.max(1, t.h.length);
     t.h = t.h.map(() => +avg.toFixed(1));
   });
@@ -312,36 +312,38 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // ---------- Water ----------
   $('wOn').onchange = e => {
     const on = (e.target as HTMLInputElement).checked;
-    store.update(s => { s.water.on = on; });
+    store.edit(s => { s.water.on = on; });
     const n = S().fish.filter(f => { const sp = getSpecies(f.species); return sp && needsWater(sp); }).length;
     if (!on && n) status(`${n} fish hidden while the tank is dry. Turn Water back on to see them.`);
     renderResults();
   };
-  $('wLevel').oninput = e => store.update(s => setWaterLevel(s, +(e.target as HTMLInputElement).value), { coalesce: 'wLevel' });
-  $('wOpac').oninput = e => store.update(s => { s.water.opacity = +(e.target as HTMLInputElement).value; }, { coalesce: 'wOpac' });
-  $('wColor').oninput = e => store.update(s => {
+  $('wLevel').oninput = e => store.edit(s => setWaterLevel(s, +(e.target as HTMLInputElement).value), { coalesce: 'wLevel' });
+  $('wOpac').oninput = e => store.edit(s => { s.water.opacity = +(e.target as HTMLInputElement).value; }, { coalesce: 'wOpac' });
+  $('wColor').oninput = e => store.edit(s => {
     s.water.color = (e.target as HTMLInputElement).value;
     if (s.water.opacity < 0.05) s.water.opacity = 0.3; // picking a colour on clear water should show it
   }, { coalesce: 'wColor' });
-  const waterPreset = (color: string, opacity: number) => store.update(s => { Object.assign(s.water, { color, opacity }); });
+  const waterPreset = (color: string, opacity: number) => store.edit(s => { Object.assign(s.water, { color, opacity }); });
   $('wClear').onclick = () => waterPreset('#7fb8a8', 0);
   $('wTannin').onclick = () => waterPreset('#6b3d14', 0.6);
   $('wGreen').onclick = () => waterPreset('#5d8a2e', 0.5);
 
   // ---------- Lighting ----------
   const lKeys = { lCount: 'count', lH: 'height', lBright: 'bright', lK: 'kelvin', lRoom: 'room' } as const;
-  for (const [id, k] of Object.entries(lKeys)) $(id).oninput = e => store.update(s => { s.light[k] = +(e.target as HTMLInputElement).value; }, { coalesce: id });
-  $<HTMLSelectElement>('lType').onchange = e => store.update(s => { s.light.type = (e.target as HTMLSelectElement).value as Scene['light']['type']; });
+  for (const [id, k] of Object.entries(lKeys)) $(id).oninput = e => store.edit(s => { s.light[k] = +(e.target as HTMLInputElement).value; }, { coalesce: id });
+  $<HTMLSelectElement>('lType').onchange = e => store.edit(s => { s.light.type = (e.target as HTMLSelectElement).value as TankSetup['light']['type']; });
 
   // ---------- Viewer (camera): saved with the scene, but not undoable ----------
   const camKeys = { cDist: 'dist', cAz: 'az', cEl: 'el', cZoom: 'zoom' } as const;
-  for (const [id, k] of Object.entries(camKeys)) $(id).oninput = e => store.update(s => { s.camera[k] = +(e.target as HTMLInputElement).value; }, { kind: 'view' });
-  $('camReset').onclick = () => store.update(s => Object.assign(s.camera, { az: 0, el: 0, zoom: 1 }), { kind: 'view' });
+  for (const [id, k] of Object.entries(camKeys)) $(id).oninput = e => store.cam(c => { c[k] = +(e.target as HTMLInputElement).value; });
+  $('camReset').onclick = () => store.cam(c => Object.assign(c, { az: 0, el: 0, zoom: 1 }));
 
-  // ---------- Compare, display, export ----------
-  $('cmp').onchange = e => store.update(s => { s.compare = (e.target as HTMLInputElement).checked; });
-  $<HTMLSelectElement>('edge').onchange = e => store.update(s => { s.render.edge = (e.target as HTMLSelectElement).value as Scene['render']['edge']; });
-  $('gridOn').onchange = e => store.update(s => { s.render.grid = (e.target as HTMLInputElement).checked; });
+  // ---------- Split, display, export ----------
+  $('split').onclick = () => { store.splitTank(); status('Split: Tank B is a copy you can change freely. Click a view to edit that tank.'); };
+  $('camLock').onclick = () => store.setCamLock(!G().camLock);
+  // an app preference: the same edge mode in every tank
+  $<HTMLSelectElement>('edge').onchange = e => store.update(s => { for (const t of s.tanks) t.render.edge = (e.target as HTMLSelectElement).value as TankSetup['render']['edge']; });
+  $('gridOn').onchange = e => store.edit(s => { s.render.grid = (e.target as HTMLInputElement).checked; });
   // viewpoint map: a per-viewer display preference (browser storage), not scene data
   const mapCb = $('mapOn'), applyMap = () => { $('viewmap').classList.toggle('off', !mapCb.checked); viewer.invalidate(); };
   try { mapCb.checked = localStorage.getItem('tanklook.viewmap') !== 'off'; } catch { /* storage blocked: keep default */ }
@@ -362,14 +364,14 @@ export function attachPanels(store: Store, viewer: Viewer) {
   /** Open a section (e.g. Fish when an animal gets selected), so what the user just acted on is editable. */
   const openSec = (key: string) => { const d = secs.find(x => x.dataset.sec === key); if (d && !d.open) d.open = true; };
   $<HTMLSelectElement>('layout').innerHTML = Object.entries(LAYOUTS).map(([k, l]) => `<option value="${k}">${esc(l.label)}</option>`).join('');
-  $<HTMLSelectElement>('layout').onchange = e => store.update(s => {
+  $<HTMLSelectElement>('layout').onchange = e => store.edit(s => {
     s.layout.id = (e.target as HTMLSelectElement).value as LayoutId;
     if (s.layout.id === 'swamp' && s.water.level > SWAMP_LEVEL) setWaterLevel(s, SWAMP_LEVEL); // land needs to stand out of the water
   });
-  $('layoutShuffle').onclick = () => store.update(s => { s.layout.seed = 1 + Math.floor(Math.random() * 1e6); });
+  $('layoutShuffle').onclick = () => store.edit(s => { s.layout.seed = 1 + Math.floor(Math.random() * 1e6); });
   document.querySelectorAll<HTMLButtonElement>('[data-png]').forEach(b => b.onclick = async () => {
     const mult = +b.dataset.png!;
-    try { download(await viewer.exportPNG(mult), `${slug(S().name)}-${mult}x.png`); }
+    try { download(await viewer.exportPNG(mult), `${slug(G().name)}-${mult}x.png`); }
     catch (e) { status((e as Error).message, true); }
   });
   for (const el of document.querySelectorAll<HTMLInputElement>('input[type=range]')) el.addEventListener('change', () => store.seal());
@@ -380,15 +382,17 @@ export function attachPanels(store: Store, viewer: Viewer) {
   let listSig = '', jsonOpen = false, lastSelId: number | null = store.selId; // a selection restored on load does not open Fish
   const jsonDetails = $('json').parentElement as HTMLDetailsElement;
   jsonDetails.addEventListener('toggle', () => { jsonOpen = jsonDetails.open; syncJson(); });
-  const syncJson = () => { if (jsonOpen) $('json').textContent = JSON.stringify(S(), null, 1); };
+  const syncJson = () => { if (jsonOpen) $('json').textContent = JSON.stringify(G(), null, 1); };
 
   function sync() {
-    const s = S(), A = s.tankA, u = s.units;
+    const s = S(), A = s.tank, u = G().units;
     $<HTMLButtonElement>('undo').disabled = !store.canUndo; $<HTMLButtonElement>('redo').disabled = !store.canRedo;
-    setVal('sceneName', s.name);
+    setVal('sceneName', G().name);
     $('uIn').classList.toggle('on', u === 'in'); $('uCm').classList.toggle('on', u === 'cm');
-    for (const k of ['L', 'H', 'D'] as const) { setVal('a' + k, toUnit(A[k], u)); setVal('b' + k, toUnit(s.tankB[k], u)); }
-    for (const id of ['aL', 'aH', 'aD', 'bL', 'bH', 'bD']) $(id).step = u === 'in' ? '0.5' : '1';
+    for (const k of ['L', 'H', 'D'] as const) setVal('a' + k, toUnit(A[k], u));
+    for (const id of ['aL', 'aH', 'aD']) $(id).step = u === 'in' ? '0.5' : '1';
+    // which tank the panel edits (split view)
+    $('editing').hidden = !store.split; $('editing').textContent = `Editing Tank ${'AB'[G().active]}: click the other view to edit that one.`;
     const vol = volume(A);
     $('volA').textContent = `${vol.gallons.toFixed(1)} US gal · ${vol.litres.toFixed(0)} L interior`;
     const wt = tankWeight(s), kgs = (kg: number) => (u === 'in' ? `${Math.round(kg * 2.20462)} lb` : `${Math.round(kg)} kg`);
@@ -476,7 +480,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
       ? '<span class="warn">Steep angle: flat fish cards start to look like paper here.</span>'
       : 'Distance is from your eye to the front glass, the same for every tank. Zoom only crops; it never changes perspective.';
 
-    $('cmp').checked = s.compare; $('bBox').hidden = !s.compare;
+    ($('split') as HTMLButtonElement).disabled = store.split;
+    $('splitHint').textContent = store.split ? 'Close a tank with the × at the bottom of its tab, at the top of its view.' : 'Copy this tank into a second, independent one beside it, then change anything in either.';
     setVal('edge', s.render.edge); $('gridOn').checked = s.render.grid; 
     setVal('layout', s.layout.id); $('layoutHint').textContent = LAYOUTS[s.layout.id].hint;
     ($('layoutShuffle') as HTMLButtonElement).disabled = s.layout.id === 'none';
@@ -484,14 +489,43 @@ export function attachPanels(store: Store, viewer: Viewer) {
   }
 
   // ---------- after each draw: viewport labels + readout (same frame as the render) ----------
+  let tabSig = '';
   viewer.onDrawn(() => {
-    const s = S(), active = viewer.active;
-    for (const [i, id] of [[0, 'labA'], [1, 'labB']] as const) {
-      const el = $<HTMLDivElement>(id), vp = active[i];
-      el.style.display = vp ? '' : 'none';
-      if (vp) { el.style.left = (vp.x + 8) + 'px'; el.textContent = (active.length > 1 ? `Tank ${vp.key}: ` : '') + fmtDims(vp.T, s.units); }
+    const g = G(), active = viewer.active, split = active.length > 1;
+    const diff = split ? tankDiff(g.tanks[0], g.tanks[1], g.units) : [];
+    const sig = JSON.stringify([diff, g.units, g.active, active.map(v => [v.x, v.w]), split || fmtDims(g.tanks[0].tank, g.units)]);
+    if (sig !== tabSig) {
+      tabSig = sig;
+      for (const [i, id] of [[0, 'labA'], [1, 'labB']] as const) {
+        const el = $<HTMLDivElement>(id), vp = active[i];
+        el.style.display = vp ? '' : 'none';
+        if (!vp) continue;
+        el.style.left = (vp.x + 8) + 'px'; el.style.maxWidth = Math.max(80, vp.w - 16) + 'px';
+        el.classList.toggle('tab', split); el.classList.toggle('on', split && i === g.active);
+        if (!split) { el.textContent = fmtDims(vp.T, g.units); continue; }
+        // only what differs (nothing = the same tank, no labels); close at the bottom
+        el.innerHTML = (diff.length ? `<div class="diffs">${diff.map(d => `<span>${esc(d[i])}</span>`).join('')}</div>` : '') +
+          `<button class="close" data-close="${i}" title="Close Tank ${vp.key}" aria-label="Close Tank ${vp.key}">× Close</button>`;
+      }
+      const lock = $<HTMLButtonElement>('camLock');
+      lock.hidden = !split;
+      if (split) {
+        lock.style.left = (active[1].x - 4) + 'px';
+        lock.classList.toggle('on', g.camLock);
+        lock.textContent = g.camLock ? '🔒' : '🔓';
+        lock.title = g.camLock ? 'Views move together (one field of view). Click to move each view on its own.' : 'Views move separately. Click to lock them together again (Tank B snaps to Tank A’s view).';
+      }
+      // the active view gets a frame
+      const fr = $<HTMLDivElement>('vpFrame'), cur = active[g.active];
+      fr.hidden = !split || !cur;
+      if (split && cur) Object.assign(fr.style, { left: cur.x + 'px', width: cur.w + 'px' });
     }
     readout();
+  });
+  for (const id of ['labA', 'labB']) $(id).addEventListener('click', e => {
+    const b = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-close]'); if (!b) return;
+    const i = +b.dataset.close!;
+    store.closeTank(i); status(`Tank ${'AB'[i]} closed. Ctrl+Z brings it back.`);
   });
   function readout() {
     const f = sel(), ro = $<HTMLDivElement>('ro');
@@ -506,7 +540,6 @@ export function attachPanels(store: Store, viewer: Viewer) {
       <div><span>Measured ratio</span><span>×${(m.len / m.ref).toFixed(3)}</span></div>
       <div><span>Straight-on formula d ÷ (d + z)</span><span>×${m.formula.toFixed(3)}</span></div>
       <div><span>Angle off side-on</span><span class="${cls}">${a.toFixed(0)}°: ${txt}</span></div>`;
-    if (m.lenB != null) html += `<div><span>Same fish in Tank B</span><span>${m.lenB.toFixed(0)} px (depth ${fmt(m.depthB!)})</span></div>`;
     ro.innerHTML = html;
   }
 

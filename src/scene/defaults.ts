@@ -1,18 +1,17 @@
 import { IN } from './physics';
-import { SCENE_VERSION, type Fish, type Scene } from './types';
+import { SCENE_VERSION, type Fish, type Scene, type TankSetup } from './types';
 
 export function defaultScene(): Scene {
+  return { version: SCENE_VERSION, name: 'My tank', units: 'in', tanks: [defaultSetup()], active: 0, camLock: true };
+}
+
+export function defaultSetup(): TankSetup {
   const A = { L: 24 * IN, H: 12 * IN, D: 12 * IN };
   let id = 1;
   const fish = (species: string, x: number, y: number, depth: number): Fish =>
     ({ id: id++, species, x, y, depth, yaw: 0, pitch: 0, roll: 0, bend: 0 });
   return {
-    version: SCENE_VERSION,
-    name: 'My tank',
-    units: 'in',
-    tankA: A,
-    tankB: { L: 24 * IN, H: 12 * IN, D: 24 * IN },
-    compare: false,
+    tank: A,
     camera: { dist: 3000, az: 0, el: 0, zoom: 1 },
     render: { edge: 'a2c', grid: true, rim: true, bg: 'blue', glass: 'auto', glassType: 'standard' },
     light: { type: 'flat', count: 2, bright: 1, kelvin: 6500, room: 0.15, height: 50 },

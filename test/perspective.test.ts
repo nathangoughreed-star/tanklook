@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { describe, expect, it } from 'vitest';
 import { applyFraming, fovFor, frameBox, frameStraightOn, neededTan, placeCamera } from '../src/render/camera';
 import { personPlacement, personSpot } from '../src/render/build';
-import { defaultScene } from '../src/scene/defaults';
+import { defaultSetup } from '../src/scene/defaults';
 import { IN, depthRatio } from '../src/scene/physics';
 
 // Project a horizontal segment of length `len` centred at (x, y, -depth) and return its on-screen length in px.
@@ -82,8 +82,8 @@ describe('orbit keeps the lens', () => {
 });
 
 describe('scale person', () => {
-  const S = defaultScene(); S.person.show = true; S.stand.show = true;
-  const T = S.tankA, C = { x: T.L / 2, z: -T.D / 2 };
+  const S = defaultSetup(); S.person.show = true; S.stand.show = true;
+  const T = S.tank, C = { x: T.L / 2, z: -T.D / 2 };
   const eyeAt = (az: number) => { const cam = new THREE.PerspectiveCamera(); placeCamera(cam, T, { ...S.camera, az, el: 0 }); return { x: cam.position.x, z: cam.position.z }; };
   it('stays put while orbiting: one spot, as far from the straight-on eye as the tank centre', () => {
     const p = personSpot(S, T), e = { x: T.L / 2, z: S.camera.dist };
@@ -101,13 +101,13 @@ describe('scale person', () => {
 
 describe('peninsula', () => {
   it('moves the person off the wall end to the open side', () => {
-    const S = defaultScene(); S.person.show = true; S.person.side = 'right'; S.wall.show = true; S.wall.side = 'right';
-    const T = S.tankA, p = personPlacement(S, T, { x: T.L / 2, z: S.camera.dist });
+    const S = defaultSetup(); S.person.show = true; S.person.side = 'right'; S.wall.show = true; S.wall.side = 'right';
+    const T = S.tank, p = personPlacement(S, T, { x: T.L / 2, z: S.camera.dist });
     expect(p.side).toBe(-1); expect(p.x + p.w / 2).toBeLessThan(T.L);
   });
   it('mirrors for the left end against the wall', () => {
-    const S = defaultScene(); S.person.show = true; S.person.side = 'left'; S.wall.show = true; S.wall.side = 'left';
-    const T = S.tankA, p = personPlacement(S, T, { x: T.L / 2, z: S.camera.dist });
+    const S = defaultSetup(); S.person.show = true; S.person.side = 'left'; S.wall.show = true; S.wall.side = 'left';
+    const T = S.tank, p = personPlacement(S, T, { x: T.L / 2, z: S.camera.dist });
     expect(p.side).toBe(1); expect(p.x - p.w / 2).toBeGreaterThan(0);
   });
 });

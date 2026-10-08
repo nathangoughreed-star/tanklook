@@ -2,6 +2,10 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Status (2026-10-08, session 5: split tanks deployed)
+
+Open next: Nathan's review of the amphibian art + sizes (`shots/26_amphibian_cards`), then climbing.
+
 ## Status (2026-10-08, end of session 2)
 
 **Live at tanklook.com** (GitHub Pages, push to `main` = test + deploy in ~1-2 min; last deploy `80a860d`).
@@ -142,7 +146,31 @@ Progress (session 4, 2026-10-08):
   panel hides with the ‹ button (top right of the panel); "› Edit" (top right of the view) brings it back.
 - Next: revise art per Nathan, then sizes review, then climbing.
 
-## NEXT WORK UNIT: split tanks (Nathan 2026-10-08) - build in a fresh session
+## Split tanks: built and deployed (session 5, 2026-10-08)
+
+As built (the design notes below still hold, with these specifics):
+- **Scene v7** `{ name, units, tanks: TankSetup[1..2], active, camLock }`; `TankSetup` = everything one tank has (`tank`
+  dims, camera, render, light, substrate, layout, terrain, water, lid, stand, wall, person, fish). Fish live in their own
+  tank's mm (no more Tank A space / `mapToTank` at render). `render.edge` stays inside each setup but is an app
+  preference: the Edge control and load keep it equal in every tank. v6 files: one tank, or (compare on) a second copy
+  at Tank B's size with fish mapped by fraction; v6 `tankB` is dropped when compare was off.
+- Every scene helper (water, terrain, weight, build, layouts, viewmap) takes a `TankSetup`; `rescaleTankA` -> `rescaleTank`.
+- Store: `store.tank` (active setup), `edit(fn)` (active tank), `cam(fn)` (mirrors to both while locked), `setActive`,
+  `splitTank` (copy, new one active), `closeTank(i)`, `setCamLock` (re-lock copies tanks[0]'s camera). Undo keeps each
+  tank's current camera and the lock; split/close are undoable. Selection stays when switching tanks if the same fish
+  id exists there (true right after a split).
+- UI: Compare section = "Split tank" button (Tank B size box removed; the Tank section sizes the active tank). Panel shows
+  "Editing Tank A/B". Pressing (or wheeling) in a view activates it first; the active view gets an accent frame.
+  Padlock button on the divider (🔒 / 🔓). Locked = one shared FOV; unlocked = each view frames itself.
+- **Viewport tabs (Nathan 2026-10-08):** `ui/diff.ts` `tankDiff(a, b, units)` lists only differing SETTINGS (a size
+  change alone does not list auto glass or a full tank's depth); numbers for dimension-like values, "X A" / "X B" for
+  details (Stocking, Water tint, Wall colour, Terrain, Arrangement, Substrate slope). Nothing different = no labels,
+  only the close button. Items wrap; "× Close" sits at the bottom of the tab. Single tank: the plain size label as before.
+- The readout's "Same fish in Tank B" row is gone (the tanks are independent now).
+- Verified in a dev page (own port 5175, so Nathan's 5173 scene was not touched): tabs, frame, lock, independent orbit,
+  re-lock snap, close either tank, undo. Tests 81/81 (new `test/split.test.ts`).
+
+### Original design notes (split tanks)
 
 Nathan: "the comparison is strongest when you can compare literally any variable. Let the user split their current tank
 and then edit them separately by selecting either viewport, which changes which is being edited on the left." And:

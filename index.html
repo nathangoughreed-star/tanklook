@@ -29,11 +29,13 @@
   </div>
   <div class="namerow"><input id="sceneName" type="text" maxlength="80" aria-label="Scene name"><span id="saveState" class="hint"></span></div>
   <div id="status" class="status" role="status" hidden></div>
+  <div id="editing" class="editing" hidden></div>
 
   <details class="help"><summary>How to use</summary>
     <ul class="hint">
       <li><b>Drag empty space</b> to look around the tank; <b>wheel</b> zooms; <b>double-click</b> empty space for straight-on.</li>
       <li><b>Drag a fish</b> to move it: parallel to the glass when viewed from the front, across the floor plan from above, front/back from the side.</li>
+      <li><b>Split tank</b> (Compare) makes an independent copy beside this one; <b>click a view</b> to edit that tank. The padlock between the views links or frees their cameras.</li>
       <li><b>Shift + wheel</b> moves the selected fish forward/back. <b>Del</b> deletes, <b>F</b> flips, <b>Ctrl+D</b> duplicates, <b>Ctrl+Z</b> undoes.</li>
       <li>Fish are drawn at adult size. A fish further back looks smaller exactly as it would through real glass at the viewing distance below.</li>
       <li>Your tank is saved in this browser automatically. Use <i>Save…</i> to keep a file or share it.</li>
@@ -42,7 +44,7 @@
 
   <details class="sec" data-sec="tank"><summary><h2>Tank</h2></summary>
   <div class="btns">
-    <select id="presetA" aria-label="Tank A preset"></select>
+    <select id="presetA" aria-label="Tank size preset"></select>
     <span class="grow"></span>
     <span class="seg"><button id="uIn">in</button><button id="uCm">cm</button></span>
   </div>
@@ -141,16 +143,8 @@
   <div class="btns"><button id="camReset">Straight on</button></div>
   </details>
   <details class="sec" data-sec="compare"><summary><h2>Compare</h2></summary>
-  <label><input type="checkbox" id="cmp"> Show a second tank side by side</label>
-  <div id="bBox">
-    <select id="presetB" aria-label="Tank B preset"></select>
-    <div class="dims">
-      <div><label for="bL">Length</label><input id="bL" type="number" step="0.5" min="0"></div>
-      <div><label for="bH">Height</label><input id="bH" type="number" step="0.5" min="0"></div>
-      <div><label for="bD">Depth</label><input id="bD" type="number" step="0.5" min="0"></div>
-    </div>
-    <div class="hint">Tank B shows the same fish at the same <i>relative</i> positions. Both views use one viewer distance and one field of view, so sizes are directly comparable.</div>
-  </div>
+  <div class="btns"><button id="split">Split tank</button></div>
+  <div class="hint" id="splitHint"></div>
   </details>
   <details class="sec" data-sec="display-and-export"><summary><h2>Display &amp; export</h2></summary>
   <div class="row"><label for="edge">Fish edges</label><select id="edge" class="span2">
@@ -167,7 +161,9 @@
   <button id="sideOpen" class="sidetog" title="Show the panel" aria-label="Show the panel">› Edit</button>
   <canvas id="c" aria-label="Tank view"></canvas>
   <canvas id="viewmap" aria-label="Viewpoint map: where the eye is relative to the tank"></canvas>
+  <div id="vpFrame" hidden></div>
   <div class="lab" id="labA"></div><div class="lab" id="labB"></div>
+  <button id="camLock" hidden></button>
   <noscript><p class="nojs">This app needs JavaScript and WebGL.</p></noscript>
 </main>
 </div>

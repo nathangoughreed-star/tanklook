@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { kelvinRGB, roomLevel } from '../src/render/lighting';
-import { IN, WATERLINE_GAP, floorY, fmtDims, glassThickness, mapToTank, rescaleTankA, spawnSnail, substrateHeight, tankUnderside, volume } from '../src/scene/physics';
+import { IN, WATERLINE_GAP, floorY, fmtDims, glassThickness, mapToTank, rescaleTank, spawnSnail, substrateHeight, tankUnderside, volume } from '../src/scene/physics';
 import { rng } from '../src/art/paint';
-import { defaultScene } from '../src/scene/defaults';
+import { defaultSetup } from '../src/scene/defaults';
 
 describe('glass thickness', () => {
   const t = (hIn: number) => glassThickness({ L: 600, H: hIn * IN, D: 300 }, 'auto');
@@ -34,9 +34,9 @@ describe('tanks', () => {
     expect(p).toEqual({ x: 300, y: 100, depth: 300 });
   });
   it('rescaling Tank A keeps fish at the same relative spot', () => {
-    const s = defaultScene(), f = s.fish[0], rx = f.x / s.tankA.L, rd = f.depth / s.tankA.D;
-    rescaleTankA(s, { L: 48 * IN, H: 21 * IN, D: 18 * IN });
-    expect(f.x / s.tankA.L).toBeCloseTo(rx, 9); expect(f.depth / s.tankA.D).toBeCloseTo(rd, 9);
+    const s = defaultSetup(), f = s.fish[0], rx = f.x / s.tank.L, rd = f.depth / s.tank.D;
+    rescaleTank(s, { L: 48 * IN, H: 21 * IN, D: 18 * IN });
+    expect(f.x / s.tank.L).toBeCloseTo(rx, 9); expect(f.depth / s.tank.D).toBeCloseTo(rd, 9);
   });
   it('a 48x21x13 in tank is about 57 US gallons interior', () => {
     expect(volume({ L: 48 * IN, H: 21 * IN, D: 13 * IN }).gallons).toBeCloseTo(56.7, 1);
@@ -45,7 +45,7 @@ describe('tanks', () => {
 });
 
 describe('stand and floor', () => {
-  const T = { L: 24 * IN, H: 12 * IN, D: 12 * IN }, R = defaultScene().render; // 12 in tall -> 5 mm glass, rimmed
+  const T = { L: 24 * IN, H: 12 * IN, D: 12 * IN }, R = defaultSetup().render; // 12 in tall -> 5 mm glass, rimmed
   it('stand top is the tank underside; floor is a stand-height below it', () => {
     expect(tankUnderside(T, R)).toBe(-7);
     expect(tankUnderside(T, { ...R, rim: false })).toBe(-5);
@@ -65,7 +65,7 @@ describe('colour temperature', () => {
 });
 
 describe('snail spawning', () => {
-  const T = { L: 24 * IN, H: 12 * IN, D: 12 * IN }, sub = { ...defaultScene().substrate, fl: 25, fr: 25, bl: 25, br: 25 };
+  const T = { L: 24 * IN, H: 12 * IN, D: 12 * IN }, sub = { ...defaultSetup().substrate, fl: 25, fr: 25, bl: 25, br: 25 };
   const runs = Array.from({ length: 20000 }, (_, i) => spawnSnail((x, d) => substrateHeight(sub, T, x, d), T, 25, rng(i + 1)));
   it('picks each surface in proportion to its area', () => {
     const hw = T.H - WATERLINE_GAP - 25, total = T.L * T.D + 2 * T.L * hw + 2 * T.D * hw;

@@ -1,9 +1,9 @@
-// Owns the WebGL renderer and the one or two viewports (Tank A, optional Tank B). Render-on-demand.
+// Owns the WebGL renderer and the one or two viewports (one per tank setup; two after a split). Render-on-demand.
 import * as THREE from 'three';
 import { fishTL, getSpecies } from '../data/species';
-import { D2R, depthRatio, floorY, mapToTank } from '../scene/physics';
+import { D2R, depthRatio, floorY } from '../scene/physics';
 import type { Store } from '../scene/store';
-import type { Fish, Tank } from '../scene/types';
+import type { Fish, Tank, TankSetup } from '../scene/types';
 import { HOOD_H, buildTank, disposeScene, personSpot, type BuiltTank } from './build';
 import { drawViewMap } from './viewmap';
 import { applyFraming, fovFor, frameBox, frameStraightOn, placeCamera, windowCentre } from './camera';
@@ -11,20 +11,21 @@ import { roomLevel, setLightUniforms, setWaterUniforms } from './lighting';
 import { setMaxAnisotropy } from './textures';
 
 export interface Viewport extends Partial<BuiltTank> {
+  /** Index into scene.tanks (0 = A, 1 = B). */
+  i: number;
   key: 'A' | 'B';
   cam: THREE.PerspectiveCamera;
+  S: TankSetup;
   T: Tank;
   x: number; y: number; w: number; h: number;
 }
 
 export interface Measurement {
   fish: Fish;
-  len: number;          // on-screen length, px (Tank A)
+  len: number;          // on-screen length, px (active tank)
   ref: number;          // same pose slid to the front glass, px
   formula: number;      // straight-on d / (d + z)
   sideAngle: number;    // degrees off side-on
-  lenB?: number;        // same fish in Tank B, px
-  depthB?: number;
 }
 
 const GAP = 8;
@@ -34,7 +35,7 @@ export class Viewer {
   readonly vps: Viewport[];
   private dirty = true;
   private needsBuild = true;
-  /** Custom terrain editing: show grid dots in Tank A; `hot` = the dot being dragged. UI state, not scene data. */
+  /** Custom terrain editing: show grid dots in the active tank; `hot` = the dot being dragged. UI state, not scene data. */
   terrainEdit: { on: boolean; hot: number | null } = { on: false, hot: null };
   private drawnListeners = new Set<() => void>();
 
@@ -44,7 +45,7 @@ export class Viewer {
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     setMaxAnisotropy(this.renderer.capabilities.getMaxAnisotropy());
     const S = store.scene;
-    this.vps = (['A', 'B'] as const).map(key => ({ key, cam: new THREE.PerspectiveCamera(40, 1, 10, 40000), T: key === 'A' ? S.tankA : S.tankB, x: 0, y: 0, w: 1, h: 1 }));
+    this.vps = (['A', 'B'] as const).map((key, i) => ({ i, key, cam: new THREE.PerspectiveCamera(40, 1, 10, 40000), S: S.tanks[0], T: S.tanks[0].tank, x: 0, y: 0, w: 1, h: 1 }));
     store.subscribe(kind => { if (kind !== 'view') this.needsBuild = true; this.dirty = true; });
     new ResizeObserver(() => { this.dirty = true; }).observe(host);
     matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { this.dirty = true; });
@@ -57,31 +58,37 @@ export class Viewer {
   /** Rebuild on the next frame (UI-only state that changes the scene, like terrain editing). */
   rebuild() { this.needsBuild = this.dirty = true; }
 
-  get active() { return this.vps.slice(0, this.store.scene.compare ? 2 : 1); }
+  /** The viewports on screen: one per tank. */
+  get active() { return this.vps.slice(0, this.store.scene.tanks.length); }
+  /** The viewport of the tank the panel edits. */
+  get current() { return this.active[this.store.scene.active] ?? this.active[0]; }
 
   private build() {
-    const S = this.store.scene;
+    const sc = this.store.scene;
     for (const vp of this.vps) {
-      disposeScene(vp.scene);
-      vp.T = vp.key === 'A' ? S.tankA : S.tankB;
-      Object.assign(vp, buildTank(S, vp.T, this.store.selId, vp.key === 'A' && this.terrainEdit.on ? this.terrainEdit : undefined));
+      disposeScene(vp.scene); vp.scene = undefined;
+      const S = sc.tanks[vp.i]; if (!S) continue;
+      const on = vp.i === sc.active;   // selection outline and terrain dots only in the tank being edited
+      vp.S = S; vp.T = S.tank;
+      Object.assign(vp, buildTank({ ...S, units: sc.units }, S.tank, on ? this.store.selId : null, on && this.terrainEdit.on ? this.terrainEdit : undefined));
     }
     this.needsBuild = false;
   }
 
-  /** Lay out viewports, frame cameras with one shared FOV, render. Synchronous, so readouts are never a frame behind. */
+  /** Lay out viewports, frame cameras, render. Synchronous, so readouts are never a frame behind. */
   draw() {
     if (this.needsBuild) this.build();
-    const S = this.store.scene, w = this.host.clientWidth, h = this.host.clientHeight, r = this.renderer;
+    const sc = this.store.scene, w = this.host.clientWidth, h = this.host.clientHeight, r = this.renderer;
     r.setSize(w, h, false);
     const active = this.active, hw = (w - GAP) / 2;
     if (active.length === 1) Object.assign(active[0], { x: 0, y: 0, w, h });
     else { Object.assign(active[0], { x: 0, y: 0, w: hw, h }); Object.assign(active[1], { x: hw + GAP, y: 0, w: hw, h }); }
-    for (const vp of active) placeCamera(vp.cam, vp.T, S.camera);
-    const headroom = S.lid === 'hood' ? HOOD_H + 6 : S.light.type === 'flat' ? 4 : 60 + S.light.height;
-    const bottom = (T: Tank) => (S.stand.show ? floorY(T, S.render, S.stand) : 0);
+    for (const vp of active) placeCamera(vp.cam, vp.T, vp.S.camera);
+    const headroom = (S: TankSetup) => (S.lid === 'hood' ? HOOD_H + 6 : S.light.type === 'flat' ? 4 : 60 + S.light.height);
+    const bottom = (S: TankSetup) => (S.stand.show ? floorY(S.tank, S.render, S.stand) : 0);
     // the scale person: its card's corners (it turns to face the camera, so use its width both ways)
     const extra = (vp: Viewport) => {
+      const S = vp.S;
       if (!S.person.show) return [];
       const p = personSpot(S, vp.T), pts: THREE.Vector3[] = [];
       for (const dx of [-p.w / 2, p.w / 2]) for (const dz of [-p.w / 2, p.w / 2]) for (const y of [p.floor, p.floor + p.h]) pts.push(new THREE.Vector3(p.x + dx, y, p.z + dz));
@@ -93,17 +100,20 @@ export class Viewer {
       m.rotation.y = Math.atan2(vp.cam.position.x - m.position.x, vp.cam.position.z - m.position.z); m.updateMatrixWorld();
     }
     // lens from the straight-on view, kept at every orbit angle (see frameStraightOn)
-    const boxes = active.map(vp => frameStraightOn(vp.T, S.camera, vp.w / vp.h, headroom, bottom(vp.T), extra(vp)));
-    const fov = fovFor(Math.max(...boxes.map(b => b.t)), S.camera.zoom); // one FOV for all: sizes stay comparable
+    const boxes = active.map(vp => frameStraightOn(vp.T, vp.S.camera, vp.w / vp.h, headroom(vp.S), bottom(vp.S), extra(vp)));
+    // locked (or one tank): one FOV for all, so sizes stay directly comparable; unlocked: each view frames itself
+    const shared = fovFor(Math.max(...boxes.map(b => b.t)), active[0].S.camera.zoom);
+    const fovOf = (k: number) => (sc.camLock || active.length === 1 ? shared : fovFor(boxes[k].t, active[k].S.camera.zoom));
     r.setScissorTest(true);
     r.setViewport(0, 0, w, h); r.setScissor(0, 0, w, h);
     r.setClearColor(new THREE.Color(getComputedStyle(this.host).getPropertyValue('--stage-gap').trim() || '#eef0f3')); r.clear();
-    for (const vp of active) {
+    for (const [k, vp] of active.entries()) {
+      const S = vp.S, fov = fovOf(k);
       // the lens SIZE comes from the straight-on view (above), but the image window is re-centred at every orbit angle
       // (Nathan 2026-10-08) on tank + stand + person; zooming in crops the room first and keeps the tank itself whole
       // while it fits (windowCentre)
       const hy = Math.tan(fov * D2R / 2), hx = hy * vp.w / vp.h;
-      const tank = frameBox(vp.cam, vp.T, vp.w / vp.h, headroom), all = frameBox(vp.cam, vp.T, vp.w / vp.h, headroom, bottom(vp.T), extra(vp));
+      const tank = frameBox(vp.cam, vp.T, vp.w / vp.h, headroom(S)), all = frameBox(vp.cam, vp.T, vp.w / vp.h, headroom(S), bottom(S), extra(vp));
       const c = windowCentre(all, tank, hx, hy);
       applyFraming(vp.cam, fov, vp.w, vp.h, c.cx, c.cy);
       r.setViewport(vp.x, vp.y, vp.w, vp.h); r.setScissor(vp.x, vp.y, vp.w, vp.h);
@@ -112,14 +122,14 @@ export class Viewer {
       r.render(vp.scene!, vp.cam);
     }
     r.setScissorTest(false);
-    const map = document.getElementById('viewmap') as HTMLCanvasElement | null, A = active[0];
+    const map = document.getElementById('viewmap') as HTMLCanvasElement | null, A = this.current;
     if (map && !map.classList.contains('off')) {
       const eye = { x: A.cam.position.x, z: A.cam.position.z };
       // floor-plan direction through the image at NDC x (lens shift included)
       const at = (nx: number) => { const p = new THREE.Vector3(nx, 0, 0.5).unproject(A.cam); return Math.atan2(p.z - eye.z, p.x - eye.x); };
       const view = { left: at(-1), right: at(1), mid: at(0) };
-      const pp = S.person.show ? personSpot(S, A.T) : null;
-      drawViewMap(map, S, A.T, eye, view, pp && { x: pp.x, z: pp.z, w: pp.w });
+      const pp = A.S.person.show ? personSpot(A.S, A.T) : null;
+      drawViewMap(map, A.S, A.T, sc.units, eye, view, pp && { x: pp.x, z: pp.z, w: pp.w });
     }
     for (const fn of this.drawnListeners) fn();
   }
@@ -138,15 +148,13 @@ export class Viewer {
     return { len: this.toPx(a, vp).distanceTo(this.toPx(b, vp)), ref: this.toPx(ra, vp).distanceTo(this.toPx(rb, vp)) };
   }
   measure(f: Fish): Measurement | null {
-    const [A, B] = this.active, sA = this.screenLen(A, f), m = A.meshById?.get(f.id);
+    const A = this.current, sA = this.screenLen(A, f), m = A.meshById?.get(f.id);
     if (!sA || !m) return null;
     const n = new THREE.Vector3(0, 0, 1).applyQuaternion(m.quaternion), v = A.cam.position.clone().sub(m.position).normalize();
-    const out: Measurement = {
-      fish: f, ...sA, formula: depthRatio(this.store.scene.camera.dist, f.depth),
+    return {
+      fish: f, ...sA, formula: depthRatio(A.S.camera.dist, f.depth),
       sideAngle: Math.acos(Math.min(1, Math.abs(n.dot(v)))) / D2R,
     };
-    if (B) { const sB = this.screenLen(B, f); out.lenB = sB?.len; out.depthB = mapToTank(this.store.scene.tankA, B.T, f).depth; }
-    return out;
   }
 
   // ---------- Picking ----------

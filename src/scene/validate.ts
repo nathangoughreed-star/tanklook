@@ -1,9 +1,9 @@
 // Load-time validation and migration. Untrusted JSON in, a complete valid Scene out (plus warnings), or an error.
 import { getSpecies, hasSpecies } from '../data/species';
-import { defaultScene } from './defaults';
-import { clamp } from './physics';
+import { defaultSetup } from './defaults';
+import { clamp, mapToTank } from './physics';
 import { keepInWater } from './water';
-import { SCENE_VERSION, type Fish, type Scene, type Tank } from './types';
+import { SCENE_VERSION, type Fish, type Scene, type Tank, type TankSetup } from './types';
 
 export class SceneError extends Error {}
 
@@ -56,6 +56,21 @@ function migrate(raw: Obj, warn: (m: string) => void): Obj {
     delete raw.plant;
   }
   // v5 adds water (level, colour); older files get the default: full, clear. v6 adds custom terrain (off).
+  if (v < 7) {
+    // v7: split tanks. One flat setup (tankA + contents) becomes tanks[0]; a shown Tank B (v6 mirrored A's contents at
+    // B's size) becomes an independent copy of A at B's size, fish at the same relative spots.
+    const { version: _v, name, units, tankA, tankB, compare, ...rest } = raw;
+    const A: Obj = { ...rest, tank: tankA }, tanks = [A];
+    const tA = isObj(tankA) ? tankA as unknown as Tank : null, tB = isObj(tankB) ? tankB as unknown as Tank : null;
+    if (compare === true && tA && tB && [tA.L, tA.H, tA.D, tB.L, tB.H, tB.D].every(n => typeof n === 'number' && n > 0)) {
+      const B = structuredClone(A); B.tank = tB;
+      if (Array.isArray(B.fish)) B.fish = B.fish.map(f => (isObj(f) && typeof f.x === 'number' && typeof f.y === 'number' && typeof f.depth === 'number'
+        ? { ...f, ...mapToTank(tA, tB, f as unknown as Fish) } : f));
+      tanks.push(B);
+    }
+    for (const k of Object.keys(raw)) delete raw[k];
+    Object.assign(raw, { name, units, tanks, active: 0, camLock: true });
+  }
   raw.version = SCENE_VERSION;
   return raw;
 }
@@ -66,8 +81,27 @@ export function parseScene(input: unknown): { scene: Scene; warnings: string[] }
     try { input = JSON.parse(input); } catch { throw new SceneError('Not a valid JSON file.'); }
   }
   if (!isObj(input)) throw new SceneError('Not a scene file (expected a JSON object).');
-  if (!('tankA' in input) || !('fish' in input)) throw new SceneError('Not a scene file (missing tank or fish).');
-  const raw = migrate(structuredClone(input), warn), d = defaultScene();
+  if (!(('tankA' in input && 'fish' in input) || Array.isArray(input.tanks))) throw new SceneError('Not a scene file (missing tank or fish).');
+  const raw = migrate(structuredClone(input), warn);
+  const rawTanks = (Array.isArray(raw.tanks) ? raw.tanks as unknown[] : []).filter(isObj).slice(0, 2);
+  if (!rawTanks.length) throw new SceneError('Not a scene file (no tank).');
+  const tanks = rawTanks.map((t, i) => parseSetup(t, warn, rawTanks.length > 1 ? `Tank ${'AB'[i]}: ` : ''));
+  for (const t of tanks) t.render.edge = tanks[0].render.edge; // an app preference, the same everywhere
+  const scene: Scene = {
+    version: SCENE_VERSION,
+    name: typeof raw.name === 'string' && raw.name.trim() ? raw.name.trim().slice(0, 80) : 'My tank',
+    units: raw.units === 'cm' ? 'cm' : 'in',
+    tanks,
+    active: raw.active === 1 && tanks.length > 1 ? 1 : 0,
+    camLock: typeof raw.camLock === 'boolean' ? raw.camLock : true,
+  };
+  if (scene.camLock && tanks.length > 1) tanks[1].camera = { ...tanks[0].camera };
+  return { scene, warnings };
+}
+
+/** One tank's setup from untrusted JSON. `pre` prefixes warnings (which tank). */
+function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetup {
+  const d = defaultSetup(), warn = (m: string) => warn0(pre + m);
 
   const num = (v: unknown, def: number, lo = -Infinity, hi = Infinity) =>
     typeof v === 'number' && Number.isFinite(v) ? clamp(v, lo, hi) : def;
@@ -80,7 +114,7 @@ export function parseScene(input: unknown): { scene: Scene; warnings: string[] }
     return { L: num(o.L, def.L, LIMITS.tankMin, LIMITS.tankMax), H: num(o.H, def.H, LIMITS.tankMin, LIMITS.tankMax), D: num(o.D, def.D, LIMITS.tankMin, LIMITS.tankMax) };
   };
 
-  const tankA = tank(raw.tankA, d.tankA), tankB = tank(raw.tankB, d.tankB);
+  const tankA = tank(raw.tank, d.tank);
   const c = sub('camera'), r = sub('render'), l = sub('light'), s = sub('substrate'), lay = sub('layout');
   const te = sub('terrain'), wa = sub('water'), st = sub('stand'), w = sub('wall'), pe = sub('person');
   const glass = r.glass === 'auto' ? 'auto' : typeof r.glass === 'number' && GLASS_CHOICES.includes(r.glass) ? r.glass : 'auto';
@@ -109,12 +143,8 @@ export function parseScene(input: unknown): { scene: Scene; warnings: string[] }
   if (unknown) warn(`${unknown} fish of unknown species were skipped.`);
   if (rawFish.length > LIMITS.maxFish) warn(`Only the first ${LIMITS.maxFish} fish were loaded.`);
 
-  const scene: Scene = {
-    version: SCENE_VERSION,
-    name: typeof raw.name === 'string' && raw.name.trim() ? raw.name.trim().slice(0, 80) : d.name,
-    units: pick(raw.units, ['in', 'cm'] as const, d.units),
-    tankA, tankB,
-    compare: bool(raw.compare, false),
+  const setup: TankSetup = {
+    tank: tankA,
     camera: {
       dist: num(c.dist, d.camera.dist, ...LIMITS.dist), az: num(c.az, 0, ...LIMITS.az),
       el: num(c.el, 0, ...LIMITS.el), zoom: num(c.zoom, 1, ...LIMITS.zoom),
@@ -161,8 +191,8 @@ export function parseScene(input: unknown): { scene: Scene; warnings: string[] }
     },
     fish,
   };
-  keepInWater(scene);
-  return { scene, warnings };
+  keepInWater(setup);
+  return setup;
 }
 
-export const nextFishId = (s: Scene) => s.fish.reduce((m, f) => Math.max(m, f.id), 0) + 1;
+export const nextFishId = (s: TankSetup) => s.fish.reduce((m, f) => Math.max(m, f.id), 0) + 1;

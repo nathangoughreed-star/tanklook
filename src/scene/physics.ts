@@ -1,5 +1,5 @@
 // Pure physical rules shared by the renderer, the UI and the tests. No three.js here.
-import type { Fish, RenderSettings, Scene, StandSettings, SubstrateSettings, Surface, Tank, Units } from './types';
+import type { Fish, RenderSettings, StandSettings, SubstrateSettings, Surface, Tank, TankSetup, Units } from './types';
 
 export const IN = 25.4;
 export const D2R = Math.PI / 180;
@@ -78,14 +78,14 @@ export function mapToTank(A: Tank, T: Tank, p: { x: number; y: number; depth: nu
 /** Straight-on apparent size ratio of an object at `depth` vs the same object at the front glass. */
 export const depthRatio = (dist: number, depth: number) => dist / (dist + depth);
 
-/** Rescale everything positioned in Tank A when Tank A's dimensions change, so items keep their relative spot. */
-export function rescaleTankA(s: Scene, next: Tank) {
-  const old = s.tankA;
+/** Rescale everything positioned in a tank when its dimensions change, so items keep their relative spot. */
+export function rescaleTank(s: TankSetup, next: Tank) {
+  const old = s.tank;
   for (const f of s.fish) { f.x *= next.L / old.L; f.y *= next.H / old.H; f.depth *= next.D / old.D; }
-  s.tankA = { ...next };
+  s.tank = { ...next };
 }
 
-/** Keep a fish inside Tank A. */
+/** Keep a fish inside its tank. */
 export function clampFish(f: Fish, A: Tank) {
   f.x = clamp(f.x, 0, A.L); f.y = clamp(f.y, 0, A.H); f.depth = clamp(f.depth, 0, A.D);
 }

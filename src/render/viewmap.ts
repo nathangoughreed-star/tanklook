@@ -1,11 +1,11 @@
 // Viewpoint map: a small top-down inset showing where the eye is (and what it sees) relative to the tank, stand,
 // room wall and scale person. A DOM canvas over the view, so it never appears in PNG exports.
 import { WALL_GAP, fmtLen, glassThickness } from '../scene/physics';
-import type { Scene, Tank } from '../scene/types';
+import type { Tank, TankSetup, Units } from '../scene/types';
 
 interface Spot { x: number; z: number; w: number }
 
-export function drawViewMap(cv: HTMLCanvasElement, S: Scene, T: Tank, eye: { x: number; z: number }, view: { left: number; right: number; mid: number }, person: Spot | null) {
+export function drawViewMap(cv: HTMLCanvasElement, S: TankSetup, T: Tank, units: Units, eye: { x: number; z: number }, view: { left: number; right: number; mid: number }, person: Spot | null) {
   const css = getComputedStyle(cv), v = (n: string, d: string) => css.getPropertyValue(n).trim() || d;
   const W = cv.clientWidth, H = cv.clientHeight, dpr = Math.min(devicePixelRatio, 2);
   if (!W || !H) return;
@@ -43,5 +43,5 @@ export function drawViewMap(cv: HTMLCanvasElement, S: Scene, T: Tank, eye: { x: 
   // caption: distance and angles
   const side = c.az === 0 ? 'straight on' : `${Math.abs(c.az)}° ${c.az < 0 ? 'left' : 'right'}`;
   g.fillStyle = ink; g.font = '600 12px system-ui, "Segoe UI", sans-serif'; g.textBaseline = 'bottom';
-  g.fillText(`Eye ${fmtLen(c.dist, S.units, 0)} from glass · ${side}${c.el ? ` · ${c.el}° above` : ''}`, 6, H - 5, W - 12);
+  g.fillText(`Eye ${fmtLen(c.dist, units, 0)} from glass · ${side}${c.el ? ` · ${c.el}° above` : ''}`, 6, H - 5, W - 12);
 }

@@ -5,9 +5,9 @@ import { SUBSTRATES } from '../art/placeholder';
 import { snailAspect } from '../art/snails';
 import { fishTL, getSpecies, needsWater, type Species } from '../data/species';
 import { restsOnGround } from '../scene/water';
-import { D2R, IN, WALL_GAP, clamp, floorY, glassThickness, mapToTank, RIM_DROP, RIM_H, tankUnderside, waterY } from '../scene/physics';
+import { D2R, IN, WALL_GAP, clamp, floorY, glassThickness, RIM_DROP, RIM_H, tankUnderside, waterY } from '../scene/physics';
 import { groundHeight, terrainPoint } from '../scene/terrain';
-import type { Background, Fish, Scene, Tank } from '../scene/types';
+import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
 import { addFixture, applyLighting } from './lighting';
 import { layoutGroup } from './layouts';
 import { cardMaterial, fishTexture, gradientTexture, personTexture, snailTexture, substrateTexture } from './textures';
@@ -30,9 +30,9 @@ function lines(pts: number[], color: number, opacity: number) {
 }
 
 /** Peninsula: the end of the tank against the room wall ('left' / 'right'), else null. */
-const penEnd = (S: Scene) => (S.wall.show && S.wall.side !== 'back' ? S.wall.side : null);
+const penEnd = (S: TankSetup) => (S.wall.show && S.wall.side !== 'back' ? S.wall.side : null);
 
-function addTank(sc: THREE.Scene, S: Scene, T: Tank) {
+function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
   const { L, H, D } = T, R = S.render;
   // backing under the substrate; a bare-bottom tank has none, so the stand top or the room shows through the bottom pane
   if (S.substrate.show || S.layout.id === 'swamp' || S.terrain.on) {
@@ -91,7 +91,7 @@ function addTank(sc: THREE.Scene, S: Scene, T: Tank) {
  * The water surface (seen from above or when orbiting; edge-on straight on) and a faint meniscus line where it meets
  * the glass. The colour of the water itself is a tint in the lighting shader (see aqWaterPath).
  */
-function addWater(sc: THREE.Scene, S: Scene, T: Tank) {
+function addWater(sc: THREE.Scene, S: TankSetup, T: Tank) {
   if (!S.water.on) return;
   const { L, D } = T, y = waterY(T, S.water.level), c = new THREE.Color(0xd8eef2).lerp(new THREE.Color(S.water.color), 0.25 + 0.5 * S.water.opacity);
   const surf = plane(L, D, basic(c, { transparent: true, opacity: 0.1 + 0.25 * S.water.opacity, depthWrite: false, side: THREE.DoubleSide }));
@@ -100,7 +100,7 @@ function addWater(sc: THREE.Scene, S: Scene, T: Tank) {
   line.renderOrder = 4; sc.add(line);
 }
 
-export const STAND_FINISHES: Record<Scene['stand']['finish'], { label: string; color: number }> = {
+export const STAND_FINISHES: Record<TankSetup['stand']['finish'], { label: string; color: number }> = {
   black: { label: 'Black', color: 0x23262b },
   white: { label: 'White', color: 0xe4e2dc },
   oak: { label: 'Oak', color: 0xa77b4f },
@@ -115,7 +115,7 @@ function shadedBox(w: number, h: number, d: number, color: number) {
 }
 
 /** Cabinet under the tank, same footprint as the outer glass, from the floor up to the tank's underside. */
-function addStand(sc: THREE.Scene, S: Scene, T: Tank) {
+function addStand(sc: THREE.Scene, S: TankSetup, T: Tank) {
   if (!S.stand.show) return;
   const { L, D } = T, t = glassThickness(T, S.render.glass), top = tankUnderside(T, S.render), h = S.stand.height;
   const W = L + 2 * t, Dp = D + 2 * t, fin = STAND_FINISHES[S.stand.finish];
@@ -159,7 +159,7 @@ export const HOOD_H = 38;
  * rounded front, with a recessed feeding hatch. Side profile extruded along the tank length; shaded per vertex so the
  * curve reads without lights.
  */
-function addHood(sc: THREE.Scene, S: Scene, T: Tank) {
+function addHood(sc: THREE.Scene, S: TankSetup, T: Tank) {
   const { L, D } = T, t = glassThickness(T, S.render.glass), rim = S.render.rim;
   const o = rim ? t + 8 : t, inset = 6, base = rim ? T.H + RIM_DROP : T.H, bev = 3;
   const x0 = -o + inset + bev, x1 = L + o - inset - bev;
@@ -196,7 +196,7 @@ function addHood(sc: THREE.Scene, S: Scene, T: Tank) {
 }
 
 /** Lid: classic black moulded hood with a hinged front flap, or two glass canopy panels on a plastic hinge strip. */
-function addLid(sc: THREE.Scene, S: Scene, T: Tank) {
+function addLid(sc: THREE.Scene, S: TankSetup, T: Tank) {
   if (S.lid === 'open') return;
   const { L, H, D } = T, t = glassThickness(T, S.render.glass), rim = S.render.rim;
   if (S.lid === 'hood') { addHood(sc, S, T); return; }
@@ -220,15 +220,15 @@ export const PERSON_ASPECT = 0.34;
 /** Gap between the tank's outline (as seen from the eye) and the person's near side, mm. */
 const PERSON_GAP = 250;
 /** Straight-on eye position (horizontal), for placements that do not follow the orbit. */
-export const straightOnEye = (S: Scene, T: Tank) => ({ x: T.L / 2, z: S.camera.dist });
+export const straightOnEye = (S: TankSetup, T: Tank) => ({ x: T.L / 2, z: S.camera.dist });
 /**
  * Where the scale person stands: a fixed spot in the room, chosen from the straight-on view: beside the tank on the
  * chosen side, as far from that eye as the tank centre (equal scale when viewed straight on). If that spot is behind
  * the room wall they take the other side; if both are, they stand against the wall. They stay put while orbiting
  * (Nathan, 2026-10-08: following the view made them jump sides).
  */
-export const personSpot = (S: Scene, T: Tank) => personPlacement(S, T, straightOnEye(S, T));
-export function personPlacement(S: Scene, T: Tank, eye: { x: number; z: number }) {
+export const personSpot = (S: TankSetup, T: Tank) => personPlacement(S, T, straightOnEye(S, T));
+export function personPlacement(S: TankSetup, T: Tank, eye: { x: number; z: number }) {
   const t = glassThickness(T, S.render.glass), rim = S.render.rim ? t + 8 : t;
   const h = S.person.height, w = h * PERSON_ASPECT, floor = floorY(T, S.render, S.stand);
   const vx = T.L / 2 - eye.x, vz = -T.D / 2 - eye.z, r = Math.hypot(vx, vz) || 1, ux = vx / r, uz = vz / r;
@@ -245,7 +245,7 @@ export function personPlacement(S: Scene, T: Tank, eye: { x: number; z: number }
   }
   return { x: p.x, z: p.z, w, h, floor, side };
 }
-function addPerson(sc: THREE.Scene, S: Scene, T: Tank) {
+function addPerson(sc: THREE.Scene, S: TankSetup, T: Tank) {
   if (!S.person.show) return;
   const p = personSpot(S, T), g = new THREE.PlaneGeometry(p.w, p.h); g.translate(0, p.h / 2, 0);
   const m = new THREE.Mesh(g, cardMaterial('person', personTexture(), 'cutout'));
@@ -253,7 +253,7 @@ function addPerson(sc: THREE.Scene, S: Scene, T: Tank) {
 }
 
 /** Plain room floor under the stand/wall, so the room doesn't float in a void. One-sided (invisible from below). */
-function addFloor(sc: THREE.Scene, S: Scene, T: Tank) {
+function addFloor(sc: THREE.Scene, S: TankSetup, T: Tank) {
   if (!S.stand.show && !S.wall.show && !S.person.show) return;
   const f = new THREE.Mesh(new THREE.PlaneGeometry(8000, 8000), basic(0xb3aca1));
   f.rotation.x = -Math.PI / 2; f.position.set(T.L / 2, floorY(T, S.render, S.stand) - 0.5, -T.D / 2);
@@ -261,7 +261,7 @@ function addFloor(sc: THREE.Scene, S: Scene, T: Tank) {
 }
 
 /** Room wall behind the tank or against a short end (peninsula). One-sided, so it vanishes when viewed from behind. */
-function addWall(sc: THREE.Scene, S: Scene, T: Tank) {
+function addWall(sc: THREE.Scene, S: TankSetup, T: Tank) {
   if (!S.wall.show) return;
   const { L, D } = T, t = glassThickness(T, S.render.glass), fy = floorY(T, S.render, S.stand);
   const ROOM_H = 2700, SPAN = 6000, SKIRT_H = 90, SKIRT_D = 14;
@@ -275,7 +275,7 @@ function addWall(sc: THREE.Scene, S: Scene, T: Tank) {
   sc.add(g);
 }
 
-function addSubstrate(sc: THREE.Scene, S: Scene, T: Tank) {
+function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   const swamp = S.layout.id === 'swamp' || S.terrain.on;
   if (!S.substrate.show && !swamp) return;
   const { L, D } = T, tile = SUBSTRATES[S.substrate.type].tile * 2, h = (x: number, d: number) => groundHeight(S, T, x, d);
@@ -342,7 +342,7 @@ export interface BuiltTank {
  * Custom terrain editing aids: a dot on every grid point (drawn over everything so plants never hide one) and faint
  * grid lines following the ground between them. `hot` = the point being dragged.
  */
-function addTerrainDots(sc: THREE.Scene, S: Scene, T: Tank, hot: number | null): THREE.Mesh[] {
+function addTerrainDots(sc: THREE.Scene, S: TankSetup, T: Tank, hot: number | null): THREE.Mesh[] {
   const t = S.terrain, g = (x: number, d: number) => groundHeight(S, T, x, d), dots: THREE.Mesh[] = [], pts: number[] = [];
   const r = clamp(Math.min(T.L / (t.cols - 1), T.D / (t.rows - 1)) * 0.09, 3.5, 9);
   const geo = new THREE.SphereGeometry(r, 12, 8), ring = new THREE.SphereGeometry(r * 1.45, 12, 8);
@@ -366,7 +366,7 @@ function addTerrainDots(sc: THREE.Scene, S: Scene, T: Tank, hot: number | null):
   return dots;
 }
 
-export function buildTank(S: Scene, T: Tank, selId: number | null, edit?: { hot: number | null }): BuiltTank {
+export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: number | null, edit?: { hot: number | null }): BuiltTank {
   const sc = new THREE.Scene(), fishMeshes: THREE.Mesh[] = [], meshById = new Map<number, THREE.Mesh>();
   addTank(sc, S, T); addWater(sc, S, T); addSubstrate(sc, S, T); addStand(sc, S, T); addWall(sc, S, T); addPerson(sc, S, T); addFloor(sc, S, T);
   const lay = layoutGroup(S, T); if (lay) sc.add(lay);
@@ -378,7 +378,7 @@ export function buildTank(S: Scene, T: Tank, selId: number | null, edit?: { hot:
     const sp = getSpecies(f.species); if (!sp) continue;
     if (sp.kind === 'snail') { for (const [m, w, h] of snailMeshes(S, T, f, sp)) register(f, m, w, h); continue; }
     if (!S.water.on && needsWater(sp)) continue; // dry tank: fish stay in the scene data, hidden until the water is back
-    const w = fishTL(f, sp), h = w * sp.aspect, p = mapToTank(S.tankA, T, f);
+    const w = fishTL(f, sp), h = w * sp.aspect, p = f;
     const m = new THREE.Mesh(cardGeometry(w, h, f.bend), cardMaterial('fish:' + f.species, fishTexture(f.species), S.render.edge));
     // bottom dwellers and animals on land rest on the ground wherever they are (their stored height is ignored)
     const y = restsOnGround(S, T, sp, p.x, p.depth, h) ? groundHeight(S, T, p.x, p.depth) + sp.rest * w - 1 : Math.min(p.y, Math.max(0, waterY(T, S.water.level) - h / 2));
@@ -402,8 +402,8 @@ const PANE_Y = { front: 0, back: Math.PI, left: -Math.PI / 2, right: Math.PI / 2
  * Snail cards. On the substrate: one upright side-view card. On glass: two one-sided cards back to back, the foot
  * facing the glass (what you see through that pane) and the shell facing into the tank; yaw = heading in the pane.
  */
-function snailMeshes(S: Scene, T: Tank, f: Fish, sp: Species): [THREE.Mesh, number, number][] {
-  const p = mapToTank(S.tankA, T, f), surf = f.surface ?? 'floor', w = fishTL(f, sp), edge = S.render.edge;
+function snailMeshes(S: TankSetup, T: Tank, f: Fish, sp: Species): [THREE.Mesh, number, number][] {
+  const p = f, surf = f.surface ?? 'floor', w = fishTL(f, sp), edge = S.render.edge;
   const sub = (x: number, d: number) => groundHeight(S, T, x, d);
   if (surf === 'floor') {
     const h = w * sp.aspect, m = new THREE.Mesh(cardGeometry(w, h, 0), cardMaterial(`snail:${sp.art}:side`, snailTexture(sp.art, 'side'), edge));
