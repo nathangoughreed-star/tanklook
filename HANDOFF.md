@@ -50,7 +50,59 @@ Note: another chat's dev server may already hold port 5173 (same folder, HMR wor
 - **Open metal frame stand (Nathan 2026-10-08)**: `stand.style: cabinet | frame` (scene v5, default cabinet). Frame =
   38 mm square tube legs, top and bottom rails, levelling feet, extra legs every ~90 cm on long tanks; the finish
   colour applies. Picture `shots/21_frame_stand`.
-- Tests 55/55. Deployed 2026-10-08 (session 3).
+- Tests 55/55. Deployed 2026-10-08 (session 3, `8fddff8`). HTTPS on tanklook.com still serves the github.io
+  certificate (curl: wrong principal); http works. Nathan to check Settings -> Pages and tick Enforce HTTPS.
+
+## Custom terrain (Nathan's idea, 2026-10-08; built session 3, NOT yet pushed)
+
+- **Scene v6** `terrain { on, cols, rows, h[] }`: a grid of ground heights (mm, Tank A, physical like the substrate)
+  spread evenly over the floor, corners included. When on it replaces the corner slopes and the swamp land
+  (`groundHeight`), so fish, plants, snails and the water rules all follow it. Broken grids load as off.
+- Interpolation: bicubic **Catmull-Rom** (passes exactly through every point, smooth across them), clamped to
+  0..0.95 H (overshoot near a sharp dip can otherwise go below the floor).
+- UI (Substrate): Custom terrain checkbox (first turn-on samples the current floor, so a swamp or slope becomes the
+  starting shape; a grid kept from before is reused), Grid slider = points along the length 3-25 (rows follow D/L
+  for square cells; changing it RESAMPLES the current surface), Edit points / Done editing, Flatten (all points to
+  the average). Corner sliders and slope buttons disabled while on.
+- Editing (UI state `viewer.terrainEdit`, not scene data): dots on every grid point in Tank A, drawn over everything,
+  faint grid lines on the ground. Drag a dot up/down: height follows the pointer at the dot's on-screen scale
+  (works from any angle); one undo step per drag. Verified with real pointer events: 120 px -> +188 mm, undo exact.
+- Known: sampling a swamp onto a coarse grid turns round pools into V-notches (raise the Grid first); the layout
+  rebuilds on every drag step (fine so far).
+- Pictures: `shots/22_terrain_dots`, `23_terrain_pulled`, `24_terrain_result`. Tests 60/60.
+
+## Dry tank / terrarium (Nathan 2026-10-08: "TankLook, not AquariumLook"; built session 3, NOT yet pushed)
+
+- `water.on` (scene v6, default true; older files load with water). Off: no tint, no surface, water controls disabled,
+  fish (everything not a snail) **hidden but kept in the data** and not clamped; Add / Add school disabled for fish
+  with a hint; status line says how many are hidden. Snails stay (read as land snails) and may use the whole glass.
+- Verified in the dev page: 7 fish hidden, back on water -> 7 shown. Picture `shots/25_dry_terrarium`. Tests 61/61.
+
+## Approximate tank weight (Nathan 2026-10-08; built session 3, NOT yet pushed)
+
+- `scene/weight.ts` `tankWeight(S)`: water = water depth over the ground integrated on a 60x60 floor grid (so level,
+  slopes, terrain and swamp land count; dry = 0); substrate = ground volume x 1.6 kg/L bulk + 0.35 kg/L pore water
+  where submerged; glass = the renderer's pane sizes at the actual thickness (`glassThickness`) x 2.5 kg/L, + 4 mm
+  lid panels with a glass lid. Not included: stand, rocks, wood, plants, rim trim, equipment.
+- Readout under the tank volume: "≈ N lb filled: water, substrate, glass" (kg in cm mode).
+- Sanity: standard 55 gal (48x21x13) with 2" gravel = 587 lb (water 406, substrate 88, glass 92 at auto 8 mm);
+  the commonly quoted "~625 lb" assumes nominal water and no substrate. A 36x16x18 swamp is mostly land: ~350 lb of
+  substrate, little water. Tests 64/64.
+
+## NEXT WORK UNIT: land + semi-aquatic species (Nathan 2026-10-08: "mixed land and water animals in the same tank")
+
+Proposed (confirm with Nathan, with pictures, before building):
+- species.json `habitat: 'water' | 'land' | 'both'` (default water; snails 'both'). Land animals rest on ground
+  above the water line (any ground when dry), like bottom dwellers (rest offset, drag slides along the ground);
+  'both' (frogs, newts, turtles, crabs) may be on land or in the water. Add the rule to `fitFish` / `nearestWater`
+  (a `nearestLand` twin) and the spawners.
+- Starter list (~15, sizes need Nathan's review like the fish): leopard gecko, crested gecko, bearded dragon, corn
+  snake, dart frog, White's tree frog, fire-bellied toad, axolotl (water), fire-bellied newt, musk turtle, red-claw
+  crab, fiddler crab, isopods, millipede, praying mantis, tarantula. Length convention to decide (snout-vent vs total).
+- Art: fishgen body plans do not fit. New painters: quadruped side view (lizard / frog / newt / turtle), snake
+  (side view lying in curves, or a ground decal), arthropod. Same style rules as the fish (no outlines, soft shading).
+- Later: climbing (geckos / tree frogs on glass and branches, like glass snails), terrarium hardscape (cork bark
+  background, mesh lid, heat lamp / UVB fixture), and the site tagline "aquarium visualizer" -> "tank visualizer".
 
 ## Next work unit: water level + water colour (requested by Nathan 2026-10-08)
 

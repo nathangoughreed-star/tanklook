@@ -7,7 +7,7 @@ import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng } from '../art/paint';
 import { PLANT_ASPECT, type PlantType } from '../art/plants';
 import { clamp } from '../scene/physics';
-import { groundHeight, swampLand } from '../scene/terrain';
+import { groundHeight } from '../scene/terrain';
 import type { LayoutId, Scene, Tank } from '../scene/types';
 import { cardMaterial, plantTexture } from './textures';
 
@@ -175,7 +175,7 @@ function build(S: Scene, T: Tank, id: LayoutId, seed: number): THREE.Group {
     carpet(0.04, 0.34);
   } else if (id === 'swamp') {
     // land: emersed grasses, swords, ferns and a few stones; pools: stems and grass growing up out of the water
-    const land = (x: number, d: number) => swampLand(T, seed, x, d) > H * 0.3;
+    const land = (x: number, d: number) => sub(x, d) > H * 0.3;
     const MUD = ['#5d5245', '#6e6457', '#4f4a42'];
     for (let x = 25; x < L - 25; x += 45 + r() * 35) for (let d = D * 0.08; d < D * 0.97; d += 50 + r() * 30) {
       const xx = x + (r() - 0.5) * 30, dd = d + (r() - 0.5) * 25, k = r();
@@ -195,7 +195,7 @@ const cache = new Map<string, THREE.Group>();
 /** The layout for tank T, cached by everything it depends on; returns a clone sharing geometry and materials. */
 export function layoutGroup(S: Scene, T: Tank): THREE.Group | null {
   const { id, seed } = S.layout; if (id === 'none') return null;
-  const key = JSON.stringify([id, seed, T, S.substrate, S.render.edge]);
+  const key = JSON.stringify([id, seed, T, S.substrate, S.terrain.on ? S.terrain : 0, S.render.edge]);
   let g = cache.get(key);
   if (!g) {
     g = build(S, T, id, seed); cache.set(key, g);

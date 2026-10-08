@@ -4,9 +4,9 @@
 // Tank B gets the same arrangement at the same relative spots.
 import { rng } from '../art/paint';
 import { clamp, substrateHeight } from './physics';
-import type { LayoutSettings, SubstrateSettings, Tank } from './types';
+import type { LayoutSettings, SubstrateSettings, Tank, TerrainSettings } from './types';
 
-export interface Ground { substrate: SubstrateSettings; layout: LayoutSettings }
+export interface Ground { substrate: SubstrateSettings; layout: LayoutSettings; terrain?: TerrainSettings }
 
 /** Land top in the swamp layout, as a fraction of interior height (the water is set below it when it is chosen). */
 export const SWAMP_LAND = 0.62;
@@ -46,8 +46,36 @@ export function swampLand(T: Tank, seed: number, x: number, depth: number): numb
   return Math.max(0, top) * (1 - wet);
 }
 
-/** Ground height (mm above the tank floor) at (x, depth): substrate, or swamp land where it is higher. */
+/** Catmull-Rom through p1..p2 at t (passes through every point; smooth slopes across them). */
+const cr = (p0: number, p1: number, p2: number, p3: number, t: number) =>
+  p1 + 0.5 * t * (p2 - p0 + t * (2 * p0 - 5 * p1 + 4 * p2 - p3 + t * (3 * (p1 - p2) + p3 - p0)));
+
+/** Custom terrain height at (x, depth): bicubic Catmull-Rom through the grid points, clamped to the tank. */
+export function terrainHeight(t: TerrainSettings, T: Tank, x: number, depth: number): number {
+  const { cols, rows, h } = t, u = clamp(x / T.L, 0, 1) * (cols - 1), v = clamp(depth / T.D, 0, 1) * (rows - 1);
+  const i = Math.min(Math.floor(u), cols - 2), j = Math.min(Math.floor(v), rows - 2), fu = u - i, fv = v - j;
+  const at = (a: number, b: number) => h[clamp(b, 0, rows - 1) * cols + clamp(a, 0, cols - 1)];
+  const row = (b: number) => cr(at(i - 1, b), at(i, b), at(i + 1, b), at(i + 2, b), fu);
+  return clamp(cr(row(j - 1), row(j), row(j + 1), row(j + 2), fv), 0, T.H * 0.95); // overshoot can dip below 0
+}
+
+/** Grid rows for a column count, so cells stay roughly square. */
+export const terrainRows = (T: Tank, cols: number) => clamp(Math.round((cols - 1) * T.D / T.L) + 1, 2, 25);
+
+/** Position (mm, Tank T) of grid point (i, j). */
+export const terrainPoint = (t: TerrainSettings, T: Tank, i: number, j: number) =>
+  ({ x: T.L * i / (t.cols - 1), depth: T.D * j / (t.rows - 1) });
+
+/** A fresh cols-wide grid sampled from the current ground (custom terrain if on, else substrate / swamp land). */
+export function sampleTerrain(g: Ground, T: Tank, cols: number): TerrainSettings {
+  const rows = terrainRows(T, cols), h: number[] = [];
+  for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) h.push(+groundHeight(g, T, T.L * i / (cols - 1), T.D * j / (rows - 1)).toFixed(1));
+  return { on: true, cols, rows, h };
+}
+
+/** Ground height (mm above the tank floor) at (x, depth): custom terrain, else substrate or swamp land where higher. */
 export function groundHeight(g: Ground, T: Tank, x: number, depth: number): number {
+  if (g.terrain?.on && g.terrain.h.length) return terrainHeight(g.terrain, T, x, depth);
   const base = substrateHeight(g.substrate, T, x, depth);
   return g.layout.id === 'swamp' ? Math.max(base, swampLand(T, g.layout.seed, x, depth)) : base;
 }

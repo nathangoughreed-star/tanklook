@@ -34,6 +34,8 @@ export class Viewer {
   readonly vps: Viewport[];
   private dirty = true;
   private needsBuild = true;
+  /** Custom terrain editing: show grid dots in Tank A; `hot` = the dot being dragged. UI state, not scene data. */
+  terrainEdit: { on: boolean; hot: number | null } = { on: false, hot: null };
   private drawnListeners = new Set<() => void>();
 
   constructor(readonly canvas: HTMLCanvasElement, readonly host: HTMLElement, readonly store: Store) {
@@ -52,6 +54,8 @@ export class Viewer {
 
   onDrawn(fn: () => void) { this.drawnListeners.add(fn); }
   invalidate() { this.dirty = true; }
+  /** Rebuild on the next frame (UI-only state that changes the scene, like terrain editing). */
+  rebuild() { this.needsBuild = this.dirty = true; }
 
   get active() { return this.vps.slice(0, this.store.scene.compare ? 2 : 1); }
 
@@ -60,7 +64,7 @@ export class Viewer {
     for (const vp of this.vps) {
       disposeScene(vp.scene);
       vp.T = vp.key === 'A' ? S.tankA : S.tankB;
-      Object.assign(vp, buildTank(S, vp.T, this.store.selId));
+      Object.assign(vp, buildTank(S, vp.T, this.store.selId, vp.key === 'A' && this.terrainEdit.on ? this.terrainEdit : undefined));
     }
     this.needsBuild = false;
   }
@@ -147,8 +151,10 @@ export class Viewer {
     if (!vp) return null;
     const ndc = new THREE.Vector2((x - vp.x) / vp.w * 2 - 1, -(y - vp.y) / vp.h * 2 + 1);
     this.ray.setFromCamera(ndc, vp.cam);
+    const dot = this.terrainEdit.on ? this.ray.intersectObjects(vp.dotMeshes ?? [], false)[0] : undefined;
+    if (dot) return { vp, ray: this.ray.ray.clone(), fishId: null, mesh: dot.object as THREE.Mesh, dot: dot.object.userData.dot as number };
     const hit = this.ray.intersectObjects(vp.fishMeshes ?? [], false)[0];
-    return { vp, ray: this.ray.ray.clone(), fishId: hit ? (hit.object.userData.id as number) : null, mesh: hit?.object as THREE.Mesh | undefined };
+    return { vp, ray: this.ray.ray.clone(), fishId: hit ? (hit.object.userData.id as number) : null, mesh: hit?.object as THREE.Mesh | undefined, dot: null as number | null };
   }
 
   // ---------- Export: render bigger, then save ----------

@@ -10,8 +10,9 @@ import {
   IN, clamp, clampFish, fmtDims, fmtLen, fromUnit, glassThickness, rescaleTankA, spawnSnail, toUnit, volume, waterY,
 } from '../scene/physics';
 import type { Store } from '../scene/store';
-import { SWAMP_LEVEL, groundHeight } from '../scene/terrain';
+import { SWAMP_LEVEL, groundHeight, sampleTerrain } from '../scene/terrain';
 import { setWaterLevel } from '../scene/water';
+import { tankWeight } from '../scene/weight';
 import type { Fish, LayoutId, Scene, Tank } from '../scene/types';
 import { GLASS_CHOICES, LIMITS, SceneError, nextFishId, parseScene } from '../scene/validate';
 
@@ -141,7 +142,9 @@ export function attachPanels(store: Store, viewer: Viewer) {
       b.ondblclick = () => addOne(sp);
       results.append(b);
     }
-    $<HTMLButtonElement>('addFish').disabled = $<HTMLButtonElement>('addSchool').disabled = !list.length;
+    const dry = !S().water.on && getSpecies(pickId)?.kind !== 'snail'; // fish need water
+    $<HTMLButtonElement>('addFish').disabled = $<HTMLButtonElement>('addSchool').disabled = !list.length || dry;
+    $('addFish').title = dry ? 'Fish need water: turn Water on (Water section)' : '';
     setOut('oAddSize', sizeLabel(addPct(), getSpecies(pickId)));
   }
   search.oninput = renderResults;
@@ -155,9 +158,10 @@ export function attachPanels(store: Store, viewer: Viewer) {
   /** A snail at a random spot on the substrate or the inside of a pane (area-weighted). */
   const snailAt = (s: Scene, sp: Species, id: number): Fish => {
     const sz = newTL(sp);
-    return { id, species: sp.id, ...spawnSnail((x, d) => groundHeight(s, s.tankA, x, d), s.tankA, sz.tl ?? sp.tl, Math.random, waterY(s.tankA, s.water.level)), pitch: 0, roll: 0, bend: 0, ...sz };
+    return { id, species: sp.id, ...spawnSnail((x, d) => groundHeight(s, s.tankA, x, d), s.tankA, sz.tl ?? sp.tl, Math.random, s.water.on ? waterY(s.tankA, s.water.level) : s.tankA.H - 10), pitch: 0, roll: 0, bend: 0, ...sz };
   };
   function addOne(sp: Species) {
+    if (!S().water.on && sp.kind !== 'snail') { status('Fish need water: turn Water on first.', true); return; }
     let id = 0;
     store.update(s => {
       const A = s.tankA, same = s.fish.filter(f => f.species === sp.id).length;
@@ -257,7 +261,34 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('subLR').onclick = () => subSet(1, 3, 1, 3);
   $('subCorner').onclick = () => subSet(1, 1, 4, 1);
 
+  // ---------- Custom terrain ----------
+  $('terOn').onchange = e => {
+    const on = (e.target as HTMLInputElement).checked;
+    store.update(s => {
+      // turning on starts from the floor you see (slopes or swamp land); a grid kept from before is reused
+      if (on && !s.terrain.h.length) s.terrain = sampleTerrain(s, s.tankA, s.terrain.cols);
+      s.terrain.on = on;
+    });
+    viewer.terrainEdit.on = on; viewer.rebuild();
+  };
+  $('terCols').oninput = e => store.update(s => {
+    const cols = +(e.target as HTMLInputElement).value; if (cols === s.terrain.cols && s.terrain.h.length) return;
+    s.terrain = sampleTerrain(s, s.tankA, cols); // resample the current surface, so shaping survives a grid change
+  }, { coalesce: 'terCols' });
+  $('terEdit').onclick = () => { viewer.terrainEdit.on = !viewer.terrainEdit.on; viewer.rebuild(); sync(); };
+  $('terFlat').onclick = () => store.update(s => {
+    const t = s.terrain, avg = t.h.reduce((a, v) => a + v, 0) / Math.max(1, t.h.length);
+    t.h = t.h.map(() => +avg.toFixed(1));
+  });
+
   // ---------- Water ----------
+  $('wOn').onchange = e => {
+    const on = (e.target as HTMLInputElement).checked;
+    store.update(s => { s.water.on = on; });
+    const n = S().fish.filter(f => getSpecies(f.species)?.kind !== 'snail').length;
+    if (!on && n) status(`${n} fish hidden while the tank is dry. Turn Water back on to see them.`);
+    renderResults();
+  };
   $('wLevel').oninput = e => store.update(s => setWaterLevel(s, +(e.target as HTMLInputElement).value), { coalesce: 'wLevel' });
   $('wOpac').oninput = e => store.update(s => { s.water.opacity = +(e.target as HTMLInputElement).value; }, { coalesce: 'wOpac' });
   $('wColor').oninput = e => store.update(s => {
@@ -318,6 +349,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
     for (const id of ['aL', 'aH', 'aD', 'bL', 'bH', 'bD']) $(id).step = u === 'in' ? '0.5' : '1';
     const vol = volume(A);
     $('volA').textContent = `${vol.gallons.toFixed(1)} US gal · ${vol.litres.toFixed(0)} L interior`;
+    const wt = tankWeight(s), kgs = (kg: number) => (u === 'in' ? `${Math.round(kg * 2.20462)} lb` : `${Math.round(kg)} kg`);
+    $('wtA').textContent = `≈ ${kgs(wt.total)} filled: water ${kgs(wt.water)} (${(u === 'in' ? wt.waterLitres / 3.785 : wt.waterLitres).toFixed(0)} ${u === 'in' ? 'gal' : 'L'}), substrate ${kgs(wt.substrate)}, glass ${kgs(wt.glass)}`;
     $('rimY').classList.toggle('on', s.render.rim); $('rimN').classList.toggle('on', !s.render.rim);
     for (const [id, lid] of LIDS) $(id).classList.toggle('on', s.lid === lid);
     setVal('bgSel', s.render.bg); setVal('glassSel', String(s.render.glass)); setVal('glassType', s.render.glassType);
@@ -367,7 +400,18 @@ export function attachPanels(store: Store, viewer: Viewer) {
     $('subOn').checked = sub.show; setVal('subType', sub.type);
     for (const [id, k] of Object.entries(SUBK)) { $(id).max = String(smax); setVal(id, sub[k]); setOut('o' + id[0].toUpperCase() + id.slice(1), fmt(sub[k])); }
 
+    const te = s.terrain, editing = viewer.terrainEdit.on && te.on;
+    $('terOn').checked = te.on; setVal('terCols', te.cols);
+    setOut('oTerCols', te.h.length ? `${te.cols} × ${te.rows} points` : `${te.cols} across`);
+    for (const id of ['terEdit', 'terFlat', 'terCols']) ($(id) as HTMLInputElement).disabled = !te.on;
+    $('terEdit').classList.toggle('on', editing); $('terEdit').textContent = editing ? 'Done editing' : 'Edit points';
+    $('terHint').textContent = !te.on ? 'Custom terrain turns the floor into a grid of points you can push down or pull up, with a smooth surface through them. It starts from the current floor.'
+      : editing ? 'Drag a dot up or down. Drag empty space to orbit; look from above to reach the back points.' : 'Corner sliders are off while custom terrain is on.';
+    for (const id of ['subBL', 'subBR', 'subFL', 'subFR', 'subLevel', 'subFB', 'subLR', 'subCorner']) ($(id) as HTMLInputElement).disabled = te.on;
+
     const wa = s.water;
+    $('wOn').checked = wa.on;
+    for (const id of ['wLevel', 'wOpac', 'wColor', 'wClear', 'wTannin', 'wGreen']) ($(id) as HTMLInputElement).disabled = !wa.on;
     setVal('wLevel', wa.level); setOut('oLevel', wa.level >= 1 ? 'Full' : `${fmt(waterY(A, wa.level))} high`);
     setVal('wOpac', wa.opacity); setOut('oOpac', wa.opacity < 0.01 ? 'Clear' : Math.round(wa.opacity * 100) + '%'); setVal('wColor', wa.color);
 

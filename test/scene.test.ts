@@ -4,7 +4,8 @@ import { defaultScene } from '../src/scene/defaults';
 import { Store } from '../src/scene/store';
 import { SCENE_VERSION } from '../src/scene/types';
 import { setWaterLevel } from '../src/scene/water';
-import { SWAMP_LEVEL, groundHeight } from '../src/scene/terrain';
+import { SWAMP_LEVEL, groundHeight, sampleTerrain, terrainHeight } from '../src/scene/terrain';
+import { tankWeight } from '../src/scene/weight';
 import { WATERLINE_GAP, spawnSnail, substrateHeight, waterK, waterY } from '../src/scene/physics';
 import { SceneError, parseScene } from '../src/scene/validate';
 
@@ -189,7 +190,7 @@ describe('water (scene v5)', () => {
     const v4 = { ...defaultScene(), version: 4 } as Record<string, unknown>;
     delete v4.water;
     const { scene } = parseScene(v4);
-    expect(scene.version).toBe(5);
+    expect(scene.version).toBe(SCENE_VERSION);
     expect(scene.water).toEqual(defaultScene().water);
     expect(scene.water.level).toBe(1);
     expect(scene.water.opacity).toBe(0);
@@ -198,7 +199,7 @@ describe('water (scene v5)', () => {
     const s = defaultScene() as unknown as Record<string, any>;
     s.water = { level: -3, color: 'red', opacity: 7 };
     const { scene } = parseScene(s);
-    expect(scene.water).toEqual({ level: 0.1, color: defaultScene().water.color, opacity: 0.95 });
+    expect(scene.water).toEqual({ on: true, level: 0.1, color: defaultScene().water.color, opacity: 0.95 });
   });
   it('keeps swimmers below the surface when the level drops, and leaves bottom dwellers alone', () => {
     const st = new Store(defaultScene());
@@ -267,5 +268,79 @@ describe('swamp terrain', () => {
   it('the ground is the substrate everywhere outside the swamp layout', () => {
     const s = defaultScene(), A = s.tankA;
     expect(groundHeight(s, A, 100, 100)).toBe(substrateHeight(s.substrate, A, 100, 100));
+  });
+});
+
+describe('custom terrain (scene v6)', () => {
+  const T = { L: 900, H: 400, D: 450 };
+  const grid = (cols: number, rows: number, f: (i: number, j: number) => number) =>
+    ({ on: true, cols, rows, h: Array.from({ length: cols * rows }, (_, k) => f(k % cols, Math.floor(k / cols))) });
+  it('the surface passes exactly through every grid point', () => {
+    const t = grid(7, 4, (i, j) => 20 + ((i * 37 + j * 53) % 90));
+    for (let j = 0; j < 4; j++) for (let i = 0; i < 7; i++)
+      expect(terrainHeight(t, T, T.L * i / 6, T.D * j / 3)).toBeCloseTo(t.h[j * 7 + i], 6);
+  });
+  it('is smooth between points: no jumps along a fine line, and a flat grid stays flat', () => {
+    const t = grid(5, 3, (i, j) => (i === 2 && j === 1 ? 150 : 30));
+    let prev = terrainHeight(t, T, 0, T.D / 2), maxStep = 0;
+    for (let x = 1; x <= T.L; x++) { const h = terrainHeight(t, T, x, T.D / 2); maxStep = Math.max(maxStep, Math.abs(h - prev)); prev = h; }
+    expect(maxStep).toBeLessThan(1.5); // 120 mm rise over a 225 mm cell, no steps
+    const flat = grid(6, 3, () => 42);
+    for (let k = 0; k < 50; k++) expect(terrainHeight(flat, T, (k * 97) % T.L, (k * 41) % T.D)).toBeCloseTo(42, 6);
+  });
+  it('never goes below the tank floor (overshoot is clamped)', () => {
+    const t = grid(5, 3, (i) => (i === 2 ? 0 : 200));
+    for (let x = 0; x <= T.L; x += 5) expect(terrainHeight(t, T, x, T.D / 2)).toBeGreaterThanOrEqual(0);
+  });
+  it('starts from the current floor and survives a grid change by resampling', () => {
+    const s = defaultScene(), A = s.tankA;
+    const t = sampleTerrain(s, A, 7);
+    expect(t.h.length).toBe(t.cols * t.rows);
+    s.terrain = t;
+    for (const [x, d] of [[0, 0], [A.L, A.D], [A.L / 2, A.D / 2]]) expect(groundHeight(s, A, x, d)).toBeCloseTo(substrateHeight(s.substrate, A, x, d), 0);
+    s.terrain.h[s.terrain.cols + 3] = 120;
+    const before = groundHeight(s, A, A.L / 2, A.D / (s.terrain.rows - 1));
+    s.terrain = sampleTerrain(s, A, 13);
+    expect(groundHeight(s, A, A.L / 2, A.D / 2)).toBeGreaterThan(0);
+    expect(Math.abs(groundHeight(s, A, A.L / 2, A.D / (sampleTerrain(defaultScene(), A, 7).rows - 1)) - before)).toBeLessThan(15);
+  });
+  it('round-trips through save/load and repairs a broken grid', () => {
+    const s = defaultScene(); s.terrain = sampleTerrain(s, s.tankA, 5);
+    expect(parseScene(JSON.parse(JSON.stringify(s))).scene.terrain).toEqual(s.terrain);
+    const bad = { ...s, terrain: { on: true, cols: 5, rows: 3, h: [1, 2, 3] } };
+    expect(parseScene(bad).scene.terrain.on).toBe(false);
+  });
+});
+
+describe('dry tank (water off)', () => {
+  it('keeps fish untouched in the data while dry, and older files load with water on', () => {
+    const st = new Store(defaultScene()), ys = st.scene.fish.map(f => f.y);
+    st.update(s => { s.water.on = false; s.water.level = 0.2; s.fish[0].y = s.tankA.H; });
+    expect(st.scene.fish[0].y).toBe(st.scene.tankA.H); // not clamped: hidden, not edited
+    expect(st.scene.fish.slice(1).map(f => f.y)).toEqual(ys.slice(1));
+    const old = defaultScene() as unknown as Record<string, any>; delete old.water.on;
+    expect(parseScene(old).scene.water.on).toBe(true);
+  });
+});
+
+describe('approximate tank weight', () => {
+  const bare = () => { const s = defaultScene(); s.substrate.show = false; s.layout.id = 'none'; s.render.glass = 10; s.lid = 'open'; return s; };
+  it('water = interior floor x water depth when there is no substrate', () => {
+    const s = bare(), A = s.tankA, w = tankWeight(s);
+    expect(w.water).toBeCloseTo(A.L * A.D * waterY(A, 1) / 1e6, 6);
+    expect(w.substrate).toBe(0);
+  });
+  it('glass from the pane sizes at their real thickness (2.5 kg/L)', () => {
+    const s = bare(), { L, H, D } = s.tankA, t = 10;
+    const vol = ((L + 2 * t) * (D + 2 * t) * t + 2 * (L + 2 * t) * H * t + 2 * D * H * t) / 1e6;
+    expect(tankWeight(s).glass).toBeCloseTo(vol * 2.5, 6);
+    s.render.glass = 5; expect(tankWeight(s).glass).toBeLessThan(vol * 2.5 * 0.6);
+  });
+  it('substrate displaces water; lowering the level and going dry cut the water, land stays', () => {
+    const s = defaultScene(), full = tankWeight(s);
+    expect(full.water).toBeLessThan(tankWeight(bare()).water);
+    setWaterLevel(s, 0.5); expect(tankWeight(s).water).toBeLessThan(full.water * 0.6);
+    s.water.on = false; const dry = tankWeight(s);
+    expect(dry.water).toBe(0); expect(dry.substrate).toBeLessThan(full.substrate); // no pore water when dry
   });
 });

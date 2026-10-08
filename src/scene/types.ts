@@ -3,7 +3,7 @@
 // Tank L/H/D are INTERIOR dimensions; glass is added outside. Fish positions live in Tank A space;
 // Tank B shows the same fish at the same relative positions (fractions of L/H/D).
 
-export const SCENE_VERSION = 5;
+export const SCENE_VERSION = 6;
 
 export type Units = 'in' | 'cm';
 export type EdgeMode = 'cutout' | 'a2c';
@@ -63,6 +63,13 @@ export interface SubstrateSettings {
   fl: number; fr: number; bl: number; br: number; // depth at each corner, mm
 }
 
+/**
+ * Custom terrain: a cols x rows grid of ground heights (mm above the tank floor, Tank A) spread evenly over the
+ * floor, corners included, with a smooth curve through every point. When on, it replaces the substrate's corner
+ * slopes and the swamp land. Heights are physical (like the substrate), so Tank B gets the same mm at the same spots.
+ */
+export interface TerrainSettings { on: boolean; cols: number; rows: number; h: number[] }
+
 /** Preset aquascape (rocks, wood, plants), generated from the tank size and a seed; not hand-placed. */
 export type LayoutId = 'none' | 'stones' | 'driftwood' | 'planted' | 'iwagumi' | 'swamp';
 export interface LayoutSettings { id: LayoutId; seed: number }
@@ -72,7 +79,8 @@ export interface LayoutSettings { id: LayoutId; seed: number }
  * resized tank keep the same fill. Colour tints what is seen through the water; opacity = how much of that colour
  * shows after 300 mm of water (physical: a deeper tank looks more tinted). Opacity 0 = clear water.
  */
-export interface WaterSettings { level: number; color: string; opacity: number }
+export interface WaterSettings { on: boolean; level: number; color: string; opacity: number }
+// on = false: a dry tank (terrarium for reptiles, amphibians, insects). Fish are kept in the data but not shown.
 
 export type StandFinish = 'black' | 'white' | 'oak';
 /** 'cabinet' = closed box with doors; 'frame' = open welded steel skeleton (square tube legs and rails). */
@@ -102,6 +110,7 @@ export interface Scene {
   light: LightSettings;
   substrate: SubstrateSettings;
   layout: LayoutSettings;
+  terrain: TerrainSettings;
   water: WaterSettings;
   lid: LidType;
   stand: StandSettings;

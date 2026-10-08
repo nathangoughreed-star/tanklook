@@ -34,6 +34,7 @@ export function fitFish(f: Fish, s: Scene) {
 
 /** Fit every fish into the water (after any scene change: level, tank size, layout, drags, new fish). */
 export function keepInWater(s: Scene) {
+  if (!s.water.on) return; // dry tank: fish are hidden, nothing to keep in
   for (const f of s.fish) fitFish(f, s);
 }
 

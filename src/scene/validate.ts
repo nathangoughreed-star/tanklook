@@ -27,7 +27,9 @@ export const LIMITS = {
   stand: [12 * 25.4, 48 * 25.4] as const, // mm
   person: [900, 2100] as const,            // mm
   size: [0.15, 1.3] as const,              // custom fish length, fraction of the adult length
-  level: [0.1, 1] as const,                // water level, fraction of full
+  level: [0.1, 1] as const,
+  terrainCols: [3, 25] as const,             // custom terrain grid points along the length
+  terrainMax: 0.95,                        // highest point, fraction of interior height                // water level, fraction of full
   opacity: [0, 0.95] as const,             // water tint after 300 mm
 };
 export const SURFACES = ['floor', 'front', 'back', 'left', 'right'] as const;
@@ -52,7 +54,7 @@ function migrate(raw: Obj, warn: (m: string) => void): Obj {
     raw.layout = { id: p.show === false ? 'none' : 'planted', seed: 1 };
     delete raw.plant;
   }
-  // v5 adds water (level, colour); older files get the default: full, clear
+  // v5 adds water (level, colour); older files get the default: full, clear. v6 adds custom terrain (off).
   raw.version = SCENE_VERSION;
   return raw;
 }
@@ -79,7 +81,7 @@ export function parseScene(input: unknown): { scene: Scene; warnings: string[] }
 
   const tankA = tank(raw.tankA, d.tankA), tankB = tank(raw.tankB, d.tankB);
   const c = sub('camera'), r = sub('render'), l = sub('light'), s = sub('substrate'), lay = sub('layout');
-  const wa = sub('water'), st = sub('stand'), w = sub('wall'), pe = sub('person');
+  const te = sub('terrain'), wa = sub('water'), st = sub('stand'), w = sub('wall'), pe = sub('person');
   const glass = r.glass === 'auto' ? 'auto' : typeof r.glass === 'number' && GLASS_CHOICES.includes(r.glass) ? r.glass : 'auto';
   const subMax = tankA.H * 0.5;
 
@@ -132,9 +134,15 @@ export function parseScene(input: unknown): { scene: Scene; warnings: string[] }
     },
     layout: { id: pick(lay.id, LAYOUT_IDS, d.layout.id), seed: Math.round(num(lay.seed, 1, 1, 1e9)) },
     water: {
-      level: num(wa.level, d.water.level, ...LIMITS.level), opacity: num(wa.opacity, d.water.opacity, ...LIMITS.opacity),
+      on: bool(wa.on, true), level: num(wa.level, d.water.level, ...LIMITS.level), opacity: num(wa.opacity, d.water.opacity, ...LIMITS.opacity),
       color: typeof wa.color === 'string' && /^#[0-9a-f]{6}$/i.test(wa.color) ? wa.color.toLowerCase() : d.water.color,
     },
+    terrain: (() => {
+      const cols = Math.round(num(te.cols, d.terrain.cols, ...LIMITS.terrainCols)), rows = Math.round(num(te.rows, 0, 0, 25));
+      const h = Array.isArray(te.h) && rows >= 2 && te.h.length === cols * rows && te.h.every(v => typeof v === 'number' && Number.isFinite(v))
+        ? (te.h as number[]).map(v => clamp(v, 0, tankA.H * LIMITS.terrainMax)) : [];
+      return h.length ? { on: bool(te.on, false), cols, rows, h } : { on: false, cols, rows: 0, h: [] };
+    })(),
     lid: pick(raw.lid, ['open', 'glass', 'hood'] as const, d.lid),
     stand: {
       show: bool(st.show, d.stand.show), height: num(st.height, d.stand.height, ...LIMITS.stand),

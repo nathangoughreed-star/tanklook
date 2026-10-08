@@ -5,7 +5,7 @@ import { SUBSTRATES } from '../art/placeholder';
 import { snailAspect } from '../art/snails';
 import { fishTL, getSpecies, type Species } from '../data/species';
 import { D2R, IN, WALL_GAP, clamp, floorY, glassThickness, mapToTank, RIM_DROP, RIM_H, tankUnderside, waterY } from '../scene/physics';
-import { groundHeight } from '../scene/terrain';
+import { groundHeight, terrainPoint } from '../scene/terrain';
 import type { Background, Fish, Scene, Tank } from '../scene/types';
 import { addFixture, applyLighting } from './lighting';
 import { layoutGroup } from './layouts';
@@ -88,6 +88,7 @@ function addTank(sc: THREE.Scene, S: Scene, T: Tank) {
  * the glass. The colour of the water itself is a tint in the lighting shader (see aqWaterPath).
  */
 function addWater(sc: THREE.Scene, S: Scene, T: Tank) {
+  if (!S.water.on) return;
   const { L, D } = T, y = waterY(T, S.water.level), c = new THREE.Color(0xd8eef2).lerp(new THREE.Color(S.water.color), 0.25 + 0.5 * S.water.opacity);
   const surf = plane(L, D, basic(c, { transparent: true, opacity: 0.1 + 0.25 * S.water.opacity, depthWrite: false, side: THREE.DoubleSide }));
   surf.rotation.x = -Math.PI / 2; surf.position.set(L / 2, y, -D / 2); surf.renderOrder = 4; surf.userData.nolight = true; sc.add(surf);
@@ -270,7 +271,7 @@ function addWall(sc: THREE.Scene, S: Scene, T: Tank) {
 }
 
 function addSubstrate(sc: THREE.Scene, S: Scene, T: Tank) {
-  const swamp = S.layout.id === 'swamp';
+  const swamp = S.layout.id === 'swamp' || S.terrain.on;
   if (!S.substrate.show && !swamp) return;
   const { L, D } = T, tile = SUBSTRATES[S.substrate.type].tile * 2, h = (x: number, d: number) => groundHeight(S, T, x, d);
   // top surface as a 16x16 grid (bilinear surfaces curve along diagonals), front face and two side faces;
@@ -327,9 +328,39 @@ export interface BuiltTank {
   scene: THREE.Scene;
   fishMeshes: THREE.Mesh[];
   meshById: Map<number, THREE.Mesh>;
+  /** Custom terrain grid points (userData.dot = index), present while editing. */
+  dotMeshes: THREE.Mesh[];
 }
 
-export function buildTank(S: Scene, T: Tank, selId: number | null): BuiltTank {
+/**
+ * Custom terrain editing aids: a dot on every grid point (drawn over everything so plants never hide one) and faint
+ * grid lines following the ground between them. `hot` = the point being dragged.
+ */
+function addTerrainDots(sc: THREE.Scene, S: Scene, T: Tank, hot: number | null): THREE.Mesh[] {
+  const t = S.terrain, g = (x: number, d: number) => groundHeight(S, T, x, d), dots: THREE.Mesh[] = [], pts: number[] = [];
+  const r = clamp(Math.min(T.L / (t.cols - 1), T.D / (t.rows - 1)) * 0.09, 3.5, 9);
+  const geo = new THREE.SphereGeometry(r, 12, 8), ring = new THREE.SphereGeometry(r * 1.45, 12, 8);
+  const mat = (c: number) => basic(c, { depthTest: false, transparent: true, opacity: 0.95 });
+  const fill = mat(0xffffff), hotM = mat(0xffb020), edge = mat(0x1d2a33);
+  for (let j = 0; j < t.rows; j++) for (let i = 0; i < t.cols; i++) {
+    const k = j * t.cols + i, p = terrainPoint(t, T, i, j), y = g(p.x, p.depth);
+    const o = new THREE.Mesh(ring, edge); o.position.set(p.x, y, -p.depth); o.renderOrder = 20; o.userData.nolight = true; sc.add(o);
+    const m = new THREE.Mesh(geo, k === hot ? hotM : fill); m.position.copy(o.position); m.renderOrder = 21; m.userData = { nolight: true, dot: k }; sc.add(m); dots.push(m);
+  }
+  const seg = 10;
+  for (let j = 0; j < t.rows; j++) for (let i = 0; i < (t.cols - 1) * seg; i++) {
+    const d = T.D * j / (t.rows - 1), x0 = T.L * i / ((t.cols - 1) * seg), x1 = T.L * (i + 1) / ((t.cols - 1) * seg);
+    pts.push(x0, g(x0, d) + 1, -d, x1, g(x1, d) + 1, -d);
+  }
+  for (let i = 0; i < t.cols; i++) for (let j = 0; j < (t.rows - 1) * seg; j++) {
+    const x = T.L * i / (t.cols - 1), d0 = T.D * j / ((t.rows - 1) * seg), d1 = T.D * (j + 1) / ((t.rows - 1) * seg);
+    pts.push(x, g(x, d0) + 1, -d0, x, g(x, d1) + 1, -d1);
+  }
+  sc.add(lines(pts, 0xffffff, 0.35));
+  return dots;
+}
+
+export function buildTank(S: Scene, T: Tank, selId: number | null, edit?: { hot: number | null }): BuiltTank {
   const sc = new THREE.Scene(), fishMeshes: THREE.Mesh[] = [], meshById = new Map<number, THREE.Mesh>();
   addTank(sc, S, T); addWater(sc, S, T); addSubstrate(sc, S, T); addStand(sc, S, T); addWall(sc, S, T); addPerson(sc, S, T); addFloor(sc, S, T);
   const lay = layoutGroup(S, T); if (lay) sc.add(lay);
@@ -340,6 +371,7 @@ export function buildTank(S: Scene, T: Tank, selId: number | null): BuiltTank {
   for (const f of S.fish) {
     const sp = getSpecies(f.species); if (!sp) continue;
     if (sp.kind === 'snail') { for (const [m, w, h] of snailMeshes(S, T, f, sp)) register(f, m, w, h); continue; }
+    if (!S.water.on) continue; // dry tank: fish stay in the scene data, hidden until the water is back
     const w = fishTL(f, sp), h = w * sp.aspect, p = mapToTank(S.tankA, T, f);
     const m = new THREE.Mesh(cardGeometry(w, h, f.bend), cardMaterial('fish:' + f.species, fishTexture(f.species), S.render.edge));
     // bottom dwellers rest on the substrate wherever they are (their stored height is ignored)
@@ -349,9 +381,10 @@ export function buildTank(S: Scene, T: Tank, selId: number | null): BuiltTank {
   }
   addLid(sc, S, T);
   if (S.lid !== 'hood') addFixture(sc, T, S.light); // with a hood the fixture is inside it; its light still applies
+  const dotMeshes = edit && S.terrain.on ? addTerrainDots(sc, S, T, edit.hot) : [];
   applyLighting(sc);
   sc.updateMatrixWorld(true);
-  return { scene: sc, fishMeshes, meshById };
+  return { scene: sc, fishMeshes, meshById, dotMeshes };
 }
 
 /** How far a glass snail sits off the inside of the pane (mm). */
@@ -373,7 +406,8 @@ function snailMeshes(S: Scene, T: Tank, f: Fish, sp: Species): [THREE.Mesh, numb
   }
   const h = w * snailAspect(sp.art, 'foot'), x = surf === 'left' ? PANE_GAP : surf === 'right' ? T.L - PANE_GAP : p.x;
   const d = surf === 'front' ? PANE_GAP : surf === 'back' ? T.D - PANE_GAP : p.depth;
-  const y = clamp(p.y, sub(x, d) + h / 2, Math.max(sub(x, d) + h / 2, waterY(T, S.water.level) - w / 2));
+  const top = S.water.on ? waterY(T, S.water.level) : T.H; // dry: the whole pane
+  const y = clamp(p.y, sub(x, d) + h / 2, Math.max(sub(x, d) + h / 2, top - w / 2));
   const foot = new THREE.Mesh(new THREE.PlaneGeometry(w, h), cardMaterial(`snail:${sp.art}:foot`, snailTexture(sp.art, 'foot'), edge, THREE.FrontSide));
   const sg = new THREE.PlaneGeometry(w, h).rotateY(Math.PI), uv = sg.attributes.uv; // face into the tank, texture not mirrored
   for (let i = 0; i < uv.count; i++) uv.setX(i, 1 - uv.getX(i));

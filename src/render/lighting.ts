@@ -69,7 +69,7 @@ export const LU = {
 };
 /** Water box (L, surface y, D) and tint per mm; set per viewport like the light. */
 export function setWaterUniforms(T: Tank, w: WaterSettings) {
-  LU.uWater.value.set(T.L, waterY(T, w.level), T.D, waterK(w.opacity));
+  LU.uWater.value.set(T.L, waterY(T, w.level), T.D, w.on ? waterK(w.opacity) : 0);
   LU.uWCol.value.set(w.color);
 }
 export function setLightUniforms(T: Tank, l: LightSettings) {

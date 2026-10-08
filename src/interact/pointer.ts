@@ -19,12 +19,20 @@ export function attachPointer(viewer: Viewer, store: Store) {
   const canvas = viewer.canvas;
   let drag: { vp: Viewport; plane: THREE.Plane; mode: DragMode; off: THREE.Vector3; moved: boolean } | null = null;
   let orbit: { x: number; y: number; az: number; el: number } | null = null;
+  // custom terrain: dragging a grid dot up/down; the height follows the pointer at the dot's on-screen scale
+  let lift: { k: number; y0: number; h0: number; mmPerPx: number; moved: boolean } | null = null;
 
   canvas.addEventListener('pointerdown', e => {
     if (e.button !== 0) return;
     const hit = viewer.hitTest(e.clientX, e.clientY); if (!hit) return;
     try { canvas.setPointerCapture(e.pointerId); } catch { /* not all pointers can be captured */ }
     canvas.classList.add('dragging');
+    if (hit.dot != null && hit.mesh) {
+      const cam = hit.vp.cam, dist = cam.position.distanceTo(hit.mesh.position);
+      lift = { k: hit.dot, y0: e.clientY, h0: store.scene.terrain.h[hit.dot], mmPerPx: dist * 2 * Math.tan(cam.fov * D2R / 2) / cam.zoom / hit.vp.h, moved: false };
+      viewer.terrainEdit.hot = hit.dot; viewer.rebuild();
+      return;
+    }
     if (hit.fishId == null || !hit.mesh) {
       const c = store.scene.camera; orbit = { x: e.clientX, y: e.clientY, az: c.az, el: c.el }; return;
     }
@@ -40,6 +48,11 @@ export function attachPointer(viewer: Viewer, store: Store) {
   });
 
   canvas.addEventListener('pointermove', e => {
+    if (lift) {
+      const l = lift, h = +clamp(l.h0 + (l.y0 - e.clientY) * l.mmPerPx, 0, store.scene.tankA.H * LIMITS.terrainMax).toFixed(1);
+      store.update(s => { s.terrain.h[l.k] = h; }, { coalesce: 'terrain' }); l.moved = true;
+      return;
+    }
     if (orbit) {
       const o = orbit;
       store.update(s => {
@@ -63,7 +76,11 @@ export function attachPointer(viewer: Viewer, store: Store) {
     d.moved = true;
   });
 
-  const end = () => { if (drag?.moved || orbit) store.seal(); drag = orbit = null; canvas.classList.remove('dragging'); };
+  const end = () => {
+    if (drag?.moved || orbit || lift?.moved) store.seal();
+    if (lift) { viewer.terrainEdit.hot = null; viewer.rebuild(); }
+    drag = orbit = lift = null; canvas.classList.remove('dragging');
+  };
   canvas.addEventListener('pointerup', end);
   canvas.addEventListener('pointercancel', end);
 
