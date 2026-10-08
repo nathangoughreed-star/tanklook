@@ -162,6 +162,13 @@ Design so far:
   Keep the one-FOV rule while locked so sizes stay directly comparable; when unlocked each view frames itself.
   Re-locking after the views were moved apart snaps the second tank's camera (orbit angle, eye distance, zoom) to the
   ORIGINAL tank's (the one that existed before the split, `tanks[0]`), not to whichever view is active (Nathan 2026-10-08).
+- **Difference labels (Nathan 2026-10-08):** the label at the top of each viewport (today "Tank A: 42 × 17 × 15" (L×H×D)")
+  lists the variables that differ between the two tanks. Numbers are shown for dimension-like values (size, stand
+  height, eye distance, water level, light height...); finer details get a name per side only: "Stocking A" vs
+  "Stocking B", "Gravel: black sand" vs "Gravel: white sand", "Water tint A" vs "Water tint B". Built from a
+  `tankDiff(a, b)` over two setups (one entry per differing setting, label for each side). Assumed until Nathan says
+  otherwise: size is always shown (it names the tank), the rest only when it differs; the label sits in the viewport
+  tab with the close x; a long list wraps. Today Tank B can only differ in size, so this lands with split tanks.
 - Data: scene v7 `tanks: [TankSetup, TankSetup?]` + `active` + `camLock`, each setup holding its own camera; migrate v6 (tankA + global contents; tankB + compare ->
   a second setup copied from A at tankB's size, fish mapped by fraction as today). Everything that reads `S.tankA` /
   global contents (panels, physics helpers, water.ts, terrain.ts, weight.ts, build.ts, pointer.ts, validate.ts, tests)
