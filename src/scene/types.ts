@@ -3,7 +3,7 @@
 // Tank L/H/D are INTERIOR dimensions; glass is added outside. Fish positions live in Tank A space;
 // Tank B shows the same fish at the same relative positions (fractions of L/H/D).
 
-export const SCENE_VERSION = 3;
+export const SCENE_VERSION = 4;
 
 export type Units = 'in' | 'cm';
 export type EdgeMode = 'cutout' | 'a2c';
@@ -24,7 +24,14 @@ export interface Fish {
   pitch: number;
   roll: number;
   bend: number; // -1..1, body curve
+  /** Custom total length, mm (juveniles, or a big individual). Absent = the species' adult length. */
+  tl?: number;
+  /** Snails only: the surface it clings to. On glass, yaw is its heading within the pane. */
+  surface?: Surface;
 }
+
+/** Where a snail sits: the substrate, or the inside of one of the four glass panes. */
+export type Surface = 'floor' | 'front' | 'back' | 'left' | 'right';
 
 export interface CameraSettings {
   dist: number; // eye to centre of the front glass, mm; identical for every tank
@@ -56,7 +63,9 @@ export interface SubstrateSettings {
   fl: number; fr: number; bl: number; br: number; // depth at each corner, mm
 }
 
-export interface PlantSettings { show: boolean; x: number; depth: number }
+/** Preset aquascape (rocks, wood, plants), generated from the tank size and a seed; not hand-placed. */
+export type LayoutId = 'none' | 'stones' | 'driftwood' | 'planted' | 'iwagumi';
+export interface LayoutSettings { id: LayoutId; seed: number }
 
 export type StandFinish = 'black' | 'white' | 'oak';
 /** Cabinet under the tank: same footprint as the tank's outer glass, adjustable height (mm, floor to tank bottom). */
@@ -83,7 +92,7 @@ export interface Scene {
   render: RenderSettings;
   light: LightSettings;
   substrate: SubstrateSettings;
-  plant: PlantSettings;
+  layout: LayoutSettings;
   lid: LidType;
   stand: StandSettings;
   wall: WallSettings;

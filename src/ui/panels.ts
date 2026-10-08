@@ -1,15 +1,16 @@
 // Sidebar wiring. Inputs write through store.update(); one sync() pulls every control back from the scene,
 // so undo/redo, file open and pointer drags all refresh the panels the same way.
 import { SUBSTRATES } from '../art/placeholder';
-import { getSpecies, searchSpecies, type Species } from '../data/species';
+import { fishTL, getSpecies, restsOnFloor, searchSpecies, type Species } from '../data/species';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
+import { LAYOUTS } from '../render/layouts';
 import type { Viewer } from '../render/viewer';
 import { defaultScene, TANK_PRESETS } from '../scene/defaults';
 import {
-  IN, clamp, clampFish, fmtDims, fmtLen, fromUnit, glassThickness, rescaleTankA, toUnit, volume,
+  IN, clamp, clampFish, fmtDims, fmtLen, fromUnit, glassThickness, rescaleTankA, spawnSnail, toUnit, volume,
 } from '../scene/physics';
 import type { Store } from '../scene/store';
-import type { Fish, Scene, Tank } from '../scene/types';
+import type { Fish, LayoutId, Scene, Tank } from '../scene/types';
 import { GLASS_CHOICES, LIMITS, SceneError, nextFishId, parseScene } from '../scene/validate';
 
 const $ = <T extends HTMLElement = HTMLInputElement>(id: string) => document.getElementById(id) as T;
@@ -130,21 +131,36 @@ export function attachPanels(store: Store, viewer: Viewer) {
       const b = document.createElement('button');
       b.setAttribute('role', 'option'); b.setAttribute('aria-selected', String(sp.id === pickId));
       b.className = sp.id === pickId ? 'on' : '';
-      b.innerHTML = `<span>${esc(sp.name)} <i>${esc(sp.sci)}</i></span><span>${fmt(sp.tl)}</span>`;
+      const tag = sp.kind === 'snail' ? '<b class="tag">snail</b>' : sp.zone === 'bottom' ? '<b class="tag">bottom</b>' : '';
+      b.innerHTML = `<span>${esc(sp.name)} ${tag}<i>${esc(sp.sci)}</i></span><span>${fmt(sp.tl)}</span>`;
+      if (sp.note) b.title = sp.note;
       b.onclick = () => { pickId = sp.id; renderResults(); };
       b.ondblclick = () => addOne(sp);
       results.append(b);
     }
     $<HTMLButtonElement>('addFish').disabled = $<HTMLButtonElement>('addSchool').disabled = !list.length;
+    setOut('oAddSize', sizeLabel(addPct(), getSpecies(pickId)));
   }
   search.oninput = renderResults;
   search.onkeydown = e => { if (e.key === 'Enter') { const sp = searchSpecies(search.value)[0]; if (sp) { pickId = sp.id; addOne(sp); renderResults(); } } };
 
+  /** Size for newly added fish: % of adult length (100 = adult, stored as no override). */
+  const addPct = () => clamp(Math.round(+$('addSize').value || 100), 15, 130);
+  const newTL = (sp: Species) => (addPct() === 100 ? {} : { tl: Math.round(sp.tl * addPct() / 100) });
+  const sizeLabel = (pct: number, sp?: Species) => (pct === 100 ? 'Adult' : `${pct}%${sp ? ' · ' + fmt(sp.tl * pct / 100) : ''}`);
+  $('addSize').oninput = () => setOut('oAddSize', sizeLabel(addPct(), getSpecies(pickId)));
+  /** A snail at a random spot on the substrate or the inside of a pane (area-weighted). */
+  const snailAt = (s: Scene, sp: Species, id: number): Fish => {
+    const sz = newTL(sp);
+    return { id, species: sp.id, ...spawnSnail(s.substrate, s.tankA, sz.tl ?? sp.tl, Math.random), pitch: 0, roll: 0, bend: 0, ...sz };
+  };
   function addOne(sp: Species) {
     let id = 0;
     store.update(s => {
       const A = s.tankA, same = s.fish.filter(f => f.species === sp.id).length;
-      const f: Fish = { id: id = nextFishId(s), species: sp.id, x: A.L / 2 + ((same % 5) - 2) * sp.tl * 0.6, y: A.H / 2, depth: A.D / 2, yaw: 0, pitch: 0, roll: 0, bend: 0 };
+      if (sp.kind === 'snail') { s.fish.push(snailAt(s, sp, id = nextFishId(s))); return; }
+      const sz = newTL(sp), tl = sz.tl ?? sp.tl;
+      const f: Fish = { id: id = nextFishId(s), species: sp.id, x: A.L / 2 + ((same % 5) - 2) * tl * 0.6, y: A.H / 2, depth: sp.zone === 'bottom' ? A.D * 0.3 : A.D / 2, yaw: 0, pitch: 0, roll: 0, bend: 0, ...sz };
       clampFish(f, A); s.fish.push(f);
     });
     store.select(id);
@@ -155,13 +171,15 @@ export function attachPanels(store: Store, viewer: Viewer) {
     const n = clamp(Math.round(+$('schoolN').value || 12), 2, 60);
     let last = 0;
     store.update(s => {
-      const A = s.tankA, tl = sp.tl, r = Math.random, cx = A.L * (0.3 + r() * 0.4), cy = A.H * (0.4 + r() * 0.3), dir = r() < 0.5 ? 0 : 180;
+      const A = s.tankA, sz = newTL(sp), tl = sz.tl ?? sp.tl, r = Math.random, cx = A.L * (0.3 + r() * 0.4), cy = A.H * (0.4 + r() * 0.3), dir = r() < 0.5 ? 0 : 180;
       for (let i = 0; i < n && s.fish.length < LIMITS.maxFish; i++) {
+        if (sp.kind === 'snail') { s.fish.push(snailAt(s, sp, last = nextFishId(s))); continue; }
         const f: Fish = {
           id: last = nextFishId(s), species: sp.id,
           x: cx + (r() - 0.5) * tl * 9, y: cy + (r() - 0.5) * tl * 4, depth: A.D * (0.15 + r() * 0.7),
-          yaw: Math.round(dir + (r() - 0.5) * 80), pitch: Math.round((r() - 0.5) * 16), roll: Math.round((r() - 0.5) * 10), bend: +((r() - 0.5) * 0.8).toFixed(2),
+          yaw: Math.round(dir + (r() - 0.5) * 80), pitch: Math.round((r() - 0.5) * 16), roll: Math.round((r() - 0.5) * 10), bend: +((r() - 0.5) * 0.8).toFixed(2), ...sz,
         };
+        if (sp.zone === 'bottom') Object.assign(f, { yaw: Math.round(r() * 360 - 180), pitch: 0, roll: 0, x: A.L * (0.1 + r() * 0.8) });
         if (f.yaw > 180) f.yaw -= 360;
         clampFish(f, A); s.fish.push(f);
       }
@@ -185,6 +203,13 @@ export function attachPanels(store: Store, viewer: Viewer) {
   const fishKeys = { fX: 'x', fY: 'y', fZ: 'depth', fYaw: 'yaw', fPitch: 'pitch', fRoll: 'roll', fBend: 'bend' } as const;
   for (const [id, k] of Object.entries(fishKeys)) $(id).oninput = e => editSel(f => { f[k] = +(e.target as HTMLInputElement).value; }, id);
   document.querySelectorAll<HTMLButtonElement>('[data-d]').forEach(b => b.onclick = () => editSel((f, s) => { f.depth = +b.dataset.d! * s.tankA.D; }));
+  const setSize = (f: Fish, pct: number) => {
+    const sp = getSpecies(f.species)!, tl = Math.round(sp.tl * clamp(pct, 15, 130) / 100);
+    if (tl === sp.tl) delete f.tl; else f.tl = tl;
+  };
+  $('fSize').oninput = e => editSel(f => setSize(f, +(e.target as HTMLInputElement).value), 'fSize');
+  $('sizeAdult').onclick = () => editSel(f => { delete f.tl; });
+  document.querySelectorAll<HTMLButtonElement>('[data-sz]').forEach(b => b.onclick = () => editSel(f => setSize(f, +b.dataset.sz! * 100)));
   const flip = () => editSel(f => { f.yaw = f.yaw > 0 ? f.yaw - 180 : f.yaw + 180; });
   const del = () => {
     const i = S().fish.findIndex(f => f.id === store.selId); if (i < 0) return;
@@ -195,7 +220,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     const f = sel(); if (!f) return;
     let id = 0;
     store.update(s => {
-      const n: Fish = { ...f, id: id = nextFishId(s), x: f.x + getSpecies(f.species)!.tl * 0.9 };
+      const n: Fish = { ...f, id: id = nextFishId(s), x: f.x + fishTL(f, getSpecies(f.species)!) * 0.9 };
       clampFish(n, s.tankA); s.fish.push(n);
     });
     store.select(id);
@@ -243,9 +268,9 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('cmp').onchange = e => store.update(s => { s.compare = (e.target as HTMLInputElement).checked; });
   $<HTMLSelectElement>('edge').onchange = e => store.update(s => { s.render.edge = (e.target as HTMLSelectElement).value as Scene['render']['edge']; });
   $('gridOn').onchange = e => store.update(s => { s.render.grid = (e.target as HTMLInputElement).checked; });
-  $('plantOn').onchange = e => store.update(s => { s.plant.show = (e.target as HTMLInputElement).checked; });
-  $('pX').oninput = e => store.update(s => { s.plant.x = +(e.target as HTMLInputElement).value; }, { coalesce: 'pX' });
-  $('pZ').oninput = e => store.update(s => { s.plant.depth = +(e.target as HTMLInputElement).value; }, { coalesce: 'pZ' });
+  $<HTMLSelectElement>('layout').innerHTML = Object.entries(LAYOUTS).map(([k, l]) => `<option value="${k}">${esc(l.label)}</option>`).join('');
+  $<HTMLSelectElement>('layout').onchange = e => store.update(s => { s.layout.id = (e.target as HTMLSelectElement).value as LayoutId; });
+  $('layoutShuffle').onclick = () => store.update(s => { s.layout.seed = 1 + Math.floor(Math.random() * 1e6); });
   document.querySelectorAll<HTMLButtonElement>('[data-png]').forEach(b => b.onclick = async () => {
     const mult = +b.dataset.png!;
     try { download(await viewer.exportPNG(mult), `${slug(S().name)}-${mult}x.png`); }
@@ -305,9 +330,13 @@ export function attachPanels(store: Store, viewer: Viewer) {
     $('selBox').classList.toggle('off', !f);
     for (const id of ['fX', 'fY', 'fZ']) $(id).min = '0';
     $('fX').max = String(A.L); $('fY').max = String(A.H); $('fZ').max = String(A.D);
+    const fsp = f && getSpecies(f.species);
+    $('fY').disabled = !!fsp && restsOnFloor(fsp, f!.surface);
     if (f) {
       for (const [id, k] of Object.entries(fishKeys)) setVal(id, f[k]);
       setOut('oX', fmt(f.x)); setOut('oY', fmt(f.y)); setOut('oZ', fmt(f.depth));
+      const pct = Math.round(fishTL(f, fsp!) / fsp!.tl * 100);
+      setVal('fSize', pct); setOut('oSize', f.tl ? `${fmt(f.tl)} · ${pct}%` : `Adult · ${fmt(fsp!.tl)}`);
       setOut('oYaw', f.yaw + '°'); setOut('oPitch', f.pitch + '°'); setOut('oRoll', f.roll + '°'); setOut('oBend', f.bend.toFixed(2));
     }
 
@@ -331,9 +360,9 @@ export function attachPanels(store: Store, viewer: Viewer) {
       : 'Distance is from your eye to the front glass, the same for every tank. Zoom only crops; it never changes perspective.';
 
     $('cmp').checked = s.compare; $('bBox').hidden = !s.compare;
-    setVal('edge', s.render.edge); $('gridOn').checked = s.render.grid; $('plantOn').checked = s.plant.show;
-    $('pX').max = String(A.L); $('pZ').max = String(A.D); setVal('pX', s.plant.x); setVal('pZ', s.plant.depth);
-    setOut('opX', fmt(s.plant.x)); setOut('opZ', fmt(s.plant.depth));
+    setVal('edge', s.render.edge); $('gridOn').checked = s.render.grid; 
+    setVal('layout', s.layout.id); $('layoutHint').textContent = LAYOUTS[s.layout.id].hint;
+    ($('layoutShuffle') as HTMLButtonElement).disabled = s.layout.id === 'none';
     syncJson();
   }
 
@@ -353,7 +382,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     if (!f || !m || !sp) { ro.innerHTML = '<span class="hint">Select a fish to see its size on screen.</span>'; return; }
     const a = m.sideAngle, cls = a < 40 ? 'ok' : a < 55 ? 'warn' : 'bad';
     const txt = a < 40 ? 'reads fine' : a < 55 ? 'marginal' : 'too thin: card looks flat';
-    let html = `<div><span><b>${esc(sp.name)}</b> <i>${esc(sp.sci)}</i></span><span>adult ${fmt(sp.tl)}</span></div>
+    let html = `<div><span><b>${esc(sp.name)}</b> <i>${esc(sp.sci)}</i></span><span>${f.tl ? `${fmt(f.tl)} (adult ${fmt(sp.tl)})` : `adult ${fmt(sp.tl)}`}</span></div>
       <div><span>Depth behind glass</span><span>${fmt(f.depth)}</span></div>
       <div><span>On screen</span><span>${m.len.toFixed(0)} px</span></div>
       <div><span>Same pose at the front glass</span><span>${m.ref.toFixed(0)} px</span></div>

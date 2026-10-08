@@ -1,91 +1,101 @@
-// Placeholder illustrations drawn on canvas with hard silhouettes (art rule: clean outlines, transparent
-// background, no soft glows or baked shadows). Fish are drawn in a unit frame: u = 0 (tail tip) .. 1 (nose tip)
+// Placeholder illustrations drawn on canvas. Fish are drawn in a unit frame: u = 0 (tail tip) .. 1 (nose tip)
 // across the card width W, v = vertical offset in widths from the centre line.
+// Fish style (2026-10-08): match the tank render, not a cartoon. No black outlines (a thin edge one shade darker
+// at most), countershading (dark back, light belly) with a soft inner rim that rounds the body, soft-edged
+// markings, small realistic eyes, fins as tinted membranes with fine rays. The silhouette stays crisp (cards use
+// alpha-test cutout), so every opaque or fin pixel keeps alpha >= FIN_A, above the 0.5 cutoff with a mipmap margin.
 import type { SubstrateType } from '../scene/types';
 
-type Ctx = CanvasRenderingContext2D;
-type Proj = (u: number, v: number) => [number, number];
-type Pt = [number, number] | [number, number, 'c'];
+import { type Ctx, type Proj, type Pt, blob, body, eye, fin, gill, hexA, rng, soft, vgrad } from './paint';
+export { rng } from './paint';
+import { GEN_ART } from './fishgen';
 
-export function rng(seed: number) {
-  return () => {
-    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
-    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
-    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-    return ((t ^ t >>> 14) >>> 0) / 4294967296;
-  };
-}
-
-/** Closed smooth path through midpoints; points tagged 'c' are sharp corners (nose/tail tips, so calibration is exact). */
-function shape(ctx: Ctx, P: Proj, pts: Pt[]) {
-  const n = pts.length, m = (a: readonly unknown[], b: readonly unknown[]) =>
-    [((a[0] as number) + (b[0] as number)) / 2, ((a[1] as number) + (b[1] as number)) / 2];
-  const q = pts.map(p => [...P(p[0], p[1]), p[2]] as [number, number, string | undefined]);
-  ctx.beginPath(); const s = m(q[n - 1], q[0]); ctx.moveTo(s[0], s[1]);
-  for (let i = 0; i < n; i++) {
-    const p = q[i], mid = m(p, q[(i + 1) % n]);
-    if (p[2] === 'c') { ctx.lineTo(p[0], p[1]); ctx.lineTo(mid[0], mid[1]); }
-    else ctx.quadraticCurveTo(p[0], p[1], mid[0], mid[1]);
-  }
-  ctx.closePath();
-}
-const OUT = '#1b2028';
-function fillStroke(ctx: Ctx, fill: string, w: number) { ctx.fillStyle = fill; ctx.fill(); ctx.strokeStyle = OUT; ctx.lineWidth = w; ctx.stroke(); }
-function eye(ctx: Ctx, P: Proj, u: number, v: number, r: number, W: number) {
-  const [x, y] = P(u, v);
-  ctx.beginPath(); ctx.arc(x, y, r * W, 0, 7); ctx.fillStyle = '#f4f4ee'; ctx.fill(); ctx.strokeStyle = OUT; ctx.lineWidth = 3; ctx.stroke();
-  ctx.beginPath(); ctx.arc(x, y, r * W * 0.55, 0, 7); ctx.fillStyle = '#111'; ctx.fill();
-}
-function band(ctx: Ctx, P: Proj, u0: number, v0: number, u1: number, v1: number, color: string) {
-  const [x0, y0] = P(u0, v0), [x1, y1] = P(u1, v1); ctx.fillStyle = color; ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
-}
 
 function drawTetra(ctx: Ctx, P: Proj, W: number) {
-  shape(ctx, P, [[0.58, -0.10], [0.52, -0.165, 'c'], [0.45, -0.09]]); fillStroke(ctx, '#b7c2bd', 5);
-  shape(ctx, P, [[0.47, 0.09], [0.38, 0.145, 'c'], [0.27, 0.06]]); fillStroke(ctx, '#b7c2bd', 5);
-  const body: Pt[] = [[1.0, 0.0, 'c'], [0.93, -0.07], [0.72, -0.115], [0.45, -0.10], [0.24, -0.045], [0.17, -0.04], [0.0, -0.15, 'c'], [0.09, 0.0], [0.0, 0.15, 'c'], [0.17, 0.04], [0.24, 0.045], [0.45, 0.10], [0.72, 0.115], [0.93, 0.07]];
-  shape(ctx, P, body); ctx.fillStyle = '#c3cbc4'; ctx.fill();
-  ctx.save(); ctx.clip();
-  band(ctx, P, 0.15, -0.2, 1, -0.06, '#6f7f5e');       // olive back
-  band(ctx, P, 0.2, -0.065, 0.95, -0.006, '#0fb6ff');  // electric-blue line
-  band(ctx, P, 0.17, -0.006, 0.6, 0.13, '#ff2533');    // red lower rear
-  ctx.restore(); shape(ctx, P, body); ctx.strokeStyle = OUT; ctx.lineWidth = 6; ctx.stroke();
-  eye(ctx, P, 0.9, -0.025, 0.024, W);
+  const tint = '#aebbb8', ray = '#7f8b87';
+  fin(ctx, P, W, [[0.61, -0.10], [0.55, -0.16, 'c'], [0.50, -0.155], [0.46, -0.10]], [0.53, -0.09], tint, ray, { rays: 7 });
+  fin(ctx, P, W, [[0.48, 0.09], [0.40, 0.135, 'c'], [0.31, 0.12], [0.26, 0.06]], [0.38, 0.07], tint, ray, { rays: 9 });
+  fin(ctx, P, W, [[0.64, 0.095], [0.58, 0.14, 'c'], [0.55, 0.095]], [0.60, 0.085], tint, ray, { rays: 4 });
+  fin(ctx, P, W, [[0.26, -0.055], [0.225, -0.08, 'c'], [0.20, -0.05]], [0.23, -0.05], '#b9b7a2', ray, { rays: 0 });
+  fin(ctx, P, W, [[0.19, -0.03], [0.09, -0.09], [0.0, -0.15, 'c'], [0.07, -0.045], [0.095, 0.0], [0.07, 0.045], [0.0, 0.15, 'c'], [0.09, 0.09], [0.19, 0.03]],
+    [0.17, 0.0], tint, ray, { rays: 16 });
+  const pts: Pt[] = [[1.0, 0.0, 'c'], [0.95, -0.055], [0.85, -0.095], [0.70, -0.115], [0.50, -0.105], [0.32, -0.07], [0.20, -0.042], [0.14, -0.036],
+    [0.14, 0.036], [0.20, 0.042], [0.32, 0.07], [0.50, 0.10], [0.70, 0.105], [0.85, 0.085], [0.95, 0.045]];
+  body(ctx, P, W, pts, -0.12, 0.11, [[0, '#4f5744'], [0.25, '#727e66'], [0.5, '#a4ada2'], [0.75, '#d0d2ca'], [1, '#e2e0d8']], 0.035, l => {
+    soft(l, P, 0.15, 0.60, -0.008, 0.13, '#c4303a', 0.95, [0, 0.05], [0.015, 0]);       // red lower rear
+    soft(l, P, 0.24, 0.93, -0.07, -0.006, '#2aa9e0', 1, [0.05, 0.03], [0.012, 0.01]); // iridescent blue line
+    soft(l, P, 0.3, 0.85, -0.05, -0.025, '#bfeaf6', 0.45, [0.1, 0.1], [0.006, 0.006]);  // sheen on the line
+    gill(l, P, W, 0.845, -0.045, 0.05, 0.02);
+  });
+  fin(ctx, P, W, [[0.80, 0.02], [0.72, 0.05, 'c'], [0.75, 0.065], [0.81, 0.045]], [0.80, 0.035], tint, ray, { a: 0.35, rays: 5 });
+  eye(ctx, P, W, 0.905, -0.022, 0.024, ['#b9ccd2', '#4c5c63']);
 }
+
 function drawAngel(ctx: Ctx, P: Proj, W: number) {
-  shape(ctx, P, [[0.74, 0.22], [0.58, 0.63, 'c'], [0.70, 0.24]]); fillStroke(ctx, '#e8e4d6', 4);
-  const body: Pt[] = [[0.99, 0.0, 'c'], [0.92, -0.12], [0.78, -0.27], [0.62, -0.36], [0.50, -0.50], [0.40, -0.64, 'c'], [0.36, -0.40], [0.27, -0.12], [0.22, -0.08], [0.10, -0.22], [0.0, -0.25, 'c'], [0.04, 0.0], [0.0, 0.25, 'c'], [0.10, 0.22], [0.22, 0.08], [0.27, 0.12], [0.36, 0.40], [0.40, 0.64, 'c'], [0.50, 0.50], [0.62, 0.34], [0.78, 0.24], [0.92, 0.10]];
-  shape(ctx, P, body); ctx.fillStyle = '#dcd8c8'; ctx.fill();
-  ctx.save(); ctx.clip();
-  ctx.fillStyle = '#2b2a28';
-  for (const [u, w] of [[0.86, 0.045], [0.64, 0.06], [0.42, 0.05]]) { const [x] = P(u - w / 2, 0), [x2] = P(u + w / 2, 0); ctx.fillRect(x, 0, x2 - x, 99999); }
-  ctx.restore(); shape(ctx, P, body); ctx.strokeStyle = OUT; ctx.lineWidth = 6; ctx.stroke();
-  eye(ctx, P, 0.875, -0.07, 0.03, W);
+  const tint = '#c3c4bc', ray = '#86857c', bar = '#26262a';
+  const bars = (c: Ctx, a: number) => {
+    for (const [u, w] of [[0.865, 0.04], [0.645, 0.065], [0.43, 0.05]] as const) soft(c, P, u - w / 2, u + w / 2, -0.7, 0.7, bar, a, [0.012, 0.012], [0, 0]);
+    soft(c, P, 0.20, 0.27, -0.7, 0.7, bar, a * 0.55, [0.02, 0.02], [0, 0]);
+  };
+  fin(ctx, P, W, [[0.66, -0.27], [0.56, -0.40], [0.40, -0.64, 'c'], [0.36, -0.48], [0.29, -0.26], [0.23, -0.07]], [0.42, -0.16], tint, ray,
+    { rays: 18, extra: c => bars(c, 0.8) });
+  fin(ctx, P, W, [[0.64, 0.25], [0.54, 0.40], [0.40, 0.64, 'c'], [0.36, 0.48], [0.29, 0.25], [0.23, 0.07]], [0.42, 0.15], tint, ray,
+    { rays: 18, extra: c => bars(c, 0.8) });
+  fin(ctx, P, W, [[0.25, -0.05], [0.12, -0.18], [0.0, -0.25, 'c'], [0.04, -0.08], [0.03, 0.0], [0.04, 0.08], [0.0, 0.25, 'c'], [0.12, 0.18], [0.25, 0.05]],
+    [0.23, 0.0], tint, ray, { rays: 22, extra: c => soft(c, P, 0.0, 0.25, -0.3, 0.3, '#c9c6b8', 0.4, [0.08, 0], [0, 0]) });
+  // Tall diamond body reaching up into the fin bases, so body and fins read as one shape, not a disc with fins.
+  const pts: Pt[] = [[0.99, 0.0, 'c'], [0.93, -0.07], [0.76, -0.21], [0.60, -0.33], [0.50, -0.40], [0.42, -0.34], [0.33, -0.19], [0.25, -0.08], [0.20, -0.05],
+    [0.20, 0.05], [0.25, 0.08], [0.33, 0.18], [0.42, 0.32], [0.50, 0.38], [0.60, 0.31], [0.76, 0.19], [0.93, 0.06]];
+  body(ctx, P, W, pts, -0.38, 0.36, [[0, '#9a998e'], [0.3, '#c8c6ba'], [0.6, '#dad8cd'], [1, '#e4e1d7']], 0.035, l => {
+    blob(l, P, W, 0.86, -0.15, 0.09, 0.07, '#c4a46a', 0.45);   // gold forehead
+    blob(l, P, W, 0.60, -0.06, 0.22, 0.2, '#ffffff', 0.14);   // silver sheen
+    bars(l, 0.9);
+    gill(l, P, W, 0.83, -0.13, 0.12, 0.035);
+  });
+  fin(ctx, P, W, [[0.74, 0.20], [0.66, 0.40], [0.58, 0.63, 'c'], [0.70, 0.26], [0.72, 0.22]], [0.73, 0.21], '#e2ddcc', ray, { a: 0.8, rays: 2 });
+  fin(ctx, P, W, [[0.78, 0.04], [0.68, 0.08, 'c'], [0.70, 0.11], [0.78, 0.075]], [0.78, 0.06], tint, ray, { a: 0.3, rays: 6 });
+  eye(ctx, P, W, 0.875, -0.065, 0.026, ['#c8673f', '#5b2a1c']);
 }
+
 function drawGourami(ctx: Ctx, P: Proj, W: number) {
-  shape(ctx, P, [[0.76, 0.15], [0.38, 0.29, 'c'], [0.73, 0.17]]); fillStroke(ctx, '#e3a35c', 4);
-  const body: Pt[] = [[1.0, 0.0, 'c'], [0.95, -0.08], [0.80, -0.17], [0.55, -0.20], [0.42, -0.27], [0.20, -0.25, 'c'], [0.18, -0.12], [0.10, -0.18], [0.0, -0.15, 'c'], [0.0, 0.15, 'c'], [0.10, 0.18], [0.18, 0.12], [0.20, 0.25, 'c'], [0.45, 0.25], [0.66, 0.17], [0.85, 0.13], [0.95, 0.07]];
-  shape(ctx, P, body); ctx.fillStyle = '#b9a685'; ctx.fill();
-  ctx.save(); ctx.clip();
-  const [x, y] = P(0.78, 0.13); ctx.beginPath(); ctx.ellipse(x, y, 0.16 * W, 0.08 * W, 0, 0, 7); ctx.fillStyle = '#d9702b'; ctx.fill();
-  const r = rng(7); ctx.fillStyle = '#f4ecd9';
-  for (let i = 0; i < 260; i++) { const [px, py] = P(0.05 + r() * 0.85, -0.27 + r() * 0.5); ctx.beginPath(); ctx.arc(px, py, (0.006 + r() * 0.006) * W, 0, 7); ctx.fill(); }
-  ctx.strokeStyle = '#2f281f'; ctx.lineWidth = 0.014 * W; ctx.beginPath();
-  for (let i = 0; i <= 14; i++) { const [px, py] = P(0.88 - i * 0.05, (i % 2 ? 0.012 : -0.012)); if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py); }
-  ctx.stroke();
-  ctx.restore(); shape(ctx, P, body); ctx.strokeStyle = OUT; ctx.lineWidth = 6; ctx.stroke();
-  eye(ctx, P, 0.9, -0.035, 0.026, W);
+  const tint = '#a8987a', ray = '#73654f', r = rng(7);
+  const pearls = (c: Ctx, n: number, u0: number, u1: number, v0: number, v1: number, a = 0.8) => {
+    for (let i = 0; i < n; i++) blob(c, P, W, u0 + r() * (u1 - u0), v0 + r() * (v1 - v0), 0.007 + r() * 0.005, 0.007 + r() * 0.005, '#f2eadb', a);
+  };
+  fin(ctx, P, W, [[0.50, -0.19], [0.40, -0.25], [0.22, -0.27, 'c'], [0.20, -0.17], [0.20, -0.08]], [0.33, -0.14], tint, ray,
+    { rays: 12, extra: c => pearls(c, 30, 0.22, 0.46, -0.27, -0.15, 0.6) });
+  fin(ctx, P, W, [[0.68, 0.17], [0.50, 0.24], [0.30, 0.27], [0.19, 0.26, 'c'], [0.18, 0.14], [0.20, 0.08]], [0.40, 0.14], tint, ray,
+    { rays: 22, extra: c => {
+      c.fillStyle = vgrad(c, P, 0.16, 0.27, [[0, hexA('#c87a3e', 0)], [1, hexA('#c87a3e', 0.9)]]); c.fillRect(0, 0, W, c.canvas.height);
+      pearls(c, 40, 0.2, 0.62, 0.17, 0.25, 0.55);
+    } });
+  fin(ctx, P, W, [[0.20, -0.07], [0.10, -0.16], [0.0, -0.15, 'c'], [0.02, 0.0], [0.0, 0.15, 'c'], [0.10, 0.16], [0.20, 0.07]], [0.18, 0.0], tint, ray,
+    { rays: 20, extra: c => pearls(c, 50, 0.02, 0.2, -0.15, 0.15, 0.55) });
+  const pts: Pt[] = [[1.0, 0.0, 'c'], [0.96, -0.07], [0.86, -0.16], [0.70, -0.20], [0.50, -0.20], [0.32, -0.15], [0.20, -0.09], [0.16, -0.08],
+    [0.16, 0.08], [0.20, 0.09], [0.32, 0.15], [0.50, 0.19], [0.70, 0.18], [0.86, 0.13], [0.96, 0.06]];
+  body(ctx, P, W, pts, -0.20, 0.19, [[0, '#5e5644'], [0.3, '#8f8266'], [0.6, '#b0a283'], [1, '#d3c6a8']], 0.035, l => {
+    blob(l, P, W, 0.78, 0.15, 0.20, 0.09, '#cc5a22', 1);     // orange breast
+    pearls(l, 220, 0.18, 0.88, -0.20, 0.12);
+    l.strokeStyle = hexA('#2a251d', 0.35); l.lineWidth = 0.022 * W; l.beginPath();
+    for (let i = 0; i <= 13; i++) { const [px, py] = P(0.86 - i * 0.05, (i % 2 ? 0.01 : -0.01)); if (i) l.lineTo(px, py); else l.moveTo(px, py); }
+    l.stroke(); l.strokeStyle = hexA('#2a251d', 0.55); l.lineWidth = 0.01 * W; l.stroke();
+    blob(l, P, W, 0.215, 0.0, 0.03, 0.03, '#2a251d', 0.7);    // tail-base spot
+    gill(l, P, W, 0.83, -0.09, 0.08, 0.025);
+  });
+  fin(ctx, P, W, [[0.77, 0.15], [0.56, 0.245], [0.38, 0.295, 'c'], [0.56, 0.232], [0.74, 0.17]], [0.75, 0.16], '#d99a5c', ray, { a: 0.85, rays: 0 });
+  fin(ctx, P, W, [[0.80, 0.03], [0.70, 0.07, 'c'], [0.72, 0.10], [0.80, 0.07]], [0.80, 0.05], tint, ray, { a: 0.3, rays: 6 });
+  eye(ctx, P, W, 0.905, -0.035, 0.024, ['#d0b48a', '#5e4a2e']);
 }
 
 export const FISH_ART: Record<string, (ctx: Ctx, P: Proj, W: number) => void> = {
-  tetra: drawTetra, angel: drawAngel, gourami: drawGourami,
+  tetra: drawTetra, angel: drawAngel, gourami: drawGourami, ...GEN_ART,
 };
 
 /** Render a fish card (width W px, height from aspect) into a canvas. Nose points to +x (right). */
 export function drawFishCard(art: string, aspect: number, W = 1024): HTMLCanvasElement {
   const c = document.createElement('canvas'), H = Math.round(W * aspect);
   c.width = W; c.height = H;
-  const ctx = c.getContext('2d')!; ctx.lineJoin = 'round';
+  const ctx = c.getContext('2d')!; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
   (FISH_ART[art] ?? drawTetra)(ctx, (u, v) => [u * W, H / 2 + v * W], W);
   return c;
 }
@@ -105,17 +115,6 @@ export function drawSubstrate(ctx: Ctx, W: number, type: SubstrateType) {
     for (const dx of [-W, 0, W]) for (const dy of [-W, 0, W]) { ctx.beginPath(); ctx.ellipse(x + dx, y + dy, rx, ry, a, 0, 7); ctx.fill(); }
   }
 }
-export function drawPlant(ctx: Ctx, W: number, H: number) {
-  const r = rng(3), greens = ['#3f8a3a', '#56a043', '#2f7031', '#6bb04e'];
-  for (let i = 0; i < 9; i++) {
-    const bx = W * (0.3 + 0.4 * i / 8), tx = bx + (r() - 0.5) * W * 0.7, ty = H * (0.02 + r() * 0.3), bw = W * 0.05;
-    const cx = (bx + tx) / 2 + (r() - 0.5) * W * 0.4;
-    ctx.beginPath(); ctx.moveTo(bx - bw / 2, H); ctx.quadraticCurveTo(cx - bw / 2, H * 0.55, tx, ty);
-    ctx.quadraticCurveTo(cx + bw / 2, H * 0.55, bx + bw / 2, H); ctx.closePath();
-    ctx.fillStyle = greens[i % 4]; ctx.fill(); ctx.strokeStyle = '#173a17'; ctx.lineWidth = 4; ctx.stroke();
-  }
-}
-
 /**
  * Neutral human silhouette for scale, standing, front view. Drawn head-to-toe across the full canvas height H
  * (so card height == person height); x in units of H from the centre line.

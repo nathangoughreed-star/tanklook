@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { searchSpecies } from '../src/data/species';
+import { SPECIES, getSpecies, searchSpecies } from '../src/data/species';
 import { defaultScene } from '../src/scene/defaults';
 import { Store } from '../src/scene/store';
 import { SCENE_VERSION } from '../src/scene/types';
@@ -116,8 +116,61 @@ describe('species search', () => {
   it('finds by common, scientific and partial names, case-insensitively', () => {
     expect(searchSpecies('NEON')[0].id).toBe('neon');
     expect(searchSpecies('pterophyllum')[0].id).toBe('angel');
-    expect(searchSpecies('gour')[0].id).toBe('gourami');
+    expect(searchSpecies('pearl gour')[0].id).toBe('gourami');
+    expect(searchSpecies('cory').map(s => s.id).sort()).toEqual(['bronzecory', 'pandacory']);
+    expect(searchSpecies('snail').every(s => s.kind === 'snail')).toBe(true);
     expect(searchSpecies('zzz')).toEqual([]);
-    expect(searchSpecies('').length).toBe(3);
+    expect(searchSpecies('').length).toBe(SPECIES.length);
+  });
+});
+
+describe('species data', () => {
+  it('every species has a sane size, card aspect and resting offset', () => {
+    expect(new Set(SPECIES.map(s => s.id)).size).toBe(SPECIES.length);
+    for (const s of SPECIES) {
+      expect(s.tl, s.id).toBeGreaterThanOrEqual(15); expect(s.tl, s.id).toBeLessThanOrEqual(400);
+      expect(s.aspect, s.id).toBeGreaterThan(0.1); expect(s.aspect, s.id).toBeLessThan(1.6);
+      // the lowest point of the drawing lies inside the card, below the centre line
+      expect(s.rest, s.id).toBeGreaterThan(0); expect(s.rest, s.id).toBeLessThanOrEqual(s.aspect / 2);
+    }
+  });
+  it('keeps the scale anchors', () => {
+    expect([getSpecies('neon')!.tl, getSpecies('angel')!.tl, getSpecies('chili')!.tl, getSpecies('oscar')!.tl]).toEqual([35, 150, 18, 300]);
+    expect(SPECIES.filter(s => s.zone === 'bottom').length).toBeGreaterThanOrEqual(6);
+    expect(SPECIES.filter(s => s.kind === 'snail').length).toBe(4);
+  });
+});
+
+describe('scene v4', () => {
+  it('migrates the v3 sample plant to a layout preset', () => {
+    const v3 = (show: boolean) => { const o = { ...defaultScene(), version: 3, plant: { show, x: 100, depth: 50 } } as Record<string, unknown>; delete o.layout; return o; };
+    const on = parseScene(v3(true)).scene, off = parseScene(v3(false)).scene;
+    expect(on.layout).toEqual({ id: 'planted', seed: 1 }); expect(off.layout.id).toBe('none');
+    expect('plant' in on).toBe(false);
+  });
+  it('keeps a surface for snails only, defaulting to the floor', () => {
+    const s = defaultScene();
+    const raw = { ...s, fish: [
+      { id: 1, species: 'nerite', x: 10, y: 50, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0, surface: 'front' },
+      { id: 2, species: 'mystery', x: 10, y: 0, depth: 50, yaw: 0, pitch: 0, roll: 0, bend: 0, surface: 'ceiling' },
+      { id: 3, species: 'neon', x: 10, y: 50, depth: 50, yaw: 0, pitch: 0, roll: 0, bend: 0, surface: 'front' },
+    ] };
+    const f = parseScene(raw).scene.fish;
+    expect(f.map(q => q.surface)).toEqual(['front', 'floor', undefined]);
+  });
+});
+
+describe('custom fish sizes', () => {
+  const fish = (tl: unknown) => ({ id: 1, species: 'angel', x: 10, y: 50, depth: 50, yaw: 0, pitch: 0, roll: 0, bend: 0, tl });
+  const load = (tl: unknown) => parseScene({ ...defaultScene(), fish: [fish(tl)] }).scene.fish[0];
+  it('defaults to adult (no override stored)', () => {
+    expect(load(undefined).tl).toBeUndefined();
+    expect(load(150).tl).toBeUndefined(); // equal to the adult length
+  });
+  it('keeps a juvenile size and clamps to 15-130 % of adult', () => {
+    expect(load(60).tl).toBe(60);
+    expect(load(5).tl).toBe(Math.round(150 * 0.15));
+    expect(load(900).tl).toBe(Math.round(150 * 1.3));
+    expect(load('big').tl).toBeUndefined();
   });
 });

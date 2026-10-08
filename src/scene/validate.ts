@@ -1,5 +1,5 @@
 // Load-time validation and migration. Untrusted JSON in, a complete valid Scene out (plus warnings), or an error.
-import { hasSpecies } from '../data/species';
+import { getSpecies, hasSpecies } from '../data/species';
 import { defaultScene } from './defaults';
 import { clamp } from './physics';
 import { SCENE_VERSION, type Fish, type Scene, type Tank } from './types';
@@ -25,7 +25,10 @@ export const LIMITS = {
   maxFish: 500,
   stand: [12 * 25.4, 48 * 25.4] as const, // mm
   person: [900, 2100] as const,            // mm
+  size: [0.15, 1.3] as const,              // custom fish length, fraction of the adult length
 };
+export const SURFACES = ['floor', 'front', 'back', 'left', 'right'] as const;
+export const LAYOUT_IDS = ['none', 'stones', 'driftwood', 'planted', 'iwagumi'] as const;
 export const GLASS_CHOICES = [4, 5, 6, 8, 10, 12, 15, 19];
 
 /** Upgrade older saved shapes to the current version, in place. */
@@ -39,6 +42,12 @@ function migrate(raw: Obj, warn: (m: string) => void): Obj {
       if (typeof r.glass === 'string' && r.glass !== 'auto') r.glass = Number(r.glass);
       if (r.edge === 'soft') { r.edge = 'cutout'; warn('Edge mode "soft blend" was removed; using cutout.'); }
     }
+  }
+  if (v < 4) {
+    // v3: one sample plant card. v4: layout presets; a shown sample plant becomes the planted preset.
+    const p = isObj(raw.plant) ? raw.plant : {};
+    raw.layout = { id: p.show === false ? 'none' : 'planted', seed: 1 };
+    delete raw.plant;
   }
   raw.version = SCENE_VERSION;
   return raw;
@@ -65,7 +74,7 @@ export function parseScene(input: unknown): { scene: Scene; warnings: string[] }
   };
 
   const tankA = tank(raw.tankA, d.tankA), tankB = tank(raw.tankB, d.tankB);
-  const c = sub('camera'), r = sub('render'), l = sub('light'), s = sub('substrate'), p = sub('plant');
+  const c = sub('camera'), r = sub('render'), l = sub('light'), s = sub('substrate'), lay = sub('layout');
   const st = sub('stand'), w = sub('wall'), pe = sub('person');
   const glass = r.glass === 'auto' ? 'auto' : typeof r.glass === 'number' && GLASS_CHOICES.includes(r.glass) ? r.glass : 'auto';
   const subMax = tankA.H * 0.5;
@@ -80,11 +89,14 @@ export function parseScene(input: unknown): { scene: Scene; warnings: string[] }
     if (typeof f.species !== 'string' || !hasSpecies(f.species)) { unknown++; continue; }
     const id = typeof f.id === 'number' && Number.isInteger(f.id) && f.id > 0 && !seen.has(f.id) ? f.id : nextId++;
     seen.add(id);
+    const adult = getSpecies(f.species)!.tl, tl = typeof f.tl === 'number' ? Math.round(num(f.tl, adult, adult * LIMITS.size[0], adult * LIMITS.size[1])) : adult;
     fish.push({
       id, species: f.species,
       x: num(f.x, tankA.L / 2, 0, tankA.L), y: num(f.y, tankA.H / 2, 0, tankA.H), depth: num(f.depth, tankA.D / 2, 0, tankA.D),
       yaw: num(f.yaw, 0, ...LIMITS.yaw), pitch: num(f.pitch, 0, ...LIMITS.tilt), roll: num(f.roll, 0, ...LIMITS.tilt),
       bend: num(f.bend, 0, ...LIMITS.bend),
+      ...(getSpecies(f.species)!.kind === 'snail' ? { surface: pick(f.surface, SURFACES, 'floor') } : {}),
+      ...(tl !== adult ? { tl } : {}),
     });
   }
   if (unknown) warn(`${unknown} fish of unknown species were skipped.`);
@@ -101,7 +113,7 @@ export function parseScene(input: unknown): { scene: Scene; warnings: string[] }
       el: num(c.el, 0, ...LIMITS.el), zoom: num(c.zoom, 1, ...LIMITS.zoom),
     },
     render: {
-      edge: pick(r.edge, ['cutout', 'a2c'] as const, 'cutout'), grid: bool(r.grid, d.render.grid), rim: bool(r.rim, d.render.rim),
+      edge: pick(r.edge, ['cutout', 'a2c'] as const, d.render.edge), grid: bool(r.grid, d.render.grid), rim: bool(r.rim, d.render.rim),
       bg: pick(r.bg, ['black', 'blue', 'gradient', 'grey', 'frosted', 'none'] as const, d.render.bg), glass,
       glassType: pick(r.glassType, ['standard', 'lowiron'] as const, 'standard'),
     },
@@ -114,7 +126,7 @@ export function parseScene(input: unknown): { scene: Scene; warnings: string[] }
       fl: num(s.fl, d.substrate.fl, 0, subMax), fr: num(s.fr, d.substrate.fr, 0, subMax),
       bl: num(s.bl, d.substrate.bl, 0, subMax), br: num(s.br, d.substrate.br, 0, subMax),
     },
-    plant: { show: bool(p.show, d.plant.show), x: num(p.x, tankA.L * 0.4, 0, tankA.L), depth: num(p.depth, tankA.D * 0.3, 0, tankA.D) },
+    layout: { id: pick(lay.id, LAYOUT_IDS, d.layout.id), seed: Math.round(num(lay.seed, 1, 1, 1e9)) },
     lid: pick(raw.lid, ['open', 'glass', 'hood'] as const, d.lid),
     stand: {
       show: bool(st.show, d.stand.show), height: num(st.height, d.stand.height, ...LIMITS.stand),

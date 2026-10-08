@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { kelvinRGB } from '../src/render/lighting';
-import { IN, floorY, fmtDims, glassThickness, mapToTank, rescaleTankA, substrateHeight, tankUnderside, volume } from '../src/scene/physics';
+import { IN, WATERLINE_GAP, floorY, fmtDims, glassThickness, mapToTank, rescaleTankA, spawnSnail, substrateHeight, tankUnderside, volume } from '../src/scene/physics';
+import { rng } from '../src/art/paint';
 import { defaultScene } from '../src/scene/defaults';
 
 describe('glass thickness', () => {
@@ -61,4 +62,27 @@ describe('colour temperature', () => {
     }
   });
   it('warm is redder than cool', () => { expect(kelvinRGB(2700)[0]).toBeGreaterThan(kelvinRGB(14000)[0]); });
+});
+
+describe('snail spawning', () => {
+  const T = { L: 24 * IN, H: 12 * IN, D: 12 * IN }, sub = { ...defaultScene().substrate, fl: 25, fr: 25, bl: 25, br: 25 };
+  const runs = Array.from({ length: 20000 }, (_, i) => spawnSnail(sub, T, 25, rng(i + 1)));
+  it('picks each surface in proportion to its area', () => {
+    const hw = T.H - WATERLINE_GAP - 25, total = T.L * T.D + 2 * T.L * hw + 2 * T.D * hw;
+    const share = (s: string) => runs.filter(r => r.surface === s).length / runs.length;
+    expect(share('floor')).toBeCloseTo(T.L * T.D / total, 1);
+    expect(share('front')).toBeCloseTo(T.L * hw / total, 1);
+    expect(share('left') + share('right')).toBeCloseTo(2 * T.D * hw / total, 1);
+  });
+  it('puts every snail on its surface, inside the tank and under the water line', () => {
+    for (const r of runs) {
+      if (r.surface === 'floor') expect(r.y).toBeCloseTo(25, 6);
+      if (r.surface === 'front') expect(r.depth).toBe(0);
+      if (r.surface === 'back') expect(r.depth).toBe(T.D);
+      if (r.surface === 'left') expect(r.x).toBe(0);
+      if (r.surface === 'right') expect(r.x).toBe(T.L);
+      expect(r.x).toBeGreaterThanOrEqual(0); expect(r.x).toBeLessThanOrEqual(T.L);
+      expect(r.y).toBeGreaterThanOrEqual(25 - 1e-9); expect(r.y).toBeLessThanOrEqual(T.H - WATERLINE_GAP);
+    }
+  });
 });

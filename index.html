@@ -78,6 +78,7 @@
     <span class="grow"></span>
     <button id="delAll">Delete all</button>
   </div>
+  <div class="row"><label for="addSize">New fish size</label><input id="addSize" type="range" min="15" max="130" step="5" value="100"><output id="oAddSize"></output></div>
   <div id="list" class="chips"></div>
   <div id="selBox">
     <div class="row"><label for="fX">Across (X)</label><input id="fX" type="range" step="1"><output id="oX"></output></div>
@@ -87,6 +88,8 @@
     <div class="row"><label for="fYaw">Turn</label><input id="fYaw" type="range" min="-180" max="180" step="1"><output id="oYaw"></output></div>
     <div class="row"><label for="fPitch">Nose up/down</label><input id="fPitch" type="range" min="-30" max="30" step="1"><output id="oPitch"></output></div>
     <div class="row"><label for="fRoll">Roll</label><input id="fRoll" type="range" min="-30" max="30" step="1"><output id="oRoll"></output></div>
+    <div class="row"><label for="fSize">Size</label><input id="fSize" type="range" min="15" max="130" step="1"><output id="oSize"></output></div>
+    <div class="btns indent"><button id="sizeAdult">Adult size</button><button data-sz="0.5">Half</button><button data-sz="0.25">Quarter</button></div>
     <div class="row"><label for="fBend">Body bend</label><input id="fBend" type="range" min="-1" max="1" step="0.05"><output id="oBend"></output></div>
     <div class="btns"><button id="flip">Flip (F)</button><button id="dup">Duplicate</button><button id="del">Delete</button></div>
     <div class="readout" id="ro"></div>
@@ -100,6 +103,10 @@
   <div class="row"><label for="subFL">Front left</label><input id="subFL" type="range" step="1" min="0"><output id="oSubFL"></output></div>
   <div class="row"><label for="subFR">Front right</label><input id="subFR" type="range" step="1" min="0"><output id="oSubFR"></output></div>
   <div class="btns"><button id="subLevel">Level</button><button id="subFB">Slope to back</button><button id="subLR">Slope to right</button><button id="subCorner">Back-left high</button></div>
+
+  <h2>Aquascape</h2>
+  <div class="field"><select id="layout" aria-label="Aquascape layout"></select><button id="layoutShuffle" title="Same style, new arrangement">Shuffle</button></div>
+  <div class="hint" id="layoutHint"></div>
 
   <h2>Lighting</h2>
   <div class="row"><label for="lType">Fixture</label><select id="lType" class="span2">
@@ -133,15 +140,12 @@
 
   <h2>Display &amp; export</h2>
   <div class="row"><label for="edge">Fish edges</label><select id="edge" class="span2">
-    <option value="cutout">Crisp (cutout)</option><option value="a2c">Smoothed (alpha-to-coverage)</option></select></div>
+    <option value="a2c">Smoothed, see-through fins (alpha-to-coverage)</option><option value="cutout">Crisp (cutout)</option></select></div>
   <label><input type="checkbox" id="gridOn"> Grid on back wall and floor (2″ / 5 cm)</label>
-  <label><input type="checkbox" id="plantOn"> Sample plant</label>
-  <div class="row"><label for="pX">Plant across</label><input id="pX" type="range" step="1" min="0"><output id="opX"></output></div>
-  <div class="row"><label for="pZ">Plant depth</label><input id="pZ" type="range" step="1" min="0"><output id="opZ"></output></div>
   <div class="btns"><span class="flabel">Export PNG</span><button data-png="1">1×</button><button data-png="2">2×</button><button data-png="4">4×</button></div>
 
   <details><summary>Scene data (JSON, physical mm)</summary><pre id="json"></pre></details>
-  <footer class="hint">Placeholder fish art. Sizes are adult total length.</footer>
+  <footer class="hint">Illustrated placeholder art. Sizes are typical adult total length in aquaria (snails: crawling length).</footer>
 </aside>
 <main id="view">
   <canvas id="c" aria-label="Aquarium view"></canvas>

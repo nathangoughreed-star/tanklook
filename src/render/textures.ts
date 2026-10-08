@@ -1,5 +1,7 @@
 import * as THREE from 'three';
-import { drawFishCard, drawPerson, drawPlant, drawSubstrate } from '../art/placeholder';
+import { drawFishCard, drawPerson, drawSubstrate } from '../art/placeholder';
+import { drawPlantCard, type PlantType } from '../art/plants';
+import { drawSnailCard, type SnailView } from '../art/snails';
 import { getSpecies } from '../data/species';
 import type { EdgeMode, SubstrateType } from '../scene/types';
 
@@ -27,11 +29,8 @@ export const substrateTexture = (type: SubstrateType) => cached('sub:' + type, (
   drawSubstrate(c.getContext('2d')!, 512, type);
   return finish(c, true);
 });
-export const plantTexture = () => cached('plant', () => {
-  const c = document.createElement('canvas'); c.width = 512; c.height = 1382;
-  drawPlant(c.getContext('2d')!, c.width, c.height);
-  return finish(c);
-});
+export const plantTexture = (type: PlantType) => cached('plant:' + type, () => finish(drawPlantCard(type)));
+export const snailTexture = (art: string, view: SnailView) => cached(`snail:${art}:${view}`, () => finish(drawSnailCard(art, view)));
 export const personTexture = () => cached('person', () => {
   const c = document.createElement('canvas'); c.height = 1536; c.width = Math.round(1536 * 0.34);
   drawPerson(c.getContext('2d')!, c.width, c.height);
@@ -47,11 +46,11 @@ export const gradientTexture = () => cached('bg-gradient', () => {
 
 /** Card materials are shared across rebuilds (marked cached so scene disposal leaves them alone). */
 const matCache = new Map<string, THREE.MeshBasicMaterial>();
-export function cardMaterial(key: string, map: THREE.Texture, edge: EdgeMode) {
-  const k = key + '|' + edge;
+export function cardMaterial(key: string, map: THREE.Texture, edge: EdgeMode, side: THREE.Side = THREE.DoubleSide) {
+  const k = key + '|' + edge + '|' + side;
   let m = matCache.get(k);
   if (!m) {
-    m = new THREE.MeshBasicMaterial({ map, side: THREE.DoubleSide });
+    m = new THREE.MeshBasicMaterial({ map, side });
     if (edge === 'cutout') m.alphaTest = 0.5; else m.alphaToCoverage = true;
     m.userData.cached = true;
     matCache.set(k, m);

@@ -2,11 +2,13 @@
 // textures and card materials are cached across rebuilds.
 import * as THREE from 'three';
 import { SUBSTRATES } from '../art/placeholder';
-import { getSpecies } from '../data/species';
+import { snailAspect } from '../art/snails';
+import { fishTL, getSpecies, type Species } from '../data/species';
 import { D2R, IN, WALL_GAP, clamp, floorY, glassThickness, mapToTank, RIM_DROP, RIM_H, substrateHeight, tankUnderside } from '../scene/physics';
-import type { Background, Scene, Tank } from '../scene/types';
+import type { Background, Fish, Scene, Tank } from '../scene/types';
 import { addFixture, applyLighting } from './lighting';
-import { cardMaterial, fishTexture, gradientTexture, personTexture, plantTexture, substrateTexture } from './textures';
+import { layoutGroup } from './layouts';
+import { cardMaterial, fishTexture, gradientTexture, personTexture, snailTexture, substrateTexture } from './textures';
 
 /** Back-wall options; color null = no background (back glass only); light = use dark grid lines. */
 export const BACKGROUNDS: Record<Background, { label: string; color: number | null; gradient?: boolean; light?: boolean }> = {
@@ -261,20 +263,20 @@ export interface BuiltTank {
 export function buildTank(S: Scene, T: Tank, selId: number | null): BuiltTank {
   const sc = new THREE.Scene(), fishMeshes: THREE.Mesh[] = [], meshById = new Map<number, THREE.Mesh>();
   addTank(sc, S, T); addSubstrate(sc, S, T); addStand(sc, S, T); addWall(sc, S, T); addPerson(sc, S, T); addFloor(sc, S, T);
-  if (S.plant.show) {
-    const ph = Math.min(380, T.H * 0.92), pw = ph / 2.7, g = new THREE.PlaneGeometry(pw, ph); g.translate(0, ph / 2, 0);
-    const m = new THREE.Mesh(g, cardMaterial('plant', plantTexture(), S.render.edge));
-    const p = mapToTank(S.tankA, T, { x: S.plant.x, y: 0, depth: S.plant.depth });
-    m.position.set(p.x, substrateHeight(S.substrate, T, p.x, p.depth) - 4, -p.depth); sc.add(m);
-  }
+  const lay = layoutGroup(S, T); if (lay) sc.add(lay);
+  const register = (f: Fish, m: THREE.Mesh, w: number, h: number) => {
+    m.userData.id = f.id; if (f.id === selId) m.add(outline(w, h));
+    sc.add(m); fishMeshes.push(m); if (!meshById.has(f.id)) meshById.set(f.id, m);
+  };
   for (const f of S.fish) {
     const sp = getSpecies(f.species); if (!sp) continue;
-    const w = sp.tl, h = sp.tl * sp.aspect, p = mapToTank(S.tankA, T, f);
+    if (sp.kind === 'snail') { for (const [m, w, h] of snailMeshes(S, T, f, sp)) register(f, m, w, h); continue; }
+    const w = fishTL(f, sp), h = w * sp.aspect, p = mapToTank(S.tankA, T, f);
     const m = new THREE.Mesh(cardGeometry(w, h, f.bend), cardMaterial('fish:' + f.species, fishTexture(f.species), S.render.edge));
-    m.position.set(p.x, p.y, -p.depth); m.rotation.set(f.roll * D2R, f.yaw * D2R, f.pitch * D2R, 'YXZ');
-    m.userData.id = f.id;
-    if (f.id === selId) m.add(outline(w, h));
-    sc.add(m); fishMeshes.push(m); meshById.set(f.id, m);
+    // bottom dwellers rest on the substrate wherever they are (their stored height is ignored)
+    const y = sp.zone === 'bottom' ? substrateHeight(S.substrate, T, p.x, p.depth) + sp.rest * w - 1 : p.y;
+    m.position.set(p.x, y, -p.depth); m.rotation.set(f.roll * D2R, f.yaw * D2R, f.pitch * D2R, 'YXZ');
+    register(f, m, w, h);
   }
   addLid(sc, S, T);
   if (S.lid !== 'hood') addFixture(sc, T, S.light); // with a hood the fixture is inside it; its light still applies
@@ -283,10 +285,38 @@ export function buildTank(S: Scene, T: Tank, selId: number | null): BuiltTank {
   return { scene: sc, fishMeshes, meshById };
 }
 
+/** How far a glass snail sits off the inside of the pane (mm). */
+const PANE_GAP = 0.8;
+/** Pane rotation about y that turns local +z (the foot side) toward that pane's glass. */
+const PANE_Y = { front: 0, back: Math.PI, left: -Math.PI / 2, right: Math.PI / 2 } as const;
+
+/**
+ * Snail cards. On the substrate: one upright side-view card. On glass: two one-sided cards back to back, the foot
+ * facing the glass (what you see through that pane) and the shell facing into the tank; yaw = heading in the pane.
+ */
+function snailMeshes(S: Scene, T: Tank, f: Fish, sp: Species): [THREE.Mesh, number, number][] {
+  const p = mapToTank(S.tankA, T, f), surf = f.surface ?? 'floor', w = fishTL(f, sp), edge = S.render.edge;
+  const sub = (x: number, d: number) => substrateHeight(S.substrate, T, x, d);
+  if (surf === 'floor') {
+    const h = w * sp.aspect, m = new THREE.Mesh(cardGeometry(w, h, 0), cardMaterial(`snail:${sp.art}:side`, snailTexture(sp.art, 'side'), edge));
+    m.position.set(p.x, sub(p.x, p.depth) + sp.rest * w - 0.5, -p.depth); m.rotation.set(0, f.yaw * D2R, 0, 'YXZ');
+    return [[m, w, h]];
+  }
+  const h = w * snailAspect(sp.art, 'foot'), x = surf === 'left' ? PANE_GAP : surf === 'right' ? T.L - PANE_GAP : p.x;
+  const d = surf === 'front' ? PANE_GAP : surf === 'back' ? T.D - PANE_GAP : p.depth;
+  const y = clamp(p.y, sub(x, d) + h / 2, T.H - h / 2);
+  const foot = new THREE.Mesh(new THREE.PlaneGeometry(w, h), cardMaterial(`snail:${sp.art}:foot`, snailTexture(sp.art, 'foot'), edge, THREE.FrontSide));
+  const sg = new THREE.PlaneGeometry(w, h).rotateY(Math.PI), uv = sg.attributes.uv; // face into the tank, texture not mirrored
+  for (let i = 0; i < uv.count; i++) uv.setX(i, 1 - uv.getX(i));
+  const shell = new THREE.Mesh(sg, cardMaterial(`snail:${sp.art}:shell`, snailTexture(sp.art, 'shell'), edge, THREE.FrontSide));
+  for (const m of [foot, shell]) { m.position.set(x, y, -d); m.rotation.set(0, PANE_Y[surf], f.yaw * D2R, 'YXZ'); }
+  return [[foot, w, h], [shell, w, h]];
+}
+
 export function disposeScene(sc: THREE.Scene | undefined) {
   sc?.traverse(o => {
     const m = o as THREE.Mesh;
-    m.geometry?.dispose();
-    if (m.material) for (const mat of ([] as THREE.Material[]).concat(m.material)) if (!mat.userData.cached) mat.dispose();
+    if (!m.geometry?.userData.keep) m.geometry?.dispose();
+    if (m.material) for (const mat of ([] as THREE.Material[]).concat(m.material)) if (!mat.userData.cached && !mat.userData.keep) mat.dispose();
   });
 }

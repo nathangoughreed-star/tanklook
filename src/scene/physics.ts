@@ -1,5 +1,5 @@
 // Pure physical rules shared by the renderer, the UI and the tests. No three.js here.
-import type { Fish, RenderSettings, Scene, StandSettings, SubstrateSettings, Tank, Units } from './types';
+import type { Fish, RenderSettings, Scene, StandSettings, SubstrateSettings, Surface, Tank, Units } from './types';
 
 export const IN = 25.4;
 export const D2R = Math.PI / 180;
@@ -42,6 +42,29 @@ export function substrateHeight(s: SubstrateSettings, T: Tank, x: number, depth:
   return (c(s.fl) * (1 - u) + c(s.fr) * u) * (1 - v) + (c(s.bl) * (1 - u) + c(s.br) * u) * v;
 }
 
+/** Snails stay this far below the interior top (the water line). */
+export const WATERLINE_GAP = 25;
+
+/**
+ * A random spot for a snail of crawling length `size`: every point of the substrate and of the inside of the four
+ * glass panes (below the water line) is equally likely, so each surface is chosen in proportion to its area.
+ * On glass, yaw is the heading within the pane.
+ */
+export function spawnSnail(sub: SubstrateSettings, T: Tank, size: number, r: () => number) {
+  const top = T.H - WATERLINE_GAP, h = (x: number, d: number) => substrateHeight(sub, T, x, d);
+  const meanSub = (h(0, 0) + h(T.L, 0) + h(0, T.D) + h(T.L, T.D)) / 4, hw = Math.max(0, top - meanSub);
+  const areas: [Surface, number][] = [['floor', T.L * T.D], ['front', T.L * hw], ['back', T.L * hw], ['left', T.D * hw], ['right', T.D * hw]];
+  let k = r() * areas.reduce((a, [, v]) => a + v, 0), surface: Surface = 'floor';
+  for (const [sf, a] of areas) { if (k < a) { surface = sf; break; } k -= a; }
+  const m = size / 2, along = (len: number) => m + r() * Math.max(0, len - 2 * m), yaw = Math.round(r() * 360 - 180);
+  const up = (x: number, d: number) => { const lo = h(x, d) + m, hi = Math.max(lo, top - m); return lo + r() * (hi - lo); };
+  switch (surface) {
+    case 'floor': { const x = along(T.L), depth = along(T.D); return { surface, x, depth, y: h(x, depth), yaw }; }
+    case 'front': case 'back': { const x = along(T.L), depth = surface === 'front' ? 0 : T.D; return { surface, x, depth, y: up(x, depth), yaw }; }
+    default: { const depth = along(T.D), x = surface === 'left' ? 0 : T.L; return { surface, x, depth, y: up(x, depth), yaw }; }
+  }
+}
+
 /** Map a Tank-A position into tank T at the same relative spot. */
 export function mapToTank(A: Tank, T: Tank, p: { x: number; y: number; depth: number }) {
   return { x: p.x * T.L / A.L, y: p.y * T.H / A.H, depth: p.depth * T.D / A.D };
@@ -54,7 +77,6 @@ export const depthRatio = (dist: number, depth: number) => dist / (dist + depth)
 export function rescaleTankA(s: Scene, next: Tank) {
   const old = s.tankA;
   for (const f of s.fish) { f.x *= next.L / old.L; f.y *= next.H / old.H; f.depth *= next.D / old.D; }
-  s.plant.x *= next.L / old.L; s.plant.depth *= next.D / old.D;
   s.tankA = { ...next };
 }
 
