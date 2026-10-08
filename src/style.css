@@ -96,14 +96,14 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 #side { position: relative }
 .sidetog { font: inherit; cursor: pointer; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 6px; padding: 3px 9px }
 #sideClose { position: absolute; top: 10px; right: 10px; font-size: 16px; line-height: 1; padding: 3px 8px }
-#sideOpen { display: none; position: absolute; top: 10px; right: 10px; z-index: 3; box-shadow: 0 1px 4px rgba(0, 0, 0, .25) }
+#sideOpen { display: none; position: absolute; top: 10px; left: 10px; z-index: 3; box-shadow: 0 1px 4px rgba(0, 0, 0, .25) }
 #app.collapsed #side { display: none }
 #app.collapsed #sideOpen { display: block }
 .lab { position: absolute; top: 8px; font-size: 12px; background: rgba(0, 0, 0, .55); color: #fff; padding: 3px 7px; border-radius: 4px; pointer-events: none; white-space: nowrap }
 /* split view: each view's tab lists what differs from the other tank, close at the bottom */
-.lab.tab { pointer-events: auto; white-space: normal; padding: 5px 8px; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; border: 1px solid transparent }
+.lab.tab { pointer-events: auto; white-space: normal; padding: 5px 8px; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; border: 1px solid transparent }
 .lab.tab.on { border-color: var(--accent); background: rgba(0, 0, 0, .7) }
-.lab .diffs { display: flex; flex-wrap: wrap; gap: 3px 10px; line-height: 1.35 }
+.lab .diffs { display: flex; flex-wrap: wrap; justify-content: flex-end; text-align: right; gap: 3px 10px; line-height: 1.35 }
 .lab .close { font: inherit; font-size: 11px; color: #fff; background: rgba(255, 255, 255, .14); border: 0; border-radius: 3px; padding: 2px 7px; cursor: pointer }
 .lab .acts { display: flex; gap: 5px }
 .lab .close:hover { background: rgba(255, 255, 255, .28) }

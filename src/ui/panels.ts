@@ -499,14 +499,16 @@ export function attachPanels(store: Store, viewer: Viewer) {
   viewer.onDrawn(() => {
     const g = G(), active = viewer.active, split = active.length > 1;
     const diff = split ? tankDiff(g.tanks[0], g.tanks[1], g.units) : [];
-    const sig = JSON.stringify([diff, g.units, g.active, g.camLock, active.map(v => [v.x, v.w]), split || fmtDims(g.tanks[0].tank, g.units)]);
+    const hidden = $('app').classList.contains('collapsed');
+    const sig = JSON.stringify([diff, hidden, g.units, g.active, g.camLock, active.map(v => [v.x, v.w]), split || fmtDims(g.tanks[0].tank, g.units)]);
     if (sig !== tabSig) {
       tabSig = sig;
       for (const [i, id] of [[0, 'labA'], [1, 'labB']] as const) {
         const el = $<HTMLDivElement>(id), vp = active[i];
         el.style.display = vp ? '' : 'none';
         if (!vp) continue;
-        el.style.left = (vp.x + 8) + 'px'; el.style.maxWidth = Math.max(80, vp.w - 16) + 'px';
+        // top-right corner of each view (Nathan 2026-10-08); the panel's "› Edit" button has the top-left
+        el.style.right = (viewer.host.clientWidth - vp.x - vp.w + 8) + 'px'; el.style.maxWidth = Math.max(80, vp.w - 16 - (vp.x === 0 && hidden ? 80 : 0)) + 'px'; // clear of "› Edit"
         el.classList.toggle('tab', split); el.classList.toggle('on', split && i === g.active);
         if (!split) { el.textContent = fmtDims(vp.T, g.units); continue; }
         // only what differs (nothing = the same tank, no labels); close at the bottom
