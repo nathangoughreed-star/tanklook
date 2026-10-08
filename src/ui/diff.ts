@@ -97,6 +97,7 @@ export function tankDiff(a: TankSetup, b: TankSetup, u: Units): DiffItem[] {
   add(a.light.type, b.light.type, t => LIGHTS[t], ['light.type']);
   if (a.light.type === b.light.type) {
     if (a.light.type === 'spot' || a.light.type === 'tube') add(a.light.count, b.light.count, n => `${n} ${a.light.type === 'tube' ? 'tube' : 'bulb'}${n > 1 ? 's' : ''}`, ['light.count']);
+    if (a.light.type === 'spot') add(a.light.rows, b.light.rows, r => `${r} row${r > 1 ? 's' : ''} of bulbs`, ['light.rows']);
     if (a.light.type !== 'flat' && a.lid !== 'hood' && b.lid !== 'hood') add(a.light.height, b.light.height, h => `Light ${len(h)} up`, ['light.height']);
   }
   add(a.light.bright, b.light.bright, v => `Brightness ×${v.toFixed(2)}`, ['light.bright']);

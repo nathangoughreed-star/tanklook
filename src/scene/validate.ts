@@ -17,6 +17,7 @@ export const LIMITS = {
   el: [-20, 85] as const,
   zoom: [0.5, 4] as const,
   count: [1, 6] as const,
+  rows: [1, 4] as const,
   bright: [0.2, 2.5] as const,
   kelvin: [2700, 14000] as const,
   room: [0, 0.8] as const,
@@ -155,7 +156,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       glassType: pick(r.glassType, ['standard', 'lowiron'] as const, 'standard'),
     },
     light: {
-      type: pick(l.type, ['flat', 'spot', 'tube', 'led'] as const, 'flat'), count: Math.round(num(l.count, 2, ...LIMITS.count)),
+      type: pick(l.type, ['flat', 'spot', 'tube', 'led'] as const, 'flat'), count: Math.round(num(l.count, 2, ...LIMITS.count)), rows: Math.round(num(l.rows, 1, ...LIMITS.rows)),
       bright: num(l.bright, 1, ...LIMITS.bright), kelvin: num(l.kelvin, 6500, ...LIMITS.kelvin), room: num(l.room, 0.15, ...LIMITS.room),
       height: num(l.height, 50, ...LIMITS.lampH), // added 2026-10-08; older files: the old fixed 50 mm
     },

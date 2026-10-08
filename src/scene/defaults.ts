@@ -14,7 +14,7 @@ export function defaultSetup(): TankSetup {
     tank: A,
     camera: { dist: 3000, az: 0, el: 0, zoom: 1 },
     render: { edge: 'a2c', grid: true, rim: true, bg: 'blue', glass: 'auto', glassType: 'standard' },
-    light: { type: 'flat', count: 2, bright: 1, kelvin: 6500, room: 0.15, height: 50 },
+    light: { type: 'flat', count: 2, rows: 1, bright: 1, kelvin: 6500, room: 0.15, height: 50 },
     substrate: { show: true, type: 'gravel', fl: 1 * IN, fr: 1 * IN, bl: 3 * IN, br: 3 * IN },
     layout: { id: 'planted', seed: 1 },
     terrain: { on: false, cols: 7, rows: 0, h: [] },

@@ -52,6 +52,8 @@ export interface RenderSettings {
 export interface LightSettings {
   type: LightType;
   count: number;
+  /** Spot lights only: rows front to back, so the bulbs form a count × rows grid (added 2026-10-08; older files: 1). */
+  rows: number;
   bright: number;
   kelvin: number;
   room: number;

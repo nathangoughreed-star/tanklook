@@ -1,6 +1,67 @@
-# TankLook (arium visualizer): handoff
+# TankLook (vivarium visualizer): handoff
 
 Living file. Project state and dated decisions go here; update in place.
+
+## Status (2026-10-08, session 6: split-view polish deployed `eee6334`; spot-light grid uncommitted)
+
+Shipped in `eee6334`: panel collapse button outside the panel; locked views share one image window (equal tanks line
+up); person framing from the card's real edges; stocking diff ignores the resize rescale; × on each difference makes
+that tank match the other (`DiffItem[2]` = match fn); tab "× Close" hides the tab (☰ chip restores), "Delete" removes
+the tank; one viewpoint map per view with its own hide/show; orbit cannot pass through the room wall
+(`scene/orbit.ts`, 150 mm clearance, also enforced after edits and on lock); peninsula cabinets get back doors;
+renamed "Vivarium Visualizer". After that (not yet committed): spot lights form a count × rows grid
+(`light.rows` 1-4, default 1, no version bump). `npm test` 88/88.
+
+**NEXT WORK UNIT: tank shapes + table stands** (Nathan 2026-10-08), ahead of land + semi-aquatic species below.
+
+## Tank shapes + table stands (requested 2026-10-08; design brief, NOT built)
+
+Request: circular, regular triangle, pentagon, hexagon, bowfront ("model it as a rectangle but just have min and max
+widths and have the tool do a smooth curve between them"); stand geometry for each; and a stand that is a table
+(rectangular or circular) with the tank movable along its top.
+
+Survey of rectangular assumptions done 2026-10-08 (Explore subagent): about 40 sites. Biggest risks: the glass pane
+generator (build.ts addTank 35-78, five BoxGeometry panes), the substrate mesh (addSubstrate 279-315, quad grid +
+4 side strips), snail `Surface` enum ('front'|'back'|'left'|'right', physics spawnSnail, build snailMeshes 398-424),
+and the lighting shader's axis-aligned water box (lighting.ts uWater/uTankMin/Max, aqWaterPath).
+
+Proposed design (for Nathan to confirm at the start of the work unit):
+- **Scene v8** `tank.shape`: 'rect' | 'bow' | 'round' | 'poly' (+ `sides` 3/5/6, + `bowMin` = end depth for 'bow').
+  Keep L/H/D as the BOUNDING BOX (bow: D = centre depth; round: L = D = diameter; poly: width across, D derived), so
+  the heightfield (u = x/L, v = depth/D), camera, walls, orbit, diff and fish storage keep working.
+- One new helper, `footprint(T)`: outline polygon (round ~64 segments, bow front ~32) plus inside / clamp-to-inset /
+  area / perimeter. Everything else calls it: clampFish, nearestWater/Land/randomLand, fitFish, spawn, pointer drag,
+  volume, tankWeight (mask the grid), water plane + meniscus, substrate (clip the grid to the outline, skirt along it),
+  glass (extrude the outline ring; flat panes per edge, curved = one shell), rim, glass lid, view map (polygon),
+  person half-width, stand footprint.
+- Bowfront curve: back flat; front goes from `bowMin` at the ends to D at the centre along a smooth curve (circular
+  arc through three points is the real-world shape; confirm).
+- "Eye distance from the front glass" for non-rect shapes = from the front-most point of the outline.
+- Hood: rect and bow only; other shapes get open top or glass lid. Peninsula end walls: rect and bow only (or: wall
+  sits against the bounding box; confirm).
+- Snails on glass: phase 1 only on flat panes of rect/bow/poly (Surface becomes pane index + position); round: floor
+  only until curved-glass snails are built.
+- Lighting shader: phase 1 keeps the bounding-box water path (small error outside the outline, where there is no
+  water to see through); exact prism/cylinder path later if it shows.
+- **Stands**: cabinet = footprint extruded (doors on the front-facing flat faces); frame stand = legs at the outline's
+  vertices. **Table**: new stand style with its own top (rect L×D or round diameter, thickness, legs) larger than the
+  tank; `stand.table { shape, L, D, x, z }` = the tank's offset on the top, clamped so the footprint stays on it.
+  Move the tank by dragging it in a "move tank" mode, or with two sliders. Walls and person go relative to the
+  table edge when a table is used (confirm).
+- **Nathan's answers (2026-10-08), these override the proposals above:**
+  1. Bowfront front = a true circular arc through (0, bowMin), (L/2, D), (L, bowMin). Yes.
+  2. Eye distance: "whatever is most analogous to how it's done now". Now: `dist` = eye to the centre of the front
+     glass, straight on. So for every shape, `dist` = eye to the front-most point of the outline on the tank's
+     centre line (round: the front of the circle; bow: the bow's apex; poly: the front vertex or the front face's
+     midpoint, whichever is nearer the eye). Orbit stays about the bounding-box centre.
+  3. Hood and peninsula end walls: rect and bow only, for now.
+  4. Snails on curved glass: build it NOW, not later ("we will have to revisit... easier now"). So the Surface
+     model becomes general in this work unit: a glass wall index + position along the outline (arc length) + height,
+     for flat panes AND the curved shell (round and bow front), with the snail oriented to the local glass normal.
+  5. With a table stand, the wall and the scale person sit relative to the table's edge. Yes.
+- Phases: (1) footprint + shapes + glass + water + substrate + fish + snails on any glass (answer 4) +
+  volume/weight + view map + cabinet; (2) table + tank placement (answer 5); (3) exact lighting path, layouts tuned
+  per shape.
 
 ## Status (2026-10-08, session 5: split tanks deployed)
 

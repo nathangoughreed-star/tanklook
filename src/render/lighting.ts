@@ -22,7 +22,8 @@ export const lampHeight = (l: LightSettings, lid: string) => (lid === 'hood' ? L
 
 export function emitters(T: Tank, l: LightSettings, height = l.height ?? LAMP_Y): Emitter[] {
   const { L, H, D } = T, y = H + height, n = l.count, E: Emitter[] = [];
-  if (l.type === 'spot') for (let i = 0; i < n; i++) E.push([L * (i + 0.5) / n, y, -D / 2, 0]);
+  // spots: a count × rows grid (rows run front to back)
+  if (l.type === 'spot') { const m = l.rows ?? 1; for (let j = 0; j < m; j++) for (let i = 0; i < n; i++) E.push([L * (i + 0.5) / n, y, -D * (j + 0.5) / m, 0]); }
   if (l.type === 'tube') for (let i = 0; i < n; i++) E.push([L / 2, y, -D * (i + 0.5) / n, L * 0.45]);
   if (l.type === 'led') {
     const cols = clamp(Math.round(L * 0.9 / 45), 2, 24);

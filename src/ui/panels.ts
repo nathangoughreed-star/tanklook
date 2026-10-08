@@ -335,7 +335,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('wGreen').onclick = () => waterPreset('#5d8a2e', 0.5);
 
   // ---------- Lighting ----------
-  const lKeys = { lCount: 'count', lH: 'height', lBright: 'bright', lK: 'kelvin', lRoom: 'room' } as const;
+  const lKeys = { lCount: 'count', lRows: 'rows', lH: 'height', lBright: 'bright', lK: 'kelvin', lRoom: 'room' } as const;
   for (const [id, k] of Object.entries(lKeys)) $(id).oninput = e => store.edit(s => { s.light[k] = +(e.target as HTMLInputElement).value; }, { coalesce: id });
   $<HTMLSelectElement>('lType').onchange = e => store.edit(s => { s.light.type = (e.target as HTMLSelectElement).value as TankSetup['light']['type']; });
 
@@ -475,9 +475,10 @@ export function attachPanels(store: Store, viewer: Viewer) {
 
     const l = s.light; setVal('lType', l.type);
     for (const [id, k] of Object.entries(lKeys)) setVal(id, l[k]);
-    setOut('oCount', String(l.count)); setOut('oBright', '×' + l.bright.toFixed(2)); setOut('oK', l.kelvin + ' K'); setOut('oRoom', l.room.toFixed(2));
+    setOut('oCount', String(l.count)); setOut('oRows', String(l.rows)); setOut('oBright', '×' + l.bright.toFixed(2)); setOut('oK', l.kelvin + ' K'); setOut('oRoom', l.room.toFixed(2));
     $('lCountRow').style.display = l.type === 'spot' || l.type === 'tube' ? '' : 'none';
     $('lCountLab').textContent = l.type === 'tube' ? 'Tubes' : 'Bulbs';
+    $('lRowsRow').style.display = l.type === 'spot' ? '' : 'none';
     setOut('oLH', s.lid === 'hood' ? 'In hood' : fmt(l.height) + ' above');
     $('lHRow').style.display = l.type === 'flat' ? 'none' : ''; ($('lH') as HTMLInputElement).disabled = s.lid === 'hood';
 
