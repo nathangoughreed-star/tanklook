@@ -101,7 +101,8 @@ export class Viewer {
     if (active.length === 1) Object.assign(active[0], { x: 0, y: 0, w, h });
     else { Object.assign(active[0], { x: 0, y: 0, w: hw, h }); Object.assign(active[1], { x: hw + GAP, y: 0, w: hw, h }); }
     for (const vp of active) placeCamera(vp.cam, vp.T, vp.S.camera);
-    const headroom = (S: TankSetup) => (S.lid === 'hood' ? HOOD_H + 6 : S.light.type === 'flat' ? 4 : 60 + S.light.height);
+    // framing counts the tank and a hood on it, never the lights above: a fixture shows only once zoomed out enough (Nathan 2026-10-09)
+    const headroom = (S: TankSetup) => (S.lid === 'hood' ? HOOD_H + 6 : 0);
     const bottom = (S: TankSetup) => (S.stand.show ? floorY(S.tank, S.render, S.stand) : 0);
     // the scale person: its card's corners as it stands facing `eye` (a w×w footprint instead put a near corner well
     // outside the silhouette, leaving extra empty space on the person's side)
@@ -132,11 +133,10 @@ export class Viewer {
     // while it fits (windowCentre)
     const wins = active.map(vp => ({
       tank: frameBox(vp.cam, vp.T, vp.w / vp.h, headroom(vp.S)),
-      bare: frameBox(vp.cam, vp.T, vp.w / vp.h, 0),
       all: frameBox(vp.cam, vp.T, vp.w / vp.h, headroom(vp.S), bottom(vp.S), extra(vp)),
     }));
     // locked: one window for both, from the union of their bounds, so identical tanks and stands sit at identical
-    // pixels even when one view's fixtures hang higher (otherwise each view centres on its own headroom)
+    // pixels even when one view has a hood (otherwise each view centres on its own)
     const union = (bs: { x0: number; x1: number; y0: number; y1: number }[]) => {
       const x0 = Math.min(...bs.map(b => b.x0)), x1 = Math.max(...bs.map(b => b.x1)), y0 = Math.min(...bs.map(b => b.y0)), y1 = Math.max(...bs.map(b => b.y1));
       return { x0, x1, y0, y1, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2 };
@@ -145,11 +145,11 @@ export class Viewer {
     for (const [k, vp] of active.entries()) {
       const S = vp.S, fov = fovOf(k);
       const hy = Math.tan(fov * D2R / 2), hx = hy * vp.w / vp.h;
-      // locked: the shared window while both tanks (with their fixtures) fit in it; zoomed past that, each view frames
-      // its own tank, so a taller tank or a higher light beside it never leaves this one cropped to the wall (Nathan 2026-10-09)
+      // locked: the shared window while both tanks fit in it; zoomed past that, each view frames
+      // its own tank, so a taller tank beside it never leaves this one cropped to the wall (Nathan 2026-10-09)
       const own = wins[k], u = lockedWin?.tank;
       const { tank, all } = u && u.x1 - u.x0 <= 2 * hx && u.y1 - u.y0 <= 2 * hy ? lockedWin! : own;
-      const c = windowCentre(all, tank, hx, hy, own.bare);
+      const c = windowCentre(all, tank, hx, hy);
       if (lockedWin || this.pan.i === vp.i) { c.cx -= this.pan.x * 2 * hx / vp.w; c.cy += this.pan.y * 2 * hy / vp.h; } // the picture follows the pointer
       applyFraming(vp.cam, fov, vp.w, vp.h, c.cx, c.cy);
       r.setViewport(vp.x, vp.y, vp.w, vp.h); r.setScissor(vp.x, vp.y, vp.w, vp.h);

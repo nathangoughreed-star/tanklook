@@ -12,7 +12,7 @@ export function placeCamera(cam: THREE.PerspectiveCamera, T: Tank, c: CameraSett
 }
 
 /**
- * Bounds of the tank (plus fixture headroom above, down to `bottom`, e.g. a stand, and any `extra` points such as the
+ * Bounds of the tank (plus any hood on it, down to `bottom`, e.g. a stand, and any `extra` points such as the
  * scale person) as seen from the camera,
  * in tan units: t = half-height needed, (cx, cy) = centre of the bounds relative to the view axis.
  */
@@ -54,14 +54,12 @@ export function applyFraming(cam: THREE.PerspectiveCamera, fov: number, w: numbe
 
 /**
  * Image-window centre (tan units) for a lens of half-size (hx, hy): the centre of `all` (tank + stand + person), moved
- * just enough to keep `tank` (the tank and its fixture headroom) wholly in frame; if that is bigger than the window, the
- * centre of `core` (the bare tank, without headroom), so a light hung high above never leaves the tank at the frame's foot.
- * So zooming in crops the room first, then the space above the tank, and the tank last.
+ * just enough to keep `tank` (the tank and any hood on it) wholly in frame; if the tank itself is bigger than the window, its centre.
+ * So zooming in crops the room first and the tank last.
  */
-type Bounds = { x0: number; x1: number; y0: number; y1: number };
-export function windowCentre(all: { cx: number; cy: number }, tank: Bounds, hx: number, hy: number, core: Bounds = tank) {
-  const keep = (c: number, a: number, b: number, h: number, ca: number, cb: number) => (b - a >= 2 * h ? (ca + cb) / 2 : Math.min(Math.max(c, b - h), a + h));
-  return { cx: keep(all.cx, tank.x0, tank.x1, hx, core.x0, core.x1), cy: keep(all.cy, tank.y0, tank.y1, hy, core.y0, core.y1) };
+export function windowCentre(all: { cx: number; cy: number }, tank: { x0: number; x1: number; y0: number; y1: number }, hx: number, hy: number) {
+  const keep = (c: number, a: number, b: number, h: number) => (b - a >= 2 * h ? (a + b) / 2 : Math.min(Math.max(c, b - h), a + h));
+  return { cx: keep(all.cx, tank.x0, tank.x1, hx), cy: keep(all.cy, tank.y0, tank.y1, hy) };
 }
 
 /** One FOV for all viewports, so pixel sizes are directly comparable between tanks. */
