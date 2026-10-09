@@ -9,6 +9,7 @@ import * as THREE from 'three';
 import { D2R, clamp } from '../scene/physics';
 import type { LightSettings, LightType, Tank, WaterSettings } from '../scene/types';
 import { waterK, waterY } from '../scene/physics';
+import { shapeOf } from '../scene/shape';
 
 export const AQ_MAX = 48, LAMP_Y = 50, REF = 320;
 export const CONES: Record<Exclude<LightType, 'flat'>, [number, number]> = {
@@ -85,7 +86,7 @@ export const LU = {
   uAmb: { value: 0.25 }, uBright: { value: 1 }, uNorm: { value: 1 }, uConeIn: { value: 0.9 }, uConeOut: { value: 0.8 },
   uRef: { value: REF }, uLCol: { value: new THREE.Color(1, 1, 1) },
   uRoomK: { value: 1 }, uSpill: { value: new THREE.Color(1, 1, 1) }, uSpillR: { value: 500 },
-  uTankMin: { value: new THREE.Vector3() }, uTankMax: { value: new THREE.Vector3() },
+  uTankMin: { value: new THREE.Vector3() }, uTankMax: { value: new THREE.Vector3() }, uTankRound: { value: 0 },
   uWater: { value: new THREE.Vector4() }, uWCol: { value: new THREE.Color() },
 };
 /** Water box (L, surface y, D) and tint per mm; set per viewport like the light. */
@@ -99,6 +100,8 @@ export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open') {
   LU.uRoomK.value = roomLevel(l.room); LU.uSpillR.value = spillReach(T) + up * 0.5;
   // spill leaves the tank box, extended up to the fixture: a raised light also lights the room over the rim
   LU.uTankMin.value.set(0, 0, -T.D); LU.uTankMax.value.set(T.L, T.H + up, 0);
+  // round and polygon tanks spill from an ellipse inscribed in that box, not the box itself (no square pool of light)
+  LU.uTankRound.value = shapeOf(T) === 'round' || shapeOf(T) === 'poly' ? 1 : 0;
   // the spill shows most in a dark room (in a lit room the eye adapts and it barely registers); a raised fixture
   // throws more of its light past the tank (up to ~1.8x at 450 mm and above)
   const spill = 0.9 * (1 - 0.75 * roomLevel(l.room)) * (1 + 0.8 * clamp((up - LAMP_Y) / 400, 0, 1));
@@ -119,7 +122,7 @@ const AQ_VERT = 'varying vec3 vAqP; varying vec3 vAqN;';
 const AQ_FRAG = `
 uniform vec4 uEm[${AQ_MAX}]; uniform int uEmN; uniform float uMode, uAmb, uBright, uNorm, uConeIn, uConeOut, uRef, uCard, uSub, uFish; uniform vec3 uLCol;
 float aqSpec = 0.0;
-uniform float uRoomMat, uRoomK, uSpillR; uniform vec3 uSpill, uTankMin, uTankMax; uniform vec4 uWater; uniform vec3 uWCol;
+uniform float uRoomMat, uRoomK, uSpillR, uTankRound; uniform vec3 uSpill, uTankMin, uTankMax; uniform vec4 uWater; uniform vec3 uWCol;
 varying vec3 vAqP; varying vec3 vAqN;
 float aqHash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float aqNoise(vec2 p) {
@@ -137,7 +140,12 @@ float aqWaterPath() {
 }
 vec3 aqLight() {
   if (uRoomMat > 0.5) {  // room surface: room light + light leaving the tank (nearest point of the tank box)
-    vec3 q = clamp(vAqP, uTankMin, uTankMax), tl = q - vAqP; float d = length(tl);
+    vec3 q = clamp(vAqP, uTankMin, uTankMax);
+    if (uTankRound > 0.5) {  // nearest point of the inscribed ellipse in plan (radial projection: close enough for a soft falloff)
+      vec2 c = 0.5 * (uTankMin.xz + uTankMax.xz), rr = 0.5 * (uTankMax.xz - uTankMin.xz), o = vAqP.xz - c;
+      float k = length(o / rr); q.xz = c + o / max(k, 1.0);
+    }
+    vec3 tl = q - vAqP; float d = length(tl);
     vec3 ld = d > 1.0 ? tl / d : vec3(0.0, 1.0, 0.0); float r = d / uSpillR;
     float facing = uCard > 0.5 ? 0.6 : 0.3 + 0.7 * max(dot(normalize(vAqN), ld), 0.0);
     return vec3(uRoomK) + uSpill * (facing / (1.0 + r * r));
