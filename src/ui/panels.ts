@@ -1,7 +1,8 @@
 // Sidebar wiring. Inputs write through store.update(); one sync() pulls every control back from the scene,
 // so undo/redo, file open and pointer drags all refresh the panels the same way.
 import { rng } from '../art/paint';
-import { SUBSTRATES } from '../art/placeholder';
+import { SUBSTRATES, drawFishCard } from '../art/placeholder';
+import { drawSnailCard } from '../art/snails';
 import { fishTL, getSpecies, needsWater, restsOnFloor, searchSpecies, speciesTag, type Species } from '../data/species';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { LAYOUTS } from '../render/layouts';
@@ -171,16 +172,32 @@ export function attachPanels(store: Store, viewer: Viewer) {
       const tag = speciesTag(sp) ? `<b class="tag">${speciesTag(sp)}</b>` : '';
       b.innerHTML = `<span>${esc(sp.name)} ${tag}<i>${esc(sp.sci)}</i></span><span>${fmt(sp.tl)}</span>`;
       if (sp.note) b.title = sp.note;
-      b.onclick = () => { pickId = sp.id; renderResults(); };
+      b.onclick = () => { pickId = sp.id; preview.hidden = false; renderResults(); };
       b.ondblclick = () => addOne(sp);
       results.append(b);
     }
     const pick = getSpecies(pickId), why = pick ? blocked(pick) : '';
+    showPreview(list.length ? pick : undefined);
     $<HTMLButtonElement>('addFish').disabled = $<HTMLButtonElement>('addSchool').disabled = !list.length || !!why;
     $('addFish').title = why;
     setOut('oAddSize', sizeLabel(addPct(), getSpecies(pickId)));
   }
   search.oninput = renderResults;
+
+  // preview tile: opens on clicking a species, then follows the pick until closed
+  const preview = $<HTMLDivElement>('spPreview'), previewArt = new Map<string, HTMLCanvasElement>();
+  let previewId = '';
+  $('spPreviewHide').onclick = () => { preview.hidden = true; };
+  function showPreview(sp?: Species) {
+    if (!sp) { preview.hidden = true; return; }
+    if (sp.id === previewId) return;
+    previewId = sp.id;
+    let c = previewArt.get(sp.id);
+    if (!c) previewArt.set(sp.id, c = sp.kind === 'snail' ? drawSnailCard(sp.art, 'side', 640) : drawFishCard(sp.art, sp.aspect, 640));
+    $('spPreviewArt').replaceChildren(c);
+    $('spPreviewName').innerHTML = `${esc(sp.name)} <i>${esc(sp.sci)}</i>`;
+    $('spPreviewInfo').textContent = [`Adult ${fmt(sp.tl)}`, speciesTag(sp), sp.note].filter(Boolean).join(' · ');
+  }
   search.onkeydown = e => { if (e.key === 'Enter') { const sp = searchSpecies(search.value)[0]; if (sp) { pickId = sp.id; addOne(sp); renderResults(); } } };
 
   /** Size for newly added fish: % of adult length (100 = adult, stored as no override). */

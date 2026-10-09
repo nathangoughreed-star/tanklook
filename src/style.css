@@ -75,6 +75,15 @@ button.on, button.primary { background: var(--accent); color: #fff; border-color
 .results button i { color: var(--muted) }
 .results button.on { background: var(--accent); color: #fff }
 .results button.on i { color: #e6efff }
+/* species preview tile under the picker */
+.spCard { position: relative; margin: 5px 0; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--chip) }
+.spCard[hidden] { display: none }
+.spCard .art { height: 120px; display: flex; align-items: center; justify-content: center; border-radius: 4px; background: linear-gradient(#cfe3ee, #a9c9da) }
+.spCard .art canvas { max-width: 92%; max-height: 92%; object-fit: contain }
+.spCard .name { margin-top: 6px; font-weight: 600 }
+.spCard .name i { font-weight: 400; color: var(--muted) }
+.spCard .hint { margin: 2px 0 0 }
+.spHide { position: absolute; top: 12px; right: 14px; z-index: 1; font: inherit; font-size: 12px; line-height: 1; padding: 2px 5px; border: 0; border-radius: 3px; background: var(--panel); color: var(--muted); cursor: pointer }
 .results .none { color: var(--muted); padding: 4px 8px }
 .results .tag { font: 600 10px/1 system-ui, sans-serif; text-transform: uppercase; letter-spacing: .04em; padding: 2px 4px; border-radius: 3px; background: var(--chip); color: var(--muted); margin-right: 4px; vertical-align: 1px }
 .results button.on .tag { background: rgba(255,255,255,.2); color: #fff }

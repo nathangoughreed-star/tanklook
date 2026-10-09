@@ -22,6 +22,13 @@ Order, one work unit per chat:
 4. Verify it on discus, tiger barb, clown loach, harlequin (same four views).
 5. Roll 3D out to the remaining fish, flat cards kept as fallbacks until each passes review.
 
+## Species preview tile (2026-10-09, Nathan; committed, ships in the next deploy)
+
+Clicking a species in the Fish picker opens a tile under the list with its painted card (`drawFishCard`, or the
+snail's side card), name, adult size, tag and note; clicking another swaps it, × closes it until the next click.
+Canvases are cached per species (640 px wide). Shows the 2D card, not the 3D model. `panels.ts` `showPreview`,
+markup `#spPreview` in index.html, `.spCard` / `.spHide` in style.css. Tests 114/114.
+
 ## Deployed 2026-10-09: build 63 (`e721433`), everything on main incl. the 3D pilot, Edit boxes, cabinet doors
 
 **Version number:** the sidebar header shows "build N" (N = commit count on main, from `scripts/build-info.mjs` via

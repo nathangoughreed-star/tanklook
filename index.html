@@ -87,6 +87,8 @@
   <details class="sec" data-sec="fish"><summary><h2>Fish</h2></summary>
   <input id="spSearch" type="search" placeholder="Search species (common or scientific name)" aria-label="Search species">
   <div id="spResults" class="results" role="listbox" aria-label="Species"></div>
+  <div id="spPreview" class="spCard" hidden><button id="spPreviewHide" class="spHide" title="Close preview" aria-label="Close preview">×</button>
+    <div id="spPreviewArt" class="art"></div><div id="spPreviewName" class="name"></div><div id="spPreviewInfo" class="hint"></div></div>
   <div class="btns">
     <button id="addFish" class="primary">Add</button>
     <button id="addSchool">Add school ×</button><input id="schoolN" type="number" min="2" max="60" value="12" aria-label="School size" class="narrow">
