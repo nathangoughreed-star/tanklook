@@ -9,6 +9,10 @@ function webglAvailable() {
   catch { return false; }
 }
 
+// the version on screen: build number (rises with every push), with its date and commit on hover
+const build = document.getElementById('build');
+if (build) { build.textContent = `· build ${__BUILD__.n}`; build.title = `Build ${__BUILD__.n}, ${__BUILD__.date} (${__BUILD__.sha})`; }
+
 const view = document.getElementById('view')!;
 if (!webglAvailable()) {
   view.innerHTML = '<p class="nojs">Your browser or device has WebGL turned off, so the tank can\'t be drawn. Try a current Chrome, Edge, Firefox or Safari.</p>';
