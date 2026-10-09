@@ -8,27 +8,50 @@ import { PLANS, eyeSpot, pairedFins, profile, type Plan } from '../art/fishgen';
 import type { EdgeMode } from '../scene/types';
 import { cardMaterial, pairedFinTexture } from './textures';
 
-/** Species drawn in 3D (test set) and a switch for before/after pictures. */
-export const fish3d = { on: true, species: new Set(['cardinal', 'discus', 'bronzecory']) };
+/** Species drawn in 3D (test set) and switches for before/after pictures. `fade` = the session-10 fixes (turned-away paint fades, card body cut out, body-shape fields, barbels); off = session 9, for pictures. */
+export const fish3d = { on: true, fade: true, species: new Set(['cardinal', 'discus', 'bronzecory']) };
 
 export const has3D = (art: string) => fish3d.on && fish3d.species.has(art) && PLANS[art]?.thick != null;
 
 const STATIONS = 40, RING = 28, EXP = 2.4; // superellipse exponent: slightly boxy flanks
 /** Pull the solid this far inside the painted outline (widths), so its edge never samples the card's transparent rim. */
 const INSET = 0.006;
-const sp = (c: number) => Math.sign(c) * Math.abs(c) ** (2 / EXP);
+const spE = (c: number, e: number) => Math.sign(c) * Math.abs(c) ** (2 / e);
 const bendZ = (bend: number, x: number) => bend * 0.14 * (1 - (2 * x) ** 2);
+
+const smooth = (a: number, b: number, x: number) => { const k = Math.min(1, Math.max(0, (x - a) / (b - a))); return k * k * (3 - 2 * k); };
+
+type Section = { vc: number; hv: number; t: number; p: Plan };
 
 /** Cross-section at u: centre line vc, half-depth hv, half-thickness t (all widths). */
 function sections(p: Plan) {
-  const prof = profile(p), thick = p.thick!;
+  const prof = profile(p), thick = p.thick!, pedT = p.pedT ?? 0.55, gu = 1 - (1 - p.pedU) * 0.2; // gu: the gill cover
   const maxHv = Math.max(...Array.from({ length: 41 }, (_, i) => { const [a, b] = prof(p.pedU + (1 - p.pedU) * i / 40); return (b - a) / 2; }));
-  return (u: number) => {
+  return (u: number): Section => {
     const [a, b] = prof(u), s = (u - p.pedU) / (1 - p.pedU), vc = (a + b) / 2, hv = Math.max(0, (b - a) / 2 - INSET);
     // thickness follows depth but stays fuller toward the head (fish are widest behind the gills)
-    const t = thick * (0.35 * hv + 0.65 * maxHv * Math.sin(Math.min(1, hv / maxHv) * Math.PI / 2)) * (0.55 + 0.45 * Math.sqrt(s));
-    return { vc, hv, t };
+    let t = thick * (0.35 * hv + 0.65 * maxHv * Math.sin(Math.min(1, hv / maxHv) * Math.PI / 2)) * (pedT + (1 - pedT) * Math.sqrt(s));
+    // armoured heads sit a step narrower than the trunk; a flat snout keeps its width to the tip (shovel)
+    if (p.step) t *= 1 - p.step * smooth(gu - 0.015, gu + 0.02, u);
+    if (p.noseW) t = Math.max(t, p.noseW * thick * maxHv * smooth(0.55, 0.8, s) * (1 - 0.5 * smooth(0.9, 1, s)));
+    return { vc, hv, t, p };
   };
+}
+
+/**
+ * Section outline at angle th (0 = top, pi = bottom; z on the + flank): a superellipse, boxier below for a flat
+ * belly (`belly`) and wider low or high (`wide`). Returns [v, z].
+ */
+function ringPt({ vc, hv, t, p }: Section, th: number): [number, number] {
+  const c = Math.cos(th), e = c < 0 ? EXP * (1 + 2.5 * (p.belly ?? 0)) : EXP;
+  return [vc - hv * spE(c, e), t * spE(Math.sin(th), e) * (1 - 0.5 * (p.wide ?? 0) * c)];
+}
+
+/** The angle on the + flank of section `sec` where the outline is at height v (v rises monotonically with th). */
+function thetaAt(sec: Section, v: number) {
+  let lo = 0, hi = Math.PI;
+  for (let k = 0; k < 30; k++) { const m = (lo + hi) / 2; if (ringPt(sec, m)[0] < v) lo = m; else hi = m; }
+  return (lo + hi) / 2;
 }
 
 /**
@@ -39,10 +62,10 @@ function bodyGeometry(p: Plan, aspect: number, bend: number) {
   const ring = sections(p), pos: number[] = [], uv: number[] = [], idx: number[] = [];
   for (let i = 0; i < STATIONS; i++) {
     const k = i / (STATIONS - 1), u = p.pedU + (1 - p.pedU) * (1 - Math.cos(k * Math.PI / 2) ** 1.5); // denser at the nose
-    const { vc, hv, t } = ring(u), x = u - 0.5, z0 = bendZ(bend, x);
+    const sec = ring(u), x = u - 0.5, z0 = bendZ(bend, x);
     for (let j = 0; j <= RING; j++) {
-      const th = j / RING * Math.PI * 2, v = vc - hv * sp(Math.cos(th));
-      pos.push(x, -v, z0 + t * sp(Math.sin(th)));
+      const [v, z] = ringPt(sec, j / RING * Math.PI * 2);
+      pos.push(x, -v, z0 + z);
       uv.push(u, 0.5 - v / aspect);
     }
   }
@@ -63,6 +86,8 @@ function bodyGeometry(p: Plan, aspect: number, bend: number) {
   const n = g.attributes.normal, col: number[] = [];
   for (let i = 0; i < n.count; i++) { const ny = n.getY(i), k = 1 - 0.28 * Math.max(0, -ny) + 0.04 * Math.max(0, ny); col.push(k, k, k); }
   g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+  // how squarely the surface faces the side (1 = flank, 0 = edge-on to the projection): where the paint is reliable
+  g.setAttribute('aSide', new THREE.Float32BufferAttribute(Array.from({ length: n.count }, (_, i) => Math.abs(n.getZ(i))), 1));
   g.userData.keep = true; // shared across rebuilds
   return g;
 }
@@ -72,21 +97,44 @@ function bodyGeometry(p: Plan, aspect: number, bend: number) {
  * the dome's axis along the local surface normal, turned slightly forward (fish eyes look ahead a little).
  */
 function eyePlacements(p: Plan, bend: number) {
-  const e = eyeSpot(p), { vc, hv, t } = sections(p)(e.u), x = e.u - 0.5;
-  // invert v = vc - hv * sp(cos th) for the angle on the section, then the point and the ellipse normal there
-  const cs = Math.max(-1, Math.min(1, (vc - e.v) / Math.max(hv, 1e-6))), c = Math.sign(cs) * Math.abs(cs) ** (EXP / 2);
-  const s = Math.sqrt(Math.max(0, 1 - c * c)), z = t * sp(s);
-  return [1, -1].map(side => {
-    const n = new THREE.Vector3(0.22, c / Math.max(hv, 1e-6), side * s / Math.max(t, 1e-6)).normalize();
-    return { pos: new THREE.Vector3(x, -e.v, bendZ(bend, x) + side * z), n, r: e.r, iris: e.iris };
-  });
+  const e = eyeSpot(p);
+  return [1, -1].map(side => ({
+    pos: surfaceAt(p, e.u, e.v, side, bend), n: normalAt(p, e.u, e.v, side, bend).add(new THREE.Vector3(0.2, 0, 0)).normalize(), r: e.r, iris: e.iris,
+  }));
 }
 
 /** Point on the body surface at card (u, v) on one flank (unit frame). */
 function surfaceAt(p: Plan, u: number, v: number, side: number, bend: number) {
-  const { vc, hv, t } = sections(p)(u), x = u - 0.5;
-  const cs = Math.max(-1, Math.min(1, (vc - v) / Math.max(hv, 1e-6))), c = Math.sign(cs) * Math.abs(cs) ** (EXP / 2);
-  return new THREE.Vector3(x, -v, bendZ(bend, x) + side * t * sp(Math.sqrt(Math.max(0, 1 - c * c))));
+  const sec = sections(p)(u), x = u - 0.5, [, z] = ringPt(sec, thetaAt(sec, v));
+  return new THREE.Vector3(x, -v, bendZ(bend, x) + side * z);
+}
+
+/** Outward surface normal at card (u, v) on one flank (finite differences along the body and around the section). */
+function normalAt(p: Plan, u: number, v: number, side: number, bend: number) {
+  const ring = sections(p);
+  const at = (uu: number, th: number) => { const [vv, z] = ringPt(ring(uu), th), x = uu - 0.5; return new THREE.Vector3(x, -vv, bendZ(bend, x) + side * z); };
+  const th = thetaAt(ring(u), v), d = 0.004;
+  const n = at(u + d, th).sub(at(u - d, th)).cross(at(u, th + d).sub(at(u, th - d))).normalize();
+  return n.z * side < 0 ? n.negate() : n;
+}
+
+/**
+ * Barbels (bottom fish): two thin tapering pairs at the corners of the mouth, angled forward, down and out, rooted a
+ * little inside the surface. `p.barbels` = the card's barbel length (widths).
+ */
+function barbelMeshes(p: Plan, bend: number, mat: THREE.Material) {
+  const out: THREE.Mesh[] = [], len = p.barbels! * 2, nb = profile(p)(0.975)[1];
+  let g = geoCache.get('barbel');
+  if (!g) { g = new THREE.CylinderGeometry(0.25, 1, 1, 6, 1).translate(0, 0.5, 0); g.userData.keep = true; geoCache.set('barbel', g); }
+  const DIRS: [number, number, number][] = [[0.35, -0.7, 0.62], [0.62, -0.72, 0.3]];
+  for (const side of [1, -1]) DIRS.forEach((d, k) => {
+    const m = new THREE.Mesh(g, mat), s = surfaceAt(p, 0.975 - k * 0.012, nb - 0.006, side, bend), z0 = bendZ(bend, s.x);
+    m.scale.set(0.004, len * (1 - 0.25 * k), 0.004);
+    m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(d[0], d[1], d[2] * side).normalize());
+    m.position.set(s.x, s.y, z0 + (s.z - z0) * 0.8);
+    out.push(m);
+  });
+  return out;
 }
 
 /** Paired-fin spread from the body (radians): pelvics hang down and out, pectorals swing out behind the gill cover. */
@@ -122,6 +170,8 @@ function finMeshes(art: string, p: Plan, bend: number, edge: EdgeMode) {
 }
 
 const geoCache = new Map<string, THREE.BufferGeometry>();
+/** With `fade` off (before pictures): the session-9 shape, without the body-shape fields and barbels. */
+const shaped = (p: Plan): Plan => (fish3d.fade ? p : { ...p, belly: 0, wide: 0, pedT: undefined, step: 0, noseW: 0, barbels: 0 });
 const matCache = new Map<string, THREE.MeshBasicMaterial>();
 
 /**
@@ -145,9 +195,14 @@ function bledTexture(map: THREE.Texture) {
   const mk = bc.createLinearGradient(c.width * 0.84, 0, c.width * 0.96, 0); mk.addColorStop(0, 'rgba(0,0,0,0)'); mk.addColorStop(1, '#000');
   bc.globalCompositeOperation = 'destination-in'; bc.fillStyle = mk; bc.fillRect(0, 0, c.width, c.height);
   ctx.drawImage(bl, 0, 0);
-  const out = new THREE.CanvasTexture(c); out.colorSpace = map.colorSpace; out.anisotropy = map.anisotropy;
-  return out;
+  const tex = (cv: HTMLCanvasElement) => { const t = new THREE.CanvasTexture(cv); t.colorSpace = map.colorSpace; t.anisotropy = map.anisotropy; return t; };
+  // the blurred copy shown where the surface turns away from the side (see aqPatch)
+  const pl = document.createElement('canvas'); pl.width = c.width; pl.height = c.height;
+  const pc = pl.getContext('2d')!; pc.filter = `blur(${Math.round(c.width * PLAIN_BLUR)}px)`; pc.drawImage(c, 0, 0);
+  return { map: tex(c), plain: tex(pl) };
 }
+/** Blur of the turned-away paint (widths): wider than a bar or band, narrower than a colour field. */
+const PLAIN_BLUR = 0.03;
 
 /** Eye dome texture by angle from the pole (SphereGeometry: top pole = uv.y 1): pupil, iris, then dark rim. */
 function eyeTexture(iris: [string, string]) {
@@ -173,10 +228,12 @@ const fishMat = (key: string, make: () => THREE.MeshBasicMaterial) => {
  * texture (painted without eye, gill and mouth). Geometry is shared per species + bend.
  */
 export function fishBody(art: string, aspect: number, w: number, bend: number, map: THREE.Texture, edge: EdgeMode) {
-  const p = PLANS[art], b = Math.round(bend * 20) / 20, key = `${art}|${aspect}|${b}`;
+  const p = shaped(PLANS[art]), b = Math.round(bend * 20) / 20, key = `${art}|${aspect}|${b}|${fish3d.fade}`;
   let g = geoCache.get(key); if (!g) { g = bodyGeometry(p, aspect, b); geoCache.set(key, g); }
   const grp = new THREE.Group(); grp.scale.setScalar(w);
-  grp.add(new THREE.Mesh(g, fishMat('body:' + map.uuid, () => new THREE.MeshBasicMaterial({ map: bledTexture(map), vertexColors: true }))));
+  grp.add(new THREE.Mesh(g, fishMat(`body:${map.uuid}:${fish3d.fade}`, () => {
+    const t = bledTexture(map), m = new THREE.MeshBasicMaterial({ map: t.map, vertexColors: true }); if (fish3d.fade) m.userData.plain = t.plain; return m;
+  })));
   for (const e of eyePlacements(p, b)) {
     const m = new THREE.Mesh(dome, fishMat('eye:' + art, () => new THREE.MeshBasicMaterial({ map: eyeTexture(e.iris) })));
     m.scale.setScalar(e.r); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), e.n);
@@ -184,5 +241,9 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
     grp.add(m);
   }
   for (const f of finMeshes(art, p, b, edge)) grp.add(f);
+  if (p.barbels) {
+    const mat = fishMat('barbel:' + art, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(p.shade[2]).multiplyScalar(0.85) }));
+    for (const m of barbelMeshes(p, b, mat)) grp.add(m);
+  }
   return grp;
 }

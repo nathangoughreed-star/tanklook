@@ -8,7 +8,9 @@ import type { SubstrateType } from '../scene/types';
 
 import { FIN_A, type Ctx, type Proj, type Pt, blob, body, eye, fin, gill, hexA, rng, soft, style, vgrad } from './paint';
 export { rng } from './paint';
-import { GEN_ART } from './fishgen';
+import { type FinSpec, GEN_ART, PLANS, profile } from './fishgen';
+/** A 3D fish's card body cut-out (widths): this far inside the outline at fin roots (the solid is inset 0.006), this far outside elsewhere. */
+const HOLLOW = 0.012, HOLLOW_OUT = 0.02;
 import { HERP_ART } from './herps';
 
 
@@ -93,13 +95,28 @@ export const FISH_ART: Record<string, (ctx: Ctx, P: Proj, W: number) => void> = 
 };
 
 /** Render a fish card (width W px, height from aspect) into a canvas. Nose points to +x (right). */
-export function drawFishCard(art: string, aspect: number, W = 1024, finA = FIN_A, features = true, paired = true): HTMLCanvasElement {
+export function drawFishCard(art: string, aspect: number, W = 1024, finA = FIN_A, features = true, paired = true, hollow = false): HTMLCanvasElement {
   style.finA = finA; style.features = features; style.paired = paired;
   const c = document.createElement('canvas'), H = Math.round(W * aspect);
   c.width = W; c.height = H;
   const ctx = c.getContext('2d')!; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-  (FISH_ART[art] ?? drawTetra)(ctx, (u, v) => [u * W, H / 2 + v * W], W);
+  ctx.save(); (FISH_ART[art] ?? drawTetra)(ctx, (u, v) => [u * W, H / 2 + v * W], W); ctx.restore(); // art may leave a clip set
   style.finA = FIN_A; style.features = true; style.paired = true;
+  // a 3D fish's card keeps only the fins: cut the body out. Past the outline where no fin is rooted (the card's
+  // painted rim and outline otherwise show as a dark hoop at the edge of the solid seen at an angle), a little inside
+  // it where one is, so the fin roots stay
+  const p = PLANS[art];
+  if (hollow && p) {
+    const prof = profile(p), N = 96, us = Array.from({ length: N + 1 }, (_, i) => p.pedU + (1.02 - p.pedU) * i / N);
+    const rooted = (f: FinSpec | undefined, u: number) => !!f && u > f.u0 - 0.02 && u < f.u1 + 0.02;
+    const top = (u: number) => (u < p.pedU + 0.03 || rooted(p.dorsal, u) || (p.adipose && Math.abs(u - p.pedU - 0.07) < 0.05) ? HOLLOW : -HOLLOW_OUT);
+    const bot = (u: number) => (u < p.pedU + 0.03 || rooted(p.anal, u) ? HOLLOW : -HOLLOW_OUT);
+    const at = (u: number) => prof(Math.min(u, 1));
+    ctx.globalCompositeOperation = 'destination-out'; ctx.beginPath();
+    us.forEach((u, i) => { const v = at(u)[0] + top(u); i ? ctx.lineTo(u * W, H / 2 + v * W) : ctx.moveTo(u * W, H / 2 + v * W); });
+    for (const u of us.reverse()) ctx.lineTo(u * W, H / 2 + (at(u)[1] - bot(u)) * W);
+    ctx.fill(); ctx.globalCompositeOperation = 'source-over';
+  }
   return c;
 }
 

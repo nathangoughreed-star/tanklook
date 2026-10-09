@@ -2,6 +2,31 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Status (2026-10-09, session 10: 3D fish (a) markings + (b) cory shape built, committed, NOT pushed; awaiting Nathan's review)
+
+Deployed first: the other chat's spot-light / size-label commit `305e490` only (pushed `305e490:main`; live on http and
+github.io; HTTPS tanklook.com did not connect from here). The 3D fish commits stay local until Nathan approves.
+Pictures (same four views, LEFT before = session 9, RIGHT after): `shots/48_discus_sheet.png`, `shots/49_cory_sheet.png`;
+cardinal unchanged `shots/48_cardinal_*`. Toggle `__gb.fish3d.fade` (off = session-9 look, for pictures).
+- **(a) Discus "eye-bar ring": root cause was the CARD, not the body texture.** The card's painted body rim (outline +
+  bar) stuck out past the solid and read as a dark hoop at the head seen at an angle. Fix (all 3D species): the card of
+  a 3D fish is cut out (`drawFishCard(..., hollow)`), past the outline where no median fin is rooted, 0.012 inside it
+  at the dorsal / anal / adipose / tail roots. Needed `ctx.save/restore` round the art (an art leaves a clip set).
+- Also general: on the 3D body, paint fades to a blurred copy (`PLAIN_BLUR` 0.03 W) where the surface turns away from
+  the side (`aSide` = |n.z| attribute) and, mildly, where it is seen edge-on (shader, `uPlain`, program key 'p'). Colour
+  fields stay (cardinal red holds), narrow bars and bands go soft. A faint far-flank arc remains near head-on (real).
+- **(b) Cory**: new optional Plan fields, generic for the audit's stress tests (pleco, kuhli): `belly` (boxier lower
+  half), `wide` (section widest low +), `pedT` (thickness at peduncle), `step` (head narrower than trunk from the gill
+  cover), `noseW` (thickness kept to the snout: shovel). Cory: 0.9 / 0.5 / 0.28 / 0.18 / 0.4. Surface lookup is now
+  numeric (`ringPt`, `thetaAt`, `normalAt`), so eyes and fins follow any section shape. 3D barbels: two tapering pairs
+  per side (`barbelMeshes`, from `Plan.barbels`); the card / body texture no longer paints barbels for 3D fish.
+  Not done (time-box): cory-specific dorsal (spine), stronger head step, side-profile changes.
+- **Review pictures tooling**: dev-only `/__shot` endpoint (`scripts/shots-plugin.mjs`, in vite.config) saves PNGs to
+  `shots/`; `scripts/shot-helpers.js` (`views(prefix, species, {zoom, crop, dist, mult})`) shoots the four views
+  before/after, crop centred on the fish. Third dev server `dev-3` (port 5193) in launch.json.
+- **Next (agreed):** Nathan reviews the two sheets; then (d) the audit: 1. card regressions from the global paint
+  changes; 2. (more important) kuhli loach, bristlenose pleco, angelfish in 3D with as little species code as possible.
+
 ## AqAdvisor stocking level (2026-10-09, separate chat; built, NOT committed, proxy NOT deployed)
 
 Nathan wanted "Stocking: 92% (powered by aqadvisor)". Agreed: fetch the number from aqadvisor.com, cite it as

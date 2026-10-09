@@ -12,7 +12,7 @@ import { groundHeight, terrainPoint } from '../scene/terrain';
 import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
 import { addFixture, applyLighting } from './lighting';
 import { layoutGroup } from './layouts';
-import { fishBody, has3D } from './fish3d';
+import { fish3d, fishBody, has3D } from './fish3d';
 import { cardMaterial, fishBodyTexture, fishTexture, gradientTexture, personTexture, snailTexture, substrateTexture } from './textures';
 
 /** Back-wall options; color null = no background (back glass only); light = use dark grid lines. */
@@ -553,8 +553,8 @@ export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: numbe
     if (sp.kind === 'snail') { for (const [m, w, h] of snailMeshes(S, T, f, sp)) register(f, m, w, h); continue; }
     if (!S.water.on && needsWater(sp)) continue; // dry tank: fish stay in the scene data, hidden until the water is back
     const w = fishTL(f, sp), h = w * sp.aspect, p = f;
-    const solid = has3D(sp.art), tex = fishTexture(f.species, S.render.edge, !solid);
-    const m = new THREE.Mesh(cardGeometry(w, h, f.bend), cardMaterial(`fish:${f.species}:${solid}`, tex, S.render.edge));
+    const solid = has3D(sp.art), tex = fishTexture(f.species, S.render.edge, solid, solid && fish3d.fade);
+    const m = new THREE.Mesh(cardGeometry(w, h, f.bend), cardMaterial(`fish:${f.species}:${solid}:${solid && fish3d.fade}`, tex, S.render.edge));
     if (solid) m.add(fishBody(sp.art, sp.aspect, w, f.bend, fishBodyTexture(f.species), S.render.edge)); // solid body + paired fins; the card keeps the median fins
     // bottom dwellers and animals on land rest on the ground wherever they are (their stored height is ignored)
     const y = restsOnGround(S, T, sp, p.x, p.depth, h) ? groundHeight(S, T, p.x, p.depth) + sp.rest * w - 1 : Math.min(p.y, Math.max(0, waterY(T, S.water.level) - h / 2));

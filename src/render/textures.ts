@@ -22,10 +22,13 @@ function cached(key: string, make: () => THREE.Texture) {
   return t;
 }
 
-/** Per edge mode: alpha-to-coverage gets clearer fins (cutout needs fin alpha above its 0.5 test). */
-export const fishTexture = (speciesId: string, edge: EdgeMode = 'cutout', paired = true) => cached(`fish:${speciesId}:${edge}:${paired}`, () => {
+/**
+ * Per edge mode: alpha-to-coverage gets clearer fins (cutout needs fin alpha above its 0.5 test). `solid` = the card
+ * of a 3D fish: only the median fins (paired fins are their own meshes; the body is cut out, as it showed past the solid).
+ */
+export const fishTexture = (speciesId: string, edge: EdgeMode = 'cutout', solid = false, hollow = solid) => cached(`fish:${speciesId}:${edge}:${solid}:${hollow}`, () => {
   const sp = getSpecies(speciesId)!;
-  return finish(drawFishCard(sp.art, sp.aspect, 1024, edge === 'a2c' ? 0.36 : undefined, true, paired));
+  return finish(drawFishCard(sp.art, sp.aspect, 1024, edge === 'a2c' ? 0.36 : undefined, true, !solid, hollow));
 });
 /** The 3D body's texture: the card painting without eye, gill and mouth (fins are hidden inside the solid anyway). */
 export const fishBodyTexture = (speciesId: string) => cached(`fishbody:${speciesId}`, () => {

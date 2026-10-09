@@ -7,7 +7,7 @@ import { type Ctx, type Proj, type Pt, blob, body, eye, fin, gill, hexA, rng, sc
 type Tail = 'fork' | 'notch' | 'round' | 'veil' | 'lyre' | 'double' | 'sword';
 type FinShape = 'tri' | 'round' | 'sail' | 'long';
 /** A fin along the back (dorsal) or belly (anal) from u0 (rear) to u1 (front), h tall (widths). */
-interface FinSpec { u0: number; u1: number; h: number; shape?: FinShape; tint?: string; a?: number; edge?: string }
+export interface FinSpec { u0: number; u1: number; h: number; shape?: FinShape; tint?: string; a?: number; edge?: string }
 type Mark =
   | { k: 'band'; u0: number; u1: number; v0: number; v1: number; c: string; a?: number; f?: number; wave?: number }
   | { k: 'bars'; us: number[]; w: number; c: string; a?: number }
@@ -35,9 +35,13 @@ export interface Plan {
   barbels?: number;   // barbel length (widths); bottom fish
   bristles?: boolean; // bristlenose snout
   rim?: number;
-  thick?: number;
+  thick?: number;     // 3D: max body thickness / max body depth (laterally compressed < 0.5 < rounder)
+  // 3D body shape (all optional): flat belly 0..1; cross-section widest low (+) or high (-); thickness at the peduncle
+  // (share, default 0.55); head this share narrower than the trunk from the gill cover on; thickness kept to the snout
+  // tip (share of max: a flat, wide snout)
+  belly?: number; wide?: number; pedT?: number; step?: number; noseW?: number;
   scale?: number;     // scale size (widths) for the scale net; 0 = none (default 0.024)
-  plates?: boolean;   // armoured (corydoras): two rows of bony plates instead of scales     // 3D: max body thickness / max body depth (laterally compressed < 0.5 < rounder)
+  plates?: boolean;   // armoured (corydoras): two rows of bony plates instead of scales
 }
 
 export function profile(p: Plan) {
@@ -195,7 +199,7 @@ export function drawPlan(p: Plan, ctx: Ctx, P: Proj, W: number) {
   });
   // pectoral fin: faint fan behind the gill cover
   if (style.paired) drawPairedFin(paired[paired.length - 1], ctx, P, W, ray);
-  if (p.barbels) {
+  if (p.barbels && style.paired) { // style.paired off = painted for the 3D pipeline, which has its own barbels
     const nb = g.prof(0.975)[1]; ctx.strokeStyle = hexA('#8b7b63', 0.9); ctx.lineWidth = 0.005 * W;
     for (const k of [0, 1]) {
       const [x0, y0] = P(0.985 - k * 0.012, nb - 0.004), [x1, y1] = P(0.96 - k * 0.02 - p.barbels * 0.3, nb + p.barbels);
@@ -318,7 +322,7 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { u0: 0.42, u1: 0.68, h: 0.14, shape: 'round', a: 0.75 }, anal: { u0: 0.38, u1: 0.48, h: 0.1, shape: 'round', a: 0.75 }, pelvic: { u: 0.7, len: 0.1 },
     marks: [{ k: 'blob', u: 0.65, v: -0.08, ru: 0.2, rv: 0.14, c: '#ffffff', a: 0.12 }], eye: { r: 0.035, iris: ['#2a2420', '#0a0806'] } },
   // ---------- bottom dwellers ----------
-  bronzecory: { plates: true, thick: 0.72, depth: 0.35, pedU: 0.18, ped: 0.06, peak: 0.6, back: 0.68, snout: 0.6, mouth: 0.06, shade: ['#4a5a48', '#8a8a62', '#d8c8a0'], tail: { type: 'fork', h: 0.15 }, fin: '#b0a888',
+  bronzecory: { plates: true, thick: 0.72, belly: 0.9, wide: 0.5, pedT: 0.28, step: 0.18, noseW: 0.4, depth: 0.35, pedU: 0.18, ped: 0.06, peak: 0.6, back: 0.68, snout: 0.6, mouth: 0.06, shade: ['#4a5a48', '#8a8a62', '#d8c8a0'], tail: { type: 'fork', h: 0.15 }, fin: '#b0a888',
     dorsal: { u0: 0.5, u1: 0.68, h: 0.16, shape: 'sail' }, anal: { u0: 0.32, u1: 0.4, h: 0.06 }, adipose: true, pelvic: { u: 0.55, len: 0.08 },
     marks: [{ k: 'blob', u: 0.6, v: -0.04, ru: 0.25, rv: 0.08, c: '#5a8070', a: 0.45 }], barbels: 0.03, eye: { r: 0.032, iris: ['#c8b890', '#3a3020'], dv: -0.05 } },
   pandacory: { depth: 0.35, pedU: 0.18, ped: 0.06, peak: 0.6, back: 0.68, snout: 0.6, mouth: 0.06, shade: ['#c8c0b0', '#e8e0d0', '#f0ebe0'], tail: { type: 'fork', h: 0.15 }, fin: '#d8d2c4',

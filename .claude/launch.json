@@ -28,6 +28,19 @@
       "port": 5183
     },
     {
+      "name": "dev-3",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5193",
+        "--strictPort"
+      ],
+      "port": 5193
+    },
+    {
       "name": "preview",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
@@ -53,6 +66,30 @@
         "dist-single"
       ],
       "port": 4174
+    },
+    {
+      "name": "aq-proxy",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "worker/dev.mjs",
+        "8787"
+      ],
+      "port": 8787
+    },
+    {
+      "name": "dev-aq",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5203",
+        "--strictPort",
+        "--mode",
+        "aq"
+      ],
+      "port": 5203
     }
   ]
 }
