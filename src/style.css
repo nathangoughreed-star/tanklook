@@ -123,6 +123,13 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 .lab a.aq { pointer-events: auto; color: #fff; text-decoration: none; padding-left: 8px; border-left: 1px solid rgba(255, 255, 255, .3) }
 .lab a.aq:hover { text-decoration: underline } .lab a.aq.over { color: #ff8a80 }
 .lab.tab a.aq { padding-left: 0; border-left: 0 }
+.lab .aqwrap { display: inline-flex; align-items: center; gap: 4px }
+.lab .aq.none { color: rgba(255, 255, 255, .65); padding-left: 8px; border-left: 1px solid rgba(255, 255, 255, .3) }
+.lab.tab .aq.none { padding-left: 0; border-left: 0 }
+.lab a.aq.stale { color: #ffd54f }
+.lab .aqre { pointer-events: auto; font: inherit; font-size: 12px; line-height: 1; color: #fff; background: rgba(255, 255, 255, .14); border: 0; border-radius: 3px; padding: 2px 5px; cursor: pointer }
+.lab .aqre:hover { background: rgba(255, 255, 255, .28) } .lab .aqre:disabled { opacity: .5; cursor: default }
+.lab .aqre.stale { color: #000; background: #ffd54f } .lab .aqre.stale:hover { background: #ffe082 }
 /* split view: each view's tab lists what differs from the other tank, close at the bottom */
 .lab.tab { pointer-events: auto; white-space: normal; padding: 5px 8px; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; border: 2px solid transparent } /* the border turns blue while the view is being edited */
 .lab.tab.on { border-color: var(--accent); background: rgba(0, 0, 0, .7) }

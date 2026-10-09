@@ -454,12 +454,6 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // down twice within an hour of automatic checks, 2026-10-09). Answers kept per tank + stocking here, and cached 7 days by
   // the proxy; shown in the sidebar and in the size label above the tank.
   const aqDone = new Map<string, number>(), aqBusy = new Set<string>(), aqErr = new Map<string, string>();
-  /** Label above one tank: 'Stocking 72% (AqAdvisor)' once checked, '' otherwise. */
-  const aqLabel = (s: TankSetup) => {
-    const q = AQ_PROXY ? aqQuery(s) : null, got = q ? aqDone.get(aqKey(q)) : undefined;
-    if (!q || got === undefined) return { text: '', url: '', over: false };
-    return { text: `Stocking ${got}% (AqAdvisor)`, url: aqAdvisorUrl(q), over: got > 100 };
-  };
   function syncAq() {
     const q = aqQuery(S());
     $('aqRow').style.display = q ? '' : 'none';
@@ -475,17 +469,24 @@ export function attachPanels(store: Store, viewer: Viewer) {
       q.standIns.length ? `Counted as a similar fish (not in AqAdvisor): ${q.standIns.map(k => `${k.count} ${k.name} as ${k.as}`).join(', ')}.` : '',
       q.skipped.length ? `Not counted (land animals): ${q.skipped.map(k => `${k.count} ${k.name}`).join(', ')}.` : ''].filter(Boolean).join(' ');
   }
-  /** Check: one request for the tank being edited. A failure is shown and can be retried; it is not remembered. */
-  $('aqCheck').onclick = async () => {
-    const q = aqQuery(S());
+  /** The last answer each view (by its key, A/B) showed, so a change to the fish or the tank keeps the old number,
+   *  in yellow, until ↻ is pressed (Nathan 2026-10-09). */
+  const aqLast = new Map<string, number>();
+  /** Check: one request for one tank. A failure is shown and can be retried; it is not remembered. An answer already
+   *  known is not asked again. */
+  const aqCheck = async (s: TankSetup) => {
+    const q = aqQuery(s);
     if (!q || !AQ_PROXY) return;
     const key = aqKey(q);
-    if (aqDone.has(key) || aqBusy.has(key)) return;
-    aqBusy.add(key); aqErr.delete(key); syncAq();
-    try { aqDone.set(key, await fetchStocking(q, AbortSignal.timeout(12000))); }
+    const keep = () => { for (const v of viewer.active) { const vq = aqQuery(v.S); if (vq && aqKey(vq) === key) aqLast.set(v.key, aqDone.get(key)!); } };
+    if (aqDone.has(key)) { keep(); viewer.invalidate(); return; }
+    if (aqBusy.has(key)) return;
+    aqBusy.add(key); aqErr.delete(key); syncAq(); viewer.invalidate();
+    try { aqDone.set(key, await fetchStocking(q, AbortSignal.timeout(12000))); keep(); }
     catch (e) { aqErr.set(key, e instanceof Error && e.message === 'proxy 429' ? 'busy, try again in a minute' : "AqAdvisor didn't answer, try later"); }
     aqBusy.delete(key); syncAq(); viewer.invalidate();
   };
+  $('aqCheck').onclick = () => aqCheck(S());
 
   function sync() {
     const s = S(), A = s.tank, u = G().units;
@@ -626,16 +627,27 @@ export function attachPanels(store: Store, viewer: Viewer) {
 
   // ---------- after each draw: viewport labels + readout (same frame as the render) ----------
   let tabSig = '';
-  /** The stocking link shown in a view's label, or '' when there is nothing to show. */
-  const aqLink = (s: TankSetup) => {
-    const aq = aqLabel(s);
-    return aq.text ? `<a class="aq${aq.over ? ' over' : ''}" href="${esc(aq.url)}" target="_blank" rel="noopener" title="AqAdvisor's stocking level for this tank (aqadvisor.com); click for the full report">${esc(aq.text)}</a>` : '';
+  /** The stocking level in a view's label, always there (Nathan 2026-10-09): a hint with no fish; the AqAdvisor answer
+   *  with ↻ to ask again; the last answer in yellow once the fish or the tank have changed since it was asked. */
+  const aqChip = (s: TankSetup, slot: string, i: number) => {
+    const q = aqQuery(s);
+    if (!q) return `<span class="aq none">${!s.fish.length ? 'Add fish to show stocking level' : !s.water.on ? 'Add water to show stocking level' : 'No fish AqAdvisor can count'}</span>`;
+    const url = esc(aqAdvisorUrl(q));
+    if (!AQ_PROXY) return `<a class="aq" href="${url}" target="_blank" rel="noopener" title="This tank's stocking on aqadvisor.com">Stocking on AqAdvisor ↗</a>`;
+    const key = aqKey(q), got = aqDone.get(key), last = aqLast.get(slot), busy = aqBusy.has(key);
+    const stale = got === undefined && last !== undefined;
+    const re = `<button class="aqre${stale ? ' stale' : ''}" data-aq="${i}"${busy ? ' disabled' : ''} title="${stale ? 'The fish or the tank changed since this was checked: click to refresh the stocking level' : got === undefined ? 'Ask AqAdvisor for this tank’s stocking level' : 'Refresh the stocking level'}" aria-label="Refresh stocking level">↻</button>`;
+    const pct = got ?? last;
+    const text = busy ? 'Stocking: checking…' : pct !== undefined ? `Stocking ${pct}% (AqAdvisor)` : aqErr.get(key) ?? 'Stocking: not checked';
+    const cls = `aq${stale ? ' stale' : pct !== undefined && pct > 100 ? ' over' : ''}`;
+    const tip = stale ? 'Out of date: the fish or the tank changed since this was checked. Press ↻ to refresh.' : 'AqAdvisor’s stocking level for this tank (aqadvisor.com); click for the full report';
+    return `<span class="aqwrap"><a class="${cls}" href="${url}" target="_blank" rel="noopener" title="${tip}">${esc(text)}</a>${re}</span>`;
   };
   viewer.onDrawn(() => {
     const g = G(), active = viewer.active, split = active.length > 1;
     const diff = split ? tankDiff(g.tanks[0], g.tanks[1], g.units) : [];
     const hidden = $('app').classList.contains('collapsed');
-    const sig = JSON.stringify([diff, hidden, g.units, g.active, store.targets, g.camLock, active.map(v => [v.x, v.w]), split || fmtDims(g.tanks[0].tank, g.units), active.map(v => aqLabel(v.S))]);
+    const sig = JSON.stringify([diff, hidden, g.units, g.active, store.targets, g.camLock, active.map(v => [v.x, v.w]), split || fmtDims(g.tanks[0].tank, g.units), active.map((v, i) => aqChip(v.S, v.key, i))]);
     if (sig !== tabSig) {
       tabSig = sig;
       for (const [i, id] of [[0, 'labA'], [1, 'labB']] as const) {
@@ -647,7 +659,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
         const ed = store.isEditing(i);
         el.classList.toggle('tab', split); el.classList.toggle('on', split && ed);
         if (!split) { // one tank: its size, and the way into a side-by-side comparison
-          el.innerHTML = `<span>${esc(fmtSize(vp.T, g.units))}</span>` + aqLink(vp.S) + `<button class="close" data-split title="Copy this tank into a second, independent one beside it">⧉ Split to compare</button>`;
+          el.innerHTML = `<span>${esc(fmtSize(vp.T, g.units))}</span>` + aqChip(vp.S, vp.key, i) + `<button class="close" data-split title="Copy this tank into a second, independent one beside it">⧉ Split to compare</button>`;
           continue;
         }
         // the "Edit" box: the panel's changes apply to every view ticked here
@@ -658,7 +670,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
         // no labels) and Save, Delete flowing together, wrapping only when the view is too narrow.
         // The second row stays folded until the tab is hovered (Nathan 2026-10-09); the ▾ hint carries the count.
         const hint = `<span class="more" aria-hidden="true">${diff.length ? `${diff.length} diff${diff.length === 1 ? '' : 's'} ` : ''}▾</span>`;
-        el.innerHTML = `<div class="hd">${aqLink(vp.S)}${hint}${box}</div>` + `<div class="diffs">${diff.map((d, k) => `<span>${esc(d[i])}<button class="match" data-match="${i},${k}" title="Make Tank ${vp.key} match Tank ${active[1 - i].key} here" aria-label="Match the other tank: ${esc(d[i])}">×</button></span>`).join('')}` +
+        el.innerHTML = `<div class="hd">${aqChip(vp.S, vp.key, i)}${hint}${box}</div>` + `<div class="diffs">${diff.map((d, k) => `<span>${esc(d[i])}<button class="match" data-match="${i},${k}" title="Make Tank ${vp.key} match Tank ${active[1 - i].key} here" aria-label="Match the other tank: ${esc(d[i])}">×</button></span>`).join('')}` +
           `<div class="acts"><button class="close" data-save="${i}" title="Save Tank ${vp.key} on its own as a single-tank file">Save</button>` +
           `<button class="close" data-delete="${i}" title="Delete Tank ${vp.key} and end the split view (Ctrl+Z brings it back)">Delete</button></div></div>`;
       }
@@ -684,6 +696,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
   });
   for (const id of ['labA', 'labB']) $(id).addEventListener('click', e => {
     if ((e.target as HTMLElement).closest('[data-split]')) { $('split').click(); return; }
+    const re = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-aq]');
+    if (re) { const vp = viewer.active[+re.dataset.aq!]; if (vp) void aqCheck(vp.S); return; }
     const sv = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-save]');
     if (sv) { saveTank(+sv.dataset.save!); return; }
     const mt = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-match]');
