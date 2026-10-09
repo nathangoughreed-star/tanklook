@@ -112,6 +112,7 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 .lab button { pointer-events: auto }
 .lab a.aq { pointer-events: auto; color: #fff; text-decoration: none; padding-left: 8px; border-left: 1px solid rgba(255, 255, 255, .3) }
 .lab a.aq:hover { text-decoration: underline } .lab a.aq.over { color: #ff8a80 }
+.lab.tab a.aq { padding-left: 0; border-left: 0 }
 /* split view: each view's tab lists what differs from the other tank, close at the bottom */
 .lab.tab { pointer-events: auto; white-space: normal; padding: 5px 8px; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; border: 1px solid transparent }
 .lab.tab.on { border-color: var(--accent); background: rgba(0, 0, 0, .7) }

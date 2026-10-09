@@ -435,11 +435,11 @@ export function attachPanels(store: Store, viewer: Viewer) {
 
   // ---------- Stocking level from AqAdvisor: fetched by itself ~1 s after the stocking or tank size settles ----------
   // (answers kept per tank + stocking here, and cached 7 days by the proxy). Shown in the size label above the tank.
-  const aqDone = new Map<string, number | 'error'>();
-  let aqBusy = '', aqTimer = 0;
-  /** Label text for the edited tank: 'Stocking 72% (AqAdvisor)', '…' while asking, '' when there is nothing to show. */
-  const aqLabel = () => {
-    const q = AQ_PROXY ? aqQuery(S()) : null;
+  const aqDone = new Map<string, number | 'error'>(), aqBusy = new Set<string>();
+  const aqWait = ['', ''], aqTimer = [0, 0]; // per tank slot: the stocking key waiting out its 1 s, and its timer
+  /** Label text for one tank: 'Stocking 72% (AqAdvisor)', '…' while asking, '' when there is nothing to show. */
+  const aqLabel = (s: TankSetup) => {
+    const q = AQ_PROXY ? aqQuery(s) : null;
     if (!q) return { text: '', url: '', over: false };
     const key = aqKey(q), got = aqDone.get(key);
     return { text: typeof got === 'number' ? `Stocking ${got}% (AqAdvisor)` : got === 'error' ? 'Stocking: AqAdvisor ↗' : 'Stocking …',
@@ -457,16 +457,21 @@ export function attachPanels(store: Store, viewer: Viewer) {
     $('aqNote').textContent = [
       q.standIns.length ? `Counted as a similar fish (not in AqAdvisor): ${q.standIns.map(k => `${k.count} ${k.name} as ${k.as}`).join(', ')}.` : '',
       q.skipped.length ? `Not counted (land animals): ${q.skipped.map(k => `${k.count} ${k.name}`).join(', ')}.` : ''].filter(Boolean).join(' ');
-    if (AQ_PROXY && got === undefined && aqBusy !== key) {
-      clearTimeout(aqTimer);
-      aqTimer = window.setTimeout(async () => {
-        const q2 = aqQuery(S());
-        if (!q2 || aqKey(q2) !== key) return; // changed again; that change schedules its own
-        aqBusy = key;
-        try { aqDone.set(key, await fetchStocking(q2)); } catch { aqDone.set(key, 'error'); }
-        aqBusy = ''; syncAq(); viewer.invalidate();
-      }, 1000);
-    }
+    G().tanks.forEach((_, i) => aqWant(i));
+  }
+  /** Asks AqAdvisor about tank slot i once its stocking has held still for 1 s (both tanks in a split view). */
+  function aqWant(i: number) {
+    const s = G().tanks[i], q = AQ_PROXY && s ? aqQuery(s) : null, key = q ? aqKey(q) : '';
+    if (!key || aqDone.has(key) || aqBusy.has(key) || aqWait[i] === key) return;
+    clearTimeout(aqTimer[i]); aqWait[i] = key;
+    aqTimer[i] = window.setTimeout(async () => {
+      aqWait[i] = '';
+      const s2 = G().tanks[i], q2 = s2 ? aqQuery(s2) : null;
+      if (!q2 || aqKey(q2) !== key || aqDone.has(key) || aqBusy.has(key)) return; // changed again; that change schedules its own
+      aqBusy.add(key);
+      try { aqDone.set(key, await fetchStocking(q2)); } catch { aqDone.set(key, 'error'); }
+      aqBusy.delete(key); syncAq(); viewer.invalidate();
+    }, 1000);
   }
 
   function sync() {
@@ -607,11 +612,16 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // ---------- after each draw: viewport labels + readout (same frame as the render) ----------
   let tabSig = '';
   const tabHidden = [false, false]; // × Close only folds a view's tab away; a small button brings it back
+  /** The stocking link shown in a view's label, or '' when there is nothing to show. */
+  const aqLink = (s: TankSetup) => {
+    const aq = aqLabel(s);
+    return aq.text ? `<a class="aq${aq.over ? ' over' : ''}" href="${esc(aq.url)}" target="_blank" rel="noopener" title="AqAdvisor's stocking level for this tank (aqadvisor.com); click for the full report">${esc(aq.text)}</a>` : '';
+  };
   viewer.onDrawn(() => {
     const g = G(), active = viewer.active, split = active.length > 1;
     const diff = split ? tankDiff(g.tanks[0], g.tanks[1], g.units) : [];
     const hidden = $('app').classList.contains('collapsed');
-    const sig = JSON.stringify([diff, tabHidden, hidden, g.units, g.active, store.targets, g.camLock, active.map(v => [v.x, v.w]), split || fmtDims(g.tanks[0].tank, g.units), split || aqLabel()]);
+    const sig = JSON.stringify([diff, tabHidden, hidden, g.units, g.active, store.targets, g.camLock, active.map(v => [v.x, v.w]), split || fmtDims(g.tanks[0].tank, g.units), active.map(v => aqLabel(v.S))]);
     if (sig !== tabSig) {
       tabSig = sig;
       for (const [i, id] of [[0, 'labA'], [1, 'labB']] as const) {
@@ -623,8 +633,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
         const ed = store.isEditing(i);
         el.classList.toggle('tab', split); el.classList.toggle('on', split && ed);
         if (!split) { // one tank: its size, and the way into a side-by-side comparison
-          const aq = aqLabel();
-          el.innerHTML = `<span>${esc(fmtSize(vp.T, g.units))}</span>` + (aq.text ? `<a class="aq${aq.over ? ' over' : ''}" href="${esc(aq.url)}" target="_blank" rel="noopener" title="AqAdvisor's stocking level for this tank (aqadvisor.com); click for the full report">${esc(aq.text)}</a>` : '') + `<button class="close" data-split title="Copy this tank into a second, independent one beside it">⧉ Split to compare</button>`;
+          el.innerHTML = `<span>${esc(fmtSize(vp.T, g.units))}</span>` + aqLink(vp.S) + `<button class="close" data-split title="Copy this tank into a second, independent one beside it">⧉ Split to compare</button>`;
           continue;
         }
         // the "Edit" box: the panel's changes apply to every view ticked here
@@ -636,7 +645,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
           continue;
         }
         // only what differs (nothing = the same tank, no labels); Save, Delete, Close (hide) at the bottom
-        el.innerHTML = box + (diff.length ? `<div class="diffs">${diff.map((d, k) => `<span>${esc(d[i])}<button class="match" data-match="${i},${k}" title="Make Tank ${vp.key} match Tank ${active[1 - i].key} here" aria-label="Match the other tank: ${esc(d[i])}">×</button></span>`).join('')}</div>` : '') +
+        el.innerHTML = box + aqLink(vp.S) + (diff.length ? `<div class="diffs">${diff.map((d, k) => `<span>${esc(d[i])}<button class="match" data-match="${i},${k}" title="Make Tank ${vp.key} match Tank ${active[1 - i].key} here" aria-label="Match the other tank: ${esc(d[i])}">×</button></span>`).join('')}</div>` : '') +
           `<div class="acts"><button class="close" data-save="${i}" title="Save Tank ${vp.key} on its own as a single-tank file">Save</button>` +
           `<button class="close" data-delete="${i}" title="Delete Tank ${vp.key} and end the split view (Ctrl+Z brings it back)">Delete</button>` +
           `<button class="close" data-close="${i}" title="Hide this tab (the tank stays)" aria-label="Hide Tank ${vp.key}'s tab">× Close</button></div>`;
