@@ -18,8 +18,15 @@ Order, one work unit per chat:
    view of tiger barb, harlequin, clown loach, GBR, danio, dwarf gourami: all six draw in 3D, flank colours read like
    the cards, no white pectoral blades, no see-through. Main is local only, NOT pushed. Branches `fix-canvas-alpha`,
    `audit-3d` and their worktrees still exist (safe to delete).
-3. Head-on marking wrapping: a GENERIC surface-mapping fix (not per species).
-4. Verify it on discus, tiger barb, clown loach, harlequin (same four views).
+3. BUILT 2026-10-09 (session 14; uncommitted, awaiting Nathan's verdict): head-on marking wrapping, generic. Where
+   the body turns away from the side, the paint fades to a copy smeared LENGTHWISE (`bledTexture`, two box passes of
+   `SMEAR` 0.08 W, then the old round blur) instead of only the round blur, and the fade starts earlier (`SIDE`
+   |n.z| 0.45..0.9, was 0.3..0.75; shader uniform `uSide`). Bar contrast on the turned-away copy (row through the bars,
+   luminance min..max): clown loach 84..165 -> 125..150, tiger barb 109..180 -> 150..157. Switch `fish3d.wrap` (off
+   = before). Flank views unchanged. Tests 132/132.
+   Shot helper updated: one tank, no hardscape, `crop: 'fit'` frames the fish by its projected box; `wrapViews`.
+4. Verify it on discus, tiger barb, clown loach, harlequin (same four views): sheets `shots/61_<species>_sheet.png`
+   (top row before, bottom after). Awaiting Nathan.
 5. Roll 3D out to the remaining fish, flat cards kept as fallbacks until each passes review.
 
 ## Hardscape system: roadmap steps 3 + 4 built (2026-10-09, session 13; committed and pushed, checked in the browser)

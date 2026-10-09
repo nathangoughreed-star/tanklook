@@ -8,8 +8,8 @@ import { PLANS, eyeSpot, pairedFins, profile, type Plan } from '../art/fishgen';
 import type { EdgeMode } from '../scene/types';
 import { cardMaterial, pairedFinTexture } from './textures';
 
-/** Species drawn in 3D (test set) and switches for before/after pictures. `fade` = the session-10 fixes (turned-away paint fades, card body cut out, body-shape fields, barbels); off = session 9, for pictures. */
-export const fish3d = { on: true, fade: true, species: new Set(['cardinal', 'discus', 'bronzecory', 'tigerbarb', 'bristlenose', 'kuhli', 'angel', 'danio', 'guppy', 'dwarfgourami', 'gbr', 'harlequin', 'oto', 'clownloach', 'goldfish']) };
+/** Species drawn in 3D (test set) and switches for before/after pictures. `fade` = the session-10 fixes (turned-away paint fades, card body cut out, body-shape fields, barbels); off = session 9, for pictures. `wrap` = the turned-away paint is smeared lengthwise (bars and spots don't close into hoops over the back and throat); off = session 11's round blur. */
+export const fish3d = { on: true, fade: true, wrap: true, species: new Set(['cardinal', 'discus', 'bronzecory', 'tigerbarb', 'bristlenose', 'kuhli', 'angel', 'danio', 'guppy', 'dwarfgourami', 'gbr', 'harlequin', 'oto', 'clownloach', 'goldfish', 'ember', 'rummynose', 'chili', 'cherrybarb', 'platy', 'molly', 'swordtail', 'betta', 'honeygourami', 'bolivianram', 'kribensis', 'oscar', 'pandacory', 'sae']) };
 
 export const has3D = (art: string) => fish3d.on && fish3d.species.has(art) && PLANS[art]?.thick != null;
 
@@ -202,11 +202,28 @@ function bledTexture(map: THREE.Texture) {
   const tex = (cv: HTMLCanvasElement) => { const t = new THREE.CanvasTexture(cv); t.colorSpace = map.colorSpace; t.anisotropy = map.anisotropy; return t; };
   // the blurred copy shown where the surface turns away from the side (see aqPatch)
   const pl = document.createElement('canvas'); pl.width = c.width; pl.height = c.height;
-  const pc = pl.getContext('2d')!; pc.filter = `blur(${Math.round(c.width * PLAIN_BLUR)}px)`; pc.drawImage(c, 0, 0);
+  const pc = pl.getContext('2d')!;
+  if (fish3d.wrap) {
+    // lengthwise: two box averages along the body, so markings across it (bars, spots) dissolve into the colour
+    // around them while lengthwise fields and stripes stay; then the round blur as before
+    const n = 16, r = c.width * SMEAR;
+    let src: HTMLCanvasElement = c;
+    for (let pass = 0; pass < 2; pass++) {
+      const acc = document.createElement('canvas'); acc.width = c.width; acc.height = c.height;
+      const ac = acc.getContext('2d')!;
+      for (let k = 0; k < n; k++) { ac.globalAlpha = 1 / (k + 1); ac.drawImage(src, Math.round(-r + 2 * r * k / (n - 1)), 0); }
+      src = acc;
+    }
+    pc.filter = `blur(${Math.round(c.width * PLAIN_BLUR)}px)`; pc.drawImage(src, 0, 0);
+  } else { pc.filter = `blur(${Math.round(c.width * PLAIN_BLUR)}px)`; pc.drawImage(c, 0, 0); }
   return { map: tex(c), plain: tex(pl) };
 }
 /** Blur of the turned-away paint (widths): wider than a bar or band, narrower than a colour field. */
 const PLAIN_BLUR = 0.03;
+/** Lengthwise smear of the turned-away paint (box half-width, widths; applied twice): wider than any bar or spot. */
+const SMEAR = 0.08;
+/** How squarely the surface must face the side (|normal.z|) before the sharp paint shows: the plain copy below x, the paint above y. */
+const SIDE = new THREE.Vector2(0.45, 0.9);
 
 /** Eye dome texture by angle from the pole (SphereGeometry: top pole = uv.y 1): pupil, iris, then dark rim. */
 function eyeTexture(iris: [string, string]) {
@@ -235,8 +252,8 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
   const p = shaped(PLANS[art]), b = Math.round(bend * 20) / 20, key = `${art}|${aspect}|${b}|${fish3d.fade}`;
   let g = geoCache.get(key); if (!g) { g = bodyGeometry(p, aspect, b); geoCache.set(key, g); }
   const grp = new THREE.Group(); grp.scale.setScalar(w);
-  grp.add(new THREE.Mesh(g, fishMat(`body:${map.uuid}:${fish3d.fade}`, () => {
-    const t = bledTexture(map), m = new THREE.MeshBasicMaterial({ map: t.map, vertexColors: true }); if (fish3d.fade) m.userData.plain = t.plain; return m;
+  grp.add(new THREE.Mesh(g, fishMat(`body:${map.uuid}:${fish3d.fade}:${fish3d.wrap}`, () => {
+    const t = bledTexture(map), m = new THREE.MeshBasicMaterial({ map: t.map, vertexColors: true }); if (fish3d.fade) { m.userData.plain = t.plain; m.userData.side = fish3d.wrap ? SIDE : new THREE.Vector2(0.3, 0.75); } return m;
   })));
   for (const e of eyePlacements(p, b)) {
     const m = new THREE.Mesh(dome, fishMat('eye:' + art, () => new THREE.MeshBasicMaterial({ map: eyeTexture(e.iris) })));

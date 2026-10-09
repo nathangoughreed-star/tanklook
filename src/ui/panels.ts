@@ -743,9 +743,11 @@ export function attachPanels(store: Store, viewer: Viewer) {
     // hidden once this tank's current answer is shown
     const re = got !== undefined ? '' : `<button class="aqre${stale ? ' stale' : ''}" data-aq="${i}"${busy ? ' disabled' : ''} title="${stale ? 'The fish or the tank changed since this was checked: click to refresh the stocking level' : 'Ask AqAdvisor for this tank’s stocking level'}" aria-label="Refresh stocking level">↻</button>`;
     const pct = got ?? last;
-    const text = busy ? `Stocking: ${aqWaitText(key)}` : pct !== undefined ? `Stocking ${pct}% (AqAdvisor)` : aqErr.get(key) ?? 'Stocking: not checked';
+    // a failed refresh says so, next to the old number it could not replace (it used to hide behind it)
+    const err = aqErr.get(key);
+    const text = busy ? `Stocking: ${aqWaitText(key)}` : pct !== undefined ? `Stocking ${pct}% (AqAdvisor)${err ? `, not updated: ${err}` : ''}` : err ?? 'Stocking: not checked';
     const cls = `aq${stale ? ' stale' : pct !== undefined && pct > 100 ? ' over' : ''}`;
-    const tip = stale ? 'Out of date: the fish or the tank changed since this was checked. Press ↻ to refresh.' : 'AqAdvisor’s stocking level for this tank (aqadvisor.com); click for the full report';
+    const tip = stale && err ? `Out of date, and the refresh failed (${err}). This is the level before the last change.` : stale ? 'Out of date: the fish or the tank changed since this was checked. Press ↻ to refresh.' : 'AqAdvisor’s stocking level for this tank (aqadvisor.com); click for the full report';
     return `<span class="aqwrap"><a class="${cls}" href="${url}" target="_blank" rel="noopener" title="${tip}">${esc(text)}</a>${re}</span>`;
   };
   viewer.onDrawn(() => {

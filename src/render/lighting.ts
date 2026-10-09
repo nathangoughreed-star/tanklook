@@ -219,17 +219,19 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
       '#include <opaque_fragment>')
     .replace('#include <map_fragment>', AQ_MAP);
   // 3D fish body: the side projection smears where the surface turns away from the side (front of the head, back,
-  // belly), so there the paint fades to a blurred copy: colour fields stay, narrow bars and bands go soft;
+  // belly), so there the paint fades to a copy smeared lengthwise (fish3d `bledTexture`): colour fields and lengthwise
+  // stripes stay, bars and spots dissolve instead of closing into hoops over the nape and throat (range: `uSide`);
   // and the same where the surface is seen edge-on (a thin body shows its far flank past the head, where both flanks'
   // bars would line up into a ring)
   if (this.userData.plain) {
     (shader.uniforms as Record<string, THREE.IUniform>).uPlain = { value: this.userData.plain };
+    (shader.uniforms as Record<string, THREE.IUniform>).uSide = { value: this.userData.side ?? new THREE.Vector2(0.3, 0.75) };
     shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\nattribute float aSide; varying float vAqSide;')
       .replace('#include <begin_vertex>', '#include <begin_vertex>\nvAqSide = aSide;');
-    shader.fragmentShader = shader.fragmentShader.replace('#include <common>', '#include <common>\nuniform sampler2D uPlain; varying float vAqSide;')
+    shader.fragmentShader = shader.fragmentShader.replace('#include <common>', '#include <common>\nuniform sampler2D uPlain; uniform vec2 uSide; varying float vAqSide;')
       .replace('vec4 aqTex = texture2D(map, vMapUv);',
       'float aqG = abs(dot(normalize(vAqN), normalize(cameraPosition - vAqP)));\n' +
-      'vec4 aqTex = mix(texture2D(uPlain, vMapUv), texture2D(map, vMapUv), smoothstep(0.3, 0.75, vAqSide) * smoothstep(0.08, 0.3, aqG));');
+      'vec4 aqTex = mix(texture2D(uPlain, vMapUv), texture2D(map, vMapUv), smoothstep(uSide.x, uSide.y, vAqSide) * smoothstep(0.08, 0.3, aqG));');
   }
 }
 // one cache key per material kind keeps one compiled program per kind
