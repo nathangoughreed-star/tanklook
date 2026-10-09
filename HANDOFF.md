@@ -21,8 +21,48 @@ checked in the browser (dev server `dev` on 5173), shots `shots/28_table_*`.
   either). Add drag later if the sliders feel clumsy.
 - Not checked: split view with two tables; PNG export with a table.
 
-**NEXT:** phase 3
-(exact lighting water path for shaped tanks, layouts tuned per shape).
+**NEXT:** roadmap step 1, the 3D fish style test (see "Roadmap (2026-10-09)" below). Tank shapes phase 3 (exact
+lighting water path for shaped tanks, layouts tuned per shape) is still open; "layouts tuned per shape" folds into
+roadmap step 3, where layouts become starter sets.
+
+## Roadmap (2026-10-09, agreed with Nathan)
+
+Nathan's goals: better-looking fish and plants; custom placement from a large library of hardscape (rock, caves,
+wood) and plant species; more animals, including saltwater. **Static render only, still no animation.**
+
+**Decision: fully 3D fish, built from the existing parametric body plan (`src/art/fishgen.ts`), not sourced models.**
+- Performance is not a concern: about 2-4 k triangles per fish, so even a 200-fish tank stays under 1 M triangles. Build
+  each species' geometry once, cache it and share it (InstancedMesh or a shared BufferGeometry); never regenerate it
+  per rebuild (the scene rebuilds on every drag step). The `aqPatch` lighting (`onBeforeCompile` in
+  `render/lighting.ts`) applies to any material, so 3D fish get the water lighting unchanged.
+- Method: loft a body from the side profile with a width per station (add width to `Plan`); project the painted side
+  texture onto both flanks; fins stay thin membranes (a2c, one alpha per fin). Nose-to-tail stays exactly adult TL.
+  A static pose (curved body, tilt) becomes possible.
+- Rejected: downloaded or bought glTF models (blocked by the art provenance policy, inconsistent style, the single file
+  grows from about 0.57 MB to several MB, sourcing every species forever); AI-generated 3D (unclear rights, uneven
+  quality).
+
+**Reversal (Nathan 2026-10-09): custom hardscape and plant placement is now wanted** (replaces the 2026-10-08 call
+"layouts are presets only").
+- Scene items: each rock, wood, cave or plant carries `{kind, variant, seed, position, rotation, scale}`; pick and drag
+  like fish, plus rotate and scale. Existing layouts become starter sets that place editable items. This needs a scene
+  version bump plus a migration.
+- Library = procedural generators with a seed, so variety costs no file size and needs no licence. Stones: seiryu,
+  dragon stone, lava, river, slate. Wood: spider, manzanita, mopani, branch. Caves: stone arches, tubes, coconut.
+- Plants become real 3D (leaf cards arranged along stems, per species: java fern, anubias, crypts, swords, vallisneria,
+  stem plants, carpets), replacing the crossed cards.
+
+**Saltwater last**, since it reuses both systems: a fresh or salt setting on each tank (filters the species list),
+marine fish via the 3D generator, live rock and corals (branching, plate, mushroom, soft) as library items,
+aragonite sand and clearer blue water presets.
+
+**Order (one work unit per session):**
+1. 3D fish style test: three fish, before/after pictures at the default 1200 mm, Nathan judges the direction.
+2. Roll 3D out to all 42 species.
+3. Placeable scene items + pick/drag/rotate/scale; layouts become starter sets.
+4. Hardscape library.
+5. 3D plant species.
+6. Saltwater.
 
 ## Status (2026-10-08, session 7: tank shapes phase 1 built, NOT committed)
 
@@ -500,7 +540,7 @@ no licensing, but stays illustrated).
 ## Still open
 
 Release camera limits; species sizes review (list built, 37); art pipeline + provenance policy;
-whether lighting ships in v1; hardscape scope; React vs plain TS for the UI layer (see Phase 2 plan).
+whether lighting ships in v1; hardscape scope (now: roadmap steps 3-5); React vs plain TS for the UI layer (see Phase 2 plan).
 
 ## Phase 2 build decisions (2026-10-08)
 
@@ -549,5 +589,5 @@ Each module is a separable unit, so subagents can build in parallel once the typ
 ## Known gaps
 
 - Illustrated (generated) art for 34 of 37 species; image-based art still blocked on the provenance policy.
-- Layouts are presets only (no custom plant/hardscape placement, by Nathan's call 2026-10-08).
+- Layouts are presets only; custom placement is now planned (roadmap step 3, Nathan 2026-10-09).
 - Scene rebuilds fully on every change, including each drag step; fine at hundreds of fish, revisit if schools get big.
