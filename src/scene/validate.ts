@@ -18,7 +18,7 @@ export const LIMITS = {
   dist: [400, 5000] as const,
   az: [-180, 180] as const,
   el: [-20, 85] as const,
-  zoom: [0.5, 4] as const,
+  zoom: [0.5, 12] as const,
   count: [1, 6] as const,
   rows: [1, 4] as const,
   spacing: [0, 1500] as const,     // mm, 0 = auto

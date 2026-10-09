@@ -12,8 +12,8 @@ export function placeCamera(cam: THREE.PerspectiveCamera, T: Tank, c: CameraSett
 }
 
 /**
- * Bounds of the tank (plus any hood on it, down to `bottom`, e.g. a stand, and any `extra` points such as the
- * scale person) as seen from the camera,
+ * Bounds of the tank (plus any hood on it, down to `bottom`, e.g. a stand, and any `extra` points such as a
+ * table wider than the tank) as seen from the camera,
  * in tan units: t = half-height needed, (cx, cy) = centre of the bounds relative to the view axis.
  */
 export function frameBox(cam: THREE.PerspectiveCamera, T: Tank, aspect: number, headroom: number, bottom = 0, extra: THREE.Vector3[] = []) {
@@ -53,7 +53,7 @@ export function applyFraming(cam: THREE.PerspectiveCamera, fov: number, w: numbe
 }
 
 /**
- * Image-window centre (tan units) for a lens of half-size (hx, hy): the centre of `all` (tank + stand + person), moved
+ * Image-window centre (tan units) for a lens of half-size (hx, hy): the centre of `all` (tank + stand), moved
  * just enough to keep `tank` (the tank and any hood on it) wholly in frame; if the tank itself is bigger than the window, its centre.
  * So zooming in crops the room first and the tank last.
  */

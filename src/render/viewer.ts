@@ -5,7 +5,7 @@ import { D2R, depthRatio, floorY, tankUnderside } from '../scene/physics';
 import { tableOn, tableRing } from '../scene/table';
 import type { Store } from '../scene/store';
 import type { Fish, Tank, TankSetup } from '../scene/types';
-import { HOOD_H, buildTank, disposeScene, personSpot, straightOnEye, type BuiltTank } from './build';
+import { HOOD_H, buildTank, disposeScene, personSpot, type BuiltTank } from './build';
 import { drawViewMap } from './viewmap';
 import { applyFraming, fovFor, frameBox, frameStraightOn, placeCamera, windowCentre } from './camera';
 import { roomLevel, setLightUniforms, setWaterUniforms } from './lighting';
@@ -104,15 +104,11 @@ export class Viewer {
     // framing counts the tank and a hood on it, never the lights above: a fixture shows only once zoomed out enough (Nathan 2026-10-09)
     const headroom = (S: TankSetup) => (S.lid === 'hood' ? HOOD_H + 6 : 0);
     const bottom = (S: TankSetup) => (S.stand.show ? floorY(S.tank, S.render, S.stand) : 0);
-    // the scale person: its card's corners as it stands facing `eye` (a w×w footprint instead put a near corner well
-    // outside the silhouette, leaving extra empty space on the person's side)
-    const extra = (vp: Viewport, eye: { x: number; z: number } = vp.cam.position) => {
+    // a table wider than the tank; the scale person never counts, so a tall person beside a small tank no longer
+    // shrinks it in the default view, and shows only once zoomed out enough, like the lights (Nathan 2026-10-09)
+    const extra = (vp: Viewport) => {
       const S = vp.S, pts: THREE.Vector3[] = [];
-      if (tableOn(S)) for (const [x, d] of tableRing(vp.T, S.stand.table)) for (const y of [floorY(vp.T, S.render, S.stand), tankUnderside(vp.T, S.render)]) pts.push(new THREE.Vector3(x, y, -d)); // a table wider than the tank
-      if (!S.person.show) return pts;
-      const p = personSpot(S, vp.T);
-      const dx = eye.x - p.x, dz = eye.z - p.z, r = Math.hypot(dx, dz) || 1, px = -dz / r * p.w / 2, pz = dx / r * p.w / 2;
-      for (const k of [-1, 1]) for (const y of [p.floor, p.floor + p.h]) pts.push(new THREE.Vector3(p.x + k * px, y, p.z + k * pz));
+      if (tableOn(S)) for (const [x, d] of tableRing(vp.T, S.stand.table)) for (const y of [floorY(vp.T, S.render, S.stand), tankUnderside(vp.T, S.render)]) pts.push(new THREE.Vector3(x, y, -d));
       return pts;
     };
     for (const vp of active) {      // the person stays put and turns to face the viewer
@@ -121,7 +117,7 @@ export class Viewer {
       m.rotation.y = Math.atan2(vp.cam.position.x - m.position.x, vp.cam.position.z - m.position.z); m.updateMatrixWorld();
     }
     // lens from the straight-on view, kept at every orbit angle (see frameStraightOn)
-    const boxes = active.map(vp => frameStraightOn(vp.T, vp.S.camera, vp.w / vp.h, headroom(vp.S), bottom(vp.S), extra(vp, straightOnEye(vp.S, vp.T))));
+    const boxes = active.map(vp => frameStraightOn(vp.T, vp.S.camera, vp.w / vp.h, headroom(vp.S), bottom(vp.S), extra(vp)));
     // locked (or one tank): one FOV for all, so sizes stay directly comparable; unlocked: each view frames itself
     const shared = fovFor(Math.max(...boxes.map(b => b.t)), active[0].S.camera.zoom);
     const fovOf = (k: number) => (sc.camLock || active.length === 1 ? shared : fovFor(boxes[k].t, active[k].S.camera.zoom));
@@ -129,8 +125,8 @@ export class Viewer {
     r.setViewport(0, 0, w, h); r.setScissor(0, 0, w, h);
     r.setClearColor(new THREE.Color(getComputedStyle(this.host).getPropertyValue('--stage-gap').trim() || '#eef0f3')); r.clear();
     // the lens SIZE comes from the straight-on view (above), but the image window is re-centred at every orbit angle
-    // (Nathan 2026-10-08) on tank + stand + person; zooming in crops the room first and keeps the tank itself whole
-    // while it fits (windowCentre)
+    // (Nathan 2026-10-08) on tank + stand; zooming in crops the room first
+    // and keeps the tank itself whole while it fits (windowCentre)
     const wins = active.map(vp => ({
       tank: frameBox(vp.cam, vp.T, vp.w / vp.h, headroom(vp.S)),
       all: frameBox(vp.cam, vp.T, vp.w / vp.h, headroom(vp.S), bottom(vp.S), extra(vp)),

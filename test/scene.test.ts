@@ -46,7 +46,7 @@ describe('parseScene', () => {
     ];
     const { scene, warnings } = parseScene(s);
     expect(scene.tanks[0].tank.L).toBe(5000);
-    expect(scene.tanks[0].camera.zoom).toBe(4);
+    expect(scene.tanks[0].camera.zoom).toBe(12);
     expect(scene.tanks[0].fish.map(f => f.id)).toEqual([1, 3]);
     expect(scene.tanks[0].fish[0].x).toBe(0);
     expect(scene.tanks[0].fish[1].depth).toBe(scene.tanks[0].tank.D);
