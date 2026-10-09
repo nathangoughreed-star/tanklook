@@ -450,46 +450,42 @@ export function attachPanels(store: Store, viewer: Viewer) {
   jsonDetails.addEventListener('toggle', () => { jsonOpen = jsonDetails.open; syncJson(); });
   const syncJson = () => { if (jsonOpen) $('json').textContent = JSON.stringify(G(), null, 1); };
 
-  // ---------- Stocking level from AqAdvisor: fetched by itself ~1 s after the stocking or tank size settles ----------
-  // (answers kept per tank + stocking here, and cached 7 days by the proxy). Shown in the size label above the tank.
-  const aqDone = new Map<string, number | 'error'>(), aqBusy = new Set<string>();
-  const aqWait = ['', ''], aqTimer = [0, 0]; // per tank slot: the stocking key waiting out its 1 s, and its timer
-  /** Label text for one tank: 'Stocking 72% (AqAdvisor)', '…' while asking, '' when there is nothing to show. */
+  // ---------- Stocking level from AqAdvisor: asked only when someone presses Check (AqAdvisor is a small site that went
+  // down twice within an hour of automatic checks, 2026-10-09). Answers kept per tank + stocking here, and cached 7 days by
+  // the proxy; shown in the sidebar and in the size label above the tank.
+  const aqDone = new Map<string, number>(), aqBusy = new Set<string>(), aqErr = new Map<string, string>();
+  /** Label above one tank: 'Stocking 72% (AqAdvisor)' once checked, '' otherwise. */
   const aqLabel = (s: TankSetup) => {
-    const q = AQ_PROXY ? aqQuery(s) : null;
-    if (!q) return { text: '', url: '', over: false };
-    const key = aqKey(q), got = aqDone.get(key);
-    return { text: typeof got === 'number' ? `Stocking ${got}% (AqAdvisor)` : got === 'error' ? 'Stocking: AqAdvisor ↗' : 'Stocking …',
-      url: aqAdvisorUrl(q), over: typeof got === 'number' && got > 100 };
+    const q = AQ_PROXY ? aqQuery(s) : null, got = q ? aqDone.get(aqKey(q)) : undefined;
+    if (!q || got === undefined) return { text: '', url: '', over: false };
+    return { text: `Stocking ${got}% (AqAdvisor)`, url: aqAdvisorUrl(q), over: got > 100 };
   };
   function syncAq() {
     const q = aqQuery(S());
     $('aqRow').style.display = q ? '' : 'none';
     if (!q) { $('aqNote').textContent = ''; return; }
-    const key = aqKey(q), got = aqDone.get(key);
+    const key = aqKey(q), got = aqDone.get(key), busy = aqBusy.has(key);
     $<HTMLAnchorElement>('aqLink').href = aqAdvisorUrl(q);
-    $('aqOut').textContent = typeof got === 'number' ? `${got}% (per AqAdvisor)${got > 100 ? ', overstocked' : ''}`
-      : AQ_PROXY && got !== 'error' ? 'checking…' : '';
-    $('aqOut').className = typeof got === 'number' && got > 100 ? 'bad' : '';
+    $('aqCheck').style.display = AQ_PROXY && got === undefined ? '' : 'none';
+    $<HTMLButtonElement>('aqCheck').disabled = busy;
+    $('aqOut').textContent = got !== undefined ? `${got}% (per AqAdvisor)${got > 100 ? ', overstocked' : ''}`
+      : busy ? 'checking…' : aqErr.get(key) ?? '';
+    $('aqOut').className = got !== undefined && got > 100 ? 'bad' : '';
     $('aqNote').textContent = [
       q.standIns.length ? `Counted as a similar fish (not in AqAdvisor): ${q.standIns.map(k => `${k.count} ${k.name} as ${k.as}`).join(', ')}.` : '',
       q.skipped.length ? `Not counted (land animals): ${q.skipped.map(k => `${k.count} ${k.name}`).join(', ')}.` : ''].filter(Boolean).join(' ');
-    G().tanks.forEach((_, i) => aqWant(i));
   }
-  /** Asks AqAdvisor about tank slot i once its stocking has held still for 1 s (both tanks in a split view). */
-  function aqWant(i: number) {
-    const s = G().tanks[i], q = AQ_PROXY && s ? aqQuery(s) : null, key = q ? aqKey(q) : '';
-    if (!key || aqDone.has(key) || aqBusy.has(key) || aqWait[i] === key) return;
-    clearTimeout(aqTimer[i]); aqWait[i] = key;
-    aqTimer[i] = window.setTimeout(async () => {
-      aqWait[i] = '';
-      const s2 = G().tanks[i], q2 = s2 ? aqQuery(s2) : null;
-      if (!q2 || aqKey(q2) !== key || aqDone.has(key) || aqBusy.has(key)) return; // changed again; that change schedules its own
-      aqBusy.add(key);
-      try { aqDone.set(key, await fetchStocking(q2)); } catch { aqDone.set(key, 'error'); }
-      aqBusy.delete(key); syncAq(); viewer.invalidate();
-    }, 1000);
-  }
+  /** Check: one request for the tank being edited. A failure is shown and can be retried; it is not remembered. */
+  $('aqCheck').onclick = async () => {
+    const q = aqQuery(S());
+    if (!q || !AQ_PROXY) return;
+    const key = aqKey(q);
+    if (aqDone.has(key) || aqBusy.has(key)) return;
+    aqBusy.add(key); aqErr.delete(key); syncAq();
+    try { aqDone.set(key, await fetchStocking(q, AbortSignal.timeout(12000))); }
+    catch (e) { aqErr.set(key, e instanceof Error && e.message === 'proxy 429' ? 'busy, try again in a minute' : "AqAdvisor didn't answer, try later"); }
+    aqBusy.delete(key); syncAq(); viewer.invalidate();
+  };
 
   function sync() {
     const s = S(), A = s.tank, u = G().units;
