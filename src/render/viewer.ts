@@ -1,7 +1,8 @@
 // Owns the WebGL renderer and the one or two viewports (one per tank setup; two after a split). Render-on-demand.
 import * as THREE from 'three';
 import { fishTL, getSpecies } from '../data/species';
-import { D2R, depthRatio, floorY } from '../scene/physics';
+import { D2R, depthRatio, floorY, tankUnderside } from '../scene/physics';
+import { tableOn, tableRing } from '../scene/table';
 import type { Store } from '../scene/store';
 import type { Fish, Tank, TankSetup } from '../scene/types';
 import { HOOD_H, buildTank, disposeScene, personSpot, straightOnEye, type BuiltTank } from './build';
@@ -89,9 +90,10 @@ export class Viewer {
     // the scale person: its card's corners as it stands facing `eye` (a w×w footprint instead put a near corner well
     // outside the silhouette, leaving extra empty space on the person's side)
     const extra = (vp: Viewport, eye: { x: number; z: number } = vp.cam.position) => {
-      const S = vp.S;
-      if (!S.person.show) return [];
-      const p = personSpot(S, vp.T), pts: THREE.Vector3[] = [];
+      const S = vp.S, pts: THREE.Vector3[] = [];
+      if (tableOn(S)) for (const [x, d] of tableRing(vp.T, S.stand.table)) for (const y of [floorY(vp.T, S.render, S.stand), tankUnderside(vp.T, S.render)]) pts.push(new THREE.Vector3(x, y, -d)); // a table wider than the tank
+      if (!S.person.show) return pts;
+      const p = personSpot(S, vp.T);
       const dx = eye.x - p.x, dz = eye.z - p.z, r = Math.hypot(dx, dz) || 1, px = -dz / r * p.w / 2, pz = dx / r * p.w / 2;
       for (const k of [-1, 1]) for (const y of [p.floor, p.floor + p.h]) pts.push(new THREE.Vector3(p.x + k * px, y, p.z + k * pz));
       return pts;

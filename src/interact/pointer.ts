@@ -1,19 +1,26 @@
 // Pointer: click a fish card to select it and drag it; drag empty space to orbit; wheel zooms (FOV only);
 // shift + wheel moves the selected fish forward/back; click empty space to deselect; double-click it for straight-on.
-// With split tanks, pressing in a view makes that tank the one being edited. Bottom dwellers and floor snails slide along the floor; snails on glass stay in their pane.
+// With split tanks, pressing in a view makes that tank the one being edited. Bottom dwellers and floor snails slide along the floor; snails on glass slide over the glass (round corners and curved shells).
 import * as THREE from 'three';
 import { fishTL, getSpecies, restsOnFloor } from '../data/species';
 import { restsOnGround } from '../scene/water';
 import { D2R, clamp } from '../scene/physics';
+import { clampIn, nearestGlass } from '../scene/shape';
 import type { Store } from '../scene/store';
+import type { Tank } from '../scene/types';
 import type { Viewer, Viewport } from '../render/viewer';
 import { LIMITS } from '../scene/validate';
 
-type DragMode = 'front' | 'top' | 'side';
+type DragMode = 'front' | 'top' | 'side' | 'glass';
 
 /** The drag plane follows the view: front-ish = parallel to glass; >45° from above = floor plan; side-on = side plane. */
 export function dragModeFor(az: number, el: number): DragMode {
   return Math.abs(el) > 45 ? 'top' : Math.abs(Math.sin(az * D2R)) > 0.82 ? 'side' : 'front';
+}
+
+/** World-space outward normal of the glass at the point of the outline nearest (x, depth). */
+function glassNormal(T: Tank, x: number, depth: number) {
+  const n = nearestGlass(T, x, depth).n; return new THREE.Vector3(n[0], 0, -n[1]);
 }
 
 export function attachPointer(viewer: Viewer, store: Store) {
@@ -46,11 +53,12 @@ export function attachPointer(viewer: Viewer, store: Store) {
     // the drag plane: the floor or the snail's pane for animals that cling to a surface, else it follows the view
     const surf = f?.surface ?? 'floor';
     const onGround = !!sp && !!f && (restsOnFloor(sp, surf) || (sp.kind !== 'snail' && restsOnGround(t, t.tank, sp, f.x, f.depth, fishTL(f, sp) * sp.aspect)));
-    const mode: DragMode = onGround ? 'top' : sp?.kind === 'snail' ? (surf === 'left' || surf === 'right' ? 'side' : 'front') : dragModeFor(c.az, c.el);
-    const n = mode === 'top' ? new THREE.Vector3(0, 1, 0) : mode === 'side' ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 0, 1);
+    const mode: DragMode = onGround ? 'top' : sp?.kind === 'snail' ? 'glass' : dragModeFor(c.az, c.el);
+    const n = mode === 'glass' ? glassNormal(t.tank, f!.x, f!.depth) : mode === 'top' ? new THREE.Vector3(0, 1, 0) : mode === 'side' ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 0, 1);
     const pl = new THREE.Plane().setFromNormalAndCoplanarPoint(n, hit.mesh.position), p = new THREE.Vector3();
     if (!hit.ray.intersectPlane(pl, p)) return;
-    drag = { vp: hit.vp, plane: pl, mode, off: p.sub(hit.mesh.position), moved: false };
+    // a glass snail follows the pointer itself (no grab offset), since its drag plane turns with the glass under it
+    drag = { vp: hit.vp, plane: pl, mode, off: mode === 'glass' ? new THREE.Vector3() : p.sub(hit.mesh.position), moved: false };
   });
 
   canvas.addEventListener('pointermove', e => {
@@ -74,9 +82,17 @@ export function attachPointer(viewer: Viewer, store: Store) {
     const d = drag, T = d.vp.T;
     store.edit(t => {
       const f = t.fish.find(f => f.id === store.selId); if (!f) return;
+      if (d.mode === 'glass') {
+        // slide over the glass: onto the nearest point of the outline, then the drag plane turns to the glass there,
+        // so a snail can crawl round a curved shell or a corner
+        const g = nearestGlass(T, p.x, -p.z); f.x = g.x; f.depth = g.depth; f.y = clamp(p.y, 0, T.H);
+        d.plane.setFromNormalAndCoplanarPoint(glassNormal(T, g.x, g.depth), new THREE.Vector3(g.x, f.y, -g.depth));
+        return;
+      }
       if (d.mode !== 'side') f.x = clamp(p.x, 0, T.L);
       if (d.mode !== 'top') f.y = clamp(p.y, 0, T.H);
       if (d.mode !== 'front') f.depth = clamp(-p.z, 0, T.D);
+      const q = clampIn(T, f.x, f.depth); f.x = q.x; f.depth = q.depth;
     }, { coalesce: 'drag' });
     d.moved = true;
   });
@@ -108,7 +124,9 @@ export function attachPointer(viewer: Viewer, store: Store) {
     const dir = Math.sign(e.deltaY || e.deltaX);
     store.edit(t => {
       const f = t.fish.find(f => f.id === store.selId)!;
+      if (f.surface === 'glass') return; // on the glass: depth is set by where on the glass it is
       f.depth = clamp(f.depth + dir * t.tank.D * 0.03, 0, t.tank.D);
+      const q = clampIn(t.tank, f.x, f.depth); f.x = q.x; f.depth = q.depth;
     }, { coalesce: 'wheel-depth' });
   }, { passive: false });
 }

@@ -47,11 +47,15 @@
     <span class="grow"></span>
     <span class="seg"><button id="uIn">in</button><button id="uCm">cm</button></span>
   </div>
+  <div class="field"><label class="flabel" for="shapeSel">Shape</label><select id="shapeSel"></select></div>
+  <div class="field" id="sidesRow"><span class="flabel">Sides</span><span class="seg"><button id="sides3" title="Triangle">3</button><button id="sides5" title="Pentagon">5</button><button id="sides6" title="Hexagon">6</button></span></div>
   <div class="dims">
-    <div><label for="aL">Length</label><input id="aL" type="number" step="0.5" min="0"></div>
+    <div><label for="aL" id="aLLab">Length</label><input id="aL" type="number" step="0.5" min="0"></div>
     <div><label for="aH">Height</label><input id="aH" type="number" step="0.5" min="0"></div>
-    <div><label for="aD">Depth</label><input id="aD" type="number" step="0.5" min="0"></div>
+    <div><label for="aD" id="aDLab">Depth</label><input id="aD" type="number" step="0.5" min="0"></div>
   </div>
+  <div class="row" id="bowRow"><label for="bowMin" title="Depth at the ends; the front curves out to the full depth at the centre">End depth</label><input id="bowMin" type="range" min="20" max="600" step="1"><output id="oBow"></output></div>
+  <div class="hint" id="shapeHint"></div>
   <div class="hint" id="volA"></div>
   <div class="hint" id="wtA" title="Approximate: water over the substrate, substrate / land (wet gravel ~1.95 kg/L, dry ~1.6), and the glass at its actual thickness. Stand, rocks, wood and plants not included."></div>
   <div class="field"><span class="flabel">Style</span><span class="seg"><button id="rimY">Rimmed</button><button id="rimN">Rimless</button></span></div>
@@ -62,15 +66,23 @@
   <div class="hint" id="glassHint"></div>
   </details>
   <details class="sec" data-sec="room"><summary><h2>Room</h2></summary>
-  <div class="field"><label class="flabel"><input type="checkbox" id="standOn"> Stand</label><select id="standStyle" aria-label="Stand type"><option value="cabinet">Cabinet</option><option value="frame">Open metal frame</option></select><select id="standFinish" aria-label="Stand finish"></select></div>
+  <div class="field"><label class="flabel"><input type="checkbox" id="standOn"> Stand</label><select id="standStyle" aria-label="Stand type"><option value="cabinet">Cabinet</option><option value="frame">Open metal frame</option><option value="table">Table</option></select><select id="standFinish" aria-label="Stand finish"></select></div>
   <div class="row"><label for="standH">Stand height</label><input id="standH" type="range" step="5"><output id="oStandH"></output></div>
+  <div id="tableRows">
+  <div class="field"><span class="flabel">Table top</span><span class="seg"><button id="tableRect">Rectangular</button><button id="tableRound">Round</button></span></div>
+  <div class="row"><label for="tableL" id="tableLLab">Table length</label><input id="tableL" type="range" step="10"><output id="oTableL"></output></div>
+  <div class="row" id="tableDRow"><label for="tableD">Table depth</label><input id="tableD" type="range" step="10"><output id="oTableD"></output></div>
+  <div class="row"><label for="tableX">Tank left / right</label><input id="tableX" type="range" step="5"><output id="oTableX"></output></div>
+  <div class="row"><label for="tableZ">Tank front / back</label><input id="tableZ" type="range" step="5"><output id="oTableZ"></output></div>
+  <div class="field"><span class="flabel">Place tank</span><span class="seg"><button id="tableCentre">Centre</button><button id="tableBack">At the back</button><button id="tableFront">At the front</button></span></div>
+  </div>
   <div class="field"><label class="flabel"><input type="checkbox" id="wallOn"> Wall</label>
     <span class="seg"><button id="wallBack">Behind</button><button id="wallLeft" title="Peninsula: left end against the wall">Left end</button><button id="wallRight" title="Peninsula: right end against the wall">Right end</button></span>
     <input id="wallColor" type="color" aria-label="Wall colour" title="Wall colour"></div>
   <div class="field"><label class="flabel"><input type="checkbox" id="personOn"> Person</label>
     <span class="seg"><button id="personLeft">Left</button><button id="personRight">Right</button></span></div>
   <div class="row"><label for="personH">Person height</label><input id="personH" type="range" step="10"><output id="oPersonH"></output></div>
-  <div class="hint">The stand matches the tank's footprint. <i>Peninsula</i> puts the tank's end against the wall; the background moves to that end and the long back glass is clear.</div>
+  <div class="hint">Cabinet and frame stands match the tank's footprint; a table is bigger, with the tank anywhere on it, and the wall and person keep clear of its edge. <i>Peninsula</i> puts the tank's end against the wall; the background moves to that end and the long back glass is clear.</div>
   </details>
   <details class="sec" data-sec="fish"><summary><h2>Fish</h2></summary>
   <input id="spSearch" type="search" placeholder="Search species (common or scientific name)" aria-label="Search species">

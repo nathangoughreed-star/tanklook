@@ -49,8 +49,8 @@ describe('stand and floor', () => {
   it('stand top is the tank underside; floor is a stand-height below it', () => {
     expect(tankUnderside(T, R)).toBe(-7);
     expect(tankUnderside(T, { ...R, rim: false })).toBe(-5);
-    expect(floorY(T, R, { show: true, height: 30 * IN, finish: 'black', style: 'cabinet' })).toBeCloseTo(-7 - 762, 6);
-    expect(floorY(T, R, { show: false, height: 30 * IN, finish: 'black', style: 'cabinet' })).toBe(-7);
+    expect(floorY(T, R, { show: true, height: 30 * IN, finish: 'black', style: 'cabinet', table: { shape: 'rect', L: 900, D: 450, x: 0, z: 0 } })).toBeCloseTo(-7 - 762, 6);
+    expect(floorY(T, R, { show: false, height: 30 * IN, finish: 'black', style: 'cabinet', table: { shape: 'rect', L: 900, D: 450, x: 0, z: 0 } })).toBe(-7);
   });
 });
 
@@ -70,17 +70,15 @@ describe('snail spawning', () => {
   it('picks each surface in proportion to its area', () => {
     const hw = T.H - WATERLINE_GAP - 25, total = T.L * T.D + 2 * T.L * hw + 2 * T.D * hw;
     const share = (s: string) => runs.filter(r => r.surface === s).length / runs.length;
+    const on = (k: (r: (typeof runs)[number]) => boolean) => runs.filter(r => r.surface === 'glass' && k(r)).length / runs.length;
     expect(share('floor')).toBeCloseTo(T.L * T.D / total, 1);
-    expect(share('front')).toBeCloseTo(T.L * hw / total, 1);
-    expect(share('left') + share('right')).toBeCloseTo(2 * T.D * hw / total, 1);
+    expect(on(r => r.depth === 0)).toBeCloseTo(T.L * hw / total, 1);                // the front pane
+    expect(on(r => r.x === 0 || r.x === T.L)).toBeCloseTo(2 * T.D * hw / total, 1); // the two ends
   });
   it('puts every snail on its surface, inside the tank and under the water line', () => {
     for (const r of runs) {
       if (r.surface === 'floor') expect(r.y).toBeCloseTo(25, 6);
-      if (r.surface === 'front') expect(r.depth).toBe(0);
-      if (r.surface === 'back') expect(r.depth).toBe(T.D);
-      if (r.surface === 'left') expect(r.x).toBe(0);
-      if (r.surface === 'right') expect(r.x).toBe(T.L);
+      if (r.surface === 'glass') expect(Math.min(r.depth, T.D - r.depth, r.x, T.L - r.x)).toBeCloseTo(0, 6); // on a pane
       expect(r.x).toBeGreaterThanOrEqual(0); expect(r.x).toBeLessThanOrEqual(T.L);
       expect(r.y).toBeGreaterThanOrEqual(25 - 1e-9); expect(r.y).toBeLessThanOrEqual(T.H - WATERLINE_GAP);
     }

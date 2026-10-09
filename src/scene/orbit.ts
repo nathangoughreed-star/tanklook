@@ -1,6 +1,7 @@
 // Orbit limit (Nathan 2026-10-08): with the room wall on, the eye cannot orbit through it. Same eye maths as
 // placeCamera (orbit about the tank centre, radius dist + D/2), without three.js so the store can use it.
-import { D2R, WALL_GAP, glassThickness } from './physics';
+import { D2R } from './physics';
+import { wallPlane } from './table';
 import type { CameraSettings, TankSetup } from './types';
 
 /** How close the eye may come to the wall's room face, mm. */
@@ -9,10 +10,10 @@ export const WALL_CLEAR = 150;
 /** True when the eye for camera `c` is on the room side of this tank's wall (or there is no wall). */
 export function eyeClear(S: TankSetup, c: CameraSettings) {
   if (!S.wall.show) return true;
-  const T = S.tank, t = glassThickness(T, S.render.glass), r = c.dist + T.D / 2, az = c.az * D2R, el = c.el * D2R;
+  const T = S.tank, r = c.dist + T.D / 2, az = c.az * D2R, el = c.el * D2R, w = wallPlane(S, T);
   const x = T.L / 2 + r * Math.sin(az) * Math.cos(el), z = -T.D / 2 + r * Math.cos(az) * Math.cos(el);
   const s = S.wall.side;
-  return s === 'back' ? z > -T.D - t - WALL_GAP + WALL_CLEAR : s === 'right' ? x < T.L + t + WALL_GAP - WALL_CLEAR : x > -t - WALL_GAP + WALL_CLEAR;
+  return s === 'back' ? z > w.back + WALL_CLEAR : s === 'right' ? x < w.right - WALL_CLEAR : x > w.left + WALL_CLEAR;
 }
 
 const wrap = (a: number) => ((a + 540) % 360) - 180;

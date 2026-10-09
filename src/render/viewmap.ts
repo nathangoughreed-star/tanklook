@@ -1,6 +1,8 @@
 // Viewpoint map: a small top-down inset showing where the eye is (and what it sees) relative to the tank, stand,
 // room wall and scale person. A DOM canvas over the view, so it never appears in PNG exports.
-import { WALL_GAP, fmtLen, glassThickness } from '../scene/physics';
+import { fmtLen, glassThickness } from '../scene/physics';
+import { facingRuns, offsetRing } from '../scene/shape';
+import { tableOn, tableRing, wallPlane } from '../scene/table';
 import type { Tank, TankSetup, Units } from '../scene/types';
 
 interface Spot { x: number; z: number; w: number }
@@ -14,6 +16,8 @@ export function drawViewMap(cv: HTMLCanvasElement, S: TankSetup, T: Tank, units:
   const t = glassThickness(T, S.render.glass), rim = S.render.rim ? t + 8 : t, c = S.camera;
   // fit tank, eye and person; world x -> right, world z (toward the viewer) -> down
   const xs = [-rim, T.L + rim, eye.x], zs = [rim, -T.D - rim, eye.z];
+  const table = tableOn(S) ? tableRing(T, S.stand.table) : null;
+  if (table) for (const [x, d] of table) { xs.push(x); zs.push(-d); }
   if (person) { xs.push(person.x - person.w / 2, person.x + person.w / 2); zs.push(person.z); }
   const x0 = Math.min(...xs), x1 = Math.max(...xs), z0 = Math.min(...zs), z1 = Math.max(...zs), mapH = H - 22;
   const k = Math.min((W - 24) / (x1 - x0), (mapH - 20) / (z1 - z0));
@@ -23,8 +27,9 @@ export function drawViewMap(cv: HTMLCanvasElement, S: TankSetup, T: Tank, units:
 
   if (S.wall.show) {            // room wall: a thick line across the map
     g.strokeStyle = muted; g.lineWidth = 3; g.beginPath();
-    if (S.wall.side === 'back') { const z = Z(-T.D - t - WALL_GAP); g.moveTo(4, z); g.lineTo(W - 4, z); }
-    else { const x = X(S.wall.side === 'right' ? T.L + t + WALL_GAP : -t - WALL_GAP); g.moveTo(x, 4); g.lineTo(x, mapH - 4); }
+    const wp = wallPlane(S, T);
+    if (S.wall.side === 'back') { const z = Z(wp.back); g.moveTo(4, z); g.lineTo(W - 4, z); }
+    else { const x = X(S.wall.side === 'right' ? wp.right : wp.left); g.moveTo(x, 4); g.lineTo(x, mapH - 4); }
     g.stroke();
   }
   // view cone: what the picture actually shows (left / right edges and centre of the shifted image window, as world
@@ -35,9 +40,18 @@ export function drawViewMap(cv: HTMLCanvasElement, S: TankSetup, T: Tank, units:
   g.closePath(); g.fill(); g.globalAlpha = 1;
   g.strokeStyle = accent; g.setLineDash([3, 3]); g.lineWidth = 1; g.beginPath(); g.moveTo(X(eye.x), Z(eye.z));
   g.lineTo(X(eye.x + Math.cos(view.mid) * dist), Z(eye.z + Math.sin(view.mid) * dist)); g.stroke(); g.setLineDash([]);
-  // tank (outer glass) with the front edge marked
-  g.fillStyle = '#2f6f9a'; g.fillRect(X(-rim), Z(-T.D - rim), (T.L + 2 * rim) * k, (T.D + 2 * rim) * k);
-  g.strokeStyle = '#8fd6bb'; g.lineWidth = 2; g.beginPath(); g.moveTo(X(-rim), Z(rim)); g.lineTo(X(T.L + rim), Z(rim)); g.stroke();
+  if (table) {                  // table top under the tank
+    g.fillStyle = muted; g.globalAlpha = 0.3; g.beginPath();
+    for (const [x, d] of table) g.lineTo(X(x), Z(-d));
+    g.closePath(); g.fill(); g.globalAlpha = 1;
+  }
+  // tank (outer glass outline) with the front marked
+  g.fillStyle = '#2f6f9a'; g.beginPath();
+  for (const [x, d] of offsetRing(T, rim)) g.lineTo(X(x), Z(-d));
+  g.closePath(); g.fill();
+  g.strokeStyle = '#8fd6bb'; g.lineWidth = 2; g.beginPath();
+  for (const r of facingRuns(T, rim, [0, -1])) { g.moveTo(X(r[0][0]), Z(-r[0][1])); for (const [x, d] of r) g.lineTo(X(x), Z(-d)); }
+  g.stroke();
   if (person) { g.fillStyle = '#7d8593'; g.beginPath(); g.arc(X(person.x), Z(person.z), Math.max(3, person.w * 0.25 * k), 0, 7); g.fill(); }
   g.fillStyle = accent; g.beginPath(); g.arc(X(eye.x), Z(eye.z), 4, 0, 7); g.fill();
   // caption: distance and angles

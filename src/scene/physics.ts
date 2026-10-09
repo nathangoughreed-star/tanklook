@@ -1,4 +1,5 @@
 // Pure physical rules shared by the renderer, the UI and the tests. No three.js here.
+import { clampIn, footprint, glassAt, inside, nearestGlass, normTank, wallSpan } from './shape';
 import type { Fish, RenderSettings, StandSettings, SubstrateSettings, Surface, Tank, TankSetup, Units } from './types';
 
 export const IN = 25.4;
@@ -52,22 +53,26 @@ export const waterY = (T: Tank, level: number) => clamp(level, 0, 1) * (T.H - WA
 export const waterK = (opacity: number) => -Math.log(1 - clamp(opacity, 0, 0.97)) / 300;
 
 /**
- * A random spot for a snail on ground `h` of crawling length `size`: every point of the substrate and of the inside of the four
- * glass panes (below the water line, `top`) is equally likely, so each surface is chosen in proportion to its area.
- * On glass, yaw is the heading within the pane.
+ * A random spot for a snail on ground `h` of crawling length `size`: every point of the substrate and of the inside of the
+ * glass (below the water line, `top`) is equally likely, so floor and glass are chosen in proportion to their area. On
+ * glass, (x, depth) is the point on the glass (any pane or curved shell) and yaw the heading there.
  */
 export function spawnSnail(h: (x: number, depth: number) => number, T: Tank, size: number, r: () => number, top = T.H - WATERLINE_GAP) {
-  const meanSub = (h(0, 0) + h(T.L, 0) + h(0, T.D) + h(T.L, T.D)) / 4, hw = Math.max(0, top - meanSub);
-  const areas: [Surface, number][] = [['floor', T.L * T.D], ['front', T.L * hw], ['back', T.L * hw], ['left', T.D * hw], ['right', T.D * hw]];
-  let k = r() * areas.reduce((a, [, v]) => a + v, 0), surface: Surface = 'floor';
-  for (const [sf, a] of areas) { if (k < a) { surface = sf; break; } k -= a; }
-  const m = size / 2, along = (len: number) => m + r() * Math.max(0, len - 2 * m), yaw = Math.round(r() * 360 - 180);
-  const up = (x: number, d: number) => { const lo = h(x, d) + m, hi = Math.max(lo, top - m); return lo + r() * (hi - lo); };
-  switch (surface) {
-    case 'floor': { const x = along(T.L), depth = along(T.D); return { surface, x, depth, y: h(x, depth), yaw }; }
-    case 'front': case 'back': { const x = along(T.L), depth = surface === 'front' ? 0 : T.D; return { surface, x, depth, y: up(x, depth), yaw }; }
-    default: { const depth = along(T.D), x = surface === 'left' ? 0 : T.L; return { surface, x, depth, y: up(x, depth), yaw }; }
+  const f = footprint(T), m = size / 2, yaw = Math.round(r() * 360 - 180);
+  const meanSub = f.ring.reduce((a, p) => a + h(p[0], p[1]), 0) / f.ring.length, hw = Math.max(0, top - meanSub);
+  if (r() * (f.area + f.perimeter * hw) < f.area) {
+    let x = T.L / 2, depth = T.D / 2;
+    for (let k = 0; k < 200; k++) {
+      const px = m + r() * Math.max(0, T.L - 2 * m), pd = m + r() * Math.max(0, T.D - 2 * m);
+      if (inside(T, px, pd, m)) { x = px; depth = pd; break; }
+    }
+    return { surface: 'floor' as Surface, x, depth, y: h(x, depth), yaw };
   }
+  // on glass: a uniform point along the outline, kept half a body from the corners of a flat pane
+  let g = glassAt(T, r() * f.perimeter);
+  if (!f.walls[g.wall].curved) { const [s0, s1] = wallSpan(T, g.wall); if (s1 - s0 > 2 * m) g = glassAt(T, clamp(g.s, s0 + m, s1 - m)); }
+  const lo = h(g.x, g.depth) + m, hi = Math.max(lo, top - m);
+  return { surface: 'glass' as Surface, x: g.x, depth: g.depth, y: lo + r() * (hi - lo), yaw };
 }
 
 /** Map a Tank-A position into tank T at the same relative spot. */
@@ -80,14 +85,16 @@ export const depthRatio = (dist: number, depth: number) => dist / (dist + depth)
 
 /** Rescale everything positioned in a tank when its dimensions change, so items keep their relative spot. */
 export function rescaleTank(s: TankSetup, next: Tank) {
-  const old = s.tank;
+  const old = s.tank; next = normTank(next);
   for (const f of s.fish) { f.x *= next.L / old.L; f.y *= next.H / old.H; f.depth *= next.D / old.D; }
   s.tank = { ...next };
 }
 
-/** Keep a fish inside its tank. */
+/** Keep a fish inside its tank: within the footprint (a glass snail on the glass), between the floor and the top. */
 export function clampFish(f: Fish, A: Tank) {
-  f.x = clamp(f.x, 0, A.L); f.y = clamp(f.y, 0, A.H); f.depth = clamp(f.depth, 0, A.D);
+  f.y = clamp(f.y, 0, A.H);
+  const p = f.surface === 'glass' ? nearestGlass(A, f.x, f.depth) : clampIn(A, clamp(f.x, 0, A.L), clamp(f.depth, 0, A.D));
+  f.x = p.x; f.depth = p.depth;
 }
 
 // ---------- Units & formatting ----------
@@ -97,13 +104,15 @@ export function fmtLen(mm: number, u: Units, digits = 1) {
 }
 export function fmtDims(T: Tank, u: Units) {
   const k = unitMM(u), suf = u === 'in' ? '″' : ' cm';
-  return `${+(T.L / k).toFixed(1)} × ${+(T.H / k).toFixed(1)} × ${+(T.D / k).toFixed(1)}${suf} (L×H×D)`;
+  const dims = `${+(T.L / k).toFixed(1)} × ${+(T.H / k).toFixed(1)} × ${+(T.D / k).toFixed(1)}${suf} (L×H×D)`;
+  const sh = T.shape ?? 'rect';
+  return sh === 'rect' ? dims : `${sh === 'bow' ? 'bowfront' : sh === 'round' ? 'round' : `${T.sides}-sided`} ${dims}`;
 }
 export const toUnit = (mm: number, u: Units) => +(mm / unitMM(u)).toFixed(2);
 export const fromUnit = (v: number, u: Units) => v * unitMM(u);
 
-/** Interior volume in US gallons and litres. */
+/** Interior volume in US gallons and litres (footprint area x height). */
 export function volume(T: Tank) {
-  const litres = T.L * T.H * T.D / 1e6;
+  const litres = footprint(T).area * T.H / 1e6;
   return { litres, gallons: litres / 3.785411784 };
 }

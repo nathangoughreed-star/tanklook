@@ -2,7 +2,62 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
-## Status (2026-10-08, session 6: split-view polish deployed `eee6334`; spot-light grid uncommitted)
+## Status (2026-10-09, session 8: tank shapes phase 2 (table stand) built, NOT committed)
+
+Built on top of the uncommitted phase 1. `npm test` 104/104 (new `test/table.test.ts`), `tsc` and `vite build` clean,
+checked in the browser (dev server `dev` on 5173), shots `shots/28_table_*`.
+- **Stand style 'table'** with `stand.table { shape: 'rect' | 'round', L, D, x, z }` (mm; x, z = the tank's offset from
+  the table centre, x right, z toward the back). Always present, kept while another style is chosen; older files get
+  the default 36″ × 18″ top. No version bump (like `light.rows`).
+- **`scene/table.ts`** (new): `fitTable` (run in `store.update` and on load) grows the top to hold the tank's rim
+  outline (never shrinks), round keeps D = L, clamps the offset so the outline stays on the top; `tableRange` = slider
+  limits; `roomBox` / `wallPlane` = tank glass ∪ table top, used by the wall (build), the orbit limit (`orbit.ts`), the
+  person (wall check, and half-width taken from the table's edge too) and the view map.
+- Renderer: top (32 mm) + apron set 50 mm in + four square legs (round: at the diagonals), finish colour. Camera
+  framing includes the table's corners. View map draws the top under the tank.
+- UI (Room): Table option; Rectangular / Round; length + depth (or diameter); tank left/right and front/back sliders;
+  Centre / At the back / At the front buttons. Split diff lists table size and tank placement.
+- **Deviation from the brief**: tank placement is sliders + buttons only, no drag-to-move mode (the brief allowed
+  either). Add drag later if the sliders feel clumsy.
+- Not checked: split view with two tables; PNG export with a table.
+
+**NEXT:** Nathan reviews phase 1 (`shots/27_*`) and phase 2 (`shots/28_*`), then commit + deploy both; then phase 3
+(exact lighting water path for shaped tanks, layouts tuned per shape).
+
+## Status (2026-10-08, session 7: tank shapes phase 1 built, NOT committed)
+
+Spot-light grid committed as `fda7d88`. Then phase 1 of tank shapes (brief below), uncommitted, `npm test` 98/98,
+`tsc` and `vite build` clean, checked in the browser (dev server `dev-alt` on 5183, since another chat held 5173):
+- **Scene v8**: `Tank.shape?` 'rect' | 'bow' | 'round' | 'poly', `sides?` (3/5/6), `bowMin?`. A rectangle is stored
+  as plain `{L, H, D}` (no shape key), so v7 files and rect tanks are unchanged. `normTank` enforces: round D = L,
+  poly D = L x polyRatio(n), bow bowMin between max(20, D - L/2) (arc at most a half circle) and D.
+- **`scene/shape.ts`** (new): footprint (walls = flat panes or one curved shell; ring; edges with outward normals),
+  inside / insideBy / clampIn, nearestGlass + glassAt (point, smooth normal, arc length), offsetWalls / offsetRing
+  (mitred, so rect outer glass is exactly (L+2t) x (D+2t)), clipToFootprint, chord, halfWidth, facingRuns.
+  Polygons have a flat face toward the viewer (triangle: point to the back). Front-most point is at depth 0 on the
+  centre line for every shape, so the camera / `dist` / orbit needed no change (answer 2).
+- **Snails (answer 4)**: `Surface` is now 'floor' | 'glass'; a glass snail's (x, depth) IS its point on the glass
+  (deviation from the brief's "wall index + arc length": same information, and no extra fields). v7 'front' etc.
+  migrate to 'glass' with the coordinate snapped onto that pane. Rendered at nearestGlass, foot toward the local
+  normal; dragging slides over the glass (the drag plane turns with it, so snails round curves and corners).
+  spawnSnail weights floor area vs perimeter x wetted height.
+- Renderer: panes from the outline (custom prisms, wound outward; EdgesGeometry at 20° so a curved shell shows no facet
+  seams), bottom pane, rim rings, background on the glass facing the room wall (wraps round the back of round /
+  angled tanks), wall + floor grid, water surface + meniscus, substrate grid clipped to the outline + skirt, terrain
+  dots outside the outline hidden, cabinet = extruded outline with doors on the front-facing run (curved on a bow),
+  frame stand = legs round the outline, hood warped to the bow, glass lid = one plate for non-rect, person half-width
+  from the outline, view map draws the outline. Layout items clamped into the outline (non-rect only, so rect
+  layouts are unchanged). Volume = area x H; weight masks the grid and uses outer-minus-inner ring for the glass
+  (identical to the old rect formula, tested).
+- UI: Shape select, Sides 3/5/6, bowfront End depth slider, labels Diameter / Width / Centre depth, Depth input locked
+  for round / poly. Hood and peninsula end buttons disabled for round / poly; switching to those shapes turns a hood
+  into a glass top and a peninsula into a back wall.
+- Not done (by plan): lighting shader still uses the bounding box for the water path and spill (phase 3); table stand
+  + tank placement (phase 2). Not checked: split view with two different shapes, PNG export of a shaped tank.
+
+**NEXT:** Nathan reviews the shapes (`shots/27_*`), then commit + deploy; then phase 2 (table stand).
+
+## Status (2026-10-08, session 6: split-view polish deployed `eee6334`; spot-light grid committed `fda7d88`)
 
 Shipped in `eee6334`: panel collapse button outside the panel; locked views share one image window (equal tanks line
 up); person framing from the card's real edges; stocking diff ignores the resize rescale; × on each difference makes
@@ -14,7 +69,7 @@ renamed "Vivarium Visualizer". After that (not yet committed): spot lights form 
 
 **NEXT WORK UNIT: tank shapes + table stands** (Nathan 2026-10-08), ahead of land + semi-aquatic species below.
 
-## Tank shapes + table stands (requested 2026-10-08; design brief, NOT built)
+## Tank shapes + table stands (requested 2026-10-08; phase 1 built 2026-10-08 session 7, phases 2-3 not built)
 
 Request: circular, regular triangle, pentagon, hexagon, bowfront ("model it as a rectangle but just have min and max
 widths and have the tool do a smooth curve between them"); stand geometry for each; and a stand that is a table

@@ -7,6 +7,7 @@ import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng } from '../art/paint';
 import { PLANT_ASPECT, type PlantType } from '../art/plants';
 import { clamp } from '../scene/physics';
+import { clampIn, shapeOf } from '../scene/shape';
 import { groundHeight } from '../scene/terrain';
 import type { LayoutId, Tank, TankSetup } from '../scene/types';
 import { cardMaterial, plantTexture } from './textures';
@@ -95,6 +96,8 @@ function plant(S: TankSetup, type: PlantType, x: number, y: number, depth: numbe
 function build(S: TankSetup, T: Tank, id: LayoutId, seed: number): THREE.Group {
   const out = new THREE.Group(), { L, H, D } = T, sub = (x: number, d: number) => groundHeight(S, T, x, d);
   const r = rng(seed * 7919 + id.length * 104729);
+  // not a rectangle: everything is also kept inside the outline (a rectangle's layouts are unchanged)
+  const shaped = shapeOf(T) !== 'rect', V = (x: number, y: number, z: number, m = 30) => { if (shaped) { const q = clampIn(T, x, -z, m); x = q.x; z = -q.depth; } return new THREE.Vector3(x, y, z); };
   const room = (x: number, d: number, y = sub(x, d)) => H - y - 15; // headroom to the water line
   // Crossed cards reach half a card width in both x and depth whatever their turn, so the whole card must fit
   // inside the glass: a plant wider than the tank is scaled down, then its base is kept half a width from every pane.
@@ -103,10 +106,12 @@ function build(S: TankSetup, T: Tank, id: LayoutId, seed: number): THREE.Group {
     let hh = Math.min(h, maxW * PLANT_ASPECT[type]);
     const half = hh / PLANT_ASPECT[type] / 2;
     x = clamp(x, half + gap, L - half - gap); d = clamp(d, half + gap, D - half - gap);
+    if (shaped) ({ x, depth: d } = clampIn(T, x, d, half + gap)); // round / angled glass: inside the outline too
     const y = yIn ?? sub(x, d) - 4;
     hh = Math.min(hh, room(x, d, y)); if (hh > 15) out.add(plant(S, type, x, y, d, hh, r));
   };
   const addStone = (x: number, d: number, rx: number, ry: number, rz: number, color: string, angular = false, lift = 0) => {
+    if (shaped) ({ x, depth: d } = clampIn(T, x, d, Math.max(rx, rz) * 0.8));
     const s = stone(r, rx, ry, rz, color, angular); s.position.set(x, sub(x, d) - ry * 0.12 + lift, -d); out.add(s); return s;
   };
   const carpet = (d0: number, d1: number, skip?: (x: number, d: number) => boolean) => {

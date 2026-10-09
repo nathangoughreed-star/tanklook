@@ -3,7 +3,7 @@
 // Tank L/H/D are INTERIOR dimensions; glass is added outside. Fish positions live in their own tank's space.
 // Split tanks (scene v7): up to two fully independent setups, each with its own contents, room and camera.
 
-export const SCENE_VERSION = 7;
+export const SCENE_VERSION = 8;
 
 export type Units = 'in' | 'cm';
 export type EdgeMode = 'cutout' | 'a2c';
@@ -12,7 +12,17 @@ export type GlassType = 'standard' | 'lowiron';
 export type LightType = 'flat' | 'spot' | 'tube' | 'led';
 export type SubstrateType = 'gravel' | 'black' | 'white';
 
-export interface Tank { L: number; H: number; D: number }
+/** Tank floor outline (scene v8). L x D is always the bounding box; see scene/shape.ts. */
+export type TankShape = 'rect' | 'bow' | 'round' | 'poly';
+export interface Tank {
+  L: number; H: number; D: number;
+  /** Absent = 'rect' (files before v8). round: D = L (diameter). poly: L = width, D derived from it. bow: D = centre depth. */
+  shape?: TankShape;
+  /** poly only: 3, 5 or 6 sides, a flat face toward the viewer. */
+  sides?: number;
+  /** bow only: depth at the ends (mm); the front is a circular arc from the ends to the full depth D at the centre. */
+  bowMin?: number;
+}
 
 export interface Fish {
   id: number;
@@ -26,12 +36,15 @@ export interface Fish {
   bend: number; // -1..1, body curve
   /** Custom total length, mm (juveniles, or a big individual). Absent = the species' adult length. */
   tl?: number;
-  /** Snails only: the surface it clings to. On glass, yaw is its heading within the pane. */
+  /** Snails only: the surface it clings to. On glass, (x, depth) is a point on the glass and yaw its heading there. */
   surface?: Surface;
 }
 
-/** Where a snail sits: the substrate, or the inside of one of the four glass panes. */
-export type Surface = 'floor' | 'front' | 'back' | 'left' | 'right';
+/**
+ * Where a snail sits: the substrate, or the inside of the glass at (x, depth) on the outline, any pane or curved shell
+ * (v8; before that the four rectangle panes 'front' | 'back' | 'left' | 'right', migrated to 'glass').
+ */
+export type Surface = 'floor' | 'glass';
 
 export interface CameraSettings {
   dist: number; // eye to centre of the front glass, mm; identical for every tank
@@ -87,10 +100,19 @@ export interface WaterSettings { on: boolean; level: number; color: string; opac
 // on = false: a dry tank (terrarium for reptiles, amphibians, insects). Fish are kept in the data but not shown.
 
 export type StandFinish = 'black' | 'white' | 'oak';
-/** 'cabinet' = closed box with doors; 'frame' = open welded steel skeleton (square tube legs and rails). */
-export type StandStyle = 'cabinet' | 'frame';
-/** Stand under the tank: same footprint as the tank's outer glass, adjustable height (mm, floor to tank bottom). */
-export interface StandSettings { show: boolean; height: number; finish: StandFinish; style: StandStyle }
+/** 'cabinet' = closed box with doors; 'frame' = open welded steel skeleton (square tube legs and rails); 'table' = a
+ * table top larger than the tank, the tank placed anywhere on it (2026-10-09). */
+export type StandStyle = 'cabinet' | 'frame' | 'table';
+/**
+ * Table top (scene/table.ts): rectangular L x D or round (diameter L = D), mm. (x, z) = the tank's offset from the
+ * table centre, mm, x to the right, z toward the back; kept so the tank's outline stays on the top.
+ */
+export interface TableSettings { shape: 'rect' | 'round'; L: number; D: number; x: number; z: number }
+/**
+ * Stand under the tank, adjustable height (mm, floor to tank bottom). Cabinet and frame: the tank's footprint.
+ * `table` is kept while another style is chosen (added 2026-10-09; older files get one sized to the tank).
+ */
+export interface StandSettings { show: boolean; height: number; finish: StandFinish; style: StandStyle; table: TableSettings }
 
 /** Top of the tank: open, glass canopy panels, or a classic black moulded hood (lights inside). */
 export type LidType = 'open' | 'glass' | 'hood';

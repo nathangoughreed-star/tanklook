@@ -4,6 +4,7 @@
 // Tank B gets the same arrangement at the same relative spots.
 import { rng } from '../art/paint';
 import { clamp, substrateHeight } from './physics';
+import { inside } from './shape';
 import type { LayoutSettings, SubstrateSettings, Tank, TerrainSettings } from './types';
 
 export interface Ground { substrate: SubstrateSettings; layout: LayoutSettings; terrain?: TerrainSettings }
@@ -91,6 +92,7 @@ export function nearestWater(g: Ground, T: Tank, top: number, x: number, depth: 
   let best: Spot | null = null, bd = Infinity, deep: Spot | null = null, dw = 0;
   for (let i = 0; i <= N; i++) for (let j = 0; j <= N; j++) {
     const px = T.L * (0.02 + 0.96 * i / N), pd = T.D * (0.02 + 0.96 * j / N);
+    if (!inside(T, px, pd, 0.02 * Math.min(T.L, T.D))) continue;
     const water = top - groundHeight(g, T, px, pd);
     if (water > dw) { dw = water; deep = { x: px, depth: pd }; }
     if (water < need) continue;
@@ -106,7 +108,7 @@ export function nearestLand(g: Ground, T: Tank, top: number, x: number, depth: n
   let best: { x: number; depth: number } | null = null, bd = Infinity;
   for (let i = 0; i <= N; i++) for (let j = 0; j <= N; j++) {
     const px = T.L * (0.02 + 0.96 * i / N), pd = T.D * (0.02 + 0.96 * j / N);
-    if (groundHeight(g, T, px, pd) < top) continue;
+    if (!inside(T, px, pd, 0.02 * Math.min(T.L, T.D)) || groundHeight(g, T, px, pd) < top) continue;
     const dd = (px - x) ** 2 + (pd - depth) ** 2;
     if (dd < bd) { bd = dd; best = { x: px, depth: pd }; }
   }
@@ -117,7 +119,7 @@ export function nearestLand(g: Ground, T: Tank, top: number, x: number, depth: n
 export function randomLand(g: Ground, T: Tank, top: number, r: () => number) {
   for (let k = 0; k < 400; k++) {
     const x = T.L * (0.05 + 0.9 * r()), depth = T.D * (0.08 + 0.84 * r());
-    if (groundHeight(g, T, x, depth) >= top) return { x, depth };
+    if (inside(T, x, depth, 0.05 * Math.min(T.L, T.D)) && groundHeight(g, T, x, depth) >= top) return { x, depth };
   }
   return nearestLand(g, T, top, T.L * r(), T.D * r());
 }

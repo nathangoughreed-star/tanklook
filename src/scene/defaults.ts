@@ -20,7 +20,7 @@ export function defaultSetup(): TankSetup {
     terrain: { on: false, cols: 7, rows: 0, h: [] },
     water: { on: true, level: 1, color: '#7fb8a8', opacity: 0 },
     lid: 'open',
-    stand: { show: false, height: 30 * IN, finish: 'black', style: 'cabinet' },
+    stand: { show: false, height: 30 * IN, finish: 'black', style: 'cabinet', table: { shape: 'rect', L: 36 * IN, D: 18 * IN, x: 0, z: 0 } },
     wall: { show: false, side: 'back', color: '#d8d2c6' },
     person: { show: false, height: 1750, side: 'left' },
     fish: [

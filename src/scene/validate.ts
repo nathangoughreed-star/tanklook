@@ -2,6 +2,8 @@
 import { getSpecies, hasSpecies } from '../data/species';
 import { defaultSetup } from './defaults';
 import { clamp, mapToTank } from './physics';
+import { normTank } from './shape';
+import { TABLE_MAX, fitTable } from './table';
 import { keepInWater } from './water';
 import { SCENE_VERSION, type Fish, type Scene, type Tank, type TankSetup } from './types';
 
@@ -34,7 +36,11 @@ export const LIMITS = {
   terrainMax: 0.95,                        // highest point, fraction of interior height                // water level, fraction of full
   opacity: [0, 0.95] as const,             // water tint after 300 mm
 };
-export const SURFACES = ['floor', 'front', 'back', 'left', 'right'] as const;
+export const SURFACES = ['floor', 'glass'] as const;
+/** The v7 rectangle panes a glass snail could be on, with the coordinate that put it on that pane. */
+const OLD_PANES: Record<string, (f: Obj, T: Tank) => void> = {
+  front: f => { f.depth = 0; }, back: (f, T) => { f.depth = T.D; }, left: f => { f.x = 0; }, right: (f, T) => { f.x = T.L; },
+};
 export const LAYOUT_IDS = ['none', 'stones', 'driftwood', 'planted', 'iwagumi', 'swamp'] as const;
 export const GLASS_CHOICES = [4, 5, 6, 8, 10, 12, 15, 19];
 
@@ -57,6 +63,7 @@ function migrate(raw: Obj, warn: (m: string) => void): Obj {
     delete raw.plant;
   }
   // v5 adds water (level, colour); older files get the default: full, clear. v6 adds custom terrain (off).
+  // v8 adds tank shapes (absent = rect) and glass snails anywhere on the glass (old pane names are mapped in parseSetup).
   if (v < 7) {
     // v7: split tanks. One flat setup (tankA + contents) becomes tanks[0]; a shown Tank B (v6 mirrored A's contents at
     // B's size) becomes an independent copy of A at B's size, fish at the same relative spots.
@@ -112,7 +119,10 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
   const sub = (k: string) => (isObj(raw[k]) ? raw[k] as Obj : {});
   const tank = (v: unknown, def: Tank): Tank => {
     const o = isObj(v) ? v : {};
-    return { L: num(o.L, def.L, LIMITS.tankMin, LIMITS.tankMax), H: num(o.H, def.H, LIMITS.tankMin, LIMITS.tankMax), D: num(o.D, def.D, LIMITS.tankMin, LIMITS.tankMax) };
+    const T: Tank = { L: num(o.L, def.L, LIMITS.tankMin, LIMITS.tankMax), H: num(o.H, def.H, LIMITS.tankMin, LIMITS.tankMax), D: num(o.D, def.D, LIMITS.tankMin, LIMITS.tankMax) };
+    const shape = pick(o.shape, ['rect', 'bow', 'round', 'poly'] as const, 'rect'); // v8; older files: rect
+    if (shape === 'rect') return T;
+    return normTank({ ...T, shape, ...(shape === 'poly' ? { sides: num(o.sides, 6) } : {}), ...(shape === 'bow' ? { bowMin: num(o.bowMin, T.D * 0.75, 0, T.D) } : {}) });
   };
 
   const tankA = tank(raw.tank, d.tank);
@@ -128,6 +138,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
   let unknown = 0;
   for (const f of rawFish.slice(0, LIMITS.maxFish)) {
     if (!isObj(f)) continue;
+    if (typeof f.surface === 'string' && f.surface in OLD_PANES) { OLD_PANES[f.surface](f, tankA); f.surface = 'glass'; } // v7 pane -> v8 glass
     if (typeof f.species !== 'string' || !hasSpecies(f.species)) { unknown++; continue; }
     const id = typeof f.id === 'number' && Number.isInteger(f.id) && f.id > 0 && !seen.has(f.id) ? f.id : nextId++;
     seen.add(id);
@@ -180,7 +191,12 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
     stand: {
       show: bool(st.show, d.stand.show), height: num(st.height, d.stand.height, ...LIMITS.stand),
       finish: pick(st.finish, ['black', 'white', 'oak'] as const, d.stand.finish),
-      style: pick(st.style, ['cabinet', 'frame'] as const, d.stand.style),
+      style: pick(st.style, ['cabinet', 'frame', 'table'] as const, d.stand.style),
+      table: (() => { // added 2026-10-09 (no version bump); fitTable below grows it to the tank and keeps the tank on it
+        const tb = isObj(st.table) ? st.table as Obj : {}, dt = d.stand.table, shape = pick(tb.shape, ['rect', 'round'] as const, 'rect');
+        const L = num(tb.L, dt.L, 0, TABLE_MAX), D = shape === 'round' ? L : num(tb.D, dt.D, 0, TABLE_MAX);
+        return { shape, L, D, x: num(tb.x, 0, -TABLE_MAX, TABLE_MAX), z: num(tb.z, 0, -TABLE_MAX, TABLE_MAX) };
+      })(),
     },
     person: {
       show: bool(pe.show, d.person.show), height: num(pe.height, d.person.height, ...LIMITS.person),
@@ -192,7 +208,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
     },
     fish,
   };
-  keepInWater(setup);
+  keepInWater(setup); fitTable(setup);
   return setup;
 }
 

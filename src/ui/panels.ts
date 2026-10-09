@@ -14,7 +14,9 @@ import type { Store } from '../scene/store';
 import { SWAMP_LEVEL, groundHeight, nearestLand, randomLand, sampleTerrain } from '../scene/terrain';
 import { restsOnGround, setWaterLevel } from '../scene/water';
 import { tankWeight } from '../scene/weight';
-import type { Fish, LayoutId, Scene, Tank, TankSetup } from '../scene/types';
+import { POLY_SIDES, SHAPES, bowMinLimit, shapeOf } from '../scene/shape';
+import { TABLE_MAX, tableRange } from '../scene/table';
+import type { Fish, LayoutId, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
 import { GLASS_CHOICES, LIMITS, SceneError, nextFishId, parseScene } from '../scene/validate';
 
 const $ = <T extends HTMLElement = HTMLInputElement>(id: string) => document.getElementById(id) as T;
@@ -82,16 +84,26 @@ export function attachPanels(store: Store, viewer: Viewer) {
     s.onchange = () => {
       if (s.value === '') return;
       const p = TANK_PRESETS[+s.value]; s.value = '';
-      setTank({ L: p[1] * IN, H: p[2] * IN, D: p[3] * IN });
+      setTank({ ...S().tank, L: p[1] * IN, H: p[2] * IN, D: p[3] * IN }); // keeps the shape (round: D follows L)
     };
   }
-  function setTank(T: Tank) {
+  function setTank(T: Tank, coalesce?: string) {
     store.edit(s => {
-      rescaleTank(s, T); // keep fish at the same relative spot
+      rescaleTank(s, T); // keep fish at the same relative spot (and apply the shape's rules, e.g. round D = L)
       const max = T.H * 0.5;
       for (const k of ['fl', 'fr', 'bl', 'br'] as const) s.substrate[k] = Math.min(s.substrate[k], max);
-    });
+      // hood and peninsula ends exist for rectangles and bowfronts only (Nathan 2026-10-08)
+      if (!flatEnds(s.tank)) { if (s.lid === 'hood') s.lid = 'glass'; if (s.wall.side !== 'back') s.wall.side = 'back'; }
+    }, { coalesce });
   }
+  const flatEnds = (T: Tank) => ['rect', 'bow'].includes(shapeOf(T));
+  $<HTMLSelectElement>('shapeSel').innerHTML = Object.entries(SHAPES).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join('');
+  $<HTMLSelectElement>('shapeSel').onchange = e => {
+    const shape = (e.target as HTMLSelectElement).value as TankShape, T = S().tank;
+    setTank({ ...T, shape, sides: T.sides ?? 6, bowMin: T.bowMin ?? T.D * 0.7 });
+  };
+  for (const n of POLY_SIDES) $('sides' + n).onclick = () => setTank({ ...S().tank, shape: 'poly', sides: n });
+  $('bowMin').oninput = e => setTank({ ...S().tank, bowMin: +(e.target as HTMLInputElement).value }, 'bowMin');
   for (const k of ['L', 'H', 'D'] as const) {
     const el = $('a' + k);
     el.onchange = () => {
@@ -119,6 +131,18 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $<HTMLSelectElement>('standStyle').onchange = e => store.edit(s => { s.stand.style = (e.target as HTMLSelectElement).value as TankSetup['stand']['style']; s.stand.show = true; });
   $('standH').min = String(LIMITS.stand[0]); $('standH').max = String(LIMITS.stand[1]);
   $('standH').oninput = e => store.edit(s => { s.stand.height = +(e.target as HTMLInputElement).value; s.stand.show = true; }, { coalesce: 'standH' });
+  // table stand: top shape and size, and where the tank sits on it (store.update -> fitTable keeps it on the top)
+  const editTable = (fn: (tb: TableSettings, s: TankSetup) => void, coalesce?: string) => store.edit(s => { fn(s.stand.table, s); s.stand.style = 'table'; s.stand.show = true; }, coalesce ? { coalesce } : {});
+  $('tableRect').onclick = () => editTable(tb => { tb.shape = 'rect'; });
+  $('tableRound').onclick = () => editTable(tb => { tb.shape = 'round'; tb.L = tb.D = Math.max(tb.L, tb.D); });
+  for (const id of ['tableL', 'tableD', 'tableX', 'tableZ']) { $(id).min = String(-TABLE_MAX); $(id).max = String(TABLE_MAX); }
+  $('tableL').oninput = e => editTable(tb => { tb.L = +(e.target as HTMLInputElement).value; if (tb.shape === 'round') tb.D = tb.L; }, 'tableL');
+  $('tableD').oninput = e => editTable(tb => { tb.D = +(e.target as HTMLInputElement).value; }, 'tableD');
+  $('tableX').oninput = e => editTable(tb => { tb.x = +(e.target as HTMLInputElement).value; }, 'tableX');
+  $('tableZ').oninput = e => editTable(tb => { tb.z = +(e.target as HTMLInputElement).value; }, 'tableZ');
+  $('tableCentre').onclick = () => editTable(tb => { tb.x = 0; tb.z = 0; });
+  $('tableBack').onclick = () => editTable(tb => { tb.x = 0; tb.z = TABLE_MAX; });   // fitTable stops it at the edge
+  $('tableFront').onclick = () => editTable(tb => { tb.x = 0; tb.z = -TABLE_MAX; });
   $('wallOn').onchange = e => store.edit(s => { s.wall.show = (e.target as HTMLInputElement).checked; });
   for (const [id, side] of [['wallBack', 'back'], ['wallLeft', 'left'], ['wallRight', 'right']] as const)
     $(id).onclick = () => store.edit(s => { s.wall.side = side; s.wall.show = true; });
@@ -401,6 +425,18 @@ export function attachPanels(store: Store, viewer: Viewer) {
     $('uIn').classList.toggle('on', u === 'in'); $('uCm').classList.toggle('on', u === 'cm');
     for (const k of ['L', 'H', 'D'] as const) setVal('a' + k, toUnit(A[k], u));
     for (const id of ['aL', 'aH', 'aD']) $(id).step = u === 'in' ? '0.5' : '1';
+    const sh = shapeOf(A);
+    setVal('shapeSel', sh); $('sidesRow').style.display = sh === 'poly' ? '' : 'none'; $('bowRow').style.display = sh === 'bow' ? '' : 'none';
+    for (const n of POLY_SIDES) $('sides' + n).classList.toggle('on', sh === 'poly' && A.sides === n);
+    $('aLLab').textContent = sh === 'round' ? 'Diameter' : sh === 'poly' ? 'Width' : 'Length';
+    $('aDLab').textContent = sh === 'bow' ? 'Centre depth' : 'Depth';
+    $('aD').disabled = sh === 'round' || sh === 'poly'; // set by the width
+    if (sh === 'bow') { const b = $('bowMin'); b.min = String(Math.ceil(Math.max(20, bowMinLimit(A)))); b.max = String(Math.floor(A.D)); setVal('bowMin', A.bowMin ?? A.D); setOut('oBow', fmt(A.bowMin ?? A.D)); }
+    $('shapeHint').textContent = sh === 'rect' ? '' : sh === 'bow' ? 'Bowfront: the front glass is a curve from the end depth out to the full depth at the centre.'
+      : (sh === 'round' ? 'Round: one curved glass wall.' : `${A.sides} flat panes, one facing you.`) + ' No hood or peninsula ends for this shape.';
+    $('shapeHint').style.display = sh === 'rect' ? 'none' : '';
+    ($('lidHood') as HTMLButtonElement).disabled = !flatEnds(A);
+    for (const id of ['wallLeft', 'wallRight']) ($(id) as HTMLButtonElement).disabled = !flatEnds(A);
     // which tank the panel edits (split view)
     $('editing').hidden = !store.split; $('editing').textContent = `Editing Tank ${'AB'[G().active]}: click the other view to edit that one.`;
     const vol = volume(A);
@@ -415,6 +451,16 @@ export function attachPanels(store: Store, viewer: Viewer) {
 
     $('standOn').checked = s.stand.show; setVal('standFinish', s.stand.finish); setVal('standStyle', s.stand.style); setVal('standH', s.stand.height);
     setOut('oStandH', fmt(s.stand.height));
+    const tb = s.stand.table, tr = tableRange(s);
+    $('tableRows').style.display = s.stand.show && s.stand.style === 'table' ? '' : 'none';
+    $('tableRect').classList.toggle('on', tb.shape === 'rect'); $('tableRound').classList.toggle('on', tb.shape === 'round');
+    $('tableLLab').textContent = tb.shape === 'round' ? 'Table diameter' : 'Table length'; $('tableDRow').style.display = tb.shape === 'round' ? 'none' : '';
+    $('tableL').min = String(Math.ceil(tr.minL)); $('tableD').min = String(Math.ceil(tr.minD)); $('tableL').max = $('tableD').max = String(TABLE_MAX);
+    $('tableX').min = String(Math.floor(tr.x0)); $('tableX').max = String(Math.ceil(tr.x1)); $('tableZ').min = String(Math.floor(tr.z0)); $('tableZ').max = String(Math.ceil(tr.z1));
+    setVal('tableL', tb.L); setVal('tableD', tb.D); setVal('tableX', tb.x); setVal('tableZ', tb.z);
+    setOut('oTableL', fmt(tb.L)); setOut('oTableD', fmt(tb.D));
+    const off = (v: number, neg: string, pos: string) => (Math.abs(v) < 1 ? 'Centred' : `${fmt(Math.abs(v))} ${v < 0 ? neg : pos}`);
+    setOut('oTableX', off(tb.x, 'left', 'right')); setOut('oTableZ', off(tb.z, 'forward', 'back'));
     $('wallOn').checked = s.wall.show; setVal('wallColor', s.wall.color);
     for (const [id, side] of [['wallBack', 'back'], ['wallLeft', 'left'], ['wallRight', 'right']] as const)
       $(id).classList.toggle('on', s.wall.show && s.wall.side === side);

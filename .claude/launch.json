@@ -15,6 +15,19 @@
       "port": 5173
     },
     {
+      "name": "dev-alt",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5183",
+        "--strictPort"
+      ],
+      "port": 5183
+    },
+    {
       "name": "preview",
       "runtimeExecutable": "npm",
       "runtimeArgs": [

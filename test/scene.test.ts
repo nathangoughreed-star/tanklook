@@ -62,7 +62,7 @@ describe('stand and wall settings', () => {
     expect(scene.tanks[0].stand.show).toBe(false); expect(scene.tanks[0].wall.show).toBe(false);
     const bad = { ...v6(), stand: { show: true, height: 5, finish: 'gold' }, wall: { show: true, side: 'ceiling', color: 'red' } };
     const r = load(bad);
-    expect(r.stand).toEqual({ show: true, height: 12 * 25.4, finish: 'black', style: 'cabinet' });
+    expect(r.stand).toMatchObject({ show: true, height: 12 * 25.4, finish: 'black', style: 'cabinet' });
     expect(r.wall).toEqual({ show: true, side: 'back', color: '#d8d2c6' });
   });
   it('lid defaults to open for older files and keeps valid choices', () => {
@@ -159,7 +159,7 @@ describe('scene v4', () => {
     expect(on.layout).toEqual({ id: 'planted', seed: 1 }); expect(off.layout.id).toBe('none');
     expect('plant' in on).toBe(false);
   });
-  it('keeps a surface for snails only, defaulting to the floor', () => {
+  it('keeps a surface for snails only, defaulting to the floor; a v7 pane becomes a point on the glass', () => {
     const s = v6();
     const raw = { ...s, fish: [
       { id: 1, species: 'nerite', x: 10, y: 50, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0, surface: 'front' },
@@ -167,7 +167,8 @@ describe('scene v4', () => {
       { id: 3, species: 'neon', x: 10, y: 50, depth: 50, yaw: 0, pitch: 0, roll: 0, bend: 0, surface: 'front' },
     ] };
     const f = load(raw).fish;
-    expect(f.map(q => q.surface)).toEqual(['front', 'floor', undefined]);
+    expect(f.map(q => q.surface)).toEqual(['glass', 'floor', undefined]);
+    expect(f[0].depth).toBeCloseTo(0, 6); expect(f[0].x).toBeCloseTo(10, 6); // on the front pane, where it was
   });
 });
 

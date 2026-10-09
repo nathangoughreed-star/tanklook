@@ -2,6 +2,7 @@
 import { defaultScene } from './defaults';
 import { parseScene } from './validate';
 import { clearCams, eyeClear, limitOrbit } from './orbit';
+import { fitTable } from './table';
 import { keepInWater } from './water';
 import type { CameraSettings, Fish, Scene, TankSetup } from './types';
 
@@ -93,7 +94,7 @@ export class Store {
       this.lastKey = opts.coalesce ?? null; this.lastTime = now;
     }
     fn(this.scene);
-    if (kind === 'scene') { for (const t of this.scene.tanks) keepInWater(t); clearCams(this.scene.tanks, this.scene.camLock); }
+    if (kind === 'scene') { for (const t of this.scene.tanks) { keepInWater(t); fitTable(t); } clearCams(this.scene.tanks, this.scene.camLock); }
     if (this.selId != null && !this.tank.fish.some(f => f.id === this.selId)) this.selId = null;
     this.emit(kind);
   }
