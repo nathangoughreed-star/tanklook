@@ -67,15 +67,18 @@ export function aqAdvisorUrl(q: AqQuery) {
  *  2 new requests a minute, so a queue of tanks waits instead of getting "busy". */
 export const AQ_GAP_MS = 30000;
 let aqChain: Promise<unknown> = Promise.resolve(), aqNextAt = 0;
+/** Seconds until the queue's 30 s gap is over (0 = none, or still behind a request in flight). */
+export const aqWaitS = () => Math.max(0, Math.ceil((aqNextAt - Date.now()) / 1000));
 
 /** Stocking level in percent from the proxy. Requests go one at a time (never two at once, 2026-10-09), and after a
  *  fresh (uncached) answer the next waits AQ_GAP_MS. Throws when there is no proxy or it fails; 'proxy 503' = the
- *  proxy's breaker is resting after a failure. */
-export function fetchStocking(q: AqQuery, timeoutMs = 12000): Promise<number> {
+ *  proxy's breaker is resting after a failure. onStart: called when this request leaves the queue. */
+export function fetchStocking(q: AqQuery, onStart?: () => void, timeoutMs = 12000): Promise<number> {
   const run = async () => {
     if (!AQ_PROXY) throw new Error('no proxy');
     const wait = aqNextAt - Date.now();
     if (wait > 0) await new Promise(r => setTimeout(r, wait));
+    onStart?.();
     const p = new URLSearchParams({ sel: q.sel, l: String(q.l), d: String(q.d), h: String(q.h) });
     const res = await fetch(`${AQ_PROXY}/stocking?${p}`, { signal: AbortSignal.timeout(timeoutMs) });
     const j = await res.json().catch(() => ({})) as { stocking?: number; cached?: boolean };
