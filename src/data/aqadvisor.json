@@ -146,5 +146,20 @@
  "trumpet": {
   "aq": "200909300127",
   "name": "Malaysian Trumpet Snail (Melanoides tuberculata)"
+ },
+ "axolotl": {
+  "aq": "200911041032",
+  "name": "Dojo Loach (Misgurnus anguillicaudatus)",
+  "standIn": true
+ },
+ "firenewt": {
+  "aq": "200909300249",
+  "name": "Zebra Loach (Botia striata)",
+  "standIn": true
+ },
+ "firetoad": {
+  "aq": "200909300241",
+  "name": "White Cloud Mountain Minnow (Tanichthys albonubes)",
+  "standIn": true
  }
 }

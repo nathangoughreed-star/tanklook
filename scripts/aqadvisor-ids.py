@@ -49,6 +49,14 @@ NAMES = {
     'trumpet': 'Malaysian Trumpet Snail (Melanoides tuberculata)',
 }
 
+# Not in AqAdvisor: counted as a similar animal in size and type (Nathan 2026-10-09), flagged standIn in the json.
+# Land-only animals (dart frog, White's tree frog) add nothing to the water and stay uncounted.
+STAND_INS = {
+    'axolotl': 'Dojo Loach (Misgurnus anguillicaudatus)',  # 23 cm, bottom, cold water
+    'firenewt': 'Zebra Loach (Botia striata)',  # 9 cm, bottom
+    'firetoad': 'White Cloud Mountain Minnow (Tanichthys albonubes)',  # 4.5 cm, semi-aquatic, cool water
+}
+
 BASE = 'http://aqadvisor.com/AqAdvisor.php'
 UA = 'TankLook species mapper (tanklook.com; one request per species)'
 
@@ -64,14 +72,17 @@ def add(name):
     m = re.search(r'name="AlreadySelected" value="(\d+):1::"', html)
     return m.group(1) if m else None
 
+path = pathlib.Path(__file__).resolve().parent.parent / 'src' / 'data' / 'aqadvisor.json'
+known = json.loads(path.read_text(encoding='utf8')) if path.exists() else {}
 out = {}
-for sid, name in NAMES.items():
-    aq = add(name)
+for sid, name in [*NAMES.items(), *STAND_INS.items()]:
+    old = known.get(sid)
+    aq = old['aq'] if old and old['name'] == name else add(name)  # only ask AqAdvisor for new or changed entries
     print(f'{sid:14} {aq or "NOT FOUND"}  {name}')
     if aq:
-        out[sid] = {'aq': aq, 'name': name}
-    time.sleep(1)
+        out[sid] = {'aq': aq, 'name': name, **({'standIn': True} if sid in STAND_INS else {})}
+    if not (old and old['name'] == name):
+        time.sleep(1)
 
-path = pathlib.Path(__file__).resolve().parent.parent / 'src' / 'data' / 'aqadvisor.json'
 path.write_text(json.dumps(out, indent=1) + '\n', encoding='utf8')
-print(f'{len(out)}/{len(NAMES)} resolved -> {path}')
+print(f'{len(out)}/{len(NAMES) + len(STAND_INS)} resolved -> {path}')

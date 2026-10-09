@@ -38,6 +38,15 @@ differences). Fish panel keeps a readout + "Not counted" note. Panel sections st
 Same push shipped the approved 3D fish (`f77f791`, `66c69af`). Nathan's fish review (2026-10-09): discus pass, cory
 pass for this iteration (still smooth / egg-shaped head-on, weak head-trunk step, generic dorsal; stop there);
 **next work unit = the species audit** (kuhli, bristlenose, angelfish + one ordinary species, same multi-angle sheets).
+- **Species policy (Nathan 2026-10-09), applies to every future species addition:**
+  1. Choose which fish to add next from AqAdvisor's published most-popular list (location not found yet: not linked
+     from the calculator, its articles or the report page; ask Nathan for the URL).
+  2. Prefer species that are on AqAdvisor; add each new one's AqAdvisor name to `NAMES` in `scripts/aqadvisor-ids.py`
+     and rerun it (only new / changed names are requested).
+  3. Species not on AqAdvisor: count them as a similar fish in size and type (`STAND_INS` in the same script, flagged
+     `standIn`; the Fish panel says "counted as a similar fish"). Now: axolotl = Dojo Loach, fire-bellied newt = Zebra
+     Loach, fire-bellied toad = White Cloud Mountain Minnow. Land-only animals (dart frog, White's tree frog) stay
+     uncounted.
 - AqAdvisor has no API but its form is a stateless GET: `AlreadySelected=<id>:<n>::,...` + tank in inches +
   `FormSubmit=Update` returns "Your aquarium stocking level is N%". Filter choice doesn't change the %. http only, no
   CORS -> needs a proxy. No robots.txt (404).

@@ -440,8 +440,9 @@ export function attachPanels(store: Store, viewer: Viewer) {
     $('aqOut').textContent = typeof got === 'number' ? `${got}% (per AqAdvisor)${got > 100 ? ', overstocked' : ''}`
       : AQ_PROXY && got !== 'error' ? 'checking…' : '';
     $('aqOut').className = typeof got === 'number' && got > 100 ? 'bad' : '';
-    $('aqNote').textContent = q.skipped.length
-      ? `Not counted (not in AqAdvisor): ${q.skipped.map(k => `${k.count} ${k.name}`).join(', ')}.` : '';
+    $('aqNote').textContent = [
+      q.standIns.length ? `Counted as a similar fish (not in AqAdvisor): ${q.standIns.map(k => `${k.count} ${k.name} as ${k.as}`).join(', ')}.` : '',
+      q.skipped.length ? `Not counted (land animals): ${q.skipped.map(k => `${k.count} ${k.name}`).join(', ')}.` : ''].filter(Boolean).join(' ');
     if (AQ_PROXY && got === undefined && aqBusy !== key) {
       clearTimeout(aqTimer);
       aqTimer = window.setTimeout(async () => {

@@ -12,7 +12,8 @@ import type { TankSetup } from '../scene/types';
  *  worker/dev.mjs serves it locally. Unset = link to aqadvisor.com only. */
 export const AQ_PROXY: string = (import.meta.env?.VITE_AQ_PROXY ?? '').replace(/\/$/, '');
 
-const AQ_IDS = ids as Record<string, { aq: string; name: string }>;
+/** standIn: not in AqAdvisor, counted as a similar animal in size and type (Nathan 2026-10-09). */
+const AQ_IDS = ids as Record<string, { aq: string; name: string; standIn?: boolean }>;
 const IN = 25.4;
 
 export interface AqQuery {
@@ -21,8 +22,10 @@ export interface AqQuery {
   /** Tank as AqAdvisor's box, inches: true length and height, depth = floor area / length, so the box has the tank's
    *  real bottom area (what AqAdvisor's stocking depends on) and, with the true height, its volume. */
   l: number; d: number; h: number;
-  /** Animals AqAdvisor has no entry for (frogs, newts, axolotl), with counts. */
+  /** Animals with no AqAdvisor entry and no stand-in (land-only frogs), with counts. */
   skipped: { name: string; count: number }[];
+  /** Animals counted as a similar AqAdvisor species: name, the stand-in's common name, count. */
+  standIns: { name: string; as: string; count: number }[];
   /** Fish counted. */
   counted: number;
 }
@@ -32,16 +35,19 @@ export function aqQuery(s: TankSetup): AqQuery | null {
   if (!s.water.on) return null;
   const counts = new Map<string, number>();
   for (const f of s.fish) counts.set(f.species, (counts.get(f.species) ?? 0) + 1);
-  const parts: string[] = [], skipped: AqQuery['skipped'] = [];
+  const parts: string[] = [], skipped: AqQuery['skipped'] = [], standIns: AqQuery['standIns'] = [];
   let counted = 0;
   for (const [sp, n] of [...counts].sort(([a], [b]) => a.localeCompare(b))) {
     const m = AQ_IDS[sp];
-    if (m) { parts.push(`${m.aq}:${n}::`); counted += n; }
+    if (m) {
+      parts.push(`${m.aq}:${n}::`); counted += n;
+      if (m.standIn) standIns.push({ name: getSpecies(sp)?.name ?? sp, as: m.name.replace(/ \(.*$/, ''), count: n });
+    }
     else skipped.push({ name: getSpecies(sp)?.name ?? sp, count: n });
   }
   if (!parts.length) return null;
   const T = s.tank, r = (mm: number) => Math.round(mm / IN * 10) / 10;
-  return { sel: parts.join(','), l: r(T.L), d: r(footprint(T).area / T.L), h: r(T.H), skipped, counted };
+  return { sel: parts.join(','), l: r(T.L), d: r(footprint(T).area / T.L), h: r(T.H), skipped, standIns, counted };
 }
 
 /** Same request, as a key: equal keys = same answer. */

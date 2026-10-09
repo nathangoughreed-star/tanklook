@@ -4,7 +4,7 @@
 // distinct tank + stocking reaches aqadvisor.com at most once a week. Deploy: see worker/README.md.
 
 const AQ = 'http://aqadvisor.com/AqAdvisor.php';
-const ORIGINS = /^(https:\/\/(www\.)?tanklook\.com|http:\/\/(localhost|127\.0\.0\.1)(:\d+)?)$/;
+const ORIGINS = /^(https?:\/\/(www\.)?tanklook\.com|http:\/\/(localhost|127\.0\.0\.1)(:\d+)?)$/; // http too: Pages HTTPS isn't enforced yet
 const SEL = /^\d{6,14}:\d{1,3}::(,\d{6,14}:\d{1,3}::){0,59}$/;
 const CACHE_S = 7 * 24 * 3600;
 
