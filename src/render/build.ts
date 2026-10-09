@@ -195,7 +195,12 @@ function shadedBox(w: number, h: number, d: number, color: number) {
  * back, ends between) so it reads as 3D; lit as a room surface.
  */
 function shadedPrism(ring: P[], y0: number, y1: number, color: number) {
-  const geo = prismGeometry(ring, y0, y1), n = geo.attributes.normal, c = new THREE.Color(color), cols: number[] = [];
+  return shadedSolid(prismGeometry(ring, y0, y1), color);
+}
+
+/** Any solid's geometry shaded per face as shadedPrism does; lit as a room surface. */
+function shadedSolid(geo: THREE.BufferGeometry, color: number) {
+  const n = geo.attributes.normal, c = new THREE.Color(color), cols: number[] = [];
   for (let i = 0; i < n.count; i++) {
     const ny = n.getY(i), nz = n.getZ(i), k = ny > 0.5 ? 1.08 : ny < -0.5 ? 0.5 : 0.78 + nz * (nz > 0 ? 0.17 : 0.08);
     cols.push(c.r * k, c.g * k, c.b * k);
@@ -212,19 +217,39 @@ function addStand(sc: THREE.Scene, S: TankSetup, T: Tank) {
   if (S.stand.style === 'frame') { addFrameStand(sc, T, t, top, h, fin.color); return; }
   if (S.stand.style === 'table') { addTableStand(sc, S, T, top, h, fin.color); return; }
   sc.add(shadedPrism(offsetRing(T, t), top - h, top, fin.color));
-  // doors on the faces toward the viewer (a curved front gets curved doors): seams just proud of the face, a
-  // kick-plate line near the floor, a split in the middle; a peninsula is open on both long sides, so its cabinet has
-  // doors on the back too (Nathan 2026-10-08)
-  const inset = Math.min(30, h * 0.08), y0 = top - h + Math.min(70, h * 0.12), y1 = top - inset;
+  // doors on the faces toward the viewer (a curved front gets curved doors): a pair of overlay panels standing proud
+  // of the carcass above a kick plate, split in the middle, each with a bar handle beside the split; a seam line round
+  // each panel's front keeps the doors readable straight on, where the panel face and the carcass shade alike. A
+  // peninsula is open on both long sides, so its cabinet has doors on the back too (Nathan 2026-10-08)
+  const inset = Math.min(30, h * 0.08), y0 = top - h + Math.min(70, h * 0.12), y1 = top - inset, gap = 1.5;
   const seam = fin.color === STAND_FINISHES.white.color ? 0x9a9890 : 0x111214, pts: number[] = [];
-  const runs = facingRuns(T, t + 0.6, [0, -1]).concat(penEnd(S) ? facingRuns(T, t + 0.6, [0, 1]) : []);
+  const hh = Math.min(140, (y1 - y0) * 0.25), hy1 = y1 - Math.min(60, (y1 - y0) * 0.1), hy0 = hy1 - hh;
+  const runs = facingRuns(T, t, [0, -1]).concat(penEnd(S) ? facingRuns(T, t, [0, 1]) : []);
   for (const r of runs) {
     const len = runLength(r); if (len < 2 * inset + 40) continue;
-    const door = subRun(r, inset, len - inset), m = alongRun(r, len / 2);
-    for (const y of [y0, y1]) for (let i = 0; i < door.length - 1; i++) pts.push(...at(door[i], y), ...at(door[i + 1], y));
-    for (const p of [door[0], door[door.length - 1], m]) pts.push(...at(p, y1), ...at(p, y0));
+    for (const [s0, s1, hs] of [[inset, len / 2 - gap, len / 2 - 45], [len / 2 + gap, len - inset, len / 2 + 45]]) {
+      const back = subRun(r, s0, s1), face = proud(back, DOOR_T), line = proud(back, DOOR_T + 0.6);
+      sc.add(shadedSolid(wallGeometry(back, face, y0, y1), fin.color));
+      for (const y of [y0, y1]) for (let i = 0; i < line.length - 1; i++) pts.push(...at(line[i], y), ...at(line[i + 1], y));
+      for (const p of [line[0], line[line.length - 1]]) pts.push(...at(p, y1), ...at(p, y0));
+      if (hs - 6 < s0 || hs + 6 > s1) continue;
+      const hb = proud(subRun(r, hs - 6, hs + 6), DOOR_T);
+      sc.add(shadedSolid(wallGeometry(hb, proud(hb, 22), hy0, hy1), HANDLE));
+    }
   }
   sc.add(lines(pts, seam, 0.8));
+}
+
+const DOOR_T = 18, HANDLE = 0x9a9ea4; // overlay door thickness (mm); brushed-steel bar handles
+
+/** A polyline along the ring pushed `d` outward (each vertex along the mean of its edges' outward normals). */
+function proud(r: P[], d: number): P[] {
+  const n = (a: P, b: P): P => { const l = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1; return [(b[1] - a[1]) / l, -(b[0] - a[0]) / l]; };
+  return r.map((p, i) => {
+    const a = i > 0 ? n(r[i - 1], p) : null, b = i < r.length - 1 ? n(p, r[i + 1]) : null;
+    const v: P = a && b ? [a[0] + b[0], a[1] + b[1]] : (a ?? b)!, l = Math.hypot(v[0], v[1]) || 1;
+    return [p[0] + (v[0] / l) * d, p[1] + (v[1] / l) * d];
+  });
 }
 
 /**
