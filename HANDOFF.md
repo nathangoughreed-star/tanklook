@@ -82,8 +82,8 @@ session-9 loft. Ask Nathan before each download. Watch: fused or opaque fins in 
   - The audit's outcome decides: expand the 3D pipeline to all species, or rework the architecture.
 - **Next: (3)** stretched markings: side projection smears where the surface turns away from the side (discus eye bar
   rings the head). Then (4) cory geometry. Not checked yet: the global paint changes on the other 34 species' cards.
-- **Shared working tree:** another chat was editing index.html, defaults/physics/types/validate, ui/diff + panels at the
-  same time (2 split.test failures are theirs: size label gained gallons and area). Commit the two sets separately.
+- **Committed 2026-10-09 (session 10):** the other chat's spot-light pattern / spacing / beam angle and size label as
+  `305e490` (split.test updated to the new label), session 9's 3D fish as `f77f791`. Not deployed. Tests 104/104.
 
 **(superseded)** Nathan judges the direction. If yes: fixes for the artefacts above (eye and gill per flank instead of projected,
 real pectoral fins), then roadmap step 2 (all 42 species, a `thick` per plan; hand-drawn neon / gourami / angel need plans
