@@ -419,32 +419,40 @@ export function attachPanels(store: Store, viewer: Viewer) {
   jsonDetails.addEventListener('toggle', () => { jsonOpen = jsonDetails.open; syncJson(); });
   const syncJson = () => { if (jsonOpen) $('json').textContent = JSON.stringify(G(), null, 1); };
 
-  // ---------- Stocking level from AqAdvisor (on demand; answers kept per tank + stocking) ----------
+  // ---------- Stocking level from AqAdvisor: fetched by itself ~1 s after the stocking or tank size settles ----------
+  // (answers kept per tank + stocking here, and cached 7 days by the proxy). Shown in the size label above the tank.
   const aqDone = new Map<string, number | 'error'>();
-  let aqBusy = '';
+  let aqBusy = '', aqTimer = 0;
+  /** Label text for the edited tank: 'Stocking 72% (AqAdvisor)', '…' while asking, '' when there is nothing to show. */
+  const aqLabel = () => {
+    const q = AQ_PROXY ? aqQuery(S()) : null;
+    if (!q) return { text: '', url: '', over: false };
+    const key = aqKey(q), got = aqDone.get(key);
+    return { text: typeof got === 'number' ? `Stocking ${got}% (AqAdvisor)` : got === 'error' ? 'Stocking: AqAdvisor ↗' : 'Stocking …',
+      url: aqAdvisorUrl(q), over: typeof got === 'number' && got > 100 };
+  };
   function syncAq() {
     const q = aqQuery(S());
     $('aqRow').style.display = q ? '' : 'none';
     if (!q) { $('aqNote').textContent = ''; return; }
     const key = aqKey(q), got = aqDone.get(key);
     $<HTMLAnchorElement>('aqLink').href = aqAdvisorUrl(q);
-    const check = $<HTMLButtonElement>('aqCheck');
-    check.hidden = !AQ_PROXY || typeof got === 'number'; check.disabled = aqBusy === key;
-    $('aqOut').textContent = aqBusy === key ? 'checking…'
-      : typeof got === 'number' ? `${got}% (per AqAdvisor)${got > 100 ? ', overstocked' : ''}`
-      : got === 'error' ? 'AqAdvisor did not answer; open it there:' : AQ_PROXY ? '' : 'see';
+    $('aqOut').textContent = typeof got === 'number' ? `${got}% (per AqAdvisor)${got > 100 ? ', overstocked' : ''}`
+      : AQ_PROXY && got !== 'error' ? 'checking…' : '';
     $('aqOut').className = typeof got === 'number' && got > 100 ? 'bad' : '';
     $('aqNote').textContent = q.skipped.length
       ? `Not counted (not in AqAdvisor): ${q.skipped.map(k => `${k.count} ${k.name}`).join(', ')}.` : '';
+    if (AQ_PROXY && got === undefined && aqBusy !== key) {
+      clearTimeout(aqTimer);
+      aqTimer = window.setTimeout(async () => {
+        const q2 = aqQuery(S());
+        if (!q2 || aqKey(q2) !== key) return; // changed again; that change schedules its own
+        aqBusy = key;
+        try { aqDone.set(key, await fetchStocking(q2)); } catch { aqDone.set(key, 'error'); }
+        aqBusy = ''; syncAq(); viewer.invalidate();
+      }, 1000);
+    }
   }
-  $('aqCheck').onclick = async () => {
-    const q = aqQuery(S());
-    if (!q) return;
-    const key = aqKey(q);
-    aqBusy = key; syncAq();
-    try { aqDone.set(key, await fetchStocking(q)); } catch { aqDone.set(key, 'error'); }
-    aqBusy = ''; syncAq();
-  };
 
   function sync() {
     const s = S(), A = s.tank, u = G().units;
@@ -585,7 +593,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     const g = G(), active = viewer.active, split = active.length > 1;
     const diff = split ? tankDiff(g.tanks[0], g.tanks[1], g.units) : [];
     const hidden = $('app').classList.contains('collapsed');
-    const sig = JSON.stringify([diff, tabHidden, hidden, g.units, g.active, g.camLock, active.map(v => [v.x, v.w]), split || fmtDims(g.tanks[0].tank, g.units)]);
+    const sig = JSON.stringify([diff, tabHidden, hidden, g.units, g.active, g.camLock, active.map(v => [v.x, v.w]), split || fmtDims(g.tanks[0].tank, g.units), split || aqLabel()]);
     if (sig !== tabSig) {
       tabSig = sig;
       for (const [i, id] of [[0, 'labA'], [1, 'labB']] as const) {
@@ -596,7 +604,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
         el.style.right = (viewer.host.clientWidth - vp.x - vp.w + 8) + 'px'; el.style.maxWidth = Math.max(80, vp.w - 16 - (vp.x === 0 && hidden ? 80 : 0)) + 'px'; // clear of "› Edit"
         el.classList.toggle('tab', split); el.classList.toggle('on', split && i === g.active);
         if (!split) { // one tank: its size, and the way into a side-by-side comparison
-          el.innerHTML = `<span>${esc(fmtSize(vp.T, g.units))}</span><button class="close" data-split title="Copy this tank into a second, independent one beside it">⧉ Split to compare</button>`;
+          const aq = aqLabel();
+          el.innerHTML = `<span>${esc(fmtSize(vp.T, g.units))}</span>` + (aq.text ? `<a class="aq${aq.over ? ' over' : ''}" href="${esc(aq.url)}" target="_blank" rel="noopener" title="AqAdvisor's stocking level for this tank (aqadvisor.com); click for the full report">${esc(aq.text)}</a>` : '') + `<button class="close" data-split title="Copy this tank into a second, independent one beside it">⧉ Split to compare</button>`;
           continue;
         }
         if (tabHidden[i]) {

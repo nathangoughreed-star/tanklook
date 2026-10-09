@@ -27,19 +27,17 @@ cardinal unchanged `shots/48_cardinal_*`. Toggle `__gb.fish3d.fade` (off = sessi
 - **Next (agreed):** Nathan reviews the two sheets; then (d) the audit: 1. card regressions from the global paint
   changes; 2. (more important) kuhli loach, bristlenose pleco, angelfish in 3D with as little species code as possible.
 
-## AqAdvisor stocking level (2026-10-09, separate chat; DEPLOYED as link-only `245b5cc`, proxy NOT deployed)
+## AqAdvisor stocking level (2026-10-09, separate chat; LIVE with the proxy)
 
-**Deploy state (2026-10-09):** live = `245b5cc` = old live `305e490` + AqAdvisor (`97300f3` cherry-picked) + panel
-sections start collapsed on every load (`921e280`, Nathan: open sections are no longer remembered; only the hidden
-panel is). Nathan chose this over shipping the 3D fish. **Local main is AHEAD of live with the 3D fish (`f77f791`,
-`5ac9a3e`, `66c69af`, merged back as `9bdff83`, no rewrite): pushing main deploys the fish.** Nathan's fish review
-(pasted 2026-10-09): discus pass, cory pass for this iteration (still too smooth / egg-shaped head-on, weak head-trunk
-step, generic dorsal; stop there), next = the species audit (kuhli, bristlenose, angelfish + one ordinary species,
-same multi-angle sheets). To put the stocking % live: Cloudflare steps in `worker/README.md`.
-
-Nathan wanted "Stocking: 92% (powered by aqadvisor)". Agreed: fetch the number from aqadvisor.com, cite it as
-"per AqAdvisor" (not "powered by", which reads as a partnership), on demand only (a Check button), cached, with a link
-to their full report as the fallback.
+**State (2026-10-09):** proxy deployed on Nathan's personal Cloudflare (nathangoughreed@gmail.com, workers.dev subdomain
+`tanklook`): https://tanklook-aq.tanklook.workers.dev, URL in `.env.production`. Redeploy: `npx wrangler deploy` in
+`worker/` (wrangler login done on this PC). Nathan 2026-10-09: the % shows in the size label above the tank
+("24 × 12 × 12″, 15 gallons, 288 in² | Stocking 72% (AqAdvisor)", red over 100 %, click = AqAdvisor's full report) and
+updates by itself 1 s after the stocking or size settles (no Check button); single-tank view only (split tabs show
+differences). Fish panel keeps a readout + "Not counted" note. Panel sections start collapsed on every load.
+Same push shipped the approved 3D fish (`f77f791`, `66c69af`). Nathan's fish review (2026-10-09): discus pass, cory
+pass for this iteration (still smooth / egg-shaped head-on, weak head-trunk step, generic dorsal; stop there);
+**next work unit = the species audit** (kuhli, bristlenose, angelfish + one ordinary species, same multi-angle sheets).
 - AqAdvisor has no API but its form is a stateless GET: `AlreadySelected=<id>:<n>::,...` + tank in inches +
   `FormSubmit=Update` returns "Your aquarium stocking level is N%". Filter choice doesn't change the %. http only, no
   CORS -> needs a proxy. No robots.txt (404).

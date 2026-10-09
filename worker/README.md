@@ -7,6 +7,8 @@ reads the percentage from the results page and returns `{"stocking": 92}`. It is
 
 Without the worker, the app still shows the "AqAdvisor ↗" link, which opens the same calculation on aqadvisor.com.
 
+Deployed 2026-10-09: https://tanklook-aq.tanklook.workers.dev (Nathan's personal account).
+
 ## Deploy (once, free plan)
 
 1. Create a Cloudflare account (personal) if you don't have one.
