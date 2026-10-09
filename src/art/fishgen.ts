@@ -26,12 +26,12 @@ export interface Plan {
   shade: [string, string, string]; // back, flank, belly
   tail: { type: Tail; h: number; tint?: string; a?: number; edge?: string };
   dorsal?: FinSpec; anal?: FinSpec; adipose?: boolean;
-  pelvic?: { u: number; len: number; tint?: string; thread?: boolean };
+  pelvic?: { u: number; len: number; tint?: string; thread?: boolean; angle?: number }; // angle: degrees below horizontal (thread)
   fin: string;        // default membrane tint
   ray?: string;
   marks?: Mark[];     // painted inside the body
   finMarks?: Mark[];  // painted inside the dorsal, anal and tail fins
-  eye: { r: number; iris: [string, string]; u?: number; dv?: number };
+  eye: { r: number; iris: [string, string]; u?: number; dv?: number; up?: number }; // up (3D): 0 on the flank .. 1 on top of the head
   barbels?: number;   // barbel length (widths); bottom fish
   bristles?: boolean; // bristlenose snout
   rim?: number;
@@ -40,6 +40,7 @@ export interface Plan {
   // (share, default 0.55); head this share narrower than the trunk from the gill cover on; thickness kept to the snout
   // tip (share of max: a flat, wide snout)
   belly?: number; wide?: number; pedT?: number; step?: number; noseW?: number;
+  angular?: number;   // 0 curved outline .. 1 straight back and belly lines meeting at a rounded apex (diamond: angelfish)
   scale?: number;     // scale size (widths) for the scale net; 0 = none (default 0.024)
   plates?: boolean;   // armoured (corydoras): two rows of bony plates instead of scales
 }
@@ -54,6 +55,12 @@ export function profile(p: Plan) {
       const s = (t - tp) / (1 - tp);
       hh = p.depth * Math.pow(Math.max(0, 1 - Math.pow(s, 1.6 + sn * 1.4)), 1 - 0.5 * sn); vc = mouth * s * s;
     }
+    if (p.angular) {
+      // straight lines from the peduncle and from the nose, joined by a smooth minimum so the apex is rounded
+      const r0 = 2 * p.ped, l1 = r0 + (p.depth - r0) * t / tp, l2 = p.depth * (1 - t) / (1 - tp), k = 0.3 * p.depth;
+      const h = Math.max(k - Math.abs(l1 - l2), 0) / k, line = (Math.min(l1, l2) - h * h * k / 4) * p.depth / (p.depth - k / 4);
+      hh += (Math.min(line, p.depth) - hh) * p.angular;
+    }
     return [vc - hh * back, vc + hh * (1 - back)];
   };
 }
@@ -64,7 +71,7 @@ function finPts(f: FinSpec, base: (u: number) => number, sg: number): Pt[] {
     case 'round': return [[f.u1, b(f.u1)], [f.u1 - d * 0.12, V(0.85)], [f.u0 + d * 0.45, V(1)], [f.u0 - d * 0.08, V(0.75)], [f.u0 - d * 0.06, b(f.u0)]];
     case 'sail': return [[f.u1, b(f.u1)], [f.u1 - d * 0.05, V(1), 'c'], [f.u0 + d * 0.25, V(0.78)], [f.u0 - d * 0.06, V(0.5)], [f.u0 - d * 0.06, b(f.u0)]];
     // tall sail swept back to a high pointed tip (angelfish)
-    case 'swept': return [[f.u1, b(f.u1)], [f.u1 - d * 0.35, V(0.45)], [f.u0 + d * 0.3, V(1), 'c'], [f.u0 + d * 0.12, V(0.72)], [f.u0 - d * 0.12, b(f.u0 - d * 0.12)]];
+    case 'swept': return [[f.u1, b(f.u1), 'c'], [f.u0 + d * 0.3, V(1), 'c'], [f.u0 + d * 0.06, V(0.55), 'c'], [f.u0 - d * 0.12, b(f.u0 - d * 0.12), 'c']]; // straight edges
     case 'long': return [[f.u1, b(f.u1)], [f.u1 - d * 0.25, V(0.65)], [f.u0, V(1)], [f.u0 - d * 0.3, V(0.9)], [f.u0 - d * 0.28, b(f.u0)]];
     default: return [[f.u1, b(f.u1)], [f.u1 - d * 0.35, V(1), 'c'], [f.u0, V(0.3)], [f.u0 - 0.01, b(f.u0)]];
   }
@@ -95,7 +102,10 @@ function geometry(p: Plan) {
   let pelvic: Pt[] | undefined;
   if (p.pelvic) {
     const { u, len } = p.pelvic, b = prof(u)[1] - 0.01;
-    pelvic = p.pelvic.thread ? [[u + 0.01, b], [u - len * 0.55, b + len * 0.35], [u - len, b + len * 0.5, 'c'], [u - len * 0.5, b + len * 0.3], [u - 0.01, b]]
+    // a thread hangs back at ~27 degrees, or steeper (`angle`): its points turn about the root
+    const rot = ((p.pelvic.angle ?? 26.6) - 26.6) * Math.PI / 180, cr = Math.cos(rot), sr = Math.sin(rot);
+    const R = (dx: number, dy: number, c?: 'c'): Pt => { const x = -dx * len, y = dy * len, qu = u + x * cr + y * sr, qv = b - x * sr + y * cr; return c ? [qu, qv, c] : [qu, qv]; };
+    pelvic = p.pelvic.thread ? [[u + 0.01, b], R(0.55, 0.35), R(1, 0.5, 'c'), R(0.5, 0.3), [u - 0.01, b]]
       : [[u + 0.02, b], [u - len * 0.6, b + len * 0.75, 'c'], [u - len * 0.35, b + len * 0.25], [u - 0.03, b]];
   }
   return { prof, bodyPts, tail, dorsal, anal, pelvic, c };
@@ -140,13 +150,14 @@ function paintMarks(c: Ctx, P: Proj, W: number, marks: Mark[] | undefined, seed:
   }
 }
 
+const mixHex = (a: string, b: string, k: number) => '#' + [1, 3, 5].map(i => Math.round(parseInt(a.slice(i, i + 2), 16) * (1 - k) + parseInt(b.slice(i, i + 2), 16) * k).toString(16).padStart(2, '0')).join('');
 export interface PairedFin { kind: 'pelvic' | 'pectoral'; pts: Pt[]; root: [number, number]; tint: string; a?: number; rays: number }
 /** The paired fins (pelvic if the plan has one, then the pectoral), in card coordinates. */
 export function pairedFins(p: Plan): PairedFin[] {
   const g = geometry(p), out: PairedFin[] = [];
   if (g.pelvic) out.push({ kind: 'pelvic', pts: g.pelvic, root: [p.pelvic!.u, g.prof(p.pelvic!.u)[1]], tint: p.pelvic!.tint ?? p.fin, a: p.pelvic!.thread ? 0.85 : undefined, rays: p.pelvic!.thread ? 0 : 5 });
   const pu = 1 - (1 - p.pedU) * 0.24, [pt, pb] = g.prof(pu), pm = pt + (pb - pt) * 0.62, pl = Math.min((1 - p.pedU) * 0.17, p.depth * 0.75); // slender fish (loaches) keep small pectorals
-  out.push({ kind: 'pectoral', pts: [[pu, pm - 0.01], [pu - pl, pm + pl * 0.3, 'c'], [pu - pl * 0.7, pm + pl * 0.55], [pu + 0.005, pm + 0.015]], root: [pu, pm], tint: p.fin, a: 0.3, rays: 5 });
+  out.push({ kind: 'pectoral', pts: [[pu, pm - 0.01], [pu - pl, pm + pl * 0.3, 'c'], [pu - pl * 0.7, pm + pl * 0.55], [pu + 0.005, pm + 0.015]], root: [pu, pm], tint: mixHex(p.fin, p.shade[1], 0.35), a: 0.3, rays: 5 }); // pectoral takes on some flank colour: it lies against the body
   return out;
 }
 export function drawPairedFin(f: PairedFin, ctx: Ctx, P: Proj, W: number, ray = '#7d7a70') {
@@ -154,7 +165,7 @@ export function drawPairedFin(f: PairedFin, ctx: Ctx, P: Proj, W: number, ray = 
   if (f.kind === 'pectoral' && f.a !== undefined) return; // the card's faint fan over the flank gets no spine
   // leading spine / first ray: the stiff front edge that gives a fin its structure
   const tip = f.pts.find(q => q[2] === 'c') ?? f.pts[1], [x0, y0] = P(f.root[0], f.root[1]), [x1, y1] = P(tip[0], tip[1]);
-  ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.strokeStyle = hexA(ray, 0.75); ctx.lineWidth = 0.006 * W; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.strokeStyle = hexA(ray, f.kind === 'pectoral' ? 0.45 : 0.75); ctx.lineWidth = 0.006 * W; ctx.stroke();
 }
 
 /** Eye centre (u, v), radius and iris colours. */
@@ -316,8 +327,8 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { u0: 0.15, u1: 0.72, h: 0.07, shape: 'round', edge: '#c8603a' }, anal: { u0: 0.15, u1: 0.68, h: 0.07, shape: 'round', edge: '#c8603a' }, pelvic: { u: 0.72, len: 0.12, tint: '#c8603a' },
     marks: [{ k: 'bars', us: [0.88, 0.2], w: 0.035, c: '#2a2a30', a: 0.55 }, ...[-0.3, -0.21, -0.12, -0.03, 0.06, 0.15, 0.24].map(v => ({ k: 'band' as const, u0: 0.12, u1: 0.98, v0: v, v1: v + 0.032, c: '#8a5a3a', a: 0.6, wave: 0.009 }))],
     eye: { r: 0.03, iris: ['#d04a2a', '#4a1208'] }, rim: 0.03 },
-  angel: { thick: 0.2, depth: 0.78, pedU: 0.2, ped: 0.045, peak: 0.4, snout: 0.25, shade: ['#9a998e', '#d0cec2', '#e4e1d7'], tail: { type: 'notch', h: 0.24, tint: '#c3c4bc' }, fin: '#c3c4bc',
-    dorsal: { u0: 0.3, u1: 0.66, h: 0.25, shape: 'swept' }, anal: { u0: 0.3, u1: 0.64, h: 0.25, shape: 'swept' }, pelvic: { u: 0.74, len: 0.42, thread: true, tint: '#e2ddcc' },
+  angel: { thick: 0.2, angular: 0.8, depth: 0.78, pedU: 0.2, ped: 0.045, peak: 0.375, snout: 0.25, shade: ['#9a998e', '#d0cec2', '#e4e1d7'], tail: { type: 'notch', h: 0.24, tint: '#c3c4bc' }, fin: '#c3c4bc',
+    dorsal: { u0: 0.3, u1: 0.66, h: 0.25, shape: 'swept' }, anal: { u0: 0.3, u1: 0.64, h: 0.25, shape: 'swept' }, pelvic: { u: 0.74, len: 0.45, thread: true, tint: '#e2ddcc', angle: 68 },
     marks: [{ k: 'blob', u: 0.86, v: -0.15, ru: 0.09, rv: 0.07, c: '#c4a46a', a: 0.45 }, { k: 'blob', u: 0.6, v: -0.06, ru: 0.22, rv: 0.2, c: '#ffffff', a: 0.14 },
       { k: 'bars', us: [0.865, 0.645, 0.43], w: 0.05, c: '#26262a', a: 0.9 }, { k: 'bars', us: [0.235], w: 0.06, c: '#26262a', a: 0.5 }],
     finMarks: [{ k: 'bars', us: [0.645, 0.43], w: 0.05, c: '#26262a', a: 0.8 }], eye: { r: 0.026, iris: ['#c8673f', '#5b2a1c'] } },
@@ -339,7 +350,7 @@ export const PLANS: Record<string, Plan> = {
   bristlenose: { plates: true, thick: 1.3, belly: 1, wide: 0.6, noseW: 0.8, depth: 0.25, pedU: 0.16, ped: 0.05, peak: 0.75, back: 0.72, snout: 0.75, mouth: 0.05, shade: ['#3a3a30', '#5a5444', '#8a826a'], tail: { type: 'notch', h: 0.11, tint: '#4a4638', a: 0.85 }, fin: '#4a4638',
     dorsal: { u0: 0.42, u1: 0.68, h: 0.13, shape: 'sail', a: 0.85 }, anal: { u0: 0.3, u1: 0.36, h: 0.04 }, adipose: true, pelvic: { u: 0.58, len: 0.1 },
     marks: [{ k: 'spots', n: 70, u0: 0.16, u1: 0.95, v0: -0.18, v1: 0.05, r: 0.008, c: '#c8c0a0', a: 0.6 }],
-    finMarks: [{ k: 'spots', n: 40, u0: 0, u1: 0.7, v0: -0.4, v1: 0.2, r: 0.008, c: '#c8c0a0', a: 0.5 }], bristles: true, eye: { r: 0.022, iris: ['#6a6040', '#1a1610'], dv: -0.12 } },
+    finMarks: [{ k: 'spots', n: 40, u0: 0, u1: 0.7, v0: -0.4, v1: 0.2, r: 0.008, c: '#c8c0a0', a: 0.5 }], bristles: true, eye: { r: 0.022, iris: ['#6a6040', '#1a1610'], dv: -0.12, up: 0.7 } },
   oto: { plates: true, depth: 0.19, pedU: 0.17, ped: 0.035, peak: 0.65, back: 0.62, snout: 0.6, mouth: 0.03, shade: ['#6a6a50', '#a8a280', '#e0dcc8'], tail: { type: 'notch', h: 0.1 }, fin: '#c0bba4',
     dorsal: { u0: 0.5, u1: 0.62, h: 0.08, shape: 'sail' }, anal: { u0: 0.33, u1: 0.4, h: 0.04 }, pelvic: { u: 0.58, len: 0.06 },
     marks: [{ k: 'band', u0: 0.18, u1: 0.98, v0: -0.015, v1: 0.012, c: '#2a2820', a: 0.85, f: 0.008 }], finMarks: [{ k: 'blob', u: 0.08, v: 0, ru: 0.04, rv: 0.025, c: '#2a2820', a: 0.7 }],
