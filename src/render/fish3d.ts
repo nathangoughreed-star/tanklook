@@ -9,7 +9,7 @@ import type { EdgeMode } from '../scene/types';
 import { cardMaterial, pairedFinTexture } from './textures';
 
 /** Species drawn in 3D (test set) and switches for before/after pictures. `fade` = the session-10 fixes (turned-away paint fades, card body cut out, body-shape fields, barbels); off = session 9, for pictures. */
-export const fish3d = { on: true, fade: true, species: new Set(['cardinal', 'discus', 'bronzecory']) };
+export const fish3d = { on: true, fade: true, species: new Set(['cardinal', 'discus', 'bronzecory', 'tigerbarb', 'bristlenose', 'kuhli', 'angel']) };
 
 export const has3D = (art: string) => fish3d.on && fish3d.species.has(art) && PLANS[art]?.thick != null;
 

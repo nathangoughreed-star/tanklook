@@ -22,7 +22,7 @@
   {"id": "gbr", "name": "German blue ram", "sci": "Mikrogeophagus ramirezi", "tl": 60, "art": "gbr"},
   {"id": "bolivianram", "name": "Bolivian ram", "sci": "Mikrogeophagus altispinosus", "tl": 80, "art": "bolivianram"},
   {"id": "kribensis", "name": "Kribensis", "sci": "Pelvicachromis pulcher", "tl": 90, "art": "kribensis"},
-  {"id": "angel", "name": "Angelfish", "sci": "Pterophyllum scalare", "tl": 150, "art": "angel", "aspect": 1.3},
+  {"id": "angel", "name": "Angelfish", "sci": "Pterophyllum scalare", "tl": 150, "art": "angel"},
   {"id": "discus", "name": "Discus", "sci": "Symphysodon aequifasciatus", "tl": 150, "art": "discus"},
   {"id": "oscar", "name": "Oscar", "sci": "Astronotus ocellatus", "tl": 300, "art": "oscar"},
   {"id": "goldfish", "name": "Fancy goldfish", "sci": "Carassius auratus", "tl": 160, "art": "goldfish"},

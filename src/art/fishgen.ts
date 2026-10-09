@@ -5,7 +5,7 @@
 import { type Ctx, type Proj, type Pt, blob, body, eye, fin, gill, hexA, rng, scales, shape, soft, style, wavyBand } from './paint';
 
 type Tail = 'fork' | 'notch' | 'round' | 'veil' | 'lyre' | 'double' | 'sword';
-type FinShape = 'tri' | 'round' | 'sail' | 'long';
+type FinShape = 'tri' | 'round' | 'sail' | 'long' | 'swept';
 /** A fin along the back (dorsal) or belly (anal) from u0 (rear) to u1 (front), h tall (widths). */
 export interface FinSpec { u0: number; u1: number; h: number; shape?: FinShape; tint?: string; a?: number; edge?: string }
 type Mark =
@@ -63,6 +63,8 @@ function finPts(f: FinSpec, base: (u: number) => number, sg: number): Pt[] {
   switch (f.shape ?? 'tri') {
     case 'round': return [[f.u1, b(f.u1)], [f.u1 - d * 0.12, V(0.85)], [f.u0 + d * 0.45, V(1)], [f.u0 - d * 0.08, V(0.75)], [f.u0 - d * 0.06, b(f.u0)]];
     case 'sail': return [[f.u1, b(f.u1)], [f.u1 - d * 0.05, V(1), 'c'], [f.u0 + d * 0.25, V(0.78)], [f.u0 - d * 0.06, V(0.5)], [f.u0 - d * 0.06, b(f.u0)]];
+    // tall sail swept back to a high pointed tip (angelfish)
+    case 'swept': return [[f.u1, b(f.u1)], [f.u1 - d * 0.35, V(0.45)], [f.u0 + d * 0.3, V(1), 'c'], [f.u0 + d * 0.12, V(0.72)], [f.u0 - d * 0.12, b(f.u0 - d * 0.12)]];
     case 'long': return [[f.u1, b(f.u1)], [f.u1 - d * 0.25, V(0.65)], [f.u0, V(1)], [f.u0 - d * 0.3, V(0.9)], [f.u0 - d * 0.28, b(f.u0)]];
     default: return [[f.u1, b(f.u1)], [f.u1 - d * 0.35, V(1), 'c'], [f.u0, V(0.3)], [f.u0 - 0.01, b(f.u0)]];
   }
@@ -266,7 +268,7 @@ export const PLANS: Record<string, Plan> = {
   cherrybarb: { depth: 0.29, pedU: 0.2, ped: 0.045, peak: 0.55, snout: 0.45, shade: ['#8a3a2a', '#c4473a', '#d97a62'], tail: { type: 'fork', h: 0.15, tint: '#c25a48' }, fin: '#c96b58',
     dorsal: { u0: 0.47, u1: 0.6, h: 0.1 }, anal: { u0: 0.3, u1: 0.42, h: 0.06 }, pelvic: { u: 0.58, len: 0.06 },
     marks: [{ k: 'band', u0: 0.2, u1: 0.9, v0: -0.01, v1: 0.012, c: '#4a1d16', a: 0.6, f: 0.01 }], eye: { r: 0.03, iris: ['#c9a080', '#4a2a1a'] } },
-  tigerbarb: { depth: 0.42, pedU: 0.2, ped: 0.05, peak: 0.5, snout: 0.45, shade: ['#8c7a45', '#d8b670', '#ecd7a4'], tail: { type: 'fork', h: 0.17, tint: '#d07a4a', edge: '#c23a28' }, fin: '#d3a274',
+  tigerbarb: { thick: 0.38, depth: 0.42, pedU: 0.2, ped: 0.05, peak: 0.5, snout: 0.45, shade: ['#8c7a45', '#d8b670', '#ecd7a4'], tail: { type: 'fork', h: 0.17, tint: '#d07a4a', edge: '#c23a28' }, fin: '#d3a274',
     dorsal: { u0: 0.47, u1: 0.62, h: 0.12, tint: '#1f1f1f', a: 0.85, edge: '#c23a28' }, anal: { u0: 0.3, u1: 0.42, h: 0.08 }, pelvic: { u: 0.58, len: 0.07, tint: '#c4442e' },
     marks: [{ k: 'bars', us: [0.9, 0.67, 0.45, 0.24], w: 0.06, c: '#1c1c1e', a: 0.92 }], eye: { r: 0.032, iris: ['#cf6a3a', '#4a2010'] } },
   guppy: { depth: 0.2, pedU: 0.4, ped: 0.04, peak: 0.45, snout: 0.45, mouth: -0.015, shade: ['#7c8476', '#bfc4b8', '#ddddd2'], tail: { type: 'notch', h: 0.27, tint: '#e0782e', a: 0.85 }, fin: '#c6a37a',
@@ -314,6 +316,11 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { u0: 0.15, u1: 0.72, h: 0.07, shape: 'round', edge: '#c8603a' }, anal: { u0: 0.15, u1: 0.68, h: 0.07, shape: 'round', edge: '#c8603a' }, pelvic: { u: 0.72, len: 0.12, tint: '#c8603a' },
     marks: [{ k: 'bars', us: [0.88, 0.2], w: 0.035, c: '#2a2a30', a: 0.55 }, ...[-0.3, -0.21, -0.12, -0.03, 0.06, 0.15, 0.24].map(v => ({ k: 'band' as const, u0: 0.12, u1: 0.98, v0: v, v1: v + 0.032, c: '#8a5a3a', a: 0.6, wave: 0.009 }))],
     eye: { r: 0.03, iris: ['#d04a2a', '#4a1208'] }, rim: 0.03 },
+  angel: { thick: 0.2, depth: 0.78, pedU: 0.2, ped: 0.045, peak: 0.4, snout: 0.25, shade: ['#9a998e', '#d0cec2', '#e4e1d7'], tail: { type: 'notch', h: 0.24, tint: '#c3c4bc' }, fin: '#c3c4bc',
+    dorsal: { u0: 0.3, u1: 0.66, h: 0.25, shape: 'swept' }, anal: { u0: 0.3, u1: 0.64, h: 0.25, shape: 'swept' }, pelvic: { u: 0.74, len: 0.42, thread: true, tint: '#e2ddcc' },
+    marks: [{ k: 'blob', u: 0.86, v: -0.15, ru: 0.09, rv: 0.07, c: '#c4a46a', a: 0.45 }, { k: 'blob', u: 0.6, v: -0.06, ru: 0.22, rv: 0.2, c: '#ffffff', a: 0.14 },
+      { k: 'bars', us: [0.865, 0.645, 0.43], w: 0.05, c: '#26262a', a: 0.9 }, { k: 'bars', us: [0.235], w: 0.06, c: '#26262a', a: 0.5 }],
+    finMarks: [{ k: 'bars', us: [0.645, 0.43], w: 0.05, c: '#26262a', a: 0.8 }], eye: { r: 0.026, iris: ['#c8673f', '#5b2a1c'] } },
   oscar: { depth: 0.42, pedU: 0.2, ped: 0.07, peak: 0.5, snout: 0.55, mouth: 0.01, shade: ['#2a2a24', '#3e3b30', '#4a4438'], tail: { type: 'round', h: 0.16, tint: '#3a372e', a: 0.85 }, fin: '#3a372e',
     dorsal: { u0: 0.2, u1: 0.68, h: 0.08, shape: 'round', a: 0.85 }, anal: { u0: 0.2, u1: 0.45, h: 0.09, shape: 'round', a: 0.85 }, pelvic: { u: 0.62, len: 0.09 },
     marks: [{ k: 'spots', n: 12, u0: 0.3, u1: 0.8, v0: -0.05, v1: 0.15, r: 0.045, c: '#c8642a', a: 0.6 }, { k: 'blob', u: 0.24, v: -0.02, ru: 0.04, rv: 0.04, c: '#d8702a', a: 0.9 }, { k: 'blob', u: 0.24, v: -0.02, ru: 0.022, rv: 0.022, c: '#141414', a: 0.95 }],
@@ -329,7 +336,7 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { u0: 0.5, u1: 0.68, h: 0.16, shape: 'sail', tint: '#2a2a2a', a: 0.85 }, anal: { u0: 0.32, u1: 0.4, h: 0.06 }, adipose: true, pelvic: { u: 0.55, len: 0.08 },
     marks: [{ k: 'bars', us: [0.885], w: 0.06, c: '#1c1c1c', a: 0.95 }, { k: 'blob', u: 0.24, v: -0.02, ru: 0.06, rv: 0.06, c: '#1c1c1c', a: 0.9 }], barbels: 0.03,
     eye: { r: 0.032, iris: ['#4a4040', '#0c0a0a'], dv: -0.05 } },
-  bristlenose: { plates: true, depth: 0.25, pedU: 0.16, ped: 0.05, peak: 0.75, back: 0.72, snout: 0.75, mouth: 0.05, shade: ['#3a3a30', '#5a5444', '#8a826a'], tail: { type: 'notch', h: 0.11, tint: '#4a4638', a: 0.85 }, fin: '#4a4638',
+  bristlenose: { plates: true, thick: 1.3, belly: 1, wide: 0.6, noseW: 0.8, depth: 0.25, pedU: 0.16, ped: 0.05, peak: 0.75, back: 0.72, snout: 0.75, mouth: 0.05, shade: ['#3a3a30', '#5a5444', '#8a826a'], tail: { type: 'notch', h: 0.11, tint: '#4a4638', a: 0.85 }, fin: '#4a4638',
     dorsal: { u0: 0.42, u1: 0.68, h: 0.13, shape: 'sail', a: 0.85 }, anal: { u0: 0.3, u1: 0.36, h: 0.04 }, adipose: true, pelvic: { u: 0.58, len: 0.1 },
     marks: [{ k: 'spots', n: 70, u0: 0.16, u1: 0.95, v0: -0.18, v1: 0.05, r: 0.008, c: '#c8c0a0', a: 0.6 }],
     finMarks: [{ k: 'spots', n: 40, u0: 0, u1: 0.7, v0: -0.4, v1: 0.2, r: 0.008, c: '#c8c0a0', a: 0.5 }], bristles: true, eye: { r: 0.022, iris: ['#6a6040', '#1a1610'], dv: -0.12 } },
@@ -337,7 +344,7 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { u0: 0.5, u1: 0.62, h: 0.08, shape: 'sail' }, anal: { u0: 0.33, u1: 0.4, h: 0.04 }, pelvic: { u: 0.58, len: 0.06 },
     marks: [{ k: 'band', u0: 0.18, u1: 0.98, v0: -0.015, v1: 0.012, c: '#2a2820', a: 0.85, f: 0.008 }], finMarks: [{ k: 'blob', u: 0.08, v: 0, ru: 0.04, rv: 0.025, c: '#2a2820', a: 0.7 }],
     eye: { r: 0.024, iris: ['#b0a070', '#2a2418'], dv: -0.08 } },
-  kuhli: { depth: 0.085, pedU: 0.05, ped: 0.025, peak: 0.6, back: 0.55, snout: 0.6, mouth: 0.01, shade: ['#4a3a2a', '#d88a5a', '#ecc0a0'], tail: { type: 'round', h: 0.035, tint: '#c88a62' }, fin: '#d09a72',
+  kuhli: { thick: 0.85, depth: 0.085, pedU: 0.05, ped: 0.025, peak: 0.6, back: 0.55, snout: 0.6, mouth: 0.01, shade: ['#4a3a2a', '#d88a5a', '#ecc0a0'], tail: { type: 'round', h: 0.035, tint: '#c88a62' }, fin: '#d09a72',
     dorsal: { u0: 0.22, u1: 0.28, h: 0.025, shape: 'round' }, anal: { u0: 0.12, u1: 0.18, h: 0.02, shape: 'round' },
     marks: [{ k: 'bars', us: [0.93, 0.85, 0.77, 0.69, 0.61, 0.53, 0.45, 0.37, 0.29, 0.21, 0.13, 0.07], w: 0.035, c: '#2a2018', a: 0.85 }], barbels: 0.012,
     eye: { r: 0.008, iris: ['#6a5040', '#1a1008'] }, rim: 0.012 },
