@@ -134,7 +134,12 @@ export class Viewer {
       r.setViewport(vp.x, vp.y, vp.w, vp.h); r.setScissor(vp.x, vp.y, vp.w, vp.h);
       r.setClearColor(new THREE.Color(0xd9dde2).multiplyScalar(0.06 + 0.94 * roomLevel(S.light.room))); r.clear(); // the space beyond the room dims with the room light
       setLightUniforms(vp.T, S.light, S.lid); setWaterUniforms(vp.T, S.water);
+      // keep the cleared alpha (1): alpha-to-coverage fins would otherwise leave a translucent canvas, through which
+      // the page shows on screen and a viewer's background (often white) in an exported PNG
+      const cb = r.state.buffers.color, gl = r.getContext();
+      cb.setMask(true); gl.colorMask(true, true, true, false); cb.setLocked(true);
       r.render(vp.scene!, vp.cam);
+      cb.setLocked(false); cb.setMask(true); gl.colorMask(true, true, true, true);
     }
     r.setScissorTest(false);
     // one viewpoint map per view, at its bottom-left corner, drawn from that view's own camera, tank and person
