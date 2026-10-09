@@ -2,14 +2,14 @@
 // (see placeholder.ts), so the species list can grow without hand-drawing each fish. Same unit frame as the
 // hand-drawn art: u = 0 (tail tip) .. 1 (nose tip) across the card width W (== adult TL), v = offset in widths
 // from the card's centre line, + down. Tail and nose tips are sharp corners at u = 0 and u = 1 exactly.
-import { type Ctx, type Proj, type Pt, blob, body, eye, fin, gill, hexA, rng, shape, soft } from './paint';
+import { type Ctx, type Proj, type Pt, blob, body, eye, fin, gill, hexA, rng, scales, shape, soft, style, wavyBand } from './paint';
 
 type Tail = 'fork' | 'notch' | 'round' | 'veil' | 'lyre' | 'double' | 'sword';
 type FinShape = 'tri' | 'round' | 'sail' | 'long';
 /** A fin along the back (dorsal) or belly (anal) from u0 (rear) to u1 (front), h tall (widths). */
 interface FinSpec { u0: number; u1: number; h: number; shape?: FinShape; tint?: string; a?: number; edge?: string }
 type Mark =
-  | { k: 'band'; u0: number; u1: number; v0: number; v1: number; c: string; a?: number; f?: number }
+  | { k: 'band'; u0: number; u1: number; v0: number; v1: number; c: string; a?: number; f?: number; wave?: number }
   | { k: 'bars'; us: number[]; w: number; c: string; a?: number }
   | { k: 'spots'; n: number; u0: number; u1: number; v0: number; v1: number; r: number; c: string; a?: number }
   | { k: 'blob'; u: number; v: number; ru: number; rv: number; c: string; a?: number }
@@ -35,9 +35,12 @@ export interface Plan {
   barbels?: number;   // barbel length (widths); bottom fish
   bristles?: boolean; // bristlenose snout
   rim?: number;
+  thick?: number;
+  scale?: number;     // scale size (widths) for the scale net; 0 = none (default 0.024)
+  plates?: boolean;   // armoured (corydoras): two rows of bony plates instead of scales     // 3D: max body thickness / max body depth (laterally compressed < 0.5 < rounder)
 }
 
-function profile(p: Plan) {
+export function profile(p: Plan) {
   const tp = p.peak ?? 0.55, back = p.back ?? 0.5, sn = p.snout ?? 0.5, mouth = p.mouth ?? 0;
   return (u: number): [number, number] => {
     const t = Math.min(1, Math.max(0, (u - p.pedU) / (1 - p.pedU)));
@@ -100,10 +103,27 @@ export function planMeta(p: Plan) {
   return { aspect: +(2 * ext + 0.03).toFixed(3), rest: +low.toFixed(3) };
 }
 
+/** Corydoras armour: two rows of plates meeting at the lateral line, each plate edge a faint curved seam. */
+function plates(l: Ctx, P: Proj, W: number, p: Plan, prof: (u: number) => [number, number], head: number) {
+  l.save(); l.lineWidth = Math.max(1, 0.003 * W);
+  for (let u = p.pedU + 0.02; u < head - 0.02; u += 0.038) {
+    const [t0, b0] = prof(u), t = t0 + (b0 - t0) * 0.16, b = b0 - (b0 - t0) * 0.14, mid = t0 + (b0 - t0) * 0.48;
+    for (const [v0, v1] of [[t, mid], [mid, b]] as const) {
+      const [x0, y0] = P(u, v0), [x1, y1] = P(u, v1), [cx, cy] = P(u - 0.018, (v0 + v1) / 2);
+      l.beginPath(); l.moveTo(x0, y0); l.quadraticCurveTo(cx, cy, x1, y1); l.strokeStyle = 'rgba(14,16,10,0.09)'; l.stroke();
+      l.lineWidth = Math.max(2, 0.008 * W); l.beginPath(); l.moveTo(x0 + 0.006 * W, y0); l.quadraticCurveTo(cx + 0.006 * W, cy, x1 + 0.006 * W, y1); l.strokeStyle = 'rgba(255,250,230,0.07)'; l.stroke(); l.lineWidth = Math.max(1, 0.003 * W);
+    }
+  }
+  const [a0, b0] = prof(p.pedU), [a1, b1] = prof(head), [x0, y0] = P(p.pedU, (a0 + b0) / 2), [x1, y1] = P(head, a1 + (b1 - a1) * 0.48);
+  l.beginPath(); l.moveTo(x0, y0); l.lineTo(x1, y1); l.strokeStyle = 'rgba(14,16,10,0.14)'; l.stroke();
+  l.restore();
+}
+
 function paintMarks(c: Ctx, P: Proj, W: number, marks: Mark[] | undefined, seed: number) {
   const r = rng(seed);
   for (const m of marks ?? []) {
-    if (m.k === 'band') { const f = m.f ?? 0.02; soft(c, P, m.u0, m.u1, m.v0, m.v1, m.c, m.a ?? 0.9, [f, f], [f * 0.6, f * 0.6]); }
+    if (m.k === 'band' && m.wave) wavyBand(c, P, m.u0, m.u1, m.v0, m.v1, m.wave, m.c, m.a ?? 0.9, seed + Math.round(m.v0 * 1000));
+    else if (m.k === 'band') { const f = m.f ?? 0.02; soft(c, P, m.u0, m.u1, m.v0, m.v1, m.c, m.a ?? 0.9, [f, f], [f * 0.6, f * 0.6]); }
     else if (m.k === 'bars') for (const u of m.us) soft(c, P, u - m.w / 2, u + m.w / 2, -1, 1, m.c, m.a ?? 0.85, [m.w * 0.3, m.w * 0.3], [0, 0]);
     else if (m.k === 'blob') blob(c, P, W, m.u, m.v, m.ru, m.rv, m.c, m.a ?? 0.9);
     else if (m.k === 'poly') { shape(c, P, m.pts); c.fillStyle = hexA(m.c, m.a ?? 0.9); c.fill(); }
@@ -112,6 +132,29 @@ function paintMarks(c: Ctx, P: Proj, W: number, marks: Mark[] | undefined, seed:
       blob(c, P, W, m.u0 + r() * (m.u1 - m.u0), m.v0 + r() * (m.v1 - m.v0), rr, rr, m.c, m.a ?? 0.85);
     }
   }
+}
+
+export interface PairedFin { kind: 'pelvic' | 'pectoral'; pts: Pt[]; root: [number, number]; tint: string; a?: number; rays: number }
+/** The paired fins (pelvic if the plan has one, then the pectoral), in card coordinates. */
+export function pairedFins(p: Plan): PairedFin[] {
+  const g = geometry(p), out: PairedFin[] = [];
+  if (g.pelvic) out.push({ kind: 'pelvic', pts: g.pelvic, root: [p.pelvic!.u, g.prof(p.pelvic!.u)[1]], tint: p.pelvic!.tint ?? p.fin, a: p.pelvic!.thread ? 0.85 : undefined, rays: p.pelvic!.thread ? 0 : 5 });
+  const pu = 1 - (1 - p.pedU) * 0.24, [pt, pb] = g.prof(pu), pm = pt + (pb - pt) * 0.62, pl = (1 - p.pedU) * 0.17;
+  out.push({ kind: 'pectoral', pts: [[pu, pm - 0.01], [pu - pl, pm + pl * 0.3, 'c'], [pu - pl * 0.7, pm + pl * 0.55], [pu + 0.005, pm + 0.015]], root: [pu, pm], tint: p.fin, a: 0.3, rays: 5 });
+  return out;
+}
+export function drawPairedFin(f: PairedFin, ctx: Ctx, P: Proj, W: number, ray = '#7d7a70') {
+  fin(ctx, P, W, f.pts, f.root, f.tint, ray, { a: f.a, rays: f.rays });
+  if (f.kind === 'pectoral' && f.a !== undefined) return; // the card's faint fan over the flank gets no spine
+  // leading spine / first ray: the stiff front edge that gives a fin its structure
+  const tip = f.pts.find(q => q[2] === 'c') ?? f.pts[1], [x0, y0] = P(f.root[0], f.root[1]), [x1, y1] = P(tip[0], tip[1]);
+  ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.strokeStyle = hexA(ray, 0.75); ctx.lineWidth = 0.006 * W; ctx.stroke();
+}
+
+/** Eye centre (u, v), radius and iris colours. */
+export function eyeSpot(p: Plan) {
+  const u = p.eye.u ?? 1 - (1 - p.pedU) * 0.09, [et, eb] = profile(p)(u);
+  return { u, v: et + (eb - et) * (0.38 + (p.eye.dv ?? 0)), r: p.eye.r, iris: p.eye.iris };
 }
 
 export function drawPlan(p: Plan, ctx: Ctx, P: Proj, W: number) {
@@ -129,7 +172,8 @@ export function drawPlan(p: Plan, ctx: Ctx, P: Proj, W: number) {
   draw(g.tail, [p.pedU + 0.02, g.c], p.tail, 11);
   if (p.dorsal) draw(g.dorsal, [(p.dorsal.u0 + p.dorsal.u1) / 2, g.prof((p.dorsal.u0 + p.dorsal.u1) / 2)[0] + 0.02], p.dorsal, 12);
   if (p.anal) draw(g.anal, [(p.anal.u0 + p.anal.u1) / 2, g.prof((p.anal.u0 + p.anal.u1) / 2)[1] - 0.02], p.anal, 13);
-  if (g.pelvic) fin(ctx, P, W, g.pelvic, [p.pelvic!.u, g.prof(p.pelvic!.u)[1]], p.pelvic!.tint ?? p.fin, ray, { a: p.pelvic!.thread ? 0.85 : undefined, rays: p.pelvic!.thread ? 0 : 5 });
+  const paired = pairedFins(p);
+  if (style.paired && paired[0]?.kind === 'pelvic') drawPairedFin(paired[0], ctx, P, W, ray);
   if (p.adipose) {
     const u = p.pedU + 0.07, b = g.prof(u)[0];
     fin(ctx, P, W, [[u + 0.03, b + 0.01], [u, b - 0.035, 'c'], [u - 0.03, b + 0.01]], [u, b], p.fin, ray, { rays: 0 });
@@ -138,11 +182,19 @@ export function drawPlan(p: Plan, ctx: Ctx, P: Proj, W: number) {
   body(ctx, P, W, g.bodyPts, t0, b0, [[0, p.shade[0]], [0.4, p.shade[1]], [0.65, p.shade[1]], [1, p.shade[2]]], p.rim ?? 0.035, l => {
     paintMarks(l, P, W, p.marks, 7);
     const gu = 1 - (1 - p.pedU) * 0.2, [gt, gb] = g.prof(gu);
-    gill(l, P, W, gu, gt + (gb - gt) * 0.2, gt + (gb - gt) * 0.85, 0.02);
+    if (style.features) gill(l, P, W, gu, gt + (gb - gt) * 0.2, gt + (gb - gt) * 0.85, 0.02);
+  }, l => {
+    const head = 1 - (1 - p.pedU) * 0.2;
+    if (p.plates) plates(l, P, W, p, g.prof, head);
+    else if ((p.scale ?? 0.024) > 0) scales(l, P, W, p.pedU - 0.02, head, p.scale ?? 0.024);
+    if (!style.features) return;
+    // mouth line: a short dark cleft back from the snout tip
+    const m0 = p.mouth ?? 0, [mx, my] = P(1 - 0.004, m0 + 0.004), [ex, ey] = P(1 - (1 - p.pedU) * 0.045, m0 + 0.012);
+    l.beginPath(); l.moveTo(mx, my); l.quadraticCurveTo((mx + ex) / 2, ey, ex, ey);
+    l.strokeStyle = 'rgba(18,16,12,0.45)'; l.lineWidth = 0.004 * W; l.stroke();
   });
   // pectoral fin: faint fan behind the gill cover
-  const pu = 1 - (1 - p.pedU) * 0.24, [pt, pb] = g.prof(pu), pm = pt + (pb - pt) * 0.62, pl = (1 - p.pedU) * 0.12;
-  fin(ctx, P, W, [[pu, pm - 0.01], [pu - pl, pm + pl * 0.3, 'c'], [pu - pl * 0.7, pm + pl * 0.55], [pu + 0.005, pm + 0.015]], [pu, pm], p.fin, ray, { a: 0.3, rays: 5 });
+  if (style.paired) drawPairedFin(paired[paired.length - 1], ctx, P, W, ray);
   if (p.barbels) {
     const nb = g.prof(0.975)[1]; ctx.strokeStyle = hexA('#8b7b63', 0.9); ctx.lineWidth = 0.005 * W;
     for (const k of [0, 1]) {
@@ -157,8 +209,8 @@ export function drawPlan(p: Plan, ctx: Ctx, P: Proj, W: number) {
       ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + (r() - 0.3) * 0.01 * W, y - (0.012 + r() * 0.01) * W); ctx.stroke();
     }
   }
-  const eu = p.eye.u ?? 1 - (1 - p.pedU) * 0.09, [et, eb] = g.prof(eu);
-  eye(ctx, P, W, eu, et + (eb - et) * (0.38 + (p.eye.dv ?? 0)), p.eye.r, p.eye.iris);
+  const e = eyeSpot(p);
+  if (style.features) eye(ctx, P, W, e.u, e.v, e.r, e.iris);
 }
 
 // ---------- Shrimp (custom: segmented, rostrum forward, legs below, antennae swept back) ----------
@@ -183,7 +235,7 @@ function drawShrimp(s: ShrimpSpec, ctx: Ctx, P: Proj, W: number) {
 
 const N = '#b9b8ad'; // neutral fin tint
 export const PLANS: Record<string, Plan> = {
-  cardinal: { depth: 0.22, pedU: 0.17, ped: 0.035, peak: 0.55, snout: 0.35, shade: ['#4d5443', '#9aa39a', '#c7c4bc'], tail: { type: 'fork', h: 0.14 }, fin: '#b7c0bd',
+  cardinal: { thick: 0.42, depth: 0.22, pedU: 0.17, ped: 0.035, peak: 0.55, snout: 0.35, shade: ['#4d5443', '#9aa39a', '#c7c4bc'], tail: { type: 'fork', h: 0.14 }, fin: '#b7c0bd',
     dorsal: { u0: 0.47, u1: 0.6, h: 0.07 }, anal: { u0: 0.27, u1: 0.48, h: 0.05 }, adipose: true, pelvic: { u: 0.62, len: 0.06 },
     marks: [{ k: 'band', u0: 0.17, u1: 0.95, v0: -0.005, v1: 0.2, c: '#c02f38', a: 0.95, f: 0.012 }, { k: 'band', u0: 0.22, u1: 0.93, v0: -0.065, v1: -0.008, c: '#2aa9e0', a: 1, f: 0.01 }],
     eye: { r: 0.026, iris: ['#b9ccd2', '#4c5c63'] } },
@@ -254,9 +306,9 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { u0: 0.22, u1: 0.68, h: 0.08, shape: 'round', edge: '#c8443a' }, anal: { u0: 0.22, u1: 0.45, h: 0.08, shape: 'round' }, pelvic: { u: 0.66, len: 0.1, tint: '#7a4ca0' },
     marks: [{ k: 'band', u0: 0.2, u1: 0.92, v0: -0.02, v1: 0.02, c: '#2a2620', a: 0.8, f: 0.012 }, { k: 'blob', u: 0.62, v: 0.1, ru: 0.15, rv: 0.06, c: '#d0405a', a: 0.75 }],
     finMarks: [{ k: 'blob', u: 0.3, v: -0.17, ru: 0.025, rv: 0.025, c: '#1a1a1a', a: 0.85 }], eye: { r: 0.028, iris: ['#c8a050', '#3a2a10'] } },
-  discus: { depth: 0.78, pedU: 0.13, ped: 0.07, peak: 0.45, snout: 0.85, mouth: 0.02, shade: ['#5a6a7a', '#3f8aa8', '#4a98b0'], tail: { type: 'notch', h: 0.14, tint: '#6a8a9a' }, fin: '#5a8698',
+  discus: { scale: 0.014, thick: 0.2, depth: 0.78, pedU: 0.13, ped: 0.07, peak: 0.45, snout: 0.85, mouth: 0.02, shade: ['#5a6a7a', '#3f8aa8', '#4a98b0'], tail: { type: 'notch', h: 0.14, tint: '#6a8a9a' }, fin: '#5a8698',
     dorsal: { u0: 0.15, u1: 0.72, h: 0.07, shape: 'round', edge: '#c8603a' }, anal: { u0: 0.15, u1: 0.68, h: 0.07, shape: 'round', edge: '#c8603a' }, pelvic: { u: 0.72, len: 0.12, tint: '#c8603a' },
-    marks: [{ k: 'bars', us: [0.88, 0.2], w: 0.035, c: '#2a2a30', a: 0.55 }, ...[-0.3, -0.21, -0.12, -0.03, 0.06, 0.15, 0.24].map(v => ({ k: 'band' as const, u0: 0.12, u1: 0.98, v0: v, v1: v + 0.035, c: '#8a5a3a', a: 0.55, f: 0.015 }))],
+    marks: [{ k: 'bars', us: [0.88, 0.2], w: 0.035, c: '#2a2a30', a: 0.55 }, ...[-0.3, -0.21, -0.12, -0.03, 0.06, 0.15, 0.24].map(v => ({ k: 'band' as const, u0: 0.12, u1: 0.98, v0: v, v1: v + 0.032, c: '#8a5a3a', a: 0.6, wave: 0.009 }))],
     eye: { r: 0.03, iris: ['#d04a2a', '#4a1208'] }, rim: 0.03 },
   oscar: { depth: 0.42, pedU: 0.2, ped: 0.07, peak: 0.5, snout: 0.55, mouth: 0.01, shade: ['#2a2a24', '#3e3b30', '#4a4438'], tail: { type: 'round', h: 0.16, tint: '#3a372e', a: 0.85 }, fin: '#3a372e',
     dorsal: { u0: 0.2, u1: 0.68, h: 0.08, shape: 'round', a: 0.85 }, anal: { u0: 0.2, u1: 0.45, h: 0.09, shape: 'round', a: 0.85 }, pelvic: { u: 0.62, len: 0.09 },
@@ -266,7 +318,7 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { u0: 0.42, u1: 0.68, h: 0.14, shape: 'round', a: 0.75 }, anal: { u0: 0.38, u1: 0.48, h: 0.1, shape: 'round', a: 0.75 }, pelvic: { u: 0.7, len: 0.1 },
     marks: [{ k: 'blob', u: 0.65, v: -0.08, ru: 0.2, rv: 0.14, c: '#ffffff', a: 0.12 }], eye: { r: 0.035, iris: ['#2a2420', '#0a0806'] } },
   // ---------- bottom dwellers ----------
-  bronzecory: { depth: 0.35, pedU: 0.18, ped: 0.06, peak: 0.6, back: 0.68, snout: 0.6, mouth: 0.06, shade: ['#4a5a48', '#8a8a62', '#d8c8a0'], tail: { type: 'fork', h: 0.15 }, fin: '#b0a888',
+  bronzecory: { plates: true, thick: 0.72, depth: 0.35, pedU: 0.18, ped: 0.06, peak: 0.6, back: 0.68, snout: 0.6, mouth: 0.06, shade: ['#4a5a48', '#8a8a62', '#d8c8a0'], tail: { type: 'fork', h: 0.15 }, fin: '#b0a888',
     dorsal: { u0: 0.5, u1: 0.68, h: 0.16, shape: 'sail' }, anal: { u0: 0.32, u1: 0.4, h: 0.06 }, adipose: true, pelvic: { u: 0.55, len: 0.08 },
     marks: [{ k: 'blob', u: 0.6, v: -0.04, ru: 0.25, rv: 0.08, c: '#5a8070', a: 0.45 }], barbels: 0.03, eye: { r: 0.032, iris: ['#c8b890', '#3a3020'], dv: -0.05 } },
   pandacory: { depth: 0.35, pedU: 0.18, ped: 0.06, peak: 0.6, back: 0.68, snout: 0.6, mouth: 0.06, shade: ['#c8c0b0', '#e8e0d0', '#f0ebe0'], tail: { type: 'fork', h: 0.15 }, fin: '#d8d2c4',

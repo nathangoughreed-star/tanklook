@@ -2,6 +2,93 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Status (2026-10-09, session 9: 3D fish style test built, NOT committed; awaiting Nathan's verdict)
+
+Roadmap step 1. Started late in the weekly window by Nathan's choice. `npm test` 104/104, `tsc` clean, checked in the browser
+(dev server `dev-alt`, port 5183). Pictures: `shots/46_{discus,cardinal,bronzecory}_sheet.png` (before/after; straight on,
+50° right, 25° above, 75° near head-on).
+- **`src/render/fish3d.ts`** (new): a solid body lofted from `profile(plan)` (now exported from fishgen) between `pedU` and
+  the nose: 40 stations (denser at the nose) × 28-point superellipse rings (exponent 2.4), with a capped peduncle.
+  Thickness = `Plan.thick` (new optional field: max thickness / max depth; cardinal 0.42, discus 0.2, bronze cory 0.72)
+  × depth, fuller toward the head. UVs = side projection of the existing card texture onto both flanks. Inset 0.006 W
+  inside the painted outline, plus a colour-bled copy of the texture (opaque material), so the nose never shows the black
+  of empty texels (seen on the first pass). Vertex colours darken the underside slightly. Geometry cached per
+  species + bend (0.05 steps), `userData.keep`; material cached per texture.
+- **Wiring** (build.ts): the body is a child of the existing card mesh, so the card stays as the fins (its painted body
+  sits inside the solid) and picking, selection outline, rest offset and TL are unchanged. Only species in
+  `fish3d.species` (the three above) with `thick` set; `fish3d.on` toggles (dev handle `__gb.fish3d`).
+- Seen in the pictures: side view identical (as intended); the difference shows from 50° on and is clear near head-on
+  (card goes edge-on, body keeps its volume). Artefacts: side projection stretches paint over the back and belly (cory's
+  gill line becomes a crease over the top; discus bars wrap onto the front face); the far eye shows past the snout at
+  50° on the thin discus; paired fins (pectoral, pelvic) are still painted on the flank, not 3D.
+- Not done: bend shape check, a2c vs cutout check, performance with a school.
+
+**Nathan's verdict (2026-10-09): "too cartoony... doesn't match how good and crisp the rest of the model displays."**
+The 3D shape is not the problem; the procedural PAINTING is (flat saturated fills, blurred bands, no sheen / scales,
+fins as tints). Picture `shots/47_cartoon_cues.png`. Decision pending: how to get realistic texture (see options in the
+session 9 chat: photo textures on the 3D body vs a procedural realism pass vs bought models); this reopens the
+art provenance policy.
+Nathan 2026-10-09: NOT buying models; Meshy (AI image-to-3D) "seemed cool". **Proposed next work unit (fresh chat after the
+weekly reset):** a head-to-head on cardinal, discus, bronze cory, same four views as `46_*_sheet`: (a) Meshy GLBs that
+Nathan generates himself (Claude cannot make accounts; check Meshy's output licence per plan and that the reference
+images are his or CC), loaded with GLTFLoader, scaled to adult TL, compressed by script (gltf-transform, no Blender),
+water lighting via `aqPatch`; vs (b) CC-licensed photos (e.g. Wikimedia Commons, credited) projected onto the
+session-9 loft. Ask Nathan before each download. Watch: fused or opaque fins in AI meshes; single-file size (about
+10-20 MB for 42 Meshy fish vs 0.57 MB now; the website could load them on demand).
+
+**Nathan 2026-10-09: "let's see how well we can refine the models without Meshy."** Realism pass done in session 9
+(same three fish, sheets `shots/46_*_sheet.png` regenerated; uncommitted, tests 104/104):
+- **Bug found:** the first 3D sheets were wrong. The loft's triangles were wound inward, so FrontSide culled the near
+  flank and the pictures mostly showed the flat card. Fixed (`idx` order in `bodyGeometry`). Nathan's "too cartoony"
+  verdict was on those broken pictures.
+- Shader fish mode (`userData.fish` -> `uFish`, program key 'f'): facing = 1 + 0.6 n·L, Blinn highlight (x0.16), faint
+  edge sheen, saturation 1.28, a soft roll-off instead of the hard max clamp (which erased form shading). In flat light
+  (the default!) fish get a fixed key from above-front; without it the 3D body had no shading at all.
+- Painting (affects every species' card too): eye with a shaded socket, faint rim, dim catchlight; tone multiply over
+  markings (darker back / belly + mottling); scale net (`scales`, `Plan.scale`, default 0.024 W, discus 0.014);
+  corydoras plates (`Plan.plates`); wavy bands (`band.wave`, discus); mouth line; fins at alpha 0.36 with a2c (cutout
+  keeps 0.62; `fishTexture(id, edge)`).
+- 3D body uses `fishBodyTexture` (painted with `style.features = false`: no eye / gill / mouth, which smeared over the
+  curved head) with the nose tip blurred; real eyes = flattened domes along the surface normal, set in (`eyeSpot`).
+- Nathan's review (2026-10-09): "materially closer... first real proof 3D fish can work". Discus best, cardinal good,
+  bronze cory weakest (smooth blimp; needs ventral flattening, head structure, barbels, plated feel). Agreed order:
+  (1) real fins, (2) contact shadow, (3) stretched markings, (4) species geometry (cory first).
+- **(1) + (2) done:** pectoral + pelvic fins are their own membranes on both flanks (`pairedFins` / `drawPairedFin` in
+  fishgen, `pairedFinTexture`, `finMeshes` in fish3d: rooted on the surface, pelvic swung 0.6 rad about the body axis,
+  pectoral 0.75 rad about a vertical base + 0.25 down), with a dark leading spine; the 3D species' card and body texture
+  leave them out (`style.paired`). Pectoral length 0.17 of the body (was 0.12; card too). Contact shadow for EVERY fish
+  (build.ts `contactShadow`: soft ellipse on the ground, 0.5 x exp(-lift / 0.8 TL), widens with height). Cory plates
+  kept off the back and belly (they ringed the body).
+- Nathan's review of fins + shadow (2026-10-09): "credible low-complexity 3D aquarium assets"; remaining issues are
+  species-specific polish, not viability. Cory improved most but is still weakest: head-on view too smooth / generic;
+  wants a flatter belly, a less symmetric torpedo, a shovel-like head with a clearer head-to-trunk step, a more
+  distinct peduncle, a cory-specific dorsal, and visible barbels. Cardinal: broadly convincing (slightly capsule-like
+  head-on); don't spend more there yet. Discus: strongest; its eye-bar wrap is the most distracting texture issue.
+  **Agreed order:** (a) stretched markings, (b) cory shape + barbels, (c) subtle cues (fin posture, tetra head), then
+  (d) a quick audit of a representative subset of the other 34 species, to check the pipeline generalises
+  (detail density, fin treatment, art that converts badly to 3D). Not a polish pass.
+- **Nathan 2026-10-09 (session 10), plan refined:** validate the general method, don't build three beautiful exceptions.
+  - (a) + (b) stay but are TIME-BOXED: fix the discus eye-bar wrap and reshape the cory, no further polish on either.
+    Review = the same four views as `46_*_sheet` (straight on, 50° right, 25° above, 75° near head-on), before/after,
+    so only those two changes show.
+  - (c) subtle cues: deferred until after the audit.
+  - (d) audit answers TWO separate questions:
+    1. Regressions from the global paint changes on the other species' CARDS: eyes, patterns, scale texture, fin
+       visibility, recognisable silhouettes.
+    2. **(more important)** Does the 3D loft handle structurally different body plans? Stress tests: **kuhli loach**
+       (eel-like), **bristlenose pleco** (flat-bellied, depressed, sucker mouth), **angelfish** (tall, laterally
+       compressed, long fins; hand-drawn, may need a plan). Count the species-specific code each needs: convincing
+       with little of it = the approach scales; lots of it = rethink parts of the architecture before step 2.
+  - The audit's outcome decides: expand the 3D pipeline to all species, or rework the architecture.
+- **Next: (3)** stretched markings: side projection smears where the surface turns away from the side (discus eye bar
+  rings the head). Then (4) cory geometry. Not checked yet: the global paint changes on the other 34 species' cards.
+- **Shared working tree:** another chat was editing index.html, defaults/physics/types/validate, ui/diff + panels at the
+  same time (2 split.test failures are theirs: size label gained gallons and area). Commit the two sets separately.
+
+**(superseded)** Nathan judges the direction. If yes: fixes for the artefacts above (eye and gill per flank instead of projected,
+real pectoral fins), then roadmap step 2 (all 42 species, a `thick` per plan; hand-drawn neon / gourami / angel need plans
+or their own loft).
+
 ## Status (2026-10-09, session 8: tank shapes phases 1 + 2 deployed `9286b85`)
 
 Built on top of the uncommitted phase 1. `npm test` 104/104 (new `test/table.test.ts`), `tsc` and `vite build` clean,

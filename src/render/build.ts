@@ -12,7 +12,8 @@ import { groundHeight, terrainPoint } from '../scene/terrain';
 import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
 import { addFixture, applyLighting } from './lighting';
 import { layoutGroup } from './layouts';
-import { cardMaterial, fishTexture, gradientTexture, personTexture, snailTexture, substrateTexture } from './textures';
+import { fishBody, has3D } from './fish3d';
+import { cardMaterial, fishBodyTexture, fishTexture, gradientTexture, personTexture, snailTexture, substrateTexture } from './textures';
 
 /** Back-wall options; color null = no background (back glass only); light = use dark grid lines. */
 export const BACKGROUNDS: Record<Background, { label: string; color: number | null; gradient?: boolean; light?: boolean }> = {
@@ -459,6 +460,33 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   mk(top, 0xffffff, topCol); mk(side, 0xb4b4b4); // the skirt a touch darker so the layer reads through the glass
 }
 
+/** Soft dark ellipse for contact shadows (radial falloff to zero at the edge). */
+const shadowTex = (() => {
+  let t: THREE.Texture | undefined;
+  return () => {
+    if (t) return t;
+    const c = document.createElement('canvas'); c.width = c.height = 128;
+    const x = c.getContext('2d')!, g = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+    g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(0.45, 'rgba(0,0,0,0.6)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+    x.fillStyle = g; x.fillRect(0, 0, 128, 128);
+    return (t = new THREE.CanvasTexture(c));
+  };
+})();
+const shadowGeo = (() => { const g = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2); g.userData.keep = true; return g; })();
+/**
+ * A soft shadow on the ground under an animal: under the light above, strongest when it rests on the ground and
+ * fading as it rises (gone by about two body lengths). Ellipse = body length x a share of its height, turned with it.
+ */
+function contactShadow(S: TankSetup, T: Tank, x: number, depth: number, bottom: number, w: number, h: number, yaw: number) {
+  const g = groundHeight(S, T, x, depth), lift = Math.max(0, bottom - g), k = 0.5 * Math.exp(-lift / (0.8 * w));
+  if (k < 0.03) return null;
+  const m = new THREE.Mesh(shadowGeo, new THREE.MeshBasicMaterial({ map: shadowTex(), transparent: true, opacity: k, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
+  const s = 1 + lift / w * 0.6; // a higher fish casts a wider, softer shadow
+  m.scale.set(w * 0.95 * s, 1, Math.max(h * 0.5, w * 0.2) * s); m.rotation.y = yaw * D2R;
+  m.position.set(x, g + 0.5, -depth); m.userData.nolight = true; m.renderOrder = 1;
+  return m;
+}
+
 export function cardGeometry(w: number, h: number, bend: number) {
   const g = new THREE.PlaneGeometry(w, h, 16, 1);
   if (bend) {
@@ -525,11 +553,14 @@ export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: numbe
     if (sp.kind === 'snail') { for (const [m, w, h] of snailMeshes(S, T, f, sp)) register(f, m, w, h); continue; }
     if (!S.water.on && needsWater(sp)) continue; // dry tank: fish stay in the scene data, hidden until the water is back
     const w = fishTL(f, sp), h = w * sp.aspect, p = f;
-    const m = new THREE.Mesh(cardGeometry(w, h, f.bend), cardMaterial('fish:' + f.species, fishTexture(f.species), S.render.edge));
+    const solid = has3D(sp.art), tex = fishTexture(f.species, S.render.edge, !solid);
+    const m = new THREE.Mesh(cardGeometry(w, h, f.bend), cardMaterial(`fish:${f.species}:${solid}`, tex, S.render.edge));
+    if (solid) m.add(fishBody(sp.art, sp.aspect, w, f.bend, fishBodyTexture(f.species), S.render.edge)); // solid body + paired fins; the card keeps the median fins
     // bottom dwellers and animals on land rest on the ground wherever they are (their stored height is ignored)
     const y = restsOnGround(S, T, sp, p.x, p.depth, h) ? groundHeight(S, T, p.x, p.depth) + sp.rest * w - 1 : Math.min(p.y, Math.max(0, waterY(T, S.water.level) - h / 2));
     m.position.set(p.x, y, -p.depth); m.rotation.set(f.roll * D2R, f.yaw * D2R, f.pitch * D2R, 'YXZ');
     register(f, m, w, h);
+    const sh = contactShadow(S, T, p.x, p.depth, y - h / 2, w, h, f.yaw); if (sh) sc.add(sh);
   }
   addLid(sc, S, T);
   if (S.lid !== 'hood') addFixture(sc, T, S.light, floorY(T, S.render, S.stand) + 2700); // ceiling: the wall's room height // with a hood the fixture is inside it; its light still applies

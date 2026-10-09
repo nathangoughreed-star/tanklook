@@ -117,7 +117,8 @@ export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open') {
 
 const AQ_VERT = 'varying vec3 vAqP; varying vec3 vAqN;';
 const AQ_FRAG = `
-uniform vec4 uEm[${AQ_MAX}]; uniform int uEmN; uniform float uMode, uAmb, uBright, uNorm, uConeIn, uConeOut, uRef, uCard, uSub; uniform vec3 uLCol;
+uniform vec4 uEm[${AQ_MAX}]; uniform int uEmN; uniform float uMode, uAmb, uBright, uNorm, uConeIn, uConeOut, uRef, uCard, uSub, uFish; uniform vec3 uLCol;
+float aqSpec = 0.0;
 uniform float uRoomMat, uRoomK, uSpillR; uniform vec3 uSpill, uTankMin, uTankMax; uniform vec4 uWater; uniform vec3 uWCol;
 varying vec3 vAqP; varying vec3 vAqN;
 float aqHash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -141,8 +142,14 @@ vec3 aqLight() {
     float facing = uCard > 0.5 ? 0.6 : 0.3 + 0.7 * max(dot(normalize(vAqN), ld), 0.0);
     return vec3(uRoomK) + uSpill * (facing / (1.0 + r * r));
   }
-  if (uMode < 0.5) return vec3(1.0);
   float sum = 0.0; vec3 n = normalize(vAqN);
+  if (uMode < 0.5) {
+    if (uFish < 0.5) return vec3(1.0);
+    // flat light: 3D fish still need form, so a fixed soft key from above and slightly in front
+    vec3 ld = normalize(vec3(-0.2, 1.0, 0.35)), hv = normalize(ld + normalize(cameraPosition - vAqP));
+    aqSpec = 0.6 * pow(max(dot(n, hv), 0.0), 40.0);
+    return vec3(1.0 + 0.6 * dot(n, ld));
+  }
   for (int i = 0; i < ${AQ_MAX}; i++) {
     if (i >= uEmN) break;
     vec4 e = uEm[i];
@@ -151,6 +158,12 @@ vec3 aqLight() {
     float cone = smoothstep(uConeOut, uConeIn, ld.y), r = d / uRef;
     float fall = e.w > 0.0 ? 1.0 / (1.0 + r) : 1.0 / (1.0 + r * r);
     float facing = uCard > 0.5 ? 1.0 : 0.3 + 0.9 * abs(dot(n, ld));
+    // 3D fish body: lit from the light's side (flank = 1, back brighter, belly darker), plus a soft highlight
+    if (uFish > 0.5) {
+      facing = 1.0 + 0.6 * dot(n, ld);
+      vec3 hv = normalize(ld + normalize(cameraPosition - vAqP));
+      aqSpec += cone * fall * pow(max(dot(n, hv), 0.0), 40.0);
+    }
     sum += cone * fall * facing;
   }
   return vec3(uAmb) + uLCol * (uBright * uNorm * sum);
@@ -167,20 +180,29 @@ const AQ_MAP = `#ifdef USE_MAP
 #endif`;
 
 function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithUniforms) {
-  Object.assign(shader.uniforms, LU, { uCard: { value: this.userData.card ? 1 : 0 }, uSub: { value: this.userData.sub ? 1 : 0 }, uRoomMat: { value: this.userData.room ? 1 : 0 } });
+  Object.assign(shader.uniforms, LU, { uCard: { value: this.userData.card ? 1 : 0 }, uSub: { value: this.userData.sub ? 1 : 0 }, uFish: { value: this.userData.fish ? 1 : 0 }, uRoomMat: { value: this.userData.room ? 1 : 0 } });
   shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\n' + AQ_VERT)
     .replace('#include <begin_vertex>', '#include <begin_vertex>\nvAqP = (modelMatrix * vec4(transformed, 1.0)).xyz; vAqN = normalize(mat3(modelMatrix) * normal);');
   shader.fragmentShader = shader.fragmentShader.replace('#include <common>', '#include <common>\n' + AQ_FRAG)
     .replace('#include <opaque_fragment>', 'vec3 aqLt = aqLight(); outgoingLight *= aqLt;\n' +
       'if (uCard > 0.5) { float aqL = dot(outgoingLight, vec3(0.2126, 0.7152, 0.0722)); outgoingLight = max(mix(vec3(aqL), outgoingLight, 1.35), 0.0); }\n' +
-      'float aqM = max(max(outgoingLight.r, outgoingLight.g), outgoingLight.b); if (aqM > 1.0) outgoingLight /= aqM;\n' +
+      'float aqM = max(max(outgoingLight.r, outgoingLight.g), outgoingLight.b);\n' +
+      // 3D fish body: a soft roll-off instead of the hard clamp (which flattens the form shading wherever the light
+      // is strong), then the highlight and a faint silvery sheen toward the edges on top
+      'if (uFish > 0.5) {\n' +
+      '  float aqS = dot(outgoingLight, vec3(0.2126, 0.7152, 0.0722)); outgoingLight = max(mix(vec3(aqS), outgoingLight, 1.28), 0.0);\n' +
+      '  outgoingLight *= (1.0 - exp(-1.6 * aqM)) / max(0.92 * aqM, 1e-4);\n' +
+      '  vec3 aqV = normalize(cameraPosition - vAqP); float aqRim = pow(1.0 - abs(dot(normalize(vAqN), aqV)), 3.0);\n' +
+      '  outgoingLight += uLCol * (uBright * uNorm * aqSpec * 0.16) + vec3(0.03, 0.04, 0.045) * aqRim * min(dot(aqLt, vec3(0.333)), 1.5);\n' +
+      '  outgoingLight = min(outgoingLight, vec3(1.0));\n' +
+      '} else if (aqM > 1.0) outgoingLight /= aqM;\n' +
       // water colour: blend toward the lit water colour by how much water the sightline crosses
       'if (uWater.w > 0.0) { float aqF = 1.0 - exp(-uWater.w * aqWaterPath()); outgoingLight = mix(outgoingLight, uWCol * min(dot(aqLt, vec3(0.2126, 0.7152, 0.0722)), 1.0), aqF); }\n' +
       '#include <opaque_fragment>')
     .replace('#include <map_fragment>', AQ_MAP);
 }
 // one cache key per material kind keeps one compiled program per kind
-const progKey = function (this: THREE.Material) { return 'aq' + (this.userData.card ? 'c' : '') + (this.userData.sub ? 's' : '') + (this.userData.room ? 'r' : ''); };
+const progKey = function (this: THREE.Material) { return 'aq' + (this.userData.card ? 'c' : '') + (this.userData.sub ? 's' : '') + (this.userData.room ? 'r' : '') + (this.userData.fish ? 'f' : ''); };
 
 /** Light every opaque surface inside the tank (substrate, background, fish, plant); glass, rim, lines and the fixture stay unlit. */
 export function applyLighting(sc: THREE.Scene) {
@@ -191,7 +213,7 @@ export function applyLighting(sc: THREE.Scene) {
       if (!(m as THREE.MeshBasicMaterial).isMeshBasicMaterial || (m.transparent && !m.userData.cached) || m.userData.aq) continue;
       if (o.userData.room) m.userData.room = true;
       if (!mesh.geometry.attributes.normal) mesh.geometry.computeVertexNormals();
-      m.userData.aq = true; m.userData.card = !!m.userData.cached;
+      m.userData.aq = true; m.userData.card = !!m.userData.cached && !m.userData.fish;
       m.onBeforeCompile = aqPatch; m.customProgramCacheKey = progKey; m.needsUpdate = true;
     }
   });

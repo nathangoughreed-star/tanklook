@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import { drawFishCard, drawPerson, drawSubstrate } from '../art/placeholder';
+import { drawPairedFin, type PairedFin } from '../art/fishgen';
+import { FIN_A, style } from '../art/paint';
 import { drawPlantCard, type PlantType } from '../art/plants';
 import { drawSnailCard, type SnailView } from '../art/snails';
 import { getSpecies } from '../data/species';
@@ -20,10 +22,26 @@ function cached(key: string, make: () => THREE.Texture) {
   return t;
 }
 
-export const fishTexture = (speciesId: string) => cached('fish:' + speciesId, () => {
+/** Per edge mode: alpha-to-coverage gets clearer fins (cutout needs fin alpha above its 0.5 test). */
+export const fishTexture = (speciesId: string, edge: EdgeMode = 'cutout', paired = true) => cached(`fish:${speciesId}:${edge}:${paired}`, () => {
   const sp = getSpecies(speciesId)!;
-  return finish(drawFishCard(sp.art, sp.aspect));
+  return finish(drawFishCard(sp.art, sp.aspect, 1024, edge === 'a2c' ? 0.36 : undefined, true, paired));
 });
+/** The 3D body's texture: the card painting without eye, gill and mouth (fins are hidden inside the solid anyway). */
+export const fishBodyTexture = (speciesId: string) => cached(`fishbody:${speciesId}`, () => {
+  const sp = getSpecies(speciesId)!;
+  return finish(drawFishCard(sp.art, sp.aspect, 1024, undefined, false, false));
+});
+/** A 3D fish's paired fin as its own small texture (drawn at the card's resolution); `box` = its extent in card units. */
+export const pairedFinTexture = (art: string, f: PairedFin, box: { u0: number; v0: number; w: number; h: number }, edge: EdgeMode) =>
+  cached(`fin:${art}:${f.kind}:${edge}`, () => {
+    const R = 1024, c = document.createElement('canvas'); c.width = Math.ceil(box.w * R); c.height = Math.ceil(box.h * R);
+    const ctx = c.getContext('2d')!; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    style.finA = edge === 'a2c' ? 0.36 : FIN_A;
+    drawPairedFin({ ...f, a: f.kind === 'pectoral' ? undefined : f.a }, ctx, (u, v) => [(u - box.u0) * R, (v - box.v0) * R], R);
+    style.finA = FIN_A;
+    return finish(c);
+  });
 export const substrateTexture = (type: SubstrateType) => cached('sub:' + type, () => {
   const c = document.createElement('canvas'); c.width = c.height = 512;
   drawSubstrate(c.getContext('2d')!, 512, type);

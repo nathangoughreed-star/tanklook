@@ -29,6 +29,12 @@ export function shape(ctx: Ctx, P: Proj, pts: Pt[]) {
 }
 
 export const FIN_A = 0.62;
+/**
+ * Paint settings for the card being drawn: fin alpha is lower with alpha-to-coverage (see-through fins), FIN_A in cutout;
+ * features = false leaves out eye, gill and mouth (the 3D body's texture: those would smear over the curved head);
+ * paired = false leaves out the pectoral and pelvic fins (3D fish have them as their own membranes).
+ */
+export const style = { finA: FIN_A, features: true, paired: true };
 export const hexA = (h: string, a: number) => { const n = parseInt(h.slice(1), 16); return `rgba(${n >> 16},${n >> 8 & 255},${n & 255},${a})`; };
 /** Blank canvas the size of ctx's, for building a layer before compositing it. */
 export function layer(ctx: Ctx) {
@@ -65,7 +71,7 @@ export function blob(ctx: Ctx, P: Proj, W: number, u: number, v: number, ru: num
 
 /** Fin membrane: translucent tint plus fine rays fanning from root to the outline. */
 export function fin(ctx: Ctx, P: Proj, W: number, pts: Pt[], root: [number, number], tint: string, ray: string,
-  { a = FIN_A, rays = 14, extra }: { a?: number; rays?: number; extra?: (c: Ctx) => void } = {}) {
+  { a = style.finA, rays = 14, extra }: { a?: number; rays?: number; extra?: (c: Ctx) => void } = {}) {
   ctx.save(); shape(ctx, P, pts); ctx.fillStyle = hexA(tint, a); ctx.fill(); ctx.clip();
   extra?.(ctx);
   const [rx, ry] = P(root[0], root[1]); ctx.strokeStyle = hexA(ray, Math.min(0.5, a * 0.6)); ctx.lineWidth = 0.0022 * W;
@@ -81,16 +87,27 @@ export function fin(ctx: Ctx, P: Proj, W: number, pts: Pt[], root: [number, numb
  * Opaque body on its own layer: countershading gradient (stops from v=top to v=bot), markings painted inside it
  * (source-atop, so they never change the silhouette), then a soft inner rim and a thin darker edge that round it.
  */
-export function body(ctx: Ctx, P: Proj, W: number, pts: Pt[], top: number, bot: number, shade: Stops, rim: number, paint: (l: Ctx) => void) {
+export function body(ctx: Ctx, P: Proj, W: number, pts: Pt[], top: number, bot: number, shade: Stops, rim: number, paint: (l: Ctx) => void, after?: (l: Ctx) => void) {
   const l = layer(ctx);
   shape(l, P, pts); l.fillStyle = vgrad(l, P, top, bot, shade); l.fill();
   l.globalCompositeOperation = 'source-atop';
   paint(l);
+  // tone over the markings too (they are flat fills): darker toward the back and belly, fine mottling
+  const t = layer(l), r = rng(3), [, ty] = P(0, top), [, by] = P(0, bot);
+  t.fillStyle = vgrad(t, P, top, bot, [[0, 'rgb(196,196,196)'], [0.4, '#fff'], [0.62, '#fff'], [1, 'rgb(214,214,214)']]);
+  t.fillRect(0, ty, t.canvas.width, by - ty);
+  for (let i = 0; i < 60; i++) {
+    const u = r(), v = top + r() * (bot - top), k = Math.round(205 + r() * 50);
+    blob(t, P, W, u, v, 0.02 + r() * 0.05, 0.01 + r() * 0.03, `#${k.toString(16).repeat(3)}`, 0.35);
+  }
+  t.globalCompositeOperation = 'destination-in'; t.drawImage(l.canvas, 0, 0);
+  l.globalCompositeOperation = 'multiply'; l.drawImage(t.canvas, 0, 0); l.globalCompositeOperation = 'source-atop';
   shape(l, P, pts);
   for (const k of [1, 0.7, 0.45, 0.25]) {
     l.lineWidth = rim * W * k; l.strokeStyle = vgrad(l, P, top, bot, [[0, 'rgba(14,16,12,0.08)'], [1, 'rgba(14,16,12,0.035)']]); l.stroke();
   }
   l.lineWidth = 0.005 * W; l.strokeStyle = 'rgba(14,16,12,0.2)'; l.stroke();
+  after?.(l);
   ctx.drawImage(l.canvas, 0, 0);
 }
 /** Gill-cover line: a faint arc bulging toward the tail. */
@@ -99,12 +116,44 @@ export function gill(ctx: Ctx, P: Proj, W: number, u: number, v0: number, v1: nu
   ctx.beginPath(); ctx.moveTo(x0, y0); ctx.quadraticCurveTo(cx, cy, x1, y1);
   ctx.strokeStyle = 'rgba(20,20,16,0.16)'; ctx.lineWidth = 0.008 * W; ctx.stroke();
 }
-/** Small realistic eye: coloured/metallic iris (light top to dark rim), dark pupil set forward, tiny catchlight. */
+/**
+ * Small realistic eye: shaded socket blending into the head, iris (light top to dark rim), dark pupil set forward, a
+ * faint rim and a dim catchlight (a bright ringed eye is the strongest cartoon cue).
+ */
 export function eye(ctx: Ctx, P: Proj, W: number, u: number, v: number, r: number, iris: [string, string]) {
-  const [x, y] = P(u, v), R = r * W, g = ctx.createRadialGradient(x, y - R * 0.35, R * 0.1, x, y, R);
+  const [x, y] = P(u, v), R = r * W;
+  const s = ctx.createRadialGradient(x, y, R * 0.9, x, y, R * 1.9);
+  s.addColorStop(0, 'rgba(16,18,14,0.28)'); s.addColorStop(1, 'rgba(16,18,14,0)');
+  ctx.fillStyle = s; ctx.fillRect(x - R * 2, y - R * 2, R * 4, R * 4);
+  const g = ctx.createRadialGradient(x, y - R * 0.35, R * 0.1, x, y, R);
   g.addColorStop(0, iris[0]); g.addColorStop(1, iris[1]);
   ctx.beginPath(); ctx.arc(x, y, R, 0, 7); ctx.fillStyle = g; ctx.fill();
-  ctx.lineWidth = R * 0.12; ctx.strokeStyle = 'rgba(18,18,16,0.5)'; ctx.stroke();
+  ctx.lineWidth = R * 0.08; ctx.strokeStyle = 'rgba(18,18,16,0.25)'; ctx.stroke();
   ctx.beginPath(); ctx.arc(x + R * 0.08, y, R * 0.56, 0, 7); ctx.fillStyle = '#0b0c0d'; ctx.fill();
-  ctx.beginPath(); ctx.arc(x - R * 0.12, y - R * 0.24, R * 0.14, 0, 7); ctx.fillStyle = 'rgba(255,255,255,0.6)'; ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x - R * 0.1, y - R * 0.28, R * 0.16, R * 0.08, -0.4, 0, 7); ctx.fillStyle = 'rgba(255,255,255,0.28)'; ctx.fill();
+}
+
+/**
+ * Scale net over the body (draw on the body layer, source-atop): rows of overlapping scales, each showing its rear edge
+ * as a faint dark arc with a lighter one just inside; none on the head (u above `head`). s = scale size (widths).
+ */
+export function scales(l: Ctx, P: Proj, W: number, u0: number, head: number, s: number) {
+  l.save(); l.lineWidth = Math.max(1, 0.0022 * W);
+  for (let j = 0, v = -0.5; v < 0.5; j++, v += s * 0.62) {
+    for (let u = u0 + (j % 2) * s * 0.5; u < head; u += s * 0.78) {
+      const fade = Math.min(1, (head - u) / (s * 3)), [x, y] = P(u, v), R = s * 0.55 * W;
+      l.beginPath(); l.arc(x, y, R, Math.PI - 1.15, Math.PI + 1.15); l.strokeStyle = `rgba(12,14,10,${0.09 * fade})`; l.stroke();
+      l.beginPath(); l.arc(x + R * 0.18, y, R * 0.9, Math.PI - 1.0, Math.PI + 1.0); l.strokeStyle = `rgba(255,255,250,${0.06 * fade})`; l.stroke();
+    }
+  }
+  l.restore();
+}
+
+/** Band with wavy, slightly irregular edges (amp in widths), hard but anti-aliased: a pattern, not an airbrush. */
+export function wavyBand(c: Ctx, P: Proj, u0: number, u1: number, v0: number, v1: number, amp: number, color: string, a: number, seed: number) {
+  const r = rng(seed), ph = [r() * 6, r() * 6, r() * 6, r() * 6], n = 60, top: [number, number][] = [], bot: [number, number][] = [];
+  const w = (u: number, k: number) => amp * (Math.sin(u * 23 + ph[k]) * 0.7 + Math.sin(u * 51 + ph[k + 1]) * 0.3);
+  for (let i = 0; i <= n; i++) { const u = u0 + (u1 - u0) * i / n; top.push(P(u, v0 + w(u, 0))); bot.unshift(P(u, v1 + w(u, 2))); }
+  c.beginPath(); [...top, ...bot].forEach(([x, y], i) => (i ? c.lineTo(x, y) : c.moveTo(x, y))); c.closePath();
+  c.fillStyle = hexA(color, a); c.fill();
 }

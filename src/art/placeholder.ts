@@ -6,7 +6,7 @@
 // alpha-test cutout), so every opaque or fin pixel keeps alpha >= FIN_A, above the 0.5 cutoff with a mipmap margin.
 import type { SubstrateType } from '../scene/types';
 
-import { type Ctx, type Proj, type Pt, blob, body, eye, fin, gill, hexA, rng, soft, vgrad } from './paint';
+import { FIN_A, type Ctx, type Proj, type Pt, blob, body, eye, fin, gill, hexA, rng, soft, style, vgrad } from './paint';
 export { rng } from './paint';
 import { GEN_ART } from './fishgen';
 import { HERP_ART } from './herps';
@@ -93,11 +93,13 @@ export const FISH_ART: Record<string, (ctx: Ctx, P: Proj, W: number) => void> = 
 };
 
 /** Render a fish card (width W px, height from aspect) into a canvas. Nose points to +x (right). */
-export function drawFishCard(art: string, aspect: number, W = 1024): HTMLCanvasElement {
+export function drawFishCard(art: string, aspect: number, W = 1024, finA = FIN_A, features = true, paired = true): HTMLCanvasElement {
+  style.finA = finA; style.features = features; style.paired = paired;
   const c = document.createElement('canvas'), H = Math.round(W * aspect);
   c.width = W; c.height = H;
   const ctx = c.getContext('2d')!; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
   (FISH_ART[art] ?? drawTetra)(ctx, (u, v) => [u * W, H / 2 + v * W], W);
+  style.finA = FIN_A; style.features = true; style.paired = true;
   return c;
 }
 
