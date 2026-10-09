@@ -39,6 +39,22 @@ export class Viewer {
   /** Custom terrain editing: show grid dots in the active tank; `hot` = the dot being dragged. UI state, not scene data. */
   terrainEdit: { on: boolean; hot: number | null } = { on: false, hot: null };
   private drawnListeners = new Set<() => void>();
+  /**
+   * Temporary middle-drag pan, screen px: slides the image window (a lens shift, like the framing), so the eye,
+   * perspective and orbit centre are untouched. `i` = the view being panned (both when locked). Eases back on release.
+   */
+  pan = { i: 0, x: 0, y: 0 };
+  private panAnim = 0;
+  setPan(i: number, x: number, y: number) { cancelAnimationFrame(this.panAnim); this.pan = { i, x, y }; this.dirty = true; }
+  releasePan() {
+    const { x, y } = this.pan, t0 = performance.now(), ms = 220;
+    const step = (t: number) => {
+      const k = Math.min(1, (t - t0) / ms), e = 1 - (1 - k) ** 3;
+      this.pan.x = x * (1 - e); this.pan.y = y * (1 - e); this.dirty = true;
+      if (k < 1) this.panAnim = requestAnimationFrame(step);
+    };
+    this.panAnim = requestAnimationFrame(step);
+  }
 
   constructor(readonly canvas: HTMLCanvasElement, readonly host: HTMLElement, readonly store: Store) {
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: false });
@@ -130,6 +146,7 @@ export class Viewer {
       const hy = Math.tan(fov * D2R / 2), hx = hy * vp.w / vp.h;
       const { tank, all } = lockedWin ?? wins[k];
       const c = windowCentre(all, tank, hx, hy);
+      if (lockedWin || this.pan.i === vp.i) { c.cx -= this.pan.x * 2 * hx / vp.w; c.cy += this.pan.y * 2 * hy / vp.h; } // the picture follows the pointer
       applyFraming(vp.cam, fov, vp.w, vp.h, c.cx, c.cy);
       r.setViewport(vp.x, vp.y, vp.w, vp.h); r.setScissor(vp.x, vp.y, vp.w, vp.h);
       r.setClearColor(new THREE.Color(0xd9dde2).multiplyScalar(0.06 + 0.94 * roomLevel(S.light.room))); r.clear(); // the space beyond the room dims with the room light
