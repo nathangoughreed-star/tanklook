@@ -9,7 +9,9 @@ architecture validated for rollout; head-on marking distortion is now a systemat
 rollout; the remaining 34 species are on hold until the merge and the mapping fix. QC list adds: the guppy's broad
 tail becomes an edge-on sheet at extreme angles (acceptable for now).
 Order, one work unit per chat:
-1. Merge `fix-canvas-alpha` once the other chat has finished editing main (`viewer.ts`).
+1. DONE 2026-10-09 (session 12): `fix-canvas-alpha` merged into main (`1cd57d6`, local, not pushed). The other
+   chats' uncommitted edits on main (middle-drag pan: `pointer.ts`, `viewer.ts`, `style.css`; round-tank spill:
+   `lighting.ts`) were stashed for the merge and restored, still uncommitted. No textual overlap; tsc clean, tests 110/110.
 2. Reconcile and merge `audit-3d` (`viewer.ts`, `lighting.ts` overlap the other chat's edits), rerun tests,
    visually re-check the 3D lighting.
 3. Head-on marking wrapping: a GENERIC surface-mapping fix (not per species).
