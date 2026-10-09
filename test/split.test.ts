@@ -34,13 +34,13 @@ describe('scene v7 migration', () => {
 });
 
 describe('split tanks', () => {
-  it('split copies the tank; edits go to the active tank only', () => {
+  it('split copies the tank; edits go to the ticked tank only (B after a split)', () => {
     const st = new Store(defaultScene()); st.splitTank();
     expect(st.scene.tanks.length).toBe(2); expect(st.scene.active).toBe(1);
     st.edit(t => { t.water.opacity = 0.5; t.fish.pop(); });
     expect(st.scene.tanks[0].water.opacity).toBe(0);
     expect(st.scene.tanks[0].fish.length).toBe(st.scene.tanks[1].fish.length + 1);
-    st.setActive(0); st.edit(t => { t.lid = 'hood'; });
+    st.setEditing(0, true); st.setEditing(1, false); st.edit(t => { t.lid = 'hood'; });
     expect(st.scene.tanks.map(t => t.lid)).toEqual(['hood', 'open']);
   });
   it('closing either tank leaves the other; undo brings it back', () => {
@@ -63,7 +63,33 @@ describe('split tanks', () => {
     const st = new Store(defaultScene()); const id = st.tank.fish[1].id; st.select(id);
     st.splitTank(); expect(st.selId).toBe(id);
     st.edit(t => { t.fish = t.fish.filter(f => f.id !== id); }); expect(st.selId).toBe(null);
-    st.select(null); st.setActive(0); st.select(id); st.setActive(1); expect(st.selId).toBe(null);
+    st.select(null); st.setEditing(0, true); st.setEditing(1, false); st.select(id);
+    st.setEditing(1, true); st.setEditing(0, false); expect(st.selId).toBe(null);
+  });
+  it('with both views ticked, one edit changes both tanks in one undo step', () => {
+    const st = new Store(defaultScene()); st.splitTank(); st.setEditing(0, true);
+    expect(st.targets.sort()).toEqual([0, 1]);
+    st.edit(t => { t.lid = 'hood'; });
+    expect(st.scene.tanks.map(t => t.lid)).toEqual(['hood', 'hood']);
+    st.undo(); expect(st.scene.tanks.map(t => t.lid)).toEqual(['open', 'open']);
+    st.editTank(0, t => { t.lid = 'glass'; }); // a drag in one view changes that tank only
+    expect(st.scene.tanks.map(t => t.lid)).toEqual(['glass', 'open']);
+  });
+  it('the last ticked view cannot be unticked; unticking the shown tank shows the other', () => {
+    const st = new Store(defaultScene()); st.splitTank();
+    st.setEditing(1, false); expect(st.targets).toEqual([1]);
+    st.setEditing(0, true); st.setEditing(1, false); expect(st.targets).toEqual([0]); expect(st.scene.active).toBe(0);
+    st.closeTank(0); expect(st.targets).toEqual([0]);
+  });
+  it('a fish added to both tanks gets one id free in each', () => {
+    const st = new Store(defaultScene()); st.splitTank();
+    st.edit(t => { t.fish.push({ ...t.fish[0], id: 99 }); });
+    st.setEditing(0, true); const id = st.nextId(); expect(id).toBe(100);
+  });
+  it('unlocked: orbiting one view moves only that camera; the panel sliders move every ticked view', () => {
+    const st = new Store(defaultScene()); st.splitTank(); st.setCamLock(false); st.setEditing(0, true);
+    st.cam(c => { c.az = 20; }, 0); expect(st.scene.tanks.map(t => t.camera.az)).toEqual([20, 0]);
+    st.cam(c => { c.az = -15; }); expect(st.scene.tanks.map(t => t.camera.az)).toEqual([-15, -15]);
   });
 });
 

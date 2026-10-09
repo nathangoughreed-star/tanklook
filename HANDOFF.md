@@ -22,6 +22,19 @@ Order, one work unit per chat:
 4. Verify it on discus, tiger barb, clown loach, harlequin (same four views).
 5. Roll 3D out to the remaining fish, flat cards kept as fallbacks until each passes review.
 
+## Split view: per-view "Edit" boxes (2026-10-09, Nathan; built, NOT committed)
+
+Replaces "click a view to choose which tank the panel edits". Each split view's tab has an **Edit** checkbox; the
+panel's changes go to every ticked tank (one undo step). After a split only B is ticked (as before); at least one box
+stays ticked (the last one is disabled). Store: `editOn` (UI state, not saved), `targets`, `isEditing(i)`,
+`setEditing(i, on)`, `edit()` loops over targets, `editTank(i)` for direct drags, `cam(fn, i?)`, `nextId()` (one id
+free in every tank, so an added fish shares its id and the selection covers both). `scene.active` = the ticked tank
+the panel SHOWS; pressing in a ticked view shows it. An unticked view only orbits / zooms / pans (no fish or terrain
+drags). Dragging a fish or terrain dot changes only that view's tank. Tank size / shape writes are per-tank (only the
+changed dimension is copied); adds use one seeded RNG so both tanks get the same placement. Every ticked view is
+framed (`vpFrame`, `vpFrame2`). Tests 114/114 (split.test updated + 4 new). Checked on dev-5 (port 5243, new in
+launch.json): boxes, frames, message, lid / length edits to B only, both, A only; fish add to both.
+
 ## Status (2026-10-09, session 11c: alpha fix on `fix-canvas-alpha`; 8-species pilot on `audit-3d`; neither merged)
 
 Nathan 2026-10-09: four fixes accepted; fix the canvas compositing first, kept separate; then an 8-species pilot

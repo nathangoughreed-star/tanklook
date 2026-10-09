@@ -133,6 +133,19 @@
         "--strictPort"
       ],
       "port": 5233
+    },
+    {
+      "name": "dev-5",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5243",
+        "--strictPort"
+      ],
+      "port": 5243
     }
   ]
 }

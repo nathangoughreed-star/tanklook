@@ -1,5 +1,6 @@
 // Sidebar wiring. Inputs write through store.update(); one sync() pulls every control back from the scene,
 // so undo/redo, file open and pointer drags all refresh the panels the same way.
+import { rng } from '../art/paint';
 import { SUBSTRATES } from '../art/placeholder';
 import { fishTL, getSpecies, needsWater, restsOnFloor, searchSpecies, speciesTag, type Species } from '../data/species';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
@@ -18,14 +19,14 @@ import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, fetchStocking } from '../data/a
 import { POLY_SIDES, SHAPES, bowMinLimit, offsetRing, ringArea, shapeOf } from '../scene/shape';
 import { TABLE_MAX, tableRange } from '../scene/table';
 import type { Fish, LayoutId, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
-import { GLASS_CHOICES, LIMITS, SceneError, nextFishId, parseScene } from '../scene/validate';
+import { GLASS_CHOICES, LIMITS, SceneError, parseScene } from '../scene/validate';
 
 const $ = <T extends HTMLElement = HTMLInputElement>(id: string) => document.getElementById(id) as T;
 const esc = (s: string) => s.replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 
 export function attachPanels(store: Store, viewer: Viewer) {
   const G = () => store.scene;   // the whole scene: name, units, the tanks
-  const S = () => store.tank;    // the tank the panel edits (the active view)
+  const S = () => store.tank;    // the tank the panel shows; edits go to every view with "Edit" ticked (store.edit)
   const fmt = (mm: number) => fmtLen(mm, G().units);
   const sel = () => store.selected;
   /** Mutate the selected fish (undoable, coalesced per control). */
@@ -85,11 +86,13 @@ export function attachPanels(store: Store, viewer: Viewer) {
     s.onchange = () => {
       if (s.value === '') return;
       const p = TANK_PRESETS[+s.value]; s.value = '';
-      setTank({ ...S().tank, L: p[1] * IN, H: p[2] * IN, D: p[3] * IN }); // keeps the shape (round: D follows L)
+      setTank(T => ({ ...T, L: p[1] * IN, H: p[2] * IN, D: p[3] * IN })); // keeps the shape (round: D follows L)
     };
   }
-  function setTank(T: Tank, coalesce?: string) {
+  /** Resize / reshape each edited tank from its own current size (so ticking both changes only what was set). */
+  function setTank(next: (T: Tank) => Tank, coalesce?: string) {
     store.edit(s => {
+      const T = next(s.tank);
       rescaleTank(s, T); // keep fish at the same relative spot (and apply the shape's rules, e.g. round D = L)
       const max = T.H * 0.5;
       for (const k of ['fl', 'fr', 'bl', 'br'] as const) s.substrate[k] = Math.min(s.substrate[k], max);
@@ -100,17 +103,16 @@ export function attachPanels(store: Store, viewer: Viewer) {
   const flatEnds = (T: Tank) => ['rect', 'bow'].includes(shapeOf(T));
   $<HTMLSelectElement>('shapeSel').innerHTML = Object.entries(SHAPES).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join('');
   $<HTMLSelectElement>('shapeSel').onchange = e => {
-    const shape = (e.target as HTMLSelectElement).value as TankShape, T = S().tank;
-    setTank({ ...T, shape, sides: T.sides ?? 6, bowMin: T.bowMin ?? T.D * 0.7 });
+    const shape = (e.target as HTMLSelectElement).value as TankShape;
+    setTank(T => ({ ...T, shape, sides: T.sides ?? 6, bowMin: T.bowMin ?? T.D * 0.7 }));
   };
-  for (const n of POLY_SIDES) $('sides' + n).onclick = () => setTank({ ...S().tank, shape: 'poly', sides: n });
-  $('bowMin').oninput = e => setTank({ ...S().tank, bowMin: +(e.target as HTMLInputElement).value }, 'bowMin');
+  for (const n of POLY_SIDES) $('sides' + n).onclick = () => setTank(T => ({ ...T, shape: 'poly', sides: n }));
+  $('bowMin').oninput = e => setTank(T => ({ ...T, bowMin: +(e.target as HTMLInputElement).value }), 'bowMin');
   for (const k of ['L', 'H', 'D'] as const) {
     const el = $('a' + k);
     el.onchange = () => {
       const v = +el.value; if (!Number.isFinite(v) || v <= 0) { sync(); return; }
-      const T = { ...S().tank }; T[k] = clamp(fromUnit(v, G().units), LIMITS.tankMin, LIMITS.tankMax);
-      setTank(T);
+      setTank(T => ({ ...T, [k]: clamp(fromUnit(v, G().units), LIMITS.tankMin, LIMITS.tankMax) }));
     };
   }
   const setUnits = (u: Scene['units']) => store.update(s => { s.units = u; });
@@ -187,9 +189,9 @@ export function attachPanels(store: Store, viewer: Viewer) {
   const sizeLabel = (pct: number, sp?: Species) => (pct === 100 ? 'Adult' : `${pct}%${sp ? ' · ' + fmt(sp.tl * pct / 100) : ''}`);
   $('addSize').oninput = () => setOut('oAddSize', sizeLabel(addPct(), getSpecies(pickId)));
   /** A snail at a random spot on the substrate or the inside of a pane (area-weighted). */
-  const snailAt = (s: TankSetup, sp: Species, id: number): Fish => {
+  const snailAt = (s: TankSetup, sp: Species, id: number, r: () => number): Fish => {
     const sz = newTL(sp);
-    return { id, species: sp.id, ...spawnSnail((x, d) => groundHeight(s, s.tank, x, d), s.tank, sz.tl ?? sp.tl, Math.random, s.water.on ? waterY(s.tank, s.water.level) : s.tank.H - 10), pitch: 0, roll: 0, bend: 0, ...sz };
+    return { id, species: sp.id, ...spawnSnail((x, d) => groundHeight(s, s.tank, x, d), s.tank, sz.tl ?? sp.tl, r, s.water.on ? waterY(s.tank, s.water.level) : s.tank.H - 10), pitch: 0, roll: 0, bend: 0, ...sz };
   };
   /** Random heading around `dir` (0 or 180) with a little pitch, roll and bend; bottom dwellers face anywhere, level. */
   const randomPose = (sp: Species, r: () => number, dir: number) => {
@@ -215,12 +217,12 @@ export function attachPanels(store: Store, viewer: Viewer) {
   }
   function addOne(sp: Species) {
     const why = blocked(sp); if (why) { status(why, true); renderResults(); return; }
-    let id = 0;
+    const id = store.nextId(), seed = Math.random() * 1e9;
     store.edit(s => {
-      const A = s.tank;
-      if (sp.kind === 'snail') { s.fish.push(snailAt(s, sp, id = nextFishId(s))); return; }
-      const sz = newTL(sp), r = Math.random;
-      const f: Fish = { id: id = nextFishId(s), species: sp.id, x: A.L * (0.1 + r() * 0.8), y: waterY(A, s.water.level) * (0.2 + r() * 0.6), depth: A.D * (0.15 + r() * 0.7), ...randomPose(sp, r, r() < 0.5 ? 0 : 180), ...sz };
+      const A = s.tank, r = rng(seed); // the same draws in every edited tank
+      if (sp.kind === 'snail') { s.fish.push(snailAt(s, sp, id, r)); return; }
+      const sz = newTL(sp);
+      const f: Fish = { id, species: sp.id, x: A.L * (0.1 + r() * 0.8), y: waterY(A, s.water.level) * (0.2 + r() * 0.6), depth: A.D * (0.15 + r() * 0.7), ...randomPose(sp, r, r() < 0.5 ? 0 : 180), ...sz };
       if (sp.habitat !== 'water') placeOnLand(s, sp, f, r);
       clampFish(f, A); s.fish.push(f);
     });
@@ -231,13 +233,15 @@ export function attachPanels(store: Store, viewer: Viewer) {
     const sp = getSpecies(pickId); if (!sp) return;
     const why = blocked(sp); if (why) { status(why, true); renderResults(); return; }
     const n = clamp(Math.round(+$('schoolN').value || 12), 2, 60);
+    const first = store.nextId(), seed = Math.random() * 1e9;
     let last = 0;
     store.edit(s => {
-      const A = s.tank, sz = newTL(sp), tl = sz.tl ?? sp.tl, r = Math.random, cx = A.L * (0.3 + r() * 0.4), cy = waterY(A, s.water.level) * (0.4 + r() * 0.3), dir = r() < 0.5 ? 0 : 180;
+      let id = first;
+      const A = s.tank, sz = newTL(sp), tl = sz.tl ?? sp.tl, r = rng(seed), cx = A.L * (0.3 + r() * 0.4), cy = waterY(A, s.water.level) * (0.4 + r() * 0.3), dir = r() < 0.5 ? 0 : 180;
       for (let i = 0; i < n && s.fish.length < LIMITS.maxFish; i++) {
-        if (sp.kind === 'snail') { s.fish.push(snailAt(s, sp, last = nextFishId(s))); continue; }
+        if (sp.kind === 'snail') { s.fish.push(snailAt(s, sp, last = id++, r)); continue; }
         const f: Fish = {
-          id: last = nextFishId(s), species: sp.id,
+          id: last = id++, species: sp.id,
           x: cx + (r() - 0.5) * tl * 9, y: cy + (r() - 0.5) * tl * 4, depth: A.D * (0.15 + r() * 0.7),
           ...randomPose(sp, r, dir), ...sz,
         };
@@ -274,15 +278,16 @@ export function attachPanels(store: Store, viewer: Viewer) {
   document.querySelectorAll<HTMLButtonElement>('[data-sz]').forEach(b => b.onclick = () => editSel(f => setSize(f, +b.dataset.sz! * 100)));
   const flip = () => editSel(f => { f.yaw = f.yaw > 0 ? f.yaw - 180 : f.yaw + 180; });
   const del = () => {
-    const i = S().fish.findIndex(f => f.id === store.selId); if (i < 0) return;
-    store.edit(s => { s.fish.splice(i, 1); });
+    const id = store.selId, i = S().fish.findIndex(f => f.id === id); if (i < 0) return;
+    store.edit(s => { s.fish = s.fish.filter(f => f.id !== id); });
     store.select(S().fish[Math.max(0, i - 1)]?.id ?? null);
   };
   const dup = () => {
-    const f = sel(); if (!f) return;
-    let id = 0;
+    if (!sel()) return;
+    const id = store.nextId(), src = store.selId;
     store.edit(s => {
-      const n: Fish = { ...f, id: id = nextFishId(s), x: f.x + fishTL(f, getSpecies(f.species)!) * 0.9 };
+      const f = s.fish.find(q => q.id === src); if (!f) return;
+      const n: Fish = { ...f, id, x: f.x + fishTL(f, getSpecies(f.species)!) * 0.9 };
       clampFish(n, s.tank); s.fish.push(n);
     });
     store.select(id);
@@ -475,7 +480,10 @@ export function attachPanels(store: Store, viewer: Viewer) {
     ($('lidHood') as HTMLButtonElement).disabled = !flatEnds(A);
     for (const id of ['wallLeft', 'wallRight']) ($(id) as HTMLButtonElement).disabled = !flatEnds(A);
     // which tank the panel edits (split view)
-    $('editing').hidden = !store.split; $('editing').textContent = `Editing Tank ${'AB'[G().active]}: click the other view to edit that one.`;
+    const tg = store.targets;
+    $('editing').hidden = !store.split;
+    $('editing').textContent = tg.length > 1 ? 'Editing both tanks: changes here apply to Tank A and Tank B.'
+      : `Editing Tank ${'AB'[tg[0]]} only: tick “Edit” on the other view to change both.`;
     const vol = volume(A);
     // footprint: the outer glass outline, i.e. what stands on the stand
     const fpMm2 = ringArea(offsetRing(A, glassThickness(A, s.render.glass)));
@@ -594,27 +602,32 @@ export function attachPanels(store: Store, viewer: Viewer) {
     const g = G(), active = viewer.active, split = active.length > 1;
     const diff = split ? tankDiff(g.tanks[0], g.tanks[1], g.units) : [];
     const hidden = $('app').classList.contains('collapsed');
-    const sig = JSON.stringify([diff, tabHidden, hidden, g.units, g.active, g.camLock, active.map(v => [v.x, v.w]), split || fmtDims(g.tanks[0].tank, g.units), split || aqLabel()]);
+    const sig = JSON.stringify([diff, tabHidden, hidden, g.units, g.active, store.targets, g.camLock, active.map(v => [v.x, v.w]), split || fmtDims(g.tanks[0].tank, g.units), split || aqLabel()]);
     if (sig !== tabSig) {
       tabSig = sig;
       for (const [i, id] of [[0, 'labA'], [1, 'labB']] as const) {
         const el = $<HTMLDivElement>(id), vp = active[i];
         el.style.display = vp ? '' : 'none';
-        if (!vp) continue;
+        if (!vp) { el.innerHTML = ''; continue; }
         // top-right corner of each view (Nathan 2026-10-08); the panel's "› Edit" button has the top-left
         el.style.right = (viewer.host.clientWidth - vp.x - vp.w + 8) + 'px'; el.style.maxWidth = Math.max(80, vp.w - 16 - (vp.x === 0 && hidden ? 80 : 0)) + 'px'; // clear of "› Edit"
-        el.classList.toggle('tab', split); el.classList.toggle('on', split && i === g.active);
+        const ed = store.isEditing(i);
+        el.classList.toggle('tab', split); el.classList.toggle('on', split && ed);
         if (!split) { // one tank: its size, and the way into a side-by-side comparison
           const aq = aqLabel();
           el.innerHTML = `<span>${esc(fmtSize(vp.T, g.units))}</span>` + (aq.text ? `<a class="aq${aq.over ? ' over' : ''}" href="${esc(aq.url)}" target="_blank" rel="noopener" title="AqAdvisor's stocking level for this tank (aqadvisor.com); click for the full report">${esc(aq.text)}</a>` : '') + `<button class="close" data-split title="Copy this tank into a second, independent one beside it">⧉ Split to compare</button>`;
           continue;
         }
+        // the "Edit" box: the panel's changes apply to every view ticked here
+        const only = ed && store.targets.length === 1;
+        const box = `<label class="edbox" title="${only ? `Tank ${vp.key} is the only tank being edited; tick the other view's box to edit both` : `Apply the panel's changes to Tank ${vp.key}`}">` +
+          `<input type="checkbox" data-edit="${i}"${ed ? ' checked' : ''}${only ? ' disabled' : ''}> Edit</label>`;
         if (tabHidden[i]) {
-          el.innerHTML = `<button class="close" data-showtab="${i}" title="Show Tank ${vp.key}'s tab: what differs, Save, Delete">☰ ${vp.key}${diff.length ? ` · ${diff.length}` : ''}</button>`;
+          el.innerHTML = box + `<button class="close" data-showtab="${i}" title="Show Tank ${vp.key}'s tab: what differs, Save, Delete">☰ ${vp.key}${diff.length ? ` · ${diff.length}` : ''}</button>`;
           continue;
         }
         // only what differs (nothing = the same tank, no labels); Save, Delete, Close (hide) at the bottom
-        el.innerHTML = (diff.length ? `<div class="diffs">${diff.map((d, k) => `<span>${esc(d[i])}<button class="match" data-match="${i},${k}" title="Make Tank ${vp.key} match Tank ${active[1 - i].key} here" aria-label="Match the other tank: ${esc(d[i])}">×</button></span>`).join('')}</div>` : '') +
+        el.innerHTML = box + (diff.length ? `<div class="diffs">${diff.map((d, k) => `<span>${esc(d[i])}<button class="match" data-match="${i},${k}" title="Make Tank ${vp.key} match Tank ${active[1 - i].key} here" aria-label="Match the other tank: ${esc(d[i])}">×</button></span>`).join('')}</div>` : '') +
           `<div class="acts"><button class="close" data-save="${i}" title="Save Tank ${vp.key} on its own as a single-tank file">Save</button>` +
           `<button class="close" data-delete="${i}" title="Delete Tank ${vp.key} and end the split view (Ctrl+Z brings it back)">Delete</button>` +
           `<button class="close" data-close="${i}" title="Hide this tab (the tank stays)" aria-label="Hide Tank ${vp.key}'s tab">× Close</button></div>`;
@@ -628,12 +641,18 @@ export function attachPanels(store: Store, viewer: Viewer) {
         lock.setAttribute('aria-label', g.camLock ? 'Cameras locked together' : 'Cameras unlocked');
         lock.title = g.camLock ? 'Views move together (one field of view). Click to move each view on its own.' : 'Views move separately. Click to lock them together again (Tank B snaps to Tank A’s view).';
       }
-      // the active view gets a frame
-      const fr = $<HTMLDivElement>('vpFrame'), cur = active[g.active];
-      fr.hidden = !split || !cur;
-      if (split && cur) Object.assign(fr.style, { left: cur.x + 'px', width: cur.w + 'px' });
+      // every view being edited gets a frame
+      for (const [i, id] of [[0, 'vpFrame'], [1, 'vpFrame2']] as const) {
+        const fr = $<HTMLDivElement>(id), cur = active[i], on = split && !!cur && store.isEditing(i);
+        fr.hidden = !on;
+        if (on) Object.assign(fr.style, { left: cur.x + 'px', width: cur.w + 'px' });
+      }
     }
     readout();
+  });
+  for (const id of ['labA', 'labB']) $(id).addEventListener('change', e => {
+    const cb = (e.target as HTMLElement).closest<HTMLInputElement>('[data-edit]');
+    if (cb) store.setEditing(+cb.dataset.edit!, cb.checked);
   });
   for (const id of ['labA', 'labB']) $(id).addEventListener('click', e => {
     if ((e.target as HTMLElement).closest('[data-split]')) { $('split').click(); return; }

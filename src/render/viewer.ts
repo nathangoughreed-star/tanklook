@@ -36,7 +36,7 @@ export class Viewer {
   readonly vps: Viewport[];
   private dirty = true;
   private needsBuild = true;
-  /** Custom terrain editing: show grid dots in the active tank; `hot` = the dot being dragged. UI state, not scene data. */
+  /** Custom terrain editing: show grid dots in the edited tanks; `hot` = the dot being dragged. UI state, not scene data. */
   terrainEdit: { on: boolean; hot: number | null } = { on: false, hot: null };
   private drawnListeners = new Set<() => void>();
   /**
@@ -85,7 +85,7 @@ export class Viewer {
     for (const vp of this.vps) {
       disposeScene(vp.scene); vp.scene = undefined;
       const S = sc.tanks[vp.i]; if (!S) continue;
-      const on = vp.i === sc.active;   // selection outline and terrain dots only in the tank being edited
+      const on = this.store.isEditing(vp.i); // selection outline and terrain dots only in the tanks being edited
       vp.S = S; vp.T = S.tank;
       Object.assign(vp, buildTank({ ...S, units: sc.units }, S.tank, on ? this.store.selId : null, on && this.terrainEdit.on ? this.terrainEdit : undefined));
     }
