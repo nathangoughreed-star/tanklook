@@ -1,3 +1,16 @@
 name = "tanklook-aq"
 main = "aqadvisor-proxy.js"
 compatibility_date = "2026-09-01"
+
+# Answers for 7 days (the Cache API does nothing on *.workers.dev, so the cache lives in KV)
+[[kv_namespaces]]
+binding = "AQ_CACHE"
+id = "15762efcd60547c5be7cd586fd31b388"
+
+# New questions to AqAdvisor: at most 2 a minute per Cloudflare location
+[[ratelimits]]
+name = "AQ_GATE"
+namespace_id = "1001"
+  [ratelimits.simple]
+  limit = 2
+  period = 60

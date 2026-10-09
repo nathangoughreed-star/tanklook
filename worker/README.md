@@ -3,7 +3,14 @@
 TankLook shows "Stocking: 92% (per AqAdvisor)". AqAdvisor (aqadvisor.com) has no API, serves http only and sends no
 CORS headers, so the page can't ask it directly. This Cloudflare Worker forwards a well-formed stocking request,
 reads the percentage from the results page and returns `{"stocking": 92}`. It is not an open proxy: only
-`/stocking?sel=<id>:<n>::,...&l=&d=&h=` is accepted. Each answer is cached for 7 days.
+`/stocking?sel=<id>:<n>::,...&l=&d=&h=` is accepted.
+
+Being gentle with AqAdvisor (it went down twice within an hour of TankLook's automatic checks, 2026-10-09):
+- The app asks only when someone presses **Check**, never by itself.
+- Each answer is kept 7 days in KV (`AQ_CACHE`). The Cache API does nothing on `*.workers.dev`, so the earlier
+  `caches.default` cache never held anything: every request went to AqAdvisor until this change.
+- New questions to AqAdvisor: at most 2 a minute per Cloudflare location (`AQ_GATE` rate limit); extra ones get
+  `429 {"error":"busy"}`. AqAdvisor gets 8 s to answer, then `502 {"error":"aqadvisor unreachable"}`.
 
 Without the worker, the app still shows the "AqAdvisor ↗" link, which opens the same calculation on aqadvisor.com.
 

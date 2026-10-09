@@ -1,12 +1,13 @@
 // Cloudflare Worker: AqAdvisor stocking level for TankLook.
 // GET /stocking?sel=<id>:<n>::,...&l=<in>&d=<in>&h=<in>  ->  {"stocking": 92}
 // Only well-formed stocking requests are forwarded (not an open proxy); answers are cached for a week, so each
-// distinct tank + stocking reaches aqadvisor.com at most once a week. Deploy: see worker/README.md.
+// distinct tank + stocking reaches aqadvisor.com at most once a week, and no more than 2 new requests go out a minute. Deploy: see worker/README.md.
 
 const AQ = 'http://aqadvisor.com/AqAdvisor.php';
 const ORIGINS = /^(https?:\/\/(www\.)?tanklook\.com|http:\/\/(localhost|127\.0\.0\.1)(:\d+)?)$/; // http too: Pages HTTPS isn't enforced yet
 const SEL = /^\d{6,14}:\d{1,3}::(,\d{6,14}:\d{1,3}::){0,59}$/;
 const CACHE_S = 7 * 24 * 3600;
+const TIMEOUT_MS = 8000; // give up on AqAdvisor after 8 s
 
 /** "Your aquarium stocking level is 66% ." -> 66; null when the page has no result. */
 export function parseStocking(html) {
@@ -42,23 +43,23 @@ export default {
     const q = aqParams(url.searchParams);
     if (!q) return json({ error: 'bad request' }, 400, origin);
 
-    // cache on the normalised AqAdvisor query, independent of the caller's origin
-    const key = new Request(`https://cache.tanklook/stocking?${q}`);
-    const cache = caches.default;
-    let hit = await cache.match(key);
-    if (!hit) {
-      let res;
-      try {
-        res = await fetch(`${AQ}?${q}`, { headers: { 'user-agent': 'TankLook stocking check (tanklook.com; results cached 7 days)' } });
-      } catch {
-        return json({ error: 'aqadvisor unreachable' }, 502, origin);
-      }
-      const stocking = res.ok ? parseStocking(await res.text()) : null;
-      if (stocking === null) return json({ error: 'no result' }, 502, origin);
-      hit = json({ stocking }, 200, null, CACHE_S);
-      ctx.waitUntil(cache.put(key, hit.clone()));
+    // answers kept 7 days in KV under the normalised AqAdvisor query, independent of the caller's origin
+    const key = q.toString();
+    const kept = await env.AQ_CACHE.get(key);
+    if (kept !== null) return json({ stocking: Number(kept) }, 200, origin, 3600);
+    // at most 2 new questions to AqAdvisor a minute (per Cloudflare location); it is a small site that went down twice
+    // under light automatic use (2026-10-09)
+    if (!(await env.AQ_GATE.limit({ key: 'aqadvisor' })).success) return json({ error: 'busy' }, 429, origin);
+    let res;
+    try {
+      res = await fetch(`${AQ}?${q}`, { headers: { 'user-agent': 'TankLook stocking check (tanklook.com; results kept 7 days)' },
+        signal: AbortSignal.timeout(TIMEOUT_MS) });
+    } catch {
+      return json({ error: 'aqadvisor unreachable' }, 502, origin);
     }
-    const body = await hit.json();
-    return json(body, 200, origin, 3600);
+    const stocking = res.ok ? parseStocking(await res.text()) : null;
+    if (stocking === null) return json({ error: 'no result' }, 502, origin);
+    ctx.waitUntil(env.AQ_CACHE.put(key, String(stocking), { expirationTtl: CACHE_S }));
+    return json({ stocking }, 200, origin, 3600);
   },
 };
