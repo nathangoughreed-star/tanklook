@@ -13,7 +13,8 @@ import {
   IN, clamp, clampFish, fmtDims, fmtLen, fmtSize, fromUnit, glassThickness, rescaleTank, spawnSnail, toUnit, volume, waterY,
 } from '../scene/physics';
 import type { Store } from '../scene/store';
-import { SWAMP_LEVEL, groundHeight, nearestLand, randomLand, sampleTerrain } from '../scene/terrain';
+import { SWAMP_LEVEL, groundHeight, nearestLand, sampleTerrain } from '../scene/terrain';
+import { placeOnLand, randomPose, shuffleFish } from '../scene/scatter';
 import { restsOnGround, setWaterLevel } from '../scene/water';
 import { tankWeight } from '../scene/weight';
 import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, fetchStocking } from '../data/aqadvisor';
@@ -23,6 +24,8 @@ import type { Fish, LayoutId, Scene, TableSettings, Tank, TankSetup, TankShape }
 import { GLASS_CHOICES, LIMITS, SceneError, parseScene } from '../scene/validate';
 
 const $ = <T extends HTMLElement = HTMLInputElement>(id: string) => document.getElementById(id) as T;
+/** ?debug in the URL shows calibration readouts (apparent-size maths) in the fish readout. */
+const DEBUG = new URLSearchParams(location.search).has('debug');
 const esc = (s: string) => s.replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 
 export function attachPanels(store: Store, viewer: Viewer) {
@@ -48,6 +51,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('undo').onclick = () => store.undo();
   $('redo').onclick = () => store.redo();
   $('newScene').onclick = () => {
+    if (G().tanks.some(t => t.fish.length) && !confirm('Start a new, empty tank? (Undo brings this one back.)')) return;
     const s = defaultScene(); s.tanks[0].fish = []; s.name = 'New tank';
     s.tanks[0].camera = { ...S().camera }; s.units = G().units;
     store.replace(s); status('New tank. Undo brings the previous one back.');
@@ -170,7 +174,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
       b.setAttribute('role', 'option'); b.setAttribute('aria-selected', String(sp.id === pickId));
       b.className = sp.id === pickId ? 'on' : '';
       const tag = speciesTag(sp) ? `<b class="tag">${speciesTag(sp)}</b>` : '';
-      b.innerHTML = `<span>${esc(sp.name)} ${tag}<i>${esc(sp.sci)}</i></span><span>${fmt(sp.tl)}</span>`;
+      b.innerHTML = `<span class="nm">${esc(sp.name)} ${tag}</span><span>${fmt(sp.tl)}</span><i class="sci" title="${esc(sp.sci)}">${esc(sp.sci)}</i>`;
       if (sp.note) b.title = sp.note;
       b.onclick = () => { pickId = sp.id; preview.hidden = false; renderResults(); };
       b.ondblclick = () => addOne(sp);
@@ -210,12 +214,6 @@ export function attachPanels(store: Store, viewer: Viewer) {
     const sz = newTL(sp);
     return { id, species: sp.id, ...spawnSnail((x, d) => groundHeight(s, s.tank, x, d), s.tank, sz.tl ?? sp.tl, r, s.water.on ? waterY(s.tank, s.water.level) : s.tank.H - 10), pitch: 0, roll: 0, bend: 0, ...sz };
   };
-  /** Random heading around `dir` (0 or 180) with a little pitch, roll and bend; bottom dwellers face anywhere, level. */
-  const randomPose = (sp: Species, r: () => number, dir: number) => {
-    if (sp.zone === 'bottom') return { yaw: Math.round(r() * 360 - 180), pitch: 0, roll: 0, bend: +((r() - 0.5) * 0.8).toFixed(2) };
-    let yaw = Math.round(dir + (r() - 0.5) * 80); if (yaw > 180) yaw -= 360;
-    return { yaw, pitch: Math.round((r() - 0.5) * 16), roll: Math.round((r() - 0.5) * 10), bend: +((r() - 0.5) * 0.8).toFixed(2) };
-  };
   /** Water surface for placement: the water line, or -1 in a dry tank (all ground counts as land). */
   const surfaceY = (s: TankSetup) => (s.water.on ? waterY(s.tank, s.water.level) : -1);
   /** Why this species cannot be added right now ('' = it can). */
@@ -225,12 +223,6 @@ export function attachPanels(store: Store, viewer: Viewer) {
     if (sp.habitat === 'land' && !nearestLand(s, s.tank, surfaceY(s), 0, 0))
       return 'Land animals need ground above the water: lower the water, or use the Swamp layout or Custom terrain.';
     return '';
-  }
-  /** Put a land or amphibious animal on a random spot of land (amphibians: half the time in the water if there is any). */
-  function placeOnLand(s: TankSetup, sp: Species, f: Fish, r: () => number) {
-    if (sp.habitat === 'both' && s.water.on && r() < 0.5) return;
-    const p = randomLand(s, s.tank, surfaceY(s), r); if (!p) return;
-    f.x = p.x; f.depth = p.depth; f.y = groundHeight(s, s.tank, p.x, p.depth);
   }
   function addOne(sp: Species) {
     const why = blocked(sp); if (why) { status(why, true); renderResults(); return; }
@@ -268,6 +260,12 @@ export function attachPanels(store: Store, viewer: Viewer) {
       }
     });
     store.select(last);
+  };
+  $('shuffle').onclick = () => {
+    if (!S().fish.length) return;
+    const seed = Math.random() * 1e9;
+    store.edit(s => shuffleFish(s, rng(seed)));
+    status('Shuffled: a new moment in the tank. Ctrl+Z brings the last one back.');
   };
   let delArm = 0;
   $('delAll').onclick = () => {
@@ -408,6 +406,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
   mapCb.onchange = () => setMap(mapCb.checked);
   for (const b of document.querySelectorAll<HTMLButtonElement>('.vmapHide')) b.onclick = () => setMap(false);
   $('mapShow').onclick = () => setMap(true);
+  // first visit: open "How to use" so the orbit / zoom / drag gestures are discoverable (Muse feedback 2026-10-09)
+  try { if (!localStorage.getItem('tanklook.seen')) { ($('help') as unknown as HTMLDetailsElement).open = true; localStorage.setItem('tanklook.seen', '1'); } } catch { /* ignore */ }
   // panel sections start collapsed on every load (Nathan 2026-10-09); whether the panel is hidden is a per-viewer preference
   const secs = [...document.querySelectorAll<HTMLDetailsElement>('details.sec')];
   const saveUI = () => { try { localStorage.setItem('tanklook.ui', JSON.stringify({ hidden: $('app').classList.contains('collapsed') })); } catch { /* ignore */ } };
@@ -517,8 +517,10 @@ export function attachPanels(store: Store, viewer: Viewer) {
       : `Editing Tank ${'AB'[tg[0]]} only: tick “Edit” on the other view to change both.`;
     const vol = volume(A);
     // footprint: the outer glass outline, i.e. what stands on the stand
-    const fpMm2 = ringArea(offsetRing(A, glassThickness(A, s.render.glass)));
-    const fpTxt = u === 'in' ? `${Math.round(fpMm2 / (IN * IN)).toLocaleString()} sq in` : `${Math.round(fpMm2 / 100).toLocaleString()} cm²`;
+    // labelled "outside the glass" with its outer size, so it does not read as a wrong product of the interior size
+    const outer = offsetRing(A, glassThickness(A, s.render.glass)), fpMm2 = ringArea(outer);
+    const ext = (k: 0 | 1) => Math.max(...outer.map(p => p[k])) - Math.min(...outer.map(p => p[k]));
+    const fpTxt = `${fmt(ext(0))} × ${fmt(ext(1))} outside the glass (${u === 'in' ? `${Math.round(fpMm2 / (IN * IN)).toLocaleString()} sq in` : `${Math.round(fpMm2 / 100).toLocaleString()} cm²`})`;
     $('volA').textContent = `${vol.gallons.toFixed(1)} US gal · ${vol.litres.toFixed(0)} L interior · footprint ${fpTxt}`;
     const wt = tankWeight(s), kgs = (kg: number) => (u === 'in' ? `${Math.round(kg * 2.20462)} lb` : `${Math.round(kg)} kg`);
     $('wtA').textContent = `≈ ${kgs(wt.total)} filled: water ${kgs(wt.water)} (${(u === 'in' ? wt.waterLitres / 3.785 : wt.waterLitres).toFixed(0)} ${u === 'in' ? 'gal' : 'L'}), substrate ${kgs(wt.substrate)}, glass ${kgs(wt.glass)}`;
@@ -658,14 +660,15 @@ export function attachPanels(store: Store, viewer: Viewer) {
         const box = `<label class="edbox" title="${only ? `Untick to close the panel` : ed ? `The panel's changes apply to Tank ${vp.key}` : `Apply the panel's changes to Tank ${vp.key} (opens the panel)`}">` +
           `<input type="checkbox" data-edit="${i}"${ed ? ' checked' : ''}> Edit</label>`;
         if (tabHidden[i]) {
-          el.innerHTML = box + `<button class="close" data-showtab="${i}" title="Show Tank ${vp.key}'s tab: what differs, Save, Delete">☰ ${vp.key}${diff.length ? ` · ${diff.length}` : ''}</button>`;
+          el.innerHTML = `<div class="hd"><button class="close" data-showtab="${i}" title="Show Tank ${vp.key}'s tab: what differs, Save, Delete">☰ ${vp.key}${diff.length ? ` · ${diff.length}` : ''}</button>${box}</div>`;
           continue;
         }
-        // only what differs (nothing = the same tank, no labels); Save, Delete, Close (hide) at the bottom
-        el.innerHTML = box + aqLink(vp.S) + (diff.length ? `<div class="diffs">${diff.map((d, k) => `<span>${esc(d[i])}<button class="match" data-match="${i},${k}" title="Make Tank ${vp.key} match Tank ${active[1 - i].key} here" aria-label="Match the other tank: ${esc(d[i])}">×</button></span>`).join('')}</div>` : '') +
+        // packed in two rows (Nathan 2026-10-09): stocking + Edit on top; then what differs (nothing = the same tank,
+        // no labels) and Save, Delete, Close (hide) flowing together, wrapping only when the view is too narrow
+        el.innerHTML = `<div class="hd">${aqLink(vp.S)}${box}</div>` + `<div class="diffs">${diff.map((d, k) => `<span>${esc(d[i])}<button class="match" data-match="${i},${k}" title="Make Tank ${vp.key} match Tank ${active[1 - i].key} here" aria-label="Match the other tank: ${esc(d[i])}">×</button></span>`).join('')}` +
           `<div class="acts"><button class="close" data-save="${i}" title="Save Tank ${vp.key} on its own as a single-tank file">Save</button>` +
           `<button class="close" data-delete="${i}" title="Delete Tank ${vp.key} and end the split view (Ctrl+Z brings it back)">Delete</button>` +
-          `<button class="close" data-close="${i}" title="Hide this tab (the tank stays)" aria-label="Hide Tank ${vp.key}'s tab">× Close</button></div>`;
+          `<button class="close" data-close="${i}" title="Hide this tab (the tank stays)" aria-label="Hide Tank ${vp.key}'s tab">× Close</button></div></div>`;
       }
       const lock = $<HTMLButtonElement>('camLock');
       lock.hidden = !split;
@@ -675,12 +678,6 @@ export function attachPanels(store: Store, viewer: Viewer) {
         lock.innerHTML = padlock(g.camLock); lock.setAttribute('aria-pressed', String(g.camLock));
         lock.setAttribute('aria-label', g.camLock ? 'Cameras locked together' : 'Cameras unlocked');
         lock.title = g.camLock ? 'Views move together (one field of view). Click to move each view on its own.' : 'Views move separately. Click to lock them together again (Tank B snaps to Tank A’s view).';
-      }
-      // every view being edited gets a frame
-      for (const [i, id] of [[0, 'vpFrame'], [1, 'vpFrame2']] as const) {
-        const fr = $<HTMLDivElement>(id), cur = active[i], on = split && !!cur && store.isEditing(i);
-        fr.hidden = !on;
-        if (on) Object.assign(fr.style, { left: cur.x + 'px', width: cur.w + 'px' });
       }
     }
     readout();
@@ -718,7 +715,9 @@ export function attachPanels(store: Store, viewer: Viewer) {
     const txt = a < 40 ? 'reads fine' : a < 55 ? 'marginal' : 'too thin: card looks flat';
     let html = `<div><span><b>${esc(sp.name)}</b> <i>${esc(sp.sci)}</i></span><span>${f.tl ? `${fmt(f.tl)} (adult ${fmt(sp.tl)})` : `adult ${fmt(sp.tl)}`}</span></div>
       <div><span>Depth behind glass</span><span>${fmt(f.depth)}</span></div>
-      <div><span>On screen</span><span>${m.len.toFixed(0)} px</span></div>
+      <div><span>Looks, vs. at the front glass</span><span>${Math.round(100 * m.len / m.ref)} % as big</span></div>`;
+    // calibration readouts only with ?debug in the URL (Muse feedback 2026-10-09: cryptic for normal users)
+    if (DEBUG) html += `<div><span>On screen</span><span>${m.len.toFixed(0)} px</span></div>
       <div><span>Same pose at the front glass</span><span>${m.ref.toFixed(0)} px</span></div>
       <div><span>Measured ratio</span><span>×${(m.len / m.ref).toFixed(3)}</span></div>
       <div><span>Straight-on formula d ÷ (d + z)</span><span>×${m.formula.toFixed(3)}</span></div>

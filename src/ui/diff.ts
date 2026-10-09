@@ -72,8 +72,12 @@ export function tankDiff(a: TankSetup, b: TankSetup, u: Units): DiffItem[] {
   }
 
   // contents
-  // positions relative to the tank (rescaleTank moves fish with a resize), rounded so float drift is not a difference
-  const stock = (t: TankSetup) => t.fish.map(f => ({ ...f, x: +(f.x / t.tank.L).toFixed(4), y: +(f.y / t.tank.H).toFixed(4), depth: +(f.depth / t.tank.D).toFixed(4) }));
+  // stocking = how many of each species; where the fish sit and how they pose is not a difference (Nathan 2026-10-09)
+  const stock = (t: TankSetup) => {
+    const n: Record<string, number> = {};
+    for (const f of t.fish) n[f.species] = (n[f.species] ?? 0) + 1;
+    return Object.keys(n).sort().map(s => [s, n[s]]);
+  };
   add(stock(a), stock(b), named('Stocking'), (to, from) => {
     to.fish = from.fish.map(f => ({ ...structuredClone(f), x: f.x * to.tank.L / from.tank.L, y: f.y * to.tank.H / from.tank.H, depth: f.depth * to.tank.D / from.tank.D }));
   });

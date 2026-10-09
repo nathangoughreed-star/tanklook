@@ -22,6 +22,37 @@ Order, one work unit per chat:
 4. Verify it on discus, tiger barb, clown loach, harlequin (same four views).
 5. Roll 3D out to the remaining fish, flat cards kept as fallbacks until each passes review.
 
+## Muse UX feedback fixes (2026-10-09; uncommitted, checked on the dev server)
+
+- Fish readout: calibration rows (px, measured ratio, d/(d+z), angle off side-on) only with `?debug` in the URL;
+  normal users see name, size, depth and "Looks, vs. at the front glass: N % as big".
+- Area labels: the canvas header says "288 in² floor" (interior); the Tank panel says "footprint 24.4″ × 12.2″
+  outside the glass (298 sq in)". Muse read the two unlabelled numbers as a maths error.
+- "New" asks for confirmation when either tank has animals.
+- Species rows: name + tag and size on line one, the Latin name on its own line, no wrap, ellipsis.
+- First visit (`tanklook.seen` not in localStorage) opens "How to use".
+- Still open from that feedback: tick Enforce HTTPS (Pages settings, Nathan; http:// still serves 200 with no
+  redirect); shareable scene URLs; a real mobile check.
+
+## HTTPS live (2026-10-09)
+
+The Pages certificate had never been issued (the site served GitHub's `*.github.io` cert, so browsers showed a privacy
+error). Provisioning ran from Settings -> Pages once the custom domain was (re)checked; tanklook.com now
+serves a Let's Encrypt cert for `tanklook.com` + `www.tanklook.com`. Remaining: tick Enforce HTTPS once GitHub enables it.
+
+## Shuffle button (2026-10-09, Nathan; uncommitted, not yet checked in the browser)
+
+"Shuffle" in the Fish section (next to Delete all) moves every animal to a fresh spot and pose, "a new slice in time";
+one undo step, the same seed in every ticked split view. Ids, species, sizes kept. Rules (`src/scene/scatter.ts`
+`shuffleFish`, which now also owns `randomPose` / `placeOnLand`): bottom dwellers on the ground, land / amphibious
+animals via `placeOnLand`, snails via `spawnSnail` (floor or glass); swimmers in a band of the free water by the new
+species field `level` ('top' 0.65-0.98, mid 0.2-0.8, 'low' 0.02-0.4); 3+ of a species with `group` 'school' form a
+tight aligned school (heading ±12°), 'shoal' a loose group 2.2× wider (70 % follow the heading); big groups sometimes
+split in two; everyone else is spread apart (best of 8 candidates). Data: school = neon, cardinal, ember, rummynose,
+harlequin, chili, danio, tiger barb; shoal = cherry barb, livebearers, angel, discus, goldfish, corys, oto, kuhli,
+clown loach, both shrimps; top = betta, the gouramis, guppy; low = cherry barb, GBR, Bolivian ram, kribensis.
+Tests `test/scatter.test.ts` (117/117 total).
+
 ## Species preview tile (2026-10-09, Nathan; committed, ships in the next deploy)
 
 Clicking a species in the Fish picker opens a tile under the list with its painted card (`drawFishCard`, or the
@@ -43,8 +74,8 @@ stays ticked (the last one is disabled). Store: `editOn` (UI state, not saved), 
 free in every tank, so an added fish shares its id and the selection covers both). `scene.active` = the ticked tank
 the panel SHOWS; pressing in a ticked view shows it. An unticked view only orbits / zooms / pans (no fish or terrain
 drags). Dragging a fish or terrain dot changes only that view's tank. Tank size / shape writes are per-tank (only the
-changed dimension is copied); adds use one seeded RNG so both tanks get the same placement. Every ticked view is
-framed (`vpFrame`, `vpFrame2`). **Panel rule (Nathan 2026-10-09, later):** split, the panel is open exactly while a box
+changed dimension is copied); adds use one seeded RNG so both tanks get the same placement. A ticked view's tab
+(card) gets the blue border; the viewport itself is not framed (Nathan 2026-10-09). **Panel rule (Nathan 2026-10-09, later):** split, the panel is open exactly while a box
 is ticked: unticking the last box closes the panel, ticking one opens it, closing the panel unticks all, the
 "› Edit" button re-ticks the tank last shown. `targets` may be empty when split (a single tank is always [0]);
 `store.clearEditing()`; panels.ts `keepRule` enforces it after split / undo / load and at startup. Tests 114/114 (split.test updated + 4 new). Checked on dev-5 (port 5243, new in

@@ -71,7 +71,8 @@ button.on, button.primary { background: var(--accent); color: #fff; border-color
 .warn { color: var(--warn) } .bad { color: var(--bad) } .ok { color: var(--ok) }
 #aqLink { color: var(--accent); text-decoration: none } #aqLink:hover { text-decoration: underline }
 .results { display: flex; flex-direction: column; gap: 2px; margin: 5px 0; max-height: 190px; overflow-y: auto }
-.results button { display: flex; justify-content: space-between; gap: 8px; text-align: left; background: transparent; border-color: transparent }
+.results button { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 8px; text-align: left; background: transparent; border-color: transparent }
+.results button .sci { grid-column: 1 / -1; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 .results button i { color: var(--muted) }
 .results button.on { background: var(--accent); color: #fff }
 .results button.on i { color: #e6efff }
@@ -123,13 +124,15 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 .lab a.aq:hover { text-decoration: underline } .lab a.aq.over { color: #ff8a80 }
 .lab.tab a.aq { padding-left: 0; border-left: 0 }
 /* split view: each view's tab lists what differs from the other tank, close at the bottom */
-.lab.tab { pointer-events: auto; white-space: normal; padding: 5px 8px; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; border: 1px solid transparent }
+.lab.tab { pointer-events: auto; white-space: normal; padding: 5px 8px; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; border: 2px solid transparent } /* the border turns blue while the view is being edited */
 .lab.tab.on { border-color: var(--accent); background: rgba(0, 0, 0, .7) }
-.lab .diffs { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; line-height: 1.3 }
+.lab .hd { display: flex; align-items: center; gap: 10px }
+.lab .diffs { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 4px; line-height: 1.3 }
 /* one quiet box per difference */
 .lab .diffs span { display: inline-flex; align-items: center; gap: 4px; padding: 1px 3px 1px 6px; border-radius: 3px; background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .16); white-space: nowrap }
 .lab .close { font: inherit; font-size: 11px; color: #fff; background: rgba(255, 255, 255, .14); border: 0; border-radius: 3px; padding: 2px 7px; cursor: pointer }
 .lab .acts { display: flex; gap: 5px }
+.lab .diffs span + .acts { margin-left: 4px } /* a little air between the differences and the buttons */
 .lab .edbox { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; cursor: pointer; user-select: none }
 .lab .edbox input { margin: 0; accent-color: var(--accent); cursor: pointer }
 .lab .edbox input:disabled { cursor: default }
@@ -137,8 +140,7 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 .lab .match { font: inherit; font-size: 11px; line-height: 1; color: rgba(255, 255, 255, .6); background: none; border: 0; border-radius: 2px; padding: 1px 3px; cursor: pointer }
 .lab .match:hover { color: #fff; background: rgba(255, 255, 255, .22) }
 .lab .close:hover { background: rgba(255, 255, 255, .28) }
-.vpFrame { position: absolute; top: 0; bottom: 0; border: 2px solid var(--accent); pointer-events: none; box-sizing: border-box }
-.vpFrame[hidden], #camLock[hidden], .editing[hidden] { display: none }
+#camLock[hidden], .editing[hidden] { display: none }
 #camLock { position: absolute; top: 50%; transform: translate(-50%, -50%); z-index: 2; width: 30px; height: 30px; padding: 0; border-radius: 50%; border: 1px solid var(--line); background: var(--panel); font-size: 14px; line-height: 1; cursor: pointer; box-shadow: 0 1px 4px rgba(0, 0, 0, .3) }
 #camLock { display: grid; place-items: center; color: var(--accent) }
 #camLock:not(.on) { color: var(--muted) }

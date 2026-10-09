@@ -21,17 +21,22 @@ export interface Species {
   habitat: Habitat;
   /** v (in widths, + down) of the lowest point of the drawing; a resting animal's centre sits this far above the floor. */
   rest: number;
+  /** How a group of 3+ swims (steers Shuffle only): 'school' tight and aligned, 'shoal' loose. Absent = keeps apart. */
+  group?: 'school' | 'shoal';
+  /** The part of the water column a swimmer favours (steers Shuffle only). Absent = mid water. */
+  level?: 'top' | 'low';
   note?: string;
 }
 
-interface RawSpecies { id: string; name: string; sci: string; tl: number; art: string; aspect?: number; zone?: string; kind?: string; habitat?: string; note?: string }
+interface RawSpecies { id: string; name: string; sci: string; tl: number; art: string; aspect?: number; zone?: string; kind?: string; group?: string; level?: string; habitat?: string; note?: string }
 
 function resolve(r: RawSpecies): Species {
   const kind = r.kind === 'snail' ? 'snail' as const : undefined, zone = r.zone === 'bottom' ? 'bottom' as const : undefined;
   const meta = kind ? { aspect: snailAspect(r.art, 'side'), rest: snailRest(r.art) } : artMeta(r.art) ?? herpMeta(r.art);
   const aspect = r.aspect ?? meta?.aspect ?? 0.4, rest = meta?.rest ?? aspect / 2;
   const habitat: Habitat = kind ? 'both' : r.habitat === 'land' || r.habitat === 'both' ? r.habitat : 'water';
-  return { id: r.id, name: r.name, sci: r.sci, tl: r.tl, art: r.art, aspect, rest, zone, kind, habitat, note: r.note };
+  const group = r.group === 'school' || r.group === 'shoal' ? r.group : undefined, level = r.level === 'top' || r.level === 'low' ? r.level : undefined;
+  return { id: r.id, name: r.name, sci: r.sci, tl: r.tl, art: r.art, aspect, rest, zone, kind, habitat, group, level, note: r.note };
 }
 
 export const SPECIES: Species[] = (data.species as RawSpecies[]).map(resolve);

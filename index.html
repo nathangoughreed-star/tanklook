@@ -30,7 +30,7 @@
   <div id="status" class="status" role="status" hidden></div>
   <div id="editing" class="editing" hidden></div>
 
-  <details class="help"><summary>How to use</summary>
+  <details class="help" id="help"><summary>How to use</summary>
     <ul class="hint">
       <li><b>Drag empty space</b> to look around the tank; <b>wheel</b> zooms; <b>click</b> empty space to deselect, <b>double-click</b> it for straight-on.</li>
       <li><b>Drag a fish</b> to move it: parallel to the glass when viewed from the front, across the floor plan from above, front/back from the side.</li>
@@ -93,6 +93,7 @@
     <button id="addFish" class="primary">Add</button>
     <button id="addSchool">Add school ×</button><input id="schoolN" type="number" min="2" max="60" value="12" aria-label="School size" class="narrow">
     <span class="grow"></span>
+    <button id="shuffle" title="Move every animal to a new spot, as if a moment later: bottom dwellers stay down, schools stay together">Shuffle</button>
     <button id="delAll">Delete all</button>
   </div>
   <div class="row"><label for="addSize">New fish size</label><input id="addSize" type="range" min="15" max="130" step="5" value="100"><output id="oAddSize"></output></div>
@@ -183,7 +184,6 @@
   <div class="vmap" id="vmap0"><canvas aria-label="Viewpoint map: where the eye is relative to the tank"></canvas><button class="vmapHide" title="Hide the viewpoint map" aria-label="Hide the viewpoint map">×</button></div>
   <div class="vmap" id="vmap1"><canvas aria-label="Viewpoint map for Tank B"></canvas><button class="vmapHide" title="Hide the viewpoint map" aria-label="Hide the viewpoint map">×</button></div>
   <button id="mapShow" class="sidetog" title="Show the viewpoint map (top view of where you stand)">⌖ Map</button>
-  <div id="vpFrame" class="vpFrame" hidden></div><div id="vpFrame2" class="vpFrame" hidden></div>
   <div class="lab" id="labA"></div><div class="lab" id="labB"></div>
   <button id="camLock" hidden></button>
   <noscript><p class="nojs">This app needs JavaScript and WebGL.</p></noscript>
