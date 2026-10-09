@@ -386,15 +386,13 @@ export function attachPanels(store: Store, viewer: Viewer) {
   mapCb.onchange = () => setMap(mapCb.checked);
   for (const b of document.querySelectorAll<HTMLButtonElement>('.vmapHide')) b.onclick = () => setMap(false);
   $('mapShow').onclick = () => setMap(true);
-  // panel sections start collapsed; which ones are open, and whether the panel is hidden, are per-viewer preferences
+  // panel sections start collapsed on every load (Nathan 2026-10-09); whether the panel is hidden is a per-viewer preference
   const secs = [...document.querySelectorAll<HTMLDetailsElement>('details.sec')];
-  const saveUI = () => { try { localStorage.setItem('tanklook.ui', JSON.stringify({ open: secs.filter(d => d.open).map(d => d.dataset.sec), hidden: $('app').classList.contains('collapsed') })); } catch { /* ignore */ } };
+  const saveUI = () => { try { localStorage.setItem('tanklook.ui', JSON.stringify({ hidden: $('app').classList.contains('collapsed') })); } catch { /* ignore */ } };
   try {
-    const ui = JSON.parse(localStorage.getItem('tanklook.ui') ?? '{}') as { open?: string[]; hidden?: boolean };
-    for (const d of secs) d.open = !!ui.open?.includes(d.dataset.sec ?? '');
+    const ui = JSON.parse(localStorage.getItem('tanklook.ui') ?? '{}') as { hidden?: boolean };
     $('app').classList.toggle('collapsed', !!ui.hidden);
-  } catch { /* storage blocked: all collapsed, panel shown */ }
-  for (const d of secs) d.addEventListener('toggle', saveUI);
+  } catch { /* storage blocked: panel shown */ }
   const showSide = (on: boolean) => { $('app').classList.toggle('collapsed', !on); saveUI(); viewer.invalidate(); };
   $('sideClose').onclick = () => showSide(false);
   $('sideOpen').onclick = () => showSide(true);
