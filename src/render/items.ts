@@ -8,7 +8,6 @@ import { rng } from '../art/paint';
 import { PLANT_ASPECT, type PlantType } from '../art/plants';
 import { CARPET_H, CARPET_W, itemSink, stoneDims, woodLimbs, type Limb } from '../scene/items';
 import { D2R } from '../scene/physics';
-import { clampIn, insideBy } from '../scene/shape';
 import { groundHeight } from '../scene/terrain';
 import type { Item, Tank, TankSetup } from '../scene/types';
 import { cardMaterial, plantTexture } from './textures';
@@ -172,23 +171,17 @@ function caveShape(variant: string, seed: number, size: number) {
 }
 
 // ---------- Plants ----------
-/** Crossed cards, base at y = 0; a carpet patch = many small crossed cards in a disc, each set on the ground under it
- *  (spot() moves a card in from the glass and gives the width it has room for, or null leaves it out). */
-function plantGeo(type: PlantType, seed: number, h: number, spot?: (lx: number, lz: number) => { x: number; y: number; z: number; w: number } | null) {
+/** Crossed cards, base at y = 0; a carpet patch = many small crossed cards in a disc, each set on the ground under it. */
+function plantGeo(type: PlantType, seed: number, h: number, ground?: (lx: number, lz: number) => number) {
   const cards: THREE.BufferGeometry[] = [];
-  const card = (w: number, hh: number, x: number, y: number, z: number, turn: number, crop = 1) => {
-    for (const k of [0, 1]) {
-      const pg = new THREE.PlaneGeometry(w, hh), uv = pg.attributes.uv;
-      if (crop < 1) for (let i = 0; i < uv.count; i++) uv.setX(i, 0.5 + (uv.getX(i) - 0.5) * crop); // a narrowed card shows the middle of the picture, not a squeezed one
-      cards.push(pg.translate(0, hh / 2, 0).rotateY(turn + k * Math.PI / 2).translate(x, y, z));
-    }
+  const card = (w: number, hh: number, x: number, y: number, z: number, turn: number) => {
+    for (const k of [0, 1]) cards.push(new THREE.PlaneGeometry(w, hh).translate(0, hh / 2, 0).rotateY(turn + k * Math.PI / 2).translate(x, y, z));
   };
   if (type === 'carpet') {
     const r = rng(seed), rad = h / 2 - CARPET_W * 0.35, n = Math.max(3, Math.round(h * h / 4200));
     for (let i = 0; i < n; i++) {
       const a = r() * Math.PI * 2, d = Math.sqrt(r()) * Math.max(0, rad), x = Math.cos(a) * d, z = Math.sin(a) * d;
-      const hh = CARPET_H * (0.8 + r() * 0.4), turn = (r() - 0.5) * 0.5, p = spot ? spot(x, z) : { x, y: 0, z, w: CARPET_W }; // draws taken even for a dropped card: the rest stay put
-      if (p) card(p.w, hh, p.x, p.y, p.z, turn, p.w / CARPET_W);
+      card(CARPET_W, CARPET_H * (0.8 + r() * 0.4), x, ground ? ground(x, z) : 0, z, (r() - 0.5) * 0.5);
     }
   } else card(h / PLANT_ASPECT[type], h, 0, 0, 0, 0);
   const g = mergeGeometries(cards)!;
@@ -240,20 +233,8 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
     if (h < 15) return null;
     const c = Math.cos(it.yaw * D2R), s = Math.sin(it.yaw * D2R);
     // a carpet hugs the ground under each card: its key carries the spot (rebuilt only while it moves)
-    const k = carpet ? `carpet|${it.seed}|${it.size}|${Math.round(it.x)}|${Math.round(it.depth)}|${it.yaw}|${it.lift}|${T.shape}|${T.L}|${T.D}|${T.sides}|${T.bowMin}` :`${type}|${it.seed}|${Math.round(h)}`;
-    // near the glass a card is cut down to the width it has room for, so the carpet runs right up to the glass without
-    // poking through; a card past the edge line is mirrored back in by as much (keeping the edge thick), and one more
-    // than half a card past it is left out
-    const EDGE = 8;
-    const at = (lx: number, lz: number) => {
-      let x = it.x + lx * c + lz * s, d = it.depth + lx * s - lz * c;
-      const e = EDGE - insideBy(T, x, d);
-      if (e > CARPET_W / 2) return null;
-      if (e > 0) ({ x, depth: d } = clampIn(T, x, d, EDGE + e));
-      const dx = x - it.x, dd = d - it.depth;
-      return { x: dx * c + dd * s, y: groundHeight(S, T, x, d) - ground, z: dx * s - dd * c, w: Math.min(CARPET_W, 2 * insideBy(T, x, d)) };
-    };
-    const g = plants.get(k) ?? remember(plants, k, plantGeo(type, it.seed, h, carpet ? at : undefined), 300, dispose);
+    const k = carpet ? `carpet|${it.seed}|${it.size}|${Math.round(it.x)}|${Math.round(it.depth)}|${it.yaw}|${it.lift}` : `${type}|${it.seed}|${Math.round(h)}`;
+    const g = plants.get(k) ?? remember(plants, k, plantGeo(type, it.seed, h, carpet ? (lx, lz) => groundHeight(S, T, it.x + lx * c + lz * s, it.depth + lx * s - lz * c) - ground : undefined), 300, dispose);
     if (carpet) g.computeBoundingBox();
     m = new THREE.Mesh(g, cardMaterial('plant:' + type, plantTexture(type), S.render.edge));
     m.userData.plant = true;

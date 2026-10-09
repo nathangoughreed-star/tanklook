@@ -251,7 +251,7 @@ pass for this iteration (still smooth / egg-shaped head-on, weak head-trunk step
   200 fresh requests a UTC day (KV counter `day:<date>`). Deployed 2026-10-09 (version 70dcde85).
 - **Outage #4 (2026-10-09 ~19:22 UTC):** site down for everyone (no answer from Nathan's PC either) after only 6
   proxy calls all day; points away from our traffic. **Uptime log** (Nathan: find out what brings it down, without load
-  testing): worker cron HEADs aqadvisor.com every 10 min (`checkHealth`), and every upstream stocking call is logged;
+  testing): worker cron HEADs aqadvisor.com every 5 min (`checkHealth`), and every upstream stocking call is logged;
   both in KV per day (`health:<date>`, `calls:<date>`, 30 days), served at `/log?days=N`. Summary:
   `node scripts/aq-health.mjs [days]` prints uptime %, each outage with its length and our calls in the hour before.
   Read it after a day or two before changing the gates.

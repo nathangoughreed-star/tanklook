@@ -19,6 +19,6 @@ namespace_id = "1001"
 [observability]
 enabled = true
 
-# Uptime log: HEAD aqadvisor.com every 10 minutes (checkHealth), kept 30 days in KV, read at /log
+# Uptime log: HEAD aqadvisor.com every 5 minutes (checkHealth), kept 30 days in KV, read at /log
 [triggers]
-crons = ["*/10 * * * *"]
+crons = ["*/5 * * * *"]

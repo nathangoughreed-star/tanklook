@@ -48,14 +48,14 @@ async function logTo(env, kind, entry) {
   await env.AQ_CACHE.put(key, JSON.stringify(list), { expirationTtl: LOG_S });
 }
 
-/** Health check (cron, every 10 min): one HEAD of the home page, lighter than a page view. Up/down + ms, so outages
+/** Health check (cron, every 5 min): one HEAD of the home page (PHP still builds the page, so about one page view). Up/down + ms, so outages
  *  can be lined up against our own calls (`calls:<date>`) to see whether they follow our traffic (2026-10-09). */
 export async function checkHealth(env) {
   const t = Date.now();
   let status = 0, why = '';
   try {
     const res = await fetch('http://aqadvisor.com/', { method: 'HEAD', signal: AbortSignal.timeout(10000),
-      headers: { 'user-agent': 'TankLook uptime check (tanklook.com; every 10 min)' } });
+      headers: { 'user-agent': 'TankLook uptime check (tanklook.com; every 5 min)' } });
     status = res.status;
   } catch (e) { why = e?.name === 'TimeoutError' ? 'timeout' : 'unreachable'; }
   const entry = { t, up: status >= 200 && status < 400, status, ms: Date.now() - t, ...(why && { why }) };
