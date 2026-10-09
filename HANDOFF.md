@@ -12,8 +12,12 @@ Order, one work unit per chat:
 1. DONE 2026-10-09 (session 12): `fix-canvas-alpha` merged into main (`1cd57d6`, local, not pushed). The other
    chats' uncommitted edits on main (middle-drag pan: `pointer.ts`, `viewer.ts`, `style.css`; round-tank spill:
    `lighting.ts`) were stashed for the merge and restored, still uncommitted. No textual overlap; tsc clean, tests 110/110.
-2. Reconcile and merge `audit-3d` (`viewer.ts`, `lighting.ts` overlap the other chat's edits), rerun tests,
-   visually re-check the 3D lighting.
+2. DONE 2026-10-09 (session 12): the other chats' work committed first (`0ca1ac2` round-tank spill, `92cb931`
+   middle-drag pan), then `audit-3d` merged (`5476b2e`): auto-merged, no conflicts (its alpha fix is the same
+   change already on main, present once). tsc clean, tests 110/110. Visual spot check on the dev server, straight-on
+   view of tiger barb, harlequin, clown loach, GBR, danio, dwarf gourami: all six draw in 3D, flank colours read like
+   the cards, no white pectoral blades, no see-through. Main is local only, NOT pushed. Branches `fix-canvas-alpha`,
+   `audit-3d` and their worktrees still exist (safe to delete).
 3. Head-on marking wrapping: a GENERIC surface-mapping fix (not per species).
 4. Verify it on discus, tiger barb, clown loach, harlequin (same four views).
 5. Roll 3D out to the remaining fish, flat cards kept as fallbacks until each passes review.
