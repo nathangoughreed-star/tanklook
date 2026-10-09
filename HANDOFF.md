@@ -2,6 +2,20 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## NEXT (Nathan 2026-10-09, closing session 11): 3D sequence
+
+Verdicts: alpha fix approved; pilot passed (geometry generation, NOT yet the final visual-quality test); generic 3D
+architecture validated for rollout; head-on marking distortion is now a systematic problem: fix it before the full
+rollout; the remaining 34 species are on hold until the merge and the mapping fix. QC list adds: the guppy's broad
+tail becomes an edge-on sheet at extreme angles (acceptable for now).
+Order, one work unit per chat:
+1. Merge `fix-canvas-alpha` once the other chat has finished editing main (`viewer.ts`).
+2. Reconcile and merge `audit-3d` (`viewer.ts`, `lighting.ts` overlap the other chat's edits), rerun tests,
+   visually re-check the 3D lighting.
+3. Head-on marking wrapping: a GENERIC surface-mapping fix (not per species).
+4. Verify it on discus, tiger barb, clown loach, harlequin (same four views).
+5. Roll 3D out to the remaining fish, flat cards kept as fallbacks until each passes review.
+
 ## Status (2026-10-09, session 11c: alpha fix on `fix-canvas-alpha`; 8-species pilot on `audit-3d`; neither merged)
 
 Nathan 2026-10-09: four fixes accepted; fix the canvas compositing first, kept separate; then an 8-species pilot
