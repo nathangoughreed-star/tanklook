@@ -138,6 +138,14 @@ float aqWaterPath() {
   float a = max(max(tn.x, tn.y), max(tn.z, 0.0)), b = min(min(tf.x, tf.y), min(tf.z, 1.0));
   return max(b - a, 0.0) * length(vAqP - o);
 }
+// 3D fish facing, measured against the flank that faces the viewer (horizontal, toward the camera): that flank gets
+// exactly 1, like the card, so side views match the card's brightness; surfaces turned toward the light are brighter,
+// away from it darker, symmetrically (so the curved flank averages to the card), which keeps the volume
+float aqFishFacing(vec3 n, vec3 ld) {
+  vec3 tv = cameraPosition - vAqP; vec3 nv = normalize(vec3(tv.x, 0.0, tv.z) + vec3(1e-4, 0.0, 0.0));
+  float x = dot(n, ld) - dot(nv, ld);
+  return 1.0 + 0.5 * x;
+}
 vec3 aqLight() {
   if (uRoomMat > 0.5) {  // room surface: room light + light leaving the tank (nearest point of the tank box)
     vec3 q = clamp(vAqP, uTankMin, uTankMax);
@@ -156,7 +164,7 @@ vec3 aqLight() {
     // flat light: 3D fish still need form, so a fixed soft key from above and slightly in front
     vec3 ld = normalize(vec3(-0.2, 1.0, 0.35)), hv = normalize(ld + normalize(cameraPosition - vAqP));
     aqSpec = 0.6 * pow(max(dot(n, hv), 0.0), 40.0);
-    return vec3(1.0 + 0.6 * dot(n, ld));
+    return vec3(aqFishFacing(n, ld));
   }
   for (int i = 0; i < ${AQ_MAX}; i++) {
     if (i >= uEmN) break;
@@ -166,9 +174,9 @@ vec3 aqLight() {
     float cone = smoothstep(uConeOut, uConeIn, ld.y), r = d / uRef;
     float fall = e.w > 0.0 ? 1.0 / (1.0 + r) : 1.0 / (1.0 + r * r);
     float facing = uCard > 0.5 ? 1.0 : 0.3 + 0.9 * abs(dot(n, ld));
-    // 3D fish body: lit from the light's side (flank = 1, back brighter, belly darker), plus a soft highlight
+    // 3D fish body: lit from the light's side (flank toward the viewer = 1, back brighter, belly darker), plus a soft highlight
     if (uFish > 0.5) {
-      facing = 1.0 + 0.6 * dot(n, ld);
+      facing = aqFishFacing(n, ld);
       vec3 hv = normalize(ld + normalize(cameraPosition - vAqP));
       aqSpec += cone * fall * pow(max(dot(n, hv), 0.0), 40.0);
     }
@@ -195,11 +203,13 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
     .replace('#include <opaque_fragment>', 'vec3 aqLt = aqLight(); outgoingLight *= aqLt;\n' +
       'if (uCard > 0.5) { float aqL = dot(outgoingLight, vec3(0.2126, 0.7152, 0.0722)); outgoingLight = max(mix(vec3(aqL), outgoingLight, 1.35), 0.0); }\n' +
       'float aqM = max(max(outgoingLight.r, outgoingLight.g), outgoingLight.b);\n' +
-      // 3D fish body: a soft roll-off instead of the hard clamp (which flattens the form shading wherever the light
-      // is strong), then the highlight and a faint silvery sheen toward the edges on top
+      // 3D fish body: the card's saturation, then a shoulder instead of the hard clamp (which flattens the form shading
+      // wherever the light is strong): values up to 0.6 are untouched, so the body matches its card, and only
+      // highlights roll off toward 1; then the highlight and a faint silvery sheen toward the edges on top
       'if (uFish > 0.5) {\n' +
-      '  float aqS = dot(outgoingLight, vec3(0.2126, 0.7152, 0.0722)); outgoingLight = max(mix(vec3(aqS), outgoingLight, 1.28), 0.0);\n' +
-      '  outgoingLight *= (1.0 - exp(-1.6 * aqM)) / max(0.92 * aqM, 1e-4);\n' +
+      '  float aqS = dot(outgoingLight, vec3(0.2126, 0.7152, 0.0722)); outgoingLight = max(mix(vec3(aqS), outgoingLight, 1.35), 0.0);\n' +
+      '  aqM = max(max(outgoingLight.r, outgoingLight.g), outgoingLight.b);\n' +
+      '  if (aqM > 0.6) outgoingLight *= (0.6 + 0.4 * (1.0 - exp(-(aqM - 0.6) / 0.4))) / aqM;\n' +
       '  vec3 aqV = normalize(cameraPosition - vAqP); float aqRim = pow(1.0 - abs(dot(normalize(vAqN), aqV)), 3.0);\n' +
       '  outgoingLight += uLCol * (uBright * uNorm * aqSpec * 0.16) + vec3(0.03, 0.04, 0.045) * aqRim * min(dot(aqLt, vec3(0.333)), 1.5);\n' +
       '  outgoingLight = min(outgoingLight, vec3(1.0));\n' +

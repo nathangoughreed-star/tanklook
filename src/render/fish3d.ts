@@ -9,7 +9,7 @@ import type { EdgeMode } from '../scene/types';
 import { cardMaterial, pairedFinTexture } from './textures';
 
 /** Species drawn in 3D (test set) and switches for before/after pictures. `fade` = the session-10 fixes (turned-away paint fades, card body cut out, body-shape fields, barbels); off = session 9, for pictures. */
-export const fish3d = { on: true, fade: true, species: new Set(['cardinal', 'discus', 'bronzecory']) };
+export const fish3d = { on: true, fade: true, species: new Set(['cardinal', 'discus', 'bronzecory', 'tigerbarb', 'bristlenose', 'kuhli', 'angel', 'danio', 'guppy', 'dwarfgourami', 'gbr', 'harlequin', 'oto', 'clownloach', 'goldfish']) };
 
 export const has3D = (art: string) => fish3d.on && fish3d.species.has(art) && PLANS[art]?.thick != null;
 
@@ -97,23 +97,27 @@ function bodyGeometry(p: Plan, aspect: number, bend: number) {
  * the dome's axis along the local surface normal, turned slightly forward (fish eyes look ahead a little).
  */
 function eyePlacements(p: Plan, bend: number) {
-  const e = eyeSpot(p);
+  const e = eyeSpot(p), th0 = thetaAt(sections(p)(e.u), e.v);
+  // `eye.up` turns the eye from the flank toward the top of the head (flattened fish: plecos look upward)
+  const th = th0 + (EYE_TOP - th0) * (p.eye.up ?? 0);
   return [1, -1].map(side => ({
-    pos: surfaceAt(p, e.u, e.v, side, bend), n: normalAt(p, e.u, e.v, side, bend).add(new THREE.Vector3(0.2, 0, 0)).normalize(), r: e.r, iris: e.iris,
+    pos: pointAt(p, e.u, th, side, bend), n: normalAtTh(p, e.u, th, side, bend).add(new THREE.Vector3(0.2, 0, 0)).normalize(), r: e.r, iris: e.iris,
   }));
 }
+/** Section angle of a fully raised eye (`eye.up` = 1): on the head's upper surface, a little off the midline. */
+const EYE_TOP = 0.5;
 
-/** Point on the body surface at card (u, v) on one flank (unit frame). */
-function surfaceAt(p: Plan, u: number, v: number, side: number, bend: number) {
-  const sec = sections(p)(u), x = u - 0.5, [, z] = ringPt(sec, thetaAt(sec, v));
+/** Point on the body surface at station u, section angle th, on one flank (unit frame). */
+function pointAt(p: Plan, u: number, th: number, side: number, bend: number) {
+  const [v, z] = ringPt(sections(p)(u), th), x = u - 0.5;
   return new THREE.Vector3(x, -v, bendZ(bend, x) + side * z);
 }
+/** Point on the body surface at card (u, v) on one flank (unit frame). */
+const surfaceAt = (p: Plan, u: number, v: number, side: number, bend: number) => pointAt(p, u, thetaAt(sections(p)(u), v), side, bend);
 
-/** Outward surface normal at card (u, v) on one flank (finite differences along the body and around the section). */
-function normalAt(p: Plan, u: number, v: number, side: number, bend: number) {
-  const ring = sections(p);
-  const at = (uu: number, th: number) => { const [vv, z] = ringPt(ring(uu), th), x = uu - 0.5; return new THREE.Vector3(x, -vv, bendZ(bend, x) + side * z); };
-  const th = thetaAt(ring(u), v), d = 0.004;
+/** Outward surface normal at station u, section angle th (finite differences along the body and around the section). */
+function normalAtTh(p: Plan, u: number, th: number, side: number, bend: number) {
+  const at = (uu: number, t: number) => pointAt(p, uu, t, side, bend), d = 0.004;
   const n = at(u + d, th).sub(at(u - d, th)).cross(at(u, th + d).sub(at(u, th - d))).normalize();
   return n.z * side < 0 ? n.negate() : n;
 }
