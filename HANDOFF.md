@@ -2,6 +2,29 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Status (2026-10-09, session 11c: alpha fix on `fix-canvas-alpha`; 8-species pilot on `audit-3d`; neither merged)
+
+Nathan 2026-10-09: four fixes accepted; fix the canvas compositing first, kept separate; then an 8-species pilot
+(danio, male guppy, dwarf gourami, German blue ram = `gbr`, harlequin, oto, clown loach, goldfish), four views vs
+the card, acceptance: side silhouette not worse, 3/4 plausible, head-on recognisable, no egregious wrapping, no
+lighting / transparency defects, no species code; record the configuration effort. Do NOT merge `audit-3d` into a
+dirty main: reconcile `viewer.ts` / `lighting.ts` with the other chat's changes after it finishes, rerun tests, and
+re-check the lighting visually. No more polish on tiger barb / angel / bristlenose. QC list: angel pelvic filaments
+splay near head-on, angel dark upper-edge line, bars ringing heads near head-on. Backlog: sucker mouth + bristles as
+reusable anatomical features.
+- **Alpha fix** (worktree `../Glass-Box-alphafix`, branch `fix-canvas-alpha` = `3d4eb5c` + `49b713d`, launch config
+  `alphafix` port 5233): `viewer.ts` only. Verified by reading the drawing buffer after a frame and decoding the
+  exported PNG (`shots/_verify.js`): before 10,920 / 10,920 / 88,038 translucent pixels (blue water / frosted white /
+  iwagumi stones: plant edges too), after 0 / 0 / 0 in both. Picture `shots/57_alpha_sheet.png` (each export over
+  white and over the page colour: before they differ, after identical). Tests 110/110. Ready to merge into main
+  once the other chat's `viewer.ts` edit is in (same function; small conflict expected).
+- **Pilot** (`audit-3d` `aa68521`): all 8 passed on the FIRST data-only pass: one line each (`thick`; oto also
+  `belly 0.8, wide 0.4, noseW 0.5, eye.up 0.3`; clown loach `belly 0.4`), no tuning round, no new code. Sheets
+  `shots/58_pilot_A.png` (harlequin, danio, guppy, gourami), `58_pilot_B.png` (GBR, goldfish, oto, clown loach),
+  `58_guppy_sheet.png`. Watch items: head-on wrapping of the GBR eye bar, clown loach bars, danio stripes and the
+  harlequin patch (same QC item as above); goldfish reads ball-like at 50° (the card is a fancy goldfish, not the
+  common one Nathan named). Effort: configuration is minutes per species; the real cost is the four-view review.
+
 ## Status (2026-10-09, session 11b: four generic 3D fixes built on branch `audit-3d`, NOT merged)
 
 **Nathan's decisions (2026-10-09, on the audit):** general 3D approach approved. Verdicts: tiger barb pass, kuhli pass
