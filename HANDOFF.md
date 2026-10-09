@@ -27,7 +27,15 @@ cardinal unchanged `shots/48_cardinal_*`. Toggle `__gb.fish3d.fade` (off = sessi
 - **Next (agreed):** Nathan reviews the two sheets; then (d) the audit: 1. card regressions from the global paint
   changes; 2. (more important) kuhli loach, bristlenose pleco, angelfish in 3D with as little species code as possible.
 
-## AqAdvisor stocking level (2026-10-09, separate chat; built, NOT committed, proxy NOT deployed)
+## AqAdvisor stocking level (2026-10-09, separate chat; DEPLOYED as link-only `245b5cc`, proxy NOT deployed)
+
+**Deploy state (2026-10-09):** live = `245b5cc` = old live `305e490` + AqAdvisor (`97300f3` cherry-picked) + panel
+sections start collapsed on every load (`921e280`, Nathan: open sections are no longer remembered; only the hidden
+panel is). Nathan chose this over shipping the 3D fish. **Local main is AHEAD of live with the 3D fish (`f77f791`,
+`5ac9a3e`, `66c69af`, merged back as `9bdff83`, no rewrite): pushing main deploys the fish.** Nathan's fish review
+(pasted 2026-10-09): discus pass, cory pass for this iteration (still too smooth / egg-shaped head-on, weak head-trunk
+step, generic dorsal; stop there), next = the species audit (kuhli, bristlenose, angelfish + one ordinary species,
+same multi-angle sheets). To put the stocking % live: Cloudflare steps in `worker/README.md`.
 
 Nathan wanted "Stocking: 92% (powered by aqadvisor)". Agreed: fetch the number from aqadvisor.com, cite it as
 "per AqAdvisor" (not "powered by", which reads as a partnership), on demand only (a Check button), cached, with a link
