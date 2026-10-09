@@ -132,6 +132,11 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 .lab .diffs span { display: inline-flex; align-items: center; gap: 4px; padding: 1px 3px 1px 6px; border-radius: 3px; background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .16); white-space: nowrap }
 .lab .close { font: inherit; font-size: 11px; color: #fff; background: rgba(255, 255, 255, .14); border: 0; border-radius: 3px; padding: 2px 7px; cursor: pointer }
 .lab .acts { display: flex; gap: 5px }
+/* folded until hovered (or reached by keyboard): the ▾ hint stands in for the second row */
+.lab.tab .diffs { display: none }
+.lab.tab:hover .diffs, .lab.tab:has(:focus-visible) .diffs { display: flex }
+.lab .more { font-size: 11px; color: rgba(255, 255, 255, .6) }
+.lab.tab:hover .more, .lab.tab:has(:focus-visible) .more { display: none }
 .lab .diffs span + .acts { margin-left: 4px } /* a little air between the differences and the buttons */
 .lab .edbox { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; cursor: pointer; user-select: none }
 .lab .edbox input { margin: 0; accent-color: var(--accent); cursor: pointer }

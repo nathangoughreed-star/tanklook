@@ -621,7 +621,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
       : 'Distance is from your eye to the front glass, the same for every tank. Zoom only crops; it never changes perspective.';
 
     ($('split') as HTMLButtonElement).disabled = store.split;
-    $('splitHint').textContent = store.split ? 'Each view’s tab (top of the view) can Save that tank on its own, Delete it, or Close (hide) the tab. Save… at the top saves both in one file.' : 'Copy this tank into a second, independent one beside it, then change anything in either.';
+    $('splitHint').textContent = store.split ? 'Each view’s tab (top of the view) opens on hover: what differs, Save that tank on its own, or Delete it. Save… at the top saves both in one file.' : 'Copy this tank into a second, independent one beside it, then change anything in either.';
     setVal('edge', s.render.edge); $('gridOn').checked = s.render.grid; 
     setVal('layout', s.layout.id); $('layoutHint').textContent = LAYOUTS[s.layout.id].hint;
     ($('layoutShuffle') as HTMLButtonElement).disabled = s.layout.id === 'none';
@@ -630,7 +630,6 @@ export function attachPanels(store: Store, viewer: Viewer) {
 
   // ---------- after each draw: viewport labels + readout (same frame as the render) ----------
   let tabSig = '';
-  const tabHidden = [false, false]; // × Close only folds a view's tab away; a small button brings it back
   /** The stocking link shown in a view's label, or '' when there is nothing to show. */
   const aqLink = (s: TankSetup) => {
     const aq = aqLabel(s);
@@ -640,7 +639,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     const g = G(), active = viewer.active, split = active.length > 1;
     const diff = split ? tankDiff(g.tanks[0], g.tanks[1], g.units) : [];
     const hidden = $('app').classList.contains('collapsed');
-    const sig = JSON.stringify([diff, tabHidden, hidden, g.units, g.active, store.targets, g.camLock, active.map(v => [v.x, v.w]), split || fmtDims(g.tanks[0].tank, g.units), active.map(v => aqLabel(v.S))]);
+    const sig = JSON.stringify([diff, hidden, g.units, g.active, store.targets, g.camLock, active.map(v => [v.x, v.w]), split || fmtDims(g.tanks[0].tank, g.units), active.map(v => aqLabel(v.S))]);
     if (sig !== tabSig) {
       tabSig = sig;
       for (const [i, id] of [[0, 'labA'], [1, 'labB']] as const) {
@@ -659,16 +658,13 @@ export function attachPanels(store: Store, viewer: Viewer) {
         const only = ed && store.targets.length === 1;
         const box = `<label class="edbox" title="${only ? `Untick to close the panel` : ed ? `The panel's changes apply to Tank ${vp.key}` : `Apply the panel's changes to Tank ${vp.key} (opens the panel)`}">` +
           `<input type="checkbox" data-edit="${i}"${ed ? ' checked' : ''}> Edit</label>`;
-        if (tabHidden[i]) {
-          el.innerHTML = `<div class="hd"><button class="close" data-showtab="${i}" title="Show Tank ${vp.key}'s tab: what differs, Save, Delete">☰ ${vp.key}${diff.length ? ` · ${diff.length}` : ''}</button>${box}</div>`;
-          continue;
-        }
         // packed in two rows (Nathan 2026-10-09): stocking + Edit on top; then what differs (nothing = the same tank,
-        // no labels) and Save, Delete, Close (hide) flowing together, wrapping only when the view is too narrow
-        el.innerHTML = `<div class="hd">${aqLink(vp.S)}${box}</div>` + `<div class="diffs">${diff.map((d, k) => `<span>${esc(d[i])}<button class="match" data-match="${i},${k}" title="Make Tank ${vp.key} match Tank ${active[1 - i].key} here" aria-label="Match the other tank: ${esc(d[i])}">×</button></span>`).join('')}` +
+        // no labels) and Save, Delete flowing together, wrapping only when the view is too narrow.
+        // The second row stays folded until the tab is hovered (Nathan 2026-10-09); the ▾ hint carries the count.
+        const hint = `<span class="more" aria-hidden="true">${diff.length ? `${diff.length} diff${diff.length === 1 ? '' : 's'} ` : ''}▾</span>`;
+        el.innerHTML = `<div class="hd">${aqLink(vp.S)}${hint}${box}</div>` + `<div class="diffs">${diff.map((d, k) => `<span>${esc(d[i])}<button class="match" data-match="${i},${k}" title="Make Tank ${vp.key} match Tank ${active[1 - i].key} here" aria-label="Match the other tank: ${esc(d[i])}">×</button></span>`).join('')}` +
           `<div class="acts"><button class="close" data-save="${i}" title="Save Tank ${vp.key} on its own as a single-tank file">Save</button>` +
-          `<button class="close" data-delete="${i}" title="Delete Tank ${vp.key} and end the split view (Ctrl+Z brings it back)">Delete</button>` +
-          `<button class="close" data-close="${i}" title="Hide this tab (the tank stays)" aria-label="Hide Tank ${vp.key}'s tab">× Close</button></div></div>`;
+          `<button class="close" data-delete="${i}" title="Delete Tank ${vp.key} and end the split view (Ctrl+Z brings it back)">Delete</button></div></div>`;
       }
       const lock = $<HTMLButtonElement>('camLock');
       lock.hidden = !split;
@@ -701,10 +697,9 @@ export function attachPanels(store: Store, viewer: Viewer) {
       return;
     }
     const at = (k: string) => (e.target as HTMLElement).closest<HTMLButtonElement>(`[data-${k}]`)?.dataset[k];
-    const hide = at('close'), show = at('showtab'), del = at('delete');
-    if (hide !== undefined || show !== undefined) { tabHidden[+(hide ?? show)!] = hide !== undefined; viewer.invalidate(); return; }
+    const del = at('delete');
     if (del === undefined) return;
-    const i = +del; tabHidden.fill(false);
+    const i = +del;
     store.closeTank(i); status(`Tank ${'AB'[i]} deleted. Ctrl+Z brings it back.`);
   });
   function readout() {
