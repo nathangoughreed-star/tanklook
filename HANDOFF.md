@@ -2,7 +2,7 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
-## Status (2026-10-09, session 8: tank shapes phase 2 (table stand) built, NOT committed)
+## Status (2026-10-09, session 8: tank shapes phases 1 + 2 deployed `9286b85`)
 
 Built on top of the uncommitted phase 1. `npm test` 104/104 (new `test/table.test.ts`), `tsc` and `vite build` clean,
 checked in the browser (dev server `dev` on 5173), shots `shots/28_table_*`.
@@ -21,7 +21,7 @@ checked in the browser (dev server `dev` on 5173), shots `shots/28_table_*`.
   either). Add drag later if the sliders feel clumsy.
 - Not checked: split view with two tables; PNG export with a table.
 
-**NEXT:** Nathan reviews phase 1 (`shots/27_*`) and phase 2 (`shots/28_*`), then commit + deploy both; then phase 3
+**NEXT:** phase 3
 (exact lighting water path for shaped tanks, layouts tuned per shape).
 
 ## Status (2026-10-08, session 7: tank shapes phase 1 built, NOT committed)
