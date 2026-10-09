@@ -22,7 +22,12 @@ Order, one work unit per chat:
 4. Verify it on discus, tiger barb, clown loach, harlequin (same four views).
 5. Roll 3D out to the remaining fish, flat cards kept as fallbacks until each passes review.
 
-## Split view: per-view "Edit" boxes (2026-10-09, Nathan; built, NOT committed)
+## Deployed 2026-10-09: build 63 (`e721433`), everything on main incl. the 3D pilot, Edit boxes, cabinet doors
+
+**Version number:** the sidebar header shows "build N" (N = commit count on main, from `scripts/build-info.mjs` via
+Vite `define`; CI checks out full history for it); hover shows date + commit. It rises by itself with every push.
+
+## Split view: per-view "Edit" boxes (2026-10-09, Nathan; committed `80379ef`, deployed in build 63)
 
 Replaces "click a view to choose which tank the panel edits". Each split view's tab has an **Edit** checkbox; the
 panel's changes go to every ticked tank (one undo step). After a split only B is ticked (as before); at least one box
