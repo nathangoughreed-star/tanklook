@@ -2,6 +2,39 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Status (2026-10-09, session 11: species audit (d) done; awaiting Nathan's call on the open points)
+
+Dev server `dev-4` (port 5213) added: other chats held 5173/5183/5193. Card sheets: `scripts/card-sheet.js`
+(`sheet(name, ids)`, before = pre-3D art modules copied from `de92c7f` into `shots/_art_before/`, after = `src/art`).
+Stress-test sheets: rows card / 3D, same four views. Pictures: `shots/50_cards_{a,b,armour}.png`,
+`shots/52_{tigerbarb,bristlenose}_sheet.png`, `shots/54_{angel,kuhli}_sheet.png`, `shots/54_angel_kuhli_card.png`.
+Gotcha: the browser pane is 0×0 while hidden, so `exportPNG` fails; `resize_window` 1280×800 first. Bottom fish
+leave the frame at high zoom: use zoom 2-2.6, `mult: 4`, small `crop`.
+- **1. Card regressions from the paint pass (21 species checked, incl. hand-drawn neon / gourami / angel, shrimp,
+  frog):** eyes, patterns, silhouettes and fins all intact. Changes are the intended ones (scale net, tone mottling,
+  mouth line). One real regression, fixed ON MAIN: armoured catfish (panda cory, bristlenose, oto) got a fish-scale
+  net; now `plates: true`. Minor, not changed: danio stripes slightly muted by the tone multiply; black molly shows the
+  scale net strongly.
+- **2. 3D stress tests: the loft generalises; the gaps are plan vocabulary + two generic rendering issues.** Species-
+  specific CODE needed: none for any of the four (no `if species`). Per species (branch `audit-3d`, not on main):
+  - tiger barb (ordinary): `thick: 0.38` only. Convincing.
+  - kuhli: `thick: 0.85` + one generic fix ON MAIN: pectoral length capped at 0.75 × body depth (changes only kuhli;
+    it had tetra-sized "wings"). Convincing as a striped tube.
+  - bristlenose: `thick 1.3, belly 1, wide 0.6, noseW 0.8` (fields from the cory). Shape reads as a flat-bellied
+    pleco. Open: eyes sit on the flanks (plecos: on top of the head; needs a generic eye-elevation field); bristles
+    and sucker mouth are not 3D (would be species features = new code); paler than its card (see lighting below).
+  - angelfish: hand-drawn, so it needed a full Plan (data; replaces the hand-drawn card with generated art) + one new
+    generic fin shape `swept`. Loft handles the tall compressed body well. But the generated card is WORSE than the
+    hand-drawn one: body is a disc, not the angel's diamond (`profile` can only make convex curves; needs a generic
+    straight-flank option), fins still rounder than the hand sails.
+  - Generic issues seen on all: (a) the flat-light key in fish mode (`lighting.ts`, `1 + 0.6 n·L`) brightens the
+    3D flank ~1.2× and an up-facing back ~1.55× vs the card, so dark, broad-backed fish wash out (bristlenose);
+    (b) 3D pectorals read as bright white blades (tiger barb, angel). (c) Bars still ring the head near head-on
+    (soft, known).
+- **Recommendation:** expand 3D to all species (step 2), after a short generic list: eye elevation, straight-flank
+  profile option, key-light normalised to the flank, pectoral brightness. Keep angel hand-drawn (no 3D) until the
+  profile option exists.
+
 ## Status (2026-10-09, session 10: 3D fish (a) markings + (b) cory shape built, committed, NOT pushed; awaiting Nathan's review)
 
 Deployed first: the other chat's spot-light / size-label commit `305e490` only (pushed `305e490:main`; live on http and

@@ -143,7 +143,7 @@ export interface PairedFin { kind: 'pelvic' | 'pectoral'; pts: Pt[]; root: [numb
 export function pairedFins(p: Plan): PairedFin[] {
   const g = geometry(p), out: PairedFin[] = [];
   if (g.pelvic) out.push({ kind: 'pelvic', pts: g.pelvic, root: [p.pelvic!.u, g.prof(p.pelvic!.u)[1]], tint: p.pelvic!.tint ?? p.fin, a: p.pelvic!.thread ? 0.85 : undefined, rays: p.pelvic!.thread ? 0 : 5 });
-  const pu = 1 - (1 - p.pedU) * 0.24, [pt, pb] = g.prof(pu), pm = pt + (pb - pt) * 0.62, pl = (1 - p.pedU) * 0.17;
+  const pu = 1 - (1 - p.pedU) * 0.24, [pt, pb] = g.prof(pu), pm = pt + (pb - pt) * 0.62, pl = Math.min((1 - p.pedU) * 0.17, p.depth * 0.75); // slender fish (loaches) keep small pectorals
   out.push({ kind: 'pectoral', pts: [[pu, pm - 0.01], [pu - pl, pm + pl * 0.3, 'c'], [pu - pl * 0.7, pm + pl * 0.55], [pu + 0.005, pm + 0.015]], root: [pu, pm], tint: p.fin, a: 0.3, rays: 5 });
   return out;
 }
@@ -325,15 +325,15 @@ export const PLANS: Record<string, Plan> = {
   bronzecory: { plates: true, thick: 0.72, belly: 0.9, wide: 0.5, pedT: 0.28, step: 0.18, noseW: 0.4, depth: 0.35, pedU: 0.18, ped: 0.06, peak: 0.6, back: 0.68, snout: 0.6, mouth: 0.06, shade: ['#4a5a48', '#8a8a62', '#d8c8a0'], tail: { type: 'fork', h: 0.15 }, fin: '#b0a888',
     dorsal: { u0: 0.5, u1: 0.68, h: 0.16, shape: 'sail' }, anal: { u0: 0.32, u1: 0.4, h: 0.06 }, adipose: true, pelvic: { u: 0.55, len: 0.08 },
     marks: [{ k: 'blob', u: 0.6, v: -0.04, ru: 0.25, rv: 0.08, c: '#5a8070', a: 0.45 }], barbels: 0.03, eye: { r: 0.032, iris: ['#c8b890', '#3a3020'], dv: -0.05 } },
-  pandacory: { depth: 0.35, pedU: 0.18, ped: 0.06, peak: 0.6, back: 0.68, snout: 0.6, mouth: 0.06, shade: ['#c8c0b0', '#e8e0d0', '#f0ebe0'], tail: { type: 'fork', h: 0.15 }, fin: '#d8d2c4',
+  pandacory: { plates: true, depth: 0.35, pedU: 0.18, ped: 0.06, peak: 0.6, back: 0.68, snout: 0.6, mouth: 0.06, shade: ['#c8c0b0', '#e8e0d0', '#f0ebe0'], tail: { type: 'fork', h: 0.15 }, fin: '#d8d2c4',
     dorsal: { u0: 0.5, u1: 0.68, h: 0.16, shape: 'sail', tint: '#2a2a2a', a: 0.85 }, anal: { u0: 0.32, u1: 0.4, h: 0.06 }, adipose: true, pelvic: { u: 0.55, len: 0.08 },
     marks: [{ k: 'bars', us: [0.885], w: 0.06, c: '#1c1c1c', a: 0.95 }, { k: 'blob', u: 0.24, v: -0.02, ru: 0.06, rv: 0.06, c: '#1c1c1c', a: 0.9 }], barbels: 0.03,
     eye: { r: 0.032, iris: ['#4a4040', '#0c0a0a'], dv: -0.05 } },
-  bristlenose: { depth: 0.25, pedU: 0.16, ped: 0.05, peak: 0.75, back: 0.72, snout: 0.75, mouth: 0.05, shade: ['#3a3a30', '#5a5444', '#8a826a'], tail: { type: 'notch', h: 0.11, tint: '#4a4638', a: 0.85 }, fin: '#4a4638',
+  bristlenose: { plates: true, depth: 0.25, pedU: 0.16, ped: 0.05, peak: 0.75, back: 0.72, snout: 0.75, mouth: 0.05, shade: ['#3a3a30', '#5a5444', '#8a826a'], tail: { type: 'notch', h: 0.11, tint: '#4a4638', a: 0.85 }, fin: '#4a4638',
     dorsal: { u0: 0.42, u1: 0.68, h: 0.13, shape: 'sail', a: 0.85 }, anal: { u0: 0.3, u1: 0.36, h: 0.04 }, adipose: true, pelvic: { u: 0.58, len: 0.1 },
     marks: [{ k: 'spots', n: 70, u0: 0.16, u1: 0.95, v0: -0.18, v1: 0.05, r: 0.008, c: '#c8c0a0', a: 0.6 }],
     finMarks: [{ k: 'spots', n: 40, u0: 0, u1: 0.7, v0: -0.4, v1: 0.2, r: 0.008, c: '#c8c0a0', a: 0.5 }], bristles: true, eye: { r: 0.022, iris: ['#6a6040', '#1a1610'], dv: -0.12 } },
-  oto: { depth: 0.19, pedU: 0.17, ped: 0.035, peak: 0.65, back: 0.62, snout: 0.6, mouth: 0.03, shade: ['#6a6a50', '#a8a280', '#e0dcc8'], tail: { type: 'notch', h: 0.1 }, fin: '#c0bba4',
+  oto: { plates: true, depth: 0.19, pedU: 0.17, ped: 0.035, peak: 0.65, back: 0.62, snout: 0.6, mouth: 0.03, shade: ['#6a6a50', '#a8a280', '#e0dcc8'], tail: { type: 'notch', h: 0.1 }, fin: '#c0bba4',
     dorsal: { u0: 0.5, u1: 0.62, h: 0.08, shape: 'sail' }, anal: { u0: 0.33, u1: 0.4, h: 0.04 }, pelvic: { u: 0.58, len: 0.06 },
     marks: [{ k: 'band', u0: 0.18, u1: 0.98, v0: -0.015, v1: 0.012, c: '#2a2820', a: 0.85, f: 0.008 }], finMarks: [{ k: 'blob', u: 0.08, v: 0, ru: 0.04, rv: 0.025, c: '#2a2820', a: 0.7 }],
     eye: { r: 0.024, iris: ['#b0a070', '#2a2418'], dv: -0.08 } },

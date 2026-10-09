@@ -90,6 +90,19 @@
         "aq"
       ],
       "port": 5203
+    },
+    {
+      "name": "dev-4",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5213",
+        "--strictPort"
+      ],
+      "port": 5213
     }
   ]
 }
