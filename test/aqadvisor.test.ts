@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import ids from '../src/data/aqadvisor.json';
 import { aqAdvisorUrl, aqKey, aqQuery } from '../src/data/aqadvisor';
 import { SPECIES } from '../src/data/species';
@@ -6,7 +6,7 @@ import { defaultScene } from '../src/scene/defaults';
 import { footprint } from '../src/scene/shape';
 import type { Fish, TankSetup } from '../src/scene/types';
 // @ts-expect-error plain-JS worker module, no types
-import { aqParams, parseStocking } from '../worker/aqadvisor-proxy.js';
+import worker, { aqParams, parseStocking } from '../worker/aqadvisor-proxy.js';
 
 const fish = (species: string, n: number): Fish[] =>
   Array.from({ length: n }, (_, i) => ({ id: i, species, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0 }));
@@ -69,5 +69,46 @@ describe('AqAdvisor proxy', () => {
     expect(aqParams(ok)?.get('AlreadySelected')).toBe('200909300039:10::,200909300034:6::');
     for (const bad of [{ sel: 'x' }, { sel: '200909300039:10::&evil=1' }, { l: '0' }, { h: '9999' }] as Record<string, string>[])
       expect(aqParams(new URLSearchParams({ ...Object.fromEntries(ok), ...bad }))).toBeNull();
+  });
+
+  describe('breaker', () => {
+    afterEach(() => { vi.unstubAllGlobals(); vi.restoreAllMocks(); });
+    const env = () => {
+      const kv = new Map<string, string>();
+      return { kv, AQ_CACHE: { get: async (k: string) => kv.get(k) ?? null, put: async (k: string, v: string) => { kv.set(k, v); } },
+        AQ_GATE: { limit: async () => ({ success: true }) } };
+    };
+    const ctx = { waitUntil: (p: Promise<unknown>) => p };
+    const ask = (e: ReturnType<typeof env>, h = '16') =>
+      worker.fetch(new Request(`https://x/stocking?sel=200909300039:10::&l=24&d=12&h=${h}`), e, ctx) as Promise<Response>;
+
+    it('rests after a failure: no further requests reach AqAdvisor, cached answers still served', async () => {
+      vi.spyOn(console, 'log').mockImplementation(() => {});
+      const up = vi.fn(async () => new Response('Service Unavailable', { status: 503 }));
+      vi.stubGlobal('fetch', up);
+      const e = env();
+      e.kv.set(aqParams(new URLSearchParams({ sel: '200909300039:10::', l: '24', d: '12', h: '20' })).toString(), '50');
+      expect((await ask(e)).status).toBe(503);
+      expect((await ask(e, '17')).status).toBe(503);
+      expect(up).toHaveBeenCalledTimes(1);
+      expect(await (await ask(e, '20')).json()).toEqual({ stocking: 50, cached: true });
+    });
+
+    it('marks fresh answers uncached and keeps them', async () => {
+      vi.spyOn(console, 'log').mockImplementation(() => {});
+      vi.stubGlobal('fetch', vi.fn(async () => new Response('Your aquarium stocking level is 72% .')));
+      const e = env();
+      expect(await (await ask(e)).json()).toEqual({ stocking: 72 });
+      expect(await (await ask(e)).json()).toEqual({ stocking: 72, cached: true });
+    });
+
+    it('stops at the daily cap', async () => {
+      const up = vi.fn(async () => new Response('Your aquarium stocking level is 72% .'));
+      vi.stubGlobal('fetch', up);
+      const e = env();
+      e.kv.set(`day:${new Date().toISOString().slice(0, 10)}`, '200');
+      expect((await ask(e)).status).toBe(429);
+      expect(up).not.toHaveBeenCalled();
+    });
   });
 });

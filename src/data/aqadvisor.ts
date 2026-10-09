@@ -63,13 +63,28 @@ export function aqAdvisorUrl(q: AqQuery) {
   });
 }
 
-/** Stocking level in percent from the proxy. Throws when there is no proxy or it fails. */
-export async function fetchStocking(q: AqQuery, signal?: AbortSignal): Promise<number> {
-  if (!AQ_PROXY) throw new Error('no proxy');
-  const p = new URLSearchParams({ sel: q.sel, l: String(q.l), d: String(q.d), h: String(q.h) });
-  const res = await fetch(`${AQ_PROXY}/stocking?${p}`, { signal });
-  if (!res.ok) throw new Error(`proxy ${res.status}`);
-  const j = await res.json() as { stocking?: number };
-  if (typeof j.stocking !== 'number') throw new Error('no result');
-  return j.stocking;
+/** Gap after an answer that reached aqadvisor.com before the page asks for the next one: matches the proxy's
+ *  2 new requests a minute, so a queue of tanks waits instead of getting "busy". */
+export const AQ_GAP_MS = 30000;
+let aqChain: Promise<unknown> = Promise.resolve(), aqNextAt = 0;
+
+/** Stocking level in percent from the proxy. Requests go one at a time (never two at once, 2026-10-09), and after a
+ *  fresh (uncached) answer the next waits AQ_GAP_MS. Throws when there is no proxy or it fails; 'proxy 503' = the
+ *  proxy's breaker is resting after a failure. */
+export function fetchStocking(q: AqQuery, timeoutMs = 12000): Promise<number> {
+  const run = async () => {
+    if (!AQ_PROXY) throw new Error('no proxy');
+    const wait = aqNextAt - Date.now();
+    if (wait > 0) await new Promise(r => setTimeout(r, wait));
+    const p = new URLSearchParams({ sel: q.sel, l: String(q.l), d: String(q.d), h: String(q.h) });
+    const res = await fetch(`${AQ_PROXY}/stocking?${p}`, { signal: AbortSignal.timeout(timeoutMs) });
+    const j = await res.json().catch(() => ({})) as { stocking?: number; cached?: boolean };
+    if (!j.cached) aqNextAt = Date.now() + AQ_GAP_MS; // a miss (or failure) touched aqadvisor.com
+    if (!res.ok) throw new Error(`proxy ${res.status}`);
+    if (typeof j.stocking !== 'number') throw new Error('no result');
+    return j.stocking;
+  };
+  const p = aqChain.then(run, run);
+  aqChain = p.catch(() => {});
+  return p;
 }

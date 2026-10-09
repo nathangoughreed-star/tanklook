@@ -14,3 +14,7 @@ namespace_id = "1001"
   [ratelimits.simple]
   limit = 2
   period = 60
+
+# Workers Logs: each AqAdvisor call is logged (ok / fail, ms) - the evidence for the next outage
+[observability]
+enabled = true

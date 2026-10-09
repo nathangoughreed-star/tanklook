@@ -556,8 +556,11 @@ export function attachPanels(store: Store, viewer: Viewer) {
     if (aqDone.has(key)) { keep(); viewer.invalidate(); return; }
     if (aqBusy.has(key)) return;
     aqBusy.add(key); aqErr.delete(key); syncAq(); viewer.invalidate();
-    try { aqDone.set(key, await fetchStocking(q, AbortSignal.timeout(12000))); keep(); }
-    catch (e) { aqErr.set(key, e instanceof Error && e.message === 'proxy 429' ? 'busy, try again in a minute' : "AqAdvisor didn't answer, try later"); }
+    try { aqDone.set(key, await fetchStocking(q)); keep(); }
+    catch (e) {
+      const m = e instanceof Error ? e.message : '';
+      aqErr.set(key, m === 'proxy 429' ? 'busy, try again in a minute' : m === 'proxy 503' ? 'AqAdvisor is resting, try in 10 minutes' : "AqAdvisor didn't answer, try later");
+    }
     aqBusy.delete(key); syncAq(); viewer.invalidate();
   };
   $('aqCheck').onclick = () => aqCheck(S());

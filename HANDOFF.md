@@ -233,6 +233,15 @@ differences). Fish panel keeps a readout + "Not counted" note. Panel sections st
 Same push shipped the approved 3D fish (`f77f791`, `66c69af`). Nathan's fish review (2026-10-09): discus pass, cory
 pass for this iteration (still smooth / egg-shaped head-on, weak head-trunk step, generic dorsal; stop there);
 **next work unit = the species audit** (kuhli, bristlenose, angelfish + one ordinary species, same multi-angle sheets).
+- **Outage #3 (2026-10-09, two tanks refreshed close together) and gates.** Measured right after: AqAdvisor answers a
+  stocking calc in 0.23-0.33 s whatever the species count (2, 6, 15 species), and 6 requests in ~4 min (two ~30 s
+  apart) did nothing to it. So two requests are NOT heavy load; most likely the site (shared Apache/PHP host) is flaky
+  on its own or its host throttles bursts from Cloudflare IPs (first probe after the outage hung 6 s at connect, the next
+  was fine). Not proven; the worker now logs every upstream call (Workers Logs, `[observability]`) so the next outage
+  has evidence. Gates: worker breaker (any failure -> KV `breaker:down`, no upstream calls for 10 min, cached answers
+  still served, page shows "AqAdvisor is resting"); responses carry `cached: true`; the page sends one request at a
+  time and waits 30 s after any uncached answer (`fetchStocking` queue). Proxy limit stays 2 a minute, plus a cap of
+  200 fresh requests a UTC day (KV counter `day:<date>`). Deployed 2026-10-09 (version 70dcde85).
 - **Species policy (Nathan 2026-10-09), applies to every future species addition:**
   1. Choose which fish to add next from AqAdvisor's published most-popular list (location not found yet: not linked
      from the calculator, its articles or the report page; ask Nathan for the URL).

@@ -6,7 +6,8 @@ import worker from './aqadvisor-proxy.js';
 
 const store = new Map(), sent = [];
 const env = {
-  AQ_CACHE: { get: async k => store.get(k) ?? null, put: async (k, v) => { store.set(k, v); } },
+  AQ_CACHE: { get: async k => { const e = store.get(k); return e && e.exp > Date.now() ? e.v : null; },
+    put: async (k, v, o) => { store.set(k, { v, exp: Date.now() + (o?.expirationTtl ?? 1e9) * 1000 }); } },
   AQ_GATE: { limit: async () => { const now = Date.now(); while (sent.length && now - sent[0] > 60000) sent.shift();
     return { success: sent.length < 2 && sent.push(now) > 0 }; } },
 };
