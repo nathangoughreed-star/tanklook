@@ -2,6 +2,25 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## AqAdvisor stocking level (2026-10-09, separate chat; built, NOT committed, proxy NOT deployed)
+
+Nathan wanted "Stocking: 92% (powered by aqadvisor)". Agreed: fetch the number from aqadvisor.com, cite it as
+"per AqAdvisor" (not "powered by", which reads as a partnership), on demand only (a Check button), cached, with a link
+to their full report as the fallback.
+- AqAdvisor has no API but its form is a stateless GET: `AlreadySelected=<id>:<n>::,...` + tank in inches +
+  `FormSubmit=Update` returns "Your aquarium stocking level is N%". Filter choice doesn't change the %. http only, no
+  CORS -> needs a proxy. No robots.txt (404).
+- `src/data/aqadvisor.json`: 37 TankLook species -> AqAdvisor ids (all aquatic species; the 5 herps aren't in
+  AqAdvisor and show as "Not counted"). Rebuilt by `scripts/aqadvisor-ids.py`. Choices: rummy-nose = H. bleheri,
+  betta = male, goldfish = fancy, cherry shrimp = Red Cherry (N. heteropoda), nerite = zebra.
+- `src/data/aqadvisor.ts`: request per tank (non-rect tanks: depth = floor area / length, so bottom area and volume match the real tank; Nathan: stocking goes by bottom area),
+  link URL, `fetchStocking`. Proxy URL from `VITE_AQ_PROXY` (unset = link only, the current production state).
+- `worker/aqadvisor-proxy.js`: Cloudflare Worker, only accepts well-formed `/stocking` requests, CORS for tanklook.com
+  + localhost, 7-day cache. `worker/dev.mjs` runs it locally (launch configs `aq-proxy` + `dev-aq`, port 5203, with
+  `.env.aq.local`). Deploy steps: `worker/README.md` (needs Nathan's own Cloudflare account; Claude can't create it).
+- UI: Fish section, "Stocking  [Check]  AqAdvisor ↗"; result "72% (per AqAdvisor)", red with ", overstocked" over
+  100 %. Verified in the browser: default tank 72 %, same as aqadvisor.com for the same link. Tests 110/110, tsc clean.
+
 ## Status (2026-10-09, session 9: 3D fish style test built, NOT committed; awaiting Nathan's verdict)
 
 Roadmap step 1. Started late in the weekly window by Nathan's choice. `npm test` 104/104, `tsc` clean, checked in the browser

@@ -14,6 +14,7 @@ import type { Store } from '../scene/store';
 import { SWAMP_LEVEL, groundHeight, nearestLand, randomLand, sampleTerrain } from '../scene/terrain';
 import { restsOnGround, setWaterLevel } from '../scene/water';
 import { tankWeight } from '../scene/weight';
+import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, fetchStocking } from '../data/aqadvisor';
 import { POLY_SIDES, SHAPES, bowMinLimit, offsetRing, ringArea, shapeOf } from '../scene/shape';
 import { TABLE_MAX, tableRange } from '../scene/table';
 import type { Fish, LayoutId, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
@@ -420,6 +421,33 @@ export function attachPanels(store: Store, viewer: Viewer) {
   jsonDetails.addEventListener('toggle', () => { jsonOpen = jsonDetails.open; syncJson(); });
   const syncJson = () => { if (jsonOpen) $('json').textContent = JSON.stringify(G(), null, 1); };
 
+  // ---------- Stocking level from AqAdvisor (on demand; answers kept per tank + stocking) ----------
+  const aqDone = new Map<string, number | 'error'>();
+  let aqBusy = '';
+  function syncAq() {
+    const q = aqQuery(S());
+    $('aqRow').style.display = q ? '' : 'none';
+    if (!q) { $('aqNote').textContent = ''; return; }
+    const key = aqKey(q), got = aqDone.get(key);
+    $<HTMLAnchorElement>('aqLink').href = aqAdvisorUrl(q);
+    const check = $<HTMLButtonElement>('aqCheck');
+    check.hidden = !AQ_PROXY || typeof got === 'number'; check.disabled = aqBusy === key;
+    $('aqOut').textContent = aqBusy === key ? 'checking…'
+      : typeof got === 'number' ? `${got}% (per AqAdvisor)${got > 100 ? ', overstocked' : ''}`
+      : got === 'error' ? 'AqAdvisor did not answer; open it there:' : AQ_PROXY ? '' : 'see';
+    $('aqOut').className = typeof got === 'number' && got > 100 ? 'bad' : '';
+    $('aqNote').textContent = q.skipped.length
+      ? `Not counted (not in AqAdvisor): ${q.skipped.map(k => `${k.count} ${k.name}`).join(', ')}.` : '';
+  }
+  $('aqCheck').onclick = async () => {
+    const q = aqQuery(S());
+    if (!q) return;
+    const key = aqKey(q);
+    aqBusy = key; syncAq();
+    try { aqDone.set(key, await fetchStocking(q)); } catch { aqDone.set(key, 'error'); }
+    aqBusy = ''; syncAq();
+  };
+
   function sync() {
     const s = S(), A = s.tank, u = G().units;
     $<HTMLButtonElement>('undo').disabled = !store.canUndo; $<HTMLButtonElement>('redo').disabled = !store.canRedo;
@@ -448,6 +476,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     $('volA').textContent = `${vol.gallons.toFixed(1)} US gal · ${vol.litres.toFixed(0)} L interior · footprint ${fpTxt}`;
     const wt = tankWeight(s), kgs = (kg: number) => (u === 'in' ? `${Math.round(kg * 2.20462)} lb` : `${Math.round(kg)} kg`);
     $('wtA').textContent = `≈ ${kgs(wt.total)} filled: water ${kgs(wt.water)} (${(u === 'in' ? wt.waterLitres / 3.785 : wt.waterLitres).toFixed(0)} ${u === 'in' ? 'gal' : 'L'}), substrate ${kgs(wt.substrate)}, glass ${kgs(wt.glass)}`;
+    syncAq();
     $('rimY').classList.toggle('on', s.render.rim); $('rimN').classList.toggle('on', !s.render.rim);
     for (const [id, lid] of LIDS) $(id).classList.toggle('on', s.lid === lid);
     setVal('bgSel', s.render.bg); setVal('glassSel', String(s.render.glass)); setVal('glassType', s.render.glassType);

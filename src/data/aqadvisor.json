@@ -1,0 +1,150 @@
+{
+ "neon": {
+  "aq": "200909300144",
+  "name": "Neon Tetra (Paracheirodon innesi)"
+ },
+ "cardinal": {
+  "aq": "200909300039",
+  "name": "Cardinal Tetra (Paracheirodon axelrodi)"
+ },
+ "ember": {
+  "aq": "200909300065",
+  "name": "Ember Tetra (Hyphessobrycon amandae)"
+ },
+ "rummynose": {
+  "aq": "200909300196",
+  "name": "Rummynose Tetra (Hemigrammus bleheri)"
+ },
+ "harlequin": {
+  "aq": "200909300094",
+  "name": "Harlequin Rasbora (Trigonostigma heteromorpha)"
+ },
+ "chili": {
+  "aq": "200911012018",
+  "name": "Chili Rasbora (Boraras brigittae)"
+ },
+ "danio": {
+  "aq": "200909300248",
+  "name": "Zebra Danio (Danio rerio)"
+ },
+ "cherrybarb": {
+  "aq": "200909300041",
+  "name": "Cherry Barb (Puntius titteya)"
+ },
+ "tigerbarb": {
+  "aq": "200909300232",
+  "name": "Tiger Barb (Puntius tetrazona)"
+ },
+ "guppy": {
+  "aq": "200909300093",
+  "name": "Guppy (Poecilia reticulata)"
+ },
+ "platy": {
+  "aq": "200909300164",
+  "name": "Platy (Xiphophorus maculatus)"
+ },
+ "molly": {
+  "aq": "200909300131",
+  "name": "Molly (Poecilia sphenops)"
+ },
+ "swordtail": {
+  "aq": "200909300222",
+  "name": "Swordtail (Xiphophorus hellerii)"
+ },
+ "betta": {
+  "aq": "200909300017",
+  "name": "Betta [Male] (Betta splendens)"
+ },
+ "dwarfgourami": {
+  "aq": "200909300061",
+  "name": "Dwarf Gourami (Colisa lalia)"
+ },
+ "honeygourami": {
+  "aq": "200909300098",
+  "name": "Honey Gourami (Trichogaster chuna)"
+ },
+ "gourami": {
+  "aq": "200909300158",
+  "name": "Pearl Gourami (Trichogaster leerii)"
+ },
+ "gbr": {
+  "aq": "200909300078",
+  "name": "German Blue Ram (Mikrogeophagus ramirezi)"
+ },
+ "bolivianram": {
+  "aq": "200909300031",
+  "name": "Bolivian Ram (Mikrogeophagus altispinosus)"
+ },
+ "kribensis": {
+  "aq": "200909300113",
+  "name": "Kribensis (Pelvicachromis pulcher)"
+ },
+ "angel": {
+  "aq": "200909300009",
+  "name": "Angelfish (Pterophyllum scalare)"
+ },
+ "discus": {
+  "aq": "200909300058",
+  "name": "Discus (Symphysodon aequifasciatus)"
+ },
+ "oscar": {
+  "aq": "200909300152",
+  "name": "Oscar (Astronotus ocellatus)"
+ },
+ "goldfish": {
+  "aq": "200909300070",
+  "name": "Fancy Goldfish (Carassius auratus)"
+ },
+ "bronzecory": {
+  "aq": "200909300034",
+  "name": "Bronze Cory (Corydoras aeneus)"
+ },
+ "pandacory": {
+  "aq": "200909300155",
+  "name": "Panda Cory (Corydoras panda)"
+ },
+ "bristlenose": {
+  "aq": "200909300033",
+  "name": "Bristlenose Pleco (Ancistrus sp.)"
+ },
+ "oto": {
+  "aq": "200909300153",
+  "name": "Oto (Otocinclus vittatus)"
+ },
+ "kuhli": {
+  "aq": "200909300114",
+  "name": "Kuhli Loach (Pangio kuhlii)"
+ },
+ "clownloach": {
+  "aq": "200909300045",
+  "name": "Clown Loach (Chromobotia macracanthus)"
+ },
+ "sae": {
+  "aq": "200909300207",
+  "name": "Siamese Algae Eater (Crossocheilus siamensis)"
+ },
+ "cherryshrimp": {
+  "aq": "200909300181",
+  "name": "Red Cherry Shrimp (Neocaridina heteropoda)"
+ },
+ "amano": {
+  "aq": "200909300008",
+  "name": "Amano Shrimp (Cardina multidentata)"
+ },
+ "nerite": {
+  "aq": "200909300250",
+  "name": "Zebra Nerite Snail (Neritina natalensis sp. Zebra)"
+ },
+ "mystery": {
+  "aq": "200909300134",
+  "name": "Mystery Snail (Pomacea cuprina)"
+ },
+ "ramshorn": {
+  "aq": "200909300178",
+  "name": "Ramshorn Snail (Planorbidae)"
+ },
+ "trumpet": {
+  "aq": "200909300127",
+  "name": "Malaysian Trumpet Snail (Melanoides tuberculata)"
+ }
+}
