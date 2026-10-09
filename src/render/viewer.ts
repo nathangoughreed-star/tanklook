@@ -145,7 +145,9 @@ export class Viewer {
       const S = vp.S, fov = fovOf(k);
       const hy = Math.tan(fov * D2R / 2), hx = hy * vp.w / vp.h;
       const { tank, all } = lockedWin ?? wins[k];
-      const c = windowCentre(all, tank, hx, hy);
+      // locked and zoomed past the union: shift only as far as this view's own tank needs (whole while it fits, else
+      // its centre), so a taller or longer tank beside it never leaves this one cropped to the wall (Nathan 2026-10-09)
+      const c = windowCentre(windowCentre(all, tank, hx, hy), wins[k].tank, hx, hy);
       if (lockedWin || this.pan.i === vp.i) { c.cx -= this.pan.x * 2 * hx / vp.w; c.cy += this.pan.y * 2 * hy / vp.h; } // the picture follows the pointer
       applyFraming(vp.cam, fov, vp.w, vp.h, c.cx, c.cy);
       r.setViewport(vp.x, vp.y, vp.w, vp.h); r.setScissor(vp.x, vp.y, vp.w, vp.h);
