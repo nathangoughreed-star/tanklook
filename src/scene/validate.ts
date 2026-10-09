@@ -1,11 +1,12 @@
 // Load-time validation and migration. Untrusted JSON in, a complete valid Scene out (plus warnings), or an error.
 import { getSpecies, hasSpecies } from '../data/species';
 import { defaultSetup } from './defaults';
+import { LIBRARY, MAX_ITEMS, clampItem, starterItems } from './items';
 import { clamp, mapToTank } from './physics';
 import { normTank } from './shape';
 import { TABLE_MAX, fitTable } from './table';
 import { keepInWater } from './water';
-import { SCENE_VERSION, type Fish, type Scene, type Tank, type TankSetup } from './types';
+import { SCENE_VERSION, type Fish, type Item, type Scene, type Tank, type TankSetup } from './types';
 
 export class SceneError extends Error {}
 
@@ -66,6 +67,7 @@ function migrate(raw: Obj, warn: (m: string) => void): Obj {
   }
   // v5 adds water (level, colour); older files get the default: full, clear. v6 adds custom terrain (off).
   // v8 adds tank shapes (absent = rect) and glass snails anywhere on the glass (old pane names are mapped in parseSetup).
+  // v9 adds aquascape items: a file without them gets its layout's starter set (parseSetup), so it looks much as it did.
   if (v < 7) {
     // v7: split tanks. One flat setup (tankA + contents) becomes tanks[0]; a shown Tank B (v6 mirrored A's contents at
     // B's size) becomes an independent copy of A at B's size, fish at the same relative spots.
@@ -211,9 +213,32 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       color: typeof w.color === 'string' && /^#[0-9a-f]{6}$/i.test(w.color) ? w.color.toLowerCase() : d.wall.color,
     },
     fish,
+    items: [],
   };
+  setup.items = Array.isArray(raw.items) ? parseItems(raw.items, tankA, warn) : starterItems(setup);
   keepInWater(setup); fitTable(setup);
   return setup;
+}
+
+function parseItems(raw: unknown[], T: Tank, warn: (m: string) => void): Item[] {
+  const out: Item[] = [], seen = new Set<number>(), fin = (v: unknown, def: number) => (typeof v === 'number' && Number.isFinite(v) ? v : def);
+  let nextId = 1, bad = 0;
+  for (const o of raw) if (isObj(o) && typeof o.id === 'number') nextId = Math.max(nextId, o.id + 1);
+  for (const o of raw.slice(0, MAX_ITEMS)) {
+    const v = isObj(o) && typeof o.variant === 'string' && Object.hasOwn(LIBRARY, o.variant) ? LIBRARY[o.variant] : null;
+    if (!isObj(o) || !v) { bad++; continue; }
+    const id = typeof o.id === 'number' && Number.isInteger(o.id) && o.id > 0 && !seen.has(o.id) ? o.id : nextId++;
+    seen.add(id);
+    const it: Item = {
+      id, kind: v.kind, variant: o.variant as string, seed: Math.round(clamp(fin(o.seed, 1), 1, 2e9)),
+      x: fin(o.x, T.L / 2), depth: fin(o.depth, T.D / 2), lift: fin(o.lift, 0),
+      yaw: Math.round(fin(o.yaw, 0)), tilt: Math.round(fin(o.tilt, 0)), size: fin(o.size, v.size),
+    };
+    clampItem(it, T); out.push(it);
+  }
+  if (bad) warn(`${bad} unknown aquascape items were skipped.`);
+  if (raw.length > MAX_ITEMS) warn(`Only the first ${MAX_ITEMS} aquascape items were loaded.`);
+  return out;
 }
 
 export const nextFishId = (s: TankSetup) => s.fish.reduce((m, f) => Math.max(m, f.id), 0) + 1;

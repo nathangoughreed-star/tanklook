@@ -87,6 +87,7 @@ export const depthRatio = (dist: number, depth: number) => dist / (dist + depth)
 export function rescaleTank(s: TankSetup, next: Tank) {
   const old = s.tank; next = normTank(next);
   for (const f of s.fish) { f.x *= next.L / old.L; f.y *= next.H / old.H; f.depth *= next.D / old.D; }
+  for (const it of s.items) { it.x *= next.L / old.L; it.depth *= next.D / old.D; } // sizes stay physical
   s.tank = { ...next };
 }
 

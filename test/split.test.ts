@@ -103,7 +103,7 @@ describe('difference labels', () => {
   });
   it('dimensions show numbers; details only name each side', () => {
     const [a, b] = pair();
-    b.tank = { L: 36 * IN, H: 16 * IN, D: 18 * IN }; b.fish.pop(); b.water.opacity = 0.4; a.water.opacity = 0.2; b.substrate.type = 'white';
+    rescaleTank(b, { L: 36 * IN, H: 16 * IN, D: 18 * IN }); b.fish.pop(); b.water.opacity = 0.4; a.water.opacity = 0.2; b.substrate.type = 'white';
     const d = labels(a, b, 'in');
     expect(d).toContainEqual(['24 × 12 × 12″, 15 gallons, 288 in² floor', '36 × 16 × 18″, 44.9 gallons, 648 in² floor']);
     expect(d).toContainEqual(['Stocking A', 'Stocking B']);

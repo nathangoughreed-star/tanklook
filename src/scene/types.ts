@@ -2,8 +2,9 @@
 // Coordinates: x along the tank length 0..L, y up from the tank floor 0..H, depth = mm behind the front glass 0..D.
 // Tank L/H/D are INTERIOR dimensions; glass is added outside. Fish positions live in their own tank's space.
 // Split tanks (scene v7): up to two fully independent setups, each with its own contents, room and camera.
+// Aquascape items (scene v9): every rock, piece of wood, cave and plant is its own placeable item.
 
-export const SCENE_VERSION = 8;
+export const SCENE_VERSION = 9;
 
 export type Units = 'in' | 'cm';
 export type EdgeMode = 'cutout' | 'a2c';
@@ -94,9 +95,36 @@ export interface SubstrateSettings {
  */
 export interface TerrainSettings { on: boolean; cols: number; rows: number; h: number[] }
 
-/** Preset aquascape (rocks, wood, plants), generated from the tank size and a seed; not hand-placed. */
+/**
+ * Starter set (scene v9; before that the whole aquascape): choosing one places a fresh set of editable items made from
+ * the tank size and the seed. It stays recorded as the set the tank started from; 'swamp' also shapes the land.
+ */
 export type LayoutId = 'none' | 'stones' | 'driftwood' | 'planted' | 'iwagumi' | 'swamp';
 export interface LayoutSettings { id: LayoutId; seed: number }
+
+/** Library item kinds; the variant names the generator (scene/items.ts LIBRARY). */
+export type ItemKind = 'stone' | 'wood' | 'cave' | 'plant';
+/**
+ * One placed piece of hardscape or one plant (scene v9). Its shape is generated from (variant, seed, size), so a
+ * file stores no meshes. (x, depth) = the anchor on the floor plan; the piece rests on the ground there, raised by
+ * `lift` when it sits on another piece.
+ */
+export interface Item {
+  id: number;
+  kind: ItemKind;
+  variant: string;
+  seed: number;
+  x: number;
+  depth: number;
+  /** Base above the ground under (x, depth), mm: 0 = on the substrate; more = resting on another piece. */
+  lift: number;
+  /** Turn about the vertical, degrees. */
+  yaw: number;
+  /** Lean sideways, degrees. */
+  tilt: number;
+  /** mm: the length of a stone, wood or cave, the height of a plant, the width of a carpet patch. */
+  size: number;
+}
 
 /**
  * Water: level as a fraction of a full tank (1 = full, i.e. WATERLINE_GAP below the interior top), so a resized tank
@@ -147,6 +175,8 @@ export interface TankSetup {
   wall: WallSettings;
   person: PersonSettings;
   fish: Fish[];
+  /** Rocks, wood, caves and plants (scene v9). */
+  items: Item[];
 }
 
 export interface Scene {

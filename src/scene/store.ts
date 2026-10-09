@@ -4,7 +4,8 @@ import { parseScene } from './validate';
 import { clearCams, eyeClear, limitOrbit } from './orbit';
 import { fitTable } from './table';
 import { keepInWater } from './water';
-import type { CameraSettings, Fish, Scene, TankSetup } from './types';
+import { clampItem } from './items';
+import type { CameraSettings, Fish, Item, Scene, TankSetup } from './types';
 
 /** 'scene' = 3D content changed (rebuild), 'view' = camera only (redraw), 'select' = selection only. */
 export type ChangeKind = 'scene' | 'view' | 'select' | 'load';
@@ -24,6 +25,8 @@ export const STORAGE_KEY = 'tanklook.scene';
 export class Store {
   scene: Scene;
   selId: number | null = null;
+  /** The selected aquascape item (rock, wood, cave, plant); at most one of selId / selItem is set. */
+  selItem: number | null = null;
   /** Per view: does the panel's editing apply to that tank (the "Edit" box on each view's tab). UI state, not saved. */
   editOn: boolean[] = [true, false];
   private undoStack: string[] = [];
@@ -45,6 +48,7 @@ export class Store {
   get tank(): TankSetup { return this.scene.tanks[this.scene.active] ?? this.scene.tanks[0]; }
   get split() { return this.scene.tanks.length > 1; }
   get selected(): Fish | undefined { return this.tank.fish.find(f => f.id === this.selId); }
+  get selectedItem(): Item | undefined { return this.tank.items.find(it => it.id === this.selItem); }
 
   /** Indices of the tanks the panel edits (the views with "Edit" ticked); the shown tank first. A single tank is
    *  always edited; split, it is empty while no box is ticked (the panel is then closed). */
@@ -86,6 +90,7 @@ export class Store {
     if (i === this.scene.active || !this.scene.tanks[i] || !this.editOn[i]) return;
     this.scene.active = i; this.seal();
     if (!this.tank.fish.some(f => f.id === this.selId)) this.selId = null;
+    if (!this.tank.items.some(it => it.id === this.selItem)) this.selItem = null;
     this.emit('select');
   }
 
@@ -98,11 +103,14 @@ export class Store {
     if (on && !this.editOn[a]) this.scene.active = i;
     if (!on && i === a) { const o = this.editOn.findIndex((v, k) => v && k < n); if (o >= 0) this.scene.active = o; }
     if (!this.tank.fish.some(f => f.id === this.selId)) this.selId = null;
+    if (!this.tank.items.some(it => it.id === this.selItem)) this.selItem = null;
     this.emit('select');
   }
 
   /** A fish id free in every tank, so a fish added to both tanks gets the same id (the selection then covers both). */
   nextId() { return Math.max(...this.scene.tanks.map(t => t.fish.reduce((m, f) => Math.max(m, f.id), 0))) + 1; }
+  /** An item id free in every tank (the same item added to both tanks shares it, like fish). */
+  nextItemId() { return Math.max(...this.scene.tanks.map(t => t.items.reduce((m, it) => Math.max(m, it.id), 0))) + 1; }
 
   /** Split: copy the current tank into a second, independent one, which becomes active. Undoable. */
   splitTank() {
@@ -133,8 +141,9 @@ export class Store {
       this.lastKey = opts.coalesce ?? null; this.lastTime = now;
     }
     fn(this.scene);
-    if (kind === 'scene') { for (const t of this.scene.tanks) { keepInWater(t); fitTable(t); } clearCams(this.scene.tanks, this.scene.camLock); }
+    if (kind === 'scene') { for (const t of this.scene.tanks) { keepInWater(t); fitTable(t); for (const it of t.items) clampItem(it, t.tank); } clearCams(this.scene.tanks, this.scene.camLock); }
     if (this.selId != null && !this.tank.fish.some(f => f.id === this.selId)) this.selId = null;
+    if (this.selItem != null && !this.tank.items.some(it => it.id === this.selItem)) this.selItem = null;
     this.emit(kind);
   }
 
@@ -142,8 +151,12 @@ export class Store {
   seal() { this.lastKey = null; }
 
   select(id: number | null) {
-    if (id === this.selId) return;
-    this.selId = id; this.emit('select');
+    if (id === this.selId && (id != null || this.selItem == null)) return;
+    this.selId = id; this.selItem = null; this.emit('select');
+  }
+  selectItem(id: number | null) {
+    if (id === this.selItem && this.selId == null) return;
+    this.selItem = id; this.selId = null; this.emit('select');
   }
 
   private pushUndo() {
@@ -167,6 +180,7 @@ export class Store {
     this.syncEditOn();
     this.seal();
     if (this.selId != null && !this.tank.fish.some(f => f.id === this.selId)) this.selId = this.tank.fish.at(-1)?.id ?? null;
+    if (this.selItem != null && !this.tank.items.some(it => it.id === this.selItem)) this.selItem = null;
     this.emit('load');
   }
 
@@ -187,7 +201,7 @@ export class Store {
     this.pushUndo(); this.seal();
     this.scene = scene;
     this.editOn = [0, 1].map(k => k === scene.active);
-    this.selId = this.tank.fish[0]?.id ?? null;
+    this.selId = this.tank.fish[0]?.id ?? null; this.selItem = null;
     this.emit('load');
   }
 

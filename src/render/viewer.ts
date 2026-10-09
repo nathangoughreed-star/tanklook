@@ -87,7 +87,7 @@ export class Viewer {
       const S = sc.tanks[vp.i]; if (!S) continue;
       const on = this.store.isEditing(vp.i); // selection outline and terrain dots only in the tanks being edited
       vp.S = S; vp.T = S.tank;
-      Object.assign(vp, buildTank({ ...S, units: sc.units }, S.tank, on ? this.store.selId : null, on && this.terrainEdit.on ? this.terrainEdit : undefined));
+      Object.assign(vp, buildTank({ ...S, units: sc.units }, S.tank, on ? this.store.selId : null, on && this.terrainEdit.on ? this.terrainEdit : undefined, on ? this.store.selItem : null));
     }
     this.needsBuild = false;
   }
@@ -210,9 +210,15 @@ export class Viewer {
     const ndc = new THREE.Vector2((x - vp.x) / vp.w * 2 - 1, -(y - vp.y) / vp.h * 2 + 1);
     this.ray.setFromCamera(ndc, vp.cam);
     const dot = this.terrainEdit.on ? this.ray.intersectObjects(vp.dotMeshes ?? [], false)[0] : undefined;
-    if (dot) return { vp, ray: this.ray.ray.clone(), fishId: null, mesh: dot.object as THREE.Mesh, dot: dot.object.userData.dot as number };
-    const hit = this.ray.intersectObjects(vp.fishMeshes ?? [], false)[0];
-    return { vp, ray: this.ray.ray.clone(), fishId: hit ? (hit.object.userData.id as number) : null, mesh: hit?.object as THREE.Mesh | undefined, dot: null as number | null };
+    const none = { fishId: null as number | null, itemId: null as number | null, dot: null as number | null };
+    if (dot) return { vp, ray: this.ray.ray.clone(), ...none, mesh: dot.object as THREE.Mesh, dot: dot.object.userData.dot as number };
+    // the nearest fish, rock, wood or cave; a plant only when nothing else is under the pointer (its cards are mostly
+    // see-through, so it would otherwise hide the fish behind it)
+    const items = vp.itemMeshes ?? [];
+    const hit = this.ray.intersectObjects([...(vp.fishMeshes ?? []), ...items.filter(m => !m.userData.plant)], false)[0]
+      ?? this.ray.intersectObjects(items.filter(m => m.userData.plant), false)[0];
+    const o = hit?.object;
+    return { vp, ray: this.ray.ray.clone(), ...none, fishId: o && o.userData.item == null ? (o.userData.id as number) : null, itemId: o?.userData.item ?? null, mesh: o as THREE.Mesh | undefined };
   }
 
   // ---------- Export: render bigger, then save ----------

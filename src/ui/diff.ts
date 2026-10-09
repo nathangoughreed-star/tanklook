@@ -3,7 +3,6 @@
 // "Water tint A" vs "Water tint B"). Nothing different = no entries: the tanks are the same.
 import { SUBSTRATES } from '../art/placeholder';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
-import { LAYOUTS } from '../render/layouts';
 import { fmtSize, fmtLen, glassThickness, rescaleTank, waterY } from '../scene/physics';
 import { setWaterLevel } from '../scene/water';
 import type { TankSetup, Units } from '../scene/types';
@@ -89,8 +88,17 @@ export function tankDiff(a: TankSetup, b: TankSetup, u: Units): DiffItem[] {
   }
   add(a.terrain.on, b.terrain.on, on => (on ? 'Custom terrain' : 'No custom terrain'), ['terrain']);
   if (a.terrain.on && b.terrain.on) add(a.terrain, b.terrain, named('Terrain'), ['terrain']);
-  add(a.layout.id, b.layout.id, id => `Layout: ${LAYOUTS[id].label.toLowerCase()}`, ['layout']);
-  if (a.layout.id === b.layout.id && a.layout.id !== 'none') add(a.layout.seed, b.layout.seed, named('Arrangement'), ['layout.seed']);
+  // aquascape: which pieces and plants (by variant); where they sit is the arrangement. The swamp's land is a layout.
+  const scape = (t: TankSetup) => { const n: Record<string, number> = {}; for (const it of t.items) n[it.variant] = (n[it.variant] ?? 0) + 1; return Object.keys(n).sort().map(k => [k, n[k]]); };
+  const copyScape: Match = (to, from) => {
+    to.layout = { ...from.layout };
+    to.items = from.items.map(it => ({ ...it, x: it.x * to.tank.L / from.tank.L, depth: it.depth * to.tank.D / from.tank.D }));
+  };
+  add(a.layout.id === 'swamp', b.layout.id === 'swamp', on => (on ? 'Swamp land' : 'No swamp land'), copyScape);
+  add(scape(a), scape(b), named('Aquascape'), copyScape);
+  // positions relative to the tank (to 1 %), so resizing a tank alone is not a new arrangement
+  const placed = (t: TankSetup) => t.items.map(it => ({ ...it, x: Math.round(it.x / t.tank.L * 100), depth: Math.round(it.depth / t.tank.D * 100), lift: Math.round(it.lift) }));
+  if (same(scape(a), scape(b))) add(placed(a), placed(b), named('Arrangement'), copyScape);
 
   // water
   add(a.water.on, b.water.on, on => (on ? 'Water' : 'Dry'), ['water.on']);

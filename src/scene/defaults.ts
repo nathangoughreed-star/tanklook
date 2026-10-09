@@ -1,3 +1,4 @@
+import { starterItems } from './items';
 import { IN } from './physics';
 import { SCENE_VERSION, type Fish, type Scene, type TankSetup } from './types';
 
@@ -10,7 +11,7 @@ export function defaultSetup(): TankSetup {
   let id = 1;
   const fish = (species: string, x: number, y: number, depth: number): Fish =>
     ({ id: id++, species, x, y, depth, yaw: 0, pitch: 0, roll: 0, bend: 0 });
-  return {
+  const s: TankSetup = {
     tank: A,
     camera: { dist: 3000, az: 0, el: 0, zoom: 1 },
     render: { edge: 'a2c', grid: true, rim: true, bg: 'blue', glass: 'auto', glassType: 'standard' },
@@ -29,7 +30,10 @@ export function defaultSetup(): TankSetup {
       fish('neon', 0.8 * A.L, 0.34 * A.H, 0.5 * A.D),
       fish('neon', 0.8 * A.L, 0.46 * A.H, 0.95 * A.D),
     ],
+    items: [],
   };
+  s.items = starterItems(s);
+  return s;
 }
 
 export const TANK_PRESETS: [label: string, L: number, H: number, D: number][] = [

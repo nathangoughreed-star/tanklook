@@ -5,9 +5,9 @@ import { SUBSTRATES, drawFishCard } from '../art/placeholder';
 import { drawSnailCard } from '../art/snails';
 import { fishTL, getSpecies, needsWater, restsOnFloor, searchSpecies, speciesTag, type Species } from '../data/species';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
-import { LAYOUTS } from '../render/layouts';
 import type { Viewer } from '../render/viewer';
 import { defaultScene, TANK_PRESETS } from '../scene/defaults';
+import { KINDS, LAYOUTS, LIBRARY, clampItem, itemDims, makeItem, starterItems } from '../scene/items';
 import { tankDiff } from './diff';
 import {
   IN, clamp, clampFish, fmtDims, fmtLen, fmtSize, fromUnit, glassThickness, rescaleTank, spawnSnail, toUnit, volume, waterY,
@@ -20,7 +20,7 @@ import { tankWeight } from '../scene/weight';
 import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, fetchStocking } from '../data/aqadvisor';
 import { POLY_SIDES, SHAPES, bowMinLimit, offsetRing, ringArea, shapeOf } from '../scene/shape';
 import { TABLE_MAX, tableRange } from '../scene/table';
-import type { Fish, LayoutId, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
+import type { Fish, Item, ItemKind, LayoutId, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
 import { GLASS_CHOICES, LIMITS, SceneError, parseScene } from '../scene/validate';
 
 const $ = <T extends HTMLElement = HTMLInputElement>(id: string) => document.getElementById(id) as T;
@@ -314,8 +314,14 @@ export function attachPanels(store: Store, viewer: Viewer) {
     const mod = e.ctrlKey || e.metaKey;
     if (mod && e.key.toLowerCase() === 'z' && !typing) { e.preventDefault(); if (e.shiftKey) store.redo(); else store.undo(); return; }
     if (mod && e.key.toLowerCase() === 'y' && !typing) { e.preventDefault(); store.redo(); return; }
-    if (mod && e.key.toLowerCase() === 'd' && !typing) { e.preventDefault(); dup(); return; }
+    if (mod && e.key.toLowerCase() === 'd' && !typing) { e.preventDefault(); if (store.selectedItem) itemDup(); else dup(); return; }
     if (typing || mod || e.altKey) return;
+    if (store.selectedItem) {
+      if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); itemDel(); }
+      else if (e.key === 'r' || e.key === 'R') editItem(it => { it.yaw += e.shiftKey ? -15 : 15; });
+      else if (e.key === 'Escape') store.selectItem(null);
+      return;
+    }
     if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); del(); }
     else if (e.key === 'f' || e.key === 'F') flip();
     else if (e.key === 'Escape') store.select(null);
@@ -430,11 +436,78 @@ export function attachPanels(store: Store, viewer: Viewer) {
   /** Open a section (e.g. Fish when an animal gets selected), so what the user just acted on is editable. */
   const openSec = (key: string) => { const d = secs.find(x => x.dataset.sec === key); if (d && !d.open) d.open = true; };
   $<HTMLSelectElement>('layout').innerHTML = Object.entries(LAYOUTS).map(([k, l]) => `<option value="${k}">${esc(l.label)}</option>`).join('');
-  $<HTMLSelectElement>('layout').onchange = e => store.edit(s => {
-    s.layout.id = (e.target as HTMLSelectElement).value as LayoutId;
-    if (s.layout.id === 'swamp' && s.water.level > SWAMP_LEVEL) setWaterLevel(s, SWAMP_LEVEL); // land needs to stand out of the water
-  });
-  $('layoutShuffle').onclick = () => store.edit(s => { s.layout.seed = 1 + Math.floor(Math.random() * 1e6); });
+  // a starter set replaces every piece (undoable); the pieces are then ordinary items
+  const replaced = (s: TankSetup) => { s.items = starterItems(s); };
+  $<HTMLSelectElement>('layout').onchange = e => {
+    store.selectItem(null);
+    store.edit(s => {
+      s.layout.id = (e.target as HTMLSelectElement).value as LayoutId;
+      if (s.layout.id === 'swamp' && s.water.level > SWAMP_LEVEL) setWaterLevel(s, SWAMP_LEVEL); // land needs to stand out of the water
+      replaced(s);
+    });
+    status('New starter set placed. Ctrl+Z brings the previous pieces back.');
+  };
+  $('layoutShuffle').onclick = () => {
+    const seed = 1 + Math.floor(Math.random() * 1e6);
+    store.selectItem(null);
+    store.edit(s => { s.layout.seed = seed; replaced(s); });
+    status('Rearranged. Ctrl+Z brings the previous pieces back.');
+  };
+
+  // ---------- Aquascape items: library, selection ----------
+  $('lib').innerHTML = (Object.keys(KINDS) as ItemKind[]).map(k => `<div class="libRow"><span class="flabel">${KINDS[k]}</span><div class="chips">${
+    Object.entries(LIBRARY).filter(([, v]) => v.kind === k).map(([id, v]) => `<button data-lib="${id}" title="Add: ${esc(v.hint)}">${esc(v.label)}</button>`).join('')}</div></div>`).join('');
+  /** Add a piece at an open spot (the candidate farthest from every other piece, front-middle preferred). Same id and
+   *  seed in every tank being edited. */
+  const addItem = (variant: string) => {
+    const id = store.nextItemId(), seed = 1 + Math.floor(Math.random() * 1e9), r = rng(seed);
+    store.edit(s => {
+      const T = s.tank, it = makeItem(T, variant, id, seed, T.L / 2, T.D / 2, { yaw: LIBRARY[variant].kind === 'plant' ? 0 : Math.round((r() - 0.5) * 60) });
+      let best = -1;
+      for (let k = 0; k < 16; k++) {
+        const x = T.L * (0.15 + r() * 0.7), d = T.D * (0.2 + r() * 0.6);
+        const gap = Math.min(...s.items.filter(q => q.kind !== 'plant' || q.variant !== 'carpet').map(q => Math.hypot(q.x - x, q.depth - d)), 1e6) - Math.abs(x - T.L / 2) * 0.15;
+        if (gap > best) { best = gap; it.x = x; it.depth = d; }
+      }
+      clampItem(it, T); s.items.push(it);
+    });
+    store.selectItem(id); openSec('aquascape');
+  };
+  document.querySelectorAll<HTMLButtonElement>('[data-lib]').forEach(b => b.onclick = () => addItem(b.dataset.lib!));
+  const editItem = (fn: (it: Item, s: TankSetup) => void, coalesce?: string) => {
+    const id = store.selItem; if (id == null) return;
+    store.edit(s => { const it = s.items.find(q => q.id === id); if (it) { fn(it, s); clampItem(it, s.tank); } }, { coalesce });
+  };
+  $('iSize').oninput = e => editItem(it => { it.size = +(e.target as HTMLInputElement).value; }, 'iSize');
+  $('iYaw').oninput = e => editItem(it => { it.yaw = +(e.target as HTMLInputElement).value; }, 'iYaw');
+  $('iTilt').oninput = e => editItem(it => { it.tilt = +(e.target as HTMLInputElement).value; }, 'iTilt');
+  $('iLift').oninput = e => editItem(it => { it.lift = +(e.target as HTMLInputElement).value; }, 'iLift');
+  $('iReshape').onclick = () => { const seed = 1 + Math.floor(Math.random() * 1e9); editItem(it => { it.seed = seed; }); };
+  $('iDrop').onclick = () => editItem(it => { it.lift = 0; });
+  const itemDel = () => {
+    const id = store.selItem; if (id == null) return;
+    store.edit(s => { s.items = s.items.filter(q => q.id !== id); });
+    store.selectItem(null);
+  };
+  const itemDup = () => {
+    const src = store.selItem; if (src == null) return;
+    const id = store.nextItemId();
+    store.edit(s => {
+      const it = s.items.find(q => q.id === src); if (!it) return;
+      const n: Item = { ...it, id, x: it.x + Math.max(20, itemDims(it)[0] * 0.8), yaw: it.yaw + 25 };
+      clampItem(n, s.tank); s.items.push(n);
+    });
+    store.selectItem(id);
+  };
+  $('iDup').onclick = itemDup; $('iDel').onclick = itemDel;
+  let clearArm = 0;
+  $('itemsClear').onclick = () => {
+    const b = $<HTMLButtonElement>('itemsClear');
+    if (!clearArm) { b.textContent = 'Sure? Click again'; b.classList.add('on'); clearArm = window.setTimeout(() => { clearArm = 0; b.textContent = 'Remove all'; b.classList.remove('on'); }, 3000); return; }
+    clearTimeout(clearArm); clearArm = 0; b.textContent = 'Remove all'; b.classList.remove('on');
+    store.edit(s => { s.items = []; }); store.selectItem(null);
+    status('Every rock, piece of wood and plant removed. Ctrl+Z brings them back.');
+  };
   document.querySelectorAll<HTMLButtonElement>('[data-png]').forEach(b => b.onclick = async () => {
     const mult = +b.dataset.png!;
     try { download(await viewer.exportPNG(mult), `${slug(G().name)}-${mult}x.png`); }
@@ -446,6 +519,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   const setVal = (id: string, v: number | string) => { const el = $(id); if (document.activeElement !== el || el.type === 'range') el.value = String(v); };
   const setOut = (id: string, txt: string, cls = '') => { const el = $<HTMLOutputElement>(id); el.textContent = txt; el.className = cls; };
   let listSig = '', jsonOpen = false, lastSelId: number | null = store.selId; // a selection restored on load does not open Fish
+  let lastItem: number | null = null;
   const jsonDetails = $('json').parentElement as HTMLDetailsElement;
   jsonDetails.addEventListener('toggle', () => { jsonOpen = jsonDetails.open; syncJson(); });
   const syncJson = () => { if (jsonOpen) $('json').textContent = JSON.stringify(G(), null, 1); };
@@ -500,7 +574,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     for (const n of POLY_SIDES) $('sides' + n).classList.toggle('on', sh === 'poly' && A.sides === n);
     $('aLLab').textContent = sh === 'round' ? 'Diameter' : sh === 'poly' ? 'Width' : 'Length';
     $('aDLab').textContent = sh === 'bow' ? 'Centre depth' : 'Depth';
-    $('aD').disabled = sh === 'round' || sh === 'poly'; // set by the width
+    $('aD').parentElement!.style.display = sh === 'round' || sh === 'poly' ? 'none' : ''; // depth follows from the diameter / width
     if (sh === 'bow') { const b = $('bowMin'); b.min = String(Math.ceil(Math.max(20, bowMinLimit(A)))); b.max = String(Math.floor(A.D)); setVal('bowMin', A.bowMin ?? A.D); setOut('oBow', fmt(A.bowMin ?? A.D)); }
     $('shapeHint').textContent = sh === 'rect' ? '' : sh === 'bow' ? 'Bowfront: the front glass is a curve from the end depth out to the full depth at the centre.'
       : (sh === 'round' ? 'Round: one curved glass wall.' : `${A.sides} flat panes, one facing you.`) + ' No hood or peninsula ends for this shape.';
@@ -620,8 +694,25 @@ export function attachPanels(store: Store, viewer: Viewer) {
     ($('split') as HTMLButtonElement).disabled = store.split;
     $('splitHint').textContent = store.split ? 'Each view’s tab (top of the view) opens on hover: what differs, Save that tank on its own, or Delete it. Save… at the top saves both in one file.' : 'Copy this tank into a second, independent one beside it, then change anything in either.';
     setVal('edge', s.render.edge); $('gridOn').checked = s.render.grid; 
-    setVal('layout', s.layout.id); $('layoutHint').textContent = LAYOUTS[s.layout.id].hint;
+    setVal('layout', s.layout.id); $('layoutHint').textContent = LAYOUTS[s.layout.id].hint + ' Then move, add or remove any piece.';
     ($('layoutShuffle') as HTMLButtonElement).disabled = s.layout.id === 'none';
+    const nk = (k: ItemKind) => s.items.filter(q => q.kind === k).length;
+    $('itemCount').textContent = s.items.length ? (Object.keys(KINDS) as ItemKind[]).filter(k => nk(k)).map(k => `${nk(k)} ${KINDS[k].toLowerCase()}`).join(', ') : 'Nothing placed yet. Pick a piece above to add it.';
+    ($('itemsClear') as HTMLButtonElement).disabled = !s.items.length;
+    const it = store.selectedItem;
+    if (it && it.id !== lastItem) openSec('aquascape');
+    lastItem = it?.id ?? null;
+    $('itemBox').hidden = !it;
+    if (it) {
+      const v = LIBRARY[it.variant], [l, h, w] = itemDims(it);
+      $('itemName').innerHTML = `${esc(v.label)} <i>${fmt(l)} × ${fmt(h)} high × ${fmt(w)}</i>`;
+      $('iSizeLab').textContent = it.kind === 'plant' ? (it.variant === 'carpet' ? 'Width' : 'Height') : it.variant === 'manzanita' ? 'Height' : 'Length';
+      const probe = { ...it, size: 1e6 }; clampItem(probe, A);
+      $('iSize').min = String(Math.min(v.min, probe.size)); $('iSize').max = String(probe.size);
+      setVal('iSize', it.size); setOut('oISize', fmt(it.size));
+      setVal('iYaw', it.yaw); setOut('oIYaw', it.yaw + '°'); setVal('iTilt', it.tilt); setOut('oITilt', it.tilt + '°');
+      $('iLift').max = String(Math.round(A.H)); setVal('iLift', Math.round(it.lift)); setOut('oILift', it.lift < 1 ? 'On the ground' : fmt(it.lift));
+    }
     syncJson();
   }
 

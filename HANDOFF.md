@@ -22,6 +22,36 @@ Order, one work unit per chat:
 4. Verify it on discus, tiger barb, clown loach, harlequin (same four views).
 5. Roll 3D out to the remaining fish, flat cards kept as fallbacks until each passes review.
 
+## Hardscape system: roadmap steps 3 + 4 built (2026-10-09, session 13; committed and pushed, checked in the browser)
+
+Nathan chose hardscape ahead of 3D fish steps 3-5 (those stay pending, order unchanged). Scene **v9**.
+- **Items** (`types.ts` `Item`): `{id, kind: stone|wood|cave|plant, variant, seed, x, depth, lift, yaw, tilt, size}`.
+  `lift` = base above the ground under (x, depth) (0 = on the substrate); `size` = length (stone, wood, cave),
+  height (plant, manzanita), width (carpet patch). Shapes come from (variant, seed, size); files hold no meshes.
+- **Library** (`scene/items.ts` `LIBRARY`, 19 variants): stones river / seiryu / dragon / lava / slate; wood branch /
+  spider / manzanita / mopani; caves stone arch / clay tube / coconut; plants = the 7 existing card types (fern,
+  anubias, sword, grass, stem, stemred, carpet patch). Pure skeletons (`stoneDims`, `woodLimbs`, `itemDims`) shared
+  by renderer and starter code. Meshes: `render/items.ts`, one mesh per item, light baked per turn (cached by
+  variant|seed|size|yaw|tilt), plants still crossed cards (3D plants = step 5).
+- **Layouts became starter sets**: the Aquascape select ("Start from") replaces all items with that set's pieces
+  (undoable), Shuffle = same set, new seed. `layout.id` is kept as the set started from; 'swamp' still shapes land.
+  The old driftwood layout is now one `branch` piece with ferns / anubias tied on (raised by `lift`).
+  `render/layouts.ts` deleted; `LAYOUTS` moved to `scene/items.ts`.
+- **Migration**: a pre-v9 file (no `items`) gets `starterItems()` of its layout, so it looks much as before.
+- **Editing**: library buttons add a piece at an open spot (all ticked tanks, shared id + seed). Click selects
+  (`store.selItem`, exclusive with the fish `selId`; blue bounding box). Drag: the grabbed point stays under the
+  pointer and the base slides over the ground and other pieces (`surfaceHit` + `supportLift` in `pointer.ts`), so
+  pieces stack; pieces resting on the dragged one ride along. Shift + wheel or R turns 15°. Panel: size, turn, lean,
+  raised, New shape (reseed), Drop, Duplicate (Ctrl+D), Delete (Del), Remove all. Picking: nearest fish or solid
+  piece; plants only when nothing else is under the pointer. Tank resize keeps pieces at the same relative spot
+  (`rescaleTank`), sizes physical. Split diff: "Aquascape A/B" by variant counts, "Arrangement" by relative spots.
+- Tests 127/127 (`test/items.test.ts` new; `split.test.ts` resizes with `rescaleTank` now). Browser-checked
+  (other chat's server on 5173; this chat could not start its own, 5-server cap): all 12 solid variants render,
+  stacking and riders work, driftwood starter OK, no console errors. The shared browser scene was restored after.
+- **Open / for Nathan's look**: visual quality of each generator (dragon stone pits read weakly at small sizes;
+  wood end caps look light); no collision between pieces (they can overlap); fish ignore rocks (a bottom dweller can
+  sit inside a stone); tank weight ignores rocks.
+
 ## Muse UX feedback fixes (2026-10-09; uncommitted, checked on the dev server)
 
 - Fish readout: calibration rows (px, measured ratio, d/(d+z), angle off side-on) only with `?debug` in the URL;

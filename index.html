@@ -136,8 +136,19 @@
   <div class="hint">Tint is how much of the colour shows through 30 cm (12″) of water, so a deeper tank looks more tinted. Fish stay below the surface.</div>
   </details>
   <details class="sec" data-sec="aquascape"><summary><h2>Aquascape</h2></summary>
-  <div class="field"><select id="layout" aria-label="Aquascape layout"></select><button id="layoutShuffle" title="Same style, new arrangement">Shuffle</button></div>
+  <div class="field"><label class="flabel" for="layout">Start from</label><select id="layout"></select><button id="layoutShuffle" title="Replace every piece with a new arrangement of this starter set (Ctrl+Z brings the old one back)">Shuffle</button></div>
   <div class="hint" id="layoutHint"></div>
+  <div id="lib"></div>
+  <div class="btns"><span class="hint" id="itemCount"></span><span class="grow"></span><button id="itemsClear">Remove all</button></div>
+  <div id="itemBox">
+    <div class="itemName" id="itemName"></div>
+    <div class="row"><label for="iSize" id="iSizeLab">Size</label><input id="iSize" type="range" step="1"><output id="oISize"></output></div>
+    <div class="row"><label for="iYaw">Turn</label><input id="iYaw" type="range" min="-180" max="180" step="1"><output id="oIYaw"></output></div>
+    <div class="row"><label for="iTilt">Lean</label><input id="iTilt" type="range" min="-45" max="45" step="1"><output id="oITilt"></output></div>
+    <div class="row"><label for="iLift">Raised</label><input id="iLift" type="range" min="0" step="1"><output id="oILift"></output></div>
+    <div class="btns"><button id="iReshape" title="Same kind and size, a new shape">New shape</button><button id="iDrop" title="Set it down on the ground">Drop</button><button id="iDup">Duplicate</button><button id="iDel">Delete</button></div>
+  </div>
+  <div class="hint" id="itemHint">Click a piece in the tank to select it; drag it to move it. It rests on the ground or on the piece under it, and carries whatever rests on it. Shift + wheel or R turns it.</div>
   </details>
   <details class="sec" data-sec="lighting"><summary><h2>Lighting</h2></summary>
   <div class="row"><label for="lType">Fixture</label><select id="lType" class="span2">

@@ -11,7 +11,7 @@ import { TABLE_TOP, tableCentre, tableOn, tableRing, wallPlane } from '../scene/
 import { groundHeight, terrainPoint } from '../scene/terrain';
 import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
 import { addFixture, applyLighting } from './lighting';
-import { layoutGroup } from './layouts';
+import { itemMesh } from './items';
 import { fish3d, fishBody, has3D } from './fish3d';
 import { cardMaterial, fishBodyTexture, fishTexture, gradientTexture, personTexture, snailTexture, substrateTexture } from './textures';
 
@@ -528,12 +528,24 @@ function outline(w: number, h: number) {
   return r;
 }
 
+/** The selection box round an aquascape item: its bounding box, drawn over everything. */
+function boxOutline(g: THREE.BufferGeometry) {
+  if (!g.boundingBox) g.computeBoundingBox();
+  const { min: a, max: b } = g.boundingBox!, c = [[a.x, a.y, a.z], [b.x, a.y, a.z], [b.x, a.y, b.z], [a.x, a.y, b.z], [a.x, b.y, a.z], [b.x, b.y, a.z], [b.x, b.y, b.z], [a.x, b.y, b.z]];
+  const e = [0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7].flatMap(i => c[i]);
+  const r = lines(e, 0x3d8bff, 1);
+  (r.material as THREE.Material).depthTest = false; r.renderOrder = 10; r.userData.nolight = true;
+  return r;
+}
+
 export interface BuiltTank {
   scene: THREE.Scene;
   fishMeshes: THREE.Mesh[];
   meshById: Map<number, THREE.Mesh>;
   /** Custom terrain grid points (userData.dot = index), present while editing. */
   dotMeshes: THREE.Mesh[];
+  /** Aquascape items (userData.item = id; userData.plant on plants). */
+  itemMeshes: THREE.Mesh[];
 }
 
 /**
@@ -565,10 +577,15 @@ function addTerrainDots(sc: THREE.Scene, S: TankSetup, T: Tank, hot: number | nu
   return dots;
 }
 
-export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: number | null, edit?: { hot: number | null }): BuiltTank {
+export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: number | null, edit?: { hot: number | null }, selItem: number | null = null): BuiltTank {
   const sc = new THREE.Scene(), fishMeshes: THREE.Mesh[] = [], meshById = new Map<number, THREE.Mesh>();
   addTank(sc, S, T); addWater(sc, S, T); addSubstrate(sc, S, T); addStand(sc, S, T); addWall(sc, S, T); addPerson(sc, S, T); addFloor(sc, S, T);
-  const lay = layoutGroup(S, T); if (lay) sc.add(lay);
+  const itemMeshes: THREE.Mesh[] = [];
+  for (const it of S.items) {
+    const m = itemMesh(S, T, it); if (!m) continue;
+    if (it.id === selItem) m.add(boxOutline(m.geometry));
+    sc.add(m); itemMeshes.push(m);
+  }
   const register = (f: Fish, m: THREE.Mesh, w: number, h: number) => {
     m.userData.id = f.id; if (f.id === selId) m.add(outline(w, h));
     sc.add(m); fishMeshes.push(m); if (!meshById.has(f.id)) meshById.set(f.id, m);
@@ -592,7 +609,7 @@ export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: numbe
   const dotMeshes = edit && S.terrain.on ? addTerrainDots(sc, S, T, edit.hot) : [];
   applyLighting(sc);
   sc.updateMatrixWorld(true);
-  return { scene: sc, fishMeshes, meshById, dotMeshes };
+  return { scene: sc, fishMeshes, meshById, dotMeshes, itemMeshes };
 }
 
 /** How far a glass snail sits off the inside of the pane (mm). */
