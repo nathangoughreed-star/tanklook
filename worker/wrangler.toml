@@ -18,3 +18,7 @@ namespace_id = "1001"
 # Workers Logs: each AqAdvisor call is logged (ok / fail, ms) - the evidence for the next outage
 [observability]
 enabled = true
+
+# Uptime log: HEAD aqadvisor.com every 10 minutes (checkHealth), kept 30 days in KV, read at /log
+[triggers]
+crons = ["*/10 * * * *"]

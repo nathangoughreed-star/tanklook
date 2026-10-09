@@ -10,6 +10,7 @@ const CACHE_S = 7 * 24 * 3600;
 const TIMEOUT_MS = 8000; // give up on AqAdvisor after 8 s
 const REST_S = 600; // after any failure, leave AqAdvisor alone for 10 minutes (breaker)
 const DOWN = 'breaker:down'; // KV key, set with a TTL while resting
+const LOG_S = 30 * 24 * 3600; // health log and call log kept 30 days
 const DAY_CAP = 200; // fresh questions to AqAdvisor per UTC day, all users together (approximate: KV is not atomic)
 
 /** "Your aquarium stocking level is 66% ." -> 66; null when the page has no result. */
@@ -39,9 +40,45 @@ function json(body, status, origin, cacheS = 0) {
   return new Response(JSON.stringify(body), { status, headers: h });
 }
 
+const day = (t = Date.now()) => new Date(t).toISOString().slice(0, 10);
+/** Appends one entry to a per-day list in KV (`<kind>:<date>`). Read-modify-write: fine at a few writes an hour. */
+async function logTo(env, kind, entry) {
+  const key = `${kind}:${day(entry.t)}`, list = JSON.parse(await env.AQ_CACHE.get(key) ?? '[]');
+  list.push(entry);
+  await env.AQ_CACHE.put(key, JSON.stringify(list), { expirationTtl: LOG_S });
+}
+
+/** Health check (cron, every 10 min): one HEAD of the home page, lighter than a page view. Up/down + ms, so outages
+ *  can be lined up against our own calls (`calls:<date>`) to see whether they follow our traffic (2026-10-09). */
+export async function checkHealth(env) {
+  const t = Date.now();
+  let status = 0, why = '';
+  try {
+    const res = await fetch('http://aqadvisor.com/', { method: 'HEAD', signal: AbortSignal.timeout(10000),
+      headers: { 'user-agent': 'TankLook uptime check (tanklook.com; every 10 min)' } });
+    status = res.status;
+  } catch (e) { why = e?.name === 'TimeoutError' ? 'timeout' : 'unreachable'; }
+  const entry = { t, up: status >= 200 && status < 400, status, ms: Date.now() - t, ...(why && { why }) };
+  console.log(JSON.stringify({ health: entry }));
+  await logTo(env, 'health', entry);
+  return entry;
+}
+
 export default {
+  async scheduled(event, env, ctx) { ctx.waitUntil(checkHealth(env)); },
+
   async fetch(request, env, ctx) {
     const url = new URL(request.url), origin = request.headers.get('origin');
+    // GET /log?days=N: the health checks and our own AqAdvisor calls, newest day first (read by scripts/aq-health.mjs)
+    if (request.method === 'GET' && url.pathname === '/log') {
+      const n = Math.min(30, Math.max(1, Number(url.searchParams.get('days')) || 2)), out = [];
+      for (let i = 0; i < n; i++) {
+        const d = day(Date.now() - i * 864e5);
+        out.push({ day: d, health: JSON.parse(await env.AQ_CACHE.get(`health:${d}`) ?? '[]'),
+          calls: JSON.parse(await env.AQ_CACHE.get(`calls:${d}`) ?? '[]') });
+      }
+      return json(out, 200, origin);
+    }
     if (request.method !== 'GET' || url.pathname !== '/stocking') return json({ error: 'not found' }, 404, origin);
     const q = aqParams(url.searchParams);
     if (!q) return json({ error: 'bad request' }, 400, origin);
@@ -65,6 +102,7 @@ export default {
       const until = Date.now() + REST_S * 1000;
       // Workers Logs (observability in wrangler.toml): every upstream call is logged, so the next outage has evidence
       console.log(JSON.stringify({ aq: 'fail', why, ms: Date.now() - t0, sel: q.get('AlreadySelected'), restUntil: until }));
+      ctx.waitUntil(logTo(env, 'calls', { t: t0, ok: false, why, ms: Date.now() - t0 }));
       ctx.waitUntil(env.AQ_CACHE.put(DOWN, String(until), { expirationTtl: REST_S }));
       return json({ error: 'resting', until }, 503, origin);
     };
@@ -79,6 +117,7 @@ export default {
     }
     if (stocking === null) return rest('no result');
     console.log(JSON.stringify({ aq: 'ok', ms: Date.now() - t0, stocking, sel: q.get('AlreadySelected') }));
+    ctx.waitUntil(logTo(env, 'calls', { t: t0, ok: true, ms: Date.now() - t0 }));
     ctx.waitUntil(env.AQ_CACHE.put(key, String(stocking), { expirationTtl: CACHE_S }));
     return json({ stocking }, 200, origin, 3600);
   },

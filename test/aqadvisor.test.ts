@@ -6,7 +6,7 @@ import { defaultScene } from '../src/scene/defaults';
 import { footprint } from '../src/scene/shape';
 import type { Fish, TankSetup } from '../src/scene/types';
 // @ts-expect-error plain-JS worker module, no types
-import worker, { aqParams, parseStocking } from '../worker/aqadvisor-proxy.js';
+import worker, { aqParams, checkHealth, parseStocking } from '../worker/aqadvisor-proxy.js';
 
 const fish = (species: string, n: number): Fish[] =>
   Array.from({ length: n }, (_, i) => ({ id: i, species, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0 }));
@@ -100,6 +100,17 @@ describe('AqAdvisor proxy', () => {
       const e = env();
       expect(await (await ask(e)).json()).toEqual({ stocking: 72 });
       expect(await (await ask(e)).json()).toEqual({ stocking: 72, cached: true });
+    });
+
+    it('logs health checks, up and down, per day', async () => {
+      vi.spyOn(console, 'log').mockImplementation(() => {});
+      const e = env();
+      vi.stubGlobal('fetch', vi.fn(async () => new Response(null, { status: 200 })));
+      expect((await checkHealth(e)).up).toBe(true);
+      vi.stubGlobal('fetch', vi.fn(async () => { throw new TypeError('network'); }));
+      expect(await checkHealth(e)).toMatchObject({ up: false, why: 'unreachable' });
+      const log = await (await worker.fetch(new Request('https://x/log?days=1'), e, ctx) as Response).json();
+      expect(log[0].health.map((h: { up: boolean }) => h.up)).toEqual([true, false]);
     });
 
     it('stops at the daily cap', async () => {
