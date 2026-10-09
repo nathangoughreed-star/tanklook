@@ -132,6 +132,7 @@ export class Viewer {
     // while it fits (windowCentre)
     const wins = active.map(vp => ({
       tank: frameBox(vp.cam, vp.T, vp.w / vp.h, headroom(vp.S)),
+      bare: frameBox(vp.cam, vp.T, vp.w / vp.h, 0),
       all: frameBox(vp.cam, vp.T, vp.w / vp.h, headroom(vp.S), bottom(vp.S), extra(vp)),
     }));
     // locked: one window for both, from the union of their bounds, so identical tanks and stands sit at identical
@@ -144,10 +145,11 @@ export class Viewer {
     for (const [k, vp] of active.entries()) {
       const S = vp.S, fov = fovOf(k);
       const hy = Math.tan(fov * D2R / 2), hx = hy * vp.w / vp.h;
-      const { tank, all } = lockedWin ?? wins[k];
-      // locked and zoomed past the union: shift only as far as this view's own tank needs (whole while it fits, else
-      // its centre), so a taller or longer tank beside it never leaves this one cropped to the wall (Nathan 2026-10-09)
-      const c = windowCentre(windowCentre(all, tank, hx, hy), wins[k].tank, hx, hy);
+      // locked: the shared window while both tanks (with their fixtures) fit in it; zoomed past that, each view frames
+      // its own tank, so a taller tank or a higher light beside it never leaves this one cropped to the wall (Nathan 2026-10-09)
+      const own = wins[k], u = lockedWin?.tank;
+      const { tank, all } = u && u.x1 - u.x0 <= 2 * hx && u.y1 - u.y0 <= 2 * hy ? lockedWin! : own;
+      const c = windowCentre(all, tank, hx, hy, own.bare);
       if (lockedWin || this.pan.i === vp.i) { c.cx -= this.pan.x * 2 * hx / vp.w; c.cy += this.pan.y * 2 * hy / vp.h; } // the picture follows the pointer
       applyFraming(vp.cam, fov, vp.w, vp.h, c.cx, c.cy);
       r.setViewport(vp.x, vp.y, vp.w, vp.h); r.setScissor(vp.x, vp.y, vp.w, vp.h);
