@@ -14,6 +14,14 @@ export const AQ_MAX = 48, LAMP_Y = 50, REF = 320;
 export const CONES: Record<Exclude<LightType, 'flat'>, [number, number]> = {
   spot: [Math.cos(18 * D2R), Math.cos(34 * D2R)], tube: [0.45, -0.15], led: [Math.cos(45 * D2R), Math.cos(75 * D2R)],
 };
+/** Spot beam (full angle, degrees) -> [cos inner, cos outer] half-angles; the default 52° gives the old 18°/34°. */
+const spotCone = (deg: number): [number, number] => [Math.cos(Math.min(deg * 0.35, 80) * D2R), Math.cos(Math.min(deg * 0.65, 85) * D2R)];
+/** The fixture's beam, and how much brighter it is per unit area than the standard one (same output, narrower beam). */
+function beam(l: LightSettings): { cone: [number, number]; gain: number } {
+  if (l.type !== 'spot') return { cone: CONES[l.type as Exclude<LightType, 'flat'>], gain: 1 };
+  const deg = l.cone ?? 52, solid = (a: number) => 1 - Math.cos(a / 2 * D2R);
+  return { cone: spotCone(deg), gain: solid(52) / solid(deg) };
+}
 /** [x, y, z, halfLength]: halfLength > 0 means a line emitter along x. */
 export type Emitter = [number, number, number, number];
 
@@ -22,8 +30,17 @@ export const lampHeight = (l: LightSettings, lid: string) => (lid === 'hood' ? L
 
 export function emitters(T: Tank, l: LightSettings, height = l.height ?? LAMP_Y): Emitter[] {
   const { L, H, D } = T, y = H + height, n = l.count, E: Emitter[] = [];
-  // spots: a count × rows grid (rows run front to back)
-  if (l.type === 'spot') { const m = l.rows ?? 1; for (let j = 0; j < m; j++) for (let i = 0; i < n; i++) E.push([L * (i + 0.5) / n, y, -D * (j + 0.5) / m, 0]); }
+  // spots: a count × rows grid (rows run front to back), centred over the tank. Auto spacing (0) spreads it to fill
+  // the tank; a set spacing is centre to centre, with rows √3/2 of it apart in the triangular pattern. 'tri' staggers
+  // the rows: the middle row (or the back one, with an even number) has `count` bulbs, its neighbours one fewer.
+  if (l.type === 'spot') {
+    const m = l.rows ?? 1, s = l.spacing ?? 0, tri = l.pattern === 'tri';
+    const sx = s > 0 ? s : L / n, sz = s > 0 ? (tri ? s * Math.sqrt(3) / 2 : s) : D / m;
+    for (let j = 0; j < m; j++) {
+      const k = tri && j % 2 !== (m % 2 ? ((m - 1) / 2) % 2 : 1) ? Math.max(n - 1, 1) : n, z = -D / 2 - (j - (m - 1) / 2) * sz;
+      for (let i = 0; i < k; i++) E.push([L / 2 + (i - (k - 1) / 2) * sx, y, z, 0]);
+    }
+  }
   if (l.type === 'tube') for (let i = 0; i < n; i++) E.push([L / 2, y, -D * (i + 0.5) / n, L * 0.45]);
   if (l.type === 'led') {
     const cols = clamp(Math.round(L * 0.9 / 45), 2, 24);
@@ -87,13 +104,14 @@ export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open') {
   const spill = 0.9 * (1 - 0.75 * roomLevel(l.room)) * (1 + 0.8 * clamp((up - LAMP_Y) / 400, 0, 1));
   if (on) LU.uSpill.value.setRGB(...kelvinRGB(l.kelvin)).multiplyScalar(spill * l.bright); else LU.uSpill.value.setRGB(spill, spill, spill);
   if (!on) return;
-  const E = emitters(T, l, hgt), cone = CONES[l.type as Exclude<LightType, 'flat'>];
+  const E = emitters(T, l, hgt), { cone, gain } = beam(l), ref: LightSettings = { ...l, spacing: 0, cone: 52 };
   E.forEach((e, i) => LU.uEm.value[i].set(...e)); LU.uEmN.value = E.length;
-  // normalised with the fixture at the standard height (sample a mid-height plane across the tank), so raising it
-  // dims the tank (distance falloff) and evens it out (wider footprint), as a real light does
-  const R = emitters(T, l, LAMP_Y); let avg = 0, k = 0;
-  for (let i = 1; i <= 5; i++) for (let j = 1; j <= 5; j++) { avg += lightSum(R, [T.L * i / 6, T.H * 0.5, -T.D * j / 6], cone); k++; }
-  LU.uNorm.value = k / Math.max(avg, 1e-6); [LU.uConeIn.value, LU.uConeOut.value] = cone;
+  // normalised with the fixture at the standard height, auto spacing and standard beam (sample a mid-height plane
+  // across the tank), so raising it dims the tank (distance falloff) and evens it out (wider footprint), spreading
+  // the bulbs past the glass loses light outside, and a narrower beam concentrates the same output (gain)
+  const R = emitters(T, ref, LAMP_Y), rc = beam(ref).cone; let avg = 0, k = 0;
+  for (let i = 1; i <= 5; i++) for (let j = 1; j <= 5; j++) { avg += lightSum(R, [T.L * i / 6, T.H * 0.5, -T.D * j / 6], rc); k++; }
+  LU.uNorm.value = gain * k / Math.max(avg, 1e-6); [LU.uConeIn.value, LU.uConeOut.value] = cone;
   LU.uAmb.value = l.room; LU.uBright.value = l.bright; LU.uLCol.value.setRGB(...kelvinRGB(l.kelvin));
 }
 

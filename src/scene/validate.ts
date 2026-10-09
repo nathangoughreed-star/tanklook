@@ -20,6 +20,8 @@ export const LIMITS = {
   zoom: [0.5, 4] as const,
   count: [1, 6] as const,
   rows: [1, 4] as const,
+  spacing: [0, 1500] as const,     // mm, 0 = auto
+  cone: [15, 120] as const,        // degrees, full beam angle
   bright: [0.2, 2.5] as const,
   kelvin: [2700, 14000] as const,
   room: [0, 0.8] as const,
@@ -168,6 +170,8 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
     },
     light: {
       type: pick(l.type, ['flat', 'spot', 'tube', 'led'] as const, 'flat'), count: Math.round(num(l.count, 2, ...LIMITS.count)), rows: Math.round(num(l.rows, 1, ...LIMITS.rows)),
+      // added 2026-10-09 (no version bump); older files: the old filled grid and 52° beam
+      pattern: pick(l.pattern, ['grid', 'tri'] as const, 'grid'), spacing: Math.round(num(l.spacing, 0, ...LIMITS.spacing)), cone: Math.round(num(l.cone, 52, ...LIMITS.cone)),
       bright: num(l.bright, 1, ...LIMITS.bright), kelvin: num(l.kelvin, 6500, ...LIMITS.kelvin), room: num(l.room, 0.15, ...LIMITS.room),
       height: num(l.height, 50, ...LIMITS.lampH), // added 2026-10-08; older files: the old fixed 50 mm
     },

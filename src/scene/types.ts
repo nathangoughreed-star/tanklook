@@ -67,6 +67,13 @@ export interface LightSettings {
   count: number;
   /** Spot lights only: rows front to back, so the bulbs form a count × rows grid (added 2026-10-08; older files: 1). */
   rows: number;
+  /** Spot lights only (added 2026-10-09; older files: 'grid', 0, 52): 'tri' staggers alternate rows by half a step and
+   * drops one bulb from them, a triangular lattice that suits a round tank. */
+  pattern: 'grid' | 'tri';
+  /** Spot lights only: centre-to-centre bulb spacing (mm); 0 = auto, spread to fill the tank. */
+  spacing: number;
+  /** Spot lights only: full beam angle (degrees), as printed on the bulb. */
+  cone: number;
   bright: number;
   kelvin: number;
   room: number;

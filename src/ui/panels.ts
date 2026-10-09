@@ -8,13 +8,13 @@ import type { Viewer } from '../render/viewer';
 import { defaultScene, TANK_PRESETS } from '../scene/defaults';
 import { tankDiff } from './diff';
 import {
-  IN, clamp, clampFish, fmtDims, fmtLen, fromUnit, glassThickness, rescaleTank, spawnSnail, toUnit, volume, waterY,
+  IN, clamp, clampFish, fmtDims, fmtLen, fmtSize, fromUnit, glassThickness, rescaleTank, spawnSnail, toUnit, volume, waterY,
 } from '../scene/physics';
 import type { Store } from '../scene/store';
 import { SWAMP_LEVEL, groundHeight, nearestLand, randomLand, sampleTerrain } from '../scene/terrain';
 import { restsOnGround, setWaterLevel } from '../scene/water';
 import { tankWeight } from '../scene/weight';
-import { POLY_SIDES, SHAPES, bowMinLimit, shapeOf } from '../scene/shape';
+import { POLY_SIDES, SHAPES, bowMinLimit, offsetRing, ringArea, shapeOf } from '../scene/shape';
 import { TABLE_MAX, tableRange } from '../scene/table';
 import type { Fish, LayoutId, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
 import { GLASS_CHOICES, LIMITS, SceneError, nextFishId, parseScene } from '../scene/validate';
@@ -359,8 +359,10 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('wGreen').onclick = () => waterPreset('#5d8a2e', 0.5);
 
   // ---------- Lighting ----------
-  const lKeys = { lCount: 'count', lRows: 'rows', lH: 'height', lBright: 'bright', lK: 'kelvin', lRoom: 'room' } as const;
-  for (const [id, k] of Object.entries(lKeys)) $(id).oninput = e => store.edit(s => { s.light[k] = +(e.target as HTMLInputElement).value; }, { coalesce: id });
+  const lKeys = { lCount: 'count', lRows: 'rows', lSp: 'spacing', lCone: 'cone', lH: 'height', lBright: 'bright', lK: 'kelvin', lRoom: 'room' } as const;
+  // spacing below a bulb's width snaps to 0 = auto (fill the tank)
+  for (const [id, k] of Object.entries(lKeys)) $(id).oninput = e => store.edit(s => { const v = +(e.target as HTMLInputElement).value; s.light[k] = k === 'spacing' && v < 80 ? 0 : v; }, { coalesce: id });
+  $<HTMLSelectElement>('lPat').onchange = e => store.edit(s => { s.light.pattern = (e.target as HTMLSelectElement).value as TankSetup['light']['pattern']; });
   $<HTMLSelectElement>('lType').onchange = e => store.edit(s => { s.light.type = (e.target as HTMLSelectElement).value as TankSetup['light']['type']; });
 
   // ---------- Viewer (camera): saved with the scene, but not undoable ----------
@@ -440,7 +442,10 @@ export function attachPanels(store: Store, viewer: Viewer) {
     // which tank the panel edits (split view)
     $('editing').hidden = !store.split; $('editing').textContent = `Editing Tank ${'AB'[G().active]}: click the other view to edit that one.`;
     const vol = volume(A);
-    $('volA').textContent = `${vol.gallons.toFixed(1)} US gal · ${vol.litres.toFixed(0)} L interior`;
+    // footprint: the outer glass outline, i.e. what stands on the stand
+    const fpMm2 = ringArea(offsetRing(A, glassThickness(A, s.render.glass)));
+    const fpTxt = u === 'in' ? `${Math.round(fpMm2 / (IN * IN)).toLocaleString()} sq in` : `${Math.round(fpMm2 / 100).toLocaleString()} cm²`;
+    $('volA').textContent = `${vol.gallons.toFixed(1)} US gal · ${vol.litres.toFixed(0)} L interior · footprint ${fpTxt}`;
     const wt = tankWeight(s), kgs = (kg: number) => (u === 'in' ? `${Math.round(kg * 2.20462)} lb` : `${Math.round(kg)} kg`);
     $('wtA').textContent = `≈ ${kgs(wt.total)} filled: water ${kgs(wt.water)} (${(u === 'in' ? wt.waterLitres / 3.785 : wt.waterLitres).toFixed(0)} ${u === 'in' ? 'gal' : 'L'}), substrate ${kgs(wt.substrate)}, glass ${kgs(wt.glass)}`;
     $('rimY').classList.toggle('on', s.render.rim); $('rimN').classList.toggle('on', !s.render.rim);
@@ -524,7 +529,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
     setOut('oCount', String(l.count)); setOut('oRows', String(l.rows)); setOut('oBright', '×' + l.bright.toFixed(2)); setOut('oK', l.kelvin + ' K'); setOut('oRoom', l.room.toFixed(2));
     $('lCountRow').style.display = l.type === 'spot' || l.type === 'tube' ? '' : 'none';
     $('lCountLab').textContent = l.type === 'tube' ? 'Tubes' : 'Bulbs';
-    $('lRowsRow').style.display = l.type === 'spot' ? '' : 'none';
+    for (const id of ['lRowsRow', 'lPatRow', 'lSpRow', 'lConeRow']) $(id).style.display = l.type === 'spot' ? '' : 'none';
+    setVal('lPat', l.pattern); setOut('oLSp', l.spacing ? fmt(l.spacing) : 'Auto'); setOut('oLCone', l.cone + '°');
     setOut('oLH', s.lid === 'hood' ? 'In hood' : fmt(l.height) + ' above');
     $('lHRow').style.display = l.type === 'flat' ? 'none' : ''; ($('lH') as HTMLInputElement).disabled = s.lid === 'hood';
 
@@ -563,7 +569,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
         el.style.right = (viewer.host.clientWidth - vp.x - vp.w + 8) + 'px'; el.style.maxWidth = Math.max(80, vp.w - 16 - (vp.x === 0 && hidden ? 80 : 0)) + 'px'; // clear of "› Edit"
         el.classList.toggle('tab', split); el.classList.toggle('on', split && i === g.active);
         if (!split) { // one tank: its size, and the way into a side-by-side comparison
-          el.innerHTML = `<span>${esc(fmtDims(vp.T, g.units))}</span><button class="close" data-split title="Copy this tank into a second, independent one beside it">⧉ Split to compare</button>`;
+          el.innerHTML = `<span>${esc(fmtSize(vp.T, g.units))}</span><button class="close" data-split title="Copy this tank into a second, independent one beside it">⧉ Split to compare</button>`;
           continue;
         }
         if (tabHidden[i]) {

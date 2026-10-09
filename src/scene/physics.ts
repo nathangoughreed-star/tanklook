@@ -111,6 +111,13 @@ export function fmtDims(T: Tank, u: Units) {
 export const toUnit = (mm: number, u: Units) => +(mm / unitMM(u)).toFixed(2);
 export const fromUnit = (v: number, u: Units) => v * unitMM(u);
 
+/** Dimensions, then capacity and floor area (interior): `24 × 12 × 12″, 15 gallons, 288 in²`. */
+export function fmtSize(T: Tank, u: Units) {
+  const v = volume(T), a = footprint(T).area, dims = fmtDims(T, u).replace(' (L×H×D)', '');
+  return u === 'in' ? `${dims}, ${+v.gallons.toFixed(1)} gallons, ${Math.round(a / (IN * IN)).toLocaleString()} in²`
+    : `${dims}, ${Math.round(v.litres)} L, ${Math.round(a / 100).toLocaleString()} cm²`;
+}
+
 /** Interior volume in US gallons and litres (footprint area x height). */
 export function volume(T: Tank) {
   const litres = footprint(T).area * T.H / 1e6;

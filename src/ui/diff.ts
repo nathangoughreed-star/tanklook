@@ -4,7 +4,7 @@
 import { SUBSTRATES } from '../art/placeholder';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { LAYOUTS } from '../render/layouts';
-import { fmtDims, fmtLen, glassThickness, rescaleTank, waterY } from '../scene/physics';
+import { fmtSize, fmtLen, glassThickness, rescaleTank, waterY } from '../scene/physics';
 import { setWaterLevel } from '../scene/water';
 import type { TankSetup, Units } from '../scene/types';
 
@@ -40,7 +40,7 @@ export function tankDiff(a: TankSetup, b: TankSetup, u: Units): DiffItem[] {
   };
   const named = (name: string) => (_: unknown, side: 'A' | 'B') => `${name} ${side}`;
 
-  add(a.tank, b.tank, T => fmtDims(T, u).replace(' (L×H×D)', ''), (to, from) => rescaleTank(to, from.tank));
+  add(a.tank, b.tank, T => fmtSize(T, u), (to, from) => rescaleTank(to, from.tank));
   add(a.render.glass, b.render.glass, (g, side) => `Glass ${glassThickness((side === 'A' ? a : b).tank, g)} mm${g === 'auto' ? ' (auto)' : ''}`, ['render.glass']);
   add(a.render.glassType, b.render.glassType, t => (t === 'lowiron' ? 'Low-iron glass' : 'Standard glass'), ['render.glassType']);
   add(a.render.rim, b.render.rim, r => (r ? 'Rimmed' : 'Rimless'), ['render.rim']);
@@ -102,7 +102,12 @@ export function tankDiff(a: TankSetup, b: TankSetup, u: Units): DiffItem[] {
   add(a.light.type, b.light.type, t => LIGHTS[t], ['light.type']);
   if (a.light.type === b.light.type) {
     if (a.light.type === 'spot' || a.light.type === 'tube') add(a.light.count, b.light.count, n => `${n} ${a.light.type === 'tube' ? 'tube' : 'bulb'}${n > 1 ? 's' : ''}`, ['light.count']);
-    if (a.light.type === 'spot') add(a.light.rows, b.light.rows, r => `${r} row${r > 1 ? 's' : ''} of bulbs`, ['light.rows']);
+    if (a.light.type === 'spot') {
+      add(a.light.rows, b.light.rows, r => `${r} row${r > 1 ? 's' : ''} of bulbs`, ['light.rows']);
+      add(a.light.pattern, b.light.pattern, p => p === 'tri' ? 'Triangular bulb pattern' : 'Grid bulb pattern', ['light.pattern']);
+      add(a.light.spacing, b.light.spacing, v => v ? `Bulbs ${len(v)} apart` : 'Bulbs spread to fit', ['light.spacing']);
+      add(a.light.cone, b.light.cone, v => `${v}° beam`, ['light.cone']);
+    }
     if (a.light.type !== 'flat' && a.lid !== 'hood' && b.lid !== 'hood') add(a.light.height, b.light.height, h => `Light ${len(h)} up`, ['light.height']);
   }
   add(a.light.bright, b.light.bright, v => `Brightness ×${v.toFixed(2)}`, ['light.bright']);

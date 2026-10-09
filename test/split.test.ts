@@ -76,7 +76,7 @@ describe('difference labels', () => {
     const [a, b] = pair();
     b.tank = { L: 36 * IN, H: 16 * IN, D: 18 * IN }; b.fish.pop(); b.water.opacity = 0.4; a.water.opacity = 0.2; b.substrate.type = 'white';
     const d = labels(a, b, 'in');
-    expect(d).toContainEqual(['24 × 12 × 12″', '36 × 16 × 18″']);
+    expect(d).toContainEqual(['24 × 12 × 12″, 15 gallons, 288 in²', '36 × 16 × 18″, 44.9 gallons, 648 in²']);
     expect(d).toContainEqual(['Stocking A', 'Stocking B']);
     expect(d).toContainEqual(['Water tint A', 'Water tint B']);
     expect(d.find(x => x[0].startsWith('Substrate:'))?.[1]).toMatch(/^Substrate: /);
@@ -84,7 +84,7 @@ describe('difference labels', () => {
   });
   it('resizing alone does not list the stocking (fish keep their relative spots)', () => {
     const [a, b] = pair(); rescaleTank(b, { L: 48 * IN, H: 21 * IN, D: 18 * IN });
-    expect(labels(a, b, 'in')).toEqual([['24 × 12 × 12″', '48 × 21 × 18″']]);
+    expect(labels(a, b, 'in')).toEqual([['24 × 12 × 12″, 15 gallons, 288 in²', '48 × 21 × 18″, 78.5 gallons, 864 in²']]);
   });
   it('the × makes one side match: each difference goes away, the rest stay', () => {
     const [a, b] = pair();
