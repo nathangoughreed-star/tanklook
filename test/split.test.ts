@@ -75,10 +75,13 @@ describe('split tanks', () => {
     st.editTank(0, t => { t.lid = 'glass'; }); // a drag in one view changes that tank only
     expect(st.scene.tanks.map(t => t.lid)).toEqual(['glass', 'open']);
   });
-  it('the last ticked view cannot be unticked; unticking the shown tank shows the other', () => {
+  it('unticking the shown tank shows the other; with none ticked nothing is edited; a single tank always is', () => {
     const st = new Store(defaultScene()); st.splitTank();
-    st.setEditing(1, false); expect(st.targets).toEqual([1]);
     st.setEditing(0, true); st.setEditing(1, false); expect(st.targets).toEqual([0]); expect(st.scene.active).toBe(0);
+    st.setEditing(0, false); expect(st.targets).toEqual([]);
+    st.edit(t => { t.lid = 'hood'; }); expect(st.scene.tanks.map(t => t.lid)).toEqual(['open', 'open']);
+    st.setEditing(1, true); expect(st.targets).toEqual([1]); expect(st.scene.active).toBe(1);
+    st.clearEditing(); expect(st.targets).toEqual([]);
     st.closeTank(0); expect(st.targets).toEqual([0]);
   });
   it('a fish added to both tanks gets one id free in each', () => {

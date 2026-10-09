@@ -37,7 +37,10 @@ free in every tank, so an added fish shares its id and the selection covers both
 the panel SHOWS; pressing in a ticked view shows it. An unticked view only orbits / zooms / pans (no fish or terrain
 drags). Dragging a fish or terrain dot changes only that view's tank. Tank size / shape writes are per-tank (only the
 changed dimension is copied); adds use one seeded RNG so both tanks get the same placement. Every ticked view is
-framed (`vpFrame`, `vpFrame2`). Tests 114/114 (split.test updated + 4 new). Checked on dev-5 (port 5243, new in
+framed (`vpFrame`, `vpFrame2`). **Panel rule (Nathan 2026-10-09, later):** split, the panel is open exactly while a box
+is ticked: unticking the last box closes the panel, ticking one opens it, closing the panel unticks all, the
+"› Edit" button re-ticks the tank last shown. `targets` may be empty when split (a single tank is always [0]);
+`store.clearEditing()`; panels.ts `keepRule` enforces it after split / undo / load and at startup. Tests 114/114 (split.test updated + 4 new). Checked on dev-5 (port 5243, new in
 launch.json): boxes, frames, message, lid / length edits to B only, both, A only; fish add to both.
 
 ## Status (2026-10-09, session 11c: alpha fix on `fix-canvas-alpha`; 8-species pilot on `audit-3d`; neither merged)

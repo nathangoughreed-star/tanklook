@@ -399,8 +399,17 @@ export function attachPanels(store: Store, viewer: Viewer) {
     $('app').classList.toggle('collapsed', !!ui.hidden);
   } catch { /* storage blocked: panel shown */ }
   const showSide = (on: boolean) => { $('app').classList.toggle('collapsed', !on); saveUI(); viewer.invalidate(); };
-  $('sideClose').onclick = () => showSide(false);
-  $('sideOpen').onclick = () => showSide(true);
+  // split: the panel is open exactly while some view's "Edit" box is ticked (Nathan 2026-10-09). Closing it unticks
+  // them; opening it ticks the tank it last showed; the boxes open / close it (on the tabs, below).
+  const sideHidden = () => $('app').classList.contains('collapsed');
+  $('sideClose').onclick = () => { showSide(false); if (store.split) store.clearEditing(); };
+  $('sideOpen').onclick = () => { showSide(true); if (store.split && !store.targets.length) store.setEditing(G().active, true); };
+  const keepRule = () => { // after split / undo / load
+    if (!store.split) return;
+    if (sideHidden() && store.targets.length) store.clearEditing();
+    else if (!sideHidden() && !store.targets.length) store.setEditing(G().active, true);
+  };
+  store.subscribe(keepRule); keepRule();
   /** Open a section (e.g. Fish when an animal gets selected), so what the user just acted on is editable. */
   const openSec = (key: string) => { const d = secs.find(x => x.dataset.sec === key); if (d && !d.open) d.open = true; };
   $<HTMLSelectElement>('layout').innerHTML = Object.entries(LAYOUTS).map(([k, l]) => `<option value="${k}">${esc(l.label)}</option>`).join('');
@@ -620,8 +629,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
         }
         // the "Edit" box: the panel's changes apply to every view ticked here
         const only = ed && store.targets.length === 1;
-        const box = `<label class="edbox" title="${only ? `Tank ${vp.key} is the only tank being edited; tick the other view's box to edit both` : `Apply the panel's changes to Tank ${vp.key}`}">` +
-          `<input type="checkbox" data-edit="${i}"${ed ? ' checked' : ''}${only ? ' disabled' : ''}> Edit</label>`;
+        const box = `<label class="edbox" title="${only ? `Untick to close the panel` : ed ? `The panel's changes apply to Tank ${vp.key}` : `Apply the panel's changes to Tank ${vp.key} (opens the panel)`}">` +
+          `<input type="checkbox" data-edit="${i}"${ed ? ' checked' : ''}> Edit</label>`;
         if (tabHidden[i]) {
           el.innerHTML = box + `<button class="close" data-showtab="${i}" title="Show Tank ${vp.key}'s tab: what differs, Save, Delete">☰ ${vp.key}${diff.length ? ` · ${diff.length}` : ''}</button>`;
           continue;
@@ -652,7 +661,11 @@ export function attachPanels(store: Store, viewer: Viewer) {
   });
   for (const id of ['labA', 'labB']) $(id).addEventListener('change', e => {
     const cb = (e.target as HTMLElement).closest<HTMLInputElement>('[data-edit]');
-    if (cb) store.setEditing(+cb.dataset.edit!, cb.checked);
+    if (!cb) return;
+    // ticking one opens the panel; unticking the last one closes it
+    if (cb.checked) { showSide(true); store.setEditing(+cb.dataset.edit!, true); return; }
+    if (store.targets.length === 1) showSide(false);
+    store.setEditing(+cb.dataset.edit!, false);
   });
   for (const id of ['labA', 'labB']) $(id).addEventListener('click', e => {
     if ((e.target as HTMLElement).closest('[data-split]')) { $('split').click(); return; }

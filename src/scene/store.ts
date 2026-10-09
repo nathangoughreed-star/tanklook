@@ -41,15 +41,17 @@ export class Store {
   subscribe(fn: Listener) { this.listeners.add(fn); return () => this.listeners.delete(fn); }
   private emit(kind: ChangeKind) { for (const fn of this.listeners) fn(kind); }
 
-  /** The tank the panel shows (always one of the tanks being edited). The selection always refers to a fish in this tank. */
+  /** The tank the panel shows (one of the tanks being edited, when any is). The selection always refers to a fish in this tank. */
   get tank(): TankSetup { return this.scene.tanks[this.scene.active] ?? this.scene.tanks[0]; }
   get split() { return this.scene.tanks.length > 1; }
   get selected(): Fish | undefined { return this.tank.fish.find(f => f.id === this.selId); }
 
-  /** Indices of the tanks the panel edits (the views with "Edit" ticked); the shown tank first. Never empty. */
+  /** Indices of the tanks the panel edits (the views with "Edit" ticked); the shown tank first. A single tank is
+   *  always edited; split, it is empty while no box is ticked (the panel is then closed). */
   get targets(): number[] {
     const n = this.scene.tanks.length, a = this.scene.active;
-    return [a, ...[...Array(n).keys()].filter(i => i !== a && this.editOn[i])];
+    if (n === 1) return [0];
+    return [...Array(n).keys()].filter(i => this.editOn[i]).sort((x, y) => +(y === a) - +(x === a));
   }
   isEditing(i: number) { return this.targets.includes(i); }
 
@@ -87,12 +89,14 @@ export class Store {
     this.emit('select');
   }
 
-  /** Tick / untick view i's "Edit" box. At least one tank stays ticked; unticking the shown tank shows the other. */
+  /** Tick / untick view i's "Edit" box. The panel shows a ticked tank: ticking one while the shown tank is unticked
+   *  shows it; unticking the shown tank shows the other if that one is ticked. */
   setEditing(i: number, on: boolean) {
     const n = this.scene.tanks.length; if (i >= n) return;
-    if (!on && !this.editOn.some((v, k) => v && k !== i && k < n)) return;
     this.editOn[i] = on; this.seal();
-    if (!on && i === this.scene.active) this.scene.active = this.editOn.findIndex((v, k) => v && k < n);
+    const a = this.scene.active;
+    if (on && !this.editOn[a]) this.scene.active = i;
+    if (!on && i === a) { const o = this.editOn.findIndex((v, k) => v && k < n); if (o >= 0) this.scene.active = o; }
     if (!this.tank.fish.some(f => f.id === this.selId)) this.selId = null;
     this.emit('select');
   }
@@ -166,17 +170,23 @@ export class Store {
     this.emit('load');
   }
 
-  /** The shown tank is always ticked; a tank that no longer exists is not. */
+  /** Untick every view (the panel was closed). */
+  clearEditing() {
+    if (!this.editOn.some(Boolean)) return;
+    this.editOn = [false, false]; this.seal(); this.emit('select');
+  }
+
+  /** A tank that no longer exists is not ticked. */
   private syncEditOn() {
     const n = this.scene.tanks.length;
-    this.editOn = [0, 1].map(k => k < n && (k === this.scene.active || !!this.editOn[k]));
+    this.editOn = [0, 1].map(k => k < n && !!this.editOn[k]);
   }
 
   /** Replace the whole scene (open file, new). Undoable. */
   replace(scene: Scene) {
     this.pushUndo(); this.seal();
     this.scene = scene;
-    this.editOn = []; this.syncEditOn();
+    this.editOn = [0, 1].map(k => k === scene.active);
     this.selId = this.tank.fish[0]?.id ?? null;
     this.emit('load');
   }
