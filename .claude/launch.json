@@ -103,6 +103,21 @@
         "--strictPort"
       ],
       "port": 5213
+    },
+    {
+      "name": "audit3d",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "C:/Users/nreed/Glass-Box-audit3d",
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5223",
+        "--strictPort"
+      ],
+      "port": 5223
     }
   ]
 }

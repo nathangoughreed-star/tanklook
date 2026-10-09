@@ -2,6 +2,36 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Status (2026-10-09, session 11b: four generic 3D fixes built on branch `audit-3d`, NOT merged)
+
+**Nathan's decisions (2026-10-09, on the audit):** general 3D approach approved. Verdicts: tiger barb pass, kuhli pass
+(most important: a radically different length/depth ratio with no special generator), bristlenose conditional
+(geometry works; head, eyes, mouth, bristles not pleco enough yet), angelfish needs revision (round body lost the
+identity). Do the four generic fixes before any rollout; add the straight-sided outline NOW and redo the angel (target
+= the hand-drawn silhouette; angular but with some convexity, narrow peduncle, data-driven, not an angel exception).
+Do NOT merge `audit-3d` or mass-convert yet. After the fixes: a production PILOT of 6-8 species spanning body plans,
+then the full rollout; flat cards stay as the fallback until each 3D model passes its visual review.
+Pre-release checklist item: bars ringing the head at extreme angles (tiger barb, angel). Later: reusable anatomical
+features (ventral sucker mouth, snout bristles) for the bristlenose, not a reason to drop the generic geometry.
+
+Built (worktree `../Glass-Box-audit3d` on branch `audit-3d`, commit `1e34b03`; launch config `audit3d`, port 5223;
+pictures in that worktree's `shots/`: `55_tigerbarb_lighting.png`, `56_angel_sheet.png`, `56_bristlenose_sheet.png`,
+`56_angel_card.png`). Tests 110/110, tsc clean.
+1. **Lighting** (`lighting.ts`): fish facing is measured against the flank facing the viewer (`aqFishFacing`, slope
+   0.5 both ways), so a side view equals the card under the reference flat light; the old fish "roll-off" boosted
+   darks up to 1.7x (that, not the key, washed out the pleco) and is now a shoulder above 0.6; fish saturation = card
+   (1.35). Tiger barb flank luminance: card 143, 3D before 161, now 142.
+2. **Pectorals**: the "white blades" were a RENDERER bug: the canvas has alpha, and alpha-to-coverage fins wrote
+   alpha < 1, so the page (on screen) or the PNG viewer's background (white) showed through every translucent fin,
+   cards included. Fix in `viewer.ts`: alpha writes off while the scene draws. Also pectoral tint 35% toward the
+   flank colour, softer spine. Candidate to cherry-pick to main on its own (affects live cards' fins too).
+3. **Outline**: `Plan.angular` 0..1 (straight lines from peduncle and nose, smooth-min apex), fin shape `swept`
+   (straight-edged sails), `pelvic.angle` (thread steepness). Angel: `angular 0.8, peak 0.375`, swept dorsal/anal,
+   filament at 68°. Card now close to the hand-drawn one (`56_angel_card.png`).
+4. **Eyes**: `Plan.eye.up` 0..1 turns the 3D eye along the section from the flank toward the top of the head
+   (`EYE_TOP` 0.5 rad); bristlenose 0.7.
+Next: Nathan reviews the three sheets; then the pilot (6-8 species).
+
 ## Status (2026-10-09, session 11: species audit (d) done; awaiting Nathan's call on the open points)
 
 Dev server `dev-4` (port 5213) added: other chats held 5173/5183/5193. Card sheets: `scripts/card-sheet.js`
