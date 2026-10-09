@@ -7,7 +7,7 @@ import { type Ctx, type Proj, type Pt, blob, body, hexA, soft } from './paint';
 
 export type SnailView = 'side' | 'foot' | 'shell';
 type Kind = 'nerite' | 'mystery' | 'ramshorn' | 'trumpet';
-interface SnailSpec { kind: Kind; shell: [string, string, string]; foot: [string, string]; mark: string }
+export interface SnailSpec { kind: Kind; shell: [string, string, string]; foot: [string, string]; mark: string }
 
 export const SNAILS: Record<string, SnailSpec> = {
   nerite: { kind: 'nerite', shell: ['#4a4a22', '#8a8a3a', '#a8a050'], foot: ['#8a8070', '#c8bfae'], mark: '#1e1c14' },
@@ -23,6 +23,24 @@ export const SNAIL_META: Record<Kind, { side: number; glass: number }> = {
   ramshorn: { side: 0.86, glass: 0.62 },
   trumpet: { side: 0.5, glass: 0.34 },
 };
+/**
+ * 3D snail (render/snail3d.ts), one generator for every shell: a logarithmic spiral, an aperture ellipse swept round
+ * the coil axis, growing `grow` times per turn and sliding `drop` (share of the whorl radius) down the axis, so 0 is a
+ * flat coil and a large drop a tall spire. `ap` = aperture [radial, axial] (shares of the whorl radius); `axis` =
+ * where the spire points (x forward, y up, z to the side); `size` / `tall` = shell length / height at most (as on the side card), `at` = shell centre along the body,
+ * `foot` = where the foot starts (all widths / card u, as on the side card); `tent` = tentacle length; `mark` = the
+ * shell pattern: axial (zebra stripes along the growth lines), spiral (bands along the coil), growth (fine growth
+ * lines), spots.
+ */
+export interface Shell3D { turns: number; grow: number; drop: number; ap: [number, number]; axis: [number, number, number]; size: number; tall: number; at: number; foot: number; tent: number; mark: 'axial' | 'spiral' | 'growth' | 'spots' }
+export const SHELL3D: Record<Kind, Shell3D> = {
+  nerite: { turns: 1.8, grow: 10, drop: 0.2, ap: [0.8, 0.9], axis: [-0.3, 0.35, 0.9], size: 0.8, tall: 0.42, at: 0.46, foot: 0.02, tent: 0.06, mark: 'axial' },
+  mystery: { turns: 4, grow: 2.6, drop: 1, ap: [0.6, 0.7], axis: [-0.5, 0.85, 0.2], size: 0.66, tall: 0.76, at: 0.42, foot: 0.02, tent: 0.1, mark: 'spiral' },
+  ramshorn: { turns: 4, grow: 1.9, drop: 0, ap: [0.4, 0.42], axis: [0, 0, 1], size: 0.7, tall: 0.7, at: 0.44, foot: 0.02, tent: 0.06, mark: 'growth' },
+  trumpet: { turns: 9, grow: 1.32, drop: 7, ap: [0.45, 1.05], axis: [-0.9, 0.45, 0], size: 0.72, tall: 0.32, at: 0.35, foot: 0.32, tent: 0.06, mark: 'spots' },
+};
+export const shell3D = (art: string) => ({ ...SHELL3D[SNAILS[art].kind], spec: SNAILS[art] });
+
 export const snailAspect = (art: string, view: SnailView) => SNAIL_META[SNAILS[art].kind][view === 'side' ? 'side' : 'glass'];
 export const snailRest = (art: string) => SNAIL_META[SNAILS[art].kind].side / 2 - 0.015;
 

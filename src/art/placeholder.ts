@@ -8,7 +8,7 @@ import type { SubstrateType } from '../scene/types';
 
 import { FIN_A, type Ctx, type Proj, type Pt, blob, body, eye, fin, gill, hexA, rng, soft, style, vgrad } from './paint';
 export { rng } from './paint';
-import { type FinSpec, GEN_ART, PLANS, profile } from './fishgen';
+import { type FinSpec, GEN_ART, bodyPlan, profile } from './fishgen';
 /** A 3D fish's card body cut-out (widths): this far inside the outline at fin roots (the solid is inset 0.006), this far outside elsewhere. */
 const HOLLOW = 0.012, HOLLOW_OUT = 0.02;
 import { HERP_ART } from './herps';
@@ -105,7 +105,7 @@ export function drawFishCard(art: string, aspect: number, W = 1024, finA = FIN_A
   // a 3D fish's card keeps only the fins: cut the body out. Past the outline where no fin is rooted (the card's
   // painted rim and outline otherwise show as a dark hoop at the edge of the solid seen at an angle), a little inside
   // it where one is, so the fin roots stay
-  const p = PLANS[art];
+  const p = bodyPlan(art);
   if (hollow && p) {
     const prof = profile(p), N = 96, us = Array.from({ length: N + 1 }, (_, i) => p.pedU + (1.02 - p.pedU) * i / N);
     const rooted = (f: FinSpec | undefined, u: number) => !!f && u > f.u0 - 0.02 && u < f.u1 + 0.02;

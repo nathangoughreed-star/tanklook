@@ -43,9 +43,31 @@ export interface Plan {
   angular?: number;   // 0 curved outline .. 1 straight back and belly lines meeting at a rounded apex (diamond: angelfish)
   scale?: number;     // scale size (widths) for the scale net; 0 = none (default 0.024)
   plates?: boolean;   // armoured (corydoras): two rows of bony plates instead of scales
+  // drawn-outline bodies (shrimp): the side outline as a closed polygon (top from the nose back, then the bottom
+  // forward) instead of the parametric one; no pectoral fins; thin limbs (3D tubes on both flanks)
+  outline?: [number, number][];
+  pectoral?: boolean; // default true
+  limbs?: Limb[];
 }
+/**
+ * A thin limb (legs, antennae) as a tube on each flank, 3D only: rooted on the body at (u, v), running to the root +
+ * `to` (widths: along the body, down, outward), bowed toward root + `via`; radius `r` at the root, tapering.
+ */
+export interface Limb { u: number; v: number; to: [number, number, number]; via?: [number, number, number]; r: number }
 
+/** [top, bottom] at u from a closed outline (top from the nose back, bottom forward), linear between points. */
+function outlineProfile(o: [number, number][]) {
+  const k = o.reduce((m, q, i) => (q[0] < o[m][0] ? i : m), 0);
+  const top = o.slice(0, k + 1).reverse(), bot = [...o.slice(k), o[0]]; // both by rising u
+  const at = (c: [number, number][], u: number) => {
+    if (u <= c[0][0]) return c[0][1];
+    for (let i = 1; i < c.length; i++) if (u <= c[i][0]) { const [u0, v0] = c[i - 1], [u1, v1] = c[i]; return v0 + (v1 - v0) * (u - u0) / (u1 - u0 || 1); }
+    return c[c.length - 1][1];
+  };
+  return (u: number): [number, number] => { const a = at(top, u), b = at(bot, u); return [Math.min(a, b), Math.max(a, b)]; };
+}
 export function profile(p: Plan) {
+  if (p.outline) return outlineProfile(p.outline);
   const tp = p.peak ?? 0.55, back = p.back ?? 0.5, sn = p.snout ?? 0.5, mouth = p.mouth ?? 0;
   return (u: number): [number, number] => {
     const t = Math.min(1, Math.max(0, (u - p.pedU) / (1 - p.pedU)));
@@ -156,6 +178,7 @@ export interface PairedFin { kind: 'pelvic' | 'pectoral'; pts: Pt[]; root: [numb
 export function pairedFins(p: Plan): PairedFin[] {
   const g = geometry(p), out: PairedFin[] = [];
   if (g.pelvic) out.push({ kind: 'pelvic', pts: g.pelvic, root: [p.pelvic!.u, g.prof(p.pelvic!.u)[1]], tint: p.pelvic!.tint ?? p.fin, a: p.pelvic!.thread ? 0.85 : undefined, rays: p.pelvic!.thread ? 0 : 5 });
+  if (p.pectoral === false) return out;
   const pu = 1 - (1 - p.pedU) * 0.24, [pt, pb] = g.prof(pu), pm = pt + (pb - pt) * 0.62, pl = Math.min((1 - p.pedU) * 0.17, p.depth * 0.75); // slender fish (loaches) keep small pectorals
   out.push({ kind: 'pectoral', pts: [[pu, pm - 0.01], [pu - pl, pm + pl * 0.3, 'c'], [pu - pl * 0.7, pm + pl * 0.55], [pu + 0.005, pm + 0.015]], root: [pu, pm], tint: mixHex(p.fin, p.shade[1], 0.35), a: 0.3, rays: 5 }); // pectoral takes on some flank colour: it lies against the body
   return out;
@@ -231,35 +254,49 @@ export function drawPlan(p: Plan, ctx: Ctx, P: Proj, W: number) {
 }
 
 // ---------- Shrimp (custom: segmented, rostrum forward, legs below, antennae swept back) ----------
+/** The shrimp drawing's outline (shared by the card and the 3D body). */
+const SHRIMP_OUTLINE: [number, number][] = [[1, -0.075], [0.86, -0.07], [0.78, -0.11], [0.6, -0.125], [0.42, -0.12], [0.28, -0.09], [0.16, -0.05], [0.13, 0.0],
+  [0.16, 0.05], [0.28, 0.07], [0.42, 0.08], [0.6, 0.075], [0.75, 0.065], [0.84, 0.04], [0.86, -0.02]];
 interface ShrimpSpec { body: [string, string]; dots?: string; a?: number }
 function drawShrimp(s: ShrimpSpec, ctx: Ctx, P: Proj, W: number) {
-  const leg = hexA(s.body[0], 0.75);
+  const leg = hexA(s.body[0], 0.75), limbs = style.paired; // off: painted for the 3D shrimp, whose legs are tubes
   ctx.strokeStyle = leg; ctx.lineWidth = 0.008 * W;
-  for (let i = 0; i < 5; i++) { const u = 0.72 - i * 0.07, [x, y] = P(u, 0.05), [x2, y2] = P(u - 0.03, 0.16); ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x2, y2); ctx.stroke(); }
-  for (let i = 0; i < 4; i++) { const u = 0.42 - i * 0.07, [x, y] = P(u, 0.07), [x2, y2] = P(u - 0.02, 0.12); ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x2, y2); ctx.stroke(); }
+  if (limbs) for (let i = 0; i < 5; i++) { const u = 0.72 - i * 0.07, [x, y] = P(u, 0.05), [x2, y2] = P(u - 0.03, 0.16); ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x2, y2); ctx.stroke(); }
+  if (limbs) for (let i = 0; i < 4; i++) { const u = 0.42 - i * 0.07, [x, y] = P(u, 0.07), [x2, y2] = P(u - 0.02, 0.12); ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x2, y2); ctx.stroke(); }
   fin(ctx, P, W, [[0.16, -0.03], [0.02, -0.075], [0, -0.06, 'c'], [0.03, 0.0], [0, 0.07, 'c'], [0.03, 0.08], [0.16, 0.05]], [0.14, 0.01], s.body[0], s.body[0], { a: 0.8, rays: 6 });
-  const pts: Pt[] = [[1, -0.075, 'c'], [0.86, -0.07], [0.78, -0.11], [0.6, -0.125], [0.42, -0.12], [0.28, -0.09], [0.16, -0.05], [0.13, 0.0],
-    [0.16, 0.05], [0.28, 0.07], [0.42, 0.08], [0.6, 0.075], [0.75, 0.065], [0.84, 0.04], [0.86, -0.02]];
+  const pts: Pt[] = SHRIMP_OUTLINE.map(([u, v], i) => (i ? [u, v] : [u, v, 'c']));
   body(ctx, P, W, pts, -0.125, 0.08, [[0, s.body[0]], [0.6, s.body[1]], [1, s.body[1]]], 0.03, l => {
     for (let i = 0; i < 5; i++) { const u = 0.62 - i * 0.09, [x, y0] = P(u, -0.13), [, y1] = P(u, 0.08); l.strokeStyle = 'rgba(30,10,10,0.14)'; l.lineWidth = 0.006 * W; l.beginPath(); l.moveTo(x, y0); l.quadraticCurveTo(x - 0.02 * W, (y0 + y1) / 2, x, y1); l.stroke(); }
     if (s.dots) for (let i = 0; i < 14; i++) blob(l, P, W, 0.2 + i * 0.045, 0.02 + (i % 2) * 0.012, 0.008, 0.005, s.dots, 0.8);
     soft(l, P, 0.2, 0.86, -0.13, -0.09, '#ffffff', 0.18, [0.05, 0.05], [0.01, 0.02]);
   });
   ctx.strokeStyle = hexA(s.body[0], 0.8); ctx.lineWidth = 0.004 * W;
-  for (const k of [0, 1]) { const [x0, y0] = P(0.88, -0.07), [x1, y1] = P(0.3 - k * 0.12, -0.17 + k * 0.02); ctx.beginPath(); ctx.moveTo(x0, y0); ctx.quadraticCurveTo(...P(0.75, -0.2), x1, y1); ctx.stroke(); }
-  eye(ctx, P, W, 0.86, -0.06, 0.018, ['#3a2a22', '#120c0a']);
+  if (limbs) for (const k of [0, 1]) { const [x0, y0] = P(0.88, -0.07), [x1, y1] = P(0.3 - k * 0.12, -0.17 + k * 0.02); ctx.beginPath(); ctx.moveTo(x0, y0); ctx.quadraticCurveTo(...P(0.75, -0.2), x1, y1); ctx.stroke(); }
+  if (style.features) eye(ctx, P, W, 0.86, -0.06, 0.018, ['#3a2a22', '#120c0a']);
 }
 
 const N = '#b9b8ad'; // neutral fin tint
+/** A zigzag line as a thin polygon (a `poly` mark): n segments from u0 to u1, peaks at +/- amp, half-thickness t. */
+const zigzag = (u0: number, u1: number, n: number, amp: number, t: number): [number, number][] => {
+  const mid = Array.from({ length: n + 1 }, (_, i) => [u0 + (u1 - u0) * i / n, i % 2 ? amp : -amp] as [number, number]);
+  return [...mid.map(([u, v]) => [u, v - t] as [number, number]), ...mid.reverse().map(([u, v]) => [u, v + t] as [number, number])];
+};
+
 export const PLANS: Record<string, Plan> = {
   cardinal: { thick: 0.42, depth: 0.22, pedU: 0.17, ped: 0.035, peak: 0.55, snout: 0.35, shade: ['#4d5443', '#9aa39a', '#c7c4bc'], tail: { type: 'fork', h: 0.14 }, fin: '#b7c0bd',
     dorsal: { u0: 0.47, u1: 0.6, h: 0.07 }, anal: { u0: 0.27, u1: 0.48, h: 0.05 }, adipose: true, pelvic: { u: 0.62, len: 0.06 },
     marks: [{ k: 'band', u0: 0.17, u1: 0.95, v0: -0.005, v1: 0.2, c: '#c02f38', a: 0.95, f: 0.012 }, { k: 'band', u0: 0.22, u1: 0.93, v0: -0.065, v1: -0.008, c: '#2aa9e0', a: 1, f: 0.01 }],
     eye: { r: 0.026, iris: ['#b9ccd2', '#4c5c63'] } },
-  ember: { depth: 0.26, pedU: 0.2, ped: 0.04, peak: 0.5, snout: 0.4, shade: ['#b0522e', '#d9743e', '#e89a6a'], tail: { type: 'fork', h: 0.15, tint: '#d07a4e' }, fin: '#d58a5c',
+  // neon: was hand-drawn (drawTetra); outline, fins and colours taken from that drawing
+  tetra: { thick: 0.42, depth: 0.22, pedU: 0.16, ped: 0.036, peak: 0.6, snout: 0.35, shade: ['#56604a', '#a4ada2', '#dcdad2'], tail: { type: 'fork', h: 0.15 }, fin: '#aebbb8',
+    dorsal: { u0: 0.46, u1: 0.61, h: 0.06 }, anal: { u0: 0.26, u1: 0.48, h: 0.05 }, adipose: true, pelvic: { u: 0.6, len: 0.05 },
+    marks: [{ k: 'band', u0: 0.15, u1: 0.6, v0: -0.008, v1: 0.2, c: '#c4303a', a: 0.95, f: 0.015 }, { k: 'band', u0: 0.24, u1: 0.93, v0: -0.07, v1: -0.006, c: '#2aa9e0', a: 1, f: 0.012 },
+      { k: 'band', u0: 0.3, u1: 0.85, v0: -0.05, v1: -0.025, c: '#bfeaf6', a: 0.45, f: 0.006 }],
+    eye: { r: 0.024, iris: ['#b9ccd2', '#4c5c63'] } },
+  ember: { thick: 0.42, depth: 0.26, pedU: 0.2, ped: 0.04, peak: 0.5, snout: 0.4, shade: ['#b0522e', '#d9743e', '#e89a6a'], tail: { type: 'fork', h: 0.15, tint: '#d07a4e' }, fin: '#d58a5c',
     dorsal: { u0: 0.47, u1: 0.6, h: 0.08 }, anal: { u0: 0.28, u1: 0.5, h: 0.06 }, adipose: true, pelvic: { u: 0.6, len: 0.06 },
     marks: [{ k: 'band', u0: 0.4, u1: 0.95, v0: 0.04, v1: 0.15, c: '#f2c7a6', a: 0.5, f: 0.03 }], eye: { r: 0.03, iris: ['#d8a070', '#5b3020'] } },
-  rummynose: { depth: 0.21, pedU: 0.2, ped: 0.035, peak: 0.55, snout: 0.35, shade: ['#8b927f', '#c9cdc2', '#e2e1da'], tail: { type: 'fork', h: 0.14 }, fin: '#c8ccc5',
+  rummynose: { thick: 0.42, depth: 0.21, pedU: 0.2, ped: 0.035, peak: 0.55, snout: 0.35, shade: ['#8b927f', '#c9cdc2', '#e2e1da'], tail: { type: 'fork', h: 0.14 }, fin: '#c8ccc5',
     dorsal: { u0: 0.48, u1: 0.6, h: 0.07 }, anal: { u0: 0.27, u1: 0.48, h: 0.05 }, adipose: true, pelvic: { u: 0.62, len: 0.05 },
     marks: [{ k: 'blob', u: 0.93, v: -0.01, ru: 0.09, rv: 0.08, c: '#c4303a', a: 0.95 }],
     finMarks: [{ k: 'bars', us: [0.04, 0.12], w: 0.035, c: '#1e1e20', a: 0.85 }, { k: 'band', u0: 0, u1: 0.2, v0: -0.012, v1: 0.012, c: '#1e1e20', a: 0.85, f: 0.005 }],
@@ -267,7 +304,7 @@ export const PLANS: Record<string, Plan> = {
   harlequin: { thick: 0.38, depth: 0.31, pedU: 0.2, ped: 0.045, peak: 0.5, snout: 0.3, shade: ['#8a6f58', '#d29a7c', '#e8c3ad'], tail: { type: 'fork', h: 0.16, tint: '#d79c82' }, fin: '#d6a48c',
     dorsal: { u0: 0.47, u1: 0.6, h: 0.09 }, anal: { u0: 0.33, u1: 0.47, h: 0.06 }, pelvic: { u: 0.6, len: 0.06 },
     marks: [{ k: 'poly', pts: [[0.62, -0.06], [0.62, 0.02], [0.4, 0.1], [0.22, 0.03], [0.22, -0.03]], c: '#1f1d22', a: 0.88 }], eye: { r: 0.03, iris: ['#c8b8a0', '#55483a'] } },
-  chili: { depth: 0.21, pedU: 0.2, ped: 0.035, peak: 0.5, snout: 0.35, shade: ['#a5402e', '#d4563c', '#e07a5c'], tail: { type: 'fork', h: 0.13, tint: '#c95a44' }, fin: '#cf7056',
+  chili: { thick: 0.42, depth: 0.21, pedU: 0.2, ped: 0.035, peak: 0.5, snout: 0.35, shade: ['#a5402e', '#d4563c', '#e07a5c'], tail: { type: 'fork', h: 0.13, tint: '#c95a44' }, fin: '#cf7056',
     dorsal: { u0: 0.4, u1: 0.52, h: 0.07 }, anal: { u0: 0.3, u1: 0.44, h: 0.05 }, pelvic: { u: 0.56, len: 0.05 },
     marks: [{ k: 'band', u0: 0.22, u1: 0.85, v0: -0.012, v1: 0.012, c: '#2a1a18', a: 0.7, f: 0.01 }, { k: 'blob', u: 0.24, v: 0, ru: 0.03, rv: 0.025, c: '#1a1212', a: 0.8 }],
     eye: { r: 0.03, iris: ['#d07050', '#4a1a12'] } },
@@ -276,7 +313,7 @@ export const PLANS: Record<string, Plan> = {
     marks: [-0.055, -0.015, 0.025, 0.065].map(v => ({ k: 'band' as const, u0: 0.2, u1: 0.9, v0: v - 0.012, v1: v + 0.012, c: '#2b4f8c', a: 0.9, f: 0.008 })),
     finMarks: [-0.03, 0, 0.03].map(v => ({ k: 'band' as const, u0: 0.0, u1: 0.25, v0: v - 0.007, v1: v + 0.007, c: '#2b4f8c', a: 0.8, f: 0.004 })),
     eye: { r: 0.026, iris: ['#c9c2a6', '#4e4a3c'] } },
-  cherrybarb: { depth: 0.29, pedU: 0.2, ped: 0.045, peak: 0.55, snout: 0.45, shade: ['#8a3a2a', '#c4473a', '#d97a62'], tail: { type: 'fork', h: 0.15, tint: '#c25a48' }, fin: '#c96b58',
+  cherrybarb: { thick: 0.4, depth: 0.29, pedU: 0.2, ped: 0.045, peak: 0.55, snout: 0.45, shade: ['#8a3a2a', '#c4473a', '#d97a62'], tail: { type: 'fork', h: 0.15, tint: '#c25a48' }, fin: '#c96b58',
     dorsal: { u0: 0.47, u1: 0.6, h: 0.1 }, anal: { u0: 0.3, u1: 0.42, h: 0.06 }, pelvic: { u: 0.58, len: 0.06 },
     marks: [{ k: 'band', u0: 0.2, u1: 0.9, v0: -0.01, v1: 0.012, c: '#4a1d16', a: 0.6, f: 0.01 }], eye: { r: 0.03, iris: ['#c9a080', '#4a2a1a'] } },
   tigerbarb: { thick: 0.38, depth: 0.42, pedU: 0.2, ped: 0.05, peak: 0.5, snout: 0.45, shade: ['#8c7a45', '#d8b670', '#ecd7a4'], tail: { type: 'fork', h: 0.17, tint: '#d07a4a', edge: '#c23a28' }, fin: '#d3a274',
@@ -287,26 +324,33 @@ export const PLANS: Record<string, Plan> = {
     marks: [{ k: 'blob', u: 0.55, v: 0, ru: 0.06, rv: 0.05, c: '#2d6fb0', a: 0.8 }, { k: 'blob', u: 0.47, v: 0.01, ru: 0.03, rv: 0.03, c: '#1a1a1a', a: 0.8 }, { k: 'blob', u: 0.68, v: 0.02, ru: 0.06, rv: 0.04, c: '#e0884a', a: 0.7 }],
     finMarks: [{ k: 'band', u0: 0, u1: 0.2, v0: -0.3, v1: 0.3, c: '#3a6ab8', a: 0.55, f: 0.08 }, { k: 'spots', n: 26, u0: 0.04, u1: 0.38, v0: -0.24, v1: 0.24, r: 0.014, c: '#2a2a40', a: 0.6 }],
     eye: { r: 0.026, iris: ['#c9b890', '#4a3e2c'] } },
-  platy: { depth: 0.36, pedU: 0.2, ped: 0.06, peak: 0.45, snout: 0.6, mouth: -0.02, shade: ['#b0482a', '#de6a3a', '#eb9a6a'], tail: { type: 'notch', h: 0.16, tint: '#d87850' }, fin: '#da8a62',
+  platy: { thick: 0.5, depth: 0.36, pedU: 0.2, ped: 0.06, peak: 0.45, snout: 0.6, mouth: -0.02, shade: ['#b0482a', '#de6a3a', '#eb9a6a'], tail: { type: 'notch', h: 0.16, tint: '#d87850' }, fin: '#da8a62',
     dorsal: { u0: 0.42, u1: 0.58, h: 0.09 }, anal: { u0: 0.42, u1: 0.5, h: 0.05 }, pelvic: { u: 0.62, len: 0.06 },
     eye: { r: 0.034, iris: ['#cfb890', '#4a3e2c'] } },
-  molly: { depth: 0.31, pedU: 0.22, ped: 0.07, peak: 0.45, snout: 0.6, mouth: -0.02, shade: ['#141416', '#232427', '#33353a'], tail: { type: 'round', h: 0.16, tint: '#2a2b30', a: 0.75 }, fin: '#2d2e33',
+  molly: { thick: 0.5, depth: 0.31, pedU: 0.22, ped: 0.07, peak: 0.45, snout: 0.6, mouth: -0.02, shade: ['#141416', '#232427', '#33353a'], tail: { type: 'round', h: 0.16, tint: '#2a2b30', a: 0.75 }, fin: '#2d2e33',
     dorsal: { u0: 0.33, u1: 0.62, h: 0.12, shape: 'sail', a: 0.75 }, anal: { u0: 0.4, u1: 0.5, h: 0.06 }, pelvic: { u: 0.62, len: 0.05 },
     marks: [{ k: 'blob', u: 0.6, v: -0.02, ru: 0.15, rv: 0.08, c: '#6a7080', a: 0.18 }], eye: { r: 0.03, iris: ['#9a8a6a', '#2a2418'] } },
-  swordtail: { depth: 0.27, pedU: 0.3, ped: 0.05, peak: 0.45, snout: 0.5, mouth: -0.015, shade: ['#a63a2a', '#d4553a', '#e4886a'], tail: { type: 'sword', h: 0.18, tint: '#d26a48' }, fin: '#d07a58',
+  swordtail: { thick: 0.45, depth: 0.27, pedU: 0.3, ped: 0.05, peak: 0.45, snout: 0.5, mouth: -0.015, shade: ['#a63a2a', '#d4553a', '#e4886a'], tail: { type: 'sword', h: 0.18, tint: '#d26a48' }, fin: '#d07a58',
     dorsal: { u0: 0.47, u1: 0.62, h: 0.09 }, anal: { u0: 0.5, u1: 0.57, h: 0.05 }, pelvic: { u: 0.65, len: 0.05 },
     finMarks: [{ k: 'band', u0: 0, u1: 0.25, v0: 0.06, v1: 0.12, c: '#1c1c1c', a: 0.85, f: 0.008 }], eye: { r: 0.028, iris: ['#cfb890', '#4a3e2c'] } },
-  betta: { depth: 0.24, pedU: 0.36, ped: 0.08, peak: 0.4, snout: 0.6, mouth: -0.02, shade: ['#4a1428', '#8a1f34', '#a33a44'], tail: { type: 'veil', h: 0.38, tint: '#9c2236', a: 0.8 }, fin: '#a02a3c', ray: '#5a0f1c',
+  betta: { thick: 0.45, depth: 0.24, pedU: 0.36, ped: 0.08, peak: 0.4, snout: 0.6, mouth: -0.02, shade: ['#4a1428', '#8a1f34', '#a33a44'], tail: { type: 'veil', h: 0.38, tint: '#9c2236', a: 0.8 }, fin: '#a02a3c', ray: '#5a0f1c',
     dorsal: { u0: 0.32, u1: 0.55, h: 0.22, shape: 'long', a: 0.8 }, anal: { u0: 0.3, u1: 0.62, h: 0.25, shape: 'long', a: 0.8 }, pelvic: { u: 0.68, len: 0.12, thread: true, tint: '#9c2236' },
     marks: [{ k: 'spots', n: 60, u0: 0.38, u1: 0.85, v0: -0.08, v1: 0.08, r: 0.01, c: '#4f7fb8', a: 0.35 }],
     finMarks: [{ k: 'spots', n: 60, u0: 0, u1: 0.6, v0: -0.4, v1: 0.4, r: 0.015, c: '#4f7fb8', a: 0.25 }],
     eye: { r: 0.03, iris: ['#7a3030', '#1a0808'] } },
+  // pearl gourami: was hand-drawn (drawGourami); outline, fins and markings taken from that drawing
+  gourami: { thick: 0.32, depth: 0.39, pedU: 0.17, ped: 0.08, peak: 0.45, snout: 0.5, mouth: -0.02, shade: ['#5e5644', '#a09274', '#d3c6a8'], tail: { type: 'round', h: 0.16, tint: '#a8987a' }, fin: '#a8987a', ray: '#73654f',
+    dorsal: { u0: 0.2, u1: 0.5, h: 0.08, shape: 'round' }, anal: { u0: 0.18, u1: 0.68, h: 0.09, shape: 'round', edge: '#c87a3e' }, pelvic: { u: 0.72, len: 0.4, thread: true, tint: '#c8b48a' },
+    marks: [{ k: 'blob', u: 0.78, v: 0.15, ru: 0.2, rv: 0.09, c: '#cc5a22', a: 1 }, { k: 'spots', n: 200, u0: 0.18, u1: 0.88, v0: -0.2, v1: 0.12, r: 0.009, c: '#f2eadb', a: 0.9 },
+      { k: 'poly', pts: zigzag(0.86, 0.21, 13, 0.01, 0.006), c: '#2a251d', a: 0.6 }, { k: 'blob', u: 0.215, v: 0, ru: 0.03, rv: 0.03, c: '#2a251d', a: 0.7 }],
+    finMarks: [{ k: 'spots', n: 110, u0: 0.02, u1: 0.62, v0: -0.27, v1: 0.27, r: 0.009, c: '#f2eadb', a: 0.6 }],
+    eye: { r: 0.024, iris: ['#d0b48a', '#5e4a2e'] } },
   dwarfgourami: { thick: 0.32, depth: 0.42, pedU: 0.2, ped: 0.06, peak: 0.5, snout: 0.5, mouth: -0.02, shade: ['#2f5c8a', '#c25a3a', '#d47a54'], tail: { type: 'round', h: 0.17, tint: '#c6603e' }, fin: '#c86a4a',
     dorsal: { u0: 0.22, u1: 0.55, h: 0.1, shape: 'round', edge: '#3c74b0' }, anal: { u0: 0.2, u1: 0.72, h: 0.12, shape: 'round', edge: '#3c74b0' }, pelvic: { u: 0.72, len: 0.4, thread: true, tint: '#d68a5a' },
     marks: [0.32, 0.4, 0.48, 0.56, 0.64, 0.72, 0.8].map(u => ({ k: 'band' as const, u0: u, u1: u + 0.035, v0: -0.25, v1: 0.25, c: '#3a78b8', a: 0.75, f: 0.01 })),
     finMarks: [{ k: 'spots', n: 40, u0: 0.05, u1: 0.7, v0: -0.35, v1: 0.35, r: 0.012, c: '#3a78b8', a: 0.6 }],
     eye: { r: 0.032, iris: ['#c8603a', '#3a1a10'] } },
-  honeygourami: { depth: 0.38, pedU: 0.2, ped: 0.06, peak: 0.5, snout: 0.5, mouth: -0.02, shade: ['#b06a2a', '#e09a42', '#eabc78'], tail: { type: 'round', h: 0.15, tint: '#dca064' }, fin: '#dca064',
+  honeygourami: { thick: 0.32, depth: 0.38, pedU: 0.2, ped: 0.06, peak: 0.5, snout: 0.5, mouth: -0.02, shade: ['#b06a2a', '#e09a42', '#eabc78'], tail: { type: 'round', h: 0.15, tint: '#dca064' }, fin: '#dca064',
     dorsal: { u0: 0.25, u1: 0.55, h: 0.08, shape: 'round' }, anal: { u0: 0.22, u1: 0.68, h: 0.1, shape: 'round', edge: '#3a3020' }, pelvic: { u: 0.7, len: 0.3, thread: true, tint: '#e0a868' },
     marks: [{ k: 'band', u0: 0.65, u1: 0.95, v0: 0.05, v1: 0.2, c: '#2c2a30', a: 0.6, f: 0.04 }], eye: { r: 0.03, iris: ['#d08a40', '#4a2a10'] } },
   gbr: { thick: 0.36, depth: 0.44, pedU: 0.22, ped: 0.06, peak: 0.5, snout: 0.55, shade: ['#6b7a5a', '#b8b46a', '#d8c088'], tail: { type: 'round', h: 0.17, tint: '#b0907a' }, fin: '#b89a80',
@@ -315,11 +359,11 @@ export const PLANS: Record<string, Plan> = {
       { k: 'blob', u: 0.62, v: -0.04, ru: 0.05, rv: 0.06, c: '#1a1a1e', a: 0.75 }, { k: 'spots', n: 70, u0: 0.25, u1: 0.8, v0: -0.15, v1: 0.15, r: 0.012, c: '#5aa0d8', a: 0.75 }],
     finMarks: [{ k: 'spots', n: 50, u0: 0, u1: 0.65, v0: -0.4, v1: 0.4, r: 0.01, c: '#5aa0d8', a: 0.55 }],
     eye: { r: 0.032, iris: ['#c8443a', '#4a1210'] } },
-  bolivianram: { depth: 0.38, pedU: 0.22, ped: 0.055, peak: 0.5, snout: 0.5, shade: ['#6a6450', '#b8ae8a', '#d8cfb0'], tail: { type: 'lyre', h: 0.17, tint: '#c2a890' }, fin: '#c2ac94',
+  bolivianram: { thick: 0.36, depth: 0.38, pedU: 0.22, ped: 0.055, peak: 0.5, snout: 0.5, shade: ['#6a6450', '#b8ae8a', '#d8cfb0'], tail: { type: 'lyre', h: 0.17, tint: '#c2a890' }, fin: '#c2ac94',
     dorsal: { u0: 0.22, u1: 0.62, h: 0.12, shape: 'round', edge: '#c8443a' }, anal: { u0: 0.22, u1: 0.48, h: 0.09, shape: 'round' }, pelvic: { u: 0.65, len: 0.1, tint: '#d26a52' },
     marks: [{ k: 'blob', u: 0.58, v: -0.01, ru: 0.04, rv: 0.04, c: '#1a1a1e', a: 0.8 }, { k: 'bars', us: [0.87], w: 0.03, c: '#2a2a2c', a: 0.7 }, { k: 'blob', u: 0.8, v: 0.1, ru: 0.12, rv: 0.06, c: '#e8a868', a: 0.5 }],
     eye: { r: 0.03, iris: ['#c8443a', '#4a1210'] } },
-  kribensis: { depth: 0.3, pedU: 0.2, ped: 0.05, peak: 0.55, snout: 0.45, shade: ['#5c5848', '#b3aa90', '#d8b8a8'], tail: { type: 'notch', h: 0.15, tint: '#c8ac6a' }, fin: '#c0a674',
+  kribensis: { thick: 0.45, belly: 0.2, depth: 0.3, pedU: 0.2, ped: 0.05, peak: 0.55, snout: 0.45, shade: ['#5c5848', '#b3aa90', '#d8b8a8'], tail: { type: 'notch', h: 0.15, tint: '#c8ac6a' }, fin: '#c0a674',
     dorsal: { u0: 0.22, u1: 0.68, h: 0.08, shape: 'round', edge: '#c8443a' }, anal: { u0: 0.22, u1: 0.45, h: 0.08, shape: 'round' }, pelvic: { u: 0.66, len: 0.1, tint: '#7a4ca0' },
     marks: [{ k: 'band', u0: 0.2, u1: 0.92, v0: -0.02, v1: 0.02, c: '#2a2620', a: 0.8, f: 0.012 }, { k: 'blob', u: 0.62, v: 0.1, ru: 0.15, rv: 0.06, c: '#d0405a', a: 0.75 }],
     finMarks: [{ k: 'blob', u: 0.3, v: -0.17, ru: 0.025, rv: 0.025, c: '#1a1a1a', a: 0.85 }], eye: { r: 0.028, iris: ['#c8a050', '#3a2a10'] } },
@@ -332,7 +376,7 @@ export const PLANS: Record<string, Plan> = {
     marks: [{ k: 'blob', u: 0.86, v: -0.15, ru: 0.09, rv: 0.07, c: '#c4a46a', a: 0.45 }, { k: 'blob', u: 0.6, v: -0.06, ru: 0.22, rv: 0.2, c: '#ffffff', a: 0.14 },
       { k: 'bars', us: [0.865, 0.645, 0.43], w: 0.05, c: '#26262a', a: 0.9 }, { k: 'bars', us: [0.235], w: 0.06, c: '#26262a', a: 0.5 }],
     finMarks: [{ k: 'bars', us: [0.645, 0.43], w: 0.05, c: '#26262a', a: 0.8 }], eye: { r: 0.026, iris: ['#c8673f', '#5b2a1c'] } },
-  oscar: { depth: 0.42, pedU: 0.2, ped: 0.07, peak: 0.5, snout: 0.55, mouth: 0.01, shade: ['#2a2a24', '#3e3b30', '#4a4438'], tail: { type: 'round', h: 0.16, tint: '#3a372e', a: 0.85 }, fin: '#3a372e',
+  oscar: { thick: 0.48, depth: 0.42, pedU: 0.2, ped: 0.07, peak: 0.5, snout: 0.55, mouth: 0.01, shade: ['#2a2a24', '#3e3b30', '#4a4438'], tail: { type: 'round', h: 0.16, tint: '#3a372e', a: 0.85 }, fin: '#3a372e',
     dorsal: { u0: 0.2, u1: 0.68, h: 0.08, shape: 'round', a: 0.85 }, anal: { u0: 0.2, u1: 0.45, h: 0.09, shape: 'round', a: 0.85 }, pelvic: { u: 0.62, len: 0.09 },
     marks: [{ k: 'spots', n: 12, u0: 0.3, u1: 0.8, v0: -0.05, v1: 0.15, r: 0.045, c: '#c8642a', a: 0.6 }, { k: 'blob', u: 0.24, v: -0.02, ru: 0.04, rv: 0.04, c: '#d8702a', a: 0.9 }, { k: 'blob', u: 0.24, v: -0.02, ru: 0.022, rv: 0.022, c: '#141414', a: 0.95 }],
     eye: { r: 0.03, iris: ['#c84a2a', '#3a1208'] } },
@@ -343,7 +387,7 @@ export const PLANS: Record<string, Plan> = {
   bronzecory: { plates: true, thick: 0.72, belly: 0.9, wide: 0.5, pedT: 0.28, step: 0.18, noseW: 0.4, depth: 0.35, pedU: 0.18, ped: 0.06, peak: 0.6, back: 0.68, snout: 0.6, mouth: 0.06, shade: ['#4a5a48', '#8a8a62', '#d8c8a0'], tail: { type: 'fork', h: 0.15 }, fin: '#b0a888',
     dorsal: { u0: 0.5, u1: 0.68, h: 0.16, shape: 'sail' }, anal: { u0: 0.32, u1: 0.4, h: 0.06 }, adipose: true, pelvic: { u: 0.55, len: 0.08 },
     marks: [{ k: 'blob', u: 0.6, v: -0.04, ru: 0.25, rv: 0.08, c: '#5a8070', a: 0.45 }], barbels: 0.03, eye: { r: 0.032, iris: ['#c8b890', '#3a3020'], dv: -0.05 } },
-  pandacory: { plates: true, depth: 0.35, pedU: 0.18, ped: 0.06, peak: 0.6, back: 0.68, snout: 0.6, mouth: 0.06, shade: ['#c8c0b0', '#e8e0d0', '#f0ebe0'], tail: { type: 'fork', h: 0.15 }, fin: '#d8d2c4',
+  pandacory: { plates: true, thick: 0.72, belly: 0.9, wide: 0.5, pedT: 0.28, step: 0.18, noseW: 0.4, depth: 0.35, pedU: 0.18, ped: 0.06, peak: 0.6, back: 0.68, snout: 0.6, mouth: 0.06, shade: ['#c8c0b0', '#e8e0d0', '#f0ebe0'], tail: { type: 'fork', h: 0.15 }, fin: '#d8d2c4',
     dorsal: { u0: 0.5, u1: 0.68, h: 0.16, shape: 'sail', tint: '#2a2a2a', a: 0.85 }, anal: { u0: 0.32, u1: 0.4, h: 0.06 }, adipose: true, pelvic: { u: 0.55, len: 0.08 },
     marks: [{ k: 'bars', us: [0.885], w: 0.06, c: '#1c1c1c', a: 0.95 }, { k: 'blob', u: 0.24, v: -0.02, ru: 0.06, rv: 0.06, c: '#1c1c1c', a: 0.9 }], barbels: 0.03,
     eye: { r: 0.032, iris: ['#4a4040', '#0c0a0a'], dv: -0.05 } },
@@ -363,7 +407,7 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { u0: 0.5, u1: 0.64, h: 0.11 }, anal: { u0: 0.3, u1: 0.4, h: 0.06 }, pelvic: { u: 0.56, len: 0.07 },
     marks: [{ k: 'bars', us: [0.86, 0.6, 0.3], w: 0.08, c: '#1c1a18', a: 0.92 }], finMarks: [{ k: 'bars', us: [0.57], w: 0.04, c: '#1c1a18', a: 0.9 }], barbels: 0.02,
     eye: { r: 0.022, iris: ['#c8a050', '#3a2a10'] } },
-  sae: { depth: 0.2, pedU: 0.2, ped: 0.04, peak: 0.6, back: 0.58, snout: 0.45, mouth: 0.02, shade: ['#7a7258', '#bdb498', '#e0dccc'], tail: { type: 'fork', h: 0.13 }, fin: '#c8c2ae',
+  sae: { thick: 0.55, belly: 0.3, depth: 0.2, pedU: 0.2, ped: 0.04, peak: 0.6, back: 0.58, snout: 0.45, mouth: 0.02, shade: ['#7a7258', '#bdb498', '#e0dccc'], tail: { type: 'fork', h: 0.13 }, fin: '#c8c2ae',
     dorsal: { u0: 0.5, u1: 0.62, h: 0.09 }, anal: { u0: 0.28, u1: 0.36, h: 0.05 }, pelvic: { u: 0.55, len: 0.06 },
     marks: [{ k: 'band', u0: 0.18, u1: 0.99, v0: -0.02, v1: 0.02, c: '#1c1a18', a: 0.92, f: 0.008 }], finMarks: [{ k: 'band', u0: 0.08, u1: 0.22, v0: -0.02, v1: 0.02, c: '#1c1a18', a: 0.85, f: 0.006 }], barbels: 0.012,
     eye: { r: 0.022, iris: ['#c8b890', '#3a3020'] } },
@@ -373,6 +417,24 @@ const SHRIMP: Record<string, ShrimpSpec> = {
   cherryshrimp: { body: ['#b8242a', '#d8444a'] },
   amano: { body: ['#9a9a8a', '#c8c4b4'], dots: '#6a4a3a' },
 };
+/**
+ * 3D shrimp: the drawing's outline lofted; walking legs, swimmerets and antennae as tubes where the card paints them
+ * (splayed outward); the tail fan stays on the card.
+ */
+const shrimpPlan = (s: ShrimpSpec): Plan => ({
+  outline: SHRIMP_OUTLINE, thick: 0.6, pedT: 0.6, depth: 0.205, pedU: 0.14, ped: 0.05, pectoral: false,
+  shade: [s.body[0], s.body[1], s.body[1]], tail: { type: 'fork', h: 0.1 }, fin: s.body[0],
+  eye: { r: 0.022, u: 0.835, dv: -0.17, iris: ['#3a2a22', '#120c0a'] },
+  limbs: [
+    ...[0, 1, 2, 3, 4].map(i => ({ u: 0.72 - i * 0.07, v: 0.045, to: [-0.03, 0.11, 0.03], via: [-0.005, 0.03, 0.04], r: 0.005 }) as Limb),
+    ...[0, 1, 2, 3].map(i => ({ u: 0.42 - i * 0.07, v: 0.06, to: [-0.02, 0.05, 0.02], r: 0.004 }) as Limb),
+    { u: 0.88, v: -0.065, to: [-0.58, -0.1, 0.08], via: [-0.13, -0.13, 0.03], r: 0.003 },
+    { u: 0.88, v: -0.065, to: [-0.7, -0.08, 0.13], via: [-0.13, -0.12, 0.05], r: 0.003 },
+  ],
+});
+const SHRIMP_PLANS = Object.fromEntries(Object.entries(SHRIMP).map(([k, s]) => [k, shrimpPlan(s)]));
+/** The body plan the 3D loft and the card cut-out use: a fish plan, or a drawn body's (shrimp). */
+export const bodyPlan = (art: string): Plan | undefined => PLANS[art] ?? SHRIMP_PLANS[art];
 /** Card aspect / resting offset for the shrimp drawing. */
 export const SHRIMP_META = { aspect: 0.4, rest: 0.16 };
 

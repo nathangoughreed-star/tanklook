@@ -4,14 +4,15 @@
 // card stays as the fins (thin membranes); its painted body sits inside the solid. Nose and tail tips are unchanged,
 // so nose-to-tail stays adult TL.
 import * as THREE from 'three';
-import { PLANS, eyeSpot, pairedFins, profile, type Plan } from '../art/fishgen';
+import { bodyPlan, eyeSpot, pairedFins, profile, type Plan } from '../art/fishgen';
+import { SNAILS } from '../art/snails';
 import type { EdgeMode } from '../scene/types';
 import { cardMaterial, pairedFinTexture } from './textures';
 
-/** Species drawn in 3D (test set) and switches for before/after pictures. `fade` = the session-10 fixes (turned-away paint fades, card body cut out, body-shape fields, barbels); off = session 9, for pictures. */
-export const fish3d = { on: true, fade: true, species: new Set(['cardinal', 'discus', 'bronzecory', 'tigerbarb', 'bristlenose', 'kuhli', 'angel', 'danio', 'guppy', 'dwarfgourami', 'gbr', 'harlequin', 'oto', 'clownloach', 'goldfish']) };
+/** Species drawn in 3D (test set) and switches for before/after pictures. `fade` = the session-10 fixes (turned-away paint fades, card body cut out, body-shape fields, barbels); off = session 9, for pictures. `wrap` = the turned-away paint is smeared lengthwise (bars and spots don't close into hoops over the back and throat); off = session 11's round blur. */
+export const fish3d = { on: true, fade: true, wrap: true, species: new Set(['cardinal', 'discus', 'bronzecory', 'tigerbarb', 'bristlenose', 'kuhli', 'angel', 'danio', 'guppy', 'dwarfgourami', 'gbr', 'harlequin', 'oto', 'clownloach', 'goldfish', 'ember', 'rummynose', 'chili', 'cherrybarb', 'platy', 'molly', 'swordtail', 'betta', 'honeygourami', 'bolivianram', 'kribensis', 'oscar', 'pandacory', 'sae', 'tetra', 'gourami', 'cherryshrimp', 'amano', 'nerite', 'mystery', 'ramshorn', 'trumpet']) };
 
-export const has3D = (art: string) => fish3d.on && fish3d.species.has(art) && PLANS[art]?.thick != null;
+export const has3D = (art: string) => fish3d.on && fish3d.species.has(art) && (bodyPlan(art)?.thick != null || art in SNAILS);
 
 const STATIONS = 40, RING = 28, EXP = 2.4; // superellipse exponent: slightly boxy flanks
 /** Pull the solid this far inside the painted outline (widths), so its edge never samples the card's transparent rim. */
@@ -142,6 +143,39 @@ function barbelMeshes(p: Plan, bend: number, mat: THREE.Material) {
 }
 
 /** Paired-fin spread from the body (radians): pelvics hang down and out, pectorals swing out behind the gill cover. */
+/** A tube along `curve` from radius r at its start, tapering to a third at its end (limbs, tentacles). */
+export function taperTube(curve: THREE.Curve<THREE.Vector3>, r: number, N = 12, R = 5) {
+  const tube = new THREE.TubeGeometry(curve, N, r, R, false), pos = tube.attributes.position, c = new THREE.Vector3(), q = new THREE.Vector3();
+  for (let k = 0; k < pos.count; k++) { // pull each ring toward the curve
+    const s = Math.floor(k / (R + 1)) / N; curve.getPoint(s, c);
+    q.fromBufferAttribute(pos, k).sub(c).multiplyScalar(1 - 0.67 * s).add(c); pos.setXYZ(k, q.x, q.y, q.z);
+  }
+  tube.computeVertexNormals();
+  return tube;
+}
+
+/**
+ * Limbs (`Plan.limbs`: legs, antennae) as tubes tapering to a third of the root radius, mirrored on both flanks:
+ * a quadratic curve from the surface point at (u, v) to root + `to`, bowed toward root + `via`.
+ */
+function limbMeshes(art: string, p: Plan, bend: number, mat: THREE.Material) {
+  const out: THREE.Mesh[] = [];
+  p.limbs!.forEach((l, i) => {
+    for (const side of [1, -1]) {
+      const key = `limb:${art}:${bend}:${side}:${i}`;
+      let g = geoCache.get(key);
+      if (!g) {
+        const [t, b] = profile(p)(l.u), r0 = surfaceAt(p, l.u, Math.min(b - 0.004, Math.max(t + 0.004, l.v)), side, bend);
+        const off = (d: [number, number, number]) => r0.clone().add(new THREE.Vector3(d[0], -d[1], d[2] * side));
+        const via = l.via ? off(l.via) : r0.clone().lerp(off(l.to), 0.5);
+        g = taperTube(new THREE.QuadraticBezierCurve3(r0, via, off(l.to)), l.r); g.userData.keep = true; geoCache.set(key, g);
+      }
+      out.push(new THREE.Mesh(g, mat));
+    }
+  });
+  return out;
+}
+
 const SPREAD = { pelvic: 0.6, pectoral: 0.75 };
 
 /**
@@ -202,11 +236,28 @@ function bledTexture(map: THREE.Texture) {
   const tex = (cv: HTMLCanvasElement) => { const t = new THREE.CanvasTexture(cv); t.colorSpace = map.colorSpace; t.anisotropy = map.anisotropy; return t; };
   // the blurred copy shown where the surface turns away from the side (see aqPatch)
   const pl = document.createElement('canvas'); pl.width = c.width; pl.height = c.height;
-  const pc = pl.getContext('2d')!; pc.filter = `blur(${Math.round(c.width * PLAIN_BLUR)}px)`; pc.drawImage(c, 0, 0);
+  const pc = pl.getContext('2d')!;
+  if (fish3d.wrap) {
+    // lengthwise: two box averages along the body, so markings across it (bars, spots) dissolve into the colour
+    // around them while lengthwise fields and stripes stay; then the round blur as before
+    const n = 16, r = c.width * SMEAR;
+    let src: HTMLCanvasElement = c;
+    for (let pass = 0; pass < 2; pass++) {
+      const acc = document.createElement('canvas'); acc.width = c.width; acc.height = c.height;
+      const ac = acc.getContext('2d')!;
+      for (let k = 0; k < n; k++) { ac.globalAlpha = 1 / (k + 1); ac.drawImage(src, Math.round(-r + 2 * r * k / (n - 1)), 0); }
+      src = acc;
+    }
+    pc.filter = `blur(${Math.round(c.width * PLAIN_BLUR)}px)`; pc.drawImage(src, 0, 0);
+  } else { pc.filter = `blur(${Math.round(c.width * PLAIN_BLUR)}px)`; pc.drawImage(c, 0, 0); }
   return { map: tex(c), plain: tex(pl) };
 }
 /** Blur of the turned-away paint (widths): wider than a bar or band, narrower than a colour field. */
 const PLAIN_BLUR = 0.03;
+/** Lengthwise smear of the turned-away paint (box half-width, widths; applied twice): wider than any bar or spot. */
+const SMEAR = 0.08;
+/** How squarely the surface must face the side (|normal.z|) before the sharp paint shows: the plain copy below x, the paint above y. */
+const SIDE = new THREE.Vector2(0.45, 0.9);
 
 /** Eye dome texture by angle from the pole (SphereGeometry: top pole = uv.y 1): pupil, iris, then dark rim. */
 function eyeTexture(iris: [string, string]) {
@@ -232,11 +283,11 @@ const fishMat = (key: string, make: () => THREE.MeshBasicMaterial) => {
  * texture (painted without eye, gill and mouth). Geometry is shared per species + bend.
  */
 export function fishBody(art: string, aspect: number, w: number, bend: number, map: THREE.Texture, edge: EdgeMode) {
-  const p = shaped(PLANS[art]), b = Math.round(bend * 20) / 20, key = `${art}|${aspect}|${b}|${fish3d.fade}`;
+  const p = shaped(bodyPlan(art)!), b = Math.round(bend * 20) / 20, key = `${art}|${aspect}|${b}|${fish3d.fade}`;
   let g = geoCache.get(key); if (!g) { g = bodyGeometry(p, aspect, b); geoCache.set(key, g); }
   const grp = new THREE.Group(); grp.scale.setScalar(w);
-  grp.add(new THREE.Mesh(g, fishMat(`body:${map.uuid}:${fish3d.fade}`, () => {
-    const t = bledTexture(map), m = new THREE.MeshBasicMaterial({ map: t.map, vertexColors: true }); if (fish3d.fade) m.userData.plain = t.plain; return m;
+  grp.add(new THREE.Mesh(g, fishMat(`body:${map.uuid}:${fish3d.fade}:${fish3d.wrap}`, () => {
+    const t = bledTexture(map), m = new THREE.MeshBasicMaterial({ map: t.map, vertexColors: true }); if (fish3d.fade) { m.userData.plain = t.plain; m.userData.side = fish3d.wrap ? SIDE : new THREE.Vector2(0.3, 0.75); } return m;
   })));
   for (const e of eyePlacements(p, b)) {
     const m = new THREE.Mesh(dome, fishMat('eye:' + art, () => new THREE.MeshBasicMaterial({ map: eyeTexture(e.iris) })));
@@ -245,6 +296,10 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
     grp.add(m);
   }
   for (const f of finMeshes(art, p, b, edge)) grp.add(f);
+  if (p.limbs) {
+    const mat = fishMat('limb:' + art, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(p.shade[0]).multiplyScalar(0.9) }));
+    for (const m of limbMeshes(art, p, b, mat)) grp.add(m);
+  }
   if (p.barbels) {
     const mat = fishMat('barbel:' + art, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(p.shade[2]).multiplyScalar(0.85) }));
     for (const m of barbelMeshes(p, b, mat)) grp.add(m);

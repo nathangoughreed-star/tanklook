@@ -28,6 +28,41 @@ Order, one work unit per chat:
 4. Verify it on discus, tiger barb, clown loach, harlequin (same four views): sheets `shots/61_<species>_sheet.png`
    (top row before, bottom after). Awaiting Nathan.
 5. Roll 3D out to the remaining fish, flat cards kept as fallbacks until each passes review.
+   STARTED 2026-10-09 (session 14; uncommitted). Lessons from sessions 9-11 collected in `shots/3d_lessons.md`
+   (36 rules, rejected list, per-species recipe). Batch 1 = the 14 fish with body plans, data only (recipe: `thick`;
+   bottom fish the cory / loach fields): ember .42, chili .42, rummynose .42, cherrybarb .4, platy .5, molly .5,
+   swordtail .45, betta .45, honeygourami .32, bolivianram .36, kribensis .45 + belly .2, oscar .48, pandacory = bronze
+   cory fields, sae .55 + belly .3. Sheets `shots/63_rollout_{A..D}.png` (card / 3D, same framing). All pass by my
+   review; awaiting Nathan. A thinner `thick` was tried on eight and reverted: the round head-on look is the 15° of
+   foreshortened length at 75°, not thickness (`shots/63_thick_tune.png`).
+   Left (`shots/64_remaining.png`): neon + pearl gourami (hand-drawn, no Plan); shrimp; 4 snails; 5 amphibians.
+   Nathan 2026-10-09: yes, neon + pearl gourami next, then the non-fish generators (shrimp, snails, amphibians).
+   Batch 2 DONE (uncommitted): `PLANS.tetra` (neon) and `PLANS.gourami` (pearl) replace `drawTetra` / `drawGourami`
+   (same as the angel: GEN_ART overrides FISH_ART; species `aspect` overrides removed, planMeta computes it). Built
+   from the hand-drawn coordinates; zigzag lateral line = a `poly` mark from the new `zigzag()` helper (data, no new
+   Mark kind). Sheets `shots/65_handdrawn_vs_plan.png`, `shots/65_rollout_E.png`: both pass by my review.
+   `drawTetra` / `drawGourami` are now unused (kept until Nathan approves).
+   Shrimp DONE (uncommitted): three generic Plan fields, reusable by any drawn body: `outline` (closed side polygon
+   replaces the parametric profile: `outlineProfile`), `pectoral: false`, `limbs` (tapered tubes on both flanks from
+   a surface point along a quadratic curve: `limbMeshes` in fish3d). `SHRIMP_PLANS` built from `SHRIMP_OUTLINE`
+   (shared with the card drawing); `bodyPlan(art)` = PLANS ?? SHRIMP_PLANS, used by has3D / fishBody / the card cut.
+   `drawShrimp` skips legs + antennae when `style.paired` is off and the eye when `features` is off. Shrimp: thick .6,
+   eye u .835 r .022, 5 walking legs + 4 swimmerets + 2 antennae per side. Sheet `shots/66_shrimp.png`: pass by my
+   review; watch item: legs fan like a comb head-on.
+   Snails DONE on the floor (uncommitted): `render/snail3d.ts`, ONE shell generator for all four (logarithmic spiral:
+   aperture ellipse swept round the coil axis, `grow` per turn, `drop` = spire slide). Data `SHELL3D` in
+   `art/snails.ts` (turns, grow, drop, ap, axis, size, tall, at, foot, tent, mark). Placement is generic: the shell is
+   turned so the aperture opens down onto the foot, then spun so the spire points nearest `axis`; scaled to fit the
+   card's shell length AND height (`size`, `tall`). Paint follows the coil (uv = along the coil, around the whorl):
+   `axial` zebra (nerite), `spiral` bands (mystery), `growth` lines (ramshorn), `spots` (trumpet). Foot = flat-soled
+   half ellipsoid, tentacles = `taperTube` (shared with the shrimp legs, exported from fish3d). The card stays as the
+   invisible picking target (`HIDDEN` material in build.ts), 3D body is its child; floor snails now get a contact
+   shadow. Glass snails still use the two flat cards. Rules learned: whorls touch only if `ap[1]` >=
+   drop*(1-1/grow)/(1+1/grow) (the trumpet was a corkscrew at 0.55); a nerite is a fast-growing coil with its axis
+   sideways, not a short cone. Sheet `shots/70_snails.png`: all four pass by my review; watch item: the mystery's
+   spire sits low at the back (card: on top) and its aperture lip shows as a pale notch at 50°.
+   Next: amphibians (dart frog, tree frog, fire-bellied toad, fire newt, axolotl): a limbed-body generator.
+   NOTE: `src/render/items.ts` is modified by another chat (not this work).
 
 ## Hardscape system: roadmap steps 3 + 4 built (2026-10-09, session 13; committed and pushed, checked in the browser)
 

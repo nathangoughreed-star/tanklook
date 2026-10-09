@@ -13,6 +13,7 @@ import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
 import { addFixture, applyLighting } from './lighting';
 import { itemMesh } from './items';
 import { fish3d, fishBody, has3D } from './fish3d';
+import { snailBody } from './snail3d';
 import { cardMaterial, fishBodyTexture, fishTexture, gradientTexture, personTexture, snailTexture, substrateTexture } from './textures';
 
 /** Back-wall options; color null = no background (back glass only); light = use dark grid lines. */
@@ -592,7 +593,11 @@ export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: numbe
   };
   for (const f of S.fish) {
     const sp = getSpecies(f.species); if (!sp) continue;
-    if (sp.kind === 'snail') { for (const [m, w, h] of snailMeshes(S, T, f, sp)) register(f, m, w, h); continue; }
+    if (sp.kind === 'snail') {
+      for (const [m, w, h] of snailMeshes(S, T, f, sp)) register(f, m, w, h);
+      if (has3D(sp.art) && (f.surface ?? 'floor') === 'floor') { const w = fishTL(f, sp), sh = contactShadow(S, T, f.x, f.depth, groundHeight(S, T, f.x, f.depth), w, w * 0.45, f.yaw); if (sh) sc.add(sh); }
+      continue;
+    }
     if (!S.water.on && needsWater(sp)) continue; // dry tank: fish stay in the scene data, hidden until the water is back
     const w = fishTL(f, sp), h = w * sp.aspect, p = f;
     const solid = has3D(sp.art), tex = fishTexture(f.species, S.render.edge, solid, solid && fish3d.fade);
@@ -612,6 +617,9 @@ export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: numbe
   return { scene: sc, fishMeshes, meshById, dotMeshes, itemMeshes };
 }
 
+/** Material of a picking card whose animal is drawn in 3D. */
+const HIDDEN = new THREE.MeshBasicMaterial({ visible: false });
+HIDDEN.userData.cached = true; HIDDEN.userData.keep = true;
 /** How far a glass snail sits off the inside of the pane (mm). */
 const PANE_GAP = 0.8;
 
@@ -623,8 +631,11 @@ function snailMeshes(S: TankSetup, T: Tank, f: Fish, sp: Species): [THREE.Mesh, 
   const p = f, surf = f.surface ?? 'floor', w = fishTL(f, sp), edge = S.render.edge;
   const sub = (x: number, d: number) => groundHeight(S, T, x, d);
   if (surf === 'floor') {
-    const h = w * sp.aspect, m = new THREE.Mesh(cardGeometry(w, h, 0), cardMaterial(`snail:${sp.art}:side`, snailTexture(sp.art, 'side'), edge));
+    // 3D: the card stays as the (invisible) picking target, the solid snail stands on its sole under it
+    const h = w * sp.aspect, solid = has3D(sp.art);
+    const m = new THREE.Mesh(cardGeometry(w, h, 0), solid ? HIDDEN : cardMaterial(`snail:${sp.art}:side`, snailTexture(sp.art, 'side'), edge));
     m.position.set(p.x, sub(p.x, p.depth) + sp.rest * w - 0.5, -p.depth); m.rotation.set(0, f.yaw * D2R, 0, 'YXZ');
+    if (solid) { const b = snailBody(sp.art, w); b.position.y = 0.5 - sp.rest * w; m.add(b); }
     return [[m, w, h]];
   }
   // on the glass at the point nearest its (x, depth), just off the inside face, foot (local +z) toward the glass

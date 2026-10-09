@@ -2,7 +2,7 @@
  "version": 2,
  "note": "Card width == typical adult total length (tl, mm) in aquaria; snails: crawling length. aspect = card height / width (computed from the art when omitted). art = a drawing key in src/art (placeholder.ts hand-drawn, fishgen.ts generated, snails.ts). zone 'bottom' rests on the substrate; kind 'snail' clings to the floor or a glass pane. habitat 'land' rests on ground above the water, 'both' on land or in water deep enough (default 'water'). group 'school' swims in a tight, aligned school, 'shoal' in a loose group (when 3+ are kept); level 'top' / 'low' is the part of the water column a swimmer favours (default mid). Both only steer Shuffle. Lengths are total length, nose to tail tip (Nathan 2026-10-08).",
  "species": [
-  {"id": "neon", "name": "Neon tetra", "sci": "Paracheirodon innesi", "tl": 35, "group": "school", "art": "tetra", "aspect": 0.34},
+  {"id": "neon", "name": "Neon tetra", "sci": "Paracheirodon innesi", "tl": 35, "group": "school", "art": "tetra"},
   {"id": "cardinal", "name": "Cardinal tetra", "sci": "Paracheirodon axelrodi", "tl": 45, "group": "school", "art": "cardinal"},
   {"id": "ember", "name": "Ember tetra", "sci": "Hyphessobrycon amandae", "tl": 20, "group": "school", "art": "ember"},
   {"id": "rummynose", "name": "Rummy-nose tetra", "sci": "Hemigrammus rhodostomus", "tl": 50, "group": "school", "art": "rummynose"},
@@ -18,7 +18,7 @@
   {"id": "betta", "name": "Betta (male)", "sci": "Betta splendens", "tl": 65, "level": "top", "art": "betta"},
   {"id": "dwarfgourami", "name": "Dwarf gourami", "sci": "Trichogaster lalius", "tl": 80, "level": "top", "art": "dwarfgourami"},
   {"id": "honeygourami", "name": "Honey gourami", "sci": "Trichogaster chuna", "tl": 50, "level": "top", "art": "honeygourami"},
-  {"id": "gourami", "name": "Pearl gourami", "sci": "Trichopodus leerii", "tl": 120, "level": "top", "art": "gourami", "aspect": 0.6},
+  {"id": "gourami", "name": "Pearl gourami", "sci": "Trichopodus leerii", "tl": 120, "level": "top", "art": "gourami"},
   {"id": "gbr", "name": "German blue ram", "sci": "Mikrogeophagus ramirezi", "tl": 60, "level": "low", "art": "gbr"},
   {"id": "bolivianram", "name": "Bolivian ram", "sci": "Mikrogeophagus altispinosus", "tl": 80, "level": "low", "art": "bolivianram"},
   {"id": "kribensis", "name": "Kribensis", "sci": "Pelvicachromis pulcher", "tl": 90, "level": "low", "art": "kribensis"},
