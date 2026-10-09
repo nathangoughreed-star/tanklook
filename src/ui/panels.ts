@@ -739,7 +739,9 @@ export function attachPanels(store: Store, viewer: Viewer) {
     if (!AQ_PROXY) return `<a class="aq" href="${url}" target="_blank" rel="noopener" title="This tank's stocking on aqadvisor.com">Stocking on AqAdvisor ↗</a>`;
     const key = aqKey(q), got = aqDone.get(key), last = aqLast.get(slot), busy = aqBusy.has(key);
     const stale = got === undefined && last !== undefined;
-    const re = `<button class="aqre${stale ? ' stale' : ''}" data-aq="${i}"${busy ? ' disabled' : ''} title="${stale ? 'The fish or the tank changed since this was checked: click to refresh the stocking level' : got === undefined ? 'Ask AqAdvisor for this tank’s stocking level' : 'Refresh the stocking level'}" aria-label="Refresh stocking level">↻</button>`;
+    // ↻ only when there is something to fetch (Nathan 2026-10-09): never checked, out of date, or the last try failed;
+    // hidden once this tank's current answer is shown
+    const re = got !== undefined ? '' : `<button class="aqre${stale ? ' stale' : ''}" data-aq="${i}"${busy ? ' disabled' : ''} title="${stale ? 'The fish or the tank changed since this was checked: click to refresh the stocking level' : 'Ask AqAdvisor for this tank’s stocking level'}" aria-label="Refresh stocking level">↻</button>`;
     const pct = got ?? last;
     const text = busy ? `Stocking: ${aqWaitText(key)}` : pct !== undefined ? `Stocking ${pct}% (AqAdvisor)` : aqErr.get(key) ?? 'Stocking: not checked';
     const cls = `aq${stale ? ' stale' : pct !== undefined && pct > 100 ? ' over' : ''}`;
