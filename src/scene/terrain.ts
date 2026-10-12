@@ -4,7 +4,7 @@
 // Tank B gets the same arrangement at the same relative spots.
 import { rng } from '../art/paint';
 import { clamp, substrateHeight } from './physics';
-import { inside, shapeOf } from './shape';
+import { bowlDims, inside, shapeOf } from './shape';
 import type { LayoutSettings, SubstrateSettings, Tank, TerrainSettings } from './types';
 
 export interface Ground { substrate: SubstrateSettings; layout: LayoutSettings; terrain?: TerrainSettings }
@@ -77,10 +77,10 @@ export const terrainRings = (cols: number) => Math.max(1, Math.round((cols - 1) 
 /**
  * Radial grid: Catmull-Rom round each ring (periodic) at the angle, then across the rings at the radius. Ring -1 is
  * ring 1 seen from the opposite side, so the surface is smooth through the centre; past the outer ring it holds that
- * ring's value. Radius and angle are measured in the ellipse inscribed in L x D (a circle for a round tank).
+ * ring's value. Radius and angle are measured in terrainDisc.
  */
 function radialHeight(t: TerrainSettings, T: Tank, x: number, depth: number): number {
-  const N = t.rows, h = t.h, ex = (x - T.L / 2) / (T.L / 2), ed = (depth - T.D / 2) / (T.D / 2);
+  const N = t.rows, h = t.h, c = terrainDisc(T), ex = (x - c.x) / c.rx, ed = (depth - c.depth) / c.rd;
   const rho = Math.min(Math.hypot(ex, ed), 1) * N, th = Math.atan2(ed, ex);
   const ring = (k: number, a: number): number => {
     if (k < 0) return ring(-k, a + Math.PI);
@@ -93,6 +93,16 @@ function radialHeight(t: TerrainSettings, T: Tank, x: number, depth: number): nu
   const k = Math.min(Math.floor(rho), N - 1), f = rho - k;
   return cr(ring(k - 1, th), ring(k, th), ring(k + 1, th), ring(k + 2, th), f);
 }
+/** Round tanks and bowls shape their terrain on rings round the centre; every other shape on a rectangular grid. */
+export const radialTerrain = (T: Tank) => shapeOf(T) === 'round' || shapeOf(T) === 'bowl';
+/**
+ * The disc a radial grid spans, in floor-plan mm: the bowl's floor circle (the renderer flares the ground out from it
+ * to meet the sloping glass), else the ellipse inscribed in L x D (the circle of a round tank).
+ */
+export function terrainDisc(T: Tank) {
+  const r = shapeOf(T) === 'bowl' ? bowlDims(T).rb : 0;
+  return { x: T.L / 2, depth: T.D / 2, rx: r || T.L / 2, rd: r || T.D / 2 };
+}
 /** Angle of the first point on every ring: straight to the front glass, so a dot sits at the front centre. */
 const RING_A0 = -Math.PI / 2;
 
@@ -103,9 +113,10 @@ export const terrainRows = (T: Tank, cols: number) => clamp(Math.round((cols - 1
 export function terrainPoints(t: TerrainSettings, T: Tank): { x: number; depth: number }[] {
   const out: { x: number; depth: number }[] = [];
   if (t.radial) {
+    const c = terrainDisc(T);
     for (let k = 0; k <= t.rows; k++) for (let i = 0, n = ringCount(k); i < n; i++) {
       const a = RING_A0 + 2 * Math.PI * i / n, r = k / t.rows;
-      out.push({ x: T.L / 2 * (1 + r * Math.cos(a)), depth: T.D / 2 * (1 + r * Math.sin(a)) });
+      out.push({ x: c.x + c.rx * r * Math.cos(a), depth: c.depth + c.rd * r * Math.sin(a) });
     }
   } else for (let j = 0; j < t.rows; j++) for (let i = 0; i < t.cols; i++) out.push({ x: T.L * i / (t.cols - 1), depth: T.D * j / (t.rows - 1) });
   return out;
@@ -113,11 +124,11 @@ export function terrainPoints(t: TerrainSettings, T: Tank): { x: number; depth: 
 
 /**
  * A fresh grid sampled from the current ground (custom terrain if on, else substrate / swamp land): `cols` points across
- * for a rectangular grid, or for a round tank concentric rings at that spacing, a dot at the centre and the outer ring
+ * for a rectangular grid, or for a round tank or bowl concentric rings at that spacing, a dot at the centre and the outer ring
  * on the glass.
  */
 export function sampleTerrain(g: Ground, T: Tank, cols: number): TerrainSettings {
-  const radial = shapeOf(T) === 'round', rows = radial ? terrainRings(cols) : terrainRows(T, cols);
+  const radial = radialTerrain(T), rows = radial ? terrainRings(cols) : terrainRows(T, cols);
   const t: TerrainSettings = { on: true, cols, rows, h: [], ...(radial ? { radial: true } : {}) };
   t.h = terrainPoints(t, T).map(p => +groundHeight(g, T, p.x, p.depth).toFixed(1));
   return t;

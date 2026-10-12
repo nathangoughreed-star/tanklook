@@ -8,6 +8,7 @@ import { SWAMP_LEVEL, groundHeight, nearestLand, radialSize, randomLand, ringCou
 import { tankWeight } from '../src/scene/weight';
 import { WATERLINE_GAP, spawnSnail, substrateHeight, waterK, waterY } from '../src/scene/physics';
 import { SceneError, parseScene } from '../src/scene/validate';
+import { bowlDims, normTank } from '../src/scene/shape';
 
 /** A v6 (pre-split) flat save built from the default setup: the shape every older file has. */
 const v6 = (): Record<string, any> => { const { tank, ...rest } = structuredClone(defaultSetup()); return { version: 6, name: 'My tank', units: 'in', tankA: tank, tankB: { ...tank }, compare: false, ...rest }; };
@@ -330,6 +331,17 @@ describe('custom terrain (scene v6)', () => {
     for (let x = 1; x <= R.L; x++) { const h = terrainHeight(t, R, x, R.D / 2); maxStep = Math.max(maxStep, Math.abs(h - prev)); prev = h; }
     expect(maxStep).toBeLessThan(3);
     expect(load(JSON.parse(JSON.stringify({ ...defaultScene(), tanks: [s] }))).terrain).toEqual(s.terrain);
+  });
+  it('bowls use the radial grid too, spanning the floor circle', () => {
+    const s = defaultSetup(), B = normTank({ ...s.tank, shape: 'bowl' }), rb = bowlDims(B).rb;
+    s.tank = B;
+    const t = sampleTerrain(s, B, 9), pts = terrainPoints(t, B);
+    expect(t.radial).toBe(true); expect(t.h.length).toBe(radialSize(t.rows));
+    expect(pts[0].x).toBeCloseTo(B.L / 2, 6);
+    const out = pts.slice(-ringCount(t.rows));
+    for (const q of out) expect(Math.hypot(q.x - B.L / 2, q.depth - B.D / 2)).toBeCloseTo(rb, 6);
+    t.h = t.h.map((_, k) => 20 + (k * 37) % 90);
+    pts.forEach((p, k) => expect(terrainHeight(t, B, p.x, p.depth)).toBeCloseTo(t.h[k], 6));
   });
   it('round-trips through save/load and repairs a broken grid', () => {
     const s = defaultSetup(); s.terrain = sampleTerrain(s, s.tank, 5);

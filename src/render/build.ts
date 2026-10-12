@@ -8,7 +8,7 @@ import { restsOnGround } from '../scene/water';
 import { D2R, IN, clamp, floorY, glassThickness, RIM_DROP, RIM_H, tankUnderside, waterY } from '../scene/physics';
 import { alongRun, backgroundRuns, bowlDims, bowlRadius, chord, circleRing, clipToFootprint, facingRuns, footprint, glassFrame, halfWidth, inside, nearestGlass, offsetRing, offsetWalls, runLength, shapeOf, subRun, type P } from '../scene/shape';
 import { TABLE_TOP, tableCentre, tableOn, tableRing, wallPlane } from '../scene/table';
-import { groundHeight, terrainPoints } from '../scene/terrain';
+import { groundHeight, terrainDisc, terrainPoints } from '../scene/terrain';
 import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
 import { addFixture, applyLighting } from './lighting';
 import { itemMesh } from './items';
@@ -492,6 +492,13 @@ function addWall(sc: THREE.Scene, S: TankSetup, T: Tank) {
   sc.add(g);
 }
 
+/** World position of floor-plan point (x, d) on ground at height y; in a bowl (floor radius rb > 0) pushed out from the axis to meet the glass at that height. */
+function flare(T: Tank, x: number, d: number, y: number, rb: number): [number, number, number] {
+  if (!rb) return [x, y, -d];
+  const k = Math.max(1, (bowlRadius(T, y) - 0.5) / rb), cx = T.L / 2, cd = T.D / 2;
+  return [cx + (x - cx) * k, y, -(cd + (d - cd) * k)];
+}
+
 function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   const swamp = S.layout.id === 'swamp' || S.terrain.on;
   if (!S.substrate.show && !swamp) return;
@@ -501,13 +508,8 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   type V3 = [number, number, number];
   const top: number[][] = [], side: number[][] = [], N = swamp ? 72 : 16, wy = waterY(T, S.water.level);
   // a bowl flares above its floor: the ground spreads out from the centre to meet the glass at its own height
-  const bowl = shapeOf(T) === 'bowl', rb = bowl ? bowlDims(T).rb : 0;
-  const G = (p: P): V3 => {
-    const y = h(p[0], p[1]);
-    if (!bowl) return [p[0], y, -p[1]];
-    const k = Math.max(1, (bowlRadius(T, y) - 0.5) / rb), cx = L / 2, cd = D / 2;
-    return [cx + (p[0] - cx) * k, y, -(cd + (p[1] - cd) * k)];
-  };
+  const rb = shapeOf(T) === 'bowl' ? bowlDims(T).rb : 0;
+  const G = (p: P): V3 => flare(T, p[0], p[1], h(p[0], p[1]), rb);
   const P3 = (i: number, j: number): V3 => G([L * i / N, D * j / N]);
   // cheap slope shading: brightness from each cell's tilt toward a light above, front and left
   const light = new THREE.Vector3(-0.35, 1, 0.45).normalize(), topCol: number[] = [];
@@ -624,7 +626,8 @@ export interface BuiltTank {
  */
 function addTerrainDots(sc: THREE.Scene, S: TankSetup, T: Tank, hot: number | null): THREE.Mesh[] {
   const t = S.terrain, g = (x: number, d: number) => groundHeight(S, T, x, d), dots: THREE.Mesh[] = [], pts: number[] = [];
-  const step = t.radial ? T.L / 2 / t.rows : Math.min(T.L / (t.cols - 1), T.D / (t.rows - 1));
+  const rb = shapeOf(T) === 'bowl' ? bowlDims(T).rb : 0, disc = terrainDisc(T);
+  const step = t.radial ? disc.rx / t.rows : Math.min(T.L / (t.cols - 1), T.D / (t.rows - 1));
   const r = clamp(step * 0.09, 3.5, 9);
   const geo = new THREE.SphereGeometry(r, 12, 8), ring = new THREE.SphereGeometry(r * 1.45, 12, 8);
   const mat = (c: number) => basic(c, { depthTest: false, transparent: true, opacity: 0.95 });
@@ -632,16 +635,16 @@ function addTerrainDots(sc: THREE.Scene, S: TankSetup, T: Tank, hot: number | nu
   terrainPoints(t, T).forEach((p, k) => {
     const y = g(p.x, p.depth);
     if (!inside(T, p.x, p.depth, -1)) return; // outside a round or angled tank: still shapes the ground, not shown
-    const o = new THREE.Mesh(ring, edge); o.position.set(p.x, y, -p.depth); o.renderOrder = 20; o.userData.nolight = true; sc.add(o);
+    const o = new THREE.Mesh(ring, edge); o.position.set(...flare(T, p.x, p.depth, y, rb)); o.renderOrder = 20; o.userData.nolight = true; sc.add(o);
     const m = new THREE.Mesh(geo, k === hot ? hotM : fill); m.position.copy(o.position); m.renderOrder = 21; m.userData = { nolight: true, dot: k }; sc.add(m); dots.push(m);
   });
-  const seg = 10, seg2 = (x0: number, d0: number, x1: number, d1: number) => pts.push(x0, g(x0, d0) + 1, -d0, x1, g(x1, d1) + 1, -d1);
-  if (t.radial) { // a circle through each ring (ellipse in a non-round Tank B)
+  const seg = 10, seg2 = (x0: number, d0: number, x1: number, d1: number) => pts.push(...flare(T, x0, d0, g(x0, d0) + 1, rb), ...flare(T, x1, d1, g(x1, d1) + 1, rb));
+  if (t.radial) { // a circle through each ring (ellipse in a non-round Tank B; flared out to the glass in a bowl)
     for (let k = 1; k <= t.rows; k++) {
-      const n = Math.max(24, Math.round(2 * Math.PI * k) * seg), rx = T.L / 2 * k / t.rows, rd = T.D / 2 * k / t.rows;
+      const n = Math.max(24, Math.round(2 * Math.PI * k) * seg), rx = disc.rx * k / t.rows, rd = disc.rd * k / t.rows;
       for (let i = 0; i < n; i++) {
         const a0 = 2 * Math.PI * i / n, a1 = 2 * Math.PI * (i + 1) / n;
-        seg2(T.L / 2 + rx * Math.cos(a0), T.D / 2 + rd * Math.sin(a0), T.L / 2 + rx * Math.cos(a1), T.D / 2 + rd * Math.sin(a1));
+        seg2(disc.x + rx * Math.cos(a0), disc.depth + rd * Math.sin(a0), disc.x + rx * Math.cos(a1), disc.depth + rd * Math.sin(a1));
       }
     }
   } else {

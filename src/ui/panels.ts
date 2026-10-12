@@ -14,7 +14,7 @@ import {
   IN, clamp, clampFish, fmtDims, fmtLen, fmtSize, fromUnit, glassThickness, rescaleTank, toUnit, volume, waterY,
 } from '../scene/physics';
 import type { Store } from '../scene/store';
-import { SWAMP_LEVEL, nearestLand, sampleTerrain } from '../scene/terrain';
+import { SWAMP_LEVEL, nearestLand, radialTerrain, sampleTerrain } from '../scene/terrain';
 import { randomPose, shuffleFish } from '../scene/scatter';
 import { restsOnGround, setWaterLevel } from '../scene/water';
 import { tankWeight } from '../scene/weight';
@@ -101,9 +101,9 @@ export function attachPanels(store: Store, viewer: Viewer) {
       const T = next(s.tank);
       rescaleTank(s, T); // keep fish at the same relative spot (and apply the shape's rules, e.g. round D = L)
       const max = T.H * 0.5;
-      // a round tank shapes its terrain on rings, any other on a rectangular grid: resample the surface into the new kind
+      // round tanks and bowls shape their terrain on rings, any other on a rectangular grid: resample into the new kind
       const te = s.terrain;
-      if (te.h.length && !!te.radial !== (shapeOf(s.tank) === 'round')) s.terrain = { ...sampleTerrain(s, s.tank, te.cols), on: te.on };
+      if (te.h.length && !!te.radial !== radialTerrain(s.tank)) s.terrain = { ...sampleTerrain(s, s.tank, te.cols), on: te.on };
       for (const k of ['fl', 'fr', 'bl', 'br'] as const) s.substrate[k] = Math.min(s.substrate[k], max);
       // hood and peninsula ends exist for rectangles and bowfronts only (Nathan 2026-10-08)
       if (!flatEnds(s.tank)) { if (s.lid === 'hood') s.lid = 'glass'; if (s.wall.side !== 'back') s.wall.side = 'back'; }
