@@ -15,10 +15,11 @@ const mat = (key: string, make: () => THREE.MeshBasicMaterial) => {
 };
 
 /** Soft form shading (as the fish body): undersides turn away from the light above. */
-function shade(g: THREE.BufferGeometry, dark = 0.28) {
+function shade(g: THREE.BufferGeometry, dark = 0.28, flank = 0) {
   g.computeVertexNormals();
   const n = g.attributes.normal, col: number[] = [];
-  for (let i = 0; i < n.count; i++) { const ny = n.getY(i), k = 1 - dark * Math.max(0, -ny) + 0.04 * Math.max(0, ny); col.push(k, k, k); }
+  // flank: the sides fall off too, so a low rounded body reads as round rather than as a flat disc
+  for (let i = 0; i < n.count; i++) { const ny = n.getY(i), k = 1 - dark * Math.max(0, -ny) + 0.04 * Math.max(0, ny) - flank * (1 - Math.abs(ny)); col.push(k, k, k); }
   g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
 }
 
@@ -109,21 +110,21 @@ function footGeometry(s: Shell3D, h: number) {
     let x = p.getX(i), y = p.getY(i); const z = p.getZ(i);
     if (y < 0) y *= 0.12; // flat sole
     const head = Math.max(0, x) ** 2; // the head end is fuller
-    p.setXYZ(i, x * L + s.foot + L - 0.5, (y + 0.12) * h * (0.75 + 0.5 * head), z * L * 0.36 * (1 - 0.25 * Math.max(0, -x)));
+    p.setXYZ(i, x * L + s.foot + L - 0.5, (y + 0.12) * h * (0.75 + 0.5 * head), z * L * 0.32 * (1 - 0.25 * Math.max(0, -x)));
   }
-  shade(g, 0.4);
+  shade(g, 0.4, 0.35);
   return g;
 }
 
 /** Tentacles from the top of the head, up and forward, splayed. */
 function tentacleGeometry(s: Shell3D, h: number, side: number) {
-  const r0 = new THREE.Vector3(0.43, h * 1.3, 0.02 * side), len = s.tent * 1.4;
+  const r0 = new THREE.Vector3(0.4, h * 0.85, 0.02 * side), len = s.tent * 1.4;
   const end = r0.clone().add(new THREE.Vector3(len * 0.6, len * 0.75, len * 0.4 * side));
   const g = taperTube(new THREE.QuadraticBezierCurve3(r0, r0.clone().add(new THREE.Vector3(len * 0.45, len * 0.2, len * 0.1 * side)), end), 0.009);
   return g;
 }
 
-const FOOT_H = 0.075;
+const FOOT_H = 0.22; // a muscular foot, not a wafer: it reads as a body from the side and edge-on on the glass
 
 /** The 3D snail for a card of width w: shell, foot, tentacles; origin at the sole under the card centre. */
 export function snailBody(art: string, w: number) {
@@ -140,5 +141,24 @@ export function snailBody(art: string, w: number) {
   grp.add(new THREE.Mesh(geo(':foot', () => footGeometry(s, FOOT_H)), skin));
   for (const side of [1, -1]) grp.add(new THREE.Mesh(geo(':tent' + side, () => tentacleGeometry(s, FOOT_H, side)), skin));
   grp.scale.setScalar(w);
+  grp.userData.pivot = new THREE.Vector3(s.at - 0.5, FOOT_H * 0.55, 0); // where the shell sits on the foot
   return grp;
+}
+
+const SAG = 35 * Math.PI / 180;
+
+/**
+ * A snail on a wall (glass): its shell hangs toward `down` (gravity in the body's own frame, unit), swung about where it
+ * sits on the foot by up to SAG as far as down lies along the sole, then lifted clear of the pane if the swing dips it in.
+ */
+export function sagShell(body: THREE.Group, down: THREE.Vector3) {
+  const shell = body.children[0] as THREE.Mesh, piv = body.userData.pivot as THREE.Vector3;
+  const along = new THREE.Vector3(down.x, 0, down.z), k = along.length();
+  if (k < 0.05) return;
+  const q = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0).cross(along).normalize(), SAG * Math.min(1, k));
+  const p = shell.geometry.attributes.position, v = new THREE.Vector3();
+  let low = Infinity;
+  for (let i = 0; i < p.count; i++) low = Math.min(low, v.fromBufferAttribute(p, i).sub(piv).applyQuaternion(q).add(piv).y);
+  shell.quaternion.copy(q);
+  shell.position.copy(piv).sub(piv.clone().applyQuaternion(q)).add(new THREE.Vector3(0, Math.max(0, 0.01 - low), 0));
 }

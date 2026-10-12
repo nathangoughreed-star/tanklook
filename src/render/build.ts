@@ -13,7 +13,7 @@ import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
 import { addFixture, applyLighting } from './lighting';
 import { itemMesh } from './items';
 import { fish3d, fishBody, has3D } from './fish3d';
-import { snailBody } from './snail3d';
+import { sagShell, snailBody } from './snail3d';
 import { cardMaterial, fishBodyTexture, fishTexture, gradientTexture, personTexture, snailTexture, substrateTexture } from './textures';
 
 /** Back-wall options; color null = no background (back glass only); light = use dark grid lines. */
@@ -758,6 +758,8 @@ function snailMeshes(S: TankSetup, T: Tank, f: Fish, sp: Species, ground: number
     const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), HIDDEN);
     m.position.set(x, y, -d); m.rotation.set(rx, ry, f.yaw * D2R, 'YXZ');
     const b = snailBody(sp.art, w); b.rotation.x = -Math.PI / 2; m.add(b);
+    m.updateMatrixWorld(true); // the shell hangs down the pane under its weight
+    sagShell(b, new THREE.Vector3(0, -1, 0).applyQuaternion(b.getWorldQuaternion(new THREE.Quaternion()).invert()));
     return [[m, w, h]];
   }
   const foot =new THREE.Mesh(new THREE.PlaneGeometry(w, h), cardMaterial(`snail:${sp.art}:foot`, snailTexture(sp.art, 'foot'), edge, THREE.FrontSide));
