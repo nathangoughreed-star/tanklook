@@ -11,7 +11,7 @@ export type EdgeMode = 'cutout' | 'a2c';
 export type Background = 'black' | 'blue' | 'gradient' | 'grey' | 'frosted' | 'none';
 export type GlassType = 'standard' | 'lowiron';
 export type LightType = 'flat' | 'spot' | 'tube' | 'led';
-export type SubstrateType = 'gravel' | 'black' | 'white';
+export type SubstrateType = 'gravel' | 'pea' | 'clown' | 'blue' | 'onyx' | 'black' | 'white';
 
 /** Tank floor outline (scene v8). L x D is always the bounding box; see scene/shape.ts. */
 export type TankShape = 'rect' | 'bow' | 'round' | 'poly';

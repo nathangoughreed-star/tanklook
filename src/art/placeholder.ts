@@ -120,20 +120,99 @@ export function drawFishCard(art: string, aspect: number, W = 1024, finA = FIN_A
   return c;
 }
 
-export const SUBSTRATES: Record<SubstrateType, { label: string; base: string; shades: string[]; size: [number, number]; tile: number }> = {
-  gravel: { label: 'Natural gravel', base: '#7d6c55', shades: ['#a08a6c', '#5e5040', '#8f8576', '#b8a68a', '#4a4239'], size: [5, 11], tile: 90 },
-  black:  { label: 'Black sand', base: '#222225', shades: ['#38383c', '#151517', '#4a4a50'], size: [1.5, 3.5], tile: 40 },
-  white:  { label: 'White sand', base: '#ddd2bb', shades: ['#efe7d6', '#c9bc9f', '#f7f2e6'], size: [1.5, 3.5], tile: 40 },
+/**
+ * Substrate looks. Sand: flat grains on a base colour (too fine for shading to show). Gravel ('pebble'): packed, shaded
+ * stones; `gloss` is the coated look of dyed aquarium gravel, `speckle` the mineral flecks of natural stone. Sizes are
+ * radii in tile pixels (tile 90 → 512 px per 180 mm, so ~0.35 mm per pixel).
+ */
+export interface SubstrateLook {
+  label: string; kind: 'sand' | 'pebble'; base: string; shades: string[]; size: [number, number]; tile: number;
+  gloss?: number; speckle?: boolean; round?: number;
+}
+export const SUBSTRATES: Record<SubstrateType, SubstrateLook> = {
+  gravel: { label: 'Natural gravel', kind: 'pebble', base: '#241e17', tile: 90, size: [5, 11], speckle: true, gloss: 0.12, round: 0.75,
+    shades: ['#9c8a70', '#7a6a55', '#b5a58c', '#8d8a82', '#6b6258', '#c9bfae', '#5a4f43', '#a39383', '#857565', '#4b4640', '#b39a7a', '#d6cdbd'] },
+  pea:    { label: 'Pea gravel', kind: 'pebble', base: '#2a2219', tile: 90, size: [4, 8], speckle: true, gloss: 0.15, round: 0.88,
+    shades: ['#c4a57e', '#b08d64', '#d8c1a0', '#9e7f5c', '#a99a86', '#e2d5c0', '#8a7058', '#bfae96'] },
+  clown:  { label: 'Mixed colour gravel', kind: 'pebble', base: '#141414', tile: 90, size: [5, 9], gloss: 0.7, round: 0.85,
+    shades: ['#d42a2a', '#1f5fd1', '#f2c81f', '#2ea84a', '#f06aa8', '#7b3fc4', '#f2801f', '#19b5b0', '#efefea', '#1e1e1e'] },
+  blue:   { label: 'Blue gravel', kind: 'pebble', base: '#0b1430', tile: 90, size: [5, 9], gloss: 0.6, round: 0.85,
+    shades: ['#2458c9', '#1c47a8', '#3a72e0', '#16388a', '#2f65d6'] },
+  onyx:   { label: 'Black gravel', kind: 'pebble', base: '#0a0a0b', tile: 90, size: [5, 10], gloss: 0.45, round: 0.8,
+    shades: ['#2a2a2e', '#1f1f22', '#36363b', '#18181a', '#414147'] },
+  black:  { label: 'Black sand', kind: 'sand', base: '#222225', shades: ['#38383c', '#151517', '#4a4a50'], size: [1.5, 3.5], tile: 40 },
+  white:  { label: 'White sand', kind: 'sand', base: '#ddd2bb', shades: ['#efe7d6', '#c9bc9f', '#f7f2e6'], size: [1.5, 3.5], tile: 40 },
 };
-/** Seamless grain tile (grains wrap across the edges). */
+const rgbOf = (hex: string) => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16));
+const rgbStr = (c: number[], k = 1, a = 1) => `rgba(${c.map(v => Math.round(Math.min(255, Math.max(0, v * k)))).join(',')},${a})`;
+/** Seamless substrate tile (grains and stones wrap across the edges). */
 export function drawSubstrate(ctx: Ctx, W: number, type: SubstrateType) {
   const t = SUBSTRATES[type], r = rng(11); ctx.fillStyle = t.base; ctx.fillRect(0, 0, W, W);
+  if (t.kind === 'pebble') return drawPebbles(ctx, W, t, r);
   const n = Math.round(W * W / (t.size[1] * t.size[1] * 2.2));
   for (let i = 0; i < n; i++) {
     const x = r() * W, y = r() * W, rx = t.size[0] + r() * (t.size[1] - t.size[0]), ry = rx * (0.6 + r() * 0.4), a = r() * 3;
     ctx.fillStyle = t.shades[i % t.shades.length];
     for (const dx of [-W, 0, W]) for (const dy of [-W, 0, W]) { ctx.beginPath(); ctx.ellipse(x + dx, y + dy, rx, ry, a, 0, 7); ctx.fill(); }
   }
+}
+/**
+ * Packed gravel, seen from above with the light from the upper left: stones dropped in random order, so later ones lie
+ * on top; each casts a soft shadow down-right and is lit by a gradient (bright toward the light, dark at the rim).
+ * Irregular rounded outlines, per-stone colour jitter, and for natural stone a few mineral flecks; coated gravel gets a
+ * small specular glint. A pool of pre-rendered stones is stamped thousands of times (drawing each stone afresh took
+ * seconds); the pile goes down in layers, each darkening what is under it, so the gaps read as depth, not outlines.
+ */
+function drawPebbles(ctx: Ctx, W: number, t: SubstrateLook, r: () => number) {
+  const [s0, s1] = t.size, avg = (s0 + s1) / 2, n = Math.round(W * W * 2.6 / (Math.PI * avg * avg * 0.8));
+  const pool = Array.from({ length: 240 }, () => pebbleSprite(t, r));
+  const LAYERS = 4;
+  for (let i = 0; i < n; i++) {
+    if (i && i % Math.ceil(n / LAYERS) === 0) { ctx.fillStyle = 'rgba(0,0,0,0.14)'; ctx.fillRect(0, 0, W, W); }
+    const sp = pool[Math.floor(r() * pool.length)], x = r() * W - sp.o, y = r() * W - sp.o, s = sp.c.width;
+    for (const dx of [-W, 0, W]) for (const dy of [-W, 0, W]) {
+      if (x + dx > W || x + dx + s < 0 || y + dy > W || y + dy + s < 0) continue;
+      ctx.drawImage(sp.c, x + dx, y + dy);
+    }
+  }
+}
+/** One stone with its contact shadow on a small canvas; `o` = offset from the canvas corner to the stone's centre. */
+function pebbleSprite(t: SubstrateLook, r: () => number) {
+  const [s0, s1] = t.size, round = t.round ?? 0.8;
+  const rad = s0 + Math.pow(r(), 1.4) * (s1 - s0), asp = 0.62 + r() * 0.36, rot = r() * Math.PI;
+  const c = rgbOf(t.shades[Math.floor(r() * t.shades.length)]), tint = 0.86 + r() * 0.28;
+  const o = Math.ceil(rad * 2), cv = document.createElement('canvas'); cv.width = cv.height = o * 2;
+  const x = cv.getContext('2d')!;
+  // contact shadow, down-right of the stone
+  x.save(); x.translate(o + rad * 0.28, o + rad * 0.32); x.rotate(rot);
+  const sg = x.createRadialGradient(0, 0, rad * 0.4, 0, 0, rad * 1.35);
+  sg.addColorStop(0, 'rgba(0,0,0,0.55)'); sg.addColorStop(1, 'rgba(0,0,0,0)');
+  x.fillStyle = sg; x.beginPath(); x.ellipse(0, 0, rad * 1.35, rad * asp * 1.35, 0, 0, 7); x.fill(); x.restore();
+  // irregular outline: K radii, jittered less the rounder the stone, smoothed through the midpoints
+  const K = 9, rr = Array.from({ length: K }, () => 1 + (r() - 0.5) * (1 - round));
+  const pt = (k: number) => { const a = (k % K) / K * Math.PI * 2, q = rr[k % K]; return [Math.cos(a) * rad * q, Math.sin(a) * rad * asp * q]; };
+  const mid = (k: number) => { const [ax, ay] = pt(k), [bx, by] = pt(k + 1); return [(ax + bx) / 2, (ay + by) / 2]; };
+  x.save(); x.translate(o, o); x.rotate(rot); x.beginPath();
+  const m0 = mid(0); x.moveTo(m0[0], m0[1]);
+  for (let k = 1; k <= K; k++) { const [px, py] = pt(k), [mx, my] = mid(k); x.quadraticCurveTo(px, py, mx, my); }
+  x.closePath();
+  // light from the upper left, in the stone's rotated frame
+  const lx = -Math.cos(rot) * 0.38 - Math.sin(rot) * 0.42, ly = Math.sin(rot) * 0.38 - Math.cos(rot) * 0.42;
+  const g = x.createRadialGradient(lx * rad, ly * rad * asp, rad * 0.05, lx * rad * 0.4, ly * rad * asp * 0.4, rad * 1.25);
+  g.addColorStop(0, rgbStr(c, tint * 1.28)); g.addColorStop(0.45, rgbStr(c, tint)); g.addColorStop(1, rgbStr(c, tint * 0.5));
+  x.fillStyle = g; x.fill(); x.clip();
+  if (t.speckle) for (let k = Math.floor(r() * 5); k > 0; k--) {
+    x.fillStyle = rgbStr(c, tint * (r() < 0.5 ? 0.6 : 1.35), 0.7);
+    x.beginPath(); x.arc((r() - 0.5) * 1.1 * rad, (r() - 0.5) * 1.1 * rad * asp, (0.06 + r() * 0.1) * rad, 0, 7); x.fill();
+  }
+  const glint = (t.gloss ?? 0) * (0.6 + r() * 0.4);
+  if (glint > 0.05) {
+    const hx = lx * rad * 0.75, hy = ly * rad * asp * 0.75, hg = x.createRadialGradient(hx, hy, 0, hx, hy, rad * 0.38);
+    hg.addColorStop(0, `rgba(255,255,255,${0.75 * glint})`); hg.addColorStop(1, 'rgba(255,255,255,0)');
+    x.fillStyle = hg; x.fillRect(-rad * 1.5, -rad * 1.5, rad * 3, rad * 3);
+  }
+  x.restore();
+  return { c: cv, o };
 }
 /**
  * Neutral human silhouette for scale, standing, front view. Drawn head-to-toe across the full canvas height H

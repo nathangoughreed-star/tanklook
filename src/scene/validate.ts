@@ -178,7 +178,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       height: num(l.height, 50, ...LIMITS.lampH), // added 2026-10-08; older files: the old fixed 50 mm
     },
     substrate: {
-      show: bool(s.show, d.substrate.show), type: pick(s.type, ['gravel', 'black', 'white'] as const, 'gravel'),
+      show: bool(s.show, d.substrate.show), type: pick(s.type, ['gravel', 'pea', 'clown', 'blue', 'onyx', 'black', 'white'] as const, 'gravel'),
       fl: num(s.fl, d.substrate.fl, 0, subMax), fr: num(s.fr, d.substrate.fr, 0, subMax),
       bl: num(s.bl, d.substrate.bl, 0, subMax), br: num(s.br, d.substrate.br, 0, subMax),
     },
