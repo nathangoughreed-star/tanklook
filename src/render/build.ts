@@ -753,7 +753,14 @@ function snailMeshes(S: TankSetup, T: Tank, f: Fish, sp: Species, ground: number
   const y0 = clamp(p.y, sub(g0.x, g0.depth) + h / 2, Math.max(sub(g0.x, g0.depth) + h / 2, top - w / 2));
   const g = glassFrame(T, p.x, p.depth, y0), ry = Math.atan2(g.n[0], -g.n[2]), rx = -Math.asin(g.n[1]);
   const x = g.x - g.n[0] * PANE_GAP, d = g.depth - g.n[2] * PANE_GAP, y = y0 - g.n[1] * PANE_GAP;
-  const foot = new THREE.Mesh(new THREE.PlaneGeometry(w, h), cardMaterial(`snail:${sp.art}:foot`, snailTexture(sp.art, 'foot'), edge, THREE.FrontSide));
+  if (has3D(sp.art)) {
+    // solid: an invisible picking card in the pane, the 3D snail on its sole against the glass (its up = card -z, into the tank)
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), HIDDEN);
+    m.position.set(x, y, -d); m.rotation.set(rx, ry, f.yaw * D2R, 'YXZ');
+    const b = snailBody(sp.art, w); b.rotation.x = -Math.PI / 2; m.add(b);
+    return [[m, w, h]];
+  }
+  const foot =new THREE.Mesh(new THREE.PlaneGeometry(w, h), cardMaterial(`snail:${sp.art}:foot`, snailTexture(sp.art, 'foot'), edge, THREE.FrontSide));
   const sg = new THREE.PlaneGeometry(w, h).rotateY(Math.PI), uv = sg.attributes.uv; // face into the tank, texture not mirrored
   for (let i = 0; i < uv.count; i++) uv.setX(i, 1 - uv.getX(i));
   const shell = new THREE.Mesh(sg, cardMaterial(`snail:${sp.art}:shell`, snailTexture(sp.art, 'shell'), edge, THREE.FrontSide));
