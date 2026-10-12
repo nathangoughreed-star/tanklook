@@ -111,6 +111,27 @@ const ringLines = (ring: P[], y: number) => ring.flatMap((p, i) => [...at(p, y),
 /** The thin black line drawn on glass edges (render.edges). */
 const glassLine = () => new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.55, depthWrite: false });
 
+/**
+ * A sphere's silhouette line, in the glass-edge colour: dark where the view grazes the surface (normal from `centre`
+ * at right angles to the view). About 2 px wide at any zoom (n.v squared grows about linearly away from the edge, so
+ * its screen derivative sets the width), and never thinner than the facets' own slack at the mesh's edge.
+ */
+function silhouetteMaterial(centre: THREE.Vector3) {
+  return new THREE.ShaderMaterial({
+    uniforms: { centre: { value: centre } },
+    transparent: true, depthWrite: false,
+    vertexShader: `varying vec3 vW; varying vec3 vC; uniform vec3 centre;
+      void main() { vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; vC = (modelMatrix * vec4(centre, 1.0)).xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
+    fragmentShader: `varying vec3 vW; varying vec3 vC;
+      void main() {
+        float d = abs(dot(normalize(vW - vC), normalize(cameraPosition - vW))), s = d * d, w = fwidth(s);
+        float a = max(1.0 - smoothstep(1.2 * w, 2.4 * w, s), 1.0 - smoothstep(0.045, 0.06, d));
+        if (a < 0.01) discard;
+        gl_FragColor = vec4(0.0, 0.0, 0.0, 0.55 * a);
+      }`,
+  });
+}
+
 /** Height bands and segments round of a bowl's shell. */
 const BOWL_BANDS = 28, BOWL_SEG = 72;
 
@@ -155,6 +176,16 @@ function addBowl(sc: THREE.Scene, S: TankSetup, T: Tank, add: (geo: THREE.Buffer
     }
     // only the lip's two circles are glass edges; drawn once, with the front half
     add(g.geometry(), front ? 6 : 5, front ? [...ringLines(circleRing(T, rIn(H), BOWL_SEG), H), ...ringLines(circleRing(T, rOut(H), BOWL_SEG), H)] : []);
+  }
+  // the shell's outline against the room: a sphere has no edge to draw, so its silhouette is drawn where the view grazes
+  // it (Nathan 2026-10-12: the far side read as fish floating in space)
+  if (S.render.edges) {
+    const g = new Tris();
+    for (let i = 0; i < BOWL_SEG; i++) for (let j = 0; j < ys.length - 1; j++) {
+      const a0 = ang(i), a1 = ang(i + 1), y0 = ys[j], y1 = ys[j + 1];
+      g.quad(pt(a0, rOut(y0), y0), pt(a1, rOut(y0), y0), pt(a1, rOut(y1), y1), pt(a0, rOut(y1), y1), 0);
+    }
+    const m = new THREE.Mesh(g.geometry(), silhouetteMaterial(new THREE.Vector3(R, c, -R))); m.renderOrder = 7; sc.add(m);
   }
   add(prismGeometry(circleRing(T, rOut(0), BOWL_SEG), -t, 0), 5); // bottom pane, out to the shell's foot
   // the floor's edge inside (the opening's is on the lip); the equator is not an edge, so no line there
