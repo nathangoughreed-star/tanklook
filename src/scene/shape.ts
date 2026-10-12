@@ -2,6 +2,9 @@
 // rect, bowfront, round and regular polygons. L x D stays the BOUNDING BOX of the outline, with the front-most point at
 // depth 0 on the centre line, so everything keyed to the box (heightfield u = x/L, v = depth/D, camera, walls, orbit,
 // rescale) keeps working; only "is this spot in the tank" and the glass follow the outline. Every shape is convex.
+// The bowl is the one shape whose walls are not upright: a sphere cut flat at the floor and at the opening. Its footprint
+// is the flat floor disc (substrate, hardscape and stand live there); what changes with height (fish room, glass, water
+// surface, volume) asks `bowlRadius`. L x D is still its bounding box (the equator), front-most point at depth 0.
 // Points are [x, depth]: x along the length 0..L, depth mm behind the front 0..D. No three.js here.
 import type { Tank, TankShape } from './types';
 
@@ -18,7 +21,7 @@ export interface Footprint { walls: Wall[]; ring: P[]; edges: Edge[]; area: numb
 /** Segments in a full circle and in the bowfront arc. */
 const ROUND_SEG = 64, BOW_SEG = 32;
 
-export const SHAPES: Record<TankShape, string> = { rect: 'Rectangle', bow: 'Bowfront', round: 'Round (cylinder)', poly: 'Polygon' };
+export const SHAPES: Record<TankShape, string> = { rect: 'Rectangle', bow: 'Bowfront', round: 'Round (cylinder)', poly: 'Polygon', bowl: 'Bowl (sphere)' };
 export const POLY_SIDES = [3, 5, 6] as const;
 export const shapeOf = (T: Tank): TankShape => T.shape ?? 'rect';
 
@@ -33,6 +36,39 @@ export function polyRatio(n: number) {
   return (Math.max(...ds) - Math.min(...ds)) / (Math.max(...xs) - Math.min(...xs));
 }
 
+/** Floor and opening diameters of a bowl, as fractions of its diameter L. */
+export const BOWL_MIN = 0.2, BOWL_MAX = 0.95, BOWL_DEFAULT = 0.6;
+
+/** A bowl's sphere radius R, floor and opening radii, and the height of the sphere's centre above the floor. */
+export function bowlDims(T: Tank) {
+  const R = T.L / 2, rb = clamp((T.bowlFloor ?? T.L * BOWL_DEFAULT) / 2, 0, R), rt = clamp((T.bowlTop ?? T.L * BOWL_DEFAULT) / 2, 0, R);
+  const c = Math.sqrt(R * R - rb * rb);
+  return { R, rb, rt, c, H: c + Math.sqrt(R * R - rt * rt) };
+}
+
+/** Radius (mm) of a bowl's cross-section at height y above the floor; Infinity for upright-walled shapes. */
+export function bowlRadius(T: Tank, y: number) {
+  if (shapeOf(T) !== 'bowl') return Infinity;
+  const { R, c } = bowlDims(T), z = y - c;
+  return Math.sqrt(Math.max(0, R * R - z * z));
+}
+
+/** A circle of radius r round the centre of the L x D box, as a ring in the footprint's order (no repeated point). */
+export function circleRing(T: Tank, r: number, n = ROUND_SEG): P[] {
+  return Array.from({ length: n }, (_, i) => { const a = -Math.PI + 2 * Math.PI * i / n; return [T.L / 2 + r * Math.sin(a), T.D / 2 - r * Math.cos(a)] as P; });
+}
+
+/** How far the widest outline sticks out past the footprint (mm): a bowl's equator past its floor; else 0. */
+export const bulge = (T: Tank) => (shapeOf(T) === 'bowl' ? T.L / 2 - bowlDims(T).rb : 0);
+
+/** Interior volume (mm³) between heights y0 and y1: footprint area x height, or a slice of the bowl's sphere. */
+export function volumeBetween(T: Tank, y0: number, y1: number, area = footprint(T).area) {
+  if (y1 <= y0) return 0;
+  if (shapeOf(T) !== 'bowl') return area * (y1 - y0);
+  const { R, c } = bowlDims(T), F = (y: number) => { const z = clamp(y, 0, T.H) - c; return R * R * z - z * z * z / 3; };
+  return Math.PI * (F(y1) - F(y0));
+}
+
 /** Smallest end depth of a bowfront: the arc may not be more than a half circle (it would bulge past L). */
 export const bowMinLimit = (T: Tank) => Math.max(0, T.D - T.L / 2);
 
@@ -43,6 +79,12 @@ export const bowMinLimit = (T: Tank) => Math.max(0, T.D - T.L / 2);
 export function normTank(T: Tank): Tank {
   const s = shapeOf(T);
   if (s === 'rect') return { L: T.L, H: T.H, D: T.D }; // stored as plain L x H x D, like every file before v8
+  if (s === 'bowl') {
+    const lo = T.L * BOWL_MIN, hi = T.L * BOWL_MAX, f = +clamp(T.bowlFloor ?? T.L * BOWL_DEFAULT, lo, hi).toFixed(1), t = +clamp(T.bowlTop ?? T.L * BOWL_DEFAULT, lo, hi).toFixed(1);
+    const B: Tank = { L: T.L, H: T.H, D: T.L, shape: 'bowl', bowlFloor: f, bowlTop: t };
+    return { ...B, H: +bowlDims(B).H.toFixed(1) };
+  }
+  T = { ...T, bowlFloor: undefined, bowlTop: undefined };
   if (s === 'round') return { ...T, D: T.L, sides: undefined, bowMin: undefined };
   if (s === 'poly') { const n = (POLY_SIDES as readonly number[]).includes(T.sides ?? 0) ? T.sides! : 6; return { ...T, sides: n, D: +(T.L * polyRatio(n)).toFixed(1), bowMin: undefined }; }
   const lo = bowMinLimit(T), b = T.bowMin ?? T.D * 0.75;
@@ -51,9 +93,9 @@ export function normTank(T: Tank): Tank {
 
 function makeWalls(T: Tank): Wall[] {
   const { L, D } = T, s = shapeOf(T);
-  if (s === 'round') {
-    const R = L / 2, pts: P[] = [];
-    for (let i = 0; i <= ROUND_SEG; i++) { const a = -Math.PI + 2 * Math.PI * i / ROUND_SEG; pts.push([R + R * Math.sin(a), R - R * Math.cos(a)]); }
+  if (s === 'round' || s === 'bowl') {
+    const R = L / 2, r = s === 'bowl' ? bowlDims(T).rb : R, pts: P[] = [];
+    for (let i = 0; i <= ROUND_SEG; i++) { const a = -Math.PI + 2 * Math.PI * i / ROUND_SEG; pts.push([R + r * Math.sin(a), R - r * Math.cos(a)]); }
     return [{ pts, curved: true }];
   }
   if (s === 'poly') {
@@ -76,7 +118,7 @@ function makeWalls(T: Tank): Wall[] {
 const cache = new Map<string, Footprint>();
 /** The footprint of tank T (cached by its shape parameters). */
 export function footprint(T: Tank): Footprint {
-  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.sides}|${T.bowMin}`;
+  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}`;
   let f = cache.get(key);
   if (f) return f;
   const walls = makeWalls(T), ring: P[] = [], edges: Edge[] = [];
@@ -130,9 +172,16 @@ const mid = (a: P, b: P): P => { const n: P = [a[0] + b[0], a[1] + b[1]], l = Ma
 
 export interface OnGlass { x: number; depth: number; n: P; s: number; wall: number }
 
-/** The nearest point on the glass (inside face) to (x, depth), with its outward normal and arc length. */
-export function nearestGlass(T: Tank, x: number, d: number): OnGlass {
+/**
+ * The nearest point on the glass (inside face) to (x, depth), with its outward normal and arc length. A bowl's glass
+ * depends on the height: give `y` and the point is on the sphere's circle there (else on the floor's edge).
+ */
+export function nearestGlass(T: Tank, x: number, d: number, y?: number): OnGlass {
   const f = footprint(T);
+  if (y !== undefined && shapeOf(T) === 'bowl') {
+    const R = T.L / 2, r = bowlRadius(T, y), a = Math.atan2(x - R, -(d - R)) || 0, n: P = [Math.sin(a), -Math.cos(a)];
+    return { x: R + r * n[0], depth: R + r * n[1], n, s: ((a + Math.PI) / (2 * Math.PI)) * f.perimeter, wall: 0 };
+  }
   let best: OnGlass = { x, depth: d, n: [0, -1], s: 0, wall: 0 }, bd = Infinity;
   f.edges.forEach((e, i) => {
     const dx = e.b[0] - e.a[0], dd = e.b[1] - e.a[1], t = clamp(((x - e.a[0]) * dx + (d - e.a[1]) * dd) / (e.len * e.len), 0, 1);
@@ -210,11 +259,11 @@ export function chord(T: Tank, axis: 0 | 1, v: number): [number, number] | null 
   return lo <= hi ? [lo, hi] : null;
 }
 
-/** Half the footprint's width (grown by `grow` mm) across a horizontal view direction (ux, uz); z = -depth. */
+/** Half the widest outline's width (grown by `grow` mm) across a horizontal view direction (ux, uz); z = -depth. */
 export function halfWidth(T: Tank, ux: number, uz: number, grow: number) {
   const cx = T.L / 2, cd = T.D / 2;
   let m = 0;
-  for (const p of offsetRing(T, grow)) m = Math.max(m, Math.abs((p[0] - cx) * -uz + (-(p[1] - cd)) * ux));
+  for (const p of offsetRing(T, grow + bulge(T))) m = Math.max(m, Math.abs((p[0] - cx) * -uz + (-(p[1] - cd)) * ux));
   return m;
 }
 

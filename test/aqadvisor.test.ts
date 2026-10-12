@@ -3,7 +3,7 @@ import ids from '../src/data/aqadvisor.json';
 import { aqAdvisorUrl, aqKey, aqQuery } from '../src/data/aqadvisor';
 import { SPECIES } from '../src/data/species';
 import { defaultScene } from '../src/scene/defaults';
-import { footprint } from '../src/scene/shape';
+import { footprint, normTank, volumeBetween } from '../src/scene/shape';
 import type { Fish, TankSetup } from '../src/scene/types';
 // @ts-expect-error plain-JS worker module, no types
 import worker, { aqParams, checkHealth, parseStocking } from '../worker/aqadvisor-proxy.js';
@@ -54,6 +54,15 @@ describe('AqAdvisor request', () => {
     }
     s.tank = { L: 508, H: 406.4, D: 508, shape: 'round' };
     expect(aqQuery(s)!.d).toBeCloseTo(20 * Math.PI / 4, 1); // 20" round: 314 in² floor = 20 x 15.7"
+  });
+
+  it('a bowl: area halfway between its widest circle and its circle at the substrate line, volume kept', () => {
+    const s = setup(fish('neon', 8));
+    s.substrate = { ...s.substrate, show: false }; s.layout = { id: 'none', seed: 1 }; s.terrain = { ...s.terrain, on: false };
+    s.tank = normTank({ L: 400, H: 1, D: 1, shape: 'bowl', bowlFloor: 240, bowlTop: 320 }); // R 200, floor r 120, H 280
+    const q = aqQuery(s)!, A = Math.PI * (200 ** 2 + 120 ** 2) / 2 / 25.4 ** 2; // bare floor: substrate line = the floor
+    expect(q.l * q.d / A).toBeCloseTo(1, 1); // l and d are rounded to 0.1 in
+    expect(q.l * q.d * q.h / (volumeBetween(s.tank, 0, 280) / 25.4 ** 3)).toBeCloseTo(1, 1);
   });
 });
 

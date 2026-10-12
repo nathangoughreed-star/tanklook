@@ -5,7 +5,8 @@
 // same calculation on aqadvisor.com as a link.
 import ids from './aqadvisor.json';
 import { getSpecies } from './species';
-import { footprint } from '../scene/shape';
+import { bowlRadius, footprint, shapeOf, volumeBetween } from '../scene/shape';
+import { groundHeight } from '../scene/terrain';
 import type { TankSetup } from '../scene/types';
 
 /** The proxy (Cloudflare Worker), from VITE_AQ_PROXY in .env.production, e.g. 'https://tanklook-aq.<account>.workers.dev';
@@ -20,7 +21,9 @@ export interface AqQuery {
   /** AlreadySelected value, species in a stable order. */
   sel: string;
   /** Tank as AqAdvisor's box, inches: true length and height, depth = floor area / length, so the box has the tank's
-   *  real bottom area (what AqAdvisor's stocking depends on) and, with the true height, its volume. */
+   *  real bottom area (what AqAdvisor's stocking depends on) and, with the true height, its volume. A bowl's area is
+   *  halfway between its widest circle and its circle at the substrate line (Nathan 2026-10-12), height = volume / that
+   *  area, so the box still has the bowl's volume. */
   l: number; d: number; h: number;
   /** Animals with no AqAdvisor entry and no stand-in (land-only frogs), with counts. */
   skipped: { name: string; count: number }[];
@@ -47,7 +50,13 @@ export function aqQuery(s: TankSetup): AqQuery | null {
   }
   if (!parts.length) return null;
   const T = s.tank, r = (mm: number) => Math.round(mm / IN * 10) / 10;
-  return { sel: parts.join(','), l: r(T.L), d: r(footprint(T).area / T.L), h: r(T.H), skipped, standIns, counted };
+  const V = volumeBetween(T, 0, T.H);
+  if (shapeOf(T) === 'bowl') {
+    const ring = footprint(T).ring, sub = ring.reduce((a, p) => a + groundHeight(s, T, p[0], p[1]), 0) / ring.length; // where the substrate meets the glass
+    const A = Math.PI * ((T.L / 2) ** 2 + bowlRadius(T, sub) ** 2) / 2;
+    return { sel: parts.join(','), l: r(T.L), d: r(A / T.L), h: r(V / A), skipped, standIns, counted };
+  }
+  return { sel: parts.join(','), l: r(T.L), d: r(V / (T.L * T.H)), h: r(T.H), skipped, standIns, counted };
 }
 
 /** Same request, as a key: equal keys = same answer. */

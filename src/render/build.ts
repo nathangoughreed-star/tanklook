@@ -6,7 +6,7 @@ import { snailAspect } from '../art/snails';
 import { fishTL, getSpecies, needsWater, type Species } from '../data/species';
 import { restsOnGround } from '../scene/water';
 import { D2R, IN, clamp, floorY, glassThickness, RIM_DROP, RIM_H, tankUnderside, waterY } from '../scene/physics';
-import { alongRun, chord, clipToFootprint, facingRuns, footprint, halfWidth, inside, nearestGlass, offsetRing, offsetWalls, runLength, shapeOf, subRun, type P } from '../scene/shape';
+import { alongRun, bowlDims, bowlRadius, chord, circleRing, clipToFootprint, facingRuns, footprint, halfWidth, inside, nearestGlass, offsetRing, offsetWalls, runLength, shapeOf, subRun, type P } from '../scene/shape';
 import { TABLE_TOP, tableCentre, tableOn, tableRing, wallPlane } from '../scene/table';
 import { groundHeight, terrainPoint } from '../scene/terrain';
 import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
@@ -101,14 +101,64 @@ function backRuns(S: TankSetup, T: Tank): P[][] {
   return facingRuns(T, 0, wallDir(S), 0.3).map(r => (r[0][0] + r[0][1] > r[r.length - 1][0] + r[r.length - 1][1] ? [...r].reverse() : r));
 }
 
+/** Height bands and segments round of a bowl's shell. */
+const BOWL_BANDS = 28, BOWL_SEG = 72;
+
+/**
+ * A bowl: the background on the inside of the sphere facing the room wall, then the glass shell (a sphere zone t thick,
+ * concentric, from the floor to the opening) on a round bottom pane, and the outline of floor, opening and equator.
+ */
+function addBowl(sc: THREE.Scene, S: TankSetup, T: Tank, add: (geo: THREE.BufferGeometry, ro: number) => void, t: number) {
+  const { H } = T, { R, c } = bowlDims(T), bg = BACKGROUNDS[S.render.bg], dir = wallDir(S);
+  const ys = Array.from({ length: BOWL_BANDS + 1 }, (_, j) => H * j / BOWL_BANDS);
+  if (c > 0 && c < H) { ys.push(c); ys.sort((a, b) => a - b); } // a row on the equator, so the widest point is exact
+  const ang = (i: number) => -Math.PI + 2 * Math.PI * i / BOWL_SEG;
+  const pt = (a: number, r: number, y: number) => [R + r * Math.sin(a), y, -(R - r * Math.cos(a))];
+  const rIn = (y: number) => bowlRadius(T, y), rOut = (y: number) => Math.sqrt(Math.max(0, (R + t) ** 2 - (y - c) ** 2));
+  if (bg.color !== null) {
+    // the cells whose outward direction faces the room wall, 0.5 mm inside the glass; u round the run, v up
+    const ok = (a: number) => Math.sin(a) * dir[0] - Math.cos(a) * dir[1] > 0.3;
+    const cells = Array.from({ length: BOWL_SEG }, (_, i) => i).filter(i => ok((ang(i) + ang(i + 1)) / 2));
+    const g = new Tris(), n = cells.length || 1;
+    cells.forEach((i, k) => {
+      const a0 = ang(i), a1 = ang(i + 1), u0 = k / n, u1 = (k + 1) / n;
+      for (let j = 0; j < ys.length - 1; j++) {
+        const y0 = ys[j], y1 = ys[j + 1], r0 = rIn(y0) - 0.5, r1 = rIn(y1) - 0.5;
+        g.quad(pt(a0, r0, y0), pt(a1, r0, y0), pt(a1, r1, y1), pt(a0, r1, y1), 0, [[u0, y0 / H], [u1, y0 / H], [u1, y1 / H], [u0, y1 / H]]);
+      }
+    });
+    if (cells.length) sc.add(new THREE.Mesh(g.geometry(), basic(bg.color, { map: bg.gradient ? gradientTexture() : null, side: THREE.DoubleSide })));
+  }
+  // the shell, split into a back and a front half so the front draws after what is inside (as the panes do)
+  for (const front of [false, true]) {
+    const g = new Tris();
+    for (let i = 0; i < BOWL_SEG; i++) {
+      const a0 = ang(i), a1 = ang(i + 1);
+      if ((Math.cos((a0 + a1) / 2) > 0) !== front) continue; // cos a > 0: the front half (depth < R)
+      for (let j = 0; j < ys.length - 1; j++) {
+        const y0 = ys[j], y1 = ys[j + 1];
+        // inner face toward the water, outer face toward the room (front faces only are drawn)
+        g.quad(pt(a0, rIn(y0), y0), pt(a0, rIn(y1), y1), pt(a1, rIn(y1), y1), pt(a1, rIn(y0), y0), 0);
+        g.quad(pt(a0, rOut(y0), y0), pt(a1, rOut(y0), y0), pt(a1, rOut(y1), y1), pt(a0, rOut(y1), y1), 0);
+      }
+      g.quad(pt(a0, rIn(H), H), pt(a1, rIn(H), H), pt(a1, rOut(H), H), pt(a0, rOut(H), H), 1); // the lip round the opening
+    }
+    add(g.geometry(), front ? 6 : 5);
+  }
+  add(prismGeometry(circleRing(T, rOut(0), BOWL_SEG), -t, 0), 5); // bottom pane, out to the shell's foot
+  const box: number[] = [...ringLines(circleRing(T, rIn(0), BOWL_SEG), 0), ...ringLines(circleRing(T, rIn(H), BOWL_SEG), H)];
+  if (c > 0 && c < H) box.push(...ringLines(circleRing(T, R, BOWL_SEG), c));
+  sc.add(lines(box, 0x7fb5a6, 0.35));
+}
+
 function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
-  const { H } = T, R = S.render, fp = footprint(T);
+  const { H } = T, R = S.render, fp = footprint(T), bowl = shapeOf(T) === 'bowl';
   // backing under the substrate; a bare-bottom tank has none, so the stand top or the room shows through the bottom pane
   if (S.substrate.show || S.layout.id === 'swamp' || S.terrain.on) sc.add(new THREE.Mesh(flatGeometry(fp.ring, 0), basic(0xcdb98f, { side: THREE.DoubleSide })));
-  const bg = BACKGROUNDS[R.bg], t = glassThickness(T, R.glass), runs = backRuns(S, T);
+  const bg = BACKGROUNDS[R.bg], t = glassThickness(T, R.glass), runs = bowl ? [] : backRuns(S, T);
   // the background covers the glass that faces the room wall: the back, or the end against it in a peninsula (then the
   // long back glass is clear, since that side is viewable); on a round or angled tank it wraps round the back
-  if (bg.color !== null) {
+  if (bg.color !== null && !bowl) {
     for (const r of runs) {
       const g = new Tris(), len = runLength(r) || 1; let s = 0;
       for (let i = 0; i < r.length - 1; i++) {
@@ -132,20 +182,24 @@ function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
     const g = new THREE.Mesh(geo, [faceM, edgeM]); g.renderOrder = ro; sc.add(g);
     const o = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 20), edgeLine); o.renderOrder = ro + 1; sc.add(o); // 20°: no seams between a curved shell's facets
   };
-  // bottom pane under everything; one wall per pane (a curved shell is one wall), mitred at the corners
-  const outer = offsetWalls(T, t);
-  add(prismGeometry(offsetRing(T, t), -t, 0), 5);
-  fp.walls.forEach((w, i) => {
-    const front = fp.edges.some(e => e.wall === i && e.n[1] < -0.5);
-    add(wallGeometry(w.pts, outer[i], 0, H, fp.walls.length === 1), front ? 6 : 5);
-  });
-  // interior outline: top and bottom loops, and the vertical corners where panes meet
-  const box: number[] = [...ringLines(fp.ring, 0), ...ringLines(fp.ring, H)];
-  if (fp.walls.length > 1) for (const w of fp.walls) box.push(...at(w.pts[0], 0), ...at(w.pts[0], H));
-  sc.add(lines(box, R.rim ? 0x55636f : 0x7fb5a6, 0.35));
-  if (R.rim) {
-    const rm = basic(0x1a1d21), r = t + 8, h = RIM_H, inner = fp.ring, rr = offsetRing(T, r);
-    for (const y0 of [H - h + 2, -t - 2]) sc.add(new THREE.Mesh(wallGeometry([...inner, inner[0]], [...rr, rr[0]], y0, y0 + h, true), rm));
+  // a bowl has its own shell (no rim: there are no pane edges to trim)
+  if (bowl) addBowl(sc, S, T, add, t);
+  else {
+    // bottom pane under everything; one wall per pane (a curved shell is one wall), mitred at the corners
+    const outer = offsetWalls(T, t);
+    add(prismGeometry(offsetRing(T, t), -t, 0), 5);
+    fp.walls.forEach((w, i) => {
+      const front = fp.edges.some(e => e.wall === i && e.n[1] < -0.5);
+      add(wallGeometry(w.pts, outer[i], 0, H, fp.walls.length === 1), front ? 6 : 5);
+    });
+    // interior outline: top and bottom loops, and the vertical corners where panes meet
+    const box: number[] = [...ringLines(fp.ring, 0), ...ringLines(fp.ring, H)];
+    if (fp.walls.length > 1) for (const w of fp.walls) box.push(...at(w.pts[0], 0), ...at(w.pts[0], H));
+    sc.add(lines(box, R.rim ? 0x55636f : 0x7fb5a6, 0.35));
+    if (R.rim) {
+      const rm = basic(0x1a1d21), r = t + 8, h = RIM_H, inner = fp.ring, rr = offsetRing(T, r);
+      for (const y0 of [H - h + 2, -t - 2]) sc.add(new THREE.Mesh(wallGeometry([...inner, inner[0]], [...rr, rr[0]], y0, y0 + h, true), rm));
+    }
   }
   if (R.grid) {
     const sub = (x: number, d: number) => groundHeight(S, T, x, d);
@@ -171,9 +225,10 @@ function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
 function addWater(sc: THREE.Scene, S: TankSetup, T: Tank) {
   if (!S.water.on) return;
   const y = waterY(T, S.water.level), c = new THREE.Color(0xd8eef2).lerp(new THREE.Color(S.water.color), 0.25 + 0.5 * S.water.opacity);
-  const surf = new THREE.Mesh(flatGeometry(footprint(T).ring, y), basic(c, { transparent: true, opacity: 0.1 + 0.25 * S.water.opacity, depthWrite: false, side: THREE.DoubleSide }));
+  const bowl = shapeOf(T) === 'bowl', r = bowlRadius(T, y); // a bowl's surface is the sphere's circle at the water line
+  const surf = new THREE.Mesh(flatGeometry(bowl ? circleRing(T, r) : footprint(T).ring, y), basic(c, { transparent: true, opacity: 0.1 + 0.25 * S.water.opacity, depthWrite: false, side: THREE.DoubleSide }));
   surf.renderOrder = 4; surf.userData.nolight = true; sc.add(surf);
-  const line = lines(ringLines(offsetRing(T, -0.6), y), 0xe8f6fa, 0.45);
+  const line = lines(ringLines(bowl ? circleRing(T, r - 0.6) : offsetRing(T, -0.6), y), 0xe8f6fa, 0.45);
   line.renderOrder = 4; sc.add(line);
 }
 
@@ -363,8 +418,9 @@ function addLid(sc: THREE.Scene, S: TankSetup, T: Tank) {
   const faceM = basic(0xbfe0ee, { transparent: true, opacity: 0.1, depthWrite: false });
   const edgeM = basic(lowIron ? 0xa9d3da : 0x3f8f72, { transparent: true, opacity: 0.8, depthWrite: false });
   const lineM = new THREE.LineBasicMaterial({ color: BACKGROUNDS[S.render.bg].light ? 0x2f6f5a : 0x8fd6bb, transparent: true, opacity: 0.7, depthWrite: false });
-  if (shapeOf(T) !== 'rect') { // one plate cut to the outline (lifted off, not hinged)
-    const geo = prismGeometry(offsetRing(T, -inset), y - pt / 2, y + pt / 2);
+  if (shapeOf(T) !== 'rect') { // one plate cut to the outline (lifted off, not hinged); a bowl's covers its opening
+    const ring = shapeOf(T) === 'bowl' ? circleRing(T, bowlDims(T).rt - inset) : offsetRing(T, -inset);
+    const geo = prismGeometry(ring, y - pt / 2, y + pt / 2);
     const g = new THREE.Mesh(geo, [faceM, edgeM]); g.renderOrder = 7; sc.add(g);
     const e = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 20), lineM); e.renderOrder = 8; sc.add(e);
     return;
@@ -447,7 +503,14 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   // outline; UVs from physical mm so grain size is constant
   type V3 = [number, number, number];
   const top: number[][] = [], side: number[][] = [], N = swamp ? 72 : 16, wy = waterY(T, S.water.level);
-  const G = (p: P): V3 => [p[0], h(p[0], p[1]), -p[1]];
+  // a bowl flares above its floor: the ground spreads out from the centre to meet the glass at its own height
+  const bowl = shapeOf(T) === 'bowl', rb = bowl ? bowlDims(T).rb : 0;
+  const G = (p: P): V3 => {
+    const y = h(p[0], p[1]);
+    if (!bowl) return [p[0], y, -p[1]];
+    const k = Math.max(1, (bowlRadius(T, y) - 0.5) / rb), cx = L / 2, cd = D / 2;
+    return [cx + (p[0] - cx) * k, y, -(cd + (p[1] - cd) * k)];
+  };
   const P3 = (i: number, j: number): V3 => G([L * i / N, D * j / N]);
   // cheap slope shading: brightness from each cell's tilt toward a light above, front and left
   const light = new THREE.Vector3(-0.35, 1, 0.45).normalize(), topCol: number[] = [];
@@ -639,7 +702,7 @@ function snailMeshes(S: TankSetup, T: Tank, f: Fish, sp: Species): [THREE.Mesh, 
     return [[m, w, h]];
   }
   // on the glass at the point nearest its (x, depth), just off the inside face, foot (local +z) toward the glass
-  const h = w * snailAspect(sp.art, 'foot'), g = nearestGlass(T, p.x, p.depth), ry = Math.atan2(g.n[0], -g.n[1]);
+  const h = w * snailAspect(sp.art, 'foot'), g = nearestGlass(T, p.x, p.depth, p.y), ry = Math.atan2(g.n[0], -g.n[1]);
   const x = g.x - g.n[0] * PANE_GAP, d = g.depth - g.n[1] * PANE_GAP;
   const top = S.water.on ? waterY(T, S.water.level) : T.H; // dry: the whole pane
   const y = clamp(p.y, sub(x, d) + h / 2, Math.max(sub(x, d) + h / 2, top - w / 2));

@@ -8,9 +8,9 @@
 import * as THREE from 'three';
 import { fishTL, getSpecies, restsOnFloor } from '../data/species';
 import { restsOnGround } from '../scene/water';
-import { D2R, clamp } from '../scene/physics';
+import { D2R, clamp, clampFish } from '../scene/physics';
 import { clampItem } from '../scene/items';
-import { clampIn, nearestGlass } from '../scene/shape';
+import { nearestGlass } from '../scene/shape';
 import { groundHeight } from '../scene/terrain';
 import type { Store } from '../scene/store';
 import type { Tank, TankSetup } from '../scene/types';
@@ -25,8 +25,8 @@ export function dragModeFor(az: number, el: number): DragMode {
 }
 
 /** World-space outward normal of the glass at the point of the outline nearest (x, depth). */
-function glassNormal(T: Tank, x: number, depth: number) {
-  const n = nearestGlass(T, x, depth).n; return new THREE.Vector3(n[0], 0, -n[1]);
+function glassNormal(T: Tank, x: number, depth: number, y?: number) {
+  const n = nearestGlass(T, x, depth, y).n; return new THREE.Vector3(n[0], 0, -n[1]);
 }
 
 /** Solid (not plant) item meshes of a view, minus the ids in `skip`. */
@@ -123,7 +123,7 @@ export function attachPointer(viewer: Viewer, store: Store) {
     const surf = f?.surface ?? 'floor';
     const onGround = !!sp && !!f && (restsOnFloor(sp, surf) || (sp.kind !== 'snail' && restsOnGround(t, t.tank, sp, f.x, f.depth, fishTL(f, sp) * sp.aspect)));
     const mode: DragMode = onGround ? 'top' : sp?.kind === 'snail' ? 'glass' : dragModeFor(c.az, c.el);
-    const n = mode === 'glass' ? glassNormal(t.tank, f!.x, f!.depth) : mode === 'top' ? new THREE.Vector3(0, 1, 0) : mode === 'side' ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 0, 1);
+    const n = mode === 'glass' ? glassNormal(t.tank, f!.x, f!.depth, f!.y) : mode === 'top' ? new THREE.Vector3(0, 1, 0) : mode === 'side' ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 0, 1);
     const pl = new THREE.Plane().setFromNormalAndCoplanarPoint(n, hit.mesh.position), p = new THREE.Vector3();
     if (!hit.ray.intersectPlane(pl, p)) return;
     // a glass snail follows the pointer itself (no grab offset), since its drag plane turns with the glass under it
@@ -174,14 +174,14 @@ export function attachPointer(viewer: Viewer, store: Store) {
       if (d.mode === 'glass') {
         // slide over the glass: onto the nearest point of the outline, then the drag plane turns to the glass there,
         // so a snail can crawl round a curved shell or a corner
-        const g = nearestGlass(T, p.x, -p.z); f.x = g.x; f.depth = g.depth; f.y = clamp(p.y, 0, T.H);
-        d.plane.setFromNormalAndCoplanarPoint(glassNormal(T, g.x, g.depth), new THREE.Vector3(g.x, f.y, -g.depth));
+        f.y = clamp(p.y, 0, T.H); const g = nearestGlass(T, p.x, -p.z, f.y); f.x = g.x; f.depth = g.depth;
+        d.plane.setFromNormalAndCoplanarPoint(glassNormal(T, g.x, g.depth, f.y), new THREE.Vector3(g.x, f.y, -g.depth));
         return;
       }
       if (d.mode !== 'side') f.x = clamp(p.x, 0, T.L);
       if (d.mode !== 'top') f.y = clamp(p.y, 0, T.H);
       if (d.mode !== 'front') f.depth = clamp(-p.z, 0, T.D);
-      const q = clampIn(T, f.x, f.depth); f.x = q.x; f.depth = q.depth;
+      clampFish(f, T);
     }, { coalesce: 'drag' });
     d.moved = true;
   });
@@ -221,7 +221,7 @@ export function attachPointer(viewer: Viewer, store: Store) {
       const f = t.fish.find(f => f.id === store.selId)!;
       if (f.surface === 'glass') return; // on the glass: depth is set by where on the glass it is
       f.depth = clamp(f.depth + dir * t.tank.D * 0.03, 0, t.tank.D);
-      const q = clampIn(t.tank, f.x, f.depth); f.x = q.x; f.depth = q.depth;
+      clampFish(f, t.tank);
     }, { coalesce: 'wheel-depth' });
   }, { passive: false });
 }

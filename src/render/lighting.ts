@@ -100,8 +100,8 @@ export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open') {
   LU.uRoomK.value = roomLevel(l.room); LU.uSpillR.value = spillReach(T) + up * 0.5;
   // spill leaves the tank box, extended up to the fixture: a raised light also lights the room over the rim
   LU.uTankMin.value.set(0, 0, -T.D); LU.uTankMax.value.set(T.L, T.H + up, 0);
-  // round and polygon tanks spill from an ellipse inscribed in that box, not the box itself (no square pool of light)
-  LU.uTankRound.value = shapeOf(T) === 'round' || shapeOf(T) === 'poly' ? 1 : 0;
+  // round, polygon and bowl tanks spill from an ellipse inscribed in that box, not the box itself (no square pool of light)
+  LU.uTankRound.value = ['round', 'poly', 'bowl'].includes(shapeOf(T)) ? 1 : 0;
   // the spill shows most in a dark room (in a lit room the eye adapts and it barely registers); a raised fixture
   // throws more of its light past the tank (up to ~1.8x at 450 mm and above)
   const spill = 0.9 * (1 - 0.75 * roomLevel(l.room)) * (1 + 0.8 * clamp((up - LAMP_Y) / 400, 0, 1));

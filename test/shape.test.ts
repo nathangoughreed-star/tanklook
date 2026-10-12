@@ -81,3 +81,38 @@ describe('weight and files', () => {
     expect(v7.tanks[0].tank.shape).toBeUndefined();
   });
 });
+
+describe('bowl (sphere cut flat at the floor and the opening)', () => {
+  // R = 200: floor 240 (rb 120, centre 160 up), opening 320 (rt 160, 120 above the centre): H = 280
+  const bowl = normTank({ L: 400, H: 1, D: 1, shape: 'bowl', bowlFloor: 240, bowlTop: 320 });
+  it('derives D and H from the three diameters and clamps the floor and opening', () => {
+    expect(bowl).toMatchObject({ D: 400, H: 280, bowlFloor: 240, bowlTop: 320 });
+    const tiny = normTank({ ...bowl, bowlFloor: 1, bowlTop: 9999 });
+    expect(tiny.bowlFloor).toBeCloseTo(400 * 0.2, 6); expect(tiny.bowlTop).toBeCloseTo(400 * 0.95, 6);
+    expect(normTank({ ...bowl, shape: 'round' }).bowlFloor).toBeUndefined();
+  });
+  it('the footprint is the floor disc; the volume is the sphere slice', () => {
+    expect(footprint(bowl).area / (Math.PI * 120 * 120)).toBeCloseTo(1, 2); // 64-gon
+    const z0 = -160, z1 = 120, V = Math.PI * (200 * 200 * (z1 - z0) - (z1 ** 3 - z0 ** 3) / 3) / 1e6;
+    expect(volume(bowl).litres).toBeCloseTo(V, 6);
+  });
+  it('keeps fish inside the sphere at their height, and snails on it', () => {
+    const f = { id: 1, species: 'neon', x: 0, y: 160, depth: 200, yaw: 0, pitch: 0, roll: 0, bend: 0 };
+    clampFish(f, bowl); expect(Math.hypot(f.x - 200, f.depth - 200)).toBeCloseTo(200, 6); // the equator
+    const g = { ...f, x: 390, y: 270 }; clampFish(g, bowl);
+    expect(Math.hypot(g.x - 200, g.depth - 200)).toBeCloseTo(Math.sqrt(200 ** 2 - 110 ** 2), 6); // near the opening
+    const r = rng(3);
+    for (let i = 0; i < 300; i++) {
+      const s = spawnSnail(() => 10, bowl, 20, r);
+      const d = Math.hypot(s.x - 200, s.depth - 200), at = Math.sqrt(200 ** 2 - (s.y - 160) ** 2);
+      if (s.surface === 'glass') expect(d).toBeCloseTo(at, 6); else expect(d).toBeLessThanOrEqual(120 - 10 + 1e-6);
+    }
+  });
+  it('water is the sphere slice to the water line; reads back from a file', () => {
+    const S = { ...defaultSetup(), tank: bowl }; S.substrate = { ...S.substrate, show: false }; S.layout = { id: 'none', seed: 1 }; S.terrain = { ...S.terrain, on: false };
+    const top = S.water.level * (280 - 25), z0 = -160, z1 = top - 160, V = Math.PI * (200 * 200 * (z1 - z0) - (z1 ** 3 - z0 ** 3) / 3) / 1e6;
+    expect(tankWeight(S).waterLitres).toBeCloseTo(V, 3);
+    const back = parseScene({ version: 9, name: 'b', units: 'cm', tanks: [{ ...defaultSetup(), tank: bowl }] }).scene;
+    expect(back.tanks[0].tank).toMatchObject({ shape: 'bowl', L: 400, D: 400, H: 280, bowlFloor: 240, bowlTop: 320 });
+  });
+});

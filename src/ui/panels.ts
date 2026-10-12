@@ -18,7 +18,7 @@ import { placeOnLand, randomPose, shuffleFish } from '../scene/scatter';
 import { restsOnGround, setWaterLevel } from '../scene/water';
 import { tankWeight } from '../scene/weight';
 import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, aqWaitS, fetchStocking } from '../data/aqadvisor';
-import { POLY_SIDES, SHAPES, bowMinLimit, offsetRing, ringArea, shapeOf } from '../scene/shape';
+import { BOWL_DEFAULT, BOWL_MAX, BOWL_MIN, POLY_SIDES, SHAPES, bowMinLimit, offsetRing, ringArea, shapeOf } from '../scene/shape';
 import { TABLE_MAX, tableRange } from '../scene/table';
 import type { Fish, Item, ItemKind, LayoutId, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
 import { GLASS_CHOICES, LIMITS, SceneError, parseScene } from '../scene/validate';
@@ -109,10 +109,11 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $<HTMLSelectElement>('shapeSel').innerHTML = Object.entries(SHAPES).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join('');
   $<HTMLSelectElement>('shapeSel').onchange = e => {
     const shape = (e.target as HTMLSelectElement).value as TankShape;
-    setTank(T => ({ ...T, shape, sides: T.sides ?? 6, bowMin: T.bowMin ?? T.D * 0.7 }));
+    setTank(T => ({ ...T, shape, sides: T.sides ?? 6, bowMin: T.bowMin ?? T.D * 0.7, bowlFloor: T.bowlFloor ?? T.L * BOWL_DEFAULT, bowlTop: T.bowlTop ?? T.L * BOWL_DEFAULT }));
   };
   for (const n of POLY_SIDES) $('sides' + n).onclick = () => setTank(T => ({ ...T, shape: 'poly', sides: n }));
   $('bowMin').oninput = e => setTank(T => ({ ...T, bowMin: +(e.target as HTMLInputElement).value }), 'bowMin');
+  for (const k of ['bowlFloor', 'bowlTop'] as const) $(k).oninput = e => setTank(T => ({ ...T, [k]: +(e.target as HTMLInputElement).value }), k);
   for (const k of ['L', 'H', 'D'] as const) {
     const el = $('a' + k);
     el.onchange = () => {
@@ -583,13 +584,20 @@ export function attachPanels(store: Store, viewer: Viewer) {
     for (const id of ['aL', 'aH', 'aD']) $(id).step = u === 'in' ? '0.5' : '1';
     const sh = shapeOf(A);
     setVal('shapeSel', sh); $('sidesRow').style.display = sh === 'poly' ? '' : 'none'; $('bowRow').style.display = sh === 'bow' ? '' : 'none';
+    for (const [k, o] of [['bowlFloor', 'oBowlFloor'], ['bowlTop', 'oBowlTop']] as const) {
+      $(k + 'Row').style.display = sh === 'bowl' ? '' : 'none';
+      if (sh !== 'bowl') continue;
+      const b = $(k); b.min = String(Math.ceil(A.L * BOWL_MIN)); b.max = String(Math.floor(A.L * BOWL_MAX)); setVal(k, A[k] ?? A.L * BOWL_DEFAULT); setOut(o, fmt(A[k] ?? A.L * BOWL_DEFAULT));
+    }
+    ($('aH') as HTMLInputElement).disabled = sh === 'bowl'; // a bowl's height follows from its three diameters
     for (const n of POLY_SIDES) $('sides' + n).classList.toggle('on', sh === 'poly' && A.sides === n);
-    $('aLLab').textContent = sh === 'round' ? 'Diameter' : sh === 'poly' ? 'Width' : 'Length';
+    $('aLLab').textContent = sh === 'round' || sh === 'bowl' ? 'Diameter' : sh === 'poly' ? 'Width' : 'Length';
     $('aDLab').textContent = sh === 'bow' ? 'Centre depth' : 'Depth';
-    $('aD').parentElement!.style.display = sh === 'round' || sh === 'poly' ? 'none' : ''; // depth follows from the diameter / width
+    $('aD').parentElement!.style.display = sh === 'round' || sh === 'poly' || sh === 'bowl' ? 'none' : ''; // depth follows from the diameter / width
     if (sh === 'bow') { const b = $('bowMin'); b.min = String(Math.ceil(Math.max(20, bowMinLimit(A)))); b.max = String(Math.floor(A.D)); setVal('bowMin', A.bowMin ?? A.D); setOut('oBow', fmt(A.bowMin ?? A.D)); }
     $('shapeHint').textContent = sh === 'rect' ? '' : sh === 'bow' ? 'Bowfront: the front glass is a curve from the end depth out to the full depth at the centre.'
-      : (sh === 'round' ? 'Round: one curved glass wall.' : `${A.sides} flat panes, one facing you.`) + ' No hood or peninsula ends for this shape.';
+      : (sh === 'round' ? 'Round: one curved glass wall.' : sh === 'bowl' ? 'Bowl: a glass sphere cut flat at the floor and the opening; its height follows from the three diameters.'
+        : `${A.sides} flat panes, one facing you.`) + ' No hood or peninsula ends for this shape.';
     $('shapeHint').style.display = sh === 'rect' ? 'none' : '';
     ($('lidHood') as HTMLButtonElement).disabled = !flatEnds(A);
     for (const id of ['wallLeft', 'wallRight']) ($(id) as HTMLButtonElement).disabled = !flatEnds(A);

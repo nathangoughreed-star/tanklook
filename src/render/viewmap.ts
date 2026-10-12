@@ -1,7 +1,7 @@
 // Viewpoint map: a small top-down inset showing where the eye is (and what it sees) relative to the tank, stand,
 // room wall and scale person. A DOM canvas over the view, so it never appears in PNG exports.
 import { fmtLen, glassThickness } from '../scene/physics';
-import { facingRuns, offsetRing } from '../scene/shape';
+import { bulge, facingRuns, offsetRing } from '../scene/shape';
 import { tableOn, tableRing, wallPlane } from '../scene/table';
 import type { Tank, TankSetup, Units } from '../scene/types';
 
@@ -47,10 +47,10 @@ export function drawViewMap(cv: HTMLCanvasElement, S: TankSetup, T: Tank, units:
   }
   // tank (outer glass outline) with the front marked
   g.fillStyle = '#2f6f9a'; g.beginPath();
-  for (const [x, d] of offsetRing(T, rim)) g.lineTo(X(x), Z(-d));
+  for (const [x, d] of offsetRing(T, rim + bulge(T))) g.lineTo(X(x), Z(-d));
   g.closePath(); g.fill();
   g.strokeStyle = '#8fd6bb'; g.lineWidth = 2; g.beginPath();
-  for (const r of facingRuns(T, rim, [0, -1])) { g.moveTo(X(r[0][0]), Z(-r[0][1])); for (const [x, d] of r) g.lineTo(X(x), Z(-d)); }
+  for (const r of facingRuns(T, rim + bulge(T), [0, -1])) { g.moveTo(X(r[0][0]), Z(-r[0][1])); for (const [x, d] of r) g.lineTo(X(x), Z(-d)); }
   g.stroke();
   if (person) { g.fillStyle = '#7d8593'; g.beginPath(); g.arc(X(person.x), Z(person.z), Math.max(3, person.w * 0.25 * k), 0, 7); g.fill(); }
   g.fillStyle = accent; g.beginPath(); g.arc(X(eye.x), Z(eye.z), 4, 0, 7); g.fill();

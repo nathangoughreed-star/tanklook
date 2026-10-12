@@ -1,7 +1,7 @@
 // Approximate filled weight of the tank: water over the ground, the substrate / land, and the glass. Not included:
 // the stand, rocks, wood, plants, rim trim and equipment.
 import { glassThickness, waterY } from './physics';
-import { footprint, inside, offsetRing, ringArea } from './shape';
+import { bowlDims, footprint, inside, offsetRing, ringArea, shapeOf, volumeBetween } from './shape';
 import { groundHeight } from './terrain';
 import type { Tank, TankSetup } from './types';
 
@@ -25,11 +25,16 @@ export function tankWeight(S: TankSetup, T: Tank = S.tank, n = 60): Weight {
     const g = groundHeight(S, T, x, d);
     water += Math.max(0, top - g) * cell; under += Math.min(g, top) * cell; over += Math.max(0, g - top) * cell;
   }
+  const bowl = shapeOf(T) === 'bowl';
+  // a bowl holds water out past its floor: the sphere slice up to the water line, less the ground in it (the ground
+  // over the floor disc only; an approximation where it heaps against flaring glass)
+  if (bowl) water = Math.max(0, volumeBetween(T, 0, top) / 1e6 - under);
   const t = glassThickness(T, S.render.glass), outer = ringArea(offsetRing(T, t));
   // bottom under everything (outer outline); walls = the ring between the inner and outer outline (mitred corners, so
   // a rectangle's panes come to the same volume as front/back spanning the ends); matches the renderer's panes
   let glassL = (outer * t + (outer - fp.area) * T.H) / 1e6;
-  if (S.lid === 'glass') glassL += fp.area * LID_GLASS / 1e6;
+  if (bowl) glassL = (outer * t + Math.PI * T.L * T.H * t) / 1e6; // floor + sphere zone 2 pi R h
+  if (S.lid === 'glass') glassL += (bowl ? Math.PI * bowlDims(T).rt ** 2 : fp.area) * LID_GLASS / 1e6;
   const w = {
     water: water * DENSITY.water,
     substrate: (under + over) * DENSITY.substrate + under * DENSITY.pore,
