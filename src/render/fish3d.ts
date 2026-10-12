@@ -5,6 +5,7 @@
 // so nose-to-tail stays adult TL.
 import * as THREE from 'three';
 import { bodyPlan, eyeSpot, pairedFins, profile, type Plan } from '../art/fishgen';
+import { rng } from '../art/paint';
 import { SNAILS } from '../art/snails';
 import type { EdgeMode } from '../scene/types';
 import { cardMaterial, pairedFinTexture } from './textures';
@@ -34,7 +35,10 @@ function sections(p: Plan) {
     let t = thick * (0.35 * hv + 0.65 * maxHv * Math.sin(Math.min(1, hv / maxHv) * Math.PI / 2)) * (pedT + (1 - pedT) * Math.sqrt(s));
     // armoured heads sit a step narrower than the trunk; a flat snout keeps its width to the tip (shovel)
     if (p.step) t *= 1 - p.step * smooth(gu - 0.015, gu + 0.02, u);
-    if (p.noseW) t = Math.max(t, p.noseW * thick * maxHv * smooth(0.55, 0.8, s) * (1 - 0.5 * smooth(0.9, 1, s)));
+    if (p.noseW) {
+      t = Math.max(t, p.noseW * thick * maxHv * smooth(0.55, 0.8, s) * (1 - 0.5 * smooth(0.9, 1, s)));
+      const k = Math.max(0, (s - 0.86) / 0.14); t *= Math.sqrt(Math.max(0, 1 - k * k)); // a rounded shovel seen from above or below, not a square cut
+    }
     return { vc, hv, t, p };
   };
 }
@@ -177,12 +181,14 @@ function limbMeshes(art: string, p: Plan, bend: number, mat: THREE.Material) {
 }
 
 const SPREAD = { pelvic: 0.6, pectoral: 0.75 };
+/** Swing of the paired fins on a fish clinging to glass: pressed out flat against the pane, pectorals swept back. */
+const SPLAY = { pelvic: 1.4, pectoral: 1.3 };
 
 /**
  * Pectoral and pelvic fins as thin membranes on both flanks, rooted on the body surface and swung out from it
  * (pelvic about the body axis, pectoral about a vertical base), painted like the card's fins.
  */
-function finMeshes(art: string, p: Plan, bend: number, edge: EdgeMode) {
+function finMeshes(art: string, p: Plan, bend: number, edge: EdgeMode, cling = false) {
   const out: THREE.Mesh[] = [];
   for (const f of pairedFins(p)) {
     const us = f.pts.map(q => q[0]), vs = f.pts.map(q => q[1]), m = 0.01;
@@ -196,15 +202,118 @@ function finMeshes(art: string, p: Plan, bend: number, edge: EdgeMode) {
     }
     const mat = cardMaterial(key, pairedFinTexture(art, f, box, edge), edge);
     for (const side of [1, -1]) {
-      const mesh = new THREE.Mesh(g, mat), a = SPREAD[f.kind];
+      const mesh = new THREE.Mesh(g, mat), a = (cling ? SPLAY : SPREAD)[f.kind];
       // root slightly inside the surface so the base never shows a gap
       const s = surfaceAt(p, f.root[0], f.root[1], side, bend), z0 = bendZ(bend, s.x);
       mesh.position.set(s.x, s.y, z0 + (s.z - z0) * 0.85);
-      if (f.kind === 'pelvic') mesh.rotation.x = -side * a; else mesh.rotation.set(-side * 0.25, side * a, 0, 'YXZ');
+      if (f.kind === 'pelvic') mesh.rotation.x = -side * a;
+      else if (cling) mesh.rotation.set(-side * a, side * 0.35, 0, 'YXZ');
+      else mesh.rotation.set(-side * 0.25, side * a, 0, 'YXZ');
       out.push(mesh);
     }
   }
   return out;
+}
+
+/**
+ * Undersides of the fish that cling to glass (seen belly-on through the pane): a painted plate over the lower part of
+ * the body, projected straight up (so a round sucker disc stays round), its edges fading into the flanks' paint.
+ * Painters draw in widths: `px(u, z)` = canvas point at station u (0 tail .. 1 nose), z across; `t(u)` = half-width there.
+ */
+type BellyPaint = (ctx: CanvasRenderingContext2D, px: (u: number, z: number) => [number, number], t: (u: number) => number, s: number) => void;
+const BELLY_ARC = 0.42; // half the lower arc the plate covers (fraction of pi each side of the keel)
+/** Speckles over the plate: n dots of radius r (widths) in colour c, seeded. */
+function speckle(ctx: CanvasRenderingContext2D, px: (u: number, z: number) => [number, number], t: (u: number) => number, s: number, seed: number, n: number, u0: number, u1: number, r: number, c: string) {
+  const R = rng(seed); ctx.fillStyle = c;
+  for (let i = 0; i < n; i++) {
+    const u = u0 + R() * (u1 - u0), [x, y] = px(u, (R() * 2 - 1) * t(u) * 0.95);
+    ctx.globalAlpha = 0.35 + R() * 0.5; ctx.beginPath(); ctx.ellipse(x, y, r * s * (0.6 + R() * 0.8), r * s * (0.6 + R() * 0.8), R() * 3, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+/** The oral disc of a sucker-mouth catfish at station u: broad lips with papillae round a dark slit and the jaw pads. */
+function suckerDisc(ctx: CanvasRenderingContext2D, px: (u: number, z: number) => [number, number], s: number, u: number, rz: number, ru: number, lip: [string, string], seed: number) {
+  const [cx, cy] = px(u, 0), a = ru * s, b = rz * s, R = rng(seed);
+  const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(a, b));
+  g.addColorStop(0, lip[1]); g.addColorStop(0.75, lip[0]); g.addColorStop(1, lip[1]);
+  ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(cx, cy, a, b, 0, 0, Math.PI * 2); ctx.fill();
+  // papillae: fine bumps over the lips, denser toward the rim
+  for (let i = 0; i < 700; i++) {
+    const th = R() * Math.PI * 2, k = 0.35 + Math.sqrt(R()) * 0.62, d = 0.0018 * s;
+    ctx.fillStyle = R() < 0.5 ? 'rgba(255,250,235,0.16)' : 'rgba(40,34,24,0.14)';
+    ctx.beginPath(); ctx.arc(cx + Math.cos(th) * a * k, cy + Math.sin(th) * b * k, d * (0.6 + R() * 0.8), 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.strokeStyle = 'rgba(30,26,20,0.45)'; ctx.lineWidth = Math.max(1, 0.06 * a);
+  ctx.beginPath(); ctx.ellipse(cx, cy, a, b, 0, 0, Math.PI * 2); ctx.stroke();
+  // the mouth: a dark crescent behind the front lip, the two jaw pads in it
+  ctx.fillStyle = '#1e1a14';
+  ctx.beginPath(); ctx.ellipse(cx + a * 0.1, cy, a * 0.2, b * 0.55, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#6a5a3c';
+  for (const sgn of [-1, 1]) { ctx.beginPath(); ctx.ellipse(cx + a * 0.12, cy + sgn * b * 0.22, a * 0.08, b * 0.17, 0, 0, Math.PI * 2); ctx.fill(); }
+}
+/** Gill slits (one each side, just behind the head) and the vent. */
+function slitsAndVent(ctx: CanvasRenderingContext2D, px: (u: number, z: number) => [number, number], t: (u: number) => number, s: number, gu: number, vu: number) {
+  ctx.strokeStyle = 'rgba(25,22,16,0.55)'; ctx.lineWidth = Math.max(1, 0.006 * s); ctx.lineCap = 'round';
+  for (const sgn of [-1, 1]) {
+    const [x0, y0] = px(gu, sgn * t(gu) * 0.55), [x1, y1] = px(gu + 0.025, sgn * t(gu) * 0.85);
+    ctx.beginPath(); ctx.moveTo(x0, y0); ctx.quadraticCurveTo(x0 + (x1 - x0) * 0.2, y1, x1, y1); ctx.stroke();
+  }
+  const [vx, vy] = px(vu, 0); ctx.fillStyle = 'rgba(30,26,20,0.6)'; ctx.beginPath(); ctx.ellipse(vx, vy, 0.008 * s, 0.005 * s, 0, 0, Math.PI * 2); ctx.fill();
+}
+const BELLIES: Record<string, BellyPaint> = {
+  // bristlenose: grey-brown, paler down the middle, freckled; a broad disc under the shovel head
+  bristlenose: (ctx, px, t, s) => {
+    const W = ctx.canvas.width, H = ctx.canvas.height, g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, '#5e5848'); g.addColorStop(0.5, '#8e8670'); g.addColorStop(1, '#5e5848');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    speckle(ctx, px, t, s, 11, 260, 0.16, 0.98, 0.005, '#3e3a2e');
+    speckle(ctx, px, t, s, 12, 90, 0.2, 0.75, 0.006, '#b4ab92');
+    slitsAndVent(ctx, px, t, s, 0.8, 0.46);
+    suckerDisc(ctx, px, s, 0.91, t(0.91) * 0.72, 0.062, ['#9a917a', '#7a725e'], 13);
+  },
+  // oto: a cream belly, the dark side stripe just showing at the edges; a small disc
+  oto: (ctx, px, t, s) => {
+    const W = ctx.canvas.width, H = ctx.canvas.height, g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, '#5a5644'); g.addColorStop(0.12, '#b8b29a'); g.addColorStop(0.3, '#e2ddc8'); g.addColorStop(0.7, '#e2ddc8'); g.addColorStop(0.88, '#b8b29a'); g.addColorStop(1, '#5a5644');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    speckle(ctx, px, t, s, 21, 60, 0.6, 0.98, 0.004, '#8a8468');
+    slitsAndVent(ctx, px, t, s, 0.8, 0.45);
+    suckerDisc(ctx, px, s, 0.93, t(0.93) * 0.68, 0.04, ['#cfc8ae', '#b0a98e'], 22);
+  },
+};
+
+function bellyPlate(art: string, p: Plan, bend: number) {
+  const paint = BELLIES[art]; if (!paint) return null;
+  const key = `belly|${art}|${bend}|${fish3d.fade}`;
+  let g = geoCache.get(key);
+  const ring = sections(p), Z = Math.max(...Array.from({ length: 41 }, (_, i) => ring(p.pedU + (1 - p.pedU) * i / 40).t)) * 1.02;
+  if (!g) {
+    const N = 18, pos: number[] = [], uv: number[] = [], col: number[] = [], idx: number[] = [];
+    for (let i = 0; i < STATIONS; i++) {
+      const k = i / (STATIONS - 1), u = p.pedU + (1 - p.pedU) * (1 - Math.cos(k * Math.PI / 2) ** 1.5), sec = ring(u), x = u - 0.5, z0 = bendZ(bend, x);
+      for (let j = 0; j <= N; j++) {
+        const f = j / N * 2 - 1, [v, z] = ringPt(sec, Math.PI * (1 + BELLY_ARC * f)), lift = 1.015; // just outside the body
+        pos.push(x, -(sec.vc + (v - sec.vc) * lift), z0 + z * lift);
+        uv.push(u, 0.5 - z / (2 * Z));
+        const a = (1 - smooth(0.55, 1, Math.abs(f))) * smooth(p.pedU, p.pedU + 0.08, u), sh = 0.92;
+        col.push(sh, sh, sh, a);
+      }
+    }
+    for (let i = 0; i < STATIONS - 1; i++) for (let j = 0; j < N; j++) { const a = i * (N + 1) + j, b = a + N + 1; idx.push(a, a + 1, b, a + 1, b + 1, b); } // outward, as the body
+    g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+    g.setAttribute('color', new THREE.Float32BufferAttribute(col, 4));
+    g.setIndex(idx); g.computeVertexNormals(); g.userData.keep = true;
+    geoCache.set(key, g);
+  }
+  const mat = fishMat(`belly:${art}`, () => {
+    const W = 1024, H = Math.round(W * 2 * Z), c = document.createElement('canvas'); c.width = W; c.height = H;
+    paint(c.getContext('2d')!, (u, z) => [u * W, (0.5 + z / (2 * Z)) * H], u => ring(u).t, W);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+    return new THREE.MeshBasicMaterial({ map: t, vertexColors: true, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+  });
+  return new THREE.Mesh(g, mat);
 }
 
 const geoCache = new Map<string, THREE.BufferGeometry>();
@@ -280,9 +389,10 @@ const fishMat = (key: string, make: () => THREE.MeshBasicMaterial) => {
 
 /**
  * The solid body + eyes for a fish card of width w; add it as a child of the card mesh. `map` = the species' body
- * texture (painted without eye, gill and mouth). Geometry is shared per species + bend.
+ * texture (painted without eye, gill and mouth). Geometry is shared per species + bend. `cling` = on the glass: the
+ * paired fins pressed out flat.
  */
-export function fishBody(art: string, aspect: number, w: number, bend: number, map: THREE.Texture, edge: EdgeMode) {
+export function fishBody(art: string, aspect: number, w: number, bend: number, map: THREE.Texture, edge: EdgeMode, cling = false) {
   const p = shaped(bodyPlan(art)!), b = Math.round(bend * 20) / 20, key = `${art}|${aspect}|${b}|${fish3d.fade}`;
   let g = geoCache.get(key); if (!g) { g = bodyGeometry(p, aspect, b); geoCache.set(key, g); }
   const grp = new THREE.Group(); grp.scale.setScalar(w);
@@ -295,7 +405,8 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
     m.position.copy(e.pos).addScaledVector(e.n, -e.r * 0.3); // set into the head, bulging a little
     grp.add(m);
   }
-  for (const f of finMeshes(art, p, b, edge)) grp.add(f);
+  const belly = bellyPlate(art, p, b); if (belly) grp.add(belly);
+  for (const f of finMeshes(art, p, b, edge, cling)) grp.add(f);
   if (p.limbs) {
     const mat = fishMat('limb:' + art, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(p.shade[0]).multiplyScalar(0.9) }));
     for (const m of limbMeshes(art, p, b, mat)) grp.add(m);

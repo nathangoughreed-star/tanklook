@@ -19,6 +19,14 @@ function stocked(): TankSetup {
 const yawGap = (a: number, b: number) => Math.abs(((a - b + 540) % 360) - 180);
 
 describe('shuffle', () => {
+  it('with a species given, moves only that species', () => {
+    const s = stocked(); shuffleFish(s, rng(3));
+    const others = JSON.stringify(s.fish.filter(f => f.species !== 'neon'));
+    const neons = JSON.stringify(s.fish.filter(f => f.species === 'neon'));
+    shuffleFish(s, rng(4), 'neon');
+    expect(JSON.stringify(s.fish.filter(f => f.species !== 'neon'))).toBe(others);
+    expect(JSON.stringify(s.fish.filter(f => f.species === 'neon'))).not.toBe(neons);
+  });
   it('keeps every animal, its species, id and size, inside the tank and the rules', () => {
     for (let seed = 1; seed <= 40; seed++) {
       const s = stocked(), before = s.fish.map(f => `${f.id}:${f.species}:${f.tl ?? ''}`);

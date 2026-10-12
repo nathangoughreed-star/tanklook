@@ -1,5 +1,5 @@
 // Keeps animals where they live: swimmers between the ground and the surface, bottom dwellers on submerged ground,
-// glass snails below the water line, land animals on ground above it; amphibious ('both') animals swim where the water is
+// animals on the glass below the water line, land animals on ground above it; amphibious ('both') animals swim where the water is
 // deep enough for them and rest on the ground elsewhere. Floor snails may sit anywhere, emerged land included.
 import { fishTL, getSpecies, type Species } from '../data/species';
 import { clamp, clampFish, waterY } from './physics';
@@ -16,9 +16,9 @@ export function restsOnGround(s: TankSetup, T: Tank, sp: Species, x: number, dep
 /** Highest centre height (mm) for this animal at water surface `top`; null = its height is not free. */
 export function maxFishY(f: Fish, top: number): number | null {
   const sp = getSpecies(f.species); if (!sp) return null;
-  if (sp.zone === 'bottom' || sp.habitat === 'land') return null; // rests on the ground
   const w = fishTL(f, sp);
-  if (sp.kind === 'snail') return (f.surface ?? 'floor') === 'floor' ? null : Math.max(0, top - w / 2);
+  if (f.surface === 'glass') return Math.max(0, top - w / 2); // a snail or pleco on the glass
+  if (sp.zone === 'bottom' || sp.habitat === 'land' || sp.kind === 'snail') return null; // rests on the ground or hardscape
   return Math.max(0, top - w * sp.aspect / 2);
 }
 
@@ -26,10 +26,8 @@ export function maxFishY(f: Fish, top: number): number | null {
 export function fitFish(f: Fish, s: TankSetup) {
   const sp = getSpecies(f.species); if (!sp) return;
   const A = s.tank, top = waterY(A, s.water.level), w = fishTL(f, sp);
-  if (sp.kind === 'snail') {
-    if ((f.surface ?? 'floor') !== 'floor') f.y = clamp(f.y, 0, Math.max(0, top - w / 2));
-    return;
-  }
+  if (f.surface === 'glass') { f.y = clamp(f.y, 0, Math.max(0, top - w / 2)); return; }
+  if (sp.kind === 'snail') return;
   const h = w * sp.aspect;
   if (sp.habitat === 'land') { // onto the nearest ground above the water; left where it is if the tank has no land
     if (groundHeight(s, A, f.x, f.depth) < top) { const p = nearestLand(s, A, top, f.x, f.depth); if (p) { f.x = p.x; f.depth = p.depth; } }

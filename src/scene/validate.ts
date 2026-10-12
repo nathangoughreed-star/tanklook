@@ -6,6 +6,7 @@ import { clamp, mapToTank } from './physics';
 import { normTank } from './shape';
 import { TABLE_MAX, fitTable } from './table';
 import { keepInWater } from './water';
+import { radialSize } from './terrain';
 import { SCENE_VERSION, type Fish, type Item, type Scene, type Tank, type TankSetup } from './types';
 
 export class SceneError extends Error {}
@@ -13,9 +14,12 @@ export class SceneError extends Error {}
 type Obj = Record<string, unknown>;
 const isObj = (v: unknown): v is Obj => typeof v === 'object' && v !== null && !Array.isArray(v);
 
+const BG_SIDES = ['back', 'left', 'right', 'front'] as const;
+
 export const LIMITS = {
   tankMin: 50, tankMax: 5000,     // mm, per interior dimension
   dist: [400, 5000] as const,
+  bgArc: [20, 360] as const,      // degrees of a round tank's shell the background covers
   az: [-180, 180] as const,
   el: [-20, 85] as const,
   zoom: [0.5, 12] as const,
@@ -39,7 +43,7 @@ export const LIMITS = {
   terrainMax: 0.95,                        // highest point, fraction of interior height                // water level, fraction of full
   opacity: [0, 0.95] as const,             // water tint after 300 mm
 };
-export const SURFACES = ['floor', 'glass'] as const;
+export const SURFACES = ['floor', 'glass', 'hardscape'] as const;
 /** The v7 rectangle panes a glass snail could be on, with the coordinate that put it on that pane. */
 const OLD_PANES: Record<string, (f: Obj, T: Tank) => void> = {
   front: f => { f.depth = 0; }, back: (f, T) => { f.depth = T.D; }, left: f => { f.x = 0; }, right: (f, T) => { f.x = T.L; },
@@ -153,7 +157,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       x: num(f.x, tankA.L / 2, 0, tankA.L), y: num(f.y, tankA.H / 2, 0, tankA.H), depth: num(f.depth, tankA.D / 2, 0, tankA.D),
       yaw: num(f.yaw, 0, ...LIMITS.yaw), pitch: num(f.pitch, 0, ...LIMITS.tilt), roll: num(f.roll, 0, ...LIMITS.tilt),
       bend: num(f.bend, 0, ...LIMITS.bend),
-      ...(getSpecies(f.species)!.kind === 'snail' ? { surface: pick(f.surface, SURFACES, 'floor') } : {}),
+      ...(getSpecies(f.species)!.surfaces ? { surface: pick(f.surface, getSpecies(f.species)!.surfaces!, 'floor') } : {}),
       ...(tl !== adult ? { tl } : {}),
     });
   }
@@ -169,6 +173,11 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
     render: {
       edge: pick(r.edge, ['cutout', 'a2c'] as const, d.render.edge), grid: bool(r.grid, d.render.grid), rim: bool(r.rim, d.render.rim),
       bg: pick(r.bg, ['black', 'blue', 'gradient', 'grey', 'frosted', 'none'] as const, d.render.bg), glass,
+      // added 2026-10-12 (no version bump); older files: the side the background then followed, the room wall's
+      bgSides: Array.isArray(r.bgSides)
+        ? BG_SIDES.filter(k => (r.bgSides as unknown[]).includes(k))
+        : [bool(w.show, d.wall.show) && (w.side === 'left' || w.side === 'right' || w.side === 'peninsula') ? (w.side === 'left' ? 'left' : 'right') : 'back'],
+      bgArc: Math.round(num(r.bgArc, 145, ...LIMITS.bgArc)),
       glassType: pick(r.glassType, ['standard', 'lowiron'] as const, 'standard'),
     },
     light: {
@@ -179,7 +188,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       height: num(l.height, 50, ...LIMITS.lampH), // added 2026-10-08; older files: the old fixed 50 mm
     },
     substrate: {
-      show: bool(s.show, d.substrate.show), type: pick(s.type, ['gravel', 'black', 'white'] as const, 'gravel'),
+      show: bool(s.show, d.substrate.show), type: pick(s.type, ['gravel', 'pea', 'clown', 'blue', 'onyx', 'black', 'white'] as const, 'gravel'),
       fl: num(s.fl, d.substrate.fl, 0, subMax), fr: num(s.fr, d.substrate.fr, 0, subMax),
       bl: num(s.bl, d.substrate.bl, 0, subMax), br: num(s.br, d.substrate.br, 0, subMax),
     },
@@ -190,9 +199,10 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
     },
     terrain: (() => {
       const cols = Math.round(num(te.cols, d.terrain.cols, ...LIMITS.terrainCols)), rows = Math.round(num(te.rows, 0, 0, 25));
-      const h = Array.isArray(te.h) && rows >= 2 && te.h.length === cols * rows && te.h.every(v => typeof v === 'number' && Number.isFinite(v))
+      const radial = te.radial === true, size = radial ? (rows >= 1 ? radialSize(rows) : -1) : rows >= 2 ? cols * rows : -1;
+      const h = Array.isArray(te.h) && te.h.length === size && te.h.every(v => typeof v === 'number' && Number.isFinite(v))
         ? (te.h as number[]).map(v => clamp(v, 0, tankA.H * LIMITS.terrainMax)) : [];
-      return h.length ? { on: bool(te.on, false), cols, rows, h } : { on: false, cols, rows: 0, h: [] };
+      return h.length ? { on: bool(te.on, false), cols, rows, h, ...(radial ? { radial } : {}) } : { on: false, cols, rows: 0, h: [] };
     })(),
     lid: pick(raw.lid, ['open', 'glass', 'hood'] as const, d.lid),
     stand: {

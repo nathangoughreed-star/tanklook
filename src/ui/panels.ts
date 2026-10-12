@@ -10,11 +10,11 @@ import { defaultScene, TANK_PRESETS } from '../scene/defaults';
 import { KINDS, LAYOUTS, LIBRARY, clampItem, itemDims, makeItem, starterItems } from '../scene/items';
 import { tankDiff } from './diff';
 import {
-  IN, clamp, clampFish, fmtDims, fmtLen, fmtSize, fromUnit, glassThickness, rescaleTank, spawnSnail, toUnit, volume, waterY,
+  IN, clamp, clampFish, fmtDims, fmtLen, fmtSize, fromUnit, glassThickness, rescaleTank, toUnit, volume, waterY,
 } from '../scene/physics';
 import type { Store } from '../scene/store';
-import { SWAMP_LEVEL, groundHeight, nearestLand, sampleTerrain } from '../scene/terrain';
-import { placeOnLand, randomPose, shuffleFish } from '../scene/scatter';
+import { SWAMP_LEVEL, nearestLand, sampleTerrain } from '../scene/terrain';
+import { randomPose, shuffleFish } from '../scene/scatter';
 import { restsOnGround, setWaterLevel } from '../scene/water';
 import { tankWeight } from '../scene/weight';
 import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, aqWaitS, fetchStocking } from '../data/aqadvisor';
@@ -69,7 +69,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
       status(e instanceof SceneError ? e.message : 'Could not open that file.', true);
     }
   };
-  const saveFile = (scene: Scene) => download(new Blob([JSON.stringify(scene, null, 1)], { type: 'application/json' }), `${slug(scene.name)}.tanklook.json`);
+  const saveFile = (scene: Scene) => download(new Blob([JSON.stringify(scene, null, 1)], { type: 'application/octet-stream' }), `${slug(scene.name)}.tank`);
   // the whole scene: with split tanks, one file holding both (opens split again)
   $('saveScene').onclick = () => saveFile(G());
   /** One tank of a split on its own, as an ordinary single-tank file (Nathan 2026-10-08). */
@@ -100,6 +100,9 @@ export function attachPanels(store: Store, viewer: Viewer) {
       const T = next(s.tank);
       rescaleTank(s, T); // keep fish at the same relative spot (and apply the shape's rules, e.g. round D = L)
       const max = T.H * 0.5;
+      // a round tank shapes its terrain on rings, any other on a rectangular grid: resample the surface into the new kind
+      const te = s.terrain;
+      if (te.h.length && !!te.radial !== (shapeOf(s.tank) === 'round')) s.terrain = { ...sampleTerrain(s, s.tank, te.cols), on: te.on };
       for (const k of ['fl', 'fr', 'bl', 'br'] as const) s.substrate[k] = Math.min(s.substrate[k], max);
       // hood and peninsula ends exist for rectangles and bowfronts only (Nathan 2026-10-08)
       if (!flatEnds(s.tank)) { if (s.lid === 'hood') s.lid = 'glass'; if (s.wall.side !== 'back') s.wall.side = 'back'; }
@@ -126,9 +129,13 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('rimY').onclick = () => store.edit(s => { s.render.rim = true; });
   $('rimN').onclick = () => store.edit(s => { s.render.rim = false; });
   const LIDS = [['lidOpen', 'open'], ['lidGlass', 'glass'], ['lidHood', 'hood']] as const;
+  const BG_BTNS = [['bgBack', 'back'], ['bgLeft', 'left'], ['bgRight', 'right'], ['bgFront', 'front']] as const;
   for (const [id, lid] of LIDS) $(id).onclick = () => store.edit(s => { s.lid = lid; });
   $<HTMLSelectElement>('bgSel').innerHTML = Object.entries(BACKGROUNDS).map(([k, b]) => `<option value="${k}">${esc(b.label)}</option>`).join('');
   $<HTMLSelectElement>('bgSel').onchange = e => store.edit(s => { s.render.bg = (e.target as HTMLSelectElement).value as TankSetup['render']['bg']; });
+  for (const [id, side] of BG_BTNS)
+    $(id).onclick = () => store.edit(s => { const b = s.render.bgSides; s.render.bgSides = b.includes(side) ? b.filter(k => k !== side) : [...b, side]; });
+  $('bgArc').oninput = e => store.edit(s => { s.render.bgArc = +(e.target as HTMLInputElement).value; }, { coalesce: 'bgArc' });
   $<HTMLSelectElement>('glassSel').innerHTML = '<option value="auto">Auto (by height)</option>' + GLASS_CHOICES.map(g => `<option value="${g}">${g} mm</option>`).join('');
   $<HTMLSelectElement>('glassSel').onchange = e => store.edit(s => { const v = (e.target as HTMLSelectElement).value; s.render.glass = v === 'auto' ? 'auto' : +v; });
   $<HTMLSelectElement>('glassType').onchange = e => store.edit(s => { s.render.glassType = (e.target as HTMLSelectElement).value as TankSetup['render']['glassType']; });
@@ -154,7 +161,11 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('tableFront').onclick = () => editTable(tb => { tb.x = 0; tb.z = -TABLE_MAX; });
   $('wallOn').onchange = e => store.edit(s => { s.wall.show = (e.target as HTMLInputElement).checked; });
   for (const [id, side] of [['wallBack', 'back'], ['wallLeft', 'left'], ['wallRight', 'right']] as const)
-    $(id).onclick = () => store.edit(s => { s.wall.side = side; s.wall.show = true; });
+    $(id).onclick = () => store.edit(s => {
+      const was = s.wall.show ? s.wall.side : 'back', b = s.render.bgSides;
+      if (b.length === 1 && b[0] === was) s.render.bgSides = [side]; // a background on the old wall side moves with the wall
+      s.wall.side = side; s.wall.show = true;
+    });
   $('wallColor').oninput = e => store.edit(s => { s.wall.color = (e.target as HTMLInputElement).value; s.wall.show = true; }, { coalesce: 'wallColor' });
 
   $('personOn').onchange = e => store.edit(s => { s.person.show = (e.target as HTMLInputElement).checked; });
@@ -183,7 +194,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     }
     const pick = getSpecies(pickId), why = pick ? blocked(pick) : '';
     showPreview(list.length ? pick : undefined);
-    $<HTMLButtonElement>('addFish').disabled = $<HTMLButtonElement>('addSchool').disabled = !list.length || !!why;
+    $<HTMLButtonElement>('addFish').disabled = !list.length || !!why;
     $('addFish').title = why;
     setOut('oAddSize', sizeLabel(addPct(), getSpecies(pickId)));
   }
@@ -210,11 +221,6 @@ export function attachPanels(store: Store, viewer: Viewer) {
   const newTL = (sp: Species) => (addPct() === 100 ? {} : { tl: Math.round(sp.tl * addPct() / 100) });
   const sizeLabel = (pct: number, sp?: Species) => (pct === 100 ? 'Adult' : `${pct}%${sp ? ' · ' + fmt(sp.tl * pct / 100) : ''}`);
   $('addSize').oninput = () => setOut('oAddSize', sizeLabel(addPct(), getSpecies(pickId)));
-  /** A snail at a random spot on the substrate or the inside of a pane (area-weighted). */
-  const snailAt = (s: TankSetup, sp: Species, id: number, r: () => number): Fish => {
-    const sz = newTL(sp);
-    return { id, species: sp.id, ...spawnSnail((x, d) => groundHeight(s, s.tank, x, d), s.tank, sz.tl ?? sp.tl, r, s.water.on ? waterY(s.tank, s.water.level) : s.tank.H - 10), pitch: 0, roll: 0, bend: 0, ...sz };
-  };
   /** Water surface for placement: the water line, or -1 in a dry tank (all ground counts as land). */
   const surfaceY = (s: TankSetup) => (s.water.on ? waterY(s.tank, s.water.level) : -1);
   /** Why this species cannot be added right now ('' = it can). */
@@ -225,43 +231,34 @@ export function attachPanels(store: Store, viewer: Viewer) {
       return 'Land animals need ground above the water: lower the water, or use the Swamp layout or Custom terrain.';
     return '';
   }
-  function addOne(sp: Species) {
-    const why = blocked(sp); if (why) { status(why, true); renderResults(); return; }
-    const id = store.nextId(), seed = Math.random() * 1e9;
+  /** Default count when a species joins the list: a group for schooling / shoaling fish, else one. */
+  const startCount = (sp: Species) => (sp.kind !== 'snail' && sp.group ? 6 : 1);
+  /** Set how many of a species each edited tank holds (`to` gets the tank's current count). New animals take the
+   *  species' sizes from "New fish size"; that species alone is re-placed by the shuffle rules (level, school, floor),
+   *  everyone else stays put. 0 takes the species off the list. One undo step per burst of clicks. */
+  function setCount(sp: Species, to: (n: number) => number) {
+    const want = Math.round(to(S().fish.filter(f => f.species === sp.id).length));
+    if (want > 0) { const why = blocked(sp); if (why) { status(why, true); renderResults(); return; } }
+    const first = store.nextId(), seed = Math.random() * 1e9;
     store.edit(s => {
-      const A = s.tank, r = rng(seed); // the same draws in every edited tank
-      if (sp.kind === 'snail') { s.fish.push(snailAt(s, sp, id, r)); return; }
+      const r = rng(seed), mine = s.fish.filter(f => f.species === sp.id);
+      const n = clamp(Math.round(to(mine.length)), 0, mine.length + LIMITS.maxFish - s.fish.length);
+      if (n === mine.length) return;
+      if (n < mine.length) { const drop = new Set(mine.slice(n).map(f => f.id)); s.fish = s.fish.filter(f => !drop.has(f.id)); return; }
       const sz = newTL(sp);
-      const f: Fish = { id, species: sp.id, x: A.L * (0.1 + r() * 0.8), y: waterY(A, s.water.level) * (0.2 + r() * 0.6), depth: A.D * (0.15 + r() * 0.7), ...randomPose(sp, r, r() < 0.5 ? 0 : 180), ...sz };
-      if (sp.habitat !== 'water') placeOnLand(s, sp, f, r);
-      clampFish(f, A); s.fish.push(f);
-    });
-    store.select(id);
+      for (let id = first; mine.length < n; id++) {
+        const f: Fish = { id, species: sp.id, x: s.tank.L / 2, y: 0, depth: s.tank.D / 2, ...randomPose(sp, r, 0), ...sz };
+        mine.push(f); s.fish.push(f);
+      }
+      shuffleFish(s, r, sp.id);
+    }, { coalesce: 'count:' + sp.id });
+    if (store.selId != null && !S().fish.some(f => f.id === store.selId)) store.select(null);
+  }
+  function addOne(sp: Species) {
+    if (S().fish.some(f => f.species === sp.id)) { status(`${sp.name} is already in the stocking list: use + or type a number.`); return; }
+    setCount(sp, () => startCount(sp));
   }
   $('addFish').onclick = () => { const sp = getSpecies(pickId); if (sp) addOne(sp); };
-  $('addSchool').onclick = () => {
-    const sp = getSpecies(pickId); if (!sp) return;
-    const why = blocked(sp); if (why) { status(why, true); renderResults(); return; }
-    const n = clamp(Math.round(+$('schoolN').value || 12), 2, 60);
-    const first = store.nextId(), seed = Math.random() * 1e9;
-    let last = 0;
-    store.edit(s => {
-      let id = first;
-      const A = s.tank, sz = newTL(sp), tl = sz.tl ?? sp.tl, r = rng(seed), cx = A.L * (0.3 + r() * 0.4), cy = waterY(A, s.water.level) * (0.4 + r() * 0.3), dir = r() < 0.5 ? 0 : 180;
-      for (let i = 0; i < n && s.fish.length < LIMITS.maxFish; i++) {
-        if (sp.kind === 'snail') { s.fish.push(snailAt(s, sp, last = id++, r)); continue; }
-        const f: Fish = {
-          id: last = id++, species: sp.id,
-          x: cx + (r() - 0.5) * tl * 9, y: cy + (r() - 0.5) * tl * 4, depth: A.D * (0.15 + r() * 0.7),
-          ...randomPose(sp, r, dir), ...sz,
-        };
-        if (sp.zone === 'bottom') f.x = A.L * (0.1 + r() * 0.8);
-        if (sp.habitat !== 'water') placeOnLand(s, sp, f, r);
-        clampFish(f, A); s.fish.push(f);
-      }
-    });
-    store.select(last);
-  };
   $('shuffle').onclick = () => {
     if (!S().fish.length) return;
     const seed = Math.random() * 1e9;
@@ -618,7 +615,11 @@ export function attachPanels(store: Store, viewer: Viewer) {
     syncAq();
     $('rimY').classList.toggle('on', s.render.rim); $('rimN').classList.toggle('on', !s.render.rim);
     for (const [id, lid] of LIDS) $(id).classList.toggle('on', s.lid === lid);
-    setVal('bgSel', s.render.bg); setVal('glassSel', String(s.render.glass)); setVal('glassType', s.render.glassType);
+    setVal('bgSel', s.render.bg);
+    for (const [id, side] of BG_BTNS) { const on = s.render.bgSides.includes(side); $(id).classList.toggle('on', on); $(id).setAttribute('aria-pressed', String(on)); }
+    $('bgSidesRow').style.display = s.render.bg === 'none' ? 'none' : '';
+    $('bgArcRow').style.display = s.render.bg !== 'none' && (sh === 'round' || sh === 'bowl') ? '' : 'none';
+    setVal('bgArc', s.render.bgArc); setOut('oBgArc', s.render.bgArc >= 360 ? '360° (all round)' : `${s.render.bgArc}°`); setVal('glassSel', String(s.render.glass)); setVal('glassType', s.render.glassType);
     const t = glassThickness(A, s.render.glass);
     $('glassHint').textContent = (s.render.glass === 'auto' ? 'Auto: ' : 'Glass: ') + t + ' mm (' + fmtLen(t, u, 2) + ')';
 
@@ -641,20 +642,25 @@ export function attachPanels(store: Store, viewer: Viewer) {
     $('personOn').checked = s.person.show; setVal('personH', s.person.height); setOut('oPersonH', fmtHeight(s.person.height, u));
     for (const [id, side] of PSIDES) $(id).classList.toggle('on', s.person.show && s.person.side === side);
 
-    // fish list (rebuilt only when membership or selection changes)
-    const sig = s.fish.map(f => f.id + f.species).join() + '|' + store.selId + u;
+    // stocking list: one row per species, in order of arrival (rebuilt only when the counts change)
+    const counts = new Map<string, number>();
+    for (const f of s.fish) counts.set(f.species, (counts.get(f.species) ?? 0) + 1);
+    const sig = [...counts].join() + '|' + u;
     if (sig !== listSig) {
-      listSig = sig; const list = $<HTMLDivElement>('list'), counts: Record<string, number> = {};
+      listSig = sig; const list = $<HTMLDivElement>('list');
       list.innerHTML = '';
-      for (const f of s.fish) {
-        counts[f.species] = (counts[f.species] || 0) + 1;
-        const b = document.createElement('button');
-        b.textContent = `${getSpecies(f.species)?.name ?? f.species} ${counts[f.species]}`;
-        if (f.id === store.selId) b.className = 'on';
-        b.onclick = () => store.select(f.id);
-        list.append(b);
+      for (const [id, n] of counts) {
+        const sp = getSpecies(id); if (!sp) continue;
+        const row = document.createElement('div'); row.className = 'sr';
+        row.innerHTML = `<span class="nm" title="${esc(sp.sci)}">${esc(sp.name)}</span><button class="dn" title="One fewer (the last one takes ${esc(sp.name)} off the list)" aria-label="One fewer">−</button><input type="number" min="0" max="${LIMITS.maxFish}" value="${n}" aria-label="How many ${esc(sp.name)}"><button class="up" title="One more" aria-label="One more">+</button>`;
+        row.querySelector<HTMLElement>('.nm')!.onclick = () => { pickId = id; preview.hidden = false; renderResults(); };
+        row.querySelector<HTMLButtonElement>('.dn')!.onclick = () => setCount(sp, k => k - 1);
+        row.querySelector<HTMLButtonElement>('.up')!.onclick = () => setCount(sp, k => k + 1);
+        const box = row.querySelector('input')!;
+        box.onchange = () => { const v = Math.round(+box.value); if (Number.isFinite(v) && box.value !== '') setCount(sp, () => Math.max(0, v)); else box.value = String(n); };
+        list.append(row);
       }
-      if (!s.fish.length) list.innerHTML = '<span class="hint">No fish yet. Pick a species above and press Add.</span>';
+      if (!counts.size) list.innerHTML = '<span class="hint">No fish yet. Pick a species above and press Add.</span>';
       renderResults();
     }
     const f = sel();
@@ -664,7 +670,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     for (const id of ['fX', 'fY', 'fZ']) $(id).min = '0';
     $('fX').max = String(A.L); $('fY').max = String(waterY(A, s.water.level)); $('fZ').max = String(A.D);
     const fsp = f && getSpecies(f.species);
-    $('fY').disabled = !!fsp && (restsOnFloor(fsp, f!.surface) || (fsp.kind !== 'snail' && restsOnGround(s, A, fsp, f!.x, f!.depth, fishTL(f!, fsp) * fsp.aspect)));
+    $('fY').disabled = !!fsp && f!.surface !== 'glass' && (restsOnFloor(fsp, f!.surface) || (fsp.kind !== 'snail' && restsOnGround(s, A, fsp, f!.x, f!.depth, fishTL(f!, fsp) * fsp.aspect)));
     if (f) {
       for (const [id, k] of Object.entries(fishKeys)) setVal(id, f[k]);
       setOut('oX', fmt(f.x)); setOut('oY', fmt(f.y)); setOut('oZ', fmt(f.depth));
@@ -679,7 +685,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
 
     const te = s.terrain, editing = viewer.terrainEdit.on && te.on;
     $('terOn').checked = te.on; setVal('terCols', te.cols);
-    setOut('oTerCols', te.h.length ? `${te.cols} × ${te.rows} points` : `${te.cols} across`);
+    setOut('oTerCols', !te.h.length ? `${te.cols} across` : te.radial ? `${te.rows} ring${te.rows > 1 ? 's' : ''}, ${te.h.length} points` : `${te.cols} × ${te.rows} points`);
     for (const id of ['terEdit', 'terFlat', 'terCols']) ($(id) as HTMLInputElement).disabled = !te.on;
     $('terEdit').classList.toggle('on', editing); $('terEdit').textContent = editing ? 'Done editing' : 'Edit points';
     $('terHint').textContent = !te.on ? 'Custom terrain turns the floor into a grid of points you can push down or pull up, with a smooth surface through them. It starts from the current floor.'

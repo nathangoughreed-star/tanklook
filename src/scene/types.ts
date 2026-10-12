@@ -9,9 +9,11 @@ export const SCENE_VERSION = 9;
 export type Units = 'in' | 'cm';
 export type EdgeMode = 'cutout' | 'a2c';
 export type Background = 'black' | 'blue' | 'gradient' | 'grey' | 'frosted' | 'none';
+/** A side of the tank the background can cover. */
+export type BgSide = 'back' | 'left' | 'right' | 'front';
 export type GlassType = 'standard' | 'lowiron';
 export type LightType = 'flat' | 'spot' | 'tube' | 'led';
-export type SubstrateType = 'gravel' | 'black' | 'white';
+export type SubstrateType = 'gravel' | 'pea' | 'clown' | 'blue' | 'onyx' | 'black' | 'white';
 
 /** Tank floor outline (scene v8). L x D is always the bounding box; see scene/shape.ts. */
 export type TankShape = 'rect' | 'bow' | 'round' | 'poly' | 'bowl';
@@ -43,15 +45,17 @@ export interface Fish {
   bend: number; // -1..1, body curve
   /** Custom total length, mm (juveniles, or a big individual). Absent = the species' adult length. */
   tl?: number;
-  /** Snails only: the surface it clings to. On glass, (x, depth) is a point on the glass and yaw its heading there. */
+  /** Clinging animals only (species `surfaces`): the surface it clings to. On glass, (x, depth) is a point on the glass and
+   * yaw its heading there; on hardscape it sits on top of the solid piece under (x, depth) (the floor if none is). */
   surface?: Surface;
 }
 
 /**
- * Where a snail sits: the substrate, or the inside of the glass at (x, depth) on the outline, any pane or curved shell
- * (v8; before that the four rectangle panes 'front' | 'back' | 'left' | 'right', migrated to 'glass').
+ * Where a clinging animal sits: the substrate, the inside of the glass at (x, depth) on the outline, any pane or curved
+ * shell (v8; before that the four rectangle panes 'front' | 'back' | 'left' | 'right', migrated to 'glass'), or the top
+ * of a rock, piece of wood or cave ('hardscape').
  */
-export type Surface = 'floor' | 'glass';
+export type Surface = 'floor' | 'glass' | 'hardscape';
 
 export interface CameraSettings {
   dist: number; // eye to centre of the front glass, mm; identical for every tank
@@ -65,6 +69,10 @@ export interface RenderSettings {
   grid: boolean;
   rim: boolean;
   bg: Background;
+  /** Sides the background covers (added 2026-10-12; older files: the side against the room wall, as it was then). */
+  bgSides: BgSide[];
+  /** Round tanks only: degrees of the shell the background covers, centred on each chosen side (older files: 145). */
+  bgArc: number;
   glass: 'auto' | number; // mm, or auto by interior height
   glassType: GlassType;
 }
@@ -98,8 +106,11 @@ export interface SubstrateSettings {
  * Custom terrain: a cols x rows grid of ground heights (mm above the tank floor, Tank A) spread evenly over the
  * floor, corners included, with a smooth curve through every point. When on, it replaces the substrate's corner
  * slopes and the swamp land. Heights are physical (like the substrate).
+ * Radial (round tanks, added 2026-10-12, no version bump): `rows` concentric rings round a centre point, ring k holding
+ * round(2 pi k) points evenly spaced (so arc spacing matches ring spacing), the outer ring on the glass; h runs centre,
+ * ring 1, ring 2, ... each ring starting at the front. `cols` stays the slider value it was made from.
  */
-export interface TerrainSettings { on: boolean; cols: number; rows: number; h: number[] }
+export interface TerrainSettings { on: boolean; cols: number; rows: number; h: number[]; radial?: boolean }
 
 /**
  * Starter set (scene v9; before that the whole aquascape): choosing one places a fresh set of editable items made from
