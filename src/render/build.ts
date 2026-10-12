@@ -17,12 +17,12 @@ import { sagShell, snailBody } from './snail3d';
 import { cardMaterial, fishBodyTexture, fishTexture, gradientTexture, personTexture, snailTexture, substrateTexture } from './textures';
 
 /** Back-wall options; color null = no background (back glass only); light = use dark grid lines. */
-export const BACKGROUNDS: Record<Background, { label: string; color: number | null; gradient?: boolean; light?: boolean }> = {
+export const BACKGROUNDS: Record<Background, { label: string; color: number | null; gradient?: boolean; light?: boolean; frost?: boolean }> = {
   black: { label: 'Black', color: 0x0b0c0e },
   blue: { label: 'Deep blue', color: 0x15395a },
   gradient: { label: 'Blue gradient', color: 0xffffff, gradient: true },
   grey: { label: 'Charcoal grey', color: 0x3a3e44 },
-  frosted: { label: 'Frosted white', color: 0xe6ecee, light: true },
+  frosted: { label: 'Frosted white', color: 0xe6ecee, light: true, frost: true },
   none: { label: 'None (clear glass)', color: null, light: true },
 };
 
@@ -31,6 +31,20 @@ function lines(pts: number[], color: number, opacity: number) {
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
   return new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color, transparent: opacity < 1, opacity }));
 }
+
+/**
+ * The background sheet. Frosted film is translucent: what is behind it shows through as a blur (three's transmission:
+ * the opaque scene behind, rendered to a mipmapped target and sampled at a roughness-dependent mip), and the rest is the
+ * white of the film itself, lit by the tank light like the other backgrounds (lighting `frost`) (Nathan 2026-10-12)
+ */
+function bgMaterial(bg: (typeof BACKGROUNDS)[Background]): THREE.Material {
+  if (!bg.frost) return basic(bg.color!, { map: bg.gradient ? gradientTexture() : null, side: THREE.DoubleSide });
+  const m = new THREE.MeshPhysicalMaterial({ color: bg.color!, transmission: FROST.transmission, roughness: FROST.roughness, ior: 1.5, thickness: 0, metalness: 0, side: THREE.DoubleSide });
+  m.userData.frost = true;
+  return m;
+}
+/** Frosted film: share of light passing through, and how much it blurs (0 clear .. 1 a single average). */
+export const FROST = { transmission: 0.85, roughness: 0.3 };
 
 /** Peninsula: the end of the tank against the room wall ('left' / 'right'), else null. */
 const penEnd = (S: TankSetup) => (S.wall.show && S.wall.side !== 'back' ? S.wall.side : null);
@@ -122,7 +136,7 @@ function addBowl(sc: THREE.Scene, S: TankSetup, T: Tank, add: (geo: THREE.Buffer
           g.quad(pt(a0, r0, y0), pt(a1, r0, y0), pt(a1, r1, y1), pt(a0, r1, y1), 0, [[u0, y0 / H], [u1, y0 / H], [u1, y1 / H], [u0, y1 / H]]);
         }
       }
-      sc.add(new THREE.Mesh(g.geometry(), basic(bg.color, { map: bg.gradient ? gradientTexture() : null, side: THREE.DoubleSide })));
+      sc.add(new THREE.Mesh(g.geometry(), bgMaterial(bg)));
     }
   }
   // the shell, split into a back and a front half so the front draws after what is inside (as the panes do)
@@ -161,7 +175,7 @@ function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
         const s1 = s + Math.hypot(r[i + 1][0] - r[i][0], r[i + 1][1] - r[i][1]);
         g.quad(at(r[i], -t), at(r[i + 1], -t), at(r[i + 1], H), at(r[i], H), 0, [[s / len, 0], [s1 / len, 0], [s1 / len, 1], [s / len, 1]]); s = s1;
       }
-      sc.add(new THREE.Mesh(g.geometry(), basic(bg.color, { map: bg.gradient ? gradientTexture() : null, side: THREE.DoubleSide })));
+      sc.add(new THREE.Mesh(g.geometry(), bgMaterial(bg)));
     }
   }
   // glass sits OUTSIDE the interior outline; large faces nearly clear, thin edge faces tinted so thickness shows

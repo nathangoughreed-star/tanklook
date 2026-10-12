@@ -218,6 +218,11 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
       'if (uWater.w > 0.0) { float aqF = 1.0 - exp(-uWater.w * aqWaterPath()); outgoingLight = mix(outgoingLight, uWCol * min(dot(aqLt, vec3(0.2126, 0.7152, 0.0722)), 1.0), aqF); }\n' +
       '#include <opaque_fragment>')
     .replace('#include <map_fragment>', AQ_MAP);
+  // frosted film (build `bgMaterial`): with no scene lights, outgoingLight is only the light let through (transmission);
+  // keep it aside, light the film's own white share like any surface, then add the transmitted light back unlit
+  if (this.userData.frost) shader.fragmentShader = shader.fragmentShader
+    .replace('vec3 aqLt = aqLight();', 'vec3 aqTr = outgoingLight; outgoingLight = diffuseColor.rgb * (1.0 - material.transmission);\nvec3 aqLt = aqLight();')
+    .replace('#include <opaque_fragment>', 'outgoingLight += aqTr;\n#include <opaque_fragment>');
   // 3D fish body: the side projection smears where the surface turns away from the side (front of the head, back,
   // belly), so there the paint fades to a copy smeared lengthwise (fish3d `bledTexture`): colour fields and lengthwise
   // stripes stay, bars and spots dissolve instead of closing into hoops over the nape and throat (range: `uSide`);
@@ -235,7 +240,7 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
   }
 }
 // one cache key per material kind keeps one compiled program per kind
-const progKey = function (this: THREE.Material) { return 'aq' + (this.userData.card ? 'c' : '') + (this.userData.sub ? 's' : '') + (this.userData.room ? 'r' : '') + (this.userData.fish ? 'f' : '') + (this.userData.plain ? 'p' : ''); };
+const progKey = function (this: THREE.Material) { return 'aq' + (this.userData.card ? 'c' : '') + (this.userData.sub ? 's' : '') + (this.userData.room ? 'r' : '') + (this.userData.fish ? 'f' : '') + (this.userData.plain ? 'p' : '') + (this.userData.frost ? 'F' : ''); };
 
 /** Light every opaque surface inside the tank (substrate, background, fish, plant); glass, rim, lines and the fixture stay unlit. */
 export function applyLighting(sc: THREE.Scene) {
@@ -243,7 +248,7 @@ export function applyLighting(sc: THREE.Scene) {
     const mesh = o as THREE.Mesh;
     if (!mesh.isMesh || o.userData.nolight) return;
     for (const m of ([] as THREE.Material[]).concat(mesh.material)) {
-      if (!(m as THREE.MeshBasicMaterial).isMeshBasicMaterial || (m.transparent && !m.userData.cached) || m.userData.aq) continue;
+      if (!((m as THREE.MeshBasicMaterial).isMeshBasicMaterial || m.userData.frost) || (m.transparent && !m.userData.cached) || m.userData.aq) continue;
       if (o.userData.room) m.userData.room = true;
       if (!mesh.geometry.attributes.normal) mesh.geometry.computeVertexNormals();
       m.userData.aq = true; m.userData.card = !!m.userData.cached && !m.userData.fish;
