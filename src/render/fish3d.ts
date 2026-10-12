@@ -4,7 +4,7 @@
 // card stays as the fins (thin membranes); its painted body sits inside the solid. Nose and tail tips are unchanged,
 // so nose-to-tail stays adult TL.
 import * as THREE from 'three';
-import { bodyPlan, eyeSpot, pairedFins, profile, type Plan } from '../art/fishgen';
+import { bodyPlan, eyeSpot, pairedFins, profile, shrimpMarksCanvas, type Plan } from '../art/fishgen';
 import { rng } from '../art/paint';
 import { SNAILS } from '../art/snails';
 import type { EdgeMode } from '../scene/types';
@@ -407,6 +407,13 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
     m.scale.setScalar(e.r); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), e.n);
     m.position.copy(e.pos).addScaledVector(e.n, -e.r * 0.3); // set into the head, bulging a little
     grp.add(m);
+  }
+  if (p.glass) { // the markings stay solid on the see-through body: the same surface again, carrying only them
+    const marks = fishMat(`marks:${art}:${aspect}`, () => {
+      const t = new THREE.CanvasTexture(shrimpMarksCanvas(art, aspect)!); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+      return new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+    });
+    grp.add(new THREE.Mesh(g, marks));
   }
   const belly = bellyPlate(art, p, b); if (belly) grp.add(belly);
   for (const f of finMeshes(art, p, b, edge, cling)) grp.add(f);

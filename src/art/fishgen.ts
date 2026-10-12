@@ -258,7 +258,44 @@ export function drawPlan(p: Plan, ctx: Ctx, P: Proj, W: number) {
 /** The shrimp drawing's outline (shared by the card and the 3D body). */
 const SHRIMP_OUTLINE: [number, number][] = [[1, -0.075], [0.86, -0.07], [0.78, -0.11], [0.6, -0.125], [0.42, -0.12], [0.28, -0.09], [0.16, -0.05], [0.13, 0.0],
   [0.16, 0.05], [0.28, 0.07], [0.42, 0.08], [0.6, 0.075], [0.75, 0.065], [0.84, 0.04], [0.86, -0.02]];
-interface ShrimpSpec { body: [string, string]; dots?: string; a?: number; glass?: number }
+interface ShrimpSpec { body: [string, string]; dots?: string; a?: number; glass?: number; dashes?: string; stripe?: string }
+/** Outline depth at u: [top, bottom] (v), read off the drawing's outline. */
+function shrimpSpan(u: number): [number, number] {
+  const top = SHRIMP_OUTLINE.slice(0, 8).reverse(), bot = SHRIMP_OUTLINE.slice(7);
+  const at = (pts: [number, number][]) => {
+    for (let i = 1; i < pts.length; i++) { const [u0, v0] = pts[i - 1], [u1, v1] = pts[i]; if (u <= u1 || i === pts.length - 1) return v0 + (v1 - v0) * Math.min(1, Math.max(0, (u - u0) / (u1 - u0))); }
+    return 0;
+  };
+  return [at(top), at(bot)];
+}
+/** Glass-shrimp markings (Amano): rows of broken dark dashes and dots along the flank, a pale stripe down the back. */
+function shrimpMarks(ctx: Ctx, P: Proj, W: number, s: ShrimpSpec) {
+  const r = rng(7);
+  if (s.stripe) {
+    ctx.strokeStyle = s.stripe; ctx.lineWidth = 0.007 * W; ctx.beginPath();
+    for (let i = 0; i <= 40; i++) { const u = 0.2 + 0.62 * i / 40, [t, b] = shrimpSpan(u), [x, y] = P(u, t + (b - t) * 0.07); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+    ctx.stroke();
+  }
+  if (!s.dashes) return;
+  ctx.strokeStyle = ctx.fillStyle = s.dashes; ctx.lineWidth = 0.0055 * W;
+  for (const f of [0.38, 0.58, 0.78]) {
+    for (let u = 0.2 + r() * 0.02; u < 0.8; ) {
+      const [t, b] = shrimpSpan(u), v = t + (b - t) * f;
+      if (r() < 0.35) { const [x, y] = P(u, v); ctx.beginPath(); ctx.arc(x, y, 0.0045 * W, 0, Math.PI * 2); ctx.fill(); u += 0.018 + r() * 0.012; continue; }
+      const len = 0.012 + r() * 0.016, u1 = u + len, [t1, b1] = shrimpSpan(u1);
+      ctx.beginPath(); ctx.moveTo(...P(u, v)); ctx.lineTo(...P(u1, t1 + (b1 - t1) * f)); ctx.stroke();
+      u = u1 + 0.008 + r() * 0.014;
+    }
+  }
+}
+/** The markings alone on a clear canvas the size of the card, for the overlay on a translucent 3D shrimp. */
+export function shrimpMarksCanvas(art: string, aspect: number, W = 1024): HTMLCanvasElement | null {
+  const s = SHRIMP[art]; if (!s?.glass) return null;
+  const c = document.createElement('canvas'), H = Math.round(W * aspect); c.width = W; c.height = H;
+  const ctx = c.getContext('2d')!; ctx.lineCap = 'round';
+  shrimpMarks(ctx, (u, v) => [u * W, H / 2 + v * W], W, s);
+  return c;
+}
 function drawShrimp(s: ShrimpSpec, ctx: Ctx, P: Proj, W: number) {
   const leg = hexA(s.body[0], 0.75), limbs = style.paired; // off: painted for the 3D shrimp, whose legs are tubes
   ctx.strokeStyle = leg; ctx.lineWidth = 0.008 * W;
@@ -268,6 +305,7 @@ function drawShrimp(s: ShrimpSpec, ctx: Ctx, P: Proj, W: number) {
   const pts: Pt[] = SHRIMP_OUTLINE.map(([u, v], i) => (i ? [u, v] : [u, v, 'c']));
   body(ctx, P, W, pts, -0.125, 0.08, [[0, s.body[0]], [0.6, s.body[1]], [1, s.body[1]]], 0.03, l => {
     for (let i = 0; i < 5; i++) { const u = 0.62 - i * 0.09, [x, y0] = P(u, -0.13), [, y1] = P(u, 0.08); l.strokeStyle = 'rgba(30,10,10,0.14)'; l.lineWidth = 0.006 * W; l.beginPath(); l.moveTo(x, y0); l.quadraticCurveTo(x - 0.02 * W, (y0 + y1) / 2, x, y1); l.stroke(); }
+    shrimpMarks(l, P, W, s);
     if (s.dots) for (let i = 0; i < 14; i++) blob(l, P, W, 0.2 + i * 0.045, 0.02 + (i % 2) * 0.012, 0.008, 0.005, s.dots, 0.8);
     soft(l, P, 0.2, 0.86, -0.13, -0.09, '#ffffff', 0.18, [0.05, 0.05], [0.01, 0.02]);
   });
@@ -416,7 +454,7 @@ export const PLANS: Record<string, Plan> = {
 
 const SHRIMP: Record<string, ShrimpSpec> = {
   cherryshrimp: { body: ['#b8242a', '#d8444a'] },
-  amano: { body: ['#7a8480', '#a4aca4'], dots: '#5a3a2a', glass: 0.4 },
+  amano: { body: ['#6e7a7c', '#94a0a0'], glass: 0.3, dashes: '#3a1e16', stripe: '#e8d8a0' },
 };
 /**
  * 3D shrimp: the drawing's outline lofted; walking legs, swimmerets and antennae as tubes where the card paints them
