@@ -880,8 +880,9 @@ Cancel, then change the name, to keep both.`)) return;
         const el = $<HTMLDivElement>(id), vp = active[i];
         el.style.display = vp ? '' : 'none';
         if (!vp) { el.innerHTML = ''; continue; }
-        // top-right corner of each view (Nathan 2026-10-08); the panel's "› Edit" button has the top-left
-        el.style.right = (viewer.host.clientWidth - vp.x - vp.w + 8) + 'px'; el.style.maxWidth = Math.max(80, vp.w - 16 - (vp.x === 0 && hidden ? 80 : 0)) + 'px'; // clear of "› Edit"
+        // top-right corner of each view (Nathan 2026-10-08); the top-left holds the panel toggle and Undo / Redo
+        const tools = vp.x === 0 ? document.querySelector<HTMLElement>('.viewtools')!.offsetWidth + 18 : 0;
+        el.style.right = (viewer.host.clientWidth - vp.x - vp.w + 8) + 'px'; el.style.maxWidth = Math.max(80, vp.w - 16 - tools) + 'px'; // clear of them
         const ed = store.isEditing(i);
         el.classList.toggle('tab', split); el.classList.toggle('on', split && ed);
         if (!split) { // one tank: its size, and the way into a side-by-side comparison

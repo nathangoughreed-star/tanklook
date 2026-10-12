@@ -18,9 +18,6 @@
   </header>
 
   <div class="toolbar">
-    <button id="undo" title="Undo (Ctrl+Z)" aria-label="Undo">↶</button>
-    <button id="redo" title="Redo (Ctrl+Shift+Z)" aria-label="Redo">↷</button>
-    <span class="grow"></span>
     <button id="newScene" title="Start a new, empty tank">New</button>
     <button id="openScene" title="Open a tank saved in this browser, or a downloaded file">Open…</button>
     <button id="saveScene" title="Save this tank in this browser, with a picture (Open… lists them)">Save</button>
@@ -197,8 +194,12 @@
   <footer class="hint">Illustrated placeholder art. Sizes are typical adult total length in aquaria (snails: crawling length).</footer>
 </aside>
 <main id="view">
-  <button id="sideClose" class="sidetog" title="Hide the panel (full-screen view)" aria-label="Hide the panel">‹</button>
-  <button id="sideOpen" class="sidetog" title="Show the panel" aria-label="Show the panel">› Edit</button>
+  <div class="viewtools">
+    <button id="sideClose" class="sidetog" title="Hide the panel (full-screen view)" aria-label="Hide the panel">‹</button>
+    <button id="sideOpen" class="sidetog" title="Show the panel" aria-label="Show the panel">› Edit</button>
+    <button id="undo" class="sidetog" title="Undo (Ctrl+Z)">↶ Undo</button>
+    <button id="redo" class="sidetog" title="Redo (Ctrl+Shift+Z)">↷ Redo</button>
+  </div>
   <canvas id="c" aria-label="Tank view"></canvas>
   <div class="vmap" id="vmap0"><canvas aria-label="Viewpoint map: where the eye is relative to the tank"></canvas><button class="vmapHide" title="Hide the viewpoint map" aria-label="Hide the viewpoint map">×</button></div>
   <div class="vmap" id="vmap1"><canvas aria-label="Viewpoint map for Tank B"></canvas><button class="vmapHide" title="Hide the viewpoint map" aria-label="Hide the viewpoint map">×</button></div>

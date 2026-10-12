@@ -130,8 +130,12 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 #side { position: relative }
 .sidetog { font: inherit; cursor: pointer; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 6px; padding: 3px 9px }
 /* the hide button sits in the view, just outside the panel, so it stays reachable however far the panel is scrolled */
-#sideClose { position: absolute; top: 10px; left: 10px; z-index: 3; font-size: 16px; line-height: 1; padding: 3px 8px; box-shadow: 0 1px 4px rgba(0, 0, 0, .25) }
-#sideOpen { display: none; position: absolute; top: 10px; left: 10px; z-index: 3; box-shadow: 0 1px 4px rgba(0, 0, 0, .25) }
+/* top-left of the view: panel toggle, then Undo / Redo (out of the scrolling panel, there even when it is hidden) */
+.viewtools { position: absolute; top: 10px; left: 10px; z-index: 3; display: flex; gap: 5px }
+.viewtools .sidetog { box-shadow: 0 1px 4px rgba(0, 0, 0, .25) }
+.viewtools .sidetog:disabled { opacity: .55; cursor: default }
+#sideClose { font-size: 16px; line-height: 1; padding: 3px 8px }
+#sideOpen { display: none }
 #app.collapsed #side { display: none }
 #app.collapsed #sideOpen { display: block }
 #app.collapsed #sideClose { display: none }
