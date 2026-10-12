@@ -4,7 +4,7 @@
 // Tank B gets the same arrangement at the same relative spots.
 import { rng } from '../art/paint';
 import { clamp, substrateHeight } from './physics';
-import { inside } from './shape';
+import { inside, shapeOf } from './shape';
 import type { LayoutSettings, SubstrateSettings, Tank, TerrainSettings } from './types';
 
 export interface Ground { substrate: SubstrateSettings; layout: LayoutSettings; terrain?: TerrainSettings }
@@ -51,27 +51,76 @@ export function swampLand(T: Tank, seed: number, x: number, depth: number): numb
 const cr = (p0: number, p1: number, p2: number, p3: number, t: number) =>
   p1 + 0.5 * t * (p2 - p0 + t * (2 * p0 - 5 * p1 + 4 * p2 - p3 + t * (3 * (p1 - p2) + p3 - p0)));
 
-/** Custom terrain height at (x, depth): bicubic Catmull-Rom through the grid points, clamped to the tank. */
+/** Custom terrain height at (x, depth): a smooth surface through every grid point, clamped to the tank. */
 export function terrainHeight(t: TerrainSettings, T: Tank, x: number, depth: number): number {
+  return clamp(t.radial ? radialHeight(t, T, x, depth) : rectHeight(t, T, x, depth), 0, T.H * 0.95); // overshoot can dip below 0
+}
+
+/** Rectangular grid: bicubic Catmull-Rom through the cols x rows points. */
+function rectHeight(t: TerrainSettings, T: Tank, x: number, depth: number): number {
   const { cols, rows, h } = t, u = clamp(x / T.L, 0, 1) * (cols - 1), v = clamp(depth / T.D, 0, 1) * (rows - 1);
   const i = Math.min(Math.floor(u), cols - 2), j = Math.min(Math.floor(v), rows - 2), fu = u - i, fv = v - j;
   const at = (a: number, b: number) => h[clamp(b, 0, rows - 1) * cols + clamp(a, 0, cols - 1)];
   const row = (b: number) => cr(at(i - 1, b), at(i, b), at(i + 1, b), at(i + 2, b), fu);
-  return clamp(cr(row(j - 1), row(j), row(j + 1), row(j + 2), fv), 0, T.H * 0.95); // overshoot can dip below 0
+  return cr(row(j - 1), row(j), row(j + 1), row(j + 2), fv);
 }
+
+/** Radial grid (round tanks): points on ring k, which has ringCount(k) of them evenly round it (ring 0 = the centre). */
+export const ringCount = (k: number) => (k === 0 ? 1 : Math.round(2 * Math.PI * k)); // arc spacing ~ ring spacing
+/** Index in h of the first point on ring k. */
+const ringStart = (k: number) => { let n = 0; for (let q = 0; q < k; q++) n += ringCount(q); return n; };
+/** Points in a radial grid of `rings` rings round the centre. */
+export const radialSize = (rings: number) => ringStart(rings + 1);
+/** Rings for a slider value (points across the tank), so the spacing matches a rectangular grid of that many columns. */
+export const terrainRings = (cols: number) => Math.max(1, Math.round((cols - 1) / 2));
+
+/**
+ * Radial grid: Catmull-Rom round each ring (periodic) at the angle, then across the rings at the radius. Ring -1 is
+ * ring 1 seen from the opposite side, so the surface is smooth through the centre; past the outer ring it holds that
+ * ring's value. Radius and angle are measured in the ellipse inscribed in L x D (a circle for a round tank).
+ */
+function radialHeight(t: TerrainSettings, T: Tank, x: number, depth: number): number {
+  const N = t.rows, h = t.h, ex = (x - T.L / 2) / (T.L / 2), ed = (depth - T.D / 2) / (T.D / 2);
+  const rho = Math.min(Math.hypot(ex, ed), 1) * N, th = Math.atan2(ed, ex);
+  const ring = (k: number, a: number): number => {
+    if (k < 0) return ring(-k, a + Math.PI);
+    k = Math.min(k, N);
+    if (k === 0) return h[0];
+    const n = ringCount(k), s = ringStart(k), u = ((((a - RING_A0) / (2 * Math.PI)) % 1 + 1) % 1) * n;
+    const i = Math.floor(u), f = u - i, at = (q: number) => h[s + ((q % n) + n) % n];
+    return cr(at(i - 1), at(i), at(i + 1), at(i + 2), f);
+  };
+  const k = Math.min(Math.floor(rho), N - 1), f = rho - k;
+  return cr(ring(k - 1, th), ring(k, th), ring(k + 1, th), ring(k + 2, th), f);
+}
+/** Angle of the first point on every ring: straight to the front glass, so a dot sits at the front centre. */
+const RING_A0 = -Math.PI / 2;
 
 /** Grid rows for a column count, so cells stay roughly square. */
 export const terrainRows = (T: Tank, cols: number) => clamp(Math.round((cols - 1) * T.D / T.L) + 1, 2, 25);
 
-/** Position (mm, Tank T) of grid point (i, j). */
-export const terrainPoint = (t: TerrainSettings, T: Tank, i: number, j: number) =>
-  ({ x: T.L * i / (t.cols - 1), depth: T.D * j / (t.rows - 1) });
+/** Position (mm, Tank T) of every grid point, in the order of h. */
+export function terrainPoints(t: TerrainSettings, T: Tank): { x: number; depth: number }[] {
+  const out: { x: number; depth: number }[] = [];
+  if (t.radial) {
+    for (let k = 0; k <= t.rows; k++) for (let i = 0, n = ringCount(k); i < n; i++) {
+      const a = RING_A0 + 2 * Math.PI * i / n, r = k / t.rows;
+      out.push({ x: T.L / 2 * (1 + r * Math.cos(a)), depth: T.D / 2 * (1 + r * Math.sin(a)) });
+    }
+  } else for (let j = 0; j < t.rows; j++) for (let i = 0; i < t.cols; i++) out.push({ x: T.L * i / (t.cols - 1), depth: T.D * j / (t.rows - 1) });
+  return out;
+}
 
-/** A fresh cols-wide grid sampled from the current ground (custom terrain if on, else substrate / swamp land). */
+/**
+ * A fresh grid sampled from the current ground (custom terrain if on, else substrate / swamp land): `cols` points across
+ * for a rectangular grid, or for a round tank concentric rings at that spacing, a dot at the centre and the outer ring
+ * on the glass.
+ */
 export function sampleTerrain(g: Ground, T: Tank, cols: number): TerrainSettings {
-  const rows = terrainRows(T, cols), h: number[] = [];
-  for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) h.push(+groundHeight(g, T, T.L * i / (cols - 1), T.D * j / (rows - 1)).toFixed(1));
-  return { on: true, cols, rows, h };
+  const radial = shapeOf(T) === 'round', rows = radial ? terrainRings(cols) : terrainRows(T, cols);
+  const t: TerrainSettings = { on: true, cols, rows, h: [], ...(radial ? { radial: true } : {}) };
+  t.h = terrainPoints(t, T).map(p => +groundHeight(g, T, p.x, p.depth).toFixed(1));
+  return t;
 }
 
 /** Ground height (mm above the tank floor) at (x, depth): custom terrain, else substrate or swamp land where higher. */

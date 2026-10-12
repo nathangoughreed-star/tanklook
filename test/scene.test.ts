@@ -4,7 +4,7 @@ import { defaultScene, defaultSetup } from '../src/scene/defaults';
 import { Store } from '../src/scene/store';
 import { SCENE_VERSION, type TankSetup } from '../src/scene/types';
 import { restsOnGround, setWaterLevel } from '../src/scene/water';
-import { SWAMP_LEVEL, groundHeight, nearestLand, randomLand, sampleTerrain, terrainHeight } from '../src/scene/terrain';
+import { SWAMP_LEVEL, groundHeight, nearestLand, radialSize, randomLand, ringCount, sampleTerrain, terrainHeight, terrainPoints } from '../src/scene/terrain';
 import { tankWeight } from '../src/scene/weight';
 import { WATERLINE_GAP, spawnSnail, substrateHeight, waterK, waterY } from '../src/scene/physics';
 import { SceneError, parseScene } from '../src/scene/validate';
@@ -311,6 +311,25 @@ describe('custom terrain (scene v6)', () => {
     s.terrain = sampleTerrain(s, A, 13);
     expect(groundHeight(s, A, A.L / 2, A.D / 2)).toBeGreaterThan(0);
     expect(Math.abs(groundHeight(s, A, A.L / 2, A.D / (sampleTerrain(defaultSetup(), A, 7).rows - 1)) - before)).toBeLessThan(15);
+  });
+  it('round tanks use a radial grid: centre dot, outer ring on the glass, even arc spacing, surface through every point', () => {
+    const s = defaultSetup(), R: typeof s.tank = { ...s.tank, shape: 'round', D: s.tank.L };
+    s.tank = R; s.substrate = { ...s.substrate, fl: 10, fr: 60, bl: 30, br: 90 };
+    const t = sampleTerrain(s, R, 9), pts = terrainPoints(t, R);
+    expect(t.radial).toBe(true); expect(t.rows).toBe(4); expect(t.h.length).toBe(radialSize(4)); expect(pts.length).toBe(t.h.length);
+    expect(pts[0].x).toBeCloseTo(R.L / 2, 6); expect(pts[0].depth).toBeCloseTo(R.D / 2, 6);
+    const ringR = R.L / 2 / t.rows;
+    for (let k = 1, at = 1; k <= t.rows; at += ringCount(k), k++) {
+      const n = ringCount(k), p = pts.slice(at, at + n);
+      for (const q of p) expect(Math.hypot(q.x - R.L / 2, q.depth - R.D / 2)).toBeCloseTo(k * ringR, 6);
+      expect(2 * Math.PI * k * ringR / n / ringR).toBeGreaterThan(0.9); expect(2 * Math.PI * k * ringR / n / ringR).toBeLessThan(1.1);
+    }
+    s.terrain = t; t.h = t.h.map((_, k) => 20 + (k * 37) % 90);
+    pts.forEach((p, k) => expect(terrainHeight(t, R, p.x, p.depth)).toBeCloseTo(t.h[k], 6));
+    let prev = terrainHeight(t, R, 0, R.D / 2), maxStep = 0; // smooth along a diameter, through the centre
+    for (let x = 1; x <= R.L; x++) { const h = terrainHeight(t, R, x, R.D / 2); maxStep = Math.max(maxStep, Math.abs(h - prev)); prev = h; }
+    expect(maxStep).toBeLessThan(3);
+    expect(load(JSON.parse(JSON.stringify({ ...defaultScene(), tanks: [s] }))).terrain).toEqual(s.terrain);
   });
   it('round-trips through save/load and repairs a broken grid', () => {
     const s = defaultSetup(); s.terrain = sampleTerrain(s, s.tank, 5);

@@ -100,8 +100,11 @@ export interface SubstrateSettings {
  * Custom terrain: a cols x rows grid of ground heights (mm above the tank floor, Tank A) spread evenly over the
  * floor, corners included, with a smooth curve through every point. When on, it replaces the substrate's corner
  * slopes and the swamp land. Heights are physical (like the substrate).
+ * Radial (round tanks, added 2026-10-12, no version bump): `rows` concentric rings round a centre point, ring k holding
+ * round(2 pi k) points evenly spaced (so arc spacing matches ring spacing), the outer ring on the glass; h runs centre,
+ * ring 1, ring 2, ... each ring starting at the front. `cols` stays the slider value it was made from.
  */
-export interface TerrainSettings { on: boolean; cols: number; rows: number; h: number[] }
+export interface TerrainSettings { on: boolean; cols: number; rows: number; h: number[]; radial?: boolean }
 
 /**
  * Starter set (scene v9; before that the whole aquascape): choosing one places a fresh set of editable items made from

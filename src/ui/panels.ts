@@ -100,6 +100,9 @@ export function attachPanels(store: Store, viewer: Viewer) {
       const T = next(s.tank);
       rescaleTank(s, T); // keep fish at the same relative spot (and apply the shape's rules, e.g. round D = L)
       const max = T.H * 0.5;
+      // a round tank shapes its terrain on rings, any other on a rectangular grid: resample the surface into the new kind
+      const te = s.terrain;
+      if (te.h.length && !!te.radial !== (shapeOf(s.tank) === 'round')) s.terrain = { ...sampleTerrain(s, s.tank, te.cols), on: te.on };
       for (const k of ['fl', 'fr', 'bl', 'br'] as const) s.substrate[k] = Math.min(s.substrate[k], max);
       // hood and peninsula ends exist for rectangles and bowfronts only (Nathan 2026-10-08)
       if (!flatEnds(s.tank)) { if (s.lid === 'hood') s.lid = 'glass'; if (s.wall.side !== 'back') s.wall.side = 'back'; }
@@ -674,7 +677,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
 
     const te = s.terrain, editing = viewer.terrainEdit.on && te.on;
     $('terOn').checked = te.on; setVal('terCols', te.cols);
-    setOut('oTerCols', te.h.length ? `${te.cols} × ${te.rows} points` : `${te.cols} across`);
+    setOut('oTerCols', !te.h.length ? `${te.cols} across` : te.radial ? `${te.rows} ring${te.rows > 1 ? 's' : ''}, ${te.h.length} points` : `${te.cols} × ${te.rows} points`);
     for (const id of ['terEdit', 'terFlat', 'terCols']) ($(id) as HTMLInputElement).disabled = !te.on;
     $('terEdit').classList.toggle('on', editing); $('terEdit').textContent = editing ? 'Done editing' : 'Edit points';
     $('terHint').textContent = !te.on ? 'Custom terrain turns the floor into a grid of points you can push down or pull up, with a smooth surface through them. It starts from the current floor.'

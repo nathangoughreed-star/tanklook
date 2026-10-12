@@ -8,7 +8,7 @@ import { restsOnGround } from '../scene/water';
 import { D2R, IN, clamp, floorY, glassThickness, RIM_DROP, RIM_H, tankUnderside, waterY } from '../scene/physics';
 import { alongRun, backgroundRuns, chord, clipToFootprint, facingRuns, footprint, halfWidth, inside, nearestGlass, offsetRing, offsetWalls, runLength, shapeOf, subRun, type P } from '../scene/shape';
 import { TABLE_TOP, tableCentre, tableOn, tableRing, wallPlane } from '../scene/table';
-import { groundHeight, terrainPoint } from '../scene/terrain';
+import { groundHeight, terrainPoints } from '../scene/terrain';
 import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
 import { addFixture, applyLighting } from './lighting';
 import { itemMesh } from './items';
@@ -547,24 +547,33 @@ export interface BuiltTank {
  */
 function addTerrainDots(sc: THREE.Scene, S: TankSetup, T: Tank, hot: number | null): THREE.Mesh[] {
   const t = S.terrain, g = (x: number, d: number) => groundHeight(S, T, x, d), dots: THREE.Mesh[] = [], pts: number[] = [];
-  const r = clamp(Math.min(T.L / (t.cols - 1), T.D / (t.rows - 1)) * 0.09, 3.5, 9);
+  const step = t.radial ? T.L / 2 / t.rows : Math.min(T.L / (t.cols - 1), T.D / (t.rows - 1));
+  const r = clamp(step * 0.09, 3.5, 9);
   const geo = new THREE.SphereGeometry(r, 12, 8), ring = new THREE.SphereGeometry(r * 1.45, 12, 8);
   const mat = (c: number) => basic(c, { depthTest: false, transparent: true, opacity: 0.95 });
   const fill = mat(0xffffff), hotM = mat(0xffb020), edge = mat(0x1d2a33);
-  for (let j = 0; j < t.rows; j++) for (let i = 0; i < t.cols; i++) {
-    const k = j * t.cols + i, p = terrainPoint(t, T, i, j), y = g(p.x, p.depth);
-    if (!inside(T, p.x, p.depth, -1)) continue; // outside a round or angled tank: still shapes the ground, not shown
+  terrainPoints(t, T).forEach((p, k) => {
+    const y = g(p.x, p.depth);
+    if (!inside(T, p.x, p.depth, -1)) return; // outside a round or angled tank: still shapes the ground, not shown
     const o = new THREE.Mesh(ring, edge); o.position.set(p.x, y, -p.depth); o.renderOrder = 20; o.userData.nolight = true; sc.add(o);
     const m = new THREE.Mesh(geo, k === hot ? hotM : fill); m.position.copy(o.position); m.renderOrder = 21; m.userData = { nolight: true, dot: k }; sc.add(m); dots.push(m);
-  }
-  const seg = 10;
-  for (let j = 0; j < t.rows; j++) for (let i = 0; i < (t.cols - 1) * seg; i++) {
-    const d = T.D * j / (t.rows - 1), x0 = T.L * i / ((t.cols - 1) * seg), x1 = T.L * (i + 1) / ((t.cols - 1) * seg);
-    pts.push(x0, g(x0, d) + 1, -d, x1, g(x1, d) + 1, -d);
-  }
-  for (let i = 0; i < t.cols; i++) for (let j = 0; j < (t.rows - 1) * seg; j++) {
-    const x = T.L * i / (t.cols - 1), d0 = T.D * j / ((t.rows - 1) * seg), d1 = T.D * (j + 1) / ((t.rows - 1) * seg);
-    pts.push(x, g(x, d0) + 1, -d0, x, g(x, d1) + 1, -d1);
+  });
+  const seg = 10, seg2 = (x0: number, d0: number, x1: number, d1: number) => pts.push(x0, g(x0, d0) + 1, -d0, x1, g(x1, d1) + 1, -d1);
+  if (t.radial) { // a circle through each ring (ellipse in a non-round Tank B)
+    for (let k = 1; k <= t.rows; k++) {
+      const n = Math.max(24, Math.round(2 * Math.PI * k) * seg), rx = T.L / 2 * k / t.rows, rd = T.D / 2 * k / t.rows;
+      for (let i = 0; i < n; i++) {
+        const a0 = 2 * Math.PI * i / n, a1 = 2 * Math.PI * (i + 1) / n;
+        seg2(T.L / 2 + rx * Math.cos(a0), T.D / 2 + rd * Math.sin(a0), T.L / 2 + rx * Math.cos(a1), T.D / 2 + rd * Math.sin(a1));
+      }
+    }
+  } else {
+    for (let j = 0; j < t.rows; j++) for (let i = 0; i < (t.cols - 1) * seg; i++) {
+      const d = T.D * j / (t.rows - 1); seg2(T.L * i / ((t.cols - 1) * seg), d, T.L * (i + 1) / ((t.cols - 1) * seg), d);
+    }
+    for (let i = 0; i < t.cols; i++) for (let j = 0; j < (t.rows - 1) * seg; j++) {
+      const x = T.L * i / (t.cols - 1); seg2(x, T.D * j / ((t.rows - 1) * seg), x, T.D * (j + 1) / ((t.rows - 1) * seg));
+    }
   }
   sc.add(lines(pts, 0xffffff, 0.35));
   return dots;

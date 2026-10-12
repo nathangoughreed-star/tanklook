@@ -6,6 +6,7 @@ import { clamp, mapToTank } from './physics';
 import { normTank } from './shape';
 import { TABLE_MAX, fitTable } from './table';
 import { keepInWater } from './water';
+import { radialSize } from './terrain';
 import { SCENE_VERSION, type Fish, type Item, type Scene, type Tank, type TankSetup } from './types';
 
 export class SceneError extends Error {}
@@ -197,9 +198,10 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
     },
     terrain: (() => {
       const cols = Math.round(num(te.cols, d.terrain.cols, ...LIMITS.terrainCols)), rows = Math.round(num(te.rows, 0, 0, 25));
-      const h = Array.isArray(te.h) && rows >= 2 && te.h.length === cols * rows && te.h.every(v => typeof v === 'number' && Number.isFinite(v))
+      const radial = te.radial === true, size = radial ? (rows >= 1 ? radialSize(rows) : -1) : rows >= 2 ? cols * rows : -1;
+      const h = Array.isArray(te.h) && te.h.length === size && te.h.every(v => typeof v === 'number' && Number.isFinite(v))
         ? (te.h as number[]).map(v => clamp(v, 0, tankA.H * LIMITS.terrainMax)) : [];
-      return h.length ? { on: bool(te.on, false), cols, rows, h } : { on: false, cols, rows: 0, h: [] };
+      return h.length ? { on: bool(te.on, false), cols, rows, h, ...(radial ? { radial } : {}) } : { on: false, cols, rows: 0, h: [] };
     })(),
     lid: pick(raw.lid, ['open', 'glass', 'hood'] as const, d.lid),
     stand: {
