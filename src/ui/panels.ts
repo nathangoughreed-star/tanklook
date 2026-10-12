@@ -5,6 +5,7 @@ import { SUBSTRATES, drawFishCard } from '../art/placeholder';
 import { drawSnailCard } from '../art/snails';
 import { fishTL, getSpecies, needsWater, restsOnFloor, searchSpecies, speciesTag, type Species } from '../data/species';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
+import { emitters } from '../render/lighting';
 import type { Viewer } from '../render/viewer';
 import { defaultScene, TANK_PRESETS } from '../scene/defaults';
 import { KINDS, LAYOUTS, LIBRARY, clampItem, itemDims, makeItem, starterItems } from '../scene/items';
@@ -700,7 +701,9 @@ export function attachPanels(store: Store, viewer: Viewer) {
 
     const l = s.light; setVal('lType', l.type);
     for (const [id, k] of Object.entries(lKeys)) setVal(id, l[k]);
-    setOut('oCount', String(l.count)); setOut('oRows', String(l.rows)); setOut('oBright', '×' + l.bright.toFixed(2)); setOut('oK', l.kelvin + ' K'); setOut('oRoom', l.room.toFixed(2));
+    // spots: the slider sets the longest row; say the total when the rows make it more (Nathan 2026-10-12: "3" showed 5)
+    const total = l.type === 'spot' ? emitters(s.tank, l).length : l.count;
+    setOut('oCount', total > l.count ? `${l.count} · ${total} total` : String(l.count)); setOut('oRows', String(l.rows)); setOut('oBright', '×' + l.bright.toFixed(2)); setOut('oK', l.kelvin + ' K'); setOut('oRoom', l.room.toFixed(2));
     $('lCountRow').style.display = l.type === 'spot' || l.type === 'tube' ? '' : 'none';
     $('lCountLab').textContent = l.type === 'tube' ? 'Tubes' : 'Bulbs';
     for (const id of ['lRowsRow', 'lPatRow', 'lSpRow', 'lConeRow']) $(id).style.display = l.type === 'spot' ? '' : 'none';
