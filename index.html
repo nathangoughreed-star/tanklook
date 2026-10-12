@@ -137,12 +137,19 @@
   <div id="itemBox">
     <div class="itemName" id="itemName"></div>
     <div class="row"><label for="iSize" id="iSizeLab">Size</label><input id="iSize" type="range" step="1"><output id="oISize"></output></div>
-    <div class="row"><label for="iYaw">Turn</label><input id="iYaw" type="range" min="-180" max="180" step="1"><output id="oIYaw"></output></div>
-    <div class="row"><label for="iTilt">Lean</label><input id="iTilt" type="range" min="-45" max="45" step="1"><output id="oITilt"></output></div>
-    <div class="row"><label for="iLift">Raised</label><input id="iLift" type="range" min="0" step="1"><output id="oILift"></output></div>
+    <div class="row"><label for="iYaw" title="Turn about the vertical">Yaw</label><input id="iYaw" type="range" min="-180" max="180" step="1"><output id="oIYaw"></output></div>
+    <div class="row"><label for="iPitch" title="Tip forward or back">Pitch</label><input id="iPitch" type="range" min="-90" max="90" step="1"><output id="oIPitch"></output></div>
+    <div class="row"><label for="iTilt" title="Lean sideways, all the way over">Roll</label><input id="iTilt" type="range" min="-180" max="180" step="1"><output id="oITilt"></output></div>
+    <div class="row"><label for="iLift">Height</label><input id="iLift" type="range" step="1"><output id="oILift"></output></div>
+    <div class="nudge" title="Move it 5 mm a click (hold to keep going; Shift: 1 mm). Arrow keys and Page Up / Down do the same.">
+      <span class="nl">Move</span>
+      <button data-nudge="x-1">◀ Left</button><button data-nudge="x1">Right ▶</button>
+      <button data-nudge="y1">▲ Up</button><button data-nudge="y-1">Down ▼</button>
+      <button data-nudge="d-1">Forward</button><button data-nudge="d1">Back</button>
+    </div>
     <div class="btns"><button id="iReshape" title="Same kind and size, a new shape">New shape</button><button id="iDrop" title="Set it down on the ground">Drop</button><button id="iDup">Duplicate</button><button id="iDel">Delete</button></div>
   </div>
-  <div class="hint" id="itemHint">Click a piece in the tank to select it; drag it to move it. It rests on the ground or on the piece under it, and carries whatever rests on it. Shift + wheel or R turns it.</div>
+  <div class="hint" id="itemHint">Click a piece in the tank to select it; drag it to move it. It rests on the ground or on the piece under it, and carries whatever rests on it. Shift + wheel or R turns it; + and − resize it; the arrow keys move it left / right and forward / back, Page Up / Down up and down. Moved that way it stays put anywhere in the water, passing through other pieces if you like.</div>
   </details>
   <details class="sec" data-sec="lighting"><summary><h2>Lighting</h2></summary>
   <div class="row"><label for="lType">Fixture</label><select id="lType" class="span2">

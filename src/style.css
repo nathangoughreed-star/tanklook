@@ -102,6 +102,8 @@ button.on, button.primary { background: var(--accent); color: #fff; border-color
 #lib .chips { margin: 3px 0 }
 #itemBox { border-top: 1px solid var(--line, #0002); margin-top: 6px; padding-top: 4px }
 #itemBox[hidden] { display: none }
+.nudge { display: grid; grid-template-columns: 92px 1fr 1fr; gap: 4px 6px; align-items: center; margin: 6px 0 }
+.nudge .nl { color: var(--muted); grid-row: span 3 }
 .itemName { font-weight: 600; margin: 2px 0 4px }
 .itemName i { font-weight: 400; color: var(--muted) }
 .readout { background: var(--chip); border: 1px solid var(--line); border-radius: 6px; padding: 8px; font-variant-numeric: tabular-nums; font-size: 12px; margin-top: 6px }

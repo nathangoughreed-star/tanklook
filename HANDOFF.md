@@ -2,6 +2,20 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Hardscape placement: yaw / pitch / roll, resize, free move, cut off by the glass (2026-10-12)
+
+Nathan asked for yaw, pitch, roll and resizing of hardscape, free placement anywhere in the tank (pieces may pass through
+each other), and pieces that go through the glass instead of stopping short, drawn cut off at the inner glass surface.
+- `Item.pitch` (new, -90..90; older files 0); `tilt` is now roll, -180..180 (was -45..45). Euler (pitch, yaw, roll) 'YXZ'.
+  A turned solid is raised so its lowest point sits where the unturned base did (`userData.rise` in `bakedShape`).
+- Item panel: Size, Yaw, Pitch, Roll, Height (may go negative = sunk into the substrate, down to `LIFT_SINK` 0.5 H) and a
+  Move pad (Left/Right, Up/Down, Forward/Back; 5 mm a click, hold repeats, Shift 1 mm). Keys: arrows = x / depth,
+  Page Up/Down = height, + / - = size x1.1. A sideways step keeps the piece's height in the tank.
+- Dragging a piece placed off any surface slides it level at its height; one on the ground / another piece slides over surfaces as before.
+- Hardscape anchors clamp only to the glass itself (plants unchanged). `solidMaterial(T)` in render/items.ts: one clipping
+  plane per footprint edge + the floor (all outlines convex), a bowl clips to its sphere in the shader; both sides drawn,
+  back faces darkened so a cut piece reads solid. `renderer.localClippingEnabled` in viewer.ts.
+
 ## Bowl tank shape (2026-10-12; DEPLOYED: pushed to origin/main `84595e5`, merged with main's background sides / arc)
 
 The local main in this shared folder was NOT fast-forwarded (other chats' uncommitted edits block it); `git pull --rebase` brings it in.

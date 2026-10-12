@@ -47,13 +47,13 @@ describe('aquascape items (scene v9)', () => {
     const back = parseScene(JSON.stringify(sc)).scene;
     expect(back.tanks[0].items).toEqual(sc.tanks[0].items);
   });
-  it('unknown variants are skipped with a warning; numbers are clamped into the tank', () => {
+  it('unknown variants are skipped with a warning; numbers are clamped into the tank (hardscape anchors up to the glass)', () => {
     const sc = defaultScene() as unknown as { tanks: { items: unknown[] }[] };
     sc.tanks[0].items = [{ id: 1, variant: 'unobtainium' }, { id: 2, variant: 'river', x: -500, depth: 1e6, size: 1e9, tilt: 99 }];
     const { scene, warnings } = parseScene(sc);
     expect(warnings.join()).toMatch(/1 unknown aquascape/);
     const it = scene.tanks[0].items[0];
-    expect(it.x).toBeGreaterThan(0); expect(it.depth).toBeLessThan(scene.tanks[0].tank.D); expect(it.tilt).toBe(45);
+    expect(it.x).toBe(0); expect(it.depth).toBe(scene.tanks[0].tank.D); expect(it.tilt).toBe(99); expect(it.pitch).toBe(0);
     expect(it.size).toBeLessThanOrEqual(LIBRARY.river.max);
   });
   it('a plant is never wider than the tank; sizes stay in the variant range', () => {

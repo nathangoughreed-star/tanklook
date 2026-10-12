@@ -8,13 +8,16 @@ import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { emitters } from '../render/lighting';
 import type { Viewer } from '../render/viewer';
 import { defaultScene, TANK_PRESETS } from '../scene/defaults';
-import { KINDS, LAYOUTS, LIBRARY, clampItem, itemDims, makeItem, starterItems } from '../scene/items';
+import { KINDS, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, itemDims, makeItem, starterItems } from '../scene/items';
 import { tankDiff } from './diff';
 import {
   IN, clamp, clampFish, fmtDims, fmtLen, fmtSize, fromUnit, glassThickness, rescaleTank, toUnit, volume, waterY,
 } from '../scene/physics';
 import type { Store } from '../scene/store';
-import { SWAMP_LEVEL, nearestLand, radialTerrain, sampleTerrain } from '../scene/terrain';
+import { SWAMP_LEVEL, groundHeight, nearestLand, radialTerrain, sampleTerrain } from '../scene/terrain';
+
+/** Arrow keys move the selected piece: [axis, direction] (depth grows toward the back). */
+const ARROWS: Record<string, [string, number]> = { ArrowLeft: ['x', -1], ArrowRight: ['x', 1], ArrowUp: ['d', 1], ArrowDown: ['d', -1], PageUp: ['y', 1], PageDown: ['y', -1] };
 import { randomPose, randomSize, shuffleFish } from '../scene/scatter';
 import { setWaterLevel } from '../scene/water';
 import { tankWeight } from '../scene/weight';
@@ -310,6 +313,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
     if (store.selectedItem) {
       if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); itemDel(); }
       else if (e.key === 'r' || e.key === 'R') editItem(it => { it.yaw += e.shiftKey ? -15 : 15; });
+      else if (e.key === '+' || e.key === '=' || e.key === '-' || e.key === '_') editItem(it => { it.size = Math.round(it.size * (e.key === '-' || e.key === '_' ? 1 / 1.1 : 1.1)); }, 'key-size');
+      else if (ARROWS[e.key]) { e.preventDefault(); nudge(...ARROWS[e.key], e.shiftKey ? 1 : 5); }
       else if (e.key === 'Escape') store.selectItem(null);
       return;
     }
@@ -471,10 +476,32 @@ export function attachPanels(store: Store, viewer: Viewer) {
   };
   $('iSize').oninput = e => editItem(it => { it.size = +(e.target as HTMLInputElement).value; }, 'iSize');
   $('iYaw').oninput = e => editItem(it => { it.yaw = +(e.target as HTMLInputElement).value; }, 'iYaw');
+  $('iPitch').oninput = e => editItem(it => { it.pitch = +(e.target as HTMLInputElement).value; }, 'iPitch');
   $('iTilt').oninput = e => editItem(it => { it.tilt = +(e.target as HTMLInputElement).value; }, 'iTilt');
   $('iLift').oninput = e => editItem(it => { it.lift = +(e.target as HTMLInputElement).value; }, 'iLift');
   $('iReshape').onclick = () => { const seed = 1 + Math.floor(Math.random() * 1e9); editItem(it => { it.seed = seed; }); };
   $('iDrop').onclick = () => editItem(it => { it.lift = 0; });
+  // free placement (Nathan 2026-10-12): step the piece along x, height or depth; pieces may pass through each other, and a
+  // sideways step keeps its height in the tank (not above the ground, which may slope under it)
+  const nudge = (axis: string, dir: number, step: number) => editItem((it, s) => {
+    if (axis === 'y') { it.lift += dir * step; return; }
+    const y = groundHeight(s, s.tank, it.x, it.depth) + it.lift;
+    if (axis === 'x') it.x += dir * step; else it.depth += dir * step;
+    clampItem(it, s.tank);
+    it.lift = y - groundHeight(s, s.tank, it.x, it.depth);
+  }, 'nudge');
+  document.querySelectorAll<HTMLButtonElement>('[data-nudge]').forEach(b => {
+    const axis = b.dataset.nudge![0], dir = +b.dataset.nudge!.slice(1);
+    let timer = 0;
+    const stop = () => { clearTimeout(timer); timer = 0; };
+    b.onpointerdown = e => {
+      const step = e.shiftKey ? 1 : 5;
+      nudge(axis, dir, step);
+      const again = (wait: number) => { timer = window.setTimeout(() => { nudge(axis, dir, step); again(60); }, wait); };
+      again(350);
+    };
+    b.onpointerup = b.onpointerleave = b.onpointercancel = stop;
+  });
   const itemDel = () => {
     const id = store.selItem; if (id == null) return;
     store.edit(s => { s.items = s.items.filter(q => q.id !== id); });
@@ -721,8 +748,9 @@ export function attachPanels(store: Store, viewer: Viewer) {
       const probe = { ...it, size: 1e6 }; clampItem(probe, A);
       $('iSize').min = String(Math.min(v.min, probe.size)); $('iSize').max = String(probe.size);
       setVal('iSize', it.size); setOut('oISize', fmt(it.size));
-      setVal('iYaw', it.yaw); setOut('oIYaw', it.yaw + '°'); setVal('iTilt', it.tilt); setOut('oITilt', it.tilt + '°');
-      $('iLift').max = String(Math.round(A.H)); setVal('iLift', Math.round(it.lift)); setOut('oILift', it.lift < 1 ? 'On the ground' : fmt(it.lift));
+      setVal('iYaw', it.yaw); setOut('oIYaw', it.yaw + '°'); setVal('iPitch', it.pitch); setOut('oIPitch', it.pitch + '°'); setVal('iTilt', it.tilt); setOut('oITilt', it.tilt + '°');
+      $('iLift').min = String(-Math.round(A.H * LIFT_SINK)); $('iLift').max = String(Math.round(A.H)); setVal('iLift', Math.round(it.lift));
+      setOut('oILift', Math.abs(it.lift) < 1 ? 'On the ground' : it.lift < 0 ? fmt(-it.lift) + ' in' : fmt(it.lift));
     }
     syncJson();
   }

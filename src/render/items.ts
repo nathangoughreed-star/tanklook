@@ -8,7 +8,7 @@ import { rng } from '../art/paint';
 import { PLANT_ASPECT, type PlantType } from '../art/plants';
 import { CARPET_H, CARPET_W, itemSink, stoneDims, woodLimbs, type Limb } from '../scene/items';
 import { D2R } from '../scene/physics';
-import { clampIn, insideBy } from '../scene/shape';
+import { bowlDims, clampIn, footprint, insideBy, shapeOf } from '../scene/shape';
 import { groundHeight } from '../scene/terrain';
 import type { Item, Tank, TankSetup } from '../scene/types';
 import { cardMaterial, plantTexture } from './textures';
@@ -197,7 +197,35 @@ function plantGeo(type: PlantType, seed: number, h: number, spot?: (lx: number, 
 }
 
 // ---------- Caches and assembly ----------
-const vcMat = (() => { const m = new THREE.MeshBasicMaterial({ vertexColors: true }); m.userData.keep = true; return m; })();
+/**
+ * Hardscape may pass through the glass (Nathan 2026-10-12): whatever lies outside the inner glass surface is not drawn,
+ * so a piece pushed into a pane looks cut off by it. One material per tank outline: a clipping plane on each straight run
+ * of the footprint (all outlines are convex) and one under the floor; a bowl clips to its sphere in the shader instead,
+ * below the opening (its walls flare past the floor disc). Needs the renderer's localClippingEnabled.
+ */
+const glassMats = new Map<string, THREE.MeshBasicMaterial>();
+function solidMaterial(T: Tank) {
+  const bowl = shapeOf(T) === 'bowl', k = `${shapeOf(T)}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}`;
+  let m = glassMats.get(k);
+  if (m) return m;
+  const planes = [new THREE.Plane(new THREE.Vector3(0, 1, 0), 0)];
+  // keep where -((x - a.x) n.x + (depth - a.d) n.d) >= 0, i.e. insideBy; world z = -depth
+  if (!bowl) for (const e of footprint(T).edges) planes.push(new THREE.Plane(new THREE.Vector3(-e.n[0], 0, e.n[1]), e.a[0] * e.n[0] + e.a[1] * e.n[1]));
+  // both sides drawn: where the glass cuts a piece open, its inside shows as a flat darker cut face, so it reads solid
+  m = new THREE.MeshBasicMaterial({ vertexColors: true, clippingPlanes: planes, side: THREE.DoubleSide });
+  const b = bowl ? bowlDims(T) : null;
+  const uC = { value: new THREE.Vector3(T.L / 2, b?.c ?? 0, -T.D / 2) }, uR = { value: b?.R ?? 1e9 }, uTop = { value: b?.H ?? 0 };
+  m.onBeforeCompile = sh => {
+    Object.assign(sh.uniforms, { uC, uR, uTop });
+    sh.vertexShader = 'varying vec3 vGlassW;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\n  vGlassW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+    sh.fragmentShader = 'varying vec3 vGlassW;\nuniform vec3 uC;\nuniform float uR;\nuniform float uTop;\n' + sh.fragmentShader
+      .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\n  if (vGlassW.y < uTop && distance(vGlassW, uC) > uR) discard;')
+      .replace('#include <dithering_fragment>', '#include <dithering_fragment>\n  if (!gl_FrontFacing) gl_FragColor.rgb *= 0.55;');
+  };
+  m.customProgramCacheKey = () => 'glass-clip';
+  m.userData.keep = true;
+  return remember(glassMats, k, m, 16, x => x.dispose());
+}
 const shapes = new Map<string, THREE.BufferGeometry>(), baked = new Map<string, THREE.BufferGeometry>(), plants = new Map<string, THREE.BufferGeometry>();
 function remember<T>(m: Map<string, T>, k: string, v: T, max: number, drop?: (v: T) => void) {
   m.set(k, v);
@@ -210,12 +238,19 @@ function solidShape(it: Item) {
   const k = `${it.variant}|${it.seed}|${it.size}`;
   return shapes.get(k) ?? remember(shapes, k, it.kind === 'stone' ? stoneShape(it.variant, it.seed, it.size) : it.kind === 'wood' ? woodShape(it.variant, it.seed, it.size) : caveShape(it.variant, it.seed, it.size), 150, dispose);
 }
-/** The shape with the light baked in for its turn and lean (the light stays put in the room while the piece turns). */
+/** A piece's turn: yaw about the vertical, then pitch (tip forward / back), then roll (lean sideways). */
+const itemEuler = (it: Item) => new THREE.Euler(it.pitch * D2R, it.yaw * D2R, it.tilt * D2R, 'YXZ');
+
+/**
+ * The shape with the light baked in for its turn and lean (the light stays put in the room while the piece turns).
+ * userData.rise = how far to raise it so its lowest point, once turned, sits where the unturned shape's base sits (a
+ * piece tipped on its side or rolled over rests on the ground instead of sinking into it).
+ */
 function bakedShape(it: Item) {
-  const k = `${it.variant}|${it.seed}|${it.size}|${it.yaw}|${it.tilt}`;
+  const k = `${it.variant}|${it.seed}|${it.size}|${it.yaw}|${it.pitch}|${it.tilt}`;
   let g = baked.get(k);
   if (g) return g;
-  const src = solidShape(it), q = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, it.yaw * D2R, it.tilt * D2R, 'YXZ')).invert();
+  const src = solidShape(it), q = new THREE.Quaternion().setFromEuler(itemEuler(it)).invert();
   const L = LIGHT.clone().applyQuaternion(q), U = V(0, 1, 0).applyQuaternion(q);
   g = src.clone();
   const n = g.attributes.normal, a = src.attributes.color, out = new Float32Array(n.count * 3), nn = new THREE.Vector3();
@@ -226,6 +261,10 @@ function bakedShape(it: Item) {
   }
   g.setAttribute('color', new THREE.BufferAttribute(out, 3));
   g.computeBoundingBox(); g.computeBoundingSphere();
+  const pos = src.attributes.position, qt = q.clone().invert(), pv = new THREE.Vector3();
+  let low0 = Infinity, low = Infinity;
+  for (let i = 0; i < pos.count; i++) { pv.fromBufferAttribute(pos, i); low0 = Math.min(low0, pv.y); low = Math.min(low, pv.applyQuaternion(qt).y); }
+  g.userData.rise = pos.count ? low0 - low : 0;
   g.userData.keep = true;
   return remember(baked, k, g, 400, dispose);
 }
@@ -257,9 +296,9 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
     if (carpet) g.computeBoundingBox();
     m = new THREE.Mesh(g, cardMaterial('plant:' + type, plantTexture(type), S.render.edge));
     m.userData.plant = true;
-  } else m = new THREE.Mesh(bakedShape(it), vcMat);
-  m.position.set(it.x, y, -it.depth);
-  m.rotation.set(0, it.yaw * D2R, it.tilt * D2R, 'YXZ');
+  } else m = new THREE.Mesh(bakedShape(it), solidMaterial(T));
+  m.position.set(it.x, y + (m.geometry.userData.rise ?? 0), -it.depth);
+  m.rotation.copy(itemEuler(it));
   m.userData.item = it.id;
   return m;
 }

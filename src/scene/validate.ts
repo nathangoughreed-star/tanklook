@@ -243,7 +243,7 @@ function parseItems(raw: unknown[], T: Tank, warn: (m: string) => void): Item[] 
     const it: Item = {
       id, kind: v.kind, variant: o.variant as string, seed: Math.round(clamp(fin(o.seed, 1), 1, 2e9)),
       x: fin(o.x, T.L / 2), depth: fin(o.depth, T.D / 2), lift: fin(o.lift, 0),
-      yaw: Math.round(fin(o.yaw, 0)), tilt: Math.round(fin(o.tilt, 0)), size: fin(o.size, v.size),
+      yaw: Math.round(fin(o.yaw, 0)), pitch: Math.round(fin(o.pitch, 0)), tilt: Math.round(fin(o.tilt, 0)), size: fin(o.size, v.size),
     };
     clampItem(it, T); out.push(it);
   }

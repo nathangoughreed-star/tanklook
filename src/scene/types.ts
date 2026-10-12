@@ -135,11 +135,14 @@ export interface Item {
   seed: number;
   x: number;
   depth: number;
-  /** Base above the ground under (x, depth), mm: 0 = on the substrate; more = resting on another piece. */
+  /** Base above the ground under (x, depth), mm: 0 = on the substrate; more = resting on another piece or floating where
+   *  it was put (pieces may pass through each other); less = sunk into the substrate (2026-10-12). */
   lift: number;
-  /** Turn about the vertical, degrees. */
+  /** Turn about the vertical (yaw), degrees. */
   yaw: number;
-  /** Lean sideways, degrees. */
+  /** Tip forward / back about its own crosswise axis (pitch), degrees, -90..90 (added 2026-10-12; older files: 0). */
+  pitch: number;
+  /** Lean sideways about its own length (roll), degrees, -180..180 (was -45..45 before 2026-10-12). */
   tilt: number;
   /** mm: the length of a stone, wood or cave, the height of a plant, the width of a carpet patch. */
   size: number;

@@ -68,7 +68,8 @@ export function attachPointer(viewer: Viewer, store: Store) {
   // dragging an aquascape item: `grab` = the grabbed point relative to the piece's base, kept under the pointer while
   // the base slides over the ground and other pieces; riders = pieces resting on it, which move with it
   type Rider = { id: number; dx: number; dd: number; dy: number };
-  let move: { vp: Viewport; id: number; grab: THREE.Vector3; riders: Rider[]; skip: Set<number>; moved: boolean } | null = null;
+  // `float` = the piece was placed off any surface (the Move buttons / arrow keys): it slides level at its height instead
+  let move: { vp: Viewport; id: number; grab: THREE.Vector3; riders: Rider[]; skip: Set<number>; float: THREE.Plane | null; moved: boolean } | null = null;
   let drag: { vp: Viewport; plane: THREE.Plane; mode: DragMode; off: THREE.Vector3; moved: boolean } | null = null;
   let orbit: { i: number; x: number; y: number; az: number; el: number } | null = null;
   // custom terrain: dragging a grid dot up/down; the height follows the pointer at the dot's on-screen scale
@@ -113,7 +114,9 @@ export function attachPointer(viewer: Viewer, store: Store) {
         if (under?.object === hit.mesh) riders.push({ id: q.id, dx: q.x - it.x, dd: q.depth - it.depth, dy: base(q) - base(it) });
       }
       const at = new THREE.Raycaster(hit.ray.origin, hit.ray.direction).intersectObject(hit.mesh, false)[0]?.point ?? hit.mesh.position;
-      move = { vp: hit.vp, id: it.id, grab: at.clone().sub(hit.mesh.position), riders, skip: new Set([it.id, ...riders.map(r => r.id)]), moved: false };
+      const skip = new Set([it.id, ...riders.map(r => r.id)]);
+      const float = Math.abs(it.lift - supportLift(hit.vp, S, it.x, it.depth, skip)) > 2 ? new THREE.Plane(new THREE.Vector3(0, 1, 0), -at.y) : null;
+      move = { vp: hit.vp, id: it.id, grab: at.clone().sub(hit.mesh.position), riders, skip, float, moved: false };
       return;
     }
     if (!editable || hit.fishId == null || !hit.mesh) {
@@ -151,11 +154,12 @@ export function attachPointer(viewer: Viewer, store: Store) {
       const m = move, hit = viewer.hitTest(e.clientX, e.clientY); if (!hit || hit.vp !== m.vp) return;
       // the ray the base travels along: the pointer's ray, shifted back by the grab point
       const S0 = store.scene.tanks[m.vp.i], base = hit.ray.clone(); base.origin.sub(m.grab);
-      const p = surfaceHit(m.vp, S0, base, m.skip); if (!p) return;
+      const p = m.float ? hit.ray.intersectPlane(m.float, new THREE.Vector3())?.sub(m.grab) : surfaceHit(m.vp, S0, base, m.skip); if (!p) return;
       store.editTank(m.vp.i, t => {
         const it = t.items.find(q => q.id === m.id); if (!it) return;
+        const y = groundHeight(t, t.tank, it.x, it.depth) + it.lift;
         it.x = p.x; it.depth = -p.z; clampItem(it, t.tank);
-        it.lift = supportLift(m.vp, t, it.x, it.depth, m.skip);
+        it.lift = m.float ? y - groundHeight(t, t.tank, it.x, it.depth) : supportLift(m.vp, t, it.x, it.depth, m.skip);
         const top = groundHeight(t, t.tank, it.x, it.depth) + it.lift;
         for (const r of m.riders) {
           const q = t.items.find(z => z.id === r.id); if (!q) continue;

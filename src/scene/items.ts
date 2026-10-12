@@ -139,7 +139,10 @@ export function itemSink(it: Item): number {
   return it.kind === 'stone' ? 0.08 * h : it.kind === 'cave' ? 0.03 * h : 0;
 }
 
-/** Keep a piece's anchor inside the glass (by most of its half-width) and its size within its variant's range and the tank. */
+/** How far a piece may be pushed down into the substrate, fraction of the tank height (the deepest substrate is 0.5 H). */
+export const LIFT_SINK = 0.5;
+
+/** Keep a piece's anchor inside the glass (plants by most of their half-width; hardscape may run through it) and its size within its variant's range and the tank. */
 export function clampItem(it: Item, T: Tank) {
   const v = LIBRARY[it.variant];
   if (v) {
@@ -148,16 +151,18 @@ export function clampItem(it: Item, T: Tank) {
     else max = Math.min(max, Math.max(T.L, T.D) * 1.1);
     it.size = Math.round(clamp(it.size, Math.min(v.min, max), max));
   }
-  const [l, , w] = itemDims(it), half = it.kind === 'plant' && it.variant !== 'carpet' ? l / 2 + 3 : Math.max(l, w) * 0.35;
+  // hardscape may run through the glass (cut off there by the renderer, 2026-10-12): only its anchor stays inside
+  const [l, , w] = itemDims(it), half = it.kind === 'plant' ? (it.variant !== 'carpet' ? l / 2 + 3 : Math.max(l, w) * 0.35) : 0;
   const inset = Math.min(half, Math.min(T.L, T.D) * 0.45);
   it.x = clamp(it.x, inset, T.L - inset); it.depth = clamp(it.depth, inset, T.D - inset);
   if (shapeOf(T) !== 'rect') ({ x: it.x, depth: it.depth } = clampIn(T, it.x, it.depth, inset));
-  it.lift = clamp(it.lift, 0, T.H);
+  it.lift = clamp(it.lift, -LIFT_SINK * T.H, T.H);
   it.yaw = ((it.yaw + 540) % 360) - 180;
-  it.tilt = clamp(it.tilt, -45, 45);
+  it.pitch = clamp(it.pitch, -90, 90);
+  it.tilt = ((it.tilt + 540) % 360) - 180;
 }
 
-/** A point of a piece's own frame in the tank (x, depth, height above the floor), turned by its yaw (tilt ignored). */
+/** A point of a piece's own frame in the tank (x, depth, height above the floor), turned by its yaw (pitch and roll ignored). */
 export function itemToTank(S: TankSetup, it: Item, p: V3) {
   const c = Math.cos(it.yaw * D2R), s = Math.sin(it.yaw * D2R);
   return { x: it.x + p[0] * c + p[2] * s, depth: it.depth - (-p[0] * s + p[2] * c), y: groundHeight(S, S.tank, it.x, it.depth) + it.lift - itemSink(it) + p[1] };
@@ -199,7 +204,7 @@ export const nextItemId = (s: TankSetup) => s.items.reduce((m, it) => Math.max(m
 /** A new item of `variant` at (x, depth), its default size (clamped to the tank), facing the glass. */
 export function makeItem(T: Tank, variant: string, id: number, seed: number, x: number, depth: number, extra: Partial<Item> = {}): Item {
   const v = LIBRARY[variant];
-  const it: Item = { id, kind: v.kind, variant, seed, x, depth, lift: 0, yaw: 0, tilt: 0, size: v.size, ...extra };
+  const it: Item = { id, kind: v.kind, variant, seed, x, depth, lift: 0, yaw: 0, pitch: 0, tilt: 0, size: v.size, ...extra };
   clampItem(it, T);
   return it;
 }
