@@ -58,15 +58,15 @@ const GRAZE = 2;
 
 /**
  * A random spot for a clinging animal on ground `h` of crawling length `size`: every point of the substrate, of the
- * inside of the glass (below the water line, `top`; if `on.glass`) and of the tops of the hardscape (`on.hard`, GRAZE
- * times over) is equally likely, so the surfaces are chosen in proportion to their area. On glass, (x, depth) is the
- * point on the glass (any pane or curved shell) and yaw the heading there.
+ * inside of the glass (below the water line, `top`; if `on.glass`, a number weighting it like GRAZE) and of the tops of
+ * the hardscape (`on.hard`, GRAZE times over) is equally likely, so the surfaces are chosen in proportion to their area.
+ * On glass, (x, depth) is the point on the glass (any pane or curved shell) and yaw the heading there.
  */
-export function spawnSnail(h: (x: number, depth: number) => number, T: Tank, size: number, r: () => number, top = T.H - WATERLINE_GAP, on: { glass?: boolean; hard?: Hardscape } = { glass: true }) {
+export function spawnSnail(h: (x: number, depth: number) => number, T: Tank, size: number, r: () => number, top = T.H - WATERLINE_GAP, on: { glass?: boolean | number; hard?: Hardscape } = { glass: true }) {
   const f = footprint(T), m = size / 2, yaw = Math.round(r() * 360 - 180), bowl = shapeOf(T) === 'bowl';
   const meanSub = f.ring.reduce((a, p) => a + h(p[0], p[1]), 0) / f.ring.length, hw = on.glass ? Math.max(0, top - meanSub) : 0;
   // a bowl's wetted glass is a sphere zone: 2 pi R x its height
-  const wet = bowl ? Math.PI * T.L * hw : f.perimeter * hw;
+  const wet = (bowl ? Math.PI * T.L * hw : f.perimeter * hw) * (on.glass === true ? 1 : on.glass || 0);
   const hard = (on.hard?.area ?? 0) * GRAZE, pick = r() * (f.area + wet + hard);
   // on hardscape: a spot on a piece whose top is under water (a few tries; else onto the floor)
   if (pick >= f.area + wet) for (let k = 0; k < 8; k++) {

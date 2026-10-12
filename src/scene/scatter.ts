@@ -86,8 +86,9 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string, sizePc
     const sp = e.sp;
     if (sp.surfaces) {
       // clinging animals: a spot on any surface they can use, in proportion to its area; snails stay wherever that is,
-      // the rest of a group of shrimp or otos left on the floor forage there as usual
-      const on = { glass: clingsTo(sp, 'glass'), hard: clingsTo(sp, 'hardscape') ? hard : undefined }, left: Fish[] = [];
+      // the rest of a group of shrimp or otos left on the floor forage there as usual. A clinging fish (oto, pleco) takes
+      // the glass at a third of its area: in a tall tank the panes outsize the floor two to one and would hold nearly all
+      const on = { glass: clingsTo(sp, 'glass') && (sp.kind === 'snail' || GLASS_FISH), hard: clingsTo(sp, 'hardscape') ? hard : undefined }, left: Fish[] = [];
       for (const f of e.fish) {
         const p = spawnSnail(g, A, fishTL(f, sp), r, top, on);
         if (sp.kind !== 'snail' && p.surface === 'floor') { f.surface = 'floor'; left.push(f); continue; }
@@ -147,6 +148,9 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string, sizePc
     }
   }
 }
+
+/** Weight of the glass, per mm², for a clinging fish choosing where to sit (floor 1, hardscape tops GRAZE). */
+const GLASS_FISH = 0.35;
 
 /** Does this many of a species move as a group? */
 const grouped = (sp: Species, n: number) => !!sp.group && n >= 3 && sp.kind !== 'snail' && sp.habitat === 'water';
