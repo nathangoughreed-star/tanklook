@@ -101,6 +101,8 @@ Order, one work unit per chat:
    spire sits low at the back (card: on top) and its aperture lip shows as a pale notch at 50°.
    Next: amphibians (dart frog, tree frog, fire-bellied toad, fire newt, axolotl): a limbed-body generator.
    NOTE: `src/render/items.ts` is modified by another chat (not this work).
+   Shot helper: `cardViews` (card at the 3D shot's framing), warm-up render instead of a timer (hidden tabs throttle
+   timers), several tabs on one dev server run species in parallel.
 
 ## Hardscape system: roadmap steps 3 + 4 built (2026-10-09, session 13; committed and pushed, checked in the browser)
 
@@ -180,8 +182,14 @@ Tests `test/scatter.test.ts` (117/117 total).
 
 Clicking a species in the Fish picker opens a tile under the list with its painted card (`drawFishCard`, or the
 snail's side card), name, adult size, tag and note; clicking another swaps it, × closes it until the next click.
-Canvases are cached per species (640 px wide). Shows the 2D card, not the 3D model. `panels.ts` `showPreview`,
+Canvases are cached per species (640 px wide). `panels.ts` `showPreview`,
 markup `#spPreview` in index.html, `.spCard` / `.spHide` in style.css. Tests 114/114.
+2026-10-09 (Nathan: "make the title cards 3D, orbit them before placing"; uncommitted, checked on the dev server):
+the tile now shows the tank's own model (card + `fishBody`, or `snailBody`; flat card for species without 3D) on a
+second small WebGLRenderer, `render/preview3d.ts` `SpeciesPreview`. Drag to turn (pitch clamped ±77°), double-click
+resets to the 3/4 start view. Rendered on demand only; uses the flat-light key and no water tint (the shared `LU`
+uniforms are swapped for its draw and restored). Framing fits 85 % of the bounding sphere, so it never rezooms while
+turning. Tile 170 px tall in 3D. No WebGL: falls back to the 2D card. Tests 134/134.
 
 ## Deployed 2026-10-09: build 63 (`e721433`), everything on main incl. the 3D pilot, Edit boxes, cabinet doors
 

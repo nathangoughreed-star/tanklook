@@ -6,6 +6,7 @@ import { drawSnailCard } from '../art/snails';
 import { fishTL, getSpecies, needsWater, searchSpecies, speciesTag, type Species } from '../data/species';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { emitters } from '../render/lighting';
+import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { defaultScene, TANK_PRESETS } from '../scene/defaults';
 import { KINDS, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, itemDims, makeItem, starterItems } from '../scene/items';
@@ -103,10 +104,10 @@ export function attachPanels(store: Store, viewer: Viewer) {
     store.edit(s => {
       const T = next(s.tank);
       rescaleTank(s, T); // keep fish at the same relative spot (and apply the shape's rules, e.g. round D = L)
-      const max = T.H * 0.5;
       // round tanks and bowls shape their terrain on rings, any other on a rectangular grid: resample into the new kind
       const te = s.terrain;
       if (te.h.length && !!te.radial !== radialTerrain(s.tank)) s.terrain = { ...sampleTerrain(s, s.tank, te.cols), on: te.on };
+      const max = T.H * 0.5;
       for (const k of ['fl', 'fr', 'bl', 'br'] as const) s.substrate[k] = Math.min(s.substrate[k], max);
       // hood and peninsula ends exist for rectangles and bowfronts only (Nathan 2026-10-08)
       if (!flatEnds(s.tank)) { if (s.lid === 'hood') s.lid = 'glass'; if (s.wall.side !== 'back') s.wall.side = 'back'; }
@@ -208,15 +209,21 @@ export function attachPanels(store: Store, viewer: Viewer) {
 
   // preview tile: opens on clicking a species, then follows the pick until closed
   const preview = $<HTMLDivElement>('spPreview'), previewArt = new Map<string, HTMLCanvasElement>();
-  let previewId = '';
+  let previewId = '', preview3d: SpeciesPreview | null | undefined; // undefined = not tried yet, null = no WebGL
   $('spPreviewHide').onclick = () => { preview.hidden = true; };
   function showPreview(sp?: Species) {
     if (!sp) { preview.hidden = true; return; }
     if (sp.id === previewId) return;
     previewId = sp.id;
-    let c = previewArt.get(sp.id);
-    if (!c) previewArt.set(sp.id, c = sp.kind === 'snail' ? drawSnailCard(sp.art, 'side', 640) : drawFishCard(sp.art, sp.aspect, 640));
-    $('spPreviewArt').replaceChildren(c);
+    if (preview3d === undefined) { try { preview3d = new SpeciesPreview(); } catch { preview3d = null; } }
+    if (preview3d) {
+      $('spPreviewArt').replaceChildren(preview3d.canvas);
+      preview3d.show(sp);
+    } else { // no WebGL: the painted card
+      let c = previewArt.get(sp.id);
+      if (!c) previewArt.set(sp.id, c = sp.kind === 'snail' ? drawSnailCard(sp.art, 'side', 640) : drawFishCard(sp.art, sp.aspect, 640));
+      $('spPreviewArt').replaceChildren(c);
+    }
     $('spPreviewName').innerHTML = `${esc(sp.name)} <i>${esc(sp.sci)}</i>`;
     $('spPreviewInfo').textContent = [`Adult ${fmt(sp.tl)}`, speciesTag(sp), sp.note].filter(Boolean).join(' · ');
   }
