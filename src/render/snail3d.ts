@@ -116,6 +116,41 @@ function footGeometry(s: Shell3D, h: number) {
   return g;
 }
 
+/** The foot's outline at the sole (unit circle param t), as footGeometry shapes it. */
+const soleAt = (s: Shell3D, t: number): [number, number] => {
+  const L = (1 - s.foot) / 2, x = Math.cos(t);
+  return [x * L + s.foot + L - 0.5, Math.sin(t) * L * 0.32 * (1 - 0.25 * Math.max(0, -x))];
+};
+
+/** The sole as seen through the glass: a flat fan just under the foot, facing down, uv = (along, across) the sole. */
+function soleGeometry(s: Shell3D) {
+  const N = 40, [cx] = soleAt(s, Math.PI / 2), pos = [cx, -0.003, 0], uv = [0.5, 0.5], idx: number[] = [];
+  for (let i = 0; i < N; i++) {
+    const t = i / N * Math.PI * 2, [x, z] = soleAt(s, t);
+    pos.push(x, -0.003, z); uv.push((Math.cos(t) + 1) / 2, (Math.sin(t) + 1) / 2);
+    idx.push(0, 1 + i, 1 + (i + 1) % N); // wound to face down (-y)
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  g.setIndex(idx);
+  return g;
+}
+
+/** Sole paint (as the glass card's): pale centre, darker rim, the transverse waves of a crawling foot, the mouth at the head. */
+function soleTexture(sp: SnailSpec) {
+  const W = 256, H = 128, c = document.createElement('canvas'); c.width = W; c.height = H;
+  const x = c.getContext('2d')!;
+  const g = x.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, W / 2);
+  g.addColorStop(0, sp.foot[1]); g.addColorStop(0.7, sp.foot[1]); g.addColorStop(1, sp.foot[0]);
+  x.save(); x.scale(1, H / W); x.fillStyle = g; x.fillRect(0, 0, W, W); x.restore();
+  x.strokeStyle = sp.foot[0]; x.globalAlpha = 0.4; x.lineWidth = 3;
+  for (let i = 0; i < 8; i++) { const u = W * (0.14 + i * 0.09); x.beginPath(); x.moveTo(u, 0); x.quadraticCurveTo(u + W * 0.04, H / 2, u, H); x.stroke(); }
+  x.globalAlpha = 0.6; x.fillStyle = '#3a2a22'; x.beginPath(); x.ellipse(W * 0.93, H / 2, W * 0.025, H * 0.09, 0, 0, 7); x.fill();
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  return t;
+}
+
 /** Tentacles from the top of the head, up and forward, splayed. */
 function tentacleGeometry(s: Shell3D, h: number, side: number) {
   const r0 = new THREE.Vector3(0.4, h * 0.85, 0.02 * side), len = s.tent * 1.4;
@@ -140,6 +175,7 @@ export function snailBody(art: string, w: number) {
   });
   grp.add(new THREE.Mesh(geo(':foot', () => footGeometry(s, FOOT_H)), skin));
   for (const side of [1, -1]) grp.add(new THREE.Mesh(geo(':tent' + side, () => tentacleGeometry(s, FOOT_H, side)), skin));
+  grp.add(new THREE.Mesh(geo(':sole', () => soleGeometry(s)), mat('sole:' + art, () => new THREE.MeshBasicMaterial({ map: soleTexture(sp) }))));
   grp.scale.setScalar(w);
   grp.userData.pivot = new THREE.Vector3(s.at - 0.5, FOOT_H * 0.55, 0); // where the shell sits on the foot
   return grp;
