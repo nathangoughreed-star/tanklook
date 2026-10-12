@@ -17,6 +17,15 @@ export function randomPose(sp: Species, r: () => number, dir: number, spread = 8
 }
 const wrap = (a: number) => (a > 180 ? a - 360 : a <= -180 ? a + 360 : a);
 
+/** Body length drawn around `pct` % of adult (normal, sd 8 % of adult, kept within 15–130 %), so no two fish are
+ *  quite the same size. Snails and shrimp vary a little less. Stored as no override when it lands on adult. */
+export function randomSize(f: Fish, sp: Species, pct: number, r: () => number) {
+  const n = Math.sqrt(-2 * Math.log(1 - r())) * Math.cos(2 * Math.PI * r()); // standard normal (Box–Muller)
+  const sd = sp.kind === 'snail' || sp.surfaces ? 5 : 8;
+  const tl = Math.round(sp.tl * clamp(pct + n * sd, 15, 130) / 100);
+  if (tl === sp.tl) delete f.tl; else f.tl = tl;
+}
+
 /** Part of the water column (0 = just above the ground, 1 = just under the surface) each level favours. */
 const BANDS = { top: [0.65, 0.98], mid: [0.2, 0.8], low: [0.02, 0.4] } as const;
 
@@ -28,8 +37,9 @@ export function placeOnLand(s: TankSetup, sp: Species, f: Fish, r: () => number)
 }
 
 /** Move every animal in the tank to a new spot and pose under the rules above. */
-/** `only` = move just that species (e.g. after its count changed); everyone else stays put and is kept clear of. */
-export function shuffleFish(s: TankSetup, r: () => number, only?: string) {
+/** `only` = move just that species (e.g. after its count changed); everyone else stays put and is kept clear of.
+ *  `sizePct` = also re-roll each moved animal's size around that % of adult (randomSize). */
+export function shuffleFish(s: TankSetup, r: () => number, only?: string, sizePct?: number) {
   const A = s.tank, top = s.water.on ? waterY(A, s.water.level) : A.H - 10, g = (x: number, d: number) => groundHeight(s, A, x, d);
   const placed: { x: number; y: number; depth: number; w: number }[] = [];
   const note = (f: Fish, w: number) => placed.push({ x: f.x, y: f.y, depth: f.depth, w });
@@ -64,6 +74,7 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string) {
   const bySpecies = new Map<string, Fish[]>();
   for (const f of s.fish) {
     if (only && f.species !== only) { const sp = getSpecies(f.species); if (sp) note(f, fishTL(f, sp)); continue; }
+    if (sizePct !== undefined) { const sp = getSpecies(f.species); if (sp) randomSize(f, sp, sizePct, r); }
     const l = bySpecies.get(f.species); if (l) l.push(f); else bySpecies.set(f.species, [f]);
   }
   // groups first (they need the room), then the loners, which keep clear of everything already placed

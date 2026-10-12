@@ -3,7 +3,7 @@
 import { rng } from '../art/paint';
 import { SUBSTRATES, drawFishCard } from '../art/placeholder';
 import { drawSnailCard } from '../art/snails';
-import { fishTL, getSpecies, needsWater, restsOnFloor, searchSpecies, speciesTag, type Species } from '../data/species';
+import { fishTL, getSpecies, needsWater, searchSpecies, speciesTag, type Species } from '../data/species';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { emitters } from '../render/lighting';
 import type { Viewer } from '../render/viewer';
@@ -15,8 +15,8 @@ import {
 } from '../scene/physics';
 import type { Store } from '../scene/store';
 import { SWAMP_LEVEL, nearestLand, radialTerrain, sampleTerrain } from '../scene/terrain';
-import { randomPose, shuffleFish } from '../scene/scatter';
-import { restsOnGround, setWaterLevel } from '../scene/water';
+import { randomPose, randomSize, shuffleFish } from '../scene/scatter';
+import { setWaterLevel } from '../scene/water';
 import { tankWeight } from '../scene/weight';
 import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, aqWaitS, fetchStocking } from '../data/aqadvisor';
 import { BOWL_DEFAULT, BOWL_MAX, BOWL_MIN, POLY_SIDES, SHAPES, bowMinLimit, offsetRing, ringArea, shapeOf } from '../scene/shape';
@@ -221,7 +221,6 @@ export function attachPanels(store: Store, viewer: Viewer) {
 
   /** Size for newly added fish: % of adult length (100 = adult, stored as no override). */
   const addPct = () => clamp(Math.round(+$('addSize').value || 100), 15, 130);
-  const newTL = (sp: Species) => (addPct() === 100 ? {} : { tl: Math.round(sp.tl * addPct() / 100) });
   const sizeLabel = (pct: number, sp?: Species) => (pct === 100 ? 'Adult' : `${pct}%${sp ? ' · ' + fmt(sp.tl * pct / 100) : ''}`);
   $('addSize').oninput = () => setOut('oAddSize', sizeLabel(addPct(), getSpecies(pickId)));
   /** Water surface for placement: the water line, or -1 in a dry tank (all ground counts as land). */
@@ -248,9 +247,9 @@ export function attachPanels(store: Store, viewer: Viewer) {
       const n = clamp(Math.round(to(mine.length)), 0, mine.length + LIMITS.maxFish - s.fish.length);
       if (n === mine.length) return;
       if (n < mine.length) { const drop = new Set(mine.slice(n).map(f => f.id)); s.fish = s.fish.filter(f => !drop.has(f.id)); return; }
-      const sz = newTL(sp);
       for (let id = first; mine.length < n; id++) {
-        const f: Fish = { id, species: sp.id, x: s.tank.L / 2, y: 0, depth: s.tank.D / 2, ...randomPose(sp, r, 0), ...sz };
+        const f: Fish = { id, species: sp.id, x: s.tank.L / 2, y: 0, depth: s.tank.D / 2, ...randomPose(sp, r, 0) };
+        randomSize(f, sp, addPct(), r);
         mine.push(f); s.fish.push(f);
       }
       shuffleFish(s, r, sp.id);
@@ -265,7 +264,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('shuffle').onclick = () => {
     if (!S().fish.length) return;
     const seed = Math.random() * 1e9;
-    store.edit(s => shuffleFish(s, rng(seed)));
+    store.edit(s => shuffleFish(s, rng(seed), undefined, addPct()));
     status('Shuffled: a new moment in the tank. Ctrl+Z brings the last one back.');
   };
   let delArm = 0;
@@ -282,16 +281,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   };
 
   // ---------- Selected fish ----------
-  const fishKeys = { fX: 'x', fY: 'y', fZ: 'depth', fYaw: 'yaw', fPitch: 'pitch', fRoll: 'roll', fBend: 'bend' } as const;
-  for (const [id, k] of Object.entries(fishKeys)) $(id).oninput = e => editSel(f => { f[k] = +(e.target as HTMLInputElement).value; }, id);
-  document.querySelectorAll<HTMLButtonElement>('[data-d]').forEach(b => b.onclick = () => editSel((f, s) => { f.depth = +b.dataset.d! * s.tank.D; }));
-  const setSize = (f: Fish, pct: number) => {
-    const sp = getSpecies(f.species)!, tl = Math.round(sp.tl * clamp(pct, 15, 130) / 100);
-    if (tl === sp.tl) delete f.tl; else f.tl = tl;
-  };
-  $('fSize').oninput = e => editSel(f => setSize(f, +(e.target as HTMLInputElement).value), 'fSize');
-  $('sizeAdult').onclick = () => editSel(f => { delete f.tl; });
-  document.querySelectorAll<HTMLButtonElement>('[data-sz]').forEach(b => b.onclick = () => editSel(f => setSize(f, +b.dataset.sz! * 100)));
+  // no per-fish position / pose / size sliders (Nathan 2026-10-12): Shuffle and new fish roll them at random
   const flip = () => editSel(f => { f.yaw = f.yaw > 0 ? f.yaw - 180 : f.yaw + 180; });
   const del = () => {
     const id = store.selId, i = S().fish.findIndex(f => f.id === id); if (i < 0) return;
@@ -671,17 +661,6 @@ export function attachPanels(store: Store, viewer: Viewer) {
     if (f && f.id !== lastSelId) openSec('fish');
     lastSelId = f?.id ?? null;
     $('selBox').classList.toggle('off', !f);
-    for (const id of ['fX', 'fY', 'fZ']) $(id).min = '0';
-    $('fX').max = String(A.L); $('fY').max = String(waterY(A, s.water.level)); $('fZ').max = String(A.D);
-    const fsp = f && getSpecies(f.species);
-    $('fY').disabled = !!fsp && f!.surface !== 'glass' && (restsOnFloor(fsp, f!.surface) || (fsp.kind !== 'snail' && restsOnGround(s, A, fsp, f!.x, f!.depth, fishTL(f!, fsp) * fsp.aspect)));
-    if (f) {
-      for (const [id, k] of Object.entries(fishKeys)) setVal(id, f[k]);
-      setOut('oX', fmt(f.x)); setOut('oY', fmt(f.y)); setOut('oZ', fmt(f.depth));
-      const pct = Math.round(fishTL(f, fsp!) / fsp!.tl * 100);
-      setVal('fSize', pct); setOut('oSize', f.tl ? `${fmt(f.tl)} · ${pct}%` : `Adult · ${fmt(fsp!.tl)}`);
-      setOut('oYaw', f.yaw + '°'); setOut('oPitch', f.pitch + '°'); setOut('oRoll', f.roll + '°'); setOut('oBend', f.bend.toFixed(2));
-    }
 
     const sub = s.substrate, smax = Math.round(A.H * 0.5);
     setVal('subType', sub.show ? sub.type : 'bare');
