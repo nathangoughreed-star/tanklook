@@ -183,3 +183,6 @@ footer { margin-top: 18px }
   #view { height: 50%; flex: none }
   #app.collapsed #view { height: 100% }
 }
+.row output.typein { cursor: text; border-radius: 3px; padding: 1px 3px }
+.row output.typein:hover, .row output.typein:focus-visible { background: var(--chip); outline: 1px solid var(--line) }
+.row .typeinBox { width: 100%; padding: 1px 4px; text-align: right; font-variant-numeric: tabular-nums }

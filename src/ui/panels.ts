@@ -11,6 +11,7 @@ import type { Viewer } from '../render/viewer';
 import { defaultScene, TANK_PRESETS } from '../scene/defaults';
 import { KINDS, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, itemDims, makeItem, starterItems } from '../scene/items';
 import { tankDiff } from './diff';
+import { attachTypeIns, parseLen, plainNum, tidy, type TypeIn } from './typein';
 import {
   IN, clamp, clampFish, fmtDims, fmtLen, fmtSize, fromUnit, glassThickness, rescaleTank, toUnit, volume, waterY,
 } from '../scene/physics';
@@ -546,9 +547,36 @@ export function attachPanels(store: Store, viewer: Viewer) {
   });
   for (const el of document.querySelectorAll<HTMLInputElement>('input[type=range]')) el.addEventListener('change', () => store.seal());
 
+  // ---------- type-in values: click a slider's readout to type an exact number (in the scene's units for lengths) ----------
+  const toU = (mm: number) => tidy(toUnit(mm, G().units), 1);
+  const len: TypeIn = { show: toU, parse: t => parseLen(t, G().units) };
+  const num = (d = 2): TypeIn => ({ show: v => tidy(v, d), parse: plainNum });
+  /** An offset either side of centre: shown signed; "3 left" / "3 forward" read as negative. */
+  const side = (neg: RegExp): TypeIn => ({ show: toU, parse: t => {
+    const v = parseLen(t.replace(/\b(left|right|forward|front|back)\b/gi, '').trim(), G().units);
+    return v == null ? null : neg.test(t) ? -Math.abs(v) : v;
+  } });
+  const lens = ['bowMin', 'bowlFloor', 'bowlTop', 'standH', 'tableL', 'tableD', 'subBL', 'subBR', 'subFL', 'subFR', 'lH', 'cDist', 'iSize', 'iLift', 'personH'];
+  const nums = { bgArc: 0, iYaw: 0, iPitch: 0, iTilt: 0, lCount: 0, lRows: 0, lCone: 0, lK: 0, lBright: 2, lRoom: 2, cAz: 0, cEl: 0, cZoom: 2, terCols: 0, addSize: 0 };
+  attachTypeIns({
+    ...Object.fromEntries(lens.map(id => [id, len])),
+    ...Object.fromEntries(Object.entries(nums).map(([id, d]) => [id, num(d)])),
+    lSp: { show: v => (v ? toU(v) : 'auto'), parse: t => (/^\s*(auto|0)\s*$/i.test(t) ? 0 : parseLen(t, G().units)) },
+    tableX: side(/left/i), tableZ: side(/forward|front/i),
+    wOpac: { show: v => tidy(v * 100, 0), parse: t => { const v = plainNum(t); return v == null ? null : v / 100; } },
+    // the water level slider is a fraction of the tank; the box takes the water's height, found by bisection
+    wLevel: { show: v => toU(waterY(S().tank, v)), parse: t => {
+      if (/^\s*full\s*$/i.test(t)) return 1;
+      const mm = parseLen(t, G().units); if (mm == null) return null;
+      let lo = 0, hi = 1;
+      for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2; if (waterY(S().tank, m) < mm) lo = m; else hi = m; }
+      return (lo + hi) / 2;
+    } },
+  });
+
   // ---------- sync: scene -> controls ----------
   const setVal = (id: string, v: number | string) => { const el = $(id); if (document.activeElement !== el || el.type === 'range') el.value = String(v); };
-  const setOut = (id: string, txt: string, cls = '') => { const el = $<HTMLOutputElement>(id); el.textContent = txt; el.className = cls; };
+  const setOut = (id: string, txt: string, cls = '') => { const el = $<HTMLOutputElement>(id); el.textContent = txt; el.className = (el.classList.contains('typein') ? 'typein ' : '') + cls; };
   let listSig = '', jsonOpen = false, lastSelId: number | null = store.selId; // a selection restored on load does not open Fish
   let lastItem: number | null = null;
   const jsonDetails = $('json').parentElement as HTMLDetailsElement;
