@@ -1018,6 +1018,7 @@ whether lighting ships in v1; hardscape scope (now: roadmap steps 3-5); React vs
 - Lighting in compare view: checked, works (uniforms are set per viewport before each render).
 - Removed PoC test aids: depth ladder, "what to test" list. Kept the perspective readout (it is the proof).
 - Autosave key `tanklook.scene` in localStorage, debounced 400 ms and flushed on `pagehide`.
+- Save… downloads `<name>.json` (application/json), not `.tank`: browsers flagged `.tank` as an untrusted file type (Nathan 2026-10-12). Open… still accepts old `.tank` files.
 - **Room + lid (Nathan, 2026-10-08), scene v3** (v2 files load with these off/open):
   - `stand {show, height 12-48 in (default 30), finish black|white|oak}`: same footprint as the outer glass, from the
     floor up to the tank underside (`tankUnderside()` / `floorY()` in physics.ts).

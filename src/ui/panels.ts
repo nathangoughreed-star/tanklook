@@ -75,7 +75,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
       status(e instanceof SceneError ? e.message : 'Could not open that file.', true);
     }
   };
-  const saveFile = (scene: Scene) => download(new Blob([JSON.stringify(scene, null, 1)], { type: 'application/octet-stream' }), `${slug(scene.name)}.tank`);
+  const saveFile = (scene: Scene) => download(new Blob([JSON.stringify(scene, null, 1)], { type: 'application/json' }), `${slug(scene.name)}.json`);
   // the whole scene: with split tanks, one file holding both (opens split again)
   $('saveScene').onclick = () => saveFile(G());
   /** One tank of a split on its own, as an ordinary single-tank file (Nathan 2026-10-08). */
