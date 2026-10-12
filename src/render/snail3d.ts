@@ -181,20 +181,22 @@ export function snailBody(art: string, w: number) {
   return grp;
 }
 
-const SAG = 35 * Math.PI / 180;
+const SAG = 40 * Math.PI / 180;
 
 /**
- * A snail on a wall (glass): its shell hangs toward `down` (gravity in the body's own frame, unit), swung about where it
- * sits on the foot by up to SAG as far as down lies along the sole, then lifted clear of the pane if the swing dips it in.
+ * A snail on a wall (glass): its shell swivels on the foot, about the foot's own up (the pane's normal), so its weight
+ * hangs toward `down` (gravity in the body's frame, unit), by up to SAG as far as down lies along the pane. A swivel
+ * never brings the shell nearer the glass (tipping it toward the pane did, and lifting it clear tore it off the foot).
  */
 export function sagShell(body: THREE.Group, down: THREE.Vector3) {
   const shell = body.children[0] as THREE.Mesh, piv = body.userData.pivot as THREE.Vector3;
-  const along = new THREE.Vector3(down.x, 0, down.z), k = along.length();
+  const k = Math.hypot(down.x, down.z);
   if (k < 0.05) return;
-  const q = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0).cross(along).normalize(), SAG * Math.min(1, k));
-  const p = shell.geometry.attributes.position, v = new THREE.Vector3();
-  let low = Infinity;
-  for (let i = 0; i < p.count; i++) low = Math.min(low, v.fromBufferAttribute(p, i).sub(piv).applyQuaternion(q).add(piv).y);
+  const c = new THREE.Vector3().fromBufferAttribute(shell.geometry.attributes.position, 0).sub(piv); // the spire tip (vertex 0 = the coil's apex), seen from the shell's seat
+  if (Math.hypot(c.x, c.z) < 1e-3) return;
+  const ang = (v: { x: number; z: number }) => Math.atan2(-v.z, v.x); // rotation about +y adds to this
+  let d = ang(down) - ang(c); d = Math.atan2(Math.sin(d), Math.cos(d));
+  const q = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.sign(d) * Math.min(Math.abs(d), SAG * Math.min(1, k)));
   shell.quaternion.copy(q);
-  shell.position.copy(piv).sub(piv.clone().applyQuaternion(q)).add(new THREE.Vector3(0, Math.max(0, 0.01 - low), 0));
+  shell.position.copy(piv).sub(piv.clone().applyQuaternion(q));
 }
