@@ -112,13 +112,13 @@ function addBowl(sc: THREE.Scene, S: TankSetup, T: Tank, add: (geo: THREE.Buffer
   const pt = (a: number, r: number, y: number) => [R + r * Math.sin(a), y, -(R - r * Math.cos(a))];
   const rIn = (y: number) => bowlRadius(T, y), rOut = (y: number) => Math.sqrt(Math.max(0, (R + t) ** 2 - (y - c) ** 2));
   if (bg.color !== null) {
-    // the chosen sides' arcs (backgroundRuns, as on a round tank) on the sphere, 0.5 mm inside the glass; u along, v up
+    // the chosen sides' arcs (backgroundRuns, as on a round tank) on the sphere, 0.5 mm outside the glass; u along, v up
     for (const run of runs) {
       const as = run.map(p => Math.atan2(p[0] - R, -(p[1] - R))), g = new Tris(), n = as.length - 1;
       for (let i = 0; i < n; i++) {
         const a0 = as[i], a1 = as[i + 1], u0 = i / n, u1 = (i + 1) / n;
         for (let j = 0; j < ys.length - 1; j++) {
-          const y0 = ys[j], y1 = ys[j + 1], r0 = rIn(y0) - 0.5, r1 = rIn(y1) - 0.5;
+          const y0 = ys[j], y1 = ys[j + 1], r0 = rOut(y0) + 0.5, r1 = rOut(y1) + 0.5;
           g.quad(pt(a0, r0, y0), pt(a1, r0, y0), pt(a1, r1, y1), pt(a0, r1, y1), 0, [[u0, y0 / H], [u1, y0 / H], [u1, y1 / H], [u0, y1 / H]]);
         }
       }
@@ -151,14 +151,15 @@ function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
   const { H } = T, R = S.render, fp = footprint(T), bowl = shapeOf(T) === 'bowl';
   // backing under the substrate; a bare-bottom tank has none, so the stand top or the room shows through the bottom pane
   if (S.substrate.show || S.layout.id === 'swamp' || S.terrain.on) sc.add(new THREE.Mesh(flatGeometry(fp.ring, 0), basic(0xcdb98f, { side: THREE.DoubleSide })));
-  const bg = BACKGROUNDS[R.bg], t = glassThickness(T, R.glass), runs = backgroundRuns(T, R.bgSides, R.bgArc);
-  // the background covers the panes facing the chosen sides; on a round tank an arc of the shell round each
+  const bg = BACKGROUNDS[R.bg], t = glassThickness(T, R.glass), runs = backgroundRuns(T, R.bgSides, R.bgArc, t + 0.5);
+  // the background covers the panes facing the chosen sides; on a round tank an arc of the shell round each. It is on
+  // the OUTER face (0.5 mm off it), full pane height: the substrate ends at the inner face, the glass between (Nathan 2026-10-12)
   if (bg.color !== null && !bowl) { // a bowl's background is on its sphere (addBowl)
     for (const r of runs) {
       const g = new Tris(), len = runLength(r) || 1; let s = 0;
       for (let i = 0; i < r.length - 1; i++) {
         const s1 = s + Math.hypot(r[i + 1][0] - r[i][0], r[i + 1][1] - r[i][1]);
-        g.quad(at(r[i], 0), at(r[i + 1], 0), at(r[i + 1], H), at(r[i], H), 0, [[s / len, 0], [s1 / len, 0], [s1 / len, 1], [s / len, 1]]); s = s1;
+        g.quad(at(r[i], -t), at(r[i + 1], -t), at(r[i + 1], H), at(r[i], H), 0, [[s / len, 0], [s1 / len, 0], [s1 / len, 1], [s / len, 1]]); s = s1;
       }
       sc.add(new THREE.Mesh(g.geometry(), basic(bg.color, { map: bg.gradient ? gradientTexture() : null, side: THREE.DoubleSide })));
     }

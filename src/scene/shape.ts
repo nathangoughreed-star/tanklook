@@ -301,16 +301,18 @@ export function facingRuns(T: Tank, t: number, dir: P | P[], cos = 0.5): P[][] {
 export const BG_DIRS = { back: [0, 1], left: [-1, 0], right: [1, 0], front: [0, -1] } as const satisfies Record<string, P>;
 
 /**
- * Runs of the inside of the glass the background covers: every pane facing one of `sides` (within ~72°, so an angled
- * pane between two chosen sides is covered once). A round tank instead takes an arc of `arcDeg` degrees centred on
- * each chosen side; overlapping arcs merge, 360° is the whole shell. Each run goes from its front-left end.
+ * Runs of the glass the background covers: every pane facing one of `sides` (within ~72°, so an angled pane between
+ * two chosen sides is covered once). A round tank instead takes an arc of `arcDeg` degrees centred on each chosen side;
+ * overlapping arcs merge, 360° is the whole shell. Each run goes from its front-left end. `out` = 0: just inside the
+ * inner glass; `out` > 0: that far outside the inner glass (t + a hair: on the outer face, as a real background is).
  */
-export function backgroundRuns(T: Tank, sides: readonly (keyof typeof BG_DIRS)[], arcDeg: number): P[][] {
+export function backgroundRuns(T: Tank, sides: readonly (keyof typeof BG_DIRS)[], arcDeg: number, out = 0): P[][] {
   if (!sides.length) return [];
   let runs: P[][];
   if (shapeOf(T) === 'round' || shapeOf(T) === 'bowl') { // a bowl: arcs round the axis (addBowl draws them on its sphere)
-    const R = T.L / 2, r = R * Math.cos(Math.PI / ROUND_SEG), TAU = 2 * Math.PI, half = (clamp(arcDeg, 0, 360) / 360) * Math.PI;
-    // inside every chord of the glass shell, so the background never pokes into the glass between its vertices
+    // inside every chord of the inner shell, or (out > 0) outside every chord of the shell grown by out, so the
+    // background never pokes into the glass between its vertices
+    const R = T.L / 2, cs = Math.cos(Math.PI / ROUND_SEG), r = out > 0 ? R + out / cs : R * cs, TAU = 2 * Math.PI, half = (clamp(arcDeg, 0, 360) / 360) * Math.PI;
     const pt = (a: number): P => [R + r * Math.sin(a), R - r * Math.cos(a)];
     const iv = sides.map(k => { const [x, d] = BG_DIRS[k], c = (Math.atan2(x, -d) + TAU) % TAU; return [c - half, c + half]; }).sort((a, b) => a[0] - b[0]);
     const m: number[][] = [];
@@ -319,7 +321,7 @@ export function backgroundRuns(T: Tank, sides: readonly (keyof typeof BG_DIRS)[]
     if (m[0][1] - m[0][0] >= TAU - 1e-6) return [Array.from({ length: ROUND_SEG + 1 }, (_, i) => pt(TAU * i / ROUND_SEG))];
     runs = m.filter(([a, b]) => b - a > 1e-6).map(([a, b]) => { const n = Math.max(2, Math.ceil((b - a) / (TAU / ROUND_SEG))); return Array.from({ length: n + 1 }, (_, i) => pt(a + (b - a) * i / n)); });
   } else {
-    runs = facingRuns(T, 0, sides.map(k => BG_DIRS[k] as unknown as P), 0.3);
+    runs = facingRuns(T, out, sides.map(k => BG_DIRS[k] as unknown as P), 0.3);
   }
   return runs.map(q => (q[0][0] + q[0][1] > q[q.length - 1][0] + q[q.length - 1][1] ? [...q].reverse() : q));
 }

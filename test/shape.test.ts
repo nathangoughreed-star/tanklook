@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { rng } from '../src/art/paint';
 import { defaultSetup } from '../src/scene/defaults';
 import { IN, clampFish, glassThickness, spawnSnail, volume } from '../src/scene/physics';
-import { backgroundRuns, chord, clampIn, footprint, glassFrame, inside, nearestGlass, normTank, offsetRing, polyRatio, ringArea } from '../src/scene/shape';
+import { backgroundRuns, chord, clampIn, footprint, glassFrame, inside, insideBy, nearestGlass, normTank, offsetRing, polyRatio, ringArea } from '../src/scene/shape';
 import type { Tank } from '../src/scene/types';
 import { parseScene } from '../src/scene/validate';
 import { tankWeight } from '../src/scene/weight';
@@ -130,6 +130,7 @@ describe('background sides (2026-10-12)', () => {
   it('rect: one pane per chosen side, none for no sides', () => {
     expect(backgroundRuns(rect, [], 145)).toEqual([]);
     expect(len(backgroundRuns(rect, ['back'], 145))).toBeCloseTo(600);
+    expect(len(backgroundRuns(rect, ['back'], 145, 5))).toBeCloseTo(610); // outer face: the pane plus both mitres
     expect(len(backgroundRuns(rect, ['back', 'left', 'right'], 145))).toBeCloseTo(1200);
     expect(backgroundRuns(rect, ['back', 'left', 'right'], 145)).toHaveLength(1); // adjacent panes join into one run
     expect(len(backgroundRuns(rect, ['back', 'left', 'right', 'front'], 145))).toBeCloseTo(1800);
@@ -151,6 +152,8 @@ describe('background sides (2026-10-12)', () => {
     for (const p of backgroundRuns(round, ['back'], 120)[0]) expect(inside(round, p[0], p[1], -1e-6)).toBe(true);
     const r = backgroundRuns(round, ['back'], 120)[0];
     expect(r[0][0] + r[r.length - 1][0]).toBeCloseTo(2 * R);
+    // on the outer face (out > 0): every point outside the glass grown by out, no closer than the grown shell's chords
+    for (const p of backgroundRuns(round, ['back'], 120, 6)[0]) expect(insideBy(round, p[0], p[1])).toBeLessThanOrEqual(-6 + 1e-6);
   });
   it('older files: the background stays where the room wall put it', () => {
     const old = (wall?: object) => { const t = structuredClone(defaultSetup()) as Record<string, any>; delete t.render.bgSides; delete t.render.bgArc; if (wall) t.wall = wall; return parseScene({ version: 9, name: 'o', units: 'mm', tanks: [t] }).scene.tanks[0]; }; // eslint-disable-line @typescript-eslint/no-explicit-any
