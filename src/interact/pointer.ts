@@ -12,7 +12,7 @@ import { clingsTo, fishTL, getSpecies, restsOnFloor } from '../data/species';
 import { restsOnGround } from '../scene/water';
 import { D2R, clamp, clampFish } from '../scene/physics';
 import { clampItem } from '../scene/items';
-import { nearestGlass } from '../scene/shape';
+import { glassFrame, nearestGlass } from '../scene/shape';
 import { groundHeight } from '../scene/terrain';
 import type { Store } from '../scene/store';
 import type { Tank, TankSetup } from '../scene/types';
@@ -26,9 +26,9 @@ export function dragModeFor(az: number, el: number): DragMode {
   return Math.abs(el) > 45 ? 'top' : Math.abs(Math.sin(az * D2R)) > 0.82 ? 'side' : 'front';
 }
 
-/** World-space outward normal of the glass at the point of the outline nearest (x, depth). */
-function glassNormal(T: Tank, x: number, depth: number, y?: number) {
-  const n = nearestGlass(T, x, depth, y).n; return new THREE.Vector3(n[0], 0, -n[1]);
+/** World-space outward normal of the glass at height y nearest (x, depth); tilted on a bowl, so the drag plane lies on the sphere. */
+function glassNormal(T: Tank, x: number, depth: number, y: number) {
+  const n = glassFrame(T, x, depth, y).n; return new THREE.Vector3(n[0], n[1], -n[2]);
 }
 
 /** Solid (not plant) item meshes of a view, minus the ids in `skip`. */

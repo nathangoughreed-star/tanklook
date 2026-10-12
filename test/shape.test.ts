@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { rng } from '../src/art/paint';
 import { defaultSetup } from '../src/scene/defaults';
 import { IN, clampFish, glassThickness, spawnSnail, volume } from '../src/scene/physics';
-import { backgroundRuns, chord, clampIn, footprint, inside, nearestGlass, normTank, offsetRing, polyRatio, ringArea } from '../src/scene/shape';
+import { backgroundRuns, chord, clampIn, footprint, glassFrame, inside, nearestGlass, normTank, offsetRing, polyRatio, ringArea } from '../src/scene/shape';
 import type { Tank } from '../src/scene/types';
 import { parseScene } from '../src/scene/validate';
 import { tankWeight } from '../src/scene/weight';
@@ -107,6 +107,14 @@ describe('bowl (sphere cut flat at the floor and the opening)', () => {
       const d = Math.hypot(s.x - 200, s.depth - 200), at = Math.sqrt(200 ** 2 - (s.y - 160) ** 2);
       if (s.surface === 'glass') expect(d).toBeCloseTo(at, 6); else expect(d).toBeLessThanOrEqual(120 - 10 + 1e-6);
     }
+  });
+  it('the glass normal tilts with the sphere: up above the equator, down below it, level on upright panes', () => {
+    const len = (n: number[]) => Math.hypot(n[0], n[1], n[2]);
+    for (const [y, ny] of [[160, 0], [280, 120 / 200], [0, -160 / 200]]) {
+      const g = glassFrame(bowl, 10, 200, y); expect(g.n[1]).toBeCloseTo(ny, 6); expect(len(g.n)).toBeCloseTo(1, 6);
+      expect(Math.hypot(g.x - 200, g.depth - 200)).toBeCloseTo(Math.sqrt(200 ** 2 - (y - 160) ** 2), 6);
+    }
+    expect(glassFrame(round, 10, 250, 300).n[1]).toBe(0);
   });
   it('water is the sphere slice to the water line; reads back from a file', () => {
     const S = { ...defaultSetup(), tank: bowl }; S.substrate = { ...S.substrate, show: false }; S.layout = { id: 'none', seed: 1 }; S.terrain = { ...S.terrain, on: false };

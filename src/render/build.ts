@@ -6,7 +6,7 @@ import { snailAspect } from '../art/snails';
 import { fishTL, getSpecies, needsWater, type Species } from '../data/species';
 import { restsOnGround } from '../scene/water';
 import { D2R, IN, clamp, floorY, glassThickness, RIM_DROP, RIM_H, tankUnderside, waterY } from '../scene/physics';
-import { alongRun, backgroundRuns, bowlDims, bowlRadius, chord, circleRing, clipToFootprint, facingRuns, footprint, halfWidth, inside, nearestGlass, offsetRing, offsetWalls, runLength, shapeOf, subRun, type P } from '../scene/shape';
+import { alongRun, backgroundRuns, bowlDims, bowlRadius, chord, circleRing, clipToFootprint, facingRuns, footprint, glassFrame, halfWidth, inside, nearestGlass, offsetRing, offsetWalls, runLength, shapeOf, subRun, type P } from '../scene/shape';
 import { TABLE_TOP, tableCentre, tableOn, tableRing, wallPlane } from '../scene/table';
 import { groundHeight, terrainPoints } from '../scene/terrain';
 import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
@@ -702,12 +702,15 @@ const PANE_GAP = 0.8;
  * tank, head along yaw in the plane of the pane (0 = level, 90 = straight up).
  */
 function onGlass(S: TankSetup, T: Tank, f: Fish, sp: Species, m: THREE.Mesh, w: number) {
-  const g = nearestGlass(T, f.x, f.depth), n = new THREE.Vector3(g.n[0], 0, -g.n[1]); // outward, toward the pane
-  const top = S.water.on ? waterY(T, S.water.level) : T.H, sub = groundHeight(S, T, g.x, g.depth);
+  const g0 = nearestGlass(T, f.x, f.depth, f.y);
+  const top = S.water.on ? waterY(T, S.water.level) : T.H, sub = groundHeight(S, T, g0.x, g0.depth);
   const y = clamp(f.y, sub + w / 2, Math.max(sub + w / 2, top - w / 2)), off = sp.rest * w + PANE_GAP;
-  const up = n.clone().negate(), along = new THREE.Vector3(n.z, 0, -n.x), a = f.yaw * D2R;
-  const head = along.multiplyScalar(Math.cos(a)).add(new THREE.Vector3(0, Math.sin(a), 0)), side = head.clone().cross(up);
-  m.position.set(g.x - g.n[0] * off, y, -(g.depth - g.n[1] * off));
+  // outward normal toward the glass (tilted on a bowl); "up" for the heading = straight up, laid onto the glass
+  const g = glassFrame(T, f.x, f.depth, y), n = new THREE.Vector3(g.n[0], g.n[1], -g.n[2]);
+  const up = n.clone().negate(), along = new THREE.Vector3(n.z, 0, -n.x).normalize(), a = f.yaw * D2R;
+  const climb = new THREE.Vector3(0, 1, 0).addScaledVector(n, -n.y).normalize();
+  const head = along.multiplyScalar(Math.cos(a)).addScaledVector(climb, Math.sin(a)), side = head.clone().cross(up);
+  m.position.set(g.x - n.x * off, y - n.y * off, -g.depth - n.z * off);
   m.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(head, up, side));
 }
 
@@ -727,15 +730,17 @@ function snailMeshes(S: TankSetup, T: Tank, f: Fish, sp: Species, ground: number
     return [[m, w, h]];
   }
   // on the glass at the point nearest its (x, depth), just off the inside face, foot (local +z) toward the glass
-  const h = w * snailAspect(sp.art, 'foot'), g = nearestGlass(T, p.x, p.depth, p.y), ry = Math.atan2(g.n[0], -g.n[1]);
-  const x = g.x - g.n[0] * PANE_GAP, d = g.depth - g.n[1] * PANE_GAP;
+  // on a bowl the foot lies on the sphere: tilted back above the equator, forward below it (rx)
+  const h = w * snailAspect(sp.art, 'foot'), g0 = nearestGlass(T, p.x, p.depth, p.y);
   const top = S.water.on ? waterY(T, S.water.level) : T.H; // dry: the whole pane
-  const y = clamp(p.y, sub(x, d) + h / 2, Math.max(sub(x, d) + h / 2, top - w / 2));
+  const y0 = clamp(p.y, sub(g0.x, g0.depth) + h / 2, Math.max(sub(g0.x, g0.depth) + h / 2, top - w / 2));
+  const g = glassFrame(T, p.x, p.depth, y0), ry = Math.atan2(g.n[0], -g.n[2]), rx = -Math.asin(g.n[1]);
+  const x = g.x - g.n[0] * PANE_GAP, d = g.depth - g.n[2] * PANE_GAP, y = y0 - g.n[1] * PANE_GAP;
   const foot = new THREE.Mesh(new THREE.PlaneGeometry(w, h), cardMaterial(`snail:${sp.art}:foot`, snailTexture(sp.art, 'foot'), edge, THREE.FrontSide));
   const sg = new THREE.PlaneGeometry(w, h).rotateY(Math.PI), uv = sg.attributes.uv; // face into the tank, texture not mirrored
   for (let i = 0; i < uv.count; i++) uv.setX(i, 1 - uv.getX(i));
   const shell = new THREE.Mesh(sg, cardMaterial(`snail:${sp.art}:shell`, snailTexture(sp.art, 'shell'), edge, THREE.FrontSide));
-  for (const m of [foot, shell]) { m.position.set(x, y, -d); m.rotation.set(0, ry, f.yaw * D2R, 'YXZ'); }
+  for (const m of [foot, shell]) { m.position.set(x, y, -d); m.rotation.set(rx, ry, f.yaw * D2R, 'YXZ'); }
   return [[foot, w, h], [shell, w, h]];
 }
 

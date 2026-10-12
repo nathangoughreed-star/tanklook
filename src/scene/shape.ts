@@ -191,6 +191,17 @@ export function nearestGlass(T: Tank, x: number, d: number, y?: number): OnGlass
   return best;
 }
 
+/**
+ * The glass at height y nearest (x, depth), with its outward normal in 3D as [along x, up, along depth]: upright panes
+ * have no vertical part; a bowl's sphere leans in above the equator (normal tilts up) and out below it (tilts down).
+ */
+export function glassFrame(T: Tank, x: number, d: number, y: number): { x: number; depth: number; n: [number, number, number] } {
+  const g = nearestGlass(T, x, d, y);
+  if (shapeOf(T) !== 'bowl') return { x: g.x, depth: g.depth, n: [g.n[0], 0, g.n[1]] };
+  const { R, c } = bowlDims(T), ny = clamp((y - c) / R, -1, 1), h = Math.sqrt(1 - ny * ny);
+  return { x: g.x, depth: g.depth, n: [g.n[0] * h, ny, g.n[1] * h] };
+}
+
 /** The point on the glass at arc length `s` (wraps round). */
 export function glassAt(T: Tank, s: number): OnGlass {
   const f = footprint(T), P0 = f.perimeter, ss = ((s % P0) + P0) % P0;
