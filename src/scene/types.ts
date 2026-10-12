@@ -37,15 +37,17 @@ export interface Fish {
   bend: number; // -1..1, body curve
   /** Custom total length, mm (juveniles, or a big individual). Absent = the species' adult length. */
   tl?: number;
-  /** Snails only: the surface it clings to. On glass, (x, depth) is a point on the glass and yaw its heading there. */
+  /** Clinging animals only (species `surfaces`): the surface it clings to. On glass, (x, depth) is a point on the glass and
+   * yaw its heading there; on hardscape it sits on top of the solid piece under (x, depth) (the floor if none is). */
   surface?: Surface;
 }
 
 /**
- * Where a snail sits: the substrate, or the inside of the glass at (x, depth) on the outline, any pane or curved shell
- * (v8; before that the four rectangle panes 'front' | 'back' | 'left' | 'right', migrated to 'glass').
+ * Where a clinging animal sits: the substrate, the inside of the glass at (x, depth) on the outline, any pane or curved
+ * shell (v8; before that the four rectangle panes 'front' | 'back' | 'left' | 'right', migrated to 'glass'), or the top
+ * of a rock, piece of wood or cave ('hardscape').
  */
-export type Surface = 'floor' | 'glass';
+export type Surface = 'floor' | 'glass' | 'hardscape';
 
 export interface CameraSettings {
   dist: number; // eye to centre of the front glass, mm; identical for every tank

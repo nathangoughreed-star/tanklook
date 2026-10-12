@@ -1,9 +1,11 @@
 // Shuffle: every animal to a fresh spot, as if the tank were photographed a moment later. Each keeps its species, size
-// and id; the rules come from the species data: bottom dwellers on the ground, land animals on land, snails on the
-// substrate or the glass, swimmers in their favoured band of the water column ('level'), groups of 3+ of a 'school'
-// species in a tight aligned school and of a 'shoal' species in a loose group, everyone else spread apart.
-import { fishTL, getSpecies, type Species } from '../data/species';
+// and id; the rules come from the species data: bottom dwellers on the ground, land animals on land, clinging animals
+// (snails, shrimp, plecos) on the substrate, the glass or the hardscape as their species allows, swimmers in their
+// favoured band of the water column ('level'), groups of 3+ of a 'school' species in a tight aligned school and of a
+// 'shoal' species in a loose group, everyone else spread apart.
+import { clingsTo, fishTL, getSpecies, type Species } from '../data/species';
 import { clamp, clampFish, spawnSnail, waterY } from './physics';
+import { hardscape } from './items';
 import { inside } from './shape';
 import { groundHeight, randomLand } from './terrain';
 import type { Fish, TankSetup } from './types';
@@ -68,11 +70,22 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string) {
   const groups = [...bySpecies.entries()].map(([id, fish]) => ({ sp: getSpecies(id)!, fish })).filter(e => e.sp)
     .sort((a, b) => +grouped(b.sp, b.fish.length) - +grouped(a.sp, a.fish.length));
 
-  for (const { sp, fish } of groups) {
-    if (sp.kind === 'snail') {
-      for (const f of fish) { Object.assign(f, spawnSnail(g, A, fishTL(f, sp), r, top), { pitch: 0, roll: 0, bend: 0 }); }
-      continue;
+  const hard = hardscape(s);
+  for (const e of groups) {
+    const sp = e.sp;
+    if (sp.surfaces) {
+      // clinging animals: a spot on any surface they can use, in proportion to its area; snails stay wherever that is,
+      // the rest of a group of shrimp or otos left on the floor forage there as usual
+      const on = { glass: clingsTo(sp, 'glass'), hard: clingsTo(sp, 'hardscape') ? hard : undefined }, left: Fish[] = [];
+      for (const f of e.fish) {
+        const p = spawnSnail(g, A, fishTL(f, sp), r, top, on);
+        if (sp.kind !== 'snail' && p.surface === 'floor') { f.surface = 'floor'; left.push(f); continue; }
+        Object.assign(f, p, { pitch: 0, roll: 0, bend: sp.kind === 'snail' ? 0 : +((r() - 0.5) * 0.4).toFixed(2) }); note(f, fishTL(f, sp));
+      }
+      if (sp.kind === 'snail' || !left.length) continue;
+      e.fish = left;
     }
+    const { fish } = e;
     if (sp.habitat === 'land' || sp.habitat === 'both') {
       for (const f of fish) {
         const w = fishTL(f, sp), p = spot(w / 2, w * sp.aspect * 1.5);

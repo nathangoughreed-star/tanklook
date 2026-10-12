@@ -163,6 +163,37 @@ export function itemToTank(S: TankSetup, it: Item, p: V3) {
   return { x: it.x + p[0] * c + p[2] * s, depth: it.depth - (-p[0] * s + p[2] * c), y: groundHeight(S, S.tank, it.x, it.depth) + it.lift - itemSink(it) + p[1] };
 }
 
+/**
+ * The tops of the solid pieces (stones, wood, caves) as somewhere a clinging animal can sit: their rough upward-facing
+ * area (mm²) and a random spot on them in proportion to it, (x, depth) and an estimate of the height there. The renderer
+ * finds the exact top under (x, depth); this only has to land on the piece.
+ */
+export function hardscape(S: TankSetup) {
+  const parts: { area: number; spot: (r: () => number) => { x: number; depth: number; y: number } }[] = [];
+  for (const it of S.items) {
+    if (it.kind === 'plant') continue;
+    if (it.kind === 'wood') {
+      for (const l of woodLimbs(it.variant, it.seed, it.size)) {
+        const len = l.pts.slice(1).reduce((a, p, i) => a + Math.hypot(p[0] - l.pts[i][0], p[1] - l.pts[i][1], p[2] - l.pts[i][2]), 0);
+        parts.push({ area: len * (l.r0 + l.r1), spot: r => { const t = 0.1 + r() * 0.8, p = itemToTank(S, it, along(l.pts, t)); return { ...p, y: p.y + l.r0 + (l.r1 - l.r0) * t }; } });
+      }
+      continue;
+    }
+    const [l, h, w] = itemDims(it);
+    parts.push({ area: l * w * 0.5, spot: r => itemToTank(S, it, [(r() - 0.5) * l * 0.4, h, (r() - 0.5) * w * 0.4]) });
+  }
+  const area = parts.reduce((a, p) => a + p.area, 0);
+  return {
+    area,
+    spot(r: () => number) {
+      let k = r() * area;
+      for (const p of parts) { if ((k -= p.area) <= 0) return p.spot(r); }
+      return parts.length ? parts[parts.length - 1].spot(r) : null;
+    },
+  };
+}
+export type Hardscape = ReturnType<typeof hardscape>;
+
 export const nextItemId = (s: TankSetup) => s.items.reduce((m, it) => Math.max(m, it.id), 0) + 1;
 
 /** A new item of `variant` at (x, depth), its default size (clamped to the tank), facing the glass. */

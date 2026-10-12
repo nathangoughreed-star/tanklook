@@ -1,5 +1,6 @@
 // Pure physical rules shared by the renderer, the UI and the tests. No three.js here.
 import { clampIn, footprint, glassAt, inside, nearestGlass, normTank, wallSpan } from './shape';
+import type { Hardscape } from './items';
 import type { Fish, RenderSettings, StandSettings, SubstrateSettings, Surface, Tank, TankSetup, Units } from './types';
 
 export const IN = 25.4;
@@ -52,15 +53,25 @@ export const waterY = (T: Tank, level: number) => clamp(level, 0, 1) * (T.H - WA
 /** Tint strength per mm of water for an opacity (the share of the water colour after 300 mm). */
 export const waterK = (opacity: number) => -Math.log(1 - clamp(opacity, 0, 0.97)) / 300;
 
+/** How much more a grazer favours the tops of rock and wood (their biofilm) than the same area of floor or glass. */
+const GRAZE = 2;
+
 /**
- * A random spot for a snail on ground `h` of crawling length `size`: every point of the substrate and of the inside of the
- * glass (below the water line, `top`) is equally likely, so floor and glass are chosen in proportion to their area. On
- * glass, (x, depth) is the point on the glass (any pane or curved shell) and yaw the heading there.
+ * A random spot for a clinging animal on ground `h` of crawling length `size`: every point of the substrate, of the
+ * inside of the glass (below the water line, `top`; if `on.glass`) and of the tops of the hardscape (`on.hard`, GRAZE
+ * times over) is equally likely, so the surfaces are chosen in proportion to their area. On glass, (x, depth) is the
+ * point on the glass (any pane or curved shell) and yaw the heading there.
  */
-export function spawnSnail(h: (x: number, depth: number) => number, T: Tank, size: number, r: () => number, top = T.H - WATERLINE_GAP) {
+export function spawnSnail(h: (x: number, depth: number) => number, T: Tank, size: number, r: () => number, top = T.H - WATERLINE_GAP, on: { glass?: boolean; hard?: Hardscape } = { glass: true }) {
   const f = footprint(T), m = size / 2, yaw = Math.round(r() * 360 - 180);
-  const meanSub = f.ring.reduce((a, p) => a + h(p[0], p[1]), 0) / f.ring.length, hw = Math.max(0, top - meanSub);
-  if (r() * (f.area + f.perimeter * hw) < f.area) {
+  const meanSub = f.ring.reduce((a, p) => a + h(p[0], p[1]), 0) / f.ring.length, hw = on.glass ? Math.max(0, top - meanSub) : 0;
+  const hard = (on.hard?.area ?? 0) * GRAZE, pick = r() * (f.area + f.perimeter * hw + hard);
+  // on hardscape: a spot on a piece whose top is under water (a few tries; else onto the floor)
+  if (pick >= f.area + f.perimeter * hw) for (let k = 0; k < 8; k++) {
+    const p = on.hard!.spot(r);
+    if (p && p.y + m < top && inside(T, p.x, p.depth, 0)) return { surface: 'hardscape' as Surface, x: p.x, depth: p.depth, y: p.y, yaw };
+  }
+  if (pick < f.area || pick >= f.area + f.perimeter * hw) {
     let x = T.L / 2, depth = T.D / 2;
     for (let k = 0; k < 200; k++) {
       const px = m + r() * Math.max(0, T.L - 2 * m), pd = m + r() * Math.max(0, T.D - 2 * m);

@@ -587,6 +587,14 @@ export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: numbe
     if (it.id === selItem) m.add(boxOutline(m.geometry));
     sc.add(m); itemMeshes.push(m);
   }
+  // the top of the solid piece (stone, wood, cave) under (x, depth), for animals on the hardscape; else the ground
+  const solids = itemMeshes.filter(m => !m.userData.plant); for (const m of solids) m.updateMatrixWorld(true);
+  const down = new THREE.Raycaster(), from = new THREE.Vector3(), DOWN = new THREE.Vector3(0, -1, 0);
+  const base = (f: Fish) => {
+    const g = groundHeight(S, T, f.x, f.depth); if (f.surface !== 'hardscape') return g;
+    down.set(from.set(f.x, T.H * 3 + 1000, -f.depth), DOWN);
+    return Math.max(g, down.intersectObjects(solids, false)[0]?.point.y ?? g);
+  };
   const register = (f: Fish, m: THREE.Mesh, w: number, h: number) => {
     m.userData.id = f.id; if (f.id === selId) m.add(outline(w, h));
     sc.add(m); fishMeshes.push(m); if (!meshById.has(f.id)) meshById.set(f.id, m);
@@ -594,7 +602,7 @@ export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: numbe
   for (const f of S.fish) {
     const sp = getSpecies(f.species); if (!sp) continue;
     if (sp.kind === 'snail') {
-      for (const [m, w, h] of snailMeshes(S, T, f, sp)) register(f, m, w, h);
+      for (const [m, w, h] of snailMeshes(S, T, f, sp, base(f))) register(f, m, w, h);
       if (has3D(sp.art) && (f.surface ?? 'floor') === 'floor') { const w = fishTL(f, sp), sh = contactShadow(S, T, f.x, f.depth, groundHeight(S, T, f.x, f.depth), w, w * 0.45, f.yaw); if (sh) sc.add(sh); }
       continue;
     }
@@ -602,11 +610,13 @@ export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: numbe
     const w = fishTL(f, sp), h = w * sp.aspect, p = f;
     const solid = has3D(sp.art), tex = fishTexture(f.species, S.render.edge, solid, solid && fish3d.fade);
     const m = new THREE.Mesh(cardGeometry(w, h, f.bend), cardMaterial(`fish:${f.species}:${solid}:${solid && fish3d.fade}`, tex, S.render.edge));
-    if (solid) m.add(fishBody(sp.art, sp.aspect, w, f.bend, fishBodyTexture(f.species), S.render.edge)); // solid body + paired fins; the card keeps the median fins
-    // bottom dwellers and animals on land rest on the ground wherever they are (their stored height is ignored)
-    const y = restsOnGround(S, T, sp, p.x, p.depth, h) ? groundHeight(S, T, p.x, p.depth) + sp.rest * w - 1 : Math.min(p.y, Math.max(0, waterY(T, S.water.level) - h / 2));
+    if (solid) m.add(fishBody(sp.art, sp.aspect, w, f.bend, fishBodyTexture(f.species), S.render.edge, f.surface === 'glass')); // solid body + paired fins; the card keeps the median fins
+    if (f.surface === 'glass') { onGlass(S, T, f, sp, m, w); register(f, m, w, h); continue; }
+    // bottom dwellers and animals on land rest on the ground (or the hardscape) wherever they are (their stored height is ignored)
+    const y = restsOnGround(S, T, sp, p.x, p.depth, h) ? base(f) + sp.rest * w - 1 : Math.min(p.y, Math.max(0, waterY(T, S.water.level) - h / 2));
     m.position.set(p.x, y, -p.depth); m.rotation.set(f.roll * D2R, f.yaw * D2R, f.pitch * D2R, 'YXZ');
     register(f, m, w, h);
+    if (f.surface === 'hardscape') continue;
     const sh = contactShadow(S, T, p.x, p.depth, y - h / 2, w, h, f.yaw); if (sh) sc.add(sh);
   }
   addLid(sc, S, T);
@@ -620,21 +630,35 @@ export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: numbe
 /** Material of a picking card whose animal is drawn in 3D. */
 const HIDDEN = new THREE.MeshBasicMaterial({ visible: false });
 HIDDEN.userData.cached = true; HIDDEN.userData.keep = true;
-/** How far a glass snail sits off the inside of the pane (mm). */
+/** How far a snail or pleco on the glass sits off the inside of the pane (mm). */
 const PANE_GAP = 0.8;
 
 /**
- * Snail cards. On the substrate: one upright side-view card. On glass: two one-sided cards back to back, the foot
+ * A fish clinging to the glass (a pleco or an oto) at the point nearest its (x, depth): belly on the pane, back into the
+ * tank, head along yaw in the plane of the pane (0 = level, 90 = straight up).
+ */
+function onGlass(S: TankSetup, T: Tank, f: Fish, sp: Species, m: THREE.Mesh, w: number) {
+  const g = nearestGlass(T, f.x, f.depth), n = new THREE.Vector3(g.n[0], 0, -g.n[1]); // outward, toward the pane
+  const top = S.water.on ? waterY(T, S.water.level) : T.H, sub = groundHeight(S, T, g.x, g.depth);
+  const y = clamp(f.y, sub + w / 2, Math.max(sub + w / 2, top - w / 2)), off = sp.rest * w + PANE_GAP;
+  const up = n.clone().negate(), along = new THREE.Vector3(n.z, 0, -n.x), a = f.yaw * D2R;
+  const head = along.multiplyScalar(Math.cos(a)).add(new THREE.Vector3(0, Math.sin(a), 0)), side = head.clone().cross(up);
+  m.position.set(g.x - g.n[0] * off, y, -(g.depth - g.n[1] * off));
+  m.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(head, up, side));
+}
+
+/**
+ * Snail cards. On the substrate or hardscape (`ground` = the height under it): one upright side-view card. On glass: two one-sided cards back to back, the foot
  * facing the glass (what you see through that pane) and the shell facing into the tank; yaw = heading in the pane.
  */
-function snailMeshes(S: TankSetup, T: Tank, f: Fish, sp: Species): [THREE.Mesh, number, number][] {
+function snailMeshes(S: TankSetup, T: Tank, f: Fish, sp: Species, ground: number): [THREE.Mesh, number, number][] {
   const p = f, surf = f.surface ?? 'floor', w = fishTL(f, sp), edge = S.render.edge;
   const sub = (x: number, d: number) => groundHeight(S, T, x, d);
-  if (surf === 'floor') {
+  if (surf !== 'glass') {
     // 3D: the card stays as the (invisible) picking target, the solid snail stands on its sole under it
     const h = w * sp.aspect, solid = has3D(sp.art);
     const m = new THREE.Mesh(cardGeometry(w, h, 0), solid ? HIDDEN : cardMaterial(`snail:${sp.art}:side`, snailTexture(sp.art, 'side'), edge));
-    m.position.set(p.x, sub(p.x, p.depth) + sp.rest * w - 0.5, -p.depth); m.rotation.set(0, f.yaw * D2R, 0, 'YXZ');
+    m.position.set(p.x, ground + sp.rest * w - 0.5, -p.depth); m.rotation.set(0, f.yaw * D2R, 0, 'YXZ');
     if (solid) { const b = snailBody(sp.art, w); b.position.y = 0.5 - sp.rest * w; m.add(b); }
     return [[m, w, h]];
   }

@@ -39,7 +39,7 @@ export const LIMITS = {
   terrainMax: 0.95,                        // highest point, fraction of interior height                // water level, fraction of full
   opacity: [0, 0.95] as const,             // water tint after 300 mm
 };
-export const SURFACES = ['floor', 'glass'] as const;
+export const SURFACES = ['floor', 'glass', 'hardscape'] as const;
 /** The v7 rectangle panes a glass snail could be on, with the coordinate that put it on that pane. */
 const OLD_PANES: Record<string, (f: Obj, T: Tank) => void> = {
   front: f => { f.depth = 0; }, back: (f, T) => { f.depth = T.D; }, left: f => { f.x = 0; }, right: (f, T) => { f.x = T.L; },
@@ -152,7 +152,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       x: num(f.x, tankA.L / 2, 0, tankA.L), y: num(f.y, tankA.H / 2, 0, tankA.H), depth: num(f.depth, tankA.D / 2, 0, tankA.D),
       yaw: num(f.yaw, 0, ...LIMITS.yaw), pitch: num(f.pitch, 0, ...LIMITS.tilt), roll: num(f.roll, 0, ...LIMITS.tilt),
       bend: num(f.bend, 0, ...LIMITS.bend),
-      ...(getSpecies(f.species)!.kind === 'snail' ? { surface: pick(f.surface, SURFACES, 'floor') } : {}),
+      ...(getSpecies(f.species)!.surfaces ? { surface: pick(f.surface, getSpecies(f.species)!.surfaces!, 'floor') } : {}),
       ...(tl !== adult ? { tl } : {}),
     });
   }

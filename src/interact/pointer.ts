@@ -2,11 +2,13 @@
 // shift + wheel moves the selected fish forward/back; click empty space to deselect; double-click it for straight-on.
 // Middle-drag pans the picture for a look round the edge; it eases back to the framing on release.
 // With split tanks, a view whose "Edit" box is ticked takes fish and terrain drags (that tank only) and pressing in it
-// shows it in the panel; an unticked view only orbits, zooms and pans. Bottom dwellers and floor snails slide along the floor; snails on glass slide over the glass (round corners and curved shells).
+// shows it in the panel; an unticked view only orbits, zooms and pans. Bottom dwellers and floor snails slide along the
+// floor, climbing onto a rock or wood if the species clings to hardscape; snails and plecos on glass slide over the glass
+// (round corners and curved shells).
 // Aquascape items (rocks, wood, caves, plants) go where the pointer meets the ground or another piece, and rest on
 // whatever is under them there; anything resting on the dragged piece rides along. Shift + wheel turns the selected piece.
 import * as THREE from 'three';
-import { fishTL, getSpecies, restsOnFloor } from '../data/species';
+import { clingsTo, fishTL, getSpecies, restsOnFloor } from '../data/species';
 import { restsOnGround } from '../scene/water';
 import { D2R, clamp } from '../scene/physics';
 import { clampItem } from '../scene/items';
@@ -122,11 +124,11 @@ export function attachPointer(viewer: Viewer, store: Store) {
     // the drag plane: the floor or the snail's pane for animals that cling to a surface, else it follows the view
     const surf = f?.surface ?? 'floor';
     const onGround = !!sp && !!f && (restsOnFloor(sp, surf) || (sp.kind !== 'snail' && restsOnGround(t, t.tank, sp, f.x, f.depth, fishTL(f, sp) * sp.aspect)));
-    const mode: DragMode = onGround ? 'top' : sp?.kind === 'snail' ? 'glass' : dragModeFor(c.az, c.el);
+    const mode: DragMode = surf === 'glass' ? 'glass' : onGround ? 'top' : dragModeFor(c.az, c.el);
     const n = mode === 'glass' ? glassNormal(t.tank, f!.x, f!.depth) : mode === 'top' ? new THREE.Vector3(0, 1, 0) : mode === 'side' ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 0, 1);
     const pl = new THREE.Plane().setFromNormalAndCoplanarPoint(n, hit.mesh.position), p = new THREE.Vector3();
     if (!hit.ray.intersectPlane(pl, p)) return;
-    // a glass snail follows the pointer itself (no grab offset), since its drag plane turns with the glass under it
+    // an animal on the glass follows the pointer itself (no grab offset), since its drag plane turns with the glass under it
     drag = { vp: hit.vp, plane: pl, mode, off: mode === 'glass' ? new THREE.Vector3() : p.sub(hit.mesh.position), moved: false };
   });
 
@@ -182,6 +184,9 @@ export function attachPointer(viewer: Viewer, store: Store) {
       if (d.mode !== 'top') f.y = clamp(p.y, 0, T.H);
       if (d.mode !== 'front') f.depth = clamp(-p.z, 0, T.D);
       const q = clampIn(T, f.x, f.depth); f.x = q.x; f.depth = q.depth;
+      // over a rock, wood or cave it climbs on top (if it can), off it back down to the floor
+      const sp = getSpecies(f.species);
+      if (d.mode === 'top' && sp && clingsTo(sp, 'hardscape')) f.surface = supportLift(d.vp, t, f.x, f.depth, new Set()) > 0 ? 'hardscape' : 'floor';
     }, { coalesce: 'drag' });
     d.moved = true;
   });
