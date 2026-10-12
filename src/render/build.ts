@@ -101,7 +101,7 @@ const BOWL_BANDS = 28, BOWL_SEG = 72;
  * A bowl: the background on the inside of the sphere facing the room wall, then the glass shell (a sphere zone t thick,
  * concentric, from the floor to the opening) on a round bottom pane, and the outline of floor, opening and equator.
  */
-function addBowl(sc: THREE.Scene, S: TankSetup, T: Tank, add: (geo: THREE.BufferGeometry, ro: number) => void, t: number, runs: P[][]) {
+function addBowl(sc: THREE.Scene, S: TankSetup, T: Tank, add: (geo: THREE.BufferGeometry, ro: number, outline?: number[]) => void, t: number, runs: P[][]) {
   const { H } = T, { R, c } = bowlDims(T), bg = BACKGROUNDS[S.render.bg];
   const ys = Array.from({ length: BOWL_BANDS + 1 }, (_, j) => H * j / BOWL_BANDS);
   if (c > 0 && c < H) { ys.push(c); ys.sort((a, b) => a - b); } // a row on the equator, so the widest point is exact
@@ -136,7 +136,8 @@ function addBowl(sc: THREE.Scene, S: TankSetup, T: Tank, add: (geo: THREE.Buffer
       }
       g.quad(pt(a0, rIn(H), H), pt(a1, rIn(H), H), pt(a1, rOut(H), H), pt(a0, rOut(H), H), 1); // the lip round the opening
     }
-    add(g.geometry(), front ? 6 : 5);
+    // only the lip's two circles are glass edges; drawn once, with the front half
+    add(g.geometry(), front ? 6 : 5, front ? [...ringLines(circleRing(T, rIn(H), BOWL_SEG), H), ...ringLines(circleRing(T, rOut(H), BOWL_SEG), H)] : []);
   }
   add(prismGeometry(circleRing(T, rOut(0), BOWL_SEG), -t, 0), 5); // bottom pane, out to the shell's foot
   const box: number[] = [...ringLines(circleRing(T, rIn(0), BOWL_SEG), 0), ...ringLines(circleRing(T, rIn(H), BOWL_SEG), H)];
@@ -170,9 +171,11 @@ function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
   // Light lines read on dark backgrounds, dark lines on light ones (and on clear glass over the grey stage).
   const lineCol = bg.light ? (lowIron ? 0x6f8f96 : 0x2f6f5a) : (lowIron ? 0xe2f3f6 : 0x8fd6bb);
   const edgeLine = new THREE.LineBasicMaterial({ color: lineCol, transparent: true, opacity: 0.75, depthWrite: false });
-  const add = (geo: THREE.BufferGeometry, ro: number) => {
+  // outline: line segments to draw instead of the geometry's own edges (a bowl's shell halves: the cut between them is not an edge)
+  const add = (geo: THREE.BufferGeometry, ro: number, outline?: number[]) => {
     const g = new THREE.Mesh(geo, [faceM, edgeM]); g.renderOrder = ro; sc.add(g);
-    const o = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 20), edgeLine); o.renderOrder = ro + 1; sc.add(o); // 20°: no seams between a curved shell's facets
+    const eg = outline ? new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(outline, 3)) : new THREE.EdgesGeometry(geo, 20);
+    const o = new THREE.LineSegments(eg, edgeLine); o.renderOrder = ro + 1; sc.add(o); // 20°: no seams between a curved shell's facets
   };
   // a bowl has its own shell (no rim: there are no pane edges to trim)
   if (bowl) addBowl(sc, S, T, add, t, runs);
