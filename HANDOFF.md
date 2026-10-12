@@ -2,6 +2,30 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Bowl tank shape (2026-10-12; DEPLOYED: pushed to origin/main `84595e5`, merged with main's background sides / arc)
+
+The local main in this shared folder was NOT fast-forwarded (other chats' uncommitted edits block it); `git pull --rebase` brings it in.
+The bowl background uses `backgroundRuns` like a round tank (the arc slider shows for bowls).
+
+Nathan asked for a globular tank: a sphere cut flat at the floor and at the opening, with the bowl, floor and opening
+sizes adjustable. Built in a worktree because main holds other chats' WIP in the same files. Dev server: launch config `bowl` (port 5253).
+- `shape: 'bowl'`, `bowlFloor` / `bowlTop` = diameters (mm), each 0.2..0.95 x L (default 0.6). D = L; H is DERIVED
+  (sqrt(R²-rb²) + sqrt(R²-rt²)), so the Height input is locked. UI: "Floor ⌀" / "Opening ⌀" sliders, Diameter label.
+  The user said "radius"; diameters chosen to match the existing Diameter field (easy to flip).
+- Design: the footprint is the FLOOR DISC, so the substrate, items, terrain, stand and table work unchanged; everything that
+  depends on height asks `bowlRadius(T, y)`: `clampFish` (fish within the sphere's circle at their height), `nearestGlass(T, x, d, y)`
+  (glass snails on the sphere), `volumeBetween` (sphere slice: volume, weight, AqAdvisor),
+  water surface + meniscus, substrate spread radially to meet the flaring glass. `bulge(T)` = equator past floor
+  (halfWidth for the person, view map outline). Renderer `addBowl`: concentric shell t thick (28 bands + equator row,
+  72 segments, back / front halves), background on the inside of the sphere facing the room wall, round bottom pane,
+  outline at floor / opening / equator, glass lid = disc over the opening. No rim, hood or peninsula for a bowl.
+- AqAdvisor (Nathan 2026-10-12): a bowl's area = halfway between the equator circle and the circle at the substrate
+  line (mean ground height round the floor edge); box d = area / L, h = volume / area (volume kept).
+- tsc, vite build clean; tests 138/138 (5 new). Checked in the browser straight on and from above.
+  2026-10-12 later: glass snails, clinging fish and the snail drag plane tilt with the sphere (`glassFrame`: point on
+  the glass at a height + 3D outward normal; deployed `f148646`). Not done: items near the floor edge sit on the
+  unspread ground height; lighting spill uses the bounding-box ellipse (as round).
+
 ## NEXT (Nathan 2026-10-09, closing session 11): 3D sequence
 
 Verdicts: alpha fix approved; pilot passed (geometry generation, NOT yet the final visual-quality test); generic 3D
