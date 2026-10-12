@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { rng } from '../src/art/paint';
 import { defaultSetup } from '../src/scene/defaults';
 import { IN, clampFish, glassThickness, spawnSnail, volume } from '../src/scene/physics';
-import { chord, clampIn, footprint, inside, nearestGlass, normTank, offsetRing, polyRatio, ringArea } from '../src/scene/shape';
+import { backgroundRuns, chord, clampIn, footprint, inside, nearestGlass, normTank, offsetRing, polyRatio, ringArea } from '../src/scene/shape';
 import type { Tank } from '../src/scene/types';
 import { parseScene } from '../src/scene/validate';
 import { tankWeight } from '../src/scene/weight';
@@ -79,5 +79,40 @@ describe('weight and files', () => {
     expect(v8.tanks[0].tank).toMatchObject({ shape: 'round', D: 400 });
     const v7 = parseScene({ version: 7, name: 'r', units: 'cm', tanks: [{ ...s, tank: { L: 24 * IN, H: 12 * IN, D: 12 * IN } }] }).scene;
     expect(v7.tanks[0].tank.shape).toBeUndefined();
+  });
+});
+
+describe('background sides (2026-10-12)', () => {
+  const len = (rs: [number, number][][]) => rs.reduce((a, r) => a + r.slice(1).reduce((b, p, i) => b + Math.hypot(p[0] - r[i][0], p[1] - r[i][1]), 0), 0);
+  it('rect: one pane per chosen side, none for no sides', () => {
+    expect(backgroundRuns(rect, [], 145)).toEqual([]);
+    expect(len(backgroundRuns(rect, ['back'], 145))).toBeCloseTo(600);
+    expect(len(backgroundRuns(rect, ['back', 'left', 'right'], 145))).toBeCloseTo(1200);
+    expect(backgroundRuns(rect, ['back', 'left', 'right'], 145)).toHaveLength(1); // adjacent panes join into one run
+    expect(len(backgroundRuns(rect, ['back', 'left', 'right', 'front'], 145))).toBeCloseTo(1800);
+  });
+  it('hexagon: an angled pane between two chosen sides is covered once', () => {
+    const one = len(backgroundRuns(hex, ['back'], 145)), two = len(backgroundRuns(hex, ['back', 'left'], 145));
+    expect(two).toBeLessThan(2 * one);
+  });
+  it('round: the arc slider sets the arc length; overlapping arcs merge; 360 is the whole shell', () => {
+    const R = round.L / 2, arc = (deg: number) => (deg / 360) * 2 * Math.PI * R;
+    expect(len(backgroundRuns(round, ['back'], 90)) / arc(90)).toBeCloseTo(1, 2);
+    expect(len(backgroundRuns(round, ['back'], 200)) / arc(200)).toBeCloseTo(1, 2);
+    expect(len(backgroundRuns(round, ['left', 'right'], 90)) / arc(180)).toBeCloseTo(1, 2);
+    expect(len(backgroundRuns(round, ['back', 'left'], 180)) / arc(270)).toBeCloseTo(1, 2);
+    expect(backgroundRuns(round, ['back', 'left'], 180)).toHaveLength(1);
+    expect(len(backgroundRuns(round, ['back', 'front'], 200)) / arc(360)).toBeCloseTo(1, 2);
+    expect(len(backgroundRuns(round, ['back'], 360)) / arc(360)).toBeCloseTo(1, 2);
+    // centred on the back: symmetric about x = R, and every point inside the glass
+    for (const p of backgroundRuns(round, ['back'], 120)[0]) expect(inside(round, p[0], p[1], -1e-6)).toBe(true);
+    const r = backgroundRuns(round, ['back'], 120)[0];
+    expect(r[0][0] + r[r.length - 1][0]).toBeCloseTo(2 * R);
+  });
+  it('older files: the background stays where the room wall put it', () => {
+    const old = (wall?: object) => { const t = structuredClone(defaultSetup()) as Record<string, any>; delete t.render.bgSides; delete t.render.bgArc; if (wall) t.wall = wall; return parseScene({ version: 9, name: 'o', units: 'mm', tanks: [t] }).scene.tanks[0]; }; // eslint-disable-line @typescript-eslint/no-explicit-any
+    expect(old().render.bgSides).toEqual(['back']);
+    const s = old({ show: true, side: 'left', color: '#d8d2c6' });
+    expect(s.render.bgSides).toEqual(['left']); expect(s.render.bgArc).toBe(145);
   });
 });

@@ -9,6 +9,8 @@ export const SCENE_VERSION = 9;
 export type Units = 'in' | 'cm';
 export type EdgeMode = 'cutout' | 'a2c';
 export type Background = 'black' | 'blue' | 'gradient' | 'grey' | 'frosted' | 'none';
+/** A side of the tank the background can cover. */
+export type BgSide = 'back' | 'left' | 'right' | 'front';
 export type GlassType = 'standard' | 'lowiron';
 export type LightType = 'flat' | 'spot' | 'tube' | 'led';
 export type SubstrateType = 'gravel' | 'pea' | 'clown' | 'blue' | 'onyx' | 'black' | 'white';
@@ -61,6 +63,10 @@ export interface RenderSettings {
   grid: boolean;
   rim: boolean;
   bg: Background;
+  /** Sides the background covers (added 2026-10-12; older files: the side against the room wall, as it was then). */
+  bgSides: BgSide[];
+  /** Round tanks only: degrees of the shell the background covers, centred on each chosen side (older files: 145). */
+  bgArc: number;
   glass: 'auto' | number; // mm, or auto by interior height
   glassType: GlassType;
 }

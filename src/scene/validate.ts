@@ -13,9 +13,12 @@ export class SceneError extends Error {}
 type Obj = Record<string, unknown>;
 const isObj = (v: unknown): v is Obj => typeof v === 'object' && v !== null && !Array.isArray(v);
 
+const BG_SIDES = ['back', 'left', 'right', 'front'] as const;
+
 export const LIMITS = {
   tankMin: 50, tankMax: 5000,     // mm, per interior dimension
   dist: [400, 5000] as const,
+  bgArc: [20, 360] as const,      // degrees of a round tank's shell the background covers
   az: [-180, 180] as const,
   el: [-20, 85] as const,
   zoom: [0.5, 12] as const,
@@ -168,6 +171,11 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
     render: {
       edge: pick(r.edge, ['cutout', 'a2c'] as const, d.render.edge), grid: bool(r.grid, d.render.grid), rim: bool(r.rim, d.render.rim),
       bg: pick(r.bg, ['black', 'blue', 'gradient', 'grey', 'frosted', 'none'] as const, d.render.bg), glass,
+      // added 2026-10-12 (no version bump); older files: the side the background then followed, the room wall's
+      bgSides: Array.isArray(r.bgSides)
+        ? BG_SIDES.filter(k => (r.bgSides as unknown[]).includes(k))
+        : [bool(w.show, d.wall.show) && (w.side === 'left' || w.side === 'right' || w.side === 'peninsula') ? (w.side === 'left' ? 'left' : 'right') : 'back'],
+      bgArc: Math.round(num(r.bgArc, 145, ...LIMITS.bgArc)),
       glassType: pick(r.glassType, ['standard', 'lowiron'] as const, 'standard'),
     },
     light: {

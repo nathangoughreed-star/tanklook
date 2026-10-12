@@ -218,9 +218,14 @@ export function halfWidth(T: Tank, ux: number, uz: number, grow: number) {
   return m;
 }
 
-/** Runs of the outer ring (offset t) whose outward normal faces direction `dir` within `cos` (e.g. the front: [0, -1]). */
-export function facingRuns(T: Tank, t: number, dir: P, cos = 0.5): P[][] {
-  const f = footprint(T), ring = offsetRing(T, t), n = f.edges.length, ok = f.edges.map(e => e.n[0] * dir[0] + e.n[1] * dir[1] > cos);
+/**
+ * Runs of the outer ring (offset t) whose outward normal faces direction `dir` within `cos` (e.g. the front: [0, -1]);
+ * given several directions, an edge facing any of them.
+ */
+export function facingRuns(T: Tank, t: number, dir: P | P[], cos = 0.5): P[][] {
+  const dirs = (typeof dir[0] === 'number' ? [dir] : dir) as P[];
+  const f = footprint(T), ring = offsetRing(T, t), n = f.edges.length, ok = f.edges.map(e => dirs.some(d => e.n[0] * d[0] + e.n[1] * d[1] > cos));
+  if (!ok.some(Boolean)) return [];
   if (ok.every(Boolean)) return [[...ring, ring[0]]];
   const start = ok.findIndex(v => !v), runs: P[][] = [];
   let cur: P[] | null = null;
@@ -230,6 +235,33 @@ export function facingRuns(T: Tank, t: number, dir: P, cos = 0.5): P[][] {
   }
   if (cur) runs.push(cur);
   return runs;
+}
+
+/** The sides a background can cover, as directions from the tank (footprint coordinates: depth grows toward the back). */
+export const BG_DIRS = { back: [0, 1], left: [-1, 0], right: [1, 0], front: [0, -1] } as const satisfies Record<string, P>;
+
+/**
+ * Runs of the inside of the glass the background covers: every pane facing one of `sides` (within ~72°, so an angled
+ * pane between two chosen sides is covered once). A round tank instead takes an arc of `arcDeg` degrees centred on
+ * each chosen side; overlapping arcs merge, 360° is the whole shell. Each run goes from its front-left end.
+ */
+export function backgroundRuns(T: Tank, sides: readonly (keyof typeof BG_DIRS)[], arcDeg: number): P[][] {
+  if (!sides.length) return [];
+  let runs: P[][];
+  if (shapeOf(T) === 'round') {
+    const R = T.L / 2, r = R * Math.cos(Math.PI / ROUND_SEG), TAU = 2 * Math.PI, half = (clamp(arcDeg, 0, 360) / 360) * Math.PI;
+    // inside every chord of the glass shell, so the background never pokes into the glass between its vertices
+    const pt = (a: number): P => [R + r * Math.sin(a), R - r * Math.cos(a)];
+    const iv = sides.map(k => { const [x, d] = BG_DIRS[k], c = (Math.atan2(x, -d) + TAU) % TAU; return [c - half, c + half]; }).sort((a, b) => a[0] - b[0]);
+    const m: number[][] = [];
+    for (const [a, b] of iv) { const l = m[m.length - 1]; if (l && a <= l[1]) l[1] = Math.max(l[1], b); else m.push([a, b]); }
+    if (m.length > 1 && m[m.length - 1][1] >= m[0][0] + TAU) { m[0][0] = m[m.length - 1][0] - TAU; m[0][1] = Math.max(m[0][1], m[m.length - 1][1] - TAU); m.pop(); }
+    if (m[0][1] - m[0][0] >= TAU - 1e-6) return [Array.from({ length: ROUND_SEG + 1 }, (_, i) => pt(TAU * i / ROUND_SEG))];
+    runs = m.filter(([a, b]) => b - a > 1e-6).map(([a, b]) => { const n = Math.max(2, Math.ceil((b - a) / (TAU / ROUND_SEG))); return Array.from({ length: n + 1 }, (_, i) => pt(a + (b - a) * i / n)); });
+  } else {
+    runs = facingRuns(T, 0, sides.map(k => BG_DIRS[k] as unknown as P), 0.3);
+  }
+  return runs.map(q => (q[0][0] + q[0][1] > q[q.length - 1][0] + q[q.length - 1][1] ? [...q].reverse() : q));
 }
 
 /** Length of a polyline. */

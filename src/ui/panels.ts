@@ -125,9 +125,13 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('rimY').onclick = () => store.edit(s => { s.render.rim = true; });
   $('rimN').onclick = () => store.edit(s => { s.render.rim = false; });
   const LIDS = [['lidOpen', 'open'], ['lidGlass', 'glass'], ['lidHood', 'hood']] as const;
+  const BG_BTNS = [['bgBack', 'back'], ['bgLeft', 'left'], ['bgRight', 'right'], ['bgFront', 'front']] as const;
   for (const [id, lid] of LIDS) $(id).onclick = () => store.edit(s => { s.lid = lid; });
   $<HTMLSelectElement>('bgSel').innerHTML = Object.entries(BACKGROUNDS).map(([k, b]) => `<option value="${k}">${esc(b.label)}</option>`).join('');
   $<HTMLSelectElement>('bgSel').onchange = e => store.edit(s => { s.render.bg = (e.target as HTMLSelectElement).value as TankSetup['render']['bg']; });
+  for (const [id, side] of BG_BTNS)
+    $(id).onclick = () => store.edit(s => { const b = s.render.bgSides; s.render.bgSides = b.includes(side) ? b.filter(k => k !== side) : [...b, side]; });
+  $('bgArc').oninput = e => store.edit(s => { s.render.bgArc = +(e.target as HTMLInputElement).value; }, { coalesce: 'bgArc' });
   $<HTMLSelectElement>('glassSel').innerHTML = '<option value="auto">Auto (by height)</option>' + GLASS_CHOICES.map(g => `<option value="${g}">${g} mm</option>`).join('');
   $<HTMLSelectElement>('glassSel').onchange = e => store.edit(s => { const v = (e.target as HTMLSelectElement).value; s.render.glass = v === 'auto' ? 'auto' : +v; });
   $<HTMLSelectElement>('glassType').onchange = e => store.edit(s => { s.render.glassType = (e.target as HTMLSelectElement).value as TankSetup['render']['glassType']; });
@@ -153,7 +157,11 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('tableFront').onclick = () => editTable(tb => { tb.x = 0; tb.z = -TABLE_MAX; });
   $('wallOn').onchange = e => store.edit(s => { s.wall.show = (e.target as HTMLInputElement).checked; });
   for (const [id, side] of [['wallBack', 'back'], ['wallLeft', 'left'], ['wallRight', 'right']] as const)
-    $(id).onclick = () => store.edit(s => { s.wall.side = side; s.wall.show = true; });
+    $(id).onclick = () => store.edit(s => {
+      const was = s.wall.show ? s.wall.side : 'back', b = s.render.bgSides;
+      if (b.length === 1 && b[0] === was) s.render.bgSides = [side]; // a background on the old wall side moves with the wall
+      s.wall.side = side; s.wall.show = true;
+    });
   $('wallColor').oninput = e => store.edit(s => { s.wall.color = (e.target as HTMLInputElement).value; s.wall.show = true; }, { coalesce: 'wallColor' });
 
   $('personOn').onchange = e => store.edit(s => { s.person.show = (e.target as HTMLInputElement).checked; });
@@ -596,7 +604,11 @@ export function attachPanels(store: Store, viewer: Viewer) {
     syncAq();
     $('rimY').classList.toggle('on', s.render.rim); $('rimN').classList.toggle('on', !s.render.rim);
     for (const [id, lid] of LIDS) $(id).classList.toggle('on', s.lid === lid);
-    setVal('bgSel', s.render.bg); setVal('glassSel', String(s.render.glass)); setVal('glassType', s.render.glassType);
+    setVal('bgSel', s.render.bg);
+    for (const [id, side] of BG_BTNS) { const on = s.render.bgSides.includes(side); $(id).classList.toggle('on', on); $(id).setAttribute('aria-pressed', String(on)); }
+    $('bgSidesRow').style.display = s.render.bg === 'none' ? 'none' : '';
+    $('bgArcRow').style.display = s.render.bg !== 'none' && sh === 'round' ? '' : 'none';
+    setVal('bgArc', s.render.bgArc); setOut('oBgArc', s.render.bgArc >= 360 ? '360° (all round)' : `${s.render.bgArc}°`); setVal('glassSel', String(s.render.glass)); setVal('glassType', s.render.glassType);
     const t = glassThickness(A, s.render.glass);
     $('glassHint').textContent = (s.render.glass === 'auto' ? 'Auto: ' : 'Glass: ') + t + ' mm (' + fmtLen(t, u, 2) + ')';
 

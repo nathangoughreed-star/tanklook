@@ -4,6 +4,7 @@
 import { SUBSTRATES } from '../art/placeholder';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { fmtSize, fmtLen, glassThickness, rescaleTank, waterY } from '../scene/physics';
+import { shapeOf } from '../scene/shape';
 import { setWaterLevel } from '../scene/water';
 import type { TankSetup, Units } from '../scene/types';
 
@@ -45,6 +46,11 @@ export function tankDiff(a: TankSetup, b: TankSetup, u: Units): DiffItem[] {
   add(a.render.rim, b.render.rim, r => (r ? 'Rimmed' : 'Rimless'), ['render.rim']);
   add(a.lid, b.lid, l => LIDS[l], ['lid']);
   add(a.render.bg, b.render.bg, bg => `Background: ${BACKGROUNDS[bg].label.toLowerCase()}`, ['render.bg']);
+  const sidesTxt = (b: string[]) => (b.length ? ['back', 'left', 'right', 'front'].filter(k => b.includes(k)).join(' + ') : 'no sides');
+  if (a.render.bg !== 'none' && b.render.bg !== 'none') {
+    add(a.render.bgSides, b.render.bgSides, v => `Background on ${sidesTxt(v)}`, ['render.bgSides']);
+    if (shapeOf(a.tank) === 'round' && shapeOf(b.tank) === 'round') add(a.render.bgArc, b.render.bgArc, v => `Background arc ${v}°`, ['render.bgArc']);
+  }
   add(a.render.grid, b.render.grid, g => (g ? 'Grid' : 'No grid'), ['render.grid']);
 
   // stand, room, person: details only when both have one

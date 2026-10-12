@@ -6,7 +6,7 @@ import { snailAspect } from '../art/snails';
 import { fishTL, getSpecies, needsWater, type Species } from '../data/species';
 import { restsOnGround } from '../scene/water';
 import { D2R, IN, clamp, floorY, glassThickness, RIM_DROP, RIM_H, tankUnderside, waterY } from '../scene/physics';
-import { alongRun, chord, clipToFootprint, facingRuns, footprint, halfWidth, inside, nearestGlass, offsetRing, offsetWalls, runLength, shapeOf, subRun, type P } from '../scene/shape';
+import { alongRun, backgroundRuns, chord, clipToFootprint, facingRuns, footprint, halfWidth, inside, nearestGlass, offsetRing, offsetWalls, runLength, shapeOf, subRun, type P } from '../scene/shape';
 import { TABLE_TOP, tableCentre, tableOn, tableRing, wallPlane } from '../scene/table';
 import { groundHeight, terrainPoint } from '../scene/terrain';
 import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
@@ -93,21 +93,13 @@ function flatGeometry(ring: P[], y: number) {
 /** Closed loop of line segments round a ring at height y. */
 const ringLines = (ring: P[], y: number) => ring.flatMap((p, i) => [...at(p, y), ...at(ring[(i + 1) % ring.length], y)]);
 
-/** Direction (footprint coordinates) from the tank toward the room wall: the back, or the peninsula end. */
-const wallDir = (S: TankSetup): P => { const pen = penEnd(S); return pen === 'left' ? [-1, 0] : pen === 'right' ? [1, 0] : [0, 1]; };
-
-/** Runs of the inside of the glass that face the room wall (the background goes there), each from its front-left end. */
-function backRuns(S: TankSetup, T: Tank): P[][] {
-  return facingRuns(T, 0, wallDir(S), 0.3).map(r => (r[0][0] + r[0][1] > r[r.length - 1][0] + r[r.length - 1][1] ? [...r].reverse() : r));
-}
 
 function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
   const { H } = T, R = S.render, fp = footprint(T);
   // backing under the substrate; a bare-bottom tank has none, so the stand top or the room shows through the bottom pane
   if (S.substrate.show || S.layout.id === 'swamp' || S.terrain.on) sc.add(new THREE.Mesh(flatGeometry(fp.ring, 0), basic(0xcdb98f, { side: THREE.DoubleSide })));
-  const bg = BACKGROUNDS[R.bg], t = glassThickness(T, R.glass), runs = backRuns(S, T);
-  // the background covers the glass that faces the room wall: the back, or the end against it in a peninsula (then the
-  // long back glass is clear, since that side is viewable); on a round or angled tank it wraps round the back
+  const bg = BACKGROUNDS[R.bg], t = glassThickness(T, R.glass), runs = backgroundRuns(T, R.bgSides, R.bgArc);
+  // the background covers the panes facing the chosen sides; on a round tank an arc of the shell round each
   if (bg.color !== null) {
     for (const r of runs) {
       const g = new Tris(), len = runLength(r) || 1; let s = 0;
