@@ -48,6 +48,7 @@ export interface Plan {
   outline?: [number, number][];
   pectoral?: boolean; // default true
   limbs?: Limb[];
+  glass?: number;     // 3D: body and limb opacity (translucent shrimp); unset = opaque
 }
 /**
  * A thin limb (legs, antennae) as a tube on each flank, 3D only: rooted on the body at (u, v), running to the root +
@@ -257,13 +258,13 @@ export function drawPlan(p: Plan, ctx: Ctx, P: Proj, W: number) {
 /** The shrimp drawing's outline (shared by the card and the 3D body). */
 const SHRIMP_OUTLINE: [number, number][] = [[1, -0.075], [0.86, -0.07], [0.78, -0.11], [0.6, -0.125], [0.42, -0.12], [0.28, -0.09], [0.16, -0.05], [0.13, 0.0],
   [0.16, 0.05], [0.28, 0.07], [0.42, 0.08], [0.6, 0.075], [0.75, 0.065], [0.84, 0.04], [0.86, -0.02]];
-interface ShrimpSpec { body: [string, string]; dots?: string; a?: number }
+interface ShrimpSpec { body: [string, string]; dots?: string; a?: number; glass?: number }
 function drawShrimp(s: ShrimpSpec, ctx: Ctx, P: Proj, W: number) {
   const leg = hexA(s.body[0], 0.75), limbs = style.paired; // off: painted for the 3D shrimp, whose legs are tubes
   ctx.strokeStyle = leg; ctx.lineWidth = 0.008 * W;
   if (limbs) for (let i = 0; i < 5; i++) { const u = 0.72 - i * 0.07, [x, y] = P(u, 0.05), [x2, y2] = P(u - 0.03, 0.16); ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x2, y2); ctx.stroke(); }
   if (limbs) for (let i = 0; i < 4; i++) { const u = 0.42 - i * 0.07, [x, y] = P(u, 0.07), [x2, y2] = P(u - 0.02, 0.12); ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x2, y2); ctx.stroke(); }
-  fin(ctx, P, W, [[0.16, -0.03], [0.02, -0.075], [0, -0.06, 'c'], [0.03, 0.0], [0, 0.07, 'c'], [0.03, 0.08], [0.16, 0.05]], [0.14, 0.01], s.body[0], s.body[0], { a: 0.8, rays: 6 });
+  fin(ctx, P, W, [[0.16, -0.03], [0.02, -0.075], [0, -0.06, 'c'], [0.03, 0.0], [0, 0.07, 'c'], [0.03, 0.08], [0.16, 0.05]], [0.14, 0.01], s.body[0], s.body[0], { a: s.glass ? 0.35 : 0.8, rays: 6 });
   const pts: Pt[] = SHRIMP_OUTLINE.map(([u, v], i) => (i ? [u, v] : [u, v, 'c']));
   body(ctx, P, W, pts, -0.125, 0.08, [[0, s.body[0]], [0.6, s.body[1]], [1, s.body[1]]], 0.03, l => {
     for (let i = 0; i < 5; i++) { const u = 0.62 - i * 0.09, [x, y0] = P(u, -0.13), [, y1] = P(u, 0.08); l.strokeStyle = 'rgba(30,10,10,0.14)'; l.lineWidth = 0.006 * W; l.beginPath(); l.moveTo(x, y0); l.quadraticCurveTo(x - 0.02 * W, (y0 + y1) / 2, x, y1); l.stroke(); }
@@ -415,7 +416,7 @@ export const PLANS: Record<string, Plan> = {
 
 const SHRIMP: Record<string, ShrimpSpec> = {
   cherryshrimp: { body: ['#b8242a', '#d8444a'] },
-  amano: { body: ['#9a9a8a', '#c8c4b4'], dots: '#6a4a3a' },
+  amano: { body: ['#7a8480', '#a4aca4'], dots: '#5a3a2a', glass: 0.4 },
 };
 /**
  * 3D shrimp: the drawing's outline lofted; walking legs, swimmerets and antennae as tubes where the card paints them
@@ -424,7 +425,7 @@ const SHRIMP: Record<string, ShrimpSpec> = {
 const shrimpPlan = (s: ShrimpSpec): Plan => ({
   outline: SHRIMP_OUTLINE, thick: 0.6, pedT: 0.6, depth: 0.205, pedU: 0.14, ped: 0.05, pectoral: false,
   shade: [s.body[0], s.body[1], s.body[1]], tail: { type: 'fork', h: 0.1 }, fin: s.body[0],
-  eye: { r: 0.022, u: 0.835, dv: -0.17, iris: ['#3a2a22', '#120c0a'] },
+  eye: { r: 0.022, u: 0.835, dv: -0.17, iris: ['#3a2a22', '#120c0a'] }, glass: s.glass,
   limbs: [
     ...[0, 1, 2, 3, 4].map(i => ({ u: 0.72 - i * 0.07, v: 0.045, to: [-0.03, 0.11, 0.03], via: [-0.005, 0.03, 0.04], r: 0.005 }) as Limb),
     ...[0, 1, 2, 3].map(i => ({ u: 0.42 - i * 0.07, v: 0.06, to: [-0.02, 0.05, 0.02], r: 0.004 }) as Limb),

@@ -381,6 +381,9 @@ function eyeTexture(iris: [string, string]) {
 }
 const dome = (() => { const g = new THREE.SphereGeometry(1, 24, 16); g.scale(1, 0.38, 1); g.userData.keep = true; return g; })();
 
+/** A translucent body (glass shrimp): the water and what is behind show through. */
+const see = (p: Plan) => (p.glass ? { transparent: true, opacity: p.glass } : {});
+
 const fishMat = (key: string, make: () => THREE.MeshBasicMaterial) => {
   let m = matCache.get(key);
   if (!m) { m = make(); m.userData.cached = true; m.userData.fish = true; matCache.set(key, m); }
@@ -397,7 +400,7 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
   let g = geoCache.get(key); if (!g) { g = bodyGeometry(p, aspect, b); geoCache.set(key, g); }
   const grp = new THREE.Group(); grp.scale.setScalar(w);
   grp.add(new THREE.Mesh(g, fishMat(`body:${map.uuid}:${fish3d.fade}:${fish3d.wrap}`, () => {
-    const t = bledTexture(map), m = new THREE.MeshBasicMaterial({ map: t.map, vertexColors: true }); if (fish3d.fade) { m.userData.plain = t.plain; m.userData.side = fish3d.wrap ? SIDE : new THREE.Vector2(0.3, 0.75); } return m;
+    const t = bledTexture(map), m = new THREE.MeshBasicMaterial({ map: t.map, vertexColors: true, ...see(p) }); if (fish3d.fade) { m.userData.plain = t.plain; m.userData.side = fish3d.wrap ? SIDE : new THREE.Vector2(0.3, 0.75); } return m;
   })));
   for (const e of eyePlacements(p, b)) {
     const m = new THREE.Mesh(dome, fishMat('eye:' + art, () => new THREE.MeshBasicMaterial({ map: eyeTexture(e.iris) })));
@@ -408,7 +411,7 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
   const belly = bellyPlate(art, p, b); if (belly) grp.add(belly);
   for (const f of finMeshes(art, p, b, edge, cling)) grp.add(f);
   if (p.limbs) {
-    const mat = fishMat('limb:' + art, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(p.shade[0]).multiplyScalar(0.9) }));
+    const mat = fishMat('limb:' + art, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(p.shade[0]).multiplyScalar(0.9), ...see(p) }));
     for (const m of limbMeshes(art, p, b, mat)) grp.add(m);
   }
   if (p.barbels) {
