@@ -4,7 +4,7 @@
 // Tank B gets the same arrangement at the same relative spots.
 import { rng } from '../art/paint';
 import { clamp, substrateHeight } from './physics';
-import { bowlDims, inside, shapeOf } from './shape';
+import { bowlDims, bowlRadius, clampIn, inside, insideBy, shapeOf } from './shape';
 import type { LayoutSettings, SubstrateSettings, Tank, TerrainSettings } from './types';
 
 export interface Ground { substrate: SubstrateSettings; layout: LayoutSettings; terrain?: TerrainSettings }
@@ -139,6 +139,33 @@ export function groundHeight(g: Ground, T: Tank, x: number, depth: number): numb
   if (g.terrain?.on && g.terrain.h.length) return terrainHeight(g.terrain, T, x, depth);
   const base = substrateHeight(g.substrate, T, x, depth);
   return g.layout.id === 'swamp' ? Math.max(base, swampLand(T, g.layout.seed, x, depth)) : base;
+}
+
+/**
+ * How far (x, depth) lies inside the glass at ground level, mm (negative outside). A bowl's glass there is the sphere's
+ * circle at the ground's height, wider than its floor disc (the footprint); every other shape's walls are upright.
+ */
+export function groundInsideBy(g: Ground, T: Tank, x: number, depth: number): number {
+  if (shapeOf(T) !== 'bowl') return insideBy(T, x, depth);
+  return bowlRadius(T, groundHeight(g, T, x, depth)) - Math.hypot(x - T.L / 2, depth - T.D / 2);
+}
+
+/**
+ * The nearest spot at least `inset` mm inside the glass, for a piece standing on the ground there from `from` to `to`
+ * mm above it. Upright walls: clampIn. A bowl: inside the sphere's circle at both ends of that span (the sphere bulges
+ * between them), so a piece can stand anywhere on the substrate, not just over the floor disc (2026-10-12).
+ */
+export function clampGround(g: Ground, T: Tank, x: number, depth: number, inset = 0, from = 0, to = from) {
+  if (shapeOf(T) !== 'bowl') return clampIn(T, x, depth, inset);
+  const cx = T.L / 2, cd = T.D / 2;
+  for (let k = 0; k < 8; k++) { // the ground may slope: re-read its height where the spot moved to
+    const y = groundHeight(g, T, x, depth), top = Math.min(y + to, T.H - 15);
+    const r = Math.min(bowlRadius(T, y + from), bowlRadius(T, Math.max(top, y + from))) - inset, q = Math.hypot(x - cx, depth - cd);
+    if (r <= 0) return { x: cx, depth: cd };
+    if (q <= r + 1e-6) break;
+    x = cx + (x - cx) * r / q; depth = cd + (depth - cd) * r / q;
+  }
+  return { x, depth };
 }
 
 /**

@@ -8,8 +8,8 @@ import { rng } from '../art/paint';
 import { PLANT_ASPECT, type PlantType } from '../art/plants';
 import { CARPET_H, CARPET_W, itemSink, stoneDims, woodLimbs, type Limb } from '../scene/items';
 import { D2R } from '../scene/physics';
-import { bowlDims, clampIn, footprint, insideBy, shapeOf } from '../scene/shape';
-import { groundHeight } from '../scene/terrain';
+import { bowlDims, footprint, shapeOf } from '../scene/shape';
+import { clampGround, groundHeight, groundInsideBy } from '../scene/terrain';
 import type { Item, Tank, TankSetup } from '../scene/types';
 import { cardMaterial, plantTexture } from './textures';
 
@@ -279,18 +279,18 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
     if (h < 15) return null;
     const c = Math.cos(it.yaw * D2R), s = Math.sin(it.yaw * D2R);
     // a carpet hugs the ground under each card: its key carries the spot (rebuilt only while it moves)
-    const k = carpet ? `carpet|${it.seed}|${it.size}|${Math.round(it.x)}|${Math.round(it.depth)}|${it.yaw}|${it.lift}|${T.shape}|${T.L}|${T.D}|${T.sides}|${T.bowMin}` : `${type}|${it.seed}|${Math.round(h)}`;
+    const k = carpet ? `carpet|${it.seed}|${it.size}|${Math.round(it.x)}|${Math.round(it.depth)}|${it.yaw}|${it.lift}|${T.shape}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}` : `${type}|${it.seed}|${Math.round(h)}`;
     // near the glass a card is cut down to the width it has room for, so the carpet runs right up to the glass without
     // poking through; a card past the edge line is mirrored back in by as much (keeping the edge thick), and one more
     // than half a card past it is left out
     const EDGE = 8;
     const at = (lx: number, lz: number) => {
       let x = it.x + lx * c + lz * s, d = it.depth + lx * s - lz * c;
-      const e = EDGE - insideBy(T, x, d);
+      const e = EDGE - groundInsideBy(S, T, x, d);
       if (e > CARPET_W / 2) return null;
-      if (e > 0) ({ x, depth: d } = clampIn(T, x, d, EDGE + e));
+      if (e > 0) ({ x, depth: d } = clampGround(S, T, x, d, EDGE + e));
       const dx = x - it.x, dd = d - it.depth;
-      return { x: dx * c + dd * s, y: groundHeight(S, T, x, d) - ground, z: dx * s - dd * c, w: Math.min(CARPET_W, 2 * insideBy(T, x, d)) };
+      return { x: dx * c + dd * s, y: groundHeight(S, T, x, d) - ground, z: dx * s - dd * c, w: Math.min(CARPET_W, 2 * groundInsideBy(S, T, x, d)) };
     };
     const g = plants.get(k) ?? remember(plants, k, plantGeo(type, it.seed, h, carpet ? at : undefined), 300, dispose);
     if (carpet) g.computeBoundingBox();

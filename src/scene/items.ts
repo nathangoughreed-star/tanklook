@@ -4,8 +4,8 @@
 import { rng } from '../art/paint';
 import { PLANT_ASPECT, type PlantType } from '../art/plants';
 import { clamp, D2R } from './physics';
-import { clampIn, shapeOf } from './shape';
-import { groundHeight } from './terrain';
+import { bowlDims, bowlRadius, clampIn, shapeOf } from './shape';
+import { clampGround, groundHeight, radialTerrain, type Ground } from './terrain';
 import type { Item, ItemKind, LayoutId, Tank, TankSetup } from './types';
 
 export interface Variant { kind: ItemKind; label: string; hint: string; size: number; min: number; max: number }
@@ -142,8 +142,12 @@ export function itemSink(it: Item): number {
 /** How far a piece may be pushed down into the substrate, fraction of the tank height (the deepest substrate is 0.5 H). */
 export const LIFT_SINK = 0.5;
 
-/** Keep a piece's anchor inside the glass (plants by most of their half-width; hardscape may run through it) and its size within its variant's range and the tank. */
-export function clampItem(it: Item, T: Tank) {
+/**
+ * Keep a piece's anchor inside the glass (plants by most of their half-width; hardscape may run through it) and its size
+ * within its variant's range and the tank. Pass the ground `g` wherever there is one: a bowl's glass at the substrate is
+ * wider than its floor disc, and without it a bowl keeps pieces over the floor (the old, too-tight rule).
+ */
+export function clampItem(it: Item, T: Tank, g?: Ground) {
   const v = LIBRARY[it.variant];
   if (v) {
     let max = v.max;
@@ -155,7 +159,10 @@ export function clampItem(it: Item, T: Tank) {
   const [l, , w] = itemDims(it), half = it.kind === 'plant' ? (it.variant !== 'carpet' ? l / 2 + 3 : Math.max(l, w) * 0.35) : 0;
   const inset = Math.min(half, Math.min(T.L, T.D) * 0.45);
   it.x = clamp(it.x, inset, T.L - inset); it.depth = clamp(it.depth, inset, T.D - inset);
-  if (shapeOf(T) !== 'rect') ({ x: it.x, depth: it.depth } = clampIn(T, it.x, it.depth, inset));
+  if (g && shapeOf(T) === 'bowl') { // a plant stays clear of the glass over its whole height (the sphere closes in above)
+    const lift = clamp(it.lift, 0, T.H), up = it.kind === 'plant' && it.variant !== 'carpet' ? itemDims(it)[1] : 0;
+    ({ x: it.x, depth: it.depth } = clampGround(g, T, it.x, it.depth, inset, lift, lift + up));
+  } else if (shapeOf(T) !== 'rect') ({ x: it.x, depth: it.depth } = clampIn(T, it.x, it.depth, inset));
   it.lift = clamp(it.lift, -LIFT_SINK * T.H, T.H);
   it.yaw = ((it.yaw + 540) % 360) - 180;
   it.pitch = clamp(it.pitch, -90, 90);
@@ -202,10 +209,10 @@ export type Hardscape = ReturnType<typeof hardscape>;
 export const nextItemId = (s: TankSetup) => s.items.reduce((m, it) => Math.max(m, it.id), 0) + 1;
 
 /** A new item of `variant` at (x, depth), its default size (clamped to the tank), facing the glass. */
-export function makeItem(T: Tank, variant: string, id: number, seed: number, x: number, depth: number, extra: Partial<Item> = {}): Item {
+export function makeItem(T: Tank, variant: string, id: number, seed: number, x: number, depth: number, extra: Partial<Item> = {}, g?: Ground): Item {
   const v = LIBRARY[variant];
   const it: Item = { id, kind: v.kind, variant, seed, x, depth, lift: 0, yaw: 0, pitch: 0, tilt: 0, size: v.size, ...extra };
-  clampItem(it, T);
+  clampItem(it, T, g);
   return it;
 }
 
@@ -217,20 +224,41 @@ export function starterItems(S: TankSetup): Item[] {
   if (id === 'none') return out;
   const r = rng(S.layout.seed * 7919 + id.length * 104729), sub = (x: number, d: number) => groundHeight(S, T, x, d);
   const seed = () => 1 + Math.floor(r() * 1e9);
-  const put = (variant: string, x: number, d: number, size: number, o: Partial<Item> = {}) => {
-    const it = makeItem(T, variant, out.length + 1, seed(), x, d, { yaw: Math.round((r() - 0.5) * 360), size: Math.round(size), ...o });
+  // The layouts are drawn on the L x D box. A round tank or bowl squeezes the box onto its disc of ground (elliptical
+  // grid mapping) instead of clamping each piece in, which piled a whole layout onto one ring round the middle
+  // (2026-10-12): the back row stays at the back, the corners land at the rim. A bowl's disc is the glass at the ground.
+  const bowl = shapeOf(T) === 'bowl', disc = radialTerrain(T);
+  const map = (x: number, d: number) => {
+    if (!disc) return { x, d };
+    const u = clamp(2 * x / L - 1, -1, 1), v = clamp(2 * d / D - 1, -1, 1), a = u * Math.sqrt(1 - v * v / 2), b = v * Math.sqrt(1 - u * u / 2);
+    let rx = L / 2, rd = D / 2;
+    if (bowl) for (let k = 0; k < 3; k++) rx = rd = bowlRadius(T, sub(L / 2 + a * rx, D / 2 + b * rd)) - 3;
+    return { x: L / 2 + a * rx, d: D / 2 + b * rd };
+  };
+  /** A piece at (x, d) on the box (`raw`: already a spot in the tank, e.g. on a piece placed before). */
+  const put = (variant: string, x: number, d: number, size: number, o: Partial<Item> = {}, raw = false) => {
+    const p = raw ? { x, d } : map(x, d);
+    const it = makeItem(T, variant, out.length + 1, seed(), p.x, p.d, { yaw: Math.round((r() - 0.5) * 360), size: Math.round(size), ...o }, S);
     out.push(it); return it;
   };
   const room = (x: number, d: number, lift = 0) => H - sub(x, d) - lift - 15; // headroom to the water line
-  /** A plant (crossed cards, facing the glass give or take 15°); too little headroom = left out. */
-  const plant = (type: PlantType, x: number, d: number, h: number, lift = 0) => {
-    const hh = Math.min(h, room(x, d, lift), (Math.min(L, D) - 6) * PLANT_ASPECT[type]);
-    if (hh > 15) put(type, x, d, hh, { yaw: Math.round((r() - 0.5) * 30), lift });
+  /** A plant (crossed cards, facing the glass give or take 15°); too little headroom = left out. In a bowl it is cut
+   *  down to fit under the sphere where it stands (to half its height at most; clampItem eases the rest in off the
+   *  glass), so plants rise towards the middle instead of all moving there. */
+  const plant = (type: PlantType, x: number, d: number, h: number, lift = 0, raw = false) => {
+    const p = raw ? { x, d } : map(x, d);
+    let hh = Math.min(h, room(p.x, p.d, lift), (Math.min(L, D) - 6) * PLANT_ASPECT[type]);
+    if (bowl) {
+      const { R, c } = bowlDims(T), y0 = sub(p.x, p.d) + lift, q0 = Math.hypot(p.x - L / 2, p.d - D / 2);
+      const h0 = hh;
+      for (let k = 0; k < 3; k++) { const q = q0 + hh / PLANT_ASPECT[type] / 2 + 3; hh = Math.max(h0 / 2, Math.min(hh, (q < R ? c + Math.sqrt(R * R - q * q) : 0) - y0)); }
+    }
+    if (hh > 15) put(type, p.x, p.d, hh, { yaw: Math.round((r() - 0.5) * 30), lift }, true);
   };
   const carpet = (d0: number, d1: number, skip?: (x: number, d: number) => boolean) => {
     for (let d = D * d0 + 45; d <= D * d1; d += 95) for (let x = 60 + r() * 30; x < L - 40; x += 115 + r() * 25) {
-      const xx = x + (r() - 0.5) * 30, dd = d + (r() - 0.5) * 20;
-      if (!skip?.(xx, dd)) put('carpet', xx, dd, 140 + r() * 30);
+      const p = map(x + (r() - 0.5) * 30, d + (r() - 0.5) * 20);
+      if (!skip?.(p.x, p.d)) put('carpet', p.x, p.d, 140 + r() * 30, {}, true);
     }
   };
 
@@ -257,7 +285,7 @@ export function starterItems(S: TankSetup): Item[] {
       placed.push([it.x, it.depth, h * 0.45]);
     }
     carpet(0.05, 0.95, (x, d) => placed.some(([px, pd, rr]) => Math.hypot(x - px, (d - pd) * 1.3) < rr + 40));
-    for (const [px, pd, rr] of placed) for (let i = 0; i < 3; i++) plant('grass', px + (r() - 0.5) * rr * 2.4, pd + rr * 0.8 + r() * 20, 60 + r() * 40);
+    for (const [px, pd, rr] of placed) for (let i = 0; i < 3; i++) plant('grass', px + (r() - 0.5) * rr * 2.4, pd + rr * 0.8 + r() * 20, 60 + r() * 40, 0, true);
   } else if (id === 'driftwood') {
     const flip = r() < 0.5, size = Math.min(L * 0.78, H * 0.82 / 0.68, D * 2.2);
     const wood = put('branch', L * 0.47, D * 0.62, size, { yaw: (flip ? 180 : 0) + Math.round((r() - 0.5) * 16) });
@@ -265,7 +293,7 @@ export function starterItems(S: TankSetup): Item[] {
     const limbs = woodLimbs('branch', wood.seed, wood.size), at = (k: number, t: number) => itemToTank(S, wood, along(limbs[k].pts, t));
     const tieOn = (type: PlantType, k: number, t: number, h: number, dd = 0) => {
       const p = at(k, t), g = sub(p.x, p.depth + dd), rad = limbs[k].r0;
-      plant(type, p.x, p.depth + dd, h, Math.max(0, p.y + rad * 0.2 - g));
+      plant(type, p.x, p.depth + dd, h, Math.max(0, p.y + rad * 0.2 - g), true);
     };
     for (const t of [0.25, 0.55]) tieOn('fern', 0, t, clamp(H * 0.4, 90, 220));
     for (const t of [0.4, 0.75]) tieOn('anubias', limbs.length - 1, t, clamp(H * 0.22, 60, 130), 10);
@@ -289,7 +317,7 @@ export function starterItems(S: TankSetup): Item[] {
     carpet(0.04, 0.34);
   } else if (id === 'swamp') {
     // land: emersed grasses, swords, ferns and a few stones; pools: stems and grass growing up out of the water
-    const land = (x: number, d: number) => sub(x, d) > H * 0.3;
+    const land = (x: number, d: number) => { const p = map(x, d); return sub(p.x, p.d) > H * 0.3; };
     for (let x = 25; x < L - 25; x += 45 + r() * 35) for (let d = D * 0.08; d < D * 0.97; d += 50 + r() * 30) {
       const xx = x + (r() - 0.5) * 30, dd = d + (r() - 0.5) * 25, k = r();
       if (land(xx, dd)) {

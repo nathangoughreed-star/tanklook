@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { defaultScene, defaultSetup } from '../src/scene/defaults';
 import { LIBRARY, clampItem, itemDims, makeItem, starterItems, woodLimbs } from '../src/scene/items';
 import { IN, rescaleTank } from '../src/scene/physics';
+import { bowlDims, bowlRadius, normTank } from '../src/scene/shape';
 import { Store } from '../src/scene/store';
+import { groundHeight } from '../src/scene/terrain';
 import { parseScene } from '../src/scene/validate';
 import { LAYOUT_IDS } from '../src/scene/validate';
 import { SCENE_VERSION, type LayoutId } from '../src/scene/types';
@@ -71,6 +73,26 @@ describe('aquascape items (scene v9)', () => {
       const a = woodLimbs(v, 5, 300);
       expect(a).toEqual(woodLimbs(v, 5, 300));
       for (const l of a) for (const p of l.pts) expect(p[1]).toBeGreaterThan(-0.01);
+    }
+  });
+  it('a bowl spreads its layout over the whole substrate, not a ring round the floor disc (2026-10-12)', () => {
+    for (const id of LAYOUT_IDS) {
+      if (id === 'none') continue;
+      const s = defaultSetup(); s.tank = normTank({ L: 16 * IN, H: 1, D: 1, shape: 'bowl' }); s.layout = { id, seed: 7 };
+      const T = s.tank, rb = bowlDims(T).rb, items = starterItems(s);
+      const q = (it: { x: number; depth: number }) => Math.hypot(it.x - T.L / 2, it.depth - T.D / 2);
+      // every anchor is inside the glass at its ground; a plant stays inside it over its whole height
+      for (const it of items) {
+        const y = groundHeight(s, T, it.x, it.depth) + Math.max(0, it.lift);
+        expect(q(it)).toBeLessThanOrEqual(bowlRadius(T, y) + 0.5);
+        if (it.kind === 'plant' && it.variant !== 'carpet') expect(q(it) + itemDims(it)[0] / 2).toBeLessThanOrEqual(bowlRadius(T, Math.min(y + it.size, T.H - 15)) + 0.5);
+      }
+      // and the pieces reach out past the floor disc, left and right, not one ring (stones is one central cluster anyway)
+      if (id !== 'stones') {
+        expect(items.filter(it => q(it) > rb).length).toBeGreaterThan(2);
+        expect(Math.min(...items.map(it => it.x))).toBeLessThan(T.L / 2 - rb * 0.9);
+        expect(Math.max(...items.map(it => it.x))).toBeGreaterThan(T.L / 2 + rb * 0.9);
+      }
     }
   });
   it('selecting an item clears the fish selection and the other way round; undo keeps it valid', () => {

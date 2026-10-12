@@ -523,21 +523,21 @@ Cancel, then change the name, to keep both.`)) return;
   const addItem = (variant: string) => {
     const id = store.nextItemId(), seed = 1 + Math.floor(Math.random() * 1e9), r = rng(seed);
     store.edit(s => {
-      const T = s.tank, it = makeItem(T, variant, id, seed, T.L / 2, T.D / 2, { yaw: LIBRARY[variant].kind === 'plant' ? 0 : Math.round((r() - 0.5) * 60) });
+      const T = s.tank, it = makeItem(T, variant, id, seed, T.L / 2, T.D / 2, { yaw: LIBRARY[variant].kind === 'plant' ? 0 : Math.round((r() - 0.5) * 60) }, s);
       let best = -1;
       for (let k = 0; k < 16; k++) {
         const x = T.L * (0.15 + r() * 0.7), d = T.D * (0.2 + r() * 0.6);
         const gap = Math.min(...s.items.filter(q => q.kind !== 'plant' || q.variant !== 'carpet').map(q => Math.hypot(q.x - x, q.depth - d)), 1e6) - Math.abs(x - T.L / 2) * 0.15;
         if (gap > best) { best = gap; it.x = x; it.depth = d; }
       }
-      clampItem(it, T); s.items.push(it);
+      clampItem(it, T, s); s.items.push(it);
     });
     store.selectItem(id); openSec('aquascape');
   };
   document.querySelectorAll<HTMLButtonElement>('[data-lib]').forEach(b => b.onclick = () => addItem(b.dataset.lib!));
   const editItem = (fn: (it: Item, s: TankSetup) => void, coalesce?: string) => {
     const id = store.selItem; if (id == null) return;
-    store.edit(s => { const it = s.items.find(q => q.id === id); if (it) { fn(it, s); clampItem(it, s.tank); } }, { coalesce });
+    store.edit(s => { const it = s.items.find(q => q.id === id); if (it) { fn(it, s); clampItem(it, s.tank, s); } }, { coalesce });
   };
   $('iSize').oninput = e => editItem(it => { it.size = +(e.target as HTMLInputElement).value; }, 'iSize');
   $('iYaw').oninput = e => editItem(it => { it.yaw = +(e.target as HTMLInputElement).value; }, 'iYaw');
@@ -552,7 +552,7 @@ Cancel, then change the name, to keep both.`)) return;
     if (axis === 'y') { it.lift += dir * step; return; }
     const y = groundHeight(s, s.tank, it.x, it.depth) + it.lift;
     if (axis === 'x') it.x += dir * step; else it.depth += dir * step;
-    clampItem(it, s.tank);
+    clampItem(it, s.tank, s);
     it.lift = y - groundHeight(s, s.tank, it.x, it.depth);
   }, 'nudge');
   document.querySelectorAll<HTMLButtonElement>('[data-nudge]').forEach(b => {
@@ -578,7 +578,7 @@ Cancel, then change the name, to keep both.`)) return;
     store.edit(s => {
       const it = s.items.find(q => q.id === src); if (!it) return;
       const n: Item = { ...it, id, x: it.x + Math.max(20, itemDims(it)[0] * 0.8), yaw: it.yaw + 25 };
-      clampItem(n, s.tank); s.items.push(n);
+      clampItem(n, s.tank, s); s.items.push(n);
     });
     store.selectItem(id);
   };

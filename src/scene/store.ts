@@ -141,7 +141,7 @@ export class Store {
       this.lastKey = opts.coalesce ?? null; this.lastTime = now;
     }
     fn(this.scene);
-    if (kind === 'scene') { for (const t of this.scene.tanks) { keepInWater(t); fitTable(t); for (const it of t.items) clampItem(it, t.tank); } clearCams(this.scene.tanks, this.scene.camLock); }
+    if (kind === 'scene') { for (const t of this.scene.tanks) { keepInWater(t); fitTable(t); for (const it of t.items) clampItem(it, t.tank, t); } clearCams(this.scene.tanks, this.scene.camLock); }
     if (this.selId != null && !this.tank.fish.some(f => f.id === this.selId)) this.selId = null;
     if (this.selItem != null && !this.tank.items.some(it => it.id === this.selItem)) this.selItem = null;
     this.emit(kind);

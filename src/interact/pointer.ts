@@ -158,12 +158,12 @@ export function attachPointer(viewer: Viewer, store: Store) {
       store.editTank(m.vp.i, t => {
         const it = t.items.find(q => q.id === m.id); if (!it) return;
         const y = groundHeight(t, t.tank, it.x, it.depth) + it.lift;
-        it.x = p.x; it.depth = -p.z; clampItem(it, t.tank);
+        it.x = p.x; it.depth = -p.z; clampItem(it, t.tank, t);
         it.lift = m.float ? y - groundHeight(t, t.tank, it.x, it.depth) : supportLift(m.vp, t, it.x, it.depth, m.skip);
         const top = groundHeight(t, t.tank, it.x, it.depth) + it.lift;
         for (const r of m.riders) {
           const q = t.items.find(z => z.id === r.id); if (!q) continue;
-          q.x = it.x + r.dx; q.depth = it.depth + r.dd; clampItem(q, t.tank);
+          q.x = it.x + r.dx; q.depth = it.depth + r.dd; clampItem(q, t.tank, t);
           q.lift = Math.max(0, top + r.dy - groundHeight(t, t.tank, q.x, q.depth));
         }
       }, { coalesce: 'item-drag' });
@@ -222,7 +222,7 @@ export function attachPointer(viewer: Viewer, store: Store) {
     const dir = Math.sign(e.deltaY || e.deltaX);
     if (store.selectedItem) { // turn the selected piece 15° a notch
       const id = store.selItem;
-      store.edit(t => { const it = t.items.find(q => q.id === id); if (it) { it.yaw = it.yaw + dir * 15; clampItem(it, t.tank); } }, { coalesce: 'wheel-turn' });
+      store.edit(t => { const it = t.items.find(q => q.id === id); if (it) { it.yaw = it.yaw + dir * 15; clampItem(it, t.tank, t); } }, { coalesce: 'wheel-turn' });
       return;
     }
     if (!store.selected) return;

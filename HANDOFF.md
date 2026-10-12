@@ -39,6 +39,12 @@ sizes adjustable. Built in a worktree because main holds other chats' WIP in the
   2026-10-12 later: glass snails, clinging fish and the snail drag plane tilt with the sphere (`glassFrame`: point on
   the glass at a height + 3D outward normal; deployed `f148646`). Not done: items near the floor edge sit on the
   unspread ground height; lighting spill uses the bounding-box ellipse (as round).
+- 2026-10-12, aquascape spread in bowls: plants and hardscape had been clamped to the floor disc (footprint), so a
+  layout piled into one ring at the middle. Now `clampItem(it, T, g)` takes the ground and, for a bowl, clamps to the
+  sphere's circle at the ground height (`clampGround` / `groundInsideBy` in terrain.ts; a plant stays inside over its
+  whole height). `starterItems` maps the L x D box onto the disc of ground (elliptical grid mapping) for round tanks
+  and bowls instead of clamping, and in a bowl shortens rim plants to fit under the sphere (to half height at most).
+  Carpet cards near the glass use the same ground-level edge. Terrain sculpting grid still spans only the floor disc.
 
 ## NEXT (Nathan 2026-10-09, closing session 11): 3D sequence
 

@@ -6,7 +6,7 @@ import { clamp, mapToTank } from './physics';
 import { normTank } from './shape';
 import { TABLE_MAX, fitTable } from './table';
 import { keepInWater } from './water';
-import { radialSize } from './terrain';
+import { radialSize, type Ground } from './terrain';
 import { SCENE_VERSION, type Fish, type Item, type Scene, type Tank, type TankSetup } from './types';
 
 export class SceneError extends Error {}
@@ -226,12 +226,12 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
     fish,
     items: [],
   };
-  setup.items = Array.isArray(raw.items) ? parseItems(raw.items, tankA, warn) : starterItems(setup);
+  setup.items = Array.isArray(raw.items) ? parseItems(raw.items, tankA, warn, setup) : starterItems(setup);
   keepInWater(setup); fitTable(setup);
   return setup;
 }
 
-function parseItems(raw: unknown[], T: Tank, warn: (m: string) => void): Item[] {
+function parseItems(raw: unknown[], T: Tank, warn: (m: string) => void, g: Ground): Item[] {
   const out: Item[] = [], seen = new Set<number>(), fin = (v: unknown, def: number) => (typeof v === 'number' && Number.isFinite(v) ? v : def);
   let nextId = 1, bad = 0;
   for (const o of raw) if (isObj(o) && typeof o.id === 'number') nextId = Math.max(nextId, o.id + 1);
@@ -245,7 +245,7 @@ function parseItems(raw: unknown[], T: Tank, warn: (m: string) => void): Item[] 
       x: fin(o.x, T.L / 2), depth: fin(o.depth, T.D / 2), lift: fin(o.lift, 0),
       yaw: Math.round(fin(o.yaw, 0)), pitch: Math.round(fin(o.pitch, 0)), tilt: Math.round(fin(o.tilt, 0)), size: fin(o.size, v.size),
     };
-    clampItem(it, T); out.push(it);
+    clampItem(it, T, g); out.push(it);
   }
   if (bad) warn(`${bad} unknown aquascape items were skipped.`);
   if (raw.length > MAX_ITEMS) warn(`Only the first ${MAX_ITEMS} aquascape items were loaded.`);
