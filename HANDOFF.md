@@ -112,6 +112,19 @@ The Pages certificate had never been issued (the site served GitHub's `*.github.
 error). Provisioning ran from Settings -> Pages once the custom domain was (re)checked; tanklook.com now
 serves a Let's Encrypt cert for `tanklook.com` + `www.tanklook.com`. Remaining: tick Enforce HTTPS once GitHub enables it.
 
+## Stocking list replaces per-fish chips (2026-10-09, Nathan; uncommitted, checked on the dev server)
+
+Nathan: no need to pick and place single fish; manage stocking by species and let the shuffle rules place them.
+The Fish section's chip per animal is gone; `#list` is one row per species (order of arrival): name, −, a count
+box, +. Add puts the picked species on the list (6 for a `group` species, else 1; already listed = a hint to use +).
+− from 1 or typing 0 takes the species off; re-adding goes through Add. "Add school ×" removed. Each count change
+(`setCount` in `panels.ts`, coalesced into one undo step per burst) adds or removes that species' last animals
+and re-places **only that species** with `shuffleFish(s, r, only)` (new param: everyone else stays put and is kept
+clear of). Shuffle still moves everyone. Canvas click / drag / the selected-fish controls are unchanged.
+Test: `scatter.test.ts` "moves only that species" (134/134).
+Possible next (Nathan's "gates and heatmaps"): per-species placement maps (e.g. near plants / caves, shade), today
+it is only `level` bands, `zone` bottom and school / shoal shapes.
+
 ## Shuffle button (2026-10-09, Nathan; uncommitted, not yet checked in the browser)
 
 "Shuffle" in the Fish section (next to Delete all) moves every animal to a fresh spot and pose, "a new slice in time";

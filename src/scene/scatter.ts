@@ -26,7 +26,8 @@ export function placeOnLand(s: TankSetup, sp: Species, f: Fish, r: () => number)
 }
 
 /** Move every animal in the tank to a new spot and pose under the rules above. */
-export function shuffleFish(s: TankSetup, r: () => number) {
+/** `only` = move just that species (e.g. after its count changed); everyone else stays put and is kept clear of. */
+export function shuffleFish(s: TankSetup, r: () => number, only?: string) {
   const A = s.tank, top = s.water.on ? waterY(A, s.water.level) : A.H - 10, g = (x: number, d: number) => groundHeight(s, A, x, d);
   const placed: { x: number; y: number; depth: number; w: number }[] = [];
   const note = (f: Fish, w: number) => placed.push({ x: f.x, y: f.y, depth: f.depth, w });
@@ -59,7 +60,10 @@ export function shuffleFish(s: TankSetup, r: () => number) {
   };
 
   const bySpecies = new Map<string, Fish[]>();
-  for (const f of s.fish) { const l = bySpecies.get(f.species); if (l) l.push(f); else bySpecies.set(f.species, [f]); }
+  for (const f of s.fish) {
+    if (only && f.species !== only) { const sp = getSpecies(f.species); if (sp) note(f, fishTL(f, sp)); continue; }
+    const l = bySpecies.get(f.species); if (l) l.push(f); else bySpecies.set(f.species, [f]);
+  }
   // groups first (they need the room), then the loners, which keep clear of everything already placed
   const groups = [...bySpecies.entries()].map(([id, fish]) => ({ sp: getSpecies(id)!, fish })).filter(e => e.sp)
     .sort((a, b) => +grouped(b.sp, b.fish.length) - +grouped(a.sp, a.fish.length));

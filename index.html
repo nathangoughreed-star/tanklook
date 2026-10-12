@@ -90,14 +90,13 @@
   <div id="spPreview" class="spCard" hidden><button id="spPreviewHide" class="spHide" title="Close preview" aria-label="Close preview">×</button>
     <div id="spPreviewArt" class="art"></div><div id="spPreviewName" class="name"></div><div id="spPreviewInfo" class="hint"></div></div>
   <div class="btns">
-    <button id="addFish" class="primary">Add</button>
-    <button id="addSchool">Add school ×</button><input id="schoolN" type="number" min="2" max="60" value="12" aria-label="School size" class="narrow">
+    <button id="addFish" class="primary" title="Add this species to the stocking list (a schooling species starts at 6)">Add</button>
     <span class="grow"></span>
     <button id="shuffle" title="Move every animal to a new spot, as if a moment later: bottom dwellers stay down, schools stay together">Shuffle</button>
     <button id="delAll">Delete all</button>
   </div>
   <div class="row"><label for="addSize">New fish size</label><input id="addSize" type="range" min="15" max="130" step="5" value="100"><output id="oAddSize"></output></div>
-  <div id="list" class="chips"></div>
+  <div id="list" class="stock" aria-label="Stocking"></div>
   <div class="field" id="aqRow"><span class="flabel">Stocking</span><button id="aqCheck" title="Ask AqAdvisor for this tank's stocking level (one request)">Check</button><span id="aqOut"></span><a id="aqLink" target="_blank" rel="noopener" title="Open this tank and stocking in AqAdvisor's calculator for the full report">AqAdvisor ↗</a></div>
   <div class="hint" id="aqNote"></div>
   <div id="selBox">
