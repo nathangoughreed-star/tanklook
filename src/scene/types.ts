@@ -68,6 +68,8 @@ export interface RenderSettings {
   edge: EdgeMode;
   grid: boolean;
   rim: boolean;
+  /** Thin black lines on every glass edge, inside and out (added 2026-10-12; older files: shown). */
+  edges: boolean;
   bg: Background;
   /** Sides the background covers (added 2026-10-12; older files: the side against the room wall, as it was then). */
   bgSides: BgSide[];

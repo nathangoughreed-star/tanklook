@@ -94,6 +94,9 @@ function flatGeometry(ring: P[], y: number) {
 const ringLines = (ring: P[], y: number) => ring.flatMap((p, i) => [...at(p, y), ...at(ring[(i + 1) % ring.length], y)]);
 
 
+/** The thin black line drawn on glass edges (render.edges). */
+const glassLine = () => new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.55, depthWrite: false });
+
 /** Height bands and segments round of a bowl's shell. */
 const BOWL_BANDS = 28, BOWL_SEG = 72;
 
@@ -140,9 +143,8 @@ function addBowl(sc: THREE.Scene, S: TankSetup, T: Tank, add: (geo: THREE.Buffer
     add(g.geometry(), front ? 6 : 5, front ? [...ringLines(circleRing(T, rIn(H), BOWL_SEG), H), ...ringLines(circleRing(T, rOut(H), BOWL_SEG), H)] : []);
   }
   add(prismGeometry(circleRing(T, rOut(0), BOWL_SEG), -t, 0), 5); // bottom pane, out to the shell's foot
-  const box: number[] = [...ringLines(circleRing(T, rIn(0), BOWL_SEG), 0), ...ringLines(circleRing(T, rIn(H), BOWL_SEG), H)];
-  if (c > 0 && c < H) box.push(...ringLines(circleRing(T, R, BOWL_SEG), c));
-  sc.add(lines(box, 0x7fb5a6, 0.35));
+  // the floor's edge inside (the opening's is on the lip); the equator is not an edge, so no line there
+  if (S.render.edges) sc.add(new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(ringLines(circleRing(T, rIn(0), BOWL_SEG), 0), 3)), glassLine()));
 }
 
 function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
@@ -167,13 +169,13 @@ function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
   const edgeM = lowIron
     ? basic(0xa9d3da, { transparent: true, opacity: 0.75, depthWrite: false })
     : basic(0x3f8f72, { transparent: true, opacity: 0.85, depthWrite: false });
-  // pane outlines: thin glass is often under a pixel thick, so its edge faces vanish; a line is always >= 1 px.
-  // Light lines read on dark backgrounds, dark lines on light ones (and on clear glass over the grey stage).
-  const lineCol = bg.light ? (lowIron ? 0x6f8f96 : 0x2f6f5a) : (lowIron ? 0xe2f3f6 : 0x8fd6bb);
-  const edgeLine = new THREE.LineBasicMaterial({ color: lineCol, transparent: true, opacity: 0.75, depthWrite: false });
+  // pane outlines (Glass edges on): thin glass is often under a pixel thick, so its edge faces vanish; a line is always
+  // >= 1 px. Thin black lines on every glass edge, inside and out (Nathan 2026-10-12)
+  const edgeLine = glassLine();
   // outline: line segments to draw instead of the geometry's own edges (a bowl's shell halves: the cut between them is not an edge)
   const add = (geo: THREE.BufferGeometry, ro: number, outline?: number[]) => {
     const g = new THREE.Mesh(geo, [faceM, edgeM]); g.renderOrder = ro; sc.add(g);
+    if (!R.edges) return;
     const eg = outline ? new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(outline, 3)) : new THREE.EdgesGeometry(geo, 20);
     const o = new THREE.LineSegments(eg, edgeLine); o.renderOrder = ro + 1; sc.add(o); // 20°: no seams between a curved shell's facets
   };
@@ -190,7 +192,7 @@ function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
     // interior outline: top and bottom loops, and the vertical corners where panes meet
     const box: number[] = [...ringLines(fp.ring, 0), ...ringLines(fp.ring, H)];
     if (fp.walls.length > 1) for (const w of fp.walls) box.push(...at(w.pts[0], 0), ...at(w.pts[0], H));
-    sc.add(lines(box, R.rim ? 0x55636f : 0x7fb5a6, 0.35));
+    if (R.edges) sc.add(new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(box, 3)), glassLine()));
     if (R.rim) {
       const rm = basic(0x1a1d21), r = t + 8, h = RIM_H, inner = fp.ring, rr = offsetRing(T, r);
       for (const y0 of [H - h + 2, -t - 2]) sc.add(new THREE.Mesh(wallGeometry([...inner, inner[0]], [...rr, rr[0]], y0, y0 + h, true), rm));
@@ -412,19 +414,19 @@ function addLid(sc: THREE.Scene, S: TankSetup, T: Tank) {
   const lowIron = S.render.glassType === 'lowiron';
   const faceM = basic(0xbfe0ee, { transparent: true, opacity: 0.1, depthWrite: false });
   const edgeM = basic(lowIron ? 0xa9d3da : 0x3f8f72, { transparent: true, opacity: 0.8, depthWrite: false });
-  const lineM = new THREE.LineBasicMaterial({ color: BACKGROUNDS[S.render.bg].light ? 0x2f6f5a : 0x8fd6bb, transparent: true, opacity: 0.7, depthWrite: false });
+  const lineM = glassLine(), edges = S.render.edges;
   if (shapeOf(T) !== 'rect') { // one plate cut to the outline (lifted off, not hinged); a bowl's covers its opening
     const ring = shapeOf(T) === 'bowl' ? circleRing(T, bowlDims(T).rt - inset) : offsetRing(T, -inset);
     const geo = prismGeometry(ring, y - pt / 2, y + pt / 2);
     const g = new THREE.Mesh(geo, [faceM, edgeM]); g.renderOrder = 7; sc.add(g);
-    const e = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 20), lineM); e.renderOrder = 8; sc.add(e);
+    if (edges) { const e = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 20), lineM); e.renderOrder = 8; sc.add(e); }
     return;
   }
   const w = (L - 2 * inset - gap) / 2, dp = D - 2 * inset;
   for (const cx of [inset + w / 2, L - inset - w / 2]) {
     const geo = new THREE.BoxGeometry(w, pt, dp), m = [edgeM, edgeM, faceM, faceM, edgeM, edgeM];
     const g = new THREE.Mesh(geo, m); g.position.set(cx, y, -D / 2); g.renderOrder = 7; sc.add(g);
-    const e = new THREE.LineSegments(new THREE.EdgesGeometry(geo), lineM); e.position.copy(g.position); e.renderOrder = 8; sc.add(e);
+    if (edges) { const e = new THREE.LineSegments(new THREE.EdgesGeometry(geo), lineM); e.position.copy(g.position); e.renderOrder = 8; sc.add(e); }
   }
   const hinge = shadedBox(L - 2 * inset, pt + 2, 12, 0x2b2e33); hinge.position.set(L / 2, y, -D * 0.38); sc.add(hinge); // back strip | front flap
 }
@@ -530,8 +532,17 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
     for (let k = 0; k < m; k++) {
       const p: P = [e.a[0] + (e.b[0] - e.a[0]) * k / m, e.a[1] + (e.b[1] - e.a[1]) * k / m], q: P = [e.a[0] + (e.b[0] - e.a[0]) * (k + 1) / m, e.a[1] + (e.b[1] - e.a[1]) * (k + 1) / m];
       const s0 = e.s0 + e.len * k / m, s1 = e.s0 + e.len * (k + 1) / m, gp = G(p), gq = G(q);
-      const pts: V3[] = [[p[0], 0, -p[1]], [q[0], 0, -q[1]], gq, gp], uv = [[s0, 0], [s1, 0], [s1, gq[1]], [s0, gp[1]]];
-      for (const i of [0, 1, 2, 0, 2, 3]) side.push(pts[i], [uv[i][0] / tile, uv[i][1] / tile]);
+      // a bowl: in bands up the curve of the glass (one straight strip would cut inside the sphere, a cone)
+      const bands = bowl ? 8 : 1, cx = L / 2, cd = D / 2;
+      const on = (c: P, top: number, j: number): V3 => {
+        const y = top * j / bands; if (!bowl || j === bands) return j === bands ? (c === p ? gp : gq) : [c[0], 0, -c[1]];
+        const f = (bowlRadius(T, y) - 0.5) / rb; return [cx + (c[0] - cx) * f, y, -(cd + (c[1] - cd) * f)];
+      };
+      for (let j = 0; j < bands; j++) {
+        const pts: V3[] = [on(p, gp[1], j), on(q, gq[1], j), on(q, gq[1], j + 1), on(p, gp[1], j + 1)];
+        const uv = [[s0, pts[0][1]], [s1, pts[1][1]], [s1, pts[2][1]], [s0, pts[3][1]]];
+        for (const i of [0, 1, 2, 0, 2, 3]) side.push(pts[i], [uv[i][0] / tile, uv[i][1] / tile]);
+      }
     }
   }
   const mk = (arr: number[][], shade: number, cols?: number[]) => {

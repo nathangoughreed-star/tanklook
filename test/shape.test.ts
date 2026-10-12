@@ -159,3 +159,13 @@ describe('background sides (2026-10-12)', () => {
     expect(s.render.bgSides).toEqual(['left']); expect(s.render.bgArc).toBe(145);
   });
 });
+
+describe('glass edges setting (2026-10-12)', () => {
+  it('older files show glass edges; hidden is kept', () => {
+    const t = structuredClone(defaultSetup()) as unknown as { render: Record<string, unknown> };
+    delete t.render.edges;
+    expect(parseScene({ version: 9, name: 'e', units: 'mm', tanks: [t] }).scene.tanks[0].render.edges).toBe(true);
+    t.render.edges = false;
+    expect(parseScene({ version: 9, name: 'e', units: 'mm', tanks: [t] }).scene.tanks[0].render.edges).toBe(false);
+  });
+});

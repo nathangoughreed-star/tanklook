@@ -129,6 +129,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('uIn').onclick = () => setUnits('in'); $('uCm').onclick = () => setUnits('cm');
   $('rimY').onclick = () => store.edit(s => { s.render.rim = true; });
   $('rimN').onclick = () => store.edit(s => { s.render.rim = false; });
+  $('edgesY').onclick = () => store.edit(s => { s.render.edges = true; });
+  $('edgesN').onclick = () => store.edit(s => { s.render.edges = false; });
   const LIDS = [['lidOpen', 'open'], ['lidGlass', 'glass'], ['lidHood', 'hood']] as const;
   const BG_BTNS = [['bgBack', 'back'], ['bgLeft', 'left'], ['bgRight', 'right'], ['bgFront', 'front']] as const;
   for (const [id, lid] of LIDS) $(id).onclick = () => store.edit(s => { s.lid = lid; });
@@ -615,6 +617,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     $('wtA').textContent = `≈ ${kgs(wt.total)} filled: water ${kgs(wt.water)} (${(u === 'in' ? wt.waterLitres / 3.785 : wt.waterLitres).toFixed(0)} ${u === 'in' ? 'gal' : 'L'}), substrate ${kgs(wt.substrate)}, glass ${kgs(wt.glass)}`;
     syncAq();
     $('rimY').classList.toggle('on', s.render.rim); $('rimN').classList.toggle('on', !s.render.rim);
+    $('edgesY').classList.toggle('on', s.render.edges); $('edgesN').classList.toggle('on', !s.render.edges);
     for (const [id, lid] of LIDS) $(id).classList.toggle('on', s.lid === lid);
     setVal('bgSel', s.render.bg);
     for (const [id, side] of BG_BTNS) { const on = s.render.bgSides.includes(side); $(id).classList.toggle('on', on); $(id).setAttribute('aria-pressed', String(on)); }
