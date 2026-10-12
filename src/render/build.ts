@@ -508,7 +508,7 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   type V3 = [number, number, number];
   const top: number[][] = [], side: number[][] = [], N = swamp ? 72 : 16, wy = waterY(T, S.water.level);
   // a bowl flares above its floor: the ground spreads out from the centre to meet the glass at its own height
-  const rb = shapeOf(T) === 'bowl' ? bowlDims(T).rb : 0;
+  const bowl = shapeOf(T) === 'bowl', rb = bowl ? bowlDims(T).rb : 0;
   const G = (p: P): V3 => flare(T, p[0], p[1], h(p[0], p[1]), rb);
   const P3 = (i: number, j: number): V3 => G([L * i / N, D * j / N]);
   // cheap slope shading: brightness from each cell's tilt toward a light above, front and left
