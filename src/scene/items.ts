@@ -301,6 +301,26 @@ export function starterItems(S: TankSetup): Item[] {
     plant('anubias', X(0.2), D * 0.55, clamp(H * 0.25, 60, 140));
     for (const fx of [0.04, 0.1, 0.9, 0.96]) plant('grass', X(fx), D * (0.85 + r() * 0.1), H * (0.8 + r() * 0.15));
     for (let i = 0; i < 8; i++) { const s = 12 + r() * 18; put('river', X(0.1 + r() * 0.3), D * (0.6 + r() * 0.3), s * 1.2); }
+  } else if (id === 'planted' && disc) {
+    // round tank or bowl: a planted mound, not rows along the back glass, which on a disc left the middle bare
+    // (2026-10-12). Tall stems in a cluster just behind the centre (tallest in its middle), swords, ferns and grass
+    // round it from side to side, anubias at the front sides, carpet across the front; the front middle stays open.
+    const cx = L / 2, cd = D / 2, rg = bowl ? bowlRadius(T, sub(cx, cd)) - 3 : Math.min(L, D) / 2;
+    const at = (a: number, k: number) => [cx + Math.sin(a) * k * rg, cd + Math.cos(a) * k * rg] as const; // a = 0: straight back
+    const STEMS: PlantType[] = ['stem', 'stemred', 'stem', 'grass', 'stem'], mr = 0.5 * rg, md = cd + 0.15 * rg;
+    const n = Math.max(5, Math.round(Math.PI * mr * mr / 3400)), turn = r() * 6;
+    for (let i = 0; i < n; i++) { // a sunflower spiral, jittered: evenly filled, no rows
+      const k = Math.sqrt((i + 0.5) / n), a = turn + i * 2.39996, x = cx + Math.sin(a) * k * mr + (r() - 0.5) * 25, d = md + Math.cos(a) * k * mr + (r() - 0.5) * 25;
+      plant(STEMS[(i + Math.floor(r() * 2)) % STEMS.length], x, d, (H - sub(x, d)) * (0.95 - 0.3 * k) * (0.9 + r() * 0.1), 0, true);
+    }
+    const ring = 0.72 * rg, m = Math.max(4, Math.round(1.5 * Math.PI * ring / 120));
+    for (let i = 0; i < m; i++) {
+      const a = -0.75 * Math.PI + 1.5 * Math.PI * (i + 0.5) / m + (r() - 0.5) * 0.15, [x, d] = at(a, ring / rg + (r() - 0.5) * 0.1), k = r();
+      const t: PlantType = k < 0.45 ? 'sword' : k < 0.7 ? 'fern' : 'grass';
+      plant(t, x, d, t === 'sword' ? clamp(H * 0.5, 100, 320) : t === 'fern' ? clamp(H * 0.35, 80, 220) : H * (0.35 + r() * 0.15), 0, true);
+    }
+    for (const s of [-1, 1]) { const [x, d] = at(s * 0.68 * Math.PI, 0.82); plant('anubias', x, d, clamp(H * 0.2, 60, 130), 0, true); }
+    carpet(0.04, 0.34);
   } else if (id === 'planted') {
     const BACK: PlantType[] = ['stem', 'stemred', 'grass', 'stem', 'stemred', 'stem'];
     const n = Math.max(4, Math.round(L / 70));

@@ -45,6 +45,9 @@ sizes adjustable. Built in a worktree because main holds other chats' WIP in the
   whole height). `starterItems` maps the L x D box onto the disc of ground (elliptical grid mapping) for round tanks
   and bowls instead of clamping, and in a bowl shortens rim plants to fit under the sphere (to half height at most).
   Carpet cards near the glass use the same ground-level edge. Terrain sculpting grid still spans only the floor disc.
+  Then (Nathan: "now plants aren't generating in the center"): Planted on a disc (round tank or bowl) is its own
+  arrangement, as the rows along the back glass became an arc round the rim with a bare middle: a sunflower-spiral
+  mound of stems just behind the centre, swords / ferns / grass round it, anubias front sides, carpet front.
 
 ## NEXT (Nathan 2026-10-09, closing session 11): 3D sequence
 

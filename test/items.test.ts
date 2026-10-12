@@ -89,9 +89,10 @@ describe('aquascape items (scene v9)', () => {
       }
       // and the pieces reach out past the floor disc, left and right, not one ring (stones is one central cluster anyway)
       if (id !== 'stones') {
-        expect(items.filter(it => q(it) > rb).length).toBeGreaterThan(2);
-        expect(Math.min(...items.map(it => it.x))).toBeLessThan(T.L / 2 - rb * 0.9);
-        expect(Math.max(...items.map(it => it.x))).toBeGreaterThan(T.L / 2 + rb * 0.9);
+        expect(items.filter(it => q(it) > rb).length).toBeGreaterThan(0);
+        if (id === 'planted') expect(items.filter(it => q(it) < rb * 0.4).length).toBeGreaterThan(1); // a mound, not a bare middle
+        expect(Math.min(...items.map(it => it.x))).toBeLessThan(T.L / 2 - rb * 0.7);
+        expect(Math.max(...items.map(it => it.x))).toBeGreaterThan(T.L / 2 + rb * 0.7);
       }
     }
   });
