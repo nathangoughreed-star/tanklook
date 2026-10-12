@@ -222,6 +222,17 @@ export class Viewer {
     return { vp, ray: this.ray.ray.clone(), ...none, fishId: o && o.userData.item == null ? (o.userData.id as number) : null, itemId: o?.userData.item ?? null, mesh: o as THREE.Mesh | undefined };
   }
 
+  /** Small JPEG of the current view for the saved-tanks list (drawn and read in one go: no preserved buffer needed). */
+  thumbnail(w = 320): string {
+    this.draw();
+    const c = this.canvas, t = document.createElement('canvas');
+    t.width = w; t.height = Math.max(1, Math.round(w * c.height / c.width));
+    const g = t.getContext('2d')!;
+    g.imageSmoothingQuality = 'high';
+    g.drawImage(c, 0, 0, t.width, t.height);
+    return t.toDataURL('image/jpeg', 0.75);
+  }
+
   // ---------- Export: render bigger, then save ----------
   exportPNG(mult: number): Promise<Blob> {
     const dpr = this.renderer.getPixelRatio();

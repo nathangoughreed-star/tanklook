@@ -28,6 +28,7 @@ import { BOWL_DEFAULT, BOWL_MAX, BOWL_MIN, POLY_SIDES, SHAPES, bowMinLimit, offs
 import { TABLE_MAX, tableRange } from '../scene/table';
 import type { Fish, Item, ItemKind, LayoutId, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
 import { GLASS_CHOICES, LIMITS, SceneError, parseScene } from '../scene/validate';
+import { deleteFromLib, listLib, loadFromLib, saveToLib } from '../scene/library';
 
 const $ = <T extends HTMLElement = HTMLInputElement>(id: string) => document.getElementById(id) as T;
 /** ?debug in the URL shows calibration readouts (apparent-size maths) in the fish readout. */
@@ -60,30 +61,79 @@ export function attachPanels(store: Store, viewer: Viewer) {
     if (G().tanks.some(t => t.fish.length) && !confirm('Start a new, empty tank? (Undo brings this one back.)')) return;
     const s = defaultScene(); s.tanks[0].fish = []; s.name = 'New tank';
     s.tanks[0].camera = { ...S().camera }; s.units = G().units;
-    store.replace(s); status('New tank. Undo brings the previous one back.');
+    store.replace(s); setLibId(null); status('New tank. Undo brings the previous one back.');
   };
-  $('openScene').onclick = () => $('fileIn').click();
+  // Open… shows the tanks saved in this browser (with pictures) and the way to open a downloaded file
+  const dlg = $<HTMLDialogElement>('libDlg');
+  $('openScene').onclick = () => { renderLib(); dlg.showModal(); };
+  $('openFile').onclick = () => { dlg.close(); $('fileIn').click(); };
   $('fileIn').onchange = async () => {
     const input = $('fileIn'), file = input.files?.[0]; input.value = '';
     if (!file) return;
     if (file.size > 5e6) { status('That file is too large to be a scene (over 5 MB).', true); return; }
     try {
       const { scene, warnings } = parseScene(await file.text());
-      store.replace(scene);
+      store.replace(scene); setLibId(null);
       status(`Opened "${scene.name}".` + (warnings.length ? ' ' + warnings.join(' ') : ''), warnings.length > 0);
     } catch (e) {
       status(e instanceof SceneError ? e.message : 'Could not open that file.', true);
     }
   };
+  /** The browser-saved tank this scene came from (or was last saved as): Save updates it without asking. */
+  const LIB_CUR = 'tanklook.libCurrent';
+  const libId = () => { try { return localStorage.getItem(LIB_CUR); } catch { return null; } };
+  const setLibId = (id: string | null) => { try { if (id) localStorage.setItem(LIB_CUR, id); else localStorage.removeItem(LIB_CUR); } catch { /* ignore */ } };
+  const when = (t: number) => new Date(t).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+  function renderLib() {
+    const list = listLib(), box = $<HTMLDivElement>('libList');
+    box.innerHTML = list.length ? list.map(e =>
+      `<div class="libcard"><button class="libopen" data-lib="${esc(e.id)}" title="Open “${esc(e.name)}”">` +
+      `<img src="${esc(e.thumb)}" alt="" loading="lazy"><b>${esc(e.name)}</b>` +
+      `<span class="hint">${esc(when(e.saved))}${e.tanks > 1 ? ' · 2 tanks' : ''}</span></button>` +
+      `<button class="libdel" data-libdel="${esc(e.id)}" title="Delete “${esc(e.name)}” from this browser" aria-label="Delete ${esc(e.name)}">×</button></div>`).join('')
+      : '<p class="hint">No tanks saved in this browser yet. <i>Save</i> puts the current tank here.</p>';
+  }
+  $('libList').onclick = e => {
+    const t = e.target as HTMLElement, del = t.closest<HTMLButtonElement>('[data-libdel]'), op = t.closest<HTMLButtonElement>('[data-lib]');
+    if (del) {
+      const id = del.dataset.libdel!, ent = listLib().find(x => x.id === id);
+      if (!ent || !confirm(`Delete “${ent.name}” from this browser? This can’t be undone.`)) return;
+      deleteFromLib(id); if (libId() === id) setLibId(null); renderLib();
+      return;
+    }
+    if (!op) return;
+    try {
+      const { scene, warnings } = loadFromLib(op.dataset.lib!);
+      store.replace(scene); setLibId(op.dataset.lib!); dlg.close();
+      status(`Opened "${scene.name}". Undo brings the previous one back.` + (warnings.length ? ' ' + warnings.join(' ') : ''), warnings.length > 0);
+    } catch (err) {
+      status(err instanceof SceneError ? err.message : 'Could not open that tank.', true); renderLib();
+    }
+  };
+  // Save: into this browser under the scene's name. Same name as the tank it came from: updated in place; same name
+  // as a different saved tank: ask before replacing it; a new name: a new entry (the old one is kept).
+  $('saveScene').onclick = () => {
+    const g = G(), list = listLib(), cur = libId(), same = list.find(x => x.name === g.name);
+    if (same && same.id !== cur && !confirm(`A different tank called “${g.name}” is already saved in this browser (${when(same.saved)}). Replace it?
+
+Cancel, then change the name, to keep both.`)) return;
+    try {
+      const e = saveToLib(g, viewer.thumbnail(), same?.id);
+      setLibId(e.id);
+      status(`Saved “${e.name}” in this browser (${list.length + (same ? 0 : 1)} saved). Download keeps a file you can back up or share.`);
+    } catch (err) {
+      status((err as Error).message, true);
+    }
+  };
   const saveFile = (scene: Scene) => download(new Blob([JSON.stringify(scene, null, 1)], { type: 'application/json' }), `${slug(scene.name)}.json`);
   // the whole scene: with split tanks, one file holding both (opens split again)
-  $('saveScene').onclick = () => saveFile(G());
+  $('downloadScene').onclick = () => saveFile(G());
   /** One tank of a split on its own, as an ordinary single-tank file (Nathan 2026-10-08). */
   const saveTank = (i: number) => {
     const g = G(), t = g.tanks[i]; if (!t) return;
     const name = `${g.name} - Tank ${'AB'[i]}`.slice(0, 80);
     saveFile({ ...g, name, tanks: [structuredClone(t)], active: 0, camLock: true });
-    status(`Saved Tank ${'AB'[i]} on its own as "${name}".`);
+    status(`Downloaded Tank ${'AB'[i]} on its own as "${name}".`);
   };
   $('sceneName').onchange = () => {
     const v = $('sceneName').value.trim().slice(0, 80) || 'My tank';
@@ -771,7 +821,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
       : 'Distance is from your eye to the front glass, the same for every tank. Zoom only crops; it never changes perspective.';
 
     ($('split') as HTMLButtonElement).disabled = store.split;
-    $('splitHint').textContent = store.split ? 'Each view’s tab (top of the view) opens on hover: what differs, Save that tank on its own, or Delete it. Save… at the top saves both in one file.' : 'Copy this tank into a second, independent one beside it, then change anything in either.';
+    $('splitHint').textContent = store.split ? 'Each view’s tab (top of the view) opens on hover: what differs, Download that tank on its own, or Delete it. Save and Download at the top keep both tanks together.' : 'Copy this tank into a second, independent one beside it, then change anything in either.';
     setVal('edge', s.render.edge); $('gridOn').checked = s.render.grid; 
     setVal('layout', s.layout.id); $('layoutHint').textContent = LAYOUTS[s.layout.id].hint + ' Then move, add or remove any piece.';
     ($('layoutShuffle') as HTMLButtonElement).disabled = s.layout.id === 'none';
@@ -846,7 +896,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
         // The second row stays folded until the tab is hovered (Nathan 2026-10-09); the ▾ hint carries the count.
         const hint = `<span class="more" aria-hidden="true">${diff.length ? `${diff.length} diff${diff.length === 1 ? '' : 's'} ` : ''}▾</span>`;
         el.innerHTML = `<div class="hd">${aqChip(vp.S, vp.key, i)}${hint}${box}</div>` + `<div class="diffs">${diff.map((d, k) => `<span>${esc(d[i])}<button class="match" data-match="${i},${k}" title="Make Tank ${vp.key} match Tank ${active[1 - i].key} here" aria-label="Match the other tank: ${esc(d[i])}">×</button></span>`).join('')}` +
-          `<div class="acts"><button class="close" data-save="${i}" title="Save Tank ${vp.key} on its own as a single-tank file">Save</button>` +
+          `<div class="acts"><button class="close" data-save="${i}" title="Download Tank ${vp.key} on its own as a single-tank file">Download</button>` +
           `<button class="close" data-delete="${i}" title="Delete Tank ${vp.key} and end the split view (Ctrl+Z brings it back)">Delete</button></div></div>`;
       }
       const lock = $<HTMLButtonElement>('camLock');
@@ -913,7 +963,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     clearTimeout(saveTimer);
     saveTimer = window.setTimeout(() => {
       store.saveLocal();
-      $('saveState').textContent = 'Saved in this browser';
+      $('saveState').textContent = 'Autosaved';
     }, 400);
   });
 

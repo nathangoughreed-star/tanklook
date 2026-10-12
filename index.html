@@ -22,10 +22,17 @@
     <button id="redo" title="Redo (Ctrl+Shift+Z)" aria-label="Redo">↷ Redo</button>
     <span class="grow"></span>
     <button id="newScene" title="Start a new, empty tank">New</button>
-    <button id="openScene" title="Open a saved tank (.json) file">Open…</button>
-    <button id="saveScene" title="Download this scene as a .json file">Save…</button>
-    <input id="fileIn" type="file" accept=".tank,.json" hidden>
+    <button id="openScene" title="Open a tank saved in this browser, or a downloaded file">Open…</button>
+    <button id="saveScene" title="Save this tank in this browser, with a picture (Open… lists them)">Save</button>
+    <button id="downloadScene" title="Download this tank as a .json file to back up or share">Download</button>
+    <input id="fileIn" type="file" accept=".json,.tank" hidden>
   </div>
+  <dialog id="libDlg" class="libdlg" aria-labelledby="libTitle">
+    <form method="dialog" class="libhead"><h2 id="libTitle">Open a tank</h2><button value="close" aria-label="Close">✕</button></form>
+    <p class="hint">Saved in this browser only: clearing site data removes them, and Safari clears them after 7 days without a visit. <i>Download</i> keeps a file.</p>
+    <div id="libList" class="libgrid"></div>
+    <div class="btns"><button id="openFile">Open a downloaded file…</button></div>
+  </dialog>
   <div class="namerow"><input id="sceneName" type="text" maxlength="80" aria-label="Scene name"><span id="saveState" class="hint"></span></div>
   <div id="status" class="status" role="status" hidden></div>
   <div id="editing" class="editing" hidden></div>
@@ -34,10 +41,10 @@
     <ul class="hint">
       <li><b>Drag empty space</b> to look around the tank; <b>wheel</b> zooms; <b>click</b> empty space to deselect, <b>double-click</b> it for straight-on.</li>
       <li><b>Drag a fish</b> to move it: parallel to the glass when viewed from the front, across the floor plan from above, front/back from the side.</li>
-      <li><b>Split tank</b> (Compare) makes an independent copy beside this one; <b>click a view</b> to edit that tank. The padlock between the views links or frees their cameras. <i>Save…</i> keeps both tanks in one file; <i>Save</i> on a view's tab saves that tank on its own.</li>
+      <li><b>Split tank</b> (Compare) makes an independent copy beside this one; <b>click a view</b> to edit that tank. The padlock between the views links or frees their cameras. <i>Save</i> and <i>Download</i> keep both tanks together; <i>Download</i> on a view's tab saves that tank on its own.</li>
       <li><b>Shift + wheel</b> moves the selected fish forward/back. <b>Del</b> deletes, <b>F</b> flips, <b>Ctrl+D</b> duplicates, <b>Ctrl+Z</b> undoes.</li>
       <li>Fish are drawn at adult size. A fish further back looks smaller exactly as it would through real glass at the viewing distance below.</li>
-      <li>Your tank is saved in this browser automatically. Use <i>Save…</i> to keep a file or share it.</li>
+      <li>Your current tank is kept in this browser automatically. <i>Save</i> adds it, with a picture, to the tanks <i>Open…</i> lists; <i>Download</i> keeps a file to back up or share (browser saves are lost if site data is cleared).</li>
     </ul>
   </details>
 

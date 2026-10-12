@@ -186,3 +186,17 @@ footer { margin-top: 18px }
 .row output.typein { cursor: text; border-radius: 3px; padding: 1px 3px }
 .row output.typein:hover, .row output.typein:focus-visible { background: var(--chip); outline: 1px solid var(--line) }
 .row .typeinBox { width: 100%; padding: 1px 4px; text-align: right; font-variant-numeric: tabular-nums }
+
+/* Open…: tanks saved in this browser */
+.libdlg { width: min(640px, calc(100vw - 32px)); max-height: calc(100vh - 48px); padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--ink) }
+.libdlg::backdrop { background: rgb(0 0 0 / .45) }
+.libhead { display: flex; align-items: center; justify-content: space-between; margin: 0 0 4px }
+.libhead h2 { margin: 0; font-size: 15px }
+.libgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; margin: 8px 0; overflow-y: auto; max-height: calc(100vh - 220px) }
+.libcard { position: relative }
+.libopen { display: flex; flex-direction: column; gap: 2px; width: 100%; padding: 4px; text-align: left; background: var(--chip) }
+.libopen:hover { border-color: var(--accent) }
+.libopen img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 3px; background: var(--bg) }
+.libopen b { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.libdel { position: absolute; top: 8px; right: 8px; padding: 0 6px; line-height: 20px; background: rgb(0 0 0 / .55); color: #fff; border-color: transparent }
+.libdel:hover { background: var(--bad) }
