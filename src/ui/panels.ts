@@ -88,7 +88,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     const list = listLib(), box = $<HTMLDivElement>('libList');
     box.innerHTML = list.length ? list.map(e =>
       `<div class="libcard"><button class="libopen" data-lib="${esc(e.id)}" title="Open “${esc(e.name)}”">` +
-      `<img src="${esc(e.thumb)}" alt="" loading="lazy"><b>${esc(e.name)}</b>` +
+      (e.thumb ? `<img src="${esc(e.thumb)}" alt="" loading="lazy">` : '<span class="nothumb">No picture</span>') + `<b>${esc(e.name)}</b>` +
       `<span class="hint">${esc(when(e.saved))}${e.tanks > 1 ? ' · 2 tanks' : ''}</span></button>` +
       `<button class="libdel" data-libdel="${esc(e.id)}" title="Delete “${esc(e.name)}” from this browser" aria-label="Delete ${esc(e.name)}">×</button></div>`).join('')
       : '<p class="hint">No tanks saved in this browser yet. <i>Save</i> puts the current tank here.</p>';
@@ -118,7 +118,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
 
 Cancel, then change the name, to keep both.`)) return;
     try {
-      const e = saveToLib(g, viewer.thumbnail(), same?.id);
+      let thumb = ''; try { thumb = viewer.thumbnail(); } catch { /* no picture: still save the tank */ }
+      const e = saveToLib(g, thumb, same?.id);
       setLibId(e.id);
       status(`Saved “${e.name}” in this browser (${list.length + (same ? 0 : 1)} saved). Download keeps a file you can back up or share.`);
     } catch (err) {

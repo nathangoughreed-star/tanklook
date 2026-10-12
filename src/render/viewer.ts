@@ -222,10 +222,12 @@ export class Viewer {
     return { vp, ray: this.ray.ray.clone(), ...none, fishId: o && o.userData.item == null ? (o.userData.id as number) : null, itemId: o?.userData.item ?? null, mesh: o as THREE.Mesh | undefined };
   }
 
-  /** Small JPEG of the current view for the saved-tanks list (drawn and read in one go: no preserved buffer needed). */
+  /** Small JPEG of the current view for the saved-tanks list (drawn and read in one go: no preserved buffer needed).
+   *  '' when there is nothing to picture (view collapsed or hidden): the save goes ahead without one. */
   thumbnail(w = 320): string {
     this.draw();
     const c = this.canvas, t = document.createElement('canvas');
+    if (!c.width || !c.height) return '';
     t.width = w; t.height = Math.max(1, Math.round(w * c.height / c.width));
     const g = t.getContext('2d')!;
     g.imageSmoothingQuality = 'high';
