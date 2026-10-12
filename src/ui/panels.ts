@@ -327,10 +327,15 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // 'bare' = bare-bottom glass (substrate.show off; the last type is kept for when it comes back)
   $<HTMLSelectElement>('subType').innerHTML = '<option value="bare">Bare bottom (no substrate)</option>' +
     Object.entries(SUBSTRATES).map(([k, t]) => `<option value="${k}">${esc(t.label)}</option>`).join('');
-  $<HTMLSelectElement>('subType').onchange = e => store.edit(s => {
-    const v = (e.target as HTMLSelectElement).value;
-    s.substrate.show = v !== 'bare'; if (v !== 'bare') s.substrate.type = v as TankSetup['substrate']['type'];
-  });
+  $<HTMLSelectElement>('subType').onchange = e => {
+    const v = (e.target as HTMLSelectElement).value, bare = v === 'bare';
+    store.edit(s => {
+      s.substrate.show = !bare; if (!bare) s.substrate.type = v as TankSetup['substrate']['type'];
+      // custom terrain is ground too, so a bare bottom turns it off (its grid is kept for when it comes back)
+      if (bare) s.terrain.on = false;
+    });
+    if (bare && viewer.terrainEdit.on) { viewer.terrainEdit.on = false; viewer.rebuild(); }
+  };
   const SUBK = { subFL: 'fl', subFR: 'fr', subBL: 'bl', subBR: 'br' } as const;
   for (const [id, k] of Object.entries(SUBK)) $(id).oninput = e => store.edit(s => { s.substrate[k] = +(e.target as HTMLInputElement).value; }, { coalesce: id });
   const subSet = (fl: number, fr: number, bl: number, br: number) => store.edit(s => {
@@ -349,6 +354,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
       // turning on starts from the floor you see (slopes or swamp land); a grid kept from before is reused
       if (on && !s.terrain.h.length) s.terrain = sampleTerrain(s, s.tank, s.terrain.cols);
       s.terrain.on = on;
+      if (on) s.substrate.show = true; // shaped ground on a bare bottom: bring back the last substrate type
     });
     viewer.terrainEdit.on = on; viewer.rebuild();
   };
