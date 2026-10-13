@@ -20,7 +20,7 @@ import { SWAMP_LEVEL, groundHeight, nearestLand, sameGrid, sampleTerrain } from 
 
 /** Arrow keys move the selected piece: [axis, direction] (depth grows toward the back). */
 const ARROWS: Record<string, [string, number]> = { ArrowLeft: ['x', -1], ArrowRight: ['x', 1], ArrowUp: ['d', 1], ArrowDown: ['d', -1], PageUp: ['y', 1], PageDown: ['y', -1] };
-import { randomPose, randomSize, shuffleFish } from '../scene/scatter';
+import { placeNew, randomPose, randomSize, shuffleFish } from '../scene/scatter';
 import { fitFish, setWaterLevel } from '../scene/water';
 import { tankWeight } from '../scene/weight';
 import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, aqWaitS, fetchStocking } from '../data/aqadvisor';
@@ -67,17 +67,33 @@ export function attachPanels(store: Store, viewer: Viewer) {
   const dlg = $<HTMLDialogElement>('libDlg');
   $('openScene').onclick = () => { renderLib(); dlg.showModal(); };
   $('openFile').onclick = () => { dlg.close(); $('fileIn').click(); };
+  // Opening rebuilds the tank in one blocking frame (several seconds for a full tank): show the spinner, let it paint,
+  // then open; it clears on the first draw after, which is the one that built the tank.
+  const busy = $('busy');
+  let busyArmed = false;
+  viewer.onDrawn(() => { if (busyArmed) { busyArmed = false; busy.hidden = true; } });
+  /** `open` returns false when it could not open (it reports why itself). */
+  const whileOpening = (name: string, open: () => boolean) => {
+    $('busyText').textContent = `Opening “${name}”…`; busy.hidden = false;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (open()) { busyArmed = true; viewer.invalidate(); } else busy.hidden = true;
+    }));
+  };
   $('fileIn').onchange = async () => {
     const input = $('fileIn'), file = input.files?.[0]; input.value = '';
     if (!file) return;
     if (file.size > 5e6) { status('That file is too large to be a scene (over 5 MB).', true); return; }
-    try {
-      const { scene, warnings } = parseScene(await file.text());
-      store.replace(scene); setLibId(null);
-      status(`Opened "${scene.name}".` + (warnings.length ? ' ' + warnings.join(' ') : ''), warnings.length > 0);
-    } catch (e) {
-      status(e instanceof SceneError ? e.message : 'Could not open that file.', true);
+    let parsed: ReturnType<typeof parseScene>;
+    try { parsed = parseScene(await file.text()); } catch (e) {
+      status(e instanceof SceneError ? e.message : 'Could not open that file.', true); return;
     }
+    const { scene, warnings } = parsed;
+    whileOpening(scene.name, () => {
+      try { store.replace(scene); } catch { status('Could not open that file.', true); return false; }
+      setLibId(null);
+      status(`Opened "${scene.name}".` + (warnings.length ? ' ' + warnings.join(' ') : ''), warnings.length > 0);
+      return true;
+    });
   };
   /** The browser-saved tank this scene came from (or was last saved as): Save updates it without asking. */
   const LIB_CUR = 'tanklook.libCurrent';
@@ -102,13 +118,18 @@ export function attachPanels(store: Store, viewer: Viewer) {
       return;
     }
     if (!op) return;
-    try {
-      const { scene, warnings } = loadFromLib(op.dataset.lib!);
-      store.replace(scene); setLibId(op.dataset.lib!); dlg.close();
-      status(`Opened "${scene.name}". Undo brings the previous one back.` + (warnings.length ? ' ' + warnings.join(' ') : ''), warnings.length > 0);
-    } catch (err) {
-      status(err instanceof SceneError ? err.message : 'Could not open that tank.', true); renderLib();
-    }
+    const id = op.dataset.lib!;
+    dlg.close();
+    whileOpening(listLib().find(x => x.id === id)?.name ?? 'tank', () => {
+      try {
+        const { scene, warnings } = loadFromLib(id);
+        store.replace(scene); setLibId(id);
+        status(`Opened "${scene.name}". Undo brings the previous one back.` + (warnings.length ? ' ' + warnings.join(' ') : ''), warnings.length > 0);
+        return true;
+      } catch (err) {
+        status(err instanceof SceneError ? err.message : 'Could not open that tank.', true); return false;
+      }
+    });
   };
   // Save: into this browser under the scene's name. Same name as the tank it came from: updated in place; same name
   // as a different saved tank: ask before replacing it; a new name: a new entry (the old one is kept).
@@ -332,23 +353,24 @@ Cancel, then change the name, to keep both.`)) return;
   /** Is this fish in the species' list row? A dimorphic species has a row per sex. */
   const inRow = (f: Fish, sp: Species, sex?: Sex) => f.species === sp.id && (!sp.female || (f.sex === 'f') === (sex === 'f'));
   /** Set how many of a species each edited tank holds (`to` gets the tank's current count). New animals take the
-   *  species' sizes from "New fish size"; that species alone is re-placed by the shuffle rules (level, school, floor),
-   *  everyone else stays put. 0 takes the species off the list. One undo step per burst of clicks. */
+   *  species' sizes from "New fish size"; only they are placed (joining their species' school if it is already in the
+   *  tank, else by the shuffle rules), everyone else stays put (Nathan 2026-10-13). 0 takes the species off the list.
+   *  One undo step per burst of clicks. */
   function setCount(sp: Species, to: (n: number) => number, sex?: Sex) {
     const want = Math.round(to(S().fish.filter(f => inRow(f, sp, sex)).length));
     if (want > 0) { const why = blocked(sp); if (why) { status(why, true); renderResults(); return; } }
     const first = store.nextId(), seed = Math.random() * 1e9;
     store.edit(s => {
-      const r = rng(seed), mine = s.fish.filter(f => inRow(f, sp, sex));
+      const r = rng(seed), mine = s.fish.filter(f => inRow(f, sp, sex)), added = new Set<number>();
       const n = clamp(Math.round(to(mine.length)), 0, mine.length + LIMITS.maxFish - s.fish.length);
       if (n === mine.length) return;
       if (n < mine.length) { const drop = new Set(mine.slice(n).map(f => f.id)); s.fish = s.fish.filter(f => !drop.has(f.id)); return; }
       for (let id = first; mine.length < n; id++) {
         const f: Fish = { id, species: sp.id, x: s.tank.L / 2, y: 0, depth: s.tank.D / 2, ...randomPose(sp, r, 0), ...(sex && sp.female ? { sex } : {}) };
         randomSize(f, sp, addPct(), r);
-        mine.push(f); s.fish.push(f);
+        mine.push(f); s.fish.push(f); added.add(id);
       }
-      shuffleFish(s, r, sp.id);
+      placeNew(s, r, added);
     }, { coalesce: `count:${sp.id}:${sex ?? ''}` });
     if (store.selId != null && !S().fish.some(f => f.id === store.selId)) store.select(null);
   }
