@@ -57,6 +57,13 @@ model); LED bar = one such wedge per row of emitters (outline of a row of identi
 whole (light missing the tank shows), inside clipped at the glass (footprint planes; a bowl discards outside its sphere);
 the substrate hides the rest, leaving the footprint. Note: a raised tube's model beam is very wide, so its overlay is a
 big sheet above the rim; that is the model, not the overlay (tube cone [0.45, -0.15] may be worth narrowing later).
+- Same day, made a working view (Nathan: "turned on, lighting tweaked, then turned off, so it doesn't have to be subtle"):
+  bold yellow beams above the rim (opacity 0.3, faint 0.1 inside), drawn once as a union (stencil) so crossing beams
+  don't darken, orange outline (sides down to the rim, ring at the rim). A **hit map** on every lit surface in the tank
+  (`aqHits` in the light shader; uniforms `uBm`/`uBmN`/`uBmCos`, set by `setLightUniforms(..., beams)`): counts the beams
+  reaching each point (same half-strength angle and beams as the overlay; LED rows count once) and shades it: none 0.8 +
+  pink hatch, one 0.5, two 0.15, three+ clear (Nathan: less opacity where hit twice or more), orange line on each
+  beam's edge. Room surfaces and the rim trim (`userData.nomap`) are left out. Shots `shots/beams_map_{angle,top,led}.png`.
 Open question (asked 2026-10-13): the bright patch on the room wall is the spill model (nearest point of the tank box,
 extended UP TO THE FIXTURE), not a reflection; it should probably follow the actual beams instead.
 

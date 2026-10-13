@@ -242,7 +242,7 @@ function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
     if (R.edges) sc.add(new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(box, 3)), glassLine()));
     if (R.rim) {
       const rm = basic(0x1a1d21), r = t + 8, h = RIM_H, inner = fp.ring, rr = offsetRing(T, r);
-      for (const y0 of [H - h + 2, -t - 2]) sc.add(new THREE.Mesh(wallGeometry([...inner, inner[0]], [...rr, rr[0]], y0, y0 + h, true), rm));
+      for (const y0 of [H - h + 2, -t - 2]) { const o = new THREE.Mesh(wallGeometry([...inner, inner[0]], [...rr, rr[0]], y0, y0 + h, true), rm); o.userData.nomap = true; sc.add(o); } // no beam hit map on the trim
     }
   }
   if (R.grid) {

@@ -131,14 +131,18 @@ export const LU = {
   uRoomK: { value: 1 }, uSpill: { value: new THREE.Color(1, 1, 1) }, uSpillR: { value: 500 },
   uTankMin: { value: new THREE.Vector3() }, uTankMax: { value: new THREE.Vector3() }, uTankRound: { value: 0 },
   uWater: { value: new THREE.Vector4() }, uWCol: { value: new THREE.Color() },
+  // beam overlay's hit map: one beam per entry (x, fixture y, z, half-length along x), cos of its half-strength angle
+  uBm: { value: Array.from({ length: AQ_MAX }, () => new THREE.Vector4()) }, uBmN: { value: 0 }, uBmCos: { value: 0 },
 };
 /** Water box (L, surface y, D) and tint per mm; set per viewport like the light. */
 export function setWaterUniforms(T: Tank, w: WaterSettings) {
   LU.uWater.value.set(T.L, waterY(T, w.level), T.D, w.on ? waterK(w.opacity) : 0);
   LU.uWCol.value.set(w.color);
 }
-export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open') {
+export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams = false) {
   const on = l.type !== 'flat'; LU.uMode.value = on ? 1 : 0;
+  LU.uBmN.value = 0;
+  if (on && beams) { const b = beamSegs(T, l, lid); b.segs.forEach((s, i) => LU.uBm.value[i].set(s[0], b.top, s[1], s[2])); LU.uBmN.value = b.segs.length; LU.uBmCos.value = Math.cos(b.half); }
   const hgt = lampHeight(l, lid), up = on ? hgt : 0;
   LU.uRoomK.value = roomLevel(l.room); LU.uSpillR.value = spillReach(T) + up * 0.5;
   // spill leaves the tank box, extended up to the fixture: a raised light also lights the room over the rim
@@ -226,6 +230,21 @@ vec3 aqLight() {
     sum += cone * fall * facing;
   }
   return vec3(uAmb) + uLCol * (uBright * uNorm * sum);
+}
+// beam overlay hit map (Nathan 2026-10-13: see where light does and does not land, and where it lands twice or more):
+// x = how many beams reach this point (inside the half-strength angle), y = 1 on a beam's edge line
+uniform vec4 uBm[${AQ_MAX}]; uniform int uBmN; uniform float uBmCos, uNoMap;
+vec2 aqHits() {
+  float n = 0.0, edge = 0.0;
+  for (int i = 0; i < ${AQ_MAX}; i++) {
+    if (i >= uBmN) break;
+    vec4 e = uBm[i];
+    vec3 q = vec3(clamp(vAqP.x, e.x - e.w, e.x + e.w), e.y, e.z), tl = q - vAqP;
+    float f = tl.y / max(length(tl), 1.0) - uBmCos, w = fwidth(f);
+    n += step(0.0, f);
+    edge = max(edge, 1.0 - smoothstep(1.5 * w, 3.5 * w, abs(f)));
+  }
+  return vec2(n, edge);
 }`;
 // substrate anti-tiling: two copies of the texture (rotated + rescaled) blended by low-frequency noise, plus soft light/dark patches
 const AQ_MAP = `#ifdef USE_MAP
@@ -240,7 +259,7 @@ const AQ_MAP = `#ifdef USE_MAP
 
 function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithUniforms) {
   this.userData.pre?.(shader); // the material's own patch (hardscape: glass clip and grit) still applies under the lighting
-  Object.assign(shader.uniforms, LU, { uCard: { value: this.userData.card ? 1 : 0 }, uSub: { value: this.userData.sub ? 1 : 0 }, uFish: { value: this.userData.fish ? 1 : 0 }, uRoomMat: { value: this.userData.room ? 1 : 0 } });
+  Object.assign(shader.uniforms, LU, { uCard: { value: this.userData.card ? 1 : 0 }, uSub: { value: this.userData.sub ? 1 : 0 }, uFish: { value: this.userData.fish ? 1 : 0 }, uRoomMat: { value: this.userData.room ? 1 : 0 }, uNoMap: { value: this.userData.nomap ? 1 : 0 } });
   shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\n' + AQ_VERT)
     .replace('#include <begin_vertex>', '#include <begin_vertex>\nvAqP = (modelMatrix * vec4(transformed, 1.0)).xyz; vAqN = normalize(mat3(modelMatrix) * normal);');
   shader.fragmentShader = shader.fragmentShader.replace('#include <common>', '#include <common>\n' + AQ_FRAG)
@@ -260,6 +279,12 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
       '} else if (aqM > 1.0) outgoingLight /= aqM;\n' +
       // water colour: blend toward the lit water colour by how much water the sightline crosses
       'if (uWater.w > 0.0) { float aqF = 1.0 - exp(-uWater.w * aqWaterPath()); outgoingLight = mix(outgoingLight, uWCol * min(dot(aqLt, vec3(0.2126, 0.7152, 0.0722)), 1.0), aqF); }\n' +
+      // beam overlay: a shade over everything in the tank, heaviest where no beam lands, lighter for each beam
+      // (none / one / two / three or more: 0.8 / 0.5 / 0.15 / 0); no beam is also hatched, so it cannot pass for a
+      // shadow; a bright line along each beam's edge
+      'if (uBmN > 0 && uRoomMat < 0.5 && uNoMap < 0.5) { vec2 aqH = aqHits(); outgoingLight = mix(outgoingLight, vec3(0.04, 0.02, 0.1), aqH.x < 0.5 ? 0.8 : aqH.x < 1.5 ? 0.5 : aqH.x < 2.5 ? 0.15 : 0.0);\n' +
+      '  if (aqH.x < 0.5) outgoingLight = mix(outgoingLight, vec3(0.75, 0.2, 0.3), 0.7 * step(0.8, fract((vAqP.x + vAqP.y + vAqP.z) / 18.0)));\n' +
+      '  outgoingLight = mix(outgoingLight, vec3(1.0, 0.7, 0.0), aqH.y); }\n' +
       '#include <opaque_fragment>')
     .replace('#include <map_fragment>', AQ_MAP);
   // frosted film (build `bgMaterial`): with no scene lights, outgoingLight is only the light let through (transmission);
@@ -284,7 +309,7 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
   }
 }
 // one cache key per material kind keeps one compiled program per kind
-const progKey = function (this: THREE.Material) { return 'aq' + (this.userData.card ? 'c' : '') + (this.userData.sub ? 's' : '') + (this.userData.room ? 'r' : '') + (this.userData.fish ? 'f' : '') + (this.userData.plain ? 'p' : '') + (this.userData.frost ? 'F' : '') + (this.userData.solid ? 'h' : ''); };
+const progKey = function (this: THREE.Material) { return 'aq' + (this.userData.card ? 'c' : '') + (this.userData.sub ? 's' : '') + (this.userData.room ? 'r' : '') + (this.userData.fish ? 'f' : '') + (this.userData.plain ? 'p' : '') + (this.userData.frost ? 'F' : '') + (this.userData.solid ? 'h' : '') + (this.userData.nomap ? 'n' : ''); };
 
 /** Light every opaque surface inside the tank (substrate, background, fish, plant); glass, rim, lines and the fixture stay unlit. */
 export function applyLighting(sc: THREE.Scene) {
@@ -294,6 +319,7 @@ export function applyLighting(sc: THREE.Scene) {
     for (const m of ([] as THREE.Material[]).concat(mesh.material)) {
       if (!((m as THREE.MeshBasicMaterial).isMeshBasicMaterial || m.userData.frost) || (m.transparent && !m.userData.cached) || m.userData.aq) continue;
       if (o.userData.room) m.userData.room = true;
+      if (o.userData.nomap) m.userData.nomap = true;
       if (!mesh.geometry.attributes.normal) mesh.geometry.computeVertexNormals();
       m.userData.aq = true; m.userData.card = !!m.userData.cached && !m.userData.fish;
       m.onBeforeCompile = aqPatch; m.customProgramCacheKey = progKey; m.needsUpdate = true;
@@ -337,21 +363,33 @@ export function addFixture(sc: THREE.Scene, T: Tank, l: LightSettings, ceiling?:
  * identical cones). The half-strength angle is the middle of the shader's cone ramp, so the overlay matches the light.
  * Fainter or stronger with the Brightness slider. Cut off at the glass like hardscape; the substrate hides the part below it, leaving the footprint on the ground.
  */
-export function addBeams(sc: THREE.Scene, T: Tank, l: LightSettings, lid: string) {
-  if (l.type === 'flat') return;
+/** The overlay's beams: half-strength half-angle, fixture height and one [x centre, z, half-length] per beam (an LED bar: one per row). */
+function beamSegs(T: Tank, l: LightSettings, lid: string) {
   const { cone } = beam(l), half = Math.acos((cone[0] + cone[1]) / 2), top = T.H + lampHeight(l, lid);
-  const segs: [number, number, number][] = []; // x centre, z, half-length
+  const segs: [number, number, number][] = [];
   const E = emitters(T, l, lampHeight(l, lid));
   if (l.type === 'led') {
     const rows = new Map<number, number[]>();
     for (const e of E) rows.set(e[2], [...(rows.get(e[2]) ?? []), e[0]]);
     for (const [z, xs] of rows) { const a = Math.min(...xs), b = Math.max(...xs); segs.push([(a + b) / 2, z, (b - a) / 2]); }
   } else for (const e of E) segs.push([e[0], e[2], e[3]]);
+  return { half, top, segs };
+}
+
+export function addBeams(sc: THREE.Scene, T: Tank, l: LightSettings, lid: string) {
+  if (l.type === 'flat') return;
+  const { half, top, segs } = beamSegs(T, l, lid);
   const bowl = shapeOf(T) === 'bowl', planes: THREE.Plane[] = [];
   if (!bowl) for (const e of footprint(T).edges) planes.push(new THREE.Plane(new THREE.Vector3(-e.n[0], 0, e.n[1]), e.a[0] * e.n[0] + e.a[1] * e.n[1]));
-  const look = { color: new THREE.Color(...kelvinRGB(l.kelvin)).multiplyScalar(0.5).addScalar(0.5), transparent: true, opacity: clamp(0.14 * l.bright, 0.04, 0.32), depthWrite: false, side: THREE.DoubleSide };
+  // a working view, not a look (Nathan 2026-10-13): bold, and the union of the beams drawn once (stencil), so where
+  // beams cross on screen it does not darken; how many beams reach a spot shows on the surfaces (the hit map)
+  const look = {
+    color: 0xffe066, transparent: true, opacity: 0.3, depthWrite: false, side: THREE.DoubleSide,
+    stencilWrite: true, stencilRef: 1, stencilFunc: THREE.NotEqualStencilFunc, stencilZPass: THREE.ReplaceStencilOp,
+  } as const;
   // above the rim the beam is drawn whole (light that misses the tank shows); inside, it stops at the glass
-  const open = new THREE.MeshBasicMaterial(look), mat = new THREE.MeshBasicMaterial({ ...look, clippingPlanes: planes });
+  // (inside, faint: the hit map on the surfaces below carries the reading there)
+  const open = new THREE.MeshBasicMaterial(look), mat = new THREE.MeshBasicMaterial({ ...look, opacity: 0.1, clippingPlanes: planes });
   if (bowl) { // a bowl: inside the sphere
     const b = bowlDims(T), v = (x: number) => x.toFixed(1);
     mat.onBeforeCompile = sh => {
@@ -378,4 +416,14 @@ export function addBeams(sc: THREE.Scene, T: Tank, l: LightSettings, lid: string
     const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx);
     const o = new THREE.Mesh(g, m); o.userData.nolight = true; o.renderOrder = 5; sc.add(o);
   }
+  // outline: the beam's edge where it crosses the rim, and its sides from the fixture down to there (four per beam);
+  // inside the tank the hit map draws the edges on the surfaces themselves
+  const line = new THREE.LineBasicMaterial({ color: 0xffb000, transparent: true, opacity: 0.9, depthWrite: false }), lp: number[] = [];
+  for (const [cx, z, h] of segs) {
+    const R = (top - T.H) * tan, rim = ring(cx, z, h, R, T.H);
+    for (let i = 0; i < n; i++) { const j = (i + 1) % n; lp.push(rim[3 * i], rim[3 * i + 1], rim[3 * i + 2], rim[3 * j], rim[3 * j + 1], rim[3 * j + 2]); }
+    for (const [dx, dz] of [[h + R, 0], [-h - R, 0], [h, R], [-h, -R]]) lp.push(cx + Math.sign(dx) * h, top, z, cx + dx, T.H, z + dz);
+  }
+  const lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.Float32BufferAttribute(lp, 3));
+  const lo = new THREE.LineSegments(lg, line); lo.userData.nolight = true; lo.renderOrder = 6; sc.add(lo);
 }
