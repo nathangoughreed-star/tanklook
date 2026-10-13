@@ -13,7 +13,15 @@ export type Background = 'black' | 'blue' | 'gradient' | 'grey' | 'frosted' | 'n
 export type BgSide = 'back' | 'left' | 'right' | 'front';
 export type GlassType = 'standard' | 'lowiron';
 export type LightType = 'flat' | 'spot' | 'tube' | 'led';
-export type SubstrateType = 'gravel' | 'pea' | 'clown' | 'blue' | 'onyx' | 'black' | 'white';
+export type SubstrateType = 'gravel' | 'pea' | 'clown' | 'blue' | 'onyx' | 'black' | 'white' | 'custom';
+/** Grain size of a custom substrate, finest to coarsest. */
+export type Grain = 'mud' | 'sand' | 'gravel' | 'pebble';
+/**
+ * Custom substrate (Nathan 2026-10-13): a grain and a colour, optionally blended with a second grain and colour.
+ * `share` = % of the floor that is the second grain; `mix` 0-1: 0 = separate patches (no mixing), 1 = mixed grain
+ * by grain, between = clumps of each with mixed ground between them.
+ */
+export interface SubstrateBlend { grain: Grain; color: string; grain2: Grain | 'none'; color2: string; share: number; mix: number }
 
 /** Tank floor outline (scene v8). L x D is always the bounding box; see scene/shape.ts. */
 export type TankShape = 'rect' | 'bow' | 'round' | 'poly' | 'bowl' | 'pie';
@@ -108,6 +116,7 @@ export interface LightSettings {
 export interface SubstrateSettings {
   show: boolean;
   type: SubstrateType;
+  custom: SubstrateBlend; // used when type is 'custom'
   fl: number; fr: number; bl: number; br: number; // depth at each corner, mm
 }
 

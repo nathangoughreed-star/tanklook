@@ -1,7 +1,7 @@
 // What differs between two split tanks, for the viewport tabs (Nathan 2026-10-08). Dimension-like values show their
 // numbers ("Stand 30″" vs "Stand 24″"); finer details only name each side ("Stocking A" vs "Stocking B",
 // "Water tint A" vs "Water tint B"). Nothing different = no entries: the tanks are the same.
-import { SUBSTRATES } from '../art/placeholder';
+import { SUBSTRATES, blendLabel } from '../art/placeholder';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { fmtSize, fmtLen, glassThickness, rescaleTank, waterY } from '../scene/physics';
 import { shapeOf } from '../scene/shape';
@@ -88,8 +88,8 @@ export function tankDiff(a: TankSetup, b: TankSetup, u: Units): DiffItem[] {
   add(stock(a), stock(b), named('Stocking'), (to, from) => {
     to.fish = from.fish.map(f => ({ ...structuredClone(f), x: f.x * to.tank.L / from.tank.L, y: f.y * to.tank.H / from.tank.H, depth: f.depth * to.tank.D / from.tank.D }));
   });
-  add(a.substrate.show ? a.substrate.type : 'bare', b.substrate.show ? b.substrate.type : 'bare',
-    t => (t === 'bare' ? 'Bare bottom' : `Substrate: ${SUBSTRATES[t as keyof typeof SUBSTRATES].label.toLowerCase()}`), ['substrate.show', 'substrate.type']);
+  const subOf = (t: TankSetup) => !t.substrate.show ? 'bare' : t.substrate.type === 'custom' ? blendLabel(t.substrate.custom) : SUBSTRATES[t.substrate.type].label;
+  add(subOf(a), subOf(b), t => (t === 'bare' ? 'Bare bottom' : `Substrate: ${t.toLowerCase()}`), ['substrate.show', 'substrate.type', 'substrate.custom']);
   if (a.substrate.show && b.substrate.show && !a.terrain.on && !b.terrain.on) {
     const c = (t: TankSetup) => [t.substrate.fl, t.substrate.fr, t.substrate.bl, t.substrate.br];
     add(c(a), c(b), named('Substrate slope'), ['substrate.fl', 'substrate.fr', 'substrate.bl', 'substrate.br']);

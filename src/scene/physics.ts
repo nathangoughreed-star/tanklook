@@ -39,7 +39,7 @@ export const SUBSTRATE_CAP = 0.6;
  * Substrate surface height (mm above the tank floor) at (x, depth): bilinear blend of the four corner depths.
  * Depths are physical, so a different tank gets the same thickness, not a proportional one.
  */
-export function substrateHeight(s: SubstrateSettings, T: Tank, x: number, depth: number): number {
+export function substrateHeight(s: Pick<SubstrateSettings, 'show' | 'fl' | 'fr' | 'bl' | 'br'>, T: Tank, x: number, depth: number): number {
   if (!s.show) return 0;
   const cap = T.H * SUBSTRATE_CAP, c = (v: number) => Math.min(v, cap);
   const u = clamp(x / T.L, 0, 1), v = clamp(depth / T.D, 0, 1);

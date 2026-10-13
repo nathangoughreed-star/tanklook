@@ -1,7 +1,7 @@
 // Sidebar wiring. Inputs write through store.update(); one sync() pulls every control back from the scene,
 // so undo/redo, file open and pointer drags all refresh the panels the same way.
 import { rng } from '../art/paint';
-import { SUBSTRATES, drawFishCard } from '../art/placeholder';
+import { GRAIN_LOOK, SUBSTRATES, drawFishCard } from '../art/placeholder';
 import { drawSnailCard } from '../art/snails';
 import { CATEGORIES, SPECIES, fishTL, getSpecies, needsWater, searchSpecies, speciesOf, speciesTag, type Category, type Sex, type Species } from '../data/species';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
@@ -432,7 +432,20 @@ Cancel, then change the name, to keep both.`)) return;
   // ---------- Substrate ----------
   // 'bare' = bare-bottom glass (substrate.show off; the last type is kept for when it comes back)
   $<HTMLSelectElement>('subType').innerHTML = '<option value="bare">Bare bottom (no substrate)</option>' +
-    Object.entries(SUBSTRATES).map(([k, t]) => `<option value="${k}">${esc(t.label)}</option>`).join('');
+    Object.entries(SUBSTRATES).map(([k, t]) => `<option value="${k}">${esc(t.label)}</option>`).join('') +
+    '<option value="custom">Custom grain and colour</option>';
+  // custom substrate (Nathan 2026-10-13): grain + colour, optionally a second grain, its share and how mixed the two are
+  const grainOpts = Object.entries(GRAIN_LOOK).map(([k, g]) => `<option value="${k}">${esc(g.label)}</option>`).join('');
+  $<HTMLSelectElement>('subG1').innerHTML = grainOpts;
+  $<HTMLSelectElement>('subG2').innerHTML = '<option value="none">Nothing (one grain)</option>' + grainOpts;
+  const cust = (f: (c: TankSetup['substrate']['custom'], v: string) => void, coalesce?: string) => (e: Event) =>
+    store.edit(s => f(s.substrate.custom, (e.target as HTMLInputElement).value), coalesce ? { coalesce } : undefined);
+  $('subG1').onchange = cust((c, v) => { c.grain = v as typeof c.grain; });
+  $('subG2').onchange = cust((c, v) => { c.grain2 = v as typeof c.grain2; });
+  $('subC1').oninput = cust((c, v) => { c.color = v; }, 'subC1');
+  $('subC2').oninput = cust((c, v) => { c.color2 = v; }, 'subC2');
+  $('subShare').oninput = cust((c, v) => { c.share = +v; }, 'subShare');
+  $('subMix').oninput = cust((c, v) => { c.mix = +v / 100; }, 'subMix');
   $<HTMLSelectElement>('subType').onchange = e => {
     const v = (e.target as HTMLSelectElement).value, bare = v === 'bare';
     store.edit(s => {
@@ -849,6 +862,13 @@ Cancel, then change the name, to keep both.`)) return;
 
     const sub = s.substrate, smax = Math.round(A.H * 0.5);
     setVal('subType', sub.show ? sub.type : 'bare');
+    const cu = sub.custom, two = cu.grain2 !== 'none';
+    $('subCustom').hidden = !sub.show || sub.type !== 'custom';
+    setVal('subG1', cu.grain); setVal('subC1', cu.color); setVal('subG2', cu.grain2); setVal('subC2', cu.color2);
+    $('subC2').hidden = $('subShareRow').hidden = $('subMixRow').hidden = $('subMixHint').hidden = !two;
+    $('subShareL').textContent = !two ? 'Share' : cu.grain2 === cu.grain ? 'Colour 2' : GRAIN_LOOK[cu.grain2 as keyof typeof GRAIN_LOOK].label;
+    setVal('subShare', cu.share); setOut('oSubShare', `${cu.share} %`);
+    setVal('subMix', Math.round(cu.mix * 100)); setOut('oSubMix', cu.mix <= 0 ? 'None' : cu.mix >= 1 ? 'Full' : `${Math.round(cu.mix * 100)} %`);
     for (const [id, k] of Object.entries(SUBK)) { $(id).max = String(smax); setVal(id, sub[k]); setOut('o' + id[0].toUpperCase() + id.slice(1), fmt(sub[k])); }
 
     const te = s.terrain, editing = viewer.terrainEdit.on && te.on;

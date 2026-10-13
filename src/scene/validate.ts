@@ -6,8 +6,10 @@ import { WALL_GAP, WALL_GAP_MAX, clamp, mapToTank } from './physics';
 import { normTank } from './shape';
 import { TABLE_MAX, fitTable } from './table';
 import { keepInWater } from './water';
-import { pieSize, radialSize, type Ground } from './terrain';
+import { pieSize, radialSize, sameGrid, sampleTerrain, type Ground } from './terrain';
 import { SCENE_VERSION, type Fish, type Item, type Scene, type Tank, type TankSetup } from './types';
+
+const GRAINS = ['mud', 'sand', 'gravel', 'pebble'] as const;
 
 export class SceneError extends Error {}
 
@@ -190,7 +192,16 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       height: num(l.height, 50, ...LIMITS.lampH), // added 2026-10-08; older files: the old fixed 50 mm
     },
     substrate: {
-      show: bool(s.show, d.substrate.show), type: pick(s.type, ['gravel', 'pea', 'clown', 'blue', 'onyx', 'black', 'white'] as const, 'gravel'),
+      show: bool(s.show, d.substrate.show), type: pick(s.type, ['gravel', 'pea', 'clown', 'blue', 'onyx', 'black', 'white', 'custom'] as const, 'gravel'),
+      custom: (() => { // added 2026-10-13 (no version bump); older files: the default blend
+        const c = (s.custom && typeof s.custom === 'object' ? s.custom : {}) as Record<string, unknown>, dc = d.substrate.custom;
+        const hex = (v: unknown, f: string) => typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v) ? v.toLowerCase() : f;
+        return {
+          grain: pick(c.grain, GRAINS, dc.grain), color: hex(c.color, dc.color),
+          grain2: pick(c.grain2, ['none', ...GRAINS] as const, dc.grain2), color2: hex(c.color2, dc.color2),
+          share: Math.round(num(c.share, dc.share, 5, 95)), mix: num(c.mix, dc.mix, 0, 1),
+        };
+      })(),
       fl: num(s.fl, d.substrate.fl, 0, subMax), fr: num(s.fr, d.substrate.fr, 0, subMax),
       bl: num(s.bl, d.substrate.bl, 0, subMax), br: num(s.br, d.substrate.br, 0, subMax),
     },
@@ -231,6 +242,10 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
     items: [],
   };
   setup.items = Array.isArray(raw.items) ? parseItems(raw.items, tankA, warn, setup) : starterItems(setup);
+  // a grid saved before its tank's shape had its own kind (a pie slice before 2026-10-13 kept the rectangular grid):
+  // resample the same surface onto the tank's grid, as changing the shape in the panel does
+  const te2 = setup.terrain;
+  if (te2.h.length && !sameGrid(te2, setup.tank)) setup.terrain = { ...sampleTerrain(setup, setup.tank, te2.cols), on: te2.on };
   keepInWater(setup); fitTable(setup);
   return setup;
 }

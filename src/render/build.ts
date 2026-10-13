@@ -1,7 +1,7 @@
 // Builds a three.js scene for one tank from scene data. Rebuilt on every content change (cheap at this scale);
 // textures and card materials are cached across rebuilds.
 import * as THREE from 'three';
-import { SUBSTRATES } from '../art/placeholder';
+import { SUBSTRATES, blendTile, maskQuantile } from '../art/placeholder';
 import { snailAspect } from '../art/snails';
 import { fishTL, needsWater, speciesOf, type Species } from '../data/species';
 import { restsOnGround } from '../scene/water';
@@ -15,7 +15,7 @@ import { itemMesh } from './items';
 import { fish3d, fishBody, has3D } from './fish3d';
 import { herpBody, isHerp3D } from './herp3d';
 import { sagShell, snailBody } from './snail3d';
-import { cardMaterial, fishBodyTexture, fishTexture, gradientTexture, personTexture, snailTexture, substrateTexture } from './textures';
+import { blendTexture, cardMaterial, fishBodyTexture, fishTexture, gradientTexture, personTexture, snailTexture, substrateMaskTexture, substrateTexture } from './textures';
 
 /** Back-wall options; color null = no background (back glass only); light = use dark grid lines. */
 export const BACKGROUNDS: Record<Background, { label: string; color: number | null; gradient?: boolean; light?: boolean; frost?: boolean }> = {
@@ -616,7 +616,7 @@ function flare(T: Tank, x: number, d: number, y: number, rb: number): [number, n
 function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   const swamp = S.layout.id === 'swamp' || S.terrain.on;
   if (!S.substrate.show && !swamp) return;
-  const { L, D } = T, tile = SUBSTRATES[S.substrate.type].tile * 2, h = (x: number, d: number) => groundHeight(S, T, x, d);
+  const sub = S.substrate, { L, D } = T, tile = sub.type === 'custom' ? blendTile(sub.custom) : SUBSTRATES[sub.type].tile * 2, h = (x: number, d: number) => groundHeight(S, T, x, d);
   // top surface as a 16x16 grid (bilinear surfaces curve along diagonals) clipped to the outline, and a skirt round the
   // outline; UVs from physical mm so grain size is constant
   type V3 = [number, number, number];
@@ -665,10 +665,36 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
     const g = new THREE.BufferGeometry(); if (cols) g.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
     g.setAttribute('position', new THREE.Float32BufferAttribute(arr.filter((_, i) => i % 2 === 0).flat(), 3));
     g.setAttribute('uv', new THREE.Float32BufferAttribute(arr.filter((_, i) => i % 2 === 1).flat(), 2));
-    const m = new THREE.MeshBasicMaterial({ map: substrateTexture(S.substrate.type), color: shade, vertexColors: !!cols, side: THREE.DoubleSide });
-    m.userData.sub = true; sc.add(new THREE.Mesh(g, m));
+    const m = new THREE.MeshBasicMaterial({ map: sub.type === 'custom' ? blendTexture(sub.custom, 'a') : substrateTexture(sub.type), color: shade, vertexColors: !!cols, side: THREE.DoubleSide });
+    m.userData.sub = true; if (sub.type === 'custom') blendGrains(m, sub.custom, tile);
+    sc.add(new THREE.Mesh(g, m));
   };
   mk(top, 0xffffff, topCol); mk(side, 0xb4b4b4); // the skirt a touch darker so the layer reads through the glass
+}
+
+/**
+ * Custom substrate with a second grain (Nathan 2026-10-13): a floor-wide noise mask (`substrateMask`) splits the floor
+ * into the first grain alone (map), the second alone and the two mixed grain by grain. In mask-share terms the pure
+ * patches take (1 - mix) of each grain's share and the mixed ground the rest, so the shares hold at any mix: mix 0 =
+ * separate patches with a sharp edge, 1 = mixed everywhere. Patches shrink as the mix rises (big drifts to small clumps).
+ */
+function blendGrains(m: THREE.MeshBasicMaterial, b: TankSetup['substrate']['custom'], tile: number) {
+  if (b.grain2 === 'none') return;
+  const p2 = b.share / 100, k = 1 - b.mix, period = 900 - 650 * b.mix; // mm per mask repeat
+  const uniforms = {
+    uMapB: { value: blendTexture(b, 'b') }, uMapM: { value: blendTexture(b, 'm') }, uMask: { value: substrateMaskTexture() },
+    uZone: { value: new THREE.Vector4(maskQuantile((1 - p2) * k), maskQuantile(1 - p2 * k), tile / period, 0.012) },
+  };
+  m.userData.post = (sh: THREE.WebGLProgramParametersWithUniforms) => {
+    Object.assign(sh.uniforms, uniforms);
+    sh.fragmentShader = sh.fragmentShader.replace('void main() {', `uniform sampler2D uMapB, uMapM, uMask; uniform vec4 uZone;
+vec4 aqBlend(vec2 uv) {
+  float n = texture2D(uMask, vMapUv * uZone.z).r;
+  float a = 1.0 - smoothstep(uZone.x - uZone.w, uZone.x + uZone.w, n), b = smoothstep(uZone.y - uZone.w, uZone.y + uZone.w, n);
+  return texture2D(map, uv) * a + texture2D(uMapB, uv) * b + texture2D(uMapM, uv) * max(1.0 - a - b, 0.0);
+}
+void main() {`).replace('texture2D(map, vMapUv);', 'aqBlend(vMapUv);').replace('texture2D(map, uv2)', 'aqBlend(uv2)');
+  };
 }
 
 /** Soft dark ellipse for contact shadows (radial falloff to zero at the edge). */

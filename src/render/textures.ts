@@ -1,11 +1,11 @@
 import * as THREE from 'three';
-import { drawFishCard, drawPerson, drawSubstrate } from '../art/placeholder';
+import { drawBlendTile, drawFishCard, drawPerson, drawSubstrate, substrateMask, type PresetSubstrate } from '../art/placeholder';
 import { drawPairedFin, type PairedFin } from '../art/fishgen';
 import { FIN_A, style } from '../art/paint';
 import { drawPlantCard, type PlantType } from '../art/plants';
 import { drawSnailCard, type SnailView } from '../art/snails';
 import type { Species } from '../data/species';
-import type { EdgeMode, SubstrateType } from '../scene/types';
+import type { EdgeMode, SubstrateBlend } from '../scene/types';
 
 let anisotropy = 1;
 export function setMaxAnisotropy(a: number) { anisotropy = a; }
@@ -43,11 +43,35 @@ export const pairedFinTexture = (art: string, f: PairedFin, box: { u0: number; v
     style.finA = FIN_A;
     return finish(c);
   });
-export const substrateTexture = (type: SubstrateType) => cached('sub:' + type, () => {
+export const substrateTexture = (type: PresetSubstrate) => cached('sub:' + type, () => {
   const c = document.createElement('canvas'); c.width = c.height = 512;
   drawSubstrate(c.getContext('2d')!, 512, type);
   return finish(c, true);
 });
+/**
+ * Custom substrate tiles ('a' / 'b' each grain alone, 'm' mixed grain by grain). Only the inputs a tile depends on
+ * are in its key; kept in a small cache of their own (dragging a colour makes a new tile per step), the oldest disposed.
+ */
+const blendTex = new Map<string, THREE.Texture>();
+export function blendTexture(b: SubstrateBlend, which: 'a' | 'b' | 'm') {
+  const key = which === 'a' ? `a:${b.grain}:${b.color}:${b.grain2}` : which === 'b' ? `b:${b.grain2}:${b.color2}:${b.grain}`
+    : `m:${b.grain}:${b.color}:${b.grain2}:${b.color2}:${b.share}`;
+  let t = blendTex.get(key);
+  if (t) { blendTex.delete(key); blendTex.set(key, t); return t; } // most recent last
+  const c = document.createElement('canvas'); c.width = c.height = 1024;
+  drawBlendTile(c.getContext('2d')!, 1024, b, which);
+  t = finish(c, true); t.userData.keep = true; blendTex.set(key, t);
+  if (blendTex.size > 18) { const [k0, t0] = blendTex.entries().next().value!; blendTex.delete(k0); t0.dispose(); }
+  return t;
+}
+/** Where each grain of a custom blend lies (see placeholder `substrateMask`). */
+let maskTex: THREE.DataTexture | undefined;
+export function substrateMaskTexture() {
+  if (maskTex) return maskTex;
+  const t = new THREE.DataTexture(substrateMask().data, 256, 256);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.magFilter = t.minFilter = THREE.LinearFilter; t.needsUpdate = true; t.userData.keep = true;
+  return (maskTex = t);
+}
 export const plantTexture = (type: PlantType) => cached('plant:' + type, () => finish(drawPlantCard(type)));
 export const snailTexture = (art: string, view: SnailView) => cached(`snail:${art}:${view}`, () => finish(drawSnailCard(art, view)));
 export const personTexture = () => cached('person', () => {

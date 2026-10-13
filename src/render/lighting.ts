@@ -287,6 +287,7 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
       '  outgoingLight = mix(outgoingLight, vec3(1.0, 0.7, 0.0), aqH.y); }\n' +
       '#include <opaque_fragment>')
     .replace('#include <map_fragment>', AQ_MAP);
+  this.userData.post?.(shader); // the material's patch of the lit shader (custom substrate: its grains blended by a mask)
   // frosted film (build `bgMaterial`): with no scene lights, outgoingLight is only the light let through (transmission);
   // keep it aside, light the film's own white share like any surface, then add the transmitted light back unlit
   if (this.userData.frost) shader.fragmentShader = shader.fragmentShader
@@ -309,7 +310,7 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
   }
 }
 // one cache key per material kind keeps one compiled program per kind
-const progKey = function (this: THREE.Material) { return 'aq' + (this.userData.card ? 'c' : '') + (this.userData.sub ? 's' : '') + (this.userData.room ? 'r' : '') + (this.userData.fish ? 'f' : '') + (this.userData.plain ? 'p' : '') + (this.userData.frost ? 'F' : '') + (this.userData.solid ? 'h' : '') + (this.userData.nomap ? 'n' : ''); };
+const progKey = function (this: THREE.Material) { return 'aq' + (this.userData.card ? 'c' : '') + (this.userData.sub ? 's' : '') + (this.userData.room ? 'r' : '') + (this.userData.fish ? 'f' : '') + (this.userData.plain ? 'p' : '') + (this.userData.frost ? 'F' : '') + (this.userData.solid ? 'h' : '') + (this.userData.post ? 'b' : '') + (this.userData.nomap ? 'n' : ''); };
 
 /** Light every opaque surface inside the tank (substrate, background, fish, plant); glass, rim, lines and the fixture stay unlit. */
 export function applyLighting(sc: THREE.Scene) {

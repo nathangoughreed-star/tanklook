@@ -2,6 +2,22 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Custom substrate: grain, colour, blends (2026-10-13)
+
+Nathan: pick a grain size (mud, sand, gravel, pebbles) and then any colour; optionally blend two grains with their own
+colours, a share ("30 % pebbles") and a Mixing slider (none = separate patches, full = mixed grain by grain, between =
+clumps). Substrate type "Custom grain and colour" (`substrate.type: 'custom'`, `substrate.custom` = SubstrateBlend,
+validated with defaults, no version bump). Presets unchanged.
+- Art (art/placeholder.ts `drawBlendTile`, `GRAIN_LOOK`): grain sizes in mm, so a grain keeps its real size; shades
+  generated round the picked colour (HSL jitter, some greyer stones). Tiles 'a' (grain 1), 'b' (grain 2), 'm' (mixed:
+  the finer grain as the bed, the coarser covering its share; same grain twice = each stone one colour or the other).
+  A fine bed under a coarse tile is drawn at its own repeat and laid as a pattern (grain-by-grain sand on a pebble tile
+  took 11 s; now ~0.3 s). Tiles 1024 px, own LRU cache of 18 (render/textures.ts `blendTexture`).
+- Placement (render/build.ts `blendGrains`): a seamless 256² noise mask over the floor; thresholds from the mask's own
+  sorted values (`maskQuantile`) so the shares are exact: pure patches take (1 - mix) of each share, mixed ground the
+  rest; patch size shrinks as the mix rises (mask repeat 900 mm at 0 to 250 mm at 1). Done in the lit shader via a new
+  `userData.post` hook in lighting.ts `aqPatch` (runs after AQ_MAP, swaps its `texture2D(map, ...)` for `aqBlend`).
+
 ## Optimized spot pattern (2026-10-13)
 
 Nathan: on a 90° pie corner tank he wanted one puck toward the corner and one near each end of the arc; asked for an

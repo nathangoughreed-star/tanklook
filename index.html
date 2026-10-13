@@ -119,6 +119,13 @@
   </details>
   <details class="sec" data-sec="substrate"><summary><h2>Substrate</h2></summary>
   <div class="field"><select id="subType" aria-label="Substrate type"></select></div>
+  <div id="subCustom" hidden>
+  <div class="field"><span class="flabel">Grain</span><select id="subG1" aria-label="Grain size"></select><input id="subC1" type="color" aria-label="Grain colour" title="Grain colour"></div>
+  <div class="field"><span class="flabel">Blend with</span><select id="subG2" aria-label="Second grain"></select><input id="subC2" type="color" aria-label="Second grain colour" title="Second grain colour"></div>
+  <div class="row" id="subShareRow"><label for="subShare" id="subShareL">Share</label><input id="subShare" type="range" min="5" max="95" step="5"><output id="oSubShare"></output></div>
+  <div class="row" id="subMixRow"><label for="subMix">Mixing</label><input id="subMix" type="range" min="0" max="100" step="5"><output id="oSubMix"></output></div>
+  <div class="hint" id="subMixHint">Mixing: none = separate patches of each, full = mixed grain by grain, between = clumps of each in mixed ground.</div>
+  </div>
   <div class="hint">Depth at each corner, laid out as seen from above (back at the top):</div>
   <div class="row"><label for="subBL">Back left</label><input id="subBL" type="range" step="1" min="0"><output id="oSubBL"></output></div>
   <div class="row"><label for="subBR">Back right</label><input id="subBR" type="range" step="1" min="0"><output id="oSubBR"></output></div>
