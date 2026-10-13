@@ -45,6 +45,9 @@ Rules: touch another lane's file only for a one-line hook, and say so in your se
 asking Nathan. Shipping: in the worktree `git fetch` + `git merge origin/main`, tsc + tests + browser check, then
 `git push origin HEAD:main` and `git -C "C:/Users/nreed/Glass Box" merge --ff-only origin/main`. HANDOFF.md
 conflicts on merge: keep both sections. Each lane adds its own dated section at the top of this file.
+Lane B DONE (`ff590db`). Lane F added 2026-10-13: example tanks, `../Glass-Box-examples` / `examples`, launch config
+`examples` 5313; owns the Open dialog's examples list in `src/ui/panels.ts` + `index.html`, and new example files.
+Lane G (fixes from shots/audit/AUDIT.md) waits for lane D's report; it takes over `src/ui/*` after F lands.
 Later lane E (corals + live rock as items) waits for A to land: it shares `scene/items.ts` / `render/items.ts`.
 
 ## Pan stays put (2026-10-13)
