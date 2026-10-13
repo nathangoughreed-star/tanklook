@@ -213,6 +213,8 @@ export class Viewer {
     const dot = this.terrainEdit.on ? this.ray.intersectObjects(vp.dotMeshes ?? [], false)[0] : undefined;
     const none = { fishId: null as number | null, itemId: null as number | null, dot: null as number | null };
     if (dot) return { vp, ray: this.ray.ray.clone(), ...none, mesh: dot.object as THREE.Mesh, dot: dot.object.userData.dot as number };
+    // while shaping the ground only its dots are live: a near miss turns the view instead of moving a fish or a rock
+    if (this.terrainEdit.on) return { vp, ray: this.ray.ray.clone(), ...none, mesh: undefined as THREE.Mesh | undefined };
     // the nearest fish, rock, wood or cave; a plant only when nothing else is under the pointer (its cards are mostly
     // see-through, so it would otherwise hide the fish behind it). A hit only counts in the middle of the piece's
     // on-screen box, so a drag that starts on a fin tip or a leaf's edge turns the view instead of moving the piece
