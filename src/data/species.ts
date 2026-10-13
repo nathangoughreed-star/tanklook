@@ -5,6 +5,12 @@ import type { Surface } from '../scene/types';
 import data from './species.json';
 
 export type Habitat = 'water' | 'land' | 'both';
+/** The Animals panel's sub menus, in menu order (Nathan 2026-10-13). */
+export const CATEGORIES = [
+  ['fw-fish', 'Freshwater fish'], ['fw-invert', 'Freshwater inverts'], ['sw-fish', 'Saltwater fish'], ['sw-invert', 'Saltwater inverts'],
+  ['amphibian', 'Amphibians'], ['reptile', 'Reptiles'], ['land-invert', 'Land inverts'],
+] as const;
+export type Category = typeof CATEGORIES[number][0];
 
 export interface Species {
   id: string;
@@ -23,6 +29,8 @@ export interface Species {
   /** Where it lives: 'water' (fish; hidden in a dry tank), 'land' (rests on ground above the water line), 'both' (on land, or
    * swimming where the water is deep enough for it). Snails are 'both'. */
   habitat: Habitat;
+  /** The Animals sub menu it is listed under. */
+  cat: Category;
   /** v (in widths, + down) of the lowest point of the drawing; a resting animal's centre sits this far above the floor. */
   rest: number;
   /** How a group of 3+ swims (steers Shuffle only): 'school' tight and aligned, 'shoal' loose. Absent = keeps apart. */
@@ -39,7 +47,7 @@ export interface Species {
 /** 'f' = female; absent = male (or a species drawn the same either way). */
 export type Sex = 'f';
 
-interface RawSpecies { id: string; name: string; sci: string; tl: number; art: string; aspect?: number; zone?: string; kind?: string; group?: string; level?: string; habitat?: string; cling?: string; note?: string; female?: { art: string; tl: number } }
+interface RawSpecies { id: string; cat?: string; name: string; sci: string; tl: number; art: string; aspect?: number; zone?: string; kind?: string; group?: string; level?: string; habitat?: string; cling?: string; note?: string; female?: { art: string; tl: number } }
 
 function resolve(r: RawSpecies): Species {
   const kind = r.kind === 'snail' ? 'snail' as const : undefined, zone = r.zone === 'bottom' ? 'bottom' as const : undefined;
@@ -48,7 +56,7 @@ function resolve(r: RawSpecies): Species {
   const habitat: Habitat = kind ? 'both' : r.habitat === 'land' || r.habitat === 'both' ? r.habitat : 'water';
   const group = r.group === 'school' || r.group === 'shoal' ? r.group : undefined, level = r.level === 'top' || r.level === 'low' ? r.level : undefined;
   const surfaces: Surface[] | undefined = kind || r.cling === 'any' ? ['floor', 'glass', 'hardscape'] : r.cling === 'hardscape' ? ['floor', 'hardscape'] : undefined;
-  const sp: Species = { id: r.id, name: r.name, sci: r.sci, tl: r.tl, art: r.art, aspect, rest, zone, kind, surfaces, habitat, group, level, note: r.note, look: r.id };
+  const sp: Species = { id: r.id, name: r.name, sci: r.sci, tl: r.tl, art: r.art, aspect, rest, zone, kind, surfaces, habitat, cat: CATEGORIES.some(c => c[0] === r.cat) ? r.cat as Category : 'fw-fish', group, level, note: r.note, look: r.id };
   if (r.female) {
     const m = artMeta(r.female.art)!;
     sp.female = { ...sp, art: r.female.art, tl: r.female.tl, aspect: m.aspect, rest: m.rest, look: r.id + '~f', sex: 'f', female: undefined };
@@ -75,12 +83,13 @@ export const needsWater = (sp: Species) => sp.habitat === 'water';
 export const speciesTag = (sp: Species) => sp.kind === 'snail' ? 'snail' : sp.zone === 'bottom' ? 'bottom' : sp.habitat === 'land' ? 'land' : sp.habitat === 'both' ? 'amphibious' : '';
 
 /** Case- and accent-insensitive search over common and scientific names; prefix matches rank first. */
-export function searchSpecies(q: string): Species[] {
+export function searchSpecies(q: string, cat?: Category): Species[] {
+  const pool = cat ? SPECIES.filter(s => s.cat === cat) : SPECIES;
   const norm = (s: string) => s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
   const terms = norm(q).split(/\s+/).filter(Boolean);
-  if (!terms.length) return [...SPECIES].sort((a, b) => a.name.localeCompare(b.name));
+  if (!terms.length) return [...pool].sort((a, b) => a.name.localeCompare(b.name));
   const scored: [number, Species][] = [];
-  for (const s of SPECIES) {
+  for (const s of pool) {
     const tags = ' ' + speciesTag(s);
     const hay = norm(s.name + ' ' + s.sci + ' ' + s.id + tags), words = hay.split(/\s+/);
     if (!terms.every(t => hay.includes(t))) continue;

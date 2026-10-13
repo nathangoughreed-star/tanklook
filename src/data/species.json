@@ -1,6 +1,6 @@
 {
  "version": 2,
- "note": "Card width == typical adult total length (tl, mm) in aquaria; snails: crawling length. aspect = card height / width (computed from the art when omitted). art = a drawing key in src/art (placeholder.ts hand-drawn, fishgen.ts generated, snails.ts). zone 'bottom' rests on the substrate; kind 'snail' clings to the floor or a glass pane. habitat 'land' rests on ground above the water, 'both' on land or in water deep enough (default 'water'). group 'school' swims in a tight, aligned school, 'shoal' in a loose group (when 3+ are kept); level 'top' / 'low' is the part of the water column a swimmer favours (default mid). Both only steer Shuffle. Lengths are total length, nose to tail tip (Nathan 2026-10-08). female = the female's drawing and adult length for a sexually dimorphic species (the species itself is the male).",
+ "note": "Card width == typical adult total length (tl, mm) in aquaria; snails: crawling length. aspect = card height / width (computed from the art when omitted). art = a drawing key in src/art (placeholder.ts hand-drawn, fishgen.ts generated, snails.ts). zone 'bottom' rests on the substrate; kind 'snail' clings to the floor or a glass pane. habitat 'land' rests on ground above the water, 'both' on land or in water deep enough (default 'water'). group 'school' swims in a tight, aligned school, 'shoal' in a loose group (when 3+ are kept); level 'top' / 'low' is the part of the water column a swimmer favours (default mid). Both only steer Shuffle. Lengths are total length, nose to tail tip (Nathan 2026-10-08). cat = the Animals menu it is listed under: 'fw-fish' (default), 'fw-invert', 'sw-fish', 'sw-invert', 'amphibian', 'reptile', 'land-invert'. female = the female's drawing and adult length for a sexually dimorphic species (the species itself is the male).",
  "species": [
   {"id": "neon", "name": "Neon tetra", "sci": "Paracheirodon innesi", "tl": 35, "group": "school", "art": "tetra"},
   {"id": "cardinal", "name": "Cardinal tetra", "sci": "Paracheirodon axelrodi", "tl": 45, "group": "school", "art": "cardinal"},
@@ -36,16 +36,16 @@
   {"id": "clownloach", "name": "Clown loach", "sci": "Chromobotia macracanthus", "tl": 200, "zone": "bottom", "group": "shoal", "art": "clownloach", "note": "Commonly 15-20 cm in aquaria; can reach 30 cm."},
   {"id": "sae", "name": "Siamese algae eater", "sci": "Crossocheilus oblongus", "tl": 150, "zone": "bottom", "art": "sae"},
   {"id": "peapuffer", "name": "Pea puffer", "sci": "Carinotetraodon travancoricus", "tl": 30, "group": "shoal", "art": "peapuffer", "female": {"art": "peapuffer_f", "tl": 30}},
-  {"id": "cherryshrimp", "name": "Cherry shrimp", "sci": "Neocaridina davidi", "tl": 30, "zone": "bottom", "cling": "hardscape", "group": "shoal", "art": "cherryshrimp"},
-  {"id": "amano", "name": "Amano shrimp", "sci": "Caridina multidentata", "tl": 45, "zone": "bottom", "cling": "hardscape", "group": "shoal", "art": "amano"},
-  {"id": "nerite", "name": "Nerite snail (zebra)", "sci": "Neritina natalensis", "tl": 25, "kind": "snail", "art": "nerite"},
-  {"id": "mystery", "name": "Mystery snail", "sci": "Pomacea diffusa", "tl": 55, "kind": "snail", "art": "mystery"},
-  {"id": "ramshorn", "name": "Ramshorn snail", "sci": "Planorbella duryi", "tl": 20, "kind": "snail", "art": "ramshorn"},
-  {"id": "trumpet", "name": "Malaysian trumpet snail", "sci": "Melanoides tuberculata", "tl": 25, "kind": "snail", "art": "trumpet"},
-  {"id": "dartfrog", "name": "Dyeing dart frog", "sci": "Dendrobates tinctorius", "tl": 45, "habitat": "land", "art": "dartfrog"},
-  {"id": "treefrog", "name": "White's tree frog", "sci": "Ranoidea caerulea", "tl": 100, "habitat": "land", "art": "treefrog"},
-  {"id": "firetoad", "name": "Fire-bellied toad", "sci": "Bombina orientalis", "tl": 45, "habitat": "both", "art": "firetoad"},
-  {"id": "firenewt", "name": "Chinese fire-bellied newt", "sci": "Cynops orientalis", "tl": 90, "habitat": "both", "art": "firenewt"},
-  {"id": "axolotl", "name": "Axolotl", "sci": "Ambystoma mexicanum", "tl": 230, "zone": "bottom", "art": "axolotl"}
+  {"id": "cherryshrimp", "cat": "fw-invert", "name": "Cherry shrimp", "sci": "Neocaridina davidi", "tl": 30, "zone": "bottom", "cling": "hardscape", "group": "shoal", "art": "cherryshrimp"},
+  {"id": "amano", "cat": "fw-invert", "name": "Amano shrimp", "sci": "Caridina multidentata", "tl": 45, "zone": "bottom", "cling": "hardscape", "group": "shoal", "art": "amano"},
+  {"id": "nerite", "cat": "fw-invert", "name": "Nerite snail (zebra)", "sci": "Neritina natalensis", "tl": 25, "kind": "snail", "art": "nerite"},
+  {"id": "mystery", "cat": "fw-invert", "name": "Mystery snail", "sci": "Pomacea diffusa", "tl": 55, "kind": "snail", "art": "mystery"},
+  {"id": "ramshorn", "cat": "fw-invert", "name": "Ramshorn snail", "sci": "Planorbella duryi", "tl": 20, "kind": "snail", "art": "ramshorn"},
+  {"id": "trumpet", "cat": "fw-invert", "name": "Malaysian trumpet snail", "sci": "Melanoides tuberculata", "tl": 25, "kind": "snail", "art": "trumpet"},
+  {"id": "dartfrog", "cat": "amphibian", "name": "Dyeing dart frog", "sci": "Dendrobates tinctorius", "tl": 45, "habitat": "land", "art": "dartfrog"},
+  {"id": "treefrog", "cat": "amphibian", "name": "White's tree frog", "sci": "Ranoidea caerulea", "tl": 100, "habitat": "land", "art": "treefrog"},
+  {"id": "firetoad", "cat": "amphibian", "name": "Fire-bellied toad", "sci": "Bombina orientalis", "tl": 45, "habitat": "both", "art": "firetoad"},
+  {"id": "firenewt", "cat": "amphibian", "name": "Chinese fire-bellied newt", "sci": "Cynops orientalis", "tl": 90, "habitat": "both", "art": "firenewt"},
+  {"id": "axolotl", "cat": "amphibian", "name": "Axolotl", "sci": "Ambystoma mexicanum", "tl": 230, "zone": "bottom", "art": "axolotl"}
  ]
 }

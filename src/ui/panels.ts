@@ -3,7 +3,7 @@
 import { rng } from '../art/paint';
 import { SUBSTRATES, drawFishCard } from '../art/placeholder';
 import { drawSnailCard } from '../art/snails';
-import { fishTL, getSpecies, needsWater, searchSpecies, speciesOf, speciesTag, type Sex, type Species } from '../data/species';
+import { CATEGORIES, SPECIES, fishTL, getSpecies, needsWater, searchSpecies, speciesOf, speciesTag, type Category, type Sex, type Species } from '../data/species';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { emitters } from '../render/lighting';
 import { SpeciesPreview } from '../render/preview3d';
@@ -237,13 +237,33 @@ Cancel, then change the name, to keep both.`)) return;
   const PSIDES = [['personLeft', 'left'], ['personRight', 'right']] as const;
   for (const [id, side] of PSIDES) $(id).onclick = () => store.edit(s => { s.person.side = side; s.person.show = true; });
 
-  // ---------- Species search & adding fish ----------
+  // ---------- Species search & adding animals ----------
   let pickId = 'neon';
   const search = $('spSearch'), results = $<HTMLDivElement>('spResults');
+  // sub menus: All, then one chip per group; the search looks only inside the chosen group
+  let cat: Category | undefined;
+  const cats = $('spCats');
+  for (const [k, label] of [[undefined, 'All'], ...CATEGORIES] as const) {
+    const n = k ? SPECIES.filter(sp => sp.cat === k).length : SPECIES.length, b = document.createElement('button');
+    b.setAttribute('role', 'tab'); b.dataset.cat = k ?? '';
+    b.innerHTML = `${esc(label)} <span class="n">${n}</span>`;
+    if (!n) b.classList.add('empty');
+    b.onclick = () => { cat = k; renderResults(); };
+    cats.append(b);
+  }
+  const catName = () => CATEGORIES.find(c => c[0] === cat)?.[1] ?? '';
   function renderResults() {
-    const list = searchSpecies(search.value);
+    for (const b of cats.children as HTMLCollectionOf<HTMLButtonElement>) {
+      const on = b.dataset.cat === (cat ?? '');
+      b.classList.toggle('on', on); b.setAttribute('aria-selected', String(on));
+    }
+    search.setAttribute('placeholder', cat ? `Search ${catName().toLowerCase()}` : 'Search species (common or scientific name)');
+    const list = searchSpecies(search.value, cat);
     if (list.length && !list.some(s => s.id === pickId)) pickId = list[0].id;
-    results.innerHTML = list.length ? '' : '<div class="none">No species match.</div>';
+    const elsewhere = !list.length && cat && search.value.trim() ? searchSpecies(search.value).length : 0;
+    results.innerHTML = list.length ? '' : `<div class="none">${!cat || search.value.trim() ? 'No species match' : `No ${esc(catName().toLowerCase())} yet`}${elsewhere ? ` in ${esc(catName())}. <a href="#" id="spAll">${elsewhere} in other groups</a>` : '.'}</div>`;
+    const all = results.querySelector<HTMLAnchorElement>('#spAll');
+    if (all) all.onclick = e => { e.preventDefault(); cat = undefined; renderResults(); };
     for (const sp of list) {
       const b = document.createElement('button');
       b.setAttribute('role', 'option'); b.setAttribute('aria-selected', String(sp.id === pickId));
@@ -291,7 +311,7 @@ Cancel, then change the name, to keep both.`)) return;
     const adult = base.female ? `Adult ♂ ${fmt(base.tl)}, ♀ ${fmt(base.female.tl)}` : `Adult ${fmt(sp.tl)}`;
     $('spPreviewInfo').textContent = [adult, speciesTag(sp), sp.note].filter(Boolean).join(' · ');
   }
-  search.onkeydown = e => { if (e.key === 'Enter') { const sp = searchSpecies(search.value)[0]; if (sp) { pickId = sp.id; addOne(sp); renderResults(); } } };
+  search.onkeydown = e => { if (e.key === 'Enter') { const sp = searchSpecies(search.value, cat)[0]; if (sp) { pickId = sp.id; addOne(sp); renderResults(); } } };
 
   /** Size for newly added fish: % of adult length (100 = adult, stored as no override). */
   const addPct = () => clamp(Math.round(+$('addSize').value || 100), 15, 130);
@@ -816,7 +836,7 @@ Cancel, then change the name, to keep both.`)) return;
         box.onchange = () => { const v = Math.round(+box.value); if (Number.isFinite(v) && box.value !== '') setCount(sp, () => Math.max(0, v), sex); else box.value = String(n); };
         list.append(row);
       }
-      if (!counts.size) list.innerHTML = '<span class="hint">No fish yet. Pick a species above and press Add.</span>';
+      if (!counts.size) list.innerHTML = '<span class="hint">No animals yet. Pick a species above and press Add.</span>';
       renderResults();
     }
     const f = sel();

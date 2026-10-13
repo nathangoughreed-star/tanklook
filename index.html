@@ -95,7 +95,8 @@
   <div class="row"><label for="personH">Person height</label><input id="personH" type="range" step="10"><output id="oPersonH"></output></div>
   <div class="hint">Cabinet and frame stands match the tank's footprint; a custom-size cabinet or a table can be bigger, with the tank anywhere on it, and the wall and person keep clear of its edge. <i>Peninsula</i> puts the tank's end against the wall; the background moves to that end and the long back glass is clear.</div>
   </details>
-  <details class="sec" data-sec="fish"><summary><h2>Fish</h2></summary>
+  <details class="sec" data-sec="fish"><summary><h2>Animals</h2></summary>
+  <div id="spCats" class="cats" role="tablist" aria-label="Animal groups"></div>
   <input id="spSearch" type="search" placeholder="Search species (common or scientific name)" aria-label="Search species">
   <div id="spResults" class="results" role="listbox" aria-label="Species"></div>
   <div id="spPreview" class="spCard" hidden><button id="spPreviewHide" class="spHide" title="Close preview" aria-label="Close preview">×</button>
@@ -106,7 +107,7 @@
     <button id="shuffle" title="Move every animal to a new spot, as if a moment later: bottom dwellers stay down, schools stay together">Shuffle</button>
     <button id="delAll">Delete all</button>
   </div>
-  <div class="row"><label for="addSize">New fish size</label><input id="addSize" type="range" min="15" max="130" step="5" value="100"><output id="oAddSize"></output></div>
+  <div class="row"><label for="addSize">New animal size</label><input id="addSize" type="range" min="15" max="130" step="5" value="100"><output id="oAddSize"></output></div>
   <div id="list" class="stock" aria-label="Stocking"></div>
   <div class="field" id="aqRow"><span class="flabel">Stocking</span><button id="aqCheck" title="Ask AqAdvisor for this tank's stocking level (one request)">Check</button><span id="aqOut"></span><a id="aqLink" target="_blank" rel="noopener" title="Open this tank and stocking in AqAdvisor's calculator for the full report">AqAdvisor ↗</a></div>
   <div class="hint" id="aqNote"></div>
