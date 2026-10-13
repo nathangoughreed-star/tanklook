@@ -16,6 +16,14 @@ Nathan: driftwood, caves and rocks looked too clean; wanted randomly generated k
   darker cut face were not applied under lighting; it now runs `userData.pre` first (program key gets 'h').
 - Cost measured: about 2.6 ms more per frame for 11 pieces at 930x860 (frames are drawn on change only).
 
+## Pie slice tank shape (2026-10-13)
+
+Nathan asked for a "pie slice" aquarium (half round or 90° corner tank): set radius, height and degrees.
+`shape: 'pie'`, `pieDeg` 45-180 (default 90; capped at 180 so the outline stays convex, which insideBy / clampIn rely on).
+D = radius, L derived = chord 2r sin(θ/2) (normTank); apex at the back centre, arc toward the viewer, two flat panes
+back to the apex (one back pane at 180°). UI: "Pie slice (corner / half round)" in Shape, Length hidden, Depth reads
+Radius, Angle slider (type-in). Flat-ends rules apply (no hood, back wall only). Shots `shots/pie_{90,120,180}.png`.
+
 ## Light beam overlay (2026-10-13)
 
 Nathan asked for a Lighting-tab toggle showing the light cones from height and beam angle, and an analog for the other

@@ -128,10 +128,11 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
   const tank = (v: unknown, def: Tank): Tank => {
     const o = isObj(v) ? v : {};
     const T: Tank = { L: num(o.L, def.L, LIMITS.tankMin, LIMITS.tankMax), H: num(o.H, def.H, LIMITS.tankMin, LIMITS.tankMax), D: num(o.D, def.D, LIMITS.tankMin, LIMITS.tankMax) };
-    const shape = pick(o.shape, ['rect', 'bow', 'round', 'poly', 'bowl'] as const, 'rect'); // v8; older files: rect
+    const shape = pick(o.shape, ['rect', 'bow', 'round', 'poly', 'bowl', 'pie'] as const, 'rect'); // v8; older files: rect
     if (shape === 'rect') return T;
     return normTank({ ...T, shape, ...(shape === 'poly' ? { sides: num(o.sides, 6) } : {}), ...(shape === 'bow' ? { bowMin: num(o.bowMin, T.D * 0.75, 0, T.D) } : {}),
-      ...(shape === 'bowl' ? { bowlFloor: num(o.bowlFloor, T.L * 0.6, 0, T.L), bowlTop: num(o.bowlTop, T.L * 0.6, 0, T.L) } : {}) });
+      ...(shape === 'bowl' ? { bowlFloor: num(o.bowlFloor, T.L * 0.6, 0, T.L), bowlTop: num(o.bowlTop, T.L * 0.6, 0, T.L) } : {}),
+      ...(shape === 'pie' ? { pieDeg: num(o.pieDeg, 90, 45, 180) } : {}) });
   };
 
   const tankA = tank(raw.tank, d.tank);

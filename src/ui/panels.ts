@@ -24,7 +24,7 @@ import { randomPose, randomSize, shuffleFish } from '../scene/scatter';
 import { fitFish, setWaterLevel } from '../scene/water';
 import { tankWeight } from '../scene/weight';
 import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, aqWaitS, fetchStocking } from '../data/aqadvisor';
-import { BOWL_DEFAULT, BOWL_MAX, BOWL_MIN, POLY_SIDES, SHAPES, bowMinLimit, offsetRing, ringArea, shapeOf } from '../scene/shape';
+import { BOWL_DEFAULT, BOWL_MAX, BOWL_MIN, PIE_DEFAULT, POLY_SIDES, SHAPES, bowMinLimit, offsetRing, ringArea, shapeOf } from '../scene/shape';
 import { TABLE_MAX, tableOn, tableRange } from '../scene/table';
 import type { Fish, Item, ItemKind, LayoutId, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
 import { GLASS_CHOICES, LIMITS, SceneError, parseScene } from '../scene/validate';
@@ -169,10 +169,11 @@ Cancel, then change the name, to keep both.`)) return;
   $<HTMLSelectElement>('shapeSel').innerHTML = Object.entries(SHAPES).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join('');
   $<HTMLSelectElement>('shapeSel').onchange = e => {
     const shape = (e.target as HTMLSelectElement).value as TankShape;
-    setTank(T => ({ ...T, shape, sides: T.sides ?? 6, bowMin: T.bowMin ?? T.D * 0.7, bowlFloor: T.bowlFloor ?? T.L * BOWL_DEFAULT, bowlTop: T.bowlTop ?? T.L * BOWL_DEFAULT }));
+    setTank(T => ({ ...T, shape, sides: T.sides ?? 6, bowMin: T.bowMin ?? T.D * 0.7, bowlFloor: T.bowlFloor ?? T.L * BOWL_DEFAULT, bowlTop: T.bowlTop ?? T.L * BOWL_DEFAULT, pieDeg: T.pieDeg ?? PIE_DEFAULT }));
   };
   for (const n of POLY_SIDES) $('sides' + n).onclick = () => setTank(T => ({ ...T, shape: 'poly', sides: n }));
   $('bowMin').oninput = e => setTank(T => ({ ...T, bowMin: +(e.target as HTMLInputElement).value }), 'bowMin');
+  $('pieDeg').oninput = e => setTank(T => ({ ...T, pieDeg: +(e.target as HTMLInputElement).value }), 'pieDeg');
   for (const k of ['bowlFloor', 'bowlTop'] as const) $(k).oninput = e => setTank(T => ({ ...T, [k]: +(e.target as HTMLInputElement).value }), k);
   for (const k of ['L', 'H', 'D'] as const) {
     const el = $('a' + k);
@@ -632,7 +633,7 @@ Cancel, then change the name, to keep both.`)) return;
     return v == null ? null : neg.test(t) ? -Math.abs(v) : v;
   } });
   const lens = ['bowMin', 'bowlFloor', 'bowlTop', 'standH', 'tableL', 'tableD', 'subBL', 'subBR', 'subFL', 'subFR', 'lH', 'cDist', 'iSize', 'iLift', 'personH'];
-  const nums = { bgArc: 0, iYaw: 0, iPitch: 0, iTilt: 0, lCount: 0, lRows: 0, lCone: 0, lK: 0, lBright: 2, lRoom: 2, cAz: 0, cEl: 0, cZoom: 2, terCols: 0, addSize: 0 };
+  const nums = { pieDeg: 0, bgArc: 0, iYaw: 0, iPitch: 0, iTilt: 0, lCount: 0, lRows: 0, lCone: 0, lK: 0, lBright: 2, lRoom: 2, cAz: 0, cEl: 0, cZoom: 2, terCols: 0, addSize: 0 };
   attachTypeIns({
     ...Object.fromEntries(lens.map(id => [id, len])),
     ...Object.fromEntries(Object.entries(nums).map(([id, d]) => [id, num(d)])),
@@ -717,6 +718,8 @@ Cancel, then change the name, to keep both.`)) return;
     for (const id of ['aL', 'aH', 'aD']) $(id).step = u === 'in' ? '0.5' : '1';
     const sh = shapeOf(A);
     setVal('shapeSel', sh); $('sidesRow').style.display = sh === 'poly' ? '' : 'none'; $('bowRow').style.display = sh === 'bow' ? '' : 'none';
+    $('pieRow').style.display = sh === 'pie' ? '' : 'none';
+    if (sh === 'pie') { setVal('pieDeg', A.pieDeg ?? PIE_DEFAULT); setOut('oPie', `${A.pieDeg ?? PIE_DEFAULT}°`); }
     for (const [k, o] of [['bowlFloor', 'oBowlFloor'], ['bowlTop', 'oBowlTop']] as const) {
       $(k + 'Row').style.display = sh === 'bowl' ? '' : 'none';
       if (sh !== 'bowl') continue;
@@ -725,11 +728,13 @@ Cancel, then change the name, to keep both.`)) return;
     ($('aH') as HTMLInputElement).disabled = sh === 'bowl'; // a bowl's height follows from its three diameters
     for (const n of POLY_SIDES) $('sides' + n).classList.toggle('on', sh === 'poly' && A.sides === n);
     $('aLLab').textContent = sh === 'round' || sh === 'bowl' ? 'Diameter' : sh === 'poly' ? 'Width' : 'Length';
-    $('aDLab').textContent = sh === 'bow' ? 'Centre depth' : 'Depth';
+    $('aDLab').textContent = sh === 'bow' ? 'Centre depth' : sh === 'pie' ? 'Radius' : 'Depth';
+    $('aL').parentElement!.style.display = sh === 'pie' ? 'none' : ''; // a pie slice's width follows from radius and angle
     $('aD').parentElement!.style.display = sh === 'round' || sh === 'poly' || sh === 'bowl' ? 'none' : ''; // depth follows from the diameter / width
     if (sh === 'bow') { const b = $('bowMin'); b.min = String(Math.ceil(Math.max(20, bowMinLimit(A)))); b.max = String(Math.floor(A.D)); setVal('bowMin', A.bowMin ?? A.D); setOut('oBow', fmt(A.bowMin ?? A.D)); }
     $('shapeHint').textContent = sh === 'rect' ? '' : sh === 'bow' ? 'Bowfront: the front glass is a curve from the end depth out to the full depth at the centre.'
-      : (sh === 'round' ? 'Round: one curved glass wall.' : sh === 'bowl' ? 'Bowl: a glass sphere cut flat at the floor and the opening; its height follows from the three diameters.'
+      : (sh === 'round' ? 'Round: one curved glass wall.' : sh === 'pie' ? `Pie slice: a curved front and two flat panes meeting at the back${(A.pieDeg ?? PIE_DEFAULT) === 90 ? ' (a corner tank)' : (A.pieDeg ?? PIE_DEFAULT) === 180 ? ' (a half round)' : ''}; ${fmt(A.L)} wide.`
+        : sh === 'bowl' ? 'Bowl: a glass sphere cut flat at the floor and the opening; its height follows from the three diameters.'
         : `${A.sides} flat panes, one facing you.`) + ' No hood or peninsula ends for this shape.';
     $('shapeHint').style.display = sh === 'rect' ? 'none' : '';
     ($('lidHood') as HTMLButtonElement).disabled = !flatEnds(A);

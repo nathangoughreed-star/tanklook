@@ -16,11 +16,11 @@ export type LightType = 'flat' | 'spot' | 'tube' | 'led';
 export type SubstrateType = 'gravel' | 'pea' | 'clown' | 'blue' | 'onyx' | 'black' | 'white';
 
 /** Tank floor outline (scene v8). L x D is always the bounding box; see scene/shape.ts. */
-export type TankShape = 'rect' | 'bow' | 'round' | 'poly' | 'bowl';
+export type TankShape = 'rect' | 'bow' | 'round' | 'poly' | 'bowl' | 'pie';
 export interface Tank {
   L: number; H: number; D: number;
   /**
-   * Absent = 'rect' (files before v8). round: D = L (diameter). poly: L = width, D derived from it. bow: D = centre depth.
+   * Absent = 'rect' (files before v8). round: D = L (diameter). poly: L = width, D derived from it. bow: D = centre depth. pie: D = radius, L derived.
    * bowl: a sphere of diameter L = D cut flat at the floor and at the opening; H is derived from the three diameters.
    */
   shape?: TankShape;
@@ -31,6 +31,8 @@ export interface Tank {
   /** bowl only: diameters (mm) of the flat floor and of the opening at the top, both less than L. */
   bowlFloor?: number;
   bowlTop?: number;
+  /** pie only: angle (45-180°) between the two flat panes at the back; D is the radius and L the chord it spans. */
+  pieDeg?: number;
 }
 
 export interface Fish {

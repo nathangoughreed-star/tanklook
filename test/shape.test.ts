@@ -172,3 +172,25 @@ describe('glass edges setting (2026-10-12)', () => {
     expect(parseScene({ version: 9, name: 'e', units: 'mm', tanks: [t] }).scene.tanks[0].render.edges).toBe(false);
   });
 });
+
+describe('pie slice', () => {
+  it('a corner tank (90°): width from the radius, area a quarter circle, corner at the back', () => {
+    const T = normTank({ L: 1, H: 500, D: 600, shape: 'pie', pieDeg: 90 });
+    expect(T.L).toBeCloseTo(600 * Math.SQRT2, 0);
+    expect(footprint(T).area).toBeCloseTo(Math.PI * 600 * 600 / 4, -3);
+    expect(inside(T, T.L / 2, 300)).toBe(true);
+    expect(inside(T, 50, 550)).toBe(false); // the back corners of the box are outside
+    expect(inside(T, T.L / 2, 5)).toBe(true);
+  });
+  it('a half round (180°): L = 2 x radius, flat back pane', () => {
+    const T = normTank({ L: 1, H: 400, D: 300, shape: 'pie', pieDeg: 180 });
+    expect(T.L).toBeCloseTo(600, 1);
+    expect(footprint(T).area).toBeCloseTo(Math.PI * 300 * 300 / 2, -3);
+    expect(inside(T, 20, 295)).toBe(true);
+    expect(insideBy(T, 300, 150)).toBeCloseTo(150, 0);
+  });
+  it('angle is clamped to 45-180 and survives a file round trip', () => {
+    expect(normTank({ L: 1, H: 400, D: 300, shape: 'pie', pieDeg: 300 }).pieDeg).toBe(180);
+    expect(normTank({ L: 1, H: 400, D: 300, shape: 'pie', pieDeg: 10 }).pieDeg).toBe(45);
+  });
+});

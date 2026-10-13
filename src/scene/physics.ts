@@ -130,7 +130,7 @@ export function fmtDims(T: Tank, u: Units) {
   const k = unitMM(u), suf = u === 'in' ? '″' : ' cm';
   const dims = `${+(T.L / k).toFixed(1)} × ${+(T.H / k).toFixed(1)} × ${+(T.D / k).toFixed(1)}${suf} (L×H×D)`;
   const sh = T.shape ?? 'rect';
-  return sh === 'rect' ? dims : `${sh === 'bow' ? 'bowfront' : sh === 'round' ? 'round' : sh === 'bowl' ? 'bowl' : `${T.sides}-sided`} ${dims}`;
+  return sh === 'rect' ? dims : `${sh === 'bow' ? 'bowfront' : sh === 'round' ? 'round' : sh === 'bowl' ? 'bowl' : sh === 'pie' ? `${T.pieDeg}° pie slice` : `${T.sides}-sided`} ${dims}`;
 }
 export const toUnit = (mm: number, u: Units) => +(mm / unitMM(u)).toFixed(2);
 export const fromUnit = (v: number, u: Units) => v * unitMM(u);

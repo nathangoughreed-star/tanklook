@@ -1,5 +1,5 @@
 // Tank footprint (scene v8): the floor outline of every tank shape, and the geometry questions asked of it. Shapes are
-// rect, bowfront, round and regular polygons. L x D stays the BOUNDING BOX of the outline, with the front-most point at
+// rect, bowfront, round, regular polygons and pie slices. L x D stays the BOUNDING BOX of the outline, with the front-most point at
 // depth 0 on the centre line, so everything keyed to the box (heightfield u = x/L, v = depth/D, camera, walls, orbit,
 // rescale) keeps working; only "is this spot in the tank" and the glass follow the outline. Every shape is convex.
 // The bowl is the one shape whose walls are not upright: a sphere cut flat at the floor and at the opening. Its footprint
@@ -21,7 +21,7 @@ export interface Footprint { walls: Wall[]; ring: P[]; edges: Edge[]; area: numb
 /** Segments in a full circle and in the bowfront arc. */
 const ROUND_SEG = 64, BOW_SEG = 32;
 
-export const SHAPES: Record<TankShape, string> = { rect: 'Rectangle', bow: 'Bowfront', round: 'Round (cylinder)', poly: 'Polygon', bowl: 'Bowl (sphere)' };
+export const SHAPES: Record<TankShape, string> = { rect: 'Rectangle', bow: 'Bowfront', round: 'Round (cylinder)', poly: 'Polygon', bowl: 'Bowl (sphere)', pie: 'Pie slice (corner / half round)' };
 export const POLY_SIDES = [3, 5, 6] as const;
 export const shapeOf = (T: Tank): TankShape => T.shape ?? 'rect';
 
@@ -35,6 +35,12 @@ export function polyRatio(n: number) {
   const p = unitPoly(n), xs = p.map(q => q[0]), ds = p.map(q => q[1]);
   return (Math.max(...ds) - Math.min(...ds)) / (Math.max(...xs) - Math.min(...xs));
 }
+
+/** Pie slice: the angle (degrees) between its two flat panes. Up to a half circle, so the outline stays convex. */
+export const PIE_MIN = 45, PIE_MAX = 180, PIE_DEFAULT = 90;
+const pieHalf = (T: Tank) => (clamp(T.pieDeg ?? PIE_DEFAULT, PIE_MIN, PIE_MAX) * Math.PI) / 360;
+/** Width of a pie slice of radius r: the chord between the arc's ends (2r at a half circle). */
+export const pieWidth = (r: number, deg: number) => 2 * r * Math.sin((clamp(deg, PIE_MIN, PIE_MAX) * Math.PI) / 360);
 
 /** Floor and opening diameters of a bowl, as fractions of its diameter L. */
 export const BOWL_MIN = 0.2, BOWL_MAX = 0.95, BOWL_DEFAULT = 0.6;
@@ -74,7 +80,7 @@ export const bowMinLimit = (T: Tank) => Math.max(0, T.D - T.L / 2);
 
 /**
  * A tank with its shape's constraints applied: round D = L (diameter); polygon D from L and the side count; bowfront
- * end depth between the half-circle limit and D. A rectangle is plain { L, H, D }, as in files before v8.
+ * end depth between the half-circle limit and D; pie slice L from its radius D and angle. A rectangle is plain { L, H, D }, as in files before v8.
  */
 export function normTank(T: Tank): Tank {
   const s = shapeOf(T);
@@ -84,7 +90,8 @@ export function normTank(T: Tank): Tank {
     const B: Tank = { L: T.L, H: T.H, D: T.L, shape: 'bowl', bowlFloor: f, bowlTop: t };
     return { ...B, H: +bowlDims(B).H.toFixed(1) };
   }
-  T = { ...T, bowlFloor: undefined, bowlTop: undefined };
+  if (s === 'pie') { const deg = Math.round(clamp(T.pieDeg ?? PIE_DEFAULT, PIE_MIN, PIE_MAX)); return { L: +pieWidth(T.D, deg).toFixed(1), H: T.H, D: T.D, shape: 'pie', pieDeg: deg }; }
+  T = { ...T, bowlFloor: undefined, bowlTop: undefined, pieDeg: undefined };
   if (s === 'round') return { ...T, D: T.L, sides: undefined, bowMin: undefined };
   if (s === 'poly') { const n = (POLY_SIDES as readonly number[]).includes(T.sides ?? 0) ? T.sides! : 6; return { ...T, sides: n, D: +(T.L * polyRatio(n)).toFixed(1), bowMin: undefined }; }
   const lo = bowMinLimit(T), b = T.bowMin ?? T.D * 0.75;
@@ -97,6 +104,15 @@ function makeWalls(T: Tank): Wall[] {
     const R = L / 2, r = s === 'bowl' ? bowlDims(T).rb : R, pts: P[] = [];
     for (let i = 0; i <= ROUND_SEG; i++) { const a = -Math.PI + 2 * Math.PI * i / ROUND_SEG; pts.push([R + r * Math.sin(a), R - r * Math.cos(a)]); }
     return [{ pts, curved: true }];
+  }
+  if (s === 'pie') {
+    // apex at the back centre (depth D = radius), the arc toward the viewer, then the right pane back to the apex and
+    // the left pane out to the arc's start: a corner tank (90°) points its corner away, a half round has a flat back
+    const r = D, h = pieHalf(T), n = Math.max(8, Math.ceil(ROUND_SEG * h / Math.PI)), pts: P[] = [];
+    for (let i = 0; i <= n; i++) { const a = -h + 2 * h * i / n; pts.push([L / 2 + r * Math.sin(a), r - r * Math.cos(a)]); }
+    if (h > Math.PI / 2 - 1e-6) return [{ pts, curved: true }, { pts: [pts[n], pts[0]], curved: false }]; // half round: one flat back pane
+    const apex: P = [L / 2, r];
+    return [{ pts, curved: true }, { pts: [pts[n], apex], curved: false }, { pts: [apex, pts[0]], curved: false }];
   }
   if (s === 'poly') {
     const u = unitPoly(T.sides ?? 6), x0 = Math.min(...u.map(q => q[0])), x1 = Math.max(...u.map(q => q[0])), d0 = Math.min(...u.map(q => q[1]));
@@ -118,7 +134,7 @@ function makeWalls(T: Tank): Wall[] {
 const cache = new Map<string, Footprint>();
 /** The footprint of tank T (cached by its shape parameters). */
 export function footprint(T: Tank): Footprint {
-  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}`;
+  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.pieDeg}`;
   let f = cache.get(key);
   if (f) return f;
   const walls = makeWalls(T), ring: P[] = [], edges: Edge[] = [];
