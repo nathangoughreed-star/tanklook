@@ -29,6 +29,7 @@ import { TABLE_MAX, tableOn, tableRange, wallGap } from '../scene/table';
 import type { Fish, Item, ItemKind, LayoutId, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
 import { GLASS_CHOICES, LIMITS, SceneError, parseScene } from '../scene/validate';
 import { deleteFromLib, listLib, loadFromLib, saveToLib } from '../scene/library';
+import { EXAMPLES } from '../examples';
 
 const $ = <T extends HTMLElement = HTMLInputElement>(id: string) => document.getElementById(id) as T;
 /** ?debug in the URL shows calibration readouts (apparent-size maths) in the fish readout. */
@@ -67,7 +68,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   };
   // Open… shows the tanks saved in this browser (with pictures) and the way to open a downloaded file
   const dlg = $<HTMLDialogElement>('libDlg');
-  $('openScene').onclick = () => { renderLib(); dlg.showModal(); };
+  $('openScene').onclick = () => { renderExamples(); renderLib(); dlg.showModal(); };
   $('openFile').onclick = () => { dlg.close(); $('fileIn').click(); };
   // Opening rebuilds the tank in one blocking frame (several seconds for a full tank): show the spinner, let it paint,
   // then open; it clears on the first draw after, which is the one that built the tank.
@@ -111,6 +112,29 @@ export function attachPanels(store: Store, viewer: Viewer) {
       `<button class="libdel" data-libdel="${esc(e.id)}" title="Delete “${esc(e.name)}” from this browser" aria-label="Delete ${esc(e.name)}">×</button></div>`).join('')
       : '<p class="hint">No tanks saved in this browser yet. <i>Save</i> puts the current tank here.</p>';
   }
+  // Examples (lane F): bundled scenes, opened like a file (a new, unsaved tank; Undo brings the previous one back)
+  function renderExamples() {
+    const box = $<HTMLDivElement>('exList');
+    if (box.childElementCount) return;
+    box.innerHTML = EXAMPLES.map(x =>
+      `<div class="libcard"><button class="libopen" data-ex="${esc(x.id)}" title="${esc(x.hint)}">` +
+      `<img src="${esc(x.thumb)}" alt=""><b>${esc(x.name)}</b><span class="hint">${esc(x.hint)}</span></button></div>`).join('');
+  }
+  $('exList').onclick = e => {
+    const op = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-ex]'), x = op && EXAMPLES.find(q => q.id === op.dataset.ex);
+    if (!x) return;
+    dlg.close();
+    whileOpening(x.name, () => {
+      try {
+        const { scene } = parseScene(x.scene);
+        store.replace(scene); setLibId(null);
+        status(`Opened the example "${scene.name}". Undo brings the previous tank back; Save keeps your own copy.`);
+        return true;
+      } catch {
+        status('Could not open that example.', true); return false;
+      }
+    });
+  };
   $('libList').onclick = e => {
     const t = e.target as HTMLElement, del = t.closest<HTMLButtonElement>('[data-libdel]'), op = t.closest<HTMLButtonElement>('[data-lib]');
     if (del) {

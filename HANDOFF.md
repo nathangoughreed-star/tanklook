@@ -2,6 +2,27 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane F: example tanks (2026-10-13; branch `examples`, shipped to main)
+
+- **Open… lists six Examples** above "Saved in this browser": Planted community (40 breeder), Iwagumi (rimless 24 in),
+  Betta bowl (30 cm bowl on a round oak table), Paludarium (swamp set, water 42 %, toads + dart frogs on land, chilis +
+  shrimp in the pool), Tree frog terrarium (18x18x24 dry, custom soil), Reef (placeholder: salt, aragonite, reef-blue,
+  lava rock, no animals). Nathan approved the six from draft pictures.
+- **Opens like a file**: `parseScene` + `store.replace`, so one undo step back to the previous tank; `setLibId(null)`, so
+  Save makes the user's own copy and never touches the example. Status: "Opened the example ...".
+- **Files**: `src/examples/<id>.json` (ordinary downloaded scenes) + `<id>.jpg` (400 px thumbnail), listed in
+  `src/examples/index.ts` and imported with `?raw` / `?inline`, so they are in the JS bundle and the single-file build
+  (checked: `dist-single/tanklook.html` holds all six, no fetch). About 110 kB JSON + 100 kB pictures.
+- **Re-saving after lanes A / C / E land** (the point of keeping them as plain scene files): open the example, adjust,
+  *Download*, replace `src/examples/<id>.json`; for a new picture, *Save* it and copy the thumbnail, or in the dev
+  server `__gb.viewer.thumbnail(400)` and save the JPEG as `<id>.jpg`. Plants turn 3D by themselves once lane A merges
+  (items store only variant/seed/size). The reef wants marine fish (lane C) and corals / live rock (lane E); rename it
+  from "Reef (placeholder)" then, and update its `name` + `hint` in `index.ts` (the test checks the file name matches).
+- `test/examples.test.ts`: six examples, each parses with no warnings, every species exists, reef is salt, terrarium dry.
+- Touched outside my files: two CSS rules in `src/style.css` (`.libsub`, `#exList`). The examples were built in the dev
+  server from the app's own `defaultSetup` / `starterItems` / `shuffleFish`, then hand-tuned (paludarium land plants
+  thinned near the frogs, terrarium frogs moved to the front, betta bowl water 85 %).
+
 ## Lane B: fresh or salt tank (2026-10-13; branch `salt-tank`, shipped to main)
 
 - **Water section: Type = Freshwater | Saltwater** (`water.salt`, the seam's flag; off when Water is off). One undo step.
@@ -45,7 +66,7 @@ Rules: touch another lane's file only for a one-line hook, and say so in your se
 asking Nathan. Shipping: in the worktree `git fetch` + `git merge origin/main`, tsc + tests + browser check, then
 `git push origin HEAD:main` and `git -C "C:/Users/nreed/Glass Box" merge --ff-only origin/main`. HANDOFF.md
 conflicts on merge: keep both sections. Each lane adds its own dated section at the top of this file.
-Lane B DONE (`ff590db`). Lane F added 2026-10-13: example tanks, `../Glass-Box-examples` / `examples`, launch config
+Lane B DONE (`ff590db`). Lane F DONE (see its section). Lane F added 2026-10-13: example tanks, `../Glass-Box-examples` / `examples`, launch config
 `examples` 5313; owns the Open dialog's examples list in `src/ui/panels.ts` + `index.html`, and new example files.
 Lane G (fixes from shots/audit/AUDIT.md) waits for lane D's report; it takes over `src/ui/*` after F lands.
 Later lane E (corals + live rock as items) waits for A to land: it shares `scene/items.ts` / `render/items.ts`.
