@@ -265,6 +265,15 @@ const AQ_MAP = `#ifdef USE_MAP
     aqTex = mix(aqTex, texture2D(map, uv2), smoothstep(0.3, 0.7, aqNoise(vMapUv * 0.45)));
     aqTex.rgb *= 0.82 + 0.36 * aqNoise(vMapUv * 0.9 + 7.0);
   }
+  // fish stand out (render.pop): a dark ring just outside the painted outline of a fish card (fins, flat fish), up to
+  // 2.5 px wide on screen, so its edge reads against sand or leaves; see-through fins count (their alpha is low), with
+  // a line as faint as the fin
+  if (uFishCard > 0.5 && uPop > 0.01) {
+    vec2 aqD = fwidth(vMapUv) * (2.5 * uPop); float aqA = 0.0;
+    for (int i = 0; i < 8; i++) { float a = float(i) * 0.785398; aqA = max(aqA, texture2D(map, vMapUv + aqD * vec2(cos(a), sin(a))).a); }
+    float aqO = smoothstep(0.08, 0.3, aqA) * (1.0 - smoothstep(0.02, 0.12, aqTex.a));
+    aqTex = vec4(mix(aqTex.rgb, vec3(0.05, 0.04, 0.035), aqO), max(aqTex.a, aqO * min(1.0, 1.6 * aqA)));
+  }
   diffuseColor *= aqTex;
 #endif`;
 

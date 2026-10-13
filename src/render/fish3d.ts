@@ -387,6 +387,25 @@ const dome = (() => { const g = new THREE.SphereGeometry(1, 24, 16); g.scale(1, 
 /** A translucent body (glass shrimp): the water and what is behind show through. */
 const see = (p: Plan) => (p.glass ? { transparent: true, opacity: p.glass } : {});
 
+/**
+ * Fish stand out (render.pop): a dark outline round the solid body, drawn as the body's back faces pushed out along
+ * the normals by a constant width on screen (up to 2.5 px at full strength), so only a rim shows past the body.
+ * Set per viewport by the viewer: `uPop` = render.pop, `uVpH` = the viewport's height in CSS px.
+ */
+export const OUTLINE = { uPop: { value: 0 }, uVpH: { value: 1 } };
+const outlineMat = new THREE.ShaderMaterial({
+  uniforms: OUTLINE, side: THREE.BackSide,
+  vertexShader: `uniform float uPop, uVpH;
+void main() {
+  vec4 p = modelMatrix * vec4(position, 1.0); vec3 n = normalize(mat3(modelMatrix) * normal);
+  float d = max(-(viewMatrix * p).z, 1.0);
+  p.xyz += n * (2.5 * uPop) * 2.0 * d / (projectionMatrix[1][1] * uVpH);
+  gl_Position = projectionMatrix * viewMatrix * p;
+}`,
+  fragmentShader: `uniform float uPop; void main() { if (uPop < 0.01) discard; gl_FragColor = vec4(0.05, 0.04, 0.035, 1.0); }`,
+});
+outlineMat.userData.cached = true;
+
 const fishMat = (key: string, make: () => THREE.MeshBasicMaterial) => {
   let m = matCache.get(key);
   if (!m) { m = make(); m.userData.cached = true; m.userData.fish = true; matCache.set(key, m); }
@@ -405,6 +424,7 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
   grp.add(new THREE.Mesh(g, fishMat(`body:${map.uuid}:${fish3d.fade}:${fish3d.wrap}`, () => {
     const t = bledTexture(map), m = new THREE.MeshBasicMaterial({ map: t.map, vertexColors: true, ...see(p) }); if (fish3d.fade) { m.userData.plain = t.plain; m.userData.side = fish3d.wrap ? SIDE : new THREE.Vector2(0.3, 0.75); } return m;
   })));
+  if (!p.glass) { const o = new THREE.Mesh(g, outlineMat); o.userData.nolight = true; grp.add(o); }
   for (const e of eyePlacements(p, b)) {
     const m = new THREE.Mesh(dome, fishMat('eye:' + art, () => new THREE.MeshBasicMaterial({ map: eyeTexture(e.iris) })));
     m.scale.setScalar(e.r); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), e.n);

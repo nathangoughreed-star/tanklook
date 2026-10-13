@@ -11,6 +11,11 @@ tanks like `edge`; older files 0.5; 0 = the old look). Shader only (lighting.ts 
 the water uniforms): 3D fish bodies get up to +20 % brightness and saturation 1.35 -> 1.7, a darker outline where the
 body turns edge-on (up to 55 %), and up to 60 % less water haze; fish cards (`userData.fishCard`, set in build.ts) get
 the lift and the haze cut. Shot `shots/pop_compare.png` (off / 50 / 100).
+- Same day (Nathan: "also increase the lineweight of the outline"): a real dark outline, width = 2.5 px x pop on
+  screen. Solid body: its back faces pushed out along the normals (fish3d `OUTLINE` / `outlineMat`, a ShaderMaterial
+  child of the body; uniforms set per viewport by the viewer, `uVpH` = viewport height; none on see-through bodies).
+  Cards (fins, flat fish): a ring just outside the painted alpha in AQ_MAP (8 taps at the line width), as faint as a
+  see-through fin.
 
 ## Custom substrate: grain, colour, blends (2026-10-13)
 
