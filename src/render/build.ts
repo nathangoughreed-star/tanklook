@@ -10,7 +10,7 @@ import { alongRun, backgroundRuns, bowlDims, bowlRadius, chord, circleRing, clip
 import { TABLE_TOP, tableCentre, tableOn, tableRing, wallPlane } from '../scene/table';
 import { groundHeight, terrainDisc, terrainPoints } from '../scene/terrain';
 import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
-import { addFixture, applyLighting } from './lighting';
+import { addBeams, addFixture, applyLighting } from './lighting';
 import { itemMesh } from './items';
 import { fish3d, fishBody, has3D } from './fish3d';
 import { herpBody, isHerp3D } from './herp3d';
@@ -804,6 +804,7 @@ export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: numbe
   }
   addLid(sc, S, T);
   if (S.lid !== 'hood') addFixture(sc, T, S.light, floorY(T, S.render, S.stand) + 2700); // ceiling: the wall's room height // with a hood the fixture is inside it; its light still applies
+  if (S.render.beams) addBeams(sc, T, S.light, S.lid);
   const dotMeshes = edit && S.terrain.on ? addTerrainDots(sc, S, T, edit.hot) : [];
   applyLighting(sc);
   sc.updateMatrixWorld(true);

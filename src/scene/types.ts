@@ -72,6 +72,8 @@ export interface RenderSettings {
   rim: boolean;
   /** Thin black lines on every glass edge, inside and out (added 2026-10-12; older files: shown). */
   edges: boolean;
+  /** Light beams drawn where each fixture falls to half strength (added 2026-10-13; older files: hidden). */
+  beams: boolean;
   bg: Background;
   /** Sides the background covers (added 2026-10-12; older files: the side against the room wall, as it was then). */
   bgSides: BgSide[];

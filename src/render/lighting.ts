@@ -9,7 +9,7 @@ import * as THREE from 'three';
 import { D2R, clamp } from '../scene/physics';
 import type { LightSettings, LightType, Tank, WaterSettings } from '../scene/types';
 import { waterK, waterY } from '../scene/physics';
-import { shapeOf } from '../scene/shape';
+import { bowlDims, footprint, shapeOf } from '../scene/shape';
 
 export const AQ_MAX = 48, LAMP_Y = 50, REF = 320;
 export const CONES: Record<Exclude<LightType, 'flat'>, [number, number]> = {
@@ -283,5 +283,55 @@ export function addFixture(sc: THREE.Scene, T: Tank, l: LightSettings, ceiling?:
   if (l.type === 'led') {
     add(new THREE.BoxGeometry(L * 0.96, 12, D * 0.45), dark, L / 2, y + 8, -D / 2);
     for (const e of E) add(new THREE.BoxGeometry(10, 2, 10), glow, e[0], y + 1, e[2]);
+  }
+}
+
+/**
+ * Beam overlay (Nathan 2026-10-13): where each fixture's light falls to half strength, drawn as a faint solid from the
+ * fixture down to the tank floor. A spot's is a cone at its printed beam angle; a tube's (a line source) is a wedge
+ * along it with rounded ends; an LED bar's many emitters are drawn as one such wedge per row (the outline of a row of
+ * identical cones). The half-strength angle is the middle of the shader's cone ramp, so the overlay matches the light.
+ * Cut off at the glass like hardscape; the substrate hides the part below it, leaving the footprint on the ground.
+ */
+export function addBeams(sc: THREE.Scene, T: Tank, l: LightSettings, lid: string) {
+  if (l.type === 'flat') return;
+  const { cone } = beam(l), half = Math.acos((cone[0] + cone[1]) / 2), top = T.H + lampHeight(l, lid);
+  const segs: [number, number, number][] = []; // x centre, z, half-length
+  const E = emitters(T, l, lampHeight(l, lid));
+  if (l.type === 'led') {
+    const rows = new Map<number, number[]>();
+    for (const e of E) rows.set(e[2], [...(rows.get(e[2]) ?? []), e[0]]);
+    for (const [z, xs] of rows) { const a = Math.min(...xs), b = Math.max(...xs); segs.push([(a + b) / 2, z, (b - a) / 2]); }
+  } else for (const e of E) segs.push([e[0], e[2], e[3]]);
+  const bowl = shapeOf(T) === 'bowl', planes: THREE.Plane[] = [];
+  if (!bowl) for (const e of footprint(T).edges) planes.push(new THREE.Plane(new THREE.Vector3(-e.n[0], 0, e.n[1]), e.a[0] * e.n[0] + e.a[1] * e.n[1]));
+  const look = { color: new THREE.Color(...kelvinRGB(l.kelvin)).multiplyScalar(0.5).addScalar(0.5), transparent: true, opacity: 0.14, depthWrite: false, side: THREE.DoubleSide };
+  // above the rim the beam is drawn whole (light that misses the tank shows); inside, it stops at the glass
+  const open = new THREE.MeshBasicMaterial(look), mat = new THREE.MeshBasicMaterial({ ...look, clippingPlanes: planes });
+  if (bowl) { // a bowl: inside the sphere
+    const b = bowlDims(T), v = (x: number) => x.toFixed(1);
+    mat.onBeforeCompile = sh => {
+      sh.vertexShader = 'varying vec3 vBeamW;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\n  vBeamW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+      sh.fragmentShader = 'varying vec3 vBeamW;\n' + sh.fragmentShader.replace('#include <clipping_planes_fragment>',
+        `#include <clipping_planes_fragment>
+  if (distance(vBeamW, vec3(${v(T.L / 2)}, ${v(b.c)}, ${v(-T.D / 2)})) > ${v(b.R)}) discard;`);
+    };
+    mat.customProgramCacheKey = () => `beam-bowl-${v(T.L)}-${v(b.c)}`;
+  }
+  // a stadium (half-length h, radius r) round the line under the emitter: one ring at the fixture (r = 0), one at the floor
+  const K = 24, ring = (cx: number, z: number, h: number, r: number, y: number) => {
+    const p: number[] = [];
+    for (const s of [1, -1]) for (let i = 0; i <= K; i++) {
+      const a = s * (-Math.PI / 2 + Math.PI * i / K);
+      p.push(cx + s * h + s * r * Math.cos(a), y, z + r * Math.sin(a) * s);
+    }
+    return p;
+  };
+  const tan = Math.tan(half), n = 2 * (K + 1);
+  for (const [cx, z, h] of segs) for (const [y0, y1, m] of [[top, T.H, open], [T.H, 0, mat]] as const) {
+    const pos = [...ring(cx, z, h, (top - y0) * tan, y0), ...ring(cx, z, h, (top - y1) * tan, y1)], idx: number[] = [];
+    for (let i = 0; i < n; i++) { const j = (i + 1) % n; idx.push(i, j, n + i, j, n + j, n + i); }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx);
+    const o = new THREE.Mesh(g, m); o.userData.nolight = true; o.renderOrder = 5; sc.add(o);
   }
 }

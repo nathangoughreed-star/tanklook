@@ -2,6 +2,20 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Light beam overlay (2026-10-13)
+
+Nathan asked for a Lighting-tab toggle showing the light cones from height and beam angle, and an analog for the other
+fixtures. `render.beams` (default off; older files off), checkbox "Show light beams" in Lighting (disabled for flat).
+`addBeams` in render/lighting.ts: a faint solid per beam from the fixture to the tank floor at the HALF-STRENGTH angle =
+middle of the shader's cone ramp (acos of the mean of the two cosines), so it matches the light model: spot = cone at
+about half the printed beam angle; tube (line source) = a wedge along the tube with rounded ends (~81° half-angle in the
+model); LED bar = one such wedge per row of emitters (outline of a row of identical cones, ~61°). Above the rim drawn
+whole (light missing the tank shows), inside clipped at the glass (footprint planes; a bowl discards outside its sphere);
+the substrate hides the rest, leaving the footprint. Note: a raised tube's model beam is very wide, so its overlay is a
+big sheet above the rim; that is the model, not the overlay (tube cone [0.45, -0.15] may be worth narrowing later).
+Open question (asked 2026-10-13): the bright patch on the room wall is the spill model (nearest point of the tank box,
+extended UP TO THE FIXTURE), not a reflection; it should probably follow the actual beams instead.
+
 ## Male / female fish (2026-10-13; DEPLOYED `23633f2`)
 
 Nathan asked for a male/female selector with matching shape, colouring and size, starting with the most dimorphic species.

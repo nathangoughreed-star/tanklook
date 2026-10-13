@@ -45,6 +45,7 @@ export function tankDiff(a: TankSetup, b: TankSetup, u: Units): DiffItem[] {
   add(a.render.glassType, b.render.glassType, t => (t === 'lowiron' ? 'Low-iron glass' : 'Standard glass'), ['render.glassType']);
   add(a.render.rim, b.render.rim, r => (r ? 'Rimmed' : 'Rimless'), ['render.rim']);
   add(a.render.edges, b.render.edges, e => (e ? 'Glass edges shown' : 'Glass edges hidden'), ['render.edges']);
+  add(a.render.beams, b.render.beams, e => (e ? 'Light beams shown' : 'Light beams hidden'), ['render.beams']);
   add(a.lid, b.lid, l => LIDS[l], ['lid']);
   add(a.render.bg, b.render.bg, bg => `Background: ${BACKGROUNDS[bg].label.toLowerCase()}`, ['render.bg']);
   const sidesTxt = (b: string[]) => (b.length ? ['back', 'left', 'right', 'front'].filter(k => b.includes(k)).join(' + ') : 'no sides');
