@@ -821,10 +821,31 @@ export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: numbe
   // the top of the solid piece (stone, wood, cave) under (x, depth), for animals on the hardscape; else the ground
   const solids = itemMeshes.filter(m => !m.userData.plant); for (const m of solids) m.updateMatrixWorld(true);
   const down = new THREE.Raycaster(), from = new THREE.Vector3(), DOWN = new THREE.Vector3(0, -1, 0);
-  const base = (f: Fish) => {
-    const g = groundHeight(S, T, f.x, f.depth); if (f.surface !== 'hardscape') return g;
-    down.set(from.set(f.x, T.H * 3 + 1000, -f.depth), DOWN);
+  const top = (x: number, depth: number, hard: boolean) => {
+    const g = groundHeight(S, T, x, depth); if (!hard) return g;
+    down.set(from.set(x, T.H * 3 + 1000, -depth), DOWN);
     return Math.max(g, down.intersectObjects(solids, false)[0]?.point.y ?? g);
+  };
+  const base = (f: Fish) => top(f.x, f.depth, f.surface === 'hardscape');
+  // an animal (mesh m, length w, its centre k above its belly) resting on a slope: tipped to the ground's slope under its
+  // head, tail and both sides (at most MAX_TILT), its centre k off the ground along that tilt, then lifted just clear
+  // where the ground still rises into its belly (a bank's curve, a slope past MAX_TILT)
+  const restOn = (f: Fish, m: THREE.Mesh, w: number, k: number) => {
+    const hard = f.surface === 'hardscape', g = (x: number, dp: number) => top(x, dp, hard), a = f.yaw * D2R;
+    const hx = Math.cos(a), hd = Math.sin(a), L = w * 0.4, Wd = w * 0.2; // heading in (x, depth); side = (hd, -hx)
+    const sH = (g(f.x + hx * L, f.depth + hd * L) - g(f.x - hx * L, f.depth - hd * L)) / (2 * L);
+    const sS = (g(f.x + hd * Wd, f.depth - hx * Wd) - g(f.x - hd * Wd, f.depth + hx * Wd)) / (2 * Wd);
+    // gradient in world x, z (z = -depth): heading = (hx, -hd), side = (hd, hx)
+    const n = new THREE.Vector3(-(sH * hx + sS * hd), 1, -(-sH * hd + sS * hx)).normalize();
+    if (n.y < Math.cos(MAX_TILT)) { const s = Math.hypot(n.x, n.z) || 1; n.set(n.x / s * Math.sin(MAX_TILT), Math.cos(MAX_TILT), n.z / s * Math.sin(MAX_TILT)); }
+    m.quaternion.premultiply(new THREE.Quaternion().setFromUnitVectors(UP, n));
+    m.position.set(f.x, base(f), -f.depth).addScaledVector(n, k);
+    let lift = 0;
+    for (const u of [-0.35, 0, 0.35]) for (const v of [-0.25, 0, 0.25]) {
+      const q = new THREE.Vector3(u * w, -k, v * w).applyQuaternion(m.quaternion).add(m.position);
+      lift = Math.max(lift, g(q.x, -q.z) - q.y);
+    }
+    m.position.y += Math.min(lift, w);
   };
   const register = (f: Fish, m: THREE.Mesh, w: number, h: number) => {
     m.userData.id = f.id; if (f.id === selId) m.add(outline(w, h));
@@ -846,8 +867,11 @@ export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: numbe
     else if (solid) m.add(fishBody(sp.art, sp.aspect, w, f.bend, fishBodyTexture(sp), S.render.edge, f.surface === 'glass')); // solid body + paired fins; the card keeps the median fins
     if (f.surface === 'glass') { onGlass(S, T, f, sp, m, w); register(f, m, w, h); continue; }
     // bottom dwellers and animals on land rest on the ground (or the hardscape) wherever they are (their stored height is ignored)
-    const y = restsOnGround(S, T, sp, p.x, p.depth, h) ? base(f) + sp.rest * w - 1 : Math.min(p.y, Math.max(0, waterY(T, S.water.level) - h / 2));
+    const rests = restsOnGround(S, T, sp, p.x, p.depth, h);
+    const y = rests ? base(f) + sp.rest * w - 1 : Math.min(p.y, Math.max(0, waterY(T, S.water.level) - h / 2));
     m.position.set(p.x, y, -p.depth); m.rotation.set(f.roll * D2R, f.yaw * D2R, f.pitch * D2R, 'YXZ');
+    // on a slope: lying along the ground, not level with it (Nathan 2026-10-13: a treefrog on a bank sat half in the substrate)
+    if (rests) restOn(f, m, w, sp.rest * w - 1);
     register(f, m, w, h);
     if (f.surface === 'hardscape') continue;
     const sh = contactShadow(S, T, p.x, p.depth, y - h / 2, w, h, f.yaw); if (sh) sc.add(sh);
@@ -864,6 +888,8 @@ export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: numbe
 /** Material of a picking card whose animal is drawn in 3D. */
 const HIDDEN = new THREE.MeshBasicMaterial({ visible: false });
 HIDDEN.userData.cached = true; HIDDEN.userData.keep = true;
+/** World up, and the steepest an animal resting on the ground is tilted to follow it (radians). */
+const UP = new THREE.Vector3(0, 1, 0), MAX_TILT = 45 * D2R;
 /** How far a snail or pleco on the glass sits off the inside of the pane (mm). */
 const PANE_GAP = 0.8;
 
