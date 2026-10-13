@@ -203,7 +203,7 @@ function finMeshes(art: string, p: Plan, bend: number, edge: EdgeMode, cling = f
       // root at the origin; card frame (x = u, y = -v)
       g.translate(box.u0 + box.w / 2 - f.root[0], -(box.v0 + box.h / 2 - f.root[1]), 0); g.userData.keep = true; geoCache.set(key, g);
     }
-    const mat = cardMaterial(key, pairedFinTexture(art, f, box, edge), edge);
+    const mat = cardMaterial(key, pairedFinTexture(art, f, box, edge), edge); mat.userData.fishCard = true; // outlined by fish stand out
     for (const side of [1, -1]) {
       const mesh = new THREE.Mesh(g, mat), a = (cling ? SPLAY : SPREAD)[f.kind];
       // root slightly inside the surface so the base never shows a gap

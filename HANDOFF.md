@@ -16,6 +16,9 @@ the lift and the haze cut. Shot `shots/pop_compare.png` (off / 50 / 100).
   child of the body; uniforms set per viewport by the viewer, `uVpH` = viewport height; none on see-through bodies).
   Cards (fins, flat fish): a ring just outside the painted alpha in AQ_MAP (8 taps at the line width), as faint as a
   see-through fin.
+- Same day (Nathan, a betta: fins had no line): paired fins (fish3d `finMeshes`) are flagged `fishCard` too; the ring
+  is drawn where the alpha drops off (neighbour alpha minus own > 0.1-0.35), not only past zero alpha, so soft feathered
+  fin edges get it; at least 1 px wide. Shot `shots/betta_compare.png`.
 
 ## Custom substrate: grain, colour, blends (2026-10-13)
 
