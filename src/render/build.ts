@@ -7,7 +7,7 @@ import { fishTL, needsWater, speciesOf, type Species } from '../data/species';
 import { restsOnGround } from '../scene/water';
 import { D2R, IN, clamp, floorY, glassThickness, RIM_DROP, RIM_H, tankUnderside, waterY } from '../scene/physics';
 import { alongRun, backgroundRuns, bowlDims, bowlRadius, chord, circleRing, clipToFootprint, facingRuns, footprint, glassFrame, halfWidth, inside, nearestGlass, offsetRing, offsetWalls, runLength, shapeOf, subRun, type P } from '../scene/shape';
-import { TABLE_TOP, tableCentre, tableOn, tableRing, wallPlane } from '../scene/table';
+import { TABLE_TOP, cornerWalls, wallGap, tableCentre, tableOn, tableRing, wallPlane } from '../scene/table';
 import { groundHeight, terrainDisc, terrainPoints } from '../scene/terrain';
 import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
 import { addBeams, addFixture, applyLighting } from './lighting';
@@ -48,7 +48,7 @@ function bgMaterial(bg: (typeof BACKGROUNDS)[Background]): THREE.Material {
 export const FROST = { transmission: 0.85, roughness: 0.3 };
 
 /** Peninsula: the end of the tank against the room wall ('left' / 'right'), else null. */
-const penEnd = (S: TankSetup) => (S.wall.show && S.wall.side !== 'back' ? S.wall.side : null);
+const penEnd = (S: TankSetup) => (S.wall.show && (S.wall.side === 'left' || S.wall.side === 'right') ? S.wall.side : null);
 
 /** World position of footprint point p at height y (depth runs toward -z). */
 const at = (p: P, y: number): [number, number, number] => [p[0], y, -p[1]];
@@ -555,11 +555,13 @@ export function personPlacement(S: TankSetup, T: Tank, eye: { x: number; z: numb
   // rotate eye->tank about the eye: a positive angle swings toward screen-right
   const spot = (a: number) => ({ x: eye.x + vx * Math.cos(a) - vz * Math.sin(a), z: eye.z + vx * Math.sin(a) + vz * Math.cos(a) });
   const wp = wallPlane(S, T), wb = wp.back, wr = wp.right, wl = wp.left, m = w / 2 + 5, ws = S.wall.side;
-  const blocked = (p: { x: number; z: number }) => S.wall.show && (ws === 'back' ? p.z - m < wb : ws === 'right' ? p.x + m > wr : p.x - m < wl);
+  const cw = ws === 'corner' ? cornerWalls(S, T) : null, cws = cw ? [cw.left, cw.right] : [];
+  const cornerIn = (p: { x: number; z: number }) => cws.reduce((q, w) => { const v = w.n[0] * q.x + w.n[1] * q.z - w.c - m; return v < 0 ? { x: q.x - w.n[0] * v, z: q.z - w.n[1] * v } : q; }, p);
+  const blocked = (p: { x: number; z: number }) => S.wall.show && (cw ? cws.some(w => w.n[0] * p.x + w.n[1] * p.z < w.c + m) : ws === 'back' ? p.z - m < wb : ws === 'right' ? p.x + m > wr : p.x - m < wl);
   let side: -1 | 1 = S.person.side === 'left' ? -1 : 1, p = spot(side * phi);
   if (blocked(p)) {
     const q = spot(-side * phi);
-    if (!blocked(q)) { p = q; side = side === 1 ? -1 : 1; } else p = ws === 'back' ? { ...p, z: wb + m } : ws === 'right' ? { ...p, x: wr - m } : { ...p, x: wl + m };
+    if (!blocked(q)) { p = q; side = side === 1 ? -1 : 1; } else p = cw ? cornerIn(cornerIn(p)) : ws === 'back' ? { ...p, z: wb + m } : ws === 'right' ? { ...p, x: wr - m } : { ...p, x: wl + m };
   }
   return { x: p.x, z: p.z, w, h, floor, side };
 }
@@ -578,15 +580,26 @@ function addFloor(sc: THREE.Scene, S: TankSetup, T: Tank) {
   f.userData.room = true; sc.add(f);
 }
 
-/** Room wall behind the tank or against a short end (peninsula). One-sided, so it vanishes when viewed from behind. */
+/** Room wall behind the tank, against a short end (peninsula), or two walls in a corner. One-sided, so it vanishes when viewed from behind. */
 function addWall(sc: THREE.Scene, S: TankSetup, T: Tank) {
   if (!S.wall.show) return;
   const { L, D } = T, wp = wallPlane(S, T), fy = floorY(T, S.render, S.stand);
-  const ROOM_H = 2700, SPAN = 6000, SKIRT_H = 90, SKIRT_D = 14;
+  const ROOM_H = 2700, SPAN = 6000, SKIRT_H = 90, SKIRT_D = Math.max(1, Math.min(14, wallGap(S))); // a skirting board thinner than the gap
   const g = new THREE.Group();
-  const wall = new THREE.Mesh(new THREE.PlaneGeometry(SPAN, ROOM_H), basic(S.wall.color)); // normal +z, toward the tank
-  wall.position.set(0, ROOM_H / 2, 0); wall.userData.room = true; g.add(wall);
-  const skirt = shadedBox(SPAN, SKIRT_H, SKIRT_D, 0xf1efe9); skirt.position.set(0, SKIRT_H / 2, SKIRT_D / 2); g.add(skirt);
+  const panel = (w: THREE.Group, off: number) => { // off: shift along the wall (a corner wall starts at the corner)
+    const wall = new THREE.Mesh(new THREE.PlaneGeometry(SPAN, ROOM_H), basic(S.wall.color)); // normal +z, toward the tank
+    wall.position.set(off, ROOM_H / 2, 0); wall.userData.room = true; w.add(wall);
+    const skirt = shadedBox(SPAN, SKIRT_H, SKIRT_D, 0xf1efe9); skirt.position.set(off, SKIRT_H / 2, SKIRT_D / 2); w.add(skirt);
+  };
+  if (S.wall.side === 'corner') { // each wall from the corner out into the room; local +x of a wall turned by a is (cos a, -sin a)
+    const cw = cornerWalls(S, T);
+    for (const a of [Math.PI / 4, -Math.PI / 4]) {
+      const w = new THREE.Group(); panel(w, a > 0 ? -SPAN / 2 : SPAN / 2);
+      w.position.set(cw.corner[0], fy, cw.corner[1]); w.rotation.y = a; sc.add(w);
+    }
+    return;
+  }
+  panel(g, 0);
   if (S.wall.side === 'back') g.position.set(L / 2, fy, wp.back);
   else if (S.wall.side === 'right') { g.position.set(wp.right, fy, -D / 2); g.rotation.y = -Math.PI / 2; }
   else { g.position.set(wp.left, fy, -D / 2); g.rotation.y = Math.PI / 2; }

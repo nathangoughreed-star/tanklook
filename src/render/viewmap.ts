@@ -2,7 +2,7 @@
 // room wall and scale person. A DOM canvas over the view, so it never appears in PNG exports.
 import { fmtLen, glassThickness } from '../scene/physics';
 import { bulge, facingRuns, offsetRing } from '../scene/shape';
-import { tableOn, tableRing, wallPlane } from '../scene/table';
+import { cornerWalls, tableOn, tableRing, wallPlane } from '../scene/table';
 import type { Tank, TankSetup, Units } from '../scene/types';
 
 interface Spot { x: number; z: number; w: number }
@@ -28,7 +28,8 @@ export function drawViewMap(cv: HTMLCanvasElement, S: TankSetup, T: Tank, units:
   if (S.wall.show) {            // room wall: a thick line across the map
     g.strokeStyle = muted; g.lineWidth = 3; g.beginPath();
     const wp = wallPlane(S, T);
-    if (S.wall.side === 'back') { const z = Z(wp.back); g.moveTo(4, z); g.lineTo(W - 4, z); }
+    if (S.wall.side === 'corner') { const { corner: c, left, right } = cornerWalls(S, T), r = 1e5; g.moveTo(X(c[0] + left.dir[0] * r), Z(c[1] + left.dir[1] * r)); g.lineTo(X(c[0]), Z(c[1])); g.lineTo(X(c[0] + right.dir[0] * r), Z(c[1] + right.dir[1] * r)); }
+    else if (S.wall.side === 'back') { const z = Z(wp.back); g.moveTo(4, z); g.lineTo(W - 4, z); }
     else { const x = X(S.wall.side === 'right' ? wp.right : wp.left); g.moveTo(x, 4); g.lineTo(x, mapH - 4); }
     g.stroke();
   }

@@ -2,7 +2,7 @@
 // the tank placed anywhere on it. The room (wall, scale person) then sits relative to the table's edge (answer 5).
 // Footprint coordinates as in shape.ts: (x, depth), depth growing toward the back.
 import { WALL_GAP, clamp, glassThickness } from './physics';
-import { offsetRing, type P } from './shape';
+import { bulge, offsetRing, type P } from './shape';
 import type { Tank, TableSettings, TankSetup } from './types';
 
 /** Table top thickness (mm). */
@@ -82,8 +82,35 @@ export function roomBox(S: TankSetup, T: Tank) {
   return { x0, x1, d0, d1 };
 }
 
+/**
+ * Room corner behind the tank (wall side 'corner', Nathan 2026-10-13): two walls at right angles, each 45° to the back,
+ * meeting behind the tank. In world (x, z): each wall is the line n . (x, z) = c, n its unit normal into the room, pushed
+ * in until it is the wall gap off the outer glass or the table, so a 90° pie slice sits flush in the corner. `dir` runs
+ * along each wall from the corner into the room; `corner` is where they meet.
+ */
+export function cornerWalls(S: TankSetup, T: Tank) {
+  const gap = wallGap(S);
+  const k = Math.SQRT1_2, pts: P[] = offsetRing(T, glassThickness(T, S.render.glass) + bulge(T));
+  if (tableOn(S)) pts.push(...tableRing(T, S.stand.table));
+  const wall = (nx: number, dx: number) => {
+    const n: P = [nx, k], c = Math.min(...pts.map(p => n[0] * p[0] - n[1] * p[1])) - gap; // world z = -depth
+    return { n, c, dir: [dx, k] as P };
+  };
+  const left = wall(k, -k), right = wall(-k, k);
+  // corner: n_l . q = c_l, n_r . q = c_r with n = (±k, k)
+  const corner: P = [(left.c - right.c) / (2 * k), (left.c + right.c) / (2 * k)];
+  return { left, right, corner };
+}
+
+/**
+ * Distance (mm) from the tank (or table) to the room wall, whichever way it stands; older files: WALL_GAP. At least 1 mm,
+ * so a background film (0.5 mm outside the glass) stays in front of the wall.
+ */
+export const wallGap = (S: TankSetup) => Math.max(1, S.wall.gap ?? WALL_GAP);
+
 /** Where the room wall stands, in world coordinates: back = its z; ends = its x. */
 export function wallPlane(S: TankSetup, T: Tank) {
   const b = roomBox(S, T);
-  return { back: -b.d1 - WALL_GAP, left: b.x0 - WALL_GAP, right: b.x1 + WALL_GAP };
+  const g = wallGap(S);
+  return { back: -b.d1 - g, left: b.x0 - g, right: b.x1 + g };
 }

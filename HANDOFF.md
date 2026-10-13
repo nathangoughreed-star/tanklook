@@ -23,6 +23,13 @@ Nathan asked for a "pie slice" aquarium (half round or 90° corner tank): set ra
 D = radius, L derived = chord 2r sin(θ/2) (normTank); apex at the back centre, arc toward the viewer, two flat panes
 back to the apex (one back pane at 180°). UI: "Pie slice (corner / half round)" in Shape, Length hidden, Depth reads
 Radius, Angle slider (type-in). Flat-ends rules apply (no hood, back wall only). Shots `shots/pie_{90,120,180}.png`.
+- Same day (Nathan): wall placement **Corner** (`wall.side = 'corner'`, any shape): two walls at right angles, each 45°
+  to the back, meeting behind the tank; `cornerWalls()` in scene/table.ts pushes each in to the gap off the outer glass
+  (or table), so a 90° pie sits flush with its corner in the room corner. Orbit limit, person placement and the view map
+  know both walls; not a peninsula (no back doors); background on the panes facing back.
+- **Distance to wall** slider (`wall.gap`, mm, 0-1000, absent = the old 50; `wallGap()`), for every placement (behind,
+  ends, corner). At least 1 mm in effect, so the background film (0.5 mm outside the glass) stays in front of the wall;
+  the skirting board thins to fit a small gap. Shots `shots/corner_{gap50,gap0_top,gap300}.png`.
 
 ## Light beam overlay (2026-10-13)
 

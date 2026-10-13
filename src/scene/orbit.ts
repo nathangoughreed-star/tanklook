@@ -1,7 +1,7 @@
 // Orbit limit (Nathan 2026-10-08): with the room wall on, the eye cannot orbit through it. Same eye maths as
 // placeCamera (orbit about the tank centre, radius dist + D/2), without three.js so the store can use it.
 import { D2R } from './physics';
-import { wallPlane } from './table';
+import { cornerWalls, wallPlane } from './table';
 import type { CameraSettings, TankSetup } from './types';
 
 /** How close the eye may come to the wall's room face, mm. */
@@ -13,6 +13,7 @@ export function eyeClear(S: TankSetup, c: CameraSettings) {
   const T = S.tank, r = c.dist + T.D / 2, az = c.az * D2R, el = c.el * D2R, w = wallPlane(S, T);
   const x = T.L / 2 + r * Math.sin(az) * Math.cos(el), z = -T.D / 2 + r * Math.cos(az) * Math.cos(el);
   const s = S.wall.side;
+  if (s === 'corner') { const cw = cornerWalls(S, T); return [cw.left, cw.right].every(w => w.n[0] * x + w.n[1] * z > w.c + WALL_CLEAR); }
   return s === 'back' ? z > w.back + WALL_CLEAR : s === 'right' ? x < w.right - WALL_CLEAR : x > w.left + WALL_CLEAR;
 }
 

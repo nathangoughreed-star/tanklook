@@ -29,6 +29,8 @@ export function floorY(T: Tank, R: RenderSettings, stand: StandSettings) {
 
 /** Gap between the outside of the glass and the room wall (mm). */
 export const WALL_GAP = 50;
+/** Range of the distance-to-wall slider (mm). */
+export const WALL_GAP_MAX = 1000;
 
 /** Highest a substrate corner may go, as a fraction of interior height. */
 export const SUBSTRATE_CAP = 0.6;

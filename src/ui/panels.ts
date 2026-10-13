@@ -13,7 +13,7 @@ import { KINDS, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, itemDims, makeItem, star
 import { tankDiff } from './diff';
 import { attachTypeIns, parseLen, plainNum, tidy, type TypeIn } from './typein';
 import {
-  IN, clamp, clampFish, fmtDims, fmtLen, fmtSize, fromUnit, glassThickness, rescaleTank, toUnit, volume, waterY,
+  IN, clamp, clampFish, fmtDims, fmtLen, fmtSize, fromUnit, glassThickness, rescaleTank, toUnit, volume, WALL_GAP_MAX, waterY,
 } from '../scene/physics';
 import type { Store } from '../scene/store';
 import { SWAMP_LEVEL, groundHeight, nearestLand, radialTerrain, sampleTerrain } from '../scene/terrain';
@@ -25,7 +25,7 @@ import { fitFish, setWaterLevel } from '../scene/water';
 import { tankWeight } from '../scene/weight';
 import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, aqWaitS, fetchStocking } from '../data/aqadvisor';
 import { BOWL_DEFAULT, BOWL_MAX, BOWL_MIN, PIE_DEFAULT, POLY_SIDES, SHAPES, bowMinLimit, offsetRing, ringArea, shapeOf } from '../scene/shape';
-import { TABLE_MAX, tableOn, tableRange } from '../scene/table';
+import { TABLE_MAX, tableOn, tableRange, wallGap } from '../scene/table';
 import type { Fish, Item, ItemKind, LayoutId, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
 import { GLASS_CHOICES, LIMITS, SceneError, parseScene } from '../scene/validate';
 import { deleteFromLib, listLib, loadFromLib, saveToLib } from '../scene/library';
@@ -162,7 +162,7 @@ Cancel, then change the name, to keep both.`)) return;
       const max = T.H * 0.5;
       for (const k of ['fl', 'fr', 'bl', 'br'] as const) s.substrate[k] = Math.min(s.substrate[k], max);
       // hood and peninsula ends exist for rectangles and bowfronts only (Nathan 2026-10-08)
-      if (!flatEnds(s.tank)) { if (s.lid === 'hood') s.lid = 'glass'; if (s.wall.side !== 'back') s.wall.side = 'back'; }
+      if (!flatEnds(s.tank)) { if (s.lid === 'hood') s.lid = 'glass'; if (s.wall.side === 'left' || s.wall.side === 'right') s.wall.side = 'back'; }
     }, { coalesce });
   }
   const flatEnds = (T: Tank) => ['rect', 'bow'].includes(shapeOf(T));
@@ -220,12 +220,15 @@ Cancel, then change the name, to keep both.`)) return;
   $('tableBack').onclick = () => editTable(tb => { tb.x = 0; tb.z = TABLE_MAX; });   // fitTable stops it at the edge
   $('tableFront').onclick = () => editTable(tb => { tb.x = 0; tb.z = -TABLE_MAX; });
   $('wallOn').onchange = e => store.edit(s => { s.wall.show = (e.target as HTMLInputElement).checked; });
-  for (const [id, side] of [['wallBack', 'back'], ['wallLeft', 'left'], ['wallRight', 'right']] as const)
+  for (const [id, side] of [['wallBack', 'back'], ['wallLeft', 'left'], ['wallRight', 'right'], ['wallCorner', 'corner']] as const)
     $(id).onclick = () => store.edit(s => {
       const was = s.wall.show ? s.wall.side : 'back', b = s.render.bgSides;
-      if (b.length === 1 && b[0] === was) s.render.bgSides = [side]; // a background on the old wall side moves with the wall
+      const bgOf = (w: typeof side) => (w === 'corner' ? 'back' : w); // a corner's background covers the panes facing back
+      if (b.length === 1 && b[0] === bgOf(was)) s.render.bgSides = [bgOf(side)]; // a background on the old wall side moves with the wall
       s.wall.side = side; s.wall.show = true;
     });
+  $('wallGap').max = String(WALL_GAP_MAX);
+  $('wallGap').oninput = e => store.edit(s => { s.wall.gap = +(e.target as HTMLInputElement).value; s.wall.show = true; }, { coalesce: 'wallGap' });
   $('wallColor').oninput = e => store.edit(s => { s.wall.color = (e.target as HTMLInputElement).value; s.wall.show = true; }, { coalesce: 'wallColor' });
 
   $('personOn').onchange = e => store.edit(s => { s.person.show = (e.target as HTMLInputElement).checked; });
@@ -632,7 +635,7 @@ Cancel, then change the name, to keep both.`)) return;
     const v = parseLen(t.replace(/\b(left|right|forward|front|back)\b/gi, '').trim(), G().units);
     return v == null ? null : neg.test(t) ? -Math.abs(v) : v;
   } });
-  const lens = ['bowMin', 'bowlFloor', 'bowlTop', 'standH', 'tableL', 'tableD', 'subBL', 'subBR', 'subFL', 'subFR', 'lH', 'cDist', 'iSize', 'iLift', 'personH'];
+  const lens = ['bowMin', 'bowlFloor', 'bowlTop', 'standH', 'tableL', 'tableD', 'subBL', 'subBR', 'subFL', 'subFR', 'lH', 'cDist', 'iSize', 'iLift', 'personH', 'wallGap'];
   const nums = { pieDeg: 0, bgArc: 0, iYaw: 0, iPitch: 0, iTilt: 0, lCount: 0, lRows: 0, lCone: 0, lK: 0, lBright: 2, lRoom: 2, cAz: 0, cEl: 0, cZoom: 2, terCols: 0, addSize: 0 };
   attachTypeIns({
     ...Object.fromEntries(lens.map(id => [id, len])),
@@ -780,9 +783,10 @@ Cancel, then change the name, to keep both.`)) return;
     const off = (v: number, neg: string, pos: string) => (Math.abs(v) < 1 ? 'Centred' : `${fmt(Math.abs(v))} ${v < 0 ? neg : pos}`);
     setOut('oTableX', off(tb.x, 'left', 'right')); setOut('oTableZ', off(tb.z, 'forward', 'back'));
     $('wallOn').checked = s.wall.show; setVal('wallColor', s.wall.color);
-    for (const [id, side] of [['wallBack', 'back'], ['wallLeft', 'left'], ['wallRight', 'right']] as const)
+    for (const [id, side] of [['wallBack', 'back'], ['wallLeft', 'left'], ['wallRight', 'right'], ['wallCorner', 'corner']] as const)
       $(id).classList.toggle('on', s.wall.show && s.wall.side === side);
 
+    setVal('wallGap', wallGap(s)); setOut('oWallGap', fmt(wallGap(s)));
     $('personOn').checked = s.person.show; setVal('personH', s.person.height); setOut('oPersonH', fmtHeight(s.person.height, u));
     for (const [id, side] of PSIDES) $(id).classList.toggle('on', s.person.show && s.person.side === side);
 

@@ -2,7 +2,7 @@
 import { fishTL, getSpecies, hasSpecies } from '../data/species';
 import { defaultSetup } from './defaults';
 import { LIBRARY, MAX_ITEMS, clampItem, starterItems } from './items';
-import { clamp, mapToTank } from './physics';
+import { WALL_GAP, WALL_GAP_MAX, clamp, mapToTank } from './physics';
 import { normTank } from './shape';
 import { TABLE_MAX, fitTable } from './table';
 import { keepInWater } from './water';
@@ -222,8 +222,9 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       side: pick(pe.side, ['left', 'right'] as const, d.person.side),
     },
     wall: {
-      show: bool(w.show, d.wall.show), side: pick(w.side === 'peninsula' ? 'right' : w.side, ['back', 'left', 'right'] as const, d.wall.side), // 'peninsula' (session 3) was the right end
+      show: bool(w.show, d.wall.show), side: pick(w.side === 'peninsula' ? 'right' : w.side, ['back', 'left', 'right', 'corner'] as const, d.wall.side), // 'peninsula' (session 3) was the right end
       color: typeof w.color === 'string' && /^#[0-9a-f]{6}$/i.test(w.color) ? w.color.toLowerCase() : d.wall.color,
+      ...(w.gap !== undefined ? { gap: num(w.gap, WALL_GAP, 0, WALL_GAP_MAX) } : {}),
     },
     fish,
     items: [],
