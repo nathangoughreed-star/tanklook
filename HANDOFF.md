@@ -2,6 +2,22 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Parallel lanes (2026-10-13, Nathan: fill the gaps before showing other people)
+
+Four chats at once, each owning its files. Seam already on main (`cb7783c`): optional `salt?: boolean` on `Species`
+(absent = freshwater) and on `WaterSettings` (validated, default fresh, no version bump).
+| Lane | Folder / branch | Launch config | Owns |
+|---|---|---|---|
+| A 3D plants | `../Glass-Box-plants3d` / `plants3d` | `plants3d` 5283 | `art/plants.ts`, new `render/plant3d.ts`, plant branch of `render/items.ts`, plant entries of `scene/items.ts` |
+| B Salt tank | `../Glass-Box-salt-tank` / `salt-tank` | `salt-tank` 5293 | `src/ui/*` (salt toggle, species filter), water + substrate presets, `scene/defaults.ts`, `scene/water.ts`, AqAdvisor off for salt |
+| C Marine fish | `../Glass-Box-marine-fish` / `marine-fish` | `marine-fish` 5303 | `data/species.json` + `species.ts` data, `art/fishgen.ts` PLANS, `art/paint.ts`; `render/fish3d.ts` generic fixes only |
+| D Audit + review | main checkout, no `src/` edits | `dev` 5173 | `shots/audit/`, the "Still open" / "Known gaps" sections below |
+Rules: touch another lane's file only for a one-line hook, and say so in your section. No scene version bump without
+asking Nathan. Shipping: in the worktree `git fetch` + `git merge origin/main`, tsc + tests + browser check, then
+`git push origin HEAD:main` and `git -C "C:/Users/nreed/Glass Box" merge --ff-only origin/main`. HANDOFF.md
+conflicts on merge: keep both sections. Each lane adds its own dated section at the top of this file.
+Later lane E (corals + live rock as items) waits for A to land: it shares `scene/items.ts` / `render/items.ts`.
+
 ## Pan stays put (2026-10-13)
 
 Nathan: snapping back after every pan was limiting; asked about SolidWorks-style free pan + orbit. Decided against
