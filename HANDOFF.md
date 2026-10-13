@@ -2,6 +2,35 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane B: fresh or salt tank (2026-10-13; branch `salt-tank`, shipped to main)
+
+- **Water section: Type = Freshwater | Saltwater** (`water.salt`, the seam's flag; off when Water is off). One undo step.
+  Switching swaps clear water for the other type's clear (fresh `#7fb8a8`, marine `#8ec9ec`, both opacity 0); any other
+  colour is the user's and stays.
+- **Animals list filtered by water** (`fitsWater` in `ui/panels.ts`): a saltwater tank (salt and water on) lists species
+  with `salt: true`, a fresh or dry tank lists the rest. Group chip counts follow; an empty search says how many matches
+  the other water has ("switch the tank in Water").
+- **Animals that no longer fit are offered for removal, not removed**: a row under Type names them ("Not saltwater
+  animals: 6 Neon tetra") with **Remove N**; one undo step, Ctrl+Z restores. The row stays while any misfit is in the
+  tank (also after undo or a loaded file).
+- **Marine water presets**, shown only on a salt tank (Blackwater / Green hidden): Reef blue `#2f86d0` 22 %, Deep blue
+  `#1f5fb0` 40 %; Clear follows the type. 12 % was invisible in a 12-inch-deep tank. With no background behind the tank
+  the tint stays subtle, because the water model tints only what is inside the water.
+- **Substrates** `aragonite` (fine bright cream sand) and `coral` (crushed coral: coarse flat chalky chips). Coral began
+  as pebble gravel, but the pebble shading (rim darkening, contact shadows, layer darkening) made it mid-grey, so it is
+  now a coarse "sand". Both listed for any tank, labelled "(marine)". `SubstrateType` + validate list extended, no
+  version bump.
+- **AqAdvisor off for salt**: `aqQuery` returns null for a salt tank. The view label reads "Stocking: not available for
+  saltwater (AqAdvisor is freshwater only)", with a matching sidebar note. Compare lists Freshwater / Saltwater as a
+  difference.
+- **One-line hook in lane C's `data/species.ts`**: `resolve()` dropped unknown JSON fields, so `"salt": true` never
+  reached the species. Added `if ((r as { salt?: unknown }).salt === true) sp.salt = true;` before the female block.
+  Lane C: keep it (or fold it into `RawSpecies`) when merging.
+- Tested with a temporary local `"salt": true` on the angelfish (not committed): filter, counts, misfit row, Remove +
+  undo, presets, both substrates in the browser; `test/salt.test.ts` covers AqAdvisor off and the reload round-trip.
+- Not done / for later: `Species.cat` and `salt` are independent (a salt species in `fw-fish` still lists under
+  "Freshwater fish"), so lane C should set both. Live rock and corals wait for lane E.
+
 ## Parallel lanes (2026-10-13, Nathan: fill the gaps before showing other people)
 
 Four chats at once, each owning its files. Seam already on main (`cb7783c`): optional `salt?: boolean` on `Species`

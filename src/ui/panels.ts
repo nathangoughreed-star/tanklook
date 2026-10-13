@@ -261,30 +261,45 @@ Cancel, then change the name, to keep both.`)) return;
   for (const [id, side] of PSIDES) $(id).onclick = () => store.edit(s => { s.person.side = side; s.person.show = true; });
 
   // ---------- Species search & adding animals ----------
+  /** Clear water for each type (2026-10-13): marine clear is bluer than the fresh default. */
+  const FRESH_CLEAR: [string, number] = ['#7fb8a8', 0], SALT_CLEAR: [string, number] = ['#8ec9ec', 0];
+  /** A saltwater tank: salt set and water on (a dry tank lists the freshwater and land animals). */
+  const isSalt = (s: TankSetup) => s.water.on && !!s.water.salt;
+  /** Does this species belong in this tank? Species without `salt` are freshwater (or land). */
+  const fitsWater = (sp: Species, s: TankSetup) => !!sp.salt === isSalt(s);
+  /** Animals in this tank that do not fit its water (offered for removal in the Water section). */
+  const misfits = (s: TankSetup) => s.fish.filter(f => { const sp = getSpecies(f.species); return !!sp && !fitsWater(sp, s); });
   let pickId = 'neon';
   const search = $('spSearch'), results = $<HTMLDivElement>('spResults');
   // sub menus: All, then one chip per group; the search looks only inside the chosen group
   let cat: Category | undefined;
   const cats = $('spCats');
   for (const [k, label] of [[undefined, 'All'], ...CATEGORIES] as const) {
-    const n = k ? SPECIES.filter(sp => sp.cat === k).length : SPECIES.length, b = document.createElement('button');
-    b.setAttribute('role', 'tab'); b.dataset.cat = k ?? '';
-    b.innerHTML = `${esc(label)} <span class="n">${n}</span>`;
-    if (!n) b.classList.add('empty');
+    const b = document.createElement('button');
+    b.setAttribute('role', 'tab'); b.dataset.cat = k ?? ''; b.innerHTML = `${esc(label)} <span class="n"></span>`;
     b.onclick = () => { cat = k; renderResults(); };
     cats.append(b);
   }
   const catName = () => CATEGORIES.find(c => c[0] === cat)?.[1] ?? '';
+  /** The species list shows only animals for this tank's water (2026-10-13): salt species in a saltwater tank, the rest
+   *  (no `salt` flag) in a freshwater or dry one. */
+  const findSpecies = (q: string, c?: Category) => searchSpecies(q, c).filter(sp => fitsWater(sp, S()));
   function renderResults() {
+    const salt = isSalt(S());
     for (const b of cats.children as HTMLCollectionOf<HTMLButtonElement>) {
-      const on = b.dataset.cat === (cat ?? '');
+      const on = b.dataset.cat === (cat ?? ''), k = b.dataset.cat as Category | '';
+      const n = SPECIES.filter(sp => (!k || sp.cat === k) && fitsWater(sp, S())).length;
+      b.querySelector('.n')!.textContent = String(n); b.classList.toggle('empty', !n);
       b.classList.toggle('on', on); b.setAttribute('aria-selected', String(on));
     }
-    search.setAttribute('placeholder', cat ? `Search ${catName().toLowerCase()}` : 'Search species (common or scientific name)');
-    const list = searchSpecies(search.value, cat);
+    search.setAttribute('placeholder', cat ? `Search ${salt ? 'marine ' : ''}${catName().toLowerCase()}` : `Search ${salt ? 'marine ' : ''}species (common or scientific name)`);
+    const list = findSpecies(search.value, cat);
     if (list.length && !list.some(s => s.id === pickId)) pickId = list[0].id;
-    const elsewhere = !list.length && cat && search.value.trim() ? searchSpecies(search.value).length : 0;
-    results.innerHTML = list.length ? '' : `<div class="none">${!cat || search.value.trim() ? 'No species match' : `No ${esc(catName().toLowerCase())} yet`}${elsewhere ? ` in ${esc(catName())}. <a href="#" id="spAll">${elsewhere} in other groups</a>` : '.'}</div>`;
+    const elsewhere = !list.length && cat && search.value.trim() ? findSpecies(search.value).length : 0;
+    const other = !list.length && search.value.trim() ? searchSpecies(search.value, cat).length : 0; // matches for the other water
+    results.innerHTML = list.length ? '' : `<div class="none">${!search.value.trim() && salt && !findSpecies('').length ? 'No saltwater species yet'
+      : !cat || search.value.trim() ? `No ${salt ? 'saltwater ' : ''}species match${other ? ` (${other} ${salt ? 'freshwater' : 'saltwater'}: switch the tank in Water)` : ''}`
+      : `No ${salt ? 'saltwater ' : ''}${esc(catName().toLowerCase())} yet`}${elsewhere ? ` in ${esc(catName())}. <a href="#" id="spAll">${elsewhere} in other groups</a>` : '.'}</div>`;
     const all = results.querySelector<HTMLAnchorElement>('#spAll');
     if (all) all.onclick = e => { e.preventDefault(); cat = undefined; renderResults(); };
     for (const sp of list) {
@@ -334,7 +349,7 @@ Cancel, then change the name, to keep both.`)) return;
     const adult = base.female ? `Adult ♂ ${fmt(base.tl)}, ♀ ${fmt(base.female.tl)}` : `Adult ${fmt(sp.tl)}`;
     $('spPreviewInfo').textContent = [adult, speciesTag(sp), sp.note].filter(Boolean).join(' · ');
   }
-  search.onkeydown = e => { if (e.key === 'Enter') { const sp = searchSpecies(search.value, cat)[0]; if (sp) { pickId = sp.id; addOne(sp); renderResults(); } } };
+  search.onkeydown = e => { if (e.key === 'Enter') { const sp = findSpecies(search.value, cat)[0]; if (sp) { pickId = sp.id; addOne(sp); renderResults(); } } };
 
   /** Size for newly added fish: % of adult length (100 = adult, stored as no override). */
   const addPct = () => clamp(Math.round(+$('addSize').value || 100), 15, 130);
@@ -527,9 +542,34 @@ Cancel, then change the name, to keep both.`)) return;
     if (s.water.opacity < 0.05) s.water.opacity = 0.3; // picking a colour on clear water should show it
   }, { coalesce: 'wColor' });
   const waterPreset = (color: string, opacity: number) => store.edit(s => { Object.assign(s.water, { color, opacity }); });
-  $('wClear').onclick = () => waterPreset('#7fb8a8', 0);
+  $('wClear').onclick = () => waterPreset(...(S().water.salt ? SALT_CLEAR : FRESH_CLEAR));
   $('wTannin').onclick = () => waterPreset('#6b3d14', 0.6);
   $('wGreen').onclick = () => waterPreset('#5d8a2e', 0.5);
+  // marine (2026-10-13): reef water is clearer and bluer than fresh; "Clear" follows the water type
+  $('wReef').onclick = () => waterPreset('#2f86d0', 0.22);
+  $('wOcean').onclick = () => waterPreset('#1f5fb0', 0.4);
+
+  // ---------- Freshwater / saltwater (2026-10-13) ----------
+  // Switching is one undo step; animals that do not fit the new water stay until "Remove" is pressed (also undoable).
+  const setSalt = (salt: boolean) => {
+    if (!!S().water.salt === salt) return;
+    store.edit(s => {
+      if (salt) s.water.salt = true; else delete s.water.salt;
+      // the other type's clear water becomes this type's clear water; any other colour is the user's and stays
+      const [c, o] = salt ? FRESH_CLEAR : SALT_CLEAR;
+      if (s.water.color === c && s.water.opacity === o) [s.water.color, s.water.opacity] = salt ? SALT_CLEAR : FRESH_CLEAR;
+    });
+    const n = misfits(S()).length;
+    status(`${salt ? 'Saltwater' : 'Freshwater'} tank: the Animals list shows ${salt ? 'marine' : 'freshwater'} species.${n ? ` ${n} animal${n > 1 ? 's' : ''} here ${n > 1 ? 'do' : 'does'} not fit: Remove is in the Water section.` : ''}`);
+  };
+  $('wFresh').onclick = () => setSalt(false);
+  $('wSalt').onclick = () => setSalt(true);
+  $('wMisfitDel').onclick = () => {
+    const out = new Set(misfits(S()).map(f => f.id)); if (!out.size) return;
+    store.edit(s => { s.fish = s.fish.filter(f => !out.has(f.id)); });
+    if (store.selId != null && out.has(store.selId)) store.select(null);
+    status(`${out.size} animal${out.size > 1 ? 's' : ''} removed. Ctrl+Z brings them back.`);
+  };
 
   // ---------- Lighting ----------
   const lKeys = { lCount: 'count', lRows: 'rows', lSp: 'spacing', lCone: 'cone', lH: 'height', lBright: 'bright', lK: 'kelvin', lRoom: 'room' } as const;
@@ -742,7 +782,7 @@ Cancel, then change the name, to keep both.`)) return;
   function syncAq() {
     const q = aqQuery(S());
     $('aqRow').style.display = q ? '' : 'none';
-    if (!q) { $('aqNote').textContent = ''; return; }
+    if (!q) { $('aqNote').textContent = isSalt(S()) && S().fish.length ? 'Stocking level: AqAdvisor covers freshwater only, so a saltwater tank has none.' : ''; return; }
     const key = aqKey(q), got = aqDone.get(key), busy = aqBusy.has(key);
     $<HTMLAnchorElement>('aqLink').href = aqAdvisorUrl(q);
     $('aqCheck').style.display = AQ_PROXY && got === undefined ? '' : 'none';
@@ -781,6 +821,7 @@ Cancel, then change the name, to keep both.`)) return;
   };
   $('aqCheck').onclick = () => aqCheck(S());
 
+  let waterKind = '';
   function sync() {
     const s = S(), A = s.tank, u = G().units;
     $<HTMLButtonElement>('undo').disabled = !store.canUndo; $<HTMLButtonElement>('redo').disabled = !store.canRedo;
@@ -915,7 +956,19 @@ Cancel, then change the name, to keep both.`)) return;
 
     const wa = s.water;
     $('wOn').checked = wa.on;
-    for (const id of ['wLevel', 'wOpac', 'wColor', 'wClear', 'wTannin', 'wGreen']) ($(id) as HTMLInputElement).disabled = !wa.on;
+    for (const id of ['wLevel', 'wOpac', 'wColor', 'wClear', 'wTannin', 'wGreen', 'wReef', 'wOcean', 'wFresh', 'wSalt']) ($(id) as HTMLInputElement).disabled = !wa.on;
+    $('wFresh').classList.toggle('on', !wa.salt); $('wSalt').classList.toggle('on', !!wa.salt);
+    for (const id of ['wTannin', 'wGreen']) $(id).style.display = wa.salt ? 'none' : '';
+    for (const id of ['wReef', 'wOcean']) $(id).style.display = wa.salt ? '' : 'none';
+    const mis = misfits(s);
+    $('wMisfitRow').style.display = mis.length ? '' : 'none';
+    if (mis.length) {
+      const by = new Map<string, number>();
+      for (const f of mis) { const nm = getSpecies(f.species)?.name ?? f.species; by.set(nm, (by.get(nm) ?? 0) + 1); }
+      $('wMisfit').textContent = `Not ${isSalt(s) ? 'saltwater' : 'freshwater'} animals: ${[...by].map(([nm, n]) => `${n} ${nm}`).join(', ')}.`;
+      $('wMisfitDel').textContent = `Remove ${mis.length}`;
+    }
+    const wk = `${isSalt(s)}`; if (wk !== waterKind) { waterKind = wk; renderResults(); } // the species list follows the water
     setVal('wLevel', wa.level); setOut('oLevel', wa.level >= 1 ? 'Full' : `${fmt(waterY(A, wa.level))} high`);
     setVal('wOpac', wa.opacity); setOut('oOpac', wa.opacity < 0.01 ? 'Clear' : Math.round(wa.opacity * 100) + '%'); setVal('wColor', wa.color);
 
@@ -971,7 +1024,7 @@ Cancel, then change the name, to keep both.`)) return;
    *  with ↻ to ask again; the last answer in yellow once the fish or the tank have changed since it was asked. */
   const aqChip = (s: TankSetup, slot: string, i: number) => {
     const q = aqQuery(s);
-    if (!q) return `<span class="aq none">${!s.fish.length ? 'Add fish to show stocking level' : !s.water.on ? 'Add water to show stocking level' : 'No fish AqAdvisor can count'}</span>`;
+    if (!q) return `<span class="aq none">${!s.fish.length ? 'Add fish to show stocking level' : !s.water.on ? 'Add water to show stocking level' : isSalt(s) ? 'Stocking: not available for saltwater (AqAdvisor is freshwater only)' : 'No fish AqAdvisor can count'}</span>`;
     const url = esc(aqAdvisorUrl(q));
     if (!AQ_PROXY) return `<a class="aq" href="${url}" target="_blank" rel="noopener" title="This tank's stocking on aqadvisor.com">Stocking on AqAdvisor ↗</a>`;
     const key = aqKey(q), got = aqDone.get(key), last = aqLast.get(slot), busy = aqBusy.has(key);
