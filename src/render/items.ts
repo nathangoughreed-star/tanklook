@@ -40,10 +40,25 @@ function inward(g: THREE.BufferGeometry) {
   g.computeVertexNormals();
   return g;
 }
-/** Keep only position, normal and colour, all indexed or all not, so pieces merge. */
+/** Keep only position, normal, colour and grit, all indexed or all not, so pieces merge. */
 function clean(g: THREE.BufferGeometry, indexed: boolean) {
-  for (const k of Object.keys(g.attributes)) if (!['position', 'normal', 'color'].includes(k)) g.deleteAttribute(k);
+  for (const k of Object.keys(g.attributes)) if (!['position', 'normal', 'color', 'aGrit'].includes(k)) g.deleteAttribute(k);
   return indexed ? g : g.index ? g.toNonIndexed() : g;
+}
+
+// ---------- Surface grit ----------
+// Every solid carries aGrit = (noise coordinates in mm, kind); the shader (GRIT) draws the fine detail per pixel from it:
+// grain, pits and cracks on stone, grain, splits and knots on wood. Kinds: 1 river, 2 seiryu / arch, 3 dragon, 4 lava,
+// 5 slate, 6 bark (coordinates = along the limb, angle around, radius), 7 terracotta, 8 coconut, 9 end grain, 10 plain wood.
+const GRIT_KIND: Record<string, number> = { river: 1, seiryu: 2, dragon: 3, lava: 4, slate: 5, tube: 7, coconut: 8, arch: 2 };
+const gritOffset = (seed: number) => [0.6180339, 0.4142135, 0.7320508].map((k, i) => ((seed * k + i * 0.37) % 1) * 400);
+/** aGrit from the vertex positions (shifted per seed so no two pieces share a pattern); left alone if already set. */
+function grit(g: THREE.BufferGeometry, kind: number, seed: number) {
+  if (g.attributes.aGrit) return g;
+  const p = g.attributes.position, o = gritOffset(seed), a = new Float32Array(p.count * 4);
+  for (let i = 0; i < p.count; i++) { a[i * 4] = p.getX(i) + o[0]; a[i * 4 + 1] = p.getY(i) + o[1]; a[i * 4 + 2] = p.getZ(i) + o[2]; a[i * 4 + 3] = kind; }
+  g.setAttribute('aGrit', new THREE.BufferAttribute(a, 4));
+  return g;
 }
 
 // ---------- Stones ----------
@@ -100,7 +115,7 @@ function slab(r: R, l: number, h: number, w: number, base: THREE.Color) {
 
 // ---------- Wood ----------
 const WOOD: Record<string, [string, string]> = { branch: ['#6b4a2e', '#5e4128'], spider: ['#a3845e', '#8e7050'], manzanita: ['#74392a', '#8b4a36'], mopani: ['#3e2a1c', '#a3855c'] };
-function limbGeo(r: R, L: Limb, cols: [string, string], variant: string) {
+function limbGeo(r: R, rs: R, L: Limb, cols: [string, string], variant: string, s0: number) {
   const curve = new THREE.CatmullRomCurve3(L.pts.map(p => V(...p))), len = curve.getLength(), TS = Math.max(8, Math.min(48, Math.round(len / Math.max(4, L.r0)))), RS = L.r0 > 6 ? 10 : 7;
   const g = new THREE.TubeGeometry(curve, TS, 1, RS, false), p = g.attributes.position, v = new THREE.Vector3(), c = new THREE.Vector3(), knot = r() * 10;
   for (let i = 0; i <= TS; i++) {
@@ -109,6 +124,9 @@ function limbGeo(r: R, L: Limb, cols: [string, string], variant: string) {
     for (let j = 0; j <= RS; j++) { const k = i * (RS + 1) + j; v.fromBufferAttribute(p, k).sub(c).multiplyScalar(rad * (1 + 0.07 * Math.sin(j * 2.3 + i * 0.7))).add(c); p.setXYZ(k, v.x, v.y, v.z); }
   }
   g.computeVertexNormals();
+  const ga = new Float32Array(p.count * 4);
+  for (let i = 0; i <= TS; i++) for (let j = 0; j <= RS; j++) ga.set([s0 + i / TS * len, j / RS * Math.PI * 2, L.r0 + (L.r1 - L.r0) * i / TS, 6], (i * (RS + 1) + j) * 4);
+  g.setAttribute('aGrit', new THREE.BufferAttribute(ga, 4));
   const base = C(cols[L.tone]), light = C(cols[1]), patch = waves(r, 4);
   paint(g, (q, i) => {
     const j = i % (RS + 1), grain = 1 + 0.16 * Math.sin(j * 2.9 + knot) + 0.06 * Math.sin(i * 0.37);
@@ -118,13 +136,30 @@ function limbGeo(r: R, L: Limb, cols: [string, string], variant: string) {
   const parts = [clean(g, true)];
   for (const [t, rad] of [[0, L.r0], [1, L.r1]] as const) {
     const s = new THREE.SphereGeometry(rad * 1.02, RS, 6); s.translate(...curve.getPointAt(t).toArray() as [number, number, number]);
-    parts.push(clean(paint(s, () => shade(base, 1.15)), true));
+    parts.push(clean(grit(paint(s, () => shade(base, 1.15)), 10, s0), true));
+  }
+  // broken-off side branches: short stubs with a dark, ringed end (0-2 on a limb thick enough to show them)
+  const n = L.r0 < 2.5 ? 0 : Math.floor(rs() * 2.6), up = V(0, 1, 0);
+  for (let k = 0; k < n; k++) {
+    const t = 0.15 + rs() * 0.6, c0 = curve.getPointAt(t), tan = curve.getTangentAt(t), rad = L.r0 + (L.r1 - L.r0) * t;
+    const b1 = tan.clone().cross(Math.abs(tan.y) < 0.9 ? up : V(1, 0, 0)).normalize(), b2 = tan.clone().cross(b1), a = rs() * Math.PI * 2;
+    const dir = b1.multiplyScalar(Math.cos(a)).add(b2.multiplyScalar(Math.sin(a))).addScaledVector(tan, rs() * 0.8).normalize();
+    const sr = rad * (0.35 + rs() * 0.2), sl = rad * (1.5 + rs() * 0.9), st = new THREE.CylinderGeometry(sr * 0.8, sr, sl, Math.max(6, RS - 2), 1).translate(0, sl / 2, 0);
+    const sp = st.attributes.position, sn = st.attributes.normal, sa = new Float32Array(sp.count * 4), off = s0 + 500 + k * 97;
+    for (let i = 0; i < sp.count; i++) {
+      const x = sp.getX(i), y = sp.getY(i), z = sp.getZ(i);
+      sa.set(sn.getY(i) > 0.9 ? [x, z, 0, 9] : [off + y, Math.atan2(z, x) + Math.PI, sr, 6], i * 4);
+    }
+    st.setAttribute('aGrit', new THREE.BufferAttribute(sa, 4));
+    paint(st, q => shade(base, q.y > sl - 0.01 ? 0.8 : 1));
+    st.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(up, dir)).translate(c0.x, c0.y, c0.z);
+    parts.push(clean(st, true));
   }
   return mergeGeometries(parts)!;
 }
 function woodShape(variant: string, seed: number, size: number) {
-  const r = rng(seed * 13 + 5);
-  return mergeGeometries(woodLimbs(variant, seed, size).map(L => limbGeo(r, L, WOOD[variant] ?? WOOD.branch, variant)))!;
+  const r = rng(seed * 13 + 5), rs = rng(seed * 29 + 1), o = gritOffset(seed)[0];
+  return mergeGeometries(woodLimbs(variant, seed, size).map((L, i) => limbGeo(r, rs, L, WOOD[variant] ?? WOOD.branch, variant, o + i * 977)))!;
 }
 
 // ---------- Caves ----------
@@ -196,6 +231,86 @@ function plantGeo(type: PlantType, seed: number, h: number, spot?: (lx: number, 
   return g;
 }
 
+// ---------- Grit shader ----------
+/** Fragment code: gritK() = how much darker or lighter this pixel of a solid is, from vGrit (see grit()). Detail finer than
+ *  about a pixel fades out (px = mm per pixel), so distant pieces do not shimmer. */
+const GRIT = `varying vec4 vGrit;
+float gH(vec3 p) { p = fract(p * 0.3183099 + 0.1); p *= 17.0; return fract(p.x * p.y * p.z * (p.x + p.y + p.z)); }
+float gN(vec3 x) {
+  vec3 i = floor(x), f = fract(x); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(mix(gH(i), gH(i + vec3(1, 0, 0)), f.x), mix(gH(i + vec3(0, 1, 0)), gH(i + vec3(1, 1, 0)), f.x), f.y),
+             mix(mix(gH(i + vec3(0, 0, 1)), gH(i + vec3(1, 0, 1)), f.x), mix(gH(i + vec3(0, 1, 1)), gH(i + vec3(1, 1, 1)), f.x), f.y), f.z);
+}
+float gF(vec3 p) { float a = 0.0, w = 0.5; for (int k = 0; k < 3; k++) { a += w * gN(p); p = p * 2.03 + vec3(1.7, 9.2, 3.1); w *= 0.5; } return a / 0.875; }
+// distance to the nearest cell border of a jittered grid: zero along a network of cracks
+float gEdge(vec3 p) {
+  vec3 i = floor(p), f = fract(p); float d1 = 8.0, d2 = 8.0;
+  for (int z = -1; z <= 1; z++) for (int y = -1; y <= 1; y++) for (int x = -1; x <= 1; x++) {
+    vec3 g = vec3(x, y, z), o = vec3(gH(i + g), gH(i + g + 11.3), gH(i + g + 27.1));
+    float d = length(g + o - f);
+    if (d < d1) { d2 = d1; d1 = d; } else if (d < d2) d2 = d;
+  }
+  return d2 - d1;
+}
+float gFade(float f, float px) { return 1.0 - smoothstep(0.4, 0.9, px * f); }
+// turned off the grid axes, so thresholded spots come out round instead of square (stone and clay only: wood keeps its grain axis)
+const mat3 gR = mat3(0.0, 0.8, 0.6, -0.8, 0.36, -0.48, -0.6, -0.48, 0.64);
+// a line where e < w, antialiased, thinning out (instead of shimmering) once it is under a pixel wide
+float gLine(float e, float w) { float fw = fwidth(e) + 1e-4; return (1.0 - smoothstep(max(w - fw, 0.0), w + fw, e)) * min(1.0, 2.0 * w / fw); }
+float gStone(vec3 p, float px, float rough, float cracks) {
+  float k = 1.0 + (gF(p * 0.4) - 0.5) * 0.24 * gFade(0.4, px) + (gF(p * 0.07 + 3.0) - 0.5) * 0.2;
+  k *= 1.0 - 0.45 * rough * smoothstep(0.66, 0.76, gN(p * 0.5 + 5.0)) * gFade(0.5, px);  // pits
+  k *= 1.0 - 0.3 * rough * smoothstep(0.7, 0.8, gN(p * 0.18 + 2.0));                         // bigger pocks
+  vec3 q = p * 0.026 + 0.7 * vec3(gN(p * 0.07), gN(p * 0.07 + 3.1), gN(p * 0.07 + 7.7));
+  float e = gEdge(q), m = smoothstep(0.5, 0.68, gN(p * 0.02 + 13.0)) * smoothstep(0.3, 0.55, gN(p * 0.06 + 21.0)) * cracks, c = gLine(e, 0.03) * m;
+  float lip = (1.0 - smoothstep(0.03, 0.1, e)) * m * gFade(0.12, px);
+  return k * (1.0 + 0.1 * lip * (1.0 - c)) * (1.0 - 0.62 * c);
+}
+float gWood(vec3 g) {
+  float s = g.x, th = g.y, r = max(g.z, 0.5);
+  float px = length(fwidth(vec3(s, r * cos(th), r * sin(th))));
+  // knots: at most one per cell (55 mm along, a third of the way round): dark core, rings, the grain bent around it
+  float core = 0.0, ring = 0.0, warp = 0.0, cs = 55.0, i0 = floor(s / cs);
+  for (int a = -1; a <= 1; a++) for (int j = 0; j < 3; j++) {
+    vec3 id = vec3(i0 + float(a), float(j), 3.0);
+    if (gH(id + 41.9) > 0.42) continue;
+    float sc = (id.x + 0.2 + 0.6 * gH(id + 0.5)) * cs, tc = (float(j) + gH(id + 17.3)) * 2.094395;
+    float dt = mod(th - tc + 3.14159, 6.28318) - 3.14159, sz = r * (0.22 + 0.3 * gH(id + 63.1));
+    float dd = length(vec2((s - sc) / (sz * 1.7), dt * r / sz));
+    core = max(core, 1.0 - smoothstep(0.5, 0.75, dd));
+    ring = max(ring, (1.0 - smoothstep(0.9, 2.4, dd)) * (0.5 + 0.5 * sin(dd * 9.0)));
+    warp += exp(-dd * dd * 0.25) * sign(dt) * 0.9 * sz / r;
+  }
+  float t2 = th + warp;
+  vec3 c = vec3(s, r * cos(t2), r * sin(t2));
+  float k = 1.0 + (gN(vec3(s * 0.03, c.y * 0.45, c.z * 0.45)) - 0.5) * 0.32 * gFade(0.4, px)  // fine grain streaks
+              + (gF(vec3(s * 0.006, c.y * 0.15, c.z * 0.15)) - 0.5) * 0.22;                   // weathered patches
+  float e = abs(gN(vec3(s * 0.009, c.y * 0.28, c.z * 0.28) + 5.0) * 2.0 - 1.0);             // splits along the grain
+  float m = smoothstep(0.45, 0.65, gN(vec3(s * 0.011, c.y * 0.05, c.z * 0.05) + 9.0));
+  k *= 1.0 - 0.6 * gLine(e, 0.045) * m;
+  return k * (1.0 - 0.22 * ring - 0.5 * core);
+}
+float gritK() {
+  int t = int(vGrit.w + 0.5); vec3 p = vGrit.xyz; float px = length(fwidth(p)), k = 1.0; vec3 q = gR * p;
+  if (t == 1) k = gStone(q, px, 0.25, 0.3);
+  else if (t == 2) k = gStone(q, px, 0.6, 1.0);
+  else if (t == 3) k = gStone(q, px, 1.1, 0.6);
+  else if (t == 4) k = gStone(q, px, 1.4, 0.35);
+  else if (t == 5) {  // slate: fissures along the layers over the fine grain
+    float e = abs(gN(vec3(p.x * 0.02, p.y * 0.35, p.z * 0.02)) * 2.0 - 1.0), m = smoothstep(0.4, 0.6, gN(p * 0.03 + 4.0));
+    k = gStone(q, px, 0.4, 0.5) * (1.0 - 0.55 * gLine(e, 0.05) * m);
+  }
+  else if (t == 6) k = gWood(p);
+  else if (t == 7) k = (1.0 + (gF(q * 0.4) - 0.5) * 0.34 * gFade(0.4, px) + (gF(q * 0.05) - 0.5) * 0.3   // clay grain and firing blotches
+                   + 0.18 * smoothstep(0.74, 0.84, gN(q * 0.5 + 9.0)) * gFade(0.5, px))                    // pale grit
+                   * (1.0 - 0.4 * smoothstep(0.7, 0.8, gN(q * 0.45 + 2.0)) * gFade(0.45, px));             // pinholes
+  else if (t == 8) k = 1.0 + (gN(vec3(p.x * 0.7, p.y * 0.05, p.z * 0.7)) - 0.5) * 0.5 * gFade(0.6, px) + (gF(p * 0.1) - 0.5) * 0.2;
+  else if (t == 9) { float d = length(p.xy); k = (0.7 + 0.14 * sin(d * 2.6 + 2.0 * gN(p * 0.4))) * (1.0 - 0.5 * gLine(abs(gN(vec3(atan(p.y, p.x) * 3.0, 0.0, 1.0)) * 2.0 - 1.0), 0.06)); }
+  else if (t == 10) k = 1.0 + (gF(p * 0.3) - 0.5) * 0.22 * gFade(0.6, px);
+  return k;
+}
+`;
+
 // ---------- Caches and assembly ----------
 /**
  * Hardscape may pass through the glass (Nathan 2026-10-12): whatever lies outside the inner glass surface is not drawn,
@@ -215,15 +330,18 @@ function solidMaterial(T: Tank) {
   m = new THREE.MeshBasicMaterial({ vertexColors: true, clippingPlanes: planes, side: THREE.DoubleSide });
   const b = bowl ? bowlDims(T) : null;
   const uC = { value: new THREE.Vector3(T.L / 2, b?.c ?? 0, -T.D / 2) }, uR = { value: b?.R ?? 1e9 }, uTop = { value: b?.H ?? 0 };
-  m.onBeforeCompile = sh => {
+  // the lighting pass (render/lighting.ts aqPatch) takes over onBeforeCompile and runs userData.pre first
+  const pre = (sh: THREE.WebGLProgramParametersWithUniforms) => {
     Object.assign(sh.uniforms, { uC, uR, uTop });
-    sh.vertexShader = 'varying vec3 vGlassW;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\n  vGlassW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
-    sh.fragmentShader = 'varying vec3 vGlassW;\nuniform vec3 uC;\nuniform float uR;\nuniform float uTop;\n' + sh.fragmentShader
+    sh.vertexShader = 'varying vec3 vGlassW;\nattribute vec4 aGrit;\nvarying vec4 vGrit;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\n  vGlassW = (modelMatrix * vec4(transformed, 1.0)).xyz; vGrit = aGrit;');
+    sh.fragmentShader = 'varying vec3 vGlassW;\nuniform vec3 uC;\nuniform float uR;\nuniform float uTop;\n' + GRIT + sh.fragmentShader
       .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\n  if (vGlassW.y < uTop && distance(vGlassW, uC) > uR) discard;')
+      .replace('#include <color_fragment>', '#include <color_fragment>\n  diffuseColor.rgb *= gritK();')
       .replace('#include <dithering_fragment>', '#include <dithering_fragment>\n  if (!gl_FrontFacing) gl_FragColor.rgb *= 0.55;');
   };
+  m.onBeforeCompile = pre;
   m.customProgramCacheKey = () => 'glass-clip';
-  m.userData.keep = true;
+  Object.assign(m.userData, { keep: true, solid: true, pre });
   return remember(glassMats, k, m, 16, x => x.dispose());
 }
 const shapes = new Map<string, THREE.BufferGeometry>(), baked = new Map<string, THREE.BufferGeometry>(), plants = new Map<string, THREE.BufferGeometry>();
@@ -236,7 +354,8 @@ const dispose = (g: THREE.BufferGeometry) => g.dispose();
 
 function solidShape(it: Item) {
   const k = `${it.variant}|${it.seed}|${it.size}`;
-  return shapes.get(k) ?? remember(shapes, k, it.kind === 'stone' ? stoneShape(it.variant, it.seed, it.size) : it.kind === 'wood' ? woodShape(it.variant, it.seed, it.size) : caveShape(it.variant, it.seed, it.size), 150, dispose);
+  const make = () => grit(it.kind === 'stone' ? stoneShape(it.variant, it.seed, it.size) : it.kind === 'wood' ? woodShape(it.variant, it.seed, it.size) : caveShape(it.variant, it.seed, it.size), GRIT_KIND[it.variant] ?? 2, it.seed);
+  return shapes.get(k) ?? remember(shapes, k, make(), 150, dispose);
 }
 /** A piece's turn: yaw about the vertical, then pitch (tip forward / back), then roll (lean sideways). */
 const itemEuler = (it: Item) => new THREE.Euler(it.pitch * D2R, it.yaw * D2R, it.tilt * D2R, 'YXZ');

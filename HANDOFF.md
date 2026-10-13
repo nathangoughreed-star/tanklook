@@ -2,6 +2,20 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Hardscape surface grit (2026-10-13)
+
+Nathan: driftwood, caves and rocks looked too clean; wanted randomly generated knots, crevices and cracks.
+- Per-pixel, in the hardscape shader (render/items.ts `GRIT`, run by `solidMaterial`): every solid geometry carries
+  `aGrit` = (noise coordinates in mm, kind). Stone / arch: fine grain, blotches, pits and pocks (by roughness: river
+  least, lava most), crack networks (cellular edges, masked so only some stretches show; seiryu most). Slate adds
+  fissures along its layers. Wood: coordinates along the limb / around / radius, so grain streaks and splits run along
+  the limb; knots (dark core, rings, grain bent round them) at random spots. Terracotta tube: clay grain, blotches,
+  pale grit, pinholes. Coconut: fibres. Detail finer than a pixel fades out. Pattern shifted per seed.
+- Geometry: wood limbs get 0-2 broken-off side-branch stubs with a dark ringed end (own rng, so limb shapes are unchanged).
+- Fixed on the way: the lighting pass (`aqPatch`) replaced the hardscape material's own patch, so the bowl clip and the
+  darker cut face were not applied under lighting; it now runs `userData.pre` first (program key gets 'h').
+- Cost measured: about 2.6 ms more per frame for 11 pieces at 930x860 (frames are drawn on change only).
+
 ## Light beam overlay (2026-10-13)
 
 Nathan asked for a Lighting-tab toggle showing the light cones from height and beam angle, and an analog for the other
