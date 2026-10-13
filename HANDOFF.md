@@ -30,6 +30,10 @@ Radius, Angle slider (type-in). Flat-ends rules apply (no hood, back wall only).
 - **Distance to wall** slider (`wall.gap`, mm, 0-1000, absent = the old 50; `wallGap()`), for every placement (behind,
   ends, corner). At least 1 mm in effect, so the background film (0.5 mm outside the glass) stays in front of the wall;
   the skirting board thins to fit a small gap. Shots `shots/corner_{gap50,gap0_top,gap300}.png`.
+- Same day (Nathan): a pie slice's custom terrain is polar like a round tank's: `TerrainSettings.arc` (degrees) with
+  `radial`; ring k = an arc of radius k/rows round the apex, pane to pane, `pieSegs(k, arc)` segments (ring 0 = the apex
+  dot). Rings from the Grid slider at the same spacing as a rectangle ((cols-1) x D/L). `sameGrid()` resamples when the
+  shape or angle changes. In a non-pie Tank B the slice is stretched to L x D. Shot `shots/pie_terrain_grid.png`.
 
 ## Light beam overlay (2026-10-13)
 

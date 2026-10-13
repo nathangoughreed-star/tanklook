@@ -16,7 +16,7 @@ import {
   IN, clamp, clampFish, fmtDims, fmtLen, fmtSize, fromUnit, glassThickness, rescaleTank, toUnit, volume, WALL_GAP_MAX, waterY,
 } from '../scene/physics';
 import type { Store } from '../scene/store';
-import { SWAMP_LEVEL, groundHeight, nearestLand, radialTerrain, sampleTerrain } from '../scene/terrain';
+import { SWAMP_LEVEL, groundHeight, nearestLand, sameGrid, sampleTerrain } from '../scene/terrain';
 
 /** Arrow keys move the selected piece: [axis, direction] (depth grows toward the back). */
 const ARROWS: Record<string, [string, number]> = { ArrowLeft: ['x', -1], ArrowRight: ['x', 1], ArrowUp: ['d', 1], ArrowDown: ['d', -1], PageUp: ['y', 1], PageDown: ['y', -1] };
@@ -156,9 +156,9 @@ Cancel, then change the name, to keep both.`)) return;
     store.edit(s => {
       const T = next(s.tank);
       rescaleTank(s, T); // keep fish at the same relative spot (and apply the shape's rules, e.g. round D = L)
-      // round tanks and bowls shape their terrain on rings, any other on a rectangular grid: resample into the new kind
+      // round tanks and bowls shape their terrain on rings, a pie slice on arcs, any other on a rectangular grid: resample into the new kind
       const te = s.terrain;
-      if (te.h.length && !!te.radial !== radialTerrain(s.tank)) s.terrain = { ...sampleTerrain(s, s.tank, te.cols), on: te.on };
+      if (te.h.length && !sameGrid(te, s.tank)) s.terrain = { ...sampleTerrain(s, s.tank, te.cols), on: te.on };
       const max = T.H * 0.5;
       for (const k of ['fl', 'fr', 'bl', 'br'] as const) s.substrate[k] = Math.min(s.substrate[k], max);
       // hood and peninsula ends exist for rectangles and bowfronts only (Nathan 2026-10-08)
@@ -477,8 +477,11 @@ Cancel, then change the name, to keep both.`)) return;
   const lKeys = { lCount: 'count', lRows: 'rows', lSp: 'spacing', lCone: 'cone', lH: 'height', lBright: 'bright', lK: 'kelvin', lRoom: 'room' } as const;
   // spacing below a bulb's width snaps to 0 = auto (fill the tank)
   for (const [id, k] of Object.entries(lKeys)) $(id).oninput = e => store.edit(s => { const v = +(e.target as HTMLInputElement).value; s.light[k] = k === 'spacing' && v < 80 ? 0 : v; }, { coalesce: id });
-  $<HTMLSelectElement>('lPat').onchange = e => store.edit(s => { s.light.pattern = (e.target as HTMLSelectElement).value as TankSetup['light']['pattern']; });
-  $<HTMLSelectElement>('lType').onchange = e => store.edit(s => { s.light.type = (e.target as HTMLSelectElement).value as TankSetup['light']['type']; });
+  // up to 12 bulbs when placed to fit the tank (no rows to multiply them), 6 otherwise
+  const countMax = (l: TankSetup['light']) => (l.type === 'spot' && l.pattern === 'fit' ? 12 : 6);
+  const capCount = (l: TankSetup['light']) => { l.count = Math.min(l.count, countMax(l)); };
+  $<HTMLSelectElement>('lPat').onchange = e => store.edit(s => { s.light.pattern = (e.target as HTMLSelectElement).value as TankSetup['light']['pattern']; capCount(s.light); });
+  $<HTMLSelectElement>('lType').onchange = e => store.edit(s => { s.light.type = (e.target as HTMLSelectElement).value as TankSetup['light']['type']; capCount(s.light); });
   $('lBeams').onchange = e => store.edit(s => { s.render.beams = (e.target as HTMLInputElement).checked; });
 
   // ---------- Viewer (camera): saved with the scene, but not undoable ----------
@@ -830,7 +833,7 @@ Cancel, then change the name, to keep both.`)) return;
 
     const te = s.terrain, editing = viewer.terrainEdit.on && te.on;
     $('terOn').checked = te.on; setVal('terCols', te.cols);
-    setOut('oTerCols', !te.h.length ? `${te.cols} across` : te.radial ? `${te.rows} ring${te.rows > 1 ? 's' : ''}, ${te.h.length} points` : `${te.cols} × ${te.rows} points`);
+    setOut('oTerCols', !te.h.length ? `${te.cols} across` : te.radial ? `${te.rows} ${te.arc ? 'arc' : 'ring'}${te.rows > 1 ? 's' : ''}, ${te.h.length} points` : `${te.cols} × ${te.rows} points`);
     for (const id of ['terEdit', 'terFlat', 'terCols']) ($(id) as HTMLInputElement).disabled = !te.on;
     $('terEdit').classList.toggle('on', editing); $('terEdit').textContent = editing ? 'Done editing' : 'Edit points';
     $('terHint').textContent = !te.on ? 'Custom terrain turns the floor into a grid of points you can push down or pull up, with a smooth surface through them. It starts from the current floor.'
@@ -843,7 +846,7 @@ Cancel, then change the name, to keep both.`)) return;
     setVal('wLevel', wa.level); setOut('oLevel', wa.level >= 1 ? 'Full' : `${fmt(waterY(A, wa.level))} high`);
     setVal('wOpac', wa.opacity); setOut('oOpac', wa.opacity < 0.01 ? 'Clear' : Math.round(wa.opacity * 100) + '%'); setVal('wColor', wa.color);
 
-    const l = s.light; setVal('lType', l.type);
+    const l = s.light; setVal('lType', l.type); ($('lCount') as HTMLInputElement).max = String(countMax(l));
     for (const [id, k] of Object.entries(lKeys)) setVal(id, l[k]);
     // spots: the slider sets the longest row; say the total when the rows make it more (Nathan 2026-10-12: "3" showed 5)
     const total = l.type === 'spot' ? emitters(s.tank, l).length : l.count;
@@ -851,6 +854,7 @@ Cancel, then change the name, to keep both.`)) return;
     $('lCountRow').style.display = l.type === 'spot' || l.type === 'tube' ? '' : 'none';
     $('lCountLab').textContent = l.type === 'tube' ? 'Tubes' : 'Bulbs';
     for (const id of ['lRowsRow', 'lPatRow', 'lSpRow', 'lConeRow']) $(id).style.display = l.type === 'spot' ? '' : 'none';
+    if (l.pattern === 'fit') for (const id of ['lRowsRow', 'lSpRow']) $(id).style.display = 'none'; // placed by the outline
     setVal('lPat', l.pattern); setOut('oLSp', l.spacing ? fmt(l.spacing) : 'Auto'); setOut('oLCone', l.cone + '°');
     setOut('oLH', s.lid === 'hood' ? 'In hood' : fmt(l.height) + ' above');
     $('lHRow').style.display = l.type === 'flat' ? 'none' : ''; ($('lH') as HTMLInputElement).disabled = s.lid === 'hood';

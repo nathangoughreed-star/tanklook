@@ -4,7 +4,7 @@
 // Tank B gets the same arrangement at the same relative spots.
 import { rng } from '../art/paint';
 import { clamp, substrateHeight } from './physics';
-import { bowlDims, bowlRadius, clampIn, inside, insideBy, shapeOf } from './shape';
+import { PIE_DEFAULT, bowlDims, bowlRadius, clampIn, inside, insideBy, shapeOf } from './shape';
 import type { LayoutSettings, SubstrateSettings, Tank, TerrainSettings } from './types';
 
 export interface Ground { substrate: SubstrateSettings; layout: LayoutSettings; terrain?: TerrainSettings }
@@ -53,7 +53,7 @@ const cr = (p0: number, p1: number, p2: number, p3: number, t: number) =>
 
 /** Custom terrain height at (x, depth): a smooth surface through every grid point, clamped to the tank. */
 export function terrainHeight(t: TerrainSettings, T: Tank, x: number, depth: number): number {
-  return clamp(t.radial ? radialHeight(t, T, x, depth) : rectHeight(t, T, x, depth), 0, T.H * 0.95); // overshoot can dip below 0
+  return clamp(t.radial ? (t.arc ? pieHeight(t, T, x, depth) : radialHeight(t, T, x, depth)) : rectHeight(t, T, x, depth), 0, T.H * 0.95); // overshoot can dip below 0
 }
 
 /** Rectangular grid: bicubic Catmull-Rom through the cols x rows points. */
@@ -95,6 +95,48 @@ function radialHeight(t: TerrainSettings, T: Tank, x: number, depth: number): nu
 }
 /** Round tanks and bowls shape their terrain on rings round the centre; every other shape on a rectangular grid. */
 export const radialTerrain = (T: Tank) => shapeOf(T) === 'round' || shapeOf(T) === 'bowl';
+
+/**
+ * Pie slice grid (Nathan 2026-10-13: the same polar editing as a round tank): ring k is an arc of radius k / rows of the
+ * slice's radius round its apex (ring 0 = the apex), from one flat pane to the other, with pieSegs(k) segments so the
+ * arc spacing matches the ring spacing. Arc angle in degrees.
+ */
+export const pieSegs = (k: number, arc: number) => Math.max(1, Math.round(k * arc * Math.PI / 180));
+const pieStart = (k: number, arc: number) => { let n = k > 0 ? 1 : 0; for (let q = 1; q < k; q++) n += pieSegs(q, arc) + 1; return n; };
+/** Points in a pie grid of `rings` arcs. */
+export const pieSize = (rings: number, arc: number) => pieStart(rings + 1, arc);
+/** The grid a tank's terrain is shaped on: rectangular, rings (round, bowl) or arcs round a pie slice's apex. */
+export const terrainGrid = (T: Tank): { radial?: true; arc?: number } =>
+  shapeOf(T) === 'pie' ? { radial: true, arc: T.pieDeg ?? PIE_DEFAULT } : radialTerrain(T) ? { radial: true } : {};
+/** Is terrain t on the grid tank T uses (else it is resampled onto it)? */
+export const sameGrid = (t: TerrainSettings, T: Tank) => { const g = terrainGrid(T); return !!t.radial === !!g.radial && (t.arc ?? 0) === (g.arc ?? 0); };
+/**
+ * A spot as (rho, angle) round the pie apex: rho in slice radii, angle from straight ahead (toward the front glass),
+ * positive to the right. Exact in a pie slice of that arc; in another shape (Tank B) the slice stretched to L x D.
+ */
+function piePolar(T: Tank, arc: number, x: number, depth: number) {
+  const h = arc * Math.PI / 360, X = (x - T.L / 2) / (T.L / 2) * Math.sin(h), Y = (T.D - depth) / T.D;
+  return { rho: Math.hypot(X, Y), a: Math.atan2(X, Y) };
+}
+/** Floor-plan spot at (rho, angle) round the pie apex (inverse of piePolar). */
+function piePoint(T: Tank, arc: number, rho: number, a: number) {
+  const h = arc * Math.PI / 360;
+  return { x: T.L / 2 + rho * Math.sin(a) * (T.L / 2) / Math.sin(h), depth: T.D - rho * Math.cos(a) * T.D };
+}
+/** Pie grid: Catmull-Rom along each arc at the angle (ends held), then across the arcs at the radius. */
+function pieHeight(t: TerrainSettings, T: Tank, x: number, depth: number): number {
+  const N = t.rows, h = t.h, arc = t.arc!, hh = arc * Math.PI / 360, p = piePolar(T, arc, x, depth);
+  const rho = Math.min(p.rho, 1) * N, a = clamp(p.a, -hh, hh);
+  const ring = (k: number): number => {
+    k = clamp(k, 0, N);
+    if (k === 0) return h[0];
+    const n = pieSegs(k, arc), s = pieStart(k, arc), u = (a + hh) / (2 * hh) * n;
+    const i = Math.min(Math.floor(u), n - 1), f = u - i, at = (q: number) => h[s + clamp(q, 0, n)];
+    return cr(at(i - 1), at(i), at(i + 1), at(i + 2), f);
+  };
+  const k = Math.min(Math.floor(rho), N - 1), f = rho - k;
+  return cr(ring(k - 1), ring(k), ring(k + 1), ring(k + 2), f);
+}
 /**
  * The disc a radial grid spans, in floor-plan mm: the bowl's floor circle (the renderer flares the ground out from it
  * to meet the sloping glass), else the ellipse inscribed in L x D (the circle of a round tank).
@@ -112,7 +154,11 @@ export const terrainRows = (T: Tank, cols: number) => clamp(Math.round((cols - 1
 /** Position (mm, Tank T) of every grid point, in the order of h. */
 export function terrainPoints(t: TerrainSettings, T: Tank): { x: number; depth: number }[] {
   const out: { x: number; depth: number }[] = [];
-  if (t.radial) {
+  if (t.radial && t.arc) {
+    const arc = t.arc, hh = arc * Math.PI / 360;
+    out.push(piePoint(T, arc, 0, 0));
+    for (let k = 1; k <= t.rows; k++) for (let i = 0, n = pieSegs(k, arc); i <= n; i++) out.push(piePoint(T, arc, k / t.rows, -hh + 2 * hh * i / n));
+  } else if (t.radial) {
     const c = terrainDisc(T);
     for (let k = 0; k <= t.rows; k++) for (let i = 0, n = ringCount(k); i < n; i++) {
       const a = RING_A0 + 2 * Math.PI * i / n, r = k / t.rows;
@@ -125,11 +171,12 @@ export function terrainPoints(t: TerrainSettings, T: Tank): { x: number; depth: 
 /**
  * A fresh grid sampled from the current ground (custom terrain if on, else substrate / swamp land): `cols` points across
  * for a rectangular grid, or for a round tank or bowl concentric rings at that spacing, a dot at the centre and the outer ring
- * on the glass.
+ * on the glass; a pie slice, arcs round its apex at that spacing, the outer one on the curved glass.
  */
 export function sampleTerrain(g: Ground, T: Tank, cols: number): TerrainSettings {
-  const radial = radialTerrain(T), rows = radial ? terrainRings(cols) : terrainRows(T, cols);
-  const t: TerrainSettings = { on: true, cols, rows, h: [], ...(radial ? { radial: true } : {}) };
+  const grid = terrainGrid(T);
+  const rows = grid.arc ? Math.max(1, Math.round((cols - 1) * T.D / T.L)) : grid.radial ? terrainRings(cols) : terrainRows(T, cols);
+  const t: TerrainSettings = { on: true, cols, rows, h: [], ...grid };
   t.h = terrainPoints(t, T).map(p => +groundHeight(g, T, p.x, p.depth).toFixed(1));
   return t;
 }

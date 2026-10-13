@@ -4,11 +4,11 @@ import { defaultScene, defaultSetup } from '../src/scene/defaults';
 import { Store } from '../src/scene/store';
 import { SCENE_VERSION, type TankSetup } from '../src/scene/types';
 import { restsOnGround, setWaterLevel } from '../src/scene/water';
-import { SWAMP_LEVEL, groundHeight, nearestLand, radialSize, randomLand, ringCount, sampleTerrain, terrainHeight, terrainPoints } from '../src/scene/terrain';
+import { SWAMP_LEVEL, groundHeight, nearestLand, pieSize, radialSize, randomLand, sameGrid, ringCount, sampleTerrain, terrainHeight, terrainPoints } from '../src/scene/terrain';
 import { tankWeight } from '../src/scene/weight';
 import { WATERLINE_GAP, spawnSnail, substrateHeight, waterK, waterY } from '../src/scene/physics';
 import { SceneError, parseScene } from '../src/scene/validate';
-import { bowlDims, normTank } from '../src/scene/shape';
+import { bowlDims, inside, normTank } from '../src/scene/shape';
 
 /** A v6 (pre-split) flat save built from the default setup: the shape every older file has. */
 const v6 = (): Record<string, any> => { const { tank, ...rest } = structuredClone(defaultSetup()); return { version: 6, name: 'My tank', units: 'in', tankA: tank, tankB: { ...tank }, compare: false, ...rest }; };
@@ -440,5 +440,34 @@ describe('light height', () => {
     };
     const low = stats(50), high = stats(400);
     expect(high.mean).toBeLessThan(low.mean); expect(high.spread).toBeLessThan(low.spread);
+  });
+});
+
+describe('pie slice terrain grid', () => {
+  const pieSetup = (deg = 90) => { const s = defaultSetup(); s.tank = normTank({ L: 1, H: 450, D: 600, shape: 'pie', pieDeg: deg }); s.substrate = { ...s.substrate, fl: 40, fr: 40, bl: 80, br: 80 }; return s; };
+  it('arcs round the apex: a dot at the apex, every dot inside the glass, outer arc on the curve', () => {
+    const s = pieSetup(), T = s.tank, t = sampleTerrain(s, T, 13);
+    expect(t.radial).toBe(true); expect(t.arc).toBe(90);
+    const pts = terrainPoints(t, T);
+    expect(pts.length).toBe(pieSize(t.rows, 90)); expect(t.h.length).toBe(pts.length);
+    expect(pts[0].x).toBeCloseTo(T.L / 2, 6); expect(pts[0].depth).toBeCloseTo(T.D, 6);
+    for (const p of pts) expect(inside(T, p.x, p.depth, -1)).toBe(true); // on the true arc, a hair outside the faceted glass
+    const outer = pts.slice(-3); for (const p of outer) expect(Math.hypot(p.x - T.L / 2, p.depth - T.D)).toBeCloseTo(T.D, 1);
+  });
+  it('the surface passes through every grid point and moves only near an edited one', () => {
+    const s = pieSetup(120), T = s.tank, t = sampleTerrain(s, T, 13), pts = terrainPoints(t, T);
+    pts.forEach((p, k) => expect(terrainHeight(t, T, p.x, p.depth)).toBeCloseTo(t.h[k], 3));
+    const k = pts.length - 4, far = pts[1], before = terrainHeight(t, T, far.x, far.depth);
+    t.h[k] += 60; expect(terrainHeight(t, T, pts[k].x, pts[k].depth)).toBeCloseTo(t.h[k], 3);
+    expect(terrainHeight(t, T, far.x, far.depth)).toBeCloseTo(before, 3);
+  });
+  it('changing the angle or shape asks for a resample; the grid survives a file round trip', () => {
+    const s = pieSetup(), t = sampleTerrain(s, s.tank, 13);
+    expect(sameGrid(t, s.tank)).toBe(true);
+    expect(sameGrid(t, normTank({ ...s.tank, pieDeg: 180 }))).toBe(false);
+    expect(sameGrid(t, normTank({ ...s.tank, shape: 'round' }))).toBe(false);
+    const sc = defaultScene(); sc.tanks[0].tank = s.tank; sc.tanks[0].terrain = t;
+    const back = parseScene(JSON.parse(JSON.stringify(sc))).scene.tanks[0].terrain;
+    expect(back.arc).toBe(90); expect(back.h).toEqual(t.h);
   });
 });

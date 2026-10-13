@@ -88,11 +88,12 @@ export interface RenderSettings {
 export interface LightSettings {
   type: LightType;
   count: number;
-  /** Spot lights only: rows front to back, so the bulbs form a count × rows grid (added 2026-10-08; older files: 1). */
+  /** Spot lights only (grid / tri): rows front to back, so the bulbs form a count × rows grid (added 2026-10-08; older files: 1). */
   rows: number;
   /** Spot lights only (added 2026-10-09; older files: 'grid', 0, 52): 'tri' staggers alternate rows by half a step and
-   * drops one bulb from them, a triangular lattice that suits a round tank. */
-  pattern: 'grid' | 'tri';
+   * drops one bulb from them, a triangular lattice that suits a round tank. 'fit' (added 2026-10-13) places `count`
+   * bulbs to cover the tank's own outline evenly (rows and spacing unused): see `fitSpots`. */
+  pattern: 'grid' | 'tri' | 'fit';
   /** Spot lights only: centre-to-centre bulb spacing (mm); 0 = auto, spread to fill the tank. */
   spacing: number;
   /** Spot lights only: full beam angle (degrees), as printed on the bulb. */
@@ -118,7 +119,8 @@ export interface SubstrateSettings {
  * round(2 pi k) points evenly spaced (so arc spacing matches ring spacing), the outer ring on the glass (a bowl's: at the floor); h runs centre,
  * ring 1, ring 2, ... each ring starting at the front. `cols` stays the slider value it was made from.
  */
-export interface TerrainSettings { on: boolean; cols: number; rows: number; h: number[]; radial?: boolean }
+/** radial: rings round the centre (round tank, bowl); with arc (degrees): arcs round a pie slice's apex (2026-10-13). */
+export interface TerrainSettings { on: boolean; cols: number; rows: number; h: number[]; radial?: boolean; arc?: number }
 
 /**
  * Starter set (scene v9; before that the whole aquascape): choosing one places a fresh set of editable items made from

@@ -8,7 +8,7 @@ import { restsOnGround } from '../scene/water';
 import { D2R, IN, clamp, floorY, glassThickness, RIM_DROP, RIM_H, tankUnderside, waterY } from '../scene/physics';
 import { alongRun, backgroundRuns, bowlDims, bowlRadius, chord, circleRing, clipToFootprint, facingRuns, footprint, glassFrame, halfWidth, inside, nearestGlass, offsetRing, offsetWalls, runLength, shapeOf, subRun, type P } from '../scene/shape';
 import { TABLE_TOP, cornerWalls, wallGap, tableCentre, tableOn, tableRing, wallPlane } from '../scene/table';
-import { groundHeight, terrainDisc, terrainPoints } from '../scene/terrain';
+import { groundHeight, pieSegs, terrainDisc, terrainPoints } from '../scene/terrain';
 import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
 import { addBeams, addFixture, applyLighting } from './lighting';
 import { itemMesh } from './items';
@@ -741,7 +741,7 @@ export interface BuiltTank {
 function addTerrainDots(sc: THREE.Scene, S: TankSetup, T: Tank, hot: number | null): THREE.Mesh[] {
   const t = S.terrain, g = (x: number, d: number) => groundHeight(S, T, x, d), dots: THREE.Mesh[] = [], pts: number[] = [];
   const rb = shapeOf(T) === 'bowl' ? bowlDims(T).rb : 0, disc = terrainDisc(T);
-  const step = t.radial ? disc.rx / t.rows : Math.min(T.L / (t.cols - 1), T.D / (t.rows - 1));
+  const step = t.arc ? T.D / t.rows : t.radial ? disc.rx / t.rows : Math.min(T.L / (t.cols - 1), T.D / (t.rows - 1));
   const r = clamp(step * 0.09, 3.5, 9);
   const geo = new THREE.SphereGeometry(r, 12, 8), ring = new THREE.SphereGeometry(r * 1.45, 12, 8);
   const mat = (c: number) => basic(c, { depthTest: false, transparent: true, opacity: 0.95 });
@@ -753,7 +753,14 @@ function addTerrainDots(sc: THREE.Scene, S: TankSetup, T: Tank, hot: number | nu
     const m = new THREE.Mesh(geo, k === hot ? hotM : fill); m.position.copy(o.position); m.renderOrder = 21; m.userData = { nolight: true, dot: k }; sc.add(m); dots.push(m);
   });
   const seg = 10, seg2 = (x0: number, d0: number, x1: number, d1: number) => pts.push(...flare(T, x0, d0, g(x0, d0) + 1, rb), ...flare(T, x1, d1, g(x1, d1) + 1, rb));
-  if (t.radial) { // a circle through each ring (ellipse in a non-round Tank B; flared out to the glass in a bowl)
+  if (t.arc) { // an arc through each ring of a pie slice grid, round its apex (stretched in a non-pie Tank B)
+    const hh = t.arc * Math.PI / 360, sx = T.L / 2 / Math.sin(hh);
+    const P = (k: number, a: number): [number, number] => [T.L / 2 + (k / t.rows) * Math.sin(a) * sx, T.D - (k / t.rows) * Math.cos(a) * T.D];
+    for (let k = 1; k <= t.rows; k++) {
+      const n = pieSegs(k, t.arc) * seg;
+      for (let i = 0; i < n; i++) seg2(...P(k, -hh + 2 * hh * i / n), ...P(k, -hh + 2 * hh * (i + 1) / n));
+    }
+  } else if (t.radial) { // a circle through each ring (ellipse in a non-round Tank B; flared out to the glass in a bowl)
     for (let k = 1; k <= t.rows; k++) {
       const n = Math.max(24, Math.round(2 * Math.PI * k) * seg), rx = disc.rx * k / t.rows, rd = disc.rd * k / t.rows;
       for (let i = 0; i < n; i++) {

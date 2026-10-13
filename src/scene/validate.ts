@@ -6,7 +6,7 @@ import { WALL_GAP, WALL_GAP_MAX, clamp, mapToTank } from './physics';
 import { normTank } from './shape';
 import { TABLE_MAX, fitTable } from './table';
 import { keepInWater } from './water';
-import { radialSize, type Ground } from './terrain';
+import { pieSize, radialSize, type Ground } from './terrain';
 import { SCENE_VERSION, type Fish, type Item, type Scene, type Tank, type TankSetup } from './types';
 
 export class SceneError extends Error {}
@@ -23,7 +23,7 @@ export const LIMITS = {
   az: [-180, 180] as const,
   el: [-20, 85] as const,
   zoom: [0.5, 12] as const,
-  count: [1, 6] as const,
+  count: [1, 12] as const,                   // above 6 only reachable with the optimised spot pattern
   rows: [1, 4] as const,
   spacing: [0, 1500] as const,     // mm, 0 = auto
   cone: [15, 120] as const,        // degrees, full beam angle
@@ -185,7 +185,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
     light: {
       type: pick(l.type, ['flat', 'spot', 'tube', 'led'] as const, 'flat'), count: Math.round(num(l.count, 2, ...LIMITS.count)), rows: Math.round(num(l.rows, 1, ...LIMITS.rows)),
       // added 2026-10-09 (no version bump); older files: the old filled grid and 52° beam
-      pattern: pick(l.pattern, ['grid', 'tri'] as const, 'grid'), spacing: Math.round(num(l.spacing, 0, ...LIMITS.spacing)), cone: Math.round(num(l.cone, 52, ...LIMITS.cone)),
+      pattern: pick(l.pattern, ['grid', 'tri', 'fit'] as const, 'grid'), spacing: Math.round(num(l.spacing, 0, ...LIMITS.spacing)), cone: Math.round(num(l.cone, 52, ...LIMITS.cone)),
       bright: num(l.bright, 1, ...LIMITS.bright), kelvin: num(l.kelvin, 6500, ...LIMITS.kelvin), room: num(l.room, 0.15, ...LIMITS.room),
       height: num(l.height, 50, ...LIMITS.lampH), // added 2026-10-08; older files: the old fixed 50 mm
     },
@@ -201,10 +201,11 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
     },
     terrain: (() => {
       const cols = Math.round(num(te.cols, d.terrain.cols, ...LIMITS.terrainCols)), rows = Math.round(num(te.rows, 0, 0, 25));
-      const radial = te.radial === true, size = radial ? (rows >= 1 ? radialSize(rows) : -1) : rows >= 2 ? cols * rows : -1;
+      const radial = te.radial === true, arc = radial && typeof te.arc === 'number' ? Math.round(clamp(te.arc, 45, 180)) : 0;
+      const size = radial ? (rows >= 1 ? (arc ? pieSize(rows, arc) : radialSize(rows)) : -1) : rows >= 2 ? cols * rows : -1;
       const h = Array.isArray(te.h) && te.h.length === size && te.h.every(v => typeof v === 'number' && Number.isFinite(v))
         ? (te.h as number[]).map(v => clamp(v, 0, tankA.H * LIMITS.terrainMax)) : [];
-      return h.length ? { on: bool(te.on, false), cols, rows, h, ...(radial ? { radial } : {}) } : { on: false, cols, rows: 0, h: [] };
+      return h.length ? { on: bool(te.on, false), cols, rows, h, ...(radial ? { radial } : {}), ...(arc ? { arc } : {}) } : { on: false, cols, rows: 0, h: [] };
     })(),
     lid: pick(raw.lid, ['open', 'glass', 'hood'] as const, d.lid),
     stand: {
