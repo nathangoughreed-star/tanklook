@@ -2,6 +2,15 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Pan stays put (2026-10-13)
+
+Nathan: snapping back after every pan was limiting; asked about SolidWorks-style free pan + orbit. Decided against
+moving the eye/pivot (breaks the fixed eye distance and like-for-like tank comparison, and orbit then swings the tank
+out of view). Instead the middle-drag pan (still a lens shift, viewer.ts `pans`, one per view; locked views pan
+together) no longer eases back on release: orbit and zoom keep it, a second drag continues from it. Three resets,
+all easing back (220 ms): double middle-click, Home (F is taken by flip), and a "Re-centre" button in the view tools
+that shows only while panned. Not reset by opening a tank or changing layout.
+
 ## Fish stand out (2026-10-13)
 
 Nathan: fish washed out against sand, backgrounds and plants; asked for an option, or hard-coded if truer to life.

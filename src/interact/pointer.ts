@@ -1,6 +1,6 @@
 // Pointer: click a fish card to select it and drag it; drag empty space to orbit; wheel zooms (FOV only);
 // shift + wheel moves the selected fish forward/back; click empty space to deselect; double-click it for straight-on.
-// Middle-drag pans the picture for a look round the edge; it eases back to the framing on release.
+// Middle-drag pans the picture and it stays panned; double middle-click, Home or the Re-centre button eases it back.
 // With split tanks, a view whose "Edit" box is ticked takes fish and terrain drags (that tank only) and pressing in it
 // shows it in the panel; an unticked view only orbits, zooms and pans. Bottom dwellers and floor snails slide along the
 // floor, climbing onto a rock or wood if the species clings to hardscape; snails and plecos on glass slide over the glass
@@ -78,15 +78,20 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
   // custom terrain: dragging a grid dot up/down; the height follows the pointer at the dot's on-screen scale
   let lift: { i: number; k: number; y0: number; h0: number; mmPerPx: number; moved: boolean } | null = null;
 
-  // middle-drag: a temporary pan that eases back on release (Viewer.pan)
+  // middle-drag: a pan that stays (Viewer.pans); a double middle-click re-centres
   let pan: { i: number; x: number; y: number } | null = null;
+  let lastMid = { t: 0, x: 0, y: 0 };
   canvas.addEventListener('mousedown', e => { if (e.button === 1) e.preventDefault(); }); // no browser autoscroll
   canvas.addEventListener('pointerdown', e => {
     if (e.button === 1) {
       const hit = viewer.hitTest(e.clientX, e.clientY); if (!hit) return;
       e.preventDefault();
+      const dbl = e.timeStamp - lastMid.t < 400 && Math.hypot(e.clientX - lastMid.x, e.clientY - lastMid.y) < 6;
+      lastMid = dbl ? { t: 0, x: 0, y: 0 } : { t: e.timeStamp, x: e.clientX, y: e.clientY };
+      if (dbl) { viewer.resetPan(); return; }
       try { canvas.setPointerCapture(e.pointerId); } catch { /* not all pointers can be captured */ }
-      pan = { i: hit.vp.i, x: e.clientX, y: e.clientY }; canvas.classList.add('panning');
+      const p0 = viewer.pans[hit.vp.i];
+      pan = { i: hit.vp.i, x: e.clientX - p0.x, y: e.clientY - p0.y }; canvas.classList.add('panning');
       return;
     }
     if (e.button !== 0) return;
@@ -199,7 +204,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
   });
 
   const end = (e: PointerEvent) => {
-    if (pan) { pan = null; viewer.releasePan(); canvas.classList.remove('panning'); return; }
+    if (pan) { pan = null; canvas.classList.remove('panning'); return; }
     // a plain click on empty space (no orbit drag) clears the selection, so nothing is highlighted
     if (orbit && e.type === 'pointerup' && Math.hypot(e.clientX - orbit.x, e.clientY - orbit.y) < 4) store.select(null);
     if (drag?.moved || orbit || lift?.moved || move?.moved) store.seal();

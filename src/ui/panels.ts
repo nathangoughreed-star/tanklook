@@ -56,6 +56,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
 
   // ---------- File: new / open / save / name / undo ----------
   $('undo').onclick = () => store.undo();
+  const recenter = $('recenter'); recenter.onclick = () => viewer.resetPan();
+  viewer.onPan(() => { recenter.hidden = !viewer.panned; });
   $('redo').onclick = () => store.redo();
   $('newScene').onclick = () => {
     if (G().tanks.some(t => t.fish.length) && !confirm('Start a new, empty tank? (Undo brings this one back.)')) return;
@@ -438,6 +440,7 @@ Cancel, then change the name, to keep both.`)) return;
     if (mod && e.key.toLowerCase() === 'y' && !typing) { e.preventDefault(); store.redo(); return; }
     if (mod && e.key.toLowerCase() === 'd' && !typing) { e.preventDefault(); if (store.selectedItem) itemDup(); else dup(); return; }
     if (typing || mod || e.altKey) return;
+    if (e.key === 'Home') { e.preventDefault(); viewer.resetPan(); return; }
     if (store.selectedItem) {
       if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); itemDel(); }
       else if (e.key === 'r' || e.key === 'R') editItem(it => { it.yaw += e.shiftKey ? -15 : 15; });

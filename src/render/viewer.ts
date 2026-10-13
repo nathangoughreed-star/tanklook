@@ -71,17 +71,29 @@ export class Viewer {
   terrainEdit: { on: boolean; hot: number | null } = { on: false, hot: null };
   private drawnListeners = new Set<() => void>();
   /**
-   * Temporary middle-drag pan, screen px: slides the image window (a lens shift, like the framing), so the eye,
-   * perspective and orbit centre are untouched. `i` = the view being panned (both when locked). Eases back on release.
+   * Middle-drag pan per view, screen px: slides the image window (a lens shift, like the framing), so the eye,
+   * perspective and orbit centre are untouched. It stays put (orbit and zoom keep it) until re-centred with
+   * resetPan (Nathan 2026-10-13; it used to ease back on release). Locked views pan together.
    */
-  pan = { i: 0, x: 0, y: 0 };
+  pans = [{ x: 0, y: 0 }, { x: 0, y: 0 }];
   private panAnim = 0;
-  setPan(i: number, x: number, y: number) { cancelAnimationFrame(this.panAnim); this.pan = { i, x, y }; this.dirty = true; }
-  releasePan() {
-    const { x, y } = this.pan, t0 = performance.now(), ms = 220;
+  private panListeners = new Set<() => void>();
+  onPan(fn: () => void) { this.panListeners.add(fn); }
+  get panned() { return this.pans.some(p => p.x || p.y); }
+  private panChanged() { this.dirty = true; for (const fn of this.panListeners) fn(); }
+  setPan(i: number, x: number, y: number) {
+    cancelAnimationFrame(this.panAnim);
+    for (const [k, p] of this.pans.entries()) if (k === i || this.store.scene.camLock) { p.x = x; p.y = y; }
+    this.panChanged();
+  }
+  /** Ease every view back to its framing. */
+  resetPan() {
+    cancelAnimationFrame(this.panAnim);
+    const from = this.pans.map(p => ({ ...p })), t0 = performance.now(), ms = 220;
     const step = (t: number) => {
       const k = Math.min(1, (t - t0) / ms), e = 1 - (1 - k) ** 3;
-      this.pan.x = x * (1 - e); this.pan.y = y * (1 - e); this.dirty = true;
+      for (const [i, p] of this.pans.entries()) { p.x = from[i].x * (1 - e); p.y = from[i].y * (1 - e); }
+      this.panChanged();
       if (k < 1) this.panAnim = requestAnimationFrame(step);
     };
     this.panAnim = requestAnimationFrame(step);
@@ -173,7 +185,7 @@ export class Viewer {
       const own = wins[k], u = lockedWin?.tank;
       const { tank, all } = u && u.x1 - u.x0 <= 2 * hx && u.y1 - u.y0 <= 2 * hy ? lockedWin! : own;
       const c = windowCentre(all, tank, hx, hy);
-      if (lockedWin || this.pan.i === vp.i) { c.cx -= this.pan.x * 2 * hx / vp.w; c.cy += this.pan.y * 2 * hy / vp.h; } // the picture follows the pointer
+      const pan = this.pans[vp.i]; c.cx -= pan.x * 2 * hx / vp.w; c.cy += pan.y * 2 * hy / vp.h; // the picture follows the pointer
       applyFraming(vp.cam, fov, vp.w, vp.h, c.cx, c.cy);
       const person = vp.scene?.getObjectByName('person');
       if (person) this.placePerson(vp, person, headroom(S), bottom(S));
