@@ -209,6 +209,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
     water: {
       on: bool(wa.on, true), level: num(wa.level, d.water.level, ...LIMITS.level), opacity: num(wa.opacity, d.water.opacity, ...LIMITS.opacity),
       color: typeof wa.color === 'string' && /^#[0-9a-f]{6}$/i.test(wa.color) ? wa.color.toLowerCase() : d.water.color,
+      ...(bool(wa.salt, false) ? { salt: true } : {}),
     },
     terrain: (() => {
       const cols = Math.round(num(te.cols, d.terrain.cols, ...LIMITS.terrainCols)), rows = Math.round(num(te.rows, 0, 0, 25));

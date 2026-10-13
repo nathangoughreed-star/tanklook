@@ -173,8 +173,9 @@ export interface Item {
  * keeps the same fill. Colour tints what is seen through the water; opacity = how much of that colour
  * shows after 300 mm of water (physical: a deeper tank looks more tinted). Opacity 0 = clear water.
  */
-export interface WaterSettings { on: boolean; level: number; color: string; opacity: number }
+export interface WaterSettings { on: boolean; level: number; color: string; opacity: number; salt?: boolean }
 // on = false: a dry tank (terrarium for reptiles, amphibians, insects). Fish are kept in the data but not shown.
+// salt = true: a marine tank (added 2026-10-13, no version bump; absent = freshwater).
 
 export type StandFinish = 'black' | 'white' | 'oak';
 /** 'cabinet' = closed box with doors; 'frame' = open welded steel skeleton (square tube legs and rails); 'table' = a

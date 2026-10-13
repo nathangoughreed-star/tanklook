@@ -29,6 +29,8 @@ export interface Species {
   /** Where it lives: 'water' (fish; hidden in a dry tank), 'land' (rests on ground above the water line), 'both' (on land, or
    * swimming where the water is deep enough for it). Snails are 'both'. */
   habitat: Habitat;
+  /** Marine species (added 2026-10-13); absent = freshwater. Salt tanks list only these, fresh tanks only the rest. */
+  salt?: boolean;
   /** The Animals sub menu it is listed under. */
   cat: Category;
   /** v (in widths, + down) of the lowest point of the drawing; a resting animal's centre sits this far above the floor. */
