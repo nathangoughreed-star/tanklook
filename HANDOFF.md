@@ -31,8 +31,8 @@ Nathan: with hardscape now easy to size and place, Shuffle should give much more
 - Tests: shuffles of each set must differ in piece count (>2.5x), materials and where the weight sits.
 - Later the same day (Nathan: short plants in a neat front row, tall at the back "looks like a farm"): plants no longer
   go in rows. `scatter(weights, clumps, {d0, d1, gap, half})` drops clumps (stems 2-5, grass 2-4, sword 1-2, fern /
-  anubias 1-2) at best-of-3 random spots; depth only sets the odds: each kind has a soft heat zone (anubias 0.15,
-  fern 0.4, sword 0.5, stems / grass 0.8 of D, plus a 6 % floor so strays happen), the back fills more than the front,
+  anubias 1-2) at best-of-3 random spots; depth only sets the odds: each kind has a soft heat zone (anubias 0.2,
+  fern 0.4, sword 0.5, stems / grass 0.8 of D, plus a 20 % floor so strays happen), the back fills more than the front,
   reachable height rises front to back, clumps keep off hardscape and mostly out of the open-water gap. Used by
   planted (rect; also the default seed 1), the driftwood background and iwagumi's back grass. Carpet = jittered grid
   with a ragged back edge. Planted keeps at least 0.6 density. Disc planted (spiral mound) and swamp unchanged.
