@@ -149,6 +149,8 @@ export class Viewer {
       const c = windowCentre(all, tank, hx, hy);
       if (lockedWin || this.pan.i === vp.i) { c.cx -= this.pan.x * 2 * hx / vp.w; c.cy += this.pan.y * 2 * hy / vp.h; } // the picture follows the pointer
       applyFraming(vp.cam, fov, vp.w, vp.h, c.cx, c.cy);
+      const person = vp.scene?.getObjectByName('person');
+      if (person) person.visible = !this.personBlocks(vp, person, headroom(S), bottom(S));
       r.setViewport(vp.x, vp.y, vp.w, vp.h); r.setScissor(vp.x, vp.y, vp.w, vp.h);
       r.setClearColor(new THREE.Color(0xd9dde2).multiplyScalar(0.06 + 0.94 * roomLevel(S.light.room))); r.clear(); // the space beyond the room dims with the room light
       setLightUniforms(vp.T, S.light, S.lid); setWaterUniforms(vp.T, S.water);
@@ -199,6 +201,25 @@ export class Viewer {
       fish: f, ...sA, formula: depthRatio(A.S.camera.dist, f.depth),
       sideAngle: Math.acos(Math.min(1, Math.abs(n.dot(v)))) / D2R,
     };
+  }
+
+  /** Does the scale person stand between the camera and the tank or stand, covering part of them on screen?
+   *  Then it is hidden for this view; it comes back once the view turns so it stands clear (Nathan 2026-10-13). */
+  private personBlocks(vp: Viewport, person: THREE.Object3D, headroom: number, bottom: number) {
+    const cam = vp.cam; cam.updateMatrixWorld();
+    const tank = new THREE.Box3(new THREE.Vector3(0, bottom, -vp.T.D), new THREE.Vector3(vp.T.L, vp.T.H + headroom, 0));
+    const body = new THREE.Box3().setFromObject(person);
+    if (body.distanceToPoint(cam.position) >= tank.distanceToPoint(cam.position)) return false; // behind: the tank covers it
+    const rect = (b: THREE.Box3) => {
+      let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+      for (let i = 0; i < 8; i++) {
+        const p = this.corner.set(i & 1 ? b.max.x : b.min.x, i & 2 ? b.max.y : b.min.y, i & 4 ? b.max.z : b.min.z).project(cam);
+        x0 = Math.min(x0, p.x); x1 = Math.max(x1, p.x); y0 = Math.min(y0, p.y); y1 = Math.max(y1, p.y);
+      }
+      return { x0, x1, y0, y1 };
+    };
+    const a = rect(body), t = rect(tank);
+    return a.x0 < t.x1 && a.x1 > t.x0 && a.y0 < t.y1 && a.y1 > t.y0;
   }
 
   // ---------- Picking ----------
