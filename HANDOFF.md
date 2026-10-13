@@ -2,6 +2,26 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Male / female fish (2026-10-13; DEPLOYED `23633f2`)
+
+Nathan asked for a male/female selector with matching shape, colouring and size, starting with the most dimorphic species.
+- Batch 1 (done): betta, guppy, swordtail, dwarf gourami, honey gourami, cherry barb, kribensis, GBR, pearl gourami.
+  species.json `female: {art, tl}`; the species itself is the male. Female plans = `her(male, overrides)` in fishgen.ts
+  (data only, same generator + loft; keys `<art>_f`, also listed in `fish3d.species`). Adult lengths (male / female, mm):
+  betta 65/55, guppy 35/50, swordtail 120 incl. sword/115, dwarf gourami 80/65, honey 45 (was 50)/50, cherry barb 50/50,
+  kribensis 90/75, GBR 60/50, pearl 120/110.
+- Code: `Fish.sex = 'f'` (absent = male); `speciesOf(f)` = the look a fish is drawn and sized with; `fishTL` is sex-aware;
+  textures key on `Species.look` (`<id>` / `<id>~f`). Stocking list: a row per sex for dimorphic species (both shown
+  while either has fish); Add starts a group 1 male : 2 females, a lone fish male. Selected fish: Sex switch (custom size
+  keeps its share of adult). Preview tile: Male / Female toggle. "(male)" dropped from guppy / betta / swordtail names.
+- Review sheets `shots/90_sexes_{A,B}.png` (`scripts/sex-sheet.py`; shot helper takes `sex`). Pass by my review; after
+  the sheets the honey gourami female's stripe was softened and the swordtail female went 100 -> 115 mm (not re-shot).
+- Batch 2 candidates (moderate dimorphism): platy and molly (female bigger, gravid spot; male platy ~45 / female ~60),
+  Bolivian ram, bristlenose (male bristles: card only, not 3D yet), cherry shrimp (female more coloured, saddle).
+  Male kribensis could get a pointed tail with ocelli and longer dorsal/anal (left as before).
+- Note: other chats' commits 728dad9 / acdfd9c swept this change's renderer + panel edits in and pushed them before the
+  data landed (main briefly did not build); 23633f2 completed it.
+
 ## Hardscape placement: yaw / pitch / roll, resize, free move, cut off by the glass (2026-10-12)
 
 Nathan asked for yaw, pitch, roll and resizing of hardscape, free placement anywhere in the tank (pieces may pass through
