@@ -187,6 +187,51 @@
         "--strictPort"
       ],
       "port": 5273
+    },
+    {
+      "name": "plants3d",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "C:/Users/nreed/Glass-Box-plants3d",
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5283",
+        "--strictPort"
+      ],
+      "port": 5283
+    },
+    {
+      "name": "salt-tank",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "C:/Users/nreed/Glass-Box-salt-tank",
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5293",
+        "--strictPort"
+      ],
+      "port": 5293
+    },
+    {
+      "name": "marine-fish",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "C:/Users/nreed/Glass-Box-marine-fish",
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5303",
+        "--strictPort"
+      ],
+      "port": 5303
     }
   ]
 }
