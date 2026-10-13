@@ -16,6 +16,9 @@ Nathan asked for a male/female selector with matching shape, colouring and size,
   keeps its share of adult). Preview tile: Male / Female toggle. "(male)" dropped from guppy / betta / swordtail names.
 - Review sheets `shots/90_sexes_{A,B}.png` (`scripts/sex-sheet.py`; shot helper takes `sex`). Pass by my review; after
   the sheets the honey gourami female's stripe was softened and the swordtail female went 100 -> 115 mm (not re-shot).
+- Pea puffer added 2026-10-13 (Nathan): `peapuffer` / `peapuffer_f`, 30 mm both, shoal; male = dark belly keel stripe +
+  wrinkle lines behind the eye, female rounder and plainer. No pelvic fins, dorsal + anal small and far back, eye r .05
+  up .3. AqAdvisor "Dwarf Puffer" 200909300063. Sheet `shots/91_peapuffer.png`.
 - Batch 2 candidates (moderate dimorphism): platy and molly (female bigger, gravid spot; male platy ~45 / female ~60),
   Bolivian ram, bristlenose (male bristles: card only, not 3D yet), cherry shrimp (female more coloured, saddle).
   Male kribensis could get a pointed tail with ocelli and longer dorsal/anal (left as before).

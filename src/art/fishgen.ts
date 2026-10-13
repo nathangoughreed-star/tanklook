@@ -422,6 +422,13 @@ export const PLANS: Record<string, Plan> = {
   goldfish: { thick: 0.55, depth: 0.52, pedU: 0.32, ped: 0.06, peak: 0.45, snout: 0.75, shade: ['#c8642a', '#e88a3a', '#f0b87a'], tail: { type: 'double', h: 0.3, tint: '#e8964e', a: 0.75 }, fin: '#ec9e5e',
     dorsal: { u0: 0.42, u1: 0.68, h: 0.14, shape: 'round', a: 0.75 }, anal: { u0: 0.38, u1: 0.48, h: 0.1, shape: 'round', a: 0.75 }, pelvic: { u: 0.7, len: 0.1 },
     marks: [{ k: 'blob', u: 0.65, v: -0.08, ru: 0.2, rv: 0.14, c: '#ffffff', a: 0.12 }], eye: { r: 0.035, iris: ['#2a2420', '#0a0806'] } },
+  // pea puffer (male): dark keel stripe along the belly, wrinkle lines behind the eye, yellowish fins
+  peapuffer: { thick: 0.75, depth: 0.4, pedU: 0.2, ped: 0.05, peak: 0.65, snout: 0.7, mouth: -0.01, shade: ['#76763a', '#c4b65a', '#ece6cc'], tail: { type: 'round', h: 0.12, tint: '#d8cc80', a: 0.55 }, fin: '#d8cc80',
+    dorsal: { u0: 0.22, u1: 0.3, h: 0.08, shape: 'round', a: 0.55 }, anal: { u0: 0.22, u1: 0.3, h: 0.07, shape: 'round', a: 0.55 },
+    marks: [{ k: 'blob', u: 0.6, v: -0.06, ru: 0.25, rv: 0.08, c: '#7ab070', a: 0.18 }, { k: 'spots', n: 9, u0: 0.27, u1: 0.8, v0: -0.13, v1: 0.03, r: 0.034, c: '#3e3c1e', a: 0.75 },
+      { k: 'spots', n: 14, u0: 0.25, u1: 0.85, v0: -0.12, v1: 0.06, r: 0.016, c: '#3e3c1e', a: 0.6 }, { k: 'band', u0: 0.4, u1: 0.8, v0: 0.125, v1: 0.15, c: '#34321e', a: 0.6, f: 0.025 },
+      ...[0.8, 0.818, 0.836].map(u => ({ k: 'poly' as const, pts: [[u, 0.02], [u + 0.007, 0.02], [u - 0.004, 0.075], [u - 0.011, 0.075]] as [number, number][], c: '#5a3a1e', a: 0.55 }))],
+    eye: { r: 0.05, iris: ['#9ad0b8', '#1e2a24'], up: 0.3 } },
   // ---------- bottom dwellers ----------
   bronzecory: { plates: true, thick: 0.72, belly: 0.9, wide: 0.5, pedT: 0.28, step: 0.18, noseW: 0.4, depth: 0.35, pedU: 0.18, ped: 0.06, peak: 0.6, back: 0.68, snout: 0.6, mouth: 0.06, shade: ['#4a5a48', '#8a8a62', '#d8c8a0'], tail: { type: 'fork', h: 0.15 }, fin: '#b0a888',
     dorsal: { u0: 0.5, u1: 0.68, h: 0.16, shape: 'sail' }, anal: { u0: 0.32, u1: 0.4, h: 0.06 }, adipose: true, pelvic: { u: 0.55, len: 0.08 },
@@ -494,6 +501,11 @@ Object.assign(PLANS, {
       { k: 'blob', u: 0.62, v: -0.04, ru: 0.05, rv: 0.06, c: '#1a1a1e', a: 0.75 }, { k: 'blob', u: 0.6, v: 0.14, ru: 0.13, rv: 0.07, c: '#d8587a', a: 0.75 },
       { k: 'spots', n: 40, u0: 0.25, u1: 0.8, v0: -0.15, v1: 0.1, r: 0.011, c: '#5aa0d8', a: 0.55 }],
     finMarks: [{ k: 'spots', n: 25, u0: 0, u1: 0.65, v0: -0.4, v1: 0.4, r: 0.01, c: '#5aa0d8', a: 0.4 }] }),
+  // rounder, no belly stripe or eye wrinkles, rounder spots, clear fins
+  peapuffer_f: her('peapuffer', { thick: 0.8, depth: 0.44, tail: { type: 'round', h: 0.12, tint: '#d4d0b8', a: 0.5 }, fin: '#d4d0b8',
+    dorsal: { u0: 0.22, u1: 0.3, h: 0.08, shape: 'round', a: 0.5 }, anal: { u0: 0.22, u1: 0.3, h: 0.07, shape: 'round', a: 0.5 },
+    marks: [{ k: 'blob', u: 0.6, v: -0.06, ru: 0.25, rv: 0.09, c: '#7ab070', a: 0.18 }, { k: 'spots', n: 10, u0: 0.27, u1: 0.8, v0: -0.14, v1: 0.04, r: 0.036, c: '#3e3c1e', a: 0.72 },
+      { k: 'spots', n: 10, u0: 0.25, u1: 0.85, v0: -0.13, v1: 0.06, r: 0.02, c: '#3e3c1e', a: 0.55 }] }),
   // no orange-red breast, a rounded dorsal and a plain anal fin
   gourami_f: her('gourami', { dorsal: { u0: 0.22, u1: 0.45, h: 0.07, shape: 'round' }, anal: { u0: 0.18, u1: 0.68, h: 0.08, shape: 'round' }, pelvic: { u: 0.72, len: 0.35, thread: true, tint: '#d8ccb0' },
     marks: PLANS.gourami.marks!.slice(1) }),

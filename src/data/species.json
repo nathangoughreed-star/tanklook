@@ -33,6 +33,7 @@
   {"id": "kuhli", "name": "Kuhli loach", "sci": "Pangio kuhlii", "tl": 100, "zone": "bottom", "group": "shoal", "art": "kuhli"},
   {"id": "clownloach", "name": "Clown loach", "sci": "Chromobotia macracanthus", "tl": 200, "zone": "bottom", "group": "shoal", "art": "clownloach", "note": "Commonly 15-20 cm in aquaria; can reach 30 cm."},
   {"id": "sae", "name": "Siamese algae eater", "sci": "Crossocheilus oblongus", "tl": 150, "zone": "bottom", "art": "sae"},
+  {"id": "peapuffer", "name": "Pea puffer", "sci": "Carinotetraodon travancoricus", "tl": 30, "group": "shoal", "art": "peapuffer", "female": {"art": "peapuffer_f", "tl": 30}},
   {"id": "cherryshrimp", "name": "Cherry shrimp", "sci": "Neocaridina davidi", "tl": 30, "zone": "bottom", "cling": "hardscape", "group": "shoal", "art": "cherryshrimp"},
   {"id": "amano", "name": "Amano shrimp", "sci": "Caridina multidentata", "tl": 45, "zone": "bottom", "cling": "hardscape", "group": "shoal", "art": "amano"},
   {"id": "nerite", "name": "Nerite snail (zebra)", "sci": "Neritina natalensis", "tl": 25, "kind": "snail", "art": "nerite"},

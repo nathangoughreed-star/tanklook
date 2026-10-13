@@ -41,6 +41,7 @@ NAMES = {
     'kuhli': 'Kuhli Loach (Pangio kuhlii)',
     'clownloach': 'Clown Loach (Chromobotia macracanthus)',
     'sae': 'Siamese Algae Eater (Crossocheilus siamensis)',
+    'peapuffer': 'Dwarf Puffer (Carinotetraodon travancoricus)',
     'cherryshrimp': 'Red Cherry Shrimp (Neocaridina heteropoda)',
     'amano': 'Amano Shrimp (Cardina multidentata)',
     'nerite': 'Zebra Nerite Snail (Neritina natalensis sp. Zebra)',
