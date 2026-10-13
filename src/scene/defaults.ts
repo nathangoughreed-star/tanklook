@@ -36,6 +36,14 @@ export function defaultSetup(): TankSetup {
   return s;
 }
 
+/** What New starts from: a bare, empty tank (Nathan 2026-10-13): no animals, background, grid, substrate or hardscape. */
+export function bareSetup(): TankSetup {
+  const s = defaultSetup();
+  s.fish = []; s.items = []; s.layout.id = 'none';
+  s.render.bg = 'none'; s.render.grid = false; s.substrate.show = false;
+  return s;
+}
+
 export const TANK_PRESETS: [label: string, L: number, H: number, D: number][] = [
   ['10 gal 20×12×10', 20, 12, 10], ['20 long 30×12×12', 30, 12, 12], ['20 high 24×16×12', 24, 16, 12],
   ['29 gal 30×18×12', 30, 18, 12], ['40 breeder 36×16×18', 36, 16, 18], ['55 gal 48×21×13', 48, 21, 13],
