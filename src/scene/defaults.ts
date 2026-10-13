@@ -14,7 +14,7 @@ export function defaultSetup(): TankSetup {
   const s: TankSetup = {
     tank: A,
     camera: { dist: 3000, az: 0, el: 0, zoom: 1 },
-    render: { edge: 'a2c', grid: true, rim: true, edges: true, beams: false, pop: 0.5, bg: 'blue', bgSides: ['back'], bgArc: 145, glass: 'auto', glassType: 'standard' },
+    render: { edge: 'a2c', grid: true, rim: true, edges: true, beams: false, pop: 0.25, bg: 'blue', bgSides: ['back'], bgArc: 145, glass: 'auto', glassType: 'standard' },
     light: { type: 'flat', count: 2, rows: 1, pattern: 'grid', spacing: 0, cone: 52, bright: 1, kelvin: 6500, room: 0.15, height: 50 },
     substrate: { show: true, type: 'gravel', custom: { grain: 'sand', color: '#cbb894', grain2: 'none', color2: '#6f6556', share: 30, mix: 0.5 }, fl: 1 * IN, fr: 1 * IN, bl: 3 * IN, br: 3 * IN },
     layout: { id: 'planted', seed: 1 },
