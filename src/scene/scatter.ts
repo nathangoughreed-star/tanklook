@@ -37,9 +37,9 @@ export function placeOnLand(s: TankSetup, sp: Species, f: Fish, r: () => number)
 }
 
 /** Move every animal in the tank to a new spot and pose under the rules above. */
-/** `only` = move just that species (e.g. after its count changed); everyone else stays put and is kept clear of.
+/** `only` = move just that species, or the animals the test picks; everyone else stays put and is kept clear of.
  *  `sizePct` = also re-roll each moved animal's size around that % of adult (randomSize). */
-export function shuffleFish(s: TankSetup, r: () => number, only?: string, sizePct?: number) {
+export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: Fish) => boolean), sizePct?: number) {
   const A = s.tank, top = s.water.on ? waterY(A, s.water.level) : A.H - 10, g = (x: number, d: number) => groundHeight(s, A, x, d);
   const placed: { x: number; y: number; depth: number; w: number }[] = [];
   const note = (f: Fish, w: number) => placed.push({ x: f.x, y: f.y, depth: f.depth, w });
@@ -73,7 +73,7 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string, sizePc
 
   const bySpecies = new Map<string, Fish[]>();
   for (const f of s.fish) {
-    if (only && f.species !== only) { const sp = getSpecies(f.species); if (sp) note(f, fishTL(f, sp)); continue; }
+    if (only && (typeof only === 'string' ? f.species !== only : !only(f))) { const sp = getSpecies(f.species); if (sp) note(f, fishTL(f, sp)); continue; }
     if (sizePct !== undefined) { const sp = getSpecies(f.species); if (sp) randomSize(f, sp, sizePct, r); }
     const l = bySpecies.get(f.species); if (l) l.push(f); else bySpecies.set(f.species, [f]);
   }
@@ -147,6 +147,34 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string, sizePc
       Object.assign(f, p, pose); clampFish(f, A); note(f, fw);
     }
   }
+}
+
+/** Place just the animals in `ids` (newly added), leaving everyone else where they are. A newcomer to a school or shoal
+ *  already in the tank joins it: next to a random member (either sex), heading its way. The rest go by the shuffle rules. */
+export function placeNew(s: TankSetup, r: () => number, ids: Set<number>) {
+  const A = s.tank, top = s.water.on ? waterY(A, s.water.level) : A.H - 10, g = (x: number, d: number) => groundHeight(s, A, x, d);
+  const joined = new Set<number>();
+  for (const id of new Set(s.fish.filter(f => ids.has(f.id)).map(f => f.species))) {
+    const sp = getSpecies(id); if (!sp || sp.surfaces || !grouped(sp, s.fish.filter(f => f.species === id).length)) continue;
+    const mates = s.fish.filter(f => f.species === id && !ids.has(f.id)); if (!mates.length) continue;
+    const tight = sp.group === 'school', bottom = sp.zone === 'bottom';
+    for (const f of s.fish.filter(q => q.species === id && ids.has(q.id))) {
+      const m = mates[Math.floor(r() * mates.length)], fw = fishTL(f, sp), h = fw * sp.aspect;
+      let p = { x: m.x, y: m.y, depth: m.depth };
+      for (let k = 0; k < 16; k++) { // a spot a body length or two from the mate (wider in a shoal), clear of the others
+        const a = r() * 2 * Math.PI, e = (r() - 0.5) * (bottom ? 0 : 1.2), d = fw * (tight ? 0.8 + r() * 0.8 : 1.5 + r() * 2);
+        const x = m.x + Math.cos(a) * Math.cos(e) * d, depth = m.depth + Math.sin(a) * Math.cos(e) * d;
+        if (!inside(A, x, depth, fw / 2)) continue;
+        const y = bottom ? g(x, depth) : clamp(m.y + Math.sin(e) * d * 0.6, g(x, depth) + h / 2, Math.max(g(x, depth) + h / 2, top - h / 2));
+        p = { x, y, depth };
+        if (mates.every(q => Math.hypot(q.x - x, q.y - y, q.depth - depth) > fw * 0.6)) break;
+      }
+      const pose = bottom ? randomPose(sp, r, 0) : tight ? randomPose(sp, r, m.yaw, 24) : r() < 0.7 ? randomPose(sp, r, m.yaw, 80) : randomPose(sp, r, r() * 360 - 180, 0);
+      if (bottom && r() < 0.6) pose.yaw = wrap(Math.round(m.yaw + (r() - 0.5) * 120));
+      Object.assign(f, p, pose); clampFish(f, A); mates.push(f); joined.add(f.id);
+    }
+  }
+  if ([...ids].some(id => !joined.has(id))) shuffleFish(s, r, f => ids.has(f.id) && !joined.has(f.id));
 }
 
 /** Weight of the glass, per mm², for a clinging fish choosing where to sit (floor 1, hardscape tops GRAZE). */

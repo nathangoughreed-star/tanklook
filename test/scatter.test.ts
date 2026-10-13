@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { rng } from '../src/art/paint';
 import { defaultSetup } from '../src/scene/defaults';
 import { waterY } from '../src/scene/physics';
-import { shuffleFish } from '../src/scene/scatter';
+import { placeNew, shuffleFish } from '../src/scene/scatter';
 import { inside } from '../src/scene/shape';
 import { groundHeight } from '../src/scene/terrain';
 import type { Fish, TankSetup } from '../src/scene/types';
@@ -53,6 +53,19 @@ describe('shuffle', () => {
       expect(heads.every(a => heads.filter(b => yawGap(a, b) <= 30).length >= 3)).toBe(true);
     }
     expect(together).toBeGreaterThan(20); // split schools aside, it stays compact
+  });
+  it('placing new animals leaves everyone else put; a newcomer joins its school', () => {
+    for (let seed = 1; seed <= 20; seed++) {
+      const s = stocked(); shuffleFish(s, rng(seed));
+      const before = JSON.stringify(s.fish);
+      s.fish.push({ id: 99, species: 'neon', x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0 });
+      placeNew(s, rng(seed + 100), new Set([99]));
+      expect(JSON.stringify(s.fish.slice(0, -1))).toBe(before);
+      const f = s.fish.at(-1)!, mates = s.fish.filter(q => q.species === 'neon' && q.id !== 99);
+      expect(inside(s.tank, f.x, f.depth, -1)).toBe(true);
+      expect(Math.min(...mates.map(q => Math.hypot(q.x - f.x, q.y - f.y, q.depth - f.depth)))).toBeLessThan(35 * 2);
+      expect(mates.some(q => yawGap(q.yaw, f.yaw) <= 30)).toBe(true);
+    }
   });
   it('is repeatable from a seed (the same draws in every edited tank)', () => {
     const a = stocked(), b = stocked();
