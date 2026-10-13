@@ -142,11 +142,6 @@ export class Viewer {
       if (tableOn(S)) for (const [x, d] of tableRing(vp.T, S.stand.table)) for (const y of [floorY(vp.T, S.render, S.stand), tankUnderside(vp.T, S.render)]) pts.push(new THREE.Vector3(x, y, -d));
       return pts;
     };
-    for (const vp of active) {      // the person stays put and turns to face the viewer
-      const m = vp.scene?.getObjectByName('person');
-      if (!m) continue;
-      m.rotation.y = Math.atan2(vp.cam.position.x - m.position.x, vp.cam.position.z - m.position.z); m.updateMatrixWorld();
-    }
     // lens from the straight-on view, kept at every orbit angle (see frameStraightOn)
     const boxes = active.map(vp => frameStraightOn(vp.T, vp.S.camera, vp.w / vp.h, headroom(vp.S), bottom(vp.S), extra(vp)));
     // locked (or one tank): one FOV for all, so sizes stay directly comparable; unlocked: each view frames itself
@@ -180,7 +175,7 @@ export class Viewer {
       if (lockedWin || this.pan.i === vp.i) { c.cx -= this.pan.x * 2 * hx / vp.w; c.cy += this.pan.y * 2 * hy / vp.h; } // the picture follows the pointer
       applyFraming(vp.cam, fov, vp.w, vp.h, c.cx, c.cy);
       const person = vp.scene?.getObjectByName('person');
-      if (person) person.visible = !this.personBlocks(vp, person, headroom(S), bottom(S));
+      if (person) this.placePerson(vp, person, headroom(S), bottom(S));
       r.setViewport(vp.x, vp.y, vp.w, vp.h); r.setScissor(vp.x, vp.y, vp.w, vp.h);
       r.setClearColor(new THREE.Color(0xd9dde2).multiplyScalar(0.06 + 0.94 * roomLevel(S.light.room))); r.clear(); // the space beyond the room dims with the room light
       setLightUniforms(vp.T, S.light, S.lid, S.render.beams); setWaterUniforms(vp.T, S.water);
@@ -204,8 +199,8 @@ export class Viewer {
       // floor-plan direction through the image at NDC x (lens shift included)
       const at = (nx: number) => { const p = new THREE.Vector3(nx, 0, 0.5).unproject(A.cam); return Math.atan2(p.z - eye.z, p.x - eye.x); };
       const view = { left: at(-1), right: at(1), mid: at(0) };
-      const pp = A.S.person.show ? personSpot(A.S, A.T) : null;
-      drawViewMap(box.querySelector('canvas')!, A.S, A.T, sc.units, eye, view, pp && { x: pp.x, z: pp.z, w: pp.w });
+      const pm = A.scene?.getObjectByName('person'), pp = pm && A.S.person.show ? personSpot(A.S, A.T) : null; // where they stand in this view
+      drawViewMap(box.querySelector('canvas')!, A.S, A.T, sc.units, eye, view, pm && pp ? { x: pm.position.x, z: pm.position.z, w: pp.w } : null);
     }
     for (const fn of this.drawnListeners) fn();
   }
@@ -233,8 +228,28 @@ export class Viewer {
     };
   }
 
-  /** Does the scale person stand between the camera and the tank or stand, covering part of them on screen?
-   *  Then it is hidden for this view; it comes back once the view turns so it stands clear (Nathan 2026-10-13). */
+  /** The scale person stands at their home spot, facing the viewer. If from this view they would cover part of the
+   *  tank or stand, they step sideways across the view, away from the tank, just far enough to stand clear; they
+   *  are never hidden (Nathan 2026-10-13). */
+  private placePerson(vp: Viewport, person: THREE.Object3D, headroom: number, bottom: number) {
+    const home = (person.userData.home ??= person.position.clone()) as THREE.Vector3, cam = vp.cam;
+    cam.updateMatrixWorld();
+    const e = cam.matrixWorld.elements, rl = Math.hypot(e[0], e[2]) || 1, rx = e[0] / rl, rz = e[2] / rl; // screen-right, level
+    // step toward the screen side they already stand on, relative to the tank's centre
+    const s = (vp.T.L / 2 - home.x) * rx + (-vp.T.D / 2 - home.z) * rz > 0 ? -1 : 1;
+    const at = (d: number) => {
+      person.position.set(home.x + s * d * rx, home.y, home.z + s * d * rz);
+      person.rotation.y = Math.atan2(cam.position.x - person.position.x, cam.position.z - person.position.z); person.updateMatrixWorld();
+      return this.personBlocks(vp, person, headroom, bottom);
+    };
+    if (!at(0)) return;
+    let lo = 0, hi = 200;
+    while (hi < 50000 && at(hi)) { lo = hi; hi *= 2; }
+    for (let i = 0; i < 12; i++) { const m = (lo + hi) / 2; if (at(m)) lo = m; else hi = m; }
+    at(hi + 50); // a small gap past touching
+  }
+
+  /** Does the scale person stand between the camera and the tank or stand, covering part of them on screen? */
   private personBlocks(vp: Viewport, person: THREE.Object3D, headroom: number, bottom: number) {
     const cam = vp.cam; cam.updateMatrixWorld();
     const tank = new THREE.Box3(new THREE.Vector3(0, bottom, -vp.T.D), new THREE.Vector3(vp.T.L, vp.T.H + headroom, 0));
