@@ -7,7 +7,7 @@
 // (round corners and curved shells).
 // Aquascape items (rocks, wood, caves, plants) go where the pointer meets the ground or another piece, and rest on
 // whatever is under them there; anything resting on the dragged piece rides along. Shift + wheel turns the selected piece.
-// Pieces take presses only while the Aquascape menu is open.
+// Pieces take presses only while the Aquascape menu is open, animals only while the Animals menu is.
 import * as THREE from 'three';
 import { clingsTo, fishTL, getSpecies, restsOnFloor, speciesOf } from '../data/species';
 import { restsOnGround } from '../scene/water';
@@ -64,9 +64,9 @@ function supportLift(vp: Viewport, S: TankSetup, x: number, depth: number, skip:
   return hit ? Math.max(0, hit.point.y - groundHeight(S, S.tank, x, depth)) : 0;
 }
 
-/** `itemsEditable`: whether aquascape pieces can be picked and dragged now (only while the Aquascape menu is open);
- *  otherwise a press on a piece orbits like empty space. */
-export function attachPointer(viewer: Viewer, store: Store, itemsEditable: () => boolean = () => true) {
+/** `canPick`: whether aquascape pieces / animals can be picked and dragged now (only while the Aquascape / Animals menu
+ *  is open); otherwise a press on one orbits like empty space. */
+export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'items' | 'fish') => boolean = () => true) {
   const canvas = viewer.canvas;
   // dragging an aquascape item: `grab` = the grabbed point relative to the piece's base, kept under the pointer while
   // the base slides over the ground and other pieces; riders = pieces resting on it, which move with it
@@ -104,7 +104,7 @@ export function attachPointer(viewer: Viewer, store: Store, itemsEditable: () =>
       viewer.terrainEdit.hot = hit.dot; viewer.rebuild();
       return;
     }
-    if (editable && hit.itemId != null && hit.mesh && itemsEditable()) {
+    if (editable && hit.itemId != null && hit.mesh && canPick('items')) {
       store.selectItem(hit.itemId);
       const S = store.scene.tanks[vi], it = S.items.find(q => q.id === hit!.itemId);
       if (!it) return;
@@ -122,7 +122,7 @@ export function attachPointer(viewer: Viewer, store: Store, itemsEditable: () =>
       move = { vp: hit.vp, id: it.id, grab: at.clone().sub(hit.mesh.position), riders, skip, float, moved: false };
       return;
     }
-    if (!editable || hit.fishId == null || !hit.mesh) {
+    if (!editable || hit.fishId == null || !hit.mesh || !canPick('fish')) {
       const c = store.scene.tanks[vi].camera; orbit = { i: vi, x: e.clientX, y: e.clientY, az: c.az, el: c.el }; return;
     }
     store.select(hit.fishId);

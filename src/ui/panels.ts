@@ -561,11 +561,12 @@ Cancel, then change the name, to keep both.`)) return;
   store.subscribe(keepRule); keepRule();
   /** Open a section (e.g. Fish when an animal gets selected), so what the user just acted on is editable. */
   const openSec = (key: string) => { const d = secs.find(x => x.dataset.sec === key); if (d && !d.open) d.open = true; };
-  // one section open at a time: opening one collapses the rest (Nathan 2026-10-13). Pieces can be picked and moved only
-  // while Aquascape is open (pointer.ts), so closing it drops the piece selection too.
+  // one section open at a time: opening one collapses the rest (Nathan 2026-10-13). Pieces / animals can be picked and
+  // moved only while Aquascape / Animals is open (pointer.ts), so closing it drops that selection too.
   for (const d of secs) d.addEventListener('toggle', () => {
     if (d.open) { for (const o of secs) if (o !== d && o.open) o.open = false; }
     else if (d.dataset.sec === 'aquascape' && store.selItem != null) store.selectItem(null);
+    else if (d.dataset.sec === 'fish' && store.selId != null) store.select(null);
   });
   $<HTMLSelectElement>('layout').innerHTML = Object.entries(LAYOUTS).map(([k, l]) => `<option value="${k}">${esc(l.label)}</option>`).join('');
   // a starter set replaces every piece (undoable); the pieces are then ordinary items

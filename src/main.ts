@@ -20,9 +20,10 @@ if (!webglAvailable()) {
   const restored = Store.loadLocal();
   const store = new Store(restored ?? undefined);
   const viewer = new Viewer(document.getElementById('c') as HTMLCanvasElement, view, store);
-  // aquascape pieces move only while the Aquascape menu is open and the panel showing
-  const aquascape = document.querySelector<HTMLDetailsElement>('details.sec[data-sec="aquascape"]');
-  attachPointer(viewer, store, () => !!aquascape?.open && !document.getElementById('app')!.classList.contains('collapsed'));
+  // aquascape pieces / animals move only while the Aquascape / Animals menu is open and the panel showing
+  const sec = { items: 'aquascape', fish: 'fish' } as const;
+  attachPointer(viewer, store, what => !!document.querySelector<HTMLDetailsElement>(`details.sec[data-sec="${sec[what]}"]`)?.open
+    && !document.getElementById('app')!.classList.contains('collapsed'));
   const ui = attachPanels(store, viewer);
   if (import.meta.env.DEV) import('./render/fish3d').then(({ fish3d }) => Object.assign(window, { __gb: { store, viewer, fish3d } })); // debugging handle, dev server only
   if (restored) ui.status('Welcome back: your last tank was restored from this browser.');
