@@ -935,12 +935,9 @@ Cancel, then change the name, to keep both.`)) return;
 
     const c = s.camera;
     for (const [id, k] of Object.entries(camKeys)) setVal(id, c[k]);
-    setOut('oDist', fmt(c.dist)); setOut('oAz', c.az + '°', Math.abs(c.az) > 30 ? 'warn' : '');
-    setOut('oEl', c.el + '°', c.el > 25 || c.el < 0 ? 'warn' : ''); setOut('oZoom', '×' + c.zoom.toFixed(2));
-    const beyond = Math.abs(c.az) > 30 || c.el > 25 || c.el < 0;
-    $('camHint').innerHTML = beyond
-      ? '<span class="warn">Steep angle: flat fish cards start to look like paper here.</span>'
-      : 'Distance is from your eye to the front glass, the same for every tank. Zoom only crops; it never changes perspective.';
+    setOut('oDist', fmt(c.dist)); setOut('oAz', c.az + '°'); setOut('oEl', c.el + '°'); setOut('oZoom', '×' + c.zoom.toFixed(2));
+    // no steep-angle warning: the fish are 3D now, not flat cards (Nathan 2026-10-13)
+    $('camHint').textContent = 'Distance is from your eye to the front glass, the same for every tank. Zoom only crops; it never changes perspective.';
 
     ($('split') as HTMLButtonElement).disabled = store.split;
     $('splitHint').textContent = store.split ? 'Each view’s tab (top of the view) opens on hover: what differs, Download that tank on its own, or Delete it. Save and Download at the top keep both tanks together.' : 'Copy this tank into a second, independent one beside it, then change anything in either.';
