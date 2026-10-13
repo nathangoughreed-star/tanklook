@@ -86,13 +86,16 @@ model); LED bar = one such wedge per row of emitters (outline of a row of identi
 whole (light missing the tank shows), inside clipped at the glass (footprint planes; a bowl discards outside its sphere);
 the substrate hides the rest, leaving the footprint. Note: a raised tube's model beam is very wide, so its overlay is a
 big sheet above the rim; that is the model, not the overlay (tube cone [0.45, -0.15] may be worth narrowing later).
-- Same day, made a working view (Nathan: "turned on, lighting tweaked, then turned off, so it doesn't have to be subtle"):
-  bold yellow beams above the rim (opacity 0.3, faint 0.1 inside), drawn once as a union (stencil) so crossing beams
-  don't darken, orange outline (sides down to the rim, ring at the rim). A **hit map** on every lit surface in the tank
-  (`aqHits` in the light shader; uniforms `uBm`/`uBmN`/`uBmCos`, set by `setLightUniforms(..., beams)`): counts the beams
-  reaching each point (same half-strength angle and beams as the overlay; LED rows count once) and shades it: none 0.8 +
-  pink hatch, one 0.5, two 0.15, three+ clear (Nathan: less opacity where hit twice or more), orange line on each
-  beam's edge. Room surfaces and the rim trim (`userData.nomap`) are left out. Shots `shots/beams_map_{angle,top,led}.png`.
+- Same day, made a working view for placing lights (Nathan: "turned on, lighting tweaked, then turned off, so it doesn't
+  have to be subtle"). Checkbox now "Light map". The tank holds **only its substrate** (no plants, hardscape, fish:
+  `bare` in buildTank). Beams bold yellow above the rim (0.3), faint inside (0.1), drawn once as a union (stencil); no
+  outline lines (Nathan asked them gone). The substrate shows a **physical light map** (`aqIrr` in the light shader):
+  per emitter, beam profile at that angle x cos of incidence x inverse square distance (tube: inverse distance),
+  summed; 1 = one standard 52° bulb 300 mm straight above a level surface (x beam gain x Brightness; an LED bar's
+  emitters share four bulbs' output). False colour on a log scale, a step per doubling (1/16 navy ... 1 yellow ... 8
+  white), faint contour per doubling, grain kept faintly; replaces lit colour and water haze. Legend under the checkbox
+  (`lMapKey`). So a sloped or mounded substrate gives brighter, smaller, non-circular footprints where it rises toward
+  a light. Shots `shots/lightmap_{angle,narrow_angle,narrow_top}.png`.
 Open question (asked 2026-10-13): the bright patch on the room wall is the spill model (nearest point of the tank box,
 extended UP TO THE FIXTURE), not a reflection; it should probably follow the actual beams instead.
 

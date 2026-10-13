@@ -899,7 +899,7 @@ Cancel, then change the name, to keep both.`)) return;
     setVal('lPat', l.pattern); setOut('oLSp', l.spacing ? fmt(l.spacing) : 'Auto'); setOut('oLCone', l.cone + '°');
     setOut('oLH', s.lid === 'hood' ? 'In hood' : fmt(l.height) + ' above');
     $('lHRow').style.display = l.type === 'flat' ? 'none' : ''; ($('lH') as HTMLInputElement).disabled = s.lid === 'hood';
-    $('lBeams').checked = s.render.beams; ($('lBeams') as HTMLInputElement).disabled = l.type === 'flat';
+    $('lBeams').checked = s.render.beams; $('lMapKey').style.display = s.render.beams && l.type !== 'flat' ? '' : 'none'; ($('lBeams') as HTMLInputElement).disabled = l.type === 'flat';
 
     const c = s.camera;
     for (const [id, k] of Object.entries(camKeys)) setVal(id, c[k]);

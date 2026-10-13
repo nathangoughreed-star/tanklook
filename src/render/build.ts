@@ -242,7 +242,7 @@ function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
     if (R.edges) sc.add(new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(box, 3)), glassLine()));
     if (R.rim) {
       const rm = basic(0x1a1d21), r = t + 8, h = RIM_H, inner = fp.ring, rr = offsetRing(T, r);
-      for (const y0 of [H - h + 2, -t - 2]) { const o = new THREE.Mesh(wallGeometry([...inner, inner[0]], [...rr, rr[0]], y0, y0 + h, true), rm); o.userData.nomap = true; sc.add(o); } // no beam hit map on the trim
+      for (const y0 of [H - h + 2, -t - 2]) sc.add(new THREE.Mesh(wallGeometry([...inner, inner[0]], [...rr, rr[0]], y0, y0 + h, true), rm));
     }
   }
   if (R.grid) {
@@ -810,7 +810,10 @@ export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: numbe
   const sc = new THREE.Scene(), fishMeshes: THREE.Mesh[] = [], meshById = new Map<number, THREE.Mesh>();
   addTank(sc, S, T); addWater(sc, S, T); addSubstrate(sc, S, T); addStand(sc, S, T); addWall(sc, S, T); addPerson(sc, S, T); addFloor(sc, S, T);
   const itemMeshes: THREE.Mesh[] = [];
-  for (const it of S.items) {
+  // light beams on (a working view for placing the lights): the tank holds only its substrate, so the light map on it
+  // is not blocked or hidden by plants, hardscape or animals (Nathan 2026-10-13)
+  const bare = S.render.beams && S.light.type !== 'flat';
+  for (const it of bare ? [] : S.items) {
     const m = itemMesh(S, T, it); if (!m) continue;
     if (it.id === selItem) m.add(boxOutline(m.geometry));
     sc.add(m); itemMeshes.push(m);
@@ -827,7 +830,7 @@ export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: numbe
     m.userData.id = f.id; if (f.id === selId) m.add(outline(w, h));
     sc.add(m); fishMeshes.push(m); if (!meshById.has(f.id)) meshById.set(f.id, m);
   };
-  for (const f of S.fish) {
+  for (const f of bare ? [] : S.fish) {
     const sp = speciesOf(f); if (!sp) continue;
     if (sp.kind === 'snail') {
       for (const [m, w, h] of snailMeshes(S, T, f, sp, base(f))) register(f, m, w, h);
