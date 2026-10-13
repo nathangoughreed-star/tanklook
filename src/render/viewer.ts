@@ -73,7 +73,7 @@ export class Viewer {
   /**
    * Middle-drag pan per view, screen px: slides the image window (a lens shift, like the framing), so the eye,
    * perspective and orbit centre are untouched. It stays put (orbit and zoom keep it) until re-centred with
-   * resetPan (Nathan 2026-10-13; it used to ease back on release). Locked views pan together.
+   * resetPan (Nathan 2026-10-13; it used to ease back on release). Locked views pan together. Wheel zoom pans too (zoomAt).
    */
   pans = [{ x: 0, y: 0 }, { x: 0, y: 0 }];
   private panAnim = 0;
@@ -85,6 +85,18 @@ export class Viewer {
     cancelAnimationFrame(this.panAnim);
     for (const [k, p] of this.pans.entries()) if (k === i || this.store.scene.camLock) { p.x = x; p.y = y; }
     this.panChanged();
+  }
+  /** Image window each view was last drawn with, tan units (centre and half-size). */
+  private shown: { cx: number; cy: number; hx: number; hy: number }[] = [];
+  private anchor: { i: number; nx: number; ny: number; u: number; v: number } | null = null;
+  /**
+   * Call before a wheel zoom in view i: the next draw pans so the point under the pointer stays under it (Nathan
+   * 2026-10-13). Ticks that land before that draw keep the first tick's point.
+   */
+  zoomAt(i: number, clientX: number, clientY: number) {
+    const vp = this.vps[i], w = this.shown[i]; if (!w || this.anchor?.i === i) return;
+    const r = this.host.getBoundingClientRect(), nx = (clientX - r.left - vp.x) / vp.w * 2 - 1, ny = 1 - (clientY - r.top - vp.y) / vp.h * 2;
+    this.anchor = { i, nx, ny, u: w.cx + nx * w.hx, v: w.cy + ny * w.hy };
   }
   /** Ease every view back to its framing. */
   resetPan() {
@@ -177,15 +189,25 @@ export class Viewer {
       return { x0, x1, y0, y1, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2 };
     };
     const lockedWin = sc.camLock && active.length > 1 ? { tank: union(wins.map(b => b.tank)), all: union(wins.map(b => b.all)) } : null;
-    for (const [k, vp] of active.entries()) {
-      const S = vp.S, fov = fovOf(k);
+    const frame = (k: number) => {
+      const vp = active[k], fov = fovOf(k);
       const hy = Math.tan(fov * D2R / 2), hx = hy * vp.w / vp.h;
       // locked: the shared window while both tanks fit in it; zoomed past that, each view frames
       // its own tank, so a taller tank beside it never leaves this one cropped to the wall (Nathan 2026-10-09)
       const own = wins[k], u = lockedWin?.tank;
       const { tank, all } = u && u.x1 - u.x0 <= 2 * hx && u.y1 - u.y0 <= 2 * hy ? lockedWin! : own;
-      const c = windowCentre(all, tank, hx, hy);
+      return { fov, hx, hy, c: windowCentre(all, tank, hx, hy) };
+    };
+    // wheel zoom: pan so the point that was under the pointer is under it again (zoomAt)
+    const a = this.anchor, ak = a ? active.findIndex(v => v.i === a.i) : -1; this.anchor = null;
+    if (a && ak >= 0) {
+      const { hx, hy, c } = frame(ak), vp = active[ak];
+      this.setPan(a.i, (c.cx + a.nx * hx - a.u) * vp.w / (2 * hx), (a.v - c.cy - a.ny * hy) * vp.h / (2 * hy));
+    }
+    for (const [k, vp] of active.entries()) {
+      const S = vp.S, { fov, hx, hy, c } = frame(k);
       const pan = this.pans[vp.i]; c.cx -= pan.x * 2 * hx / vp.w; c.cy += pan.y * 2 * hy / vp.h; // the picture follows the pointer
+      this.shown[vp.i] = { cx: c.cx, cy: c.cy, hx, hy };
       applyFraming(vp.cam, fov, vp.w, vp.h, c.cx, c.cy);
       const person = vp.scene?.getObjectByName('person');
       if (person) this.placePerson(vp, person, headroom(S), bottom(S));

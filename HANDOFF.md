@@ -10,6 +10,10 @@ out of view). Instead the middle-drag pan (still a lens shift, viewer.ts `pans`,
 together) no longer eases back on release: orbit and zoom keep it, a second drag continues from it. Three resets,
 all easing back (220 ms): double middle-click, Home (F is taken by flip), and a "Re-centre" button in the view tools
 that shows only while panned. Not reset by opening a tank or changing layout.
+- Same day (Nathan: "always zooming toward the point the mouse is at"): wheel zoom pans so the point under the
+  pointer stays under it (viewer `zoomAt` records the tan-space point before the zoom; the next draw solves the pan;
+  measured within 0.3 px over 7 ticks in and out). So zooming off-centre shows Re-centre too. The panel zoom slider
+  still zooms about the framing. Double-click straight-on now also re-centres.
 
 ## Fish stand out (2026-10-13)
 

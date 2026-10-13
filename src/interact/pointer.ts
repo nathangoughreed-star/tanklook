@@ -1,5 +1,5 @@
-// Pointer: click a fish card to select it and drag it; drag empty space to orbit; wheel zooms (FOV only);
-// shift + wheel moves the selected fish forward/back; click empty space to deselect; double-click it for straight-on.
+// Pointer: click a fish card to select it and drag it; drag empty space to orbit; wheel zooms (FOV only) toward the
+// pointer; shift + wheel moves the selected fish forward/back; click empty space to deselect; double-click it for straight-on.
 // Middle-drag pans the picture and it stays panned; double middle-click, Home or the Re-centre button eases it back.
 // With split tanks, a view whose "Edit" box is ticked takes fish and terrain drags (that tank only) and pressing in it
 // shows it in the panel; an unticked view only orbits, zooms and pans. Bottom dwellers and floor snails slide along the
@@ -217,14 +217,19 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
   canvas.addEventListener('dblclick', e => {
     const hit = viewer.hitTest(e.clientX, e.clientY); if (!hit || hit.fishId != null || hit.itemId != null) return;
     store.cam(c => Object.assign(c, { az: 0, el: 0, zoom: 1 }), hit.vp.i);
+    viewer.resetPan(); // the whole default view, now that zooming pans
   });
 
   canvas.addEventListener('wheel', e => {
     e.preventDefault();
     if (!e.shiftKey) {
       const hit = viewer.hitTest(e.clientX, e.clientY);
-      // zoom the view under the pointer
-      store.cam(c => { c.zoom = +clamp(c.zoom * (e.deltaY > 0 ? 1 / 1.1 : 1.1), ...LIMITS.zoom).toFixed(2); }, hit?.vp.i ?? store.scene.active);
+      // zoom the view under the pointer, toward the point under it
+      const i = hit?.vp.i ?? store.scene.active, c0 = store.scene.tanks[i]?.camera.zoom;
+      const z = c0 == null ? null : +clamp(c0 * (e.deltaY > 0 ? 1 / 1.1 : 1.1), ...LIMITS.zoom).toFixed(2);
+      if (z == null || z === c0) return;
+      if (hit) viewer.zoomAt(i, e.clientX, e.clientY);
+      store.cam(c => { c.zoom = z; }, i);
       return;
     }
     const dir = Math.sign(e.deltaY || e.deltaX);
