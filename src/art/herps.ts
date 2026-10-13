@@ -61,6 +61,12 @@ function line(ctx: Ctx, P: Proj, W: number, pts: [number, number][], a: number, 
 }
 
 // ---------- Frogs ----------
+/** Sitting frog's torso + head, side view, in the design frame (ground at v = 0.265; see drawFrog's P). */
+const FROG_TORSO: Pt[] = [[1.0, 0.035, 'c'], [0.975, -0.04], [0.9, -0.11], [0.8, -0.15], [0.68, -0.145], [0.52, -0.13], [0.36, -0.12], [0.2, -0.07],
+  [0.08, 0.04], [0.05, 0.15], [0.1, 0.23], [0.22, 0.25], [0.42, 0.22], [0.6, 0.17], [0.76, 0.12], [0.9, 0.09], [0.97, 0.07]];
+/** The frog's design height v (ground 0.265) in the card frame of aspect `aspect` (flatter frames squash toward the ground). */
+const frogV = (aspect: number, v: number) => { const g = aspect / 2 - 0.015, k = (g + 0.25) / (0.265 + 0.25); return g - (0.265 - v) * k; };
+
 // Sitting frog, nominal frame aspect 0.56 (ground g = 0.265); `flat` < 1 squashes heights toward the ground (toads).
 interface FrogSpec {
   aspect: number;
@@ -81,9 +87,7 @@ function drawFrog(s: FrogSpec, ctx: Ctx, P0: Proj, W: number) {
   limb(ctx, P, W, [[0.64, 0.1, 0.03], [0.665, 0.19, 0.022], [0.68, 0.25, 0.017]], [[0.62, 0.262], [0.66, 0.264]], toe, s.leg, true, undefined, pads);
   limb(ctx, P, W, [[0.2, 0.25, 0.018], [0.34, 0.255, 0.014]], [[0.44, 0.262], [0.41, 0.264]], toe, s.leg, true, undefined, pads);
   // torso + head
-  const pts: Pt[] = [[1.0, 0.035, 'c'], [0.975, -0.04], [0.9, -0.11], [0.8, -0.15], [0.68, -0.145], [0.52, -0.13], [0.36, -0.12], [0.2, -0.07],
-    [0.08, 0.04], [0.05, 0.15], [0.1, 0.23], [0.22, 0.25], [0.42, 0.22], [0.6, 0.17], [0.76, 0.12], [0.9, 0.09], [0.97, 0.07]];
-  body(ctx, P, W, pts, -0.16, 0.25, shadeOf(s.skin), 0.05, l => {
+  body(ctx, P, W, FROG_TORSO, -0.16, 0.25, shadeOf(s.skin), 0.05, l => {
     s.marks?.(l, P, W);
     if (s.warts) { const r = rng(7); for (let i = 0; i < 46; i++) blob(l, P, W, 0.12 + r() * 0.78, -0.12 + r() * 0.2, 0.011, 0.009, s.warts, 0.55); }
     soft(l, P, 0.3, 0.85, -0.15, -0.08, '#ffffff', 0.14, [0.12, 0.1], [0.02, 0.04]); // sheen along the back
@@ -153,6 +157,15 @@ interface SalSpec {
   gills?: [string, string]; // external gills: stalk, fringe
 }
 
+/** Newt / axolotl body + tail, side view, card frame: tail tip at u = 0, nose at u = 1. */
+function salSide(s: SalSpec): Pt[] {
+  const g = s.aspect / 2 - 0.015, hd = s.head, tr = s.trunk, cv = g - 0.04 - tr;
+  return [[1.0, cv + hd * 0.25, 'c'], [0.985, cv - hd * 0.6], [0.94, cv - hd * 0.95], [0.87, cv - hd], [0.8, cv - tr * 0.9],
+    [0.7, cv - tr], [0.55, cv - tr * 0.95], [0.42, cv - tr * 0.85], [0.28, cv - tr * 0.6], [0.14, cv - tr * 0.35], [0.0, cv, 'c'],
+    [0.14, cv + tr * 0.35], [0.28, cv + tr * 0.6], [0.42, cv + tr * 0.85], [0.55, cv + tr], [0.7, cv + tr], [0.8, cv + tr * 0.95],
+    [0.88, cv + hd * 0.9], [0.95, cv + hd * 0.8], [0.99, cv + hd * 0.6]];
+}
+
 function drawSal(s: SalSpec, ctx: Ctx, P0: Proj, W: number) {
   const g = s.aspect / 2 - 0.015, P: Proj = (u, v) => P0(u, v), hd = s.head, tr = s.trunk, cv = g - 0.04 - tr; // body centre line
   const toe = 0.0065;
@@ -164,11 +177,7 @@ function drawSal(s: SalSpec, ctx: Ctx, P0: Proj, W: number) {
     [0.08, cv + 0.035], [0.2, cv + tr + 0.015], [0.34, cv + tr + 0.02], [0.44, cv + tr]], [0.3, cv], s.finTail, darker(s.finTail, 0.75), { rays: 0, a: 0.7 });
   if (s.gills) gills(ctx, P, W, s, cv, true);
   // body: tail tip u = 0, head to u = 1
-  const pts: Pt[] = [[1.0, cv + hd * 0.25, 'c'], [0.985, cv - hd * 0.6], [0.94, cv - hd * 0.95], [0.87, cv - hd], [0.8, cv - tr * 0.9],
-    [0.7, cv - tr], [0.55, cv - tr * 0.95], [0.42, cv - tr * 0.85], [0.28, cv - tr * 0.6], [0.14, cv - tr * 0.35], [0.0, cv, 'c'],
-    [0.14, cv + tr * 0.35], [0.28, cv + tr * 0.6], [0.42, cv + tr * 0.85], [0.55, cv + tr], [0.7, cv + tr], [0.8, cv + tr * 0.95],
-    [0.88, cv + hd * 0.9], [0.95, cv + hd * 0.8], [0.99, cv + hd * 0.6]];
-  body(ctx, P, W, pts, cv - hd, cv + tr, shadeOf(s.skin), 0.035, l => {
+  body(ctx, P, W, salSide(s), cv - hd, cv + tr, shadeOf(s.skin), 0.035, l => {
     s.marks?.(l, P, W);
     soft(l, P, 0.2, 0.95, cv - hd, cv - tr * 0.5, '#ffffff', 0.12, [0.1, 0.05], [0.01, 0.02]); // sheen
   });
@@ -224,3 +233,133 @@ export function herpMeta(art: string): { aspect: number; rest: number } | undefi
   const s = FROGS[art] ?? SALS[art]; if (!s) return undefined;
   return { aspect: s.aspect, rest: s.aspect / 2 - 0.015 };
 }
+
+// ---------- 3D (render/herp3d.ts) ----------
+// One limbed-body generator for every amphibian; per species only data. Positions are in the card frame (u 0 tail ..
+// 1 nose, v down from the card's centre line, in widths) plus z = out to the animal's side (widths; the far side is
+// mirrored). Body paint is laid out round the body: `a` = 0 on the back's midline .. 0.5 mid-flank .. 1 belly midline.
+
+/** A joint of a limb: u, v, z, radius. */
+export type Joint = [number, number, number, number];
+export interface Limb3D {
+  js: Joint[];                 // root (inside the body) .. wrist / end of the foot
+  toes: [number, number][];    // toe tips as [du, dz] from the last joint; the tips rest on the ground
+  toe: number;                 // toe radius at the root
+  pad?: number;                // round toe pads (tree frogs)
+}
+export type Mark3D =
+  | { k: 'band'; u: [number, number]; a: [number, number]; c: string; o: number; blur?: number }
+  | { k: 'spots'; n: number; u: [number, number]; a: [number, number]; r: [number, number]; c: string; o: number; seed: number }
+  | { k: 'line'; pts: [number, number][]; c: string; o: number; w: number };
+export interface Herp3D {
+  side: Pt[];                     // side outline (card frame), the loft's silhouette
+  wid: [number, number][];        // half-width by u (widths), smoothed; both ends are rounded
+  belly: number;                  // section exponent below the mid-line (higher = flatter belly); 2.4 above
+  tone: [number, string][];       // colour round the section by a
+  marks: Mark3D[];
+  limbs: Limb3D[];
+  legCol: [string, string];       // limbs: top, underside
+  legSpots?: { c: string; r: number; n: number }; // n per unit of limb length
+  eye: { u: number; th: number; r: number; iris: [string, string]; pupil: 'round' | 'h' | 'dark'; bulge: number };
+  fin?: { top: [number, number][]; bot: [number, number][]; c: string; o: number }; // membranes along the tail (edges, card frame)
+  gills?: { at: [number, number, number]; tips: [number, number, number][]; stalk: string; fringe: string };
+  ground: number;                 // the ground line v (card frame)
+}
+
+/** Frogs share one sitting pose (design frame, see FROG_TORSO); `fat` widens the body. */
+function frog3D(s: FrogSpec, fat: number, tone: [number, string][], marks: Mark3D[], legSpots?: Herp3D['legSpots']): Herp3D {
+  const V = (v: number) => frogV(s.aspect, v), J = (u: number, v: number, z: number, r: number): Joint => [u, V(v), z, r];
+  const pad = s.pads, toe = 0.009;
+  return {
+    side: FROG_TORSO.map(p => (p.length > 2 ? [p[0], V(p[1]), 'c'] : [p[0], V(p[1])]) as Pt),
+    wid: ([[0.06, 0.11], [0.2, 0.165], [0.42, 0.185], [0.62, 0.175], [0.78, 0.16], [0.9, 0.125], [1, 0.07]] as [number, number][]).map(([u, w]) => [u, w * fat]),
+    belly: 3.2, tone, marks, legSpots,
+    limbs: [
+      // hind leg folded beside the body: thigh forward along the flank, shank back to the heel, the long foot forward
+      { js: [J(0.13, 0.12, 0.08 * fat, 0.066), J(0.44, 0.15, 0.185 * fat, 0.046), J(0.15, 0.228, 0.215 * fat, 0.022), J(0.3, 0.252, 0.235 * fat, 0.013)],
+        toes: [[0.2, -0.07], [0.19, -0.01], [0.15, 0.045], [0.11, 0.085], [0.06, 0.11]], toe, pad },
+      // front arm straight down under the shoulder, fingers turned in and out
+      { js: [J(0.7, 0.08, 0.1 * fat, 0.032), J(0.68, 0.17, 0.165 * fat, 0.024), J(0.725, 0.245, 0.17 * fat, 0.016)],
+        toes: [[0.085, -0.045], [0.08, 0.015], [0.045, 0.06], [-0.015, 0.075]], toe, pad },
+    ],
+    legCol: [s.leg[1], s.leg[2]],
+    eye: { u: 0.8, th: 0.72, r: 0.052 * (frogV(s.aspect, 1) - frogV(s.aspect, 0)), iris: s.iris, pupil: s.pupil, bulge: 0.7 },
+    ground: frogV(s.aspect, 0.265),
+  };
+}
+const FROG_FACE: Mark3D[] = [
+  { k: 'line', pts: [[0.74, 0.6], [0.84, 0.63], [0.94, 0.64], [0.995, 0.58]], c: '#0e100c', o: 0.25, w: 0.004 }, // mouth
+  { k: 'spots', n: 2, u: [0.968, 0.972], a: [0.17, 0.23], r: [0.005, 0.005], c: '#141410', o: 0.6, seed: 1 },      // nostrils
+];
+
+/** Newts / axolotl: sprawling legs from the flanks, toes splayed; `legScale` sizes legs and toes. */
+function sal3D(s: SalSpec, wid: [number, number][], tone: [number, string][], marks: Mark3D[], legScale: number,
+  extra: Partial<Herp3D> = {}): Herp3D {
+  const g = s.aspect / 2 - 0.015, tr = s.trunk, cv = g - 0.04 - tr;
+  const t = (u: number) => wid.reduce((m, q) => (Math.abs(q[0] - u) < Math.abs(m[0] - u) ? q : m))[1];
+  const k = legScale, toe = 0.0055 * k, fy = g - toe;
+  const leg = (u: number, dir: number): Limb3D => ({
+    js: [[u, cv + tr * 0.25, t(u) * 0.6, 0.017 * k], [u + 0.01 * dir, cv + tr * 0.55, t(u) + 0.03 * k, 0.013 * k], [u + 0.02 * dir, fy - 0.004, t(u) + 0.045 * k, 0.009 * k]],
+    toes: (dir > 0 ? [[0.03, -0.012], [0.032, 0.008], [0.022, 0.025], [0.004, 0.032]] : [[0.026, 0.004], [0.02, 0.02], [0.006, 0.03], [-0.012, 0.032], [-0.03, 0.022]])
+      .map(([du, dz]) => [du * k, dz * k] as [number, number]),
+    toe,
+  });
+  return {
+    side: salSide(s), wid, belly: 2.6, tone, marks,
+    limbs: [leg(0.79, 1), leg(0.5, -1)],
+    legCol: [s.leg[1], s.leg[2]],
+    eye: { u: 0.925, th: 0.95, r: s.head * 0.26, iris: s.iris, pupil: s.pupil as 'round' | 'dark', bulge: 0.45 },
+    ground: g,
+    ...extra,
+  };
+}
+
+const axo = SALS.axolotl, axoCv = axo.aspect / 2 - 0.015 - 0.04 - axo.trunk;
+
+export const HERP3D: Record<string, Herp3D> = {
+  // yellow bands down each side of the back, black between with black spots; a lower side band; blue belly
+  dartfrog: frog3D(FROGS.dartfrog, 1, [[0, '#17181b'], [0.6, '#1c1d20'], [0.82, '#202227'], [1, '#26467e']], [
+    { k: 'band', u: [0.14, 0.95], a: [0.0, 0.34], c: '#f1c62a', o: 0.95, blur: 0.012 },
+    { k: 'spots', n: 9, u: [0.25, 0.75], a: [0.0, 0.12], r: [0.022, 0.034], c: '#151619', o: 0.95, seed: 4 },
+    { k: 'band', u: [0.12, 0.6], a: [0.5, 0.6], c: '#f1c62a', o: 0.9, blur: 0.014 },
+    { k: 'band', u: [0.15, 0.8], a: [0.85, 1.0], c: '#2c5fae', o: 0.8, blur: 0.03 },
+    ...FROG_FACE,
+  ], { c: '#101114', r: 0.012, n: 34 }),
+  // jade green above, cream below with a soft edge, a few white flecks, the fold over the eardrum
+  treefrog: frog3D(FROGS.treefrog, 1.12, [[0, '#5f9a4a'], [0.42, '#7cb35d'], [0.56, '#a9c98a'], [0.64, '#e8e2c4'], [1, '#efe9cf']], [
+    { k: 'spots', n: 7, u: [0.25, 0.75], a: [0.1, 0.4], r: [0.007, 0.009], c: '#f4f3e6', o: 0.7, seed: 5 },
+    { k: 'line', pts: [[0.86, 0.3], [0.76, 0.36], [0.66, 0.42], [0.6, 0.5]], c: '#3f6a2f', o: 0.3, w: 0.012 },
+    ...FROG_FACE,
+  ]),
+  // warty green back with black blotches; red-orange belly with black spots
+  firetoad: frog3D(FROGS.firetoad, 1.1, [[0, '#4b7a32'], [0.5, '#5d8c3a'], [0.66, '#5f8a38'], [0.73, '#d9461e'], [1, '#e04a1c']], [
+    { k: 'spots', n: 26, u: [0.12, 0.88], a: [0.0, 0.5], r: [0.018, 0.034], c: '#111410', o: 0.85, seed: 9 },
+    { k: 'spots', n: 110, u: [0.1, 0.92], a: [0.0, 0.55], r: [0.008, 0.012], c: '#3e6627', o: 0.6, seed: 7 },
+    { k: 'spots', n: 18, u: [0.15, 0.85], a: [0.76, 1.0], r: [0.014, 0.022], c: '#141210', o: 0.85, seed: 10 },
+    ...FROG_FACE,
+  ], { c: '#111410', r: 0.016, n: 14 }),
+  // dark brown-black and granular above, the orange belly showing low on the flank
+  firenewt: sal3D(SALS.firenewt, [[0, 0.003], [0.2, 0.008], [0.42, 0.017], [0.55, 0.028], [0.72, 0.032], [0.86, 0.034], [0.95, 0.028], [1, 0.014]],
+    [[0, '#241f1b'], [0.5, '#3a312a'], [0.66, '#50382a'], [0.74, '#e2621e'], [1, '#e8661c']], [
+      { k: 'spots', n: 160, u: [0.05, 0.97], a: [0.0, 0.6], r: [0.003, 0.004], c: '#57493c', o: 0.6, seed: 12 },
+      { k: 'spots', n: 30, u: [0.35, 0.9], a: [0.8, 1.0], r: [0.004, 0.007], c: '#2a2420', o: 0.7, seed: 13 },
+      { k: 'line', pts: [[0.9, 0.62], [0.96, 0.64], [0.995, 0.58]], c: '#0e100c', o: 0.25, w: 0.003 },
+    ], 1),
+  // leucistic: pale pink, faint darker mottling; broad flat head, gills, tail fin from mid-back
+  axolotl: sal3D(axo, [[0, 0.003], [0.2, 0.008], [0.42, 0.02], [0.55, 0.045], [0.72, 0.05], [0.84, 0.066], [0.94, 0.062], [1, 0.036]],
+    [[0, '#e9b9b4'], [0.5, '#f2cdc6'], [1, '#f6dcd4']], [
+      { k: 'spots', n: 16, u: [0.2, 0.9], a: [0.0, 0.6], r: [0.016, 0.024], c: '#e3a7a2', o: 0.35, seed: 21 },
+      { k: 'line', pts: [[0.9, 0.62], [0.96, 0.66], [0.995, 0.58]], c: '#7a4a48', o: 0.3, w: 0.003 },
+    ], 1.15, {
+      fin: {
+        top: [[0.62, axoCv - axo.trunk], [0.45, axoCv - axo.trunk - 0.03], [0.25, axoCv - axo.trunk - 0.025], [0.08, axoCv - 0.03], [0, axoCv]],
+        bot: [[0, axoCv], [0.08, axoCv + 0.035], [0.2, axoCv + axo.trunk + 0.015], [0.34, axoCv + axo.trunk + 0.02], [0.44, axoCv + axo.trunk]],
+        c: '#f0d2cc', o: 0.6,
+      },
+      gills: {
+        at: [0.83, axoCv - axo.head * 0.45, 0.05],
+        tips: [[0.75, axoCv - axo.head - 0.06, 0.075], [0.72, axoCv - axo.head - 0.03, 0.095], [0.71, axoCv - axo.head * 0.3, 0.1]],
+        stalk: '#d9707a', fringe: '#e2505e',
+      },
+    }),
+};

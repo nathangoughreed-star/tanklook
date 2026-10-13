@@ -108,7 +108,18 @@ Order, one work unit per chat:
    drop*(1-1/grow)/(1+1/grow) (the trumpet was a corkscrew at 0.55); a nerite is a fast-growing coil with its axis
    sideways, not a short cone. Sheet `shots/70_snails.png`: all four pass by my review; watch item: the mystery's
    spire sits low at the back (card: on top) and its aperture lip shows as a pale notch at 50°.
-   Next: amphibians (dart frog, tree frog, fire-bellied toad, fire newt, axolotl): a limbed-body generator.
+   Amphibians DONE 2026-10-13 (committed, not pushed; awaiting Nathan's verdict): `render/herp3d.ts`, ONE limbed-body
+   generator for all five, data `HERP3D` in `art/herps.ts` (frogs share `frog3D`, newt + axolotl share `sal3D`).
+   Body lofted from the card's own side outline (`FROG_TORSO` / `salSide`, now shared with the card painter) with a
+   half-width table `wid`; paint laid out ROUND the body (u along, a = 0 back midline .. 1 belly midline, mirrored), so
+   marks are data (`band` / `spots` / `line`) and stay put from above. Legs = Catmull-Rom tubes through jointed points
+   (`Limb3D`), toes to tips on the ground, round pads (tree frog); limb spots box-mapped on the CPU (the lighting
+   patch replaces onBeforeCompile, so no shader tricks on fish materials). Eyes = domes on the surface looking out
+   sideways (pupil round / horizontal slit / all dark). Axolotl: tail-fin membranes on the midline + gill stalks with
+   filament fringes. The card is the invisible picking target (`HIDDEN`), as the snails. Sheets
+   `shots/81_frogs_v2.png`, `shots/81_sals_v2.png` (v1 = `80_*`: eyes looked at the sky, toad red too high).
+   Watch items: frog thighs read as tubes (card: a big oval); the far eye shows as a lid bump at 50°.
+   Sheet script used: a 30-line PIL card/3D grid (scratchpad, not in the repo).
    NOTE: `src/render/items.ts` is modified by another chat (not this work).
    Shot helper: `cardViews` (card at the 3D shot's framing), warm-up render instead of a timer (hidden tabs throttle
    timers), several tabs on one dev server run species in parallel.

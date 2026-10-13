@@ -6,14 +6,15 @@
 import * as THREE from 'three';
 import { bodyPlan, eyeSpot, pairedFins, profile, shrimpMarksCanvas, type Plan } from '../art/fishgen';
 import { rng } from '../art/paint';
+import { HERP3D } from '../art/herps';
 import { SNAILS } from '../art/snails';
 import type { EdgeMode } from '../scene/types';
 import { cardMaterial, pairedFinTexture } from './textures';
 
 /** Species drawn in 3D (test set) and switches for before/after pictures. `fade` = the session-10 fixes (turned-away paint fades, card body cut out, body-shape fields, barbels); off = session 9, for pictures. `wrap` = the turned-away paint is smeared lengthwise (bars and spots don't close into hoops over the back and throat); off = session 11's round blur. */
-export const fish3d = { on: true, fade: true, wrap: true, species: new Set(['cardinal', 'discus', 'bronzecory', 'tigerbarb', 'bristlenose', 'kuhli', 'angel', 'danio', 'guppy', 'dwarfgourami', 'gbr', 'harlequin', 'oto', 'clownloach', 'goldfish', 'ember', 'rummynose', 'chili', 'cherrybarb', 'platy', 'molly', 'swordtail', 'betta', 'honeygourami', 'bolivianram', 'kribensis', 'oscar', 'pandacory', 'sae', 'tetra', 'gourami', 'cherryshrimp', 'amano', 'nerite', 'mystery', 'ramshorn', 'trumpet']) };
+export const fish3d = { on: true, fade: true, wrap: true, species: new Set(['cardinal', 'discus', 'bronzecory', 'tigerbarb', 'bristlenose', 'kuhli', 'angel', 'danio', 'guppy', 'dwarfgourami', 'gbr', 'harlequin', 'oto', 'clownloach', 'goldfish', 'ember', 'rummynose', 'chili', 'cherrybarb', 'platy', 'molly', 'swordtail', 'betta', 'honeygourami', 'bolivianram', 'kribensis', 'oscar', 'pandacory', 'sae', 'tetra', 'gourami', 'cherryshrimp', 'amano', 'nerite', 'mystery', 'ramshorn', 'trumpet', 'dartfrog', 'treefrog', 'firetoad', 'firenewt', 'axolotl']) };
 
-export const has3D = (art: string) => fish3d.on && fish3d.species.has(art) && (bodyPlan(art)?.thick != null || art in SNAILS);
+export const has3D = (art: string) => fish3d.on && fish3d.species.has(art) && (bodyPlan(art)?.thick != null || art in SNAILS || art in HERP3D);
 
 const STATIONS = 40, RING = 28, EXP = 2.4; // superellipse exponent: slightly boxy flanks
 /** Pull the solid this far inside the painted outline (widths), so its edge never samples the card's transparent rim. */
