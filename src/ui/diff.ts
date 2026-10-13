@@ -58,10 +58,10 @@ export function tankDiff(a: TankSetup, b: TankSetup, u: Units): DiffItem[] {
   add(a.stand.show, b.stand.show, s => (s ? 'Stand' : 'No stand'), ['stand.show']);
   if (a.stand.show && b.stand.show) {
     add(a.stand.height, b.stand.height, h => `Stand ${len(h)}`, ['stand.height']);
-    add(a.stand.style, b.stand.style, s => (s === 'frame' ? 'Frame stand' : s === 'table' ? 'Table' : 'Cabinet stand'), ['stand.style', 'stand.table']);
-    if (a.stand.style === 'table' && b.stand.style === 'table') {
-      const ta = a.stand.table, tb = b.stand.table;
-      add({ sh: ta.shape, L: ta.L, D: ta.D }, { sh: tb.shape, L: tb.L, D: tb.D }, ({ sh, L, D }) => (sh === 'round' ? `Round table ${len(L)}` : `Table ${len(L)} × ${len(D)}`), ['stand.table']);
+    add(a.stand.style, b.stand.style, s => (s === 'frame' ? 'Frame stand' : s === 'table' ? 'Table' : s === 'custom' ? 'Custom-size stand' : 'Cabinet stand'), ['stand.style', 'stand.table']);
+    if (a.stand.style === b.stand.style && (a.stand.style === 'table' || a.stand.style === 'custom')) {
+      const ta = a.stand.table, tb = b.stand.table, w = a.stand.style === 'custom' ? 'Stand' : 'Table';
+      add({ sh: ta.shape, L: ta.L, D: ta.D }, { sh: tb.shape, L: tb.L, D: tb.D }, ({ sh, L, D }) => (sh === 'round' ? `Round ${w.toLowerCase()} ${len(L)}` : `${w} ${len(L)} × ${len(D)}`), ['stand.table']);
       add([ta.x, ta.z], [tb.x, tb.z], named('Tank placement'), (to, from) => { to.stand.table.x = from.stand.table.x; to.stand.table.z = from.stand.table.z; });
     }
     add(a.stand.finish, b.stand.finish, f => `Stand: ${STAND_FINISHES[f].label.toLowerCase()}`, ['stand.finish']);

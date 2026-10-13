@@ -1,5 +1,5 @@
 // Load-time validation and migration. Untrusted JSON in, a complete valid Scene out (plus warnings), or an error.
-import { getSpecies, hasSpecies } from '../data/species';
+import { fishTL, getSpecies, hasSpecies } from '../data/species';
 import { defaultSetup } from './defaults';
 import { LIBRARY, MAX_ITEMS, clampItem, starterItems } from './items';
 import { clamp, mapToTank } from './physics';
@@ -151,7 +151,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
     if (typeof f.species !== 'string' || !hasSpecies(f.species)) { unknown++; continue; }
     const id = typeof f.id === 'number' && Number.isInteger(f.id) && f.id > 0 && !seen.has(f.id) ? f.id : nextId++;
     seen.add(id);
-    const adult = getSpecies(f.species)!.tl, tl = typeof f.tl === 'number' ? Math.round(num(f.tl, adult, adult * LIMITS.size[0], adult * LIMITS.size[1])) : adult;
+    const base = getSpecies(f.species)!, sex = f.sex === 'f' && base.female ? 'f' as const : undefined, adult = fishTL({ sex }, base), tl = typeof f.tl === 'number' ? Math.round(num(f.tl, adult, adult * LIMITS.size[0], adult * LIMITS.size[1])) : adult;
     fish.push({
       id, species: f.species,
       x: num(f.x, tankA.L / 2, 0, tankA.L), y: num(f.y, tankA.H / 2, 0, tankA.H), depth: num(f.depth, tankA.D / 2, 0, tankA.D),
@@ -159,6 +159,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       bend: num(f.bend, 0, ...LIMITS.bend),
       ...(getSpecies(f.species)!.surfaces ? { surface: pick(f.surface, getSpecies(f.species)!.surfaces!, 'floor') } : {}),
       ...(tl !== adult ? { tl } : {}),
+      ...(sex ? { sex } : {}),
     });
   }
   if (unknown) warn(`${unknown} fish of unknown species were skipped.`);
@@ -208,7 +209,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
     stand: {
       show: bool(st.show, d.stand.show), height: num(st.height, d.stand.height, ...LIMITS.stand),
       finish: pick(st.finish, ['black', 'white', 'oak'] as const, d.stand.finish),
-      style: pick(st.style, ['cabinet', 'frame', 'table'] as const, d.stand.style),
+      style: pick(st.style, ['cabinet', 'frame', 'table', 'custom'] as const, d.stand.style),
       table: (() => { // added 2026-10-09 (no version bump); fitTable below grows it to the tank and keeps the tank on it
         const tb = isObj(st.table) ? st.table as Obj : {}, dt = d.stand.table, shape = pick(tb.shape, ['rect', 'round'] as const, 'rect');
         const L = num(tb.L, dt.L, 0, TABLE_MAX), D = shape === 'round' ? L : num(tb.D, dt.D, 0, TABLE_MAX);

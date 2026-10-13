@@ -45,6 +45,8 @@ export interface Fish {
   bend: number; // -1..1, body curve
   /** Custom total length, mm (juveniles, or a big individual). Absent = the species' adult length. */
   tl?: number;
+  /** Dimorphic species only (species `female`): 'f' = drawn and sized as a female. Absent = male. */
+  sex?: 'f';
   /** Clinging animals only (species `surfaces`): the surface it clings to. On glass, (x, depth) is a point on the glass and
    * yaw its heading there; on hardscape it sits on top of the solid piece under (x, depth) (the floor if none is). */
   surface?: Surface;
@@ -158,8 +160,9 @@ export interface WaterSettings { on: boolean; level: number; color: string; opac
 
 export type StandFinish = 'black' | 'white' | 'oak';
 /** 'cabinet' = closed box with doors; 'frame' = open welded steel skeleton (square tube legs and rails); 'table' = a
- * table top larger than the tank, the tank placed anywhere on it (2026-10-09). */
-export type StandStyle = 'cabinet' | 'frame' | 'table';
+ * table top larger than the tank, the tank placed anywhere on it (2026-10-09); 'custom' = a cabinet sized and placed
+ * like the table (its top is the table's settings), for any tank (2026-10-13). */
+export type StandStyle = 'cabinet' | 'frame' | 'table' | 'custom';
 /**
  * Table top (scene/table.ts): rectangular L x D or round (diameter L = D), mm. (x, z) = the tank's offset from the
  * table centre, mm, x to the right, z toward the back; kept so the tank's outline stays on the top.

@@ -10,7 +10,8 @@ export const TABLE_TOP = 32;
 /** Largest table side / diameter (mm). */
 export const TABLE_MAX = 3000;
 
-export const tableOn = (S: TankSetup) => S.stand.show && S.stand.style === 'table';
+/** Is the stand sized by the table settings (a table, or a custom-size cabinet)? */
+export const tableOn = (S: TankSetup) => S.stand.show && (S.stand.style === 'table' || S.stand.style === 'custom');
 
 /** The tank's outline on the table: the outer glass, or the rim when rimmed (the rim sits on the top too). */
 function tankOuter(S: TankSetup, T: Tank) {

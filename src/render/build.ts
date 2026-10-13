@@ -310,26 +310,51 @@ function shadedSolid(geo: THREE.BufferGeometry, color: number) {
   return m;
 }
 
-/** Stand under the tank, from the floor up to the tank's underside: a cabinet with the outer glass's footprint, an open frame, or a table. */
+/** Stand under the tank, from the floor up to the tank's underside: a cabinet with the outer glass's footprint, an open frame, a table, or a cabinet sized like the table. */
 function addStand(sc: THREE.Scene, S: TankSetup, T: Tank) {
   if (!S.stand.show) return;
   const t = glassThickness(T, S.render.glass), top = tankUnderside(T, S.render), h = S.stand.height, fin = STAND_FINISHES[S.stand.finish];
   if (S.stand.style === 'frame') { addFrameStand(sc, T, t, top, h, fin.color); return; }
   if (S.stand.style === 'table') { addTableStand(sc, S, T, top, h, fin.color); return; }
+  if (S.stand.style === 'custom') { // the table's top and placement, built as a cabinet
+    const ring = tableRing(T, S.stand.table);
+    sc.add(shadedPrism(ring, top - h, top, fin.color));
+    addDoors(sc, edgeRuns(ring, [0, -1]).concat(penEnd(S) ? edgeRuns(ring, [0, 1]) : []), top, h, fin.color);
+    return;
+  }
   sc.add(shadedPrism(offsetRing(T, t), top - h, top, fin.color));
-  // doors on the faces toward the viewer (a curved front gets curved doors): a pair of overlay panels standing proud
-  // of the carcass above a kick plate, split in the middle, each with a bar handle beside the split; a seam line round
-  // each panel's front keeps the doors readable straight on, where the panel face and the carcass shade alike. A
-  // peninsula is open on both long sides, so its cabinet has doors on the back too (Nathan 2026-10-08)
+  // a peninsula is open on both long sides, so its cabinet has doors on the back too (Nathan 2026-10-08)
+  addDoors(sc, facingRuns(T, t, [0, -1]).concat(penEnd(S) ? facingRuns(T, t, [0, 1]) : []), top, h, fin.color);
+}
+
+/** The runs of a closed convex ring (a stand's top) whose edges face `dir` (outward normal within 60 degrees). */
+function edgeRuns(ring: P[], dir: P): P[][] {
+  const n = ring.length, ok = ring.map((p, i) => { const q = ring[(i + 1) % n], l = Math.hypot(q[0] - p[0], q[1] - p[1]) || 1; return ((q[1] - p[1]) * dir[0] - (q[0] - p[0]) * dir[1]) / l > 0.5; });
+  if (ok.every(Boolean)) return [[...ring, ring[0]]];
+  const start = ok.findIndex(v => !v), runs: P[][] = [];
+  let cur: P[] | null = null;
+  for (let k = 1; k <= n; k++) {
+    const i = (start + k) % n;
+    if (ok[i]) { if (!cur) cur = [ring[i]]; cur.push(ring[(i + 1) % n]); } else if (cur) { runs.push(cur); cur = null; }
+  }
+  if (cur) runs.push(cur);
+  return runs;
+}
+
+/**
+ * Cabinet doors on the given runs of the carcass face (a curved face gets curved doors): a pair of overlay panels
+ * standing proud of the carcass above a kick plate, split in the middle, each with a bar handle beside the split; a seam
+ * line round each panel's front keeps the doors readable straight on, where the panel face and the carcass shade alike.
+ */
+function addDoors(sc: THREE.Scene, runs: P[][], top: number, h: number, color: number) {
   const inset = Math.min(30, h * 0.08), y0 = top - h + Math.min(70, h * 0.12), y1 = top - inset, gap = 1.5;
-  const seam = fin.color === STAND_FINISHES.white.color ? 0x9a9890 : 0x111214, pts: number[] = [];
+  const seam = color === STAND_FINISHES.white.color ? 0x9a9890 : 0x111214, pts: number[] = [];
   const hh = Math.min(140, (y1 - y0) * 0.25), hy1 = y1 - Math.min(60, (y1 - y0) * 0.1), hy0 = hy1 - hh;
-  const runs = facingRuns(T, t, [0, -1]).concat(penEnd(S) ? facingRuns(T, t, [0, 1]) : []);
   for (const r of runs) {
     const len = runLength(r); if (len < 2 * inset + 40) continue;
     for (const [s0, s1, hs] of [[inset, len / 2 - gap, len / 2 - 45], [len / 2 + gap, len - inset, len / 2 + 45]]) {
       const back = subRun(r, s0, s1), face = proud(back, DOOR_T), line = proud(back, DOOR_T + 0.6);
-      sc.add(shadedSolid(wallGeometry(back, face, y0, y1), fin.color));
+      sc.add(shadedSolid(wallGeometry(back, face, y0, y1), color));
       for (const y of [y0, y1]) for (let i = 0; i < line.length - 1; i++) pts.push(...at(line[i], y), ...at(line[i + 1], y));
       for (const p of [line[0], line[line.length - 1]]) pts.push(...at(p, y1), ...at(p, y0));
       if (hs - 6 < s0 || hs + 6 > s1) continue;

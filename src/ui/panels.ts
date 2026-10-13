@@ -3,7 +3,7 @@
 import { rng } from '../art/paint';
 import { SUBSTRATES, drawFishCard } from '../art/placeholder';
 import { drawSnailCard } from '../art/snails';
-import { fishTL, getSpecies, needsWater, searchSpecies, speciesTag, type Species } from '../data/species';
+import { fishTL, getSpecies, needsWater, searchSpecies, speciesOf, speciesTag, type Sex, type Species } from '../data/species';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { emitters } from '../render/lighting';
 import { SpeciesPreview } from '../render/preview3d';
@@ -21,11 +21,11 @@ import { SWAMP_LEVEL, groundHeight, nearestLand, radialTerrain, sampleTerrain } 
 /** Arrow keys move the selected piece: [axis, direction] (depth grows toward the back). */
 const ARROWS: Record<string, [string, number]> = { ArrowLeft: ['x', -1], ArrowRight: ['x', 1], ArrowUp: ['d', 1], ArrowDown: ['d', -1], PageUp: ['y', 1], PageDown: ['y', -1] };
 import { randomPose, randomSize, shuffleFish } from '../scene/scatter';
-import { setWaterLevel } from '../scene/water';
+import { fitFish, setWaterLevel } from '../scene/water';
 import { tankWeight } from '../scene/weight';
 import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, aqWaitS, fetchStocking } from '../data/aqadvisor';
 import { BOWL_DEFAULT, BOWL_MAX, BOWL_MIN, POLY_SIDES, SHAPES, bowMinLimit, offsetRing, ringArea, shapeOf } from '../scene/shape';
-import { TABLE_MAX, tableRange } from '../scene/table';
+import { TABLE_MAX, tableOn, tableRange } from '../scene/table';
 import type { Fish, Item, ItemKind, LayoutId, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
 import { GLASS_CHOICES, LIMITS, SceneError, parseScene } from '../scene/validate';
 import { deleteFromLib, listLib, loadFromLib, saveToLib } from '../scene/library';
@@ -207,7 +207,7 @@ Cancel, then change the name, to keep both.`)) return;
   $('standH').min = String(LIMITS.stand[0]); $('standH').max = String(LIMITS.stand[1]);
   $('standH').oninput = e => store.edit(s => { s.stand.height = +(e.target as HTMLInputElement).value; s.stand.show = true; }, { coalesce: 'standH' });
   // table stand: top shape and size, and where the tank sits on it (store.update -> fitTable keeps it on the top)
-  const editTable = (fn: (tb: TableSettings, s: TankSetup) => void, coalesce?: string) => store.edit(s => { fn(s.stand.table, s); s.stand.style = 'table'; s.stand.show = true; }, coalesce ? { coalesce } : {});
+  const editTable = (fn: (tb: TableSettings, s: TankSetup) => void, coalesce?: string) => store.edit(s => { fn(s.stand.table, s); if (s.stand.style !== 'custom') s.stand.style = 'table'; s.stand.show = true; }, coalesce ? { coalesce } : {});
   $('tableRect').onclick = () => editTable(tb => { tb.shape = 'rect'; });
   $('tableRound').onclick = () => editTable(tb => { tb.shape = 'round'; tb.L = tb.D = Math.max(tb.L, tb.D); });
   for (const id of ['tableL', 'tableD', 'tableX', 'tableZ']) { $(id).min = String(-TABLE_MAX); $(id).max = String(TABLE_MAX); }
@@ -262,22 +262,29 @@ Cancel, then change the name, to keep both.`)) return;
   // preview tile: opens on clicking a species, then follows the pick until closed
   const preview = $<HTMLDivElement>('spPreview'), previewArt = new Map<string, HTMLCanvasElement>();
   let previewId = '', preview3d: SpeciesPreview | null | undefined; // undefined = not tried yet, null = no WebGL
+  let previewSex: Sex | undefined; // which sex the tile shows for a dimorphic species
   $('spPreviewHide').onclick = () => { preview.hidden = true; };
-  function showPreview(sp?: Species) {
-    if (!sp) { preview.hidden = true; return; }
-    if (sp.id === previewId) return;
-    previewId = sp.id;
+  for (const [id, sx] of [['spSexM', undefined], ['spSexF', 'f']] as const)
+    $(id).onclick = () => { previewSex = sx; showPreview(getSpecies(pickId)); };
+  function showPreview(base?: Species) {
+    if (!base) { preview.hidden = true; return; }
+    $('spSex').hidden = !base.female;
+    $('spSexM').classList.toggle('on', previewSex !== 'f'); $('spSexF').classList.toggle('on', previewSex === 'f');
+    const sp = previewSex === 'f' && base.female ? base.female : base;
+    if (sp.look === previewId) return;
+    previewId = sp.look;
     if (preview3d === undefined) { try { preview3d = new SpeciesPreview(); } catch { preview3d = null; } }
     if (preview3d) {
       $('spPreviewArt').replaceChildren(preview3d.canvas);
       preview3d.show(sp);
     } else { // no WebGL: the painted card
-      let c = previewArt.get(sp.id);
-      if (!c) previewArt.set(sp.id, c = sp.kind === 'snail' ? drawSnailCard(sp.art, 'side', 640) : drawFishCard(sp.art, sp.aspect, 640));
+      let c = previewArt.get(sp.look);
+      if (!c) previewArt.set(sp.look, c = sp.kind === 'snail' ? drawSnailCard(sp.art, 'side', 640) : drawFishCard(sp.art, sp.aspect, 640));
       $('spPreviewArt').replaceChildren(c);
     }
     $('spPreviewName').innerHTML = `${esc(sp.name)} <i>${esc(sp.sci)}</i>`;
-    $('spPreviewInfo').textContent = [`Adult ${fmt(sp.tl)}`, speciesTag(sp), sp.note].filter(Boolean).join(' · ');
+    const adult = base.female ? `Adult ♂ ${fmt(base.tl)}, ♀ ${fmt(base.female.tl)}` : `Adult ${fmt(sp.tl)}`;
+    $('spPreviewInfo').textContent = [adult, speciesTag(sp), sp.note].filter(Boolean).join(' · ');
   }
   search.onkeydown = e => { if (e.key === 'Enter') { const sp = searchSpecies(search.value)[0]; if (sp) { pickId = sp.id; addOne(sp); renderResults(); } } };
 
@@ -297,30 +304,35 @@ Cancel, then change the name, to keep both.`)) return;
   }
   /** Default count when a species joins the list: a group for schooling / shoaling fish, else one. */
   const startCount = (sp: Species) => (sp.kind !== 'snail' && sp.group ? 6 : 1);
+  /** Is this fish in the species' list row? A dimorphic species has a row per sex. */
+  const inRow = (f: Fish, sp: Species, sex?: Sex) => f.species === sp.id && (!sp.female || (f.sex === 'f') === (sex === 'f'));
   /** Set how many of a species each edited tank holds (`to` gets the tank's current count). New animals take the
    *  species' sizes from "New fish size"; that species alone is re-placed by the shuffle rules (level, school, floor),
    *  everyone else stays put. 0 takes the species off the list. One undo step per burst of clicks. */
-  function setCount(sp: Species, to: (n: number) => number) {
-    const want = Math.round(to(S().fish.filter(f => f.species === sp.id).length));
+  function setCount(sp: Species, to: (n: number) => number, sex?: Sex) {
+    const want = Math.round(to(S().fish.filter(f => inRow(f, sp, sex)).length));
     if (want > 0) { const why = blocked(sp); if (why) { status(why, true); renderResults(); return; } }
     const first = store.nextId(), seed = Math.random() * 1e9;
     store.edit(s => {
-      const r = rng(seed), mine = s.fish.filter(f => f.species === sp.id);
+      const r = rng(seed), mine = s.fish.filter(f => inRow(f, sp, sex));
       const n = clamp(Math.round(to(mine.length)), 0, mine.length + LIMITS.maxFish - s.fish.length);
       if (n === mine.length) return;
       if (n < mine.length) { const drop = new Set(mine.slice(n).map(f => f.id)); s.fish = s.fish.filter(f => !drop.has(f.id)); return; }
       for (let id = first; mine.length < n; id++) {
-        const f: Fish = { id, species: sp.id, x: s.tank.L / 2, y: 0, depth: s.tank.D / 2, ...randomPose(sp, r, 0) };
+        const f: Fish = { id, species: sp.id, x: s.tank.L / 2, y: 0, depth: s.tank.D / 2, ...randomPose(sp, r, 0), ...(sex && sp.female ? { sex } : {}) };
         randomSize(f, sp, addPct(), r);
         mine.push(f); s.fish.push(f);
       }
       shuffleFish(s, r, sp.id);
-    }, { coalesce: 'count:' + sp.id });
+    }, { coalesce: `count:${sp.id}:${sex ?? ''}` });
     if (store.selId != null && !S().fish.some(f => f.id === store.selId)) store.select(null);
   }
   function addOne(sp: Species) {
     if (S().fish.some(f => f.species === sp.id)) { status(`${sp.name} is already in the stocking list: use + or type a number.`); return; }
-    setCount(sp, () => startCount(sp));
+    // a dimorphic group starts as one male to two females (livebearers, barbs); a lone fish starts male
+    const n = startCount(sp), m = sp.female && n > 1 ? Math.round(n / 3) : n;
+    setCount(sp, () => m);
+    if (n > m) setCount(sp, () => n - m, 'f');
   }
   $('addFish').onclick = () => { const sp = getSpecies(pickId); if (sp) addOne(sp); };
   $('shuffle').onclick = () => {
@@ -355,12 +367,21 @@ Cancel, then change the name, to keep both.`)) return;
     const id = store.nextId(), src = store.selId;
     store.edit(s => {
       const f = s.fish.find(q => q.id === src); if (!f) return;
-      const n: Fish = { ...f, id, x: f.x + fishTL(f, getSpecies(f.species)!) * 0.9 };
+      const n: Fish = { ...f, id, x: f.x + fishTL(f, speciesOf(f)!) * 0.9 };
       clampFish(n, s.tank); s.fish.push(n);
     });
     store.select(id);
   };
   $('flip').onclick = flip; $('del').onclick = del; $('dup').onclick = dup;
+  /** Switch the selected fish's sex; a custom size keeps its share of the adult length. */
+  const setSex = (sex?: Sex) => editSel((f, s) => {
+    const sp = getSpecies(f.species); if (!sp?.female || (f.sex === 'f') === (sex === 'f')) return;
+    const was = fishTL({ sex: f.sex }, sp), now = fishTL({ sex }, sp);
+    if (f.tl) { f.tl = Math.round(f.tl * now / was); if (f.tl === now) delete f.tl; }
+    if (sex) f.sex = sex; else delete f.sex;
+    fitFish(f, s);
+  });
+  $('sexM').onclick = () => setSex(); $('sexF').onclick = () => setSex('f');
 
   addEventListener('keydown', e => {
     const t = e.target as HTMLElement, typing = (t.tagName === 'INPUT' && (t as HTMLInputElement).type !== 'range' && (t as HTMLInputElement).type !== 'checkbox') || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT';
@@ -739,9 +760,11 @@ Cancel, then change the name, to keep both.`)) return;
     $('standOn').checked = s.stand.show; setVal('standFinish', s.stand.finish); setVal('standStyle', s.stand.style); setVal('standH', s.stand.height);
     setOut('oStandH', fmt(s.stand.height));
     const tb = s.stand.table, tr = tableRange(s);
-    $('tableRows').style.display = s.stand.show && s.stand.style === 'table' ? '' : 'none';
+    $('tableRows').style.display = tableOn(s) ? '' : 'none';
+    const word = s.stand.style === 'custom' ? 'Stand' : 'Table';
+    $('tableTopLab').textContent = `${word} top`; $('tableDLab').textContent = `${word} depth`;
     $('tableRect').classList.toggle('on', tb.shape === 'rect'); $('tableRound').classList.toggle('on', tb.shape === 'round');
-    $('tableLLab').textContent = tb.shape === 'round' ? 'Table diameter' : 'Table length'; $('tableDRow').style.display = tb.shape === 'round' ? 'none' : '';
+    $('tableLLab').textContent = `${word} ${tb.shape === 'round' ? 'diameter' : 'length'}`; $('tableDRow').style.display = tb.shape === 'round' ? 'none' : '';
     $('tableL').min = String(Math.ceil(tr.minL)); $('tableD').min = String(Math.ceil(tr.minD)); $('tableL').max = $('tableD').max = String(TABLE_MAX);
     $('tableX').min = String(Math.floor(tr.x0)); $('tableX').max = String(Math.ceil(tr.x1)); $('tableZ').min = String(Math.floor(tr.z0)); $('tableZ').max = String(Math.ceil(tr.z1));
     setVal('tableL', tb.L); setVal('tableD', tb.D); setVal('tableX', tb.x); setVal('tableZ', tb.z);
@@ -756,21 +779,28 @@ Cancel, then change the name, to keep both.`)) return;
     for (const [id, side] of PSIDES) $(id).classList.toggle('on', s.person.show && s.person.side === side);
 
     // stocking list: one row per species, in order of arrival (rebuilt only when the counts change)
+    // a dimorphic species has a row per sex, both shown while either has fish ('<id>' male, '<id>~f' female)
     const counts = new Map<string, number>();
-    for (const f of s.fish) counts.set(f.species, (counts.get(f.species) ?? 0) + 1);
+    for (const f of s.fish) {
+      const sp = getSpecies(f.species), k = sp?.female && f.sex === 'f' ? f.species + '~f' : f.species;
+      if (sp?.female) for (const q of [f.species, f.species + '~f']) if (!counts.has(q)) counts.set(q, 0);
+      counts.set(k, (counts.get(k) ?? 0) + 1);
+    }
     const sig = [...counts].join() + '|' + u;
     if (sig !== listSig) {
       listSig = sig; const list = $<HTMLDivElement>('list');
       list.innerHTML = '';
-      for (const [id, n] of counts) {
-        const sp = getSpecies(id); if (!sp) continue;
+      for (const [key, n] of counts) {
+        const [id, fem] = key.split('~'), sp = getSpecies(id); if (!sp) continue;
+        const sex: Sex | undefined = fem ? 'f' : undefined, sx = sp.female ? ` <span class="sx">${sex ? '♀ female' : '♂ male'}</span>` : '';
+        const who = esc(sp.name) + (sp.female ? (sex ? ' females' : ' males') : '');
         const row = document.createElement('div'); row.className = 'sr';
-        row.innerHTML = `<span class="nm" title="${esc(sp.sci)}">${esc(sp.name)}</span><button class="dn" title="One fewer (the last one takes ${esc(sp.name)} off the list)" aria-label="One fewer">−</button><input type="number" min="0" max="${LIMITS.maxFish}" value="${n}" aria-label="How many ${esc(sp.name)}"><button class="up" title="One more" aria-label="One more">+</button>`;
-        row.querySelector<HTMLElement>('.nm')!.onclick = () => { pickId = id; preview.hidden = false; renderResults(); };
-        row.querySelector<HTMLButtonElement>('.dn')!.onclick = () => setCount(sp, k => k - 1);
-        row.querySelector<HTMLButtonElement>('.up')!.onclick = () => setCount(sp, k => k + 1);
+        row.innerHTML = `<span class="nm" title="${esc(sp.sci)}">${esc(sp.name)}${sx}</span><button class="dn" title="One fewer (with none of either sex left, ${esc(sp.name)} leaves the list)" aria-label="One fewer">−</button><input type="number" min="0" max="${LIMITS.maxFish}" value="${n}" aria-label="How many ${who}"><button class="up" title="One more" aria-label="One more">+</button>`;
+        row.querySelector<HTMLElement>('.nm')!.onclick = () => { pickId = id; previewSex = sex; preview.hidden = false; renderResults(); };
+        row.querySelector<HTMLButtonElement>('.dn')!.onclick = () => setCount(sp, k => k - 1, sex);
+        row.querySelector<HTMLButtonElement>('.up')!.onclick = () => setCount(sp, k => k + 1, sex);
         const box = row.querySelector('input')!;
-        box.onchange = () => { const v = Math.round(+box.value); if (Number.isFinite(v) && box.value !== '') setCount(sp, () => Math.max(0, v)); else box.value = String(n); };
+        box.onchange = () => { const v = Math.round(+box.value); if (Number.isFinite(v) && box.value !== '') setCount(sp, () => Math.max(0, v), sex); else box.value = String(n); };
         list.append(row);
       }
       if (!counts.size) list.innerHTML = '<span class="hint">No fish yet. Pick a species above and press Add.</span>';
@@ -780,6 +810,9 @@ Cancel, then change the name, to keep both.`)) return;
     if (f && f.id !== lastSelId) openSec('fish');
     lastSelId = f?.id ?? null;
     $('selBox').classList.toggle('off', !f);
+    const fsp = f && getSpecies(f.species), dim = !!fsp?.female;
+    $('sexRow').hidden = !dim;
+    $('sexM').classList.toggle('on', dim && f!.sex !== 'f'); $('sexF').classList.toggle('on', dim && f!.sex === 'f');
 
     const sub = s.substrate, smax = Math.round(A.H * 0.5);
     setVal('subType', sub.show ? sub.type : 'bare');
@@ -941,11 +974,11 @@ Cancel, then change the name, to keep both.`)) return;
   });
   function readout() {
     const f = sel(), ro = $<HTMLDivElement>('ro');
-    const m = f && viewer.measure(f), sp = f && getSpecies(f.species);
+    const m = f && viewer.measure(f), sp = f && speciesOf(f);
     if (!f || !m || !sp) { ro.innerHTML = '<span class="hint">Select a fish to see its size on screen.</span>'; return; }
     const a = m.sideAngle, cls = a < 40 ? 'ok' : a < 55 ? 'warn' : 'bad';
     const txt = a < 40 ? 'reads fine' : a < 55 ? 'marginal' : 'too thin: card looks flat';
-    let html = `<div><span><b>${esc(sp.name)}</b> <i>${esc(sp.sci)}</i></span><span>${f.tl ? `${fmt(f.tl)} (adult ${fmt(sp.tl)})` : `adult ${fmt(sp.tl)}`}</span></div>
+    let html = `<div><span><b>${esc(sp.name)}${sp.sex === 'f' ? ' ♀' : getSpecies(f.species)!.female ? ' ♂' : ''}</b> <i>${esc(sp.sci)}</i></span><span>${f.tl ? `${fmt(f.tl)} (adult ${fmt(sp.tl)})` : `adult ${fmt(sp.tl)}`}</span></div>
       <div><span>Depth behind glass</span><span>${fmt(f.depth)}</span></div>
       <div><span>Looks, vs. at the front glass</span><span>${Math.round(100 * m.len / m.ref)} % as big</span></div>`;
     // calibration readouts only with ?debug in the URL (Muse feedback 2026-10-09: cryptic for normal users)
