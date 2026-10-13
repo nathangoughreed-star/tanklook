@@ -2,7 +2,7 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
-## Lane C: marine species (2026-10-13; committed on `marine-fish`, awaiting Nathan's verdict, NOT pushed)
+## Lane C: marine species (2026-10-13; Nathan approved the sheets, hermit "fine for now"; pushed to main)
 
 12 species, all `salt: true` (cat `sw-fish` / `sw-invert`), approved list (Nathan, same day, hermit crab as shell + limbs).
 TL = typical adult in an aquarium (as the freshwater list), checked against the cited max:
@@ -36,7 +36,8 @@ Generic additions (no species code; all optional, existing species unchanged):
 - `Herp3D.shell` (a carried shell from the snail generator: snail3d `shellMesh`, now also used by `snailBody`),
   `Herp3D.eye.at` (eye on a stalk tip), `Limb3D.c` (own limb colour).
 - `Shell3D.open` (which way the aperture faces; default unchanged) and `Shell3D.tilt` (lean the spire back).
-Tests: `aqadvisor.test.ts` now expects only freshwater water species in the AqAdvisor map; `scene.test.ts` snail
+Tests: `aqadvisor.test.ts` now leaves the marine species out of the AqAdvisor map (the app asks AqAdvisor for freshwater
+  tanks only; AqAdvisor HAS a saltwater calculator, Nathan same day: mapping the marine species to it is a follow-up unit); `scene.test.ts` snail
 count 4 -> 5. tsc clean, 173/173. Checked in the browser: a salt tank lists 9 marine fish + 3 marine inverts, no
 freshwater species.
 Sheets (worktree `shots/`): `91_marine_{A,B,C}.png` (card / 3D, four views, same framing). My review: the 9 fish pass;
