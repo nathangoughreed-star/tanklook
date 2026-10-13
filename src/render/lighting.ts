@@ -267,12 +267,13 @@ const AQ_MAP = `#ifdef USE_MAP
   }
   // fish stand out (render.pop): a dark ring just outside the painted outline of a fish card (fins, flat fish), up to
   // 2.5 px wide on screen (at least 1 px), so its edge reads against sand or leaves. Drawn where the alpha drops off, not
-  // only where it reaches zero, so soft, feathered fin edges get it too; a see-through fin's line is as faint as the fin
+  // only where it reaches zero, so soft, feathered fin edges get it too. The same width as the body's line (fish3d
+  // outlineMat); an opaque fin's line is as dark as the body's, a see-through fin's fainter (Nathan 2026-10-13)
   if (uFishCard > 0.5 && uPop > 0.01) {
     vec2 aqD = fwidth(vMapUv) * max(2.5 * uPop, 1.0); float aqA = 0.0;
     for (int i = 0; i < 8; i++) { float a = float(i) * 0.785398; aqA = max(aqA, texture2D(map, vMapUv + aqD * vec2(cos(a), sin(a))).a); }
     float aqO = smoothstep(0.1, 0.35, aqA - aqTex.a);
-    aqTex = vec4(mix(aqTex.rgb, vec3(0.05, 0.04, 0.035), aqO), max(aqTex.a, aqO * min(1.0, 1.6 * aqA)));
+    aqTex = vec4(mix(aqTex.rgb, vec3(0.05, 0.04, 0.035), aqO), max(aqTex.a, aqO * mix(0.5, 1.0, smoothstep(0.7, 0.95, aqA))));
   }
   diffuseColor *= aqTex;
 #endif`;

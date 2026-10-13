@@ -19,6 +19,8 @@ the lift and the haze cut. Shot `shots/pop_compare.png` (off / 50 / 100).
 - Same day (Nathan, a betta: fins had no line): paired fins (fish3d `finMeshes`) are flagged `fishCard` too; the ring
   is drawn where the alpha drops off (neighbour alpha minus own > 0.1-0.35), not only past zero alpha, so soft feathered
   fin edges get it; at least 1 px wide. Shot `shots/betta_compare.png`.
+- Same day (Nathan: every outer edge the same treatment, see-through fins fainter): body and fin lines share one width,
+  max(2.5 px x pop, 1 px); an opaque fin's line is as dark as the body's, a see-through fin's at half strength.
 
 ## Custom substrate: grain, colour, blends (2026-10-13)
 

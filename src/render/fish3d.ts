@@ -389,7 +389,7 @@ const see = (p: Plan) => (p.glass ? { transparent: true, opacity: p.glass } : {}
 
 /**
  * Fish stand out (render.pop): a dark outline round the solid body, drawn as the body's back faces pushed out along
- * the normals by a constant width on screen (up to 2.5 px at full strength), so only a rim shows past the body.
+ * the normals by a constant width on screen (2.5 px x render.pop, at least 1 px; the same width as the fins' line, lighting.ts AQ_MAP), so only a rim shows past the body.
  * Set per viewport by the viewer: `uPop` = render.pop, `uVpH` = the viewport's height in CSS px.
  */
 export const OUTLINE = { uPop: { value: 0 }, uVpH: { value: 1 } };
@@ -399,7 +399,7 @@ const outlineMat = new THREE.ShaderMaterial({
 void main() {
   vec4 p = modelMatrix * vec4(position, 1.0); vec3 n = normalize(mat3(modelMatrix) * normal);
   float d = max(-(viewMatrix * p).z, 1.0);
-  p.xyz += n * (2.5 * uPop) * 2.0 * d / (projectionMatrix[1][1] * uVpH);
+  p.xyz += n * max(2.5 * uPop, 1.0) * 2.0 * d / (projectionMatrix[1][1] * uVpH);
   gl_Position = projectionMatrix * viewMatrix * p;
 }`,
   fragmentShader: `uniform float uPop; void main() { if (uPop < 0.01) discard; gl_FragColor = vec4(0.05, 0.04, 0.035, 1.0); }`,
