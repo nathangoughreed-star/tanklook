@@ -393,18 +393,26 @@ const see = (p: Plan) => (p.glass ? { transparent: true, opacity: p.glass } : {}
  * Set per viewport by the viewer: `uPop` = render.pop, `uVpH` = the viewport's height in CSS px.
  */
 export const OUTLINE = { uPop: { value: 0 }, uVpH: { value: 1 } };
-const outlineMat = new THREE.ShaderMaterial({
-  uniforms: OUTLINE, side: THREE.BackSide,
-  vertexShader: `uniform float uPop, uVpH;
+/**
+ * A silhouette line round a solid: its back faces pushed out along the normals by `px` (a GLSL expression, CSS px on
+ * screen; may use uPop), in `color`; hidden while render.pop is 0. Shared by the fish body and the stand (build.ts).
+ */
+export function hullMaterial(px: string, color: THREE.Color) {
+  const m = new THREE.ShaderMaterial({
+    uniforms: { ...OUTLINE, uCol: { value: color } }, side: THREE.BackSide,
+    vertexShader: `uniform float uPop, uVpH;
 void main() {
   vec4 p = modelMatrix * vec4(position, 1.0); vec3 n = normalize(mat3(modelMatrix) * normal);
   float d = max(-(viewMatrix * p).z, 1.0);
-  p.xyz += n * max(2.5 * uPop, 1.0) * 2.0 * d / (projectionMatrix[1][1] * uVpH);
+  p.xyz += n * (${px}) * 2.0 * d / (projectionMatrix[1][1] * uVpH);
   gl_Position = projectionMatrix * viewMatrix * p;
 }`,
-  fragmentShader: `uniform float uPop; void main() { if (uPop < 0.01) discard; gl_FragColor = vec4(0.05, 0.04, 0.035, 1.0); }`,
-});
-outlineMat.userData.cached = true;
+    fragmentShader: `uniform float uPop; uniform vec3 uCol; void main() { if (uPop < 0.01) discard; gl_FragColor = vec4(uCol, 1.0); }`,
+  });
+  m.userData.cached = true;
+  return m;
+}
+const outlineMat = hullMaterial('max(2.5 * uPop, 1.0)', new THREE.Color(0.05, 0.04, 0.035));
 
 const fishMat = (key: string, make: () => THREE.MeshBasicMaterial) => {
   let m = matCache.get(key);

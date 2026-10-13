@@ -12,7 +12,7 @@ import { groundHeight, pieSegs, terrainDisc, terrainPoints } from '../scene/terr
 import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
 import { addBeams, addFixture, applyLighting } from './lighting';
 import { itemMesh } from './items';
-import { fish3d, fishBody, has3D } from './fish3d';
+import { OUTLINE, fish3d, fishBody, has3D, hullMaterial } from './fish3d';
 import { herpBody, isHerp3D } from './herp3d';
 import { sagShell, snailBody } from './snail3d';
 import { blendTexture, cardMaterial, fishBodyTexture, fishTexture, gradientTexture, personTexture, snailTexture, substrateMaskTexture, substrateTexture } from './textures';
@@ -287,6 +287,32 @@ function shadedBox(w: number, h: number, d: number, color: number) {
   const c = new THREE.Color(color), k = [0.78, 0.78, 1.08, 0.5, 0.95, 0.7];
   const mats = k.map(f => basic(c.clone().multiplyScalar(f)));
   const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mats); m.userData.room = true;
+  return ink(m, color);
+}
+
+/**
+ * Fish stand out (render.pop) also inks the furniture (Nathan 2026-10-13: the table "looks a bit mushy"): a fine dark
+ * line, 1 px, on every crease (edges sharper than 30 degrees) and round the silhouette (so a round top's curved side
+ * gets one too), in a dark shade of the piece's colour; hidden while render.pop is 0. The faces are pushed back a
+ * little so the crease lines win the depth test.
+ */
+const inkMats = new Map<number, [THREE.ShaderMaterial, THREE.ShaderMaterial]>();
+function ink(m: THREE.Mesh, color: number) {
+  let mats = inkMats.get(color);
+  if (!mats) {
+    const c = new THREE.Color(color).multiplyScalar(0.35).convertLinearToSRGB(); // the line shaders write it as is (display values)
+    const line = new THREE.ShaderMaterial({
+      uniforms: { uPop: OUTLINE.uPop, uCol: { value: c } },
+      vertexShader: 'void main() { gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+      fragmentShader: 'uniform float uPop; uniform vec3 uCol; void main() { if (uPop < 0.01) discard; gl_FragColor = vec4(uCol, 1.0); }',
+    });
+    line.userData.cached = true;
+    mats = [line, hullMaterial('1.0', c)]; inkMats.set(color, mats);
+  }
+  for (const mm of ([] as THREE.Material[]).concat(m.material)) { mm.polygonOffset = true; mm.polygonOffsetFactor = 1; mm.polygonOffsetUnits = 1; }
+  const e = new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry, 30), mats[0]), h = new THREE.Mesh(m.geometry, mats[1]);
+  e.userData.nolight = h.userData.nolight = true;
+  m.add(e, h);
   return m;
 }
 
@@ -307,7 +333,7 @@ function shadedSolid(geo: THREE.BufferGeometry, color: number) {
   }
   geo.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3)); geo.clearGroups();
   const m = new THREE.Mesh(geo, basic(0xffffff, { vertexColors: true })); m.userData.room = true;
-  return m;
+  return ink(m, color);
 }
 
 /** Stand under the tank, from the floor up to the tank's underside: a cabinet with the outer glass's footprint, an open frame, a table, or a cabinet sized like the table. */
