@@ -16,6 +16,20 @@ big sheet above the rim; that is the model, not the overlay (tube cone [0.45, -0
 Open question (asked 2026-10-13): the bright patch on the room wall is the spill model (nearest point of the tank box,
 extended UP TO THE FIXTURE), not a reflection; it should probably follow the actual beams instead.
 
+## Aquascape Shuffle rolls a style (2026-10-13)
+
+Nathan: with hardscape now easy to size and place, Shuffle should give much more diverse outcomes, dense vs sparse.
+- `starterStyle(seed)` in scene/items.ts. **Seed 1 = the starter set as designed** (the default scene and "Start from"
+  until the first Shuffle); any other seed rolls: density (sparse 0.3-0.6 / medium 0.8-1.2 / packed 1.5-2.4, a third
+  each), scale 0.65-1.45, composition (centre, one side, two groups with a valley, thirds, 3-4 scattered groups),
+  materials, and `wild` (pitch / roll of solid pieces).
+- Per set: stones = one cluster per group in river / seiryu / dragon / lava / slate (slate stacks into ledges), some
+  with plants at the foot; iwagumi = main stone + 0-9 satellites per group, any lean, carpet full / front only / patchy;
+  driftwood = one piece per group (branch, spider, manzanita, mopani), epiphytes tied on its limbs, optional back row
+  and carpet; planted = palette, back-row density, open-water gap placed by the composition, optional rock / wood
+  accent; swamp = spacing and stone type. Sparse styles leave the carpet patchy.
+- Tests: shuffles of each set must differ in piece count (>2.5x), materials and where the weight sits.
+
 ## Male / female fish (2026-10-13; DEPLOYED `23633f2`)
 
 Nathan asked for a male/female selector with matching shape, colouring and size, starting with the most dimorphic species.

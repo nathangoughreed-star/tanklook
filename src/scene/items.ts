@@ -216,14 +216,42 @@ export function makeItem(T: Tank, variant: string, id: number, seed: number, x: 
   return it;
 }
 
+/** One group of a starter set: where it sits (fractions of L and D) and its weight (1 = the main group). */
+interface Focus { x: number; d: number; k: number }
 /**
- * Starter set: the old preset layouts, now placing ordinary editable items. Deterministic in (layout, tank, ground).
+ * How a starter set is drawn. Seed 1 is the set as designed; every other seed (Shuffle) rolls a style so a shuffle
+ * gives a genuinely different tank, not the same picture nudged (Nathan 2026-10-13): how densely it is filled (sparse,
+ * medium or packed, about equally often), how big the pieces are, where the groups sit (centre, one side, two
+ * groups, thirds, scattered), which materials, and how far solid pieces lean and tip.
+ */
+export interface Style { classic: boolean; dens: number; scale: number; foci: Focus[]; wild: number; open: number; pick: <T>(a: T[]) => T }
+export function starterStyle(seed: number): Style {
+  const q = rng(seed * 104723 + 17), pick = <T>(a: T[]) => a[Math.floor(q() * a.length) % a.length];
+  if (seed === 1) return { classic: true, dens: 1, scale: 1, foci: [{ x: 0.5, d: 0.5, k: 1 }], wild: 0, open: 0.5, pick };
+  const b = q(), dens = b < 0.34 ? 0.3 + q() * 0.3 : b < 0.67 ? 0.8 + q() * 0.4 : 1.5 + q() * 0.9;
+  const scale = 0.65 + q() * 0.8, j = () => (q() - 0.5) * 0.1, side = q() < 0.5 ? 1 : -1, s = (f: number) => 0.5 + side * (f - 0.5);
+  const foci: Focus[] = pick<() => Focus[]>([
+    () => [{ x: 0.5 + j(), d: 0.5 + j(), k: 1 }],                                          // centre
+    () => [{ x: s(0.28) + j(), d: 0.55 + j(), k: 1 }],                                     // one side, open water on the other
+    () => [{ x: s(0.24) + j(), d: 0.55 + j(), k: 1 }, { x: s(0.76) + j(), d: 0.5 + j(), k: 0.55 + q() * 0.4 }], // two groups, a valley between
+    () => [{ x: s(0.36) + j(), d: 0.55 + j(), k: 1 }, { x: s(0.7) + j(), d: 0.4 + j(), k: 0.35 + q() * 0.2 }], // thirds: main + a smaller one
+    (n = 3 + Math.floor(q() * 2)) => Array.from({ length: n }, (_, i) => ({ x: (i + 0.5 + (q() - 0.5) * 0.6) / n, d: 0.3 + q() * 0.45, k: 0.4 + q() * 0.4 })), // scattered
+  ])();
+  const open = foci.length === 1 ? 1 - foci[0].x : foci.length === 2 ? (foci[0].x + foci[1].x) / 2 : -1; // open water (fraction of L), -1 none
+  return { classic: false, dens, scale, foci, wild: q(), open, pick };
+}
+
+/**
+ * Starter set: the old preset layouts, now placing ordinary editable items, drawn in the seed's `starterStyle`.
+ * Deterministic in (layout, seed, tank, ground).
  */
 export function starterItems(S: TankSetup): Item[] {
   const T = S.tank, { L, H, D } = T, id = S.layout.id, out: Item[] = [];
   if (id === 'none') return out;
   const r = rng(S.layout.seed * 7919 + id.length * 104729), sub = (x: number, d: number) => groundHeight(S, T, x, d);
   const seed = () => 1 + Math.floor(r() * 1e9);
+  const st = starterStyle(S.layout.seed), { classic, dens } = st;
+  const many = (n: number, k = 1) => Math.max(0, Math.round(n * dens * k + (classic ? 0 : r() - 0.5)));
   // The layouts are drawn on the L x D box. A round tank or bowl squeezes the box onto its disc of ground (elliptical
   // grid mapping) instead of clamping each piece in, which piled a whole layout onto one ring round the middle
   // (2026-10-12): the back row stays at the back, the corners land at the rim. A bowl's disc is the glass at the ground.
@@ -241,6 +269,8 @@ export function starterItems(S: TankSetup): Item[] {
     const it = makeItem(T, variant, out.length + 1, seed(), p.x, p.d, { yaw: Math.round((r() - 0.5) * 360), size: Math.round(size), ...o }, S);
     out.push(it); return it;
   };
+  /** Lean and tip for a solid piece in this style (none for a classic set or a round river stone). */
+  const tip = (variant: string, k = 1): Partial<Item> => classic || variant === 'river' ? {} : { pitch: Math.round((r() - 0.5) * 50 * st.wild * k), tilt: Math.round((r() - 0.5) * 40 * st.wild * k) };
   const room = (x: number, d: number, lift = 0) => H - sub(x, d) - lift - 15; // headroom to the water line
   /** A plant (crossed cards, facing the glass give or take 15°); too little headroom = left out. In a bowl it is cut
    *  down to fit under the sphere where it stands (to half its height at most; clampItem eases the rest in off the
@@ -255,38 +285,81 @@ export function starterItems(S: TankSetup): Item[] {
     }
     if (hh > 15) put(type, p.x, p.d, hh, { yaw: Math.round((r() - 0.5) * 30), lift }, true);
   };
+  /** Carpet cards from depth d0 to d1 (fractions of D). Off a classic set, a sparse style leaves bare patches. */
+  const ph = [r() * 6, r() * 6, 0.004 + r() * 0.006], patchy = !classic && dens < 1 ? 0.9 - dens : -2;
   const carpet = (d0: number, d1: number, skip?: (x: number, d: number) => boolean) => {
     for (let d = D * d0 + 45; d <= D * d1; d += 95) for (let x = 60 + r() * 30; x < L - 40; x += 115 + r() * 25) {
+      if (Math.sin(x * ph[2] + ph[0]) + Math.sin(d * ph[2] * 1.7 + ph[1]) < patchy * 2 - 0.6) continue;
       const p = map(x + (r() - 0.5) * 30, d + (r() - 0.5) * 20);
       if (!skip?.(p.x, p.d)) put('carpet', p.x, p.d, 140 + r() * 30, {}, true);
     }
   };
+  /** Tall plants along the back glass, about one per 7 cm of length, scaled by the style's density. */
+  const backRow = (types: PlantType[], k = 1, d0 = 0.78) => {
+    const n = Math.max(2, Math.round(L / 70 * Math.min(dens, 1.6) * k)), per = classic || dens > 1.3 ? 2 : 1;
+    for (let i = 0; i < n; i++) {
+      const x = L * (0.03 + 0.94 * i / (n - 1)) + (classic ? 0 : (r() - 0.5) * L / n), type = types[(i + Math.floor(r() * 2)) % types.length];
+      for (let k2 = 0; k2 < per; k2++) plant(type, x + (r() - 0.5) * 40, D * (d0 + r() * (0.95 - d0)), (H - sub(x, D * 0.85)) * (0.78 + r() * 0.2) * (classic ? 1 : 0.75 + 0.25 * st.scale));
+    }
+  };
+  /** A small stone group (an accent for planted / wood sets). */
+  const rocks = (f: Focus, variant: string, s0: number) => {
+    put(variant, L * f.x, D * f.d, s0 * 1.3, tip(variant));
+    for (let i = 0, n = many(3, f.k); i < n; i++) { const a = r() * 6.28, dd = s0 * (0.7 + r() * 0.5); put(variant, L * f.x + Math.cos(a) * dd, D * f.d + Math.sin(a) * dd * 0.6, s0 * (0.4 + r() * 0.4), tip(variant)); }
+  };
 
   if (id === 'stones') {
-    const s0 = clamp(Math.min(L, D * 1.6, H * 1.4) * 0.22, 50, 180), cx = L * (0.45 + r() * 0.1), cz = D * 0.5;
-    const main = put('river', cx, cz, s0 * 1.4);
-    const n = 7;
-    for (let i = 0; i < n; i++) {
-      const a = (i / n) * Math.PI * 2 + r() * 0.5, s = s0 * (0.4 + r() * 0.35), dist = s0 * (0.65 + r() * 0.35);
-      put('river', cx + Math.cos(a) * dist, clamp(cz + Math.sin(a) * dist * 0.7, s * 0.5, D - s * 0.5), s * (1 + r() * 0.4));
-    }
-    const top = itemDims(main)[1] * 0.8;
-    for (let i = 0; i < 2; i++) { const s = s0 * (0.35 + r() * 0.15); put('river', cx + (r() - 0.5) * s0 * 0.5, cz + (r() - 0.5) * s0 * 0.3, s * 1.1, { lift: top }); }
-    for (let i = 0; i < 16; i++) {
-      const a = r() * Math.PI * 2, dist = s0 * (1.1 + r() * 1.0), s = 12 + r() * 16;
-      put('river', clamp(cx + Math.cos(a) * dist, 20, L - 20), clamp(cz + Math.sin(a) * dist * 0.6, 20, D - 20), s * 1.2);
+    const mats = classic ? ['river'] : st.pick([['river'], ['river'], ['seiryu'], ['dragon'], ['lava'], ['slate'], ['river', 'lava'], ['seiryu', 'dragon'], ['dragon', 'lava']]);
+    const mat = () => mats[Math.floor(r() * mats.length)], base = clamp(Math.min(L, D * 1.6, H * 1.4) * 0.22, 50, 180) * st.scale;
+    for (const f of st.foci) {
+      const s0 = base * Math.sqrt(f.k), cx = L * f.x * (classic ? 0.9 + r() * 0.2 : 1), cz = D * f.d, v0 = mat();
+      const main = put(v0, cx, cz, s0 * 1.4, tip(v0, 0.6));
+      for (let i = 0, n = many(7, f.k); i < n; i++) {
+        const a = (i / n) * Math.PI * 2 + r() * 0.5, s = s0 * (0.4 + r() * 0.35), dist = s0 * (0.65 + r() * 0.35) * (classic ? 1 : 0.7 + 0.5 / dens), v = mat();
+        put(v, cx + Math.cos(a) * dist, clamp(cz + Math.sin(a) * dist * 0.7, s * 0.5, D - s * 0.5), s * (1 + r() * 0.4), tip(v));
+      }
+      // stones resting on the main one; slate stacks into a ledge of shrinking slabs
+      let top = itemDims(main)[1] * (v0 === 'slate' ? 0.95 : 0.8);
+      for (let i = 0, n = v0 === 'slate' ? 2 + Math.floor(r() * 3) : dens < 0.5 ? 0 : 2; i < n; i++) {
+        const s = v0 === 'slate' ? s0 * 1.4 * (0.85 - 0.12 * i) : s0 * (0.35 + r() * 0.15) * 1.1;
+        const it = put(v0, cx + (r() - 0.5) * s0 * 0.5, cz + (r() - 0.5) * s0 * 0.3, s, { lift: top, ...(v0 === 'slate' ? { pitch: Math.round((r() - 0.5) * 8) } : tip(v0, 0.4)) });
+        if (v0 === 'slate') top += itemDims(it)[1] * 0.95;
+      }
+      for (let i = 0, n = many(16, f.k); i < n; i++) {
+        const a = r() * Math.PI * 2, dist = s0 * (1.1 + r() * (classic ? 1 : 0.6 + 1.2 / dens)), s = 12 + r() * 16;
+        put(mat(), clamp(cx + Math.cos(a) * dist, 20, L - 20), clamp(cz + Math.sin(a) * dist * 0.6, 20, D - 20), s * 1.2);
+      }
+      // off a classic set, now and then a few plants tucked round the foot of the group
+      if (!classic && r() < 0.45) for (let i = 0, n = many(3, f.k); i < n; i++) {
+        const a = r() * 6.28, dd = s0 * (0.9 + r() * 0.4);
+        plant(r() < 0.5 ? 'anubias' : 'fern', cx + Math.cos(a) * dd, cz + Math.abs(Math.sin(a)) * dd * 0.6, clamp(H * (0.15 + r() * 0.15), 50, 160));
+      }
     }
   } else if (id === 'iwagumi') {
-    const left = r() < 0.5, side = left ? 1 : -1, mx = L * (left ? 0.38 : 0.62), mh = clamp(H * 0.5, 70, 330);
-    const spots: V3[] = [[mx, D * 0.55, 1], [mx + side * L * 0.2, D * 0.45, 0.6], [mx - side * L * 0.16, D * 0.7, 0.45], [mx + side * L * 0.36, D * 0.3, 0.3], [mx - side * L * 0.3, D * 0.35, 0.22]];
+    const stone = classic ? 'seiryu' : st.pick(['seiryu', 'seiryu', 'dragon', 'lava', 'river']), side = (st.foci[0].x <= 0.5 ? 1 : -1) * (classic && r() < 0.5 ? -1 : 1);
+    const lean = classic ? 7 : Math.round(4 + st.wild * 22), mh = clamp(H * 0.5, 70, 330) * st.scale;
+    const ratio = stone === 'seiryu' ? 0.62 : stone === 'river' ? 1.1 : 0.8; // size from the wanted height
     const placed: V3[] = [];
-    for (const [x, d, k] of spots) {
-      const h = mh * k, it = put('seiryu', clamp(x, h * 0.4, L - h * 0.4), clamp(d, h * 0.3, D - h * 0.3), h * 0.62, { tilt: side * 7 });
-      placed.push([it.x, it.depth, h * 0.45]);
+    for (const f of st.foci) {
+      const mx = classic ? L * (side > 0 ? 0.38 : 0.62) : L * f.x, md = D * f.d, k0 = Math.sqrt(f.k);
+      // main stone, then satellites stepping out to alternate sides, each smaller (4 in the classic set)
+      const n = classic ? 4 : clamp(Math.round((1 + 3.5 * dens) * f.k + (r() - 0.5) * 2), f.k < 1 ? 0 : 2, 9);
+      const spots: V3[] = classic ? [[mx, D * 0.55, 1], [mx + side * L * 0.2, D * 0.45, 0.6], [mx - side * L * 0.16, D * 0.7, 0.45], [mx + side * L * 0.36, D * 0.3, 0.3], [mx - side * L * 0.3, D * 0.35, 0.22]]
+        : [[mx, md, k0], ...Array.from({ length: n }, (_, i): V3 => {
+          const sg = i % 2 ? -side : side, dist = L * (0.05 + 0.045 * (i + 1)) * (0.7 + 0.6 * r()) * k0 * (0.6 + 0.5 / Math.sqrt(dens));
+          return [mx + sg * dist, md + (r() - 0.5) * D * 0.45, k0 * 0.62 * Math.pow(0.8, i) * (0.75 + 0.5 * r())];
+        })];
+      for (const [x, d, k] of spots) {
+        const h = mh * k, it = put(stone, clamp(x, h * 0.4, L - h * 0.4), clamp(d, h * 0.3, D - h * 0.3), h * ratio,
+          { tilt: side * lean, ...(classic ? {} : { pitch: Math.round((r() - 0.3) * 20 * st.wild) }) });
+        placed.push([it.x, it.depth, h * 0.45]);
+      }
     }
-    carpet(0.05, 0.95, (x, d) => placed.some(([px, pd, rr]) => Math.hypot(x - px, (d - pd) * 1.3) < rr + 40));
-    for (const [px, pd, rr] of placed) for (let i = 0; i < 3; i++) plant('grass', px + (r() - 0.5) * rr * 2.4, pd + rr * 0.8 + r() * 20, 60 + r() * 40, 0, true);
-  } else if (id === 'driftwood') {
+    const front = !classic && r() < 0.3; // carpet only in front of the stones, sand behind
+    carpet(0.05, front ? 0.5 : 0.95, (x, d) => placed.some(([px, pd, rr]) => Math.hypot(x - px, (d - pd) * 1.3) < rr + 40));
+    for (const [px, pd, rr] of placed) for (let i = 0, n = classic ? 3 : many(3); i < n; i++) plant('grass', px + (r() - 0.5) * rr * 2.4, pd + rr * 0.8 + r() * 20, (60 + r() * 40) * (classic ? 1 : 0.8 + 0.4 * st.scale), 0, true);
+    if (!classic && dens > 1 && r() < 0.6) backRow(['grass'], 0.5, 0.85);
+  } else if (id === 'driftwood' && classic) {
     const flip = r() < 0.5, size = Math.min(L * 0.78, H * 0.82 / 0.68, D * 2.2);
     const wood = put('branch', L * 0.47, D * 0.62, size, { yaw: (flip ? 180 : 0) + Math.round((r() - 0.5) * 16) });
     // ferns and anubias tied onto the wood: on the trunk and the low limb
@@ -301,51 +374,75 @@ export function starterItems(S: TankSetup): Item[] {
     plant('anubias', X(0.2), D * 0.55, clamp(H * 0.25, 60, 140));
     for (const fx of [0.04, 0.1, 0.9, 0.96]) plant('grass', X(fx), D * (0.85 + r() * 0.1), H * (0.8 + r() * 0.15));
     for (let i = 0; i < 8; i++) { const s = 12 + r() * 18; put('river', X(0.1 + r() * 0.3), D * (0.6 + r() * 0.3), s * 1.2); }
+  } else if (id === 'driftwood') {
+    // one piece of wood per group (three at most), ferns and anubias tied on; mostly one kind of wood for the tank
+    const same = r() < 0.65, kinds = ['branch', 'branch', 'spider', 'manzanita', 'mopani'], k0 = st.pick(kinds);
+    const pebble = st.pick(['river', 'river', 'lava', 'dragon']);
+    for (const f of st.foci.slice(0, 3)) {
+      const v = same ? k0 : st.pick(kinds), g = Math.sqrt(f.k) * st.scale;
+      const size = v === 'manzanita' ? H * (0.6 + r() * 0.3) * g : v === 'mopani' ? Math.min(L * 0.35, D * 1.2) * g : v === 'spider' ? Math.min(L * 0.55, D * 1.6) * g : Math.min(L * 0.7, H * 0.82 / 0.68, D * 2.2) * g;
+      const wood = put(v, L * f.x, D * (f.d + 0.08), size, { yaw: Math.round((r() - 0.5) * 360) });
+      const limbs = woodLimbs(v, wood.seed, wood.size);
+      for (let i = 0, n = many(4, f.k); i < n; i++) {
+        const k = Math.floor(r() * limbs.length), t = 0.2 + r() * 0.6, p = itemToTank(S, wood, along(limbs[k].pts, t)), fern = k === 0 ? r() < 0.7 : r() < 0.3;
+        plant(fern ? 'fern' : 'anubias', p.x, p.depth, fern ? clamp(H * 0.35, 80, 220) * (0.7 + 0.4 * r()) : clamp(H * 0.2, 55, 130), Math.max(0, p.y + limbs[k].r0 * 0.2 - sub(p.x, p.depth)), true);
+      }
+      for (let i = 0, n = many(5, f.k); i < n; i++) { const s = 12 + r() * 22; put(pebble, L * (f.x + (r() - 0.5) * 0.3), D * (f.d + (r() - 0.3) * 0.35), s * 1.2, tip(pebble)); }
+    }
+    for (const fx of [0.04, 0.1, 0.9, 0.96].slice(0, Math.max(0, Math.round(4 * Math.min(dens, 1))))) plant('grass', L * fx, D * (0.85 + r() * 0.1), H * (0.8 + r() * 0.15));
+    if (dens > 1.2) backRow(st.pick<PlantType[]>([['grass'], ['stem', 'stemred'], ['grass', 'stem']]), 0.6);
+    if (r() < 0.3 + 0.2 * dens) carpet(0.04, 0.3);
   } else if (id === 'planted' && disc) {
     // round tank or bowl: a planted mound, not rows along the back glass, which on a disc left the middle bare
     // (2026-10-12). Tall stems in a cluster just behind the centre (tallest in its middle), swords, ferns and grass
     // round it from side to side, anubias at the front sides, carpet across the front; the front middle stays open.
     const cx = L / 2, cd = D / 2, rg = bowl ? bowlRadius(T, sub(cx, cd)) - 3 : Math.min(L, D) / 2;
     const at = (a: number, k: number) => [cx + Math.sin(a) * k * rg, cd + Math.cos(a) * k * rg] as const; // a = 0: straight back
-    const STEMS: PlantType[] = ['stem', 'stemred', 'stem', 'grass', 'stem'], mr = 0.5 * rg, md = cd + 0.15 * rg;
-    const n = Math.max(5, Math.round(Math.PI * mr * mr / 3400)), turn = r() * 6;
+    const STEMS: PlantType[] = classic ? ['stem', 'stemred', 'stem', 'grass', 'stem'] : st.pick<PlantType[]>([['stem', 'stemred', 'stem', 'grass', 'stem'], ['stemred', 'stem'], ['grass', 'stem'], ['stem']]);
+    const mr = 0.5 * rg * (classic ? 1 : 0.7 + 0.3 * Math.min(dens, 1.4)), md = cd + 0.15 * rg;
+    const n = Math.max(5, Math.round(Math.PI * mr * mr / 3400 * dens)), turn = r() * 6;
     for (let i = 0; i < n; i++) { // a sunflower spiral, jittered: evenly filled, no rows
       const k = Math.sqrt((i + 0.5) / n), a = turn + i * 2.39996, x = cx + Math.sin(a) * k * mr + (r() - 0.5) * 25, d = md + Math.cos(a) * k * mr + (r() - 0.5) * 25;
-      plant(STEMS[(i + Math.floor(r() * 2)) % STEMS.length], x, d, (H - sub(x, d)) * (0.95 - 0.3 * k) * (0.9 + r() * 0.1), 0, true);
+      plant(STEMS[(i + Math.floor(r() * 2)) % STEMS.length], x, d, (H - sub(x, d)) * (0.95 - 0.3 * k) * (0.9 + r() * 0.1) * (classic ? 1 : 0.7 + 0.3 * st.scale), 0, true);
     }
-    const ring = 0.72 * rg, m = Math.max(4, Math.round(1.5 * Math.PI * ring / 120));
+    const ring = 0.72 * rg, m = Math.max(dens < 0.5 ? 2 : 4, Math.round(1.5 * Math.PI * ring / 120 * dens));
     for (let i = 0; i < m; i++) {
       const a = -0.75 * Math.PI + 1.5 * Math.PI * (i + 0.5) / m + (r() - 0.5) * 0.15, [x, d] = at(a, ring / rg + (r() - 0.5) * 0.1), k = r();
       const t: PlantType = k < 0.45 ? 'sword' : k < 0.7 ? 'fern' : 'grass';
       plant(t, x, d, t === 'sword' ? clamp(H * 0.5, 100, 320) : t === 'fern' ? clamp(H * 0.35, 80, 220) : H * (0.35 + r() * 0.15), 0, true);
     }
     for (const s of [-1, 1]) { const [x, d] = at(s * 0.68 * Math.PI, 0.82); plant('anubias', x, d, clamp(H * 0.2, 60, 130), 0, true); }
-    carpet(0.04, 0.34);
+    if (classic || r() < 0.75) carpet(0.04, 0.34);
   } else if (id === 'planted') {
-    const BACK: PlantType[] = ['stem', 'stemred', 'grass', 'stem', 'stemred', 'stem'];
-    const n = Math.max(4, Math.round(L / 70));
-    for (let i = 0; i < n; i++) {
-      const x = L * (0.03 + 0.94 * i / (n - 1)), type = BACK[(i + Math.floor(r() * 2)) % BACK.length];
-      for (let k = 0; k < 2; k++) plant(type, x + (r() - 0.5) * 40, D * (0.78 + r() * 0.17), (H - sub(x, D * 0.85)) * (0.78 + r() * 0.2));
+    backRow(classic ? ['stem', 'stemred', 'grass', 'stem', 'stemred', 'stem'] : st.pick<PlantType[]>([['stem', 'stemred', 'grass'], ['grass'], ['stem', 'stem', 'stemred'], ['stemred', 'stem'], ['grass', 'stem', 'grass']]));
+    // the middle row leaves a gap of open water where the style has one (mid-front in the classic set)
+    const gap = st.open < 0 || dens > 1.9 ? -1 : st.open, half = classic ? 0.12 : 0.1 + 0.1 / dens;
+    const mid: PlantType[] = classic ? ['sword', 'stem'] : st.pick<PlantType[]>([['sword', 'stem'], ['sword', 'sword', 'fern'], ['fern', 'stem', 'grass'], ['sword', 'stemred']]);
+    for (let x = L * 0.05; x < L * 0.97; x += (130 + r() * 50) / (classic ? 1 : dens)) {
+      if (gap >= 0 && Math.abs(x / L - gap) < half) continue;
+      const t = mid[Math.floor(r() * mid.length)], d = D * (0.48 + r() * 0.18);
+      plant(t, x, d, t === 'sword' ? clamp(H * 0.6, 120, 380) : t === 'fern' ? clamp(H * 0.4, 90, 240) : H * (0.45 + r() * 0.15));
     }
-    for (let x = L * 0.05; x < L * 0.97; x += 130 + r() * 50) {
-      if (x > L * 0.38 && x < L * 0.62) continue; // open swimming space mid-front
-      const t: PlantType = r() < 0.5 ? 'sword' : 'stem', d = D * (0.48 + r() * 0.18);
-      plant(t, x, d, t === 'sword' ? clamp(H * 0.6, 120, 380) : H * (0.45 + r() * 0.15));
+    for (const fx of [0.08, 0.92]) if (classic || r() < 0.4 + 0.3 * dens) plant('anubias', L * fx, D * 0.32, clamp(H * 0.22, 60, 130));
+    if (classic || r() < 0.75) carpet(0.04, 0.34);
+    // now and then a rock group or a piece of wood in the front of a shuffled planted tank
+    if (!classic && r() < 0.5) {
+      const f = { x: gap >= 0 ? gap + (gap < 0.5 ? 0.18 : -0.18) : 0.3 + r() * 0.4, d: 0.32, k: 0.6 }, w = r();
+      if (w < 0.6) rocks(f, st.pick(['seiryu', 'dragon', 'river', 'lava']), clamp(H * 0.18, 30, 90) * st.scale);
+      else put(st.pick(['mopani', 'spider', 'branch']), L * f.x, D * 0.45, Math.min(L * 0.35, D * 1.2) * st.scale);
     }
-    for (const fx of [0.08, 0.92]) plant('anubias', L * fx, D * 0.32, clamp(H * 0.22, 60, 130));
-    carpet(0.04, 0.34);
   } else if (id === 'swamp') {
     // land: emersed grasses, swords, ferns and a few stones; pools: stems and grass growing up out of the water
-    const land = (x: number, d: number) => { const p = map(x, d); return sub(p.x, p.d) > H * 0.3; };
-    for (let x = 25; x < L - 25; x += 45 + r() * 35) for (let d = D * 0.08; d < D * 0.97; d += 50 + r() * 30) {
+    const land = (x: number, d: number) => { const p = map(x, d); return sub(p.x, p.d) > H * 0.3; }, step = 1 / Math.sqrt(dens), hs = classic ? 1 : st.scale;
+    const stone = classic ? 'river' : st.pick(['river', 'dragon', 'lava', 'seiryu']), pRock = classic ? 0.06 : 0.03 + r() * 0.12;
+    for (let x = 25; x < L - 25; x += (45 + r() * 35) * step) for (let d = D * 0.08; d < D * 0.97; d += (50 + r() * 30) * step) {
       const xx = x + (r() - 0.5) * 30, dd = d + (r() - 0.5) * 25, k = r();
       if (land(xx, dd)) {
-        if (k < 0.45) plant('grass', xx, dd, clamp(H * (0.15 + r() * 0.2), 40, 160));
-        else if (k < 0.6) plant('fern', xx, dd, clamp(H * (0.15 + r() * 0.1), 50, 140));
+        if (k < 0.45) plant('grass', xx, dd, clamp(H * (0.15 + r() * 0.2), 40, 160) * hs);
+        else if (k < 0.6) plant('fern', xx, dd, clamp(H * (0.15 + r() * 0.1), 50, 140) * hs);
         else if (k < 0.7) plant('anubias', xx, dd, clamp(H * 0.1, 35, 90));
-        else if (k < 0.78) plant('sword', xx, dd, clamp(H * (0.2 + r() * 0.1), 60, 200));
-        else if (k < 0.84) put('river', xx, dd, (14 + r() * 26) * 1.2);
+        else if (k < 0.78) plant('sword', xx, dd, clamp(H * (0.2 + r() * 0.1), 60, 200) * hs);
+        else if (k < 0.78 + pRock) put(stone, xx, dd, (14 + r() * 26) * 1.2 * (classic ? 1 : 0.6 + st.scale), tip(stone));
       } else if (k < 0.3) plant(r() < 0.5 ? 'stem' : 'grass', xx, dd, (H - sub(xx, dd)) * (0.6 + r() * 0.3));
     }
   }

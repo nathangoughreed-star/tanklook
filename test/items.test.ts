@@ -25,8 +25,8 @@ describe('aquascape items (scene v9)', () => {
     }
   });
   it('every starter piece is a library variant, inside the tank, with a unique id', () => {
-    for (const id of LAYOUT_IDS) for (const T of [{ L: 24 * IN, H: 12 * IN, D: 12 * IN }, { L: 60 * IN, H: 24 * IN, D: 24 * IN }, { L: 12 * IN, H: 8 * IN, D: 8 * IN }]) {
-      const s = defaultSetup(); s.tank = T; s.layout = { id, seed: 7 };
+    for (const id of LAYOUT_IDS) for (const T of [{ L: 24 * IN, H: 12 * IN, D: 12 * IN }, { L: 60 * IN, H: 24 * IN, D: 24 * IN }, { L: 12 * IN, H: 8 * IN, D: 8 * IN }]) for (const seed of [1, 7, 8, 13, 99, 1234]) {
+      const s = defaultSetup(); s.tank = T; s.layout = { id, seed };
       const items = starterItems(s), ids = new Set(items.map(i => i.id));
       expect(ids.size).toBe(items.length);
       for (const it of items) {
@@ -38,10 +38,14 @@ describe('aquascape items (scene v9)', () => {
     }
   });
   it('driftwood ties its ferns onto the wood (raised off the ground)', () => {
-    const s = defaultSetup(); s.layout = { id: 'driftwood', seed: 2 };
+    const s = defaultSetup(); s.layout = { id: 'driftwood', seed: 1 };
     const items = starterItems(s);
     expect(items.filter(i => i.variant === 'branch')).toHaveLength(1);
     expect(items.filter(i => i.variant === 'fern' && i.lift > 10).length).toBeGreaterThan(0);
+    // shuffled: any wood, still with plants tied on somewhere
+    let tied = 0;
+    for (let seed = 2; seed < 22; seed++) { s.layout.seed = seed; tied += +starterItems(s).some(i => i.kind === 'plant' && i.variant !== 'carpet' && i.lift > 10); }
+    expect(tied).toBeGreaterThan(14);
   });
   it('items survive a save and load unchanged', () => {
     const sc = defaultScene();
@@ -76,9 +80,9 @@ describe('aquascape items (scene v9)', () => {
     }
   });
   it('a bowl spreads its layout over the whole substrate, not a ring round the floor disc (2026-10-12)', () => {
-    for (const id of LAYOUT_IDS) {
+    for (const id of LAYOUT_IDS) for (const seed of [1, 7, 13]) {
       if (id === 'none') continue;
-      const s = defaultSetup(); s.tank = normTank({ L: 16 * IN, H: 1, D: 1, shape: 'bowl' }); s.layout = { id, seed: 7 };
+      const s = defaultSetup(); s.tank = normTank({ L: 16 * IN, H: 1, D: 1, shape: 'bowl' }); s.layout = { id, seed };
       const T = s.tank, rb = bowlDims(T).rb, items = starterItems(s);
       const q = (it: { x: number; depth: number }) => Math.hypot(it.x - T.L / 2, it.depth - T.D / 2);
       // every anchor is inside the glass at its ground; a plant stays inside it over its whole height
@@ -87,13 +91,31 @@ describe('aquascape items (scene v9)', () => {
         expect(q(it)).toBeLessThanOrEqual(bowlRadius(T, y) + 0.5);
         if (it.kind === 'plant' && it.variant !== 'carpet') expect(q(it) + itemDims(it)[0] / 2).toBeLessThanOrEqual(bowlRadius(T, Math.min(y + it.size, T.H - 15)) + 0.5);
       }
-      // and the pieces reach out past the floor disc, left and right, not one ring (stones is one central cluster anyway)
-      if (id !== 'stones') {
+      // and the set as designed reaches out past the floor disc, left and right, not one ring (stones is one central
+      // cluster anyway; a shuffled set may sit to one side on purpose)
+      if (id !== 'stones' && seed === 1) {
         expect(items.filter(it => q(it) > rb).length).toBeGreaterThan(0);
-        if (id === 'planted') expect(items.filter(it => q(it) < rb * 0.4).length).toBeGreaterThan(1); // a mound, not a bare middle
+        if (id === 'planted') expect(items.filter(it => q(it) < rb * 0.4).length).toBeGreaterThan(0); // a mound, not a bare middle
         expect(Math.min(...items.map(it => it.x))).toBeLessThan(T.L / 2 - rb * 0.7);
         expect(Math.max(...items.map(it => it.x))).toBeGreaterThan(T.L / 2 + rb * 0.7);
       }
+    }
+  });
+  it('Shuffle rolls genuinely different sets: sparse and packed, different materials, groups in different places (2026-10-13)', () => {
+    const s = defaultSetup();
+    for (const id of LAYOUT_IDS) {
+      if (id === 'none') continue;
+      s.layout = { id, seed: 1 };
+      const counts: number[] = [], kinds = new Set<string>(), xs: number[] = [];
+      for (let seed = 2; seed < 42; seed++) {
+        s.layout.seed = seed; const items = starterItems(s);
+        counts.push(items.length); items.filter(i => i.kind !== 'plant').forEach(i => kinds.add(i.variant));
+        const solid = items.filter(i => i.kind !== 'plant' || i.variant !== 'carpet');
+        if (solid.length) xs.push(solid.reduce((a, i) => a + i.x, 0) / solid.length / s.tank.L);
+      }
+      expect(Math.max(...counts) / Math.max(1, Math.min(...counts))).toBeGreaterThan(id === 'swamp' ? 2 : 2.5);
+      if (id === 'stones' || id === 'iwagumi' || id === 'driftwood') expect(kinds.size).toBeGreaterThan(2);
+      if (id !== 'swamp') expect(Math.max(...xs) - Math.min(...xs)).toBeGreaterThan(id === 'planted' ? 0.1 : 0.2); // the weight of the set moves about
     }
   });
   it('selecting an item clears the fish selection and the other way round; undo keeps it valid', () => {
