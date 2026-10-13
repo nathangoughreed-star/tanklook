@@ -214,12 +214,29 @@ export class Viewer {
     const none = { fishId: null as number | null, itemId: null as number | null, dot: null as number | null };
     if (dot) return { vp, ray: this.ray.ray.clone(), ...none, mesh: dot.object as THREE.Mesh, dot: dot.object.userData.dot as number };
     // the nearest fish, rock, wood or cave; a plant only when nothing else is under the pointer (its cards are mostly
-    // see-through, so it would otherwise hide the fish behind it)
-    const items = vp.itemMeshes ?? [];
-    const hit = this.ray.intersectObjects([...(vp.fishMeshes ?? []), ...items.filter(m => !m.userData.plant)], false)[0]
-      ?? this.ray.intersectObjects(items.filter(m => m.userData.plant), false)[0];
+    // see-through, so it would otherwise hide the fish behind it). A hit only counts in the middle of the piece's
+    // on-screen box, so a drag that starts on a fin tip or a leaf's edge turns the view instead of moving the piece
+    const items = vp.itemMeshes ?? [], core = (h: THREE.Intersection) => this.inCore(h.object as THREE.Mesh, ndc, vp);
+    const hit = this.ray.intersectObjects([...(vp.fishMeshes ?? []), ...items.filter(m => !m.userData.plant)], false).find(core)
+      ?? this.ray.intersectObjects(items.filter(m => m.userData.plant), false).find(core);
     const o = hit?.object;
     return { vp, ray: this.ray.ray.clone(), ...none, fishId: o && o.userData.item == null ? (o.userData.id as number) : null, itemId: o?.userData.item ?? null, mesh: o as THREE.Mesh | undefined };
+  }
+
+  private static CORE = 0.65; // share of the on-screen box (each way) that picks the piece
+  private static CORE_MIN_PX = 12; // but never a half-size under this, so small fish stay easy to grab
+  private box = new THREE.Box3(); private corner = new THREE.Vector3();
+  /** Is the pointer (ndc) inside the central part of the mesh's projected bounding box? */
+  private inCore(m: THREE.Mesh, ndc: THREE.Vector2, vp: Viewport) {
+    if (!m.geometry.boundingBox) m.geometry.computeBoundingBox();
+    const b = this.box.copy(m.geometry.boundingBox!).applyMatrix4(m.matrixWorld);
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    for (let i = 0; i < 8; i++) {
+      const p = this.corner.set(i & 1 ? b.max.x : b.min.x, i & 2 ? b.max.y : b.min.y, i & 4 ? b.max.z : b.min.z).project(vp.cam);
+      x0 = Math.min(x0, p.x); x1 = Math.max(x1, p.x); y0 = Math.min(y0, p.y); y1 = Math.max(y1, p.y);
+    }
+    const hx = Math.max((x1 - x0) / 2 * Viewer.CORE, Viewer.CORE_MIN_PX * 2 / vp.w), hy = Math.max((y1 - y0) / 2 * Viewer.CORE, Viewer.CORE_MIN_PX * 2 / vp.h);
+    return Math.abs(ndc.x - (x0 + x1) / 2) <= hx && Math.abs(ndc.y - (y0 + y1) / 2) <= hy;
   }
 
   /** Small JPEG of the current view for the saved-tanks list (drawn and read in one go: no preserved buffer needed).
