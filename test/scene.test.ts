@@ -149,7 +149,7 @@ describe('species data', () => {
   it('keeps the scale anchors', () => {
     expect([getSpecies('neon')!.tl, getSpecies('angel')!.tl, getSpecies('chili')!.tl, getSpecies('oscar')!.tl]).toEqual([35, 150, 18, 300]);
     expect(SPECIES.filter(s => s.zone === 'bottom').length).toBeGreaterThanOrEqual(6);
-    expect(SPECIES.filter(s => s.kind === 'snail').length).toBe(4);
+    expect(SPECIES.filter(s => s.kind === 'snail').length).toBe(5); // 4 freshwater + the marine turbo
   });
 });
 

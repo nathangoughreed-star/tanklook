@@ -8,6 +8,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { HERP3D, type Herp3D, type Limb3D, type Mark3D } from '../art/herps';
 import { rng, type Pt } from '../art/paint';
 import { taperTube } from './fish3d';
+import { shellMesh } from './snail3d';
 
 export const isHerp3D = (art: string) => art in HERP3D;
 
@@ -303,7 +304,8 @@ export function herpBody(art: string, w: number) {
   const lcol = (ny: number) => under.clone().lerp(top, smooth(-0.5, 0.3, ny));
   const lm = limbMaterial(art, h);
   h.limbs.forEach((l, i) => {
-    const g = K(':limb' + i, () => limbGeometry(l, h.ground, lcol));
+    const c = l.c, own = c && ((ny: number) => new THREE.Color(c[1]).lerp(new THREE.Color(c[0]), smooth(-0.5, 0.3, ny)));
+    const g = K(':limb' + i, () => limbGeometry(l, h.ground, own || lcol));
     for (const side of [1, -1]) { const m = new THREE.Mesh(g, lm); m.scale.z = side; grp.add(m); }
   });
   // eyes
@@ -312,7 +314,9 @@ export function herpBody(art: string, w: number) {
   const em = mat('eye:' + art, () => new THREE.MeshBasicMaterial({ map: eyeTexture(e, lid) }));
   for (const side of [1, -1]) {
     // sits on the surface normal but looks out sideways and a little ahead (amphibian eyes face the side, not the sky)
-    const p = surf(b, e.u, e.th, side), n = normalAt(b, e.u, e.th, side), look = n.clone().add(new THREE.Vector3(0.15, 0, side * 0.9)).normalize();
+    // on a stalk (`at`): on its tip, looking out and ahead
+    const p = e.at ? P3(e.at[0], e.at[1], side * e.at[2]) : surf(b, e.u, e.th, side), n = e.at ? new THREE.Vector3(0.3, 0.5, side).normalize() : normalAt(b, e.u, e.th, side);
+    const look = n.clone().add(new THREE.Vector3(0.15, 0, side * 0.9)).normalize();
     const fwd = new THREE.Vector3(1, 0, 0).projectOnPlane(look).normalize(), m = new THREE.Mesh(dome, em);
     m.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(fwd, look, new THREE.Vector3().crossVectors(fwd, look)));
     m.scale.setScalar(e.r); m.position.copy(p).addScaledVector(n, e.r * (e.bulge - 0.55));
@@ -328,6 +332,7 @@ export function herpBody(art: string, w: number) {
     const fm = mat('gfringe:' + art, () => new THREE.MeshBasicMaterial({ color: gl.fringe, vertexColors: true }));
     for (const side of [1, -1]) for (const [g, m] of [[sg, sm], [fg, fm]] as const) { const o = new THREE.Mesh(g, m); o.scale.z = side; grp.add(o); }
   }
+  if (h.shell) { const sm = shellMesh(art, h.shell.s, h.shell); sm.position.y = -h.ground; grp.add(sm); }
   grp.scale.setScalar(w);
   return grp;
 }

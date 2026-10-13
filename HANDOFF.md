@@ -2,6 +2,48 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane C: marine species (2026-10-13; committed on `marine-fish`, awaiting Nathan's verdict, NOT pushed)
+
+12 species, all `salt: true` (cat `sw-fish` / `sw-invert`), approved list (Nathan, same day, hermit crab as shell + limbs).
+TL = typical adult in an aquarium (as the freshwater list), checked against the cited max:
+| id | species | TL mm | source (max) |
+|---|---|---|---|
+| ocellaris | *Amphiprion ocellaris* | 80 | FishBase 11 cm TL |
+| royalgramma | *Gramma loreto* | 75 | FishBase 8 cm TL |
+| yellowtang | *Zebrasoma flavescens* | 180 | FishBase 20 cm TL |
+| firefish | *Nemateleotris magnifica* | 75 | FishBase 9 cm TL |
+| banggai | *Pterapogon kauderni* | 70 | FishBase 8.6 cm TL |
+| sixline | *Pseudocheilinus hexataenia* | 75 | FishBase 10 cm TL |
+| chromis | *Chromis viridis* | 75 | FishBase 10 cm TL |
+| coralbeauty | *Centropyge bispinosa* | 90 | FishBase 11.5 cm TL |
+| watchman | *Cryptocentrus cinctus* | 90 | FishBase 10 cm SL (so about 12 cm TL) |
+| cleanershrimp | *Lysmata amboinensis* | 55 | about 6 cm body, antennae excluded (CMFRI eprint 14967, reefguide.org; SeaLifeBase blank) |
+| turbo | *Turbo fluctuosus* | 50 | shell 2.5-8.6 cm (WoRMS via Wikipedia; SeaLifeBase blank) |
+| hermit | *Clibanarius tricolor* | 30 | about 2.5 cm incl. shell (retailers; no published size found) |
+FishBase pages: `https://www.fishbase.se/summary/<Genus-species>.html`.
+
+Built (data first, generators reused):
+- 9 fish = `PLANS` entries in `art/fishgen.ts` (marine block above the bottom dwellers), thick per the recipe; watchman
+  = goby bottom fish (`back` .6, `belly` .5, `wide` .3, `eye.up` .35). Added to `fish3d.species`.
+- Cleaner shrimp = a `SHRIMP` spec. New optional spec fields: `back` (broad band over the upper flank), `stripeW`
+  (back stripe width), `ant` (antenna colour, length factor).
+- Turbo = a fifth snail kind in `art/snails.ts` (`SHELL3D.turbo`, card drawn by the mystery snail's branch).
+- Hermit crab = a herp-family entry in `art/herps.ts` (`HERMITS`, `drawHermit`, `HERP3D.hermit`): small lofted body,
+  2 walking legs + claw per side, eye stalks and antennae as `Limb3D` tubes, one joint table for card and 3D. Species
+  `zone: bottom`, `cling: hardscape`.
+Generic additions (no species code; all optional, existing species unchanged):
+- `fishgen.Limb.c` + fish3d `limbMeshes` per-limb colour (white antennae).
+- `Herp3D.shell` (a carried shell from the snail generator: snail3d `shellMesh`, now also used by `snailBody`),
+  `Herp3D.eye.at` (eye on a stalk tip), `Limb3D.c` (own limb colour).
+- `Shell3D.open` (which way the aperture faces; default unchanged) and `Shell3D.tilt` (lean the spire back).
+Tests: `aqadvisor.test.ts` now expects only freshwater water species in the AqAdvisor map; `scene.test.ts` snail
+count 4 -> 5. tsc clean, 173/173. Checked in the browser: a salt tank lists 9 marine fish + 3 marine inverts, no
+freshwater species.
+Sheets (worktree `shots/`): `91_marine_{A,B,C}.png` (card / 3D, four views, same framing). My review: the 9 fish pass;
+watch items: watchman head-on is a pointed snout (the 75° foreshortening, lesson 38); sixline stripes ring head-on;
+cleaner shrimp legs comb head-on (as the other shrimp); turbo aperture lip reads as a visor at 50° (as the mystery);
+hermit shell is a tilted turbo-like coil, its side view shows the aperture lip as a wedge, card shell is rounder.
+
 ## Lane B: fresh or salt tank (2026-10-13; branch `salt-tank`, shipped to main)
 
 - **Water section: Type = Freshwater | Saltwater** (`water.salt`, the seam's flag; off when Water is off). One undo step.

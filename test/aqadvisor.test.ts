@@ -20,7 +20,7 @@ const setup = (f: Fish[]): TankSetup => {
 describe('AqAdvisor request', () => {
   it('maps every species that lives in water, and only those; stand-ins only for the ones AqAdvisor lacks', () => {
     const map = ids as Record<string, { standIn?: boolean }>;
-    for (const sp of SPECIES) expect(sp.id in map, sp.id).toBe(sp.habitat !== 'land');
+    for (const sp of SPECIES) expect(sp.id in map, sp.id).toBe(sp.habitat !== 'land' && !sp.salt); // AqAdvisor is freshwater only (off for salt tanks)
     expect(Object.keys(map).filter(k => map[k].standIn).sort()).toEqual(['axolotl', 'firenewt', 'firetoad']);
   });
 

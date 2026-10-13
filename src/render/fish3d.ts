@@ -12,7 +12,7 @@ import type { EdgeMode } from '../scene/types';
 import { cardMaterial, pairedFinTexture } from './textures';
 
 /** Species drawn in 3D (test set) and switches for before/after pictures. `fade` = the session-10 fixes (turned-away paint fades, card body cut out, body-shape fields, barbels); off = session 9, for pictures. `wrap` = the turned-away paint is smeared lengthwise (bars and spots don't close into hoops over the back and throat); off = session 11's round blur. */
-export const fish3d = { on: true, fade: true, wrap: true, species: new Set(['cardinal', 'discus', 'bronzecory', 'tigerbarb', 'bristlenose', 'kuhli', 'angel', 'danio', 'guppy', 'dwarfgourami', 'gbr', 'harlequin', 'oto', 'clownloach', 'goldfish', 'ember', 'rummynose', 'chili', 'cherrybarb', 'platy', 'molly', 'swordtail', 'betta', 'honeygourami', 'bolivianram', 'kribensis', 'oscar', 'pandacory', 'sae', 'tetra', 'gourami', 'cherryshrimp', 'amano', 'nerite', 'mystery', 'ramshorn', 'trumpet', 'dartfrog', 'treefrog', 'firetoad', 'firenewt', 'axolotl',
+export const fish3d = { on: true, fade: true, wrap: true, species: new Set(['cardinal', 'discus', 'bronzecory', 'tigerbarb', 'bristlenose', 'kuhli', 'angel', 'danio', 'guppy', 'dwarfgourami', 'gbr', 'harlequin', 'oto', 'clownloach', 'goldfish', 'ember', 'rummynose', 'chili', 'cherrybarb', 'platy', 'molly', 'swordtail', 'betta', 'honeygourami', 'bolivianram', 'kribensis', 'oscar', 'pandacory', 'sae', 'tetra', 'gourami', 'ocellaris', 'royalgramma', 'yellowtang', 'firefish', 'banggai', 'sixline', 'chromis', 'coralbeauty', 'watchman', 'cherryshrimp', 'amano', 'cleanershrimp', 'nerite', 'mystery', 'ramshorn', 'trumpet', 'turbo', 'hermit', 'dartfrog', 'treefrog', 'firetoad', 'firenewt', 'axolotl',
   // females of the dimorphic species (species.json `female`)
   'betta_f', 'guppy_f', 'swordtail_f', 'dwarfgourami_f', 'honeygourami_f', 'cherrybarb_f', 'kribensis_f', 'gbr_f', 'gourami_f', 'peapuffer', 'peapuffer_f', 'hatchet', 'cpd', 'cpd_f']) };
 
@@ -165,7 +165,7 @@ export function taperTube(curve: THREE.Curve<THREE.Vector3>, r: number, N = 12, 
  * Limbs (`Plan.limbs`: legs, antennae) as tubes tapering to a third of the root radius, mirrored on both flanks:
  * a quadratic curve from the surface point at (u, v) to root + `to`, bowed toward root + `via`.
  */
-function limbMeshes(art: string, p: Plan, bend: number, mat: THREE.Material) {
+function limbMeshes(art: string, p: Plan, bend: number, mat: (c?: string) => THREE.Material) {
   const out: THREE.Mesh[] = [];
   p.limbs!.forEach((l, i) => {
     for (const side of [1, -1]) {
@@ -177,7 +177,7 @@ function limbMeshes(art: string, p: Plan, bend: number, mat: THREE.Material) {
         const via = l.via ? off(l.via) : r0.clone().lerp(off(l.to), 0.5);
         g = taperTube(new THREE.QuadraticBezierCurve3(r0, via, off(l.to)), l.r); g.userData.keep = true; geoCache.set(key, g);
       }
-      out.push(new THREE.Mesh(g, mat));
+      out.push(new THREE.Mesh(g, mat(l.c)));
     }
   });
   return out;
@@ -450,7 +450,7 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
   const belly = bellyPlate(art, p, b); if (belly) grp.add(belly);
   for (const f of finMeshes(art, p, b, edge, cling)) grp.add(f);
   if (p.limbs) {
-    const mat = fishMat('limb:' + art, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(p.shade[0]).multiplyScalar(0.9), ...see(p) }));
+    const mat = (c?: string) => fishMat(`limb:${art}:${c ?? ''}`, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(c ?? p.shade[0]).multiplyScalar(0.9), ...see(p) })); // own colour (cleaner shrimp's white antennae) or the back's
     for (const m of limbMeshes(art, p, b, mat)) grp.add(m);
   }
   if (p.barbels) {

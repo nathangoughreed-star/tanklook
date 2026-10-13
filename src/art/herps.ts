@@ -4,6 +4,7 @@
 // centre line, + down. The animal stands on the ground line g = aspect / 2 - 0.015 (its lowest point, = rest).
 // Legs on the far side are drawn first and darker; legs on the near side over the body.
 import { type Ctx, type Proj, type Pt, type Stops, blob, body, fin, rng, soft } from './paint';
+import type { Shell3D } from './snails';
 
 type J = [number, number, number]; // joint: u, v, radius (widths)
 
@@ -223,13 +224,59 @@ const SALS: Record<string, SalSpec> = {
   },
 };
 
+// ---------- Hermit crab (marine, lane C 2026-10-13) ----------
+// A small crab body, two walking legs and a claw per side out of a borrowed snail shell. One set of joints feeds both the
+// card and the 3D body (Limb3D: u, v, z, r); the shell is the snail generator's (Shell3D), opening forward.
+interface HermitSpec { shell: [string, string, string]; mark: string; body: [string, string, string]; leg: [string, string, string]; eye: [string, string] }
+const HERMIT_A = 0.7, HG = HERMIT_A / 2 - 0.015;
+const HERMITS: Record<string, HermitSpec> = {
+  // blue-leg (Clibanarius tricolor): blue legs, orange-red antennae, olive-brown body, a dull brown shell
+  hermit: { shell: ['#4a4234', '#7a6c54', '#a49478'], mark: '#3a2e22', body: ['#4a4030', '#6a5c46', '#8a7a62'], leg: ['#1c2c5c', '#2c4c9c', '#4a66b0'], eye: ['#2a2a2a', '#0a0a0a'] },
+};
+const HERMIT_SIDE: Pt[] = [[0.88, 0.17, 'c'], [0.83, 0.1], [0.7, 0.085], [0.57, 0.1], [0.55, 0.2], [0.66, 0.245], [0.8, 0.225]];
+const HERMIT_LIMBS: Limb3D[] = [
+  // walking legs: up from the body to a knee, down to the tip on the sand
+  { js: [[0.66, 0.2, 0.05, 0.022], [0.71, 0.11, 0.15, 0.017], [0.76, 0.27, 0.21, 0.012]], toes: [[0.035, 0.025]], toe: 0.009 },
+  { js: [[0.75, 0.2, 0.05, 0.022], [0.83, 0.12, 0.15, 0.017], [0.9, 0.27, 0.19, 0.012]], toes: [[0.04, 0.015]], toe: 0.009 },
+  // claw: arm forward to a heavy palm, two fingers to the sand
+  { js: [[0.8, 0.2, 0.04, 0.026], [0.87, 0.24, 0.08, 0.026], [0.93, 0.27, 0.06, 0.036]], toes: [[0.055, -0.01], [0.05, 0.015]], toe: 0.014 },
+  // eye stalk (no toes; the eye sits on its tip) and antenna (own colour)
+  { js: [[0.85, 0.12, 0.02, 0.009], [0.89, 0.06, 0.035, 0.007]], toes: [], toe: 0 },
+  { js: [[0.87, 0.15, 0.015, 0.0045], [0.95, 0.02, 0.05, 0.0035], [0.995, -0.14, 0.09, 0.0025]], toes: [], toe: 0, c: ['#d0582a', '#a8401c'] },
+];
+/** The borrowed shell: a globose (turbo-like) shell, the aperture forward where the crab comes out, the spire on top. */
+const HERMIT_SHELL: Shell3D = { turns: 4, grow: 2.6, drop: 1.2, ap: [0.6, 0.7], axis: [-1, 0.5, 0], size: 0.62, tall: 0.55, at: 0.33, foot: 0, tent: 0, mark: 'spiral', open: [1, -0.4, 0], tilt: 40 };
+
+function drawHermit(s: HermitSpec, ctx: Ctx, P: Proj, W: number) {
+  const card = (l: Limb3D, far: boolean) => {
+    const js = l.js.map(j => [j[0] - (far ? 0.02 : 0), j[1] - (far ? 0.015 : 0), j[3]] as J), e = js[js.length - 1];
+    const toes = l.toes.map(([du]) => [e[0] + du, HG - l.toe * 0.5] as [number, number]);
+    limb(ctx, P, W, js, toes, l.toe, l.c ? [l.c[1], l.c[0], l.c[0]] : s.leg, far);
+  };
+  for (const l of HERMIT_LIMBS.slice(0, 3)) card(l, true);
+  // shell: the body whorl, the spire behind and above it, the dark aperture toward the crab
+  const sh: Stops = [[0, s.shell[2]], [0.5, s.shell[1]], [1, s.shell[0]]], cu = 0.3, cv = HG - 0.2;
+  const ell = (u: number, v: number, ru: number, rv: number, n: number) => Array.from({ length: n }, (_, i) => [u + ru * Math.cos(i / n * Math.PI * 2), v + rv * Math.sin(i / n * Math.PI * 2)] as Pt);
+  body(ctx, P, W, ell(0.14, cv - 0.2, 0.13, 0.1, 20), cv - 0.3, cv - 0.1, sh, 0.05, () => {});
+  body(ctx, P, W, ell(cu, cv, 0.24, 0.2, 28), cv - 0.2, cv + 0.2, sh, 0.06, l => {
+    for (const dv of [-0.12, -0.04, 0.05]) soft(l, P, 0.08, 0.52, cv + dv, cv + dv + 0.02, s.mark, 0.35, [0.04, 0.04], [0.008, 0.008]);
+    soft(l, P, 0.16, 0.4, cv - 0.17, cv - 0.07, '#ffffff', 0.18, [0.08, 0.08], [0.03, 0.04]);
+  });
+  blob(ctx, P, W, 0.52, cv + 0.06, 0.04, 0.12, '#14100c', 0.85);
+  body(ctx, P, W, HERMIT_SIDE, 0.085, 0.245, [[0, s.body[0]], [0.5, s.body[1]], [1, s.body[2]]], 0.03, () => {});
+  for (const l of HERMIT_LIMBS) card(l, false);
+  const st = HERMIT_LIMBS[3].js[1]; herpEye(ctx, P, W, st[0], st[1] - 0.012, 0.018, s.eye, 'dark');
+}
+
 export const HERP_ART: Record<string, (ctx: Ctx, P: Proj, W: number) => void> = {
   ...Object.fromEntries(Object.entries(FROGS).map(([k, s]) => [k, (c: Ctx, P: Proj, W: number) => drawFrog(s, c, P, W)])),
   ...Object.fromEntries(Object.entries(SALS).map(([k, s]) => [k, (c: Ctx, P: Proj, W: number) => drawSal(s, c, P, W)])),
+  ...Object.fromEntries(Object.entries(HERMITS).map(([k, s]) => [k, (c: Ctx, P: Proj, W: number) => drawHermit(s, c, P, W)])),
 };
 
 /** Aspect + resting offset (the ground line) for amphibian art keys. */
 export function herpMeta(art: string): { aspect: number; rest: number } | undefined {
+  if (HERMITS[art]) return { aspect: HERMIT_A, rest: HG };
   const s = FROGS[art] ?? SALS[art]; if (!s) return undefined;
   return { aspect: s.aspect, rest: s.aspect / 2 - 0.015 };
 }
@@ -246,6 +293,7 @@ export interface Limb3D {
   toes: [number, number][];    // toe tips as [du, dz] from the last joint; the tips rest on the ground
   toe: number;                 // toe radius at the root
   pad?: number;                // round toe pads (tree frogs)
+  c?: [string, string];        // own colour (top, underside), else the species' legCol (hermit crab antennae)
 }
 export type Mark3D =
   | { k: 'band'; u: [number, number]; a: [number, number]; c: string; o: number; blur?: number }
@@ -260,10 +308,11 @@ export interface Herp3D {
   limbs: Limb3D[];
   legCol: [string, string];       // limbs: top, underside
   legSpots?: { c: string; r: number; n: number }; // n per unit of limb length
-  eye: { u: number; th: number; r: number; iris: [string, string]; pupil: 'round' | 'h' | 'dark'; bulge: number };
+  eye: { u: number; th: number; r: number; iris: [string, string]; pupil: 'round' | 'h' | 'dark'; bulge: number; at?: [number, number, number] }; // at: on a stalk tip (u, v, z), not the body surface
   fin?: { top: [number, number][]; bot: [number, number][]; c: string; o: number }; // membranes along the tail (edges, card frame)
   gills?: { at: [number, number, number]; tips: [number, number, number][]; stalk: string; fringe: string };
   ground: number;                 // the ground line v (card frame)
+  shell?: { s: Shell3D; shell: [string, string, string]; mark: string }; // a carried snail shell (hermit crab), from the snail generator
 }
 
 /** Frogs share one sitting pose (design frame, see FROG_TORSO); `fat` widens the body. */
@@ -317,6 +366,14 @@ function sal3D(s: SalSpec, wid: [number, number][], tone: [number, string][], ma
 const axo = SALS.axolotl, axoCv = axo.aspect / 2 - 0.015 - 0.04 - axo.trunk;
 
 export const HERP3D: Record<string, Herp3D> = {
+  // hermit crab: the small body out of the shell, legs and claw from HERMIT_LIMBS, the eyes on the stalk tips
+  hermit: {
+    side: HERMIT_SIDE, wid: [[0.55, 0.06], [0.68, 0.075], [0.8, 0.065], [0.88, 0.04]], belly: 2.6,
+    tone: [[0, HERMITS.hermit.body[0]], [0.5, HERMITS.hermit.body[1]], [1, HERMITS.hermit.body[2]]], marks: [],
+    limbs: HERMIT_LIMBS, legCol: [HERMITS.hermit.leg[1], HERMITS.hermit.leg[0]],
+    eye: { u: 0.89, th: 0.3, r: 0.018, iris: HERMITS.hermit.eye, pupil: 'dark', bulge: 1, at: [0.89, 0.045, 0.035] },
+    ground: HG, shell: { s: HERMIT_SHELL, shell: HERMITS.hermit.shell, mark: HERMITS.hermit.mark },
+  },
   // yellow bands down each side of the back, black between with black spots; a lower side band; blue belly
   dartfrog: frog3D(FROGS.dartfrog, 1, [[0, '#17181b'], [0.6, '#1c1d20'], [0.82, '#202227'], [1, '#26467e']], [
     { k: 'band', u: [0.14, 0.95], a: [0.0, 0.34], c: '#f1c62a', o: 0.95, blur: 0.012 },
