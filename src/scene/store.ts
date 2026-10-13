@@ -39,7 +39,7 @@ export class Store {
   constructor(scene: Scene = defaultScene()) {
     this.scene = scene;
     this.editOn = [0, 1].map(k => k === scene.active);
-    this.selId = this.tank.fish[0]?.id ?? null;
+    // nothing starts selected (Nathan 2026-10-13: a refresh or an opened tank showed a fish highlighted)
   }
 
   subscribe(fn: Listener) { this.listeners.add(fn); return () => this.listeners.delete(fn); }
@@ -204,7 +204,7 @@ export class Store {
     this.pushUndo(); this.seal();
     this.scene = scene;
     this.editOn = [0, 1].map(k => k === scene.active);
-    this.selId = this.tank.fish[0]?.id ?? null; this.selItem = null;
+    this.selId = null; this.selItem = null;
     this.emit('load');
   }
 
