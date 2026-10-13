@@ -84,7 +84,7 @@ export interface RenderSettings {
   edges: boolean;
   /** Light beams drawn where each fixture falls to half strength (added 2026-10-13; older files: hidden). */
   beams: boolean;
-  /** Fish stand out, 0-1 (added 2026-10-13; older files: 0.25): an app preference. 0 = the plain lit render; higher
+  /** Fish stand out, 0-1 (added 2026-10-13; older files: 0.15): an app preference. 0 = the plain lit render; higher
    * lifts fish bodies' brightness and colour, darkens their outline and lets the water haze them less. */
   pop: number;
   bg: Background;

@@ -15,8 +15,8 @@ that shows only while panned. Not reset by opening a tank or changing layout.
 
 Nathan: fish washed out against sand, backgrounds and plants; asked for an option, or hard-coded if truer to life.
 It is not physical (real fish separate from the ground mostly by cast shadows and sheen), so it is an option, not a
-fix: Display & export > **Fish stand out** slider (`render.pop`, 0-1, default 0.25 (Nathan, same day; was 0.5); an app preference kept equal across
-tanks like `edge`; older files 0.25; 0 = the old look). Shader only (lighting.ts `aqPatch`, uniform `uPop`, set with
+fix: Display & export > **Fish stand out** slider (`render.pop`, 0-1, default 0.15 (Nathan, same day; was 0.5, then 0.25); an app preference kept equal across
+tanks like `edge`; older files 0.15; 0 = the old look). Shader only (lighting.ts `aqPatch`, uniform `uPop`, set with
 the water uniforms): 3D fish bodies get up to +20 % brightness and saturation 1.35 -> 1.7, a darker outline where the
 body turns edge-on (up to 55 %), and up to 60 % less water haze; fish cards (`userData.fishCard`, set in build.ts) get
 the lift and the haze cut. Shot `shots/pop_compare.png` (off / 50 / 100).

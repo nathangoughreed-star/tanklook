@@ -175,7 +175,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       el: num(c.el, 0, ...LIMITS.el), zoom: num(c.zoom, 1, ...LIMITS.zoom),
     },
     render: {
-      edge: pick(r.edge, ['cutout', 'a2c'] as const, d.render.edge), grid: bool(r.grid, d.render.grid), rim: bool(r.rim, d.render.rim), edges: bool(r.edges, d.render.edges), beams: bool(r.beams, false), pop: num(r.pop, 0.25, 0, 1),
+      edge: pick(r.edge, ['cutout', 'a2c'] as const, d.render.edge), grid: bool(r.grid, d.render.grid), rim: bool(r.rim, d.render.rim), edges: bool(r.edges, d.render.edges), beams: bool(r.beams, false), pop: num(r.pop, 0.15, 0, 1),
       bg: pick(r.bg, ['black', 'blue', 'gradient', 'grey', 'frosted', 'none'] as const, d.render.bg), glass,
       // added 2026-10-12 (no version bump); older files: the side the background then followed, the room wall's
       bgSides: Array.isArray(r.bgSides)
