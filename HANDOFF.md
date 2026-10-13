@@ -2,6 +2,16 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Fish stand out (2026-10-13)
+
+Nathan: fish washed out against sand, backgrounds and plants; asked for an option, or hard-coded if truer to life.
+It is not physical (real fish separate from the ground mostly by cast shadows and sheen), so it is an option, not a
+fix: Display & export > **Fish stand out** slider (`render.pop`, 0-1, default 0.5; an app preference kept equal across
+tanks like `edge`; older files 0.5; 0 = the old look). Shader only (lighting.ts `aqPatch`, uniform `uPop`, set with
+the water uniforms): 3D fish bodies get up to +20 % brightness and saturation 1.35 -> 1.7, a darker outline where the
+body turns edge-on (up to 55 %), and up to 60 % less water haze; fish cards (`userData.fishCard`, set in build.ts) get
+the lift and the haze cut. Shot `shots/pop_compare.png` (off / 50 / 100).
+
 ## Custom substrate: grain, colour, blends (2026-10-13)
 
 Nathan: pick a grain size (mud, sand, gravel, pebbles) and then any colour; optionally blend two grains with their own

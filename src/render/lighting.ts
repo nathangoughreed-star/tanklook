@@ -130,12 +130,13 @@ export const LU = {
   uRef: { value: REF }, uLCol: { value: new THREE.Color(1, 1, 1) },
   uRoomK: { value: 1 }, uSpill: { value: new THREE.Color(1, 1, 1) }, uSpillR: { value: 500 },
   uTankMin: { value: new THREE.Vector3() }, uTankMax: { value: new THREE.Vector3() }, uTankRound: { value: 0 },
-  uWater: { value: new THREE.Vector4() }, uWCol: { value: new THREE.Color() },
+  uWater: { value: new THREE.Vector4() }, uWCol: { value: new THREE.Color() }, uPop: { value: 0 },
   // beam overlay's hit map: one beam per entry (x, fixture y, z, half-length along x), cos of its half-strength angle
   uBm: { value: Array.from({ length: AQ_MAX }, () => new THREE.Vector4()) }, uBmN: { value: 0 }, uBmCos: { value: 0 },
 };
-/** Water box (L, surface y, D) and tint per mm; set per viewport like the light. */
-export function setWaterUniforms(T: Tank, w: WaterSettings) {
+/** Water box (L, surface y, D) and tint per mm, and how far fish stand out (render.pop); set per viewport like the light. */
+export function setWaterUniforms(T: Tank, w: WaterSettings, pop = 0) {
+  LU.uPop.value = pop;
   LU.uWater.value.set(T.L, waterY(T, w.level), T.D, w.on ? waterK(w.opacity) : 0);
   LU.uWCol.value.set(w.color);
 }
@@ -169,7 +170,7 @@ const AQ_VERT = 'varying vec3 vAqP; varying vec3 vAqN;';
 const AQ_FRAG = `
 uniform vec4 uEm[${AQ_MAX}]; uniform int uEmN; uniform float uMode, uAmb, uBright, uNorm, uConeIn, uConeOut, uRef, uCard, uSub, uFish; uniform vec3 uLCol;
 float aqSpec = 0.0;
-uniform float uRoomMat, uRoomK, uSpillR, uTankRound; uniform vec3 uSpill, uTankMin, uTankMax; uniform vec4 uWater; uniform vec3 uWCol;
+uniform float uRoomMat, uRoomK, uSpillR, uTankRound; uniform vec3 uSpill, uTankMin, uTankMax; uniform vec4 uWater; uniform vec3 uWCol; uniform float uPop, uFishCard;
 varying vec3 vAqP; varying vec3 vAqN;
 float aqHash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float aqNoise(vec2 p) {
@@ -259,26 +260,28 @@ const AQ_MAP = `#ifdef USE_MAP
 
 function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithUniforms) {
   this.userData.pre?.(shader); // the material's own patch (hardscape: glass clip and grit) still applies under the lighting
-  Object.assign(shader.uniforms, LU, { uCard: { value: this.userData.card ? 1 : 0 }, uSub: { value: this.userData.sub ? 1 : 0 }, uFish: { value: this.userData.fish ? 1 : 0 }, uRoomMat: { value: this.userData.room ? 1 : 0 }, uNoMap: { value: this.userData.nomap ? 1 : 0 } });
+  Object.assign(shader.uniforms, LU, { uCard: { value: this.userData.card ? 1 : 0 }, uSub: { value: this.userData.sub ? 1 : 0 }, uFish: { value: this.userData.fish ? 1 : 0 }, uRoomMat: { value: this.userData.room ? 1 : 0 }, uNoMap: { value: this.userData.nomap ? 1 : 0 }, uFishCard: { value: this.userData.fishCard ? 1 : 0 } });
   shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\n' + AQ_VERT)
     .replace('#include <begin_vertex>', '#include <begin_vertex>\nvAqP = (modelMatrix * vec4(transformed, 1.0)).xyz; vAqN = normalize(mat3(modelMatrix) * normal);');
   shader.fragmentShader = shader.fragmentShader.replace('#include <common>', '#include <common>\n' + AQ_FRAG)
     .replace('#include <opaque_fragment>', 'vec3 aqLt = aqLight(); outgoingLight *= aqLt;\n' +
-      'if (uCard > 0.5) { float aqL = dot(outgoingLight, vec3(0.2126, 0.7152, 0.0722)); outgoingLight = max(mix(vec3(aqL), outgoingLight, 1.35), 0.0); }\n' +
+      'if (uCard > 0.5) { float aqL = dot(outgoingLight, vec3(0.2126, 0.7152, 0.0722)); outgoingLight = max(mix(vec3(aqL), outgoingLight, 1.35 + 0.35 * uPop * uFishCard), 0.0) * (1.0 + 0.2 * uPop * uFishCard); }\n' +
       'float aqM = max(max(outgoingLight.r, outgoingLight.g), outgoingLight.b);\n' +
       // 3D fish body: the card's saturation, then a shoulder instead of the hard clamp (which flattens the form shading
       // wherever the light is strong): values up to 0.6 are untouched, so the body matches its card, and only
       // highlights roll off toward 1; then the highlight and a faint silvery sheen toward the edges on top
       'if (uFish > 0.5) {\n' +
-      '  float aqS = dot(outgoingLight, vec3(0.2126, 0.7152, 0.0722)); outgoingLight = max(mix(vec3(aqS), outgoingLight, 1.35), 0.0);\n' +
+      '  float aqS = dot(outgoingLight, vec3(0.2126, 0.7152, 0.0722)); outgoingLight = max(mix(vec3(aqS), outgoingLight, 1.35 + 0.35 * uPop), 0.0) * (1.0 + 0.2 * uPop);\n' +
       '  aqM = max(max(outgoingLight.r, outgoingLight.g), outgoingLight.b);\n' +
       '  if (aqM > 0.6) outgoingLight *= (0.6 + 0.4 * (1.0 - exp(-(aqM - 0.6) / 0.4))) / aqM;\n' +
       '  vec3 aqV = normalize(cameraPosition - vAqP); float aqRim = pow(1.0 - abs(dot(normalize(vAqN), aqV)), 3.0);\n' +
       '  outgoingLight += uLCol * (uBright * uNorm * aqSpec * 0.16) + vec3(0.03, 0.04, 0.045) * aqRim * min(dot(aqLt, vec3(0.333)), 1.5);\n' +
+      // fish stand out (render.pop): the outline darkens where the body turns edge-on, so it reads against sand or leaves
+      '  outgoingLight *= 1.0 - 0.55 * uPop * smoothstep(0.55, 0.95, 1.0 - abs(dot(normalize(vAqN), aqV)));\n' +
       '  outgoingLight = min(outgoingLight, vec3(1.0));\n' +
       '} else if (aqM > 1.0) outgoingLight /= aqM;\n' +
       // water colour: blend toward the lit water colour by how much water the sightline crosses
-      'if (uWater.w > 0.0) { float aqF = 1.0 - exp(-uWater.w * aqWaterPath()); outgoingLight = mix(outgoingLight, uWCol * min(dot(aqLt, vec3(0.2126, 0.7152, 0.0722)), 1.0), aqF); }\n' +
+      'if (uWater.w > 0.0) { float aqF = (1.0 - exp(-uWater.w * aqWaterPath())) * (1.0 - 0.6 * uPop * max(uFish, uFishCard)); outgoingLight = mix(outgoingLight, uWCol * min(dot(aqLt, vec3(0.2126, 0.7152, 0.0722)), 1.0), aqF); }\n' +
       // beam overlay: a shade over everything in the tank, heaviest where no beam lands, lighter for each beam
       // (none / one / two / three or more: 0.8 / 0.5 / 0.15 / 0); no beam is also hatched, so it cannot pass for a
       // shadow; a bright line along each beam's edge
@@ -310,7 +313,7 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
   }
 }
 // one cache key per material kind keeps one compiled program per kind
-const progKey = function (this: THREE.Material) { return 'aq' + (this.userData.card ? 'c' : '') + (this.userData.sub ? 's' : '') + (this.userData.room ? 'r' : '') + (this.userData.fish ? 'f' : '') + (this.userData.plain ? 'p' : '') + (this.userData.frost ? 'F' : '') + (this.userData.solid ? 'h' : '') + (this.userData.post ? 'b' : '') + (this.userData.nomap ? 'n' : ''); };
+const progKey = function (this: THREE.Material) { return 'aq' + (this.userData.card ? 'c' : '') + (this.userData.sub ? 's' : '') + (this.userData.room ? 'r' : '') + (this.userData.fish ? 'f' : '') + (this.userData.plain ? 'p' : '') + (this.userData.frost ? 'F' : '') + (this.userData.solid ? 'h' : '') + (this.userData.post ? 'b' : '') + (this.userData.nomap ? 'n' : '') + (this.userData.fishCard ? 'k' : ''); };
 
 /** Light every opaque surface inside the tank (substrate, background, fish, plant); glass, rim, lines and the fixture stay unlit. */
 export function applyLighting(sc: THREE.Scene) {

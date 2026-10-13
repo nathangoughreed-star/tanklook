@@ -838,6 +838,7 @@ export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: numbe
     const w = fishTL(f, sp), h = w * sp.aspect, p = f;
     const solid = has3D(sp.art), herp = solid && isHerp3D(sp.art);
     const m = new THREE.Mesh(cardGeometry(w, h, f.bend), herp ? HIDDEN : cardMaterial(`fish:${sp.look}:${solid}:${solid && fish3d.fade}`, fishTexture(sp, S.render.edge, solid, solid && fish3d.fade), S.render.edge));
+    if (!herp) (m.material as THREE.Material).userData.fishCard = true; // fish stand out (render.pop) lifts the card too
     if (herp) m.add(herpBody(sp.art, w)); // the card stays as the invisible picking target
     else if (solid) m.add(fishBody(sp.art, sp.aspect, w, f.bend, fishBodyTexture(sp), S.render.edge, f.surface === 'glass')); // solid body + paired fins; the card keeps the median fins
     if (f.surface === 'glass') { onGlass(S, T, f, sp, m, w); register(f, m, w, h); continue; }

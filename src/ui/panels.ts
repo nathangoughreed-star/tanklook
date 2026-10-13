@@ -527,6 +527,7 @@ Cancel, then change the name, to keep both.`)) return;
   $('camLock').onclick = () => store.setCamLock(!G().camLock);
   // an app preference: the same edge mode in every tank
   $<HTMLSelectElement>('edge').onchange = e => store.update(s => { for (const t of s.tanks) t.render.edge = (e.target as HTMLSelectElement).value as TankSetup['render']['edge']; });
+  $('pop').oninput = e => store.update(s => { for (const t of s.tanks) t.render.pop = +(e.target as HTMLInputElement).value / 100; });
   $('gridOn').onchange = e => store.edit(s => { s.render.grid = (e.target as HTMLInputElement).checked; });
   // viewpoint map: a per-viewer display preference (browser storage), not scene data
   // the map's own × and "⌖ Map" button do the same as the checkbox; the viewer places and shows one map per view
@@ -911,7 +912,7 @@ Cancel, then change the name, to keep both.`)) return;
 
     ($('split') as HTMLButtonElement).disabled = store.split;
     $('splitHint').textContent = store.split ? 'Each view’s tab (top of the view) opens on hover: what differs, Download that tank on its own, or Delete it. Save and Download at the top keep both tanks together.' : 'Copy this tank into a second, independent one beside it, then change anything in either.';
-    setVal('edge', s.render.edge); $('gridOn').checked = s.render.grid; 
+    setVal('edge', s.render.edge); $('gridOn').checked = s.render.grid; setVal('pop', Math.round(s.render.pop * 100)); setOut('oPop', s.render.pop ? `${Math.round(s.render.pop * 100)} %` : 'off');
     setVal('layout', s.layout.id); $('layoutHint').textContent = LAYOUTS[s.layout.id].hint + ' Then move, add or remove any piece.';
     ($('layoutShuffle') as HTMLButtonElement).disabled = s.layout.id === 'none';
     const nk = (k: ItemKind) => s.items.filter(q => q.kind === k).length;

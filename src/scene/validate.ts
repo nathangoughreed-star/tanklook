@@ -104,7 +104,7 @@ export function parseScene(input: unknown): { scene: Scene; warnings: string[] }
   const rawTanks = (Array.isArray(raw.tanks) ? raw.tanks as unknown[] : []).filter(isObj).slice(0, 2);
   if (!rawTanks.length) throw new SceneError('Not a scene file (no tank).');
   const tanks = rawTanks.map((t, i) => parseSetup(t, warn, rawTanks.length > 1 ? `Tank ${'AB'[i]}: ` : ''));
-  for (const t of tanks) t.render.edge = tanks[0].render.edge; // an app preference, the same everywhere
+  for (const t of tanks) { t.render.edge = tanks[0].render.edge; t.render.pop = tanks[0].render.pop; } // app preferences, the same everywhere
   const scene: Scene = {
     version: SCENE_VERSION,
     name: typeof raw.name === 'string' && raw.name.trim() ? raw.name.trim().slice(0, 80) : 'My tank',
@@ -175,7 +175,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       el: num(c.el, 0, ...LIMITS.el), zoom: num(c.zoom, 1, ...LIMITS.zoom),
     },
     render: {
-      edge: pick(r.edge, ['cutout', 'a2c'] as const, d.render.edge), grid: bool(r.grid, d.render.grid), rim: bool(r.rim, d.render.rim), edges: bool(r.edges, d.render.edges), beams: bool(r.beams, false),
+      edge: pick(r.edge, ['cutout', 'a2c'] as const, d.render.edge), grid: bool(r.grid, d.render.grid), rim: bool(r.rim, d.render.rim), edges: bool(r.edges, d.render.edges), beams: bool(r.beams, false), pop: num(r.pop, 0.5, 0, 1),
       bg: pick(r.bg, ['black', 'blue', 'gradient', 'grey', 'frosted', 'none'] as const, d.render.bg), glass,
       // added 2026-10-12 (no version bump); older files: the side the background then followed, the room wall's
       bgSides: Array.isArray(r.bgSides)
