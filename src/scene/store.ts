@@ -1,5 +1,5 @@
 // Holds the scene, the selection and undo/redo history. Every mutation goes through update().
-import { defaultScene } from './defaults';
+import { emptyScene } from './defaults';
 import { parseScene } from './validate';
 import { clearCams, eyeClear, limitOrbit } from './orbit';
 import { fitTable } from './table';
@@ -36,7 +36,7 @@ export class Store {
   private lastTime = 0;
   private listeners = new Set<Listener>();
 
-  constructor(scene: Scene = defaultScene()) {
+  constructor(scene: Scene = emptyScene()) {
     this.scene = scene;
     this.editOn = [0, 1].map(k => k === scene.active);
     // nothing starts selected (Nathan 2026-10-13: a refresh or an opened tank showed a fish highlighted)

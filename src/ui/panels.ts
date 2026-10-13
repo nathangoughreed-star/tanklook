@@ -8,7 +8,7 @@ import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { emitters } from '../render/lighting';
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
-import { bareSetup, defaultScene, TANK_PRESETS } from '../scene/defaults';
+import { emptyScene, TANK_PRESETS } from '../scene/defaults';
 import { KINDS, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, itemDims, makeItem, starterItems } from '../scene/items';
 import { tankDiff } from './diff';
 import { attachTypeIns, parseLen, plainNum, tidy, type TypeIn } from './typein';
@@ -61,7 +61,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('redo').onclick = () => store.redo();
   $('newScene').onclick = () => {
     if (G().tanks.some(t => t.fish.length) && !confirm('Start a new, empty tank? (Undo brings this one back.)')) return;
-    const s = defaultScene(); s.tanks[0] = bareSetup(); s.name = 'New tank';
+    const s = emptyScene(); s.name = 'New tank';
     s.tanks[0].camera = { ...S().camera }; s.units = G().units;
     store.replace(s); setLibId(null); status('New tank. Undo brings the previous one back.');
   };

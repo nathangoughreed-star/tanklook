@@ -6,6 +6,12 @@ export function defaultScene(): Scene {
   return { version: SCENE_VERSION, name: 'My tank', units: 'in', tanks: [defaultSetup()], active: 0, camLock: true };
 }
 
+/** What a first visit and New start from: one bare tank (bareSetup). */
+export function emptyScene(): Scene {
+  return { ...defaultScene(), tanks: [bareSetup()] };
+}
+
+/** The stocked demo tank (planted layout, a few fish); also the base other setups and old files are filled in from. */
 export function defaultSetup(): TankSetup {
   const A = { L: 24 * IN, H: 12 * IN, D: 12 * IN };
   let id = 1;
@@ -36,7 +42,7 @@ export function defaultSetup(): TankSetup {
   return s;
 }
 
-/** What New starts from: a bare, empty tank (Nathan 2026-10-13): no animals, background, grid, substrate or hardscape. */
+/** A bare, empty tank (Nathan 2026-10-13): no animals, background, grid, substrate or hardscape. */
 export function bareSetup(): TankSetup {
   const s = defaultSetup();
   s.fish = []; s.items = []; s.layout.id = 'none';
