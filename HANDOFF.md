@@ -112,6 +112,9 @@ conflicts on merge: keep both sections. Each lane adds its own dated section at 
 Lane B DONE (`ff590db`). Lane F DONE (see its section). Lane F added 2026-10-13: example tanks, `../Glass-Box-examples` / `examples`, launch config
 `examples` 5313; owns the Open dialog's examples list in `src/ui/panels.ts` + `index.html`, and new example files.
 Lane G (fixes from shots/audit/AUDIT.md) waits for lane D's report; it takes over `src/ui/*` after F lands.
+Lane C DONE (`2c38519`). Lane F DONE (`829929a`). Lane H added 2026-10-13: AqAdvisor saltwater, `../Glass-Box-aq-salt` /
+`aq-salt`, launch config `aq-salt` 5333 (aq mode; needs `aq-proxy` 8787); owns `data/aqadvisor.*`, `worker/*`, and the
+salt switch-off in the AqAdvisor code. Lane E also re-saves the examples and fills the reef example when it lands.
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_e1923781-40bc-48d3-84f3-ed380e471779`
 ("Lanes coordinator"). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
 and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says
