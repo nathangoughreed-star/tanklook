@@ -291,7 +291,7 @@ export function addFixture(sc: THREE.Scene, T: Tank, l: LightSettings, ceiling?:
  * fixture down to the tank floor. A spot's is a cone at its printed beam angle; a tube's (a line source) is a wedge
  * along it with rounded ends; an LED bar's many emitters are drawn as one such wedge per row (the outline of a row of
  * identical cones). The half-strength angle is the middle of the shader's cone ramp, so the overlay matches the light.
- * Cut off at the glass like hardscape; the substrate hides the part below it, leaving the footprint on the ground.
+ * Fainter or stronger with the Brightness slider. Cut off at the glass like hardscape; the substrate hides the part below it, leaving the footprint on the ground.
  */
 export function addBeams(sc: THREE.Scene, T: Tank, l: LightSettings, lid: string) {
   if (l.type === 'flat') return;
@@ -305,7 +305,7 @@ export function addBeams(sc: THREE.Scene, T: Tank, l: LightSettings, lid: string
   } else for (const e of E) segs.push([e[0], e[2], e[3]]);
   const bowl = shapeOf(T) === 'bowl', planes: THREE.Plane[] = [];
   if (!bowl) for (const e of footprint(T).edges) planes.push(new THREE.Plane(new THREE.Vector3(-e.n[0], 0, e.n[1]), e.a[0] * e.n[0] + e.a[1] * e.n[1]));
-  const look = { color: new THREE.Color(...kelvinRGB(l.kelvin)).multiplyScalar(0.5).addScalar(0.5), transparent: true, opacity: 0.14, depthWrite: false, side: THREE.DoubleSide };
+  const look = { color: new THREE.Color(...kelvinRGB(l.kelvin)).multiplyScalar(0.5).addScalar(0.5), transparent: true, opacity: clamp(0.14 * l.bright, 0.04, 0.32), depthWrite: false, side: THREE.DoubleSide };
   // above the rim the beam is drawn whole (light that misses the tank shows); inside, it stops at the glass
   const open = new THREE.MeshBasicMaterial(look), mat = new THREE.MeshBasicMaterial({ ...look, clippingPlanes: planes });
   if (bowl) { // a bowl: inside the sphere
@@ -322,8 +322,8 @@ export function addBeams(sc: THREE.Scene, T: Tank, l: LightSettings, lid: string
   const K = 24, ring = (cx: number, z: number, h: number, r: number, y: number) => {
     const p: number[] = [];
     for (const s of [1, -1]) for (let i = 0; i <= K; i++) {
-      const a = s * (-Math.PI / 2 + Math.PI * i / K);
-      p.push(cx + s * h + s * r * Math.cos(a), y, z + r * Math.sin(a) * s);
+      const a = (s > 0 ? -Math.PI / 2 : Math.PI / 2) + Math.PI * i / K; // +h end: -90..90°, -h end: 90..270°
+      p.push(cx + s * h + r * Math.cos(a), y, z + r * Math.sin(a));
     }
     return p;
   };
