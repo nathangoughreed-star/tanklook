@@ -395,9 +395,10 @@ const see = (p: Plan) => (p.glass ? { transparent: true, opacity: p.glass } : {}
 export const OUTLINE = { uPop: { value: 0 }, uVpH: { value: 1 } };
 /**
  * A silhouette line round a solid: its back faces pushed out along the normals by `px` (a GLSL expression, CSS px on
- * screen; may use uPop), in `color`; hidden while render.pop is 0. Shared by the fish body and the stand (build.ts).
+ * screen; may use uPop), in `color`. `gated`: hidden while render.pop is 0 (the fish body's); the furniture's (build.ts
+ * `ink`) is always drawn.
  */
-export function hullMaterial(px: string, color: THREE.Color) {
+export function hullMaterial(px: string, color: THREE.Color, gated = true) {
   const m = new THREE.ShaderMaterial({
     uniforms: { ...OUTLINE, uCol: { value: color } }, side: THREE.BackSide,
     vertexShader: `uniform float uPop, uVpH;
@@ -407,7 +408,7 @@ void main() {
   p.xyz += n * (${px}) * 2.0 * d / (projectionMatrix[1][1] * uVpH);
   gl_Position = projectionMatrix * viewMatrix * p;
 }`,
-    fragmentShader: `uniform float uPop; uniform vec3 uCol; void main() { if (uPop < 0.01) discard; gl_FragColor = vec4(uCol, 1.0); }`,
+    fragmentShader: `uniform float uPop; uniform vec3 uCol; void main() { ${gated ? 'if (uPop < 0.01) discard; ' : ''}gl_FragColor = vec4(uCol, 1.0); }`,
   });
   m.userData.cached = true;
   return m;

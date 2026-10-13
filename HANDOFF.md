@@ -21,10 +21,11 @@ the lift and the haze cut. Shot `shots/pop_compare.png` (off / 50 / 100).
   fin edges get it; at least 1 px wide. Shot `shots/betta_compare.png`.
 - Same day (Nathan: every outer edge the same treatment, see-through fins fainter): body and fin lines share one width,
   max(2.5 px x pop, 1 px); an opaque fin's line is as dark as the body's, a see-through fin's at half strength.
-- Same day (Nathan, a round table: "everything looks a bit mushy"): the setting also inks the furniture. Every
+- Same day (Nathan, a round table: "everything looks a bit mushy"): the furniture is inked, ALWAYS ON (Nathan: a fixed
+  visual style, not tied to the fish slider; it briefly followed the slider, reverted the same day). Every
   `shadedBox` / `shadedSolid` (stand, table, frame, doors, handles, skirting) gets build.ts `ink()`: 1 px lines on
   creases (EdgesGeometry 30 deg) plus a 1 px silhouette hull (fish3d `hullMaterial`, now shared with the fish body), in
-  the piece's colour x 0.35; faces polygon-offset back so the lines win; hidden while pop is 0 (uniform, no rebuild).
+  the piece's colour x 0.35; faces polygon-offset back so the lines win.
   Shot `shots/ink_compare.png`.
 
 ## Custom substrate: grain, colour, blends (2026-10-13)
