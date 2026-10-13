@@ -54,7 +54,9 @@ and at any milestone that unblocks another lane (A: plants pushed; D: shots/audi
 what landed (commit), what is still open, and which files are now free. The coordinator then sends Nathan the prompts
 for any chats that can start now. If a prompt is still waiting when another lane opens, it sends all waiting prompts again
 in one new message. Every new lane prompt includes this protocol. Questions for Nathan stay in the lane's own chat.
-Later lane E (corals + live rock as items) waits for A to land: it shares `scene/items.ts` / `render/items.ts`.
+Lane E (corals + live rock as items) OPENED 2026-10-13 early, per lane A: A's change in `render/items.ts` is a ~4-line
+hook in the plant branch of itemMesh and A does not touch `scene/items.ts`. E: `../Glass-Box-corals` / `corals`, launch
+config `corals` 5323; owns `scene/items.ts`, the non-plant branches of `render/items.ts`, new `render/coral3d.ts`.
 
 ## Pan stays put (2026-10-13)
 
