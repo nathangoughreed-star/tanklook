@@ -3,6 +3,7 @@ import { defaultScene } from './defaults';
 import { parseScene } from './validate';
 import { clearCams, eyeClear, limitOrbit } from './orbit';
 import { fitTable } from './table';
+import { sameGrid, sampleTerrain } from './terrain';
 import { keepInWater } from './water';
 import { clampItem } from './items';
 import type { CameraSettings, Fish, Item, Scene, TankSetup } from './types';
@@ -141,7 +142,9 @@ export class Store {
       this.lastKey = opts.coalesce ?? null; this.lastTime = now;
     }
     fn(this.scene);
-    if (kind === 'scene') { for (const t of this.scene.tanks) { keepInWater(t); fitTable(t); for (const it of t.items) clampItem(it, t.tank, t); } clearCams(this.scene.tanks, this.scene.camLock); }
+    // a terrain grid of another kind than its tank's (copied from the other tank, or a new shape) is resampled onto it
+    const regrid = (t: TankSetup) => { const te = t.terrain; if (te.h.length && !sameGrid(te, t.tank)) t.terrain = { ...sampleTerrain(t, t.tank, te.cols), on: te.on }; };
+    if (kind === 'scene') { for (const t of this.scene.tanks) { regrid(t); keepInWater(t); fitTable(t); for (const it of t.items) clampItem(it, t.tank, t); } clearCams(this.scene.tanks, this.scene.camLock); }
     if (this.selId != null && !this.tank.fish.some(f => f.id === this.selId)) this.selId = null;
     if (this.selItem != null && !this.tank.items.some(it => it.id === this.selItem)) this.selItem = null;
     this.emit(kind);

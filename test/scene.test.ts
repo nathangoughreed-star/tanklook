@@ -470,4 +470,13 @@ describe('pie slice terrain grid', () => {
     const back = parseScene(JSON.parse(JSON.stringify(sc))).scene.tanks[0].terrain;
     expect(back.arc).toBe(90); expect(back.h).toEqual(t.h);
   });
+  it('a pie slice saved with an old rectangular grid loads on the polar grid, same surface', () => {
+    const s = pieSetup(), T = s.tank, sc = defaultScene(); s.substrate = { ...s.substrate, fl: 20, fr: 20, bl: 90, br: 90 };
+    const rect = { ...sampleTerrain(s, { L: T.L, H: T.H, D: T.D }, 13), on: true }; // as the panel made it before the fix
+    expect(rect.radial).toBeUndefined();
+    sc.tanks[0] = { ...sc.tanks[0], tank: T, substrate: s.substrate, terrain: rect };
+    const te = parseScene(JSON.parse(JSON.stringify(sc))).scene.tanks[0].terrain;
+    expect(te.arc).toBe(90); expect(te.on).toBe(true);
+    for (const [x, d] of [[T.L / 2, T.D * 0.9], [T.L / 2, T.D * 0.2]]) expect(terrainHeight(te, T, x, d)).toBeCloseTo(terrainHeight(rect, T, x, d), -1);
+  });
 });

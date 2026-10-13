@@ -61,6 +61,9 @@ Radius, Angle slider (type-in). Flat-ends rules apply (no hood, back wall only).
   `radial`; ring k = an arc of radius k/rows round the apex, pane to pane, `pieSegs(k, arc)` segments (ring 0 = the apex
   dot). Rings from the Grid slider at the same spacing as a rectangle ((cols-1) x D/L). `sameGrid()` resamples when the
   shape or angle changes. In a non-pie Tank B the slice is stretched to L x D. Shot `shots/pie_terrain_grid.png`.
+  Fix after deploy (Nathan saw the old rectangular grid): a grid of the wrong kind is now resampled on load (validate;
+  that part landed inside `bdcb3a8`, another chat's commit, shared checkout) and after every scene edit (store), so
+  scenes saved before the change and terrain copied between tanks of different shapes are converted too.
 
 ## Light beam overlay (2026-10-13)
 
