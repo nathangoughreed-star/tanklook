@@ -9,7 +9,7 @@ import * as THREE from 'three';
 import { D2R, clamp } from '../scene/physics';
 import type { LightSettings, LightType, Tank, WaterSettings } from '../scene/types';
 import { waterK, waterY } from '../scene/physics';
-import { bowlDims, footprint, shapeOf } from '../scene/shape';
+import { bowlDims, footprint, insideBy, shapeOf, type P } from '../scene/shape';
 
 export const AQ_MAX = 48, LAMP_Y = 50, REF = 320;
 export const CONES: Record<Exclude<LightType, 'flat'>, [number, number]> = {
@@ -34,7 +34,8 @@ export function emitters(T: Tank, l: LightSettings, height = l.height ?? LAMP_Y)
   // spots: a count × rows grid (rows run front to back), centred over the tank. Auto spacing (0) spreads it to fill
   // the tank; a set spacing is centre to centre, with rows √3/2 of it apart in the triangular pattern. 'tri' staggers
   // the rows: the middle row (or the back one, with an even number) has `count` bulbs, its neighbours one fewer.
-  if (l.type === 'spot') {
+  if (l.type === 'spot' && l.pattern === 'fit') for (const [x, d] of fitSpots(T, n)) E.push([x, y, -d, 0]);
+  else if (l.type === 'spot') {
     const m = l.rows ?? 1, s = l.spacing ?? 0, tri = l.pattern === 'tri';
     const sx = s > 0 ? s : L / n, sz = s > 0 ? (tri ? s * Math.sqrt(3) / 2 : s) : D / m;
     for (let j = 0; j < m; j++) {
@@ -48,6 +49,48 @@ export function emitters(T: Tank, l: LightSettings, height = l.height ?? LAMP_Y)
     for (const r of [0.38, 0.62]) for (let c = 0; c < cols; c++) E.push([L * (0.05 + 0.9 * (c + 0.5) / cols), y, -D * r, 0]);
   }
   return E.slice(0, AQ_MAX);
+}
+
+const fitCache = new Map<string, P[]>();
+/**
+ * `n` bulb positions [x, depth] that cover the tank's outline evenly, for odd shapes a grid fits badly (Nathan,
+ * 2026-10-13: a 90° pie wants one bulb toward the corner and one near each end of the arc). Centroidal Voronoi:
+ * every bulb sits at the centre of the floor area nearer to it than to any other bulb, which minimises the mean
+ * distance from the floor to its nearest bulb. Lloyd's iteration over a sample grid of the footprint, from a few
+ * deterministic starts (farthest-point seeding), keeping the best; cached per outline and count.
+ */
+export function fitSpots(T: Tank, n: number): P[] {
+  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.pieDeg}|${n}`;
+  const hit = fitCache.get(key);
+  if (hit) return hit;
+  const g = 48, S: P[] = [];
+  for (let i = 0; i < g; i++) for (let j = 0; j < g; j++) {
+    const x = T.L * (i + 0.5) / g, d = T.D * (j + 0.5) / g;
+    if (insideBy(T, x, d) > 0) S.push([x, d]);
+  }
+  if (!S.length) S.push([T.L / 2, T.D / 2]);
+  const near = (p: P, c: P[]) => { let k = 0, b = Infinity; c.forEach((q, i) => { const v = (p[0] - q[0]) ** 2 + (p[1] - q[1]) ** 2; if (v < b) { b = v; k = i; } }); return [k, b]; };
+  let best: P[] = [], bestE = Infinity;
+  // starts: farthest-point seeding from the centroid, and from each of a few spread samples
+  const mean: P = [S.reduce((a, p) => a + p[0], 0) / S.length, S.reduce((a, p) => a + p[1], 0) / S.length];
+  for (const first of [mean, S[0], S[S.length >> 1], S[S.length - 1], S[Math.floor(S.length / 3)]]) {
+    let c: P[] = [first];
+    while (c.length < n) { let f = S[0], fd = -1; for (const p of S) { const v = near(p, c)[1]; if (v > fd) { fd = v; f = p; } } c.push(f); }
+    for (let it = 0; it < 120; it++) {
+      const acc = c.map(() => [0, 0, 0]);
+      for (const p of S) { const a = acc[near(p, c)[0]]; a[0] += p[0]; a[1] += p[1]; a[2]++; }
+      const next = acc.map((a, i): P => (a[2] ? [a[0] / a[2], a[1] / a[2]] : c[i]));
+      const moved = Math.max(...next.map((q, i) => Math.hypot(q[0] - c[i][0], q[1] - c[i][1])));
+      c = next;
+      if (moved < 0.05) break;
+    }
+    const E = S.reduce((a, p) => a + near(p, c)[1], 0);
+    if (!best.length || E < bestE * (1 - 1e-6)) { bestE = E; best = c; }
+  }
+  // front to back, left to right, so the bulbs keep a stable order
+  best = best.map(p => [+p[0].toFixed(1), +p[1].toFixed(1)] as P).sort((a, b) => a[1] - b[1] || a[0] - b[0]);
+  fitCache.set(key, best); if (fitCache.size > 32) fitCache.delete(fitCache.keys().next().value!);
+  return best;
 }
 
 /** JS twin of the shader loop (card mode: no facing term); used for normalisation. */

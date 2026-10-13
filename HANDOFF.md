@@ -2,6 +2,17 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Optimized spot pattern (2026-10-13)
+
+Nathan: on a 90° pie corner tank he wanted one puck toward the corner and one near each end of the arc; asked for an
+"optimized" pattern for odd shapes given N lights. Spot Pattern "Optimized for the tank shape" (`pattern: 'fit'`):
+`fitSpots(T, n)` in render/lighting.ts places `count` bulbs as a centroidal Voronoi layout of the footprint (Lloyd on a
+48x48 sample grid, 5 deterministic farthest-point starts, lowest mean squared floor-to-nearest-bulb distance kept;
+cached). Rows and Spacing hidden in this mode; Count goes to 12 here (6 otherwise; capped back when leaving it).
+90° pie, r 600, N=3: one on the bisector 200 mm in from the corner, two ~180 mm out from the centre line near the arc
+ends (cell centres, so inset from the glass rather than in the corners). Rect N=2 = quarter points. Shot
+`shots/pie_fit3_top.jpg`. Tests test/lightfit.test.ts.
+
 ## Hardscape surface grit (2026-10-13)
 
 Nathan: driftwood, caves and rocks looked too clean; wanted randomly generated knots, crevices and cracks.
