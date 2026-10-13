@@ -1,0 +1,200 @@
+{
+ "version": 9,
+ "name": "Betta bowl",
+ "units": "in",
+ "tanks": [
+  {
+   "tank": {
+    "L": 300,
+    "H": 213.8,
+    "D": 300,
+    "shape": "bowl",
+    "bowlFloor": 200,
+    "bowlTop": 220
+   },
+   "camera": {
+    "dist": 3000,
+    "az": 0,
+    "el": 14,
+    "zoom": 2.6
+   },
+   "render": {
+    "edge": "a2c",
+    "grid": false,
+    "rim": true,
+    "edges": true,
+    "beams": false,
+    "pop": 0.15,
+    "bg": "none",
+    "bgSides": [
+     "back"
+    ],
+    "bgArc": 145,
+    "glass": "auto",
+    "glassType": "standard"
+   },
+   "light": {
+    "type": "spot",
+    "count": 1,
+    "rows": 1,
+    "pattern": "grid",
+    "spacing": 0,
+    "cone": 52,
+    "bright": 1,
+    "kelvin": 6500,
+    "room": 0.15,
+    "height": 250
+   },
+   "substrate": {
+    "show": true,
+    "type": "pea",
+    "custom": {
+     "grain": "sand",
+     "color": "#cbb894",
+     "grain2": "none",
+     "color2": "#6f6556",
+     "share": 30,
+     "mix": 0.5
+    },
+    "fl": 25,
+    "fr": 25,
+    "bl": 25,
+    "br": 25
+   },
+   "layout": {
+    "id": "none",
+    "seed": 3
+   },
+   "terrain": {
+    "on": false,
+    "cols": 7,
+    "rows": 0,
+    "h": []
+   },
+   "water": {
+    "on": true,
+    "level": 0.85,
+    "color": "#7fb8a8",
+    "opacity": 0
+   },
+   "lid": "open",
+   "stand": {
+    "show": true,
+    "height": 762,
+    "finish": "oak",
+    "style": "table",
+    "table": {
+     "shape": "round",
+     "L": 500,
+     "D": 500,
+     "x": 0,
+     "z": 0
+    }
+   },
+   "wall": {
+    "show": true,
+    "side": "back",
+    "color": "#d8d2c6"
+   },
+   "person": {
+    "show": false,
+    "height": 1750,
+    "side": "left"
+   },
+   "fish": [
+    {
+     "id": 1,
+     "species": "betta",
+     "x": 214.1362173249945,
+     "y": 127.39580375371546,
+     "depth": 143.0184115888551,
+     "yaw": 166,
+     "pitch": 3,
+     "roll": -2,
+     "bend": 0.14
+    },
+    {
+     "id": 2,
+     "species": "nerite",
+     "x": 182.54332014456475,
+     "y": 38.78222546689212,
+     "depth": 23.079392736746854,
+     "yaw": 10,
+     "pitch": 0,
+     "roll": 0,
+     "bend": 0,
+     "surface": "glass"
+    }
+   ],
+   "items": [
+    {
+     "id": 1,
+     "kind": "wood",
+     "variant": "mopani",
+     "seed": 74,
+     "x": 150,
+     "depth": 170,
+     "lift": 0,
+     "yaw": 20,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 120
+    },
+    {
+     "id": 2,
+     "kind": "plant",
+     "variant": "anubias",
+     "seed": 111,
+     "x": 122.66303535507203,
+     "depth": 195.55699392915704,
+     "lift": 0,
+     "yaw": 0,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 70
+    },
+    {
+     "id": 3,
+     "kind": "plant",
+     "variant": "fern",
+     "seed": 148,
+     "x": 180.98017422168715,
+     "depth": 194.96594424274494,
+     "lift": 0,
+     "yaw": 0,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 110
+    },
+    {
+     "id": 4,
+     "kind": "stone",
+     "variant": "river",
+     "seed": 185,
+     "x": 205,
+     "depth": 120,
+     "lift": 0,
+     "yaw": 0,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 45
+    },
+    {
+     "id": 5,
+     "kind": "plant",
+     "variant": "carpet",
+     "seed": 222,
+     "x": 110,
+     "depth": 120,
+     "lift": 0,
+     "yaw": 0,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 90
+    }
+   ]
+  }
+ ],
+ "active": 0,
+ "camLock": true
+}
