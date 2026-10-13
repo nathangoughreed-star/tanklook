@@ -10,6 +10,36 @@ import { drawViewMap } from './viewmap';
 import { applyFraming, fovFor, frameBox, frameStraightOn, placeCamera, windowCentre } from './camera';
 import { roomLevel, setLightUniforms, setWaterUniforms } from './lighting';
 import { setMaxAnisotropy } from './textures';
+import { PERSON_BODY, PERSON_HEAD } from '../art/placeholder';
+
+type Pt2 = [number, number];
+const cross = (o: Pt2, a: Pt2, b: Pt2) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+/** Convex hull (monotone chain), anticlockwise. */
+function convexHull(pts: Pt2[]): Pt2[] {
+  const p = [...pts].sort((a, b) => a[0] - b[0] || a[1] - b[1]), lo: Pt2[] = [], up: Pt2[] = [];
+  for (const q of p) { while (lo.length > 1 && cross(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop(); lo.push(q); }
+  for (const q of p.reverse()) { while (up.length > 1 && cross(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop(); up.push(q); }
+  return [...lo.slice(0, -1), ...up.slice(0, -1)];
+}
+const inside = (q: Pt2, poly: Pt2[]) => {   // even-odd rule, any simple polygon
+  let r = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const [xi, yi] = poly[i], [xj, yj] = poly[j];
+    if ((yi > q[1]) !== (yj > q[1]) && q[0] < (xj - xi) * (q[1] - yi) / (yj - yi) + xi) r = !r;
+  }
+  return r;
+};
+/** Do two simple polygons overlap (an edge crossing, or one inside the other)? */
+function polysOverlap(a: Pt2[], b: Pt2[]) {
+  for (let i = 0; i < a.length; i++) {
+    const p = a[i], q = a[(i + 1) % a.length];
+    for (let j = 0; j < b.length; j++) {
+      const r = b[j], s = b[(j + 1) % b.length];
+      if (cross(p, q, r) * cross(p, q, s) < 0 && cross(r, s, p) * cross(r, s, q) < 0) return true;
+    }
+  }
+  return inside(a[0], b) || inside(b[0], a);
+}
 
 export interface Viewport extends Partial<BuiltTank> {
   /** Index into scene.tanks (0 = A, 1 = B). */
@@ -210,16 +240,26 @@ export class Viewer {
     const tank = new THREE.Box3(new THREE.Vector3(0, bottom, -vp.T.D), new THREE.Vector3(vp.T.L, vp.T.H + headroom, 0));
     const body = new THREE.Box3().setFromObject(person);
     if (body.distanceToPoint(cam.position) >= tank.distanceToPoint(cam.position)) return false; // behind: the tank covers it
-    const rect = (b: THREE.Box3) => {
-      let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
-      for (let i = 0; i < 8; i++) {
-        const p = this.corner.set(i & 1 ? b.max.x : b.min.x, i & 2 ? b.max.y : b.min.y, i & 4 ? b.max.z : b.min.z).project(cam);
-        x0 = Math.min(x0, p.x); x1 = Math.max(x1, p.x); y0 = Math.min(y0, p.y); y1 = Math.max(y1, p.y);
-      }
-      return { x0, x1, y0, y1 };
+    // compare the shapes actually drawn, not their screen boxes: the drawn figure (not its card or the card's
+    // turned bounding box) against the tank's own outline (not the rectangle around it, whose empty corners beside a
+    // turned tank used to hide a person standing clear of the glass)
+    const h = (person as THREE.Mesh<THREE.PlaneGeometry>).geometry.parameters.height;
+    let behindEye = 0;
+    const toScreen = (x: number, y: number) => {   // figure coords (heights; y down from the head) -> NDC
+      const p = this.corner.set(x * h, h * (1 - y), 0).applyMatrix4(person.matrixWorld);
+      if (p.clone().applyMatrix4(cam.matrixWorldInverse).z >= 0) behindEye++;
+      p.project(cam); return [p.x, p.y] as Pt2;
     };
-    const a = rect(body), t = rect(tank);
-    return a.x0 < t.x1 && a.x1 > t.x0 && a.y0 < t.y1 && a.y1 > t.y0;
+    const bodyPoly = PERSON_BODY.map(([x, y]) => toScreen(x, y));
+    const headPoly = Array.from({ length: 16 }, (_, i) => toScreen(PERSON_HEAD.rx * Math.cos(i * Math.PI / 8), PERSON_HEAD.y + PERSON_HEAD.ry * Math.sin(i * Math.PI / 8)));
+    if (behindEye) return behindEye < bodyPoly.length + headPoly.length; // partly behind the eye: right up close, it covers the view
+    const corners: Pt2[] = [];
+    for (let i = 0; i < 8; i++) {
+      const p = this.corner.set(i & 1 ? tank.max.x : tank.min.x, i & 2 ? tank.max.y : tank.min.y, i & 4 ? tank.max.z : tank.min.z).project(cam);
+      corners.push([p.x, p.y]);
+    }
+    const hull = convexHull(corners);
+    return polysOverlap(bodyPoly, hull) || polysOverlap(headPoly, hull);
   }
 
   // ---------- Picking ----------

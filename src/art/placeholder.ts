@@ -218,16 +218,20 @@ function pebbleSprite(t: SubstrateLook, r: () => number) {
  * Neutral human silhouette for scale, standing, front view. Drawn head-to-toe across the full canvas height H
  * (so card height == person height); x in units of H from the centre line.
  */
+const PERSON_R: [number, number][] = [ // right half: neck, out along the shoulder, down the arm and back up, down the body and leg
+  [0.034, 0.118], [0.1, 0.148], [0.135, 0.175], [0.15, 0.3], [0.148, 0.455], [0.132, 0.49], [0.114, 0.458],
+  [0.105, 0.235], [0.094, 0.3], [0.087, 0.42], [0.097, 0.52], [0.086, 0.75], [0.066, 0.962], [0.084, 0.996],
+  [0.018, 0.998], [0.016, 0.76], [0.0, 0.535],
+];
+/** The scale person's outline, in heights: x across from the centre line, y down from the top of the head.
+ *  The body is one closed outline; the head an ellipse (centre and radii). Shared with the viewer's "does it block" test. */
+export const PERSON_BODY: [number, number][] = [...PERSON_R, ...PERSON_R.slice(0, -1).reverse().map(([x, y]) => [-x, y] as [number, number])];
+export const PERSON_HEAD = { y: 0.064, rx: 0.052, ry: 0.062 };
+
 export function drawPerson(ctx: Ctx, W: number, H: number) {
-  const R: [number, number][] = [ // right half: neck, out along the shoulder, down the arm and back up, down the body and leg
-    [0.034, 0.118], [0.1, 0.148], [0.135, 0.175], [0.15, 0.3], [0.148, 0.455], [0.132, 0.49], [0.114, 0.458],
-    [0.105, 0.235], [0.094, 0.3], [0.087, 0.42], [0.097, 0.52], [0.086, 0.75], [0.066, 0.962], [0.084, 0.996],
-    [0.018, 0.998], [0.016, 0.76], [0.0, 0.535],
-  ];
-  const pts = [...R, ...R.slice(0, -1).reverse().map(([x, y]) => [-x, y] as [number, number])];
   const P = (x: number, y: number): [number, number] => [W / 2 + x * H, 2 + y * (H - 4)];
   ctx.lineJoin = 'round'; ctx.fillStyle = '#7d8593'; ctx.strokeStyle = '#3a3f48'; ctx.lineWidth = 5;
-  ctx.beginPath(); pts.forEach(([x, y], i) => { const [px, py] = P(x, y); if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py); });
+  ctx.beginPath(); PERSON_BODY.forEach(([x, y], i) => { const [px, py] = P(x, y); if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py); });
   ctx.closePath(); ctx.fill(); ctx.stroke();
-  const [hx, hy] = P(0, 0.064); ctx.beginPath(); ctx.ellipse(hx, hy, 0.052 * H, 0.062 * H, 0, 0, 7); ctx.fill(); ctx.stroke();
+  const [hx, hy] = P(0, PERSON_HEAD.y); ctx.beginPath(); ctx.ellipse(hx, hy, PERSON_HEAD.rx * H, PERSON_HEAD.ry * H, 0, 0, 7); ctx.fill(); ctx.stroke();
 }
