@@ -48,6 +48,12 @@ conflicts on merge: keep both sections. Each lane adds its own dated section at 
 Lane B DONE (`ff590db`). Lane F added 2026-10-13: example tanks, `../Glass-Box-examples` / `examples`, launch config
 `examples` 5313; owns the Open dialog's examples list in `src/ui/panels.ts` + `index.html`, and new example files.
 Lane G (fixes from shots/audit/AUDIT.md) waits for lane D's report; it takes over `src/ui/*` after F lands.
+**Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_e1923781-40bc-48d3-84f3-ed380e471779`
+("Lanes coordinator"). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
+and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says
+what landed (commit), what is still open, and which files are now free. The coordinator then sends Nathan the prompts
+for any chats that can start now. If a prompt is still waiting when another lane opens, it sends all waiting prompts again
+in one new message. Every new lane prompt includes this protocol. Questions for Nathan stay in the lane's own chat.
 Later lane E (corals + live rock as items) waits for A to land: it shares `scene/items.ts` / `render/items.ts`.
 
 ## Pan stays put (2026-10-13)
