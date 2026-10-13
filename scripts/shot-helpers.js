@@ -5,14 +5,14 @@
 
 const wait = ms => new Promise(r => setTimeout(r, ms));
 
-export async function shot(name, { species = 'discus', az = 0, el = 0, dist = 1200, zoom = 1.8, fade = true, wrap = true, on = true, crop = 0.62, mult = 2, frame = null } = {}) {
+export async function shot(name, { species = 'discus', az = 0, el = 0, dist = 1200, zoom = 1.8, fade = true, wrap = true, on = true, crop = 0.62, mult = 2, frame = null, sex } = {}) {
   const { store, viewer, fish3d } = window.__gb;
   fish3d.fade = fade; fish3d.wrap = wrap; fish3d.on = on;
   // one tank (split views shrink the picture), no hardscape
   if (store.scene.tanks.length > 1) store.update(s => { s.tanks = [s.tanks[s.active]]; s.active = 0; });
   store.edit(t => {
     t.layout = { id: 'none', seed: 1 }; t.items = [];
-    t.fish = [{ id: 1, species, x: t.tank.L / 2, y: t.tank.H / 2, depth: t.tank.D / 2, yaw: 0, pitch: 0, roll: 0, bend: 0 }];
+    t.fish = [{ id: 1, species, x: t.tank.L / 2, y: t.tank.H / 2, depth: t.tank.D / 2, yaw: 0, pitch: 0, roll: 0, bend: 0, ...(sex ? { sex } : {}) }];
   });
   store.cam(c => { c.dist = dist; c.az = az; c.el = el; c.zoom = zoom; });
   store.select(null);

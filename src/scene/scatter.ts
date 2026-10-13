@@ -3,7 +3,7 @@
 // (snails, shrimp, plecos) on the substrate, the glass or the hardscape as their species allows, swimmers in their
 // favoured band of the water column ('level'), groups of 3+ of a 'school' species in a tight aligned school and of a
 // 'shoal' species in a loose group, everyone else spread apart.
-import { clingsTo, fishTL, getSpecies, type Species } from '../data/species';
+import { clingsTo, fishTL, getSpecies, speciesOf, type Species } from '../data/species';
 import { clamp, clampFish, spawnSnail, waterY } from './physics';
 import { hardscape } from './items';
 import { inside } from './shape';
@@ -22,8 +22,8 @@ const wrap = (a: number) => (a > 180 ? a - 360 : a <= -180 ? a + 360 : a);
 export function randomSize(f: Fish, sp: Species, pct: number, r: () => number) {
   const n = Math.sqrt(-2 * Math.log(1 - r())) * Math.cos(2 * Math.PI * r()); // standard normal (Box–Muller)
   const sd = sp.kind === 'snail' || sp.surfaces ? 5 : 8;
-  const tl = Math.round(sp.tl * clamp(pct + n * sd, 15, 130) / 100);
-  if (tl === sp.tl) delete f.tl; else f.tl = tl;
+  const adult = fishTL({ sex: f.sex }, sp), tl = Math.round(adult * clamp(pct + n * sd, 15, 130) / 100);
+  if (tl === adult) delete f.tl; else f.tl = tl;
 }
 
 /** Part of the water column (0 = just above the ground, 1 = just under the surface) each level favours. */
@@ -100,15 +100,15 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string, sizePc
     const { fish } = e;
     if (sp.habitat === 'land' || sp.habitat === 'both') {
       for (const f of fish) {
-        const w = fishTL(f, sp), p = spot(w / 2, w * sp.aspect * 1.5);
-        Object.assign(f, { x: p.x, depth: p.depth, y: bandY(p.x, p.depth, w * sp.aspect, 0.1 + r() * 0.5) }, randomPose(sp, r, r() < 0.5 ? 0 : 180));
+        const w = fishTL(f, sp), a = speciesOf(f)!.aspect, p = spot(w / 2, w * a * 1.5);
+        Object.assign(f, { x: p.x, depth: p.depth, y: bandY(p.x, p.depth, w * a, 0.1 + r() * 0.5) }, randomPose(sp, r, r() < 0.5 ? 0 : 180));
         placeOnLand(s, sp, f, r); clampFish(f, A); note(f, w);
       }
       continue;
     }
     if (!grouped(sp, fish.length)) {
       for (const f of fish) {
-        const w = fishTL(f, sp), h = w * sp.aspect;
+        const w = fishTL(f, sp), h = w * speciesOf(f)!.aspect;
         const p = roomiest(w, () => { const q = spot(w / 2, h * 1.5); return { ...q, y: sp.zone === 'bottom' ? g(q.x, q.depth) : bandY(q.x, q.depth, h, bandT(sp)) }; });
         Object.assign(f, p, randomPose(sp, r, r() < 0.5 ? 0 : 180)); clampFish(f, A); note(f, w);
       }

@@ -452,6 +452,53 @@ export const PLANS: Record<string, Plan> = {
     eye: { r: 0.022, iris: ['#c8b890', '#3a3020'] } },
 };
 
+// ---------- females of the dimorphic species (species.json `female`): the male's plan with the female's shape, fins and
+// colours. Females of these are shorter-finned and duller; livebearer females are larger, deeper bodied and carry a dark
+// gravid spot above the anal fin; dwarf cichlid females are smaller with a coloured belly.
+const her = (male: string, o: Partial<Plan>): Plan => ({ ...PLANS[male], ...o });
+Object.assign(PLANS, {
+  // short round tail and fins, deeper body, duller red with faint stress stripes, white egg spot behind the ventrals
+  betta_f: her('betta', { depth: 0.27, pedU: 0.24, ped: 0.07, peak: 0.45, shade: ['#4e2630', '#7e3440', '#a05a5a'], tail: { type: 'round', h: 0.15, tint: '#8a2a3a', a: 0.8 },
+    dorsal: { u0: 0.42, u1: 0.56, h: 0.08, shape: 'round', a: 0.8 }, anal: { u0: 0.3, u1: 0.6, h: 0.09, shape: 'long', a: 0.8 }, pelvic: { u: 0.68, len: 0.08, thread: true, tint: '#9c2236' },
+    marks: [{ k: 'band', u0: 0.28, u1: 0.85, v0: -0.045, v1: -0.025, c: '#3a1418', a: 0.35, f: 0.012 }, { k: 'band', u0: 0.28, u1: 0.8, v0: 0.02, v1: 0.04, c: '#3a1418', a: 0.3, f: 0.012 },
+      { k: 'spots', n: 30, u0: 0.35, u1: 0.85, v0: -0.08, v1: 0.08, r: 0.008, c: '#4f7fb8', a: 0.25 }, { k: 'blob', u: 0.6, v: 0.115, ru: 0.014, rv: 0.011, c: '#f4efe6', a: 0.95 }],
+    finMarks: [{ k: 'spots', n: 20, u0: 0, u1: 0.3, v0: -0.2, v1: 0.2, r: 0.01, c: '#4f7fb8', a: 0.2 }] }),
+  // larger and deeper, olive-silver with a net of scales, plain short tail, dark gravid spot, a fan anal fin (no gonopodium)
+  guppy_f: her('guppy', { thick: 0.5, depth: 0.27, pedU: 0.27, ped: 0.05, peak: 0.5, snout: 0.5, shade: ['#76785e', '#b2b196', '#dcd8c4'], tail: { type: 'round', h: 0.13, tint: '#c8b490', a: 0.6 }, fin: '#c8bea4',
+    dorsal: { u0: 0.42, u1: 0.54, h: 0.07 }, anal: { u0: 0.38, u1: 0.48, h: 0.06 }, pelvic: { u: 0.63, len: 0.05 },
+    marks: [{ k: 'blob', u: 0.5, v: 0.075, ru: 0.045, rv: 0.035, c: '#2a2420', a: 0.55 }], finMarks: [{ k: 'spots', n: 12, u0: 0.02, u1: 0.22, v0: -0.1, v1: 0.1, r: 0.01, c: '#7a6a4a', a: 0.3 }],
+    eye: { r: 0.024, iris: ['#c9b890', '#4a3e2c'] } }),
+  // no sword: a plain notched tail; deeper, a fan anal fin, gravid spot
+  swordtail_f: her('swordtail', { depth: 0.3, pedU: 0.22, ped: 0.055, shade: ['#a84a34', '#d0684a', '#e6987a'], tail: { type: 'notch', h: 0.15, tint: '#d26a48' },
+    anal: { u0: 0.38, u1: 0.5, h: 0.07 }, pelvic: { u: 0.63, len: 0.05 }, finMarks: [], marks: [{ k: 'blob', u: 0.48, v: 0.09, ru: 0.035, rv: 0.03, c: '#4a1a10', a: 0.45 }] }),
+  // silvery grey with faint brownish bars, rounded dorsal, no blue fin edges
+  dwarfgourami_f: her('dwarfgourami', { shade: ['#5f6f78', '#9ba4a3', '#cbcfc6'], tail: { type: 'round', h: 0.16, tint: '#a8aca4' }, fin: '#b0b2aa',
+    dorsal: { u0: 0.27, u1: 0.55, h: 0.08, shape: 'round' }, anal: { u0: 0.2, u1: 0.7, h: 0.1, shape: 'round' }, pelvic: { u: 0.72, len: 0.38, thread: true, tint: '#c8a888' },
+    marks: [0.32, 0.4, 0.48, 0.56, 0.64, 0.72, 0.8].map(u => ({ k: 'band' as const, u0: u, u1: u + 0.03, v0: -0.2, v1: 0.2, c: '#a07a5e', a: 0.3, f: 0.012 })),
+    finMarks: [{ k: 'spots', n: 20, u0: 0.05, u1: 0.6, v0: -0.3, v1: 0.3, r: 0.01, c: '#8a8478', a: 0.3 }] }),
+  // drab silvery tan with a brown stripe from eye to tail, no black throat
+  honeygourami_f: her('honeygourami', { shade: ['#8a7a5a', '#c2ae86', '#e4d8bc'], tail: { type: 'round', h: 0.15, tint: '#d0c0a0' }, fin: '#d2c4a4',
+    anal: { u0: 0.22, u1: 0.68, h: 0.1, shape: 'round' }, pelvic: { u: 0.7, len: 0.28, thread: true, tint: '#e0c898' },
+    marks: [{ k: 'band', u0: 0.24, u1: 0.84, v0: -0.012, v1: 0.022, c: '#8a6a44', a: 0.45, f: 0.05 }] }),
+  // tan-brown with the dark lateral stripe clearer, a touch deeper
+  cherrybarb_f: her('cherrybarb', { depth: 0.31, shade: ['#7c6448', '#bea27c', '#e0ceb0'], tail: { type: 'fork', h: 0.15, tint: '#c8a888' }, fin: '#cdb094',
+    marks: [{ k: 'band', u0: 0.2, u1: 0.9, v0: -0.012, v1: 0.014, c: '#3a2a1e', a: 0.75, f: 0.01 }] }),
+  // smaller and rounder, bright cherry belly, rounded fins with a gold-edged dorsal and dark dorsal spots
+  kribensis_f: her('kribensis', { belly: 0.3, depth: 0.34, peak: 0.5, tail: { type: 'round', h: 0.14, tint: '#c8ac6a' },
+    dorsal: { u0: 0.25, u1: 0.66, h: 0.08, shape: 'round', edge: '#d8b040' }, anal: { u0: 0.24, u1: 0.44, h: 0.07, shape: 'round' },
+    marks: [{ k: 'band', u0: 0.2, u1: 0.92, v0: -0.02, v1: 0.02, c: '#2a2620', a: 0.8, f: 0.012 }, { k: 'blob', u: 0.6, v: 0.12, ru: 0.18, rv: 0.08, c: '#c8305a', a: 0.9 }, { k: 'blob', u: 0.62, v: 0.1, ru: 0.08, rv: 0.04, c: '#8a3a9a', a: 0.35 }],
+    finMarks: [{ k: 'blob', u: 0.32, v: -0.18, ru: 0.025, rv: 0.025, c: '#1a1a1a', a: 0.85 }, { k: 'blob', u: 0.45, v: -0.185, ru: 0.022, rv: 0.022, c: '#1a1a1a', a: 0.8 }] }),
+  // smaller, lower dorsal, a pink belly patch, fewer blue spangles
+  gbr_f: her('gbr', { dorsal: { u0: 0.22, u1: 0.62, h: 0.1, shape: 'round', edge: '#c8443a' },
+    marks: [{ k: 'blob', u: 0.86, v: -0.02, ru: 0.12, rv: 0.12, c: '#e0b04a', a: 0.6 }, { k: 'bars', us: [0.87], w: 0.04, c: '#1a1a1e', a: 0.85 },
+      { k: 'blob', u: 0.62, v: -0.04, ru: 0.05, rv: 0.06, c: '#1a1a1e', a: 0.75 }, { k: 'blob', u: 0.6, v: 0.14, ru: 0.13, rv: 0.07, c: '#d8587a', a: 0.75 },
+      { k: 'spots', n: 40, u0: 0.25, u1: 0.8, v0: -0.15, v1: 0.1, r: 0.011, c: '#5aa0d8', a: 0.55 }],
+    finMarks: [{ k: 'spots', n: 25, u0: 0, u1: 0.65, v0: -0.4, v1: 0.4, r: 0.01, c: '#5aa0d8', a: 0.4 }] }),
+  // no orange-red breast, a rounded dorsal and a plain anal fin
+  gourami_f: her('gourami', { dorsal: { u0: 0.22, u1: 0.45, h: 0.07, shape: 'round' }, anal: { u0: 0.18, u1: 0.68, h: 0.08, shape: 'round' }, pelvic: { u: 0.72, len: 0.35, thread: true, tint: '#d8ccb0' },
+    marks: PLANS.gourami.marks!.slice(1) }),
+});
+
 const SHRIMP: Record<string, ShrimpSpec> = {
   cherryshrimp: { body: ['#b8242a', '#d8444a'] },
   amano: { body: ['#6e7a7c', '#94a0a0'], glass: 0.3, dashes: '#3a1e16', stripe: '#e8d8a0' },

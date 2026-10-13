@@ -1,6 +1,6 @@
 // Owns the WebGL renderer and the one or two viewports (one per tank setup; two after a split). Render-on-demand.
 import * as THREE from 'three';
-import { fishTL, getSpecies } from '../data/species';
+import { fishTL, speciesOf } from '../data/species';
 import { D2R, depthRatio, floorY, tankUnderside } from '../scene/physics';
 import { tableOn, tableRing } from '../scene/table';
 import type { Store } from '../scene/store';
@@ -186,7 +186,7 @@ export class Viewer {
     return new THREE.Vector2((p.x + 1) / 2 * vp.w, (1 - p.y) / 2 * vp.h);
   }
   private screenLen(vp: Viewport, f: Fish) {
-    const m = vp.meshById?.get(f.id), sp = getSpecies(f.species);
+    const m = vp.meshById?.get(f.id), sp = speciesOf(f);
     if (!m || !sp) return null;
     const tl = fishTL(f, sp), a = new THREE.Vector3(-tl / 2, 0, 0).applyMatrix4(m.matrixWorld), b = new THREE.Vector3(tl / 2, 0, 0).applyMatrix4(m.matrixWorld);
     // reference: the identical fish (same pose) slid forward to the front glass, so the ratio isolates depth

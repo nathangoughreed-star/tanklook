@@ -21,9 +21,9 @@ function speciesModel(sp: Species) {
     return g;
   }
   if (solid && isHerp3D(sp.art)) { g.add(herpBody(sp.art, 1)); return g; }
-  const tex = fishTexture(sp.id, EDGE, solid, solid && fish3d.fade);
-  const m = new THREE.Mesh(cardGeometry(1, sp.aspect, 0), cardMaterial(`fish:${sp.id}:${solid}:${solid && fish3d.fade}`, tex, EDGE));
-  if (solid) m.add(fishBody(sp.art, sp.aspect, 1, 0, fishBodyTexture(sp.id), EDGE));
+  const tex = fishTexture(sp, EDGE, solid, solid && fish3d.fade);
+  const m = new THREE.Mesh(cardGeometry(1, sp.aspect, 0), cardMaterial(`fish:${sp.look}:${solid}:${solid && fish3d.fade}`, tex, EDGE));
+  if (solid) m.add(fishBody(sp.art, sp.aspect, 1, 0, fishBodyTexture(sp), EDGE));
   g.add(m);
   return g;
 }

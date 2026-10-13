@@ -1,7 +1,7 @@
 // Keeps animals where they live: swimmers between the ground and the surface, bottom dwellers on submerged ground,
 // animals on the glass below the water line, land animals on ground above it; amphibious ('both') animals swim where the water is
 // deep enough for them and rest on the ground elsewhere. Floor snails may sit anywhere, emerged land included.
-import { fishTL, getSpecies, type Species } from '../data/species';
+import { fishTL, speciesOf, type Species } from '../data/species';
 import { clamp, clampFish, waterY } from './physics';
 import { groundHeight, nearestLand, nearestWater } from './terrain';
 import type { Fish, Tank, TankSetup } from './types';
@@ -15,7 +15,7 @@ export function restsOnGround(s: TankSetup, T: Tank, sp: Species, x: number, dep
 
 /** Highest centre height (mm) for this animal at water surface `top`; null = its height is not free. */
 export function maxFishY(f: Fish, top: number): number | null {
-  const sp = getSpecies(f.species); if (!sp) return null;
+  const sp = speciesOf(f); if (!sp) return null;
   const w = fishTL(f, sp);
   if (f.surface === 'glass') return Math.max(0, top - w / 2); // a snail or pleco on the glass
   if (sp.zone === 'bottom' || sp.habitat === 'land' || sp.kind === 'snail') return null; // rests on the ground or hardscape
@@ -24,7 +24,7 @@ export function maxFishY(f: Fish, top: number): number | null {
 
 /** Move one fish into its tank's water: onto a spot with enough water over the ground, then between ground and surface. */
 export function fitFish(f: Fish, s: TankSetup) {
-  const sp = getSpecies(f.species); if (!sp) return;
+  const sp = speciesOf(f); if (!sp) return;
   const A = s.tank, top = waterY(A, s.water.level), w = fishTL(f, sp);
   if (f.surface === 'glass') { f.y = clamp(f.y, 0, Math.max(0, top - w / 2)); return; }
   if (sp.kind === 'snail') return;

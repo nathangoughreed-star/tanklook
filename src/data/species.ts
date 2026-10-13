@@ -30,9 +30,16 @@ export interface Species {
   /** The part of the water column a swimmer favours (steers Shuffle only). Absent = mid water. */
   level?: 'top' | 'low';
   note?: string;
+  /** Texture / material cache key: the id, or `<id>~f` for the female look. */
+  look: string;
+  /** Sexually dimorphic species: the female look (own drawing, adult length, card aspect). The species itself is the male. */
+  female?: Species;
+  sex?: Sex;
 }
+/** 'f' = female; absent = male (or a species drawn the same either way). */
+export type Sex = 'f';
 
-interface RawSpecies { id: string; name: string; sci: string; tl: number; art: string; aspect?: number; zone?: string; kind?: string; group?: string; level?: string; habitat?: string; cling?: string; note?: string }
+interface RawSpecies { id: string; name: string; sci: string; tl: number; art: string; aspect?: number; zone?: string; kind?: string; group?: string; level?: string; habitat?: string; cling?: string; note?: string; female?: { art: string; tl: number } }
 
 function resolve(r: RawSpecies): Species {
   const kind = r.kind === 'snail' ? 'snail' as const : undefined, zone = r.zone === 'bottom' ? 'bottom' as const : undefined;
@@ -41,7 +48,12 @@ function resolve(r: RawSpecies): Species {
   const habitat: Habitat = kind ? 'both' : r.habitat === 'land' || r.habitat === 'both' ? r.habitat : 'water';
   const group = r.group === 'school' || r.group === 'shoal' ? r.group : undefined, level = r.level === 'top' || r.level === 'low' ? r.level : undefined;
   const surfaces: Surface[] | undefined = kind || r.cling === 'any' ? ['floor', 'glass', 'hardscape'] : r.cling === 'hardscape' ? ['floor', 'hardscape'] : undefined;
-  return { id: r.id, name: r.name, sci: r.sci, tl: r.tl, art: r.art, aspect, rest, zone, kind, surfaces, habitat, group, level, note: r.note };
+  const sp: Species = { id: r.id, name: r.name, sci: r.sci, tl: r.tl, art: r.art, aspect, rest, zone, kind, surfaces, habitat, group, level, note: r.note, look: r.id };
+  if (r.female) {
+    const m = artMeta(r.female.art)!;
+    sp.female = { ...sp, art: r.female.art, tl: r.female.tl, aspect: m.aspect, rest: m.rest, look: r.id + '~f', sex: 'f', female: undefined };
+  }
+  return sp;
 }
 
 export const SPECIES: Species[] = (data.species as RawSpecies[]).map(resolve);
@@ -49,8 +61,10 @@ const byId = new Map(SPECIES.map(s => [s.id, s]));
 
 export const getSpecies = (id: string) => byId.get(id);
 export const hasSpecies = (id: string) => byId.has(id);
-/** This fish's total length (mm): its custom size if set, else the species' adult length. */
-export const fishTL = (f: { tl?: number }, sp: Species) => f.tl ?? sp.tl;
+/** The look a fish is drawn and sized with: the species, or its female for a female of a dimorphic species. */
+export const speciesOf = (f: { species: string; sex?: Sex }) => { const sp = byId.get(f.species); return sp && f.sex === 'f' && sp.female ? sp.female : sp; };
+/** This fish's total length (mm): its custom size if set, else the adult length of its sex. */
+export const fishTL = (f: { tl?: number; sex?: Sex }, sp: Species) => f.tl ?? (f.sex === 'f' && sp.female ? sp.female.tl : sp.tl);
 /** Always rests on the ground or hardscape (bottom dwellers, land animals and snails not on glass); 'both' animals depend on the water at their spot. */
 export const restsOnFloor = (sp: Species, surface?: string) => surface !== 'glass' && (sp.zone === 'bottom' || sp.habitat === 'land' || sp.kind === 'snail');
 /** Can it cling to this surface? */

@@ -8,7 +8,7 @@
 // Aquascape items (rocks, wood, caves, plants) go where the pointer meets the ground or another piece, and rest on
 // whatever is under them there; anything resting on the dragged piece rides along. Shift + wheel turns the selected piece.
 import * as THREE from 'three';
-import { clingsTo, fishTL, getSpecies, restsOnFloor } from '../data/species';
+import { clingsTo, fishTL, getSpecies, restsOnFloor, speciesOf } from '../data/species';
 import { restsOnGround } from '../scene/water';
 import { D2R, clamp, clampFish } from '../scene/physics';
 import { clampItem } from '../scene/items';
@@ -123,7 +123,7 @@ export function attachPointer(viewer: Viewer, store: Store) {
       const c = store.scene.tanks[vi].camera; orbit = { i: vi, x: e.clientX, y: e.clientY, az: c.az, el: c.el }; return;
     }
     store.select(hit.fishId);
-    const t = store.scene.tanks[vi], c = t.camera, f = t.fish.find(q => q.id === hit.fishId), sp = f && getSpecies(f.species);
+    const t = store.scene.tanks[vi], c = t.camera, f = t.fish.find(q => q.id === hit.fishId), sp = f && speciesOf(f);
     // the drag plane: the floor or the snail's pane for animals that cling to a surface, else it follows the view
     const surf = f?.surface ?? 'floor';
     const onGround = !!sp && !!f && (restsOnFloor(sp, surf) || (sp.kind !== 'snail' && restsOnGround(t, t.tank, sp, f.x, f.depth, fishTL(f, sp) * sp.aspect)));
