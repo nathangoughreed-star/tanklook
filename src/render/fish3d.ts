@@ -14,7 +14,7 @@ import { cardMaterial, pairedFinTexture } from './textures';
 /** Species drawn in 3D (test set) and switches for before/after pictures. `fade` = the session-10 fixes (turned-away paint fades, card body cut out, body-shape fields, barbels); off = session 9, for pictures. `wrap` = the turned-away paint is smeared lengthwise (bars and spots don't close into hoops over the back and throat); off = session 11's round blur. */
 export const fish3d = { on: true, fade: true, wrap: true, species: new Set(['cardinal', 'discus', 'bronzecory', 'tigerbarb', 'bristlenose', 'kuhli', 'angel', 'danio', 'guppy', 'dwarfgourami', 'gbr', 'harlequin', 'oto', 'clownloach', 'goldfish', 'ember', 'rummynose', 'chili', 'cherrybarb', 'platy', 'molly', 'swordtail', 'betta', 'honeygourami', 'bolivianram', 'kribensis', 'oscar', 'pandacory', 'sae', 'tetra', 'gourami', 'cherryshrimp', 'amano', 'nerite', 'mystery', 'ramshorn', 'trumpet', 'dartfrog', 'treefrog', 'firetoad', 'firenewt', 'axolotl',
   // females of the dimorphic species (species.json `female`)
-  'betta_f', 'guppy_f', 'swordtail_f', 'dwarfgourami_f', 'honeygourami_f', 'cherrybarb_f', 'kribensis_f', 'gbr_f', 'gourami_f', 'peapuffer', 'peapuffer_f']) };
+  'betta_f', 'guppy_f', 'swordtail_f', 'dwarfgourami_f', 'honeygourami_f', 'cherrybarb_f', 'kribensis_f', 'gbr_f', 'gourami_f', 'peapuffer', 'peapuffer_f', 'hatchet', 'cpd', 'cpd_f']) };
 
 export const has3D = (art: string) => fish3d.on && fish3d.species.has(art) && (bodyPlan(art)?.thick != null || art in SNAILS || art in HERP3D);
 

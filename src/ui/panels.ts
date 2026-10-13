@@ -270,6 +270,7 @@ Cancel, then change the name, to keep both.`)) return;
     if (!base) { preview.hidden = true; return; }
     $('spSex').hidden = !base.female;
     $('spSexM').classList.toggle('on', previewSex !== 'f'); $('spSexF').classList.toggle('on', previewSex === 'f');
+    $('addFish').textContent = base.female ? (previewSex ? 'Add females' : 'Add males') : 'Add';
     const sp = previewSex === 'f' && base.female ? base.female : base;
     if (sp.look === previewId) return;
     previewId = sp.look;
@@ -327,13 +328,14 @@ Cancel, then change the name, to keep both.`)) return;
     }, { coalesce: `count:${sp.id}:${sex ?? ''}` });
     if (store.selId != null && !S().fish.some(f => f.id === store.selId)) store.select(null);
   }
+  /** Add a species at its start count, of the sex the preview tile has highlighted (dimorphic species). */
   function addOne(sp: Species) {
-    if (S().fish.some(f => f.species === sp.id)) { status(`${sp.name} is already in the stocking list: use + or type a number.`); return; }
-    // a dimorphic group starts as one male to two females (livebearers, barbs); a lone fish starts male
-    const n = startCount(sp), m = sp.female && n > 1 ? Math.round(n / 3) : n;
-    setCount(sp, () => m);
-    if (n > m) setCount(sp, () => n - m, 'f');
+    const sex = sp.female ? previewSex : undefined;
+    if (S().fish.some(f => inRow(f, sp, sex))) { status(`${rowName(sp, sex)} is already in the stocking list: use + or type a number.`); return; }
+    setCount(sp, () => startCount(sp), sex);
   }
+  /** Stocking name: "Betta (male)" / "Betta (female)" for a dimorphic species, else the name. */
+  const rowName = (sp: Species, sex?: Sex) => sp.name + (sp.female ? (sex ? ' (female)' : ' (male)') : '');
   $('addFish').onclick = () => { const sp = getSpecies(pickId); if (sp) addOne(sp); };
   $('shuffle').onclick = () => {
     if (!S().fish.length) return;
@@ -780,11 +782,10 @@ Cancel, then change the name, to keep both.`)) return;
     for (const [id, side] of PSIDES) $(id).classList.toggle('on', s.person.show && s.person.side === side);
 
     // stocking list: one row per species, in order of arrival (rebuilt only when the counts change)
-    // a dimorphic species has a row per sex, both shown while either has fish ('<id>' male, '<id>~f' female)
+    // a dimorphic species has a row per sex present: '<id>' male, '<id>~f' female
     const counts = new Map<string, number>();
     for (const f of s.fish) {
       const sp = getSpecies(f.species), k = sp?.female && f.sex === 'f' ? f.species + '~f' : f.species;
-      if (sp?.female) for (const q of [f.species, f.species + '~f']) if (!counts.has(q)) counts.set(q, 0);
       counts.set(k, (counts.get(k) ?? 0) + 1);
     }
     const sig = [...counts].join() + '|' + u;
@@ -793,10 +794,9 @@ Cancel, then change the name, to keep both.`)) return;
       list.innerHTML = '';
       for (const [key, n] of counts) {
         const [id, fem] = key.split('~'), sp = getSpecies(id); if (!sp) continue;
-        const sex: Sex | undefined = fem ? 'f' : undefined, sx = sp.female ? ` <span class="sx">${sex ? '♀ female' : '♂ male'}</span>` : '';
-        const who = esc(sp.name) + (sp.female ? (sex ? ' females' : ' males') : '');
+        const sex: Sex | undefined = fem ? 'f' : undefined, who = esc(rowName(sp, sex));
         const row = document.createElement('div'); row.className = 'sr';
-        row.innerHTML = `<span class="nm" title="${esc(sp.sci)}">${esc(sp.name)}${sx}</span><button class="dn" title="One fewer (with none of either sex left, ${esc(sp.name)} leaves the list)" aria-label="One fewer">−</button><input type="number" min="0" max="${LIMITS.maxFish}" value="${n}" aria-label="How many ${who}"><button class="up" title="One more" aria-label="One more">+</button>`;
+        row.innerHTML = `<span class="nm" title="${esc(sp.sci)}">${who}</span><button class="dn" title="One fewer (the last one takes ${who} off the list)" aria-label="One fewer">−</button><input type="number" min="0" max="${LIMITS.maxFish}" value="${n}" aria-label="How many ${who}"><button class="up" title="One more" aria-label="One more">+</button>`;
         row.querySelector<HTMLElement>('.nm')!.onclick = () => { pickId = id; previewSex = sex; preview.hidden = false; renderResults(); };
         row.querySelector<HTMLButtonElement>('.dn')!.onclick = () => setCount(sp, k => k - 1, sex);
         row.querySelector<HTMLButtonElement>('.up')!.onclick = () => setCount(sp, k => k + 1, sex);

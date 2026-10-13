@@ -87,7 +87,6 @@ button.on, button.primary { background: var(--accent); color: #fff; border-color
 .spCard .name { margin-top: 6px; font-weight: 600 }
 .spSex { margin-top: 6px }
 .spSex[hidden], #sexRow[hidden] { display: none }
-.stock .sr .sx { color: var(--muted) }
 .spCard .name i { font-weight: 400; color: var(--muted) }
 .spCard .hint { margin: 2px 0 0 }
 .spHide { position: absolute; top: 12px; right: 14px; z-index: 1; font: inherit; font-size: 12px; line-height: 1; padding: 2px 5px; border: 0; border-radius: 3px; background: var(--panel); color: var(--muted); cursor: pointer }

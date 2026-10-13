@@ -42,6 +42,8 @@ NAMES = {
     'clownloach': 'Clown Loach (Chromobotia macracanthus)',
     'sae': 'Siamese Algae Eater (Crossocheilus siamensis)',
     'peapuffer': 'Dwarf Puffer (Carinotetraodon travancoricus)',
+    'cpd': 'Celestial Pearl Danio (Danio margaritatus)',
+    'hatchet': 'Marbled Hatchet (Carnegiella strigata)',
     'cherryshrimp': 'Red Cherry Shrimp (Neocaridina heteropoda)',
     'amano': 'Amano Shrimp (Cardina multidentata)',
     'nerite': 'Zebra Nerite Snail (Neritina natalensis sp. Zebra)',

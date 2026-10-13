@@ -54,6 +54,12 @@ Nathan asked for a male/female selector with matching shape, colouring and size,
 - Pea puffer added 2026-10-13 (Nathan): `peapuffer` / `peapuffer_f`, 30 mm both, shoal; male = dark belly keel stripe +
   wrinkle lines behind the eye, female rounder and plainer. No pelvic fins, dorsal + anal small and far back, eye r .05
   up .3. AqAdvisor "Dwarf Puffer" 200909300063. Sheet `shots/91_peapuffer.png`.
+- 2026-10-13 (Nathan): Add takes the sex highlighted on the preview tile's Male / Female toggle (button reads "Add males" /
+  "Add females"; the whole start count is that sex); stocking rows show only the sexes present, named "Betta (male)" /
+  "Betta (female)". Replaces the earlier 1 male : 2 females start and the always-both rows.
+- Added 2026-10-13: celestial pearl danio `cpd` / `cpd_f` (25 mm, shoal; male blue with an orange belly and red fins
+  barred black, female green-grey and plain) and marbled hatchetfish `hatchet` (35 mm, school, top; `back: 0.2` gives
+  the straight back over a deep keel; marbled slanting bands = `poly` marks). AqAdvisor ids resolved. Sheet `shots/92_cpd_hatchet.png`.
 - Batch 2 candidates (moderate dimorphism): platy and molly (female bigger, gravid spot; male platy ~45 / female ~60),
   Bolivian ram, bristlenose (male bristles: card only, not 3D yet), cherry shrimp (female more coloured, saddle).
   Male kribensis could get a pointed tail with ocelli and longer dorsal/anal (left as before).

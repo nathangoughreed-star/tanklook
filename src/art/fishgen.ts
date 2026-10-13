@@ -422,6 +422,20 @@ export const PLANS: Record<string, Plan> = {
   goldfish: { thick: 0.55, depth: 0.52, pedU: 0.32, ped: 0.06, peak: 0.45, snout: 0.75, shade: ['#c8642a', '#e88a3a', '#f0b87a'], tail: { type: 'double', h: 0.3, tint: '#e8964e', a: 0.75 }, fin: '#ec9e5e',
     dorsal: { u0: 0.42, u1: 0.68, h: 0.14, shape: 'round', a: 0.75 }, anal: { u0: 0.38, u1: 0.48, h: 0.1, shape: 'round', a: 0.75 }, pelvic: { u: 0.7, len: 0.1 },
     marks: [{ k: 'blob', u: 0.65, v: -0.08, ru: 0.2, rv: 0.14, c: '#ffffff', a: 0.12 }], eye: { r: 0.035, iris: ['#2a2420', '#0a0806'] } },
+  // marbled hatchetfish: straight back, deep keel of a belly (most of the depth under the centre line), upturned mouth,
+  // big high eye, small dorsal set far back over a long anal fin; silvery with dark marbled bands slanting across the keel
+  hatchet: { thick: 0.3, depth: 0.42, pedU: 0.2, ped: 0.035, peak: 0.6, back: 0.2, snout: 0.3, mouth: -0.05, shade: ['#6e7258', '#c8c6b2', '#e6e2d4'], tail: { type: 'fork', h: 0.13 }, fin: N,
+    dorsal: { u0: 0.3, u1: 0.37, h: 0.06 }, anal: { u0: 0.22, u1: 0.45, h: 0.04 }, adipose: true, pelvic: { u: 0.5, len: 0.03 },
+    marks: [{ k: 'band', u0: 0.2, u1: 0.84, v0: -0.035, v1: -0.018, c: '#2a2a22', a: 0.8, f: 0.006 },
+      ...[0.26, 0.38, 0.5, 0.62].map(u => ({ k: 'poly' as const, pts: [[u, -0.01], [u + 0.03, -0.01], [u + 0.2, 0.34], [u + 0.165, 0.34]] as [number, number][], c: '#3a3426', a: 0.7 }))],
+    eye: { r: 0.045, iris: ['#c8c4a8', '#3a3828'], dv: -0.02 } },
+  // celestial pearl danio (male): blue-grey with pearly spots, orange belly, fins barred black and red-orange
+  cpd: { thick: 0.45, depth: 0.22, pedU: 0.2, ped: 0.04, peak: 0.5, snout: 0.4, shade: ['#26323e', '#40505e', '#d8743e'], tail: { type: 'fork', h: 0.14, tint: '#e0502a', a: 0.7 }, fin: '#e0502a',
+    dorsal: { u0: 0.38, u1: 0.5, h: 0.08, shape: 'round', a: 0.75 }, anal: { u0: 0.3, u1: 0.46, h: 0.07, shape: 'round', a: 0.75 }, pelvic: { u: 0.58, len: 0.06, tint: '#e0502a' },
+    marks: [{ k: 'blob', u: 0.62, v: 0.08, ru: 0.22, rv: 0.04, c: '#e07a3a', a: 0.7 }, { k: 'spots', n: 45, u0: 0.24, u1: 0.84, v0: -0.08, v1: 0.05, r: 0.011, c: '#ecdcb0', a: 0.9 }],
+    finMarks: [{ k: 'bars', us: [0.055, 0.135], w: 0.022, c: '#1a1a1e', a: 0.8 },
+      { k: 'band', u0: 0.3, u1: 0.55, v0: -0.148, v1: -0.128, c: '#1a1a1e', a: 0.85, f: 0.004 }, { k: 'band', u0: 0.25, u1: 0.5, v0: 0.135, v1: 0.155, c: '#1a1a1e', a: 0.85, f: 0.004 }],
+    eye: { r: 0.032, iris: ['#c8b890', '#3a3020'] } },
   // pea puffer (male): dark keel stripe along the belly, wrinkle lines behind the eye, yellowish fins
   peapuffer: { thick: 0.75, depth: 0.4, pedU: 0.2, ped: 0.05, peak: 0.65, snout: 0.7, mouth: -0.01, shade: ['#76763a', '#c4b65a', '#ece6cc'], tail: { type: 'round', h: 0.12, tint: '#d8cc80', a: 0.55 }, fin: '#d8cc80',
     dorsal: { u0: 0.22, u1: 0.3, h: 0.08, shape: 'round', a: 0.55 }, anal: { u0: 0.22, u1: 0.3, h: 0.07, shape: 'round', a: 0.55 },
@@ -501,6 +515,11 @@ Object.assign(PLANS, {
       { k: 'blob', u: 0.62, v: -0.04, ru: 0.05, rv: 0.06, c: '#1a1a1e', a: 0.75 }, { k: 'blob', u: 0.6, v: 0.14, ru: 0.13, rv: 0.07, c: '#d8587a', a: 0.75 },
       { k: 'spots', n: 40, u0: 0.25, u1: 0.8, v0: -0.15, v1: 0.1, r: 0.011, c: '#5aa0d8', a: 0.55 }],
     finMarks: [{ k: 'spots', n: 25, u0: 0, u1: 0.65, v0: -0.4, v1: 0.4, r: 0.01, c: '#5aa0d8', a: 0.4 }] }),
+  // greener and duller, rounder belly, smaller spots, paler fins with faint bars
+  cpd_f: her('cpd', { depth: 0.24, shade: ['#46503e', '#76806a', '#c8a07a'], tail: { type: 'fork', h: 0.14, tint: '#d8a07a', a: 0.55 }, fin: '#d8a07a',
+    dorsal: { u0: 0.38, u1: 0.5, h: 0.07, shape: 'round', a: 0.6 }, anal: { u0: 0.3, u1: 0.46, h: 0.06, shape: 'round', a: 0.6 }, pelvic: { u: 0.58, len: 0.06, tint: '#d8a07a' },
+    marks: [{ k: 'blob', u: 0.62, v: 0.09, ru: 0.22, rv: 0.04, c: '#d8a070', a: 0.4 }, { k: 'spots', n: 40, u0: 0.24, u1: 0.84, v0: -0.08, v1: 0.05, r: 0.009, c: '#e4dcbc', a: 0.75 }],
+    finMarks: [{ k: 'bars', us: [0.055, 0.135], w: 0.02, c: '#2a2a2a', a: 0.45 }] }),
   // rounder, no belly stripe or eye wrinkles, rounder spots, clear fins
   peapuffer_f: her('peapuffer', { thick: 0.8, depth: 0.44, tail: { type: 'round', h: 0.12, tint: '#d4d0b8', a: 0.5 }, fin: '#d4d0b8',
     dorsal: { u0: 0.22, u1: 0.3, h: 0.08, shape: 'round', a: 0.5 }, anal: { u0: 0.22, u1: 0.3, h: 0.07, shape: 'round', a: 0.5 },

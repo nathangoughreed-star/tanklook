@@ -9,6 +9,8 @@
   {"id": "harlequin", "name": "Harlequin rasbora", "sci": "Trigonostigma heteromorpha", "tl": 45, "group": "school", "art": "harlequin"},
   {"id": "chili", "name": "Chili rasbora", "sci": "Boraras brigittae", "tl": 18, "group": "school", "art": "chili"},
   {"id": "danio", "name": "Zebra danio", "sci": "Danio rerio", "tl": 50, "group": "school", "art": "danio"},
+  {"id": "cpd", "name": "Celestial pearl danio", "sci": "Danio margaritatus", "tl": 25, "group": "shoal", "art": "cpd", "female": {"art": "cpd_f", "tl": 25}},
+  {"id": "hatchet", "name": "Marbled hatchetfish", "sci": "Carnegiella strigata", "tl": 35, "group": "school", "level": "top", "art": "hatchet"},
   {"id": "cherrybarb", "name": "Cherry barb", "sci": "Rohanella (Puntius) titteya", "tl": 50, "group": "shoal", "level": "low", "art": "cherrybarb", "female": {"art": "cherrybarb_f", "tl": 50}},
   {"id": "tigerbarb", "name": "Tiger barb", "sci": "Puntigrus tetrazona", "tl": 70, "group": "school", "art": "tigerbarb"},
   {"id": "guppy", "name": "Guppy", "sci": "Poecilia reticulata", "tl": 35, "group": "shoal", "level": "top", "art": "guppy", "female": {"art": "guppy_f", "tl": 50}},
