@@ -285,21 +285,58 @@ export function starterItems(S: TankSetup): Item[] {
     }
     if (hh > 15) put(type, p.x, p.d, hh, { yaw: Math.round((r() - 0.5) * 30), lift }, true);
   };
-  /** Carpet cards from depth d0 to d1 (fractions of D). Off a classic set, a sparse style leaves bare patches. */
+  /** Carpet cards from depth d0 to d1 (fractions of D, 0 = front glass): a jittered grid, so no straight rows, with a
+   *  ragged back edge that thins out past d1. Off a classic set, a sparse style leaves bare patches. */
   const ph = [r() * 6, r() * 6, 0.004 + r() * 0.006], patchy = !classic && dens < 1 ? 0.9 - dens : -2;
   const carpet = (d0: number, d1: number, skip?: (x: number, d: number) => boolean) => {
-    for (let d = D * d0 + 45; d <= D * d1; d += 95) for (let x = 60 + r() * 30; x < L - 40; x += 115 + r() * 25) {
-      if (Math.sin(x * ph[2] + ph[0]) + Math.sin(d * ph[2] * 1.7 + ph[1]) < patchy * 2 - 0.6) continue;
-      const p = map(x + (r() - 0.5) * 30, d + (r() - 0.5) * 20);
+    const soft = D * 0.18;
+    for (let d = D * d0 + 45; d <= D * d1 + soft; d += 95) for (let x = 60 + r() * 60; x < L - 40; x += 115) {
+      const xx = x + (r() - 0.5) * 100, dd = Math.min(d + (r() - 0.5) * 85, D - 30);
+      if (dd > D * d1 && r() < (dd - D * d1) / soft) continue;
+      if (Math.sin(xx * ph[2] + ph[0]) + Math.sin(dd * ph[2] * 1.7 + ph[1]) < patchy * 2 - 0.6) continue;
+      const p = map(clamp(xx, 40, L - 40), Math.max(dd, 30));
       if (!skip?.(p.x, p.d)) put('carpet', p.x, p.d, 140 + r() * 30, {}, true);
     }
   };
-  /** Tall plants along the back glass, about one per 7 cm of length, scaled by the style's density. */
-  const backRow = (types: PlantType[], k = 1, d0 = 0.78) => {
-    const n = Math.max(2, Math.round(L / 70 * Math.min(dens, 1.6) * k)), per = classic || dens > 1.3 ? 2 : 1;
-    for (let i = 0; i < n; i++) {
-      const x = L * (0.03 + 0.94 * i / (n - 1)) + (classic ? 0 : (r() - 0.5) * L / n), type = types[(i + Math.floor(r() * 2)) % types.length];
-      for (let k2 = 0; k2 < per; k2++) plant(type, x + (r() - 0.5) * 40, D * (d0 + r() * (0.95 - d0)), (H - sub(x, D * 0.85)) * (0.78 + r() * 0.2) * (classic ? 1 : 0.75 + 0.25 * st.scale));
+  /**
+   * Plants scattered in clumps over the floor, with no rows (Nathan 2026-10-13: rows of short plants in front and tall
+   * ones behind "look like a farm"). Depth only sets the odds: each kind has a heat zone (anubias front, ferns and
+   * swords in the middle, stems and grass behind) and the height a clump may reach rises front to back, but any clump
+   * lands at a random spot. `w` weights the kinds, `n` clumps (before density), between depths d0..d1; inside the
+   * open-water `gap` (fraction of L, the front 60 %) a clump is mostly turned away. Clumps keep off the hardscape.
+   */
+  const ZONE: Partial<Record<PlantType, [number, number]>> = { anubias: [0.15, 0.2], fern: [0.4, 0.22], sword: [0.5, 0.2], grass: [0.82, 0.25], stem: [0.8, 0.22], stemred: [0.82, 0.2] };
+  const CAP: Partial<Record<PlantType, number>> = { anubias: clamp(H * 0.22, 60, 130), fern: clamp(H * 0.4, 90, 240), sword: clamp(H * 0.6, 120, 380) };
+  const scatter = (w: Partial<Record<PlantType, number>>, n: number, o: { d0?: number; d1?: number; gap?: number; half?: number } = {}) => {
+    const { d0 = 0.08, d1 = 0.96, gap = -1, half = 0 } = o, hs = classic ? 1 : 0.75 + 0.25 * st.scale;
+    const solid = out.filter(it => it.kind !== 'plant').map(it => [it.x, it.depth, itemDims(it)[0] * 0.4] as const);
+    const centres: [number, number][] = [];
+    for (let c = 0, tries = 0, want = Math.max(1, Math.round(n * dens)); c < want && tries < want * 12; tries++) {
+      // best of 3 candidates (farthest from the clumps so far): spread out, not even
+      let best: [number, number] | null = null, bd = -1;
+      for (let k = 0; k < 3; k++) {
+        const x = L * (0.03 + r() * 0.94), t = d0 + r() * (d1 - d0), d = D * t;
+        if (r() > 0.45 + 0.55 * t) continue;                                    // the back fills up more than the front
+        if (gap >= 0 && t < 0.6 && Math.abs(x / L - gap) < half && r() < 0.85) continue;
+        if (solid.some(([sx, sd, sr]) => Math.hypot(x - sx, d - sd) < sr)) continue;
+        const dist = Math.min(1e6, ...centres.map(([cx, cd]) => Math.hypot(x - cx, d - cd)));
+        if (dist > bd) { bd = dist; best = [x, d]; }
+      }
+      if (!best) continue;
+      centres.push(best); c++;
+      const [x, d] = best, t = d / D;
+      // the kind: its weight times how well this depth suits it (a soft bump, so strays happen)
+      const odds = (Object.keys(w) as PlantType[]).map(k => { const [m, s] = ZONE[k] ?? [0.5, 0.3]; return [k, w[k]! * (0.06 + Math.exp(-(((t - m) / s) ** 2)))] as const; });
+      let pickK = r() * odds.reduce((a, [, v]) => a + v, 0), type = odds[0][0];
+      for (const [k, v] of odds) if ((pickK -= v) <= 0) { type = k; break; }
+      const p = map(x, d), reach = (H - sub(p.x, p.d)) * (0.22 + 0.76 * Math.min(1, Math.max(0, t) ** 1.3)) * (0.85 + r() * 0.3) * hs;
+      const h0 = Math.min(CAP[type] ? CAP[type]! * (0.7 + r() * 0.4) : Infinity, reach);
+      const m = type === 'stem' || type === 'stemred' ? 2 + Math.floor(r() * 4) : type === 'grass' ? 2 + Math.floor(r() * 3) : type === 'sword' ? (r() < 0.25 ? 2 : 1) : 1 + Math.floor(r() * 2);
+      const rad = type === 'sword' ? 55 : type === 'anubias' ? 30 : 38;
+      for (let k = 0; k < m; k++) {
+        const a = r() * 6.28, q = k ? rad * Math.sqrt(r()) : 0, dx = Math.cos(a) * q, dd = Math.sin(a) * q;
+        plant(type, clamp(x + dx, 15, L - 15), clamp(d + dd, 15, D - 15), h0 * (0.85 + r() * 0.2 + 0.15 * dd / rad));
+      }
     }
   };
   /** A small stone group (an accent for planted / wood sets). */
@@ -358,7 +395,7 @@ export function starterItems(S: TankSetup): Item[] {
     const front = !classic && r() < 0.3; // carpet only in front of the stones, sand behind
     carpet(0.05, front ? 0.5 : 0.95, (x, d) => placed.some(([px, pd, rr]) => Math.hypot(x - px, (d - pd) * 1.3) < rr + 40));
     for (const [px, pd, rr] of placed) for (let i = 0, n = classic ? 3 : many(3); i < n; i++) plant('grass', px + (r() - 0.5) * rr * 2.4, pd + rr * 0.8 + r() * 20, (60 + r() * 40) * (classic ? 1 : 0.8 + 0.4 * st.scale), 0, true);
-    if (!classic && dens > 1 && r() < 0.6) backRow(['grass'], 0.5, 0.85);
+    if (!classic && dens > 1 && r() < 0.6) scatter({ grass: 1 }, L * D / 60000, { d0: 0.65 });
   } else if (id === 'driftwood' && classic) {
     const flip = r() < 0.5, size = Math.min(L * 0.78, H * 0.82 / 0.68, D * 2.2);
     const wood = put('branch', L * 0.47, D * 0.62, size, { yaw: (flip ? 180 : 0) + Math.round((r() - 0.5) * 16) });
@@ -389,8 +426,7 @@ export function starterItems(S: TankSetup): Item[] {
       }
       for (let i = 0, n = many(5, f.k); i < n; i++) { const s = 12 + r() * 22; put(pebble, L * (f.x + (r() - 0.5) * 0.3), D * (f.d + (r() - 0.3) * 0.35), s * 1.2, tip(pebble)); }
     }
-    for (const fx of [0.04, 0.1, 0.9, 0.96].slice(0, Math.max(0, Math.round(4 * Math.min(dens, 1))))) plant('grass', L * fx, D * (0.85 + r() * 0.1), H * (0.8 + r() * 0.15));
-    if (dens > 1.2) backRow(st.pick<PlantType[]>([['grass'], ['stem', 'stemred'], ['grass', 'stem']]), 0.6);
+    scatter(st.pick<Partial<Record<PlantType, number>>>([{ grass: 1 }, { stem: 1, stemred: 1, anubias: 0.4 }, { grass: 1, stem: 1, fern: 0.5 }]), L * D / (dens > 1.2 ? 30000 : 70000), { d0: 0.4 });
     if (r() < 0.3 + 0.2 * dens) carpet(0.04, 0.3);
   } else if (id === 'planted' && disc) {
     // round tank or bowl: a planted mound, not rows along the back glass, which on a disc left the middle bare
@@ -414,23 +450,25 @@ export function starterItems(S: TankSetup): Item[] {
     for (const s of [-1, 1]) { const [x, d] = at(s * 0.68 * Math.PI, 0.82); plant('anubias', x, d, clamp(H * 0.2, 60, 130), 0, true); }
     if (classic || r() < 0.75) carpet(0.04, 0.34);
   } else if (id === 'planted') {
-    backRow(classic ? ['stem', 'stemred', 'grass', 'stem', 'stemred', 'stem'] : st.pick<PlantType[]>([['stem', 'stemred', 'grass'], ['grass'], ['stem', 'stem', 'stemred'], ['stemred', 'stem'], ['grass', 'stem', 'grass']]));
-    // the middle row leaves a gap of open water where the style has one (mid-front in the classic set)
+    // open water where the style has one (mid-front in the classic set), unless the tank is packed
     const gap = st.open < 0 || dens > 1.9 ? -1 : st.open, half = classic ? 0.12 : 0.1 + 0.1 / dens;
-    const mid: PlantType[] = classic ? ['sword', 'stem'] : st.pick<PlantType[]>([['sword', 'stem'], ['sword', 'sword', 'fern'], ['fern', 'stem', 'grass'], ['sword', 'stemred']]);
-    for (let x = L * 0.05; x < L * 0.97; x += (130 + r() * 50) / (classic ? 1 : dens)) {
-      if (gap >= 0 && Math.abs(x / L - gap) < half) continue;
-      const t = mid[Math.floor(r() * mid.length)], d = D * (0.48 + r() * 0.18);
-      plant(t, x, d, t === 'sword' ? clamp(H * 0.6, 120, 380) : t === 'fern' ? clamp(H * 0.4, 90, 240) : H * (0.45 + r() * 0.15));
-    }
-    for (const fx of [0.08, 0.92]) if (classic || r() < 0.4 + 0.3 * dens) plant('anubias', L * fx, D * 0.32, clamp(H * 0.22, 60, 130));
-    if (classic || r() < 0.75) carpet(0.04, 0.34);
-    // now and then a rock group or a piece of wood in the front of a shuffled planted tank
+    // now and then a rock group or a piece of wood in the front of a shuffled planted tank (placed first: plants keep off it)
     if (!classic && r() < 0.5) {
       const f = { x: gap >= 0 ? gap + (gap < 0.5 ? 0.18 : -0.18) : 0.3 + r() * 0.4, d: 0.32, k: 0.6 }, w = r();
       if (w < 0.6) rocks(f, st.pick(['seiryu', 'dragon', 'river', 'lava']), clamp(H * 0.18, 30, 90) * st.scale);
       else put(st.pick(['mopani', 'spider', 'branch']), L * f.x, D * 0.45, Math.min(L * 0.35, D * 1.2) * st.scale);
     }
+    const mix: Partial<Record<PlantType, number>> = classic ? { stem: 3, stemred: 2, grass: 1, sword: 1.2, anubias: 0.5, fern: 0.3 }
+      : st.pick<Partial<Record<PlantType, number>>>([
+        { stem: 2, stemred: 1.5, grass: 1, sword: 1, anubias: 0.5, fern: 0.4 },
+        { grass: 3, sword: 1.5, anubias: 0.5 },                               // vallisneria jungle
+        { stem: 2, stemred: 2, fern: 1, anubias: 0.6 },                       // Dutch-style stems
+        { stemred: 2, stem: 1, sword: 1.5 },
+        { grass: 1.5, stem: 1, fern: 1.5, anubias: 1 },                       // low-tech ferns and anubias
+      ]);
+    scatter(mix, L * D / 16000 * Math.max(1, 0.6 / dens), { gap, half }); // sparse, but still a planted tank
+    const solid = out.filter(it => it.kind !== 'plant');
+    if (classic || r() < 0.75) carpet(0.04, 0.34, (x, d) => solid.some(it => Math.hypot(x - it.x, d - it.depth) < itemDims(it)[0] * 0.4));
   } else if (id === 'swamp') {
     // land: emersed grasses, swords, ferns and a few stones; pools: stems and grass growing up out of the water
     const land = (x: number, d: number) => { const p = map(x, d); return sub(p.x, p.d) > H * 0.3; }, step = 1 / Math.sqrt(dens), hs = classic ? 1 : st.scale;
