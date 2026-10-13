@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import { SUBSTRATES } from '../art/placeholder';
 import { snailAspect } from '../art/snails';
-import { fishTL, getSpecies, needsWater, type Species } from '../data/species';
+import { fishTL, needsWater, speciesOf, type Species } from '../data/species';
 import { restsOnGround } from '../scene/water';
 import { D2R, IN, clamp, floorY, glassThickness, RIM_DROP, RIM_H, tankUnderside, waterY } from '../scene/physics';
 import { alongRun, backgroundRuns, bowlDims, bowlRadius, chord, circleRing, clipToFootprint, facingRuns, footprint, glassFrame, halfWidth, inside, nearestGlass, offsetRing, offsetWalls, runLength, shapeOf, subRun, type P } from '../scene/shape';
@@ -381,6 +381,7 @@ const TUBE = 38;
 function addFrameStand(sc: THREE.Scene, T: Tank, t: number, top: number, h: number, color: number) {
   const s = Math.min(TUBE, h / 6), foot = 12, yLow = top - h + foot + s / 2, yTop = top - s / 2;
   const box = (w: number, hh: number, d: number, x: number, y: number, z: number, ry = 0) => { const b = shadedBox(w, hh, d, color); b.position.set(x, y, z); b.rotation.y = ry; sc.add(b); };
+  if (shapeOf(T) === 'bowl') { addBowlFrame(sc, T, t, top, h, s, foot, yLow, yTop, color, box); return; }
   // leg centres: the outline pushed out to the tube's centre line; each pane's start, plus more along long panes
   const legs: P[] = [];
   for (const w of offsetWalls(T, t - s / 2)) {
@@ -397,6 +398,34 @@ function addFrameStand(sc: THREE.Scene, T: Tank, t: number, top: number, h: numb
     // cross rails front to back between the middle legs of a long tank
     const d0 = Math.min(...legs.map(p => p[1])), d1 = Math.max(...legs.map(p => p[1]));
     for (const p of legs) if (Math.abs(p[1] - d0) < 1) { const q = legs.find(b => Math.abs(b[1] - d1) < 1 && Math.abs(b[0] - p[0]) < 1); if (q && legs.indexOf(q) !== (legs.indexOf(p) + 1) % legs.length && legs.indexOf(p) !== (legs.indexOf(q) + 1) % legs.length) rail(p, q, y); }
+  }
+}
+
+/**
+ * A bowl's frame stand: its flat floor is far narrower than the sphere it carries, so legs round the floor alone make a
+ * top-heavy tower. Four legs instead, at the floor's edge under the bowl, splayed out to stand on a circle as wide as
+ * the bowl's equator (never past the bowl's own silhouette, so it clears whatever the bowl clears); rings of rail at
+ * the top and just above the floor (Nathan 2026-10-13: "looks a little unsafe").
+ */
+function addBowlFrame(sc: THREE.Scene, T: Tank, t: number, top: number, h: number, s: number, foot: number, yLow: number, yTop: number, color: number,
+  box: (w: number, hh: number, d: number, x: number, y: number, z: number, ry?: number) => void) {
+  const { R, rb } = bowlDims(T), cx = T.L / 2, cz = -T.D / 2, yFoot = top - h + foot;
+  const r0 = Math.max(s, rb + t - s / 2), rf = Math.max(r0, R + t - s / 2);
+  const rAt = (y: number) => r0 + (rf - r0) * (top - y) / (top - yFoot);
+  const at = (r: number, a: number, y: number) => new THREE.Vector3(cx + r * Math.sin(a), y, cz - r * Math.cos(a));
+  const angs = [1, 3, 5, 7].map(k => k * Math.PI / 4); // legs at the diagonals: two front, two back
+  for (const a of angs) {
+    const p = at(r0, a, top), q = at(rf, a, yFoot), dir = p.clone().sub(q), len = dir.length();
+    const b = shadedBox(s, len, s, color); b.position.copy(p).add(q).multiplyScalar(0.5);
+    b.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.normalize()); sc.add(b);
+    box(s * 0.7, foot, s * 0.7, q.x, top - h + foot / 2, q.z);                                       // levelling foot
+  }
+  for (const y of [yTop, yLow]) {
+    const r = rAt(y);
+    angs.forEach((a, i) => {
+      const p = at(r, a, y), q = at(r, angs[(i + 1) % angs.length], y), len = p.distanceTo(q) - s;
+      if (len > 1) box(len, s, s, (p.x + q.x) / 2, y, (p.z + q.z) / 2, Math.atan2(-(q.z - p.z), q.x - p.x));
+    });
   }
 }
 
@@ -728,7 +757,7 @@ export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: numbe
     sc.add(m); fishMeshes.push(m); if (!meshById.has(f.id)) meshById.set(f.id, m);
   };
   for (const f of S.fish) {
-    const sp = getSpecies(f.species); if (!sp) continue;
+    const sp = speciesOf(f); if (!sp) continue;
     if (sp.kind === 'snail') {
       for (const [m, w, h] of snailMeshes(S, T, f, sp, base(f))) register(f, m, w, h);
       if (has3D(sp.art) && (f.surface ?? 'floor') === 'floor') { const w = fishTL(f, sp), sh = contactShadow(S, T, f.x, f.depth, groundHeight(S, T, f.x, f.depth), w, w * 0.45, f.yaw); if (sh) sc.add(sh); }
@@ -737,9 +766,9 @@ export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: numbe
     if (!S.water.on && needsWater(sp)) continue; // dry tank: fish stay in the scene data, hidden until the water is back
     const w = fishTL(f, sp), h = w * sp.aspect, p = f;
     const solid = has3D(sp.art), herp = solid && isHerp3D(sp.art);
-    const m = new THREE.Mesh(cardGeometry(w, h, f.bend), herp ? HIDDEN : cardMaterial(`fish:${f.species}:${solid}:${solid && fish3d.fade}`, fishTexture(f.species, S.render.edge, solid, solid && fish3d.fade), S.render.edge));
+    const m = new THREE.Mesh(cardGeometry(w, h, f.bend), herp ? HIDDEN : cardMaterial(`fish:${sp.look}:${solid}:${solid && fish3d.fade}`, fishTexture(sp, S.render.edge, solid, solid && fish3d.fade), S.render.edge));
     if (herp) m.add(herpBody(sp.art, w)); // the card stays as the invisible picking target
-    else if (solid) m.add(fishBody(sp.art, sp.aspect, w, f.bend, fishBodyTexture(f.species), S.render.edge, f.surface === 'glass')); // solid body + paired fins; the card keeps the median fins
+    else if (solid) m.add(fishBody(sp.art, sp.aspect, w, f.bend, fishBodyTexture(sp), S.render.edge, f.surface === 'glass')); // solid body + paired fins; the card keeps the median fins
     if (f.surface === 'glass') { onGlass(S, T, f, sp, m, w); register(f, m, w, h); continue; }
     // bottom dwellers and animals on land rest on the ground (or the hardscape) wherever they are (their stored height is ignored)
     const y = restsOnGround(S, T, sp, p.x, p.depth, h) ? base(f) + sp.rest * w - 1 : Math.min(p.y, Math.max(0, waterY(T, S.water.level) - h / 2));
