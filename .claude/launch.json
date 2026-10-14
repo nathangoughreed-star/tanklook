@@ -294,6 +294,21 @@
         "--strictPort"
       ],
       "port": 5343
+    },
+    {
+      "name": "reef-polish",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "C:/Users/nreed/Glass-Box-reef-polish",
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5353",
+        "--strictPort"
+      ],
+      "port": 5353
     }
   ]
 }

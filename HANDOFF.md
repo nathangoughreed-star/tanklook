@@ -186,6 +186,10 @@ salt switch-off in the AqAdvisor code. Lane E also re-saves the examples and fil
 Lane A DONE (`29515de`). Lane G opened 2026-10-14 ahead of the audit: `../Glass-Box-audit-fixes` / `audit-fixes`, launch
 config `audit-fixes` 5343; waits for lane D's message that shots/audit/AUDIT.md is written. Owns `src/ui/*`, `index.html`,
 `src/style.css` (lanes E and H keep their small panels.ts hooks); a finding in another lane's files goes to that lane.
+Lane H DONE (`6c91148`). Lane E DONE (`e8ccd65`). Lane I opened 2026-10-14: E's leftovers + example refresh,
+`../Glass-Box-reef-polish` / `reef-polish`, launch config `reef-polish` 5353; owns `scene/items.ts` (lane A may add one
+crypts LIBRARY line), the non-plant branches of `render/items.ts`, `render/coral3d.ts`, `src/examples/*`, LayoutId in
+`scene/types.ts` / `scene/validate.ts`. Lane G owns `src/ui/*`.
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_e1923781-40bc-48d3-84f3-ed380e471779`
 ("Lanes coordinator"). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
 and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says
