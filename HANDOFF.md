@@ -22,6 +22,23 @@ Nathan: "can we also allow farther zooming out?" Zoom now goes 0.25-12 (was 0.5-
   the limit, the load / clamp round trip, eyeDist / lensZoom, and the fov hold with no size jump at 0.5.
 - Pictures: `shots/v1-v3` (the options) and `v4-v6` (desktop / split / phone before-after), in the lane worktree only (gitignored).
 
+## Lane S2: anatomy audit P1, fish batch 4 (2026-10-14; branch `fish-fins-b4`, port 5513; Nathan approved the sheets; pushed to main)
+Split from lane S. Only the PLANS / her() entries of these species in `src/art/fishgen.ts`; generic parameters came from lane S
+(`tail.sword`, `eye.bulge` in f3706dc; `gapeDrop` in 332e863). All 9 looks v2 at build 351; no other fingerprint changed.
+- **hatchet:** pectorals x2.3 rooted high (`pec` {s 2.3, v 0.3}), wing-like from front/top; long low anal along the keel
+  (MedianFin at 0.52 len 0.3), small dorsal far back.
+- **swordtail (male):** `tail.sword` 0.3 with pedU 0.45 (long tapering sword, black lower edge), slimmer body (depth 0.16),
+  gonopodium, upturned mouth (gape 0.03). **swordtail~f:** no sword, own dorsal and eye, depth 0.24.
+  Size kept at 120 mm TL (Nathan): the sword is inside the TL, so the body now shows ~66 mm instead of ~84 mm.
+- **guppy:** gonopodium, upturned mouth. **guppy~f:** coin tail -> notch fan; keeps her anal fin (`gono: undefined`).
+- **betta(~f):** anal fin from just behind the pelvics to the peduncle (MedianFin), pointed paired pelvics (ext, w 0.6) instead
+  of threads, upturned jaw (gape 0.04); lane D's drape and the male/female fin lengths kept.
+- **peapuffer(~f):** `scale: 0` (skin, fine speckle added LAST so the seeded spot pattern stays), `eye.bulge` 0.65,
+  a short straight beak mouth (gape 0.009, gapeDrop 0.002).
+- Mouth lines (gape) on swordtail/guppy/betta use gapeDrop 0.008: the default 0.02 reads as a frown head-on.
+- Before/after composites: worktree `shots/laneS2/cmp-*.jpg` (gitignored). Quick sheet loop without a dev server:
+  `npm run sheets`, copy your looks out, `git checkout -- public/model-sheets` (every JPEG re-encodes differently).
+
 ## Lane T: AR view on iPhone, AR Quick Look (2026-10-14; branch `ar-view`, port 5483; pushed to main, HIDDEN behind `?ar=ios`)
 - Built: `src/render/arUsdz.ts` + `test/arUsdz.test.ts`; `attachAR` in `src/render/ar.ts` now picks WebXR (Android, lane Q,
   unchanged) or AR Quick Look (`a.relList.supports('ar')`, iPhone/iPad Safari). Desktop and non-AR Android see no button.
@@ -852,7 +869,7 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | X P2 fish, freshwater | `../Glass-Box-fish-fins` / `fish-fins` | 5503 | PLANS / her() entries ONLY of neon, cardinal, ember, rummynose, chili, danio, cpd, cherrybarb, tigerbarb, platy, molly | ready to open (prompt `prompts/lane-X-fish-p2-fresh.md`) |
 | Y P2 fish, bottom + marine | `../Glass-Box-fish-p2b` / `fish-p2b` | 5533 | PLANS / her() entries ONLY of bronzecory, pandacory, oto, clownloach, sae, ocellaris, royalgramma, sixline, chromis | ready to open (prompt `prompts/lane-Y-fish-p2-bottom-marine.md`) |
 | R2 snail aperture kink | `../Glass-Box-p2-small` / `p2-small` (started by lane R) | 5493 | `art/snails.ts`, `render/snail3d.ts` (mystery / turbo / trumpet fillCut) | CLOSED: tried, Nathan declined (`52fb6cb`); snail files free |
-| S2 fish batch 4 | `../Glass-Box-fish-fins-b4` / `fish-fins-b4` | 5513 | in `art/fishgen.ts` ONLY the PLANS / her() entries of hatchet, swordtail(~f), guppy(~f), betta(~f), peapuffer(~f); no MedianFin / medianPts / gonoPts / tailPts / pairedFins, no paint.ts / fish3d.ts (new generic parameters: ask lane S) | running (session `local_5cf51e1b`) |
+| S2 fish batch 4 | (worktree removed) | - | - | DONE (`1399de7`, build 351); swordtail kept at 120 mm (Nathan) |
 | V zoom out further | `../Glass-Box-zoom-out` / `zoom-out` | 5523 | `scene/validate.ts` LIMITS.zoom, `render/camera.ts`, the zoom / framing parts of `render/viewer.ts`, the cZoom slider in `index.html` / `ui/panels.ts`, `interact/pointer.ts` wheel / pinch | DONE (see Lane V section); files free. Also touched (free files): `render/build.ts` room size + ceiling, `render/viewmap.ts` caption, `scene/orbit.ts` |
 | T iPhone AR | `../Glass-Box-ar` / `ar-view` (lane Q's, Q is done) | 5483 | new `render/arUsdz.ts` + test, `render/ar.ts` | DONE for now (`3085106`); iPhone button hidden behind `?ar=ios` until an iPhone test, then IOS_FLAG = false; files free |
 | W Android app | not made yet (`../Glass-Box-android` / `android`) | next free | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | PARKED for later (prompt `prompts/lane-W-android-app.md`); after P's files are free, mind V's `index.html` / `panels.ts` edits |
