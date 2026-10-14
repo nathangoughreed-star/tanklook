@@ -22,6 +22,25 @@ Living file. Project state and dated decisions go here; update in place.
   ("Bare tank"); the pieces stay.
 - Before/after pairs: `shots/final/P1..P4_*_pair.png` (main checkout, gitignored).
 
+## Lane R: anatomy audit P2, axolotl + zebra nerite (2026-10-14; branch `p2-small`, port 5493; Nathan approved both sheets; pushed to main)
+Owns `src/art/herps.ts`, `src/render/herp3d.ts`, `src/art/snails.ts`, `src/render/snail3d.ts`. Models v3 at build 317; no
+other model's fingerprint changed (other snails, hermit crab, frogs, newt identical).
+- **Axolotl:** gills = three rami a side (bases stacked down the neck, tips spread out as a crown), each feathered by ~52
+  fine curved filaments (seeded lengths, longest mid-stalk, swept to the tip and drooping) instead of comb teeth
+  (`gillGeometry`). Trunk: broad flat head, neck pinch, fuller wider trunk, belly sagging to the vent, 12 faint costal
+  grooves (`line` marks). Fin: one membrane (`axoFin` in herps.ts, shared by the 2D card) from the shoulders, low along
+  the back, deepening over the tail, round a pointed tip past the muscle (body tip now u 0.03) and forward to the vent;
+  `finGeometry` takes a spline edge and runs past the body's tip.
+- **Zebra nerite:** level aperture (`open` [0.05,-1,0]) with a thin lip (0.03), so the shell sits low over the foot;
+  foot 0.13 high (`footH`) and as wide as the shell (`footW` 0.76, Nathan: "their bodies are the same width as the
+  shells"), head radius fixed (`head` 0.085), tentacles 0.085. New Shell3D fields, nerite only: `ph` 48 (smoother rim),
+  `seam: false` (the painted suture ran along the body whorl as a false crease), `fillCut` (rows where the aperture plane
+  misses the whorl take their cut from their neighbours instead of clamping to +-0.6, and the paint follows the coil
+  angle). Zebra stripes are one full sine round the whorl, drawn past the texture edges (the slanted stroke ends had
+  notched the stripes along the wrap line).
+- Open: mystery, turbo and trumpet also clamp their aperture cut (rows jump +-0.6 on the inner side); `fillCut` would fix
+  them but changes their approved look, so not switched on. 2D side cards unchanged except the axolotl's fin outline.
+
 ## Lane N: shareable scene links (2026-10-14; branch `share-url`; review item R12; pushed to main)
 
 - **What**: File toolbar button **Copy share link** (`index.html`, handler in `ui/panels.ts`). The link is the page
@@ -85,7 +104,8 @@ Owns `src/art/herps.ts`, `src/render/herp3d.ts` (lane L's snail files not touche
   and render-on-demand pauses.
 - A / B swap (Nathan 2026-10-14, after the phone test): in split view a "Show tank B" button at the top of the AR overlay
   swaps to the other tank on the same floor spot, turned the same way; the Size check line names the tank. Desktop: swap
-  A -> B -> A restores pixel-identical. Needs a phone check with a split tank.
+  A -> B -> A restores pixel-identical. Nathan checked it on the S24+ ("it works now", after a cached page); the button then
+  moved to the lower right, above the Size check line, under the thumb (52 px tall).
 - DONE: Nathan tested on the S24+ (2026-10-14): "it works flawlessly". Minor leftover: the selection outline shows in AR
   if a fish was selected. If a big tank ever drops under 60 fps, lower `renderer.xr.setFramebufferScaleFactor` before the session.
 - NEXT AR step (iPhone phase, not built): USDZExporter on a simplified copy of the tank (plain materials, no custom
@@ -685,6 +705,21 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 
 ## Parallel lanes (2026-10-13, Nathan: fill the gaps before showing other people)
 
+**Current lanes (2026-10-14 16:25, coordinator "Lanes coordinator 2", `local_d0390f66`).** Everything else below is DONE.
+| Lane | Worktree / branch | Port | Owns | State |
+|---|---|---|---|---|
+| P final polish | `../Glass-Box-final-fixes` / `final-fixes` | 5473 | `src/style.css`, `index.html`, `src/ui/panels.ts`, `src/scene/water.ts` | FINAL.md items 1-6 done, push pending Nathan's yes |
+| R P2 axolotl + nerite | `../Glass-Box-p2-small` / `p2-small` | 5493 | `art/herps.ts`, `render/herp3d.ts`, `art/snails.ts`, `render/snail3d.ts` | DONE (`45f872a`); files free. Open: fillCut for mystery / turbo / trumpet (would change approved look) |
+| S P1 fish fins | `../Glass-Box-fish-fins` / `fish-fins` | 5503 | `art/fishgen.ts`, `art/paint.ts`, `render/fish3d.ts` | running (session `local_b5a88177`) |
+| R2 snail aperture kink | `../Glass-Box-p2-small` / `p2-small` (started by lane R) | 5493 | `art/snails.ts`, `render/snail3d.ts` (mystery / turbo / trumpet fillCut) | running (session `local_8190ce91`) |
+| T iPhone AR | `../Glass-Box-ar` / `ar-view` (lane Q's, Q is done) | 5483 | new `render/arUsdz.ts` + test, `render/ar.ts` | running (session `local_070f91c7`) |
+Free (no lane): `render/build.ts`, `render/items.ts`, `scene/items.ts`, `render/viewer.ts`, `main.ts`, `render/lighting.ts`,
+`render/coral3d.ts`, `render/shrimp3d.ts` / `art/shrimps.ts`, `scene/share.ts`, herps / herp3d / snails / snail3d. A one-line hook in a free file is fine; name it
+in your section. Where to read: anatomy audit `reference/model-anatomy-audit-v1.md`; model versions "Model review sheet"
+below; lane D's R1-R12 verdicts under "Review pack R1-R12"; the final check `shots/final/FINAL.md` (main checkout only).
+Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
+
+
 Four chats at once, each owning its files. Seam already on main (`cb7783c`): optional `salt?: boolean` on `Species`
 (absent = freshwater) and on `WaterSettings` (validated, default fresh, no version bump).
 | Lane | Folder / branch | Launch config | Owns |
@@ -763,9 +798,9 @@ Lane S set up 2026-10-14 (anatomy audit P1 fish, 20 species / 29 models: fin str
 `../Glass-Box-fish-fins` / `fish-fins`, launch config `fish-fins` 5503; owns `art/fishgen.ts`, `art/paint.ts`,
 `render/fish3d.ts`. Lane D DONE (`6176008`, `66d2dba`, `49f3f33`), so lane S can start. Lane Q DONE (`1398b14`;
 Nathan on the S24+: "works flawlessly"); iPhone phase not started. Lane Q reopened for an A / B
-swap in the AR overlay (`d9e6a8b`), split-tank phone check pending. Lane T opened 2026-10-14: iPhone AR (AR Quick Look,
-USDZ export), `../Glass-Box-ar-ios` / `ar-ios`, launch config `ar-ios` 5513; owns new `render/arUsdz.ts` + test, and
-`render/ar.ts` once lane Q reports done (until then T asks the coordinator before editing it).
+swap in the AR overlay (`d9e6a8b`), phone-checked. Lane T opened 2026-10-14: iPhone AR (AR Quick Look,
+USDZ export), in lane Q's worktree `../Glass-Box-ar` / `ar-view`, launch config `ar-view` 5483; owns new `render/arUsdz.ts` + test, and
+`render/ar.ts` (lane Q DONE, `ea46f6b`; A / B swap phone-checked).
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_d0390f66-339c-4fa1-ab38-43e9c2a35958`
 ("Lanes coordinator 2", took over 2026-10-14 from `local_e1923781`). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
 and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says

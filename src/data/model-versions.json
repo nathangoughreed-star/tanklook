@@ -3,7 +3,7 @@
  "models": {
   "amano": {"v":2,"hash":"c0505ea1","build":284,"date":"2026-10-14"},
   "angel": {"v":1,"hash":"32129c25","build":217,"date":"2026-10-14"},
-  "axolotl": {"v":2,"hash":"b90c1b72","build":287,"date":"2026-10-14"},
+  "axolotl": {"v":3,"hash":"54c2494c","build":317,"date":"2026-10-14"},
   "banggai": {"v":1,"hash":"b9d2ab44","build":217,"date":"2026-10-14"},
   "betta": {"v":1,"hash":"6e932c55","build":217,"date":"2026-10-14"},
   "betta~f": {"v":1,"hash":"5b5d321e","build":217,"date":"2026-10-14"},
@@ -48,7 +48,7 @@
   "molly": {"v":1,"hash":"9ea665fa","build":217,"date":"2026-10-14"},
   "mystery": {"v":2,"hash":"bb456e81","build":288,"date":"2026-10-14"},
   "neon": {"v":1,"hash":"f9ef7b07","build":217,"date":"2026-10-14"},
-  "nerite": {"v":2,"hash":"d1c02481","build":288,"date":"2026-10-14"},
+  "nerite": {"v":3,"hash":"2baa3691","build":317,"date":"2026-10-14"},
   "ocellaris": {"v":1,"hash":"8a70e63a","build":217,"date":"2026-10-14"},
   "oscar": {"v":1,"hash":"ebb58762","build":217,"date":"2026-10-14"},
   "oto": {"v":1,"hash":"15af5d4a","build":217,"date":"2026-10-14"},
