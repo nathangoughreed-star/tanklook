@@ -20,4 +20,11 @@ describe('example tanks (lane F, 2026-10-13)', () => {
     expect(tank('reef').water.salt).toBe(true);
     expect(tank('terrarium').water.on).toBe(false);
   });
+  it('the reef holds live rock, corals and only marine animals (lane E, 2026-10-14)', () => {
+    const t = parseScene(EXAMPLES.find(x => x.id === 'reef')!.scene).scene.tanks[0];
+    expect(t.items.some(i => i.variant === 'liverock')).toBe(true);
+    expect(new Set(t.items.filter(i => i.kind === 'coral').map(i => i.variant)).size).toBe(4);
+    expect(t.fish.length).toBeGreaterThan(5);
+    for (const f of t.fish) expect(getSpecies(f.species)!.salt, f.species).toBe(true);
+  });
 });

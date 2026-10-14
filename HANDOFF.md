@@ -47,6 +47,29 @@ or a type with no `PLANT3D` entry). No scene version bump: plants were already i
 - To turn it on if AqAdvisor fixes the page: pass a `salt` flag through `AqQuery` -> proxy `sw=1` -> `AqAdvisorMarine.php`
   (no filter fields), include it in the worker's cache key, redeploy the worker.
 
+## Lane E: live rock + corals (2026-10-14; branch `corals`; Nathan approved the style test, live rock salt only; pushed to main)
+
+- **Library** (`scene/items.ts`): `liverock` (kind `stone`, size = length) and new kind `coral` ("Corals" row): `acropora`
+  Branching, `montipora` Plate, `mushroom` Mushroom corals (disc cluster on its own small live rock), `leather` Leather
+  (toadstool). Coral size = width (item panel says "Width"). `Variant.salt` marks all five; the Aquascape buttons carry
+  `data-salt` and `render()` hides them unless the tank is saltwater with water on. `ItemKind` + `'coral'` (one line in
+  `types.ts`). No scene version bump: older files have none; an older app skips them as unknown variants.
+- **Shapes** (`render/coral3d.ts`, `reefShape`): procedural from (variant, seed, size), base on y = 0, cached / light-baked
+  / glass-clipped by `render/items.ts` like the stones (dispatch in `solidShape`; `waves`, `paint`, `clean`, `grit` now
+  exported). Live rock = 3-5 overlapping knobbly lumps with holes, fitted to `stoneDims`, cream under pink / purple
+  coralline patches. Acropora = 6-9 recursive tapered tube trunks, tips paler (5 colour morphs). Plate = spiral whorl of
+  thin cupped discs tipped up at the rim (4 morphs). Mushroom = 6-10 ribbed discs with a pale mouth, set on the rock's top
+  (5 morphs). Leather = lathe stalk + folded cap (3 morphs). Grit kinds 11 (hard coral cups) and 12 (soft polyp fuzz).
+- **Reef example** finished (lane F's steps): `src/examples/reef.json` + `reef.jpg` re-saved, renamed "Reef": 24x18x18 in,
+  5 live rocks, 7 corals (all four kinds), 2 ocellaris, royal gramma, firefish, watchman goby, cleaner shrimp, 2 turbo
+  snails, 3 hermit crabs (no yellow tang: too big for 24 in).
+- Tests: `test/reef.test.ts` (library flags, save / load, shapes deterministic, on y = 0, about their size), examples test
+  checks the reef's rock, corals and marine-only animals. 186/186. Browser: buttons hidden in fresh, shown in salt, Add
+  works, no console errors. Style-test pictures: worktree `shots/e1_{front,above,seeds,reef}.png`, `e2_reef_full.png`.
+- **Open / later**: live rock still a little rounded from straight on and its holes barely show; corals are not in any
+  starter set (a "Reef" Aquascape start set would need a `LayoutId`, i.e. a types/validate change); the other five
+  examples' thumbnails predate lane A's 3D plants (the scenes turn 3D by themselves, the pictures do not).
+
 ## Lane C: marine species (2026-10-13; Nathan approved the sheets, hermit "fine for now"; pushed to main)
 
 12 species, all `salt: true` (cat `sw-fish` / `sw-invert`), approved list (Nathan, same day, hermit crab as shell + limbs).
@@ -169,7 +192,7 @@ and at any milestone that unblocks another lane (A: plants pushed; D: shots/audi
 what landed (commit), what is still open, and which files are now free. The coordinator then sends Nathan the prompts
 for any chats that can start now. If a prompt is still waiting when another lane opens, it sends all waiting prompts again
 in one new message. Every new lane prompt includes this protocol. Questions for Nathan stay in the lane's own chat.
-Lane E (corals + live rock as items) OPENED 2026-10-13 early, per lane A: A's change in `render/items.ts` is a ~4-line
+Lane E DONE (see its section). Lane E (corals + live rock as items) OPENED 2026-10-13 early, per lane A: A's change in `render/items.ts` is a ~4-line
 hook in the plant branch of itemMesh and A does not touch `scene/items.ts`. E: `../Glass-Box-corals` / `corals`, launch
 config `corals` 5323; owns `scene/items.ts`, the non-plant branches of `render/items.ts`, new `render/coral3d.ts`.
 
