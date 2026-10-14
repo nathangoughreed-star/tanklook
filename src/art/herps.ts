@@ -65,6 +65,16 @@ function line(ctx: Ctx, P: Proj, W: number, pts: [number, number][], a: number, 
 /** Sitting frog's torso + head, side view, in the design frame (ground at v = 0.265; see drawFrog's P). */
 const FROG_TORSO: Pt[] = [[1.0, 0.035, 'c'], [0.975, -0.04], [0.9, -0.11], [0.8, -0.15], [0.68, -0.145], [0.52, -0.13], [0.36, -0.12], [0.2, -0.07],
   [0.08, 0.04], [0.05, 0.15], [0.1, 0.23], [0.22, 0.25], [0.42, 0.22], [0.6, 0.17], [0.76, 0.12], [0.9, 0.09], [0.97, 0.07]];
+/** The frogs' shared half-width by u (3D). */
+const FROG_WID: [number, number][] = [[0.06, 0.11], [0.2, 0.165], [0.42, 0.185], [0.62, 0.175], [0.78, 0.16], [0.9, 0.125], [1, 0.07]];
+/** White's tree frog: the back dips a little behind a big, broad head (a neck), the head rises to the eyes. */
+const TREEFROG_TORSO: Pt[] = [[1.0, 0.035, 'c'], [0.975, -0.05], [0.91, -0.125], [0.83, -0.16], [0.74, -0.15], [0.66, -0.13], [0.54, -0.135], [0.38, -0.125], [0.2, -0.07],
+  [0.08, 0.04], [0.05, 0.15], [0.1, 0.23], [0.22, 0.25], [0.42, 0.22], [0.6, 0.17], [0.7, 0.14], [0.8, 0.115], [0.9, 0.09], [0.97, 0.07]];
+const TREEFROG_WID: [number, number][] = [[0.06, 0.11], [0.2, 0.165], [0.42, 0.185], [0.6, 0.168], [0.69, 0.142], [0.79, 0.178], [0.87, 0.166], [0.94, 0.125], [1, 0.07]];
+/** Fire-bellied toad: a short, flat, broad body (the rump well forward of the heels), a low wide head. */
+const TOAD_TORSO: Pt[] = [[1.0, 0.05, 'c'], [0.975, -0.015], [0.91, -0.08], [0.82, -0.115], [0.7, -0.125], [0.55, -0.12], [0.4, -0.105], [0.28, -0.065],
+  [0.19, 0.02], [0.16, 0.13], [0.2, 0.215], [0.3, 0.245], [0.45, 0.235], [0.62, 0.2], [0.78, 0.15], [0.9, 0.11], [0.97, 0.085]];
+const TOAD_WID: [number, number][] = [[0.17, 0.13], [0.28, 0.2], [0.45, 0.225], [0.62, 0.215], [0.78, 0.19], [0.9, 0.145], [1, 0.08]];
 /** The frog's design height v (ground 0.265) in the card frame of aspect `aspect` (flatter frames squash toward the ground). */
 const frogV = (aspect: number, v: number) => { const g = aspect / 2 - 0.015, k = (g + 0.25) / (0.265 + 0.25); return g - (0.265 - v) * k; };
 
@@ -78,6 +88,9 @@ interface FrogSpec {
   marks?: (l: Ctx, P: Proj, W: number) => void;
   legMarks?: (l: Ctx, P: Proj, W: number) => void;
   warts?: string;                   // wart colour (toads)
+  torso?: Pt[];                     // own side outline (design frame), else FROG_TORSO
+  wid?: [number, number][];         // own half-width by u (3D), else the shared frog's
+  rump?: number;                    // the hip sits this far forward (u) on a short-bodied frog (toad)
 }
 
 function drawFrog(s: FrogSpec, ctx: Ctx, P0: Proj, W: number) {
@@ -88,7 +101,7 @@ function drawFrog(s: FrogSpec, ctx: Ctx, P0: Proj, W: number) {
   limb(ctx, P, W, [[0.64, 0.1, 0.03], [0.665, 0.19, 0.022], [0.68, 0.25, 0.017]], [[0.62, 0.262], [0.66, 0.264]], toe, s.leg, true, undefined, pads);
   limb(ctx, P, W, [[0.2, 0.25, 0.018], [0.34, 0.255, 0.014]], [[0.44, 0.262], [0.41, 0.264]], toe, s.leg, true, undefined, pads);
   // torso + head
-  body(ctx, P, W, FROG_TORSO, -0.16, 0.25, shadeOf(s.skin), 0.05, l => {
+  body(ctx, P, W, s.torso ?? FROG_TORSO, -0.16, 0.25, shadeOf(s.skin), 0.05, l => {
     s.marks?.(l, P, W);
     if (s.warts) { const r = rng(7); for (let i = 0; i < 46; i++) blob(l, P, W, 0.12 + r() * 0.78, -0.12 + r() * 0.2, 0.011, 0.009, s.warts, 0.55); }
     soft(l, P, 0.3, 0.85, -0.15, -0.08, '#ffffff', 0.14, [0.12, 0.1], [0.02, 0.04]); // sheen along the back
@@ -113,7 +126,7 @@ const FROGS: Record<string, FrogSpec> = {
   // Dendrobates tinctorius: black with yellow back bands, blue legs with black spots
   dartfrog: {
     aspect: 0.56, skin: ['#151619', '#1c1d20', '#202227'], leg: ['#2c5fae', '#3a74c4', '#2d58a0'],
-    iris: ['#2a2a2c', '#09090a'], pupil: 'dark',
+    iris: ['#2a2a2c', '#09090a'], pupil: 'dark', pads: 0.012,
     marks: (l, P, W) => {
       soft(l, P, 0.18, 0.9, -0.17, -0.07, '#f1c62a', 0.95, [0.06, 0.06], [0.01, 0.02]);
       soft(l, P, 0.12, 0.6, 0.0, 0.07, '#f1c62a', 0.9, [0.06, 0.08], [0.02, 0.02]);
@@ -125,7 +138,7 @@ const FROGS: Record<string, FrogSpec> = {
   // Ranoidea caerulea: plump jade green, cream belly, gold eye with a horizontal pupil, big toe pads, fold over the eardrum
   treefrog: {
     aspect: 0.56, skin: ['#5f9a4a', '#7cb35d', '#e8e2c4'], leg: ['#679f4f', '#80b462', '#d9d4b4'],
-    iris: ['#e7c66a', '#8a6a22'], pupil: 'h', pads: 0.016,
+    iris: ['#e7c66a', '#8a6a22'], pupil: 'h', pads: 0.017, torso: TREEFROG_TORSO, wid: TREEFROG_WID,
     marks: (l, P, W) => {
       soft(l, P, 0.12, 0.98, 0.06, 0.26, '#efe9cf', 0.9, [0.06, 0.04], [0.04, 0.0]);
       line(l, P, W, [[0.86, -0.12], [0.76, -0.1], [0.66, -0.07], [0.6, -0.02]], 0.2, 0.012); // supratympanic fold
@@ -135,7 +148,7 @@ const FROGS: Record<string, FrogSpec> = {
   // Bombina orientalis: flatter, warty green back with black blotches, red-orange belly with black spots
   firetoad: {
     aspect: 0.5, skin: ['#4b7a32', '#5d8c3a', '#d9461e'], leg: ['#557f35', '#5f8a3a', '#cf4a1e'],
-    iris: ['#b38a3a', '#4c3a18'], pupil: 'round', warts: '#3e6627',
+    iris: ['#b38a3a', '#4c3a18'], pupil: 'round', warts: '#3e6627', torso: TOAD_TORSO, wid: TOAD_WID, rump: 0.1,
     marks: (l, P, W) => {
       const r = rng(9); for (let i = 0; i < 14; i++) blob(l, P, W, 0.15 + r() * 0.7, -0.12 + r() * 0.14, 0.03, 0.02, '#111410', 0.85);
       soft(l, P, 0.1, 0.98, 0.1, 0.26, '#e04a1c', 0.95, [0.05, 0.04], [0.04, 0.0]);
@@ -156,11 +169,17 @@ interface SalSpec {
   trunk: number;  // trunk half-depth
   finTail?: string; // tail fin membrane colour (axolotl)
   gills?: [string, string]; // external gills: stalk, fringe
+  swimTail?: boolean; // a newt's deep, flattened swimming tail and a rounded head (no axolotl fin membrane)
 }
 
 /** Newt / axolotl body + tail, side view, card frame: tail tip at u = 0, nose at u = 1. */
 function salSide(s: SalSpec): Pt[] {
   const g = s.aspect / 2 - 0.015, hd = s.head, tr = s.trunk, cv = g - 0.04 - tr;
+  // newt: rounded snout, the tail holding most of the trunk's depth (crest above, keel below) to a short point
+  if (s.swimTail) return [[1.0, cv + hd * 0.15], [0.988, cv - hd * 0.5], [0.955, cv - hd * 0.9], [0.9, cv - hd], [0.84, cv - hd * 0.9],
+    [0.78, cv - tr * 0.95], [0.68, cv - tr], [0.55, cv - tr * 1.02], [0.45, cv - tr * 1.06], [0.32, cv - tr * 1.06], [0.2, cv - tr * 1.0],
+    [0.1, cv - tr * 0.82], [0.035, cv - tr * 0.5], [0.0, cv - tr * 0.15, 'c'], [0.03, cv + tr * 0.25], [0.1, cv + tr * 0.55], [0.2, cv + tr * 0.72], [0.32, cv + tr * 0.82], [0.44, cv + tr * 0.9],
+    [0.52, cv + tr], [0.68, cv + tr], [0.8, cv + tr * 0.95], [0.88, cv + hd * 0.85], [0.95, cv + hd * 0.72], [0.99, cv + hd * 0.45]];
   return [[1.0, cv + hd * 0.25, 'c'], [0.985, cv - hd * 0.6], [0.94, cv - hd * 0.95], [0.87, cv - hd], [0.8, cv - tr * 0.9],
     [0.7, cv - tr], [0.55, cv - tr * 0.95], [0.42, cv - tr * 0.85], [0.28, cv - tr * 0.6], [0.14, cv - tr * 0.35], [0.0, cv, 'c'],
     [0.14, cv + tr * 0.35], [0.28, cv + tr * 0.6], [0.42, cv + tr * 0.85], [0.55, cv + tr], [0.7, cv + tr], [0.8, cv + tr * 0.95],
@@ -208,10 +227,10 @@ function gills(ctx: Ctx, P: Proj, W: number, s: SalSpec, cv: number, far: boolea
 const SALS: Record<string, SalSpec> = {
   // Cynops orientalis: dark brown-black, granular, orange belly edge just visible
   firenewt: {
-    aspect: 0.2, skin: ['#2a2420', '#3a312a', '#e2621e'], leg: ['#2e2823', '#3b322b', '#d8601f'], head: 0.034, trunk: 0.032,
-    iris: ['#8a6a30', '#2a2010'], pupil: 'round',
+    aspect: 0.2, skin: ['#2a2420', '#3a312a', '#e2621e'], leg: ['#2e2823', '#3b322b', '#d8601f'], head: 0.035, trunk: 0.034,
+    iris: ['#8a6a30', '#2a2010'], pupil: 'round', swimTail: true,
     marks: (l, P, W) => {
-      const g = 0.2 / 2 - 0.015, cv = g - 0.04 - 0.032;
+      const g = 0.2 / 2 - 0.015, cv = g - 0.04 - 0.034;
       soft(l, P, 0.35, 0.97, cv + 0.012, cv + 0.04, '#e8661c', 0.9, [0.08, 0.04], [0.01, 0.0]);
       const r = rng(12); for (let i = 0; i < 70; i++) blob(l, P, W, 0.05 + r() * 0.9, cv - 0.03 + r() * 0.04, 0.004, 0.003, '#57493c', 0.6);
     },
@@ -233,25 +252,30 @@ const HERMITS: Record<string, HermitSpec> = {
   // blue-leg (Clibanarius tricolor): blue legs, orange-red antennae, olive-brown body, a dull brown shell
   hermit: { shell: ['#4a4234', '#7a6c54', '#a49478'], mark: '#3a2e22', body: ['#4a4030', '#6a5c46', '#8a7a62'], leg: ['#1c2c5c', '#2c4c9c', '#4a66b0'], eye: ['#2a2a2a', '#0a0a0a'] },
 };
-const HERMIT_SIDE: Pt[] = [[0.88, 0.17, 'c'], [0.83, 0.1], [0.7, 0.085], [0.57, 0.1], [0.55, 0.2], [0.66, 0.245], [0.8, 0.225]];
+// the cephalothorax out of the aperture, the soft abdomen running back into the shell (HERP3D's `shell` lines the aperture up on it)
+const HERMIT_SIDE: Pt[] = [[0.88, 0.17, 'c'], [0.83, 0.1], [0.7, 0.085], [0.57, 0.095], [0.45, 0.115], [0.38, 0.165], [0.44, 0.225], [0.57, 0.245], [0.66, 0.245], [0.8, 0.225]];
+const HERMIT_JOINT = '#d8893a'; // Clibanarius tricolor: orange-gold rings at the leg joints
 const HERMIT_LIMBS: Limb3D[] = [
-  // walking legs: up from the body to a knee, down to the tip on the sand
-  { js: [[0.66, 0.2, 0.05, 0.022], [0.71, 0.11, 0.15, 0.017], [0.76, 0.27, 0.21, 0.012]], toes: [[0.035, 0.025]], toe: 0.009 },
-  { js: [[0.75, 0.2, 0.05, 0.022], [0.83, 0.12, 0.15, 0.017], [0.9, 0.27, 0.19, 0.012]], toes: [[0.04, 0.015]], toe: 0.009 },
-  // claw: arm forward to a heavy palm, two fingers to the sand
-  { js: [[0.8, 0.2, 0.04, 0.026], [0.87, 0.24, 0.08, 0.026], [0.93, 0.27, 0.06, 0.036]], toes: [[0.055, -0.01], [0.05, 0.015]], toe: 0.014 },
+  // walking legs, jointed: coxa out of the body, the long merus up to the knee, carpus and propodus down, the dactyl to the sand
+  { js: [[0.64, 0.2, 0.05, 0.021], [0.68, 0.11, 0.14, 0.019], [0.71, 0.15, 0.2, 0.016], [0.74, 0.24, 0.235, 0.013]], toes: [[0.03, 0.025]], toe: 0.01, seg: HERMIT_JOINT },
+  { js: [[0.73, 0.2, 0.05, 0.021], [0.8, 0.11, 0.13, 0.019], [0.85, 0.15, 0.18, 0.016], [0.89, 0.24, 0.2, 0.013]], toes: [[0.04, 0.015]], toe: 0.01, seg: HERMIT_JOINT },
+  // cheliped: arm forward and down to a heavy palm; the two fingers close in front of it
+  { js: [[0.79, 0.2, 0.04, 0.024], [0.85, 0.215, 0.085, 0.022], [0.9, 0.25, 0.075, 0.02]], toes: [], toe: 0, seg: HERMIT_JOINT, claw: { palm: 0.075, r: 0.036, finger: 0.055 } },
   // eye stalk (no toes; the eye sits on its tip) and antenna (own colour)
   { js: [[0.85, 0.12, 0.02, 0.009], [0.89, 0.06, 0.035, 0.007]], toes: [], toe: 0 },
   { js: [[0.87, 0.15, 0.015, 0.0045], [0.95, 0.02, 0.05, 0.0035], [0.995, -0.14, 0.09, 0.0025]], toes: [], toe: 0, c: ['#d0582a', '#a8401c'] },
 ];
-/** The borrowed shell: a globose (turbo-like) shell, the aperture forward where the crab comes out, the spire on top. */
-const HERMIT_SHELL: Shell3D = { turns: 4, grow: 2.6, drop: 1.2, ap: [0.6, 0.7], axis: [-1, 0.5, 0], size: 0.62, tall: 0.55, at: 0.33, foot: 0, tent: 0, mark: 'spiral', open: [1, -0.4, 0], tilt: 40 };
+/** The borrowed shell: a globose (turbo-like) shell, the spire on top, its aperture forward and just behind the legs, the crab's body in it. */
+const HERMIT_SHELL: Shell3D = { turns: 4, grow: 2.6, drop: 1.2, ap: [0.6, 0.7], axis: [-1, 0.5, 0], size: 0.56, tall: 0.5, at: 0.43, foot: 0, tent: 0, mark: 'spiral', open: [1, -0.4, 0], tilt: 40 };
 
 function drawHermit(s: HermitSpec, ctx: Ctx, P: Proj, W: number) {
   const card = (l: Limb3D, far: boolean) => {
-    const js = l.js.map(j => [j[0] - (far ? 0.02 : 0), j[1] - (far ? 0.015 : 0), j[3]] as J), e = js[js.length - 1];
-    const toes = l.toes.map(([du]) => [e[0] + du, HG - l.toe * 0.5] as [number, number]);
-    limb(ctx, P, W, js, toes, l.toe, l.c ? [l.c[1], l.c[0], l.c[0]] : s.leg, far);
+    const js = l.js.map(j => [j[0] - (far ? 0.02 : 0), j[1] - (far ? 0.015 : 0), j[3]] as J), e = js[js.length - 1], cl = l.claw;
+    // a claw: the palm as a last fat joint, the two fingers as toes closing in front of it
+    if (cl) js.push([e[0] + cl.palm * 0.5, e[1] + 0.01, cl.r]);
+    const toes = cl ? [[e[0] + cl.palm + cl.finger, e[1] + 0.005], [e[0] + cl.palm + cl.finger * 0.9, e[1] + 0.02]] as [number, number][]
+      : l.toes.map(([du]) => [e[0] + du, HG - l.toe * 0.5] as [number, number]);
+    limb(ctx, P, W, js, toes, cl ? cl.r * 0.35 : l.toe, l.c ? [l.c[1], l.c[0], l.c[0]] : s.leg, far);
   };
   for (const l of HERMIT_LIMBS.slice(0, 3)) card(l, true);
   // shell: the body whorl, the spire behind and above it, the dark aperture toward the crab
@@ -294,6 +318,10 @@ export interface Limb3D {
   toe: number;                 // toe radius at the root
   pad?: number;                // round toe pads (tree frogs)
   thigh?: number;              // frog thigh: peak radius of the smooth, flattened teardrop over the first segment
+  blunt?: boolean;             // toes as jointed digits (a knuckle, round tips) instead of tapering spikes
+  web?: number;                // webbing between neighbouring toes, out to this fraction of their length (toad hind feet)
+  seg?: string;                // an arthropod leg: segments swelling between narrow joints, the joints in this colour (hermit crab)
+  claw?: { palm: number; r: number; finger: number }; // a chela on the end: palm length, palm half-height, finger length (widths)
   c?: [string, string];        // own colour (top, underside), else the species' legCol (hermit crab antennae)
 }
 export type Mark3D =
@@ -314,23 +342,27 @@ export interface Herp3D {
   gills?: { at: [number, number, number]; tips: [number, number, number][]; stalk: string; fringe: string };
   ground: number;                 // the ground line v (card frame)
   shell?: { s: Shell3D; shell: [string, string, string]; mark: string }; // a carried snail shell (hermit crab), from the snail generator
+  warts?: { n: number; u: [number, number]; a: [number, number]; r: [number, number]; h: number; seed: number }; // raised skin bumps (a: round the section, h: height / radius)
 }
 
 /** Frogs share one sitting pose (design frame, see FROG_TORSO); `fat` widens the body. */
 function frog3D(s: FrogSpec, fat: number, tone: [number, string][], marks: Mark3D[], legSpots?: Herp3D['legSpots']): Herp3D {
   const V = (v: number) => frogV(s.aspect, v), J = (u: number, v: number, z: number, r: number): Joint => [u, V(v), z, r];
-  const pad = s.pads, toe = 0.009;
+  const pad = s.pads, toe = 0.009, r = s.rump ?? 0, web = s.warts ? 0.9 : undefined;
+  // the toad's webbed hind foot fans its toes wider
+  const hindToes: [number, number][] = web ? [[0.13, -0.08], [0.18, -0.025], [0.18, 0.04], [0.13, 0.1], [0.06, 0.13]] : [[0.15, -0.06], [0.19, -0.015], [0.18, 0.035], [0.13, 0.08], [0.075, 0.105]];
   return {
-    side: FROG_TORSO.map(p => (p.length > 2 ? [p[0], V(p[1]), 'c'] : [p[0], V(p[1])]) as Pt),
-    wid: ([[0.06, 0.11], [0.2, 0.165], [0.42, 0.185], [0.62, 0.175], [0.78, 0.16], [0.9, 0.125], [1, 0.07]] as [number, number][]).map(([u, w]) => [u, w * fat]),
+    side: (s.torso ?? FROG_TORSO).map(p => (p.length > 2 ? [p[0], V(p[1]), 'c'] : [p[0], V(p[1])]) as Pt),
+    wid: (s.wid ?? FROG_WID).map(([u, w]) => [u, w * fat]),
     belly: 3.2, tone, marks, legSpots,
     limbs: [
-      // hind leg folded beside the body: thigh forward along the flank, shank back to the heel, the long foot forward
-      { js: [J(0.13, 0.12, 0.08 * fat, 0.066), J(0.44, 0.15, 0.185 * fat, 0.046), J(0.15, 0.228, 0.215 * fat, 0.022), J(0.3, 0.252, 0.235 * fat, 0.013)],
-        toes: [[0.2, -0.07], [0.19, -0.01], [0.15, 0.045], [0.11, 0.085], [0.06, 0.11]], toe, pad, thigh: 0.1 },
-      // front arm straight down under the shoulder, fingers turned in and out
-      { js: [J(0.7, 0.08, 0.1 * fat, 0.032), J(0.68, 0.17, 0.165 * fat, 0.024), J(0.725, 0.245, 0.17 * fat, 0.016)],
-        toes: [[0.085, -0.045], [0.08, 0.015], [0.045, 0.06], [-0.015, 0.075]], toe, pad },
+      // hind leg folded beside the body: thigh forward along the flank, shank back to the heel, the long foot forward;
+      // jointed toes, the fourth the longest (webbed on the toad)
+      { js: [J(0.13 + r, 0.12, 0.08 * fat, 0.066), J(0.44 + r * 0.3, 0.15, 0.185 * fat, 0.046), J(0.15 + r * 0.6, 0.228, 0.215 * fat, 0.022), J(0.3 + r * 0.5, 0.252, 0.235 * fat, 0.015)],
+        toes: hindToes, toe, pad, thigh: 0.1, blunt: true, web },
+      // front arm straight down under the shoulder, four fingers turned in and out
+      { js: [J(0.7, 0.08, 0.1 * fat, 0.032), J(0.68, 0.17, 0.165 * fat, 0.024), J(0.725, 0.245, 0.17 * fat, 0.017)],
+        toes: [[0.075, -0.04], [0.085, 0.01], [0.055, 0.055], [0.0, 0.07]], toe, pad, blunt: true },
     ],
     legCol: [s.leg[1], s.leg[2]],
     eye: { u: 0.8, th: 0.9, r: 0.052 * (frogV(s.aspect, 1) - frogV(s.aspect, 0)), iris: s.iris, pupil: s.pupil, bulge: 0.62 },
@@ -379,7 +411,7 @@ function sal3D(s: SalSpec, wid: [number, number][], tone: [number, string][], ma
     js: [[u, cv + tr * 0.25, t(u) * 0.6, 0.017 * k], [u + 0.01 * dir, cv + tr * 0.55, t(u) + 0.03 * k, 0.013 * k], [u + 0.02 * dir, fy - 0.004, t(u) + 0.045 * k, 0.009 * k]],
     toes: (dir > 0 ? [[0.03, -0.012], [0.032, 0.008], [0.022, 0.025], [0.004, 0.032]] : [[0.026, 0.004], [0.02, 0.02], [0.006, 0.03], [-0.012, 0.032], [-0.03, 0.022]])
       .map(([du, dz]) => [du * k, dz * k] as [number, number]),
-    toe,
+    toe, blunt: s.swimTail,
   });
   return {
     side: salSide(s), wid, belly: 2.6, tone, marks,
@@ -407,7 +439,7 @@ export const HERP3D_GLASS: Record<string, Herp3D> = {};
 export const HERP3D: Record<string, Herp3D> = {
   // hermit crab: the small body out of the shell, legs and claw from HERMIT_LIMBS, the eyes on the stalk tips
   hermit: {
-    side: HERMIT_SIDE, wid: [[0.55, 0.06], [0.68, 0.075], [0.8, 0.065], [0.88, 0.04]], belly: 2.6,
+    side: HERMIT_SIDE, wid: [[0.4, 0.06], [0.55, 0.068], [0.68, 0.075], [0.8, 0.065], [0.88, 0.04]], belly: 2.6,
     tone: [[0, HERMITS.hermit.body[0]], [0.5, HERMITS.hermit.body[1]], [1, HERMITS.hermit.body[2]]], marks: [],
     limbs: HERMIT_LIMBS, legCol: [HERMITS.hermit.leg[1], HERMITS.hermit.leg[0]],
     eye: { u: 0.89, th: 0.3, r: 0.018, iris: HERMITS.hermit.eye, pupil: 'dark', bulge: 1, at: [0.89, 0.045, 0.035] },
@@ -421,16 +453,20 @@ export const HERP3D: Record<string, Herp3D> = {
     { k: 'band', u: [0.15, 0.8], a: [0.85, 1.0], c: '#2c5fae', o: 0.8, blur: 0.03 },
     ...FROG_FACE,
   ], { c: '#101114', r: 0.012, n: 34 }),
-  treefrog: frog3D(FROGS.treefrog, 1.12, TREEFROG_TONE, TREEFROG_MARKS),
+  treefrog: frog3D(FROGS.treefrog, 1.1, TREEFROG_TONE, TREEFROG_MARKS),
   // warty green back with black blotches; red-orange belly with black spots
-  firetoad: frog3D(FROGS.firetoad, 1.1, [[0, '#4b7a32'], [0.5, '#5d8c3a'], [0.66, '#5f8a38'], [0.73, '#d9461e'], [1, '#e04a1c']], [
+  firetoad: { ...frog3D(FROGS.firetoad, 1.1, [[0, '#4b7a32'], [0.5, '#5d8c3a'], [0.66, '#5f8a38'], [0.73, '#d9461e'], [1, '#e04a1c']], [
     { k: 'spots', n: 26, u: [0.12, 0.88], a: [0.0, 0.5], r: [0.018, 0.034], c: '#111410', o: 0.85, seed: 9 },
     { k: 'spots', n: 110, u: [0.1, 0.92], a: [0.0, 0.55], r: [0.008, 0.012], c: '#3e6627', o: 0.6, seed: 7 },
-    { k: 'spots', n: 18, u: [0.15, 0.85], a: [0.76, 1.0], r: [0.014, 0.022], c: '#141210', o: 0.85, seed: 10 },
+    { k: 'spots', n: 18, u: [0.22, 0.85], a: [0.76, 1.0], r: [0.014, 0.022], c: '#141210', o: 0.85, seed: 10 },
     ...FROG_FACE,
   ], { c: '#111410', r: 0.016, n: 14 }),
+    // low rounded warts over the back and upper flanks, none on the smooth belly
+    warts: { n: 80, u: [0.24, 0.9], a: [0.04, 0.55], r: [0.013, 0.021], h: 0.5, seed: 31 } },
   // dark brown-black and granular above, the orange belly showing low on the flank
-  firenewt: sal3D(SALS.firenewt, [[0, 0.003], [0.2, 0.008], [0.42, 0.017], [0.55, 0.028], [0.72, 0.032], [0.86, 0.034], [0.95, 0.028], [1, 0.014]],
+  // a broad trunk, a rounded head a little wider than the neck, the tail flattened side to side
+  firenewt: sal3D(SALS.firenewt, [[0, 0.002], [0.08, 0.004], [0.2, 0.007], [0.34, 0.01], [0.44, 0.014], [0.5, 0.026], [0.56, 0.038], [0.66, 0.045],
+    [0.76, 0.043], [0.82, 0.035], [0.88, 0.04], [0.94, 0.037], [1, 0.022]],
     [[0, '#241f1b'], [0.5, '#3a312a'], [0.66, '#50382a'], [0.74, '#e2621e'], [1, '#e8661c']], [
       { k: 'spots', n: 160, u: [0.05, 0.97], a: [0.0, 0.6], r: [0.003, 0.004], c: '#57493c', o: 0.6, seed: 12 },
       { k: 'spots', n: 30, u: [0.35, 0.9], a: [0.8, 1.0], r: [0.004, 0.007], c: '#2a2420', o: 0.7, seed: 13 },
