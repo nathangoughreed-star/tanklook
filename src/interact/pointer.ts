@@ -57,6 +57,16 @@ function surfaceHit(vp: Viewport, S: TankSetup, ray: THREE.Ray, skip: Set<number
   return !ground || ray.origin.distanceTo(piece) < ray.origin.distanceTo(ground) ? piece : ground;
 }
 
+/** Views within this many degrees of level drag aquascape pieces on an upright plane (see `move.wall`). */
+export const EDGE_ON_EL = 20;
+
+/** The upright plane through `at` facing the camera horizontally, if the view is near edge-on (|el| < EDGE_ON_EL). */
+export function wallPlane(cam: THREE.Camera, el: number, at: THREE.Vector3): THREE.Plane | null {
+  if (Math.abs(el) >= EDGE_ON_EL) return null;
+  const n = cam.getWorldDirection(new THREE.Vector3()).setY(0);
+  return n.lengthSq() < 1e-9 ? null : new THREE.Plane().setFromNormalAndCoplanarPoint(n.normalize(), at);
+}
+
 /** Height (above the ground) of the top of whatever solid piece is under (x, depth), excluding `skip`; 0 = bare ground. */
 function supportLift(vp: Viewport, S: TankSetup, x: number, depth: number, skip: Set<number>) {
   const ray = new THREE.Raycaster(new THREE.Vector3(x, S.tank.H * 3 + 1000, -depth), new THREE.Vector3(0, -1, 0));
@@ -71,12 +81,23 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
   // dragging an aquascape item: `grab` = the grabbed point relative to the piece's base, kept under the pointer while
   // the base slides over the ground and other pieces; riders = pieces resting on it, which move with it
   type Rider = { id: number; dx: number; dd: number; dy: number };
-  // `float` = the piece was placed off any surface (the Move buttons / arrow keys): it slides level at its height instead
-  let move: { vp: Viewport; id: number; grab: THREE.Vector3; riders: Rider[]; skip: Set<number>; float: THREE.Plane | null; moved: boolean } | null = null;
+  // `float` = the piece was placed off any surface (the Move buttons / arrow keys): it slides level at its height instead;
+  // `wall` = the view is near edge-on, so the pointer's ray grazes the floor: the piece slides across on an upright plane
+  // facing the eye (left / right, depth kept) and rests on whatever is under it (audit #3)
+  let move: { vp: Viewport; id: number; grab: THREE.Vector3; riders: Rider[]; skip: Set<number>; float: THREE.Plane | null; wall: THREE.Plane | null; moved: boolean } | null = null;
   let drag: { vp: Viewport; plane: THREE.Plane; mode: DragMode; off: THREE.Vector3; moved: boolean } | null = null;
   let orbit: { i: number; x: number; y: number; az: number; el: number } | null = null;
   // custom terrain: dragging a grid dot up/down; the height follows the pointer at the dot's on-screen scale
   let lift: { i: number; k: number; y0: number; h0: number; mmPerPx: number; moved: boolean } | null = null;
+
+  // touch (audit #6): two fingers on a view pinch to zoom and move together to pan, toward the point between them; a
+  // second finger while a fish, piece or terrain dot is being dragged is ignored. `first` = the finger that started the
+  // gesture: only its lifting ends a drag.
+  const touches = new Map<number, { x: number; y: number }>();
+  let first: number | null = null;
+  let pinch: { i: number; d0: number; z0: number; mid: { x: number; y: number } } | null = null;
+  const fingers = () => [...touches.values()];
+  const midOf = (a: { x: number; y: number }[]) => ({ x: (a[0].x + a[1].x) / 2, y: (a[0].y + a[1].y) / 2 });
 
   // middle-drag: a pan that stays (Viewer.pans); a double middle-click re-centres
   let pan: { i: number; x: number; y: number } | null = null;
@@ -95,6 +116,20 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       return;
     }
     if (e.button !== 0) return;
+    if (e.pointerType === 'touch') {
+      if (pinch || touches.size >= 2) return;
+      if (touches.size === 1) { // the second finger: a pinch, unless something is being dragged
+        if (drag || move || lift) return;
+        const hit0 = viewer.hitTest(e.clientX, e.clientY); if (!hit0) return;
+        touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        try { canvas.setPointerCapture(e.pointerId); } catch { /* not all pointers can be captured */ }
+        if (orbit) { const o = orbit; store.cam(c => { c.az = o.az; c.el = o.el; }, o.i); orbit = null; } // undo the first finger's turn
+        const f = fingers(), i = hit0.vp.i;
+        pinch = { i, d0: Math.max(10, Math.hypot(f[0].x - f[1].x, f[0].y - f[1].y)), z0: store.scene.tanks[i].camera.zoom, mid: midOf(f) };
+        return;
+      }
+      touches.set(e.pointerId, { x: e.clientX, y: e.clientY }); first = e.pointerId;
+    }
     let hit = viewer.hitTest(e.clientX, e.clientY); if (!hit) return;
     const vi = hit.vp.i, editable = store.isEditing(vi);
     if (editable && vi !== store.scene.active) {  // show that tank in the panel first (rebuilds: the selection moves there)
@@ -124,7 +159,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       const at = new THREE.Raycaster(hit.ray.origin, hit.ray.direction).intersectObject(hit.mesh, false)[0]?.point ?? hit.mesh.position;
       const skip = new Set([it.id, ...riders.map(r => r.id)]);
       const float = Math.abs(it.lift - supportLift(hit.vp, S, it.x, it.depth, skip)) > 2 ? new THREE.Plane(new THREE.Vector3(0, 1, 0), -at.y) : null;
-      move = { vp: hit.vp, id: it.id, grab: at.clone().sub(hit.mesh.position), riders, skip, float, moved: false };
+      move = { vp: hit.vp, id: it.id, grab: at.clone().sub(hit.mesh.position), riders, skip, float, wall: wallPlane(hit.vp.cam, S.camera.el, at), moved: false };
       return;
     }
     if (!editable || hit.fishId == null || !hit.mesh || !canPick('fish')) {
@@ -144,6 +179,16 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
   });
 
   canvas.addEventListener('pointermove', e => {
+    if (touches.has(e.pointerId)) touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pinch) {
+      if (touches.size < 2) return;
+      const p = pinch, f = fingers(), mid = midOf(f);
+      const z = +clamp(p.z0 * Math.hypot(f[0].x - f[1].x, f[0].y - f[1].y) / p.d0, ...LIMITS.zoom).toFixed(2);
+      viewer.zoomAt(p.i, mid.x, mid.y, p.mid.x, p.mid.y); p.mid = mid;
+      if (z !== store.scene.tanks[p.i].camera.zoom) store.cam(c => { c.zoom = z; }, p.i); else viewer.draw();
+      return;
+    }
+    if (e.pointerType === 'touch' && first != null && e.pointerId !== first) return;
     if (pan) { viewer.setPan(pan.i, e.clientX - pan.x, e.clientY - pan.y); return; }
     if (lift) {
       const l = lift, h = +clamp(l.h0 + (l.y0 - e.clientY) * l.mmPerPx, 0, store.scene.tanks[l.i].tank.H * LIMITS.terrainMax).toFixed(1);
@@ -162,7 +207,8 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       const m = move, hit = viewer.hitTest(e.clientX, e.clientY); if (!hit || hit.vp !== m.vp) return;
       // the ray the base travels along: the pointer's ray, shifted back by the grab point
       const S0 = store.scene.tanks[m.vp.i], base = hit.ray.clone(); base.origin.sub(m.grab);
-      const p = m.float ? hit.ray.intersectPlane(m.float, new THREE.Vector3())?.sub(m.grab) : surfaceHit(m.vp, S0, base, m.skip); if (!p) return;
+      const plane = m.wall ?? m.float;
+      const p = plane ? hit.ray.intersectPlane(plane, new THREE.Vector3())?.sub(m.grab) : surfaceHit(m.vp, S0, base, m.skip); if (!p) return;
       store.editTank(m.vp.i, t => {
         const it = t.items.find(q => q.id === m.id); if (!it) return;
         const y = groundHeight(t, t.tank, it.x, it.depth) + it.lift;
@@ -204,6 +250,12 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
   });
 
   const end = (e: PointerEvent) => {
+    if (e.pointerType === 'touch') {
+      touches.delete(e.pointerId);
+      if (pinch) { if (!touches.size) { pinch = null; first = null; } return; } // lifting the last finger ends it
+      if (first != null && e.pointerId !== first) return; // an ignored second finger
+      first = null;
+    }
     if (pan) { pan = null; canvas.classList.remove('panning'); return; }
     // a plain click on empty space (no orbit drag) clears the selection, so nothing is highlighted
     if (orbit && e.type === 'pointerup' && Math.hypot(e.clientX - orbit.x, e.clientY - orbit.y) < 4) store.select(null);

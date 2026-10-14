@@ -34,6 +34,17 @@
     <div id="libList" class="libgrid"></div>
     <div class="btns"><button id="openFile">Open a downloaded file…</button></div>
   </dialog>
+  <dialog id="startDlg" class="libdlg startdlg" aria-labelledby="startTitle">
+    <h2 id="startTitle">TankLook</h2>
+    <p class="hint">Plan an aquarium, paludarium or terrarium: tank, ground, plants, animals and light, all to scale.</p>
+    <div class="startbtns">
+      <button id="startLast" class="primary" hidden><b>Continue your last tank</b><span id="startLastName"></span></button>
+      <button id="startFresh"><b>Start fresh</b><span>An empty tank to fill yourself</span></button>
+    </div>
+    <h3 class="libsub">Or start from an example</h3>
+    <div id="startEx" class="libgrid"></div>
+    <p class="hint">Drag (one finger on a phone) to look around, wheel or pinch to zoom; <i>How to use</i> at the top of the panel has the rest. <i>Open…</i> brings the examples back later.</p>
+  </dialog>
   <div id="busy" class="busy" role="status" aria-live="polite" hidden><div class="busybox"><span class="spin" aria-hidden="true"></span><span id="busyText">Opening…</span></div></div>
   <div class="namerow"><input id="sceneName" type="text" maxlength="80" aria-label="Scene name"><span id="saveState" class="hint"></span></div>
   <div id="status" class="status" role="status" hidden></div>
@@ -43,7 +54,8 @@
     <ul class="hint">
       <li><b>Drag empty space</b> to look around the tank; <b>wheel</b> zooms; <b>click</b> empty space to deselect, <b>double-click</b> it for straight-on.</li>
       <li><b>Drag a fish</b> to move it: parallel to the glass when viewed from the front, across the floor plan from above, front/back from the side.</li>
-      <li><b>Split tank</b> (Compare) makes an independent copy beside this one; <b>click a view</b> to edit that tank. The padlock between the views links or frees their cameras. <i>Save</i> and <i>Download</i> keep both tanks together; <i>Download</i> on a view's tab saves that tank on its own.</li>
+      <li><b>Split tank</b> (Compare) makes an independent copy beside this one; tick <b>Edit</b> on a view to edit that tank (both ticked: both change). The padlock between the views links or frees their cameras. <i>Save</i> and <i>Download</i> keep both tanks together; <i>Download</i> on a view's tab saves that tank on its own.</li>
+      <li><b>On a phone or tablet:</b> drag with one finger to look around, pinch with two to zoom, drag with two to move the picture.</li>
       <li><b>Shift + wheel</b> moves the selected fish forward/back. <b>Del</b> deletes, <b>F</b> flips, <b>Ctrl+D</b> duplicates, <b>Ctrl+Z</b> undoes.</li>
       <li>Fish are drawn at adult size. A fish further back looks smaller exactly as it would through real glass at the viewing distance below.</li>
       <li>Your current tank is kept in this browser automatically. <i>Save</i> adds it, with a picture, to the tanks <i>Open…</i> lists; <i>Download</i> keeps a file to back up or share (browser saves are lost if site data is cleared).</li>
@@ -71,17 +83,18 @@
   <div class="hint" id="volA"></div>
   <div class="hint" id="wtA" title="Approximate: water over the substrate, substrate / land (wet gravel ~1.95 kg/L, dry ~1.6), and the glass at its actual thickness. Stand, rocks, wood and plants not included."></div>
   <div class="field"><span class="flabel">Style</span><span class="seg"><button id="rimY">Rimmed</button><button id="rimN">Rimless</button></span></div>
-  <div class="field"><span class="flabel" title="Thin black lines on every glass edge, inside and out">Glass edges</span><span class="seg"><button id="edgesY">Shown</button><button id="edgesN">Hidden</button></span></div>
+  <div class="field"><span class="flabel" title="Thin black lines on every glass edge, inside and out, so the panes read clearly (subtle on a rimmed tank)">Glass outlines</span><span class="seg"><button id="edgesY">Shown</button><button id="edgesN">Hidden</button></span></div>
   <div class="field"><span class="flabel">Lid</span><span class="seg"><button id="lidOpen">Open top</button><button id="lidGlass">Glass top</button><button id="lidHood">Hood</button></span></div>
   <div class="field"><label class="flabel" for="bgSel">Background</label><select id="bgSel"></select></div>
   <div class="field" id="bgSidesRow"><span class="flabel" title="Sides the background covers; pick any number">On sides</span><span class="seg"><button id="bgBack" aria-pressed="false">Back</button><button id="bgLeft" aria-pressed="false">Left</button><button id="bgRight" aria-pressed="false">Right</button><button id="bgFront" aria-pressed="false">Front</button></span></div>
   <div class="row" id="bgArcRow"><label for="bgArc" title="How much of the round wall the background covers, centred on each chosen side">Arc</label><input id="bgArc" type="range" min="20" max="360" step="5"><output id="oBgArc"></output></div>
-  <div class="field"><label class="flabel" for="glassSel">Glass</label><select id="glassSel"></select>
-    <select id="glassType" aria-label="Glass type"><option value="standard">Standard</option><option value="lowiron">Low-iron (ultra clear)</option></select></div>
+  <div class="field"><label class="flabel" for="glassSel">Glass</label><select id="glassSel"></select></div>
+  <div class="field"><label class="flabel" for="glassType">Glass type</label><select id="glassType"><option value="standard">Standard</option><option value="lowiron">Low-iron (ultra clear)</option></select></div>
   <div class="hint" id="glassHint"></div>
   </details>
   <details class="sec" data-sec="room"><summary><h2>Room</h2></summary>
-  <div class="field"><label class="flabel"><input type="checkbox" id="standOn"> Stand</label><select id="standStyle" aria-label="Stand type"><option value="cabinet">Cabinet</option><option value="frame">Open metal frame</option><option value="custom">Cabinet, custom size</option><option value="table">Table</option></select><select id="standFinish" aria-label="Stand finish"></select></div>
+  <div class="field"><label class="flabel"><input type="checkbox" id="standOn"> Stand</label><select id="standStyle" aria-label="Stand type"><option value="cabinet">Cabinet</option><option value="frame">Open metal frame</option><option value="custom">Cabinet, custom size</option><option value="table">Table</option></select></div>
+  <div class="field"><label class="flabel" for="standFinish">Finish</label><select id="standFinish"></select></div>
   <div class="row"><label for="standH">Stand height</label><input id="standH" type="range" step="5"><output id="oStandH"></output></div>
   <div id="tableRows">
   <div class="field"><span class="flabel" id="tableTopLab">Table top</span><span class="seg"><button id="tableRect">Rectangular</button><button id="tableRound">Round</button></span></div>
@@ -109,12 +122,15 @@
   <div class="row" id="subMixRow"><label for="subMix">Mixing</label><input id="subMix" type="range" min="0" max="100" step="5"><output id="oSubMix"></output></div>
   <div class="hint" id="subMixHint">Mixing: none = separate patches of each, full = mixed grain by grain, between = clumps of each in mixed ground.</div>
   </div>
+  <div class="hint" id="subBare">Choose a substrate above to set its depth.</div>
+  <div id="subDepth">
   <div class="hint">Depth at each corner, laid out as seen from above (back at the top):</div>
   <div class="row"><label for="subBL">Back left</label><input id="subBL" type="range" step="1" min="0"><output id="oSubBL"></output></div>
   <div class="row"><label for="subBR">Back right</label><input id="subBR" type="range" step="1" min="0"><output id="oSubBR"></output></div>
   <div class="row"><label for="subFL">Front left</label><input id="subFL" type="range" step="1" min="0"><output id="oSubFL"></output></div>
   <div class="row"><label for="subFR">Front right</label><input id="subFR" type="range" step="1" min="0"><output id="oSubFR"></output></div>
   <div class="btns"><button id="subLevel">Level</button><button id="subFB">Slope to back</button><button id="subLR">Slope to right</button><button id="subCorner">Back-left high</button></div>
+  </div>
   <div class="field"><label class="flabel"><input type="checkbox" id="terOn"> Custom terrain</label><button id="terEdit" title="Show the grid points in the tank; drag one up or down">Edit points</button><button id="terFlat" title="Every point at the substrate's average depth">Flatten</button></div>
   <div class="row" id="terColsRow"><label for="terCols">Grid</label><input id="terCols" type="range" min="3" max="25" step="1"><output id="oTerCols"></output></div>
   <div class="hint" id="terHint">Custom terrain turns the floor into a grid of points you can push down or pull up, with a smooth surface through them. It starts from the current floor.</div>
@@ -130,7 +146,7 @@
     <div class="row"><label for="iYaw" title="Turn about the vertical">Yaw</label><input id="iYaw" type="range" min="-180" max="180" step="1"><output id="oIYaw"></output></div>
     <div class="row"><label for="iPitch" title="Tip forward or back">Pitch</label><input id="iPitch" type="range" min="-90" max="90" step="1"><output id="oIPitch"></output></div>
     <div class="row"><label for="iTilt" title="Lean sideways, all the way over">Roll</label><input id="iTilt" type="range" min="-180" max="180" step="1"><output id="oITilt"></output></div>
-    <div class="row"><label for="iLift">Height</label><input id="iLift" type="range" step="1"><output id="oILift"></output></div>
+    <div class="row"><label for="iLift" title="Raise it above the ground (0 = sitting on it)">Raise</label><input id="iLift" type="range" step="1"><output id="oILift"></output></div>
     <div class="nudge" title="Move it 5 mm a click (hold to keep going; Shift: 1 mm). Arrow keys and Page Up / Down do the same.">
       <span class="nl">Move</span>
       <button data-nudge="x-1">◀ Left</button><button data-nudge="x1">Right ▶</button>
@@ -147,12 +163,13 @@
   <div id="spResults" class="results" role="listbox" aria-label="Species"></div>
   <div id="spPreview" class="spCard" hidden><button id="spPreviewHide" class="spHide" title="Close preview" aria-label="Close preview">×</button>
     <div id="spPreviewArt" class="art"></div><span id="spSex" class="seg spSex" hidden><button id="spSexM" title="Show the male">♂ Male</button><button id="spSexF" title="Show the female">♀ Female</button></span><div id="spPreviewName" class="name"></div><div id="spPreviewInfo" class="hint"></div></div>
-  <div class="btns">
+  <div class="btns" id="addRow">
     <button id="addFish" class="primary" title="Add this species to the stocking list (a schooling species starts at 6)">Add</button>
     <span class="grow"></span>
     <button id="shuffle" title="Move every animal to a new spot, as if a moment later: bottom dwellers stay down, schools stay together">Shuffle</button>
     <button id="delAll">Delete all</button>
   </div>
+  <div id="addWhy" class="hint why" hidden></div>
   <div class="row"><label for="addSize">New animal size</label><input id="addSize" type="range" min="15" max="130" step="5" value="100"><output id="oAddSize"></output></div>
   <div id="list" class="stock" aria-label="Stocking"></div>
   <div class="field" id="aqRow"><span class="flabel">Stocking</span><button id="aqCheck" title="Ask AqAdvisor for this tank's stocking level (one request)">Check</button><span id="aqOut"></span><a id="aqLink" target="_blank" rel="noopener" title="Open this tank and stocking in AqAdvisor's calculator for the full report">AqAdvisor ↗</a></div>
@@ -165,7 +182,7 @@
   </details>
   <details class="sec" data-sec="water"><summary><h2>Water</h2></summary>
   <div class="field"><label class="flabel"><input type="checkbox" id="wOn"> Water</label><span class="hint">Off = a dry terrarium (reptiles, amphibians, insects); fish are hidden, not deleted.</span></div>
-  <div class="field"><span class="flabel">Type</span><span class="seg"><button id="wFresh" title="Freshwater tank: the Animals list shows freshwater species">Freshwater</button><button id="wSalt" title="Saltwater (marine) tank: the Animals list shows marine species">Saltwater</button></span></div>
+  <div class="field"><span class="flabel">Type</span><span class="seg"><button id="wFresh" title="Freshwater tank: the Animals list shows freshwater species">Freshwater</button><button id="wSalt" title="Saltwater (marine) tank: the Animals list shows marine species">Saltwater</button></span><span class="hint" id="wTypeOff">Turn Water on to choose</span></div>
   <div class="field" id="wMisfitRow"><span class="hint" id="wMisfit"></span><button id="wMisfitDel" title="Remove the animals that do not live in this water (Ctrl+Z brings them back)">Remove</button></div>
   <div class="row"><label for="wLevel">Level</label><input id="wLevel" type="range" min="0.1" max="1" step="0.01"><output id="oLevel"></output></div>
   <div class="row"><label for="wOpac">Tint</label><input id="wOpac" type="range" min="0" max="0.95" step="0.01"><output id="oOpac"></output></div>
@@ -182,14 +199,21 @@
   <div class="row" id="lPatRow"><label for="lPat">Pattern</label><select id="lPat" class="span2"><option value="grid">Grid</option><option value="tri">Triangular (staggered rows)</option><option value="fit">Optimized for the tank shape</option></select></div>
   <div class="row" id="lSpRow"><label for="lSp">Spacing</label><input id="lSp" type="range" min="0" max="1500" step="10"><output id="oLSp"></output></div>
   <div class="row" id="lConeRow"><label for="lCone">Beam angle</label><input id="lCone" type="range" min="15" max="120" step="1"><output id="oLCone"></output></div>
-  <div class="row" id="lHRow"><label for="lH">Height</label><input id="lH" type="range" min="20" max="900" step="5"><output id="oLH"></output></div>
-  <div class="row"><label for="lBright">Brightness</label><input id="lBright" type="range" min="0.2" max="2.5" step="0.05"><output id="oBright"></output></div>
+  <div class="row" id="lHRow"><label for="lH" title="How far the fixture hangs above the top of the tank">Height above tank</label><input id="lH" type="range" min="20" max="900" step="5"><output id="oLH"></output></div>
+  <div class="row" id="lWRow"><label for="lW" title="The fixture's power draw from its label, all bulbs or tubes together. Set, it estimates PAR and lux at the substrate and the render follows it. 0 = off: Brightness stays a manual knob">Power</label><input id="lW" type="range" min="0" max="400" step="1"><output id="oLW"></output></div>
+  <div class="row" id="lTechRow"><label for="lTech" title="What is inside the fixture: sets how much light each watt makes, and its colour mix (lux per µmol)">Light type</label><select id="lTech" class="span2"></select></div>
+  <div class="row" id="lParRow"><label for="lPar" title="Your own PAR-meter reading at the substrate (or the maker's figure), µmol/m²/s. Set, the estimate is scaled to match it. 0 = estimate">PAR (measured)</label><input id="lPar" type="range" min="0" max="300" step="1"><output id="oLPar"></output></div>
+  <div id="lOut" class="hint"></div>
+  <div class="row"><label for="lBright" id="lBrightLab">Brightness</label><input id="lBright" type="range" min="0.2" max="2.5" step="0.05"><output id="oBright"></output></div>
   <div class="row"><label for="lK">Colour temp</label><input id="lK" type="range" min="2700" max="14000" step="100"><output id="oK"></output></div>
-  <div class="row"><label for="lRoom">Room light</label><input id="lRoom" type="range" min="0" max="0.8" step="0.01"><output id="oRoom"></output></div>
+  <div class="row"><label for="lRoom" title="Light from the room around the tank (ambient): 0 = a dark room, only the tank lights">Room light (ambient)</label><input id="lRoom" type="range" min="0" max="0.8" step="0.01"><output id="oRoom"></output></div>
+  <div class="btns"><button id="lTop" title="Look straight down on the tank, to watch the light map while you change the lights">Look from above</button><button id="lFront" title="Back to straight on">Straight on</button></div>
   <label><input type="checkbox" id="lBeams"> Light map: beams, and the light on the substrate (hides plants, hardscape and fish)</label>
   <div id="lMapKey" class="hint"><div style="height:10px;border-radius:2px;margin:4px 0 2px;background:linear-gradient(90deg,#0d0d40 0%,#1a40d9 14.3%,#00b3e6 28.6%,#26cc40 42.9%,#f2e61a 57.1%,#ff8c0d 71.4%,#e61a1a 85.7%,#ffe6e6 100%)"></div>
   <div style="position:relative;height:14px"><span style="position:absolute;left:0">1/16</span><span style="position:absolute;left:28.6%;transform:translateX(-50%)">1/4</span><span style="position:absolute;left:57.1%;transform:translateX(-50%)">1</span><span style="position:absolute;left:85.7%;transform:translateX(-50%)">4</span><span style="position:absolute;right:0">8</span></div>
   Light on the substrate, from distance, beam angle and how squarely it lands, summed over the lights; a colour step per doubling. 1 = one standard 52° bulb 300 mm straight above.</div>
+  <div id="lMapBare" class="hint why" hidden>The colours land on the substrate, and this tank has a bare bottom: <button type="button" class="linkbtn" id="lMapSub">pick a substrate</button>.</div>
+  <div class="btns"><button id="lParGuide" title="What PAR is, what levels suit planted tanks and reefs, and what grows at each">PAR guide: what plants and corals need</button></div>
   <div class="hint">A visual approximation: light falls off with distance and beam angle from fixtures above the water. No real optics, shadows or ripples.</div>
   </details>
   <details class="sec" data-sec="viewer"><summary><h2>Viewer</h2></summary>
@@ -206,19 +230,19 @@
   </details>
   <details class="sec" data-sec="display-and-export"><summary><h2>Display &amp; export</h2></summary>
   <div class="row"><label for="edge">Fish edges</label><select id="edge" class="span2">
-    <option value="a2c">Smoothed, see-through fins (alpha-to-coverage)</option><option value="cutout">Crisp (cutout)</option></select></div>
+    <option value="a2c">Smooth, see-through fins</option><option value="cutout">Crisp, solid fins (faster)</option></select></div>
   <div class="row"><label for="pop" title="Lifts fish off busy backgrounds and plants: brighter, richer colour, a darker outline and less water haze on them. 0 = plain lighting.">Fish stand out</label><input id="pop" type="range" min="0" max="100" step="5"><output id="oPop"></output></div>
   <label><input type="checkbox" id="mapOn" checked> Viewpoint map (top view of where you stand)</label>
   <label><input type="checkbox" id="gridOn"> Grid on back wall and floor (2″ / 5 cm)</label>
-  <div class="btns"><span class="flabel">Export PNG</span><button data-png="1">1×</button><button data-png="2">2×</button><button data-png="4">4×</button></div>
+  <div class="btns" id="pngRow" title="A picture of the view: 1× is its size on screen"><span class="flabel">Export PNG</span><button data-png="1">1×</button><button data-png="2">2×</button><button data-png="4">4×</button></div>
   </details>
 
-  <details><summary>Scene data (JSON, physical mm)</summary><pre id="json"></pre></details>
+  <details><summary>Scene data (JSON)</summary><div class="btns"><button id="jsonCopy">Copy</button><span class="hint">Lengths in mm; "units" is only how the panel shows them.</span></div><pre id="json"></pre></details>
   <footer class="hint">Illustrated placeholder art. Sizes are typical adult total length in aquaria (snails: crawling length).</footer>
 </aside>
 <main id="view">
   <div class="viewtools">
-    <button id="sideClose" class="sidetog" title="Hide the panel (full-screen view)" aria-label="Hide the panel">‹</button>
+    <button id="sideClose" class="sidetog" title="Hide the panel (full-screen view)" aria-label="Hide the panel">‹ Hide</button>
     <button id="sideOpen" class="sidetog" title="Show the panel" aria-label="Show the panel">› Edit</button>
     <button id="undo" class="sidetog" title="Undo (Ctrl+Z)">↶ Undo</button>
     <button id="redo" class="sidetog" title="Redo (Ctrl+Shift+Z)">↷ Redo</button>

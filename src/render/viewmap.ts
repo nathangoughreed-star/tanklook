@@ -58,5 +58,5 @@ export function drawViewMap(cv: HTMLCanvasElement, S: TankSetup, T: Tank, units:
   // caption: distance and angles
   const side = c.az === 0 ? 'straight on' : `${Math.abs(c.az)}° ${c.az < 0 ? 'left' : 'right'}`;
   g.fillStyle = ink; g.font = '600 12px system-ui, "Segoe UI", sans-serif'; g.textBaseline = 'bottom';
-  g.fillText(`Eye ${fmtLen(c.dist, units, 0)} from glass · ${side}${c.el ? ` · ${c.el}° above` : ''}`, 6, H - 5, W - 12);
+  g.fillText(`Eye ${fmtLen(c.dist, units, 0)} from glass · ${side}${c.el ? ` · ${Math.abs(c.el)}° ${c.el > 0 ? 'above' : 'below'}` : ''}`, 6, H - 5, W - 12);
 }

@@ -42,6 +42,22 @@ describe('shuffle', () => {
       expect((betta.y - g) / (top - g)).toBeGreaterThan(0.5); // a top swimmer stays in the upper water
     }
   });
+  it('puts tree frogs on the glass above the water, head up, or on land', () => {
+    let onGlass = 0;
+    for (let seed = 1; seed <= 30; seed++) {
+      const s = defaultSetup(); s.water.level *= 0.5;
+      for (let i = 0; i < 4; i++) s.fish.push({ id: i + 1, species: 'treefrog', x: s.tank.L / 2, y: 100, depth: s.tank.D / 2, yaw: 0, pitch: 0, roll: 0, bend: 0 });
+      shuffleFish(s, rng(seed)); keepInWater(s);
+      const top = waterY(s.tank, s.water.level);
+      for (const f of s.fish.filter(q => q.surface === 'glass')) {
+        onGlass++;
+        expect(f.y - 50).toBeGreaterThanOrEqual(top - 1e-6); // a 100 mm frog clears the water line
+        expect(f.y + 50).toBeLessThanOrEqual(s.tank.H + 1e-6);
+        expect(yawGap(f.yaw, 90)).toBeLessThanOrEqual(40);
+      }
+    }
+    expect(onGlass).toBeGreaterThan(30);
+  });
   it('keeps a school together and heading one way', () => {
     let together = 0;
     for (let seed = 1; seed <= 40; seed++) {

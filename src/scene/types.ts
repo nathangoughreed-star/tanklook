@@ -114,7 +114,18 @@ export interface LightSettings {
   room: number;
   /** Fixture height above the top of the tank (mm). Higher = dimmer, more even, more spill into the room. Ignored with a hood. */
   height: number;
+  /** Light output (added 2026-10-14, all optional, no version bump; model in scene/lightout.ts). Power draw (W); 0 or
+   * absent = off, Brightness stays the manual knob. Set: the render brightness follows the computed lux, `bright` is an exposure. */
+  watts?: number;
+  /** What is inside the fixture; the allowed techs depend on `type` (TECHS[t].on); absent or not allowed = the type's default. */
+  tech?: LightTech;
+  /** Measured or published PAR at the substrate (µmol/m²/s); 0 or absent = estimate. Set, the estimate is scaled to match. */
+  par?: number;
+  /** What the Light map shows when watts is set (an app preference, like `beams`); absent = 'par'. */
+  mapUnit?: 'par' | 'lux';
 }
+
+export type LightTech = 'led-white' | 'led-planted' | 'led-reef' | 't5-refl' | 't5-bare' | 't8' | 'cfl' | 'mh' | 'halogen';
 
 export interface SubstrateSettings {
   show: boolean;

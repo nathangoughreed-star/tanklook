@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Model review · TankLook</title>
+<link rel="stylesheet" href="./src/review/review.css">
+</head>
+<body>
+<header>
+  <h1>Model review</h1>
+  <div id="meta" class="hint"></div>
+  <div class="bar">
+    <input id="filter" type="search" placeholder="Filter by name or id" aria-label="Filter species">
+    <span class="seg" role="group" aria-label="Lighting">
+      <button data-light="both" class="on">Both lights</button><button data-light="flat">Preview light</button><button data-light="tank">Tank light</button>
+    </span>
+    <label><input id="onlyFlag" type="checkbox"> Flagged only</label>
+    <label><input id="onlyChanged" type="checkbox"> Changed only</label>
+    <button id="copy">Copy flagged list</button>
+    <button id="record" hidden></button>
+  </div>
+  <div id="status" class="hint"></div>
+</header>
+<main id="list"></main>
+<script type="module" src="./src/review/main.ts"></script>
+</body>
+</html>

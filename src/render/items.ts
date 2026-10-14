@@ -12,7 +12,7 @@ import { D2R } from '../scene/physics';
 import { bowlDims, footprint, shapeOf } from '../scene/shape';
 import { clampGround, groundHeight, groundInsideBy } from '../scene/terrain';
 import type { Item, Tank, TankSetup } from '../scene/types';
-import { carpetOnGround, has3DPlant, plantGeometry, plantMaterial } from './plant3d';
+import { carpetOnGround, has3DPlant, plant3d, plantGeometry } from './plant3d';
 import { reefShape } from './coral3d';
 import { cardMaterial, plantTexture } from './textures';
 
@@ -326,23 +326,34 @@ float gritK() {
  * below the opening (its walls flare past the floor disc). Needs the renderer's localClippingEnabled.
  */
 const glassMats = new Map<string, THREE.MeshBasicMaterial>();
-function solidMaterial(T: Tank) {
-  const bowl = shapeOf(T) === 'bowl', k = `${shapeOf(T)}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}`;
-  let m = glassMats.get(k);
-  if (m) return m;
-  const planes = [new THREE.Plane(new THREE.Vector3(0, 1, 0), 0)];
+const glassKey = (T: Tank) => `${shapeOf(T)}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}`;
+/** The clipping planes and the bowl's sphere cut (a shader patch adding vGlassW) for one tank outline. */
+function glassClip(T: Tank) {
+  const bowl = shapeOf(T) === 'bowl', planes = [new THREE.Plane(new THREE.Vector3(0, 1, 0), 0)];
   // keep where -((x - a.x) n.x + (depth - a.d) n.d) >= 0, i.e. insideBy; world z = -depth
   if (!bowl) for (const e of footprint(T).edges) planes.push(new THREE.Plane(new THREE.Vector3(-e.n[0], 0, e.n[1]), e.a[0] * e.n[0] + e.a[1] * e.n[1]));
-  // both sides drawn: where the glass cuts a piece open, its inside shows as a flat darker cut face, so it reads solid
-  m = new THREE.MeshBasicMaterial({ vertexColors: true, clippingPlanes: planes, side: THREE.DoubleSide });
   const b = bowl ? bowlDims(T) : null;
   const uC = { value: new THREE.Vector3(T.L / 2, b?.c ?? 0, -T.D / 2) }, uR = { value: b?.R ?? 1e9 }, uTop = { value: b?.H ?? 0 };
+  const patch = (sh: THREE.WebGLProgramParametersWithUniforms) => {
+    Object.assign(sh.uniforms, { uC, uR, uTop });
+    sh.vertexShader = 'varying vec3 vGlassW;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\n  vGlassW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+    sh.fragmentShader = 'varying vec3 vGlassW;\nuniform vec3 uC;\nuniform float uR;\nuniform float uTop;\n' + sh.fragmentShader
+      .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\n  if (vGlassW.y < uTop && distance(vGlassW, uC) > uR) discard;');
+  };
+  return { planes, patch };
+}
+function solidMaterial(T: Tank) {
+  const k = glassKey(T);
+  let m = glassMats.get(k);
+  if (m) return m;
+  const { planes, patch } = glassClip(T);
+  // both sides drawn: where the glass cuts a piece open, its inside shows as a flat darker cut face, so it reads solid
+  m = new THREE.MeshBasicMaterial({ vertexColors: true, clippingPlanes: planes, side: THREE.DoubleSide });
   // the lighting pass (render/lighting.ts aqPatch) takes over onBeforeCompile and runs userData.pre first
   const pre = (sh: THREE.WebGLProgramParametersWithUniforms) => {
-    Object.assign(sh.uniforms, { uC, uR, uTop });
-    sh.vertexShader = 'varying vec3 vGlassW;\nattribute vec4 aGrit;\nvarying vec4 vGrit;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\n  vGlassW = (modelMatrix * vec4(transformed, 1.0)).xyz; vGrit = aGrit;');
-    sh.fragmentShader = 'varying vec3 vGlassW;\nuniform vec3 uC;\nuniform float uR;\nuniform float uTop;\n' + GRIT + sh.fragmentShader
-      .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\n  if (vGlassW.y < uTop && distance(vGlassW, uC) > uR) discard;')
+    patch(sh);
+    sh.vertexShader = 'attribute vec4 aGrit;\nvarying vec4 vGrit;\n' + sh.vertexShader.replace('vGlassW = ', 'vGrit = aGrit; vGlassW = ');
+    sh.fragmentShader = GRIT + sh.fragmentShader
       .replace('#include <color_fragment>', '#include <color_fragment>\n  diffuseColor.rgb *= gritK();')
       .replace('#include <dithering_fragment>', '#include <dithering_fragment>\n  if (!gl_FrontFacing) gl_FragColor.rgb *= 0.55;');
   };
@@ -350,6 +361,19 @@ function solidMaterial(T: Tank) {
   m.customProgramCacheKey = () => 'glass-clip';
   Object.assign(m.userData, { keep: true, solid: true, pre });
   return remember(glassMats, k, m, 16, x => x.dispose());
+}
+/** 3D plants are cut off at the glass the same way (a leaf arching past a pane stops at it), one material per outline. */
+const plantMats = new Map<string, THREE.MeshBasicMaterial>();
+function plantMaterial(T: Tank) {
+  const k = glassKey(T);
+  let m = plantMats.get(k);
+  if (m) return m;
+  const { planes, patch } = glassClip(T);
+  m = new THREE.MeshBasicMaterial({ vertexColors: true, clippingPlanes: planes });
+  m.onBeforeCompile = patch;
+  m.customProgramCacheKey = () => 'plant-clip';
+  Object.assign(m.userData, { cached: true, keep: true, plantClip: true, pre: patch });
+  return remember(plantMats, k, m, 16, x => x.dispose());
 }
 const shapes = new Map<string, THREE.BufferGeometry>(), baked = new Map<string, THREE.BufferGeometry>(), plants = new Map<string, THREE.BufferGeometry>();
 function remember<T>(m: Map<string, T>, k: string, v: T, max: number, drop?: (v: T) => void) {
@@ -418,13 +442,13 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
       const dx = x - it.x, dd = d - it.depth;
       return { x: dx * c + dd * s, y: groundHeight(S, T, x, d) - ground, z: dx * s - dd * c, w: Math.min(CARPET_W, 2 * groundInsideBy(S, T, x, d)) };
     };
-    const solid = has3DPlant(type), k3 = (solid ? '3d|' : '') + k;
+    const solid = has3DPlant(type), k3 = (solid ? `3d${plant3d.sway ? 's' : ''}|` : '') + k;
     // a 3D carpet is built once per (seed, size), then only set on the ground here
     const make = () => !solid ? plantGeo(type, it.seed, h, carpet ? at : undefined) : !carpet ? plantGeometry(type, it.seed, h)
-      : carpetOnGround(plants.get(`3d|carpet|${it.seed}|${it.size}`) ?? remember(plants, `3d|carpet|${it.seed}|${it.size}`, plantGeometry(type, it.seed, h), 300, dispose), at);
+      : carpetOnGround(plants.get(`3d${plant3d.sway ? 's' : ''}|carpet|${it.seed}|${it.size}`) ?? remember(plants, `3d${plant3d.sway ? 's' : ''}|carpet|${it.seed}|${it.size}`, plantGeometry(type, it.seed, h), 300, dispose), at);
     const g = plants.get(k3) ?? remember(plants, k3, make(), 300, dispose);
     if (carpet) g.computeBoundingBox();
-    m = new THREE.Mesh(g, solid ? plantMaterial() : cardMaterial('plant:' + type, plantTexture(type), S.render.edge));
+    m = new THREE.Mesh(g, solid ? plantMaterial(T) : cardMaterial('plant:' + type, plantTexture(type), S.render.edge));
     m.userData.plant = true;
   } else m = new THREE.Mesh(bakedShape(it), solidMaterial(T));
   m.position.set(it.x, y + (m.geometry.userData.rise ?? 0), -it.depth);

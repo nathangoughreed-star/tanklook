@@ -17,7 +17,7 @@
 html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font: 13px/1.4 system-ui, "Segoe UI", sans-serif }
 #app { display: flex; height: 100% }
 #side { width: 350px; flex: none; overflow-y: auto; background: var(--panel); border-right: 1px solid var(--line); padding: 10px 14px 40px }
-#view { flex: 1; position: relative; min-width: 0; min-height: 300px }
+#view { flex: 1; position: relative; min-width: 0; min-height: 300px; overflow: hidden } /* nothing inside may widen the page (audit #2) */
 /* viewpoint map, one per view at its bottom-left corner; × hides them, "⌖ Map" brings them back */
 .vmap { position: absolute; left: 10px; bottom: 10px; width: 190px; height: 150px; border-radius: 6px; background: color-mix(in srgb, var(--panel) 88%, transparent); border: 1px solid var(--line) }
 .vmap canvas { display: block; width: 100%; height: 100%; pointer-events: none }
@@ -97,15 +97,19 @@ button.on, button.primary { background: var(--accent); color: #fff; border-color
 .cats button.on { background: var(--accent); border-color: var(--accent); color: #fff; opacity: 1 }
 .cats button.on .n { color: #e6efff }
 .results .none { color: var(--muted); padding: 4px 8px }
+.results .none .linkbtn, .linkbtn { display: inline; padding: 0; border: 0; background: none; color: var(--accent); text-decoration: underline; text-align: left }
 .results .tag { font: 600 10px/1 system-ui, sans-serif; text-transform: uppercase; letter-spacing: .04em; padding: 2px 4px; border-radius: 3px; background: var(--chip); color: var(--muted); margin-right: 4px; vertical-align: 1px }
 .results button.on .tag { background: rgba(255,255,255,.2); color: #fff }
 #layout { flex: 1 }
 .chips { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0 }
+.why { color: var(--warn); margin: 2px 0 4px }
 .stock { margin: 6px 0; display: grid; gap: 3px }
 .stock .sr { display: flex; align-items: center; gap: 4px }
 .stock .sr .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer }
 .stock .sr button { width: 24px; padding: 2px 0 }
-.stock .sr input { width: 44px; text-align: center }
+.stock .sr input { width: 52px; text-align: center }
+.stock .sr.misfit .nm { color: var(--bad) } .stock .tag.bad { color: var(--bad); font-weight: 600 }
+.stock .misnote { display: flex; align-items: center; gap: 8px; margin-top: 2px; color: var(--bad) } .stock .misnote span { flex: 1 }
 .chips button { font-size: 11.5px; padding: 2px 6px }
 #selBox.off { opacity: .4; pointer-events: none }
 #lib .libRow { display: flex; gap: 6px; align-items: baseline }
@@ -147,8 +151,9 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 #app.collapsed #side { display: none }
 #app.collapsed #sideOpen { display: block }
 #app.collapsed #sideClose { display: none }
-.lab { position: absolute; top: 8px; display: flex; align-items: center; gap: 8px; font-size: 12px; background: rgba(0, 0, 0, .55); color: #fff; padding: 3px 7px; border-radius: 4px; pointer-events: none; white-space: nowrap }
+.lab { position: absolute; top: 8px; display: flex; align-items: center; gap: 8px; font-size: 12px; background: rgba(0, 0, 0, .55); color: #fff; padding: 3px 7px; border-radius: 4px; pointer-events: none; white-space: nowrap; flex-wrap: wrap; justify-content: flex-end; row-gap: 4px } /* wraps inside its max-width on a narrow view (audit #2) */
 .lab button { pointer-events: auto }
+.lab:not(.tab) > span:first-child { white-space: normal; text-align: right } /* the size line itself wraps too */
 .lab a.aq { pointer-events: auto; color: #fff; text-decoration: none; padding-left: 8px; border-left: 1px solid rgba(255, 255, 255, .3) }
 .lab a.aq:hover { text-decoration: underline } .lab a.aq.over { color: #ff8a80 }
 .lab.tab a.aq { padding-left: 0; border-left: 0 }
@@ -163,6 +168,7 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 .lab.tab { pointer-events: auto; white-space: normal; padding: 5px 8px; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; border: 2px solid transparent } /* the border turns blue while the view is being edited */
 .lab.tab.on { border-color: var(--accent); background: rgba(0, 0, 0, .7) }
 .lab .hd { display: flex; align-items: center; gap: 10px }
+.lab .tabkey { display: inline-grid; place-items: center; min-width: 18px; height: 18px; border-radius: 3px; background: #fff; color: #000; font-size: 11px }
 .lab .diffs { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 4px; line-height: 1.3 }
 /* one quiet box per difference */
 .lab .diffs span { display: inline-flex; align-items: center; gap: 4px; padding: 1px 3px 1px 6px; border-radius: 3px; background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .16); white-space: nowrap }
@@ -193,6 +199,8 @@ footer { margin-top: 18px }
   #app { flex-direction: column-reverse }
   #side { width: 100%; height: 50%; border-right: 0; border-top: 1px solid var(--line); padding: 10px 16px 40px }
   #view { height: 50%; flex: none }
+  /* the species list is long on a phone: Add stays in reach at the bottom of the panel (audit #8) */
+  #addRow { position: sticky; bottom: 0; z-index: 2; margin: 0 -16px; padding: 6px 16px; background: var(--panel); border-top: 1px solid var(--line) }
   #app.collapsed #view { height: 100% }
 }
 .row output.typein { cursor: text; border-radius: 3px; padding: 1px 3px }
@@ -202,6 +210,14 @@ footer { margin-top: 18px }
 /* Open…: tanks saved in this browser */
 .libdlg { width: min(640px, calc(100vw - 32px)); max-height: calc(100vh - 48px); padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--ink) }
 .libdlg::backdrop { background: rgb(0 0 0 / .45) }
+/* the start menu: continue / start fresh / an example, in the middle of the screen on every load */
+.startdlg { width: min(720px, calc(100vw - 32px)) }
+.startdlg h2 { margin: 2px 0 2px; font-size: 18px }
+.startbtns { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 4px }
+.startbtns button { flex: 1 1 200px; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 10px 12px; text-align: left }
+.startbtns button[hidden] { display: none }
+.startbtns span { font-size: 12px; opacity: .85; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100% }
+#startEx { max-height: none; overflow: visible }
 /* opening a tank blocks the page for a few seconds while it builds: the spinner is a transform animation, so the
    compositor keeps it turning while the main thread is busy */
 .busy { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: rgb(0 0 0 / .35); cursor: progress }
@@ -222,3 +238,13 @@ footer { margin-top: 18px }
 .libopen b { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
 .libdel { position: absolute; top: 8px; right: 8px; padding: 0 6px; line-height: 20px; background: rgb(0 0 0 / .55); color: #fff; border-color: transparent }
 .libdel:hover { background: var(--bad) }
+
+/* touch screens: controls big enough for a finger (audit #33) */
+@media (pointer: coarse) {
+  button, select, input[type=number], input[type=text], input[type=search] { min-height: 40px }
+  input[type=checkbox] { width: 22px; height: 22px }
+  input[type=range] { height: 32px }
+  .stock .sr button { width: 40px }
+  .vmapHide { padding: 8px 10px; font-size: 16px }
+  .lab button { min-height: 32px } /* the tank label stays compact over the view */
+}

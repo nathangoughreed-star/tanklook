@@ -4,6 +4,7 @@
 import { SUBSTRATES, blendLabel } from '../art/placeholder';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { fmtSize, fmtLen, glassThickness, rescaleTank, waterY } from '../scene/physics';
+import { TECHS, techOf } from '../scene/lightout';
 import { shapeOf } from '../scene/shape';
 import { setWaterLevel } from '../scene/water';
 import type { TankSetup, Units } from '../scene/types';
@@ -130,8 +131,15 @@ export function tankDiff(a: TankSetup, b: TankSetup, u: Units): DiffItem[] {
       add(a.light.cone, b.light.cone, v => `${v}° beam`, ['light.cone']);
     }
     if (a.light.type !== 'flat' && a.lid !== 'hood' && b.lid !== 'hood') add(a.light.height, b.light.height, h => `Light ${len(h)} up`, ['light.height']);
+    if (a.light.type !== 'flat') { // light output (lane K)
+      add(a.light.watts ?? 0, b.light.watts ?? 0, w => (w ? `${w} W light` : 'Light power not set'), ['light.watts']);
+      if (a.light.watts && b.light.watts) {
+        add(techOf(a.light), techOf(b.light), t => TECHS[t].label, ['light.tech']);
+        add(a.light.par ?? 0, b.light.par ?? 0, v => (v ? `Measured PAR ${v} µmol` : 'PAR estimated'), ['light.par']);
+      }
+    }
   }
-  add(a.light.bright, b.light.bright, v => `Brightness ×${v.toFixed(2)}`, ['light.bright']);
+  add(a.light.bright, b.light.bright, v => `${a.light.watts && b.light.watts ? 'Exposure' : 'Brightness'} ×${v.toFixed(2)}`, ['light.bright']);
   add(a.light.kelvin, b.light.kelvin, k => `${k} K`, ['light.kelvin']);
   add(a.light.room, b.light.room, v => `Room light ${v.toFixed(2)}`, ['light.room']);
 
