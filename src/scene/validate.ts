@@ -3,11 +3,12 @@ import { fishTL, getSpecies, hasSpecies } from '../data/species';
 import { defaultSetup } from './defaults';
 import { LIBRARY, MAX_ITEMS, clampItem, starterItems } from './items';
 import { WALL_GAP, WALL_GAP_MAX, clamp, mapToTank } from './physics';
+import { TECH_IDS } from './lightout';
 import { normTank } from './shape';
 import { TABLE_MAX, fitTable } from './table';
 import { keepInWater } from './water';
 import { pieSize, radialSize, sameGrid, sampleTerrain, type Ground } from './terrain';
-import { SCENE_VERSION, type Fish, type Item, type Scene, type Tank, type TankSetup } from './types';
+import { SCENE_VERSION, type Fish, type Item, type LightTech, type Scene, type Tank, type TankSetup } from './types';
 
 const GRAINS = ['mud', 'sand', 'gravel', 'pebble'] as const;
 
@@ -33,6 +34,8 @@ export const LIMITS = {
   kelvin: [2700, 14000] as const,
   room: [0, 0.8] as const,
   lampH: [20, 900] as const,
+  watts: [0, 2000] as const,
+  par: [0, 2500] as const,
   yaw: [-180, 180] as const,
   tilt: [-30, 30] as const,
   bend: [-1, 1] as const,
@@ -190,6 +193,11 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       pattern: pick(l.pattern, ['grid', 'tri', 'fit'] as const, 'grid'), spacing: Math.round(num(l.spacing, 0, ...LIMITS.spacing)), cone: Math.round(num(l.cone, 52, ...LIMITS.cone)),
       bright: num(l.bright, 1, ...LIMITS.bright), kelvin: num(l.kelvin, 6500, ...LIMITS.kelvin), room: num(l.room, 0.15, ...LIMITS.room),
       height: num(l.height, 50, ...LIMITS.lampH), // added 2026-10-08; older files: the old fixed 50 mm
+      // light output (added 2026-10-14, no version bump): kept only when present, so older files load unchanged
+      ...(l.watts != null ? { watts: Math.round(num(l.watts, 0, ...LIMITS.watts) * 10) / 10 } : {}),
+      ...(typeof l.tech === 'string' && (TECH_IDS as readonly string[]).includes(l.tech) ? { tech: l.tech as LightTech } : {}),
+      ...(l.par != null ? { par: Math.round(num(l.par, 0, ...LIMITS.par)) } : {}),
+      ...(l.mapUnit === 'par' || l.mapUnit === 'lux' ? { mapUnit: l.mapUnit } : {}),
     },
     substrate: {
       show: bool(s.show, d.substrate.show), type: pick(s.type, ['gravel', 'pea', 'clown', 'blue', 'onyx', 'black', 'white', 'aragonite', 'coral', 'custom'] as const, 'gravel'),
