@@ -616,6 +616,9 @@ the recommendation for the rest"): `../Glass-Box-models-fix` / `models-fix`, lau
 fish / amphibian art and 3D files (art/fishgen.ts, art/paint.ts, art/herps.ts, render/fish3d.ts, render/herp3d.ts,
 art/placeholder.ts) EXCEPT lane M's shrimp parts and hand-off lines, and the hardscape generators in render/items.ts
 (non-plant branches) and scene/items.ts stone / wood / cave entries, after lane I lands.
+Lane I DONE (`534b664`). Lane N opened 2026-10-14 (review item R12, Nathan via lane D's recommendation): shareable scene
+URLs, `../Glass-Box-share-url` / `share-url`, launch config `share-url` 5453; owns new `src/scene/share.ts` + test, the
+share hook in `src/main.ts`, and a Share control in `src/ui/panels.ts` / `index.html` (small hooks only).
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_d0390f66-339c-4fa1-ab38-43e9c2a35958`
 ("Lanes coordinator 2", took over 2026-10-14 from `local_e1923781`). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
 and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says
