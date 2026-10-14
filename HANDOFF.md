@@ -2,6 +2,33 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane N: shareable scene links (2026-10-14; branch `share-url`; review item R12; pushed to main)
+
+- **What**: File toolbar button **Copy share link** (`index.html`, handler in `ui/panels.ts`). The link is the page
+  address + `#tank=<base64url of the deflated scene JSON>`: the same scene as Save / Download (after validate), packed by
+  the browser's `CompressionStream('deflate')`, no dependency, no server, the hash never reaches a server. The single-file
+  build (`file://`) links to `https://tanklook.com/` instead of its own path.
+- **Opening**: `src/main.ts` checks `location.hash` at start (and on `hashchange`, a link pasted into an open tab), drops
+  the hash from the address bar (so a reload keeps the visitor's edits) and calls `ui.openShared`: `readShare` ->
+  `parseScene` -> `store.replace` (one undo step back), `setLibId(null)` (a new unsaved tank, not added to Saved), the
+  start menu is not shown. A broken link gets a clean status error ("damaged (cut short or mistyped)" etc.) and the
+  tank on screen stays.
+- **Copy**: `navigator.clipboard.write` with a `ClipboardItem` whose text is a promise (started inside the click, so
+  Safari allows it while the link is compressed), then `writeText`, then `execCommand('copy')`, then a `prompt()` with
+  the link. Status gives the length; over 2,000 characters (`LONG_LINK`) it warns that some apps (Discord, texts) cut
+  it and suggests tinyurl.com or Download.
+- **Link lengths** (the six examples): betta 1,284, terrarium 1,661, reef 3,631, paludarium 5,428, planted 6,171, iwagumi
+  11,080 characters. Measured alternatives: rounding numbers to 0.01 cuts ~30 % (iwagumi 7.4k), not enough to matter.
+  **Nathan 2026-10-14**: ship as is; long links go through a public shortener by hand. Built-in short links would mean
+  storing the tank on our Cloudflare worker (KV), a separate lane if it is ever wanted; a third-party shortener API
+  can't be called from the static page (account token would be public, CORS).
+- Files: new `src/scene/share.ts` (`shareHash`, `shareUrl`, `readShare`, `isShareHash`; 5 MB inflate cap) +
+  `test/share.test.ts` (round trip: every example + default, identical JSON and the same link again; 12 malformed links
+  each a SceneError). Hooks: `src/main.ts` (start), `ui/panels.ts` (button handler, `copyText`, `openShared`, returned
+  from attachPanels), one toolbar button in `index.html` (it wraps to its own row under New / Open / Save / Download).
+- Not checked: the clipboard itself (the app's browser pane denies it; the prompt fallback ran) and the single-file build
+  run from disk (the pane shows file:// as a static snapshot); the bundle holds the share code.
+
 ## Lane I: reef polish + example refresh (2026-10-14; branch `reef-polish`; Nathan approved rock C and reef option B; pushed to main)
 
 - **Reef starter set**: new `LayoutId` `'reef'` (`scene/types.ts`, `LAYOUT_IDS` in `scene/validate.ts`, no version bump),
@@ -624,7 +651,7 @@ the recommendation for the rest"): `../Glass-Box-models-fix` / `models-fix`, lau
 fish / amphibian art and 3D files (art/fishgen.ts, art/paint.ts, art/herps.ts, render/fish3d.ts, render/herp3d.ts,
 art/placeholder.ts) EXCEPT lane M's shrimp parts and hand-off lines, and the hardscape generators in render/items.ts
 (non-plant branches) and scene/items.ts stone / wood / cave entries, after lane I lands.
-Lane I DONE (`534b664`). Lane N opened 2026-10-14 (review item R12, Nathan via lane D's recommendation): shareable scene
+Lane I DONE (`534b664`). Lane N DONE (see its section). Lane N opened 2026-10-14 (review item R12, Nathan via lane D's recommendation): shareable scene
 URLs, `../Glass-Box-share-url` / `share-url`, launch config `share-url` 5453; owns new `src/scene/share.ts` + test, the
 share hook in `src/main.ts`, and a Share control in `src/ui/panels.ts` / `index.html` (small hooks only).
 Lane M DONE (`03f2312`). Lane D pushed R1 + R8 (`250f4d7`, `c7000c5`). Lane O opened 2026-10-14 (anatomy audit P1, the

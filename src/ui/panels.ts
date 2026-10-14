@@ -33,6 +33,7 @@ import type { Fish, Item, ItemKind, LayoutId, LightTech, Scene, TableSettings, T
 import { GLASS_CHOICES, LIMITS, SceneError, parseScene } from '../scene/validate';
 import { deleteFromLib, listLib, loadFromLib, saveToLib } from '../scene/library';
 import { EXAMPLES } from '../examples';
+import { LONG_LINK, readShare, shareUrl } from '../scene/share';
 
 const $ = <T extends HTMLElement = HTMLInputElement>(id: string) => document.getElementById(id) as T;
 /** ?debug in the URL shows calibration readouts (apparent-size maths) in the fish readout. */
@@ -197,6 +198,46 @@ Cancel, then change the name, to keep both.`)) return;
   const saveFile = (scene: Scene) => download(new Blob([JSON.stringify(scene, null, 1)], { type: 'application/json' }), `${slug(scene.name)}.json`);
   // the whole scene: with split tanks, one file holding both (opens split again)
   $('downloadScene').onclick = () => saveFile(G());
+  // Share link (lane N, R12): the scene deflated into the URL hash, no server. The single-file build (file://) links to
+  // the live site, since a file path means nothing on another computer.
+  $('shareScene').onclick = async () => {
+    const made = shareUrl(G(), location.protocol === 'file:' ? 'https://tanklook.com/' : location.href);
+    const copied = copyText(made); // started inside the click: Safari allows the clipboard only there
+    let url: string;
+    try { url = await made; } catch { status('This browser cannot make share links (it is too old). Download sends a file instead.', true); return; }
+    if (!await copied) { prompt('Copy this link:', url); return; }
+    const n = url.length.toLocaleString();
+    status(url.length > LONG_LINK
+      ? `Copied a share link (${n} characters). It is long: some apps (Discord, texts) cut links past about 2,000 characters, so paste it into a shortener like tinyurl.com, or use Download.`
+      : `Copied a share link (${n} characters). Whoever opens it gets this tank as a new, unsaved copy.`);
+  };
+  async function copyText(text: Promise<string>) {
+    try { // the clipboard item takes the text as a promise, so the gesture is not used up while the link is compressed
+      await navigator.clipboard.write([new ClipboardItem({ 'text/plain': text.then(t => new Blob([t], { type: 'text/plain' })) })]);
+      return true;
+    } catch { /* no ClipboardItem or blocked: try the older ways */ }
+    const t = await text.catch(() => '');
+    if (!t) return false;
+    try { await navigator.clipboard.writeText(t); return true; } catch { /* blocked */ }
+    const ta = document.createElement('textarea'); ta.value = t; ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.append(ta); ta.select();
+    try { return document.execCommand('copy'); } catch { return false; } finally { ta.remove(); }
+  }
+  /** Open a share link's hash like a file: validated, one undo step back, a new unsaved tank. */
+  async function openShared(hash: string) {
+    let parsed: Awaited<ReturnType<typeof readShare>>;
+    try { parsed = await readShare(hash); } catch (e) {
+      status(e instanceof SceneError ? e.message : 'Could not open that share link.', true); return;
+    }
+    const { scene, warnings } = parsed;
+    whileOpening(scene.name, () => {
+      try { store.replace(scene); } catch { status('Could not open that share link.', true); return false; }
+      setLibId(null);
+      status(`Opened the shared tank "${scene.name}". Undo brings your previous tank back; Save keeps your own copy.` +
+        (warnings.length ? ' ' + warnings.join(' ') : ''), warnings.length > 0);
+      return true;
+    });
+  }
   /** One tank of a split on its own, as an ordinary single-tank file (Nathan 2026-10-08). */
   const saveTank = (i: number) => {
     const g = G(), t = g.tanks[i]; if (!t) return;
@@ -1323,7 +1364,7 @@ Cancel, then change the name, to keep both.`)) return;
 
   renderResults();
   sync();
-  return { status, showStart };
+  return { status, showStart, openShared };
 }
 
 /** Padlock icon: closed shackle (views move together) or swung open (each view on its own). */
