@@ -36,7 +36,7 @@ type Mark =
   | { k: 'bars'; us: number[]; w: number; c: string; a?: number }
   | { k: 'spots'; n: number; u0: number; u1: number; v0: number; v1: number; r: number; c: string; a?: number }
   | { k: 'blob'; u: number; v: number; ru: number; rv: number; c: string; a?: number }
-  | { k: 'poly'; pts: [number, number][]; c: string; a?: number };
+  | { k: 'poly'; pts: Pt[]; c: string; a?: number }; // points flagged 'c' are sharp corners (shape())
 
 export interface Plan {
   depth: number;      // max body depth, widths
