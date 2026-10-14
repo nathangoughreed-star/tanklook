@@ -2,7 +2,7 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
-## Lane G: audit fixes, UI share (2026-10-14; branch `audit-fixes`; batch 1 pushed to main)
+## Lane G: audit fixes, UI share (2026-10-14; branch `audit-fixes`; batches 1 + 2 pushed to main, DONE)
 - Split with lane G2 (coordinator): G owns `src/ui/*`, `index.html`, `src/style.css`; G2 owns interact/scene/render.
   G's share is 38 findings: #2, 4, 5, 7-13, 16, 17, 22-28, 30-41, 43-46, 48, the label part of 49, 50. G2's 15: #1, 3,
   6, 14, 15, 18-21, 29, 47, the export crop of 49, 51-53. Lane I: #42. One line in `src/main.ts` (start menu call).
@@ -17,7 +17,18 @@ Living file. Project state and dated decisions go here; update in place.
   #16 lift row is "Raise"; #17 light map on a bare bottom says so, links to Substrate; #22 help says tick Edit; #23 A/B
   badge on split tabs; #24 the diff chip reads "⇄ A" (copy from A).
 - Nathan's calls: #29 Stand ON by default (G2 builds it); #38 only "no stocking check for salt yet".
-- Next: batch 2 = my S3s.
+- Batch 2 (S3, browser-checked; sheets `shots/fixes/s3_sheet_*.png`): #25 Glass type / Finish labelled rows; #26
+  "Glass outlines"; #27 "Capacity … (inside the glass, to the top)" and "gal to the water line"; #28 out-of-range sizes
+  say what they were set to, inputs carry min/max; #30 cm inputs to 0.1; #31 tab title = tank name · TankLook; #32 eye
+  map starts hidden on a phone (until the viewer chooses); #33 40 px touch targets under `(pointer: coarse)`; #34
+  "‹ Hide"; #35 Add says "Add 6" / "Add 2", new `pair` flag in species data (ocellaris, banggai); #36 a status at the
+  500 cap; #37 "Turn Water on to choose"; #38 "No stocking check for saltwater tanks yet."; #39 "Adult ±10 %"; #40
+  bare bottom hides the depth sliders; #41 singular counts; #43 the map steps aside while terrain points are edited;
+  #44 light map unticked with no fixture; #45 "Room light (ambient)", "Height above tank"; #46 Lighting has Look from
+  above / Straight on; #48 JSON rounded to 0.01, Copy button, units note; #49 plain fish-edge labels, PNG pixel sizes
+  on hover; #50 the split hint says two tanks is the most.
+- Fixed in batch 2: a batch-1 comment had swallowed the line that disables the light-map box with no fixture.
+- Not done: #49's PNG crop/margins/A-B labels (G2's export code).
 
 ## Lane G2: core audit fixes (2026-10-14; branch `core-fixes`, port 5363; owns src/interact, src/scene, src/render minus lane I's files)
 Plan approved by Nathan (batches in severity order). Pictures: `shots/g2/` in the main checkout (before = `shots/audit/`).

@@ -107,7 +107,7 @@ button.on, button.primary { background: var(--accent); color: #fff; border-color
 .stock .sr { display: flex; align-items: center; gap: 4px }
 .stock .sr .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer }
 .stock .sr button { width: 24px; padding: 2px 0 }
-.stock .sr input { width: 44px; text-align: center }
+.stock .sr input { width: 52px; text-align: center }
 .stock .sr.misfit .nm { color: var(--bad) } .stock .tag.bad { color: var(--bad); font-weight: 600 }
 .stock .misnote { display: flex; align-items: center; gap: 8px; margin-top: 2px; color: var(--bad) } .stock .misnote span { flex: 1 }
 .chips button { font-size: 11.5px; padding: 2px 6px }
@@ -238,3 +238,13 @@ footer { margin-top: 18px }
 .libopen b { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
 .libdel { position: absolute; top: 8px; right: 8px; padding: 0 6px; line-height: 20px; background: rgb(0 0 0 / .55); color: #fff; border-color: transparent }
 .libdel:hover { background: var(--bad) }
+
+/* touch screens: controls big enough for a finger (audit #33) */
+@media (pointer: coarse) {
+  button, select, input[type=number], input[type=text], input[type=search] { min-height: 40px }
+  input[type=checkbox] { width: 22px; height: 22px }
+  input[type=range] { height: 32px }
+  .stock .sr button { width: 40px }
+  .vmapHide { padding: 8px 10px; font-size: 16px }
+  .lab button { min-height: 32px } /* the tank label stays compact over the view */
+}
