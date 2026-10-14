@@ -16,7 +16,7 @@ import { clumpAuto } from '../render/plant3d';
 import { tankDiff } from './diff';
 import { attachTypeIns, parseLen, plainNum, tidy, type TypeIn } from './typein';
 import {
-  IN, clamp, clampFish, fmtDims, fmtLen, fmtSize, fromUnit, glassThickness, rescaleTank, toUnit, volume, WALL_GAP_MAX, waterY,
+  IN, clamp, clampFish, fmtLen, fromUnit, glassThickness, rescaleTank, toUnit, volume, WALL_GAP_MAX, waterY,
 } from '../scene/physics';
 import type { Store } from '../scene/store';
 import { SWAMP_LEVEL, groundHeight, nearestLand, sameGrid, sampleTerrain } from '../scene/terrain';
@@ -1343,13 +1343,14 @@ Cancel, then change the name, to keep both.`)) return;
     const g = G(), active = viewer.active, split = active.length > 1;
     const diff = split ? tankDiff(g.tanks[0], g.tanks[1], g.units) : [];
     const hidden = $('app').classList.contains('collapsed');
-    const sig = JSON.stringify([diff, hidden, g.units, g.active, store.targets, g.camLock, active.map(v => [v.x, v.w]), split || fmtDims(g.tanks[0].tank, g.units), active.map((v, i) => aqChip(v.S, v.key, i))]);
+    const sig = JSON.stringify([diff, hidden, g.units, g.active, store.targets, g.camLock, active.map(v => [v.x, v.w]), active.map((v, i) => aqChip(v.S, v.key, i))]);
     if (sig !== tabSig) {
       tabSig = sig;
       for (const [i, id] of [[0, 'labA'], [1, 'labB']] as const) {
         const el = $<HTMLDivElement>(id), vp = active[i];
-        el.style.display = vp ? '' : 'none';
-        if (!vp) { el.innerHTML = ''; continue; }
+        // only while comparing (Nathan 2026-10-14): one tank's size, stocking and Split all live in the panel already
+        el.style.display = vp && split ? '' : 'none';
+        if (!vp || !split) { el.innerHTML = ''; continue; }
         // top-right corner of each view (Nathan 2026-10-08); the top-left holds the panel toggle and Undo / Redo
         // (on a phone in split view they reach past the middle into view B too: final check item 2)
         const vt = document.querySelector<HTMLElement>('.viewtools')!, tools = Math.max(0, vt.offsetLeft + vt.offsetWidth + 8 - vp.x);
@@ -1358,11 +1359,7 @@ Cancel, then change the name, to keep both.`)) return;
         el.style.top = below ? (vt.offsetTop + vt.offsetHeight + 6) + 'px' : '';
         el.style.right = (viewer.host.clientWidth - vp.x - vp.w + 8) + 'px'; el.style.maxWidth = (below ? vp.w - 16 : Math.max(80, vp.w - 16 - tools)) + 'px'; // clear of them
         const ed = store.isEditing(i);
-        el.classList.toggle('tab', split); el.classList.toggle('on', split && ed);
-        if (!split) { // one tank: its size, and the way into a side-by-side comparison
-          el.innerHTML = `<span>${esc(fmtSize(vp.T, g.units))}</span>` + aqChip(vp.S, vp.key, i) + `<button class="close" data-split title="Copy this tank into a second, independent one beside it">⧉ Split to compare</button>`;
-          continue;
-        }
+        el.classList.add('tab'); el.classList.toggle('on', ed);
         // the "Edit" box: the panel's changes apply to every view ticked here
         const only = ed && store.targets.length === 1;
         const box = `<label class="edbox" title="${only ? `Untick to close the panel` : ed ? `The panel's changes apply to Tank ${vp.key}` : `Apply the panel's changes to Tank ${vp.key} (opens the panel)`}">` +
@@ -1396,7 +1393,6 @@ Cancel, then change the name, to keep both.`)) return;
     store.setEditing(+cb.dataset.edit!, false);
   });
   for (const id of ['labA', 'labB']) $(id).addEventListener('click', e => {
-    if ((e.target as HTMLElement).closest('[data-split]')) { $('split').click(); return; }
     const re = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-aq]');
     if (re) { const vp = viewer.active[+re.dataset.aq!]; if (vp) void aqCheck(vp.S); return; }
     const sv = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-save]');
