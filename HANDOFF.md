@@ -742,7 +742,10 @@ dorsal / tail fin) and zebra nerite (shell edge and aperture, smaller foot, dist
 Lane S set up 2026-10-14 (anatomy audit P1 fish, 20 species / 29 models: fin structure, then species):
 `../Glass-Box-fish-fins` / `fish-fins`, launch config `fish-fins` 5503; owns `art/fishgen.ts`, `art/paint.ts`,
 `render/fish3d.ts`. Lane D DONE (`6176008`, `66d2dba`, `49f3f33`), so lane S can start. Lane Q DONE (`1398b14`;
-Nathan on the S24+: "works flawlessly"); iPhone phase not started.
+Nathan on the S24+: "works flawlessly"); iPhone phase not started. Lane Q reopened for an A / B
+swap in the AR overlay (`d9e6a8b`), split-tank phone check pending. Lane T opened 2026-10-14: iPhone AR (AR Quick Look,
+USDZ export), `../Glass-Box-ar-ios` / `ar-ios`, launch config `ar-ios` 5513; owns new `render/arUsdz.ts` + test, and
+`render/ar.ts` once lane Q reports done (until then T asks the coordinator before editing it).
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_d0390f66-339c-4fa1-ab38-43e9c2a35958`
 ("Lanes coordinator 2", took over 2026-10-14 from `local_e1923781`). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
 and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says
