@@ -464,8 +464,8 @@ describe('light height', () => {
     expect(load({ ...v6(), light: { ...defaultSetup().light, height: 5000 } }).light.height).toBe(900);
   });
   it('a raised fixture lights the tank less but more evenly', async () => {
-    const { emitters, lightSum, CONES } = await import('../src/render/lighting');
-    const T = { L: 914, H: 406, D: 457 }, l = { ...defaultSetup().light, type: 'spot' as const, count: 2 }, cone = CONES.spot;
+    const { emitters, lightSum } = await import('../src/render/lighting'), { beamExp } = await import('../src/scene/lightout');
+    const T = { L: 914, H: 406, D: 457 }, l = { ...defaultSetup().light, type: 'spot' as const, count: 2 }, cone = beamExp(l);
     const stats = (h: number) => {
       const E = emitters(T, l, h), v: number[] = [];
       for (let i = 1; i <= 9; i++) v.push(lightSum(E, [T.L * i / 10, T.H * 0.3, -T.D / 2], cone));

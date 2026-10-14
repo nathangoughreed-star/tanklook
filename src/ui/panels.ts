@@ -5,12 +5,14 @@ import { GRAIN_LOOK, SUBSTRATES, drawFishCard } from '../art/placeholder';
 import { drawSnailCard } from '../art/snails';
 import { CATEGORIES, SPECIES, fishTL, getSpecies, needsWater, searchSpecies, speciesOf, speciesTag, type Category, type Sex, type Species } from '../data/species';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
-import { emitters } from '../render/lighting';
+import { MAP_DIV, emitters } from '../render/lighting';
 import { TECHS, lightOutCached, readout as lightReadout, techOf, techsFor } from '../scene/lightout';
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene, TANK_PRESETS } from '../scene/defaults';
 import { KINDS, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, itemDims, makeItem, starterItems } from '../scene/items';
+import { isClump, isPatch, type PlantType } from '../art/plants';
+import { clumpAuto } from '../render/plant3d';
 import { tankDiff } from './diff';
 import { attachTypeIns, parseLen, plainNum, tidy, type TypeIn } from './typein';
 import {
@@ -145,23 +147,14 @@ export function attachPanels(store: Store, viewer: Viewer) {
     });
   }
   // Start menu (Nathan 2026-10-14: "upon start, a menu in the middle of the screen: start fresh or from an example"):
-  // shown on every load; Esc or Continue keeps the tank restored from this browser
+  // shown only when no tank was restored from this browser (Nathan 2026-10-14); Esc keeps the empty tank
   const startDlg = $<HTMLDialogElement>('startDlg');
   $('startEx').onclick = e => openExample(e, startDlg);
-  $('startLast').onclick = () => startDlg.close();
-  $('startFresh').onclick = () => {
-    startDlg.close();
-    if ($('startLast').hidden) return; // nothing was restored: the tank on screen is already a fresh one
-    const s = emptyScene(); s.name = 'New tank';
-    s.tanks[0].camera = { ...S().camera }; s.units = G().units;
-    store.replace(s); setLibId(null); status('New tank. Undo brings your last one back.');
-  };
-  function showStart(restored: boolean) {
-    $('startLast').hidden = !restored;
-    $('startLastName').textContent = restored ? `“${G().name}”${G().tanks.length > 1 ? ', 2 tanks' : ''}` : '';
+  $('startFresh').onclick = () => startDlg.close(); // the tank on screen is already a fresh one
+  function showStart() {
     renderExamples('startEx');
     startDlg.showModal();
-    (restored ? $('startLast') : $('startFresh')).focus();
+    $('startFresh').focus();
   }
   $('libList').onclick = e => {
     const t = e.target as HTMLElement, del = t.closest<HTMLButtonElement>('[data-libdel]'), op = t.closest<HTMLButtonElement>('[data-lib]');
@@ -654,6 +647,31 @@ Cancel, then change the name, to keep both.`)) return;
   $<HTMLSelectElement>('lPat').onchange = e => store.edit(s => { s.light.pattern = (e.target as HTMLSelectElement).value as TankSetup['light']['pattern']; capCount(s.light); });
   $<HTMLSelectElement>('lType').onchange = e => store.edit(s => { s.light.type = (e.target as HTMLSelectElement).value as TankSetup['light']['type']; capCount(s.light); });
   $('lBeams').onchange = e => store.edit(s => { s.render.beams = (e.target as HTMLInputElement).checked; });
+  $<HTMLSelectElement>('lUnit').onchange = e => store.edit(s => { s.light.mapUnit = (e.target as HTMLSelectElement).value as 'par' | 'lux'; });
+  /** The Light map legend: labels at doublings along the ramp (7 steps up from MAP_DIV), and the PAR bands. */
+  let mapKeyFor = '';
+  const mapKey = (unit: 'rel' | 'par' | 'lux') => {
+    if (mapKeyFor === unit) return; mapKeyFor = unit;
+    const at = (v: number) => Math.log2(v / MAP_DIV[unit]) / 7 * 100, span = (x: number, t: string, st = '') => {
+      const e = document.createElement('span'); e.textContent = t;
+      e.style.cssText = `position:absolute;left:${x}%;transform:translateX(${x <= 0 ? 0 : x >= 100 ? -100 : -50}%);${st}`; return e;
+    };
+    const ticks: [number, string][] = unit === 'rel' ? [[1 / 16, '1/16'], [1 / 4, '1/4'], [1, '1'], [4, '4'], [8, '8']]
+      : unit === 'par' ? [[5, '5'], [10, '10'], [20, '20'], [40, '40'], [80, '80'], [160, '160'], [320, '320']]
+      : [[250, '250'], [1000, '1k'], [4000, '4k'], [16000, '16k']];
+    $('lMapTicks').replaceChildren(...ticks.map(([v, t]) => span(at(v), t)));
+    // planted-tank light classes at the substrate, under the PAR ramp
+    $('lMapBands').hidden = unit !== 'par';
+    if (unit === 'par') $('lMapBands').replaceChildren(...([[30, 50, 'med'], [50, 80, 'high'], [80, 640, 'very high'], [0, 30, 'low']] as [number, number, string][]).map(([a, b, t]) => {
+      const x0 = a ? Math.max(at(a), 0) : 0, x1 = Math.min(at(b), 100), e = document.createElement('span'); e.textContent = t;
+      e.style.cssText = `position:absolute;left:${x0}%;width:${x1 - x0}%;text-align:center;border-left:1px solid currentColor;font-size:0.9em;white-space:nowrap;overflow:hidden`;
+      return e;
+    }));
+    $('lMapText').textContent = unit === 'rel'
+      ? 'Light on the substrate, from distance, beam angle and how squarely it lands, summed over the lights; a colour step per doubling. 1 = one standard 52° bulb 300 mm straight above. Set Power for PAR or lux.'
+      : unit === 'par' ? 'PAR at the substrate, µmol/m²/s, from the power and light type: a colour step per doubling. Below: the planted-tank light classes.'
+      : 'Lux at the substrate, from the power and light type: a colour step per doubling. Water takes red first, so lux and PAR fall off at different rates.';
+  };
   $<HTMLSelectElement>('lTech').onchange = e => store.edit(s => { s.light.tech = (e.target as HTMLSelectElement).value as LightTech; });
   let techFor = ''; // the fixture type the Light type list was built for
 
@@ -748,7 +766,7 @@ Cancel, then change the name, to keep both.`)) return;
       let best = -1;
       for (let k = 0; k < 16; k++) {
         const x = T.L * (0.15 + r() * 0.7), d = T.D * (0.2 + r() * 0.6);
-        const gap = Math.min(...s.items.filter(q => q.kind !== 'plant' || q.variant !== 'carpet').map(q => Math.hypot(q.x - x, q.depth - d)), 1e6) - Math.abs(x - T.L / 2) * 0.15;
+        const gap = Math.min(...s.items.filter(q => q.kind !== 'plant' || !isPatch(q.variant)).map(q => Math.hypot(q.x - x, q.depth - d)), 1e6) - Math.abs(x - T.L / 2) * 0.15;
         if (gap > best) { best = gap; it.x = x; it.depth = d; }
       }
       clampItem(it, T, s); s.items.push(it);
@@ -761,6 +779,8 @@ Cancel, then change the name, to keep both.`)) return;
     store.edit(s => { const it = s.items.find(q => q.id === id); if (it) { fn(it, s); clampItem(it, s.tank, s); } }, { coalesce });
   };
   $('iSize').oninput = e => editItem(it => { it.size = +(e.target as HTMLInputElement).value; }, 'iSize');
+  $('iSpread').oninput = e => editItem(it => { it.spread = +(e.target as HTMLInputElement).value; }, 'iSpread');
+  $('iStems').oninput = e => editItem(it => { it.stems = +(e.target as HTMLInputElement).value; }, 'iStems');
   $('iYaw').oninput = e => editItem(it => { it.yaw = +(e.target as HTMLInputElement).value; }, 'iYaw');
   $('iPitch').oninput = e => editItem(it => { it.pitch = +(e.target as HTMLInputElement).value; }, 'iPitch');
   $('iTilt').oninput = e => editItem(it => { it.tilt = +(e.target as HTMLInputElement).value; }, 'iTilt');
@@ -833,8 +853,8 @@ Cancel, then change the name, to keep both.`)) return;
     const v = parseLen(t.replace(/\b(left|right|forward|front|back)\b/gi, '').trim(), G().units);
     return v == null ? null : neg.test(t) ? -Math.abs(v) : v;
   } });
-  const lens = ['bowMin', 'bowlFloor', 'bowlTop', 'standH', 'tableL', 'tableD', 'subBL', 'subBR', 'subFL', 'subFR', 'lH', 'cDist', 'iSize', 'iLift', 'personH', 'wallGap'];
-  const nums = { pieDeg: 0, bgArc: 0, iYaw: 0, iPitch: 0, iTilt: 0, lCount: 0, lRows: 0, lCone: 0, lK: 0, lBright: 2, lRoom: 2, lW: 0, lPar: 0, cAz: 0, cEl: 0, cZoom: 2, terCols: 0, addSize: 0 };
+  const lens = ['bowMin', 'bowlFloor', 'bowlTop', 'standH', 'tableL', 'tableD', 'subBL', 'subBR', 'subFL', 'subFR', 'lH', 'cDist', 'iSize', 'iSpread', 'iLift', 'personH', 'wallGap'];
+  const nums = { pieDeg: 0, bgArc: 0, iYaw: 0, iPitch: 0, iTilt: 0, iStems: 0, lCount: 0, lRows: 0, lCone: 0, lK: 0, lBright: 2, lRoom: 2, lW: 0, lPar: 0, cAz: 0, cEl: 0, cZoom: 2, terCols: 0, addSize: 0 };
   attachTypeIns({
     ...Object.fromEntries(lens.map(id => [id, len])),
     ...Object.fromEntries(Object.entries(nums).map(([id, d]) => [id, num(d)])),
@@ -916,10 +936,20 @@ Cancel, then change the name, to keep both.`)) return;
   };
   $('aqCheck').onclick = () => aqCheck(S());
 
-  let waterKind = '';
-  function sync() {
+  let waterKind = '', syncKeys: string[] = [];
+  /** Pull every control back from the scene. `full` = false (the store listener): only the groups whose inputs changed,
+   *  so a drag step, which moves one fish or item or turns the camera, leaves the rest alone (lane J2: 6-7 ms per step on
+   *  a big tank). The panel's own handlers call it full, e.g. to put back a typed value that was refused. */
+  function sync(full = true) {
     const s = S(), A = s.tank, u = G().units;
     $<HTMLButtonElement>('undo').disabled = !store.canUndo; $<HTMLButtonElement>('redo').disabled = !store.canRedo;
+    const it0 = store.selectedItem, keys = [
+      JSON.stringify([{ ...s, fish: null, items: null, camera: null }, G().name, u, store.split, store.targets, viewer.terrainEdit.on]),
+      s.fish.map(f => `${f.species}~${f.sex}`).join(), s.items.map(i => i.kind).join(), JSON.stringify(s.camera),
+      JSON.stringify(it0 && { ...it0, x: 0, depth: 0 }), // the item box shows no position
+    ];
+    const [env, fishSet, itemSet, cam, item] = keys.map((k, i) => full || k !== syncKeys[i]); syncKeys = keys;
+    if (env) {
     setVal('sceneName', G().name);
     $('uIn').classList.toggle('on', u === 'in'); $('uCm').classList.toggle('on', u === 'cm');
     for (const k of ['L', 'H', 'D'] as const) setVal('a' + k, u === 'cm' ? +(A[k] / 10).toFixed(1) : toUnit(A[k], u)); // cm to 0.1 (audit #30)
@@ -963,7 +993,6 @@ Cancel, then change the name, to keep both.`)) return;
     $('volA').textContent = `Capacity ${vol.gallons.toFixed(1)} US gal · ${vol.litres.toFixed(0)} L (inside the glass, to the top) · footprint ${fpTxt}`;
     const wt = tankWeight(s), kgs = (kg: number) => (u === 'in' ? `${Math.round(kg * 2.20462)} lb` : `${Math.round(kg)} kg`);
     $('wtA').textContent = `≈ ${kgs(wt.total)} filled: water ${kgs(wt.water)} (${(u === 'in' ? wt.waterLitres / 3.785 : wt.waterLitres).toFixed(0)} ${u === 'in' ? 'gal' : 'L'} to the water line, over the substrate), substrate ${kgs(wt.substrate)}, glass ${kgs(wt.glass)}`;
-    syncAq();
     $('rimY').classList.toggle('on', s.render.rim); $('rimN').classList.toggle('on', !s.render.rim);
     $('edgesY').classList.toggle('on', s.render.edges); $('edgesN').classList.toggle('on', !s.render.edges);
     for (const [id, lid] of LIDS) $(id).classList.toggle('on', s.lid === lid);
@@ -996,6 +1025,8 @@ Cancel, then change the name, to keep both.`)) return;
     setVal('wallGap', wallGap(s)); setOut('oWallGap', fmt(wallGap(s)));
     $('personOn').checked = s.person.show; setVal('personH', s.person.height); setOut('oPersonH', fmtHeight(s.person.height, u));
     for (const [id, side] of PSIDES) $(id).classList.toggle('on', s.person.show && s.person.side === side);
+    }
+    if (env || fishSet) syncAq();
 
     // stocking list: one row per species, in order of arrival (rebuilt only when the counts change)
     // a dimorphic species has a row per sex present: '<id>' male, '<id>~f' female
@@ -1039,6 +1070,7 @@ Cancel, then change the name, to keep both.`)) return;
     $('sexRow').hidden = !dim;
     $('sexM').classList.toggle('on', dim && f!.sex !== 'f'); $('sexF').classList.toggle('on', dim && f!.sex === 'f');
 
+    if (env || fishSet) {
     const sub = s.substrate, smax = Math.round(A.H * 0.5);
     setVal('subType', sub.show ? sub.type : 'bare');
     const cu = sub.custom, two = cu.grain2 !== 'none';
@@ -1107,14 +1139,20 @@ Cancel, then change the name, to keep both.`)) return;
     $('lBrightLab').title = watts ? 'Like a camera: how bright the render looks for the light the fixture gives (x0.5-2). The PAR and lux do not change' : '';
     Object.assign($('lBright') as HTMLInputElement, watts ? { min: '0.5', max: '2' } : { min: '0.2', max: '2.5' }); setVal('lBright', l.bright);
     if (watts) setOut('oBright', '×' + Math.min(Math.max(l.bright, 0.5), 2).toFixed(2));
+    const mapOn = s.render.beams && l.type !== 'flat';
+    $('lUnitRow').style.display = mapOn && watts ? '' : 'none'; setVal('lUnit', l.mapUnit ?? 'par'); mapKey(watts ? l.mapUnit ?? 'par' : 'rel');
     $('lBeams').checked = s.render.beams && l.type !== 'flat'; $('lBeams').parentElement!.title = l.type === 'flat' ? 'No fixture: pick one under Fixture to see the light map' : ''; /* audit #44 */ $('lMapKey').style.display = s.render.beams && l.type !== 'flat' ? '' : 'none';
     $('lMapBare').hidden = !(s.render.beams && l.type !== 'flat' && !s.substrate.show); /* the map needs a floor to draw on (audit #17) */ ($('lBeams') as HTMLInputElement).disabled = l.type === 'flat';
+    }
 
+    if (cam) {
     const c = s.camera;
     for (const [id, k] of Object.entries(camKeys)) setVal(id, c[k]);
     setOut('oDist', fmt(c.dist)); setOut('oAz', c.az + '°'); setOut('oEl', c.el + '°'); setOut('oZoom', '×' + c.zoom.toFixed(2));
     // no steep-angle warning: the fish are 3D now, not flat cards (Nathan 2026-10-13)
     $('camHint').textContent = 'Distance is from your eye to the front glass, the same for every tank. Zoom only crops; it never changes perspective.';
+    }
+    if (env || itemSet) {
 
     ($('split') as HTMLButtonElement).disabled = store.split;
     $('splitHint').textContent = store.split ? 'Two tanks is the most: Delete one on its tab to split again. Each view’s tab (top of the view) opens on hover: what differs, Download that tank on its own, or Delete it. Save and Download at the top keep both tanks together.' : 'Copy this tank into a second, independent one beside it, then change anything in either.';
@@ -1125,20 +1163,32 @@ Cancel, then change the name, to keep both.`)) return;
     const nk = (k: ItemKind) => s.items.filter(q => q.kind === k).length;
     $('itemCount').textContent = s.items.length ? (Object.keys(KINDS) as ItemKind[]).filter(k => nk(k)).map(k => `${nk(k)} ${nk(k) === 1 && k !== 'wood' ? KINDS[k].toLowerCase().replace(/s$/, '') : KINDS[k].toLowerCase()}`).join(', ') : 'Nothing placed yet. Pick a piece above to add it.';
     ($('itemsClear') as HTMLButtonElement).disabled = !s.items.length;
-    const it = store.selectedItem;
+    }
+    if (env || item) {
+    const it = it0;
     if (it && it.id !== lastItem) openSec('aquascape');
     lastItem = it?.id ?? null;
     $('itemBox').hidden = !it;
     if (it) {
       const v = LIBRARY[it.variant], [l, h, w] = itemDims(it);
       $('itemName').innerHTML = `${esc(v.label)} <i>${fmt(l)} × ${fmt(h)} high × ${fmt(w)}</i>`;
-      $('iSizeLab').textContent = it.kind === 'plant' ? (it.variant === 'carpet' ? 'Width' : 'Height') : it.variant === 'manzanita' ? 'Height' : it.kind === 'coral' ? 'Width' : 'Length';
+      $('iSizeLab').textContent = it.kind === 'plant' ? (isPatch(it.variant) ? 'Width' : 'Height') : it.variant === 'manzanita' ? 'Height' : it.kind === 'coral' ? 'Width' : 'Length';
       const probe = { ...it, size: 1e6 }; clampItem(probe, A);
       $('iSize').min = String(Math.min(v.min, probe.size)); $('iSize').max = String(probe.size);
       setVal('iSize', it.size); setOut('oISize', fmt(it.size));
+      // a clump's spread and count: its own once moved, else what the seed gives it ("auto")
+      const clump = it.kind === 'plant' && isClump(it.variant);
+      document.querySelectorAll<HTMLElement>('#itemBox .clump').forEach(e => { e.style.display = clump ? '' : 'none'; }); // (.row sets display, so not hidden)
+      if (clump) {
+        const auto = clumpAuto(it.variant as PlantType, it.seed, it.size), sp = it.spread ?? auto.spread, n = it.stems ?? auto.stems;
+        $('iSpread').min = '10'; $('iSpread').max = String(Math.max(10, Math.round(Math.min(A.L, A.D) - 6)));
+        setVal('iSpread', sp); setOut('oISpread', fmt(sp) + (it.spread == null ? ' auto' : ''));
+        setVal('iStems', n); setOut('oIStems', n + (it.stems == null ? ' auto' : ''));
+      }
       setVal('iYaw', it.yaw); setOut('oIYaw', it.yaw + '°'); setVal('iPitch', it.pitch); setOut('oIPitch', it.pitch + '°'); setVal('iTilt', it.tilt); setOut('oITilt', it.tilt + '°');
       $('iLift').min = String(-Math.round(A.H * LIFT_SINK)); $('iLift').max = String(Math.round(A.H)); setVal('iLift', Math.round(it.lift));
       setOut('oILift', Math.abs(it.lift) < 1 ? 'On the ground' : it.lift < 0 ? fmt(-it.lift) + ' in' : fmt(it.lift));
+    }
     }
     syncJson();
   }
@@ -1259,7 +1309,7 @@ Cancel, then change the name, to keep both.`)) return;
   // ---------- autosave ----------
   let saveTimer = 0;
   store.subscribe(kind => {
-    sync();
+    sync(kind === 'load');
     if (kind === 'select') return;
     clearTimeout(saveTimer);
     saveTimer = window.setTimeout(() => {

@@ -2,7 +2,165 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
-## Lane K: light output (2026-10-14; branch `light-output`, port 5383; steps 1-2 of 4 pushed)
+## Lanes L + M: anatomy audit P0 fixes (2026-10-14; opened, run in parallel)
+From `reference/model-anatomy-audit-v1.md` (see "Model review sheet" below). Nathan picked P0 first, two parallel
+chats; fin layout (most of P1) and frogs/newt are later lanes.
+- **Lane L: snail shells** (`../Glass-Box-snails`, branch `snail-shells`, launch config `snails`, port 5423). Owns
+  `src/art/snails.ts`, `src/render/snail3d.ts` (carved out of J2's `src/render/*`). Goal: one shell builder that makes
+  a closed, continuous coil with a real aperture the body comes out of (no open sector, no shell floating over a slab
+  foot), then per-kind shape: mystery (globose, raised spire), ramshorn (flat closed tubular coil), turbo (rounded
+  body whorl), trumpet (one continuous high cone, convex whorls), nerite (low spire, smaller foot, head at the
+  aperture). The hermit crab's shell comes from `shellMesh` here, so it gets the fix; its body (herps.ts / herp3d.ts) is
+  NOT lane L's.
+- **Lane M: shrimp body** (`../Glass-Box-shrimp`, branch `shrimp-body`, launch config `shrimp`, port 5433). Owns a new
+  `src/render/shrimp3d.ts` (and a new art file if it needs one) plus the shrimp parts of `src/art/fishgen.ts`; in
+  `src/render/fish3d.ts` only the few lines that hand shrimp to the new builder (ask the coordinator before more: J2
+  owns render/*). Goal: cephalothorax + articulated, bent abdomen (stepped segments in the geometry, not drawn lines),
+  stalked eyes, rostrum, 5 pairs of jointed walking legs separate from smaller swimmerets, and a flat horizontal
+  telson + uropod tail fan (no vertical fish tail). Then per species: cherry (Neocaridina), amano (glass body + its
+  markings), cleaner (Lysmata, long white antennae, abdominal bend). Hermit body is a later lane.
+- Both: the audit's "keep" list and constraints bind. Look at the result on `/review.html` on the lane's own dev
+  server; when done press Record there (writes `src/data/model-versions.json` + the changed `public/model-sheets/`),
+  after merging main in, then check the stamped build = `git rev-list --count HEAD` + 1 before the last commit.
+  `npm run sheets` rewrites all sheets headlessly if needed. Tests + typecheck green, push to main, report to the
+  coordinator, preview_stop the dev server. Questions to Nathan come with pictures (sheet crops).
+
+## Lane J2: performance leftovers (2026-10-14; branch `perf`, port 5373; pushed to main)
+- **Frosted background (render/viewer.ts `frostCull`):** the frosted film is three's transmission material, and three
+  draws every opaque mesh a second time (4x MSAA, half float, viewport size) into the picture the film blurs. On the
+  iwagumi example (the only example with Frosted white) that pass was half the frame. Meshes inside the tank are now
+  left out of it unless the eye is outside one of the film's faces (from behind, or a film all round), via a per-frame
+  onBeforeRender hook that sets drawRange.count = -1 in off-screen passes only. Visible change, approved by Nathan
+  (2026-10-14, "frost change is fine"): plants and fish no longer cast a faint blurred shadow on the film
+  (`shots/j2_frost_before_after.png`, `j2_frost_zoom.png` in the perf worktree). Iwagumi GPU **43 -> 26 ms** at
+  1050x850 (timer queries, alternating frames); the film's pass itself still costs ~5-8 ms (see Open).
+- **Light output fields (render/build.ts envKey):** watts, tech, par, mapUnit only feed uniforms, so they no longer force a
+  full rebuild (iwagumi Power step 243 -> 158 ms; build 'same'). The ~100 ms left is `lightOut` in scene/lightout.ts
+  re-running for each new wattage (lane K2's file). test/incremental.test.ts pins it; incrementalCheck has a "light power" edit.
+- **Panel sync() (ui/panels.ts):** the store listener refreshes only the groups whose inputs changed (setup minus fish /
+  items / camera; species list; item kinds; camera; the selected item minus its position). Direct `sync()` calls from
+  the panel's own handlers stay full (they put back refused typed values). Per drag step **6-7 -> ~0.5 ms** (fish 0.9,
+  item 0.6, orbit 0.3, against 0.4 / 0.4 / 0 with the panel detached).
+- **Tried and dropped: plant depth pre-pass** (a depth-only copy of each plant, polygon offset 1/1, drawn first): 0 px
+  differ, but measured with alternating frames it made planted **slower** (22 -> 33 ms GPU); the first sequential runs
+  that looked like a 3-8 ms gain were load noise from other lanes. Lesson: on this shared machine, only A/B timings
+  measured with alternating frames count.
+- **Proof:** incrementalCheck.runAll 133 edits (121 incremental), 0 differ (one run had a single 1 px flicker on
+  paludarium / stone turn that did not repeat in two re-runs; no new code runs on paludarium); after merging main,
+  iwagumi + planted + split 57 edits, 0 differ.
+- **Open:** (1) the film's own transmission pass (~5-8 ms on iwagumi) can only go if the frost is drawn by our own shader
+  at lower resolution, which means changing the frost hook in render/lighting.ts (K2's file). (2) `lightOut` ~100 ms
+  per new wattage (K2). (3) Steady draw on non-frost big tanks is ~18-22 ms GPU at 1050x850, mostly the lit plant shader
+  (~7 ms on iwagumi); no change from J2's side found that helps.
+- Files touched: render/viewer.ts (frostCull + helpers), render/build.ts (envKey), render/incrementalCheck.ts (one
+  edit), ui/panels.ts (sync guard + listener), test/incremental.test.ts.
+
+## Lane K2: light output follow-ups (2026-10-14; branch `light-output`, port 5383)
+- Owns scene/lightout.ts, test/lightout.test.ts, ui/lightHover.ts, reference/par-calibration-data.md, render/lighting.ts
+  (carved out from J2), the Lighting rows in index.html / ui/panels.ts.
+- Task 1 (pushed): tap-to-read on phones in `ui/lightHover.ts`. A touch tap (down/up within 8 px, one finger) on the
+  substrate with the Light map on and the power set shows the hover readout, centred 56 px above the finger and
+  clamped to the screen (below the finger if there is no room above). It stays until the next tap, a drag, a second
+  finger, or a change to any tank's light; tapping off the substrate hides it. Listens on the viewer host next to
+  interact/pointer.ts (unchanged). Test note: the app's browser pane suspends requestAnimationFrame while it is not
+  being painted, so synthetic taps only show the tip once a screenshot forces a frame.
+- Task 2: lamp calibration. The plain web fetch was blocked on reefs.com, but the app's browser pane got through: Joshi's
+  lab tests (grade A) are in reference/par-calibration-data.md D12a / D12b. Nathan: split metal halide by bulb colour
+  (new tech 'mh-20k', one word added to LightTech in scene/types.ts); test against the lab data, with the forum sets
+  logged only. mh 10-14K ppe 0.83, 20K 0.47, eta 0.77 from four pendant reflectors (cos^m beam fits each within ±10%
+  at 50-100°). CFL eta and all halogen values: still ESTIMATES (no PAR data anywhere; the MSU Lamp PPF sheet has no
+  rows for them). Forum MH readings run 2-3x below the lab-based model.
+- Task 3: soft beam in the normal render (Nathan approved from before/after pictures). aqLight, lightSum, the relative
+  Light map and the beam overlay use cos^m (beamExp; uniform uBeamM replaces uConeIn/uConeOut); a spot's gain is
+  (m + 1) / (m52 + 1) (`beamGain`). uNorm still normalises to the standard fixture: planted view -2.5% (spots) /
+  +1.4% (LED); bare sand under spots -10% (light now falls past the old cone edge). CONES / spotCone / beam() removed
+  from scene/lightout.ts; test/scene.test.ts "raised fixture" passes beamExp instead of CONES.spot.
+
+## Lane J: edit performance, audit #52-53 (2026-10-14; branch `perf`, port 5373; pushed to main)
+- **What changed:** an edit no longer rebuilds the whole scene. `render/build.ts`: each fish and item is a *part* keyed
+  by its own data + selection (+ the solid pieces' data for an animal on the hardscape); `patchTank` keeps the parts whose
+  key is unchanged and rebuilds the rest. `envKey` = everything else the meshes depend on (minus camera, kelvin /
+  brightness / room light, fish stand out, and the colours `patchLook` sets in place: water colour + opacity while it
+  stays above 0, wall colour, custom substrate colours / share / mix). `render/viewer.ts` `build()`: per view; an
+  unchanged envKey patches, any other change is today's full rebuild (the fallback; `viewer.incremental = false` forces
+  it, `viewer.lastBuild` says what the last build did). An edit in B no longer rebuilds A. Undo / redo of a move patch
+  too (the diff is by data, not by event).
+- **Draw order (needed for pixel identity):** three.js sorts opaque objects by material id, i.e. by when each material
+  was created, so a patched scene drew some ties in another order than a full rebuild (2-144 px off, only on the first
+  edit after a tank's first build, depending on cache history). The viewer now ranks materials by first appearance in
+  the scene instead (`setOpaqueSort`, same grouping, no measurable cost), and a patched scene keeps a full build's child
+  order (`contentAt`). Side effect: full rebuilds are now also history-independent.
+- **Proof:** `src/render/incrementalCheck.ts` (dev only, not imported by the app; run from the console, see its header):
+  18 edits (fish move / turn / resize / raise / select / delete / duplicate, stone move / turn / resize, plant move,
+  item select, undo, redo, water colour, wall colour, substrate colours, fish stand out) on all six examples + a split
+  view, comparing the incremental frame with a full rebuild pixel by pixel: 126 edits, 114 incremental, **0 pixels
+  differ**, on a fresh page and again warm, and again after merging lanes K and A's latest (a full rebuild's own redraw
+  differed by a few pixels on 2 edits there; the check accepts either full-rebuild frame). `test/incremental.test.ts` pins which fields envKey / lookKey see.
+- **Timings** (planted, 40 fish / 56 items; interleaved A/B in one session, median; this machine was 2-3x slower than at
+  the baseline because of other lanes, so read the ratios): fish move 167-175 -> 43-59 ms, item move 157-241 -> 32-50,
+  select 139-175 -> 33-38, water colour 183 -> 49-61, fish stand out 188-209 -> 47-49; iwagumi (174 items) fish / item
+  move 224-290 -> 63-68; split, edit in B 234-334 -> 44-52. Baseline at quiet load: ~65 ms per edit, steady draw 15-18
+  ms. What is left per edit is the steady draw itself (15-50 ms, the floor) plus ~5-7 ms of the panel's `sync()`
+  (ui/panels.ts store listener, not lane J's file).
+- **Still full rebuilds:** water level, tank size / shape, stand, lid, lights' layout / height, substrate type / depth /
+  grain, terrain, background, beams, Split itself, opening a file; and the first draw after one stays ~35 ms above a
+  steady draw (new materials + buffers).
+- **Open (not done):** (1) the panel `sync()` on every drag step (~5-7 ms, ui/panels.ts); (2) the steady draw on big
+  tanks (iwagumi 45-50 ms: 174 items); (3) items.ts `plants` cache key rounds the height (`Math.round(h)`) but builds with
+  the exact one, so plants of the same type and seed within 0.5 mm share whichever height came first (lane I's file).
+- Files touched: render/build.ts, render/viewer.ts (build() and the opaque sort only; framing untouched), new
+  render/incrementalCheck.ts, test/incremental.test.ts. lighting.ts, items.ts, coral3d.ts, camera.ts and store.ts unchanged.
+
+## Lane A2: plant library (2026-10-14; branch `plants3d`, port 5283; crypt + 9 species + Spread / Stems pushed to main)
+
+Grows the 3D plant library on the lane A generator: new species are data (`PLANT3D` in `art/plants.ts`) plus a
+`LIBRARY` entry in `scene/items.ts`, a `PlantType` / `PLANT_ASPECT` entry and a card drawing (`drawPlantCard`; the
+card stays the fallback and the picking size). `scene/validate.ts` accepts any `LIBRARY` variant, so no version bump.
+- Crypt (`crypt`, "Cryptocoryne", C. wendtii; default 110 mm, 30..300): rosette, 12-18 stalked lance leaves with
+  rippled edges, olive-green to bronze on top, reddish-brown underneath, 1-3 crowns per clump, sway 0.15. Nathan
+  (2026-10-14) tried stiffer, blunter tips (less arch / wave / twist) and preferred the original: keep these values.
+  Sheets: `shots/107_row_crypt_sheet.png` (card vs 3D, 10 seeds), `110_crypt_tips_sheet.png` (the rejected stiffening),
+  `108_library_sheet.png` (one of each species).
+- Cache key fix (lane J, 2026-10-14): the plant geometry key in `render/items.ts` rounded the height but built with the
+  exact one (two near-equal plants shared the first one's mesh); the carpet key rounded x / depth the same way. Both
+  now key on the exact values. `incrementalCheck.runAll`: 126 edits, 0 differ; crypt move / resize / turn / add /
+  undo and a 0.4 mm carpet nudge: 0 px.
+- `shots/cap.js` (scratch): imports the app's own plant3d module (after a hot reload it is `plant3d.ts?t=...`), nudges
+  every item's x by 1e-4 mm so an on/off toggle really rebuilds, and `wide: true` frames a row. `shots/sheet.py`
+  stacks labelled pictures.
+- Four more (Nathan 2026-10-14: "they all look great"), data + cards only: Bucephalandra (`buce`, 70 mm, rhizome,
+  dark leaves with blue-grey / wine casts), Rotala (`rotala`, 240 mm, fine stems, pink tops), Ludwigia (`ludwigia`,
+  220 mm, broad oval leaves, red top), Crypt balansae (`balansae`, 320 mm, tall puckered straps). Sheets
+  `shots/111_{rotala,ludwigia}_sheet.png`, `112_{buce,balansae}_sheet.png`. The stem / anubias / carpet card
+  functions take an optional palette; the old cards draw exactly as before.
+- Monte Carlo: dropped (Nathan 2026-10-14: the existing carpet looks better; `shots/113_mc_sheet.png`). `isCarpet`,
+  `isFloat`, `isPatch` (art/plants.ts) replace the old `variant === 'carpet'` tests (scene/items.ts, render/items.ts,
+  two lines in ui/panels.ts: add-item spacing, the Width / Height label).
+- Five more, shipped (Nathan 2026-10-14: "ship all five"):
+  - Dwarf sagittaria (`sagittaria`, 70 mm): rosette data, 6-10 crowns of grassy leaves.
+  - Echinodorus 'Ozelot' (`ozelot`, 200 mm): sword data plus `Leaf3D.spots` (soft maroon blobs in the vertex colour;
+    only leaves that set it draw extra random numbers, so no approved plant changed).
+  - Java moss (`moss`, 45 mm tall, ~2x as wide): new form `moss`, a ragged dome over a dark core, fronds along its
+    normal; lift it onto wood / rock like anubias (a stand-alone clump, not a coat over the hardscape surface).
+    About 48 k triangles for a 60 mm clump (count scales with footprint, capped at 3000 fronds).
+  - Red root floaters (`redroot`) and salvinia (`salvinia`), 220 mm patches: new form `float`, rosettes lying on the
+    water (y = waterY(level)), thin wandering roots below; hidden in a dry tank; size = patch width (`isPatch`).
+    ~52 k / ~26 k triangles per 220 mm patch.
+  Sheets: `shots/114_{sagittaria,ozelot}_sheet.png`, `116_moss_sheet.png`, `119_float_sheet.png`.
+- Not in any starter set (Nathan: hold off).
+- Spread + Stems (Nathan 2026-10-14: "one plant can mean 5 stems over a 12-inch circle or 10 stems in 4 inches";
+  built and pushed): `Item.spread` (mm across the circle the stems / crowns start in) and `Item.stems` (count, 1..40,
+  `MAX_STEMS` in scene/items.ts), both optional: absent = the species' own look from the seed, so old files and the
+  starter sets are unchanged and there is no version bump. Only for `isClump` plants (form `stem`, or a rosette with
+  `crowns`: stem, stemred, rotala, ludwigia, grass, sagittaria, crypt, balansae); `clampItem` drops them on anything
+  else. A rosette clump keeps its leaves per crown; with its own spread the crowns fill the circle (sunflower spiral)
+  and the plant is not pulled in to its card width. Edit box: two rows under Height (index.html + ui/panels.ts), hidden
+  for other plants; until moved they show the seed's values with "auto" (`clumpAuto` in render/plant3d.ts). Both
+  reach the plant mesh key in render/items.ts (lane J keys items on their JSON, so the patch path sees them too).
+  Test `test/clump.test.ts`; incrementalCheck with spread / stems / height edits on stem, red stem, vallisneria: 0 px.
+  Sheet `shots/121_clump_sheet.png` (auto vs 12" / 5 vs 4" / 10, front and above).
+
+## Lane K: light output (2026-10-14; branch `light-output`, port 5383; DONE, all 4 steps pushed)
 - Owns `render/lighting.ts` (carved out of lane J's render/*), new `scene/lightout.ts` + `test/lightout.test.ts`, the
   light fields in scene/types.ts / defaults.ts / validate.ts, the Lighting rows in index.html / ui/panels.ts,
   ui/diff.ts, ui/parGuide.ts. Lane J: the fixture geometry (emitters, beam, fitSpots, lampHeight, CONES, LAMP_Y,
@@ -26,7 +184,30 @@ Living file. Project state and dated decisions go here; update in place.
   line; Brightness is relabelled Exposure (x0.5-2) while the power is set. The render follows it: `setLightUniforms`
   takes the setup (ONE-LINE HOOK in lane J's render/viewer.ts: `..., S.render.beams, S)`) and uses
   `lightOutCached` -> `renderBright`. ui/diff.ts: A/B lines for power, light type, measured PAR, Exposure.
-- Next: 3 (shader port + PAR / Lux map), 4 (hover tooltip).
+- Step 3: `aqIrr` with the power set calls `aqIrrAbs`, a line-by-line port of `bandsAt` (uniforms uLoA / uLoWall /
+  uLoK / uLoSplit / uLoOut, set in `setLoUniforms`); the ramp is log2(level / uMapDiv), MAP_DIV rel 1/16, PAR 2.5
+  (yellow = 40, medium), lux 125. "Map shows" PAR / Lux select (light.mapUnit), legends in real units with the
+  planted bands under the PAR ramp. GPU check: `irrReadback(renderer, pts, normals)` (dev, from the console via
+  `await import('/src/render/lighting.ts')` and `window.__gb`) agreed with bandsAt to 0.003% at 54 lit points.
+  Readout "surface" is now the brightest point just under the surface (was: above the brightest substrate point,
+  which could sit by the glass where the direct beam misses the surface: read 0).
+- Review (Nathan 2026-10-14: "surely the corners wouldn't get basically no light"): two fixes. (1) Beam = cos^m off
+  straight down with m set so the printed beam angle is where it falls to HALF (`beamExp`; LED bar and tube cross-section
+  m = 1, half at 60°), replacing the hard smoothstep cut-off in the model and the map (the ordinary render keeps its own
+  cone). (2) Bounced light (`bounce`): floor light x substrate reflectance (SUB_ALBEDO; custom from its colour) spread
+  over the inside surfaces, kept in by the surface (0.45) and glass (0.43), integrating-cavity style; added under water
+  (everywhere when dry). 36x16x18 in, 3 spots 60°, 45 W: corner 16% -> 41% of centre, minimum 3 -> 84 µmol; bounce is
+  ~7% of the mean on gravel, ~22% on white sand. LED bar and T5 corners were already 63-73% (Fluval publishes ~55%).
+  Refit: T5 eta 0.65 (Barr +12 / -1%), bare T5 0.4, T8 0.45; Hydra -9..+6%, JBL -26..+14%. Shader port re-checked
+  (GPU vs JS <= 0.0001%).
+- Step 4: `ui/lightHover.ts` (new; two lines in main.ts attach it). With the Light map on and the power set, the
+  pointer is ray-marched onto the ground (items are hidden by the map, so the ground is enough) and `bandsAt` is
+  evaluated there with the ground's normal (via `lightEnvCached`, override scale included): "190 µmol PAR · 12,800 lux
+  · 12.7″ deep" ("above the water" on paludarium land, "dry" in a dry tank). Mouse / pen only (touch has no hover),
+  hidden while dragging, on wheel and off the substrate; one evaluation per frame; re-read on a store change.
+- Open ideas (not built): a lid-condition choice (clean / condensation / dirty, ~0.9 / 0.8 / 0.65, estimates, not
+  data); a tap-to-read on phones; CFL / metal halide / halogen datasets; the ordinary render still uses the old
+  smoothstep cone (only the map and the numbers use cos^m).
 
 ## Model review sheet + model versions (2026-10-14, Nathan: "keep it where it can be updated with version number every time a model is updated")
 - `review.html` (live at tanklook.com/review.html; second Vite page, `src/review/`): every species look (females too)
@@ -37,9 +218,22 @@ Living file. Project state and dated decisions go here; update in place.
   no longer matches shows "changed since" (orange); "Changed only" filters to them.
 - **Rule for any chat that changes a model** (art/, fish3d, snail3d, herp3d, species.json sizes): open
   `/review.html` on your dev server, wait for it to render, press "Record N changed models", commit
-  `src/data/model-versions.json` with the change. The button only exists on the dev server (plugin
+  `src/data/model-versions.json` and `public/model-sheets/` with the change. The button only exists on the dev server (plugin
   `scripts/model-versions-plugin.mjs`); it stamps build = current commit count + 1, i.e. the commit you are about to make.
 - All 68 looks recorded as v1 at build 217 (stamped 216; another chat committed first, so check the number after pushing). Fingerprints held across reloads and at phone size in the app's browser.
+- **Anatomy audit v1** (2026-10-14, ChatGPT from the model sheets; `reference/model-anatomy-audit-v1.md`): 6 P0
+  (rebuild: cherry/amano/cleaner shrimp = fish tail + leg spikes; mystery/ramshorn/turbo snail = open shell sector,
+  shell floats over a slab foot), 26 species P1 (fin layout: median fins drawn as short rear paddles, two-dorsal species
+  merged into one, livebearer gonopodia, frog/newt limbs), 25 P2 (proportions). Spot-checked turbo + cherryshrimp
+  sheets: findings hold. Its "keep" list (gourami feelers, angel streamers, barbels, axolotl 3 gill pairs, puffer
+  fins) and constraints are binding for the fix lanes. Not started; Nathan to pick lane order.
+- **Pre-rendered sheets for reviewers without WebGL** (2026-10-14: ChatGPT's cloud browser has WebGL disabled and saw
+  nothing): `public/model-sheets/` = one labelled JPEG per look (title, sci name, id, size, version; 4 views x 2 lights,
+  1710 x 556) + a static `index.html` gallery, live at tanklook.com/model-sheets/. review.html links to it and, with
+  no WebGL, says so and points there. Record writes the changed models' sheets + the gallery too, so commit
+  `public/model-sheets/` with the versions. `npm run sheets` rewrites every sheet headlessly (Vite + headless
+  Edge/Chrome with SwiftShader, ~80 s; `scripts/export-sheets.mjs`), no dev-server slot needed. JPEG 0.9: 4.7 MB the set
+  (PNG was 18 MB).
 
 ## Light output: watts -> PAR / lux (2026-10-14; draft only, no src/ edits)
 - Design draft `reference/light-output-draft.md`: watts + light tech -> photons -> existing beam model in real units,
@@ -58,8 +252,8 @@ Living file. Project state and dated decisions go here; update in place.
   G's share is 38 findings: #2, 4, 5, 7-13, 16, 17, 22-28, 30-41, 43-46, 48, the label part of 49, 50. G2's 15: #1, 3,
   6, 14, 15, 18-21, 29, 47, the export crop of 49, 51-53. Lane I: #42. One line in `src/main.ts` (start menu call).
 - **Start menu (Nathan 2026-10-14: "upon start, a menu in the middle of the screen: start fresh or from an example")**:
-  `#startDlg`, shown on every load: Continue your last tank (only when one was restored; Esc does the same), Start
-  fresh, the six example cards, a gesture line. How to use no longer opens itself on the first visit.
+  `#startDlg`: Start fresh, the six example cards, a gesture line. Nathan 2026-10-14 (later): shown ONLY when no tank
+  was restored from this browser; a returning visitor gets "Welcome back" instead (Continue button removed). How to use no longer opens itself on the first visit.
 - Batch 1 (S1 + S2, browser-checked; before/after sheets in `shots/fixes/`, gitignored): #2 the tank label wraps and
   `#view` clips; #5 each shape keeps its own L/D for the visit (Rect → Pie → Rect back to 24″); #7 a split tab with no
   room beside Undo/Redo drops below them; #8 Add row sticky on phones; #9 why Add is off, as a line under it; #10/#11
@@ -179,6 +373,10 @@ or a type with no `PLANT3D` entry). No scene version bump: plants were already i
   plus a sideways S-wobble growing to the tip; stems bend along their height the same way. Own random stream
   (`rng(seed * 104729 + 71)`), so the approved leaf layouts did not change. `plant3d.sway = false` = rigid. Sheet
   `shots/98_planted_sheet.png` (before / after).
+  Per-plant amount (Nathan 2026-10-14: "the red stems all bend about the same; straight up should be just as likely"):
+  each plant's sway = species sway x 1.3 x uniform(0, 1) (`rng(seed * 15485863 + 5)`), so straight and strongly bent
+  plants are equally likely, every species. Rows `shots/102_row_{stemred,stem,grass}_lab.png` (10 plants, same seeds
+  as `101_*`).
 - Per-plant build (Nathan 2026-10-14: "does every sword look like every other?"): the leaf layout was already per
   item seed (count, lengths, angles, colour picks); now the plant-wide traits vary too, drawn per seed from a
   triangular spread round the species' value (own stream `rng(seed * 7907 + 3)`): leaf width +-18 %, length +-12 %,
@@ -366,6 +564,14 @@ Lane K opened 2026-10-14: light output (watts -> PAR / lux, light map units + ho
 `light-output`, launch config `light-output` 5383. Owns `render/lighting.ts` (carved out of lane J's `src/render/*`; J
 keeps the rest), new `scene/lightout.ts` + test, the light fields in `scene/types.ts` / `defaults.ts` / `validate.ts`,
 the Lighting rows in `index.html` / `ui/panels.ts`, `ui/parGuide.ts`. Spec: `reference/light-output-draft.md`.
+Lane K DONE (`472c769`). Lane J DONE (`720558c`; in-place edits, ~65 ms per edit at the quiet baseline). Lane A2 (plant
+library) open in `../Glass-Box-plants3d`. Lane J2 offered 2026-10-14: J's leftovers (panels.ts sync() 5-7 ms per drag
+step; steady draw 45-50 ms on big tanks; lane K's light fields in build.ts envKey), reusing `../Glass-Box-perf` /
+`perf`, port 5373; owns `src/render/*` except the plant branch of `render/items.ts` (A2) and `render/coral3d.ts` (I),
+plus the store listener in `src/ui/panels.ts`.
+Lane K2 offered 2026-10-14 (light follow-ups: tap-to-read, CFL / MH / halogen calibration, soft beam in the normal
+render), in `../Glass-Box-light-output` / `light-output`, port 5383. `render/lighting.ts` is CARVED OUT to K2 (not J2);
+J2 asks the coordinator before touching it. K2 also owns scene/lightout.ts, ui/lightHover.ts, the Lighting rows.
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_e1923781-40bc-48d3-84f3-ed380e471779`
 ("Lanes coordinator"). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
 and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says
@@ -1658,7 +1864,7 @@ Each module is a separable unit, so subagents can build in parallel once the typ
   11 with a female look); flat cards remain only as the fallback / picking target. Watch items are R1-R6 above.
 - Mobile: usable but rough (audit S1 #2, S2 #6-8): no pinch zoom, page overflow from the tank label, half-screen panel.
 - No stocking guidance for salt tanks (AqAdvisor's marine calculator is broken on their side; Nathan: leave it off).
-- Scene rebuilds fully on every change; the audit timed Split / Undo / colour-temperature changes at 0.7-1.7 s, but on
-  software GL, so re-measure on real hardware before acting.
+- Moving / turning / resizing one fish or item, selection and the colour sliders patch the scene in place (lane J);
+  geometry changes (water level, tank size, stand, substrate, terrain, Split, opening a file) still rebuild fully.
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.

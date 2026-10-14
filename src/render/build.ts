@@ -268,9 +268,10 @@ function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
  */
 function addWater(sc: THREE.Scene, S: TankSetup, T: Tank) {
   if (!S.water.on) return;
-  const y = waterY(T, S.water.level), c = new THREE.Color(0xd8eef2).lerp(new THREE.Color(S.water.color), 0.25 + 0.5 * S.water.opacity);
+  const y = waterY(T, S.water.level), look = surfaceLook(S.water);
   const bowl = shapeOf(T) === 'bowl', r = bowlRadius(T, y); // a bowl's surface is the sphere's circle at the water line
-  const surf = new THREE.Mesh(flatGeometry(bowl ? circleRing(T, r) : footprint(T).ring, y), basic(c, { transparent: true, opacity: 0.1 + 0.25 * S.water.opacity, depthWrite: false, side: THREE.DoubleSide }));
+  const surf = new THREE.Mesh(flatGeometry(bowl ? circleRing(T, r) : footprint(T).ring, y), basic(look.color, { transparent: true, opacity: look.opacity, depthWrite: false, side: THREE.DoubleSide }));
+  (surf.material as THREE.Material).userData.waterSurf = true; // recoloured in place (patchLook)
   surf.renderOrder = 4; surf.userData.nolight = true; sc.add(surf);
   const line = lines(ringLines(bowl ? circleRing(T, r - 0.6) : offsetRing(T, -0.6), y), 0xe8f6fa, 0.45);
   line.renderOrder = 4; sc.add(line);
@@ -616,7 +617,7 @@ function addWall(sc: THREE.Scene, S: TankSetup, T: Tank) {
   const ROOM_H = 2700, SPAN = 6000, SKIRT_H = 90, SKIRT_D = Math.max(1, Math.min(14, wallGap(S))); // a skirting board thinner than the gap
   const g = new THREE.Group();
   const panel = (w: THREE.Group, off: number) => { // off: shift along the wall (a corner wall starts at the corner)
-    const wall = new THREE.Mesh(new THREE.PlaneGeometry(SPAN, ROOM_H), basic(S.wall.color)); // normal +z, toward the tank
+    const wall = new THREE.Mesh(new THREE.PlaneGeometry(SPAN, ROOM_H), basic(S.wall.color, { userData: { wallPaint: true } })); // normal +z, toward the tank; recoloured in place (patchLook)
     wall.position.set(off, ROOM_H / 2, 0); wall.userData.room = true; w.add(wall);
     const skirt = shadedBox(SPAN, SKIRT_H, SKIRT_D, 0xf1efe9); skirt.position.set(off, SKIRT_H / 2, SKIRT_D / 2); w.add(skirt);
   };
@@ -711,13 +712,17 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
  * patches take (1 - mix) of each grain's share and the mixed ground the rest, so the shares hold at any mix: mix 0 =
  * separate patches with a sharp edge, 1 = mixed everywhere. Patches shrink as the mix rises (big drifts to small clumps).
  */
+/** The mask shader's uniforms for a two-grain blend; with `u`, its values are updated in place (patchLook). */
+interface BlendUniforms { uMapB: { value: THREE.Texture }; uMapM: { value: THREE.Texture }; uMask: { value: THREE.Texture }; uZone: { value: THREE.Vector4 } }
+function blendUniforms(b: TankSetup['substrate']['custom'], tile: number, u?: BlendUniforms): BlendUniforms {
+  const p2 = b.share / 100, k = 1 - b.mix, period = 900 - 650 * b.mix; // mm per mask repeat
+  const zone = new THREE.Vector4(maskQuantile((1 - p2) * k), maskQuantile(1 - p2 * k), tile / period, 0.012);
+  if (u) { u.uMapB.value = blendTexture(b, 'b'); u.uMapM.value = blendTexture(b, 'm'); u.uZone.value.copy(zone); return u; }
+  return { uMapB: { value: blendTexture(b, 'b') }, uMapM: { value: blendTexture(b, 'm') }, uMask: { value: substrateMaskTexture() }, uZone: { value: zone } };
+}
 function blendGrains(m: THREE.MeshBasicMaterial, b: TankSetup['substrate']['custom'], tile: number) {
   if (b.grain2 === 'none') return;
-  const p2 = b.share / 100, k = 1 - b.mix, period = 900 - 650 * b.mix; // mm per mask repeat
-  const uniforms = {
-    uMapB: { value: blendTexture(b, 'b') }, uMapM: { value: blendTexture(b, 'm') }, uMask: { value: substrateMaskTexture() },
-    uZone: { value: new THREE.Vector4(maskQuantile((1 - p2) * k), maskQuantile(1 - p2 * k), tile / period, 0.012) },
-  };
+  const uniforms = m.userData.blend = blendUniforms(b, tile); // patchLook updates them in place
   m.userData.post = (sh: THREE.WebGLProgramParametersWithUniforms) => {
     Object.assign(sh.uniforms, uniforms);
     sh.fragmentShader = sh.fragmentShader.replace('void main() {', `uniform sampler2D uMapB, uMapM, uMask; uniform vec4 uZone;
@@ -783,6 +788,9 @@ function boxOutline(g: THREE.BufferGeometry) {
   return r;
 }
 
+/** One fish's or item's objects in the scene and the key they were built from: an unchanged key keeps them (patchTank). */
+interface Part { key: string; objs: THREE.Object3D[]; meshes: THREE.Mesh[] }
+
 export interface BuiltTank {
   scene: THREE.Scene;
   fishMeshes: THREE.Mesh[];
@@ -791,6 +799,45 @@ export interface BuiltTank {
   dotMeshes: THREE.Mesh[];
   /** Aquascape items (userData.item = id; userData.plant on plants). */
   itemMeshes: THREE.Mesh[];
+  /** Per fish / item in scene order (audit #52-53: an edit rebuilds only the parts whose key changed). */
+  fishParts: Part[];
+  itemParts: Part[];
+  /** How many of the scene's children come before the items and animals: a patched scene keeps a full build's order. */
+  contentAt: number;
+}
+
+/**
+ * The fields the meshes outside the fish and items depend on: a change to any of them rebuilds the whole tank. Left
+ * out: the fish and items (patched part by part), the camera, the values that are only uniforms (colour temperature,
+ * brightness, room light, lane K's power / light type / measured PAR / map unit, fish stand out) and the colours `patchLook` sets in place (water colour and opacity, while
+ * it stays above 0; the wall colour; a custom substrate's colours, share and mix).
+ */
+export function envKey(S: TankSetup) {
+  const { kelvin: _k, room: _r, bright: _b, watts: _w, tech: _t, par: _q, mapUnit: _u, ...light } = S.light, { pop: _p, ...render } = S.render;
+  const { color: _wc, opacity, ...water } = S.water, { color: _c, ...wall } = S.wall;
+  const { color: _c1, color2: _c2, share: _s, mix: _m, ...custom } = S.substrate.custom;
+  return JSON.stringify({ ...S, fish: null, items: null, camera: null, light, render, water: { ...water, tinted: opacity > 0 }, wall, substrate: { ...S.substrate, custom } });
+}
+/** The values `patchLook` sets. */
+export const lookKey = (S: TankSetup) => JSON.stringify([S.water.color, S.water.opacity, S.wall.color, S.substrate.custom]);
+
+/** Water surface tint and opacity (addWater). */
+const surfaceLook = (w: TankSetup['water']) => ({ color: new THREE.Color(0xd8eef2).lerp(new THREE.Color(w.color), 0.25 + 0.5 * w.opacity), opacity: 0.1 + 0.25 * w.opacity });
+
+/** Recolour a built tank in place for a change that only `lookKey` sees (same envKey). */
+export function patchLook(sc: THREE.Scene, S: TankSetup) {
+  const s = surfaceLook(S.water), b = S.substrate.custom;
+  sc.traverse(o => {
+    const m = (o as THREE.Mesh).material as THREE.MeshBasicMaterial | undefined;
+    if (!m?.userData) return;
+    if (m.userData.waterSurf) { m.color.copy(s.color); m.opacity = s.opacity; }
+    else if (m.userData.wallPaint) m.color.set(S.wall.color);
+    else if (m.userData.sub && S.substrate.type === 'custom') {
+      m.map = blendTexture(b, 'a');
+      const u = m.userData.blend as BlendUniforms | undefined;
+      if (u) blendUniforms(b, blendTile(b), u); // the same uniform objects the program holds
+    }
+  });
 }
 
 /**
@@ -840,19 +887,56 @@ function addTerrainDots(sc: THREE.Scene, S: TankSetup, T: Tank, hot: number | nu
 }
 
 export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: number | null, edit?: { hot: number | null }, selItem: number | null = null): BuiltTank {
-  const sc = new THREE.Scene(), fishMeshes: THREE.Mesh[] = [], meshById = new Map<number, THREE.Mesh>();
+  const sc = new THREE.Scene();
   addTank(sc, S, T); addWater(sc, S, T); addSubstrate(sc, S, T); addStand(sc, S, T); addWall(sc, S, T); addPerson(sc, S, T); addFloor(sc, S, T);
-  const itemMeshes: THREE.Mesh[] = [];
+  const b: BuiltTank = { scene: sc, fishMeshes: [], meshById: new Map(), dotMeshes: [], itemMeshes: [], fishParts: [], itemParts: [], contentAt: sc.children.length };
+  addContents(b, S, T, selId, selItem);
+  addLid(sc, S, T);
+  if (S.lid !== 'hood') addFixture(sc, T, S.light, floorY(T, S.render, S.stand) + 2700); // ceiling: the wall's room height // with a hood the fixture is inside it; its light still applies
+  if (S.render.beams) addBeams(sc, T, S.light, S.lid);
+  b.dotMeshes = edit && S.terrain.on ? addTerrainDots(sc, S, T, edit.hot) : [];
+  applyLighting(sc);
+  sc.updateMatrixWorld(true);
+  return b;
+}
+
+/**
+ * Bring a built tank's fish and items up to date with S, which must have the envKey it was built from (else rebuild
+ * it with buildTank): a fish or item whose key is unchanged keeps its meshes, the rest are rebuilt and the old ones
+ * disposed (audit #52-53: moving one fish rebuilt all 40 fish and 56 items, ~65 ms per drag step). Returns how many
+ * parts were built.
+ */
+export function patchTank(b: BuiltTank, S: TankSetup & { units: Units }, T: Tank, selId: number | null, selItem: number | null = null) {
+  const n = addContents(b, S, T, selId, selItem, true);
+  if (n) { applyLighting(b.scene); b.scene.updateMatrixWorld(true); }
+  return n;
+}
+
+/** Add the items and animals to b.scene (reusing b's parts whose key is unchanged when `reuse`); fills b's lists. */
+function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: number | null, selItem: number | null, reuse = false) {
+  const sc = b.scene, pool = new Map<string, Part[]>();
+  if (reuse) for (const p of [...b.itemParts, ...b.fishParts]) pool.set(p.key, [...pool.get(p.key) ?? [], p]);
+  let built = 0;
+  const part = (key: string, objs: THREE.Object3D[], meshes: THREE.Mesh[]): Part => { built++; for (const o of objs) sc.add(o); return { key, objs, meshes }; };
+  const take = (key: string) => pool.get(key)?.pop();
   // light beams on (a working view for placing the lights): the tank holds only its substrate, so the light map on it
   // is not blocked or hidden by plants, hardscape or animals (Nathan 2026-10-13)
   const bare = S.render.beams && S.light.type !== 'flat';
-  for (const it of bare ? [] : S.items) {
-    const m = itemMesh(S, T, it); if (!m) continue;
-    if (it.id === selItem) m.add(boxOutline(m.geometry));
-    sc.add(m); itemMeshes.push(m);
-  }
+  const hard: string[] = []; // the solid pieces' data: an animal on the hardscape is rebuilt when any of them changes
+  b.itemParts = (bare ? [] : S.items).map(it => {
+    const data = JSON.stringify(it), key = 'i' + data + (it.id === selItem ? '*' : '');
+    const m = take(key) ?? (() => {
+      const m = itemMesh(S, T, it); if (!m) return part(key, [], []);
+      if (it.id === selItem) m.add(boxOutline(m.geometry));
+      return part(key, [m], [m]);
+    })();
+    if (m.meshes.some(o => !o.userData.plant)) hard.push(data);
+    return m;
+  });
+  b.itemMeshes = b.itemParts.flatMap(p => p.meshes);
+  const solids = b.itemMeshes.filter(m => !m.userData.plant); for (const m of solids) m.updateMatrixWorld(true);
+  const hardKey = hard.join('|');
   // the top of the solid piece (stone, wood, cave) under (x, depth), for animals on the hardscape; else the ground
-  const solids = itemMeshes.filter(m => !m.userData.plant); for (const m of solids) m.updateMatrixWorld(true);
   const down = new THREE.Raycaster(), from = new THREE.Vector3(), DOWN = new THREE.Vector3(0, -1, 0);
   const top = (x: number, depth: number, hard: boolean) => {
     const g = groundHeight(S, T, x, depth); if (!hard) return g;
@@ -880,42 +964,52 @@ export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: numbe
     }
     m.position.y += Math.min(lift, w);
   };
-  const register = (f: Fish, m: THREE.Mesh, w: number, h: number) => {
-    m.userData.id = f.id; if (f.id === selId) m.add(outline(w, h));
-    sc.add(m); fishMeshes.push(m); if (!meshById.has(f.id)) meshById.set(f.id, m);
-  };
-  for (const f of bare ? [] : S.fish) {
-    const sp = speciesOf(f); if (!sp) continue;
+  // one animal's meshes (`register`: picked, outlined when selected) and its contact shadow (`add`)
+  const animal = (f: Fish, register: (m: THREE.Mesh, w: number, h: number) => void, add: (o: THREE.Object3D | null) => void) => {
+    const sp = speciesOf(f); if (!sp) return;
     if (sp.kind === 'snail') {
-      for (const [m, w, h] of snailMeshes(S, T, f, sp, base(f))) register(f, m, w, h);
-      if (has3D(sp.art) && (f.surface ?? 'floor') === 'floor') { const w = fishTL(f, sp), sh = contactShadow(S, T, f.x, f.depth, groundHeight(S, T, f.x, f.depth), w, w * 0.45, f.yaw); if (sh) sc.add(sh); }
-      continue;
+      for (const [m, w, h] of snailMeshes(S, T, f, sp, base(f))) register(m, w, h);
+      if (has3D(sp.art) && (f.surface ?? 'floor') === 'floor') { const w = fishTL(f, sp); add(contactShadow(S, T, f.x, f.depth, groundHeight(S, T, f.x, f.depth), w, w * 0.45, f.yaw)); }
+      return;
     }
-    if (!S.water.on && needsWater(sp)) continue; // dry tank: fish stay in the scene data, hidden until the water is back
+    if (!S.water.on && needsWater(sp)) return; // dry tank: fish stay in the scene data, hidden until the water is back
     const w = fishTL(f, sp), h = w * sp.aspect, p = f;
     const solid = has3D(sp.art), herp = solid && isHerp3D(sp.art);
     const m = new THREE.Mesh(cardGeometry(w, h, f.bend), herp ? HIDDEN : cardMaterial(`fish:${sp.look}:${solid}:${solid && fish3d.fade}`, fishTexture(sp, S.render.edge, solid, solid && fish3d.fade), S.render.edge));
     if (!herp) (m.material as THREE.Material).userData.fishCard = true; // fish stand out (render.pop) lifts the card too
     if (herp) m.add(herpBody(sp.art, w, f.surface === 'glass')); // the card stays as the invisible picking target
     else if (solid) m.add(fishBody(sp.art, sp.aspect, w, f.bend, fishBodyTexture(sp), S.render.edge, f.surface === 'glass')); // solid body + paired fins; the card keeps the median fins
-    if (f.surface === 'glass') { onGlass(S, T, f, sp, m, w); register(f, m, w, h); continue; }
+    if (f.surface === 'glass') { onGlass(S, T, f, sp, m, w); register(m, w, h); return; }
     // bottom dwellers and animals on land rest on the ground (or the hardscape) wherever they are (their stored height is ignored)
     const rests = restsOnGround(S, T, sp, p.x, p.depth, h);
     const y = rests ? base(f) + sp.rest * w - 1 : Math.min(p.y, Math.max(0, waterY(T, S.water.level) - h / 2));
     m.position.set(p.x, y, -p.depth); m.rotation.set(f.roll * D2R, f.yaw * D2R, f.pitch * D2R, 'YXZ');
     // on a slope: lying along the ground, not level with it (Nathan 2026-10-13: a treefrog on a bank sat half in the substrate)
     if (rests) restOn(f, m, w, sp.rest * w - 1);
-    register(f, m, w, h);
-    if (f.surface === 'hardscape') continue;
-    const sh = contactShadow(S, T, p.x, p.depth, y - h / 2, w, h, f.yaw); if (sh) sc.add(sh);
+    register(m, w, h);
+    if (f.surface === 'hardscape') return;
+    add(contactShadow(S, T, p.x, p.depth, y - h / 2, w, h, f.yaw));
+  };
+  const fishPart = (f: Fish, key: string) => {
+    const objs: THREE.Object3D[] = [], meshes: THREE.Mesh[] = [];
+    animal(f, (m, w, h) => { m.userData.id = f.id; if (f.id === selId) m.add(outline(w, h)); objs.push(m); meshes.push(m); }, o => { if (o) objs.push(o); });
+    return part(key, objs, meshes);
+  };
+  b.fishParts = (bare ? [] : S.fish).map(f => {
+    const key = 'f' + JSON.stringify(f) + (f.id === selId ? '*' : '') + (f.surface === 'hardscape' ? hardKey : '');
+    return take(key) ?? fishPart(f, key);
+  });
+  b.fishMeshes = b.fishParts.flatMap(p => p.meshes);
+  b.meshById = new Map();
+  for (const m of b.fishMeshes) if (!b.meshById.has(m.userData.id)) b.meshById.set(m.userData.id, m);
+  // what was not reused is gone or changed
+  for (const l of pool.values()) for (const p of l) for (const o of p.objs) { sc.remove(o); disposeScene(o); }
+  // the children in a full build's order (new parts were added at the end): the draw order depends on it (viewer opaqueOrder)
+  if (reuse) {
+    const parts = [...b.itemParts, ...b.fishParts].flatMap(p => p.objs), mine = new Set(parts), rest = sc.children.filter(o => !mine.has(o));
+    sc.children = [...rest.slice(0, b.contentAt), ...parts, ...rest.slice(b.contentAt)];
   }
-  addLid(sc, S, T);
-  if (S.lid !== 'hood') addFixture(sc, T, S.light, floorY(T, S.render, S.stand) + 2700); // ceiling: the wall's room height // with a hood the fixture is inside it; its light still applies
-  if (S.render.beams) addBeams(sc, T, S.light, S.lid);
-  const dotMeshes = edit && S.terrain.on ? addTerrainDots(sc, S, T, edit.hot) : [];
-  applyLighting(sc);
-  sc.updateMatrixWorld(true);
-  return { scene: sc, fishMeshes, meshById, dotMeshes, itemMeshes };
+  return built;
 }
 
 /** Material of a picking card whose animal is drawn in 3D. */
@@ -981,7 +1075,7 @@ function snailMeshes(S: TankSetup, T: Tank, f: Fish, sp: Species, ground: number
   return [[foot, w, h], [shell, w, h]];
 }
 
-export function disposeScene(sc: THREE.Scene | undefined) {
+export function disposeScene(sc: THREE.Object3D | undefined) {
   sc?.traverse(o => {
     const m = o as THREE.Mesh;
     if (!m.geometry?.userData.keep) m.geometry?.dispose();

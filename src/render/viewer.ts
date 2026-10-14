@@ -3,9 +3,10 @@ import * as THREE from 'three';
 import { fishTL, speciesOf } from '../data/species';
 import { D2R, depthRatio, floorY, fmtLen, tankUnderside } from '../scene/physics';
 import { tableOn, tableRing } from '../scene/table';
+import { footprint } from '../scene/shape';
 import type { Store } from '../scene/store';
 import type { Fish, Tank, TankSetup } from '../scene/types';
-import { HOOD_H, buildTank, disposeScene, personSpot, type BuiltTank } from './build';
+import { HOOD_H, buildTank, disposeScene, envKey, lookKey, patchLook, patchTank, personSpot, type BuiltTank } from './build';
 import { drawViewMap } from './viewmap';
 import { applyFraming, fovFor, frameBox, frameStraightOn, placeCamera, windowCentre } from './camera';
 import { glowColor, lampHeight, roomLevel, setLightUniforms, setWaterUniforms } from './lighting';
@@ -49,6 +50,8 @@ export interface Viewport extends Partial<BuiltTank> {
   cam: THREE.PerspectiveCamera;
   /** Fixture parts and the beams above the rim: hidden while the eye is above them (userData.overhead = that height). */
   overhead?: THREE.Object3D[];
+  /** Frosted background sheets (build `bgMaterial`), with their faces as outward planes (`frostCull`). */
+  frost?: { mesh: THREE.Mesh; planes: THREE.Plane[] }[];
   S: TankSetup;
   T: Tank;
   x: number; y: number; w: number; h: number;
@@ -76,6 +79,30 @@ export function exportCrop(content: { x0: number; x1: number; y0: number; y1: nu
   const m = 0.06 * Math.max(x1 - x0, y1 - y0);
   const x = Math.max(0, Math.floor(x0 - m)), y = Math.max(0, Math.floor(y0 - m));
   return { x, y, w: Math.min(W, Math.ceil(x1 + m)) - x, h: Math.min(H, Math.ceil(y1 + m)) - y };
+}
+
+/** The faces of a frosted sheet as planes whose normal points away from the tank's centre (outside = the room side). */
+function outwardPlanes(m: THREE.Mesh, T: Tank): THREE.Plane[] {
+  const pos = m.geometry.attributes.position, idx = m.geometry.index, n = idx ? idx.count : pos.count;
+  const c = new THREE.Vector3(T.L / 2, T.H / 2, -T.D / 2), tri = new THREE.Triangle(), out: THREE.Plane[] = [], v = [0, 1, 2].map(() => new THREE.Vector3());
+  m.updateMatrixWorld();
+  for (let i = 0; i < n; i += 3) {
+    for (let k = 0; k < 3; k++) v[k].fromBufferAttribute(pos, idx ? idx.getX(i + k) : i + k).applyMatrix4(m.matrixWorld);
+    tri.set(v[0], v[1], v[2]); if (tri.getArea() < 1e-6) continue;
+    const p = tri.getPlane(new THREE.Plane());
+    if (p.distanceToPoint(c) > 0) p.negate();
+    if (!out.some(q => q.normal.dot(p.normal) > 0.99999 && Math.abs(q.constant - p.constant) < 0.01)) out.push(p);
+  }
+  return out;
+}
+/** frostCull: a mesh in the tank draws nothing into an off-screen target (the transmission pass); the canvas pass is untouched. */
+function skipOffscreen(this: THREE.Object3D, r: THREE.WebGLRenderer, _s: THREE.Scene, _c: THREE.Camera, g: THREE.BufferGeometry) {
+  if (r.getRenderTarget() === null) return;
+  this.userData.range = g.drawRange.count; g.drawRange.count = -1; // a negative count draws nothing (three's renderBufferDirect)
+}
+function restoreRange(this: THREE.Object3D, _r: THREE.WebGLRenderer, _s: THREE.Scene, _c: THREE.Camera, g: THREE.BufferGeometry) {
+  if (this.userData.range === undefined) return;
+  g.drawRange.count = this.userData.range; delete this.userData.range;
 }
 
 export class Viewer {
@@ -135,6 +162,11 @@ export class Viewer {
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.localClippingEnabled = true; // hardscape is cut off at the glass (render/items.ts solidMaterial)
     setMaxAnisotropy(this.renderer.capabilities.getMaxAnisotropy());
+    // opaque draw order as three's default (materials grouped, then front to back), but the groups ranked by where
+    // each material first appears in the scene instead of by its id, i.e. by when it was created: a patched scene
+    // (build.ts patchTank) and a full rebuild then draw ties in the same order and match pixel for pixel (audit #52-53)
+    this.renderer.setOpaqueSort((a, b) => a.groupOrder - b.groupOrder || a.renderOrder - b.renderOrder
+      || (this.rank.get(a.material) ?? 0) - (this.rank.get(b.material) ?? 0) || a.z - b.z || a.id - b.id);
     const S = store.scene;
     this.vps = (['A', 'B'] as const).map((key, i) => ({ i, key, cam: new THREE.PerspectiveCamera(40, 1, 10, 40000), S: S.tanks[0], T: S.tanks[0].tank, x: 0, y: 0, w: 1, h: 1 }));
     store.subscribe(kind => { if (kind !== 'view') this.needsBuild = true; this.dirty = true; });
@@ -154,37 +186,50 @@ export class Viewer {
   /** The viewport of the tank the panel edits. */
   get current() { return this.active[this.store.scene.active] ?? this.active[0]; }
 
-  /** What each view was last built from, minus the values that are only uniforms (see `buildKey`). */
-  private built: string[] = [];
+  /** Opaque draw order: each material's place of first appearance in the scene being drawn (see the constructor). */
+  private rank = new Map<THREE.Material, number>();
+  /** Per view: the key its meshes outside the fish and items were built from (`viewKey`), and its `lookKey`. */
+  private built: { env: string; look: string }[] = [];
+  /** false = every change rebuilds the whole scene, as before audit #52-53 (the fallback; dev checks compare the two). */
+  incremental = true;
+  /** What the last build did per view: 'full', 'patch' (with the number of fish / items rebuilt), or 'same'. */
+  lastBuild: string[] = [];
   /**
-   * The scene as the meshes depend on it: everything but the light's colour temperature, brightness and room light,
-   * which reach the picture only through uniforms set every draw (and the fixture's glow, recoloured in place). A
-   * change to those alone skips the rebuild (audit #51: about 1-1.5 s per slider step on software GL).
+   * What a view's meshes outside the fish and items depend on (envKey: everything but the fish, items, camera, the
+   * values that are only uniforms and the colours patched in place), plus whether it is edited and the terrain dots.
+   * Unchanged: only the fish and items whose own data or selection changed are rebuilt (patchTank). Colour
+   * temperature, brightness and room light reach the picture through uniforms set every draw (audit #51).
    */
-  private buildKey(i: number) {
+  private viewKey(i: number) {
     const S = this.store.scene.tanks[i]; if (!S) return '';
-    const { kelvin: _k, room: _r, bright: _b, ...light } = S.light;
-    return JSON.stringify([{ ...S, camera: null, light }, this.store.scene.units, this.store.isEditing(i), this.store.selId, this.store.selItem, this.terrainEdit]);
+    return JSON.stringify([envKey(S), this.store.scene.units, this.store.isEditing(i), this.terrainEdit]);
   }
 
   private build() {
-    const sc = this.store.scene, keys = this.vps.map(vp => this.buildKey(vp.i));
-    if (this.built.length && this.vps.every((vp, k) => keys[k] === this.built[k] && !!vp.scene === !!sc.tanks[vp.i])) {
-      for (const vp of this.vps) {
-        if (!vp.scene) continue;
-        vp.S = sc.tanks[vp.i];
-        vp.scene.traverse(o => { const m = (o as THREE.Mesh).material as THREE.MeshBasicMaterial | undefined; if (m?.userData?.glow) m.color.copy(glowColor(vp.S.light.kelvin)); });
-      }
-      this.needsBuild = false; return;
-    }
-    this.built = keys;
+    const sc = this.store.scene;
+    this.lastBuild = [];
     for (const vp of this.vps) {
-      disposeScene(vp.scene); vp.scene = undefined;
-      const S = sc.tanks[vp.i]; if (!S) continue;
+      const S = sc.tanks[vp.i], old = this.built[vp.i];
+      if (!S) { disposeScene(vp.scene); vp.scene = undefined; this.built[vp.i] = { env: '', look: '' }; continue; }
       const on = this.store.isEditing(vp.i); // selection outline and terrain dots only in the tanks being edited
+      const env = this.viewKey(vp.i), look = lookKey(S), units = { ...S, units: sc.units };
       vp.S = S; vp.T = S.tank;
-      Object.assign(vp, buildTank({ ...S, units: sc.units }, S.tank, on ? this.store.selId : null, on && this.terrainEdit.on ? this.terrainEdit : undefined, on ? this.store.selItem : null));
-      vp.overhead = []; (vp.scene as THREE.Scene | undefined)?.traverse(o => { if (o.userData.overhead != null) vp.overhead!.push(o); });
+      if (this.incremental && vp.scene && old?.env === env) {
+        if (old.look !== look) patchLook(vp.scene, S);
+        const n = patchTank(vp as BuiltTank, units, S.tank, on ? this.store.selId : null, on ? this.store.selItem : null);
+        vp.scene.traverse(o => { const m = (o as THREE.Mesh).material as THREE.MeshBasicMaterial | undefined; if (m?.userData?.glow) m.color.copy(glowColor(S.light.kelvin)); });
+        this.lastBuild[vp.i] = n ? `patch ${n}` : old.look !== look ? 'look' : 'same';
+      } else {
+        disposeScene(vp.scene);
+        Object.assign(vp, buildTank(units, S.tank, on ? this.store.selId : null, on && this.terrainEdit.on ? this.terrainEdit : undefined, on ? this.store.selItem : null));
+        vp.overhead = []; vp.frost = [];
+        (vp.scene as THREE.Scene | undefined)?.traverse(o => {
+          if (o.userData.overhead != null) vp.overhead!.push(o);
+          if (((o as THREE.Mesh).material as THREE.Material | undefined)?.userData?.frost) vp.frost!.push({ mesh: o as THREE.Mesh, planes: outwardPlanes(o as THREE.Mesh, S.tank) });
+        });
+        this.lastBuild[vp.i] = 'full';
+      }
+      this.built[vp.i] = { env, look };
     }
     this.needsBuild = false;
   }
@@ -265,9 +310,12 @@ export class Viewer {
       setLightUniforms(vp.T, S.light, S.lid, S.render.beams, S); setWaterUniforms(vp.T, S.water, S.render.pop); OUTLINE.uPop.value = S.render.pop; OUTLINE.uVpH.value = vp.h;
       // keep the cleared alpha (1): alpha-to-coverage fins would otherwise leave a translucent canvas, through which
       // the page shows on screen and a viewer's background (often white) in an exported PNG
+      this.rank.clear(); vp.scene!.traverse(o => { const m = (o as THREE.Mesh).material; if (m) for (const x of ([] as THREE.Material[]).concat(m)) if (!this.rank.has(x)) this.rank.set(x, this.rank.size); });
       const cb = r.state.buffers.color, gl = r.getContext();
       cb.setMask(true); gl.colorMask(true, true, true, false); cb.setLocked(true);
+      const culled = this.frostCull(vp);
       r.render(vp.scene!, vp.cam);
+      for (const o of culled) { o.onBeforeRender = THREE.Object3D.prototype.onBeforeRender; o.onAfterRender = THREE.Object3D.prototype.onAfterRender; }
       cb.setLocked(false); cb.setMask(true); gl.colorMask(true, true, true, true);
     }
     r.setScissorTest(false);
@@ -288,6 +336,31 @@ export class Viewer {
       drawViewMap(box.querySelector('canvas')!, A.S, A.T, sc.units, eye, view, pm && pp ? { x: pm.position.x, z: pm.position.z, w: pp.w } : null);
     }
     for (const fn of this.drawnListeners) fn();
+  }
+
+  /**
+   * Frosted film: three draws every opaque mesh a second time, into the picture the film blurs (its transmission pass),
+   * which on a big tank cost as much as the frame itself. What is in the tank can only show through the film when the
+   * eye is outside one of the film's faces (looking at it from behind, or a film all round): otherwise the film is behind
+   * it all, so those meshes are left out of that pass (Nathan 2026-10-14: the faint shadow they cast on the film may go).
+   * Returns the meshes whose hooks to reset after the render.
+   */
+  private frostCull(vp: Viewport): THREE.Object3D[] {
+    if (!vp.frost?.length || !vp.scene) return [];
+    const eye = vp.cam.position;
+    if (vp.frost.some(f => f.planes.some(p => p.distanceToPoint(eye) > 0))) return [];
+    vp.scene.updateMatrixWorld(); // meshes built or patched since the last frame are placed first
+    const T = vp.T, ring = footprint(T).ring, box = this.box, mid = this.corner, out: THREE.Object3D[] = [];
+    const x0 = Math.min(...ring.map(p => p[0])), x1 = Math.max(...ring.map(p => p[0])), d0 = Math.min(...ring.map(p => p[1])), d1 = Math.max(...ring.map(p => p[1]));
+    vp.scene.traverse(o => {
+      const m = o as THREE.Mesh;
+      if (!m.geometry || !(m.isMesh || (o as THREE.Line).isLine) || (m.material as THREE.Material).userData?.frost) return;
+      if (!m.geometry.boundingBox) m.geometry.computeBoundingBox();
+      box.copy(m.geometry.boundingBox!).applyMatrix4(m.matrixWorld).getCenter(mid);
+      if (mid.x < x0 || mid.x > x1 || -mid.z < d0 || -mid.z > d1 || mid.y < 0 || mid.y > T.H) return;
+      o.onBeforeRender = skipOffscreen; o.onAfterRender = restoreRange; out.push(o);
+    });
+    return out;
   }
 
   // ---------- Measurement: verifies the perspective model numerically ----------
