@@ -86,7 +86,7 @@ picture able to span touching sides.
   ("Bare tank"); the pieces stay.
 - Before/after pairs: `shots/final/P1..P4_*_pair.png` (main checkout, gitignored).
 
-## Lane S: anatomy audit P1, fish fins (2026-10-14; branch `fish-fins`, port 5503; IN PROGRESS, batches 1-2 approved and pushed; batch 4 moved to lane S2)
+## Lane S: anatomy audit P1, fish fins (2026-10-14; branch `fish-fins`, port 5503; DONE: batches 1-3 approved and pushed; batch 4 is lane S2's)
 Owns `src/art/fishgen.ts`, `src/art/paint.ts`, `src/render/fish3d.ts`. Hook elsewhere: `src/art/placeholder.ts` asks
 `fishgen.finRooted(p, top, u)` where fins are rooted (the 3D card's body cut-out keeps the rim there), 3 lines.
 - **Cause of the "rear paddles":** the old `FinSpec` outline put a flat top at a fixed height above the fin's MIDPOINT;
@@ -105,6 +105,33 @@ Owns `src/art/fishgen.ts`, `src/art/paint.ts`, `src/render/fish3d.ts`. Hook else
   pectorals x1.6, mouth line), bristlenose (one-spine dorsal sail, pectorals x2.1 low, pelvics w 1.4, flatter head).
   New generic: `Plan.gape` = a 3D mouth line (fish3d `gapeMeshes`; the body texture has no mouth), off by default.
   Open: the oscar's jaw/cheek bulk would need head geometry the shared loft does not have (not built).
+- **Batch 3 (Nathan approved, v2 at build 348):** firefish (raked first-dorsal pennant via `lead`/`drop`, long low
+  `dorsal2`, matching anal), banggai (spiny first dorsal, swept `dorsal2` and anal, big pelvics), watchman (two dorsals,
+  eyes raised `up` 0.55, `gape`, pectorals x1.6), yellowtang (`rostrum`: projecting snout; eye set back `u` 0.8; long
+  dorsal/anal), coralbeauty (long spiny dorsal/anal, `gape`). New generic, all off by default: `Plan.rostrum` {len, h}
+  in `profile()`, `MedianFin.lead`. Fix: `rake` 1 divided by zero (now capped at 0.999).
+- **For lane S2 (on main, no model changes):** `tail.sword` (`f3706dc`; long tapering sword from u = sword to the tip),
+  `eye.bulge` (`f3706dc`; rounder 3D eye domes, set in less deep), `Plan.gapeDrop` (`332e863`; mouth line curve,
+  default 0.02).
+- **Pruned (lane M's leftovers):** `shrimpMarksCanvas`, `Plan.glass` and fish3d's glass branch (`see`, the marks
+  overlay, the outline skip). Shrimp build in `shrimp3d.ts` with their own glass; every look still matches its record.
+- **P2 fish rows the new parameters make cheap** (`reference/model-anatomy-audit-v1.md` P2; for a later lane, PLANS only):
+  - Cheap, fins only (`MedianFin` at / len / h / spines / trail, `pec`, `pelvic` ext / w): ember (low dorsal, short anal
+    base), rummynose (small dorsal), danio (dorsal rearward: `at`; upturned mouth: `mouth`, `gape` + `gapeDrop`), cherry
+    barb (dorsal height; slimmer male = `depth`), tiger barb (bigger triangular dorsal, paired fins `pelvic.w`), platy and
+    molly (ray-supported dorsal sail, rounder caudal; male `gono` if a male look is wanted), oto (triangular dorsal with
+    one spine like the bristlenose; caudal fork via lyre `cut`), clown loach (fin area, `pec.s`), SAE (dorsal; mouth
+    `gape`), bronze / panda cory (broad low pectorals `pec` {s, v}; triangular dorsal on one spine; scutes already
+    `plates`), and the marine four, which take the cichlid recipe of batches 1-2: ocellaris (long continuous spiny/soft
+    dorsal, `pec.s`, `gape`), royal gramma (long dorsal base, oblique jaw `gape`), sixline (continuous dorsal), chromis
+    (dorsal origin forward, `gape`; fork curvature via lyre `cut`).
+  - Partly cheap (fins yes, the rest is profile tuning with existing fields): neon, cardinal (outline / peduncle), chili
+    (shorter snout), cpd (short snout, moderate fork via lyre `cut`).
+  - Not cheap: goldfish (paired double caudal seen from above needs a 3D tail structure, not a card), kuhli (fine
+    cylindrical barbels / blunt loach head: barbel and head geometry), harlequin (body rhomboid is `angular`, the patch is
+    a marking; no new parameter helps).
+- Open: the oscar's jaw / cheek bulk would need head geometry the shared loft has not got (not built; ask Nathan before
+  a new head template).
 - Batch 4 (hatchet, swordtail, guppy, betta, pea puffer) is lane S2's (`../Glass-Box-fish-fins-b4`): PLANS entries only;
   new generic parameters come from lane S.
 - Before/after composites: worktree `shots/laneS/b*-*.jpg` (gitignored).
@@ -801,7 +828,7 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 |---|---|---|---|---|
 | P final polish | `../Glass-Box-final-fixes` / `final-fixes` | 5473 | `src/style.css`, `index.html`, `src/ui/panels.ts`, `src/scene/water.ts` | DONE (`7e5897a`); files free |
 | R P2 axolotl + nerite | `../Glass-Box-p2-small` / `p2-small` | 5493 | `art/herps.ts`, `render/herp3d.ts`, `art/snails.ts`, `render/snail3d.ts` | DONE (`45f872a`); files free. Open: fillCut for mystery / turbo / trumpet (would change approved look) |
-| S P1 fish fins | `../Glass-Box-fish-fins` / `fish-fins` | 5503 | `art/fishgen.ts`, `art/paint.ts`, `render/fish3d.ts` | running (session `local_b5a88177`) |
+| S P1 fish fins | `../Glass-Box-fish-fins` / `fish-fins` | 5503 | (released) | DONE; files free (S2 keeps its batch-4 PLANS entries in fishgen.ts) |
 | R2 snail aperture kink | `../Glass-Box-p2-small` / `p2-small` (started by lane R) | 5493 | `art/snails.ts`, `render/snail3d.ts` (mystery / turbo / trumpet fillCut) | CLOSED: tried, Nathan declined (`52fb6cb`); snail files free |
 | S2 fish batch 4 | `../Glass-Box-fish-fins-b4` / `fish-fins-b4` | 5513 | in `art/fishgen.ts` ONLY the PLANS / her() entries of hatchet, swordtail(~f), guppy(~f), betta(~f), peapuffer(~f); no MedianFin / medianPts / gonoPts / tailPts / pairedFins, no paint.ts / fish3d.ts (new generic parameters: ask lane S) | running (session `local_5cf51e1b`) |
 | V zoom out further | `../Glass-Box-zoom-out` / `zoom-out` | 5523 | `scene/validate.ts` LIMITS.zoom, `render/camera.ts`, the zoom / framing parts of `render/viewer.ts`, the cZoom slider in `index.html` / `ui/panels.ts`, `interact/pointer.ts` wheel / pinch | running (session `local_7dddf0e8`), options sent to Nathan |

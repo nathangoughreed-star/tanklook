@@ -83,7 +83,6 @@ export interface Plan {
   limbs?: Limb[];
   drape?: number;     // 3D: the card's median fins ripple out of the card plane by this much (widths), so edge-on they read as fin, not board
   sharp?: boolean;    // 3D: keep the painted markings crisp where the surface turns away (large clean patches, not bars or spots)
-  glass?: number;     // 3D: body and limb opacity (translucent shrimp); unset = opaque
 }
 /**
  * A thin limb (legs, antennae) as a tube on each flank, 3D only: rooted on the body at (u, v), running to the root +
@@ -392,14 +391,6 @@ function shrimpMarks(ctx: Ctx, P: Proj, W: number, s: ShrimpSpec) {
       u = u1 + 0.008 + r() * 0.014;
     }
   }
-}
-/** The markings alone on a clear canvas the size of the card, for the overlay on a translucent 3D shrimp. */
-export function shrimpMarksCanvas(art: string, aspect: number, W = 1024): HTMLCanvasElement | null {
-  const s = SHRIMP[art]; if (!s?.glass) return null;
-  const c = document.createElement('canvas'), H = Math.round(W * aspect); c.width = W; c.height = H;
-  const ctx = c.getContext('2d')!; ctx.lineCap = 'round';
-  shrimpMarks(ctx, (u, v) => [u * W, H / 2 + v * W], W, s);
-  return c;
 }
 function drawShrimp(s: ShrimpSpec, ctx: Ctx, P: Proj, W: number) {
   if (!style.paired) return; // painted for the 3D shrimp: render/shrimp3d.ts builds and paints the whole animal, its card stays empty
@@ -730,7 +721,7 @@ const SHRIMP: Record<string, ShrimpSpec> = {
 const shrimpPlan = (s: ShrimpSpec): Plan => ({
   outline: SHRIMP_OUTLINE, thick: 0.6, pedT: 0.6, depth: 0.205, pedU: 0.14, ped: 0.05, pectoral: false,
   shade: [s.body[0], s.body[1], s.body[1]], tail: { type: 'fork', h: 0.1 }, fin: s.body[0],
-  eye: { r: 0.022, u: 0.835, dv: -0.17, iris: ['#3a2a22', '#120c0a'] }, glass: s.glass,
+  eye: { r: 0.022, u: 0.835, dv: -0.17, iris: ['#3a2a22', '#120c0a'] },
   limbs: [
     ...[0, 1, 2, 3, 4].map(i => ({ u: 0.72 - i * 0.07, v: 0.045, to: [-0.03, 0.11, 0.03], via: [-0.005, 0.03, 0.04], r: 0.005 }) as Limb),
     ...[0, 1, 2, 3].map(i => ({ u: 0.42 - i * 0.07, v: 0.06, to: [-0.02, 0.05, 0.02], r: 0.004 }) as Limb),
