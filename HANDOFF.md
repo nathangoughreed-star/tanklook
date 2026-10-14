@@ -577,6 +577,11 @@ plus the store listener in `src/ui/panels.ts`.
 Lane K2 offered 2026-10-14 (light follow-ups: tap-to-read, CFL / MH / halogen calibration, soft beam in the normal
 render), in `../Glass-Box-light-output` / `light-output`, port 5383. `render/lighting.ts` is CARVED OUT to K2 (not J2);
 J2 asks the coordinator before touching it. K2 also owns scene/lightout.ts, ui/lightHover.ts, the Lighting rows.
+Lanes G2, J2, K2, A2 DONE (2026-10-14). Lane D reopened for the review fixes (Nathan: "go ahead with the models, take
+the recommendation for the rest"): `../Glass-Box-models-fix` / `models-fix`, launch config `models-fix` 5443. Owns the
+fish / amphibian art and 3D files (art/fishgen.ts, art/paint.ts, art/herps.ts, render/fish3d.ts, render/herp3d.ts,
+art/placeholder.ts) EXCEPT lane M's shrimp parts and hand-off lines, and the hardscape generators in render/items.ts
+(non-plant branches) and scene/items.ts stone / wood / cave entries, after lane I lands.
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_e1923781-40bc-48d3-84f3-ed380e471779`
 ("Lanes coordinator"). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
 and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says

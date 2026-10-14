@@ -397,6 +397,21 @@
         "--strictPort"
       ],
       "port": 5433
+    },
+    {
+      "name": "models-fix",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "C:/Users/nreed/Glass-Box-models-fix",
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5443",
+        "--strictPort"
+      ],
+      "port": 5443
     }
   ]
 }
