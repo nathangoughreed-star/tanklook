@@ -17,6 +17,7 @@ Living file. Project state and dated decisions go here; update in place.
   on (`p.y + 1`), so a ledge under a higher rock stays a ledge, and off the rock it goes to the sand. One undo step per
   drag (coalesce `item-drag`, sealed on release). The Move buttons / Lift slider (`ui/panels.ts`) are unchanged: they can still
   place a coral floating; a later drag seats it.
+  Nathan 2026-10-14: that is BY DESIGN. The Move buttons / Lift slider are a manual override of the seating; don't "fix" them.
 - Tests `test/coralseat.test.ts`: tipped rock (4 pitch / roll mixes, including the 40° roll that buried it), drop on rock /
   on sand, ledge under a higher rock, one undo step. Browser: drag on rock (lift 81, 1 mm in), on sand (0), 2 undos step
   back; 375 px no horizontal scroll, 0 console errors. Pictures in the worktree `shots/Z_sheet_*.jpg` (gitignored).
