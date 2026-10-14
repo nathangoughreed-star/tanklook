@@ -142,7 +142,7 @@ function barbelMeshes(p: Plan, bend: number, mat: THREE.Material) {
   const DIRS: [number, number, number][] = [[0.35, -0.7, 0.62], [0.62, -0.72, 0.3]];
   for (const side of [1, -1]) DIRS.forEach((d, k) => {
     const m = new THREE.Mesh(g, mat), s = surfaceAt(p, 0.975 - k * 0.012, nb - 0.006, side, bend), z0 = bendZ(bend, s.x);
-    m.scale.set(0.004, len * (1 - 0.25 * k), 0.004);
+    const r = p.barbelR ?? 0.004; m.scale.set(r, len * (1 - 0.25 * k), r);
     m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(d[0], d[1], d[2] * side).normalize());
     m.position.set(s.x, s.y, z0 + (s.z - z0) * 0.8);
     out.push(m);

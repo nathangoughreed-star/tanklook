@@ -47,6 +47,7 @@ export interface Plan {
   snout?: number;     // 0 pointed .. 1 blunt
   rostrum?: { len: number; h: number }; // a projecting snout: the head tapers to half-depth h at 1 - len, then a narrow snout runs on to the tip (tang)
   mouth?: number;     // nose offset (+ down, - up)
+  noseCap?: number;   // the snout ends in a rounded cap this long (widths) instead of a point (loaches; off by default)
   shade: [string, string, string]; // back, flank, belly
   // cut (lyre): depth of the fork, share of the tail length (default 0.8); sword ('sword'): the fan ends at u = sword and
   // its lower rays run on as a slim tapering sword to the tip at u = 0 (unset: the short tab)
@@ -68,6 +69,7 @@ export interface Plan {
   gape?: number;      // 3D: a mouth line this long (u) back from the snout tip on each flank (the body texture has no mouth)
   gapeDrop?: number;  // 3D: how far the mouth line curves down at its rear end (widths, default 0.02; 0 = straight)
   barbels?: number;   // barbel length (widths); bottom fish
+  barbelR?: number;   // 3D: barbel root radius (widths, default 0.004); fine cylindrical barbels on slim fish (kuhli)
   bristles?: boolean; // bristlenose snout
   rim?: number;
   thick?: number;     // 3D: max body thickness / max body depth (laterally compressed < 0.5 < rounder)
@@ -106,7 +108,7 @@ function outlineProfile(o: [number, number][]) {
 export function profile(p: Plan) {
   if (p.outline) return outlineProfile(p.outline);
   const tp = p.peak ?? 0.55, back = p.back ?? 0.5, sn = p.snout ?? 0.5, mouth = p.mouth ?? 0, ro = p.rostrum, nose = ro ? 1 - ro.len : 1;
-  return (u: number): [number, number] => {
+  const f = (u: number): [number, number] => {
     const t = Math.min(1, Math.max(0, (u - p.pedU) / (nose - p.pedU)));
     let hh: number, vc = 0;
     if (t <= tp) hh = 2 * p.ped + (p.depth - 2 * p.ped) * Math.sin(t / tp * Math.PI / 2) ** 1.3;
@@ -125,6 +127,14 @@ export function profile(p: Plan) {
       const j = 0.8 * ro.h * 2; hh = Math.max(hh, hs) + Math.max(0, j - Math.abs(hh - hs)) ** 2 / (4 * j) * (1 - Math.min(1, k)); vc = mouth * Math.min(1, Math.max(0, (u - p.pedU) / (1 - p.pedU) - 0.4) / 0.6) ** 2;
     }
     return [vc - hh * back, vc + hh * (1 - back)];
+  };
+  if (!p.noseCap) return f;
+  // rounded cap: from u = 1 - cap the outline closes in a half ellipse, cap long and as deep as the body there
+  const cap = p.noseCap, u0 = 1 - cap, [a0, b0] = f(u0);
+  return (u: number): [number, number] => {
+    if (u <= u0) return f(u);
+    const k = Math.min(1, (u - u0) / cap), r = Math.sqrt(Math.max(0, 1 - k * k)), m = (a0 + b0) / 2, mv = m + ((p.mouth ?? 0) - m) * k * k;
+    return [mv - (m - a0) * r, mv + (b0 - m) * r];
   };
 }
 
