@@ -31,6 +31,7 @@ export function edits(): Edit[] {
     ['water colour', E(s => ed(s, () => { t(s).water.color = '#7a9a6a'; t(s).water.opacity = Math.max(0.05, t(s).water.opacity * 1.5); }))],
     ['wall colour', E(s => ed(s, () => { t(s).wall.color = '#c8b8a8'; }))],
     ['substrate colours', E(s => ed(s, () => { const c = t(s).substrate.custom; c.color = '#a08060'; c.color2 = '#404850'; c.share = 40; c.mix = 0.7; }))],
+    ['light power', E(s => ed(s, () => { const l = t(s).light; l.watts = (l.watts ?? 0) + 30; l.mapUnit = 'lux'; }))],
     ['fish stand out', E(s => ed(s, () => { t(s).render.pop = 0.6; }))],
     ['redo', E(s => s.redo())],
   ];

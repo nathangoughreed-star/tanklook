@@ -2,6 +2,59 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lanes L + M: anatomy audit P0 fixes (2026-10-14; opened, run in parallel)
+From `reference/model-anatomy-audit-v1.md` (see "Model review sheet" below). Nathan picked P0 first, two parallel
+chats; fin layout (most of P1) and frogs/newt are later lanes.
+- **Lane L: snail shells** (`../Glass-Box-snails`, branch `snail-shells`, launch config `snails`, port 5423). Owns
+  `src/art/snails.ts`, `src/render/snail3d.ts` (carved out of J2's `src/render/*`). Goal: one shell builder that makes
+  a closed, continuous coil with a real aperture the body comes out of (no open sector, no shell floating over a slab
+  foot), then per-kind shape: mystery (globose, raised spire), ramshorn (flat closed tubular coil), turbo (rounded
+  body whorl), trumpet (one continuous high cone, convex whorls), nerite (low spire, smaller foot, head at the
+  aperture). The hermit crab's shell comes from `shellMesh` here, so it gets the fix; its body (herps.ts / herp3d.ts) is
+  NOT lane L's.
+- **Lane M: shrimp body** (`../Glass-Box-shrimp`, branch `shrimp-body`, launch config `shrimp`, port 5433). Owns a new
+  `src/render/shrimp3d.ts` (and a new art file if it needs one) plus the shrimp parts of `src/art/fishgen.ts`; in
+  `src/render/fish3d.ts` only the few lines that hand shrimp to the new builder (ask the coordinator before more: J2
+  owns render/*). Goal: cephalothorax + articulated, bent abdomen (stepped segments in the geometry, not drawn lines),
+  stalked eyes, rostrum, 5 pairs of jointed walking legs separate from smaller swimmerets, and a flat horizontal
+  telson + uropod tail fan (no vertical fish tail). Then per species: cherry (Neocaridina), amano (glass body + its
+  markings), cleaner (Lysmata, long white antennae, abdominal bend). Hermit body is a later lane.
+- Both: the audit's "keep" list and constraints bind. Look at the result on `/review.html` on the lane's own dev
+  server; when done press Record there (writes `src/data/model-versions.json` + the changed `public/model-sheets/`),
+  after merging main in, then check the stamped build = `git rev-list --count HEAD` + 1 before the last commit.
+  `npm run sheets` rewrites all sheets headlessly if needed. Tests + typecheck green, push to main, report to the
+  coordinator, preview_stop the dev server. Questions to Nathan come with pictures (sheet crops).
+
+## Lane J2: performance leftovers (2026-10-14; branch `perf`, port 5373; pushed to main)
+- **Frosted background (render/viewer.ts `frostCull`):** the frosted film is three's transmission material, and three
+  draws every opaque mesh a second time (4x MSAA, half float, viewport size) into the picture the film blurs. On the
+  iwagumi example (the only example with Frosted white) that pass was half the frame. Meshes inside the tank are now
+  left out of it unless the eye is outside one of the film's faces (from behind, or a film all round), via a per-frame
+  onBeforeRender hook that sets drawRange.count = -1 in off-screen passes only. Visible change, approved by Nathan
+  (2026-10-14, "frost change is fine"): plants and fish no longer cast a faint blurred shadow on the film
+  (`shots/j2_frost_before_after.png`, `j2_frost_zoom.png` in the perf worktree). Iwagumi GPU **43 -> 26 ms** at
+  1050x850 (timer queries, alternating frames); the film's pass itself still costs ~5-8 ms (see Open).
+- **Light output fields (render/build.ts envKey):** watts, tech, par, mapUnit only feed uniforms, so they no longer force a
+  full rebuild (iwagumi Power step 243 -> 158 ms; build 'same'). The ~100 ms left is `lightOut` in scene/lightout.ts
+  re-running for each new wattage (lane K2's file). test/incremental.test.ts pins it; incrementalCheck has a "light power" edit.
+- **Panel sync() (ui/panels.ts):** the store listener refreshes only the groups whose inputs changed (setup minus fish /
+  items / camera; species list; item kinds; camera; the selected item minus its position). Direct `sync()` calls from
+  the panel's own handlers stay full (they put back refused typed values). Per drag step **6-7 -> ~0.5 ms** (fish 0.9,
+  item 0.6, orbit 0.3, against 0.4 / 0.4 / 0 with the panel detached).
+- **Tried and dropped: plant depth pre-pass** (a depth-only copy of each plant, polygon offset 1/1, drawn first): 0 px
+  differ, but measured with alternating frames it made planted **slower** (22 -> 33 ms GPU); the first sequential runs
+  that looked like a 3-8 ms gain were load noise from other lanes. Lesson: on this shared machine, only A/B timings
+  measured with alternating frames count.
+- **Proof:** incrementalCheck.runAll 133 edits (121 incremental), 0 differ (one run had a single 1 px flicker on
+  paludarium / stone turn that did not repeat in two re-runs; no new code runs on paludarium); after merging main,
+  iwagumi + planted + split 57 edits, 0 differ.
+- **Open:** (1) the film's own transmission pass (~5-8 ms on iwagumi) can only go if the frost is drawn by our own shader
+  at lower resolution, which means changing the frost hook in render/lighting.ts (K2's file). (2) `lightOut` ~100 ms
+  per new wattage (K2). (3) Steady draw on non-frost big tanks is ~18-22 ms GPU at 1050x850, mostly the lit plant shader
+  (~7 ms on iwagumi); no change from J2's side found that helps.
+- Files touched: render/viewer.ts (frostCull + helpers), render/build.ts (envKey), render/incrementalCheck.ts (one
+  edit), ui/panels.ts (sync guard + listener), test/incremental.test.ts.
+
 ## Lane K2: light output follow-ups (2026-10-14; branch `light-output`, port 5383)
 - Owns scene/lightout.ts, test/lightout.test.ts, ui/lightHover.ts, reference/par-calibration-data.md, render/lighting.ts
   (carved out from J2), the Lighting rows in index.html / ui/panels.ts.
@@ -163,6 +216,12 @@ card stays the fallback and the picking size). `scene/validate.ts` accepts any `
   `src/data/model-versions.json` and `public/model-sheets/` with the change. The button only exists on the dev server (plugin
   `scripts/model-versions-plugin.mjs`); it stamps build = current commit count + 1, i.e. the commit you are about to make.
 - All 68 looks recorded as v1 at build 217 (stamped 216; another chat committed first, so check the number after pushing). Fingerprints held across reloads and at phone size in the app's browser.
+- **Anatomy audit v1** (2026-10-14, ChatGPT from the model sheets; `reference/model-anatomy-audit-v1.md`): 6 P0
+  (rebuild: cherry/amano/cleaner shrimp = fish tail + leg spikes; mystery/ramshorn/turbo snail = open shell sector,
+  shell floats over a slab foot), 26 species P1 (fin layout: median fins drawn as short rear paddles, two-dorsal species
+  merged into one, livebearer gonopodia, frog/newt limbs), 25 P2 (proportions). Spot-checked turbo + cherryshrimp
+  sheets: findings hold. Its "keep" list (gourami feelers, angel streamers, barbels, axolotl 3 gill pairs, puffer
+  fins) and constraints are binding for the fix lanes. Not started; Nathan to pick lane order.
 - **Pre-rendered sheets for reviewers without WebGL** (2026-10-14: ChatGPT's cloud browser has WebGL disabled and saw
   nothing): `public/model-sheets/` = one labelled JPEG per look (title, sci name, id, size, version; 4 views x 2 lights,
   1710 x 556) + a static `index.html` gallery, live at tanklook.com/model-sheets/. review.html links to it and, with
