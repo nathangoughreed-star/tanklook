@@ -70,7 +70,7 @@ Split from lane S. Only the PLANS / her() entries of these species in `src/art/f
   pinch-zoom locked or not. Then flip IOS_FLAG. Lane Q leftover fixed: selection boxes (lines drawn over everything) are hidden in WebXR AR and never exported. Known: plant colours may read duller under Quick Look's lighting than in
   the viewer (its own IBL); fish fins are translucent cards, faint from far.
 
-## Lane W: Android app (2026-10-14; PARKED, Nathan: "remember it for a later date"; prompt `prompts/lane-W-android-app.md`)
+## Lane W: Android app (2026-10-14; OPENED same day, Nathan: "start work on the android app"; prompt `prompts/lane-W-android-app.md`)
 - **Route: Trusted Web Activity (TWA)** around https://tanklook.com/ (Bubblewrap or PWABuilder). Real Chrome, so WebXR
   AR keeps working and pushes to main update the app with no store release. **Not Capacitor**: Android WebView has no
   WebXR (AR would need a native ARCore plugin); revisit only if offline use beats AR. Estimate: 1-2 days of code; the
@@ -872,7 +872,7 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | S2 fish batch 4 | (worktree removed) | - | - | DONE (`1399de7`, build 351); swordtail kept at 120 mm (Nathan) |
 | V zoom out further | `../Glass-Box-zoom-out` / `zoom-out` | 5523 | `scene/validate.ts` LIMITS.zoom, `render/camera.ts`, the zoom / framing parts of `render/viewer.ts`, the cZoom slider in `index.html` / `ui/panels.ts`, `interact/pointer.ts` wheel / pinch | DONE (see Lane V section); files free. Also touched (free files): `render/build.ts` room size + ceiling, `render/viewmap.ts` caption, `scene/orbit.ts` |
 | T iPhone AR | `../Glass-Box-ar` / `ar-view` (lane Q's, Q is done) | 5483 | new `render/arUsdz.ts` + test, `render/ar.ts` | DONE for now (`3085106`); iPhone button hidden behind `?ar=ios` until an iPhone test, then IOS_FLAG = false; files free |
-| W Android app | not made yet (`../Glass-Box-android` / `android`) | next free | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | PARKED for later (prompt `prompts/lane-W-android-app.md`); after P's files are free, mind V's `index.html` / `panels.ts` edits |
+| W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | OPENED 2026-10-14 (prompt `prompts/lane-W-android-app.md`); step 1 landscape layout; mind V's `index.html` / `panels.ts` edits |
 Free (no lane): `render/build.ts`, `render/items.ts`, `scene/items.ts`, `render/viewer.ts`, `main.ts`, `render/lighting.ts`,
 `render/coral3d.ts`, `render/shrimp3d.ts` / `art/shrimps.ts`, `scene/share.ts`, herps / herp3d / snails / snail3d. A one-line hook in a free file is fine; name it
 in your section. Where to read: anatomy audit `reference/model-anatomy-audit-v1.md`; model versions "Model review sheet"
