@@ -2,6 +2,36 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane T: AR view on iPhone, AR Quick Look (2026-10-14; branch `ar-view`, port 5483; pushed to main, HIDDEN behind `?ar=ios`)
+- Built: `src/render/arUsdz.ts` + `test/arUsdz.test.ts`; `attachAR` in `src/render/ar.ts` now picks WebXR (Android, lane Q,
+  unchanged) or AR Quick Look (`a.relList.supports('ar')`, iPhone/iPad Safari). Desktop and non-AR Android see no button.
+- Gate: `IOS_FLAG` in ar.ts: the iPhone button shows only with `?ar=ios` in the URL until someone tests on a real iPhone
+  (Nathan had none at hand 2026-10-14). After a good test: set `IOS_FLAG = false`.
+- Tap: "Preparing AR…", then a .usdz Blob opens through `<a rel="ar" href=blob#allowsContentScaling=0><img></a>` (auto-click;
+  a small panel keeps the Size check line and an "Open in AR" link in case the auto-open is blocked after the async export).
+  `allowsContentScaling=0` should lock true size; unverified on a blob URL, check on the phone.
+- Export = a COPY of the current viewport's build (viewer untouched): drops person / room floor / wall / terrain dots
+  (`roomObjects`, shared with prepScene), outline hulls, lines, the animals' decal shadows, the snails' invisible hit cards.
+  Every mesh -> MeshStandardMaterial: glass opacity >= 0.1, water volume -> light tint (0.12), frost -> white sheet 0.8,
+  glow -> emissive, soft fin cards (alpha-to-coverage) -> alpha blend. Double-sided parts get a reversed copy.
+- Vertex colours (Quick Look ignores them): parts without a map are baked into one small atlas, one 8 px tile per part
+  holding the plane through its colours (top 2 principal axes; bilinear = exact; worst residual 0.014 on Planted community).
+  Parts with a map keep the colours' mean as a tint (fish form shading; Quick Look lights the model itself).
+- Size: meshoptimizer (new dependency, lazy chunk `meshoptimizer/simplifier`) at 0.5 mm, after welding triangle soups;
+  plant leaves barely simplify (open strips; Permissive mode made sticks), so over budget plants keep a share of their
+  pieces, carpets first (>= 1000 pieces, down to 20 %), then stem plants. Budget 250k triangles (Nathan chose ~25 MB over
+  15 MB from a side-by-side picture). Numbers rounded (0.1 mm, normals 0.01) and the zip repacked 64-byte aligned (three's
+  own alignment code is off); textures max 512 px; canvas toBlob made synchronous during export (Chromium's idle-time
+  toBlob cost ~1 s per texture).
+- Measured on desktop (quiet machine): Planted community (40 breeder, 40 fish) 810k -> 254k tris, 25.7 MB, 2.3-2.4 s
+  (carpets 20 %, stem leaves 94 %); Iwagumi 26 MB 2.8-3.3 s; Reef 24.6 MB 3.2 s; Paludarium 17 MB 2.8 s; Terrarium 11.7 MB
+  1.3 s; Betta 2.6 MB 0.9 s. File checked: stored, every file 64-byte aligned, model.usda first, loads in three's
+  USDZLoader, bbox 0.94 m wide, stand foot at y = 0.
+- Dev: `(await import('/src/render/arUsdz.ts')).exportUSDZ(__gb.viewer.current)` -> { blob, stats } on the dev page.
+- OPEN (needs an iPhone): checklist: button shows with ?ar=ios, Quick Look opens (auto or via the panel link), tank stands
+  on the floor at the right height, size right against a tape measure, glass / water / fish look right, the stand shows,
+  pinch-zoom locked or not. Then flip IOS_FLAG. Known: plant colours may read duller under Quick Look's lighting than in
+  the viewer (its own IBL); fish fins are translucent cards, faint from far.
 
 ## Background pictures (2026-10-14; main checkout, pushed to main)
 Nathan: custom backgrounds from an uploaded image, with stretch / fill / fit, different backgrounds on different sides, one
