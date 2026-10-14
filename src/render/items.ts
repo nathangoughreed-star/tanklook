@@ -6,7 +6,7 @@
 import * as THREE from 'three';
 import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng } from '../art/paint';
-import { PLANT_ASPECT, type PlantType } from '../art/plants';
+import { PLANT_ASPECT, isCarpet, type PlantType } from '../art/plants';
 import { CARPET_H, CARPET_W, itemSink, stoneDims, woodLimbs, type Limb } from '../scene/items';
 import { D2R } from '../scene/physics';
 import { bowlDims, footprint, shapeOf } from '../scene/shape';
@@ -222,7 +222,7 @@ function plantGeo(type: PlantType, seed: number, h: number, spot?: (lx: number, 
       cards.push(pg.translate(0, hh / 2, 0).rotateY(turn + k * Math.PI / 2).translate(x, y, z));
     }
   };
-  if (type === 'carpet') {
+  if (isCarpet(type)) {
     const r = rng(seed), rad = h / 2 - CARPET_W * 0.35, n = Math.max(3, Math.round(h * h / 4200));
     for (let i = 0; i < n; i++) {
       const a = r() * Math.PI * 2, d = Math.sqrt(r()) * Math.max(0, rad), x = Math.cos(a) * d, z = Math.sin(a) * d;
@@ -424,13 +424,13 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
   const ground = groundHeight(S, T, it.x, it.depth), y = ground + it.lift - itemSink(it);
   let m: THREE.Mesh;
   if (it.kind === 'plant') {
-    const type = it.variant as PlantType, carpet = type === 'carpet';
+    const type = it.variant as PlantType, carpet = isCarpet(type);
     const h = carpet ? it.size : Math.min(it.size, T.H - y - 15); // stops at the water line (the old layouts' rule)
     if (h < 15) return null;
     const c = Math.cos(it.yaw * D2R), s = Math.sin(it.yaw * D2R);
     // a carpet hugs the ground under each card: its key carries the spot (rebuilt only while it moves); the rest key on
     // the exact height they are built with (a rounded one let two near-equal plants share the first one's mesh)
-    const k = carpet ? `carpet|${it.seed}|${it.size}|${it.x}|${it.depth}|${it.yaw}|${it.lift}|${T.shape}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}` : `${type}|${it.seed}|${h}`;
+    const k = carpet ? `${type}|${it.seed}|${it.size}|${it.x}|${it.depth}|${it.yaw}|${it.lift}|${T.shape}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}` : `${type}|${it.seed}|${h}`;
     // near the glass a card is cut down to the width it has room for, so the carpet runs right up to the glass without
     // poking through; a card past the edge line is mirrored back in by as much (keeping the edge thick), and one more
     // than half a card past it is left out
@@ -446,7 +446,7 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
     const solid = has3DPlant(type), k3 = (solid ? `3d${plant3d.sway ? 's' : ''}|` : '') + k;
     // a 3D carpet is built once per (seed, size), then only set on the ground here
     const make = () => !solid ? plantGeo(type, it.seed, h, carpet ? at : undefined) : !carpet ? plantGeometry(type, it.seed, h)
-      : carpetOnGround(plants.get(`3d${plant3d.sway ? 's' : ''}|carpet|${it.seed}|${it.size}`) ?? remember(plants, `3d${plant3d.sway ? 's' : ''}|carpet|${it.seed}|${it.size}`, plantGeometry(type, it.seed, h), 300, dispose), at);
+      : carpetOnGround(plants.get(`3d${plant3d.sway ? 's' : ''}|${type}|${it.seed}|${it.size}`) ?? remember(plants, `3d${plant3d.sway ? 's' : ''}|${type}|${it.seed}|${it.size}`, plantGeometry(type, it.seed, h), 300, dispose), at);
     const g = plants.get(k3) ?? remember(plants, k3, make(), 300, dispose);
     if (carpet) g.computeBoundingBox();
     m = new THREE.Mesh(g, solid ? plantMaterial(T) : cardMaterial('plant:' + type, plantTexture(type), S.render.edge));

@@ -11,6 +11,7 @@ import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene, TANK_PRESETS } from '../scene/defaults';
 import { KINDS, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, itemDims, makeItem, starterItems } from '../scene/items';
+import { isCarpet } from '../art/plants';
 import { tankDiff } from './diff';
 import { attachTypeIns, parseLen, plainNum, tidy, type TypeIn } from './typein';
 import {
@@ -773,7 +774,7 @@ Cancel, then change the name, to keep both.`)) return;
       let best = -1;
       for (let k = 0; k < 16; k++) {
         const x = T.L * (0.15 + r() * 0.7), d = T.D * (0.2 + r() * 0.6);
-        const gap = Math.min(...s.items.filter(q => q.kind !== 'plant' || q.variant !== 'carpet').map(q => Math.hypot(q.x - x, q.depth - d)), 1e6) - Math.abs(x - T.L / 2) * 0.15;
+        const gap = Math.min(...s.items.filter(q => q.kind !== 'plant' || !isCarpet(q.variant)).map(q => Math.hypot(q.x - x, q.depth - d)), 1e6) - Math.abs(x - T.L / 2) * 0.15;
         if (gap > best) { best = gap; it.x = x; it.depth = d; }
       }
       clampItem(it, T, s); s.items.push(it);
@@ -1159,7 +1160,7 @@ Cancel, then change the name, to keep both.`)) return;
     if (it) {
       const v = LIBRARY[it.variant], [l, h, w] = itemDims(it);
       $('itemName').innerHTML = `${esc(v.label)} <i>${fmt(l)} × ${fmt(h)} high × ${fmt(w)}</i>`;
-      $('iSizeLab').textContent = it.kind === 'plant' ? (it.variant === 'carpet' ? 'Width' : 'Height') : it.variant === 'manzanita' ? 'Height' : it.kind === 'coral' ? 'Width' : 'Length';
+      $('iSizeLab').textContent = it.kind === 'plant' ? (isCarpet(it.variant) ? 'Width' : 'Height') : it.variant === 'manzanita' ? 'Height' : it.kind === 'coral' ? 'Width' : 'Length';
       const probe = { ...it, size: 1e6 }; clampItem(probe, A);
       $('iSize').min = String(Math.min(v.min, probe.size)); $('iSize').max = String(probe.size);
       setVal('iSize', it.size); setOut('oISize', fmt(it.size));
