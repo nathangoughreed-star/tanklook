@@ -1949,19 +1949,27 @@ no licensing, but stays illustrated).
 
 ## Still open (rewritten 2026-10-14, lane D)
 
-Waiting on Nathan, one picture page each in `shots/review/` (index `shots/review/REVIEW.md`; shots/ is local, gitignored):
-- R1 3D amphibians: accept, or fix the frog thighs (tubes) and the far-eye knob at 50°?
-- R2 head-on marking wrap (discus, tiger barb, clown loach, harlequin, GBR): pass? (the harlequin patch smudges head-on)
-- R3 3D rollout batch 1 (14 fish): pass? (ember / chili blocky head-on, honey gourami belly block, betta fin slab)
-- R4 delete the unused hand-drawn `drawTetra` / `drawGourami` (art/placeholder.ts)?
-- R5 3D shrimp: accept, or fix the comb-like leg fan head-on?
-- R6 3D snails: accept? (mystery spire low at the back, pale lip notch)
-- R7 male / female looks and sizes, 11 species (re-shot after the honey stripe and swordtail 115 mm changes)
-- R8 hardscape generators good enough to show? (coconut doorway sawtooth, thin wood, flat end caps)
-- R9 wall spill: follow the actual beams instead of the box-to-fixture model?
-- R10 adult sizes of all 57 species (fresh, salt, herps, inverts; females separate)
-- R11 tick Enforce HTTPS in GitHub Pages settings (http still serves 200, no redirect)
-- R12 shareable scene URLs (not built)
+Review pack R1-R12 (`shots/review/REVIEW.md`) decided 2026-10-14 (Nathan: "go ahead with the models, take the
+recommendation for the rest"); all done by lane D in `models-fix`:
+- R1 frogs: thighs = tucked teardrops with smooth normals, eyes set deeper with a lid mound (`250f4d7`; 5 herps v2,
+  build 287). The far eye still shows over the head at 50°: accepted as anatomy (frog eyes bulge above the skull).
+- R2 / R3 fish (`6176008`, versions `66d2dba` build 309): honey gourami soft breast, discus bands cleaner head-on,
+  betta median fins drape (`Plan.drape`, `drapedCard`, one-line hook in build.ts; the card is not fingerprinted, so
+  the betta's version did not bump), harlequin `Plan.sharp`; generic: outline thins on fish small on screen (1 px
+  floor), fish texture anisotropy 16. Accepted as is: ember / chili head-on (a 40 px fish blown up 7x by the sheet,
+  not a model fault), harlequin patch (foreshortened, roughly true).
+- R4 `drawTetra` / `drawGourami` deleted (`352f441`). R7 sexes, R10 sizes: pass.
+- R8 hardscape (`250f4d7`): coconut doorway a clean ragged rim with shell thickness; chunkier driftwood trunks and limb
+  roots; worn tapered limb tips. Example thumbnails re-shot (betta bowl, terrarium, paludarium).
+- R9 wall spill: NOT built (lane D's call). The broad wash stands in fairly for real room spill (mostly bounce off the
+  water and substrate); with the light hung high the beams mostly miss a wall 50 mm behind the tank; and it would mean
+  editing K2's lighting.ts. Revisit only if the wash looks wrong beside the light map.
+- R12 shareable scene URLs: recommended as its own small lane (deflate the ~9 KB scene with CompressionStream,
+  base64url in the `#` = ~3-4 KB; Share button, decode on load, "opened a shared tank" note with Undo; ui + scene
+  files). The most useful thing for showing the tool to people.
+- R5 shrimp, R6 snails: rebuilt by lanes M and L. R11: http already 301-redirects to https.
+- Leftover (not done, cheap): `shrimpMarksCanvas` (fishgen) and fish3d's `p.glass` branch may be dead now that shrimp
+  have their own builder; check `Plan.glass` users before pruning.
 First-visit audit: `shots/audit/AUDIT.md`, 53 findings (4 S1, 20 S2, 29 S3) with shots; fix lane G works from it.
 The S1s: water level piles every fish at x = 12 mm; phone label overflow widens the page; aquascape drag erratic in the
 straight-on view; first visit is an empty box (no pointer to Examples / Animals).
