@@ -29,6 +29,23 @@ Living file. Project state and dated decisions go here; update in place.
 - Not checked: the clipboard itself (the app's browser pane denies it; the prompt fallback ran) and the single-file build
   run from disk (the pane shows file:// as a static snapshot); the bundle holds the share code.
 
+## Lane O: anatomy audit P1, non-fish animals (2026-10-14; branch `herps-p1`, port 5463; Nathan approved all five sheets; pushed to main)
+Owns `src/art/herps.ts`, `src/render/herp3d.ts` (lane L's snail files not touched). Models v3 at build 297.
+- **Hermit crab:** the shell slides sideways (herp3d: by the mean of `shellMesh`'s `userData.lip` z) so its off-axis
+  aperture is on the crab's midline, and forward (`HERMIT_SHELL.at` 0.33 -> 0.43, size 0.56 / tall 0.5) so it sits just
+  behind the legs; the body outline runs back into the shell. Claws: `Limb3D.claw` = palm (flattened ellipsoid) + fixed
+  and hinged fingers meeting at the tips (`clawGeometry`). Legs: `Limb3D.seg` = 4 joints, each segment swelling between
+  narrow joints, the joints ringed in the given colour (orange-gold). The 2D card draws the palm as a fat last joint.
+- **Frogs:** `Limb3D.blunt` = jointed toes (knuckle, round tip) on all three frogs; toe discs (`pads`) on the dart frog
+  (0.012) and tree frog (0.017). `FrogSpec.torso` / `wid` / `rump` let a species own its outline: tree frog = neck waist
+  behind a broad head; toad = short broad body, the hip forward (`rump` 0.1). Toad: `Limb3D.web` (webbing out to 0.9 of
+  the hind toes, both faces, `webGeometry`) and `Herp3D.warts` (raised bumps displaced out of the body loft, which goes
+  to 200 x 120 for it; lit crowns / shaded feet baked into the vertex colours since the body is unlit).
+- **Newt:** `SalSpec.swimTail` = own side outline (rounded snout, a tail holding the trunk's depth to a short point),
+  broader trunk and rounded head in `wid`, blunt toes. The axolotl is unchanged.
+- Before/after sheets: `shots/herps-p1/` (lane worktree only, not committed). Open: nothing left from the audit's P1
+  rows for these five.
+
 ## Final check before showing (2026-10-14; main `fe28ad3`; no src/ edits)
 - `shots/final/FINAL.md` (main checkout only, gitignored): audit 53 = **46 fixed, 7 partly, 0 not fixed, 0 regressed**; 0 console
   errors; no horizontal scroll at 375 px. Edits take 2 frames (33 ms) on the real GPU on every example; moving a Reef live rock
@@ -692,6 +709,7 @@ control and hook) and `src/scene/water.ts`.
 Lane Q opened 2026-10-14 (Nathan's idea): AR view, WebXR immersive-ar on his Galaxy S24+, tank at true size.
 `../Glass-Box-ar` / `ar-view`, launch config `ar-view` 5483; owns new `src/render/ar.ts` + test, minimal hooks in
 `render/viewer.ts`, one AR button in `index.html` / `src/ui` (lane P owns those: small edits only). iPhone is a later phase.
+Lane O DONE (`e4be598`; hermit, frogs, toad, newt at v3). `art/herps.ts`, `render/herp3d.ts` free.
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_d0390f66-339c-4fa1-ab38-43e9c2a35958`
 ("Lanes coordinator 2", took over 2026-10-14 from `local_e1923781`). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
 and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says
