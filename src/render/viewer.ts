@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 import { fishTL, speciesOf } from '../data/species';
 import { D2R, clamp, depthRatio, floorY, fmtLen, tankUnderside } from '../scene/physics';
+import { eyeDist, lensZoom } from '../scene/orbit';
 import { tableOn, tableRing } from '../scene/table';
 import { footprint } from '../scene/shape';
 import type { Store } from '../scene/store';
@@ -81,6 +82,9 @@ export function exportCrop(content: { x0: number; x1: number; y0: number; y1: nu
   return { x, y, w: Math.min(W, Math.ceil(x1 + m)) - x, h: Math.min(H, Math.ceil(y1 + m)) - y };
 }
 
+/** The orbit centre (placeCamera looks at it), so tan units are measured from the direction to it. */
+const pivot = (T: Tank) => new THREE.Vector3(T.L / 2, T.H / 2, -T.D / 2);
+
 /** The faces of a frosted sheet as planes whose normal points away from the tank's centre (outside = the room side). */
 function outwardPlanes(m: THREE.Mesh, T: Tank): THREE.Plane[] {
   const pos = m.geometry.attributes.position, idx = m.geometry.index, n = idx ? idx.count : pos.count;
@@ -131,7 +135,7 @@ export class Viewer {
   }
   /** Image window each view was last drawn with, tan units (centre and half-size). */
   private shown: { cx: number; cy: number; hx: number; hy: number }[] = [];
-  private anchor: { i: number; nx: number; ny: number; u: number; v: number } | null = null;
+  private anchor: { i: number; nx: number; ny: number; u: number; v: number; r: number } | null = null;
   /**
    * Call before a wheel zoom in view i: the next draw pans so the point under the pointer stays under it (Nathan
    * 2026-10-13). Ticks that land before that draw keep the first tick's point. A pinch passes where its fingers' midpoint
@@ -141,7 +145,8 @@ export class Viewer {
     const vp = this.vps[i], w = this.shown[i]; if (!w || this.anchor?.i === i) return;
     const r = this.host.getBoundingClientRect(), n = (x: number, y: number) => [(x - r.left - vp.x) / vp.w * 2 - 1, 1 - (y - r.top - vp.y) / vp.h * 2];
     const [nx, ny] = n(clientX, clientY), [fx, fy] = n(fromX, fromY);
-    this.anchor = { i, nx, ny, u: w.cx + fx * w.hx, v: w.cy + fy * w.hy };
+    // r: eye to orbit centre, so a zoom that steps the eye back (below LENS_ZOOM_MIN) can rescale the point at the tank's depth
+    this.anchor = { i, nx, ny, u: w.cx + fx * w.hx, v: w.cy + fy * w.hy, r: vp.cam.position.distanceTo(pivot(vp.T)) };
   }
   /** Ease every view back to its framing. */
   resetPan() {
@@ -269,8 +274,8 @@ export class Viewer {
     // the default tank was a small box on top of the cabinet)
     const boxes = active.map(vp => frameStraightOn(vp.T, vp.S.camera, vp.w / vp.h, headroom(vp.S)));
     // locked (or one tank): one FOV for all, so sizes stay directly comparable; unlocked: each view frames itself
-    const shared = fovFor(Math.max(...boxes.map(b => b.t)), active[0].S.camera.zoom);
-    const fovOf = (k: number) => (sc.camLock || active.length === 1 ? shared : fovFor(boxes[k].t, active[k].S.camera.zoom));
+    const shared = fovFor(Math.max(...boxes.map(b => b.t)), lensZoom(active[0].S.camera));
+    const fovOf = (k: number) => (sc.camLock || active.length === 1 ? shared : fovFor(boxes[k].t, lensZoom(active[k].S.camera)));
     r.setScissorTest(true);
     r.setViewport(0, 0, w, h); r.setScissor(0, 0, w, h);
     r.setClearColor(new THREE.Color(getComputedStyle(this.host).getPropertyValue('--stage-gap').trim() || '#eef0f3')); r.clear();
@@ -302,8 +307,8 @@ export class Viewer {
     // wheel zoom: pan so the point that was under the pointer is under it again (zoomAt)
     const a = this.anchor, ak = a ? active.findIndex(v => v.i === a.i) : -1; this.anchor = null;
     if (a && ak >= 0) {
-      const { hx, hy, c } = frame(ak), vp = active[ak];
-      this.setPan(a.i, (c.cx + a.nx * hx - a.u) * vp.w / (2 * hx), (a.v - c.cy - a.ny * hy) * vp.h / (2 * hy));
+      const { hx, hy, c } = frame(ak), vp = active[ak], k = a.r / vp.cam.position.distanceTo(pivot(vp.T));
+      this.setPan(a.i, (c.cx + a.nx * hx - a.u * k) * vp.w / (2 * hx), (a.v * k - c.cy - a.ny * hy) * vp.h / (2 * hy));
     }
     this.content = [];
     for (const [k, vp] of active.entries()) {
@@ -393,7 +398,7 @@ export class Viewer {
     if (!sA || !m) return null;
     const n = new THREE.Vector3(0, 0, 1).applyQuaternion(m.quaternion), v = A.cam.position.clone().sub(m.position).normalize();
     return {
-      fish: f, ...sA, formula: depthRatio(A.S.camera.dist, f.depth),
+      fish: f, ...sA, formula: depthRatio(eyeDist(A.S.camera), f.depth),
       sideAngle: Math.acos(Math.min(1, Math.abs(n.dot(v)))) / D2R,
     };
   }

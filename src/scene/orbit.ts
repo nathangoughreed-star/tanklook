@@ -4,13 +4,24 @@ import { D2R } from './physics';
 import { cornerWalls, wallPlane } from './table';
 import type { CameraSettings, TankSetup } from './types';
 
+/**
+ * Zoom below this steps the eye back instead of widening the lens (lane V, Nathan 2026-10-14: "allow farther zooming
+ * out"): the field of view stays at this zoom's and the eye distance grows by LENS_ZOOM_MIN / zoom, the same for every
+ * tank, so locked views stay like-for-like. At and above it zoom is a pure field-of-view change at the fixed eye.
+ */
+export const LENS_ZOOM_MIN = 0.5;
+/** The zoom the lens (field of view) uses. */
+export const lensZoom = (c: CameraSettings) => Math.max(c.zoom, LENS_ZOOM_MIN);
+/** Eye to front glass, mm, straight on: the Eye distance, stepped back when zoomed out past LENS_ZOOM_MIN. */
+export const eyeDist = (c: CameraSettings) => (c.zoom >= LENS_ZOOM_MIN ? c.dist : c.dist * LENS_ZOOM_MIN / Math.max(c.zoom, 0.01));
+
 /** How close the eye may come to the wall's room face, mm. */
 export const WALL_CLEAR = 150;
 
 /** True when the eye for camera `c` is on the room side of this tank's wall (or there is no wall). */
 export function eyeClear(S: TankSetup, c: CameraSettings) {
   if (!S.wall.show) return true;
-  const T = S.tank, r = c.dist + T.D / 2, az = c.az * D2R, el = c.el * D2R, w = wallPlane(S, T);
+  const T = S.tank, r = eyeDist(c) + T.D / 2, az = c.az * D2R, el = c.el * D2R, w = wallPlane(S, T);
   const x = T.L / 2 + r * Math.sin(az) * Math.cos(el), z = -T.D / 2 + r * Math.cos(az) * Math.cos(el);
   const s = S.wall.side;
   if (s === 'corner') { const cw = cornerWalls(S, T); return [cw.left, cw.right].every(w => w.n[0] * x + w.n[1] * z > w.c + WALL_CLEAR); }

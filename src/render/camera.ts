@@ -1,12 +1,13 @@
 // Camera rule: the eye is a fixed physical distance from the front glass, the same for every tank.
 // Zoom only changes field of view (crop), never perspective. Pure apart from three.js maths, so it is testable.
 import * as THREE from 'three';
+import { eyeDist, lensZoom } from '../scene/orbit';
 import { D2R } from '../scene/physics';
 import type { CameraSettings, Tank } from '../scene/types';
 
 /** Orbit about the tank centre; radius chosen so that straight-on the eye is exactly `dist` from the front glass. */
 export function placeCamera(cam: THREE.PerspectiveCamera, T: Tank, c: CameraSettings) {
-  const az = c.az * D2R, el = c.el * D2R, P = new THREE.Vector3(T.L / 2, T.H / 2, -T.D / 2), r = c.dist + T.D / 2;
+  const az = c.az * D2R, el = c.el * D2R, P = new THREE.Vector3(T.L / 2, T.H / 2, -T.D / 2), r = eyeDist(c) + T.D / 2;
   cam.position.set(P.x + r * Math.sin(az) * Math.cos(el), P.y + r * Math.sin(el), P.z + r * Math.cos(az) * Math.cos(el));
   cam.lookAt(P); cam.updateMatrixWorld();
 }
@@ -37,7 +38,7 @@ export const neededTan = (...a: Parameters<typeof frameBox>) => frameBox(...a).t
  */
 const refCam = new THREE.PerspectiveCamera();
 export function frameStraightOn(T: Tank, c: CameraSettings, aspect: number, headroom: number, bottom = 0, extra: THREE.Vector3[] = []) {
-  placeCamera(refCam, T, { ...c, az: 0, el: 0 });
+  placeCamera(refCam, T, { ...c, az: 0, el: 0, zoom: lensZoom(c) }); // the lens is sized from the Eye distance, never the stepped-back eye
   return frameBox(refCam, T, aspect, headroom, bottom, extra);
 }
 

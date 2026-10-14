@@ -602,11 +602,15 @@ function addPerson(sc: THREE.Scene, S: TankSetup, T: Tank) {
   m.position.set(p.x, p.floor, p.z); m.name = 'person'; m.userData.room = true; sc.add(m);
 }
 
+/** Room wall width and floor size, mm: big enough that nothing runs out at the minimum zoom (lane V, 2026-10-14). */
+const ROOM_SPAN = 40000;
 /** Plain room floor under the stand/wall, so the room doesn't float in a void. One-sided (invisible from below). */
 function addFloor(sc: THREE.Scene, S: TankSetup, T: Tank) {
   if (!S.stand.show && !S.wall.show && !S.person.show) return;
+  // 40 m across so zoomed all the way out (eye stepped back, lane V) its edge never shows; scaled, not resized,
+  // because render/ar.ts finds the floor by its 8000 geometry width
   const f = new THREE.Mesh(new THREE.PlaneGeometry(8000, 8000), basic(0xb3aca1));
-  f.rotation.x = -Math.PI / 2; f.position.set(T.L / 2, floorY(T, S.render, S.stand) - 0.5, -T.D / 2);
+  f.scale.setScalar(ROOM_SPAN / 8000); f.rotation.x = -Math.PI / 2; f.position.set(T.L / 2, floorY(T, S.render, S.stand) - 0.5, -T.D / 2);
   f.userData.room = true; sc.add(f);
 }
 
@@ -614,18 +618,26 @@ function addFloor(sc: THREE.Scene, S: TankSetup, T: Tank) {
 function addWall(sc: THREE.Scene, S: TankSetup, T: Tank) {
   if (!S.wall.show) return;
   const { L, D } = T, wp = wallPlane(S, T), fy = floorY(T, S.render, S.stand);
-  const ROOM_H = 2700, SPAN = 6000, SKIRT_H = 90, SKIRT_D = Math.max(1, Math.min(14, wallGap(S))); // a skirting board thinner than the gap
+  const ROOM_H = 2700, SPAN = ROOM_SPAN, SKIRT_H = 90, SKIRT_D = Math.max(1, Math.min(14, wallGap(S))); // a skirting board thinner than the gap
   const g = new THREE.Group();
   const panel = (w: THREE.Group, off: number) => { // off: shift along the wall (a corner wall starts at the corner)
     const wall = new THREE.Mesh(new THREE.PlaneGeometry(SPAN, ROOM_H), basic(S.wall.color, { userData: { wallPaint: true } })); // normal +z, toward the tank; recoloured in place (patchLook)
     wall.position.set(off, ROOM_H / 2, 0); wall.userData.room = true; w.add(wall);
     const skirt = shadedBox(SPAN, SKIRT_H, SKIRT_D, 0xf1efe9); skirt.position.set(off, SKIRT_H / 2, SKIRT_D / 2); w.add(skirt);
   };
+  // a ceiling at the wall's top, so zoomed far out the room has a lid instead of the space beyond; one-sided (seen
+  // only from below), in the (first) wall group so whatever hides the walls (the AR view) hides it too
+  const ceiling = (w: THREE.Group) => {
+    const c = new THREE.Mesh(new THREE.PlaneGeometry(SPAN, SPAN), basic(0xf3f1ec));
+    c.rotation.x = Math.PI / 2; c.position.set(L / 2, fy + ROOM_H, -D / 2); c.userData.room = true;
+    w.updateMatrixWorld(true); w.attach(c);
+  };
   if (S.wall.side === 'corner') { // each wall from the corner out into the room; local +x of a wall turned by a is (cos a, -sin a)
     const cw = cornerWalls(S, T);
     for (const a of [Math.PI / 4, -Math.PI / 4]) {
       const w = new THREE.Group(); panel(w, a > 0 ? -SPAN / 2 : SPAN / 2);
       w.position.set(cw.corner[0], fy, cw.corner[1]); w.rotation.y = a; sc.add(w);
+      if (a > 0) ceiling(w);
     }
     return;
   }
@@ -633,7 +645,7 @@ function addWall(sc: THREE.Scene, S: TankSetup, T: Tank) {
   if (S.wall.side === 'back') g.position.set(L / 2, fy, wp.back);
   else if (S.wall.side === 'right') { g.position.set(wp.right, fy, -D / 2); g.rotation.y = -Math.PI / 2; }
   else { g.position.set(wp.left, fy, -D / 2); g.rotation.y = Math.PI / 2; }
-  sc.add(g);
+  sc.add(g); ceiling(g);
 }
 
 /** World position of floor-plan point (x, d) on ground at height y; in a bowl (floor radius rb > 0) pushed out from the axis to meet the glass at that height. */

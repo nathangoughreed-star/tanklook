@@ -25,7 +25,7 @@ export const LIMITS = {
   bgArc: [20, 360] as const,      // degrees of a round tank's shell the background covers
   az: [-180, 180] as const,
   el: [-20, 85] as const,
-  zoom: [0.5, 12] as const,
+  zoom: [0.25, 12] as const, // below 0.5 the eye steps back (scene/orbit.ts eyeDist); was 0.5 before 2026-10-14, older readers clamp
   count: [1, 12] as const,                   // above 6 only reachable with the optimised spot pattern
   rows: [1, 4] as const,
   spacing: [0, 1500] as const,     // mm, 0 = auto
