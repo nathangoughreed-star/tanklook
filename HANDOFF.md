@@ -662,6 +662,9 @@ opened 2026-10-14 for FINAL.md items 1-6 (status line off-screen, phone split ta
 terrain button / eye map, water re-raise height, Start from stuck on reef): `../Glass-Box-final-fixes` / `final-fixes`,
 launch config `final-fixes` 5473; owns `src/style.css`, `index.html`, `src/ui/panels.ts` (except lane N's Share
 control and hook) and `src/scene/water.ts`.
+Lane Q opened 2026-10-14 (Nathan's idea): AR view, WebXR immersive-ar on his Galaxy S24+, tank at true size.
+`../Glass-Box-ar` / `ar-view`, launch config `ar-view` 5483; owns new `src/render/ar.ts` + test, minimal hooks in
+`render/viewer.ts`, one AR button in `index.html` / `src/ui` (lane P owns those: small edits only). iPhone is a later phase.
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_d0390f66-339c-4fa1-ab38-43e9c2a35958`
 ("Lanes coordinator 2", took over 2026-10-14 from `local_e1923781`). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
 and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says
