@@ -2,6 +2,23 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane X: anatomy audit P2, freshwater mid-water fish (2026-10-14; branch `fish-fins`, port 5503; Nathan approved both sheets; pushed to main)
+PLANS entries only in `src/art/fishgen.ts`; no new generic parameters; v2 at build 372 (13 looks).
+- **Characins** (neon = art `tetra`, cardinal, ember, rummynose): `MedianFin` dorsal mid-back, short base with a
+  swept rear point (`tip` point, `trail`, low `drop`); anal on a long low base; slimmer rear body and a narrow
+  peduncle (`peak` ~0.64-0.66, `ped` ~0.03); blunter head (`snout` 0.45-0.6); small mouth line (`gape` ~0.022).
+  Neon / cardinal tails: lyre `cut` 0.5 (softer fork). Ember: `depth` 0.26 -> 0.24.
+- **chili:** shorter, softer head (`snout` 0.6), smoother peduncle, small pointed dorsal / anal.
+- **danio:** dorsal moved back over the anal, upturned oblique mouth (`mouth` -0.025, `gape` + `gapeDrop` 0.012),
+  fine barbels (`barbels` 0.018). **cpd (+ ~f):** `snout` 0.75, moderate fork (lyre `cut` 0.38).
+- **cherrybarb:** male slimmer (`depth` 0.26; female keeps 0.31), taller pointed dorsal. **tigerbarb:** big
+  triangular dorsal (h 0.17), pelvics `w` 1.5, pectorals x1.3. **platy:** larger dorsal, round caudal fan, upturned
+  mouth. **molly:** long ray-supported dorsal (`MedianFin`), larger round caudal, upturned jaw.
+- **Still open (needs generic work, not done):** the nose tip is always a sharp corner (`geometry()` bodyPts
+  `[1, mouth, 'c']`), so neon / cardinal / chili / cpd snouts stay slightly pointed; chili's front-view eye-region
+  texture unchanged; characin dorsal/anal can't taper front-high-to-rear-low (MedianFin keeps a level top); platy /
+  molly have no male gonopodium look (one look each; add `gono` if Nathan wants males).
+- Before/after composites: worktree `shots/laneX/b*-*.jpg` (gitignored).
 ## Lane Y: anatomy audit P2, bottom dwellers + marine fish (2026-10-14; branch `fish-p2b`, port 5533; Nathan approved both batches; pushed to main)
 PLANS entries only in `src/art/fishgen.ts`, all with lane S's parameters; no new generic parameter, no paint.ts / fish3d.ts edits.
 - **Batch 1 (v2 at build 359, `cb6d2e7`):** bronzecory / pandacory: triangular dorsal on one stout spine (MedianFin, `spines`
@@ -710,9 +727,22 @@ Plan approved by Nathan (batches in severity order). Pictures: `shots/g2/` in th
   spots, webbing on all four feet. New `FrogSpec` fields `web` (all feet) and `eye` (own eye position); the other three
   frogs' fingerprints did not change. Added to `fish3d.species` (3D on).
 - AqAdvisor has no entry: stand-in Panda Cory (3.5 cm vs 5 cm, bottom, warm, groups), `standIn` in aqadvisor.json.
-- Model v1 at build 360, sheet `public/model-sheets/adf.jpg`. Awaiting Nathan's look. Open: it uses the land
-  frogs' sitting pose (hind legs folded); a real ADF often rests with the hind legs splayed out sideways, or floats at
-  the surface in a "zen" pose; not done.
+- Model v1 at build 360, sheet `public/model-sheets/adf.jpg`.
+- **v2 at build 374 (Nathan: "a resting pose with the hind legs splayed out sideways, like a real ADF on the bottom"):**
+  `adfLimbs()` overrides frog3D's folded legs for `HERP3D.adf` only: thighs out sideways from the hips, knees bent
+  forward, the long webbed feet trailing back and out (past the tail end, u < 0); arms out to the sides, webbed hands
+  spread forward. The 2D card keeps the folded side view (in 3D it is only the invisible picking target).
+- **Floating "zen" pose (Nathan: "lets add the floating zen pose at the surface"):** new `Surface` value `'top'` =
+  floating at the water surface (its height is the water line's; stored y ignored). Species `cling: "top"` -> surfaces
+  `['floor', 'top']` (adf only). Shuffle / Add float `FLOAT_FROG` = 1/3 of them (scatter.ts; none in a dry tank), nose
+  up 4-12°, the rest rest on the bottom. Pose `HERP3D_FLOAT.adf` (herps.ts): the resting body with all four legs spread
+  limp and drooping; its `top` line (the back) sits 0.5 mm under the water line (build.ts), no contact shadow.
+  `herpBody(art, w, surface)` now takes the surface (glass / top poses). `restsOnFloor` is false on 'top'. Test in
+  scatter.test.ts (share, height, save round-trip, dry tank). Not fingerprinted (like the tree frog's glass pose):
+  review sheet unchanged; picture made with a temporary swap. Not done: dragging can't move a frog between the floor
+  and the surface (only Shuffle / Add choose), and in a tank filled to the rim the rim hides floaters from eye height.
+- Gotcha: `npm run sheets` renders in headless software WebGL, whose fingerprints differ from a GPU's for every model,
+  so the sheets script cannot record versions (tried: it bumped all 68). Record from a dev server's review page only.
 
 ## Tree frogs climb the glass (2026-10-14; Nathan: "like otos and snails cling to the glass")
 - White's tree frog has `cling: any` (glass, hardscape, floor). Shuffle / Add use the oto path (`spawnSnail`) with a new
@@ -916,13 +946,15 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | P final polish | `../Glass-Box-final-fixes` / `final-fixes` | 5473 | `src/style.css`, `index.html`, `src/ui/panels.ts`, `src/scene/water.ts` | DONE (`7e5897a`); files free |
 | R P2 axolotl + nerite | `../Glass-Box-p2-small` / `p2-small` | 5493 | `art/herps.ts`, `render/herp3d.ts`, `art/snails.ts`, `render/snail3d.ts` | DONE (`45f872a`); files free. Open: fillCut for mystery / turbo / trumpet (would change approved look) |
 | S P1 fish fins | `../Glass-Box-fish-fins` / `fish-fins` | 5503 | (released) | DONE (`f71987c`, `624f8b1`); P2 notes in lane S's section; files free |
-| X P2 fish, freshwater | `../Glass-Box-fish-fins` / `fish-fins` | 5503 | PLANS / her() entries ONLY of neon, cardinal, ember, rummynose, chili, danio, cpd, cherrybarb, tigerbarb, platy, molly | running (session `local_600c5def`) |
+| X P2 fish, freshwater | `../Glass-Box-fish-fins` / `fish-fins` | 5503 | (released) | DONE (see Lane X section, build 372); files free |
 | Y P2 fish, bottom + marine | `../Glass-Box-fish-p2b` / `fish-p2b` | 5533 | PLANS / her() entries ONLY of bronzecory, pandacory, oto, clownloach, sae, ocellaris, royalgramma, sixline, chromis | DONE (batches 1-2 pushed, build 365); worktree removable |
 | R2 snail aperture kink | `../Glass-Box-p2-small` / `p2-small` (started by lane R) | 5493 | `art/snails.ts`, `render/snail3d.ts` (mystery / turbo / trumpet fillCut) | CLOSED: tried, Nathan declined (`52fb6cb`); snail files free |
 | S2 fish batch 4 | (worktree removed) | - | - | DONE (`1399de7`, build 351); swordtail kept at 120 mm (Nathan) |
 | V zoom out further | `../Glass-Box-zoom-out` / `zoom-out` | 5523 | `scene/validate.ts` LIMITS.zoom, `render/camera.ts`, the zoom / framing parts of `render/viewer.ts`, the cZoom slider in `index.html` / `ui/panels.ts`, `interact/pointer.ts` wheel / pinch | DONE (see Lane V section); files free. Also touched (free files): `render/build.ts` room size + ceiling, `render/viewmap.ts` caption, `scene/orbit.ts` |
 | T iPhone AR | `../Glass-Box-ar` / `ar-view` (lane Q's, Q is done) | 5483 | new `render/arUsdz.ts` + test, `render/ar.ts` | DONE for now (`3085106`); iPhone button hidden behind `?ar=ios` until an iPhone test, then IOS_FLAG = false; files free |
 | ADF African dwarf frog | `../Glass-Box-adf` / `adf-frog` | 5553 | `FROGS.adf` + new FrogSpec fields in `art/herps.ts` / `render/herp3d.ts`, the `adf` entries in `data/species.json`, `data/aqadvisor.json`, one line in `fish3d.species` | running (session `local_37002c35`), v1 sheet awaiting Nathan |
+| Z coral seating | `../Glass-Box-coral-seat` / `coral-seat` | 5563 | coral seating in `render/items.ts` (seatCorals) / `scene/items.ts` (seatHook), the coral drop in `src/interact/*`, `src/examples/reef.json` + `reef.jpg` | running (session `local_d4c637fd`) |
+| F2 harder fish | `../Glass-Box-fish-hard` / `fish-hard` | 5573 | PLANS / her() entries of goldfish (fantail, Nathan), kuhli, harlequin, oscar; new OFF-by-default generic parameters in `art/fishgen.ts` / `render/fish3d.ts` / `art/paint.ts` (double caudal, barbels, head geometry) | running (session `local_7819f0ee`) |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | OPENED 2026-10-14 (prompt `prompts/lane-W-android-app.md`); step 1 landscape layout; mind V's `index.html` / `panels.ts` edits |
 Free (no lane): `render/build.ts`, `render/items.ts`, `scene/items.ts`, `render/viewer.ts`, `main.ts`, `render/lighting.ts`,
 `render/coral3d.ts`, `render/shrimp3d.ts` / `art/shrimps.ts`, `scene/share.ts`, herps / herp3d / snails / snail3d. A one-line hook in a free file is fine; name it

@@ -50,7 +50,9 @@ export interface Plan {
   shade: [string, string, string]; // back, flank, belly
   // cut (lyre): depth of the fork, share of the tail length (default 0.8); sword ('sword'): the fan ends at u = sword and
   // its lower rays run on as a slim tapering sword to the tip at u = 0 (unset: the short tab)
-  tail: { type: Tail; h: number; tint?: string; a?: number; edge?: string; cut?: number; sword?: number };
+  // split (3D, off by default): a double caudal (fantail goldfish), two copies of the tail joined along the top whose
+  // lower parts flare out sideways by this many degrees, more toward the rear (fish3d `splitTail`); the card draws it flat
+  tail: { type: Tail; h: number; tint?: string; a?: number; edge?: string; cut?: number; sword?: number; split?: number };
   dorsal?: AnyFin; anal?: AnyFin; adipose?: boolean;
   dorsal2?: MedianFin; // a second, separate dorsal behind the first (gobies, cardinals)
   // male livebearers: the anal fin is a gonopodium, a slim rod from `at` lying back along the belly, `len` long
@@ -296,21 +298,31 @@ export function eyeSpot(p: Plan) {
   return { u, v: et + (eb - et) * (0.38 + (p.eye.dv ?? 0)), r: p.eye.r, iris: p.eye.iris };
 }
 
-export function drawPlan(p: Plan, ctx: Ctx, P: Proj, W: number) {
-  const g = geometry(p), ray = p.ray ?? '#7d7a70';
-  const finOpts = (f: { tint?: string; a?: number; edge?: string } | undefined, root: [number, number], pts: Pt[], seed: number) =>
-    [pts, root, f?.tint ?? p.fin, ray, {
+/** Draws one median fin or the tail in the plan's fin style (fin marks, edge). */
+function finDrawer(p: Plan, ctx: Ctx, P: Proj, W: number) {
+  const ray = p.ray ?? '#7d7a70';
+  return (pts: Pt[] | undefined, root: [number, number], f: { tint?: string; a?: number; edge?: string } | undefined, seed: number, segs?: FinRay[]) => {
+    if (!pts) return;
+    const e = {
       a: f?.a, rays: 14, extra: (c: Ctx) => {
         paintMarks(c, P, W, p.finMarks, seed);
         if (f?.edge) { shape(c, P, pts); c.strokeStyle = hexA(f.edge, 0.55); c.lineWidth = 0.014 * W; c.stroke(); }
       },
-    }] as const;
-  const draw = (pts: Pt[] | undefined, root: [number, number], f: { tint?: string; a?: number; edge?: string } | undefined, seed: number, segs?: FinRay[]) => {
-    if (!pts) return; const [a, b, c2, d, e] = finOpts(f, root, pts, seed); fin(ctx, P, W, a, b, c2, d, segs ? { ...e, segs } : e);
+    };
+    fin(ctx, P, W, pts, root, f?.tint ?? p.fin, ray, segs ? { ...e, segs } : e);
   };
+}
+/** The tail fin alone (a split tail's lobes are their own 3D meshes, painted with this), and its centre line v. */
+export function drawTail(p: Plan, ctx: Ctx, P: Proj, W: number) {
+  const g = geometry(p); finDrawer(p, ctx, P, W)(g.tail, [p.pedU + 0.02, g.c], p.tail, 11);
+}
+export const tailBox = (p: Plan) => { const g = geometry(p), vs = g.tail.map(q => q[1]); return { u1: Math.max(...g.tail.map(q => q[0])), v0: Math.min(...vs), v1: Math.max(...vs), c: g.c }; };
+
+export function drawPlan(p: Plan, ctx: Ctx, P: Proj, W: number) {
+  const g = geometry(p), ray = p.ray ?? '#7d7a70', draw = finDrawer(p, ctx, P, W);
   // root of a fin's ray fan: the middle of its base, just inside the body
   const mid = (f: AnyFin) => (isMedian(f) ? f.at - f.len / 2 : (f.u0 + f.u1) / 2);
-  draw(g.tail, [p.pedU + 0.02, g.c], p.tail, 11);
+  if (!(p.tail.split && !style.paired)) draw(g.tail, [p.pedU + 0.02, g.c], p.tail, 11); // a 3D fish's split tail: fish3d draws its two lobes
   if (p.dorsal) draw(g.dorsal, [mid(p.dorsal), g.prof(mid(p.dorsal))[0] + 0.02], p.dorsal, 12, g.rays.dorsal);
   if (p.dorsal2) draw(g.dorsal2, [mid(p.dorsal2), g.prof(mid(p.dorsal2))[0] + 0.02], p.dorsal2, 14, g.rays.dorsal2);
   if (p.gono) draw(g.anal, [p.gono.at, g.prof(p.gono.at)[1]], { tint: p.gono.tint, a: 0.85 }, 13, g.rays.anal);
@@ -420,41 +432,42 @@ const zigzag = (u0: number, u1: number, n: number, amp: number, t: number): [num
 };
 
 export const PLANS: Record<string, Plan> = {
-  cardinal: { thick: 0.42, depth: 0.22, pedU: 0.17, ped: 0.035, peak: 0.55, snout: 0.35, shade: ['#4d5443', '#9aa39a', '#c7c4bc'], tail: { type: 'fork', h: 0.14 }, fin: '#b7c0bd',
-    dorsal: { u0: 0.47, u1: 0.6, h: 0.07 }, anal: { u0: 0.27, u1: 0.48, h: 0.05 }, adipose: true, pelvic: { u: 0.62, len: 0.06 },
+  cardinal: { gape: 0.022, gapeDrop: 0.005, thick: 0.42, depth: 0.23, pedU: 0.18, ped: 0.03, peak: 0.64, snout: 0.55, shade: ['#4d5443', '#9aa39a', '#c7c4bc'], tail: { type: 'lyre', h: 0.14, cut: 0.5 }, fin: '#b7c0bd',
+    // characin fins: dorsal mid-back, tall in front; anal on a long base, tallest in front
+    dorsal: { at: 0.62, len: 0.06, h: 0.09, rake: 0.3, lead: 0.6, tip: 'point', trail: 0.05, drop: 0.2 }, anal: { at: 0.48, len: 0.21, h: 0.05, rake: 0.05, lead: 0.9, drop: 0.5, trail: 0.01 }, adipose: true, pelvic: { u: 0.62, len: 0.06 },
     marks: [{ k: 'band', u0: 0.17, u1: 0.95, v0: -0.005, v1: 0.2, c: '#c02f38', a: 0.95, f: 0.012 }, { k: 'band', u0: 0.22, u1: 0.93, v0: -0.065, v1: -0.008, c: '#2aa9e0', a: 1, f: 0.01 }],
     eye: { r: 0.026, iris: ['#b9ccd2', '#4c5c63'] } },
   // neon: was hand-drawn (drawTetra); outline, fins and colours taken from that drawing
-  tetra: { thick: 0.42, depth: 0.22, pedU: 0.16, ped: 0.036, peak: 0.6, snout: 0.35, shade: ['#56604a', '#a4ada2', '#dcdad2'], tail: { type: 'fork', h: 0.15 }, fin: '#aebbb8',
-    dorsal: { u0: 0.46, u1: 0.61, h: 0.06 }, anal: { u0: 0.26, u1: 0.48, h: 0.05 }, adipose: true, pelvic: { u: 0.6, len: 0.05 },
+  tetra: { gape: 0.022, gapeDrop: 0.005, thick: 0.42, depth: 0.22, pedU: 0.18, ped: 0.03, peak: 0.66, snout: 0.6, shade: ['#56604a', '#a4ada2', '#dcdad2'], tail: { type: 'lyre', h: 0.15, cut: 0.5 }, fin: '#aebbb8',
+    dorsal: { at: 0.62, len: 0.06, h: 0.085, rake: 0.3, lead: 0.6, tip: 'point', trail: 0.05, drop: 0.2 }, anal: { at: 0.48, len: 0.2, h: 0.045, rake: 0.05, lead: 0.9, drop: 0.5, trail: 0.01 }, adipose: true, pelvic: { u: 0.6, len: 0.05 },
     marks: [{ k: 'band', u0: 0.15, u1: 0.6, v0: -0.008, v1: 0.2, c: '#c4303a', a: 0.95, f: 0.015 }, { k: 'band', u0: 0.24, u1: 0.93, v0: -0.07, v1: -0.006, c: '#2aa9e0', a: 1, f: 0.012 },
       { k: 'band', u0: 0.3, u1: 0.85, v0: -0.05, v1: -0.025, c: '#bfeaf6', a: 0.45, f: 0.006 }],
     eye: { r: 0.024, iris: ['#b9ccd2', '#4c5c63'] } },
-  ember: { thick: 0.42, depth: 0.26, pedU: 0.2, ped: 0.04, peak: 0.5, snout: 0.4, shade: ['#b0522e', '#d9743e', '#e89a6a'], tail: { type: 'fork', h: 0.15, tint: '#d07a4e' }, fin: '#d58a5c',
-    dorsal: { u0: 0.47, u1: 0.6, h: 0.08 }, anal: { u0: 0.28, u1: 0.5, h: 0.06 }, adipose: true, pelvic: { u: 0.6, len: 0.06 },
+  ember: { gape: 0.022, gapeDrop: 0.005, thick: 0.42, depth: 0.24, pedU: 0.2, ped: 0.034, peak: 0.6, snout: 0.45, shade: ['#b0522e', '#d9743e', '#e89a6a'], tail: { type: 'fork', h: 0.15, tint: '#d07a4e' }, fin: '#d58a5c',
+    dorsal: { at: 0.61, len: 0.06, h: 0.1, rake: 0.3, lead: 0.6, tip: 'point', trail: 0.05, drop: 0.2 }, anal: { at: 0.5, len: 0.25, h: 0.06, rake: 0.05, lead: 0.9, drop: 0.5, trail: 0.01 }, adipose: true, pelvic: { u: 0.6, len: 0.06 },
     marks: [{ k: 'band', u0: 0.4, u1: 0.95, v0: 0.04, v1: 0.15, c: '#f2c7a6', a: 0.5, f: 0.03 }], eye: { r: 0.03, iris: ['#d8a070', '#5b3020'] } },
-  rummynose: { thick: 0.42, depth: 0.21, pedU: 0.2, ped: 0.035, peak: 0.55, snout: 0.35, shade: ['#8b927f', '#c9cdc2', '#e2e1da'], tail: { type: 'fork', h: 0.14 }, fin: '#c8ccc5',
-    dorsal: { u0: 0.48, u1: 0.6, h: 0.07 }, anal: { u0: 0.27, u1: 0.48, h: 0.05 }, adipose: true, pelvic: { u: 0.62, len: 0.05 },
+  rummynose: { gape: 0.022, gapeDrop: 0.005, thick: 0.42, depth: 0.21, pedU: 0.2, ped: 0.028, peak: 0.66, snout: 0.45, shade: ['#8b927f', '#c9cdc2', '#e2e1da'], tail: { type: 'fork', h: 0.14 }, fin: '#c8ccc5',
+    dorsal: { at: 0.61, len: 0.06, h: 0.09, rake: 0.3, lead: 0.6, tip: 'point', trail: 0.05, drop: 0.2 }, anal: { at: 0.47, len: 0.21, h: 0.045, rake: 0.05, lead: 0.9, drop: 0.5, trail: 0.01 }, adipose: true, pelvic: { u: 0.62, len: 0.05 },
     marks: [{ k: 'blob', u: 0.93, v: -0.01, ru: 0.09, rv: 0.08, c: '#c4303a', a: 0.95 }],
     finMarks: [{ k: 'bars', us: [0.04, 0.12], w: 0.035, c: '#1e1e20', a: 0.85 }, { k: 'band', u0: 0, u1: 0.2, v0: -0.012, v1: 0.012, c: '#1e1e20', a: 0.85, f: 0.005 }],
     eye: { r: 0.024, iris: ['#d26a54', '#5a1e18'] } },
   harlequin: { sharp: true, thick: 0.38, depth: 0.31, pedU: 0.2, ped: 0.045, peak: 0.5, snout: 0.3, shade: ['#8a6f58', '#d29a7c', '#e8c3ad'], tail: { type: 'fork', h: 0.16, tint: '#d79c82' }, fin: '#d6a48c',
     dorsal: { u0: 0.47, u1: 0.6, h: 0.09 }, anal: { u0: 0.33, u1: 0.47, h: 0.06 }, pelvic: { u: 0.6, len: 0.06 },
     marks: [{ k: 'poly', pts: [[0.62, -0.06], [0.62, 0.02], [0.4, 0.1], [0.22, 0.03], [0.22, -0.03]], c: '#1f1d22', a: 0.88 }], eye: { r: 0.03, iris: ['#c8b8a0', '#55483a'] } },
-  chili: { thick: 0.42, depth: 0.21, pedU: 0.2, ped: 0.035, peak: 0.5, snout: 0.35, shade: ['#a5402e', '#d4563c', '#e07a5c'], tail: { type: 'fork', h: 0.13, tint: '#c95a44' }, fin: '#cf7056',
-    dorsal: { u0: 0.4, u1: 0.52, h: 0.07 }, anal: { u0: 0.3, u1: 0.44, h: 0.05 }, pelvic: { u: 0.56, len: 0.05 },
+  chili: { gape: 0.02, gapeDrop: 0.005, thick: 0.42, depth: 0.21, pedU: 0.2, ped: 0.03, peak: 0.58, snout: 0.6, shade: ['#a5402e', '#d4563c', '#e07a5c'], tail: { type: 'fork', h: 0.13, tint: '#c95a44' }, fin: '#cf7056',
+    dorsal: { at: 0.53, len: 0.06, h: 0.08, rake: 0.3, lead: 0.6, tip: 'point', trail: 0.045, drop: 0.2 }, anal: { at: 0.45, len: 0.1, h: 0.055, rake: 0.05, lead: 0.85, tip: 'point', trail: 0.03, drop: 0.35 }, pelvic: { u: 0.56, len: 0.05 },
     marks: [{ k: 'band', u0: 0.22, u1: 0.85, v0: -0.012, v1: 0.012, c: '#2a1a18', a: 0.7, f: 0.01 }, { k: 'blob', u: 0.24, v: 0, ru: 0.03, rv: 0.025, c: '#1a1212', a: 0.8 }],
     eye: { r: 0.03, iris: ['#d07050', '#4a1a12'] } },
-  danio: { thick: 0.5, depth: 0.19, pedU: 0.18, ped: 0.035, peak: 0.5, snout: 0.3, mouth: -0.01, shade: ['#9a9a7c', '#d6d2bc', '#ece8d8'], tail: { type: 'fork', h: 0.12 }, fin: N,
-    dorsal: { u0: 0.4, u1: 0.52, h: 0.06 }, anal: { u0: 0.27, u1: 0.5, h: 0.06 }, pelvic: { u: 0.58, len: 0.05 },
+  danio: { gape: 0.032, gapeDrop: 0.012, barbels: 0.018, thick: 0.5, depth: 0.19, pedU: 0.18, ped: 0.032, peak: 0.55, snout: 0.4, mouth: -0.025, shade: ['#9a9a7c', '#d6d2bc', '#ece8d8'], tail: { type: 'fork', h: 0.12 }, fin: N,
+    dorsal: { at: 0.5, len: 0.11, h: 0.07, rake: 0.3, lead: 0.7, drop: 0.5, trail: 0.02 }, anal: { at: 0.49, len: 0.2, h: 0.065, rake: 0.2, lead: 0.75, drop: 0.45, trail: 0.02 }, pelvic: { u: 0.58, len: 0.05 },
     marks: [-0.055, -0.015, 0.025, 0.065].map(v => ({ k: 'band' as const, u0: 0.2, u1: 0.9, v0: v - 0.012, v1: v + 0.012, c: '#2b4f8c', a: 0.9, f: 0.008 })),
     finMarks: [-0.03, 0, 0.03].map(v => ({ k: 'band' as const, u0: 0.0, u1: 0.25, v0: v - 0.007, v1: v + 0.007, c: '#2b4f8c', a: 0.8, f: 0.004 })),
     eye: { r: 0.026, iris: ['#c9c2a6', '#4e4a3c'] } },
-  cherrybarb: { thick: 0.4, depth: 0.29, pedU: 0.2, ped: 0.045, peak: 0.55, snout: 0.45, shade: ['#8a3a2a', '#c4473a', '#d97a62'], tail: { type: 'fork', h: 0.15, tint: '#c25a48' }, fin: '#c96b58',
-    dorsal: { u0: 0.47, u1: 0.6, h: 0.1 }, anal: { u0: 0.3, u1: 0.42, h: 0.06 }, pelvic: { u: 0.58, len: 0.06 },
+  cherrybarb: { gape: 0.025, gapeDrop: 0.006, thick: 0.4, depth: 0.26, pedU: 0.2, ped: 0.04, peak: 0.6, snout: 0.5, shade: ['#8a3a2a', '#c4473a', '#d97a62'], tail: { type: 'fork', h: 0.15, tint: '#c25a48' }, fin: '#c96b58',
+    dorsal: { at: 0.61, len: 0.12, h: 0.12, rake: 0.2, lead: 0.6, tip: 'point', trail: 0.05, drop: 0.25 }, anal: { at: 0.44, len: 0.11, h: 0.075, rake: 0.2, lead: 0.7, tip: 'point', trail: 0.035, drop: 0.3 }, pelvic: { u: 0.58, len: 0.07, w: 1.2 },
     marks: [{ k: 'band', u0: 0.2, u1: 0.9, v0: -0.01, v1: 0.012, c: '#4a1d16', a: 0.6, f: 0.01 }], eye: { r: 0.03, iris: ['#c9a080', '#4a2a1a'] } },
   tigerbarb: { thick: 0.38, depth: 0.42, pedU: 0.2, ped: 0.05, peak: 0.5, snout: 0.45, shade: ['#8c7a45', '#d8b670', '#ecd7a4'], tail: { type: 'fork', h: 0.17, tint: '#d07a4a', edge: '#c23a28' }, fin: '#d3a274',
-    dorsal: { u0: 0.47, u1: 0.62, h: 0.12, tint: '#1f1f1f', a: 0.85, edge: '#c23a28' }, anal: { u0: 0.3, u1: 0.42, h: 0.08 }, pelvic: { u: 0.58, len: 0.07, tint: '#c4442e' },
+    dorsal: { at: 0.64, len: 0.15, h: 0.17, rake: 0.15, lead: 0.6, tip: 'point', trail: 0.06, drop: 0.25, tint: '#1f1f1f', a: 0.85, edge: '#c23a28' }, anal: { at: 0.44, len: 0.13, h: 0.1, rake: 0.2, lead: 0.7, tip: 'point', trail: 0.04, drop: 0.3 }, pelvic: { u: 0.6, len: 0.11, w: 1.5, tint: '#c4442e' }, pec: { s: 1.3 },
     marks: [{ k: 'bars', us: [0.9, 0.67, 0.45, 0.24], w: 0.06, c: '#1c1c1e', a: 0.92 }], eye: { r: 0.032, iris: ['#cf6a3a', '#4a2010'] } },
   // male: the anal fin is a gonopodium; small upturned mouth
   guppy: { gape: 0.035, gapeDrop: 0.008, thick: 0.45, depth: 0.2, pedU: 0.4, ped: 0.04, peak: 0.45, snout: 0.4, mouth: -0.03, shade: ['#7c8476', '#bfc4b8', '#ddddd2'], tail: { type: 'notch', h: 0.27, tint: '#e0782e', a: 0.85 }, fin: '#c6a37a',
@@ -462,11 +475,11 @@ export const PLANS: Record<string, Plan> = {
     marks: [{ k: 'blob', u: 0.55, v: 0, ru: 0.06, rv: 0.05, c: '#2d6fb0', a: 0.8 }, { k: 'blob', u: 0.47, v: 0.01, ru: 0.03, rv: 0.03, c: '#1a1a1a', a: 0.8 }, { k: 'blob', u: 0.68, v: 0.02, ru: 0.06, rv: 0.04, c: '#e0884a', a: 0.7 }],
     finMarks: [{ k: 'band', u0: 0, u1: 0.2, v0: -0.3, v1: 0.3, c: '#3a6ab8', a: 0.55, f: 0.08 }, { k: 'spots', n: 26, u0: 0.04, u1: 0.38, v0: -0.24, v1: 0.24, r: 0.014, c: '#2a2a40', a: 0.6 }],
     eye: { r: 0.026, iris: ['#c9b890', '#4a3e2c'] } },
-  platy: { thick: 0.5, depth: 0.36, pedU: 0.2, ped: 0.06, peak: 0.45, snout: 0.6, mouth: -0.02, shade: ['#b0482a', '#de6a3a', '#eb9a6a'], tail: { type: 'notch', h: 0.16, tint: '#d87850' }, fin: '#da8a62',
-    dorsal: { u0: 0.42, u1: 0.58, h: 0.09 }, anal: { u0: 0.42, u1: 0.5, h: 0.05 }, pelvic: { u: 0.62, len: 0.06 },
+  platy: { gape: 0.03, gapeDrop: 0.008, thick: 0.5, depth: 0.36, pedU: 0.21, ped: 0.06, peak: 0.45, snout: 0.6, mouth: -0.03, shade: ['#b0482a', '#de6a3a', '#eb9a6a'], tail: { type: 'round', h: 0.17, tint: '#d87850' }, fin: '#da8a62',
+    dorsal: { at: 0.62, len: 0.2, h: 0.12, rake: 0.35, lead: 0.6, drop: 0.6, trail: 0.04 }, anal: { at: 0.5, len: 0.1, h: 0.07, rake: 0.3, lead: 0.7, tip: 'point', trail: 0.03, drop: 0.4 }, pelvic: { u: 0.62, len: 0.06 },
     eye: { r: 0.034, iris: ['#cfb890', '#4a3e2c'] } },
-  molly: { thick: 0.5, depth: 0.31, pedU: 0.22, ped: 0.07, peak: 0.45, snout: 0.6, mouth: -0.02, shade: ['#141416', '#232427', '#33353a'], tail: { type: 'round', h: 0.16, tint: '#2a2b30', a: 0.75 }, fin: '#2d2e33',
-    dorsal: { u0: 0.33, u1: 0.62, h: 0.12, shape: 'sail', a: 0.75 }, anal: { u0: 0.4, u1: 0.5, h: 0.06 }, pelvic: { u: 0.62, len: 0.05 },
+  molly: { gape: 0.032, gapeDrop: 0.008, thick: 0.5, depth: 0.31, pedU: 0.24, ped: 0.065, peak: 0.45, snout: 0.55, mouth: -0.035, shade: ['#141416', '#232427', '#33353a'], tail: { type: 'round', h: 0.18, tint: '#2a2b30', a: 0.75 }, fin: '#2d2e33',
+    dorsal: { at: 0.64, len: 0.28, h: 0.12, rake: 0.55, lead: 0.5, drop: 0.7, trail: 0.05, a: 0.75 }, anal: { at: 0.5, len: 0.1, h: 0.07, rake: 0.3, lead: 0.7, tip: 'point', trail: 0.03, drop: 0.4 }, pelvic: { u: 0.62, len: 0.05 },
     marks: [{ k: 'blob', u: 0.6, v: -0.02, ru: 0.15, rv: 0.08, c: '#6a7080', a: 0.18 }], eye: { r: 0.03, iris: ['#9a8a6a', '#2a2418'] } },
   // male: long slim body, gonopodium, upturned mouth, the sword the lower caudal rays drawn out
   swordtail: { gape: 0.03, gapeDrop: 0.008, thick: 0.45, depth: 0.16, pedU: 0.45, ped: 0.035, peak: 0.45, snout: 0.4, mouth: -0.025, shade: ['#a63a2a', '#d4553a', '#e4886a'], tail: { type: 'sword', h: 0.11, sword: 0.3, tint: '#d26a48' }, fin: '#d07a58',
@@ -537,8 +550,9 @@ export const PLANS: Record<string, Plan> = {
     anal: { at: 0.48, len: 0.26, h: 0.1, spines: 0.25, nSp: 3, spineH: [0.04, 0.06], rake: 0.5, trail: 0.04, a: 0.85 }, pelvic: { u: 0.64, len: 0.1, w: 1.2 },
     marks: [{ k: 'spots', n: 12, u0: 0.3, u1: 0.8, v0: -0.05, v1: 0.15, r: 0.045, c: '#c8642a', a: 0.6 }, { k: 'blob', u: 0.24, v: -0.02, ru: 0.04, rv: 0.04, c: '#d8702a', a: 0.9 }, { k: 'blob', u: 0.24, v: -0.02, ru: 0.022, rv: 0.022, c: '#141414', a: 0.95 }],
     eye: { r: 0.03, iris: ['#c84a2a', '#3a1208'] } },
-  goldfish: { thick: 0.55, depth: 0.52, pedU: 0.32, ped: 0.06, peak: 0.45, snout: 0.75, shade: ['#c8642a', '#e88a3a', '#f0b87a'], tail: { type: 'double', h: 0.3, tint: '#e8964e', a: 0.75 }, fin: '#ec9e5e',
-    dorsal: { u0: 0.42, u1: 0.68, h: 0.14, shape: 'round', a: 0.75 }, anal: { u0: 0.38, u1: 0.48, h: 0.1, shape: 'round', a: 0.75 }, pelvic: { u: 0.7, len: 0.1 },
+  // fantail (Nathan 2026-10-14): egg-shaped body, a paired double caudal that splits and spreads sideways (seen from above), larger paired fins
+  goldfish: { thick: 0.68, depth: 0.52, pedU: 0.32, ped: 0.06, peak: 0.45, snout: 0.75, shade: ['#c8642a', '#e88a3a', '#f0b87a'], tail: { type: 'notch', h: 0.3, split: 45, tint: '#e8964e', a: 0.75 }, fin: '#ec9e5e',
+    dorsal: { u0: 0.42, u1: 0.68, h: 0.14, shape: 'round', a: 0.75 }, anal: { u0: 0.38, u1: 0.48, h: 0.1, shape: 'round', a: 0.75 }, pelvic: { u: 0.7, len: 0.15, w: 1.4 }, pec: { s: 2 },
     marks: [{ k: 'blob', u: 0.65, v: -0.08, ru: 0.2, rv: 0.14, c: '#ffffff', a: 0.12 }], eye: { r: 0.035, iris: ['#2a2420', '#0a0806'] } },
   // marbled hatchetfish: straight back, deep keel of a belly (most of the depth under the centre line), upturned mouth,
   // big high eye, small dorsal set far back over a long anal fin; silvery with dark marbled bands slanting across the keel
@@ -548,7 +562,7 @@ export const PLANS: Record<string, Plan> = {
       ...[0.26, 0.38, 0.5, 0.62].map(u => ({ k: 'poly' as const, pts: [[u, -0.01], [u + 0.03, -0.01], [u + 0.2, 0.34], [u + 0.165, 0.34]] as [number, number][], c: '#3a3426', a: 0.7 }))],
     eye: { r: 0.045, iris: ['#c8c4a8', '#3a3828'], dv: -0.02 } },
   // celestial pearl danio (male): blue-grey with pearly spots, orange belly, fins barred black and red-orange
-  cpd: { thick: 0.45, depth: 0.22, pedU: 0.2, ped: 0.04, peak: 0.5, snout: 0.4, shade: ['#26323e', '#40505e', '#d8743e'], tail: { type: 'fork', h: 0.14, tint: '#e0502a', a: 0.7 }, fin: '#e0502a',
+  cpd: { gape: 0.02, gapeDrop: 0.006, thick: 0.45, depth: 0.22, pedU: 0.2, ped: 0.038, peak: 0.55, snout: 0.75, shade: ['#26323e', '#40505e', '#d8743e'], tail: { type: 'lyre', h: 0.14, cut: 0.38, tint: '#e0502a', a: 0.7 }, fin: '#e0502a',
     dorsal: { u0: 0.38, u1: 0.5, h: 0.08, shape: 'round', a: 0.75 }, anal: { u0: 0.3, u1: 0.46, h: 0.07, shape: 'round', a: 0.75 }, pelvic: { u: 0.58, len: 0.06, tint: '#e0502a' },
     marks: [{ k: 'blob', u: 0.62, v: 0.08, ru: 0.22, rv: 0.04, c: '#e07a3a', a: 0.7 }, { k: 'spots', n: 45, u0: 0.24, u1: 0.84, v0: -0.08, v1: 0.05, r: 0.011, c: '#ecdcb0', a: 0.9 }],
     finMarks: [{ k: 'bars', us: [0.055, 0.135], w: 0.022, c: '#1a1a1e', a: 0.8 },
@@ -706,7 +720,7 @@ Object.assign(PLANS, {
       { k: 'spots', n: 40, u0: 0.25, u1: 0.8, v0: -0.15, v1: 0.1, r: 0.011, c: '#5aa0d8', a: 0.55 }],
     finMarks: [{ k: 'spots', n: 25, u0: 0, u1: 0.65, v0: -0.4, v1: 0.4, r: 0.01, c: '#5aa0d8', a: 0.4 }] }),
   // greener and duller, rounder belly, smaller spots, paler fins with faint bars
-  cpd_f: her('cpd', { depth: 0.24, shade: ['#46503e', '#76806a', '#c8a07a'], tail: { type: 'fork', h: 0.14, tint: '#d8a07a', a: 0.55 }, fin: '#d8a07a',
+  cpd_f: her('cpd', { depth: 0.24, shade: ['#46503e', '#76806a', '#c8a07a'], tail: { type: 'lyre', h: 0.14, cut: 0.38, tint: '#d8a07a', a: 0.55 }, fin: '#d8a07a',
     dorsal: { u0: 0.38, u1: 0.5, h: 0.07, shape: 'round', a: 0.6 }, anal: { u0: 0.3, u1: 0.46, h: 0.06, shape: 'round', a: 0.6 }, pelvic: { u: 0.58, len: 0.06, tint: '#d8a07a' },
     marks: [{ k: 'blob', u: 0.62, v: 0.09, ru: 0.22, rv: 0.04, c: '#d8a070', a: 0.4 }, { k: 'spots', n: 40, u0: 0.24, u1: 0.84, v0: -0.08, v1: 0.05, r: 0.009, c: '#e4dcbc', a: 0.75 }],
     finMarks: [{ k: 'bars', us: [0.055, 0.135], w: 0.02, c: '#2a2a2a', a: 0.45 }] }),

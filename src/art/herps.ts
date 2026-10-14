@@ -374,6 +374,7 @@ export interface Herp3D {
   fin?: { top: [number, number][]; bot: [number, number][]; c: string; o: number }; // membranes along the tail (edges, card frame)
   gills?: { at: [number, number, number]; tips: [number, number, number][]; stalk: string; fringe: string };
   ground: number;                 // the ground line v (card frame)
+  top?: number;                   // floating pose: the line v (card frame) that sits at the water surface
   shell?: { s: Shell3D; shell: [string, string, string]; mark: string }; // a carried snail shell (hermit crab), from the snail generator
   warts?: { n: number; u: [number, number]; a: [number, number]; r: [number, number]; h: number; seed: number }; // raised skin bumps (a: round the section, h: height / radius)
 }
@@ -429,6 +430,20 @@ function frogOnGlass3D(s: FrogSpec, fat: number, tone: [number, string][], marks
     ground: frogV(s.aspect, 0.265),
   };
 }
+/**
+ * The African dwarf frog resting on the bottom: hind legs splayed out sideways (thigh out from the hip, knee bent
+ * forward, shank back), the long webbed feet trailing back and out; arms out to the sides, hands spread forward.
+ */
+function adfLimbs(): Limb3D[] {
+  const s = FROGS.adf, V = (v: number) => frogV(s.aspect, v), J = (u: number, v: number, z: number, r: number): Joint => [u, V(v), z, r];
+  const toe = 0.008;
+  return [
+    { js: [J(0.16, 0.13, 0.08, 0.06), J(0.3, 0.215, 0.29, 0.04), J(0.1, 0.248, 0.37, 0.022), J(0.03, 0.256, 0.41, 0.015)],
+      toes: [[-0.1, -0.03], [-0.13, 0.01], [-0.13, 0.05], [-0.11, 0.09], [-0.07, 0.115]], toe, thigh: 0.08, blunt: true, web: 1 },
+    { js: [J(0.7, 0.1, 0.09, 0.03), J(0.72, 0.19, 0.2, 0.022), J(0.8, 0.248, 0.26, 0.015)],
+      toes: [[0.07, -0.04], [0.085, 0.0], [0.07, 0.04], [0.035, 0.07]], toe, blunt: true, web: 1 },
+  ];
+}
 const FROG_FACE: Mark3D[] = [
   { k: 'line', pts: [[0.74, 0.6], [0.84, 0.63], [0.94, 0.64], [0.995, 0.58]], c: '#0e100c', o: 0.25, w: 0.004 }, // mouth
   { k: 'spots', n: 2, u: [0.968, 0.972], a: [0.17, 0.23], r: [0.005, 0.005], c: '#141410', o: 0.6, seed: 1 },      // nostrils
@@ -468,6 +483,8 @@ const TREEFROG_MARKS: Mark3D[] = [
 
 /** The pose an animal takes clinging to glass, where it differs from its resting one. */
 export const HERP3D_GLASS: Record<string, Herp3D> = {};
+/** The pose an animal takes floating at the water surface (species `cling: "top"`). */
+export const HERP3D_FLOAT: Record<string, Herp3D> = {};
 
 export const HERP3D: Record<string, Herp3D> = {
   // hermit crab: the small body out of the shell, legs and claw from HERMIT_LIMBS, the eyes on the stalk tips
@@ -502,6 +519,7 @@ export const HERP3D: Record<string, Herp3D> = {
     { k: 'spots', n: 140, u: [0.1, 0.95], a: [0.0, 0.6], r: [0.005, 0.008], c: '#4f4a39', o: 0.5, seed: 42 },
     { k: 'line', pts: [[0.8, 0.62], [0.9, 0.64], [0.995, 0.6]], c: '#0e100c', o: 0.22, w: 0.003 }, // mouth
   ], { c: '#2f2c21', r: 0.01, n: 14 }),
+    limbs: adfLimbs(),
     warts: { n: 120, u: [0.15, 0.95], a: [0.02, 0.6], r: [0.007, 0.011], h: 0.45, seed: 43 } },
   // dark brown-black and granular above, the orange belly showing low on the flank
   // a broad trunk, a rounded head a little wider than the neck, the tail flattened side to side
@@ -533,3 +551,19 @@ export const HERP3D: Record<string, Herp3D> = {
 };
 // on the glass the flat belly turns the lower flank toward you: the cream starts lower round the section
 HERP3D_GLASS.treefrog = frogOnGlass3D(FROGS.treefrog, 1.12, [[0, '#5f9a4a'], [0.45, '#7cb35d'], [0.66, '#a9c98a'], [0.74, '#e8e2c4'], [1, '#efe9cf']], TREEFROG_MARKS);
+// the African dwarf frog's "zen" float: hanging at the water line, back and snout just at the surface, all four legs
+// spread out limp and drooping a little (the toe tips set the ground line below the belly)
+HERP3D_FLOAT.adf = (() => {
+  const s = FROGS.adf, V = (v: number) => frogV(s.aspect, v), J = (u: number, v: number, z: number, r: number): Joint => [u, V(v), z, r];
+  const toe = 0.008;
+  return {
+    ...HERP3D.adf,
+    limbs: [
+      { js: [J(0.16, 0.13, 0.08, 0.06), J(0.28, 0.2, 0.3, 0.04), J(0.08, 0.26, 0.4, 0.022), J(0.0, 0.3, 0.45, 0.015)],
+        toes: [[-0.1, -0.02], [-0.13, 0.02], [-0.13, 0.06], [-0.1, 0.1], [-0.06, 0.12]], toe, thigh: 0.08, blunt: true, web: 1 },
+      { js: [J(0.7, 0.1, 0.09, 0.03), J(0.74, 0.2, 0.22, 0.022), J(0.8, 0.29, 0.3, 0.015)],
+        toes: [[0.07, -0.03], [0.085, 0.01], [0.07, 0.05], [0.035, 0.08]], toe, blunt: true, web: 1 },
+    ],
+    ground: V(0.34), top: V(-0.07),
+  };
+})();

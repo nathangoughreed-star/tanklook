@@ -14,7 +14,7 @@ import { getImage } from '../scene/images';
 import { addBeams, addFixture, applyLighting, waterVolumeMaterial } from './lighting';
 import { itemMesh } from './items';
 import { drapedCard, fish3d, fishBody, has3D, hullMaterial } from './fish3d';
-import { herpBody, isHerp3D } from './herp3d';
+import { herpBody, herpFloatTop, isHerp3D } from './herp3d';
 import { sagShell, snailBody } from './snail3d';
 import { blendTexture, cardMaterial, pictureTexture, fishBodyTexture, fishTexture, gradientTexture, personTexture, snailTexture, substrateMaskTexture, substrateTexture } from './textures';
 
@@ -1012,9 +1012,15 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: number | null, 
     const solid = has3D(sp.art), herp = solid && isHerp3D(sp.art);
     const m = new THREE.Mesh((solid && drapedCard(sp.art, w, h, f.bend)) || cardGeometry(w, h, f.bend), herp ? HIDDEN : cardMaterial(`fish:${sp.look}:${solid}:${solid && fish3d.fade}`, fishTexture(sp, S.render.edge, solid, solid && fish3d.fade), S.render.edge));
     if (!herp) (m.material as THREE.Material).userData.fishCard = true; // fish stand out (render.pop) lifts the card too
-    if (herp) m.add(herpBody(sp.art, w, f.surface === 'glass')); // the card stays as the invisible picking target
+    if (herp) m.add(herpBody(sp.art, w, f.surface)); // the card stays as the invisible picking target
     else if (solid) m.add(fishBody(sp.art, sp.aspect, w, f.bend, fishBodyTexture(sp), S.render.edge, f.surface === 'glass')); // solid body + paired fins; the card keeps the median fins
     if (f.surface === 'glass') { onGlass(S, T, f, sp, m, w); register(m, w, h); return; }
+    // floating at the water surface (dwarf frog): the pose's `top` line just under the water line, wherever it is
+    const ft = f.surface === 'top' ? herpFloatTop(sp.art) : undefined;
+    if (ft !== undefined) {
+      m.position.set(p.x, waterY(T, S.water.level) - 0.5 + ft * w, -p.depth); m.rotation.set(f.roll * D2R, f.yaw * D2R, f.pitch * D2R, 'YXZ');
+      register(m, w, h); return;
+    }
     // bottom dwellers and animals on land rest on the ground (or the hardscape) wherever they are (their stored height is ignored)
     const rests = restsOnGround(S, T, sp, p.x, p.depth, h);
     const y = rests ? base(f) + sp.rest * w - 1 : Math.min(p.y, Math.max(0, waterY(T, S.water.level) - h / 2));
