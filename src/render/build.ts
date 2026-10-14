@@ -568,13 +568,7 @@ function addLid(sc: THREE.Scene, S: TankSetup, T: Tank) {
   const faceM = basic(0xbfe0ee, { transparent: true, opacity: 0.1, depthWrite: false });
   const edgeM = basic(lowIron ? 0xa9d3da : 0x3f8f72, { transparent: true, opacity: 0.8, depthWrite: false });
   const lineM = glassLine(), edges = S.render.edges;
-  if (shapeOf(T) !== 'rect') { // one plate cut to the outline (lifted off, not hinged); a bowl's covers its opening
-    const ring = shapeOf(T) === 'bowl' ? circleRing(T, bowlDims(T).rt - inset) : offsetRing(T, -inset);
-    const geo = prismGeometry(ring, y - pt / 2, y + pt / 2);
-    const g = new THREE.Mesh(geo, [faceM, edgeM]); g.renderOrder = 7; sc.add(g);
-    if (edges) { const e = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 20), lineM); e.renderOrder = 8; sc.add(e); }
-    return;
-  }
+  if (shapeOf(T) !== 'rect') { addShapedCanopy(sc, T, y, pt, inset, faceM, edgeM, edges ? lineM : null); return; }
   const w = (L - 2 * inset - gap) / 2, dp = D - 2 * inset;
   for (const cx of [inset + w / 2, L - inset - w / 2]) {
     const geo = new THREE.BoxGeometry(w, pt, dp), m = [edgeM, edgeM, faceM, faceM, edgeM, edgeM];
@@ -582,6 +576,63 @@ function addLid(sc: THREE.Scene, S: TankSetup, T: Tank) {
     if (edges) { const e = new THREE.LineSegments(new THREE.EdgesGeometry(geo), lineM); e.position.copy(g.position); e.renderOrder = 8; sc.add(e); }
   }
   const hinge = shadedBox(L - 2 * inset, pt + 2, 12, 0x2b2e33); hinge.position.set(L / 2, y, -D * 0.38); sc.add(hinge); // back strip | front flap
+}
+
+/** A convex ring clipped to the box x0..x1, d0..d1 (footprint coordinates); [] if nothing is left. */
+function clipRing(ring: P[], x0: number, x1: number, d0: number, d1: number): P[] {
+  let out = ring;
+  for (const [k, v, keepLess] of [[0, x0, false], [0, x1, true], [1, d0, false], [1, d1, true]] as const) {
+    const inn = (p: P) => (keepLess ? p[k] <= v : p[k] >= v), next: P[] = [];
+    for (let i = 0; i < out.length; i++) {
+      const p = out[i], q = out[(i + 1) % out.length];
+      if (inn(p)) next.push(p);
+      if (inn(p) !== inn(q)) { const s = (v - p[k]) / (q[k] - p[k]); next.push([p[0] + (q[0] - p[0]) * s, p[1] + (q[1] - p[1]) * s]); }
+    }
+    out = next; if (out.length < 3) return [];
+  }
+  return out;
+}
+
+/** Longest canopy sold as one piece (mm); longer tanks take two side by side, as real bowfronts over ~4 ft do. */
+const CANOPY_MAX = 1000;
+
+/**
+ * Glass canopy for a non-rectangular tank, as sold for bowfront, hexagon, pentagon and corner tanks: a fixed back strip
+ * and a hinged front flap cut to the front's shape (the bow, the angled panes, the quarter-round's arc), joined by a
+ * plastic hinge strip straight across; a trim-to-fit plastic filler along the back edge (cut round filter and cords);
+ * a small plastic handle on each flap's front edge. Long tanks take two canopies side by side. A bowl's opening gets
+ * one round cover plate with a lift knob.
+ */
+function addShapedCanopy(sc: THREE.Scene, T: Tank, y: number, pt: number, inset: number, faceM: THREE.Material, edgeM: THREE.Material, lineM: THREE.Material | null) {
+  const y0 = y - pt / 2, y1 = y + pt / 2, PLASTIC = 0x2b2e33;
+  const plate = (ring: P[]) => {
+    if (ring.length < 3) return;
+    const geo = prismGeometry(ring, y0, y1), g = new THREE.Mesh(geo, [faceM, edgeM]); g.renderOrder = 7; sc.add(g);
+    if (lineM) { const e = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 20), lineM); e.renderOrder = 8; sc.add(e); }
+  };
+  const knob = (x: number, d: number, ry: number, w: number, depth: number) => {
+    const k = shadedBox(w, 7, depth, PLASTIC); k.position.set(x, y1 + 3.5, -d); k.rotation.y = ry; sc.add(k);
+  };
+  if (shapeOf(T) === 'bowl') { plate(circleRing(T, bowlDims(T).rt - inset)); knob(T.L / 2, T.D / 2, 0, 18, 18); return; }
+  const L = T.L, ring = offsetRing(T, -inset), gap = 3, strip = 12;
+  const front = Math.min(...ring.map(p => p[1])), back = Math.max(...ring.map(p => p[1]));
+  // the hinge a little behind the middle, so the flap (the part lifted to feed) is the bigger piece
+  const dh = front + (back - front) * 0.58, fill = Math.min(40, (back - front) * 0.08);
+  const n = L > CANOPY_MAX ? 2 : 1, xs = Array.from({ length: n + 1 }, (_, i) => (L * i) / n);
+  for (let i = 0; i < n; i++) {
+    const xa = xs[i] + (i ? gap / 2 : -Infinity), xb = xs[i + 1] - (i < n - 1 ? gap / 2 : -Infinity);
+    plate(clipRing(ring, xa, xb, -Infinity, dh - gap / 2));                 // front flap
+    plate(clipRing(ring, xa, xb, dh + gap / 2, back - fill));               // fixed back strip
+    const filler = clipRing(ring, xa, xb, back - fill + 1, Infinity);       // trim-to-fit plastic filler
+    if (filler.length >= 3) sc.add(shadedPrism(filler, y0, y1 - 0.5, PLASTIC));
+    const hinge = clipRing(ring, xa, xb, dh - strip / 2, dh + strip / 2);   // hinge strip over the joint
+    if (hinge.length >= 3) sc.add(shadedPrism(hinge, y0 - 1, y1 + 1, PLASTIC));
+    // handle: centred on the flap, just behind its front edge, square to the glass there
+    const cx = (Math.max(xa, 0) + Math.min(xb, L)) / 2, c = chord(T, 0, cx);
+    if (!c) continue;
+    const g = nearestGlass(T, cx, c[0]), k = inset + 14;
+    knob(cx - g.n[0] * k, c[0] - g.n[1] * k, Math.atan2(g.n[0], -g.n[1]), 44, 10);
+  }
 }
 
 /** Silhouette card width / height. */
