@@ -13,7 +13,7 @@
     "dist": 3000,
     "az": -10,
     "el": 8,
-    "zoom": 1
+    "zoom": 1.1
    },
    "render": {
     "edge": "a2c",
@@ -23,11 +23,11 @@
     "beams": false,
     "pop": 0.15,
     "bg": "frosted",
+    "glass": "auto",
     "bgSides": [
      "back"
     ],
     "bgArc": 145,
-    "glass": "auto",
     "glassType": "standard"
    },
    "light": {
@@ -62,23 +62,23 @@
     "id": "iwagumi",
     "seed": 11
    },
+   "water": {
+    "on": true,
+    "level": 1,
+    "opacity": 0,
+    "color": "#7fb8a8"
+   },
    "terrain": {
     "on": false,
     "cols": 7,
     "rows": 0,
     "h": []
    },
-   "water": {
-    "on": true,
-    "level": 1,
-    "color": "#7fb8a8",
-    "opacity": 0
-   },
    "lid": "open",
    "stand": {
-    "show": false,
+    "show": true,
     "height": 762,
-    "finish": "black",
+    "finish": "white",
     "style": "cabinet",
     "table": {
      "shape": "rect",
@@ -88,15 +88,15 @@
      "z": 0
     }
    },
-   "wall": {
-    "show": true,
-    "side": "back",
-    "color": "#d8d2c6"
-   },
    "person": {
     "show": false,
     "height": 1750,
     "side": "left"
+   },
+   "wall": {
+    "show": true,
+    "side": "back",
+    "color": "#d8d2c6"
    },
    "fish": [
     {

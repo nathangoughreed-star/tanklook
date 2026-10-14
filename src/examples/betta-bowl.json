@@ -26,11 +26,11 @@
     "beams": false,
     "pop": 0.15,
     "bg": "none",
+    "glass": "auto",
     "bgSides": [
      "back"
     ],
     "bgArc": 145,
-    "glass": "auto",
     "glassType": "standard"
    },
    "light": {
@@ -65,17 +65,17 @@
     "id": "none",
     "seed": 3
    },
+   "water": {
+    "on": true,
+    "level": 0.85,
+    "opacity": 0,
+    "color": "#7fb8a8"
+   },
    "terrain": {
     "on": false,
     "cols": 7,
     "rows": 0,
     "h": []
-   },
-   "water": {
-    "on": true,
-    "level": 0.85,
-    "color": "#7fb8a8",
-    "opacity": 0
    },
    "lid": "open",
    "stand": {
@@ -91,15 +91,15 @@
      "z": 0
     }
    },
-   "wall": {
-    "show": true,
-    "side": "back",
-    "color": "#d8d2c6"
-   },
    "person": {
     "show": false,
     "height": 1750,
     "side": "left"
+   },
+   "wall": {
+    "show": true,
+    "side": "back",
+    "color": "#d8d2c6"
    },
    "fish": [
     {

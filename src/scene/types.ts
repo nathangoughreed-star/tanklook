@@ -136,9 +136,10 @@ export interface TerrainSettings { on: boolean; cols: number; rows: number; h: n
 
 /**
  * Starter set (scene v9; before that the whole aquascape): choosing one places a fresh set of editable items made from
- * the tank size and the seed. It stays recorded as the set the tank started from; 'swamp' also shapes the land.
+ * the tank size and the seed. It stays recorded as the set the tank started from; 'swamp' also shapes the land. 'reef'
+ * (2026-10-14): live rock and corals, offered in a saltwater tank only.
  */
-export type LayoutId = 'none' | 'stones' | 'driftwood' | 'planted' | 'iwagumi' | 'swamp';
+export type LayoutId = 'none' | 'stones' | 'driftwood' | 'planted' | 'iwagumi' | 'swamp' | 'reef';
 export interface LayoutSettings { id: LayoutId; seed: number }
 
 /** Library item kinds; the variant names the generator (scene/items.ts LIBRARY). */
