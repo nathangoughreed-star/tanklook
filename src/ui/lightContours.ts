@@ -1,11 +1,11 @@
 // Light map contour labels (Nathan 2026-10-14: "like an elevation map shows elevation"): with the Light map on and the
-// fixture's power set, the shader draws a line at each doubling (the legend's ticks: PAR 5, 10, 20 … / lux 250, 500,
+// fixture's power set, the shader draws contour lines (PAR every light.mapStep, 10 by default; lux at each doubling: 250, 500,
 // 1k …); this puts the value on each line, as a contour map does. The light model (scene/lightout.ts bandsAt, the
 // function the shader is a port of) is sampled over the ground, each level traced by marching squares, and a label set
 // on every traced line long enough to read, about one per 25 cm along it. Traced again only when the setup changes;
 // the labels follow the camera on every draw.
 import * as THREE from 'three';
-import { MAP_DIV } from '../render/lighting';
+import { MAP_DIV, mapStepOf } from '../render/lighting';
 import type { Viewer } from '../render/viewer';
 import { bandsAt, lightEnvCached, luxOf, parOf } from '../scene/lightout';
 import { groundHeight, groundInsideBy } from '../scene/terrain';
@@ -20,10 +20,10 @@ const fmt = (v: number, unit: 'par' | 'lux') => unit === 'par' ? String(v)
 export function contourLabels(S: TankSetup, T: Tank): Label[] {
   const L: Label[] = [], env = lightEnvCached({ ...S, tank: T });
   if (!env) return L;
-  const unit = S.light.mapUnit ?? 'par', div = MAP_DIV[unit];
+  const unit = S.light.mapUnit ?? 'par', div = MAP_DIV[unit], step = mapStepOf(S.light, unit);
   const nx = 64, nz = Math.max(8, Math.round(nx * T.D / T.L)), dx = T.L / nx, dz = T.D / nz;
   const h = (x: number, d: number) => groundHeight(S, T, x, d);
-  // t = log2(level / div) at each grid node, NaN outside the ground (the shader's aqT; lines at whole t)
+  // t at each grid node (the shader's aqC; lines at whole t): level / step, or log2(level / div) at doublings; NaN off the ground
   const t: number[][] = [];
   for (let i = 0; i <= nx; i++) {
     const row: number[] = []; t.push(row);
@@ -32,13 +32,14 @@ export function contourLabels(S: TankSetup, T: Tank): Label[] {
       if (groundInsideBy(S, T, x, d) <= 1) { row.push(NaN); continue; }
       const hx = (h(x + 5, d) - h(x - 5, d)) / 10, hd = (h(x, d + 5) - h(x, d - 5)) / 10, k = Math.hypot(hx, 1, hd);
       const b = bandsAt(env, [x, h(x, d) + 0.5, -d], [-hx / k, 1 / k, hd / k]);
-      row.push(Math.log2(Math.max(unit === 'lux' ? luxOf(b) : parOf(b), 1e-6) / div));
+      const lv = Math.max(unit === 'lux' ? luxOf(b) : parOf(b), 1e-6);
+      row.push(step ? lv / step : Math.log2(lv / div));
     }
   }
   let lo = Infinity, hi = -Infinity;
   for (const r of t) for (const v of r) if (v === v) { lo = Math.min(lo, v); hi = Math.max(hi, v); }
   const SPACE = 250, MIN = 60; // mm along a line between labels; shorter lines get none
-  for (let n = Math.max(0, Math.ceil(lo)); n <= hi; n++) {
+  for (let n = Math.max(step ? 1 : 0, Math.ceil(lo)); n <= hi; n++) {
     // marching squares: segments of the level-n line, chained into polylines by shared edge points
     const segs: [string, string][] = [], pts = new Map<string, [number, number]>();
     const edge = (i0: number, j0: number, i1: number, j1: number) => {
@@ -70,7 +71,7 @@ export function contourLabels(S: TankSetup, T: Tank): Label[] {
       let len = 0;
       const cum = line.map((p, k) => (len += k ? Math.hypot(p[0] - line[k - 1][0], p[1] - line[k - 1][1]) : 0));
       if (len < MIN) continue;
-      const count = Math.max(1, Math.round(len / SPACE)), text = fmt(div * 2 ** n, unit);
+      const count = Math.max(1, Math.round(len / SPACE)), text = fmt(step ? n * step : div * 2 ** n, unit);
       for (let q = 0; q < count; q++) {
         const at = len * (q + 0.5) / count, k = Math.max(1, cum.findIndex(c => c >= at)), [x, d] = line[k];
         L.push({ p: new THREE.Vector3(x, h(x, d) + 0.5, -d), text });

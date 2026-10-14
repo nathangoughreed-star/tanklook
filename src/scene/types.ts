@@ -134,6 +134,8 @@ export interface LightSettings {
   par?: number;
   /** What the Light map shows when watts is set (an app preference, like `beams`); absent = 'par'. */
   mapUnit?: 'par' | 'lux';
+  /** PAR between the Light map's contour lines, a multiple of 5 (5-100; an app preference); absent = 10. */
+  mapStep?: number;
 }
 
 export type LightTech = 'led-white' | 'led-planted' | 'led-reef' | 't5-refl' | 't5-bare' | 't8' | 'cfl' | 'mh' | 'mh-20k' | 'halogen';

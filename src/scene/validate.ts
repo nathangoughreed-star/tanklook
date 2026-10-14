@@ -218,6 +218,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       ...(typeof l.tech === 'string' && (TECH_IDS as readonly string[]).includes(l.tech) ? { tech: l.tech as LightTech } : {}),
       ...(l.par != null ? { par: Math.round(num(l.par, 0, ...LIMITS.par)) } : {}),
       ...(l.mapUnit === 'par' || l.mapUnit === 'lux' ? { mapUnit: l.mapUnit } : {}),
+      ...(l.mapStep != null ? { mapStep: Math.round(num(l.mapStep, 10, 5, 100) / 5) * 5 } : {}),
     },
     substrate: {
       show: bool(s.show, d.substrate.show), type: pick(s.type, ['gravel', 'pea', 'clown', 'blue', 'onyx', 'black', 'white', 'aragonite', 'coral', 'custom'] as const, 'gravel'),

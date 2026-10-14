@@ -67,11 +67,16 @@ export const LU = {
   // light output (lane K; watts set): the map in real units, a port of scene/lightout.ts bandsAt. uLoA: phi x 1e6 /
   // norm (per emitter), water surface y, losses x the PAR-override scale, wall-image weight (0 = no images);
   // uLoM: beam exponent (cos^m); uLoInd: bounced light per band (x the override scale); uLoWall: tank L, D; uLoK: absorption per mm per band; uLoSplit: photon share per band; uLoOut: per-band weight of
-  // what is shown (PAR 1,1,1; lux LUXW); uMapDiv: the level at the bottom of the ramp (relative 1/16, PAR 2.5, lux 125)
+  // what is shown (PAR 1,1,1; lux LUXW); uMapDiv: the level at the bottom of the ramp (relative 1/16, PAR 2.5, lux 125);
+  // uMapStep: PAR contour lines every this much (light.mapStep), 0 = a line at each doubling
   uLoOn: { value: 0 }, uLoA: { value: new THREE.Vector4() }, uLoWall: { value: new THREE.Vector2() },
   uLoK: { value: new THREE.Vector3() }, uLoSplit: { value: new THREE.Vector3() }, uLoOut: { value: new THREE.Vector3(1, 1, 1) },
-  uMapDiv: { value: 1 / 16 }, uLoM: { value: 1 }, uLoInd: { value: new THREE.Vector3() },
+  uMapDiv: { value: 1 / 16 }, uMapStep: { value: 0 }, uLoM: { value: 1 }, uLoInd: { value: new THREE.Vector3() },
 };
+/** PAR contour spacing on the Light map when light.mapStep is not set (Nathan 2026-10-14; slider 5-100 by 5). */
+export const MAP_STEP = 10;
+/** The PAR contour spacing, or 0 for a line at each doubling (lux, and the relative map). */
+export const mapStepOf = (l: LightSettings, unit: 'rel' | 'par' | 'lux') => (unit === 'par' ? l.mapStep ?? MAP_STEP : 0);
 /** The Light map ramp's bottom (navy) per unit: a colour step per doubling, yellow (4 steps up) on the "medium" band. */
 export const MAP_DIV = { rel: 1 / 16, par: 2.5, lux: 125 } as const;
 /** Water box (L, surface y, D) and tint per mm, and how far fish stand out (render.pop); set per viewport like the light. */
@@ -149,6 +154,7 @@ export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams 
   LU.uAmb.value = l.room; LU.uBright.value = bright; LU.uLCol.value.setRGB(...kelvinRGB(l.kelvin));
   const env = lo ? lightEnvCached({ ...S!, tank: T }) : null;
   LU.uLoOn.value = env ? 1 : 0; LU.uMapDiv.value = env ? MAP_DIV[l.mapUnit ?? 'par'] : MAP_DIV.rel;
+  LU.uMapStep.value = env ? mapStepOf(l, l.mapUnit ?? 'par') : 0;
   if (env) setLoUniforms(env, lo!.scale, l.mapUnit ?? 'par');
 }
 function setLoUniforms(env: LightEnv, scale: number, unit: 'par' | 'lux') {
@@ -232,7 +238,7 @@ vec3 aqLight() {
 // square of the distance (a tube, a line source: inverse distance), summed over the lights. Relative to one standard
 // spot bulb (52°) 300 mm straight above a level surface = 1 (times Brightness), shown on a log scale, a colour step per
 // doubling: 1/16 navy (dimmed below), 1/8 blue, 1/4 cyan, 1/2 green, 1 yellow, 2 orange, 4 red, 8 white.
-uniform float uMapOn, uMapW, uMapGain, uLoOn, uMapDiv, uLoM; uniform vec4 uLoA; uniform vec2 uLoWall; uniform vec3 uLoK, uLoSplit, uLoOut, uLoInd;
+uniform float uMapOn, uMapW, uMapGain, uLoOn, uMapDiv, uMapStep, uLoM; uniform vec4 uLoA; uniform vec2 uLoWall; uniform vec3 uLoK, uLoSplit, uLoOut, uLoInd;
 // one emitter (or a wall image of it, weight w) at p: a port of scene/lightout.ts addSrc, PAR or lux by uLoOut
 float aqSrc(vec3 p, vec3 n, vec3 ep, float h, float w) {
   float ys = uLoA.y, wd = p.y < ys ? ys - p.y : 0.0;
@@ -342,10 +348,12 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
       'if (uWater.w > 0.0) { float aqF = (1.0 - exp(-uWater.w * aqWaterPath())) * (1.0 - 0.6 * uPop * max(uFish, uFishCard)); outgoingLight = mix(outgoingLight, uWCol * min(dot(aqLt, vec3(0.2126, 0.7152, 0.0722)), 1.0), aqF); }\n' +
       // light map on the substrate (beam overlay on): false colour by level, a dark contour line at each doubling (valued by ui/lightContours), the
       // grain kept faintly so the relief still reads; replaces the lit colour and the water haze
-      'if (uMapOn > 0.5 && uSub > 0.5) { float aqT = log2(max(aqIrr(), 1e-6) / uMapDiv), aqW = fwidth(aqT);\n' +
+      'if (uMapOn > 0.5 && uSub > 0.5) { float aqI = max(aqIrr(), 1e-6), aqT = log2(aqI / uMapDiv);\n' +
+      // contours: every uMapStep PAR (light.mapStep), else at each doubling
+      '  float aqC = uMapStep > 0.0 ? aqI / uMapStep : aqT, aqW = fwidth(aqC);\n' +
       '  float aqG = dot(diffuseColor.rgb, vec3(0.2126, 0.7152, 0.0722));\n' +
       '  outgoingLight = aqRamp(aqT) * (0.75 + 0.45 * aqG) * (aqT < 0.0 ? 0.35 : 1.0);\n' +
-      '  outgoingLight *= 1.0 - 0.7 * (1.0 - smoothstep(0.6 * aqW, 1.6 * aqW, abs(fract(aqT + 0.5) - 0.5))) * step(0.0, aqT); }\n' +
+      '  outgoingLight *= 1.0 - 0.7 * (1.0 - smoothstep(0.6 * aqW, 1.6 * aqW, abs(fract(aqC + 0.5) - 0.5))) * (uMapStep > 0.0 ? step(0.5, aqC) : step(0.0, aqT)); }\n' +
       '#include <opaque_fragment>')
     .replace('#include <map_fragment>', AQ_MAP);
   this.userData.post?.(shader); // the material's patch of the lit shader (custom substrate: its grains blended by a mask)
