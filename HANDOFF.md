@@ -160,6 +160,9 @@ Lane G (fixes from shots/audit/AUDIT.md) waits for lane D's report; it takes ove
 Lane H DONE (salt stocking stays off, see its section). Lane C DONE (`2c38519`). Lane F DONE (`829929a`). Lane H added 2026-10-13: AqAdvisor saltwater, `../Glass-Box-aq-salt` /
 `aq-salt`, launch config `aq-salt` 5333 (aq mode; needs `aq-proxy` 8787); owns `data/aqadvisor.*`, `worker/*`, and the
 salt switch-off in the AqAdvisor code. Lane E also re-saves the examples and fills the reef example when it lands.
+Lane A DONE (`29515de`). Lane G opened 2026-10-14 ahead of the audit: `../Glass-Box-audit-fixes` / `audit-fixes`, launch
+config `audit-fixes` 5343; waits for lane D's message that shots/audit/AUDIT.md is written. Owns `src/ui/*`, `index.html`,
+`src/style.css` (lanes E and H keep their small panels.ts hooks); a finding in another lane's files goes to that lane.
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_e1923781-40bc-48d3-84f3-ed380e471779`
 ("Lanes coordinator"). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
 and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says
