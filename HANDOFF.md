@@ -30,7 +30,7 @@ Living file. Project state and dated decisions go here; update in place.
 - Dev: `(await import('/src/render/arUsdz.ts')).exportUSDZ(__gb.viewer.current)` -> { blob, stats } on the dev page.
 - OPEN (needs an iPhone): checklist: button shows with ?ar=ios, Quick Look opens (auto or via the panel link), tank stands
   on the floor at the right height, size right against a tape measure, glass / water / fish look right, the stand shows,
-  pinch-zoom locked or not. Then flip IOS_FLAG. Known: plant colours may read duller under Quick Look's lighting than in
+  pinch-zoom locked or not. Then flip IOS_FLAG. Lane Q leftover fixed: selection boxes (lines drawn over everything) are hidden in WebXR AR and never exported. Known: plant colours may read duller under Quick Look's lighting than in
   the viewer (its own IBL); fish fins are translucent cards, faint from far.
 
 ## Lane W: Android app (2026-10-14; PARKED, Nathan: "remember it for a later date"; prompt `prompts/lane-W-android-app.md`)

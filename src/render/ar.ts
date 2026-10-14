@@ -107,6 +107,8 @@ export function prepScene(vp: Viewport): ARPrep {
       mats.set(m, f); m.material = new THREE.MeshBasicMaterial({ color: f.color, transparent: true, opacity: 0.8, side: THREE.DoubleSide, depthWrite: false });
     }
   });
+  // selection boxes (a fish's or an item's): lines drawn over everything, meaningless in the room
+  sc.traverse(o => { if ((o as THREE.LineSegments).isLineSegments && ((o as THREE.LineSegments).material as THREE.Material).depthTest === false) roomOnly.push(o); });
   for (const o of [...roomOnly, ...(vp.dotMeshes ?? [])]) hide(o);
   const tankObjs = sc.children.filter(o => o.visible);
 
