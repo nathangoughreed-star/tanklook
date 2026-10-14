@@ -299,6 +299,18 @@ export function lightOut(S: LightScene): LightOut | null {
   };
 }
 
+const outCache = new Map<string, LightOut | null>();
+/** lightOut, cached on the settings it reads (the viewer asks every frame, per viewport; the panel on every edit). */
+export function lightOutCached(S: LightScene): LightOut | null {
+  const l = S.light;
+  if (l.type === 'flat' || !(l.watts && l.watts > 0)) return null;
+  const key = JSON.stringify([S.tank, l, S.lid, S.water, S.substrate, S.layout.id, S.layout.seed, S.terrain]);
+  if (outCache.has(key)) return outCache.get(key)!;
+  const o = lightOut(S);
+  outCache.set(key, o); if (outCache.size > 8) outCache.delete(outCache.keys().next().value!);
+  return o;
+}
+
 /** Lux at mid-water that renders at Brightness 1: a 24 x 12 x 12 in tank under a 20 W white LED bar gives about this
  * (typical setups land at 6,000-12,000 lux mid-water, so they render at 0.9-1.25 before the Exposure knob). */
 export const LREF = 8000;

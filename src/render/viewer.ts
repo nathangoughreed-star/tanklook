@@ -262,7 +262,7 @@ export class Viewer {
       if (person) this.placePerson(vp, person, headroom(S), bottom(S));
       r.setViewport(vp.x, vp.y, vp.w, vp.h); r.setScissor(vp.x, vp.y, vp.w, vp.h);
       r.setClearColor(new THREE.Color(0xd9dde2).multiplyScalar(0.06 + 0.94 * roomLevel(S.light.room))); r.clear(); // the space beyond the room dims with the room light
-      setLightUniforms(vp.T, S.light, S.lid, S.render.beams); setWaterUniforms(vp.T, S.water, S.render.pop); OUTLINE.uPop.value = S.render.pop; OUTLINE.uVpH.value = vp.h;
+      setLightUniforms(vp.T, S.light, S.lid, S.render.beams, S); setWaterUniforms(vp.T, S.water, S.render.pop); OUTLINE.uPop.value = S.render.pop; OUTLINE.uVpH.value = vp.h;
       // keep the cleared alpha (1): alpha-to-coverage fins would otherwise leave a translucent canvas, through which
       // the page shows on screen and a viewer's background (often white) in an exported PNG
       const cb = r.state.buffers.color, gl = r.getContext();
