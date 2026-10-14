@@ -4,6 +4,7 @@ import { Viewer } from './render/viewer';
 import { Store } from './scene/store';
 import { attachPanels } from './ui/panels';
 import { attachParGuide } from './ui/parGuide';
+import { attachLightHover } from './ui/lightHover';
 
 function webglAvailable() {
   try { const c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); }
@@ -27,6 +28,7 @@ if (!webglAvailable()) {
     && !document.getElementById('app')!.classList.contains('collapsed'));
   const ui = attachPanels(store, viewer);
   attachParGuide(() => store.tank.water.on && !!store.tank.water.salt);
+  attachLightHover(viewer, store); // Light map hover readout (lane K)
   if (import.meta.env.DEV) import('./render/fish3d').then(({ fish3d }) => Object.assign(window, { __gb: { store, viewer, fish3d } })); // debugging handle, dev server only
   ui.showStart(!!restored);
 }

@@ -357,6 +357,19 @@ export function lightOutCached(S: LightScene): LightOut | null {
   return o;
 }
 
+const envCache = new Map<string, LightEnv | null>();
+/** lightEnv with the PAR-override scale applied (as the shader gets it), cached like lightOutCached: for the hover readout. */
+export function lightEnvCached(S: LightScene): LightEnv | null {
+  const o = lightOutCached(S);
+  if (!o) return null;
+  const key = JSON.stringify([S.tank, S.light, S.lid, S.water, S.substrate, S.layout.id, S.layout.seed, S.terrain]);
+  if (!envCache.has(key)) {
+    const e = lightEnv(S);
+    envCache.set(key, e && { ...e, scale: o.scale }); if (envCache.size > 8) envCache.delete(envCache.keys().next().value!);
+  }
+  return envCache.get(key)!;
+}
+
 /** Lux at mid-water that renders at Brightness 1: a 24 x 12 x 12 in tank under a 20 W white LED bar gives about this
  * (typical setups land at 6,000-12,000 lux mid-water, so they render at 0.9-1.25 before the Exposure knob). */
 export const LREF = 8000;

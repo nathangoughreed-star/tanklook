@@ -37,7 +37,7 @@ Living file. Project state and dated decisions go here; update in place.
 - Files touched: render/build.ts, render/viewer.ts (build() and the opaque sort only; framing untouched), new
   render/incrementalCheck.ts, test/incremental.test.ts. lighting.ts, items.ts, coral3d.ts, camera.ts and store.ts unchanged.
 
-## Lane K: light output (2026-10-14; branch `light-output`, port 5383; steps 1-3 of 4 pushed)
+## Lane K: light output (2026-10-14; branch `light-output`, port 5383; DONE, all 4 steps pushed)
 - Owns `render/lighting.ts` (carved out of lane J's render/*), new `scene/lightout.ts` + `test/lightout.test.ts`, the
   light fields in scene/types.ts / defaults.ts / validate.ts, the Lighting rows in index.html / ui/panels.ts,
   ui/diff.ts, ui/parGuide.ts. Lane J: the fixture geometry (emitters, beam, fitSpots, lampHeight, CONES, LAMP_Y,
@@ -77,7 +77,14 @@ Living file. Project state and dated decisions go here; update in place.
   ~7% of the mean on gravel, ~22% on white sand. LED bar and T5 corners were already 63-73% (Fluval publishes ~55%).
   Refit: T5 eta 0.65 (Barr +12 / -1%), bare T5 0.4, T8 0.45; Hydra -9..+6%, JBL -26..+14%. Shader port re-checked
   (GPU vs JS <= 0.0001%).
-- Next: 4 (hover tooltip).
+- Step 4: `ui/lightHover.ts` (new; two lines in main.ts attach it). With the Light map on and the power set, the
+  pointer is ray-marched onto the ground (items are hidden by the map, so the ground is enough) and `bandsAt` is
+  evaluated there with the ground's normal (via `lightEnvCached`, override scale included): "190 µmol PAR · 12,800 lux
+  · 12.7″ deep" ("above the water" on paludarium land, "dry" in a dry tank). Mouse / pen only (touch has no hover),
+  hidden while dragging, on wheel and off the substrate; one evaluation per frame; re-read on a store change.
+- Open ideas (not built): a lid-condition choice (clean / condensation / dirty, ~0.9 / 0.8 / 0.65, estimates, not
+  data); a tap-to-read on phones; CFL / metal halide / halogen datasets; the ordinary render still uses the old
+  smoothstep cone (only the map and the numbers use cos^m).
 
 ## Model review sheet + model versions (2026-10-14, Nathan: "keep it where it can be updated with version number every time a model is updated")
 - `review.html` (live at tanklook.com/review.html; second Vite page, `src/review/`): every species look (females too)
