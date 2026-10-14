@@ -1,0 +1,285 @@
+{
+ "version": 9,
+ "name": "Tree frog terrarium",
+ "units": "in",
+ "tanks": [
+  {
+   "tank": {
+    "L": 457.2,
+    "H": 609.5999999999999,
+    "D": 457.2
+   },
+   "camera": {
+    "dist": 3000,
+    "az": 10,
+    "el": 10,
+    "zoom": 1
+   },
+   "render": {
+    "edge": "a2c",
+    "grid": false,
+    "rim": true,
+    "edges": true,
+    "beams": false,
+    "pop": 0.15,
+    "bg": "black",
+    "bgSides": [
+     "back"
+    ],
+    "bgArc": 145,
+    "glass": "auto",
+    "glassType": "standard"
+   },
+   "light": {
+    "type": "led",
+    "count": 1,
+    "rows": 1,
+    "pattern": "grid",
+    "spacing": 0,
+    "cone": 52,
+    "bright": 1,
+    "kelvin": 6500,
+    "room": 0.15,
+    "height": 50
+   },
+   "substrate": {
+    "show": true,
+    "type": "custom",
+    "custom": {
+     "grain": "mud",
+     "color": "#4a3726",
+     "grain2": "gravel",
+     "color2": "#6b5a44",
+     "share": 25,
+     "mix": 0.4
+    },
+    "fl": 50.8,
+    "fr": 50.8,
+    "bl": 76.19999999999999,
+    "br": 76.19999999999999
+   },
+   "layout": {
+    "id": "none",
+    "seed": 9
+   },
+   "terrain": {
+    "on": false,
+    "cols": 7,
+    "rows": 0,
+    "h": []
+   },
+   "water": {
+    "on": false,
+    "level": 1,
+    "color": "#7fb8a8",
+    "opacity": 0
+   },
+   "lid": "glass",
+   "stand": {
+    "show": false,
+    "height": 762,
+    "finish": "black",
+    "style": "cabinet",
+    "table": {
+     "shape": "rect",
+     "L": 914.4,
+     "D": 457.2,
+     "x": 0,
+     "z": 0
+    }
+   },
+   "wall": {
+    "show": true,
+    "side": "back",
+    "color": "#d8d2c6"
+   },
+   "person": {
+    "show": false,
+    "height": 1750,
+    "side": "left"
+   },
+   "fish": [
+    {
+     "id": 1,
+     "species": "treefrog",
+     "x": 100.584,
+     "y": 56.388000000000005,
+     "depth": 100.584,
+     "yaw": 40,
+     "pitch": 3,
+     "roll": -2,
+     "bend": 0.34
+    },
+    {
+     "id": 2,
+     "species": "treefrog",
+     "x": 251.46,
+     "y": 53.848,
+     "depth": 54.864,
+     "yaw": -30,
+     "pitch": 4,
+     "roll": 1,
+     "bend": -0.11
+    },
+    {
+     "id": 3,
+     "species": "treefrog",
+     "x": 374.904,
+     "y": 64.77,
+     "depth": 251.46,
+     "yaw": 160,
+     "pitch": -3,
+     "roll": -5,
+     "bend": 0.3
+    }
+   ],
+   "items": [
+    {
+     "id": 1,
+     "kind": "wood",
+     "variant": "branch",
+     "seed": 106,
+     "x": 160.01999999999998,
+     "depth": 274.32,
+     "lift": 0,
+     "yaw": 30,
+     "pitch": -15,
+     "tilt": 0,
+     "size": 503
+    },
+    {
+     "id": 2,
+     "kind": "wood",
+     "variant": "manzanita",
+     "seed": 159,
+     "x": 329.18399999999997,
+     "depth": 320.03999999999996,
+     "lift": 0,
+     "yaw": 0,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 480
+    },
+    {
+     "id": 3,
+     "kind": "wood",
+     "variant": "mopani",
+     "seed": 212,
+     "x": 228.6,
+     "depth": 160.01999999999998,
+     "lift": 0,
+     "yaw": -20,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 220
+    },
+    {
+     "id": 4,
+     "kind": "plant",
+     "variant": "fern",
+     "seed": 265,
+     "x": 99.15384615384615,
+     "depth": 358.04615384615386,
+     "lift": 0,
+     "yaw": 0,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 250
+    },
+    {
+     "id": 5,
+     "kind": "plant",
+     "variant": "fern",
+     "seed": 318,
+     "x": 384.96923076923076,
+     "depth": 114.3,
+     "lift": 0,
+     "yaw": 0,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 180
+    },
+    {
+     "id": 6,
+     "kind": "plant",
+     "variant": "anubias",
+     "seed": 371,
+     "x": 137.16,
+     "depth": 137.16,
+     "lift": 0,
+     "yaw": 0,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 120
+    },
+    {
+     "id": 7,
+     "kind": "plant",
+     "variant": "anubias",
+     "seed": 424,
+     "x": 283.464,
+     "depth": 91.44,
+     "lift": 0,
+     "yaw": 0,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 100
+    },
+    {
+     "id": 8,
+     "kind": "plant",
+     "variant": "carpet",
+     "seed": 477,
+     "x": 114.3,
+     "depth": 70,
+     "lift": 0,
+     "yaw": 0,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 200
+    },
+    {
+     "id": 9,
+     "kind": "plant",
+     "variant": "carpet",
+     "seed": 530,
+     "x": 342.9,
+     "depth": 205.74,
+     "lift": 0,
+     "yaw": 0,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 220
+    },
+    {
+     "id": 10,
+     "kind": "plant",
+     "variant": "carpet",
+     "seed": 583,
+     "x": 228.6,
+     "depth": 342.9,
+     "lift": 0,
+     "yaw": 0,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 240
+    },
+    {
+     "id": 11,
+     "kind": "stone",
+     "variant": "river",
+     "seed": 636,
+     "x": 365.76,
+     "depth": 54.864,
+     "lift": 0,
+     "yaw": 0,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 90
+    }
+   ]
+  }
+ ],
+ "active": 0,
+ "camLock": true
+}

@@ -2,6 +2,99 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane C: marine species (2026-10-13; Nathan approved the sheets, hermit "fine for now"; pushed to main)
+
+12 species, all `salt: true` (cat `sw-fish` / `sw-invert`), approved list (Nathan, same day, hermit crab as shell + limbs).
+TL = typical adult in an aquarium (as the freshwater list), checked against the cited max:
+| id | species | TL mm | source (max) |
+|---|---|---|---|
+| ocellaris | *Amphiprion ocellaris* | 80 | FishBase 11 cm TL |
+| royalgramma | *Gramma loreto* | 75 | FishBase 8 cm TL |
+| yellowtang | *Zebrasoma flavescens* | 180 | FishBase 20 cm TL |
+| firefish | *Nemateleotris magnifica* | 75 | FishBase 9 cm TL |
+| banggai | *Pterapogon kauderni* | 70 | FishBase 8.6 cm TL |
+| sixline | *Pseudocheilinus hexataenia* | 75 | FishBase 10 cm TL |
+| chromis | *Chromis viridis* | 75 | FishBase 10 cm TL |
+| coralbeauty | *Centropyge bispinosa* | 90 | FishBase 11.5 cm TL |
+| watchman | *Cryptocentrus cinctus* | 90 | FishBase 10 cm SL (so about 12 cm TL) |
+| cleanershrimp | *Lysmata amboinensis* | 55 | about 6 cm body, antennae excluded (CMFRI eprint 14967, reefguide.org; SeaLifeBase blank) |
+| turbo | *Turbo fluctuosus* | 50 | shell 2.5-8.6 cm (WoRMS via Wikipedia; SeaLifeBase blank) |
+| hermit | *Clibanarius tricolor* | 30 | about 2.5 cm incl. shell (retailers; no published size found) |
+FishBase pages: `https://www.fishbase.se/summary/<Genus-species>.html`.
+
+Built (data first, generators reused):
+- 9 fish = `PLANS` entries in `art/fishgen.ts` (marine block above the bottom dwellers), thick per the recipe; watchman
+  = goby bottom fish (`back` .6, `belly` .5, `wide` .3, `eye.up` .35). Added to `fish3d.species`.
+- Cleaner shrimp = a `SHRIMP` spec. New optional spec fields: `back` (broad band over the upper flank), `stripeW`
+  (back stripe width), `ant` (antenna colour, length factor).
+- Turbo = a fifth snail kind in `art/snails.ts` (`SHELL3D.turbo`, card drawn by the mystery snail's branch).
+- Hermit crab = a herp-family entry in `art/herps.ts` (`HERMITS`, `drawHermit`, `HERP3D.hermit`): small lofted body,
+  2 walking legs + claw per side, eye stalks and antennae as `Limb3D` tubes, one joint table for card and 3D. Species
+  `zone: bottom`, `cling: hardscape`.
+Generic additions (no species code; all optional, existing species unchanged):
+- `fishgen.Limb.c` + fish3d `limbMeshes` per-limb colour (white antennae).
+- `Herp3D.shell` (a carried shell from the snail generator: snail3d `shellMesh`, now also used by `snailBody`),
+  `Herp3D.eye.at` (eye on a stalk tip), `Limb3D.c` (own limb colour).
+- `Shell3D.open` (which way the aperture faces; default unchanged) and `Shell3D.tilt` (lean the spire back).
+Tests: `aqadvisor.test.ts` now leaves the marine species out of the AqAdvisor map (the app asks AqAdvisor for freshwater
+  tanks only; AqAdvisor HAS a saltwater calculator, Nathan same day: mapping the marine species to it is a follow-up unit); `scene.test.ts` snail
+count 4 -> 5. tsc clean, 173/173. Checked in the browser: a salt tank lists 9 marine fish + 3 marine inverts, no
+freshwater species.
+Sheets (worktree `shots/`): `91_marine_{A,B,C}.png` (card / 3D, four views, same framing). My review: the 9 fish pass;
+watch items: watchman head-on is a pointed snout (the 75° foreshortening, lesson 38); sixline stripes ring head-on;
+cleaner shrimp legs comb head-on (as the other shrimp); turbo aperture lip reads as a visor at 50° (as the mystery);
+hermit shell is a tilted turbo-like coil, its side view shows the aperture lip as a wedge, card shell is rounder.
+
+## Lane F: example tanks (2026-10-13; branch `examples`, shipped to main)
+
+- **Open… lists six Examples** above "Saved in this browser": Planted community (40 breeder), Iwagumi (rimless 24 in),
+  Betta bowl (30 cm bowl on a round oak table), Paludarium (swamp set, water 42 %, toads + dart frogs on land, chilis +
+  shrimp in the pool), Tree frog terrarium (18x18x24 dry, custom soil), Reef (placeholder: salt, aragonite, reef-blue,
+  lava rock, no animals). Nathan approved the six from draft pictures.
+- **Opens like a file**: `parseScene` + `store.replace`, so one undo step back to the previous tank; `setLibId(null)`, so
+  Save makes the user's own copy and never touches the example. Status: "Opened the example ...".
+- **Files**: `src/examples/<id>.json` (ordinary downloaded scenes) + `<id>.jpg` (400 px thumbnail), listed in
+  `src/examples/index.ts` and imported with `?raw` / `?inline`, so they are in the JS bundle and the single-file build
+  (checked: `dist-single/tanklook.html` holds all six, no fetch). About 110 kB JSON + 100 kB pictures.
+- **Re-saving after lanes A / C / E land** (the point of keeping them as plain scene files): open the example, adjust,
+  *Download*, replace `src/examples/<id>.json`; for a new picture, *Save* it and copy the thumbnail, or in the dev
+  server `__gb.viewer.thumbnail(400)` and save the JPEG as `<id>.jpg`. Plants turn 3D by themselves once lane A merges
+  (items store only variant/seed/size). The reef wants marine fish (lane C) and corals / live rock (lane E); rename it
+  from "Reef (placeholder)" then, and update its `name` + `hint` in `index.ts` (the test checks the file name matches).
+- `test/examples.test.ts`: six examples, each parses with no warnings, every species exists, reef is salt, terrarium dry.
+- Touched outside my files: two CSS rules in `src/style.css` (`.libsub`, `#exList`). The examples were built in the dev
+  server from the app's own `defaultSetup` / `starterItems` / `shuffleFish`, then hand-tuned (paludarium land plants
+  thinned near the frogs, terrarium frogs moved to the front, betta bowl water 85 %).
+
+## Lane B: fresh or salt tank (2026-10-13; branch `salt-tank`, shipped to main)
+
+- **Water section: Type = Freshwater | Saltwater** (`water.salt`, the seam's flag; off when Water is off). One undo step.
+  Switching swaps clear water for the other type's clear (fresh `#7fb8a8`, marine `#8ec9ec`, both opacity 0); any other
+  colour is the user's and stays.
+- **Animals list filtered by water** (`fitsWater` in `ui/panels.ts`): a saltwater tank (salt and water on) lists species
+  with `salt: true`, a fresh or dry tank lists the rest. Group chip counts follow; an empty search says how many matches
+  the other water has ("switch the tank in Water").
+- **Animals that no longer fit are offered for removal, not removed**: a row under Type names them ("Not saltwater
+  animals: 6 Neon tetra") with **Remove N**; one undo step, Ctrl+Z restores. The row stays while any misfit is in the
+  tank (also after undo or a loaded file).
+- **Marine water presets**, shown only on a salt tank (Blackwater / Green hidden): Reef blue `#2f86d0` 22 %, Deep blue
+  `#1f5fb0` 40 %; Clear follows the type. 12 % was invisible in a 12-inch-deep tank. With no background behind the tank
+  the tint stays subtle, because the water model tints only what is inside the water.
+- **Substrates** `aragonite` (fine bright cream sand) and `coral` (crushed coral: coarse flat chalky chips). Coral began
+  as pebble gravel, but the pebble shading (rim darkening, contact shadows, layer darkening) made it mid-grey, so it is
+  now a coarse "sand". Both listed for any tank, labelled "(marine)". `SubstrateType` + validate list extended, no
+  version bump.
+- **AqAdvisor off for salt**: `aqQuery` returns null for a salt tank. The view label reads "Stocking: not available for
+  saltwater (AqAdvisor is freshwater only)", with a matching sidebar note. Compare lists Freshwater / Saltwater as a
+  difference.
+- **One-line hook in lane C's `data/species.ts`**: `resolve()` dropped unknown JSON fields, so `"salt": true` never
+  reached the species. Added `if ((r as { salt?: unknown }).salt === true) sp.salt = true;` before the female block.
+  Lane C: keep it (or fold it into `RawSpecies`) when merging.
+- Tested with a temporary local `"salt": true` on the angelfish (not committed): filter, counts, misfit row, Remove +
+  undo, presets, both substrates in the browser; `test/salt.test.ts` covers AqAdvisor off and the reload round-trip.
+- Not done / for later: `Species.cat` and `salt` are independent (a salt species in `fw-fish` still lists under
+  "Freshwater fish"), so lane C should set both. Live rock and corals wait for lane E.
+
 ## Parallel lanes (2026-10-13, Nathan: fill the gaps before showing other people)
 
 Four chats at once, each owning its files. Seam already on main (`cb7783c`): optional `salt?: boolean` on `Species`
@@ -16,7 +109,21 @@ Rules: touch another lane's file only for a one-line hook, and say so in your se
 asking Nathan. Shipping: in the worktree `git fetch` + `git merge origin/main`, tsc + tests + browser check, then
 `git push origin HEAD:main` and `git -C "C:/Users/nreed/Glass Box" merge --ff-only origin/main`. HANDOFF.md
 conflicts on merge: keep both sections. Each lane adds its own dated section at the top of this file.
-Later lane E (corals + live rock as items) waits for A to land: it shares `scene/items.ts` / `render/items.ts`.
+Lane B DONE (`ff590db`). Lane F DONE (see its section). Lane F added 2026-10-13: example tanks, `../Glass-Box-examples` / `examples`, launch config
+`examples` 5313; owns the Open dialog's examples list in `src/ui/panels.ts` + `index.html`, and new example files.
+Lane G (fixes from shots/audit/AUDIT.md) waits for lane D's report; it takes over `src/ui/*` after F lands.
+Lane C DONE (`2c38519`). Lane F DONE (`829929a`). Lane H added 2026-10-13: AqAdvisor saltwater, `../Glass-Box-aq-salt` /
+`aq-salt`, launch config `aq-salt` 5333 (aq mode; needs `aq-proxy` 8787); owns `data/aqadvisor.*`, `worker/*`, and the
+salt switch-off in the AqAdvisor code. Lane E also re-saves the examples and fills the reef example when it lands.
+**Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_e1923781-40bc-48d3-84f3-ed380e471779`
+("Lanes coordinator"). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
+and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says
+what landed (commit), what is still open, and which files are now free. The coordinator then sends Nathan the prompts
+for any chats that can start now. If a prompt is still waiting when another lane opens, it sends all waiting prompts again
+in one new message. Every new lane prompt includes this protocol. Questions for Nathan stay in the lane's own chat.
+Lane E (corals + live rock as items) OPENED 2026-10-13 early, per lane A: A's change in `render/items.ts` is a ~4-line
+hook in the plant branch of itemMesh and A does not touch `scene/items.ts`. E: `../Glass-Box-corals` / `corals`, launch
+config `corals` 5323; owns `scene/items.ts`, the non-plant branches of `render/items.ts`, new `render/coral3d.ts`.
 
 ## Pan stays put (2026-10-13)
 

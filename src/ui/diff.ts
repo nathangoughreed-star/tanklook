@@ -111,6 +111,7 @@ export function tankDiff(a: TankSetup, b: TankSetup, u: Units): DiffItem[] {
   // water
   add(a.water.on, b.water.on, on => (on ? 'Water' : 'Dry'), ['water.on']);
   if (a.water.on && b.water.on) {
+    add(!!a.water.salt, !!b.water.salt, salt => (salt ? 'Saltwater' : 'Freshwater'), ['water.salt']);
     add(a.water.level, b.water.level, (lv, side) => (lv >= 1 ? 'Water full' : `Water ${len(waterY((side === 'A' ? a : b).tank, lv))} deep`), (to, from) => setWaterLevel(to, from.water.level));
     add([a.water.color, a.water.opacity], [b.water.color, b.water.opacity], (_, side) => {
       const t = side === 'A' ? a : b;

@@ -143,6 +143,11 @@ export const SUBSTRATES: Record<PresetSubstrate, SubstrateLook> = {
     shades: ['#2a2a2e', '#1f1f22', '#36363b', '#18181a', '#414147'] },
   black:  { label: 'Black sand', kind: 'sand', base: '#222225', shades: ['#38383c', '#151517', '#4a4a50'], size: [1.5, 3.5], tile: 40 },
   white:  { label: 'White sand', kind: 'sand', base: '#ddd2bb', shades: ['#efe7d6', '#c9bc9f', '#f7f2e6'], size: [1.5, 3.5], tile: 40 },
+  // marine (2026-10-13): oolitic aragonite is a bright, fine, faintly pink-cream sand; crushed coral is coarse,
+  // chalky white and cream chips with the odd pink or grey fragment (drawn as flat chips: pebble shading made it grey)
+  aragonite: { label: 'Aragonite sand (marine)', kind: 'sand', base: '#e9e3d4', shades: ['#f6f2e8', '#ddd3bf', '#fbf8f1', '#e8d9cc'], size: [1.2, 3], tile: 40 },
+  coral:  { label: 'Crushed coral (marine)', kind: 'sand', base: '#bdb4a2', size: [2.5, 6.5], tile: 70,
+    shades: ['#efe9dc', '#e2d8c4', '#f7f3ea', '#d3c7ae', '#e8d6cc', '#b9b2a6', '#f1e4d2', '#ddd5c9', '#a8a196'] },
 };
 const rgbOf = (hex: string) => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16));
 const rgbStr = (c: number[], k = 1, a = 1) => `rgba(${c.map(v => Math.round(Math.min(255, Math.max(0, v * k)))).join(',')},${a})`;

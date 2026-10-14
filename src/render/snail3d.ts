@@ -57,11 +57,12 @@ function shellGeometry(s: Shell3D, footH: number) {
   const { g, cap } = rawShell(s), T = s.turns * Math.PI * 2, k = Math.log(s.grow) / (Math.PI * 2);
   // the coil's direction of growth at the aperture = the way the aperture opens
   const open = new THREE.Vector3(k * Math.cos(T) - Math.sin(T), -k * s.drop, k * Math.sin(T) + Math.cos(T)).normalize();
-  const down = new THREE.Vector3(0.25, -1, 0).normalize(), q1 = new THREE.Quaternion().setFromUnitVectors(open, down);
+  const down = new THREE.Vector3(...(s.open ?? [0.25, -1, 0])).normalize(), q1 = new THREE.Quaternion().setFromUnitVectors(open, down);
   const flat = (v: THREE.Vector3) => v.clone().projectOnPlane(down).normalize();
   const spire = flat(new THREE.Vector3(0, 1, 0).applyQuaternion(q1)), want = flat(new THREE.Vector3(...s.axis));
   const ang = Math.atan2(new THREE.Vector3().crossVectors(spire, want).dot(down), spire.dot(want));
   g.applyQuaternion(new THREE.Quaternion().setFromAxisAngle(down, ang).multiply(q1));
+  if (s.tilt) g.rotateZ(s.tilt * Math.PI / 180); // lean the spire back (a hermit crab's shell lies on its body whorl)
   g.computeBoundingBox();
   const b = g.boundingBox!, sc = Math.min(s.size / (b.max.x - b.min.x), s.tall / (b.max.y - b.min.y));
   g.translate(-(b.min.x + b.max.x) / 2, -b.min.y, -(b.min.z + b.max.z) / 2).scale(sc, sc, sc).translate(s.at - 0.5, footH * 0.55, 0);
@@ -72,7 +73,7 @@ function shellGeometry(s: Shell3D, footH: number) {
 }
 
 /** The shell's paint along its own coordinates: base by side of the whorl, then the species' pattern. */
-function shellTexture(s: Shell3D, sp: SnailSpec) {
+function shellTexture(s: Shell3D, sp: Pick<SnailSpec, 'shell' | 'mark'>) {
   const W = 1024, H = 128, c = document.createElement('canvas'); c.width = W; c.height = H;
   const x = c.getContext('2d')!, [dk, md, lt] = sp.shell;
   // around the whorl: v 0 = outer edge, 0.25 = top (toward the spire), 0.5 = inner, 0.75 = underside
@@ -159,6 +160,12 @@ function tentacleGeometry(s: Shell3D, h: number, side: number) {
   return g;
 }
 
+/** A shell on its own (unit frame, its bottom at lift x 0.55): a snail's, or the one a hermit crab carries. */
+export function shellMesh(key: string, s: Shell3D, look: Pick<SnailSpec, 'shell' | 'mark'>, lift = 0) {
+  let g = geoCache.get(key + ':shell'); if (!g) { g = shellGeometry(s, lift); g.userData.keep = true; geoCache.set(key + ':shell', g); }
+  return new THREE.Mesh(g, mat('shell:' + key, () => new THREE.MeshBasicMaterial({ map: shellTexture(s, look), vertexColors: true, side: THREE.DoubleSide })));
+}
+
 const FOOT_H = 0.22; // a muscular foot, not a wafer: it reads as a body from the side and edge-on on the glass
 
 /** The 3D snail for a card of width w: shell, foot, tentacles; origin at the sole under the card centre. */
@@ -168,7 +175,7 @@ export function snailBody(art: string, w: number) {
     let g = geoCache.get(art + key); if (!g) { g = make(); g.userData.keep = true; geoCache.set(art + key, g); }
     return g;
   };
-  grp.add(new THREE.Mesh(geo(':shell', () => shellGeometry(s, FOOT_H)), mat('shell:' + art, () => new THREE.MeshBasicMaterial({ map: shellTexture(s, sp), vertexColors: true, side: THREE.DoubleSide }))));
+  grp.add(shellMesh(art, s, sp, FOOT_H));
   const skin = mat('foot:' + art, () => {
     const m = new THREE.MeshBasicMaterial({ vertexColors: true, color: new THREE.Color(sp.foot[1]).lerp(new THREE.Color(sp.foot[0]), 0.4) });
     return m;

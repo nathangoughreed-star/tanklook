@@ -1,0 +1,434 @@
+{
+ "version": 9,
+ "name": "Reef (placeholder)",
+ "units": "in",
+ "tanks": [
+  {
+   "tank": {
+    "L": 609.5999999999999,
+    "H": 457.2,
+    "D": 457.2
+   },
+   "camera": {
+    "dist": 3000,
+    "az": -12,
+    "el": 8,
+    "zoom": 1
+   },
+   "render": {
+    "edge": "a2c",
+    "grid": false,
+    "rim": false,
+    "edges": true,
+    "beams": false,
+    "pop": 0.15,
+    "bg": "black",
+    "bgSides": [
+     "back"
+    ],
+    "bgArc": 145,
+    "glass": "auto",
+    "glassType": "standard"
+   },
+   "light": {
+    "type": "spot",
+    "count": 3,
+    "rows": 2,
+    "pattern": "grid",
+    "spacing": 0,
+    "cone": 52,
+    "bright": 1,
+    "kelvin": 14000,
+    "room": 0.15,
+    "height": 50
+   },
+   "substrate": {
+    "show": true,
+    "type": "aragonite",
+    "custom": {
+     "grain": "sand",
+     "color": "#cbb894",
+     "grain2": "none",
+     "color2": "#6f6556",
+     "share": 30,
+     "mix": 0.5
+    },
+    "fl": 25.4,
+    "fr": 25.4,
+    "bl": 50.8,
+    "br": 50.8
+   },
+   "layout": {
+    "id": "stones",
+    "seed": 4
+   },
+   "terrain": {
+    "on": false,
+    "cols": 7,
+    "rows": 0,
+    "h": []
+   },
+   "water": {
+    "on": true,
+    "level": 1,
+    "color": "#2f86d0",
+    "opacity": 0.22,
+    "salt": true
+   },
+   "lid": "open",
+   "stand": {
+    "show": false,
+    "height": 762,
+    "finish": "black",
+    "style": "cabinet",
+    "table": {
+     "shape": "rect",
+     "L": 914.4,
+     "D": 457.2,
+     "x": 0,
+     "z": 0
+    }
+   },
+   "wall": {
+    "show": true,
+    "side": "back",
+    "color": "#d8d2c6"
+   },
+   "person": {
+    "show": false,
+    "height": 1750,
+    "side": "left"
+   },
+   "fish": [],
+   "items": [
+    {
+     "id": 1,
+     "kind": "stone",
+     "variant": "lava",
+     "seed": 315197007,
+     "x": 460.2139459007307,
+     "depth": 231.97194326014258,
+     "lift": 0,
+     "yaw": 157,
+     "pitch": -5,
+     "tilt": 4,
+     "size": 158
+    },
+    {
+     "id": 2,
+     "kind": "stone",
+     "variant": "lava",
+     "seed": 135950800,
+     "x": 581.9228327699008,
+     "depth": 256.2115177308783,
+     "lift": 0,
+     "yaw": -62,
+     "pitch": 6,
+     "tilt": -3,
+     "size": 71
+    },
+    {
+     "id": 3,
+     "kind": "stone",
+     "variant": "lava",
+     "seed": 380138085,
+     "x": 500.1536829191919,
+     "depth": 319.6626613048962,
+     "lift": 0,
+     "yaw": 133,
+     "pitch": -4,
+     "tilt": -3,
+     "size": 91
+    },
+    {
+     "id": 4,
+     "kind": "stone",
+     "variant": "lava",
+     "seed": 300623082,
+     "x": 384.1294112938232,
+     "depth": 293.0227680309684,
+     "lift": 0,
+     "yaw": 138,
+     "pitch": -3,
+     "tilt": 3,
+     "size": 97
+    },
+    {
+     "id": 5,
+     "kind": "stone",
+     "variant": "lava",
+     "seed": 945444285,
+     "x": 324.31939731561476,
+     "depth": 231.04042515094244,
+     "lift": 0,
+     "yaw": -173,
+     "pitch": -6,
+     "tilt": 0,
+     "size": 60
+    },
+    {
+     "id": 6,
+     "kind": "stone",
+     "variant": "lava",
+     "seed": 357038214,
+     "x": 358.0086054215129,
+     "depth": 181.6398546563221,
+     "lift": 0,
+     "yaw": 27,
+     "pitch": -2,
+     "tilt": 6,
+     "size": 70
+    },
+    {
+     "id": 7,
+     "kind": "stone",
+     "variant": "lava",
+     "seed": 513613515,
+     "x": 478.1310207636767,
+     "depth": 139.76515030840596,
+     "lift": 0,
+     "yaw": -73,
+     "pitch": -1,
+     "tilt": 6,
+     "size": 78
+    },
+    {
+     "id": 8,
+     "kind": "stone",
+     "variant": "lava",
+     "seed": 74167908,
+     "x": 541.1591332789676,
+     "depth": 186.23833200835313,
+     "lift": 0,
+     "yaw": 132,
+     "pitch": 10,
+     "tilt": 3,
+     "size": 58
+    },
+    {
+     "id": 9,
+     "kind": "stone",
+     "variant": "lava",
+     "seed": 985557714,
+     "x": 438.1219066782095,
+     "depth": 238.55330482831957,
+     "lift": 87.29242414262147,
+     "yaw": 108,
+     "pitch": 2,
+     "tilt": 0,
+     "size": 57
+    },
+    {
+     "id": 10,
+     "kind": "stone",
+     "variant": "lava",
+     "seed": 361423027,
+     "x": 445.66902337622287,
+     "depth": 217.48376124247906,
+     "lift": 87.29242414262147,
+     "yaw": -87,
+     "pitch": -2,
+     "tilt": 2,
+     "size": 48
+    },
+    {
+     "id": 11,
+     "kind": "stone",
+     "variant": "lava",
+     "seed": 100053588,
+     "x": 589.5999999999999,
+     "depth": 391.68675793405265,
+     "lift": 0,
+     "yaw": 132,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 27
+    },
+    {
+     "id": 12,
+     "kind": "stone",
+     "variant": "lava",
+     "seed": 764083424,
+     "x": 474.6134334393098,
+     "depth": 306.25076494350617,
+     "lift": 0,
+     "yaw": 116,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 24
+    },
+    {
+     "id": 13,
+     "kind": "stone",
+     "variant": "lava",
+     "seed": 928499438,
+     "x": 312.2123817914961,
+     "depth": 200.18533204108624,
+     "lift": 0,
+     "yaw": -91,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 30
+    },
+    {
+     "id": 14,
+     "kind": "stone",
+     "variant": "lava",
+     "seed": 160318796,
+     "x": 543.3848968920929,
+     "depth": 296.9464236899038,
+     "lift": 0,
+     "yaw": 104,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 22
+    },
+    {
+     "id": 15,
+     "kind": "stone",
+     "variant": "lava",
+     "seed": 657141582,
+     "x": 286.6231231555969,
+     "depth": 345.6020297771997,
+     "lift": 0,
+     "yaw": -7,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 31
+    },
+    {
+     "id": 16,
+     "kind": "stone",
+     "variant": "lava",
+     "seed": 686212914,
+     "x": 323.48063201818536,
+     "depth": 129.33949426047548,
+     "lift": 0,
+     "yaw": 115,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 27
+    },
+    {
+     "id": 17,
+     "kind": "stone",
+     "variant": "lava",
+     "seed": 318076652,
+     "x": 276.5339804602989,
+     "depth": 372.90429577675343,
+     "lift": 0,
+     "yaw": -142,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 32
+    },
+    {
+     "id": 18,
+     "kind": "stone",
+     "variant": "lava",
+     "seed": 618782421,
+     "x": 443.6545207984455,
+     "depth": 43.44775013500288,
+     "lift": 0,
+     "yaw": 18,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 19
+    },
+    {
+     "id": 19,
+     "kind": "stone",
+     "variant": "lava",
+     "seed": 82697719,
+     "x": 529.9740704957154,
+     "depth": 360.77622029866325,
+     "lift": 0,
+     "yaw": 35,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 30
+    },
+    {
+     "id": 20,
+     "kind": "stone",
+     "variant": "lava",
+     "seed": 798074805,
+     "x": 498.2723778979565,
+     "depth": 92.70915187820933,
+     "lift": 0,
+     "yaw": 113,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 28
+    },
+    {
+     "id": 21,
+     "kind": "stone",
+     "variant": "lava",
+     "seed": 481082269,
+     "x": 320.8084625902955,
+     "depth": 287.84863848177014,
+     "lift": 0,
+     "yaw": -109,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 20
+    },
+    {
+     "id": 22,
+     "kind": "stone",
+     "variant": "lava",
+     "seed": 717334399,
+     "x": 437.708236122545,
+     "depth": 391.42432892963404,
+     "lift": 0,
+     "yaw": -180,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 20
+    },
+    {
+     "id": 23,
+     "kind": "stone",
+     "variant": "lava",
+     "seed": 484469520,
+     "x": 357.142378291573,
+     "depth": 119.32396564347066,
+     "lift": 0,
+     "yaw": 9,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 17
+    },
+    {
+     "id": 24,
+     "kind": "stone",
+     "variant": "lava",
+     "seed": 758945226,
+     "x": 464.2005580532238,
+     "depth": 334.07889959935403,
+     "lift": 0,
+     "yaw": 150,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 20
+    },
+    {
+     "id": 25,
+     "kind": "stone",
+     "variant": "lava",
+     "seed": 907502685,
+     "x": 491.7077979923193,
+     "depth": 80.23866721131063,
+     "lift": 0,
+     "yaw": 135,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 30
+    }
+   ]
+  }
+ ],
+ "active": 0,
+ "camLock": true
+}

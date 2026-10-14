@@ -52,9 +52,9 @@ export interface Plan {
 }
 /**
  * A thin limb (legs, antennae) as a tube on each flank, 3D only: rooted on the body at (u, v), running to the root +
- * `to` (widths: along the body, down, outward), bowed toward root + `via`; radius `r` at the root, tapering.
+ * `to` (widths: along the body, down, outward), bowed toward root + `via`; radius `r` at the root, tapering; colour `c`.
  */
-export interface Limb { u: number; v: number; to: [number, number, number]; via?: [number, number, number]; r: number }
+export interface Limb { u: number; v: number; to: [number, number, number]; via?: [number, number, number]; r: number; c?: string } // c: own colour (default: the back's)
 
 /** [top, bottom] at u from a closed outline (top from the nose back, bottom forward), linear between points. */
 function outlineProfile(o: [number, number][]) {
@@ -258,7 +258,8 @@ export function drawPlan(p: Plan, ctx: Ctx, P: Proj, W: number) {
 /** The shrimp drawing's outline (shared by the card and the 3D body). */
 const SHRIMP_OUTLINE: [number, number][] = [[1, -0.075], [0.86, -0.07], [0.78, -0.11], [0.6, -0.125], [0.42, -0.12], [0.28, -0.09], [0.16, -0.05], [0.13, 0.0],
   [0.16, 0.05], [0.28, 0.07], [0.42, 0.08], [0.6, 0.075], [0.75, 0.065], [0.84, 0.04], [0.86, -0.02]];
-interface ShrimpSpec { body: [string, string]; dots?: string; a?: number; glass?: number; dashes?: string; stripe?: string }
+// stripeW: the back stripe's width (widths, default 0.007); ant: antenna colour and length (x the default)
+interface ShrimpSpec { body: [string, string]; dots?: string; a?: number; glass?: number; dashes?: string; stripe?: string; stripeW?: number; ant?: [string, number]; back?: string } // back: a broad band over the upper flank
 /** Outline depth at u: [top, bottom] (v), read off the drawing's outline. */
 function shrimpSpan(u: number): [number, number] {
   const top = SHRIMP_OUTLINE.slice(0, 8).reverse(), bot = SHRIMP_OUTLINE.slice(7);
@@ -271,8 +272,9 @@ function shrimpSpan(u: number): [number, number] {
 /** Glass-shrimp markings (Amano): rows of broken dark dashes and dots along the flank, a pale stripe down the back. */
 function shrimpMarks(ctx: Ctx, P: Proj, W: number, s: ShrimpSpec) {
   const r = rng(7);
+  if (s.back) for (let i = 0; i < 40; i++) { const u = 0.17 + 0.68 * i / 40, [t, b] = shrimpSpan(u); soft(ctx, P, u, u + 0.03, t - 0.02, t + (b - t) * 0.42, s.back, 0.9, [0, 0], [0, 0.02]); }
   if (s.stripe) {
-    ctx.strokeStyle = s.stripe; ctx.lineWidth = 0.007 * W; ctx.beginPath();
+    ctx.strokeStyle = s.stripe; ctx.lineWidth = (s.stripeW ?? 0.007) * W; ctx.beginPath();
     for (let i = 0; i <= 40; i++) { const u = 0.2 + 0.62 * i / 40, [t, b] = shrimpSpan(u), [x, y] = P(u, t + (b - t) * 0.07); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
     ctx.stroke();
   }
@@ -309,8 +311,9 @@ function drawShrimp(s: ShrimpSpec, ctx: Ctx, P: Proj, W: number) {
     if (s.dots) for (let i = 0; i < 14; i++) blob(l, P, W, 0.2 + i * 0.045, 0.02 + (i % 2) * 0.012, 0.008, 0.005, s.dots, 0.8);
     soft(l, P, 0.2, 0.86, -0.13, -0.09, '#ffffff', 0.18, [0.05, 0.05], [0.01, 0.02]);
   });
-  ctx.strokeStyle = hexA(s.body[0], 0.8); ctx.lineWidth = 0.004 * W;
-  if (limbs) for (const k of [0, 1]) { const [x0, y0] = P(0.88, -0.07), [x1, y1] = P(0.3 - k * 0.12, -0.17 + k * 0.02); ctx.beginPath(); ctx.moveTo(x0, y0); ctx.quadraticCurveTo(...P(0.75, -0.2), x1, y1); ctx.stroke(); }
+  const [ac, al] = s.ant ?? [s.body[0], 1];
+  ctx.strokeStyle = hexA(ac, 0.8); ctx.lineWidth = 0.004 * W;
+  if (limbs) for (const k of [0, 1]) { const [x0, y0] = P(0.88, -0.07), [x1, y1] = P(0.88 - (0.58 + k * 0.12) * al, -0.17 + k * 0.02); ctx.beginPath(); ctx.moveTo(x0, y0); ctx.quadraticCurveTo(...P(0.75, -0.2), x1, y1); ctx.stroke(); }
   if (style.features) eye(ctx, P, W, 0.86, -0.06, 0.018, ['#3a2a22', '#120c0a']);
 }
 
@@ -443,6 +446,56 @@ export const PLANS: Record<string, Plan> = {
       { k: 'spots', n: 14, u0: 0.25, u1: 0.85, v0: -0.12, v1: 0.06, r: 0.016, c: '#3e3c1e', a: 0.6 }, { k: 'band', u0: 0.4, u1: 0.8, v0: 0.125, v1: 0.15, c: '#34321e', a: 0.6, f: 0.025 },
       ...[0.8, 0.818, 0.836].map(u => ({ k: 'poly' as const, pts: [[u, 0.02], [u + 0.007, 0.02], [u - 0.004, 0.075], [u - 0.011, 0.075]] as [number, number][], c: '#5a3a1e', a: 0.55 }))],
     eye: { r: 0.05, iris: ['#9ad0b8', '#1e2a24'], up: 0.3 } },
+  // ---------- marine (lane C, 2026-10-13) ----------
+  // ocellaris clownfish: orange, three white bars edged black (head, mid-body bulging forward, peduncle), fins edged black
+  ocellaris: { thick: 0.45, depth: 0.36, pedU: 0.2, ped: 0.065, peak: 0.55, snout: 0.6, shade: ['#c8561a', '#ec7a24', '#f09440'], tail: { type: 'round', h: 0.15, tint: '#e8762a', edge: '#1a1614' }, fin: '#e8762a',
+    dorsal: { u0: 0.24, u1: 0.7, h: 0.11, shape: 'round', edge: '#1a1614' }, anal: { u0: 0.24, u1: 0.44, h: 0.1, shape: 'round', edge: '#1a1614' }, pelvic: { u: 0.66, len: 0.09, tint: '#e8762a' },
+    marks: [{ k: 'bars', us: [0.81, 0.54, 0.26], w: 0.085, c: '#1a1614', a: 0.85 }, { k: 'bars', us: [0.81, 0.54, 0.26], w: 0.062, c: '#f6f4ee', a: 1 },
+      { k: 'blob', u: 0.57, v: -0.06, ru: 0.03, rv: 0.08, c: '#f6f4ee', a: 1 }],
+    finMarks: [{ k: 'bars', us: [0.54], w: 0.062, c: '#f6f4ee', a: 0.9 }], eye: { r: 0.032, iris: ['#d0702a', '#2a1206'] } },
+  // royal gramma: violet front half, yellow rear half, a black spot at the front of the dorsal, a dark line through the eye
+  royalgramma: { thick: 0.4, depth: 0.29, pedU: 0.18, ped: 0.05, peak: 0.55, snout: 0.45, shade: ['#6a2a8a', '#9a44b8', '#a85ac0'], tail: { type: 'notch', h: 0.14, tint: '#f0c020' }, fin: '#9a44b8',
+    dorsal: { u0: 0.2, u1: 0.72, h: 0.08, shape: 'round' }, anal: { u0: 0.2, u1: 0.45, h: 0.08, shape: 'round' }, pelvic: { u: 0.7, len: 0.16, thread: true, tint: '#9a44b8', angle: 45 },
+    marks: [{ k: 'band', u0: 0.1, u1: 0.5, v0: -1, v1: 1, c: '#f2c21e', a: 1, f: 0.06 }, { k: 'band', u0: 0.84, u1: 1, v0: -0.03, v1: -0.017, c: '#2a1430', a: 0.7, f: 0.005 }],
+    finMarks: [{ k: 'band', u0: 0, u1: 0.46, v0: -1, v1: 1, c: '#f2c21e', a: 0.95, f: 0.05 }, { k: 'blob', u: 0.67, v: -0.19, ru: 0.025, rv: 0.025, c: '#18121a', a: 0.9 }],
+    eye: { r: 0.03, iris: ['#7a3a8a', '#1a0a1e'] } },
+  // yellow tang: tall disc, long low-set snout, tall rounded dorsal and anal fins, a white scalpel on the peduncle
+  yellowtang: { scale: 0.012, thick: 0.22, angular: 0.5, depth: 0.56, pedU: 0.17, ped: 0.045, peak: 0.45, snout: 0.15, mouth: -0.03, shade: ['#d8b018', '#f2d02a', '#f6dc5a'], tail: { type: 'notch', h: 0.18, tint: '#f0cc2a' }, fin: '#f0cc2a',
+    dorsal: { u0: 0.2, u1: 0.76, h: 0.16, shape: 'round' }, anal: { u0: 0.2, u1: 0.58, h: 0.14, shape: 'round' }, pelvic: { u: 0.68, len: 0.08 },
+    marks: [{ k: 'blob', u: 0.2, v: 0, ru: 0.022, rv: 0.009, c: '#fbfaf2', a: 1 }, { k: 'blob', u: 0.62, v: -0.1, ru: 0.25, rv: 0.18, c: '#ffffff', a: 0.12 }],
+    eye: { r: 0.03, iris: ['#3a3020', '#0a0806'], dv: -0.06 } },
+  // firefish: slender, white with a yellow head, the rear turning orange-red to a dark red tail; tall front dorsal spike
+  firefish: { thick: 0.45, depth: 0.17, pedU: 0.18, ped: 0.035, peak: 0.6, snout: 0.5, mouth: -0.02, shade: ['#d8d2c4', '#f0ece2', '#f6f3ec'], tail: { type: 'round', h: 0.09, tint: '#a8241c' }, fin: '#d8c8b0',
+    dorsal: { u0: 0.24, u1: 0.76, h: 0.25, a: 0.85 }, anal: { u0: 0.2, u1: 0.48, h: 0.06, tint: '#d84a28' }, pelvic: { u: 0.74, len: 0.06 },
+    marks: [{ k: 'band', u0: 0.1, u1: 0.42, v0: -1, v1: 1, c: '#e0522a', a: 0.95, f: 0.08 }, { k: 'band', u0: 0.1, u1: 0.25, v0: -1, v1: 1, c: '#8a1a14', a: 0.6, f: 0.04 }, { k: 'blob', u: 0.94, v: -0.02, ru: 0.08, rv: 0.08, c: '#f2c83a', a: 0.85 }],
+    finMarks: [{ k: 'band', u0: 0, u1: 0.4, v0: -1, v1: 1, c: '#d84a28', a: 0.8, f: 0.05 }], eye: { r: 0.034, iris: ['#c8b890', '#2a2010'] } },
+  // banggai cardinal: silver with three black bars, white dots, tall dorsals, long pelvics, a deeply forked streamer tail
+  banggai: { thick: 0.38, depth: 0.42, pedU: 0.24, ped: 0.05, peak: 0.5, snout: 0.45, shade: ['#8a8a84', '#c8c8c0', '#e2e0dc'], tail: { type: 'fork', h: 0.22, tint: '#b8b8b0', edge: '#1a1a1a' }, fin: '#9a9a94',
+    dorsal: { u0: 0.36, u1: 0.68, h: 0.22, shape: 'swept' }, anal: { u0: 0.28, u1: 0.5, h: 0.18, shape: 'swept' }, pelvic: { u: 0.68, len: 0.16, tint: '#1e1e1e' },
+    marks: [{ k: 'bars', us: [0.885, 0.66, 0.42], w: 0.06, c: '#1a1a1a', a: 0.92 }, { k: 'spots', n: 34, u0: 0.24, u1: 0.4, v0: -0.12, v1: 0.14, r: 0.009, c: '#f6f6f0', a: 0.95 }],
+    finMarks: [{ k: 'spots', n: 30, u0: 0.2, u1: 0.55, v0: -0.4, v1: 0.4, r: 0.009, c: '#f6f6f0', a: 0.9 }, { k: 'bars', us: [0.42], w: 0.06, c: '#1a1a1a', a: 0.85 }],
+    eye: { r: 0.034, iris: ['#c8c0a0', '#1a1810'] } },
+  // six-line wrasse: orange-brown with six thin blue lines nose to tail, a dark spot on the peduncle, a greenish tail
+  sixline: { thick: 0.42, depth: 0.25, pedU: 0.18, ped: 0.05, peak: 0.55, snout: 0.4, shade: ['#4a4a7a', '#c8683a', '#7a7aa8'], tail: { type: 'round', h: 0.12, tint: '#6a9a7a' }, fin: '#8a8ab0',
+    dorsal: { u0: 0.2, u1: 0.74, h: 0.06, shape: 'round', edge: '#c8443a' }, anal: { u0: 0.2, u1: 0.46, h: 0.06, shape: 'round' }, pelvic: { u: 0.7, len: 0.06 },
+    marks: [...[-0.085, -0.055, -0.025, 0.005, 0.035, 0.065].map(v => ({ k: 'band' as const, u0: 0.2, u1: 0.97, v0: v - 0.007, v1: v + 0.007, c: '#3a58c8', a: 0.85, f: 0.006 })),
+      { k: 'blob', u: 0.21, v: -0.035, ru: 0.016, rv: 0.016, c: '#141418', a: 0.9 }],
+    eye: { r: 0.028, iris: ['#c8a040', '#2a1a08'] } },
+  // blue-green chromis: iridescent pale blue-green, deeply forked tail, long spiny dorsal
+  chromis: { thick: 0.38, depth: 0.33, pedU: 0.22, ped: 0.042, peak: 0.55, snout: 0.45, shade: ['#4a9a9a', '#8ad0c8', '#c8ece4'], tail: { type: 'fork', h: 0.19, tint: '#a8dcd4', a: 0.7 }, fin: '#a8dcd4',
+    dorsal: { u0: 0.3, u1: 0.72, h: 0.1, a: 0.7 }, anal: { u0: 0.3, u1: 0.48, h: 0.09, a: 0.7 }, pelvic: { u: 0.68, len: 0.1 },
+    marks: [{ k: 'blob', u: 0.6, v: -0.08, ru: 0.25, rv: 0.1, c: '#d8fff6', a: 0.2 }], eye: { r: 0.036, iris: ['#7aa0a0', '#1a2a2a'] } },
+  // coral beauty: dwarf angel; deep blue-violet back and belly round an orange flank crossed by thin dark bars
+  coralbeauty: { scale: 0.016, thick: 0.35, depth: 0.45, pedU: 0.2, ped: 0.06, peak: 0.5, snout: 0.5, shade: ['#28287a', '#e0702a', '#32328a'], tail: { type: 'round', h: 0.17, tint: '#2a2a80' }, fin: '#2a2a80',
+    dorsal: { u0: 0.2, u1: 0.74, h: 0.1, shape: 'round', edge: '#5a8ad8' }, anal: { u0: 0.2, u1: 0.48, h: 0.1, shape: 'round', edge: '#5a8ad8' }, pelvic: { u: 0.68, len: 0.1, tint: '#d8682a' },
+    marks: [{ k: 'bars', us: [0.32, 0.38, 0.44, 0.5, 0.56, 0.62, 0.68, 0.74], w: 0.012, c: '#3a2a6a', a: 0.45 }, { k: 'blob', u: 0.9, v: 0.02, ru: 0.08, rv: 0.12, c: '#3a3aa0', a: 0.5 }],
+    eye: { r: 0.03, iris: ['#3a3aa0', '#0e0e2a'] } },
+  // yellow watchman goby: rests on the sand; yellow with faint bars and blue head spots, eyes high, rounded tail
+  watchman: { thick: 0.68, belly: 0.5, wide: 0.3, depth: 0.19, pedU: 0.18, ped: 0.045, peak: 0.65, back: 0.6, snout: 0.7, mouth: 0.02, shade: ['#c8a020', '#e8c838', '#f0d870'], tail: { type: 'round', h: 0.1, tint: '#e0c040' }, fin: '#e0c040',
+    dorsal: { u0: 0.2, u1: 0.62, h: 0.08, shape: 'round' }, anal: { u0: 0.2, u1: 0.45, h: 0.07, shape: 'round' }, pelvic: { u: 0.7, len: 0.07 },
+    marks: [{ k: 'bars', us: [0.3, 0.44, 0.58, 0.72], w: 0.05, c: '#a07a20', a: 0.3 }, { k: 'spots', n: 12, u0: 0.78, u1: 0.98, v0: -0.06, v1: 0.05, r: 0.008, c: '#5ab0e0', a: 0.85 }],
+    finMarks: [{ k: 'spots', n: 10, u0: 0.25, u1: 0.6, v0: -0.2, v1: -0.1, r: 0.008, c: '#5ab0e0', a: 0.7 }],
+    eye: { r: 0.027, iris: ['#c8a040', '#2a1a08'], dv: -0.12, up: 0.35 } },
   // ---------- bottom dwellers ----------
   bronzecory: { plates: true, thick: 0.72, belly: 0.9, wide: 0.5, pedT: 0.28, step: 0.18, noseW: 0.4, depth: 0.35, pedU: 0.18, ped: 0.06, peak: 0.6, back: 0.68, snout: 0.6, mouth: 0.06, shade: ['#4a5a48', '#8a8a62', '#d8c8a0'], tail: { type: 'fork', h: 0.15 }, fin: '#b0a888',
     dorsal: { u0: 0.5, u1: 0.68, h: 0.16, shape: 'sail' }, anal: { u0: 0.32, u1: 0.4, h: 0.06 }, adipose: true, pelvic: { u: 0.55, len: 0.08 },
@@ -533,6 +586,8 @@ Object.assign(PLANS, {
 const SHRIMP: Record<string, ShrimpSpec> = {
   cherryshrimp: { body: ['#b8242a', '#d8444a'] },
   amano: { body: ['#6e7a7c', '#94a0a0'], glass: 0.3, dashes: '#3a1e16', stripe: '#e8d8a0' },
+  // skunk cleaner (Lysmata amboinensis): red back split by a broad white stripe, orange-yellow flanks, long white antennae
+  cleanershrimp: { body: ['#c8281e', '#e8a838'], back: '#c42a20', stripe: '#f6f4ee', stripeW: 0.022, ant: ['#f4f2ea', 1.35] },
 };
 /**
  * 3D shrimp: the drawing's outline lofted; walking legs, swimmerets and antennae as tubes where the card paints them
@@ -545,8 +600,7 @@ const shrimpPlan = (s: ShrimpSpec): Plan => ({
   limbs: [
     ...[0, 1, 2, 3, 4].map(i => ({ u: 0.72 - i * 0.07, v: 0.045, to: [-0.03, 0.11, 0.03], via: [-0.005, 0.03, 0.04], r: 0.005 }) as Limb),
     ...[0, 1, 2, 3].map(i => ({ u: 0.42 - i * 0.07, v: 0.06, to: [-0.02, 0.05, 0.02], r: 0.004 }) as Limb),
-    { u: 0.88, v: -0.065, to: [-0.58, -0.1, 0.08], via: [-0.13, -0.13, 0.03], r: 0.003 },
-    { u: 0.88, v: -0.065, to: [-0.7, -0.08, 0.13], via: [-0.13, -0.12, 0.05], r: 0.003 },
+    ...[[0.58, -0.1, 0.08, -0.13, 0.03], [0.7, -0.08, 0.13, -0.12, 0.05]].map(([l, v, z, vv, vz]) => ({ u: 0.88, v: -0.065, to: [-l * (s.ant?.[1] ?? 1), v, z], via: [-0.13, vv, vz], r: 0.003, c: s.ant?.[0] }) as Limb),
   ],
 });
 const SHRIMP_PLANS = Object.fromEntries(Object.entries(SHRIMP).map(([k, s]) => [k, shrimpPlan(s)]));

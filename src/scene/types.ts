@@ -13,7 +13,7 @@ export type Background = 'black' | 'blue' | 'gradient' | 'grey' | 'frosted' | 'n
 export type BgSide = 'back' | 'left' | 'right' | 'front';
 export type GlassType = 'standard' | 'lowiron';
 export type LightType = 'flat' | 'spot' | 'tube' | 'led';
-export type SubstrateType = 'gravel' | 'pea' | 'clown' | 'blue' | 'onyx' | 'black' | 'white' | 'custom';
+export type SubstrateType = 'gravel' | 'pea' | 'clown' | 'blue' | 'onyx' | 'black' | 'white' | 'aragonite' | 'coral' | 'custom';
 /** Grain size of a custom substrate, finest to coarsest. */
 export type Grain = 'mud' | 'sand' | 'gravel' | 'pebble';
 /**

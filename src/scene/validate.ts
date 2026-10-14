@@ -192,7 +192,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       height: num(l.height, 50, ...LIMITS.lampH), // added 2026-10-08; older files: the old fixed 50 mm
     },
     substrate: {
-      show: bool(s.show, d.substrate.show), type: pick(s.type, ['gravel', 'pea', 'clown', 'blue', 'onyx', 'black', 'white', 'custom'] as const, 'gravel'),
+      show: bool(s.show, d.substrate.show), type: pick(s.type, ['gravel', 'pea', 'clown', 'blue', 'onyx', 'black', 'white', 'aragonite', 'coral', 'custom'] as const, 'gravel'),
       custom: (() => { // added 2026-10-13 (no version bump); older files: the default blend
         const c = (s.custom && typeof s.custom === 'object' ? s.custom : {}) as Record<string, unknown>, dc = d.substrate.custom;
         const hex = (v: unknown, f: string) => typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v) ? v.toLowerCase() : f;

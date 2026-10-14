@@ -35,7 +35,7 @@ export interface AqQuery {
 
 /** The stocking request for one tank, or null when there is nothing to ask (dry tank or no aquatic animals). */
 export function aqQuery(s: TankSetup): AqQuery | null {
-  if (!s.water.on) return null;
+  if (!s.water.on || s.water.salt) return null; // AqAdvisor is freshwater only (2026-10-13)
   const counts = new Map<string, number>();
   for (const f of s.fish) counts.set(f.species, (counts.get(f.species) ?? 0) + 1);
   const parts: string[] = [], skipped: AqQuery['skipped'] = [], standIns: AqQuery['standIns'] = [];
