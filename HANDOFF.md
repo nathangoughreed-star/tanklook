@@ -28,7 +28,7 @@ Living file. Project state and dated decisions go here; update in place.
   above / Straight on; #48 JSON rounded to 0.01, Copy button, units note; #49 plain fish-edge labels, PNG pixel sizes
   on hover; #50 the split hint says two tanks is the most.
 - Fixed in batch 2: a batch-1 comment had swallowed the line that disables the light-map box with no fixture.
-- Not done: #49's PNG crop/margins/A-B labels (G2's export code).
+- #49's PNG crop and A/B labels landed in G2's batch 2 (`f7b2cc3`); the start menu hint now says "wheel or pinch".
 
 ## Lane G2: core audit fixes (2026-10-14; branch `core-fixes`, port 5363; owns src/interact, src/scene, src/render minus lane I's files)
 Plan approved by Nathan (batches in severity order). Pictures: `shots/g2/` in the main checkout (before = `shots/audit/`).
