@@ -550,8 +550,9 @@ export const PLANS: Record<string, Plan> = {
     anal: { at: 0.48, len: 0.26, h: 0.1, spines: 0.25, nSp: 3, spineH: [0.04, 0.06], rake: 0.5, trail: 0.04, a: 0.85 }, pelvic: { u: 0.64, len: 0.1, w: 1.2 },
     marks: [{ k: 'spots', n: 12, u0: 0.3, u1: 0.8, v0: -0.05, v1: 0.15, r: 0.045, c: '#c8642a', a: 0.6 }, { k: 'blob', u: 0.24, v: -0.02, ru: 0.04, rv: 0.04, c: '#d8702a', a: 0.9 }, { k: 'blob', u: 0.24, v: -0.02, ru: 0.022, rv: 0.022, c: '#141414', a: 0.95 }],
     eye: { r: 0.03, iris: ['#c84a2a', '#3a1208'] } },
-  goldfish: { thick: 0.55, depth: 0.52, pedU: 0.32, ped: 0.06, peak: 0.45, snout: 0.75, shade: ['#c8642a', '#e88a3a', '#f0b87a'], tail: { type: 'double', h: 0.3, tint: '#e8964e', a: 0.75 }, fin: '#ec9e5e',
-    dorsal: { u0: 0.42, u1: 0.68, h: 0.14, shape: 'round', a: 0.75 }, anal: { u0: 0.38, u1: 0.48, h: 0.1, shape: 'round', a: 0.75 }, pelvic: { u: 0.7, len: 0.1 },
+  // fantail (Nathan 2026-10-14): egg-shaped body, a paired double caudal that splits and spreads sideways (seen from above), larger paired fins
+  goldfish: { thick: 0.68, depth: 0.52, pedU: 0.32, ped: 0.06, peak: 0.45, snout: 0.75, shade: ['#c8642a', '#e88a3a', '#f0b87a'], tail: { type: 'notch', h: 0.3, split: 45, tint: '#e8964e', a: 0.75 }, fin: '#ec9e5e',
+    dorsal: { u0: 0.42, u1: 0.68, h: 0.14, shape: 'round', a: 0.75 }, anal: { u0: 0.38, u1: 0.48, h: 0.1, shape: 'round', a: 0.75 }, pelvic: { u: 0.7, len: 0.15, w: 1.4 }, pec: { s: 2 },
     marks: [{ k: 'blob', u: 0.65, v: -0.08, ru: 0.2, rv: 0.14, c: '#ffffff', a: 0.12 }], eye: { r: 0.035, iris: ['#2a2420', '#0a0806'] } },
   // marbled hatchetfish: straight back, deep keel of a belly (most of the depth under the centre line), upturned mouth,
   // big high eye, small dorsal set far back over a long anal fin; silvery with dark marbled bands slanting across the keel
