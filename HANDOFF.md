@@ -2,6 +2,36 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane J2: performance leftovers (2026-10-14; branch `perf`, port 5373; pushed to main)
+- **Frosted background (render/viewer.ts `frostCull`):** the frosted film is three's transmission material, and three
+  draws every opaque mesh a second time (4x MSAA, half float, viewport size) into the picture the film blurs. On the
+  iwagumi example (the only example with Frosted white) that pass was half the frame. Meshes inside the tank are now
+  left out of it unless the eye is outside one of the film's faces (from behind, or a film all round), via a per-frame
+  onBeforeRender hook that sets drawRange.count = -1 in off-screen passes only. Visible change, approved by Nathan
+  (2026-10-14, "frost change is fine"): plants and fish no longer cast a faint blurred shadow on the film
+  (`shots/j2_frost_before_after.png`, `j2_frost_zoom.png` in the perf worktree). Iwagumi GPU **43 -> 26 ms** at
+  1050x850 (timer queries, alternating frames); the film's pass itself still costs ~5-8 ms (see Open).
+- **Light output fields (render/build.ts envKey):** watts, tech, par, mapUnit only feed uniforms, so they no longer force a
+  full rebuild (iwagumi Power step 243 -> 158 ms; build 'same'). The ~100 ms left is `lightOut` in scene/lightout.ts
+  re-running for each new wattage (lane K2's file). test/incremental.test.ts pins it; incrementalCheck has a "light power" edit.
+- **Panel sync() (ui/panels.ts):** the store listener refreshes only the groups whose inputs changed (setup minus fish /
+  items / camera; species list; item kinds; camera; the selected item minus its position). Direct `sync()` calls from
+  the panel's own handlers stay full (they put back refused typed values). Per drag step **6-7 -> ~0.5 ms** (fish 0.9,
+  item 0.6, orbit 0.3, against 0.4 / 0.4 / 0 with the panel detached).
+- **Tried and dropped: plant depth pre-pass** (a depth-only copy of each plant, polygon offset 1/1, drawn first): 0 px
+  differ, but measured with alternating frames it made planted **slower** (22 -> 33 ms GPU); the first sequential runs
+  that looked like a 3-8 ms gain were load noise from other lanes. Lesson: on this shared machine, only A/B timings
+  measured with alternating frames count.
+- **Proof:** incrementalCheck.runAll 133 edits (121 incremental), 0 differ (one run had a single 1 px flicker on
+  paludarium / stone turn that did not repeat in two re-runs; no new code runs on paludarium); after merging main,
+  iwagumi + planted + split 57 edits, 0 differ.
+- **Open:** (1) the film's own transmission pass (~5-8 ms on iwagumi) can only go if the frost is drawn by our own shader
+  at lower resolution, which means changing the frost hook in render/lighting.ts (K2's file). (2) `lightOut` ~100 ms
+  per new wattage (K2). (3) Steady draw on non-frost big tanks is ~18-22 ms GPU at 1050x850, mostly the lit plant shader
+  (~7 ms on iwagumi); no change from J2's side found that helps.
+- Files touched: render/viewer.ts (frostCull + helpers), render/build.ts (envKey), render/incrementalCheck.ts (one
+  edit), ui/panels.ts (sync guard + listener), test/incremental.test.ts.
+
 ## Lane K2: light output follow-ups (2026-10-14; branch `light-output`, port 5383)
 - Owns scene/lightout.ts, test/lightout.test.ts, ui/lightHover.ts, reference/par-calibration-data.md, render/lighting.ts
   (carved out from J2), the Lighting rows in index.html / ui/panels.ts.
