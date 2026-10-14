@@ -49,15 +49,18 @@ describe('split tanks', () => {
     expect(st.scene.tanks.length).toBe(1); expect(st.tank.lid).toBe('glass'); expect(st.scene.active).toBe(0);
     st.undo(); expect(st.scene.tanks.length).toBe(2);
   });
-  it('locked cameras move together; unlocked they move apart; re-locking snaps to the original tank', () => {
+  it('locked cameras move together; unlocked they move apart; re-locking snaps to the view moved last (audit #21)', () => {
     const st = new Store(defaultScene()); st.splitTank();
     st.cam(c => { c.az = 30; });
     expect(st.scene.tanks.map(t => t.camera.az)).toEqual([30, 30]);
     st.setCamLock(false); st.cam(c => { c.az = -40; c.zoom = 2; }); // active = tank B
     expect(st.scene.tanks.map(t => t.camera.az)).toEqual([30, -40]);
+    st.setCamLock(true); // B was moved last: A takes B's camera
+    expect(st.scene.tanks[0].camera).toEqual(st.scene.tanks[1].camera);
+    expect(st.scene.tanks[0].camera.az).toBe(-40);
+    st.setCamLock(false); st.cam(c => { c.az = 15; }, 0); // orbit in view A
     st.setCamLock(true);
-    expect(st.scene.tanks[1].camera).toEqual(st.scene.tanks[0].camera);
-    expect(st.scene.tanks[1].camera.az).toBe(30);
+    expect(st.scene.tanks.map(t => t.camera.az)).toEqual([15, 15]);
   });
   it('switching tanks keeps the selection when the same fish exists there', () => {
     const st = new Store(defaultScene()); const id = st.tank.fish[1].id; st.select(id);

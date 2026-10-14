@@ -140,6 +140,31 @@ export function setWaterUniforms(T: Tank, w: WaterSettings, pop = 0) {
   LU.uWater.value.set(T.L, waterY(T, w.level), T.D, w.on ? waterK(w.opacity) : 0);
   LU.uWCol.value.set(w.color);
 }
+/**
+ * The empty water's own colour (audit #18): drawn on the far faces of the water volume, as much of the water colour as
+ * the sightline crosses (same slab test and `waterK` as the tint on objects). It draws only where nothing is behind it
+ * (fragment depth pinned to the far plane, depth test "less"), so a fish, the background or the room wall, which are
+ * tinted by their own shader, are not tinted twice; what it colours is the empty page seen through the water.
+ */
+export function waterVolumeMaterial() {
+  return new THREE.ShaderMaterial({
+    uniforms: { uWater: LU.uWater, uWCol: LU.uWCol, uPopV: LU.uPop },
+    vertexShader: 'varying vec3 vP; void main() { vec4 w = modelMatrix * vec4(position, 1.0); vP = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }',
+    fragmentShader: `uniform vec4 uWater; uniform vec3 uWCol; varying vec3 vP;
+void main() {
+  vec3 o = cameraPosition, dv = vP - o;
+  dv = mix(dv, vec3(1e-3), step(abs(dv), vec3(1e-3)));
+  vec3 t0 = (vec3(0.0, 0.0, -uWater.z) - o) / dv, t1 = (vec3(uWater.x, uWater.y, 0.0) - o) / dv;
+  vec3 tn = min(t0, t1), tf = max(t0, t1);
+  float a = max(max(tn.x, tn.y), max(tn.z, 0.0)), b = min(min(tf.x, tf.y), min(tf.z, 1.0));
+  float f = 1.0 - exp(-uWater.w * max(b - a, 0.0) * length(vP - o));
+  gl_FragColor = vec4(uWCol * 0.85, f);
+  gl_FragDepth = 0.9999999;
+}`,
+    transparent: true, depthWrite: false, depthFunc: THREE.LessDepth, side: THREE.BackSide,
+  });
+}
+
 export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams = false) {
   const on = l.type !== 'flat'; LU.uMode.value = on ? 1 : 0;
   // light map: a spot bulb or a tube counts as one light; an LED bar's emitters share the output of four bulbs

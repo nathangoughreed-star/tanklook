@@ -21,7 +21,7 @@ Living file. Project state and dated decisions go here; update in place.
 
 ## Lane G2: core audit fixes (2026-10-14; branch `core-fixes`, port 5363; owns src/interact, src/scene, src/render minus lane I's files)
 Plan approved by Nathan (batches in severity order). Pictures: `shots/g2/` in the main checkout (before = `shots/audit/`).
-- **Batch 1 (pushed):**
+- **Batch 1 (pushed `16ecc27`):**
   - #1 water level: `nearestWater` (terrain.ts) fell back to "the deepest spot", which on a flat floor was the first
     grid corner (x = 12 mm), so every fish taller than the water piled at the left glass. Now: no spot deep enough =
     the nearest spot with 3/4 of the deepest water, or stay put if here already has that; only the height drops.
@@ -33,6 +33,17 @@ Plan approved by Nathan (batches in severity order). Pictures: `shots/g2/` in th
   - #29 the Stand is ON for new tanks (defaults.ts, Nathan's call). Files without a `stand.show` still load with it off
     (validate.ts no longer falls back to the default there).
   - #47 viewer map caption: "20° below" for negative elevations (viewmap.ts).
+- **Batch 2 (pushed):**
+  - #6 touch: two fingers pinch to zoom and pan together toward the point between them (pointer.ts; `zoomAt` takes the
+    midpoint's old position, viewer.ts). A second finger during a fish / piece / terrain drag is ignored; only the
+    first finger's lift ends a drag; a pinch undoes the first finger's orbit. Checked with synthetic touch events.
+  - #18 the water itself is tinted: `waterVolumeMaterial` (lighting.ts) on the far faces of the water volume (prism, or
+    a lathe for a bowl; build.ts addWater), same slab path + `waterK` as the object tint. Fragment depth pinned to the
+    far plane, so it draws only where nothing is behind (no double tint on fish, background or wall).
+  - #21 re-lock copies the camera of the view moved last (`Store.lastCam`), replacing Nathan's 2026-10-08 "snaps to the
+    original tank" (approved in the G2 plan). Camera moves stay out of undo (the view is not part of history).
+  - #49 PNG: cropped to the tanks' boxes (tank + stand + table, 6 % margin; `exportCrop`), A / B badges on split views.
+    Pixel sizes on the buttons stay with lane G.
 - Dev server: `preview_start core-fixes` hit the five-servers-per-folder limit, so Vite runs from the shell on 5363.
 
 ## Lane D: first-visit audit + review pack (2026-10-14; no src/ edits)

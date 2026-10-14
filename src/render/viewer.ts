@@ -62,6 +62,20 @@ export interface Measurement {
 
 const GAP = 8;
 
+/**
+ * The part of the canvas (CSS px) an exported PNG keeps (audit #49: it had wide empty margins): the tanks' boxes (tank,
+ * stand, table) with a margin of 6 % of the larger side, never past the canvas; split views keep their full width
+ * between the outer tanks, so both stay side by side as on screen.
+ */
+export function exportCrop(content: { x0: number; x1: number; y0: number; y1: number }[], W: number, H: number) {
+  if (!content.length) return { x: 0, y: 0, w: W, h: H };
+  const x0 = Math.min(...content.map(c => c.x0)), x1 = Math.max(...content.map(c => c.x1));
+  const y0 = Math.min(...content.map(c => c.y0)), y1 = Math.max(...content.map(c => c.y1));
+  const m = 0.06 * Math.max(x1 - x0, y1 - y0);
+  const x = Math.max(0, Math.floor(x0 - m)), y = Math.max(0, Math.floor(y0 - m));
+  return { x, y, w: Math.min(W, Math.ceil(x1 + m)) - x, h: Math.min(H, Math.ceil(y1 + m)) - y };
+}
+
 export class Viewer {
   readonly renderer: THREE.WebGLRenderer;
   readonly vps: Viewport[];
@@ -91,12 +105,14 @@ export class Viewer {
   private anchor: { i: number; nx: number; ny: number; u: number; v: number } | null = null;
   /**
    * Call before a wheel zoom in view i: the next draw pans so the point under the pointer stays under it (Nathan
-   * 2026-10-13). Ticks that land before that draw keep the first tick's point.
+   * 2026-10-13). Ticks that land before that draw keep the first tick's point. A pinch passes where its fingers' midpoint
+   * was (`fromX`, `fromY`): the point that was there goes to where the midpoint is now, so it zooms and pans at once.
    */
-  zoomAt(i: number, clientX: number, clientY: number) {
+  zoomAt(i: number, clientX: number, clientY: number, fromX = clientX, fromY = clientY) {
     const vp = this.vps[i], w = this.shown[i]; if (!w || this.anchor?.i === i) return;
-    const r = this.host.getBoundingClientRect(), nx = (clientX - r.left - vp.x) / vp.w * 2 - 1, ny = 1 - (clientY - r.top - vp.y) / vp.h * 2;
-    this.anchor = { i, nx, ny, u: w.cx + nx * w.hx, v: w.cy + ny * w.hy };
+    const r = this.host.getBoundingClientRect(), n = (x: number, y: number) => [(x - r.left - vp.x) / vp.w * 2 - 1, 1 - (y - r.top - vp.y) / vp.h * 2];
+    const [nx, ny] = n(clientX, clientY), [fx, fy] = n(fromX, fromY);
+    this.anchor = { i, nx, ny, u: w.cx + fx * w.hx, v: w.cy + fy * w.hy };
   }
   /** Ease every view back to its framing. */
   resetPan() {
@@ -204,10 +220,14 @@ export class Viewer {
       const { hx, hy, c } = frame(ak), vp = active[ak];
       this.setPan(a.i, (c.cx + a.nx * hx - a.u) * vp.w / (2 * hx), (a.v - c.cy - a.ny * hy) * vp.h / (2 * hy));
     }
+    this.content = [];
     for (const [k, vp] of active.entries()) {
       const S = vp.S, { fov, hx, hy, c } = frame(k);
       const pan = this.pans[vp.i]; c.cx -= pan.x * 2 * hx / vp.w; c.cy += pan.y * 2 * hy / vp.h; // the picture follows the pointer
       this.shown[vp.i] = { cx: c.cx, cy: c.cy, hx, hy };
+      // the tank + stand (+ table) on the canvas, CSS px: what an exported PNG is cropped to (audit #49)
+      const a = wins[k].all, px = (t: number) => vp.x + ((t - c.cx) / hx + 1) / 2 * vp.w, py = (t: number) => vp.y + (1 - ((t - c.cy) / hy + 1) / 2) * vp.h;
+      this.content[k] = { x0: Math.max(vp.x, px(a.x0)), x1: Math.min(vp.x + vp.w, px(a.x1)), y0: Math.max(vp.y, py(a.y1)), y1: Math.min(vp.y + vp.h, py(a.y0)), vx: vp.x, vw: vp.w };
       applyFraming(vp.cam, fov, vp.w, vp.h, c.cx, c.cy);
       const person = vp.scene?.getObjectByName('person');
       if (person) this.placePerson(vp, person, headroom(S), bottom(S));
@@ -365,14 +385,30 @@ export class Viewer {
     return t.toDataURL('image/jpeg', 0.75);
   }
 
-  // ---------- Export: render bigger, then save ----------
+  /** Per drawn view: the tank + stand's box on the canvas (CSS px) and the view's own left / width. */
+  private content: { x0: number; x1: number; y0: number; y1: number; vx: number; vw: number }[] = [];
+
+  // ---------- Export: render bigger, crop to the tanks, label split views, then save ----------
   exportPNG(mult: number): Promise<Blob> {
-    const dpr = this.renderer.getPixelRatio();
-    this.renderer.setPixelRatio(dpr * mult);
+    const dpr = this.renderer.getPixelRatio(), k = dpr * mult;
+    this.renderer.setPixelRatio(k);
     this.draw();
+    const out = exportCrop(this.content, this.canvas.width / k, this.canvas.height / k);
+    const t = document.createElement('canvas'); t.width = Math.round(out.w * k); t.height = Math.round(out.h * k);
+    const g = t.getContext('2d')!;
+    g.drawImage(this.canvas, out.x * k, out.y * k, t.width, t.height, 0, 0, t.width, t.height);
+    this.renderer.setPixelRatio(dpr); this.dirty = true;
+    if (this.content.length > 1) { // split: an A / B badge at the top-left of each view, as in the Compare chips
+      const fs = Math.round(Math.max(18, 0.035 * out.h) * k);
+      g.font = `700 ${fs}px system-ui, "Segoe UI", sans-serif`; g.textBaseline = 'top';
+      this.content.forEach((c, i) => {
+        const x = (Math.max(c.vx, out.x) - out.x) * k + fs * 0.6, y = fs * 0.6, label = 'AB'[i], w = g.measureText(label).width + fs * 0.8;
+        g.fillStyle = 'rgba(20, 24, 30, 0.75)'; g.fillRect(x, y, w, fs * 1.5);
+        g.fillStyle = '#fff'; g.fillText(label, x + fs * 0.4, y + fs * 0.25);
+      });
+    }
     return new Promise((resolve, reject) => {
-      this.canvas.toBlob(b => {
-        this.renderer.setPixelRatio(dpr); this.dirty = true;
+      t.toBlob(b => {
         if (b) resolve(b); else reject(new Error('The browser could not create the image (it may be too large; try a smaller size).'));
       }, 'image/png');
     });
