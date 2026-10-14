@@ -2,6 +2,15 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane D: first-visit audit + review pack (2026-10-14; no src/ edits)
+- `shots/audit/AUDIT.md`: 53 ranked findings with cropped, marked shots (headless Chrome, fresh profile = true first
+  visit, desktop + 375 px phone + 768 px tablet, on main `c67aeb7`: before lanes A / E / H merged). Both re-checked S1s
+  reproduced. Fix lane G owns the fixes.
+- `shots/review/REVIEW.md`: one picture page per item awaiting Nathan (R1-R12), listed under "Still open" at the bottom.
+- "Still open" and "Known gaps" at the bottom rewritten to the current state.
+- Tooling (scratchpad, not in the repo): a ~80-line CDP driver over Node's built-in WebSocket + system Chrome; each run
+  gets its own profile, so parallel agents do not share localStorage. Worth adding to scripts/ if audits recur.
+
 ## Tree frogs climb the glass (2026-10-14; Nathan: "like otos and snails cling to the glass")
 - White's tree frog has `cling: any` (glass, hardscape, floor). Shuffle / Add use the oto path (`spawnSnail`) with a new
   `on.above` = the water line, so a frog on the glass or hardscape is always out of the water; glass weight `GLASS_FROG`
@@ -1411,10 +1420,31 @@ no licensing, but stays illustrated).
 - **Phase 2 stack (Nathan, 2026-10-08):** Vite + plain TypeScript (no React); GitHub Pages via GitHub Actions;
   **public** repo. Only procedural placeholder art is committed until the art provenance policy is settled.
 
-## Still open
+## Still open (rewritten 2026-10-14, lane D)
 
-Release camera limits; species sizes review (list built, 37); art pipeline + provenance policy;
-whether lighting ships in v1; hardscape scope (now: roadmap steps 3-5); React vs plain TS for the UI layer (see Phase 2 plan).
+Waiting on Nathan, one picture page each in `shots/review/` (index `shots/review/REVIEW.md`; shots/ is local, gitignored):
+- R1 3D amphibians: accept, or fix the frog thighs (tubes) and the far-eye knob at 50°?
+- R2 head-on marking wrap (discus, tiger barb, clown loach, harlequin, GBR): pass? (the harlequin patch smudges head-on)
+- R3 3D rollout batch 1 (14 fish): pass? (ember / chili blocky head-on, honey gourami belly block, betta fin slab)
+- R4 delete the unused hand-drawn `drawTetra` / `drawGourami` (art/placeholder.ts)?
+- R5 3D shrimp: accept, or fix the comb-like leg fan head-on?
+- R6 3D snails: accept? (mystery spire low at the back, pale lip notch)
+- R7 male / female looks and sizes, 11 species (re-shot after the honey stripe and swordtail 115 mm changes)
+- R8 hardscape generators good enough to show? (coconut doorway sawtooth, thin wood, flat end caps)
+- R9 wall spill: follow the actual beams instead of the box-to-fixture model?
+- R10 adult sizes of all 57 species (fresh, salt, herps, inverts; females separate)
+- R11 tick Enforce HTTPS in GitHub Pages settings (http still serves 200, no redirect)
+- R12 shareable scene URLs (not built)
+First-visit audit: `shots/audit/AUDIT.md`, 53 findings (4 S1, 20 S2, 29 S3) with shots; fix lane G works from it.
+The S1s: water level piles every fish at x = 12 mm; phone label overflow widens the page; aquascape drag erratic in the
+straight-on view; first visit is an empty box (no pointer to Examples / Animals).
+Not decided, low priority: camera limits (orbit already clamps elevation -20..85; "release" never defined); fish ignore
+rocks (a bottom dweller can sit inside a stone); tank weight ignores hardscape.
+
+Settled since this list was first written (2026-10-08), kept here so nobody reopens them: plain TypeScript, no React
+(Phase 2 stack); lighting shipped (spot / tube / LED, light map, beams); art is procedural generators only (Nathan
+rejected bought / AI models, repo is public), so the provenance question is moot; hardscape steps 3-4 shipped, step 5
+(3D plants) shipped as lane A, corals + live rock as lane E.
 
 ## Phase 2 build decisions (2026-10-08)
 
@@ -1468,8 +1498,13 @@ whether lighting ships in v1; hardscape scope (now: roadmap steps 3-5); React vs
    (localStorage + JSON file), PNG export, undo/redo.
 Each module is a separable unit, so subagents can build in parallel once the types in `scene/` exist.
 
-## Known gaps
+## Known gaps (rewritten 2026-10-14, lane D)
 
-- Illustrated (generated) art for 34 of 37 species; image-based art still blocked on the provenance policy.
-- Layouts are presets only; custom placement is now planned (roadmap step 3, Nathan 2026-10-09).
-- Scene rebuilds fully on every change, including each drag step; fine at hundreds of fish, revisit if schools get big.
+- Every one of the 57 species (12 salt) draws in 3D from a generator (fish PLANS incl. shrimp, `HERP3D`, snail shells;
+  11 with a female look); flat cards remain only as the fallback / picking target. Watch items are R1-R6 above.
+- Mobile: usable but rough (audit S1 #2, S2 #6-8): no pinch zoom, page overflow from the tank label, half-screen panel.
+- No stocking guidance for salt tanks (AqAdvisor's marine calculator is broken on their side; Nathan: leave it off).
+- Scene rebuilds fully on every change; the audit timed Split / Undo / colour-temperature changes at 0.7-1.7 s, but on
+  software GL, so re-measure on real hardware before acting.
+- Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
+- Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
