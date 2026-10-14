@@ -20,8 +20,9 @@ const setup = (f: Fish[]): TankSetup => {
 describe('AqAdvisor request', () => {
   it('maps every species that lives in water, and only those; stand-ins only for the ones AqAdvisor lacks', () => {
     const map = ids as Record<string, { standIn?: boolean }>;
-    for (const sp of SPECIES) expect(sp.id in map, sp.id).toBe(sp.habitat !== 'land' && !sp.salt); // the app asks AqAdvisor for freshwater tanks only (its saltwater calculator: not wired yet)
-    expect(Object.keys(map).filter(k => map[k].standIn).sort()).toEqual(['axolotl', 'firenewt', 'firetoad']);
+    for (const sp of SPECIES) expect(sp.id in map, sp.id).toBe(sp.habitat !== 'land'); // marine ones: AqAdvisorMarine.php ids, kept for when it gives a % again
+    for (const sp of SPECIES) expect(!!(map[sp.id] as { salt?: boolean } | undefined)?.salt, sp.id).toBe(!!sp.salt && sp.habitat !== 'land');
+    expect(Object.keys(map).filter(k => map[k].standIn).sort()).toEqual(['axolotl', 'cleanershrimp', 'firenewt', 'firetoad', 'hermit', 'turbo']);
   });
 
   it('counts per species in a stable order, tank in inches', () => {
@@ -31,6 +32,13 @@ describe('AqAdvisor request', () => {
     expect(q.counted).toBe(16);
     expect(aqKey(q)).toBe(aqKey(aqQuery(setup([...fish('bronzecory', 6), ...fish('cardinal', 10)]))!));
     expect(aqAdvisorUrl(q)).toContain('AlreadySelected=200909300034%3A6%3A%3A%2C200909300039%3A10%3A%3A');
+  });
+
+  it('a marine animal in a fresh tank is not counted (its id belongs to the saltwater calculator)', () => {
+    const q = aqQuery(setup([...fish('neon', 8), ...fish('ocellaris', 2)]))!;
+    expect(q.counted).toBe(8);
+    expect(q.sel).not.toContain('201003260004');
+    expect(q.skipped.map(k => k.count)).toEqual([2]);
   });
 
   it('stand-ins are counted, land animals skipped; nothing to ask for a dry tank or land animals only', () => {
