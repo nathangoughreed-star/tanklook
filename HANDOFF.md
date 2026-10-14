@@ -2,6 +2,26 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+
+## Lane P: final polish, FINAL.md items 1-6 (2026-10-14; branch `final-fixes`, port 5473; Nathan approved via the coordinator; pushed to main)
+- **1 Status line** (`style.css .status`): `#status` is now a toast fixed to the panel's bottom (desktop: 14 px in, 322 wide;
+  phone: full width 64 px up, above the sticky Add row), so "at most 500 animals" / "already in the stocking list" show
+  wherever the panel is scrolled. Same element, same `status()` in panels.ts; a bad message gets a 4 px red left edge.
+- **2 Split tab vs Redo** (panels.ts `onDrawn`): the tab's clearance from the view tools is measured for every view
+  (`offsetLeft + offsetWidth + 8 - vp.x`), not only the one at x = 0, so on a 375 phone the B tab drops below Redo too.
+- **3 Touch targets** (`style.css`, `(pointer: coarse)` only): checkbox labels in #side 40 px tall (the label is the
+  target), sliders 40, colour inputs 44x40, section summaries 40, other summaries and #aqLink padded. Phone sweep with
+  every section open: 0 controls under 38 px (was ~41). Desktop unchanged.
+- **4 Custom terrain tick** (panels.ts terOn): `viewer.terrainEdit.on` is set before the edit, then `sync()`, so the
+  button reads "Done editing" and the eye map steps aside at once.
+- **5 Water lower-then-raise** (`scene/water.ts setWaterLevel`): fits the fish itself and remembers, per fish id, where
+  a lower level pushed it from (share of the water height, x, depth). Raising again starts from there, while the fish
+  is still exactly where the push left it (a drag in between wins). Test in `test/scene.test.ts`; the old
+  "proportional" test now compares against scale + keepInWater.
+- **6 Start from after salt -> fresh** (panels.ts setSalt): going fresh with the reef starter sets `layout.id = 'none'`
+  ("Bare tank"); the pieces stay.
+- Before/after pairs: `shots/final/P1..P4_*_pair.png` (main checkout, gitignored).
+
 ## Lane N: shareable scene links (2026-10-14; branch `share-url`; review item R12; pushed to main)
 
 - **What**: File toolbar button **Copy share link** (`index.html`, handler in `ui/panels.ts`). The link is the page

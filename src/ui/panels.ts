@@ -614,13 +614,14 @@ Cancel, then change the name, to keep both.`)) return;
   // ---------- Custom terrain ----------
   $('terOn').onchange = e => {
     const on = (e.target as HTMLInputElement).checked;
+    viewer.terrainEdit.on = on; // before the edit, so its sync already says "Done editing" and moves the map (final check item 4)
     store.edit(s => {
       // turning on starts from the floor you see (slopes or swamp land); a grid kept from before is reused
       if (on && !s.terrain.h.length) s.terrain = sampleTerrain(s, s.tank, s.terrain.cols);
       s.terrain.on = on;
       if (on) s.substrate.show = true; // shaped ground on a bare bottom: bring back the last substrate type
     });
-    viewer.terrainEdit.on = on; viewer.rebuild();
+    viewer.rebuild(); sync();
   };
   $('terCols').oninput = e => store.edit(s => {
     const cols = +(e.target as HTMLInputElement).value; if (cols === s.terrain.cols && s.terrain.h.length) return;
@@ -635,6 +636,7 @@ Cancel, then change the name, to keep both.`)) return;
   // ---------- Water ----------
   $('wOn').onchange = e => {
     const on = (e.target as HTMLInputElement).checked;
+    viewer.terrainEdit.on = on; // before the edit, so its sync already says "Done editing" and moves the map (final check item 4)
     store.edit(s => { s.water.on = on; });
     const n = S().fish.filter(f => { const sp = getSpecies(f.species); return sp && needsWater(sp); }).length;
     if (!on && n) status(`${n} fish hidden while the tank is dry. Turn Water back on to see them.`);
@@ -660,6 +662,8 @@ Cancel, then change the name, to keep both.`)) return;
     if (!!S().water.salt === salt) return;
     store.edit(s => {
       if (salt) s.water.salt = true; else delete s.water.salt;
+      // the reef starter is salt only: back in fresh water its pieces stay, but Start from no longer claims it (final check item 6)
+      if (!salt && s.layout.id === 'reef') s.layout = { ...s.layout, id: 'none' };
       // the other type's clear water becomes this type's clear water; any other colour is the user's and stays
       const [c, o] = salt ? FRESH_CLEAR : SALT_CLEAR;
       if (s.water.color === c && s.water.opacity === o) [s.water.color, s.water.opacity] = salt ? SALT_CLEAR : FRESH_CLEAR;
@@ -1272,7 +1276,8 @@ Cancel, then change the name, to keep both.`)) return;
         el.style.display = vp ? '' : 'none';
         if (!vp) { el.innerHTML = ''; continue; }
         // top-right corner of each view (Nathan 2026-10-08); the top-left holds the panel toggle and Undo / Redo
-        const vt = document.querySelector<HTMLElement>('.viewtools')!, tools = vp.x === 0 ? vt.offsetWidth + 18 : 0;
+        // (on a phone in split view they reach past the middle into view B too: final check item 2)
+        const vt = document.querySelector<HTMLElement>('.viewtools')!, tools = Math.max(0, vt.offsetLeft + vt.offsetWidth + 8 - vp.x);
         // too narrow beside them (a phone in split view): the tab drops below them instead of under them (audit #7)
         const below = tools > 0 && vp.w - 16 - tools < 150;
         el.style.top = below ? (vt.offsetTop + vt.offsetHeight + 6) + 'px' : '';

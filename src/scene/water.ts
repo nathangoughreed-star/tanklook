@@ -62,9 +62,24 @@ export function keepInWater(s: TankSetup) {
   for (const f of s.fish) fitFish(f, s);
 }
 
+// Where each fish was before a lower level pushed it (height as a share of the water, x, depth), and where the push
+// left it: raising the level again starts from the first, not from the clamped spot (final check item 5). An entry
+// counts only while the fish is still exactly where the push left it, so a drag in between wins.
+const pushed = new Map<number, { r: number; x: number; depth: number; at: [number, number, number] }>();
+
 /** Change the water level, moving swimmers (and glass snails) with it so a school keeps its shape. */
 export function setWaterLevel(s: TankSetup, level: number) {
-  const A = s.tank, k = waterY(A, level) / Math.max(1, waterY(A, s.water.level));
-  for (const f of s.fish) if (maxFishY(f, Infinity) != null) f.y *= k;
+  const A = s.tank, was = Math.max(1, waterY(A, s.water.level)), top = waterY(A, level);
   s.water.level = level;
+  for (const f of s.fish) {
+    if (maxFishY(f, Infinity) == null) continue;
+    const m = pushed.get(f.id), held = m && m.at[0] === f.x && m.at[1] === f.y && m.at[2] === f.depth;
+    const r = held ? m.r : f.y / was;
+    if (held) { f.x = m.x; f.depth = m.depth; }
+    const x = f.x, depth = f.depth;
+    f.y = r * top;
+    if (s.water.on) fitFish(f, s);
+    if (f.x !== x || f.depth !== depth || Math.abs(f.y - r * top) > 1e-6) pushed.set(f.id, { r, x, depth, at: [f.x, f.y, f.depth] });
+    else pushed.delete(f.id);
+  }
 }

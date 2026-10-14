@@ -3,7 +3,7 @@ import { SPECIES, getSpecies, searchSpecies } from '../src/data/species';
 import { defaultScene, defaultSetup } from '../src/scene/defaults';
 import { Store } from '../src/scene/store';
 import { SCENE_VERSION, type TankSetup } from '../src/scene/types';
-import { restsOnGround, setWaterLevel } from '../src/scene/water';
+import { keepInWater, restsOnGround, setWaterLevel } from '../src/scene/water';
 import { SWAMP_LEVEL, groundHeight, nearestLand, pieSize, radialSize, randomLand, sameGrid, ringCount, sampleTerrain, terrainHeight, terrainPoints } from '../src/scene/terrain';
 import { tankWeight } from '../src/scene/weight';
 import { WATERLINE_GAP, spawnSnail, substrateHeight, waterK, waterY } from '../src/scene/physics';
@@ -242,9 +242,12 @@ describe('water (scene v5)', () => {
     }
   });
   it('lowering the level moves swimmers with it (proportionally), so schools keep their shape', () => {
-    const s = defaultSetup(), ys = s.fish.map(f => f.y), k = waterY(s.tank, 0.5) / waterY(s.tank, 1);
+    // scaled, then fitted into the water (setWaterLevel fits them itself since final check item 5; the store did it after)
+    const s = defaultSetup(), want = defaultSetup(), k = waterY(s.tank, 0.5) / waterY(s.tank, 1);
+    for (const f of want.fish) f.y *= k;
+    want.water.level = 0.5; keepInWater(want);
     setWaterLevel(s, 0.5);
-    s.fish.forEach((f, i) => expect(f.y).toBeCloseTo(ys[i] * k));
+    s.fish.forEach((f, i) => expect(f.y).toBeCloseTo(want.fish[i].y));
   });
   it('lowering the level below a tall fish keeps it about where it is (deepest nearby spot), not pinned to the left glass (audit #1)', () => {
     const st = new Store(defaultScene());
@@ -258,6 +261,19 @@ describe('water (scene v5)', () => {
     // 10 %: the sloped gravel stands above the water except at the front, so they go forward, but keep their x
     st.edit(s => setWaterLevel(s, 0.1));
     st.tank.fish.forEach((f, i) => expect(Math.abs(f.x - xs[i])).toBeLessThan(15));
+  });
+  it('lowering the level and raising it again brings swimmers back to their heights and spots (final check item 5)', () => {
+    const st = new Store(defaultScene());
+    st.edit(s => { s.fish = [116, 180, 250, 320, 380, 431].map((x, i) => ({ id: 300 + i, species: 'angel', x, y: 120 + 20 * i, depth: 150, yaw: 0, pitch: 0, roll: 0, bend: 0 })); });
+    const before = st.tank.fish.map(f => ({ x: f.x, y: f.y, depth: f.depth }));
+    for (const level of [0.7, 0.4, 0.1, 0.4, 0.7, 1]) st.edit(s => setWaterLevel(s, level), { coalesce: 'wLevel' });
+    st.tank.fish.forEach((f, i) => { expect(f.x).toBeCloseTo(before[i].x); expect(f.depth).toBeCloseTo(before[i].depth); expect(f.y).toBeCloseTo(before[i].y); });
+    // a fish dragged while the water is low starts from where it was dropped
+    st.edit(s => setWaterLevel(s, 0.1));
+    const id = st.tank.fish[0].id;
+    st.edit(s => { const f = s.fish.find(f => f.id === id)!; f.x = 300; });
+    st.edit(s => setWaterLevel(s, 1));
+    expect(st.tank.fish.find(f => f.id === id)!.x).toBe(300);
   });
   it('clamps a fish dragged above the water line', () => {
     const st = new Store(defaultScene()), id = st.tank.fish[0].id;
