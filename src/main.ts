@@ -17,6 +17,9 @@ function webglAvailable() {
 const build = document.getElementById('build');
 if (build) { build.textContent = `· build ${__BUILD__.n}`; build.title = `Build ${__BUILD__.n}, ${__BUILD__.date} (${__BUILD__.sha})`; }
 
+// installable app + offline after one visit (lane W, public/sw.js); not on the dev server, where it would cache HMR files
+if (import.meta.env.PROD && 'serviceWorker' in navigator) addEventListener('load', () => { void navigator.serviceWorker.register('./sw.js').catch(() => {}); });
+
 const view = document.getElementById('view')!;
 if (!webglAvailable()) {
   view.innerHTML = '<p class="nojs">Your browser or device has WebGL turned off, so the tank can\'t be drawn. Try a current Chrome, Edge, Firefox or Safari.</p>';

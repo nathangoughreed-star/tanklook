@@ -86,6 +86,14 @@ Split from lane S. Only the PLANS / her() entries of these species in `src/art/f
   phone but is still read once at load (rotating never flips the viewer's map). Fixed on the way: the sticky `#addRow`
   floated 40 px (the panel's bottom padding) above the bottom on portrait phones too, with list rows showing under it;
   now `bottom: -40px`. Pictures: `shots/landscape/W1-W4` (worktree only); taken by a CDP script (touch emulated).
+- **Step 2 DONE (2026-10-14): installable PWA.** `public/manifest.webmanifest` (standalone, orientation any, colours
+  #15181e = dark --bg), `public/icons/` (any 192/512, maskable 192/512, apple-touch 180; placeholder art = the favicon's
+  tank + fish, drawn by PIL; replace before the store listing if wanted), link + theme-color tags in `index.html`, and
+  `public/sw.js` registered from `main.ts` (PROD only, one line). SW: the app page network-first (pushes show on the
+  next open), `assets/` cache-first capped at 120, other same-origin network-first, other origins (aqadvisor proxy)
+  untouched. Lazy chunks are cached only once loaded, so offline covers what the visitor has already opened. Checked
+  on `android-prod` (vite preview, 5544): SW active and controlling, the app opens with the server stopped,
+  `Page.getInstallabilityErrors` = none. Not yet checked: the install prompt on a real phone (needs the live https site).
 - **Order:** landscape layout, PWA manifest + SW, TWA shell + asset links, Play listing material (Nathan does the account
   and submissions), low-end phone performance check.
 
