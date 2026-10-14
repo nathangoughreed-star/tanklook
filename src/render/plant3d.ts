@@ -205,10 +205,3 @@ export function carpetOnGround(base: THREE.BufferGeometry, spot: Spot) {
   g.computeBoundingBox(); g.computeBoundingSphere(); g.userData.keep = true;
   return g;
 }
-
-let mat: THREE.MeshBasicMaterial | null = null;
-/** One material for every 3D plant: vertex colours, lit by the water lighting like the cards. */
-export function plantMaterial() {
-  if (!mat) { mat = new THREE.MeshBasicMaterial({ vertexColors: true }); mat.userData.cached = true; mat.userData.keep = true; }
-  return mat;
-}
