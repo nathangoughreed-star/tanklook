@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { defaultScene, defaultSetup } from '../src/scene/defaults';
 import {
-  KWATER, LREF, TECHS, TECH_IDS, bandsAt, beam, lightEnv, lightOut, lineNorm, luxOf, luxPer, parOf, pointNorm, readout, renderBright,
+  KWATER, LREF, TECHS, TECH_IDS, bandsAt, beamExp, lightEnv, lightOut, lineNorm, luxOf, luxPer, parOf, pointNorm, readout, renderBright,
   techOf, techsFor, type Band, type Emitter, type LightEnv, type LightScene,
 } from '../src/scene/lightout';
 import { normTank } from '../src/scene/shape';
@@ -14,9 +14,9 @@ function scene(l: Partial<LightSettings>, tank?: Tank, extra: Partial<LightScene
   return { ...s, tank: tank ?? s.tank, lid: 'open', light: { ...s.light, type: 'led', watts: 30, ...l }, ...extra } as LightScene;
 }
 /** A hand-built environment: emitters with a total output, in air (ys = -Infinity) unless a surface is given. */
-function env(E: Emitter[], total: number, cone: [number, number], tech: LightTech, ys = -Infinity, k: Band = KWATER.map(v => v / 1000) as Band): LightEnv {
+function env(E: Emitter[], total: number, m: number, tech: LightTech, ys = -Infinity, k: Band = KWATER.map(v => v / 1000) as Band): LightEnv {
   const line = E[0][3] > 0;
-  return { E, phi: total / E.length, cone, norm: line ? lineNorm(cone) : pointNorm(cone), split: TECHS[tech].split, k, ys, trans: 1, walls: null, scale: 1 };
+  return { E, phi: total / E.length, m, norm: line ? lineNorm(m) : pointNorm(m), ind: [0, 0, 0], split: TECHS[tech].split, k, ys, trans: 1, walls: null, scale: 1 };
 }
 const photons = (W: number, t: LightTech) => W * TECHS[t].ppe * TECHS[t].eta;
 const par = (e: LightEnv, p: number[], n?: number[]) => parOf(bandsAt(e, p, n));
@@ -32,7 +32,7 @@ describe('light output model', () => {
     expect(lightEnv(scene({ watts: undefined }))).toBeNull();
   });
   it('a point source in air falls off with the inverse square, beam normalised to its flux', () => {
-    const cone = beam({ type: 'spot', cone: 60 } as LightSettings).cone, e = env([[0, 1000, 0, 0]], 100, cone, 'led-white');
+    const cone = beamExp({ type: 'spot', cone: 60 }), e = env([[0, 1000, 0, 0]], 100, cone, 'led-white');
     expect(par(e, [0, 0, 0]) / par(e, [0, -1000, 0])).toBeCloseTo(4, 6);
     // the profile integrates to the flux: sum E dA over a large plane 1 m below = flux (within the grid error)
     let s = 0; const step = 25;
@@ -40,7 +40,7 @@ describe('light output model', () => {
     expect(s).toBeCloseTo(100, 0);
   });
   it('a line source conserves flux too, and is 1/r under its middle', () => {
-    const e = env([[0, 500, 0, 600]], 100, beam({ type: 'tube' } as LightSettings).cone, 't5-refl');
+    const e = env([[0, 500, 0, 600]], 100, beamExp({ type: 'tube' }), 't5-refl');
     let s = 0; const step = 20;
     for (let x = -4000; x < 4000; x += step) for (let z = -4000; z < 4000; z += step) s += par(e, [x + step / 2, 0, z + step / 2]) * (step / 1000) ** 2;
     expect(s / 100).toBeGreaterThan(0.9); // missing: the tails past ±4 m, and what a bare tube sends above horizontal
@@ -49,7 +49,7 @@ describe('light output model', () => {
     expect(par(e, [0, 400, 0]) / par(e, [0, 300, 0])).toBeCloseTo(2 * f(100) / f(200), 6); // 100 mm vs 200 mm: 1/r
   });
   it('refraction: a deep tank loses less light than straight-line inverse square (water absorption off)', () => {
-    const cone = beam({ type: 'spot', cone: 60 } as LightSettings).cone, wet = env([[0, 300, 0, 0]], 100, cone, 'led-white', 0, [0, 0, 0]);
+    const cone = beamExp({ type: 'spot', cone: 60 }), wet = env([[0, 300, 0, 0]], 100, cone, 'led-white', 0, [0, 0, 0]);
     const at = (d: number) => par(wet, [0, -d, 0]) / (par(wet, [0, -0.01, 0]) / 0.97 * 0.97);
     expect(at(500)).toBeCloseTo((300 / (300 + 500 / 1.33)) ** 2, 3);
     expect(at(500)).toBeGreaterThan((300 / 800) ** 2 * 1.3);
@@ -57,7 +57,7 @@ describe('light output model', () => {
   it('water absorbs red most, so lux and PAR fall off at different rates with depth; murky water dims both', () => {
     // red photons count fully in PAR but little in lux, and water takes them first: under white light PAR falls a
     // little faster than lux; under blue reef light (little red) the green share goes first and lux falls faster
-    const cone = beam({ type: 'spot', cone: 60 } as LightSettings).cone;
+    const cone = beamExp({ type: 'spot', cone: 60 });
     const keep = (t: LightTech) => { const e = env([[0, 300, 0, 0]], 100, cone, t, 0), a = bandsAt(e, [0, -10, 0]), b = bandsAt(e, [0, -800, 0]); return [luxOf(b) / luxOf(a), parOf(b) / parOf(a)]; };
     const [wl, wp] = keep('led-white'), [rl, rp] = keep('led-reef');
     expect(wl / wp).toBeGreaterThan(1.01);
@@ -127,7 +127,7 @@ describe('calibration', () => {
     return rows.map(r => r[2] / r[1] - 1);
   };
   it('AI Hydra 32 HD (reef LED, 90.5 W, ~100° beam), in air under the centre, Apogee MQ-510 (DaniReef, grade A)', () => {
-    const cone = beam({ type: 'spot', cone: 100 } as LightSettings).cone, e = env([[0, 0, 0, 0]], photons(90.5, 'led-reef'), cone, 'led-reef');
+    const cone = beamExp({ type: 'spot', cone: 100 }), e = env([[0, 0, 0, 0]], photons(90.5, 'led-reef'), cone, 'led-reef');
     const res = log('AI Hydra 32 HD (in air)', ([[170, 1908], [370, 462], [570, 197]] as const).map(([d, m]) => [`${d / 10} cm`, m, par(e, [0, -d, 0])]));
     for (const r of res) expect(Math.abs(r)).toBeLessThan(0.3);
   });
@@ -136,7 +136,7 @@ describe('calibration', () => {
     // aquarium of unstated size: assumed 1.6 x 0.8 m, bar centred along it. With no walls at all the model reads
     // 20-37% low below 50 cm (the glass returns light at depth), so the walls are part of the fit, not a fudge.
     const T = { L: 1600, D: 800 }, n = 100, E: Emitter[] = Array.from({ length: n }, (_, i) => [T.L / 2 - 574.5 + 1149 * (i + 0.5) / n, 45, -T.D / 2, 0]);
-    const e = { ...env(E, photons(68, 'led-white'), beam({ type: 'led' } as LightSettings).cone, 'led-white', 0), walls: { ...T, w: 0.7 } };
+    const e = { ...env(E, photons(68, 'led-white'), beamExp({ type: 'led' }), 'led-white', 0), walls: { ...T, w: 0.7 } };
     const at = (y: number) => par(e, [T.L / 2, y, -T.D / 2]);
     const meas: [number, number][] = [[0, 802], [100, 356], [200, 241], [300, 172], [400, 134], [500, 114], [600, 102], [700, 91]];
     const res = log('JBL Solar Natur 68 W (in water)', [
@@ -148,9 +148,9 @@ describe('calibration', () => {
     // tank 14 in (356 mm) front to back; assumed 48 in (1219 mm) long, filled to 560 mm (so ~200 mm of air), 1149 mm
     // tubes side by side 60 mm apart over the middle. Logged with and without the side glass.
     const T = { L: 1219, D: 356 }, E: Emitter[] = [[T.L / 2, 760, -T.D / 2 - 30, 574.5], [T.L / 2, 760, -T.D / 2 + 30, 574.5]];
-    const e = env(E, photons(108, 't5-refl'), beam({ type: 'tube' } as LightSettings).cone, 't5-refl', 560), w = { ...e, walls: { ...T, w: 0.7 } };
+    const e = env(E, photons(108, 't5-refl'), beamExp({ type: 'tube' }), 't5-refl', 560), w = { ...e, walls: { ...T, w: 0.7 } };
     // one 54 W tube at the rim of a 24 in tank, substrate 610 mm below it: ~40 (assumed 48 x 18 in, water 50 mm below the tube)
-    const T2 = { L: 1219, D: 457 }, one = { ...env([[T2.L / 2, 610, -T2.D / 2, 574.5]], photons(54, 't5-refl'), beam({ type: 'tube' } as LightSettings).cone, 't5-refl', 560), walls: { ...T2, w: 0.7 } };
+    const T2 = { L: 1219, D: 457 }, one = { ...env([[T2.L / 2, 610, -T2.D / 2, 574.5]], photons(54, 't5-refl'), beamExp({ type: 'tube' }), 't5-refl', 560), walls: { ...T2, w: 0.7 } };
     const res = log('T5 HO (substrate, assumptions above)', [['2x54 no walls', 60, par(e, [T.L / 2, 0, -T.D / 2])], ['2x54 glass', 60, par(w, [T.L / 2, 0, -T.D / 2])],
       ['1x54 glass', 40, par(one, [T2.L / 2, 0, -T2.D / 2])]]);
     for (const r of res.slice(1)) expect(Math.abs(r)).toBeLessThan(0.5);
