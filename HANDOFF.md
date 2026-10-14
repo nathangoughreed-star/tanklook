@@ -2,6 +2,27 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane F2: harder fish, new shapes (2026-10-14; branch `fish-hard`, port 5573; Nathan approved all four; pushed to main)
+Four species' PLANS entries in `src/art/fishgen.ts`, plus new GENERIC options, each off by default on its own commit (no other
+look changed; every fingerprint checked on /review.html before each Record).
+- **goldfish -> fantail (v2, build 377):** `tail.split` (8feffb9): a double caudal, two copies of the tail joined along the
+  top, lower parts flaring out (degrees) and the lobes swinging out to the rear (fish3d `splitTail`; fishgen `drawTail` /
+  `tailBox`; the 3D card leaves its own tail out). Goldfish: `split` 45 on 'notch' lobes, thick 0.68, pec x2, pelvic len
+  0.15 w 1.4. Not done: the fantail's doubled anal fin.
+- **kuhli (v2, build 384):** `noseCap` (84f85b4, profile(): the snout ends in a rounded half-ellipse this long instead of
+  the sharp corner; lane X's neon / cardinal / chili / cpd note could use it) and `barbelR` (3D barbel radius, default
+  0.004). Kuhli: noseCap 0.04, snout 0.95, peak 0.78, pedT 0.35, barbelR 0.0013, barbels 0.016.
+- **harlequin (v2, build 386):** poly marks take 'c' sharp-corner points (e49d389; they were always smoothed into a bean).
+  Harlequin: angular 0.7, peak 0.58, ped 0.03, depth 0.33; the patch a triangle from under the dorsal to the peduncle.
+- **oscar (v3, build 390):** head geometry was tried and dropped (Nathan: cheeks / jaw / lips read as a detached bulb or
+  "still looks like ass" next to his red tiger oscar photo, `shots/laneF2/ref-oscar.webp`). Shipped: lane S's v2 body
+  unchanged, the colours from that photo (olive-grey head and upper front, near-black rear via a dark blob, ~120 small
+  orange spots, orange throat and gill cover), noseCap 0.02. With noseCap the 3D mouth line starts on the snout midline
+  so the two sides meet (generic, fish3d gapeMeshes). The renderer lifts very dark colours, so contrast comes from the
+  lighter head, not a blacker body.
+- Head geometry for cory / panda, loach / SAE heads, marine cheeks: not built (the cheek / jaw attempt is not in the code).
+- Before/after composites: worktree `shots/laneF2/cmp-*.jpg` (gitignored); `cmp.py <ids>` after `npm run sheets`.
+
 ## Lane X: anatomy audit P2, freshwater mid-water fish (2026-10-14; branch `fish-fins`, port 5503; Nathan approved both sheets; pushed to main)
 PLANS entries only in `src/art/fishgen.ts`; no new generic parameters; v2 at build 372 (13 looks).
 - **Characins** (neon = art `tetra`, cardinal, ember, rummynose): `MedianFin` dorsal mid-back, short base with a
@@ -962,7 +983,7 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | T iPhone AR | `../Glass-Box-ar` / `ar-view` (lane Q's, Q is done) | 5483 | new `render/arUsdz.ts` + test, `render/ar.ts` | DONE for now (`3085106`); iPhone button hidden behind `?ar=ios` until an iPhone test, then IOS_FLAG = false; files free |
 | ADF African dwarf frog | `../Glass-Box-adf` / `adf-frog` | 5553 | `FROGS.adf` + new FrogSpec fields in `art/herps.ts` / `render/herp3d.ts`, the `adf` entries in `data/species.json`, `data/aqadvisor.json`, one line in `fish3d.species` | running (session `local_37002c35`), v1 sheet awaiting Nathan |
 | Z coral seating | `../Glass-Box-coral-seat` / `coral-seat` | 5563 | coral seating in `render/items.ts` (seatCorals) / `scene/items.ts` (seatHook), the coral drop in `src/interact/*`, `src/examples/reef.json` + `reef.jpg` | running (session `local_d4c637fd`) |
-| F2 harder fish | `../Glass-Box-fish-hard` / `fish-hard` | 5573 | PLANS / her() entries of goldfish (fantail, Nathan), kuhli, harlequin, oscar; new OFF-by-default generic parameters in `art/fishgen.ts` / `render/fish3d.ts` / `art/paint.ts` (double caudal, barbels, head geometry) | running (session `local_7819f0ee`) |
+| F2 harder fish | (worktree removed) | - | - | DONE (`8febeec`): fantail, kuhli, harlequin, oscar v3. Open: head geometry rejected by Nathan (cory / loach / SAE / marine heads have no generic); fantail doubled anal fin; lane X's leftovers not applied (noseCap on neon / cardinal / chili / cpd, characin dorsal taper, platy / molly gonopodium) |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | OPENED 2026-10-14 (prompt `prompts/lane-W-android-app.md`); step 1 landscape layout; mind V's `index.html` / `panels.ts` edits |
 Free (no lane): `render/build.ts`, `render/items.ts`, `scene/items.ts`, `render/viewer.ts`, `main.ts`, `render/lighting.ts`,
 `render/coral3d.ts`, `render/shrimp3d.ts` / `art/shrimps.ts`, `scene/share.ts`, herps / herp3d / snails / snail3d. A one-line hook in a free file is fine; name it

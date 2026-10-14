@@ -36,7 +36,7 @@ type Mark =
   | { k: 'bars'; us: number[]; w: number; c: string; a?: number }
   | { k: 'spots'; n: number; u0: number; u1: number; v0: number; v1: number; r: number; c: string; a?: number }
   | { k: 'blob'; u: number; v: number; ru: number; rv: number; c: string; a?: number }
-  | { k: 'poly'; pts: [number, number][]; c: string; a?: number };
+  | { k: 'poly'; pts: Pt[]; c: string; a?: number }; // points flagged 'c' are sharp corners (shape())
 
 export interface Plan {
   depth: number;      // max body depth, widths
@@ -47,6 +47,7 @@ export interface Plan {
   snout?: number;     // 0 pointed .. 1 blunt
   rostrum?: { len: number; h: number }; // a projecting snout: the head tapers to half-depth h at 1 - len, then a narrow snout runs on to the tip (tang)
   mouth?: number;     // nose offset (+ down, - up)
+  noseCap?: number;   // the snout ends in a rounded cap this long (widths) instead of a point (loaches; off by default)
   shade: [string, string, string]; // back, flank, belly
   // cut (lyre): depth of the fork, share of the tail length (default 0.8); sword ('sword'): the fan ends at u = sword and
   // its lower rays run on as a slim tapering sword to the tip at u = 0 (unset: the short tab)
@@ -68,6 +69,7 @@ export interface Plan {
   gape?: number;      // 3D: a mouth line this long (u) back from the snout tip on each flank (the body texture has no mouth)
   gapeDrop?: number;  // 3D: how far the mouth line curves down at its rear end (widths, default 0.02; 0 = straight)
   barbels?: number;   // barbel length (widths); bottom fish
+  barbelR?: number;   // 3D: barbel root radius (widths, default 0.004); fine cylindrical barbels on slim fish (kuhli)
   bristles?: boolean; // bristlenose snout
   rim?: number;
   thick?: number;     // 3D: max body thickness / max body depth (laterally compressed < 0.5 < rounder)
@@ -106,7 +108,7 @@ function outlineProfile(o: [number, number][]) {
 export function profile(p: Plan) {
   if (p.outline) return outlineProfile(p.outline);
   const tp = p.peak ?? 0.55, back = p.back ?? 0.5, sn = p.snout ?? 0.5, mouth = p.mouth ?? 0, ro = p.rostrum, nose = ro ? 1 - ro.len : 1;
-  return (u: number): [number, number] => {
+  const f = (u: number): [number, number] => {
     const t = Math.min(1, Math.max(0, (u - p.pedU) / (nose - p.pedU)));
     let hh: number, vc = 0;
     if (t <= tp) hh = 2 * p.ped + (p.depth - 2 * p.ped) * Math.sin(t / tp * Math.PI / 2) ** 1.3;
@@ -125,6 +127,14 @@ export function profile(p: Plan) {
       const j = 0.8 * ro.h * 2; hh = Math.max(hh, hs) + Math.max(0, j - Math.abs(hh - hs)) ** 2 / (4 * j) * (1 - Math.min(1, k)); vc = mouth * Math.min(1, Math.max(0, (u - p.pedU) / (1 - p.pedU) - 0.4) / 0.6) ** 2;
     }
     return [vc - hh * back, vc + hh * (1 - back)];
+  };
+  if (!p.noseCap) return f;
+  // rounded cap: from u = 1 - cap the outline closes in a half ellipse, cap long and as deep as the body there
+  const cap = p.noseCap, u0 = 1 - cap, [a0, b0] = f(u0);
+  return (u: number): [number, number] => {
+    if (u <= u0) return f(u);
+    const k = Math.min(1, (u - u0) / cap), r = Math.sqrt(Math.max(0, 1 - k * k)), m = (a0 + b0) / 2, mv = m + ((p.mouth ?? 0) - m) * k * k;
+    return [mv - (m - a0) * r, mv + (b0 - m) * r];
   };
 }
 
@@ -451,9 +461,10 @@ export const PLANS: Record<string, Plan> = {
     marks: [{ k: 'blob', u: 0.93, v: -0.01, ru: 0.09, rv: 0.08, c: '#c4303a', a: 0.95 }],
     finMarks: [{ k: 'bars', us: [0.04, 0.12], w: 0.035, c: '#1e1e20', a: 0.85 }, { k: 'band', u0: 0, u1: 0.2, v0: -0.012, v1: 0.012, c: '#1e1e20', a: 0.85, f: 0.005 }],
     eye: { r: 0.024, iris: ['#d26a54', '#5a1e18'] } },
-  harlequin: { sharp: true, thick: 0.38, depth: 0.31, pedU: 0.2, ped: 0.045, peak: 0.5, snout: 0.3, shade: ['#8a6f58', '#d29a7c', '#e8c3ad'], tail: { type: 'fork', h: 0.16, tint: '#d79c82' }, fin: '#d6a48c',
+  // rhomboid: deep at the shoulder, straight back and belly lines to a slender peduncle; the black patch a triangular rear-body wedge
+  harlequin: { sharp: true, thick: 0.38, depth: 0.33, pedU: 0.2, ped: 0.03, peak: 0.58, angular: 0.7, snout: 0.3, shade: ['#8a6f58', '#d29a7c', '#e8c3ad'], tail: { type: 'fork', h: 0.16, tint: '#d79c82' }, fin: '#d6a48c',
     dorsal: { u0: 0.47, u1: 0.6, h: 0.09 }, anal: { u0: 0.33, u1: 0.47, h: 0.06 }, pelvic: { u: 0.6, len: 0.06 },
-    marks: [{ k: 'poly', pts: [[0.62, -0.06], [0.62, 0.02], [0.4, 0.1], [0.22, 0.03], [0.22, -0.03]], c: '#1f1d22', a: 0.88 }], eye: { r: 0.03, iris: ['#c8b8a0', '#55483a'] } },
+    marks: [{ k: 'poly', pts: [[0.62, -0.115, 'c'], [0.6, -0.02], [0.61, 0.075, 'c'], [0.19, 0.004, 'c']], c: '#1f1d22', a: 0.9 }], eye: { r: 0.03, iris: ['#c8b8a0', '#55483a'] } },
   chili: { gape: 0.02, gapeDrop: 0.005, thick: 0.42, depth: 0.21, pedU: 0.2, ped: 0.03, peak: 0.58, snout: 0.6, shade: ['#a5402e', '#d4563c', '#e07a5c'], tail: { type: 'fork', h: 0.13, tint: '#c95a44' }, fin: '#cf7056',
     dorsal: { at: 0.53, len: 0.06, h: 0.08, rake: 0.3, lead: 0.6, tip: 'point', trail: 0.045, drop: 0.2 }, anal: { at: 0.45, len: 0.1, h: 0.055, rake: 0.05, lead: 0.85, tip: 'point', trail: 0.03, drop: 0.35 }, pelvic: { u: 0.56, len: 0.05 },
     marks: [{ k: 'band', u0: 0.22, u1: 0.85, v0: -0.012, v1: 0.012, c: '#2a1a18', a: 0.7, f: 0.01 }, { k: 'blob', u: 0.24, v: 0, ru: 0.03, rv: 0.025, c: '#1a1212', a: 0.8 }],
@@ -545,11 +556,16 @@ export const PLANS: Record<string, Plan> = {
     marks: [{ k: 'blob', u: 0.86, v: -0.15, ru: 0.09, rv: 0.07, c: '#c4a46a', a: 0.45 }, { k: 'blob', u: 0.6, v: -0.06, ru: 0.22, rv: 0.2, c: '#ffffff', a: 0.14 },
       { k: 'bars', us: [0.865, 0.645, 0.43], w: 0.05, c: '#26262a', a: 0.9 }, { k: 'bars', us: [0.235], w: 0.06, c: '#26262a', a: 0.5 }],
     finMarks: [{ k: 'bars', us: [0.645, 0.43], w: 0.05, c: '#26262a', a: 0.8 }], eye: { r: 0.026, iris: ['#c8673f', '#5b2a1c'] } },
-  oscar: { gape: 0.07, pec: { s: 1.6 }, thick: 0.48, depth: 0.42, pedU: 0.2, ped: 0.07, peak: 0.5, snout: 0.45, mouth: 0.025, shade: ['#2a2a24', '#3e3b30', '#4a4438'], tail: { type: 'round', h: 0.16, tint: '#3a372e', a: 0.85 }, fin: '#3a372e',
-    dorsal: { at: 0.76, len: 0.52, h: 0.11, spines: 0.6, nSp: 9, spineH: [0.05, 0.07], notch: 0.3, rake: 0.6, trail: 0.05, a: 0.85 },
-    anal: { at: 0.48, len: 0.26, h: 0.1, spines: 0.25, nSp: 3, spineH: [0.04, 0.06], rake: 0.5, trail: 0.04, a: 0.85 }, pelvic: { u: 0.64, len: 0.1, w: 1.2 },
-    marks: [{ k: 'spots', n: 12, u0: 0.3, u1: 0.8, v0: -0.05, v1: 0.15, r: 0.045, c: '#c8642a', a: 0.6 }, { k: 'blob', u: 0.24, v: -0.02, ru: 0.04, rv: 0.04, c: '#d8702a', a: 0.9 }, { k: 'blob', u: 0.24, v: -0.02, ru: 0.022, rv: 0.022, c: '#141414', a: 0.95 }],
-    eye: { r: 0.03, iris: ['#c84a2a', '#3a1208'] } },
+  // v2 body (lane S); colours from Nathan's reference photo (red tiger oscar): olive-grey head and upper front, near-black
+  // rear body, many small orange spots, orange throat and gill cover; nose rounded slightly (noseCap)
+  oscar: { noseCap: 0.02, gape: 0.07, pec: { s: 1.6 }, thick: 0.48, depth: 0.42, pedU: 0.2, ped: 0.07, peak: 0.5, snout: 0.45, mouth: 0.025, shade: ['#3c3f31', '#1b1c17', '#2c241a'], tail: { type: 'round', h: 0.16, tint: '#1f201c', a: 0.9 }, fin: '#1f201c',
+    dorsal: { at: 0.76, len: 0.52, h: 0.11, spines: 0.6, nSp: 9, spineH: [0.05, 0.07], notch: 0.3, rake: 0.6, trail: 0.05, a: 0.9 },
+    anal: { at: 0.48, len: 0.26, h: 0.1, spines: 0.25, nSp: 3, spineH: [0.04, 0.06], rake: 0.5, trail: 0.04, a: 0.9 }, pelvic: { u: 0.64, len: 0.1, w: 1.2 },
+    marks: [{ k: 'blob', u: 0.42, v: 0.04, ru: 0.34, rv: 0.25, c: '#0e0f0c', a: 0.8 }, { k: 'blob', u: 0.85, v: -0.05, ru: 0.21, rv: 0.16, c: '#8f9274', a: 0.85 }, { k: 'blob', u: 0.95, v: 0.0, ru: 0.06, rv: 0.06, c: '#b0a878', a: 0.7 },
+      { k: 'blob', u: 0.86, v: 0.13, ru: 0.12, rv: 0.08, c: '#d8913c', a: 0.8 }, { k: 'spots', n: 30, u0: 0.72, u1: 0.83, v0: -0.03, v1: 0.15, r: 0.011, c: '#e2742a', a: 0.9 },
+      { k: 'spots', n: 80, u0: 0.29, u1: 0.74, v0: -0.09, v1: 0.17, r: 0.01, c: '#ec8a2c', a: 0.9 }, { k: 'spots', n: 9, u0: 0.32, u1: 0.65, v0: -0.02, v1: 0.15, r: 0.022, c: '#e07a28', a: 0.85 },
+      { k: 'blob', u: 0.24, v: -0.02, ru: 0.04, rv: 0.04, c: '#e2802a', a: 0.95 }, { k: 'blob', u: 0.24, v: -0.02, ru: 0.022, rv: 0.022, c: '#141414', a: 0.95 }],
+    eye: { r: 0.03, iris: ['#b8743c', '#2e1a0a'] } },
   // fantail (Nathan 2026-10-14): egg-shaped body, a paired double caudal that splits and spreads sideways (seen from above), larger paired fins
   goldfish: { thick: 0.68, depth: 0.52, pedU: 0.32, ped: 0.06, peak: 0.45, snout: 0.75, shade: ['#c8642a', '#e88a3a', '#f0b87a'], tail: { type: 'notch', h: 0.3, split: 45, tint: '#e8964e', a: 0.75 }, fin: '#ec9e5e',
     dorsal: { u0: 0.42, u1: 0.68, h: 0.14, shape: 'round', a: 0.75 }, anal: { u0: 0.38, u1: 0.48, h: 0.1, shape: 'round', a: 0.75 }, pelvic: { u: 0.7, len: 0.15, w: 1.4 }, pec: { s: 2 },
@@ -660,9 +676,10 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { at: 0.63, len: 0.12, h: 0.1, spines: 0.12, nSp: 1, spineH: 0.12, rake: 0.12, drop: 0.35 }, anal: { u0: 0.33, u1: 0.4, h: 0.04 }, pelvic: { u: 0.58, len: 0.07, w: 1.2 },
     marks: [{ k: 'band', u0: 0.18, u1: 0.98, v0: -0.015, v1: 0.012, c: '#2a2820', a: 0.85, f: 0.008 }], finMarks: [{ k: 'blob', u: 0.08, v: 0, ru: 0.04, rv: 0.025, c: '#2a2820', a: 0.7 }],
     eye: { r: 0.024, iris: ['#b0a070', '#2a2418'], dv: -0.08, up: 0.3 } },
-  kuhli: { thick: 0.85, depth: 0.085, pedU: 0.05, ped: 0.025, peak: 0.6, back: 0.55, snout: 0.6, mouth: 0.01, shade: ['#4a3a2a', '#d88a5a', '#ecc0a0'], tail: { type: 'round', h: 0.035, tint: '#c88a62' }, fin: '#d09a72',
+  // blunt loach head, fine cylindrical barbels, the trunk fullest behind mid-body and the tail laterally compressed
+  kuhli: { thick: 0.85, pedT: 0.35, depth: 0.085, pedU: 0.05, ped: 0.02, peak: 0.78, back: 0.55, snout: 0.95, noseCap: 0.04, mouth: 0.01, barbelR: 0.0013, shade: ['#4a3a2a', '#d88a5a', '#ecc0a0'], tail: { type: 'round', h: 0.035, tint: '#c88a62' }, fin: '#d09a72',
     dorsal: { u0: 0.22, u1: 0.28, h: 0.025, shape: 'round' }, anal: { u0: 0.12, u1: 0.18, h: 0.02, shape: 'round' },
-    marks: [{ k: 'bars', us: [0.93, 0.85, 0.77, 0.69, 0.61, 0.53, 0.45, 0.37, 0.29, 0.21, 0.13, 0.07], w: 0.035, c: '#2a2018', a: 0.85 }], barbels: 0.012,
+    marks: [{ k: 'bars', us: [0.93, 0.85, 0.77, 0.69, 0.61, 0.53, 0.45, 0.37, 0.29, 0.21, 0.13, 0.07], w: 0.035, c: '#2a2018', a: 0.85 }], barbels: 0.016,
     eye: { r: 0.008, iris: ['#6a5040', '#1a1008'] }, rim: 0.012 },
   clownloach: { pec: { s: 1.6, v: 0.75 }, gape: 0.025, thick: 0.6, belly: 0.4, depth: 0.29, pedU: 0.18, ped: 0.045, peak: 0.52, back: 0.62, snout: 0.38, mouth: 0.05, shade: ['#c8742a', '#e8a040', '#f0c070'], tail: { type: 'fork', h: 0.15, tint: '#c8443a' }, fin: '#c8443a',
     dorsal: { at: 0.64, len: 0.16, h: 0.13, rake: 0.25, drop: 0.55 }, anal: { at: 0.4, len: 0.1, h: 0.085, rake: 0.4, drop: 0.6 }, pelvic: { u: 0.56, len: 0.1, w: 1.3 },
