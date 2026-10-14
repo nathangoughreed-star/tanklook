@@ -61,7 +61,7 @@ export const LU = {
   uRef: { value: REF }, uLCol: { value: new THREE.Color(1, 1, 1) },
   uRoomK: { value: 1 }, uSpill: { value: new THREE.Color(1, 1, 1) }, uSpillR: { value: 500 },
   uTankMin: { value: new THREE.Vector3() }, uTankMax: { value: new THREE.Vector3() }, uTankRound: { value: 0 },
-  uWater: { value: new THREE.Vector4() }, uWCol: { value: new THREE.Color() }, uPop: { value: 0 },
+  uWater: { value: new THREE.Vector4() }, uBow: { value: new THREE.Vector3() }, uWCol: { value: new THREE.Color() }, uPop: { value: 0 },
   // light map (beam overlay): on, weight per emitter, the beam's concentration (see aqIrr)
   uMapOn: { value: 0 }, uMapW: { value: 1 }, uMapGain: { value: 1 },
   // light output (lane K; watts set): the map in real units, a port of scene/lightout.ts bandsAt. uLoA: phi x 1e6 /
@@ -79,7 +79,20 @@ export function setWaterUniforms(T: Tank, w: WaterSettings, pop = 0) {
   LU.uPop.value = pop;
   LU.uWater.value.set(T.L, waterY(T, w.level), T.D, w.on ? waterK(w.opacity) : 0);
   LU.uWCol.value.set(w.color);
+  // a bowfront's water is the box cut by the bow's circle (centre (L/2, -R), radius R): without it the box corners in
+  // front of the curved glass tint whatever is seen through them (the cabinet below). A near-flat bow (huge R) is skipped.
+  const e = shapeOf(T) === 'bow' ? clamp(T.D - (T.bowMin ?? T.D), 0, T.L / 2) : 0, R = e > 20 ? (T.L * T.L / 4 + e * e) / (2 * e) : 0;
+  LU.uBow.value.set(T.L / 2, -R, R);
 }
+/** Clips the water slab segment [a, b] (fractions of dv from o) to a bowfront's circle in plan (uBow.z = 0: no bow). */
+const BOW_GLSL = `uniform vec3 uBow;
+void aqBow(vec3 o, vec3 dv, inout float a, inout float b) {
+  if (uBow.z <= 0.0) return;
+  vec2 f = o.xz - uBow.xy, d = dv.xz; float lf = length(f);
+  float A = dot(d, d), B = dot(f, d), C = (lf - uBow.z) * (lf + uBow.z), q = B * B - A * C;
+  if (A < 1e-9 || q < 0.0) { if (C > 0.0) b = a; return; }
+  float s = sqrt(q); a = max(a, (-B - s) / A); b = min(b, (-B + s) / A);
+}`;
 /**
  * The empty water's own colour (audit #18): drawn on the far faces of the water volume, as much of the water colour as
  * the sightline crosses (same slab test and `waterK` as the tint on objects). It draws only where nothing is behind it
@@ -88,15 +101,17 @@ export function setWaterUniforms(T: Tank, w: WaterSettings, pop = 0) {
  */
 export function waterVolumeMaterial() {
   return new THREE.ShaderMaterial({
-    uniforms: { uWater: LU.uWater, uWCol: LU.uWCol, uPopV: LU.uPop },
+    uniforms: { uWater: LU.uWater, uBow: LU.uBow, uWCol: LU.uWCol, uPopV: LU.uPop },
     vertexShader: 'varying vec3 vP; void main() { vec4 w = modelMatrix * vec4(position, 1.0); vP = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }',
     fragmentShader: `uniform vec4 uWater; uniform vec3 uWCol; varying vec3 vP;
+${BOW_GLSL}
 void main() {
   vec3 o = cameraPosition, dv = vP - o;
   dv = mix(dv, vec3(1e-3), step(abs(dv), vec3(1e-3)));
   vec3 t0 = (vec3(0.0, 0.0, -uWater.z) - o) / dv, t1 = (vec3(uWater.x, uWater.y, 0.0) - o) / dv;
   vec3 tn = min(t0, t1), tf = max(t0, t1);
   float a = max(max(tn.x, tn.y), max(tn.z, 0.0)), b = min(min(tf.x, tf.y), min(tf.z, 1.0));
+  aqBow(o, dv, a, b);
   float f = 1.0 - exp(-uWater.w * max(b - a, 0.0) * length(vP - o));
   gl_FragColor = vec4(uWCol * 0.85, f);
   gl_FragDepth = 0.9999999;
@@ -150,6 +165,7 @@ uniform vec4 uEm[${AQ_MAX}]; uniform int uEmN; uniform float uMode, uAmb, uBrigh
 float aqSpec = 0.0;
 uniform float uRoomMat, uRoomK, uSpillR, uTankRound; uniform vec3 uSpill, uTankMin, uTankMax; uniform vec4 uWater; uniform vec3 uWCol; uniform float uPop, uFishCard;
 varying vec3 vAqP; varying vec3 vAqN;
+${BOW_GLSL}
 float aqHash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float aqNoise(vec2 p) {
   vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
@@ -162,6 +178,7 @@ float aqWaterPath() {
   vec3 t0 = (vec3(0.0, 0.0, -uWater.z) - o) / dv, t1 = (vec3(uWater.x, uWater.y, 0.0) - o) / dv;
   vec3 tn = min(t0, t1), tf = max(t0, t1);
   float a = max(max(tn.x, tn.y), max(tn.z, 0.0)), b = min(min(tf.x, tf.y), min(tf.z, 1.0));
+  aqBow(o, dv, a, b);
   return max(b - a, 0.0) * length(vAqP - o);
 }
 // 3D fish facing, measured against the flank that faces the viewer (horizontal, toward the camera): that flank gets
