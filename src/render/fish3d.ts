@@ -110,7 +110,7 @@ function eyePlacements(p: Plan, bend: number) {
   // `eye.up` turns the eye from the flank toward the top of the head (flattened fish: plecos look upward)
   const th = th0 + (EYE_TOP - th0) * (p.eye.up ?? 0);
   return [1, -1].map(side => ({
-    pos: pointAt(p, e.u, th, side, bend), n: normalAtTh(p, e.u, th, side, bend).add(new THREE.Vector3(0.2, 0, 0)).normalize(), r: e.r, iris: e.iris,
+    pos: pointAt(p, e.u, th, side, bend), n: normalAtTh(p, e.u, th, side, bend).add(new THREE.Vector3(0.2, 0, 0)).normalize(), r: e.r, iris: e.iris, bulge: p.eye.bulge ?? 0.38,
   }));
 }
 /** Section angle of a fully raised eye (`eye.up` = 1): on the head's upper surface, a little off the midline. */
@@ -407,7 +407,9 @@ function eyeTexture(iris: [string, string]) {
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
   return t;
 }
-const dome = (() => { const g = new THREE.SphereGeometry(1, 24, 16); g.scale(1, 0.38, 1); g.userData.keep = true; return g; })();
+const domes = new Map<number, THREE.BufferGeometry>();
+/** Eye dome, `b` = its height (share of the radius): flat for most fish, rounder for bulging eyes (puffers). */
+const dome = (b = 0.38) => { let g = domes.get(b); if (!g) { g = new THREE.SphereGeometry(1, 24, 16); g.scale(1, b, 1); g.userData.keep = true; domes.set(b, g); } return g; };
 
 /** A translucent body (glass shrimp): the water and what is behind show through. */
 const see = (p: Plan) => (p.glass ? { transparent: true, opacity: p.glass } : {});
@@ -462,9 +464,9 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
   })));
   if (!p.glass) { const o = new THREE.Mesh(g, outlineMat); o.userData.nolight = true; grp.add(o); }
   for (const e of eyePlacements(p, b)) {
-    const m = new THREE.Mesh(dome, fishMat('eye:' + art, () => new THREE.MeshBasicMaterial({ map: eyeTexture(e.iris) })));
+    const m = new THREE.Mesh(dome(e.bulge), fishMat('eye:' + art, () => new THREE.MeshBasicMaterial({ map: eyeTexture(e.iris) })));
     m.scale.setScalar(e.r); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), e.n);
-    m.position.copy(e.pos).addScaledVector(e.n, -e.r * 0.3); // set into the head, bulging a little
+    m.position.copy(e.pos).addScaledVector(e.n, -e.r * (0.3 - 0.5 * (e.bulge - 0.38))); // set into the head, bulging a little (rounder domes sit less deep)
     grp.add(m);
   }
   if (p.glass) { // the markings stay solid on the see-through body: the same surface again, carrying only them

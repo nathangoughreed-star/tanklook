@@ -46,7 +46,9 @@ export interface Plan {
   snout?: number;     // 0 pointed .. 1 blunt
   mouth?: number;     // nose offset (+ down, - up)
   shade: [string, string, string]; // back, flank, belly
-  tail: { type: Tail; h: number; tint?: string; a?: number; edge?: string; cut?: number }; // cut (lyre): depth of the fork, share of the tail length (default 0.8)
+  // cut (lyre): depth of the fork, share of the tail length (default 0.8); sword ('sword'): the fan ends at u = sword and
+  // its lower rays run on as a slim tapering sword to the tip at u = 0 (unset: the short tab)
+  tail: { type: Tail; h: number; tint?: string; a?: number; edge?: string; cut?: number; sword?: number };
   dorsal?: AnyFin; anal?: AnyFin; adipose?: boolean;
   dorsal2?: MedianFin; // a second, separate dorsal behind the first (gobies, cardinals)
   // male livebearers: the anal fin is a gonopodium, a slim rod from `at` lying back along the belly, `len` long
@@ -58,7 +60,7 @@ export interface Plan {
   ray?: string;
   marks?: Mark[];     // painted inside the body
   finMarks?: Mark[];  // painted inside the dorsal, anal and tail fins
-  eye: { r: number; iris: [string, string]; u?: number; dv?: number; up?: number }; // up (3D): 0 on the flank .. 1 on top of the head
+  eye: { r: number; iris: [string, string]; u?: number; dv?: number; up?: number; bulge?: number }; // up (3D): 0 on the flank .. 1 on top of the head; bulge (3D): the dome's height, share of r (default 0.38)
   gape?: number;      // 3D: a mouth line this long (u) back from the snout tip on each flank (the body texture has no mouth)
   barbels?: number;   // barbel length (widths); bottom fish
   bristles?: boolean; // bristlenose snout
@@ -179,7 +181,7 @@ function gonoPts(g: { at: number; len: number }, belly: (u: number) => number): 
   return { pts, rays: [[g.at + 0.004, b0 + 0.01, tipU + 0.004, tipV, 2.4]] };
 }
 
-function tailPts(t: Tail, pu: number, c: number, pd: number, th: number, cut = 0.8): Pt[] {
+function tailPts(t: Tail, pu: number, c: number, pd: number, th: number, cut = 0.8, sword?: number): Pt[] {
   const e = pu + 0.03;
   switch (t) {
     case 'fork': return [[e, c - pd], [pu * 0.55, c - th * 0.6], [0, c - th, 'c'], [pu * 0.42, c - th * 0.12], [pu * 0.5, c], [pu * 0.42, c + th * 0.12], [0, c + th, 'c'], [pu * 0.55, c + th * 0.6], [e, c + pd]];
@@ -188,7 +190,13 @@ function tailPts(t: Tail, pu: number, c: number, pd: number, th: number, cut = 0
     case 'round': return [[e, c - pd], [pu * 0.65, c - th * 0.95], [pu * 0.18, c - th * 0.85], [0, c - th * 0.35], [0, c, 'c'], [0, c + th * 0.35], [pu * 0.18, c + th * 0.85], [pu * 0.65, c + th * 0.95], [e, c + pd]];
     case 'veil': return [[e, c - pd], [pu * 0.7, c - th * 0.9], [pu * 0.25, c - th * 0.95], [0.02, c - th * 0.4], [0, c + th * 0.1, 'c'], [0.03, c + th * 0.6], [pu * 0.3, c + th], [pu * 0.75, c + th * 0.8], [e, c + pd]];
     case 'double': return [[e, c - pd], [pu * 0.5, c - th * 0.7], [0, c - th * 0.55, 'c'], [pu * 0.35, c + th * 0.05], [0, c + th * 0.95, 'c'], [pu * 0.55, c + th * 0.7], [e, c + pd]];
-    case 'sword': return [[e, c - pd], [pu * 0.45, c - th * 0.75], [pu * 0.3, c - th * 0.8, 'c'], [pu * 0.32, c + th * 0.2], [0, c + th * 0.55, 'c'], [pu * 0.35, c + th * 0.55], [pu * 0.5, c + th * 0.7], [e, c + pd]];
+    case 'sword': if (sword) {
+      // fan from the peduncle to u = sword (truncate rear edge), then the sword: root 0.035 deep, tapering to an upturned point
+      const ue = sword, f = (k: number) => ue + (pu - ue) * k, vs = c + th * 0.55, r = 0.0175;
+      return [[e, c - pd], [f(0.45), c - th * 0.75], [f(0.08), c - th * 0.8, 'c'], [ue, c + th * 0.1], [ue, vs - r], [ue * 0.5, vs - r * 0.75], [0, vs - 0.012, 'c'],
+        [ue * 0.5, vs + r * 0.5], [ue, vs + r], [f(0.5), c + th * 0.62], [e, c + pd]];
+    }
+      return [[e, c - pd], [pu * 0.45, c - th * 0.75], [pu * 0.3, c - th * 0.8, 'c'], [pu * 0.32, c + th * 0.2], [0, c + th * 0.55, 'c'], [pu * 0.35, c + th * 0.55], [pu * 0.5, c + th * 0.7], [e, c + pd]];
   }
 }
 
@@ -198,7 +206,7 @@ function geometry(p: Plan) {
   for (let i = 1; i < n; i++) { const u = 1 - (1 - p.pedU) * i / (n - 1); const [a, b] = prof(u); top.push([u, a]); bot.unshift([u, b]); }
   const bodyPts: Pt[] = [[1, p.mouth ?? 0, 'c'], ...top, ...bot];
   const [pt, pb] = prof(p.pedU), c = (pt + pb) / 2, pd = (pb - pt) / 2;
-  const tail = tailPts(p.tail.type, p.pedU, c, pd, p.tail.h, p.tail.cut);
+  const tail = tailPts(p.tail.type, p.pedU, c, pd, p.tail.h, p.tail.cut, p.tail.sword);
   const back = (u: number) => prof(u)[0], belly = (u: number) => prof(u)[1];
   const med = (f: AnyFin | undefined, base: (u: number) => number, sg: number) => !f ? undefined : isMedian(f) ? medianPts(f, base, sg) : { pts: finPts(f, base, sg), rays: undefined };
   const dorsalF = med(p.dorsal, back, -1), dorsal2F = med(p.dorsal2, back, -1);
