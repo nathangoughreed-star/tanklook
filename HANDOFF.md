@@ -54,8 +54,12 @@ other model's fingerprint changed (other snails, hermit crab, frogs, newt identi
   misses the whorl take their cut from their neighbours instead of clamping to +-0.6, and the paint follows the coil
   angle). Zebra stripes are one full sine round the whorl, drawn past the texture edges (the slanted stroke ends had
   notched the stripes along the wrap line).
-- Open: mystery, turbo and trumpet also clamp their aperture cut (rows jump +-0.6 on the inner side); `fillCut` would fix
-  them but changes their approved look, so not switched on. 2D side cards unchanged except the axolotl's fin outline.
+- Mystery, turbo and trumpet also clamp their aperture cut, but their real crossings are smooth (0.6..1.95 rad past T),
+  so the clamp gives a flat plateau, not the nerite's alternating jumps (ramshorn and hermit never clamp). `fillCut`
+  tried on all three 2026-10-14: mystery no visible change, turbo a hairline, trumpet a cleaner rim with its paint
+  sliding along the coil. **Nathan: don't ship it for any of the three; closed.** Compare sheets headless to headless
+  only (`npm run sheets` output differs from the recorded browser sheets for every look). 2D side cards unchanged
+  except the axolotl's fin outline.
 
 ## Lane N: shareable scene links (2026-10-14; branch `share-url`; review item R12; pushed to main)
 
