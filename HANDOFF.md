@@ -2,6 +2,25 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane Z: corals sit on the rock (2026-10-14; branch `coral-seat`, port 5563; Nathan approved; pushed to main)
+- **Measured first**: the Reef example has NO floating corals. All 8 raised corals rest within 1 mm of the rock straight
+  under them. Three (12 and 13, blue acropora; 29, mushroom) sit on a ledge tucked under a higher rock, with branches into it.
+  Re-seating them (to the top of the pile, or with the new rule) looked worse (clumped, riding into other corals).
+  Nathan: **leave `reef.json` / `reef.jpg` as saved** (no re-shoot).
+- **`coralSeat`** (`render/items.ts`, shared by `seatCorals` and the drag): looking from the planned height, a base in the
+  water drops to the rock top below; a base INSIDE a rock rises to that rock's own top (down-ray with both-sided copies,
+  counting into / out of rock by the face normal). The middle of the foot picks the rock; the 4 probes around it raise it
+  on a slope (up to 2r above the middle), and a face higher than that is a wall, skipped. Base `SEAT_SINK` = 3 mm in; no rock
+  = the ground (lift 0). Rock only: corals never seat on coral. Fixes generated corals buried up to 47 mm in steeply tipped
+  rock (the old look-down from base + 40 mm started inside the rock). Shuffled reef layouts change a little where that happened.
+- **Drag** (`interact/pointer.ts`): a coral never slides level (`float` off). Each move seats it at the point the pointer is
+  on (`p.y + 1`), so a ledge under a higher rock stays a ledge, and off the rock it goes to the sand. One undo step per
+  drag (coalesce `item-drag`, sealed on release). The Move buttons / Lift slider (`ui/panels.ts`) are unchanged: they can still
+  place a coral floating; a later drag seats it.
+- Tests `test/coralseat.test.ts`: tipped rock (4 pitch / roll mixes, including the 40° roll that buried it), drop on rock /
+  on sand, ledge under a higher rock, one undo step. Browser: drag on rock (lift 81, 1 mm in), on sand (0), 2 undos step
+  back; 375 px no horizontal scroll, 0 console errors. Pictures in the worktree `shots/Z_sheet_*.jpg` (gitignored).
+
 ## Lane F2: harder fish, new shapes (2026-10-14; branch `fish-hard`, port 5573; Nathan approved all four; pushed to main)
 Four species' PLANS entries in `src/art/fishgen.ts`, plus new GENERIC options, each off by default on its own commit (no other
 look changed; every fingerprint checked on /review.html before each Record).
