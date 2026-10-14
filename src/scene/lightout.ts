@@ -347,7 +347,7 @@ export function lightOut(S: LightScene): LightOut | null {
 // so the caches hold one run at 1 W with no PAR override and scale it (lane J2: a Power step re-ran the model, ~100 ms).
 // The key leaves out the light fields the model does not read (Exposure, colour, room light, map unit).
 const unitKey = (S: LightScene) => {
-  const { watts: _w, par: _p, bright: _b, kelvin: _k, room: _r, mapUnit: _m, mapStep: _ms, ...l } = S.light;
+  const { watts: _w, par: _p, bright: _b, kelvin: _k, room: _r, mapUnit: _m, mapStep: _ms, mapStepLux: _ml, ...l } = S.light;
   return JSON.stringify([S.tank, l, S.lid, S.water, S.substrate, S.layout.id, S.layout.seed, S.terrain]);
 };
 const unitS = (S: LightScene): LightScene => ({ ...S, light: { ...S.light, watts: 1, par: undefined } });

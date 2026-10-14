@@ -1,6 +1,6 @@
 // Light map contour labels (Nathan 2026-10-14: "like an elevation map shows elevation"): with the Light map on and the
-// fixture's power set, the shader draws contour lines (PAR every light.mapStep, 10 by default; lux at each doubling: 250, 500,
-// 1k …); this puts the value on each line, as a contour map does. The light model (scene/lightout.ts bandsAt, the
+// fixture's power set, the shader draws contour lines (every light.mapStep PAR, 20 by default, or
+// mapStepLux lux, 1000); this puts the value on each line, as a contour map does. The light model (scene/lightout.ts bandsAt, the
 // function the shader is a port of) is sampled over the ground, each level traced by marching squares, and a label set
 // on every traced line long enough to read, about one per 25 cm along it. Traced again only when the setup changes;
 // the labels follow the camera on every draw.
@@ -14,7 +14,7 @@ import type { Tank, TankSetup } from '../scene/types';
 type Label = { p: THREE.Vector3; text: string };
 
 const fmt = (v: number, unit: 'par' | 'lux') => unit === 'par' ? String(v)
-  : v >= 1000 ? `${+(v / 1000).toFixed(v % 1000 ? 1 : 0)}k` : String(v);
+  : v >= 1000 ? `${+(v / 1000).toFixed(2)}k` : String(v);
 
 /** Contour labels for one setup: the ground sampled on a grid, each doubling traced, labels spaced along each line. */
 export function contourLabels(S: TankSetup, T: Tank): Label[] {

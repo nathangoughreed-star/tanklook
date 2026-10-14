@@ -5,7 +5,7 @@ import { GRAIN_LOOK, SUBSTRATES, drawFishCard } from '../art/placeholder';
 import { drawSnailCard } from '../art/snails';
 import { CATEGORIES, SPECIES, fishTL, getSpecies, needsWater, searchSpecies, speciesOf, speciesTag, type Category, type Sex, type Species } from '../data/species';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
-import { MAP_DIV, MAP_STEP, emitters } from '../render/lighting';
+import { MAP_DIV, MAP_STEP, emitters, mapStepOf } from '../render/lighting';
 import { TECHS, lightOutCached, readout as lightReadout, techOf, techsFor } from '../scene/lightout';
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
@@ -772,7 +772,7 @@ Cancel, then change the name, to keep both.`)) return;
   $<HTMLSelectElement>('lPat').onchange = e => store.edit(s => { s.light.pattern = (e.target as HTMLSelectElement).value as TankSetup['light']['pattern']; capCount(s.light); });
   $<HTMLSelectElement>('lType').onchange = e => store.edit(s => { s.light.type = (e.target as HTMLSelectElement).value as TankSetup['light']['type']; capCount(s.light); });
   $('lBeams').onchange = e => store.edit(s => { s.render.beams = (e.target as HTMLInputElement).checked; });
-  $('lStep').oninput = e => store.edit(s => { s.light.mapStep = +(e.target as HTMLInputElement).value; }, { coalesce: 'lStep' });
+  $('lStep').oninput = e => store.edit(s => { const v = +(e.target as HTMLInputElement).value; if ((s.light.mapUnit ?? 'par') === 'lux') s.light.mapStepLux = v; else s.light.mapStep = v; }, { coalesce: 'lStep' });
   $<HTMLSelectElement>('lUnit').onchange = e => store.edit(s => { s.light.mapUnit = (e.target as HTMLSelectElement).value as 'par' | 'lux'; });
   /** The Light map legend: labels at doublings along the ramp (7 steps up from MAP_DIV), and the PAR bands. */
   let mapKeyFor = '';
@@ -1289,7 +1289,9 @@ Cancel, then change the name, to keep both.`)) return;
     if (watts) setOut('oBright', '×' + Math.min(Math.max(l.bright, 0.5), 2).toFixed(2));
     const mapOn = s.render.beams && l.type !== 'flat';
     $('lUnitRow').style.display = mapOn && watts ? '' : 'none'; setVal('lUnit', l.mapUnit ?? 'par'); mapKey(watts ? l.mapUnit ?? 'par' : 'rel');
-    $('lStepRow').style.display = mapOn && watts && (l.mapUnit ?? 'par') === 'par' ? '' : 'none'; setVal('lStep', l.mapStep ?? MAP_STEP); setOut('oLStep', `${l.mapStep ?? MAP_STEP} PAR`);
+    { const u = l.mapUnit ?? 'par', r = MAP_STEP[u], v = mapStepOf(l, u); $('lStepRow').style.display = mapOn && watts ? '' : 'none';
+      Object.assign($('lStep') as HTMLInputElement, { min: String(r.min), max: String(r.max), step: String(r.by) }); setVal('lStep', v);
+      setOut('oLStep', u === 'lux' ? `${v.toLocaleString('en-US')} lux` : `${v} PAR`); }
     $('lBeams').checked = s.render.beams && l.type !== 'flat'; $('lBeams').parentElement!.title = l.type === 'flat' ? 'No fixture: pick one under Fixture to see the light map' : ''; /* audit #44 */ $('lMapKey').style.display = s.render.beams && l.type !== 'flat' ? '' : 'none';
     $('lMapBare').hidden = !(s.render.beams && l.type !== 'flat' && !s.substrate.show); /* the map needs a floor to draw on (audit #17) */ ($('lBeams') as HTMLInputElement).disabled = l.type === 'flat';
     }

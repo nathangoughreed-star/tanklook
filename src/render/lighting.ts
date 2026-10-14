@@ -68,15 +68,19 @@ export const LU = {
   // norm (per emitter), water surface y, losses x the PAR-override scale, wall-image weight (0 = no images);
   // uLoM: beam exponent (cos^m); uLoInd: bounced light per band (x the override scale); uLoWall: tank L, D; uLoK: absorption per mm per band; uLoSplit: photon share per band; uLoOut: per-band weight of
   // what is shown (PAR 1,1,1; lux LUXW); uMapDiv: the level at the bottom of the ramp (relative 1/16, PAR 2.5, lux 125);
-  // uMapStep: PAR contour lines every this much (light.mapStep), 0 = a line at each doubling
+  // uMapStep: contour lines every this much in the shown unit (light.mapStep / mapStepLux), 0 = a line at each doubling
   uLoOn: { value: 0 }, uLoA: { value: new THREE.Vector4() }, uLoWall: { value: new THREE.Vector2() },
   uLoK: { value: new THREE.Vector3() }, uLoSplit: { value: new THREE.Vector3() }, uLoOut: { value: new THREE.Vector3(1, 1, 1) },
   uMapDiv: { value: 1 / 16 }, uMapStep: { value: 0 }, uLoM: { value: 1 }, uLoInd: { value: new THREE.Vector3() },
 };
-/** PAR contour spacing on the Light map when light.mapStep is not set (Nathan 2026-10-14; slider 5-100 by 5). */
-export const MAP_STEP = 10;
-/** The PAR contour spacing, or 0 for a line at each doubling (lux, and the relative map). */
-export const mapStepOf = (l: LightSettings, unit: 'rel' | 'par' | 'lux') => (unit === 'par' ? l.mapStep ?? MAP_STEP : 0);
+/**
+ * Light map contour spacing when not set, and the slider's range (Nathan 2026-10-14: PAR 5-100 by 5, default 20). Lux
+ * scaled to match at 50 lux per µmol (white LED is about 67 in air, less under water): 250-5000 by 250, default 1000.
+ */
+export const MAP_STEP = { par: { def: 20, min: 5, max: 100, by: 5 }, lux: { def: 1000, min: 250, max: 5000, by: 250 } } as const;
+/** The contour spacing in the shown unit, or 0 for a line at each doubling (the relative map, without watts). */
+export const mapStepOf = (l: LightSettings, unit: 'rel' | 'par' | 'lux') =>
+  unit === 'par' ? l.mapStep ?? MAP_STEP.par.def : unit === 'lux' ? l.mapStepLux ?? MAP_STEP.lux.def : 0;
 /** The Light map ramp's bottom (navy) per unit: a colour step per doubling, yellow (4 steps up) on the "medium" band. */
 export const MAP_DIV = { rel: 1 / 16, par: 2.5, lux: 125 } as const;
 /** Water box (L, surface y, D) and tint per mm, and how far fish stand out (render.pop); set per viewport like the light. */
@@ -349,7 +353,7 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
       // light map on the substrate (beam overlay on): false colour by level, a dark contour line at each doubling (valued by ui/lightContours), the
       // grain kept faintly so the relief still reads; replaces the lit colour and the water haze
       'if (uMapOn > 0.5 && uSub > 0.5) { float aqI = max(aqIrr(), 1e-6), aqT = log2(aqI / uMapDiv);\n' +
-      // contours: every uMapStep PAR (light.mapStep), else at each doubling
+      // contours: every uMapStep (PAR or lux, light.mapStep / mapStepLux), else at each doubling
       '  float aqC = uMapStep > 0.0 ? aqI / uMapStep : aqT, aqW = fwidth(aqC);\n' +
       '  float aqG = dot(diffuseColor.rgb, vec3(0.2126, 0.7152, 0.0722));\n' +
       '  outgoingLight = aqRamp(aqT) * (0.75 + 0.45 * aqG) * (aqT < 0.0 ? 0.35 : 1.0);\n' +
