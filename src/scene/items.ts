@@ -532,10 +532,12 @@ export function starterItems(S: TankSetup): Item[] {
         const a = (i / n) * Math.PI * 2 + r() * 0.6, dist = s0 * (0.55 + r() * 0.3) * (1 + (wide - 1) * r());
         rocks.push(put('liverock', clamp(cx + Math.cos(a) * dist, 20, L - 20), clamp(cz + Math.sin(a) * dist * 0.55 / Math.sqrt(wide), 20, D - 20), s0 * (0.6 + r() * 0.35), tip('liverock')));
       }
-      // stacked: one or two rocks up on the base, smaller as they go
+      // stacked: one or two rocks up on the base, smaller as they go, and more until the main island stands about half
+      // the water deep (a smaller island a little less), so a big tank's reef is not a low strip (Nathan 2026-10-14)
+      const want = ((S.water.on ? H * S.water.level : H) - sub(cx, cz)) * 0.5 * (f.k < 1 ? 0.85 : 1);
       let top = itemDims(rocks[0])[1] * 0.75;
-      for (let i = 0, n = dens < 0.5 ? 1 : 1 + Math.floor(r() * 2); i < n && room(cx, cz, top) > 60; i++) {
-        const it = put('liverock', rocks[0].x + (r() - 0.5) * s0 * 0.4, rocks[0].depth + (r() - 0.5) * s0 * 0.2, s0 * (0.75 - 0.15 * i), { lift: Math.round(top), ...tip('liverock', 0.5) }, true);
+      for (let i = 0, n = dens < 0.5 ? 1 : 1 + Math.floor(r() * 2); i < 6 && (i < n || top < want) && room(cx, cz, top) > 60; i++) {
+        const it = put('liverock', rocks[0].x + (r() - 0.5) * s0 * 0.4, rocks[0].depth + (r() - 0.5) * s0 * 0.2, s0 * Math.max(0.45, 0.75 - 0.1 * i), { lift: Math.round(top), ...tip('liverock', 0.5) }, true);
         rocks.push(it); top += itemDims(it)[1] * 0.7;
       }
       // corals on the rock: each on a rock's top (the stacked ones first), a little off its middle

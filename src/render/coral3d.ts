@@ -3,7 +3,7 @@
 // light and clips them at the glass; this file only builds the shape, its unlit colours and its grit (shader detail)
 // coordinates. Base on y = 0, centred on the anchor. Size = the piece's width (live rock: its length).
 import * as THREE from 'three';
-import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { mergeGeometries, mergeVertices, toCreasedNormals } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng } from '../art/paint';
 import { stoneDims } from '../scene/items';
 import { clean, grit, paint, waves } from './items';
@@ -14,6 +14,8 @@ const V = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
 const C = (hex: string) => new THREE.Color(hex);
 /** Grit kinds (see GRIT in render/items.ts): 3 pitted rock, 11 hard coral (corallite dots), 12 soft tissue (polyp fuzz). */
 const ROCK = 3, HARD = 11, SOFT = 12;
+/** Live rock: edges sharper than this stay sharp, the rest is shaded smooth. */
+const ROCK_CREASE = 55 * Math.PI / 180;
 
 /** Smooth normals across a generator's seams (sphere / lathe edges), keeping it indexed so parts merge. */
 function smooth(g: G) {
@@ -34,7 +36,7 @@ function stand(parts: G[]) {
 // ---------- Live rock ----------
 /**
  * Porous reef rock: a few overlapping craggy lumps, cream under patches of pink and purple coralline algae. Angular, not
- * rounded (Nathan 2026-10-14): flat facets (no shared normals), each lump broken by a few flat faces with sharp edges,
+ * rounded (Nathan 2026-10-14): each lump broken by a few flat faces with sharp edges,
  * and pitted with round holes of many sizes that go dark inside, besides the channels.
  */
 function rockGeo(r: R, l: number, h: number, w: number) {
@@ -45,7 +47,7 @@ function rockGeo(r: R, l: number, h: number, w: number) {
     const faces = Array.from({ length: 5 + Math.floor(r() * 4) }, () => ({ n: V(r() - 0.5, r() * 0.9 - 0.25, r() - 0.5).normalize(), o: 0.6 + r() * 0.25 }));
     // pits: round holes over the surface, a few big ones and many small
     const pits = Array.from({ length: 26 + Math.floor(r() * 14) }, (_, i) => ({ d: V(r() - 0.5, r() - 0.5, r() - 0.5).normalize(), w: i < 5 ? 0.2 + r() * 0.12 : 0.07 + r() * 0.1, k: 0.18 + r() * 0.22 }));
-    const g: G = new THREE.IcosahedronGeometry(1, 4); // not indexed: every triangle keeps its own flat normal
+    const g: G = new THREE.IcosahedronGeometry(1, 4); // not indexed: creased normals below decide what is sharp
     g.deleteAttribute('normal'); g.deleteAttribute('uv');
     const p = g.attributes.position, dent = new Float32Array(p.count);
     for (let i = 0; i < p.count; i++) {
@@ -70,7 +72,9 @@ function rockGeo(r: R, l: number, h: number, w: number) {
   g.computeBoundingBox();
   const bb = g.boundingBox!, cx = (bb.max.x + bb.min.x) / 2, cz = (bb.max.z + bb.min.z) / 2;
   for (let i = 0; i < p.count; i++) p.setXYZ(i, (p.getX(i) - cx) * l / (bb.max.x - bb.min.x), (p.getY(i) - bb.min.y) * h / (bb.max.y - bb.min.y), (p.getZ(i) - cz) * w / (bb.max.z - bb.min.z));
-  g.computeVertexNormals();
+  // smooth across the small triangles, sharp across the broken faces' edges and pit rims (Nathan 2026-10-14: angular
+  // yes, but the triangles read too large and geometric with every one flat)
+  toCreasedNormals(g, ROCK_CREASE);
   const base = C(['#b8a687', '#ad9c80', '#c2b294'][Math.floor(r() * 3)]), cor = [C('#8e4d86'), C('#c4698f'), C('#a65a9c')][Math.floor(r() * 3)];
   const patch = waves(r, 5), patch2 = waves(r, 4), algae = C('#6f6b45');
   paint(g, (q, i) => {
