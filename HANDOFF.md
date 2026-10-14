@@ -2,6 +2,15 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane D: first-visit audit + review pack (2026-10-14; no src/ edits)
+- `shots/audit/AUDIT.md`: 53 ranked findings with cropped, marked shots (headless Chrome, fresh profile = true first
+  visit, desktop + 375 px phone + 768 px tablet, on main `c67aeb7`: before lanes A / E / H merged). Both re-checked S1s
+  reproduced. Fix lane G owns the fixes.
+- `shots/review/REVIEW.md`: one picture page per item awaiting Nathan (R1-R12), listed under "Still open" at the bottom.
+- "Still open" and "Known gaps" at the bottom rewritten to the current state.
+- Tooling (scratchpad, not in the repo): a ~80-line CDP driver over Node's built-in WebSocket + system Chrome; each run
+  gets its own profile, so parallel agents do not share localStorage. Worth adding to scripts/ if audits recur.
+
 ## Tree frogs climb the glass (2026-10-14; Nathan: "like otos and snails cling to the glass")
 - White's tree frog has `cling: any` (glass, hardscape, floor). Shuffle / Add use the oto path (`spawnSnail`) with a new
   `on.above` = the water line, so a frog on the glass or hardscape is always out of the water; glass weight `GLASS_FROG`
@@ -11,6 +20,14 @@ Living file. Project state and dated decisions go here; update in place.
   frog's height alone when the water level changes. Rendering needed nothing new: `onGlass` already lays any
   card + 3D body belly to the pane. Test in scatter.test.ts. Checked in the tree frog terrarium example.
 - Dart frogs, toads, newts unchanged (no `cling`).
+- **Glass pose (Nathan's two photos, same day):** `HERP3D_GLASS.treefrog` (`frogOnGlass3D`, herps.ts): belly levelled
+  flat onto the pane, arms folded under the chin, hind legs folded tight along the flanks, toe pads turned in under
+  the belly; cream starts lower round the section. `herpBody(art, w, glass)`; build.ts passes `f.surface === 'glass'`.
+  Picture `shots/92_treefrog_glass_sheet.png`. Awaiting Nathan's look.
+- **Bug found on the way: every 3D amphibian body was inside out** (bodyGeometry wound inward, so you saw the far
+  side's inside: cream flank seen from above, the far eye showing through; the old "far eye shows as a lid bump"
+  watch item). Winding flipped in `bodyGeometry`; the vertex shading now darkens the real underside. Affects all
+  frogs, newts, axolotl and the hermit crab's body.
 
 ## Lane A: 3D plants (2026-10-14; Nathan approved the style test "looks good, roll out"; pushed to main)
 
@@ -200,6 +217,13 @@ Lane H DONE (`6c91148`). Lane E DONE (`e8ccd65`). Lane I opened 2026-10-14: E's 
 `../Glass-Box-reef-polish` / `reef-polish`, launch config `reef-polish` 5353; owns `scene/items.ts` (lane A may add one
 crypts LIBRARY line), the non-plant branches of `render/items.ts`, `render/coral3d.ts`, `src/examples/*`, LayoutId in
 `scene/types.ts` / `scene/validate.ts`. Lane G owns `src/ui/*`.
+Audit written 2026-10-14: `shots/audit/AUDIT.md` in the MAIN checkout only (shots/ is gitignored), 53 findings. Split
+into two fix lanes: G (`src/ui/*`, `index.html`, `src/style.css`) and G2, core fixes, `../Glass-Box-core-fixes` /
+`core-fixes`, launch config `core-fixes` 5363 (`src/interact/*`, `src/scene/*`, `src/render/*` except lane I's files).
+A finding that spans both goes to the lane holding the root cause, with at most a one-line hook in the other's files.
+Audit ownership (lane G's split, 2026-10-14): G2 = #1, 3, 6, 14, 15, 18-21, 29, 47, the PNG crop/margins/A-B labels
+part of #49, 51-53; I = #42; G = the other 38. Nathan's calls: #29 the Stand is ON by default for new tanks (G2, scene/defaults.ts);
+#38 salt tanks show only "no stocking check for salt yet" (G).
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_e1923781-40bc-48d3-84f3-ed380e471779`
 ("Lanes coordinator"). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
 and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says
@@ -1407,10 +1431,31 @@ no licensing, but stays illustrated).
 - **Phase 2 stack (Nathan, 2026-10-08):** Vite + plain TypeScript (no React); GitHub Pages via GitHub Actions;
   **public** repo. Only procedural placeholder art is committed until the art provenance policy is settled.
 
-## Still open
+## Still open (rewritten 2026-10-14, lane D)
 
-Release camera limits; species sizes review (list built, 37); art pipeline + provenance policy;
-whether lighting ships in v1; hardscape scope (now: roadmap steps 3-5); React vs plain TS for the UI layer (see Phase 2 plan).
+Waiting on Nathan, one picture page each in `shots/review/` (index `shots/review/REVIEW.md`; shots/ is local, gitignored):
+- R1 3D amphibians: accept, or fix the frog thighs (tubes) and the far-eye knob at 50°?
+- R2 head-on marking wrap (discus, tiger barb, clown loach, harlequin, GBR): pass? (the harlequin patch smudges head-on)
+- R3 3D rollout batch 1 (14 fish): pass? (ember / chili blocky head-on, honey gourami belly block, betta fin slab)
+- R4 delete the unused hand-drawn `drawTetra` / `drawGourami` (art/placeholder.ts)?
+- R5 3D shrimp: accept, or fix the comb-like leg fan head-on?
+- R6 3D snails: accept? (mystery spire low at the back, pale lip notch)
+- R7 male / female looks and sizes, 11 species (re-shot after the honey stripe and swordtail 115 mm changes)
+- R8 hardscape generators good enough to show? (coconut doorway sawtooth, thin wood, flat end caps)
+- R9 wall spill: follow the actual beams instead of the box-to-fixture model?
+- R10 adult sizes of all 57 species (fresh, salt, herps, inverts; females separate)
+- R11 tick Enforce HTTPS in GitHub Pages settings (http still serves 200, no redirect)
+- R12 shareable scene URLs (not built)
+First-visit audit: `shots/audit/AUDIT.md`, 53 findings (4 S1, 20 S2, 29 S3) with shots; fix lane G works from it.
+The S1s: water level piles every fish at x = 12 mm; phone label overflow widens the page; aquascape drag erratic in the
+straight-on view; first visit is an empty box (no pointer to Examples / Animals).
+Not decided, low priority: camera limits (orbit already clamps elevation -20..85; "release" never defined); fish ignore
+rocks (a bottom dweller can sit inside a stone); tank weight ignores hardscape.
+
+Settled since this list was first written (2026-10-08), kept here so nobody reopens them: plain TypeScript, no React
+(Phase 2 stack); lighting shipped (spot / tube / LED, light map, beams); art is procedural generators only (Nathan
+rejected bought / AI models, repo is public), so the provenance question is moot; hardscape steps 3-4 shipped, step 5
+(3D plants) shipped as lane A, corals + live rock as lane E.
 
 ## Phase 2 build decisions (2026-10-08)
 
@@ -1464,8 +1509,13 @@ whether lighting ships in v1; hardscape scope (now: roadmap steps 3-5); React vs
    (localStorage + JSON file), PNG export, undo/redo.
 Each module is a separable unit, so subagents can build in parallel once the types in `scene/` exist.
 
-## Known gaps
+## Known gaps (rewritten 2026-10-14, lane D)
 
-- Illustrated (generated) art for 34 of 37 species; image-based art still blocked on the provenance policy.
-- Layouts are presets only; custom placement is now planned (roadmap step 3, Nathan 2026-10-09).
-- Scene rebuilds fully on every change, including each drag step; fine at hundreds of fish, revisit if schools get big.
+- Every one of the 57 species (12 salt) draws in 3D from a generator (fish PLANS incl. shrimp, `HERP3D`, snail shells;
+  11 with a female look); flat cards remain only as the fallback / picking target. Watch items are R1-R6 above.
+- Mobile: usable but rough (audit S1 #2, S2 #6-8): no pinch zoom, page overflow from the tank label, half-screen panel.
+- No stocking guidance for salt tanks (AqAdvisor's marine calculator is broken on their side; Nathan: leave it off).
+- Scene rebuilds fully on every change; the audit timed Split / Undo / colour-temperature changes at 0.7-1.7 s, but on
+  software GL, so re-measure on real hardware before acting.
+- Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
+- Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.

@@ -336,6 +336,33 @@ function frog3D(s: FrogSpec, fat: number, tone: [number, string][], marks: Mark3
     ground: frogV(s.aspect, 0.265),
   };
 }
+/**
+ * A tree frog resting on glass (Nathan's photos 2026-10-14): belly pressed flat on the pane (the ground line), arms
+ * folded under the chin, hind legs folded tight along the flanks, every toe pad tucked in under the body.
+ */
+function frogOnGlass3D(s: FrogSpec, fat: number, tone: [number, string][], marks: Mark3D[]): Herp3D {
+  const V = (v: number) => frogV(s.aspect, v), J = (u: number, v: number, z: number, r: number): Joint => [u, V(v), z, r];
+  const pad = s.pads, toe = 0.009;
+  // the sitting outline with its underside levelled onto the glass, a little lower over the back
+  const side: Pt[] = [[1.0, 0.07, 'c'], [0.975, -0.01], [0.9, -0.08], [0.8, -0.115], [0.68, -0.115], [0.52, -0.105], [0.36, -0.095], [0.2, -0.05],
+    [0.08, 0.06], [0.05, 0.16], [0.1, 0.235], [0.22, 0.255], [0.42, 0.258], [0.6, 0.255], [0.76, 0.245], [0.88, 0.22], [0.96, 0.15]];
+  return {
+    side: side.map(p => (p.length > 2 ? [p[0], V(p[1]), 'c'] : [p[0], V(p[1])]) as Pt),
+    wid: ([[0.06, 0.11], [0.2, 0.17], [0.42, 0.19], [0.62, 0.18], [0.78, 0.16], [0.9, 0.125], [1, 0.07]] as [number, number][]).map(([u, w]) => [u, w * fat]),
+    belly: 6, tone, marks,
+    limbs: [
+      // hind leg: thigh forward along the flank, shank back beside it, the long foot forward again, toes turned in under the belly
+      { js: [J(0.14, 0.16, 0.11 * fat, 0.07), J(0.47, 0.205, 0.215 * fat, 0.05), J(0.13, 0.235, 0.235 * fat, 0.028), J(0.36, 0.252, 0.2 * fat, 0.016)],
+        toes: [[0.15, -0.07], [0.14, -0.04], [0.12, -0.01], [0.09, 0.01], [0.05, 0.015]], toe, pad },
+      // arm folded under the chin: elbow back along the side, hand forward and in
+      { js: [J(0.72, 0.13, 0.11 * fat, 0.034), J(0.6, 0.22, 0.17 * fat, 0.027), J(0.73, 0.252, 0.11 * fat, 0.017)],
+        toes: [[0.07, -0.05], [0.075, -0.025], [0.065, 0], [0.045, 0.02]], toe, pad },
+    ],
+    legCol: [s.leg[1], s.leg[2]],
+    eye: { u: 0.8, th: 0.72, r: 0.052 * (frogV(s.aspect, 1) - frogV(s.aspect, 0)), iris: s.iris, pupil: s.pupil, bulge: 0.7 },
+    ground: frogV(s.aspect, 0.265),
+  };
+}
 const FROG_FACE: Mark3D[] = [
   { k: 'line', pts: [[0.74, 0.6], [0.84, 0.63], [0.94, 0.64], [0.995, 0.58]], c: '#0e100c', o: 0.25, w: 0.004 }, // mouth
   { k: 'spots', n: 2, u: [0.968, 0.972], a: [0.17, 0.23], r: [0.005, 0.005], c: '#141410', o: 0.6, seed: 1 },      // nostrils
@@ -365,6 +392,17 @@ function sal3D(s: SalSpec, wid: [number, number][], tone: [number, string][], ma
 
 const axo = SALS.axolotl, axoCv = axo.aspect / 2 - 0.015 - 0.04 - axo.trunk;
 
+// White's tree frog: jade green above, cream below with a soft edge, a few white flecks, the fold over the eardrum
+const TREEFROG_TONE: [number, string][] = [[0, '#5f9a4a'], [0.42, '#7cb35d'], [0.56, '#a9c98a'], [0.64, '#e8e2c4'], [1, '#efe9cf']];
+const TREEFROG_MARKS: Mark3D[] = [
+  { k: 'spots', n: 7, u: [0.25, 0.75], a: [0.1, 0.4], r: [0.007, 0.009], c: '#f4f3e6', o: 0.7, seed: 5 },
+  { k: 'line', pts: [[0.86, 0.3], [0.76, 0.36], [0.66, 0.42], [0.6, 0.5]], c: '#3f6a2f', o: 0.3, w: 0.012 },
+  ...FROG_FACE,
+];
+
+/** The pose an animal takes clinging to glass, where it differs from its resting one. */
+export const HERP3D_GLASS: Record<string, Herp3D> = {};
+
 export const HERP3D: Record<string, Herp3D> = {
   // hermit crab: the small body out of the shell, legs and claw from HERMIT_LIMBS, the eyes on the stalk tips
   hermit: {
@@ -382,12 +420,7 @@ export const HERP3D: Record<string, Herp3D> = {
     { k: 'band', u: [0.15, 0.8], a: [0.85, 1.0], c: '#2c5fae', o: 0.8, blur: 0.03 },
     ...FROG_FACE,
   ], { c: '#101114', r: 0.012, n: 34 }),
-  // jade green above, cream below with a soft edge, a few white flecks, the fold over the eardrum
-  treefrog: frog3D(FROGS.treefrog, 1.12, [[0, '#5f9a4a'], [0.42, '#7cb35d'], [0.56, '#a9c98a'], [0.64, '#e8e2c4'], [1, '#efe9cf']], [
-    { k: 'spots', n: 7, u: [0.25, 0.75], a: [0.1, 0.4], r: [0.007, 0.009], c: '#f4f3e6', o: 0.7, seed: 5 },
-    { k: 'line', pts: [[0.86, 0.3], [0.76, 0.36], [0.66, 0.42], [0.6, 0.5]], c: '#3f6a2f', o: 0.3, w: 0.012 },
-    ...FROG_FACE,
-  ]),
+  treefrog: frog3D(FROGS.treefrog, 1.12, TREEFROG_TONE, TREEFROG_MARKS),
   // warty green back with black blotches; red-orange belly with black spots
   firetoad: frog3D(FROGS.firetoad, 1.1, [[0, '#4b7a32'], [0.5, '#5d8c3a'], [0.66, '#5f8a38'], [0.73, '#d9461e'], [1, '#e04a1c']], [
     { k: 'spots', n: 26, u: [0.12, 0.88], a: [0.0, 0.5], r: [0.018, 0.034], c: '#111410', o: 0.85, seed: 9 },
@@ -420,3 +453,5 @@ export const HERP3D: Record<string, Herp3D> = {
       },
     }),
 };
+// on the glass the flat belly turns the lower flank toward you: the cream starts lower round the section
+HERP3D_GLASS.treefrog = frogOnGlass3D(FROGS.treefrog, 1.12, [[0, '#5f9a4a'], [0.45, '#7cb35d'], [0.66, '#a9c98a'], [0.74, '#e8e2c4'], [1, '#efe9cf']], TREEFROG_MARKS);
