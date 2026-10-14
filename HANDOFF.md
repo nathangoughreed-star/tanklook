@@ -708,7 +708,7 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 **Current lanes (2026-10-14 16:25, coordinator "Lanes coordinator 2", `local_d0390f66`).** Everything else below is DONE.
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
-| P final polish | `../Glass-Box-final-fixes` / `final-fixes` | 5473 | `src/style.css`, `index.html`, `src/ui/panels.ts`, `src/scene/water.ts` | FINAL.md items 1-6 done, push pending Nathan's yes |
+| P final polish | `../Glass-Box-final-fixes` / `final-fixes` | 5473 | `src/style.css`, `index.html`, `src/ui/panels.ts`, `src/scene/water.ts` | DONE (`7e5897a`); files free |
 | R P2 axolotl + nerite | `../Glass-Box-p2-small` / `p2-small` | 5493 | `art/herps.ts`, `render/herp3d.ts`, `art/snails.ts`, `render/snail3d.ts` | DONE (`45f872a`); files free. Open: fillCut for mystery / turbo / trumpet (would change approved look) |
 | S P1 fish fins | `../Glass-Box-fish-fins` / `fish-fins` | 5503 | `art/fishgen.ts`, `art/paint.ts`, `render/fish3d.ts` | running (session `local_b5a88177`) |
 | R2 snail aperture kink | `../Glass-Box-p2-small` / `p2-small` (started by lane R) | 5493 | `art/snails.ts`, `render/snail3d.ts` (mystery / turbo / trumpet fillCut) | running (session `local_8190ce91`) |
