@@ -2,6 +2,19 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Model review sheet + model versions (2026-10-14, Nathan: "keep it where it can be updated with version number every time a model is updated")
+- `review.html` (live at tanklook.com/review.html; second Vite page, `src/review/`): every species look (females too)
+  from Side, 3/4, Front, Top, each in the preview tile's flat light and in the default tank's LED bar + water. Filter,
+  "Needs work" tick + note per model (this browser only), "Copy flagged list" puts them on the clipboard as text.
+- Versions: `src/data/model-versions.json` holds, per look, a fingerprint (geometry on a 1/500 grid, 24 px texture
+  thumbnails at 3 bits, material colours, art/tl/aspect), `v`, and the build it shipped in. A model whose fingerprint
+  no longer matches shows "changed since" (orange); "Changed only" filters to them.
+- **Rule for any chat that changes a model** (art/, fish3d, snail3d, herp3d, species.json sizes): open
+  `/review.html` on your dev server, wait for it to render, press "Record N changed models", commit
+  `src/data/model-versions.json` with the change. The button only exists on the dev server (plugin
+  `scripts/model-versions-plugin.mjs`); it stamps build = current commit count + 1, i.e. the commit you are about to make.
+- All 68 looks recorded as v1 at build 216. Fingerprints held across reloads and at phone size in the app's browser.
+
 ## Light output: watts -> PAR / lux (2026-10-14; draft only, no src/ edits)
 - Design draft `reference/light-output-draft.md`: watts + light tech -> photons -> existing beam model in real units,
   plus refraction, side-glass reflection, water absorption in three colour bands. Light map gets a PAR / Lux switch

@@ -13,7 +13,7 @@ import { cardMaterial, fishBodyTexture, fishTexture, snailTexture } from './text
 const EDGE = 'a2c' as const, FOV = 28, YAW0 = 0.55, PITCH0 = 0.18, PITCH_MAX = 1.35;
 
 /** The model for a species at width 1 (unit frame: head at +x, card facing +z). */
-function speciesModel(sp: Species) {
+export function speciesModel(sp: Species) {
   const solid = has3D(sp.art), g = new THREE.Group();
   if (sp.kind === 'snail') {
     if (solid) g.add(snailBody(sp.art, 1));
