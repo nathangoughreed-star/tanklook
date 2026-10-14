@@ -173,6 +173,11 @@ or a type with no `PLANT3D` entry). No scene version bump: plants were already i
   plus a sideways S-wobble growing to the tip; stems bend along their height the same way. Own random stream
   (`rng(seed * 104729 + 71)`), so the approved leaf layouts did not change. `plant3d.sway = false` = rigid. Sheet
   `shots/98_planted_sheet.png` (before / after).
+- Per-plant build (Nathan 2026-10-14: "does every sword look like every other?"): the leaf layout was already per
+  item seed (count, lengths, angles, colour picks); now the plant-wide traits vary too, drawn per seed from a
+  triangular spread round the species' value (own stream `rng(seed * 7907 + 3)`): leaf width +-18 %, length +-12 %,
+  rise +-20 %, droop +-30 %, stalk / rhizome thickness +-25 %, leaf pairs per stem +-15 %, brightness +-6 % and a
+  warm / cool cast (+-8 %). Sheet `shots/100_variety_sheet.png` (5 swords, 5 vallisneria, same size, different seeds).
 - Watch items: vallisneria clumps spread wider than their card; the sword is taller than its old card; the carpet sits
   lower than the card from the front. Crypts: not built yet (next).
 
