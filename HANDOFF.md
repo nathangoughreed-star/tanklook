@@ -2,6 +2,27 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane K: light output (2026-10-14; branch `light-output`, port 5383; step 1 of 4 pushed)
+- Owns `render/lighting.ts` (carved out of lane J's render/*), new `scene/lightout.ts` + `test/lightout.test.ts`, the
+  light fields in scene/types.ts / defaults.ts / validate.ts, the Lighting rows in index.html / ui/panels.ts,
+  ui/diff.ts, ui/parGuide.ts. Lane J: the fixture geometry (emitters, beam, fitSpots, lampHeight, CONES, LAMP_Y,
+  AQ_MAX) moved from render/lighting.ts into scene/lightout.ts; lighting.ts re-exports it, no other file changed.
+- Step 1 (the model, `scene/lightout.ts`): photons = W x PPE x eta, beam normalised to unit flux (points: sr; tubes:
+  2D round the axis x an exact finite-length factor), glass lid 0.9, surface 0.97, paraxial refraction (depth / 1.33),
+  side-glass mirror images (rect tanks, weight 0.7, only where the image ray meets the glass under water), three bands
+  (blue / green / red) with pure-water absorption 0.012 / 0.07 / 0.35 per m plus half the water tint (`waterK`).
+  `lightOut` gives surface / mean / min / max PAR, lux at the substrate and mid-water; `readout` the panel line;
+  `renderBright` = clamp(sqrt(luxMid / 8000), 0.2, 2.5) x Exposure. New optional LightSettings: watts, tech, par,
+  mapUnit (validated, kept only when present).
+- Calibration (tests print the residuals): AI Hydra 32 HD in air +9 / -5 / -7%; JBL Solar Natur in water +22% just
+  under the surface, +2 to -20% from 10 to 70 cm, with the glass walls assumed 1.6 x 0.8 m (no walls: -37% at 70 cm);
+  T5 HO (Barr) -3 / -10% at eta 0.75 once the glass is modelled (the first hand check's 0.4-0.5 left the glass out).
+- Findings for Nathan: under white / planted light lux falls a little SLOWER than PAR with depth (red goes first and
+  barely counts in lux); only under blue reef light does lux fall faster. LREF is 8,000 lux, not ~2,000 (typical
+  setups give 6,000-12,000 mid-water). Readout range = the tech's uncertainty (LED ±30%, others ±50%) or min-max.
+- Next: step 2 (Watts / Tech / PAR override rows, readout, Brightness -> Exposure), 3 (shader port + PAR / Lux map),
+  4 (hover tooltip).
+
 ## Light output: watts -> PAR / lux (2026-10-14; draft only, no src/ edits)
 - Design draft `reference/light-output-draft.md`: watts + light tech -> photons -> existing beam model in real units,
   plus refraction, side-glass reflection, water absorption in three colour bands. Light map gets a PAR / Lux switch
