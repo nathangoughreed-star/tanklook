@@ -2,6 +2,27 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane F2: harder fish, new shapes (2026-10-14; branch `fish-hard`, port 5573; Nathan approved all four; pushed to main)
+Four species' PLANS entries in `src/art/fishgen.ts`, plus new GENERIC options, each off by default on its own commit (no other
+look changed; every fingerprint checked on /review.html before each Record).
+- **goldfish -> fantail (v2, build 377):** `tail.split` (8feffb9): a double caudal, two copies of the tail joined along the
+  top, lower parts flaring out (degrees) and the lobes swinging out to the rear (fish3d `splitTail`; fishgen `drawTail` /
+  `tailBox`; the 3D card leaves its own tail out). Goldfish: `split` 45 on 'notch' lobes, thick 0.68, pec x2, pelvic len
+  0.15 w 1.4. Not done: the fantail's doubled anal fin.
+- **kuhli (v2, build 384):** `noseCap` (84f85b4, profile(): the snout ends in a rounded half-ellipse this long instead of
+  the sharp corner; lane X's neon / cardinal / chili / cpd note could use it) and `barbelR` (3D barbel radius, default
+  0.004). Kuhli: noseCap 0.04, snout 0.95, peak 0.78, pedT 0.35, barbelR 0.0013, barbels 0.016.
+- **harlequin (v2, build 386):** poly marks take 'c' sharp-corner points (e49d389; they were always smoothed into a bean).
+  Harlequin: angular 0.7, peak 0.58, ped 0.03, depth 0.33; the patch a triangle from under the dorsal to the peduncle.
+- **oscar (v3, build 390):** head geometry was tried and dropped (Nathan: cheeks / jaw / lips read as a detached bulb or
+  "still looks like ass" next to his red tiger oscar photo, `shots/laneF2/ref-oscar.webp`). Shipped: lane S's v2 body
+  unchanged, the colours from that photo (olive-grey head and upper front, near-black rear via a dark blob, ~120 small
+  orange spots, orange throat and gill cover), noseCap 0.02. With noseCap the 3D mouth line starts on the snout midline
+  so the two sides meet (generic, fish3d gapeMeshes). The renderer lifts very dark colours, so contrast comes from the
+  lighter head, not a blacker body.
+- Head geometry for cory / panda, loach / SAE heads, marine cheeks: not built (the cheek / jaw attempt is not in the code).
+- Before/after composites: worktree `shots/laneF2/cmp-*.jpg` (gitignored); `cmp.py <ids>` after `npm run sheets`.
+
 ## Lane X: anatomy audit P2, freshwater mid-water fish (2026-10-14; branch `fish-fins`, port 5503; Nathan approved both sheets; pushed to main)
 PLANS entries only in `src/art/fishgen.ts`; no new generic parameters; v2 at build 372 (13 looks).
 - **Characins** (neon = art `tetra`, cardinal, ember, rummynose): `MedianFin` dorsal mid-back, short base with a
@@ -127,6 +148,23 @@ Split from lane S. Only the PLANS / her() entries of these species in `src/art/f
   untouched. Lazy chunks are cached only once loaded, so offline covers what the visitor has already opened. Checked
   on `android-prod` (vite preview, 5544): SW active and controlling, the app opens with the server stopped,
   `Page.getInstallabilityErrors` = none. Not yet checked: the install prompt on a real phone (needs the live https site).
+- **Step 3 in progress (2026-10-14): TWA project in `android/`** (Bubblewrap 1.x, `twa-manifest.json` written by hand,
+  then `bubblewrap update`): package `com.tanklook.app`, host tanklook.com, orientation default (follows the phone),
+  target/compile SDK 36, min 21, version 1.0.0 (code 1). Toolchain on this PC (not in the repo): Bubblewrap CLI (npm -g),
+  Temurin JDK 17.0.11 and Android cmdline-tools 6609375 in `%USERPROFILE%\.bubblewrap` (config.json points there).
+  Upload key: `C:\Users\nreed\keys\tanklook-upload.jks`, alias `upload`; Nathan makes it and keeps the passwords,
+  never in the repo (`android/.gitignore` blocks *.jks / *.aab / build output). Nathan runs `bubblewrap build` himself
+  (it asks for the passwords and for the Android SDK licences). Then: its `assetlinks.json` goes to
+  `public/.well-known/assetlinks.json`; after Play App Signing is on, ADD Play's app-signing SHA-256 too (from Play
+  Console > App integrity), or the store build shows the browser bar.
+- **Step 3 built (2026-10-14):** `android/app-release-signed.apk` + `app-release-bundle.aab` (git-ignored), signed with
+  the upload key, SHA-256 `EB:FB:F5:12:...:FA:DC:2E` (full value in `public/.well-known/assetlinks.json`, served at
+  tanklook.com/.well-known/assetlinks.json). minSdk raised to 24 (androidbrowserhelper 2.7.4 needs it). Gotchas for the
+  next build: (1) Bubblewrap installed a 32-bit JDK on Windows (Gradle's 1.5 GB heap fails); config.json now points at
+  64-bit Temurin 17 in `%USERPROFILE%\.bubblewrap\jdk\x64`. (2) PowerShell blocks `bubblewrap.ps1`: run `bubblewrap.cmd`.
+  (3) The app's terminals set `NoDefaultCurrentDirectoryInExePath=1`, so `gradlew.bat` is "not recognized": clear it
+  first. Build line: `cd C:/Users/nreed/Glass-Box-android/android; $env:NoDefaultCurrentDirectoryInExePath = $null;
+  bubblewrap.cmd build`. To ship an update to the shell only: bump appVersionCode / appVersionName in twa-manifest.json.
 - **Order:** landscape layout, PWA manifest + SW, TWA shell + asset links, Play listing material (Nathan does the account
   and submissions), low-end phone performance check.
 
@@ -718,9 +756,22 @@ Plan approved by Nathan (batches in severity order). Pictures: `shots/g2/` in th
   spots, webbing on all four feet. New `FrogSpec` fields `web` (all feet) and `eye` (own eye position); the other three
   frogs' fingerprints did not change. Added to `fish3d.species` (3D on).
 - AqAdvisor has no entry: stand-in Panda Cory (3.5 cm vs 5 cm, bottom, warm, groups), `standIn` in aqadvisor.json.
-- Model v1 at build 360, sheet `public/model-sheets/adf.jpg`. Awaiting Nathan's look. Open: it uses the land
-  frogs' sitting pose (hind legs folded); a real ADF often rests with the hind legs splayed out sideways, or floats at
-  the surface in a "zen" pose; not done.
+- Model v1 at build 360, sheet `public/model-sheets/adf.jpg`.
+- **v2 at build 374 (Nathan: "a resting pose with the hind legs splayed out sideways, like a real ADF on the bottom"):**
+  `adfLimbs()` overrides frog3D's folded legs for `HERP3D.adf` only: thighs out sideways from the hips, knees bent
+  forward, the long webbed feet trailing back and out (past the tail end, u < 0); arms out to the sides, webbed hands
+  spread forward. The 2D card keeps the folded side view (in 3D it is only the invisible picking target).
+- **Floating "zen" pose (Nathan: "lets add the floating zen pose at the surface"):** new `Surface` value `'top'` =
+  floating at the water surface (its height is the water line's; stored y ignored). Species `cling: "top"` -> surfaces
+  `['floor', 'top']` (adf only). Shuffle / Add float `FLOAT_FROG` = 1/3 of them (scatter.ts; none in a dry tank), nose
+  up 4-12°, the rest rest on the bottom. Pose `HERP3D_FLOAT.adf` (herps.ts): the resting body with all four legs spread
+  limp and drooping; its `top` line (the back) sits 0.5 mm under the water line (build.ts), no contact shadow.
+  `herpBody(art, w, surface)` now takes the surface (glass / top poses). `restsOnFloor` is false on 'top'. Test in
+  scatter.test.ts (share, height, save round-trip, dry tank). Not fingerprinted (like the tree frog's glass pose):
+  review sheet unchanged; picture made with a temporary swap. Not done: dragging can't move a frog between the floor
+  and the surface (only Shuffle / Add choose), and in a tank filled to the rim the rim hides floaters from eye height.
+- Gotcha: `npm run sheets` renders in headless software WebGL, whose fingerprints differ from a GPU's for every model,
+  so the sheets script cannot record versions (tried: it bumped all 68). Record from a dev server's review page only.
 
 ## Tree frogs climb the glass (2026-10-14; Nathan: "like otos and snails cling to the glass")
 - White's tree frog has `cling: any` (glass, hardscape, floor). Shuffle / Add use the oto path (`spawnSnail`) with a new
@@ -931,8 +982,8 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | V zoom out further | `../Glass-Box-zoom-out` / `zoom-out` | 5523 | `scene/validate.ts` LIMITS.zoom, `render/camera.ts`, the zoom / framing parts of `render/viewer.ts`, the cZoom slider in `index.html` / `ui/panels.ts`, `interact/pointer.ts` wheel / pinch | DONE (see Lane V section); files free. Also touched (free files): `render/build.ts` room size + ceiling, `render/viewmap.ts` caption, `scene/orbit.ts` |
 | T iPhone AR | `../Glass-Box-ar` / `ar-view` (lane Q's, Q is done) | 5483 | new `render/arUsdz.ts` + test, `render/ar.ts` | DONE for now (`3085106`); iPhone button hidden behind `?ar=ios` until an iPhone test, then IOS_FLAG = false; files free |
 | ADF African dwarf frog | `../Glass-Box-adf` / `adf-frog` | 5553 | `FROGS.adf` + new FrogSpec fields in `art/herps.ts` / `render/herp3d.ts`, the `adf` entries in `data/species.json`, `data/aqadvisor.json`, one line in `fish3d.species` | running (session `local_37002c35`), v1 sheet awaiting Nathan |
-| Z coral seating | `../Glass-Box-coral-seat` / `coral-seat` | 5563 | coral seating in `render/items.ts` (seatCorals) / `scene/items.ts` (seatHook), the coral drop in `src/interact/*`, `src/examples/reef.json` + `reef.jpg` | ready to open (prompt `prompts/lane-Z-coral-seat.md`) |
-| F2 harder fish | `../Glass-Box-fish-hard` / `fish-hard` | 5573 | PLANS / her() entries of goldfish (fantail, Nathan), kuhli, harlequin, oscar; new OFF-by-default generic parameters in `art/fishgen.ts` / `render/fish3d.ts` / `art/paint.ts` (double caudal, barbels, head geometry) | ready to open (prompt `prompts/lane-F2-fish-hard.md`) |
+| Z coral seating | `../Glass-Box-coral-seat` / `coral-seat` | 5563 | coral seating in `render/items.ts` (seatCorals) / `scene/items.ts` (seatHook), the coral drop in `src/interact/*`, `src/examples/reef.json` + `reef.jpg` | running (session `local_d4c637fd`) |
+| F2 harder fish | (worktree removed) | - | - | DONE (`8febeec`): fantail, kuhli, harlequin, oscar v3. Open: head geometry rejected by Nathan (cory / loach / SAE / marine heads have no generic); fantail doubled anal fin; lane X's leftovers not applied (noseCap on neon / cardinal / chili / cpd, characin dorsal taper, platy / molly gonopodium) |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | OPENED 2026-10-14 (prompt `prompts/lane-W-android-app.md`); step 1 landscape layout; mind V's `index.html` / `panels.ts` edits |
 Free (no lane): `render/build.ts`, `render/items.ts`, `scene/items.ts`, `render/viewer.ts`, `main.ts`, `render/lighting.ts`,
 `render/coral3d.ts`, `render/shrimp3d.ts` / `art/shrimps.ts`, `scene/share.ts`, herps / herp3d / snails / snail3d. A one-line hook in a free file is fine; name it

@@ -4,8 +4,8 @@
 // card stays as the fins (thin membranes); its painted body sits inside the solid. Nose and tail tips are unchanged,
 // so nose-to-tail stays adult TL.
 import * as THREE from 'three';
-import { bodyPlan, eyeSpot, pairedFins, profile, type Plan } from '../art/fishgen';
-import { rng } from '../art/paint';
+import { bodyPlan, drawTail, eyeSpot, pairedFins, profile, tailBox, type Plan } from '../art/fishgen';
+import { FIN_A, rng, style } from '../art/paint';
 import { HERP3D } from '../art/herps';
 import { SNAILS } from '../art/snails';
 import type { EdgeMode } from '../scene/types';
@@ -142,7 +142,7 @@ function barbelMeshes(p: Plan, bend: number, mat: THREE.Material) {
   const DIRS: [number, number, number][] = [[0.35, -0.7, 0.62], [0.62, -0.72, 0.3]];
   for (const side of [1, -1]) DIRS.forEach((d, k) => {
     const m = new THREE.Mesh(g, mat), s = surfaceAt(p, 0.975 - k * 0.012, nb - 0.006, side, bend), z0 = bendZ(bend, s.x);
-    m.scale.set(0.004, len * (1 - 0.25 * k), 0.004);
+    const r = p.barbelR ?? 0.004; m.scale.set(r, len * (1 - 0.25 * k), r);
     m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(d[0], d[1], d[2] * side).normalize());
     m.position.set(s.x, s.y, z0 + (s.z - z0) * 0.8);
     out.push(m);
@@ -165,6 +165,8 @@ function gapeMeshes(art: string, p: Plan, bend: number, mat: THREE.Material) {
         const s = surfaceAt(p, u, v, side, bend), z0 = bendZ(bend, s.x);
         return new THREE.Vector3(s.x, s.y, z0 + (s.z - z0) * 1.04 + side * 0.001);
       });
+      // a rounded snout (noseCap) is broad at the front: the line starts at the tip on the midline, so the two sides meet
+      if (p.noseCap) { const z0 = bendZ(bend, 0.5); pts.unshift(new THREE.Vector3(0.5 + 0.002, -(m0 + 0.004), z0)); }
       g = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 16, 0.0028, 5, false); g.userData.keep = true; geoCache.set(key, g);
     }
     out.push(new THREE.Mesh(g, mat));
@@ -205,6 +207,42 @@ function limbMeshes(art: string, p: Plan, bend: number, mat: (c?: string) => THR
   });
   return out;
 }
+
+/**
+ * Double caudal (`tail.split`, fantail goldfish): two copies of the tail, the card's own left out. At the peduncle
+ * they lie together in the card plane; further back their parts below the peduncle's top flare out to either side
+ * (the lobes joined along the top, an upturned V from behind) and the whole lobe swings out a little (a V from above).
+ */
+function splitTail(art: string, p: Plan, bend: number, edge: EdgeMode) {
+  const tb = tailBox(p), m = 0.01, box = { u0: -m, v0: tb.v0 - m, w: tb.u1 + 2 * m, h: tb.v1 - tb.v0 + 2 * m };
+  const [pt, pb] = profile(p)(p.pedU), hinge = tb.c - (pb - pt) * 0.35, tan = Math.tan(p.tail.split! * Math.PI / 180);
+  const R = 1024, key = `tail2:${art}`;
+  let tex = texCache.get(key + edge);
+  if (!tex) {
+    const c = document.createElement('canvas'); c.width = Math.ceil(box.w * R); c.height = Math.ceil(box.h * R);
+    const ctx = c.getContext('2d')!; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    style.finA = edge === 'a2c' ? 0.36 : FIN_A; style.features = false; style.paired = false;
+    drawTail(p, ctx, (u, v) => [(u - box.u0) * R, (v - box.v0) * R], R);
+    style.finA = FIN_A; style.features = true; style.paired = true;
+    tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8; texCache.set(key + edge, tex);
+  }
+  const mat = cardMaterial(key, tex, edge); mat.userData.fishCard = true; // outlined by fish stand out
+  return [1, -1].map(side => {
+    const gk = `${key}:${bend}:${side}`;
+    let g = geoCache.get(gk);
+    if (!g) {
+      g = new THREE.PlaneGeometry(box.w, box.h, 24, 16); g.translate(box.u0 + box.w / 2 - 0.5, -(box.v0 + box.h / 2), 0);
+      const pos = g.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        const x = pos.getX(i), u = x + 0.5, v = -pos.getY(i), k = smooth(p.pedU + 0.02, p.pedU * 0.45, u); // 0 at the root .. 1 behind it
+        pos.setZ(i, bendZ(bend, x) + side * k * (Math.max(0, v - hinge) * tan + 0.3 * (p.pedU - u) + 0.003));
+      }
+      g.computeVertexNormals(); g.computeBoundingSphere(); g.userData.keep = true; geoCache.set(gk, g);
+    }
+    return new THREE.Mesh(g, mat);
+  });
+}
+const texCache = new Map<string, THREE.Texture>();
 
 const SPREAD = { pelvic: 0.6, pectoral: 0.75 };
 /** Swing of the paired fins on a fish clinging to glass: pressed out flat against the pane, pectorals swept back. */
@@ -467,6 +505,7 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
     grp.add(m);
   }
   const belly = bellyPlate(art, p, b); if (belly) grp.add(belly);
+  if (p.tail.split) for (const m of splitTail(art, p, b, edge)) grp.add(m);
   for (const f of finMeshes(art, p, b, edge, cling)) grp.add(f);
   if (p.limbs) {
     const mat = (c?: string) => fishMat(`limb:${art}:${c ?? ''}`, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(c ?? p.shade[0]).multiplyScalar(0.9) })); // own colour (cleaner shrimp's white antennae) or the back's

@@ -26,6 +26,9 @@ export function randomSize(f: Fish, sp: Species, pct: number, r: () => number) {
   if (tl === adult) delete f.tl; else f.tl = tl;
 }
 
+/** Share of a species with `cling: "top"` (African dwarf frog) floating at the surface after a Shuffle. */
+export const FLOAT_FROG = 1 / 3;
+
 /** Part of the water column (0 = just above the ground, 1 = just under the surface) each level favours. */
 const BANDS = { top: [0.65, 0.98], mid: [0.2, 0.8], low: [0.02, 0.4] } as const;
 
@@ -92,6 +95,13 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
       const land = sp.habitat === 'land', glass = clingsTo(sp, 'glass') && (sp.kind === 'snail' || (land ? GLASS_FROG : GLASS_FISH));
       const on = { glass, hard: clingsTo(sp, 'hardscape') ? hard : undefined, above: land && s.water.on ? waterY(A, s.water.level) : undefined }, left: Fish[] = [];
       for (const f of e.fish) {
+        // a dwarf frog floats at the surface (its "zen" pose) about a third of the time, else it rests on the bottom
+        if (clingsTo(sp, 'top')) {
+          if (!s.water.on || r() >= FLOAT_FROG) { f.surface = 'floor'; left.push(f); continue; }
+          const w = fishTL(f, sp), q = roomiest(w, () => { const c = spot(w / 2, w); return { ...c, y: top }; });
+          Object.assign(f, q, { surface: 'top' as const, yaw: Math.round(r() * 360 - 180), pitch: Math.round(4 + r() * 8), roll: 0, bend: 0 }); note(f, w);
+          continue;
+        }
         const p = spawnSnail(g, A, fishTL(f, sp), r, land ? A.H - 10 : top, on);
         if (sp.kind !== 'snail' && p.surface === 'floor') { f.surface = 'floor'; left.push(f); continue; }
         // a frog on the glass sits head up, more or less
