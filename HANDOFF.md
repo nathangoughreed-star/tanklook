@@ -165,6 +165,8 @@ Split from lane S. Only the PLANS / her() entries of these species in `src/art/f
   (3) The app's terminals set `NoDefaultCurrentDirectoryInExePath=1`, so `gradlew.bat` is "not recognized": clear it
   first. Build line: `cd C:/Users/nreed/Glass-Box-android/android; $env:NoDefaultCurrentDirectoryInExePath = $null;
   bubblewrap.cmd build`. To ship an update to the shell only: bump appVersionCode / appVersionName in twa-manifest.json.
+- **Step 3 DONE (2026-10-14):** Nathan installed the APK on his S24+: "it works". Google's asset-links check = linked.
+  Next: step 4, Play listing material; Nathan opens the developer account (14-day / 12-tester closed test).
 - **Order:** landscape layout, PWA manifest + SW, TWA shell + asset links, Play listing material (Nathan does the account
   and submissions), low-end phone performance check.
 
