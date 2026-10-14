@@ -489,26 +489,55 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
   return m;
 }
 
+/** mm a seated coral's base goes into the rock (it rests on it, never a hair above). */
+export const SEAT_SINK = 3;
+
+const BOTH_SIDES = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide });
+const _n = V(0, 0, 0);
 /**
- * Seat each raised coral of a fresh layout on the rock it was meant for: looking down from a little above its planned
- * base (so not onto a rock stacked higher up), its base goes to the highest top found under the middle of its foot, a
- * little into the rock; with nothing under it, onto the ground.
+ * The rock surface a coral planned at height `y` over (x, depth) rests on: with `y` in the water, the first top below
+ * it; with `y` inside a rock (a guessed or tipped top), that rock's own top above it. Null = no rock under it. `solids`
+ * are see-from-both-sides copies, so the ray finds where it goes into a rock (face up) and out of it (face down).
  */
-const SEAT_ABOVE = 40; // mm above a coral's planned base that seatCorals looks down from
-function seatCorals(S: TankSetup) {
+function restingTop(solids: THREE.Object3D[], x: number, depth: number, y: number): number | null {
+  const hits = new THREE.Raycaster(V(x, 1e5, -depth), V(0, -1, 0)).intersectObjects(solids, false);
+  let inside = 0, last: number | null = null, below = false;
+  for (const h of hits) {
+    if (!below && h.point.y < y) { below = true; if (inside > 0) return last; }
+    if (_n.copy(h.face!.normal).transformDirection(h.object.matrixWorld).y > 0) {
+      if (inside === 0) { if (below) return h.point.y; last = h.point.y; }
+      inside++;
+    } else inside = Math.max(0, inside - 1);
+  }
+  return !below && inside > 0 ? last : null;
+}
+
+/**
+ * Lift (above the ground) that seats a coral of `it`'s size at (x, depth), planned at height `y`, on the rock: the
+ * highest resting top (restingTop) under the middle of its foot, SEAT_SINK into it (a top more than a steep slope above
+ * the middle's is a wall, skipped); 0 = no rock under it, so the ground.
+ * Going by the planned height (not the sky) keeps a coral on its ledge under a higher rock.
+ */
+export function coralSeat(S: TankSetup, it: Item, solids: THREE.Object3D[], y: number, x = it.x, depth = it.depth): number {
+  const r = itemDims(it)[0] * 0.08, g = groundHeight(S, S.tank, x, depth);
+  const both = solids.map(o => { const m = new THREE.Mesh((o as THREE.Mesh).geometry, BOTH_SIDES); m.matrixWorld.copy(o.matrixWorld); return m; });
+  // the middle of the foot says which rock; the rest raise it on a slope, but a rock face rising past the foot (a higher
+  // rock it is tucked under) is a wall, not a seat. With no rock under the middle, the foot hangs from the rock's edge.
+  const mid = restingTop(both, x, depth, y), around = [[r, 0], [-r, 0], [0, r], [0, -r]].map(([dx, dd]) => restingTop(both, x + dx, depth + dd, y)).filter((t): t is number => t != null);
+  const top = mid == null ? Math.max(-Infinity, ...around) : Math.max(mid, ...around.filter(t => t <= mid + 2 * r));
+  return top > g ? Math.round(top - g - SEAT_SINK) : 0;
+}
+
+/**
+ * Seat each raised coral of a fresh layout on the rock it was meant for (coralSeat from its planned base, so not onto a
+ * rock stacked higher up): the layouts only guess a rock's top from its box.
+ */
+export function seatCorals(S: TankSetup) {
   const T = S.tank, rocks = S.items.filter(it => it.kind !== 'plant' && it.kind !== 'coral').map(it => itemMesh(S, T, it)).filter((m): m is THREE.Mesh => !!m);
   for (const m of rocks) m.updateMatrixWorld(true);
-  const ray = new THREE.Raycaster(), DOWN = V(0, -1, 0), from = V(0, 0, 0);
   for (const it of S.items) {
     if (it.kind !== 'coral' || it.lift <= 0) continue;
-    const r = itemDims(it)[0] * 0.08, g = groundHeight(S, T, it.x, it.depth), y0 = g + it.lift + SEAT_ABOVE;
-    let top = -Infinity;
-    for (const [dx, dd] of [[0, 0], [r, 0], [-r, 0], [0, r], [0, -r]]) {
-      ray.set(from.set(it.x + dx, y0, -(it.depth + dd)), DOWN);
-      const y = ray.intersectObjects(rocks, false)[0]?.point.y;
-      if (y != null) top = Math.max(top, y);
-    }
-    it.lift = top > g ? Math.round(top - g - 3) : 0;
+    it.lift = coralSeat(S, it, rocks, groundHeight(S, T, it.x, it.depth) + it.lift);
   }
 }
 seatHook.corals = seatCorals;

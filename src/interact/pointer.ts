@@ -14,6 +14,7 @@ import { restsOnGround } from '../scene/water';
 import { D2R, clamp, clampFish } from '../scene/physics';
 import { clampItem } from '../scene/items';
 import { glassFrame, nearestGlass } from '../scene/shape';
+import { coralSeat } from '../render/items';
 import { groundHeight } from '../scene/terrain';
 import type { Store } from '../scene/store';
 import type { Tank, TankSetup } from '../scene/types';
@@ -81,10 +82,11 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
   // dragging an aquascape item: `grab` = the grabbed point relative to the piece's base, kept under the pointer while
   // the base slides over the ground and other pieces; riders = pieces resting on it, which move with it
   type Rider = { id: number; dx: number; dd: number; dy: number };
+  // `coral` = a coral: it never floats, and wherever it is let go it rests on the rock under the pointer (coralSeat), or the ground;
   // `float` = the piece was placed off any surface (the Move buttons / arrow keys): it slides level at its height instead;
   // `wall` = the view is near edge-on, so the pointer's ray grazes the floor: the piece slides across on an upright plane
   // facing the eye (left / right, depth kept) and rests on whatever is under it (audit #3)
-  let move: { vp: Viewport; id: number; grab: THREE.Vector3; riders: Rider[]; skip: Set<number>; float: THREE.Plane | null; wall: THREE.Plane | null; moved: boolean } | null = null;
+  let move: { vp: Viewport; id: number; grab: THREE.Vector3; riders: Rider[]; skip: Set<number>; float: THREE.Plane | null; wall: THREE.Plane | null; coral: boolean; moved: boolean } | null = null;
   let drag: { vp: Viewport; plane: THREE.Plane; mode: DragMode; off: THREE.Vector3; moved: boolean } | null = null;
   let orbit: { i: number; x: number; y: number; az: number; el: number } | null = null;
   // custom terrain: dragging a grid dot up/down; the height follows the pointer at the dot's on-screen scale
@@ -158,8 +160,8 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       }
       const at = new THREE.Raycaster(hit.ray.origin, hit.ray.direction).intersectObject(hit.mesh, false)[0]?.point ?? hit.mesh.position;
       const skip = new Set([it.id, ...riders.map(r => r.id)]);
-      const float = Math.abs(it.lift - supportLift(hit.vp, S, it.x, it.depth, skip)) > 2 ? new THREE.Plane(new THREE.Vector3(0, 1, 0), -at.y) : null;
-      move = { vp: hit.vp, id: it.id, grab: at.clone().sub(hit.mesh.position), riders, skip, float, wall: wallPlane(hit.vp.cam, S.camera.el, at), moved: false };
+      const coral = it.kind === 'coral', float = !coral && Math.abs(it.lift - supportLift(hit.vp, S, it.x, it.depth, skip)) > 2 ? new THREE.Plane(new THREE.Vector3(0, 1, 0), -at.y) : null;
+      move = { vp: hit.vp, id: it.id, grab: at.clone().sub(hit.mesh.position), riders, skip, float, wall: wallPlane(hit.vp.cam, S.camera.el, at), coral, moved: false };
       return;
     }
     if (!editable || hit.fishId == null || !hit.mesh || !canPick('fish')) {
@@ -213,7 +215,9 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
         const it = t.items.find(q => q.id === m.id); if (!it) return;
         const y = groundHeight(t, t.tank, it.x, it.depth) + it.lift;
         it.x = p.x; it.depth = -p.z; clampItem(it, t.tank, t);
-        it.lift = m.float ? y - groundHeight(t, t.tank, it.x, it.depth) : supportLift(m.vp, t, it.x, it.depth, m.skip);
+        // a coral seats on the rock (never on coral) at the point the pointer is on, so a ledge under a higher rock stays a ledge
+        it.lift = m.coral ? coralSeat(t, it, solids(m.vp, m.skip).filter(o => !o.userData.coral), p.y + 1)
+          : m.float ? y - groundHeight(t, t.tank, it.x, it.depth) : supportLift(m.vp, t, it.x, it.depth, m.skip);
         const top = groundHeight(t, t.tank, it.x, it.depth) + it.lift;
         for (const r of m.riders) {
           const q = t.items.find(z => z.id === r.id); if (!q) continue;
