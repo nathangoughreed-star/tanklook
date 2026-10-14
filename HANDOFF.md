@@ -33,6 +33,20 @@ Living file. Project state and dated decisions go here; update in place.
   pinch-zoom locked or not. Then flip IOS_FLAG. Known: plant colours may read duller under Quick Look's lighting than in
   the viewer (its own IBL); fish fins are translucent cards, faint from far.
 
+## Lane W: Android app (2026-10-14; PARKED, Nathan: "remember it for a later date"; prompt `prompts/lane-W-android-app.md`)
+- **Route: Trusted Web Activity (TWA)** around https://tanklook.com/ (Bubblewrap or PWABuilder). Real Chrome, so WebXR
+  AR keeps working and pushes to main update the app with no store release. **Not Capacitor**: Android WebView has no
+  WebXR (AR would need a native ARCore plugin); revisit only if offline use beats AR. Estimate: 1-2 days of code; the
+  calendar time is Play's 14-day / 12-tester closed test that new personal accounts must run before production.
+- **Missing today:** no web manifest, no service worker, no `/.well-known/assetlinks.json`.
+- **Landscape gap (found 2026-10-14, not fixed):** the layout only switches on width (`style.css` `max-width: 760px`).
+  Sideways, phones wider than 760 px get the desktop layout (menu left, 350 px, ~40 % of the width): roughly right.
+  Phones 760 px or narrower in landscape stay stacked at ~180 px per half: unusable. Fix: a short-landscape rule that
+  always puts the panel on the left at ~260-280 px. The view map's phone default reads the width once at load.
+- **Order:** landscape layout, PWA manifest + SW, TWA shell + asset links, Play listing material (Nathan does the account
+  and submissions), low-end phone performance check.
+
+
 ## Background pictures (2026-10-14; main checkout, pushed to main)
 Nathan: custom backgrounds from an uploaded image, with stretch / fill / fit, different backgrounds on different sides, one
 picture able to span touching sides.
@@ -792,6 +806,7 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | S2 fish batch 4 | `../Glass-Box-fish-fins-b4` / `fish-fins-b4` | 5513 | in `art/fishgen.ts` ONLY the PLANS / her() entries of hatchet, swordtail(~f), guppy(~f), betta(~f), peapuffer(~f); no MedianFin / medianPts / gonoPts / tailPts / pairedFins, no paint.ts / fish3d.ts (new generic parameters: ask lane S) | ready to open (S batch 2 is on main, `09bd9a3`; prompt `prompts/lane-S2-fish-batch4.md`) |
 | V zoom out further | `../Glass-Box-zoom-out` / `zoom-out` | 5523 | `scene/validate.ts` LIMITS.zoom, `render/camera.ts`, the zoom / framing parts of `render/viewer.ts`, the cZoom slider in `index.html` / `ui/panels.ts`, `interact/pointer.ts` wheel / pinch | ready to open (prompt `prompts/lane-V-zoom-out.md`) |
 | T iPhone AR | `../Glass-Box-ar` / `ar-view` (lane Q's, Q is done) | 5483 | new `render/arUsdz.ts` + test, `render/ar.ts` | running (session `local_070f91c7`) |
+| W Android app | not made yet (`../Glass-Box-android` / `android`) | next free | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | PARKED for later (prompt `prompts/lane-W-android-app.md`); after P's files are free, mind V's `index.html` / `panels.ts` edits |
 Free (no lane): `render/build.ts`, `render/items.ts`, `scene/items.ts`, `render/viewer.ts`, `main.ts`, `render/lighting.ts`,
 `render/coral3d.ts`, `render/shrimp3d.ts` / `art/shrimps.ts`, `scene/share.ts`, herps / herp3d / snails / snail3d. A one-line hook in a free file is fine; name it
 in your section. Where to read: anatomy audit `reference/model-anatomy-audit-v1.md`; model versions "Model review sheet"
