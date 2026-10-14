@@ -227,10 +227,14 @@ footer { margin-top: 18px }
   .status { left: 10px; right: auto; width: 260px; bottom: 60px } /* over the panel, above the sticky Add row */
   #addRow { position: sticky; bottom: -40px; z-index: 2; margin: 0 -12px; padding: 6px 12px; background: var(--panel); border-top: 1px solid var(--line) }
   .vmap { width: 140px; height: 105px }
-  #sideTab { display: none }
-  .viewtools #sideClose { display: block }
-  #app.collapsed .viewtools #sideClose { display: none }
-  #app.collapsed .viewtools #sideOpen { display: block }
+  /* the arrow tab on the panel's right edge, halfway down; hidden, it waits at the screen's left edge (Nathan 2026-10-14) */
+  .viewtools #sideClose, #app.collapsed .viewtools #sideOpen { display: none }
+  #sideTab { display: flex; align-items: center; justify-content: center; position: absolute; top: 50%; bottom: auto; left: 0; transform: translateY(-50%); z-index: 3;
+    width: 24px; height: 56px; min-height: 0; padding: 0; border: 1px solid var(--line); border-left: 0; border-radius: 0 8px 8px 0;
+    background: var(--panel); color: var(--ink); font-size: 16px; line-height: 1; cursor: pointer; box-shadow: 2px 0 4px rgba(0, 0, 0, .12) }
+  #sideTab::before { content: ''; position: absolute; inset: -8px -12px -8px 0 }
+  #sideTab span { display: inline-block; transform: rotate(90deg) }
+  #app.collapsed #sideTab span { transform: rotate(-90deg) }
 }
 .row output.typein { cursor: text; border-radius: 3px; padding: 1px 3px }
 .row output.typein:hover, .row output.typein:focus-visible { background: var(--chip); outline: 1px solid var(--line) }
