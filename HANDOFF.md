@@ -2,6 +2,23 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane S2: anatomy audit P1, fish batch 4 (2026-10-14; branch `fish-fins-b4`, port 5513; Nathan approved the sheets; pushed to main)
+Split from lane S. Only the PLANS / her() entries of these species in `src/art/fishgen.ts`; generic parameters came from lane S
+(`tail.sword`, `eye.bulge` in f3706dc; `gapeDrop` in 332e863). All 9 looks v2 at build 351; no other fingerprint changed.
+- **hatchet:** pectorals x2.3 rooted high (`pec` {s 2.3, v 0.3}), wing-like from front/top; long low anal along the keel
+  (MedianFin at 0.52 len 0.3), small dorsal far back.
+- **swordtail (male):** `tail.sword` 0.3 with pedU 0.45 (long tapering sword, black lower edge), slimmer body (depth 0.16),
+  gonopodium, upturned mouth (gape 0.03). **swordtail~f:** no sword, own dorsal and eye, depth 0.24.
+  Size kept at 120 mm TL (Nathan): the sword is inside the TL, so the body now shows ~66 mm instead of ~84 mm.
+- **guppy:** gonopodium, upturned mouth. **guppy~f:** coin tail -> notch fan; keeps her anal fin (`gono: undefined`).
+- **betta(~f):** anal fin from just behind the pelvics to the peduncle (MedianFin), pointed paired pelvics (ext, w 0.6) instead
+  of threads, upturned jaw (gape 0.04); lane D's drape and the male/female fin lengths kept.
+- **peapuffer(~f):** `scale: 0` (skin, fine speckle added LAST so the seeded spot pattern stays), `eye.bulge` 0.65,
+  a short straight beak mouth (gape 0.009, gapeDrop 0.002).
+- Mouth lines (gape) on swordtail/guppy/betta use gapeDrop 0.008: the default 0.02 reads as a frown head-on.
+- Before/after composites: worktree `shots/laneS2/cmp-*.jpg` (gitignored). Quick sheet loop without a dev server:
+  `npm run sheets`, copy your looks out, `git checkout -- public/model-sheets` (every JPEG re-encodes differently).
+
 ## Lane T: AR view on iPhone, AR Quick Look (2026-10-14; branch `ar-view`, port 5483; pushed to main, HIDDEN behind `?ar=ios`)
 - Built: `src/render/arUsdz.ts` + `test/arUsdz.test.ts`; `attachAR` in `src/render/ar.ts` now picks WebXR (Android, lane Q,
   unchanged) or AR Quick Look (`a.relList.supports('ar')`, iPhone/iPad Safari). Desktop and non-AR Android see no button.

@@ -456,8 +456,9 @@ export const PLANS: Record<string, Plan> = {
   tigerbarb: { thick: 0.38, depth: 0.42, pedU: 0.2, ped: 0.05, peak: 0.5, snout: 0.45, shade: ['#8c7a45', '#d8b670', '#ecd7a4'], tail: { type: 'fork', h: 0.17, tint: '#d07a4a', edge: '#c23a28' }, fin: '#d3a274',
     dorsal: { u0: 0.47, u1: 0.62, h: 0.12, tint: '#1f1f1f', a: 0.85, edge: '#c23a28' }, anal: { u0: 0.3, u1: 0.42, h: 0.08 }, pelvic: { u: 0.58, len: 0.07, tint: '#c4442e' },
     marks: [{ k: 'bars', us: [0.9, 0.67, 0.45, 0.24], w: 0.06, c: '#1c1c1e', a: 0.92 }], eye: { r: 0.032, iris: ['#cf6a3a', '#4a2010'] } },
-  guppy: { thick: 0.45, depth: 0.2, pedU: 0.4, ped: 0.04, peak: 0.45, snout: 0.45, mouth: -0.015, shade: ['#7c8476', '#bfc4b8', '#ddddd2'], tail: { type: 'notch', h: 0.27, tint: '#e0782e', a: 0.85 }, fin: '#c6a37a',
-    dorsal: { u0: 0.42, u1: 0.58, h: 0.09, tint: '#7fa6c6' }, anal: { u0: 0.47, u1: 0.55, h: 0.05 }, pelvic: { u: 0.65, len: 0.04 },
+  // male: the anal fin is a gonopodium; small upturned mouth
+  guppy: { gape: 0.035, gapeDrop: 0.008, thick: 0.45, depth: 0.2, pedU: 0.4, ped: 0.04, peak: 0.45, snout: 0.4, mouth: -0.03, shade: ['#7c8476', '#bfc4b8', '#ddddd2'], tail: { type: 'notch', h: 0.27, tint: '#e0782e', a: 0.85 }, fin: '#c6a37a',
+    dorsal: { u0: 0.42, u1: 0.58, h: 0.09, tint: '#7fa6c6' }, gono: { at: 0.57, len: 0.11 }, pelvic: { u: 0.65, len: 0.04 },
     marks: [{ k: 'blob', u: 0.55, v: 0, ru: 0.06, rv: 0.05, c: '#2d6fb0', a: 0.8 }, { k: 'blob', u: 0.47, v: 0.01, ru: 0.03, rv: 0.03, c: '#1a1a1a', a: 0.8 }, { k: 'blob', u: 0.68, v: 0.02, ru: 0.06, rv: 0.04, c: '#e0884a', a: 0.7 }],
     finMarks: [{ k: 'band', u0: 0, u1: 0.2, v0: -0.3, v1: 0.3, c: '#3a6ab8', a: 0.55, f: 0.08 }, { k: 'spots', n: 26, u0: 0.04, u1: 0.38, v0: -0.24, v1: 0.24, r: 0.014, c: '#2a2a40', a: 0.6 }],
     eye: { r: 0.026, iris: ['#c9b890', '#4a3e2c'] } },
@@ -467,11 +468,14 @@ export const PLANS: Record<string, Plan> = {
   molly: { thick: 0.5, depth: 0.31, pedU: 0.22, ped: 0.07, peak: 0.45, snout: 0.6, mouth: -0.02, shade: ['#141416', '#232427', '#33353a'], tail: { type: 'round', h: 0.16, tint: '#2a2b30', a: 0.75 }, fin: '#2d2e33',
     dorsal: { u0: 0.33, u1: 0.62, h: 0.12, shape: 'sail', a: 0.75 }, anal: { u0: 0.4, u1: 0.5, h: 0.06 }, pelvic: { u: 0.62, len: 0.05 },
     marks: [{ k: 'blob', u: 0.6, v: -0.02, ru: 0.15, rv: 0.08, c: '#6a7080', a: 0.18 }], eye: { r: 0.03, iris: ['#9a8a6a', '#2a2418'] } },
-  swordtail: { thick: 0.45, depth: 0.27, pedU: 0.3, ped: 0.05, peak: 0.45, snout: 0.5, mouth: -0.015, shade: ['#a63a2a', '#d4553a', '#e4886a'], tail: { type: 'sword', h: 0.18, tint: '#d26a48' }, fin: '#d07a58',
-    dorsal: { u0: 0.47, u1: 0.62, h: 0.09 }, anal: { u0: 0.5, u1: 0.57, h: 0.05 }, pelvic: { u: 0.65, len: 0.05 },
-    finMarks: [{ k: 'band', u0: 0, u1: 0.25, v0: 0.06, v1: 0.12, c: '#1c1c1c', a: 0.85, f: 0.008 }], eye: { r: 0.028, iris: ['#cfb890', '#4a3e2c'] } },
-  betta: { drape: 0.03, thick: 0.45, depth: 0.24, pedU: 0.36, ped: 0.08, peak: 0.4, snout: 0.6, mouth: -0.02, shade: ['#4a1428', '#8a1f34', '#a33a44'], tail: { type: 'veil', h: 0.38, tint: '#9c2236', a: 0.8 }, fin: '#a02a3c', ray: '#5a0f1c',
-    dorsal: { u0: 0.32, u1: 0.55, h: 0.22, shape: 'long', a: 0.8 }, anal: { u0: 0.3, u1: 0.62, h: 0.25, shape: 'long', a: 0.8 }, pelvic: { u: 0.68, len: 0.12, thread: true, tint: '#9c2236' },
+  // male: long slim body, gonopodium, upturned mouth, the sword the lower caudal rays drawn out
+  swordtail: { gape: 0.03, gapeDrop: 0.008, thick: 0.45, depth: 0.16, pedU: 0.45, ped: 0.035, peak: 0.45, snout: 0.4, mouth: -0.025, shade: ['#a63a2a', '#d4553a', '#e4886a'], tail: { type: 'sword', h: 0.11, sword: 0.3, tint: '#d26a48' }, fin: '#d07a58',
+    dorsal: { u0: 0.58, u1: 0.7, h: 0.07 }, gono: { at: 0.69, len: 0.09 }, pelvic: { u: 0.74, len: 0.04 },
+    finMarks: [{ k: 'band', u0: 0, u1: 0.33, v0: 0.062, v1: 0.09, c: '#1c1c1c', a: 0.85, f: 0.006 }], eye: { r: 0.022, iris: ['#cfb890', '#4a3e2c'] } },
+  // anal fin from just behind the pelvics back to the peduncle, long pointed pelvics, upturned jaw
+  betta: { drape: 0.03, gape: 0.04, gapeDrop: 0.008, thick: 0.45, depth: 0.24, pedU: 0.36, ped: 0.08, peak: 0.4, snout: 0.5, mouth: -0.035, shade: ['#4a1428', '#8a1f34', '#a33a44'], tail: { type: 'veil', h: 0.38, tint: '#9c2236', a: 0.8 }, fin: '#a02a3c', ray: '#5a0f1c',
+    dorsal: { at: 0.56, len: 0.2, h: 0.2, rake: 0.65, trail: 0.1, drop: 0.6, a: 0.8 }, anal: { at: 0.65, len: 0.3, h: 0.24, rake: 0.75, trail: 0.1, drop: 0.7, a: 0.8 },
+    pelvic: { u: 0.69, len: 0.15, ext: 0.05, w: 0.6, tint: '#9c2236' },
     marks: [{ k: 'spots', n: 60, u0: 0.38, u1: 0.85, v0: -0.08, v1: 0.08, r: 0.01, c: '#4f7fb8', a: 0.35 }],
     finMarks: [{ k: 'spots', n: 60, u0: 0, u1: 0.6, v0: -0.4, v1: 0.4, r: 0.015, c: '#4f7fb8', a: 0.25 }],
     eye: { r: 0.03, iris: ['#7a3030', '#1a0808'] } },
@@ -538,8 +542,8 @@ export const PLANS: Record<string, Plan> = {
     marks: [{ k: 'blob', u: 0.65, v: -0.08, ru: 0.2, rv: 0.14, c: '#ffffff', a: 0.12 }], eye: { r: 0.035, iris: ['#2a2420', '#0a0806'] } },
   // marbled hatchetfish: straight back, deep keel of a belly (most of the depth under the centre line), upturned mouth,
   // big high eye, small dorsal set far back over a long anal fin; silvery with dark marbled bands slanting across the keel
-  hatchet: { thick: 0.3, depth: 0.42, pedU: 0.2, ped: 0.035, peak: 0.6, back: 0.2, snout: 0.3, mouth: -0.05, shade: ['#6e7258', '#c8c6b2', '#e6e2d4'], tail: { type: 'fork', h: 0.13 }, fin: N,
-    dorsal: { u0: 0.3, u1: 0.37, h: 0.06 }, anal: { u0: 0.22, u1: 0.45, h: 0.04 }, adipose: true, pelvic: { u: 0.5, len: 0.03 },
+  hatchet: { pec: { s: 2.3, v: 0.3 }, thick: 0.3, depth: 0.42, pedU: 0.2, ped: 0.035, peak: 0.6, back: 0.2, snout: 0.3, mouth: -0.05, shade: ['#6e7258', '#c8c6b2', '#e6e2d4'], tail: { type: 'fork', h: 0.13 }, fin: N,
+    dorsal: { at: 0.38, len: 0.08, h: 0.07, rake: 0.4 }, anal: { at: 0.52, len: 0.3, h: 0.05, rake: 0.2, trail: 0.02, drop: 0.7 }, adipose: true, pelvic: { u: 0.5, len: 0.03 },
     marks: [{ k: 'band', u0: 0.2, u1: 0.84, v0: -0.035, v1: -0.018, c: '#2a2a22', a: 0.8, f: 0.006 },
       ...[0.26, 0.38, 0.5, 0.62].map(u => ({ k: 'poly' as const, pts: [[u, -0.01], [u + 0.03, -0.01], [u + 0.2, 0.34], [u + 0.165, 0.34]] as [number, number][], c: '#3a3426', a: 0.7 }))],
     eye: { r: 0.045, iris: ['#c8c4a8', '#3a3828'], dv: -0.02 } },
@@ -551,12 +555,12 @@ export const PLANS: Record<string, Plan> = {
       { k: 'band', u0: 0.3, u1: 0.55, v0: -0.148, v1: -0.128, c: '#1a1a1e', a: 0.85, f: 0.004 }, { k: 'band', u0: 0.25, u1: 0.5, v0: 0.135, v1: 0.155, c: '#1a1a1e', a: 0.85, f: 0.004 }],
     eye: { r: 0.032, iris: ['#c8b890', '#3a3020'] } },
   // pea puffer (male): dark keel stripe along the belly, wrinkle lines behind the eye, yellowish fins
-  peapuffer: { thick: 0.75, depth: 0.4, pedU: 0.2, ped: 0.05, peak: 0.65, snout: 0.7, mouth: -0.01, shade: ['#76763a', '#c4b65a', '#ece6cc'], tail: { type: 'round', h: 0.12, tint: '#d8cc80', a: 0.55 }, fin: '#d8cc80',
+  peapuffer: { scale: 0, gape: 0.009, gapeDrop: 0.002, thick: 0.75, depth: 0.4, pedU: 0.2, ped: 0.05, peak: 0.65, snout: 0.7, mouth: -0.01, shade: ['#76763a', '#c4b65a', '#ece6cc'], tail: { type: 'round', h: 0.12, tint: '#d8cc80', a: 0.55 }, fin: '#d8cc80',
     dorsal: { u0: 0.22, u1: 0.3, h: 0.08, shape: 'round', a: 0.55 }, anal: { u0: 0.22, u1: 0.3, h: 0.07, shape: 'round', a: 0.55 },
     marks: [{ k: 'blob', u: 0.6, v: -0.06, ru: 0.25, rv: 0.08, c: '#7ab070', a: 0.18 }, { k: 'spots', n: 9, u0: 0.27, u1: 0.8, v0: -0.13, v1: 0.03, r: 0.034, c: '#3e3c1e', a: 0.75 },
       { k: 'spots', n: 14, u0: 0.25, u1: 0.85, v0: -0.12, v1: 0.06, r: 0.016, c: '#3e3c1e', a: 0.6 }, { k: 'band', u0: 0.4, u1: 0.8, v0: 0.125, v1: 0.15, c: '#34321e', a: 0.6, f: 0.025 },
-      ...[0.8, 0.818, 0.836].map(u => ({ k: 'poly' as const, pts: [[u, 0.02], [u + 0.007, 0.02], [u - 0.004, 0.075], [u - 0.011, 0.075]] as [number, number][], c: '#5a3a1e', a: 0.55 }))],
-    eye: { r: 0.05, iris: ['#9ad0b8', '#1e2a24'], up: 0.3 } },
+      ...[0.8, 0.818, 0.836].map(u => ({ k: 'poly' as const, pts: [[u, 0.02], [u + 0.007, 0.02], [u - 0.004, 0.075], [u - 0.011, 0.075]] as [number, number][], c: '#5a3a1e', a: 0.55 })), { k: 'spots', n: 120, u0: 0.22, u1: 0.92, v0: -0.17, v1: 0.15, r: 0.006, c: '#5a5428', a: 0.3 }],
+    eye: { r: 0.05, iris: ['#9ad0b8', '#1e2a24'], up: 0.3, bulge: 0.65 } },
   // ---------- marine (lane C, 2026-10-13) ----------
   // ocellaris clownfish: orange, three white bars edged black (head, mid-body bulging forward, peduncle), fins edged black
   ocellaris: { thick: 0.45, depth: 0.36, pedU: 0.2, ped: 0.065, peak: 0.55, snout: 0.6, shade: ['#c8561a', '#ec7a24', '#f09440'], tail: { type: 'round', h: 0.15, tint: '#e8762a', edge: '#1a1614' }, fin: '#e8762a',
@@ -654,17 +658,17 @@ const her = (male: string, o: Partial<Plan>): Plan => ({ ...PLANS[male], ...o })
 Object.assign(PLANS, {
   // short round tail and fins, deeper body, duller red with faint stress stripes, white egg spot behind the ventrals
   betta_f: her('betta', { depth: 0.27, pedU: 0.24, ped: 0.07, peak: 0.45, shade: ['#4e2630', '#7e3440', '#a05a5a'], tail: { type: 'round', h: 0.15, tint: '#8a2a3a', a: 0.8 },
-    dorsal: { u0: 0.42, u1: 0.56, h: 0.08, shape: 'round', a: 0.8 }, anal: { u0: 0.3, u1: 0.6, h: 0.09, shape: 'long', a: 0.8 }, pelvic: { u: 0.68, len: 0.08, thread: true, tint: '#9c2236' },
+    dorsal: { at: 0.56, len: 0.13, h: 0.08, rake: 0.6, a: 0.8 }, anal: { at: 0.64, len: 0.36, h: 0.09, rake: 0.7, a: 0.8 }, pelvic: { u: 0.69, len: 0.1, ext: 0.03, w: 0.6, tint: '#9c2236' },
     marks: [{ k: 'band', u0: 0.28, u1: 0.85, v0: -0.045, v1: -0.025, c: '#3a1418', a: 0.35, f: 0.012 }, { k: 'band', u0: 0.28, u1: 0.8, v0: 0.02, v1: 0.04, c: '#3a1418', a: 0.3, f: 0.012 },
       { k: 'spots', n: 30, u0: 0.35, u1: 0.85, v0: -0.08, v1: 0.08, r: 0.008, c: '#4f7fb8', a: 0.25 }, { k: 'blob', u: 0.6, v: 0.115, ru: 0.014, rv: 0.011, c: '#f4efe6', a: 0.95 }],
     finMarks: [{ k: 'spots', n: 20, u0: 0, u1: 0.3, v0: -0.2, v1: 0.2, r: 0.01, c: '#4f7fb8', a: 0.2 }] }),
   // larger and deeper, olive-silver with a net of scales, plain short tail, dark gravid spot, a fan anal fin (no gonopodium)
-  guppy_f: her('guppy', { thick: 0.5, depth: 0.27, pedU: 0.27, ped: 0.05, peak: 0.5, snout: 0.5, shade: ['#76785e', '#b2b196', '#dcd8c4'], tail: { type: 'round', h: 0.13, tint: '#c8b490', a: 0.6 }, fin: '#c8bea4',
+  guppy_f: her('guppy', { thick: 0.5, depth: 0.27, pedU: 0.27, ped: 0.05, peak: 0.5, snout: 0.5, shade: ['#76785e', '#b2b196', '#dcd8c4'], tail: { type: 'notch', h: 0.14, tint: '#c8b490', a: 0.6 }, fin: '#c8bea4', gono: undefined,
     dorsal: { u0: 0.42, u1: 0.54, h: 0.07 }, anal: { u0: 0.38, u1: 0.48, h: 0.06 }, pelvic: { u: 0.63, len: 0.05 },
     marks: [{ k: 'blob', u: 0.5, v: 0.075, ru: 0.045, rv: 0.035, c: '#2a2420', a: 0.55 }], finMarks: [{ k: 'spots', n: 12, u0: 0.02, u1: 0.22, v0: -0.1, v1: 0.1, r: 0.01, c: '#7a6a4a', a: 0.3 }],
     eye: { r: 0.024, iris: ['#c9b890', '#4a3e2c'] } }),
   // no sword: a plain notched tail; deeper, a fan anal fin, gravid spot
-  swordtail_f: her('swordtail', { depth: 0.3, pedU: 0.22, ped: 0.055, shade: ['#a84a34', '#d0684a', '#e6987a'], tail: { type: 'notch', h: 0.15, tint: '#d26a48' },
+  swordtail_f: her('swordtail', { gono: undefined, depth: 0.24, pedU: 0.22, ped: 0.05, dorsal: { u0: 0.47, u1: 0.62, h: 0.09 }, eye: { r: 0.028, iris: ['#cfb890', '#4a3e2c'] }, shade: ['#a84a34', '#d0684a', '#e6987a'], tail: { type: 'notch', h: 0.15, tint: '#d26a48' },
     anal: { u0: 0.38, u1: 0.5, h: 0.07 }, pelvic: { u: 0.63, len: 0.05 }, finMarks: [], marks: [{ k: 'blob', u: 0.48, v: 0.09, ru: 0.035, rv: 0.03, c: '#4a1a10', a: 0.45 }] }),
   // silvery grey with faint brownish bars, rounded dorsal, no blue fin edges
   dwarfgourami_f: her('dwarfgourami', { shade: ['#5f6f78', '#9ba4a3', '#cbcfc6'], tail: { type: 'round', h: 0.16, tint: '#a8aca4' }, fin: '#b0b2aa',
@@ -701,7 +705,7 @@ Object.assign(PLANS, {
   peapuffer_f: her('peapuffer', { thick: 0.8, depth: 0.44, tail: { type: 'round', h: 0.12, tint: '#d4d0b8', a: 0.5 }, fin: '#d4d0b8',
     dorsal: { u0: 0.22, u1: 0.3, h: 0.08, shape: 'round', a: 0.5 }, anal: { u0: 0.22, u1: 0.3, h: 0.07, shape: 'round', a: 0.5 },
     marks: [{ k: 'blob', u: 0.6, v: -0.06, ru: 0.25, rv: 0.09, c: '#7ab070', a: 0.18 }, { k: 'spots', n: 10, u0: 0.27, u1: 0.8, v0: -0.14, v1: 0.04, r: 0.036, c: '#3e3c1e', a: 0.72 },
-      { k: 'spots', n: 10, u0: 0.25, u1: 0.85, v0: -0.13, v1: 0.06, r: 0.02, c: '#3e3c1e', a: 0.55 }] }),
+      { k: 'spots', n: 10, u0: 0.25, u1: 0.85, v0: -0.13, v1: 0.06, r: 0.02, c: '#3e3c1e', a: 0.55 }, { k: 'spots', n: 120, u0: 0.22, u1: 0.92, v0: -0.18, v1: 0.16, r: 0.006, c: '#5a5428', a: 0.27 }] }),
   // no orange-red breast, a rounded dorsal and a plain anal fin
   gourami_f: her('gourami', { dorsal: { at: 0.5, len: 0.26, h: 0.08, spines: 0.35, nSp: 5, spineH: [0.05, 0.065], notch: 0.3, trail: 0.025 },
     anal: { at: 0.7, len: 0.5, h: 0.09, spines: 0.4, nSp: 7, spineH: [0.03, 0.065], notch: 0.18, rake: 0.6, trail: 0.03 }, pelvic: { u: 0.72, len: 0.35, thread: true, tint: '#d8ccb0' },
