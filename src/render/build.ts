@@ -10,7 +10,7 @@ import { alongRun, backgroundRuns, bowlDims, bowlRadius, chord, circleRing, clip
 import { TABLE_TOP, cornerWalls, wallGap, tableCentre, tableOn, tableRing, wallPlane } from '../scene/table';
 import { groundHeight, pieSegs, terrainDisc, terrainPoints } from '../scene/terrain';
 import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
-import { addBeams, addFixture, applyLighting } from './lighting';
+import { addBeams, addFixture, applyLighting, waterVolumeMaterial } from './lighting';
 import { itemMesh } from './items';
 import { fish3d, fishBody, has3D, hullMaterial } from './fish3d';
 import { herpBody, isHerp3D } from './herp3d';
@@ -274,6 +274,14 @@ function addWater(sc: THREE.Scene, S: TankSetup, T: Tank) {
   surf.renderOrder = 4; surf.userData.nolight = true; sc.add(surf);
   const line = lines(ringLines(bowl ? circleRing(T, r - 0.6) : offsetRing(T, -0.6), y), 0xe8f6fa, 0.45);
   line.renderOrder = 4; sc.add(line);
+  // the water's own colour where only the empty page is behind it (audit #18; objects are tinted in their shader)
+  if (S.water.opacity <= 0) return;
+  let vol: THREE.BufferGeometry;
+  if (bowl) {
+    const n = 24, prof = Array.from({ length: n + 1 }, (_, i) => new THREE.Vector2(Math.max(0.5, bowlRadius(T, y * i / n)), y * i / n));
+    vol = new THREE.LatheGeometry([new THREE.Vector2(0, 0), ...prof, new THREE.Vector2(0, y)], 48).translate(T.L / 2, 0, -T.D / 2);
+  } else vol = prismGeometry(footprint(T).ring, 0, y);
+  const m = new THREE.Mesh(vol, waterVolumeMaterial()); m.userData.nolight = true; m.renderOrder = 3; sc.add(m);
 }
 
 export const STAND_FINISHES: Record<TankSetup['stand']['finish'], { label: string; color: number }> = {

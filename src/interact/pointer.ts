@@ -90,6 +90,15 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
   // custom terrain: dragging a grid dot up/down; the height follows the pointer at the dot's on-screen scale
   let lift: { i: number; k: number; y0: number; h0: number; mmPerPx: number; moved: boolean } | null = null;
 
+  // touch (audit #6): two fingers on a view pinch to zoom and move together to pan, toward the point between them; a
+  // second finger while a fish, piece or terrain dot is being dragged is ignored. `first` = the finger that started the
+  // gesture: only its lifting ends a drag.
+  const touches = new Map<number, { x: number; y: number }>();
+  let first: number | null = null;
+  let pinch: { i: number; d0: number; z0: number; mid: { x: number; y: number } } | null = null;
+  const fingers = () => [...touches.values()];
+  const midOf = (a: { x: number; y: number }[]) => ({ x: (a[0].x + a[1].x) / 2, y: (a[0].y + a[1].y) / 2 });
+
   // middle-drag: a pan that stays (Viewer.pans); a double middle-click re-centres
   let pan: { i: number; x: number; y: number } | null = null;
   let lastMid = { t: 0, x: 0, y: 0 };
@@ -107,6 +116,20 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       return;
     }
     if (e.button !== 0) return;
+    if (e.pointerType === 'touch') {
+      if (pinch || touches.size >= 2) return;
+      if (touches.size === 1) { // the second finger: a pinch, unless something is being dragged
+        if (drag || move || lift) return;
+        const hit0 = viewer.hitTest(e.clientX, e.clientY); if (!hit0) return;
+        touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        try { canvas.setPointerCapture(e.pointerId); } catch { /* not all pointers can be captured */ }
+        if (orbit) { const o = orbit; store.cam(c => { c.az = o.az; c.el = o.el; }, o.i); orbit = null; } // undo the first finger's turn
+        const f = fingers(), i = hit0.vp.i;
+        pinch = { i, d0: Math.max(10, Math.hypot(f[0].x - f[1].x, f[0].y - f[1].y)), z0: store.scene.tanks[i].camera.zoom, mid: midOf(f) };
+        return;
+      }
+      touches.set(e.pointerId, { x: e.clientX, y: e.clientY }); first = e.pointerId;
+    }
     let hit = viewer.hitTest(e.clientX, e.clientY); if (!hit) return;
     const vi = hit.vp.i, editable = store.isEditing(vi);
     if (editable && vi !== store.scene.active) {  // show that tank in the panel first (rebuilds: the selection moves there)
@@ -156,6 +179,16 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
   });
 
   canvas.addEventListener('pointermove', e => {
+    if (touches.has(e.pointerId)) touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pinch) {
+      if (touches.size < 2) return;
+      const p = pinch, f = fingers(), mid = midOf(f);
+      const z = +clamp(p.z0 * Math.hypot(f[0].x - f[1].x, f[0].y - f[1].y) / p.d0, ...LIMITS.zoom).toFixed(2);
+      viewer.zoomAt(p.i, mid.x, mid.y, p.mid.x, p.mid.y); p.mid = mid;
+      if (z !== store.scene.tanks[p.i].camera.zoom) store.cam(c => { c.zoom = z; }, p.i); else viewer.draw();
+      return;
+    }
+    if (e.pointerType === 'touch' && first != null && e.pointerId !== first) return;
     if (pan) { viewer.setPan(pan.i, e.clientX - pan.x, e.clientY - pan.y); return; }
     if (lift) {
       const l = lift, h = +clamp(l.h0 + (l.y0 - e.clientY) * l.mmPerPx, 0, store.scene.tanks[l.i].tank.H * LIMITS.terrainMax).toFixed(1);
@@ -217,6 +250,12 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
   });
 
   const end = (e: PointerEvent) => {
+    if (e.pointerType === 'touch') {
+      touches.delete(e.pointerId);
+      if (pinch) { if (!touches.size) { pinch = null; first = null; } return; } // lifting the last finger ends it
+      if (first != null && e.pointerId !== first) return; // an ignored second finger
+      first = null;
+    }
     if (pan) { pan = null; canvas.classList.remove('panning'); return; }
     // a plain click on empty space (no orbit drag) clears the selection, so nothing is highlighted
     if (orbit && e.type === 'pointerup' && Math.hypot(e.clientX - orbit.x, e.clientY - orbit.y) < 4) store.select(null);

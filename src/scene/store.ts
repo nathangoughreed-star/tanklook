@@ -35,6 +35,8 @@ export class Store {
   private lastKey: string | null = null;
   private lastTime = 0;
   private listeners = new Set<Listener>();
+  /** The view whose camera moved last (UI state): re-locking copies its camera to the other view. */
+  lastCam = 0;
 
   constructor(scene: Scene = emptyScene()) {
     this.scene = scene;
@@ -74,6 +76,7 @@ export class Store {
   /** Move a camera (not undoable): view i's (orbit / zoom in that view), or else every edited tank's (panel sliders).
    *  While the cameras are locked, both views move together. */
   cam(fn: (c: CameraSettings) => void, i?: number) {
+    this.lastCam = i ?? this.scene.active;
     this.update(s => {
       for (const k of s.camLock ? [i ?? s.active] : i != null ? [i] : this.targets) {
         const A = s.tanks[k]; if (!A) continue;
@@ -128,9 +131,15 @@ export class Store {
     if (!this.tank.fish.some(f => f.id === this.selId)) this.selId = null;
   }
 
-  /** Lock / unlock the two cameras. Re-locking snaps the second view to the original tank's camera (Nathan 2026-10-08). */
+  /** Lock / unlock the two cameras. Re-locking snaps the other view to the camera of the view moved last (audit #21;
+   *  was always the original tank's, Nathan 2026-10-08), so the view you were working in keeps its angle. */
   setCamLock(on: boolean) {
-    this.update(s => { s.camLock = on; if (on) { for (const t of s.tanks) t.camera = { ...s.tanks[0].camera }; clearCams(s.tanks, true); } }, { kind: 'view' });
+    this.update(s => {
+      s.camLock = on; if (!on) return;
+      const c = { ...(s.tanks[this.lastCam] ?? s.tanks[0]).camera };
+      for (const t of s.tanks) t.camera = { ...c };
+      clearCams(s.tanks, true);
+    }, { kind: 'view' });
   }
 
   update(fn: (s: Scene) => void, opts: UpdateOptions = {}) {
