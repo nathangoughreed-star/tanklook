@@ -53,7 +53,7 @@ Living file. Project state and dated decisions go here; update in place.
 - Files touched: render/build.ts, render/viewer.ts (build() and the opaque sort only; framing untouched), new
   render/incrementalCheck.ts, test/incremental.test.ts. lighting.ts, items.ts, coral3d.ts, camera.ts and store.ts unchanged.
 
-## Lane A2: plant library (2026-10-14; branch `plants3d`, port 5283; crypt pushed to main)
+## Lane A2: plant library (2026-10-14; branch `plants3d`, port 5283; crypt + 9 species + Spread / Stems pushed to main)
 
 Grows the 3D plant library on the lane A generator: new species are data (`PLANT3D` in `art/plants.ts`) plus a
 `LIBRARY` entry in `scene/items.ts`, a `PlantType` / `PLANT_ASPECT` entry and a card drawing (`drawPlantCard`; the
@@ -70,9 +70,37 @@ card stays the fallback and the picking size). `scene/validate.ts` accepts any `
 - `shots/cap.js` (scratch): imports the app's own plant3d module (after a hot reload it is `plant3d.ts?t=...`), nudges
   every item's x by 1e-4 mm so an on/off toggle really rebuilds, and `wide: true` frames a row. `shots/sheet.py`
   stacks labelled pictures.
-- Proposed next (asked Nathan, no answer yet): data only: Monte Carlo / HC, Bucephalandra, Rotala, Ludwigia,
-  C. balansae; small option: dwarf sagittaria (grassy carpet); new code: Echinodorus 'Ozelot' (leaf spots), Java moss
-  (coat on wood / rock), floaters (water line). Also open: should crypts join the Dense planted starter set.
+- Four more (Nathan 2026-10-14: "they all look great"), data + cards only: Bucephalandra (`buce`, 70 mm, rhizome,
+  dark leaves with blue-grey / wine casts), Rotala (`rotala`, 240 mm, fine stems, pink tops), Ludwigia (`ludwigia`,
+  220 mm, broad oval leaves, red top), Crypt balansae (`balansae`, 320 mm, tall puckered straps). Sheets
+  `shots/111_{rotala,ludwigia}_sheet.png`, `112_{buce,balansae}_sheet.png`. The stem / anubias / carpet card
+  functions take an optional palette; the old cards draw exactly as before.
+- Monte Carlo: dropped (Nathan 2026-10-14: the existing carpet looks better; `shots/113_mc_sheet.png`). `isCarpet`,
+  `isFloat`, `isPatch` (art/plants.ts) replace the old `variant === 'carpet'` tests (scene/items.ts, render/items.ts,
+  two lines in ui/panels.ts: add-item spacing, the Width / Height label).
+- Five more, shipped (Nathan 2026-10-14: "ship all five"):
+  - Dwarf sagittaria (`sagittaria`, 70 mm): rosette data, 6-10 crowns of grassy leaves.
+  - Echinodorus 'Ozelot' (`ozelot`, 200 mm): sword data plus `Leaf3D.spots` (soft maroon blobs in the vertex colour;
+    only leaves that set it draw extra random numbers, so no approved plant changed).
+  - Java moss (`moss`, 45 mm tall, ~2x as wide): new form `moss`, a ragged dome over a dark core, fronds along its
+    normal; lift it onto wood / rock like anubias (a stand-alone clump, not a coat over the hardscape surface).
+    About 48 k triangles for a 60 mm clump (count scales with footprint, capped at 3000 fronds).
+  - Red root floaters (`redroot`) and salvinia (`salvinia`), 220 mm patches: new form `float`, rosettes lying on the
+    water (y = waterY(level)), thin wandering roots below; hidden in a dry tank; size = patch width (`isPatch`).
+    ~52 k / ~26 k triangles per 220 mm patch.
+  Sheets: `shots/114_{sagittaria,ozelot}_sheet.png`, `116_moss_sheet.png`, `119_float_sheet.png`.
+- Not in any starter set (Nathan: hold off).
+- Spread + Stems (Nathan 2026-10-14: "one plant can mean 5 stems over a 12-inch circle or 10 stems in 4 inches";
+  built and pushed): `Item.spread` (mm across the circle the stems / crowns start in) and `Item.stems` (count, 1..40,
+  `MAX_STEMS` in scene/items.ts), both optional: absent = the species' own look from the seed, so old files and the
+  starter sets are unchanged and there is no version bump. Only for `isClump` plants (form `stem`, or a rosette with
+  `crowns`: stem, stemred, rotala, ludwigia, grass, sagittaria, crypt, balansae); `clampItem` drops them on anything
+  else. A rosette clump keeps its leaves per crown; with its own spread the crowns fill the circle (sunflower spiral)
+  and the plant is not pulled in to its card width. Edit box: two rows under Height (index.html + ui/panels.ts), hidden
+  for other plants; until moved they show the seed's values with "auto" (`clumpAuto` in render/plant3d.ts). Both
+  reach the plant mesh key in render/items.ts (lane J keys items on their JSON, so the patch path sees them too).
+  Test `test/clump.test.ts`; incrementalCheck with spread / stems / height edits on stem, red stem, vallisneria: 0 px.
+  Sheet `shots/121_clump_sheet.png` (auto vs 12" / 5 vs 4" / 10, front and above).
 
 ## Lane K: light output (2026-10-14; branch `light-output`, port 5383; DONE, all 4 steps pushed)
 - Owns `render/lighting.ts` (carved out of lane J's render/*), new `scene/lightout.ts` + `test/lightout.test.ts`, the
@@ -132,9 +160,16 @@ card stays the fallback and the picking size). `scene/validate.ts` accepts any `
   no longer matches shows "changed since" (orange); "Changed only" filters to them.
 - **Rule for any chat that changes a model** (art/, fish3d, snail3d, herp3d, species.json sizes): open
   `/review.html` on your dev server, wait for it to render, press "Record N changed models", commit
-  `src/data/model-versions.json` with the change. The button only exists on the dev server (plugin
+  `src/data/model-versions.json` and `public/model-sheets/` with the change. The button only exists on the dev server (plugin
   `scripts/model-versions-plugin.mjs`); it stamps build = current commit count + 1, i.e. the commit you are about to make.
 - All 68 looks recorded as v1 at build 217 (stamped 216; another chat committed first, so check the number after pushing). Fingerprints held across reloads and at phone size in the app's browser.
+- **Pre-rendered sheets for reviewers without WebGL** (2026-10-14: ChatGPT's cloud browser has WebGL disabled and saw
+  nothing): `public/model-sheets/` = one labelled JPEG per look (title, sci name, id, size, version; 4 views x 2 lights,
+  1710 x 556) + a static `index.html` gallery, live at tanklook.com/model-sheets/. review.html links to it and, with
+  no WebGL, says so and points there. Record writes the changed models' sheets + the gallery too, so commit
+  `public/model-sheets/` with the versions. `npm run sheets` rewrites every sheet headlessly (Vite + headless
+  Edge/Chrome with SwiftShader, ~80 s; `scripts/export-sheets.mjs`), no dev-server slot needed. JPEG 0.9: 4.7 MB the set
+  (PNG was 18 MB).
 
 ## Light output: watts -> PAR / lux (2026-10-14; draft only, no src/ edits)
 - Design draft `reference/light-output-draft.md`: watts + light tech -> photons -> existing beam model in real units,

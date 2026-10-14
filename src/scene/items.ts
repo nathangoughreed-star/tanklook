@@ -2,7 +2,7 @@
 // renderer builds them from (so placement code can find a branch to tie a fern to without three.js), and the starter
 // sets that replace the old fixed layouts. All sizes physical (mm): a bigger tank gets more pieces, not bigger ones.
 import { rng } from '../art/paint';
-import { PLANT_ASPECT, type PlantType } from '../art/plants';
+import { PLANT_ASPECT, isCarpet, isClump, isFloat, isPatch, type PlantType } from '../art/plants';
 import { clamp, D2R } from './physics';
 import { bowlDims, bowlRadius, clampIn, shapeOf } from './shape';
 import { clampGround, groundHeight, radialTerrain, type Ground } from './terrain';
@@ -31,6 +31,15 @@ export const LIBRARY: Record<string, Variant> = {
   stem: { kind: 'plant', label: 'Stem plant', hint: 'Size = height.', size: 220, min: 40, max: 900 },
   stemred: { kind: 'plant', label: 'Red stem plant', hint: 'Size = height.', size: 220, min: 40, max: 900 },
   crypt: { kind: 'plant', label: 'Cryptocoryne', hint: 'A low rosette of wavy bronze-green leaves (C. wendtii). Size = height.', size: 110, min: 30, max: 300 },
+  buce: { kind: 'plant', label: 'Bucephalandra', hint: 'A small, slow rhizome plant for wood and rock: dark leaves with a blue or wine cast. Size = height.', size: 70, min: 20, max: 200 },
+  rotala: { kind: 'plant', label: 'Rotala', hint: 'A fine-leaved stem plant with pink tops. Size = height.', size: 240, min: 40, max: 900 },
+  ludwigia: { kind: 'plant', label: 'Ludwigia', hint: 'A stem plant with broad oval leaves, deep red at the top. Size = height.', size: 220, min: 40, max: 900 },
+  balansae: { kind: 'plant', label: 'Crypt balansae', hint: 'Tall, narrow crinkled leaves for the back. Size = height.', size: 320, min: 60, max: 700 },
+  ozelot: { kind: 'plant', label: "Echinodorus 'Ozelot'", hint: 'A mid-sized sword with maroon-spotted leaves. Size = height.', size: 200, min: 50, max: 500 },
+  sagittaria: { kind: 'plant', label: 'Dwarf sagittaria', hint: 'A low run of grassy tufts that spreads into a lawn. Size = height.', size: 70, min: 30, max: 150 },
+  moss: { kind: 'plant', label: 'Java moss', hint: 'A low mound of moss: on the ground, or raise it onto wood or rock. Size = height (about twice as wide).', size: 45, min: 15, max: 150 },
+  redroot: { kind: 'plant', label: 'Red root floaters', hint: 'Small round leaves floating at the water line, red roots hanging below. Size = patch width.', size: 200, min: 60, max: 600 },
+  salvinia: { kind: 'plant', label: 'Salvinia', hint: 'Floating chains of cupped oval leaves at the water line. Size = patch width.', size: 200, min: 60, max: 600 },
   carpet: { kind: 'plant', label: 'Carpet patch', hint: 'A low carpet plant. Size = patch width.', size: 160, min: 60, max: 400 },
   // corals (2026-10-14): size = width
   acropora: { kind: 'coral', label: 'Branching coral', hint: 'An Acropora-style colony of branches with pale tips. Size = width.', size: 160, min: 40, max: 500, salt: true },
@@ -40,6 +49,8 @@ export const LIBRARY: Record<string, Variant> = {
 };
 export const KINDS: Record<ItemKind, string> = { stone: 'Stones', wood: 'Wood', cave: 'Caves', plant: 'Plants', coral: 'Corals' };
 export const MAX_ITEMS = 600;
+/** Most stems or crowns one clump may have (a stem is about 1.5 k triangles). */
+export const MAX_STEMS = 40;
 /** Carpet cards, mm (about 3 cm tall, like a trimmed Monte Carlo carpet). */
 export const CARPET_W = 100, CARPET_H = CARPET_W * PLANT_ASPECT.carpet;
 
@@ -132,10 +143,10 @@ export function woodLimbs(variant: string, seed: number, size: number): Limb[] {
 }
 
 /** Overall size of a piece: [length, height, width] in its own frame, mm (plants: card width, height, width). */
-export function itemDims(it: Pick<Item, 'kind' | 'variant' | 'seed' | 'size'>): V3 {
+export function itemDims(it: Pick<Item, 'kind' | 'variant' | 'seed' | 'size' | 'spread'>): V3 {
   const s = it.size;
   if (it.kind === 'stone') return stoneDims(it.variant, it.seed, s);
-  if (it.kind === 'plant') return it.variant === 'carpet' ? [s, CARPET_H, s] : [s / PLANT_ASPECT[it.variant as PlantType], s, s / PLANT_ASPECT[it.variant as PlantType]];
+  if (it.kind === 'plant') return isCarpet(it.variant) ? [s, CARPET_H, s] : isFloat(it.variant) ? [s, s * PLANT_ASPECT[it.variant as PlantType], s] : ((w: number) => [w, s, w])(it.spread ? Math.max(it.spread, s / PLANT_ASPECT[it.variant as PlantType]) : s / PLANT_ASPECT[it.variant as PlantType]) as [number, number, number];
   if (it.kind === 'coral') return [s, s * ({ acropora: 0.6, montipora: 0.45, mushroom: 0.4, leather: 0.6 } as Record<string, number>)[it.variant], s];
   if (it.kind === 'cave') return it.variant === 'arch' ? [s, 0.5 * s, 0.45 * s] : it.variant === 'tube' ? [s, 0.42 * s, 0.42 * s] : [s, 0.5 * s, s];
   return it.variant === 'manzanita' ? [0.7 * s, s, 0.7 * s] : it.variant === 'spider' ? [s, 0.5 * s, 0.8 * s] : it.variant === 'mopani' ? [s, 0.45 * s, 0.3 * s] : [s, 0.65 * s, 0.45 * s];
@@ -160,19 +171,24 @@ export function clampItem(it: Item, T: Tank, g?: Ground) {
   const v = LIBRARY[it.variant];
   if (v) {
     let max = v.max;
-    if (it.kind === 'plant' && it.variant !== 'carpet') max = Math.min(max, (Math.min(T.L, T.D) - 6) * PLANT_ASPECT[it.variant as PlantType], T.H * 1.5);
+    if (it.kind === 'plant' && !isPatch(it.variant)) max = Math.min(max, (Math.min(T.L, T.D) - 6) * PLANT_ASPECT[it.variant as PlantType], T.H * 1.5);
     else max = Math.min(max, Math.max(T.L, T.D) * 1.1);
     it.size = Math.round(clamp(it.size, Math.min(v.min, max), max));
   }
   // hardscape may run through the glass (cut off there by the renderer, 2026-10-12): only its anchor stays inside
-  const [l, , w] = itemDims(it), half = it.kind === 'plant' ? (it.variant !== 'carpet' ? l / 2 + 3 : Math.max(l, w) * 0.35) : 0;
+  const [l, , w] = itemDims(it), half = it.kind === 'plant' ? (!isPatch(it.variant) ? l / 2 + 3 : Math.max(l, w) * 0.35) : 0;
   const inset = Math.min(half, Math.min(T.L, T.D) * 0.45);
   it.x = clamp(it.x, inset, T.L - inset); it.depth = clamp(it.depth, inset, T.D - inset);
   if (g && shapeOf(T) === 'bowl') { // a plant stays clear of the glass over its whole height (the sphere closes in above)
-    const lift = clamp(it.lift, 0, T.H), up = it.kind === 'plant' && it.variant !== 'carpet' ? itemDims(it)[1] : 0;
+    const lift = clamp(it.lift, 0, T.H), up = it.kind === 'plant' && !isPatch(it.variant) ? itemDims(it)[1] : 0;
     ({ x: it.x, depth: it.depth } = clampGround(g, T, it.x, it.depth, inset, lift, lift + up));
   } else if (shapeOf(T) !== 'rect') ({ x: it.x, depth: it.depth } = clampIn(T, it.x, it.depth, inset));
   it.lift = clamp(it.lift, -LIFT_SINK * T.H, T.H);
+  // a clump's own spread and count (absent = the species' own); dropped on anything that is not a clump
+  if (it.kind === 'plant' && isClump(it.variant)) {
+    if (it.spread != null) it.spread = Math.round(clamp(it.spread, 10, Math.max(10, Math.min(T.L, T.D) - 6)));
+    if (it.stems != null) it.stems = Math.round(clamp(it.stems, 1, MAX_STEMS));
+  } else { delete it.spread; delete it.stems; }
   it.yaw = ((it.yaw + 540) % 360) - 180;
   it.pitch = clamp(it.pitch, -90, 90);
   it.tilt = ((it.tilt + 540) % 360) - 180;
