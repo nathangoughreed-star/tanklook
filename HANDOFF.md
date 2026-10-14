@@ -200,6 +200,10 @@ Lane H DONE (`6c91148`). Lane E DONE (`e8ccd65`). Lane I opened 2026-10-14: E's 
 `../Glass-Box-reef-polish` / `reef-polish`, launch config `reef-polish` 5353; owns `scene/items.ts` (lane A may add one
 crypts LIBRARY line), the non-plant branches of `render/items.ts`, `render/coral3d.ts`, `src/examples/*`, LayoutId in
 `scene/types.ts` / `scene/validate.ts`. Lane G owns `src/ui/*`.
+Audit written 2026-10-14: `shots/audit/AUDIT.md` in the MAIN checkout only (shots/ is gitignored), 53 findings. Split
+into two fix lanes: G (`src/ui/*`, `index.html`, `src/style.css`) and G2, core fixes, `../Glass-Box-core-fixes` /
+`core-fixes`, launch config `core-fixes` 5363 (`src/interact/*`, `src/scene/*`, `src/render/*` except lane I's files).
+A finding that spans both goes to the lane holding the root cause, with at most a one-line hook in the other's files.
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_e1923781-40bc-48d3-84f3-ed380e471779`
 ("Lanes coordinator"). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
 and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says
