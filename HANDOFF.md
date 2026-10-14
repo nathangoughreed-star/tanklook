@@ -70,6 +70,11 @@ chats; fin layout (most of P1) and frogs/newt are later lanes.
   logged only. mh 10-14K ppe 0.83, 20K 0.47, eta 0.77 from four pendant reflectors (cos^m beam fits each within ±10%
   at 50-100°). CFL eta and all halogen values: still ESTIMATES (no PAR data anywhere; the MSU Lamp PPF sheet has no
   rows for them). Forum MH readings run 2-3x below the lab-based model.
+- Task 3: soft beam in the normal render (Nathan approved from before/after pictures). aqLight, lightSum, the relative
+  Light map and the beam overlay use cos^m (beamExp; uniform uBeamM replaces uConeIn/uConeOut); a spot's gain is
+  (m + 1) / (m52 + 1) (`beamGain`). uNorm still normalises to the standard fixture: planted view -2.5% (spots) /
+  +1.4% (LED); bare sand under spots -10% (light now falls past the old cone edge). CONES / spotCone / beam() removed
+  from scene/lightout.ts; test/scene.test.ts "raised fixture" passes beamExp instead of CONES.spot.
 
 ## Lane J: edit performance, audit #52-53 (2026-10-14; branch `perf`, port 5373; pushed to main)
 - **What changed:** an edit no longer rebuilds the whole scene. `render/build.ts`: each fish and item is a *part* keyed
