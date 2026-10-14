@@ -434,6 +434,13 @@ export class Viewer {
       this.host.appendChild(el);
     }
     el.style.display = ''; el.style.left = (vp!.x + vp!.w / 2) + 'px';
+    // below the overlays at the top of this view (Undo / Redo, the tank label), which drop lower on a phone (lane G)
+    let top = 44;
+    for (const o of this.host.querySelectorAll<HTMLElement>('.viewtools, .lab')) {
+      if (!o.offsetParent || o.offsetLeft >= vp!.x + vp!.w || o.offsetLeft + o.offsetWidth <= vp!.x) continue;
+      top = Math.max(top, o.offsetTop + o.offsetHeight + 6);
+    }
+    el.style.top = top + 'px';
     el.textContent = `▲ Light ${fmtLen(lampHeight(l!, S!.lid), this.store.scene.units, 1)} above the tank`;
   }
 
