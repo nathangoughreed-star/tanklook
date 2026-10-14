@@ -144,23 +144,14 @@ export function attachPanels(store: Store, viewer: Viewer) {
     });
   }
   // Start menu (Nathan 2026-10-14: "upon start, a menu in the middle of the screen: start fresh or from an example"):
-  // shown on every load; Esc or Continue keeps the tank restored from this browser
+  // shown only when no tank was restored from this browser (Nathan 2026-10-14); Esc keeps the empty tank
   const startDlg = $<HTMLDialogElement>('startDlg');
   $('startEx').onclick = e => openExample(e, startDlg);
-  $('startLast').onclick = () => startDlg.close();
-  $('startFresh').onclick = () => {
-    startDlg.close();
-    if ($('startLast').hidden) return; // nothing was restored: the tank on screen is already a fresh one
-    const s = emptyScene(); s.name = 'New tank';
-    s.tanks[0].camera = { ...S().camera }; s.units = G().units;
-    store.replace(s); setLibId(null); status('New tank. Undo brings your last one back.');
-  };
-  function showStart(restored: boolean) {
-    $('startLast').hidden = !restored;
-    $('startLastName').textContent = restored ? `“${G().name}”${G().tanks.length > 1 ? ', 2 tanks' : ''}` : '';
+  $('startFresh').onclick = () => startDlg.close(); // the tank on screen is already a fresh one
+  function showStart() {
     renderExamples('startEx');
     startDlg.showModal();
-    (restored ? $('startLast') : $('startFresh')).focus();
+    $('startFresh').focus();
   }
   $('libList').onclick = e => {
     const t = e.target as HTMLElement, del = t.closest<HTMLButtonElement>('[data-libdel]'), op = t.closest<HTMLButtonElement>('[data-lib]');
