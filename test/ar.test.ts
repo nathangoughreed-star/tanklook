@@ -49,6 +49,8 @@ describe('AR placement', () => {
     expect(c.x).toBeCloseTo(T.L / 2); expect(c.z).toBeCloseTo(-T.D / 2);
     S.stand.show = false;
     expect(baseCentre(S).y).toBe(floorY(T, S.render, S.stand));
+    S.stand.show = true; // toggled off in AR: the tank's own underside on the surface
+    expect(baseCentre(S, T, false).y).toBe(floorY(T, S.render, { ...S.stand, show: false }));
   });
 });
 
@@ -57,6 +59,7 @@ describe('AR size check', () => {
     const S = defaultSetup();
     Object.assign(S.tank, { L: 914.4, D: 457.2, H: 406.4 }); S.stand.show = true; S.stand.height = 711.2;
     expect(sizeText(S, 'in')).toBe('Size check: 36 × 18 × 16″ (L × D × H) on a 28″ stand');
+    expect(sizeText(S, 'in', false)).toBe('Size check: 36 × 18 × 16″ (L × D × H)'); // stand toggled off in AR
     S.stand.show = false;
     expect(sizeText(S, 'cm')).toBe('Size check: 91.4 × 45.7 × 40.6 cm (L × D × H)');
   });

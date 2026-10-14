@@ -6,7 +6,7 @@
 // render/arUsdz.ts), chosen in attachAR when WebXR is missing.
 import * as THREE from 'three';
 import { restsOnFloor, speciesOf } from '../data/species';
-import { floorY, unitMM } from '../scene/physics';
+import { floorY, tankUnderside, unitMM } from '../scene/physics';
 import { footprint } from '../scene/shape';
 import type { Store } from '../scene/store';
 import type { Tank, TankSetup, Units } from '../scene/types';
@@ -23,10 +23,11 @@ export const LEVEL_COS = Math.cos(20 * Math.PI / 180);
 /** Screen px a touch may move and still be a tap. */
 export const TAP_PX = 10;
 
-/** The point of the tank that sits on the hit surface: the middle of its footprint, at the bottom of the stand (or the tank). */
-export function baseCentre(S: TankSetup, T: Tank = S.tank) {
+/** The point of the tank that sits on the hit surface: the middle of its footprint, at the bottom of the stand (or the tank; `stand` false = the stand is toggled off in AR). */
+export function baseCentre(S: TankSetup, T: Tank = S.tank, stand = true) {
   const ring = footprint(T).ring, xs = ring.map(p => p[0]), ds = ring.map(p => p[1]);
-  return new THREE.Vector3((Math.min(...xs) + Math.max(...xs)) / 2, floorY(T, S.render, S.stand), -(Math.min(...ds) + Math.max(...ds)) / 2);
+  const y = stand ? floorY(T, S.render, S.stand) : tankUnderside(T, S.render);
+  return new THREE.Vector3((Math.min(...xs) + Math.max(...xs)) / 2, y, -(Math.min(...ds) + Math.max(...ds)) / 2);
 }
 
 /**
@@ -51,9 +52,9 @@ export const dragYaw = (dx: number, w: number) => dx / Math.max(1, w) * Math.PI;
 export const isLevel = (m: ArrayLike<number>) => m[5] / (Math.hypot(m[4], m[5], m[6]) || 1) >= LEVEL_COS;
 
 /** "Size check" line: L × D × H in the user's units, plus the stand under it (what a tape measure should read). */
-export function sizeText(S: TankSetup, u: Units) {
+export function sizeText(S: TankSetup, u: Units, standOn = true) {
   const T = S.tank, k = unitMM(u), suf = u === 'in' ? '″' : ' cm', f = (mm: number) => +(mm / k).toFixed(1);
-  const stand = S.stand.show ? ` on a ${f(S.stand.height)}${suf} stand` : '';
+  const stand = S.stand.show && standOn ?` on a ${f(S.stand.height)}${suf} stand` : '';
   return `Size check: ${f(T.L)} × ${f(T.D)} × ${f(T.H)}${suf} (L × D × H)${stand}`;
 }
 
@@ -86,6 +87,8 @@ export interface ARPrep {
   shadow: THREE.Mesh;
   /** Show or hide the tank (hidden until it is placed); the reticle is shown separately. */
   showTank(on: boolean): void;
+  /** Show or hide the stand under the tank (the tank then sits on the hit surface itself; see baseCentre). */
+  showStand(on: boolean): void;
   /** Gentle idle motion of the swimming animals at time t (ms); the app's animals are otherwise still. */
   sway(t: number): void;
   restore(): void;
@@ -134,9 +137,12 @@ export function prepScene(vp: Viewport): ARPrep {
     return part.objs.map(o => ({ o, y: o.position.y, q: o.quaternion.clone(), ph: (f.id * 2.399) % (2 * Math.PI) }));
   });
   const up = new THREE.Vector3(0, 1, 0), dq = new THREE.Quaternion();
+  let tankOn = true, standOn = true;
+  const show = () => { for (const o of tankObjs) o.visible = tankOn && (standOn || !o.userData.stand); shadow.visible = tankOn; };
   return {
     reticle, shadow,
-    showTank(on) { for (const o of tankObjs) o.visible = on; shadow.visible = on; },
+    showTank(on) { tankOn = on; show(); },
+    showStand(on) { standOn = on; shadow.position.y = baseCentre(S, T, on).y + 1; show(); },
     sway(t) {
       for (const s of swim) {
         const a = t / 1000 * 1.3 + s.ph;
@@ -167,6 +173,7 @@ const OVERLAY_CSS = `#arOverlay{position:fixed;inset:0;font:500 15px system-ui,"
 #arOverlay .msg{background:rgba(20,24,30,.72);padding:6px 12px;border-radius:12px;text-align:center;max-width:100%}
 #arOverlay .fps{position:absolute;top:14px;left:14px;background:rgba(20,24,30,.55);padding:2px 8px;border-radius:8px;font-size:12px}
 #arOverlay button{position:absolute;top:10px;right:10px;font:600 16px system-ui,sans-serif;min-width:44px;min-height:44px;padding:0 16px;border-radius:22px;border:0;background:rgba(20,24,30,.8);color:#fff}
+#arOverlay .standTog{top:64px}
 #arOverlay .bar .swap{position:static;align-self:flex-end;pointer-events:auto;min-height:52px;font-size:17px}`; // swap: lower right, under the thumb (Nathan 2026-10-14)
 
 /** Can this browser open AR Quick Look (iPhone / iPad Safari)? */
@@ -239,13 +246,17 @@ async function runAR(viewer: Viewer, store: Store, _button?: HTMLButtonElement) 
   if (!vp.scene) return;
   if (!document.getElementById('arCss')) { const st = document.createElement('style'); st.id = 'arCss'; st.textContent = OVERLAY_CSS; document.head.appendChild(st); }
   const overlay = document.createElement('div'); overlay.id = 'arOverlay';
-  overlay.innerHTML = '<div class="fps"></div><button type="button" class="close">Close</button><div class="bar"><button type="button" class="swap" hidden></button><div class="msg hint"></div><div class="msg size"></div></div>';
+  overlay.innerHTML = '<div class="fps"></div><button type="button" class="close">Close</button><button type="button" class="standTog" hidden></button><div class="bar"><button type="button" class="swap" hidden></button><div class="msg hint"></div><div class="msg size"></div></div>';
   document.body.appendChild(overlay);
   const hint = overlay.querySelector<HTMLElement>('.hint')!, fpsEl = overlay.querySelector<HTMLElement>('.fps')!;
   const sizeEl = overlay.querySelector<HTMLElement>('.size')!, swapBtn = overlay.querySelector<HTMLButtonElement>('.swap')!;
+  const standBtn = overlay.querySelector<HTMLButtonElement>('.standTog')!;
+  let standOn = true; // the stand / table under the tank, toggled in the room (Nathan 2026-10-14); kept across A / B swaps
   const label = () => {
-    sizeEl.textContent = (views.length > 1 ? `Tank ${vp.key} · ` : '') + sizeText(S, units);
+    sizeEl.textContent = (views.length > 1 ? `Tank ${vp.key} · ` : '') + sizeText(S, units, standOn);
     swapBtn.hidden = views.length < 2; swapBtn.textContent = `Show tank ${views.find(v => v !== vp)?.key ?? ''}`;
+    standBtn.hidden = !S.stand.show; standBtn.textContent = `Stand: ${standOn ? 'on' : 'off'}`;
+    standBtn.setAttribute('aria-pressed', String(standOn));
   };
   label();
   hint.textContent = 'Point the phone at the floor or a stand top and move it slowly';
@@ -260,7 +271,7 @@ async function runAR(viewer: Viewer, store: Store, _button?: HTMLButtonElement) 
   const viewerSpace = await session.requestReferenceSpace('viewer');
   const hitSource = (await session.requestHitTestSource!({ space: viewerSpace }))!;
 
-  let prep = prepScene(vp), centre = baseCentre(S, vp.T);
+  let prep = prepScene(vp), centre = baseCentre(S, vp.T, standOn);
   prep.showTank(false);
   const rig = new THREE.Object3D(); rig.matrixAutoUpdate = false;
   const cam = new THREE.PerspectiveCamera(50, 1, 0.02, 60); rig.add(cam); // near / far in m: the view space is the room's
@@ -290,8 +301,12 @@ async function runAR(viewer: Viewer, store: Store, _button?: HTMLButtonElement) 
   // the other tank on the same spot of the floor, turned the same way (its own stand height: base centre on the floor)
   swapBtn.addEventListener('click', () => {
     const next = views.find(v => v !== vp); if (!next) return;
-    prep.restore(); vp = next; S = vp.S; prep = prepScene(vp); centre = baseCentre(S, vp.T);
-    prep.showTank(!!placed); label();
+    prep.restore(); vp = next; S = vp.S; prep = prepScene(vp); centre = baseCentre(S, vp.T, standOn);
+    prep.showStand(standOn); prep.showTank(!!placed); label();
+  });
+  // stand off: the tank itself sits on the same spot (its base centre drops to the tank's underside)
+  standBtn.addEventListener('click', () => {
+    standOn = !standOn; prep.showStand(standOn); centre = baseCentre(S, vp.T, standOn); label();
   });
 
   let frames = 0, t0 = 0;

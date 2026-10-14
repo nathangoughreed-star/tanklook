@@ -922,7 +922,10 @@ function addTerrainDots(sc: THREE.Scene, S: TankSetup, T: Tank, hot: number | nu
 
 export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: number | null, edit?: { hot: number | null }, selItem: number | null = null): BuiltTank {
   const sc = new THREE.Scene();
-  addTank(sc, S, T); addWater(sc, S, T); addSubstrate(sc, S, T); addStand(sc, S, T); addWall(sc, S, T); addPerson(sc, S, T); addFloor(sc, S, T);
+  addTank(sc, S, T); addWater(sc, S, T); addSubstrate(sc, S, T);
+  const n0 = sc.children.length; addStand(sc, S, T);
+  for (const o of sc.children.slice(n0)) o.userData.stand = true; // AR's stand toggle hides these
+  addWall(sc, S, T); addPerson(sc, S, T); addFloor(sc, S, T);
   const b: BuiltTank = { scene: sc, fishMeshes: [], meshById: new Map(), dotMeshes: [], itemMeshes: [], fishParts: [], itemParts: [], contentAt: sc.children.length };
   addContents(b, S, T, selId, selItem);
   addLid(sc, S, T);
