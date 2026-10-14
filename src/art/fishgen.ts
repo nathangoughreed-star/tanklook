@@ -563,16 +563,20 @@ export const PLANS: Record<string, Plan> = {
     eye: { r: 0.05, iris: ['#9ad0b8', '#1e2a24'], up: 0.3, bulge: 0.65 } },
   // ---------- marine (lane C, 2026-10-13) ----------
   // ocellaris clownfish: orange, three white bars edged black (head, mid-body bulging forward, peduncle), fins edged black
-  ocellaris: { thick: 0.45, depth: 0.36, pedU: 0.2, ped: 0.065, peak: 0.55, snout: 0.6, shade: ['#c8561a', '#ec7a24', '#f09440'], tail: { type: 'round', h: 0.15, tint: '#e8762a', edge: '#1a1614' }, fin: '#e8762a',
-    dorsal: { u0: 0.24, u1: 0.7, h: 0.11, shape: 'round', edge: '#1a1614' }, anal: { u0: 0.24, u1: 0.44, h: 0.1, shape: 'round', edge: '#1a1614' }, pelvic: { u: 0.66, len: 0.09, tint: '#e8762a' },
+  ocellaris: { pec: { s: 1.6 }, gape: 0.03, gapeDrop: 0.003, thick: 0.45, depth: 0.36, pedU: 0.2, ped: 0.065, peak: 0.55, snout: 0.6, shade: ['#c8561a', '#ec7a24', '#f09440'], tail: { type: 'round', h: 0.15, tint: '#e8762a', edge: '#1a1614' }, fin: '#e8762a',
+    // one long dorsal from the nape: low spiny front, taller rounded soft rear; anal from behind the vent
+    dorsal: { at: 0.74, len: 0.5, h: 0.11, spines: 0.45, nSp: 10, spineH: [0.05, 0.065], notch: 0.3, rake: 0.5, trail: 0.03, drop: 0.7, edge: '#1a1614' },
+    anal: { at: 0.48, len: 0.23, h: 0.1, spines: 0.2, nSp: 2, spineH: [0.04, 0.07], notch: 0.3, rake: 0.5, trail: 0.03, drop: 0.7, edge: '#1a1614' }, pelvic: { u: 0.66, len: 0.09, tint: '#e8762a' },
     marks: [{ k: 'bars', us: [0.81, 0.54, 0.26], w: 0.085, c: '#1a1614', a: 0.85 }, { k: 'bars', us: [0.81, 0.54, 0.26], w: 0.062, c: '#f6f4ee', a: 1 },
       { k: 'blob', u: 0.57, v: -0.06, ru: 0.03, rv: 0.08, c: '#f6f4ee', a: 1 }],
     finMarks: [{ k: 'bars', us: [0.54], w: 0.062, c: '#f6f4ee', a: 0.9 }], eye: { r: 0.032, iris: ['#d0702a', '#2a1206'] } },
   // royal gramma: violet front half, yellow rear half, a black spot at the front of the dorsal, a dark line through the eye
-  royalgramma: { thick: 0.4, depth: 0.29, pedU: 0.18, ped: 0.05, peak: 0.55, snout: 0.45, shade: ['#6a2a8a', '#9a44b8', '#a85ac0'], tail: { type: 'notch', h: 0.14, tint: '#f0c020' }, fin: '#9a44b8',
-    dorsal: { u0: 0.2, u1: 0.72, h: 0.08, shape: 'round' }, anal: { u0: 0.2, u1: 0.45, h: 0.08, shape: 'round' }, pelvic: { u: 0.7, len: 0.16, thread: true, tint: '#9a44b8', angle: 45 },
+  royalgramma: { gape: 0.045, gapeDrop: 0.003, mouth: -0.01, thick: 0.4, depth: 0.29, pedU: 0.18, ped: 0.05, peak: 0.55, snout: 0.45, shade: ['#6a2a8a', '#9a44b8', '#a85ac0'], tail: { type: 'notch', h: 0.14, tint: '#f0c020' }, fin: '#9a44b8',
+    // long dorsal from the nape to the peduncle, the soft rear raised; anal from behind the vent
+    dorsal: { at: 0.76, len: 0.6, h: 0.085, spines: 0.4, nSp: 12, spineH: [0.04, 0.06], notch: 0.2, rake: 0.7, trail: 0.05, drop: 0.85 },
+    anal: { at: 0.5, len: 0.32, h: 0.08, spines: 0.15, nSp: 3, spineH: [0.035, 0.06], notch: 0.2, rake: 0.7, trail: 0.04, drop: 0.85 }, pelvic: { u: 0.7, len: 0.16, thread: true, tint: '#9a44b8', angle: 45 },
     marks: [{ k: 'band', u0: 0.1, u1: 0.5, v0: -1, v1: 1, c: '#f2c21e', a: 1, f: 0.06 }, { k: 'band', u0: 0.84, u1: 1, v0: -0.03, v1: -0.017, c: '#2a1430', a: 0.7, f: 0.005 }],
-    finMarks: [{ k: 'band', u0: 0, u1: 0.46, v0: -1, v1: 1, c: '#f2c21e', a: 0.95, f: 0.05 }, { k: 'blob', u: 0.67, v: -0.19, ru: 0.025, rv: 0.025, c: '#18121a', a: 0.9 }],
+    finMarks: [{ k: 'band', u0: 0, u1: 0.46, v0: -1, v1: 1, c: '#f2c21e', a: 0.95, f: 0.05 }, { k: 'blob', u: 0.72, v: -0.17, ru: 0.025, rv: 0.025, c: '#18121a', a: 0.9 }],
     eye: { r: 0.03, iris: ['#7a3a8a', '#1a0a1e'] } },
   // yellow tang: tall disc, long low-set snout, tall rounded dorsal and anal fins, a white scalpel on the peduncle
   yellowtang: { rostrum: { len: 0.08, h: 0.05 }, gape: 0.02, scale: 0.012, thick: 0.22, angular: 0.5, depth: 0.56, pedU: 0.17, ped: 0.045, peak: 0.45, snout: 0.3, mouth: 0.02, shade: ['#d8b018', '#f2d02a', '#f6dc5a'], tail: { type: 'notch', h: 0.18, tint: '#f0cc2a' }, fin: '#f0cc2a',
@@ -597,14 +601,18 @@ export const PLANS: Record<string, Plan> = {
     finMarks: [{ k: 'spots', n: 30, u0: 0.2, u1: 0.55, v0: -0.4, v1: 0.4, r: 0.009, c: '#f6f6f0', a: 0.9 }, { k: 'bars', us: [0.42], w: 0.06, c: '#1a1a1a', a: 0.85 }],
     eye: { r: 0.034, iris: ['#c8c0a0', '#1a1810'] } },
   // six-line wrasse: orange-brown with six thin blue lines nose to tail, a dark spot on the peduncle, a greenish tail
-  sixline: { thick: 0.42, depth: 0.25, pedU: 0.18, ped: 0.05, peak: 0.55, snout: 0.4, shade: ['#4a4a7a', '#c8683a', '#7a7aa8'], tail: { type: 'round', h: 0.12, tint: '#6a9a7a' }, fin: '#8a8ab0',
-    dorsal: { u0: 0.2, u1: 0.74, h: 0.06, shape: 'round', edge: '#c8443a' }, anal: { u0: 0.2, u1: 0.46, h: 0.06, shape: 'round' }, pelvic: { u: 0.7, len: 0.06 },
+  sixline: { gape: 0.018, gapeDrop: 0.002, thick: 0.42, depth: 0.25, pedU: 0.18, ped: 0.05, peak: 0.55, snout: 0.55, shade: ['#4a4a7a', '#c8683a', '#7a7aa8'], tail: { type: 'round', h: 0.12, tint: '#6a9a7a' }, fin: '#8a8ab0',
+    // one continuous low dorsal from the nape to the peduncle
+    dorsal: { at: 0.77, len: 0.58, h: 0.06, spines: 0.55, nSp: 9, spineH: [0.04, 0.05], notch: 0.15, rake: 0.6, trail: 0.03, drop: 0.8, edge: '#c8443a' },
+    anal: { at: 0.5, len: 0.31, h: 0.055, spines: 0.2, nSp: 3, spineH: [0.03, 0.045], notch: 0.15, rake: 0.6, trail: 0.03, drop: 0.8 }, pelvic: { u: 0.7, len: 0.06 },
     marks: [...[-0.085, -0.055, -0.025, 0.005, 0.035, 0.065].map(v => ({ k: 'band' as const, u0: 0.2, u1: 0.97, v0: v - 0.007, v1: v + 0.007, c: '#3a58c8', a: 0.85, f: 0.006 })),
       { k: 'blob', u: 0.21, v: -0.035, ru: 0.016, rv: 0.016, c: '#141418', a: 0.9 }],
     eye: { r: 0.028, iris: ['#c8a040', '#2a1a08'] } },
   // blue-green chromis: iridescent pale blue-green, deeply forked tail, long spiny dorsal
-  chromis: { thick: 0.38, depth: 0.33, pedU: 0.22, ped: 0.042, peak: 0.55, snout: 0.45, shade: ['#4a9a9a', '#8ad0c8', '#c8ece4'], tail: { type: 'fork', h: 0.19, tint: '#a8dcd4', a: 0.7 }, fin: '#a8dcd4',
-    dorsal: { u0: 0.3, u1: 0.72, h: 0.1, a: 0.7 }, anal: { u0: 0.3, u1: 0.48, h: 0.09, a: 0.7 }, pelvic: { u: 0.68, len: 0.1 },
+  chromis: { pec: { s: 1.3 }, gape: 0.02, gapeDrop: 0.002, thick: 0.38, depth: 0.33, pedU: 0.22, ped: 0.042, peak: 0.55, snout: 0.45, shade: ['#4a9a9a', '#8ad0c8', '#c8ece4'], tail: { type: 'lyre', h: 0.19, tint: '#a8dcd4', a: 0.7, cut: 0.75 }, fin: '#a8dcd4',
+    // dorsal from over the gill cover, spiny front then a soft rear to a point; anal from behind the vent
+    dorsal: { at: 0.77, len: 0.54, h: 0.1, spines: 0.6, nSp: 12, spineH: [0.06, 0.085], notch: 0.1, rake: 0.5, tip: 'point', trail: 0.04, drop: 0.7, a: 0.7 },
+    anal: { at: 0.5, len: 0.28, h: 0.09, spines: 0.15, nSp: 2, spineH: [0.04, 0.07], notch: 0.1, rake: 0.4, tip: 'point', trail: 0.04, drop: 0.7, a: 0.7 }, pelvic: { u: 0.68, len: 0.1 },
     marks: [{ k: 'blob', u: 0.6, v: -0.08, ru: 0.25, rv: 0.1, c: '#d8fff6', a: 0.2 }], eye: { r: 0.036, iris: ['#7aa0a0', '#1a2a2a'] } },
   // coral beauty: dwarf angel; deep blue-violet back and belly round an orange flank crossed by thin dark bars
   coralbeauty: { gape: 0.035, scale: 0.016, thick: 0.35, depth: 0.45, pedU: 0.2, ped: 0.06, peak: 0.5, snout: 0.42, mouth: 0.01, shade: ['#28287a', '#e0702a', '#32328a'], tail: { type: 'round', h: 0.17, tint: '#2a2a80' }, fin: '#2a2a80',
