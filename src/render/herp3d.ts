@@ -5,12 +5,15 @@
 // adds tail-fin membranes and gill stalks. Unit frame as a fish card: width 1, x = u - 0.5, y = -v, z to the side.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { HERP3D, HERP3D_GLASS, type Herp3D, type Limb3D, type Mark3D } from '../art/herps';
+import { HERP3D, HERP3D_FLOAT, HERP3D_GLASS, type Herp3D, type Limb3D, type Mark3D } from '../art/herps';
 import { rng, type Pt } from '../art/paint';
+import type { Surface } from '../scene/types';
 import { taperTube } from './fish3d';
 import { shellMesh } from './snail3d';
 
 export const isHerp3D = (art: string) => art in HERP3D;
+/** Floating at the water surface: the card-frame line v that sits at the surface (its float pose's `top`). */
+export const herpFloatTop = (art: string) => HERP3D_FLOAT[art]?.top;
 
 const geoCache = new Map<string, THREE.BufferGeometry>();
 const matCache = new Map<string, THREE.Material>();
@@ -413,9 +416,11 @@ function gillGeometry(gl: NonNullable<Herp3D['gills']>) {
 // ---------- assembly ----------
 
 /** The 3D amphibian for a card of width w, origin at the card's centre (the card frame's v = 0); add it as the card's child.
- *  `glass` = clinging to a pane: its glass pose if it has one (tree frog), belly on the ground line. */
-export function herpBody(art: string, w: number, glass = false) {
-  const pose = glass && HERP3D_GLASS[art], h = pose || HERP3D[art], b = bodyShape(h), grp = new THREE.Group(), key = pose ? art + '~glass' : art;
+ *  `surface` 'glass' = clinging to a pane: its glass pose if it has one (tree frog), belly on the ground line; 'top' =
+ *  floating at the water surface: its float pose (African dwarf frog). */
+export function herpBody(art: string, w: number, surface?: Surface) {
+  const pose = surface === 'glass' ? HERP3D_GLASS[art] : surface === 'top' ? HERP3D_FLOAT[art] : undefined;
+  const h = pose || HERP3D[art], b = bodyShape(h), grp = new THREE.Group(), key = pose ? art + '~' + surface : art;
   const K = (k: string, make: () => THREE.BufferGeometry) => geo(key + k, make);
   grp.add(new THREE.Mesh(K(':body', () => bodyGeometry(b, h.warts)), mat('body:' + key, () => new THREE.MeshBasicMaterial({ map: bodyTexture(h, b), vertexColors: true }))));
   // limbs: the + side, mirrored for the far side (a negative scale; three flips the winding)

@@ -722,8 +722,16 @@ Plan approved by Nathan (batches in severity order). Pictures: `shots/g2/` in th
 - **v2 at build 374 (Nathan: "a resting pose with the hind legs splayed out sideways, like a real ADF on the bottom"):**
   `adfLimbs()` overrides frog3D's folded legs for `HERP3D.adf` only: thighs out sideways from the hips, knees bent
   forward, the long webbed feet trailing back and out (past the tail end, u < 0); arms out to the sides, webbed hands
-  spread forward. The 2D card keeps the folded side view (in 3D it is only the invisible picking target). Open: a
-  floating "zen" pose at the surface; not done.
+  spread forward. The 2D card keeps the folded side view (in 3D it is only the invisible picking target).
+- **Floating "zen" pose (Nathan: "lets add the floating zen pose at the surface"):** new `Surface` value `'top'` =
+  floating at the water surface (its height is the water line's; stored y ignored). Species `cling: "top"` -> surfaces
+  `['floor', 'top']` (adf only). Shuffle / Add float `FLOAT_FROG` = 1/3 of them (scatter.ts; none in a dry tank), nose
+  up 4-12°, the rest rest on the bottom. Pose `HERP3D_FLOAT.adf` (herps.ts): the resting body with all four legs spread
+  limp and drooping; its `top` line (the back) sits 0.5 mm under the water line (build.ts), no contact shadow.
+  `herpBody(art, w, surface)` now takes the surface (glass / top poses). `restsOnFloor` is false on 'top'. Test in
+  scatter.test.ts (share, height, save round-trip, dry tank). Not fingerprinted (like the tree frog's glass pose):
+  review sheet unchanged; picture made with a temporary swap. Not done: dragging can't move a frog between the floor
+  and the surface (only Shuffle / Add choose), and in a tank filled to the rim the rim hides floaters from eye height.
 - Gotcha: `npm run sheets` renders in headless software WebGL, whose fingerprints differ from a GPU's for every model,
   so the sheets script cannot record versions (tried: it bumped all 68). Record from a dev server's review page only.
 

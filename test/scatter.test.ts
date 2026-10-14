@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { rng } from '../src/art/paint';
-import { defaultSetup } from '../src/scene/defaults';
+import { defaultScene, defaultSetup } from '../src/scene/defaults';
+import { parseScene } from '../src/scene/validate';
 import { waterY } from '../src/scene/physics';
 import { placeNew, shuffleFish } from '../src/scene/scatter';
 import { inside } from '../src/scene/shape';
@@ -57,6 +58,29 @@ describe('shuffle', () => {
       }
     }
     expect(onGlass).toBeGreaterThan(30);
+  });
+  it('floats about a third of the dwarf frogs at the surface, the rest on the bottom; a dry tank floats none', () => {
+    let afloat = 0, all = 0;
+    for (let seed = 1; seed <= 30; seed++) {
+      const s = defaultSetup();
+      for (let i = 0; i < 6; i++) s.fish.push({ id: i + 1, species: 'adf', x: s.tank.L / 2, y: 100, depth: s.tank.D / 2, yaw: 0, pitch: 0, roll: 0, bend: 0 });
+      shuffleFish(s, rng(seed)); keepInWater(s);
+      const top = waterY(s.tank, s.water.level);
+      for (const f of s.fish.filter(q => q.species === 'adf')) {
+        all++;
+        expect(['floor', 'top']).toContain(f.surface);
+        expect(inside(s.tank, f.x, f.depth, -1)).toBe(true);
+        if (f.surface === 'top') { afloat++; expect(f.y).toBeCloseTo(top, 6); }
+      }
+      const sc = defaultScene(); sc.tanks[0] = { ...sc.tanks[0], ...s };
+      const back = parseScene(JSON.stringify(sc)).scene.tanks[0].fish;
+      expect(back.map(f => f.surface)).toEqual(s.fish.map(f => f.surface)); // 'top' survives a save and reload
+    }
+    expect(afloat / all).toBeGreaterThan(0.2); expect(afloat / all).toBeLessThan(0.5);
+    const dry = defaultSetup(); dry.water.on = false;
+    for (let i = 0; i < 6; i++) dry.fish.push({ id: i + 1, species: 'adf', x: 100, y: 100, depth: 100, yaw: 0, pitch: 0, roll: 0, bend: 0 });
+    shuffleFish(dry, rng(5));
+    expect(dry.fish.filter(f => f.species === 'adf').every(f => f.surface === 'floor')).toBe(true);
   });
   it('keeps a school together and heading one way', () => {
     let together = 0;
