@@ -113,17 +113,18 @@ export function attachPanels(store: Store, viewer: Viewer) {
       : '<p class="hint">No tanks saved in this browser yet. <i>Save</i> puts the current tank here.</p>';
   }
   // Examples (lane F): bundled scenes, opened like a file (a new, unsaved tank; Undo brings the previous one back)
-  function renderExamples() {
-    const box = $<HTMLDivElement>('exList');
+  function renderExamples(id = 'exList') {
+    const box = $<HTMLDivElement>(id);
     if (box.childElementCount) return;
     box.innerHTML = EXAMPLES.map(x =>
       `<div class="libcard"><button class="libopen" data-ex="${esc(x.id)}" title="${esc(x.hint)}">` +
       `<img src="${esc(x.thumb)}" alt=""><b>${esc(x.name)}</b><span class="hint">${esc(x.hint)}</span></button></div>`).join('');
   }
-  $('exList').onclick = e => {
+  $('exList').onclick = e => openExample(e, dlg);
+  function openExample(e: MouseEvent, from: HTMLDialogElement) {
     const op = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-ex]'), x = op && EXAMPLES.find(q => q.id === op.dataset.ex);
     if (!x) return;
-    dlg.close();
+    from.close();
     whileOpening(x.name, () => {
       try {
         const { scene } = parseScene(x.scene);
@@ -134,7 +135,26 @@ export function attachPanels(store: Store, viewer: Viewer) {
         status('Could not open that example.', true); return false;
       }
     });
+  }
+  // Start menu (Nathan 2026-10-14: "upon start, a menu in the middle of the screen: start fresh or from an example"):
+  // shown on every load; Esc or Continue keeps the tank restored from this browser
+  const startDlg = $<HTMLDialogElement>('startDlg');
+  $('startEx').onclick = e => openExample(e, startDlg);
+  $('startLast').onclick = () => startDlg.close();
+  $('startFresh').onclick = () => {
+    startDlg.close();
+    if ($('startLast').hidden) return; // nothing was restored: the tank on screen is already a fresh one
+    const s = emptyScene(); s.name = 'New tank';
+    s.tanks[0].camera = { ...S().camera }; s.units = G().units;
+    store.replace(s); setLibId(null); status('New tank. Undo brings your last one back.');
   };
+  function showStart(restored: boolean) {
+    $('startLast').hidden = !restored;
+    $('startLastName').textContent = restored ? `“${G().name}”${G().tanks.length > 1 ? ', 2 tanks' : ''}` : '';
+    renderExamples('startEx');
+    startDlg.showModal();
+    (restored ? $('startLast') : $('startFresh')).focus();
+  }
   $('libList').onclick = e => {
     const t = e.target as HTMLElement, del = t.closest<HTMLButtonElement>('[data-libdel]'), op = t.closest<HTMLButtonElement>('[data-lib]');
     if (del) {
@@ -214,9 +234,13 @@ Cancel, then change the name, to keep both.`)) return;
   }
   const flatEnds = (T: Tank) => ['rect', 'bow'].includes(shapeOf(T));
   $<HTMLSelectElement>('shapeSel').innerHTML = Object.entries(SHAPES).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join('');
+  // each shape keeps its own length / depth for this visit: a round or pie tank derives one from the other, so going
+  // back to a rectangle brings its own size back (audit #5); a bowl derives its height too
+  const shapeDims = new Map<TankShape, Pick<Tank, 'L' | 'H' | 'D'>>();
   $<HTMLSelectElement>('shapeSel').onchange = e => {
-    const shape = (e.target as HTMLSelectElement).value as TankShape;
-    setTank(T => ({ ...T, shape, sides: T.sides ?? 6, bowMin: T.bowMin ?? T.D * 0.7, bowlFloor: T.bowlFloor ?? T.L * BOWL_DEFAULT, bowlTop: T.bowlTop ?? T.L * BOWL_DEFAULT, pieDeg: T.pieDeg ?? PIE_DEFAULT }));
+    const shape = (e.target as HTMLSelectElement).value as TankShape, T0 = S().tank, from = T0.shape ?? 'rect', back = shapeDims.get(shape);
+    shapeDims.set(from, { L: T0.L, H: T0.H, D: T0.D });
+    setTank(T => ({ ...T, ...(back ? { L: back.L, D: back.D, ...(from === 'bowl' ? { H: back.H } : {}) } : {}), shape, sides: T.sides ?? 6, bowMin: T.bowMin ?? T.D * 0.7, bowlFloor: T.bowlFloor ?? T.L * BOWL_DEFAULT, bowlTop: T.bowlTop ?? T.L * BOWL_DEFAULT, pieDeg: T.pieDeg ?? PIE_DEFAULT }));
   };
   for (const n of POLY_SIDES) $('sides' + n).onclick = () => setTank(T => ({ ...T, shape: 'poly', sides: n }));
   $('bowMin').oninput = e => setTank(T => ({ ...T, bowMin: +(e.target as HTMLInputElement).value }), 'bowMin');
@@ -316,16 +340,23 @@ Cancel, then change the name, to keep both.`)) return;
       b.querySelector('.n')!.textContent = String(n); b.classList.toggle('empty', !n);
       b.classList.toggle('on', on); b.setAttribute('aria-selected', String(on));
     }
-    search.setAttribute('placeholder', cat ? `Search ${salt ? 'marine ' : ''}${catName().toLowerCase()}` : `Search ${salt ? 'marine ' : ''}species (common or scientific name)`);
+    // the group names already say fresh or salt, so only the All search adds "marine" (audit #10)
+    search.setAttribute('placeholder', cat ? `Search ${catName().toLowerCase()}` : `Search ${salt ? 'marine ' : ''}species (common or scientific name)`);
     const list = findSpecies(search.value, cat);
     if (list.length && !list.some(s => s.id === pickId)) pickId = list[0].id;
     const elsewhere = !list.length && cat && search.value.trim() ? findSpecies(search.value).length : 0;
     const other = !list.length && search.value.trim() ? searchSpecies(search.value, cat).length : 0; // matches for the other water
-    results.innerHTML = list.length ? '' : `<div class="none">${!search.value.trim() && salt && !findSpecies('').length ? 'No saltwater species yet'
-      : !cat || search.value.trim() ? `No ${salt ? 'saltwater ' : ''}species match${other ? ` (${other} ${salt ? 'freshwater' : 'saltwater'}: switch the tank in Water)` : ''}`
-      : `No ${salt ? 'saltwater ' : ''}${esc(catName().toLowerCase())} yet`}${elsewhere ? ` in ${esc(catName())}. <a href="#" id="spAll">${elsewhere} in other groups</a>` : '.'}</div>`;
+    const inCat = cat && !search.value.trim() ? searchSpecies('', cat).length : 0; // the whole group, any water
+    // a group that is empty only because of this tank's water says how to get it (audit #11)
+    const toSalt = cat ? cat.startsWith('sw-') : !salt, swap = `<button type="button" class="linkbtn" id="spSwap">Switch the tank to ${toSalt ? 'Saltwater' : 'Freshwater'}</button>`;
+    results.innerHTML = list.length ? '' : `<div class="none">${!search.value.trim() && salt && !findSpecies('').length ? 'No saltwater species yet.'
+      : !cat || search.value.trim() ? `No ${salt ? 'saltwater ' : ''}species match${other ? ` (${other} ${salt ? 'freshwater' : 'saltwater'}). ${swap}` : '.'}`
+      : inCat ? `${esc(catName())} need a ${toSalt ? 'saltwater' : 'freshwater'} tank. ${swap} to see ${inCat}.`
+      : `No ${esc(catName().toLowerCase())} yet.`}${elsewhere ? ` <a href="#" id="spAll">${elsewhere} in other groups</a>` : ''}</div>`;
     const all = results.querySelector<HTMLAnchorElement>('#spAll');
     if (all) all.onclick = e => { e.preventDefault(); cat = undefined; renderResults(); };
+    const sw = results.querySelector<HTMLButtonElement>('#spSwap');
+    if (sw) sw.onclick = () => { if (!S().water.on) store.edit(s => { s.water.on = true; }); setSalt(toSalt); };
     for (const sp of list) {
       const b = document.createElement('button');
       b.setAttribute('role', 'option'); b.setAttribute('aria-selected', String(sp.id === pickId));
@@ -341,6 +372,7 @@ Cancel, then change the name, to keep both.`)) return;
     showPreview(list.length ? pick : undefined);
     $<HTMLButtonElement>('addFish').disabled = !list.length || !!why;
     $('addFish').title = why;
+    $('addWhy').textContent = why; $('addWhy').hidden = !why || !list.length; // said under Add, not only in a tooltip (audit #9)
     setOut('oAddSize', sizeLabel(addPct(), getSpecies(pickId)));
   }
   search.oninput = renderResults;
@@ -584,16 +616,18 @@ Cancel, then change the name, to keep both.`)) return;
       if (s.water.color === c && s.water.opacity === o) [s.water.color, s.water.opacity] = salt ? SALT_CLEAR : FRESH_CLEAR;
     });
     const n = misfits(S()).length;
-    status(`${salt ? 'Saltwater' : 'Freshwater'} tank: the Animals list shows ${salt ? 'marine' : 'freshwater'} species.${n ? ` ${n} animal${n > 1 ? 's' : ''} here ${n > 1 ? 'do' : 'does'} not fit: Remove is in the Water section.` : ''}`);
+    status(`${salt ? 'Saltwater' : 'Freshwater'} tank: the Animals list shows ${salt ? 'marine' : 'freshwater'} species.${n ? ` ${n} animal${n > 1 ? 's' : ''} here ${n > 1 ? 'do' : 'does'} not fit: they are marked in the stocking list (Animals).` : ''}`);
   };
   $('wFresh').onclick = () => setSalt(false);
   $('wSalt').onclick = () => setSalt(true);
-  $('wMisfitDel').onclick = () => {
+  $('wMisfitDel').onclick = () => removeMisfits();
+  $('lMapSub').onclick = () => { openSec('substrate'); $('subType').focus(); };
+  function removeMisfits() {
     const out = new Set(misfits(S()).map(f => f.id)); if (!out.size) return;
     store.edit(s => { s.fish = s.fish.filter(f => !out.has(f.id)); });
     if (store.selId != null && out.has(store.selId)) store.select(null);
     status(`${out.size} animal${out.size > 1 ? 's' : ''} removed. Ctrl+Z brings them back.`);
-  };
+  }
 
   // ---------- Lighting ----------
   const lKeys = { lCount: 'count', lRows: 'rows', lSp: 'spacing', lCone: 'cone', lH: 'height', lBright: 'bright', lK: 'kelvin', lRoom: 'room' } as const;
@@ -627,8 +661,7 @@ Cancel, then change the name, to keep both.`)) return;
   mapCb.onchange = () => setMap(mapCb.checked);
   for (const b of document.querySelectorAll<HTMLButtonElement>('.vmapHide')) b.onclick = () => setMap(false);
   $('mapShow').onclick = () => setMap(true);
-  // first visit: open "How to use" so the orbit / zoom / drag gestures are discoverable (Muse feedback 2026-10-09)
-  try { if (!localStorage.getItem('tanklook.seen')) { ($('help') as unknown as HTMLDetailsElement).open = true; localStorage.setItem('tanklook.seen', '1'); } } catch { /* ignore */ }
+  // "How to use" stays closed: the start menu names the main gestures and points to it (audit #4 / #8, 2026-10-14)
   // panel sections start collapsed on every load (Nathan 2026-10-09); whether the panel is hidden is a per-viewer preference
   const secs = [...document.querySelectorAll<HTMLDetailsElement>('details.sec')];
   const saveUI = () => { try { localStorage.setItem('tanklook.ui', JSON.stringify({ hidden: $('app').classList.contains('collapsed') })); } catch { /* ignore */ } };
@@ -660,11 +693,15 @@ Cancel, then change the name, to keep both.`)) return;
   $<HTMLSelectElement>('layout').innerHTML = Object.entries(LAYOUTS).map(([k, l]) => `<option value="${k}">${esc(l.label)}</option>`).join('');
   // a starter set replaces every piece (undoable); the pieces are then ordinary items
   const replaced = (s: TankSetup) => { s.items = starterItems(s); };
+  // leaving swamp brings back the level it lowered, unless the level was moved since (audit #13)
+  let preSwamp = emptyScene().tanks[0].water.level;
   $<HTMLSelectElement>('layout').onchange = e => {
     store.selectItem(null);
     store.edit(s => {
+      const was = s.layout.id;
       s.layout.id = (e.target as HTMLSelectElement).value as LayoutId;
-      if (s.layout.id === 'swamp' && s.water.level > SWAMP_LEVEL) setWaterLevel(s, SWAMP_LEVEL); // land needs to stand out of the water
+      if (s.layout.id === 'swamp' && s.water.level > SWAMP_LEVEL) { preSwamp = s.water.level; setWaterLevel(s, SWAMP_LEVEL); } // land needs to stand out of the water
+      else if (was === 'swamp' && s.layout.id !== 'swamp' && s.water.level === SWAMP_LEVEL) setWaterLevel(s, preSwamp);
       replaced(s);
     });
     status('New starter set placed. Ctrl+Z brings the previous pieces back.');
@@ -932,15 +969,16 @@ Cancel, then change the name, to keep both.`)) return;
       const sp = getSpecies(f.species), k = sp?.female && f.sex === 'f' ? f.species + '~f' : f.species;
       counts.set(k, (counts.get(k) ?? 0) + 1);
     }
-    const sig = [...counts].join() + '|' + u;
+    const sig = [...counts].join() + '|' + u + '|' + isSalt(s);
     if (sig !== listSig) {
       listSig = sig; const list = $<HTMLDivElement>('list');
       list.innerHTML = '';
       for (const [key, n] of counts) {
         const [id, fem] = key.split('~'), sp = getSpecies(id); if (!sp) continue;
         const sex: Sex | undefined = fem ? 'f' : undefined, who = esc(rowName(sp, sex));
-        const row = document.createElement('div'); row.className = 'sr';
-        row.innerHTML = `<span class="nm" title="${esc(sp.sci)}">${who}</span><button class="dn" title="One fewer (the last one takes ${who} off the list)" aria-label="One fewer">−</button><input type="number" min="0" max="${LIMITS.maxFish}" value="${n}" aria-label="How many ${who}"><button class="up" title="One more" aria-label="One more">+</button>`;
+        const row = document.createElement('div'), off = !fitsWater(sp, s); row.className = off ? 'sr misfit' : 'sr';
+        // an animal that does not live in this tank's water is marked in its row (audit #12)
+        row.innerHTML = `<span class="nm" title="${esc(sp.sci)}${off ? ` · does not live in ${isSalt(s) ? 'saltwater' : 'freshwater'}` : ''}">${off ? '<b class="tag bad">✕ wrong water</b> ' : ''}${who}</span><button class="dn" title="One fewer (the last one takes ${who} off the list)" aria-label="One fewer">−</button><input type="number" min="0" max="${LIMITS.maxFish}" value="${n}" aria-label="How many ${who}"><button class="up" title="One more" aria-label="One more">+</button>`;
         row.querySelector<HTMLElement>('.nm')!.onclick = () => { pickId = id; previewSex = sex; preview.hidden = false; renderResults(); };
         row.querySelector<HTMLButtonElement>('.dn')!.onclick = () => setCount(sp, k => k - 1, sex);
         row.querySelector<HTMLButtonElement>('.up')!.onclick = () => setCount(sp, k => k + 1, sex);
@@ -949,6 +987,13 @@ Cancel, then change the name, to keep both.`)) return;
         list.append(row);
       }
       if (!counts.size) list.innerHTML = '<span class="hint">No animals yet. Pick a species above and press Add.</span>';
+      const nMis = misfits(s).length;
+      if (nMis) {
+        const note = document.createElement('div'); note.className = 'misnote';
+        note.innerHTML = `<span>${nMis} ${nMis > 1 ? 'animals do' : 'animal does'} not live in ${isSalt(s) ? 'saltwater' : 'freshwater'}.</span>`;
+        const rm = document.createElement('button'); rm.textContent = `Remove ${nMis}`; rm.title = $('wMisfitDel').title; rm.onclick = removeMisfits;
+        note.append(rm); list.append(note);
+      }
       renderResults();
     }
     const f = sel();
@@ -1010,7 +1055,8 @@ Cancel, then change the name, to keep both.`)) return;
     setVal('lPat', l.pattern); setOut('oLSp', l.spacing ? fmt(l.spacing) : 'Auto'); setOut('oLCone', l.cone + '°');
     setOut('oLH', s.lid === 'hood' ? 'In hood' : fmt(l.height) + ' above');
     $('lHRow').style.display = l.type === 'flat' ? 'none' : ''; ($('lH') as HTMLInputElement).disabled = s.lid === 'hood';
-    $('lBeams').checked = s.render.beams; $('lMapKey').style.display = s.render.beams && l.type !== 'flat' ? '' : 'none'; ($('lBeams') as HTMLInputElement).disabled = l.type === 'flat';
+    $('lBeams').checked = s.render.beams; $('lMapKey').style.display = s.render.beams && l.type !== 'flat' ? '' : 'none';
+    $('lMapBare').hidden = !(s.render.beams && l.type !== 'flat' && !s.substrate.show); // the map needs a floor to draw on (audit #17) ($('lBeams') as HTMLInputElement).disabled = l.type === 'flat';
 
     const c = s.camera;
     for (const [id, k] of Object.entries(camKeys)) setVal(id, c[k]);
@@ -1078,8 +1124,11 @@ Cancel, then change the name, to keep both.`)) return;
         el.style.display = vp ? '' : 'none';
         if (!vp) { el.innerHTML = ''; continue; }
         // top-right corner of each view (Nathan 2026-10-08); the top-left holds the panel toggle and Undo / Redo
-        const tools = vp.x === 0 ? document.querySelector<HTMLElement>('.viewtools')!.offsetWidth + 18 : 0;
-        el.style.right = (viewer.host.clientWidth - vp.x - vp.w + 8) + 'px'; el.style.maxWidth = Math.max(80, vp.w - 16 - tools) + 'px'; // clear of them
+        const vt = document.querySelector<HTMLElement>('.viewtools')!, tools = vp.x === 0 ? vt.offsetWidth + 18 : 0;
+        // too narrow beside them (a phone in split view): the tab drops below them instead of under them (audit #7)
+        const below = tools > 0 && vp.w - 16 - tools < 150;
+        el.style.top = below ? (vt.offsetTop + vt.offsetHeight + 6) + 'px' : '';
+        el.style.right = (viewer.host.clientWidth - vp.x - vp.w + 8) + 'px'; el.style.maxWidth = (below ? vp.w - 16 : Math.max(80, vp.w - 16 - tools)) + 'px'; // clear of them
         const ed = store.isEditing(i);
         el.classList.toggle('tab', split); el.classList.toggle('on', split && ed);
         if (!split) { // one tank: its size, and the way into a side-by-side comparison
@@ -1094,7 +1143,7 @@ Cancel, then change the name, to keep both.`)) return;
         // no labels) and Save, Delete flowing together, wrapping only when the view is too narrow.
         // The second row stays folded until the tab is hovered (Nathan 2026-10-09); the ▾ hint carries the count.
         const hint = `<span class="more" aria-hidden="true">${diff.length ? `${diff.length} diff${diff.length === 1 ? '' : 's'} ` : ''}▾</span>`;
-        el.innerHTML = `<div class="hd">${aqChip(vp.S, vp.key, i)}${hint}${box}</div>` + `<div class="diffs">${diff.map((d, k) => `<span>${esc(d[i])}<button class="match" data-match="${i},${k}" title="Make Tank ${vp.key} match Tank ${active[1 - i].key} here" aria-label="Match the other tank: ${esc(d[i])}">×</button></span>`).join('')}` +
+        el.innerHTML = `<div class="hd"><b class="tabkey" title="Tank ${vp.key}">${vp.key}</b>${aqChip(vp.S, vp.key, i)}${hint}${box}</div>` + `<div class="diffs">${diff.map((d, k) => `<span>${esc(d[i])}<button class="match" data-match="${i},${k}" title="Copy Tank ${active[1 - i].key}’s value into Tank ${vp.key}" aria-label="Copy from Tank ${active[1 - i].key}: ${esc(d[i])}">⇄ ${active[1 - i].key}</button></span>`).join('')}` +
           `<div class="acts"><button class="close" data-save="${i}" title="Download Tank ${vp.key} on its own as a single-tank file">Download</button>` +
           `<button class="close" data-delete="${i}" title="Delete Tank ${vp.key} and end the split view (Ctrl+Z brings it back)">Delete</button></div></div>`;
       }
@@ -1171,7 +1220,7 @@ Cancel, then change the name, to keep both.`)) return;
 
   renderResults();
   sync();
-  return { status };
+  return { status, showStart };
 }
 
 /** Padlock icon: closed shackle (views move together) or swung open (each view on its own). */
