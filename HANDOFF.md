@@ -47,7 +47,7 @@ Living file. Project state and dated decisions go here; update in place.
 - Files touched: render/build.ts, render/viewer.ts (build() and the opaque sort only; framing untouched), new
   render/incrementalCheck.ts, test/incremental.test.ts. lighting.ts, items.ts, coral3d.ts, camera.ts and store.ts unchanged.
 
-## Lane A2: plant library (2026-10-14; branch `plants3d`, port 5283; crypt + 4 species pushed to main)
+## Lane A2: plant library (2026-10-14; branch `plants3d`, port 5283; crypt + 9 species pushed to main)
 
 Grows the 3D plant library on the lane A generator: new species are data (`PLANT3D` in `art/plants.ts`) plus a
 `LIBRARY` entry in `scene/items.ts`, a `PlantType` / `PLANT_ASPECT` entry and a card drawing (`drawPlantCard`; the
@@ -69,12 +69,26 @@ card stays the fallback and the picking size). `scene/validate.ts` accepts any `
   220 mm, broad oval leaves, red top), Crypt balansae (`balansae`, 320 mm, tall puckered straps). Sheets
   `shots/111_{rotala,ludwigia}_sheet.png`, `112_{buce,balansae}_sheet.png`. The stem / anubias / carpet card
   functions take an optional palette; the old cards draw exactly as before.
-- Monte Carlo (`montecarlo`): built (PLANT3D + card, a brighter rounder carpet) but HELD OUT of `LIBRARY`: Nathan's
-  first impression from `shots/111_montecarlo_sheet.png` was that the existing carpet looks better. Carpets are now
-  `isCarpet(variant)` (art/plants.ts) wherever the code said `variant === 'carpet'` (scene/items.ts, render/items.ts,
+- Monte Carlo: dropped (Nathan 2026-10-14: the existing carpet looks better; `shots/113_mc_sheet.png`). `isCarpet`,
+  `isFloat`, `isPatch` (art/plants.ts) replace the old `variant === 'carpet'` tests (scene/items.ts, render/items.ts,
   two lines in ui/panels.ts: add-item spacing, the Width / Height label).
-- Not in any starter set yet (Nathan: hold off). Still to propose: dwarf sagittaria, Echinodorus 'Ozelot' (leaf spots),
-  Java moss (new form), floaters (new form).
+- Five more, shipped (Nathan 2026-10-14: "ship all five"):
+  - Dwarf sagittaria (`sagittaria`, 70 mm): rosette data, 6-10 crowns of grassy leaves.
+  - Echinodorus 'Ozelot' (`ozelot`, 200 mm): sword data plus `Leaf3D.spots` (soft maroon blobs in the vertex colour;
+    only leaves that set it draw extra random numbers, so no approved plant changed).
+  - Java moss (`moss`, 45 mm tall, ~2x as wide): new form `moss`, a ragged dome over a dark core, fronds along its
+    normal; lift it onto wood / rock like anubias (a stand-alone clump, not a coat over the hardscape surface).
+    About 48 k triangles for a 60 mm clump (count scales with footprint, capped at 3000 fronds).
+  - Red root floaters (`redroot`) and salvinia (`salvinia`), 220 mm patches: new form `float`, rosettes lying on the
+    water (y = waterY(level)), thin wandering roots below; hidden in a dry tank; size = patch width (`isPatch`).
+    ~52 k / ~26 k triangles per 220 mm patch.
+  Sheets: `shots/114_{sagittaria,ozelot}_sheet.png`, `116_moss_sheet.png`, `119_float_sheet.png`.
+- Not in any starter set (Nathan: hold off).
+- NEXT (Nathan 2026-10-14, approved): per-item Spread + Stems for multi-stem / multi-crown plants (stem, stemred,
+  rotala, ludwigia, grass, sagittaria, crypt, balansae). Two optional Item fields, absent = today's look (the seed
+  picks the count, spread follows the height), so no scene version bump. Count, not density (Nathan's own terms:
+  "5 stems over 12 inches"); cap about 40. Mock-up `shots/120_spread_stems_mock.png`. Touches scene/types.ts,
+  scene/validate.ts and the Edit box in ui/panels.ts: cleared with the coordinator first.
 
 ## Lane K: light output (2026-10-14; branch `light-output`, port 5383; DONE, all 4 steps pushed)
 - Owns `render/lighting.ts` (carved out of lane J's render/*), new `scene/lightout.ts` + `test/lightout.test.ts`, the
