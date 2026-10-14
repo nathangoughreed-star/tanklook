@@ -47,7 +47,7 @@ Living file. Project state and dated decisions go here; update in place.
 - Files touched: render/build.ts, render/viewer.ts (build() and the opaque sort only; framing untouched), new
   render/incrementalCheck.ts, test/incremental.test.ts. lighting.ts, items.ts, coral3d.ts, camera.ts and store.ts unchanged.
 
-## Lane A2: plant library (2026-10-14; branch `plants3d`, port 5283; crypt + 9 species pushed to main)
+## Lane A2: plant library (2026-10-14; branch `plants3d`, port 5283; crypt + 9 species + Spread / Stems pushed to main)
 
 Grows the 3D plant library on the lane A generator: new species are data (`PLANT3D` in `art/plants.ts`) plus a
 `LIBRARY` entry in `scene/items.ts`, a `PlantType` / `PLANT_ASPECT` entry and a card drawing (`drawPlantCard`; the
@@ -84,11 +84,17 @@ card stays the fallback and the picking size). `scene/validate.ts` accepts any `
     ~52 k / ~26 k triangles per 220 mm patch.
   Sheets: `shots/114_{sagittaria,ozelot}_sheet.png`, `116_moss_sheet.png`, `119_float_sheet.png`.
 - Not in any starter set (Nathan: hold off).
-- NEXT (Nathan 2026-10-14, approved): per-item Spread + Stems for multi-stem / multi-crown plants (stem, stemred,
-  rotala, ludwigia, grass, sagittaria, crypt, balansae). Two optional Item fields, absent = today's look (the seed
-  picks the count, spread follows the height), so no scene version bump. Count, not density (Nathan's own terms:
-  "5 stems over 12 inches"); cap about 40. Mock-up `shots/120_spread_stems_mock.png`. Touches scene/types.ts,
-  scene/validate.ts and the Edit box in ui/panels.ts: cleared with the coordinator first.
+- Spread + Stems (Nathan 2026-10-14: "one plant can mean 5 stems over a 12-inch circle or 10 stems in 4 inches";
+  built and pushed): `Item.spread` (mm across the circle the stems / crowns start in) and `Item.stems` (count, 1..40,
+  `MAX_STEMS` in scene/items.ts), both optional: absent = the species' own look from the seed, so old files and the
+  starter sets are unchanged and there is no version bump. Only for `isClump` plants (form `stem`, or a rosette with
+  `crowns`: stem, stemred, rotala, ludwigia, grass, sagittaria, crypt, balansae); `clampItem` drops them on anything
+  else. A rosette clump keeps its leaves per crown; with its own spread the crowns fill the circle (sunflower spiral)
+  and the plant is not pulled in to its card width. Edit box: two rows under Height (index.html + ui/panels.ts), hidden
+  for other plants; until moved they show the seed's values with "auto" (`clumpAuto` in render/plant3d.ts). Both
+  reach the plant mesh key in render/items.ts (lane J keys items on their JSON, so the patch path sees them too).
+  Test `test/clump.test.ts`; incrementalCheck with spread / stems / height edits on stem, red stem, vallisneria: 0 px.
+  Sheet `shots/121_clump_sheet.png` (auto vs 12" / 5 vs 4" / 10, front and above).
 
 ## Lane K: light output (2026-10-14; branch `light-output`, port 5383; DONE, all 4 steps pushed)
 - Owns `render/lighting.ts` (carved out of lane J's render/*), new `scene/lightout.ts` + `test/lightout.test.ts`, the

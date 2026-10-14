@@ -2,7 +2,7 @@
 // renderer builds them from (so placement code can find a branch to tie a fern to without three.js), and the starter
 // sets that replace the old fixed layouts. All sizes physical (mm): a bigger tank gets more pieces, not bigger ones.
 import { rng } from '../art/paint';
-import { PLANT_ASPECT, isCarpet, isFloat, isPatch, type PlantType } from '../art/plants';
+import { PLANT_ASPECT, isCarpet, isClump, isFloat, isPatch, type PlantType } from '../art/plants';
 import { clamp, D2R } from './physics';
 import { bowlDims, bowlRadius, clampIn, shapeOf } from './shape';
 import { clampGround, groundHeight, radialTerrain, type Ground } from './terrain';
@@ -49,6 +49,8 @@ export const LIBRARY: Record<string, Variant> = {
 };
 export const KINDS: Record<ItemKind, string> = { stone: 'Stones', wood: 'Wood', cave: 'Caves', plant: 'Plants', coral: 'Corals' };
 export const MAX_ITEMS = 600;
+/** Most stems or crowns one clump may have (a stem is about 1.5 k triangles). */
+export const MAX_STEMS = 40;
 /** Carpet cards, mm (about 3 cm tall, like a trimmed Monte Carlo carpet). */
 export const CARPET_W = 100, CARPET_H = CARPET_W * PLANT_ASPECT.carpet;
 
@@ -141,10 +143,10 @@ export function woodLimbs(variant: string, seed: number, size: number): Limb[] {
 }
 
 /** Overall size of a piece: [length, height, width] in its own frame, mm (plants: card width, height, width). */
-export function itemDims(it: Pick<Item, 'kind' | 'variant' | 'seed' | 'size'>): V3 {
+export function itemDims(it: Pick<Item, 'kind' | 'variant' | 'seed' | 'size' | 'spread'>): V3 {
   const s = it.size;
   if (it.kind === 'stone') return stoneDims(it.variant, it.seed, s);
-  if (it.kind === 'plant') return isCarpet(it.variant) ? [s, CARPET_H, s] : isFloat(it.variant) ? [s, s * PLANT_ASPECT[it.variant as PlantType], s] : [s / PLANT_ASPECT[it.variant as PlantType], s, s / PLANT_ASPECT[it.variant as PlantType]];
+  if (it.kind === 'plant') return isCarpet(it.variant) ? [s, CARPET_H, s] : isFloat(it.variant) ? [s, s * PLANT_ASPECT[it.variant as PlantType], s] : ((w: number) => [w, s, w])(it.spread ? Math.max(it.spread, s / PLANT_ASPECT[it.variant as PlantType]) : s / PLANT_ASPECT[it.variant as PlantType]) as [number, number, number];
   if (it.kind === 'coral') return [s, s * ({ acropora: 0.6, montipora: 0.45, mushroom: 0.4, leather: 0.6 } as Record<string, number>)[it.variant], s];
   if (it.kind === 'cave') return it.variant === 'arch' ? [s, 0.5 * s, 0.45 * s] : it.variant === 'tube' ? [s, 0.42 * s, 0.42 * s] : [s, 0.5 * s, s];
   return it.variant === 'manzanita' ? [0.7 * s, s, 0.7 * s] : it.variant === 'spider' ? [s, 0.5 * s, 0.8 * s] : it.variant === 'mopani' ? [s, 0.45 * s, 0.3 * s] : [s, 0.65 * s, 0.45 * s];
@@ -182,6 +184,11 @@ export function clampItem(it: Item, T: Tank, g?: Ground) {
     ({ x: it.x, depth: it.depth } = clampGround(g, T, it.x, it.depth, inset, lift, lift + up));
   } else if (shapeOf(T) !== 'rect') ({ x: it.x, depth: it.depth } = clampIn(T, it.x, it.depth, inset));
   it.lift = clamp(it.lift, -LIFT_SINK * T.H, T.H);
+  // a clump's own spread and count (absent = the species' own); dropped on anything that is not a clump
+  if (it.kind === 'plant' && isClump(it.variant)) {
+    if (it.spread != null) it.spread = Math.round(clamp(it.spread, 10, Math.max(10, Math.min(T.L, T.D) - 6)));
+    if (it.stems != null) it.stems = Math.round(clamp(it.stems, 1, MAX_STEMS));
+  } else { delete it.spread; delete it.stems; }
   it.yaw = ((it.yaw + 540) % 360) - 180;
   it.pitch = clamp(it.pitch, -90, 90);
   it.tilt = ((it.tilt + 540) % 360) - 180;

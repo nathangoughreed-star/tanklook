@@ -9,7 +9,7 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng } from '../art/paint';
 import { PLANT_ASPECT, PLANT3D, type Leaf3D, type PlantType } from '../art/plants';
-import { CARPET_H } from '../scene/items';
+import { CARPET_H, MAX_STEMS } from '../scene/items';
 import { taperTube } from './fish3d';
 
 /** Switches for review sheets: on (off = the crossed cards), sway (off = every leaf rigid). */
@@ -126,11 +126,23 @@ function tint(g: THREE.BufferGeometry, k: number, warm: number) {
   for (let i = 0; i < c.count; i++) c.setXYZ(i, c.getX(i) * m[0], c.getY(i) * m[1], c.getZ(i) * m[2]);
 }
 
+/** A clump's own spread (mm across the circle its stems or crowns start in) and count; absent = the species' own, drawn
+ *  from the seed (Nathan 2026-10-14: "5 stems over 12 inches" or "10 stems in 4 inches"). */
+export interface Clump { spread?: number; stems?: number }
+
+/** The spread and count a clump has when it has none of its own: the seed's draws, as plantGeometry makes them. */
+export function clumpAuto(type: PlantType, seed: number, h: number) {
+  const P = PLANT3D[type], r = rng(seed * 7919 + 13);
+  if (!P) return { spread: h / PLANT_ASPECT[type], stems: 1 };
+  const n0 = Math.round(between(r, P.n)), c0 = Math.round(between(r, P.crowns ?? [1, 1]));
+  return { spread: Math.round(h / PLANT_ASPECT[type] * P.spread), stems: P.form === 'stem' ? n0 : c0 };
+}
+
 /**
  * The plant's geometry, base at y = 0, its tallest point at h. A carpet is a patch h wide on flat ground, built once per
  * (seed, size); carpetOnGround() then sets each leaflet on the ground under it (cheap, so it can run every drag step).
  */
-export function plantGeometry(type: PlantType, seed: number, h: number) {
+export function plantGeometry(type: PlantType, seed: number, h: number, clump: Clump = {}) {
   const P = PLANT3D[type]!, r = rng(seed * 7919 + 13), out = new Sheets(), extra: THREE.BufferGeometry[] = [];
   // this plant's own build: leaf width, length, rise, droop, stalk thickness, leaf pairs and tint drawn round the
   // species' values (a triangular spread, most plants near the middle; own random stream, so the layout stays)
@@ -187,9 +199,10 @@ export function plantGeometry(type: PlantType, seed: number, h: number) {
   }
   if (P.form === 'stem') {
     // upright stems, leaf pairs crossing at each node, the top ones smaller and more upright
-    const n = Math.round(between(r, P.n)), nodes = Math.round((P.nodes ?? 20) * kNodes);
+    const n0 = Math.round(between(r, P.n)), n = clump.stems ? Math.min(MAX_STEMS, Math.round(clump.stems)) : n0, nodes = Math.round((P.nodes ?? 20) * kNodes);
+    const base = clump.spread ? clump.spread / 2 : Wc * P.spread / 2;
     for (let s = 0; s < n; s++) {
-      const a = r() * 6.28, d = Math.sqrt(r()) * Wc * P.spread / 2, b = V(Math.cos(a) * d, 0, Math.sin(a) * d);
+      const a = r() * 6.28, d = Math.sqrt(r()) * base, b = V(Math.cos(a) * d, 0, Math.sin(a) * d);
       const top = h * (0.75 + 0.25 * r()), lean = V((r() - 0.5) * Wc * 0.4, 0, (r() - 0.5) * Wc * 0.4);
       const sb = bend(), side = V(-cz, 0, cx);
       const at = (t: number) => b.clone().addScaledVector(lean, t * t).add(V(cx, 0, cz).multiplyScalar(sb.k * top * 0.45 * t * t))
@@ -230,14 +243,20 @@ export function plantGeometry(type: PlantType, seed: number, h: number) {
     extra.push(core);
   } else {
     // rosette: leaves from the crown(s), outer ones longer and spreading; rhizome: along a creeping root
-    const n = Math.round(between(r, P.n)), crowns = Math.round(between(r, P.crowns ?? [1, 1])), rz = P.form === 'rhizome';
-    const half = Wc * P.spread / 2, roots: THREE.Vector3[] = [];
+    const n0 = Math.round(between(r, P.n)), c0 = Math.round(between(r, P.crowns ?? [1, 1])), rz = P.form === 'rhizome';
+    // a clump with its own count keeps the species' leaves per crown
+    const crowns = P.crowns && clump.stems ? Math.min(MAX_STEMS, Math.round(clump.stems)) : c0, n = Math.min(600, Math.round(n0 * crowns / c0));
+    const half = (P.crowns && clump.spread ? clump.spread : Wc * P.spread) / 2, roots: THREE.Vector3[] = [];
     if (rz) {
       const yaw = (r() - 0.5) * 0.6, dz = Math.sin(yaw) * half;
       for (let i = 0; i <= 4; i++) { const t = i / 4 * 2 - 1; roots.push(V(t * half * Math.cos(yaw), h * 0.012 + (r() - 0.5) * h * 0.01, t * dz + (r() - 0.5) * half * 0.15)); }
       extra.push(tube(roots, Math.max(1.5, h * 0.02 * kStalk), P.stalk));
     }
-    const centres = Array.from({ length: crowns }, (_, i) => V(crowns > 1 ? (i / (crowns - 1) * 2 - 1) * half + (r() - 0.5) * half * 0.3 : 0, 0, (r() - 0.5) * half * 0.4));
+    // crowns: along a short row (the species' own look), or spread evenly over the clump's circle when it has its own
+    // spread (a sunflower spiral, nudged so it does not read as a pattern)
+    const centres = P.crowns && clump.spread
+      ? Array.from({ length: crowns }, (_, i) => { const a = i * 2.39996 + (r() - 0.5) * 0.8, d = half * Math.sqrt((i + 0.5) / crowns) * (0.85 + r() * 0.3); return V(Math.cos(a) * d, 0, Math.sin(a) * d); })
+      : Array.from({ length: crowns }, (_, i) => V(crowns > 1 ? (i / (crowns - 1) * 2 - 1) * half + (r() - 0.5) * half * 0.3 : 0, 0, (r() - 0.5) * half * 0.4));
     for (let i = 0; i < n; i++) {
       const t = i / Math.max(1, n - 1), outer = rz ? r() : 1 - t;
       let base: THREE.Vector3, yaw: number;
@@ -253,7 +272,7 @@ export function plantGeometry(type: PlantType, seed: number, h: number) {
   const top = Math.max(...parts.map(g => { g.computeBoundingBox(); return g.boundingBox!.max.y; })), k = h / Math.max(1, top);
   // a plant whose leaves reach out wider than its card is drawn narrower (at most by a quarter), so it fits where the card did
   const reach = Math.max(...parts.map(g => Math.max(-g.boundingBox!.min.x, g.boundingBox!.max.x, -g.boundingBox!.min.z, g.boundingBox!.max.z))) * k;
-  const kx = Math.max(0.75, Math.min(1, Wc * 0.6 / Math.max(1, reach)));
+  const kx = clump.spread ? 1 : Math.max(0.75, Math.min(1, Wc * 0.6 / Math.max(1, reach))); // a clump's own spread is kept
   for (const g of parts) g.scale(k * kx, k, k * kx);
   shade(leaves, h, Wc / 2);
   tint(leaves, kTint, warm);

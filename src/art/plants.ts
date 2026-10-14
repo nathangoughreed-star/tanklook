@@ -15,6 +15,8 @@ export const PLANT_ASPECT: Record<PlantType, number> = { stem: 3.2, stemred: 3.2
 export const isCarpet = (v: string) => v === 'carpet';
 /** Plants that float at the water line (size = patch width; roots hang below; not drawn in a dry tank). */
 export const isFloat = (v: string) => v === 'redroot' || v === 'salvinia';
+/** Plants that grow as several stems or crowns, so a clump has its own spread and count (Item.spread / stems). */
+export const isClump = (v: string) => PLANT3D[v as PlantType]?.form === 'stem' || !!PLANT3D[v as PlantType]?.crowns;
 /** Plants whose size is the width of a patch, not a height. */
 export const isPatch = (v: string) => isCarpet(v) || isFloat(v);
 
