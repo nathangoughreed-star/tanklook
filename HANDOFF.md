@@ -20,7 +20,8 @@ Living file. Project state and dated decisions go here; update in place.
   18 edits (fish move / turn / resize / raise / select / delete / duplicate, stone move / turn / resize, plant move,
   item select, undo, redo, water colour, wall colour, substrate colours, fish stand out) on all six examples + a split
   view, comparing the incremental frame with a full rebuild pixel by pixel: 126 edits, 114 incremental, **0 pixels
-  differ**, on a fresh page and again warm. `test/incremental.test.ts` pins which fields envKey / lookKey see.
+  differ**, on a fresh page and again warm, and again after merging lanes K and A's latest (a full rebuild's own redraw
+  differed by a few pixels on 2 edits there; the check accepts either full-rebuild frame). `test/incremental.test.ts` pins which fields envKey / lookKey see.
 - **Timings** (planted, 40 fish / 56 items; interleaved A/B in one session, median; this machine was 2-3x slower than at
   the baseline because of other lanes, so read the ratios): fish move 167-175 -> 43-59 ms, item move 157-241 -> 32-50,
   select 139-175 -> 33-38, water colour 183 -> 49-61, fish stand out 188-209 -> 47-49; iwagumi (174 items) fish / item
@@ -36,7 +37,7 @@ Living file. Project state and dated decisions go here; update in place.
 - Files touched: render/build.ts, render/viewer.ts (build() and the opaque sort only; framing untouched), new
   render/incrementalCheck.ts, test/incremental.test.ts. lighting.ts, items.ts, coral3d.ts, camera.ts and store.ts unchanged.
 
-## Lane K: light output (2026-10-14; branch `light-output`, port 5383; step 1 of 4 pushed)
+## Lane K: light output (2026-10-14; branch `light-output`, port 5383; steps 1-3 of 4 pushed)
 - Owns `render/lighting.ts` (carved out of lane J's render/*), new `scene/lightout.ts` + `test/lightout.test.ts`, the
   light fields in scene/types.ts / defaults.ts / validate.ts, the Lighting rows in index.html / ui/panels.ts,
   ui/diff.ts, ui/parGuide.ts. Lane J: the fixture geometry (emitters, beam, fitSpots, lampHeight, CONES, LAMP_Y,
@@ -54,8 +55,30 @@ Living file. Project state and dated decisions go here; update in place.
 - Findings for Nathan: under white / planted light lux falls a little SLOWER than PAR with depth (red goes first and
   barely counts in lux); only under blue reef light does lux fall faster. LREF is 8,000 lux, not ~2,000 (typical
   setups give 6,000-12,000 mid-water). Readout range = the tech's uncertainty (LED ±30%, others ±50%) or min-max.
-- Next: step 2 (Watts / Tech / PAR override rows, readout, Brightness -> Exposure), 3 (shader port + PAR / Lux map),
-  4 (hover tooltip).
+- Nathan 2026-10-14: yes to T5 eta 0.75, the JBL tank assumption, the lux-vs-PAR finding and LREF 8,000 ("as accurate
+  as feasible").
+- Step 2: Lighting rows Power (W, 0 = not set), Light type (techs for the fixture type), PAR (measured), the readout
+  line; Brightness is relabelled Exposure (x0.5-2) while the power is set. The render follows it: `setLightUniforms`
+  takes the setup (ONE-LINE HOOK in lane J's render/viewer.ts: `..., S.render.beams, S)`) and uses
+  `lightOutCached` -> `renderBright`. ui/diff.ts: A/B lines for power, light type, measured PAR, Exposure.
+- Step 3: `aqIrr` with the power set calls `aqIrrAbs`, a line-by-line port of `bandsAt` (uniforms uLoA / uLoWall /
+  uLoK / uLoSplit / uLoOut, set in `setLoUniforms`); the ramp is log2(level / uMapDiv), MAP_DIV rel 1/16, PAR 2.5
+  (yellow = 40, medium), lux 125. "Map shows" PAR / Lux select (light.mapUnit), legends in real units with the
+  planted bands under the PAR ramp. GPU check: `irrReadback(renderer, pts, normals)` (dev, from the console via
+  `await import('/src/render/lighting.ts')` and `window.__gb`) agreed with bandsAt to 0.003% at 54 lit points.
+  Readout "surface" is now the brightest point just under the surface (was: above the brightest substrate point,
+  which could sit by the glass where the direct beam misses the surface: read 0).
+- Review (Nathan 2026-10-14: "surely the corners wouldn't get basically no light"): two fixes. (1) Beam = cos^m off
+  straight down with m set so the printed beam angle is where it falls to HALF (`beamExp`; LED bar and tube cross-section
+  m = 1, half at 60°), replacing the hard smoothstep cut-off in the model and the map (the ordinary render keeps its own
+  cone). (2) Bounced light (`bounce`): floor light x substrate reflectance (SUB_ALBEDO; custom from its colour) spread
+  over the inside surfaces, kept in by the surface (0.45) and glass (0.43), integrating-cavity style; added under water
+  (everywhere when dry). 36x16x18 in, 3 spots 60°, 45 W: corner 16% -> 41% of centre, minimum 3 -> 84 µmol; bounce is
+  ~7% of the mean on gravel, ~22% on white sand. LED bar and T5 corners were already 63-73% (Fluval publishes ~55%).
+  Refit: T5 eta 0.65 (Barr +12 / -1%), bare T5 0.4, T8 0.45; Hydra -9..+6%, JBL -26..+14%. Shader port re-checked
+  (GPU vs JS <= 0.0001%).
+- Next: 4 (hover tooltip).
+
 ## Model review sheet + model versions (2026-10-14, Nathan: "keep it where it can be updated with version number every time a model is updated")
 - `review.html` (live at tanklook.com/review.html; second Vite page, `src/review/`): every species look (females too)
   from Side, 3/4, Front, Top, each in the preview tile's flat light and in the default tank's LED bar + water. Filter,
@@ -201,6 +224,21 @@ or a type with no `PLANT3D` entry). No scene version bump: plants were already i
 - Hook (my lane): plant branch of `itemMesh` in `render/items.ts`. `scene/items.ts` not touched.
 - Sheets (worktree `shots/`, not in git): `9{1,2}_{fern,sword,carpet}_sheet.png` (style test), `94_*` (rollout),
   `96_planted_sheet.png` (dense planted, card / 3D). Capture helper `shots/cap.js` (card vs 3D at the same framing).
+- Sway (Nathan 2026-10-14: plants looked stiff, "leaves and stems are bendy and ebb and flow in the current"): per
+  species `sway` (0 stiff .. 1 limp: vallisneria 1, stems .65, fern / sword .3, carpet .1, anubias .08). One current
+  direction per plant (mostly along the tank, +-35°), every leaf leans into it by its own share (longer leaves more)
+  plus a sideways S-wobble growing to the tip; stems bend along their height the same way. Own random stream
+  (`rng(seed * 104729 + 71)`), so the approved leaf layouts did not change. `plant3d.sway = false` = rigid. Sheet
+  `shots/98_planted_sheet.png` (before / after).
+  Per-plant amount (Nathan 2026-10-14: "the red stems all bend about the same; straight up should be just as likely"):
+  each plant's sway = species sway x 1.3 x uniform(0, 1) (`rng(seed * 15485863 + 5)`), so straight and strongly bent
+  plants are equally likely, every species. Rows `shots/102_row_{stemred,stem,grass}_lab.png` (10 plants, same seeds
+  as `101_*`).
+- Per-plant build (Nathan 2026-10-14: "does every sword look like every other?"): the leaf layout was already per
+  item seed (count, lengths, angles, colour picks); now the plant-wide traits vary too, drawn per seed from a
+  triangular spread round the species' value (own stream `rng(seed * 7907 + 3)`): leaf width +-18 %, length +-12 %,
+  rise +-20 %, droop +-30 %, stalk / rhizome thickness +-25 %, leaf pairs per stem +-15 %, brightness +-6 % and a
+  warm / cool cast (+-8 %). Sheet `shots/100_variety_sheet.png` (5 swords, 5 vallisneria, same size, different seeds).
 - Watch items: vallisneria clumps spread wider than their card; the sword is taller than its old card; the carpet sits
   lower than the card from the front. Crypts: not built yet (next).
 

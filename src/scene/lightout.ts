@@ -5,7 +5,7 @@
 // Light map shader (render/lighting.ts aqIrr) is a port of `bandsAt`, and the hover readout calls it directly.
 // Pure (no three.js), unit-tested in test/lightout.test.ts against published PAR-at-depth data.
 import { D2R, clamp, waterK, waterY } from './physics';
-import { insideBy, shapeOf, type P } from './shape';
+import { footprint, insideBy, shapeOf, type P } from './shape';
 import { groundHeight, groundInsideBy, type Ground } from './terrain';
 import type { LidType, LightSettings, LightTech, LightType, Tank, WaterSettings } from './types';
 
@@ -121,17 +121,17 @@ export interface Tech {
   unc: number;
 }
 // Calibration (reference/par-calibration-data.md, test/lightout.test.ts): reef LED PPE 1.75 fits the AI Hydra 32 HD
-// (in air, -7..+9%), white LED 1.6 x 0.9 the JBL Solar Natur (in water, -20..+22%). T5 HO with reflectors fits the
-// Barr Report readings at eta 0.75 once the side glass is modelled (the first hand check, which left the glass out,
-// suggested 0.4-0.5). T8, CFL, metal halide, halogen: no dataset yet. LED band splits are set from the lux factors
+// (in air, -9..+6%), white LED 1.6 x 0.9 the JBL Solar Natur (in water, -26..+14%). T5 HO with reflectors fits the
+// Barr Report readings at eta 0.65 once the side glass is modelled (the first hand check, which left the glass out,
+// suggested 0.4-0.5); bare T5 and T8 scaled with it. T8, CFL, metal halide, halogen: no dataset yet. LED band splits are set from the lux factors
 // (white ~67, planted ~48, reef ~26 lux per µmol), not measured.
 export const TECHS: Record<LightTech, Tech> = {
   'led-white': { label: 'LED, white', on: ['spot', 'tube', 'led'], ppe: 1.6, eta: 0.9, split: [0.22, 0.53, 0.25], unc: 0.3 },
   'led-planted': { label: 'LED, planted RGB', on: ['spot', 'led'], ppe: 1.8, eta: 0.9, split: [0.33, 0.33, 0.34], unc: 0.3 },
   'led-reef': { label: 'LED, reef (blue)', on: ['spot', 'led'], ppe: 1.75, eta: 0.9, split: [0.78, 0.13, 0.09], unc: 0.3 },
-  't5-refl': { label: 'T5 HO, own reflectors', on: ['tube'], ppe: 1.2, eta: 0.75, split: [0.2, 0.6, 0.2], unc: 0.5 },
-  't5-bare': { label: 'T5 HO, bare', on: ['tube'], ppe: 1.2, eta: 0.45, split: [0.2, 0.6, 0.2], unc: 0.5 },
-  't8': { label: 'T8', on: ['tube'], ppe: 0.85, eta: 0.5, split: [0.2, 0.6, 0.2], unc: 0.5 },
+  't5-refl': { label: 'T5 HO, own reflectors', on: ['tube'], ppe: 1.2, eta: 0.65, split: [0.2, 0.6, 0.2], unc: 0.5 },
+  't5-bare': { label: 'T5 HO, bare', on: ['tube'], ppe: 1.2, eta: 0.4, split: [0.2, 0.6, 0.2], unc: 0.5 },
+  't8': { label: 'T8', on: ['tube'], ppe: 0.85, eta: 0.45, split: [0.2, 0.6, 0.2], unc: 0.5 },
   'cfl': { label: 'CFL / power compact', on: ['spot', 'tube'], ppe: 0.8, eta: 0.5, split: [0.2, 0.59, 0.21], unc: 0.5 },
   'mh': { label: 'Metal halide pendant', on: ['spot'], ppe: 1.3, eta: 0.7, split: [0.24, 0.57, 0.19], unc: 0.5 },
   'halogen': { label: 'Incandescent / halogen', on: ['spot'], ppe: 0.3, eta: 0.6, split: [0.08, 0.36, 0.56], unc: 0.5 },
@@ -151,23 +151,46 @@ export const luxOf = (b: Band) => b[0] * LUXW[0] + b[1] * LUXW[1] + b[2] * LUXW[
 // ---------- the model ----------
 
 const smooth = (a: number, b: number, x: number) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
-/** ∫ beam profile over the sphere (sr): what turns a point emitter's µmol/s into µmol/s/sr. */
-export const pointNorm = (c: [number, number]) => 2 * Math.PI * ((1 - c[0]) + (c[0] - Math.max(c[1], -1)) / 2);
-/** ∫ beam profile round the tube's axis (rad), the 2D equivalent for a line emitter. */
-export function lineNorm(c: [number, number]) {
+/**
+ * The beam as a power of the cosine off straight down, cos^m (an LED with a lens, a reflector), its exponent set so the
+ * printed beam angle is where it falls to half (the usual way a beam angle is quoted): light tails off past the beam
+ * angle instead of stopping (Nathan 2026-10-14: corners went black under a hard cut-off). A bare LED is m = 1 (Lambertian,
+ * half at 60°: an LED bar); a tube's cross-section the same, half at 60° either side (reflector or the lamp's own spread).
+ */
+export const beamExp = (l: { type: LightType; cone?: number }) =>
+  l.type === 'spot' ? Math.log(0.5) / Math.log(Math.cos(clamp(l.cone ?? 52, 5, 170) / 2 * D2R)) : 1;
+/** ∫ cos^m over the lower hemisphere (sr): what turns a point emitter's µmol/s into µmol/s/sr. */
+export const pointNorm = (m: number) => 2 * Math.PI / (m + 1);
+/** ∫ cos^m round the tube's axis over the lower half (rad), the 2D equivalent for a line emitter. */
+export function lineNorm(m: number) {
   let s = 0; const n = 720;
-  for (let i = 0; i < n; i++) s += smooth(c[1], c[0], Math.cos(-Math.PI + 2 * Math.PI * (i + 0.5) / n));
-  return s * 2 * Math.PI / n;
+  for (let i = 0; i < n; i++) s += Math.cos(-Math.PI / 2 + Math.PI * (i + 0.5) / n) ** m;
+  return s * Math.PI / n;
 }
+/** Diffuse reflectance (PAR) of each substrate, for the light it bounces back into the tank; bare glass bottom 0.1. */
+export const SUB_ALBEDO: Record<string, number> = {
+  gravel: 0.2, pea: 0.3, clown: 0.15, blue: 0.08, onyx: 0.05, black: 0.06, white: 0.55, aragonite: 0.6, coral: 0.55,
+};
+const hexLum = (h: string) => { const c = [1, 3, 5].map(i => (parseInt(h.slice(i, i + 2), 16) / 255) ** 2.2); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
+export function subAlbedo(sub: { show: boolean; type: string; custom?: { color: string } }) {
+  if (!sub.show) return 0.1;
+  if (sub.type === 'custom') return clamp(hexLum(sub.custom?.color ?? '#808080') * 1.1, 0.04, 0.7);
+  return SUB_ALBEDO[sub.type] ?? 0.2;
+}
+/** Diffuse light kept in by the water surface and the glass (about 1 - 1/n² of it is totally reflected back in). */
+export const KEEP_SURFACE = 0.45, KEEP_GLASS = 0.43;
 
 /** Everything `bandsAt` needs, from the settings once (lightEnv) or built by hand (the calibration tests). */
 export interface LightEnv {
   E: Emitter[];
   /** µmol/s per emitter (a line emitter: over its whole length). */
   phi: number;
-  cone: [number, number];
-  /** pointNorm or lineNorm of the cone (by the emitters' kind). */
+  /** Beam exponent (cos^m, beamExp) and its pointNorm / lineNorm (by the emitters' kind). */
+  m: number;
   norm: number;
+  /** Bounced light (µmol/m²/s per band, losses included): light reflected by the substrate, kept in by the surface and
+   * glass, spread evenly; added under water (everywhere in a dry tank). */
+  ind: Band;
   split: Band;
   /** Absorption per mm of water, per band. */
   k: Band;
@@ -191,12 +214,12 @@ function addSrc(env: LightEnv, px: number, py: number, pz: number, nx: number, n
     const dz = ez - pz, r = Math.max(Math.hypot(dy, dz), 1), xr = px - ex;
     const f = 0.5 * ((h - xr) / Math.hypot(r, h - xr) + (h + xr) / Math.hypot(r, h + xr));
     const inc = Math.max((ny * dy + nz * dz) / r, 0);
-    e0 = (env.phi / (2 * h)) * 1e6 * smooth(env.cone[1], env.cone[0], dy / r) * inc * f / (env.norm * r);
+    e0 = (env.phi / (2 * h)) * 1e6 * (dy / r) ** env.m * inc * f / (env.norm * r);
     sinA = Math.abs(dz) / r;
   } else {
     const dx = ex - px, dz = ez - pz, d = Math.max(Math.hypot(dx, dy, dz), 1);
     const inc = Math.max((nx * dx + ny * dy + nz * dz) / d, 0);
-    e0 = env.phi * 1e6 * smooth(env.cone[1], env.cone[0], dy / d) * inc / (env.norm * d * d);
+    e0 = env.phi * 1e6 * (dy / d) ** env.m * inc / (env.norm * d * d);
     sinA = Math.hypot(dx, dz) / d;
   }
   e0 *= w * env.trans;
@@ -226,6 +249,7 @@ export function bandsAt(env: LightEnv, p: readonly number[], n: readonly number[
       if (g > 0) addSrc(env, px, py, pz, nx, ny, nz, ix, ey, iz, h, W.w * g, out);
     }
   }
+  if (under || !Number.isFinite(env.ys)) for (let i = 0; i < 3; i++) out[i] += env.ind[i];
   if (env.scale !== 1) for (let i = 0; i < 3; i++) out[i] *= env.scale;
   return out;
 }
@@ -237,14 +261,36 @@ export type LightScene = Ground & { tank: Tank; light: LightSettings; lid: LidTy
 export function lightEnv(S: LightScene): LightEnv | null {
   const { tank: T, light: l, water: w } = S;
   if (l.type === 'flat' || !(l.watts && l.watts > 0)) return null;
-  const tech = TECHS[techOf(l)], E = emitters(T, l, lampHeight(l, S.lid)), { cone } = beam(l), line = l.type === 'tube';
+  const tech = TECHS[techOf(l)], E = emitters(T, l, lampHeight(l, S.lid)), m = beamExp(l), line = l.type === 'tube';
   const tint = w.on ? TINT_SHARE * waterK(w.opacity) : 0;
-  return {
-    E, phi: (l.watts * tech.ppe * tech.eta) / Math.max(E.length, 1), cone, norm: line ? lineNorm(cone) : pointNorm(cone),
+  const env: LightEnv = {
+    E, phi: (l.watts * tech.ppe * tech.eta) / Math.max(E.length, 1), m, norm: line ? lineNorm(m) : pointNorm(m), ind: [0, 0, 0],
     split: tech.split, k: KWATER.map(k => k / 1000 + tint) as Band,
     ys: w.on ? waterY(T, w.level) : -Infinity, trans: S.lid === 'glass' ? GLASS_LID : 1,
     walls: shapeOf(T) === 'rect' ? { L: T.L, D: T.D, w: WALL_W } : null, scale: 1,
   };
+  env.ind = bounce(S, env);
+  return env;
+}
+
+/**
+ * The bounced light, as in an integrating cavity: the light reaching the floor (sampled just above it, direct + glass
+ * images), times the substrate's reflectance, spread over every inside surface and multiplied up by how much of the
+ * diffuse light the surface, the glass and the floor send back in: E = rho_s x flux / (area x (1 - mean reflectance)).
+ */
+function bounce(S: LightScene, env: LightEnv): Band {
+  const T = S.tank, { area, perimeter: perim } = footprint(T), g = 10, fl: Band = [0, 0, 0];
+  let k = 0, y = 0;
+  for (let i = 0; i < g; i++) for (let j = 0; j < g; j++) {
+    const x = T.L * (i + 0.5) / g, d = T.D * (j + 0.5) / g;
+    if (insideBy(T, x, d) <= 0) continue;
+    const h = groundHeight(S, T, x, d), b = bandsAt(env, [x, h + 0.5, -d]); k++; y += h;
+    for (let c = 0; c < 3; c++) fl[c] += b[c];
+  }
+  if (!k) return [0, 0, 0];
+  const wet = Number.isFinite(env.ys), top = wet ? env.ys : T.H, depth = Math.max(top - y / k, 1), rho = subAlbedo(S.substrate);
+  const A = 2 * area + perim * depth, keep = (area * rho + (wet ? area * KEEP_SURFACE : 0) + perim * depth * KEEP_GLASS) / A;
+  return fl.map(v => (v / k) * area * rho / (A * (1 - keep))) as Band;
 }
 
 export type ParBand = 'low' | 'medium' | 'high' | 'very high';
@@ -252,7 +298,7 @@ export type ParBand = 'low' | 'medium' | 'high' | 'very high';
 export const parBand = (v: number): ParBand => (v < 30 ? 'low' : v < 50 ? 'medium' : v < 80 ? 'high' : 'very high');
 
 export interface LightOut {
-  /** PAR just under the water surface above the brightest substrate point (the rim, in a dry tank). */
+  /** PAR just under the water surface at its brightest (the rim's height, in a dry tank). */
   surface: number;
   /** PAR at the substrate: mean, min, max over a 24 x 24 grid of the footprint. */
   mean: number; min: number; max: number;
@@ -283,20 +329,32 @@ export function lightOut(S: LightScene): LightOut | null {
   if (!env) return null;
   const pts = substratePoints(S);
   if (!pts.length) return null;
-  let sum = 0, lux = 0, mid = 0, min = Infinity, max = -Infinity, top = pts[0].p;
+  let sum = 0, lux = 0, mid = 0, min = Infinity, max = -Infinity, surface = 0;
   const ys = Number.isFinite(env.ys) ? env.ys : S.tank.H;
   for (const { p, n } of pts) {
     const b = bandsAt(env, p, n), v = parOf(b);
     sum += v; lux += luxOf(b); min = Math.min(min, v);
-    if (v > max) { max = v; top = p; }
+    max = Math.max(max, v);
+    surface = Math.max(surface, parOf(bandsAt(env, [p[0], ys - 0.01, p[2]])));
     mid += luxOf(bandsAt(env, [p[0], (p[1] + Math.max(ys, p[1])) / 2, p[2]]));
   }
   const k = pts.length, mean = sum / k, scale = S.light.par && S.light.par > 0 && mean > 0 ? S.light.par / mean : 1;
-  const surface = parOf(bandsAt(env, [top[0], ys - 0.01, top[2]]));
   return {
     surface: surface * scale, mean: mean * scale, min: min * scale, max: max * scale,
     luxMean: lux / k * scale, luxMid: mid / k * scale, band: parBand(mean * scale), scale, tech: techOf(S.light),
   };
+}
+
+const outCache = new Map<string, LightOut | null>();
+/** lightOut, cached on the settings it reads (the viewer asks every frame, per viewport; the panel on every edit). */
+export function lightOutCached(S: LightScene): LightOut | null {
+  const l = S.light;
+  if (l.type === 'flat' || !(l.watts && l.watts > 0)) return null;
+  const key = JSON.stringify([S.tank, l, S.lid, S.water, S.substrate, S.layout.id, S.layout.seed, S.terrain]);
+  if (outCache.has(key)) return outCache.get(key)!;
+  const o = lightOut(S);
+  outCache.set(key, o); if (outCache.size > 8) outCache.delete(outCache.keys().next().value!);
+  return o;
 }
 
 /** Lux at mid-water that renders at Brightness 1: a 24 x 12 x 12 in tank under a 20 W white LED bar gives about this
@@ -313,7 +371,7 @@ const thou = (v: number) => { const r = v >= 1000 ? Math.round(v / 100) * 100 : 
  * The range is the tech's uncertainty round the mean, or min-max across the substrate where that is wider.
  */
 export function readout(o: LightOut, own = o.scale !== 1): string {
-  const surf = `surface ≈ ${nice(o.surface)} · ≈ ${thou(o.luxMean)} lux`;
+  const surf = `surface ≈ ${o.surface >= 1000 ? thou(o.surface) : nice(o.surface)} · ≈ ${thou(o.luxMean)} lux`;
   if (own) return `PAR at substrate ${nice(o.mean)} µmol (yours; ${o.band}) · ${surf}`;
   const u = TECHS[o.tech].unc, lo = Math.min(o.mean * (1 - u), o.min), hi = Math.max(o.mean * (1 + u), o.max);
   const a = parBand(lo), b = parBand(hi), bands = a === b ? a : `${a}-${b}`;

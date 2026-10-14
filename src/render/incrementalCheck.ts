@@ -45,9 +45,9 @@ function grab(v: Viewer) {
 
 /**
  * Apply each edit, draw incrementally, then rebuild from scratch and draw twice: count the pixels of the incremental
- * frame that match neither full-rebuild frame. Two frames, because before the viewer's own opaque order (viewer.ts
- * constructor) a full rebuild's first and second draw could differ by a pixel or two; `jitter` = how many pixels those
- * two differ by (0 since).
+ * frame that match neither full-rebuild frame. Two frames, because a full rebuild's own first and second draw can
+ * differ by a few pixels (seen on 2 of 126 edits, 2026-10-14, not from the incremental path); `jitter` = how many
+ * pixels those two differ by.
  */
 export function check(store: Store, v: Viewer, list = edits()) {
   const out: { edit: string; build: string; diff: number; maxDelta: number; jitter: number; box: number[] }[] = [];
