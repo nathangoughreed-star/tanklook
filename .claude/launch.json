@@ -550,21 +550,6 @@
       "port": 5544
     },
     {
-      "name": "coral-seat",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "--prefix",
-        "C:/Users/nreed/Glass-Box-coral-seat",
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5563",
-        "--strictPort"
-      ],
-      "port": 5563
-    },
-    {
       "name": "fish-x2",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
