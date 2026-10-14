@@ -13,7 +13,7 @@ Living file. Project state and dated decisions go here; update in place.
   `/review.html` on your dev server, wait for it to render, press "Record N changed models", commit
   `src/data/model-versions.json` with the change. The button only exists on the dev server (plugin
   `scripts/model-versions-plugin.mjs`); it stamps build = current commit count + 1, i.e. the commit you are about to make.
-- All 68 looks recorded as v1 at build 216. Fingerprints held across reloads and at phone size in the app's browser.
+- All 68 looks recorded as v1 at build 217 (stamped 216; another chat committed first, so check the number after pushing). Fingerprints held across reloads and at phone size in the app's browser.
 
 ## Light output: watts -> PAR / lux (2026-10-14; draft only, no src/ edits)
 - Design draft `reference/light-output-draft.md`: watts + light tech -> photons -> existing beam model in real units,
