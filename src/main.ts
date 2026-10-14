@@ -2,7 +2,7 @@ import './style.css';
 import { attachPointer } from './interact/pointer';
 import { Viewer } from './render/viewer';
 import { Store } from './scene/store';
-import { attachPanels } from './ui/panels';
+import { attachPanels, scapeSec } from './ui/panels';
 import { attachParGuide } from './ui/parGuide';
 import { attachLightHover } from './ui/lightHover';
 import { attachAR } from './render/ar';
@@ -27,9 +27,9 @@ if (!webglAvailable()) {
   const restored = Store.loadLocal();
   const store = new Store(restored ?? undefined);
   const viewer = new Viewer(document.getElementById('c') as HTMLCanvasElement, view, store);
-  // aquascape pieces / animals move only while the Aquascape / Animals menu is open and the panel showing
-  const sec = { items: 'aquascape', fish: 'fish' } as const;
-  attachPointer(viewer, store, what => !!document.querySelector<HTMLDetailsElement>(`details.sec[data-sec="${sec[what]}"]`)?.open
+  // pieces move only while their menu (Hardscape, or Plants for plants and corals) is open, animals only while Animals is,
+  // and the panel showing
+  attachPointer(viewer, store, (what, kind) => !!document.querySelector<HTMLDetailsElement>(`details.sec[data-sec="${what === 'fish' ? 'fish' : scapeSec(kind!)}"]`)?.open
     && !document.getElementById('app')!.classList.contains('collapsed'));
   const ui = attachPanels(store, viewer);
   attachParGuide(() => store.tank.water.on && !!store.tank.water.salt);

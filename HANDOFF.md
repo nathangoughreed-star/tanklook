@@ -2,6 +2,13 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Aquascape menu split into Hardscape and Plants (2026-10-14; Nathan asked; pushed to main)
+- **Hardscape** (`data-sec="hardscape"`): Start from + Shuffle, stones / wood / caves, its own count and Remove all.
+  **Plants** (`data-sec="plants"`, titled "Plants & Corals" in saltwater): plants and corals, own count and Remove all
+  (each Remove all clears only its menu's kinds). `scapeSec(kind)` in `ui/panels.ts` maps kind → menu.
+- The piece editor (`#itemEdit`: item box + hint) is one DOM node, moved into whichever of the two opens; selecting a
+  piece opens its menu. Pointer: a piece can be picked only while ITS menu is open (`canPick('items', kind)`).
+
 ## Lane Z: corals sit on the rock (2026-10-14; branch `coral-seat`, port 5563; Nathan approved; pushed to main)
 - **Measured first**: the Reef example has NO floating corals. All 8 raised corals rest within 1 mm of the rock straight
   under them. Three (12 and 13, blue acropora; 29, mushroom) sit on a ledge tucked under a higher rock, with branches into it.

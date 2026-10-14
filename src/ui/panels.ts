@@ -41,6 +41,10 @@ const $ = <T extends HTMLElement = HTMLInputElement>(id: string) => document.get
 const DEBUG = new URLSearchParams(location.search).has('debug');
 const esc = (s: string) => s.replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 
+/** The menu a kind of piece lives in: stones, wood and caves under Hardscape, plants and corals under Plants. */
+export type ScapeSec = 'hardscape' | 'plants';
+export const scapeSec = (k: ItemKind): ScapeSec => k === 'plant' || k === 'coral' ? 'plants' : 'hardscape';
+
 export function attachPanels(store: Store, viewer: Viewer) {
   const G = () => store.scene;   // the whole scene: name, units, the tanks
   const S = () => store.tank;    // the tank the panel shows; edits go to every view with "Edit" ticked (store.edit)
@@ -855,10 +859,12 @@ Cancel, then change the name, to keep both.`)) return;
   /** Open a section (e.g. Fish when an animal gets selected), so what the user just acted on is editable. */
   const openSec = (key: string) => { const d = secs.find(x => x.dataset.sec === key); if (d && !d.open) d.open = true; };
   // one section open at a time: opening one collapses the rest (Nathan 2026-10-13). Pieces / animals can be picked and
-  // moved only while Aquascape / Animals is open (pointer.ts), so closing it drops that selection too.
+  // moved only while their menu (Hardscape, Plants, Animals) is open (pointer.ts), so closing it drops that selection too.
+  // The piece editor (#itemEdit) moves into whichever of Hardscape / Plants is open.
   for (const d of secs) d.addEventListener('toggle', () => {
-    if (d.open) { for (const o of secs) if (o !== d && o.open) o.open = false; }
-    else if (d.dataset.sec === 'aquascape' && store.selItem != null) store.selectItem(null);
+    const scape = d.dataset.sec === 'hardscape' || d.dataset.sec === 'plants';
+    if (d.open) { for (const o of secs) if (o !== d && o.open) o.open = false; if (scape) d.append($('itemEdit')); }
+    else if (scape && store.selectedItem && scapeSec(store.selectedItem.kind) === d.dataset.sec) store.selectItem(null);
     else if (d.dataset.sec === 'fish' && store.selId != null) store.select(null);
   });
   $<HTMLSelectElement>('layout').innerHTML = Object.entries(LAYOUTS).map(([k, l]) => `<option value="${k}">${esc(l.label)}</option>`).join('');
@@ -885,9 +891,11 @@ Cancel, then change the name, to keep both.`)) return;
   };
 
   // ---------- Aquascape items: library, selection ----------
+  // stones, wood and caves under Hardscape; plants and corals under Plants (Nathan 2026-10-14)
   // live rock and corals (data-salt) show in a saltwater tank only: render() toggles them
-  $('lib').innerHTML = (Object.keys(KINDS) as ItemKind[]).map(k => `<div class="libRow"${k === 'coral' ? ' data-salt' : ''}><span class="flabel">${KINDS[k]}</span><div class="chips">${
+  const libHtml = (sec: ScapeSec) => (Object.keys(KINDS) as ItemKind[]).filter(k => scapeSec(k) === sec).map(k => `<div class="libRow"${k === 'coral' ? ' data-salt' : ''}><span class="flabel">${KINDS[k]}</span><div class="chips">${
     Object.entries(LIBRARY).filter(([, v]) => v.kind === k).map(([id, v]) => `<button data-lib="${id}"${v.salt ? ' data-salt' : ''} title="Add: ${esc(v.hint)}">${esc(v.label)}</button>`).join('')}</div></div>`).join('');
+  $('libHard').innerHTML = libHtml('hardscape'); $('libPlant').innerHTML = libHtml('plants');
   /** Add a piece at an open spot (the candidate farthest from every other piece, front-middle preferred). Same id and
    *  seed in every tank being edited. */
   const addItem = (variant: string) => {
@@ -902,7 +910,7 @@ Cancel, then change the name, to keep both.`)) return;
       }
       clampItem(it, T, s); s.items.push(it);
     });
-    store.selectItem(id); openSec('aquascape');
+    store.selectItem(id); openSec(scapeSec(LIBRARY[variant].kind));
   };
   document.querySelectorAll<HTMLButtonElement>('[data-lib]').forEach(b => b.onclick = () => addItem(b.dataset.lib!));
   const editItem = (fn: (it: Item, s: TankSetup) => void, coalesce?: string) => {
@@ -955,14 +963,19 @@ Cancel, then change the name, to keep both.`)) return;
     store.selectItem(id);
   };
   $('iDup').onclick = itemDup; $('iDel').onclick = itemDel;
-  let clearArm = 0;
-  $('itemsClear').onclick = () => {
-    const b = $<HTMLButtonElement>('itemsClear');
-    if (!clearArm) { b.textContent = 'Sure? Click again'; b.classList.add('on'); clearArm = window.setTimeout(() => { clearArm = 0; b.textContent = 'Remove all'; b.classList.remove('on'); }, 3000); return; }
-    clearTimeout(clearArm); clearArm = 0; b.textContent = 'Remove all'; b.classList.remove('on');
-    store.edit(s => { s.items = []; }); store.selectItem(null);
-    status('Every rock, piece of wood and plant removed. Ctrl+Z brings them back.');
+  // Remove all: that menu's pieces only (asks once more first)
+  const clearBtn = (btn: string, sec: ScapeSec, done: string) => {
+    let arm = 0;
+    $(btn).onclick = () => {
+      const b = $<HTMLButtonElement>(btn);
+      if (!arm) { b.textContent = 'Sure? Click again'; b.classList.add('on'); arm = window.setTimeout(() => { arm = 0; b.textContent = 'Remove all'; b.classList.remove('on'); }, 3000); return; }
+      clearTimeout(arm); arm = 0; b.textContent = 'Remove all'; b.classList.remove('on');
+      store.selectItem(null); store.edit(s => { s.items = s.items.filter(q => scapeSec(q.kind) !== sec); });
+      status(`${done} Ctrl+Z brings them back.`);
+    };
   };
+  clearBtn('itemsClearHard', 'hardscape', 'Every rock, piece of wood and cave removed.');
+  clearBtn('itemsClearPlant', 'plants', 'Every plant and coral removed.');
   // each button says the picture's size in pixels (audit #49)
   $('pngRow').addEventListener('pointerenter', () => {
     const r = devicePixelRatio || 1, w = viewer.host.clientWidth * r, h = viewer.host.clientHeight * r;
@@ -1234,7 +1247,8 @@ Cancel, then change the name, to keep both.`)) return;
     $('wFresh').classList.toggle('on', !wa.salt); $('wSalt').classList.toggle('on', !!wa.salt);
     for (const id of ['wTannin', 'wGreen']) $(id).style.display = wa.salt ? 'none' : '';
     for (const id of ['wReef', 'wOcean']) $(id).style.display = wa.salt ? '' : 'none';
-    document.querySelectorAll<HTMLElement>('#lib [data-salt], #layout option[value="reef"]').forEach(e => e.style.display = isSalt(s) ? '' : 'none');
+    document.querySelectorAll<HTMLElement>('.lib [data-salt], #layout option[value="reef"]').forEach(e => e.style.display = isSalt(s) ? '' : 'none');
+    $('plantsTitle').textContent = isSalt(s) ? 'Plants & Corals' : 'Plants';
     const mis = misfits(s);
     $('wMisfitRow').style.display = mis.length ? '' : 'none';
     if (mis.length) {
@@ -1294,12 +1308,15 @@ Cancel, then change the name, to keep both.`)) return;
     $('layoutHint').textContent = s.layout.id === 'none' && s.items.length ? 'A starter set replaces every piece; or add, move and remove pieces yourself.' : LAYOUTS[s.layout.id].hint + ' Then move, add or remove any piece.';
     ($('layoutShuffle') as HTMLButtonElement).disabled = s.layout.id === 'none';
     const nk = (k: ItemKind) => s.items.filter(q => q.kind === k).length;
-    $('itemCount').textContent = s.items.length ? (Object.keys(KINDS) as ItemKind[]).filter(k => nk(k)).map(k => `${nk(k)} ${nk(k) === 1 && k !== 'wood' ? KINDS[k].toLowerCase().replace(/s$/, '') : KINDS[k].toLowerCase()}`).join(', ') : 'Nothing placed yet. Pick a piece above to add it.';
-    ($('itemsClear') as HTMLButtonElement).disabled = !s.items.length;
+    for (const [sec, out, btn] of [['hardscape', 'itemCountHard', 'itemsClearHard'], ['plants', 'itemCountPlant', 'itemsClearPlant']] as const) {
+      const ks = (Object.keys(KINDS) as ItemKind[]).filter(k => scapeSec(k) === sec && nk(k));
+      $(out).textContent = ks.length ? ks.map(k => `${nk(k)} ${nk(k) === 1 && k !== 'wood' ? KINDS[k].toLowerCase().replace(/s$/, '') : KINDS[k].toLowerCase()}`).join(', ') : 'Nothing placed yet. Pick one above to add it.';
+      ($(btn) as HTMLButtonElement).disabled = !ks.length;
+    }
     }
     if (env || item) {
     const it = it0;
-    if (it && it.id !== lastItem) openSec('aquascape');
+    if (it && it.id !== lastItem) openSec(scapeSec(it.kind));
     lastItem = it?.id ?? null;
     $('itemBox').hidden = !it;
     if (it) {

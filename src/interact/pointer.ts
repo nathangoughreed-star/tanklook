@@ -7,7 +7,7 @@
 // (round corners and curved shells).
 // Aquascape items (rocks, wood, caves, plants) go where the pointer meets the ground or another piece, and rest on
 // whatever is under them there; anything resting on the dragged piece rides along. Shift + wheel turns the selected piece.
-// Pieces take presses only while the Aquascape menu is open, animals only while the Animals menu is.
+// Pieces take presses only while their menu (Hardscape, or Plants for plants and corals) is open, animals only while the Animals menu is.
 import * as THREE from 'three';
 import { clingsTo, fishTL, getSpecies, restsOnFloor, speciesOf } from '../data/species';
 import { restsOnGround } from '../scene/water';
@@ -17,7 +17,7 @@ import { glassFrame, nearestGlass } from '../scene/shape';
 import { coralSeat } from '../render/items';
 import { groundHeight } from '../scene/terrain';
 import type { Store } from '../scene/store';
-import type { Tank, TankSetup } from '../scene/types';
+import type { ItemKind, Tank, TankSetup } from '../scene/types';
 import type { Viewer, Viewport } from '../render/viewer';
 import { LIMITS } from '../scene/validate';
 
@@ -75,9 +75,9 @@ function supportLift(vp: Viewport, S: TankSetup, x: number, depth: number, skip:
   return hit ? Math.max(0, hit.point.y - groundHeight(S, S.tank, x, depth)) : 0;
 }
 
-/** `canPick`: whether aquascape pieces / animals can be picked and dragged now (only while the Aquascape / Animals menu
- *  is open); otherwise a press on one orbits like empty space. */
-export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'items' | 'fish') => boolean = () => true) {
+/** `canPick`: whether aquascape pieces (of this kind) / animals can be picked and dragged now (only while their menu,
+ *  Hardscape / Plants / Animals, is open); otherwise a press on one orbits like empty space. */
+export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'items' | 'fish', kind?: ItemKind) => boolean = () => true) {
   const canvas = viewer.canvas;
   // dragging an aquascape item: `grab` = the grabbed point relative to the piece's base, kept under the pointer while
   // the base slides over the ground and other pieces; riders = pieces resting on it, which move with it
@@ -146,7 +146,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       viewer.terrainEdit.hot = hit.dot; viewer.rebuild();
       return;
     }
-    if (editable && hit.itemId != null && hit.mesh && canPick('items')) {
+    if (editable && hit.itemId != null && hit.mesh && canPick('items', store.scene.tanks[vi].items.find(q => q.id === hit!.itemId)?.kind ?? 'stone')) {
       store.selectItem(hit.itemId);
       const S = store.scene.tanks[vi], it = S.items.find(q => q.id === hit!.itemId);
       if (!it) return;

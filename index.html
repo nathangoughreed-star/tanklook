@@ -142,11 +142,12 @@
   <div class="row" id="terColsRow"><label for="terCols">Grid</label><input id="terCols" type="range" min="3" max="25" step="1"><output id="oTerCols"></output></div>
   <div class="hint" id="terHint">Custom terrain turns the floor into a grid of points you can push down or pull up, with a smooth surface through them. It starts from the current floor.</div>
   </details>
-  <details class="sec" data-sec="aquascape"><summary><h2>Aquascape</h2></summary>
+  <details class="sec" data-sec="hardscape"><summary><h2>Hardscape</h2></summary>
   <div class="field"><label class="flabel" for="layout">Start from</label><select id="layout"></select><button id="layoutShuffle" title="Replace every piece with a new arrangement of this starter set (Ctrl+Z brings the old one back)">Shuffle</button></div>
   <div class="hint" id="layoutHint"></div>
-  <div id="lib"></div>
-  <div class="btns"><span class="hint" id="itemCount"></span><span class="grow"></span><button id="itemsClear">Remove all</button></div>
+  <div class="lib" id="libHard"></div>
+  <div class="btns"><span class="hint" id="itemCountHard"></span><span class="grow"></span><button id="itemsClearHard">Remove all</button></div>
+  <div id="itemEdit">
   <div id="itemBox">
     <div class="itemName" id="itemName"></div>
     <div class="row"><label for="iSize" id="iSizeLab">Size</label><input id="iSize" type="range" step="1"><output id="oISize"></output></div>
@@ -165,6 +166,11 @@
     <div class="btns"><button id="iReshape" title="Same kind and size, a new shape">New shape</button><button id="iDrop" title="Set it down on the ground">Drop</button><button id="iDup">Duplicate</button><button id="iDel">Delete</button></div>
   </div>
   <div class="hint" id="itemHint">Click a piece in the tank to select it; drag it to move it. It rests on the ground or on the piece under it, and carries whatever rests on it. Shift + wheel or R turns it; + and − resize it; the arrow keys move it left / right and forward / back, Page Up / Down up and down. Moved that way it stays put anywhere in the water, passing through other pieces if you like.</div>
+  </div>
+  </details>
+  <details class="sec" data-sec="plants"><summary><h2 id="plantsTitle">Plants</h2></summary>
+  <div class="lib" id="libPlant"></div>
+  <div class="btns"><span class="hint" id="itemCountPlant"></span><span class="grow"></span><button id="itemsClearPlant">Remove all</button></div>
   </details>
   <details class="sec" data-sec="fish"><summary><h2>Animals</h2></summary>
   <div id="spCats" class="cats" role="tablist" aria-label="Animal groups"></div>
