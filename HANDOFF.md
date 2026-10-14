@@ -2,6 +2,84 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane N: shareable scene links (2026-10-14; branch `share-url`; review item R12; pushed to main)
+
+- **What**: File toolbar button **Copy share link** (`index.html`, handler in `ui/panels.ts`). The link is the page
+  address + `#tank=<base64url of the deflated scene JSON>`: the same scene as Save / Download (after validate), packed by
+  the browser's `CompressionStream('deflate')`, no dependency, no server, the hash never reaches a server. The single-file
+  build (`file://`) links to `https://tanklook.com/` instead of its own path.
+- **Opening**: `src/main.ts` checks `location.hash` at start (and on `hashchange`, a link pasted into an open tab), drops
+  the hash from the address bar (so a reload keeps the visitor's edits) and calls `ui.openShared`: `readShare` ->
+  `parseScene` -> `store.replace` (one undo step back), `setLibId(null)` (a new unsaved tank, not added to Saved), the
+  start menu is not shown. A broken link gets a clean status error ("damaged (cut short or mistyped)" etc.) and the
+  tank on screen stays.
+- **Copy**: `navigator.clipboard.write` with a `ClipboardItem` whose text is a promise (started inside the click, so
+  Safari allows it while the link is compressed), then `writeText`, then `execCommand('copy')`, then a `prompt()` with
+  the link. Status gives the length; over 2,000 characters (`LONG_LINK`) it warns that some apps (Discord, texts) cut
+  it and suggests tinyurl.com or Download.
+- **Link lengths** (the six examples): betta 1,284, terrarium 1,661, reef 3,631, paludarium 5,428, planted 6,171, iwagumi
+  11,080 characters. Measured alternatives: rounding numbers to 0.01 cuts ~30 % (iwagumi 7.4k), not enough to matter.
+  **Nathan 2026-10-14**: ship as is; long links go through a public shortener by hand. Built-in short links would mean
+  storing the tank on our Cloudflare worker (KV), a separate lane if it is ever wanted; a third-party shortener API
+  can't be called from the static page (account token would be public, CORS).
+- Files: new `src/scene/share.ts` (`shareHash`, `shareUrl`, `readShare`, `isShareHash`; 5 MB inflate cap) +
+  `test/share.test.ts` (round trip: every example + default, identical JSON and the same link again; 12 malformed links
+  each a SceneError). Hooks: `src/main.ts` (start), `ui/panels.ts` (button handler, `copyText`, `openShared`, returned
+  from attachPanels), one toolbar button in `index.html` (it wraps to its own row under New / Open / Save / Download).
+- Not checked: the clipboard itself (the app's browser pane denies it; the prompt fallback ran) and the single-file build
+  run from disk (the pane shows file:// as a static snapshot); the bundle holds the share code.
+
+## Lane O: anatomy audit P1, non-fish animals (2026-10-14; branch `herps-p1`, port 5463; Nathan approved all five sheets; pushed to main)
+Owns `src/art/herps.ts`, `src/render/herp3d.ts` (lane L's snail files not touched). Models v3 at build 297.
+- **Hermit crab:** the shell slides sideways (herp3d: by the mean of `shellMesh`'s `userData.lip` z) so its off-axis
+  aperture is on the crab's midline, and forward (`HERMIT_SHELL.at` 0.33 -> 0.43, size 0.56 / tall 0.5) so it sits just
+  behind the legs; the body outline runs back into the shell. Claws: `Limb3D.claw` = palm (flattened ellipsoid) + fixed
+  and hinged fingers meeting at the tips (`clawGeometry`). Legs: `Limb3D.seg` = 4 joints, each segment swelling between
+  narrow joints, the joints ringed in the given colour (orange-gold). The 2D card draws the palm as a fat last joint.
+- **Frogs:** `Limb3D.blunt` = jointed toes (knuckle, round tip) on all three frogs; toe discs (`pads`) on the dart frog
+  (0.012) and tree frog (0.017). `FrogSpec.torso` / `wid` / `rump` let a species own its outline: tree frog = neck waist
+  behind a broad head; toad = short broad body, the hip forward (`rump` 0.1). Toad: `Limb3D.web` (webbing out to 0.9 of
+  the hind toes, both faces, `webGeometry`) and `Herp3D.warts` (raised bumps displaced out of the body loft, which goes
+  to 200 x 120 for it; lit crowns / shaded feet baked into the vertex colours since the body is unlit).
+- **Newt:** `SalSpec.swimTail` = own side outline (rounded snout, a tail holding the trunk's depth to a short point),
+  broader trunk and rounded head in `wid`, blunt toes. The axolotl is unchanged.
+- Before/after sheets: `shots/herps-p1/` (lane worktree only, not committed). Open: nothing left from the audit's P1
+  rows for these five.
+
+## Lane Q: AR view, WebXR (2026-10-14; branch `ar-view`, port 5483; Nathan's idea: the tank at real size in his room)
+- Built: `src/render/ar.ts` + `test/ar.test.ts`. An "◱ AR" button in the view toolbar, shown only when
+  `navigator.xr.isSessionSupported('immersive-ar')` is true (desktop and iOS never see it). Session: `immersive-ar`,
+  `hit-test` required, `dom-overlay` optional (Close, hint line, Size check L × D × H + stand, fps readout top-left).
+- True size without rescaling the scene: the shaders (lighting, water tint) work in world mm, so the scene stays in mm
+  and the XR camera hangs from a rig (`rigMatrix`) mapping room metres to tank mm (three's WebXRManager premultiplies
+  the camera parent's matrixWorld). Near / far are in m (view space is the room's).
+- Placement: reticle on level hits only (normal within 20° of up), tap places (front turned toward the phone), tap again
+  moves, one-finger drag turns (half a turn per screen width). No pinch-scale.
+- Scene prep (`prepScene` / `restore`, callable from `window.__gb.ar` on the dev server): hides the room floor, wall, scale
+  person, terrain dots; frosted film becomes a plain translucent sheet (no transmission pass in XR); a blurred dark quad
+  under the base as the contact shadow; water tint x0.6 (`AR_WATER`). Stand and fixture stay. Desktop check: restore is
+  pixel-identical to before, twice; button hidden on desktop; mock support shows it; fits at 375 px.
+- The app's animals have no swim animation (render-on-demand, static poses). AR adds an idle sway only (3 mm bob, ±4° yaw)
+  for the swimming animals, restored on exit. Real swimming would be its own lane.
+- viewer.ts hook: the loop is now `renderer.setAnimationLoop`; `viewer.xrFrame` set = the AR session draws each XR frame
+  and render-on-demand pauses.
+- Open: Nathan's S24+ test (checklist in the lane chat); perf on the phone unknown (fps readout; if under 60 drop
+  `renderer.xr.setFramebufferScaleFactor` before the session); the selection outline shows if a fish was selected.
+- NEXT AR step (iPhone phase, not built): USDZExporter on a simplified copy of the tank (plain materials, no custom
+  shaders), served as a .usdz link with `rel="ar"` for AR Quick Look.
+
+## Final check before showing (2026-10-14; main `fe28ad3`; no src/ edits)
+- `shots/final/FINAL.md` (main checkout only, gitignored): audit 53 = **46 fixed, 7 partly, 0 not fixed, 0 regressed**; 0 console
+  errors; no horizontal scroll at 375 px. Edits take 2 frames (33 ms) on the real GPU on every example; moving a Reef live rock
+  59-66 ms (patches 4 parts).
+- Open items, most severe first: (1) S2 `#status` sits at the top of the scrolling panel, so messages (500 cap #36, repeat Add)
+  are never seen from Animals; (2) S2 #7 phone split B tab still overlaps Redo by 11 px; (3) S3 #33 sliders / checkboxes / colour
+  inputs / summaries under 40 px on touch; (4) S3 #43 Custom terrain tick leaves "Edit points" and the eye map stale until the next
+  sync; (5) S3 fish heights do not come back after lowering then raising the level (scene/water.ts); (6) S3 Start from keeps
+  "reef" after switching back to fresh. #1-4 + 6 are UI (lane G's old files), #5 scene.
+- Method: three Sonnet agents with the CDP driver (fresh profile per run), plus GPU timing (`--use-angle=d3d11` instead of
+  SwiftShader: headless Chrome then reports the Intel Arc).
+
 ## Lane I: reef polish + example refresh (2026-10-14; branch `reef-polish`; Nathan approved rock C and reef option B; pushed to main)
 
 - **Reef starter set**: new `LayoutId` `'reef'` (`scene/types.ts`, `LAYOUT_IDS` in `scene/validate.ts`, no version bump),
@@ -46,6 +124,19 @@ chats; fin layout (most of P1) and frogs/newt are later lanes.
   body whorl), trumpet (one continuous high cone, convex whorls), nerite (low spire, smaller foot, head at the
   aperture). The hermit crab's shell comes from `shellMesh` here, so it gets the fix; its body (herps.ts / herp3d.ts) is
   NOT lane L's.
+  **DONE 2026-10-14 (Nathan approved the before/after sheets "new shells look good"; build 288, pushed to main).**
+  `rawShell` in snail3d.ts: the whorls now touch (each kind's `ap` widened until they do; `sutures()` finds where they
+  meet, at the same angle on every turn, and the texture draws a dark seam there). The aperture is cut on a plane turned
+  `incl` degrees toward the shell base (new Shell3D field, default 0), its last 5 % flares into a lip (`lip`, default
+  0.12), and a dark recessed cavity closes it. A snail's shell sits with its lower lip in the foot's back, and a skin
+  "plug" fills the aperture down into the foot (child of the shell mesh, so `sagShell` turns it too). New: a head over
+  the front of the foot carrying the tentacles; `footEnd` / `footW` per kind (nerite: shorter foot); tentacles get
+  vertex colours (they rendered black before). Per kind: mystery globose with a raised spire, turbo a higher spire,
+  ramshorn an upright flat coil opening at the bottom-front (axis [0,0,-1] = the handedness that puts it there), trumpet
+  `ap` [0.45, 1.5] for one continuous cone, nerite `ap` 0.95 (at 0.8 its whorls did not touch). Hermit: same
+  `HERMIT_SHELL`, gets the closed coil, lip and cavity; its abdomen still sits outside the aperture (`at` in herps.ts:
+  hermit-body lane). Open: the 2D side cards (art/snails.ts `drawSide`) are unchanged, their own drawings. Gotcha: the
+  dev server reads the build number when it starts, so restart it after merging main, before pressing Record.
 - **Lane M: shrimp body** (`../Glass-Box-shrimp`, branch `shrimp-body`, launch config `shrimp`, port 5433). Owns a new
   `src/render/shrimp3d.ts` (and a new art file if it needs one) plus the shrimp parts of `src/art/fishgen.ts`; in
   `src/render/fish3d.ts` only the few lines that hand shrimp to the new builder (ask the coordinator before more: J2
@@ -624,9 +715,30 @@ the recommendation for the rest"): `../Glass-Box-models-fix` / `models-fix`, lau
 fish / amphibian art and 3D files (art/fishgen.ts, art/paint.ts, art/herps.ts, render/fish3d.ts, render/herp3d.ts,
 art/placeholder.ts) EXCEPT lane M's shrimp parts and hand-off lines, and the hardscape generators in render/items.ts
 (non-plant branches) and scene/items.ts stone / wood / cave entries, after lane I lands.
-Lane I DONE (`534b664`). Lane N opened 2026-10-14 (review item R12, Nathan via lane D's recommendation): shareable scene
+Lane I DONE (`534b664`). Lane N DONE (see its section). Lane N opened 2026-10-14 (review item R12, Nathan via lane D's recommendation): shareable scene
 URLs, `../Glass-Box-share-url` / `share-url`, launch config `share-url` 5453; owns new `src/scene/share.ts` + test, the
 share hook in `src/main.ts`, and a Share control in `src/ui/panels.ts` / `index.html` (small hooks only).
+Lane M DONE (`03f2312`). Lane D pushed R1 + R8 (`250f4d7`, `c7000c5`). Lane O opened 2026-10-14 (anatomy audit P1, the
+non-fish animals): hermit crab body, fire-bellied newt, frog P1 leftovers (feet, toe discs, webbing, warts),
+`../Glass-Box-herps` / `herps-p1`, launch config `herps` 5463; owns `src/art/herps.ts`, `src/render/herp3d.ts`. The
+hermit shell comes from lane L's `shellMesh` (art/snails.ts / render/snail3d.ts): O does not edit those, it places
+the body in the aperture from herps.ts. Fish P1 (fin layout) waits until lane D ships R2 + R3.
+Lane L DONE (`9cb81f6`). Final check DONE (`dea1d5d`, shots/final/FINAL.md: 46 fixed, 7 partly, 0 regressed). Lane P
+opened 2026-10-14 for FINAL.md items 1-6 (status line off-screen, phone split tab vs Redo, touch target sizes, Custom
+terrain button / eye map, water re-raise height, Start from stuck on reef): `../Glass-Box-final-fixes` / `final-fixes`,
+launch config `final-fixes` 5473; owns `src/style.css`, `index.html`, `src/ui/panels.ts` (except lane N's Share
+control and hook) and `src/scene/water.ts`.
+Lane Q opened 2026-10-14 (Nathan's idea): AR view, WebXR immersive-ar on his Galaxy S24+, tank at true size.
+`../Glass-Box-ar` / `ar-view`, launch config `ar-view` 5483; owns new `src/render/ar.ts` + test, minimal hooks in
+`render/viewer.ts`, one AR button in `index.html` / `src/ui` (lane P owns those: small edits only). iPhone is a later phase.
+Lane O DONE (`e4be598`; hermit, frogs, toad, newt at v3). `art/herps.ts`, `render/herp3d.ts` free. Lane N DONE (`0d0b85a`; share links, its panels.ts / index.html /
+main.ts hooks are free).
+Lane R opened 2026-10-14 (anatomy audit P2, the non-fish rows): axolotl (softer filament gills, trunk, continuous
+dorsal / tail fin) and zebra nerite (shell edge and aperture, smaller foot, distinct head), `../Glass-Box-p2-small` /
+`p2-small`, launch config `p2-small` 5493; owns `art/herps.ts`, `render/herp3d.ts`, `art/snails.ts`, `render/snail3d.ts`.
+Lane S set up 2026-10-14 (anatomy audit P1 fish, 20 species / 29 models: fin structure, then species):
+`../Glass-Box-fish-fins` / `fish-fins`, launch config `fish-fins` 5503; owns `art/fishgen.ts`, `art/paint.ts`,
+`render/fish3d.ts`. Starts only after lane D ships R2 + R3 (D holds those files until then).
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_d0390f66-339c-4fa1-ab38-43e9c2a35958`
 ("Lanes coordinator 2", took over 2026-10-14 from `local_e1923781`). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
 and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says

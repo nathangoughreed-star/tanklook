@@ -7,7 +7,7 @@ import * as THREE from 'three';
 import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng } from '../art/paint';
 import { PLANT_ASPECT, isCarpet, isFloat, type PlantType } from '../art/plants';
-import { CARPET_H, CARPET_W, itemSink, stoneDims, woodLimbs, type Limb } from '../scene/items';
+import { CARPET_H, CARPET_W, itemDims, itemSink, seatHook, stoneDims, woodLimbs, type Limb } from '../scene/items';
 import { D2R, waterY } from '../scene/physics';
 import { bowlDims, footprint, shapeOf } from '../scene/shape';
 import { clampGround, groundHeight, groundInsideBy } from '../scene/terrain';
@@ -485,5 +485,30 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
   m.position.set(it.x, it.kind === 'plant' && isFloat(it.variant) ? waterY(T, S.water.level) : y + (m.geometry.userData.rise ?? 0), -it.depth);
   m.rotation.copy(itemEuler(it));
   m.userData.item = it.id;
+  if (it.kind === 'coral') m.userData.coral = true;
   return m;
 }
+
+/**
+ * Seat each raised coral of a fresh layout on the rock it was meant for: looking down from a little above its planned
+ * base (so not onto a rock stacked higher up), its base goes to the highest top found under the middle of its foot, a
+ * little into the rock; with nothing under it, onto the ground.
+ */
+const SEAT_ABOVE = 40; // mm above a coral's planned base that seatCorals looks down from
+function seatCorals(S: TankSetup) {
+  const T = S.tank, rocks = S.items.filter(it => it.kind !== 'plant' && it.kind !== 'coral').map(it => itemMesh(S, T, it)).filter((m): m is THREE.Mesh => !!m);
+  for (const m of rocks) m.updateMatrixWorld(true);
+  const ray = new THREE.Raycaster(), DOWN = V(0, -1, 0), from = V(0, 0, 0);
+  for (const it of S.items) {
+    if (it.kind !== 'coral' || it.lift <= 0) continue;
+    const r = itemDims(it)[0] * 0.08, g = groundHeight(S, T, it.x, it.depth), y0 = g + it.lift + SEAT_ABOVE;
+    let top = -Infinity;
+    for (const [dx, dd] of [[0, 0], [r, 0], [-r, 0], [0, r], [0, -r]]) {
+      ray.set(from.set(it.x + dx, y0, -(it.depth + dd)), DOWN);
+      const y = ray.intersectObjects(rocks, false)[0]?.point.y;
+      if (y != null) top = Math.max(top, y);
+    }
+    it.lift = top > g ? Math.round(top - g - 3) : 0;
+  }
+}
+seatHook.corals = seatCorals;

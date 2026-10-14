@@ -209,7 +209,7 @@ export function itemToTank(S: TankSetup, it: Item, p: V3) {
 export function hardscape(S: TankSetup) {
   const parts: { area: number; spot: (r: () => number) => { x: number; depth: number; y: number } }[] = [];
   for (const it of S.items) {
-    if (it.kind === 'plant') continue;
+    if (it.kind === 'plant' || it.kind === 'coral') continue; // no grazing on live coral (Nathan 2026-10-14)
     if (it.kind === 'wood') {
       for (const l of woodLimbs(it.variant, it.seed, it.size)) {
         const len = l.pts.slice(1).reduce((a, p, i) => a + Math.hypot(p[0] - l.pts[i][0], p[1] - l.pts[i][1], p[2] - l.pts[i][2]), 0);
@@ -572,5 +572,13 @@ export function starterItems(S: TankSetup): Item[] {
     // rubble: small live rock pieces scattered on the sand
     for (let i = 0, n = many(5); i < n; i++) put('liverock', L * (0.05 + r() * 0.9), D * (0.1 + r() * 0.8), 30 + r() * 25);
   }
-  return out.slice(0, MAX_ITEMS);
+  const items = out.slice(0, MAX_ITEMS);
+  seatHook.corals?.({ ...S, items });
+  return items;
 }
+
+/**
+ * Set by the renderer (it has the pieces' real shapes): drops each raised coral onto the actual top of the rock under
+ * it. The layouts only guess a rock's top from its box, which left corals floating over a tipped or lumpy rock.
+ */
+export const seatHook: { corals?: (S: TankSetup) => void } = {};

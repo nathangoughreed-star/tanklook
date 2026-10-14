@@ -937,11 +937,12 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: number | null, 
   const solids = b.itemMeshes.filter(m => !m.userData.plant); for (const m of solids) m.updateMatrixWorld(true);
   const hardKey = hard.join('|');
   // the top of the solid piece (stone, wood, cave) under (x, depth), for animals on the hardscape; else the ground
+  const rests = solids.filter(m => !m.userData.coral); // animals rest on rock, wood and caves, never on coral
   const down = new THREE.Raycaster(), from = new THREE.Vector3(), DOWN = new THREE.Vector3(0, -1, 0);
   const top = (x: number, depth: number, hard: boolean) => {
     const g = groundHeight(S, T, x, depth); if (!hard) return g;
     down.set(from.set(x, T.H * 3 + 1000, -depth), DOWN);
-    return Math.max(g, down.intersectObjects(solids, false)[0]?.point.y ?? g);
+    return Math.max(g, down.intersectObjects(rests, false)[0]?.point.y ?? g);
   };
   const base = (f: Fish) => top(f.x, f.depth, f.surface === 'hardscape');
   // an animal (mesh m, length w, its centre k above its belly) resting on a slope: tipped to the ground's slope under its
