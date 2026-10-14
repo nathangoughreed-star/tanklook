@@ -340,12 +340,12 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
       '} else if (aqM > 1.0) outgoingLight /= aqM;\n' +
       // water colour: blend toward the lit water colour by how much water the sightline crosses
       'if (uWater.w > 0.0) { float aqF = (1.0 - exp(-uWater.w * aqWaterPath())) * (1.0 - 0.6 * uPop * max(uFish, uFishCard)); outgoingLight = mix(outgoingLight, uWCol * min(dot(aqLt, vec3(0.2126, 0.7152, 0.0722)), 1.0), aqF); }\n' +
-      // light map on the substrate (beam overlay on): false colour by level, a faint line at each doubling, the
+      // light map on the substrate (beam overlay on): false colour by level, a dark contour line at each doubling (valued by ui/lightContours), the
       // grain kept faintly so the relief still reads; replaces the lit colour and the water haze
       'if (uMapOn > 0.5 && uSub > 0.5) { float aqT = log2(max(aqIrr(), 1e-6) / uMapDiv), aqW = fwidth(aqT);\n' +
       '  float aqG = dot(diffuseColor.rgb, vec3(0.2126, 0.7152, 0.0722));\n' +
       '  outgoingLight = aqRamp(aqT) * (0.75 + 0.45 * aqG) * (aqT < 0.0 ? 0.35 : 1.0);\n' +
-      '  outgoingLight *= 1.0 - 0.35 * (1.0 - smoothstep(0.5 * aqW, 1.5 * aqW, abs(fract(aqT + 0.5) - 0.5))) * step(0.0, aqT); }\n' +
+      '  outgoingLight *= 1.0 - 0.7 * (1.0 - smoothstep(0.6 * aqW, 1.6 * aqW, abs(fract(aqT + 0.5) - 0.5))) * step(0.0, aqT); }\n' +
       '#include <opaque_fragment>')
     .replace('#include <map_fragment>', AQ_MAP);
   this.userData.post?.(shader); // the material's patch of the lit shader (custom substrate: its grains blended by a mask)
