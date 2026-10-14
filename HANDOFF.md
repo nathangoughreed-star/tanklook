@@ -2,6 +2,23 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane G: audit fixes, UI share (2026-10-14; branch `audit-fixes`; batch 1 pushed to main)
+- Split with lane G2 (coordinator): G owns `src/ui/*`, `index.html`, `src/style.css`; G2 owns interact/scene/render.
+  G's share is 38 findings: #2, 4, 5, 7-13, 16, 17, 22-28, 30-41, 43-46, 48, the label part of 49, 50. G2's 15: #1, 3,
+  6, 14, 15, 18-21, 29, 47, the export crop of 49, 51-53. Lane I: #42. One line in `src/main.ts` (start menu call).
+- **Start menu (Nathan 2026-10-14: "upon start, a menu in the middle of the screen: start fresh or from an example")**:
+  `#startDlg`, shown on every load: Continue your last tank (only when one was restored; Esc does the same), Start
+  fresh, the six example cards, a gesture line. How to use no longer opens itself on the first visit.
+- Batch 1 (S1 + S2, browser-checked; before/after sheets in `shots/fixes/`, gitignored): #2 the tank label wraps and
+  `#view` clips; #5 each shape keeps its own L/D for the visit (Rect → Pie → Rect back to 24″); #7 a split tab with no
+  room beside Undo/Redo drops below them; #8 Add row sticky on phones; #9 why Add is off, as a line under it; #10/#11
+  group names carry fresh/salt, an empty group offers "Switch the tank to Saltwater/Freshwater"; #12 wrong-water rows
+  marked in the stocking list with Remove there; #13 leaving Swamp restores the level it lowered (unless moved since);
+  #16 lift row is "Raise"; #17 light map on a bare bottom says so, links to Substrate; #22 help says tick Edit; #23 A/B
+  badge on split tabs; #24 the diff chip reads "⇄ A" (copy from A).
+- Nathan's calls: #29 Stand ON by default (G2 builds it); #38 only "no stocking check for salt yet".
+- Next: batch 2 = my S3s.
+
 ## Lane D: first-visit audit + review pack (2026-10-14; no src/ edits)
 - `shots/audit/AUDIT.md`: 53 ranked findings with cropped, marked shots (headless Chrome, fresh profile = true first
   visit, desktop + 375 px phone + 768 px tablet, on main `c67aeb7`: before lanes A / E / H merged). Both re-checked S1s
