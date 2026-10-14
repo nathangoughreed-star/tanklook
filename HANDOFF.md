@@ -137,8 +137,8 @@ card stays the fallback and the picking size). `scene/validate.ts` accepts any `
   G's share is 38 findings: #2, 4, 5, 7-13, 16, 17, 22-28, 30-41, 43-46, 48, the label part of 49, 50. G2's 15: #1, 3,
   6, 14, 15, 18-21, 29, 47, the export crop of 49, 51-53. Lane I: #42. One line in `src/main.ts` (start menu call).
 - **Start menu (Nathan 2026-10-14: "upon start, a menu in the middle of the screen: start fresh or from an example")**:
-  `#startDlg`, shown on every load: Continue your last tank (only when one was restored; Esc does the same), Start
-  fresh, the six example cards, a gesture line. How to use no longer opens itself on the first visit.
+  `#startDlg`: Start fresh, the six example cards, a gesture line. Nathan 2026-10-14 (later): shown ONLY when no tank
+  was restored from this browser; a returning visitor gets "Welcome back" instead (Continue button removed). How to use no longer opens itself on the first visit.
 - Batch 1 (S1 + S2, browser-checked; before/after sheets in `shots/fixes/`, gitignored): #2 the tank label wraps and
   `#view` clips; #5 each shape keeps its own L/D for the visit (Rect → Pie → Rect back to 24″); #7 a split tab with no
   room beside Undo/Redo drops below them; #8 Add row sticky on phones; #9 why Add is off, as a line under it; #10/#11
