@@ -6,9 +6,9 @@
 import * as THREE from 'three';
 import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng } from '../art/paint';
-import { PLANT_ASPECT, isCarpet, type PlantType } from '../art/plants';
+import { PLANT_ASPECT, isCarpet, isFloat, type PlantType } from '../art/plants';
 import { CARPET_H, CARPET_W, itemSink, stoneDims, woodLimbs, type Limb } from '../scene/items';
-import { D2R } from '../scene/physics';
+import { D2R, waterY } from '../scene/physics';
 import { bowlDims, footprint, shapeOf } from '../scene/shape';
 import { clampGround, groundHeight, groundInsideBy } from '../scene/terrain';
 import type { Item, Tank, TankSetup } from '../scene/types';
@@ -229,7 +229,8 @@ function plantGeo(type: PlantType, seed: number, h: number, spot?: (lx: number, 
       const hh = CARPET_H * (0.8 + r() * 0.4), turn = (r() - 0.5) * 0.5, p = spot ? spot(x, z) : { x, y: 0, z, w: CARPET_W }; // draws taken even for a dropped card: the rest stay put
       if (p) card(p.w, hh, p.x, p.y, p.z, turn, p.w / CARPET_W);
     }
-  } else card(h / PLANT_ASPECT[type], h, 0, 0, 0, 0);
+  } else if (isFloat(type)) card(h, h * PLANT_ASPECT[type], 0, -h * PLANT_ASPECT[type] * 0.92, 0, 0); // the card's top band at the surface
+  else card(h / PLANT_ASPECT[type], h, 0, 0, 0, 0);
   const g = mergeGeometries(cards)!;
   g.userData.keep = true;
   return g;
@@ -424,8 +425,9 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
   const ground = groundHeight(S, T, it.x, it.depth), y = ground + it.lift - itemSink(it);
   let m: THREE.Mesh;
   if (it.kind === 'plant') {
-    const type = it.variant as PlantType, carpet = isCarpet(type);
-    const h = carpet ? it.size : Math.min(it.size, T.H - y - 15); // stops at the water line (the old layouts' rule)
+    const type = it.variant as PlantType, carpet = isCarpet(type), float = isFloat(type);
+    if (float && !S.water.on) return null; // floaters need water
+    const h = carpet || float ? it.size : Math.min(it.size, T.H - y - 15); // stops at the water line (the old layouts' rule)
     if (h < 15) return null;
     const c = Math.cos(it.yaw * D2R), s = Math.sin(it.yaw * D2R);
     // a carpet hugs the ground under each card: its key carries the spot (rebuilt only while it moves); the rest key on
@@ -452,7 +454,7 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
     m = new THREE.Mesh(g, solid ? plantMaterial(T) : cardMaterial('plant:' + type, plantTexture(type), S.render.edge));
     m.userData.plant = true;
   } else m = new THREE.Mesh(bakedShape(it), solidMaterial(T));
-  m.position.set(it.x, y + (m.geometry.userData.rise ?? 0), -it.depth);
+  m.position.set(it.x, it.kind === 'plant' && isFloat(it.variant) ? waterY(T, S.water.level) : y + (m.geometry.userData.rise ?? 0), -it.depth);
   m.rotation.copy(itemEuler(it));
   m.userData.item = it.id;
   return m;

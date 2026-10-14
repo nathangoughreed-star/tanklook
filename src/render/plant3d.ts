@@ -100,8 +100,8 @@ function leaf(out: Sheets, f: Leaf3D, stalkCol: string, base: THREE.Vector3, yaw
 }
 
 /** A stalk or rhizome: a tapered tube through the points, flat colour. */
-function tube(pts: THREE.Vector3[], r: number, col: string) {
-  const g = taperTube(new THREE.CatmullRomCurve3(pts), r, Math.max(4, pts.length * 2), 4);
+function tube(pts: THREE.Vector3[], r: number, col: string, N = Math.max(4, pts.length * 2), R = 4) {
+  const g = taperTube(new THREE.CatmullRomCurve3(pts), r, N, R);
   const k = new THREE.Color(col), a = new Float32Array(g.attributes.position.count * 3);
   for (let i = 0; i < a.length; i += 3) { a[i] = k.r; a[i + 1] = k.g; a[i + 2] = k.b; }
   g.setAttribute('color', new THREE.BufferAttribute(a, 3));
@@ -165,6 +165,26 @@ export function plantGeometry(type: PlantType, seed: number, h: number) {
     Object.assign(g.userData, { keep: true, anchors, owner: Uint32Array.from(owner) });
     return g;
   }
+  if (P.form === 'float') {
+    // y = 0 is the water surface: rosettes lie on it over a disc h wide (salvinia-like chains are rosettes too, just
+    // more oval leaves), roots hang under each one
+    const F = P.float!, rad = h / 2, n = Math.round(Math.min(600, Math.PI * rad * rad / 1000 * between(r, F.per)));
+    for (let i = 0; i < n; i++) {
+      const a = r() * 6.28, d = Math.sqrt(r()) * rad * 0.92, c = V(Math.cos(a) * d, 0.6, Math.sin(a) * d), k = Math.round(between(r, F.leaves)), y0 = r() * 6.28;
+      for (let j = 0; j < k; j++) leaf(out, f, P.stalk, c, y0 + j * 6.28 / k + (r() - 0.5) * 0.4, between(r, f.len), between(r, f.rise), twist(), pick(), bright(), r);
+      for (let j = 0, m = Math.round(between(r, F.roots)); j < m; j++) {
+        // a thin root that wanders a little on the way down
+        const L = between(r, F.rootLen), dx = (r() - 0.5) * L * 0.5, dz = (r() - 0.5) * L * 0.5, wx = (r() - 0.5) * L * 0.15, wz = (r() - 0.5) * L * 0.15;
+        extra.push(tube([0, 0.25, 0.5, 0.75, 1].map(t => V(c.x + dx * t * t + wx * Math.sin(t * 6), -L * t, c.z + dz * t * t + wz * Math.sin(t * 5))), 0.25, P.stalk, 6, 3));
+      }
+    }
+    const leaves = out.geometry();
+    shade(leaves, 2, 1e9);
+    tint(leaves, kTint, warm);
+    const g = mergeGeometries([leaves, ...extra.map(e => { e.computeVertexNormals(); return e; })])!;
+    g.computeBoundingBox(); g.computeBoundingSphere(); g.userData.keep = true;
+    return g;
+  }
   if (P.form === 'stem') {
     // upright stems, leaf pairs crossing at each node, the top ones smaller and more upright
     const n = Math.round(between(r, P.n)), nodes = Math.round((P.nodes ?? 20) * kNodes);
@@ -184,6 +204,30 @@ export function plantGeometry(type: PlantType, seed: number, h: number) {
         for (const o of [0, Math.PI]) leaf(out, f, P.stalk, at(t), rot + o, L, rise, twist(), cols, br, r, bend(0.4));
       }
     }
+  } else if (P.form === 'moss') {
+    // a ragged dome (radius = half the card width, height h) over a dark core; fronds all over it, pointing outward
+    // along the dome's normal plus a scatter, the ones round the rim drooping over the edge
+    const R = Wc / 2, lump = [r() * 6.28, r() * 6.28, 0.6 + r() * 0.3], area = Math.PI * R * R;
+    const rim = (a: number) => R * (0.85 + 0.09 * Math.sin(3 * a + lump[0]) + 0.06 * Math.sin(5 * a + lump[1]));
+    const domeY = (d: number, a: number) => h * Math.sqrt(Math.max(0, 1 - d * d)) * (lump[2] + (1 - lump[2]) * (0.5 + 0.5 * Math.sin(2 * a + lump[1])));
+    const n = Math.round(Math.min(MAX_LEAFLETS, area / 1000 * between(r, P.n)));
+    for (let i = 0; i < n; i++) {
+      const a = r() * 6.28, d = Math.sqrt(r()) * 0.98, e = rim(a), base = V(Math.cos(a) * d * e, domeY(d, a) * 0.9, Math.sin(a) * d * e);
+      const nrm = V(Math.cos(a) * d / R, Math.max(0.05, Math.sqrt(1 - d * d)) / h, Math.sin(a) * d / R).normalize();
+      const up = Math.acos(Math.min(1, nrm.y)) + (r() - 0.5) * 1.6, yaw = a + (r() - 0.5) * 2.4;
+      leaf(out, f, P.stalk, base, yaw, h * between(r, f.len), Math.max(0, up), twist(), pick(), bright() * (0.75 + 0.25 * d), r, bend(0.2));
+    }
+    const core = new THREE.SphereGeometry(1, 14, 7, 0, Math.PI * 2, 0, Math.PI / 2);
+    const cp = core.attributes.position;
+    for (let i = 0; i < cp.count; i++) {
+      const x = cp.getX(i), z = cp.getZ(i), d = Math.hypot(x, z), a = Math.atan2(z, x), e = rim(a) * 0.92;
+      cp.setXYZ(i, x * e, domeY(Math.min(1, d), a) * 0.85, z * e);
+    }
+    core.deleteAttribute('uv'); core.computeVertexNormals();
+    const kc = new THREE.Color(P.stalk), ca = new Float32Array(cp.count * 3);
+    for (let i = 0; i < ca.length; i += 3) { ca[i] = kc.r; ca[i + 1] = kc.g; ca[i + 2] = kc.b; }
+    core.setAttribute('color', new THREE.BufferAttribute(ca, 3));
+    extra.push(core);
   } else {
     // rosette: leaves from the crown(s), outer ones longer and spreading; rhizome: along a creeping root
     const n = Math.round(between(r, P.n)), crowns = Math.round(between(r, P.crowns ?? [1, 1])), rz = P.form === 'rhizome';

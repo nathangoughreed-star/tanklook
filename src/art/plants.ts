@@ -4,13 +4,19 @@ import { hexA, rng } from './paint';
 
 type Ctx = CanvasRenderingContext2D;
 export type PlantType = 'stem' | 'stemred' | 'grass' | 'sword' | 'fern' | 'anubias' | 'carpet' | 'crypt'
-  | 'buce' | 'rotala' | 'ludwigia' | 'balansae' | 'sagittaria' | 'ozelot';
+  | 'buce' | 'rotala' | 'ludwigia' | 'balansae' | 'sagittaria' | 'ozelot' | 'moss'
+  | 'redroot' | 'salvinia';
 
 /** Card aspect (height / width) per plant type. */
 export const PLANT_ASPECT: Record<PlantType, number> = { stem: 3.2, stemred: 3.2, grass: 3.6, sword: 1.1, fern: 1.3, anubias: 0.8, carpet: 0.32, crypt: 1,
-  buce: 0.9, rotala: 3.6, ludwigia: 3, balansae: 3, sagittaria: 0.45, ozelot: 1.1 };
+  buce: 0.9, rotala: 3.6, ludwigia: 3, balansae: 3, sagittaria: 0.45, ozelot: 1.1, moss: 0.45,
+  redroot: 0.35, salvinia: 0.25 };
 /** Plants that grow as a low patch (size = patch width, height = CARPET_H) rather than upright (size = height). */
 export const isCarpet = (v: string) => v === 'carpet';
+/** Plants that float at the water line (size = patch width; roots hang below; not drawn in a dry tank). */
+export const isFloat = (v: string) => v === 'redroot' || v === 'salvinia';
+/** Plants whose size is the width of a patch, not a height. */
+export const isPatch = (v: string) => isCarpet(v) || isFloat(v);
 
 /** Leaf from base (x, y) along angle a (radians, 0 = up, + clockwise), length l, max width w, slight curl. */
 function leaf(ctx: Ctx, x: number, y: number, a: number, l: number, w: number, cols: [string, string], curl = 0, rib = true) {
@@ -140,6 +146,32 @@ function ozelot(ctx: Ctx, W: number, H: number) {
   }
 }
 
+// Java moss: a low ragged mound of tiny dark fronds
+function moss(ctx: Ctx, W: number, H: number) {
+  const r = rng(43), cols: [string, string][] = [['#1e3a1c', '#3a6230'], ['#24421e', '#426c36'], ['#1a341a', '#34582c']];
+  for (let i = 0; i < 1400; i++) {
+    const u = r() * 2 - 1, top = H * (1 - Math.sqrt(Math.max(0, 1 - u * u)) * (0.85 + 0.15 * Math.sin(u * 9))), x = W * (0.5 + u * 0.48);
+    const y = top + r() ** 0.6 * (H - top), a = (r() - 0.5) * 2.4 + u * 0.6, l = W * (0.02 + r() * 0.025);
+    leaf(ctx, x, y, a, l, l * 0.3, cols[i % 3], (r() - 0.5) * 0.3, false);
+  }
+}
+
+// Floating plants, seen from the side: a thin band of leaves along the top edge, roots hanging under them
+function floater(ctx: Ctx, W: number, H: number, cols: [string, string][], root: string, seed: number, rootLen: number) {
+  const r = rng(seed), top = H * 0.08;
+  ctx.strokeStyle = root; ctx.lineWidth = Math.max(1, W * 0.003); ctx.globalAlpha = 0.8;
+  for (let i = 0; i < 70; i++) {
+    const x = W * (0.03 + r() * 0.94), l = H * rootLen * (0.3 + r() * 0.7);
+    ctx.beginPath(); ctx.moveTo(x, top); ctx.quadraticCurveTo(x + (r() - 0.5) * W * 0.02, top + l / 2, x + (r() - 0.5) * W * 0.03, top + l); ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+  for (let i = 0; i < 160; i++) {
+    const x = W * (0.02 + r() * 0.96), y = top * (0.4 + r() * 0.9), rr = W * (0.012 + r() * 0.012), [c0, c1] = cols[i % cols.length];
+    const g = ctx.createRadialGradient(x, y - rr * 0.3, 0, x, y, rr); g.addColorStop(0, c1); g.addColorStop(1, c0);
+    ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(x, y, rr, rr * 0.35, 0, 0, 7); ctx.fill();
+  }
+}
+
 function carpet(ctx: Ctx, W: number, H: number) {
   const r = rng(19);
   for (let i = 0; i < 900; i++) {
@@ -156,7 +188,9 @@ export function drawPlantCard(type: PlantType, W = 512): HTMLCanvasElement {
   const ctx = c.getContext('2d')!; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
   ({ stem: () => stem(ctx, W, H, false), stemred: () => stem(ctx, W, H, true), grass: () => grass(ctx, W, H), sword: () => sword(ctx, W, H),
     fern: () => fern(ctx, W, H), anubias: () => anubias(ctx, W, H), carpet: () => carpet(ctx, W, H),
-    crypt: () => crypt(ctx, W, H), balansae: () => balansae(ctx, W, H), sagittaria: () => sagittaria(ctx, W, H), ozelot: () => ozelot(ctx, W, H),
+    crypt: () => crypt(ctx, W, H), balansae: () => balansae(ctx, W, H), sagittaria: () => sagittaria(ctx, W, H), ozelot: () => ozelot(ctx, W, H), moss: () => moss(ctx, W, H),
+    redroot: () => floater(ctx, W, H, [['#3e7a2e', '#7ab04e'], ['#6a5a2a', '#a8803e'], ['#7a3426', '#b45a3e']], '#a05a4a', 45, 0.85),
+    salvinia: () => floater(ctx, W, H, [['#4a7e30', '#86b858'], ['#548836', '#92c262']], '#6a5236', 47, 0.6),
     buce: () => anubias(ctx, W, H, [['#1c3428', '#3a5a46'], ['#262c38', '#46525e'], ['#34282c', '#5a4648']], 9, 0.3, 33),
     rotala: () => stem(ctx, W, H, false, { seed: 35, stalk: '#6a5a3a', low: [['#4a7a34', '#78a856'], ['#52823a', '#86b45e']], top: [['#b0606a', '#e0909a'], ['#b06a50', '#e09a78']], from: 0.6, len: 0.7, wid: 0.75, nodes: 40 }),
     ludwigia: () => stem(ctx, W, H, false, { seed: 37, stalk: '#6a3a2a', low: [['#5a4a2a', '#8a6a3e'], ['#5e4228', '#8e603c']], top: [['#7a2a22', '#b04a3a'], ['#6e2a2a', '#a04440']], from: 0.4, len: 1.1, wid: 2, nodes: 18 }) })[type]();
@@ -199,9 +233,11 @@ export interface Leaf3D {
 }
 export interface Plant3D {
   /** rosette = leaves from one crown; rhizome = leaves along a creeping root; stem = upright stems with paired leaves;
-   *  carpet = tiny leaflets over a patch. */
-  form: 'rosette' | 'rhizome' | 'stem' | 'carpet';
-  /** Leaves (rosette, rhizome), stems (stem), or leaflets per 1000 mm² of patch (carpet): min, max. */
+   *  carpet = tiny leaflets over a patch; moss = tiny fronds all over a low ragged mound; float = small rosettes lying
+   *  on the water over a patch, roots hanging under them. */
+  form: 'rosette' | 'rhizome' | 'stem' | 'carpet' | 'moss' | 'float';
+  /** Leaves (rosette, rhizome), stems (stem), or leaflets per 1000 mm² of patch (carpet) or of the mound's footprint
+   *  (moss): min, max. */
   n: [number, number];
   /** How much it gives to the water current: 0 = stiff, 1 = limp (tall thin leaves lean and wave, short stiff ones barely). */
   sway: number;
@@ -216,6 +252,8 @@ export interface Plant3D {
   top?: { cols: [string, string][]; from: number };
   /** Crowns (rosette): several plants in one clump (vallisneria runners). */
   crowns?: [number, number];
+  /** Floating plants: rosettes per 1000 mm² of patch, leaves per rosette, roots per rosette and root length (mm). */
+  float?: { per: [number, number]; leaves: [number, number]; roots: [number, number]; rootLen: [number, number] };
 }
 
 const LEAF_GREENS: [string, string][] = GREENS;
@@ -270,4 +308,18 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
     len: [0.75, 1], wid: 0.22, prof: [0.7, 0.75], rise: [0.08, 0.8], arch: 0.4, twist: 0.4, fold: -0.12, wave: [0.04, 3], pet: 0.25,
     cols: [['#3a6e2c', '#64984a'], ['#42762e', '#70a252'], ['#4a6a2c', '#76904a']], under: '#5a7a46', rib: '#a8c690',
     spots: { col: '#5e2a1e', n: [14, 24], r: 0.035 }, seg: [24, 7] } },
+  // Java moss (Taxiphyllum barbieri): a low ragged mound of tiny dark fronds over a dark core, on the ground or lifted
+  // onto wood or rock. Frond length: a fraction of the mound's height
+  moss: { sway: 0.05, form: 'moss', n: [280, 340], spread: 0.95, stalk: '#16281a', leaf: {
+    len: [0.07, 0.13], wid: 0.55, prof: [0.6, 0.5], rise: [0, 0], arch: 0.8, twist: 1.2, fold: 0.2, wave: [0, 0], pet: 0,
+    cols: [['#1e3a1c', '#3a6230'], ['#24421e', '#426c36'], ['#1a341a', '#34582c'], ['#22401c', '#3e6a2e']], under: '#2a4a26', seg: [2, 3] } },
+  // Red root floaters (Phyllanthus fluitans): small rosettes of round, cupped leaves, green to bronze-red, red roots.
+  // Leaf length in mm (like the carpet)
+  redroot: { sway: 0, form: 'float', n: [0, 0], spread: 1, stalk: '#7a3e34', float: { per: [2.5, 3.2], leaves: [5, 7], roots: [1, 3], rootLen: [12, 45] }, leaf: {
+    len: [6, 10], wid: 0.95, prof: [1, 0.55], rise: [1.35, 1.5], arch: 0.05, twist: 0.2, fold: 0.35, wave: [0, 0], pet: 0.05,
+    cols: [['#3e7a2e', '#7ab04e'], ['#4a7e30', '#86b858'], ['#447a2c', '#7eae4c'], ['#5e6a2c', '#94984a'], ['#7a3a28', '#a85a3e']], under: '#7a4a3a', seg: [2, 4] } },
+  // Salvinia: floating chains of paired oval leaves, cupped and velvety pale green, short brown roots
+  salvinia: { sway: 0, form: 'float', n: [0, 0], spread: 1, stalk: '#4e3e2a', float: { per: [2.5, 3.5], leaves: [4, 8], roots: [1, 2], rootLen: [8, 25] }, leaf: {
+    len: [8, 13], wid: 0.75, prof: [0.9, 0.55], rise: [1.3, 1.5], arch: 0.05, twist: 0.1, fold: 0.5, wave: [0, 0], pet: 0,
+    cols: [['#4a7e30', '#86b858'], ['#548836', '#92c262'], ['#46782c', '#7eb052']], under: '#6a8a4a', seg: [2, 4] } },
 };
