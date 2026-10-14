@@ -319,8 +319,9 @@ Plan approved by Nathan (batches in severity order). Pictures: `shots/g2/` in th
     and ~60 ms in the first draw (new materials / buffers; a steady draw is ~8 ms): ~130-230 ms per edit or drag step
     with 40 fish + 56 items. Keeping cached item geometry alive did not help. The fix is updating meshes in place
     instead of rebuilding (fish moves first): a work unit of its own.
-- **Open question for Nathan (#29):** with the stand on, a new 24×12×12″ tank sits small on top of a 30″ cabinet in the
-  default view (`shots/g2/29_stand_default_after.jpg`). Keep it, or frame the tank and let the stand run off the bottom?
+- **#29 framing (Nathan 2026-10-14: frame just the tank):** the lens is sized to the tank (and a hood) only, and the
+  window is centred on the tank; the stand / table run off the bottom. Zooming out below 1 eases the centre toward tank +
+  stand (by zoom 0.7). viewer.ts. Pictures `shots/g2/29_frame_tank_before.jpg` / `_after.jpg`.
 - Dev server: `preview_start core-fixes` hit the five-servers-per-folder limit, so Vite runs from the shell on 5363.
 
 ## Lane D: first-visit audit + review pack (2026-10-14; no src/ edits)
