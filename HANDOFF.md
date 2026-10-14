@@ -664,6 +664,17 @@ Plan approved by Nathan (batches in severity order). Pictures: `shots/g2/` in th
 - Tooling (scratchpad, not in the repo): a ~80-line CDP driver over Node's built-in WebSocket + system Chrome; each run
   gets its own profile, so parallel agents do not share localStorage. Worth adding to scripts/ if audits recur.
 
+## African dwarf frog (2026-10-14; Nathan: "can we add an african dwarf frog model?"; branch `adf-frog`, port 5553)
+- Species `adf` (Hymenochirus boettgeri, 35 mm, water, bottom, shoal; note warns off the 12 cm African clawed frog).
+  Art: a `FROGS.adf` entry on the shared frog painter / `frog3D`: own flat torso with a long pointed snout
+  (`ADF_TORSO`, `ADF_WID`), small lidless eyes on the sides of the head, olive-grey granular skin (fine warts), small dark
+  spots, webbing on all four feet. New `FrogSpec` fields `web` (all feet) and `eye` (own eye position); the other three
+  frogs' fingerprints did not change. Added to `fish3d.species` (3D on).
+- AqAdvisor has no entry: stand-in Panda Cory (3.5 cm vs 5 cm, bottom, warm, groups), `standIn` in aqadvisor.json.
+- Model v1 at build 360, sheet `public/model-sheets/adf.jpg`. Awaiting Nathan's look. Open: it uses the land
+  frogs' sitting pose (hind legs folded); a real ADF often rests with the hind legs splayed out sideways, or floats at
+  the surface in a "zen" pose; not done.
+
 ## Tree frogs climb the glass (2026-10-14; Nathan: "like otos and snails cling to the glass")
 - White's tree frog has `cling: any` (glass, hardscape, floor). Shuffle / Add use the oto path (`spawnSnail`) with a new
   `on.above` = the water line, so a frog on the glass or hardscape is always out of the water; glass weight `GLASS_FROG`
