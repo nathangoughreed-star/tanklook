@@ -303,6 +303,10 @@ A finding that spans both goes to the lane holding the root cause, with at most 
 Audit ownership (lane G's split, 2026-10-14): G2 = #1, 3, 6, 14, 15, 18-21, 29, 47, the PNG crop/margins/A-B labels
 part of #49, 51-53; I = #42; G = the other 38. Nathan's calls: #29 the Stand is ON by default for new tanks (G2, scene/defaults.ts);
 #38 salt tanks show only "no stocking check for salt yet" (G).
+Lane G DONE (`59025b3`). Lane G2 DONE (`4667d9f`; #52-53 measured, not fixed). Lane J opened 2026-10-14: edit
+performance (#52-53, in-place mesh updates instead of a full rebuild per edit), `../Glass-Box-perf` / `perf`, launch
+config `perf` 5373; owns `src/render/*` and `src/scene/store.ts` except lane I's `render/coral3d.ts` and G2's possible
+#29 framing in `render/camera.ts` / `render/viewer.ts`.
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_e1923781-40bc-48d3-84f3-ed380e471779`
 ("Lanes coordinator"). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
 and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says
