@@ -5,7 +5,7 @@ import { SUBSTRATES, blendTile, maskQuantile } from '../art/placeholder';
 import { snailAspect } from '../art/snails';
 import { fishTL, needsWater, speciesOf, type Species } from '../data/species';
 import { glassBand, restsOnGround } from '../scene/water';
-import { D2R, IN, clamp, floorY, glassThickness, RIM_DROP, RIM_H, tankUnderside, waterY } from '../scene/physics';
+import { D2R, IN, ceilingH, clamp, floorY, glassThickness, RIM_DROP, RIM_H, tankUnderside, waterY } from '../scene/physics';
 import { alongRun, backgroundRuns, bowlDims, bowlRadius, chord, circleRing, clipToFootprint, facingRuns, footprint, glassFrame, halfWidth, inside, nearestGlass, offsetRing, offsetWalls, runLength, shapeOf, subRun, type P } from '../scene/shape';
 import { TABLE_TOP, cornerWalls, wallGap, tableCentre, tableOn, tableRing, wallPlane } from '../scene/table';
 import { groundHeight, pieSegs, terrainDisc, terrainPoints } from '../scene/terrain';
@@ -640,7 +640,7 @@ function addFloor(sc: THREE.Scene, S: TankSetup, T: Tank) {
 function addWall(sc: THREE.Scene, S: TankSetup, T: Tank) {
   if (!S.wall.show) return;
   const { L, D } = T, wp = wallPlane(S, T), fy = floorY(T, S.render, S.stand);
-  const ROOM_H = 2700, SPAN = ROOM_SPAN, SKIRT_H = 90, SKIRT_D = Math.max(1, Math.min(14, wallGap(S))); // a skirting board thinner than the gap
+  const ROOM_H = ceilingH(S.wall), SPAN = ROOM_SPAN, SKIRT_H = 90, SKIRT_D = Math.max(1, Math.min(14, wallGap(S))); // a skirting board thinner than the gap
   const g = new THREE.Group();
   const panel = (w: THREE.Group, off: number) => { // off: shift along the wall (a corner wall starts at the corner)
     const wall = new THREE.Mesh(new THREE.PlaneGeometry(SPAN, ROOM_H), basic(S.wall.color, { userData: { wallPaint: true } })); // normal +z, toward the tank; recoloured in place (patchLook)
@@ -929,7 +929,7 @@ export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: numbe
   const b: BuiltTank = { scene: sc, fishMeshes: [], meshById: new Map(), dotMeshes: [], itemMeshes: [], fishParts: [], itemParts: [], contentAt: sc.children.length };
   addContents(b, S, T, selId, selItem);
   addLid(sc, S, T);
-  if (S.lid !== 'hood') addFixture(sc, T, S.light, floorY(T, S.render, S.stand) + 2700); // ceiling: the wall's room height // with a hood the fixture is inside it; its light still applies
+  if (S.lid !== 'hood') addFixture(sc, T, S.light, floorY(T, S.render, S.stand) + ceilingH(S.wall)); // ceiling: the wall's room height // with a hood the fixture is inside it; its light still applies
   if (S.render.beams) addBeams(sc, T, S.light, S.lid);
   b.dotMeshes = edit && S.terrain.on ? addTerrainDots(sc, S, T, edit.hot) : [];
   applyLighting(sc);

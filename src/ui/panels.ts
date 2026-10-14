@@ -16,7 +16,7 @@ import { clumpAuto } from '../render/plant3d';
 import { tankDiff } from './diff';
 import { attachTypeIns, parseLen, plainNum, tidy, type TypeIn } from './typein';
 import {
-  IN, clamp, clampFish, fmtLen, fromUnit, glassThickness, rescaleTank, toUnit, volume, WALL_GAP_MAX, waterY,
+  CEILING_MAX, CEILING_MIN, IN, ceilingH, clamp, clampFish, fmtLen, fromUnit, glassThickness, rescaleTank, toUnit, volume, WALL_GAP_MAX, waterY,
 } from '../scene/physics';
 import type { Store } from '../scene/store';
 import { SWAMP_LEVEL, groundHeight, nearestLand, sameGrid, sampleTerrain } from '../scene/terrain';
@@ -418,6 +418,8 @@ Cancel, then change the name, to keep both.`)) return;
       s.wall.side = side; s.wall.show = true;
     });
   $('wallGap').max = String(WALL_GAP_MAX);
+  $('ceilH').min = String(CEILING_MIN); $('ceilH').max = String(CEILING_MAX);
+  $('ceilH').oninput = e => store.edit(s => { s.wall.height = +(e.target as HTMLInputElement).value; s.wall.show = true; }, { coalesce: 'ceilH' });
   $('wallGap').oninput = e => store.edit(s => { s.wall.gap = +(e.target as HTMLInputElement).value; s.wall.show = true; }, { coalesce: 'wallGap' });
   $('wallColor').oninput = e => store.edit(s => { s.wall.color = (e.target as HTMLInputElement).value; s.wall.show = true; }, { coalesce: 'wallColor' });
 
@@ -833,12 +835,17 @@ Cancel, then change the name, to keep both.`)) return;
     const ui = JSON.parse(localStorage.getItem('tanklook.ui') ?? '{}') as { hidden?: boolean };
     $('app').classList.toggle('collapsed', !!ui.hidden);
   } catch { /* storage blocked: panel shown */ }
-  const showSide = (on: boolean) => { $('app').classList.toggle('collapsed', !on); saveUI(); viewer.invalidate(); };
+  const showSide = (on: boolean) => {
+    $('app').classList.toggle('collapsed', !on); saveUI(); viewer.invalidate();
+    const tab = $('sideTab'), t = on ? 'Hide the panel' : 'Show the panel';
+    tab.title = t; tab.setAttribute('aria-label', t); tab.setAttribute('aria-expanded', String(on));
+  };
   // split: the panel is open exactly while some view's "Edit" box is ticked (Nathan 2026-10-09). Closing it unticks
   // them; opening it ticks the tank it last showed; the boxes open / close it (on the tabs, below).
   const sideHidden = () => $('app').classList.contains('collapsed');
   $('sideClose').onclick = () => { showSide(false); if (store.split) store.clearEditing(); };
   $('sideOpen').onclick = () => { showSide(true); if (store.split && !store.targets.length) store.setEditing(G().active, true); };
+  $('sideTab').onclick = () => $(sideHidden() ? 'sideOpen' : 'sideClose').click(); // the phone's arrow tab (style.css)
   const keepRule = () => { // after split / undo / load
     if (!store.split) return;
     if (sideHidden() && store.targets.length) store.clearEditing();
@@ -977,7 +984,7 @@ Cancel, then change the name, to keep both.`)) return;
     const v = parseLen(t.replace(/\b(left|right|forward|front|back)\b/gi, '').trim(), G().units);
     return v == null ? null : neg.test(t) ? -Math.abs(v) : v;
   } });
-  const lens = ['bowMin', 'bowlFloor', 'bowlTop', 'standH', 'tableL', 'tableD', 'subBL', 'subBR', 'subFL', 'subFR', 'lH', 'cDist', 'iSize', 'iSpread', 'iLift', 'personH', 'wallGap'];
+  const lens = ['bowMin', 'bowlFloor', 'bowlTop', 'standH', 'tableL', 'tableD', 'subBL', 'subBR', 'subFL', 'subFR', 'lH', 'cDist', 'iSize', 'iSpread', 'iLift', 'personH', 'wallGap', 'ceilH'];
   const nums = { pieDeg: 0, bgArc: 0, iYaw: 0, iPitch: 0, iTilt: 0, iStems: 0, lCount: 0, lRows: 0, lCone: 0, lK: 0, lBright: 2, lRoom: 2, lW: 0, lPar: 0, cAz: 0, cEl: 0, cZoom: 2, terCols: 0, addSize: 0 };
   attachTypeIns({
     ...Object.fromEntries(lens.map(id => [id, len])),
@@ -1148,6 +1155,7 @@ Cancel, then change the name, to keep both.`)) return;
       $(id).classList.toggle('on', s.wall.show && s.wall.side === side);
 
     setVal('wallGap', wallGap(s)); setOut('oWallGap', fmt(wallGap(s)));
+    setVal('ceilH', ceilingH(s.wall)); setOut('oCeilH', fmtHeight(ceilingH(s.wall), u));
     $('personOn').checked = s.person.show; setVal('personH', s.person.height); setOut('oPersonH', fmtHeight(s.person.height, u));
     for (const [id, side] of PSIDES) $(id).classList.toggle('on', s.person.show && s.person.side === side);
     }

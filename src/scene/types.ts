@@ -227,8 +227,9 @@ export type LidType = 'open' | 'glass' | 'hood';
  * the user picks the end, reversing the earlier single 'peninsula' = right end). 'corner' = two walls meeting behind the
  * tank, each at 45° (Nathan 2026-10-13: a corner tank's apex in the room corner). */
 export type WallSide = 'back' | 'left' | 'right' | 'corner';
-/** gap: distance (mm) from the tank or table to the wall (added 2026-10-13; absent = 50). */
-export interface WallSettings { show: boolean; side: WallSide; color: string; gap?: number }
+/** gap: distance (mm) from the tank or table to the wall (added 2026-10-13; absent = 50). height: floor to ceiling
+ * (mm; added 2026-10-14; absent = 8 ft, physics CEILING_H). */
+export interface WallSettings { show: boolean; side: WallSide; color: string; gap?: number; height?: number }
 
 /** Human silhouette standing beside the tank for scale. height in mm, head to toe. */
 export interface PersonSettings { show: boolean; height: number; side: 'left' | 'right' }

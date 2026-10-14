@@ -148,7 +148,7 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 .viewtools .sidetog { box-shadow: 0 1px 4px rgba(0, 0, 0, .25) }
 .viewtools .sidetog:disabled { opacity: .55; cursor: default }
 #sideClose { font-size: 16px; line-height: 1; padding: 3px 8px }
-#sideOpen { display: none }
+#sideOpen, #sideTab { display: none }
 #app.collapsed #side { display: none }
 #app.collapsed #sideOpen { display: block }
 #app.collapsed #sideClose { display: none }
@@ -205,6 +205,14 @@ footer { margin-top: 18px }
   .status { left: 16px; width: auto; right: 16px; bottom: 64px } /* above the sticky Add row */
   #addRow { position: sticky; bottom: -40px; z-index: 2; margin: 0 -16px; padding: 6px 16px; background: var(--panel); border-top: 1px solid var(--line) }
   #app.collapsed #view { height: 100% }
+  /* phone upright (Nathan 2026-10-14): Hide / Edit become a small arrow tab on the panel's top edge, not a button
+     floating in the view's corner; collapsed, it waits at the bottom of the screen to bring the panel back */
+  .viewtools #sideClose, #app.collapsed .viewtools #sideOpen { display: none }
+  #sideTab { display: flex; align-items: center; justify-content: center; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); z-index: 3;
+    width: 56px; height: 24px; min-height: 0; padding: 0; border: 1px solid var(--line); border-bottom: 0; border-radius: 8px 8px 0 0;
+    background: var(--panel); color: var(--ink); font-size: 16px; line-height: 1; cursor: pointer; box-shadow: 0 -2px 4px rgba(0, 0, 0, .12) }
+  #sideTab::before { content: ''; position: absolute; inset: -12px -8px 0 } /* a finger-sized target round the small tab */
+  #app.collapsed #sideTab span { display: inline-block; transform: rotate(180deg) }
 }
 /* a phone turned sideways (lane W): the panel always sits on the left at 280 px and the view fills the rest, whatever
    the width; stacked halves would be ~180 px tall. After the narrow rule so it wins on phones 760 px wide or less. */
@@ -219,6 +227,10 @@ footer { margin-top: 18px }
   .status { left: 10px; right: auto; width: 260px; bottom: 60px } /* over the panel, above the sticky Add row */
   #addRow { position: sticky; bottom: -40px; z-index: 2; margin: 0 -12px; padding: 6px 12px; background: var(--panel); border-top: 1px solid var(--line) }
   .vmap { width: 140px; height: 105px }
+  #sideTab { display: none }
+  .viewtools #sideClose { display: block }
+  #app.collapsed .viewtools #sideClose { display: none }
+  #app.collapsed .viewtools #sideOpen { display: block }
 }
 .row output.typein { cursor: text; border-radius: 3px; padding: 1px 3px }
 .row output.typein:hover, .row output.typein:focus-visible { background: var(--chip); outline: 1px solid var(--line) }

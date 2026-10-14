@@ -31,6 +31,10 @@ export function floorY(T: Tank, R: RenderSettings, stand: StandSettings) {
 export const WALL_GAP = 50;
 /** Range of the distance-to-wall slider (mm). */
 export const WALL_GAP_MAX = 1000;
+/** Floor to ceiling (mm): 8 ft, the usual US room (Nathan 2026-10-14; was a fixed 2700). Range of its slider. */
+export const CEILING_H = 2438.4, CEILING_MIN = 2000, CEILING_MAX = 4500;
+/** The room's floor-to-ceiling height (mm): the wall, the ceiling and a hanging light's cables. */
+export const ceilingH = (w: { height?: number }) => w.height ?? CEILING_H;
 
 /** Highest a substrate corner may go, as a fraction of interior height. */
 export const SUBSTRATE_CAP = 0.6;

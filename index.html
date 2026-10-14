@@ -114,6 +114,7 @@
     <span class="seg"><button id="wallBack">Behind</button><button id="wallLeft" title="Peninsula: left end against the wall">Left end</button><button id="wallRight" title="Peninsula: right end against the wall">Right end</button><button id="wallCorner" title="Two walls meeting behind the tank: a corner tank's point goes into the corner">Corner</button></span>
     <input id="wallColor" type="color" aria-label="Wall colour" title="Wall colour"></div>
   <div class="row"><label for="wallGap" title="Gap between the tank (or its table) and the wall, for any wall placement">Distance to wall</label><input id="wallGap" type="range" min="0" step="5"><output id="oWallGap"></output></div>
+  <div class="row"><label for="ceilH" title="Floor to ceiling: the room wall's height, and how far a raised light's cables run up">Ceiling height</label><input id="ceilH" type="range" step="1"><output id="oCeilH"></output></div>
   <div class="field"><label class="flabel"><input type="checkbox" id="personOn"> Person</label>
     <span class="seg"><button id="personLeft">Left</button><button id="personRight">Right</button></span></div>
   <div class="row"><label for="personH">Person height</label><input id="personH" type="range" step="10"><output id="oPersonH"></output></div>
@@ -260,6 +261,7 @@
     <button id="arView" class="sidetog" title="See this tank at real size in your room (phone camera)" hidden>◱ AR</button>
     <button id="recenter" class="sidetog" title="Re-centre the panned view (Home, or double middle-click)" hidden>⌖ Re-centre</button>
   </div>
+  <button id="sideTab" title="Hide the panel" aria-label="Hide the panel" aria-expanded="true"><span>▾</span></button>
   <canvas id="c" aria-label="Tank view"></canvas>
   <div class="vmap" id="vmap0"><canvas aria-label="Viewpoint map: where the eye is relative to the tank"></canvas><button class="vmapHide" title="Hide the viewpoint map" aria-label="Hide the viewpoint map">×</button></div>
   <div class="vmap" id="vmap1"><canvas aria-label="Viewpoint map for Tank B"></canvas><button class="vmapHide" title="Hide the viewpoint map" aria-label="Hide the viewpoint map">×</button></div>
