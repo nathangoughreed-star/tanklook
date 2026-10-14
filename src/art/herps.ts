@@ -293,6 +293,7 @@ export interface Limb3D {
   toes: [number, number][];    // toe tips as [du, dz] from the last joint; the tips rest on the ground
   toe: number;                 // toe radius at the root
   pad?: number;                // round toe pads (tree frogs)
+  thigh?: number;              // frog thigh: peak radius of the smooth, flattened teardrop over the first segment
   c?: [string, string];        // own colour (top, underside), else the species' legCol (hermit crab antennae)
 }
 export type Mark3D =
@@ -326,13 +327,13 @@ function frog3D(s: FrogSpec, fat: number, tone: [number, string][], marks: Mark3
     limbs: [
       // hind leg folded beside the body: thigh forward along the flank, shank back to the heel, the long foot forward
       { js: [J(0.13, 0.12, 0.08 * fat, 0.066), J(0.44, 0.15, 0.185 * fat, 0.046), J(0.15, 0.228, 0.215 * fat, 0.022), J(0.3, 0.252, 0.235 * fat, 0.013)],
-        toes: [[0.2, -0.07], [0.19, -0.01], [0.15, 0.045], [0.11, 0.085], [0.06, 0.11]], toe, pad },
+        toes: [[0.2, -0.07], [0.19, -0.01], [0.15, 0.045], [0.11, 0.085], [0.06, 0.11]], toe, pad, thigh: 0.1 },
       // front arm straight down under the shoulder, fingers turned in and out
       { js: [J(0.7, 0.08, 0.1 * fat, 0.032), J(0.68, 0.17, 0.165 * fat, 0.024), J(0.725, 0.245, 0.17 * fat, 0.016)],
         toes: [[0.085, -0.045], [0.08, 0.015], [0.045, 0.06], [-0.015, 0.075]], toe, pad },
     ],
     legCol: [s.leg[1], s.leg[2]],
-    eye: { u: 0.8, th: 0.72, r: 0.052 * (frogV(s.aspect, 1) - frogV(s.aspect, 0)), iris: s.iris, pupil: s.pupil, bulge: 0.7 },
+    eye: { u: 0.8, th: 0.9, r: 0.052 * (frogV(s.aspect, 1) - frogV(s.aspect, 0)), iris: s.iris, pupil: s.pupil, bulge: 0.62 },
     ground: frogV(s.aspect, 0.265),
   };
 }
@@ -353,13 +354,13 @@ function frogOnGlass3D(s: FrogSpec, fat: number, tone: [number, string][], marks
     limbs: [
       // hind leg: thigh forward along the flank, shank back beside it, the long foot forward again, toes turned in under the belly
       { js: [J(0.14, 0.16, 0.11 * fat, 0.07), J(0.47, 0.205, 0.215 * fat, 0.05), J(0.13, 0.235, 0.235 * fat, 0.028), J(0.36, 0.252, 0.2 * fat, 0.016)],
-        toes: [[0.15, -0.07], [0.14, -0.04], [0.12, -0.01], [0.09, 0.01], [0.05, 0.015]], toe, pad },
+        toes: [[0.15, -0.07], [0.14, -0.04], [0.12, -0.01], [0.09, 0.01], [0.05, 0.015]], toe, pad, thigh: 0.1 },
       // arm folded under the chin: elbow back along the side, hand forward and in
       { js: [J(0.72, 0.13, 0.11 * fat, 0.034), J(0.6, 0.22, 0.17 * fat, 0.027), J(0.73, 0.252, 0.11 * fat, 0.017)],
         toes: [[0.07, -0.05], [0.075, -0.025], [0.065, 0], [0.045, 0.02]], toe, pad },
     ],
     legCol: [s.leg[1], s.leg[2]],
-    eye: { u: 0.8, th: 0.72, r: 0.052 * (frogV(s.aspect, 1) - frogV(s.aspect, 0)), iris: s.iris, pupil: s.pupil, bulge: 0.7 },
+    eye: { u: 0.8, th: 0.9, r: 0.052 * (frogV(s.aspect, 1) - frogV(s.aspect, 0)), iris: s.iris, pupil: s.pupil, bulge: 0.62 },
     ground: frogV(s.aspect, 0.265),
   };
 }

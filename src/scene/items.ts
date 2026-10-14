@@ -92,7 +92,7 @@ export function along(pts: V3[], t: number): V3 {
 export function woodLimbs(variant: string, seed: number, size: number): Limb[] {
   const r = rng(seed * 17 + 3), s = size, j = (k: number) => (r() - 0.5) * k * s;
   if (variant === 'spider') {
-    const rad = 0.022 * s, c: V3 = [0, 0.05 * s, 0], out: Limb[] = [{ pts: [[-0.03 * s, 0.02 * s, 0], c, [0.04 * s, 0.09 * s, 0.01 * s]], r0: rad * 2.2, r1: rad * 1.6, tone: 0 }];
+    const rad = 0.03 * s, c: V3 = [0, 0.05 * s, 0], out: Limb[] = [{ pts: [[-0.03 * s, 0.02 * s, 0], c, [0.04 * s, 0.09 * s, 0.01 * s]], r0: rad * 3, r1: rad * 2, tone: 0 }];
     const n = 7 + Math.floor(r() * 4);
     for (let i = 0; i < n; i++) {
       const a = (i / n) * Math.PI * 2 + r() * 0.6, d: V3 = [Math.cos(a), 0, Math.sin(a) * 0.75], len = (0.36 + r() * 0.16) * s;
@@ -100,7 +100,7 @@ export function woodLimbs(variant: string, seed: number, size: number): Limb[] {
       const p1 = add3(add3(c, d, len * 0.3), [j(0.06), rise * 0.35 + (droop ? 0.02 * s : 0), j(0.06)]);
       const p2 = add3(add3(c, d, len * 0.65), [j(0.08), droop ? 0.03 * s : rise * 0.7, j(0.08)]);
       const p3 = add3(add3(c, d, len), [j(0.06), droop ? 0.01 * s : rise, j(0.06)]);
-      out.push({ pts: [c, p1, p2, p3], r0: rad * (0.8 + r() * 0.5), r1: rad * 0.25, tone: 0 });
+      out.push({ pts: [c, p1, p2, p3], r0: rad * (1.0 + r() * 0.5), r1: rad * 0.22, tone: 0 });
     }
     return out;
   }
@@ -108,7 +108,7 @@ export function woodLimbs(variant: string, seed: number, size: number): Limb[] {
     const out: Limb[] = [];
     const grow = (p: V3, d: V3, len: number, rad: number, depth: number) => {
       const end = add3(p, d, len), m1 = add3(along([p, end], 0.35), [j(0.03), 0, j(0.03)]), m2 = add3(along([p, end], 0.7), [j(0.03), 0, j(0.03)]);
-      out.push({ pts: [p, m1, m2, end], r0: rad, r1: rad * 0.7, tone: 0 });
+      out.push({ pts: [p, m1, m2, end], r0: rad, r1: rad * 0.62, tone: 0 });
       if (depth <= 0) return;
       const kids = depth > 1 && r() < 0.3 ? 3 : 2;
       for (let k = 0; k < kids; k++) {
@@ -116,15 +116,15 @@ export function woodLimbs(variant: string, seed: number, size: number): Limb[] {
         const ang = (25 + r() * 20) * D2R, side = norm3([r() - 0.5, (r() - 0.5) * 0.2, r() - 0.5]);
         const perp = norm3(add3(side, d, -(side[0] * d[0] + side[1] * d[1] + side[2] * d[2])));
         const nd = norm3(add3(add3([d[0] * Math.cos(ang), d[1] * Math.cos(ang), d[2] * Math.cos(ang)], perp, Math.sin(ang) * (k % 2 ? -1 : 1)), [0, 0.15, 0]));
-        grow(end, nd, len * (0.62 + r() * 0.12), rad * 0.62, depth - 1);
+        grow(end, nd, len * (0.62 + r() * 0.12), rad * 0.66, depth - 1);
       }
     };
-    grow([0, 0, 0], norm3([(r() - 0.5) * 0.3, 1, (r() - 0.5) * 0.3]), 0.36 * s, 0.045 * s, 3);
-    for (let k = 0; k < 3; k++) { const a = r() * Math.PI * 2, l = (0.12 + r() * 0.1) * s; out.push({ pts: [[0, 0.03 * s, 0], [Math.cos(a) * l * 0.5, 0.02 * s, Math.sin(a) * l * 0.5], [Math.cos(a) * l, 0.008 * s, Math.sin(a) * l]], r0: 0.03 * s, r1: 0.01 * s, tone: 0 }); }
+    grow([0, 0, 0], norm3([(r() - 0.5) * 0.3, 1, (r() - 0.5) * 0.3]), 0.36 * s, 0.062 * s, 3);
+    for (let k = 0; k < 3; k++) { const a = r() * Math.PI * 2, l = (0.12 + r() * 0.1) * s; out.push({ pts: [[0, 0.03 * s, 0], [Math.cos(a) * l * 0.5, 0.02 * s, Math.sin(a) * l * 0.5], [Math.cos(a) * l, 0.008 * s, Math.sin(a) * l]], r0: 0.042 * s, r1: 0.012 * s, tone: 0 }); }
     return out;
   }
   if (variant === 'mopani') {
-    const rad = 0.11 * s, main: V3[] = [[-0.42 * s, 0.09 * s, j(0.08)], [-0.18 * s, 0.26 * s + j(0.06), j(0.1)], [0.12 * s, 0.28 * s + j(0.06), j(0.1)], [0.4 * s, 0.08 * s, j(0.08)]];
+    const rad = 0.125 * s, main: V3[] = [[-0.42 * s, 0.09 * s, j(0.08)], [-0.18 * s, 0.26 * s + j(0.06), j(0.1)], [0.12 * s, 0.28 * s + j(0.06), j(0.1)], [0.4 * s, 0.08 * s, j(0.08)]];
     const p = along(main, 0.45 + r() * 0.15);
     return [
       { pts: main, r0: rad, r1: rad * 0.75, tone: 0 },
@@ -132,12 +132,12 @@ export function woodLimbs(variant: string, seed: number, size: number): Limb[] {
     ];
   }
   // 'branch': a trunk rising from one end, three side branches and a lower limb (the old driftwood layout, as a piece)
-  const rad = 0.055 * s;
+  const rad = 0.085 * s;
   const trunk: V3[] = [[-0.42 * s, 0.3 * rad, 0.14 * s], [-0.16 * s, 0.2 * s + j(0.04), 0.05 * s + j(0.04)], [0.12 * s, 0.4 * s + j(0.05), -0.02 * s], [0.34 * s, 0.6 * s + j(0.05), -0.05 * s + j(0.05)]];
   const out: Limb[] = [{ pts: trunk, r0: rad, r1: rad * 0.35, tone: 0 }];
   for (const [t, dir, len] of [[0.45, -1, 0.3], [0.62, 1, 0.24], [0.3, 1, 0.2]] as const) {
     const p0 = along(trunk, t), dx = dir * len * s;
-    out.push({ pts: [p0, add3(p0, [dx * 0.5, 0.11 * s, 0.05 * s]), add3(p0, [dx, 0.2 * s, j(0.14)])], r0: rad * 0.5, r1: rad * 0.18, tone: 0 });
+    out.push({ pts: [p0, add3(p0, [dx * 0.5, 0.11 * s, 0.05 * s]), add3(p0, [dx, 0.2 * s, j(0.14)])], r0: rad * 0.55, r1: rad * 0.16, tone: 0 });
   }
   out.push({ pts: [[0.5 * s, 0.25 * rad, 0.2 * s], [0.3 * s, 0.07 * s, 0.1 * s], [0.08 * s, 0.06 * s, -0.08 * s]], r0: rad * 0.75, r1: rad * 0.3, tone: 1 });
   return out;

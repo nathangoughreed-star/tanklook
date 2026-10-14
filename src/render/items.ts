@@ -119,12 +119,17 @@ function slab(r: R, l: number, h: number, w: number, base: THREE.Color) {
 
 // ---------- Wood ----------
 const WOOD: Record<string, [string, string]> = { branch: ['#6b4a2e', '#5e4128'], spider: ['#a3845e', '#8e7050'], manzanita: ['#74392a', '#8b4a36'], mopani: ['#3e2a1c', '#a3855c'] };
+/** Limb radius at t: linear taper, a flared root on thick limbs, and the last 14% rounding off into a worn tip (no flat cut). */
+function tipRad(L: Limb, t: number) {
+  const flare = L.r0 > 6 ? 1 + 0.3 * Math.pow(1 - t, 4) : 1, e = Math.max(0, (t - 0.86) / 0.14);
+  return (L.r0 + (L.r1 - L.r0) * t) * flare * (1 - 0.62 * e * e);
+}
 function limbGeo(r: R, rs: R, L: Limb, cols: [string, string], variant: string, s0: number) {
   const curve = new THREE.CatmullRomCurve3(L.pts.map(p => V(...p))), len = curve.getLength(), TS = Math.max(8, Math.min(48, Math.round(len / Math.max(4, L.r0)))), RS = L.r0 > 6 ? 10 : 7;
   const g = new THREE.TubeGeometry(curve, TS, 1, RS, false), p = g.attributes.position, v = new THREE.Vector3(), c = new THREE.Vector3(), knot = r() * 10;
   for (let i = 0; i <= TS; i++) {
     const t = i / TS; curve.getPointAt(t, c);
-    const rad = (L.r0 + (L.r1 - L.r0) * t) * (1 + 0.1 * Math.sin(t * 19 + knot));
+    const rad = tipRad(L, t) * (1 + 0.1 * Math.sin(t * 19 + knot));
     for (let j = 0; j <= RS; j++) { const k = i * (RS + 1) + j; v.fromBufferAttribute(p, k).sub(c).multiplyScalar(rad * (1 + 0.07 * Math.sin(j * 2.3 + i * 0.7))).add(c); p.setXYZ(k, v.x, v.y, v.z); }
   }
   g.computeVertexNormals();
@@ -138,9 +143,9 @@ function limbGeo(r: R, rs: R, L: Limb, cols: [string, string], variant: string, 
     return shade(base, grain);
   });
   const parts = [clean(g, true)];
-  for (const [t, rad] of [[0, L.r0], [1, L.r1]] as const) {
+  for (const [t, rad] of [[0, tipRad(L, 0)], [1, tipRad(L, 1)]] as const) {
     const s = new THREE.SphereGeometry(rad * 1.02, RS, 6); s.translate(...curve.getPointAt(t).toArray() as [number, number, number]);
-    parts.push(clean(grit(paint(s, () => shade(base, 1.15)), 10, s0), true));
+    parts.push(clean(grit(paint(s, () => shade(base, t ? 1.0 : 1.08)), 10, s0), true));
   }
   // broken-off side branches: short stubs with a dark, ringed end (0-2 on a limb thick enough to show them)
   const n = L.r0 < 2.5 ? 0 : Math.floor(rs() * 2.6), up = V(0, 1, 0);
@@ -179,22 +184,45 @@ function caveShape(variant: string, seed: number, size: number) {
   }
   if (variant === 'coconut') {
     const rad = s / 2, outer = C('#4e3423'), inner = C('#7a5a3a'), fib = waves(r, 5);
-    const door = (x: number, y: number, z: number) => z > 0.3 * rad && y < 0.55 * rad && Math.abs(x) < 0.38 * rad;
-    const half = (k: number) => {
-      const g = new THREE.SphereGeometry(rad * k, 28, 12, 0, Math.PI * 2, 0, Math.PI / 2).toNonIndexed(), p = g.attributes.position, keep: number[] = [];
-      for (let t = 0; t < p.count; t += 3) {
-        const cx = (p.getX(t) + p.getX(t + 1) + p.getX(t + 2)) / 3, cy = (p.getY(t) + p.getY(t + 1) + p.getY(t + 2)) / 3, cz = (p.getZ(t) + p.getZ(t + 1) + p.getZ(t + 2)) / 3;
-        if (!door(cx, cy, cz)) for (let q = 0; q < 3; q++) keep.push(p.getX(t + q), p.getY(t + q) * 0.92, p.getZ(t + q));
-      }
-      const out = new THREE.BufferGeometry(); out.setAttribute('position', new THREE.Float32BufferAttribute(keep, 3));
-      return out;
+    // doorway: a rounded-square opening with a slightly ragged, hand-broken rim. The shell is a (azimuth x elevation) grid whose
+    // columns start at the doorway edge instead of the equator, so the rim is one smooth polyline (no triangle sawtooth).
+    const N = 120, M = 40, th0 = 0.42, epsTop = 0.58, ph = [r() * 6.28, r() * 6.28, r() * 6.28];
+    const edge = (j: number) => { // elevation (rad) of the shell edge at column j (0 = equator)
+      const t = ((j / N + 0.5) % 1 - 0.5) * 2 * Math.PI, u = Math.abs(t) / th0;
+      if (u >= 1) return 0;
+      const rg = 0.03 * Math.sin(t * 17 + ph[0]) + 0.014 * Math.sin(t * 37 + ph[1]) + 0.005 * Math.sin(t * 61 + ph[2]);
+      return Math.max(0, epsTop * Math.pow(1 - Math.pow(u, 4), 0.25) + rg * Math.min(1, (1 - u) * 6));
     };
-    const o = half(1), i = half(0.93), ip = i.attributes.position;
-    for (let t = 0; t < ip.count; t += 3) { const x = ip.getX(t + 1), y = ip.getY(t + 1), z = ip.getZ(t + 1); ip.setXYZ(t + 1, ip.getX(t + 2), ip.getY(t + 2), ip.getZ(t + 2)); ip.setXYZ(t + 2, x, y, z); }
-    o.computeVertexNormals(); i.computeVertexNormals();
+    const half = (k: number, flip: boolean) => {
+      const pos: number[] = [], idx: number[] = [];
+      for (let j = 0; j <= N; j++) {
+        const t = (j % N) / N * Math.PI * 2, h = edge(j);
+        for (let i = 0; i <= M; i++) { const e = h + (Math.PI / 2 - h) * i / M; pos.push(rad * k * Math.cos(e) * Math.sin(t), rad * k * Math.sin(e) * 0.92, rad * k * Math.cos(e) * Math.cos(t)); }
+      }
+      for (let j = 0; j < N; j++) for (let i = 0; i < M; i++) {
+        const a0 = j * (M + 1) + i, b0 = (j + 1) * (M + 1) + i, c0 = b0 + 1, d0 = a0 + 1;
+        idx.push(...(flip ? [a0, d0, b0, b0, d0, c0] : [a0, b0, d0, b0, c0, d0]));
+      }
+      let g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx);
+      g = mergeVertices(g); g.computeVertexNormals();
+      return g;
+    };
+    // winding: the outer shell's face normals must point away from the centre; the inner shell takes the opposite
+    const facing = (g: THREE.BufferGeometry) => { const p0 = g.attributes.position, n0 = g.attributes.normal, m = Math.floor(p0.count / 3); return p0.getX(m) * n0.getX(m) + p0.getY(m) * n0.getY(m) + p0.getZ(m) * n0.getZ(m) > 0; };
+    let o = half(1, false); const fl = !facing(o); if (fl) o = half(1, true);
+    const i = half(0.93, !fl);
+    // shell thickness: a rim strip along the edge loop of the outer half, joined to the inner half
+    const rim: number[] = [];
+    for (let j = 0; j < N; j++) {
+      const P = (k: number, jj: number) => { const t = (jj % N) / N * Math.PI * 2, h = edge(jj); return [rad * k * Math.cos(h) * Math.sin(t), rad * k * Math.sin(h) * 0.92, rad * k * Math.cos(h) * Math.cos(t)]; };
+      const a = P(1, j), b = P(1, j + 1), c = P(0.93, j), d = P(0.93, j + 1);
+      rim.push(...a, ...c, ...b, ...b, ...c, ...d, ...a, ...b, ...c, ...b, ...d, ...c); // both windings: faces whichever way the camera sees it
+    }
+    const rg = new THREE.BufferGeometry(); rg.setAttribute('position', new THREE.Float32BufferAttribute(rim, 3)); rg.setIndex([...Array(rim.length / 3).keys()]); rg.computeVertexNormals();
     paint(o, q => shade(outer, 1 + 0.14 * Math.sin(Math.atan2(q.z, q.x) * 40 + 3 * fib(q.clone().multiplyScalar(0.05)))));
     paint(i, () => inner);
-    return mergeGeometries([o, i])!;
+    paint(rg, () => shade(inner, 0.78));
+    return mergeGeometries([o, i, rg])!;
   }
   // arch: half a rough torus standing on its two feet
   const tr = 0.16 * s, R0 = 0.5 * s - tr, g0 = new THREE.TorusGeometry(R0, tr, 9, 30, Math.PI), nz = waves(r), p = g0.attributes.position, v = new THREE.Vector3();

@@ -91,8 +91,8 @@ function normalAt(b: Body, u: number, th: number, side = 1) {
 const halfPerim = (b: Body, u: number) => { let s = 0, p = b.ring(u, 0); for (let j = 1; j <= 24; j++) { const q = b.ring(u, Math.PI * j / 24); s += Math.hypot(q[0] - p[0], q[1] - p[1]); p = q; } return Math.max(s, 1e-3); };
 
 /** Soft form shading in vertex colours (as the snails): undersides turn away from the light above. */
-function shade(g: THREE.BufferGeometry, dark = 0.28, col?: (ny: number) => THREE.Color) {
-  g.computeVertexNormals();
+function shade(g: THREE.BufferGeometry, dark = 0.28, col?: (ny: number) => THREE.Color, keepNormals = false) {
+  if (!keepNormals) g.computeVertexNormals();
   const n = g.attributes.normal, out: number[] = [];
   for (let i = 0; i < n.count; i++) {
     const ny = n.getY(i), k = 1 - dark * Math.max(0, -ny) + 0.04 * Math.max(0, ny), c = col ? col(ny) : new THREE.Color(1, 1, 1);
@@ -196,17 +196,31 @@ function eyeTexture(e: Herp3D['eye'], lid: string) {
 
 // ---------- limbs ----------
 
-/** A tube through the joints (Catmull-Rom), its radius blended between the joints' radii, with round ends. */
-function jointTube(pts: THREE.Vector3[], radii: number[]) {
-  const curve = new THREE.CatmullRomCurve3(pts, false, 'centripetal'), N = 10 * (pts.length - 1), R = 12;
+/** A tube through the joints (Catmull-Rom), its radius blended between the joints' radii, with round ends.
+ *  `thigh` = a frog's thigh over the first segment: a smooth teardrop swelling to that radius near the hip, flattened
+ *  against the flank (squeezed in z), and built with smooth normals (finer rings) so it reads as a muscle, not a faceted tube. */
+function jointTube(pts: THREE.Vector3[], radii: number[], thigh = 0) {
+  const curve = new THREE.CatmullRomCurve3(pts, false, 'centripetal'), N = (thigh ? 18 : 10) * (pts.length - 1), R = thigh ? 24 : 12;
   const tube = new THREE.TubeGeometry(curve, N, 1, R, false), pos = tube.attributes.position, c = new THREE.Vector3(), q = new THREE.Vector3();
   const len: number[] = [0]; for (let i = 1; i < pts.length; i++) len.push(len[i - 1] + pts[i].distanceTo(pts[i - 1]));
   const rAt = (f: number) => { const d = f * len[len.length - 1]; for (let i = 1; i < len.length; i++) if (d <= len[i]) return radii[i - 1] + (radii[i] - radii[i - 1]) * smooth(0, 1, (d - len[i - 1]) / (len[i] - len[i - 1])); return radii[radii.length - 1]; };
+  // 0..1 along the thigh segment (>1 beyond the knee): the teardrop's swell and the flattening
+  const tt = (f: number) => (f * len[len.length - 1]) / len[1];
+  const swell = (f: number) => { const t = tt(f); return t >= 1 ? 0 : Math.sin(Math.PI * Math.pow(Math.max(0, t), 0.62)) ** 1.1; };
   for (let k = 0; k < pos.count; k++) {
     const f = Math.floor(k / (R + 1)) / N; curve.getPointAt(f, c);
-    q.fromBufferAttribute(pos, k).sub(c).multiplyScalar(rAt(f)).add(c); pos.setXYZ(k, q.x, q.y, q.z);
+    let r = rAt(f);
+    if (thigh) r += Math.max(0, thigh - r) * swell(f);
+    q.fromBufferAttribute(pos, k).sub(c).multiplyScalar(r);
+    if (thigh) q.z *= 1 - 0.36 * (1 - smooth(0.55, 1.15, tt(f))) * smooth(0, 0.12, tt(f) + 0.12);
+    q.add(c); pos.setXYZ(k, q.x, q.y, q.z);
   }
-  const ends = [0, pts.length - 1].map(i => { const s = new THREE.SphereGeometry(radii[i], 12, 8); s.translate(pts[i].x, pts[i].y, pts[i].z); return s; });
+  if (thigh) tube.computeVertexNormals();
+  const ends = [0, pts.length - 1].map(i => { const s = new THREE.SphereGeometry(radii[i], thigh ? 20 : 12, thigh ? 12 : 8); s.translate(pts[i].x, pts[i].y, pts[i].z); return s; });
+  if (thigh) { // the hip cap is squeezed like the thigh
+    const s = ends[0]; s.translate(-pts[0].x, -pts[0].y, -pts[0].z); s.scale(1, 1, 0.64); s.translate(pts[0].x, pts[0].y, pts[0].z);
+    s.computeVertexNormals();
+  }
   for (const s of ends) s.deleteAttribute('uv');
   tube.deleteAttribute('uv');
   return mergeGeometries([tube.toNonIndexed(), ...ends.map(s => s.toNonIndexed())])!;
@@ -215,14 +229,14 @@ const P3 = (u: number, v: number, z: number) => new THREE.Vector3(u - 0.5, -v, z
 
 /** One limb (the + side): the jointed tube, then toes from its last joint to tips on the ground, with pads. */
 function limbGeometry(l: Limb3D, ground: number, col: (ny: number) => THREE.Color) {
-  const js = l.js.map(j => P3(j[0], j[1], j[2])), end = js[js.length - 1], parts: THREE.BufferGeometry[] = [jointTube(js, l.js.map(j => j[3]))];
+  const js = l.js.map(j => P3(j[0], j[1], j[2])), end = js[js.length - 1], parts: THREE.BufferGeometry[] = [jointTube(js, l.js.map(j => j[3]), l.thigh)];
   for (const [du, dz] of l.toes) {
     const tip = P3(l.js[l.js.length - 1][0] + du, ground - l.toe * 0.34, l.js[l.js.length - 1][2] + dz);
     const via = end.clone().lerp(tip, 0.5); via.y = Math.max(via.y, tip.y + l.toe * 0.8);
     const t = taperTube(new THREE.QuadraticBezierCurve3(end.clone(), via, tip), l.toe, 8, 6); t.deleteAttribute('uv'); parts.push(t.toNonIndexed());
     if (l.pad) { const s = new THREE.SphereGeometry(l.pad, 10, 6).scale(1, 0.55, 1).translate(tip.x, -ground + l.pad * 0.55, tip.z); s.deleteAttribute('uv'); parts.push(s.toNonIndexed()); }
   }
-  return boxUV(shade(mergeGeometries(parts)!, 0.3, col));
+  return boxUV(shade(mergeGeometries(parts)!, 0.3, col, !!l.thigh));
 }
 
 /** Box mapping per triangle (non-indexed): uv from the position seen along the face's dominant axis, so spots stay round on tubes at any angle. */
@@ -314,6 +328,9 @@ export function herpBody(art: string, w: number, glass = false) {
   const e = h.eye, lid = h.tone[0][1];
   const dome = K(':eye', () => new THREE.SphereGeometry(1, 24, 16).scale(1, e.bulge, 1));
   const em = mat('eye:' + art, () => new THREE.MeshBasicMaterial({ map: eyeTexture(e, lid) }));
+  // a low skin mound round the dome (the eyelid): blends the eye into the head instead of a ball sitting on it (frogs only; stalk eyes keep their own)
+  const mound = e.at ? null : K(':lid', () => shade(new THREE.SphereGeometry(1, 28, 16).scale(1.32, e.bulge * 0.7, 1.32), 0.3));
+  const lm2 = mound && mat('lid:' + art, () => new THREE.MeshBasicMaterial({ color: lid, vertexColors: true }));
   for (const side of [1, -1]) {
     // sits on the surface normal but looks out sideways and a little ahead (amphibian eyes face the side, not the sky)
     // on a stalk (`at`): on its tip, looking out and ahead
@@ -321,8 +338,9 @@ export function herpBody(art: string, w: number, glass = false) {
     const look = n.clone().add(new THREE.Vector3(0.15, 0, side * 0.9)).normalize();
     const fwd = new THREE.Vector3(1, 0, 0).projectOnPlane(look).normalize(), m = new THREE.Mesh(dome, em);
     m.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(fwd, look, new THREE.Vector3().crossVectors(fwd, look)));
-    m.scale.setScalar(e.r); m.position.copy(p).addScaledVector(n, e.r * (e.bulge - 0.55));
+    m.scale.setScalar(e.r); m.position.copy(p).addScaledVector(n, e.r * (e.bulge - (e.at ? 0.55 : 0.82)));
     grp.add(m);
+    if (mound) { const k = new THREE.Mesh(mound, lm2!); k.quaternion.copy(m.quaternion); k.scale.setScalar(e.r); k.position.copy(p).addScaledVector(n, e.r * (e.bulge * 0.7 - 0.9)); grp.add(k); }
   }
   if (h.fin) {
     const f = h.fin;
