@@ -86,7 +86,7 @@ describe('light output model', () => {
     expect(readout(o)).toMatch(/^PAR at substrate 45 µmol \(yours; medium\)/);
   });
   it('lux factors per tech match Apogee / estimates', () => {
-    const want: Record<LightTech, number> = { 'led-white': 67, 'led-planted': 48, 'led-reef': 26, 't5-refl': 74, 't5-bare': 74, 't8': 74, 'cfl': 72, 'mh': 71, 'halogen': 52 };
+    const want: Record<LightTech, number> = { 'led-white': 67, 'led-planted': 48, 'led-reef': 26, 't5-refl': 74, 't5-bare': 74, 't8': 74, 'cfl': 72, 'mh': 71, 'halogen': 49 };
     for (const t of TECH_IDS) {
       expect(TECHS[t].split.reduce((a, b) => a + b, 0)).toBeCloseTo(1, 6);
       expect(Math.abs(luxPer(t) / want[t] - 1)).toBeLessThan(0.05);
@@ -154,5 +154,23 @@ describe('calibration', () => {
     const res = log('T5 HO (substrate, assumptions above)', [['2x54 no walls', 60, par(e, [T.L / 2, 0, -T.D / 2])], ['2x54 glass', 60, par(w, [T.L / 2, 0, -T.D / 2])],
       ['1x54 glass', 40, par(one, [T2.L / 2, 0, -T2.D / 2])]]);
     for (const r of res.slice(1)) expect(Math.abs(r)).toBeLessThan(0.5);
+  });
+  it('metal halide pendants, in water under the lamp (reference/par-calibration-data.md, K2 datasets): ±50%', () => {
+    // a pendant as a 120° spot (its reflector; assumed). Measured values fall more slowly with depth than a point
+    // source: a pendant is a ~30 cm reflector, not a point, so the model reads high just under the lamp and low deep.
+    const run = (W: number, T: { L: number; D: number }, ys: number, h: number, xs: number[], pts: [number, number][]) => {
+      const E: Emitter[] = xs.map(dx => [T.L / 2 + dx, ys + h, -T.D / 2, 0]);
+      const e = { ...env(E, photons(W, 'mh') * E.length, beamExp({ type: 'spot', cone: 120 }), 'mh', ys), walls: { ...T, w: 0.7 } };
+      return pts.map(([d, m]): [string, number, number] => [`${(d / 25.4).toFixed(0)} in deep`, m, par(e, [T.L / 2, ys - d, -T.D / 2])]);
+    };
+    // Melev's Reef 2008 (grade A numbers, tank assumed): 3 x 250 W Radium 20K, 9 in above the water; assumed 24 in
+    // apart over a 72 x 24 in tank (~280 gal), 30 in of water; mid-range of the readings under a bulb
+    const melev = log('MH: Melev 3x250 W, 9 in up', run(250, { L: 1829, D: 610 }, 760, 229, [-610, 0, 610], [[25, 698], [152, 404], [305, 316]]));
+    // ReefCentral thread (grade C): 250 W 14K, 12 in above a 48 x 24 x 24 in tank; "200s" just under, "150 or lower" a
+    // few inches down (a bound at an unstated depth: logged, not tested), 70-80 at the bottom
+    const rc = log('MH: ReefCentral 250 W, 12 in up', run(250, { L: 1219, D: 610 }, 610, 305, [0], [[51, 250], [76, 150], [600, 75]]));
+    // forum snippet (grade B/C, tank assumed 48 x 24 x 24 in): 400 W 20K, 16 in above the water
+    const big = log('MH: 400 W 20K, 16 in up', run(400, { L: 1219, D: 610 }, 610, 406, [0], [[25, 200], [254, 135], [508, 110]]));
+    for (const r of [...melev, rc[0], rc[2], ...big]) expect(Math.abs(r)).toBeLessThan(0.5);
   });
 });

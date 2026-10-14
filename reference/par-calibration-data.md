@@ -141,3 +141,61 @@ Fluval lux column at 30 cm gives 80/4330 = 0.0185 (equals sunlight factor).
 - No metal halide or CFL aquarium dataset (Practical Fishkeeping data paywalled).
 - No manufacturer data for Chihiros/Twinstar/ONF with watts and tank dims (only vendor blogs).
 - No published PPE for aquarium LED, CFL, halogen, incandescent.
+
+## 6. Lane K2 additions: metal halide, CFL / power compact, halogen (web research, 2026-10-14)
+Blocked (HTTP 403 / bot check): reefs.com (all Joshi / Marks / Riddle articles), canr.msu.edu ("Lamp PPF" sheet,
+lighting-metrics.pdf), journals.ashs.org (Thimijan & Heins 1983). So no Joshi PAR-vs-distance tables and no MSU sheet;
+their numbers below are search snippets only (B). Fits and residuals: test/lightout.test.ts, "metal halide pendants".
+
+### D10. Nelson & Bugbee 2014, PLOS ONE, whole-fixture PPE (A)
+- https://extension.usu.edu/apec/files/publications/publication/pub__8264567.pdf (USU preprint). 400-700 nm photons,
+  whole fixture (ballast, reflector, optics included).
+- Ceramic MH 315 W 3100 K 1.46; 4200 K 1.38; 2 x 315 W Boulderlamp CMH 1.25; fluorescent 400 W induction 0.95;
+  T8 60 W fixture 0.84 (48 µmol/s at 58 W); mogul HPS 1.02; best HPS / LED 1.66-1.70 µmol/J.
+- These are horticultural 3-4K lamps; aquarium 10-20K MH bulbs are bluer and much less efficient (D12).
+
+### D11. Lux to PPFD for MH and incandescent (A: AGi32; B: others)
+- AGi32 (https://docs.agi32.com/AGi32/Content/adding_calculation_points/PPFD_Concepts.htm), lux per µmol/m²/s:
+  CIE A incandescent 2856 K 49.3; D65 54.6; MH 3144 K 69.4, 4002 K 66.7, 4039 K 61.3; HPS 85.
+- Mars Hydro (B): cool-white fluorescent 74, MH 71, ceramic MH 4200 K 65, 3100 K 59. U Arkansas citing Thimijan &
+  Heins (B): fluorescent 72-77, MH 72. No halogen-specific factor: incandescent 49 used.
+
+### D12. Joshi / Marks bare 250 W MH lamps, in air, sensor 18 in (457 mm) from the lamp (B, search snippets)
+| Lamp | Ballast | unshielded | shielded |
+|---|---|---|---|
+| 250 W DE Sun Aquatics 20000 K | M80 HQI | 80.3 | 64.1 |
+| same | IceCap electronic | 63.8 | 50.8 |
+| 250 W DE Sun Aquatics 14000 K | M80 | 77.5 | 61.8 |
+| 250 W mogul PFO 13000 K | M80 / IceCap / M58 | 75.7 / 43.9 / 45.3 | |
+- Derived (my arithmetic): ~75 µmol at 0.457 m broadside from a double-ended lamp (intensity ~ sin θ, so on-axis =
+  flux / π² r²) gives 0.6 µmol/J; isotropic gives 0.76. Model uses ppe 0.75 for aquarium 14-20K lamps on their ballast.
+
+### D13. Melev's Reef 2008, MH pendants in water (A numbers; tank and spacing NOT stated, assumed)
+- https://melevsreef.com/node/243. Radium 20000 K, 250 W, IceCap and magnetic ballasts, bulbs 9 in above the water,
+  battery PAR meter (unnamed), probe in water. Three bulbs; tank ~280 gal (diary name only).
+| Depth | PAR (range over bulbs) |
+|---|---|
+| 1 in | 646-749 |
+| 6 in | 344-463 |
+| 12 in | 283-349 |
+- Fit assumes 72 x 24 in, 30 in of water, bulbs 24 in apart, 120° reflectors: model -20 / -24 / -39%.
+
+### D14. ReefCentral "Par readings", 250 W 14K Phoenix, 12 in above a 48 x 24 x 24 in tank (C)
+- https://forums.reefcentral.com/threads/par-readings.1724773. Club meter (~15% calibration error suspected).
+- Near the bulb in air ~1200; at the surface 300s; just under 200s; "a few inches" 150 or lower; bottom (24 in) 70-80.
+- Fit (2 in 250, 3 in 150, 24 in 75): +11 / +66 / +17%. The 3 in row is a bound at an unstated depth: logged, not tested.
+
+### D15. 400 W 20K MH, 16 in above the water, tank middle (B/C, forum snippet; tank assumed 48 x 24 x 24 in)
+- ~200 at 1 in, 135 at 10 in, 110 at 20 in. Fit: +46 / +7 / -27%.
+- Also seen, not used (C, distance vs depth unclear, wattage per search summary 400 W): Marine Colorado "Very cheap
+  halides" bulbs at 6 / 12 in: Radium 610 / 430, Plusrite 14K 778 / 560, Plusrite 20K 477 / 350, Ushio 20K 530 / 382.
+
+### D16. Halogen / incandescent (my computation; no data)
+- 3000 K blackbody photon split blue / green / red 0.10 / 0.30 / 0.60 (2800 K 0.09 / 0.29 / 0.62; 3200 K 0.12 / 0.32 /
+  0.57); gives 47 lux per µmol vs AGi32 incandescent 49.
+- PPE: no measurement found. Blackbody estimate 0.3-0.4 µmol/J for a bare filament; one Philips MR11 page 0.1 (B).
+  Model: ppe 0.3, eta 0.6, both ESTIMATES. No PAR-at-distance table for halogen spots found.
+
+### D17. CFL / power compact: no PAR tables found
+- PPE proxy: Nelson & Bugbee T8 fixture 0.84 (D10). Typical CFL efficacy 50-70 lm/W over the fluorescent factor
+  74 gives 0.7-0.95 µmol/J (my arithmetic, efficacy range not from a dataset). Model: ppe 0.8; eta 0.5 is an ESTIMATE.
