@@ -2,6 +2,22 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane Y: anatomy audit P2, bottom dwellers + marine fish (2026-10-14; branch `fish-p2b`, port 5533; Nathan approved both batches; pushed to main)
+PLANS entries only in `src/art/fishgen.ts`, all with lane S's parameters; no new generic parameter, no paint.ts / fish3d.ts edits.
+- **Batch 1 (v2 at build 359, `cb6d2e7`):** bronzecory / pandacory: triangular dorsal on one stout spine (MedianFin, `spines`
+  0.12, `nSp` 1), broad low pectorals `pec` {s 1.9, v 0.85}, pelvics w 1.3. oto: one-spine triangular dorsal, `pec` 1.7 low,
+  tail notch -> fork. clownloach: bigger dorsal / anal / paired fins, blunter sloping head (snout 0.38, mouth 0.05), `gape`.
+  sae: taller pointed dorsal, small anal, blunter snout with a low mouth line.
+- **Batch 2 (v2 at build 365):** ocellaris (long dorsal from the nape, spiny front, rounded soft rear; anal behind the vent;
+  `pec` 1.6), royalgramma (dorsal nape to peduncle with a raised soft rear, longer anal, oblique jaw `gape` 0.045, dorsal
+  spot moved onto the fin), sixline (continuous low dorsal, blunter forehead snout 0.55, small mouth), chromis (dorsal from
+  over the gill cover, low spine notches 0.1 so it is not a saw blade; fork -> lyre `cut` 0.75 for curved lobes).
+- Mouth lines: `gapeDrop` 0.002-0.003 on all the marine fish; 0.008-0.01 still read as a frown head-on.
+- Not done (beyond "cheap"): cory scute rows and the panda mask, the loach / SAE head geometry, the marine fish's
+  gill-cover / cheek sculpting (would need head geometry the shared loft does not have).
+- Before/after composites: worktree `shots/laneY/cmp-*.jpg` (gitignored); `shots/laneY/cmp.py <ids>` rebuilds them after
+  `npm run sheets`.
+
 ## Lane V: zoom out further (2026-10-14; branch `zoom-out`, port 5523; Nathan approved option (b) and the pictures; pushed to main)
 Nathan: "can we also allow farther zooming out?" Zoom now goes 0.25-12 (was 0.5-12).
 - Measured first: the betta bowl's view is narrow (eye 3 m back; 29° tall even at 0.25), but the Reef 72 at 0.25 with a
@@ -892,7 +908,7 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | R P2 axolotl + nerite | `../Glass-Box-p2-small` / `p2-small` | 5493 | `art/herps.ts`, `render/herp3d.ts`, `art/snails.ts`, `render/snail3d.ts` | DONE (`45f872a`); files free. Open: fillCut for mystery / turbo / trumpet (would change approved look) |
 | S P1 fish fins | `../Glass-Box-fish-fins` / `fish-fins` | 5503 | (released) | DONE (`f71987c`, `624f8b1`); P2 notes in lane S's section; files free |
 | X P2 fish, freshwater | `../Glass-Box-fish-fins` / `fish-fins` | 5503 | PLANS / her() entries ONLY of neon, cardinal, ember, rummynose, chili, danio, cpd, cherrybarb, tigerbarb, platy, molly | running (session `local_600c5def`) |
-| Y P2 fish, bottom + marine | `../Glass-Box-fish-p2b` / `fish-p2b` | 5533 | PLANS / her() entries ONLY of bronzecory, pandacory, oto, clownloach, sae, ocellaris, royalgramma, sixline, chromis | running (session `local_9324d1d3`) |
+| Y P2 fish, bottom + marine | `../Glass-Box-fish-p2b` / `fish-p2b` | 5533 | PLANS / her() entries ONLY of bronzecory, pandacory, oto, clownloach, sae, ocellaris, royalgramma, sixline, chromis | DONE (batches 1-2 pushed, build 365); worktree removable |
 | R2 snail aperture kink | `../Glass-Box-p2-small` / `p2-small` (started by lane R) | 5493 | `art/snails.ts`, `render/snail3d.ts` (mystery / turbo / trumpet fillCut) | CLOSED: tried, Nathan declined (`52fb6cb`); snail files free |
 | S2 fish batch 4 | (worktree removed) | - | - | DONE (`1399de7`, build 351); swordtail kept at 120 mm (Nathan) |
 | V zoom out further | `../Glass-Box-zoom-out` / `zoom-out` | 5523 | `scene/validate.ts` LIMITS.zoom, `render/camera.ts`, the zoom / framing parts of `render/viewer.ts`, the cZoom slider in `index.html` / `ui/panels.ts`, `interact/pointer.ts` wheel / pinch | DONE (see Lane V section); files free. Also touched (free files): `render/build.ts` room size + ceiling, `render/viewmap.ts` caption, `scene/orbit.ts` |
