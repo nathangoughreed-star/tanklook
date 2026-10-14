@@ -2,6 +2,18 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Final check before showing (2026-10-14; main `fe28ad3`; no src/ edits)
+- `shots/final/FINAL.md` (main checkout only, gitignored): audit 53 = **46 fixed, 7 partly, 0 not fixed, 0 regressed**; 0 console
+  errors; no horizontal scroll at 375 px. Edits take 2 frames (33 ms) on the real GPU on every example; moving a Reef live rock
+  59-66 ms (patches 4 parts).
+- Open items, most severe first: (1) S2 `#status` sits at the top of the scrolling panel, so messages (500 cap #36, repeat Add)
+  are never seen from Animals; (2) S2 #7 phone split B tab still overlaps Redo by 11 px; (3) S3 #33 sliders / checkboxes / colour
+  inputs / summaries under 40 px on touch; (4) S3 #43 Custom terrain tick leaves "Edit points" and the eye map stale until the next
+  sync; (5) S3 fish heights do not come back after lowering then raising the level (scene/water.ts); (6) S3 Start from keeps
+  "reef" after switching back to fresh. #1-4 + 6 are UI (lane G's old files), #5 scene.
+- Method: three Sonnet agents with the CDP driver (fresh profile per run), plus GPU timing (`--use-angle=d3d11` instead of
+  SwiftShader: headless Chrome then reports the Intel Arc).
+
 ## Lane I: reef polish + example refresh (2026-10-14; branch `reef-polish`; Nathan approved rock C and reef option B; pushed to main)
 
 - **Reef starter set**: new `LayoutId` `'reef'` (`scene/types.ts`, `LAYOUT_IDS` in `scene/validate.ts`, no version bump),
