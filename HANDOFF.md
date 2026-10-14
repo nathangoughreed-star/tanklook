@@ -640,6 +640,11 @@ art/placeholder.ts) EXCEPT lane M's shrimp parts and hand-off lines, and the har
 Lane I DONE (`534b664`). Lane N opened 2026-10-14 (review item R12, Nathan via lane D's recommendation): shareable scene
 URLs, `../Glass-Box-share-url` / `share-url`, launch config `share-url` 5453; owns new `src/scene/share.ts` + test, the
 share hook in `src/main.ts`, and a Share control in `src/ui/panels.ts` / `index.html` (small hooks only).
+Lane M DONE (`03f2312`). Lane D pushed R1 + R8 (`250f4d7`, `c7000c5`). Lane O opened 2026-10-14 (anatomy audit P1, the
+non-fish animals): hermit crab body, fire-bellied newt, frog P1 leftovers (feet, toe discs, webbing, warts),
+`../Glass-Box-herps` / `herps-p1`, launch config `herps` 5463; owns `src/art/herps.ts`, `src/render/herp3d.ts`. The
+hermit shell comes from lane L's `shellMesh` (art/snails.ts / render/snail3d.ts): O does not edit those, it places
+the body in the aperture from herps.ts. Fish P1 (fin layout) waits until lane D ships R2 + R3.
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_d0390f66-339c-4fa1-ab38-43e9c2a35958`
 ("Lanes coordinator 2", took over 2026-10-14 from `local_e1923781`). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
 and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says
