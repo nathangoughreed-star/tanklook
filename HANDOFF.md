@@ -2,6 +2,26 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane V: zoom out further (2026-10-14; branch `zoom-out`, port 5523; Nathan approved option (b) and the pictures; pushed to main)
+Nathan: "can we also allow farther zooming out?" Zoom now goes 0.25-12 (was 0.5-12).
+- Measured first: the betta bowl's view is narrow (eye 3 m back; 29° tall even at 0.25), but the Reef 72 at 0.25 with a
+  wider lens got 72° (desktop), 87° (phone) or 111° (split), with edges stretched up to 2.8×. The room also ran out
+  (the space above the 2.7 m wall, the wall's ends, the edge of the 8 m floor).
+- Decision (Nathan picked (b) over (a), "just widen the lens"): below 0.5 the lens holds at 0.5's field of view and the eye
+  steps back by 0.5 / zoom (0.25 = 2× the Eye distance). The step-back factor is the same for every tank, so locked split
+  views stay like-for-like. At 0.5 and above nothing changes (zoom stays a pure field-of-view change at the fixed eye).
+  `scene/orbit.ts` `LENS_ZOOM_MIN`, `lensZoom`, `eyeDist`; `placeCamera` and the orbit wall limit (`eyeClear`) use
+  `eyeDist`, while the lens is still sized from the Eye distance (`frameStraightOn`). So zooming out near a side wall
+  stops at the wall, like orbiting does.
+- Wheel / pinch keep the point under the pointer: the zoomAt anchor rescales by eye-to-pivot distance (old / new).
+  Before that fix it drifted 46 px by 0.25; now it is ≤ 2 px over 9 ticks, exact on the way back.
+- Room (`render/build.ts`, free file): the wall is 40 m wide (`ROOM_SPAN`), the floor 40 m (the mesh is scaled because
+  `render/ar.ts` finds it by its 8000 geometry width), and there is a one-sided ceiling at 2.7 m, in the wall group so AR
+  hides it too. Readouts: the eye-map caption and the depth-ratio formula use `eyeDist` (`render/viewmap.ts`, `viewer.ts`).
+- Files: no scene version bump; old zooms load unchanged and older readers clamp to 0.5. `test/zoomout.test.ts` covers
+  the limit, the load / clamp round trip, eyeDist / lensZoom, and the fov hold with no size jump at 0.5.
+- Pictures: `shots/v1-v3` (the options) and `v4-v6` (desktop / split / phone before-after), in the lane worktree only (gitignored).
+
 ## Lane T: AR view on iPhone, AR Quick Look (2026-10-14; branch `ar-view`, port 5483; pushed to main, HIDDEN behind `?ar=ios`)
 - Built: `src/render/arUsdz.ts` + `test/arUsdz.test.ts`; `attachAR` in `src/render/ar.ts` now picks WebXR (Android, lane Q,
   unchanged) or AR Quick Look (`a.relList.supports('ar')`, iPhone/iPad Safari). Desktop and non-AR Android see no button.
@@ -833,7 +853,7 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | Y P2 fish, bottom + marine | `../Glass-Box-fish-p2b` / `fish-p2b` | 5533 | PLANS / her() entries ONLY of bronzecory, pandacory, oto, clownloach, sae, ocellaris, royalgramma, sixline, chromis | ready to open (prompt `prompts/lane-Y-fish-p2-bottom-marine.md`) |
 | R2 snail aperture kink | `../Glass-Box-p2-small` / `p2-small` (started by lane R) | 5493 | `art/snails.ts`, `render/snail3d.ts` (mystery / turbo / trumpet fillCut) | CLOSED: tried, Nathan declined (`52fb6cb`); snail files free |
 | S2 fish batch 4 | `../Glass-Box-fish-fins-b4` / `fish-fins-b4` | 5513 | in `art/fishgen.ts` ONLY the PLANS / her() entries of hatchet, swordtail(~f), guppy(~f), betta(~f), peapuffer(~f); no MedianFin / medianPts / gonoPts / tailPts / pairedFins, no paint.ts / fish3d.ts (new generic parameters: ask lane S) | running (session `local_5cf51e1b`) |
-| V zoom out further | `../Glass-Box-zoom-out` / `zoom-out` | 5523 | `scene/validate.ts` LIMITS.zoom, `render/camera.ts`, the zoom / framing parts of `render/viewer.ts`, the cZoom slider in `index.html` / `ui/panels.ts`, `interact/pointer.ts` wheel / pinch | running (session `local_7dddf0e8`), options sent to Nathan |
+| V zoom out further | `../Glass-Box-zoom-out` / `zoom-out` | 5523 | `scene/validate.ts` LIMITS.zoom, `render/camera.ts`, the zoom / framing parts of `render/viewer.ts`, the cZoom slider in `index.html` / `ui/panels.ts`, `interact/pointer.ts` wheel / pinch | DONE (see Lane V section); files free. Also touched (free files): `render/build.ts` room size + ceiling, `render/viewmap.ts` caption, `scene/orbit.ts` |
 | T iPhone AR | `../Glass-Box-ar` / `ar-view` (lane Q's, Q is done) | 5483 | new `render/arUsdz.ts` + test, `render/ar.ts` | DONE for now (`3085106`); iPhone button hidden behind `?ar=ios` until an iPhone test, then IOS_FLAG = false; files free |
 | W Android app | not made yet (`../Glass-Box-android` / `android`) | next free | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | PARKED for later (prompt `prompts/lane-W-android-app.md`); after P's files are free, mind V's `index.html` / `panels.ts` edits |
 Free (no lane): `render/build.ts`, `render/items.ts`, `scene/items.ts`, `render/viewer.ts`, `main.ts`, `render/lighting.ts`,
