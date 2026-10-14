@@ -75,6 +75,10 @@ chats; fin layout (most of P1) and frogs/newt are later lanes.
   (m + 1) / (m52 + 1) (`beamGain`). uNorm still normalises to the standard fixture: planted view -2.5% (spots) /
   +1.4% (LED); bare sand under spots -10% (light now falls past the old cone edge). CONES / spotCone / beam() removed
   from scene/lightout.ts; test/scene.test.ts "raised fixture" passes beamExp instead of CONES.spot.
+- J2 leftover (a), done: lightOutCached / lightEnvCached hold one run at 1 W (no PAR override), keyed without the
+  fields the model ignores (Exposure, kelvin, room, map unit), and scale by the watts; setLightUniforms uses the
+  cached env. A Power step: model 20-35 ms -> 0 ms, the whole edit ~9 ms. Not done (offered, not asked for): (b) frost
+  transmission pass -> own low-res shader (5-8 ms), (c) the lit plant shader on big tanks (18-22 ms GPU).
 
 ## Lane J: edit performance, audit #52-53 (2026-10-14; branch `perf`, port 5373; pushed to main)
 - **What changed:** an edit no longer rebuilds the whole scene. `render/build.ts`: each fish and item is a *part* keyed
