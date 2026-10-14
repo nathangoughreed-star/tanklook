@@ -6,33 +6,13 @@
 // alpha-test cutout), so every opaque or fin pixel keeps alpha >= FIN_A, above the 0.5 cutoff with a mipmap margin.
 import type { Grain, SubstrateBlend, SubstrateType } from '../scene/types';
 
-import { FIN_A, type Ctx, type Proj, type Pt, blob, body, eye, fin, gill, hexA, rng, soft, style, vgrad } from './paint';
+import { FIN_A, type Ctx, type Proj, type Pt, blob, body, eye, fin, gill, rng, soft, style } from './paint';
 export { rng } from './paint';
 import { type FinSpec, GEN_ART, bodyPlan, profile } from './fishgen';
 /** A 3D fish's card body cut-out (widths): this far inside the outline at fin roots (the solid is inset 0.006), this far outside elsewhere. */
 const HOLLOW = 0.012, HOLLOW_OUT = 0.02;
 import { HERP_ART } from './herps';
 
-
-function drawTetra(ctx: Ctx, P: Proj, W: number) {
-  const tint = '#aebbb8', ray = '#7f8b87';
-  fin(ctx, P, W, [[0.61, -0.10], [0.55, -0.16, 'c'], [0.50, -0.155], [0.46, -0.10]], [0.53, -0.09], tint, ray, { rays: 7 });
-  fin(ctx, P, W, [[0.48, 0.09], [0.40, 0.135, 'c'], [0.31, 0.12], [0.26, 0.06]], [0.38, 0.07], tint, ray, { rays: 9 });
-  fin(ctx, P, W, [[0.64, 0.095], [0.58, 0.14, 'c'], [0.55, 0.095]], [0.60, 0.085], tint, ray, { rays: 4 });
-  fin(ctx, P, W, [[0.26, -0.055], [0.225, -0.08, 'c'], [0.20, -0.05]], [0.23, -0.05], '#b9b7a2', ray, { rays: 0 });
-  fin(ctx, P, W, [[0.19, -0.03], [0.09, -0.09], [0.0, -0.15, 'c'], [0.07, -0.045], [0.095, 0.0], [0.07, 0.045], [0.0, 0.15, 'c'], [0.09, 0.09], [0.19, 0.03]],
-    [0.17, 0.0], tint, ray, { rays: 16 });
-  const pts: Pt[] = [[1.0, 0.0, 'c'], [0.95, -0.055], [0.85, -0.095], [0.70, -0.115], [0.50, -0.105], [0.32, -0.07], [0.20, -0.042], [0.14, -0.036],
-    [0.14, 0.036], [0.20, 0.042], [0.32, 0.07], [0.50, 0.10], [0.70, 0.105], [0.85, 0.085], [0.95, 0.045]];
-  body(ctx, P, W, pts, -0.12, 0.11, [[0, '#4f5744'], [0.25, '#727e66'], [0.5, '#a4ada2'], [0.75, '#d0d2ca'], [1, '#e2e0d8']], 0.035, l => {
-    soft(l, P, 0.15, 0.60, -0.008, 0.13, '#c4303a', 0.95, [0, 0.05], [0.015, 0]);       // red lower rear
-    soft(l, P, 0.24, 0.93, -0.07, -0.006, '#2aa9e0', 1, [0.05, 0.03], [0.012, 0.01]); // iridescent blue line
-    soft(l, P, 0.3, 0.85, -0.05, -0.025, '#bfeaf6', 0.45, [0.1, 0.1], [0.006, 0.006]);  // sheen on the line
-    gill(l, P, W, 0.845, -0.045, 0.05, 0.02);
-  });
-  fin(ctx, P, W, [[0.80, 0.02], [0.72, 0.05, 'c'], [0.75, 0.065], [0.81, 0.045]], [0.80, 0.035], tint, ray, { a: 0.35, rays: 5 });
-  eye(ctx, P, W, 0.905, -0.022, 0.024, ['#b9ccd2', '#4c5c63']);
-}
 
 function drawAngel(ctx: Ctx, P: Proj, W: number) {
   const tint = '#c3c4bc', ray = '#86857c', bar = '#26262a';
@@ -60,38 +40,8 @@ function drawAngel(ctx: Ctx, P: Proj, W: number) {
   eye(ctx, P, W, 0.875, -0.065, 0.026, ['#c8673f', '#5b2a1c']);
 }
 
-function drawGourami(ctx: Ctx, P: Proj, W: number) {
-  const tint = '#a8987a', ray = '#73654f', r = rng(7);
-  const pearls = (c: Ctx, n: number, u0: number, u1: number, v0: number, v1: number, a = 0.8) => {
-    for (let i = 0; i < n; i++) blob(c, P, W, u0 + r() * (u1 - u0), v0 + r() * (v1 - v0), 0.007 + r() * 0.005, 0.007 + r() * 0.005, '#f2eadb', a);
-  };
-  fin(ctx, P, W, [[0.50, -0.19], [0.40, -0.25], [0.22, -0.27, 'c'], [0.20, -0.17], [0.20, -0.08]], [0.33, -0.14], tint, ray,
-    { rays: 12, extra: c => pearls(c, 30, 0.22, 0.46, -0.27, -0.15, 0.6) });
-  fin(ctx, P, W, [[0.68, 0.17], [0.50, 0.24], [0.30, 0.27], [0.19, 0.26, 'c'], [0.18, 0.14], [0.20, 0.08]], [0.40, 0.14], tint, ray,
-    { rays: 22, extra: c => {
-      c.fillStyle = vgrad(c, P, 0.16, 0.27, [[0, hexA('#c87a3e', 0)], [1, hexA('#c87a3e', 0.9)]]); c.fillRect(0, 0, W, c.canvas.height);
-      pearls(c, 40, 0.2, 0.62, 0.17, 0.25, 0.55);
-    } });
-  fin(ctx, P, W, [[0.20, -0.07], [0.10, -0.16], [0.0, -0.15, 'c'], [0.02, 0.0], [0.0, 0.15, 'c'], [0.10, 0.16], [0.20, 0.07]], [0.18, 0.0], tint, ray,
-    { rays: 20, extra: c => pearls(c, 50, 0.02, 0.2, -0.15, 0.15, 0.55) });
-  const pts: Pt[] = [[1.0, 0.0, 'c'], [0.96, -0.07], [0.86, -0.16], [0.70, -0.20], [0.50, -0.20], [0.32, -0.15], [0.20, -0.09], [0.16, -0.08],
-    [0.16, 0.08], [0.20, 0.09], [0.32, 0.15], [0.50, 0.19], [0.70, 0.18], [0.86, 0.13], [0.96, 0.06]];
-  body(ctx, P, W, pts, -0.20, 0.19, [[0, '#5e5644'], [0.3, '#8f8266'], [0.6, '#b0a283'], [1, '#d3c6a8']], 0.035, l => {
-    blob(l, P, W, 0.78, 0.15, 0.20, 0.09, '#cc5a22', 1);     // orange breast
-    pearls(l, 220, 0.18, 0.88, -0.20, 0.12);
-    l.strokeStyle = hexA('#2a251d', 0.35); l.lineWidth = 0.022 * W; l.beginPath();
-    for (let i = 0; i <= 13; i++) { const [px, py] = P(0.86 - i * 0.05, (i % 2 ? 0.01 : -0.01)); if (i) l.lineTo(px, py); else l.moveTo(px, py); }
-    l.stroke(); l.strokeStyle = hexA('#2a251d', 0.55); l.lineWidth = 0.01 * W; l.stroke();
-    blob(l, P, W, 0.215, 0.0, 0.03, 0.03, '#2a251d', 0.7);    // tail-base spot
-    gill(l, P, W, 0.83, -0.09, 0.08, 0.025);
-  });
-  fin(ctx, P, W, [[0.77, 0.15], [0.56, 0.245], [0.38, 0.295, 'c'], [0.56, 0.232], [0.74, 0.17]], [0.75, 0.16], '#d99a5c', ray, { a: 0.85, rays: 0 });
-  fin(ctx, P, W, [[0.80, 0.03], [0.70, 0.07, 'c'], [0.72, 0.10], [0.80, 0.07]], [0.80, 0.05], tint, ray, { a: 0.3, rays: 6 });
-  eye(ctx, P, W, 0.905, -0.035, 0.024, ['#d0b48a', '#5e4a2e']);
-}
-
 export const FISH_ART: Record<string, (ctx: Ctx, P: Proj, W: number) => void> = {
-  tetra: drawTetra, angel: drawAngel, gourami: drawGourami, ...GEN_ART, ...HERP_ART,
+  angel: drawAngel, ...GEN_ART, ...HERP_ART,
 };
 
 /** Render a fish card (width W px, height from aspect) into a canvas. Nose points to +x (right). */
@@ -100,7 +50,7 @@ export function drawFishCard(art: string, aspect: number, W = 1024, finA = FIN_A
   const c = document.createElement('canvas'), H = Math.round(W * aspect);
   c.width = W; c.height = H;
   const ctx = c.getContext('2d')!; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-  ctx.save(); (FISH_ART[art] ?? drawTetra)(ctx, (u, v) => [u * W, H / 2 + v * W], W); ctx.restore(); // art may leave a clip set
+  ctx.save(); (FISH_ART[art] ?? FISH_ART.tetra)(ctx, (u, v) => [u * W, H / 2 + v * W], W); ctx.restore(); // art may leave a clip set
   style.finA = FIN_A; style.features = true; style.paired = true;
   // a 3D fish's card keeps only the fins: cut the body out. Past the outline where no fin is rooted (the card's
   // painted rim and outline otherwise show as a dark hoop at the edge of the solid seen at an angle), a little inside
