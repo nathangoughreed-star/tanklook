@@ -2,6 +2,16 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Tree frogs climb the glass (2026-10-14; Nathan: "like otos and snails cling to the glass")
+- White's tree frog has `cling: any` (glass, hardscape, floor). Shuffle / Add use the oto path (`spawnSnail`) with a new
+  `on.above` = the water line, so a frog on the glass or hardscape is always out of the water; glass weight `GLASS_FROG`
+  0.6 (otos 0.35); on the glass it sits head up (yaw 90 ± 40) and unbent. Floor picks still go to land.
+- `glassBand` (water.ts) is the height range on the glass: land climbers from the water line (or ground) to the top of
+  the pane, everything else ground to water line. Used by `onGlass` (build.ts) and `fitFish`; `maxFishY` leaves a
+  frog's height alone when the water level changes. Rendering needed nothing new: `onGlass` already lays any
+  card + 3D body belly to the pane. Test in scatter.test.ts. Checked in the tree frog terrarium example.
+- Dart frogs, toads, newts unchanged (no `cling`).
+
 ## Lane A: 3D plants (2026-10-14; Nathan approved the style test "looks good, roll out"; pushed to main)
 
 Roadmap step 5. All seven plant types are real 3D; the crossed cards stay as the fallback (`plant3d.on = false`,

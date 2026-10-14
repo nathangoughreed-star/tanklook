@@ -55,7 +55,7 @@
   {"id": "turbo", "cat": "sw-invert", "salt": true, "name": "Mexican turbo snail", "sci": "Turbo fluctuosus", "tl": 50, "kind": "snail", "art": "turbo"},
   {"id": "hermit", "cat": "sw-invert", "salt": true, "name": "Blue-leg hermit crab", "sci": "Clibanarius tricolor", "tl": 30, "zone": "bottom", "cling": "hardscape", "art": "hermit", "note": "Length including its borrowed shell."},
   {"id": "dartfrog", "cat": "amphibian", "name": "Dyeing dart frog", "sci": "Dendrobates tinctorius", "tl": 45, "habitat": "land", "art": "dartfrog"},
-  {"id": "treefrog", "cat": "amphibian", "name": "White's tree frog", "sci": "Ranoidea caerulea", "tl": 100, "habitat": "land", "art": "treefrog"},
+  {"id": "treefrog", "cat": "amphibian", "name": "White's tree frog", "sci": "Ranoidea caerulea", "tl": 100, "habitat": "land", "cling": "any", "art": "treefrog"},
   {"id": "firetoad", "cat": "amphibian", "name": "Fire-bellied toad", "sci": "Bombina orientalis", "tl": 45, "habitat": "both", "art": "firetoad"},
   {"id": "firenewt", "cat": "amphibian", "name": "Chinese fire-bellied newt", "sci": "Cynops orientalis", "tl": 90, "habitat": "both", "art": "firenewt"},
   {"id": "axolotl", "cat": "amphibian", "name": "Axolotl", "sci": "Ambystoma mexicanum", "tl": 230, "zone": "bottom", "art": "axolotl"}

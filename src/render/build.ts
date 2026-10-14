@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { SUBSTRATES, blendTile, maskQuantile } from '../art/placeholder';
 import { snailAspect } from '../art/snails';
 import { fishTL, needsWater, speciesOf, type Species } from '../data/species';
-import { restsOnGround } from '../scene/water';
+import { glassBand, restsOnGround } from '../scene/water';
 import { D2R, IN, clamp, floorY, glassThickness, RIM_DROP, RIM_H, tankUnderside, waterY } from '../scene/physics';
 import { alongRun, backgroundRuns, bowlDims, bowlRadius, chord, circleRing, clipToFootprint, facingRuns, footprint, glassFrame, halfWidth, inside, nearestGlass, offsetRing, offsetWalls, runLength, shapeOf, subRun, type P } from '../scene/shape';
 import { TABLE_TOP, cornerWalls, wallGap, tableCentre, tableOn, tableRing, wallPlane } from '../scene/table';
@@ -915,13 +915,12 @@ const UP = new THREE.Vector3(0, 1, 0), MAX_TILT = 45 * D2R;
 const PANE_GAP = 0.8;
 
 /**
- * A fish clinging to the glass (a pleco or an oto) at the point nearest its (x, depth): belly on the pane, back into the
+ * An animal clinging to the glass (a pleco, an oto or a tree frog) at the point nearest its (x, depth): belly on the pane, back into the
  * tank, head along yaw in the plane of the pane (0 = level, 90 = straight up).
  */
 function onGlass(S: TankSetup, T: Tank, f: Fish, sp: Species, m: THREE.Mesh, w: number) {
   const g0 = nearestGlass(T, f.x, f.depth, f.y);
-  const top = S.water.on ? waterY(T, S.water.level) : T.H, sub = groundHeight(S, T, g0.x, g0.depth);
-  const y = clamp(f.y, sub + w / 2, Math.max(sub + w / 2, top - w / 2)), off = sp.rest * w + PANE_GAP;
+  const y = clamp(f.y, ...glassBand(S, T, sp, w, groundHeight(S, T, g0.x, g0.depth))), off = sp.rest * w + PANE_GAP;
   // outward normal toward the glass (tilted on a bowl); "up" for the heading = straight up, laid onto the glass
   const g = glassFrame(T, f.x, f.depth, y), n = new THREE.Vector3(g.n[0], g.n[1], -g.n[2]);
   const up = n.clone().negate(), along = new THREE.Vector3(n.z, 0, -n.x).normalize(), a = f.yaw * D2R;
