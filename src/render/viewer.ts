@@ -172,9 +172,14 @@ export class Viewer {
     store.subscribe(kind => { if (kind !== 'view') this.needsBuild = true; this.dirty = true; });
     new ResizeObserver(() => { this.dirty = true; }).observe(host);
     matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { this.dirty = true; });
-    const loop = () => { if (this.dirty) { this.dirty = false; this.draw(); } requestAnimationFrame(loop); };
-    requestAnimationFrame(loop);
+    // three's loop (window frames, or the XR session's while one runs); an AR session draws through xrFrame instead (render/ar.ts)
+    this.renderer.setAnimationLoop((t, f) => {
+      if (this.xrFrame && f) this.xrFrame(t, f);
+      else if (this.dirty) { this.dirty = false; this.draw(); }
+    });
   }
+  /** Set while an AR session runs: it draws every XR frame itself and the normal render-on-demand pauses (render/ar.ts). */
+  xrFrame: ((t: number, frame: XRFrame) => void) | null = null;
 
   onDrawn(fn: () => void) { this.drawnListeners.add(fn); }
   invalidate() { this.dirty = true; }
