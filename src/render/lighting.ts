@@ -11,23 +11,30 @@ import type { LightSettings, Tank, WaterSettings } from '../scene/types';
 import { waterK, waterY } from '../scene/physics';
 import { bowlDims, footprint, shapeOf } from '../scene/shape';
 
-import { AQ_MAX, LAMP_Y, LUXW, beam, emitters, lampHeight, lightEnv, lightOutCached, renderBright, type Emitter, type LightEnv, type LightScene } from '../scene/lightout';
+import { AQ_MAX, LAMP_Y, LUXW, beamExp, emitters, lampHeight, lightEnv, lightOutCached, renderBright, type Emitter, type LightEnv, type LightScene } from '../scene/lightout';
 // the fixture geometry lives with the light-output model now (lane K); re-exported so importers stay as they were
-export { AQ_MAX, CONES, LAMP_Y, beam, emitters, fitSpots, lampHeight, type Emitter } from '../scene/lightout';
+export { AQ_MAX, LAMP_Y, emitters, fitSpots, lampHeight, type Emitter } from '../scene/lightout';
 
 export const REF = 320;
 
 /** JS twin of the shader loop (card mode: no facing term); used for normalisation. */
-export function lightSum(E: Emitter[], p: [number, number, number], cone: [number, number]) {
+export function lightSum(E: Emitter[], p: [number, number, number], m: number) {
   let sum = 0;
   for (const e of E) {
     const qx = e[3] > 0 ? clamp(p[0], e[0] - e[3], e[0] + e[3]) : e[0], dx = qx - p[0], dy = e[1] - p[1], dz = e[2] - p[2];
     const d = Math.hypot(dx, dy, dz), ly = dy / Math.max(d, 1);
-    const c = THREE.MathUtils.smoothstep(ly, cone[1], cone[0]), r = d / REF;
+    const c = ly > 0 ? ly ** m : 0, r = d / REF;
     sum += c * (e[3] > 0 ? 1 / (1 + r) : 1 / (1 + r * r));
   }
   return sum;
 }
+
+/**
+ * Lane K2: the scene's beam is the model's cos^m (scene/lightout beamExp: half strength at the printed beam angle; LED
+ * bar and tube m = 1), fading smoothly past the beam angle. A narrower spot puts the same output on a smaller area:
+ * per unit of solid angle it is (m + 1) / (m52 + 1) x the standard 52° spot (pointNorm), the scene's normalisation.
+ */
+export const beamGain = (l: LightSettings) => l.type === 'spot' ? (beamExp(l) + 1) / (beamExp({ type: 'spot', cone: 52 }) + 1) : 1;
 
 /** Tanner Helland approximation, scaled to unit luminance so temperature doesn't change brightness. */
 /**
@@ -50,7 +57,7 @@ export function kelvinRGB(K: number): [number, number, number] {
 /** Shared uniforms; set per viewport before each render because Tank A and Tank B have different fixtures. */
 export const LU = {
   uEm: { value: Array.from({ length: AQ_MAX }, () => new THREE.Vector4()) }, uEmN: { value: 0 }, uMode: { value: 0 },
-  uAmb: { value: 0.25 }, uBright: { value: 1 }, uNorm: { value: 1 }, uConeIn: { value: 0.9 }, uConeOut: { value: 0.8 },
+  uAmb: { value: 0.25 }, uBright: { value: 1 }, uNorm: { value: 1 }, uBeamM: { value: 1 },
   uRef: { value: REF }, uLCol: { value: new THREE.Color(1, 1, 1) },
   uRoomK: { value: 1 }, uSpill: { value: new THREE.Color(1, 1, 1) }, uSpillR: { value: 500 },
   uTankMin: { value: new THREE.Vector3() }, uTankMax: { value: new THREE.Vector3() }, uTankRound: { value: 0 },
@@ -104,7 +111,7 @@ export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams 
   const lo = on && S ? lightOutCached({ ...S, tank: T }) : null, bright = lo ? renderBright(lo, l.bright) : l.bright;
   // light map: a spot bulb or a tube counts as one light; an LED bar's emitters share the output of four bulbs
   LU.uMapOn.value = on && beams ? 1 : 0;
-  if (on) { LU.uMapGain.value = beam(l).gain; LU.uMapW.value = l.type === 'led' ? 4 / Math.max(emitters(T, l).length, 1) : 1; }
+  if (on) { LU.uMapGain.value = beamGain(l); LU.uMapW.value = l.type === 'led' ? 4 / Math.max(emitters(T, l).length, 1) : 1; }
   const hgt = lampHeight(l, lid), up = on ? hgt : 0;
   LU.uRoomK.value = roomLevel(l.room); LU.uSpillR.value = spillReach(T) + up * 0.5;
   // spill leaves the tank box, extended up to the fixture: a raised light also lights the room over the rim
@@ -116,14 +123,14 @@ export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams 
   const spill = 0.9 * (1 - 0.75 * roomLevel(l.room)) * (1 + 0.8 * clamp((up - LAMP_Y) / 400, 0, 1));
   if (on) LU.uSpill.value.setRGB(...kelvinRGB(l.kelvin)).multiplyScalar(spill * bright); else LU.uSpill.value.setRGB(spill, spill, spill);
   if (!on) return;
-  const E = emitters(T, l, hgt), { cone, gain } = beam(l), ref: LightSettings = { ...l, spacing: 0, cone: 52 };
+  const E = emitters(T, l, hgt), m = beamExp(l), gain = beamGain(l), ref: LightSettings = { ...l, spacing: 0, cone: 52 };
   E.forEach((e, i) => LU.uEm.value[i].set(...e)); LU.uEmN.value = E.length;
   // normalised with the fixture at the standard height, auto spacing and standard beam (sample a mid-height plane
   // across the tank), so raising it dims the tank (distance falloff) and evens it out (wider footprint), spreading
   // the bulbs past the glass loses light outside, and a narrower beam concentrates the same output (gain)
-  const R = emitters(T, ref, LAMP_Y), rc = beam(ref).cone; let avg = 0, k = 0;
-  for (let i = 1; i <= 5; i++) for (let j = 1; j <= 5; j++) { avg += lightSum(R, [T.L * i / 6, T.H * 0.5, -T.D * j / 6], rc); k++; }
-  LU.uNorm.value = gain * k / Math.max(avg, 1e-6); [LU.uConeIn.value, LU.uConeOut.value] = cone;
+  const R = emitters(T, ref, LAMP_Y), rm = beamExp(ref); let avg = 0, k = 0;
+  for (let i = 1; i <= 5; i++) for (let j = 1; j <= 5; j++) { avg += lightSum(R, [T.L * i / 6, T.H * 0.5, -T.D * j / 6], rm); k++; }
+  LU.uNorm.value = gain * k / Math.max(avg, 1e-6); LU.uBeamM.value = m;
   LU.uAmb.value = l.room; LU.uBright.value = bright; LU.uLCol.value.setRGB(...kelvinRGB(l.kelvin));
   const env = lo ? lightEnv({ ...S!, tank: T }) : null;
   LU.uLoOn.value = env ? 1 : 0; LU.uMapDiv.value = env ? MAP_DIV[l.mapUnit ?? 'par'] : MAP_DIV.rel;
@@ -139,7 +146,7 @@ function setLoUniforms(env: LightEnv, scale: number, unit: 'par' | 'lux') {
 
 const AQ_VERT = 'varying vec3 vAqP; varying vec3 vAqN;';
 const AQ_FRAG = `
-uniform vec4 uEm[${AQ_MAX}]; uniform int uEmN; uniform float uMode, uAmb, uBright, uNorm, uConeIn, uConeOut, uRef, uCard, uSub, uFish; uniform vec3 uLCol;
+uniform vec4 uEm[${AQ_MAX}]; uniform int uEmN; uniform float uMode, uAmb, uBright, uNorm, uBeamM, uRef, uCard, uSub, uFish; uniform vec3 uLCol;
 float aqSpec = 0.0;
 uniform float uRoomMat, uRoomK, uSpillR, uTankRound; uniform vec3 uSpill, uTankMin, uTankMax; uniform vec4 uWater; uniform vec3 uWCol; uniform float uPop, uFishCard;
 varying vec3 vAqP; varying vec3 vAqN;
@@ -190,7 +197,7 @@ vec3 aqLight() {
     vec4 e = uEm[i];
     vec3 q = e.w > 0.0 ? vec3(clamp(vAqP.x, e.x - e.w, e.x + e.w), e.y, e.z) : e.xyz;
     vec3 tl = q - vAqP; float d = length(tl); vec3 ld = tl / max(d, 1.0);
-    float cone = smoothstep(uConeOut, uConeIn, ld.y), r = d / uRef;
+    float cone = pow(max(ld.y, 0.0), uBeamM), r = d / uRef;
     float fall = e.w > 0.0 ? 1.0 / (1.0 + r) : 1.0 / (1.0 + r * r);
     float facing = uCard > 0.5 ? 1.0 : 0.3 + 0.9 * abs(dot(n, ld));
     // 3D fish body: lit from the light's side (flank toward the viewer = 1, back brighter, belly darker), plus a soft highlight
@@ -260,7 +267,7 @@ float aqIrr() {
     vec4 e = uEm[i];
     vec3 q = e.w > 0.0 ? vec3(clamp(vAqP.x, e.x - e.w, e.x + e.w), e.y, e.z) : e.xyz;
     vec3 tl = q - vAqP; float d = max(length(tl), 1.0); vec3 ld = tl / d;
-    float prof = smoothstep(uConeOut, uConeIn, ld.y), inc = max(dot(n, ld), 0.0);
+    float prof = pow(max(ld.y, 0.0), uBeamM), inc = max(dot(n, ld), 0.0);
     sum += prof * inc * (e.w > 0.0 ? 300.0 / d : 90000.0 / (d * d));
   }
   return sum * uMapW * uMapGain * uBright;
@@ -406,7 +413,7 @@ export function addFixture(sc: THREE.Scene, T: Tank, l: LightSettings, ceiling?:
  */
 /** The overlay's beams: half-strength half-angle, fixture height and one [x centre, z, half-length] per beam (an LED bar: one per row). */
 function beamSegs(T: Tank, l: LightSettings, lid: string) {
-  const { cone } = beam(l), half = Math.acos((cone[0] + cone[1]) / 2), top = T.H + lampHeight(l, lid);
+  const half = Math.acos(0.5 ** (1 / beamExp(l))), top = T.H + lampHeight(l, lid);
   const segs: [number, number, number][] = [];
   const E = emitters(T, l, lampHeight(l, lid));
   if (l.type === 'led') {

@@ -12,17 +12,6 @@ import type { LidType, LightSettings, LightTech, LightType, Tank, WaterSettings 
 // ---------- fixture geometry (was render/lighting.ts) ----------
 
 export const AQ_MAX = 48, LAMP_Y = 50;
-export const CONES: Record<Exclude<LightType, 'flat'>, [number, number]> = {
-  spot: [Math.cos(18 * D2R), Math.cos(34 * D2R)], tube: [0.45, -0.15], led: [Math.cos(45 * D2R), Math.cos(75 * D2R)],
-};
-/** Spot beam (full angle, degrees) -> [cos inner, cos outer] half-angles; the default 52° gives the old 18°/34°. */
-const spotCone = (deg: number): [number, number] => [Math.cos(Math.min(deg * 0.35, 80) * D2R), Math.cos(Math.min(deg * 0.65, 85) * D2R)];
-/** The fixture's beam, and how much brighter it is per unit area than the standard one (same output, narrower beam). */
-export function beam(l: LightSettings): { cone: [number, number]; gain: number } {
-  if (l.type !== 'spot') return { cone: CONES[l.type as Exclude<LightType, 'flat'>], gain: 1 };
-  const deg = l.cone ?? 52, solid = (a: number) => 1 - Math.cos(a / 2 * D2R);
-  return { cone: spotCone(deg), gain: solid(52) / solid(deg) };
-}
 /** [x, y, z, halfLength]: halfLength > 0 means a line emitter along x. */
 export type Emitter = [number, number, number, number];
 
