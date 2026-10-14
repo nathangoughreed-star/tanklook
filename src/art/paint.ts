@@ -69,11 +69,22 @@ export function blob(ctx: Ctx, P: Proj, W: number, u: number, v: number, ru: num
   ctx.fillStyle = g; ctx.fillRect(-1, -1, 2, 2); ctx.restore();
 }
 
-/** Fin membrane: translucent tint plus fine rays fanning from root to the outline. */
+/**
+ * Fin membrane: translucent tint plus fine rays fanning from root to the outline, or, with `segs`, each ray (and spine)
+ * on its own line from its base on the body to its tip: [u0, v0, u1, v1, width x the default].
+ */
 export function fin(ctx: Ctx, P: Proj, W: number, pts: Pt[], root: [number, number], tint: string, ray: string,
-  { a = style.finA, rays = 14, extra }: { a?: number; rays?: number; extra?: (c: Ctx) => void } = {}) {
+  { a = style.finA, rays = 14, extra, segs }: { a?: number; rays?: number; extra?: (c: Ctx) => void; segs?: [number, number, number, number, number][] } = {}) {
   ctx.save(); shape(ctx, P, pts); ctx.fillStyle = hexA(tint, a); ctx.fill(); ctx.clip();
   extra?.(ctx);
+  if (segs) {
+    for (const [u0, v0, u1, v1, w] of segs) {
+      const [x0, y0] = P(u0, v0), [x1, y1] = P(u1, v1);
+      ctx.strokeStyle = hexA(ray, Math.min(w > 1 ? 0.75 : 0.5, a * (w > 1 ? 0.9 : 0.6))); ctx.lineWidth = 0.0022 * W * w;
+      ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x0 + (x1 - x0) * 1.05, y0 + (y1 - y0) * 1.05); ctx.stroke();
+    }
+    ctx.restore(); return;
+  }
   const [rx, ry] = P(root[0], root[1]); ctx.strokeStyle = hexA(ray, Math.min(0.5, a * 0.6)); ctx.lineWidth = 0.0022 * W;
   for (let i = 0; i < rays; i++) {
     const t = (i + 0.5) / rays * (pts.length - 1), k = Math.floor(t), f = t - k, p0 = pts[k], p1 = pts[Math.min(k + 1, pts.length - 1)];

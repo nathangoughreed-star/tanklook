@@ -8,6 +8,28 @@ type Tail = 'fork' | 'notch' | 'round' | 'veil' | 'lyre' | 'double' | 'sword';
 type FinShape = 'tri' | 'round' | 'sail' | 'long' | 'swept';
 /** A fin along the back (dorsal) or belly (anal) from u0 (rear) to u1 (front), h tall (widths). */
 export interface FinSpec { u0: number; u1: number; h: number; shape?: FinShape; tint?: string; a?: number; edge?: string }
+/**
+ * A median fin built from its structure (anatomy audit P1, lane S) instead of an outline: the base starts at `at`
+ * (front, u) and runs `len` back along the body, and every height is measured from the body contour under it, so a
+ * long fin stands clear along a domed back instead of showing only where the back falls away (the "rear paddle").
+ * Front share `spines` of the base is spiny: `nSp` stiff spines (sharp tips, the membrane dipping `notch` between them)
+ * rising from `spineH[0]` to `spineH[1]`; the soft rear rises to `h` (its highest point `rake` of the way back) and
+ * ends `tip` round or in a point, the rear tip `trail` (u) behind the base end (trailing / extended rays).
+ */
+export interface MedianFin {
+  at: number; len: number; h: number;
+  spines?: number; spineH?: number | [number, number]; nSp?: number; notch?: number;
+  rake?: number; tip?: 'round' | 'point'; trail?: number; drop?: number; // drop: the rear tip's height (share of h)
+  fringe?: boolean; // the soft part's edge ragged with free ray tips (pearl gourami male's anal fin)
+  tint?: string; a?: number; edge?: string;
+}
+type AnyFin = FinSpec | MedianFin;
+const isMedian = (f: AnyFin): f is MedianFin => 'at' in f;
+/** Is a fin rooted on the back (`top`) or belly at u? (the 3D card keeps the body's rim there, so the fin roots stay) */
+export function finRooted(p: Plan, top: boolean, u: number) {
+  const on = (f: AnyFin | undefined) => !!f && (isMedian(f) ? u > f.at - f.len - 0.02 && u < f.at + 0.02 : u > f.u0 - 0.02 && u < f.u1 + 0.02);
+  return top ? on(p.dorsal) || on(p.dorsal2) : p.gono ? Math.abs(u - p.gono.at) < 0.03 : on(p.anal);
+}
 type Mark =
   | { k: 'band'; u0: number; u1: number; v0: number; v1: number; c: string; a?: number; f?: number; wave?: number }
   | { k: 'bars'; us: number[]; w: number; c: string; a?: number }
@@ -24,9 +46,14 @@ export interface Plan {
   snout?: number;     // 0 pointed .. 1 blunt
   mouth?: number;     // nose offset (+ down, - up)
   shade: [string, string, string]; // back, flank, belly
-  tail: { type: Tail; h: number; tint?: string; a?: number; edge?: string };
-  dorsal?: FinSpec; anal?: FinSpec; adipose?: boolean;
-  pelvic?: { u: number; len: number; tint?: string; thread?: boolean; angle?: number }; // angle: degrees below horizontal (thread)
+  tail: { type: Tail; h: number; tint?: string; a?: number; edge?: string; cut?: number }; // cut (lyre): depth of the fork, share of the tail length (default 0.8)
+  dorsal?: AnyFin; anal?: AnyFin; adipose?: boolean;
+  dorsal2?: MedianFin; // a second, separate dorsal behind the first (gobies, cardinals)
+  // male livebearers: the anal fin is a gonopodium, a slim rod from `at` lying back along the belly, `len` long
+  gono?: { at: number; len: number; tint?: string };
+  // ext: the leading ray runs on past the membrane by this much (widths); w: membrane width x the default
+  pelvic?: { u: number; len: number; tint?: string; thread?: boolean; angle?: number; ext?: number; w?: number }; // angle: degrees below horizontal (thread)
+  pec?: { s?: number; v?: number; u?: number }; // pectoral: size x the default, root height (0 top .. 1 belly, default 0.62), root u (default behind the gill)
   fin: string;        // default membrane tint
   ray?: string;
   marks?: Mark[];     // painted inside the body
@@ -102,11 +129,60 @@ function finPts(f: FinSpec, base: (u: number) => number, sg: number): Pt[] {
   }
 }
 
-function tailPts(t: Tail, pu: number, c: number, pd: number, th: number): Pt[] {
+/** A ray or spine drawn on a fin: base (u, v) to tip (u, v), stroke width x the default. */
+export type FinRay = [number, number, number, number, number];
+/**
+ * Outline and rays of a `MedianFin` on the contour `base` (the back for sg -1, the belly for sg 1). The outline runs
+ * from the base's front up the leading spine, over the spine tips (sharp) and the membrane dips between them, along
+ * the soft part, round its rear tip and back along a base line a little inside the body (the body covers it).
+ */
+function medianPts(f: MedianFin, base: (u: number) => number, sg: number): { pts: Pt[]; rays: FinRay[] } {
+  const u1 = f.at, u0 = f.at - f.len, S = f.spines ?? 0, h = f.h;
+  const [sh0, sh1] = typeof f.spineH === 'number' ? [f.spineH, f.spineH] : f.spineH ?? [h * 0.75, h * 0.9];
+  const B = (u: number) => base(u) - sg * 0.02, T = (u: number, hh: number) => base(u) + sg * hh;
+  const at = (s: number) => u1 - f.len * s; // s: 0 front .. 1 rear of the base
+  const top: Pt[] = [], rays: FinRay[] = [];
+  const lean = 0.35; // rays slope back from base to tip
+  const ray = (u: number, hh: number, w: number) => rays.push([Math.min(u1, u + lean * hh), B(Math.min(u1, u + lean * hh)), u, T(u, hh), w]);
+  let hEnd = 0;
+  if (S > 0) {
+    const n = f.nSp ?? Math.max(3, Math.round(S * f.len / 0.035)), nt = f.notch ?? 0.4;
+    for (let i = 0; i < n; i++) {
+      const k = n > 1 ? i / (n - 1) : 1, hh = (sh0 + (sh1 - sh0) * k) * (i ? 1 : 0.6), s = S * (i + 0.75) / n, u = at(s); // the first spine is short
+      if (i) { const hm = (hh + hEnd) / 2 * (1 - nt), um = at(S * (i + 0.25) / n); top.push([um, T(um, hm)]); }
+      top.push([u, T(u, hh), 'c']); ray(u, hh, 2.2); hEnd = hh;
+    }
+  }
+  // soft part: rises from the last spine (or from the leading ray) to h, `rake` of the way back, then eases off
+  const r = f.rake ?? 0.4, n = 7, h0 = S > 0 ? hEnd * 0.85 : h * 0.55, pointy = f.tip === 'point';
+  for (let i = S > 0 ? 1 : 0; i <= n; i++) {
+    const t = i / n, s = S + (1 - S) * t, u = at(s);
+    const hh = t < r ? h0 + (h - h0) * Math.sin(t / r * Math.PI / 2) : h * (1 - (pointy ? 0 : 0.25) * ((t - r) / (1 - r)) ** 2);
+    if (f.fringe && i > 0) { const um = at(S + (1 - S) * (i - 0.5) / n); top.push([um, T(um, hh * 0.86)], [u, T(u, hh * 1.06), 'c']); }
+    else top.push(i === 0 ? [u, T(u, hh), 'c'] : [u, T(u, hh)]);
+    ray(u, hh, i === 0 && S === 0 ? 2.2 : 1);
+  }
+  // rear: a point behind the base end (trailing rays) or a rounded lobe; then the free rear edge back to the body
+  const ov = f.trail ?? (pointy ? 0.25 * h : 0.18 * h), hr = h * (f.drop ?? (pointy ? 0.75 : 0.6));
+  if (pointy) { top.push([u0 - ov, T(u0 - ov, hr), 'c']); ray(u0 - ov, hr, 1); }
+  else { top.push([u0 - ov * 0.7, T(u0 - ov * 0.7, hr)], [u0 - ov, T(u0 - ov, hr * 0.45)]); }
+  const pts: Pt[] = [[u1 + 0.004, B(u1 + 0.004)], [u1, T(u1, 0.02)], ...top, [u0 - ov * 0.15, B(u0 - ov * 0.15)]];
+  for (let k = 1; k <= 4; k++) { const u = u0 + (u1 - u0) * k / 5; pts.push([u, B(u)]); } // base line, rear to front
+  return { pts, rays };
+}
+
+/** Gonopodium (male livebearers): the anal fin as a slim rod lying back along the belly, with a stiff dark leading ray. */
+function gonoPts(g: { at: number; len: number }, belly: (u: number) => number): { pts: Pt[]; rays: FinRay[] } {
+  const b0 = belly(g.at) - 0.012, tipU = g.at - g.len, tipV = belly(g.at) + 0.045;
+  const pts: Pt[] = [[g.at + 0.012, b0], [g.at - 0.01, b0 + 0.03], [tipU + g.len * 0.25, tipV - 0.002], [tipU, tipV + 0.004, 'c'], [tipU + g.len * 0.3, tipV - 0.016], [g.at - 0.03, b0 + 0.004]];
+  return { pts, rays: [[g.at + 0.004, b0 + 0.01, tipU + 0.004, tipV, 2.4]] };
+}
+
+function tailPts(t: Tail, pu: number, c: number, pd: number, th: number, cut = 0.8): Pt[] {
   const e = pu + 0.03;
   switch (t) {
     case 'fork': return [[e, c - pd], [pu * 0.55, c - th * 0.6], [0, c - th, 'c'], [pu * 0.42, c - th * 0.12], [pu * 0.5, c], [pu * 0.42, c + th * 0.12], [0, c + th, 'c'], [pu * 0.55, c + th * 0.6], [e, c + pd]];
-    case 'lyre': return [[e, c - pd], [pu * 0.6, c - th * 0.5], [0, c - th, 'c'], [pu * 0.7, c - th * 0.15], [pu * 0.8, c], [pu * 0.7, c + th * 0.15], [0, c + th, 'c'], [pu * 0.6, c + th * 0.5], [e, c + pd]];
+    case 'lyre': return [[e, c - pd], [pu * 0.6, c - th * 0.5], [0, c - th, 'c'], [pu * (cut - 0.1), c - th * 0.15], [pu * cut, c], [pu * (cut - 0.1), c + th * 0.15], [0, c + th, 'c'], [pu * 0.6, c + th * 0.5], [e, c + pd]];
     case 'notch': return [[e, c - pd], [pu * 0.4, c - th * 0.85], [0, c - th, 'c'], [pu * 0.12, c], [0, c + th, 'c'], [pu * 0.4, c + th * 0.85], [e, c + pd]];
     case 'round': return [[e, c - pd], [pu * 0.65, c - th * 0.95], [pu * 0.18, c - th * 0.85], [0, c - th * 0.35], [0, c, 'c'], [0, c + th * 0.35], [pu * 0.18, c + th * 0.85], [pu * 0.65, c + th * 0.95], [e, c + pd]];
     case 'veil': return [[e, c - pd], [pu * 0.7, c - th * 0.9], [pu * 0.25, c - th * 0.95], [0.02, c - th * 0.4], [0, c + th * 0.1, 'c'], [0.03, c + th * 0.6], [pu * 0.3, c + th], [pu * 0.75, c + th * 0.8], [e, c + pd]];
@@ -121,24 +197,29 @@ function geometry(p: Plan) {
   for (let i = 1; i < n; i++) { const u = 1 - (1 - p.pedU) * i / (n - 1); const [a, b] = prof(u); top.push([u, a]); bot.unshift([u, b]); }
   const bodyPts: Pt[] = [[1, p.mouth ?? 0, 'c'], ...top, ...bot];
   const [pt, pb] = prof(p.pedU), c = (pt + pb) / 2, pd = (pb - pt) / 2;
-  const tail = tailPts(p.tail.type, p.pedU, c, pd, p.tail.h);
-  const dorsal = p.dorsal && finPts(p.dorsal, u => prof(u)[0], -1);
-  const anal = p.anal && finPts(p.anal, u => prof(u)[1], 1);
+  const tail = tailPts(p.tail.type, p.pedU, c, pd, p.tail.h, p.tail.cut);
+  const back = (u: number) => prof(u)[0], belly = (u: number) => prof(u)[1];
+  const med = (f: AnyFin | undefined, base: (u: number) => number, sg: number) => !f ? undefined : isMedian(f) ? medianPts(f, base, sg) : { pts: finPts(f, base, sg), rays: undefined };
+  const dorsalF = med(p.dorsal, back, -1), dorsal2F = med(p.dorsal2, back, -1);
+  const analF = p.gono ? gonoPts(p.gono, belly) : med(p.anal, belly, 1);
   let pelvic: Pt[] | undefined;
   if (p.pelvic) {
-    const { u, len } = p.pelvic, b = prof(u)[1] - 0.01;
+    const { u, len } = p.pelvic, b = prof(u)[1] - 0.01, w = p.pelvic.w ?? 1, ext = p.pelvic.ext ?? 0;
     // a thread hangs back at ~27 degrees, or steeper (`angle`): its points turn about the root
     const rot = ((p.pelvic.angle ?? 26.6) - 26.6) * Math.PI / 180, cr = Math.cos(rot), sr = Math.sin(rot);
     const R = (dx: number, dy: number, c?: 'c'): Pt => { const x = -dx * len, y = dy * len, qu = u + x * cr + y * sr, qv = b - x * sr + y * cr; return c ? [qu, qv, c] : [qu, qv]; };
+    // ext: the leading ray carries on past the membrane's tip, along the same line
+    const tip: Pt = ext ? [u - (len + ext) * 0.6, b + (len + ext) * 0.75, 'c'] : [u - len * 0.6, b + len * 0.75, 'c'];
     pelvic = p.pelvic.thread ? [[u + 0.01, b], R(0.55, 0.35), R(1, 0.5, 'c'), R(0.5, 0.3), [u - 0.01, b]]
-      : [[u + 0.02, b], [u - len * 0.6, b + len * 0.75, 'c'], [u - len * 0.35, b + len * 0.25], [u - 0.03, b]];
+      : w === 1 && !ext ? [[u + 0.02, b], tip, [u - len * 0.35, b + len * 0.25], [u - 0.03, b]]
+      : [[u + 0.02, b], tip, ...(ext ? [[u - len * 0.62, b + len * 0.72] as Pt] : []), [u - len * (0.35 + 0.3 * (w - 1)), b + len * 0.25 * w], [u - 0.03 * w, b]];
   }
-  return { prof, bodyPts, tail, dorsal, anal, pelvic, c };
+  return { prof, bodyPts, tail, dorsal: dorsalF?.pts, dorsal2: dorsal2F?.pts, anal: analF?.pts, rays: { dorsal: dorsalF?.rays, dorsal2: dorsal2F?.rays, anal: analF?.rays }, pelvic, c };
 }
 
 /** Card aspect (height / width) and resting offset: v of the lowest body/pelvic point (bottom dwellers sit on it). */
 export function planMeta(p: Plan) {
-  const g = geometry(p), all = [g.bodyPts, g.tail, g.dorsal ?? [], g.anal ?? [], g.pelvic ?? []].flat();
+  const g = geometry(p), all = [g.bodyPts, g.tail, g.dorsal ?? [], g.dorsal2 ?? [], g.anal ?? [], g.pelvic ?? []].flat();
   const ext = Math.max(...all.map(q => Math.abs(q[1])));
   const low = Math.max(...g.bodyPts.map(q => q[1]), ...(g.pelvic ?? []).map(q => q[1]));
   return { aspect: +(2 * ext + 0.03).toFixed(3), rest: +low.toFixed(3) };
@@ -182,7 +263,7 @@ export function pairedFins(p: Plan): PairedFin[] {
   const g = geometry(p), out: PairedFin[] = [];
   if (g.pelvic) out.push({ kind: 'pelvic', pts: g.pelvic, root: [p.pelvic!.u, g.prof(p.pelvic!.u)[1]], tint: p.pelvic!.tint ?? p.fin, a: p.pelvic!.thread ? 0.85 : undefined, rays: p.pelvic!.thread ? 0 : 5 });
   if (p.pectoral === false) return out;
-  const pu = 1 - (1 - p.pedU) * 0.24, [pt, pb] = g.prof(pu), pm = pt + (pb - pt) * 0.62, pl = Math.min((1 - p.pedU) * 0.17, p.depth * 0.75); // slender fish (loaches) keep small pectorals
+  const pu = p.pec?.u ?? 1 - (1 - p.pedU) * 0.24, [pt, pb] = g.prof(pu), pm = pt + (pb - pt) * (p.pec?.v ?? 0.62), pl = Math.min((1 - p.pedU) * 0.17, p.depth * 0.75) * (p.pec?.s ?? 1); // slender fish (loaches) keep small pectorals
   out.push({ kind: 'pectoral', pts: [[pu, pm - 0.01], [pu - pl, pm + pl * 0.3, 'c'], [pu - pl * 0.7, pm + pl * 0.55], [pu + 0.005, pm + 0.015]], root: [pu, pm], tint: mixHex(p.fin, p.shade[1], 0.35), a: 0.3, rays: 5 }); // pectoral takes on some flank colour: it lies against the body
   return out;
 }
@@ -209,12 +290,16 @@ export function drawPlan(p: Plan, ctx: Ctx, P: Proj, W: number) {
         if (f?.edge) { shape(c, P, pts); c.strokeStyle = hexA(f.edge, 0.55); c.lineWidth = 0.014 * W; c.stroke(); }
       },
     }] as const;
-  const draw = (pts: Pt[] | undefined, root: [number, number], f: { tint?: string; a?: number; edge?: string } | undefined, seed: number) => {
-    if (!pts) return; const [a, b, c2, d, e] = finOpts(f, root, pts, seed); fin(ctx, P, W, a, b, c2, d, e);
+  const draw = (pts: Pt[] | undefined, root: [number, number], f: { tint?: string; a?: number; edge?: string } | undefined, seed: number, segs?: FinRay[]) => {
+    if (!pts) return; const [a, b, c2, d, e] = finOpts(f, root, pts, seed); fin(ctx, P, W, a, b, c2, d, segs ? { ...e, segs } : e);
   };
+  // root of a fin's ray fan: the middle of its base, just inside the body
+  const mid = (f: AnyFin) => (isMedian(f) ? f.at - f.len / 2 : (f.u0 + f.u1) / 2);
   draw(g.tail, [p.pedU + 0.02, g.c], p.tail, 11);
-  if (p.dorsal) draw(g.dorsal, [(p.dorsal.u0 + p.dorsal.u1) / 2, g.prof((p.dorsal.u0 + p.dorsal.u1) / 2)[0] + 0.02], p.dorsal, 12);
-  if (p.anal) draw(g.anal, [(p.anal.u0 + p.anal.u1) / 2, g.prof((p.anal.u0 + p.anal.u1) / 2)[1] - 0.02], p.anal, 13);
+  if (p.dorsal) draw(g.dorsal, [mid(p.dorsal), g.prof(mid(p.dorsal))[0] + 0.02], p.dorsal, 12, g.rays.dorsal);
+  if (p.dorsal2) draw(g.dorsal2, [mid(p.dorsal2), g.prof(mid(p.dorsal2))[0] + 0.02], p.dorsal2, 14, g.rays.dorsal2);
+  if (p.gono) draw(g.anal, [p.gono.at, g.prof(p.gono.at)[1]], { tint: p.gono.tint, a: 0.85 }, 13, g.rays.anal);
+  else if (p.anal) draw(g.anal, [mid(p.anal), g.prof(mid(p.anal))[1] - 0.02], p.anal, 13, g.rays.anal);
   const paired = pairedFins(p);
   if (style.paired && paired[0]?.kind === 'pelvic') drawPairedFin(paired[0], ctx, P, W, ray);
   if (p.adipose) {
@@ -384,28 +469,37 @@ export const PLANS: Record<string, Plan> = {
     finMarks: [{ k: 'spots', n: 60, u0: 0, u1: 0.6, v0: -0.4, v1: 0.4, r: 0.015, c: '#4f7fb8', a: 0.25 }],
     eye: { r: 0.03, iris: ['#7a3030', '#1a0808'] } },
   // pearl gourami: was hand-drawn (drawGourami); outline, fins and markings taken from that drawing
-  gourami: { thick: 0.32, depth: 0.39, pedU: 0.17, ped: 0.08, peak: 0.45, snout: 0.5, mouth: -0.02, shade: ['#5e5644', '#a09274', '#d3c6a8'], tail: { type: 'round', h: 0.16, tint: '#a8987a' }, fin: '#a8987a', ray: '#73654f',
-    dorsal: { u0: 0.2, u1: 0.5, h: 0.08, shape: 'round' }, anal: { u0: 0.18, u1: 0.68, h: 0.09, shape: 'round', edge: '#c87a3e' }, pelvic: { u: 0.72, len: 0.4, thread: true, tint: '#c8b48a' },
+  gourami: { thick: 0.32, depth: 0.39, pedU: 0.17, ped: 0.08, peak: 0.45, snout: 0.55, mouth: -0.045, shade: ['#5e5644', '#a09274', '#d3c6a8'], tail: { type: 'round', h: 0.16, tint: '#a8987a' }, fin: '#a8987a', ray: '#73654f',
+    // short dorsal set back, pointed in the male; anal from behind the pelvics to the peduncle, its rear rays drawn out in a fringe
+    dorsal: { at: 0.5, len: 0.26, h: 0.1, spines: 0.35, nSp: 5, spineH: [0.05, 0.07], notch: 0.3, tip: 'point', trail: 0.14, drop: 0.9, rake: 0.6 },
+    anal: { at: 0.7, len: 0.5, h: 0.11, spines: 0.4, nSp: 7, spineH: [0.03, 0.07], notch: 0.18, rake: 0.7, tip: 'point', trail: 0.07, fringe: true, edge: '#c87a3e' }, pelvic: { u: 0.72, len: 0.4, thread: true, tint: '#c8b48a' },
     marks: [{ k: 'blob', u: 0.78, v: 0.15, ru: 0.2, rv: 0.09, c: '#cc5a22', a: 1 }, { k: 'spots', n: 200, u0: 0.18, u1: 0.88, v0: -0.2, v1: 0.12, r: 0.009, c: '#f2eadb', a: 0.9 },
       { k: 'poly', pts: zigzag(0.86, 0.21, 13, 0.01, 0.006), c: '#2a251d', a: 0.6 }, { k: 'blob', u: 0.215, v: 0, ru: 0.03, rv: 0.03, c: '#2a251d', a: 0.7 }],
     finMarks: [{ k: 'spots', n: 110, u0: 0.02, u1: 0.62, v0: -0.27, v1: 0.27, r: 0.009, c: '#f2eadb', a: 0.6 }],
     eye: { r: 0.024, iris: ['#d0b48a', '#5e4a2e'] } },
-  dwarfgourami: { thick: 0.32, depth: 0.42, pedU: 0.2, ped: 0.06, peak: 0.5, snout: 0.5, mouth: -0.02, shade: ['#2f5c8a', '#c25a3a', '#d47a54'], tail: { type: 'round', h: 0.17, tint: '#c6603e' }, fin: '#c86a4a',
-    dorsal: { u0: 0.22, u1: 0.55, h: 0.1, shape: 'round', edge: '#3c74b0' }, anal: { u0: 0.2, u1: 0.72, h: 0.12, shape: 'round', edge: '#3c74b0' }, pelvic: { u: 0.72, len: 0.4, thread: true, tint: '#d68a5a' },
+  dwarfgourami: { thick: 0.32, depth: 0.42, pedU: 0.2, ped: 0.06, peak: 0.5, snout: 0.55, mouth: -0.045, shade: ['#2f5c8a', '#c25a3a', '#d47a54'], tail: { type: 'round', h: 0.17, tint: '#c6603e' }, fin: '#c86a4a',
+    // gourami fins: long bases, low spiny fronts deepening to the rear; the male's soft dorsal and anal end in points
+    dorsal: { at: 0.62, len: 0.38, h: 0.1, spines: 0.6, nSp: 7, spineH: [0.035, 0.07], notch: 0.18, tip: 'point', trail: 0.07, rake: 0.6, edge: '#3c74b0' },
+    anal: { at: 0.68, len: 0.46, h: 0.12, spines: 0.5, nSp: 7, spineH: [0.03, 0.08], notch: 0.18, tip: 'point', trail: 0.06, rake: 0.65, edge: '#3c74b0' }, pelvic: { u: 0.72, len: 0.4, thread: true, tint: '#d68a5a' },
     marks: [0.32, 0.4, 0.48, 0.56, 0.64, 0.72, 0.8].map(u => ({ k: 'band' as const, u0: u, u1: u + 0.035, v0: -0.25, v1: 0.25, c: '#3a78b8', a: 0.75, f: 0.01 })),
     finMarks: [{ k: 'spots', n: 40, u0: 0.05, u1: 0.7, v0: -0.35, v1: 0.35, r: 0.012, c: '#3a78b8', a: 0.6 }],
     eye: { r: 0.032, iris: ['#c8603a', '#3a1a10'] } },
-  honeygourami: { thick: 0.32, depth: 0.38, pedU: 0.2, ped: 0.06, peak: 0.5, snout: 0.5, mouth: -0.02, shade: ['#b06a2a', '#e09a42', '#eabc78'], tail: { type: 'round', h: 0.15, tint: '#dca064' }, fin: '#dca064',
-    dorsal: { u0: 0.25, u1: 0.55, h: 0.08, shape: 'round' }, anal: { u0: 0.22, u1: 0.68, h: 0.1, shape: 'round', edge: '#3a3020' }, pelvic: { u: 0.7, len: 0.3, thread: true, tint: '#e0a868' },
+  honeygourami: { thick: 0.32, depth: 0.38, pedU: 0.2, ped: 0.06, peak: 0.5, snout: 0.55, mouth: -0.045, shade: ['#b06a2a', '#e09a42', '#eabc78'], tail: { type: 'round', h: 0.15, tint: '#dca064' }, fin: '#dca064',
+    dorsal: { at: 0.6, len: 0.36, h: 0.085, spines: 0.6, nSp: 6, spineH: [0.03, 0.06], notch: 0.18, tip: 'point', trail: 0.05, rake: 0.6 },
+    anal: { at: 0.67, len: 0.45, h: 0.1, spines: 0.5, nSp: 6, spineH: [0.03, 0.07], notch: 0.18, tip: 'point', trail: 0.05, rake: 0.65, edge: '#3a3020' }, pelvic: { u: 0.7, len: 0.3, thread: true, tint: '#e0a868' },
     marks: [{ k: 'band', u0: 0.7, u1: 1, v0: 0.04, v1: 0.26, c: '#4a3a30', a: 0.42, f: 0.14 }, { k: 'blob', u: 0.84, v: 0.14, ru: 0.09, rv: 0.07, c: '#3a2e2a', a: 0.35 }], eye: { r: 0.03, iris: ['#d08a40', '#4a2a10'] } },
   gbr: { thick: 0.36, depth: 0.44, pedU: 0.22, ped: 0.06, peak: 0.5, snout: 0.55, shade: ['#6b7a5a', '#b8b46a', '#d8c088'], tail: { type: 'round', h: 0.17, tint: '#b0907a' }, fin: '#b89a80',
-    dorsal: { u0: 0.22, u1: 0.62, h: 0.13, shape: 'round', edge: '#c8443a' }, anal: { u0: 0.22, u1: 0.5, h: 0.1, shape: 'round' }, pelvic: { u: 0.65, len: 0.1, tint: '#c84a3a' },
+    // dorsal from over the gill cover to the peduncle: tall black front spines (male), soft rear drawn out to a point
+    dorsal: { at: 0.8, len: 0.52, h: 0.12, spines: 0.5, nSp: 8, spineH: [0.17, 0.08], tip: 'point', trail: 0.07, edge: '#c8443a' },
+    anal: { at: 0.52, len: 0.27, h: 0.1, spines: 0.25, nSp: 3, spineH: [0.04, 0.07], tip: 'point', trail: 0.05 }, pelvic: { u: 0.67, len: 0.11, ext: 0.07, tint: '#c84a3a' },
     marks: [{ k: 'blob', u: 0.86, v: -0.02, ru: 0.12, rv: 0.12, c: '#e0b04a', a: 0.7 }, { k: 'bars', us: [0.87], w: 0.04, c: '#1a1a1e', a: 0.85 },
       { k: 'blob', u: 0.62, v: -0.04, ru: 0.05, rv: 0.06, c: '#1a1a1e', a: 0.75 }, { k: 'spots', n: 70, u0: 0.25, u1: 0.8, v0: -0.15, v1: 0.15, r: 0.012, c: '#5aa0d8', a: 0.75 }],
-    finMarks: [{ k: 'spots', n: 50, u0: 0, u1: 0.65, v0: -0.4, v1: 0.4, r: 0.01, c: '#5aa0d8', a: 0.55 }],
+    finMarks: [{ k: 'spots', n: 50, u0: 0, u1: 0.65, v0: -0.4, v1: 0.4, r: 0.01, c: '#5aa0d8', a: 0.55 }, { k: 'band', u0: 0.66, u1: 0.8, v0: -0.6, v1: -0.2, c: '#1a1a1e', a: 0.85, f: 0.02 }],
     eye: { r: 0.032, iris: ['#c8443a', '#4a1210'] } },
-  bolivianram: { thick: 0.36, depth: 0.38, pedU: 0.22, ped: 0.055, peak: 0.5, snout: 0.5, shade: ['#6a6450', '#b8ae8a', '#d8cfb0'], tail: { type: 'lyre', h: 0.17, tint: '#c2a890' }, fin: '#c2ac94',
-    dorsal: { u0: 0.22, u1: 0.62, h: 0.12, shape: 'round', edge: '#c8443a' }, anal: { u0: 0.22, u1: 0.48, h: 0.09, shape: 'round' }, pelvic: { u: 0.65, len: 0.1, tint: '#d26a52' },
+  bolivianram: { thick: 0.36, depth: 0.38, pedU: 0.22, ped: 0.055, peak: 0.5, snout: 0.5, shade: ['#6a6450', '#b8ae8a', '#d8cfb0'], tail: { type: 'lyre', h: 0.17, tint: '#c2a890', cut: 0.42 }, fin: '#c2ac94',
+    // raised front spines, soft rear to a point; a shallow tail fork with the outer rays drawn out; long pelvics
+    dorsal: { at: 0.8, len: 0.54, h: 0.11, spines: 0.55, nSp: 9, spineH: [0.15, 0.075], tip: 'point', trail: 0.06, edge: '#c8443a' },
+    anal: { at: 0.5, len: 0.26, h: 0.1, spines: 0.25, nSp: 3, spineH: [0.04, 0.07], tip: 'point', trail: 0.05 }, pelvic: { u: 0.67, len: 0.11, ext: 0.08, tint: '#d26a52' },
     marks: [{ k: 'blob', u: 0.58, v: -0.01, ru: 0.04, rv: 0.04, c: '#1a1a1e', a: 0.8 }, { k: 'bars', us: [0.87], w: 0.03, c: '#2a2a2c', a: 0.7 }, { k: 'blob', u: 0.8, v: 0.1, ru: 0.12, rv: 0.06, c: '#e8a868', a: 0.5 }],
     eye: { r: 0.03, iris: ['#c8443a', '#4a1210'] } },
   kribensis: { thick: 0.45, belly: 0.2, depth: 0.3, pedU: 0.2, ped: 0.05, peak: 0.55, snout: 0.45, shade: ['#5c5848', '#b3aa90', '#d8b8a8'], tail: { type: 'notch', h: 0.15, tint: '#c8ac6a' }, fin: '#c0a674',
@@ -550,12 +644,14 @@ Object.assign(PLANS, {
     anal: { u0: 0.38, u1: 0.5, h: 0.07 }, pelvic: { u: 0.63, len: 0.05 }, finMarks: [], marks: [{ k: 'blob', u: 0.48, v: 0.09, ru: 0.035, rv: 0.03, c: '#4a1a10', a: 0.45 }] }),
   // silvery grey with faint brownish bars, rounded dorsal, no blue fin edges
   dwarfgourami_f: her('dwarfgourami', { shade: ['#5f6f78', '#9ba4a3', '#cbcfc6'], tail: { type: 'round', h: 0.16, tint: '#a8aca4' }, fin: '#b0b2aa',
-    dorsal: { u0: 0.27, u1: 0.55, h: 0.08, shape: 'round' }, anal: { u0: 0.2, u1: 0.7, h: 0.1, shape: 'round' }, pelvic: { u: 0.72, len: 0.38, thread: true, tint: '#c8a888' },
+    dorsal: { at: 0.62, len: 0.38, h: 0.08, spines: 0.6, nSp: 7, spineH: [0.035, 0.065], notch: 0.18, rake: 0.6 },
+    anal: { at: 0.68, len: 0.46, h: 0.1, spines: 0.5, nSp: 7, spineH: [0.03, 0.075], notch: 0.18, rake: 0.6 }, pelvic: { u: 0.72, len: 0.38, thread: true, tint: '#c8a888' },
     marks: [0.32, 0.4, 0.48, 0.56, 0.64, 0.72, 0.8].map(u => ({ k: 'band' as const, u0: u, u1: u + 0.03, v0: -0.2, v1: 0.2, c: '#a07a5e', a: 0.3, f: 0.012 })),
     finMarks: [{ k: 'spots', n: 20, u0: 0.05, u1: 0.6, v0: -0.3, v1: 0.3, r: 0.01, c: '#8a8478', a: 0.3 }] }),
   // drab silvery tan with a brown stripe from eye to tail, no black throat
   honeygourami_f: her('honeygourami', { shade: ['#8a7a5a', '#c2ae86', '#e4d8bc'], tail: { type: 'round', h: 0.15, tint: '#d0c0a0' }, fin: '#d2c4a4',
-    anal: { u0: 0.22, u1: 0.68, h: 0.1, shape: 'round' }, pelvic: { u: 0.7, len: 0.28, thread: true, tint: '#e0c898' },
+    dorsal: { at: 0.6, len: 0.36, h: 0.075, spines: 0.6, nSp: 6, spineH: [0.03, 0.055], notch: 0.18, rake: 0.6 },
+    anal: { at: 0.67, len: 0.45, h: 0.09, spines: 0.5, nSp: 6, spineH: [0.03, 0.065], notch: 0.18, rake: 0.6 }, pelvic: { u: 0.7, len: 0.28, thread: true, tint: '#e0c898' },
     marks: [{ k: 'band', u0: 0.24, u1: 0.84, v0: -0.012, v1: 0.022, c: '#8a6a44', a: 0.45, f: 0.05 }] }),
   // tan-brown with the dark lateral stripe clearer, a touch deeper
   cherrybarb_f: her('cherrybarb', { depth: 0.31, shade: ['#7c6448', '#bea27c', '#e0ceb0'], tail: { type: 'fork', h: 0.15, tint: '#c8a888' }, fin: '#cdb094',
@@ -566,7 +662,7 @@ Object.assign(PLANS, {
     marks: [{ k: 'band', u0: 0.2, u1: 0.92, v0: -0.02, v1: 0.02, c: '#2a2620', a: 0.8, f: 0.012 }, { k: 'blob', u: 0.6, v: 0.12, ru: 0.18, rv: 0.08, c: '#c8305a', a: 0.9 }, { k: 'blob', u: 0.62, v: 0.1, ru: 0.08, rv: 0.04, c: '#8a3a9a', a: 0.35 }],
     finMarks: [{ k: 'blob', u: 0.32, v: -0.18, ru: 0.025, rv: 0.025, c: '#1a1a1a', a: 0.85 }, { k: 'blob', u: 0.45, v: -0.185, ru: 0.022, rv: 0.022, c: '#1a1a1a', a: 0.8 }] }),
   // smaller, lower dorsal, a pink belly patch, fewer blue spangles
-  gbr_f: her('gbr', { dorsal: { u0: 0.22, u1: 0.62, h: 0.1, shape: 'round', edge: '#c8443a' },
+  gbr_f: her('gbr', { dorsal: { at: 0.8, len: 0.52, h: 0.1, spines: 0.5, nSp: 8, spineH: [0.07, 0.08], trail: 0.03, edge: '#c8443a' }, anal: { at: 0.52, len: 0.27, h: 0.09, spines: 0.25, nSp: 3, spineH: [0.04, 0.065], trail: 0.03 }, pelvic: { u: 0.67, len: 0.1, ext: 0.03, tint: '#c84a3a' },
     marks: [{ k: 'blob', u: 0.86, v: -0.02, ru: 0.12, rv: 0.12, c: '#e0b04a', a: 0.6 }, { k: 'bars', us: [0.87], w: 0.04, c: '#1a1a1e', a: 0.85 },
       { k: 'blob', u: 0.62, v: -0.04, ru: 0.05, rv: 0.06, c: '#1a1a1e', a: 0.75 }, { k: 'blob', u: 0.6, v: 0.14, ru: 0.13, rv: 0.07, c: '#d8587a', a: 0.75 },
       { k: 'spots', n: 40, u0: 0.25, u1: 0.8, v0: -0.15, v1: 0.1, r: 0.011, c: '#5aa0d8', a: 0.55 }],
@@ -582,7 +678,8 @@ Object.assign(PLANS, {
     marks: [{ k: 'blob', u: 0.6, v: -0.06, ru: 0.25, rv: 0.09, c: '#7ab070', a: 0.18 }, { k: 'spots', n: 10, u0: 0.27, u1: 0.8, v0: -0.14, v1: 0.04, r: 0.036, c: '#3e3c1e', a: 0.72 },
       { k: 'spots', n: 10, u0: 0.25, u1: 0.85, v0: -0.13, v1: 0.06, r: 0.02, c: '#3e3c1e', a: 0.55 }] }),
   // no orange-red breast, a rounded dorsal and a plain anal fin
-  gourami_f: her('gourami', { dorsal: { u0: 0.22, u1: 0.45, h: 0.07, shape: 'round' }, anal: { u0: 0.18, u1: 0.68, h: 0.08, shape: 'round' }, pelvic: { u: 0.72, len: 0.35, thread: true, tint: '#d8ccb0' },
+  gourami_f: her('gourami', { dorsal: { at: 0.5, len: 0.26, h: 0.08, spines: 0.35, nSp: 5, spineH: [0.05, 0.065], notch: 0.3, trail: 0.025 },
+    anal: { at: 0.7, len: 0.5, h: 0.09, spines: 0.4, nSp: 7, spineH: [0.03, 0.065], notch: 0.18, rake: 0.6, trail: 0.03 }, pelvic: { u: 0.72, len: 0.35, thread: true, tint: '#d8ccb0' },
     marks: PLANS.gourami.marks!.slice(1) }),
 });
 

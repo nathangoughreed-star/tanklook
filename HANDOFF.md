@@ -22,6 +22,22 @@ Living file. Project state and dated decisions go here; update in place.
   ("Bare tank"); the pieces stay.
 - Before/after pairs: `shots/final/P1..P4_*_pair.png` (main checkout, gitignored).
 
+## Lane S: anatomy audit P1, fish fins (2026-10-14; branch `fish-fins`, port 5503; IN PROGRESS, batch 1 approved and pushed)
+Owns `src/art/fishgen.ts`, `src/art/paint.ts`, `src/render/fish3d.ts`. Hook elsewhere: `src/art/placeholder.ts` asks
+`fishgen.finRooted(p, top, u)` where fins are rooted (the 3D card's body cut-out keeps the rim there), 3 lines.
+- **Cause of the "rear paddles":** the old `FinSpec` outline put a flat top at a fixed height above the fin's MIDPOINT;
+  over a domed back the body hid everything but the rear lobe.
+- **New `MedianFin`** (a plan's `dorsal` / `anal` is either the old `FinSpec` or this; `isMedian` = has `at`): base from
+  `at` (front, u) running `len` back; every height measured from the body contour under it. `spines` (front share),
+  `nSp`, `spineH` [front, rear] (first spine drawn at 0.6), `notch`; soft part to `h`, peak `rake` of the way back;
+  `tip` round | point, `trail` (rear tip behind the base end), `drop`, `fringe` (ragged free ray tips). Rays drawn base
+  to tip (`paint.fin` `segs`), spines thicker. Also new: `dorsal2` (second dorsal), `gono` (gonopodium replaces the
+  anal), `pelvic.ext` / `pelvic.w`, `pec` {s, v, u}, `tail.cut` (lyre fork depth). Unconverted fish are unchanged
+  (fingerprints identical).
+- **Batch 1 (Nathan approved, v2 at build 330):** gbr / gbr~f, bolivianram (shallow lyre `cut` 0.42), dwarfgourami(~f),
+  honeygourami(~f), gourami(~f) (male fringed anal, long trailing dorsal); gourami mouths upturned (`mouth` -0.045).
+- Before/after composites: worktree `shots/laneS/b1-*.jpg` (gitignored).
+
 ## Lane R: anatomy audit P2, axolotl + zebra nerite (2026-10-14; branch `p2-small`, port 5493; Nathan approved both sheets; pushed to main)
 Owns `src/art/herps.ts`, `src/render/herp3d.ts`, `src/art/snails.ts`, `src/render/snail3d.ts`. Models v3 at build 317; no
 other model's fingerprint changed (other snails, hermit crab, frogs, newt identical).
