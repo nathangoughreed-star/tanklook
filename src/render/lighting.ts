@@ -11,7 +11,7 @@ import type { LightSettings, Tank, WaterSettings } from '../scene/types';
 import { waterK, waterY } from '../scene/physics';
 import { bowlDims, footprint, shapeOf } from '../scene/shape';
 
-import { AQ_MAX, LAMP_Y, beam, emitters, lampHeight, type Emitter } from '../scene/lightout';
+import { AQ_MAX, LAMP_Y, beam, emitters, lampHeight, lightOutCached, renderBright, type Emitter, type LightScene } from '../scene/lightout';
 // the fixture geometry lives with the light-output model now (lane K); re-exported so importers stay as they were
 export { AQ_MAX, CONES, LAMP_Y, beam, emitters, fitSpots, lampHeight, type Emitter } from '../scene/lightout';
 
@@ -89,8 +89,10 @@ void main() {
   });
 }
 
-export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams = false) {
+/** `S` (the setup; lane K): with watts set, the brightness follows the computed lux and `l.bright` is the exposure. */
+export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams = false, S?: LightScene) {
   const on = l.type !== 'flat'; LU.uMode.value = on ? 1 : 0;
+  const lo = on && S ? lightOutCached({ ...S, tank: T }) : null, bright = lo ? renderBright(lo, l.bright) : l.bright;
   // light map: a spot bulb or a tube counts as one light; an LED bar's emitters share the output of four bulbs
   LU.uMapOn.value = on && beams ? 1 : 0;
   if (on) { LU.uMapGain.value = beam(l).gain; LU.uMapW.value = l.type === 'led' ? 4 / Math.max(emitters(T, l).length, 1) : 1; }
@@ -103,7 +105,7 @@ export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams 
   // the spill shows most in a dark room (in a lit room the eye adapts and it barely registers); a raised fixture
   // throws more of its light past the tank (up to ~1.8x at 450 mm and above)
   const spill = 0.9 * (1 - 0.75 * roomLevel(l.room)) * (1 + 0.8 * clamp((up - LAMP_Y) / 400, 0, 1));
-  if (on) LU.uSpill.value.setRGB(...kelvinRGB(l.kelvin)).multiplyScalar(spill * l.bright); else LU.uSpill.value.setRGB(spill, spill, spill);
+  if (on) LU.uSpill.value.setRGB(...kelvinRGB(l.kelvin)).multiplyScalar(spill * bright); else LU.uSpill.value.setRGB(spill, spill, spill);
   if (!on) return;
   const E = emitters(T, l, hgt), { cone, gain } = beam(l), ref: LightSettings = { ...l, spacing: 0, cone: 52 };
   E.forEach((e, i) => LU.uEm.value[i].set(...e)); LU.uEmN.value = E.length;
@@ -113,7 +115,7 @@ export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams 
   const R = emitters(T, ref, LAMP_Y), rc = beam(ref).cone; let avg = 0, k = 0;
   for (let i = 1; i <= 5; i++) for (let j = 1; j <= 5; j++) { avg += lightSum(R, [T.L * i / 6, T.H * 0.5, -T.D * j / 6], rc); k++; }
   LU.uNorm.value = gain * k / Math.max(avg, 1e-6); [LU.uConeIn.value, LU.uConeOut.value] = cone;
-  LU.uAmb.value = l.room; LU.uBright.value = l.bright; LU.uLCol.value.setRGB(...kelvinRGB(l.kelvin));
+  LU.uAmb.value = l.room; LU.uBright.value = bright; LU.uLCol.value.setRGB(...kelvinRGB(l.kelvin));
 }
 
 const AQ_VERT = 'varying vec3 vAqP; varying vec3 vAqN;';

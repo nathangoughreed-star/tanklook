@@ -2,7 +2,7 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
-## Lane K: light output (2026-10-14; branch `light-output`, port 5383; step 1 of 4 pushed)
+## Lane K: light output (2026-10-14; branch `light-output`, port 5383; steps 1-2 of 4 pushed)
 - Owns `render/lighting.ts` (carved out of lane J's render/*), new `scene/lightout.ts` + `test/lightout.test.ts`, the
   light fields in scene/types.ts / defaults.ts / validate.ts, the Lighting rows in index.html / ui/panels.ts,
   ui/diff.ts, ui/parGuide.ts. Lane J: the fixture geometry (emitters, beam, fitSpots, lampHeight, CONES, LAMP_Y,
@@ -20,8 +20,14 @@ Living file. Project state and dated decisions go here; update in place.
 - Findings for Nathan: under white / planted light lux falls a little SLOWER than PAR with depth (red goes first and
   barely counts in lux); only under blue reef light does lux fall faster. LREF is 8,000 lux, not ~2,000 (typical
   setups give 6,000-12,000 mid-water). Readout range = the tech's uncertainty (LED ±30%, others ±50%) or min-max.
-- Next: step 2 (Watts / Tech / PAR override rows, readout, Brightness -> Exposure), 3 (shader port + PAR / Lux map),
-  4 (hover tooltip).
+- Nathan 2026-10-14: yes to T5 eta 0.75, the JBL tank assumption, the lux-vs-PAR finding and LREF 8,000 ("as accurate
+  as feasible").
+- Step 2: Lighting rows Power (W, 0 = not set), Light type (techs for the fixture type), PAR (measured), the readout
+  line; Brightness is relabelled Exposure (x0.5-2) while the power is set. The render follows it: `setLightUniforms`
+  takes the setup (ONE-LINE HOOK in lane J's render/viewer.ts: `..., S.render.beams, S)`) and uses
+  `lightOutCached` -> `renderBright`. ui/diff.ts: A/B lines for power, light type, measured PAR, Exposure.
+- Next: 3 (shader port + PAR / Lux map), 4 (hover tooltip).
+
 ## Model review sheet + model versions (2026-10-14, Nathan: "keep it where it can be updated with version number every time a model is updated")
 - `review.html` (live at tanklook.com/review.html; second Vite page, `src/review/`): every species look (females too)
   from Side, 3/4, Front, Top, each in the preview tile's flat light and in the default tank's LED bar + water. Filter,
