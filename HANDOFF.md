@@ -24,7 +24,8 @@ Living file. Project state and dated decisions go here; update in place.
   48 x 18 x 22 in, 12 in ends, rimmed**: 73.4 gal gross in the app; sources: Sea Clear / Tsunami 72 bow 48x18x20, owner
   report 48x18x22 with 12 in ends; the first try, 48x18x24 with 14 in ends, is an 80 gal size). The reef now uses the
   Reef starter set (seed 1) and lane E's animals. Hints in `index.ts` updated. Thumbnails re-shot after merging main
-  (lane A sway / per-plant variation / glass clip, lane K lights) at 400 x 343, camera zoom 1.1.
+  (lane A sway / per-plant variation / glass clip, lane K lights, G2 #29 tank-only framing) at 400 x 343; every example's
+  camera zoom is 0.8, so the tank fills the picture and its stand still shows (at 1 the stand runs off the bottom).
 - **Audit #42** (plant leaves through the glass): lane A's `82090a8` on main fixes it (3D plants glass-clipped, bowls too);
   my own version was dropped. Measured for the record: 3D leaves reach 1.9x the card half-width (sword, fern), 1.4x anubias,
   3.3x vallisneria, so clamping the anchor on the real reach would have emptied the glass edges.

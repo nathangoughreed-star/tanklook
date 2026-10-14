@@ -14,7 +14,7 @@
     "dist": 3000,
     "az": 6,
     "el": 22,
-    "zoom": 1.1
+    "zoom": 0.8
    },
    "render": {
     "edge": "a2c",
