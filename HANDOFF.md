@@ -732,6 +732,7 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | R P2 axolotl + nerite | `../Glass-Box-p2-small` / `p2-small` | 5493 | `art/herps.ts`, `render/herp3d.ts`, `art/snails.ts`, `render/snail3d.ts` | DONE (`45f872a`); files free. Open: fillCut for mystery / turbo / trumpet (would change approved look) |
 | S P1 fish fins | `../Glass-Box-fish-fins` / `fish-fins` | 5503 | `art/fishgen.ts`, `art/paint.ts`, `render/fish3d.ts` | running (session `local_b5a88177`) |
 | R2 snail aperture kink | `../Glass-Box-p2-small` / `p2-small` (started by lane R) | 5493 | `art/snails.ts`, `render/snail3d.ts` (mystery / turbo / trumpet fillCut) | CLOSED: tried, Nathan declined (`52fb6cb`); snail files free |
+| S2 fish batch 4 | `../Glass-Box-fish-fins-b4` / `fish-fins-b4` | 5513 | in `art/fishgen.ts` ONLY the PLANS / her() entries of hatchet, swordtail(~f), guppy(~f), betta(~f), peapuffer(~f); no MedianFin / medianPts / gonoPts / tailPts / pairedFins, no paint.ts / fish3d.ts (new generic parameters: ask lane S) | waits for lane S's batch 2 push |
 | T iPhone AR | `../Glass-Box-ar` / `ar-view` (lane Q's, Q is done) | 5483 | new `render/arUsdz.ts` + test, `render/ar.ts` | running (session `local_070f91c7`) |
 Free (no lane): `render/build.ts`, `render/items.ts`, `scene/items.ts`, `render/viewer.ts`, `main.ts`, `render/lighting.ts`,
 `render/coral3d.ts`, `render/shrimp3d.ts` / `art/shrimps.ts`, `scene/share.ts`, herps / herp3d / snails / snail3d. A one-line hook in a free file is fine; name it

@@ -502,6 +502,21 @@
         "--strictPort"
       ],
       "port": 5503
+    },
+    {
+      "name": "fish-fins-b4",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "C:/Users/nreed/Glass-Box-fish-fins-b4",
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5513",
+        "--strictPort"
+      ],
+      "port": 5513
     }
   ]
 }
