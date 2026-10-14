@@ -343,29 +343,40 @@ export function lightOut(S: LightScene): LightOut | null {
   };
 }
 
-const outCache = new Map<string, LightOut | null>();
+// Everything the model gives is proportional to the watts (photons, so the direct light, the bounce and every reading),
+// so the caches hold one run at 1 W with no PAR override and scale it (lane J2: a Power step re-ran the model, ~100 ms).
+// The key leaves out the light fields the model does not read (Exposure, colour, room light, map unit).
+const unitKey = (S: LightScene) => {
+  const { watts: _w, par: _p, bright: _b, kelvin: _k, room: _r, mapUnit: _m, ...l } = S.light;
+  return JSON.stringify([S.tank, l, S.lid, S.water, S.substrate, S.layout.id, S.layout.seed, S.terrain]);
+};
+const unitS = (S: LightScene): LightScene => ({ ...S, light: { ...S.light, watts: 1, par: undefined } });
+function cached<T>(cache: Map<string, T>, key: string, make: () => T): T {
+  if (!cache.has(key)) { cache.set(key, make()); if (cache.size > 8) cache.delete(cache.keys().next().value!); }
+  return cache.get(key)!;
+}
+const outCache = new Map<string, LightOut | null>(), envCache = new Map<string, LightEnv | null>();
 /** lightOut, cached on the settings it reads (the viewer asks every frame, per viewport; the panel on every edit). */
 export function lightOutCached(S: LightScene): LightOut | null {
   const l = S.light;
   if (l.type === 'flat' || !(l.watts && l.watts > 0)) return null;
-  const key = JSON.stringify([S.tank, l, S.lid, S.water, S.substrate, S.layout.id, S.layout.seed, S.terrain]);
-  if (outCache.has(key)) return outCache.get(key)!;
-  const o = lightOut(S);
-  outCache.set(key, o); if (outCache.size > 8) outCache.delete(outCache.keys().next().value!);
-  return o;
+  const u = cached(outCache, unitKey(S), () => lightOut(unitS(S)));
+  if (!u) return null;
+  const w = l.watts, scale = l.par && l.par > 0 && u.mean > 0 ? l.par / (u.mean * w) : 1, f = w * scale;
+  return {
+    surface: u.surface * f, mean: u.mean * f, min: u.min * f, max: u.max * f, luxMean: u.luxMean * f, luxMid: u.luxMid * f,
+    band: parBand(u.mean * f), scale, tech: u.tech,
+  };
 }
 
-const envCache = new Map<string, LightEnv | null>();
 /** lightEnv with the PAR-override scale applied (as the shader gets it), cached like lightOutCached: for the hover readout. */
 export function lightEnvCached(S: LightScene): LightEnv | null {
   const o = lightOutCached(S);
   if (!o) return null;
-  const key = JSON.stringify([S.tank, S.light, S.lid, S.water, S.substrate, S.layout.id, S.layout.seed, S.terrain]);
-  if (!envCache.has(key)) {
-    const e = lightEnv(S);
-    envCache.set(key, e && { ...e, scale: o.scale }); if (envCache.size > 8) envCache.delete(envCache.keys().next().value!);
-  }
-  return envCache.get(key)!;
+  const e = cached(envCache, unitKey(S), () => lightEnv(unitS(S)));
+  if (!e) return null;
+  const w = S.light.watts!;
+  return { ...e, phi: e.phi * w, ind: e.ind.map(v => v * w) as Band, scale: o.scale };
 }
 
 /** Lux at mid-water that renders at Brightness 1: a 24 x 12 x 12 in tank under a 20 W white LED bar gives about this

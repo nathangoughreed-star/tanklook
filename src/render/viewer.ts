@@ -1,7 +1,7 @@
 // Owns the WebGL renderer and the one or two viewports (one per tank setup; two after a split). Render-on-demand.
 import * as THREE from 'three';
 import { fishTL, speciesOf } from '../data/species';
-import { D2R, depthRatio, floorY, fmtLen, tankUnderside } from '../scene/physics';
+import { D2R, clamp, depthRatio, floorY, fmtLen, tankUnderside } from '../scene/physics';
 import { tableOn, tableRing } from '../scene/table';
 import { footprint } from '../scene/shape';
 import type { Store } from '../scene/store';
@@ -256,8 +256,10 @@ export class Viewer {
       if (tableOn(S)) for (const [x, d] of tableRing(vp.T, S.stand.table)) for (const y of [floorY(vp.T, S.render, S.stand), tankUnderside(vp.T, S.render)]) pts.push(new THREE.Vector3(x, y, -d));
       return pts;
     };
-    // lens from the straight-on view, kept at every orbit angle (see frameStraightOn)
-    const boxes = active.map(vp => frameStraightOn(vp.T, vp.S.camera, vp.w / vp.h, headroom(vp.S), bottom(vp.S), extra(vp)));
+    // lens from the straight-on view, kept at every orbit angle (see frameStraightOn); it frames the tank (and a hood)
+    // only: a stand or table runs off the bottom and shows once zoomed out (Nathan 2026-10-14, audit #29: on a stand,
+    // the default tank was a small box on top of the cabinet)
+    const boxes = active.map(vp => frameStraightOn(vp.T, vp.S.camera, vp.w / vp.h, headroom(vp.S)));
     // locked (or one tank): one FOV for all, so sizes stay directly comparable; unlocked: each view frames itself
     const shared = fovFor(Math.max(...boxes.map(b => b.t)), active[0].S.camera.zoom);
     const fovOf = (k: number) => (sc.camLock || active.length === 1 ? shared : fovFor(boxes[k].t, active[k].S.camera.zoom));
@@ -285,7 +287,9 @@ export class Viewer {
       // its own tank, so a taller tank beside it never leaves this one cropped to the wall (Nathan 2026-10-09)
       const own = wins[k], u = lockedWin?.tank;
       const { tank, all } = u && u.x1 - u.x0 <= 2 * hx && u.y1 - u.y0 <= 2 * hy ? lockedWin! : own;
-      return { fov, hx, hy, c: windowCentre(all, tank, hx, hy) };
+      // centred on the tank (#29, Nathan 2026-10-14: the stand runs off the bottom); zooming out eases toward tank + stand
+      const a = windowCentre(all, tank, hx, hy), t = windowCentre(tank, tank, hx, hy), out = clamp((1 - vp.S.camera.zoom) / 0.3, 0, 1);
+      return { fov, hx, hy, c: { cx: t.cx + (a.cx - t.cx) * out, cy: t.cy + (a.cy - t.cy) * out } };
     };
     // wheel zoom: pan so the point that was under the pointer is under it again (zoomAt)
     const a = this.anchor, ak = a ? active.findIndex(v => v.i === a.i) : -1; this.anchor = null;

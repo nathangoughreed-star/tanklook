@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { defaultScene, defaultSetup } from '../src/scene/defaults';
 import {
-  KWATER, LREF, TECHS, TECH_IDS, bandsAt, beamExp, lightEnv, lightOut, lineNorm, luxOf, luxPer, parOf, pointNorm, readout, renderBright,
+  KWATER, LREF, TECHS, TECH_IDS, bandsAt, beamExp, lightEnv, lightEnvCached, lightOut, lightOutCached, lineNorm, luxOf, luxPer, parOf, pointNorm, readout, renderBright,
   techOf, techsFor, type Band, type Emitter, type LightEnv, type LightScene,
 } from '../src/scene/lightout';
 import { normTank } from '../src/scene/shape';
@@ -25,6 +25,15 @@ describe('light output model', () => {
   it('doubling watts doubles PAR and lux everywhere', () => {
     const a = lightOut(scene({ watts: 20 }))!, b = lightOut(scene({ watts: 40 }))!;
     for (const k of ['mean', 'min', 'max', 'surface', 'luxMean', 'luxMid'] as const) expect(b[k] / a[k]).toBeCloseTo(2, 6);
+  });
+  it('the caches scale one 1 W run: same numbers as a full run, PAR override included', () => {
+    for (const l of [{ watts: 37 }, { watts: 120, type: 'spot' as const, cone: 40 }, { watts: 60, par: 45 }]) {
+      const S = scene(l), a = lightOut(S)!, b = lightOutCached(S)!;
+      for (const k of ['surface', 'mean', 'min', 'max', 'luxMean', 'luxMid', 'scale'] as const) expect(b[k] / a[k]).toBeCloseTo(1, 9);
+      expect(b.band).toBe(a.band);
+      const e = { ...lightEnv(S)!, scale: a.scale }, c = lightEnvCached(S)!, p = [S.tank.L / 3, 40, -S.tank.D / 2];
+      expect(parOf(bandsAt(c, p)) / parOf(bandsAt(e, p))).toBeCloseTo(1, 9);
+    }
   });
   it('no watts, or a flat light: no estimate (the manual Brightness as before)', () => {
     expect(lightOut(scene({ watts: 0 }))).toBeNull();

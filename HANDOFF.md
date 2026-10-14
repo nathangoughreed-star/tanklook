@@ -108,6 +108,10 @@ chats; fin layout (most of P1) and frogs/newt are later lanes.
   (m + 1) / (m52 + 1) (`beamGain`). uNorm still normalises to the standard fixture: planted view -2.5% (spots) /
   +1.4% (LED); bare sand under spots -10% (light now falls past the old cone edge). CONES / spotCone / beam() removed
   from scene/lightout.ts; test/scene.test.ts "raised fixture" passes beamExp instead of CONES.spot.
+- J2 leftover (a), done: lightOutCached / lightEnvCached hold one run at 1 W (no PAR override), keyed without the
+  fields the model ignores (Exposure, kelvin, room, map unit), and scale by the watts; setLightUniforms uses the
+  cached env. A Power step: model 20-35 ms -> 0 ms, the whole edit ~9 ms. Not done (offered, not asked for): (b) frost
+  transmission pass -> own low-res shader (5-8 ms), (c) the lit plant shader on big tanks (18-22 ms GPU).
 
 ## Lane J: edit performance, audit #52-53 (2026-10-14; branch `perf`, port 5373; pushed to main)
 - **What changed:** an edit no longer rebuilds the whole scene. `render/build.ts`: each fish and item is a *part* keyed
@@ -348,8 +352,9 @@ Plan approved by Nathan (batches in severity order). Pictures: `shots/g2/` in th
     and ~60 ms in the first draw (new materials / buffers; a steady draw is ~8 ms): ~130-230 ms per edit or drag step
     with 40 fish + 56 items. Keeping cached item geometry alive did not help. The fix is updating meshes in place
     instead of rebuilding (fish moves first): a work unit of its own.
-- **Open question for Nathan (#29):** with the stand on, a new 24×12×12″ tank sits small on top of a 30″ cabinet in the
-  default view (`shots/g2/29_stand_default_after.jpg`). Keep it, or frame the tank and let the stand run off the bottom?
+- **#29 framing (Nathan 2026-10-14: frame just the tank):** the lens is sized to the tank (and a hood) only, and the
+  window is centred on the tank; the stand / table run off the bottom. Zooming out below 1 eases the centre toward tank +
+  stand (by zoom 0.7). viewer.ts. Pictures `shots/g2/29_frame_tank_before.jpg` / `_after.jpg`.
 - Dev server: `preview_start core-fixes` hit the five-servers-per-folder limit, so Vite runs from the shell on 5363.
 
 ## Lane D: first-visit audit + review pack (2026-10-14; no src/ edits)

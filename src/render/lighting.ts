@@ -11,7 +11,7 @@ import type { LightSettings, Tank, WaterSettings } from '../scene/types';
 import { waterK, waterY } from '../scene/physics';
 import { bowlDims, footprint, shapeOf } from '../scene/shape';
 
-import { AQ_MAX, LAMP_Y, LUXW, beamExp, emitters, lampHeight, lightEnv, lightOutCached, renderBright, type Emitter, type LightEnv, type LightScene } from '../scene/lightout';
+import { AQ_MAX, LAMP_Y, LUXW, beamExp, emitters, lampHeight, lightEnvCached, lightOutCached, renderBright, type Emitter, type LightEnv, type LightScene } from '../scene/lightout';
 // the fixture geometry lives with the light-output model now (lane K); re-exported so importers stay as they were
 export { AQ_MAX, LAMP_Y, emitters, fitSpots, lampHeight, type Emitter } from '../scene/lightout';
 
@@ -132,7 +132,7 @@ export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams 
   for (let i = 1; i <= 5; i++) for (let j = 1; j <= 5; j++) { avg += lightSum(R, [T.L * i / 6, T.H * 0.5, -T.D * j / 6], rm); k++; }
   LU.uNorm.value = gain * k / Math.max(avg, 1e-6); LU.uBeamM.value = m;
   LU.uAmb.value = l.room; LU.uBright.value = bright; LU.uLCol.value.setRGB(...kelvinRGB(l.kelvin));
-  const env = lo ? lightEnv({ ...S!, tank: T }) : null;
+  const env = lo ? lightEnvCached({ ...S!, tank: T }) : null;
   LU.uLoOn.value = env ? 1 : 0; LU.uMapDiv.value = env ? MAP_DIV[l.mapUnit ?? 'par'] : MAP_DIV.rel;
   if (env) setLoUniforms(env, lo!.scale, l.mapUnit ?? 'par');
 }
