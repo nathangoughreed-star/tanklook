@@ -110,6 +110,15 @@ Split from lane S. Only the PLANS / her() entries of these species in `src/art/f
   untouched. Lazy chunks are cached only once loaded, so offline covers what the visitor has already opened. Checked
   on `android-prod` (vite preview, 5544): SW active and controlling, the app opens with the server stopped,
   `Page.getInstallabilityErrors` = none. Not yet checked: the install prompt on a real phone (needs the live https site).
+- **Step 3 in progress (2026-10-14): TWA project in `android/`** (Bubblewrap 1.x, `twa-manifest.json` written by hand,
+  then `bubblewrap update`): package `com.tanklook.app`, host tanklook.com, orientation default (follows the phone),
+  target/compile SDK 36, min 21, version 1.0.0 (code 1). Toolchain on this PC (not in the repo): Bubblewrap CLI (npm -g),
+  Temurin JDK 17.0.11 and Android cmdline-tools 6609375 in `%USERPROFILE%\.bubblewrap` (config.json points there).
+  Upload key: `C:\Users\nreed\keys\tanklook-upload.jks`, alias `upload`; Nathan makes it and keeps the passwords,
+  never in the repo (`android/.gitignore` blocks *.jks / *.aab / build output). Nathan runs `bubblewrap build` himself
+  (it asks for the passwords and for the Android SDK licences). Then: its `assetlinks.json` goes to
+  `public/.well-known/assetlinks.json`; after Play App Signing is on, ADD Play's app-signing SHA-256 too (from Play
+  Console > App integrity), or the store build shows the browser bar.
 - **Order:** landscape layout, PWA manifest + SW, TWA shell + asset links, Play listing material (Nathan does the account
   and submissions), low-end phone performance check.
 
