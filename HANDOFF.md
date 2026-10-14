@@ -2,6 +2,13 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Light output: watts -> PAR / lux (2026-10-14; draft only, no src/ edits)
+- Design draft `reference/light-output-draft.md`: watts + light tech -> photons -> existing beam model in real units,
+  plus refraction, side-glass reflection, water absorption in three colour bands. Light map gets a PAR / Lux switch
+  (separate calculations, same ramp) and a hover tooltip with both values at that spot.
+- Decided (Nathan): Brightness becomes an Exposure knob when watts is set; calibration against published PAR charts
+  approved. Runs as its own lane after G and G2 finish (touches scene/, render/lighting.ts, ui/panels.ts).
+
 ## Lane G: audit fixes, UI share (2026-10-14; branch `audit-fixes`; batches 1 + 2 pushed to main, DONE)
 - Split with lane G2 (coordinator): G owns `src/ui/*`, `index.html`, `src/style.css`; G2 owns interact/scene/render.
   G's share is 38 findings: #2, 4, 5, 7-13, 16, 17, 22-28, 30-41, 43-46, 48, the label part of 49, 50. G2's 15: #1, 3,
