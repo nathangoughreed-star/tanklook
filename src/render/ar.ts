@@ -175,9 +175,12 @@ const OVERLAY_CSS = `#arOverlay{position:fixed;inset:0;font:500 15px system-ui,"
 #arOverlay .bar{position:absolute;left:12px;right:12px;bottom:max(16px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none}
 #arOverlay .msg{background:rgba(20,24,30,.72);padding:6px 12px;border-radius:12px;text-align:center;max-width:100%}
 #arOverlay .fps{position:absolute;top:14px;left:14px;background:rgba(20,24,30,.55);padding:2px 8px;border-radius:8px;font-size:12px}
-#arOverlay .btns,#arOverlay .menu{align-self:flex-end;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+#arOverlay .btns{align-self:flex-end;margin-right:-12px;display:flex;align-items:center}
+#arOverlay .menu{display:flex;flex-direction:column;gap:8px;align-items:stretch;padding:8px;background:rgba(20,24,30,.72);border-radius:14px 0 0 14px}
 #arOverlay .btns.closed .menu{display:none}
-#arOverlay button{pointer-events:auto;font:600 17px system-ui,sans-serif;min-width:44px;min-height:52px;padding:0 18px;border-radius:26px;border:0;background:rgba(20,24,30,.8);color:#fff}`; // the buttons: lower right, under the thumb, folding away behind Menu (Nathan 2026-10-14)
+#arOverlay button{pointer-events:auto;font:600 17px system-ui,sans-serif;min-width:44px;min-height:52px;padding:0 18px;border-radius:26px;border:0;background:rgba(255,255,255,.14);color:#fff}
+#arOverlay .fold{position:relative;min-width:0;width:24px;min-height:0;height:56px;padding:0;border-radius:8px 0 0 8px;background:rgba(20,24,30,.72);font-size:16px;line-height:1}
+#arOverlay .fold::before{content:'';position:absolute;inset:-12px 0 -12px -16px}`; // the buttons: a box on the right edge, low, under the thumb; an arrow tab on its left edge folds it away (Nathan 2026-10-14, as the panel's tab)
 
 /** Can this browser open AR Quick Look (iPhone / iPad Safari)? */
 export function quickLookSupported() {
@@ -249,16 +252,17 @@ async function runAR(viewer: Viewer, store: Store, _button?: HTMLButtonElement) 
   if (!vp.scene) return;
   if (!document.getElementById('arCss')) { const st = document.createElement('style'); st.id = 'arCss'; st.textContent = OVERLAY_CSS; document.head.appendChild(st); }
   const overlay = document.createElement('div'); overlay.id = 'arOverlay';
-  overlay.innerHTML = '<div class="fps"></div><div class="bar"><div class="btns"><div class="menu"><button type="button" class="close">Close AR</button><button type="button" class="standTog" hidden></button><button type="button" class="shuffle" hidden>🔀 Shuffle</button><button type="button" class="photo" hidden>📷 Photo</button><button type="button" class="swap" hidden></button></div><button type="button" class="fold" aria-expanded="true">▾ Hide</button></div><div class="msg hint"></div><div class="msg size"></div></div>';
+  overlay.innerHTML = '<div class="fps"></div><div class="bar"><div class="btns"><button type="button" class="fold" aria-label="Hide the menu" aria-expanded="true">▸</button><div class="menu"><button type="button" class="close">Close AR</button><button type="button" class="standTog" hidden></button><button type="button" class="shuffle" hidden>🔀 Shuffle</button><button type="button" class="photo" hidden>📷 Photo</button><button type="button" class="swap" hidden></button></div></div><div class="msg hint"></div><div class="msg size"></div></div>';
   document.body.appendChild(overlay);
   const hint = overlay.querySelector<HTMLElement>('.hint')!, fpsEl = overlay.querySelector<HTMLElement>('.fps')!;
   const sizeEl = overlay.querySelector<HTMLElement>('.size')!, swapBtn = overlay.querySelector<HTMLButtonElement>('.swap')!;
   const standBtn = overlay.querySelector<HTMLButtonElement>('.standTog')!, photoBtn = overlay.querySelector<HTMLButtonElement>('.photo')!;
   const shuffleBtn = overlay.querySelector<HTMLButtonElement>('.shuffle')!, foldBtn = overlay.querySelector<HTMLButtonElement>('.fold')!;
-  // the button stack folds away to one Menu button, so it does not cover the room (Nathan 2026-10-14)
+  // the menu box folds away behind its arrow tab, so it does not cover the room (Nathan 2026-10-14)
   foldBtn.addEventListener('click', () => {
     const closed = overlay.querySelector('.btns')!.classList.toggle('closed');
-    foldBtn.textContent = closed ? '☰ Menu' : '▾ Hide'; foldBtn.setAttribute('aria-expanded', String(!closed));
+    foldBtn.textContent = closed ? '◂' : '▸'; foldBtn.setAttribute('aria-expanded', String(!closed));
+    foldBtn.setAttribute('aria-label', closed ? 'Show the menu' : 'Hide the menu');
   });
   let standOn = true; // the stand / table under the tank, toggled in the room (Nathan 2026-10-14); kept across A / B swaps
   const label = () => {
