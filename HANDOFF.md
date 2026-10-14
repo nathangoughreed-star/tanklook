@@ -2,6 +2,23 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane X: anatomy audit P2, freshwater mid-water fish (2026-10-14; branch `fish-fins`, port 5503; Nathan approved both sheets; pushed to main)
+PLANS entries only in `src/art/fishgen.ts`; no new generic parameters; v2 at build 372 (13 looks).
+- **Characins** (neon = art `tetra`, cardinal, ember, rummynose): `MedianFin` dorsal mid-back, short base with a
+  swept rear point (`tip` point, `trail`, low `drop`); anal on a long low base; slimmer rear body and a narrow
+  peduncle (`peak` ~0.64-0.66, `ped` ~0.03); blunter head (`snout` 0.45-0.6); small mouth line (`gape` ~0.022).
+  Neon / cardinal tails: lyre `cut` 0.5 (softer fork). Ember: `depth` 0.26 -> 0.24.
+- **chili:** shorter, softer head (`snout` 0.6), smoother peduncle, small pointed dorsal / anal.
+- **danio:** dorsal moved back over the anal, upturned oblique mouth (`mouth` -0.025, `gape` + `gapeDrop` 0.012),
+  fine barbels (`barbels` 0.018). **cpd (+ ~f):** `snout` 0.75, moderate fork (lyre `cut` 0.38).
+- **cherrybarb:** male slimmer (`depth` 0.26; female keeps 0.31), taller pointed dorsal. **tigerbarb:** big
+  triangular dorsal (h 0.17), pelvics `w` 1.5, pectorals x1.3. **platy:** larger dorsal, round caudal fan, upturned
+  mouth. **molly:** long ray-supported dorsal (`MedianFin`), larger round caudal, upturned jaw.
+- **Still open (needs generic work, not done):** the nose tip is always a sharp corner (`geometry()` bodyPts
+  `[1, mouth, 'c']`), so neon / cardinal / chili / cpd snouts stay slightly pointed; chili's front-view eye-region
+  texture unchanged; characin dorsal/anal can't taper front-high-to-rear-low (MedianFin keeps a level top); platy /
+  molly have no male gonopodium look (one look each; add `gono` if Nathan wants males).
+- Before/after composites: worktree `shots/laneX/b*-*.jpg` (gitignored).
 ## Lane Y: anatomy audit P2, bottom dwellers + marine fish (2026-10-14; branch `fish-p2b`, port 5533; Nathan approved both batches; pushed to main)
 PLANS entries only in `src/art/fishgen.ts`, all with lane S's parameters; no new generic parameter, no paint.ts / fish3d.ts edits.
 - **Batch 1 (v2 at build 359, `cb6d2e7`):** bronzecory / pandacory: triangular dorsal on one stout spine (MedianFin, `spines`
@@ -907,7 +924,7 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | P final polish | `../Glass-Box-final-fixes` / `final-fixes` | 5473 | `src/style.css`, `index.html`, `src/ui/panels.ts`, `src/scene/water.ts` | DONE (`7e5897a`); files free |
 | R P2 axolotl + nerite | `../Glass-Box-p2-small` / `p2-small` | 5493 | `art/herps.ts`, `render/herp3d.ts`, `art/snails.ts`, `render/snail3d.ts` | DONE (`45f872a`); files free. Open: fillCut for mystery / turbo / trumpet (would change approved look) |
 | S P1 fish fins | `../Glass-Box-fish-fins` / `fish-fins` | 5503 | (released) | DONE (`f71987c`, `624f8b1`); P2 notes in lane S's section; files free |
-| X P2 fish, freshwater | `../Glass-Box-fish-fins` / `fish-fins` | 5503 | PLANS / her() entries ONLY of neon, cardinal, ember, rummynose, chili, danio, cpd, cherrybarb, tigerbarb, platy, molly | running (session `local_600c5def`) |
+| X P2 fish, freshwater | `../Glass-Box-fish-fins` / `fish-fins` | 5503 | (released) | DONE (see Lane X section, build 372); files free |
 | Y P2 fish, bottom + marine | `../Glass-Box-fish-p2b` / `fish-p2b` | 5533 | PLANS / her() entries ONLY of bronzecory, pandacory, oto, clownloach, sae, ocellaris, royalgramma, sixline, chromis | DONE (batches 1-2 pushed, build 365); worktree removable |
 | R2 snail aperture kink | `../Glass-Box-p2-small` / `p2-small` (started by lane R) | 5493 | `art/snails.ts`, `render/snail3d.ts` (mystery / turbo / trumpet fillCut) | CLOSED: tried, Nathan declined (`52fb6cb`); snail files free |
 | S2 fish batch 4 | (worktree removed) | - | - | DONE (`1399de7`, build 351); swordtail kept at 120 mm (Nathan) |
