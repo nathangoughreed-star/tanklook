@@ -689,11 +689,11 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
 | P final polish | `../Glass-Box-final-fixes` / `final-fixes` | 5473 | `src/style.css`, `index.html`, `src/ui/panels.ts`, `src/scene/water.ts` | FINAL.md items 1-6 done, push pending Nathan's yes |
-| R P2 axolotl + nerite | `../Glass-Box-p2-small` / `p2-small` | 5493 | `art/herps.ts`, `render/herp3d.ts`, `art/snails.ts`, `render/snail3d.ts` | running, sheets to Nathan |
+| R P2 axolotl + nerite | `../Glass-Box-p2-small` / `p2-small` | 5493 | `art/herps.ts`, `render/herp3d.ts`, `art/snails.ts`, `render/snail3d.ts` | DONE (`45f872a`); files free. Open: fillCut for mystery / turbo / trumpet (would change approved look) |
 | S P1 fish fins | `../Glass-Box-fish-fins` / `fish-fins` | 5503 | `art/fishgen.ts`, `art/paint.ts`, `render/fish3d.ts` | ready to open (prompt `prompts/lane-S-fish-fins.md`) |
 | T iPhone AR | `../Glass-Box-ar-ios` / `ar-ios` | 5513 | new `render/arUsdz.ts` + test, `render/ar.ts` | ready to open (prompt `prompts/lane-T-ar-iphone.md`) |
 Free (no lane): `render/build.ts`, `render/items.ts`, `scene/items.ts`, `render/viewer.ts`, `main.ts`, `render/lighting.ts`,
-`render/coral3d.ts`, `render/shrimp3d.ts` / `art/shrimps.ts`, `scene/share.ts`. A one-line hook in a free file is fine; name it
+`render/coral3d.ts`, `render/shrimp3d.ts` / `art/shrimps.ts`, `scene/share.ts`, herps / herp3d / snails / snail3d. A one-line hook in a free file is fine; name it
 in your section. Where to read: anatomy audit `reference/model-anatomy-audit-v1.md`; model versions "Model review sheet"
 below; lane D's R1-R12 verdicts under "Review pack R1-R12"; the final check `shots/final/FINAL.md` (main checkout only).
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
