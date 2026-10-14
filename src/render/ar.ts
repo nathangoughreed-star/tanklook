@@ -154,6 +154,7 @@ const OVERLAY_CSS = `#arOverlay{position:fixed;inset:0;font:500 15px system-ui,"
 #arOverlay .bar{position:absolute;left:12px;right:12px;bottom:max(16px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none}
 #arOverlay .msg{background:rgba(20,24,30,.72);padding:6px 12px;border-radius:12px;text-align:center;max-width:100%}
 #arOverlay .fps{position:absolute;top:14px;left:14px;background:rgba(20,24,30,.55);padding:2px 8px;border-radius:8px;font-size:12px}
+#arOverlay .swap{right:auto;left:50%;transform:translateX(-50%)}
 #arOverlay button{position:absolute;top:10px;right:10px;font:600 16px system-ui,sans-serif;min-width:44px;min-height:44px;padding:0 16px;border-radius:22px;border:0;background:rgba(20,24,30,.8);color:#fff}`;
 
 /** Show the AR button when this device can do immersive AR, and run the session from it. */
@@ -170,14 +171,21 @@ export async function attachAR(viewer: Viewer, store: Store, button: HTMLButtonE
 
 async function runAR(viewer: Viewer, store: Store) {
   viewer.draw(); // the current build, up to date
-  const vp = viewer.current, r = viewer.renderer, S = vp.S, units = store.scene.units;
+  // split view: start with the tank the panel edits; the A / B button swaps to the other one in place
+  const views = viewer.active.filter(v => v.scene), r = viewer.renderer, units = store.scene.units;
+  let vp = viewer.current, S = vp.S;
   if (!vp.scene) return;
   if (!document.getElementById('arCss')) { const st = document.createElement('style'); st.id = 'arCss'; st.textContent = OVERLAY_CSS; document.head.appendChild(st); }
   const overlay = document.createElement('div'); overlay.id = 'arOverlay';
-  overlay.innerHTML = '<div class="fps"></div><button type="button">Close</button><div class="bar"><div class="msg hint"></div><div class="msg size"></div></div>';
+  overlay.innerHTML = '<div class="fps"></div><button type="button" class="close">Close</button><button type="button" class="swap" hidden></button><div class="bar"><div class="msg hint"></div><div class="msg size"></div></div>';
   document.body.appendChild(overlay);
   const hint = overlay.querySelector<HTMLElement>('.hint')!, fpsEl = overlay.querySelector<HTMLElement>('.fps')!;
-  overlay.querySelector<HTMLElement>('.size')!.textContent = sizeText(S, units);
+  const sizeEl = overlay.querySelector<HTMLElement>('.size')!, swapBtn = overlay.querySelector<HTMLButtonElement>('.swap')!;
+  const label = () => {
+    sizeEl.textContent = (views.length > 1 ? `Tank ${vp.key} · ` : '') + sizeText(S, units);
+    swapBtn.hidden = views.length < 2; swapBtn.textContent = `Show tank ${views.find(v => v !== vp)?.key ?? ''}`;
+  };
+  label();
   hint.textContent = 'Point the phone at the floor or a stand top and move it slowly';
 
   let session: XRSession;
@@ -190,7 +198,7 @@ async function runAR(viewer: Viewer, store: Store) {
   const viewerSpace = await session.requestReferenceSpace('viewer');
   const hitSource = (await session.requestHitTestSource!({ space: viewerSpace }))!;
 
-  const prep = prepScene(vp), centre = baseCentre(S, vp.T);
+  let prep = prepScene(vp), centre = baseCentre(S, vp.T);
   prep.showTank(false);
   const rig = new THREE.Object3D(); rig.matrixAutoUpdate = false;
   const cam = new THREE.PerspectiveCamera(50, 1, 0.02, 60); rig.add(cam); // near / far in m: the view space is the room's
@@ -216,7 +224,13 @@ async function runAR(viewer: Viewer, store: Store) {
   overlay.addEventListener('pointerup', () => { if (down && !down.moved) place(); down = null; });
   overlay.addEventListener('pointercancel', () => { down = null; });
   session.addEventListener('select', () => { if (!session.domOverlayState) place(); });
-  overlay.querySelector('button')!.addEventListener('click', () => { session.end(); });
+  overlay.querySelector('.close')!.addEventListener('click', () => { session.end(); });
+  // the other tank on the same spot of the floor, turned the same way (its own stand height: base centre on the floor)
+  swapBtn.addEventListener('click', () => {
+    const next = views.find(v => v !== vp); if (!next) return;
+    prep.restore(); vp = next; S = vp.S; prep = prepScene(vp); centre = baseCentre(S, vp.T);
+    prep.showTank(!!placed); label();
+  });
 
   let frames = 0, t0 = 0;
   viewer.xrFrame = (t, frame) => {
