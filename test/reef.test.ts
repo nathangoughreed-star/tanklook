@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { reefShape } from '../src/render/coral3d';
 import { defaultScene } from '../src/scene/defaults';
-import { LIBRARY, itemDims, makeItem } from '../src/scene/items';
+import { LIBRARY, itemDims, makeItem, starterItems } from '../src/scene/items';
+import { defaultSetup } from '../src/scene/defaults';
+import { LAYOUT_IDS } from '../src/scene/validate';
 import { parseScene } from '../src/scene/validate';
 
 const REEF = ['liverock', 'acropora', 'montipora', 'mushroom', 'leather'];
@@ -33,5 +35,23 @@ describe('live rock and corals (lane E, 2026-10-14)', () => {
       expect(wide).toBeGreaterThan(0.6 * l); expect(wide).toBeLessThan(1.35 * l);
       expect(bb.max.y).toBeGreaterThan(0.4 * h); expect(bb.max.y).toBeLessThan(2 * h);
     }
+  });
+});
+
+describe('Reef starter set (lane I, 2026-10-14)', () => {
+  it('is a layout: live rock islands with corals, deterministic, a new arrangement per Shuffle seed', () => {
+    expect(LAYOUT_IDS).toContain('reef');
+    const s = defaultSetup(); s.water.salt = true; s.tank = { ...s.tank, L: 610, H: 457, D: 457 };
+    const sets = [1, 2, 3, 4].map(seed => { s.layout = { id: 'reef', seed }; return starterItems(s); });
+    s.layout = { id: 'reef', seed: 1 };
+    expect(starterItems(s)).toEqual(sets[0]);
+    for (const items of sets) {
+      expect(items.filter(i => i.variant === 'liverock').length).toBeGreaterThanOrEqual(4);
+      expect(items.filter(i => i.kind === 'coral').length).toBeGreaterThanOrEqual(2);
+      expect(items.every(i => LIBRARY[i.variant].salt)).toBe(true);           // reef pieces only: no plants, no wood
+      expect(items.some(i => i.kind === 'coral' && i.lift > 20)).toBe(true);   // corals up on the rock
+      for (const i of items.filter(i => i.kind === 'coral')) expect(i.lift + itemDims(i)[1]).toBeLessThanOrEqual(s.tank.H); // under the top
+    }
+    expect(new Set(sets.map(a => JSON.stringify(a))).size).toBe(4);
   });
 });

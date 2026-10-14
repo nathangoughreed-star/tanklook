@@ -5,15 +5,17 @@
  "tanks": [
   {
    "tank": {
-    "L": 457.2,
+    "L": 646.6,
     "H": 609.5999999999999,
-    "D": 457.2
+    "D": 457.2,
+    "shape": "pie",
+    "pieDeg": 90
    },
    "camera": {
     "dist": 3000,
     "az": 10,
     "el": 10,
-    "zoom": 1
+    "zoom": 0.8
    },
    "render": {
     "edge": "a2c",
@@ -23,11 +25,11 @@
     "beams": false,
     "pop": 0.15,
     "bg": "black",
+    "glass": "auto",
     "bgSides": [
      "back"
     ],
     "bgArc": 145,
-    "glass": "auto",
     "glassType": "standard"
    },
    "light": {
@@ -62,75 +64,75 @@
     "id": "none",
     "seed": 9
    },
+   "water": {
+    "on": false,
+    "level": 1,
+    "opacity": 0,
+    "color": "#7fb8a8"
+   },
    "terrain": {
     "on": false,
     "cols": 7,
     "rows": 0,
     "h": []
    },
-   "water": {
-    "on": false,
-    "level": 1,
-    "color": "#7fb8a8",
-    "opacity": 0
-   },
    "lid": "glass",
    "stand": {
-    "show": false,
+    "show": true,
     "height": 762,
-    "finish": "black",
+    "finish": "oak",
     "style": "cabinet",
     "table": {
      "shape": "rect",
      "L": 914.4,
-     "D": 457.2,
+     "D": 501,
      "x": 0,
-     "z": 0
+     "z": -3.5558441227156834
     }
-   },
-   "wall": {
-    "show": true,
-    "side": "back",
-    "color": "#d8d2c6"
    },
    "person": {
     "show": false,
     "height": 1750,
     "side": "left"
    },
+   "wall": {
+    "show": true,
+    "side": "back",
+    "color": "#d8d2c6"
+   },
    "fish": [
     {
      "id": 1,
      "species": "treefrog",
-     "x": 100.584,
-     "y": 56.388000000000005,
-     "depth": 100.584,
-     "yaw": 40,
-     "pitch": 3,
+     "x": 476.9844685874973,
+     "y": 63.89263671533018,
+     "depth": 235.6674608759433,
+     "yaw": 4,
+     "pitch": 4,
      "roll": -2,
-     "bend": 0.34
+     "bend": -0.28
     },
     {
      "id": 2,
      "species": "treefrog",
-     "x": 251.46,
-     "y": 53.848,
-     "depth": 54.864,
-     "yaw": -30,
-     "pitch": 4,
-     "roll": 1,
-     "bend": -0.11
+     "x": 143.35932733830066,
+     "y": 55.897073989192016,
+     "depth": 91.74733180545644,
+     "yaw": 164,
+     "pitch": 8,
+     "roll": -3,
+     "bend": 0.3
     },
     {
      "id": 3,
      "species": "treefrog",
-     "x": 374.904,
-     "y": 64.77,
-     "depth": 251.46,
-     "yaw": 160,
-     "pitch": -3,
-     "roll": -5,
-     "bend": 0.3
+     "x": 134.13548385079486,
+     "y": 60.448546917570745,
+     "depth": 173.6738445162736,
+     "yaw": 146,
+     "pitch": 7,
+     "roll": 1,
+     "bend": 0.1
     }
    ],
    "items": [
@@ -139,7 +141,7 @@
      "kind": "wood",
      "variant": "branch",
      "seed": 106,
-     "x": 160.01999999999998,
+     "x": 226.31,
      "depth": 274.32,
      "lift": 0,
      "yaw": 30,
@@ -152,8 +154,8 @@
      "kind": "wood",
      "variant": "manzanita",
      "seed": 159,
-     "x": 329.18399999999997,
-     "depth": 320.03999999999996,
+     "x": 463.006,
+     "depth": 317.4939999999999,
      "lift": 0,
      "yaw": 0,
      "pitch": 0,
@@ -165,7 +167,7 @@
      "kind": "wood",
      "variant": "mopani",
      "seed": 212,
-     "x": 228.6,
+     "x": 323.3,
      "depth": 160.01999999999998,
      "lift": 0,
      "yaw": -20,
@@ -178,8 +180,8 @@
      "kind": "plant",
      "variant": "fern",
      "seed": 265,
-     "x": 99.15384615384615,
-     "depth": 358.04615384615386,
+     "x": 252.3001287169549,
+     "depth": 245.97541472473029,
      "lift": 0,
      "yaw": 0,
      "pitch": 0,
@@ -191,8 +193,8 @@
      "kind": "plant",
      "variant": "fern",
      "seed": 318,
-     "x": 384.96923076923076,
-     "depth": 114.3,
+     "x": 532.4225962985678,
+     "depth": 134.36127282236413,
      "lift": 0,
      "yaw": 0,
      "pitch": 0,
@@ -204,7 +206,7 @@
      "kind": "plant",
      "variant": "anubias",
      "seed": 371,
-     "x": 137.16,
+     "x": 193.98000000000002,
      "depth": 137.16,
      "lift": 0,
      "yaw": 0,
@@ -217,7 +219,7 @@
      "kind": "plant",
      "variant": "anubias",
      "seed": 424,
-     "x": 283.464,
+     "x": 400.89200000000005,
      "depth": 91.44,
      "lift": 0,
      "yaw": 0,
@@ -230,8 +232,8 @@
      "kind": "plant",
      "variant": "carpet",
      "seed": 477,
-     "x": 114.3,
-     "depth": 70,
+     "x": 175.5551372065932,
+     "depth": 99.40948347691277,
      "lift": 0,
      "yaw": 0,
      "pitch": 0,
@@ -243,8 +245,8 @@
      "kind": "plant",
      "variant": "carpet",
      "seed": 530,
-     "x": 342.9,
-     "depth": 205.74,
+     "x": 475.4077778486358,
+     "depth": 196.19777784863578,
      "lift": 0,
      "yaw": 0,
      "pitch": 0,
@@ -256,8 +258,8 @@
      "kind": "plant",
      "variant": "carpet",
      "seed": 583,
-     "x": 228.6,
-     "depth": 342.9,
+     "x": 323.3,
+     "depth": 338.40606076066,
      "lift": 0,
      "yaw": 0,
      "pitch": 0,
@@ -269,7 +271,7 @@
      "kind": "stone",
      "variant": "river",
      "seed": 636,
-     "x": 365.76,
+     "x": 517.2800000000001,
      "depth": 54.864,
      "lift": 0,
      "yaw": 0,

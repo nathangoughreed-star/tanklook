@@ -3,7 +3,7 @@
 // light and clips them at the glass; this file only builds the shape, its unlit colours and its grit (shader detail)
 // coordinates. Base on y = 0, centred on the anchor. Size = the piece's width (live rock: its length).
 import * as THREE from 'three';
-import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { mergeGeometries, mergeVertices, toCreasedNormals } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng } from '../art/paint';
 import { stoneDims } from '../scene/items';
 import { clean, grit, paint, waves } from './items';
@@ -14,6 +14,8 @@ const V = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
 const C = (hex: string) => new THREE.Color(hex);
 /** Grit kinds (see GRIT in render/items.ts): 3 pitted rock, 11 hard coral (corallite dots), 12 soft tissue (polyp fuzz). */
 const ROCK = 3, HARD = 11, SOFT = 12;
+/** Live rock: edges sharper than this stay sharp, the rest is shaded smooth. */
+const ROCK_CREASE = 55 * Math.PI / 180;
 
 /** Smooth normals across a generator's seams (sphere / lathe edges), keeping it indexed so parts merge. */
 function smooth(g: G) {
@@ -32,21 +34,34 @@ function stand(parts: G[]) {
 }
 
 // ---------- Live rock ----------
-/** Porous reef rock: a few overlapping knobbly lumps with holes, cream under patches of pink and purple coralline algae. */
+/**
+ * Porous reef rock: a few overlapping craggy lumps, cream under patches of pink and purple coralline algae. Angular, not
+ * rounded (Nathan 2026-10-14): each lump broken by a few flat faces with sharp edges,
+ * and pitted with round holes of many sizes that go dark inside, besides the channels.
+ */
 function rockGeo(r: R, l: number, h: number, w: number) {
-  const nz = waves(r), fine = waves(r, 8), hole = waves(r, 7), v = new THREE.Vector3(), cut = -0.45, lumps: G[] = [];
+  const nz = waves(r), fine = waves(r, 8), hole = waves(r, 7), v = new THREE.Vector3(), u = new THREE.Vector3(), cut = -0.45, lumps: G[] = [];
   for (let m = 0, n = 3 + Math.floor(r() * 3); m < n; m++) {
     const c = m ? V((r() - 0.5) * 1.2, r() * 0.35, (r() - 0.5) * 0.7) : V(0, 0.1, 0), rad = m ? 0.35 + r() * 0.3 : 0.6, off = V(r() * 9, r() * 9, r() * 9);
-    let g: G = new THREE.IcosahedronGeometry(1, 3);
-    g.deleteAttribute('normal'); g.deleteAttribute('uv'); g = mergeVertices(g);
+    // broken faces: planes the lump is shaved flat against (not the underside, which sits in the pile)
+    const faces = Array.from({ length: 5 + Math.floor(r() * 4) }, () => ({ n: V(r() - 0.5, r() * 0.9 - 0.25, r() - 0.5).normalize(), o: 0.6 + r() * 0.25 }));
+    // pits: round holes over the surface, a few big ones and many small
+    const pits = Array.from({ length: 26 + Math.floor(r() * 14) }, (_, i) => ({ d: V(r() - 0.5, r() - 0.5, r() - 0.5).normalize(), w: i < 5 ? 0.2 + r() * 0.12 : 0.07 + r() * 0.1, k: 0.18 + r() * 0.22 }));
+    const g: G = new THREE.IcosahedronGeometry(1, 4); // not indexed: creased normals below decide what is sharp
+    g.deleteAttribute('normal'); g.deleteAttribute('uv');
     const p = g.attributes.position, dent = new Float32Array(p.count);
     for (let i = 0; i < p.count; i++) {
-      v.fromBufferAttribute(p, i);
-      const q = v.clone().add(off);
-      let k = 1 + 0.28 * nz(q.clone().multiplyScalar(1.9)) + 0.12 * fine(q.clone().multiplyScalar(5.5));
-      k -= 0.4 * Math.max(0, hole(q.clone().multiplyScalar(4.5)) - 0.15); // holes and channels
-      dent[i] = k;
-      v.multiplyScalar(k * rad).add(c);
+      u.fromBufferAttribute(p, i).normalize();
+      const q = u.clone().add(off);
+      let k = 1 + 0.26 * nz(q.clone().multiplyScalar(1.9)) + 0.1 * fine(q.clone().multiplyScalar(5.5));
+      k -= 0.3 * Math.max(0, hole(q.clone().multiplyScalar(4.5)) - 0.2); // channels
+      v.copy(u).multiplyScalar(k);
+      for (const f of faces) { const e = v.dot(f.n) - f.o; if (e > 0) v.addScaledVector(f.n, -e * 0.92); } // shaved flat
+      let pit = 0;
+      for (const P of pits) { const a = u.angleTo(P.d); if (a < P.w) pit = Math.max(pit, P.k * Math.sqrt(1 - (a / P.w) ** 2)); }
+      v.multiplyScalar(1 - pit);
+      dent[i] = 1 - pit * 2.2 - 0.6 * Math.max(0, 1 - k); // dark in pits and channels
+      v.multiplyScalar(rad).add(c);
       p.setXYZ(i, v.x, Math.max(v.y, cut), v.z);
     }
     g.setAttribute('dent', new THREE.BufferAttribute(dent, 1));
@@ -57,11 +72,13 @@ function rockGeo(r: R, l: number, h: number, w: number) {
   g.computeBoundingBox();
   const bb = g.boundingBox!, cx = (bb.max.x + bb.min.x) / 2, cz = (bb.max.z + bb.min.z) / 2;
   for (let i = 0; i < p.count; i++) p.setXYZ(i, (p.getX(i) - cx) * l / (bb.max.x - bb.min.x), (p.getY(i) - bb.min.y) * h / (bb.max.y - bb.min.y), (p.getZ(i) - cz) * w / (bb.max.z - bb.min.z));
-  g.computeVertexNormals();
+  // smooth across the small triangles, sharp across the broken faces' edges and pit rims (Nathan 2026-10-14: angular
+  // yes, but the triangles read too large and geometric with every one flat)
+  toCreasedNormals(g, ROCK_CREASE);
   const base = C(['#b8a687', '#ad9c80', '#c2b294'][Math.floor(r() * 3)]), cor = [C('#8e4d86'), C('#c4698f'), C('#a65a9c')][Math.floor(r() * 3)];
   const patch = waves(r, 5), patch2 = waves(r, 4), algae = C('#6f6b45');
   paint(g, (q, i) => {
-    const c = base.clone().multiplyScalar(0.55 + 0.45 * Math.min(1, Math.max(0, (dent.getX(i) - 0.75) / 0.3))); // dark holes
+    const c = base.clone().multiplyScalar(0.3 + 0.7 * Math.min(1, Math.max(0, (dent.getX(i) - 0.25) / 0.7))); // dark holes
     const a = patch(q.clone().multiplyScalar(0.035)), b = patch2(q.clone().multiplyScalar(0.08));
     c.lerp(cor, Math.min(0.75, Math.max(0, (a - 0.05) * 1.8 + 0.3 * b)));        // coralline crust
     if (q.y > h * 0.4) c.lerp(algae, Math.min(0.35, Math.max(0, b * 1.4 - 0.25))); // a little turf algae on top
@@ -177,7 +194,7 @@ function mushroom(r: R, s: number) {
     g.applyQuaternion(tip).translate(Math.cos(a) * q, y, Math.sin(a) * q);
     parts.push(g);
   }
-  return stand(parts.map(g => clean(g, true)));
+  return stand(parts.map(g => clean(g, false))); // the rock is flat-faceted (not indexed), so the discs follow
 }
 
 const LEATHER: [string, string][] = [['#b9a874', '#ece0b4'], ['#9ba46c', '#dae2aa'], ['#c4a37c', '#f2dec4']];

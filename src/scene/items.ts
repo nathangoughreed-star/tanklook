@@ -61,6 +61,7 @@ export const LAYOUTS: Record<LayoutId, { label: string; hint: string }> = {
   planted: { label: 'Dense planted', hint: 'Stem plants and grasses at the back, swords, a carpet in front.' },
   iwagumi: { label: 'Iwagumi', hint: 'Angular stones on a low carpet.' },
   swamp: { label: 'Swamp / paludarium', hint: 'Land rising out of the water around one or two pools; fish stay in the water. Lowers the water when chosen.' },
+  reef: { label: 'Reef', hint: 'Live rock stacked into islands, corals on the rock and the sand. Saltwater tanks only.' },
 };
 
 type V3 = [number, number, number];
@@ -521,6 +522,55 @@ export function starterItems(S: TankSetup): Item[] {
         else if (k < 0.78 + pRock) put(stone, xx, dd, (14 + r() * 26) * 1.2 * (classic ? 1 : 0.6 + st.scale), tip(stone));
       } else if (k < 0.3) plant(r() < 0.5 ? 'stem' : 'grass', xx, dd, (H - sub(xx, dd)) * (0.6 + r() * 0.3));
     }
+  } else if (id === 'reef') {
+    // live rock islands (two in the designed set, a channel between), a few rocks stacked on each; branching and plate
+    // corals up on the rock, mushrooms and leathers lower down and on the sand. Offered in a saltwater tank only (the UI).
+    const foci = classic ? [{ x: 0.3, d: 0.55, k: 1 }, { x: 0.73, d: 0.5, k: 0.7 }] : st.foci;
+    const mix: Record<string, number> = classic ? { acropora: 2, montipora: 1.5, mushroom: 1, leather: 1 }
+      : st.pick([{ acropora: 2, montipora: 1.5, mushroom: 1, leather: 1 }, { acropora: 3, montipora: 2, mushroom: 0.5, leather: 0.3 }, // SPS
+        { mushroom: 2, leather: 2, acropora: 0.5, montipora: 0.5 }, { montipora: 3, acropora: 1, mushroom: 1, leather: 0.5 }]);    // soft, plates
+    const coral = (high: boolean) => { // weighted pick, branching and plates preferred up high, soft corals down low
+      const w = Object.entries(mix).map(([v, n]) => [v, n * ((v === 'acropora' || v === 'montipora') === high ? 1.6 : 0.6)] as const);
+      let q = r() * w.reduce((a, [, n]) => a + n, 0);
+      for (const [v, n] of w) if ((q -= n) <= 0) return v;
+      return w[0][0];
+    };
+    /** A coral at (x, d), standing at `lift`, shrunk to the headroom under the water line (left out under 30 mm). */
+    const grow = (v: string, x: number, d: number, size: number, lift: number) => {
+      const k = itemDims({ kind: 'coral', variant: v, seed: 1, size: 1 })[1], s = Math.min(size, room(x, d, lift) / k, LIBRARY[v].max);
+      if (s >= 30) put(v, x, d, s, { lift: Math.round(lift) }, true);
+    };
+    // a long tank gets wider islands of more rocks, not bigger rocks
+    const base = clamp(Math.min(L, D * 1.5, H * 1.3) * 0.3, 60, 240) * st.scale, wide = clamp(L / (base * 3.5), 1, 2.5);
+    for (const f of foci) {
+      const s0 = base * Math.sqrt(f.k), cx = L * f.x, cz = D * f.d, rocks: Item[] = [];
+      rocks.push(put('liverock', cx, cz, s0 * 1.3, tip('liverock', 0.4)));
+      for (let i = 0, n = Math.max(2, many(4 * wide, f.k)); i < n; i++) {
+        const a = (i / n) * Math.PI * 2 + r() * 0.6, dist = s0 * (0.55 + r() * 0.3) * (1 + (wide - 1) * r());
+        rocks.push(put('liverock', clamp(cx + Math.cos(a) * dist, 20, L - 20), clamp(cz + Math.sin(a) * dist * 0.55 / Math.sqrt(wide), 20, D - 20), s0 * (0.6 + r() * 0.35), tip('liverock')));
+      }
+      // stacked: one or two rocks up on the base, smaller as they go, and more until the main island stands about half
+      // the water deep (a smaller island a little less), so a big tank's reef is not a low strip (Nathan 2026-10-14)
+      const want = ((S.water.on ? H * S.water.level : H) - sub(cx, cz)) * 0.5 * (f.k < 1 ? 0.85 : 1);
+      let top = itemDims(rocks[0])[1] * 0.75;
+      for (let i = 0, n = dens < 0.5 ? 1 : 1 + Math.floor(r() * 2); i < 6 && (i < n || top < want) && room(cx, cz, top) > 60; i++) {
+        const it = put('liverock', rocks[0].x + (r() - 0.5) * s0 * 0.4, rocks[0].depth + (r() - 0.5) * s0 * 0.2, s0 * Math.max(0.45, 0.75 - 0.1 * i), { lift: Math.round(top), ...tip('liverock', 0.5) }, true);
+        rocks.push(it); top += itemDims(it)[1] * 0.7;
+      }
+      // corals on the rock: each on a rock's top (the stacked ones first), a little off its middle
+      const tops = rocks.map(rk => ({ rk, y: rk.lift + itemDims(rk)[1] * 0.8 })).sort((a, b) => b.y - a.y);
+      for (let i = 0, n = Math.max(2, many(3 + wide, f.k)); i < n; i++) {
+        const { rk, y } = tops[i % tops.length], [rl, , rw] = itemDims(rk), high = i < tops.length / 2;
+        grow(coral(high), rk.x + (r() - 0.5) * rl * 0.35, rk.depth + (r() - 0.5) * rw * 0.3, s0 * (0.55 + r() * 0.35), y);
+      }
+      // and one or two at the foot, on the sand in front
+      for (let i = 0, n = many(1.5, f.k); i < n; i++) {
+        const a = Math.PI * (0.15 + r() * 0.7);
+        grow(coral(false), clamp(cx + Math.cos(a) * s0 * 1.1, 30, L - 30), clamp(cz - Math.sin(a) * s0 * 0.75, 30, D - 30), s0 * (0.45 + r() * 0.3), 0);
+      }
+    }
+    // rubble: small live rock pieces scattered on the sand
+    for (let i = 0, n = many(5); i < n; i++) put('liverock', L * (0.05 + r() * 0.9), D * (0.1 + r() * 0.8), 30 + r() * 25);
   }
   return out.slice(0, MAX_ITEMS);
 }

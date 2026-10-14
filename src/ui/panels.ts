@@ -1101,7 +1101,7 @@ Cancel, then change the name, to keep both.`)) return;
     $('wFresh').classList.toggle('on', !wa.salt); $('wSalt').classList.toggle('on', !!wa.salt);
     for (const id of ['wTannin', 'wGreen']) $(id).style.display = wa.salt ? 'none' : '';
     for (const id of ['wReef', 'wOcean']) $(id).style.display = wa.salt ? '' : 'none';
-    document.querySelectorAll<HTMLElement>('#lib [data-salt]').forEach(e => e.style.display = isSalt(s) ? '' : 'none');
+    document.querySelectorAll<HTMLElement>('#lib [data-salt], #layout option[value="reef"]').forEach(e => e.style.display = isSalt(s) ? '' : 'none');
     const mis = misfits(s);
     $('wMisfitRow').style.display = mis.length ? '' : 'none';
     if (mis.length) {
