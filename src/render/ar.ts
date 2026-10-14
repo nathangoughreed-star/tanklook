@@ -11,6 +11,7 @@ import { footprint } from '../scene/shape';
 import type { Store } from '../scene/store';
 import type { Tank, TankSetup, Units } from '../scene/types';
 import { LU, setLightUniforms, setWaterUniforms } from './lighting';
+import { composePhoto, savePhoto } from './arPhoto';
 import { OUTLINE } from './fish3d';
 import type { Viewer, Viewport } from './viewer';
 
@@ -245,11 +246,11 @@ async function runAR(viewer: Viewer, store: Store, _button?: HTMLButtonElement) 
   if (!vp.scene) return;
   if (!document.getElementById('arCss')) { const st = document.createElement('style'); st.id = 'arCss'; st.textContent = OVERLAY_CSS; document.head.appendChild(st); }
   const overlay = document.createElement('div'); overlay.id = 'arOverlay';
-  overlay.innerHTML = '<div class="fps"></div><div class="bar"><div class="btns"><button type="button" class="close">Close</button><button type="button" class="standTog" hidden></button><button type="button" class="swap" hidden></button></div><div class="msg hint"></div><div class="msg size"></div></div>';
+  overlay.innerHTML = '<div class="fps"></div><div class="bar"><div class="btns"><button type="button" class="close">Close</button><button type="button" class="standTog" hidden></button><button type="button" class="photo" hidden>📷 Photo</button><button type="button" class="swap" hidden></button></div><div class="msg hint"></div><div class="msg size"></div></div>';
   document.body.appendChild(overlay);
   const hint = overlay.querySelector<HTMLElement>('.hint')!, fpsEl = overlay.querySelector<HTMLElement>('.fps')!;
   const sizeEl = overlay.querySelector<HTMLElement>('.size')!, swapBtn = overlay.querySelector<HTMLButtonElement>('.swap')!;
-  const standBtn = overlay.querySelector<HTMLButtonElement>('.standTog')!;
+  const standBtn = overlay.querySelector<HTMLButtonElement>('.standTog')!, photoBtn = overlay.querySelector<HTMLButtonElement>('.photo')!;
   let standOn = true; // the stand / table under the tank, toggled in the room (Nathan 2026-10-14); kept across A / B swaps
   const label = () => {
     sizeEl.textContent = (views.length > 1 ? `Tank ${vp.key} · ` : '') + sizeText(S, units, standOn);
@@ -262,7 +263,7 @@ async function runAR(viewer: Viewer, store: Store, _button?: HTMLButtonElement) 
 
   let session: XRSession;
   try {
-    session = await navigator.xr!.requestSession('immersive-ar', { requiredFeatures: ['hit-test'], optionalFeatures: ['dom-overlay'], domOverlay: { root: overlay } });
+    session = await navigator.xr!.requestSession('immersive-ar', { requiredFeatures: ['hit-test'], optionalFeatures: ['dom-overlay', 'camera-access'], domOverlay: { root: overlay } });
   } catch (e) { overlay.remove(); throw e; }
 
   r.xr.enabled = true; r.xr.setReferenceSpaceType('local');
@@ -308,6 +309,14 @@ async function runAR(viewer: Viewer, store: Store, _button?: HTMLButtonElement) 
     standOn = !standOn; prep.showStand(standOn); centre = baseCentre(S, vp.T, standOn); label();
   });
 
+  // photo: taken in the next XR frame, where the camera image is available (shown once a frame has one)
+  let shoot = false, binding: XRWebGLBinding | undefined, saying = 0;
+  photoBtn.addEventListener('click', () => { shoot = true; });
+  const say = (msg: string) => {
+    const prev = hint.textContent; hint.textContent = msg; clearTimeout(saying);
+    saying = window.setTimeout(() => { if (hint.textContent === msg) hint.textContent = prev; }, 2500);
+  };
+
   let frames = 0, t0 = 0;
   viewer.xrFrame = (t, frame) => {
     const ref = r.xr.getReferenceSpace()!;
@@ -326,6 +335,20 @@ async function runAR(viewer: Viewer, store: Store, _button?: HTMLButtonElement) 
     OUTLINE.uPop.value = S.render.pop; OUTLINE.uVpH.value = r.getDrawingBufferSize(new THREE.Vector2()).y;
     r.setClearColor(0x000000, 0);
     r.render(vp.scene!, cam);
+    const xv = pose?.views[0] as (XRView & { camera?: { width: number; height: number } }) | undefined;
+    if (xv?.camera && photoBtn.hidden) photoBtn.hidden = false;
+    if (shoot && xv?.camera) {
+      shoot = false;
+      try {
+        binding ??= new XRWebGLBinding(session, r.getContext());
+        const tex = (binding as unknown as { getCameraImage(c: unknown): WebGLTexture }).getCameraImage(xv.camera);
+        const { width: w, height: h } = xv.camera, ret = prep.reticle.visible;
+        prep.reticle.visible = false; OUTLINE.uVpH.value = h;
+        const c = composePhoto(r, tex, w, h, vp.scene!, r.xr.getCamera().cameras[0]);
+        prep.reticle.visible = ret;
+        savePhoto(c).then(() => say('Photo saved to Downloads'), e => { console.error(e); say('Photo failed'); });
+      } catch (e) { console.error(e); say('Photo failed'); }
+    }
     if (++frames >= 30) { if (t0) fpsEl.textContent = `${Math.round(30000 / (t - t0))} fps`; frames = 0; t0 = t; }
   };
 

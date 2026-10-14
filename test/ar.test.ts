@@ -64,3 +64,10 @@ describe('AR size check', () => {
     expect(sizeText(S, 'cm')).toBe('Size check: 91.4 × 45.7 × 40.6 cm (L × D × H)');
   });
 });
+
+describe('AR photo', () => {
+  it('names the file by local date and time', async () => {
+    const { photoName } = await import('../src/render/arPhoto');
+    expect(photoName(new Date(2026, 9, 14, 9, 5, 7))).toBe('tanklook-ar-2026-10-14-090507.jpg');
+  });
+});
