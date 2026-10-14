@@ -50,7 +50,9 @@ export interface Plan {
   shade: [string, string, string]; // back, flank, belly
   // cut (lyre): depth of the fork, share of the tail length (default 0.8); sword ('sword'): the fan ends at u = sword and
   // its lower rays run on as a slim tapering sword to the tip at u = 0 (unset: the short tab)
-  tail: { type: Tail; h: number; tint?: string; a?: number; edge?: string; cut?: number; sword?: number };
+  // split (3D, off by default): a double caudal (fantail goldfish), two copies of the tail joined along the top whose
+  // lower parts flare out sideways by this many degrees, more toward the rear (fish3d `splitTail`); the card draws it flat
+  tail: { type: Tail; h: number; tint?: string; a?: number; edge?: string; cut?: number; sword?: number; split?: number };
   dorsal?: AnyFin; anal?: AnyFin; adipose?: boolean;
   dorsal2?: MedianFin; // a second, separate dorsal behind the first (gobies, cardinals)
   // male livebearers: the anal fin is a gonopodium, a slim rod from `at` lying back along the belly, `len` long
@@ -296,21 +298,31 @@ export function eyeSpot(p: Plan) {
   return { u, v: et + (eb - et) * (0.38 + (p.eye.dv ?? 0)), r: p.eye.r, iris: p.eye.iris };
 }
 
-export function drawPlan(p: Plan, ctx: Ctx, P: Proj, W: number) {
-  const g = geometry(p), ray = p.ray ?? '#7d7a70';
-  const finOpts = (f: { tint?: string; a?: number; edge?: string } | undefined, root: [number, number], pts: Pt[], seed: number) =>
-    [pts, root, f?.tint ?? p.fin, ray, {
+/** Draws one median fin or the tail in the plan's fin style (fin marks, edge). */
+function finDrawer(p: Plan, ctx: Ctx, P: Proj, W: number) {
+  const ray = p.ray ?? '#7d7a70';
+  return (pts: Pt[] | undefined, root: [number, number], f: { tint?: string; a?: number; edge?: string } | undefined, seed: number, segs?: FinRay[]) => {
+    if (!pts) return;
+    const e = {
       a: f?.a, rays: 14, extra: (c: Ctx) => {
         paintMarks(c, P, W, p.finMarks, seed);
         if (f?.edge) { shape(c, P, pts); c.strokeStyle = hexA(f.edge, 0.55); c.lineWidth = 0.014 * W; c.stroke(); }
       },
-    }] as const;
-  const draw = (pts: Pt[] | undefined, root: [number, number], f: { tint?: string; a?: number; edge?: string } | undefined, seed: number, segs?: FinRay[]) => {
-    if (!pts) return; const [a, b, c2, d, e] = finOpts(f, root, pts, seed); fin(ctx, P, W, a, b, c2, d, segs ? { ...e, segs } : e);
+    };
+    fin(ctx, P, W, pts, root, f?.tint ?? p.fin, ray, segs ? { ...e, segs } : e);
   };
+}
+/** The tail fin alone (a split tail's lobes are their own 3D meshes, painted with this), and its centre line v. */
+export function drawTail(p: Plan, ctx: Ctx, P: Proj, W: number) {
+  const g = geometry(p); finDrawer(p, ctx, P, W)(g.tail, [p.pedU + 0.02, g.c], p.tail, 11);
+}
+export const tailBox = (p: Plan) => { const g = geometry(p), vs = g.tail.map(q => q[1]); return { u1: Math.max(...g.tail.map(q => q[0])), v0: Math.min(...vs), v1: Math.max(...vs), c: g.c }; };
+
+export function drawPlan(p: Plan, ctx: Ctx, P: Proj, W: number) {
+  const g = geometry(p), ray = p.ray ?? '#7d7a70', draw = finDrawer(p, ctx, P, W);
   // root of a fin's ray fan: the middle of its base, just inside the body
   const mid = (f: AnyFin) => (isMedian(f) ? f.at - f.len / 2 : (f.u0 + f.u1) / 2);
-  draw(g.tail, [p.pedU + 0.02, g.c], p.tail, 11);
+  if (!(p.tail.split && !style.paired)) draw(g.tail, [p.pedU + 0.02, g.c], p.tail, 11); // a 3D fish's split tail: fish3d draws its two lobes
   if (p.dorsal) draw(g.dorsal, [mid(p.dorsal), g.prof(mid(p.dorsal))[0] + 0.02], p.dorsal, 12, g.rays.dorsal);
   if (p.dorsal2) draw(g.dorsal2, [mid(p.dorsal2), g.prof(mid(p.dorsal2))[0] + 0.02], p.dorsal2, 14, g.rays.dorsal2);
   if (p.gono) draw(g.anal, [p.gono.at, g.prof(p.gono.at)[1]], { tint: p.gono.tint, a: 0.85 }, 13, g.rays.anal);
