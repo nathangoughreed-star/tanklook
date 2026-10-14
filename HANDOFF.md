@@ -33,6 +33,15 @@ Living file. Project state and dated decisions go here; update in place.
   `await import('/src/render/lighting.ts')` and `window.__gb`) agreed with bandsAt to 0.003% at 54 lit points.
   Readout "surface" is now the brightest point just under the surface (was: above the brightest substrate point,
   which could sit by the glass where the direct beam misses the surface: read 0).
+- Review (Nathan 2026-10-14: "surely the corners wouldn't get basically no light"): two fixes. (1) Beam = cos^m off
+  straight down with m set so the printed beam angle is where it falls to HALF (`beamExp`; LED bar and tube cross-section
+  m = 1, half at 60°), replacing the hard smoothstep cut-off in the model and the map (the ordinary render keeps its own
+  cone). (2) Bounced light (`bounce`): floor light x substrate reflectance (SUB_ALBEDO; custom from its colour) spread
+  over the inside surfaces, kept in by the surface (0.45) and glass (0.43), integrating-cavity style; added under water
+  (everywhere when dry). 36x16x18 in, 3 spots 60°, 45 W: corner 16% -> 41% of centre, minimum 3 -> 84 µmol; bounce is
+  ~7% of the mean on gravel, ~22% on white sand. LED bar and T5 corners were already 63-73% (Fluval publishes ~55%).
+  Refit: T5 eta 0.65 (Barr +12 / -1%), bare T5 0.4, T8 0.45; Hydra -9..+6%, JBL -26..+14%. Shader port re-checked
+  (GPU vs JS <= 0.0001%).
 - Next: 4 (hover tooltip).
 
 ## Model review sheet + model versions (2026-10-14, Nathan: "keep it where it can be updated with version number every time a model is updated")

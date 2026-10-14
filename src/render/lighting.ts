@@ -59,11 +59,11 @@ export const LU = {
   uMapOn: { value: 0 }, uMapW: { value: 1 }, uMapGain: { value: 1 },
   // light output (lane K; watts set): the map in real units, a port of scene/lightout.ts bandsAt. uLoA: phi x 1e6 /
   // norm (per emitter), water surface y, losses x the PAR-override scale, wall-image weight (0 = no images);
-  // uLoWall: tank L, D; uLoK: absorption per mm per band; uLoSplit: photon share per band; uLoOut: per-band weight of
+  // uLoM: beam exponent (cos^m); uLoInd: bounced light per band (x the override scale); uLoWall: tank L, D; uLoK: absorption per mm per band; uLoSplit: photon share per band; uLoOut: per-band weight of
   // what is shown (PAR 1,1,1; lux LUXW); uMapDiv: the level at the bottom of the ramp (relative 1/16, PAR 2.5, lux 125)
   uLoOn: { value: 0 }, uLoA: { value: new THREE.Vector4() }, uLoWall: { value: new THREE.Vector2() },
   uLoK: { value: new THREE.Vector3() }, uLoSplit: { value: new THREE.Vector3() }, uLoOut: { value: new THREE.Vector3(1, 1, 1) },
-  uMapDiv: { value: 1 / 16 },
+  uMapDiv: { value: 1 / 16 }, uLoM: { value: 1 }, uLoInd: { value: new THREE.Vector3() },
 };
 /** The Light map ramp's bottom (navy) per unit: a colour step per doubling, yellow (4 steps up) on the "medium" band. */
 export const MAP_DIV = { rel: 1 / 16, par: 2.5, lux: 125 } as const;
@@ -133,7 +133,7 @@ function setLoUniforms(env: LightEnv, scale: number, unit: 'par' | 'lux') {
   LU.uLoA.value.set(env.phi * 1e6 / env.norm, Number.isFinite(env.ys) ? env.ys : -1e6, env.trans * scale, env.walls ? env.walls.w : 0);
   LU.uLoWall.value.set(env.walls?.L ?? 0, env.walls?.D ?? 0);
   LU.uLoK.value.set(...env.k); LU.uLoSplit.value.set(...env.split); const o = unit === 'lux' ? LUXW : [1, 1, 1]; LU.uLoOut.value.set(o[0], o[1], o[2]);
-  [LU.uConeIn.value, LU.uConeOut.value] = env.cone;
+  LU.uLoM.value = env.m; LU.uLoInd.value.set(...env.ind).multiplyScalar(scale);
   env.E.forEach((e, i) => LU.uEm.value[i].set(...e)); LU.uEmN.value = env.E.length;
 }
 
@@ -208,7 +208,7 @@ vec3 aqLight() {
 // square of the distance (a tube, a line source: inverse distance), summed over the lights. Relative to one standard
 // spot bulb (52°) 300 mm straight above a level surface = 1 (times Brightness), shown on a log scale, a colour step per
 // doubling: 1/16 navy (dimmed below), 1/8 blue, 1/4 cyan, 1/2 green, 1 yellow, 2 orange, 4 red, 8 white.
-uniform float uMapOn, uMapW, uMapGain, uLoOn, uMapDiv; uniform vec4 uLoA; uniform vec2 uLoWall; uniform vec3 uLoK, uLoSplit, uLoOut;
+uniform float uMapOn, uMapW, uMapGain, uLoOn, uMapDiv, uLoM; uniform vec4 uLoA; uniform vec2 uLoWall; uniform vec3 uLoK, uLoSplit, uLoOut, uLoInd;
 // one emitter (or a wall image of it, weight w) at p: a port of scene/lightout.ts addSrc, PAR or lux by uLoOut
 float aqSrc(vec3 p, vec3 n, vec3 ep, float h, float w) {
   float ys = uLoA.y, wd = p.y < ys ? ys - p.y : 0.0;
@@ -218,11 +218,11 @@ float aqSrc(vec3 p, vec3 n, vec3 ep, float h, float w) {
   if (h > 0.0) {
     float dz = ep.z - p.z, r = max(length(vec2(dy, dz)), 1.0), xr = p.x - ep.x;
     float f = 0.5 * ((h - xr) / length(vec2(r, h - xr)) + (h + xr) / length(vec2(r, h + xr)));
-    e0 = uLoA.x / (2.0 * h) * smoothstep(uConeOut, uConeIn, dy / r) * max((n.y * dy + n.z * dz) / r, 0.0) * f / r;
+    e0 = uLoA.x / (2.0 * h) * pow(dy / r, uLoM) * max((n.y * dy + n.z * dz) / r, 0.0) * f / r;
     sinA = abs(dz) / r;
   } else {
     vec3 dv = vec3(ep.x - p.x, dy, ep.z - p.z); float d = max(length(dv), 1.0);
-    e0 = uLoA.x * smoothstep(uConeOut, uConeIn, dy / d) * max(dot(n, dv) / d, 0.0) / (d * d);
+    e0 = uLoA.x * pow(dy / d, uLoM) * max(dot(n, dv) / d, 0.0) / (d * d);
     sinA = length(dv.xz) / d;
   }
   e0 *= w * uLoA.z;
@@ -248,6 +248,8 @@ float aqIrrAbs(vec3 p, vec3 n) {
       if (g > 0.0) sum += aqSrc(p, n, im, e.w, uLoA.w * g);
     }
   }
+  // bounced light (lightout bounce): under water, or everywhere in a dry tank
+  if (p.y < ys || ys < -1e5) sum += dot(uLoInd, uLoOut);
   return sum;
 }
 float aqIrr() {
