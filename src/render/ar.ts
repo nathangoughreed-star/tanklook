@@ -68,6 +68,18 @@ const shadowTexture = (() => {
   };
 })();
 
+/** What only makes sense in the page's room, not the real one: the scale person, the room floor, the wall panel(s). */
+export function roomObjects(sc: THREE.Object3D) {
+  const out: THREE.Object3D[] = [];
+  sc.traverse(o => {
+    const m = o as THREE.Mesh, mat = m.material as THREE.Material | undefined;
+    if (o.name === 'person') out.push(o);
+    else if ((m.geometry as THREE.PlaneGeometry | undefined)?.parameters?.width === 8000) out.push(o); // the room floor (build addFloor)
+    else if (mat?.userData?.wallPaint && o.parent && o.parent !== sc) out.push(o.parent); // a wall panel and its skirting
+  });
+  return out;
+}
+
 export interface ARPrep {
   reticle: THREE.Object3D;
   shadow: THREE.Mesh;
@@ -86,12 +98,9 @@ export interface ARPrep {
 export function prepScene(vp: Viewport): ARPrep {
   const sc = vp.scene!, S = vp.S, T = vp.T, vis = new Map<THREE.Object3D, boolean>(), mats = new Map<THREE.Mesh, THREE.Material | THREE.Material[]>();
   const hide = (o: THREE.Object3D) => { if (!vis.has(o)) vis.set(o, o.visible); o.visible = false; };
-  const roomOnly: THREE.Object3D[] = [];
+  const roomOnly = roomObjects(sc);
   sc.traverse(o => {
     const m = o as THREE.Mesh, mat = m.material as THREE.Material | undefined;
-    if (o.name === 'person') roomOnly.push(o);
-    else if ((m.geometry as THREE.PlaneGeometry | undefined)?.parameters?.width === 8000) roomOnly.push(o); // the room floor (build addFloor)
-    else if (mat?.userData?.wallPaint && o.parent && o.parent !== sc) roomOnly.push(o.parent); // a wall panel and its skirting
     if (mat?.userData?.frost) {
       const f = mat as THREE.MeshPhysicalMaterial;
       mats.set(m, f); m.material = new THREE.MeshBasicMaterial({ color: f.color, transparent: true, opacity: 0.8, side: THREE.DoubleSide, depthWrite: false });
@@ -154,8 +163,8 @@ const OVERLAY_CSS = `#arOverlay{position:fixed;inset:0;font:500 15px system-ui,"
 #arOverlay .bar{position:absolute;left:12px;right:12px;bottom:max(16px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none}
 #arOverlay .msg{background:rgba(20,24,30,.72);padding:6px 12px;border-radius:12px;text-align:center;max-width:100%}
 #arOverlay .fps{position:absolute;top:14px;left:14px;background:rgba(20,24,30,.55);padding:2px 8px;border-radius:8px;font-size:12px}
-#arOverlay .swap{right:auto;left:50%;transform:translateX(-50%)}
-#arOverlay button{position:absolute;top:10px;right:10px;font:600 16px system-ui,sans-serif;min-width:44px;min-height:44px;padding:0 16px;border-radius:22px;border:0;background:rgba(20,24,30,.8);color:#fff}`;
+#arOverlay button{position:absolute;top:10px;right:10px;font:600 16px system-ui,sans-serif;min-width:44px;min-height:44px;padding:0 16px;border-radius:22px;border:0;background:rgba(20,24,30,.8);color:#fff}
+#arOverlay .bar .swap{position:static;align-self:flex-end;pointer-events:auto;min-height:52px;font-size:17px}`; // swap: lower right, under the thumb (Nathan 2026-10-14)
 
 /** Show the AR button when this device can do immersive AR, and run the session from it. */
 export async function attachAR(viewer: Viewer, store: Store, button: HTMLButtonElement) {
@@ -177,7 +186,7 @@ async function runAR(viewer: Viewer, store: Store) {
   if (!vp.scene) return;
   if (!document.getElementById('arCss')) { const st = document.createElement('style'); st.id = 'arCss'; st.textContent = OVERLAY_CSS; document.head.appendChild(st); }
   const overlay = document.createElement('div'); overlay.id = 'arOverlay';
-  overlay.innerHTML = '<div class="fps"></div><button type="button" class="close">Close</button><button type="button" class="swap" hidden></button><div class="bar"><div class="msg hint"></div><div class="msg size"></div></div>';
+  overlay.innerHTML = '<div class="fps"></div><button type="button" class="close">Close</button><div class="bar"><button type="button" class="swap" hidden></button><div class="msg hint"></div><div class="msg size"></div></div>';
   document.body.appendChild(overlay);
   const hint = overlay.querySelector<HTMLElement>('.hint')!, fpsEl = overlay.querySelector<HTMLElement>('.fps')!;
   const sizeEl = overlay.querySelector<HTMLElement>('.size')!, swapBtn = overlay.querySelector<HTMLButtonElement>('.swap')!;

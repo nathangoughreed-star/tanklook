@@ -65,7 +65,8 @@ Owns `src/art/herps.ts`, `src/render/herp3d.ts` (lane L's snail files not touche
   and render-on-demand pauses.
 - A / B swap (Nathan 2026-10-14, after the phone test): in split view a "Show tank B" button at the top of the AR overlay
   swaps to the other tank on the same floor spot, turned the same way; the Size check line names the tank. Desktop: swap
-  A -> B -> A restores pixel-identical. Needs a phone check with a split tank.
+  A -> B -> A restores pixel-identical. Nathan checked it on the S24+ ("it works now", after a cached page); the button then
+  moved to the lower right, above the Size check line, under the thumb (52 px tall).
 - DONE: Nathan tested on the S24+ (2026-10-14): "it works flawlessly". Minor leftover: the selection outline shows in AR
   if a fish was selected. If a big tank ever drops under 60 fps, lower `renderer.xr.setFramebufferScaleFactor` before the session.
 - NEXT AR step (iPhone phase, not built): USDZExporter on a simplified copy of the tank (plain materials, no custom
