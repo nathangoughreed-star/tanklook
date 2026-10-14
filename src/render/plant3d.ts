@@ -133,7 +133,10 @@ export function plantGeometry(type: PlantType, seed: number, h: number) {
   const twist = () => (r() - 0.5) * 2 * f.twist, bright = () => 0.9 + r() * 0.2;
   // the water's give: one current direction for the whole plant (mostly along the tank, as a filter's flow runs), each
   // leaf leaning into it by its own amount, longer leaves more (own random stream: the leaf layout stays as it was)
-  const rs = rng(seed * 104729 + 71), cur = (rs() < 0.5 ? 0 : Math.PI) + (rs() - 0.5) * 1.2, cx = Math.cos(cur), cz = Math.sin(cur), sway = plant3d.sway ? P.sway : 0;
+  const rs = rng(seed * 104729 + 71), cur = (rs() < 0.5 ? 0 : Math.PI) + (rs() - 0.5) * 1.2, cx = Math.cos(cur), cz = Math.sin(cur);
+  // how much current reaches this plant: anywhere from none (straight up) to a strong lean, all equally likely
+  // (Nathan 2026-10-14: the red stems all bent about the same)
+  const sway = plant3d.sway ? P.sway * 1.3 * rng(seed * 15485863 + 5)() : 0;
   const bend = (len = 1): Bend => ({ cx, cz, k: sway * (0.5 + rs()) * len, wob: sway * 0.5 * (rs() - 0.5) * 2 * len, ph: rs() * 6.28 });
   if (P.form === 'carpet') {
     // leaflets over a disc with a ragged edge, lower toward it; past MAX_LEAFLETS a big patch gets bigger leaflets instead of more
