@@ -249,7 +249,7 @@ async function runAR(viewer: Viewer, store: Store, _button?: HTMLButtonElement) 
   if (!vp.scene) return;
   if (!document.getElementById('arCss')) { const st = document.createElement('style'); st.id = 'arCss'; st.textContent = OVERLAY_CSS; document.head.appendChild(st); }
   const overlay = document.createElement('div'); overlay.id = 'arOverlay';
-  overlay.innerHTML = '<div class="fps"></div><div class="bar"><div class="btns"><div class="menu"><button type="button" class="close">Close</button><button type="button" class="standTog" hidden></button><button type="button" class="shuffle" hidden>🔀 Shuffle</button><button type="button" class="photo" hidden>📷 Photo</button><button type="button" class="swap" hidden></button></div><button type="button" class="fold" aria-expanded="true">▾ Hide</button></div><div class="msg hint"></div><div class="msg size"></div></div>';
+  overlay.innerHTML = '<div class="fps"></div><div class="bar"><div class="btns"><div class="menu"><button type="button" class="close">Close AR</button><button type="button" class="standTog" hidden></button><button type="button" class="shuffle" hidden>🔀 Shuffle</button><button type="button" class="photo" hidden>📷 Photo</button><button type="button" class="swap" hidden></button></div><button type="button" class="fold" aria-expanded="true">▾ Hide</button></div><div class="msg hint"></div><div class="msg size"></div></div>';
   document.body.appendChild(overlay);
   const hint = overlay.querySelector<HTMLElement>('.hint')!, fpsEl = overlay.querySelector<HTMLElement>('.fps')!;
   const sizeEl = overlay.querySelector<HTMLElement>('.size')!, swapBtn = overlay.querySelector<HTMLButtonElement>('.swap')!;
