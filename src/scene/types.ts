@@ -73,9 +73,10 @@ export interface Fish {
 /**
  * Where a clinging animal sits: the substrate, the inside of the glass at (x, depth) on the outline, any pane or curved
  * shell (v8; before that the four rectangle panes 'front' | 'back' | 'left' | 'right', migrated to 'glass'), or the top
- * of a rock, piece of wood or cave ('hardscape').
+ * of a rock, piece of wood or cave ('hardscape'), or floating at the water surface ('top': African dwarf frog; its height
+ * is the water line's, the stored y is ignored).
  */
-export type Surface = 'floor' | 'glass' | 'hardscape';
+export type Surface = 'floor' | 'glass' | 'hardscape' | 'top';
 
 export interface CameraSettings {
   dist: number; // eye to centre of the front glass, mm; identical for every tank

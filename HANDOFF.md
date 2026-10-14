@@ -127,6 +127,15 @@ Split from lane S. Only the PLANS / her() entries of these species in `src/art/f
   untouched. Lazy chunks are cached only once loaded, so offline covers what the visitor has already opened. Checked
   on `android-prod` (vite preview, 5544): SW active and controlling, the app opens with the server stopped,
   `Page.getInstallabilityErrors` = none. Not yet checked: the install prompt on a real phone (needs the live https site).
+- **Step 3 in progress (2026-10-14): TWA project in `android/`** (Bubblewrap 1.x, `twa-manifest.json` written by hand,
+  then `bubblewrap update`): package `com.tanklook.app`, host tanklook.com, orientation default (follows the phone),
+  target/compile SDK 36, min 21, version 1.0.0 (code 1). Toolchain on this PC (not in the repo): Bubblewrap CLI (npm -g),
+  Temurin JDK 17.0.11 and Android cmdline-tools 6609375 in `%USERPROFILE%\.bubblewrap` (config.json points there).
+  Upload key: `C:\Users\nreed\keys\tanklook-upload.jks`, alias `upload`; Nathan makes it and keeps the passwords,
+  never in the repo (`android/.gitignore` blocks *.jks / *.aab / build output). Nathan runs `bubblewrap build` himself
+  (it asks for the passwords and for the Android SDK licences). Then: its `assetlinks.json` goes to
+  `public/.well-known/assetlinks.json`; after Play App Signing is on, ADD Play's app-signing SHA-256 too (from Play
+  Console > App integrity), or the store build shows the browser bar.
 - **Order:** landscape layout, PWA manifest + SW, TWA shell + asset links, Play listing material (Nathan does the account
   and submissions), low-end phone performance check.
 
@@ -722,8 +731,16 @@ Plan approved by Nathan (batches in severity order). Pictures: `shots/g2/` in th
 - **v2 at build 374 (Nathan: "a resting pose with the hind legs splayed out sideways, like a real ADF on the bottom"):**
   `adfLimbs()` overrides frog3D's folded legs for `HERP3D.adf` only: thighs out sideways from the hips, knees bent
   forward, the long webbed feet trailing back and out (past the tail end, u < 0); arms out to the sides, webbed hands
-  spread forward. The 2D card keeps the folded side view (in 3D it is only the invisible picking target). Open: a
-  floating "zen" pose at the surface; not done.
+  spread forward. The 2D card keeps the folded side view (in 3D it is only the invisible picking target).
+- **Floating "zen" pose (Nathan: "lets add the floating zen pose at the surface"):** new `Surface` value `'top'` =
+  floating at the water surface (its height is the water line's; stored y ignored). Species `cling: "top"` -> surfaces
+  `['floor', 'top']` (adf only). Shuffle / Add float `FLOAT_FROG` = 1/3 of them (scatter.ts; none in a dry tank), nose
+  up 4-12°, the rest rest on the bottom. Pose `HERP3D_FLOAT.adf` (herps.ts): the resting body with all four legs spread
+  limp and drooping; its `top` line (the back) sits 0.5 mm under the water line (build.ts), no contact shadow.
+  `herpBody(art, w, surface)` now takes the surface (glass / top poses). `restsOnFloor` is false on 'top'. Test in
+  scatter.test.ts (share, height, save round-trip, dry tank). Not fingerprinted (like the tree frog's glass pose):
+  review sheet unchanged; picture made with a temporary swap. Not done: dragging can't move a frog between the floor
+  and the surface (only Shuffle / Add choose), and in a tank filled to the rim the rim hides floaters from eye height.
 - Gotcha: `npm run sheets` renders in headless software WebGL, whose fingerprints differ from a GPU's for every model,
   so the sheets script cannot record versions (tried: it bumped all 68). Record from a dev server's review page only.
 

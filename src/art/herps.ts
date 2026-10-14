@@ -374,6 +374,7 @@ export interface Herp3D {
   fin?: { top: [number, number][]; bot: [number, number][]; c: string; o: number }; // membranes along the tail (edges, card frame)
   gills?: { at: [number, number, number]; tips: [number, number, number][]; stalk: string; fringe: string };
   ground: number;                 // the ground line v (card frame)
+  top?: number;                   // floating pose: the line v (card frame) that sits at the water surface
   shell?: { s: Shell3D; shell: [string, string, string]; mark: string }; // a carried snail shell (hermit crab), from the snail generator
   warts?: { n: number; u: [number, number]; a: [number, number]; r: [number, number]; h: number; seed: number }; // raised skin bumps (a: round the section, h: height / radius)
 }
@@ -482,6 +483,8 @@ const TREEFROG_MARKS: Mark3D[] = [
 
 /** The pose an animal takes clinging to glass, where it differs from its resting one. */
 export const HERP3D_GLASS: Record<string, Herp3D> = {};
+/** The pose an animal takes floating at the water surface (species `cling: "top"`). */
+export const HERP3D_FLOAT: Record<string, Herp3D> = {};
 
 export const HERP3D: Record<string, Herp3D> = {
   // hermit crab: the small body out of the shell, legs and claw from HERMIT_LIMBS, the eyes on the stalk tips
@@ -548,3 +551,19 @@ export const HERP3D: Record<string, Herp3D> = {
 };
 // on the glass the flat belly turns the lower flank toward you: the cream starts lower round the section
 HERP3D_GLASS.treefrog = frogOnGlass3D(FROGS.treefrog, 1.12, [[0, '#5f9a4a'], [0.45, '#7cb35d'], [0.66, '#a9c98a'], [0.74, '#e8e2c4'], [1, '#efe9cf']], TREEFROG_MARKS);
+// the African dwarf frog's "zen" float: hanging at the water line, back and snout just at the surface, all four legs
+// spread out limp and drooping a little (the toe tips set the ground line below the belly)
+HERP3D_FLOAT.adf = (() => {
+  const s = FROGS.adf, V = (v: number) => frogV(s.aspect, v), J = (u: number, v: number, z: number, r: number): Joint => [u, V(v), z, r];
+  const toe = 0.008;
+  return {
+    ...HERP3D.adf,
+    limbs: [
+      { js: [J(0.16, 0.13, 0.08, 0.06), J(0.28, 0.2, 0.3, 0.04), J(0.08, 0.26, 0.4, 0.022), J(0.0, 0.3, 0.45, 0.015)],
+        toes: [[-0.1, -0.02], [-0.13, 0.02], [-0.13, 0.06], [-0.1, 0.1], [-0.06, 0.12]], toe, thigh: 0.08, blunt: true, web: 1 },
+      { js: [J(0.7, 0.1, 0.09, 0.03), J(0.74, 0.2, 0.22, 0.022), J(0.8, 0.29, 0.3, 0.015)],
+        toes: [[0.07, -0.03], [0.085, 0.01], [0.07, 0.05], [0.035, 0.08]], toe, blunt: true, web: 1 },
+    ],
+    ground: V(0.34), top: V(-0.07),
+  };
+})();

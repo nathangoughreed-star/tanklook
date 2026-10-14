@@ -59,7 +59,8 @@ function resolve(r: RawSpecies): Species {
   const aspect = r.aspect ?? meta?.aspect ?? 0.4, rest = meta?.rest ?? aspect / 2;
   const habitat: Habitat = kind ? 'both' : r.habitat === 'land' || r.habitat === 'both' ? r.habitat : 'water';
   const group = r.group === 'school' || r.group === 'shoal' ? r.group : undefined, level = r.level === 'top' || r.level === 'low' ? r.level : undefined;
-  const surfaces: Surface[] | undefined = kind || r.cling === 'any' ? ['floor', 'glass', 'hardscape'] : r.cling === 'hardscape' ? ['floor', 'hardscape'] : undefined;
+  const surfaces: Surface[] | undefined = kind || r.cling === 'any' ? ['floor', 'glass', 'hardscape'] : r.cling === 'hardscape' ? ['floor', 'hardscape']
+    : r.cling === 'top' ? ['floor', 'top'] : undefined; // 'top': rests on the bottom or floats at the water surface (dwarf frog)
   const sp: Species = { id: r.id, name: r.name, sci: r.sci, tl: r.tl, art: r.art, aspect, rest, zone, kind, surfaces, habitat, cat: CATEGORIES.some(c => c[0] === r.cat) ? r.cat as Category : 'fw-fish', group, level, note: r.note, look: r.id, ...(r.pair ? { pair: true } : {}) };
   if ((r as { salt?: unknown }).salt === true) sp.salt = true; // marine (lane B hook 2026-10-13; absent = freshwater)
   if (r.female) {
@@ -79,7 +80,7 @@ export const speciesOf = (f: { species: string; sex?: Sex }) => { const sp = byI
 /** This fish's total length (mm): its custom size if set, else the adult length of its sex. */
 export const fishTL = (f: { tl?: number; sex?: Sex }, sp: Species) => f.tl ?? (f.sex === 'f' && sp.female ? sp.female.tl : sp.tl);
 /** Always rests on the ground or hardscape (bottom dwellers, land animals and snails not on glass); 'both' animals depend on the water at their spot. */
-export const restsOnFloor = (sp: Species, surface?: string) => surface !== 'glass' && (sp.zone === 'bottom' || sp.habitat === 'land' || sp.kind === 'snail');
+export const restsOnFloor = (sp: Species, surface?: string) => surface !== 'glass' && surface !== 'top' && (sp.zone === 'bottom' || sp.habitat === 'land' || sp.kind === 'snail');
 /** Can it cling to this surface? */
 export const clingsTo = (sp: Species, surface: Surface) => !!sp.surfaces?.includes(surface);
 /** Needs water: hidden in a dry tank. */

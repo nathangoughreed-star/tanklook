@@ -1,0 +1,10 @@
+# build output and signing material never go in the repo (lane W)
+.gradle/
+build/
+app/build/
+local.properties
+*.apk
+*.aab
+*.idsig
+*.jks
+*.keystore
