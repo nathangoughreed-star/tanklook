@@ -10,6 +10,7 @@ import { HERP3D } from '../art/herps';
 import { SNAILS } from '../art/snails';
 import type { EdgeMode } from '../scene/types';
 import { cardMaterial, pairedFinTexture } from './textures';
+import { isShrimp3D, shrimpBody } from './shrimp3d';
 
 /** Species drawn in 3D (test set) and switches for before/after pictures. `fade` = the session-10 fixes (turned-away paint fades, card body cut out, body-shape fields, barbels); off = session 9, for pictures. `wrap` = the turned-away paint is smeared lengthwise (bars and spots don't close into hoops over the back and throat); off = session 11's round blur. */
 export const fish3d = { on: true, fade: true, wrap: true, species: new Set(['cardinal', 'discus', 'bronzecory', 'tigerbarb', 'bristlenose', 'kuhli', 'angel', 'danio', 'guppy', 'dwarfgourami', 'gbr', 'harlequin', 'oto', 'clownloach', 'goldfish', 'ember', 'rummynose', 'chili', 'cherrybarb', 'platy', 'molly', 'swordtail', 'betta', 'honeygourami', 'bolivianram', 'kribensis', 'oscar', 'pandacory', 'sae', 'tetra', 'gourami', 'ocellaris', 'royalgramma', 'yellowtang', 'firefish', 'banggai', 'sixline', 'chromis', 'coralbeauty', 'watchman', 'cherryshrimp', 'amano', 'cleanershrimp', 'nerite', 'mystery', 'ramshorn', 'trumpet', 'turbo', 'hermit', 'dartfrog', 'treefrog', 'firetoad', 'firenewt', 'axolotl',
@@ -427,6 +428,7 @@ const fishMat = (key: string, make: () => THREE.MeshBasicMaterial) => {
  * paired fins pressed out flat.
  */
 export function fishBody(art: string, aspect: number, w: number, bend: number, map: THREE.Texture, edge: EdgeMode, cling = false) {
+  if (isShrimp3D(art)) return shrimpBody(art, w); // shrimp: their own body plan (shrimp3d.ts)
   const p = shaped(bodyPlan(art)!), b = Math.round(bend * 20) / 20, key = `${art}|${aspect}|${b}|${fish3d.fade}`;
   let g = geoCache.get(key); if (!g) { g = bodyGeometry(p, aspect, b); geoCache.set(key, g); }
   const grp = new THREE.Group(); grp.scale.setScalar(w);

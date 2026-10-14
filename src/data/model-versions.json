@@ -1,7 +1,7 @@
 {
  "note": "Model versions for the review sheet (review.html). hash = fingerprint of the model (geometry + texture thumbnails + colours); v rises by one each time it changes; build = the build that change shipped in. Written by the sheet's Record button on the dev server; commit it with the model change.",
  "models": {
-  "amano": {"v":1,"hash":"08c7f58e","build":217,"date":"2026-10-14"},
+  "amano": {"v":2,"hash":"c0505ea1","build":284,"date":"2026-10-14"},
   "angel": {"v":1,"hash":"32129c25","build":217,"date":"2026-10-14"},
   "axolotl": {"v":1,"hash":"bcb72d0c","build":217,"date":"2026-10-14"},
   "banggai": {"v":1,"hash":"b9d2ab44","build":217,"date":"2026-10-14"},
@@ -13,10 +13,10 @@
   "cardinal": {"v":1,"hash":"7648432f","build":217,"date":"2026-10-14"},
   "cherrybarb": {"v":1,"hash":"73def7e4","build":217,"date":"2026-10-14"},
   "cherrybarb~f": {"v":1,"hash":"84f260bf","build":217,"date":"2026-10-14"},
-  "cherryshrimp": {"v":1,"hash":"3d9ebf06","build":217,"date":"2026-10-14"},
+  "cherryshrimp": {"v":2,"hash":"d5fe71db","build":284,"date":"2026-10-14"},
   "chili": {"v":1,"hash":"cb4dc401","build":217,"date":"2026-10-14"},
   "chromis": {"v":1,"hash":"6bd5cbcd","build":217,"date":"2026-10-14"},
-  "cleanershrimp": {"v":1,"hash":"b0dc540f","build":217,"date":"2026-10-14"},
+  "cleanershrimp": {"v":2,"hash":"f4f19c76","build":284,"date":"2026-10-14"},
   "clownloach": {"v":1,"hash":"a4bba26b","build":217,"date":"2026-10-14"},
   "coralbeauty": {"v":1,"hash":"16653f5a","build":217,"date":"2026-10-14"},
   "cpd": {"v":1,"hash":"296ca2d7","build":217,"date":"2026-10-14"},

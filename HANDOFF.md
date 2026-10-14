@@ -53,6 +53,14 @@ chats; fin layout (most of P1) and frogs/newt are later lanes.
   stalked eyes, rostrum, 5 pairs of jointed walking legs separate from smaller swimmerets, and a flat horizontal
   telson + uropod tail fan (no vertical fish tail). Then per species: cherry (Neocaridina), amano (glass body + its
   markings), cleaner (Lysmata, long white antennae, abdominal bend). Hermit body is a later lane.
+  **DONE 2026-10-14 (Nathan approved the before/after sheets; v2 at build 284, pushed to main).** `src/render/shrimp3d.ts`
+  builds the whole animal; `src/art/shrimps.ts` holds the per-species data (rostrum, hump, depth, leg spread, antenna
+  length, glass) and paint. Skin uv = (along the spine, dorsal midline .. keel), so the cleaner's back stripe holds from
+  above. fish3d.ts: `fishBody` hands shrimp to `shrimpBody` (2 lines). fishgen: `drawShrimp` paints nothing on the 3D
+  card (no vertical tail anywhere in 3D); the 2D card is unchanged; the shrimp `Plan` now only marks has3D. Amano's
+  marks are an overlay on the same body geometry (as before). The shrimp ignore `bend`/`cling` (no sideways bend, no
+  glass pose). Open: the hermit body (later lane); `shrimpMarksCanvas` and fish3d's `p.glass` branch are now unused by
+  shrimp (left for J2 to prune).
 - Both: the audit's "keep" list and constraints bind. Look at the result on `/review.html` on the lane's own dev
   server; when done press Record there (writes `src/data/model-versions.json` + the changed `public/model-sheets/`),
   after merging main in, then check the stamped build = `git rev-list --count HEAD` + 1 before the last commit.
@@ -616,8 +624,11 @@ the recommendation for the rest"): `../Glass-Box-models-fix` / `models-fix`, lau
 fish / amphibian art and 3D files (art/fishgen.ts, art/paint.ts, art/herps.ts, render/fish3d.ts, render/herp3d.ts,
 art/placeholder.ts) EXCEPT lane M's shrimp parts and hand-off lines, and the hardscape generators in render/items.ts
 (non-plant branches) and scene/items.ts stone / wood / cave entries, after lane I lands.
-**Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_e1923781-40bc-48d3-84f3-ed380e471779`
-("Lanes coordinator"). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
+Lane I DONE (`534b664`). Lane N opened 2026-10-14 (review item R12, Nathan via lane D's recommendation): shareable scene
+URLs, `../Glass-Box-share-url` / `share-url`, launch config `share-url` 5453; owns new `src/scene/share.ts` + test, the
+share hook in `src/main.ts`, and a Share control in `src/ui/panels.ts` / `index.html` (small hooks only).
+**Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_d0390f66-339c-4fa1-ab38-43e9c2a35958`
+("Lanes coordinator 2", took over 2026-10-14 from `local_e1923781`). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
 and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says
 what landed (commit), what is still open, and which files are now free. The coordinator then sends Nathan the prompts
 for any chats that can start now. If a prompt is still waiting when another lane opens, it sends all waiting prompts again
