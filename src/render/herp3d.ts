@@ -102,14 +102,33 @@ function shade(g: THREE.BufferGeometry, dark = 0.28, col?: (ny: number) => THREE
   return g;
 }
 
-const ST = 72, RG = 40; // stations along the body, points round the section
-function bodyGeometry(b: Body) {
+/** Raised warts: each a smooth low dome pushed out from the section's centre, scattered (seeded) over a band round the body
+ *  on both sides. Distances are in 3D, so a wart stays round wherever it sits. */
+function wartBumps(b: Body, w: NonNullable<Herp3D['warts']>) {
+  const r = rng(w.seed), ws: { c: THREE.Vector3; r: number }[] = [];
+  for (let i = 0; i < w.n; i++) {
+    const u = w.u[0] + r() * (w.u[1] - w.u[0]), a = w.a[0] + r() * (w.a[1] - w.a[0]), rad = w.r[0] + r() * (w.r[1] - w.r[0]);
+    ws.push({ c: surf(b, u, r() < 0.5 ? a * Math.PI : Math.PI * 2 - a * Math.PI), r: rad });
+  }
+  // height, and 0..1 up the wart (its crown is lit, its foot shadowed: the body material is unlit)
+  return (p: THREE.Vector3) => { let d = 0, f = 0; for (const q of ws) { const k = 1 - p.distanceToSquared(q.c) / (q.r * q.r); if (k > 0 && w.h * q.r * k * k > d) { d = w.h * q.r * k * k; f = k; } } return [d, f]; };
+}
+
+function bodyGeometry(b: Body, warts?: Herp3D['warts']) {
+  const ST = warts ? 200 : 72, RG = warts ? 120 : 40; // stations along the body, points round the section (fine enough for warts)
+  const bump = warts && wartBumps(b, warts), p = new THREE.Vector3(), lit: number[] = [];
   const pos: number[] = [], uv: number[] = [], idx: number[] = [];
   for (let i = 0; i <= ST; i++) {
     const u = b.u0 + (b.u1 - b.u0) * (1 - Math.cos(Math.PI * i / ST)) / 2; // denser at the nose and tail
     for (let j = 0; j <= RG; j++) {
       const th = Math.PI * 2 * j / RG, [v, z] = b.ring(u, th), a = th <= Math.PI ? th / Math.PI : 2 - th / Math.PI;
-      pos.push(u - 0.5, -v, z); uv.push(u, 1 - a);
+      let y = -v, zz = z;
+      if (bump) {
+        const [d, f] = bump(p.set(u - 0.5, y, z));
+        if (d) { const vc = b.sec(u).vc, ry = vc - v, l = Math.hypot(ry, z) || 1; y += d * ry / l; zz += d * z / l; }
+        lit.push(f ? (f < 0.35 ? 1 - 0.22 * Math.sin(f / 0.35 * Math.PI) : 1 + 0.28 * smooth(0.35, 1, f)) : 1);
+      }
+      pos.push(u - 0.5, y, zz); uv.push(u, 1 - a);
     }
   }
   const R = RG + 1;
@@ -119,7 +138,9 @@ function bodyGeometry(b: Body) {
   g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
   g.setIndex(idx);
-  return shade(g);
+  shade(g);
+  if (bump) { const c = g.attributes.color; for (let i = 0; i < c.count; i++) c.setXYZ(i, c.getX(i) * lit[i], c.getY(i) * lit[i], c.getZ(i) * lit[i]); }
+  return g;
 }
 
 // ---------- paint ----------
@@ -199,11 +220,19 @@ function eyeTexture(e: Herp3D['eye'], lid: string) {
 /** A tube through the joints (Catmull-Rom), its radius blended between the joints' radii, with round ends.
  *  `thigh` = a frog's thigh over the first segment: a smooth teardrop swelling to that radius near the hip, flattened
  *  against the flank (squeezed in z), and built with smooth normals (finer rings) so it reads as a muscle, not a faceted tube. */
-function jointTube(pts: THREE.Vector3[], radii: number[], thigh = 0) {
+function jointTube(pts: THREE.Vector3[], radii: number[], thigh = 0, seg = false) {
   const curve = new THREE.CatmullRomCurve3(pts, false, 'centripetal'), N = (thigh ? 18 : 10) * (pts.length - 1), R = thigh ? 24 : 12;
   const tube = new THREE.TubeGeometry(curve, N, 1, R, false), pos = tube.attributes.position, c = new THREE.Vector3(), q = new THREE.Vector3();
   const len: number[] = [0]; for (let i = 1; i < pts.length; i++) len.push(len[i - 1] + pts[i].distanceTo(pts[i - 1]));
-  const rAt = (f: number) => { const d = f * len[len.length - 1]; for (let i = 1; i < len.length; i++) if (d <= len[i]) return radii[i - 1] + (radii[i] - radii[i - 1]) * smooth(0, 1, (d - len[i - 1]) / (len[i] - len[i - 1])); return radii[radii.length - 1]; };
+  // `seg`: an arthropod leg, each segment swelling between narrower joints
+  const rAt = (f: number) => {
+    const d = f * len[len.length - 1];
+    for (let i = 1; i < len.length; i++) if (d <= len[i]) {
+      const t = (d - len[i - 1]) / (len[i] - len[i - 1]), r = radii[i - 1] + (radii[i] - radii[i - 1]) * smooth(0, 1, t);
+      return seg ? r * (0.74 + 0.34 * Math.sin(Math.PI * t) ** 0.6) : r;
+    }
+    return radii[radii.length - 1];
+  };
   // 0..1 along the thigh segment (>1 beyond the knee): the teardrop's swell and the flattening
   const tt = (f: number) => (f * len[len.length - 1]) / len[1];
   const swell = (f: number) => { const t = tt(f); return t >= 1 ? 0 : Math.sin(Math.PI * Math.pow(Math.max(0, t), 0.62)) ** 1.1; };
@@ -229,14 +258,75 @@ const P3 = (u: number, v: number, z: number) => new THREE.Vector3(u - 0.5, -v, z
 
 /** One limb (the + side): the jointed tube, then toes from its last joint to tips on the ground, with pads. */
 function limbGeometry(l: Limb3D, ground: number, col: (ny: number) => THREE.Color) {
-  const js = l.js.map(j => P3(j[0], j[1], j[2])), end = js[js.length - 1], parts: THREE.BufferGeometry[] = [jointTube(js, l.js.map(j => j[3]), l.thigh)];
-  for (const [du, dz] of l.toes) {
-    const tip = P3(l.js[l.js.length - 1][0] + du, ground - l.toe * 0.34, l.js[l.js.length - 1][2] + dz);
-    const via = end.clone().lerp(tip, 0.5); via.y = Math.max(via.y, tip.y + l.toe * 0.8);
-    const t = taperTube(new THREE.QuadraticBezierCurve3(end.clone(), via, tip), l.toe, 8, 6); t.deleteAttribute('uv'); parts.push(t.toNonIndexed());
-    if (l.pad) { const s = new THREE.SphereGeometry(l.pad, 10, 6).scale(1, 0.55, 1).translate(tip.x, -ground + l.pad * 0.55, tip.z); s.deleteAttribute('uv'); parts.push(s.toNonIndexed()); }
+  const js = l.js.map(j => P3(j[0], j[1], j[2])), end = js[js.length - 1], parts: THREE.BufferGeometry[] = [jointTube(js, l.js.map(j => j[3]), l.thigh, !!l.seg)];
+  // the joints of a segmented leg: a narrow ring in the joint colour (painted after shading, below)
+  const bands: [number, number][] = [];
+  if (l.seg) for (let i = 1; i < js.length; i++) {
+    const at = parts.reduce((n, g) => n + g.attributes.position.count, 0), s = new THREE.SphereGeometry(l.js[i][3] * 0.8, 10, 6).translate(js[i].x, js[i].y, js[i].z);
+    s.deleteAttribute('uv'); const g = s.toNonIndexed(); parts.push(g); bands.push([at, at + g.attributes.position.count]);
   }
-  return boxUV(shade(mergeGeometries(parts)!, 0.3, col, !!l.thigh));
+  if (l.claw) parts.push(...clawGeometry(js[js.length - 2], end, l.claw));
+  const digits: THREE.Curve<THREE.Vector3>[] = [];
+  for (const [du, dz] of l.toes) {
+    const tip = P3(l.js[l.js.length - 1][0] + du, ground - l.toe * (l.blunt ? 0.8 : 0.34), l.js[l.js.length - 1][2] + dz);
+    if (l.blunt) {
+      // a jointed digit: thick at the base, a raised knuckle, a round tip (capped by the disc on padded toes)
+      const k = end.clone().lerp(tip, 0.42); k.y = Math.max(k.y, tip.y + l.toe * 1.4);
+      parts.push(jointTube([end.clone(), k, tip], [l.toe * 1.3, l.toe * 0.95, l.toe * 0.85]));
+      digits.push(new THREE.CatmullRomCurve3([end.clone(), k, tip], false, 'centripetal'));
+    } else {
+      const via = end.clone().lerp(tip, 0.5); via.y = Math.max(via.y, tip.y + l.toe * 0.8);
+      const t = taperTube(new THREE.QuadraticBezierCurve3(end.clone(), via, tip), l.toe, 8, 6); t.deleteAttribute('uv'); parts.push(t.toNonIndexed());
+    }
+    if (l.pad) { // the toe disc: a flattened round pad at the tip, a little ahead of it
+      const d = tip.clone().sub(end).setY(0).normalize().multiplyScalar(l.pad * 0.35);
+      const s = new THREE.SphereGeometry(l.pad, 12, 8).scale(1, 0.5, 1).translate(tip.x + d.x, -ground + l.pad * 0.5, tip.z + d.z); s.deleteAttribute('uv'); parts.push(s.toNonIndexed());
+    }
+  }
+  if (l.web && digits.length > 1) parts.push(webGeometry(digits, l.web));
+  const g = shade(mergeGeometries(parts)!, 0.3, col, !!l.thigh);
+  if (l.seg) {
+    const c = g.attributes.color, n = g.attributes.normal, jc = new THREE.Color(l.seg);
+    for (const [a, b] of bands) for (let i = a; i < b; i++) { const k = 1 - 0.3 * Math.max(0, -n.getY(i)); c.setXYZ(i, jc.r * k, jc.g * k, jc.b * k); }
+  }
+  return boxUV(g);
+}
+
+/** A crab's claw (chela) on the end of the arm: a heavy palm flattened side to side, the fixed finger running on from
+ *  its lower front edge and the hinged finger from its upper front edge, curving to meet it at the tips. */
+function clawGeometry(prev: THREE.Vector3, wrist: THREE.Vector3, c: NonNullable<Limb3D['claw']>) {
+  const d = wrist.clone().sub(prev).normalize(), side = d.clone().cross(new THREE.Vector3(0, 1, 0)).normalize(), up = side.clone().cross(d).normalize();
+  const palm = new THREE.SphereGeometry(1, 18, 12).scale(c.palm / 2, c.r, c.r * 0.62);
+  palm.applyMatrix4(new THREE.Matrix4().makeBasis(d, up, side).setPosition(wrist.clone().addScaledVector(d, c.palm * 0.42)));
+  palm.deleteAttribute('uv');
+  const front = wrist.clone().addScaledVector(d, c.palm * 0.78), at = (a: number, b: number) => front.clone().addScaledVector(d, a).addScaledVector(up, b);
+  const tip = at(c.finger, -c.r * 0.12);
+  const fixed = taperTube(new THREE.QuadraticBezierCurve3(at(0, -c.r * 0.45), at(c.finger * 0.55, -c.r * 0.5), tip), c.r * 0.42, 10, 8);
+  const hinged = taperTube(new THREE.QuadraticBezierCurve3(at(-c.palm * 0.05, c.r * 0.42), at(c.finger * 0.6, c.r * 0.5), tip.clone().addScaledVector(up, c.r * 0.08)), c.r * 0.36, 10, 8);
+  return [palm, fixed, hinged].map(g => { g.deleteAttribute('uv'); return g.toNonIndexed(); });
+}
+
+/** Webbing between neighbouring digits, out to `reach` of their length; its free edge dips toward the foot between
+ *  the toes. Both faces, so it shows from above and below without a double-sided material. */
+function webGeometry(digits: THREE.Curve<THREE.Vector3>[], reach: number) {
+  const pos: number[] = [], R = 5;
+  for (let i = 0; i + 1 < digits.length; i++) {
+    const A = digits[i], B = digits[i + 1], row = (j: number) => {
+      const t = reach * j / R, a = A.getPointAt(t), b = B.getPointAt(t), m = A.getPointAt(t * 0.86).add(B.getPointAt(t * 0.86)).multiplyScalar(0.5);
+      return [a, m, b];
+    };
+    let prev = row(0);
+    for (let j = 1; j <= R; j++) {
+      const cur = row(j);
+      for (let c = 0; c < 2; c++) {
+        const q = [prev[c], prev[c + 1], cur[c], cur[c + 1]];
+        for (const [x, y, z] of [[0, 2, 1], [1, 2, 3], [0, 1, 2], [1, 3, 2]]) pos.push(...q[x].toArray(), ...q[y].toArray(), ...q[z].toArray());
+      }
+      prev = cur;
+    }
+  }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.computeVertexNormals();
+  return g;
 }
 
 /** Box mapping per triangle (non-indexed): uv from the position seen along the face's dominant axis, so spots stay round on tubes at any angle. */
@@ -314,7 +404,7 @@ function gillGeometry(gl: NonNullable<Herp3D['gills']>) {
 export function herpBody(art: string, w: number, glass = false) {
   const pose = glass && HERP3D_GLASS[art], h = pose || HERP3D[art], b = bodyShape(h), grp = new THREE.Group(), key = pose ? art + '~glass' : art;
   const K = (k: string, make: () => THREE.BufferGeometry) => geo(key + k, make);
-  grp.add(new THREE.Mesh(K(':body', () => bodyGeometry(b)), mat('body:' + key, () => new THREE.MeshBasicMaterial({ map: bodyTexture(h, b), vertexColors: true }))));
+  grp.add(new THREE.Mesh(K(':body', () => bodyGeometry(b, h.warts)), mat('body:' + key, () => new THREE.MeshBasicMaterial({ map: bodyTexture(h, b), vertexColors: true }))));
   // limbs: the + side, mirrored for the far side (a negative scale; three flips the winding)
   const top = new THREE.Color(h.legCol[0]), under = new THREE.Color(h.legCol[1]);
   const lcol = (ny: number) => under.clone().lerp(top, smooth(-0.5, 0.3, ny));
@@ -352,7 +442,11 @@ export function herpBody(art: string, w: number, glass = false) {
     const fm = mat('gfringe:' + art, () => new THREE.MeshBasicMaterial({ color: gl.fringe, vertexColors: true }));
     for (const side of [1, -1]) for (const [g, m] of [[sg, sm], [fg, fm]] as const) { const o = new THREE.Mesh(g, m); o.scale.z = side; grp.add(o); }
   }
-  if (h.shell) { const sm = shellMesh(art, h.shell.s, h.shell); sm.position.y = -h.ground; grp.add(sm); }
+  if (h.shell) {
+    // the borrowed shell's aperture sits off its coil axis: slide the shell sideways so the aperture is on the body's midline
+    const sm = shellMesh(art, h.shell.s, h.shell), lip: THREE.Vector3[] | undefined = sm.geometry.userData.lip;
+    sm.position.set(0, -h.ground, lip?.length ? -lip.reduce((z, p) => z + p.z, 0) / lip.length : 0); grp.add(sm);
+  }
   grp.scale.setScalar(w);
   return grp;
 }
