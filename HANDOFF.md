@@ -11,6 +11,12 @@ Living file. Project state and dated decisions go here; update in place.
   finger, or a change to any tank's light; tapping off the substrate hides it. Listens on the viewer host next to
   interact/pointer.ts (unchanged). Test note: the app's browser pane suspends requestAnimationFrame while it is not
   being painted, so synthetic taps only show the tip once a screenshot forces a frame.
+- Task 2: lamp calibration. The plain web fetch was blocked on reefs.com, but the app's browser pane got through: Joshi's
+  lab tests (grade A) are in reference/par-calibration-data.md D12a / D12b. Nathan: split metal halide by bulb colour
+  (new tech 'mh-20k', one word added to LightTech in scene/types.ts); test against the lab data, with the forum sets
+  logged only. mh 10-14K ppe 0.83, 20K 0.47, eta 0.77 from four pendant reflectors (cos^m beam fits each within ±10%
+  at 50-100°). CFL eta and all halogen values: still ESTIMATES (no PAR data anywhere; the MSU Lamp PPF sheet has no
+  rows for them). Forum MH readings run 2-3x below the lab-based model.
 
 ## Lane J: edit performance, audit #52-53 (2026-10-14; branch `perf`, port 5373; pushed to main)
 - **What changed:** an edit no longer rebuilds the whole scene. `render/build.ts`: each fish and item is a *part* keyed

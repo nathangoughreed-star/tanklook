@@ -125,10 +125,11 @@ export interface Tech {
 // Barr Report readings at eta 0.65 once the side glass is modelled (the first hand check, which left the glass out,
 // suggested 0.4-0.5); bare T5 and T8 scaled with it. LED band splits are set from the lux factors (white ~67, planted
 // ~48, reef ~26 lux per µmol), not measured.
-// Lane K2 (2026-10-14): metal halide ppe 0.75 is the bare 14K / 20K lamp on its ballast (Joshi / Marks, ~75 µmol at
-// 18 in from a 250 W lamp, grade B; horticultural 3-4K ceramic MH fixtures reach 1.25-1.46, Nelson & Bugbee 2014, so a
-// 10K bulb sits higher), eta 0.57 fits three pendant datasets (grade A-C) to -39..+47% with a 120° reflector: the sources
-// disagree by ~2x, so ±50%. CFL ppe 0.8 = typical CFL efficacy over the fluorescent lux factor, close to Nelson &
+// Lane K2 (2026-10-14): metal halide from Joshi's lab tests (reefs.com, grade A). Bare lamps at 18 in give 0.34-0.49
+// PPFD per wall watt for 10K bulbs, 0.23-0.35 for 13-14K, 0.17-0.24 for 20K; as photons (between a sin θ and an
+// isotropic lamp) ppe ~0.83 for 10-14K and ~0.47 for 20K. Four pendant reflectors with one 400 W 14K lamp fit the cos^m
+// beam within ±10% at 50-100°, with ppe x eta 0.50-0.86: eta 0.77 (one value for all). 20K band split: an ESTIMATE
+// (bluer, no spectrum data read). CFL ppe 0.8 = typical CFL efficacy over the fluorescent lux factor, close to Nelson &
 // Bugbee's T8 fixture (0.84, grade A); its eta 0.5 is an ESTIMATE (no PAR data for power compacts found). Halogen: split
 // from a 3000 K blackbody (gives 47 lux per µmol, AGi32 incandescent 49); ppe 0.3 and eta 0.6 are ESTIMATES (blackbody
 // 0.3-0.4 bare, one MR11 spec 0.1; no PAR-at-distance data found). T8: scaled from T5, no dataset.
@@ -140,7 +141,8 @@ export const TECHS: Record<LightTech, Tech> = {
   't5-bare': { label: 'T5 HO, bare', on: ['tube'], ppe: 1.2, eta: 0.4, split: [0.2, 0.6, 0.2], unc: 0.5 },
   't8': { label: 'T8', on: ['tube'], ppe: 0.85, eta: 0.45, split: [0.2, 0.6, 0.2], unc: 0.5 },
   'cfl': { label: 'CFL / power compact', on: ['spot', 'tube'], ppe: 0.8, eta: 0.5, split: [0.2, 0.59, 0.21], unc: 0.5 },
-  'mh': { label: 'Metal halide pendant', on: ['spot'], ppe: 0.75, eta: 0.57, split: [0.24, 0.57, 0.19], unc: 0.5 },
+  'mh': { label: 'Metal halide, 10-14K', on: ['spot'], ppe: 0.83, eta: 0.77, split: [0.24, 0.57, 0.19], unc: 0.5 },
+  'mh-20k': { label: 'Metal halide, 20K', on: ['spot'], ppe: 0.47, eta: 0.77, split: [0.45, 0.42, 0.13], unc: 0.5 },
   'halogen': { label: 'Incandescent / halogen', on: ['spot'], ppe: 0.3, eta: 0.6, split: [0.1, 0.3, 0.6], unc: 0.5 },
 };
 export const TECH_IDS = Object.keys(TECHS) as LightTech[];

@@ -160,7 +160,49 @@ their numbers below are search snippets only (B). Fits and residuals: test/light
 - Mars Hydro (B): cool-white fluorescent 74, MH 71, ceramic MH 4200 K 65, 3100 K 59. U Arkansas citing Thimijan &
   Heins (B): fluorescent 72-77, MH 72. No halogen-specific factor: incandescent 49 used.
 
-### D12. Joshi / Marks bare 250 W MH lamps, in air, sensor 18 in (457 mm) from the lamp (B, search snippets)
+### D12a. Joshi bare-lamp series, reefs.com (A; read in the app's browser 2026-10-14, the plain fetch was blocked)
+- Setup (150 W DE article, Nov 2002, "Test Setup"): bare lamp on a black-painted bracket, no reflector, LI-COR
+  spectroradiometer 18 in (457 mm) below the lamp's central axis; wall power measured per lamp / ballast.
+- PPFD per wall watt at 18 in (my arithmetic over the tables):
+  - 10K (250 W DE: Ushio 103 @ 307 W, AB 128 @ 304, Giesemann 108 @ 309, HIT 111 @ 308, XDE 136 @ 314, Sun Aq 142 @ 345,
+    EVC 180 @ 365; 150 W DE ~64-78 @ 164-212 W): 0.34-0.49 per W.
+  - 13-14K (Sun Aq 14K 77.5 @ 333, Aqua Connect 14K 102 @ 313, Arcadia 14K 88 @ 318, Giesemann 13K 113 @ 336; 400 W Ushio
+    14K on IceCap 151 @ 428): 0.23-0.35 per W.
+  - 20K (XDE 55 @ 269, Coralvue 58 @ 314, Sun Aq 80 @ 333, Giesemann 52.5 @ 305, Helios 78 @ 338, AB 57.7 @ 308): 0.17-0.24 per W.
+  - So per watt a 20K bulb gives about half the PAR of a 10K. Glass UV shield: about -18%.
+- Sources: https://reefs.com/magazine/spectral-analysis-of-150w-double-ended-metal-halide-lamps-and-ballasts/ ,
+  .../spectral-analysis-of-250w-double-ended-10000k-metal-halide-lamps-and-ballasts/ ,
+  .../product-review-more-spectral-analysis-of-250-watt-double-ended-metal-halide-lamps-and-ballasts/ ,
+  .../400-watt-mogul-metal-halide-lamps-ushio-14000k-icecap-400w-series-elios-10000k/ (and the 250 W mogul parts I / II,
+  175 W part I, "recent lamps and ballast combinations").
+
+### D12b. Joshi, "Analyzing Reflectors: Lumenbrite III, Lumenmax Elite, Lumenmax, Lumenarc III" (A)
+- https://reefs.com/magazine/product-review-analyzing-reflectors-lumenbrite-iii-lumenmax-elite-lumenmax-and-lumenarc-iii/
+- Ushio 14000 K 400 W mogul on an IceCap 400 W electronic ballast (bare: 151 at 18 in), in air, 13 x 13 grid at 3 in
+  over 3 x 3 ft, 24 in and 30 in from the lamp. Sums of PPFD over the 3x3 / 2x2 / 1x1 ft squares and the maximum:
+| Reflector | at | 3x3 | 2x2 | 1x1 | max |
+|---|---|---|---|---|---|
+| Lumenarc III (19.5 in square) | 24 in | 28147 | 18544 | 7299 | 349 |
+| | 30 in | 22645 | 13660 | 4890 | 222 |
+| Lumenbrite III (20 in octagon) | 24 in | 35700 | 28214 | 13473 | 669 |
+| | 30 in | 31586 | 22171 | 9361 | 444 |
+| Lumenmax Elite (15 in) | 24 in | 33229 | 26138 | 13571 | 711 |
+| | 30 in | 29080 | 21735 | 10219 | 519 |
+| Lumenmax large (22 in) | 24 in | 32886 | 21954 | 8391 | 383 |
+| | 30 in | 27630 | 17202 | 6159 | 270 |
+- Fit of the model's cos^m spot (all 8 numbers per reflector, one output and one beam angle each): Lumenarc 95°,
+  0.68 µmol/s per wall W; Lumenbrite 55°, 0.56; Lumenmax Elite 50°, 0.50; Lumenmax large 100°, 0.86; every number
+  within ±10%. So the model's beam shape holds for real pendants, and ppe x eta for a 14K lamp in a pendant ~0.5-0.86.
+- Model (Nathan 2026-10-14: split by bulb colour; test against the lab data, forum sets logged only): 'mh' 10-14K
+  ppe 0.83 x eta 0.77, 'mh-20k' ppe 0.47 x 0.77. Reflector grids with one eta: -30..+33% (tested at ±35%, the reflectors
+  themselves spread ±27%). In water, Lumenarc-like 95° beam: Melev (D13, Radium 20K) -8 / -14 / -33%; the forum sets D14 / D15 read 2-3x LOWER than the model (old bulbs, meters that
+  under-read blue MH light, positions unstated: likely, not shown).
+
+- MSU "Lamp PPF" sheet (Runkle, GPN May 2021; PDF supplied by Nathan): fixture PPF only for T8 60 W (48 µmol/s, from
+  Nelson & Bugbee 2014), HPS 400 / 600 / 1000 W and horticultural LEDs. No CFL, halogen or MH rows: nothing new for K2. Riddle power compact data and
+  Thimijan & Heins: not found / not reached.
+
+### D12. Joshi / Marks bare 250 W MH lamps, in air, sensor 18 in (457 mm) from the lamp (B, search snippets; superseded by D12a)
 | Lamp | Ballast | unshielded | shielded |
 |---|---|---|---|
 | 250 W DE Sun Aquatics 20000 K | M80 HQI | 80.3 | 64.1 |

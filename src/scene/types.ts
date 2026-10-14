@@ -125,7 +125,7 @@ export interface LightSettings {
   mapUnit?: 'par' | 'lux';
 }
 
-export type LightTech = 'led-white' | 'led-planted' | 'led-reef' | 't5-refl' | 't5-bare' | 't8' | 'cfl' | 'mh' | 'halogen';
+export type LightTech = 'led-white' | 'led-planted' | 'led-reef' | 't5-refl' | 't5-bare' | 't8' | 'cfl' | 'mh' | 'mh-20k' | 'halogen';
 
 export interface SubstrateSettings {
   show: boolean;
