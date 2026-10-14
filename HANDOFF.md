@@ -20,6 +20,14 @@ Living file. Project state and dated decisions go here; update in place.
   frog's height alone when the water level changes. Rendering needed nothing new: `onGlass` already lays any
   card + 3D body belly to the pane. Test in scatter.test.ts. Checked in the tree frog terrarium example.
 - Dart frogs, toads, newts unchanged (no `cling`).
+- **Glass pose (Nathan's two photos, same day):** `HERP3D_GLASS.treefrog` (`frogOnGlass3D`, herps.ts): belly levelled
+  flat onto the pane, arms folded under the chin, hind legs folded tight along the flanks, toe pads turned in under
+  the belly; cream starts lower round the section. `herpBody(art, w, glass)`; build.ts passes `f.surface === 'glass'`.
+  Picture `shots/92_treefrog_glass_sheet.png`. Awaiting Nathan's look.
+- **Bug found on the way: every 3D amphibian body was inside out** (bodyGeometry wound inward, so you saw the far
+  side's inside: cream flank seen from above, the far eye showing through; the old "far eye shows as a lid bump"
+  watch item). Winding flipped in `bodyGeometry`; the vertex shading now darkens the real underside. Affects all
+  frogs, newts, axolotl and the hermit crab's body.
 
 ## Lane A: 3D plants (2026-10-14; Nathan approved the style test "looks good, roll out"; pushed to main)
 

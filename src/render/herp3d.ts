@@ -5,7 +5,7 @@
 // adds tail-fin membranes and gill stalks. Unit frame as a fish card: width 1, x = u - 0.5, y = -v, z to the side.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { HERP3D, type Herp3D, type Limb3D, type Mark3D } from '../art/herps';
+import { HERP3D, HERP3D_GLASS, type Herp3D, type Limb3D, type Mark3D } from '../art/herps';
 import { rng, type Pt } from '../art/paint';
 import { taperTube } from './fish3d';
 import { shellMesh } from './snail3d';
@@ -113,7 +113,8 @@ function bodyGeometry(b: Body) {
     }
   }
   const R = RG + 1;
-  for (let i = 0; i < ST; i++) for (let j = 0; j < RG; j++) { const a = i * R + j, c = a + R; idx.push(a, c, a + 1, a + 1, c, c + 1); }
+  // wound outward (front faces out): before 2026-10-14 it was inside out, so you saw the far side's inside
+  for (let i = 0; i < ST; i++) for (let j = 0; j < RG; j++) { const a = i * R + j, c = a + R; idx.push(a, a + 1, c, a + 1, c + 1, c); }
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
@@ -294,11 +295,12 @@ function gillGeometry(gl: NonNullable<Herp3D['gills']>) {
 
 // ---------- assembly ----------
 
-/** The 3D amphibian for a card of width w, origin at the card's centre (the card frame's v = 0); add it as the card's child. */
-export function herpBody(art: string, w: number) {
-  const h = HERP3D[art], b = bodyShape(h), grp = new THREE.Group();
-  const K = (key: string, make: () => THREE.BufferGeometry) => geo(art + key, make);
-  grp.add(new THREE.Mesh(K(':body', () => bodyGeometry(b)), mat('body:' + art, () => new THREE.MeshBasicMaterial({ map: bodyTexture(h, b), vertexColors: true }))));
+/** The 3D amphibian for a card of width w, origin at the card's centre (the card frame's v = 0); add it as the card's child.
+ *  `glass` = clinging to a pane: its glass pose if it has one (tree frog), belly on the ground line. */
+export function herpBody(art: string, w: number, glass = false) {
+  const pose = glass && HERP3D_GLASS[art], h = pose || HERP3D[art], b = bodyShape(h), grp = new THREE.Group(), key = pose ? art + '~glass' : art;
+  const K = (k: string, make: () => THREE.BufferGeometry) => geo(key + k, make);
+  grp.add(new THREE.Mesh(K(':body', () => bodyGeometry(b)), mat('body:' + key, () => new THREE.MeshBasicMaterial({ map: bodyTexture(h, b), vertexColors: true }))));
   // limbs: the + side, mirrored for the far side (a negative scale; three flips the winding)
   const top = new THREE.Color(h.legCol[0]), under = new THREE.Color(h.legCol[1]);
   const lcol = (ny: number) => under.clone().lerp(top, smooth(-0.5, 0.3, ny));
