@@ -2,6 +2,29 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lanes L + M: anatomy audit P0 fixes (2026-10-14; opened, run in parallel)
+From `reference/model-anatomy-audit-v1.md` (see "Model review sheet" below). Nathan picked P0 first, two parallel
+chats; fin layout (most of P1) and frogs/newt are later lanes.
+- **Lane L: snail shells** (`../Glass-Box-snails`, branch `snail-shells`, launch config `snails`, port 5423). Owns
+  `src/art/snails.ts`, `src/render/snail3d.ts` (carved out of J2's `src/render/*`). Goal: one shell builder that makes
+  a closed, continuous coil with a real aperture the body comes out of (no open sector, no shell floating over a slab
+  foot), then per-kind shape: mystery (globose, raised spire), ramshorn (flat closed tubular coil), turbo (rounded
+  body whorl), trumpet (one continuous high cone, convex whorls), nerite (low spire, smaller foot, head at the
+  aperture). The hermit crab's shell comes from `shellMesh` here, so it gets the fix; its body (herps.ts / herp3d.ts) is
+  NOT lane L's.
+- **Lane M: shrimp body** (`../Glass-Box-shrimp`, branch `shrimp-body`, launch config `shrimp`, port 5433). Owns a new
+  `src/render/shrimp3d.ts` (and a new art file if it needs one) plus the shrimp parts of `src/art/fishgen.ts`; in
+  `src/render/fish3d.ts` only the few lines that hand shrimp to the new builder (ask the coordinator before more: J2
+  owns render/*). Goal: cephalothorax + articulated, bent abdomen (stepped segments in the geometry, not drawn lines),
+  stalked eyes, rostrum, 5 pairs of jointed walking legs separate from smaller swimmerets, and a flat horizontal
+  telson + uropod tail fan (no vertical fish tail). Then per species: cherry (Neocaridina), amano (glass body + its
+  markings), cleaner (Lysmata, long white antennae, abdominal bend). Hermit body is a later lane.
+- Both: the audit's "keep" list and constraints bind. Look at the result on `/review.html` on the lane's own dev
+  server; when done press Record there (writes `src/data/model-versions.json` + the changed `public/model-sheets/`),
+  after merging main in, then check the stamped build = `git rev-list --count HEAD` + 1 before the last commit.
+  `npm run sheets` rewrites all sheets headlessly if needed. Tests + typecheck green, push to main, report to the
+  coordinator, preview_stop the dev server. Questions to Nathan come with pictures (sheet crops).
+
 ## Lane J2: performance leftovers (2026-10-14; branch `perf`, port 5373; pushed to main)
 - **Frosted background (render/viewer.ts `frostCull`):** the frosted film is three's transmission material, and three
   draws every opaque mesh a second time (4x MSAA, half float, viewport size) into the picture the film blurs. On the
