@@ -657,7 +657,11 @@ non-fish animals): hermit crab body, fire-bellied newt, frog P1 leftovers (feet,
 `../Glass-Box-herps` / `herps-p1`, launch config `herps` 5463; owns `src/art/herps.ts`, `src/render/herp3d.ts`. The
 hermit shell comes from lane L's `shellMesh` (art/snails.ts / render/snail3d.ts): O does not edit those, it places
 the body in the aperture from herps.ts. Fish P1 (fin layout) waits until lane D ships R2 + R3.
-Lane L DONE (`9cb81f6`). Final check DONE (`dea1d5d`, shots/final/FINAL.md: 46 fixed, 7 partly, 0 regressed). Lane Popened 2026-10-14 for FINAL.md items 1-6 (status line off-screen, phone split tab vs Redo, touch target sizes, Customterrain button / eye map, water re-raise height, Start from stuck on reef): `../Glass-Box-final-fixes` / `final-fixes`,launch config `final-fixes` 5473; owns `src/style.css`, `index.html`, `src/ui/panels.ts` (except lane N's Sharecontrol and hook) and `src/scene/water.ts`.
+Lane L DONE (`9cb81f6`). Final check DONE (`dea1d5d`, shots/final/FINAL.md: 46 fixed, 7 partly, 0 regressed). Lane P
+opened 2026-10-14 for FINAL.md items 1-6 (status line off-screen, phone split tab vs Redo, touch target sizes, Custom
+terrain button / eye map, water re-raise height, Start from stuck on reef): `../Glass-Box-final-fixes` / `final-fixes`,
+launch config `final-fixes` 5473; owns `src/style.css`, `index.html`, `src/ui/panels.ts` (except lane N's Share
+control and hook) and `src/scene/water.ts`.
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_d0390f66-339c-4fa1-ab38-43e9c2a35958`
 ("Lanes coordinator 2", took over 2026-10-14 from `local_e1923781`). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
 and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says
