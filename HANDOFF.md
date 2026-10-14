@@ -46,6 +46,19 @@ chats; fin layout (most of P1) and frogs/newt are later lanes.
   body whorl), trumpet (one continuous high cone, convex whorls), nerite (low spire, smaller foot, head at the
   aperture). The hermit crab's shell comes from `shellMesh` here, so it gets the fix; its body (herps.ts / herp3d.ts) is
   NOT lane L's.
+  **DONE 2026-10-14 (Nathan approved the before/after sheets "new shells look good"; build 288, pushed to main).**
+  `rawShell` in snail3d.ts: the whorls now touch (each kind's `ap` widened until they do; `sutures()` finds where they
+  meet, at the same angle on every turn, and the texture draws a dark seam there). The aperture is cut on a plane turned
+  `incl` degrees toward the shell base (new Shell3D field, default 0), its last 5 % flares into a lip (`lip`, default
+  0.12), and a dark recessed cavity closes it. A snail's shell sits with its lower lip in the foot's back, and a skin
+  "plug" fills the aperture down into the foot (child of the shell mesh, so `sagShell` turns it too). New: a head over
+  the front of the foot carrying the tentacles; `footEnd` / `footW` per kind (nerite: shorter foot); tentacles get
+  vertex colours (they rendered black before). Per kind: mystery globose with a raised spire, turbo a higher spire,
+  ramshorn an upright flat coil opening at the bottom-front (axis [0,0,-1] = the handedness that puts it there), trumpet
+  `ap` [0.45, 1.5] for one continuous cone, nerite `ap` 0.95 (at 0.8 its whorls did not touch). Hermit: same
+  `HERMIT_SHELL`, gets the closed coil, lip and cavity; its abdomen still sits outside the aperture (`at` in herps.ts:
+  hermit-body lane). Open: the 2D side cards (art/snails.ts `drawSide`) are unchanged, their own drawings. Gotcha: the
+  dev server reads the build number when it starts, so restart it after merging main, before pressing Record.
 - **Lane M: shrimp body** (`../Glass-Box-shrimp`, branch `shrimp-body`, launch config `shrimp`, port 5433). Owns a new
   `src/render/shrimp3d.ts` (and a new art file if it needs one) plus the shrimp parts of `src/art/fishgen.ts`; in
   `src/render/fish3d.ts` only the few lines that hand shrimp to the new builder (ask the coordinator before more: J2
