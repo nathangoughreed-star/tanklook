@@ -1,7 +1,9 @@
 // Light map hover readout (lane K step 4, Nathan 2026-10-14): with the Light map on and the fixture's power set, the
 // pointer is followed down onto the ground and the light model (scene/lightout.ts bandsAt, the function the map's
 // shader is a port of) is evaluated there: "62 µmol PAR · 3,400 lux · 31 cm deep". Both values whichever unit the map
-// shows; hidden off the substrate, while dragging, and on touch (no hover). One evaluation per animation frame.
+// shows; hidden off the substrate and while dragging. One evaluation per animation frame.
+// Phones (lane K2): touch has no hover, so a tap (down/up with almost no movement; a drag still turns the view) reads
+// the spot instead, shown above the finger; it stays until the next tap, a drag, or a change to the light.
 import * as THREE from 'three';
 import type { Viewer } from '../render/viewer';
 import { bandsAt, lightEnvCached, luxOf, parOf } from '../scene/lightout';
@@ -38,8 +40,9 @@ export function attachLightHover(viewer: Viewer, store: Store) {
     'color:#f2f4f5;font:12px/1.4 system-ui,sans-serif;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,0.35)';
   document.body.append(tip);
   const ray = new THREE.Raycaster();
-  let last: PointerEvent | null = null, raf = 0;
+  let last: { clientX: number; clientY: number; touch: boolean } | null = null, raf = 0, lightKey = '';
   const hide = () => { tip.hidden = true; last = null; };
+  const keyOf = () => JSON.stringify(store.scene.tanks.map(s => s.light));
   const show = () => {
     raf = 0;
     const e = last; if (!e) return;
@@ -59,14 +62,48 @@ export function attachLightHover(viewer: Viewer, store: Store) {
     const where = wd > 0 ? `${fmtLen(wd, u, u === 'in' ? 1 : 0)} deep` : Number.isFinite(env.ys) ? 'above the water' : 'dry';
     tip.textContent = `${round(parOf(b))} µmol PAR · ${roundLux(luxOf(b))} lux · ${where}`;
     tip.hidden = false;
-    const w = tip.offsetWidth, flip = e.clientX + 16 + w > innerWidth - 8;
+    const w = tip.offsetWidth, th = tip.offsetHeight;
+    if (e.touch) { // centred above the finger, kept on screen; below it only when there is no room above
+      const top = e.clientY - 56 - th;
+      tip.style.left = `${Math.min(Math.max(e.clientX - w / 2, 4), innerWidth - w - 4)}px`;
+      tip.style.top = `${top >= 4 ? top : Math.min(e.clientY + 40, innerHeight - th - 4)}px`;
+      return;
+    }
+    const flip = e.clientX + 16 + w > innerWidth - 8;
     tip.style.left = `${flip ? e.clientX - 12 - w : e.clientX + 16}px`; tip.style.top = `${Math.max(e.clientY - 30, 4)}px`;
   };
+  // touch: a tap reads the spot; any drag or a second finger cancels it
+  const downs = new Map<number, { x: number; y: number }>();
+  let tapOk = false;
+  viewer.host.addEventListener('pointerdown', e => {
+    if (e.pointerType !== 'touch') return;
+    downs.set(e.pointerId, { x: e.clientX, y: e.clientY }); tapOk = downs.size === 1;
+  }, { passive: true });
   viewer.host.addEventListener('pointermove', e => {
-    if (e.pointerType === 'touch' || e.buttons) { hide(); return; }
-    last = e; if (!raf) raf = requestAnimationFrame(show);
+    const d = e.pointerType === 'touch' && downs.get(e.pointerId);
+    if (d && Math.hypot(e.clientX - d.x, e.clientY - d.y) > 8) { tapOk = false; hide(); }
+  }, { passive: true });
+  const up = (e: PointerEvent) => {
+    if (e.pointerType !== 'touch' || !downs.has(e.pointerId)) return;
+    downs.delete(e.pointerId);
+    if (e.type === 'pointerup' && tapOk && !downs.size) {
+      last = { clientX: e.clientX, clientY: e.clientY, touch: true }; lightKey = keyOf();
+      if (!raf) raf = requestAnimationFrame(show);
+    }
+    tapOk = false;
+  };
+  for (const ev of ['pointerup', 'pointercancel'] as const) viewer.host.addEventListener(ev, up, { passive: true });
+  viewer.host.addEventListener('pointermove', e => {
+    if (e.pointerType === 'touch') return;
+    if (e.buttons) { hide(); return; }
+    last = { clientX: e.clientX, clientY: e.clientY, touch: false }; if (!raf) raf = requestAnimationFrame(show);
   });
-  for (const ev of ['pointerleave', 'pointerdown', 'wheel'] as const) viewer.host.addEventListener(ev, hide, { passive: true });
-  // the light or the view changed under a still pointer: re-read it
-  store.subscribe(() => { if (last && !raf) raf = requestAnimationFrame(show); });
+  viewer.host.addEventListener('pointerleave', e => { if (e.pointerType !== 'touch') hide(); }, { passive: true });
+  viewer.host.addEventListener('pointerdown', hide, { passive: true });
+  viewer.host.addEventListener('wheel', hide, { passive: true });
+  // the light or the view changed under a still pointer: re-read it (a tapped reading goes away when the light changes)
+  store.subscribe(() => {
+    if (last?.touch && keyOf() !== lightKey) { hide(); return; }
+    if (last && !raf) raf = requestAnimationFrame(show);
+  });
 }

@@ -2,6 +2,16 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane K2: light output follow-ups (2026-10-14; branch `light-output`, port 5383)
+- Owns scene/lightout.ts, test/lightout.test.ts, ui/lightHover.ts, reference/par-calibration-data.md, render/lighting.ts
+  (carved out from J2), the Lighting rows in index.html / ui/panels.ts.
+- Task 1 (pushed): tap-to-read on phones in `ui/lightHover.ts`. A touch tap (down/up within 8 px, one finger) on the
+  substrate with the Light map on and the power set shows the hover readout, centred 56 px above the finger and
+  clamped to the screen (below the finger if there is no room above). It stays until the next tap, a drag, a second
+  finger, or a change to any tank's light; tapping off the substrate hides it. Listens on the viewer host next to
+  interact/pointer.ts (unchanged). Test note: the app's browser pane suspends requestAnimationFrame while it is not
+  being painted, so synthetic taps only show the tip once a screenshot forces a frame.
+
 ## Lane J: edit performance, audit #52-53 (2026-10-14; branch `perf`, port 5373; pushed to main)
 - **What changed:** an edit no longer rebuilds the whole scene. `render/build.ts`: each fish and item is a *part* keyed
   by its own data + selection (+ the solid pieces' data for an animal on the hardscape); `patchTank` keeps the parts whose
