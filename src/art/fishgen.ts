@@ -299,7 +299,8 @@ export function shrimpMarksCanvas(art: string, aspect: number, W = 1024): HTMLCa
   return c;
 }
 function drawShrimp(s: ShrimpSpec, ctx: Ctx, P: Proj, W: number) {
-  const leg = hexA(s.body[0], 0.75), limbs = style.paired; // off: painted for the 3D shrimp, whose legs are tubes
+  if (!style.paired) return; // painted for the 3D shrimp: render/shrimp3d.ts builds and paints the whole animal, its card stays empty
+  const leg = hexA(s.body[0], 0.75), limbs = true;
   ctx.strokeStyle = leg; ctx.lineWidth = 0.008 * W;
   if (limbs) for (let i = 0; i < 5; i++) { const u = 0.72 - i * 0.07, [x, y] = P(u, 0.05), [x2, y2] = P(u - 0.03, 0.16); ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x2, y2); ctx.stroke(); }
   if (limbs) for (let i = 0; i < 4; i++) { const u = 0.42 - i * 0.07, [x, y] = P(u, 0.07), [x2, y2] = P(u - 0.02, 0.12); ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x2, y2); ctx.stroke(); }
@@ -590,8 +591,8 @@ const SHRIMP: Record<string, ShrimpSpec> = {
   cleanershrimp: { body: ['#c8281e', '#e8a838'], back: '#c42a20', stripe: '#f6f4ee', stripeW: 0.022, ant: ['#f4f2ea', 1.35] },
 };
 /**
- * 3D shrimp: the drawing's outline lofted; walking legs, swimmerets and antennae as tubes where the card paints them
- * (splayed outward); the tail fan stays on the card.
+ * The shrimp's fish-style plan: only marks shrimp as 3D (has3D) and gives the card its outline; the 3D body itself is
+ * render/shrimp3d.ts (art/shrimps.ts), not this loft.
  */
 const shrimpPlan = (s: ShrimpSpec): Plan => ({
   outline: SHRIMP_OUTLINE, thick: 0.6, pedT: 0.6, depth: 0.205, pedU: 0.14, ped: 0.05, pectoral: false,

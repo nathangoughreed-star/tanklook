@@ -53,6 +53,14 @@ chats; fin layout (most of P1) and frogs/newt are later lanes.
   stalked eyes, rostrum, 5 pairs of jointed walking legs separate from smaller swimmerets, and a flat horizontal
   telson + uropod tail fan (no vertical fish tail). Then per species: cherry (Neocaridina), amano (glass body + its
   markings), cleaner (Lysmata, long white antennae, abdominal bend). Hermit body is a later lane.
+  **DONE 2026-10-14 (Nathan approved the before/after sheets; v2 at build 284, pushed to main).** `src/render/shrimp3d.ts`
+  builds the whole animal; `src/art/shrimps.ts` holds the per-species data (rostrum, hump, depth, leg spread, antenna
+  length, glass) and paint. Skin uv = (along the spine, dorsal midline .. keel), so the cleaner's back stripe holds from
+  above. fish3d.ts: `fishBody` hands shrimp to `shrimpBody` (2 lines). fishgen: `drawShrimp` paints nothing on the 3D
+  card (no vertical tail anywhere in 3D); the 2D card is unchanged; the shrimp `Plan` now only marks has3D. Amano's
+  marks are an overlay on the same body geometry (as before). The shrimp ignore `bend`/`cling` (no sideways bend, no
+  glass pose). Open: the hermit body (later lane); `shrimpMarksCanvas` and fish3d's `p.glass` branch are now unused by
+  shrimp (left for J2 to prune).
 - Both: the audit's "keep" list and constraints bind. Look at the result on `/review.html` on the lane's own dev
   server; when done press Record there (writes `src/data/model-versions.json` + the changed `public/model-sheets/`),
   after merging main in, then check the stamped build = `git rev-list --count HEAD` + 1 before the last commit.
