@@ -1,14 +1,14 @@
 // Owns the WebGL renderer and the one or two viewports (one per tank setup; two after a split). Render-on-demand.
 import * as THREE from 'three';
 import { fishTL, speciesOf } from '../data/species';
-import { D2R, depthRatio, floorY, tankUnderside } from '../scene/physics';
+import { D2R, depthRatio, floorY, fmtLen, tankUnderside } from '../scene/physics';
 import { tableOn, tableRing } from '../scene/table';
 import type { Store } from '../scene/store';
 import type { Fish, Tank, TankSetup } from '../scene/types';
 import { HOOD_H, buildTank, disposeScene, personSpot, type BuiltTank } from './build';
 import { drawViewMap } from './viewmap';
 import { applyFraming, fovFor, frameBox, frameStraightOn, placeCamera, windowCentre } from './camera';
-import { roomLevel, setLightUniforms, setWaterUniforms } from './lighting';
+import { glowColor, lampHeight, roomLevel, setLightUniforms, setWaterUniforms } from './lighting';
 import { setMaxAnisotropy } from './textures';
 import { OUTLINE } from './fish3d';
 import { PERSON_BODY, PERSON_HEAD } from '../art/placeholder';
@@ -47,6 +47,8 @@ export interface Viewport extends Partial<BuiltTank> {
   i: number;
   key: 'A' | 'B';
   cam: THREE.PerspectiveCamera;
+  /** Fixture parts and the beams above the rim: hidden while the eye is above them (userData.overhead = that height). */
+  overhead?: THREE.Object3D[];
   S: TankSetup;
   T: Tank;
   x: number; y: number; w: number; h: number;
@@ -145,21 +147,44 @@ export class Viewer {
   onDrawn(fn: () => void) { this.drawnListeners.add(fn); }
   invalidate() { this.dirty = true; }
   /** Rebuild on the next frame (UI-only state that changes the scene, like terrain editing). */
-  rebuild() { this.needsBuild = this.dirty = true; }
+  rebuild() { this.needsBuild = this.dirty = true; this.built = []; } // always a full build (textures loaded, terrain dots)
 
   /** The viewports on screen: one per tank. */
   get active() { return this.vps.slice(0, this.store.scene.tanks.length); }
   /** The viewport of the tank the panel edits. */
   get current() { return this.active[this.store.scene.active] ?? this.active[0]; }
 
+  /** What each view was last built from, minus the values that are only uniforms (see `buildKey`). */
+  private built: string[] = [];
+  /**
+   * The scene as the meshes depend on it: everything but the light's colour temperature, brightness and room light,
+   * which reach the picture only through uniforms set every draw (and the fixture's glow, recoloured in place). A
+   * change to those alone skips the rebuild (audit #51: about 1-1.5 s per slider step on software GL).
+   */
+  private buildKey(i: number) {
+    const S = this.store.scene.tanks[i]; if (!S) return '';
+    const { kelvin: _k, room: _r, bright: _b, ...light } = S.light;
+    return JSON.stringify([{ ...S, camera: null, light }, this.store.scene.units, this.store.isEditing(i), this.store.selId, this.store.selItem, this.terrainEdit]);
+  }
+
   private build() {
-    const sc = this.store.scene;
+    const sc = this.store.scene, keys = this.vps.map(vp => this.buildKey(vp.i));
+    if (this.built.length && this.vps.every((vp, k) => keys[k] === this.built[k] && !!vp.scene === !!sc.tanks[vp.i])) {
+      for (const vp of this.vps) {
+        if (!vp.scene) continue;
+        vp.S = sc.tanks[vp.i];
+        vp.scene.traverse(o => { const m = (o as THREE.Mesh).material as THREE.MeshBasicMaterial | undefined; if (m?.userData?.glow) m.color.copy(glowColor(vp.S.light.kelvin)); });
+      }
+      this.needsBuild = false; return;
+    }
+    this.built = keys;
     for (const vp of this.vps) {
       disposeScene(vp.scene); vp.scene = undefined;
       const S = sc.tanks[vp.i]; if (!S) continue;
       const on = this.store.isEditing(vp.i); // selection outline and terrain dots only in the tanks being edited
       vp.S = S; vp.T = S.tank;
       Object.assign(vp, buildTank({ ...S, units: sc.units }, S.tank, on ? this.store.selId : null, on && this.terrainEdit.on ? this.terrainEdit : undefined, on ? this.store.selItem : null));
+      vp.overhead = []; (vp.scene as THREE.Scene | undefined)?.traverse(o => { if (o.userData.overhead != null) vp.overhead!.push(o); });
     }
     this.needsBuild = false;
   }
@@ -172,7 +197,10 @@ export class Viewer {
     const active = this.active, hw = (w - GAP) / 2;
     if (active.length === 1) Object.assign(active[0], { x: 0, y: 0, w, h });
     else { Object.assign(active[0], { x: 0, y: 0, w: hw, h }); Object.assign(active[1], { x: hw + GAP, y: 0, w: hw, h }); }
-    for (const vp of active) placeCamera(vp.cam, vp.T, vp.S.camera);
+    for (const vp of active) {
+      placeCamera(vp.cam, vp.T, vp.S.camera);
+      for (const o of vp.overhead ?? []) o.visible = vp.cam.position.y < o.userData.overhead;
+    }
     // framing counts the tank and a hood on it, never the lights above: a fixture shows only once zoomed out enough (Nathan 2026-10-09)
     const headroom = (S: TankSetup) => (S.lid === 'hood' ? HOOD_H + 6 : 0);
     const bottom = (S: TankSetup) => (S.stand.show ? floorY(S.tank, S.render, S.stand) : 0);
@@ -229,6 +257,7 @@ export class Viewer {
       const a = wins[k].all, px = (t: number) => vp.x + ((t - c.cx) / hx + 1) / 2 * vp.w, py = (t: number) => vp.y + (1 - ((t - c.cy) / hy + 1) / 2) * vp.h;
       this.content[k] = { x0: Math.max(vp.x, px(a.x0)), x1: Math.min(vp.x + vp.w, px(a.x1)), y0: Math.max(vp.y, py(a.y1)), y1: Math.min(vp.y + vp.h, py(a.y0)), vx: vp.x, vw: vp.w };
       applyFraming(vp.cam, fov, vp.w, vp.h, c.cx, c.cy);
+      this.markLights(k, vp);
       const person = vp.scene?.getObjectByName('person');
       if (person) this.placePerson(vp, person, headroom(S), bottom(S));
       r.setViewport(vp.x, vp.y, vp.w, vp.h); r.setScissor(vp.x, vp.y, vp.w, vp.h);
@@ -242,6 +271,7 @@ export class Viewer {
       cb.setLocked(false); cb.setMask(true); gl.colorMask(true, true, true, true);
     }
     r.setScissorTest(false);
+    for (let k = active.length; k < 2; k++) this.markLights(k, undefined);
     // one viewpoint map per view, at its bottom-left corner, drawn from that view's own camera, tank and person
     const mapOn = (document.getElementById('mapOn') as HTMLInputElement | null)?.checked ?? true;
     for (const k of [0, 1]) {
@@ -383,6 +413,28 @@ export class Viewer {
     g.imageSmoothingQuality = 'high';
     g.drawImage(c, 0, 0, t.width, t.height);
     return t.toDataURL('image/jpeg', 0.75);
+  }
+
+  /**
+   * A raised fixture above the top of a view: a small "▲ Light … above" note at the top of that view (audit #19). The
+   * framing never counts the lights (Nathan 2026-10-09), so zoomed in they leave the picture; this says they are there.
+   */
+  private lightMarks: HTMLDivElement[] = [];
+  private markLights(k: number, vp: Viewport | undefined) {
+    let el = this.lightMarks[k];
+    const S = vp?.S, l = S?.light, show = !!vp && !!S && !!l && l.type !== 'flat' && S.lid !== 'hood' && (() => {
+      const p = new THREE.Vector3(vp.T.L / 2, vp.T.H + lampHeight(l, S.lid), -vp.T.D / 2).project(vp.cam);
+      return p.y > 1 && p.z < 1;
+    })();
+    if (!show) { if (el) el.style.display = 'none'; return; }
+    if (!el) {
+      el = this.lightMarks[k] = document.createElement('div');
+      el.style.cssText = 'position:absolute;top:44px;transform:translateX(-50%);padding:2px 8px;border-radius:10px;font:600 12px system-ui,"Segoe UI",sans-serif;'
+        + 'background:rgba(20,24,30,0.7);color:#fff;pointer-events:none;white-space:nowrap;z-index:2';
+      this.host.appendChild(el);
+    }
+    el.style.display = ''; el.style.left = (vp!.x + vp!.w / 2) + 'px';
+    el.textContent = `▲ Light ${fmtLen(lampHeight(l!, S!.lid), this.store.scene.units, 1)} above the tank`;
   }
 
   /** Per drawn view: the tank + stand's box on the canvas (CSS px) and the view's own left / width. */

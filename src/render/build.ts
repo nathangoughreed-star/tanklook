@@ -652,7 +652,8 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   const top: number[][] = [], side: number[][] = [], N = swamp ? 72 : 16, wy = waterY(T, S.water.level);
   // a bowl flares above its floor: the ground spreads out from the centre to meet the glass at its own height
   const bowl = shapeOf(T) === 'bowl', rb = bowl ? bowlDims(T).rb : 0;
-  const G = (p: P): V3 => flare(T, p[0], p[1], h(p[0], p[1]), rb);
+  // never flush with the bottom glass (a terrain point dragged to 0 z-fought with it into stripes, audit #14)
+  const G = (p: P): V3 => flare(T, p[0], p[1], Math.max(0.6, h(p[0], p[1])), rb);
   const P3 = (i: number, j: number): V3 => G([L * i / N, D * j / N]);
   // cheap slope shading: brightness from each cell's tilt toward a light above, front and left
   const light = new THREE.Vector3(-0.35, 1, 0.45).normalize(), topCol: number[] = [];
@@ -667,7 +668,10 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
     const my = (q[0][1] + q[2][1]) / 2, dry = clamp((my - wy) / 12, 0, 1), mo = 0.5 + 0.5 * Math.sin(q[0][0] * 0.045 + Math.sin(q[0][2] * 0.05) * 2.4);
     const c = [k * (1 - dry * (0.42 + 0.12 * mo)), k * (1 - dry * (0.3 - 0.12 * mo)), k * (1 - dry * (0.62 + 0.05 * mo))];
     const v = cell.map(G); // a whole cell is the quad as before; a cut one is a fan
-    for (let m = 1; m < v.length - 1; m++) for (const p of [v[0], v[m], v[m + 1]]) { top.push(p, [p[0] / tile, -p[2] / tile]); topCol.push(...c); }
+    // grain from above on gentle ground; on a steep bank (swamp pool walls) from the side it faces, so it does not
+    // smear into streaks (audit #15)
+    const uv = n.y > 0.6 ? (p: V3) => [p[0] / tile, -p[2] / tile] : Math.abs(n.x) > Math.abs(n.z) ? (p: V3) => [-p[2] / tile, p[1] / tile] : (p: V3) => [p[0] / tile, p[1] / tile];
+    for (let m = 1; m < v.length - 1; m++) for (const p of [v[0], v[m], v[m + 1]]) { top.push(p, uv(p)); topCol.push(...c); }
   }
   // the skirt round the outline in short strips, so its top edge follows the ground (swamp banks are not straight);
   // the back shows through clear back glass (peninsula, orbiting round the back)

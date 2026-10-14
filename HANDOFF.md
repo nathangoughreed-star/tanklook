@@ -51,7 +51,7 @@ Plan approved by Nathan (batches in severity order). Pictures: `shots/g2/` in th
   - #29 the Stand is ON for new tanks (defaults.ts, Nathan's call). Files without a `stand.show` still load with it off
     (validate.ts no longer falls back to the default there).
   - #47 viewer map caption: "20° below" for negative elevations (viewmap.ts).
-- **Batch 2 (pushed):**
+- **Batch 2 (pushed `f7b2cc3`):**
   - #6 touch: two fingers pinch to zoom and pan together toward the point between them (pointer.ts; `zoomAt` takes the
     midpoint's old position, viewer.ts). A second finger during a fish / piece / terrain drag is ignored; only the
     first finger's lift ends a drag; a pinch undoes the first finger's orbit. Checked with synthetic touch events.
@@ -62,6 +62,23 @@ Plan approved by Nathan (batches in severity order). Pictures: `shots/g2/` in th
     original tank" (approved in the G2 plan). Camera moves stay out of undo (the view is not part of history).
   - #49 PNG: cropped to the tanks' boxes (tank + stand + table, 6 % margin; `exportCrop`), A / B badges on split views.
     Pixel sizes on the buttons stay with lane G.
+- **Batch 3 (pushed):**
+  - #14 terrain from a bare bottom: `sampleTerrain` samples as if the substrate were shown (custom terrain always shows
+    one), so the grid starts at the corner depths; the ground is never drawn closer than 0.6 mm to the bottom glass.
+  - #15 swamp: the store keeps a swamp layout's substrate shown (`swampGround`, store.ts), so the panel says gravel, not
+    "Bare bottom"; steep ground cells (n.y < 0.6) take their grain from the side they face (no streaks on pool walls).
+  - #19 raised lights: framing still never counts the fixture (Nathan 2026-10-09); instead a "▲ Light 11.8″ above the
+    tank" note at the top of a view whose fixture is out of frame (`markLights`, a DOM div the viewer owns).
+  - #20 from above: fixture parts and the above-rim beams carry `userData.overhead` (their height) and hide while the
+    eye is above it, so no dark slab and no yellow flood over the page.
+  - #51 colour temp / brightness / room light no longer rebuild the scene (`buildKey` in viewer.ts leaves them out; the
+    fixture glow is recoloured in place): 4-9 ms instead of ~150-570 ms on the planted example. `rebuild()` still forces.
+  - #52-53 measured, NOT fixed: on real hardware (Intel Arc) an edit is ~4 ms in the store, then ~55-70 ms rebuilding
+    and ~60 ms in the first draw (new materials / buffers; a steady draw is ~8 ms): ~130-230 ms per edit or drag step
+    with 40 fish + 56 items. Keeping cached item geometry alive did not help. The fix is updating meshes in place
+    instead of rebuilding (fish moves first): a work unit of its own.
+- **Open question for Nathan (#29):** with the stand on, a new 24×12×12″ tank sits small on top of a 30″ cabinet in the
+  default view (`shots/g2/29_stand_default_after.jpg`). Keep it, or frame the tank and let the stand run off the bottom?
 - Dev server: `preview_start core-fixes` hit the five-servers-per-folder limit, so Vite runs from the shell on 5363.
 
 ## Lane D: first-visit audit + review pack (2026-10-14; no src/ edits)

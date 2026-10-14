@@ -177,7 +177,10 @@ export function sampleTerrain(g: Ground, T: Tank, cols: number): TerrainSettings
   const grid = terrainGrid(T);
   const rows = grid.arc ? Math.max(1, Math.round((cols - 1) * T.D / T.L)) : grid.radial ? terrainRings(cols) : terrainRows(T, cols);
   const t: TerrainSettings = { on: true, cols, rows, h: [], ...grid };
-  t.h = terrainPoints(t, T).map(p => +groundHeight(g, T, p.x, p.depth).toFixed(1));
+  // custom terrain always shows a substrate, so sample as if it were shown: from a bare bottom the grid starts at the
+  // corner depths, not all zeros (audit #14: a zero-thickness floor that z-fought into stripes)
+  const shown = { ...g, substrate: { ...g.substrate, show: true } };
+  t.h = terrainPoints(t, T).map(p => +groundHeight(shown, T, p.x, p.depth).toFixed(1));
   return t;
 }
 

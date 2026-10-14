@@ -375,13 +375,17 @@ export function applyLighting(sc: THREE.Scene) {
   });
 }
 
+/** The lit face of a fixture at colour temperature `kelvin`. */
+export const glowColor = (kelvin: number) => new THREE.Color(...kelvinRGB(kelvin)).multiplyScalar(0.7).addScalar(0.35);
+
 export function addFixture(sc: THREE.Scene, T: Tank, l: LightSettings, ceiling?: number) {
   if (l.type === 'flat') return;
   const { L, H, D } = T, y = H + (l.height ?? LAMP_Y);
-  const glow = new THREE.MeshBasicMaterial({ color: new THREE.Color(...kelvinRGB(l.kelvin)).multiplyScalar(0.7).addScalar(0.35) });
+  const glow = new THREE.MeshBasicMaterial({ color: glowColor(l.kelvin) }); glow.userData.glow = true; // recoloured in place (viewer)
   const dark = new THREE.MeshBasicMaterial({ color: 0x2a2e33 });
   const add = (geo: THREE.BufferGeometry, mat: THREE.Material, x: number, yy: number, z: number) => {
-    const m = new THREE.Mesh(geo, mat); m.position.set(x, yy, z); m.userData.nolight = true; sc.add(m); return m;
+    // `overhead`: hidden while the eye is above the fixture (viewer), where it would only cover the tank (audit #20)
+    const m = new THREE.Mesh(geo, mat); m.position.set(x, yy, z); m.userData.nolight = true; m.userData.overhead = y; sc.add(m); return m;
   };
   const E = emitters(T, l);
   // a raised fixture hangs from the ceiling on thin cables (two per bar, one per spot)
@@ -463,5 +467,6 @@ export function addBeams(sc: THREE.Scene, T: Tank, l: LightSettings, lid: string
     for (let i = 0; i < n; i++) { const j = (i + 1) % n; idx.push(i, j, n + i, j, n + j, n + i); }
     const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx);
     const o = new THREE.Mesh(g, m); o.userData.nolight = true; o.renderOrder = 5; sc.add(o);
+    if (m === open) o.userData.overhead = top; // above the rim: hidden from above the fixture, where it floods the view (audit #20)
   }
 }

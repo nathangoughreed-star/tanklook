@@ -55,6 +55,23 @@ describe('parseScene', () => {
   });
 });
 
+describe('custom terrain from a bare bottom (audit #14)', () => {
+  it('starts from the substrate corner depths, not a zero-thickness floor', () => {
+    const s = defaultSetup(); s.substrate.show = false;
+    const t = sampleTerrain(s, s.tank, 6);
+    expect(Math.min(...t.h)).toBeGreaterThan(20);
+    expect(Math.max(...t.h)).toBeCloseTo(s.substrate.bl, 0);
+  });
+});
+
+describe('swamp layout (audit #15)', () => {
+  it('shows its substrate, so the Substrate panel matches the land you see', () => {
+    const st = new Store(defaultScene());
+    st.edit(s => { s.substrate.show = false; s.layout.id = 'swamp'; });
+    expect(st.tank.substrate.show).toBe(true);
+  });
+});
+
 describe('stand and wall settings', () => {
   it('a new tank starts on a stand (audit #29)', () => {
     expect(defaultSetup().stand.show).toBe(true);

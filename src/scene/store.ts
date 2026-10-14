@@ -23,6 +23,10 @@ export interface UpdateOptions {
 const COALESCE_MS = 1200, MAX_HISTORY = 200;
 export const STORAGE_KEY = 'tanklook.scene';
 
+/** Swamp land is drawn in the substrate, so a swamp layout always has its substrate shown: the Substrate panel then
+ *  says what you see, not "Bare bottom" (audit #15). */
+const swampGround = (t: TankSetup) => { if (t.layout.id === 'swamp') t.substrate.show = true; };
+
 export class Store {
   scene: Scene;
   selId: number | null = null;
@@ -153,7 +157,7 @@ export class Store {
     fn(this.scene);
     // a terrain grid of another kind than its tank's (copied from the other tank, or a new shape) is resampled onto it
     const regrid = (t: TankSetup) => { const te = t.terrain; if (te.h.length && !sameGrid(te, t.tank)) t.terrain = { ...sampleTerrain(t, t.tank, te.cols), on: te.on }; };
-    if (kind === 'scene') { for (const t of this.scene.tanks) { regrid(t); keepInWater(t); fitTable(t); for (const it of t.items) clampItem(it, t.tank, t); } clearCams(this.scene.tanks, this.scene.camLock); }
+    if (kind === 'scene') { for (const t of this.scene.tanks) { regrid(t); swampGround(t); keepInWater(t); fitTable(t); for (const it of t.items) clampItem(it, t.tank, t); } clearCams(this.scene.tanks, this.scene.camLock); }
     if (this.selId != null && !this.tank.fish.some(f => f.id === this.selId)) this.selId = null;
     if (this.selItem != null && !this.tank.items.some(it => it.id === this.selItem)) this.selItem = null;
     this.emit(kind);
