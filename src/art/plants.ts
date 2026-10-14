@@ -99,3 +99,79 @@ export function drawPlantCard(type: PlantType, W = 512): HTMLCanvasElement {
     fern: () => fern(ctx, W, H), anubias: () => anubias(ctx, W, H), carpet: () => carpet(ctx, W, H) })[type]();
   return c;
 }
+
+// ---------- 3D plants (render/plant3d.ts) ----------
+/** One kind of leaf: a curved sheet along a centreline that rises at `rise` from the vertical and bends `arch` more by the tip. */
+export interface Leaf3D {
+  /** Leaf length, fraction of the plant's height (min, max); the whole plant is then scaled to its height. Carpet: mm. */
+  len: [number, number];
+  /** Widest point / length. */
+  wid: number;
+  /** Width profile along the blade: sin(pi t^k)^p (k < 1 widest near the base, p small = parallel sides). */
+  prof: [number, number];
+  /** Angle from the vertical at the base, rad (min, max): first leaves / outer leaves get the max. */
+  rise: [number, number];
+  /** Extra bend toward the ground by the tip, rad. */
+  arch: number;
+  /** Turn of the blade about its own midrib by the tip, rad (random sign). */
+  twist: number;
+  /** Cross-section: + edges up (cupped), - edges down (a ridged blade); fraction of the half width. */
+  fold: number;
+  /** Edge ripple out of the blade's plane, fraction of the width, and ripples along the blade. */
+  wave: [number, number];
+  /** Bare stalk below the blade, fraction of the length. */
+  pet: number;
+  /** Upper side: [edge, midrib] colour pairs, one picked per leaf. */
+  cols: [string, string][];
+  /** Underside colour (paler, duller). */
+  under: string;
+  /** A pale midrib line down the middle of the upper side, optional. */
+  rib?: string;
+  /** Tip colour and how far down it runs (0..1 of the blade), optional. */
+  tip?: [string, number];
+  /** Samples along the blade and across it (3 = a midrib, 5 = room for a cup or a ripple). */
+  seg: [number, number];
+}
+export interface Plant3D {
+  /** rosette = leaves from one crown; rhizome = leaves along a creeping root; stem = upright stems with paired leaves;
+   *  carpet = tiny leaflets over a patch. */
+  form: 'rosette' | 'rhizome' | 'stem' | 'carpet';
+  /** Leaves (rosette, rhizome), stems (stem), or leaflets per 1000 mm² of patch (carpet): min, max. */
+  n: [number, number];
+  /** Width over which leaves / stems / crowns start, fraction of the card width. */
+  spread: number;
+  leaf: Leaf3D;
+  /** Stalks and the rhizome. */
+  stalk: string;
+  /** Stem plants: leaf pairs up a stem; the top keeps getting smaller leaves. */
+  nodes?: number;
+  /** Stem plants: the leaf colours from this far up the stem (0..1), e.g. the red tops. */
+  top?: { cols: [string, string][]; from: number };
+  /** Crowns (rosette): several plants in one clump (vallisneria runners). */
+  crowns?: [number, number];
+}
+
+const LEAF_GREENS: [string, string][] = GREENS;
+export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
+  fern: { form: 'rhizome', n: [13, 18], spread: 0.6, stalk: '#5a4a32', leaf: {
+    len: [0.7, 1], wid: 0.1, prof: [0.8, 0.8], rise: [0.08, 0.6], arch: 0.4, twist: 0.5, fold: -0.25, wave: [0.1, 4], pet: 0.06,
+    cols: [['#244a22', '#3e7038'], ['#2a5226', '#4a7e40']], under: '#355a30', rib: '#7aa060', tip: ['#3c7034', 0.3], seg: [10, 5] } },
+  sword: { form: 'rosette', n: [16, 24], spread: 0.05, stalk: '#3a6a2c', leaf: {
+    len: [0.75, 1], wid: 0.15, prof: [0.75, 0.8], rise: [0.05, 0.75], arch: 0.4, twist: 0.5, fold: -0.15, wave: [0.03, 3], pet: 0.3,
+    cols: [['#3d7a2e', '#6aa64e'], ['#468a34', '#7ab85a'], ['#36702a', '#62a048']], under: '#5a8a48', rib: '#b0d098', seg: [10, 5] } },
+  carpet: { form: 'carpet', n: [140, 160], spread: 1, stalk: '#3f6a2e', leaf: {
+    len: [3.5, 5.5], wid: 0.75, prof: [0.9, 0.5], rise: [0.9, 1.5], arch: 0.1, twist: 0.3, fold: 0.2, wave: [0, 0], pet: 0,
+    cols: LEAF_GREENS, under: '#5e8a48', seg: [3, 3] } },
+  anubias: { form: 'rhizome', n: [10, 14], spread: 0.4, stalk: '#2e5226', leaf: {
+    len: [0.6, 0.95], wid: 0.4, prof: [0.7, 0.55], rise: [0.1, 0.6], arch: 0.25, twist: 0.3, fold: 0.15, wave: [0.02, 2], pet: 0.25,
+    cols: [['#1e3e1c', '#3a6a32'], ['#22441e', '#40723a']], under: '#3e6236', rib: '#5a8a4a', seg: [8, 5] } },
+  grass: { form: 'rosette', n: [16, 24], crowns: [3, 5], spread: 0.5, stalk: '#3f6a2e', leaf: {
+    len: [0.6, 1], wid: 0.035, prof: [1, 0.12], rise: [0.02, 0.3], arch: 0.5, twist: 1.5, fold: 0, wave: [0, 0], pet: 0,
+    cols: LEAF_GREENS, under: '#5e8a48', seg: [12, 3] } },
+  stem: { form: 'stem', n: [5, 7], nodes: 22, spread: 0.5, stalk: '#3f6a2e', top: { cols: [['#4a8a34', '#80b85a']], from: 0.8 }, leaf: {
+    len: [0.11, 0.14], wid: 0.3, prof: [0.8, 0.6], rise: [0.5, 1.2], arch: 0.3, twist: 0.3, fold: -0.1, wave: [0, 0], pet: 0,
+    cols: LEAF_GREENS, under: '#5e8a48', seg: [4, 3] } },
+  stemred: { form: 'stem', n: [5, 7], nodes: 22, spread: 0.5, stalk: '#6a4a2a', top: { cols: [['#8a3a2a', '#c0604a'], ['#7e3426', '#b4583e']], from: 0.55 }, leaf: {
+    len: [0.11, 0.14], wid: 0.3, prof: [0.8, 0.6], rise: [0.5, 1.2], arch: 0.3, twist: 0.3, fold: -0.1, wave: [0, 0], pet: 0,
+    cols: [['#4e5a2a', '#7e8a42'], ['#56602e', '#86904a']], under: '#7a7a4a', seg: [4, 3] } },
+};

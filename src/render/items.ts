@@ -1,7 +1,8 @@
 // Meshes for aquascape items (scene/items.ts). Stones, wood and caves are real 3D, shaded per vertex (a top-front-left
-// light baked in, like the hood and substrate); plants are crossed cards (one facing the glass, one edge-on, so they
-// keep some body when orbiting). Each item is ONE mesh, so picking and the selection box are simple. Shapes are cached
-// by (variant, seed, size) and the baked colours by turn as well: the scene rebuilds on every drag step.
+// light baked in, like the hood and substrate); plants are real 3D where the species has a `PLANT3D` entry
+// (render/plant3d.ts), crossed cards otherwise (one facing the glass, one edge-on, so they keep some body when orbiting).
+// Each item is ONE mesh, so picking and the selection box are simple. Shapes are cached by (variant, seed, size) and the
+// baked colours by turn as well: the scene rebuilds on every drag step.
 import * as THREE from 'three';
 import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng } from '../art/paint';
@@ -11,6 +12,7 @@ import { D2R } from '../scene/physics';
 import { bowlDims, footprint, shapeOf } from '../scene/shape';
 import { clampGround, groundHeight, groundInsideBy } from '../scene/terrain';
 import type { Item, Tank, TankSetup } from '../scene/types';
+import { has3DPlant, plantGeometry, plantMaterial } from './plant3d';
 import { cardMaterial, plantTexture } from './textures';
 
 type R = () => number;
@@ -411,9 +413,10 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
       const dx = x - it.x, dd = d - it.depth;
       return { x: dx * c + dd * s, y: groundHeight(S, T, x, d) - ground, z: dx * s - dd * c, w: Math.min(CARPET_W, 2 * groundInsideBy(S, T, x, d)) };
     };
-    const g = plants.get(k) ?? remember(plants, k, plantGeo(type, it.seed, h, carpet ? at : undefined), 300, dispose);
+    const solid = has3DPlant(type), k3 = (solid ? '3d|' : '') + k;
+    const g = plants.get(k3) ?? remember(plants, k3, (solid ? plantGeometry : plantGeo)(type, it.seed, h, carpet ? at : undefined), 300, dispose);
     if (carpet) g.computeBoundingBox();
-    m = new THREE.Mesh(g, cardMaterial('plant:' + type, plantTexture(type), S.render.edge));
+    m = new THREE.Mesh(g, solid ? plantMaterial() : cardMaterial('plant:' + type, plantTexture(type), S.render.edge));
     m.userData.plant = true;
   } else m = new THREE.Mesh(bakedShape(it), solidMaterial(T));
   m.position.set(it.x, y + (m.geometry.userData.rise ?? 0), -it.depth);
