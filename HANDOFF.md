@@ -738,7 +738,7 @@ dorsal / tail fin) and zebra nerite (shell edge and aperture, smaller foot, dist
 `p2-small`, launch config `p2-small` 5493; owns `art/herps.ts`, `render/herp3d.ts`, `art/snails.ts`, `render/snail3d.ts`.
 Lane S set up 2026-10-14 (anatomy audit P1 fish, 20 species / 29 models: fin structure, then species):
 `../Glass-Box-fish-fins` / `fish-fins`, launch config `fish-fins` 5503; owns `art/fishgen.ts`, `art/paint.ts`,
-`render/fish3d.ts`. Starts only after lane D ships R2 + R3 (D holds those files until then).
+`render/fish3d.ts`. Lane D DONE (`6176008`, `66d2dba`, `49f3f33`), so lane S can start.
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_d0390f66-339c-4fa1-ab38-43e9c2a35958`
 ("Lanes coordinator 2", took over 2026-10-14 from `local_e1923781`). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
 and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says
@@ -1967,6 +1967,7 @@ recommendation for the rest"); all done by lane D in `models-fix`:
 - R12 shareable scene URLs: recommended as its own small lane (deflate the ~9 KB scene with CompressionStream,
   base64url in the `#` = ~3-4 KB; Share button, decode on load, "opened a shared tank" note with Undo; ui + scene
   files). The most useful thing for showing the tool to people.
+  DONE by lane N (`0d0b85a`), see its section.
 - R5 shrimp, R6 snails: rebuilt by lanes M and L. R11: http already 301-redirects to https.
 - Leftover (not done, cheap): `shrimpMarksCanvas` (fishgen) and fish3d's `p.glass` branch may be dead now that shrimp
   have their own builder; check `Plan.glass` users before pruning.
