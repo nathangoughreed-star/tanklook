@@ -48,7 +48,7 @@ export interface Viewport extends Partial<BuiltTank> {
   i: number;
   key: 'A' | 'B';
   cam: THREE.PerspectiveCamera;
-  /** Fixture parts and the beams above the rim: hidden while the eye is above them (userData.overhead = that height). */
+  /** Fixture parts and the beams above the rim: hidden while the eye is above them when `hideOverhead` is on (userData.overhead = that height). */
   overhead?: THREE.Object3D[];
   /** Frosted background sheets (build `bgMaterial`), with their faces as outward planes (`frostCull`). */
   frost?: { mesh: THREE.Mesh; planes: THREE.Plane[] }[];
@@ -192,6 +192,9 @@ export class Viewer {
   private built: { env: string; look: string }[] = [];
   /** false = every change rebuilds the whole scene, as before audit #52-53 (the fallback; dev checks compare the two). */
   incremental = true;
+  /** true = fixture parts and beams above the rim hide while the eye is above them (audit #20); off by default, so the
+   *  light always shows (Nathan 2026-10-14). A per-viewer display preference, set from the View panel. */
+  hideOverhead = false;
   /** What the last build did per view: 'full', 'patch' (with the number of fish / items rebuilt), or 'same'. */
   lastBuild: string[] = [];
   /**
@@ -244,7 +247,7 @@ export class Viewer {
     else { Object.assign(active[0], { x: 0, y: 0, w: hw, h }); Object.assign(active[1], { x: hw + GAP, y: 0, w: hw, h }); }
     for (const vp of active) {
       placeCamera(vp.cam, vp.T, vp.S.camera);
-      for (const o of vp.overhead ?? []) o.visible = vp.cam.position.y < o.userData.overhead;
+      for (const o of vp.overhead ?? []) o.visible = !this.hideOverhead || vp.cam.position.y < o.userData.overhead;
     }
     // framing counts the tank and a hood on it, never the lights above: a fixture shows only once zoomed out enough (Nathan 2026-10-09)
     const headroom = (S: TankSetup) => (S.lid === 'hood' ? HOOD_H + 6 : 0);

@@ -701,6 +701,10 @@ Cancel, then change the name, to keep both.`)) return;
   mapCb.onchange = () => setMap(mapCb.checked);
   for (const b of document.querySelectorAll<HTMLButtonElement>('.vmapHide')) b.onclick = () => setMap(false);
   $('mapShow').onclick = () => setMap(true);
+  // hide the fixture from above it: a per-viewer display preference too; off unless chosen, so the light always shows (Nathan 2026-10-14)
+  const hideCb = $('hideLightAbove'), setHide = (on: boolean) => { hideCb.checked = viewer.hideOverhead = on; viewer.invalidate(); };
+  try { setHide(localStorage.getItem('tanklook.hidelight') === 'on'); } catch { setHide(false); }
+  hideCb.onchange = () => { try { localStorage.setItem('tanklook.hidelight', hideCb.checked ? 'on' : 'off'); } catch { /* ignore */ } setHide(hideCb.checked); };
   // "How to use" stays closed: the start menu names the main gestures and points to it (audit #4 / #8, 2026-10-14)
   // panel sections start collapsed on every load (Nathan 2026-10-09); whether the panel is hidden is a per-viewer preference
   const secs = [...document.querySelectorAll<HTMLDetailsElement>('details.sec')];
