@@ -252,7 +252,7 @@ export type ParBand = 'low' | 'medium' | 'high' | 'very high';
 export const parBand = (v: number): ParBand => (v < 30 ? 'low' : v < 50 ? 'medium' : v < 80 ? 'high' : 'very high');
 
 export interface LightOut {
-  /** PAR just under the water surface above the brightest substrate point (the rim, in a dry tank). */
+  /** PAR just under the water surface at its brightest (the rim's height, in a dry tank). */
   surface: number;
   /** PAR at the substrate: mean, min, max over a 24 x 24 grid of the footprint. */
   mean: number; min: number; max: number;
@@ -283,16 +283,16 @@ export function lightOut(S: LightScene): LightOut | null {
   if (!env) return null;
   const pts = substratePoints(S);
   if (!pts.length) return null;
-  let sum = 0, lux = 0, mid = 0, min = Infinity, max = -Infinity, top = pts[0].p;
+  let sum = 0, lux = 0, mid = 0, min = Infinity, max = -Infinity, surface = 0;
   const ys = Number.isFinite(env.ys) ? env.ys : S.tank.H;
   for (const { p, n } of pts) {
     const b = bandsAt(env, p, n), v = parOf(b);
     sum += v; lux += luxOf(b); min = Math.min(min, v);
-    if (v > max) { max = v; top = p; }
+    max = Math.max(max, v);
+    surface = Math.max(surface, parOf(bandsAt(env, [p[0], ys - 0.01, p[2]])));
     mid += luxOf(bandsAt(env, [p[0], (p[1] + Math.max(ys, p[1])) / 2, p[2]]));
   }
   const k = pts.length, mean = sum / k, scale = S.light.par && S.light.par > 0 && mean > 0 ? S.light.par / mean : 1;
-  const surface = parOf(bandsAt(env, [top[0], ys - 0.01, top[2]]));
   return {
     surface: surface * scale, mean: mean * scale, min: min * scale, max: max * scale,
     luxMean: lux / k * scale, luxMid: mid / k * scale, band: parBand(mean * scale), scale, tech: techOf(S.light),
@@ -325,7 +325,7 @@ const thou = (v: number) => { const r = v >= 1000 ? Math.round(v / 100) * 100 : 
  * The range is the tech's uncertainty round the mean, or min-max across the substrate where that is wider.
  */
 export function readout(o: LightOut, own = o.scale !== 1): string {
-  const surf = `surface ≈ ${nice(o.surface)} · ≈ ${thou(o.luxMean)} lux`;
+  const surf = `surface ≈ ${o.surface >= 1000 ? thou(o.surface) : nice(o.surface)} · ≈ ${thou(o.luxMean)} lux`;
   if (own) return `PAR at substrate ${nice(o.mean)} µmol (yours; ${o.band}) · ${surf}`;
   const u = TECHS[o.tech].unc, lo = Math.min(o.mean * (1 - u), o.min), hi = Math.max(o.mean * (1 + u), o.max);
   const a = parBand(lo), b = parBand(hi), bands = a === b ? a : `${a}-${b}`;

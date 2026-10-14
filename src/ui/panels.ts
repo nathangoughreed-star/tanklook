@@ -5,7 +5,7 @@ import { GRAIN_LOOK, SUBSTRATES, drawFishCard } from '../art/placeholder';
 import { drawSnailCard } from '../art/snails';
 import { CATEGORIES, SPECIES, fishTL, getSpecies, needsWater, searchSpecies, speciesOf, speciesTag, type Category, type Sex, type Species } from '../data/species';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
-import { emitters } from '../render/lighting';
+import { MAP_DIV, emitters } from '../render/lighting';
 import { TECHS, lightOutCached, readout as lightReadout, techOf, techsFor } from '../scene/lightout';
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
@@ -654,6 +654,31 @@ Cancel, then change the name, to keep both.`)) return;
   $<HTMLSelectElement>('lPat').onchange = e => store.edit(s => { s.light.pattern = (e.target as HTMLSelectElement).value as TankSetup['light']['pattern']; capCount(s.light); });
   $<HTMLSelectElement>('lType').onchange = e => store.edit(s => { s.light.type = (e.target as HTMLSelectElement).value as TankSetup['light']['type']; capCount(s.light); });
   $('lBeams').onchange = e => store.edit(s => { s.render.beams = (e.target as HTMLInputElement).checked; });
+  $<HTMLSelectElement>('lUnit').onchange = e => store.edit(s => { s.light.mapUnit = (e.target as HTMLSelectElement).value as 'par' | 'lux'; });
+  /** The Light map legend: labels at doublings along the ramp (7 steps up from MAP_DIV), and the PAR bands. */
+  let mapKeyFor = '';
+  const mapKey = (unit: 'rel' | 'par' | 'lux') => {
+    if (mapKeyFor === unit) return; mapKeyFor = unit;
+    const at = (v: number) => Math.log2(v / MAP_DIV[unit]) / 7 * 100, span = (x: number, t: string, st = '') => {
+      const e = document.createElement('span'); e.textContent = t;
+      e.style.cssText = `position:absolute;left:${x}%;transform:translateX(${x <= 0 ? 0 : x >= 100 ? -100 : -50}%);${st}`; return e;
+    };
+    const ticks: [number, string][] = unit === 'rel' ? [[1 / 16, '1/16'], [1 / 4, '1/4'], [1, '1'], [4, '4'], [8, '8']]
+      : unit === 'par' ? [[5, '5'], [10, '10'], [20, '20'], [40, '40'], [80, '80'], [160, '160'], [320, '320']]
+      : [[250, '250'], [1000, '1k'], [4000, '4k'], [16000, '16k']];
+    $('lMapTicks').replaceChildren(...ticks.map(([v, t]) => span(at(v), t)));
+    // planted-tank light classes at the substrate, under the PAR ramp
+    $('lMapBands').hidden = unit !== 'par';
+    if (unit === 'par') $('lMapBands').replaceChildren(...([[30, 50, 'med'], [50, 80, 'high'], [80, 640, 'very high'], [0, 30, 'low']] as [number, number, string][]).map(([a, b, t]) => {
+      const x0 = a ? Math.max(at(a), 0) : 0, x1 = Math.min(at(b), 100), e = document.createElement('span'); e.textContent = t;
+      e.style.cssText = `position:absolute;left:${x0}%;width:${x1 - x0}%;text-align:center;border-left:1px solid currentColor;font-size:0.9em;white-space:nowrap;overflow:hidden`;
+      return e;
+    }));
+    $('lMapText').textContent = unit === 'rel'
+      ? 'Light on the substrate, from distance, beam angle and how squarely it lands, summed over the lights; a colour step per doubling. 1 = one standard 52° bulb 300 mm straight above. Set Power for PAR or lux.'
+      : unit === 'par' ? 'PAR at the substrate, µmol/m²/s, from the power and light type: a colour step per doubling. Below: the planted-tank light classes.'
+      : 'Lux at the substrate, from the power and light type: a colour step per doubling. Water takes red first, so lux and PAR fall off at different rates.';
+  };
   $<HTMLSelectElement>('lTech').onchange = e => store.edit(s => { s.light.tech = (e.target as HTMLSelectElement).value as LightTech; });
   let techFor = ''; // the fixture type the Light type list was built for
 
@@ -1107,6 +1132,8 @@ Cancel, then change the name, to keep both.`)) return;
     $('lBrightLab').title = watts ? 'Like a camera: how bright the render looks for the light the fixture gives (x0.5-2). The PAR and lux do not change' : '';
     Object.assign($('lBright') as HTMLInputElement, watts ? { min: '0.5', max: '2' } : { min: '0.2', max: '2.5' }); setVal('lBright', l.bright);
     if (watts) setOut('oBright', '×' + Math.min(Math.max(l.bright, 0.5), 2).toFixed(2));
+    const mapOn = s.render.beams && l.type !== 'flat';
+    $('lUnitRow').style.display = mapOn && watts ? '' : 'none'; setVal('lUnit', l.mapUnit ?? 'par'); mapKey(watts ? l.mapUnit ?? 'par' : 'rel');
     $('lBeams').checked = s.render.beams && l.type !== 'flat'; $('lBeams').parentElement!.title = l.type === 'flat' ? 'No fixture: pick one under Fixture to see the light map' : ''; /* audit #44 */ $('lMapKey').style.display = s.render.beams && l.type !== 'flat' ? '' : 'none';
     $('lMapBare').hidden = !(s.render.beams && l.type !== 'flat' && !s.substrate.show); /* the map needs a floor to draw on (audit #17) */ ($('lBeams') as HTMLInputElement).disabled = l.type === 'flat';
 

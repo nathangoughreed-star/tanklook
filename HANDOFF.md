@@ -2,7 +2,7 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
-## Lane K: light output (2026-10-14; branch `light-output`, port 5383; steps 1-2 of 4 pushed)
+## Lane K: light output (2026-10-14; branch `light-output`, port 5383; steps 1-3 of 4 pushed)
 - Owns `render/lighting.ts` (carved out of lane J's render/*), new `scene/lightout.ts` + `test/lightout.test.ts`, the
   light fields in scene/types.ts / defaults.ts / validate.ts, the Lighting rows in index.html / ui/panels.ts,
   ui/diff.ts, ui/parGuide.ts. Lane J: the fixture geometry (emitters, beam, fitSpots, lampHeight, CONES, LAMP_Y,
@@ -26,7 +26,14 @@ Living file. Project state and dated decisions go here; update in place.
   line; Brightness is relabelled Exposure (x0.5-2) while the power is set. The render follows it: `setLightUniforms`
   takes the setup (ONE-LINE HOOK in lane J's render/viewer.ts: `..., S.render.beams, S)`) and uses
   `lightOutCached` -> `renderBright`. ui/diff.ts: A/B lines for power, light type, measured PAR, Exposure.
-- Next: 3 (shader port + PAR / Lux map), 4 (hover tooltip).
+- Step 3: `aqIrr` with the power set calls `aqIrrAbs`, a line-by-line port of `bandsAt` (uniforms uLoA / uLoWall /
+  uLoK / uLoSplit / uLoOut, set in `setLoUniforms`); the ramp is log2(level / uMapDiv), MAP_DIV rel 1/16, PAR 2.5
+  (yellow = 40, medium), lux 125. "Map shows" PAR / Lux select (light.mapUnit), legends in real units with the
+  planted bands under the PAR ramp. GPU check: `irrReadback(renderer, pts, normals)` (dev, from the console via
+  `await import('/src/render/lighting.ts')` and `window.__gb`) agreed with bandsAt to 0.003% at 54 lit points.
+  Readout "surface" is now the brightest point just under the surface (was: above the brightest substrate point,
+  which could sit by the glass where the direct beam misses the surface: read 0).
+- Next: 4 (hover tooltip).
 
 ## Model review sheet + model versions (2026-10-14, Nathan: "keep it where it can be updated with version number every time a model is updated")
 - `review.html` (live at tanklook.com/review.html; second Vite page, `src/review/`): every species look (females too)
