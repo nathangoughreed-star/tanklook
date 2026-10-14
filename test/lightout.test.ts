@@ -86,7 +86,7 @@ describe('light output model', () => {
     expect(readout(o)).toMatch(/^PAR at substrate 45 µmol \(yours; medium\)/);
   });
   it('lux factors per tech match Apogee / estimates', () => {
-    const want: Record<LightTech, number> = { 'led-white': 67, 'led-planted': 48, 'led-reef': 26, 't5-refl': 74, 't5-bare': 74, 't8': 74, 'cfl': 72, 'mh': 71, 'halogen': 52 };
+    const want: Record<LightTech, number> = { 'led-white': 67, 'led-planted': 48, 'led-reef': 26, 't5-refl': 74, 't5-bare': 74, 't8': 74, 'cfl': 72, 'mh': 71, 'mh-20k': 55, 'halogen': 49 };
     for (const t of TECH_IDS) {
       expect(TECHS[t].split.reduce((a, b) => a + b, 0)).toBeCloseTo(1, 6);
       expect(Math.abs(luxPer(t) / want[t] - 1)).toBeLessThan(0.05);
@@ -154,5 +154,43 @@ describe('calibration', () => {
     const res = log('T5 HO (substrate, assumptions above)', [['2x54 no walls', 60, par(e, [T.L / 2, 0, -T.D / 2])], ['2x54 glass', 60, par(w, [T.L / 2, 0, -T.D / 2])],
       ['1x54 glass', 40, par(one, [T2.L / 2, 0, -T2.D / 2])]]);
     for (const r of res.slice(1)) expect(Math.abs(r)).toBeLessThan(0.5);
+  });
+  it('metal halide pendants: Joshi reflector grids in air (grade A, ±35%); in-tank sets (±50% Melev; forum logged)', () => {
+    // Joshi, "Analyzing Reflectors": Ushio 14K 400 W on an IceCap ballast (428 W at the wall), in air, 13 x 13 grid at
+    // 3 in; sums over the 3x3 / 2x2 / 1x1 ft squares at 24 and 30 in, as means, and the maximum. Each reflector as a
+    // spot at its fitted beam angle (the angle is fitted to these grids; the output is the one TECHS value).
+    const grid = (e: LightEnv, y: number) => [6, 4, 2].map(h => {
+      let a = 0; for (let i = -h; i <= h; i++) for (let j = -h; j <= h; j++) a += par(e, [i * 76.2, -y, j * 76.2]);
+      return a / (2 * h + 1) ** 2;
+    }).concat(par(e, [0, -y, 0]));
+    const R: [string, number, number[], number[]][] = [
+      ['Lumenarc III', 95, [28147, 18544, 7299, 349], [22645, 13660, 4890, 222]],
+      ['Lumenbrite III', 55, [35700, 28214, 13473, 669], [31586, 22171, 9361, 444]],
+      ['Lumenmax Elite', 50, [33229, 26138, 13571, 711], [29080, 21735, 10219, 519]],
+      ['Lumenmax large', 100, [32886, 21954, 8391, 383], [27630, 17202, 6159, 270]],
+    ];
+    const lab: number[] = [];
+    for (const [name, cone, a24, a30] of R) {
+      const e = env([[0, 0, 0, 0]], photons(428, 'mh'), beamExp({ type: 'spot', cone }), 'mh'), n = [169, 81, 25, 1];
+      const rows = ([[609.6, a24, '24'], [762, a30, '30']] as const).flatMap(([y, m, at]) => grid(e, y).map((p, k): [string, number, number] =>
+        [`${at} in ${['3x3 mean', '2x2 mean', '1x1 mean', 'max'][k]}`, Math.round(m[k] / n[k]), p]));
+      lab.push(...log(`MH: ${name} (${cone}°), 400 W 14K, in air`, rows));
+    }
+    // ±35%, not ±30: the reflectors themselves differ by ±27% in what they put down (0.50-0.86 per wall W), and the
+    // model has one eta for all of them
+    for (const r of lab) expect(Math.abs(r)).toBeLessThan(0.35);
+    // in water: a pendant as a Lumenarc-like 95° spot
+    const run = (W: number, t: LightTech, T: { L: number; D: number }, ys: number, h: number, xs: number[], pts: [number, number][]) => {
+      const E: Emitter[] = xs.map(dx => [T.L / 2 + dx, ys + h, -T.D / 2, 0]);
+      const e = { ...env(E, photons(W, t) * E.length, beamExp({ type: 'spot', cone: 95 }), t, ys), walls: { ...T, w: 0.7 } };
+      return pts.map(([d, m]): [string, number, number] => [`${(d / 25.4).toFixed(0)} in deep`, m, par(e, [T.L / 2, ys - d, -T.D / 2])]);
+    };
+    // Melev's Reef 2008 (grade A numbers, tank assumed): 3 x 250 W Radium 20K, 9 in above the water; assumed 24 in
+    // apart over a 72 x 24 in tank (~280 gal), 30 in of water; mid-range of the readings under a bulb
+    const melev = log('MH: Melev 3x250 W 20K, 9 in up (in water)', run(250, 'mh-20k', { L: 1829, D: 610 }, 760, 229, [-610, 0, 610], [[25, 698], [152, 404], [305, 316]]));
+    for (const r of melev) expect(Math.abs(r)).toBeLessThan(0.5);
+    // forum readings (grade B/C; meters, bulb age and positions unknown): logged only, they read 2-3x below the lab data
+    log('MH: ReefCentral 250 W 14K, 12 in up (forum, not tested)', run(250, 'mh', { L: 1219, D: 610 }, 610, 305, [0], [[51, 250], [76, 150], [600, 75]]));
+    log('MH: 400 W 20K, 16 in up (forum, not tested)', run(400, 'mh-20k', { L: 1219, D: 610 }, 610, 406, [0], [[25, 200], [254, 135], [508, 110]]));
   });
 });

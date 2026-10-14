@@ -125,7 +125,7 @@ export interface LightSettings {
   mapUnit?: 'par' | 'lux';
 }
 
-export type LightTech = 'led-white' | 'led-planted' | 'led-reef' | 't5-refl' | 't5-bare' | 't8' | 'cfl' | 'mh' | 'halogen';
+export type LightTech = 'led-white' | 'led-planted' | 'led-reef' | 't5-refl' | 't5-bare' | 't8' | 'cfl' | 'mh' | 'mh-20k' | 'halogen';
 
 export interface SubstrateSettings {
   show: boolean;
@@ -177,6 +177,10 @@ export interface Item {
   tilt: number;
   /** mm: the length of a stone, wood or cave, the height of a plant, the width of a carpet patch. */
   size: number;
+  /** Plants that grow as several stems or crowns (isClump): the circle they start in, mm, and how many. Absent = the
+   *  species' own look, drawn from the seed (added 2026-10-14, no version bump). */
+  spread?: number;
+  stems?: number;
 }
 
 /**

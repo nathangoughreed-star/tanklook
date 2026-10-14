@@ -272,6 +272,8 @@ function parseItems(raw: unknown[], T: Tank, warn: (m: string) => void, g: Groun
       id, kind: v.kind, variant: o.variant as string, seed: Math.round(clamp(fin(o.seed, 1), 1, 2e9)),
       x: fin(o.x, T.L / 2), depth: fin(o.depth, T.D / 2), lift: fin(o.lift, 0),
       yaw: Math.round(fin(o.yaw, 0)), pitch: Math.round(fin(o.pitch, 0)), tilt: Math.round(fin(o.tilt, 0)), size: fin(o.size, v.size),
+      ...(typeof o.spread === 'number' && Number.isFinite(o.spread) ? { spread: o.spread } : {}),
+      ...(typeof o.stems === 'number' && Number.isFinite(o.stems) ? { stems: o.stems } : {}),
     };
     clampItem(it, T, g); out.push(it);
   }

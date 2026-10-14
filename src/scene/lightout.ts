@@ -123,8 +123,16 @@ export interface Tech {
 // Calibration (reference/par-calibration-data.md, test/lightout.test.ts): reef LED PPE 1.75 fits the AI Hydra 32 HD
 // (in air, -9..+6%), white LED 1.6 x 0.9 the JBL Solar Natur (in water, -26..+14%). T5 HO with reflectors fits the
 // Barr Report readings at eta 0.65 once the side glass is modelled (the first hand check, which left the glass out,
-// suggested 0.4-0.5); bare T5 and T8 scaled with it. T8, CFL, metal halide, halogen: no dataset yet. LED band splits are set from the lux factors
-// (white ~67, planted ~48, reef ~26 lux per µmol), not measured.
+// suggested 0.4-0.5); bare T5 and T8 scaled with it. LED band splits are set from the lux factors (white ~67, planted
+// ~48, reef ~26 lux per µmol), not measured.
+// Lane K2 (2026-10-14): metal halide from Joshi's lab tests (reefs.com, grade A). Bare lamps at 18 in give 0.34-0.49
+// PPFD per wall watt for 10K bulbs, 0.23-0.35 for 13-14K, 0.17-0.24 for 20K; as photons (between a sin θ and an
+// isotropic lamp) ppe ~0.83 for 10-14K and ~0.47 for 20K. Four pendant reflectors with one 400 W 14K lamp fit the cos^m
+// beam within ±10% at 50-100°, with ppe x eta 0.50-0.86: eta 0.77 (one value for all). 20K band split: an ESTIMATE
+// (bluer, no spectrum data read). CFL ppe 0.8 = typical CFL efficacy over the fluorescent lux factor, close to Nelson &
+// Bugbee's T8 fixture (0.84, grade A); its eta 0.5 is an ESTIMATE (no PAR data for power compacts found). Halogen: split
+// from a 3000 K blackbody (gives 47 lux per µmol, AGi32 incandescent 49); ppe 0.3 and eta 0.6 are ESTIMATES (blackbody
+// 0.3-0.4 bare, one MR11 spec 0.1; no PAR-at-distance data found). T8: scaled from T5, no dataset.
 export const TECHS: Record<LightTech, Tech> = {
   'led-white': { label: 'LED, white', on: ['spot', 'tube', 'led'], ppe: 1.6, eta: 0.9, split: [0.22, 0.53, 0.25], unc: 0.3 },
   'led-planted': { label: 'LED, planted RGB', on: ['spot', 'led'], ppe: 1.8, eta: 0.9, split: [0.33, 0.33, 0.34], unc: 0.3 },
@@ -133,8 +141,9 @@ export const TECHS: Record<LightTech, Tech> = {
   't5-bare': { label: 'T5 HO, bare', on: ['tube'], ppe: 1.2, eta: 0.4, split: [0.2, 0.6, 0.2], unc: 0.5 },
   't8': { label: 'T8', on: ['tube'], ppe: 0.85, eta: 0.45, split: [0.2, 0.6, 0.2], unc: 0.5 },
   'cfl': { label: 'CFL / power compact', on: ['spot', 'tube'], ppe: 0.8, eta: 0.5, split: [0.2, 0.59, 0.21], unc: 0.5 },
-  'mh': { label: 'Metal halide pendant', on: ['spot'], ppe: 1.3, eta: 0.7, split: [0.24, 0.57, 0.19], unc: 0.5 },
-  'halogen': { label: 'Incandescent / halogen', on: ['spot'], ppe: 0.3, eta: 0.6, split: [0.08, 0.36, 0.56], unc: 0.5 },
+  'mh': { label: 'Metal halide, 10-14K', on: ['spot'], ppe: 0.83, eta: 0.77, split: [0.24, 0.57, 0.19], unc: 0.5 },
+  'mh-20k': { label: 'Metal halide, 20K', on: ['spot'], ppe: 0.47, eta: 0.77, split: [0.45, 0.42, 0.13], unc: 0.5 },
+  'halogen': { label: 'Incandescent / halogen', on: ['spot'], ppe: 0.3, eta: 0.6, split: [0.1, 0.3, 0.6], unc: 0.5 },
 };
 export const TECH_IDS = Object.keys(TECHS) as LightTech[];
 export const techsFor = (type: LightType) => TECH_IDS.filter(t => TECHS[t].on.includes(type));
