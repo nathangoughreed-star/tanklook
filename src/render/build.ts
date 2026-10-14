@@ -12,7 +12,7 @@ import { groundHeight, pieSegs, terrainDisc, terrainPoints } from '../scene/terr
 import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
 import { addBeams, addFixture, applyLighting, waterVolumeMaterial } from './lighting';
 import { itemMesh } from './items';
-import { fish3d, fishBody, has3D, hullMaterial } from './fish3d';
+import { drapedCard, fish3d, fishBody, has3D, hullMaterial } from './fish3d';
 import { herpBody, isHerp3D } from './herp3d';
 import { sagShell, snailBody } from './snail3d';
 import { blendTexture, cardMaterial, fishBodyTexture, fishTexture, gradientTexture, personTexture, snailTexture, substrateMaskTexture, substrateTexture } from './textures';
@@ -975,7 +975,7 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: number | null, 
     if (!S.water.on && needsWater(sp)) return; // dry tank: fish stay in the scene data, hidden until the water is back
     const w = fishTL(f, sp), h = w * sp.aspect, p = f;
     const solid = has3D(sp.art), herp = solid && isHerp3D(sp.art);
-    const m = new THREE.Mesh(cardGeometry(w, h, f.bend), herp ? HIDDEN : cardMaterial(`fish:${sp.look}:${solid}:${solid && fish3d.fade}`, fishTexture(sp, S.render.edge, solid, solid && fish3d.fade), S.render.edge));
+    const m = new THREE.Mesh((solid && drapedCard(sp.art, w, h, f.bend)) || cardGeometry(w, h, f.bend), herp ? HIDDEN : cardMaterial(`fish:${sp.look}:${solid}:${solid && fish3d.fade}`, fishTexture(sp, S.render.edge, solid, solid && fish3d.fade), S.render.edge));
     if (!herp) (m.material as THREE.Material).userData.fishCard = true; // fish stand out (render.pop) lifts the card too
     if (herp) m.add(herpBody(sp.art, w, f.surface === 'glass')); // the card stays as the invisible picking target
     else if (solid) m.add(fishBody(sp.art, sp.aspect, w, f.bend, fishBodyTexture(sp), S.render.edge, f.surface === 'glass')); // solid body + paired fins; the card keeps the median fins

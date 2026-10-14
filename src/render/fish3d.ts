@@ -346,7 +346,7 @@ function bledTexture(map: THREE.Texture) {
   const mk = bc.createLinearGradient(c.width * 0.84, 0, c.width * 0.96, 0); mk.addColorStop(0, 'rgba(0,0,0,0)'); mk.addColorStop(1, '#000');
   bc.globalCompositeOperation = 'destination-in'; bc.fillStyle = mk; bc.fillRect(0, 0, c.width, c.height);
   ctx.drawImage(bl, 0, 0);
-  const tex = (cv: HTMLCanvasElement) => { const t = new THREE.CanvasTexture(cv); t.colorSpace = map.colorSpace; t.anisotropy = map.anisotropy; return t; };
+  const tex = (cv: HTMLCanvasElement) => { const t = new THREE.CanvasTexture(cv); t.colorSpace = map.colorSpace; t.anisotropy = 16; return t; };
   // the blurred copy shown where the surface turns away from the side (see aqPatch)
   const pl = document.createElement('canvas'); pl.width = c.width; pl.height = c.height;
   const pc = pl.getContext('2d')!;
@@ -371,6 +371,8 @@ const PLAIN_BLUR = 0.03;
 const SMEAR = 0.08;
 /** How squarely the surface must face the side (|normal.z|) before the sharp paint shows: the plain copy below x, the paint above y. */
 const SIDE = new THREE.Vector2(0.45, 0.9);
+/** `Plan.sharp` fish (one large clean patch): the sharp paint is shown everywhere but at the very silhouette (aqG still fades it there). */
+const SIDE_SHARP = new THREE.Vector2(0, 0.05);
 
 /** Eye dome texture by angle from the pole (SphereGeometry: top pole = uv.y 1): pupil, iris, then dark rim. */
 function eyeTexture(iris: [string, string]) {
@@ -414,7 +416,8 @@ void main() {
   m.userData.cached = true;
   return m;
 }
-const outlineMat = hullMaterial('max(2.5 * uPop, 1.0)', new THREE.Color(0.05, 0.04, 0.035));
+// the line thins on a fish that is small on screen (a 40 px ember wore a 2.5 px ring: ~4 % of its size, at most): d is the vertex depth, modelMatrix[0] the fish's width
+const outlineMat = hullMaterial('clamp(length(modelMatrix[0].xyz) * projectionMatrix[1][1] * uVpH / (2.0 * d) * 0.04, 1.0, max(2.5 * uPop, 1.0))', new THREE.Color(0.05, 0.04, 0.035));
 
 const fishMat = (key: string, make: () => THREE.MeshBasicMaterial) => {
   let m = matCache.get(key);
@@ -433,7 +436,7 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
   let g = geoCache.get(key); if (!g) { g = bodyGeometry(p, aspect, b); geoCache.set(key, g); }
   const grp = new THREE.Group(); grp.scale.setScalar(w);
   grp.add(new THREE.Mesh(g, fishMat(`body:${map.uuid}:${fish3d.fade}:${fish3d.wrap}`, () => {
-    const t = bledTexture(map), m = new THREE.MeshBasicMaterial({ map: t.map, vertexColors: true, ...see(p) }); if (fish3d.fade) { m.userData.plain = t.plain; m.userData.side = fish3d.wrap ? SIDE : new THREE.Vector2(0.3, 0.75); } return m;
+    const t = bledTexture(map), m = new THREE.MeshBasicMaterial({ map: t.map, vertexColors: true, ...see(p) }); if (fish3d.fade) { m.userData.plain = p.sharp ? t.map : t.plain; m.userData.side = p.sharp ? SIDE_SHARP : fish3d.wrap ? SIDE : new THREE.Vector2(0.3, 0.75); } return m;
   })));
   if (!p.glass) { const o = new THREE.Mesh(g, outlineMat); o.userData.nolight = true; grp.add(o); }
   for (const e of eyePlacements(p, b)) {
@@ -460,4 +463,21 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
     for (const m of barbelMeshes(p, b, mat)) grp.add(m);
   }
   return grp;
+}
+
+/**
+ * The fish card's plane, subdivided and rippled for plans with `drape` (betta): the median fins (the part of the card
+ * outside the body) wave out of the plane, more toward the tail, so seen edge-on they read as a fin and not a board.
+ * Null for plans without it (the plain card geometry is used).
+ */
+export function drapedCard(art: string, w: number, h: number, bend: number): THREE.BufferGeometry | null {
+  const p = bodyPlan(art); if (!p?.drape) return null;
+  const prof = profile(p), g = new THREE.PlaneGeometry(w, h, 40, 16), pos = g.attributes.position;
+  for (let i = 0; i < pos.count; i++) {
+    const x = pos.getX(i), u = x / w + 0.5, v = -pos.getY(i) / w, [t, b] = prof(Math.max(u, p.pedU));
+    const out = Math.max(0, t - v, v - b), ramp = smooth(0.01, 0.14, out), tailer = 1 + 1.5 * smooth(p.pedU + 0.1, 0, u);
+    pos.setZ(i, bendZ(bend, x / w) * w + p.drape * w * ramp * tailer * Math.sin(u * 10 + 0.7));
+  }
+  g.computeVertexNormals(); g.computeBoundingSphere();
+  return g;
 }

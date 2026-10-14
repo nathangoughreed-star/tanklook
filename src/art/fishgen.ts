@@ -48,6 +48,8 @@ export interface Plan {
   outline?: [number, number][];
   pectoral?: boolean; // default true
   limbs?: Limb[];
+  drape?: number;     // 3D: the card's median fins ripple out of the card plane by this much (widths), so edge-on they read as fin, not board
+  sharp?: boolean;    // 3D: keep the painted markings crisp where the surface turns away (large clean patches, not bars or spots)
   glass?: number;     // 3D: body and limb opacity (translucent shrimp); unset = opaque
 }
 /**
@@ -344,7 +346,7 @@ export const PLANS: Record<string, Plan> = {
     marks: [{ k: 'blob', u: 0.93, v: -0.01, ru: 0.09, rv: 0.08, c: '#c4303a', a: 0.95 }],
     finMarks: [{ k: 'bars', us: [0.04, 0.12], w: 0.035, c: '#1e1e20', a: 0.85 }, { k: 'band', u0: 0, u1: 0.2, v0: -0.012, v1: 0.012, c: '#1e1e20', a: 0.85, f: 0.005 }],
     eye: { r: 0.024, iris: ['#d26a54', '#5a1e18'] } },
-  harlequin: { thick: 0.38, depth: 0.31, pedU: 0.2, ped: 0.045, peak: 0.5, snout: 0.3, shade: ['#8a6f58', '#d29a7c', '#e8c3ad'], tail: { type: 'fork', h: 0.16, tint: '#d79c82' }, fin: '#d6a48c',
+  harlequin: { sharp: true, thick: 0.38, depth: 0.31, pedU: 0.2, ped: 0.045, peak: 0.5, snout: 0.3, shade: ['#8a6f58', '#d29a7c', '#e8c3ad'], tail: { type: 'fork', h: 0.16, tint: '#d79c82' }, fin: '#d6a48c',
     dorsal: { u0: 0.47, u1: 0.6, h: 0.09 }, anal: { u0: 0.33, u1: 0.47, h: 0.06 }, pelvic: { u: 0.6, len: 0.06 },
     marks: [{ k: 'poly', pts: [[0.62, -0.06], [0.62, 0.02], [0.4, 0.1], [0.22, 0.03], [0.22, -0.03]], c: '#1f1d22', a: 0.88 }], eye: { r: 0.03, iris: ['#c8b8a0', '#55483a'] } },
   chili: { thick: 0.42, depth: 0.21, pedU: 0.2, ped: 0.035, peak: 0.5, snout: 0.35, shade: ['#a5402e', '#d4563c', '#e07a5c'], tail: { type: 'fork', h: 0.13, tint: '#c95a44' }, fin: '#cf7056',
@@ -376,7 +378,7 @@ export const PLANS: Record<string, Plan> = {
   swordtail: { thick: 0.45, depth: 0.27, pedU: 0.3, ped: 0.05, peak: 0.45, snout: 0.5, mouth: -0.015, shade: ['#a63a2a', '#d4553a', '#e4886a'], tail: { type: 'sword', h: 0.18, tint: '#d26a48' }, fin: '#d07a58',
     dorsal: { u0: 0.47, u1: 0.62, h: 0.09 }, anal: { u0: 0.5, u1: 0.57, h: 0.05 }, pelvic: { u: 0.65, len: 0.05 },
     finMarks: [{ k: 'band', u0: 0, u1: 0.25, v0: 0.06, v1: 0.12, c: '#1c1c1c', a: 0.85, f: 0.008 }], eye: { r: 0.028, iris: ['#cfb890', '#4a3e2c'] } },
-  betta: { thick: 0.45, depth: 0.24, pedU: 0.36, ped: 0.08, peak: 0.4, snout: 0.6, mouth: -0.02, shade: ['#4a1428', '#8a1f34', '#a33a44'], tail: { type: 'veil', h: 0.38, tint: '#9c2236', a: 0.8 }, fin: '#a02a3c', ray: '#5a0f1c',
+  betta: { drape: 0.03, thick: 0.45, depth: 0.24, pedU: 0.36, ped: 0.08, peak: 0.4, snout: 0.6, mouth: -0.02, shade: ['#4a1428', '#8a1f34', '#a33a44'], tail: { type: 'veil', h: 0.38, tint: '#9c2236', a: 0.8 }, fin: '#a02a3c', ray: '#5a0f1c',
     dorsal: { u0: 0.32, u1: 0.55, h: 0.22, shape: 'long', a: 0.8 }, anal: { u0: 0.3, u1: 0.62, h: 0.25, shape: 'long', a: 0.8 }, pelvic: { u: 0.68, len: 0.12, thread: true, tint: '#9c2236' },
     marks: [{ k: 'spots', n: 60, u0: 0.38, u1: 0.85, v0: -0.08, v1: 0.08, r: 0.01, c: '#4f7fb8', a: 0.35 }],
     finMarks: [{ k: 'spots', n: 60, u0: 0, u1: 0.6, v0: -0.4, v1: 0.4, r: 0.015, c: '#4f7fb8', a: 0.25 }],
@@ -395,7 +397,7 @@ export const PLANS: Record<string, Plan> = {
     eye: { r: 0.032, iris: ['#c8603a', '#3a1a10'] } },
   honeygourami: { thick: 0.32, depth: 0.38, pedU: 0.2, ped: 0.06, peak: 0.5, snout: 0.5, mouth: -0.02, shade: ['#b06a2a', '#e09a42', '#eabc78'], tail: { type: 'round', h: 0.15, tint: '#dca064' }, fin: '#dca064',
     dorsal: { u0: 0.25, u1: 0.55, h: 0.08, shape: 'round' }, anal: { u0: 0.22, u1: 0.68, h: 0.1, shape: 'round', edge: '#3a3020' }, pelvic: { u: 0.7, len: 0.3, thread: true, tint: '#e0a868' },
-    marks: [{ k: 'band', u0: 0.65, u1: 0.95, v0: 0.05, v1: 0.2, c: '#2c2a30', a: 0.6, f: 0.04 }], eye: { r: 0.03, iris: ['#d08a40', '#4a2a10'] } },
+    marks: [{ k: 'band', u0: 0.7, u1: 1, v0: 0.04, v1: 0.26, c: '#4a3a30', a: 0.42, f: 0.14 }, { k: 'blob', u: 0.84, v: 0.14, ru: 0.09, rv: 0.07, c: '#3a2e2a', a: 0.35 }], eye: { r: 0.03, iris: ['#d08a40', '#4a2a10'] } },
   gbr: { thick: 0.36, depth: 0.44, pedU: 0.22, ped: 0.06, peak: 0.5, snout: 0.55, shade: ['#6b7a5a', '#b8b46a', '#d8c088'], tail: { type: 'round', h: 0.17, tint: '#b0907a' }, fin: '#b89a80',
     dorsal: { u0: 0.22, u1: 0.62, h: 0.13, shape: 'round', edge: '#c8443a' }, anal: { u0: 0.22, u1: 0.5, h: 0.1, shape: 'round' }, pelvic: { u: 0.65, len: 0.1, tint: '#c84a3a' },
     marks: [{ k: 'blob', u: 0.86, v: -0.02, ru: 0.12, rv: 0.12, c: '#e0b04a', a: 0.7 }, { k: 'bars', us: [0.87], w: 0.04, c: '#1a1a1e', a: 0.85 },
@@ -412,7 +414,7 @@ export const PLANS: Record<string, Plan> = {
     finMarks: [{ k: 'blob', u: 0.3, v: -0.17, ru: 0.025, rv: 0.025, c: '#1a1a1a', a: 0.85 }], eye: { r: 0.028, iris: ['#c8a050', '#3a2a10'] } },
   discus: { scale: 0.014, thick: 0.2, depth: 0.78, pedU: 0.13, ped: 0.07, peak: 0.45, snout: 0.85, mouth: 0.02, shade: ['#5a6a7a', '#3f8aa8', '#4a98b0'], tail: { type: 'notch', h: 0.14, tint: '#6a8a9a' }, fin: '#5a8698',
     dorsal: { u0: 0.15, u1: 0.72, h: 0.07, shape: 'round', edge: '#c8603a' }, anal: { u0: 0.15, u1: 0.68, h: 0.07, shape: 'round', edge: '#c8603a' }, pelvic: { u: 0.72, len: 0.12, tint: '#c8603a' },
-    marks: [{ k: 'bars', us: [0.88, 0.2], w: 0.035, c: '#2a2a30', a: 0.55 }, ...[-0.3, -0.21, -0.12, -0.03, 0.06, 0.15, 0.24].map(v => ({ k: 'band' as const, u0: 0.12, u1: 0.98, v0: v, v1: v + 0.032, c: '#8a5a3a', a: 0.6, wave: 0.009 }))],
+    marks: [{ k: 'bars', us: [0.88, 0.2], w: 0.035, c: '#2a2a30', a: 0.55 }, ...[-0.3, -0.21, -0.12, -0.03, 0.06, 0.15, 0.24].map(v => ({ k: 'band' as const, u0: 0.12, u1: 0.98, v0: v, v1: v + 0.032, c: '#8a5a3a', a: 0.6, wave: 0.002 }))],
     eye: { r: 0.03, iris: ['#d04a2a', '#4a1208'] }, rim: 0.03 },
   angel: { thick: 0.2, angular: 0.8, depth: 0.78, pedU: 0.2, ped: 0.045, peak: 0.375, snout: 0.25, shade: ['#9a998e', '#d0cec2', '#e4e1d7'], tail: { type: 'notch', h: 0.24, tint: '#c3c4bc' }, fin: '#c3c4bc',
     dorsal: { u0: 0.3, u1: 0.66, h: 0.25, shape: 'swept' }, anal: { u0: 0.3, u1: 0.64, h: 0.25, shape: 'swept' }, pelvic: { u: 0.74, len: 0.45, thread: true, tint: '#e2ddcc', angle: 68 },
