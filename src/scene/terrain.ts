@@ -217,23 +217,25 @@ export function clampGround(g: Ground, T: Tank, x: number, depth: number, inset 
 
 /**
  * The nearest spot (x, depth) to the given one where at least `need` mm of water stands over the ground, sampled on a
- * grid. If no spot has that much (a fish taller than the deepest water), the deepest spot; null only if the water is
- * below all the land.
+ * grid. If no spot has that much (a fish taller than the water anywhere), the nearest spot with at least 3/4 of the
+ * deepest water, or the given spot itself if it already has that (audit #1: the old "deepest spot" fallback sent every
+ * fish on a flat floor to the first grid corner, x = 12 mm); null only if the water is below all the land.
  */
 export function nearestWater(g: Ground, T: Tank, top: number, x: number, depth: number, need: number) {
-  const N = 40;
-  type Spot = { x: number; depth: number };
-  let best: Spot | null = null, bd = Infinity, deep: Spot | null = null, dw = 0;
+  const N = 40, spots: { x: number; depth: number; water: number; dd: number }[] = [];
+  let dw = 0;
   for (let i = 0; i <= N; i++) for (let j = 0; j <= N; j++) {
     const px = T.L * (0.02 + 0.96 * i / N), pd = T.D * (0.02 + 0.96 * j / N);
     if (!inside(T, px, pd, 0.02 * Math.min(T.L, T.D))) continue;
-    const water = top - groundHeight(g, T, px, pd);
-    if (water > dw) { dw = water; deep = { x: px, depth: pd }; }
-    if (water < need) continue;
-    const dd = (px - x) ** 2 + (pd - depth) ** 2;
-    if (dd < bd) { bd = dd; best = { x: px, depth: pd }; }
+    const water = top - groundHeight(g, T, px, pd); dw = Math.max(dw, water);
+    spots.push({ x: px, depth: pd, water, dd: (px - x) ** 2 + (pd - depth) ** 2 });
   }
-  return best ?? deep;
+  if (dw <= 0) return null;
+  const want = Math.min(need, dw * 0.75);
+  if (want < need && top - groundHeight(g, T, x, depth) >= want) return { x, depth };
+  let best: { x: number; depth: number } | null = null, bd = Infinity;
+  for (const p of spots) if (p.water >= want && p.dd < bd) { bd = p.dd; best = { x: p.x, depth: p.depth }; }
+  return best;
 }
 
 /** The nearest spot (x, depth) to the given one where the ground stands above the water surface `top`; null if none. */

@@ -2,6 +2,22 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane G2: core audit fixes (2026-10-14; branch `core-fixes`, port 5363; owns src/interact, src/scene, src/render minus lane I's files)
+Plan approved by Nathan (batches in severity order). Pictures: `shots/g2/` in the main checkout (before = `shots/audit/`).
+- **Batch 1 (pushed):**
+  - #1 water level: `nearestWater` (terrain.ts) fell back to "the deepest spot", which on a flat floor was the first
+    grid corner (x = 12 mm), so every fish taller than the water piled at the left glass. Now: no spot deep enough =
+    the nearest spot with 3/4 of the deepest water, or stay put if here already has that; only the height drops.
+    Lowering then raising the level brings fish back (setWaterLevel scales heights). At 10 % on the default sloped
+    gravel the back is above the water, so fish go forward but keep their x. Test in scene.test.ts.
+  - #3 aquascape drag straight on: within `EDGE_ON_EL` (20°) of level a piece slides on an upright plane facing the eye
+    (`wallPlane`, pointer.ts): x follows the pointer, depth kept, it rests on what is under it. Tilted views unchanged.
+    Test pointer.test.ts; browser: 128 mm right at el 0 with depth 159 kept, grabbable again at el 2.
+  - #29 the Stand is ON for new tanks (defaults.ts, Nathan's call). Files without a `stand.show` still load with it off
+    (validate.ts no longer falls back to the default there).
+  - #47 viewer map caption: "20° below" for negative elevations (viewmap.ts).
+- Dev server: `preview_start core-fixes` hit the five-servers-per-folder limit, so Vite runs from the shell on 5363.
+
 ## Lane D: first-visit audit + review pack (2026-10-14; no src/ edits)
 - `shots/audit/AUDIT.md`: 53 ranked findings with cropped, marked shots (headless Chrome, fresh profile = true first
   visit, desktop + 375 px phone + 768 px tablet, on main `c67aeb7`: before lanes A / E / H merged). Both re-checked S1s

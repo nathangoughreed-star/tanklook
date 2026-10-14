@@ -220,8 +220,8 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       return h.length ? { on: bool(te.on, false), cols, rows, h, ...(radial ? { radial } : {}), ...(arc ? { arc } : {}) } : { on: false, cols, rows: 0, h: [] };
     })(),
     lid: pick(raw.lid, ['open', 'glass', 'hood'] as const, d.lid),
-    stand: {
-      show: bool(st.show, d.stand.show), height: num(st.height, d.stand.height, ...LIMITS.stand),
+    stand: { // no `show` = a file older than stands: off (new tanks start with one on, audit #29)
+      show: bool(st.show, false), height: num(st.height, d.stand.height, ...LIMITS.stand),
       finish: pick(st.finish, ['black', 'white', 'oak'] as const, d.stand.finish),
       style: pick(st.style, ['cabinet', 'frame', 'table', 'custom'] as const, d.stand.style),
       table: (() => { // added 2026-10-09 (no version bump); fitTable below grows it to the tank and keeps the tank on it
