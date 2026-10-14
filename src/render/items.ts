@@ -428,8 +428,9 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
     const h = carpet ? it.size : Math.min(it.size, T.H - y - 15); // stops at the water line (the old layouts' rule)
     if (h < 15) return null;
     const c = Math.cos(it.yaw * D2R), s = Math.sin(it.yaw * D2R);
-    // a carpet hugs the ground under each card: its key carries the spot (rebuilt only while it moves)
-    const k = carpet ? `carpet|${it.seed}|${it.size}|${Math.round(it.x)}|${Math.round(it.depth)}|${it.yaw}|${it.lift}|${T.shape}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}` : `${type}|${it.seed}|${Math.round(h)}`;
+    // a carpet hugs the ground under each card: its key carries the spot (rebuilt only while it moves); the rest key on
+    // the exact height they are built with (a rounded one let two near-equal plants share the first one's mesh)
+    const k = carpet ? `carpet|${it.seed}|${it.size}|${it.x}|${it.depth}|${it.yaw}|${it.lift}|${T.shape}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}` : `${type}|${it.seed}|${h}`;
     // near the glass a card is cut down to the width it has room for, so the carpet runs right up to the glass without
     // poking through; a card past the edge line is mirrored back in by as much (keeping the edge thick), and one more
     // than half a card past it is left out

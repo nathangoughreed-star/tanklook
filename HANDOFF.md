@@ -37,6 +37,27 @@ Living file. Project state and dated decisions go here; update in place.
 - Files touched: render/build.ts, render/viewer.ts (build() and the opaque sort only; framing untouched), new
   render/incrementalCheck.ts, test/incremental.test.ts. lighting.ts, items.ts, coral3d.ts, camera.ts and store.ts unchanged.
 
+## Lane A2: plant library (2026-10-14; branch `plants3d`, port 5283; crypt pushed to main)
+
+Grows the 3D plant library on the lane A generator: new species are data (`PLANT3D` in `art/plants.ts`) plus a
+`LIBRARY` entry in `scene/items.ts`, a `PlantType` / `PLANT_ASPECT` entry and a card drawing (`drawPlantCard`; the
+card stays the fallback and the picking size). `scene/validate.ts` accepts any `LIBRARY` variant, so no version bump.
+- Crypt (`crypt`, "Cryptocoryne", C. wendtii; default 110 mm, 30..300): rosette, 12-18 stalked lance leaves with
+  rippled edges, olive-green to bronze on top, reddish-brown underneath, 1-3 crowns per clump, sway 0.15. Nathan
+  (2026-10-14) tried stiffer, blunter tips (less arch / wave / twist) and preferred the original: keep these values.
+  Sheets: `shots/107_row_crypt_sheet.png` (card vs 3D, 10 seeds), `110_crypt_tips_sheet.png` (the rejected stiffening),
+  `108_library_sheet.png` (one of each species).
+- Cache key fix (lane J, 2026-10-14): the plant geometry key in `render/items.ts` rounded the height but built with the
+  exact one (two near-equal plants shared the first one's mesh); the carpet key rounded x / depth the same way. Both
+  now key on the exact values. `incrementalCheck.runAll`: 126 edits, 0 differ; crypt move / resize / turn / add /
+  undo and a 0.4 mm carpet nudge: 0 px.
+- `shots/cap.js` (scratch): imports the app's own plant3d module (after a hot reload it is `plant3d.ts?t=...`), nudges
+  every item's x by 1e-4 mm so an on/off toggle really rebuilds, and `wide: true` frames a row. `shots/sheet.py`
+  stacks labelled pictures.
+- Proposed next (asked Nathan, no answer yet): data only: Monte Carlo / HC, Bucephalandra, Rotala, Ludwigia,
+  C. balansae; small option: dwarf sagittaria (grassy carpet); new code: Echinodorus 'Ozelot' (leaf spots), Java moss
+  (coat on wood / rock), floaters (water line). Also open: should crypts join the Dense planted starter set.
+
 ## Lane K: light output (2026-10-14; branch `light-output`, port 5383; DONE, all 4 steps pushed)
 - Owns `render/lighting.ts` (carved out of lane J's render/*), new `scene/lightout.ts` + `test/lightout.test.ts`, the
   light fields in scene/types.ts / defaults.ts / validate.ts, the Lighting rows in index.html / ui/panels.ts,
