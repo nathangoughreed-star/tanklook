@@ -8,7 +8,8 @@ import { normTank } from './shape';
 import { TABLE_MAX, fitTable } from './table';
 import { keepInWater } from './water';
 import { pieSize, radialSize, sameGrid, sampleTerrain, type Ground } from './terrain';
-import { SCENE_VERSION, type Fish, type Item, type LightTech, type Scene, type Tank, type TankSetup } from './types';
+import { SCENE_VERSION, type BgImage, type BgSide, type Fish, type Item, type LightTech, type Scene, type Tank, type TankSetup } from './types';
+import { adoptImages, sidesTouch } from './images';
 
 const GRAINS = ['mud', 'sand', 'gravel', 'pebble'] as const;
 
@@ -22,7 +23,8 @@ const BG_SIDES = ['back', 'left', 'right', 'front'] as const;
 export const LIMITS = {
   tankMin: 50, tankMax: 5000,     // mm, per interior dimension
   dist: [400, 5000] as const,
-  bgArc: [20, 360] as const,      // degrees of a round tank's shell the background covers
+  bgArc: [20, 360] as const,
+  bgScale: [10, 200] as const,    // a tiled background picture's height, % of the tank height      // degrees of a round tank's shell the background covers
   az: [-180, 180] as const,
   el: [-20, 85] as const,
   zoom: [0.5, 12] as const,
@@ -103,6 +105,7 @@ export function parseScene(input: unknown): { scene: Scene; warnings: string[] }
   }
   if (!isObj(input)) throw new SceneError('Not a scene file (expected a JSON object).');
   if (!(('tankA' in input && 'fish' in input) || Array.isArray(input.tanks))) throw new SceneError('Not a scene file (missing tank or fish).');
+  adoptImages(input.images); // a downloaded file's background pictures
   const raw = migrate(structuredClone(input), warn);
   const rawTanks = (Array.isArray(raw.tanks) ? raw.tanks as unknown[] : []).filter(isObj).slice(0, 2);
   if (!rawTanks.length) throw new SceneError('Not a scene file (no tank).');
@@ -118,6 +121,22 @@ export function parseScene(input: unknown): { scene: Scene; warnings: string[] }
   };
   if (scene.camLock && tanks.length > 1) tanks[1].camera = { ...tanks[0].camera };
   return { scene, warnings };
+}
+
+/** Background pictures: at most 4, each side under one picture only, a picture's sides touching (else it keeps its first). */
+function parseBgImages(v: unknown): BgImage[] {
+  if (!Array.isArray(v)) return [];
+  const taken = new Set<BgSide>(), out: BgImage[] = [];
+  for (const b of v.filter(isObj).slice(0, 4)) {
+    if (typeof b.img !== 'string' || !/^[a-z0-9]{1,24}$/.test(b.img)) continue;
+    let sides = BG_SIDES.filter(k => Array.isArray(b.sides) && (b.sides as unknown[]).includes(k) && !taken.has(k));
+    if (!sidesTouch(sides)) sides = sides.slice(0, 1);
+    sides.forEach(k => taken.add(k));
+    const fit = (['fill', 'fit', 'stretch', 'tile'] as const).find(f => f === b.fit) ?? 'fill';
+    const scale = typeof b.scale === 'number' && Number.isFinite(b.scale) ? clamp(Math.round(b.scale), ...LIMITS.bgScale) : 50;
+    out.push({ img: b.img, fit, sides, scale });
+  }
+  return out;
 }
 
 /** One tank's setup from untrusted JSON. `pre` prefixes warnings (which tank). */
@@ -185,6 +204,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
         ? BG_SIDES.filter(k => (r.bgSides as unknown[]).includes(k))
         : [bool(w.show, d.wall.show) && (w.side === 'left' || w.side === 'right' || w.side === 'peninsula') ? (w.side === 'left' ? 'left' : 'right') : 'back'],
       bgArc: Math.round(num(r.bgArc, 145, ...LIMITS.bgArc)),
+      bgImages: parseBgImages(r.bgImages), // added 2026-10-14 (no version bump); older files: none
       glassType: pick(r.glassType, ['standard', 'lowiron'] as const, 'standard'),
     },
     light: {

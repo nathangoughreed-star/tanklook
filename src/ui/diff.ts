@@ -50,6 +50,7 @@ export function tankDiff(a: TankSetup, b: TankSetup, u: Units): DiffItem[] {
   add(a.lid, b.lid, l => LIDS[l], ['lid']);
   add(a.render.bg, b.render.bg, bg => `Background: ${BACKGROUNDS[bg].label.toLowerCase()}`, ['render.bg']);
   const sidesTxt = (b: string[]) => (b.length ? ['back', 'left', 'right', 'front'].filter(k => b.includes(k)).join(' + ') : 'no sides');
+  add(a.render.bgImages, b.render.bgImages, v => (v.length ? `${v.length} background picture${v.length > 1 ? 's' : ''}` : 'No background pictures'), ['render.bgImages']);
   if (a.render.bg !== 'none' && b.render.bg !== 'none') {
     add(a.render.bgSides, b.render.bgSides, v => `Background on ${sidesTxt(v)}`, ['render.bgSides']);
     if (shapeOf(a.tank) === 'round' && shapeOf(b.tank) === 'round') add(a.render.bgArc, b.render.bgArc, v => `Background arc ${v}°`, ['render.bgArc']);

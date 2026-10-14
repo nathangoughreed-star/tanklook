@@ -88,6 +88,8 @@
   <div class="field"><label class="flabel" for="bgSel">Background</label><select id="bgSel"></select></div>
   <div class="field" id="bgSidesRow"><span class="flabel" title="Sides the background covers; pick any number">On sides</span><span class="seg"><button id="bgBack" aria-pressed="false">Back</button><button id="bgLeft" aria-pressed="false">Left</button><button id="bgRight" aria-pressed="false">Right</button><button id="bgFront" aria-pressed="false">Front</button></span></div>
   <div class="row" id="bgArcRow"><label for="bgArc" title="How much of the round wall the background covers, centred on each chosen side">Arc</label><input id="bgArc" type="range" min="20" max="360" step="5"><output id="oBgArc"></output></div>
+  <div class="field" id="bgPicsRow"><span class="flabel" title="Your own pictures on the glass: each on one side, or running round a corner across sides that touch. A picture's sides cover the background there.">Pictures</span><button id="bgPicAdd">Add picture…</button><input id="bgPicFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden></div>
+  <div id="bgPics"></div>
   <div class="field"><label class="flabel" for="glassSel">Glass</label><select id="glassSel"></select></div>
   <div class="field"><label class="flabel" for="glassType">Glass type</label><select id="glassType"><option value="standard">Standard</option><option value="lowiron">Low-iron (ultra clear)</option></select></div>
   <div class="hint" id="glassHint"></div>

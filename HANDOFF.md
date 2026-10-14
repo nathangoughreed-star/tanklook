@@ -3,6 +3,26 @@
 Living file. Project state and dated decisions go here; update in place.
 
 
+## Background pictures (2026-10-14; main checkout, pushed to main)
+Nathan: custom backgrounds from an uploaded image, with stretch / fill / fit, different backgrounds on different sides, one
+picture able to span touching sides.
+- **Data:** `render.bgImages: { img, fit: fill|fit|stretch|tile, sides, scale }[]` (types.ts `BgImage`; older files: []).
+  Up to 4 per tank; each side under one picture; a picture's sides must touch (`sidesTouch`, ring front-right-back-left,
+  so left+right or back+front alone are refused; left+back+right is fine). `scale` = tile height, % of tank height.
+- **Storage (`src/scene/images.ts`):** scenes hold only a picture id (FNV hash of the data URL), so undo snapshots,
+  autosave and share links stay small. Pictures live in memory + `localStorage tanklook.img.<id>`, downscaled to 2048 px
+  long edge (JPEG 0.86, PNG only when it has transparency). Download embeds the used pictures in a top-level `images`
+  map; `parseScene` adopts them. Share links go without pictures (status says so); a missing picture shows "missing" in
+  its row and its sides fall back to the plain background. Pictures are never garbage-collected from localStorage (open).
+- **Render (build.ts `BgSheet`):** pictures cover their sides whatever `bg` is (also with None); the plain background keeps
+  its own sides minus those. Each picture's run is turned clockwise seen from above (`clockwise`), so it reads correctly
+  from inside the tank across a corner (seen from outside a side pane it is mirrored, like a print viewed through glass).
+  Fit modes are composed on a canvas the run's shape (`pictureTexture`, textures.ts; fit pads with the plain background
+  colour, black for none / gradient / frosted). Pictures sit 0.3 mm (minus 0.05 per picture) outside the glass, the plain
+  sheet 0.5, so overlapping round-tank arcs never z-fight. Bowl uses the same sheets on its sphere.
+- **UI:** Tank > Background > Pictures: Add picture…, then per picture side toggles, Fit select, Size (tile), remove.
+- Tests `test/bgimages.test.ts` (touching rule, file round trip, untrusted lists). 236/236.
+
 ## Lane P: final polish, FINAL.md items 1-6 (2026-10-14; branch `final-fixes`, port 5473; Nathan approved via the coordinator; pushed to main)
 - **1 Status line** (`style.css .status`): `#status` is now a toast fixed to the panel's bottom (desktop: 14 px in, 322 wide;
   phone: full width 64 px up, above the sticky Add row), so "at most 500 animals" / "already in the stocking list" show

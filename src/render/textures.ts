@@ -5,7 +5,7 @@ import { FIN_A, style } from '../art/paint';
 import { drawPlantCard, type PlantType } from '../art/plants';
 import { drawSnailCard, type SnailView } from '../art/snails';
 import type { Species } from '../data/species';
-import type { EdgeMode, SubstrateBlend } from '../scene/types';
+import type { BgFit, EdgeMode, SubstrateBlend } from '../scene/types';
 
 let anisotropy = 1;
 export function setMaxAnisotropy(a: number) { anisotropy = a; }
@@ -99,4 +99,42 @@ export function cardMaterial(key: string, map: THREE.Texture, edge: EdgeMode, si
     matCache.set(k, m);
   }
   return m;
+}
+
+/** Decoded background pictures by id, and who to tell when one finishes decoding (the viewer redraws). */
+const pictures = new Map<string, HTMLImageElement>();
+const pictureListeners: (() => void)[] = [];
+export const onPictureLoad = (fn: () => void) => { pictureListeners.push(fn); };
+
+/**
+ * A background picture laid on a sheet `aspect` wide per unit of height (Nathan 2026-10-14): fill = cover and crop the
+ * middle, fit = whole picture on `pad`, stretch = to the sheet, tile = repeats `scale` % of the sheet tall. Composed on a
+ * canvas the sheet's shape, so the sheet's own 0..1 UVs need nothing else. Not cached: disposed with the scene.
+ */
+export function pictureTexture(id: string, data: string, fit: BgFit, scale: number, aspect: number, pad: string) {
+  const M = 2048, a = Math.max(0.02, aspect);
+  const c = document.createElement('canvas');
+  c.width = Math.max(1, Math.round(a >= 1 ? M : M * a)); c.height = Math.max(1, Math.round(a >= 1 ? M / a : M));
+  const t = finish(c);
+  const paint = (img: HTMLImageElement) => {
+    const ctx = c.getContext('2d')!, W = c.width, H = c.height, iw = img.naturalWidth || 1, ih = img.naturalHeight || 1;
+    ctx.fillStyle = pad; ctx.fillRect(0, 0, W, H);
+    if (fit === 'stretch') ctx.drawImage(img, 0, 0, W, H);
+    else if (fit === 'tile') {
+      const h = Math.max(4, H * scale / 100), w = h * iw / ih;
+      for (let y = H - h; y > -h; y -= h) for (let x = 0; x < W; x += w) ctx.drawImage(img, x, y, w, h); // rows from the floor up
+    } else {
+      const k = fit === 'fill' ? Math.max(W / iw, H / ih) : Math.min(W / iw, H / ih);
+      ctx.drawImage(img, (W - iw * k) / 2, (H - ih * k) / 2, iw * k, ih * k);
+    }
+    t.needsUpdate = true;
+  };
+  let img = pictures.get(id);
+  if (img?.complete && img.naturalWidth) paint(img);
+  else {
+    const ctx = c.getContext('2d')!; ctx.fillStyle = pad; ctx.fillRect(0, 0, c.width, c.height);
+    if (!img) { img = new Image(); img.src = data; pictures.set(id, img); }
+    img.addEventListener('load', () => { paint(img!); for (const fn of pictureListeners) fn(); }, { once: true });
+  }
+  return t;
 }

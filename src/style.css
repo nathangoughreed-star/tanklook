@@ -257,3 +257,12 @@ footer { margin-top: 18px }
   .vmapHide { padding: 8px 10px; font-size: 16px }
   .lab button { min-height: 32px } /* the tank label stays compact over the view */
 }
+
+/* Background pictures (Nathan 2026-10-14): one row per picture under Background */
+#bgPics:empty { display: none }
+.bgPic { display: flex; gap: 8px; align-items: flex-start; margin: 4px 0 8px }
+.bgPic .thumb { width: 56px; height: 40px; object-fit: cover; border-radius: 4px; flex: none; background: #0b0c0e }
+.bgPic .thumb.missing { display: grid; place-items: center; font-size: 10px; color: #c66; text-align: center }
+.bgPic .ctl { display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; min-width: 0 }
+.bgPic .ctl .seg button { padding-left: 7px; padding-right: 7px }
+.bgPic .ctl .row { flex-basis: 100%; margin: 0; grid-template-columns: 40px 1fr 44px }

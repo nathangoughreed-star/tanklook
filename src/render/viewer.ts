@@ -10,7 +10,7 @@ import { HOOD_H, buildTank, disposeScene, envKey, lookKey, patchLook, patchTank,
 import { drawViewMap } from './viewmap';
 import { applyFraming, fovFor, frameBox, frameStraightOn, placeCamera, windowCentre } from './camera';
 import { glowColor, lampHeight, roomLevel, setLightUniforms, setWaterUniforms } from './lighting';
-import { setMaxAnisotropy } from './textures';
+import { onPictureLoad, setMaxAnisotropy } from './textures';
 import { OUTLINE } from './fish3d';
 import { PERSON_BODY, PERSON_HEAD } from '../art/placeholder';
 
@@ -172,6 +172,7 @@ export class Viewer {
     store.subscribe(kind => { if (kind !== 'view') this.needsBuild = true; this.dirty = true; });
     new ResizeObserver(() => { this.dirty = true; }).observe(host);
     matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { this.dirty = true; });
+    onPictureLoad(() => { this.dirty = true; }); // a background picture finished decoding into its texture
     // three's loop (window frames, or the XR session's while one runs); an AR session draws through xrFrame instead (render/ar.ts)
     this.renderer.setAnimationLoop((t, f) => {
       if (this.xrFrame && f) this.xrFrame(t, f);
