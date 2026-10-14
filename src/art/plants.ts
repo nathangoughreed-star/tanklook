@@ -3,10 +3,10 @@
 import { hexA, rng } from './paint';
 
 type Ctx = CanvasRenderingContext2D;
-export type PlantType = 'stem' | 'stemred' | 'grass' | 'sword' | 'fern' | 'anubias' | 'carpet';
+export type PlantType = 'stem' | 'stemred' | 'grass' | 'sword' | 'fern' | 'anubias' | 'carpet' | 'crypt';
 
 /** Card aspect (height / width) per plant type. */
-export const PLANT_ASPECT: Record<PlantType, number> = { stem: 3.2, stemred: 3.2, grass: 3.6, sword: 1.1, fern: 1.3, anubias: 0.8, carpet: 0.32 };
+export const PLANT_ASPECT: Record<PlantType, number> = { stem: 3.2, stemred: 3.2, grass: 3.6, sword: 1.1, fern: 1.3, anubias: 0.8, carpet: 0.32, crypt: 1 };
 
 /** Leaf from base (x, y) along angle a (radians, 0 = up, + clockwise), length l, max width w, slight curl. */
 function leaf(ctx: Ctx, x: number, y: number, a: number, l: number, w: number, cols: [string, string], curl = 0, rib = true) {
@@ -81,6 +81,17 @@ function anubias(ctx: Ctx, W: number, H: number) {
   }
 }
 
+// Cryptocoryne wendtii: a low rosette of wavy lance leaves on short stalks, brown-green to bronze
+function crypt(ctx: Ctx, W: number, H: number) {
+  const r = rng(23), cols: [string, string][] = [['#4a4a24', '#7a6a38'], ['#3e4a22', '#6a7238'], ['#5a4426', '#8a6a3e']];
+  for (let i = 0; i < 12; i++) {
+    const a = (i / 11 - 0.5) * 2.4 + (r() - 0.5) * 0.2, pet = H * (0.12 + r() * 0.1), l = H * (0.45 + r() * 0.35);
+    const px = W / 2 + Math.sin(a) * pet, py = H - Math.cos(a) * pet;
+    ctx.strokeStyle = '#5a4030'; ctx.lineWidth = W * 0.012; ctx.beginPath(); ctx.moveTo(W / 2, H); ctx.lineTo(px, py); ctx.stroke();
+    leaf(ctx, px, py, a * 0.85, l, l * 0.24, cols[i % 3], (r() - 0.5) * 0.12);
+  }
+}
+
 function carpet(ctx: Ctx, W: number, H: number) {
   const r = rng(19);
   for (let i = 0; i < 900; i++) {
@@ -96,7 +107,8 @@ export function drawPlantCard(type: PlantType, W = 512): HTMLCanvasElement {
   c.width = W; c.height = H;
   const ctx = c.getContext('2d')!; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
   ({ stem: () => stem(ctx, W, H, false), stemred: () => stem(ctx, W, H, true), grass: () => grass(ctx, W, H), sword: () => sword(ctx, W, H),
-    fern: () => fern(ctx, W, H), anubias: () => anubias(ctx, W, H), carpet: () => carpet(ctx, W, H) })[type]();
+    fern: () => fern(ctx, W, H), anubias: () => anubias(ctx, W, H), carpet: () => carpet(ctx, W, H),
+    crypt: () => crypt(ctx, W, H) })[type]();
   return c;
 }
 
@@ -138,6 +150,8 @@ export interface Plant3D {
   form: 'rosette' | 'rhizome' | 'stem' | 'carpet';
   /** Leaves (rosette, rhizome), stems (stem), or leaflets per 1000 mm² of patch (carpet): min, max. */
   n: [number, number];
+  /** How much it gives to the water current: 0 = stiff, 1 = limp (tall thin leaves lean and wave, short stiff ones barely). */
+  sway: number;
   /** Width over which leaves / stems / crowns start, fraction of the card width. */
   spread: number;
   leaf: Leaf3D;
@@ -153,25 +167,29 @@ export interface Plant3D {
 
 const LEAF_GREENS: [string, string][] = GREENS;
 export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
-  fern: { form: 'rhizome', n: [13, 18], spread: 0.6, stalk: '#5a4a32', leaf: {
+  fern: { sway: 0.3, form: 'rhizome', n: [13, 18], spread: 0.6, stalk: '#5a4a32', leaf: {
     len: [0.7, 1], wid: 0.1, prof: [0.8, 0.8], rise: [0.08, 0.6], arch: 0.4, twist: 0.5, fold: -0.25, wave: [0.1, 4], pet: 0.06,
     cols: [['#244a22', '#3e7038'], ['#2a5226', '#4a7e40']], under: '#355a30', rib: '#7aa060', tip: ['#3c7034', 0.3], seg: [10, 5] } },
-  sword: { form: 'rosette', n: [16, 24], spread: 0.05, stalk: '#3a6a2c', leaf: {
+  sword: { sway: 0.3, form: 'rosette', n: [16, 24], spread: 0.05, stalk: '#3a6a2c', leaf: {
     len: [0.75, 1], wid: 0.15, prof: [0.75, 0.8], rise: [0.05, 0.75], arch: 0.4, twist: 0.5, fold: -0.15, wave: [0.03, 3], pet: 0.3,
     cols: [['#3d7a2e', '#6aa64e'], ['#468a34', '#7ab85a'], ['#36702a', '#62a048']], under: '#5a8a48', rib: '#b0d098', seg: [10, 5] } },
-  carpet: { form: 'carpet', n: [60, 70], spread: 1, stalk: '#3f6a2e', leaf: {
+  carpet: { sway: 0.1, form: 'carpet', n: [60, 70], spread: 1, stalk: '#3f6a2e', leaf: {
     len: [5, 7.5], wid: 0.75, prof: [0.9, 0.5], rise: [0.9, 1.5], arch: 0.1, twist: 0.3, fold: 0.2, wave: [0, 0], pet: 0,
     cols: LEAF_GREENS, under: '#5e8a48', seg: [2, 3] } },
-  anubias: { form: 'rhizome', n: [10, 14], spread: 0.4, stalk: '#2e5226', leaf: {
+  anubias: { sway: 0.08, form: 'rhizome', n: [10, 14], spread: 0.4, stalk: '#2e5226', leaf: {
     len: [0.6, 0.95], wid: 0.4, prof: [0.7, 0.55], rise: [0.1, 0.6], arch: 0.25, twist: 0.3, fold: 0.15, wave: [0.02, 2], pet: 0.25,
     cols: [['#1e3e1c', '#3a6a32'], ['#22441e', '#40723a']], under: '#3e6236', rib: '#5a8a4a', seg: [8, 5] } },
-  grass: { form: 'rosette', n: [16, 24], crowns: [3, 5], spread: 0.5, stalk: '#3f6a2e', leaf: {
+  grass: { sway: 1, form: 'rosette', n: [16, 24], crowns: [3, 5], spread: 0.5, stalk: '#3f6a2e', leaf: {
     len: [0.6, 1], wid: 0.035, prof: [1, 0.12], rise: [0.02, 0.3], arch: 0.5, twist: 1.5, fold: 0, wave: [0, 0], pet: 0,
     cols: LEAF_GREENS, under: '#5e8a48', seg: [12, 3] } },
-  stem: { form: 'stem', n: [5, 7], nodes: 22, spread: 0.5, stalk: '#3f6a2e', top: { cols: [['#4a8a34', '#80b85a']], from: 0.8 }, leaf: {
+  stem: { sway: 0.65, form: 'stem', n: [5, 7], nodes: 22, spread: 0.5, stalk: '#3f6a2e', top: { cols: [['#4a8a34', '#80b85a']], from: 0.8 }, leaf: {
     len: [0.11, 0.14], wid: 0.3, prof: [0.8, 0.6], rise: [0.5, 1.2], arch: 0.3, twist: 0.3, fold: -0.1, wave: [0, 0], pet: 0,
     cols: LEAF_GREENS, under: '#5e8a48', seg: [4, 3] } },
-  stemred: { form: 'stem', n: [5, 7], nodes: 22, spread: 0.5, stalk: '#6a4a2a', top: { cols: [['#8a3a2a', '#c0604a'], ['#7e3426', '#b4583e']], from: 0.55 }, leaf: {
+  stemred: { sway: 0.65, form: 'stem', n: [5, 7], nodes: 22, spread: 0.5, stalk: '#6a4a2a', top: { cols: [['#8a3a2a', '#c0604a'], ['#7e3426', '#b4583e']], from: 0.55 }, leaf: {
     len: [0.11, 0.14], wid: 0.3, prof: [0.8, 0.6], rise: [0.5, 1.2], arch: 0.3, twist: 0.3, fold: -0.1, wave: [0, 0], pet: 0,
     cols: [['#4e5a2a', '#7e8a42'], ['#56602e', '#86904a']], under: '#7a7a4a', seg: [4, 3] } },
+  // Cryptocoryne wendtii: short stalked lance leaves with rippled edges, olive-brown to bronze, reddish underneath
+  crypt: { sway: 0.15, form: 'rosette', n: [12, 18], crowns: [1, 3], spread: 0.3, stalk: '#5a4a30', leaf: {
+    len: [0.75, 1], wid: 0.32, prof: [0.6, 0.8], rise: [0.15, 0.9], arch: 0.35, twist: 0.15, fold: -0.08, wave: [0.06, 5], pet: 0.28,
+    cols: [['#44502a', '#72783e'], ['#4e4a2a', '#7e7040'], ['#5a462a', '#8a6a40'], ['#3e4c26', '#66763c']], under: '#84563c', rib: '#a09060', seg: [12, 5] } },
 };

@@ -199,14 +199,20 @@
   <div class="row" id="lSpRow"><label for="lSp">Spacing</label><input id="lSp" type="range" min="0" max="1500" step="10"><output id="oLSp"></output></div>
   <div class="row" id="lConeRow"><label for="lCone">Beam angle</label><input id="lCone" type="range" min="15" max="120" step="1"><output id="oLCone"></output></div>
   <div class="row" id="lHRow"><label for="lH" title="How far the fixture hangs above the top of the tank">Height above tank</label><input id="lH" type="range" min="20" max="900" step="5"><output id="oLH"></output></div>
-  <div class="row"><label for="lBright">Brightness</label><input id="lBright" type="range" min="0.2" max="2.5" step="0.05"><output id="oBright"></output></div>
+  <div class="row" id="lWRow"><label for="lW" title="The fixture's power draw from its label, all bulbs or tubes together. Set, it estimates PAR and lux at the substrate and the render follows it. 0 = off: Brightness stays a manual knob">Power</label><input id="lW" type="range" min="0" max="400" step="1"><output id="oLW"></output></div>
+  <div class="row" id="lTechRow"><label for="lTech" title="What is inside the fixture: sets how much light each watt makes, and its colour mix (lux per µmol)">Light type</label><select id="lTech" class="span2"></select></div>
+  <div class="row" id="lParRow"><label for="lPar" title="Your own PAR-meter reading at the substrate (or the maker's figure), µmol/m²/s. Set, the estimate is scaled to match it. 0 = estimate">PAR (measured)</label><input id="lPar" type="range" min="0" max="300" step="1"><output id="oLPar"></output></div>
+  <div id="lOut" class="hint"></div>
+  <div class="row"><label for="lBright" id="lBrightLab">Brightness</label><input id="lBright" type="range" min="0.2" max="2.5" step="0.05"><output id="oBright"></output></div>
   <div class="row"><label for="lK">Colour temp</label><input id="lK" type="range" min="2700" max="14000" step="100"><output id="oK"></output></div>
   <div class="row"><label for="lRoom" title="Light from the room around the tank (ambient): 0 = a dark room, only the tank lights">Room light (ambient)</label><input id="lRoom" type="range" min="0" max="0.8" step="0.01"><output id="oRoom"></output></div>
   <div class="btns"><button id="lTop" title="Look straight down on the tank, to watch the light map while you change the lights">Look from above</button><button id="lFront" title="Back to straight on">Straight on</button></div>
   <label><input type="checkbox" id="lBeams"> Light map: beams, and the light on the substrate (hides plants, hardscape and fish)</label>
   <div id="lMapKey" class="hint"><div style="height:10px;border-radius:2px;margin:4px 0 2px;background:linear-gradient(90deg,#0d0d40 0%,#1a40d9 14.3%,#00b3e6 28.6%,#26cc40 42.9%,#f2e61a 57.1%,#ff8c0d 71.4%,#e61a1a 85.7%,#ffe6e6 100%)"></div>
-  <div style="position:relative;height:14px"><span style="position:absolute;left:0">1/16</span><span style="position:absolute;left:28.6%;transform:translateX(-50%)">1/4</span><span style="position:absolute;left:57.1%;transform:translateX(-50%)">1</span><span style="position:absolute;left:85.7%;transform:translateX(-50%)">4</span><span style="position:absolute;right:0">8</span></div>
-  Light on the substrate, from distance, beam angle and how squarely it lands, summed over the lights; a colour step per doubling. 1 = one standard 52° bulb 300 mm straight above.</div>
+  <div id="lMapTicks" style="position:relative;height:14px"></div>
+  <div id="lMapBands" style="position:relative;height:14px;margin-top:2px" hidden></div>
+  <span id="lMapText"></span></div>
+  <div class="row" id="lUnitRow"><label for="lUnit" title="PAR counts the photons plants use; lux weighs the light by the eye's response. Each is calculated, not relabelled: water takes red light first, so they fall off at different rates with depth">Map shows</label><select id="lUnit" class="span2"><option value="par">PAR (µmol/m²/s): what plants use</option><option value="lux">Lux: brightness to the eye</option></select></div>
   <div id="lMapBare" class="hint why" hidden>The colours land on the substrate, and this tank has a bare bottom: <button type="button" class="linkbtn" id="lMapSub">pick a substrate</button>.</div>
   <div class="btns"><button id="lParGuide" title="What PAR is, what levels suit planted tanks and reefs, and what grows at each">PAR guide: what plants and corals need</button></div>
   <div class="hint">A visual approximation: light falls off with distance and beam angle from fixtures above the water. No real optics, shadows or ripples.</div>

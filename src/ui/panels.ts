@@ -5,7 +5,8 @@ import { GRAIN_LOOK, SUBSTRATES, drawFishCard } from '../art/placeholder';
 import { drawSnailCard } from '../art/snails';
 import { CATEGORIES, SPECIES, fishTL, getSpecies, needsWater, searchSpecies, speciesOf, speciesTag, type Category, type Sex, type Species } from '../data/species';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
-import { emitters } from '../render/lighting';
+import { MAP_DIV, emitters } from '../render/lighting';
+import { TECHS, lightOutCached, readout as lightReadout, techOf, techsFor } from '../scene/lightout';
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene, TANK_PRESETS } from '../scene/defaults';
@@ -26,7 +27,7 @@ import { tankWeight } from '../scene/weight';
 import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, aqWaitS, fetchStocking } from '../data/aqadvisor';
 import { BOWL_DEFAULT, BOWL_MAX, BOWL_MIN, PIE_DEFAULT, POLY_SIDES, SHAPES, bowMinLimit, offsetRing, ringArea, shapeOf } from '../scene/shape';
 import { TABLE_MAX, tableOn, tableRange, wallGap } from '../scene/table';
-import type { Fish, Item, ItemKind, LayoutId, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
+import type { Fish, Item, ItemKind, LayoutId, LightTech, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
 import { GLASS_CHOICES, LIMITS, SceneError, parseScene } from '../scene/validate';
 import { deleteFromLib, listLib, loadFromLib, saveToLib } from '../scene/library';
 import { EXAMPLES } from '../examples';
@@ -635,7 +636,7 @@ Cancel, then change the name, to keep both.`)) return;
   }
 
   // ---------- Lighting ----------
-  const lKeys = { lCount: 'count', lRows: 'rows', lSp: 'spacing', lCone: 'cone', lH: 'height', lBright: 'bright', lK: 'kelvin', lRoom: 'room' } as const;
+  const lKeys = { lCount: 'count', lRows: 'rows', lSp: 'spacing', lCone: 'cone', lH: 'height', lBright: 'bright', lK: 'kelvin', lRoom: 'room', lW: 'watts', lPar: 'par' } as const;
   // spacing below a bulb's width snaps to 0 = auto (fill the tank)
   for (const [id, k] of Object.entries(lKeys)) $(id).oninput = e => store.edit(s => { const v = +(e.target as HTMLInputElement).value; s.light[k] = k === 'spacing' && v < 80 ? 0 : v; }, { coalesce: id });
   // up to 12 bulbs when placed to fit the tank (no rows to multiply them), 6 otherwise
@@ -644,6 +645,33 @@ Cancel, then change the name, to keep both.`)) return;
   $<HTMLSelectElement>('lPat').onchange = e => store.edit(s => { s.light.pattern = (e.target as HTMLSelectElement).value as TankSetup['light']['pattern']; capCount(s.light); });
   $<HTMLSelectElement>('lType').onchange = e => store.edit(s => { s.light.type = (e.target as HTMLSelectElement).value as TankSetup['light']['type']; capCount(s.light); });
   $('lBeams').onchange = e => store.edit(s => { s.render.beams = (e.target as HTMLInputElement).checked; });
+  $<HTMLSelectElement>('lUnit').onchange = e => store.edit(s => { s.light.mapUnit = (e.target as HTMLSelectElement).value as 'par' | 'lux'; });
+  /** The Light map legend: labels at doublings along the ramp (7 steps up from MAP_DIV), and the PAR bands. */
+  let mapKeyFor = '';
+  const mapKey = (unit: 'rel' | 'par' | 'lux') => {
+    if (mapKeyFor === unit) return; mapKeyFor = unit;
+    const at = (v: number) => Math.log2(v / MAP_DIV[unit]) / 7 * 100, span = (x: number, t: string, st = '') => {
+      const e = document.createElement('span'); e.textContent = t;
+      e.style.cssText = `position:absolute;left:${x}%;transform:translateX(${x <= 0 ? 0 : x >= 100 ? -100 : -50}%);${st}`; return e;
+    };
+    const ticks: [number, string][] = unit === 'rel' ? [[1 / 16, '1/16'], [1 / 4, '1/4'], [1, '1'], [4, '4'], [8, '8']]
+      : unit === 'par' ? [[5, '5'], [10, '10'], [20, '20'], [40, '40'], [80, '80'], [160, '160'], [320, '320']]
+      : [[250, '250'], [1000, '1k'], [4000, '4k'], [16000, '16k']];
+    $('lMapTicks').replaceChildren(...ticks.map(([v, t]) => span(at(v), t)));
+    // planted-tank light classes at the substrate, under the PAR ramp
+    $('lMapBands').hidden = unit !== 'par';
+    if (unit === 'par') $('lMapBands').replaceChildren(...([[30, 50, 'med'], [50, 80, 'high'], [80, 640, 'very high'], [0, 30, 'low']] as [number, number, string][]).map(([a, b, t]) => {
+      const x0 = a ? Math.max(at(a), 0) : 0, x1 = Math.min(at(b), 100), e = document.createElement('span'); e.textContent = t;
+      e.style.cssText = `position:absolute;left:${x0}%;width:${x1 - x0}%;text-align:center;border-left:1px solid currentColor;font-size:0.9em;white-space:nowrap;overflow:hidden`;
+      return e;
+    }));
+    $('lMapText').textContent = unit === 'rel'
+      ? 'Light on the substrate, from distance, beam angle and how squarely it lands, summed over the lights; a colour step per doubling. 1 = one standard 52° bulb 300 mm straight above. Set Power for PAR or lux.'
+      : unit === 'par' ? 'PAR at the substrate, µmol/m²/s, from the power and light type: a colour step per doubling. Below: the planted-tank light classes.'
+      : 'Lux at the substrate, from the power and light type: a colour step per doubling. Water takes red first, so lux and PAR fall off at different rates.';
+  };
+  $<HTMLSelectElement>('lTech').onchange = e => store.edit(s => { s.light.tech = (e.target as HTMLSelectElement).value as LightTech; });
+  let techFor = ''; // the fixture type the Light type list was built for
 
   // ---------- Viewer (camera): saved with the scene, but not undoable ----------
   const camKeys = { cDist: 'dist', cAz: 'az', cEl: 'el', cZoom: 'zoom' } as const;
@@ -822,7 +850,7 @@ Cancel, then change the name, to keep both.`)) return;
     return v == null ? null : neg.test(t) ? -Math.abs(v) : v;
   } });
   const lens = ['bowMin', 'bowlFloor', 'bowlTop', 'standH', 'tableL', 'tableD', 'subBL', 'subBR', 'subFL', 'subFR', 'lH', 'cDist', 'iSize', 'iLift', 'personH', 'wallGap'];
-  const nums = { pieDeg: 0, bgArc: 0, iYaw: 0, iPitch: 0, iTilt: 0, lCount: 0, lRows: 0, lCone: 0, lK: 0, lBright: 2, lRoom: 2, cAz: 0, cEl: 0, cZoom: 2, terCols: 0, addSize: 0 };
+  const nums = { pieDeg: 0, bgArc: 0, iYaw: 0, iPitch: 0, iTilt: 0, lCount: 0, lRows: 0, lCone: 0, lK: 0, lBright: 2, lRoom: 2, lW: 0, lPar: 0, cAz: 0, cEl: 0, cZoom: 2, terCols: 0, addSize: 0 };
   attachTypeIns({
     ...Object.fromEntries(lens.map(id => [id, len])),
     ...Object.fromEntries(Object.entries(nums).map(([id, d]) => [id, num(d)])),
@@ -1071,7 +1099,7 @@ Cancel, then change the name, to keep both.`)) return;
     setVal('wOpac', wa.opacity); setOut('oOpac', wa.opacity < 0.01 ? 'Clear' : Math.round(wa.opacity * 100) + '%'); setVal('wColor', wa.color);
 
     const l = s.light; setVal('lType', l.type); ($('lCount') as HTMLInputElement).max = String(countMax(l));
-    for (const [id, k] of Object.entries(lKeys)) setVal(id, l[k]);
+    for (const [id, k] of Object.entries(lKeys)) setVal(id, l[k] ?? 0);
     // spots: the slider sets the longest row; say the total when the rows make it more (Nathan 2026-10-12: "3" showed 5)
     const total = l.type === 'spot' ? emitters(s.tank, l).length : l.count;
     setOut('oCount', total > l.count ? `${l.count} · ${total} total` : String(l.count)); setOut('oRows', String(l.rows)); setOut('oBright', '×' + l.bright.toFixed(2)); setOut('oK', l.kelvin + ' K'); setOut('oRoom', l.room.toFixed(2));
@@ -1082,6 +1110,21 @@ Cancel, then change the name, to keep both.`)) return;
     setVal('lPat', l.pattern); setOut('oLSp', l.spacing ? fmt(l.spacing) : 'Auto'); setOut('oLCone', l.cone + '°');
     setOut('oLH', s.lid === 'hood' ? 'In hood' : fmt(l.height) + ' above');
     $('lHRow').style.display = l.type === 'flat' ? 'none' : ''; ($('lH') as HTMLInputElement).disabled = s.lid === 'hood';
+    // light output (lane K): power, what is inside the fixture, a measured PAR, and the estimate; while the power is
+    // set, Brightness is an exposure on top of the brightness the light gives (x0.5-2)
+    const watts = l.type !== 'flat' && (l.watts ?? 0) > 0;
+    $('lWRow').style.display = l.type === 'flat' ? 'none' : ''; setOut('oLW', watts ? `${l.watts} W` : 'Not set');
+    if (techFor !== l.type) { techFor = l.type; $('lTech').replaceChildren(...techsFor(l.type).map(t => new Option(TECHS[t].label, t))); }
+    setVal('lTech', techOf(l)); $('lTechRow').style.display = watts ? '' : 'none';
+    $('lParRow').style.display = watts ? '' : 'none'; setOut('oLPar', l.par ? `${l.par} µmol` : 'Estimate');
+    const lo = watts ? lightOutCached(s) : null;
+    $('lOut').textContent = lo ? lightReadout(lo) : 'Set Power to estimate the light (PAR and lux) at the substrate.'; $('lOut').hidden = l.type === 'flat';
+    $('lBrightLab').textContent = watts ? 'Exposure' : 'Brightness';
+    $('lBrightLab').title = watts ? 'Like a camera: how bright the render looks for the light the fixture gives (x0.5-2). The PAR and lux do not change' : '';
+    Object.assign($('lBright') as HTMLInputElement, watts ? { min: '0.5', max: '2' } : { min: '0.2', max: '2.5' }); setVal('lBright', l.bright);
+    if (watts) setOut('oBright', '×' + Math.min(Math.max(l.bright, 0.5), 2).toFixed(2));
+    const mapOn = s.render.beams && l.type !== 'flat';
+    $('lUnitRow').style.display = mapOn && watts ? '' : 'none'; setVal('lUnit', l.mapUnit ?? 'par'); mapKey(watts ? l.mapUnit ?? 'par' : 'rel');
     $('lBeams').checked = s.render.beams && l.type !== 'flat'; $('lBeams').parentElement!.title = l.type === 'flat' ? 'No fixture: pick one under Fixture to see the light map' : ''; /* audit #44 */ $('lMapKey').style.display = s.render.beams && l.type !== 'flat' ? '' : 'none';
     $('lMapBare').hidden = !(s.render.beams && l.type !== 'flat' && !s.substrate.show); /* the map needs a floor to draw on (audit #17) */ ($('lBeams') as HTMLInputElement).disabled = l.type === 'flat';
 

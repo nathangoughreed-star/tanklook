@@ -30,6 +30,7 @@ export const LIBRARY: Record<string, Variant> = {
   grass: { kind: 'plant', label: 'Vallisneria', hint: 'Tall grass-like leaves. Size = height.', size: 280, min: 40, max: 900 },
   stem: { kind: 'plant', label: 'Stem plant', hint: 'Size = height.', size: 220, min: 40, max: 900 },
   stemred: { kind: 'plant', label: 'Red stem plant', hint: 'Size = height.', size: 220, min: 40, max: 900 },
+  crypt: { kind: 'plant', label: 'Cryptocoryne', hint: 'A low rosette of wavy bronze-green leaves (C. wendtii). Size = height.', size: 110, min: 30, max: 300 },
   carpet: { kind: 'plant', label: 'Carpet patch', hint: 'A low carpet plant. Size = patch width.', size: 160, min: 60, max: 400 },
   // corals (2026-10-14): size = width
   acropora: { kind: 'coral', label: 'Branching coral', hint: 'An Acropora-style colony of branches with pale tips. Size = width.', size: 160, min: 40, max: 500, salt: true },

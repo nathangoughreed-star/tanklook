@@ -5,7 +5,7 @@ import { D2R, depthRatio, floorY, fmtLen, tankUnderside } from '../scene/physics
 import { tableOn, tableRing } from '../scene/table';
 import type { Store } from '../scene/store';
 import type { Fish, Tank, TankSetup } from '../scene/types';
-import { HOOD_H, buildTank, disposeScene, personSpot, type BuiltTank } from './build';
+import { HOOD_H, buildTank, disposeScene, envKey, lookKey, patchLook, patchTank, personSpot, type BuiltTank } from './build';
 import { drawViewMap } from './viewmap';
 import { applyFraming, fovFor, frameBox, frameStraightOn, placeCamera, windowCentre } from './camera';
 import { glowColor, lampHeight, roomLevel, setLightUniforms, setWaterUniforms } from './lighting';
@@ -135,6 +135,11 @@ export class Viewer {
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.localClippingEnabled = true; // hardscape is cut off at the glass (render/items.ts solidMaterial)
     setMaxAnisotropy(this.renderer.capabilities.getMaxAnisotropy());
+    // opaque draw order as three's default (materials grouped, then front to back), but the groups ranked by where
+    // each material first appears in the scene instead of by its id, i.e. by when it was created: a patched scene
+    // (build.ts patchTank) and a full rebuild then draw ties in the same order and match pixel for pixel (audit #52-53)
+    this.renderer.setOpaqueSort((a, b) => a.groupOrder - b.groupOrder || a.renderOrder - b.renderOrder
+      || (this.rank.get(a.material) ?? 0) - (this.rank.get(b.material) ?? 0) || a.z - b.z || a.id - b.id);
     const S = store.scene;
     this.vps = (['A', 'B'] as const).map((key, i) => ({ i, key, cam: new THREE.PerspectiveCamera(40, 1, 10, 40000), S: S.tanks[0], T: S.tanks[0].tank, x: 0, y: 0, w: 1, h: 1 }));
     store.subscribe(kind => { if (kind !== 'view') this.needsBuild = true; this.dirty = true; });
@@ -154,37 +159,46 @@ export class Viewer {
   /** The viewport of the tank the panel edits. */
   get current() { return this.active[this.store.scene.active] ?? this.active[0]; }
 
-  /** What each view was last built from, minus the values that are only uniforms (see `buildKey`). */
-  private built: string[] = [];
+  /** Opaque draw order: each material's place of first appearance in the scene being drawn (see the constructor). */
+  private rank = new Map<THREE.Material, number>();
+  /** Per view: the key its meshes outside the fish and items were built from (`viewKey`), and its `lookKey`. */
+  private built: { env: string; look: string }[] = [];
+  /** false = every change rebuilds the whole scene, as before audit #52-53 (the fallback; dev checks compare the two). */
+  incremental = true;
+  /** What the last build did per view: 'full', 'patch' (with the number of fish / items rebuilt), or 'same'. */
+  lastBuild: string[] = [];
   /**
-   * The scene as the meshes depend on it: everything but the light's colour temperature, brightness and room light,
-   * which reach the picture only through uniforms set every draw (and the fixture's glow, recoloured in place). A
-   * change to those alone skips the rebuild (audit #51: about 1-1.5 s per slider step on software GL).
+   * What a view's meshes outside the fish and items depend on (envKey: everything but the fish, items, camera, the
+   * values that are only uniforms and the colours patched in place), plus whether it is edited and the terrain dots.
+   * Unchanged: only the fish and items whose own data or selection changed are rebuilt (patchTank). Colour
+   * temperature, brightness and room light reach the picture through uniforms set every draw (audit #51).
    */
-  private buildKey(i: number) {
+  private viewKey(i: number) {
     const S = this.store.scene.tanks[i]; if (!S) return '';
-    const { kelvin: _k, room: _r, bright: _b, ...light } = S.light;
-    return JSON.stringify([{ ...S, camera: null, light }, this.store.scene.units, this.store.isEditing(i), this.store.selId, this.store.selItem, this.terrainEdit]);
+    return JSON.stringify([envKey(S), this.store.scene.units, this.store.isEditing(i), this.terrainEdit]);
   }
 
   private build() {
-    const sc = this.store.scene, keys = this.vps.map(vp => this.buildKey(vp.i));
-    if (this.built.length && this.vps.every((vp, k) => keys[k] === this.built[k] && !!vp.scene === !!sc.tanks[vp.i])) {
-      for (const vp of this.vps) {
-        if (!vp.scene) continue;
-        vp.S = sc.tanks[vp.i];
-        vp.scene.traverse(o => { const m = (o as THREE.Mesh).material as THREE.MeshBasicMaterial | undefined; if (m?.userData?.glow) m.color.copy(glowColor(vp.S.light.kelvin)); });
-      }
-      this.needsBuild = false; return;
-    }
-    this.built = keys;
+    const sc = this.store.scene;
+    this.lastBuild = [];
     for (const vp of this.vps) {
-      disposeScene(vp.scene); vp.scene = undefined;
-      const S = sc.tanks[vp.i]; if (!S) continue;
+      const S = sc.tanks[vp.i], old = this.built[vp.i];
+      if (!S) { disposeScene(vp.scene); vp.scene = undefined; this.built[vp.i] = { env: '', look: '' }; continue; }
       const on = this.store.isEditing(vp.i); // selection outline and terrain dots only in the tanks being edited
+      const env = this.viewKey(vp.i), look = lookKey(S), units = { ...S, units: sc.units };
       vp.S = S; vp.T = S.tank;
-      Object.assign(vp, buildTank({ ...S, units: sc.units }, S.tank, on ? this.store.selId : null, on && this.terrainEdit.on ? this.terrainEdit : undefined, on ? this.store.selItem : null));
-      vp.overhead = []; (vp.scene as THREE.Scene | undefined)?.traverse(o => { if (o.userData.overhead != null) vp.overhead!.push(o); });
+      if (this.incremental && vp.scene && old?.env === env) {
+        if (old.look !== look) patchLook(vp.scene, S);
+        const n = patchTank(vp as BuiltTank, units, S.tank, on ? this.store.selId : null, on ? this.store.selItem : null);
+        vp.scene.traverse(o => { const m = (o as THREE.Mesh).material as THREE.MeshBasicMaterial | undefined; if (m?.userData?.glow) m.color.copy(glowColor(S.light.kelvin)); });
+        this.lastBuild[vp.i] = n ? `patch ${n}` : old.look !== look ? 'look' : 'same';
+      } else {
+        disposeScene(vp.scene);
+        Object.assign(vp, buildTank(units, S.tank, on ? this.store.selId : null, on && this.terrainEdit.on ? this.terrainEdit : undefined, on ? this.store.selItem : null));
+        vp.overhead = []; (vp.scene as THREE.Scene | undefined)?.traverse(o => { if (o.userData.overhead != null) vp.overhead!.push(o); });
+        this.lastBuild[vp.i] = 'full';
+      }
+      this.built[vp.i] = { env, look };
     }
     this.needsBuild = false;
   }
@@ -262,9 +276,10 @@ export class Viewer {
       if (person) this.placePerson(vp, person, headroom(S), bottom(S));
       r.setViewport(vp.x, vp.y, vp.w, vp.h); r.setScissor(vp.x, vp.y, vp.w, vp.h);
       r.setClearColor(new THREE.Color(0xd9dde2).multiplyScalar(0.06 + 0.94 * roomLevel(S.light.room))); r.clear(); // the space beyond the room dims with the room light
-      setLightUniforms(vp.T, S.light, S.lid, S.render.beams); setWaterUniforms(vp.T, S.water, S.render.pop); OUTLINE.uPop.value = S.render.pop; OUTLINE.uVpH.value = vp.h;
+      setLightUniforms(vp.T, S.light, S.lid, S.render.beams, S); setWaterUniforms(vp.T, S.water, S.render.pop); OUTLINE.uPop.value = S.render.pop; OUTLINE.uVpH.value = vp.h;
       // keep the cleared alpha (1): alpha-to-coverage fins would otherwise leave a translucent canvas, through which
       // the page shows on screen and a viewer's background (often white) in an exported PNG
+      this.rank.clear(); vp.scene!.traverse(o => { const m = (o as THREE.Mesh).material; if (m) for (const x of ([] as THREE.Material[]).concat(m)) if (!this.rank.has(x)) this.rank.set(x, this.rank.size); });
       const cb = r.state.buffers.color, gl = r.getContext();
       cb.setMask(true); gl.colorMask(true, true, true, false); cb.setLocked(true);
       r.render(vp.scene!, vp.cam);

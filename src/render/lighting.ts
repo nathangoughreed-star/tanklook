@@ -6,92 +6,16 @@
 // Room surfaces (wall, floor, stand, hood, person) are lit by the room light, plus light spilling out of the tank:
 // with the room light off, the tank is the only light in the room (Nathan, 2026-10-08).
 import * as THREE from 'three';
-import { D2R, clamp } from '../scene/physics';
-import type { LightSettings, LightType, Tank, WaterSettings } from '../scene/types';
+import { clamp } from '../scene/physics';
+import type { LightSettings, Tank, WaterSettings } from '../scene/types';
 import { waterK, waterY } from '../scene/physics';
-import { bowlDims, footprint, insideBy, shapeOf, type P } from '../scene/shape';
+import { bowlDims, footprint, shapeOf } from '../scene/shape';
 
-export const AQ_MAX = 48, LAMP_Y = 50, REF = 320;
-export const CONES: Record<Exclude<LightType, 'flat'>, [number, number]> = {
-  spot: [Math.cos(18 * D2R), Math.cos(34 * D2R)], tube: [0.45, -0.15], led: [Math.cos(45 * D2R), Math.cos(75 * D2R)],
-};
-/** Spot beam (full angle, degrees) -> [cos inner, cos outer] half-angles; the default 52° gives the old 18°/34°. */
-const spotCone = (deg: number): [number, number] => [Math.cos(Math.min(deg * 0.35, 80) * D2R), Math.cos(Math.min(deg * 0.65, 85) * D2R)];
-/** The fixture's beam, and how much brighter it is per unit area than the standard one (same output, narrower beam). */
-function beam(l: LightSettings): { cone: [number, number]; gain: number } {
-  if (l.type !== 'spot') return { cone: CONES[l.type as Exclude<LightType, 'flat'>], gain: 1 };
-  const deg = l.cone ?? 52, solid = (a: number) => 1 - Math.cos(a / 2 * D2R);
-  return { cone: spotCone(deg), gain: solid(52) / solid(deg) };
-}
-/** [x, y, z, halfLength]: halfLength > 0 means a line emitter along x. */
-export type Emitter = [number, number, number, number];
+import { AQ_MAX, LAMP_Y, LUXW, beam, emitters, lampHeight, lightEnv, lightOutCached, renderBright, type Emitter, type LightEnv, type LightScene } from '../scene/lightout';
+// the fixture geometry lives with the light-output model now (lane K); re-exported so importers stay as they were
+export { AQ_MAX, CONES, LAMP_Y, beam, emitters, fitSpots, lampHeight, type Emitter } from '../scene/lightout';
 
-/** Fixture height above the tank top (mm): the setting, or LAMP_Y inside a hood. */
-export const lampHeight = (l: LightSettings, lid: string) => (lid === 'hood' ? LAMP_Y : l.height ?? LAMP_Y);
-
-export function emitters(T: Tank, l: LightSettings, height = l.height ?? LAMP_Y): Emitter[] {
-  const { L, H, D } = T, y = H + height, n = l.count, E: Emitter[] = [];
-  // spots: a count × rows grid (rows run front to back), centred over the tank. Auto spacing (0) spreads it to fill
-  // the tank; a set spacing is centre to centre, with rows √3/2 of it apart in the triangular pattern. 'tri' staggers
-  // the rows: the middle row (or the back one, with an even number) has `count` bulbs, its neighbours one fewer.
-  if (l.type === 'spot' && l.pattern === 'fit') for (const [x, d] of fitSpots(T, n)) E.push([x, y, -d, 0]);
-  else if (l.type === 'spot') {
-    const m = l.rows ?? 1, s = l.spacing ?? 0, tri = l.pattern === 'tri';
-    const sx = s > 0 ? s : L / n, sz = s > 0 ? (tri ? s * Math.sqrt(3) / 2 : s) : D / m;
-    for (let j = 0; j < m; j++) {
-      const k = tri && j % 2 !== (m % 2 ? ((m - 1) / 2) % 2 : 1) ? Math.max(n - 1, 1) : n, z = -D / 2 - (j - (m - 1) / 2) * sz;
-      for (let i = 0; i < k; i++) E.push([L / 2 + (i - (k - 1) / 2) * sx, y, z, 0]);
-    }
-  }
-  if (l.type === 'tube') for (let i = 0; i < n; i++) E.push([L / 2, y, -D * (i + 0.5) / n, L * 0.45]);
-  if (l.type === 'led') {
-    const cols = clamp(Math.round(L * 0.9 / 45), 2, 24);
-    for (const r of [0.38, 0.62]) for (let c = 0; c < cols; c++) E.push([L * (0.05 + 0.9 * (c + 0.5) / cols), y, -D * r, 0]);
-  }
-  return E.slice(0, AQ_MAX);
-}
-
-const fitCache = new Map<string, P[]>();
-/**
- * `n` bulb positions [x, depth] that cover the tank's outline evenly, for odd shapes a grid fits badly (Nathan,
- * 2026-10-13: a 90° pie wants one bulb toward the corner and one near each end of the arc). Centroidal Voronoi:
- * every bulb sits at the centre of the floor area nearer to it than to any other bulb, which minimises the mean
- * distance from the floor to its nearest bulb. Lloyd's iteration over a sample grid of the footprint, from a few
- * deterministic starts (farthest-point seeding), keeping the best; cached per outline and count.
- */
-export function fitSpots(T: Tank, n: number): P[] {
-  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.pieDeg}|${n}`;
-  const hit = fitCache.get(key);
-  if (hit) return hit;
-  const g = 48, S: P[] = [];
-  for (let i = 0; i < g; i++) for (let j = 0; j < g; j++) {
-    const x = T.L * (i + 0.5) / g, d = T.D * (j + 0.5) / g;
-    if (insideBy(T, x, d) > 0) S.push([x, d]);
-  }
-  if (!S.length) S.push([T.L / 2, T.D / 2]);
-  const near = (p: P, c: P[]) => { let k = 0, b = Infinity; c.forEach((q, i) => { const v = (p[0] - q[0]) ** 2 + (p[1] - q[1]) ** 2; if (v < b) { b = v; k = i; } }); return [k, b]; };
-  let best: P[] = [], bestE = Infinity;
-  // starts: farthest-point seeding from the centroid, and from each of a few spread samples
-  const mean: P = [S.reduce((a, p) => a + p[0], 0) / S.length, S.reduce((a, p) => a + p[1], 0) / S.length];
-  for (const first of [mean, S[0], S[S.length >> 1], S[S.length - 1], S[Math.floor(S.length / 3)]]) {
-    let c: P[] = [first];
-    while (c.length < n) { let f = S[0], fd = -1; for (const p of S) { const v = near(p, c)[1]; if (v > fd) { fd = v; f = p; } } c.push(f); }
-    for (let it = 0; it < 120; it++) {
-      const acc = c.map(() => [0, 0, 0]);
-      for (const p of S) { const a = acc[near(p, c)[0]]; a[0] += p[0]; a[1] += p[1]; a[2]++; }
-      const next = acc.map((a, i): P => (a[2] ? [a[0] / a[2], a[1] / a[2]] : c[i]));
-      const moved = Math.max(...next.map((q, i) => Math.hypot(q[0] - c[i][0], q[1] - c[i][1])));
-      c = next;
-      if (moved < 0.05) break;
-    }
-    const E = S.reduce((a, p) => a + near(p, c)[1], 0);
-    if (!best.length || E < bestE * (1 - 1e-6)) { bestE = E; best = c; }
-  }
-  // front to back, left to right, so the bulbs keep a stable order
-  best = best.map(p => [+p[0].toFixed(1), +p[1].toFixed(1)] as P).sort((a, b) => a[1] - b[1] || a[0] - b[0]);
-  fitCache.set(key, best); if (fitCache.size > 32) fitCache.delete(fitCache.keys().next().value!);
-  return best;
-}
+export const REF = 320;
 
 /** JS twin of the shader loop (card mode: no facing term); used for normalisation. */
 export function lightSum(E: Emitter[], p: [number, number, number], cone: [number, number]) {
@@ -133,7 +57,16 @@ export const LU = {
   uWater: { value: new THREE.Vector4() }, uWCol: { value: new THREE.Color() }, uPop: { value: 0 },
   // light map (beam overlay): on, weight per emitter, the beam's concentration (see aqIrr)
   uMapOn: { value: 0 }, uMapW: { value: 1 }, uMapGain: { value: 1 },
+  // light output (lane K; watts set): the map in real units, a port of scene/lightout.ts bandsAt. uLoA: phi x 1e6 /
+  // norm (per emitter), water surface y, losses x the PAR-override scale, wall-image weight (0 = no images);
+  // uLoM: beam exponent (cos^m); uLoInd: bounced light per band (x the override scale); uLoWall: tank L, D; uLoK: absorption per mm per band; uLoSplit: photon share per band; uLoOut: per-band weight of
+  // what is shown (PAR 1,1,1; lux LUXW); uMapDiv: the level at the bottom of the ramp (relative 1/16, PAR 2.5, lux 125)
+  uLoOn: { value: 0 }, uLoA: { value: new THREE.Vector4() }, uLoWall: { value: new THREE.Vector2() },
+  uLoK: { value: new THREE.Vector3() }, uLoSplit: { value: new THREE.Vector3() }, uLoOut: { value: new THREE.Vector3(1, 1, 1) },
+  uMapDiv: { value: 1 / 16 }, uLoM: { value: 1 }, uLoInd: { value: new THREE.Vector3() },
 };
+/** The Light map ramp's bottom (navy) per unit: a colour step per doubling, yellow (4 steps up) on the "medium" band. */
+export const MAP_DIV = { rel: 1 / 16, par: 2.5, lux: 125 } as const;
 /** Water box (L, surface y, D) and tint per mm, and how far fish stand out (render.pop); set per viewport like the light. */
 export function setWaterUniforms(T: Tank, w: WaterSettings, pop = 0) {
   LU.uPop.value = pop;
@@ -165,8 +98,10 @@ void main() {
   });
 }
 
-export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams = false) {
+/** `S` (the setup; lane K): with watts set, the brightness follows the computed lux and `l.bright` is the exposure. */
+export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams = false, S?: LightScene) {
   const on = l.type !== 'flat'; LU.uMode.value = on ? 1 : 0;
+  const lo = on && S ? lightOutCached({ ...S, tank: T }) : null, bright = lo ? renderBright(lo, l.bright) : l.bright;
   // light map: a spot bulb or a tube counts as one light; an LED bar's emitters share the output of four bulbs
   LU.uMapOn.value = on && beams ? 1 : 0;
   if (on) { LU.uMapGain.value = beam(l).gain; LU.uMapW.value = l.type === 'led' ? 4 / Math.max(emitters(T, l).length, 1) : 1; }
@@ -179,7 +114,7 @@ export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams 
   // the spill shows most in a dark room (in a lit room the eye adapts and it barely registers); a raised fixture
   // throws more of its light past the tank (up to ~1.8x at 450 mm and above)
   const spill = 0.9 * (1 - 0.75 * roomLevel(l.room)) * (1 + 0.8 * clamp((up - LAMP_Y) / 400, 0, 1));
-  if (on) LU.uSpill.value.setRGB(...kelvinRGB(l.kelvin)).multiplyScalar(spill * l.bright); else LU.uSpill.value.setRGB(spill, spill, spill);
+  if (on) LU.uSpill.value.setRGB(...kelvinRGB(l.kelvin)).multiplyScalar(spill * bright); else LU.uSpill.value.setRGB(spill, spill, spill);
   if (!on) return;
   const E = emitters(T, l, hgt), { cone, gain } = beam(l), ref: LightSettings = { ...l, spacing: 0, cone: 52 };
   E.forEach((e, i) => LU.uEm.value[i].set(...e)); LU.uEmN.value = E.length;
@@ -189,7 +124,17 @@ export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams 
   const R = emitters(T, ref, LAMP_Y), rc = beam(ref).cone; let avg = 0, k = 0;
   for (let i = 1; i <= 5; i++) for (let j = 1; j <= 5; j++) { avg += lightSum(R, [T.L * i / 6, T.H * 0.5, -T.D * j / 6], rc); k++; }
   LU.uNorm.value = gain * k / Math.max(avg, 1e-6); [LU.uConeIn.value, LU.uConeOut.value] = cone;
-  LU.uAmb.value = l.room; LU.uBright.value = l.bright; LU.uLCol.value.setRGB(...kelvinRGB(l.kelvin));
+  LU.uAmb.value = l.room; LU.uBright.value = bright; LU.uLCol.value.setRGB(...kelvinRGB(l.kelvin));
+  const env = lo ? lightEnv({ ...S!, tank: T }) : null;
+  LU.uLoOn.value = env ? 1 : 0; LU.uMapDiv.value = env ? MAP_DIV[l.mapUnit ?? 'par'] : MAP_DIV.rel;
+  if (env) setLoUniforms(env, lo!.scale, l.mapUnit ?? 'par');
+}
+function setLoUniforms(env: LightEnv, scale: number, unit: 'par' | 'lux') {
+  LU.uLoA.value.set(env.phi * 1e6 / env.norm, Number.isFinite(env.ys) ? env.ys : -1e6, env.trans * scale, env.walls ? env.walls.w : 0);
+  LU.uLoWall.value.set(env.walls?.L ?? 0, env.walls?.D ?? 0);
+  LU.uLoK.value.set(...env.k); LU.uLoSplit.value.set(...env.split); const o = unit === 'lux' ? LUXW : [1, 1, 1]; LU.uLoOut.value.set(o[0], o[1], o[2]);
+  LU.uLoM.value = env.m; LU.uLoInd.value.set(...env.ind).multiplyScalar(scale);
+  env.E.forEach((e, i) => LU.uEm.value[i].set(...e)); LU.uEmN.value = env.E.length;
 }
 
 const AQ_VERT = 'varying vec3 vAqP; varying vec3 vAqN;';
@@ -263,8 +208,52 @@ vec3 aqLight() {
 // square of the distance (a tube, a line source: inverse distance), summed over the lights. Relative to one standard
 // spot bulb (52°) 300 mm straight above a level surface = 1 (times Brightness), shown on a log scale, a colour step per
 // doubling: 1/16 navy (dimmed below), 1/8 blue, 1/4 cyan, 1/2 green, 1 yellow, 2 orange, 4 red, 8 white.
-uniform float uMapOn, uMapW, uMapGain;
+uniform float uMapOn, uMapW, uMapGain, uLoOn, uMapDiv, uLoM; uniform vec4 uLoA; uniform vec2 uLoWall; uniform vec3 uLoK, uLoSplit, uLoOut, uLoInd;
+// one emitter (or a wall image of it, weight w) at p: a port of scene/lightout.ts addSrc, PAR or lux by uLoOut
+float aqSrc(vec3 p, vec3 n, vec3 ep, float h, float w) {
+  float ys = uLoA.y, wd = p.y < ys ? ys - p.y : 0.0;
+  float dy = wd > 0.0 ? ep.y - ys + wd / 1.33 : ep.y - p.y;
+  if (dy <= 0.0) return 0.0;
+  float e0, sinA;
+  if (h > 0.0) {
+    float dz = ep.z - p.z, r = max(length(vec2(dy, dz)), 1.0), xr = p.x - ep.x;
+    float f = 0.5 * ((h - xr) / length(vec2(r, h - xr)) + (h + xr) / length(vec2(r, h + xr)));
+    e0 = uLoA.x / (2.0 * h) * pow(dy / r, uLoM) * max((n.y * dy + n.z * dz) / r, 0.0) * f / r;
+    sinA = abs(dz) / r;
+  } else {
+    vec3 dv = vec3(ep.x - p.x, dy, ep.z - p.z); float d = max(length(dv), 1.0);
+    e0 = uLoA.x * pow(dy / d, uLoM) * max(dot(n, dv) / d, 0.0) / (d * d);
+    sinA = length(dv.xz) / d;
+  }
+  e0 *= w * uLoA.z;
+  vec3 a = vec3(1.0);
+  if (wd > 0.0) { float s = sinA / 1.33; a = 0.97 * exp(-uLoK * (wd / sqrt(1.0 - s * s))); }
+  return e0 * dot(uLoSplit * uLoOut, a);
+}
+// light output at this point (µmol/m²/s or lux): the emitters plus, under water in a rectangular tank, one mirror
+// image of each across each side wall, counted where its ray meets the glass below the surface (lightout bandsAt)
+float aqIrrAbs(vec3 p, vec3 n) {
+  float sum = 0.0, ys = uLoA.y, pv = ys - (ys - p.y) / 1.33, L = uLoWall.x, D = uLoWall.y;
+  for (int i = 0; i < ${AQ_MAX}; i++) {
+    if (i >= uEmN) break;
+    vec4 e = uEm[i];
+    sum += aqSrc(p, n, e.xyz, e.w, 1.0);
+    if (uLoA.w <= 0.0 || p.y >= ys || e.x < 0.0 || e.x > L || e.z > 0.0 || e.z < -D) continue;
+    for (int k = 0; k < 4; k++) {
+      vec3 im = k == 0 ? vec3(-e.x, e.y, e.z) : k == 1 ? vec3(2.0 * L - e.x, e.y, e.z) : k == 2 ? vec3(e.x, e.y, -e.z) : vec3(e.x, e.y, -2.0 * D - e.z);
+      float c = k == 0 ? 0.0 : k == 1 ? L : k == 2 ? 0.0 : -D;
+      float pa = k < 2 ? p.x : p.z, qa = k < 2 ? (e.w > 0.0 ? clamp(p.x, im.x - e.w, im.x + e.w) : im.x) : im.z;
+      if (abs(pa - qa) < 1e-6) continue;
+      float t = (pa - c) / (pa - qa), g = smoothstep(0.0, 20.0, (ys - (pv + t * (e.y - pv))) * 1.33);
+      if (g > 0.0) sum += aqSrc(p, n, im, e.w, uLoA.w * g);
+    }
+  }
+  // bounced light (lightout bounce): under water, or everywhere in a dry tank
+  if (p.y < ys || ys < -1e5) sum += dot(uLoInd, uLoOut);
+  return sum;
+}
 float aqIrr() {
+  if (uLoOn > 0.5) return aqIrrAbs(vAqP, normalize(vAqN));
   float sum = 0.0; vec3 n = normalize(vAqN);
   for (int i = 0; i < ${AQ_MAX}; i++) {
     if (i >= uEmN) break;
@@ -329,7 +318,7 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
       'if (uWater.w > 0.0) { float aqF = (1.0 - exp(-uWater.w * aqWaterPath())) * (1.0 - 0.6 * uPop * max(uFish, uFishCard)); outgoingLight = mix(outgoingLight, uWCol * min(dot(aqLt, vec3(0.2126, 0.7152, 0.0722)), 1.0), aqF); }\n' +
       // light map on the substrate (beam overlay on): false colour by level, a faint line at each doubling, the
       // grain kept faintly so the relief still reads; replaces the lit colour and the water haze
-      'if (uMapOn > 0.5 && uSub > 0.5) { float aqT = log2(max(aqIrr(), 1e-4)) + 4.0, aqW = fwidth(aqT);\n' +
+      'if (uMapOn > 0.5 && uSub > 0.5) { float aqT = log2(max(aqIrr(), 1e-6) / uMapDiv), aqW = fwidth(aqT);\n' +
       '  float aqG = dot(diffuseColor.rgb, vec3(0.2126, 0.7152, 0.0722));\n' +
       '  outgoingLight = aqRamp(aqT) * (0.75 + 0.45 * aqG) * (aqT < 0.0 ? 0.35 : 1.0);\n' +
       '  outgoingLight *= 1.0 - 0.35 * (1.0 - smoothstep(0.5 * aqW, 1.5 * aqW, abs(fract(aqT + 0.5) - 0.5))) * step(0.0, aqT); }\n' +
@@ -358,7 +347,7 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
   }
 }
 // one cache key per material kind keeps one compiled program per kind
-const progKey = function (this: THREE.Material) { return 'aq' + (this.userData.card ? 'c' : '') + (this.userData.sub ? 's' : '') + (this.userData.room ? 'r' : '') + (this.userData.fish ? 'f' : '') + (this.userData.plain ? 'p' : '') + (this.userData.frost ? 'F' : '') + (this.userData.solid ? 'h' : '') + (this.userData.post ? 'b' : '') + (this.userData.fishCard ? 'k' : ''); };
+const progKey = function (this: THREE.Material) { return 'aq' + (this.userData.card ? 'c' : '') + (this.userData.sub ? 's' : '') + (this.userData.room ? 'r' : '') + (this.userData.fish ? 'f' : '') + (this.userData.plain ? 'p' : '') + (this.userData.frost ? 'F' : '') + (this.userData.solid ? 'h' : '') + (this.userData.post ? 'b' : '') + (this.userData.fishCard ? 'k' : '') + (this.userData.plantClip ? 'g' : ''); };
 
 /** Light every opaque surface inside the tank (substrate, background, fish, plant); glass, rim, lines and the fixture stay unlit. */
 export function applyLighting(sc: THREE.Scene) {
@@ -469,4 +458,26 @@ export function addBeams(sc: THREE.Scene, T: Tank, l: LightSettings, lid: string
     const o = new THREE.Mesh(g, m); o.userData.nolight = true; o.renderOrder = 5; sc.add(o);
     if (m === open) o.userData.overhead = top; // above the rim: hidden from above the fixture, where it floods the view (audit #20)
   }
+}
+
+/**
+ * Dev check (lane K: the shader must agree with scene/lightout.ts within 2%): the Light map's aqIrr at world points
+ * `pts` with normals `ns`, read back from the GPU with the current LU uniforms (set by the last rendered viewport).
+ */
+export function irrReadback(r: THREE.WebGLRenderer, pts: number[][], ns: number[][]): number[] {
+  const n = pts.length, rt = new THREE.WebGLRenderTarget(n, 1, { type: THREE.FloatType });
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pts.flatMap((_, i) => [-1 + (2 * i + 1) / n, 0, 0]), 3));
+  g.setAttribute('aP', new THREE.Float32BufferAttribute(pts.flat(), 3)); g.setAttribute('aN', new THREE.Float32BufferAttribute(ns.flat(), 3));
+  const m = new THREE.ShaderMaterial({
+    uniforms: { ...LU, uCard: { value: 0 }, uSub: { value: 1 }, uFish: { value: 0 }, uRoomMat: { value: 0 }, uFishCard: { value: 0 } },
+    vertexShader: AQ_VERT + '\nattribute vec3 aP; attribute vec3 aN;\nvoid main() { vAqP = aP; vAqN = aN; gl_PointSize = 1.0; gl_Position = vec4(position.xy, 0.0, 1.0); }',
+    fragmentShader: AQ_FRAG + '\nvoid main() { gl_FragColor = vec4(aqIrr(), 0.0, 0.0, 1.0); }',
+  });
+  const sc = new THREE.Scene(), cam = new THREE.OrthographicCamera();
+  sc.add(new THREE.Points(g, m));
+  const prev = r.getRenderTarget(); r.setRenderTarget(rt); r.setClearColor(0, 0); r.clear(); r.render(sc, cam);
+  const px = new Float32Array(n * 4); r.readRenderTargetPixels(rt, 0, 0, n, 1, px); r.setRenderTarget(prev);
+  rt.dispose(); g.dispose(); m.dispose();
+  return Array.from({ length: n }, (_, i) => px[i * 4]);
 }
