@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { fishTL, speciesOf } from '../data/species';
 import { D2R, depthRatio, floorY, fmtLen, tankUnderside } from '../scene/physics';
 import { tableOn, tableRing } from '../scene/table';
+import { footprint } from '../scene/shape';
 import type { Store } from '../scene/store';
 import type { Fish, Tank, TankSetup } from '../scene/types';
 import { HOOD_H, buildTank, disposeScene, envKey, lookKey, patchLook, patchTank, personSpot, type BuiltTank } from './build';
@@ -49,6 +50,8 @@ export interface Viewport extends Partial<BuiltTank> {
   cam: THREE.PerspectiveCamera;
   /** Fixture parts and the beams above the rim: hidden while the eye is above them (userData.overhead = that height). */
   overhead?: THREE.Object3D[];
+  /** Frosted background sheets (build `bgMaterial`), with their faces as outward planes (`frostCull`). */
+  frost?: { mesh: THREE.Mesh; planes: THREE.Plane[] }[];
   S: TankSetup;
   T: Tank;
   x: number; y: number; w: number; h: number;
@@ -76,6 +79,30 @@ export function exportCrop(content: { x0: number; x1: number; y0: number; y1: nu
   const m = 0.06 * Math.max(x1 - x0, y1 - y0);
   const x = Math.max(0, Math.floor(x0 - m)), y = Math.max(0, Math.floor(y0 - m));
   return { x, y, w: Math.min(W, Math.ceil(x1 + m)) - x, h: Math.min(H, Math.ceil(y1 + m)) - y };
+}
+
+/** The faces of a frosted sheet as planes whose normal points away from the tank's centre (outside = the room side). */
+function outwardPlanes(m: THREE.Mesh, T: Tank): THREE.Plane[] {
+  const pos = m.geometry.attributes.position, idx = m.geometry.index, n = idx ? idx.count : pos.count;
+  const c = new THREE.Vector3(T.L / 2, T.H / 2, -T.D / 2), tri = new THREE.Triangle(), out: THREE.Plane[] = [], v = [0, 1, 2].map(() => new THREE.Vector3());
+  m.updateMatrixWorld();
+  for (let i = 0; i < n; i += 3) {
+    for (let k = 0; k < 3; k++) v[k].fromBufferAttribute(pos, idx ? idx.getX(i + k) : i + k).applyMatrix4(m.matrixWorld);
+    tri.set(v[0], v[1], v[2]); if (tri.getArea() < 1e-6) continue;
+    const p = tri.getPlane(new THREE.Plane());
+    if (p.distanceToPoint(c) > 0) p.negate();
+    if (!out.some(q => q.normal.dot(p.normal) > 0.99999 && Math.abs(q.constant - p.constant) < 0.01)) out.push(p);
+  }
+  return out;
+}
+/** frostCull: a mesh in the tank draws nothing into an off-screen target (the transmission pass); the canvas pass is untouched. */
+function skipOffscreen(this: THREE.Object3D, r: THREE.WebGLRenderer, _s: THREE.Scene, _c: THREE.Camera, g: THREE.BufferGeometry) {
+  if (r.getRenderTarget() === null) return;
+  this.userData.range = g.drawRange.count; g.drawRange.count = -1; // a negative count draws nothing (three's renderBufferDirect)
+}
+function restoreRange(this: THREE.Object3D, _r: THREE.WebGLRenderer, _s: THREE.Scene, _c: THREE.Camera, g: THREE.BufferGeometry) {
+  if (this.userData.range === undefined) return;
+  g.drawRange.count = this.userData.range; delete this.userData.range;
 }
 
 export class Viewer {
@@ -195,7 +222,11 @@ export class Viewer {
       } else {
         disposeScene(vp.scene);
         Object.assign(vp, buildTank(units, S.tank, on ? this.store.selId : null, on && this.terrainEdit.on ? this.terrainEdit : undefined, on ? this.store.selItem : null));
-        vp.overhead = []; (vp.scene as THREE.Scene | undefined)?.traverse(o => { if (o.userData.overhead != null) vp.overhead!.push(o); });
+        vp.overhead = []; vp.frost = [];
+        (vp.scene as THREE.Scene | undefined)?.traverse(o => {
+          if (o.userData.overhead != null) vp.overhead!.push(o);
+          if (((o as THREE.Mesh).material as THREE.Material | undefined)?.userData?.frost) vp.frost!.push({ mesh: o as THREE.Mesh, planes: outwardPlanes(o as THREE.Mesh, S.tank) });
+        });
         this.lastBuild[vp.i] = 'full';
       }
       this.built[vp.i] = { env, look };
@@ -282,7 +313,9 @@ export class Viewer {
       this.rank.clear(); vp.scene!.traverse(o => { const m = (o as THREE.Mesh).material; if (m) for (const x of ([] as THREE.Material[]).concat(m)) if (!this.rank.has(x)) this.rank.set(x, this.rank.size); });
       const cb = r.state.buffers.color, gl = r.getContext();
       cb.setMask(true); gl.colorMask(true, true, true, false); cb.setLocked(true);
+      const culled = this.frostCull(vp);
       r.render(vp.scene!, vp.cam);
+      for (const o of culled) { o.onBeforeRender = THREE.Object3D.prototype.onBeforeRender; o.onAfterRender = THREE.Object3D.prototype.onAfterRender; }
       cb.setLocked(false); cb.setMask(true); gl.colorMask(true, true, true, true);
     }
     r.setScissorTest(false);
@@ -303,6 +336,31 @@ export class Viewer {
       drawViewMap(box.querySelector('canvas')!, A.S, A.T, sc.units, eye, view, pm && pp ? { x: pm.position.x, z: pm.position.z, w: pp.w } : null);
     }
     for (const fn of this.drawnListeners) fn();
+  }
+
+  /**
+   * Frosted film: three draws every opaque mesh a second time, into the picture the film blurs (its transmission pass),
+   * which on a big tank cost as much as the frame itself. What is in the tank can only show through the film when the
+   * eye is outside one of the film's faces (looking at it from behind, or a film all round): otherwise the film is behind
+   * it all, so those meshes are left out of that pass (Nathan 2026-10-14: the faint shadow they cast on the film may go).
+   * Returns the meshes whose hooks to reset after the render.
+   */
+  private frostCull(vp: Viewport): THREE.Object3D[] {
+    if (!vp.frost?.length || !vp.scene) return [];
+    const eye = vp.cam.position;
+    if (vp.frost.some(f => f.planes.some(p => p.distanceToPoint(eye) > 0))) return [];
+    vp.scene.updateMatrixWorld(); // meshes built or patched since the last frame are placed first
+    const T = vp.T, ring = footprint(T).ring, box = this.box, mid = this.corner, out: THREE.Object3D[] = [];
+    const x0 = Math.min(...ring.map(p => p[0])), x1 = Math.max(...ring.map(p => p[0])), d0 = Math.min(...ring.map(p => p[1])), d1 = Math.max(...ring.map(p => p[1]));
+    vp.scene.traverse(o => {
+      const m = o as THREE.Mesh;
+      if (!m.geometry || !(m.isMesh || (o as THREE.Line).isLine) || (m.material as THREE.Material).userData?.frost) return;
+      if (!m.geometry.boundingBox) m.geometry.computeBoundingBox();
+      box.copy(m.geometry.boundingBox!).applyMatrix4(m.matrixWorld).getCenter(mid);
+      if (mid.x < x0 || mid.x > x1 || -mid.z < d0 || -mid.z > d1 || mid.y < 0 || mid.y > T.H) return;
+      o.onBeforeRender = skipOffscreen; o.onAfterRender = restoreRange; out.push(o);
+    });
+    return out;
   }
 
   // ---------- Measurement: verifies the perspective model numerically ----------

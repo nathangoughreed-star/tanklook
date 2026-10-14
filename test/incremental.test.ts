@@ -17,6 +17,7 @@ describe('envKey / lookKey', () => {
       (t: TankSetup) => t.items.push({ id: 1, kind: 'stone', variant: 'seiryu', seed: 1, x: 100, depth: 80, lift: 0, yaw: 0, pitch: 0, tilt: 0, size: 80 }),
       (t: TankSetup) => { t.camera.az += 10; },
       (t: TankSetup) => { t.light.kelvin += 500; t.light.bright = 0.5; t.light.room = 0.2; },
+      (t: TankSetup) => { t.light.watts = 45; t.light.tech = 'led-planted'; t.light.par = 120; t.light.mapUnit = 'lux'; },
       (t: TankSetup) => { t.render.pop = 0.9; },
     ]) expect(changed(fn)).toEqual({ env: false, look: false });
   });

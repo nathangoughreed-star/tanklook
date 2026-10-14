@@ -932,10 +932,20 @@ Cancel, then change the name, to keep both.`)) return;
   };
   $('aqCheck').onclick = () => aqCheck(S());
 
-  let waterKind = '';
-  function sync() {
+  let waterKind = '', syncKeys: string[] = [];
+  /** Pull every control back from the scene. `full` = false (the store listener): only the groups whose inputs changed,
+   *  so a drag step, which moves one fish or item or turns the camera, leaves the rest alone (lane J2: 6-7 ms per step on
+   *  a big tank). The panel's own handlers call it full, e.g. to put back a typed value that was refused. */
+  function sync(full = true) {
     const s = S(), A = s.tank, u = G().units;
     $<HTMLButtonElement>('undo').disabled = !store.canUndo; $<HTMLButtonElement>('redo').disabled = !store.canRedo;
+    const it0 = store.selectedItem, keys = [
+      JSON.stringify([{ ...s, fish: null, items: null, camera: null }, G().name, u, store.split, store.targets, viewer.terrainEdit.on]),
+      s.fish.map(f => `${f.species}~${f.sex}`).join(), s.items.map(i => i.kind).join(), JSON.stringify(s.camera),
+      JSON.stringify(it0 && { ...it0, x: 0, depth: 0 }), // the item box shows no position
+    ];
+    const [env, fishSet, itemSet, cam, item] = keys.map((k, i) => full || k !== syncKeys[i]); syncKeys = keys;
+    if (env) {
     setVal('sceneName', G().name);
     $('uIn').classList.toggle('on', u === 'in'); $('uCm').classList.toggle('on', u === 'cm');
     for (const k of ['L', 'H', 'D'] as const) setVal('a' + k, u === 'cm' ? +(A[k] / 10).toFixed(1) : toUnit(A[k], u)); // cm to 0.1 (audit #30)
@@ -979,7 +989,6 @@ Cancel, then change the name, to keep both.`)) return;
     $('volA').textContent = `Capacity ${vol.gallons.toFixed(1)} US gal · ${vol.litres.toFixed(0)} L (inside the glass, to the top) · footprint ${fpTxt}`;
     const wt = tankWeight(s), kgs = (kg: number) => (u === 'in' ? `${Math.round(kg * 2.20462)} lb` : `${Math.round(kg)} kg`);
     $('wtA').textContent = `≈ ${kgs(wt.total)} filled: water ${kgs(wt.water)} (${(u === 'in' ? wt.waterLitres / 3.785 : wt.waterLitres).toFixed(0)} ${u === 'in' ? 'gal' : 'L'} to the water line, over the substrate), substrate ${kgs(wt.substrate)}, glass ${kgs(wt.glass)}`;
-    syncAq();
     $('rimY').classList.toggle('on', s.render.rim); $('rimN').classList.toggle('on', !s.render.rim);
     $('edgesY').classList.toggle('on', s.render.edges); $('edgesN').classList.toggle('on', !s.render.edges);
     for (const [id, lid] of LIDS) $(id).classList.toggle('on', s.lid === lid);
@@ -1012,6 +1021,8 @@ Cancel, then change the name, to keep both.`)) return;
     setVal('wallGap', wallGap(s)); setOut('oWallGap', fmt(wallGap(s)));
     $('personOn').checked = s.person.show; setVal('personH', s.person.height); setOut('oPersonH', fmtHeight(s.person.height, u));
     for (const [id, side] of PSIDES) $(id).classList.toggle('on', s.person.show && s.person.side === side);
+    }
+    if (env || fishSet) syncAq();
 
     // stocking list: one row per species, in order of arrival (rebuilt only when the counts change)
     // a dimorphic species has a row per sex present: '<id>' male, '<id>~f' female
@@ -1055,6 +1066,7 @@ Cancel, then change the name, to keep both.`)) return;
     $('sexRow').hidden = !dim;
     $('sexM').classList.toggle('on', dim && f!.sex !== 'f'); $('sexF').classList.toggle('on', dim && f!.sex === 'f');
 
+    if (env || fishSet) {
     const sub = s.substrate, smax = Math.round(A.H * 0.5);
     setVal('subType', sub.show ? sub.type : 'bare');
     const cu = sub.custom, two = cu.grain2 !== 'none';
@@ -1127,12 +1139,16 @@ Cancel, then change the name, to keep both.`)) return;
     $('lUnitRow').style.display = mapOn && watts ? '' : 'none'; setVal('lUnit', l.mapUnit ?? 'par'); mapKey(watts ? l.mapUnit ?? 'par' : 'rel');
     $('lBeams').checked = s.render.beams && l.type !== 'flat'; $('lBeams').parentElement!.title = l.type === 'flat' ? 'No fixture: pick one under Fixture to see the light map' : ''; /* audit #44 */ $('lMapKey').style.display = s.render.beams && l.type !== 'flat' ? '' : 'none';
     $('lMapBare').hidden = !(s.render.beams && l.type !== 'flat' && !s.substrate.show); /* the map needs a floor to draw on (audit #17) */ ($('lBeams') as HTMLInputElement).disabled = l.type === 'flat';
+    }
 
+    if (cam) {
     const c = s.camera;
     for (const [id, k] of Object.entries(camKeys)) setVal(id, c[k]);
     setOut('oDist', fmt(c.dist)); setOut('oAz', c.az + '°'); setOut('oEl', c.el + '°'); setOut('oZoom', '×' + c.zoom.toFixed(2));
     // no steep-angle warning: the fish are 3D now, not flat cards (Nathan 2026-10-13)
     $('camHint').textContent = 'Distance is from your eye to the front glass, the same for every tank. Zoom only crops; it never changes perspective.';
+    }
+    if (env || itemSet) {
 
     ($('split') as HTMLButtonElement).disabled = store.split;
     $('splitHint').textContent = store.split ? 'Two tanks is the most: Delete one on its tab to split again. Each view’s tab (top of the view) opens on hover: what differs, Download that tank on its own, or Delete it. Save and Download at the top keep both tanks together.' : 'Copy this tank into a second, independent one beside it, then change anything in either.';
@@ -1143,7 +1159,9 @@ Cancel, then change the name, to keep both.`)) return;
     const nk = (k: ItemKind) => s.items.filter(q => q.kind === k).length;
     $('itemCount').textContent = s.items.length ? (Object.keys(KINDS) as ItemKind[]).filter(k => nk(k)).map(k => `${nk(k)} ${nk(k) === 1 && k !== 'wood' ? KINDS[k].toLowerCase().replace(/s$/, '') : KINDS[k].toLowerCase()}`).join(', ') : 'Nothing placed yet. Pick a piece above to add it.';
     ($('itemsClear') as HTMLButtonElement).disabled = !s.items.length;
-    const it = store.selectedItem;
+    }
+    if (env || item) {
+    const it = it0;
     if (it && it.id !== lastItem) openSec('aquascape');
     lastItem = it?.id ?? null;
     $('itemBox').hidden = !it;
@@ -1157,6 +1175,7 @@ Cancel, then change the name, to keep both.`)) return;
       setVal('iYaw', it.yaw); setOut('oIYaw', it.yaw + '°'); setVal('iPitch', it.pitch); setOut('oIPitch', it.pitch + '°'); setVal('iTilt', it.tilt); setOut('oITilt', it.tilt + '°');
       $('iLift').min = String(-Math.round(A.H * LIFT_SINK)); $('iLift').max = String(Math.round(A.H)); setVal('iLift', Math.round(it.lift));
       setOut('oILift', Math.abs(it.lift) < 1 ? 'On the ground' : it.lift < 0 ? fmt(-it.lift) + ' in' : fmt(it.lift));
+    }
     }
     syncJson();
   }
@@ -1277,7 +1296,7 @@ Cancel, then change the name, to keep both.`)) return;
   // ---------- autosave ----------
   let saveTimer = 0;
   store.subscribe(kind => {
-    sync();
+    sync(kind === 'load');
     if (kind === 'select') return;
     clearTimeout(saveTimer);
     saveTimer = window.setTimeout(() => {

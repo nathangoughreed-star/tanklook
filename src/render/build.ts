@@ -809,11 +809,11 @@ export interface BuiltTank {
 /**
  * The fields the meshes outside the fish and items depend on: a change to any of them rebuilds the whole tank. Left
  * out: the fish and items (patched part by part), the camera, the values that are only uniforms (colour temperature,
- * brightness, room light, fish stand out) and the colours `patchLook` sets in place (water colour and opacity, while
+ * brightness, room light, lane K's power / light type / measured PAR / map unit, fish stand out) and the colours `patchLook` sets in place (water colour and opacity, while
  * it stays above 0; the wall colour; a custom substrate's colours, share and mix).
  */
 export function envKey(S: TankSetup) {
-  const { kelvin: _k, room: _r, bright: _b, ...light } = S.light, { pop: _p, ...render } = S.render;
+  const { kelvin: _k, room: _r, bright: _b, watts: _w, tech: _t, par: _q, mapUnit: _u, ...light } = S.light, { pop: _p, ...render } = S.render;
   const { color: _wc, opacity, ...water } = S.water, { color: _c, ...wall } = S.wall;
   const { color: _c1, color2: _c2, share: _s, mix: _m, ...custom } = S.substrate.custom;
   return JSON.stringify({ ...S, fish: null, items: null, camera: null, light, render, water: { ...water, tinted: opacity > 0 }, wall, substrate: { ...S.substrate, custom } });
