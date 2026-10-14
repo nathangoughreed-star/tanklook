@@ -433,6 +433,9 @@ library) open in `../Glass-Box-plants3d`. Lane J2 offered 2026-10-14: J's leftov
 step; steady draw 45-50 ms on big tanks; lane K's light fields in build.ts envKey), reusing `../Glass-Box-perf` /
 `perf`, port 5373; owns `src/render/*` except the plant branch of `render/items.ts` (A2) and `render/coral3d.ts` (I),
 plus the store listener in `src/ui/panels.ts`.
+Lane K2 offered 2026-10-14 (light follow-ups: tap-to-read, CFL / MH / halogen calibration, soft beam in the normal
+render), in `../Glass-Box-light-output` / `light-output`, port 5383. `render/lighting.ts` is CARVED OUT to K2 (not J2);
+J2 asks the coordinator before touching it. K2 also owns scene/lightout.ts, ui/lightHover.ts, the Lighting rows.
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_e1923781-40bc-48d3-84f3-ed380e471779`
 ("Lanes coordinator"). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
 and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says
