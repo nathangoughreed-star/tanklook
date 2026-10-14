@@ -60,17 +60,38 @@ STAND_INS = {
     'firetoad': 'White Cloud Mountain Minnow (Tanichthys albonubes)',  # 4.5 cm, semi-aquatic, cool water
 }
 
+# Saltwater (lane C's marine species): AqAdvisor's separate marine calculator, AqAdvisorMarine.php, same form and the
+# same "stocking level is N%" answer, its own species ids. Its list is fish only (2026-10-14), so the three marine
+# invertebrates are stand-ins: small fish of about their size and habit. Flagged salt in the json.
+MARINE = {
+    'ocellaris': 'Ocellaris Clownfish (Amphiprion ocellaris)',
+    'royalgramma': 'Royal Gramma Basslet (Gramma loreto)',
+    'yellowtang': 'Yellow Tang (Zebrasoma flavescens)',
+    'firefish': 'Firefish Goby (Nemateleotris magnifica)',
+    'banggai': 'Bangaii Cardinal (Pterapogon kauderni)',
+    'sixline': 'Six Line Wrasse (Pseudocheilinus hexataenia)',
+    'chromis': 'Green Chromis (Chromis viridis)',
+    'coralbeauty': 'Coral Beauty Angelfish (Centropyge bispinosa)',
+    'watchman': 'Yellow Watchman Goby (Cryptocentrus cinctus)',
+}
+MARINE_STAND_INS = {
+    'cleanershrimp': 'Neon Goby (Gobiosoma oceanops)',  # 5 cm, a cleaner itself
+    'turbo': 'Tail Spot Blenny (Ecsenius stigmatura)',  # small rock-grazing algae eater
+    'hermit': 'Yellow Clown Goby (Gobiodon okinawae)',  # 3.5 cm, perches on rock and coral
+}
+
 BASE = 'http://aqadvisor.com/AqAdvisor.php'
+MARINE_BASE = 'http://aqadvisor.com/AqAdvisorMarine.php'
 UA = 'TankLook species mapper (tanklook.com; one request per species)'
 
-def add(name):
+def add(name, salt=False):
     q = urllib.parse.urlencode({
         'AquListBoxTank': 'User Defined', 'AquTankLength': 24, 'AquTankDepth': 12, 'AquTankHeight': 16,
-        'AquListBoxFilter': 'Choose', 'AquListBoxFilter2': 'Choose', 'AquListBoxChooser': name,
+        **({} if salt else {'AquListBoxFilter': 'Choose', 'AquListBoxFilter2': 'Choose'}), 'AquListBoxChooser': name,
         'AquTextBoxQuantity': 1, 'FormSubmit': 'Add >', 'AlreadySelected': '', 'FilterMode': 'Display all species',
         'AqTempUnit': 'C', 'AqVolUnit': 'gUS', 'AqLengthUnit': 'inch', 'AqSortType': 'cname',
         'AqSpeciesWindowSize': 'short', 'AqSearchMode': 'simple'})
-    req = urllib.request.Request(f'{BASE}?{q}', headers={'User-Agent': UA})
+    req = urllib.request.Request(f'{MARINE_BASE if salt else BASE}?{q}', headers={'User-Agent': UA})
     html = urllib.request.urlopen(req, timeout=30).read().decode('latin1')
     m = re.search(r'name="AlreadySelected" value="(\d+):1::"', html)
     return m.group(1) if m else None
@@ -78,14 +99,17 @@ def add(name):
 path = pathlib.Path(__file__).resolve().parent.parent / 'src' / 'data' / 'aqadvisor.json'
 known = json.loads(path.read_text(encoding='utf8')) if path.exists() else {}
 out = {}
-for sid, name in [*NAMES.items(), *STAND_INS.items()]:
+ALL = [*NAMES.items(), *STAND_INS.items(), *MARINE.items(), *MARINE_STAND_INS.items()]
+for sid, name in ALL:
+    salt = sid in MARINE or sid in MARINE_STAND_INS
     old = known.get(sid)
-    aq = old['aq'] if old and old['name'] == name else add(name)  # only ask AqAdvisor for new or changed entries
+    aq = old['aq'] if old and old['name'] == name else add(name, salt)  # only ask AqAdvisor for new or changed entries
     print(f'{sid:14} {aq or "NOT FOUND"}  {name}')
     if aq:
-        out[sid] = {'aq': aq, 'name': name, **({'standIn': True} if sid in STAND_INS else {})}
+        out[sid] = {'aq': aq, 'name': name, **({'standIn': True} if sid in STAND_INS or sid in MARINE_STAND_INS else {}),
+                   **({'salt': True} if salt else {})}
     if not (old and old['name'] == name):
         time.sleep(1)
 
 path.write_text(json.dumps(out, indent=1) + '\n', encoding='utf8')
-print(f'{len(out)}/{len(NAMES) + len(STAND_INS)} resolved -> {path}')
+print(f'{len(out)}/{len(ALL)} resolved -> {path}')

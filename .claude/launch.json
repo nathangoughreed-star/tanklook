@@ -279,6 +279,94 @@
         "aq"
       ],
       "port": 5333
+    },
+    {
+      "name": "audit-fixes",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "C:/Users/nreed/Glass-Box-audit-fixes",
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5343",
+        "--strictPort"
+      ],
+      "port": 5343
+    },
+    {
+      "name": "reef-polish",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "C:/Users/nreed/Glass-Box-reef-polish",
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5353",
+        "--strictPort"
+      ],
+      "port": 5353
+    },
+    {
+      "name": "core-fixes",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "C:/Users/nreed/Glass-Box-core-fixes",
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5363",
+        "--strictPort"
+      ],
+      "port": 5363
+    },
+    {
+      "name": "perf",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "C:/Users/nreed/Glass-Box-perf",
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5373",
+        "--strictPort"
+      ],
+      "port": 5373
+    },
+    {
+      "name": "light-output",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "C:/Users/nreed/Glass-Box-light-output",
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5383",
+        "--strictPort"
+      ],
+      "port": 5383
+    },
+    {
+      "name": "review",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5393",
+        "--strictPort"
+      ],
+      "port": 5393
     }
   ]
 }

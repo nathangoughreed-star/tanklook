@@ -22,5 +22,5 @@ export const EXAMPLES: Example[] = [
   { id: 'betta', name: 'Betta bowl', hint: 'A 30 cm bowl on a round side table: one betta, one nerite.', scene: betta, thumb: bettaPic },
   { id: 'paludarium', name: 'Paludarium', hint: 'Land around a pool: fire-bellied toads and dart frogs, chili rasboras and shrimp in the water.', scene: paludarium, thumb: paludariumPic },
   { id: 'terrarium', name: 'Tree frog terrarium', hint: 'A tall dry tank: wood, plants and three White’s tree frogs.', scene: terrarium, thumb: terrariumPic },
-  { id: 'reef', name: 'Reef (placeholder)', hint: 'Saltwater, aragonite and rock; marine fish and corals come later.', scene: reef, thumb: reefPic },
+  { id: 'reef', name: 'Reef', hint: '24 in nano reef: live rock and corals, a clownfish pair, royal gramma, firefish, watchman goby, cleaner shrimp, snails and hermits.', scene: reef, thumb: reefPic },
 ];

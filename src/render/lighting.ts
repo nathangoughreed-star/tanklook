@@ -6,92 +6,16 @@
 // Room surfaces (wall, floor, stand, hood, person) are lit by the room light, plus light spilling out of the tank:
 // with the room light off, the tank is the only light in the room (Nathan, 2026-10-08).
 import * as THREE from 'three';
-import { D2R, clamp } from '../scene/physics';
-import type { LightSettings, LightType, Tank, WaterSettings } from '../scene/types';
+import { clamp } from '../scene/physics';
+import type { LightSettings, Tank, WaterSettings } from '../scene/types';
 import { waterK, waterY } from '../scene/physics';
-import { bowlDims, footprint, insideBy, shapeOf, type P } from '../scene/shape';
+import { bowlDims, footprint, shapeOf } from '../scene/shape';
 
-export const AQ_MAX = 48, LAMP_Y = 50, REF = 320;
-export const CONES: Record<Exclude<LightType, 'flat'>, [number, number]> = {
-  spot: [Math.cos(18 * D2R), Math.cos(34 * D2R)], tube: [0.45, -0.15], led: [Math.cos(45 * D2R), Math.cos(75 * D2R)],
-};
-/** Spot beam (full angle, degrees) -> [cos inner, cos outer] half-angles; the default 52° gives the old 18°/34°. */
-const spotCone = (deg: number): [number, number] => [Math.cos(Math.min(deg * 0.35, 80) * D2R), Math.cos(Math.min(deg * 0.65, 85) * D2R)];
-/** The fixture's beam, and how much brighter it is per unit area than the standard one (same output, narrower beam). */
-function beam(l: LightSettings): { cone: [number, number]; gain: number } {
-  if (l.type !== 'spot') return { cone: CONES[l.type as Exclude<LightType, 'flat'>], gain: 1 };
-  const deg = l.cone ?? 52, solid = (a: number) => 1 - Math.cos(a / 2 * D2R);
-  return { cone: spotCone(deg), gain: solid(52) / solid(deg) };
-}
-/** [x, y, z, halfLength]: halfLength > 0 means a line emitter along x. */
-export type Emitter = [number, number, number, number];
+import { AQ_MAX, LAMP_Y, beam, emitters, lampHeight, type Emitter } from '../scene/lightout';
+// the fixture geometry lives with the light-output model now (lane K); re-exported so importers stay as they were
+export { AQ_MAX, CONES, LAMP_Y, beam, emitters, fitSpots, lampHeight, type Emitter } from '../scene/lightout';
 
-/** Fixture height above the tank top (mm): the setting, or LAMP_Y inside a hood. */
-export const lampHeight = (l: LightSettings, lid: string) => (lid === 'hood' ? LAMP_Y : l.height ?? LAMP_Y);
-
-export function emitters(T: Tank, l: LightSettings, height = l.height ?? LAMP_Y): Emitter[] {
-  const { L, H, D } = T, y = H + height, n = l.count, E: Emitter[] = [];
-  // spots: a count × rows grid (rows run front to back), centred over the tank. Auto spacing (0) spreads it to fill
-  // the tank; a set spacing is centre to centre, with rows √3/2 of it apart in the triangular pattern. 'tri' staggers
-  // the rows: the middle row (or the back one, with an even number) has `count` bulbs, its neighbours one fewer.
-  if (l.type === 'spot' && l.pattern === 'fit') for (const [x, d] of fitSpots(T, n)) E.push([x, y, -d, 0]);
-  else if (l.type === 'spot') {
-    const m = l.rows ?? 1, s = l.spacing ?? 0, tri = l.pattern === 'tri';
-    const sx = s > 0 ? s : L / n, sz = s > 0 ? (tri ? s * Math.sqrt(3) / 2 : s) : D / m;
-    for (let j = 0; j < m; j++) {
-      const k = tri && j % 2 !== (m % 2 ? ((m - 1) / 2) % 2 : 1) ? Math.max(n - 1, 1) : n, z = -D / 2 - (j - (m - 1) / 2) * sz;
-      for (let i = 0; i < k; i++) E.push([L / 2 + (i - (k - 1) / 2) * sx, y, z, 0]);
-    }
-  }
-  if (l.type === 'tube') for (let i = 0; i < n; i++) E.push([L / 2, y, -D * (i + 0.5) / n, L * 0.45]);
-  if (l.type === 'led') {
-    const cols = clamp(Math.round(L * 0.9 / 45), 2, 24);
-    for (const r of [0.38, 0.62]) for (let c = 0; c < cols; c++) E.push([L * (0.05 + 0.9 * (c + 0.5) / cols), y, -D * r, 0]);
-  }
-  return E.slice(0, AQ_MAX);
-}
-
-const fitCache = new Map<string, P[]>();
-/**
- * `n` bulb positions [x, depth] that cover the tank's outline evenly, for odd shapes a grid fits badly (Nathan,
- * 2026-10-13: a 90° pie wants one bulb toward the corner and one near each end of the arc). Centroidal Voronoi:
- * every bulb sits at the centre of the floor area nearer to it than to any other bulb, which minimises the mean
- * distance from the floor to its nearest bulb. Lloyd's iteration over a sample grid of the footprint, from a few
- * deterministic starts (farthest-point seeding), keeping the best; cached per outline and count.
- */
-export function fitSpots(T: Tank, n: number): P[] {
-  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.pieDeg}|${n}`;
-  const hit = fitCache.get(key);
-  if (hit) return hit;
-  const g = 48, S: P[] = [];
-  for (let i = 0; i < g; i++) for (let j = 0; j < g; j++) {
-    const x = T.L * (i + 0.5) / g, d = T.D * (j + 0.5) / g;
-    if (insideBy(T, x, d) > 0) S.push([x, d]);
-  }
-  if (!S.length) S.push([T.L / 2, T.D / 2]);
-  const near = (p: P, c: P[]) => { let k = 0, b = Infinity; c.forEach((q, i) => { const v = (p[0] - q[0]) ** 2 + (p[1] - q[1]) ** 2; if (v < b) { b = v; k = i; } }); return [k, b]; };
-  let best: P[] = [], bestE = Infinity;
-  // starts: farthest-point seeding from the centroid, and from each of a few spread samples
-  const mean: P = [S.reduce((a, p) => a + p[0], 0) / S.length, S.reduce((a, p) => a + p[1], 0) / S.length];
-  for (const first of [mean, S[0], S[S.length >> 1], S[S.length - 1], S[Math.floor(S.length / 3)]]) {
-    let c: P[] = [first];
-    while (c.length < n) { let f = S[0], fd = -1; for (const p of S) { const v = near(p, c)[1]; if (v > fd) { fd = v; f = p; } } c.push(f); }
-    for (let it = 0; it < 120; it++) {
-      const acc = c.map(() => [0, 0, 0]);
-      for (const p of S) { const a = acc[near(p, c)[0]]; a[0] += p[0]; a[1] += p[1]; a[2]++; }
-      const next = acc.map((a, i): P => (a[2] ? [a[0] / a[2], a[1] / a[2]] : c[i]));
-      const moved = Math.max(...next.map((q, i) => Math.hypot(q[0] - c[i][0], q[1] - c[i][1])));
-      c = next;
-      if (moved < 0.05) break;
-    }
-    const E = S.reduce((a, p) => a + near(p, c)[1], 0);
-    if (!best.length || E < bestE * (1 - 1e-6)) { bestE = E; best = c; }
-  }
-  // front to back, left to right, so the bulbs keep a stable order
-  best = best.map(p => [+p[0].toFixed(1), +p[1].toFixed(1)] as P).sort((a, b) => a[1] - b[1] || a[0] - b[0]);
-  fitCache.set(key, best); if (fitCache.size > 32) fitCache.delete(fitCache.keys().next().value!);
-  return best;
-}
+export const REF = 320;
 
 /** JS twin of the shader loop (card mode: no facing term); used for normalisation. */
 export function lightSum(E: Emitter[], p: [number, number, number], cone: [number, number]) {
@@ -140,6 +64,31 @@ export function setWaterUniforms(T: Tank, w: WaterSettings, pop = 0) {
   LU.uWater.value.set(T.L, waterY(T, w.level), T.D, w.on ? waterK(w.opacity) : 0);
   LU.uWCol.value.set(w.color);
 }
+/**
+ * The empty water's own colour (audit #18): drawn on the far faces of the water volume, as much of the water colour as
+ * the sightline crosses (same slab test and `waterK` as the tint on objects). It draws only where nothing is behind it
+ * (fragment depth pinned to the far plane, depth test "less"), so a fish, the background or the room wall, which are
+ * tinted by their own shader, are not tinted twice; what it colours is the empty page seen through the water.
+ */
+export function waterVolumeMaterial() {
+  return new THREE.ShaderMaterial({
+    uniforms: { uWater: LU.uWater, uWCol: LU.uWCol, uPopV: LU.uPop },
+    vertexShader: 'varying vec3 vP; void main() { vec4 w = modelMatrix * vec4(position, 1.0); vP = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }',
+    fragmentShader: `uniform vec4 uWater; uniform vec3 uWCol; varying vec3 vP;
+void main() {
+  vec3 o = cameraPosition, dv = vP - o;
+  dv = mix(dv, vec3(1e-3), step(abs(dv), vec3(1e-3)));
+  vec3 t0 = (vec3(0.0, 0.0, -uWater.z) - o) / dv, t1 = (vec3(uWater.x, uWater.y, 0.0) - o) / dv;
+  vec3 tn = min(t0, t1), tf = max(t0, t1);
+  float a = max(max(tn.x, tn.y), max(tn.z, 0.0)), b = min(min(tf.x, tf.y), min(tf.z, 1.0));
+  float f = 1.0 - exp(-uWater.w * max(b - a, 0.0) * length(vP - o));
+  gl_FragColor = vec4(uWCol * 0.85, f);
+  gl_FragDepth = 0.9999999;
+}`,
+    transparent: true, depthWrite: false, depthFunc: THREE.LessDepth, side: THREE.BackSide,
+  });
+}
+
 export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams = false) {
   const on = l.type !== 'flat'; LU.uMode.value = on ? 1 : 0;
   // light map: a spot bulb or a tube counts as one light; an LED bar's emitters share the output of four bulbs
@@ -333,7 +282,7 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
   }
 }
 // one cache key per material kind keeps one compiled program per kind
-const progKey = function (this: THREE.Material) { return 'aq' + (this.userData.card ? 'c' : '') + (this.userData.sub ? 's' : '') + (this.userData.room ? 'r' : '') + (this.userData.fish ? 'f' : '') + (this.userData.plain ? 'p' : '') + (this.userData.frost ? 'F' : '') + (this.userData.solid ? 'h' : '') + (this.userData.post ? 'b' : '') + (this.userData.fishCard ? 'k' : ''); };
+const progKey = function (this: THREE.Material) { return 'aq' + (this.userData.card ? 'c' : '') + (this.userData.sub ? 's' : '') + (this.userData.room ? 'r' : '') + (this.userData.fish ? 'f' : '') + (this.userData.plain ? 'p' : '') + (this.userData.frost ? 'F' : '') + (this.userData.solid ? 'h' : '') + (this.userData.post ? 'b' : '') + (this.userData.fishCard ? 'k' : '') + (this.userData.plantClip ? 'g' : ''); };
 
 /** Light every opaque surface inside the tank (substrate, background, fish, plant); glass, rim, lines and the fixture stay unlit. */
 export function applyLighting(sc: THREE.Scene) {
@@ -350,13 +299,17 @@ export function applyLighting(sc: THREE.Scene) {
   });
 }
 
+/** The lit face of a fixture at colour temperature `kelvin`. */
+export const glowColor = (kelvin: number) => new THREE.Color(...kelvinRGB(kelvin)).multiplyScalar(0.7).addScalar(0.35);
+
 export function addFixture(sc: THREE.Scene, T: Tank, l: LightSettings, ceiling?: number) {
   if (l.type === 'flat') return;
   const { L, H, D } = T, y = H + (l.height ?? LAMP_Y);
-  const glow = new THREE.MeshBasicMaterial({ color: new THREE.Color(...kelvinRGB(l.kelvin)).multiplyScalar(0.7).addScalar(0.35) });
+  const glow = new THREE.MeshBasicMaterial({ color: glowColor(l.kelvin) }); glow.userData.glow = true; // recoloured in place (viewer)
   const dark = new THREE.MeshBasicMaterial({ color: 0x2a2e33 });
   const add = (geo: THREE.BufferGeometry, mat: THREE.Material, x: number, yy: number, z: number) => {
-    const m = new THREE.Mesh(geo, mat); m.position.set(x, yy, z); m.userData.nolight = true; sc.add(m); return m;
+    // `overhead`: hidden while the eye is above the fixture (viewer), where it would only cover the tank (audit #20)
+    const m = new THREE.Mesh(geo, mat); m.position.set(x, yy, z); m.userData.nolight = true; m.userData.overhead = y; sc.add(m); return m;
   };
   const E = emitters(T, l);
   // a raised fixture hangs from the ceiling on thin cables (two per bar, one per spot)
@@ -438,5 +391,6 @@ export function addBeams(sc: THREE.Scene, T: Tank, l: LightSettings, lid: string
     for (let i = 0; i < n; i++) { const j = (i + 1) % n; idx.push(i, j, n + i, j, n + j, n + i); }
     const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx);
     const o = new THREE.Mesh(g, m); o.userData.nolight = true; o.renderOrder = 5; sc.add(o);
+    if (m === open) o.userData.overhead = top; // above the rim: hidden from above the fixture, where it floods the view (audit #20)
   }
 }

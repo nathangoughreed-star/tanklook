@@ -1,5 +1,5 @@
 // Keeps animals where they live: swimmers between the ground and the surface, bottom dwellers on submerged ground,
-// animals on the glass below the water line, land animals on ground above it; amphibious ('both') animals swim where the water is
+// animals on the glass below the water line (tree frogs above it), land animals on ground above it; amphibious ('both') animals swim where the water is
 // deep enough for them and rest on the ground elsewhere. Floor snails may sit anywhere, emerged land included.
 import { fishTL, speciesOf, type Species } from '../data/species';
 import { clamp, clampFish, waterY } from './physics';
@@ -13,11 +13,19 @@ export function restsOnGround(s: TankSetup, T: Tank, sp: Species, x: number, dep
   return !s.water.on || waterY(T, s.water.level) - groundHeight(s, T, x, depth) < h;
 }
 
+/** The heights (mm) an animal `w` long on the glass may sit at over ground `sub`: a land climber (tree frog) between the
+ *  water line (or the ground) and the top of the pane, anything else between the ground and the water line. */
+export function glassBand(s: TankSetup, T: Tank, sp: Species, w: number, sub: number): [number, number] {
+  const water = s.water.on ? waterY(T, s.water.level) : T.H;
+  const lo = (sp.habitat === 'land' && s.water.on ? Math.max(sub, water) : sub) + w / 2, top = sp.habitat === 'land' ? T.H : water;
+  return [lo, Math.max(lo, top - w / 2)];
+}
+
 /** Highest centre height (mm) for this animal at water surface `top`; null = its height is not free. */
 export function maxFishY(f: Fish, top: number): number | null {
   const sp = speciesOf(f); if (!sp) return null;
   const w = fishTL(f, sp);
-  if (f.surface === 'glass') return Math.max(0, top - w / 2); // a snail or pleco on the glass
+  if (f.surface === 'glass') return sp.habitat === 'land' ? null : Math.max(0, top - w / 2); // a snail or pleco on the glass (a tree frog stays above it)
   if (sp.zone === 'bottom' || sp.habitat === 'land' || sp.kind === 'snail') return null; // rests on the ground or hardscape
   return Math.max(0, top - w * sp.aspect / 2);
 }
@@ -26,7 +34,7 @@ export function maxFishY(f: Fish, top: number): number | null {
 export function fitFish(f: Fish, s: TankSetup) {
   const sp = speciesOf(f); if (!sp) return;
   const A = s.tank, top = waterY(A, s.water.level), w = fishTL(f, sp);
-  if (f.surface === 'glass') { f.y = clamp(f.y, 0, Math.max(0, top - w / 2)); return; }
+  if (f.surface === 'glass') { f.y = clamp(f.y, ...glassBand(s, A, sp, w, sp.habitat === 'land' ? groundHeight(s, A, f.x, f.depth) : 0)); return; }
   if (sp.kind === 'snail') return;
   const h = w * sp.aspect;
   if (sp.habitat === 'land') { // onto the nearest ground above the water; left where it is if the tank has no land

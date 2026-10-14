@@ -55,7 +55,27 @@ describe('parseScene', () => {
   });
 });
 
+describe('custom terrain from a bare bottom (audit #14)', () => {
+  it('starts from the substrate corner depths, not a zero-thickness floor', () => {
+    const s = defaultSetup(); s.substrate.show = false;
+    const t = sampleTerrain(s, s.tank, 6);
+    expect(Math.min(...t.h)).toBeGreaterThan(20);
+    expect(Math.max(...t.h)).toBeCloseTo(s.substrate.bl, 0);
+  });
+});
+
+describe('swamp layout (audit #15)', () => {
+  it('shows its substrate, so the Substrate panel matches the land you see', () => {
+    const st = new Store(defaultScene());
+    st.edit(s => { s.substrate.show = false; s.layout.id = 'swamp'; });
+    expect(st.tank.substrate.show).toBe(true);
+  });
+});
+
 describe('stand and wall settings', () => {
+  it('a new tank starts on a stand (audit #29)', () => {
+    expect(defaultSetup().stand.show).toBe(true);
+  });
   it('older files get both switched off; bad values are repaired', () => {
     const v2 = { ...v6(), version: 2 } as Record<string, unknown>;
     delete v2.stand; delete v2.wall;
@@ -225,6 +245,19 @@ describe('water (scene v5)', () => {
     const s = defaultSetup(), ys = s.fish.map(f => f.y), k = waterY(s.tank, 0.5) / waterY(s.tank, 1);
     setWaterLevel(s, 0.5);
     s.fish.forEach((f, i) => expect(f.y).toBeCloseTo(ys[i] * k));
+  });
+  it('lowering the level below a tall fish keeps it about where it is (deepest nearby spot), not pinned to the left glass (audit #1)', () => {
+    const st = new Store(defaultScene());
+    st.edit(s => { s.fish = [116, 180, 250, 320, 380, 431].map((x, i) => ({ id: 200 + i, species: 'angel', x, y: 200, depth: 150, yaw: 0, pitch: 0, roll: 0, bend: 0 })); });
+    const xs = st.tank.fish.map(f => f.x);
+    // 50 %: 140 mm of water everywhere, shallower than an angelfish is tall: they stay put and only drop
+    for (const level of [0.5, 1]) {
+      st.edit(s => setWaterLevel(s, level));
+      st.tank.fish.forEach((f, i) => { expect(f.x).toBe(xs[i]); expect(f.depth).toBe(150); });
+    }
+    // 10 %: the sloped gravel stands above the water except at the front, so they go forward, but keep their x
+    st.edit(s => setWaterLevel(s, 0.1));
+    st.tank.fish.forEach((f, i) => expect(Math.abs(f.x - xs[i])).toBeLessThan(15));
   });
   it('clamps a fish dragged above the water line', () => {
     const st = new Store(defaultScene()), id = st.tank.fish[0].id;

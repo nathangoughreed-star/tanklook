@@ -12,7 +12,8 @@ import { D2R } from '../scene/physics';
 import { bowlDims, footprint, shapeOf } from '../scene/shape';
 import { clampGround, groundHeight, groundInsideBy } from '../scene/terrain';
 import type { Item, Tank, TankSetup } from '../scene/types';
-import { carpetOnGround, has3DPlant, plant3d, plantGeometry, plantMaterial } from './plant3d';
+import { carpetOnGround, has3DPlant, plant3d, plantGeometry } from './plant3d';
+import { reefShape } from './coral3d';
 import { cardMaterial, plantTexture } from './textures';
 
 type R = () => number;
@@ -21,13 +22,13 @@ const V = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
 const C = (hex: string) => new THREE.Color(hex);
 
 /** Smooth pseudo-noise from a few random plane waves (enough for stones and bark; no texture needed). */
-function waves(r: R, n = 6) {
+export function waves(r: R, n = 6) {
   const w = Array.from({ length: n }, () => ({ d: V(r() - 0.5, r() - 0.5, r() - 0.5).normalize().multiplyScalar(1 + r() * 3), ph: r() * 6.28 }));
   return (p: THREE.Vector3) => w.reduce((a, q) => a + Math.sin(p.dot(q.d) + q.ph), 0) / n;
 }
 
 /** Set the unlit colour per vertex (stored in 'color'; bake() multiplies the light in). */
-function paint(g: THREE.BufferGeometry, col: (p: THREE.Vector3, i: number) => THREE.Color) {
+export function paint(g: THREE.BufferGeometry, col: (p: THREE.Vector3, i: number) => THREE.Color) {
   const p = g.attributes.position, out = new Float32Array(p.count * 3), v = new THREE.Vector3();
   for (let i = 0; i < p.count; i++) { const c = col(v.fromBufferAttribute(p, i), i); out[i * 3] = c.r; out[i * 3 + 1] = c.g; out[i * 3 + 2] = c.b; }
   g.setAttribute('color', new THREE.BufferAttribute(out, 3));
@@ -43,7 +44,7 @@ function inward(g: THREE.BufferGeometry) {
   return g;
 }
 /** Keep only position, normal, colour and grit, all indexed or all not, so pieces merge. */
-function clean(g: THREE.BufferGeometry, indexed: boolean) {
+export function clean(g: THREE.BufferGeometry, indexed: boolean) {
   for (const k of Object.keys(g.attributes)) if (!['position', 'normal', 'color', 'aGrit'].includes(k)) g.deleteAttribute(k);
   return indexed ? g : g.index ? g.toNonIndexed() : g;
 }
@@ -51,11 +52,12 @@ function clean(g: THREE.BufferGeometry, indexed: boolean) {
 // ---------- Surface grit ----------
 // Every solid carries aGrit = (noise coordinates in mm, kind); the shader (GRIT) draws the fine detail per pixel from it:
 // grain, pits and cracks on stone, grain, splits and knots on wood. Kinds: 1 river, 2 seiryu / arch, 3 dragon, 4 lava,
-// 5 slate, 6 bark (coordinates = along the limb, angle around, radius), 7 terracotta, 8 coconut, 9 end grain, 10 plain wood.
+// 5 slate, 6 bark (coordinates = along the limb, angle around, radius), 7 terracotta, 8 coconut, 9 end grain, 10 plain wood,
+// 11 hard coral (corallite dots), 12 soft coral tissue (polyp fuzz); the reef pieces (render/coral3d.ts) set their own.
 const GRIT_KIND: Record<string, number> = { river: 1, seiryu: 2, dragon: 3, lava: 4, slate: 5, tube: 7, coconut: 8, arch: 2 };
 const gritOffset = (seed: number) => [0.6180339, 0.4142135, 0.7320508].map((k, i) => ((seed * k + i * 0.37) % 1) * 400);
 /** aGrit from the vertex positions (shifted per seed so no two pieces share a pattern); left alone if already set. */
-function grit(g: THREE.BufferGeometry, kind: number, seed: number) {
+export function grit(g: THREE.BufferGeometry, kind: number, seed: number) {
   if (g.attributes.aGrit) return g;
   const p = g.attributes.position, o = gritOffset(seed), a = new Float32Array(p.count * 4);
   for (let i = 0; i < p.count; i++) { a[i * 4] = p.getX(i) + o[0]; a[i * 4 + 1] = p.getY(i) + o[1]; a[i * 4 + 2] = p.getZ(i) + o[2]; a[i * 4 + 3] = kind; }
@@ -309,6 +311,9 @@ float gritK() {
   else if (t == 8) k = 1.0 + (gN(vec3(p.x * 0.7, p.y * 0.05, p.z * 0.7)) - 0.5) * 0.5 * gFade(0.6, px) + (gF(p * 0.1) - 0.5) * 0.2;
   else if (t == 9) { float d = length(p.xy); k = (0.7 + 0.14 * sin(d * 2.6 + 2.0 * gN(p * 0.4))) * (1.0 - 0.5 * gLine(abs(gN(vec3(atan(p.y, p.x) * 3.0, 0.0, 1.0)) * 2.0 - 1.0), 0.06)); }
   else if (t == 10) k = 1.0 + (gF(p * 0.3) - 0.5) * 0.22 * gFade(0.6, px);
+  else if (t == 11) k = (1.0 + (gF(q * 0.08) - 0.5) * 0.2 + (gN(q * 0.45) - 0.5) * 0.18 * gFade(0.45, px))   // hard coral: mottling, corallite cups
+                   * (1.0 - 0.3 * smoothstep(0.6, 0.72, gN(q * 0.7 + 3.0)) * gFade(0.7, px));
+  else if (t == 12) k = 1.0 + (gF(q * 0.06) - 0.5) * 0.18 + 0.22 * smoothstep(0.55, 0.7, gN(q * 0.6 + 5.0)) * gFade(0.6, px); // soft: pale polyp fuzz
   return k;
 }
 `;
@@ -321,23 +326,34 @@ float gritK() {
  * below the opening (its walls flare past the floor disc). Needs the renderer's localClippingEnabled.
  */
 const glassMats = new Map<string, THREE.MeshBasicMaterial>();
-function solidMaterial(T: Tank) {
-  const bowl = shapeOf(T) === 'bowl', k = `${shapeOf(T)}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}`;
-  let m = glassMats.get(k);
-  if (m) return m;
-  const planes = [new THREE.Plane(new THREE.Vector3(0, 1, 0), 0)];
+const glassKey = (T: Tank) => `${shapeOf(T)}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}`;
+/** The clipping planes and the bowl's sphere cut (a shader patch adding vGlassW) for one tank outline. */
+function glassClip(T: Tank) {
+  const bowl = shapeOf(T) === 'bowl', planes = [new THREE.Plane(new THREE.Vector3(0, 1, 0), 0)];
   // keep where -((x - a.x) n.x + (depth - a.d) n.d) >= 0, i.e. insideBy; world z = -depth
   if (!bowl) for (const e of footprint(T).edges) planes.push(new THREE.Plane(new THREE.Vector3(-e.n[0], 0, e.n[1]), e.a[0] * e.n[0] + e.a[1] * e.n[1]));
-  // both sides drawn: where the glass cuts a piece open, its inside shows as a flat darker cut face, so it reads solid
-  m = new THREE.MeshBasicMaterial({ vertexColors: true, clippingPlanes: planes, side: THREE.DoubleSide });
   const b = bowl ? bowlDims(T) : null;
   const uC = { value: new THREE.Vector3(T.L / 2, b?.c ?? 0, -T.D / 2) }, uR = { value: b?.R ?? 1e9 }, uTop = { value: b?.H ?? 0 };
+  const patch = (sh: THREE.WebGLProgramParametersWithUniforms) => {
+    Object.assign(sh.uniforms, { uC, uR, uTop });
+    sh.vertexShader = 'varying vec3 vGlassW;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\n  vGlassW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+    sh.fragmentShader = 'varying vec3 vGlassW;\nuniform vec3 uC;\nuniform float uR;\nuniform float uTop;\n' + sh.fragmentShader
+      .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\n  if (vGlassW.y < uTop && distance(vGlassW, uC) > uR) discard;');
+  };
+  return { planes, patch };
+}
+function solidMaterial(T: Tank) {
+  const k = glassKey(T);
+  let m = glassMats.get(k);
+  if (m) return m;
+  const { planes, patch } = glassClip(T);
+  // both sides drawn: where the glass cuts a piece open, its inside shows as a flat darker cut face, so it reads solid
+  m = new THREE.MeshBasicMaterial({ vertexColors: true, clippingPlanes: planes, side: THREE.DoubleSide });
   // the lighting pass (render/lighting.ts aqPatch) takes over onBeforeCompile and runs userData.pre first
   const pre = (sh: THREE.WebGLProgramParametersWithUniforms) => {
-    Object.assign(sh.uniforms, { uC, uR, uTop });
-    sh.vertexShader = 'varying vec3 vGlassW;\nattribute vec4 aGrit;\nvarying vec4 vGrit;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\n  vGlassW = (modelMatrix * vec4(transformed, 1.0)).xyz; vGrit = aGrit;');
-    sh.fragmentShader = 'varying vec3 vGlassW;\nuniform vec3 uC;\nuniform float uR;\nuniform float uTop;\n' + GRIT + sh.fragmentShader
-      .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\n  if (vGlassW.y < uTop && distance(vGlassW, uC) > uR) discard;')
+    patch(sh);
+    sh.vertexShader = 'attribute vec4 aGrit;\nvarying vec4 vGrit;\n' + sh.vertexShader.replace('vGlassW = ', 'vGrit = aGrit; vGlassW = ');
+    sh.fragmentShader = GRIT + sh.fragmentShader
       .replace('#include <color_fragment>', '#include <color_fragment>\n  diffuseColor.rgb *= gritK();')
       .replace('#include <dithering_fragment>', '#include <dithering_fragment>\n  if (!gl_FrontFacing) gl_FragColor.rgb *= 0.55;');
   };
@@ -345,6 +361,19 @@ function solidMaterial(T: Tank) {
   m.customProgramCacheKey = () => 'glass-clip';
   Object.assign(m.userData, { keep: true, solid: true, pre });
   return remember(glassMats, k, m, 16, x => x.dispose());
+}
+/** 3D plants are cut off at the glass the same way (a leaf arching past a pane stops at it), one material per outline. */
+const plantMats = new Map<string, THREE.MeshBasicMaterial>();
+function plantMaterial(T: Tank) {
+  const k = glassKey(T);
+  let m = plantMats.get(k);
+  if (m) return m;
+  const { planes, patch } = glassClip(T);
+  m = new THREE.MeshBasicMaterial({ vertexColors: true, clippingPlanes: planes });
+  m.onBeforeCompile = patch;
+  m.customProgramCacheKey = () => 'plant-clip';
+  Object.assign(m.userData, { cached: true, keep: true, plantClip: true, pre: patch });
+  return remember(plantMats, k, m, 16, x => x.dispose());
 }
 const shapes = new Map<string, THREE.BufferGeometry>(), baked = new Map<string, THREE.BufferGeometry>(), plants = new Map<string, THREE.BufferGeometry>();
 function remember<T>(m: Map<string, T>, k: string, v: T, max: number, drop?: (v: T) => void) {
@@ -356,7 +385,7 @@ const dispose = (g: THREE.BufferGeometry) => g.dispose();
 
 function solidShape(it: Item) {
   const k = `${it.variant}|${it.seed}|${it.size}`;
-  const make = () => grit(it.kind === 'stone' ? stoneShape(it.variant, it.seed, it.size) : it.kind === 'wood' ? woodShape(it.variant, it.seed, it.size) : caveShape(it.variant, it.seed, it.size), GRIT_KIND[it.variant] ?? 2, it.seed);
+  const make = () => grit(it.kind === 'coral' || it.variant === 'liverock' ? reefShape(it.variant, it.seed, it.size) : it.kind === 'stone' ? stoneShape(it.variant, it.seed, it.size) : it.kind === 'wood' ? woodShape(it.variant, it.seed, it.size) : caveShape(it.variant, it.seed, it.size), GRIT_KIND[it.variant] ?? 2, it.seed);
   return shapes.get(k) ?? remember(shapes, k, make(), 150, dispose);
 }
 /** A piece's turn: yaw about the vertical, then pitch (tip forward / back), then roll (lean sideways). */
@@ -419,7 +448,7 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
       : carpetOnGround(plants.get(`3d${plant3d.sway ? 's' : ''}|carpet|${it.seed}|${it.size}`) ?? remember(plants, `3d${plant3d.sway ? 's' : ''}|carpet|${it.seed}|${it.size}`, plantGeometry(type, it.seed, h), 300, dispose), at);
     const g = plants.get(k3) ?? remember(plants, k3, make(), 300, dispose);
     if (carpet) g.computeBoundingBox();
-    m = new THREE.Mesh(g, solid ? plantMaterial() : cardMaterial('plant:' + type, plantTexture(type), S.render.edge));
+    m = new THREE.Mesh(g, solid ? plantMaterial(T) : cardMaterial('plant:' + type, plantTexture(type), S.render.edge));
     m.userData.plant = true;
   } else m = new THREE.Mesh(bakedShape(it), solidMaterial(T));
   m.position.set(it.x, y + (m.geometry.userData.rise ?? 0), -it.depth);

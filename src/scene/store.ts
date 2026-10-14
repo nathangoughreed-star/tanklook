@@ -23,6 +23,10 @@ export interface UpdateOptions {
 const COALESCE_MS = 1200, MAX_HISTORY = 200;
 export const STORAGE_KEY = 'tanklook.scene';
 
+/** Swamp land is drawn in the substrate, so a swamp layout always has its substrate shown: the Substrate panel then
+ *  says what you see, not "Bare bottom" (audit #15). */
+const swampGround = (t: TankSetup) => { if (t.layout.id === 'swamp') t.substrate.show = true; };
+
 export class Store {
   scene: Scene;
   selId: number | null = null;
@@ -35,6 +39,8 @@ export class Store {
   private lastKey: string | null = null;
   private lastTime = 0;
   private listeners = new Set<Listener>();
+  /** The view whose camera moved last (UI state): re-locking copies its camera to the other view. */
+  lastCam = 0;
 
   constructor(scene: Scene = emptyScene()) {
     this.scene = scene;
@@ -74,6 +80,7 @@ export class Store {
   /** Move a camera (not undoable): view i's (orbit / zoom in that view), or else every edited tank's (panel sliders).
    *  While the cameras are locked, both views move together. */
   cam(fn: (c: CameraSettings) => void, i?: number) {
+    this.lastCam = i ?? this.scene.active;
     this.update(s => {
       for (const k of s.camLock ? [i ?? s.active] : i != null ? [i] : this.targets) {
         const A = s.tanks[k]; if (!A) continue;
@@ -128,9 +135,15 @@ export class Store {
     if (!this.tank.fish.some(f => f.id === this.selId)) this.selId = null;
   }
 
-  /** Lock / unlock the two cameras. Re-locking snaps the second view to the original tank's camera (Nathan 2026-10-08). */
+  /** Lock / unlock the two cameras. Re-locking snaps the other view to the camera of the view moved last (audit #21;
+   *  was always the original tank's, Nathan 2026-10-08), so the view you were working in keeps its angle. */
   setCamLock(on: boolean) {
-    this.update(s => { s.camLock = on; if (on) { for (const t of s.tanks) t.camera = { ...s.tanks[0].camera }; clearCams(s.tanks, true); } }, { kind: 'view' });
+    this.update(s => {
+      s.camLock = on; if (!on) return;
+      const c = { ...(s.tanks[this.lastCam] ?? s.tanks[0]).camera };
+      for (const t of s.tanks) t.camera = { ...c };
+      clearCams(s.tanks, true);
+    }, { kind: 'view' });
   }
 
   update(fn: (s: Scene) => void, opts: UpdateOptions = {}) {
@@ -144,7 +157,7 @@ export class Store {
     fn(this.scene);
     // a terrain grid of another kind than its tank's (copied from the other tank, or a new shape) is resampled onto it
     const regrid = (t: TankSetup) => { const te = t.terrain; if (te.h.length && !sameGrid(te, t.tank)) t.terrain = { ...sampleTerrain(t, t.tank, te.cols), on: te.on }; };
-    if (kind === 'scene') { for (const t of this.scene.tanks) { regrid(t); keepInWater(t); fitTable(t); for (const it of t.items) clampItem(it, t.tank, t); } clearCams(this.scene.tanks, this.scene.camLock); }
+    if (kind === 'scene') { for (const t of this.scene.tanks) { regrid(t); swampGround(t); keepInWater(t); fitTable(t); for (const it of t.items) clampItem(it, t.tank, t); } clearCams(this.scene.tanks, this.scene.camLock); }
     if (this.selId != null && !this.tank.fish.some(f => f.id === this.selId)) this.selId = null;
     if (this.selItem != null && !this.tank.items.some(it => it.id === this.selItem)) this.selItem = null;
     this.emit(kind);

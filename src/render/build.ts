@@ -4,13 +4,13 @@ import * as THREE from 'three';
 import { SUBSTRATES, blendTile, maskQuantile } from '../art/placeholder';
 import { snailAspect } from '../art/snails';
 import { fishTL, needsWater, speciesOf, type Species } from '../data/species';
-import { restsOnGround } from '../scene/water';
+import { glassBand, restsOnGround } from '../scene/water';
 import { D2R, IN, clamp, floorY, glassThickness, RIM_DROP, RIM_H, tankUnderside, waterY } from '../scene/physics';
 import { alongRun, backgroundRuns, bowlDims, bowlRadius, chord, circleRing, clipToFootprint, facingRuns, footprint, glassFrame, halfWidth, inside, nearestGlass, offsetRing, offsetWalls, runLength, shapeOf, subRun, type P } from '../scene/shape';
 import { TABLE_TOP, cornerWalls, wallGap, tableCentre, tableOn, tableRing, wallPlane } from '../scene/table';
 import { groundHeight, pieSegs, terrainDisc, terrainPoints } from '../scene/terrain';
 import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
-import { addBeams, addFixture, applyLighting } from './lighting';
+import { addBeams, addFixture, applyLighting, waterVolumeMaterial } from './lighting';
 import { itemMesh } from './items';
 import { fish3d, fishBody, has3D, hullMaterial } from './fish3d';
 import { herpBody, isHerp3D } from './herp3d';
@@ -274,6 +274,14 @@ function addWater(sc: THREE.Scene, S: TankSetup, T: Tank) {
   surf.renderOrder = 4; surf.userData.nolight = true; sc.add(surf);
   const line = lines(ringLines(bowl ? circleRing(T, r - 0.6) : offsetRing(T, -0.6), y), 0xe8f6fa, 0.45);
   line.renderOrder = 4; sc.add(line);
+  // the water's own colour where only the empty page is behind it (audit #18; objects are tinted in their shader)
+  if (S.water.opacity <= 0) return;
+  let vol: THREE.BufferGeometry;
+  if (bowl) {
+    const n = 24, prof = Array.from({ length: n + 1 }, (_, i) => new THREE.Vector2(Math.max(0.5, bowlRadius(T, y * i / n)), y * i / n));
+    vol = new THREE.LatheGeometry([new THREE.Vector2(0, 0), ...prof, new THREE.Vector2(0, y)], 48).translate(T.L / 2, 0, -T.D / 2);
+  } else vol = prismGeometry(footprint(T).ring, 0, y);
+  const m = new THREE.Mesh(vol, waterVolumeMaterial()); m.userData.nolight = true; m.renderOrder = 3; sc.add(m);
 }
 
 export const STAND_FINISHES: Record<TankSetup['stand']['finish'], { label: string; color: number }> = {
@@ -644,7 +652,8 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   const top: number[][] = [], side: number[][] = [], N = swamp ? 72 : 16, wy = waterY(T, S.water.level);
   // a bowl flares above its floor: the ground spreads out from the centre to meet the glass at its own height
   const bowl = shapeOf(T) === 'bowl', rb = bowl ? bowlDims(T).rb : 0;
-  const G = (p: P): V3 => flare(T, p[0], p[1], h(p[0], p[1]), rb);
+  // never flush with the bottom glass (a terrain point dragged to 0 z-fought with it into stripes, audit #14)
+  const G = (p: P): V3 => flare(T, p[0], p[1], Math.max(0.6, h(p[0], p[1])), rb);
   const P3 = (i: number, j: number): V3 => G([L * i / N, D * j / N]);
   // cheap slope shading: brightness from each cell's tilt toward a light above, front and left
   const light = new THREE.Vector3(-0.35, 1, 0.45).normalize(), topCol: number[] = [];
@@ -659,7 +668,10 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
     const my = (q[0][1] + q[2][1]) / 2, dry = clamp((my - wy) / 12, 0, 1), mo = 0.5 + 0.5 * Math.sin(q[0][0] * 0.045 + Math.sin(q[0][2] * 0.05) * 2.4);
     const c = [k * (1 - dry * (0.42 + 0.12 * mo)), k * (1 - dry * (0.3 - 0.12 * mo)), k * (1 - dry * (0.62 + 0.05 * mo))];
     const v = cell.map(G); // a whole cell is the quad as before; a cut one is a fan
-    for (let m = 1; m < v.length - 1; m++) for (const p of [v[0], v[m], v[m + 1]]) { top.push(p, [p[0] / tile, -p[2] / tile]); topCol.push(...c); }
+    // grain from above on gentle ground; on a steep bank (swamp pool walls) from the side it faces, so it does not
+    // smear into streaks (audit #15)
+    const uv = n.y > 0.6 ? (p: V3) => [p[0] / tile, -p[2] / tile] : Math.abs(n.x) > Math.abs(n.z) ? (p: V3) => [-p[2] / tile, p[1] / tile] : (p: V3) => [p[0] / tile, p[1] / tile];
+    for (let m = 1; m < v.length - 1; m++) for (const p of [v[0], v[m], v[m + 1]]) { top.push(p, uv(p)); topCol.push(...c); }
   }
   // the skirt round the outline in short strips, so its top edge follows the ground (swamp banks are not straight);
   // the back shows through clear back glass (peninsula, orbiting round the back)
@@ -884,7 +896,7 @@ export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: numbe
     const solid = has3D(sp.art), herp = solid && isHerp3D(sp.art);
     const m = new THREE.Mesh(cardGeometry(w, h, f.bend), herp ? HIDDEN : cardMaterial(`fish:${sp.look}:${solid}:${solid && fish3d.fade}`, fishTexture(sp, S.render.edge, solid, solid && fish3d.fade), S.render.edge));
     if (!herp) (m.material as THREE.Material).userData.fishCard = true; // fish stand out (render.pop) lifts the card too
-    if (herp) m.add(herpBody(sp.art, w)); // the card stays as the invisible picking target
+    if (herp) m.add(herpBody(sp.art, w, f.surface === 'glass')); // the card stays as the invisible picking target
     else if (solid) m.add(fishBody(sp.art, sp.aspect, w, f.bend, fishBodyTexture(sp), S.render.edge, f.surface === 'glass')); // solid body + paired fins; the card keeps the median fins
     if (f.surface === 'glass') { onGlass(S, T, f, sp, m, w); register(f, m, w, h); continue; }
     // bottom dwellers and animals on land rest on the ground (or the hardscape) wherever they are (their stored height is ignored)
@@ -915,13 +927,12 @@ const UP = new THREE.Vector3(0, 1, 0), MAX_TILT = 45 * D2R;
 const PANE_GAP = 0.8;
 
 /**
- * A fish clinging to the glass (a pleco or an oto) at the point nearest its (x, depth): belly on the pane, back into the
+ * An animal clinging to the glass (a pleco, an oto or a tree frog) at the point nearest its (x, depth): belly on the pane, back into the
  * tank, head along yaw in the plane of the pane (0 = level, 90 = straight up).
  */
 function onGlass(S: TankSetup, T: Tank, f: Fish, sp: Species, m: THREE.Mesh, w: number) {
   const g0 = nearestGlass(T, f.x, f.depth, f.y);
-  const top = S.water.on ? waterY(T, S.water.level) : T.H, sub = groundHeight(S, T, g0.x, g0.depth);
-  const y = clamp(f.y, sub + w / 2, Math.max(sub + w / 2, top - w / 2)), off = sp.rest * w + PANE_GAP;
+  const y = clamp(f.y, ...glassBand(S, T, sp, w, groundHeight(S, T, g0.x, g0.depth))), off = sp.rest * w + PANE_GAP;
   // outward normal toward the glass (tilted on a bowl); "up" for the heading = straight up, laid onto the glass
   const g = glassFrame(T, f.x, f.depth, y), n = new THREE.Vector3(g.n[0], g.n[1], -g.n[2]);
   const up = n.clone().negate(), along = new THREE.Vector3(n.z, 0, -n.x).normalize(), a = f.yaw * D2R;

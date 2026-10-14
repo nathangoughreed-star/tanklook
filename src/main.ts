@@ -3,6 +3,7 @@ import { attachPointer } from './interact/pointer';
 import { Viewer } from './render/viewer';
 import { Store } from './scene/store';
 import { attachPanels } from './ui/panels';
+import { attachParGuide } from './ui/parGuide';
 
 function webglAvailable() {
   try { const c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); }
@@ -25,6 +26,7 @@ if (!webglAvailable()) {
   attachPointer(viewer, store, what => !!document.querySelector<HTMLDetailsElement>(`details.sec[data-sec="${sec[what]}"]`)?.open
     && !document.getElementById('app')!.classList.contains('collapsed'));
   const ui = attachPanels(store, viewer);
+  attachParGuide(() => store.tank.water.on && !!store.tank.water.salt);
   if (import.meta.env.DEV) import('./render/fish3d').then(({ fish3d }) => Object.assign(window, { __gb: { store, viewer, fish3d } })); // debugging handle, dev server only
-  if (restored) ui.status('Welcome back: your last tank was restored from this browser.');
+  ui.showStart(!!restored);
 }

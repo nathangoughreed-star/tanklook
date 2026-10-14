@@ -88,11 +88,15 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
       // clinging animals: a spot on any surface they can use, in proportion to its area; snails stay wherever that is,
       // the rest of a group of shrimp or otos left on the floor forage there as usual. A clinging fish (oto, pleco) takes
       // the glass at a third of its area: in a tall tank the panes outsize the floor two to one and would hold nearly all
-      const on = { glass: clingsTo(sp, 'glass') && (sp.kind === 'snail' || GLASS_FISH), hard: clingsTo(sp, 'hardscape') ? hard : undefined }, left: Fish[] = [];
+      // A land climber (tree frog) takes the dry glass and hardscape above the water line; on the floor it goes to land.
+      const land = sp.habitat === 'land', glass = clingsTo(sp, 'glass') && (sp.kind === 'snail' || (land ? GLASS_FROG : GLASS_FISH));
+      const on = { glass, hard: clingsTo(sp, 'hardscape') ? hard : undefined, above: land && s.water.on ? waterY(A, s.water.level) : undefined }, left: Fish[] = [];
       for (const f of e.fish) {
-        const p = spawnSnail(g, A, fishTL(f, sp), r, top, on);
+        const p = spawnSnail(g, A, fishTL(f, sp), r, land ? A.H - 10 : top, on);
         if (sp.kind !== 'snail' && p.surface === 'floor') { f.surface = 'floor'; left.push(f); continue; }
-        Object.assign(f, p, { pitch: 0, roll: 0, bend: sp.kind === 'snail' ? 0 : +((r() - 0.5) * 0.4).toFixed(2) }); note(f, fishTL(f, sp));
+        // a frog on the glass sits head up, more or less
+        if (land && p.surface === 'glass') p.yaw = Math.round(90 + (r() - 0.5) * 80);
+        Object.assign(f, p, { pitch: 0, roll: 0, bend: sp.kind === 'snail' || land ? 0 : +((r() - 0.5) * 0.4).toFixed(2) }); note(f, fishTL(f, sp));
       }
       if (sp.kind === 'snail' || !left.length) continue;
       e.fish = left;
@@ -179,6 +183,8 @@ export function placeNew(s: TankSetup, r: () => number, ids: Set<number>) {
 
 /** Weight of the glass, per mm², for a clinging fish choosing where to sit (floor 1, hardscape tops GRAZE). */
 const GLASS_FISH = 0.35;
+/** The same for a tree frog: dry glass is where you mostly see one. */
+const GLASS_FROG = 0.6;
 
 /** Does this many of a species move as a group? */
 const grouped = (sp: Species, n: number) => !!sp.group && n >= 3 && sp.kind !== 'snail' && sp.habitat === 'water';

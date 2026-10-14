@@ -2,6 +2,150 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane K: light output (2026-10-14; branch `light-output`, port 5383; step 1 of 4 pushed)
+- Owns `render/lighting.ts` (carved out of lane J's render/*), new `scene/lightout.ts` + `test/lightout.test.ts`, the
+  light fields in scene/types.ts / defaults.ts / validate.ts, the Lighting rows in index.html / ui/panels.ts,
+  ui/diff.ts, ui/parGuide.ts. Lane J: the fixture geometry (emitters, beam, fitSpots, lampHeight, CONES, LAMP_Y,
+  AQ_MAX) moved from render/lighting.ts into scene/lightout.ts; lighting.ts re-exports it, no other file changed.
+- Step 1 (the model, `scene/lightout.ts`): photons = W x PPE x eta, beam normalised to unit flux (points: sr; tubes:
+  2D round the axis x an exact finite-length factor), glass lid 0.9, surface 0.97, paraxial refraction (depth / 1.33),
+  side-glass mirror images (rect tanks, weight 0.7, only where the image ray meets the glass under water), three bands
+  (blue / green / red) with pure-water absorption 0.012 / 0.07 / 0.35 per m plus half the water tint (`waterK`).
+  `lightOut` gives surface / mean / min / max PAR, lux at the substrate and mid-water; `readout` the panel line;
+  `renderBright` = clamp(sqrt(luxMid / 8000), 0.2, 2.5) x Exposure. New optional LightSettings: watts, tech, par,
+  mapUnit (validated, kept only when present).
+- Calibration (tests print the residuals): AI Hydra 32 HD in air +9 / -5 / -7%; JBL Solar Natur in water +22% just
+  under the surface, +2 to -20% from 10 to 70 cm, with the glass walls assumed 1.6 x 0.8 m (no walls: -37% at 70 cm);
+  T5 HO (Barr) -3 / -10% at eta 0.75 once the glass is modelled (the first hand check's 0.4-0.5 left the glass out).
+- Findings for Nathan: under white / planted light lux falls a little SLOWER than PAR with depth (red goes first and
+  barely counts in lux); only under blue reef light does lux fall faster. LREF is 8,000 lux, not ~2,000 (typical
+  setups give 6,000-12,000 mid-water). Readout range = the tech's uncertainty (LED ±30%, others ±50%) or min-max.
+- Next: step 2 (Watts / Tech / PAR override rows, readout, Brightness -> Exposure), 3 (shader port + PAR / Lux map),
+  4 (hover tooltip).
+## Model review sheet + model versions (2026-10-14, Nathan: "keep it where it can be updated with version number every time a model is updated")
+- `review.html` (live at tanklook.com/review.html; second Vite page, `src/review/`): every species look (females too)
+  from Side, 3/4, Front, Top, each in the preview tile's flat light and in the default tank's LED bar + water. Filter,
+  "Needs work" tick + note per model (this browser only), "Copy flagged list" puts them on the clipboard as text.
+- Versions: `src/data/model-versions.json` holds, per look, a fingerprint (geometry on a 1/500 grid, 24 px texture
+  thumbnails at 3 bits, material colours, art/tl/aspect), `v`, and the build it shipped in. A model whose fingerprint
+  no longer matches shows "changed since" (orange); "Changed only" filters to them.
+- **Rule for any chat that changes a model** (art/, fish3d, snail3d, herp3d, species.json sizes): open
+  `/review.html` on your dev server, wait for it to render, press "Record N changed models", commit
+  `src/data/model-versions.json` with the change. The button only exists on the dev server (plugin
+  `scripts/model-versions-plugin.mjs`); it stamps build = current commit count + 1, i.e. the commit you are about to make.
+- All 68 looks recorded as v1 at build 217 (stamped 216; another chat committed first, so check the number after pushing). Fingerprints held across reloads and at phone size in the app's browser.
+
+## Light output: watts -> PAR / lux (2026-10-14; draft only, no src/ edits)
+- Design draft `reference/light-output-draft.md`: watts + light tech -> photons -> existing beam model in real units,
+  plus refraction, side-glass reflection, water absorption in three colour bands. Light map gets a PAR / Lux switch
+  (separate calculations, same ramp) and a hover tooltip with both values at that spot.
+- Decided (Nathan): Brightness becomes an Exposure knob when watts is set; calibration against published PAR charts
+  approved. Runs as its own lane after G and G2 finish (touches scene/, render/lighting.ts, ui/panels.ts).
+- Calibration first pass done: data `reference/par-calibration-data.md`, results in the draft (LED ~±30%, fluorescent
+  ~±50%; T5 fixture efficiency lower than guessed).
+- PAR guide shipped: Lighting menu button "PAR guide" opens `src/ui/parGuide.ts` (own dialog + styles): what PAR is,
+  planted tiers with what grows / struggles / CO2 / fertiliser, reef tiers with corals and dosing; opens on the reef tab
+  for a salt tank. Hooks in lane G's files: one line in index.html (the button), two in main.ts.
+
+## Lane G: audit fixes, UI share (2026-10-14; branch `audit-fixes`; batches 1 + 2 pushed to main, DONE)
+- Split with lane G2 (coordinator): G owns `src/ui/*`, `index.html`, `src/style.css`; G2 owns interact/scene/render.
+  G's share is 38 findings: #2, 4, 5, 7-13, 16, 17, 22-28, 30-41, 43-46, 48, the label part of 49, 50. G2's 15: #1, 3,
+  6, 14, 15, 18-21, 29, 47, the export crop of 49, 51-53. Lane I: #42. One line in `src/main.ts` (start menu call).
+- **Start menu (Nathan 2026-10-14: "upon start, a menu in the middle of the screen: start fresh or from an example")**:
+  `#startDlg`, shown on every load: Continue your last tank (only when one was restored; Esc does the same), Start
+  fresh, the six example cards, a gesture line. How to use no longer opens itself on the first visit.
+- Batch 1 (S1 + S2, browser-checked; before/after sheets in `shots/fixes/`, gitignored): #2 the tank label wraps and
+  `#view` clips; #5 each shape keeps its own L/D for the visit (Rect → Pie → Rect back to 24″); #7 a split tab with no
+  room beside Undo/Redo drops below them; #8 Add row sticky on phones; #9 why Add is off, as a line under it; #10/#11
+  group names carry fresh/salt, an empty group offers "Switch the tank to Saltwater/Freshwater"; #12 wrong-water rows
+  marked in the stocking list with Remove there; #13 leaving Swamp restores the level it lowered (unless moved since);
+  #16 lift row is "Raise"; #17 light map on a bare bottom says so, links to Substrate; #22 help says tick Edit; #23 A/B
+  badge on split tabs; #24 the diff chip reads "⇄ A" (copy from A).
+- Nathan's calls: #29 Stand ON by default (G2 builds it); #38 only "no stocking check for salt yet".
+- Batch 2 (S3, browser-checked; sheets `shots/fixes/s3_sheet_*.png`): #25 Glass type / Finish labelled rows; #26
+  "Glass outlines"; #27 "Capacity … (inside the glass, to the top)" and "gal to the water line"; #28 out-of-range sizes
+  say what they were set to, inputs carry min/max; #30 cm inputs to 0.1; #31 tab title = tank name · TankLook; #32 eye
+  map starts hidden on a phone (until the viewer chooses); #33 40 px touch targets under `(pointer: coarse)`; #34
+  "‹ Hide"; #35 Add says "Add 6" / "Add 2", new `pair` flag in species data (ocellaris, banggai); #36 a status at the
+  500 cap; #37 "Turn Water on to choose"; #38 "No stocking check for saltwater tanks yet."; #39 "Adult ±10 %"; #40
+  bare bottom hides the depth sliders; #41 singular counts; #43 the map steps aside while terrain points are edited;
+  #44 light map unticked with no fixture; #45 "Room light (ambient)", "Height above tank"; #46 Lighting has Look from
+  above / Straight on; #48 JSON rounded to 0.01, Copy button, units note; #49 plain fish-edge labels, PNG pixel sizes
+  on hover; #50 the split hint says two tanks is the most.
+- Fixed in batch 2: a batch-1 comment had swallowed the line that disables the light-map box with no fixture.
+- #49's PNG crop and A/B labels landed in G2's batch 2 (`f7b2cc3`); the start menu hint now says "wheel or pinch".
+
+## Lane G2: core audit fixes (2026-10-14; branch `core-fixes`, port 5363; owns src/interact, src/scene, src/render minus lane I's files)
+Plan approved by Nathan (batches in severity order). Pictures: `shots/g2/` in the main checkout (before = `shots/audit/`).
+- **Batch 1 (pushed `16ecc27`):**
+  - #1 water level: `nearestWater` (terrain.ts) fell back to "the deepest spot", which on a flat floor was the first
+    grid corner (x = 12 mm), so every fish taller than the water piled at the left glass. Now: no spot deep enough =
+    the nearest spot with 3/4 of the deepest water, or stay put if here already has that; only the height drops.
+    Lowering then raising the level brings fish back (setWaterLevel scales heights). At 10 % on the default sloped
+    gravel the back is above the water, so fish go forward but keep their x. Test in scene.test.ts.
+  - #3 aquascape drag straight on: within `EDGE_ON_EL` (20°) of level a piece slides on an upright plane facing the eye
+    (`wallPlane`, pointer.ts): x follows the pointer, depth kept, it rests on what is under it. Tilted views unchanged.
+    Test pointer.test.ts; browser: 128 mm right at el 0 with depth 159 kept, grabbable again at el 2.
+  - #29 the Stand is ON for new tanks (defaults.ts, Nathan's call). Files without a `stand.show` still load with it off
+    (validate.ts no longer falls back to the default there).
+  - #47 viewer map caption: "20° below" for negative elevations (viewmap.ts).
+- **Batch 2 (pushed `f7b2cc3`):**
+  - #6 touch: two fingers pinch to zoom and pan together toward the point between them (pointer.ts; `zoomAt` takes the
+    midpoint's old position, viewer.ts). A second finger during a fish / piece / terrain drag is ignored; only the
+    first finger's lift ends a drag; a pinch undoes the first finger's orbit. Checked with synthetic touch events.
+  - #18 the water itself is tinted: `waterVolumeMaterial` (lighting.ts) on the far faces of the water volume (prism, or
+    a lathe for a bowl; build.ts addWater), same slab path + `waterK` as the object tint. Fragment depth pinned to the
+    far plane, so it draws only where nothing is behind (no double tint on fish, background or wall).
+  - #21 re-lock copies the camera of the view moved last (`Store.lastCam`), replacing Nathan's 2026-10-08 "snaps to the
+    original tank" (approved in the G2 plan). Camera moves stay out of undo (the view is not part of history).
+  - #49 PNG: cropped to the tanks' boxes (tank + stand + table, 6 % margin; `exportCrop`), A / B badges on split views.
+    Pixel sizes on the buttons stay with lane G.
+- **Batch 3 (pushed):**
+  - #14 terrain from a bare bottom: `sampleTerrain` samples as if the substrate were shown (custom terrain always shows
+    one), so the grid starts at the corner depths; the ground is never drawn closer than 0.6 mm to the bottom glass.
+  - #15 swamp: the store keeps a swamp layout's substrate shown (`swampGround`, store.ts), so the panel says gravel, not
+    "Bare bottom"; steep ground cells (n.y < 0.6) take their grain from the side they face (no streaks on pool walls).
+  - #19 raised lights: framing still never counts the fixture (Nathan 2026-10-09); instead a "▲ Light 11.8″ above the
+    tank" note at the top of a view whose fixture is out of frame (`markLights`, a DOM div the viewer owns).
+  - #20 from above: fixture parts and the above-rim beams carry `userData.overhead` (their height) and hide while the
+    eye is above it, so no dark slab and no yellow flood over the page.
+  - #51 colour temp / brightness / room light no longer rebuild the scene (`buildKey` in viewer.ts leaves them out; the
+    fixture glow is recoloured in place): 4-9 ms instead of ~150-570 ms on the planted example. `rebuild()` still forces.
+  - #52-53 measured, NOT fixed: on real hardware (Intel Arc) an edit is ~4 ms in the store, then ~55-70 ms rebuilding
+    and ~60 ms in the first draw (new materials / buffers; a steady draw is ~8 ms): ~130-230 ms per edit or drag step
+    with 40 fish + 56 items. Keeping cached item geometry alive did not help. The fix is updating meshes in place
+    instead of rebuilding (fish moves first): a work unit of its own.
+- **Open question for Nathan (#29):** with the stand on, a new 24×12×12″ tank sits small on top of a 30″ cabinet in the
+  default view (`shots/g2/29_stand_default_after.jpg`). Keep it, or frame the tank and let the stand run off the bottom?
+- Dev server: `preview_start core-fixes` hit the five-servers-per-folder limit, so Vite runs from the shell on 5363.
+
+## Lane D: first-visit audit + review pack (2026-10-14; no src/ edits)
+- `shots/audit/AUDIT.md`: 53 ranked findings with cropped, marked shots (headless Chrome, fresh profile = true first
+  visit, desktop + 375 px phone + 768 px tablet, on main `c67aeb7`: before lanes A / E / H merged). Both re-checked S1s
+  reproduced. Fix lane G owns the fixes.
+- `shots/review/REVIEW.md`: one picture page per item awaiting Nathan (R1-R12), listed under "Still open" at the bottom.
+- "Still open" and "Known gaps" at the bottom rewritten to the current state.
+- Tooling (scratchpad, not in the repo): a ~80-line CDP driver over Node's built-in WebSocket + system Chrome; each run
+  gets its own profile, so parallel agents do not share localStorage. Worth adding to scripts/ if audits recur.
+
+## Tree frogs climb the glass (2026-10-14; Nathan: "like otos and snails cling to the glass")
+- White's tree frog has `cling: any` (glass, hardscape, floor). Shuffle / Add use the oto path (`spawnSnail`) with a new
+  `on.above` = the water line, so a frog on the glass or hardscape is always out of the water; glass weight `GLASS_FROG`
+  0.6 (otos 0.35); on the glass it sits head up (yaw 90 ± 40) and unbent. Floor picks still go to land.
+- `glassBand` (water.ts) is the height range on the glass: land climbers from the water line (or ground) to the top of
+  the pane, everything else ground to water line. Used by `onGlass` (build.ts) and `fitFish`; `maxFishY` leaves a
+  frog's height alone when the water level changes. Rendering needed nothing new: `onGlass` already lays any
+  card + 3D body belly to the pane. Test in scatter.test.ts. Checked in the tree frog terrarium example.
+- Dart frogs, toads, newts unchanged (no `cling`).
+- **Glass pose (Nathan's two photos, same day):** `HERP3D_GLASS.treefrog` (`frogOnGlass3D`, herps.ts): belly levelled
+  flat onto the pane, arms folded under the chin, hind legs folded tight along the flanks, toe pads turned in under
+  the belly; cream starts lower round the section. `herpBody(art, w, glass)`; build.ts passes `f.surface === 'glass'`.
+  Picture `shots/92_treefrog_glass_sheet.png`. Awaiting Nathan's look.
+- **Bug found on the way: every 3D amphibian body was inside out** (bodyGeometry wound inward, so you saw the far
+  side's inside: cream flank seen from above, the far eye showing through; the old "far eye shows as a lid bump"
+  watch item). Winding flipped in `bodyGeometry`; the vertex shading now darkens the real underside. Affects all
+  frogs, newts, axolotl and the hermit crab's body.
+
 ## Lane A: 3D plants (2026-10-14; Nathan approved the style test "looks good, roll out"; pushed to main)
 
 Roadmap step 5. All seven plant types are real 3D; the crossed cards stay as the fallback (`plant3d.on = false`,
@@ -31,6 +175,50 @@ or a type with no `PLANT3D` entry). No scene version bump: plants were already i
   `shots/98_planted_sheet.png` (before / after).
 - Watch items: vallisneria clumps spread wider than their card; the sword is taller than its old card; the carpet sits
   lower than the card from the front. Crypts: not built yet (next).
+
+## Lane H: AqAdvisor for salt tanks (2026-10-14; Nathan: leave it off; pushed to main)
+
+- **AqAdvisor's saltwater calculator gives no stocking %.** `AqAdvisorMarine.php` (79 fish, no invertebrates) takes the
+  same form as the freshwater page, lists the selection ("Total selected: N fishes.") and stops: no "stocking level"
+  anywhere. Checked 2026-10-14 three ways (Update with a custom 36x18x16, the "40g breeder" preset, Add > like a user)
+  and in a real browser. It did work once: Reef2Reef, Feb 2015, "Calculator says my stocking level is 172%"; the form
+  is unchanged since (Wayback 2015-01-11), so it is broken on their side, not a missing field. Nathan 2026-10-14:
+  leave stocking off for salt tanks.
+- **Mapping kept for when it works again**: `scripts/aqadvisor-ids.py` resolves `MARINE` + `MARINE_STAND_INS` on the
+  marine page; `aqadvisor.json` now holds all 12 marine species flagged `salt` (55 entries). Stand-ins (no marine
+  inverts on AqAdvisor): cleaner shrimp = Neon Goby (5 cm cleaner), turbo snail = Tail Spot Blenny (small rock grazer),
+  hermit crab = Yellow Clown Goby (3.5 cm perching goby). Bangaii Cardinal is AqAdvisor's spelling for the banggai.
+- `aqQuery` never sends a `salt` id: salt tanks still return null, and a marine animal left in a fresh tank (a misfit)
+  is "Not counted". Worker unchanged, not redeployed.
+- Readout wording only (`panels.ts`, lane E's file: two strings): "not available for saltwater (AqAdvisor gives none)";
+  the sidebar note says the saltwater calculator gives no stocking level.
+- Tests: the expected map includes the marine species again (every non-land species mapped, `salt` exactly on the
+  marine ones, 6 stand-ins); new test: a clownfish in a fresh tank is not counted. tsc clean, 182/182.
+- To turn it on if AqAdvisor fixes the page: pass a `salt` flag through `AqQuery` -> proxy `sw=1` -> `AqAdvisorMarine.php`
+  (no filter fields), include it in the worker's cache key, redeploy the worker.
+
+## Lane E: live rock + corals (2026-10-14; branch `corals`; Nathan approved the style test, live rock salt only; pushed to main)
+
+- **Library** (`scene/items.ts`): `liverock` (kind `stone`, size = length) and new kind `coral` ("Corals" row): `acropora`
+  Branching, `montipora` Plate, `mushroom` Mushroom corals (disc cluster on its own small live rock), `leather` Leather
+  (toadstool). Coral size = width (item panel says "Width"). `Variant.salt` marks all five; the Aquascape buttons carry
+  `data-salt` and `render()` hides them unless the tank is saltwater with water on. `ItemKind` + `'coral'` (one line in
+  `types.ts`). No scene version bump: older files have none; an older app skips them as unknown variants.
+- **Shapes** (`render/coral3d.ts`, `reefShape`): procedural from (variant, seed, size), base on y = 0, cached / light-baked
+  / glass-clipped by `render/items.ts` like the stones (dispatch in `solidShape`; `waves`, `paint`, `clean`, `grit` now
+  exported). Live rock = 3-5 overlapping knobbly lumps with holes, fitted to `stoneDims`, cream under pink / purple
+  coralline patches. Acropora = 6-9 recursive tapered tube trunks, tips paler (5 colour morphs). Plate = spiral whorl of
+  thin cupped discs tipped up at the rim (4 morphs). Mushroom = 6-10 ribbed discs with a pale mouth, set on the rock's top
+  (5 morphs). Leather = lathe stalk + folded cap (3 morphs). Grit kinds 11 (hard coral cups) and 12 (soft polyp fuzz).
+- **Reef example** finished (lane F's steps): `src/examples/reef.json` + `reef.jpg` re-saved, renamed "Reef": 24x18x18 in,
+  5 live rocks, 7 corals (all four kinds), 2 ocellaris, royal gramma, firefish, watchman goby, cleaner shrimp, 2 turbo
+  snails, 3 hermit crabs (no yellow tang: too big for 24 in).
+- Tests: `test/reef.test.ts` (library flags, save / load, shapes deterministic, on y = 0, about their size), examples test
+  checks the reef's rock, corals and marine-only animals. 186/186. Browser: buttons hidden in fresh, shown in salt, Add
+  works, no console errors. Style-test pictures: worktree `shots/e1_{front,above,seeds,reef}.png`, `e2_reef_full.png`.
+- **Open / later**: live rock still a little rounded from straight on and its holes barely show; corals are not in any
+  starter set (a "Reef" Aquascape start set would need a `LayoutId`, i.e. a types/validate change); the other five
+  examples' thumbnails predate lane A's 3D plants (the scenes turn 3D by themselves, the pictures do not).
 
 ## Lane C: marine species (2026-10-13; Nathan approved the sheets, hermit "fine for now"; pushed to main)
 
@@ -142,16 +330,39 @@ conflicts on merge: keep both sections. Each lane adds its own dated section at 
 Lane B DONE (`ff590db`). Lane F DONE (see its section). Lane F added 2026-10-13: example tanks, `../Glass-Box-examples` / `examples`, launch config
 `examples` 5313; owns the Open dialog's examples list in `src/ui/panels.ts` + `index.html`, and new example files.
 Lane G (fixes from shots/audit/AUDIT.md) waits for lane D's report; it takes over `src/ui/*` after F lands.
-Lane C DONE (`2c38519`). Lane F DONE (`829929a`). Lane H added 2026-10-13: AqAdvisor saltwater, `../Glass-Box-aq-salt` /
+Lane H DONE (salt stocking stays off, see its section). Lane C DONE (`2c38519`). Lane F DONE (`829929a`). Lane H added 2026-10-13: AqAdvisor saltwater, `../Glass-Box-aq-salt` /
 `aq-salt`, launch config `aq-salt` 5333 (aq mode; needs `aq-proxy` 8787); owns `data/aqadvisor.*`, `worker/*`, and the
 salt switch-off in the AqAdvisor code. Lane E also re-saves the examples and fills the reef example when it lands.
+Lane A DONE (`29515de`). Lane G opened 2026-10-14 ahead of the audit: `../Glass-Box-audit-fixes` / `audit-fixes`, launch
+config `audit-fixes` 5343; waits for lane D's message that shots/audit/AUDIT.md is written. Owns `src/ui/*`, `index.html`,
+`src/style.css` (lanes E and H keep their small panels.ts hooks); a finding in another lane's files goes to that lane.
+Lane H DONE (`6c91148`). Lane E DONE (`e8ccd65`). Lane I opened 2026-10-14: E's leftovers + example refresh,
+`../Glass-Box-reef-polish` / `reef-polish`, launch config `reef-polish` 5353; owns `scene/items.ts` (lane A may add one
+crypts LIBRARY line), the non-plant branches of `render/items.ts`, `render/coral3d.ts`, `src/examples/*`, LayoutId in
+`scene/types.ts` / `scene/validate.ts`. Lane G owns `src/ui/*`.
+Audit written 2026-10-14: `shots/audit/AUDIT.md` in the MAIN checkout only (shots/ is gitignored), 53 findings. Split
+into two fix lanes: G (`src/ui/*`, `index.html`, `src/style.css`) and G2, core fixes, `../Glass-Box-core-fixes` /
+`core-fixes`, launch config `core-fixes` 5363 (`src/interact/*`, `src/scene/*`, `src/render/*` except lane I's files).
+A finding that spans both goes to the lane holding the root cause, with at most a one-line hook in the other's files.
+Audit ownership (lane G's split, 2026-10-14): G2 = #1, 3, 6, 14, 15, 18-21, 29, 47, the PNG crop/margins/A-B labels
+part of #49, 51-53; I = #42; G = the other 38. Nathan's calls: #29 the Stand is ON by default for new tanks (G2, scene/defaults.ts);
+#38 salt tanks show only "no stocking check for salt yet" (G).
+Lane G DONE (`59025b3`). Lane G2 DONE (`4667d9f`; #52-53 measured, not fixed). Lane J opened 2026-10-14: edit
+performance (#52-53, in-place mesh updates instead of a full rebuild per edit), `../Glass-Box-perf` / `perf`, launch
+config `perf` 5373; owns `src/render/*` and `src/scene/store.ts` except lane I's `render/coral3d.ts` and G2's possible
+#29 framing in `render/camera.ts` / `render/viewer.ts`.
+Lane K opened 2026-10-14: light output (watts -> PAR / lux, light map units + hover), `../Glass-Box-light-output` /
+`light-output`, launch config `light-output` 5383. Owns `render/lighting.ts` (carved out of lane J's `src/render/*`; J
+keeps the rest), new `scene/lightout.ts` + test, the light fields in `scene/types.ts` / `defaults.ts` / `validate.ts`,
+the Lighting rows in `index.html` / `ui/panels.ts`, `ui/parGuide.ts`. Spec: `reference/light-output-draft.md`.
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_e1923781-40bc-48d3-84f3-ed380e471779`
 ("Lanes coordinator"). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
 and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says
 what landed (commit), what is still open, and which files are now free. The coordinator then sends Nathan the prompts
 for any chats that can start now. If a prompt is still waiting when another lane opens, it sends all waiting prompts again
-in one new message. Every new lane prompt includes this protocol. Questions for Nathan stay in the lane's own chat.
-Lane E (corals + live rock as items) OPENED 2026-10-13 early, per lane A: A's change in `render/items.ts` is a ~4-line
+in one new message. Every new lane prompt includes this protocol. When a lane is done it stops its own preview servers (preview_stop): the app allows only five
+per folder, and finished lanes holding them blocked lane G on 2026-10-14. Questions for Nathan stay in the lane's own chat.
+Lane E DONE (see its section). Lane E (corals + live rock as items) OPENED 2026-10-13 early, per lane A: A's change in `render/items.ts` is a ~4-line
 hook in the plant branch of itemMesh and A does not touch `scene/items.ts`. E: `../Glass-Box-corals` / `corals`, launch
 config `corals` 5323; owns `scene/items.ts`, the non-plant branches of `render/items.ts`, new `render/coral3d.ts`.
 
@@ -1352,10 +1563,31 @@ no licensing, but stays illustrated).
 - **Phase 2 stack (Nathan, 2026-10-08):** Vite + plain TypeScript (no React); GitHub Pages via GitHub Actions;
   **public** repo. Only procedural placeholder art is committed until the art provenance policy is settled.
 
-## Still open
+## Still open (rewritten 2026-10-14, lane D)
 
-Release camera limits; species sizes review (list built, 37); art pipeline + provenance policy;
-whether lighting ships in v1; hardscape scope (now: roadmap steps 3-5); React vs plain TS for the UI layer (see Phase 2 plan).
+Waiting on Nathan, one picture page each in `shots/review/` (index `shots/review/REVIEW.md`; shots/ is local, gitignored):
+- R1 3D amphibians: accept, or fix the frog thighs (tubes) and the far-eye knob at 50°?
+- R2 head-on marking wrap (discus, tiger barb, clown loach, harlequin, GBR): pass? (the harlequin patch smudges head-on)
+- R3 3D rollout batch 1 (14 fish): pass? (ember / chili blocky head-on, honey gourami belly block, betta fin slab)
+- R4 delete the unused hand-drawn `drawTetra` / `drawGourami` (art/placeholder.ts)?
+- R5 3D shrimp: accept, or fix the comb-like leg fan head-on?
+- R6 3D snails: accept? (mystery spire low at the back, pale lip notch)
+- R7 male / female looks and sizes, 11 species (re-shot after the honey stripe and swordtail 115 mm changes)
+- R8 hardscape generators good enough to show? (coconut doorway sawtooth, thin wood, flat end caps)
+- R9 wall spill: follow the actual beams instead of the box-to-fixture model?
+- R10 adult sizes of all 57 species (fresh, salt, herps, inverts; females separate)
+- R11 tick Enforce HTTPS in GitHub Pages settings (http still serves 200, no redirect)
+- R12 shareable scene URLs (not built)
+First-visit audit: `shots/audit/AUDIT.md`, 53 findings (4 S1, 20 S2, 29 S3) with shots; fix lane G works from it.
+The S1s: water level piles every fish at x = 12 mm; phone label overflow widens the page; aquascape drag erratic in the
+straight-on view; first visit is an empty box (no pointer to Examples / Animals).
+Not decided, low priority: camera limits (orbit already clamps elevation -20..85; "release" never defined); fish ignore
+rocks (a bottom dweller can sit inside a stone); tank weight ignores hardscape.
+
+Settled since this list was first written (2026-10-08), kept here so nobody reopens them: plain TypeScript, no React
+(Phase 2 stack); lighting shipped (spot / tube / LED, light map, beams); art is procedural generators only (Nathan
+rejected bought / AI models, repo is public), so the provenance question is moot; hardscape steps 3-4 shipped, step 5
+(3D plants) shipped as lane A, corals + live rock as lane E.
 
 ## Phase 2 build decisions (2026-10-08)
 
@@ -1409,8 +1641,13 @@ whether lighting ships in v1; hardscape scope (now: roadmap steps 3-5); React vs
    (localStorage + JSON file), PNG export, undo/redo.
 Each module is a separable unit, so subagents can build in parallel once the types in `scene/` exist.
 
-## Known gaps
+## Known gaps (rewritten 2026-10-14, lane D)
 
-- Illustrated (generated) art for 34 of 37 species; image-based art still blocked on the provenance policy.
-- Layouts are presets only; custom placement is now planned (roadmap step 3, Nathan 2026-10-09).
-- Scene rebuilds fully on every change, including each drag step; fine at hundreds of fish, revisit if schools get big.
+- Every one of the 57 species (12 salt) draws in 3D from a generator (fish PLANS incl. shrimp, `HERP3D`, snail shells;
+  11 with a female look); flat cards remain only as the fallback / picking target. Watch items are R1-R6 above.
+- Mobile: usable but rough (audit S1 #2, S2 #6-8): no pinch zoom, page overflow from the tank label, half-screen panel.
+- No stocking guidance for salt tanks (AqAdvisor's marine calculator is broken on their side; Nathan: leave it off).
+- Scene rebuilds fully on every change; the audit timed Split / Undo / colour-temperature changes at 0.7-1.7 s, but on
+  software GL, so re-measure on real hardware before acting.
+- Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
+- Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.

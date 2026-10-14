@@ -173,5 +173,68 @@
   "aq": "200909300241",
   "name": "White Cloud Mountain Minnow (Tanichthys albonubes)",
   "standIn": true
+ },
+ "ocellaris": {
+  "aq": "201003260004",
+  "name": "Ocellaris Clownfish (Amphiprion ocellaris)",
+  "salt": true
+ },
+ "royalgramma": {
+  "aq": "201005021931",
+  "name": "Royal Gramma Basslet (Gramma loreto)",
+  "salt": true
+ },
+ "yellowtang": {
+  "aq": "201003260001",
+  "name": "Yellow Tang (Zebrasoma flavescens)",
+  "salt": true
+ },
+ "firefish": {
+  "aq": "201003260015",
+  "name": "Firefish Goby (Nemateleotris magnifica)",
+  "salt": true
+ },
+ "banggai": {
+  "aq": "201005041430",
+  "name": "Bangaii Cardinal (Pterapogon kauderni)",
+  "salt": true
+ },
+ "sixline": {
+  "aq": "201003260018",
+  "name": "Six Line Wrasse (Pseudocheilinus hexataenia)",
+  "salt": true
+ },
+ "chromis": {
+  "aq": "201003260006",
+  "name": "Green Chromis (Chromis viridis)",
+  "salt": true
+ },
+ "coralbeauty": {
+  "aq": "201003260020",
+  "name": "Coral Beauty Angelfish (Centropyge bispinosa)",
+  "salt": true
+ },
+ "watchman": {
+  "aq": "201005021933",
+  "name": "Yellow Watchman Goby (Cryptocentrus cinctus)",
+  "salt": true
+ },
+ "cleanershrimp": {
+  "aq": "201003260009",
+  "name": "Neon Goby (Gobiosoma oceanops)",
+  "standIn": true,
+  "salt": true
+ },
+ "turbo": {
+  "aq": "201005041424",
+  "name": "Tail Spot Blenny (Ecsenius stigmatura)",
+  "standIn": true,
+  "salt": true
+ },
+ "hermit": {
+  "aq": "201005021932",
+  "name": "Yellow Clown Goby (Gobiodon okinawae)",
+  "standIn": true,
+  "salt": true
  }
 }
