@@ -26,6 +26,27 @@ or a type with no `PLANT3D` entry). No scene version bump: plants were already i
 - Watch items: vallisneria clumps spread wider than their card; the sword is taller than its old card; the carpet sits
   lower than the card from the front. Crypts: not built yet (next).
 
+## Lane H: AqAdvisor for salt tanks (2026-10-14; Nathan: leave it off; pushed to main)
+
+- **AqAdvisor's saltwater calculator gives no stocking %.** `AqAdvisorMarine.php` (79 fish, no invertebrates) takes the
+  same form as the freshwater page, lists the selection ("Total selected: N fishes.") and stops: no "stocking level"
+  anywhere. Checked 2026-10-14 three ways (Update with a custom 36x18x16, the "40g breeder" preset, Add > like a user)
+  and in a real browser. It did work once: Reef2Reef, Feb 2015, "Calculator says my stocking level is 172%"; the form
+  is unchanged since (Wayback 2015-01-11), so it is broken on their side, not a missing field. Nathan 2026-10-14:
+  leave stocking off for salt tanks.
+- **Mapping kept for when it works again**: `scripts/aqadvisor-ids.py` resolves `MARINE` + `MARINE_STAND_INS` on the
+  marine page; `aqadvisor.json` now holds all 12 marine species flagged `salt` (55 entries). Stand-ins (no marine
+  inverts on AqAdvisor): cleaner shrimp = Neon Goby (5 cm cleaner), turbo snail = Tail Spot Blenny (small rock grazer),
+  hermit crab = Yellow Clown Goby (3.5 cm perching goby). Bangaii Cardinal is AqAdvisor's spelling for the banggai.
+- `aqQuery` never sends a `salt` id: salt tanks still return null, and a marine animal left in a fresh tank (a misfit)
+  is "Not counted". Worker unchanged, not redeployed.
+- Readout wording only (`panels.ts`, lane E's file: two strings): "not available for saltwater (AqAdvisor gives none)";
+  the sidebar note says the saltwater calculator gives no stocking level.
+- Tests: the expected map includes the marine species again (every non-land species mapped, `salt` exactly on the
+  marine ones, 6 stand-ins); new test: a clownfish in a fresh tank is not counted. tsc clean, 182/182.
+- To turn it on if AqAdvisor fixes the page: pass a `salt` flag through `AqQuery` -> proxy `sw=1` -> `AqAdvisorMarine.php`
+  (no filter fields), include it in the worker's cache key, redeploy the worker.
+
 ## Lane C: marine species (2026-10-13; Nathan approved the sheets, hermit "fine for now"; pushed to main)
 
 12 species, all `salt: true` (cat `sw-fish` / `sw-invert`), approved list (Nathan, same day, hermit crab as shell + limbs).
@@ -136,7 +157,7 @@ conflicts on merge: keep both sections. Each lane adds its own dated section at 
 Lane B DONE (`ff590db`). Lane F DONE (see its section). Lane F added 2026-10-13: example tanks, `../Glass-Box-examples` / `examples`, launch config
 `examples` 5313; owns the Open dialog's examples list in `src/ui/panels.ts` + `index.html`, and new example files.
 Lane G (fixes from shots/audit/AUDIT.md) waits for lane D's report; it takes over `src/ui/*` after F lands.
-Lane C DONE (`2c38519`). Lane F DONE (`829929a`). Lane H added 2026-10-13: AqAdvisor saltwater, `../Glass-Box-aq-salt` /
+Lane H DONE (salt stocking stays off, see its section). Lane C DONE (`2c38519`). Lane F DONE (`829929a`). Lane H added 2026-10-13: AqAdvisor saltwater, `../Glass-Box-aq-salt` /
 `aq-salt`, launch config `aq-salt` 5333 (aq mode; needs `aq-proxy` 8787); owns `data/aqadvisor.*`, `worker/*`, and the
 salt switch-off in the AqAdvisor code. Lane E also re-saves the examples and fills the reef example when it lands.
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_e1923781-40bc-48d3-84f3-ed380e471779`

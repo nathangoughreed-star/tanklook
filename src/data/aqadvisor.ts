@@ -14,7 +14,9 @@ import type { TankSetup } from '../scene/types';
 export const AQ_PROXY: string = (import.meta.env?.VITE_AQ_PROXY ?? '').replace(/\/$/, '');
 
 /** standIn: not in AqAdvisor, counted as a similar animal in size and type (Nathan 2026-10-09). */
-const AQ_IDS = ids as Record<string, { aq: string; name: string; standIn?: boolean }>;
+/** salt: an id on AqAdvisor's saltwater calculator (AqAdvisorMarine.php). That page lists a stocking but no longer
+ *  prints a stocking % (checked 2026-10-14; it did in 2015), so salt tanks are not asked and these ids are never sent. */
+const AQ_IDS = ids as Record<string, { aq: string; name: string; standIn?: boolean; salt?: boolean }>;
 const IN = 25.4;
 
 export interface AqQuery {
@@ -35,14 +37,14 @@ export interface AqQuery {
 
 /** The stocking request for one tank, or null when there is nothing to ask (dry tank or no aquatic animals). */
 export function aqQuery(s: TankSetup): AqQuery | null {
-  if (!s.water.on || s.water.salt) return null; // AqAdvisor is freshwater only (2026-10-13)
+  if (!s.water.on || s.water.salt) return null; // AqAdvisor's saltwater page gives no % (2026-10-14, Nathan: leave it off)
   const counts = new Map<string, number>();
   for (const f of s.fish) counts.set(f.species, (counts.get(f.species) ?? 0) + 1);
   const parts: string[] = [], skipped: AqQuery['skipped'] = [], standIns: AqQuery['standIns'] = [];
   let counted = 0;
   for (const [sp, n] of [...counts].sort(([a], [b]) => a.localeCompare(b))) {
     const m = AQ_IDS[sp];
-    if (m) {
+    if (m && !m.salt) { // a marine animal in a fresh tank is a misfit, not counted
       parts.push(`${m.aq}:${n}::`); counted += n;
       if (m.standIn) standIns.push({ name: getSpecies(sp)?.name ?? sp, as: m.name.replace(/ \(.*$/, ''), count: n });
     }

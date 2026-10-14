@@ -806,7 +806,7 @@ Cancel, then change the name, to keep both.`)) return;
   function syncAq() {
     const q = aqQuery(S());
     $('aqRow').style.display = q ? '' : 'none';
-    if (!q) { $('aqNote').textContent = isSalt(S()) && S().fish.length ? 'Stocking level: AqAdvisor covers freshwater only, so a saltwater tank has none.' : ''; return; }
+    if (!q) { $('aqNote').textContent = isSalt(S()) && S().fish.length ? 'Stocking level: the AqAdvisor saltwater calculator gives no stocking level, so a saltwater tank has none.' : ''; return; }
     const key = aqKey(q), got = aqDone.get(key), busy = aqBusy.has(key);
     $<HTMLAnchorElement>('aqLink').href = aqAdvisorUrl(q);
     $('aqCheck').style.display = AQ_PROXY && got === undefined ? '' : 'none';
@@ -1048,7 +1048,7 @@ Cancel, then change the name, to keep both.`)) return;
    *  with ↻ to ask again; the last answer in yellow once the fish or the tank have changed since it was asked. */
   const aqChip = (s: TankSetup, slot: string, i: number) => {
     const q = aqQuery(s);
-    if (!q) return `<span class="aq none">${!s.fish.length ? 'Add fish to show stocking level' : !s.water.on ? 'Add water to show stocking level' : isSalt(s) ? 'Stocking: not available for saltwater (AqAdvisor is freshwater only)' : 'No fish AqAdvisor can count'}</span>`;
+    if (!q) return `<span class="aq none">${!s.fish.length ? 'Add fish to show stocking level' : !s.water.on ? 'Add water to show stocking level' : isSalt(s) ? 'Stocking: not available for saltwater (AqAdvisor gives none)' : 'No fish AqAdvisor can count'}</span>`;
     const url = esc(aqAdvisorUrl(q));
     if (!AQ_PROXY) return `<a class="aq" href="${url}" target="_blank" rel="noopener" title="This tank's stocking on aqadvisor.com">Stocking on AqAdvisor ↗</a>`;
     const key = aqKey(q), got = aqDone.get(key), last = aqLast.get(slot), busy = aqBusy.has(key);
