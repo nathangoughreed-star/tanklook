@@ -22,7 +22,7 @@ Living file. Project state and dated decisions go here; update in place.
   ("Bare tank"); the pieces stay.
 - Before/after pairs: `shots/final/P1..P4_*_pair.png` (main checkout, gitignored).
 
-## Lane S: anatomy audit P1, fish fins (2026-10-14; branch `fish-fins`, port 5503; IN PROGRESS, batch 1 approved and pushed)
+## Lane S: anatomy audit P1, fish fins (2026-10-14; branch `fish-fins`, port 5503; IN PROGRESS, batches 1-2 approved and pushed; batch 4 moved to lane S2)
 Owns `src/art/fishgen.ts`, `src/art/paint.ts`, `src/render/fish3d.ts`. Hook elsewhere: `src/art/placeholder.ts` asks
 `fishgen.finRooted(p, top, u)` where fins are rooted (the 3D card's body cut-out keeps the rim there), 3 lines.
 - **Cause of the "rear paddles":** the old `FinSpec` outline put a flat top at a fixed height above the fin's MIDPOINT;
@@ -36,7 +36,14 @@ Owns `src/art/fishgen.ts`, `src/art/paint.ts`, `src/render/fish3d.ts`. Hook else
   (fingerprints identical).
 - **Batch 1 (Nathan approved, v2 at build 330):** gbr / gbr~f, bolivianram (shallow lyre `cut` 0.42), dwarfgourami(~f),
   honeygourami(~f), gourami(~f) (male fringed anal, long trailing dorsal); gourami mouths upturned (`mouth` -0.045).
-- Before/after composites: worktree `shots/laneS/b1-*.jpg` (gitignored).
+- **Batch 2 (Nathan approved, v2 at build 334):** kribensis(~f) (male longer, pointed dorsal/anal), angel (long bases,
+  spines stepping up the leading edge, high trailing tips), discus (fins round the disc), oscar (long spiny dorsal,
+  pectorals x1.6, mouth line), bristlenose (one-spine dorsal sail, pectorals x2.1 low, pelvics w 1.4, flatter head).
+  New generic: `Plan.gape` = a 3D mouth line (fish3d `gapeMeshes`; the body texture has no mouth), off by default.
+  Open: the oscar's jaw/cheek bulk would need head geometry the shared loft does not have (not built).
+- Batch 4 (hatchet, swordtail, guppy, betta, pea puffer) is lane S2's (`../Glass-Box-fish-fins-b4`): PLANS entries only;
+  new generic parameters come from lane S.
+- Before/after composites: worktree `shots/laneS/b*-*.jpg` (gitignored).
 
 ## Lane R: anatomy audit P2, axolotl + zebra nerite (2026-10-14; branch `p2-small`, port 5493; Nathan approved both sheets; pushed to main)
 Owns `src/art/herps.ts`, `src/render/herp3d.ts`, `src/art/snails.ts`, `src/render/snail3d.ts`. Models v3 at build 317; no

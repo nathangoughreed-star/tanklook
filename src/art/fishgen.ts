@@ -59,6 +59,7 @@ export interface Plan {
   marks?: Mark[];     // painted inside the body
   finMarks?: Mark[];  // painted inside the dorsal, anal and tail fins
   eye: { r: number; iris: [string, string]; u?: number; dv?: number; up?: number }; // up (3D): 0 on the flank .. 1 on top of the head
+  gape?: number;      // 3D: a mouth line this long (u) back from the snout tip on each flank (the body texture has no mouth)
   barbels?: number;   // barbel length (widths); bottom fish
   bristles?: boolean; // bristlenose snout
   rim?: number;
@@ -502,21 +503,28 @@ export const PLANS: Record<string, Plan> = {
     anal: { at: 0.5, len: 0.26, h: 0.1, spines: 0.25, nSp: 3, spineH: [0.04, 0.07], tip: 'point', trail: 0.05 }, pelvic: { u: 0.67, len: 0.11, ext: 0.08, tint: '#d26a52' },
     marks: [{ k: 'blob', u: 0.58, v: -0.01, ru: 0.04, rv: 0.04, c: '#1a1a1e', a: 0.8 }, { k: 'bars', us: [0.87], w: 0.03, c: '#2a2a2c', a: 0.7 }, { k: 'blob', u: 0.8, v: 0.1, ru: 0.12, rv: 0.06, c: '#e8a868', a: 0.5 }],
     eye: { r: 0.03, iris: ['#c8443a', '#4a1210'] } },
-  kribensis: { thick: 0.45, belly: 0.2, depth: 0.3, pedU: 0.2, ped: 0.05, peak: 0.55, snout: 0.45, shade: ['#5c5848', '#b3aa90', '#d8b8a8'], tail: { type: 'notch', h: 0.15, tint: '#c8ac6a' }, fin: '#c0a674',
-    dorsal: { u0: 0.22, u1: 0.68, h: 0.08, shape: 'round', edge: '#c8443a' }, anal: { u0: 0.22, u1: 0.45, h: 0.08, shape: 'round' }, pelvic: { u: 0.66, len: 0.1, tint: '#7a4ca0' },
+  kribensis: { thick: 0.45, belly: 0.2, depth: 0.27, pedU: 0.2, ped: 0.05, peak: 0.55, snout: 0.45, shade: ['#5c5848', '#b3aa90', '#d8b8a8'], tail: { type: 'notch', h: 0.15, tint: '#c8ac6a' }, fin: '#c0a674',
+    // dorsal over the gill cover to the peduncle, low spiny front; the male's soft dorsal and anal drawn out to points
+    dorsal: { at: 0.8, len: 0.56, h: 0.09, spines: 0.6, nSp: 9, spineH: [0.05, 0.065], notch: 0.25, tip: 'point', trail: 0.09, rake: 0.6, edge: '#c8443a' },
+    anal: { at: 0.5, len: 0.27, h: 0.09, spines: 0.25, nSp: 3, spineH: [0.035, 0.06], tip: 'point', trail: 0.08 }, pelvic: { u: 0.66, len: 0.1, ext: 0.03, tint: '#7a4ca0' },
     marks: [{ k: 'band', u0: 0.2, u1: 0.92, v0: -0.02, v1: 0.02, c: '#2a2620', a: 0.8, f: 0.012 }, { k: 'blob', u: 0.62, v: 0.1, ru: 0.15, rv: 0.06, c: '#d0405a', a: 0.75 }],
     finMarks: [{ k: 'blob', u: 0.3, v: -0.17, ru: 0.025, rv: 0.025, c: '#1a1a1a', a: 0.85 }], eye: { r: 0.028, iris: ['#c8a050', '#3a2a10'] } },
   discus: { scale: 0.014, thick: 0.2, depth: 0.78, pedU: 0.13, ped: 0.07, peak: 0.45, snout: 0.85, mouth: 0.02, shade: ['#5a6a7a', '#3f8aa8', '#4a98b0'], tail: { type: 'notch', h: 0.14, tint: '#6a8a9a' }, fin: '#5a8698',
-    dorsal: { u0: 0.15, u1: 0.72, h: 0.07, shape: 'round', edge: '#c8603a' }, anal: { u0: 0.15, u1: 0.68, h: 0.07, shape: 'round', edge: '#c8603a' }, pelvic: { u: 0.72, len: 0.12, tint: '#c8603a' },
+    // dorsal and anal follow the disc from behind the head and the pelvics round to the tail root
+    dorsal: { at: 0.8, len: 0.64, h: 0.075, spines: 0.35, nSp: 7, spineH: [0.03, 0.06], notch: 0.15, rake: 0.75, trail: 0.05, drop: 0.85, edge: '#c8603a' },
+    anal: { at: 0.7, len: 0.54, h: 0.075, spines: 0.2, nSp: 4, spineH: [0.03, 0.06], notch: 0.15, rake: 0.75, trail: 0.05, drop: 0.85, edge: '#c8603a' }, pelvic: { u: 0.72, len: 0.12, tint: '#c8603a' }, gape: 0.03,
     marks: [{ k: 'bars', us: [0.88, 0.2], w: 0.035, c: '#2a2a30', a: 0.55 }, ...[-0.3, -0.21, -0.12, -0.03, 0.06, 0.15, 0.24].map(v => ({ k: 'band' as const, u0: 0.12, u1: 0.98, v0: v, v1: v + 0.032, c: '#8a5a3a', a: 0.6, wave: 0.002 }))],
     eye: { r: 0.03, iris: ['#d04a2a', '#4a1208'] }, rim: 0.03 },
   angel: { thick: 0.2, angular: 0.8, depth: 0.78, pedU: 0.2, ped: 0.045, peak: 0.375, snout: 0.25, shade: ['#9a998e', '#d0cec2', '#e4e1d7'], tail: { type: 'notch', h: 0.24, tint: '#c3c4bc' }, fin: '#c3c4bc',
-    dorsal: { u0: 0.3, u1: 0.66, h: 0.25, shape: 'swept' }, anal: { u0: 0.3, u1: 0.64, h: 0.25, shape: 'swept' }, pelvic: { u: 0.74, len: 0.45, thread: true, tint: '#e2ddcc', angle: 68 },
+    // dorsal and anal: long bases, the spines stepping up the leading edge, the soft rays sweeping back to high trailing tips
+    dorsal: { at: 0.68, len: 0.42, h: 0.42, spines: 0.3, nSp: 5, spineH: [0.04, 0.11], notch: 0.12, rake: 0.9, tip: 'point', trail: 0.13, drop: 1 },
+    anal: { at: 0.66, len: 0.4, h: 0.4, spines: 0.25, nSp: 4, spineH: [0.04, 0.1], notch: 0.12, rake: 0.9, tip: 'point', trail: 0.13, drop: 1 }, pelvic: { u: 0.74, len: 0.45, thread: true, tint: '#e2ddcc', angle: 68 },
     marks: [{ k: 'blob', u: 0.86, v: -0.15, ru: 0.09, rv: 0.07, c: '#c4a46a', a: 0.45 }, { k: 'blob', u: 0.6, v: -0.06, ru: 0.22, rv: 0.2, c: '#ffffff', a: 0.14 },
       { k: 'bars', us: [0.865, 0.645, 0.43], w: 0.05, c: '#26262a', a: 0.9 }, { k: 'bars', us: [0.235], w: 0.06, c: '#26262a', a: 0.5 }],
     finMarks: [{ k: 'bars', us: [0.645, 0.43], w: 0.05, c: '#26262a', a: 0.8 }], eye: { r: 0.026, iris: ['#c8673f', '#5b2a1c'] } },
-  oscar: { thick: 0.48, depth: 0.42, pedU: 0.2, ped: 0.07, peak: 0.5, snout: 0.55, mouth: 0.01, shade: ['#2a2a24', '#3e3b30', '#4a4438'], tail: { type: 'round', h: 0.16, tint: '#3a372e', a: 0.85 }, fin: '#3a372e',
-    dorsal: { u0: 0.2, u1: 0.68, h: 0.08, shape: 'round', a: 0.85 }, anal: { u0: 0.2, u1: 0.45, h: 0.09, shape: 'round', a: 0.85 }, pelvic: { u: 0.62, len: 0.09 },
+  oscar: { gape: 0.07, pec: { s: 1.6 }, thick: 0.48, depth: 0.42, pedU: 0.2, ped: 0.07, peak: 0.5, snout: 0.45, mouth: 0.025, shade: ['#2a2a24', '#3e3b30', '#4a4438'], tail: { type: 'round', h: 0.16, tint: '#3a372e', a: 0.85 }, fin: '#3a372e',
+    dorsal: { at: 0.76, len: 0.52, h: 0.11, spines: 0.6, nSp: 9, spineH: [0.05, 0.07], notch: 0.3, rake: 0.6, trail: 0.05, a: 0.85 },
+    anal: { at: 0.48, len: 0.26, h: 0.1, spines: 0.25, nSp: 3, spineH: [0.04, 0.06], rake: 0.5, trail: 0.04, a: 0.85 }, pelvic: { u: 0.64, len: 0.1, w: 1.2 },
     marks: [{ k: 'spots', n: 12, u0: 0.3, u1: 0.8, v0: -0.05, v1: 0.15, r: 0.045, c: '#c8642a', a: 0.6 }, { k: 'blob', u: 0.24, v: -0.02, ru: 0.04, rv: 0.04, c: '#d8702a', a: 0.9 }, { k: 'blob', u: 0.24, v: -0.02, ru: 0.022, rv: 0.022, c: '#141414', a: 0.95 }],
     eye: { r: 0.03, iris: ['#c84a2a', '#3a1208'] } },
   goldfish: { thick: 0.55, depth: 0.52, pedU: 0.32, ped: 0.06, peak: 0.45, snout: 0.75, shade: ['#c8642a', '#e88a3a', '#f0b87a'], tail: { type: 'double', h: 0.3, tint: '#e8964e', a: 0.75 }, fin: '#ec9e5e',
@@ -601,8 +609,8 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { u0: 0.5, u1: 0.68, h: 0.16, shape: 'sail', tint: '#2a2a2a', a: 0.85 }, anal: { u0: 0.32, u1: 0.4, h: 0.06 }, adipose: true, pelvic: { u: 0.55, len: 0.08 },
     marks: [{ k: 'bars', us: [0.885], w: 0.06, c: '#1c1c1c', a: 0.95 }, { k: 'blob', u: 0.24, v: -0.02, ru: 0.06, rv: 0.06, c: '#1c1c1c', a: 0.9 }], barbels: 0.03,
     eye: { r: 0.032, iris: ['#4a4040', '#0c0a0a'], dv: -0.05 } },
-  bristlenose: { plates: true, thick: 1.3, belly: 1, wide: 0.6, noseW: 0.8, depth: 0.25, pedU: 0.16, ped: 0.05, peak: 0.75, back: 0.72, snout: 0.75, mouth: 0.05, shade: ['#3a3a30', '#5a5444', '#8a826a'], tail: { type: 'notch', h: 0.11, tint: '#4a4638', a: 0.85 }, fin: '#4a4638',
-    dorsal: { u0: 0.42, u1: 0.68, h: 0.13, shape: 'sail', a: 0.85 }, anal: { u0: 0.3, u1: 0.36, h: 0.04 }, adipose: true, pelvic: { u: 0.58, len: 0.1 },
+  bristlenose: { pec: { s: 2.1, v: 0.85 }, plates: true, thick: 1.3, belly: 1, wide: 0.6, noseW: 0.9, depth: 0.23, pedU: 0.16, ped: 0.05, peak: 0.6, back: 0.72, snout: 0.6, mouth: 0.05, shade: ['#3a3a30', '#5a5444', '#8a826a'], tail: { type: 'notch', h: 0.11, tint: '#4a4638', a: 0.85 }, fin: '#4a4638',
+    dorsal: { at: 0.66, len: 0.26, h: 0.17, spines: 0.1, nSp: 1, spineH: 0.19, rake: 0.25, drop: 0.7, a: 0.85 }, anal: { u0: 0.3, u1: 0.36, h: 0.04 }, adipose: true, pelvic: { u: 0.58, len: 0.15, w: 1.4 },
     marks: [{ k: 'spots', n: 70, u0: 0.16, u1: 0.95, v0: -0.18, v1: 0.05, r: 0.008, c: '#c8c0a0', a: 0.6 }],
     finMarks: [{ k: 'spots', n: 40, u0: 0, u1: 0.7, v0: -0.4, v1: 0.2, r: 0.008, c: '#c8c0a0', a: 0.5 }], bristles: true, eye: { r: 0.022, iris: ['#6a6040', '#1a1610'], dv: -0.12, up: 0.7 } },
   oto: { plates: true, thick: 0.95, belly: 0.8, wide: 0.4, noseW: 0.5, depth: 0.19, pedU: 0.17, ped: 0.035, peak: 0.65, back: 0.62, snout: 0.6, mouth: 0.03, shade: ['#6a6a50', '#a8a280', '#e0dcc8'], tail: { type: 'notch', h: 0.1 }, fin: '#c0bba4',
@@ -658,7 +666,8 @@ Object.assign(PLANS, {
     marks: [{ k: 'band', u0: 0.2, u1: 0.9, v0: -0.012, v1: 0.014, c: '#3a2a1e', a: 0.75, f: 0.01 }] }),
   // smaller and rounder, bright cherry belly, rounded fins with a gold-edged dorsal and dark dorsal spots
   kribensis_f: her('kribensis', { belly: 0.3, depth: 0.34, peak: 0.5, tail: { type: 'round', h: 0.14, tint: '#c8ac6a' },
-    dorsal: { u0: 0.25, u1: 0.66, h: 0.08, shape: 'round', edge: '#d8b040' }, anal: { u0: 0.24, u1: 0.44, h: 0.07, shape: 'round' },
+    dorsal: { at: 0.8, len: 0.55, h: 0.08, spines: 0.6, nSp: 9, spineH: [0.05, 0.065], notch: 0.25, trail: 0.025, edge: '#d8b040' },
+    anal: { at: 0.5, len: 0.26, h: 0.07, spines: 0.25, nSp: 3, spineH: [0.03, 0.055], trail: 0.02 }, pelvic: { u: 0.66, len: 0.1, tint: '#7a4ca0' },
     marks: [{ k: 'band', u0: 0.2, u1: 0.92, v0: -0.02, v1: 0.02, c: '#2a2620', a: 0.8, f: 0.012 }, { k: 'blob', u: 0.6, v: 0.12, ru: 0.18, rv: 0.08, c: '#c8305a', a: 0.9 }, { k: 'blob', u: 0.62, v: 0.1, ru: 0.08, rv: 0.04, c: '#8a3a9a', a: 0.35 }],
     finMarks: [{ k: 'blob', u: 0.32, v: -0.18, ru: 0.025, rv: 0.025, c: '#1a1a1a', a: 0.85 }, { k: 'blob', u: 0.45, v: -0.185, ru: 0.022, rv: 0.022, c: '#1a1a1a', a: 0.8 }] }),
   // smaller, lower dorsal, a pink belly patch, fewer blue spangles

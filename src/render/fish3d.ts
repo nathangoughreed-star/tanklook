@@ -150,6 +150,28 @@ function barbelMeshes(p: Plan, bend: number, mat: THREE.Material) {
   return out;
 }
 
+/**
+ * The mouth (`p.gape`): a thin dark line on each flank from the snout tip back along the jaw, curving a little down,
+ * just outside the surface (the body's painted texture leaves the mouth out).
+ */
+function gapeMeshes(art: string, p: Plan, bend: number, mat: THREE.Material) {
+  const out: THREE.Mesh[] = [], m0 = p.mouth ?? 0;
+  for (const side of [1, -1]) {
+    const key = `gape:${art}:${bend}:${side}`;
+    let g = geoCache.get(key);
+    if (!g) {
+      const pts = Array.from({ length: 7 }, (_, i) => {
+        const k = i / 6, u = 0.997 - p.gape! * k, [t, b] = profile(p)(u), v = Math.min(b - 0.003, Math.max(t + 0.003, m0 + 0.004 + 0.02 * k * k));
+        const s = surfaceAt(p, u, v, side, bend), z0 = bendZ(bend, s.x);
+        return new THREE.Vector3(s.x, s.y, z0 + (s.z - z0) * 1.04 + side * 0.001);
+      });
+      g = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 16, 0.0028, 5, false); g.userData.keep = true; geoCache.set(key, g);
+    }
+    out.push(new THREE.Mesh(g, mat));
+  }
+  return out;
+}
+
 /** Paired-fin spread from the body (radians): pelvics hang down and out, pectorals swing out behind the gill cover. */
 /** A tube along `curve` from radius r at its start, tapering to a third at its end (limbs, tentacles). */
 export function taperTube(curve: THREE.Curve<THREE.Vector3>, r: number, N = 12, R = 5) {
@@ -458,6 +480,7 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
     const mat = (c?: string) => fishMat(`limb:${art}:${c ?? ''}`, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(c ?? p.shade[0]).multiplyScalar(0.9), ...see(p) })); // own colour (cleaner shrimp's white antennae) or the back's
     for (const m of limbMeshes(art, p, b, mat)) grp.add(m);
   }
+  if (p.gape) for (const m of gapeMeshes(art, p, b, fishMat('gape:' + art, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(p.shade[0]).multiplyScalar(0.35) })))) grp.add(m);
   if (p.barbels) {
     const mat = fishMat('barbel:' + art, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(p.shade[2]).multiplyScalar(0.85) }));
     for (const m of barbelMeshes(p, b, mat)) grp.add(m);
