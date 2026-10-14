@@ -80,6 +80,12 @@ Split from lane S. Only the PLANS / her() entries of these species in `src/art/f
   Sideways, phones wider than 760 px get the desktop layout (menu left, 350 px, ~40 % of the width): roughly right.
   Phones 760 px or narrower in landscape stay stacked at ~180 px per half: unusable. Fix: a short-landscape rule that
   always puts the panel on the left at ~260-280 px. The view map's phone default reads the width once at load.
+- **Step 1 DONE (2026-10-14, Nathan approved the pictures):** `style.css` `(orientation: landscape) and (max-height: 500px)`
+  rule after the narrow one: panel left at 280 px (row / nudge / flabel columns narrowed to fit), view fills the rest,
+  toast over the panel, sticky Add row, map 140x105. View-map default (`panels.ts` `narrow`) counts a sideways phone as a
+  phone but is still read once at load (rotating never flips the viewer's map). Fixed on the way: the sticky `#addRow`
+  floated 40 px (the panel's bottom padding) above the bottom on portrait phones too, with list rows showing under it;
+  now `bottom: -40px`. Pictures: `shots/landscape/W1-W4` (worktree only); taken by a CDP script (touch emulated).
 - **Order:** landscape layout, PWA manifest + SW, TWA shell + asset links, Play listing material (Nathan does the account
   and submissions), low-end phone performance check.
 

@@ -812,8 +812,9 @@ Cancel, then change the name, to keep both.`)) return;
   // viewpoint map: a per-viewer display preference (browser storage), not scene data
   // the map's own × and "⌖ Map" button do the same as the checkbox; the viewer places and shows one map per view
   const mapCb = $('mapOn'), applyMap = () => { $('mapShow').classList.toggle('off', mapCb.checked); viewer.invalidate(); };
-  // no choice made yet: shown, except on a phone, where it would cover a third of the view (audit #32)
-  const narrow = matchMedia('(max-width: 760px)').matches;
+  // no choice made yet: shown, except on a phone, where it would cover a third of the view (audit #32). Read once at
+  // load, upright or sideways (lane W): turning the phone does not flip the viewer's map on or off.
+  const narrow = matchMedia('(max-width: 760px), (orientation: landscape) and (max-height: 500px)').matches;
   try { const v = localStorage.getItem('tanklook.viewmap'); mapCb.checked = v ? v !== 'off' : !narrow; } catch { mapCb.checked = !narrow; }
   applyMap();
   const setMap = (on: boolean) => { mapCb.checked = on; try { localStorage.setItem('tanklook.viewmap', on ? 'on' : 'off'); } catch { /* ignore */ } applyMap(); };

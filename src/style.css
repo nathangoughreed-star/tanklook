@@ -200,10 +200,25 @@ footer { margin-top: 18px }
   #app { flex-direction: column-reverse }
   #side { width: 100%; height: 50%; border-right: 0; border-top: 1px solid var(--line); padding: 10px 16px 40px }
   #view { height: 50%; flex: none }
-  /* the species list is long on a phone: Add stays in reach at the bottom of the panel (audit #8) */
+  /* the species list is long on a phone: Add stays in reach at the bottom of the panel (audit #8); -40px = the
+     panel's bottom padding, else list rows show below it (lane W) */
   .status { left: 16px; width: auto; right: 16px; bottom: 64px } /* above the sticky Add row */
-  #addRow { position: sticky; bottom: 0; z-index: 2; margin: 0 -16px; padding: 6px 16px; background: var(--panel); border-top: 1px solid var(--line) }
+  #addRow { position: sticky; bottom: -40px; z-index: 2; margin: 0 -16px; padding: 6px 16px; background: var(--panel); border-top: 1px solid var(--line) }
   #app.collapsed #view { height: 100% }
+}
+/* a phone turned sideways (lane W): the panel always sits on the left at 280 px and the view fills the rest, whatever
+   the width; stacked halves would be ~180 px tall. After the narrow rule so it wins on phones 760 px wide or less. */
+@media (orientation: landscape) and (max-height: 500px) {
+  #app { flex-direction: row }
+  #side { width: 280px; height: 100%; border-top: 0; border-right: 1px solid var(--line); padding: 8px 12px 40px }
+  #view { height: 100%; flex: 1; min-height: 0 }
+  .row { grid-template-columns: 80px 1fr 60px }
+  .nudge { grid-template-columns: 80px 1fr 1fr }
+  .btns.indent { margin-left: 86px }
+  .flabel { width: 74px }
+  .status { left: 10px; right: auto; width: 260px; bottom: 60px } /* over the panel, above the sticky Add row */
+  #addRow { position: sticky; bottom: -40px; z-index: 2; margin: 0 -12px; padding: 6px 12px; background: var(--panel); border-top: 1px solid var(--line) }
+  .vmap { width: 140px; height: 105px }
 }
 .row output.typein { cursor: text; border-radius: 3px; padding: 1px 3px }
 .row output.typein:hover, .row output.typein:focus-visible { background: var(--chip); outline: 1px solid var(--line) }
