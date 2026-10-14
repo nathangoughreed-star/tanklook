@@ -670,9 +670,10 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { at: 0.63, len: 0.12, h: 0.1, spines: 0.12, nSp: 1, spineH: 0.12, rake: 0.12, drop: 0.35 }, anal: { u0: 0.33, u1: 0.4, h: 0.04 }, pelvic: { u: 0.58, len: 0.07, w: 1.2 },
     marks: [{ k: 'band', u0: 0.18, u1: 0.98, v0: -0.015, v1: 0.012, c: '#2a2820', a: 0.85, f: 0.008 }], finMarks: [{ k: 'blob', u: 0.08, v: 0, ru: 0.04, rv: 0.025, c: '#2a2820', a: 0.7 }],
     eye: { r: 0.024, iris: ['#b0a070', '#2a2418'], dv: -0.08, up: 0.3 } },
-  kuhli: { thick: 0.85, depth: 0.085, pedU: 0.05, ped: 0.025, peak: 0.6, back: 0.55, snout: 0.6, mouth: 0.01, shade: ['#4a3a2a', '#d88a5a', '#ecc0a0'], tail: { type: 'round', h: 0.035, tint: '#c88a62' }, fin: '#d09a72',
+  // blunt loach head, fine cylindrical barbels, the trunk fullest behind mid-body and the tail laterally compressed
+  kuhli: { thick: 0.85, pedT: 0.35, depth: 0.085, pedU: 0.05, ped: 0.02, peak: 0.78, back: 0.55, snout: 0.95, noseCap: 0.04, mouth: 0.01, barbelR: 0.0013, shade: ['#4a3a2a', '#d88a5a', '#ecc0a0'], tail: { type: 'round', h: 0.035, tint: '#c88a62' }, fin: '#d09a72',
     dorsal: { u0: 0.22, u1: 0.28, h: 0.025, shape: 'round' }, anal: { u0: 0.12, u1: 0.18, h: 0.02, shape: 'round' },
-    marks: [{ k: 'bars', us: [0.93, 0.85, 0.77, 0.69, 0.61, 0.53, 0.45, 0.37, 0.29, 0.21, 0.13, 0.07], w: 0.035, c: '#2a2018', a: 0.85 }], barbels: 0.012,
+    marks: [{ k: 'bars', us: [0.93, 0.85, 0.77, 0.69, 0.61, 0.53, 0.45, 0.37, 0.29, 0.21, 0.13, 0.07], w: 0.035, c: '#2a2018', a: 0.85 }], barbels: 0.016,
     eye: { r: 0.008, iris: ['#6a5040', '#1a1008'] }, rim: 0.012 },
   clownloach: { pec: { s: 1.6, v: 0.75 }, gape: 0.025, thick: 0.6, belly: 0.4, depth: 0.29, pedU: 0.18, ped: 0.045, peak: 0.52, back: 0.62, snout: 0.38, mouth: 0.05, shade: ['#c8742a', '#e8a040', '#f0c070'], tail: { type: 'fork', h: 0.15, tint: '#c8443a' }, fin: '#c8443a',
     dorsal: { at: 0.64, len: 0.16, h: 0.13, rake: 0.25, drop: 0.55 }, anal: { at: 0.4, len: 0.1, h: 0.085, rake: 0.4, drop: 0.6 }, pelvic: { u: 0.56, len: 0.1, w: 1.3 },
