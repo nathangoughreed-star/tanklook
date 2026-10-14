@@ -165,6 +165,8 @@ function gapeMeshes(art: string, p: Plan, bend: number, mat: THREE.Material) {
         const s = surfaceAt(p, u, v, side, bend), z0 = bendZ(bend, s.x);
         return new THREE.Vector3(s.x, s.y, z0 + (s.z - z0) * 1.04 + side * 0.001);
       });
+      // a rounded snout (noseCap) is broad at the front: the line starts at the tip on the midline, so the two sides meet
+      if (p.noseCap) { const z0 = bendZ(bend, 0.5); pts.unshift(new THREE.Vector3(0.5 + 0.002, -(m0 + 0.004), z0)); }
       g = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 16, 0.0028, 5, false); g.userData.keep = true; geoCache.set(key, g);
     }
     out.push(new THREE.Mesh(g, mat));
