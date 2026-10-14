@@ -2,6 +2,70 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane T: AR view on iPhone, AR Quick Look (2026-10-14; branch `ar-view`, port 5483; pushed to main, HIDDEN behind `?ar=ios`)
+- Built: `src/render/arUsdz.ts` + `test/arUsdz.test.ts`; `attachAR` in `src/render/ar.ts` now picks WebXR (Android, lane Q,
+  unchanged) or AR Quick Look (`a.relList.supports('ar')`, iPhone/iPad Safari). Desktop and non-AR Android see no button.
+- Gate: `IOS_FLAG` in ar.ts: the iPhone button shows only with `?ar=ios` in the URL until someone tests on a real iPhone
+  (Nathan had none at hand 2026-10-14). After a good test: set `IOS_FLAG = false`.
+- Tap: "Preparing AR…", then a .usdz Blob opens through `<a rel="ar" href=blob#allowsContentScaling=0><img></a>` (auto-click;
+  a small panel keeps the Size check line and an "Open in AR" link in case the auto-open is blocked after the async export).
+  `allowsContentScaling=0` should lock true size; unverified on a blob URL, check on the phone.
+- Export = a COPY of the current viewport's build (viewer untouched): drops person / room floor / wall / terrain dots
+  (`roomObjects`, shared with prepScene), outline hulls, lines, the animals' decal shadows, the snails' invisible hit cards.
+  Every mesh -> MeshStandardMaterial: glass opacity >= 0.1, water volume -> light tint (0.12), frost -> white sheet 0.8,
+  glow -> emissive, soft fin cards (alpha-to-coverage) -> alpha blend. Double-sided parts get a reversed copy.
+- Vertex colours (Quick Look ignores them): parts without a map are baked into one small atlas, one 8 px tile per part
+  holding the plane through its colours (top 2 principal axes; bilinear = exact; worst residual 0.014 on Planted community).
+  Parts with a map keep the colours' mean as a tint (fish form shading; Quick Look lights the model itself).
+- Size: meshoptimizer (new dependency, lazy chunk `meshoptimizer/simplifier`) at 0.5 mm, after welding triangle soups;
+  plant leaves barely simplify (open strips; Permissive mode made sticks), so over budget plants keep a share of their
+  pieces, carpets first (>= 1000 pieces, down to 20 %), then stem plants. Budget 250k triangles (Nathan chose ~25 MB over
+  15 MB from a side-by-side picture). Numbers rounded (0.1 mm, normals 0.01) and the zip repacked 64-byte aligned (three's
+  own alignment code is off); textures max 512 px; canvas toBlob made synchronous during export (Chromium's idle-time
+  toBlob cost ~1 s per texture).
+- Measured on desktop (quiet machine): Planted community (40 breeder, 40 fish) 810k -> 254k tris, 25.7 MB, 2.3-2.4 s
+  (carpets 20 %, stem leaves 94 %); Iwagumi 26 MB 2.8-3.3 s; Reef 24.6 MB 3.2 s; Paludarium 17 MB 2.8 s; Terrarium 11.7 MB
+  1.3 s; Betta 2.6 MB 0.9 s. File checked: stored, every file 64-byte aligned, model.usda first, loads in three's
+  USDZLoader, bbox 0.94 m wide, stand foot at y = 0.
+- Dev: `(await import('/src/render/arUsdz.ts')).exportUSDZ(__gb.viewer.current)` -> { blob, stats } on the dev page.
+- OPEN (needs an iPhone): checklist: button shows with ?ar=ios, Quick Look opens (auto or via the panel link), tank stands
+  on the floor at the right height, size right against a tape measure, glass / water / fish look right, the stand shows,
+  pinch-zoom locked or not. Then flip IOS_FLAG. Lane Q leftover fixed: selection boxes (lines drawn over everything) are hidden in WebXR AR and never exported. Known: plant colours may read duller under Quick Look's lighting than in
+  the viewer (its own IBL); fish fins are translucent cards, faint from far.
+
+## Lane W: Android app (2026-10-14; PARKED, Nathan: "remember it for a later date"; prompt `prompts/lane-W-android-app.md`)
+- **Route: Trusted Web Activity (TWA)** around https://tanklook.com/ (Bubblewrap or PWABuilder). Real Chrome, so WebXR
+  AR keeps working and pushes to main update the app with no store release. **Not Capacitor**: Android WebView has no
+  WebXR (AR would need a native ARCore plugin); revisit only if offline use beats AR. Estimate: 1-2 days of code; the
+  calendar time is Play's 14-day / 12-tester closed test that new personal accounts must run before production.
+- **Missing today:** no web manifest, no service worker, no `/.well-known/assetlinks.json`.
+- **Landscape gap (found 2026-10-14, not fixed):** the layout only switches on width (`style.css` `max-width: 760px`).
+  Sideways, phones wider than 760 px get the desktop layout (menu left, 350 px, ~40 % of the width): roughly right.
+  Phones 760 px or narrower in landscape stay stacked at ~180 px per half: unusable. Fix: a short-landscape rule that
+  always puts the panel on the left at ~260-280 px. The view map's phone default reads the width once at load.
+- **Order:** landscape layout, PWA manifest + SW, TWA shell + asset links, Play listing material (Nathan does the account
+  and submissions), low-end phone performance check.
+
+
+## Background pictures (2026-10-14; main checkout, pushed to main)
+Nathan: custom backgrounds from an uploaded image, with stretch / fill / fit, different backgrounds on different sides, one
+picture able to span touching sides.
+- **Data:** `render.bgImages: { img, fit: fill|fit|stretch|tile, sides, scale }[]` (types.ts `BgImage`; older files: []).
+  Up to 4 per tank; each side under one picture; a picture's sides must touch (`sidesTouch`, ring front-right-back-left,
+  so left+right or back+front alone are refused; left+back+right is fine). `scale` = tile height, % of tank height.
+- **Storage (`src/scene/images.ts`):** scenes hold only a picture id (FNV hash of the data URL), so undo snapshots,
+  autosave and share links stay small. Pictures live in memory + `localStorage tanklook.img.<id>`, downscaled to 2048 px
+  long edge (JPEG 0.86, PNG only when it has transparency). Download embeds the used pictures in a top-level `images`
+  map; `parseScene` adopts them. Share links go without pictures (status says so); a missing picture shows "missing" in
+  its row and its sides fall back to the plain background. Pictures are never garbage-collected from localStorage (open).
+- **Render (build.ts `BgSheet`):** pictures cover their sides whatever `bg` is (also with None); the plain background keeps
+  its own sides minus those. Each picture's run is turned clockwise seen from above (`clockwise`), so it reads correctly
+  from inside the tank across a corner (seen from outside a side pane it is mirrored, like a print viewed through glass).
+  Fit modes are composed on a canvas the run's shape (`pictureTexture`, textures.ts; fit pads with the plain background
+  colour, black for none / gradient / frosted). Pictures sit 0.3 mm (minus 0.05 per picture) outside the glass, the plain
+  sheet 0.5, so overlapping round-tank arcs never z-fight. Bowl uses the same sheets on its sphere.
+- **UI:** Tank > Background > Pictures: Add picture…, then per picture side toggles, Fit select, Size (tile), remove.
+- Tests `test/bgimages.test.ts` (touching rule, file round trip, untrusted lists). 236/236.
 
 ## Lane P: final polish, FINAL.md items 1-6 (2026-10-14; branch `final-fixes`, port 5473; Nathan approved via the coordinator; pushed to main)
 - **1 Status line** (`style.css .status`): `#status` is now a toast fixed to the panel's bottom (desktop: 14 px in, 322 wide;
@@ -22,7 +86,7 @@ Living file. Project state and dated decisions go here; update in place.
   ("Bare tank"); the pieces stay.
 - Before/after pairs: `shots/final/P1..P4_*_pair.png` (main checkout, gitignored).
 
-## Lane S: anatomy audit P1, fish fins (2026-10-14; branch `fish-fins`, port 5503; IN PROGRESS, batches 1-2 approved and pushed; batch 4 moved to lane S2)
+## Lane S: anatomy audit P1, fish fins (2026-10-14; branch `fish-fins`, port 5503; DONE: batches 1-3 approved and pushed; batch 4 is lane S2's)
 Owns `src/art/fishgen.ts`, `src/art/paint.ts`, `src/render/fish3d.ts`. Hook elsewhere: `src/art/placeholder.ts` asks
 `fishgen.finRooted(p, top, u)` where fins are rooted (the 3D card's body cut-out keeps the rim there), 3 lines.
 - **Cause of the "rear paddles":** the old `FinSpec` outline put a flat top at a fixed height above the fin's MIDPOINT;
@@ -41,6 +105,33 @@ Owns `src/art/fishgen.ts`, `src/art/paint.ts`, `src/render/fish3d.ts`. Hook else
   pectorals x1.6, mouth line), bristlenose (one-spine dorsal sail, pectorals x2.1 low, pelvics w 1.4, flatter head).
   New generic: `Plan.gape` = a 3D mouth line (fish3d `gapeMeshes`; the body texture has no mouth), off by default.
   Open: the oscar's jaw/cheek bulk would need head geometry the shared loft does not have (not built).
+- **Batch 3 (Nathan approved, v2 at build 348):** firefish (raked first-dorsal pennant via `lead`/`drop`, long low
+  `dorsal2`, matching anal), banggai (spiny first dorsal, swept `dorsal2` and anal, big pelvics), watchman (two dorsals,
+  eyes raised `up` 0.55, `gape`, pectorals x1.6), yellowtang (`rostrum`: projecting snout; eye set back `u` 0.8; long
+  dorsal/anal), coralbeauty (long spiny dorsal/anal, `gape`). New generic, all off by default: `Plan.rostrum` {len, h}
+  in `profile()`, `MedianFin.lead`. Fix: `rake` 1 divided by zero (now capped at 0.999).
+- **For lane S2 (on main, no model changes):** `tail.sword` (`f3706dc`; long tapering sword from u = sword to the tip),
+  `eye.bulge` (`f3706dc`; rounder 3D eye domes, set in less deep), `Plan.gapeDrop` (`332e863`; mouth line curve,
+  default 0.02).
+- **Pruned (lane M's leftovers):** `shrimpMarksCanvas`, `Plan.glass` and fish3d's glass branch (`see`, the marks
+  overlay, the outline skip). Shrimp build in `shrimp3d.ts` with their own glass; every look still matches its record.
+- **P2 fish rows the new parameters make cheap** (`reference/model-anatomy-audit-v1.md` P2; for a later lane, PLANS only):
+  - Cheap, fins only (`MedianFin` at / len / h / spines / trail, `pec`, `pelvic` ext / w): ember (low dorsal, short anal
+    base), rummynose (small dorsal), danio (dorsal rearward: `at`; upturned mouth: `mouth`, `gape` + `gapeDrop`), cherry
+    barb (dorsal height; slimmer male = `depth`), tiger barb (bigger triangular dorsal, paired fins `pelvic.w`), platy and
+    molly (ray-supported dorsal sail, rounder caudal; male `gono` if a male look is wanted), oto (triangular dorsal with
+    one spine like the bristlenose; caudal fork via lyre `cut`), clown loach (fin area, `pec.s`), SAE (dorsal; mouth
+    `gape`), bronze / panda cory (broad low pectorals `pec` {s, v}; triangular dorsal on one spine; scutes already
+    `plates`), and the marine four, which take the cichlid recipe of batches 1-2: ocellaris (long continuous spiny/soft
+    dorsal, `pec.s`, `gape`), royal gramma (long dorsal base, oblique jaw `gape`), sixline (continuous dorsal), chromis
+    (dorsal origin forward, `gape`; fork curvature via lyre `cut`).
+  - Partly cheap (fins yes, the rest is profile tuning with existing fields): neon, cardinal (outline / peduncle), chili
+    (shorter snout), cpd (short snout, moderate fork via lyre `cut`).
+  - Not cheap: goldfish (paired double caudal seen from above needs a 3D tail structure, not a card), kuhli (fine
+    cylindrical barbels / blunt loach head: barbel and head geometry), harlequin (body rhomboid is `angular`, the patch is
+    a marking; no new parameter helps).
+- Open: the oscar's jaw / cheek bulk would need head geometry the shared loft has not got (not built; ask Nathan before
+  a new head template).
 - Batch 4 (hatchet, swordtail, guppy, betta, pea puffer) is lane S2's (`../Glass-Box-fish-fins-b4`): PLANS entries only;
   new generic parameters come from lane S.
 - Before/after composites: worktree `shots/laneS/b*-*.jpg` (gitignored).
@@ -737,11 +828,14 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 |---|---|---|---|---|
 | P final polish | `../Glass-Box-final-fixes` / `final-fixes` | 5473 | `src/style.css`, `index.html`, `src/ui/panels.ts`, `src/scene/water.ts` | DONE (`7e5897a`); files free |
 | R P2 axolotl + nerite | `../Glass-Box-p2-small` / `p2-small` | 5493 | `art/herps.ts`, `render/herp3d.ts`, `art/snails.ts`, `render/snail3d.ts` | DONE (`45f872a`); files free. Open: fillCut for mystery / turbo / trumpet (would change approved look) |
-| S P1 fish fins | `../Glass-Box-fish-fins` / `fish-fins` | 5503 | `art/fishgen.ts`, `art/paint.ts`, `render/fish3d.ts` | running (session `local_b5a88177`) |
+| S P1 fish fins | `../Glass-Box-fish-fins` / `fish-fins` | 5503 | (released) | DONE (`f71987c`, `624f8b1`); P2 notes in lane S's section; files free |
+| X P2 fish, freshwater | `../Glass-Box-fish-fins` / `fish-fins` | 5503 | PLANS / her() entries ONLY of neon, cardinal, ember, rummynose, chili, danio, cpd, cherrybarb, tigerbarb, platy, molly | ready to open (prompt `prompts/lane-X-fish-p2-fresh.md`) |
+| Y P2 fish, bottom + marine | `../Glass-Box-fish-p2b` / `fish-p2b` | 5533 | PLANS / her() entries ONLY of bronzecory, pandacory, oto, clownloach, sae, ocellaris, royalgramma, sixline, chromis | ready to open (prompt `prompts/lane-Y-fish-p2-bottom-marine.md`) |
 | R2 snail aperture kink | `../Glass-Box-p2-small` / `p2-small` (started by lane R) | 5493 | `art/snails.ts`, `render/snail3d.ts` (mystery / turbo / trumpet fillCut) | CLOSED: tried, Nathan declined (`52fb6cb`); snail files free |
-| S2 fish batch 4 | `../Glass-Box-fish-fins-b4` / `fish-fins-b4` | 5513 | in `art/fishgen.ts` ONLY the PLANS / her() entries of hatchet, swordtail(~f), guppy(~f), betta(~f), peapuffer(~f); no MedianFin / medianPts / gonoPts / tailPts / pairedFins, no paint.ts / fish3d.ts (new generic parameters: ask lane S) | ready to open (S batch 2 is on main, `09bd9a3`; prompt `prompts/lane-S2-fish-batch4.md`) |
-| V zoom out further | `../Glass-Box-zoom-out` / `zoom-out` | 5523 | `scene/validate.ts` LIMITS.zoom, `render/camera.ts`, the zoom / framing parts of `render/viewer.ts`, the cZoom slider in `index.html` / `ui/panels.ts`, `interact/pointer.ts` wheel / pinch | ready to open (prompt `prompts/lane-V-zoom-out.md`) |
-| T iPhone AR | `../Glass-Box-ar` / `ar-view` (lane Q's, Q is done) | 5483 | new `render/arUsdz.ts` + test, `render/ar.ts` | running (session `local_070f91c7`) |
+| S2 fish batch 4 | `../Glass-Box-fish-fins-b4` / `fish-fins-b4` | 5513 | in `art/fishgen.ts` ONLY the PLANS / her() entries of hatchet, swordtail(~f), guppy(~f), betta(~f), peapuffer(~f); no MedianFin / medianPts / gonoPts / tailPts / pairedFins, no paint.ts / fish3d.ts (new generic parameters: ask lane S) | running (session `local_5cf51e1b`) |
+| V zoom out further | `../Glass-Box-zoom-out` / `zoom-out` | 5523 | `scene/validate.ts` LIMITS.zoom, `render/camera.ts`, the zoom / framing parts of `render/viewer.ts`, the cZoom slider in `index.html` / `ui/panels.ts`, `interact/pointer.ts` wheel / pinch | running (session `local_7dddf0e8`), options sent to Nathan |
+| T iPhone AR | `../Glass-Box-ar` / `ar-view` (lane Q's, Q is done) | 5483 | new `render/arUsdz.ts` + test, `render/ar.ts` | DONE for now (`3085106`); iPhone button hidden behind `?ar=ios` until an iPhone test, then IOS_FLAG = false; files free |
+| W Android app | not made yet (`../Glass-Box-android` / `android`) | next free | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | PARKED for later (prompt `prompts/lane-W-android-app.md`); after P's files are free, mind V's `index.html` / `panels.ts` edits |
 Free (no lane): `render/build.ts`, `render/items.ts`, `scene/items.ts`, `render/viewer.ts`, `main.ts`, `render/lighting.ts`,
 `render/coral3d.ts`, `render/shrimp3d.ts` / `art/shrimps.ts`, `scene/share.ts`, herps / herp3d / snails / snail3d. A one-line hook in a free file is fine; name it
 in your section. Where to read: anatomy audit `reference/model-anatomy-audit-v1.md`; model versions "Model review sheet"

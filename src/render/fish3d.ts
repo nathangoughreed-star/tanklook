@@ -4,7 +4,7 @@
 // card stays as the fins (thin membranes); its painted body sits inside the solid. Nose and tail tips are unchanged,
 // so nose-to-tail stays adult TL.
 import * as THREE from 'three';
-import { bodyPlan, eyeSpot, pairedFins, profile, shrimpMarksCanvas, type Plan } from '../art/fishgen';
+import { bodyPlan, eyeSpot, pairedFins, profile, type Plan } from '../art/fishgen';
 import { rng } from '../art/paint';
 import { HERP3D } from '../art/herps';
 import { SNAILS } from '../art/snails';
@@ -110,7 +110,7 @@ function eyePlacements(p: Plan, bend: number) {
   // `eye.up` turns the eye from the flank toward the top of the head (flattened fish: plecos look upward)
   const th = th0 + (EYE_TOP - th0) * (p.eye.up ?? 0);
   return [1, -1].map(side => ({
-    pos: pointAt(p, e.u, th, side, bend), n: normalAtTh(p, e.u, th, side, bend).add(new THREE.Vector3(0.2, 0, 0)).normalize(), r: e.r, iris: e.iris,
+    pos: pointAt(p, e.u, th, side, bend), n: normalAtTh(p, e.u, th, side, bend).add(new THREE.Vector3(0.2, 0, 0)).normalize(), r: e.r, iris: e.iris, bulge: p.eye.bulge ?? 0.38,
   }));
 }
 /** Section angle of a fully raised eye (`eye.up` = 1): on the head's upper surface, a little off the midline. */
@@ -161,7 +161,7 @@ function gapeMeshes(art: string, p: Plan, bend: number, mat: THREE.Material) {
     let g = geoCache.get(key);
     if (!g) {
       const pts = Array.from({ length: 7 }, (_, i) => {
-        const k = i / 6, u = 0.997 - p.gape! * k, [t, b] = profile(p)(u), v = Math.min(b - 0.003, Math.max(t + 0.003, m0 + 0.004 + 0.02 * k * k));
+        const k = i / 6, u = 0.997 - p.gape! * k, [t, b] = profile(p)(u), v = Math.min(b - 0.003, Math.max(t + 0.003, m0 + 0.004 + (p.gapeDrop ?? 0.02) * k * k));
         const s = surfaceAt(p, u, v, side, bend), z0 = bendZ(bend, s.x);
         return new THREE.Vector3(s.x, s.y, z0 + (s.z - z0) * 1.04 + side * 0.001);
       });
@@ -407,10 +407,9 @@ function eyeTexture(iris: [string, string]) {
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
   return t;
 }
-const dome = (() => { const g = new THREE.SphereGeometry(1, 24, 16); g.scale(1, 0.38, 1); g.userData.keep = true; return g; })();
-
-/** A translucent body (glass shrimp): the water and what is behind show through. */
-const see = (p: Plan) => (p.glass ? { transparent: true, opacity: p.glass } : {});
+const domes = new Map<number, THREE.BufferGeometry>();
+/** Eye dome, `b` = its height (share of the radius): flat for most fish, rounder for bulging eyes (puffers). */
+const dome = (b = 0.38) => { let g = domes.get(b); if (!g) { g = new THREE.SphereGeometry(1, 24, 16); g.scale(1, b, 1); g.userData.keep = true; domes.set(b, g); } return g; };
 
 /**
  * Fish stand out (render.pop): a dark outline round the solid body, drawn as the body's back faces pushed out along
@@ -458,26 +457,19 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
   let g = geoCache.get(key); if (!g) { g = bodyGeometry(p, aspect, b); geoCache.set(key, g); }
   const grp = new THREE.Group(); grp.scale.setScalar(w);
   grp.add(new THREE.Mesh(g, fishMat(`body:${map.uuid}:${fish3d.fade}:${fish3d.wrap}`, () => {
-    const t = bledTexture(map), m = new THREE.MeshBasicMaterial({ map: t.map, vertexColors: true, ...see(p) }); if (fish3d.fade) { m.userData.plain = p.sharp ? t.map : t.plain; m.userData.side = p.sharp ? SIDE_SHARP : fish3d.wrap ? SIDE : new THREE.Vector2(0.3, 0.75); } return m;
+    const t = bledTexture(map), m = new THREE.MeshBasicMaterial({ map: t.map, vertexColors: true }); if (fish3d.fade) { m.userData.plain = p.sharp ? t.map : t.plain; m.userData.side = p.sharp ? SIDE_SHARP : fish3d.wrap ? SIDE : new THREE.Vector2(0.3, 0.75); } return m;
   })));
-  if (!p.glass) { const o = new THREE.Mesh(g, outlineMat); o.userData.nolight = true; grp.add(o); }
+  { const o = new THREE.Mesh(g, outlineMat); o.userData.nolight = true; grp.add(o); }
   for (const e of eyePlacements(p, b)) {
-    const m = new THREE.Mesh(dome, fishMat('eye:' + art, () => new THREE.MeshBasicMaterial({ map: eyeTexture(e.iris) })));
+    const m = new THREE.Mesh(dome(e.bulge), fishMat('eye:' + art, () => new THREE.MeshBasicMaterial({ map: eyeTexture(e.iris) })));
     m.scale.setScalar(e.r); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), e.n);
-    m.position.copy(e.pos).addScaledVector(e.n, -e.r * 0.3); // set into the head, bulging a little
+    m.position.copy(e.pos).addScaledVector(e.n, -e.r * (0.3 - 0.5 * (e.bulge - 0.38))); // set into the head, bulging a little (rounder domes sit less deep)
     grp.add(m);
-  }
-  if (p.glass) { // the markings stay solid on the see-through body: the same surface again, carrying only them
-    const marks = fishMat(`marks:${art}:${aspect}`, () => {
-      const t = new THREE.CanvasTexture(shrimpMarksCanvas(art, aspect)!); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
-      return new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
-    });
-    grp.add(new THREE.Mesh(g, marks));
   }
   const belly = bellyPlate(art, p, b); if (belly) grp.add(belly);
   for (const f of finMeshes(art, p, b, edge, cling)) grp.add(f);
   if (p.limbs) {
-    const mat = (c?: string) => fishMat(`limb:${art}:${c ?? ''}`, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(c ?? p.shade[0]).multiplyScalar(0.9), ...see(p) })); // own colour (cleaner shrimp's white antennae) or the back's
+    const mat = (c?: string) => fishMat(`limb:${art}:${c ?? ''}`, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(c ?? p.shade[0]).multiplyScalar(0.9) })); // own colour (cleaner shrimp's white antennae) or the back's
     for (const m of limbMeshes(art, p, b, mat)) grp.add(m);
   }
   if (p.gape) for (const m of gapeMeshes(art, p, b, fishMat('gape:' + art, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(p.shade[0]).multiplyScalar(0.35) })))) grp.add(m);

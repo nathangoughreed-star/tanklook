@@ -2,7 +2,8 @@
 // AR view (lane Q, Nathan 2026-10-14): the current tank at true size in the room through the phone camera (WebXR
 // immersive-ar with hit-test; Android Chrome / ARCore). The scene is the viewer's own build, in mm: rather than scaling
 // it (its lighting and water shaders work in world mm), the XR camera hangs from a rig that maps the room's metres to
-// tank mm (rigMatrix), so 1 mm = 0.001 m with no other scale. iPhone (USDZ / AR Quick Look) is a later phase.
+// tank mm (rigMatrix), so 1 mm = 0.001 m with no other scale. iPhone: AR Quick Look with a .usdz export (lane T,
+// render/arUsdz.ts), chosen in attachAR when WebXR is missing.
 import * as THREE from 'three';
 import { restsOnFloor, speciesOf } from '../data/species';
 import { floorY, unitMM } from '../scene/physics';
@@ -106,6 +107,8 @@ export function prepScene(vp: Viewport): ARPrep {
       mats.set(m, f); m.material = new THREE.MeshBasicMaterial({ color: f.color, transparent: true, opacity: 0.8, side: THREE.DoubleSide, depthWrite: false });
     }
   });
+  // selection boxes (a fish's or an item's): lines drawn over everything, meaningless in the room
+  sc.traverse(o => { if ((o as THREE.LineSegments).isLineSegments && ((o as THREE.LineSegments).material as THREE.Material).depthTest === false) roomOnly.push(o); });
   for (const o of [...roomOnly, ...(vp.dotMeshes ?? [])]) hide(o);
   const tankObjs = sc.children.filter(o => o.visible);
 
@@ -166,19 +169,69 @@ const OVERLAY_CSS = `#arOverlay{position:fixed;inset:0;font:500 15px system-ui,"
 #arOverlay button{position:absolute;top:10px;right:10px;font:600 16px system-ui,sans-serif;min-width:44px;min-height:44px;padding:0 16px;border-radius:22px;border:0;background:rgba(20,24,30,.8);color:#fff}
 #arOverlay .bar .swap{position:static;align-self:flex-end;pointer-events:auto;min-height:52px;font-size:17px}`; // swap: lower right, under the thumb (Nathan 2026-10-14)
 
-/** Show the AR button when this device can do immersive AR, and run the session from it. */
+/** Can this browser open AR Quick Look (iPhone / iPad Safari)? */
+export function quickLookSupported() {
+  try { return document.createElement('a').relList.supports('ar'); } catch { return false; }
+}
+
+/** The iPhone path (lane T) waits for a test on a real iPhone: until then it shows only with ?ar=ios in the URL. */
+export const IOS_FLAG = true;
+const iosAllowed = () => !IOS_FLAG || new URLSearchParams(location.search).get('ar') === 'ios';
+
+/**
+ * Show the AR button when this device can do AR, and run it from the button: WebXR immersive-ar where it works
+ * (Android Chrome), else AR Quick Look (iPhone: the tank exported as a .usdz, render/arUsdz.ts).
+ */
 export async function attachAR(viewer: Viewer, store: Store, button: HTMLButtonElement) {
   button.hidden = true;
-  if (!(await arSupported())) return;
+  const run = (await arSupported()) ? runAR : quickLookSupported() && iosAllowed() ? runQuickLook : null;
+  if (!run) return;
   button.hidden = false;
   let busy = false;
   button.addEventListener('click', async () => {
     if (busy) return; busy = true;
-    try { await runAR(viewer, store); } catch (e) { console.error(e); alert('AR could not start: ' + ((e as Error).message || e)); } finally { busy = false; }
+    try { await run(viewer, store, button); } catch (e) { console.error(e); alert('AR could not start: ' + ((e as Error).message || e)); } finally { busy = false; }
   });
 }
 
-async function runAR(viewer: Viewer, store: Store) {
+// ---------- iPhone: AR Quick Look ----------
+
+const QL_CSS = `#arQL{position:fixed;left:12px;right:12px;bottom:max(16px,env(safe-area-inset-bottom));z-index:50;display:flex;flex-direction:column;gap:8px;align-items:center;
+background:rgba(20,24,30,.97);color:#fff;padding:12px 44px;border-radius:14px;font:500 14px system-ui,sans-serif;text-align:center}
+#arQL a{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 18px;border-radius:22px;background:#fff;color:#14181e;font-weight:600;text-decoration:none}
+#arQL a img{width:1px;height:1px}
+#arQL .x{position:absolute;top:4px;right:6px;min-width:44px;min-height:44px;border:0;background:none;color:#fff;font-size:20px}
+#arQL .hint{opacity:.8;font-size:12.5px}`;
+let qlUrl = '';
+
+/** Export the current tank to .usdz and open it in AR Quick Look; a small panel keeps the Size check line and the link. */
+async function runQuickLook(viewer: Viewer, store: Store, button: HTMLButtonElement) {
+  viewer.draw(); // the current build, up to date
+  const vp = viewer.current, label = button.textContent;
+  if (!vp.scene) return;
+  button.textContent = 'Preparing AR…'; button.disabled = true;
+  try {
+    const { exportUSDZ } = await import('./arUsdz');
+    const { blob, stats } = await exportUSDZ(vp);
+    console.info('AR Quick Look export', stats);
+    if (qlUrl) URL.revokeObjectURL(qlUrl);
+    qlUrl = URL.createObjectURL(blob);
+  } finally { button.textContent = label; button.disabled = false; }
+  if (!document.getElementById('arQLCss')) { const st = document.createElement('style'); st.id = 'arQLCss'; st.textContent = QL_CSS; document.head.appendChild(st); }
+  document.getElementById('arQL')?.remove();
+  const box = document.createElement('div'); box.id = 'arQL';
+  box.innerHTML = '<button type="button" class="x" aria-label="Close">×</button><div class="size"></div><a rel="ar">Open in AR <img alt=""></a><div class="hint"></div>';
+  box.querySelector('.size')!.textContent = sizeText(vp.S, store.scene.units);
+  box.querySelector('.hint')!.textContent = 'Tap the floor or a stand top to place it. True size: pinch-zoom is turned off.';
+  const a = box.querySelector('a')!;
+  a.href = qlUrl + '#allowsContentScaling=0'; // Quick Look: no pinch-scaling, the tank stays at true size
+  a.querySelector('img')!.src = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='; // Quick Look needs an img child
+  box.querySelector('.x')!.addEventListener('click', () => box.remove());
+  document.body.appendChild(box);
+  a.click(); // opens Quick Look right away where the tap still counts; else the link in the panel does
+}
+
+async function runAR(viewer: Viewer, store: Store, _button?: HTMLButtonElement) {
   viewer.draw(); // the current build, up to date
   // split view: start with the tank the panel edits; the A / B button swaps to the other one in place
   const views = viewer.active.filter(v => v.scene), r = viewer.renderer, units = store.scene.units;

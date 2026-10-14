@@ -16,7 +16,7 @@ import { clumpAuto } from '../render/plant3d';
 import { tankDiff } from './diff';
 import { attachTypeIns, parseLen, plainNum, tidy, type TypeIn } from './typein';
 import {
-  IN, clamp, clampFish, fmtDims, fmtLen, fmtSize, fromUnit, glassThickness, rescaleTank, toUnit, volume, WALL_GAP_MAX, waterY,
+  IN, clamp, clampFish, fmtLen, fromUnit, glassThickness, rescaleTank, toUnit, volume, WALL_GAP_MAX, waterY,
 } from '../scene/physics';
 import type { Store } from '../scene/store';
 import { SWAMP_LEVEL, groundHeight, nearestLand, sameGrid, sampleTerrain } from '../scene/terrain';
@@ -29,11 +29,12 @@ import { tankWeight } from '../scene/weight';
 import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, aqWaitS, fetchStocking } from '../data/aqadvisor';
 import { BOWL_DEFAULT, BOWL_MAX, BOWL_MIN, PIE_DEFAULT, POLY_SIDES, SHAPES, bowMinLimit, offsetRing, ringArea, shapeOf } from '../scene/shape';
 import { TABLE_MAX, tableOn, tableRange, wallGap } from '../scene/table';
-import type { Fish, Item, ItemKind, LayoutId, LightTech, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
+import type { BgFit, BgSide, Fish, Item, ItemKind, LayoutId, LightTech, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
 import { GLASS_CHOICES, LIMITS, SceneError, parseScene } from '../scene/validate';
 import { deleteFromLib, listLib, loadFromLib, saveToLib } from '../scene/library';
 import { EXAMPLES } from '../examples';
 import { LONG_LINK, readShare, shareUrl } from '../scene/share';
+import { getImage, putImage, readPicture, sceneImageIds, sidesTouch, withImages } from '../scene/images';
 
 const $ = <T extends HTMLElement = HTMLInputElement>(id: string) => document.getElementById(id) as T;
 /** ?debug in the URL shows calibration readouts (apparent-size maths) in the fish readout. */
@@ -195,7 +196,7 @@ Cancel, then change the name, to keep both.`)) return;
       status((err as Error).message, true);
     }
   };
-  const saveFile = (scene: Scene) => download(new Blob([JSON.stringify(scene, null, 1)], { type: 'application/json' }), `${slug(scene.name)}.json`);
+  const saveFile = (scene: Scene) => download(new Blob([JSON.stringify(withImages(scene), null, 1)], { type: 'application/json' }), `${slug(scene.name)}.json`);
   // the whole scene: with split tanks, one file holding both (opens split again)
   $('downloadScene').onclick = () => saveFile(G());
   // Share link (lane N, R12): the scene deflated into the URL hash, no server. The single-file build (file://) links to
@@ -207,9 +208,10 @@ Cancel, then change the name, to keep both.`)) return;
     try { url = await made; } catch { status('This browser cannot make share links (it is too old). Download sends a file instead.', true); return; }
     if (!await copied) { prompt('Copy this link:', url); return; }
     const n = url.length.toLocaleString();
-    status(url.length > LONG_LINK
+    status((url.length > LONG_LINK
       ? `Copied a share link (${n} characters). It is long: some apps (Discord, texts) cut links past about 2,000 characters, so paste it into a shortener like tinyurl.com, or use Download.`
-      : `Copied a share link (${n} characters). Whoever opens it gets this tank as a new, unsaved copy.`);
+      : `Copied a share link (${n} characters). Whoever opens it gets this tank as a new, unsaved copy.`)
+      + (sceneImageIds(G()).length ? ' Background pictures are too big for a link, so it goes without them; Download keeps them in the file.' : ''));
   };
   async function copyText(text: Promise<string>) {
     try { // the clipboard item takes the text as a promise, so the gesture is not used up while the link is compressed
@@ -312,6 +314,78 @@ Cancel, then change the name, to keep both.`)) return;
   for (const [id, side] of BG_BTNS)
     $(id).onclick = () => store.edit(s => { const b = s.render.bgSides; s.render.bgSides = b.includes(side) ? b.filter(k => k !== side) : [...b, side]; });
   $('bgArc').oninput = e => store.edit(s => { s.render.bgArc = +(e.target as HTMLInputElement).value; }, { coalesce: 'bgArc' });
+  // Background pictures (Nathan 2026-10-14): each on one side or across touching sides; a side belongs to one picture.
+  // Rows are keyed by picture id, so the same edit reaches both tanks of a linked split.
+  const PIC_SIDES: [BgSide, string][] = [['left', 'Left'], ['back', 'Back'], ['right', 'Right'], ['front', 'Front']];
+  const PIC_FITS: [BgFit, string, string][] = [
+    ['fill', 'Fill', 'Covers the glass; the picture is cropped to fit'], ['fit', 'Fit', 'The whole picture, on the background colour'],
+    ['stretch', 'Stretch', 'Stretched to the glass'], ['tile', 'Tile', 'Repeated, at the size you set'],
+  ];
+  const sideName = (k: BgSide) => k[0].toUpperCase() + k.slice(1);
+  $('bgPicAdd').onclick = () => $<HTMLInputElement>('bgPicFile').click();
+  $<HTMLInputElement>('bgPicFile').onchange = async e => {
+    const inp = e.target as HTMLInputElement, file = inp.files?.[0]; inp.value = '';
+    if (!file) return;
+    if (store.tank.render.bgImages.length >= 4) { status('At most 4 background pictures per tank.', true); return; }
+    let data: string;
+    try { data = await readPicture(file); } catch { status('That file is not a picture this browser can read.', true); return; }
+    const { id, stored } = putImage(data);
+    if (store.tank.render.bgImages.some(b => b.img === id)) { status('That picture is already on this tank.', true); return; }
+    const used = new Set(store.tank.render.bgImages.flatMap(b => b.sides));
+    const side = (['back', 'left', 'right', 'front'] as BgSide[]).find(k => !used.has(k));
+    store.edit(s => { s.render.bgImages.push({ img: id, fit: 'fill', sides: side ? [side] : [], scale: 50 }); });
+    status((side ? `Picture added on the ${side}. Click sides to move it, or to run it round a corner.` : 'Picture added; every side has a picture already, so pick its sides.')
+      + (stored ? '' : ' This browser’s storage is full, so the picture is kept for this visit only; Download keeps it in the file.'), !stored);
+  };
+  const editPic = (id: string, fn: (b: TankSetup['render']['bgImages'][number], s: TankSetup) => void, coalesce?: string) =>
+    store.edit(s => { const b = s.render.bgImages.find(x => x.img === id); if (b) fn(b, s); }, coalesce ? { coalesce } : {});
+  $('bgPics').onclick = e => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('button'), row = btn?.closest<HTMLElement>('.bgPic');
+    if (!btn || !row) return;
+    const id = row.dataset.img!, side = btn.dataset.side as BgSide | undefined;
+    if (btn.dataset.k === 'del') { store.edit(s => { s.render.bgImages = s.render.bgImages.filter(b => b.img !== id); }); return; }
+    if (!side) return;
+    const cur = store.tank.render.bgImages.find(b => b.img === id); if (!cur) return;
+    if (cur.sides.includes(side)) { editPic(id, b => { b.sides = b.sides.filter(k => k !== side); }); return; }
+    if (!sidesTouch([...cur.sides, side])) { status(`One picture can only span sides that touch: ${cur.sides.map(sideName).join(' + ')} and ${sideName(side)} do not meet. Use a second picture for the ${side}.`, true); return; }
+    editPic(id, (b, s) => {
+      for (const o of s.render.bgImages) o.sides = o.sides.filter(k => k !== side); // a side shows one picture
+      b.sides = [...b.sides, side];
+    });
+  };
+  $('bgPics').onchange = e => {
+    const sel = e.target as HTMLSelectElement, id = sel.closest<HTMLElement>('.bgPic')?.dataset.img;
+    if (id && sel.dataset.k === 'fit') editPic(id, b => { b.fit = sel.value as BgFit; });
+  };
+  $('bgPics').oninput = e => {
+    const r = e.target as HTMLInputElement, id = r.closest<HTMLElement>('.bgPic')?.dataset.img;
+    if (id && r.dataset.k === 'scale') editPic(id, b => { b.scale = +r.value; }, 'bgScale:' + id);
+  };
+  let picKey = '';
+  const syncPics = (s: TankSetup) => {
+    const L = s.render.bgImages, key = L.map(b => b.img + b.fit).join('|');
+    if (key !== picKey) {
+      picKey = key;
+      $('bgPics').innerHTML = L.map(b => {
+        const data = getImage(b.img);
+        return `<div class="bgPic" data-img="${esc(b.img)}">`
+          + (data ? `<img class="thumb" alt="" src="${data}">` : '<span class="thumb missing" title="This picture is not in this browser (share links do not carry pictures; a downloaded file does)">missing</span>')
+          + '<div class="ctl"><span class="seg">' + PIC_SIDES.map(([k, t]) => `<button data-side="${k}">${t}</button>`).join('') + '</span>'
+          + `<select data-k="fit" aria-label="Picture fit">${PIC_FITS.map(([k, t, tip]) => `<option value="${k}" title="${esc(tip)}"${k === b.fit ? ' selected' : ''}>${t}</option>`).join('')}</select>`
+          + '<button data-k="del" title="Remove this picture" aria-label="Remove picture">✕</button>'
+          + (b.fit === 'tile' ? `<div class="row"><label>Size</label><input data-k="scale" type="range" min="${LIMITS.bgScale[0]}" max="${LIMITS.bgScale[1]}" step="5" title="Tile height, % of the tank height" aria-label="Tile size"><output></output></div>` : '')
+          + '</div></div>';
+      }).join('');
+    }
+    $('bgPics').querySelectorAll<HTMLElement>('.bgPic').forEach((row, i) => {
+      const b = L[i];
+      row.querySelectorAll<HTMLButtonElement>('button[data-side]').forEach(btn => {
+        const on = b.sides.includes(btn.dataset.side as BgSide); btn.classList.toggle('on', on); btn.setAttribute('aria-pressed', String(on));
+      });
+      const r = row.querySelector<HTMLInputElement>('input[data-k="scale"]');
+      if (r) { r.value = String(b.scale); r.nextElementSibling!.textContent = `${b.scale}%`; }
+    });
+  };
   $<HTMLSelectElement>('glassSel').innerHTML = '<option value="auto">Auto (by height)</option>' + GLASS_CHOICES.map(g => `<option value="${g}">${g} mm</option>`).join('');
   $<HTMLSelectElement>('glassSel').onchange = e => store.edit(s => { const v = (e.target as HTMLSelectElement).value; s.render.glass = v === 'auto' ? 'auto' : +v; });
   $<HTMLSelectElement>('glassType').onchange = e => store.edit(s => { s.render.glassType = (e.target as HTMLSelectElement).value as TankSetup['render']['glassType']; });
@@ -1049,6 +1123,7 @@ Cancel, then change the name, to keep both.`)) return;
     for (const [id, side] of BG_BTNS) { const on = s.render.bgSides.includes(side); $(id).classList.toggle('on', on); $(id).setAttribute('aria-pressed', String(on)); }
     $('bgSidesRow').style.display = s.render.bg === 'none' ? 'none' : '';
     $('bgArcRow').style.display = s.render.bg !== 'none' && (sh === 'round' || sh === 'bowl') ? '' : 'none';
+    syncPics(s);
     setVal('bgArc', s.render.bgArc); setOut('oBgArc', s.render.bgArc >= 360 ? '360° (all round)' : `${s.render.bgArc}°`); setVal('glassSel', String(s.render.glass)); setVal('glassType', s.render.glassType);
     const t = glassThickness(A, s.render.glass);
     $('glassHint').textContent = (s.render.glass === 'auto' ? 'Auto: ' : 'Glass: ') + t + ' mm (' + fmtLen(t, u, 2) + ')';
@@ -1268,13 +1343,14 @@ Cancel, then change the name, to keep both.`)) return;
     const g = G(), active = viewer.active, split = active.length > 1;
     const diff = split ? tankDiff(g.tanks[0], g.tanks[1], g.units) : [];
     const hidden = $('app').classList.contains('collapsed');
-    const sig = JSON.stringify([diff, hidden, g.units, g.active, store.targets, g.camLock, active.map(v => [v.x, v.w]), split || fmtDims(g.tanks[0].tank, g.units), active.map((v, i) => aqChip(v.S, v.key, i))]);
+    const sig = JSON.stringify([diff, hidden, g.units, g.active, store.targets, g.camLock, active.map(v => [v.x, v.w]), active.map((v, i) => aqChip(v.S, v.key, i))]);
     if (sig !== tabSig) {
       tabSig = sig;
       for (const [i, id] of [[0, 'labA'], [1, 'labB']] as const) {
         const el = $<HTMLDivElement>(id), vp = active[i];
-        el.style.display = vp ? '' : 'none';
-        if (!vp) { el.innerHTML = ''; continue; }
+        // only while comparing (Nathan 2026-10-14): one tank's size, stocking and Split all live in the panel already
+        el.style.display = vp && split ? '' : 'none';
+        if (!vp || !split) { el.innerHTML = ''; continue; }
         // top-right corner of each view (Nathan 2026-10-08); the top-left holds the panel toggle and Undo / Redo
         // (on a phone in split view they reach past the middle into view B too: final check item 2)
         const vt = document.querySelector<HTMLElement>('.viewtools')!, tools = Math.max(0, vt.offsetLeft + vt.offsetWidth + 8 - vp.x);
@@ -1283,11 +1359,7 @@ Cancel, then change the name, to keep both.`)) return;
         el.style.top = below ? (vt.offsetTop + vt.offsetHeight + 6) + 'px' : '';
         el.style.right = (viewer.host.clientWidth - vp.x - vp.w + 8) + 'px'; el.style.maxWidth = (below ? vp.w - 16 : Math.max(80, vp.w - 16 - tools)) + 'px'; // clear of them
         const ed = store.isEditing(i);
-        el.classList.toggle('tab', split); el.classList.toggle('on', split && ed);
-        if (!split) { // one tank: its size, and the way into a side-by-side comparison
-          el.innerHTML = `<span>${esc(fmtSize(vp.T, g.units))}</span>` + aqChip(vp.S, vp.key, i) + `<button class="close" data-split title="Copy this tank into a second, independent one beside it">⧉ Split to compare</button>`;
-          continue;
-        }
+        el.classList.add('tab'); el.classList.toggle('on', ed);
         // the "Edit" box: the panel's changes apply to every view ticked here
         const only = ed && store.targets.length === 1;
         const box = `<label class="edbox" title="${only ? `Untick to close the panel` : ed ? `The panel's changes apply to Tank ${vp.key}` : `Apply the panel's changes to Tank ${vp.key} (opens the panel)`}">` +
@@ -1321,7 +1393,6 @@ Cancel, then change the name, to keep both.`)) return;
     store.setEditing(+cb.dataset.edit!, false);
   });
   for (const id of ['labA', 'labB']) $(id).addEventListener('click', e => {
-    if ((e.target as HTMLElement).closest('[data-split]')) { $('split').click(); return; }
     const re = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-aq]');
     if (re) { const vp = viewer.active[+re.dataset.aq!]; if (vp) void aqCheck(vp.S); return; }
     const sv = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-save]');

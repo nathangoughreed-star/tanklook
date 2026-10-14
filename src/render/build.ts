@@ -10,12 +10,13 @@ import { alongRun, backgroundRuns, bowlDims, bowlRadius, chord, circleRing, clip
 import { TABLE_TOP, cornerWalls, wallGap, tableCentre, tableOn, tableRing, wallPlane } from '../scene/table';
 import { groundHeight, pieSegs, terrainDisc, terrainPoints } from '../scene/terrain';
 import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
+import { getImage } from '../scene/images';
 import { addBeams, addFixture, applyLighting, waterVolumeMaterial } from './lighting';
 import { itemMesh } from './items';
 import { drapedCard, fish3d, fishBody, has3D, hullMaterial } from './fish3d';
 import { herpBody, isHerp3D } from './herp3d';
 import { sagShell, snailBody } from './snail3d';
-import { blendTexture, cardMaterial, fishBodyTexture, fishTexture, gradientTexture, personTexture, snailTexture, substrateMaskTexture, substrateTexture } from './textures';
+import { blendTexture, cardMaterial, pictureTexture, fishBodyTexture, fishTexture, gradientTexture, personTexture, snailTexture, substrateMaskTexture, substrateTexture } from './textures';
 
 /** Back-wall options; color null = no background (back glass only); light = use dark grid lines. */
 export const BACKGROUNDS: Record<Background, { label: string; color: number | null; gradient?: boolean; light?: boolean; frost?: boolean }> = {
@@ -133,6 +134,17 @@ function silhouetteMaterial(centre: THREE.Vector3) {
   });
 }
 
+/** One background sheet: its run of the glass, how far outside the outer face, and its material given width / height. */
+interface BgSheet { run: P[]; gap: number; mat: (aspect: number) => THREE.Material }
+
+/** A run turned to go clockwise seen from above (back at the top), so a picture on it reads correctly from inside. */
+function clockwise(T: Tank, r: P[]): P[] {
+  const cx = T.L / 2, cd = T.D / 2;
+  let turn = 0;
+  for (let i = 0; i < r.length - 1; i++) turn += (r[i][0] - cx) * (r[i + 1][1] - r[i][1]) - (r[i][1] - cd) * (r[i + 1][0] - r[i][0]);
+  return turn > 0 ? [...r].reverse() : r;
+}
+
 /** Height bands and segments round of a bowl's shell. */
 const BOWL_BANDS = 28, BOWL_SEG = 72;
 
@@ -140,26 +152,24 @@ const BOWL_BANDS = 28, BOWL_SEG = 72;
  * A bowl: the background on the inside of the sphere facing the room wall, then the glass shell (a sphere zone t thick,
  * concentric, from the floor to the opening) on a round bottom pane, and the outline of floor, opening and equator.
  */
-function addBowl(sc: THREE.Scene, S: TankSetup, T: Tank, add: (geo: THREE.BufferGeometry, ro: number, outline?: number[]) => void, t: number, runs: P[][]) {
-  const { H } = T, { R, c } = bowlDims(T), bg = BACKGROUNDS[S.render.bg];
+function addBowl(sc: THREE.Scene, S: TankSetup, T: Tank, add: (geo: THREE.BufferGeometry, ro: number, outline?: number[]) => void, t: number, sheets: BgSheet[]) {
+  const { H } = T, { R, c } = bowlDims(T);
   const ys = Array.from({ length: BOWL_BANDS + 1 }, (_, j) => H * j / BOWL_BANDS);
   if (c > 0 && c < H) { ys.push(c); ys.sort((a, b) => a - b); } // a row on the equator, so the widest point is exact
   const ang = (i: number) => -Math.PI + 2 * Math.PI * i / BOWL_SEG;
   const pt = (a: number, r: number, y: number) => [R + r * Math.sin(a), y, -(R - r * Math.cos(a))];
   const rIn = (y: number) => bowlRadius(T, y), rOut = (y: number) => Math.sqrt(Math.max(0, (R + t) ** 2 - (y - c) ** 2));
-  if (bg.color !== null) {
-    // the chosen sides' arcs (backgroundRuns, as on a round tank) on the sphere, 0.5 mm outside the glass; u along, v up
-    for (const run of runs) {
-      const as = run.map(p => Math.atan2(p[0] - R, -(p[1] - R))), g = new Tris(), n = as.length - 1;
-      for (let i = 0; i < n; i++) {
-        const a0 = as[i], a1 = as[i + 1], u0 = i / n, u1 = (i + 1) / n;
-        for (let j = 0; j < ys.length - 1; j++) {
-          const y0 = ys[j], y1 = ys[j + 1], r0 = rOut(y0) + 0.5, r1 = rOut(y1) + 0.5;
-          g.quad(pt(a0, r0, y0), pt(a1, r0, y0), pt(a1, r1, y1), pt(a0, r1, y1), 0, [[u0, y0 / H], [u1, y0 / H], [u1, y1 / H], [u0, y1 / H]]);
-        }
+  // the chosen sides' arcs (backgroundRuns, as on a round tank) on the sphere, just outside the glass; u along, v up
+  for (const { run, mat, gap } of sheets) {
+    const as = run.map(p => Math.atan2(p[0] - R, -(p[1] - R))), g = new Tris(), n = as.length - 1;
+    for (let i = 0; i < n; i++) {
+      const a0 = as[i], a1 = as[i + 1], u0 = i / n, u1 = (i + 1) / n;
+      for (let j = 0; j < ys.length - 1; j++) {
+        const y0 = ys[j], y1 = ys[j + 1], r0 = rOut(y0) + gap, r1 = rOut(y1) + gap;
+        g.quad(pt(a0, r0, y0), pt(a1, r0, y0), pt(a1, r1, y1), pt(a0, r1, y1), 0, [[u0, y0 / H], [u1, y0 / H], [u1, y1 / H], [u0, y1 / H]]);
       }
-      sc.add(new THREE.Mesh(g.geometry(), bgMaterial(bg)));
     }
+    sc.add(new THREE.Mesh(g.geometry(), mat(runLength(run) / H)));
   }
   // the shell, split into a back and a front half so the front draws after what is inside (as the panes do)
   for (const front of [false, true]) {
@@ -197,18 +207,30 @@ function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
   const { H } = T, R = S.render, fp = footprint(T), bowl = shapeOf(T) === 'bowl';
   // backing under the substrate; a bare-bottom tank has none, so the stand top or the room shows through the bottom pane
   if (S.substrate.show || S.layout.id === 'swamp' || S.terrain.on) sc.add(new THREE.Mesh(flatGeometry(fp.ring, 0), basic(0xcdb98f, { side: THREE.DoubleSide })));
-  const bg = BACKGROUNDS[R.bg], t = glassThickness(T, R.glass), runs = backgroundRuns(T, R.bgSides, R.bgArc, t + 0.5);
+  const bg = BACKGROUNDS[R.bg], t = glassThickness(T, R.glass);
+  // uploaded pictures take their sides whatever the background is; the plain background keeps its other sides
+  const pics = R.bgImages.flatMap(b => { const data = b.sides.length ? getImage(b.img) : undefined; return data ? [{ ...b, data }] : []; });
+  const picSides = new Set(pics.flatMap(b => b.sides)), plain = bg.color === null ? [] : R.bgSides.filter(k => !picSides.has(k));
+  const runs = backgroundRuns(T, [...new Set([...plain, ...picSides])], R.bgArc, t + 0.5); // the grid follows both
   // the background covers the panes facing the chosen sides; on a round tank an arc of the shell round each. It is on
-  // the OUTER face (0.5 mm off it), full pane height: the substrate ends at the inner face, the glass between (Nathan 2026-10-12)
-  if (bg.color !== null && !bowl) { // a bowl's background is on its sphere (addBowl)
-    for (const r of runs) {
-      const g = new Tris(), len = runLength(r) || 1; let s = 0;
-      for (let i = 0; i < r.length - 1; i++) {
-        const s1 = s + Math.hypot(r[i + 1][0] - r[i][0], r[i + 1][1] - r[i][1]);
-        g.quad(at(r[i], -t), at(r[i + 1], -t), at(r[i + 1], H), at(r[i], H), 0, [[s / len, 0], [s1 / len, 0], [s1 / len, 1], [s / len, 1]]); s = s1;
-      }
-      sc.add(new THREE.Mesh(g.geometry(), bgMaterial(bg)));
+  // the OUTER face (0.5 mm off it), full pane height: the substrate ends at the inner face, the glass between (Nathan 2026-10-12).
+  // A picture runs clockwise seen from above, so it reads the right way round from inside the tank across a corner;
+  // it sits nearer the glass than the plain sheet, which it overlaps where a round tank's arcs meet.
+  const pad = bg.color === null || bg.gradient || bg.frost ? '#0b0c0e' : '#' + bg.color.toString(16).padStart(6, '0');
+  const sheets: BgSheet[] = [
+    ...backgroundRuns(T, plain, R.bgArc, t + 0.5).map(run => ({ run, gap: 0.5, mat: () => bgMaterial(bg) })),
+    ...pics.flatMap((b, i) => backgroundRuns(T, b.sides, R.bgArc, t + 0.3 - 0.05 * i).map(r => ({
+      run: clockwise(T, r), gap: 0.3 - 0.05 * i, // where round arcs overlap, the first picture is in front
+      mat: (aspect: number) => basic(0xffffff, { map: pictureTexture(b.img, b.data, b.fit, b.scale, aspect, pad), side: THREE.DoubleSide }),
+    }))),
+  ];
+  if (!bowl) for (const { run: r, mat } of sheets) { // a bowl's background is on its sphere (addBowl)
+    const g = new Tris(), len = runLength(r) || 1; let s = 0;
+    for (let i = 0; i < r.length - 1; i++) {
+      const s1 = s + Math.hypot(r[i + 1][0] - r[i][0], r[i + 1][1] - r[i][1]);
+      g.quad(at(r[i], -t), at(r[i + 1], -t), at(r[i + 1], H), at(r[i], H), 0, [[s / len, 0], [s1 / len, 0], [s1 / len, 1], [s / len, 1]]); s = s1;
     }
+    sc.add(new THREE.Mesh(g.geometry(), mat(len / (H + t))));
   }
   // glass sits OUTSIDE the interior outline; large faces nearly clear, thin edge faces tinted so thickness shows
   const faceM = basic(0xbfe0ee, { transparent: true, opacity: 0.06, depthWrite: false });
@@ -227,7 +249,7 @@ function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
     const o = new THREE.LineSegments(eg, edgeLine); o.renderOrder = ro + 1; sc.add(o); // 20°: no seams between a curved shell's facets
   };
   // a bowl has its own shell (no rim: there are no pane edges to trim)
-  if (bowl) addBowl(sc, S, T, add, t, runs);
+  if (bowl) addBowl(sc, S, T, add, t, sheets);
   else {
     // bottom pane under everything; one wall per pane (a curved shell is one wall), mitred at the corners
     const outer = offsetWalls(T, t);

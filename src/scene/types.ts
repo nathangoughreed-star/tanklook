@@ -11,6 +11,14 @@ export type EdgeMode = 'cutout' | 'a2c';
 export type Background = 'black' | 'blue' | 'gradient' | 'grey' | 'frosted' | 'none';
 /** A side of the tank the background can cover. */
 export type BgSide = 'back' | 'left' | 'right' | 'front';
+/** How an uploaded background picture fills the glass it covers. */
+export type BgFit = 'fill' | 'fit' | 'stretch' | 'tile';
+/**
+ * An uploaded background picture (Nathan 2026-10-14) on one side or across touching sides (one run round the corner).
+ * `img` = id in the picture store (scene/images.ts; files carry the pictures in a top-level `images` map).
+ * `scale` = tile height, % of the tank height (tile only).
+ */
+export interface BgImage { img: string; fit: BgFit; sides: BgSide[]; scale: number }
 export type GlassType = 'standard' | 'lowiron';
 export type LightType = 'flat' | 'spot' | 'tube' | 'led';
 export type SubstrateType = 'gravel' | 'pea' | 'clown' | 'blue' | 'onyx' | 'black' | 'white' | 'aragonite' | 'coral' | 'custom';
@@ -92,6 +100,8 @@ export interface RenderSettings {
   bgSides: BgSide[];
   /** Round tanks only: degrees of the shell the background covers, centred on each chosen side (older files: 145). */
   bgArc: number;
+  /** Uploaded pictures, each on its own sides (added 2026-10-14; older files: none). They cover those sides whatever `bg` is. */
+  bgImages: BgImage[];
   glass: 'auto' | number; // mm, or auto by interior height
   glassType: GlassType;
 }
