@@ -677,8 +677,9 @@ Cancel, then change the name, to keep both.`)) return;
   };
 
   // ---------- Aquascape items: library, selection ----------
-  $('lib').innerHTML = (Object.keys(KINDS) as ItemKind[]).map(k => `<div class="libRow"><span class="flabel">${KINDS[k]}</span><div class="chips">${
-    Object.entries(LIBRARY).filter(([, v]) => v.kind === k).map(([id, v]) => `<button data-lib="${id}" title="Add: ${esc(v.hint)}">${esc(v.label)}</button>`).join('')}</div></div>`).join('');
+  // live rock and corals (data-salt) show in a saltwater tank only: render() toggles them
+  $('lib').innerHTML = (Object.keys(KINDS) as ItemKind[]).map(k => `<div class="libRow"${k === 'coral' ? ' data-salt' : ''}><span class="flabel">${KINDS[k]}</span><div class="chips">${
+    Object.entries(LIBRARY).filter(([, v]) => v.kind === k).map(([id, v]) => `<button data-lib="${id}"${v.salt ? ' data-salt' : ''} title="Add: ${esc(v.hint)}">${esc(v.label)}</button>`).join('')}</div></div>`).join('');
   /** Add a piece at an open spot (the candidate farthest from every other piece, front-middle preferred). Same id and
    *  seed in every tank being edited. */
   const addItem = (variant: string) => {
@@ -984,6 +985,7 @@ Cancel, then change the name, to keep both.`)) return;
     $('wFresh').classList.toggle('on', !wa.salt); $('wSalt').classList.toggle('on', !!wa.salt);
     for (const id of ['wTannin', 'wGreen']) $(id).style.display = wa.salt ? 'none' : '';
     for (const id of ['wReef', 'wOcean']) $(id).style.display = wa.salt ? '' : 'none';
+    document.querySelectorAll<HTMLElement>('#lib [data-salt]').forEach(e => e.style.display = isSalt(s) ? '' : 'none');
     const mis = misfits(s);
     $('wMisfitRow').style.display = mis.length ? '' : 'none';
     if (mis.length) {
@@ -1031,7 +1033,7 @@ Cancel, then change the name, to keep both.`)) return;
     if (it) {
       const v = LIBRARY[it.variant], [l, h, w] = itemDims(it);
       $('itemName').innerHTML = `${esc(v.label)} <i>${fmt(l)} × ${fmt(h)} high × ${fmt(w)}</i>`;
-      $('iSizeLab').textContent = it.kind === 'plant' ? (it.variant === 'carpet' ? 'Width' : 'Height') : it.variant === 'manzanita' ? 'Height' : 'Length';
+      $('iSizeLab').textContent = it.kind === 'plant' ? (it.variant === 'carpet' ? 'Width' : 'Height') : it.variant === 'manzanita' ? 'Height' : it.kind === 'coral' ? 'Width' : 'Length';
       const probe = { ...it, size: 1e6 }; clampItem(probe, A);
       $('iSize').min = String(Math.min(v.min, probe.size)); $('iSize').max = String(probe.size);
       setVal('iSize', it.size); setOut('oISize', fmt(it.size));

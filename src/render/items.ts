@@ -13,6 +13,7 @@ import { bowlDims, footprint, shapeOf } from '../scene/shape';
 import { clampGround, groundHeight, groundInsideBy } from '../scene/terrain';
 import type { Item, Tank, TankSetup } from '../scene/types';
 import { carpetOnGround, has3DPlant, plantGeometry, plantMaterial } from './plant3d';
+import { reefShape } from './coral3d';
 import { cardMaterial, plantTexture } from './textures';
 
 type R = () => number;
@@ -21,13 +22,13 @@ const V = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
 const C = (hex: string) => new THREE.Color(hex);
 
 /** Smooth pseudo-noise from a few random plane waves (enough for stones and bark; no texture needed). */
-function waves(r: R, n = 6) {
+export function waves(r: R, n = 6) {
   const w = Array.from({ length: n }, () => ({ d: V(r() - 0.5, r() - 0.5, r() - 0.5).normalize().multiplyScalar(1 + r() * 3), ph: r() * 6.28 }));
   return (p: THREE.Vector3) => w.reduce((a, q) => a + Math.sin(p.dot(q.d) + q.ph), 0) / n;
 }
 
 /** Set the unlit colour per vertex (stored in 'color'; bake() multiplies the light in). */
-function paint(g: THREE.BufferGeometry, col: (p: THREE.Vector3, i: number) => THREE.Color) {
+export function paint(g: THREE.BufferGeometry, col: (p: THREE.Vector3, i: number) => THREE.Color) {
   const p = g.attributes.position, out = new Float32Array(p.count * 3), v = new THREE.Vector3();
   for (let i = 0; i < p.count; i++) { const c = col(v.fromBufferAttribute(p, i), i); out[i * 3] = c.r; out[i * 3 + 1] = c.g; out[i * 3 + 2] = c.b; }
   g.setAttribute('color', new THREE.BufferAttribute(out, 3));
@@ -43,7 +44,7 @@ function inward(g: THREE.BufferGeometry) {
   return g;
 }
 /** Keep only position, normal, colour and grit, all indexed or all not, so pieces merge. */
-function clean(g: THREE.BufferGeometry, indexed: boolean) {
+export function clean(g: THREE.BufferGeometry, indexed: boolean) {
   for (const k of Object.keys(g.attributes)) if (!['position', 'normal', 'color', 'aGrit'].includes(k)) g.deleteAttribute(k);
   return indexed ? g : g.index ? g.toNonIndexed() : g;
 }
@@ -51,11 +52,12 @@ function clean(g: THREE.BufferGeometry, indexed: boolean) {
 // ---------- Surface grit ----------
 // Every solid carries aGrit = (noise coordinates in mm, kind); the shader (GRIT) draws the fine detail per pixel from it:
 // grain, pits and cracks on stone, grain, splits and knots on wood. Kinds: 1 river, 2 seiryu / arch, 3 dragon, 4 lava,
-// 5 slate, 6 bark (coordinates = along the limb, angle around, radius), 7 terracotta, 8 coconut, 9 end grain, 10 plain wood.
+// 5 slate, 6 bark (coordinates = along the limb, angle around, radius), 7 terracotta, 8 coconut, 9 end grain, 10 plain wood,
+// 11 hard coral (corallite dots), 12 soft coral tissue (polyp fuzz); the reef pieces (render/coral3d.ts) set their own.
 const GRIT_KIND: Record<string, number> = { river: 1, seiryu: 2, dragon: 3, lava: 4, slate: 5, tube: 7, coconut: 8, arch: 2 };
 const gritOffset = (seed: number) => [0.6180339, 0.4142135, 0.7320508].map((k, i) => ((seed * k + i * 0.37) % 1) * 400);
 /** aGrit from the vertex positions (shifted per seed so no two pieces share a pattern); left alone if already set. */
-function grit(g: THREE.BufferGeometry, kind: number, seed: number) {
+export function grit(g: THREE.BufferGeometry, kind: number, seed: number) {
   if (g.attributes.aGrit) return g;
   const p = g.attributes.position, o = gritOffset(seed), a = new Float32Array(p.count * 4);
   for (let i = 0; i < p.count; i++) { a[i * 4] = p.getX(i) + o[0]; a[i * 4 + 1] = p.getY(i) + o[1]; a[i * 4 + 2] = p.getZ(i) + o[2]; a[i * 4 + 3] = kind; }
@@ -309,6 +311,9 @@ float gritK() {
   else if (t == 8) k = 1.0 + (gN(vec3(p.x * 0.7, p.y * 0.05, p.z * 0.7)) - 0.5) * 0.5 * gFade(0.6, px) + (gF(p * 0.1) - 0.5) * 0.2;
   else if (t == 9) { float d = length(p.xy); k = (0.7 + 0.14 * sin(d * 2.6 + 2.0 * gN(p * 0.4))) * (1.0 - 0.5 * gLine(abs(gN(vec3(atan(p.y, p.x) * 3.0, 0.0, 1.0)) * 2.0 - 1.0), 0.06)); }
   else if (t == 10) k = 1.0 + (gF(p * 0.3) - 0.5) * 0.22 * gFade(0.6, px);
+  else if (t == 11) k = (1.0 + (gF(q * 0.08) - 0.5) * 0.2 + (gN(q * 0.45) - 0.5) * 0.18 * gFade(0.45, px))   // hard coral: mottling, corallite cups
+                   * (1.0 - 0.3 * smoothstep(0.6, 0.72, gN(q * 0.7 + 3.0)) * gFade(0.7, px));
+  else if (t == 12) k = 1.0 + (gF(q * 0.06) - 0.5) * 0.18 + 0.22 * smoothstep(0.55, 0.7, gN(q * 0.6 + 5.0)) * gFade(0.6, px); // soft: pale polyp fuzz
   return k;
 }
 `;
@@ -356,7 +361,7 @@ const dispose = (g: THREE.BufferGeometry) => g.dispose();
 
 function solidShape(it: Item) {
   const k = `${it.variant}|${it.seed}|${it.size}`;
-  const make = () => grit(it.kind === 'stone' ? stoneShape(it.variant, it.seed, it.size) : it.kind === 'wood' ? woodShape(it.variant, it.seed, it.size) : caveShape(it.variant, it.seed, it.size), GRIT_KIND[it.variant] ?? 2, it.seed);
+  const make = () => grit(it.kind === 'coral' || it.variant === 'liverock' ? reefShape(it.variant, it.seed, it.size) : it.kind === 'stone' ? stoneShape(it.variant, it.seed, it.size) : it.kind === 'wood' ? woodShape(it.variant, it.seed, it.size) : caveShape(it.variant, it.seed, it.size), GRIT_KIND[it.variant] ?? 2, it.seed);
   return shapes.get(k) ?? remember(shapes, k, make(), 150, dispose);
 }
 /** A piece's turn: yaw about the vertical, then pitch (tip forward / back), then roll (lean sideways). */

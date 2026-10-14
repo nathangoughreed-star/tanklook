@@ -142,7 +142,7 @@ export type LayoutId = 'none' | 'stones' | 'driftwood' | 'planted' | 'iwagumi' |
 export interface LayoutSettings { id: LayoutId; seed: number }
 
 /** Library item kinds; the variant names the generator (scene/items.ts LIBRARY). */
-export type ItemKind = 'stone' | 'wood' | 'cave' | 'plant';
+export type ItemKind = 'stone' | 'wood' | 'cave' | 'plant' | 'coral';
 /**
  * One placed piece of hardscape or one plant (scene v9). Its shape is generated from (variant, seed, size), so a
  * file stores no meshes. (x, depth) = the anchor on the floor plan; the piece rests on the ground there, raised by

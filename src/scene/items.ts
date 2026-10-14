@@ -8,13 +8,15 @@ import { bowlDims, bowlRadius, clampIn, shapeOf } from './shape';
 import { clampGround, groundHeight, radialTerrain, type Ground } from './terrain';
 import type { Item, ItemKind, LayoutId, Tank, TankSetup } from './types';
 
-export interface Variant { kind: ItemKind; label: string; hint: string; size: number; min: number; max: number }
+/** `salt`: offered in a saltwater tank only (live rock, corals). */
+export interface Variant { kind: ItemKind; label: string; hint: string; size: number; min: number; max: number; salt?: true }
 export const LIBRARY: Record<string, Variant> = {
   river: { kind: 'stone', label: 'River stone', hint: 'Smooth, rounded, brown-grey.', size: 110, min: 15, max: 600 },
   seiryu: { kind: 'stone', label: 'Seiryu', hint: 'Upright blue-grey crag with pale veins.', size: 130, min: 20, max: 600 },
   dragon: { kind: 'stone', label: 'Dragon stone', hint: 'Clay-brown, pitted with holes.', size: 140, min: 20, max: 600 },
   lava: { kind: 'stone', label: 'Lava rock', hint: 'Dark red-brown, rough and porous.', size: 90, min: 15, max: 500 },
   slate: { kind: 'stone', label: 'Slate', hint: 'Flat layered slab; stack them into ledges.', size: 150, min: 30, max: 600 },
+  liverock: { kind: 'stone', label: 'Live rock', hint: 'Porous reef rock crusted with pink and purple coralline algae; stack it and set corals on it.', size: 180, min: 30, max: 600, salt: true },
   branch: { kind: 'wood', label: 'Driftwood branch', hint: 'A rising trunk with side branches.', size: 380, min: 80, max: 1500 },
   spider: { kind: 'wood', label: 'Spider wood', hint: 'Thin pale roots spreading from a knot.', size: 320, min: 80, max: 1200 },
   manzanita: { kind: 'wood', label: 'Manzanita', hint: 'A red-brown tree that forks into fine twigs. Size = height.', size: 300, min: 80, max: 1200 },
@@ -29,8 +31,13 @@ export const LIBRARY: Record<string, Variant> = {
   stem: { kind: 'plant', label: 'Stem plant', hint: 'Size = height.', size: 220, min: 40, max: 900 },
   stemred: { kind: 'plant', label: 'Red stem plant', hint: 'Size = height.', size: 220, min: 40, max: 900 },
   carpet: { kind: 'plant', label: 'Carpet patch', hint: 'A low carpet plant. Size = patch width.', size: 160, min: 60, max: 400 },
+  // corals (2026-10-14): size = width
+  acropora: { kind: 'coral', label: 'Branching coral', hint: 'An Acropora-style colony of branches with pale tips. Size = width.', size: 160, min: 40, max: 500, salt: true },
+  montipora: { kind: 'coral', label: 'Plate coral', hint: 'A whorl of thin cupped plates. Size = width.', size: 180, min: 40, max: 500, salt: true },
+  mushroom: { kind: 'coral', label: 'Mushroom corals', hint: 'A cluster of flat discs on a small rock. Size = width.', size: 110, min: 40, max: 300, salt: true },
+  leather: { kind: 'coral', label: 'Leather coral', hint: 'A toadstool leather: a pale stalk under a folded cap. Size = width.', size: 150, min: 40, max: 450, salt: true },
 };
-export const KINDS: Record<ItemKind, string> = { stone: 'Stones', wood: 'Wood', cave: 'Caves', plant: 'Plants' };
+export const KINDS: Record<ItemKind, string> = { stone: 'Stones', wood: 'Wood', cave: 'Caves', plant: 'Plants', coral: 'Corals' };
 export const MAX_ITEMS = 600;
 /** Carpet cards, mm (about 3 cm tall, like a trimmed Monte Carlo carpet). */
 export const CARPET_W = 100, CARPET_H = CARPET_W * PLANT_ASPECT.carpet;
@@ -51,7 +58,7 @@ export interface Limb { pts: V3[]; r0: number; r1: number; tone: number }
 /** Stone length, height and width (mm) for its variant and seed. */
 export function stoneDims(variant: string, seed: number, size: number): V3 {
   const r = rng(seed * 31 + 7);
-  const [h0, h1, w0, w1] = ({ river: [0.45, 0.65, 0.7, 0.85], seiryu: [0.9, 1.4, 0.55, 0.75], dragon: [0.55, 0.9, 0.6, 0.8], lava: [0.5, 0.8, 0.65, 0.85], slate: [0.12, 0.24, 0.5, 0.8] } as Record<string, number[]>)[variant] ?? [0.6, 0.6, 0.7, 0.7];
+  const [h0, h1, w0, w1] = ({ river: [0.45, 0.65, 0.7, 0.85], seiryu: [0.9, 1.4, 0.55, 0.75], dragon: [0.55, 0.9, 0.6, 0.8], lava: [0.5, 0.8, 0.65, 0.85], slate: [0.12, 0.24, 0.5, 0.8], liverock: [0.5, 0.75, 0.6, 0.85] } as Record<string, number[]>)[variant] ?? [0.6, 0.6, 0.7, 0.7];
   return [size, size * (h0 + r() * (h1 - h0)), size * (w0 + r() * (w1 - w0))];
 }
 
@@ -128,6 +135,7 @@ export function itemDims(it: Pick<Item, 'kind' | 'variant' | 'seed' | 'size'>): 
   const s = it.size;
   if (it.kind === 'stone') return stoneDims(it.variant, it.seed, s);
   if (it.kind === 'plant') return it.variant === 'carpet' ? [s, CARPET_H, s] : [s / PLANT_ASPECT[it.variant as PlantType], s, s / PLANT_ASPECT[it.variant as PlantType]];
+  if (it.kind === 'coral') return [s, s * ({ acropora: 0.6, montipora: 0.45, mushroom: 0.4, leather: 0.6 } as Record<string, number>)[it.variant], s];
   if (it.kind === 'cave') return it.variant === 'arch' ? [s, 0.5 * s, 0.45 * s] : it.variant === 'tube' ? [s, 0.42 * s, 0.42 * s] : [s, 0.5 * s, s];
   return it.variant === 'manzanita' ? [0.7 * s, s, 0.7 * s] : it.variant === 'spider' ? [s, 0.5 * s, 0.8 * s] : it.variant === 'mopani' ? [s, 0.45 * s, 0.3 * s] : [s, 0.65 * s, 0.45 * s];
 }
