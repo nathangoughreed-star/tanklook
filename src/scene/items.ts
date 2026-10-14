@@ -35,8 +35,9 @@ export const LIBRARY: Record<string, Variant> = {
   rotala: { kind: 'plant', label: 'Rotala', hint: 'A fine-leaved stem plant with pink tops. Size = height.', size: 240, min: 40, max: 900 },
   ludwigia: { kind: 'plant', label: 'Ludwigia', hint: 'A stem plant with broad oval leaves, deep red at the top. Size = height.', size: 220, min: 40, max: 900 },
   balansae: { kind: 'plant', label: 'Crypt balansae', hint: 'Tall, narrow crinkled leaves for the back. Size = height.', size: 320, min: 60, max: 700 },
+  ozelot: { kind: 'plant', label: "Echinodorus 'Ozelot'", hint: 'A mid-sized sword with maroon-spotted leaves. Size = height.', size: 200, min: 50, max: 500 },
+  sagittaria: { kind: 'plant', label: 'Dwarf sagittaria', hint: 'A low run of grassy tufts that spreads into a lawn. Size = height.', size: 70, min: 30, max: 150 },
   carpet: { kind: 'plant', label: 'Carpet patch', hint: 'A low carpet plant. Size = patch width.', size: 160, min: 60, max: 400 },
-  // montecarlo (2026-10-14): built (PLANT3D + card), held out of the library until Nathan has compared it with the carpet
   // corals (2026-10-14): size = width
   acropora: { kind: 'coral', label: 'Branching coral', hint: 'An Acropora-style colony of branches with pale tips. Size = width.', size: 160, min: 40, max: 500, salt: true },
   montipora: { kind: 'coral', label: 'Plate coral', hint: 'A whorl of thin cupped plates. Size = width.', size: 180, min: 40, max: 500, salt: true },

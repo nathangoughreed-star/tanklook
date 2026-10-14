@@ -63,6 +63,13 @@ function leaf(out: Sheets, f: Leaf3D, stalkCol: string, base: THREE.Vector3, yaw
   const rib = f.rib ? new THREE.Color(f.rib) : null, stalk = new THREE.Color(stalkCol), pts: THREE.Vector3[] = [], cs: THREE.Color[] = [], bs: THREE.Color[] = [];
   const edge = new THREE.Color(cols[0]), mid = new THREE.Color(cols[1]), under = new THREE.Color(f.under), tip = f.tip ? new THREE.Color(f.tip[0]) : null;
   const hx = Math.cos(yaw), hz = Math.sin(yaw), ph = r() * 6.28;
+  // spots (optional): soft round blobs at (along, across), round on the leaf itself (across scaled by the width)
+  const spot = f.spots ? new THREE.Color(f.spots.col) : null, blobs = f.spots ? Array.from({ length: Math.round(between(r, f.spots.n)) }, () => [0.08 + r() * 0.85, (r() - 0.5) * 1.6, 0.6 + r() * 0.4]) : [];
+  const spotAt = (s: number, u: number) => {
+    let k = 0;
+    for (const [s0, u0, a] of blobs) k += a * Math.exp(-(((s - s0) / f.spots!.r) ** 2 + ((u - u0) * f.wid / 2 / f.spots!.r) ** 2));
+    return Math.min(1, k);
+  };
   const dir = (t: number) => {
     const a = rise + f.arch * t ** 1.5, w = bend.wob * Math.sin(t * Math.PI * 1.6 + bend.ph) * t;
     return V(Math.sin(a) * hx + bend.cx * bend.k * t ** 1.5 - hz * w, Math.cos(a), Math.sin(a) * hz + bend.cz * bend.k * t ** 1.5 + hx * w).normalize();
@@ -84,6 +91,7 @@ function leaf(out: Sheets, f: Leaf3D, stalkCol: string, base: THREE.Vector3, yaw
       const k = blade ? edge.clone().lerp(mid, (1 - Math.abs(u)) ** 1.5) : stalk.clone();
       if (blade && rib && u === 0 && s > 0.02 && s < 0.9) k.lerp(rib, 0.55);
       if (blade && tip && s > 1 - f.tip![1]) k.lerp(tip, ((s - 1 + f.tip![1]) / f.tip![1]) ** 1.5);
+      if (blade && spot) k.lerp(spot, 0.85 * spotAt(s, u));
       cs.push(k.multiplyScalar(bright)); bs.push(blade ? under.clone().lerp(k, 0.3).multiplyScalar(bright) : k);
     }
   }

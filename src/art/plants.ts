@@ -4,13 +4,13 @@ import { hexA, rng } from './paint';
 
 type Ctx = CanvasRenderingContext2D;
 export type PlantType = 'stem' | 'stemred' | 'grass' | 'sword' | 'fern' | 'anubias' | 'carpet' | 'crypt'
-  | 'montecarlo' | 'buce' | 'rotala' | 'ludwigia' | 'balansae';
+  | 'buce' | 'rotala' | 'ludwigia' | 'balansae' | 'sagittaria' | 'ozelot';
 
 /** Card aspect (height / width) per plant type. */
 export const PLANT_ASPECT: Record<PlantType, number> = { stem: 3.2, stemred: 3.2, grass: 3.6, sword: 1.1, fern: 1.3, anubias: 0.8, carpet: 0.32, crypt: 1,
-  montecarlo: 0.32, buce: 0.9, rotala: 3.6, ludwigia: 3, balansae: 3 };
+  buce: 0.9, rotala: 3.6, ludwigia: 3, balansae: 3, sagittaria: 0.45, ozelot: 1.1 };
 /** Plants that grow as a low patch (size = patch width, height = CARPET_H) rather than upright (size = height). */
-export const isCarpet = (v: string) => v === 'carpet' || v === 'montecarlo';
+export const isCarpet = (v: string) => v === 'carpet';
 
 /** Leaf from base (x, y) along angle a (radians, 0 = up, + clockwise), length l, max width w, slight curl. */
 function leaf(ctx: Ctx, x: number, y: number, a: number, l: number, w: number, cols: [string, string], curl = 0, rib = true) {
@@ -112,13 +112,41 @@ function balansae(ctx: Ctx, W: number, H: number) {
   }
 }
 
-function carpet(ctx: Ctx, W: number, H: number, cols = GREENS, seed = 19, round = 0.8) {
-  const r = rng(seed);
+// Dwarf sagittaria: a low run of small grassy tufts (it spreads by runners into a lawn)
+function sagittaria(ctx: Ctx, W: number, H: number) {
+  const r = rng(39);
+  for (let c = 0; c < 6; c++) {
+    const bx = W * (0.1 + 0.8 * c / 5) + (r() - 0.5) * W * 0.05;
+    for (let i = 0; i < 7; i++) {
+      const a = (i / 6 - 0.5) * 1.6 + (r() - 0.5) * 0.2, l = H * (0.55 + r() * 0.45);
+      leaf(ctx, bx, H, a, l, W * 0.012, GREENS[(i + c) % 4], (r() - 0.5) * 0.15, false);
+    }
+  }
+}
+
+// Echinodorus 'Ozelot': a sword whose leaves are speckled maroon (the leaf is clipped so the spots stay on it)
+function ozelot(ctx: Ctx, W: number, H: number) {
+  const r = rng(41), bx = W / 2, by = H;
+  for (let i = 0; i < 14; i++) {
+    const a = (i / 13 - 0.5) * 2.2 + (r() - 0.5) * 0.15, pet = H * (0.1 + r() * 0.08), l = H * (0.5 + r() * 0.35) - pet, w = l * 0.22;
+    const px = bx + Math.sin(a) * pet, py = by - Math.cos(a) * pet;
+    ctx.strokeStyle = '#4a6a2c'; ctx.lineWidth = W * 0.012; ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(px, py); ctx.stroke();
+    leaf(ctx, px, py, a, l, w, GREENS[i % 4], 0);
+    ctx.save(); ctx.translate(px, py); ctx.rotate(a);
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(-w, -l * 0.45, 0, -l); ctx.quadraticCurveTo(w, -l * 0.45, 0, 0); ctx.clip();
+    ctx.fillStyle = 'rgba(96,34,26,0.75)';
+    for (let k = 0; k < 18; k++) { ctx.beginPath(); ctx.ellipse((r() - 0.5) * w * 0.9, -l * (0.1 + r() * 0.8), w * 0.08, w * 0.12, 0, 0, 7); ctx.fill(); }
+    ctx.restore();
+  }
+}
+
+function carpet(ctx: Ctx, W: number, H: number) {
+  const r = rng(19);
   for (let i = 0; i < 900; i++) {
     const x = W * (0.02 + r() * 0.96), edge = Math.min(x, W - x) / (W * 0.15), top = H * (1 - Math.min(1, edge) * (0.65 + r() * 0.3));
-    const y = top + r() * (H - top), rr = W * (0.008 + r() * 0.006), [c0, c1] = cols[(i * 7) % cols.length];
+    const y = top + r() * (H - top), rr = W * (0.008 + r() * 0.006), [c0, c1] = GREENS[(i * 7) % 4];
     const g = ctx.createRadialGradient(x - rr * 0.3, y - rr * 0.3, 0, x, y, rr); g.addColorStop(0, c1); g.addColorStop(1, c0);
-    ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(x, y, rr, rr * round, r() * 3, 0, 7); ctx.fill();
+    ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(x, y, rr, rr * 0.8, r() * 3, 0, 7); ctx.fill();
   }
 }
 
@@ -128,8 +156,7 @@ export function drawPlantCard(type: PlantType, W = 512): HTMLCanvasElement {
   const ctx = c.getContext('2d')!; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
   ({ stem: () => stem(ctx, W, H, false), stemred: () => stem(ctx, W, H, true), grass: () => grass(ctx, W, H), sword: () => sword(ctx, W, H),
     fern: () => fern(ctx, W, H), anubias: () => anubias(ctx, W, H), carpet: () => carpet(ctx, W, H),
-    crypt: () => crypt(ctx, W, H), balansae: () => balansae(ctx, W, H),
-    montecarlo: () => carpet(ctx, W, H, [['#4a9234', '#86c458'], ['#549c3a', '#92ce62'], ['#448a30', '#7cba52']], 31, 0.95),
+    crypt: () => crypt(ctx, W, H), balansae: () => balansae(ctx, W, H), sagittaria: () => sagittaria(ctx, W, H), ozelot: () => ozelot(ctx, W, H),
     buce: () => anubias(ctx, W, H, [['#1c3428', '#3a5a46'], ['#262c38', '#46525e'], ['#34282c', '#5a4648']], 9, 0.3, 33),
     rotala: () => stem(ctx, W, H, false, { seed: 35, stalk: '#6a5a3a', low: [['#4a7a34', '#78a856'], ['#52823a', '#86b45e']], top: [['#b0606a', '#e0909a'], ['#b06a50', '#e09a78']], from: 0.6, len: 0.7, wid: 0.75, nodes: 40 }),
     ludwigia: () => stem(ctx, W, H, false, { seed: 37, stalk: '#6a3a2a', low: [['#5a4a2a', '#8a6a3e'], ['#5e4228', '#8e603c']], top: [['#7a2a22', '#b04a3a'], ['#6e2a2a', '#a04440']], from: 0.4, len: 1.1, wid: 2, nodes: 18 }) })[type]();
@@ -165,6 +192,8 @@ export interface Leaf3D {
   rib?: string;
   /** Tip colour and how far down it runs (0..1 of the blade), optional. */
   tip?: [string, number];
+  /** Spots on the upper side, optional: colour, spots per leaf (min, max), radius as a fraction of the blade length. */
+  spots?: { col: string; n: [number, number]; r: number };
   /** Samples along the blade and across it (3 = a midrib, 5 = room for a cup or a ripple). */
   seg: [number, number];
 }
@@ -216,10 +245,6 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
   crypt: { sway: 0.15, form: 'rosette', n: [12, 18], crowns: [1, 3], spread: 0.3, stalk: '#5a4a30', leaf: {
     len: [0.75, 1], wid: 0.32, prof: [0.6, 0.8], rise: [0.15, 0.9], arch: 0.35, twist: 0.15, fold: -0.08, wave: [0.06, 5], pet: 0.28,
     cols: [['#44502a', '#72783e'], ['#4e4a2a', '#7e7040'], ['#5a462a', '#8a6a40'], ['#3e4c26', '#66763c']], under: '#84563c', rib: '#a09060', seg: [12, 5] } },
-  // Monte Carlo (Micranthemum tweediei): a brighter, rounder-leaved carpet than the one above, a little denser
-  montecarlo: { sway: 0.08, form: 'carpet', n: [75, 90], spread: 1, stalk: '#4a7a34', leaf: {
-    len: [4, 6], wid: 0.95, prof: [1, 0.6], rise: [1, 1.5], arch: 0.08, twist: 0.3, fold: 0.25, wave: [0, 0], pet: 0,
-    cols: [['#4a9234', '#86c458'], ['#549c3a', '#92ce62'], ['#448a30', '#7cba52']], under: '#6a9a50', seg: [2, 3] } },
   // Bucephalandra: a small creeping rhizome of stiff lance leaves, dark green with blue-grey and wine casts
   buce: { sway: 0.05, form: 'rhizome', n: [8, 12], spread: 0.45, stalk: '#3a3028', leaf: {
     len: [0.55, 0.9], wid: 0.28, prof: [0.7, 0.6], rise: [0.2, 0.8], arch: 0.2, twist: 0.25, fold: 0.1, wave: [0.04, 3], pet: 0.15,
@@ -236,4 +261,13 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
   balansae: { sway: 0.6, form: 'rosette', n: [8, 14], crowns: [1, 3], spread: 0.25, stalk: '#4a4a2a', leaf: {
     len: [0.6, 1], wid: 0.08, prof: [0.9, 0.3], rise: [0.03, 0.35], arch: 0.45, twist: 0.4, fold: -0.1, wave: [0.1, 16], pet: 0.08,
     cols: [['#3a5a26', '#5e8040'], ['#4a5428', '#727a3e'], ['#42502a', '#6a7440']], under: '#6a5a3a', seg: [28, 5] } },
+  // Dwarf sagittaria (S. subulata): a run of small grassy rosettes joined by runners, the start of a lawn
+  sagittaria: { sway: 0.25, form: 'rosette', n: [40, 60], crowns: [6, 10], spread: 0.9, stalk: '#4a7a34', leaf: {
+    len: [0.6, 1], wid: 0.05, prof: [1, 0.25], rise: [0.05, 0.75], arch: 0.4, twist: 0.6, fold: 0, wave: [0, 0], pet: 0,
+    cols: [['#3e7a2e', '#6aa64e'], ['#468634', '#76b456'], ['#3a722a', '#62a046']], under: '#5e8a48', seg: [8, 3] } },
+  // Echinodorus 'Ozelot': a mid-sized sword, broader leaves speckled maroon, younger leaves a little redder
+  ozelot: { sway: 0.25, form: 'rosette', n: [12, 18], spread: 0.05, stalk: '#4a6a2c', leaf: {
+    len: [0.75, 1], wid: 0.22, prof: [0.7, 0.75], rise: [0.08, 0.8], arch: 0.4, twist: 0.4, fold: -0.12, wave: [0.04, 3], pet: 0.25,
+    cols: [['#3a6e2c', '#64984a'], ['#42762e', '#70a252'], ['#4a6a2c', '#76904a']], under: '#5a7a46', rib: '#a8c690',
+    spots: { col: '#5e2a1e', n: [14, 24], r: 0.035 }, seg: [24, 7] } },
 };
