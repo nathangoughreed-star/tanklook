@@ -221,6 +221,9 @@ Audit written 2026-10-14: `shots/audit/AUDIT.md` in the MAIN checkout only (shot
 into two fix lanes: G (`src/ui/*`, `index.html`, `src/style.css`) and G2, core fixes, `../Glass-Box-core-fixes` /
 `core-fixes`, launch config `core-fixes` 5363 (`src/interact/*`, `src/scene/*`, `src/render/*` except lane I's files).
 A finding that spans both goes to the lane holding the root cause, with at most a one-line hook in the other's files.
+Audit ownership (lane G's split, 2026-10-14): G2 = #1, 3, 6, 14, 15, 18-21, 29, 47, the PNG crop/margins/A-B labels
+part of #49, 51-53; I = #42; G = the other 38. Nathan's calls: #29 the Stand is ON by default for new tanks (G2, scene/defaults.ts);
+#38 salt tanks show only "no stocking check for salt yet" (G).
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_e1923781-40bc-48d3-84f3-ed380e471779`
 ("Lanes coordinator"). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
 and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says
