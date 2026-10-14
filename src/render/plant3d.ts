@@ -112,12 +112,23 @@ function shade(g: THREE.BufferGeometry, h: number, rad: number) {
   }
 }
 
+/** One plant's colour cast: brighter or darker by k, warmer (yellower, + warm) or cooler (bluer, - warm). */
+function tint(g: THREE.BufferGeometry, k: number, warm: number) {
+  const c = g.attributes.color, m = [k * (1 + warm), k * (1 + warm / 2), k * (1 - warm)];
+  for (let i = 0; i < c.count; i++) c.setXYZ(i, c.getX(i) * m[0], c.getY(i) * m[1], c.getZ(i) * m[2]);
+}
+
 /**
  * The plant's geometry, base at y = 0, its tallest point at h. A carpet is a patch h wide on flat ground, built once per
  * (seed, size); carpetOnGround() then sets each leaflet on the ground under it (cheap, so it can run every drag step).
  */
 export function plantGeometry(type: PlantType, seed: number, h: number) {
-  const P = PLANT3D[type]!, f = P.leaf, r = rng(seed * 7919 + 13), out = new Sheets(), extra: THREE.BufferGeometry[] = [];
+  const P = PLANT3D[type]!, r = rng(seed * 7919 + 13), out = new Sheets(), extra: THREE.BufferGeometry[] = [];
+  // this plant's own build: leaf width, length, rise, droop, stalk thickness, leaf pairs and tint drawn round the
+  // species' values (a triangular spread, most plants near the middle; own random stream, so the layout stays)
+  const rt = rng(seed * 7907 + 3), tri = (a: number) => 1 + a * (rt() + rt() - 1);
+  const kRise = tri(0.2), kStalk = tri(0.25), kNodes = tri(0.15), kTint = tri(0.06), warm = (rt() - 0.5) * 0.16, f: Leaf3D = { ...P.leaf,
+    wid: P.leaf.wid * tri(0.18), len: P.leaf.len.map(v => v * tri(0.12)) as [number, number], rise: P.leaf.rise.map(v => v * kRise) as [number, number], arch: P.leaf.arch * tri(0.3) };
   const Wc = h / PLANT_ASPECT[type], pick = () => f.cols[Math.floor(r() * f.cols.length)];
   const twist = () => (r() - 0.5) * 2 * f.twist, bright = () => 0.9 + r() * 0.2;
   // the water's give: one current direction for the whole plant (mostly along the tank, as a filter's flow runs), each
@@ -138,20 +149,21 @@ export function plantGeometry(type: PlantType, seed: number, h: number) {
     }
     const g = out.geometry();
     shade(g, CARPET_H, 1e9);
+    tint(g, kTint, warm);
     g.computeBoundingBox(); g.computeBoundingSphere();
     Object.assign(g.userData, { keep: true, anchors, owner: Uint32Array.from(owner) });
     return g;
   }
   if (P.form === 'stem') {
     // upright stems, leaf pairs crossing at each node, the top ones smaller and more upright
-    const n = Math.round(between(r, P.n)), nodes = P.nodes ?? 20;
+    const n = Math.round(between(r, P.n)), nodes = Math.round((P.nodes ?? 20) * kNodes);
     for (let s = 0; s < n; s++) {
       const a = r() * 6.28, d = Math.sqrt(r()) * Wc * P.spread / 2, b = V(Math.cos(a) * d, 0, Math.sin(a) * d);
       const top = h * (0.75 + 0.25 * r()), lean = V((r() - 0.5) * Wc * 0.4, 0, (r() - 0.5) * Wc * 0.4);
       const sb = bend(), side = V(-cz, 0, cx);
       const at = (t: number) => b.clone().addScaledVector(lean, t * t).add(V(cx, 0, cz).multiplyScalar(sb.k * top * 0.45 * t * t))
         .addScaledVector(side, sb.wob * top * 0.15 * Math.sin(t * Math.PI * 1.3 + sb.ph) * t).setY(top * t);
-      extra.push(tube([0, 0.2, 0.4, 0.6, 0.8, 1].map(at), Math.max(0.8, h * 0.006), P.stalk));
+      extra.push(tube([0, 0.2, 0.4, 0.6, 0.8, 1].map(at), Math.max(0.8, h * 0.006 * kStalk), P.stalk));
       let rot = r() * 6.28;
       for (let i = 1; i <= nodes; i++) {
         const t = (i + r() * 0.4) / (nodes + 0.4), up = 1 - t, L = h * between(r, f.len) * (1 - 0.6 * t ** 2);
@@ -168,7 +180,7 @@ export function plantGeometry(type: PlantType, seed: number, h: number) {
     if (rz) {
       const yaw = (r() - 0.5) * 0.6, dz = Math.sin(yaw) * half;
       for (let i = 0; i <= 4; i++) { const t = i / 4 * 2 - 1; roots.push(V(t * half * Math.cos(yaw), h * 0.012 + (r() - 0.5) * h * 0.01, t * dz + (r() - 0.5) * half * 0.15)); }
-      extra.push(tube(roots, Math.max(1.5, h * 0.02), P.stalk));
+      extra.push(tube(roots, Math.max(1.5, h * 0.02 * kStalk), P.stalk));
     }
     const centres = Array.from({ length: crowns }, (_, i) => V(crowns > 1 ? (i / (crowns - 1) * 2 - 1) * half + (r() - 0.5) * half * 0.3 : 0, 0, (r() - 0.5) * half * 0.4));
     for (let i = 0; i < n; i++) {
@@ -189,6 +201,7 @@ export function plantGeometry(type: PlantType, seed: number, h: number) {
   const kx = Math.max(0.75, Math.min(1, Wc * 0.6 / Math.max(1, reach)));
   for (const g of parts) g.scale(k * kx, k, k * kx);
   shade(leaves, h, Wc / 2);
+  tint(leaves, kTint, warm);
   const g = mergeGeometries(parts)!;
   g.computeBoundingBox(); g.computeBoundingSphere(); g.userData.keep = true;
   return g;
