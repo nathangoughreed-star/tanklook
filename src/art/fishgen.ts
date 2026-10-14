@@ -556,11 +556,16 @@ export const PLANS: Record<string, Plan> = {
     marks: [{ k: 'blob', u: 0.86, v: -0.15, ru: 0.09, rv: 0.07, c: '#c4a46a', a: 0.45 }, { k: 'blob', u: 0.6, v: -0.06, ru: 0.22, rv: 0.2, c: '#ffffff', a: 0.14 },
       { k: 'bars', us: [0.865, 0.645, 0.43], w: 0.05, c: '#26262a', a: 0.9 }, { k: 'bars', us: [0.235], w: 0.06, c: '#26262a', a: 0.5 }],
     finMarks: [{ k: 'bars', us: [0.645, 0.43], w: 0.05, c: '#26262a', a: 0.8 }], eye: { r: 0.026, iris: ['#c8673f', '#5b2a1c'] } },
-  oscar: { gape: 0.07, pec: { s: 1.6 }, thick: 0.48, depth: 0.42, pedU: 0.2, ped: 0.07, peak: 0.5, snout: 0.45, mouth: 0.025, shade: ['#2a2a24', '#3e3b30', '#4a4438'], tail: { type: 'round', h: 0.16, tint: '#3a372e', a: 0.85 }, fin: '#3a372e',
-    dorsal: { at: 0.76, len: 0.52, h: 0.11, spines: 0.6, nSp: 9, spineH: [0.05, 0.07], notch: 0.3, rake: 0.6, trail: 0.05, a: 0.85 },
-    anal: { at: 0.48, len: 0.26, h: 0.1, spines: 0.25, nSp: 3, spineH: [0.04, 0.06], rake: 0.5, trail: 0.04, a: 0.85 }, pelvic: { u: 0.64, len: 0.1, w: 1.2 },
-    marks: [{ k: 'spots', n: 12, u0: 0.3, u1: 0.8, v0: -0.05, v1: 0.15, r: 0.045, c: '#c8642a', a: 0.6 }, { k: 'blob', u: 0.24, v: -0.02, ru: 0.04, rv: 0.04, c: '#d8702a', a: 0.9 }, { k: 'blob', u: 0.24, v: -0.02, ru: 0.022, rv: 0.022, c: '#141414', a: 0.95 }],
-    eye: { r: 0.03, iris: ['#c84a2a', '#3a1208'] } },
+  // v2 body (lane S); colours from Nathan's reference photo (red tiger oscar): olive-grey head and upper front, near-black
+  // rear body, many small orange spots, orange throat and gill cover; nose rounded slightly (noseCap)
+  oscar: { noseCap: 0.02, gape: 0.07, pec: { s: 1.6 }, thick: 0.48, depth: 0.42, pedU: 0.2, ped: 0.07, peak: 0.5, snout: 0.45, mouth: 0.025, shade: ['#3c3f31', '#1b1c17', '#2c241a'], tail: { type: 'round', h: 0.16, tint: '#1f201c', a: 0.9 }, fin: '#1f201c',
+    dorsal: { at: 0.76, len: 0.52, h: 0.11, spines: 0.6, nSp: 9, spineH: [0.05, 0.07], notch: 0.3, rake: 0.6, trail: 0.05, a: 0.9 },
+    anal: { at: 0.48, len: 0.26, h: 0.1, spines: 0.25, nSp: 3, spineH: [0.04, 0.06], rake: 0.5, trail: 0.04, a: 0.9 }, pelvic: { u: 0.64, len: 0.1, w: 1.2 },
+    marks: [{ k: 'blob', u: 0.42, v: 0.04, ru: 0.34, rv: 0.25, c: '#0e0f0c', a: 0.8 }, { k: 'blob', u: 0.85, v: -0.05, ru: 0.21, rv: 0.16, c: '#8f9274', a: 0.85 }, { k: 'blob', u: 0.95, v: 0.0, ru: 0.06, rv: 0.06, c: '#b0a878', a: 0.7 },
+      { k: 'blob', u: 0.86, v: 0.13, ru: 0.12, rv: 0.08, c: '#d8913c', a: 0.8 }, { k: 'spots', n: 30, u0: 0.72, u1: 0.83, v0: -0.03, v1: 0.15, r: 0.011, c: '#e2742a', a: 0.9 },
+      { k: 'spots', n: 80, u0: 0.29, u1: 0.74, v0: -0.09, v1: 0.17, r: 0.01, c: '#ec8a2c', a: 0.9 }, { k: 'spots', n: 9, u0: 0.32, u1: 0.65, v0: -0.02, v1: 0.15, r: 0.022, c: '#e07a28', a: 0.85 },
+      { k: 'blob', u: 0.24, v: -0.02, ru: 0.04, rv: 0.04, c: '#e2802a', a: 0.95 }, { k: 'blob', u: 0.24, v: -0.02, ru: 0.022, rv: 0.022, c: '#141414', a: 0.95 }],
+    eye: { r: 0.03, iris: ['#b8743c', '#2e1a0a'] } },
   // fantail (Nathan 2026-10-14): egg-shaped body, a paired double caudal that splits and spreads sideways (seen from above), larger paired fins
   goldfish: { thick: 0.68, depth: 0.52, pedU: 0.32, ped: 0.06, peak: 0.45, snout: 0.75, shade: ['#c8642a', '#e88a3a', '#f0b87a'], tail: { type: 'notch', h: 0.3, split: 45, tint: '#e8964e', a: 0.75 }, fin: '#ec9e5e',
     dorsal: { u0: 0.42, u1: 0.68, h: 0.14, shape: 'round', a: 0.75 }, anal: { u0: 0.38, u1: 0.48, h: 0.1, shape: 'round', a: 0.75 }, pelvic: { u: 0.7, len: 0.15, w: 1.4 }, pec: { s: 2 },
