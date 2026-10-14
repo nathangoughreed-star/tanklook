@@ -191,6 +191,8 @@ export class Viewer {
   invalidate() { this.dirty = true; }
   /** Rebuild on the next frame (UI-only state that changes the scene, like terrain editing). */
   rebuild() { this.needsBuild = this.dirty = true; this.built = []; } // always a full build (textures loaded, terrain dots)
+  /** Apply pending store edits to the scenes now, without drawing (an AR session draws itself: render/ar.ts). */
+  buildNow() { if (this.needsBuild) this.build(); }
 
   /** The viewports on screen: one per tank. */
   get active() { return this.vps.slice(0, this.store.scene.tanks.length); }

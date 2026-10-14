@@ -11,6 +11,8 @@ import { footprint } from '../scene/shape';
 import type { Store } from '../scene/store';
 import type { Tank, TankSetup, Units } from '../scene/types';
 import { LU, setLightUniforms, setWaterUniforms } from './lighting';
+import { rng } from '../art/paint';
+import { shuffleFish } from '../scene/scatter';
 import { composePhoto, savePhoto } from './arPhoto';
 import { OUTLINE } from './fish3d';
 import type { Viewer, Viewport } from './viewer';
@@ -173,8 +175,9 @@ const OVERLAY_CSS = `#arOverlay{position:fixed;inset:0;font:500 15px system-ui,"
 #arOverlay .bar{position:absolute;left:12px;right:12px;bottom:max(16px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none}
 #arOverlay .msg{background:rgba(20,24,30,.72);padding:6px 12px;border-radius:12px;text-align:center;max-width:100%}
 #arOverlay .fps{position:absolute;top:14px;left:14px;background:rgba(20,24,30,.55);padding:2px 8px;border-radius:8px;font-size:12px}
-#arOverlay .btns{align-self:flex-end;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
-#arOverlay button{pointer-events:auto;font:600 17px system-ui,sans-serif;min-width:44px;min-height:52px;padding:0 18px;border-radius:26px;border:0;background:rgba(20,24,30,.8);color:#fff}`; // Close, Stand and the A / B swap: lower right, under the thumb (Nathan 2026-10-14)
+#arOverlay .btns,#arOverlay .menu{align-self:flex-end;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+#arOverlay .btns.closed .menu{display:none}
+#arOverlay button{pointer-events:auto;font:600 17px system-ui,sans-serif;min-width:44px;min-height:52px;padding:0 18px;border-radius:26px;border:0;background:rgba(20,24,30,.8);color:#fff}`; // the buttons: lower right, under the thumb, folding away behind Menu (Nathan 2026-10-14)
 
 /** Can this browser open AR Quick Look (iPhone / iPad Safari)? */
 export function quickLookSupported() {
@@ -246,17 +249,24 @@ async function runAR(viewer: Viewer, store: Store, _button?: HTMLButtonElement) 
   if (!vp.scene) return;
   if (!document.getElementById('arCss')) { const st = document.createElement('style'); st.id = 'arCss'; st.textContent = OVERLAY_CSS; document.head.appendChild(st); }
   const overlay = document.createElement('div'); overlay.id = 'arOverlay';
-  overlay.innerHTML = '<div class="fps"></div><div class="bar"><div class="btns"><button type="button" class="close">Close</button><button type="button" class="standTog" hidden></button><button type="button" class="photo" hidden>📷 Photo</button><button type="button" class="swap" hidden></button></div><div class="msg hint"></div><div class="msg size"></div></div>';
+  overlay.innerHTML = '<div class="fps"></div><div class="bar"><div class="btns"><div class="menu"><button type="button" class="close">Close</button><button type="button" class="standTog" hidden></button><button type="button" class="shuffle" hidden>🔀 Shuffle</button><button type="button" class="photo" hidden>📷 Photo</button><button type="button" class="swap" hidden></button></div><button type="button" class="fold" aria-expanded="true">▾ Hide</button></div><div class="msg hint"></div><div class="msg size"></div></div>';
   document.body.appendChild(overlay);
   const hint = overlay.querySelector<HTMLElement>('.hint')!, fpsEl = overlay.querySelector<HTMLElement>('.fps')!;
   const sizeEl = overlay.querySelector<HTMLElement>('.size')!, swapBtn = overlay.querySelector<HTMLButtonElement>('.swap')!;
   const standBtn = overlay.querySelector<HTMLButtonElement>('.standTog')!, photoBtn = overlay.querySelector<HTMLButtonElement>('.photo')!;
+  const shuffleBtn = overlay.querySelector<HTMLButtonElement>('.shuffle')!, foldBtn = overlay.querySelector<HTMLButtonElement>('.fold')!;
+  // the button stack folds away to one Menu button, so it does not cover the room (Nathan 2026-10-14)
+  foldBtn.addEventListener('click', () => {
+    const closed = overlay.querySelector('.btns')!.classList.toggle('closed');
+    foldBtn.textContent = closed ? '☰ Menu' : '▾ Hide'; foldBtn.setAttribute('aria-expanded', String(!closed));
+  });
   let standOn = true; // the stand / table under the tank, toggled in the room (Nathan 2026-10-14); kept across A / B swaps
   const label = () => {
     sizeEl.textContent = (views.length > 1 ? `Tank ${vp.key} · ` : '') + sizeText(S, units, standOn);
     swapBtn.hidden = views.length < 2; swapBtn.textContent = `Show tank ${views.find(v => v !== vp)?.key ?? ''}`;
     standBtn.hidden = !S.stand.show; standBtn.textContent = `Stand: ${standOn ? 'on' : 'off'}`;
     standBtn.setAttribute('aria-pressed', String(standOn));
+    shuffleBtn.hidden = !S.fish.length;
   };
   label();
   hint.textContent = 'Point the phone at the floor or a stand top and move it slowly';
@@ -309,6 +319,13 @@ async function runAR(viewer: Viewer, store: Store, _button?: HTMLButtonElement) 
     standOn = !standOn; prep.showStand(standOn); centre = baseCentre(S, vp.T, standOn); label();
   });
 
+  // shuffle: the app's own Shuffle on the tank shown (undoable there), rebuilt and re-readied in the next XR frame
+  let reshuffle = false;
+  shuffleBtn.addEventListener('click', () => {
+    const seed = Math.random() * 1e9;
+    store.editTank(vp.i, s => shuffleFish(s, rng(seed)));
+    reshuffle = true;
+  });
   // photo: taken in the next XR frame, where the camera image is available (shown once a frame has one)
   let shoot = false, binding: XRWebGLBinding | undefined, saying = 0;
   photoBtn.addEventListener('click', () => { shoot = true; });
@@ -319,6 +336,11 @@ async function runAR(viewer: Viewer, store: Store, _button?: HTMLButtonElement) 
 
   let frames = 0, t0 = 0;
   viewer.xrFrame = (t, frame) => {
+    if (reshuffle) {
+      reshuffle = false;
+      prep.restore(); viewer.buildNow(); S = vp.S; prep = prepScene(vp); prep.showStand(standOn); prep.showTank(!!placed);
+      centre = baseCentre(S, vp.T, standOn); label();
+    }
     const ref = r.xr.getReferenceSpace()!;
     const pose = frame.getViewerPose(ref);
     if (pose) eye.set(pose.transform.position.x, pose.transform.position.y, pose.transform.position.z);
