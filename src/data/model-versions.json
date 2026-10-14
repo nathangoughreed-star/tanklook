@@ -4,7 +4,7 @@
   "amano": {"v":2,"hash":"c0505ea1","build":284,"date":"2026-10-14"},
   "angel": {"v":2,"hash":"028a15dd","build":334,"date":"2026-10-14"},
   "axolotl": {"v":3,"hash":"54c2494c","build":317,"date":"2026-10-14"},
-  "banggai": {"v":1,"hash":"b9d2ab44","build":217,"date":"2026-10-14"},
+  "banggai": {"v":2,"hash":"a18f1205","build":348,"date":"2026-10-14"},
   "betta": {"v":1,"hash":"6e932c55","build":217,"date":"2026-10-14"},
   "betta~f": {"v":1,"hash":"5b5d321e","build":217,"date":"2026-10-14"},
   "bolivianram": {"v":2,"hash":"87620201","build":330,"date":"2026-10-14"},
@@ -18,7 +18,7 @@
   "chromis": {"v":1,"hash":"6bd5cbcd","build":217,"date":"2026-10-14"},
   "cleanershrimp": {"v":2,"hash":"f4f19c76","build":284,"date":"2026-10-14"},
   "clownloach": {"v":1,"hash":"a4bba26b","build":217,"date":"2026-10-14"},
-  "coralbeauty": {"v":1,"hash":"16653f5a","build":217,"date":"2026-10-14"},
+  "coralbeauty": {"v":2,"hash":"2198d280","build":348,"date":"2026-10-14"},
   "cpd": {"v":1,"hash":"296ca2d7","build":217,"date":"2026-10-14"},
   "cpd~f": {"v":1,"hash":"632b342c","build":217,"date":"2026-10-14"},
   "danio": {"v":1,"hash":"2d090b66","build":217,"date":"2026-10-14"},
@@ -27,7 +27,7 @@
   "dwarfgourami": {"v":2,"hash":"bce20719","build":330,"date":"2026-10-14"},
   "dwarfgourami~f": {"v":2,"hash":"6afcae28","build":330,"date":"2026-10-14"},
   "ember": {"v":1,"hash":"e2060a7e","build":217,"date":"2026-10-14"},
-  "firefish": {"v":1,"hash":"886fc4e4","build":217,"date":"2026-10-14"},
+  "firefish": {"v":2,"hash":"cb105797","build":348,"date":"2026-10-14"},
   "firenewt": {"v":3,"hash":"d428da21","build":297,"date":"2026-10-14"},
   "firetoad": {"v":3,"hash":"18e5e059","build":297,"date":"2026-10-14"},
   "gbr": {"v":2,"hash":"a65ff9fc","build":330,"date":"2026-10-14"},
@@ -67,7 +67,7 @@
   "treefrog": {"v":3,"hash":"4b51a019","build":297,"date":"2026-10-14"},
   "trumpet": {"v":2,"hash":"cc7a6025","build":288,"date":"2026-10-14"},
   "turbo": {"v":2,"hash":"05ee593b","build":288,"date":"2026-10-14"},
-  "watchman": {"v":1,"hash":"c7abf279","build":217,"date":"2026-10-14"},
-  "yellowtang": {"v":1,"hash":"04368b21","build":217,"date":"2026-10-14"}
+  "watchman": {"v":2,"hash":"553e0528","build":348,"date":"2026-10-14"},
+  "yellowtang": {"v":2,"hash":"933463ae","build":348,"date":"2026-10-14"}
  }
 }

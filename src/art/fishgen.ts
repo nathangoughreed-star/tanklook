@@ -20,6 +20,7 @@ export interface MedianFin {
   at: number; len: number; h: number;
   spines?: number; spineH?: number | [number, number]; nSp?: number; notch?: number;
   rake?: number; tip?: 'round' | 'point'; trail?: number; drop?: number; // drop: the rear tip's height (share of h)
+  lead?: number; // height where the soft part starts, share of h (default 0.55; low = a raked pennant)
   fringe?: boolean; // the soft part's edge ragged with free ray tips (pearl gourami male's anal fin)
   tint?: string; a?: number; edge?: string;
 }
@@ -44,6 +45,7 @@ export interface Plan {
   peak?: number;      // 0..1 along the body (tail->nose) where it is deepest
   back?: number;      // share of the depth above the centre line (0.5 symmetric; > 0.5 flat-bellied bottom fish)
   snout?: number;     // 0 pointed .. 1 blunt
+  rostrum?: { len: number; h: number }; // a projecting snout: the head tapers to half-depth h at 1 - len, then a narrow snout runs on to the tip (tang)
   mouth?: number;     // nose offset (+ down, - up)
   shade: [string, string, string]; // back, flank, belly
   // cut (lyre): depth of the fork, share of the tail length (default 0.8); sword ('sword'): the fan ends at u = sword and
@@ -102,9 +104,9 @@ function outlineProfile(o: [number, number][]) {
 }
 export function profile(p: Plan) {
   if (p.outline) return outlineProfile(p.outline);
-  const tp = p.peak ?? 0.55, back = p.back ?? 0.5, sn = p.snout ?? 0.5, mouth = p.mouth ?? 0;
+  const tp = p.peak ?? 0.55, back = p.back ?? 0.5, sn = p.snout ?? 0.5, mouth = p.mouth ?? 0, ro = p.rostrum, nose = ro ? 1 - ro.len : 1;
   return (u: number): [number, number] => {
-    const t = Math.min(1, Math.max(0, (u - p.pedU) / (1 - p.pedU)));
+    const t = Math.min(1, Math.max(0, (u - p.pedU) / (nose - p.pedU)));
     let hh: number, vc = 0;
     if (t <= tp) hh = 2 * p.ped + (p.depth - 2 * p.ped) * Math.sin(t / tp * Math.PI / 2) ** 1.3;
     else {
@@ -116,6 +118,10 @@ export function profile(p: Plan) {
       const r0 = 2 * p.ped, l1 = r0 + (p.depth - r0) * t / tp, l2 = p.depth * (1 - t) / (1 - tp), k = 0.3 * p.depth;
       const h = Math.max(k - Math.abs(l1 - l2), 0) / k, line = (Math.min(l1, l2) - h * h * k / 4) * p.depth / (p.depth - k / 4);
       hh += (Math.min(line, p.depth) - hh) * p.angular;
+    }
+    if (ro) { // the snout: a narrow tube from inside the head to the tip, rounded off at the end; joined smoothly
+      const k = Math.max(0, (u - nose) / ro.len), hs = u < nose - ro.len ? 0 : ro.h * 2 * (1 - 0.5 * Math.min(1, k)) * Math.sqrt(Math.max(0, 1 - k ** 6));
+      const j = 0.8 * ro.h * 2; hh = Math.max(hh, hs) + Math.max(0, j - Math.abs(hh - hs)) ** 2 / (4 * j) * (1 - Math.min(1, k)); vc = mouth * Math.min(1, Math.max(0, (u - p.pedU) / (1 - p.pedU) - 0.4) / 0.6) ** 2;
     }
     return [vc - hh * back, vc + hh * (1 - back)];
   };
@@ -158,7 +164,7 @@ function medianPts(f: MedianFin, base: (u: number) => number, sg: number): { pts
     }
   }
   // soft part: rises from the last spine (or from the leading ray) to h, `rake` of the way back, then eases off
-  const r = f.rake ?? 0.4, n = 7, h0 = S > 0 ? hEnd * 0.85 : h * 0.55, pointy = f.tip === 'point';
+  const r = Math.min(f.rake ?? 0.4, 0.999), n = 7, h0 = S > 0 ? hEnd * 0.85 : h * (f.lead ?? 0.55), pointy = f.tip === 'point';
   for (let i = S > 0 ? 1 : 0; i <= n; i++) {
     const t = i / n, s = S + (1 - S) * t, u = at(s);
     const hh = t < r ? h0 + (h - h0) * Math.sin(t / r * Math.PI / 2) : h * (1 - (pointy ? 0 : 0.25) * ((t - r) / (1 - r)) ** 2);
@@ -574,18 +580,24 @@ export const PLANS: Record<string, Plan> = {
     finMarks: [{ k: 'band', u0: 0, u1: 0.46, v0: -1, v1: 1, c: '#f2c21e', a: 0.95, f: 0.05 }, { k: 'blob', u: 0.67, v: -0.19, ru: 0.025, rv: 0.025, c: '#18121a', a: 0.9 }],
     eye: { r: 0.03, iris: ['#7a3a8a', '#1a0a1e'] } },
   // yellow tang: tall disc, long low-set snout, tall rounded dorsal and anal fins, a white scalpel on the peduncle
-  yellowtang: { scale: 0.012, thick: 0.22, angular: 0.5, depth: 0.56, pedU: 0.17, ped: 0.045, peak: 0.45, snout: 0.15, mouth: -0.03, shade: ['#d8b018', '#f2d02a', '#f6dc5a'], tail: { type: 'notch', h: 0.18, tint: '#f0cc2a' }, fin: '#f0cc2a',
-    dorsal: { u0: 0.2, u1: 0.76, h: 0.16, shape: 'round' }, anal: { u0: 0.2, u1: 0.58, h: 0.14, shape: 'round' }, pelvic: { u: 0.68, len: 0.08 },
+  yellowtang: { rostrum: { len: 0.08, h: 0.05 }, gape: 0.02, scale: 0.012, thick: 0.22, angular: 0.5, depth: 0.56, pedU: 0.17, ped: 0.045, peak: 0.45, snout: 0.3, mouth: 0.02, shade: ['#d8b018', '#f2d02a', '#f6dc5a'], tail: { type: 'notch', h: 0.18, tint: '#f0cc2a' }, fin: '#f0cc2a',
+    // dorsal from behind the head and anal from behind the pelvics both run to the peduncle: the tang's tall disc
+    dorsal: { at: 0.74, len: 0.54, h: 0.16, spines: 0.35, nSp: 5, spineH: [0.08, 0.14], notch: 0.2, rake: 0.45, trail: 0.04, drop: 0.7 },
+    anal: { at: 0.6, len: 0.4, h: 0.15, spines: 0.12, nSp: 3, spineH: [0.07, 0.12], notch: 0.2, rake: 0.4, trail: 0.04, drop: 0.7 }, pelvic: { u: 0.66, len: 0.08 },
     marks: [{ k: 'blob', u: 0.2, v: 0, ru: 0.022, rv: 0.009, c: '#fbfaf2', a: 1 }, { k: 'blob', u: 0.62, v: -0.1, ru: 0.25, rv: 0.18, c: '#ffffff', a: 0.12 }],
-    eye: { r: 0.03, iris: ['#3a3020', '#0a0806'], dv: -0.06 } },
+    eye: { r: 0.03, iris: ['#3a3020', '#0a0806'], dv: -0.06, u: 0.8 } },
   // firefish: slender, white with a yellow head, the rear turning orange-red to a dark red tail; tall front dorsal spike
   firefish: { thick: 0.45, depth: 0.17, pedU: 0.18, ped: 0.035, peak: 0.6, snout: 0.5, mouth: -0.02, shade: ['#d8d2c4', '#f0ece2', '#f6f3ec'], tail: { type: 'round', h: 0.09, tint: '#a8241c' }, fin: '#d8c8b0',
-    dorsal: { u0: 0.24, u1: 0.76, h: 0.25, a: 0.85 }, anal: { u0: 0.2, u1: 0.48, h: 0.06, tint: '#d84a28' }, pelvic: { u: 0.74, len: 0.06 },
+    // first dorsal a tall slender pennant raked back; second dorsal long and low; anal long, matching it
+    dorsal: { at: 0.78, len: 0.06, h: 0.08, lead: 0.5, rake: 1, tip: 'point', trail: 0.11, drop: 3.9, a: 0.85 }, dorsal2: { at: 0.64, len: 0.42, h: 0.07, rake: 0.5, trail: 0.03, a: 0.85 },
+    anal: { at: 0.56, len: 0.35, h: 0.065, rake: 0.5, trail: 0.03, tint: '#d84a28' }, pelvic: { u: 0.74, len: 0.06 },
     marks: [{ k: 'band', u0: 0.1, u1: 0.42, v0: -1, v1: 1, c: '#e0522a', a: 0.95, f: 0.08 }, { k: 'band', u0: 0.1, u1: 0.25, v0: -1, v1: 1, c: '#8a1a14', a: 0.6, f: 0.04 }, { k: 'blob', u: 0.94, v: -0.02, ru: 0.08, rv: 0.08, c: '#f2c83a', a: 0.85 }],
     finMarks: [{ k: 'band', u0: 0, u1: 0.4, v0: -1, v1: 1, c: '#d84a28', a: 0.8, f: 0.05 }], eye: { r: 0.034, iris: ['#c8b890', '#2a2010'] } },
   // banggai cardinal: silver with three black bars, white dots, tall dorsals, long pelvics, a deeply forked streamer tail
   banggai: { thick: 0.38, depth: 0.42, pedU: 0.24, ped: 0.05, peak: 0.5, snout: 0.45, shade: ['#8a8a84', '#c8c8c0', '#e2e0dc'], tail: { type: 'fork', h: 0.22, tint: '#b8b8b0', edge: '#1a1a1a' }, fin: '#9a9a94',
-    dorsal: { u0: 0.36, u1: 0.68, h: 0.22, shape: 'swept' }, anal: { u0: 0.28, u1: 0.5, h: 0.18, shape: 'swept' }, pelvic: { u: 0.68, len: 0.16, tint: '#1e1e1e' },
+    // spiny first dorsal; second dorsal and anal with long front rays sweeping back to trailing tips; big pelvics
+    dorsal: { at: 0.72, len: 0.1, h: 0.18, spines: 1, nSp: 6, spineH: [0.32, 0.16], notch: 0.35 }, dorsal2: { at: 0.57, len: 0.2, h: 0.27, rake: 0.05, tip: 'point', trail: 0.14, drop: 0.55 },
+    anal: { at: 0.55, len: 0.2, h: 0.27, spines: 0.12, nSp: 2, spineH: [0.06, 0.1], rake: 0.08, tip: 'point', trail: 0.13, drop: 0.55 }, pelvic: { u: 0.68, len: 0.2, ext: 0.07, w: 1.3, tint: '#1e1e1e' },
     marks: [{ k: 'bars', us: [0.885, 0.66, 0.42], w: 0.06, c: '#1a1a1a', a: 0.92 }, { k: 'spots', n: 34, u0: 0.24, u1: 0.4, v0: -0.12, v1: 0.14, r: 0.009, c: '#f6f6f0', a: 0.95 }],
     finMarks: [{ k: 'spots', n: 30, u0: 0.2, u1: 0.55, v0: -0.4, v1: 0.4, r: 0.009, c: '#f6f6f0', a: 0.9 }, { k: 'bars', us: [0.42], w: 0.06, c: '#1a1a1a', a: 0.85 }],
     eye: { r: 0.034, iris: ['#c8c0a0', '#1a1810'] } },
@@ -600,16 +612,20 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { u0: 0.3, u1: 0.72, h: 0.1, a: 0.7 }, anal: { u0: 0.3, u1: 0.48, h: 0.09, a: 0.7 }, pelvic: { u: 0.68, len: 0.1 },
     marks: [{ k: 'blob', u: 0.6, v: -0.08, ru: 0.25, rv: 0.1, c: '#d8fff6', a: 0.2 }], eye: { r: 0.036, iris: ['#7aa0a0', '#1a2a2a'] } },
   // coral beauty: dwarf angel; deep blue-violet back and belly round an orange flank crossed by thin dark bars
-  coralbeauty: { scale: 0.016, thick: 0.35, depth: 0.45, pedU: 0.2, ped: 0.06, peak: 0.5, snout: 0.5, shade: ['#28287a', '#e0702a', '#32328a'], tail: { type: 'round', h: 0.17, tint: '#2a2a80' }, fin: '#2a2a80',
-    dorsal: { u0: 0.2, u1: 0.74, h: 0.1, shape: 'round', edge: '#5a8ad8' }, anal: { u0: 0.2, u1: 0.48, h: 0.1, shape: 'round', edge: '#5a8ad8' }, pelvic: { u: 0.68, len: 0.1, tint: '#d8682a' },
+  coralbeauty: { gape: 0.035, scale: 0.016, thick: 0.35, depth: 0.45, pedU: 0.2, ped: 0.06, peak: 0.5, snout: 0.42, mouth: 0.01, shade: ['#28287a', '#e0702a', '#32328a'], tail: { type: 'round', h: 0.17, tint: '#2a2a80' }, fin: '#2a2a80',
+    // long spiny dorsal from the nape, soft rear rounded off to a short point; anal the same from behind the vent
+    dorsal: { at: 0.76, len: 0.55, h: 0.11, spines: 0.6, nSp: 10, spineH: [0.06, 0.085], notch: 0.3, rake: 0.6, trail: 0.06, drop: 0.7, edge: '#5a8ad8' },
+    anal: { at: 0.52, len: 0.31, h: 0.11, spines: 0.3, nSp: 3, spineH: [0.05, 0.08], notch: 0.3, rake: 0.5, trail: 0.06, drop: 0.7, edge: '#5a8ad8' }, pelvic: { u: 0.68, len: 0.11, ext: 0.03, tint: '#d8682a' },
     marks: [{ k: 'bars', us: [0.32, 0.38, 0.44, 0.5, 0.56, 0.62, 0.68, 0.74], w: 0.012, c: '#3a2a6a', a: 0.45 }, { k: 'blob', u: 0.9, v: 0.02, ru: 0.08, rv: 0.12, c: '#3a3aa0', a: 0.5 }],
     eye: { r: 0.03, iris: ['#3a3aa0', '#0e0e2a'] } },
   // yellow watchman goby: rests on the sand; yellow with faint bars and blue head spots, eyes high, rounded tail
   watchman: { thick: 0.68, belly: 0.5, wide: 0.3, depth: 0.19, pedU: 0.18, ped: 0.045, peak: 0.65, back: 0.6, snout: 0.7, mouth: 0.02, shade: ['#c8a020', '#e8c838', '#f0d870'], tail: { type: 'round', h: 0.1, tint: '#e0c040' }, fin: '#e0c040',
-    dorsal: { u0: 0.2, u1: 0.62, h: 0.08, shape: 'round' }, anal: { u0: 0.2, u1: 0.45, h: 0.07, shape: 'round' }, pelvic: { u: 0.7, len: 0.07 },
+    // two separate dorsals (spiny, then soft), anal under the second; the pelvics are a fused disc under the chest
+    dorsal: { at: 0.68, len: 0.15, h: 0.1, spines: 1, nSp: 6, spineH: [0.11, 0.08], notch: 0.3 }, dorsal2: { at: 0.5, len: 0.3, h: 0.09, rake: 0.5, trail: 0.035 },
+    anal: { at: 0.48, len: 0.27, h: 0.075, rake: 0.5, trail: 0.03 }, pelvic: { u: 0.7, len: 0.08, w: 1.3 }, gape: 0.07, pec: { s: 1.6 },
     marks: [{ k: 'bars', us: [0.3, 0.44, 0.58, 0.72], w: 0.05, c: '#a07a20', a: 0.3 }, { k: 'spots', n: 12, u0: 0.78, u1: 0.98, v0: -0.06, v1: 0.05, r: 0.008, c: '#5ab0e0', a: 0.85 }],
     finMarks: [{ k: 'spots', n: 10, u0: 0.25, u1: 0.6, v0: -0.2, v1: -0.1, r: 0.008, c: '#5ab0e0', a: 0.7 }],
-    eye: { r: 0.027, iris: ['#c8a040', '#2a1a08'], dv: -0.12, up: 0.35 } },
+    eye: { r: 0.03, iris: ['#c8a040', '#2a1a08'], dv: -0.16, up: 0.55 } },
   // ---------- bottom dwellers ----------
   bronzecory: { plates: true, thick: 0.72, belly: 0.9, wide: 0.5, pedT: 0.28, step: 0.18, noseW: 0.4, depth: 0.35, pedU: 0.18, ped: 0.06, peak: 0.6, back: 0.68, snout: 0.6, mouth: 0.06, shade: ['#4a5a48', '#8a8a62', '#d8c8a0'], tail: { type: 'fork', h: 0.15 }, fin: '#b0a888',
     dorsal: { u0: 0.5, u1: 0.68, h: 0.16, shape: 'sail' }, anal: { u0: 0.32, u1: 0.4, h: 0.06 }, adipose: true, pelvic: { u: 0.55, len: 0.08 },
