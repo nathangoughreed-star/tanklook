@@ -29,6 +29,18 @@ Living file. Project state and dated decisions go here; update in place.
 - Not checked: the clipboard itself (the app's browser pane denies it; the prompt fallback ran) and the single-file build
   run from disk (the pane shows file:// as a static snapshot); the bundle holds the share code.
 
+## Final check before showing (2026-10-14; main `fe28ad3`; no src/ edits)
+- `shots/final/FINAL.md` (main checkout only, gitignored): audit 53 = **46 fixed, 7 partly, 0 not fixed, 0 regressed**; 0 console
+  errors; no horizontal scroll at 375 px. Edits take 2 frames (33 ms) on the real GPU on every example; moving a Reef live rock
+  59-66 ms (patches 4 parts).
+- Open items, most severe first: (1) S2 `#status` sits at the top of the scrolling panel, so messages (500 cap #36, repeat Add)
+  are never seen from Animals; (2) S2 #7 phone split B tab still overlaps Redo by 11 px; (3) S3 #33 sliders / checkboxes / colour
+  inputs / summaries under 40 px on touch; (4) S3 #43 Custom terrain tick leaves "Edit points" and the eye map stale until the next
+  sync; (5) S3 fish heights do not come back after lowering then raising the level (scene/water.ts); (6) S3 Start from keeps
+  "reef" after switching back to fresh. #1-4 + 6 are UI (lane G's old files), #5 scene.
+- Method: three Sonnet agents with the CDP driver (fresh profile per run), plus GPU timing (`--use-angle=d3d11` instead of
+  SwiftShader: headless Chrome then reports the Intel Arc).
+
 ## Lane I: reef polish + example refresh (2026-10-14; branch `reef-polish`; Nathan approved rock C and reef option B; pushed to main)
 
 - **Reef starter set**: new `LayoutId` `'reef'` (`scene/types.ts`, `LAYOUT_IDS` in `scene/validate.ts`, no version bump),
@@ -73,6 +85,19 @@ chats; fin layout (most of P1) and frogs/newt are later lanes.
   body whorl), trumpet (one continuous high cone, convex whorls), nerite (low spire, smaller foot, head at the
   aperture). The hermit crab's shell comes from `shellMesh` here, so it gets the fix; its body (herps.ts / herp3d.ts) is
   NOT lane L's.
+  **DONE 2026-10-14 (Nathan approved the before/after sheets "new shells look good"; build 288, pushed to main).**
+  `rawShell` in snail3d.ts: the whorls now touch (each kind's `ap` widened until they do; `sutures()` finds where they
+  meet, at the same angle on every turn, and the texture draws a dark seam there). The aperture is cut on a plane turned
+  `incl` degrees toward the shell base (new Shell3D field, default 0), its last 5 % flares into a lip (`lip`, default
+  0.12), and a dark recessed cavity closes it. A snail's shell sits with its lower lip in the foot's back, and a skin
+  "plug" fills the aperture down into the foot (child of the shell mesh, so `sagShell` turns it too). New: a head over
+  the front of the foot carrying the tentacles; `footEnd` / `footW` per kind (nerite: shorter foot); tentacles get
+  vertex colours (they rendered black before). Per kind: mystery globose with a raised spire, turbo a higher spire,
+  ramshorn an upright flat coil opening at the bottom-front (axis [0,0,-1] = the handedness that puts it there), trumpet
+  `ap` [0.45, 1.5] for one continuous cone, nerite `ap` 0.95 (at 0.8 its whorls did not touch). Hermit: same
+  `HERMIT_SHELL`, gets the closed coil, lip and cavity; its abdomen still sits outside the aperture (`at` in herps.ts:
+  hermit-body lane). Open: the 2D side cards (art/snails.ts `drawSide`) are unchanged, their own drawings. Gotcha: the
+  dev server reads the build number when it starts, so restart it after merging main, before pressing Record.
 - **Lane M: shrimp body** (`../Glass-Box-shrimp`, branch `shrimp-body`, launch config `shrimp`, port 5433). Owns a new
   `src/render/shrimp3d.ts` (and a new art file if it needs one) plus the shrimp parts of `src/art/fishgen.ts`; in
   `src/render/fish3d.ts` only the few lines that hand shrimp to the new builder (ask the coordinator before more: J2
@@ -659,6 +684,14 @@ non-fish animals): hermit crab body, fire-bellied newt, frog P1 leftovers (feet,
 `../Glass-Box-herps` / `herps-p1`, launch config `herps` 5463; owns `src/art/herps.ts`, `src/render/herp3d.ts`. The
 hermit shell comes from lane L's `shellMesh` (art/snails.ts / render/snail3d.ts): O does not edit those, it places
 the body in the aperture from herps.ts. Fish P1 (fin layout) waits until lane D ships R2 + R3.
+Lane L DONE (`9cb81f6`). Final check DONE (`dea1d5d`, shots/final/FINAL.md: 46 fixed, 7 partly, 0 regressed). Lane P
+opened 2026-10-14 for FINAL.md items 1-6 (status line off-screen, phone split tab vs Redo, touch target sizes, Custom
+terrain button / eye map, water re-raise height, Start from stuck on reef): `../Glass-Box-final-fixes` / `final-fixes`,
+launch config `final-fixes` 5473; owns `src/style.css`, `index.html`, `src/ui/panels.ts` (except lane N's Share
+control and hook) and `src/scene/water.ts`.
+Lane Q opened 2026-10-14 (Nathan's idea): AR view, WebXR immersive-ar on his Galaxy S24+, tank at true size.
+`../Glass-Box-ar` / `ar-view`, launch config `ar-view` 5483; owns new `src/render/ar.ts` + test, minimal hooks in
+`render/viewer.ts`, one AR button in `index.html` / `src/ui` (lane P owns those: small edits only). iPhone is a later phase.
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_d0390f66-339c-4fa1-ab38-43e9c2a35958`
 ("Lanes coordinator 2", took over 2026-10-14 from `local_e1923781`). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
 and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says

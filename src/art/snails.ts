@@ -36,14 +36,17 @@ export const SNAIL_META: Record<Kind, { side: number; glass: number }> = {
  * lines), spots.
  */
 // open: the way the aperture faces (default down and a little forward, onto the foot; a hermit crab's shell opens forward);
-// tilt: then turned this many degrees about the side axis (+ leans the spire back)
-export interface Shell3D { turns: number; grow: number; drop: number; ap: [number, number]; axis: [number, number, number]; size: number; tall: number; at: number; foot: number; tent: number; mark: 'axial' | 'spiral' | 'growth' | 'spots'; open?: [number, number, number]; tilt?: number }
+// tilt: then turned this many degrees about the side axis (+ leans the spire back);
+// incl: the aperture's plane turned this many degrees from the whorl's cross-section toward the shell's base (default 0),
+// as a real aperture faces down rather than straight along the coil; lip: how far its last stretch flares (default 0.12);
+// footEnd / footW: where the foot ends (card u, default 0.97) and its half-width (share of its half-length, default 0.32)
+export interface Shell3D { turns: number; grow: number; drop: number; ap: [number, number]; axis: [number, number, number]; size: number; tall: number; at: number; foot: number; tent: number; mark: 'axial' | 'spiral' | 'growth' | 'spots'; open?: [number, number, number]; tilt?: number; incl?: number; lip?: number; footEnd?: number; footW?: number }
 export const SHELL3D: Record<Kind, Shell3D> = {
-  nerite: { turns: 1.8, grow: 10, drop: 0.2, ap: [0.8, 0.9], axis: [-0.3, 0.35, 0.9], size: 0.8, tall: 0.42, at: 0.46, foot: 0.02, tent: 0.06, mark: 'axial' },
-  mystery: { turns: 4, grow: 2.6, drop: 1, ap: [0.6, 0.7], axis: [-0.5, 0.85, 0.2], size: 0.66, tall: 0.76, at: 0.42, foot: 0.02, tent: 0.1, mark: 'spiral' },
-  ramshorn: { turns: 4, grow: 1.9, drop: 0, ap: [0.4, 0.42], axis: [0, 0, 1], size: 0.7, tall: 0.7, at: 0.44, foot: 0.02, tent: 0.06, mark: 'growth' },
-  trumpet: { turns: 9, grow: 1.32, drop: 7, ap: [0.45, 1.05], axis: [-0.9, 0.45, 0], size: 0.72, tall: 0.32, at: 0.35, foot: 0.32, tent: 0.06, mark: 'spots' },
-  turbo: { turns: 4, grow: 2.4, drop: 1.15, ap: [0.62, 0.75], axis: [-0.4, 0.9, 0.2], size: 0.7, tall: 0.72, at: 0.42, foot: 0.02, tent: 0.08, mark: 'spiral' },
+  nerite: { turns: 1.8, grow: 10, drop: 0.2, ap: [0.95, 0.95], incl: 15, axis: [-0.3, 0.35, 0.9], size: 0.8, tall: 0.42, at: 0.46, foot: 0.12, footEnd: 0.9, footW: 0.36, tent: 0.06, mark: 'axial' },
+  mystery: { turns: 4.5, grow: 2.5, drop: 1.5, ap: [0.66, 1], incl: 30, axis: [-0.55, 0.8, 0.25], size: 0.66, tall: 0.78, at: 0.42, foot: 0.02, footW: 0.4, tent: 0.1, mark: 'spiral' },
+  ramshorn: { turns: 4, grow: 1.9, drop: 0, ap: [0.42, 0.45], incl: 0, open: [1, -0.25, 0], axis: [0, 0, -1], size: 0.7, tall: 0.7, at: 0.44, foot: 0.02, tent: 0.06, mark: 'growth' },
+  trumpet: { turns: 9, grow: 1.32, drop: 7, ap: [0.45, 1.5], incl: 30, axis: [-0.9, 0.45, 0], size: 0.72, tall: 0.32, at: 0.35, foot: 0.32, tent: 0.06, mark: 'spots' },
+  turbo: { turns: 5, grow: 2.2, drop: 2.2, ap: [0.66, 1.1], incl: 25, axis: [-0.25, 0.95, 0.15], size: 0.64, tall: 0.8, at: 0.42, foot: 0.02, footW: 0.38, tent: 0.08, mark: 'spiral' },
 };
 export const shell3D = (art: string) => ({ ...SHELL3D[SNAILS[art].kind], spec: SNAILS[art] });
 
