@@ -46,7 +46,7 @@ Owns `src/art/herps.ts`, `src/render/herp3d.ts` (lane L's snail files not touche
 - Before/after sheets: `shots/herps-p1/` (lane worktree only, not committed). Open: nothing left from the audit's P1
   rows for these five.
 
-## Lane Q: AR view, WebXR (2026-10-14; branch `ar-view`, port 5483; Nathan's idea: the tank at real size in his room)
+## Lane Q: AR view, WebXR (2026-10-14; branch `ar-view`, port 5483; DONE, phone-tested; Nathan's idea: the tank at real size in his room)
 - Built: `src/render/ar.ts` + `test/ar.test.ts`. An "◱ AR" button in the view toolbar, shown only when
   `navigator.xr.isSessionSupported('immersive-ar')` is true (desktop and iOS never see it). Session: `immersive-ar`,
   `hit-test` required, `dom-overlay` optional (Close, hint line, Size check L × D × H + stand, fps readout top-left).
@@ -63,8 +63,8 @@ Owns `src/art/herps.ts`, `src/render/herp3d.ts` (lane L's snail files not touche
   for the swimming animals, restored on exit. Real swimming would be its own lane.
 - viewer.ts hook: the loop is now `renderer.setAnimationLoop`; `viewer.xrFrame` set = the AR session draws each XR frame
   and render-on-demand pauses.
-- Open: Nathan's S24+ test (checklist in the lane chat); perf on the phone unknown (fps readout; if under 60 drop
-  `renderer.xr.setFramebufferScaleFactor` before the session); the selection outline shows if a fish was selected.
+- DONE: Nathan tested on the S24+ (2026-10-14): "it works flawlessly". Minor leftover: the selection outline shows in AR
+  if a fish was selected. If a big tank ever drops under 60 fps, lower `renderer.xr.setFramebufferScaleFactor` before the session.
 - NEXT AR step (iPhone phase, not built): USDZExporter on a simplified copy of the tank (plain materials, no custom
   shaders), served as a .usdz link with `rel="ar"` for AR Quick Look.
 
