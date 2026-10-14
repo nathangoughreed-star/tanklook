@@ -19,7 +19,9 @@ self.addEventListener('activate', (e) => {
 async function networkFirst(req, key) {
   const c = await caches.open(CACHE);
   try {
-    const res = await fetch(req);
+    // no-cache: GitHub Pages sends max-age=600, so a plain fetch could hand back a page up to 10 min old (Nathan saw an
+    // old build after a push); this revalidates with the server every time (a 304 when nothing changed)
+    const res = await fetch(req, { cache: 'no-cache' });
     if (res.ok) await c.put(key ?? req, res.clone());
     return res;
   } catch (err) {
