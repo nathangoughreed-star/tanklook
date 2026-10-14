@@ -195,6 +195,10 @@ or a type with no `PLANT3D` entry). No scene version bump: plants were already i
   plus a sideways S-wobble growing to the tip; stems bend along their height the same way. Own random stream
   (`rng(seed * 104729 + 71)`), so the approved leaf layouts did not change. `plant3d.sway = false` = rigid. Sheet
   `shots/98_planted_sheet.png` (before / after).
+  Per-plant amount (Nathan 2026-10-14: "the red stems all bend about the same; straight up should be just as likely"):
+  each plant's sway = species sway x 1.3 x uniform(0, 1) (`rng(seed * 15485863 + 5)`), so straight and strongly bent
+  plants are equally likely, every species. Rows `shots/102_row_{stemred,stem,grass}_lab.png` (10 plants, same seeds
+  as `101_*`).
 - Per-plant build (Nathan 2026-10-14: "does every sword look like every other?"): the leaf layout was already per
   item seed (count, lengths, angles, colour picks); now the plant-wide traits vary too, drawn per seed from a
   triangular spread round the species' value (own stream `rng(seed * 7907 + 3)`): leaf width +-18 %, length +-12 %,
