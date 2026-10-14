@@ -136,7 +136,7 @@ describe('difference labels', () => {
     expect(a.tank).toEqual(b.tank);
   });
   it('stand height shows numbers, only when both tanks have a stand', () => {
-    const [a, b] = pair(); b.stand.height = 24 * IN;
+    const [a, b] = pair(); a.stand.show = b.stand.show = false; b.stand.height = 24 * IN;
     expect(tankDiff(a, b, 'in')).toEqual([]); // neither shows a stand
     a.stand.show = b.stand.show = true;
     expect(labels(a, b, 'in')).toEqual([['Stand 30″', 'Stand 24″']]);

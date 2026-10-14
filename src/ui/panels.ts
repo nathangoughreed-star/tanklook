@@ -93,8 +93,15 @@ export function attachPanels(store: Store, viewer: Viewer) {
     const { scene, warnings } = parsed;
     whileOpening(scene.name, () => {
       try { store.replace(scene); } catch { status('Could not open that file.', true); return false; }
-      setLibId(null);
-      status(`Opened "${scene.name}".` + (warnings.length ? ' ' + warnings.join(' ') : ''), warnings.length > 0);
+      // an opened file goes straight into the saved list (Nathan 2026-10-14); the same file opened again reuses its entry
+      let saved = '';
+      try {
+        const txt = JSON.stringify(G()), twin = listLib().find(x => x.name === scene.name && localStorage.getItem(`tanklook.lib.${x.id}`) === txt);
+        let thumb = ''; try { thumb = viewer.thumbnail(); } catch { /* no picture: still save the tank */ }
+        setLibId(saveToLib(G(), thumb, twin?.id).id);
+        saved = ' Added to your saved tanks.';
+      } catch (err) { setLibId(null); saved = ' ' + (err as Error).message; }
+      status(`Opened "${scene.name}".${saved}` + (warnings.length ? ' ' + warnings.join(' ') : ''), warnings.length > 0);
       return true;
     });
   };

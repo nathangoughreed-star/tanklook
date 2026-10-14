@@ -57,6 +57,16 @@ function surfaceHit(vp: Viewport, S: TankSetup, ray: THREE.Ray, skip: Set<number
   return !ground || ray.origin.distanceTo(piece) < ray.origin.distanceTo(ground) ? piece : ground;
 }
 
+/** Views within this many degrees of level drag aquascape pieces on an upright plane (see `move.wall`). */
+export const EDGE_ON_EL = 20;
+
+/** The upright plane through `at` facing the camera horizontally, if the view is near edge-on (|el| < EDGE_ON_EL). */
+export function wallPlane(cam: THREE.Camera, el: number, at: THREE.Vector3): THREE.Plane | null {
+  if (Math.abs(el) >= EDGE_ON_EL) return null;
+  const n = cam.getWorldDirection(new THREE.Vector3()).setY(0);
+  return n.lengthSq() < 1e-9 ? null : new THREE.Plane().setFromNormalAndCoplanarPoint(n.normalize(), at);
+}
+
 /** Height (above the ground) of the top of whatever solid piece is under (x, depth), excluding `skip`; 0 = bare ground. */
 function supportLift(vp: Viewport, S: TankSetup, x: number, depth: number, skip: Set<number>) {
   const ray = new THREE.Raycaster(new THREE.Vector3(x, S.tank.H * 3 + 1000, -depth), new THREE.Vector3(0, -1, 0));
@@ -71,8 +81,10 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
   // dragging an aquascape item: `grab` = the grabbed point relative to the piece's base, kept under the pointer while
   // the base slides over the ground and other pieces; riders = pieces resting on it, which move with it
   type Rider = { id: number; dx: number; dd: number; dy: number };
-  // `float` = the piece was placed off any surface (the Move buttons / arrow keys): it slides level at its height instead
-  let move: { vp: Viewport; id: number; grab: THREE.Vector3; riders: Rider[]; skip: Set<number>; float: THREE.Plane | null; moved: boolean } | null = null;
+  // `float` = the piece was placed off any surface (the Move buttons / arrow keys): it slides level at its height instead;
+  // `wall` = the view is near edge-on, so the pointer's ray grazes the floor: the piece slides across on an upright plane
+  // facing the eye (left / right, depth kept) and rests on whatever is under it (audit #3)
+  let move: { vp: Viewport; id: number; grab: THREE.Vector3; riders: Rider[]; skip: Set<number>; float: THREE.Plane | null; wall: THREE.Plane | null; moved: boolean } | null = null;
   let drag: { vp: Viewport; plane: THREE.Plane; mode: DragMode; off: THREE.Vector3; moved: boolean } | null = null;
   let orbit: { i: number; x: number; y: number; az: number; el: number } | null = null;
   // custom terrain: dragging a grid dot up/down; the height follows the pointer at the dot's on-screen scale
@@ -124,7 +136,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       const at = new THREE.Raycaster(hit.ray.origin, hit.ray.direction).intersectObject(hit.mesh, false)[0]?.point ?? hit.mesh.position;
       const skip = new Set([it.id, ...riders.map(r => r.id)]);
       const float = Math.abs(it.lift - supportLift(hit.vp, S, it.x, it.depth, skip)) > 2 ? new THREE.Plane(new THREE.Vector3(0, 1, 0), -at.y) : null;
-      move = { vp: hit.vp, id: it.id, grab: at.clone().sub(hit.mesh.position), riders, skip, float, moved: false };
+      move = { vp: hit.vp, id: it.id, grab: at.clone().sub(hit.mesh.position), riders, skip, float, wall: wallPlane(hit.vp.cam, S.camera.el, at), moved: false };
       return;
     }
     if (!editable || hit.fishId == null || !hit.mesh || !canPick('fish')) {
@@ -162,7 +174,8 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       const m = move, hit = viewer.hitTest(e.clientX, e.clientY); if (!hit || hit.vp !== m.vp) return;
       // the ray the base travels along: the pointer's ray, shifted back by the grab point
       const S0 = store.scene.tanks[m.vp.i], base = hit.ray.clone(); base.origin.sub(m.grab);
-      const p = m.float ? hit.ray.intersectPlane(m.float, new THREE.Vector3())?.sub(m.grab) : surfaceHit(m.vp, S0, base, m.skip); if (!p) return;
+      const plane = m.wall ?? m.float;
+      const p = plane ? hit.ray.intersectPlane(plane, new THREE.Vector3())?.sub(m.grab) : surfaceHit(m.vp, S0, base, m.skip); if (!p) return;
       store.editTank(m.vp.i, t => {
         const it = t.items.find(q => q.id === m.id); if (!it) return;
         const y = groundHeight(t, t.tank, it.x, it.depth) + it.lift;
