@@ -134,9 +134,16 @@ card stays the fallback and the picking size). `scene/validate.ts` accepts any `
   no longer matches shows "changed since" (orange); "Changed only" filters to them.
 - **Rule for any chat that changes a model** (art/, fish3d, snail3d, herp3d, species.json sizes): open
   `/review.html` on your dev server, wait for it to render, press "Record N changed models", commit
-  `src/data/model-versions.json` with the change. The button only exists on the dev server (plugin
+  `src/data/model-versions.json` and `public/model-sheets/` with the change. The button only exists on the dev server (plugin
   `scripts/model-versions-plugin.mjs`); it stamps build = current commit count + 1, i.e. the commit you are about to make.
 - All 68 looks recorded as v1 at build 217 (stamped 216; another chat committed first, so check the number after pushing). Fingerprints held across reloads and at phone size in the app's browser.
+- **Pre-rendered sheets for reviewers without WebGL** (2026-10-14: ChatGPT's cloud browser has WebGL disabled and saw
+  nothing): `public/model-sheets/` = one labelled JPEG per look (title, sci name, id, size, version; 4 views x 2 lights,
+  1710 x 556) + a static `index.html` gallery, live at tanklook.com/model-sheets/. review.html links to it and, with
+  no WebGL, says so and points there. Record writes the changed models' sheets + the gallery too, so commit
+  `public/model-sheets/` with the versions. `npm run sheets` rewrites every sheet headlessly (Vite + headless
+  Edge/Chrome with SwiftShader, ~80 s; `scripts/export-sheets.mjs`), no dev-server slot needed. JPEG 0.9: 4.7 MB the set
+  (PNG was 18 MB).
 
 ## Light output: watts -> PAR / lux (2026-10-14; draft only, no src/ edits)
 - Design draft `reference/light-output-draft.md`: watts + light tech -> photons -> existing beam model in real units,

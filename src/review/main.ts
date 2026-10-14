@@ -13,7 +13,7 @@ import manifest from '../data/model-versions.json';
 interface Rec { v: number; hash: string; build: number; date: string }
 const RECORDED = (manifest as { models: Record<string, Rec> }).models;
 const $ = (id: string) => document.getElementById(id)!;
-const FOV = 28, W = 320, H = 200;
+const FOV = 28, W = 400, H = 250;
 const VIEWS: [label: string, yaw: number, pitch: number][] = [['Side', 0, 0], ['3/4', 0.55, 0.18], ['Front', Math.PI / 2, 0.05], ['Top', 0, 1.45]];
 const LIGHTS = [['flat', 'Preview light'], ['tank', 'Tank light']] as const;
 
@@ -52,9 +52,11 @@ function fingerprint(sp: Species, model: THREE.Object3D) {
 }
 
 // ---- rendering ----
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
-renderer.setPixelRatio(1); renderer.setSize(W, H, false);
-renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.setClearColor(0x000000, 0);
+// no WebGL (some cloud browsers): the page says so and points at the pre-rendered sheets (model-sheets/)
+let gl: THREE.WebGLRenderer | null = null;
+try { gl = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }); } catch { gl = null; }
+const renderer = gl!;
+if (gl) { gl.setPixelRatio(1); gl.setSize(W, H, false); gl.outputColorSpace = THREE.SRGBColorSpace; gl.setClearColor(0x000000, 0); }
 const camera = new THREE.PerspectiveCamera(FOV, W / H, 0.01, 5000);
 const setup = defaultSetup(), T = setup.tank;
 const tankLight = { ...setup.light, type: 'led' as const };
@@ -184,18 +186,87 @@ $('copy').onclick = async () => {
   catch { $('status').textContent = 'Copy was blocked by the browser.'; }
 };
 
-// dev server only: write the new versions into src/data/model-versions.json
-const record = $('record') as HTMLButtonElement;
-record.onclick = async () => {
+// ---- pre-rendered sheets (public/model-sheets/): one labelled JPEG per look + a static gallery, for reviewers whose
+// browser has no WebGL. Written on the dev server with the versions, so they stay in step with them.
+const outs = new Map<string, Record<string, HTMLCanvasElement[]>>();
+const sheetName = (sp: Species) => sp.look.replace('~', '-');
+const esc = (t: string) => t.replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch]!);
+const LAB = 110, HEAD = 34, COL = 22;
+function sheet(sp: Species, r: Rec) {
+  const out = outs.get(sp.look)!, c = document.createElement('canvas');
+  c.width = LAB + VIEWS.length * W; c.height = HEAD + COL + LIGHTS.length * H;
+  const x = c.getContext('2d')!;
+  x.fillStyle = '#1d2129'; x.fillRect(0, 0, c.width, c.height);
+  x.fillStyle = '#e6e9ef'; x.font = 'bold 17px system-ui, sans-serif'; x.textBaseline = 'middle';
+  x.fillText(`${title(sp)}  ·  ${sp.sci}  ·  ${sp.look}  ·  ${sp.tl} mm  ·  model v${r.v}, build ${r.build}`, 10, HEAD / 2);
+  x.font = '13px system-ui, sans-serif'; x.fillStyle = '#9aa3b2'; x.textAlign = 'center';
+  VIEWS.forEach(([l], i) => x.fillText(l, LAB + i * W + W / 2, HEAD + COL / 2));
+  LIGHTS.forEach(([k, l], j) => {
+    const y = HEAD + COL + j * H;
+    x.textAlign = 'left'; x.fillStyle = '#9aa3b2'; x.fillText(l, 10, y + H / 2);
+    out[k].forEach((v, i) => {
+      // solid backgrounds (a gradient triples the PNG size)
+      x.fillStyle = k === 'flat' ? '#bcd6e4' : '#17282f'; x.fillRect(LAB + i * W + 2, y + 2, W - 4, H - 4);
+      x.drawImage(v, LAB + i * W, y);
+    });
+  });
+  return c;
+}
+function gallery(models: Record<string, Rec>) {
+  const sw = LAB + VIEWS.length * W, sh = HEAD + COL + LIGHTS.length * H, views = VIEWS.map(v => v[0]).join(', ');
+  const parts = CATEGORIES.map(([cat, label]) => {
+    const looks = LOOKS.filter(s => s.cat === cat);
+    if (!looks.length) return '';
+    return `<h2>${esc(label)}</h2>\n` + looks.map(s => {
+      const r = models[s.look] ?? { v: 0, build: 0, date: 'unrecorded' }, f = sheetName(s);
+      return `<figure id="${f}"><figcaption><b>${esc(title(s))}</b> · <i>${esc(s.sci)}</i> · ${esc(s.look)} · ${s.tl} mm · model v${r.v} (build ${r.build}, ${r.date})</figcaption>` +
+        `<a href="${f}.jpg"><img src="${f}.jpg" width="${sw}" height="${sh}" loading="lazy" alt="${esc(title(s))} (${esc(s.sci)}), model v${r.v}: ${views} views, preview light (top row) and tank light (bottom row)"></a></figure>`;
+    }).join('\n');
+  }).join('\n');
+  return `<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Model sheets · TankLook</title>
+<style>
+:root { --bg: #eef0f3; --panel: #fff; --ink: #1d2330; --muted: #5d6676; color-scheme: light }
+@media (prefers-color-scheme: dark) { :root { --bg: #15181e; --panel: #1d2129; --ink: #e6e9ef; --muted: #9aa3b2; color-scheme: dark } }
+body { margin: 0; padding: 12px 16px 40px; background: var(--bg); color: var(--ink); font: 14px/1.4 system-ui, sans-serif }
+h1 { font-size: 18px; margin: 0 0 4px } h2 { font-size: 15px; color: var(--muted); margin: 20px 0 6px }
+figure { margin: 8px 0 14px; padding: 8px; background: var(--panel); border-radius: 6px } figcaption { margin-bottom: 6px }
+img { display: block; max-width: 100%; height: auto }
+</style></head><body>
+<h1>Model sheets</h1>
+<p>Pre-rendered review images of every TankLook animal model (no WebGL needed): ${LOOKS.length} models, ${SPECIES.length} species, written at build ${build + 1}.
+Each sheet shows the ${views} views; top row in the plain preview light, bottom row at true size in the default tank's LED light and water.
+Click a sheet for the full-size image (${sw} × ${sh} px). Interactive version: <a href="../review.html">review.html</a>.</p>
+${parts}
+</body></html>
+`;
+}
+async function post(file: string, body: Blob | string) { return (await fetch(`/__model-sheets?file=${file}`, { method: 'POST', body })).ok; }
+// JPEG at 0.9: 4.7 MB for the set against 18 MB as PNG, no visible loss at review size
+const jpg = (c: HTMLCanvasElement) => new Promise<Blob>(r => c.toBlob(b => r(b!), 'image/jpeg', 0.9));
+
+// dev server only: bump the changed models' versions, write their sheets and the gallery, then the versions file
+// (written last: it reloads the page)
+const record = $('record') as HTMLButtonElement, exportAll = $('exportAll') as HTMLButtonElement;
+async function save(looks: Species[], bump: boolean) {
   const today = new Date().toISOString().slice(0, 10), models: Record<string, Rec> = { ...RECORDED };
-  for (const s of changed()) models[s.look] = { v: (RECORDED[s.look]?.v ?? 0) + 1, hash: hashes.get(s.look)!, build: build + 1, date: today };
-  const r = await fetch('/__model-versions', { method: 'POST', body: JSON.stringify(models) });
-  $('status').textContent = r.ok ? 'Recorded. Commit src/data/model-versions.json with the model change.' : 'Recording failed.';
-};
+  if (bump) for (const s of looks) models[s.look] = { v: (RECORDED[s.look]?.v ?? 0) + 1, hash: hashes.get(s.look)!, build: build + 1, date: today };
+  let ok = true;
+  const none: Rec = { v: 0, hash: '', build, date: '' };
+  for (const s of looks) { $('status').textContent = `Writing sheet ${s.look}…`; ok = await post(sheetName(s) + '.jpg', await jpg(sheet(s, models[s.look] ?? none))) && ok; }
+  ok = await post('index.html', gallery(models)) && ok;
+  if (bump) ok = (await fetch('/__model-versions', { method: 'POST', body: JSON.stringify(models) })).ok && ok;
+  $('status').textContent = ok ? 'Saved. Commit src/data/model-versions.json and public/model-sheets/ with the model change.' : 'Saving failed.';
+}
+record.onclick = () => save(changed(), true);
+// every sheet again (first export, or after a change to the sheet layout); shown when every look is recorded
+exportAll.onclick = () => save(LOOKS, false);
 
 function summary() {
   const n = changed().length, done = hashes.size === LOOKS.length;
   record.hidden = !(import.meta.env.DEV && done && n);
+  exportAll.hidden = !(import.meta.env.DEV && done && !n);
   record.textContent = `Record ${n} changed model${n === 1 ? '' : 's'} (as build ${build + 1})`;
   $('status').textContent = !done ? `Rendering ${hashes.size} / ${LOOKS.length}…`
     : n ? `${n} model${n === 1 ? '' : 's'} changed since last recorded${import.meta.env.DEV ? '' : ' (recorded from the dev server)'}.` : 'All models match their recorded versions.';
@@ -207,9 +278,18 @@ function step() {
   const t0 = performance.now();
   while (next < LOOKS.length && performance.now() - t0 < 30) {
     const sp = LOOKS[next++], { hash, out } = renderLook(sp);
-    hashes.set(sp.look, hash); fill(sp, out);
+    hashes.set(sp.look, hash); outs.set(sp.look, out); fill(sp, out);
   }
   summary();
-  if (next < LOOKS.length) setTimeout(step, 0); else applyFilter();
+  if (next < LOOKS.length) setTimeout(step, 0);
+  else {
+    applyFilter();
+    // `npm run sheets` (scripts/export-sheets.mjs) opens ?export in a headless browser: write every sheet, no versions
+    if (import.meta.env.DEV && new URLSearchParams(location.search).has('export')) save(LOOKS, false);
+  }
 }
-setTimeout(step, 0);
+if (gl) setTimeout(step, 0);
+else {
+  $('status').innerHTML = 'This browser cannot draw 3D (WebGL is off), so the models cannot be drawn here. <a href="model-sheets/">Open the pre-rendered model sheets</a>: images of every model, same views and lights.';
+  list.hidden = true;
+}
