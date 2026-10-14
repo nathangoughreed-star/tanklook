@@ -1,7 +1,7 @@
 {
  "note": "Model versions for the review sheet (review.html). hash = fingerprint of the model (geometry + texture thumbnails + colours); v rises by one each time it changes; build = the build that change shipped in. Written by the sheet's Record button on the dev server; commit it with the model change.",
  "models": {
-  "adf": {"v":1,"hash":"82546014","build":360,"date":"2026-10-14"},
+  "adf": {"v":2,"hash":"d3b46520","build":374,"date":"2026-10-14"},
   "amano": {"v":2,"hash":"c0505ea1","build":284,"date":"2026-10-14"},
   "angel": {"v":2,"hash":"028a15dd","build":334,"date":"2026-10-14"},
   "axolotl": {"v":3,"hash":"54c2494c","build":317,"date":"2026-10-14"},

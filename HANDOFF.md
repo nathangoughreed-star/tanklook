@@ -718,9 +718,14 @@ Plan approved by Nathan (batches in severity order). Pictures: `shots/g2/` in th
   spots, webbing on all four feet. New `FrogSpec` fields `web` (all feet) and `eye` (own eye position); the other three
   frogs' fingerprints did not change. Added to `fish3d.species` (3D on).
 - AqAdvisor has no entry: stand-in Panda Cory (3.5 cm vs 5 cm, bottom, warm, groups), `standIn` in aqadvisor.json.
-- Model v1 at build 360, sheet `public/model-sheets/adf.jpg`. Awaiting Nathan's look. Open: it uses the land
-  frogs' sitting pose (hind legs folded); a real ADF often rests with the hind legs splayed out sideways, or floats at
-  the surface in a "zen" pose; not done.
+- Model v1 at build 360, sheet `public/model-sheets/adf.jpg`.
+- **v2 at build 374 (Nathan: "a resting pose with the hind legs splayed out sideways, like a real ADF on the bottom"):**
+  `adfLimbs()` overrides frog3D's folded legs for `HERP3D.adf` only: thighs out sideways from the hips, knees bent
+  forward, the long webbed feet trailing back and out (past the tail end, u < 0); arms out to the sides, webbed hands
+  spread forward. The 2D card keeps the folded side view (in 3D it is only the invisible picking target). Open: a
+  floating "zen" pose at the surface; not done.
+- Gotcha: `npm run sheets` renders in headless software WebGL, whose fingerprints differ from a GPU's for every model,
+  so the sheets script cannot record versions (tried: it bumped all 68). Record from a dev server's review page only.
 
 ## Tree frogs climb the glass (2026-10-14; Nathan: "like otos and snails cling to the glass")
 - White's tree frog has `cling: any` (glass, hardscape, floor). Shuffle / Add use the oto path (`spawnSnail`) with a new

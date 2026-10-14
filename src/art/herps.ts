@@ -429,6 +429,20 @@ function frogOnGlass3D(s: FrogSpec, fat: number, tone: [number, string][], marks
     ground: frogV(s.aspect, 0.265),
   };
 }
+/**
+ * The African dwarf frog resting on the bottom: hind legs splayed out sideways (thigh out from the hip, knee bent
+ * forward, shank back), the long webbed feet trailing back and out; arms out to the sides, hands spread forward.
+ */
+function adfLimbs(): Limb3D[] {
+  const s = FROGS.adf, V = (v: number) => frogV(s.aspect, v), J = (u: number, v: number, z: number, r: number): Joint => [u, V(v), z, r];
+  const toe = 0.008;
+  return [
+    { js: [J(0.16, 0.13, 0.08, 0.06), J(0.3, 0.215, 0.29, 0.04), J(0.1, 0.248, 0.37, 0.022), J(0.03, 0.256, 0.41, 0.015)],
+      toes: [[-0.1, -0.03], [-0.13, 0.01], [-0.13, 0.05], [-0.11, 0.09], [-0.07, 0.115]], toe, thigh: 0.08, blunt: true, web: 1 },
+    { js: [J(0.7, 0.1, 0.09, 0.03), J(0.72, 0.19, 0.2, 0.022), J(0.8, 0.248, 0.26, 0.015)],
+      toes: [[0.07, -0.04], [0.085, 0.0], [0.07, 0.04], [0.035, 0.07]], toe, blunt: true, web: 1 },
+  ];
+}
 const FROG_FACE: Mark3D[] = [
   { k: 'line', pts: [[0.74, 0.6], [0.84, 0.63], [0.94, 0.64], [0.995, 0.58]], c: '#0e100c', o: 0.25, w: 0.004 }, // mouth
   { k: 'spots', n: 2, u: [0.968, 0.972], a: [0.17, 0.23], r: [0.005, 0.005], c: '#141410', o: 0.6, seed: 1 },      // nostrils
@@ -502,6 +516,7 @@ export const HERP3D: Record<string, Herp3D> = {
     { k: 'spots', n: 140, u: [0.1, 0.95], a: [0.0, 0.6], r: [0.005, 0.008], c: '#4f4a39', o: 0.5, seed: 42 },
     { k: 'line', pts: [[0.8, 0.62], [0.9, 0.64], [0.995, 0.6]], c: '#0e100c', o: 0.22, w: 0.003 }, // mouth
   ], { c: '#2f2c21', r: 0.01, n: 14 }),
+    limbs: adfLimbs(),
     warts: { n: 120, u: [0.15, 0.95], a: [0.02, 0.6], r: [0.007, 0.011], h: 0.45, seed: 43 } },
   // dark brown-black and granular above, the orange belly showing low on the flank
   // a broad trunk, a rounded head a little wider than the neck, the tail flattened side to side
