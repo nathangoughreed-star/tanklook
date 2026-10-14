@@ -30,5 +30,6 @@ if (!webglAvailable()) {
   attachParGuide(() => store.tank.water.on && !!store.tank.water.salt);
   attachLightHover(viewer, store); // Light map hover readout (lane K)
   if (import.meta.env.DEV) import('./render/fish3d').then(({ fish3d }) => Object.assign(window, { __gb: { store, viewer, fish3d } })); // debugging handle, dev server only
-  ui.showStart(!!restored);
+  // the start menu only when there is no saved tank to come back to (Nathan 2026-10-14)
+  if (restored) ui.status('Welcome back: your last tank was restored from this browser.'); else ui.showStart();
 }
