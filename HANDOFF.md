@@ -428,6 +428,11 @@ Lane K opened 2026-10-14: light output (watts -> PAR / lux, light map units + ho
 `light-output`, launch config `light-output` 5383. Owns `render/lighting.ts` (carved out of lane J's `src/render/*`; J
 keeps the rest), new `scene/lightout.ts` + test, the light fields in `scene/types.ts` / `defaults.ts` / `validate.ts`,
 the Lighting rows in `index.html` / `ui/panels.ts`, `ui/parGuide.ts`. Spec: `reference/light-output-draft.md`.
+Lane K DONE (`472c769`). Lane J DONE (`720558c`; in-place edits, ~65 ms per edit at the quiet baseline). Lane A2 (plant
+library) open in `../Glass-Box-plants3d`. Lane J2 offered 2026-10-14: J's leftovers (panels.ts sync() 5-7 ms per drag
+step; steady draw 45-50 ms on big tanks; lane K's light fields in build.ts envKey), reusing `../Glass-Box-perf` /
+`perf`, port 5373; owns `src/render/*` except the plant branch of `render/items.ts` (A2) and `render/coral3d.ts` (I),
+plus the store listener in `src/ui/panels.ts`.
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_e1923781-40bc-48d3-84f3-ed380e471779`
 ("Lanes coordinator"). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
 and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says
