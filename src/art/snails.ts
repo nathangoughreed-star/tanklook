@@ -39,10 +39,13 @@ export const SNAIL_META: Record<Kind, { side: number; glass: number }> = {
 // tilt: then turned this many degrees about the side axis (+ leans the spire back);
 // incl: the aperture's plane turned this many degrees from the whorl's cross-section toward the shell's base (default 0),
 // as a real aperture faces down rather than straight along the coil; lip: how far its last stretch flares (default 0.12);
-// footEnd / footW: where the foot ends (card u, default 0.97) and its half-width (share of its half-length, default 0.32)
-export interface Shell3D { turns: number; grow: number; drop: number; ap: [number, number]; axis: [number, number, number]; size: number; tall: number; at: number; foot: number; tent: number; mark: 'axial' | 'spiral' | 'growth' | 'spots'; open?: [number, number, number]; tilt?: number; incl?: number; lip?: number; footEnd?: number; footW?: number }
+// footEnd / footW: where the foot ends (card u, default 0.97) and its half-width (share of its half-length, default 0.32);
+// footH: the foot's height (default 0.22); head: the head's radius (default from the foot's width); ph: samples around the whorl (default 24); seam: false = no painted suture
+// (a nerite's body whorl envelops the earlier ones, so a seam along it would be a false crease); fillCut: rows where the
+// aperture plane misses the whorl take their cut from the rows either side instead of a clamp (see rawShell)
+export interface Shell3D { turns: number; grow: number; drop: number; ap: [number, number]; axis: [number, number, number]; size: number; tall: number; at: number; foot: number; tent: number; mark: 'axial' | 'spiral' | 'growth' | 'spots'; open?: [number, number, number]; tilt?: number; incl?: number; lip?: number; footEnd?: number; footW?: number; footH?: number; head?: number; ph?: number; seam?: boolean; fillCut?: boolean }
 export const SHELL3D: Record<Kind, Shell3D> = {
-  nerite: { turns: 1.8, grow: 10, drop: 0.2, ap: [0.95, 0.95], incl: 15, axis: [-0.3, 0.35, 0.9], size: 0.8, tall: 0.42, at: 0.46, foot: 0.12, footEnd: 0.9, footW: 0.36, tent: 0.06, mark: 'axial' },
+  nerite: { turns: 1.8, grow: 10, drop: 0.2, ap: [0.95, 0.95], incl: 15, open: [0.05, -1, 0], lip: 0.03, axis: [-0.3, 0.35, 0.9], size: 0.8, tall: 0.42, at: 0.46, foot: 0.2, footEnd: 0.95, footW: 0.76, footH: 0.13, head: 0.085, ph: 48, seam: false, fillCut: true, tent: 0.085, mark: 'axial' },
   mystery: { turns: 4.5, grow: 2.5, drop: 1.5, ap: [0.66, 1], incl: 30, axis: [-0.55, 0.8, 0.25], size: 0.66, tall: 0.78, at: 0.42, foot: 0.02, footW: 0.4, tent: 0.1, mark: 'spiral' },
   ramshorn: { turns: 4, grow: 1.9, drop: 0, ap: [0.42, 0.45], incl: 0, open: [1, -0.25, 0], axis: [0, 0, -1], size: 0.7, tall: 0.7, at: 0.44, foot: 0.02, tent: 0.06, mark: 'growth' },
   trumpet: { turns: 9, grow: 1.32, drop: 7, ap: [0.45, 1.5], incl: 30, axis: [-0.9, 0.45, 0], size: 0.72, tall: 0.32, at: 0.35, foot: 0.32, tent: 0.06, mark: 'spots' },

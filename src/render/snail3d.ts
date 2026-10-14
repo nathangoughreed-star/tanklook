@@ -24,7 +24,7 @@ function shade(g: THREE.BufferGeometry, dark = 0.28, flank = 0) {
   g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
 }
 
-const TH = 160, PH = 24; // samples along the coil, around the whorl
+const TH = 160, PH0 = 24; // samples along the coil, around the whorl (a shell's own `ph` overrides)
 
 /** A coil's frame: growth k per radian, total angle T, the whorl centre / tangent at angle th (shell frame, coil axis = y, spire up). */
 function coil(s: Shell3D) {
@@ -63,7 +63,7 @@ export function sutures(s: Shell3D): [number, number] | null {
  * Then a dark mantle cavity closes it, its rim on duplicated lip vertices so the lip keeps a crisp edge.
  */
 function rawShell(s: Shell3D) {
-  const { T, k, pt } = coil(s), drop = s.drop, pos: number[] = [], uv: number[] = [], idx: number[] = [];
+  const PH = s.ph ?? PH0, { T, k, pt } = coil(s), drop = s.drop, pos: number[] = [], uv: number[] = [], idx: number[] = [];
   const C = new THREE.Vector3(...pt(T, 0, 0));
   const tan = new THREE.Vector3(k * Math.cos(T) - Math.sin(T), -k * drop, k * Math.sin(T) + Math.cos(T)).normalize();
   const b = (s.incl ?? 0) * Math.PI / 180, n = tan.clone().multiplyScalar(Math.cos(b)).add(new THREE.Vector3(0, -Math.sin(b), 0)).normalize();
@@ -73,11 +73,24 @@ function rawShell(s: Shell3D) {
     const ph = Math.PI * 2 * j / PH, d = (t: number) => P.set(...pt(t, ph)).sub(C).dot(n);
     let t = T;
     for (let it = 0; it < 6; it++) { const e = 1e-4, f0 = d(t), f1 = (d(t + e) - f0) / e; if (Math.abs(f1) < 1e-6) break; t -= f0 / f1; }
+    if (s.fillCut) return Math.abs(t - T) < 0.6 && Math.abs(d(t)) < 1e-4 ? t : NaN;
     return Math.max(T - 0.6, Math.min(T + 0.6, t)); // a fast-growing coil (nerite) can find a far crossing: stay on the last whorl
   });
+  // `fillCut`: where the inner side of the whorl never meets the plane (a nerite's columella), run the cut on smoothly
+  // between the rows that do, so the rim has no jumps (clamped, those rows ended at +-0.6 alternately: a crease)
+  const ok = ends.map(Number.isFinite);
+  if (!ok.some(Boolean)) ends.fill(T);
+  else for (let j = 0; j < PH; j++) if (!ok[j]) {
+    let a = j, b = j; do a = (a - 1 + PH) % PH; while (!ok[a]); do b = (b + 1) % PH; while (!ok[b]);
+    const da = (j - a + PH) % PH || PH, db = (b - j + PH) % PH || PH, w = da / (da + db), k = (1 - Math.cos(Math.PI * w)) / 2;
+    ends[j] = ends[a] + (ends[b] - ends[a]) * k;
+  }
+  if (!ok[PH]) ends[PH] = ends[0];
+  // with `fillCut` the paint follows the coil's angle (each row ends at its own angle: by sample, stripes stepped row to row)
+  const end = Math.max(...ends);
   for (let i = 0; i <= TH; i++) for (let j = 0; j <= PH; j++) {
     const u = i / TH, th = ends[j] * u, w = Math.min(1, Math.max(0, (u - 1 + LIP) / LIP)), f = 1 + (F - 1) * w * w * (3 - 2 * w);
-    pos.push(...pt(th, Math.PI * 2 * j / PH, f)); uv.push(u, j / PH);
+    pos.push(...pt(th, Math.PI * 2 * j / PH, f)); uv.push(s.fillCut ? th / end : u, j / PH);
   }
   const R = PH + 1;
   for (let i = 0; i < TH; i++) for (let j = 0; j < PH; j++) { const a = i * R + j, c = a + R; idx.push(a, c, a + 1, a + 1, c, c + 1); }
@@ -102,7 +115,7 @@ function rawShell(s: Shell3D) {
  * shell (lift 0) stands on the ground. userData.lip / open = the aperture ring and the way it faces, body frame.
  */
 function shellGeometry(s: Shell3D, lift: number) {
-  const { g, n, rim, cap } = rawShell(s);
+  const PH = s.ph ?? PH0, { g, n, rim, cap } = rawShell(s);
   const down = new THREE.Vector3(...(s.open ?? [0.25, -1, 0])).normalize(), q1 = new THREE.Quaternion().setFromUnitVectors(n, down);
   const flat = (v: THREE.Vector3) => v.clone().projectOnPlane(down).normalize();
   const spire = flat(new THREE.Vector3(0, 1, 0).applyQuaternion(q1)), want = flat(new THREE.Vector3(...s.axis));
@@ -139,10 +152,12 @@ function shellTexture(s: Shell3D, sp: Pick<SnailSpec, 'shell' | 'mark'>) {
   const r = (() => { let a = 7; return () => ((a = (a * 16807) % 2147483647) / 2147483647); })();
   x.strokeStyle = sp.mark;
   if (s.mark === 'axial') { // zebra: wavy stripes across the whorl, fourteen per turn
+    // one whole sine wave round the whorl, so a stripe meets itself where the paint wraps (an S-curve chevroned there);
+    // drawn on past both edges so the slanted stroke's flat ends do not notch the rows the wrap lands on
     const n = Math.round(s.turns * 14);
     for (let i = 0; i < n; i++) {
       const u = (i + 0.5) / n * W; x.globalAlpha = 0.85; x.lineWidth = W / n * 0.38;
-      x.beginPath(); x.moveTo(u, 0); x.bezierCurveTo(u - W / n * 0.5, H * 0.33, u + W / n * 0.5, H * 0.66, u, H); x.stroke();
+      x.beginPath(); for (let k = -4; k <= 36; k++) x.lineTo(u + W / n * 0.3 * Math.sin(k / 32 * Math.PI * 2), H * k / 32); x.stroke();
     }
   } else if (s.mark === 'spiral') { // faint bands along the coil
     for (const v of [0.1, 0.3, 0.62]) { x.globalAlpha = 0.4; x.fillStyle = sp.mark; x.fillRect(0, v * H, W, H * 0.04); }
@@ -156,7 +171,7 @@ function shellTexture(s: Shell3D, sp: Pick<SnailSpec, 'shell' | 'mark'>) {
     for (let i = 0; i < n; i++) { const u = (i + 0.5) / n * W; x.globalAlpha = 0.45; x.lineWidth = W / n * 0.18; x.beginPath(); x.moveTo(u, 0); x.lineTo(u - 6, H); x.stroke(); }
   }
   // the suture: where each whorl runs in under the one before it, a dark seam and a little shade just below it
-  const su = sutures(s);
+  const su = s.seam === false ? null : sutures(s);
   if (su) {
     const y = row(su[1]) * H;
     const sh = x.createLinearGradient(0, y, 0, y + H * 0.08);
@@ -184,7 +199,7 @@ function footGeometry(s: Shell3D, h: number) {
 }
 
 /** The head: a rounded snout over the front of the foot, the tentacles on top of it. Returns its centre and radius. */
-const headAt = (s: Shell3D, h: number) => { const { L, c, w } = footSpan(s), r = Math.max(0.045, L * w * 0.62); return { x: c + L - r, y: h * 0.82, r }; };
+const headAt = (s: Shell3D, h: number) => { const { L, c, w } = footSpan(s), r = s.head ?? Math.max(0.045, L * w * 0.62); return { x: c + L - r, y: h * 0.82, r }; };
 function headGeometry(s: Shell3D, h: number) {
   const { x, y, r } = headAt(s, h), g = new THREE.SphereGeometry(1, 20, 12);
   g.scale(r * 1.4, r * 0.75, r * 0.85).translate(x, y, 0);
@@ -278,15 +293,15 @@ export function snailBody(art: string, w: number) {
     const m = new THREE.MeshBasicMaterial({ vertexColors: true, color: new THREE.Color(sp.foot[1]).lerp(new THREE.Color(sp.foot[0]), 0.4) });
     return m;
   });
-  const shell = shellMesh(art, s, sp, FOOT_H), sg = shell.geometry;
-  shell.add(new THREE.Mesh(geo(':plug', () => plugGeometry(s, sg.userData.lip, sg.userData.open, FOOT_H)), skin)); // turns with the shell (sagShell)
+  const fh = s.footH ?? FOOT_H, shell = shellMesh(art, s, sp, fh), sg = shell.geometry;
+  shell.add(new THREE.Mesh(geo(':plug', () => plugGeometry(s, sg.userData.lip, sg.userData.open, fh)), skin)); // turns with the shell (sagShell)
   grp.add(shell); // first child: sagShell turns children[0]
-  grp.add(new THREE.Mesh(geo(':foot', () => footGeometry(s, FOOT_H)), skin));
-  grp.add(new THREE.Mesh(geo(':head', () => headGeometry(s, FOOT_H)), skin));
-  for (const side of [1, -1]) grp.add(new THREE.Mesh(geo(':tent' + side, () => tentacleGeometry(s, FOOT_H, side)), skin));
+  grp.add(new THREE.Mesh(geo(':foot', () => footGeometry(s, fh)), skin));
+  grp.add(new THREE.Mesh(geo(':head', () => headGeometry(s, fh)), skin));
+  for (const side of [1, -1]) grp.add(new THREE.Mesh(geo(':tent' + side, () => tentacleGeometry(s, fh, side)), skin));
   grp.add(new THREE.Mesh(geo(':sole', () => soleGeometry(s)), mat('sole:' + art, () => new THREE.MeshBasicMaterial({ map: soleTexture(sp) }))));
   grp.scale.setScalar(w);
-  grp.userData.pivot = new THREE.Vector3(s.at - 0.5, FOOT_H * 0.55, 0); // where the shell sits on the foot
+  grp.userData.pivot = new THREE.Vector3(s.at - 0.5, fh * 0.55, 0); // where the shell sits on the foot
   return grp;
 }
 

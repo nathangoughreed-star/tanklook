@@ -360,14 +360,18 @@ function limbMaterial(art: string, h: Herp3D) {
 
 // ---------- axolotl extras ----------
 
-/** Tail fin membranes on the midline, from the body's top (bottom) out to the fin's edge. */
+/** Tail fin membranes on the midline, from the body's top (bottom) out to the fin's edge. The edge is a smooth spline
+ *  through its points; past the muscle's tip (u < the body's u0) the membrane runs on from the tip's centre line. */
 function finGeometry(b: Body, f: NonNullable<Herp3D['fin']>) {
   const pos: number[] = [], col: number[] = [], idx: number[] = [];
-  const edge = (e: [number, number][], u: number) => { const s = [...e].sort((p, q) => p[0] - q[0]); for (let i = 1; i < s.length; i++) if (u <= s[i][0]) { const k = (u - s[i - 1][0]) / (s[i][0] - s[i - 1][0]); return s[i - 1][1] + (s[i][1] - s[i - 1][1]) * smooth(0, 1, k); } return s[s.length - 1][1]; };
+  const edgeFn = (e: [number, number][]) => {
+    const s = new THREE.SplineCurve([...e].sort((p, q) => p[0] - q[0]).map(([u, v]) => new THREE.Vector2(u, v))).getPoints(200);
+    return (u: number) => { for (let i = 1; i < s.length; i++) if (u <= s[i].x) { const k = (u - s[i - 1].x) / (s[i].x - s[i - 1].x || 1); return s[i - 1].y + (s[i].y - s[i - 1].y) * k; } return s[s.length - 1].y; };
+  };
   for (const [e, sg] of [[f.top, -1], [f.bot, 1]] as const) {
-    const ua = Math.max(b.u0, Math.min(...e.map(p => p[0]))), ub = Math.max(...e.map(p => p[0])), n = 40, base = pos.length / 3;
+    const ua = Math.min(...e.map(p => p[0])), ub = Math.max(...e.map(p => p[0])), n = 80, base = pos.length / 3, edge = edgeFn(e);
     for (let i = 0; i <= n; i++) {
-      const u = ua + (ub - ua) * i / n, s = b.sec(u), body = s.vc + sg * s.hv * 0.85, out = edge(e, u);
+      const u = ua + (ub - ua) * i / n, s = b.sec(Math.max(b.u0 + 1e-4, u)), body = s.vc + sg * s.hv * 0.85, out = edge(u);
       const tip = sg < 0 ? Math.min(out, body) : Math.max(out, body);
       pos.push(u - 0.5, -body, 0, u - 0.5, -tip, 0); col.push(0.82, 0.82, 0.82, 1, 1, 1);
     }
@@ -378,23 +382,32 @@ function finGeometry(b: Body, f: NonNullable<Herp3D['fin']>) {
   return g;
 }
 
-/** Gill stalks sweeping up and back from behind the head (the + side), and their fringe of short filaments. */
+/**
+ * Gill stalks (rami) sweeping up, back and out from behind the head (the + side), each feathered along its length by
+ * fine filaments: thin, curved, swept toward the tip and drooping, longest mid-stalk, irregular in length and spacing,
+ * fanned to both sides of the stalk and a little off its plane. So the gill reads as a soft plume, not a comb.
+ */
 function gillGeometry(gl: NonNullable<Herp3D['gills']>) {
-  const base = P3(gl.at[0], gl.at[1], gl.at[2]), stalks: THREE.BufferGeometry[] = [], fringe: THREE.BufferGeometry[] = [];
-  for (const t of gl.tips) {
-    const tip = P3(t[0], t[1], t[2]), via = base.clone().lerp(tip, 0.5).add(new THREE.Vector3(0, 0, 0.015)), curve = new THREE.QuadraticBezierCurve3(base, via, tip);
-    const s = taperTube(curve, 0.0075, 10, 6); s.deleteAttribute('uv'); stalks.push(s.toNonIndexed());
-    const n = 9;
-    for (let j = 1; j <= n; j++) {
-      const f = j / (n + 1), p = curve.getPoint(f), d = curve.getTangent(f), up = new THREE.Vector3(0, 1, 0).projectOnPlane(d).normalize();
-      const out = new THREE.Vector3().crossVectors(d, up).normalize(), len = 0.02 * (1 - 0.45 * f);
+  const stalks: THREE.BufferGeometry[] = [], fringe: THREE.BufferGeometry[] = [], r = rng(41), Z = new THREE.Vector3(0, 0, 1);
+  gl.tips.forEach((t, i) => {
+    // the three bases stacked down the side of the neck, the top one highest
+    const base = P3(gl.at[0] - 0.004 * i, gl.at[1] + (i - 1) * 0.011, gl.at[2]), tip = P3(t[0], t[1], t[2]);
+    const via = base.clone().lerp(tip, 0.45).add(new THREE.Vector3(0, 0.006, 0.018)), curve = new THREE.QuadraticBezierCurve3(base, via, tip);
+    const s = taperTube(curve, 0.0058, 14, 6); s.deleteAttribute('uv'); stalks.push(s.toNonIndexed());
+    const n = 26, len0 = 0.026 * Math.min(1, curve.getLength() / 0.1);
+    for (let j = 0; j < n; j++) {
+      const f = 0.1 + 0.88 * (j + 0.3 + 0.4 * r()) / n, p = curve.getPoint(f), d = curve.getTangent(f);
+      const w = new THREE.Vector3().crossVectors(Z, d).normalize(); // across the stalk, in the plume's plane
       for (const sg of [1, -1]) {
-        const dir = up.clone().multiplyScalar(sg).addScaledVector(out, 0.35 * Math.sign(out.z || 1)).addScaledVector(d, 0.3).normalize();
-        const q = taperTube(new THREE.LineCurve3(p.clone(), p.clone().addScaledVector(dir, len)), 0.0032, 3, 4); q.deleteAttribute('uv'); fringe.push(q.toNonIndexed());
+        const len = len0 * Math.sin(Math.PI * (0.1 + 0.82 * f)) ** 0.6 * (0.75 + 0.5 * r());
+        const dir = w.clone().multiplyScalar(sg).addScaledVector(d, 0.6 + 0.25 * r()).addScaledVector(Z, (r() - 0.35) * 0.7).normalize();
+        const a = p.clone().addScaledVector(w, sg * 0.002), e = a.clone().addScaledVector(dir, len);
+        const m = a.clone().lerp(e, 0.5).addScaledVector(d, len * 0.12).add(new THREE.Vector3(0, -len * 0.1, 0)); // curls toward the tip, droops
+        const q = taperTube(new THREE.QuadraticBezierCurve3(a, m, e), 0.0017, 5, 4); q.deleteAttribute('uv'); fringe.push(q.toNonIndexed());
       }
     }
-  }
-  return { stalks: shade(mergeGeometries(stalks)!, 0.3), fringe: shade(mergeGeometries(fringe)!, 0.3) };
+  });
+  return { stalks: shade(mergeGeometries(stalks)!, 0.3), fringe: shade(mergeGeometries(fringe)!, 0.22) };
 }
 
 // ---------- assembly ----------

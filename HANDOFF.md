@@ -2,6 +2,25 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane R: anatomy audit P2, axolotl + zebra nerite (2026-10-14; branch `p2-small`, port 5493; Nathan approved both sheets; pushed to main)
+Owns `src/art/herps.ts`, `src/render/herp3d.ts`, `src/art/snails.ts`, `src/render/snail3d.ts`. Models v3 at build 317; no
+other model's fingerprint changed (other snails, hermit crab, frogs, newt identical).
+- **Axolotl:** gills = three rami a side (bases stacked down the neck, tips spread out as a crown), each feathered by ~52
+  fine curved filaments (seeded lengths, longest mid-stalk, swept to the tip and drooping) instead of comb teeth
+  (`gillGeometry`). Trunk: broad flat head, neck pinch, fuller wider trunk, belly sagging to the vent, 12 faint costal
+  grooves (`line` marks). Fin: one membrane (`axoFin` in herps.ts, shared by the 2D card) from the shoulders, low along
+  the back, deepening over the tail, round a pointed tip past the muscle (body tip now u 0.03) and forward to the vent;
+  `finGeometry` takes a spline edge and runs past the body's tip.
+- **Zebra nerite:** level aperture (`open` [0.05,-1,0]) with a thin lip (0.03), so the shell sits low over the foot;
+  foot 0.13 high (`footH`) and as wide as the shell (`footW` 0.76, Nathan: "their bodies are the same width as the
+  shells"), head radius fixed (`head` 0.085), tentacles 0.085. New Shell3D fields, nerite only: `ph` 48 (smoother rim),
+  `seam: false` (the painted suture ran along the body whorl as a false crease), `fillCut` (rows where the aperture plane
+  misses the whorl take their cut from their neighbours instead of clamping to +-0.6, and the paint follows the coil
+  angle). Zebra stripes are one full sine round the whorl, drawn past the texture edges (the slanted stroke ends had
+  notched the stripes along the wrap line).
+- Open: mystery, turbo and trumpet also clamp their aperture cut (rows jump +-0.6 on the inner side); `fillCut` would fix
+  them but changes their approved look, so not switched on. 2D side cards unchanged except the axolotl's fin outline.
+
 ## Lane N: shareable scene links (2026-10-14; branch `share-url`; review item R12; pushed to main)
 
 - **What**: File toolbar button **Copy share link** (`index.html`, handler in `ui/panels.ts`). The link is the page

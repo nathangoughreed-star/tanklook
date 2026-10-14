@@ -180,10 +180,12 @@ function salSide(s: SalSpec): Pt[] {
     [0.78, cv - tr * 0.95], [0.68, cv - tr], [0.55, cv - tr * 1.02], [0.45, cv - tr * 1.06], [0.32, cv - tr * 1.06], [0.2, cv - tr * 1.0],
     [0.1, cv - tr * 0.82], [0.035, cv - tr * 0.5], [0.0, cv - tr * 0.15, 'c'], [0.03, cv + tr * 0.25], [0.1, cv + tr * 0.55], [0.2, cv + tr * 0.72], [0.32, cv + tr * 0.82], [0.44, cv + tr * 0.9],
     [0.52, cv + tr], [0.68, cv + tr], [0.8, cv + tr * 0.95], [0.88, cv + hd * 0.85], [0.95, cv + hd * 0.72], [0.99, cv + hd * 0.45]];
-  return [[1.0, cv + hd * 0.25, 'c'], [0.985, cv - hd * 0.6], [0.94, cv - hd * 0.95], [0.87, cv - hd], [0.8, cv - tr * 0.9],
-    [0.7, cv - tr], [0.55, cv - tr * 0.95], [0.42, cv - tr * 0.85], [0.28, cv - tr * 0.6], [0.14, cv - tr * 0.35], [0.0, cv, 'c'],
-    [0.14, cv + tr * 0.35], [0.28, cv + tr * 0.6], [0.42, cv + tr * 0.85], [0.55, cv + tr], [0.7, cv + tr], [0.8, cv + tr * 0.95],
-    [0.88, cv + hd * 0.9], [0.95, cv + hd * 0.8], [0.99, cv + hd * 0.6]];
+  // axolotl: broad flat head, a slight neck behind the gills, a full belly sagging to the vent, the muscular tail tapering
+  // to just short of the fin's tip (the fin carries the outline on round it)
+  return [[1.0, cv + hd * 0.2, 'c'], [0.985, cv - hd * 0.55], [0.95, cv - hd * 0.85], [0.9, cv - hd * 0.92], [0.84, cv - hd * 0.82],
+    [0.78, cv - tr * 0.92], [0.68, cv - tr * 0.98], [0.56, cv - tr * 0.95], [0.46, cv - tr * 0.82], [0.34, cv - tr * 0.62], [0.2, cv - tr * 0.4],
+    [0.09, cv - tr * 0.2], [0.03, cv, 'c'], [0.09, cv + tr * 0.22], [0.2, cv + tr * 0.42], [0.34, cv + tr * 0.66], [0.46, cv + tr * 0.95],
+    [0.56, cv + tr * 1.04], [0.68, cv + tr * 1.06], [0.8, cv + tr * 0.95], [0.88, cv + hd * 0.8], [0.95, cv + hd * 0.7], [0.99, cv + hd * 0.5]];
 }
 
 function drawSal(s: SalSpec, ctx: Ctx, P0: Proj, W: number) {
@@ -193,8 +195,7 @@ function drawSal(s: SalSpec, ctx: Ctx, P0: Proj, W: number) {
   const legY = cv + tr * 0.6, foot = g - 0.004;
   limb(ctx, P, W, [[0.76, legY, 0.013], [0.725, (legY + foot) / 2, 0.01], [0.71, foot, 0.008]], [[0.69, g], [0.73, g]], toe, s.leg, true);
   limb(ctx, P, W, [[0.47, legY, 0.016], [0.43, (legY + foot) / 2, 0.012], [0.41, foot, 0.009]], [[0.38, g], [0.43, g]], toe, s.leg, true);
-  if (s.finTail) fin(ctx, P, W, [[0.62, cv - tr], [0.45, cv - tr - 0.03], [0.25, cv - tr - 0.025], [0.08, cv - 0.03], [0.0, cv, 'c'],
-    [0.08, cv + 0.035], [0.2, cv + tr + 0.015], [0.34, cv + tr + 0.02], [0.44, cv + tr]], [0.3, cv], s.finTail, darker(s.finTail, 0.75), { rays: 0, a: 0.7 });
+  if (s.finTail) { const f = axoFin(cv, tr); fin(ctx, P, W, [...f.top, [0.0, cv, 'c'], ...f.bot] as Pt[], [0.3, cv], s.finTail, darker(s.finTail, 0.75), { rays: 0, a: 0.7 }); }
   if (s.gills) gills(ctx, P, W, s, cv, true);
   // body: tail tip u = 0, head to u = 1
   body(ctx, P, W, salSide(s), cv - hd, cv + tr, shadeOf(s.skin), 0.035, l => {
@@ -207,6 +208,18 @@ function drawSal(s: SalSpec, ctx: Ctx, P0: Proj, W: number) {
   if (s.gills) gills(ctx, P, W, s, cv, false);
   line(ctx, P, W, [[0.995, cv + hd * 0.35], [0.95, cv + hd * 0.42], [0.9, cv + hd * 0.35]], 0.22, 0.003);
   herpEye(ctx, P, W, 0.925, cv - hd * 0.35, hd * 0.28, s.iris, s.pupil);
+}
+
+/**
+ * The axolotl's fin edge (card frame), one membrane: the dorsal fin rises from nothing over the shoulders, stays low
+ * along the back, deepens over the tail, runs round the pointed tip past the muscle and forward underneath to the vent.
+ */
+function axoFin(cv: number, tr: number): { top: [number, number][]; bot: [number, number][] } {
+  return {
+    top: [[0.8, cv - tr * 0.92], [0.7, cv - tr - 0.005], [0.56, cv - tr * 0.95 - 0.012], [0.44, cv - tr * 0.8 - 0.024], [0.3, cv - tr * 0.55 - 0.033],
+      [0.16, cv - tr * 0.3 - 0.035], [0.07, cv - 0.022]],
+    bot: [[0.07, cv + 0.02], [0.16, cv + tr * 0.3 + 0.028], [0.3, cv + tr * 0.55 + 0.024], [0.4, cv + tr * 0.8 + 0.01], [0.47, cv + tr * 0.97]],
+  };
 }
 
 /** Axolotl external gills: three stalks sweeping up and back from behind the head, fringed with filaments. */
@@ -472,20 +485,21 @@ export const HERP3D: Record<string, Herp3D> = {
       { k: 'spots', n: 30, u: [0.35, 0.9], a: [0.8, 1.0], r: [0.004, 0.007], c: '#2a2420', o: 0.7, seed: 13 },
       { k: 'line', pts: [[0.9, 0.62], [0.96, 0.64], [0.995, 0.58]], c: '#0e100c', o: 0.25, w: 0.003 },
     ], 1),
-  // leucistic: pale pink, faint darker mottling; broad flat head, gills, tail fin from mid-back
-  axolotl: sal3D(axo, [[0, 0.003], [0.2, 0.008], [0.42, 0.02], [0.55, 0.045], [0.72, 0.05], [0.84, 0.066], [0.94, 0.062], [1, 0.036]],
+  // leucistic: pale pink, faint darker mottling; broad flat head wider than the neck, a full rounded trunk with costal
+  // grooves down the flanks, the tail flattened side to side; one fin from the shoulders round the tail to the vent;
+  // three feathery gills a side
+  axolotl: sal3D(axo, [[0, 0.003], [0.06, 0.006], [0.2, 0.011], [0.34, 0.017], [0.44, 0.03], [0.5, 0.05], [0.58, 0.063], [0.68, 0.066],
+    [0.76, 0.062], [0.81, 0.058], [0.87, 0.073], [0.93, 0.075], [0.97, 0.063], [1, 0.042]],
     [[0, '#e9b9b4'], [0.5, '#f2cdc6'], [1, '#f6dcd4']], [
       { k: 'spots', n: 16, u: [0.2, 0.9], a: [0.0, 0.6], r: [0.016, 0.024], c: '#e3a7a2', o: 0.35, seed: 21 },
+      ...Array.from({ length: 12 }, (_, i): Mark3D => ({ k: 'line', pts: [[0.535 + i * 0.019, 0.24], [0.53 + i * 0.019, 0.45], [0.535 + i * 0.019, 0.66]], c: '#d39690', o: 0.3, w: 0.0028 })),
       { k: 'line', pts: [[0.9, 0.62], [0.96, 0.66], [0.995, 0.58]], c: '#7a4a48', o: 0.3, w: 0.003 },
     ], 1.15, {
-      fin: {
-        top: [[0.62, axoCv - axo.trunk], [0.45, axoCv - axo.trunk - 0.03], [0.25, axoCv - axo.trunk - 0.025], [0.08, axoCv - 0.03], [0, axoCv]],
-        bot: [[0, axoCv], [0.08, axoCv + 0.035], [0.2, axoCv + axo.trunk + 0.015], [0.34, axoCv + axo.trunk + 0.02], [0.44, axoCv + axo.trunk]],
-        c: '#f0d2cc', o: 0.6,
-      },
+      fin: (() => { const f = axoFin(axoCv, axo.trunk); return { top: [...f.top, [0, axoCv - 0.002]], bot: [[0, axoCv + 0.002], ...f.bot], c: '#f0d2cc', o: 0.68 }; })(),
       gills: {
         at: [0.83, axoCv - axo.head * 0.45, 0.05],
-        tips: [[0.75, axoCv - axo.head - 0.06, 0.075], [0.72, axoCv - axo.head - 0.03, 0.095], [0.71, axoCv - axo.head * 0.3, 0.1]],
+        // top: up and back; middle: back and out; bottom: back, out and a little down. Spread out from the head as a crown.
+        tips: [[0.755, axoCv - axo.head - 0.045, 0.11], [0.725, axoCv - axo.head - 0.012, 0.118], [0.72, axoCv - axo.head * 0.05, 0.122]],
         stalk: '#d9707a', fringe: '#e2505e',
       },
     }),
