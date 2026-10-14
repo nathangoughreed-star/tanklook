@@ -2,6 +2,30 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane A: 3D plants (2026-10-14; Nathan approved the style test "looks good, roll out"; pushed to main)
+
+Roadmap step 5. All seven plant types are real 3D; the crossed cards stay as the fallback (`plant3d.on = false`,
+or a type with no `PLANT3D` entry). No scene version bump: plants were already items (variant / seed / size).
+- `render/plant3d.ts`: ONE generator. A leaf = a curved sheet along a centreline (`rise` from vertical, `arch` toward
+  the ground by the tip, `twist` about the midrib, `fold` cupped / ridged, `wave` edge ripple, `pet` stalk strip in the
+  stalk colour, optional pale `rib` line), built twice: upper side and paler `under` side, each FrontSide. Forms:
+  `rosette` (crown, golden-angle spiral; `crowns` = several plants in a clump), `rhizome` (creeping root tube),
+  `stem` (stems with crossed leaf pairs, leaves shrink to the top; `top` = tip colours, the red stem), `carpet`
+  (leaflets over a ragged disc, lower to the edge). Vertex colours with form shading baked in (up-facing lighter,
+  base and middle darker); one shared MeshBasicMaterial, lit by aqPatch as a card (so the same saturation lift).
+  Size: the plant is scaled to its exact height (`size`); leaves reaching wider than the card are pulled in by up to
+  a quarter so it fits where the card did. Swords now draw at their real height (the card's picture never filled it).
+- Data: `PLANT3D` in `art/plants.ts` (fern, sword, carpet, anubias, grass = vallisneria, stem, stemred).
+- Cost: dense planted 24" starter set 418 k triangles (stem plant ~9 k, carpet patch ~18 k). A carpet is generated
+  once per (seed, size) (`plantGeometry`), then `carpetOnGround` moves each leaflet onto the ground under it on every
+  drag step (only positions are new; colours / normals / index shared). Leaflets capped at 3000 per patch (bigger
+  leaflets past that).
+- Hook (my lane): plant branch of `itemMesh` in `render/items.ts`. `scene/items.ts` not touched.
+- Sheets (worktree `shots/`, not in git): `9{1,2}_{fern,sword,carpet}_sheet.png` (style test), `94_*` (rollout),
+  `96_planted_sheet.png` (dense planted, card / 3D). Capture helper `shots/cap.js` (card vs 3D at the same framing).
+- Watch items: vallisneria clumps spread wider than their card; the sword is taller than its old card; the carpet sits
+  lower than the card from the front. Crypts: not built yet (next).
+
 ## Lane C: marine species (2026-10-13; Nathan approved the sheets, hermit "fine for now"; pushed to main)
 
 12 species, all `salt: true` (cat `sw-fish` / `sw-invert`), approved list (Nathan, same day, hermit crab as shell + limbs).

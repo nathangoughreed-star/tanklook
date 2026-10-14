@@ -9,7 +9,7 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng } from '../art/paint';
 import { PLANT_ASPECT, PLANT3D, type Leaf3D, type PlantType } from '../art/plants';
-import { CARPET_H, CARPET_W } from '../scene/items';
+import { CARPET_H } from '../scene/items';
 import { taperTube } from './fish3d';
 
 /** Switch for review sheets (off = the crossed cards). */
@@ -17,7 +17,7 @@ export const plant3d = { on: true };
 export const has3DPlant = (type: PlantType) => plant3d.on && !!PLANT3D[type];
 
 type R = () => number;
-const MAX_LEAFLETS = 7000;
+const MAX_LEAFLETS = 3000;
 type Spot = (lx: number, lz: number) => { x: number; y: number; z: number; w: number } | null;
 const V = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
@@ -105,26 +105,30 @@ function shade(g: THREE.BufferGeometry, h: number, rad: number) {
   }
 }
 
-/** The plant's geometry, base at y = 0, its tallest point at h (a carpet: a patch h wide, set on the ground by spot()). */
-export function plantGeometry(type: PlantType, seed: number, h: number, spot?: Spot) {
+/**
+ * The plant's geometry, base at y = 0, its tallest point at h. A carpet is a patch h wide on flat ground, built once per
+ * (seed, size); carpetOnGround() then sets each leaflet on the ground under it (cheap, so it can run every drag step).
+ */
+export function plantGeometry(type: PlantType, seed: number, h: number) {
   const P = PLANT3D[type]!, f = P.leaf, r = rng(seed * 7919 + 13), out = new Sheets(), extra: THREE.BufferGeometry[] = [];
   const Wc = h / PLANT_ASPECT[type], pick = () => f.cols[Math.floor(r() * f.cols.length)];
   const twist = () => (r() - 0.5) * 2 * f.twist, bright = () => 0.9 + r() * 0.2;
   if (P.form === 'carpet') {
-    // leaflets over a disc with a ragged edge, lower toward it, each set on the ground under it
-    // past MAX leaflets a big patch gets bigger leaflets instead of more
+    // leaflets over a disc with a ragged edge, lower toward it; past MAX_LEAFLETS a big patch gets bigger leaflets instead of more
     const rad = h / 2, want = Math.PI * rad * rad / 1000 * between(r, P.n), n = Math.round(Math.min(want, MAX_LEAFLETS)), grow = Math.sqrt(want / n), lobes = [r() * 6.28, r() * 6.28, r() * 6.28];
+    const anchors = new Float32Array(n * 2), owner: number[] = [];
     for (let i = 0; i < n; i++) {
       const a = r() * Math.PI * 2, edge = rad * (0.82 + 0.06 * Math.sin(3 * a + lobes[0]) + 0.05 * Math.sin(5 * a + lobes[1]) + 0.04 * Math.sin(8 * a + lobes[2]));
       const d = Math.sqrt(r()) * edge, x = Math.cos(a) * d, z = Math.sin(a) * d, k = 1 - (d / edge) ** 3;
-      const y = CARPET_H * k * (0.35 + 0.65 * r() ** 0.7), p = spot ? spot(x, z) : { x, y: 0, z, w: CARPET_W };
-      const L = between(r, f.len) * grow, rise = between(r, f.rise); // all draws taken even for a dropped leaflet: the rest stay put
-      const tw = twist(), cols = pick(), br = bright(), yaw = r() * 6.28;
-      if (p) leaf(out, f, P.stalk, V(p.x, p.y + Math.max(0, y - L * 0.5), p.z), yaw, L, rise, tw, cols, br * (0.8 + 0.2 * k), r);
+      const y = CARPET_H * k * (0.35 + 0.65 * r() ** 0.7), L = between(r, f.len) * grow, v0 = out.pos.length / 3;
+      leaf(out, f, P.stalk, V(x, Math.max(0, y - L * 0.5), z), r() * 6.28, L, between(r, f.rise), twist(), pick(), bright() * (0.8 + 0.2 * k), r);
+      anchors[i * 2] = x; anchors[i * 2 + 1] = z;
+      for (let v = v0; v < out.pos.length / 3; v++) owner.push(i);
     }
     const g = out.geometry();
     shade(g, CARPET_H, 1e9);
-    g.computeBoundingBox(); g.computeBoundingSphere(); g.userData.keep = true;
+    g.computeBoundingBox(); g.computeBoundingSphere();
+    Object.assign(g.userData, { keep: true, anchors, owner: Uint32Array.from(owner) });
     return g;
   }
   if (P.form === 'stem') {
@@ -173,6 +177,31 @@ export function plantGeometry(type: PlantType, seed: number, h: number, spot?: S
   for (const g of parts) g.scale(k * kx, k, k * kx);
   shade(leaves, h, Wc / 2);
   const g = mergeGeometries(parts)!;
+  g.computeBoundingBox(); g.computeBoundingSphere(); g.userData.keep = true;
+  return g;
+}
+
+/**
+ * A carpet (from plantGeometry) set on the ground: each leaflet moves with its anchor as spot() moves it (in from the
+ * glass, up or down with the ground); spot() = null leaves that leaflet out. Shares colours, normals and triangles.
+ */
+export function carpetOnGround(base: THREE.BufferGeometry, spot: Spot) {
+  const { anchors, owner } = base.userData as { anchors: Float32Array; owner: Uint32Array }, n = anchors.length / 2;
+  const off = new Float32Array(n * 3), gone = new Uint8Array(n);
+  for (let i = 0; i < n; i++) {
+    const x = anchors[i * 2], z = anchors[i * 2 + 1], p = spot(x, z);
+    if (!p) gone[i] = 1; else { off[i * 3] = p.x - x; off[i * 3 + 1] = p.y; off[i * 3 + 2] = p.z - z; }
+  }
+  const src = base.attributes.position, pos = new Float32Array(src.count * 3);
+  for (let v = 0; v < src.count; v++) {
+    const i = owner[v];
+    if (gone[i]) continue; // a dropped leaflet collapses to the origin, under the ground
+    pos[v * 3] = src.getX(v) + off[i * 3]; pos[v * 3 + 1] = src.getY(v) + off[i * 3 + 1]; pos[v * 3 + 2] = src.getZ(v) + off[i * 3 + 2];
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  for (const k of ['color', 'normal']) g.setAttribute(k, base.attributes[k]);
+  g.setIndex(base.index);
   g.computeBoundingBox(); g.computeBoundingSphere(); g.userData.keep = true;
   return g;
 }

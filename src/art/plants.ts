@@ -159,9 +159,9 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
   sword: { form: 'rosette', n: [16, 24], spread: 0.05, stalk: '#3a6a2c', leaf: {
     len: [0.75, 1], wid: 0.15, prof: [0.75, 0.8], rise: [0.05, 0.75], arch: 0.4, twist: 0.5, fold: -0.15, wave: [0.03, 3], pet: 0.3,
     cols: [['#3d7a2e', '#6aa64e'], ['#468a34', '#7ab85a'], ['#36702a', '#62a048']], under: '#5a8a48', rib: '#b0d098', seg: [10, 5] } },
-  carpet: { form: 'carpet', n: [140, 160], spread: 1, stalk: '#3f6a2e', leaf: {
-    len: [3.5, 5.5], wid: 0.75, prof: [0.9, 0.5], rise: [0.9, 1.5], arch: 0.1, twist: 0.3, fold: 0.2, wave: [0, 0], pet: 0,
-    cols: LEAF_GREENS, under: '#5e8a48', seg: [3, 3] } },
+  carpet: { form: 'carpet', n: [60, 70], spread: 1, stalk: '#3f6a2e', leaf: {
+    len: [5, 7.5], wid: 0.75, prof: [0.9, 0.5], rise: [0.9, 1.5], arch: 0.1, twist: 0.3, fold: 0.2, wave: [0, 0], pet: 0,
+    cols: LEAF_GREENS, under: '#5e8a48', seg: [2, 3] } },
   anubias: { form: 'rhizome', n: [10, 14], spread: 0.4, stalk: '#2e5226', leaf: {
     len: [0.6, 0.95], wid: 0.4, prof: [0.7, 0.55], rise: [0.1, 0.6], arch: 0.25, twist: 0.3, fold: 0.15, wave: [0.02, 2], pet: 0.25,
     cols: [['#1e3e1c', '#3a6a32'], ['#22441e', '#40723a']], under: '#3e6236', rib: '#5a8a4a', seg: [8, 5] } },
