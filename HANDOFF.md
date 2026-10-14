@@ -2,6 +2,39 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane I: reef polish + example refresh (2026-10-14; branch `reef-polish`; Nathan approved rock C and reef option B; pushed to main)
+
+- **Reef starter set**: new `LayoutId` `'reef'` (`scene/types.ts`, `LAYOUT_IDS` in `scene/validate.ts`, no version bump),
+  "Reef" in Aquascape > Start from. `starterItems`: live rock islands (two in the designed set, a channel between; Shuffle
+  = the usual `starterStyle` foci / density / scale, plus a coral mix: mixed, SPS, soft, plates), one or more rocks stacked
+  on each island until the main one stands about half the water deep (Nathan, option B; a smaller island 85 %), branching
+  and plate corals up on the rock, mushrooms and leathers low and on the sand, rubble pieces. A long tank gets wider islands
+  of more rocks, not bigger rocks. Corals are shrunk to the headroom under the water line.
+- **Salt only**: ONE-LINE HOOK in lane G's `src/ui/panels.ts` render(): the existing `#lib [data-salt]` toggle now also
+  takes `#layout option[value="reef"]`. A tank switched back to fresh keeps its items.
+- **Live rock** (`render/coral3d.ts` `rockGeo`): angular and porous instead of rounded lumps. Per lump 5-8 planes shave it
+  flat (broken faces with sharp edges), 26-40 round pits (5 big) pushed in and darkened, plus the old channels; icosphere
+  detail 4, not indexed, normals by `toCreasedNormals` at 55° (`ROCK_CREASE`): Nathan saw A (every triangle flat: "too
+  geometric, triangles too large"), B (35°) and C (55°) and chose C. The mushroom coral's small rock uses the same code
+  (its parts now merge non-indexed).
+- **Examples** (`src/examples/*`), Nathan 2026-10-14 "spruce up the starter tanks with stands, use more shapes": every one
+  on a stand; planted (rect 40 breeder, black cabinet), iwagumi (rimless rect, white cabinet), betta (bowl on its round
+  table, unchanged), paludarium (24 in cylinder x 24 in, rimless, round cabinet, swamp starter seed 5 re-laid with half the
+  plants, 3 spot lights `fit`), terrarium (90° corner pie, 18 in radius, oak corner cabinet), reef (**72 gal bowfront
+  48 x 18 x 22 in, 12 in ends, rimmed**: 73.4 gal gross in the app; sources: Sea Clear / Tsunami 72 bow 48x18x20, owner
+  report 48x18x22 with 12 in ends; the first try, 48x18x24 with 14 in ends, is an 80 gal size). The reef now uses the
+  Reef starter set (seed 1) and lane E's animals. Hints in `index.ts` updated. Thumbnails re-shot after merging main
+  (lane A sway / per-plant variation / glass clip, lane K lights) at 400 x 343, camera zoom 1.1.
+- **Audit #42** (plant leaves through the glass): lane A's `82090a8` on main fixes it (3D plants glass-clipped, bowls too);
+  my own version was dropped. Measured for the record: 3D leaves reach 1.9x the card half-width (sword, fern), 1.4x anubias,
+  3.3x vallisneria, so clamping the anchor on the real reach would have emptied the glass edges.
+- Tests: `reef.test.ts` (Reef set: deterministic, rock + corals, salt-only pieces, corals on the rock and under the top,
+  new seed = new set), `examples.test.ts` (each example's shape, a stand, every piece / non-glass animal inside the glass).
+- Scratch helpers (worktree `shots/`, not in git): `restage.js` (the example reshape steps), `rethumb.js`, `caprock.js`,
+  `cap42.js`; pictures `i1`-`i10`.
+- Watch items: the betta bowl's carpet sits low and barely shows from the front (lane A's carpet height); paludarium frogs
+  are small in its thumbnail.
+
 ## Lanes L + M: anatomy audit P0 fixes (2026-10-14; opened, run in parallel)
 From `reference/model-anatomy-audit-v1.md` (see "Model review sheet" below). Nathan picked P0 first, two parallel
 chats; fin layout (most of P1) and frogs/newt are later lanes.
@@ -545,7 +578,7 @@ salt switch-off in the AqAdvisor code. Lane E also re-saves the examples and fil
 Lane A DONE (`29515de`). Lane G opened 2026-10-14 ahead of the audit: `../Glass-Box-audit-fixes` / `audit-fixes`, launch
 config `audit-fixes` 5343; waits for lane D's message that shots/audit/AUDIT.md is written. Owns `src/ui/*`, `index.html`,
 `src/style.css` (lanes E and H keep their small panels.ts hooks); a finding in another lane's files goes to that lane.
-Lane H DONE (`6c91148`). Lane E DONE (`e8ccd65`). Lane I opened 2026-10-14: E's leftovers + example refresh,
+Lane H DONE (`6c91148`). Lane E DONE (`e8ccd65`). Lane I DONE (see its section). Lane I opened 2026-10-14: E's leftovers + example refresh,
 `../Glass-Box-reef-polish` / `reef-polish`, launch config `reef-polish` 5353; owns `scene/items.ts` (lane A may add one
 crypts LIBRARY line), the non-plant branches of `render/items.ts`, `render/coral3d.ts`, `src/examples/*`, LayoutId in
 `scene/types.ts` / `scene/validate.ts`. Lane G owns `src/ui/*`.
