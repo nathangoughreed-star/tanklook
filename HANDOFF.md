@@ -8,6 +8,11 @@ Living file. Project state and dated decisions go here; update in place.
   (separate calculations, same ramp) and a hover tooltip with both values at that spot.
 - Decided (Nathan): Brightness becomes an Exposure knob when watts is set; calibration against published PAR charts
   approved. Runs as its own lane after G and G2 finish (touches scene/, render/lighting.ts, ui/panels.ts).
+- Calibration first pass done: data `reference/par-calibration-data.md`, results in the draft (LED ~±30%, fluorescent
+  ~±50%; T5 fixture efficiency lower than guessed).
+- PAR guide shipped: Lighting menu button "PAR guide" opens `src/ui/parGuide.ts` (own dialog + styles): what PAR is,
+  planted tiers with what grows / struggles / CO2 / fertiliser, reef tiers with corals and dosing; opens on the reef tab
+  for a salt tank. Hooks in lane G's files: one line in index.html (the button), two in main.ts.
 
 ## Lane G: audit fixes, UI share (2026-10-14; branch `audit-fixes`; batches 1 + 2 pushed to main, DONE)
 - Split with lane G2 (coordinator): G owns `src/ui/*`, `index.html`, `src/style.css`; G2 owns interact/scene/render.

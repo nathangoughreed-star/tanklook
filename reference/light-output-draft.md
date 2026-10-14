@@ -32,11 +32,11 @@ Fixture **type** (spot / tube / LED bar) stays the geometry. **Tech** is what is
 | LED, white | spot, tube, LED | 1.6 | 0.90 | 70 | Typical aquarium bar. Each tech also gets a blue / green / red photon split (see Light map) |
 | LED, planted RGB | spot, LED | 1.8 | 0.90 | 50 | Less green, so less lux for the same PAR |
 | LED, reef (blue) | spot, LED | 2.0 | 0.90 | 25 | Looks dim on a lux meter, lots of PAR |
-| T5 HO, own reflectors | tube | 1.1 | 0.75 | 72 | |
-| T5 HO, bare | tube | 1.1 | 0.45 | 72 | Half the light goes up |
-| T8 | tube | 0.9 | 0.50 | 73 | |
+| T5 HO, own reflectors | tube | 1.2 | 0.75? | 74 | First check suggests η is too high (below) |
+| T5 HO, bare | tube | 1.2 | 0.45 | 74 | Half the light goes up |
+| T8 | tube | 0.85 | 0.50 | 74 | |
 | CFL / power compact | spot, tube | 0.8 | 0.55 | 72 | |
-| Metal halide pendant | spot | 1.3 | 0.75 | 65 | Strong shimmer |
+| Metal halide pendant | spot | 1.3 | 0.75 | 71 | Strong shimmer |
 | Incandescent / halogen | spot | 0.3 | 0.60 | 50 | Mostly heat |
 
 All of these values are first guesses, to be fixed in calibration (below). η covers fixture losses only (lens,
@@ -122,6 +122,29 @@ Options for the slider while watts is set:
 - `test/lightout.test.ts`: units (doubling watts doubles PAR), inverse-square sanity, refraction (deeper tank loses
   less than straight-line inverse-square), wall images (a narrow tank holds more light at the edges), the calibration
   fixtures within tolerance.
+
+## Calibration, first pass (2026-10-14)
+
+Data: `reference/par-calibration-data.md` (9 datasets, each graded A = read on the page, B = secondhand, C = vendor
+estimate; only 2 are grade A). Hand checks against the table above, before the model exists:
+
+- **AI Hydra 32 HD (reef LED, 90.5 W, Apogee MQ-510, in air, centre).** Point source with a ~100° beam:
+  Φ = 90.5 x 2.0 x 0.9 ≈ 163 µmol/s, I ≈ 73 µmol/s/sr. Predicts 2,520 / 532 / 224 at 17 / 37 / 57 cm against measured
+  1,908 / 462 / 197, so 15-30% high. Inverse-square holds, as the model assumes. PPE 2.0 for reef LED is probably a
+  little high; 1.7-1.8 would fit.
+- **T5 HO over planted tanks (grade B/C).** Hobby readings give about 0.4-0.55 PAR per watt at the substrate. That is
+  far below what η 0.75 predicts, so the reflector / ballast / lamp-ageing losses are larger than assumed. Expect η
+  about 0.4-0.5 with reflectors.
+- **Lux factors** (Apogee, after Thimijan & Heins 1982): sunlight 54, cool-white fluorescent 74, metal halide 71,
+  HPS 82 lux per µmol. These replace the guesses above. No published LED or incandescent factors; LED values stay
+  estimates from spectrum (white LED ~ 65-75).
+- **PPE** (Nelson & Bugbee 2014): horticultural LED 1.66-1.70, fluorescent 0.95, ceramic metal halide 1.46.
+- **Air to water:** JBL shows only 4-9% loss across the surface, in line with the 3% Fresnel + ripple assumption.
+- **Watch:** Fluval's published lux column is exactly PAR x 54, so it is computed, not measured. Many vendor figures
+  are in air at 12 in, not at the substrate; the tests must compare like with like.
+- **Gaps:** no clean T5 per-reflector table, no bare T5, no T8, metal halide or CFL dataset; no PPE for aquarium white
+  or blue LEDs. With what exists, LED estimates look like ±30%; fluorescent ±50% until better data turns up. A user's
+  own PAR-meter reading (the override) is the fix for the rest.
 
 ## Files
 
