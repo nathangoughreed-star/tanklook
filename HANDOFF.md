@@ -666,6 +666,20 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 
 ## Parallel lanes (2026-10-13, Nathan: fill the gaps before showing other people)
 
+**Current lanes (2026-10-14 16:25, coordinator "Lanes coordinator 2", `local_d0390f66`).** Everything else below is DONE.
+| Lane | Worktree / branch | Port | Owns | State |
+|---|---|---|---|---|
+| P final polish | `../Glass-Box-final-fixes` / `final-fixes` | 5473 | `src/style.css`, `index.html`, `src/ui/panels.ts`, `src/scene/water.ts` | FINAL.md items 1-6 done, push pending Nathan's yes |
+| R P2 axolotl + nerite | `../Glass-Box-p2-small` / `p2-small` | 5493 | `art/herps.ts`, `render/herp3d.ts`, `art/snails.ts`, `render/snail3d.ts` | running, sheets to Nathan |
+| S P1 fish fins | `../Glass-Box-fish-fins` / `fish-fins` | 5503 | `art/fishgen.ts`, `art/paint.ts`, `render/fish3d.ts` | ready to open (prompt `prompts/lane-S-fish-fins.md`) |
+| T iPhone AR | `../Glass-Box-ar-ios` / `ar-ios` | 5513 | new `render/arUsdz.ts` + test, `render/ar.ts` | ready to open (prompt `prompts/lane-T-ar-iphone.md`) |
+Free (no lane): `render/build.ts`, `render/items.ts`, `scene/items.ts`, `render/viewer.ts`, `main.ts`, `render/lighting.ts`,
+`render/coral3d.ts`, `render/shrimp3d.ts` / `art/shrimps.ts`, `scene/share.ts`. A one-line hook in a free file is fine; name it
+in your section. Where to read: anatomy audit `reference/model-anatomy-audit-v1.md`; model versions "Model review sheet"
+below; lane D's R1-R12 verdicts under "Review pack R1-R12"; the final check `shots/final/FINAL.md` (main checkout only).
+Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
+
+
 Four chats at once, each owning its files. Seam already on main (`cb7783c`): optional `salt?: boolean` on `Species`
 (absent = freshwater) and on `WaterSettings` (validated, default fresh, no version bump).
 | Lane | Folder / branch | Launch config | Owns |
@@ -744,7 +758,7 @@ Lane S set up 2026-10-14 (anatomy audit P1 fish, 20 species / 29 models: fin str
 `../Glass-Box-fish-fins` / `fish-fins`, launch config `fish-fins` 5503; owns `art/fishgen.ts`, `art/paint.ts`,
 `render/fish3d.ts`. Lane D DONE (`6176008`, `66d2dba`, `49f3f33`), so lane S can start. Lane Q DONE (`1398b14`;
 Nathan on the S24+: "works flawlessly"); iPhone phase not started. Lane Q reopened for an A / B
-swap in the AR overlay (`d9e6a8b`), split-tank phone check pending. Lane T opened 2026-10-14: iPhone AR (AR Quick Look,
+swap in the AR overlay (`d9e6a8b`), phone-checked. Lane T opened 2026-10-14: iPhone AR (AR Quick Look,
 USDZ export), `../Glass-Box-ar-ios` / `ar-ios`, launch config `ar-ios` 5513; owns new `render/arUsdz.ts` + test, and
 `render/ar.ts` (lane Q DONE, `ea46f6b`; A / B swap phone-checked).
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_d0390f66-339c-4fa1-ab38-43e9c2a35958`
