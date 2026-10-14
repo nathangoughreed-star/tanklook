@@ -138,6 +138,8 @@ export interface Plant3D {
   form: 'rosette' | 'rhizome' | 'stem' | 'carpet';
   /** Leaves (rosette, rhizome), stems (stem), or leaflets per 1000 mm² of patch (carpet): min, max. */
   n: [number, number];
+  /** How much it gives to the water current: 0 = stiff, 1 = limp (tall thin leaves lean and wave, short stiff ones barely). */
+  sway: number;
   /** Width over which leaves / stems / crowns start, fraction of the card width. */
   spread: number;
   leaf: Leaf3D;
@@ -153,25 +155,25 @@ export interface Plant3D {
 
 const LEAF_GREENS: [string, string][] = GREENS;
 export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
-  fern: { form: 'rhizome', n: [13, 18], spread: 0.6, stalk: '#5a4a32', leaf: {
+  fern: { sway: 0.3, form: 'rhizome', n: [13, 18], spread: 0.6, stalk: '#5a4a32', leaf: {
     len: [0.7, 1], wid: 0.1, prof: [0.8, 0.8], rise: [0.08, 0.6], arch: 0.4, twist: 0.5, fold: -0.25, wave: [0.1, 4], pet: 0.06,
     cols: [['#244a22', '#3e7038'], ['#2a5226', '#4a7e40']], under: '#355a30', rib: '#7aa060', tip: ['#3c7034', 0.3], seg: [10, 5] } },
-  sword: { form: 'rosette', n: [16, 24], spread: 0.05, stalk: '#3a6a2c', leaf: {
+  sword: { sway: 0.3, form: 'rosette', n: [16, 24], spread: 0.05, stalk: '#3a6a2c', leaf: {
     len: [0.75, 1], wid: 0.15, prof: [0.75, 0.8], rise: [0.05, 0.75], arch: 0.4, twist: 0.5, fold: -0.15, wave: [0.03, 3], pet: 0.3,
     cols: [['#3d7a2e', '#6aa64e'], ['#468a34', '#7ab85a'], ['#36702a', '#62a048']], under: '#5a8a48', rib: '#b0d098', seg: [10, 5] } },
-  carpet: { form: 'carpet', n: [60, 70], spread: 1, stalk: '#3f6a2e', leaf: {
+  carpet: { sway: 0.1, form: 'carpet', n: [60, 70], spread: 1, stalk: '#3f6a2e', leaf: {
     len: [5, 7.5], wid: 0.75, prof: [0.9, 0.5], rise: [0.9, 1.5], arch: 0.1, twist: 0.3, fold: 0.2, wave: [0, 0], pet: 0,
     cols: LEAF_GREENS, under: '#5e8a48', seg: [2, 3] } },
-  anubias: { form: 'rhizome', n: [10, 14], spread: 0.4, stalk: '#2e5226', leaf: {
+  anubias: { sway: 0.08, form: 'rhizome', n: [10, 14], spread: 0.4, stalk: '#2e5226', leaf: {
     len: [0.6, 0.95], wid: 0.4, prof: [0.7, 0.55], rise: [0.1, 0.6], arch: 0.25, twist: 0.3, fold: 0.15, wave: [0.02, 2], pet: 0.25,
     cols: [['#1e3e1c', '#3a6a32'], ['#22441e', '#40723a']], under: '#3e6236', rib: '#5a8a4a', seg: [8, 5] } },
-  grass: { form: 'rosette', n: [16, 24], crowns: [3, 5], spread: 0.5, stalk: '#3f6a2e', leaf: {
+  grass: { sway: 1, form: 'rosette', n: [16, 24], crowns: [3, 5], spread: 0.5, stalk: '#3f6a2e', leaf: {
     len: [0.6, 1], wid: 0.035, prof: [1, 0.12], rise: [0.02, 0.3], arch: 0.5, twist: 1.5, fold: 0, wave: [0, 0], pet: 0,
     cols: LEAF_GREENS, under: '#5e8a48', seg: [12, 3] } },
-  stem: { form: 'stem', n: [5, 7], nodes: 22, spread: 0.5, stalk: '#3f6a2e', top: { cols: [['#4a8a34', '#80b85a']], from: 0.8 }, leaf: {
+  stem: { sway: 0.65, form: 'stem', n: [5, 7], nodes: 22, spread: 0.5, stalk: '#3f6a2e', top: { cols: [['#4a8a34', '#80b85a']], from: 0.8 }, leaf: {
     len: [0.11, 0.14], wid: 0.3, prof: [0.8, 0.6], rise: [0.5, 1.2], arch: 0.3, twist: 0.3, fold: -0.1, wave: [0, 0], pet: 0,
     cols: LEAF_GREENS, under: '#5e8a48', seg: [4, 3] } },
-  stemred: { form: 'stem', n: [5, 7], nodes: 22, spread: 0.5, stalk: '#6a4a2a', top: { cols: [['#8a3a2a', '#c0604a'], ['#7e3426', '#b4583e']], from: 0.55 }, leaf: {
+  stemred: { sway: 0.65, form: 'stem', n: [5, 7], nodes: 22, spread: 0.5, stalk: '#6a4a2a', top: { cols: [['#8a3a2a', '#c0604a'], ['#7e3426', '#b4583e']], from: 0.55 }, leaf: {
     len: [0.11, 0.14], wid: 0.3, prof: [0.8, 0.6], rise: [0.5, 1.2], arch: 0.3, twist: 0.3, fold: -0.1, wave: [0, 0], pet: 0,
     cols: [['#4e5a2a', '#7e8a42'], ['#56602e', '#86904a']], under: '#7a7a4a', seg: [4, 3] } },
 };

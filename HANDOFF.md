@@ -23,6 +23,12 @@ or a type with no `PLANT3D` entry). No scene version bump: plants were already i
 - Hook (my lane): plant branch of `itemMesh` in `render/items.ts`. `scene/items.ts` not touched.
 - Sheets (worktree `shots/`, not in git): `9{1,2}_{fern,sword,carpet}_sheet.png` (style test), `94_*` (rollout),
   `96_planted_sheet.png` (dense planted, card / 3D). Capture helper `shots/cap.js` (card vs 3D at the same framing).
+- Sway (Nathan 2026-10-14: plants looked stiff, "leaves and stems are bendy and ebb and flow in the current"): per
+  species `sway` (0 stiff .. 1 limp: vallisneria 1, stems .65, fern / sword .3, carpet .1, anubias .08). One current
+  direction per plant (mostly along the tank, +-35°), every leaf leans into it by its own share (longer leaves more)
+  plus a sideways S-wobble growing to the tip; stems bend along their height the same way. Own random stream
+  (`rng(seed * 104729 + 71)`), so the approved leaf layouts did not change. `plant3d.sway = false` = rigid. Sheet
+  `shots/98_planted_sheet.png` (before / after).
 - Watch items: vallisneria clumps spread wider than their card; the sword is taller than its old card; the carpet sits
   lower than the card from the front. Crypts: not built yet (next).
 

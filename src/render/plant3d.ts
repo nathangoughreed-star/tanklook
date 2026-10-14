@@ -12,8 +12,8 @@ import { PLANT_ASPECT, PLANT3D, type Leaf3D, type PlantType } from '../art/plant
 import { CARPET_H } from '../scene/items';
 import { taperTube } from './fish3d';
 
-/** Switch for review sheets (off = the crossed cards). */
-export const plant3d = { on: true };
+/** Switches for review sheets: on (off = the crossed cards), sway (off = every leaf rigid). */
+export const plant3d = { on: true, sway: true };
 export const has3DPlant = (type: PlantType) => plant3d.on && !!PLANT3D[type];
 
 type R = () => number;
@@ -50,7 +50,11 @@ class Sheets {
  * One leaf from `base`, heading `yaw` (0 = +x, toward the viewer = +pi/2), length L. `rise` / `arch` / `twist` / `bright`
  * are this leaf's draws; the colour pair is picked by the caller. Returns the blade's tip.
  */
-function leaf(out: Sheets, f: Leaf3D, stalkCol: string, base: THREE.Vector3, yaw: number, L: number, rise: number, twist: number, cols: [string, string], bright: number, r: R) {
+/** How a leaf gives to the water: leans `k` toward the current (cx, cz) by the tip, plus an S-wobble of `wob` sideways. */
+interface Bend { cx: number; cz: number; k: number; wob: number; ph: number }
+const STIFF: Bend = { cx: 0, cz: 0, k: 0, wob: 0, ph: 0 };
+
+function leaf(out: Sheets, f: Leaf3D, stalkCol: string, base: THREE.Vector3, yaw: number, L: number, rise: number, twist: number, cols: [string, string], bright: number, r: R, bend: Bend = STIFF) {
   // across the blade: evenly spaced, plus two columns hugging the middle when there is a midrib line
   const us = Array.from({ length: f.seg[1] }, (_, j) => (j / (f.seg[1] - 1)) * 2 - 1);
   if (f.rib) us.splice(us.length >> 1, 1, -0.07, 0, 0.07);
@@ -59,7 +63,10 @@ function leaf(out: Sheets, f: Leaf3D, stalkCol: string, base: THREE.Vector3, yaw
   const rib = f.rib ? new THREE.Color(f.rib) : null, stalk = new THREE.Color(stalkCol), pts: THREE.Vector3[] = [], cs: THREE.Color[] = [], bs: THREE.Color[] = [];
   const edge = new THREE.Color(cols[0]), mid = new THREE.Color(cols[1]), under = new THREE.Color(f.under), tip = f.tip ? new THREE.Color(f.tip[0]) : null;
   const hx = Math.cos(yaw), hz = Math.sin(yaw), ph = r() * 6.28;
-  const dir = (t: number) => { const a = rise + f.arch * t ** 1.5; return V(Math.sin(a) * hx, Math.cos(a), Math.sin(a) * hz); };
+  const dir = (t: number) => {
+    const a = rise + f.arch * t ** 1.5, w = bend.wob * Math.sin(t * Math.PI * 1.6 + bend.ph) * t;
+    return V(Math.sin(a) * hx + bend.cx * bend.k * t ** 1.5 - hz * w, Math.cos(a), Math.sin(a) * hz + bend.cz * bend.k * t ** 1.5 + hx * w).normalize();
+  };
   const c = base.clone();
   let tPrev = 0;
   for (let i = 0; i < rows; i++) {
@@ -68,7 +75,7 @@ function leaf(out: Sheets, f: Leaf3D, stalkCol: string, base: THREE.Vector3, yaw
     tPrev = t;
     const d = dir(t);
     // across the blade: horizontal and square to the heading, turned about the midrib by the twist
-    const side = V(-hz, 0, hx).applyAxisAngle(d, twist * s), up = new THREE.Vector3().crossVectors(side, d).normalize();
+    const side0 = V(-hz, 0, hx), side = side0.addScaledVector(d, -side0.dot(d)).normalize().applyAxisAngle(d, twist * s), up = new THREE.Vector3().crossVectors(side, d).normalize();
     const w = !blade ? SW : s >= 1 ? 0 : Math.max(NP ? SW : 0, W * Math.sin(Math.PI * Math.max(1e-3, s) ** f.prof[0]) ** f.prof[1]);
     for (let j = 0; j < NC; j++) {
       const u = us[j];
@@ -113,6 +120,10 @@ export function plantGeometry(type: PlantType, seed: number, h: number) {
   const P = PLANT3D[type]!, f = P.leaf, r = rng(seed * 7919 + 13), out = new Sheets(), extra: THREE.BufferGeometry[] = [];
   const Wc = h / PLANT_ASPECT[type], pick = () => f.cols[Math.floor(r() * f.cols.length)];
   const twist = () => (r() - 0.5) * 2 * f.twist, bright = () => 0.9 + r() * 0.2;
+  // the water's give: one current direction for the whole plant (mostly along the tank, as a filter's flow runs), each
+  // leaf leaning into it by its own amount, longer leaves more (own random stream: the leaf layout stays as it was)
+  const rs = rng(seed * 104729 + 71), cur = (rs() < 0.5 ? 0 : Math.PI) + (rs() - 0.5) * 1.2, cx = Math.cos(cur), cz = Math.sin(cur), sway = plant3d.sway ? P.sway : 0;
+  const bend = (len = 1): Bend => ({ cx, cz, k: sway * (0.5 + rs()) * len, wob: sway * 0.5 * (rs() - 0.5) * 2 * len, ph: rs() * 6.28 });
   if (P.form === 'carpet') {
     // leaflets over a disc with a ragged edge, lower toward it; past MAX_LEAFLETS a big patch gets bigger leaflets instead of more
     const rad = h / 2, want = Math.PI * rad * rad / 1000 * between(r, P.n), n = Math.round(Math.min(want, MAX_LEAFLETS)), grow = Math.sqrt(want / n), lobes = [r() * 6.28, r() * 6.28, r() * 6.28];
@@ -121,7 +132,7 @@ export function plantGeometry(type: PlantType, seed: number, h: number) {
       const a = r() * Math.PI * 2, edge = rad * (0.82 + 0.06 * Math.sin(3 * a + lobes[0]) + 0.05 * Math.sin(5 * a + lobes[1]) + 0.04 * Math.sin(8 * a + lobes[2]));
       const d = Math.sqrt(r()) * edge, x = Math.cos(a) * d, z = Math.sin(a) * d, k = 1 - (d / edge) ** 3;
       const y = CARPET_H * k * (0.35 + 0.65 * r() ** 0.7), L = between(r, f.len) * grow, v0 = out.pos.length / 3;
-      leaf(out, f, P.stalk, V(x, Math.max(0, y - L * 0.5), z), r() * 6.28, L, between(r, f.rise), twist(), pick(), bright() * (0.8 + 0.2 * k), r);
+      leaf(out, f, P.stalk, V(x, Math.max(0, y - L * 0.5), z), r() * 6.28, L, between(r, f.rise), twist(), pick(), bright() * (0.8 + 0.2 * k), r, bend(0.5));
       anchors[i * 2] = x; anchors[i * 2 + 1] = z;
       for (let v = v0; v < out.pos.length / 3; v++) owner.push(i);
     }
@@ -137,15 +148,17 @@ export function plantGeometry(type: PlantType, seed: number, h: number) {
     for (let s = 0; s < n; s++) {
       const a = r() * 6.28, d = Math.sqrt(r()) * Wc * P.spread / 2, b = V(Math.cos(a) * d, 0, Math.sin(a) * d);
       const top = h * (0.75 + 0.25 * r()), lean = V((r() - 0.5) * Wc * 0.4, 0, (r() - 0.5) * Wc * 0.4);
-      const at = (t: number) => b.clone().addScaledVector(lean, t * t).setY(top * t);
-      extra.push(tube([0, 0.33, 0.66, 1].map(at), Math.max(0.8, h * 0.006), P.stalk));
+      const sb = bend(), side = V(-cz, 0, cx);
+      const at = (t: number) => b.clone().addScaledVector(lean, t * t).add(V(cx, 0, cz).multiplyScalar(sb.k * top * 0.45 * t * t))
+        .addScaledVector(side, sb.wob * top * 0.15 * Math.sin(t * Math.PI * 1.3 + sb.ph) * t).setY(top * t);
+      extra.push(tube([0, 0.2, 0.4, 0.6, 0.8, 1].map(at), Math.max(0.8, h * 0.006), P.stalk));
       let rot = r() * 6.28;
       for (let i = 1; i <= nodes; i++) {
         const t = (i + r() * 0.4) / (nodes + 0.4), up = 1 - t, L = h * between(r, f.len) * (1 - 0.6 * t ** 2);
         rot += Math.PI / 2 + (r() - 0.5) * 0.4;
         const tc = P.top && t > P.top.from ? P.top.cols[Math.floor(r() * P.top.cols.length)] : null;
         const rise = lerp(f.rise[0], f.rise[1], up ** 0.5) * (0.85 + r() * 0.3), cols = tc ?? pick(), br = bright();
-        for (const o of [0, Math.PI]) leaf(out, f, P.stalk, at(t), rot + o, L, rise, twist(), cols, br, r);
+        for (const o of [0, Math.PI]) leaf(out, f, P.stalk, at(t), rot + o, L, rise, twist(), cols, br, r, bend(0.4));
       }
     }
   } else {
@@ -164,7 +177,7 @@ export function plantGeometry(type: PlantType, seed: number, h: number) {
       if (rz) { const u = r(), k = Math.min(3, Math.floor(u * 4)); base = roots[k].clone().lerp(roots[k + 1], u * 4 - k); yaw = r() * 6.28; }
       else { base = centres[i % crowns].clone().add(V((r() - 0.5) * h * 0.02, 0, (r() - 0.5) * h * 0.02)); yaw = i * 2.39996 + r() * 0.5; }
       const L = h * between(r, f.len) * (rz ? 1 : 0.75 + 0.25 * outer), rise = lerp(f.rise[0], f.rise[1], outer) * (0.85 + r() * 0.3);
-      leaf(out, f, P.stalk, base, yaw, L, rise, twist(), pick(), bright(), r);
+      leaf(out, f, P.stalk, base, yaw, L, rise, twist(), pick(), bright(), r, bend(L / h));
     }
   }
   // scale to the height asked for (the leaves' arch makes their reach less than their length), shade the leaves while

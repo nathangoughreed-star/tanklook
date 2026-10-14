@@ -12,7 +12,7 @@ import { D2R } from '../scene/physics';
 import { bowlDims, footprint, shapeOf } from '../scene/shape';
 import { clampGround, groundHeight, groundInsideBy } from '../scene/terrain';
 import type { Item, Tank, TankSetup } from '../scene/types';
-import { carpetOnGround, has3DPlant, plantGeometry, plantMaterial } from './plant3d';
+import { carpetOnGround, has3DPlant, plant3d, plantGeometry, plantMaterial } from './plant3d';
 import { cardMaterial, plantTexture } from './textures';
 
 type R = () => number;
@@ -413,10 +413,10 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
       const dx = x - it.x, dd = d - it.depth;
       return { x: dx * c + dd * s, y: groundHeight(S, T, x, d) - ground, z: dx * s - dd * c, w: Math.min(CARPET_W, 2 * groundInsideBy(S, T, x, d)) };
     };
-    const solid = has3DPlant(type), k3 = (solid ? '3d|' : '') + k;
+    const solid = has3DPlant(type), k3 = (solid ? `3d${plant3d.sway ? 's' : ''}|` : '') + k;
     // a 3D carpet is built once per (seed, size), then only set on the ground here
     const make = () => !solid ? plantGeo(type, it.seed, h, carpet ? at : undefined) : !carpet ? plantGeometry(type, it.seed, h)
-      : carpetOnGround(plants.get(`3d|carpet|${it.seed}|${it.size}`) ?? remember(plants, `3d|carpet|${it.seed}|${it.size}`, plantGeometry(type, it.seed, h), 300, dispose), at);
+      : carpetOnGround(plants.get(`3d${plant3d.sway ? 's' : ''}|carpet|${it.seed}|${it.size}`) ?? remember(plants, `3d${plant3d.sway ? 's' : ''}|carpet|${it.seed}|${it.size}`, plantGeometry(type, it.seed, h), 300, dispose), at);
     const g = plants.get(k3) ?? remember(plants, k3, make(), 300, dispose);
     if (carpet) g.computeBoundingBox();
     m = new THREE.Mesh(g, solid ? plantMaterial() : cardMaterial('plant:' + type, plantTexture(type), S.render.edge));
