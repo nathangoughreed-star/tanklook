@@ -70,7 +70,7 @@ Split from lane S. Only the PLANS / her() entries of these species in `src/art/f
   pinch-zoom locked or not. Then flip IOS_FLAG. Lane Q leftover fixed: selection boxes (lines drawn over everything) are hidden in WebXR AR and never exported. Known: plant colours may read duller under Quick Look's lighting than in
   the viewer (its own IBL); fish fins are translucent cards, faint from far.
 
-## Lane W: Android app (2026-10-14; PARKED, Nathan: "remember it for a later date"; prompt `prompts/lane-W-android-app.md`)
+## Lane W: Android app (2026-10-14; OPENED same day, Nathan: "start work on the android app"; prompt `prompts/lane-W-android-app.md`)
 - **Route: Trusted Web Activity (TWA)** around https://tanklook.com/ (Bubblewrap or PWABuilder). Real Chrome, so WebXR
   AR keeps working and pushes to main update the app with no store release. **Not Capacitor**: Android WebView has no
   WebXR (AR would need a native ARCore plugin); revisit only if offline use beats AR. Estimate: 1-2 days of code; the
@@ -670,6 +670,17 @@ Plan approved by Nathan (batches in severity order). Pictures: `shots/g2/` in th
 - Tooling (scratchpad, not in the repo): a ~80-line CDP driver over Node's built-in WebSocket + system Chrome; each run
   gets its own profile, so parallel agents do not share localStorage. Worth adding to scripts/ if audits recur.
 
+## African dwarf frog (2026-10-14; Nathan: "can we add an african dwarf frog model?"; branch `adf-frog`, port 5553)
+- Species `adf` (Hymenochirus boettgeri, 35 mm, water, bottom, shoal; note warns off the 12 cm African clawed frog).
+  Art: a `FROGS.adf` entry on the shared frog painter / `frog3D`: own flat torso with a long pointed snout
+  (`ADF_TORSO`, `ADF_WID`), small lidless eyes on the sides of the head, olive-grey granular skin (fine warts), small dark
+  spots, webbing on all four feet. New `FrogSpec` fields `web` (all feet) and `eye` (own eye position); the other three
+  frogs' fingerprints did not change. Added to `fish3d.species` (3D on).
+- AqAdvisor has no entry: stand-in Panda Cory (3.5 cm vs 5 cm, bottom, warm, groups), `standIn` in aqadvisor.json.
+- Model v1 at build 360, sheet `public/model-sheets/adf.jpg`. Awaiting Nathan's look. Open: it uses the land
+  frogs' sitting pose (hind legs folded); a real ADF often rests with the hind legs splayed out sideways, or floats at
+  the surface in a "zen" pose; not done.
+
 ## Tree frogs climb the glass (2026-10-14; Nathan: "like otos and snails cling to the glass")
 - White's tree frog has `cling: any` (glass, hardscape, floor). Shuffle / Add use the oto path (`spawnSnail`) with a new
   `on.above` = the water line, so a frog on the glass or hardscape is always out of the water; glass weight `GLASS_FROG`
@@ -872,13 +883,13 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | P final polish | `../Glass-Box-final-fixes` / `final-fixes` | 5473 | `src/style.css`, `index.html`, `src/ui/panels.ts`, `src/scene/water.ts` | DONE (`7e5897a`); files free |
 | R P2 axolotl + nerite | `../Glass-Box-p2-small` / `p2-small` | 5493 | `art/herps.ts`, `render/herp3d.ts`, `art/snails.ts`, `render/snail3d.ts` | DONE (`45f872a`); files free. Open: fillCut for mystery / turbo / trumpet (would change approved look) |
 | S P1 fish fins | `../Glass-Box-fish-fins` / `fish-fins` | 5503 | (released) | DONE (`f71987c`, `624f8b1`); P2 notes in lane S's section; files free |
-| X P2 fish, freshwater | `../Glass-Box-fish-fins` / `fish-fins` | 5503 | PLANS / her() entries ONLY of neon, cardinal, ember, rummynose, chili, danio, cpd, cherrybarb, tigerbarb, platy, molly | ready to open (prompt `prompts/lane-X-fish-p2-fresh.md`) |
-| Y P2 fish, bottom + marine | `../Glass-Box-fish-p2b` / `fish-p2b` | 5533 | PLANS / her() entries ONLY of bronzecory, pandacory, oto, clownloach, sae, ocellaris, royalgramma, sixline, chromis | ready to open (prompt `prompts/lane-Y-fish-p2-bottom-marine.md`) |
+| X P2 fish, freshwater | `../Glass-Box-fish-fins` / `fish-fins` | 5503 | PLANS / her() entries ONLY of neon, cardinal, ember, rummynose, chili, danio, cpd, cherrybarb, tigerbarb, platy, molly | running (session `local_600c5def`) |
+| Y P2 fish, bottom + marine | `../Glass-Box-fish-p2b` / `fish-p2b` | 5533 | PLANS / her() entries ONLY of bronzecory, pandacory, oto, clownloach, sae, ocellaris, royalgramma, sixline, chromis | running (session `local_9324d1d3`) |
 | R2 snail aperture kink | `../Glass-Box-p2-small` / `p2-small` (started by lane R) | 5493 | `art/snails.ts`, `render/snail3d.ts` (mystery / turbo / trumpet fillCut) | CLOSED: tried, Nathan declined (`52fb6cb`); snail files free |
 | S2 fish batch 4 | (worktree removed) | - | - | DONE (`1399de7`, build 351); swordtail kept at 120 mm (Nathan) |
 | V zoom out further | `../Glass-Box-zoom-out` / `zoom-out` | 5523 | `scene/validate.ts` LIMITS.zoom, `render/camera.ts`, the zoom / framing parts of `render/viewer.ts`, the cZoom slider in `index.html` / `ui/panels.ts`, `interact/pointer.ts` wheel / pinch | DONE (see Lane V section); files free. Also touched (free files): `render/build.ts` room size + ceiling, `render/viewmap.ts` caption, `scene/orbit.ts` |
 | T iPhone AR | `../Glass-Box-ar` / `ar-view` (lane Q's, Q is done) | 5483 | new `render/arUsdz.ts` + test, `render/ar.ts` | DONE for now (`3085106`); iPhone button hidden behind `?ar=ios` until an iPhone test, then IOS_FLAG = false; files free |
-| W Android app | not made yet (`../Glass-Box-android` / `android`) | next free | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | PARKED for later (prompt `prompts/lane-W-android-app.md`); after P's files are free, mind V's `index.html` / `panels.ts` edits |
+| W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | OPENED 2026-10-14 (prompt `prompts/lane-W-android-app.md`); step 1 landscape layout; mind V's `index.html` / `panels.ts` edits |
 Free (no lane): `render/build.ts`, `render/items.ts`, `scene/items.ts`, `render/viewer.ts`, `main.ts`, `render/lighting.ts`,
 `render/coral3d.ts`, `render/shrimp3d.ts` / `art/shrimps.ts`, `scene/share.ts`, herps / herp3d / snails / snail3d. A one-line hook in a free file is fine; name it
 in your section. Where to read: anatomy audit `reference/model-anatomy-audit-v1.md`; model versions "Model review sheet"

@@ -75,6 +75,10 @@ const TREEFROG_WID: [number, number][] = [[0.06, 0.11], [0.2, 0.165], [0.42, 0.1
 const TOAD_TORSO: Pt[] = [[1.0, 0.05, 'c'], [0.975, -0.015], [0.91, -0.08], [0.82, -0.115], [0.7, -0.125], [0.55, -0.12], [0.4, -0.105], [0.28, -0.065],
   [0.19, 0.02], [0.16, 0.13], [0.2, 0.215], [0.3, 0.245], [0.45, 0.235], [0.62, 0.2], [0.78, 0.15], [0.9, 0.11], [0.97, 0.085]];
 const TOAD_WID: [number, number][] = [[0.17, 0.13], [0.28, 0.2], [0.45, 0.225], [0.62, 0.215], [0.78, 0.19], [0.9, 0.145], [1, 0.08]];
+/** African dwarf frog: flat and low, the head running straight into a long pointed snout, no neck, a flat belly. */
+const ADF_TORSO: Pt[] = [[1.0, 0.1, 'c'], [0.97, 0.06], [0.9, 0.0], [0.8, -0.04], [0.68, -0.06], [0.52, -0.07], [0.36, -0.065], [0.22, -0.035],
+  [0.11, 0.04], [0.08, 0.13], [0.12, 0.21], [0.24, 0.24], [0.44, 0.24], [0.62, 0.225], [0.78, 0.19], [0.9, 0.155], [0.97, 0.125]];
+const ADF_WID: [number, number][] = [[0.1, 0.1], [0.24, 0.15], [0.44, 0.16], [0.62, 0.145], [0.74, 0.115], [0.84, 0.075], [0.92, 0.04], [0.97, 0.02], [1, 0.008]];
 /** The frog's design height v (ground 0.265) in the card frame of aspect `aspect` (flatter frames squash toward the ground). */
 const frogV = (aspect: number, v: number) => { const g = aspect / 2 - 0.015, k = (g + 0.25) / (0.265 + 0.25); return g - (0.265 - v) * k; };
 
@@ -91,7 +95,10 @@ interface FrogSpec {
   torso?: Pt[];                     // own side outline (design frame), else FROG_TORSO
   wid?: [number, number][];         // own half-width by u (3D), else the shared frog's
   rump?: number;                    // the hip sits this far forward (u) on a short-bodied frog (toad)
+  web?: number;                     // webbing reach on every foot (fully aquatic frogs), else the toad's hind feet only
+  eye?: { u: number; v: number; r: number; th: number }; // own eye (design frame; th round the 3D section), else the shared one
 }
+const FROG_EYE = { u: 0.8, v: -0.14, r: 0.052, th: 0.9 };
 
 function drawFrog(s: FrogSpec, ctx: Ctx, P0: Proj, W: number) {
   const g = s.aspect / 2 - 0.015, k = (g + 0.25) / (0.265 + 0.25);
@@ -118,8 +125,9 @@ function drawFrog(s: FrogSpec, ctx: Ctx, P0: Proj, W: number) {
   ctx.save(); const [tx, ty] = P(0.685, -0.055); ctx.beginPath(); ctx.arc(tx, ty, 0.03 * W * k, 0, 7);
   ctx.strokeStyle = 'rgba(14,16,12,0.18)'; ctx.lineWidth = 0.004 * W; ctx.stroke(); ctx.restore();
   blob(ctx, P, W, 0.955, -0.03, 0.006, 0.004, '#141410', 0.6);
-  blob(ctx, P, W, 0.8, -0.13, 0.07, 0.06 * k, darker(s.skin[0], 0.7), 0.5); // socket shadow
-  herpEye(ctx, P, W, 0.8, -0.14, 0.052 * k, s.iris, s.pupil);
+  const e = s.eye ?? FROG_EYE;
+  blob(ctx, P, W, e.u, e.v + 0.01, e.r * 1.35, e.r * 1.15 * k, darker(s.skin[0], 0.7), 0.5); // socket shadow
+  herpEye(ctx, P, W, e.u, e.v, e.r * k, s.iris, s.pupil);
 }
 
 const FROGS: Record<string, FrogSpec> = {
@@ -155,6 +163,18 @@ const FROGS: Record<string, FrogSpec> = {
       for (let i = 0; i < 10; i++) blob(l, P, W, 0.15 + r() * 0.7, 0.15 + r() * 0.08, 0.018, 0.014, '#141210', 0.85);
     },
     legMarks: (l, P, W) => { const r = rng(4); for (let i = 0; i < 12; i++) blob(l, P, W, 0.05 + r() * 0.8, 0.02 + r() * 0.24, 0.018, 0.014, '#111410', 0.8); },
+  },
+  // Hymenochirus boettgeri: olive-grey to brown, finely granular, small dark spots; paler grey belly; small lidless
+  // eyes on the sides of the head; webbed fingers and toes
+  adf: {
+    aspect: 0.44, skin: ['#5f5a46', '#6e6852', '#9a9682'], leg: ['#635d48', '#6f6953', '#8e8a76'],
+    iris: ['#a39a6a', '#3b3826'], pupil: 'round', warts: '#4f4a39', torso: ADF_TORSO, wid: ADF_WID, web: 1,
+    eye: { u: 0.86, v: -0.015, r: 0.03, th: 1.05 },
+    marks: (l, P, W) => {
+      const r = rng(17); for (let i = 0; i < 22; i++) blob(l, P, W, 0.14 + r() * 0.74, -0.06 + r() * 0.14, 0.014, 0.011, '#2f2c21', 0.75);
+      soft(l, P, 0.1, 0.98, 0.14, 0.25, '#a8a490', 0.8, [0.05, 0.04], [0.04, 0.0]);
+    },
+    legMarks: (l, P, W) => { const r = rng(18); for (let i = 0; i < 10; i++) blob(l, P, W, 0.05 + r() * 0.8, 0.02 + r() * 0.24, 0.012, 0.01, '#2f2c21', 0.7); },
   },
 };
 
@@ -361,7 +381,7 @@ export interface Herp3D {
 /** Frogs share one sitting pose (design frame, see FROG_TORSO); `fat` widens the body. */
 function frog3D(s: FrogSpec, fat: number, tone: [number, string][], marks: Mark3D[], legSpots?: Herp3D['legSpots']): Herp3D {
   const V = (v: number) => frogV(s.aspect, v), J = (u: number, v: number, z: number, r: number): Joint => [u, V(v), z, r];
-  const pad = s.pads, toe = 0.009, r = s.rump ?? 0, web = s.warts ? 0.9 : undefined;
+  const pad = s.pads, toe = 0.009, r = s.rump ?? 0, web = s.web ?? (s.warts ? 0.9 : undefined), e = s.eye ?? FROG_EYE;
   // the toad's webbed hind foot fans its toes wider
   const hindToes: [number, number][] = web ? [[0.13, -0.08], [0.18, -0.025], [0.18, 0.04], [0.13, 0.1], [0.06, 0.13]] : [[0.15, -0.06], [0.19, -0.015], [0.18, 0.035], [0.13, 0.08], [0.075, 0.105]];
   return {
@@ -375,10 +395,10 @@ function frog3D(s: FrogSpec, fat: number, tone: [number, string][], marks: Mark3
         toes: hindToes, toe, pad, thigh: 0.1, blunt: true, web },
       // front arm straight down under the shoulder, four fingers turned in and out
       { js: [J(0.7, 0.08, 0.1 * fat, 0.032), J(0.68, 0.17, 0.165 * fat, 0.024), J(0.725, 0.245, 0.17 * fat, 0.017)],
-        toes: [[0.075, -0.04], [0.085, 0.01], [0.055, 0.055], [0.0, 0.07]], toe, pad, blunt: true },
+        toes: [[0.075, -0.04], [0.085, 0.01], [0.055, 0.055], [0.0, 0.07]], toe, pad, blunt: true, web: s.web },
     ],
     legCol: [s.leg[1], s.leg[2]],
-    eye: { u: 0.8, th: 0.9, r: 0.052 * (frogV(s.aspect, 1) - frogV(s.aspect, 0)), iris: s.iris, pupil: s.pupil, bulge: 0.62 },
+    eye: { u: e.u, th: e.th, r: e.r * (frogV(s.aspect, 1) - frogV(s.aspect, 0)), iris: s.iris, pupil: s.pupil, bulge: 0.62 },
     ground: frogV(s.aspect, 0.265),
   };
 }
@@ -476,6 +496,13 @@ export const HERP3D: Record<string, Herp3D> = {
   ], { c: '#111410', r: 0.016, n: 14 }),
     // low rounded warts over the back and upper flanks, none on the smooth belly
     warts: { n: 80, u: [0.24, 0.9], a: [0.04, 0.55], r: [0.013, 0.021], h: 0.5, seed: 31 } },
+  // olive-grey, paler below; small dark spots; fine granular skin all over the back and flanks
+  adf: { ...frog3D(FROGS.adf, 1, [[0, '#5f5a46'], [0.5, '#6e6852'], [0.7, '#7e7965'], [1, '#a29e8a']], [
+    { k: 'spots', n: 34, u: [0.12, 0.9], a: [0.0, 0.6], r: [0.008, 0.014], c: '#2f2c21', o: 0.75, seed: 41 },
+    { k: 'spots', n: 140, u: [0.1, 0.95], a: [0.0, 0.6], r: [0.005, 0.008], c: '#4f4a39', o: 0.5, seed: 42 },
+    { k: 'line', pts: [[0.8, 0.62], [0.9, 0.64], [0.995, 0.6]], c: '#0e100c', o: 0.22, w: 0.003 }, // mouth
+  ], { c: '#2f2c21', r: 0.01, n: 14 }),
+    warts: { n: 120, u: [0.15, 0.95], a: [0.02, 0.6], r: [0.007, 0.011], h: 0.45, seed: 43 } },
   // dark brown-black and granular above, the orange belly showing low on the flank
   // a broad trunk, a rounded head a little wider than the neck, the tail flattened side to side
   firenewt: sal3D(SALS.firenewt, [[0, 0.002], [0.08, 0.004], [0.2, 0.007], [0.34, 0.01], [0.44, 0.014], [0.5, 0.026], [0.56, 0.038], [0.66, 0.045],

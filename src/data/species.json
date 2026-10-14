@@ -58,6 +58,7 @@
   {"id": "treefrog", "cat": "amphibian", "name": "White's tree frog", "sci": "Ranoidea caerulea", "tl": 100, "habitat": "land", "cling": "any", "art": "treefrog"},
   {"id": "firetoad", "cat": "amphibian", "name": "Fire-bellied toad", "sci": "Bombina orientalis", "tl": 45, "habitat": "both", "art": "firetoad"},
   {"id": "firenewt", "cat": "amphibian", "name": "Chinese fire-bellied newt", "sci": "Cynops orientalis", "tl": 90, "habitat": "both", "art": "firenewt"},
+  {"id": "adf", "cat": "amphibian", "name": "African dwarf frog", "sci": "Hymenochirus boettgeri", "tl": 35, "zone": "bottom", "group": "shoal", "art": "adf", "note": "Fully aquatic; swims up for air. Not the African clawed frog, which grows to 12 cm."},
   {"id": "axolotl", "cat": "amphibian", "name": "Axolotl", "sci": "Ambystoma mexicanum", "tl": 230, "zone": "bottom", "art": "axolotl"}
  ]
 }
