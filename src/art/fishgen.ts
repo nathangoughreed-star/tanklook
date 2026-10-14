@@ -62,6 +62,7 @@ export interface Plan {
   finMarks?: Mark[];  // painted inside the dorsal, anal and tail fins
   eye: { r: number; iris: [string, string]; u?: number; dv?: number; up?: number; bulge?: number }; // up (3D): 0 on the flank .. 1 on top of the head; bulge (3D): the dome's height, share of r (default 0.38)
   gape?: number;      // 3D: a mouth line this long (u) back from the snout tip on each flank (the body texture has no mouth)
+  gapeDrop?: number;  // 3D: how far the mouth line curves down at its rear end (widths, default 0.02; 0 = straight)
   barbels?: number;   // barbel length (widths); bottom fish
   bristles?: boolean; // bristlenose snout
   rim?: number;

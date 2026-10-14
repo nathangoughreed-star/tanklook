@@ -161,7 +161,7 @@ function gapeMeshes(art: string, p: Plan, bend: number, mat: THREE.Material) {
     let g = geoCache.get(key);
     if (!g) {
       const pts = Array.from({ length: 7 }, (_, i) => {
-        const k = i / 6, u = 0.997 - p.gape! * k, [t, b] = profile(p)(u), v = Math.min(b - 0.003, Math.max(t + 0.003, m0 + 0.004 + 0.02 * k * k));
+        const k = i / 6, u = 0.997 - p.gape! * k, [t, b] = profile(p)(u), v = Math.min(b - 0.003, Math.max(t + 0.003, m0 + 0.004 + (p.gapeDrop ?? 0.02) * k * k));
         const s = surfaceAt(p, u, v, side, bend), z0 = bendZ(bend, s.x);
         return new THREE.Vector3(s.x, s.y, z0 + (s.z - z0) * 1.04 + side * 0.001);
       });
