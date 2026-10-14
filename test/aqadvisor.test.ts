@@ -22,7 +22,7 @@ describe('AqAdvisor request', () => {
     const map = ids as Record<string, { standIn?: boolean }>;
     for (const sp of SPECIES) expect(sp.id in map, sp.id).toBe(sp.habitat !== 'land'); // marine ones: AqAdvisorMarine.php ids, kept for when it gives a % again
     for (const sp of SPECIES) expect(!!(map[sp.id] as { salt?: boolean } | undefined)?.salt, sp.id).toBe(!!sp.salt && sp.habitat !== 'land');
-    expect(Object.keys(map).filter(k => map[k].standIn).sort()).toEqual(['axolotl', 'cleanershrimp', 'firenewt', 'firetoad', 'hermit', 'turbo']);
+    expect(Object.keys(map).filter(k => map[k].standIn).sort()).toEqual(['adf', 'axolotl', 'cleanershrimp', 'firenewt', 'firetoad', 'hermit', 'turbo']);
   });
 
   it('counts per species in a stable order, tank in inches', () => {

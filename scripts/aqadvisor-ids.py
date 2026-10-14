@@ -58,6 +58,7 @@ STAND_INS = {
     'axolotl': 'Dojo Loach (Misgurnus anguillicaudatus)',  # 23 cm, bottom, cold water
     'firenewt': 'Zebra Loach (Botia striata)',  # 9 cm, bottom
     'firetoad': 'White Cloud Mountain Minnow (Tanichthys albonubes)',  # 4.5 cm, semi-aquatic, cool water
+    'adf': 'Panda Cory (Corydoras panda)',  # African dwarf frog: 3.5 cm, bottom, warm water, kept in groups
 }
 
 # Saltwater (lane C's marine species): AqAdvisor's separate marine calculator, AqAdvisorMarine.php, same form and the
