@@ -187,7 +187,9 @@ export type LayoutId = 'none' | 'stones' | 'driftwood' | 'planted' | 'iwagumi' |
  * density the seed used to roll (`legacyDens`), animals None.
  */
 export interface LayerDens { hard: number; plant: number; animal: number }
-export interface LayoutSettings { id: LayoutId; seed: number; dens?: LayerDens }
+/** `seed` draws the style and the hardscape (and a swamp's land); `plantSeed` / `animalSeed` draw the plants and the
+ *  starter animals, so each menu's Shuffle redraws its own layer only (Nathan 2026-10-15). Absent = `seed`. */
+export interface LayoutSettings { id: LayoutId; seed: number; plantSeed?: number; animalSeed?: number; dens?: LayerDens }
 
 /** Library item kinds; the variant names the generator (scene/items.ts LIBRARY). */
 export type ItemKind = 'stone' | 'wood' | 'cave' | 'plant' | 'coral';
@@ -215,9 +217,12 @@ export interface Item {
   /** mm: the length of a stone, wood or cave, the height of a plant, the width of a carpet patch. */
   size: number;
   /** Plants that grow as several stems or crowns (isClump): the circle they start in, mm, and how many. Absent = the
-   *  species' own look, drawn from the seed (added 2026-10-14, no version bump). */
+   *  species' own look, drawn from the seed (added 2026-10-14, no version bump). Floaters have a spread too (the circle
+   *  the patch covers fully grown) and, instead of a count, `dens` (times the species' own rosettes per area) (2026-10-15).
+   *  A spread may reach past the glass: what would land outside is set down inside. */
   spread?: number;
   stems?: number;
+  dens?: number;
   /** Plants: 0 = just planted, ~0.5 = established, 1 = fully grown / overgrown (lane GR1, 2026-10-15). Absent = the
    *  growth at which the species reaches `size` (growthOf in art/plants.ts), so older files draw as they did. With it,
    *  `size` stays the plant's own scale and growth sets how big and how dense it is. */

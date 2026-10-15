@@ -2,9 +2,9 @@
 // renderer builds them from (so placement code can find a branch to tie a fern to without three.js), and the starter
 // sets that replace the old fixed layouts. All sizes physical (mm): a bigger tank gets more pieces, not bigger ones.
 import { rng } from '../art/paint';
-import { PLANT3D, PLANT_ASPECT, grownSize, isCarpet, isClump, isFloat, isPatch, type PlantType } from '../art/plants';
+import { PLANT3D, PLANT_ASPECT, grownSize, growthLen, growthOf, isCarpet, isClump, isFloat, isPatch, type PlantType } from '../art/plants';
 import { backdropDepth, clamp, clearOfWall, D2R } from './physics';
-import { bowlDims, bowlRadius, clampIn, shapeOf } from './shape';
+import { bowlDims, bowlRadius, clampIn, footprint, shapeOf } from './shape';
 import { clampGround, groundHeight, radialTerrain, type Ground } from './terrain';
 import type { Item, ItemKind, LayerDens, LayoutId, Tank, TankSetup } from './types';
 
@@ -52,6 +52,8 @@ export const LIBRARY: Record<string, Variant> = {
 };
 export const KINDS: Record<ItemKind, string> = { stone: 'Stones', wood: 'Wood', cave: 'Caves', plant: 'Plants', coral: 'Corals' };
 export const MAX_ITEMS = 600;
+/** A floater's density range (times the species' own rosettes per area). */
+export const DENS = [0.1, 3] as const;
 /** Most stems or crowns one clump may have (a stem is about 1.5 k triangles). */
 export const MAX_STEMS = 40;
 /** Carpet cards, mm (about 3 cm tall, like a trimmed Monte Carlo carpet). */
@@ -147,13 +149,29 @@ export function woodLimbs(variant: string, seed: number, size: number): Limb[] {
 }
 
 /** Overall size of a piece: [length, height, width] in its own frame, mm (plants: card width, height, width). */
+/** Plants with a Spread: clumps (with a count) and floaters (with a density instead). */
+export const hasSpread = (v: string) => isClump(v) || isFloat(v);
+/** A floater with its own spread: how wide its patch is at growth g (all of the spread at growth 1). */
+export const floatWidth = (it: Pick<Item, 'variant' | 'size' | 'spread' | 'growth'>) =>
+  it.spread! * growthLen(it.variant as PlantType, it.growth ?? growthOf(it.variant as PlantType, it.size)) / growthLen(it.variant as PlantType, 1);
+/** The most a spread may be (mm across): enough from anywhere in the tank to reach its far corner (Nathan 2026-10-15:
+ *  "all the way to fill the entire tank area regardless of where the plant sits"); from (x, depth) when given (the
+ *  slider), else from the worst spot (clampItem). A bowl keeps the old rule (its glass closes in above). */
+export function spreadMax(T: Tank, x?: number, depth?: number) {
+  if (shapeOf(T) === 'bowl') return Math.max(10, Math.min(T.L, T.D) - 6);
+  const ring = footprint(T).ring;
+  let m = 0;
+  for (const p of ring) for (const q of x == null ? ring : [[x, depth!]]) m = Math.max(m, Math.hypot(p[0] - q[0], p[1] - q[1]));
+  return Math.ceil(2 * m + 2);
+}
+
 export function itemDims(it: Pick<Item, 'kind' | 'variant' | 'seed' | 'size' | 'spread' | 'growth'>): V3 {
   const s = it.kind === 'plant' ? grownSize(it.variant as PlantType, it.size, it.growth) : it.size; // a plant at its growth
   if (it.kind === 'stone') return stoneDims(it.variant, it.seed, s);
   // an upright plant grown past its saved size gets longer much faster than its footprint widens (long leaves and stems
   // lie over at the surface), so its width follows its length only up to 1.4x the saved size
   const sw = Math.min(s, it.size * 1.4);
-  if (it.kind === 'plant') return isCarpet(it.variant) ? [s, CARPET_H, s] : isFloat(it.variant) ? [s, s * PLANT_ASPECT[it.variant as PlantType], s] : ((w: number) => [w, s, w])(it.spread ? Math.max(it.spread, sw / PLANT_ASPECT[it.variant as PlantType]) : sw / PLANT_ASPECT[it.variant as PlantType]) as [number, number, number];
+  if (it.kind === 'plant') return isCarpet(it.variant) ? [s, CARPET_H, s] : isFloat(it.variant) ? ((w: number) => [w, s * PLANT_ASPECT[it.variant as PlantType], w])(it.spread ? floatWidth(it) : s) : ((w: number) => [w, s, w])(it.spread ? Math.max(it.spread, sw / PLANT_ASPECT[it.variant as PlantType]) : sw / PLANT_ASPECT[it.variant as PlantType]) as [number, number, number];
   if (it.kind === 'coral') return [s, s * ({ acropora: 0.6, montipora: 0.45, mushroom: 0.4, leather: 0.6 } as Record<string, number>)[it.variant], s];
   if (it.kind === 'cave') return it.variant === 'arch' ? [s, 0.5 * s, 0.45 * s] : it.variant === 'tube' ? [s, 0.42 * s, 0.42 * s] : [s, 0.5 * s, s];
   return it.variant === 'manzanita' ? [0.7 * s, s, 0.7 * s] : it.variant === 'spider' ? [s, 0.5 * s, 0.8 * s] : it.variant === 'mopani' ? [s, 0.45 * s, 0.3 * s] : [s, 0.65 * s, 0.45 * s];
@@ -193,7 +211,9 @@ export function clampItem(it: Item, T: Tank, g?: Ground) {
   // upright plant keeps its base (the circle its crowns or stems start in) inside, so it can be planted right against
   // the glass; leaves arching past a pane are cut off there like hardscape (Nathan 2026-10-15). A bowl still keeps the
   // whole plant clear (its glass closes in above)
-  const [l, , w] = itemDims(it), half = it.kind === 'plant' ? (isPatch(it.variant) ? Math.max(l, w) * 0.35 : shapeOf(T) === 'bowl' ? l / 2 + 3 : plantBaseR(it) + 2) : 0;
+  // (a plant's own spread does not push it in from the glass: what would land past it is set down inside instead)
+  const own = { ...it, spread: shapeOf(T) === 'bowl' ? it.spread : undefined };
+  const [l, , w] = itemDims(own), half = it.kind === 'plant' ? (isPatch(it.variant) ? (it.spread && !own.spread ? 20 : Math.max(l, w) * 0.35) : shapeOf(T) === 'bowl' ? l / 2 + 3 : Math.min(plantBaseR(it), plantBaseR(own)) + 2) : 0;
   const inset = Math.min(half, Math.min(T.L, T.D) * 0.45);
   it.x = clamp(it.x, inset, T.L - inset); it.depth = clamp(it.depth, inset, T.D - inset);
   if (g && shapeOf(T) === 'bowl') { // a plant stays clear of the glass over its whole height (the sphere closes in above)
@@ -204,11 +224,13 @@ export function clampItem(it: Item, T: Tank, g?: Ground) {
   const wall = it.kind === 'plant' ? backdropDepth(g?.backdrop, T) : 0;
   if (wall) ({ x: it.x, depth: it.depth } = clearOfWall(T, it.x, it.depth, wall * 0.7 + half * 0.5, g?.render?.bgSides));
   it.lift = clamp(it.lift, -LIFT_SINK * T.H, T.H);
-  // a clump's own spread and count (absent = the species' own); dropped on anything that is not a clump
-  if (it.kind === 'plant' && isClump(it.variant)) {
-    if (it.spread != null) it.spread = Math.round(clamp(it.spread, 10, Math.max(10, Math.min(T.L, T.D) - 6)));
-    if (it.stems != null) it.stems = Math.round(clamp(it.stems, 1, MAX_STEMS));
-  } else { delete it.spread; delete it.stems; }
+  // a clump's own spread and count, a floater's spread and density (absent = the species' own); dropped elsewhere
+  if (it.kind === 'plant' && hasSpread(it.variant) && it.spread != null) it.spread = Math.round(clamp(it.spread, 10, spreadMax(T)));
+  else delete it.spread;
+  if (it.kind === 'plant' && isClump(it.variant) && it.stems != null) it.stems = Math.round(clamp(it.stems, 1, MAX_STEMS));
+  else delete it.stems;
+  if (it.kind === 'plant' && isFloat(it.variant) && it.dens != null) it.dens = Math.round(clamp(it.dens, DENS[0], DENS[1]) * 100) / 100;
+  else delete it.dens;
   // a plant's growth, 0..1 (absent = back-solved from its size); nothing else has one
   if (it.kind === 'plant' && it.growth != null) it.growth = Math.round(clamp(it.growth, 0, 1) * 1000) / 1000;
   else delete it.growth;
@@ -228,9 +250,9 @@ export function itemToTank(S: TankSetup, it: Item, p: V3) {
  * area (mm²) and a random spot on them in proportion to it, (x, depth) and an estimate of the height there. The renderer
  * finds the exact top under (x, depth); this only has to land on the piece.
  */
-export function hardscape(S: TankSetup) {
+export function hardscape(S: TankSetup, pieces = S.items) {
   const parts: { area: number; spot: (r: () => number) => { x: number; depth: number; y: number } }[] = [];
-  for (const it of S.items) {
+  for (const it of pieces) {
     if (it.kind === 'plant' || it.kind === 'coral') continue; // no grazing on live coral (Nathan 2026-10-14)
     if (it.kind === 'wood') {
       for (const l of woodLimbs(it.variant, it.seed, it.size)) {
@@ -253,6 +275,23 @@ export function hardscape(S: TankSetup) {
   };
 }
 export type Hardscape = ReturnType<typeof hardscape>;
+
+/** Plants grown tied onto wood or rock rather than planted in the substrate (Nathan 2026-10-15: substrate, hardscape,
+ *  then plants, some of them attached to the hardscape by type, then animals). */
+export const EPIPHYTES: ReadonlySet<string> = new Set(['fern', 'anubias', 'buce', 'moss']);
+/**
+ * A spot on the stone or wood nearest (x, depth) to tie an epiphyte on: (x, depth) on the piece and the lift above the
+ * ground there. `pieces`: where to look (default the tank's). Null when the tank has no stone or wood.
+ */
+export function perch(S: TankSetup, x: number, depth: number, r: () => number, pieces = S.items) {
+  const solid = pieces.filter(it => it.kind === 'stone' || it.kind === 'wood');
+  if (!solid.length) return null;
+  const near = solid.reduce((a, b) => Math.hypot(b.x - x, b.depth - depth) < Math.hypot(a.x - x, a.depth - depth) ? b : a);
+  const hs = hardscape(S, [near]);
+  let best: { x: number; depth: number; y: number } | null = null;
+  for (let k = 0; k < 6; k++) { const p = hs.spot(r); if (p && (!best || Math.hypot(p.x - x, p.depth - depth) < Math.hypot(best.x - x, best.depth - depth))) best = p; }
+  return best && { x: best.x, depth: best.depth, lift: Math.max(0, Math.round(best.y - groundHeight(S, S.tank, best.x, best.depth))) };
+}
 
 export const nextItemId = (s: TankSetup) => s.items.reduce((m, it) => Math.max(m, it.id), 0) + 1;
 
@@ -299,10 +338,10 @@ export function starterStyle(seed: number): Style {
 export const DENS_RANGE = [-1, 6] as const, ANIMAL_RANGE = [0, 6] as const;
 export const DENS_NAMES = ['One piece', 'Sparse', 'Light', 'Medium', 'Full', 'Packed', 'Overgrown', 'Far too much'] as const;
 export const ANIMAL_NAMES = ['None', 'Few', 'Some', 'Many', 'Full', 'Overstocked', 'Far overstocked'] as const;
-/** The name nearest a slider value. */
+/** A slider value shown as 1..10 (Nathan 2026-10-15: numbers, not names); animals at 0 are None. */
 export function densName(k: 'hard' | 'plant' | 'animal', v: number) {
-  if (k === 'animal') return v <= 0 ? 'None' : v < 0.5 ? 'One or two' : ANIMAL_NAMES[clamp(Math.round(v), 0, 6)];
-  return DENS_NAMES[clamp(Math.round(v), -1, 6) + 1];
+  if (k === 'animal') return v <= 0 ? 'None' : String(clamp(Math.round(v / ANIMAL_RANGE[1] * 10), 1, 10));
+  return String(1 + Math.round((clamp(v, ...DENS_RANGE) - DENS_RANGE[0]) / (DENS_RANGE[1] - DENS_RANGE[0]) * 9));
 }
 /** Medium hardscape and plants (the set as designed), no animals: what a new tank and an old file's seed 1 get. */
 export const DEFAULT_DENS: LayerDens = { hard: 2, plant: 2, animal: 0 };
@@ -357,14 +396,14 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
   if (id === 'none') return out;
   const spec = STYLES[id], DS = S.layout.dens ?? DEFAULT_DENS, sub = (x: number, d: number) => groundHeight(S, T, x, d);
   const st = starterStyle(S.layout.seed), designed = st.classic; // designed: seed 1, the set's own materials and groups
-  const stream = (k: number) => rng(S.layout.seed * 7919 + id.length * 104729 + k * 1000003);
+  const stream = (k: number, sd = S.layout.seed) => rng(sd * 7919 + id.length * 104729 + k * 1000003);
   // the layer being drawn: its random stream, a second one for style picks (so a pick does not shift with the count of
   // pieces drawn before it), its density, and `classic` = the set exactly as designed (seed 1 at Medium)
   let r = stream(1), q = stream(11), dens = 1, classic = false, nid = out.reduce((m, it) => Math.max(m, it.id), 0) + 1;
   const pick = <T>(a: T[]) => a[Math.floor(q() * a.length) % a.length];
   const layer = (k: 'hard' | 'plant', draw: () => void) => {
     if (k === 'hard' && keepHard) return;
-    const stop = DS[k], n0 = out.length; r = stream(k === 'hard' ? 1 : 2); q = stream(k === 'hard' ? 11 : 12);
+    const stop = DS[k], n0 = out.length; const sd = k === 'plant' ? S.layout.plantSeed ?? S.layout.seed : S.layout.seed; r = stream(k === 'hard' ? 1 : 2, sd); q = stream(k === 'hard' ? 11 : 12, sd);
     dens = stopDens(stop, spec[k]); classic = designed && stop === 2; draw();
     if (stop < 0) { // below Sparse: keep the first pieces the layer placed (the main ones come first), one at the least
       const mine = out.slice(n0).filter(it => layerOf(it) === k), keep = new Set(mine.slice(0, Math.max(1, Math.round(mine.length * keepShare(stop)))));
@@ -400,6 +439,8 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
    *  glass), so plants rise towards the middle instead of all moving there. */
   const plant = (type: PlantType, x: number, d: number, h: number, lift = 0, raw = false) => {
     const p = raw ? { x, d } : map(x, d);
+    // a fern, anubias, buce or moss set on the floor goes onto the nearest stone or wood instead
+    if (!lift && EPIPHYTES.has(type)) { const at = perch({ ...S, items: out }, p.x, p.d, r, solids()); if (at) { p.x = at.x; p.d = at.depth; lift = at.lift; } }
     let hh = Math.min(h, room(p.x, p.d, lift), (Math.min(L, D) - 6) * PLANT_ASPECT[type]);
     if (bowl) {
       const { R, c } = bowlDims(T), y0 = sub(p.x, p.d) + lift, q0 = Math.hypot(p.x - L / 2, p.d - D / 2);
@@ -558,12 +599,18 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
       // one piece of wood per group (three at most; one at the sparsest stop), pebbles round it; mostly one kind of wood
       const same = q() < 0.65, k0 = designed ? 'branch' : pick(kinds), pebble = designed ? 'river' : pick(['river', 'river', 'lava', 'dragon']);
       const vs = st.foci.map(() => same || designed ? k0 : pick(kinds));
-      st.foci.slice(0, dens < 0.5 ? 1 : 3).forEach((f, fi) => {
-        const v = vs[fi], g = Math.sqrt(f.k) * st.scale;
-        const size = v === 'manzanita' ? H * (0.6 + r() * 0.3) * g : v === 'mopani' ? Math.min(L * 0.35, D * 1.2) * g : v === 'spider' ? Math.min(L * 0.55, D * 1.6) * g : Math.min(L * 0.7, H * 0.82 / 0.68, D * 2.2) * g;
-        put(v, L * f.x, D * (f.d + 0.08), size, { yaw: Math.round((r() - 0.5) * 360) });
+      const groups = st.foci.slice(0, dens < 0.5 ? 1 : 3);
+      const woodSize = (v: string, g: number) => v === 'manzanita' ? H * (0.6 + r() * 0.3) * g : v === 'mopani' ? Math.min(L * 0.35, D * 1.2) * g : v === 'spider' ? Math.min(L * 0.55, D * 1.6) * g : Math.min(L * 0.7, H * 0.82 / 0.68, D * 2.2) * g;
+      groups.forEach((f, fi) => {
+        put(vs[fi], L * f.x, D * (f.d + 0.08), woodSize(vs[fi], Math.sqrt(f.k) * st.scale), { yaw: Math.round((r() - 0.5) * 360) });
         for (let i = 0, n = many(5, f.k); i < n; i++) { const s = 12 + r() * 22; put(pebble, L * (f.x + (r() - 0.5) * 0.3), D * (f.d + (r() - 0.3) * 0.35), s * 1.2, tip(pebble)); }
       });
+      // above Medium the wood itself thickens too (Nathan 2026-10-15: "far too much" looked like Medium): smaller pieces
+      // piled round each group, drawn after the main ones so those stay put
+      for (let j = groups.length, n = Math.min(16, Math.round(groups.length * dens)); j < n; j++) {
+        const fi = j % groups.length, f = groups[fi], v = same || designed ? vs[fi] : pick(kinds);
+        put(v, L * clamp(f.x + (r() - 0.5) * 0.45, 0.08, 0.92), D * clamp(f.d + (r() - 0.5) * 0.45, 0.15, 0.9), woodSize(v, Math.sqrt(f.k) * st.scale * (0.4 + r() * 0.3)), { yaw: Math.round((r() - 0.5) * 360), ...tip(v, 0.5) });
+      }
     });
     layer('plant', () => {
       // ferns and anubias tied onto the wood, wherever it stands now

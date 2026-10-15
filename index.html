@@ -151,7 +151,7 @@
   <div class="hint" id="terHint">Custom terrain turns the floor into a grid of points you can push down or pull up, with a smooth surface through them. It starts from the current floor.</div>
   </details>
   <details class="sec" data-sec="hardscape"><summary><h2>Hardscape</h2></summary>
-  <div class="field"><label class="flabel" for="layout">Start from</label><select id="layout"></select><button id="layoutShuffle" title="Replace every piece with a new arrangement of this starter set (Ctrl+Z brings the old one back)">Shuffle</button></div>
+  <div class="field"><label class="flabel" for="layout">Start from</label><select id="layout"></select><button id="layoutShuffle" title="A new arrangement of this starter set's rock and wood; plants and animals stay where they are (Ctrl+Z brings the old one back)">Shuffle</button></div>
   <div class="hint" id="layoutHint"></div>
   <div class="row dens"><label for="densHard" id="lDensHard" title="How much rock and wood the starter set places, from one piece to far too much. The main pieces stay where they are and more or fewer go round them; Shuffle gives a new layout. Redraws the hardscape and the plants round it when you let go (Ctrl+Z brings the old ones back)">Density</label><input id="densHard" type="range" min="-1" max="6" step="any" list="densTicks"><output id="oDensHard"></output></div>
   <datalist id="densTicks"><option value="-1"></option><option value="0"></option><option value="1"></option><option value="2"></option><option value="3"></option><option value="4"></option><option value="5"></option><option value="6"></option></datalist>
@@ -162,8 +162,9 @@
     <div class="itemName" id="itemName"></div>
     <div class="row" id="iSizeRow"><label for="iSize" id="iSizeLab">Size</label><input id="iSize" type="range" step="1"><output id="oISize"></output></div>
     <div class="row" id="iGrowthRow"><label for="iGrowth" title="From just planted to fully grown. How big and how dense it gets depends on the species; once longer than the water above it, it lies over along the surface.">Growth</label><input id="iGrowth" type="range" min="0" max="100" step="1"><output id="oIGrowth"></output></div>
-    <div class="row clump"><label for="iSpread" title="Across the circle its stems start in. Until you move it, the plant picks its own.">Spread</label><input id="iSpread" type="range" step="1"><output id="oISpread"></output></div>
+    <div class="row spread"><label for="iSpread" id="iSpreadLab" title="Across the circle its stems start in. Up to the whole tank: what would land past the glass grows inside it. Until you move it, the plant picks its own.">Spread</label><input id="iSpread" type="range" step="1"><output id="oISpread"></output></div>
     <div class="row clump"><label for="iStems" title="How many stems (or crowns) this one plant has. Until you move it, the plant picks its own.">Stems</label><input id="iStems" type="range" min="1" max="40" step="1"><output id="oIStems"></output></div>
+    <div class="row float"><label for="iDens" title="How thickly it covers the water, against the species' own. Until you move it, the plant picks its own.">Density</label><input id="iDens" type="range" min="10" max="300" step="5"><output id="oIDens"></output></div>
     <div class="row"><label for="iYaw" title="Turn about the vertical">Yaw</label><input id="iYaw" type="range" min="-180" max="180" step="1"><output id="oIYaw"></output></div>
     <div class="row"><label for="iPitch" title="Tip forward or back">Pitch</label><input id="iPitch" type="range" min="-90" max="90" step="1"><output id="oIPitch"></output></div>
     <div class="row"><label for="iTilt" title="Lean sideways, all the way over">Roll</label><input id="iTilt" type="range" min="-180" max="180" step="1"><output id="oITilt"></output></div>
@@ -181,6 +182,7 @@
   </details>
   <details class="sec" data-sec="plants"><summary><h2 id="plantsTitle">Plants</h2></summary>
   <div class="row dens"><label for="densPlant" id="lDensPlant" title="How full the starter set plants the tank, from one plant to far too much. Redraws only the plants (corals in a reef) when you let go; the rocks stay where they are">Density</label><input id="densPlant" type="range" min="-1" max="6" step="any" list="densTicks"><output id="oDensPlant"></output></div>
+  <div class="btns"><button id="plantShuffle" title="A new arrangement of the starter set's plants (corals in a reef) round the rocks where they stand (Ctrl+Z brings the old one back)">Shuffle</button></div>
   <div class="lib" id="libPlant"></div>
   <div class="btns"><span class="hint" id="itemCountPlant"></span><span class="grow"></span><button id="itemsClearPlant">Remove all</button></div>
   <div id="plantList" class="plist" aria-label="Plants in the tank" hidden></div>

@@ -30,6 +30,32 @@ Living file. Project state and dated decisions go here; update in place.
   memoising on object identity would be wrong. The frost transmission pass re-resolving programs per frame (E1 #6) is
   untouched (not an edit cost). Harness additions: `--profile-edits`, `--idle-ms`, `--no-buckets`, `--shots dir`,
   `--incremental`, `--checks-only`; edits keep the first round apart (`firstTotal`, a step off a default).
+## Lane SF: single-file build fixed (2026-10-15; branch `single-fix`; DONE, pushed to main)
+- **Was broken since d67ac73:** the second Vite entry (review.html) split three.js and the render code into shared
+  chunks; build-single.mjs only inlined the main entry, so dist-single/tanklook.html imported `./three.module-*.js` and
+  `./preview3d-*.js` and failed from disk (CORS, origin null). The lazy AR chunks (arUsdz, USDZExporter, fflate) and
+  GR4's plantWorker chunk were never inlined either.
+- **Fix (chosen: its own Vite pass, simpler and robust to any future chunking):** `vite build --mode single`
+  (vite.config.ts) builds only index.html into `dist-single/.build/` with `codeSplitting: false`, so every static and
+  dynamic import is one script (incl. EF3's lazy `scenes` chunk and the AR exporters), and `assetsInlineLimit: 1e8` makes the
+  six example thumbnails data: URLs; build-single.mjs inlines it and deletes `.build/`. `npm run build:single` still runs
+  the normal `npm run build` first (dist/ with review.html unchanged; E1's perf harness measures dist/ after it).
+  Following and inlining chunks in the inliner was rejected: ES module chunks import each other by relative URL, which
+  needs an import map / rewriting per chunk.
+- **Worker:** `new URL("plantWorker-*.js", import.meta.url)` becomes a base64 `data:` URL of the worker code (it is
+  self-contained; the script fails the build if it ever imports a chunk). A Blob URL does NOT work from file:// in
+  Edge/Chrome ("Refused to cross-origin redirects of the top-level worker script"); data: does. Verified from disk:
+  growth slider -> 1133 worker replies, no errors (warm drags in the single file).
+- Also dropped from the single file: the manifest and apple-touch-icon links (files that do not travel with it; the
+  manifest logged a CORS error from disk).
+- **Guard:** build-single.mjs fails (exit 1) if the output still references any local src/href, `from "./x.js"`,
+  `import("./x.js")`, `new URL("x.js", import.meta.url)` or any `assets/...` string (a thumbnail URL). Checked against the old broken dist: it lists the three
+  chunk imports and fails.
+- Size: 1.96 MB (was 480 kB broken, without three.js); the single file now carries the AR exporters and the worker.
+- Verified (headless Edge over CDP, from disk): start menu with all six thumbnails loaded, Planted community opens in 3D with fish /
+  plants, AR button hidden, no console errors (only the known ANGLE X4000 shader warnings); 1400 px and 375 px.
+  dist/ over http: app + /review.html (71 models) fine. Re-verified after merging EF3 (76ed8a6). tsc clean; vitest 321/321
+  (an earlier full run had 2 load-timing flakes, reef layout and swamp terrain, that pass alone).
 
 ## First download: examples on demand (2026-10-15; lane EF3, branch `download-size`, port 5653; pushed to main)
 - **The six example scenes are a lazy chunk** (`src/examples/scenes.ts`, ~131 kB / 21 kB gzip): `exampleScenes()` in
@@ -133,7 +159,7 @@ Living file. Project state and dated decisions go here; update in place.
     JSON.stringify ~3x per viewport, viewer.ts:384 placePerson bisect, viewer.ts:391 full-traverse material rank,
     viewer.ts:336/386/401 style reads + viewmap redraw; sent to E1 to time. (4) The examples are 240 of main's 426 kB
     (lazy chunk = ~100 kB gzip off first load). (5) Dead code is small: plant / flat-fish card fallbacks are
-    unreachable (every species is 3D), 3 dead + 4 test-only exports. Split plan: build.ts first (B1-B6, true pure moves
+    unreachable (every species is 3D; **Nathan 2026-10-15: delete them** in phase 2 after GR4: plant card painters + drawPlantCard + plantTexture + the card branch in items.ts, the plant3d.on / fish3d.on toggles and the flat whole-fish card path; the fish card texture that carries the 3D fins stays), 3 dead + 4 test-only exports. Split plan: build.ts first (B1-B6, true pure moves
     into flat render/build*.ts files, build.ts re-exports), then panels.ts (P0 UI-state dump, P1 utils, P2 ctx, P3-P8
     mountX(ctx) per section; behaviour-preserving, not byte-pure), only when GR4 / AL / W have no panels.ts hunks.
 - **Phase 2, later:** the coordinator merges E1 + E2 into one ranked list; Nathan picks. Fixes that touch another active
@@ -1383,7 +1409,7 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | F2 harder fish | (worktree removed) | - | - | DONE (`8febeec`): fantail, kuhli, harlequin, oscar v3. Open: head geometry rejected by Nathan (cory / loach / SAE / marine heads have no generic); fantail doubled anal fin; lane X's leftovers not applied (noseCap on neon / cardinal / chili / cpd, characin dorsal taper, platy / molly gonopodium) |
 | X2 fish leftovers | (worktree removed) | - | `art/fishgen.ts`, `render/fish3d.ts`, `art/paint.ts` (noseCap on neon / cardinal / chili / cpd, characin dorsal taper, platy / molly gonopodium, fantail doubled anal fin) | DONE 2026-10-15, pushed (see its section); fish files free; Sex switch browser-checked PASS (build 436) |
 | GR1 plant growth | `../Glass-Box-plants3d` / `plants3d` | 5283 | see the "Plant growth" section (growth value, Height removed, lying over at the surface) | DONE (`050e2d9`, `4a4e3a8`, build 440) |
-| SF single-file build fix | `../Glass-Box-single-fix` / `single-fix` | - (opens dist-single/tanklook.html directly) | `vite.config.ts`, `scripts/build-single.mjs` | ready to open (prompt `prompts/lane-SF-single-file.md`); found by E2: broken since d67ac73; also inline GR4's plantWorker chunk |
+| SF single-file build fix | `../Glass-Box-single-fix` / `single-fix` | - (opens dist-single/tanklook.html directly) | `vite.config.ts`, `scripts/build-single.mjs` | DONE, pushed (see "Lane SF" at the top): own Vite pass + data: URL worker + guard in build-single.mjs |
 | EF1 shader link time | `../Glass-Box-shader-link` / `shader-link` | 5633 | `render/items.ts` solidMaterial / GRIT / gritK, the first-picture / compile path in `render/viewer.ts` | ready to open (prompt `prompts/lane-EF1-shader-link.md`) |
 | EF2 edit speed | `../Glass-Box-edit-speed` / `edit-speed` | 5643 | `render/lighting.ts`, the water / frost rebuild in `render/build.ts`, store listeners in `scene/store.ts`, `scene/lightout.ts` | DONE 2026-10-15 (files free) |
 | EF3 download size | `../Glass-Box-download-size` / `download-size` | 5653 | `src/examples/index.ts` + the examples hooks in `ui/panels.ts` (start menu / Open dialog), model-sheet packaging after SF (SF owns `vite.config.ts`) | DONE 2026-10-15 (files free) |

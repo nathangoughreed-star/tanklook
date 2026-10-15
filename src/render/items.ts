@@ -490,10 +490,18 @@ function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
   const h = solid ? cap(it.size) : cap(grownSize(type, it.size, it.growth));
   if (h < 15) return null;
   const c = Math.cos(it.yaw * D2R), s = Math.sin(it.yaw * D2R);
+  // a plant whose own spread reaches the glass: the panes it reaches, in its own frame (plantGeometry sets its stems,
+  // crowns or rosettes down inside them), to 4 mm and 3 decimals so a drag reuses a build until it moves that far. Not
+  // in a bowl (its spread is kept inside) nor tipped
+  const clip: number[] = [];
+  if (it.spread && solid && !carpet && shapeOf(T) !== 'bowl' && !it.pitch && !it.tilt) for (const e of footprint(T).edges) {
+    const e0 = -((it.x - e.a[0]) * e.n[0] + (it.depth - e.a[1]) * e.n[1]);
+    if (e0 < it.spread / 2 + 4) clip.push(+(c * e.n[0] + s * e.n[1]).toFixed(3), +(s * e.n[0] - c * e.n[1]).toFixed(3), Math.round(e0 / 4) * 4);
+  }
   // a carpet hugs the ground under each card: its key carries the spot (rebuilt only while it moves); the rest key on
   // the exact height they are built with (a rounded one let two near-equal plants share the first one's mesh)
   // (a carpet's ground: everything groundHeight reads, lane E2 #2: a terrain or substrate edit left it on the old ground)
-  const k = carpet ? `${type}|${it.seed}|${it.size}|${h}|${it.x}|${it.depth}|${it.yaw}|${it.lift}|${T.shape}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}|${groundKey(S)}` : `${type}|${it.seed}|${it.size}|${h}|${it.spread ?? ''}|${it.stems ?? ''}`;
+  const k = carpet ? `${type}|${it.seed}|${it.size}|${h}|${it.x}|${it.depth}|${it.yaw}|${it.lift}|${T.shape}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}|${groundKey(S)}` : `${type}|${it.seed}|${it.size}|${h}|${it.spread ?? ''}|${it.stems ?? ''}|${it.dens ?? ''}|${clip.join(',')}`;
   // near the glass a card is cut down to the width it has room for, so the carpet runs right up to the glass without
   // poking through; a card past the edge line is mirrored back in by as much (keeping the edge thick), and one more
   // than half a card past it is left out
@@ -508,7 +516,7 @@ function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
   };
   // (what grows past g0 is only built once the plant has a growth of its own: a starter set costs what it did)
   const sw = `3d${plant3d.sway ? 's' : ''}${more ? '+' : ''}${plant3d.emerse ? '' : 'n'}|`, kf = sw + (carpet ? `${type}|${it.seed}|${it.size}` : k);
-  const args = [type, it.seed, h, { spread: it.spread, stems: it.stems }, g0, more, it.size] as const;
+  const args = [type, it.seed, h, { spread: it.spread, stems: it.stems, dens: it.dens, clip: clip.length ? clip : undefined }, g0, more, it.size] as const;
   let bend: { F: number; C?: number; water: boolean; walls: number[]; ks: string } | undefined;
   if (solid && !carpet && !float) {
     // longer than the water above it: lies over at the surface (`F` over its base, to 2 mm, so a drag reuses it). A
