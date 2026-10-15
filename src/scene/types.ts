@@ -208,6 +208,10 @@ export interface Item {
    *  species' own look, drawn from the seed (added 2026-10-14, no version bump). */
   spread?: number;
   stems?: number;
+  /** Plants: 0 = just planted, ~0.5 = established, 1 = fully grown / overgrown (lane GR1, 2026-10-15). Absent = the
+   *  growth at which the species reaches `size` (growthOf in art/plants.ts), so older files draw as they did. With it,
+   *  `size` stays the plant's own scale and growth sets how big and how dense it is. */
+  growth?: number;
 }
 
 /**

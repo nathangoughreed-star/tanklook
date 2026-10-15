@@ -13,7 +13,7 @@ import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene, TANK_PRESETS } from '../scene/defaults';
 import { KINDS, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, itemDims, makeItem, starterItems } from '../scene/items';
-import { isClump, isPatch, type PlantType } from '../art/plants';
+import { growthOf, isClump, isPatch, type PlantType } from '../art/plants';
 import { clumpAuto } from '../render/plant3d';
 import { tankDiff } from './diff';
 import { attachTypeIns, parseLen, plainNum, tidy, type TypeIn } from './typein';
@@ -46,6 +46,9 @@ const esc = (s: string) => s.replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 /** The menu a kind of piece lives in: stones, wood and caves under Hardscape, plants and corals under Plants. */
 export type ScapeSec = 'hardscape' | 'plants';
 export const scapeSec = (k: ItemKind): ScapeSec => k === 'plant' || k === 'coral' ? 'plants' : 'hardscape';
+
+/** A plant's growth in words (the Growth slider's readout). */
+export const growthWord = (g: number) => `${Math.round(g * 100)} % ${g < 0.1 ? 'just planted' : g < 0.35 ? 'growing in' : g < 0.65 ? 'established' : g < 0.9 ? 'grown' : 'overgrown'}`;
 
 export function attachPanels(store: Store, viewer: Viewer) {
   const G = () => store.scene;   // the whole scene: name, units, the tanks
@@ -947,6 +950,7 @@ Cancel, then change the name, to keep both.`)) return;
     store.edit(s => { const it = s.items.find(q => q.id === id); if (it) { fn(it, s); clampItem(it, s.tank, s); } }, { coalesce });
   };
   $('iSize').oninput = e => editItem(it => { it.size = +(e.target as HTMLInputElement).value; }, 'iSize');
+  $('iGrowth').oninput = e => editItem(it => { it.growth = +(e.target as HTMLInputElement).value / 100; }, 'iGrowth');
   $('iSpread').oninput = e => editItem(it => { it.spread = +(e.target as HTMLInputElement).value; }, 'iSpread');
   $('iStems').oninput = e => editItem(it => { it.stems = +(e.target as HTMLInputElement).value; }, 'iStems');
   $('iYaw').oninput = e => editItem(it => { it.yaw = +(e.target as HTMLInputElement).value; }, 'iYaw');
@@ -1027,7 +1031,7 @@ Cancel, then change the name, to keep both.`)) return;
     return v == null ? null : neg.test(t) ? -Math.abs(v) : v;
   } });
   const lens = ['bowMin', 'bowlFloor', 'bowlTop', 'standH', 'tableL', 'tableD', 'subBL', 'subBR', 'subFL', 'subFR', 'lH', 'cDist', 'iSize', 'iSpread', 'iLift', 'personH', 'wallGap', 'ceilH'];
-  const nums = { pieDeg: 0, bgArc: 0, iYaw: 0, iPitch: 0, iTilt: 0, iStems: 0, lCount: 0, lRows: 0, lCone: 0, lK: 0, lBright: 2, lRoom: 2, lW: 0, lPar: 0, cAz: 0, cEl: 0, cZoom: 2, terCols: 0, addSize: 0 };
+  const nums = { pieDeg: 0, bgArc: 0, iYaw: 0, iPitch: 0, iTilt: 0, iStems: 0, iGrowth: 0, lCount: 0, lRows: 0, lCone: 0, lK: 0, lBright: 2, lRoom: 2, lW: 0, lPar: 0, cAz: 0, cEl: 0, cZoom: 2, terCols: 0, addSize: 0 };
   attachTypeIns({
     ...Object.fromEntries(lens.map(id => [id, len])),
     ...Object.fromEntries(Object.entries(nums).map(([id, d]) => [id, num(d)])),
@@ -1388,6 +1392,10 @@ Cancel, then change the name, to keep both.`)) return;
       const probe = { ...it, size: 1e6 }; clampItem(probe, A);
       $('iSize').min = String(Math.min(v.min, probe.size)); $('iSize').max = String(probe.size);
       setVal('iSize', it.size); setOut('oISize', fmt(it.size));
+      // a plant has a Growth instead of a size (lane GR1, 2026-10-15): until moved, the growth its saved size stands for
+      const plant = it.kind === 'plant';
+      $('iSizeRow').style.display = plant ? 'none' : ''; $('iGrowthRow').style.display = plant ? '' : 'none';
+      if (plant) { const g = it.growth ?? growthOf(it.variant as PlantType, it.size); setVal('iGrowth', Math.round(g * 100)); setOut('oIGrowth', growthWord(g)); }
       // a clump's spread and count: its own once moved, else what the seed gives it ("auto")
       const clump = it.kind === 'plant' && isClump(it.variant);
       document.querySelectorAll<HTMLElement>('#itemBox .clump').forEach(e => { e.style.display = clump ? '' : 'none'; }); // (.row sets display, so not hidden)

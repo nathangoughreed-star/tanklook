@@ -6,13 +6,13 @@
 import * as THREE from 'three';
 import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng } from '../art/paint';
-import { PLANT_ASPECT, isCarpet, isFloat, type PlantType } from '../art/plants';
+import { PLANT_ASPECT, growthOf, grownSize, isCarpet, isFloat, type PlantType } from '../art/plants';
 import { CARPET_H, CARPET_W, itemDims, itemSink, seatHook, stoneDims, woodLimbs, type Limb } from '../scene/items';
 import { D2R, waterY } from '../scene/physics';
 import { bowlDims, footprint, shapeOf } from '../scene/shape';
 import { clampGround, groundHeight, groundInsideBy } from '../scene/terrain';
 import type { Item, Tank, TankSetup } from '../scene/types';
-import { carpetOnGround, has3DPlant, plant3d, plantGeometry } from './plant3d';
+import { bendPlant, carpetOnGround, has3DPlant, plant3d, plantGeometry, revealPlant } from './plant3d';
 import { reefShape } from './coral3d';
 import { cardMaterial, plantTexture } from './textures';
 
@@ -405,6 +405,8 @@ function plantMaterial(T: Tank) {
   return remember(plantMats, k, m, 16, x => x.dispose());
 }
 const shapes = new Map<string, THREE.BufferGeometry>(), baked = new Map<string, THREE.BufferGeometry>(), plants = new Map<string, THREE.BufferGeometry>();
+/** 3D plants lying over at the surface (per water level), and shown at a growth (per growth step). */
+const bent = new Map<string, THREE.BufferGeometry>(), shown = new Map<string, THREE.BufferGeometry>();
 function remember<T>(m: Map<string, T>, k: string, v: T, max: number, drop?: (v: T) => void) {
   m.set(k, v);
   if (m.size > max) { const [k0, v0] = m.entries().next().value!; m.delete(k0); drop?.(v0); }
@@ -455,12 +457,16 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
   if (it.kind === 'plant') {
     const type = it.variant as PlantType, carpet = isCarpet(type), float = isFloat(type);
     if (float && !S.water.on) return null; // floaters need water
-    const h = carpet || float ? it.size : Math.min(it.size, T.H - y - 15); // stops at the water line (the old layouts' rule)
+    // a 3D plant is built at full growth from its saved size (`h`: as before growth, capped under the lid) and shown at
+    // its growth; the crossed-card fallback is drawn at the grown size
+    const solid = has3DPlant(type), g0 = growthOf(type, it.size), gr = it.growth ?? g0;
+    const cap = (s: number) => carpet || float ? s : Math.min(s, T.H - y - 15); // stops at the lid (the old layouts' rule)
+    const h = solid ? cap(it.size) : cap(grownSize(type, it.size, it.growth));
     if (h < 15) return null;
     const c = Math.cos(it.yaw * D2R), s = Math.sin(it.yaw * D2R);
     // a carpet hugs the ground under each card: its key carries the spot (rebuilt only while it moves); the rest key on
     // the exact height they are built with (a rounded one let two near-equal plants share the first one's mesh)
-    const k = carpet ? `${type}|${it.seed}|${it.size}|${it.x}|${it.depth}|${it.yaw}|${it.lift}|${T.shape}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}` : `${type}|${it.seed}|${h}|${it.spread ?? ''}|${it.stems ?? ''}`;
+    const k = carpet ? `${type}|${it.seed}|${it.size}|${h}|${it.x}|${it.depth}|${it.yaw}|${it.lift}|${T.shape}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}` : `${type}|${it.seed}|${it.size}|${h}|${it.spread ?? ''}|${it.stems ?? ''}`;
     // near the glass a card is cut down to the width it has room for, so the carpet runs right up to the glass without
     // poking through; a card past the edge line is mirrored back in by as much (keeping the edge thick), and one more
     // than half a card past it is left out
@@ -473,11 +479,31 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
       const dx = x - it.x, dd = d - it.depth;
       return { x: dx * c + dd * s, y: groundHeight(S, T, x, d) - ground, z: dx * s - dd * c, w: Math.min(CARPET_W, 2 * groundInsideBy(S, T, x, d)) };
     };
-    const solid = has3DPlant(type), k3 = (solid ? `3d${plant3d.sway ? 's' : ''}|` : '') + k;
-    // a 3D carpet is built once per (seed, size), then only set on the ground here
-    const make = () => !solid ? plantGeo(type, it.seed, h, carpet ? at : undefined, it.spread) : !carpet ? plantGeometry(type, it.seed, h, { spread: it.spread, stems: it.stems })
-      : carpetOnGround(plants.get(`3d${plant3d.sway ? 's' : ''}|${type}|${it.seed}|${it.size}`) ?? remember(plants, `3d${plant3d.sway ? 's' : ''}|${type}|${it.seed}|${it.size}`, plantGeometry(type, it.seed, h), 300, dispose), at);
-    const g = plants.get(k3) ?? remember(plants, k3, make(), 300, dispose);
+    let g: THREE.BufferGeometry;
+    if (!solid) g = plants.get(k) ?? remember(plants, k, plantGeo(type, it.seed, h, carpet ? at : undefined, it.spread), 300, dispose);
+    else {
+      // full growth, built once per (seed, size, clump); a carpet is then set on the ground (per place)
+      // (what grows past g0 is only built once the plant has a growth of its own: a starter set costs what it did)
+      const more = it.growth != null, sw = `3d${plant3d.sway ? 's' : ''}${more ? '+' : ''}|`, kf = sw + (carpet ? `${type}|${it.seed}|${it.size}` : k);
+      const full = plants.get(kf) ?? remember(plants, kf, plantGeometry(type, it.seed, h, { spread: it.spread, stems: it.stems }, g0, more, it.size), 300, dispose);
+      let src = full, ks = kf;
+      if (carpet) { ks = sw + k; src = plants.get(ks) ?? remember(plants, ks, carpetOnGround(full, at), 300, dispose); }
+      else if (!float) {
+        // longer than the water above it: lies over at the surface (`F` over its base, to 2 mm, so a drag reuses it). A
+        // plant with no growth of its own keeps the old allowance (tips up to the lid in a full tank, as they always
+        // were) and only lies over when it would poke out further than that
+        const depth = S.water.on ? waterY(T, S.water.level) - y : T.H - 15 - y;
+        let F = Math.round((depth - 3) / 2) * 2;
+        if (it.growth == null && h <= depth + 14) F = Infinity;
+        if (Number.isFinite(F)) {
+          ks = `${kf}|${F}`;
+          src = bent.get(ks) ?? (() => { const b = bendPlant(full, F); return b === full ? b : remember(bent, ks, b, 120, dispose); })();
+        }
+      }
+      // the growth: positions only, from the plant already built (a slider drag never rebuilds it)
+      const kr = `${ks}|${gr}`;
+      g = shown.get(kr) ?? (() => { const v = revealPlant(src, gr); return v === src ? v : remember(shown, kr, v, 80, dispose); })();
+    }
     if (carpet) g.computeBoundingBox();
     m = new THREE.Mesh(g, solid ? plantMaterial(T) : cardMaterial('plant:' + type, plantTexture(type), S.render.edge));
     m.userData.plant = true;

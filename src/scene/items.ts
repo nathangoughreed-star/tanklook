@@ -2,7 +2,7 @@
 // renderer builds them from (so placement code can find a branch to tie a fern to without three.js), and the starter
 // sets that replace the old fixed layouts. All sizes physical (mm): a bigger tank gets more pieces, not bigger ones.
 import { rng } from '../art/paint';
-import { PLANT_ASPECT, isCarpet, isClump, isFloat, isPatch, type PlantType } from '../art/plants';
+import { PLANT_ASPECT, grownSize, isCarpet, isClump, isFloat, isPatch, type PlantType } from '../art/plants';
 import { backdropDepth, clamp, D2R, frontOfWall } from './physics';
 import { bowlDims, bowlRadius, clampIn, shapeOf } from './shape';
 import { clampGround, groundHeight, radialTerrain, type Ground } from './terrain';
@@ -24,23 +24,23 @@ export const LIBRARY: Record<string, Variant> = {
   arch: { kind: 'cave', label: 'Stone arch', hint: 'A rock arch to swim through.', size: 170, min: 50, max: 600 },
   tube: { kind: 'cave', label: 'Clay tube', hint: 'A terracotta spawning tube (plecos, cichlids).', size: 130, min: 40, max: 400 },
   coconut: { kind: 'cave', label: 'Coconut cave', hint: 'Half a coconut shell with a doorway.', size: 110, min: 50, max: 250 },
-  fern: { kind: 'plant', label: 'Java fern', hint: 'Grows on wood and rock. Size = height.', size: 150, min: 30, max: 450 },
-  anubias: { kind: 'plant', label: 'Anubias', hint: 'Grows on wood and rock. Size = height.', size: 90, min: 25, max: 300 },
-  sword: { kind: 'plant', label: 'Amazon sword', hint: 'A big rosette. Size = height.', size: 250, min: 50, max: 600 },
-  grass: { kind: 'plant', label: 'Vallisneria', hint: 'Tall grass-like leaves. Size = height.', size: 280, min: 40, max: 900 },
-  stem: { kind: 'plant', label: 'Stem plant', hint: 'Size = height.', size: 220, min: 40, max: 900 },
-  stemred: { kind: 'plant', label: 'Red stem plant', hint: 'Size = height.', size: 220, min: 40, max: 900 },
-  crypt: { kind: 'plant', label: 'Cryptocoryne', hint: 'A low rosette of wavy bronze-green leaves (C. wendtii). Size = height.', size: 110, min: 30, max: 300 },
-  buce: { kind: 'plant', label: 'Bucephalandra', hint: 'A small, slow rhizome plant for wood and rock: dark leaves with a blue or wine cast. Size = height.', size: 70, min: 20, max: 200 },
-  rotala: { kind: 'plant', label: 'Rotala', hint: 'A fine-leaved stem plant with pink tops. Size = height.', size: 240, min: 40, max: 900 },
-  ludwigia: { kind: 'plant', label: 'Ludwigia', hint: 'A stem plant with broad oval leaves, deep red at the top. Size = height.', size: 220, min: 40, max: 900 },
-  balansae: { kind: 'plant', label: 'Crypt balansae', hint: 'Tall, narrow crinkled leaves for the back. Size = height.', size: 320, min: 60, max: 700 },
-  ozelot: { kind: 'plant', label: "Echinodorus 'Ozelot'", hint: 'A mid-sized sword with maroon-spotted leaves. Size = height.', size: 200, min: 50, max: 500 },
-  sagittaria: { kind: 'plant', label: 'Dwarf sagittaria', hint: 'A low run of grassy tufts that spreads into a lawn. Size = height.', size: 70, min: 30, max: 150 },
-  moss: { kind: 'plant', label: 'Java moss', hint: 'A low mound of moss: on the ground, or raise it onto wood or rock. Size = height (about twice as wide).', size: 45, min: 15, max: 150 },
-  redroot: { kind: 'plant', label: 'Red root floaters', hint: 'Small round leaves floating at the water line, red roots hanging below. Size = patch width.', size: 200, min: 60, max: 600 },
-  salvinia: { kind: 'plant', label: 'Salvinia', hint: 'Floating chains of cupped oval leaves at the water line. Size = patch width.', size: 200, min: 60, max: 600 },
-  carpet: { kind: 'plant', label: 'Carpet patch', hint: 'A low carpet plant. Size = patch width.', size: 160, min: 60, max: 400 },
+  fern: { kind: 'plant', label: 'Java fern', hint: 'Grows on wood and rock.', size: 150, min: 30, max: 450 },
+  anubias: { kind: 'plant', label: 'Anubias', hint: 'Grows on wood and rock.', size: 90, min: 25, max: 300 },
+  sword: { kind: 'plant', label: 'Amazon sword', hint: 'A big rosette.', size: 250, min: 50, max: 600 },
+  grass: { kind: 'plant', label: 'Vallisneria', hint: 'Tall grass-like leaves.', size: 280, min: 40, max: 900 },
+  stem: { kind: 'plant', label: 'Stem plant', hint: 'Upright stems of paired green leaves.', size: 220, min: 40, max: 900 },
+  stemred: { kind: 'plant', label: 'Red stem plant', hint: 'Upright stems, red toward the top.', size: 220, min: 40, max: 900 },
+  crypt: { kind: 'plant', label: 'Cryptocoryne', hint: 'A low rosette of wavy bronze-green leaves (C. wendtii).', size: 110, min: 30, max: 300 },
+  buce: { kind: 'plant', label: 'Bucephalandra', hint: 'A small, slow rhizome plant for wood and rock: dark leaves with a blue or wine cast.', size: 70, min: 20, max: 200 },
+  rotala: { kind: 'plant', label: 'Rotala', hint: 'A fine-leaved stem plant with pink tops.', size: 240, min: 40, max: 900 },
+  ludwigia: { kind: 'plant', label: 'Ludwigia', hint: 'A stem plant with broad oval leaves, deep red at the top.', size: 220, min: 40, max: 900 },
+  balansae: { kind: 'plant', label: 'Crypt balansae', hint: 'Tall, narrow crinkled leaves for the back.', size: 320, min: 60, max: 700 },
+  ozelot: { kind: 'plant', label: "Echinodorus 'Ozelot'", hint: 'A mid-sized sword with maroon-spotted leaves.', size: 200, min: 50, max: 500 },
+  sagittaria: { kind: 'plant', label: 'Dwarf sagittaria', hint: 'A low run of grassy tufts that spreads into a lawn.', size: 70, min: 30, max: 150 },
+  moss: { kind: 'plant', label: 'Java moss', hint: 'A low mound of moss: on the ground, or raise it onto wood or rock.', size: 45, min: 15, max: 150 },
+  redroot: { kind: 'plant', label: 'Red root floaters', hint: 'Small round leaves floating at the water line, red roots hanging below.', size: 200, min: 60, max: 600 },
+  salvinia: { kind: 'plant', label: 'Salvinia', hint: 'Floating chains of cupped oval leaves at the water line.', size: 200, min: 60, max: 600 },
+  carpet: { kind: 'plant', label: 'Carpet patch', hint: 'A low carpet plant.', size: 160, min: 60, max: 400 },
   // corals (2026-10-14): size = width
   acropora: { kind: 'coral', label: 'Branching coral', hint: 'An Acropora-style colony of branches with pale tips. Size = width.', size: 160, min: 40, max: 500, salt: true },
   montipora: { kind: 'coral', label: 'Plate coral', hint: 'A whorl of thin cupped plates. Size = width.', size: 180, min: 40, max: 500, salt: true },
@@ -144,10 +144,13 @@ export function woodLimbs(variant: string, seed: number, size: number): Limb[] {
 }
 
 /** Overall size of a piece: [length, height, width] in its own frame, mm (plants: card width, height, width). */
-export function itemDims(it: Pick<Item, 'kind' | 'variant' | 'seed' | 'size' | 'spread'>): V3 {
-  const s = it.size;
+export function itemDims(it: Pick<Item, 'kind' | 'variant' | 'seed' | 'size' | 'spread' | 'growth'>): V3 {
+  const s = it.kind === 'plant' ? grownSize(it.variant as PlantType, it.size, it.growth) : it.size; // a plant at its growth
   if (it.kind === 'stone') return stoneDims(it.variant, it.seed, s);
-  if (it.kind === 'plant') return isCarpet(it.variant) ? [s, CARPET_H, s] : isFloat(it.variant) ? [s, s * PLANT_ASPECT[it.variant as PlantType], s] : ((w: number) => [w, s, w])(it.spread ? Math.max(it.spread, s / PLANT_ASPECT[it.variant as PlantType]) : s / PLANT_ASPECT[it.variant as PlantType]) as [number, number, number];
+  // an upright plant grown past its saved size gets longer much faster than its footprint widens (long leaves and stems
+  // lie over at the surface), so its width follows its length only up to 1.4x the saved size
+  const sw = Math.min(s, it.size * 1.4);
+  if (it.kind === 'plant') return isCarpet(it.variant) ? [s, CARPET_H, s] : isFloat(it.variant) ? [s, s * PLANT_ASPECT[it.variant as PlantType], s] : ((w: number) => [w, s, w])(it.spread ? Math.max(it.spread, sw / PLANT_ASPECT[it.variant as PlantType]) : sw / PLANT_ASPECT[it.variant as PlantType]) as [number, number, number];
   if (it.kind === 'coral') return [s, s * ({ acropora: 0.6, montipora: 0.45, mushroom: 0.4, leather: 0.6 } as Record<string, number>)[it.variant], s];
   if (it.kind === 'cave') return it.variant === 'arch' ? [s, 0.5 * s, 0.45 * s] : it.variant === 'tube' ? [s, 0.42 * s, 0.42 * s] : [s, 0.5 * s, s];
   return it.variant === 'manzanita' ? [0.7 * s, s, 0.7 * s] : it.variant === 'spider' ? [s, 0.5 * s, 0.8 * s] : it.variant === 'mopani' ? [s, 0.45 * s, 0.3 * s] : [s, 0.65 * s, 0.45 * s];
@@ -193,6 +196,9 @@ export function clampItem(it: Item, T: Tank, g?: Ground) {
     if (it.spread != null) it.spread = Math.round(clamp(it.spread, 10, Math.max(10, Math.min(T.L, T.D) - 6)));
     if (it.stems != null) it.stems = Math.round(clamp(it.stems, 1, MAX_STEMS));
   } else { delete it.spread; delete it.stems; }
+  // a plant's growth, 0..1 (absent = back-solved from its size); nothing else has one
+  if (it.kind === 'plant' && it.growth != null) it.growth = Math.round(clamp(it.growth, 0, 1) * 1000) / 1000;
+  else delete it.growth;
   it.yaw = ((it.yaw + 540) % 360) - 180;
   it.pitch = clamp(it.pitch, -90, 90);
   it.tilt = ((it.tilt + 540) % 360) - 180;

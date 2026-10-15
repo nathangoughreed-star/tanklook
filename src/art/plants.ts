@@ -256,72 +256,113 @@ export interface Plant3D {
   crowns?: [number, number];
   /** Floating plants: rosettes per 1000 mm² of patch, leaves per rosette, roots per rosette and root length (mm). */
   float?: { per: [number, number]; leaves: [number, number]; roots: [number, number]; rootLen: [number, number] };
+  /** How it grows (lane GR1, 2026-10-15). */
+  grow: Grow;
+}
+
+/**
+ * Growth (lane GR1, 2026-10-15): 0 = just planted, ~0.5 = established, 1 = fully grown / overgrown. The plant's size (its
+ * length; a patch's width) runs `len[0]` mm at 0 to `len[1]` at 1 on an even ratio per step; `more` = how many times the
+ * leaves / stems / leaflets multiply from 0 to 1 (and per growth step the same ratio). A saved plant without a growth
+ * (every file before GR1, every starter set) is at the growth whose size is its saved size (growthOf), so it draws as
+ * before.
+ */
+export interface Grow {
+  /** Speed on the timeline (lane GR3). */
+  speed: 'slow' | 'medium' | 'fast';
+  /** What it does once longer than the water above it: trail along the surface, emerge above it (lane GR2), spread
+   *  sideways, or none (it only gets denser). GR1 trails every plant that reaches the surface. */
+  overflow: 'trail' | 'emerge' | 'spread' | 'none';
+  /** Size, mm, at growth 0 and at growth 1 (height or leaf length; a carpet's or floater's patch width). */
+  len: [number, number];
+  /** Leaves / stems / leaflets at growth 1 over growth 0. */
+  more: number;
+  /** Stem plants: side shoots per stem by growth 1. */
+  shoots?: number;
 }
 
 const LEAF_GREENS: [string, string][] = GREENS;
 export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
-  fern: { sway: 0.3, form: 'rhizome', n: [13, 18], spread: 0.6, stalk: '#5a4a32', leaf: {
+  fern: { grow: { speed: 'slow', overflow: 'none', len: [60, 300], more: 4 }, sway: 0.3, form: 'rhizome', n: [13, 18], spread: 0.6, stalk: '#5a4a32', leaf: {
     len: [0.7, 1], wid: 0.1, prof: [0.8, 0.8], rise: [0.08, 0.6], arch: 0.4, twist: 0.5, fold: -0.25, wave: [0.1, 4], pet: 0.06,
     cols: [['#244a22', '#3e7038'], ['#2a5226', '#4a7e40']], under: '#355a30', rib: '#7aa060', tip: ['#3c7034', 0.3], seg: [10, 5] } },
-  sword: { sway: 0.3, form: 'rosette', n: [16, 24], spread: 0.05, stalk: '#3a6a2c', leaf: {
+  sword: { grow: { speed: 'medium', overflow: 'emerge', len: [90, 600], more: 4 }, sway: 0.3, form: 'rosette', n: [16, 24], spread: 0.05, stalk: '#3a6a2c', leaf: {
     len: [0.75, 1], wid: 0.15, prof: [0.75, 0.8], rise: [0.05, 0.75], arch: 0.4, twist: 0.5, fold: -0.15, wave: [0.03, 3], pet: 0.3,
     cols: [['#3d7a2e', '#6aa64e'], ['#468a34', '#7ab85a'], ['#36702a', '#62a048']], under: '#5a8a48', rib: '#b0d098', seg: [10, 5] } },
-  carpet: { sway: 0.1, form: 'carpet', n: [60, 70], spread: 1, stalk: '#3f6a2e', leaf: {
+  carpet: { grow: { speed: 'medium', overflow: 'spread', len: [50, 450], more: 1 }, sway: 0.1, form: 'carpet', n: [60, 70], spread: 1, stalk: '#3f6a2e', leaf: {
     len: [5, 7.5], wid: 0.75, prof: [0.9, 0.5], rise: [0.9, 1.5], arch: 0.1, twist: 0.3, fold: 0.2, wave: [0, 0], pet: 0,
     cols: LEAF_GREENS, under: '#5e8a48', seg: [2, 3] } },
-  anubias: { sway: 0.08, form: 'rhizome', n: [10, 14], spread: 0.4, stalk: '#2e5226', leaf: {
+  anubias: { grow: { speed: 'slow', overflow: 'none', len: [40, 180], more: 4 }, sway: 0.08, form: 'rhizome', n: [10, 14], spread: 0.4, stalk: '#2e5226', leaf: {
     len: [0.6, 0.95], wid: 0.4, prof: [0.7, 0.55], rise: [0.1, 0.6], arch: 0.25, twist: 0.3, fold: 0.15, wave: [0.02, 2], pet: 0.25,
     cols: [['#1e3e1c', '#3a6a32'], ['#22441e', '#40723a']], under: '#3e6236', rib: '#5a8a4a', seg: [8, 5] } },
-  grass: { sway: 1, form: 'rosette', n: [16, 24], crowns: [3, 5], spread: 0.5, stalk: '#3f6a2e', leaf: {
+  grass: { grow: { speed: 'fast', overflow: 'trail', len: [120, 900], more: 6 }, sway: 1, form: 'rosette', n: [16, 24], crowns: [3, 5], spread: 0.5, stalk: '#3f6a2e', leaf: {
     len: [0.6, 1], wid: 0.035, prof: [1, 0.12], rise: [0.02, 0.3], arch: 0.5, twist: 1.5, fold: 0, wave: [0, 0], pet: 0,
     cols: LEAF_GREENS, under: '#5e8a48', seg: [12, 3] } },
-  stem: { sway: 0.65, form: 'stem', n: [5, 7], nodes: 22, spread: 0.5, stalk: '#3f6a2e', top: { cols: [['#4a8a34', '#80b85a']], from: 0.8 }, leaf: {
+  stem: { grow: { speed: 'fast', overflow: 'emerge', len: [70, 900], more: 4, shoots: 1 }, sway: 0.65, form: 'stem', n: [5, 7], nodes: 22, spread: 0.5, stalk: '#3f6a2e', top: { cols: [['#4a8a34', '#80b85a']], from: 0.8 }, leaf: {
     len: [0.11, 0.14], wid: 0.3, prof: [0.8, 0.6], rise: [0.5, 1.2], arch: 0.3, twist: 0.3, fold: -0.1, wave: [0, 0], pet: 0,
     cols: LEAF_GREENS, under: '#5e8a48', seg: [4, 3] } },
-  stemred: { sway: 0.65, form: 'stem', n: [5, 7], nodes: 22, spread: 0.5, stalk: '#6a4a2a', top: { cols: [['#8a3a2a', '#c0604a'], ['#7e3426', '#b4583e']], from: 0.55 }, leaf: {
+  stemred: { grow: { speed: 'medium', overflow: 'emerge', len: [70, 900], more: 4, shoots: 1 }, sway: 0.65, form: 'stem', n: [5, 7], nodes: 22, spread: 0.5, stalk: '#6a4a2a', top: { cols: [['#8a3a2a', '#c0604a'], ['#7e3426', '#b4583e']], from: 0.55 }, leaf: {
     len: [0.11, 0.14], wid: 0.3, prof: [0.8, 0.6], rise: [0.5, 1.2], arch: 0.3, twist: 0.3, fold: -0.1, wave: [0, 0], pet: 0,
     cols: [['#4e5a2a', '#7e8a42'], ['#56602e', '#86904a']], under: '#7a7a4a', seg: [4, 3] } },
   // Cryptocoryne wendtii: short stalked lance leaves with rippled edges, olive-brown to bronze, reddish underneath
-  crypt: { sway: 0.15, form: 'rosette', n: [12, 18], crowns: [1, 3], spread: 0.3, stalk: '#5a4a30', leaf: {
+  crypt: { grow: { speed: 'slow', overflow: 'none', len: [45, 300], more: 5 }, sway: 0.15, form: 'rosette', n: [12, 18], crowns: [1, 3], spread: 0.3, stalk: '#5a4a30', leaf: {
     len: [0.75, 1], wid: 0.32, prof: [0.6, 0.8], rise: [0.15, 0.9], arch: 0.35, twist: 0.15, fold: -0.08, wave: [0.06, 5], pet: 0.28,
     cols: [['#44502a', '#72783e'], ['#4e4a2a', '#7e7040'], ['#5a462a', '#8a6a40'], ['#3e4c26', '#66763c']], under: '#84563c', rib: '#a09060', seg: [12, 5] } },
   // Bucephalandra: a small creeping rhizome of stiff lance leaves, dark green with blue-grey and wine casts
-  buce: { sway: 0.05, form: 'rhizome', n: [8, 12], spread: 0.45, stalk: '#3a3028', leaf: {
+  buce: { grow: { speed: 'slow', overflow: 'none', len: [30, 150], more: 4 }, sway: 0.05, form: 'rhizome', n: [8, 12], spread: 0.45, stalk: '#3a3028', leaf: {
     len: [0.55, 0.9], wid: 0.28, prof: [0.7, 0.6], rise: [0.2, 0.8], arch: 0.2, twist: 0.25, fold: 0.1, wave: [0.04, 3], pet: 0.15,
     cols: [['#2a4a36', '#527a5e'], ['#323e4e', '#5e6e80'], ['#4a3438', '#7a5e62'], ['#2c4e38', '#58805e']], under: '#5e4a4e', rib: '#8aa898', seg: [8, 5] } },
   // Rotala rotundifolia: many fine stems of small narrow leaves, pink to orange at the top
-  rotala: { sway: 0.7, form: 'stem', n: [7, 10], nodes: 30, spread: 0.55, stalk: '#6a5a3a', top: { cols: [['#b0606a', '#e0909a'], ['#b06a50', '#e09a78']], from: 0.6 }, leaf: {
+  rotala: { grow: { speed: 'fast', overflow: 'trail', len: [70, 900], more: 4, shoots: 1.5 }, sway: 0.7, form: 'stem', n: [7, 10], nodes: 30, spread: 0.55, stalk: '#6a5a3a', top: { cols: [['#b0606a', '#e0909a'], ['#b06a50', '#e09a78']], from: 0.6 }, leaf: {
     len: [0.07, 0.09], wid: 0.2, prof: [0.8, 0.6], rise: [0.45, 1.1], arch: 0.25, twist: 0.3, fold: -0.1, wave: [0, 0], pet: 0,
     cols: [['#4a7a34', '#78a856'], ['#52823a', '#86b45e']], under: '#8a8a5a', seg: [4, 3] } },
   // Ludwigia repens 'Rubin': fewer, thicker stems of broad oval leaves, olive-brown below, deep red at the top, red underneath
-  ludwigia: { sway: 0.55, form: 'stem', n: [4, 6], nodes: 16, spread: 0.45, stalk: '#6a3a2a', top: { cols: [['#7a2a22', '#b04a3a'], ['#6e2a2a', '#a04440']], from: 0.4 }, leaf: {
+  ludwigia: { grow: { speed: 'medium', overflow: 'emerge', len: [70, 800], more: 4, shoots: 1 }, sway: 0.55, form: 'stem', n: [4, 6], nodes: 16, spread: 0.45, stalk: '#6a3a2a', top: { cols: [['#7a2a22', '#b04a3a'], ['#6e2a2a', '#a04440']], from: 0.4 }, leaf: {
     len: [0.12, 0.15], wid: 0.55, prof: [1, 0.6], rise: [0.6, 1.25], arch: 0.25, twist: 0.2, fold: 0.1, wave: [0, 0], pet: 0.05,
     cols: [['#5a4a2a', '#8a6a3e'], ['#5e4228', '#8e603c']], under: '#8a3a3a', seg: [5, 3] } },
   // Cryptocoryne balansae: tall narrow straps, the blade puckered all along, green to bronze; gives to the current
-  balansae: { sway: 0.6, form: 'rosette', n: [8, 14], crowns: [1, 3], spread: 0.25, stalk: '#4a4a2a', leaf: {
+  balansae: { grow: { speed: 'medium', overflow: 'trail', len: [120, 900], more: 5 }, sway: 0.6, form: 'rosette', n: [8, 14], crowns: [1, 3], spread: 0.25, stalk: '#4a4a2a', leaf: {
     len: [0.6, 1], wid: 0.08, prof: [0.9, 0.3], rise: [0.03, 0.35], arch: 0.45, twist: 0.4, fold: -0.1, wave: [0.1, 16], pet: 0.08,
     cols: [['#3a5a26', '#5e8040'], ['#4a5428', '#727a3e'], ['#42502a', '#6a7440']], under: '#6a5a3a', seg: [28, 5] } },
   // Dwarf sagittaria (S. subulata): a run of small grassy rosettes joined by runners, the start of a lawn
-  sagittaria: { sway: 0.25, form: 'rosette', n: [40, 60], crowns: [6, 10], spread: 0.9, stalk: '#4a7a34', leaf: {
+  sagittaria: { grow: { speed: 'fast', overflow: 'spread', len: [30, 150], more: 6 }, sway: 0.25, form: 'rosette', n: [40, 60], crowns: [6, 10], spread: 0.9, stalk: '#4a7a34', leaf: {
     len: [0.6, 1], wid: 0.05, prof: [1, 0.25], rise: [0.05, 0.75], arch: 0.4, twist: 0.6, fold: 0, wave: [0, 0], pet: 0,
     cols: [['#3e7a2e', '#6aa64e'], ['#468634', '#76b456'], ['#3a722a', '#62a046']], under: '#5e8a48', seg: [8, 3] } },
   // Echinodorus 'Ozelot': a mid-sized sword, broader leaves speckled maroon, younger leaves a little redder
-  ozelot: { sway: 0.25, form: 'rosette', n: [12, 18], spread: 0.05, stalk: '#4a6a2c', leaf: {
+  ozelot: { grow: { speed: 'medium', overflow: 'emerge', len: [80, 500], more: 4 }, sway: 0.25, form: 'rosette', n: [12, 18], spread: 0.05, stalk: '#4a6a2c', leaf: {
     len: [0.75, 1], wid: 0.22, prof: [0.7, 0.75], rise: [0.08, 0.8], arch: 0.4, twist: 0.4, fold: -0.12, wave: [0.04, 3], pet: 0.25,
     cols: [['#3a6e2c', '#64984a'], ['#42762e', '#70a252'], ['#4a6a2c', '#76904a']], under: '#5a7a46', rib: '#a8c690',
     spots: { col: '#5e2a1e', n: [14, 24], r: 0.035 }, seg: [24, 7] } },
   // Java moss (Taxiphyllum barbieri): a low ragged mound of tiny dark fronds over a dark core, on the ground or lifted
   // onto wood or rock. Frond length: a fraction of the mound's height
-  moss: { sway: 0.05, form: 'moss', n: [280, 340], spread: 0.95, stalk: '#16281a', leaf: {
+  moss: { grow: { speed: 'medium', overflow: 'none', len: [20, 100], more: 6 }, sway: 0.05, form: 'moss', n: [280, 340], spread: 0.95, stalk: '#16281a', leaf: {
     len: [0.07, 0.13], wid: 0.55, prof: [0.6, 0.5], rise: [0, 0], arch: 0.8, twist: 1.2, fold: 0.2, wave: [0, 0], pet: 0,
     cols: [['#1e3a1c', '#3a6230'], ['#24421e', '#426c36'], ['#1a341a', '#34582c'], ['#22401c', '#3e6a2e']], under: '#2a4a26', seg: [2, 3] } },
   // Red root floaters (Phyllanthus fluitans): small rosettes of round, cupped leaves, green to bronze-red, red roots.
   // Leaf length in mm (like the carpet)
-  redroot: { sway: 0, form: 'float', n: [0, 0], spread: 1, stalk: '#7a3e34', float: { per: [2.5, 3.2], leaves: [5, 7], roots: [1, 3], rootLen: [12, 45] }, leaf: {
+  redroot: { grow: { speed: 'fast', overflow: 'spread', len: [60, 600], more: 1 }, sway: 0, form: 'float', n: [0, 0], spread: 1, stalk: '#7a3e34', float: { per: [2.5, 3.2], leaves: [5, 7], roots: [1, 3], rootLen: [12, 45] }, leaf: {
     len: [6, 10], wid: 0.95, prof: [1, 0.55], rise: [1.35, 1.5], arch: 0.05, twist: 0.2, fold: 0.35, wave: [0, 0], pet: 0.05,
     cols: [['#3e7a2e', '#7ab04e'], ['#4a7e30', '#86b858'], ['#447a2c', '#7eae4c'], ['#5e6a2c', '#94984a'], ['#7a3a28', '#a85a3e']], under: '#7a4a3a', seg: [2, 4] } },
   // Salvinia: floating chains of paired oval leaves, cupped and velvety pale green, short brown roots
-  salvinia: { sway: 0, form: 'float', n: [0, 0], spread: 1, stalk: '#4e3e2a', float: { per: [2.5, 3.5], leaves: [4, 8], roots: [1, 2], rootLen: [8, 25] }, leaf: {
+  salvinia: { grow: { speed: 'fast', overflow: 'spread', len: [60, 600], more: 1 }, sway: 0, form: 'float', n: [0, 0], spread: 1, stalk: '#4e3e2a', float: { per: [2.5, 3.5], leaves: [4, 8], roots: [1, 2], rootLen: [8, 25] }, leaf: {
     len: [8, 13], wid: 0.75, prof: [0.9, 0.55], rise: [1.3, 1.5], arch: 0.05, twist: 0.1, fold: 0.5, wave: [0, 0], pet: 0,
     cols: [['#4a7e30', '#86b858'], ['#548836', '#92c262'], ['#46782c', '#7eb052']], under: '#6a8a4a', seg: [2, 4] } },
 };
+
+/** Growth when a plant has none of its own: the growth at which the species reaches its saved size (0..1). */
+export function growthOf(type: PlantType, size: number) {
+  const g = PLANT3D[type]?.grow;
+  if (!g) return 0.5;
+  return Math.min(1, Math.max(0, Math.log(Math.max(1e-3, size) / g.len[0]) / Math.log(g.len[1] / g.len[0])));
+}
+/** The species' size (mm) at growth g. */
+export function growthLen(type: PlantType, g: number) {
+  const s = PLANT3D[type]?.grow;
+  return s ? s.len[0] * (s.len[1] / s.len[0]) ** Math.min(1, Math.max(0, g)) : 100;
+}
+/** A plant's own size at its growth: its saved size at growthOf(size), up or down from there by the species' curve
+ *  (a saved size outside the species' range keeps its own scale). */
+export function grownSize(type: PlantType, size: number, growth?: number) {
+  if (growth == null) return size;
+  return size * growthLen(type, growth) / growthLen(type, growthOf(type, size));
+}
