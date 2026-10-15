@@ -893,10 +893,10 @@ Cancel, then change the name, to keep both.`)) return;
       : unit === 'par' ? 'PAR at the substrate, µmol/m²/s, from the power and light type: a colour step per doubling. Below: the planted-tank light classes.'
       : 'Lux at the substrate, from the power and light type: a colour step per doubling. Water takes red first, so lux and PAR fall off at different rates.';
   };
-  // a screw-in lamp change also takes that lamp's usual power (a 50 W halogen is a 10 W LED bulb), when the power is set
+  // a screw-in lamp change also takes that lamp's usual power (a 50 W halogen is a 10 W LED bulb)
   $<HTMLSelectElement>('lTech').onchange = e => store.edit(s => {
     const l = s.light; l.tech = (e.target as HTMLSelectElement).value as LightTech; fitK(l);
-    const pw = fixtureOf(l) === 'bulb' && (l.watts ?? 0) > 0 ? powerRange(l, s.tank) : null; if (pw) l.watts = pw[2];
+    if (fixtureOf(l) === 'bulb') delete l.watts;
   });
   let techFor = ''; // the fixture the Lamp list was built for
 
@@ -1231,11 +1231,12 @@ Cancel, then change the name, to keep both.`)) return;
     return v == null ? null : neg.test(t) ? -Math.abs(v) : v;
   } });
   const lens = ['bowMin', 'bowlFloor', 'bowlTop', 'standH', 'tableL', 'tableD', 'subBL', 'subBR', 'subFL', 'subFR', 'lH', 'cDist', 'iSize', 'iSpread', 'iLift', 'personH', 'wallGap', 'ceilH'];
-  const nums = { pieDeg: 0, bgArc: 0, iYaw: 0, iPitch: 0, iTilt: 0, iStems: 0, iDens: 0, iGrowth: 0, lCount: 0, lRows: 0, lCone: 0, lK: 0, lRoom: 2, lW: 0, lPar: 0, cAz: 0, cEl: 0, cZoom: 2, terCols: 0, addSize: 0 };
+  const nums = { pieDeg: 0, bgArc: 0, iYaw: 0, iPitch: 0, iTilt: 0, iStems: 0, iDens: 0, iGrowth: 0, lCount: 0, lRows: 0, lCone: 0, lK: 0, lRoom: 2, lPar: 0, cAz: 0, cEl: 0, cZoom: 2, terCols: 0, addSize: 0 };
   attachTypeIns({
     ...Object.fromEntries(lens.map(id => [id, len])),
     ...Object.fromEntries(Object.entries(nums).map(([id, d]) => [id, num(d)])),
     lBright: { show: v => tidy(expo() ? 2 ** v : v, 2), parse: t => { const v = plainNum(t); return v == null ? null : expo() ? Math.log2(Math.max(v, 1e-3)) : v; } },
+    lW: { show: v => tidy(v, 0), parse: t => (/^\s*(typical|auto|0)\s*$/i.test(t) ? 0 : plainNum(t)) }, // 0 = the typical power
     lSp: { show: v => (v ? toU(v) : 'auto'), parse: t => (/^\s*(auto|0)\s*$/i.test(t) ? 0 : parseLen(t, G().units)) },
     tableX: side(/left/i), tableZ: side(/forward|front/i),
     wOpac: { show: v => tidy(v * 100, 0), parse: t => { const v = plainNum(t); return v == null ? null : v / 100; } },
@@ -1575,7 +1576,7 @@ Cancel, then change the name, to keep both.`)) return;
     ($('lType') as HTMLSelectElement).querySelector<HTMLOptionElement>('option[value=pendant]')!.disabled = s.lid === 'hood'; ($('lCount') as HTMLInputElement).max = String(countMax(l));
     // the fixture's usual ranges on the sliders (lightout FIX_SPEC); set before the values so they are not clipped
     { const sp = FIX_SPEC[fx], pw = powerRange(l, s.tank), lim = (id: string, lo: number, hi: number) => Object.assign($(id) as HTMLInputElement, { min: String(lo), max: String(hi) });
-      lim('lH', Math.max(sp?.h[0] ?? 20, 20), sp?.h[1] ?? 900); lim('lCone', sp?.cone?.[0] ?? 15, sp?.cone?.[1] ?? 120); lim('lW', 0, pw?.[1] ?? 400); lim('lRows', 1, sp?.maxRows ?? 4); }
+      lim('lH', Math.max(sp?.h[0] ?? 20, 20), sp?.h[1] ?? 900); lim('lCone', sp?.cone?.[0] ?? 15, sp?.cone?.[1] ?? 120); lim('lW', 1, pw?.[1] ?? 400); lim('lRows', 1, sp?.maxRows ?? 4); }
     for (const [id, k] of Object.entries(lKeys)) setVal(id, l[k] ?? 0);
     // spots: the slider sets the longest row; say the total when the rows make it more (Nathan 2026-10-12: "3" showed 5)
     const total = l.type === 'spot' ? emitters(s.tank, l).length : l.count;
@@ -1592,7 +1593,7 @@ Cancel, then change the name, to keep both.`)) return;
     // set, Brightness is an exposure on top of the brightness the light gives (x1/4-16, in stops)
     // tubes and halide pendants: the power is the lamps' (W each x how many), shown instead of the slider
     const W = wattsOf(s), watts = W > 0, fixedW = fx === 'tube' || fx === 'pendant';
-    $('lWRow').style.display = fx === 'flat' ? 'none' : ''; setOut('oLW', watts ? `${W} W` : 'Not set');
+    $('lWRow').style.display = fx === 'flat' ? 'none' : ''; setOut('oLW', watts ? `${W} W${(l.watts ?? 0) > 0 || fixedW ? '' : ' · typical'}` : 'Not set'); setVal('lW', W);
     $('lW').hidden = fixedW; $('lWFixed').hidden = !fixedW;
     if (fx === 'tube') { const t = tubeOf(l, s.tank); $('lWFixed').textContent = `${l.count} × ${t.w} W, ${t.inch} in tube${l.count > 1 ? 's' : ''}`; }
     if (fx === 'pendant') { const n = emitters(s.tank, l).length; $('lWFixed').textContent = `${n} × ${l.bulbW ?? 150} W bulb${n > 1 ? 's' : ''}`; }

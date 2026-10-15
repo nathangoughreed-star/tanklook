@@ -138,7 +138,9 @@ describe('light output model', () => {
     const b = { ...defaultSetup().light, type: 'spot', tech: 'halogen', count: 2, rows: 1, pattern: 'grid', watts: 99 } as LightSettings;
     expect(powerRange(b, T)).toEqual([0, 200, 100]);                          // 2 bulbs: up to 100 W each, 50 W halogen
     fitFixture(b, T, true);
-    expect(b.watts).toBe(100);
+    expect(b.watts).toBeUndefined(); expect(wattsOf({ tank: T, light: b })).toBe(100); // the typical power, until set
+    expect(wattsOf({ tank: T, light: { ...b, watts: 0 } })).toBe(100); expect(wattsOf({ tank: T, light: { ...b, watts: 30 } })).toBe(30);
+    expect(wattsOf({ tank: T, light: { ...b, type: 'flat' } })).toBe(0);
     expect(powerRange({ ...b, type: 'led' }, T)![2]).toBe(36);              // LED bar: 1 W per inch of tank
   });
   it('tubes: the longest standard length that fits, power from the tubes', () => {
