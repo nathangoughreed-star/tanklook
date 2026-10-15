@@ -145,8 +145,10 @@ export interface LightSettings {
   /** A Light map layer across the tank at this height above the floor (mm; an app preference, added 2026-10-15); 0 or
    * absent = the substrate only. */
   mapSlice?: number;
-  /** Light map shells: see-through surfaces round the lamps at the contour levels (an app preference, added 2026-10-15). */
+  /** Dark spots: a surface round every pocket of water below `mapDark` (an app preference, added 2026-10-15). */
   mapShells?: boolean;
+  /** Dark spots: the level below which the water counts as dark, PAR (lux: x 50); absent = 30. */
+  mapDark?: number;
 }
 
 export type LightTech = 'led-white' | 'led-planted' | 'led-reef' | 't5-refl' | 't5-bare' | 't8' | 't12' | 'led-tube' | 'cfl' | 'led-bulb' | 'mh' | 'mh-20k' | 'halogen';

@@ -6,6 +6,7 @@ import { drawSnailCard } from '../art/snails';
 import { CATEGORIES, SPECIES, fishTL, getSpecies, needsWater, searchSpecies, speciesOf, speciesTag, type Category, type Sex, type Species } from '../data/species';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { MAP_DIV, MAP_STEP, emitters, mapStepOf } from '../render/lighting';
+import { darkOf, darkStats } from '../render/lightShells';
 import { FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeOf, wattsOf, type Fixture } from '../scene/lightout';
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
@@ -787,6 +788,7 @@ Cancel, then change the name, to keep both.`)) return;
   $('lBeams').onchange = e => store.edit(s => { s.render.beams = (e.target as HTMLInputElement).checked; });
   $('lSlice').oninput = e => store.edit(s => { const v = +(e.target as HTMLInputElement).value; if (v > 0) s.light.mapSlice = v; else delete s.light.mapSlice; }, { coalesce: 'lSlice' });
   $('lShells').onchange = e => store.edit(s => { if ((e.target as HTMLInputElement).checked) s.light.mapShells = true; else delete s.light.mapShells; });
+  $('lDark').oninput = e => store.edit(s => { const v = +(e.target as HTMLInputElement).value; s.light.mapDark = (s.light.mapUnit ?? 'par') === 'lux' ? v / 50 : v; }, { coalesce: 'lDark' });
   $('lStep').oninput = e => store.edit(s => { const v = +(e.target as HTMLInputElement).value; if ((s.light.mapUnit ?? 'par') === 'lux') s.light.mapStepLux = v; else s.light.mapStep = v; }, { coalesce: 'lStep' });
   $<HTMLSelectElement>('lUnit').onchange = e => store.edit(s => { s.light.mapUnit = (e.target as HTMLSelectElement).value as 'par' | 'lux'; });
   /** The Light map legend: labels at doublings along the ramp (7 steps up from MAP_DIV), and the PAR bands. */
@@ -1325,7 +1327,16 @@ Cancel, then change the name, to keep both.`)) return;
     $('lUnitRow').style.display = mapOn && watts ? '' : 'none'; setVal('lUnit', l.mapUnit ?? 'par'); mapKey(watts ? l.mapUnit ?? 'par' : 'rel');
     // the map layer: from the floor up to the water surface (the tank top when dry)
     { const top = Math.round(s.water.on ? waterY(s.tank, s.water.level) : s.tank.H); $('lSliceRow').style.display = mapOn && watts ? '' : 'none';
-      ($('lSlice') as HTMLInputElement).max = String(top); $('lShellsRow').style.display = mapOn && watts ? '' : 'none'; ($('lShells') as HTMLInputElement).checked = !!l.mapShells; setVal('lSlice', l.mapSlice ?? 0); setOut('oLSlice', l.mapSlice ? `${fmt(l.mapSlice)} up` : 'Off'); }
+      ($('lSlice') as HTMLInputElement).max = String(top); $('lShellsRow').style.display = mapOn && watts ? '' : 'none'; ($('lShells') as HTMLInputElement).checked = !!l.mapShells;
+      // dark spots: the level (PAR, or lux at 50 per µmol) and how much of the water is below it, and where it is darkest
+      const dk = mapOn && watts && !!l.mapShells, du = l.mapUnit ?? 'par', dl = darkOf(l, du);
+      $('lDarkRow').style.display = dk ? '' : 'none'; $('lDarkOut').hidden = !dk;
+      Object.assign($('lDark') as HTMLInputElement, du === 'lux' ? { min: '250', max: '5000', step: '250' } : { min: '5', max: '100', step: '5' }); setVal('lDark', dl);
+      setOut('oLDark', du === 'lux' ? `${dl.toLocaleString('en-US')} lux` : `${dl} PAR`);
+      const ds = dk ? darkStats(s, s.tank) : null, du2 = du === 'lux' ? 'lux' : 'PAR';
+      if (ds) $('lDarkOut').textContent = ds.share > 0
+        ? `${Math.max(1, Math.round(ds.share * 100))}% of the water is below ${dl.toLocaleString('en-US')} ${du2}; darkest ${Math.round(ds.min).toLocaleString('en-US')} ${du2}, ${ds.where}.`
+        : `No dark spots: all the water gets at least ${dl.toLocaleString('en-US')} ${du2} (least ${Math.round(ds.min).toLocaleString('en-US')}, ${ds.where}).`; setVal('lSlice', l.mapSlice ?? 0); setOut('oLSlice', l.mapSlice ? `${fmt(l.mapSlice)} up` : 'Off'); }
     { const u = l.mapUnit ?? 'par', r = MAP_STEP[u], v = mapStepOf(l, u); $('lStepRow').style.display = mapOn && watts ? '' : 'none';
       Object.assign($('lStep') as HTMLInputElement, { min: String(r.min), max: String(r.max), step: String(r.by) }); setVal('lStep', v);
       setOut('oLStep', u === 'lux' ? `${v.toLocaleString('en-US')} lux` : `${v} PAR`); }
