@@ -18,7 +18,7 @@ Living file. Project state and dated decisions go here; update in place.
 - Not browser-checked in the app (no dev-server slot): the platy / molly Sex switch and stocking rows; tests cover the data.
 - Before/after composites: worktree `shots/x2/cmp-*.jpg` (gitignored).
 
-## Plant growth (2026-10-15; design agreed in chat; lane GR1 DONE: branch `plants3d`, port 5283, pushed to main; GR2 / GR3 open)
+## Plant growth (2026-10-15; design agreed in chat; lane GR1 DONE: branch `plants3d`, port 5283, pushed to main; GR3 DONE (`plant-time`, 5593); GR2 open; GPU reveal + prebuild next)
 Nathan: each plant item gets a growth slider from just planted to fully mature / overgrown; what overgrown looks like
 depends on the species (lying along the surface in sheets, growing out of the tank, spreading). Each item (which may
 hold many stems / crowns) has its own growth. Later: a global timeline that grows the whole tank at each species' rate.
@@ -71,8 +71,31 @@ hold many stems / crowns) has its own growth. Later: a global timeline that grow
     plant (a lying leaf is not relit); no emerse growth.
 - **For GR2:** `overflow` is in the data; bendPlant is where an 'emerge' piece would keep climbing past F instead (needs
   room above the line and an emersed leaf form); floaters already widen with growth (patch width from `len`).
-- **For GR3:** set `it.growth` from a tank time x `grow.speed` x tank setting; the slider path (reveal only) is the cheap
-  one, but each plant's first growth builds its extras once (stagger the first frame over many plants).
+- **GR3 landed (2026-10-15, Nathan: "keep Time as a saved setting ... ship GR3"):**
+  - Data: `TankSetup.grow: { feed: 'low' | 'ferts' | 'co2', time: 0..1 }` (types.ts `GrowSettings`; validate: older files
+    low-tech, Time 0; no version bump). `Item.planted` (plants only, -5..1): the growth the plant had at Time 0, written
+    when Time moves; below 0 = put in after Time 0 (shows as just planted before then).
+  - scene/growtime.ts: `GROW_RATE[feed][speed]` growth per unit Time (low 1 / 1.5 / 2, ferts 1.25 / 2 / 3, co2 1.5 / 3 / 5
+    for slow / medium / fast: a slow plant in a low-tech tank takes all of Time from 0 to 1; feeding helps fast growers
+    most). `setGrowTime(s, t, feed, only?)` writes every plant's growth = clamp(planted + t x rate); back at Time 0 every
+    plant is exactly as planted (a starter plant with no growth of its own goes back to none). `setPlantGrowth` = a
+    plant's own Growth slider at any Time (moves its planted growth). Tests: test/growtime.test.ts.
+  - UI (Plants panel): Feeding select + Time slider + a hint line ("N of M plants overgrown" / "Growing: N plants to go").
+    One drag = one undo step (Time is left out of the generic range seal; it seals once the last plant has grown).
+  - Cost: render/build.ts `envKey` leaves `grow` out (it made every Time step a full tank rebuild: 111 -> 79 ms per step,
+    alternate frames, 32 plants). The rest is each plant's revealPlant (1..5 ms; carpet 60 k tris 5 ms), so ui/panels.ts
+    catches a dense tank up over frames: one first build per frame, as many others as keep frames near 40 ms,
+    longest-waiting first. First growth per plant measured 200..350 ms on the busy machine (GR1: 65..170), so the first
+    Time move on a dense tank takes seconds to catch up; later moves catch up within ~0.7 s of release.
+  - Sheets (worktree `shots/`, not in git): `142_time_sheet.png` (Planted community at Time 0 / 15 / 40 %),
+    `143_controls.png`, `144_controls_375.png`, `146_proxy_sheet.png` (stretch-preview mock, rejected).
+  - Not done: shaded plants growing slower from the light map (optional, not asked yet).
+- **Next (Nathan 2026-10-15): GPU reveal + background prebuild** (chosen over a stretch preview while dragging, which got
+  the shape wrong). (1) revealPlant moves to the vertex shader: every vertex already has its growth tag, so a per-plant
+  growth uniform hides / shrinks what has not grown; a Time or Growth drag then shows the real plant every frame at ~0
+  cost, no buffers rebuilt. (2) Build each plant's full-growth extras in idle time after load / when the Plants panel
+  opens, so the first drag is warm. Files: render/plant3d.ts, render/items.ts (GR2's while GR2 is open); the
+  ui/panels.ts stagger can then go.
 
 ## 3D back wall (2026-10-15; main checkout; Nathan chose "3D panel inside" over a flat printed sheet; pushed to main)
 Nathan: textured backgrounds, e.g. a plant mat for terrariums, a live rock / coral wall for saltwater, river rocks for fresh.
@@ -1105,7 +1128,7 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | X2 fish leftovers | (worktree removed) | - | `art/fishgen.ts`, `render/fish3d.ts`, `art/paint.ts` (noseCap on neon / cardinal / chili / cpd, characin dorsal taper, platy / molly gonopodium, fantail doubled anal fin) | DONE 2026-10-15, pushed (see its section); fish files free; Sex switch browser-checked PASS (build 436) |
 | GR1 plant growth | `../Glass-Box-plants3d` / `plants3d` | 5283 | see the "Plant growth" section (growth value, Height removed, lying over at the surface) | DONE (`050e2d9`, `4a4e3a8`, build 440) |
 | GR2 emersed growth + floaters | `../Glass-Box-plants3d` / `plants3d` | 5283 | `art/plants.ts`, `render/plant3d.ts` (bendPlant 'emerge' / 'spread'), plant branch of `render/items.ts`, plant entries of `scene/items.ts`, new floater / lily species data | ready to open (prompt `prompts/lane-GR2-emersed-floaters.md`) |
-| GR3 growth timeline + tank setting | `../Glass-Box-plant-time` / `plant-time` | 5593 | new `scene/growtime.ts` + test, the tank-setting field in `scene/types.ts` / `validate.ts` / `defaults.ts`, the timeline + setting rows in `index.html` / `ui/panels.ts`; READS `PLANT3D[].grow.speed`, does not edit plant geometry | ready to open (prompt `prompts/lane-GR3-growth-timeline.md`) |
+| GR3 growth timeline + tank setting | `../Glass-Box-plant-time` / `plant-time` | 5593 | see the "Plant growth" section (Feeding + Time, `scene/growtime.ts`) | DONE (see that section) |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 Free (no lane): `render/build.ts`, `render/items.ts`, `scene/items.ts`, `render/viewer.ts`, `main.ts`, `render/lighting.ts`,
 `render/coral3d.ts`, `render/shrimp3d.ts` / `art/shrimps.ts`, `scene/share.ts`, herps / herp3d / snails / snail3d. A one-line hook in a free file is fine; name it
