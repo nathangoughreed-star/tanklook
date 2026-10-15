@@ -13,7 +13,7 @@ import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene, TANK_PRESETS } from '../scene/defaults';
 import { ANIMAL_STOPS, DEFAULT_DENS, DENS_STOPS, KINDS, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, itemDims, makeItem, type Layer } from '../scene/items';
-import { regenerate } from '../scene/starter';
+import { handEdits, regenerate } from '../scene/starter';
 import { growthOf, isClump, isPatch, type PlantType } from '../art/plants';
 import { clumpAuto } from '../render/plant3d';
 import { tankDiff } from './diff';
@@ -908,13 +908,30 @@ Cancel, then change the name, to keep both.`)) return;
   let fishId0 = 1;
   const replaced = (s: TankSetup) => regenerate(s, 'all', fishId0);
   const dropGoneFish = () => { if (store.selId != null && !S().fish.some(f => f.id === store.selId)) store.select(null); };
+  /** A redraw is complete (Nathan 2026-10-15): when it would throw away pieces or animals placed, moved or removed by
+   *  hand, a warning asks first. Resolves true to go ahead; on "Keep my scape" `revert` puts the control back. */
+  const warnDlg = $<HTMLDialogElement>('scapeWarn');
+  const okToReplace = (what: Layer | 'all', revert: () => void) => new Promise<boolean>(done => {
+    const lost = handEdits(S(), what);
+    if (!lost.length) { done(true); return; }
+    const list = lost.length === 1 ? lost[0] : `${lost.slice(0, -1).join(', ')} and ${lost[lost.length - 1]}`;
+    $('scapeWarnText').textContent = `${what === 'all' ? 'A new starter set' : 'Redrawing this layer'} starts the ${list} again from scratch. Everything you placed, moved or removed there by hand will be gone.`;
+    // answered by the buttons (Esc = keep) rather than the dialog's close event, which a background tab may hold back
+    const answer = (ok: boolean) => { warnDlg.oncancel = $('scapeKeep').onclick = $('scapeReplace').onclick = null; warnDlg.close(); if (!ok) revert(); done(ok); };
+    $('scapeKeep').onclick = () => answer(false); $('scapeReplace').onclick = () => answer(true);
+    warnDlg.oncancel = e => { e.preventDefault(); answer(false); };
+    warnDlg.showModal();
+  });
+  const showDens = () => { const d = S().layout.dens ?? DEFAULT_DENS; for (const [k, inp, out] of DENS_IN) { setVal(inp, d[k]); $(out).textContent = stopName(k, d[k]); } };
   // leaving swamp brings back the level it lowered, unless the level was moved since (audit #13)
   let preSwamp = emptyScene().tanks[0].water.level;
-  $<HTMLSelectElement>('layout').onchange = e => {
+  $<HTMLSelectElement>('layout').onchange = async e => {
+    const to = (e.target as HTMLSelectElement).value as LayoutId;
+    if (!await okToReplace('all', () => setVal('layout', S().layout.id))) return;
     store.selectItem(null); fishId0 = store.nextId();
     store.edit(s => {
       const was = s.layout.id;
-      s.layout.id = (e.target as HTMLSelectElement).value as LayoutId;
+      s.layout.id = to;
       if (s.layout.id === 'swamp' && s.water.level > SWAMP_LEVEL) { preSwamp = s.water.level; setWaterLevel(s, SWAMP_LEVEL); } // land needs to stand out of the water
       else if (was === 'swamp' && s.layout.id !== 'swamp' && s.water.level === SWAMP_LEVEL) setWaterLevel(s, preSwamp);
       replaced(s);
@@ -922,7 +939,8 @@ Cancel, then change the name, to keep both.`)) return;
     dropGoneFish();
     status('New starter set placed. Ctrl+Z brings the previous pieces back.');
   };
-  $('layoutShuffle').onclick = () => {
+  $('layoutShuffle').onclick = async () => {
+    if (!await okToReplace('all', () => {})) return;
     const seed = 1 + Math.floor(Math.random() * 1e6);
     store.selectItem(null); fishId0 = store.nextId();
     store.edit(s => { s.layout.seed = seed; replaced(s); });
@@ -937,8 +955,9 @@ Cancel, then change the name, to keep both.`)) return;
   for (const [k, inp, out] of DENS_IN) {
     const el = $<HTMLInputElement>(inp);
     el.oninput = () => { $(out).textContent = stopName(k, +el.value); };
-    el.onchange = () => {
+    el.onchange = async () => {
       const v = +el.value;
+      if (!await okToReplace(k, showDens)) return;
       if (k !== 'animal') store.selectItem(null);
       fishId0 = store.nextId();
       store.edit(s => { s.layout.dens = { ...(s.layout.dens ?? DEFAULT_DENS), [k]: v }; regenerate(s, k, fishId0); });

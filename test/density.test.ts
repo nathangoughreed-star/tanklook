@@ -3,7 +3,7 @@ import { getSpecies } from '../src/data/species';
 import { defaultScene, defaultSetup } from '../src/scene/defaults';
 import { DEFAULT_DENS, STYLES, layerOf, legacyDens, starterItems, stopDens } from '../src/scene/items';
 import { IN } from '../src/scene/physics';
-import { bioload, bioloadLitres, regenerate, starterAnimals } from '../src/scene/starter';
+import { bioload, bioloadLitres, handEdits, regenerate, starterAnimals } from '../src/scene/starter';
 import { LAYOUT_IDS, parseScene } from '../src/scene/validate';
 import type { Item, LayerDens, LayoutId, TankSetup } from '../src/scene/types';
 
@@ -103,5 +103,23 @@ describe('density sliders and per-layer streams (lane SD, 2026-10-15)', () => {
     expect(parseScene(JSON.parse(JSON.stringify(sc))).scene.tanks[0].layout.dens).toEqual(legacyDens(7));
     t.layout = { id: 'stones', seed: 7, dens: { hard: 4, plant: 0, animal: 3 } };
     expect(parseScene(JSON.parse(JSON.stringify(sc))).scene.tanks[0].layout.dens).toEqual({ hard: 4, plant: 0, animal: 3 });
+  });
+  it('hand edits are spotted, so the redraw can warn first (Nathan 2026-10-15); a fresh set needs no warning', () => {
+    for (const id of LAYOUTS) {
+      const s = setup(id, 5, { hard: 3, plant: 1, animal: 2 }); regenerate(s, 'all', 1);
+      expect(handEdits(s, 'all'), id).toEqual([]);
+      expect(handEdits(s, 'animal'), id).toEqual([]);
+    }
+    const s = setup('iwagumi', 5); regenerate(s, 'all', 1);
+    const st = hard(s.items)[0]; st.x += 40;
+    expect(handEdits(s, 'hard')).toContain('hardscape');
+    expect(handEdits(s, 'animal')).toEqual([]);
+    const t = setup('planted', 2); regenerate(t, 'all', 1);
+    t.items.splice(t.items.findIndex(i => i.kind === 'plant'), 1);
+    expect(handEdits(t, 'plant')).toEqual(['plants']);
+    expect(handEdits(t, 'hard')).toEqual(['plants']); // a hardscape redraw redraws the plants round it as well
+    const u = setup('planted', 2); u.fish = defaultSetup().fish; // the user's own animals, stop None
+    expect(handEdits(u, 'animal')).toEqual(['animals']);
+    expect(handEdits(u, 'all')).not.toContain('animals'); // at None a new set leaves them alone
   });
 });

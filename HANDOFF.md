@@ -2,7 +2,7 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
-## Lane SD: scape density sliders (2026-10-15; branch `scape-density`, port 5603; foundation pushed to main)
+## Lane SD: scape density sliders (2026-10-15; branch `scape-density`, port 5603; DONE, pushed to main)
 - **Per-layer random streams:** `starterItems(S, keepHard?)` in scene/items.ts draws each layer from its own stream
   (seed x layer: hardscape 1, plants 2, style picks 11 / 12; animals 3 in scene/starter.ts). A plant-stop change leaves
   every rock identical (tested); a plants-only redraw keeps the hardscape where it stands now and plants round it.
@@ -18,8 +18,12 @@ Living file. Project state and dated decisions go here; update in place.
 - **UI:** three stepped sliders under "Start from" (Hardscape, Plants / Corals in a reef, Animals); dragging only names the
   stop, release redraws that layer once (`regenerate`), one undo step. Hardscape redraws rocks + plants (animals stay).
   Shuffle and a new layout keep the stops. Bowl / round planted: ring 0.76 of the radius, front carpet patches spread out.
-- **Open (asked Nathan 2026-10-15, sheet `shots/sd_handedit.png` in the worktree):** after a hand edit, does a slider move
-  keep pinned / hand-moved / hand-added items (A) or replace the layer (B, what ships now; Ctrl+Z brings it back)?
+- **Hand edits (Nathan 2026-10-15: "redraw completely but with a very obvious warning popup that it will get rid of your
+  current scape"):** every redraw (slider, Shuffle, new layout) is complete; when it would drop hand edits a modal
+  `#scapeWarn` asks first ("Keep my scape" / red "Replace it"; Esc = keep, the control goes back). `handEdits(s, what)`
+  (scene/starter.ts) regenerates the layer from the current settings and compares poses (coral lift ignored; animals by
+  species count); untouched sets redraw with no popup (browser-checked on all six layouts). The dialog resolves from its
+  buttons, not its `close` event, which the background preview pane held back.
 - Pictures: worktree `shots/sd_sheet.png` (iwagumi / planted / reef at Sparse / Medium / Packed).
 
 ## Lane X2: fish leftovers from X and F2 (2026-10-15; branch `fish-x2`, port 5583; Nathan approved all four steps; pushed to main)

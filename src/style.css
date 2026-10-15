@@ -246,6 +246,14 @@ footer { margin-top: 18px }
 /* Open…: tanks saved in this browser */
 .libdlg { width: min(640px, calc(100vw - 32px)); max-height: calc(100vh - 48px); padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--ink) }
 .libdlg::backdrop { background: rgb(0 0 0 / .45) }
+/* the warning before a starter-set redraw throws away hand edits (Nathan 2026-10-15: "a very obvious warning popup") */
+.warndlg { width: min(460px, calc(100vw - 32px)); border: 2px solid var(--warn); border-top-width: 8px }
+.warndlg::backdrop { background: rgb(0 0 0 / .6) }
+.warnhead { display: flex; align-items: center; gap: 10px }
+.warnhead h2 { margin: 6px 0; font-size: 1.25em }
+.warnicon { font-size: 2.2em; line-height: 1; color: var(--warn) }
+.warndlg #scapeWarnText { font-size: 1.05em }
+button.danger { background: var(--bad); color: #fff; border-color: var(--bad); font-weight: 600 }
 /* the start menu: continue / start fresh / an example, in the middle of the screen on every load */
 .startdlg { width: min(720px, calc(100vw - 32px)) }
 .startdlg h2 { margin: 2px 0 2px; font-size: 18px }

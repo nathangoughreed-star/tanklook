@@ -6,7 +6,7 @@ import { getSpecies, type Species } from '../data/species';
 import { DEFAULT_DENS, STYLES, layerOf, starterItems, type Layer } from './items';
 import { volume } from './physics';
 import { placeNew, randomPose, randomSize } from './scatter';
-import type { Fish, TankSetup } from './types';
+import type { Fish, Item, TankSetup } from './types';
 
 /** Share of the tank's bioload cap each animal stop fills (None .. Full). Full stays under the cap. */
 export const ANIMAL_FILL = [0, 0.35, 0.6, 0.8, 0.9] as const;
@@ -90,4 +90,27 @@ export function regenerate(s: TankSetup, what: Layer | 'all', firstFishId: numbe
   if (what === 'plant') s.items = starterItems(s, s.items.filter(it => layerOf(it) === 'hard'));
   else if (what !== 'animal') s.items = starterItems(s);
   if (what === 'animal' || (what === 'all' && (s.layout.dens ?? DEFAULT_DENS).animal > 0)) s.fish = starterAnimals(s, firstFishId);
+}
+
+/** The parts of an item a hand edit changes (a coral's lift is left out: the renderer seats it on the rock). */
+const pose = (it: Item) => [it.variant, Math.round(it.x), Math.round(it.depth), Math.round(it.size), it.yaw, it.pitch ?? 0, it.tilt ?? 0, it.kind === 'coral' ? 0 : Math.round(it.lift)].join();
+const sameItems = (a: Item[], b: Item[]) => a.length === b.length && a.map(pose).sort().join('|') === b.map(pose).sort().join('|');
+const speciesCount = (fish: Fish[]) => fish.map(f => f.species + (f.sex ?? '')).sort().join();
+
+/**
+ * What a redraw of `what` would throw away that is not the starter set as drawn for the tank's current settings: pieces
+ * moved, added, removed or resized by hand, or animals other than the stop's (Nathan 2026-10-15: redraw completely,
+ * but warn first that it gets rid of the current scape). Empty = nothing of the user's is lost; the caller just redraws.
+ */
+export function handEdits(s: TankSetup, what: Layer | 'all'): ('hardscape' | 'plants' | 'animals')[] {
+  const out: ('hardscape' | 'plants' | 'animals')[] = [], dens = s.layout.dens ?? DEFAULT_DENS;
+  const hardNow = s.items.filter(it => layerOf(it) === 'hard'), plantNow = s.items.filter(it => layerOf(it) === 'plant');
+  if (what === 'hard' || what === 'all') {
+    if (!sameItems(hardNow, starterItems(s).filter(it => layerOf(it) === 'hard'))) out.push('hardscape');
+  }
+  if (what !== 'animal') {
+    if (!sameItems(plantNow, starterItems(s, hardNow).filter(it => layerOf(it) === 'plant'))) out.push('plants');
+  }
+  if ((what === 'animal' || (what === 'all' && dens.animal > 0)) && s.fish.length && speciesCount(s.fish) !== speciesCount(starterAnimals(s, 1))) out.push('animals');
+  return out;
 }

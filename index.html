@@ -39,6 +39,12 @@
     <div id="libList" class="libgrid"></div>
     <div class="btns"><button id="openFile">Open a downloaded file…</button></div>
   </dialog>
+  <dialog id="scapeWarn" class="libdlg warndlg" aria-labelledby="scapeWarnTitle" aria-describedby="scapeWarnText">
+    <div class="warnhead"><span class="warnicon" aria-hidden="true">⚠</span><h2 id="scapeWarnTitle">This replaces your current scape</h2></div>
+    <p id="scapeWarnText"></p>
+    <p class="hint">Ctrl+Z (Undo) brings it back straight after.</p>
+    <div class="btns"><span class="grow"></span><button id="scapeKeep" autofocus>Keep my scape</button><button id="scapeReplace" class="danger">Replace it</button></div>
+  </dialog>
   <dialog id="startDlg" class="libdlg startdlg" aria-labelledby="startTitle">
     <h2 id="startTitle">TankLook</h2>
     <p class="hint">Plan an aquarium, paludarium or terrarium: tank, ground, plants, animals and light, all to scale.</p>
