@@ -159,6 +159,10 @@
   "aq": "200909300127",
   "name": "Malaysian Trumpet Snail (Melanoides tuberculata)"
  },
+ "adf": {
+  "aq": "200910181719",
+  "name": "African Dwarf Frog (Hymenochirus boettgeri)"
+ },
  "axolotl": {
   "aq": "200911041032",
   "name": "Dojo Loach (Misgurnus anguillicaudatus)",
@@ -172,11 +176,6 @@
  "firetoad": {
   "aq": "200909300241",
   "name": "White Cloud Mountain Minnow (Tanichthys albonubes)",
-  "standIn": true
- },
- "adf": {
-  "aq": "200909300155",
-  "name": "Panda Cory (Corydoras panda)",
   "standIn": true
  },
  "ocellaris": {

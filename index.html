@@ -153,6 +153,7 @@
   <details class="sec" data-sec="hardscape"><summary><h2>Hardscape</h2></summary>
   <div class="field"><label class="flabel" for="layout">Start from</label><select id="layout"></select><button id="layoutShuffle" title="A new arrangement of this starter set's rock and wood; plants and animals stay where they are (Ctrl+Z brings the old one back)">Shuffle</button></div>
   <div class="hint" id="layoutHint"></div>
+  <div class="field"><label class="flabel" for="layoutComp">Composition</label><select id="layoutComp" title="Where the weight of the starter set sits, in any style: Any lets Shuffle pick. Redraws the hardscape and the plants round it (Ctrl+Z brings the old ones back)"></select></div>
   <div class="row dens"><label for="densHard" id="lDensHard" title="How much rock and wood the starter set places, from one piece to far too much. The main pieces stay where they are and more or fewer go round them; Shuffle gives a new layout. Redraws the hardscape and the plants round it when you let go (Ctrl+Z brings the old ones back)">Density</label><input id="densHard" type="range" min="-1" max="6" step="any" list="densTicks"><output id="oDensHard"></output></div>
   <datalist id="densTicks"><option value="-1"></option><option value="0"></option><option value="1"></option><option value="2"></option><option value="3"></option><option value="4"></option><option value="5"></option><option value="6"></option></datalist>
   <div class="lib" id="libHard"></div>
@@ -229,7 +230,7 @@
   </details>
   <details class="sec" data-sec="lighting"><summary><h2>Lighting</h2></summary>
   <div class="row"><label for="lType">Fixture</label><select id="lType" class="span2">
-    <option value="flat">None (flat, even light)</option><option value="puck">LED pucks / spots</option><option value="bulb">Screw-in bulbs</option>
+    <option value="flat">None (room light only)</option><option value="puck">LED pucks / spots</option><option value="bulb">Screw-in bulbs</option>
     <option value="pendant">Metal halide pendants</option><option value="tube">Tubes (fluorescent / LED)</option><option value="led">LED bar (full length)</option></select></div>
   <div class="row" id="lTechRow"><label for="lTech" title="What is inside the fixture: sets how much light each watt makes, and its colour mix (lux per µmol)">Light type</label><select id="lTech" class="span2"></select></div>
   <div class="row" id="lCountRow"><label id="lCountLab" for="lCount">Count</label><input id="lCount" type="range" min="1" max="6" step="1"><output id="oCount"></output></div>
@@ -239,6 +240,8 @@
   <div class="row" id="lConeRow"><label for="lCone">Beam angle</label><input id="lCone" type="range" min="15" max="120" step="1"><output id="oLCone"></output></div>
   <div class="row" id="lHRow"><label for="lH" title="How far the fixture hangs above the top of the tank">Height above tank</label><input id="lH" type="range" min="20" max="900" step="5"><output id="oLH"></output></div>
   <div class="row" id="lMountRow"><label for="lMount" title="What holds the fixture up">Mount</label><select id="lMount" class="span2"><option value="legs">On legs, resting on the tank rim</option><option value="hang">Hung from the ceiling</option></select></div>
+  <div class="row" id="lPosRow"><label for="lPos" title="Where the fixture sits on the tank, front to back; its legs follow">Front to back</label><input id="lPos" type="range" min="-200" max="200" step="5"><output id="oLPos"></output></div>
+  <div class="btns" id="lPosOptRow"><button id="lPosOpt" title="Move the fixture front to back to where it lights the floor most evenly">Optimize front to back</button></div>
   <div class="row" id="lBulbRow"><label for="lBulb" title="Metal halide bulbs come in set sizes; the total power is this times the number of bulbs">Bulb</label><select id="lBulb" class="span2"></select></div>
   <div class="row" id="lWRow"><label for="lW" title="Total power draw of all the lights over the tank together (every fixture, bulb and tube), not per fixture. Tubes and metal halide pendants: set by the lamps. Starts at a typical power for the fixture and tank; it estimates PAR and lux at the substrate and the render follows it. Type 'typical' to go back to the typical power">Total Power</label><input id="lW" type="range" min="0" max="400" step="1"><span id="lWFixed" class="hint" hidden></span><output id="oLW"></output></div>
   <div class="row" id="lParRow"><label for="lPar" title="Your own PAR-meter reading at the substrate (or the maker's figure), µmol/m²/s. Set, the estimate is scaled to match it. 0 = estimate">PAR (measured)</label><input id="lPar" type="range" min="0" max="300" step="1"><output id="oLPar"></output></div>

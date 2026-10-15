@@ -8,11 +8,11 @@ import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { BACKDROPS } from '../render/backdrop';
 import { MAP_DIV, MAP_STEP, emitters, mapStepOf } from '../render/lighting';
 import { darkOf, darkStats } from '../render/lightShells';
-import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, mountOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeLayout, tubeOf, TUBE_SP_MAX, wattsOf, type Fixture } from '../scene/lightout';
+import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, mountOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeLayout, tubeOf, TUBE_SP_MAX, bestPos, ledBarDepth, posMax, wattsOf, type Fixture } from '../scene/lightout';
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene, TANK_PRESETS } from '../scene/defaults';
-import { DEFAULT_DENS, EPIPHYTES, KINDS, perch, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
+import { COMPS, DEFAULT_DENS, EPIPHYTES, KINDS, perch, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
 import { handEdits, regenerate, shuffleHard } from '../scene/starter';
 import { growthOf, isClump, isFloat, isPatch, type PlantType } from '../art/plants';
 import { clumpAuto } from '../render/plant3d';
@@ -34,7 +34,7 @@ import { tankWeight } from '../scene/weight';
 import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, aqWaitS, fetchAqHealth, fetchStocking, type AqHealth } from '../data/aqadvisor';
 import { BOWL_DEFAULT, BOWL_MAX, BOWL_MIN, PIE_DEFAULT, POLY_SIDES, SHAPES, bowMinLimit, offsetRing, ringArea, shapeOf } from '../scene/shape';
 import { TABLE_MAX, tableOn, tableRange, wallGap } from '../scene/table';
-import type { BgFit, BgSide, Fish, GrowFeed, Item, ItemKind, LayoutId, LightTech, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
+import type { BgFit, BgSide, CompId, Fish, GrowFeed, Item, ItemKind, LayoutId, LightTech, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
 import { FEED_NAMES, setGrowTime, setPlantGrowth, timeChanges } from '../scene/growtime';
 import { GLASS_CHOICES, LIMITS, SceneError, parseScene } from '../scene/validate';
 import { deleteFromLib, listLib, loadFromLib, saveToLib } from '../scene/library';
@@ -840,7 +840,7 @@ Cancel, then change the name, to keep both.`)) return;
   }
 
   // ---------- Lighting ----------
-  const lKeys = { lCount: 'count', lRows: 'rows', lSp: 'spacing', lCone: 'cone', lH: 'height', lBright: 'bright', lK: 'kelvin', lRoom: 'room', lW: 'watts', lPar: 'par' } as const;
+  const lKeys = { lCount: 'count', lRows: 'rows', lSp: 'spacing', lCone: 'cone', lH: 'height', lBright: 'bright', lK: 'kelvin', lRoom: 'room', lW: 'watts', lPar: 'par', lPos: 'pos' } as const;
   // spacing below a bulb's width (tubes: 20 mm) snaps to 0 = auto (fill the tank)
   // while the power is set the Brightness slider is Exposure, in stops (bright = 2^v)
   const expo = () => wattsOf(S()) > 0;
@@ -850,6 +850,7 @@ Cancel, then change the name, to keep both.`)) return;
   const fitK = (l: TankSetup['light']) => { const [a, b, d] = TECHS[techOf(l)].k; if (l.kelvin < a || l.kelvin > b) l.kelvin = d; };
   const countMax = (l: TankSetup['light']) => FIX_SPEC[fixtureOf(l)]?.maxCount ?? (l.type === 'spot' && l.pattern === 'fit' ? 12 : 6);
   const capCount = (l: TankSetup['light']) => { l.count = Math.min(l.count, countMax(l)); };
+  $('lPosOpt').onclick = () => store.edit(s => { const b = bestPos(s.tank, s.light); if (b != null) s.light.pos = b; });
   $<HTMLSelectElement>('lMount').onchange = e => store.edit(s => { s.light.mount = (e.target as HTMLSelectElement).value as 'legs' | 'hang'; });
   $<HTMLSelectElement>('lPat').onchange = e => store.edit(s => { s.light.pattern = (e.target as HTMLSelectElement).value as TankSetup['light']['pattern']; capCount(s.light); });
   // Fixture (Nathan 2026-10-15): the style sets the geometry and which lamps fit; a lamp it does not come in becomes its
@@ -968,6 +969,7 @@ Cancel, then change the name, to keep both.`)) return;
     else if (d.dataset.sec === 'fish' && store.selId != null) store.select(null);
   });
   $<HTMLSelectElement>('layout').innerHTML = Object.entries(LAYOUTS).map(([k, l]) => `<option value="${k}">${esc(l.label)}</option>`).join('');
+  $<HTMLSelectElement>('layoutComp').innerHTML = Object.entries(COMPS).map(([k, c]) => `<option value="${k}" title="${esc(c.hint)}">${esc(c.label)}</option>`).join('');
   // a starter set replaces every piece (undoable), and the animals when its animal stop is above None; the pieces are
   // then ordinary items
   let fishId0 = 1;
@@ -1003,6 +1005,15 @@ Cancel, then change the name, to keep both.`)) return;
     });
     dropGoneFish();
     status('New starter set placed. Ctrl+Z brings the previous pieces back.');
+  };
+  // Composition (lane SS, 2026-10-15): where the weight of any style sits; redraws the hardscape and the plants round it
+  // (animals stay). Shuffle and the density sliders keep it.
+  $<HTMLSelectElement>('layoutComp').onchange = async e => {
+    const to = (e.target as HTMLSelectElement).value as CompId;
+    if (!await okToReplace('hard', () => setVal('layoutComp', S().layout.comp ?? 'any'))) return;
+    store.selectItem(null);
+    store.edit(s => { if (to === 'any') delete s.layout.comp; else s.layout.comp = to; regenerate(s, 'hard', 0); });
+    status(`Composition: ${COMPS[to].label}. Ctrl+Z brings the previous pieces back.`);
   };
   // each menu's Shuffle redraws its own layer only (Nathan 2026-10-15); Animals' Shuffle moves the animals (above)
   $('layoutShuffle').onclick = async () => {
@@ -1238,7 +1249,7 @@ Cancel, then change the name, to keep both.`)) return;
     lBright: { show: v => tidy(expo() ? 2 ** v : v, 2), parse: t => { const v = plainNum(t); return v == null ? null : expo() ? Math.log2(Math.max(v, 1e-3)) : v; } },
     lW: { show: v => tidy(v, 0), parse: t => (/^\s*(typical|auto|0)\s*$/i.test(t) ? 0 : plainNum(t)) }, // 0 = the typical power
     lSp: { show: v => (v ? toU(v) : 'auto'), parse: t => (/^\s*(auto|0)\s*$/i.test(t) ? 0 : parseLen(t, G().units)) },
-    tableX: side(/left/i), tableZ: side(/forward|front/i),
+    tableX: side(/left/i), tableZ: side(/forward|front/i), lPos: side(/forward|front/i),
     wOpac: { show: v => tidy(v * 100, 0), parse: t => { const v = plainNum(t); return v == null ? null : v / 100; } },
     // the water level slider is a fraction of the tank; the box takes the water's height, found by bisection
     wLevel: { show: v => toU(waterY(S().tank, v)), parse: t => {
@@ -1328,7 +1339,8 @@ Cancel, then change the name, to keep both.`)) return;
   const aqQueued = new Set<string>();
   let aqTick = 0;
   /** Is aqadvisor.com up (the proxy's 5-minute check)? Check and ↻ are offered only on 'up'; otherwise the stocking line
-   *  just says AqAdvisor is down (Nathan 2026-10-15). Asked on load, every 2 minutes, and when the window regains focus. */
+   *  points at the AqAdvisor ↗ link (Nathan 2026-10-15). 'down' is the checker's view, not the site's: aqadvisor.com
+   *  shuts the Cloudflare checker out ~30 min at a time while still opening in a browser (health log 2026-10-13..15). Asked on load, every 2 minutes, and when the window regains focus. */
   let aqUp: AqHealth = null;
   const pollAqHealth = async () => {
     const h = await fetchAqHealth();
@@ -1349,9 +1361,13 @@ Cancel, then change the name, to keep both.`)) return;
     $('aqCheck').style.display = AQ_PROXY && got === undefined && aqUp === 'up' ? '' : 'none';
     $<HTMLButtonElement>('aqCheck').disabled = busy;
     $('aqOut').textContent = got !== undefined ? `${got}% (per AqAdvisor)${got > 100 ? ', overstocked' : ''}`
-      : busy ? aqWaitText(key) : AQ_PROXY && aqUp === 'down' ? 'AqAdvisor is down' : aqErr.get(key) ?? '';
+      : busy ? aqWaitText(key) : AQ_PROXY && aqUp === 'down' ? 'can’t check from here right now; AqAdvisor ↗ still opens it' : aqErr.get(key) ?? '';
     $('aqOut').className = got !== undefined && got > 100 ? 'bad' : '';
-    $('aqNote').textContent = q.skipped.length ? `Not counted (land animals): ${q.skipped.map(k => `${k.count} ${k.name}`).join(', ')}.` : '';
+    // stand-ins named, so the list on aqadvisor.com makes sense: an axolotl shows there as a Dojo Loach (Nathan 2026-10-15)
+    $('aqNote').textContent = [
+      q.standIns.length ? `AqAdvisor has no ${q.standIns.map(k => k.name).join(', ')}, so ${q.standIns.length > 1 ? 'they are' : 'it is'} counted as a similar fish: ${q.standIns.map(k => `${k.count} ${k.name} as ${k.as}`).join(', ')}.` : '',
+      q.skipped.length ? `Not counted (land animals): ${q.skipped.map(k => `${k.count} ${k.name}`).join(', ')}.` : '',
+    ].filter(Boolean).join(' ');
   }
   /** The last answer each view (by its key, A/B) showed, so a change to the fish or the tank keeps the old number,
    *  in yellow, until ↻ is pressed (Nathan 2026-10-09). */
@@ -1593,6 +1609,13 @@ Cancel, then change the name, to keep both.`)) return;
     setOut('oLH', s.lid === 'hood' ? 'In hood' : fmt(l.height) + ' above');
     $('lHRow').style.display = l.type === 'flat' ? 'none' : ''; ($('lH') as HTMLInputElement).disabled = s.lid === 'hood';
     $('lMountRow').style.display = l.type === 'flat' || s.lid === 'hood' ? 'none' : ''; setVal('lMount', mountOf(l));
+    // bars (tubes, LED bar): front to back, as far as the housing stays over the tank (lightout barZ)
+    const barDep = tl ? tl.depth : l.type === 'led' ? ledBarDepth(s.tank) : 0, pm = Math.floor(posMax(s.tank, barDep) / 5) * 5, pv = clamp(l.pos ?? 0, -pm, pm);
+    $('lPosRow').style.display = $('lPosOptRow').style.display = barDep && s.lid !== 'hood' ? '' : 'none';
+    Object.assign($('lPos') as HTMLInputElement, { min: String(-pm), max: String(pm) }); setVal('lPos', pv);
+    // said as the light's centre (the middle of its rows) from the back glass; "· even" when it is where Optimize puts it
+    const best = barDep && s.lid !== 'hood' ? bestPos(s.tank, l) : null;
+    setOut('oLPos', `${fmt(s.tank.D / 2 - pv)} from back${best != null && Math.abs(best - pv) < 1 ? ' · even' : ''}`);
     $('lMount').querySelector('option[value=legs]')!.textContent = fx === 'puck' ? 'Clipped to the rim, on goosenecks' : 'On legs, resting on the tank rim';
     // light output (lane K): power, what is inside the fixture, a measured PAR, and the estimate; while the power is
     // set, Brightness is an exposure on top of the brightness the light gives (x1/4-16, in stops)
@@ -1600,7 +1623,7 @@ Cancel, then change the name, to keep both.`)) return;
     const W = wattsOf(s), watts = W > 0, fixedW = fx === 'tube' || fx === 'pendant';
     $('lWRow').style.display = fx === 'flat' ? 'none' : ''; setOut('oLW', watts ? `${W} W${(l.watts ?? 0) > 0 || fixedW ? '' : ' · typical'}` : 'Not set'); setVal('lW', W);
     $('lW').hidden = fixedW; $('lWFixed').hidden = !fixedW;
-    if (fx === 'tube') { const t = tubeOf(l, s.tank); $('lWFixed').textContent = `${l.count} × ${t.w} W, ${t.inch} in tube${l.count > 1 ? 's' : ''}`; }
+    if (fx === 'tube') { const t = tubeOf(l, s.tank); $('lWFixed').textContent = `${l.count} × ${t.w} W, ${t.inch} in tube${l.count > 1 ? 's' : ''} (${fmt(t.len)} long)`; }
     if (fx === 'pendant') { const n = emitters(s.tank, l).length; $('lWFixed').textContent = `${n} × ${l.bulbW ?? 150} W bulb${n > 1 ? 's' : ''}`; }
     $('lBulbRow').style.display = fx === 'pendant' ? '' : 'none'; setVal('lBulb', String(l.bulbW ?? 150));
     if (techFor !== fx) { techFor = fx; $('lTech').replaceChildren(...techsFor(fx).map(t => new Option(TECHS[t].label, t))); }
@@ -1615,6 +1638,7 @@ Cancel, then change the name, to keep both.`)) return;
     const lo = watts ? lightOutCached(s) : null;
     $('lOut').textContent = lo ? lightReadout(lo) : 'Set Power to estimate the light (PAR and lux) at the substrate.'; $('lOut').hidden = l.type === 'flat';
     $('lBrightLab').textContent = watts ? 'Exposure' : 'Brightness';
+    $('lBrightLab').parentElement!.style.display = l.type === 'flat' ? 'none' : ''; // no fixture: nothing to brighten
     $('lBrightLab').title = watts ? 'Like a camera: how bright the render looks for the light the fixture gives (x1/4 to x16; high washes out). The PAR and lux do not change' : '';
     Object.assign($('lBright') as HTMLInputElement, watts ? { min: String(Math.log2(EXP_MIN)), max: String(Math.log2(EXP_MAX)) } : { min: '0.2', max: '2.5' });
     setVal('lBright', watts ? Math.log2(Math.min(Math.max(l.bright, EXP_MIN), EXP_MAX)) : l.bright);
@@ -1655,6 +1679,7 @@ Cancel, then change the name, to keep both.`)) return;
     ($('split') as HTMLButtonElement).disabled = store.split;
     $('splitHint').textContent = store.split ? 'Two tanks is the most: Delete one on its tab to split again. Each view’s tab (top of the view) opens on hover: what differs, Download that tank on its own, or Delete it. Save and Download at the top keep both tanks together.' : 'Copy this tank into a second, independent one beside it, then change anything in either.';
     setVal('edge', s.render.edge); $('gridOn').checked = s.render.grid; setVal('pop', Math.round(s.render.pop * 100)); setOut('oPop', s.render.pop ? `${Math.round(s.render.pop * 100)} %` : 'off');
+    setVal('layoutComp', s.layout.comp ?? 'any'); ($('layoutComp') as HTMLSelectElement).disabled = s.layout.id === 'none';
     setVal('layout', s.layout.id); // "Bare tank" says there is nothing in it, which stops being true once a piece is added by hand (G2, 2026-10-14)
     $('layoutHint').textContent = s.layout.id === 'none' && s.items.length ? 'A starter set replaces every piece; or add, move and remove pieces yourself.' : LAYOUTS[s.layout.id].hint + ' Then move, add or remove any piece.';
     ($('layoutShuffle') as HTMLButtonElement).disabled = ($('plantShuffle') as HTMLButtonElement).disabled = s.layout.id === 'none';
@@ -1722,10 +1747,12 @@ Cancel, then change the name, to keep both.`)) return;
     // a failed refresh says so, next to the old number it could not replace (it used to hide behind it)
     const err = aqErr.get(key);
     const down = aqUp === 'down';
-    const text = busy ? `Stocking: ${aqWaitText(key)}` : pct !== undefined ? `Stocking ${pct}% (AqAdvisor)${err ? `, not updated: ${err}` : stale && down ? ', AqAdvisor is down' : ''}`
-      : down ? 'Stocking: AqAdvisor is down' : err ?? 'Stocking: not checked';
+    const text = busy ? `Stocking: ${aqWaitText(key)}` : pct !== undefined ? `Stocking ${pct}% (AqAdvisor)${err ? `, not updated: ${err}` : stale && down ? ', can’t check right now' : ''}`
+      : down ? 'Stocking: open on AqAdvisor ↗' : err ?? 'Stocking: not checked';
     const cls = `aq${stale ? ' stale' : pct !== undefined && pct > 100 ? ' over' : ''}`;
-    const tip = stale && err ? `Out of date, and the refresh failed (${err}). This is the level before the last change.` : stale ? 'Out of date: the fish or the tank changed since this was checked. Press ↻ to refresh.' : 'AqAdvisor’s stocking level for this tank (aqadvisor.com); click for the full report';
+    // 'down' = our checker (a Cloudflare server) can't reach aqadvisor.com. The site often still opens in a browser: it
+    // shuts out the checker for about 30 minutes at a time, several times a day (health log, 2026-10-13..15)
+    const tip = down && !stale ? 'The stocking checker can’t reach aqadvisor.com right now (it is often shut out for about 30 minutes). The site itself usually still opens: click for this tank on aqadvisor.com' : stale && err ? `Out of date, and the refresh failed (${err}). This is the level before the last change.` : stale ? 'Out of date: the fish or the tank changed since this was checked. Press ↻ to refresh.' : 'AqAdvisor’s stocking level for this tank (aqadvisor.com); click for the full report';
     return `<span class="aqwrap"><a class="${cls}" href="${url}" target="_blank" rel="noopener" title="${tip}">${esc(text)}</a>${re}</span>`;
   };
   viewer.onDrawn(() => {

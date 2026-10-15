@@ -57,7 +57,8 @@ export const SURFACES = ['floor', 'glass', 'hardscape'] as const;
 const OLD_PANES: Record<string, (f: Obj, T: Tank) => void> = {
   front: f => { f.depth = 0; }, back: (f, T) => { f.depth = T.D; }, left: f => { f.x = 0; }, right: (f, T) => { f.x = T.L; },
 };
-export const LAYOUT_IDS = ['none', 'stones', 'driftwood', 'planted', 'iwagumi', 'swamp', 'reef'] as const;
+export const LAYOUT_IDS = ['none', 'stones', 'driftwood', 'planted', 'iwagumi', 'swamp', 'reef', 'nature', 'dutch', 'jungle', 'forest'] as const;
+export const COMP_IDS = ['any', 'mound', 'side', 'u', 'v', 'scattered'] as const;
 export const GLASS_CHOICES = [4, 5, 6, 8, 10, 12, 15, 19];
 
 /** Upgrade older saved shapes to the current version, in place. */
@@ -224,6 +225,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       ...(l.bulbW != null ? { bulbW: (MH_BULBS as readonly number[]).includes(Number(l.bulbW)) ? Number(l.bulbW) : 150 } : {}),
       ...(l.par != null ? { par: Math.round(num(l.par, 0, ...LIMITS.par)) } : {}),
       ...(l.mount === 'legs' || l.mount === 'hang' ? { mount: l.mount } : {}),
+      ...(l.pos != null && Number(l.pos) !== 0 ? { pos: Math.round(num(l.pos, 0, -1500, 1500)) } : {}),
       ...(l.mapUnit === 'par' || l.mapUnit === 'lux' ? { mapUnit: l.mapUnit } : {}),
       ...(l.mapStep != null ? { mapStep: Math.round(num(l.mapStep, 10, 5, 100) / 5) * 5 } : {}),
       ...(l.mapShells === true ? { mapShells: true } : {}),
@@ -249,8 +251,8 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       const seed = Math.round(num(lay.seed, 1, 1, 1e9)), ld = isObj(lay.dens) ? lay.dens as Obj : null, old = legacyDens(seed); // before lane SD: the stops nearest the seed's rolled density
       const stop = (v: unknown, k: keyof typeof old) => Math.round(num(v, old[k], k === 'animal' ? ANIMAL_RANGE[0] : DENS_RANGE[0], k === 'animal' ? ANIMAL_RANGE[1] : DENS_RANGE[1]) * 100) / 100; // continuous since 2026-10-15
       const own = (v: unknown) => typeof v === 'number' && Number.isFinite(v) ? { v: Math.round(num(v, seed, 1, 1e9)) } : null;
-      const ps = own(lay.plantSeed), as = own(lay.animalSeed);
-      return { id: pick(lay.id, LAYOUT_IDS, d.layout.id), seed, ...(ps ? { plantSeed: ps.v } : {}), ...(as ? { animalSeed: as.v } : {}), dens: ld ? { hard: stop(ld.hard, 'hard'), plant: stop(ld.plant, 'plant'), animal: stop(ld.animal, 'animal') } : old };
+      const ps = own(lay.plantSeed), as = own(lay.animalSeed), comp = pick(lay.comp, COMP_IDS, 'any');
+      return { id: pick(lay.id, LAYOUT_IDS, d.layout.id), seed, ...(ps ? { plantSeed: ps.v } : {}), ...(as ? { animalSeed: as.v } : {}), dens: ld ? { hard: stop(ld.hard, 'hard'), plant: stop(ld.plant, 'plant'), animal: stop(ld.animal, 'animal') } : old, ...(comp !== 'any' ? { comp } : {}) };
     })(),
     water: {
       on: bool(wa.on, true), level: num(wa.level, d.water.level, ...LIMITS.level), opacity: num(wa.opacity, d.water.opacity, ...LIMITS.opacity),

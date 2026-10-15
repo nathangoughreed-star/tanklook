@@ -10,9 +10,9 @@ import { ALGAE_GLSL, ALGAE_STEP, AU, setAlgaeUniforms } from './algae';
 import { clamp } from '../scene/physics';
 import type { ConditionSettings, LightSettings, Tank, WaterSettings } from '../scene/types';
 import { waterK, waterY } from '../scene/physics';
-import { bowlDims, bowlRadius, footprint, shapeOf } from '../scene/shape';
+import { bowlDims, bowlRadius, clampIn, footprint, insideBy, shapeOf } from '../scene/shape';
 
-import { AQ_MAX, LAMP_Y, LUXW, beamExp, emitters, lampHeight, mountOf, lightEnvCached, lightOutCached, renderBright, fixtureOf, techOf, tubeLayout, tubeOf, type Emitter, type LightEnv, type LightScene } from '../scene/lightout';
+import { AQ_MAX, LAMP_Y, LUXW, barZ, beamExp, emitters, ledBarDepth, lampHeight, mountOf, lightEnvCached, lightOutCached, renderBright, fixtureOf, techOf, tubeLayout, tubeOf, type Emitter, type LightEnv, type LightScene } from '../scene/lightout';
 // the fixture geometry lives with the light-output model now (lane K); re-exported so importers stay as they were
 export { AQ_MAX, LAMP_Y, emitters, fitSpots, lampHeight, type Emitter } from '../scene/lightout';
 
@@ -164,7 +164,9 @@ function warmSoon(S: LightScene) {
 
 /** `S` (the setup; lane K): with watts set, the brightness follows the computed lux and `l.bright` is the exposure. */
 export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams = false, S?: LightScene) {
-  const on = l.type !== 'flat'; LU.uMode.value = on ? 1 : 0;
+  // no fixture (Nathan 2026-10-15): mode 2, the tank is lit by the room light alone (a dark room = a dark tank); mode 0
+  // (the flat reference key) is only for the fish preview and the review sheet
+  const on = l.type !== 'flat'; LU.uMode.value = on ? 1 : 2; if (!on) LU.uAmb.value = roomLevel(l.room);
   const lo = on && S ? lightOutCached({ ...S, tank: T }) : null, bright = lo ? renderBright(lo, l.bright) : clamp(l.bright, 0.2, 2.5);
   if (on && S && !lo) warmSoon({ ...S, tank: T });
   // light map: a spot bulb or a tube counts as one light; an LED bar's emitters share the output of four bulbs
@@ -179,7 +181,7 @@ export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams 
   // the spill shows most in a dark room (in a lit room the eye adapts and it barely registers); a raised fixture
   // throws more of its light past the tank (up to ~1.8x at 450 mm and above)
   const spill = 0.9 * (1 - 0.75 * roomLevel(l.room)) * (1 + 0.8 * clamp((up - LAMP_Y) / 400, 0, 1));
-  if (on) LU.uSpill.value.setRGB(...kelvinRGB(l.kelvin)).multiplyScalar(spill * bright); else LU.uSpill.value.setRGB(spill, spill, spill);
+  if (on) LU.uSpill.value.setRGB(...kelvinRGB(l.kelvin)).multiplyScalar(spill * bright); else LU.uSpill.value.setRGB(0, 0, 0); // no fixture: no light leaves the tank
   if (!on) return;
   const E = emitters(T, l, hgt), m = beamExp(l), gain = beamGain(l), ref: LightSettings = { ...l, spacing: 0, cone: 52 };
   E.forEach((e, i) => LU.uEm.value[i].set(...e)); LU.uEmN.value = E.length;
@@ -246,12 +248,14 @@ vec3 aqLight() {
     return vec3(uRoomK) + uSpill * (facing / (1.0 + r * r));
   }
   float sum = 0.0; vec3 n = normalize(vAqN);
-  if (uMode < 0.5) {
-    if (uFish < 0.5) return vec3(1.0);
-    // flat light: 3D fish still need form, so a fixed soft key from above and slightly in front
+  if (uMode < 0.5 || uMode > 1.5) {
+    // flat light (mode 0, full) or no fixture (mode 2, the room light only)
+    float k = uMode > 1.5 ? uAmb : 1.0;
+    if (uFish < 0.5) return vec3(k);
+    // 3D fish still need form, so a fixed soft key from above and slightly in front
     vec3 ld = normalize(vec3(-0.2, 1.0, 0.35)), hv = normalize(ld + normalize(cameraPosition - vAqP));
-    aqSpec = 0.6 * pow(max(dot(n, hv), 0.0), 40.0);
-    return vec3(aqFishFacing(n, ld));
+    aqSpec = 0.6 * k * pow(max(dot(n, hv), 0.0), 40.0);
+    return vec3(k * aqFishFacing(n, ld));
   }
   for (int i = 0; i < ${AQ_MAX}; i++) {
     if (i >= uEmN) break;
@@ -440,7 +444,7 @@ export const glowColor = (kelvin: number) => new THREE.Color(...kelvinRGB(kelvin
 
 export function addFixture(sc: THREE.Scene, T: Tank, l: LightSettings, ceiling?: number) {
   if (l.type === 'flat') return;
-  const { L, H, D } = T, y = H + (l.height ?? LAMP_Y);
+  const { L, H } = T, y = H + (l.height ?? LAMP_Y);
   const glow = new THREE.MeshBasicMaterial({ color: glowColor(l.kelvin) }); glow.userData.glow = true; // recoloured in place (viewer)
   const dark = new THREE.MeshBasicMaterial({ color: 0x2a2e33 });
   const add = (geo: THREE.BufferGeometry, mat: THREE.Material, x: number, yy: number, z: number) => {
@@ -448,27 +452,30 @@ export function addFixture(sc: THREE.Scene, T: Tank, l: LightSettings, ceiling?:
     const m = new THREE.Mesh(geo, mat); m.position.set(x, yy, z); m.userData.nolight = true; m.userData.overhead = y; sc.add(m); return m;
   };
   const puck = fixtureOf(l) === 'puck', E = emitters(T, l), tl = l.type === 'tube' ? tubeLayout(T, l) : null, tubeTop = tl ? y + tl.dia / 2 + 16 : 0;
+  // a bar (tubes, LED bar): its half length, centre front to back and depth; tubes are as long as their tube (tubeOf)
+  const bar = tl ? { hx: tubeOf(l, T).housing / 2, zc: tl.zc, dep: tl.depth } : l.type === 'led' ? { hx: L * 0.48, zc: barZ(T, l, ledBarDepth(T)), dep: ledBarDepth(T) } : null;
   // hung: from the ceiling on thin cables (two per bar, one per spot)
   const mount = mountOf(l);
   if (mount === 'hang' && ceiling != null) {
     const top = puck ? y + 22 : l.type === 'spot' ? y + 45 : tl ? tubeTop : y + 23, len = Math.max(0, ceiling - top), wire = new THREE.MeshBasicMaterial({ color: 0x9aa0a6 });
-    const at: [number, number][] = l.type === 'spot' ? E.map(e => [e[0], e[2]]) : [[L * 0.15, -D / 2], [L * 0.85, -D / 2]];
+    const at: [number, number][] = l.type === 'spot' || !bar ? E.map(e => [e[0], e[2]]) : [[L / 2 - bar.hx * 0.7, bar.zc], [L / 2 + bar.hx * 0.7, bar.zc]];
     for (const [x, z] of at) add(new THREE.CylinderGeometry(0.8, 0.8, len, 6), wire, x, top + len / 2, z);
   }
   // on legs (Nathan 2026-10-15, after a clip-on LED bar): at each end a bent-wire bracket, two arms out of the bar's end,
   // down to the rim, a cross-wire resting on it and a lip hooked over the outside of the glass; spots hang under a rail
-  // along each row
+  // along each row. A bar's legs reach out from its ends to wherever the rim is at their depth (barLegs), so a bar
+  // shorter than the tank, moved front to back or over a curved rim gets legs of different lengths.
   if (mount === 'legs' && puck) clipOns(T, E, y, add);
+  else if (mount === 'legs' && bar) barLegs(T, bar, tl ? tubeTop - 8 : y + 7, tl ? Math.max(bar.dep / 2 - 10, 6) : bar.dep * 0.32, add);
   else if (mount === 'legs') {
-    const wireM = new THREE.MeshBasicMaterial({ color: 0x1c1f23 }), foot = H + 3, spot = l.type === 'spot';
+    const wireM = new THREE.MeshBasicMaterial({ color: 0x1c1f23 }), foot = H + 3;
     const rod = (x0: number, y0: number, z0: number, x1: number, y1: number, z1: number) => {
       const m = add(new THREE.CylinderGeometry(2, 2, Math.hypot(x1 - x0, y1 - y0, z1 - z0), 8), wireM, (x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2);
       if (x0 !== x1) m.rotation.z = Math.PI / 2; else if (z0 !== z1) m.rotation.x = Math.PI / 2;
     };
-    const armY = spot ? y + 49 : tl ? tubeTop - 8 : y + 7, w = spot ? 12 : tl ? tl.depth * 0.66 : D * 0.32;
-    const inBar = spot ? 6 : (l.type === 'tube' ? L * 0.01 : L * 0.02) + 12; // where the arms leave the bar (inside its end)
-    for (const z of spot ? [...new Set(E.map(e => e[2]))] : [-D / 2]) {
-      if (spot) add(new THREE.BoxGeometry(L - 4, 8, 16), dark, L / 2, y + 49, z);
+    const armY = y + 49, w = 12, inBar = 6; // where the arms leave the rail (inside its end)
+    for (const z of [...new Set(E.map(e => e[2]))]) {
+      add(new THREE.BoxGeometry(L - 4, 8, 16), dark, L / 2, y + 49, z);
       for (const s of [1, -1]) {
         const at = (dx: number) => (s > 0 ? dx : L - dx), xp = at(4), xo = at(-6);
         for (const zz of [z - w / 2, z + w / 2]) {
@@ -494,14 +501,14 @@ export function addFixture(sc: THREE.Scene, T: Tank, l: LightSettings, ceiling?:
     // end plates, and under it per tube a socket at each end, capped lamp ends and (T5 with own reflectors) a polished half-pipe reflector; otherwise a white-painted ceiling. LED tubes are half aluminium
     // (they light downward only); a power compact is two thin legs side by side. The housing's depth is the layout's,
     // so more tubes or a wider spacing make a deeper hood. The glow mesh is the lamp; a faint additive halo round it.
-    const tech = techOf(l), r = tl.dia / 2, lamp = tubeOf(l, T).lamp, hl = Math.max(L * 0.98, lamp + 60), dep = tl.depth, zc = -D / 2;
+    const tech = techOf(l), r = tl.dia / 2, lamp = tubeOf(l, T).lamp, hl = bar!.hx * 2 - 12, dep = tl.depth, zc = tl.zc; // end plates outside hl
     const ceil = y + r + 9, low = y + 1, top = tubeTop; // the skirts end at the lamps' middle: their lower half shows
     const mat = (c: number, side = false) => new THREE.MeshBasicMaterial({ color: c, side: side ? THREE.DoubleSide : THREE.FrontSide });
     const skirt = mat(0x33383e), edge = mat(0x4a5058), endM = mat(0x1e2125), sock = mat(0x16181b);
     const capM = mat(tech === 'led-tube' ? 0xd6d8da : 0xc4c8cc), alu = mat(0xaab0b6);
     const halo = new THREE.MeshBasicMaterial({ color: glowColor(l.kelvin), transparent: true, opacity: 0.16, depthWrite: false, blending: THREE.AdditiveBlending });
     halo.userData.glow = true;
-    const bar = (geo: THREE.BufferGeometry, m: THREE.Material, x: number, yy: number, z: number) => { const o = add(geo, m, x, yy, z); o.rotation.z = Math.PI / 2; return o; };
+    const along = (geo: THREE.BufferGeometry, m: THREE.Material, x: number, yy: number, z: number) => { const o = add(geo, m, x, yy, z); o.rotation.z = Math.PI / 2; return o; };
     add(new THREE.BoxGeometry(hl, top - ceil, dep), dark, L / 2, (top + ceil) / 2, zc);
     for (const sz of [1, -1]) {
       add(new THREE.BoxGeometry(hl, top - low, 3), skirt, L / 2, (top + low) / 2, zc + sz * (dep / 2 - 1.5));
@@ -521,37 +528,71 @@ export function addFixture(sc: THREE.Scene, T: Tank, l: LightSettings, ceiling?:
       g.setAttribute('color', new THREE.Float32BufferAttribute(c, 3)); return g;
     };
     for (const e of E) {
-      if (tech === 't5-refl') bar(reflGeo(), refl, L / 2, y, e[2]);
+      if (tech === 't5-refl') along(reflGeo(), refl, L / 2, y, e[2]);
       const legs = tl.twin ? [e[2] - r - 1.5, e[2] + r + 1.5] : [e[2]];
       for (const z of legs) {
         if (tech === 'led-tube') {
-          bar(new THREE.CylinderGeometry(r, r, lamp, 20, 1, false, Math.PI, Math.PI), glow, L / 2, y, z);
-          bar(new THREE.CylinderGeometry(r, r, lamp, 20, 1, false, 0, Math.PI), alu, L / 2, y, z);
-        } else bar(new THREE.CylinderGeometry(r, r, lamp, 20), glow, L / 2, y, z);
-        bar(new THREE.CylinderGeometry(r * 1.9, r * 1.9, lamp - r, 20, 1, true), halo, L / 2, y, z);
+          along(new THREE.CylinderGeometry(r, r, lamp, 20, 1, false, Math.PI, Math.PI), glow, L / 2, y, z);
+          along(new THREE.CylinderGeometry(r, r, lamp, 20, 1, false, 0, Math.PI), alu, L / 2, y, z);
+        } else along(new THREE.CylinderGeometry(r, r, lamp, 20), glow, L / 2, y, z);
+        along(new THREE.CylinderGeometry(r * 1.9, r * 1.9, lamp - r, 20, 1, true), halo, L / 2, y, z);
       }
       for (const sx of [1, -1]) {
         const xe = L / 2 + sx * lamp / 2;
-        if (!tl.twin || sx > 0) for (const z of legs) bar(new THREE.CylinderGeometry(r + 0.6, r + 0.6, 14, 16), capM, xe + sx * 7, y, z);
+        if (!tl.twin || sx > 0) for (const z of legs) along(new THREE.CylinderGeometry(r + 0.6, r + 0.6, 14, 16), capM, xe + sx * 7, y, z);
         // the socket ("tombstone") holding the lamp's end, from the housing ceiling down past the lamp
         add(new THREE.BoxGeometry(12, ceil - y + r + 4, tl.wide + 10), sock, xe + sx * 20, (ceil + y - r - 4) / 2, e[2]);
       }
-      if (tl.twin) bar(new THREE.CylinderGeometry(r * 0.8, r * 0.8, tl.wide - 2, 12), glow, L / 2 - lamp / 2 - 1, y, e[2]).rotation.set(Math.PI / 2, 0, 0);
+      if (tl.twin) along(new THREE.CylinderGeometry(r * 0.8, r * 0.8, tl.wide - 2, 12), glow, L / 2 - lamp / 2 - 1, y, e[2]).rotation.set(Math.PI / 2, 0, 0);
     }
   }
   if (l.type === 'led') {
     // a slim bar like a clip-on LED light: body, raised ribs along the top, end caps, a smoked lens underneath with two
     // rows of small LEDs at each emitter row (the emitters stay the lighting samples; the dots are only the look)
-    const bl = L * 0.96, bw = D * 0.45, rib = new THREE.MeshBasicMaterial({ color: 0x3b4047 });
+    const bl = bar!.hx * 2, bw = bar!.dep, zc = bar!.zc, rib = new THREE.MeshBasicMaterial({ color: 0x3b4047 });
     const cap = new THREE.MeshBasicMaterial({ color: 0x1e2125 }), lens = new THREE.MeshBasicMaterial({ color: 0x15171a });
-    add(new THREE.BoxGeometry(bl - 16, 10, bw), dark, L / 2, y + 7, -D / 2);
-    for (const s of [1, -1]) add(new THREE.BoxGeometry(8, 12, bw + 2), cap, L / 2 + s * (bl / 2 - 4), y + 7, -D / 2);
-    for (const f of [-0.3, 0, 0.3]) add(new THREE.BoxGeometry(bl - 24, 2, bw * 0.14), rib, L / 2, y + 13, -D / 2 + f * bw);
-    add(new THREE.BoxGeometry(bl - 24, 1, bw * 0.8), lens, L / 2, y + 1.5, -D / 2);
+    add(new THREE.BoxGeometry(bl - 16, 10, bw), dark, L / 2, y + 7, zc);
+    for (const s of [1, -1]) add(new THREE.BoxGeometry(8, 12, bw + 2), cap, L / 2 + s * (bl / 2 - 4), y + 7, zc);
+    for (const f of [-0.3, 0, 0.3]) add(new THREE.BoxGeometry(bl - 24, 2, bw * 0.14), rib, L / 2, y + 13, zc + f * bw);
+    add(new THREE.BoxGeometry(bl - 24, 1, bw * 0.8), lens, L / 2, y + 1.5, zc);
     const n = Math.max(2, Math.round((bl - 40) / 22)), rows = [...new Set(E.map(e => e[2]))].flatMap(z => [z - 7, z + 7]);
     const dots = new THREE.InstancedMesh(new THREE.CylinderGeometry(3, 3, 1, 10), glow, n * rows.length), mx = new THREE.Matrix4();
     rows.forEach((z, r) => { for (let i = 0; i < n; i++) dots.setMatrixAt(r * n + i, mx.makeTranslation(L / 2 - (bl - 40) / 2 + (bl - 40) * (i + 0.5) / n, y + 0.7, z)); });
     dots.userData.nolight = true; dots.userData.overhead = y; sc.add(dots);
+  }
+}
+
+/**
+ * A bar's legs (Nathan 2026-10-15): at each end, a front and a back arm out of the end plate, out to the rim at that
+ * leg's depth (wherever the glass is there: a shorter bar, a bar moved front to back or a curved rim give legs of
+ * different lengths), down to the rim, a cross-wire resting on it and a lip hooked over the outside of the glass,
+ * square to it. `w` = the two legs' spread front to back.
+ */
+function barLegs(T: Tank, b: { hx: number; zc: number }, armY: number, w: number, add: (g: THREE.BufferGeometry, m: THREE.Material, x: number, y: number, z: number) => THREE.Mesh) {
+  const { L, H } = T, foot = H + 3, wireM = new THREE.MeshBasicMaterial({ color: 0x1c1f23 }), up = new THREE.Vector3(0, 1, 0);
+  const rod = (a: THREE.Vector3, c: THREE.Vector3) => {
+    const v = c.clone().sub(a), n = v.length();
+    if (n < 0.5) return;
+    add(new THREE.CylinderGeometry(2, 2, n, 8), wireM, (a.x + c.x) / 2, (a.y + c.y) / 2, (a.z + c.z) / 2).quaternion.setFromUnitVectors(up, v.divideScalar(n));
+  };
+  for (const sx of [1, -1]) {
+    const feet: THREE.Vector3[] = [];
+    for (const dz of [-w / 2, w / 2]) {
+      const z = b.zc + dz;
+      // the rim's depth: the leg's own, or the nearest the glass reaches at the middle (a bar past a round tank's front)
+      let d = -z;
+      if (insideBy(T, L / 2, d) < 0) d = clampIn(T, L / 2, d, 1).depth;
+      let lo = L / 2, hi = L / 2 + sx * (L / 2 + 60);
+      for (let i = 0; i < 30; i++) { const m = (lo + hi) / 2; if (insideBy(T, m, d) >= 0) lo = m; else hi = m; }
+      // outward square to the glass there (the footprint's slope)
+      const e = 0.5, gx = insideBy(T, lo + e, d) - insideBy(T, lo - e, d), gd = insideBy(T, lo, d + e) - insideBy(T, lo, d - e), gl = Math.hypot(gx, gd) || 1;
+      const nx = -gx / gl, nz = gd / gl, rx = lo, rz = -d;
+      const p = new THREE.Vector3(rx - 4 * nx, foot, rz - 4 * nz), o = new THREE.Vector3(rx + 6 * nx, foot, rz + 6 * nz);
+      const arm = new THREE.Vector3(L / 2 + sx * (b.hx - 4), armY, z), top = new THREE.Vector3(p.x, armY, p.z);
+      rod(arm, top); rod(top, p); rod(p, o); rod(o, new THREE.Vector3(o.x, foot - 16, o.z));
+      feet.push(p);
+    }
+    rod(feet[0], feet[1]);
   }
 }
 

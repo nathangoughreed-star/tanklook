@@ -2,6 +2,46 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane SS: scape styles + Composition picker (2026-10-15; branch `scape-styles`, port 5663; styles approved by Nathan, pushed to main)
+- **Four new starter styles** (scene/items.ts `starterItems` branches + `STYLES` rows + `LAYOUTS` labels; `LayoutId` and
+  `LAYOUT_IDS` grew): **Nature aquarium** (stones stepping down in front of wood rising over them, moss / fern / buce on
+  wood and stone, crypts at the feet, mixed stems behind, an open carpet midground); **Dutch** (no hardscape up to Medium,
+  no carpet; diagonal streets of one stem species each, red / green alternating, four terraces rising to the back, a rare
+  Ozelot specimen; lotus left out, its pads rode the surface); **Jungle** (big wood + spider-wood roots, vals and crypt
+  balansae to the surface, crypts / sagittaria over the floor, floater patches drifting over the groups; the "dim look"
+  is only the floaters' shade, lighting is not this lane's); **Forest** (manzanita stands as trunks, moss high in the
+  twigs, fine carpet, a sand path 70 % of the time from its own stream). Manzanita is still chunky, not "thin".
+- **Composition** (`LayoutSettings.comp?: CompId`, absent = 'any'; `COMPS`, `COMP_IDS`): `starterStyle(seed, comp)` fixes
+  the foci (mound, one side, U, V / two islands, scattered; jittered by the seed); 'any' = the old roll, so every old
+  tank and seed draws exactly as before (tested). `heightAt(foci, x)` shapes plant heights for an explicit composition
+  in the older sets too (scatter `prof`), and always in the new ones; Jungle also gathers clumps there (`crowd`). Not
+  followed: the round-tank planted mound, a swamp's land. No scene version bump (optional field).
+- Tests: `test/scapestyles.test.ts` (every style x composition in bounds, deterministic, density stops as SD, character
+  per style, composition weight, Any = old, Shuffle keeps comp, file round-trip). `test/items.test.ts`: Dutch's
+  "weight moves" check is by plant height (it covers the floor evenly). Pictures: worktree `shots/ss*_sheet_*.png`.
+
+## Lane LA: algae on plant leaves + bowl glass film (2026-10-15; branch `leaf-algae`, port 5673; Nathan approved the pictures; pushed to main)
+
+- Lane AL's two open items, both on the one Condition slider, display only, all uniforms (dragging never rebuilds).
+- **Leaves** (`render/algae.ts` LEAF_GLSL / `leafAlgaeShader`, called from plant3d `growShader`, so it rides the plant
+  material's existing post hook; items.ts untouched): uniform `AU.uAlgL`. Per vertex it reuses GR4's GPU tags: leaf age =
+  mesh growth `aGrowth` - `aGrow.x`, "out along the leaf" = distance from `aAnc` (the leaf's base). Per plant one
+  instanced vec2 `aAlg` on the grownView (slowness from the species' grow.speed: slow 1, medium 0.5, fast 0, stored as
+  `GrowData.alg` so the worker prebuild carries it; height at full growth from the bounding sphere). Noise keyed to the
+  full-growth local position, so spots stay put while a plant grows and move with it.
+  - diatoms (brown dust) on old / low leaves first, every plant (fast ones less); green spot dots and hair algae (strands
+    stretched up the plant) on slow growers, lit upper side most; BBA tufts on the outer ends of old slow-grower leaves at
+    Neglected; salt: red cyano instead of the greens. Fast stems stay cleanest; nothing above the water line.
+  - No true leaf-margin signal without a new geometry tag: BBA uses "far from the leaf base" (22..55 mm) instead.
+  - CPU reveal (`plant3d.gpu = false`) has no `aAlg`: those plants read as fast growers (review switch only).
+- **Bowl film**: `bowlFilm` = a sphere zone 0.6 mm inside the glass, floor to water line, same shader as the panes (shared
+  `FILM_FRAG`; seam at the front, where the looked-through glass is faintest; no pane edges). The "looked through"
+  test is now a soft smoothstep (the sphere has no hard pane boundary). Surface scum still skips bowls (it measures to
+  the glass by the floor's outline).
+- Pristine: SHA-256 of the canvas identical to main (planted + betta bowl, same 1280x720 viewport, A/B by stashing).
+  Tests: test/algae.test.ts (species slowness on the view, uAlgL, patch only after lighting, bowl film on the sphere).
+- Pictures: worktree `shots/LA_1..4_*.jpg` (gitignored); helper `shots/la.js`.
+
 ## Lane EF1: shader link time, first visit 35-87 s -> 10-13 s (2026-10-15; branch `shader-link`, port 5633; DONE, pushed to main)
 - **Measured** with new `scripts/cold-ab.mjs`: every load a FRESH browser profile (no GPU program cache, a first-time
   visitor), production builds before / after served side by side, alternating per example, order swapped each round,
@@ -1328,7 +1368,7 @@ or a type with no `PLANT3D` entry). No scene version bump: plants were already i
   in light.
 - Decisions (Nathan 2026-10-15): NO water haze (his water never went hazy; even 6 % lifted a black background into a veil);
   one slider, no per-effect sliders or algae types; the growth timeline does NOT drive it for now.
-- Open: algae on plant leaves (needs `render/plant3d.ts` / plant branch of items.ts, lane GR4's); bowl glass film.
+- Open: algae on plant leaves; bowl glass film. (Both done by lane LA, 2026-10-15.)
 
 ## Lane E: live rock + corals (2026-10-14; branch `corals`; Nathan approved the style test, live rock salt only; pushed to main)
 
@@ -1476,10 +1516,10 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | GR3 growth timeline + tank setting | (worktree removed) | - | see the "Plant growth" section (Feeding + Time, `scene/growtime.ts`) | DONE (`c9d615a`, `5931cb2`, build 452). GPU reveal + idle prebuild (Nathan's call) handed to GR2 |
 | SD scape density sliders | `../Glass-Box-scape-density` / `scape-density` | 5603 | `scene/items.ts` starterStyle / starterItems, LayoutSettings in `scene/types.ts`, layoutShuffle + layout picker in `ui/panels.ts` / `index.html`, new tests | foundation LIVE (`f3a1859`, build 468); waiting on Nathan: hand edits pinned vs replace the layer (replace ships now) |
 | AL dirty / algae view | `../Glass-Box-algae` / `algae` | 5613 | (released) | DONE 2026-10-15, pushed (see the Lane AL section); files free. Open: algae on plant leaves (after GR4) |
-| PL progressive first load | `../Glass-Box-progressive-load` / `progressive-load` | 5633 | the first-picture / startLinks path in `render/viewer.ts`, part grouping in `render/build.ts` (buildTank order only), a small load hint in `index.html` / `style.css` | ready to open (prompt `prompts/lane-PL-progressive-load.md`) |
-| SG stone grain | `../Glass-Box-stone-grain` / `stone-grain` | 5653 | `render/items.ts` solidMaterial / GRIT / gritK (cheaper or baked stone grain) | ready to open (prompt `prompts/lane-SG-stone-grain.md`) |
-| SS scape styles | `../Glass-Box-scape-styles` / `scape-styles` | 5663 | `scene/items.ts` starter section, `scene/starter.ts` STYLES + layer branches + Style.foci, the layout picker in `ui/panels.ts` / `index.html` | ready to open (prompt `prompts/lane-SS-scape-styles.md`) |
-| LA leaf algae + bowl film | `../Glass-Box-leaf-algae` / `leaf-algae` | 5673 | `render/algae.ts`, the plant material hook in `render/plant3d.ts`, bowl glass film | ready to open (prompt `prompts/lane-LA-leaf-algae.md`) |
+| PL progressive first load | `../Glass-Box-progressive-load` / `progressive-load` | 5633 | the first-picture / startLinks path in `render/viewer.ts`, part grouping in `render/build.ts` (buildTank order only), a small load hint in `index.html` / `style.css` | running (session `local_61a222bb`) |
+| SG stone grain | `../Glass-Box-stone-grain` / `stone-grain` | 5653 | `render/items.ts` solidMaterial / GRIT / gritK (cheaper or baked stone grain) | running (session `local_d91c0bfe`) |
+| SS scape styles | `../Glass-Box-scape-styles` / `scape-styles` | 5663 | `scene/items.ts` starter section, `scene/starter.ts`, the layout picker in `ui/panels.ts` / `index.html` | styles + Composition pushed 2026-10-15 (see its section); NOW: Quick Aquascape Setup menu (Nathan: style, Shuffle and density in one menu, Hardscape / Plants menus for hand tweaks) |
+| LA leaf algae + bowl film | (worktree removed) | - | `render/algae.ts`, the plant material hook in `render/plant3d.ts`, bowl glass film | DONE (`e87bc19`). Open: no surface scum on bowls; BBA on leaf ends, not true margins |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 Free (no lane): `render/build.ts`, `render/items.ts`, `scene/items.ts`, `render/viewer.ts`, `main.ts`, `render/lighting.ts`,
 `render/coral3d.ts`, `render/shrimp3d.ts` / `art/shrimps.ts`, `scene/share.ts`, herps / herp3d / snails / snail3d. A one-line hook in a free file is fine; name it
