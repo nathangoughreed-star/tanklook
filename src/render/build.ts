@@ -775,23 +775,36 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   // never flush with the bottom glass (a terrain point dragged to 0 z-fought with it into stripes, audit #14)
   const G = (p: P): V3 => flare(T, p[0], p[1], Math.max(0.6, h(p[0], p[1])), rb);
   const P3 = (i: number, j: number): V3 => G([L * i / N, D * j / N]);
-  // cheap slope shading: brightness from each cell's tilt toward a light above, front and left
+  // cheap slope shading: brightness from the ground's tilt toward a light above, front and left, per grid vertex and
+  // blended across each cell (one flat shade per cell showed the 16x16 grid as sharp-edged squares on gentle slopes)
   const light = new THREE.Vector3(-0.35, 1, 0.45).normalize(), topCol: number[] = [];
+  const vcol: number[][] = [];
+  for (let i = 0; i <= N; i++) for (let j = 0; j <= N; j++) {
+    const i0 = Math.max(0, i - 1), i1 = Math.min(N, i + 1), j0 = Math.max(0, j - 1), j1 = Math.min(N, j + 1);
+    const a = new THREE.Vector3(...P3(i1, j)).sub(new THREE.Vector3(...P3(i0, j))), b = new THREE.Vector3(...P3(i, j1)).sub(new THREE.Vector3(...P3(i, j0)));
+    const n = new THREE.Vector3().crossVectors(a, b).normalize(); if (n.y < 0) n.negate();
+    const k = clamp(0.55 + 0.6 * n.dot(light), 0, 1.15) / 1.15, q = P3(i, j);
+    // emerged ground reads as damp soil and moss (mottled), not aquarium gravel
+    const dry = clamp((q[1] - wy) / 12, 0, 1), mo = 0.5 + 0.5 * Math.sin(q[0] * 0.045 + Math.sin(q[2] * 0.05) * 2.4);
+    vcol[i * (N + 1) + j] = [k * (1 - dry * (0.42 + 0.12 * mo)), k * (1 - dry * (0.3 - 0.12 * mo)), k * (1 - dry * (0.62 + 0.05 * mo))];
+  }
+  const colAt = (p: P) => { // bilinear between the grid vertices round p
+    const fx = clamp(p[0] / L * N, 0, N), fz = clamp(p[1] / D * N, 0, N), i = Math.min(N - 1, Math.floor(fx)), j = Math.min(N - 1, Math.floor(fz)), u = fx - i, w = fz - j;
+    const c00 = vcol[i * (N + 1) + j], c10 = vcol[(i + 1) * (N + 1) + j], c01 = vcol[i * (N + 1) + j + 1], c11 = vcol[(i + 1) * (N + 1) + j + 1];
+    return [0, 1, 2].map(c => (c00[c] * (1 - u) + c10[c] * u) * (1 - w) + (c01[c] * (1 - u) + c11[c] * u) * w);
+  };
   for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
     const cell = clipToFootprint(T, [[L * i / N, D * j / N], [L * (i + 1) / N, D * j / N], [L * (i + 1) / N, D * (j + 1) / N], [L * i / N, D * (j + 1) / N]]);
     if (cell.length < 3) continue;
     const q = [P3(i, j), P3(i + 1, j), P3(i + 1, j + 1), P3(i, j + 1)];
     const a = new THREE.Vector3(...q[1]).sub(new THREE.Vector3(...q[0])), b = new THREE.Vector3(...q[3]).sub(new THREE.Vector3(...q[0]));
     const n = new THREE.Vector3().crossVectors(a, b).normalize(); if (n.y < 0) n.negate();
-    const k = clamp(0.55 + 0.6 * n.dot(light), 0, 1.15) / 1.15;
-    // emerged ground reads as damp soil and moss (mottled), not aquarium gravel
-    const my = (q[0][1] + q[2][1]) / 2, dry = clamp((my - wy) / 12, 0, 1), mo = 0.5 + 0.5 * Math.sin(q[0][0] * 0.045 + Math.sin(q[0][2] * 0.05) * 2.4);
-    const c = [k * (1 - dry * (0.42 + 0.12 * mo)), k * (1 - dry * (0.3 - 0.12 * mo)), k * (1 - dry * (0.62 + 0.05 * mo))];
     const v = cell.map(G); // a whole cell is the quad as before; a cut one is a fan
     // grain from above on gentle ground; on a steep bank (swamp pool walls) from the side it faces, so it does not
     // smear into streaks (audit #15)
     const uv = n.y > 0.6 ? (p: V3) => [p[0] / tile, -p[2] / tile] : Math.abs(n.x) > Math.abs(n.z) ? (p: V3) => [-p[2] / tile, p[1] / tile] : (p: V3) => [p[0] / tile, p[1] / tile];
-    for (let m = 1; m < v.length - 1; m++) for (const p of [v[0], v[m], v[m + 1]]) { top.push(p, uv(p)); topCol.push(...c); }
+    const cc = cell.map(colAt);
+    for (let m = 1; m < v.length - 1; m++) for (const t of [0, m, m + 1]) { top.push(v[t], uv(v[t])); topCol.push(...cc[t]); }
   }
   // the skirt round the outline in short strips, so its top edge follows the ground (swamp banks are not straight);
   // the back shows through clear back glass (peninsula, orbiting round the back)
@@ -970,8 +983,14 @@ function addTerrainDots(sc: THREE.Scene, S: TankSetup, T: Tank, hot: number | nu
   const step = t.arc ? T.D / t.rows : t.radial ? disc.rx / t.rows : Math.min(T.L / (t.cols - 1), T.D / (t.rows - 1));
   const r = clamp(step * 0.17, 7, 20); // big and easy to grab; still well clear of the neighbouring point
   const geo = new THREE.SphereGeometry(r, 12, 8), ring = new THREE.SphereGeometry(r * 1.45, 12, 8);
-  const mat = (c: number) => basic(c, { depthTest: false, transparent: true, opacity: 0.95 });
-  const fill = mat(0xffffff), hotM = mat(0xffb020), edge = mat(0x1d2a33);
+  // see-through so they hide little of the ground being shaped (Nathan 2026-10-15): a faint fill, and the dark rim
+  // only round the edge (by how edge-on the sphere is there), the middle left clear
+  const mat = (c: number, opacity: number) => basic(c, { depthTest: false, transparent: true, opacity });
+  const fill = mat(0xffffff, 0.22), hotM = mat(0xffb020, 0.55);
+  const edge = new THREE.ShaderMaterial({ transparent: true, depthTest: false, depthWrite: false, uniforms: { uCol: { value: new THREE.Color(0x1d2a33) } },
+    vertexShader: 'varying vec3 vN, vV; void main() { vec4 mv = modelViewMatrix * vec4(position, 1.0); vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }',
+    // the fill sphere (1 / 1.45 of the ring's radius) ends where 1 - n.v ~ 0.28
+    fragmentShader: 'uniform vec3 uCol; varying vec3 vN, vV; void main() { float f = 1.0 - abs(dot(normalize(vN), normalize(vV))); gl_FragColor = vec4(uCol, 0.85 * smoothstep(0.22, 0.32, f)); }' });
   terrainPoints(t, T).forEach((p, k) => {
     const y = g(p.x, p.depth);
     if (!inside(T, p.x, p.depth, -1)) return; // outside a round or angled tank: still shapes the ground, not shown
