@@ -300,3 +300,4 @@ footer { margin-top: 18px }
 .bgPic .ctl { display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; min-width: 0 }
 .bgPic .ctl .seg button { padding-left: 7px; padding-right: 7px }
 .bgPic .ctl .row { flex-basis: 100%; margin: 0; grid-template-columns: 40px 1fr 44px }
+#lShellsRow.off { opacity: .45; cursor: default }

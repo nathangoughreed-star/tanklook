@@ -1375,7 +1375,10 @@ Cancel, then change the name, to keep both.`)) return;
     $('lUnitRow').style.display = mapOn && watts ? '' : 'none'; setVal('lUnit', l.mapUnit ?? 'par'); mapKey(watts ? l.mapUnit ?? 'par' : 'rel');
     // the map layer: from the floor up to the water surface (the tank top when dry)
     { const top = Math.round(s.water.on ? waterY(s.tank, s.water.level) : s.tank.H); $('lSliceRow').style.display = mapOn && watts ? '' : 'none';
-      ($('lSlice') as HTMLInputElement).max = String(top); $('lShellsRow').style.display = mapOn && watts ? '' : 'none'; ($('lShells') as HTMLInputElement).checked = !!l.mapShells;
+      ($('lSlice') as HTMLInputElement).max = String(top); $('lShellsRow').style.display = mapOn ? '' : 'none'; ($('lShells') as HTMLInputElement).checked = !!l.mapShells;
+      // without Power the level has no PAR to compare with: the row stays in sight, greyed, with a note (Nathan 2026-10-15)
+      ($('lShells') as HTMLInputElement).disabled = !watts; $('lShellsRow').classList.toggle('off', !watts);
+      $('lShellsNote').hidden = !(mapOn && !watts);
       // dark spots: the level (PAR, or lux at 50 per µmol) and how much of the water is below it, and where it is darkest
       const dk = mapOn && watts && !!l.mapShells, du = l.mapUnit ?? 'par', dl = darkOf(l, du);
       $('lDarkRow').style.display = dk ? '' : 'none'; $('lDarkOut').hidden = !dk;
