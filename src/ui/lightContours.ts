@@ -8,6 +8,7 @@ import * as THREE from 'three';
 import { MAP_DIV, mapStepOf } from '../render/lighting';
 import type { Viewer } from '../render/viewer';
 import { bandsAt, lightEnvCached, luxOf, parOf, wattsOf } from '../scene/lightout';
+import { bowlRadius, insideBy } from '../scene/shape';
 import { groundHeight, groundInsideBy } from '../scene/terrain';
 import type { Tank, TankSetup } from '../scene/types';
 
@@ -22,14 +23,16 @@ export function contourLabels(S: TankSetup, T: Tank): Label[] {
   if (!env) return L;
   const unit = S.light.mapUnit ?? 'par', div = MAP_DIV[unit], step = mapStepOf(S.light, unit);
   const nx = 64, nz = Math.max(8, Math.round(nx * T.D / T.L)), dx = T.L / nx, dz = T.D / nz;
-  const h = (x: number, d: number) => groundHeight(S, T, x, d);
+  // on the map layer when one is set (a flat surface facing up), else on the ground
+  const sl = S.light.mapSlice ?? 0, flat = sl > 0, r = flat ? bowlRadius(T, sl) : Infinity;
+  const h = (x: number, d: number) => (flat ? sl : groundHeight(S, T, x, d));
   // t at each grid node (the shader's aqC; lines at whole t): level / step, or log2(level / div) at doublings; NaN off the ground
   const t: number[][] = [];
   for (let i = 0; i <= nx; i++) {
     const row: number[] = []; t.push(row);
     for (let j = 0; j <= nz; j++) {
       const x = i * dx, d = j * dz;
-      if (groundInsideBy(S, T, x, d) <= 1) { row.push(NaN); continue; }
+      if ((flat ? Math.min(insideBy(T, x, d), r - Math.hypot(x - T.L / 2, d - T.D / 2)) : groundInsideBy(S, T, x, d)) <= 1) { row.push(NaN); continue; }
       const hx = (h(x + 5, d) - h(x - 5, d)) / 10, hd = (h(x, d + 5) - h(x, d - 5)) / 10, k = Math.hypot(hx, 1, hd);
       const b = bandsAt(env, [x, h(x, d) + 0.5, -d], [-hx / k, 1 / k, hd / k]);
       const lv = Math.max(unit === 'lux' ? luxOf(b) : parOf(b), 1e-6);

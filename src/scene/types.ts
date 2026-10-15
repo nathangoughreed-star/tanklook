@@ -142,6 +142,9 @@ export interface LightSettings {
   mapStep?: number;
   /** Lux between the contour lines when the map shows lux, a multiple of 250 (250-5000); absent = 1000. */
   mapStepLux?: number;
+  /** A Light map layer across the tank at this height above the floor (mm; an app preference, added 2026-10-15); 0 or
+   * absent = the substrate only. */
+  mapSlice?: number;
 }
 
 export type LightTech = 'led-white' | 'led-planted' | 'led-reef' | 't5-refl' | 't5-bare' | 't8' | 't12' | 'led-tube' | 'cfl' | 'led-bulb' | 'mh' | 'mh-20k' | 'halogen';

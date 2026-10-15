@@ -9,7 +9,7 @@ import * as THREE from 'three';
 import { clamp } from '../scene/physics';
 import type { LightSettings, Tank, WaterSettings } from '../scene/types';
 import { waterK, waterY } from '../scene/physics';
-import { bowlDims, footprint, shapeOf } from '../scene/shape';
+import { bowlDims, bowlRadius, footprint, shapeOf } from '../scene/shape';
 
 import { AQ_MAX, LAMP_Y, LUXW, beamExp, emitters, lampHeight, lightEnvCached, lightOutCached, renderBright, type Emitter, type LightEnv, type LightScene } from '../scene/lightout';
 // the fixture geometry lives with the light-output model now (lane K); re-exported so importers stay as they were
@@ -516,4 +516,41 @@ export function irrReadback(r: THREE.WebGLRenderer, pts: number[][], ns: number[
   const px = new Float32Array(n * 4); r.readRenderTargetPixels(rt, 0, 0, n, 1, px); r.setRenderTarget(prev);
   rt.dispose(); g.dispose(); m.dispose();
   return Array.from({ length: n }, (_, i) => px[i * 4]);
+}
+
+/**
+ * Light map slice (Nathan 2026-10-15: see the light at every point in the tank): a see-through layer across the tank at
+ * `light.mapSlice` mm above the floor, coloured and contoured like the map on the substrate (the same aqIrr, on a
+ * surface facing up), so stepping it up the water shows how the light builds toward the lamps. Kept out of the build:
+ * placed in each viewport's scene before it renders, hidden unless the map shows real units and a height is set.
+ */
+let sliceMat: THREE.ShaderMaterial | null = null;
+function sliceMaterial() {
+  return sliceMat ??= new THREE.ShaderMaterial({
+    uniforms: { ...LU, uCard: { value: 0 }, uSub: { value: 1 }, uFish: { value: 0 }, uRoomMat: { value: 0 }, uFishCard: { value: 0 } },
+    vertexShader: AQ_VERT + '\nvoid main() { vec4 w = modelMatrix * vec4(position, 1.0); vAqP = w.xyz; vAqN = vec3(0.0, 1.0, 0.0); gl_Position = projectionMatrix * viewMatrix * w; }',
+    fragmentShader: AQ_FRAG + '\nvoid main() {\n' +
+      '  float aqI = max(aqIrr(), 1e-6), aqT = log2(aqI / uMapDiv), aqC = uMapStep > 0.0 ? aqI / uMapStep : aqT, aqW = fwidth(aqC);\n' +
+      '  vec3 c = aqRamp(aqT) * (aqT < 0.0 ? 0.35 : 1.0);\n' +
+      '  float line = (1.0 - smoothstep(0.6 * aqW, 1.6 * aqW, abs(fract(aqC + 0.5) - 0.5))) * (uMapStep > 0.0 ? step(0.5, aqC) : step(0.0, aqT));\n' +
+      '  gl_FragColor = vec4(c * (1.0 - 0.7 * line), 0.78 + 0.2 * line);\n' +
+      '  #include <colorspace_fragment>\n}',
+    transparent: true, depthWrite: false, side: THREE.DoubleSide,
+  });
+}
+export function placeSlice(sc: THREE.Scene, T: Tank, S: LightScene & { render: { beams: boolean }; substrate: { show: boolean } }, on: boolean) {
+  let m = sc.getObjectByName('lightSlice') as THREE.Mesh | undefined;
+  const y = S.light.mapSlice ?? 0;
+  if (!on || !S.render.beams || !(y > 0)) { if (m) m.visible = false; return; }
+  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.pieDeg}`;
+  if (!m || m.userData.key !== key) {
+    if (m) { m.geometry.dispose(); sc.remove(m); }
+    const g = new THREE.ShapeGeometry(new THREE.Shape(footprint(T).ring.map(([x, d]) => new THREE.Vector2(x, d)))).rotateX(-Math.PI / 2);
+    m = new THREE.Mesh(g, sliceMaterial()); m.name = 'lightSlice'; m.userData = { key, nolight: true }; m.renderOrder = 10; m.frustumCulled = false;
+    sc.add(m);
+  }
+  // a bowl narrows with height: the outline scaled to the bowl's radius there, about its centre
+  const k = shapeOf(T) === 'bowl' ? bowlRadius(T, y) / (T.L / 2) : 1;
+  m.scale.set(k, 1, k); m.position.set(T.L / 2 * (1 - k), y, -T.D / 2 * (1 - k));
+  m.visible = true;
 }
