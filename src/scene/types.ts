@@ -125,6 +125,9 @@ export interface LightSettings {
   room: number;
   /** Fixture height above the top of the tank (mm). Higher = dimmer, more even, more spill into the room. Ignored with a hood. */
   height: number;
+  /** How the fixture is held (added 2026-10-15, Nathan): 'legs' = on legs standing on the tank rim, 'hang' = cables from
+   * the ceiling. Absent = by height (lightout mountOf: hung above 110 mm, else on legs). Ignored with a hood. */
+  mount?: 'legs' | 'hang';
   /** Light output (added 2026-10-14, all optional, no version bump; model in scene/lightout.ts). Power draw (W); 0 or
    * absent = off, Brightness stays the manual knob. Set: the render brightness follows the computed lux, `bright` is an exposure. */
   watts?: number;

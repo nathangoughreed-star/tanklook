@@ -223,6 +223,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
         : typeof l.tech === 'string' && (TECH_IDS as readonly string[]).includes(l.tech) ? { tech: l.tech as LightTech } : {}),
       ...(l.bulbW != null ? { bulbW: (MH_BULBS as readonly number[]).includes(Number(l.bulbW)) ? Number(l.bulbW) : 150 } : {}),
       ...(l.par != null ? { par: Math.round(num(l.par, 0, ...LIMITS.par)) } : {}),
+      ...(l.mount === 'legs' || l.mount === 'hang' ? { mount: l.mount } : {}),
       ...(l.mapUnit === 'par' || l.mapUnit === 'lux' ? { mapUnit: l.mapUnit } : {}),
       ...(l.mapStep != null ? { mapStep: Math.round(num(l.mapStep, 10, 5, 100) / 5) * 5 } : {}),
       ...(l.mapShells === true ? { mapShells: true } : {}),
