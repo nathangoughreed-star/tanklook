@@ -1211,7 +1211,7 @@ Plan approved by Nathan (batches in severity order). Pictures: `shots/g2/` in th
   rays toward the glass (middle, ± half a body along head and side) at the cached `backdropGeometry`, fits a plane,
   lifts it over the highest hit, tilts no more than ~70° off the glass. No wall there -> glass as before. Glass parts'
   reuse key includes the backdrop + bgSides + rim (`wallKey`). Applies to every `onGlass` animal (tree frogs, plecos,
-  otos); snails on glass (`snailMeshes`) still sit on the pane.
+  otos); snails on glass too (`snailMeshes`: sole on the fitted plane, foot toward the wall, yaw in that plane).
 - **Glass pose (Nathan's two photos, same day):** `HERP3D_GLASS.treefrog` (`frogOnGlass3D`, herps.ts): belly levelled
   flat onto the pane, arms folded under the chin, hind legs folded tight along the flanks, toe pads turned in under
   the belly; cream starts lower round the section. `herpBody(art, w, glass)`; build.ts passes `f.surface === 'glass'`.

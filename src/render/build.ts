@@ -1270,6 +1270,16 @@ function snailMeshes(S: TankSetup, T: Tank, f: Fish, sp: Species, ground: number
   // an invisible picking card in the pane, the 3D snail on its sole against the glass (its up = card -z, into the tank)
   const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), HIDDEN);
   m.position.set(x, y, -d); m.rotation.set(rx, ry, f.yaw * D2R, 'YXZ');
+  // on the 3D wall where it covers this pane: the sole on the relief (Nathan 2026-10-15)
+  const n = new THREE.Vector3(g.n[0], g.n[1], -g.n[2]), climb = new THREE.Vector3(0, 1, 0).addScaledVector(n, -n.y).normalize();
+  const wall = onWall(S, T, new THREE.Vector3(g.x, y0, -g.depth), n, climb, climb.clone().cross(n).normalize(), Math.max(w, h));
+  if (wall) {
+    const [pw, nw] = wall, z = nw.clone().negate(); // the foot (local +z) toward the wall
+    const up = climb.clone().addScaledVector(z, -climb.dot(z)).normalize(), right = up.clone().cross(z);
+    m.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(right, up, z))
+      .multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), f.yaw * D2R));
+    m.position.copy(pw).addScaledVector(nw, PANE_GAP);
+  }
   const b = snailBody(sp.art, w); b.rotation.x = -Math.PI / 2; m.add(b);
   m.updateMatrixWorld(true); // the shell hangs down the pane under its weight
   sagShell(b, new THREE.Vector3(0, -1, 0).applyQuaternion(b.getWorldQuaternion(new THREE.Quaternion()).invert()));
