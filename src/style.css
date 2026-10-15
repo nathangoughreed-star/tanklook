@@ -33,6 +33,7 @@ h1 { font-size: 17px; margin: 2px 0 0 }
 .sub { color: var(--muted); font-size: 12px; margin-bottom: 8px }
 h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 16px 0 6px; border-top: 1px solid var(--line); padding-top: 10px }
 .row { display: grid; grid-template-columns: 92px 1fr 72px; gap: 6px; align-items: center; margin: 4px 0 }
+.row[hidden], .hint[hidden] { display: none }
 .row label { color: var(--muted) }
 .row output { text-align: right; font-variant-numeric: tabular-nums }
 .row .span2 { grid-column: span 2 }
