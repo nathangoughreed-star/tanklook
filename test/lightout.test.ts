@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { defaultScene, defaultSetup } from '../src/scene/defaults';
 import {
-  KWATER, LREF, TECHS, TECH_IDS, bandsAt, beamExp, lightEnv, lightEnvCached, lightOut, lightOutCached, lineNorm, luxOf, luxPer, parOf, pointNorm, readout, renderBright,
+  EXPOSE, EXP_MAX, KWATER, LREF, TECHS, TECH_IDS, bandsAt, beamExp, lightEnv, lightEnvCached, lightOut, lightOutCached, lineNorm, luxOf, luxPer, parOf, pointNorm, readout, renderBright,
   fitFixture, fixtureOf, powerRange, techOf, techsFor, tubeOf, wattsOf, type Band, type Emitter, type LightEnv, type LightScene,
 } from '../src/scene/lightout';
 import { normTank } from '../src/scene/shape';
@@ -153,9 +153,10 @@ describe('light output model', () => {
     expect(readout(o)).toMatch(/^PAR at substrate ≈ \d+-\d+ µmol \([a-z -]+\) · surface ≈ \d+ · ≈ [\d,]+ lux · estimate$/);
     expect(renderBright(o, 1)).toBeGreaterThanOrEqual(0.2);
     expect(renderBright(o, 2) / renderBright(o, 1)).toBeCloseTo(2, 6);
-    expect(renderBright({ ...o, luxMid: 4 * LREF }, 1)).toBeCloseTo(2, 6);
+    expect(renderBright({ ...o, luxMid: 4 * LREF }, 1)).toBeCloseTo(2 * EXPOSE, 6);
     const typical = lightOut(scene({ watts: 20 }))!;
-    expect(renderBright(typical, 1)).toBeGreaterThan(0.85); expect(renderBright(typical, 1)).toBeLessThan(1.15);
+    expect(renderBright(typical, 1) / EXPOSE).toBeGreaterThan(0.85); expect(renderBright(typical, 1) / EXPOSE).toBeLessThan(1.15);
+    expect(renderBright({ ...o, luxMid: 1e9 }, 99)).toBeCloseTo(EXPOSE * 5 * EXP_MAX, 6); // looking at the sun: allowed, capped
   });
   it('older files load unchanged; the new fields are validated', () => {
     const base = defaultScene(), load = (x: unknown) => parseScene(JSON.parse(JSON.stringify(x))).scene;

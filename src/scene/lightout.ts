@@ -481,11 +481,15 @@ export function lightEnvCached(S: LightScene): LightEnv | null {
 }
 
 /** Lux at mid-water that renders at Brightness 1: a 24 x 12 x 12 in tank under a 20 W white LED bar gives about this
- * (typical setups land at 6,000-12,000 lux mid-water, so they render at 0.9-1.25 before the Exposure knob). */
+ * (typical setups land at 6,000-12,000 lux mid-water, so they render at 0.9-1.25 before EXPOSE and the Exposure knob). */
 export const LREF = 8000;
+/** Exposure gain on every light (Nathan 2026-10-15: the default looked dim; 1.8x what x1 used to give). */
+export const EXPOSE = 1.8;
+/** The Exposure knob's range (x1/4 to x16; the slider runs in stops, -2 to +4): past x4 the tank washes out, on purpose. */
+export const EXP_MIN = 0.25, EXP_MAX = 16;
 /** Render brightness while watts is set: (lux / LREF)^0.5 (eyes and cameras adapt: 4x the light looks about 2x as
- * bright), clamped to 0.2-2.5, times the Exposure knob (the Brightness slider, x0.5-2). */
-export const renderBright = (o: LightOut, exposure: number) => clamp(Math.sqrt(o.luxMid / LREF), 0.2, 2.5) * clamp(exposure, 0.5, 2);
+ * bright), clamped to 0.1-5 (a sunlit pond reaches 5), times EXPOSE and the Exposure knob (the Brightness slider). */
+export const renderBright = (o: LightOut, exposure: number) => EXPOSE * clamp(Math.sqrt(o.luxMid / LREF), 0.1, 5) * clamp(exposure, EXP_MIN, EXP_MAX);
 
 const nice = (v: number) => (v >= 20 ? Math.round(v / 5) * 5 : Math.round(v));
 const thou = (v: number) => { const r = v >= 1000 ? Math.round(v / 100) * 100 : Math.round(v / 10) * 10; return r.toLocaleString('en-US'); };

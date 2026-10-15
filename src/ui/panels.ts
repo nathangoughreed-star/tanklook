@@ -8,7 +8,7 @@ import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { BACKDROPS } from '../render/backdrop';
 import { MAP_DIV, MAP_STEP, emitters, mapStepOf } from '../render/lighting';
 import { darkOf, darkStats } from '../render/lightShells';
-import { FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, mountOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeOf, wattsOf, type Fixture } from '../scene/lightout';
+import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, mountOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeOf, wattsOf, type Fixture } from '../scene/lightout';
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene, TANK_PRESETS } from '../scene/defaults';
@@ -842,7 +842,9 @@ Cancel, then change the name, to keep both.`)) return;
   // ---------- Lighting ----------
   const lKeys = { lCount: 'count', lRows: 'rows', lSp: 'spacing', lCone: 'cone', lH: 'height', lBright: 'bright', lK: 'kelvin', lRoom: 'room', lW: 'watts', lPar: 'par' } as const;
   // spacing below a bulb's width snaps to 0 = auto (fill the tank)
-  for (const [id, k] of Object.entries(lKeys)) $(id).oninput = e => store.edit(s => { const v = +(e.target as HTMLInputElement).value; s.light[k] = k === 'spacing' && v < 80 ? 0 : v; }, { coalesce: id });
+  // while the power is set the Brightness slider is Exposure, in stops (bright = 2^v)
+  const expo = () => wattsOf(S()) > 0;
+  for (const [id, k] of Object.entries(lKeys)) $(id).oninput = e => store.edit(s => { const v = +(e.target as HTMLInputElement).value; s.light[k] = k === 'spacing' && v < 80 ? 0 : k === 'bright' && wattsOf(s) > 0 ? +(2 ** v).toFixed(3) : v; }, { coalesce: id });
   // up to 12 bulbs when placed to fit the tank (no rows to multiply them), 6 otherwise
   /** A colour outside the lamp's usual range moves to its usual one (on a lamp or fixture change only; the slider goes past). */
   const fitK = (l: TankSetup['light']) => { const [a, b, d] = TECHS[techOf(l)].k; if (l.kelvin < a || l.kelvin > b) l.kelvin = d; };
@@ -1229,10 +1231,11 @@ Cancel, then change the name, to keep both.`)) return;
     return v == null ? null : neg.test(t) ? -Math.abs(v) : v;
   } });
   const lens = ['bowMin', 'bowlFloor', 'bowlTop', 'standH', 'tableL', 'tableD', 'subBL', 'subBR', 'subFL', 'subFR', 'lH', 'cDist', 'iSize', 'iSpread', 'iLift', 'personH', 'wallGap', 'ceilH'];
-  const nums = { pieDeg: 0, bgArc: 0, iYaw: 0, iPitch: 0, iTilt: 0, iStems: 0, iDens: 0, iGrowth: 0, lCount: 0, lRows: 0, lCone: 0, lK: 0, lBright: 2, lRoom: 2, lW: 0, lPar: 0, cAz: 0, cEl: 0, cZoom: 2, terCols: 0, addSize: 0 };
+  const nums = { pieDeg: 0, bgArc: 0, iYaw: 0, iPitch: 0, iTilt: 0, iStems: 0, iDens: 0, iGrowth: 0, lCount: 0, lRows: 0, lCone: 0, lK: 0, lRoom: 2, lW: 0, lPar: 0, cAz: 0, cEl: 0, cZoom: 2, terCols: 0, addSize: 0 };
   attachTypeIns({
     ...Object.fromEntries(lens.map(id => [id, len])),
     ...Object.fromEntries(Object.entries(nums).map(([id, d]) => [id, num(d)])),
+    lBright: { show: v => tidy(expo() ? 2 ** v : v, 2), parse: t => { const v = plainNum(t); return v == null ? null : expo() ? Math.log2(Math.max(v, 1e-3)) : v; } },
     lSp: { show: v => (v ? toU(v) : 'auto'), parse: t => (/^\s*(auto|0)\s*$/i.test(t) ? 0 : parseLen(t, G().units)) },
     tableX: side(/left/i), tableZ: side(/forward|front/i),
     wOpac: { show: v => tidy(v * 100, 0), parse: t => { const v = plainNum(t); return v == null ? null : v / 100; } },
@@ -1586,7 +1589,7 @@ Cancel, then change the name, to keep both.`)) return;
     $('lHRow').style.display = l.type === 'flat' ? 'none' : ''; ($('lH') as HTMLInputElement).disabled = s.lid === 'hood';
     $('lMountRow').style.display = l.type === 'flat' || s.lid === 'hood' ? 'none' : ''; setVal('lMount', mountOf(l));
     // light output (lane K): power, what is inside the fixture, a measured PAR, and the estimate; while the power is
-    // set, Brightness is an exposure on top of the brightness the light gives (x0.5-2)
+    // set, Brightness is an exposure on top of the brightness the light gives (x1/4-16, in stops)
     // tubes and halide pendants: the power is the lamps' (W each x how many), shown instead of the slider
     const W = wattsOf(s), watts = W > 0, fixedW = fx === 'tube' || fx === 'pendant';
     $('lWRow').style.display = fx === 'flat' ? 'none' : ''; setOut('oLW', watts ? `${W} W` : 'Not set');
@@ -1606,9 +1609,10 @@ Cancel, then change the name, to keep both.`)) return;
     const lo = watts ? lightOutCached(s) : null;
     $('lOut').textContent = lo ? lightReadout(lo) : 'Set Power to estimate the light (PAR and lux) at the substrate.'; $('lOut').hidden = l.type === 'flat';
     $('lBrightLab').textContent = watts ? 'Exposure' : 'Brightness';
-    $('lBrightLab').title = watts ? 'Like a camera: how bright the render looks for the light the fixture gives (x0.5-2). The PAR and lux do not change' : '';
-    Object.assign($('lBright') as HTMLInputElement, watts ? { min: '0.5', max: '2' } : { min: '0.2', max: '2.5' }); setVal('lBright', l.bright);
-    if (watts) setOut('oBright', '×' + Math.min(Math.max(l.bright, 0.5), 2).toFixed(2));
+    $('lBrightLab').title = watts ? 'Like a camera: how bright the render looks for the light the fixture gives (x1/4 to x16; high washes out). The PAR and lux do not change' : '';
+    Object.assign($('lBright') as HTMLInputElement, watts ? { min: String(Math.log2(EXP_MIN)), max: String(Math.log2(EXP_MAX)) } : { min: '0.2', max: '2.5' });
+    setVal('lBright', watts ? Math.log2(Math.min(Math.max(l.bright, EXP_MIN), EXP_MAX)) : l.bright);
+    if (watts) setOut('oBright', '×' + Math.min(Math.max(l.bright, EXP_MIN), EXP_MAX).toFixed(2));
     const mapOn = s.render.beams && l.type !== 'flat';
     $('lUnitRow').style.display = mapOn && watts ? '' : 'none'; setVal('lUnit', l.mapUnit ?? 'par'); mapKey(watts ? l.mapUnit ?? 'par' : 'rel');
     // the map layer: from the floor up to the water surface (the tank top when dry)
