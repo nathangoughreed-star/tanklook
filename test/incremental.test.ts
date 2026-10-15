@@ -3,7 +3,8 @@
 // That the incremental path then draws the same pixels as a full rebuild is checked in the browser
 // (src/render/incrementalCheck.ts: 144 edits over the six examples + a split view, 0 pixels differ).
 import { describe, expect, it } from 'vitest';
-import { envKey, lookKey } from '../src/render/build';
+import * as THREE from 'three';
+import { buildTank, envKey, lookKey, patchLook } from '../src/render/build';
 import { emptyScene } from '../src/scene/defaults';
 import type { TankSetup } from '../src/scene/types';
 
@@ -26,12 +27,18 @@ describe('envKey / lookKey', () => {
     expect(changed(t => { t.wall.color = '#123456'; })).toEqual({ env: false, look: true });
     expect(changed(t => { t.substrate.custom.color2 = '#123456'; t.substrate.custom.mix = 0.9; })).toEqual({ env: false, look: true });
   });
-  it('rebuilds when the water volume appears or goes (opacity 0 has none)', () => {
+  it('patches the water volume in and out (built at opacity 0 too, hidden; lane EF2: no rebuild off 0)', () => {
     const a = tank(); a.water.opacity = 0.3;
-    const b = structuredClone(a); b.water.opacity = 0.5;
-    const c = structuredClone(a); c.water.opacity = 0;
-    expect(envKey(a)).toBe(envKey(b));
-    expect(envKey(a)).not.toBe(envKey(c));
+    for (const o of [0.5, 0]) {
+      const b = structuredClone(a); b.water.opacity = o;
+      expect(envKey(a)).toBe(envKey(b));
+      expect(lookKey(a)).not.toBe(lookKey(b));
+    }
+    const S = tank(); S.water.opacity = 0;
+    const sc = buildTank({ ...S, units: 'cm' }, S.tank, null).scene, vol = () => { let v: THREE.Object3D | undefined; sc.traverse(o => { if (o.userData.waterVol) v = o; }); return v!; };
+    expect(vol().visible).toBe(false);
+    S.water.opacity = 0.2; patchLook(sc, S); expect(vol().visible).toBe(true);
+    S.water.opacity = 0; patchLook(sc, S); expect(vol().visible).toBe(false);
   });
   it('rebuilds for geometry: water level, tank size, substrate grain, stand, light height', () => {
     for (const fn of [

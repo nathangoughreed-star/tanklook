@@ -443,10 +443,13 @@ export function lightOut(S: LightScene): LightOut | null {
 
 // Everything the model gives is proportional to the watts (photons, so the direct light, the bounce and every reading),
 // so the caches hold one run at 1 W with no PAR override and scale it (lane J2: a Power step re-ran the model, ~100 ms).
-// The key leaves out the light fields the model does not read (Exposure, colour, room light, map unit).
+// The key leaves out the light fields the model does not read (Exposure, colour, room light, map unit), and the water
+// and substrate fields it does not read (water colour; the substrate's look but for its albedo), so a water colour or
+// substrate colour step under a powered light does not re-run it (~45 ms; lane EF2).
 const unitKey = (S: LightScene) => {
   const { watts: _w, par: _p, bright: _b, kelvin: _k, room: _r, mapUnit: _m, mapStep: _ms, mapStepLux: _ml, bulbW: _bw, mapSlice: _sl, mapShells: _sh, mapDark: _dk, ...l } = S.light;
-  return JSON.stringify([S.tank, l, S.lid, S.water, S.substrate, S.layout.id, S.layout.seed, S.terrain]);
+  const w = S.water, b = S.substrate;
+  return JSON.stringify([S.tank, l, S.lid, [w.on, w.level, w.opacity], [b.show, b.fl, b.fr, b.bl, b.br, subAlbedo(b)], S.layout.id, S.layout.seed, S.terrain]);
 };
 const unitS = (S: LightScene): LightScene => ({ ...S, light: { ...S.light, watts: 1, par: undefined } });
 function cached<T>(cache: Map<string, T>, key: string, make: () => T): T {

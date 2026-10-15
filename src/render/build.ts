@@ -331,14 +331,14 @@ function addWater(sc: THREE.Scene, S: TankSetup, T: Tank) {
   surf.renderOrder = 4; surf.userData.nolight = true; sc.add(surf);
   const line = lines(ringLines(bowl ? circleRing(T, r - 0.6) : offsetRing(T, -0.6), y), 0xe8f6fa, 0.45);
   line.renderOrder = 4; sc.add(line);
-  // the water's own colour where only the empty page is behind it (audit #18; objects are tinted in their shader)
-  if (S.water.opacity <= 0) return;
+  // the water's own colour where only the empty page is behind it (audit #18; objects are tinted in their shader);
+  // built even at opacity 0 and hidden there, so stepping the opacity off 0 is an in-place patch (patchLook), not a rebuild
   let vol: THREE.BufferGeometry;
   if (bowl) {
     const n = 24, prof = Array.from({ length: n + 1 }, (_, i) => new THREE.Vector2(Math.max(0.5, bowlRadius(T, y * i / n)), y * i / n));
     vol = new THREE.LatheGeometry([new THREE.Vector2(0, 0), ...prof, new THREE.Vector2(0, y)], 48).translate(T.L / 2, 0, -T.D / 2);
   } else vol = prismGeometry(footprint(T).ring, 0, y);
-  const m = new THREE.Mesh(vol, waterVolumeMaterial()); m.userData.nolight = true; m.renderOrder = 3; sc.add(m);
+  const m = new THREE.Mesh(vol, waterVolumeMaterial()); m.userData.nolight = true; m.userData.waterVol = true; m.renderOrder = 3; m.visible = S.water.opacity > 0; sc.add(m);
 }
 
 export const STAND_FINISHES: Record<TankSetup['stand']['finish'], { label: string; color: number }> = {
@@ -941,15 +941,15 @@ export interface BuiltTank {
 /**
  * The fields the meshes outside the fish and items depend on: a change to any of them rebuilds the whole tank. Left
  * out: the fish and items (patched part by part), the camera, the values that are only uniforms (colour temperature,
- * brightness, room light, lane K's power / light type / measured PAR / map unit, fish stand out) and the colours `patchLook` sets in place (water colour and opacity, while
- * it stays above 0; the wall colour; a custom substrate's colours, share and mix).
+ * brightness, room light, lane K's power / light type / measured PAR / map unit, fish stand out) and the colours `patchLook` sets in place (water colour and opacity;
+ * the wall colour; a custom substrate's colours, share and mix).
  */
 export function envKey(S: TankSetup) {
   const { kelvin: _k, room: _r, bright: _b, watts: _w, tech: _t, par: _q, mapUnit: _u, mapStep: _ms, mapStepLux: _ml, bulbW: _bw, mapSlice: _sl, mapShells: _sh, mapDark: _dk, ...light } = S.light, { pop: _p, ...render } = S.render;
-  const { color: _wc, opacity, ...water } = S.water, { color: _c, ...wall } = S.wall;
+  const { color: _wc, opacity: _o, ...water } = S.water, { color: _c, ...wall } = S.wall;
   const { color: _c1, color2: _c2, share: _s, mix: _m, ...custom } = S.substrate.custom;
   // the condition (lane AL) is uniforms only
-  return JSON.stringify({ ...S, fish: null, items: null, camera: null, grow: null, condition: null, light, render, water: { ...water, tinted: opacity > 0 }, wall, substrate: { ...S.substrate, custom } });
+  return JSON.stringify({ ...S, fish: null, items: null, camera: null, grow: null, condition: null, light, render, water, wall, substrate: { ...S.substrate, custom } });
 }
 /** The values `patchLook` sets. */
 export const lookKey = (S: TankSetup) => JSON.stringify([S.water.color, S.water.opacity, S.wall.color, S.substrate.custom]);
@@ -963,6 +963,7 @@ export function patchLook(sc: THREE.Scene, S: TankSetup) {
   sc.traverse(o => {
     const m = (o as THREE.Mesh).material as THREE.MeshBasicMaterial | undefined;
     if (!m?.userData) return;
+    if (o.userData.waterVol) o.visible = S.water.opacity > 0;
     if (m.userData.waterSurf) { m.color.copy(s.color); m.opacity = s.opacity; }
     else if (m.userData.wallPaint) m.color.set(S.wall.color);
     else if (m.userData.sub && S.substrate.type === 'custom') {

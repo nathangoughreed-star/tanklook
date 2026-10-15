@@ -14,6 +14,8 @@
 // Instrumentation lives in this script (injected into the page), never in src/.
 //
 // Options: --sizes desktop,phone (also desktop2x: 1050x850 at DPR 2, a high-DPI laptop)  --views planted,iwagumi,...,split  --frames 40  --rounds 2 (edit rounds)
+//          --shots dir (raw + PNG canvas per view, for a before / after byte diff)  --incremental (incrementalCheck.runAll)
+//          --profile-edits 'water colour,light power' (CPU profile of one such edit per breakdown view)  --no-buckets (skip the bucket A/B)
 //          --breakdown 3 (worst N views, or a list: planted,iwagumi; 0 = none)  --pairs 30 (A/B frame pairs)
 //          (a view may also be a path to a scene .json)  --no-edits  --no-prod  --no-build (measure the existing dist-single/)  --out research/efficiency/E1-baseline.json
 //          --ab file.mjs: extra A/B in each breakdown view; the module exports [{ name, a: 'js', b: 'js' }], each a page
@@ -202,6 +204,7 @@ const PAGE = () => {
         const t0 = performance.now(); fn(st()); const t1 = performance.now();
         const t = timed(() => v().draw()); sync(); const t2 = performance.now();
         const o = out[name] ??= { store: [], draw: [], total: [], gpu: [], build: '' };
+        if (r === 0) { o.firstTotal = t2 - t0; o.firstBuild = v().lastBuild.join(' / '); }
         o.store.push(t1 - t0); o.draw.push(t.cpu); o.total.push(t2 - t0); o.gpu.push(await resolve(t.q)); o.build = v().lastBuild.join(' / ');
       }
       for (const k in out) for (const f of ['store', 'draw', 'total', 'gpu']) out[k][f] = med(out[k][f]);
@@ -334,7 +337,7 @@ if (flag('shaders')) {
 
 // ---------- per size, per view ----------
 let gpuInfo = null;
-for (const size of sizes) {
+for (const size of flag('checks-only') ? [] : sizes) { // --checks-only: only --shots / --incremental
   await br.s('Emulation.setDeviceMetricsOverride', SIZES[size]);
   await br.s('Emulation.setTouchEmulationEnabled', { enabled: SIZES[size].mobile });
   await open(DEV, 'planted'); // warm-up: the dev server transforms every module on the first load
@@ -369,13 +372,42 @@ if (worst.length) {
   for (const view of worst) {
     log('breakdown', view);
     await open(DEV, view); await install(); await br.ev('__pb.settle()');
-    const b = result.breakdown[view] = { buckets: await br.ev(`__pb.bucketCosts(${PAIRS})`), programs: await br.ev('__pb.programs()'), extra: {} };
-    b.cpuProfile = await profileDraws(60);
-    // the slowest edit in the baseline (water colour, 120-170 ms): one edit + its draw, profiled
-    b.waterColourProfile = await profileDraws(1, `(async () => { const ic = await import('/src/render/incrementalCheck.ts'); const e = ic.edits().find(x => x[0] === 'water colour'); e[1](__gb.store); __gb.viewer.draw(); __gb.viewer.renderer.getContext().readPixels(0, 0, 1, 1, 6408, 5121, new Uint8Array(4)); })()`);
+    const b = result.breakdown[view] = { buckets: flag('no-buckets') ? null : await br.ev(`__pb.bucketCosts(${PAIRS})`), programs: await br.ev('__pb.programs()'), extra: {} };
+    if (!flag('no-buckets')) b.cpuProfile = await profileDraws(60);
+    // the slowest edits in the baseline (water colour 120-170 ms, light power 33-41 ms): one edit + its draw, profiled
+    // (--profile-edits 'water colour,light power'; lane EF2)
+    b.editProfiles = {};
+    for (const name of opt('profile-edits', 'water colour').split(',').filter(Boolean)) {
+      await open(DEV, view); await install(); await br.ev('__pb.settle()');
+      b.editProfiles[name] = await profileDraws(1, `(async () => { const ic = await import('/src/render/incrementalCheck.ts'); const e = ic.edits().find(x => x[0] === ${JSON.stringify(name)}); e[1](__gb.store); __gb.viewer.draw(); __gb.viewer.renderer.getContext().readPixels(0, 0, 1, 1, 6408, 5121, new Uint8Array(4)); })()`);
+    }
     for (const x of extraAB) b.extra[x.name] = await br.ev(`__pb.ab(() => { ${x.a} }, () => { ${x.b} }, ${PAIRS})`);
     if (extraAB.length) b.extraApplied = await br.ev('window.__abApplied ?? null');
   }
+}
+
+// ---------- --shots dir: the canvas of every view (as loaded, and with the water tinted at opacity 0.3), raw RGBA +
+// PNG, for a byte diff of before / after a same-picture change (lane EF2). --incremental: incrementalCheck.runAll ----------
+if (opt('shots')) {
+  const dir = opt('shots'); mkdirSync(dir, { recursive: true });
+  await br.s('Emulation.setDeviceMetricsOverride', SIZES[sizes[0] ?? 'desktop']);
+  for (const view of VIEWS) for (const [tag, js] of [['as-loaded', ''], ['water-0.3', '__gb.store.editTank(0, t => { t.water.opacity = 0.3; });']]) {
+    await open(DEV, view); await install(); await br.ev('__pb.settle()');
+    const r = await br.ev(`(async () => { ${js} for (let i = 0; i < 3; i++) { __gb.viewer.draw(); await new Promise(r => requestAnimationFrame(r)); }
+      const v = __gb.viewer; v.draw(); const gl = v.renderer.getContext(), w = gl.drawingBufferWidth, h = gl.drawingBufferHeight, px = new Uint8Array(w * h * 4);
+      gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, px); let b = ''; for (let i = 0; i < px.length; i += 0x8000) b += String.fromCharCode(...px.subarray(i, i + 0x8000));
+      return { w, h, raw: btoa(b), png: v.renderer.domElement.toDataURL('image/png') }; })()`);
+    const name = `${view.replace(/[\/:]/g, '_')}-${tag}`;
+    writeFileSync(join(dir, name + '.rgba'), Buffer.from(r.raw, 'base64'));
+    writeFileSync(join(dir, name + '.png'), Buffer.from(r.png.split(',')[1], 'base64'));
+    log('shot', name, r.w + 'x' + r.h);
+  }
+}
+if (flag('incremental')) {
+  await br.s('Emulation.setDeviceMetricsOverride', SIZES[sizes[0] ?? 'desktop']);
+  await open(DEV, 'planted'); await install(); await br.ev('__pb.settle()');
+  result.incremental = await br.ev(`(async () => { const c = await import('/src/render/incrementalCheck.ts'); return c.runAll(__gb.store, __gb.viewer); })()`, 1_800_000);
+  log('incrementalCheck', JSON.stringify(result.incremental).slice(0, 2000));
 }
 
 /**
@@ -456,7 +488,7 @@ for (const [size, rows] of Object.entries(result.sizes)) {
   }
 }
 for (const [view, b] of Object.entries(result.breakdown)) {
-  const top = Object.entries(b.buckets).sort((a, b) => (b[1].saves ?? 0) - (a[1].saves ?? 0)).slice(0, 6);
+  const top = Object.entries(b.buckets ?? {}).sort((a, b) => (b[1].saves ?? 0) - (a[1].saves ?? 0)).slice(0, 6);
   console.log(`\nbreakdown ${view} (GPU ms saved by hiding, alternating frames): ${top.map(([k, x]) => `${k} ${x.saves} (${x.meshes})`).join(', ')}`);
   if (b.cpuProfile) console.log(`  CPU self ms per draw: ${b.cpuProfile.self.slice(0, 8).map(x => `${x.f} ${x.msPerDraw}`).join(', ')}`);
   for (const [k, x] of Object.entries(b.extra)) console.log(`  ${k}: A ${x.gpuA} / B ${x.gpuB} ms GPU, B - A ${x.delta}; CPU ${x.cpuDelta}`);
