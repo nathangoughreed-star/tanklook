@@ -193,7 +193,10 @@ export function backdropGeometry(T: Tank, b: BackdropSettings, rim = false, side
     // all the way round (every side chosen): the seam is a corner too, and has no ends to close
     const closed = Math.hypot(run[0][0] - run[run.length - 1][0], run[0][1] - run[run.length - 1][1]) < 1e-6;
     if (closed) { const m = mitre(segN(run.length - 1), segN(1)); corner.set(0, m); corner.set(len, m); }
-    const ss = Array.from({ length: Math.ceil(len / step) + 1 }, (_, i) => Math.min(len, i * step));
+    // open ends stop `gap` short of the side glass: an end cap in the pane's own plane z-fights the glass and the
+    // substrate there (moiré down the side pane, Nathan 2026-10-15)
+    const e = closed ? 0 : gap;
+    const ss = Array.from({ length: Math.ceil((len - 2 * e) / step) + 1 }, (_, i) => Math.min(len - e, e + i * step));
     for (const s0 of corner.keys()) ss.push(s0);
     ss.sort((a, b) => a - b);
     const uq = [...new Set(ss)], us = uq.filter((s0, i) => i === 0 || i === uq.length - 1 || s0 - uq[i - 1] > step * 0.3 || corner.has(s0));

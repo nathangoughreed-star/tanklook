@@ -105,6 +105,21 @@ function seenAt(scene: THREE.Scene, ray: THREE.Ray) {
   }
   return null;
 }
+/**
+ * How far along `ray` an orbit pivot may sit (Nathan 2026-10-15: "build an invisible wall around the tank"): where the
+ * ray leaves the tank's box, or, for a ray that misses the tank, its closest approach to the tank centre. A point seen
+ * beyond that (the room wall behind empty space) would swing the view wide.
+ */
+function pivotReach(T: Tank, ray: THREE.Ray) {
+  const lo = [0, 0, -T.D], hi = [T.L, T.H, 0], o = ray.origin.toArray(), d = ray.direction.toArray();
+  let t0 = 0, t1 = Infinity;
+  for (let k = 0; k < 3; k++) {
+    if (Math.abs(d[k]) < 1e-9) { if (o[k] < lo[k] || o[k] > hi[k]) { t1 = -1; break; } continue; }
+    const a = (lo[k] - o[k]) / d[k], b = (hi[k] - o[k]) / d[k];
+    t0 = Math.max(t0, Math.min(a, b)); t1 = Math.min(t1, Math.max(a, b));
+  }
+  return t1 >= t0 && t1 > 0 ? t1 : Math.max(0, pivot(T).sub(ray.origin).dot(ray.direction));
+}
 /** Texture alpha at uv, 0-1 (1 when the image cannot be read). Each texture is copied to a canvas once. */
 const alphaCache = new WeakMap<THREE.Texture, ImageData | null>();
 function alphaAt(t: THREE.Texture, uv: THREE.Vector2) {
@@ -196,7 +211,8 @@ export class Viewer {
   pinOrbit(clientX: number, clientY: number) {
     const hit = this.hitTest(clientX, clientY); if (!hit || !this.shown[hit.vp.i]) return; // not drawn yet: no camera to aim from
     const vp = hit.vp, r = this.host.getBoundingClientRect(), x = clientX - r.left - vp.x, y = clientY - r.top - vp.y;
-    const P = (vp.scene && seenAt(vp.scene, hit.ray)) ?? hit.ray.closestPointToPoint(pivot(vp.T), new THREE.Vector3());
+    const seen = vp.scene && seenAt(vp.scene, hit.ray), reach = pivotReach(vp.T, hit.ray);
+    const P = seen && seen.distanceTo(hit.ray.origin) <= reach ? seen : hit.ray.at(reach, new THREE.Vector3());
     this.pin = { i: vp.i, nx: x / vp.w * 2 - 1, ny: 1 - y / vp.h * 2, P };
   }
   unpinOrbit() { this.pin = null; }

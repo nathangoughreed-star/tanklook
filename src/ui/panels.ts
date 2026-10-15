@@ -12,9 +12,9 @@ import { FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, mountOf, po
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene, TANK_PRESETS } from '../scene/defaults';
-import { DEFAULT_DENS, KINDS, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, itemDims, makeItem, type Layer } from '../scene/items';
-import { handEdits, regenerate } from '../scene/starter';
-import { growthOf, isClump, isPatch, type PlantType } from '../art/plants';
+import { DEFAULT_DENS, EPIPHYTES, KINDS, perch, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
+import { handEdits, regenerate, shuffleHard } from '../scene/starter';
+import { growthOf, isClump, isFloat, isPatch, type PlantType } from '../art/plants';
 import { clumpAuto } from '../render/plant3d';
 import { canPrebuild, plantWarm, prebuildHooks, prebuildPlants } from '../render/items';
 import { placeAt, type PlaceAt } from '../interact/pointer';
@@ -974,8 +974,8 @@ Cancel, then change the name, to keep both.`)) return;
   /** A redraw is complete (Nathan 2026-10-15): when it would throw away pieces or animals placed, moved or removed by
    *  hand, a warning asks first. Resolves true to go ahead; on "Keep my scape" `revert` puts the control back. */
   const warnDlg = $<HTMLDialogElement>('scapeWarn');
-  const okToReplace = (what: Layer | 'all', revert: () => void) => new Promise<boolean>(done => {
-    const lost = handEdits(S(), what);
+  const okToReplace = (what: Layer | 'all', revert: () => void, only?: 'hardscape') => new Promise<boolean>(done => {
+    const lost = handEdits(S(), what).filter(l => !only || l === only);
     if (!lost.length) { done(true); return; }
     const list = lost.length === 1 ? lost[0] : `${lost.slice(0, -1).join(', ')} and ${lost[lost.length - 1]}`;
     $('scapeWarnText').textContent = `${what === 'all' ? 'A new starter set' : 'Redrawing this layer'} starts the ${list} again from scratch. Everything you placed, moved or removed there by hand will be gone.`;
@@ -1002,13 +1002,20 @@ Cancel, then change the name, to keep both.`)) return;
     dropGoneFish();
     status('New starter set placed. Ctrl+Z brings the previous pieces back.');
   };
+  // each menu's Shuffle redraws its own layer only (Nathan 2026-10-15); Animals' Shuffle moves the animals (above)
   $('layoutShuffle').onclick = async () => {
-    if (!await okToReplace('all', () => {})) return;
+    if (!await okToReplace('hard', () => {}, 'hardscape')) return;
     const seed = 1 + Math.floor(Math.random() * 1e6);
-    store.selectItem(null); fishId0 = store.nextId();
-    store.edit(s => { s.layout.seed = seed; replaced(s); });
-    dropGoneFish();
-    status('Rearranged. Ctrl+Z brings the previous pieces back.');
+    store.selectItem(null);
+    store.edit(s => shuffleHard(s, seed));
+    status('Hardscape rearranged; plants and animals stayed. Ctrl+Z brings the previous pieces back.');
+  };
+  $('plantShuffle').onclick = async () => {
+    if (!await okToReplace('plant', () => {})) return;
+    const seed = 1 + Math.floor(Math.random() * 1e6);
+    store.selectItem(null);
+    store.edit(s => { s.layout.plantSeed = seed; regenerate(s, 'plant', 0); });
+    status(`${isSalt(S()) ? 'Corals' : 'Plants'} rearranged round the hardscape. Ctrl+Z brings the previous ones back.`);
   };
   // Density sliders (lane SD): one in each of Hardscape, Plants and Animals, continuous from one piece (one animal) to
   // far too much (Nathan 2026-10-15). Dragging only names the level; the layer is redrawn once, on release (a slider
@@ -1025,10 +1032,10 @@ Cancel, then change the name, to keep both.`)) return;
       fishId0 = store.nextId();
       store.edit(s => { s.layout.dens = { ...(s.layout.dens ?? DEFAULT_DENS), [k]: v }; regenerate(s, k, fishId0); });
       dropGoneFish();
-      status(k === 'plant' ? `Plants redrawn (${stopName(k, v)}); the hardscape stayed put. Ctrl+Z brings the previous ones back.`
-        : k === 'hard' ? `Hardscape redrawn (${stopName(k, v)}), with plants round it. Ctrl+Z brings the previous pieces back.`
-          : v > 4 ? `Animals restocked (${stopName(k, v)}): more than a safe bioload. Ctrl+Z brings the previous ones back.`
-          : v ? `Animals restocked (${stopName(k, v)}), within a safe bioload. Ctrl+Z brings the previous ones back.` : 'Starter animals removed. Ctrl+Z brings them back.');
+      status(k === 'plant' ? `Plants redrawn (density ${stopName(k, v)}); the hardscape stayed put. Ctrl+Z brings the previous ones back.`
+        : k === 'hard' ? `Hardscape redrawn (density ${stopName(k, v)}), with plants round it. Ctrl+Z brings the previous pieces back.`
+          : v > 4 ? `Animals restocked (${stopName(k, v)} of 10): more than a safe bioload. Ctrl+Z brings the previous ones back.`
+          : v ? `Animals restocked (${stopName(k, v)} of 10), within a safe bioload. Ctrl+Z brings the previous ones back.` : 'Starter animals removed. Ctrl+Z brings them back.');
     };
   }
 
@@ -1050,6 +1057,9 @@ Cancel, then change the name, to keep both.`)) return;
         const gap = Math.min(...s.items.filter(q => q.kind !== 'plant' || !isPatch(q.variant)).map(q => Math.hypot(q.x - x, q.depth - d)), 1e6) - Math.abs(x - T.L / 2) * 0.15;
         if (gap > best) { best = gap; it.x = x; it.depth = d; }
       }
+      // a fern, anubias, buce or moss goes on the stone or wood nearest that open spot (on the floor if there is none)
+      const at = EPIPHYTES.has(variant) ? perch(s, it.x, it.depth, r) : null;
+      if (at) Object.assign(it, at);
       clampItem(it, T, s); s.items.push(it);
     });
     store.selectItem(id); openSec(scapeSec(LIBRARY[variant].kind));
@@ -1135,7 +1145,11 @@ Cancel, then change the name, to keep both.`)) return;
   $<HTMLSelectElement>('growFeed').onchange = e => { store.seal(); growTo(store.tank.grow.time, (e.target as HTMLSelectElement).value as GrowFeed); };
   $('growTime').oninput = e => { growHeld = true; growTo(+(e.target as HTMLInputElement).value / 100, growGoal?.feed ?? store.tank.grow.feed); };
   $('growTime').onchange = () => { growHeld = false; if (!growGoal) store.seal(); };
-  $('iSpread').oninput = e => editItem(it => { it.spread = +(e.target as HTMLInputElement).value; }, 'iSpread');
+  // a floater's spread is the patch fully grown: one not grown yet is shown fully grown once it has one, so the patch
+  // covers what the slider says
+  const fullFloat = (it: Item, s: TankSetup) => { if (isFloat(it.variant) && it.growth == null) setPlantGrowth(it, 1, s); };
+  $('iSpread').oninput = e => editItem((it, s) => { it.spread = +(e.target as HTMLInputElement).value; fullFloat(it, s); }, 'iSpread');
+  $('iDens').oninput = e => editItem((it, s) => { it.dens = +(e.target as HTMLInputElement).value / 100; fullFloat(it, s); }, 'iDens');
   $('iStems').oninput = e => editItem(it => { it.stems = +(e.target as HTMLInputElement).value; }, 'iStems');
   $('iYaw').oninput = e => editItem(it => { it.yaw = +(e.target as HTMLInputElement).value; }, 'iYaw');
   $('iPitch').oninput = e => editItem(it => { it.pitch = +(e.target as HTMLInputElement).value; }, 'iPitch');
@@ -1215,7 +1229,7 @@ Cancel, then change the name, to keep both.`)) return;
     return v == null ? null : neg.test(t) ? -Math.abs(v) : v;
   } });
   const lens = ['bowMin', 'bowlFloor', 'bowlTop', 'standH', 'tableL', 'tableD', 'subBL', 'subBR', 'subFL', 'subFR', 'lH', 'cDist', 'iSize', 'iSpread', 'iLift', 'personH', 'wallGap', 'ceilH'];
-  const nums = { pieDeg: 0, bgArc: 0, iYaw: 0, iPitch: 0, iTilt: 0, iStems: 0, iGrowth: 0, lCount: 0, lRows: 0, lCone: 0, lK: 0, lBright: 2, lRoom: 2, lW: 0, lPar: 0, cAz: 0, cEl: 0, cZoom: 2, terCols: 0, addSize: 0 };
+  const nums = { pieDeg: 0, bgArc: 0, iYaw: 0, iPitch: 0, iTilt: 0, iStems: 0, iDens: 0, iGrowth: 0, lCount: 0, lRows: 0, lCone: 0, lK: 0, lBright: 2, lRoom: 2, lW: 0, lPar: 0, cAz: 0, cEl: 0, cZoom: 2, terCols: 0, addSize: 0 };
   attachTypeIns({
     ...Object.fromEntries(lens.map(id => [id, len])),
     ...Object.fromEntries(Object.entries(nums).map(([id, d]) => [id, num(d)])),
@@ -1633,7 +1647,7 @@ Cancel, then change the name, to keep both.`)) return;
     setVal('edge', s.render.edge); $('gridOn').checked = s.render.grid; setVal('pop', Math.round(s.render.pop * 100)); setOut('oPop', s.render.pop ? `${Math.round(s.render.pop * 100)} %` : 'off');
     setVal('layout', s.layout.id); // "Bare tank" says there is nothing in it, which stops being true once a piece is added by hand (G2, 2026-10-14)
     $('layoutHint').textContent = s.layout.id === 'none' && s.items.length ? 'A starter set replaces every piece; or add, move and remove pieces yourself.' : LAYOUTS[s.layout.id].hint + ' Then move, add or remove any piece.';
-    ($('layoutShuffle') as HTMLButtonElement).disabled = s.layout.id === 'none';
+    ($('layoutShuffle') as HTMLButtonElement).disabled = ($('plantShuffle') as HTMLButtonElement).disabled = s.layout.id === 'none';
     const dn = s.layout.dens ?? DEFAULT_DENS;
     for (const [k, inp, out] of DENS_IN) { setVal(inp, dn[k]); setOut(out, stopName(k, dn[k])); ($(inp) as HTMLInputElement).disabled = s.layout.id === 'none'; }
     const nk = (k: ItemKind) => s.items.filter(q => q.kind === k).length;
@@ -1659,15 +1673,18 @@ Cancel, then change the name, to keep both.`)) return;
       const plant = it.kind === 'plant';
       $('iSizeRow').style.display = plant ? 'none' : ''; $('iGrowthRow').style.display = plant ? '' : 'none';
       if (plant) { const g = it.growth ?? growthOf(it.variant as PlantType, it.size); setVal('iGrowth', Math.round(g * 100)); setOut('oIGrowth', growthWord(g)); }
-      // a clump's spread and count: its own once moved, else what the seed gives it ("auto")
-      const clump = it.kind === 'plant' && isClump(it.variant);
-      document.querySelectorAll<HTMLElement>('#itemBox .clump').forEach(e => { e.style.display = clump ? '' : 'none'; }); // (.row sets display, so not hidden)
-      if (clump) {
-        const auto = clumpAuto(it.variant as PlantType, it.seed, it.size), sp = it.spread ?? auto.spread, n = it.stems ?? auto.stems;
-        $('iSpread').min = '10'; $('iSpread').max = String(Math.max(10, Math.round(Math.min(A.L, A.D) - 6)));
+      // a clump's spread and count, a floater's spread and density: its own once moved, else what the seed gives it
+      // ("auto"); a spread up to the far corner of the tank from where it stands
+      const clump = it.kind === 'plant' && isClump(it.variant), float = it.kind === 'plant' && isFloat(it.variant);
+      const show = (sel: string, on: boolean) => document.querySelectorAll<HTMLElement>(sel).forEach(e => { e.style.display = on ? '' : 'none'; }); // (.row sets display, so not hidden)
+      show('#itemBox .clump', clump); show('#itemBox .float', float); show('#itemBox .spread', hasSpread(it.variant) && it.kind === 'plant');
+      if (clump || float) {
+        const auto = clump ? clumpAuto(it.variant as PlantType, it.seed, it.size).spread : Math.round(itemDims({ ...it, spread: undefined, growth: 1 })[0]), sp = it.spread ?? auto;
+        $('iSpread').min = '10'; $('iSpread').max = String(Math.max(sp, spreadMax(A, it.x, it.depth)));
         setVal('iSpread', sp); setOut('oISpread', fmt(sp) + (it.spread == null ? ' auto' : ''));
-        setVal('iStems', n); setOut('oIStems', n + (it.stems == null ? ' auto' : ''));
       }
+      if (clump) { const n = it.stems ?? clumpAuto(it.variant as PlantType, it.seed, it.size).stems; setVal('iStems', n); setOut('oIStems', n + (it.stems == null ? ' auto' : '')); }
+      if (float) { const d = it.dens ?? 1; setVal('iDens', Math.round(d * 100)); setOut('oIDens', Math.round(d * 100) + '%' + (it.dens == null ? ' auto' : '')); }
       setVal('iYaw', it.yaw); setOut('oIYaw', it.yaw + '°'); setVal('iPitch', it.pitch); setOut('oIPitch', it.pitch + '°'); setVal('iTilt', it.tilt); setOut('oITilt', it.tilt + '°');
       $('iLift').min = String(-Math.round(A.H * LIFT_SINK)); $('iLift').max = String(Math.round(A.H)); setVal('iLift', Math.round(it.lift));
       setOut('oILift', Math.abs(it.lift) < 1 ? 'On the ground' : it.lift < 0 ? fmt(-it.lift) + ' in' : fmt(it.lift));

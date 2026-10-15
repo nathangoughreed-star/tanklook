@@ -35,6 +35,17 @@ describe('light output model', () => {
       expect(parOf(bandsAt(c, p)) / parOf(bandsAt(e, p))).toBeCloseTo(1, 9);
     }
   });
+  it('the cache key holds only what the model reads (lane EF2): water colour and substrate looks reuse the run', () => {
+    const S = scene({ watts: 30 }), env0 = lightEnvCached(S)!;
+    const re = (f: (s: LightScene) => LightScene) => lightEnvCached(f(structuredClone(S)))!;
+    // the cached env is copied out per call; its emitters array is the cached one, so identity = same run
+    expect(re(s => ({ ...s, water: { ...s.water, color: '#224466', salt: true } })).E).toBe(env0.E);
+    expect(re(s => ({ ...s, substrate: { ...s.substrate, custom: { ...s.substrate.custom, color2: '#123456', share: 70, mix: 0.9 } } })).E).toBe(env0.E);
+    expect(re(s => ({ ...s, light: { ...s.light, watts: 90, kelvin: 4000 } })).E).toBe(env0.E);
+    expect(re(s => ({ ...s, water: { ...s.water, opacity: 0.4 } })).E).not.toBe(env0.E);
+    expect(re(s => ({ ...s, substrate: { ...s.substrate, type: s.substrate.type === 'white' ? 'onyx' : 'white' } })).E).not.toBe(env0.E);
+    expect(re(s => ({ ...s, substrate: { ...s.substrate, fl: s.substrate.fl + 10 } })).E).not.toBe(env0.E);
+  });
   it('no watts, or a flat light: no estimate (the manual Brightness as before)', () => {
     expect(lightOut(scene({ watts: 0 }))).toBeNull();
     expect(lightOut(scene({ type: 'flat' }))).toBeNull();

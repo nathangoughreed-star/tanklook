@@ -22,7 +22,7 @@ export function parseLen(text: string, u: Units): number | null {
 }
 
 export const plainNum = (t: string): number | null => {
-  const m = t.trim().replace(/,/g, '.').match(new RegExp(String.raw`^(${NUM})\s*[°%×xk]?\s*$`, 'i'));
+  const m = t.trim().replace(/,/g, '.').match(new RegExp(String.raw`^(${NUM})\s*(?:[°%×xkw]|µmol|umol)?\s*$`, 'i'));
   return m ? +m[1] : null;
 };
 
@@ -32,14 +32,18 @@ export const tidy = (v: number, d = 2) => String(+v.toFixed(d));
 /** Make each readout in `specs` (keyed by slider id) editable. The readout is the slider's next sibling <output>. */
 export function attachTypeIns(specs: Record<string, TypeIn>) {
   for (const [id, spec] of Object.entries(specs)) {
-    const range = document.getElementById(id) as HTMLInputElement | null, out = range?.nextElementSibling as HTMLOutputElement | null;
-    if (!range || !out || out.tagName !== 'OUTPUT') continue;
+    // the readout is usually the slider's next sibling; some rows put a hint or a wrapper between them (Total Power,
+    // Colour temp), so fall back to the row's own <output>
+    const range = document.getElementById(id) as HTMLInputElement | null;
+    const next = range?.nextElementSibling;
+    const out = (next?.tagName === 'OUTPUT' ? next : range?.closest('.row')?.querySelector(':scope > output')) as HTMLOutputElement | null;
+    if (!range || !out) continue;
     out.classList.add('typein'); out.tabIndex = 0; out.title = 'Click to type an exact value';
     // restoring the step snaps the slider (760 mm for a typed 30"), so the box reopens on the typed value while the
     // slider has not moved since
     let typed: { v: number; at: string } | null = null;
     const open = () => {
-      if (range.disabled || out.hidden) return;
+      if (range.disabled || range.hidden || out.hidden) return;
       const box = document.createElement('input');
       box.type = 'text'; box.className = 'typeinBox'; box.value = String(spec.show(typed && typed.at === range.value ? typed.v : +range.value));
       box.setAttribute('aria-label', (range.labels?.[0]?.textContent ?? id) + ', exact value');

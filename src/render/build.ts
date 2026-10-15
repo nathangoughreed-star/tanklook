@@ -332,14 +332,18 @@ function addWater(sc: THREE.Scene, S: TankSetup, T: Tank) {
   surf.renderOrder = 4; surf.userData.nolight = true; sc.add(surf);
   const line = lines(ringLines(bowl ? circleRing(T, r - 0.6) : offsetRing(T, -0.6), y), 0xe8f6fa, 0.45);
   line.renderOrder = 4; sc.add(line);
-  // the water's own colour where only the empty page is behind it (audit #18; objects are tinted in their shader)
-  if (S.water.opacity <= 0) return;
+  // the water's own colour where only the empty page is behind it (audit #18; objects are tinted in their shader);
+  // built even at opacity 0 and hidden there, so stepping the opacity off 0 is an in-place patch (patchLook), not a rebuild
   let vol: THREE.BufferGeometry;
   if (bowl) {
     const n = 24, prof = Array.from({ length: n + 1 }, (_, i) => new THREE.Vector2(Math.max(0.5, bowlRadius(T, y * i / n)), y * i / n));
     vol = new THREE.LatheGeometry([new THREE.Vector2(0, 0), ...prof, new THREE.Vector2(0, y)], 48).translate(T.L / 2, 0, -T.D / 2);
   } else vol = prismGeometry(footprint(T).ring, 0, y);
   const m = new THREE.Mesh(vol, waterVolumeMaterial()); m.userData.nolight = true; m.renderOrder = 3; sc.add(m);
+  // at opacity 0 it still draws in the tank's first frame (uWater.w = 0, so alpha is exactly 0: no pixel changes), so
+  // its program links with the rest of the build, not on the first opacity step; then it hides (patchLook shows it)
+  m.userData.waterVol = S.water.opacity > 0 ? 'on' : 'off';
+  m.onAfterRender = () => { m.visible = m.userData.waterVol === 'on'; };
 }
 
 export const STAND_FINISHES: Record<TankSetup['stand']['finish'], { label: string; color: number }> = {
@@ -712,6 +716,8 @@ function addPerson(sc: THREE.Scene, S: TankSetup, T: Tank) {
 
 /** Room wall width and floor size, mm: big enough that nothing runs out at the minimum zoom (lane V, 2026-10-14; 0.1 zoom, 2026-10-15). */
 const ROOM_SPAN = 120000;
+/** Half the room's width along the wall, mm: the end walls stand this far either side of the tank centre. */
+const ROOM_HALF = 2500;
 /** Plain room floor under the stand/wall, so the room doesn't float in a void. One-sided (invisible from below). */
 function addFloor(sc: THREE.Scene, S: TankSetup, T: Tank) {
   if (!S.stand.show && !S.wall.show && !S.person.show) return;
@@ -750,6 +756,12 @@ function addWall(sc: THREE.Scene, S: TankSetup, T: Tank) {
     return;
   }
   panel(g, 0);
+  // end walls square to the wall, ROOM_HALF either side of the tank, so the room has sides instead of a wall running
+  // off forever (Nathan, 2026-10-15); in the wall's group, so they hide with it
+  for (const s of [-1, 1]) {
+    const e = new THREE.Group(); e.position.set(s * ROOM_HALF, 0, SPAN / 2); e.rotation.y = -s * Math.PI / 2; g.add(e);
+    panel(e, 0);
+  }
   if (S.wall.side === 'back') g.position.set(L / 2, fy, wp.back);
   else if (S.wall.side === 'right') { g.position.set(wp.right, fy, -D / 2); g.rotation.y = -Math.PI / 2; }
   else { g.position.set(wp.left, fy, -D / 2); g.rotation.y = Math.PI / 2; }
@@ -777,8 +789,10 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   const G = (p: P): V3 => flare(T, p[0], p[1], Math.max(0.6, h(p[0], p[1])), rb);
   const P3 = (i: number, j: number): V3 => G([L * i / N, D * j / N]);
   // cheap slope shading: brightness from the ground's tilt toward a light above, front and left, per grid vertex and
-  // blended across each cell (one flat shade per cell showed the 16x16 grid as sharp-edged squares on gentle slopes)
-  const light = new THREE.Vector3(-0.35, 1, 0.45).normalize(), topCol: number[] = [];
+  // blended across each cell (one flat shade per cell showed the 16x16 grid as sharp-edged squares on gentle slopes);
+  // the lit shader's normal likewise per grid vertex and blended (computeVertexNormals on these unshared triangles gave
+  // one normal per triangle, so the fixture light drew every triangle's edge)
+  const light = new THREE.Vector3(-0.35, 1, 0.45).normalize(), topCol: number[] = [], topNrm: number[] = [];
   const vcol: number[][] = [];
   for (let i = 0; i <= N; i++) for (let j = 0; j <= N; j++) {
     const i0 = Math.max(0, i - 1), i1 = Math.min(N, i + 1), j0 = Math.max(0, j - 1), j1 = Math.min(N, j + 1);
@@ -787,12 +801,12 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
     const k = clamp(0.55 + 0.6 * n.dot(light), 0, 1.15) / 1.15, q = P3(i, j);
     // emerged ground reads as damp soil and moss (mottled), not aquarium gravel
     const dry = clamp((q[1] - wy) / 12, 0, 1), mo = 0.5 + 0.5 * Math.sin(q[0] * 0.045 + Math.sin(q[2] * 0.05) * 2.4);
-    vcol[i * (N + 1) + j] = [k * (1 - dry * (0.42 + 0.12 * mo)), k * (1 - dry * (0.3 - 0.12 * mo)), k * (1 - dry * (0.62 + 0.05 * mo))];
+    vcol[i * (N + 1) + j] = [k * (1 - dry * (0.42 + 0.12 * mo)), k * (1 - dry * (0.3 - 0.12 * mo)), k * (1 - dry * (0.62 + 0.05 * mo)), n.x, n.y, n.z];
   }
-  const colAt = (p: P) => { // bilinear between the grid vertices round p
+  const colAt = (p: P) => { // colour and normal, bilinear between the grid vertices round p
     const fx = clamp(p[0] / L * N, 0, N), fz = clamp(p[1] / D * N, 0, N), i = Math.min(N - 1, Math.floor(fx)), j = Math.min(N - 1, Math.floor(fz)), u = fx - i, w = fz - j;
     const c00 = vcol[i * (N + 1) + j], c10 = vcol[(i + 1) * (N + 1) + j], c01 = vcol[i * (N + 1) + j + 1], c11 = vcol[(i + 1) * (N + 1) + j + 1];
-    return [0, 1, 2].map(c => (c00[c] * (1 - u) + c10[c] * u) * (1 - w) + (c01[c] * (1 - u) + c11[c] * u) * w);
+    return [0, 1, 2, 3, 4, 5].map(c => (c00[c] * (1 - u) + c10[c] * u) * (1 - w) + (c01[c] * (1 - u) + c11[c] * u) * w);
   };
   for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
     const cell = clipToFootprint(T, [[L * i / N, D * j / N], [L * (i + 1) / N, D * j / N], [L * (i + 1) / N, D * (j + 1) / N], [L * i / N, D * (j + 1) / N]]);
@@ -805,7 +819,10 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
     // smear into streaks (audit #15)
     const uv = n.y > 0.6 ? (p: V3) => [p[0] / tile, -p[2] / tile] : Math.abs(n.x) > Math.abs(n.z) ? (p: V3) => [-p[2] / tile, p[1] / tile] : (p: V3) => [p[0] / tile, p[1] / tile];
     const cc = cell.map(colAt);
-    for (let m = 1; m < v.length - 1; m++) for (const t of [0, m, m + 1]) { top.push(v[t], uv(v[t])); topCol.push(...cc[t]); }
+    for (let m = 1; m < v.length - 1; m++) for (const t of [0, m, m + 1]) {
+      top.push(v[t], uv(v[t])); topCol.push(...cc[t].slice(0, 3));
+      const nn = new THREE.Vector3(...cc[t].slice(3)).normalize(); topNrm.push(nn.x, nn.y, nn.z);
+    }
   }
   // the skirt round the outline in short strips, so its top edge follows the ground (swamp banks are not straight);
   // the back shows through clear back glass (peninsula, orbiting round the back)
@@ -828,15 +845,16 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
       }
     }
   }
-  const mk = (arr: number[][], shade: number, cols?: number[]) => {
+  const mk = (arr: number[][], shade: number, cols?: number[], nrm?: number[]) => {
     const g = new THREE.BufferGeometry(); if (cols) g.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
+    if (nrm) g.setAttribute('normal', new THREE.Float32BufferAttribute(nrm, 3)); // applyLighting keeps a normal it finds
     g.setAttribute('position', new THREE.Float32BufferAttribute(arr.filter((_, i) => i % 2 === 0).flat(), 3));
     g.setAttribute('uv', new THREE.Float32BufferAttribute(arr.filter((_, i) => i % 2 === 1).flat(), 2));
     const m = new THREE.MeshBasicMaterial({ map: sub.type === 'custom' ? blendTexture(sub.custom, 'a') : substrateTexture(sub.type), color: shade, vertexColors: !!cols, side: THREE.DoubleSide });
     m.userData.sub = true; if (sub.type === 'custom') blendGrains(m, sub.custom, tile);
     sc.add(new THREE.Mesh(g, m));
   };
-  mk(top, 0xffffff, topCol); mk(side, 0xb4b4b4); // the skirt a touch darker so the layer reads through the glass
+  mk(top, 0xffffff, topCol, topNrm); mk(side, 0xb4b4b4); // the skirt a touch darker so the layer reads through the glass
 }
 
 /**
@@ -942,15 +960,15 @@ export interface BuiltTank {
 /**
  * The fields the meshes outside the fish and items depend on: a change to any of them rebuilds the whole tank. Left
  * out: the fish and items (patched part by part), the camera, the values that are only uniforms (colour temperature,
- * brightness, room light, lane K's power / light type / measured PAR / map unit, fish stand out) and the colours `patchLook` sets in place (water colour and opacity, while
- * it stays above 0; the wall colour; a custom substrate's colours, share and mix).
+ * brightness, room light, lane K's power / light type / measured PAR / map unit, fish stand out) and the colours `patchLook` sets in place (water colour and opacity;
+ * the wall colour; a custom substrate's colours, share and mix).
  */
 export function envKey(S: TankSetup) {
   const { kelvin: _k, room: _r, bright: _b, watts: _w, tech: _t, par: _q, mapUnit: _u, mapStep: _ms, mapStepLux: _ml, bulbW: _bw, mapSlice: _sl, mapShells: _sh, mapDark: _dk, ...light } = S.light, { pop: _p, ...render } = S.render;
-  const { color: _wc, opacity, ...water } = S.water, { color: _c, ...wall } = S.wall;
+  const { color: _wc, opacity: _o, ...water } = S.water, { color: _c, ...wall } = S.wall;
   const { color: _c1, color2: _c2, share: _s, mix: _m, ...custom } = S.substrate.custom;
   // the condition (lane AL) is uniforms only
-  return JSON.stringify({ ...S, fish: null, items: null, camera: null, grow: null, condition: null, light, render, water: { ...water, tinted: opacity > 0 }, wall, substrate: { ...S.substrate, custom } });
+  return JSON.stringify({ ...S, fish: null, items: null, camera: null, grow: null, condition: null, light, render, water, wall, substrate: { ...S.substrate, custom } });
 }
 /** The values `patchLook` sets. */
 export const lookKey = (S: TankSetup) => JSON.stringify([S.water.color, S.water.opacity, S.wall.color, S.substrate.custom]);
@@ -964,6 +982,7 @@ export function patchLook(sc: THREE.Scene, S: TankSetup) {
   sc.traverse(o => {
     const m = (o as THREE.Mesh).material as THREE.MeshBasicMaterial | undefined;
     if (!m?.userData) return;
+    if (o.userData.waterVol) { o.userData.waterVol = S.water.opacity > 0 ? 'on' : 'off'; o.visible = o.userData.waterVol === 'on'; }
     if (m.userData.waterSurf) { m.color.copy(s.color); m.opacity = s.opacity; }
     else if (m.userData.wallPaint) m.color.set(S.wall.color);
     else if (m.userData.sub && S.substrate.type === 'custom') {
@@ -984,14 +1003,15 @@ function addTerrainDots(sc: THREE.Scene, S: TankSetup, T: Tank, hot: number | nu
   const step = t.arc ? T.D / t.rows : t.radial ? disc.rx / t.rows : Math.min(T.L / (t.cols - 1), T.D / (t.rows - 1));
   const r = clamp(step * 0.17, 7, 20); // big and easy to grab; still well clear of the neighbouring point
   const geo = new THREE.SphereGeometry(r, 12, 8), ring = new THREE.SphereGeometry(r * 1.45, 12, 8);
-  // see-through so they hide little of the ground being shaped (Nathan 2026-10-15): a faint fill, and the dark rim
-  // only round the edge (by how edge-on the sphere is there), the middle left clear
-  const mat = (c: number, opacity: number) => basic(c, { depthTest: false, transparent: true, opacity });
-  const fill = mat(0xffffff, 0.22), hotM = mat(0xffb020, 0.55);
+  // see-through so they hide little of the ground being shaped (Nathan 2026-10-15): the fill truly clear (drawn into no
+  // pixel, still what the pointer grabs), only a thin dark outline at the sphere's silhouette; the one being dragged a
+  // faint orange
+  const mat = (c: number, opacity: number) => basic(c, { depthTest: false, depthWrite: false, transparent: true, opacity, colorWrite: opacity > 0 });
+  const fill = mat(0xffffff, 0), hotM = mat(0xffb020, 0.35);
   const edge = new THREE.ShaderMaterial({ transparent: true, depthTest: false, depthWrite: false, uniforms: { uCol: { value: new THREE.Color(0x1d2a33) } },
     vertexShader: 'varying vec3 vN, vV; void main() { vec4 mv = modelViewMatrix * vec4(position, 1.0); vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }',
-    // the fill sphere (1 / 1.45 of the ring's radius) ends where 1 - n.v ~ 0.28
-    fragmentShader: 'uniform vec3 uCol; varying vec3 vN, vV; void main() { float f = 1.0 - abs(dot(normalize(vN), normalize(vV))); gl_FragColor = vec4(uCol, 0.85 * smoothstep(0.22, 0.32, f)); }' });
+    // a hairline at the silhouette: 1 - n.v past ~0.65 is the outer ~5 % of the ring's radius
+    fragmentShader: 'uniform vec3 uCol; varying vec3 vN, vV; void main() { float f = 1.0 - abs(dot(normalize(vN), normalize(vV))); gl_FragColor = vec4(uCol, 0.8 * smoothstep(0.55, 0.7, f)); }' });
   terrainPoints(t, T).forEach((p, k) => {
     const y = g(p.x, p.depth);
     if (!inside(T, p.x, p.depth, -1)) return; // outside a round or angled tank: still shapes the ground, not shown

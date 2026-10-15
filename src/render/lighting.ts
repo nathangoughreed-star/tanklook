@@ -145,10 +145,28 @@ void main() {
   });
 }
 
+/**
+ * Power not set yet: run the light model in idle time (once per change of what it reads; the caches are per 1 W), so the
+ * first Power step finds it cached instead of spending ~35-47 ms on it in the panel update (lane EF2). It waits until
+ * nothing has drawn for 400 ms (an orbit or drag keeps pushing it back), then for an idle callback: the app asks for a
+ * frame every frame, so idle periods are at most ~16 ms and the model (one block of ~35-47 ms) cannot fit inside one.
+ */
+let warmS: LightScene | null = null, warmT = 0;
+function warmSoon(S: LightScene) {
+  warmS = S;
+  if (typeof requestIdleCallback !== 'function') return;
+  clearTimeout(warmT);
+  warmT = window.setTimeout(() => requestIdleCallback(() => {
+    const W = warmS; warmS = null;
+    if (W) lightEnvCached({ ...W, light: { ...W.light, watts: 1 } });
+  }), 400);
+}
+
 /** `S` (the setup; lane K): with watts set, the brightness follows the computed lux and `l.bright` is the exposure. */
 export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams = false, S?: LightScene) {
   const on = l.type !== 'flat'; LU.uMode.value = on ? 1 : 0;
   const lo = on && S ? lightOutCached({ ...S, tank: T }) : null, bright = lo ? renderBright(lo, l.bright) : l.bright;
+  if (on && S && !lo) warmSoon({ ...S, tank: T });
   // light map: a spot bulb or a tube counts as one light; an LED bar's emitters share the output of four bulbs
   LU.uMapOn.value = on && beams ? 1 : 0;
   if (on) { LU.uMapGain.value = beamGain(l); LU.uMapW.value = l.type === 'led' ? 4 / Math.max(emitters(T, l).length, 1) : 1; }

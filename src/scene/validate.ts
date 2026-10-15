@@ -248,7 +248,9 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
     layout: (() => {
       const seed = Math.round(num(lay.seed, 1, 1, 1e9)), ld = isObj(lay.dens) ? lay.dens as Obj : null, old = legacyDens(seed); // before lane SD: the stops nearest the seed's rolled density
       const stop = (v: unknown, k: keyof typeof old) => Math.round(num(v, old[k], k === 'animal' ? ANIMAL_RANGE[0] : DENS_RANGE[0], k === 'animal' ? ANIMAL_RANGE[1] : DENS_RANGE[1]) * 100) / 100; // continuous since 2026-10-15
-      return { id: pick(lay.id, LAYOUT_IDS, d.layout.id), seed, dens: ld ? { hard: stop(ld.hard, 'hard'), plant: stop(ld.plant, 'plant'), animal: stop(ld.animal, 'animal') } : old };
+      const own = (v: unknown) => typeof v === 'number' && Number.isFinite(v) ? { v: Math.round(num(v, seed, 1, 1e9)) } : null;
+      const ps = own(lay.plantSeed), as = own(lay.animalSeed);
+      return { id: pick(lay.id, LAYOUT_IDS, d.layout.id), seed, ...(ps ? { plantSeed: ps.v } : {}), ...(as ? { animalSeed: as.v } : {}), dens: ld ? { hard: stop(ld.hard, 'hard'), plant: stop(ld.plant, 'plant'), animal: stop(ld.animal, 'animal') } : old };
     })(),
     water: {
       on: bool(wa.on, true), level: num(wa.level, d.water.level, ...LIMITS.level), opacity: num(wa.opacity, d.water.opacity, ...LIMITS.opacity),
@@ -320,6 +322,7 @@ function parseItems(raw: unknown[], T: Tank, warn: (m: string) => void, g: Groun
       yaw: Math.round(fin(o.yaw, 0)), pitch: Math.round(fin(o.pitch, 0)), tilt: Math.round(fin(o.tilt, 0)), size: fin(o.size, v.size),
       ...(typeof o.spread === 'number' && Number.isFinite(o.spread) ? { spread: o.spread } : {}),
       ...(typeof o.stems === 'number' && Number.isFinite(o.stems) ? { stems: o.stems } : {}),
+      ...(typeof o.dens === 'number' && Number.isFinite(o.dens) ? { dens: o.dens } : {}),
       ...(typeof o.growth === 'number' && Number.isFinite(o.growth) ? { growth: o.growth } : {}),
       ...(v.kind === 'plant' && typeof o.planted === 'number' && Number.isFinite(o.planted) ? { planted: Math.round(clamp(o.planted, -GROW_RATE_MAX, 1) * 1000) / 1000 } : {}),
     };
