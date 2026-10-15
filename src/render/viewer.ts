@@ -15,6 +15,7 @@ import { wattsOf } from '../scene/lightout';
 import { placeShells } from './lightShells';
 import { onPictureLoad, setMaxAnisotropy } from './textures';
 import { OUTLINE } from './fish3d';
+import { capping } from './items';
 import { PERSON_BODY, PERSON_HEAD } from '../art/placeholder';
 
 type Pt2 = [number, number];
@@ -230,7 +231,9 @@ export class Viewer {
   }
 
   constructor(readonly canvas: HTMLCanvasElement, readonly host: HTMLElement, readonly store: Store) {
-    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: false });
+    // a stencil buffer: hardscape cut open by the glass is capped (render/items.ts capPasses), the beam overlay drawn once
+    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: false, stencil: true });
+    capping.on = !!this.renderer.getContext().getContextAttributes()?.stencil;
     this.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.localClippingEnabled = true; // hardscape is cut off at the glass (render/items.ts solidMaterial)

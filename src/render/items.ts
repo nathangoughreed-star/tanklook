@@ -332,41 +332,153 @@ float gritK() {
  */
 const glassMats = new Map<string, THREE.MeshBasicMaterial>();
 const glassKey = (T: Tank) => `${shapeOf(T)}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}`;
-/** The clipping planes and the bowl's sphere cut (a shader patch adding vGlassW) for one tank outline. */
+/** The clipping planes and the bowl's sphere cut (a shader patch adding vGlassW) for one tank outline; `vary` alone
+ *  declares what the cut needs without cutting (the cap's count passes). */
 function glassClip(T: Tank) {
   const bowl = shapeOf(T) === 'bowl', planes = [new THREE.Plane(new THREE.Vector3(0, 1, 0), 0)];
   // keep where -((x - a.x) n.x + (depth - a.d) n.d) >= 0, i.e. insideBy; world z = -depth
   if (!bowl) for (const e of footprint(T).edges) planes.push(new THREE.Plane(new THREE.Vector3(-e.n[0], 0, e.n[1]), e.a[0] * e.n[0] + e.a[1] * e.n[1]));
   const b = bowl ? bowlDims(T) : null;
   const uC = { value: new THREE.Vector3(T.L / 2, b?.c ?? 0, -T.D / 2) }, uR = { value: b?.R ?? 1e9 }, uTop = { value: b?.H ?? 0 };
-  const patch = (sh: THREE.WebGLProgramParametersWithUniforms) => {
+  const vary = (sh: THREE.WebGLProgramParametersWithUniforms) => {
     Object.assign(sh.uniforms, { uC, uR, uTop });
     sh.vertexShader = 'varying vec3 vGlassW;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\n  vGlassW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
-    sh.fragmentShader = 'varying vec3 vGlassW;\nuniform vec3 uC;\nuniform float uR;\nuniform float uTop;\n' + sh.fragmentShader
-      .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\n  if (vGlassW.y < uTop && distance(vGlassW, uC) > uR) discard;');
+    sh.fragmentShader = 'varying vec3 vGlassW;\nuniform vec3 uC;\nuniform float uR;\nuniform float uTop;\n' + sh.fragmentShader;
   };
-  return { planes, patch };
+  const patch = (sh: THREE.WebGLProgramParametersWithUniforms) => {
+    vary(sh);
+    sh.fragmentShader = sh.fragmentShader.replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\n  if (vGlassW.y < uTop && distance(vGlassW, uC) > uR) discard;');
+  };
+  return { planes, patch, vary };
 }
+/** The hardscape's grain and algae, and its inside (seen where the glass cuts it open) drawn darker by `k`. */
+const solidLook = (k: number) => (sh: THREE.WebGLProgramParametersWithUniforms) => {
+  sh.vertexShader = 'attribute vec4 aGrit;\nvarying vec4 vGrit;\nattribute float aNoAlg;\nvarying float vNoAlg;\n' + sh.vertexShader.replace('vGlassW = ', 'vGrit = aGrit; vNoAlg = aNoAlg; vGlassW = ');
+  // condition view (lane AL, render/algae.ts): algae keyed to the piece's seeded local position, none on corals
+  sh.fragmentShader = 'varying float vNoAlg;\n#define ALG_MASK (1.0 - vNoAlg)\n#define ALG_POS vGrit.xyz\n' + GRIT + sh.fragmentShader
+    .replace('#include <color_fragment>', '#include <color_fragment>\n  diffuseColor.rgb *= gritK();')
+    .replace('#include <dithering_fragment>', `#include <dithering_fragment>\n  if (!gl_FrontFacing) gl_FragColor.rgb *= ${k.toFixed(2)};`);
+};
 export function solidMaterial(T: Tank) {
   const k = glassKey(T);
   let m = glassMats.get(k);
   if (m) return m;
-  const { planes, patch } = glassClip(T);
-  // both sides drawn: where the glass cuts a piece open, its inside shows as a flat darker cut face, so it reads solid
+  const { planes, patch } = glassClip(T), look = solidLook(0.55);
+  // both sides drawn: where the glass cuts a piece open its inside shows, darker (a piece crossing the glass is capped
+  // over that, `capPasses`; this is what shows where no cap is drawn)
   m = new THREE.MeshBasicMaterial({ vertexColors: true, clippingPlanes: planes, side: THREE.DoubleSide });
   // the lighting pass (render/lighting.ts aqPatch) takes over onBeforeCompile and runs userData.pre first
-  const pre = (sh: THREE.WebGLProgramParametersWithUniforms) => {
-    patch(sh);
-    sh.vertexShader = 'attribute vec4 aGrit;\nvarying vec4 vGrit;\nattribute float aNoAlg;\nvarying float vNoAlg;\n' + sh.vertexShader.replace('vGlassW = ', 'vGrit = aGrit; vNoAlg = aNoAlg; vGlassW = ');
-    // condition view (lane AL, render/algae.ts): algae keyed to the piece's seeded local position, none on corals
-    sh.fragmentShader = 'varying float vNoAlg;\n#define ALG_MASK (1.0 - vNoAlg)\n#define ALG_POS vGrit.xyz\n' + GRIT + sh.fragmentShader
-      .replace('#include <color_fragment>', '#include <color_fragment>\n  diffuseColor.rgb *= gritK();')
-      .replace('#include <dithering_fragment>', '#include <dithering_fragment>\n  if (!gl_FrontFacing) gl_FragColor.rgb *= 0.55;');
-  };
+  const pre = (sh: THREE.WebGLProgramParametersWithUniforms) => { patch(sh); look(sh); };
   m.onBeforeCompile = pre;
   m.customProgramCacheKey = () => 'glass-clip';
   Object.assign(m.userData, { keep: true, solid: true, pre });
   return remember(glassMats, k, m, 16, x => x.dispose());
+}
+
+/**
+ * The cut face (Nathan 2026-10-15): through the opening the glass leaves, the camera saw the piece's inside (its back
+ * faces), a hollow shell from any angle but head-on. A piece crossing the glass is capped (stencil capping): along each
+ * sightline, from where it enters the kept region (the last clipping plane or the bowl's sphere it crosses from outside;
+ * `ENTRY`), two passes count the piece's surfaces (back faces +1, front faces -1, no depth test), which leaves the
+ * stencil non-zero exactly where that entry point is inside the piece; there the piece's back faces draw the flat cap:
+ * lit at the entry point with the glass's outward normal (render/lighting.ts reads vAqP / vAqN, here plain variables set
+ * at the top of main()), at its depth (a carpet or the gravel reaching inside stays hidden), clearing the stencil. Each
+ * piece's passes run one after the other (renderOrder), after the opaque scene and before the overlays drawn on top.
+ * Needs the renderer's stencil buffer (render/viewer.ts sets `capping.on`).
+ */
+const ENTRY = `
+// the sightline camera -> this fragment (at s = 1): where it enters the kept region (s; -1: the camera is inside), and
+// the glass's outward normal there
+float glassEntry(out vec3 n) {
+  float t = -1.0; n = vec3(0.0, 0.0, 1.0);
+#if NUM_CLIPPING_PLANES > 0
+  // view space, camera at the origin: kept where dot(n, q) + c >= 0 (three's clippingPlanes, q = -vClipPosition)
+  vec3 q = -vClipPosition;
+  for (int i = 0; i < NUM_CLIPPING_PLANES; i++) {
+    vec4 pl = clippingPlanes[i]; float dn = dot(pl.xyz, q);
+    if (pl.w < 0.0 && dn > 0.0) { float s = -pl.w / dn; if (s > t) { t = s; n = -pl.xyz * mat3(viewMatrix); } }
+  }
+#endif
+  vec3 o = cameraPosition, v = vGlassW - o, oc = o - uC;
+  float a = dot(v, v), b = dot(oc, v), c = dot(oc, oc) - uR * uR, disc = b * b - a * c;
+  if (c > 0.0 && disc > 0.0) { float s = (-b - sqrt(disc)) / a; if (s > t && o.y + s * v.y < uTop) { t = s; n = o + s * v - uC; } }
+  n = normalize(n);
+  return t;
+}
+`;
+const capShader = (sh: THREE.WebGLProgramParametersWithUniforms) => {
+  sh.fragmentShader = sh.fragmentShader
+    .replace('varying vec3 vAqP; varying vec3 vAqN;', 'varying vec3 vAqP; varying vec3 vAqN;\nuniform mat4 projectionMatrix;\nvec3 aqCapP; vec3 aqCapN;\n#define vAqP aqCapP\n#define vAqN aqCapN')
+    .replace('void main() {', `${ENTRY}void main() {
+#undef vAqP
+#undef vAqN
+  aqCapP = vAqP; aqCapN = vAqN;
+#define vAqP aqCapP
+#define vAqN aqCapN
+  gl_FragDepth = gl_FragCoord.z;
+  vec3 capN; float capT = glassEntry(capN);
+  if (capT > 0.0 && capT <= 1.0) {
+    aqCapP = mix(cameraPosition, vGlassW, capT); aqCapN = capN;
+    vec4 cp = projectionMatrix * viewMatrix * vec4(aqCapP, 1.0); gl_FragDepth = 0.5 + 0.5 * cp.z / cp.w;
+  }`);
+};
+type CapMats = { front: THREE.MeshBasicMaterial; back: THREE.MeshBasicMaterial; cap: THREE.MeshBasicMaterial };
+const capMats = new Map<string, CapMats>();
+function capMaterials(T: Tank): CapMats {
+  const k = glassKey(T), had = capMats.get(k);
+  if (had) return had;
+  const { planes, patch, vary } = glassClip(T), look = solidLook(0.75);
+  const count = (side: THREE.Side, op: THREE.StencilOp) => {
+    // no colour: a blend keeping what is there (the viewer locks the colour mask on, so colorWrite: false would not hold)
+    const m = new THREE.MeshBasicMaterial({ clippingPlanes: planes, side, depthWrite: false, depthTest: false,
+      blending: THREE.CustomBlending, blendSrc: THREE.ZeroFactor, blendDst: THREE.OneFactor,
+      stencilWrite: true, stencilFunc: THREE.AlwaysStencilFunc, stencilFail: op, stencilZFail: op, stencilZPass: op });
+    // not cut at the glass: only what lies before the entry point is left out (past a pane the camera is inside of, the
+    // piece still counts)
+    m.onBeforeCompile = sh => {
+      vary(sh);
+      sh.fragmentShader = sh.fragmentShader.replace('void main() {', ENTRY + 'void main() {')
+        .replace('#include <clipping_planes_fragment>', '{ vec3 capN; if (glassEntry(capN) > 1.0) discard; }');
+    };
+    m.customProgramCacheKey = () => 'glass-count';
+    m.userData.keep = true;
+    return m;
+  };
+  const cap = new THREE.MeshBasicMaterial({ vertexColors: true, clippingPlanes: planes, side: THREE.BackSide,
+    stencilWrite: true, stencilRef: 0, stencilFunc: THREE.NotEqualStencilFunc, stencilZFail: THREE.ZeroStencilOp, stencilZPass: THREE.ZeroStencilOp });
+  const pre = (sh: THREE.WebGLProgramParametersWithUniforms) => { patch(sh); look(sh); };
+  cap.onBeforeCompile = pre;
+  cap.customProgramCacheKey = () => 'glass-cap';
+  Object.assign(cap.userData, { keep: true, solid: true, pre, post: capShader });
+  const out = { front: count(THREE.FrontSide, THREE.DecrementWrapStencilOp), back: count(THREE.BackSide, THREE.IncrementWrapStencilOp), cap };
+  return remember(capMats, k, out, 16, x => { x.front.dispose(); x.back.dispose(); x.cap.dispose(); });
+}
+/** Whether pieces crossing the glass are capped: only where the renderer has a stencil buffer (render/viewer.ts). */
+export const capping = { on: false };
+let capSeq = 0;
+const _box = new THREE.Box3(), _p = new THREE.Vector3(), _c = new THREE.Vector3();
+/** The cap passes for solid piece `m` (placed) if its bounds cross the glass: children of it, never picked or exported. */
+function capPasses(m: THREE.Mesh, T: Tank) {
+  if (!capping.on) return;
+  const g = m.geometry;
+  if (!g.boundingBox) g.computeBoundingBox();
+  m.updateMatrix();
+  _box.copy(g.boundingBox!).applyMatrix4(m.matrix);
+  const { planes } = glassClip(T), bowl = shapeOf(T) === 'bowl' ? bowlDims(T) : null;
+  if (bowl) _c.set(T.L / 2, bowl.c, -T.D / 2);
+  let cut = false;
+  for (let i = 0; i < 8 && !cut; i++) {
+    _p.set(i & 1 ? _box.max.x : _box.min.x, i & 2 ? _box.max.y : _box.min.y, i & 4 ? _box.max.z : _box.min.z);
+    cut = planes.some(pl => pl.distanceToPoint(_p) < 0) || (!!bowl && _p.y < bowl.H && _p.distanceTo(_c) > bowl.R);
+  }
+  if (!cut) return;
+  const M = capMaterials(T), ro = 6 + (capSeq = (capSeq + 1) % 4000) * 2e-4;
+  for (const [mat, r] of [[M.back, ro], [M.front, ro], [M.cap, ro + 1e-4]] as const) {
+    const o = new THREE.Mesh(g, mat);
+    o.renderOrder = r; o.raycast = () => {};
+    Object.assign(o.userData, { capPass: true, nolight: mat !== M.cap });
+    m.add(o);
+  }
 }
 /** 3D plants are cut off at the glass the same way (a leaf arching past a pane stops at it), one material per outline;
  *  its shader shows each plant at its own growth (plant3d growShader, lane GR4). */
@@ -663,6 +775,7 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
   } else m = new THREE.Mesh(bakedShape(it), solidMaterial(T));
   m.position.set(it.x, it.kind === 'plant' && isFloat(it.variant) ? waterY(T, S.water.level) : y + (m.geometry.userData.rise ?? 0), -it.depth);
   m.rotation.copy(itemEuler(it));
+  if (it.kind !== 'plant') capPasses(m, T);
   m.userData.item = it.id;
   if (it.kind === 'coral') m.userData.coral = true;
   return m;

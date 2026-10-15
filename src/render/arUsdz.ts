@@ -432,7 +432,7 @@ export async function usdzScene(vp: Viewport, budget = BUDGET) {
     }
   };
   const walk = (o: THREE.Object3D) => {
-    if (!o.visible || drop.has(o)) return;
+    if (!o.visible || drop.has(o) || o.userData.capPass) return; // (the glass cap's passes: render/items.ts capPasses)
     if ((o as THREE.Mesh).isMesh) add(o as THREE.Mesh);
     for (const c of o.children) walk(c);
   };
