@@ -2,6 +2,25 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Plant growth (2026-10-15; design agreed in chat, lane GR1 prompt `prompts/lane-GR1-plant-growth.md`, not started)
+Nathan: each plant item gets a growth slider from just planted to fully mature / overgrown; what overgrown looks like
+depends on the species (lying along the surface in sheets, growing out of the tank, spreading). Each item (which may
+hold many stems / crowns) has its own growth. Later: a global timeline that grows the whole tank at each species' rate.
+- **Decisions (Nathan 2026-10-15):**
+  - **Height goes away for plants.** Growth drives the plant; the water depth and the growth stage decide whether
+    (and how far) it lies over at the surface. Vallisneria at full growth is not "tall", it lies along the water.
+    Extrapolate to every species. Width / patch size for carpets and floaters also comes from growth.
+  - **No calendar units** on the timeline (growth depends on light, CO2, ferts). Unitless Time, species speed
+    slow / medium / fast, plus a tank setting (Low-tech / Ferts / CO2 + ferts) that scales speed.
+- **Model:** `Item.growth` 0..1 (0 planted, ~0.5 established, 1 overgrown). Absent = back-solved from the saved
+  `size`, so old files and starter sets look unchanged, no version bump. Species data: speed, overflow
+  (`trail` along the surface / `emerge` above it / `spread` sideways / `none` just denser), mature length.
+- **Mechanism:** build the plant once at full growth, tag each leaf / segment with the growth it appears at, and let
+  a uniform reveal it, so scrubbing never rebuilds or reshuffles. Bending at the water line rebuilds once on release.
+- **Lanes:** GR1 growth value + reveal + lying over at the surface (trail), Height removed. GR2 emersed growth (stems
+  and swords above water, needs room above the line), floaters spreading, frogbit / water lettuce, lily form (tiger
+  lotus). GR3 timeline + tank setting (optional: light map slows shaded plants). Duckweed waits for instancing.
+
 ## 3D back wall (2026-10-15; main checkout; Nathan chose "3D panel inside" over a flat printed sheet; pushed to main)
 Nathan: textured backgrounds, e.g. a plant mat for terrariums, a live rock / coral wall for saltwater, river rocks for fresh.
 - **Data:** `TankSetup.backdrop: { kind: none|rock|river|reef|cork|moss, depth (mm, 20..100, default 50), seed }` (types.ts
