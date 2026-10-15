@@ -37,7 +37,8 @@ export function emitters(T: Tank, l: LightSettings, height = l.height ?? LAMP_Y)
   if (l.type === 'tube') { const h = tubeOf(l, T).lamp / 2; for (const z of tubeLayout(T, l).zs) E.push([L / 2, y, z, h]); }
   if (l.type === 'led') {
     const cols = clamp(Math.round(L * 0.9 / 45), 2, 24);
-    for (const r of [0.38, 0.62]) for (let c = 0; c < cols; c++) E.push([L * (0.05 + 0.9 * (c + 0.5) / cols), y, -D * r, 0]);
+    const zc = barZ(T, l, ledBarDepth(T));
+    for (const r of [-0.12, 0.12]) for (let c = 0; c < cols; c++) E.push([L * (0.05 + 0.9 * (c + 0.5) / cols), y, zc - D * r, 0]);
   }
   return E.slice(0, AQ_MAX);
 }
@@ -173,19 +174,23 @@ export function techOf(l: Pick<LightSettings, 'type' | 'tech'>): LightTech {
 }
 
 /**
- * Tubes come in set lengths, each at a set power (Nathan 2026-10-15: power follows the tubes). [fixture length in,
- * W per tube]; the longest that fits the tank is used, the shortest if none does. Lamp = the glowing length (end caps
- * and fittings off, ~92%). PC (straight power compact) and LED tube watts are ESTIMATES from common aquarium lamps.
+ * Tubes come in set lengths, each at a set power (Nathan 2026-10-15: power follows the tubes). [nominal in, W per tube,
+ * the tube's true length end to end in mm (pins off)]. The longest whose fixture (tube + sockets and end plates,
+ * TUBE_ENDS) fits within the tank's width is used, the shortest if none does (Nathan 2026-10-15: "the largest tube
+ * that will fit within the width of the tank ... that's how wide the housing should be too"). Lamp = the glowing
+ * length (the metal end caps off). PC (straight power compact) and LED tube watts are ESTIMATES from common aquarium lamps.
  */
-const TUBES: Partial<Record<LightTech, [number, number][]>> = {
-  't5-refl': [[24, 24], [36, 39], [48, 54], [60, 80]], 't5-bare': [[24, 24], [36, 39], [48, 54], [60, 80]],
-  't8': [[18, 15], [24, 17], [36, 25], [48, 32]], 't12': [[18, 15], [24, 20], [36, 30], [48, 40]],
-  'cfl': [[12, 32], [16, 36], [21, 55], [34, 96]], 'led-tube': [[24, 9], [36, 14], [48, 18]],
+const TUBES: Partial<Record<LightTech, [number, number, number][]>> = {
+  't5-refl': [[24, 24, 549], [36, 39, 849], [48, 54, 1149], [60, 80, 1449]], 't5-bare': [[24, 24, 549], [36, 39, 849], [48, 54, 1149], [60, 80, 1449]],
+  't8': [[18, 15, 451], [24, 17, 604], [36, 25, 909], [48, 32, 1213]], 't12': [[18, 15, 451], [24, 20, 604], [36, 30, 909], [48, 40, 1213]],
+  'cfl': [[12, 32, 310], [16, 36, 411], [21, 55, 533], [34, 96, 868]], 'led-tube': [[24, 9, 590], [36, 14, 895], [48, 18, 1198]],
 };
+/** What a tube fixture adds to the tube's length: a socket and an end plate at each end (mm). */
+export const TUBE_ENDS = 36;
 export function tubeOf(l: Pick<LightSettings, 'type' | 'tech'>, T: Pick<Tank, 'L'>) {
-  const sizes = TUBES[techOf(l)] ?? [[24, 24]], fit = sizes.filter(([inch]) => inch * 25.4 <= T.L + 40);
-  const [inch, w] = fit.length ? fit[fit.length - 1] : sizes[0];
-  return { inch, w, lamp: Math.min(inch * 25.4 * 0.92, T.L * 0.95) };
+  const sizes = TUBES[techOf(l)] ?? [[24, 24, 549]], fit = sizes.filter(([, , mm]) => mm + TUBE_ENDS <= T.L);
+  const [inch, w, len] = fit.length ? fit[fit.length - 1] : sizes[0];
+  return { inch, w, len, lamp: len - 28, housing: len + TUBE_ENDS };
 }
 /** Tube diameter (mm) by lamp: T5 16, T8 and the LED T8 26, T12 38; a straight power compact is twin 17 mm legs. */
 const TUBE_DIA: Partial<Record<LightTech, number>> = { 't5-refl': 16, 't5-bare': 16, 't8': 26, 't12': 38, 'led-tube': 26, 'cfl': 17 };
@@ -198,13 +203,47 @@ export const TUBE_SP_MAX = 300;
  * of half a spacing (at least clear of the reflector), so more or wider-spaced tubes make a deeper hood.
  * `wide` = one lamp's width (a power compact's two legs side by side).
  */
-export function tubeLayout(T: Pick<Tank, 'D'>, l: Pick<LightSettings, 'type' | 'tech' | 'count' | 'spacing'>) {
+export function tubeLayout(T: Pick<Tank, 'D'>, l: Pick<LightSettings, 'type' | 'tech' | 'count' | 'spacing' | 'pos'>) {
   const n = Math.max(1, l.count), tech = techOf(l), dia = TUBE_DIA[tech] ?? 26, twin = tech === 'cfl', wide = twin ? dia * 2 + 3 : dia;
   const set = (l.spacing ?? 0) > 0, s = set ? clamp(l.spacing, wide + 8, TUBE_SP_MAX) : T.D / n;
-  const zs = Array.from({ length: n }, (_, i) => -T.D / 2 - (i - (n - 1) / 2) * s);
-  const depth = set ? (n - 1) * s + 2 * Math.max(s / 2, wide / 2 + 22) : T.D * 0.9;
-  return { zs, s, set, dia, twin, wide, depth };
+  const depth = set ? (n - 1) * s + 2 * Math.max(s / 2, wide / 2 + 22) : T.D * 0.9, zc = barZ(T, l, depth);
+  const zs = Array.from({ length: n }, (_, i) => zc - (i - (n - 1) / 2) * s);
+  return { zs, s, set, dia, twin, wide, depth, zc };
 }
+/**
+ * A bar fixture's (tubes, LED bar) front-to-back place (Nathan 2026-10-15: "allow the fixture to be moved front to back
+ * along the top of the tank"): `pos` mm from the middle, + toward the back, held so the housing stays over the tank
+ * (posMax). Returns the housing's centre z (z = -depth from the front).
+ */
+export const posMax = (T: Pick<Tank, 'D'>, depth: number) => Math.max(0, (T.D - depth) / 2);
+export const barZ = (T: Pick<Tank, 'D'>, l: Pick<LightSettings, 'pos'>, depth: number) => { const m = posMax(T, depth); return -T.D / 2 - clamp(l.pos ?? 0, -m, m); };
+/** The LED bar's depth front to back (mm). */
+export const ledBarDepth = (T: Pick<Tank, 'D'>) => T.D * 0.45;
+const posCache = new Map<string, number>();
+/**
+ * The front-to-back place that lights the floor most evenly (Nathan 2026-10-15: like the bulbs' "fit" pattern, for a
+ * bar): the rule fitSpots uses, here along one axis since a bar's rows run the tank's length: the `pos` that makes the
+ * mean squared distance from the floor (every point of the footprint, so a bow front's extra floor counts) to the
+ * nearest row of lights smallest. A rectangle or a round tank gives the middle; a bow front (shallow at its ends)
+ * moves it back, a pie forward. Rounded to 5 mm (the
+ * slider's step). Null for fixtures that are not bars.
+ */
+export function bestPos(T: Tank, l: LightSettings): number | null {
+  const tl = l.type === 'tube' ? tubeLayout(T, { ...l, pos: 0 }) : null, dep = tl ? tl.depth : l.type === 'led' ? ledBarDepth(T) : 0;
+  if (!dep) return null;
+  const offs = tl ? tl.zs.map(z => -z - T.D / 2) : [-0.12 * T.D, 0.12 * T.D]; // rows' depth from the bar's centre
+  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.pieDeg}|${dep}|${offs.join(',')}`;
+  const hit = posCache.get(key);
+  if (hit != null) return hit;
+  const g = 64, ds: number[] = [];
+  for (let i = 0; i < g; i++) for (let j = 0; j < g; j++) { const x = T.L * (i + 0.5) / g, d = T.D * (j + 0.5) / g; if (insideBy(T, x, d) > 0) ds.push(d); }
+  const m = Math.floor(posMax(T, dep) / 5) * 5, cost = (p: number) => ds.reduce((a, d) => a + Math.min(...offs.map(o => (d - T.D / 2 - p - o) ** 2)), 0);
+  let best = 0, bc = Infinity;
+  for (let p = -m; p <= m; p += 5) { const c = cost(p); if (c < bc - 1e-6 || (Math.abs(c - bc) <= 1e-6 && Math.abs(p) < Math.abs(best))) { bc = c; best = p; } }
+  posCache.set(key, best); if (posCache.size > 32) posCache.delete(posCache.keys().next().value!);
+  return best;
+}
+
 /** Metal halide bulb sizes (W each). */
 export const MH_BULBS = [70, 150, 250, 400] as const;
 /**

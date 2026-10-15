@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { defaultScene, defaultSetup } from '../src/scene/defaults';
 import {
   EXPOSE, EXP_MAX, KWATER, LREF, TECHS, TECH_IDS, bandsAt, beamExp, lightEnv, lightEnvCached, lightOut, lightOutCached, lineNorm, luxOf, luxPer, parOf, pointNorm, readout, renderBright,
-  fitFixture, fixtureOf, powerRange, techOf, techsFor, tubeOf, wattsOf, type Band, type Emitter, type LightEnv, type LightScene,
+  barZ, bestPos, fitFixture, fixtureOf, powerRange, techOf, techsFor, tubeLayout, tubeOf, wattsOf, type Band, type Emitter, type LightEnv, type LightScene,
 } from '../src/scene/lightout';
 import { normTank } from '../src/scene/shape';
 import { parseScene } from '../src/scene/validate';
@@ -149,6 +149,22 @@ describe('light output model', () => {
     expect(tubeOf(l, { L: 1200 })).toMatchObject({ inch: 48, w: 54 });  // 4 ft
     expect(tubeOf(l, { L: 500 })).toMatchObject({ inch: 24, w: 24 });   // shorter than any: the shortest
     expect(wattsOf({ tank: { ...defaultSetup().tank, L: 914 }, light: { ...l, watts: 999 } })).toBe(78);
+    // the true tube length and its housing: the 24 in T5 is 549 mm, so a 30 in tank (762) cannot take the 36 in (849 + ends)
+    expect(tubeOf(l, { L: 762 })).toMatchObject({ inch: 24, len: 549, housing: 585 });
+    expect(tubeOf(l, { L: 884 })).toMatchObject({ inch: 24 }); expect(tubeOf(l, { L: 885 })).toMatchObject({ inch: 36 });
+  });
+  it('bar fixtures move front to back, held over the tank', () => {
+    const l = { type: 'tube', tech: 't5-refl', count: 2, spacing: 60 } as LightSettings, T = { D: 400 };
+    const dep = tubeLayout(T, l).depth;
+    expect(barZ(T, {}, dep)).toBe(-200);
+    expect(barZ(T, { pos: 50 }, dep)).toBe(-250);                       // + toward the back
+    expect(barZ(T, { pos: -999 }, dep)).toBe(-200 + (400 - dep) / 2);   // no further forward than the front glass
+    expect(tubeLayout(T, { ...l, pos: 50 }).zs).toEqual([-220, -280]);
+    const rect = { ...defaultSetup().tank, L: 900, D: 400 };
+    expect(bestPos(rect, l)).toBe(0);                                    // a rectangle: the middle
+    expect(bestPos(normTank({ ...rect, shape: 'bow' }), l)).toBe(15);   // a bow front: shallow at the ends, so the floor sits back
+    expect(bestPos(normTank({ ...rect, shape: 'pie' }), l)).toBe(-35);
+    expect(bestPos(rect, { ...l, type: 'spot' })).toBeNull();
   });
   it('readout line and render brightness', () => {
     const o = lightOut(scene({}))!;

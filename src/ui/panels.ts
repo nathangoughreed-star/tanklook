@@ -8,7 +8,7 @@ import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { BACKDROPS } from '../render/backdrop';
 import { MAP_DIV, MAP_STEP, emitters, mapStepOf } from '../render/lighting';
 import { darkOf, darkStats } from '../render/lightShells';
-import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, mountOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeLayout, tubeOf, TUBE_SP_MAX, wattsOf, type Fixture } from '../scene/lightout';
+import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, mountOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeLayout, tubeOf, TUBE_SP_MAX, bestPos, ledBarDepth, posMax, wattsOf, type Fixture } from '../scene/lightout';
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene, TANK_PRESETS } from '../scene/defaults';
@@ -840,7 +840,7 @@ Cancel, then change the name, to keep both.`)) return;
   }
 
   // ---------- Lighting ----------
-  const lKeys = { lCount: 'count', lRows: 'rows', lSp: 'spacing', lCone: 'cone', lH: 'height', lBright: 'bright', lK: 'kelvin', lRoom: 'room', lW: 'watts', lPar: 'par' } as const;
+  const lKeys = { lCount: 'count', lRows: 'rows', lSp: 'spacing', lCone: 'cone', lH: 'height', lBright: 'bright', lK: 'kelvin', lRoom: 'room', lW: 'watts', lPar: 'par', lPos: 'pos' } as const;
   // spacing below a bulb's width (tubes: 20 mm) snaps to 0 = auto (fill the tank)
   // while the power is set the Brightness slider is Exposure, in stops (bright = 2^v)
   const expo = () => wattsOf(S()) > 0;
@@ -850,6 +850,7 @@ Cancel, then change the name, to keep both.`)) return;
   const fitK = (l: TankSetup['light']) => { const [a, b, d] = TECHS[techOf(l)].k; if (l.kelvin < a || l.kelvin > b) l.kelvin = d; };
   const countMax = (l: TankSetup['light']) => FIX_SPEC[fixtureOf(l)]?.maxCount ?? (l.type === 'spot' && l.pattern === 'fit' ? 12 : 6);
   const capCount = (l: TankSetup['light']) => { l.count = Math.min(l.count, countMax(l)); };
+  $('lPosOpt').onclick = () => store.edit(s => { const b = bestPos(s.tank, s.light); if (b != null) s.light.pos = b; });
   $<HTMLSelectElement>('lMount').onchange = e => store.edit(s => { s.light.mount = (e.target as HTMLSelectElement).value as 'legs' | 'hang'; });
   $<HTMLSelectElement>('lPat').onchange = e => store.edit(s => { s.light.pattern = (e.target as HTMLSelectElement).value as TankSetup['light']['pattern']; capCount(s.light); });
   // Fixture (Nathan 2026-10-15): the style sets the geometry and which lamps fit; a lamp it does not come in becomes its
@@ -1238,7 +1239,7 @@ Cancel, then change the name, to keep both.`)) return;
     lBright: { show: v => tidy(expo() ? 2 ** v : v, 2), parse: t => { const v = plainNum(t); return v == null ? null : expo() ? Math.log2(Math.max(v, 1e-3)) : v; } },
     lW: { show: v => tidy(v, 0), parse: t => (/^\s*(typical|auto|0)\s*$/i.test(t) ? 0 : plainNum(t)) }, // 0 = the typical power
     lSp: { show: v => (v ? toU(v) : 'auto'), parse: t => (/^\s*(auto|0)\s*$/i.test(t) ? 0 : parseLen(t, G().units)) },
-    tableX: side(/left/i), tableZ: side(/forward|front/i),
+    tableX: side(/left/i), tableZ: side(/forward|front/i), lPos: side(/forward|front/i),
     wOpac: { show: v => tidy(v * 100, 0), parse: t => { const v = plainNum(t); return v == null ? null : v / 100; } },
     // the water level slider is a fraction of the tank; the box takes the water's height, found by bisection
     wLevel: { show: v => toU(waterY(S().tank, v)), parse: t => {
@@ -1593,6 +1594,13 @@ Cancel, then change the name, to keep both.`)) return;
     setOut('oLH', s.lid === 'hood' ? 'In hood' : fmt(l.height) + ' above');
     $('lHRow').style.display = l.type === 'flat' ? 'none' : ''; ($('lH') as HTMLInputElement).disabled = s.lid === 'hood';
     $('lMountRow').style.display = l.type === 'flat' || s.lid === 'hood' ? 'none' : ''; setVal('lMount', mountOf(l));
+    // bars (tubes, LED bar): front to back, as far as the housing stays over the tank (lightout barZ)
+    const barDep = tl ? tl.depth : l.type === 'led' ? ledBarDepth(s.tank) : 0, pm = Math.floor(posMax(s.tank, barDep) / 5) * 5, pv = clamp(l.pos ?? 0, -pm, pm);
+    $('lPosRow').style.display = $('lPosOptRow').style.display = barDep && s.lid !== 'hood' ? '' : 'none';
+    Object.assign($('lPos') as HTMLInputElement, { min: String(-pm), max: String(pm) }); setVal('lPos', pv);
+    // said as the light's centre (the middle of its rows) from the back glass; "· even" when it is where Optimize puts it
+    const best = barDep && s.lid !== 'hood' ? bestPos(s.tank, l) : null;
+    setOut('oLPos', `${fmt(s.tank.D / 2 - pv)} from back${best != null && Math.abs(best - pv) < 1 ? ' · even' : ''}`);
     $('lMount').querySelector('option[value=legs]')!.textContent = fx === 'puck' ? 'Clipped to the rim, on goosenecks' : 'On legs, resting on the tank rim';
     // light output (lane K): power, what is inside the fixture, a measured PAR, and the estimate; while the power is
     // set, Brightness is an exposure on top of the brightness the light gives (x1/4-16, in stops)
@@ -1600,7 +1608,7 @@ Cancel, then change the name, to keep both.`)) return;
     const W = wattsOf(s), watts = W > 0, fixedW = fx === 'tube' || fx === 'pendant';
     $('lWRow').style.display = fx === 'flat' ? 'none' : ''; setOut('oLW', watts ? `${W} W${(l.watts ?? 0) > 0 || fixedW ? '' : ' · typical'}` : 'Not set'); setVal('lW', W);
     $('lW').hidden = fixedW; $('lWFixed').hidden = !fixedW;
-    if (fx === 'tube') { const t = tubeOf(l, s.tank); $('lWFixed').textContent = `${l.count} × ${t.w} W, ${t.inch} in tube${l.count > 1 ? 's' : ''}`; }
+    if (fx === 'tube') { const t = tubeOf(l, s.tank); $('lWFixed').textContent = `${l.count} × ${t.w} W, ${t.inch} in tube${l.count > 1 ? 's' : ''} (${fmt(t.len)} long)`; }
     if (fx === 'pendant') { const n = emitters(s.tank, l).length; $('lWFixed').textContent = `${n} × ${l.bulbW ?? 150} W bulb${n > 1 ? 's' : ''}`; }
     $('lBulbRow').style.display = fx === 'pendant' ? '' : 'none'; setVal('lBulb', String(l.bulbW ?? 150));
     if (techFor !== fx) { techFor = fx; $('lTech').replaceChildren(...techsFor(fx).map(t => new Option(TECHS[t].label, t))); }
