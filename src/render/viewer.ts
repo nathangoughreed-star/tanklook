@@ -137,8 +137,6 @@ function outwardPlanes(m: THREE.Mesh, T: Tank): THREE.Plane[] {
   }
   return out;
 }
-/** three's WebGLProgram (its types leave out isReady: true once the driver has linked it, asked without waiting). */
-type Linking = { isReady(): boolean };
 /** frostCull: a mesh in the tank draws nothing into an off-screen target (the transmission pass); the canvas pass is untouched. */
 function skipOffscreen(this: THREE.Object3D, r: THREE.WebGLRenderer, _s: THREE.Scene, _c: THREE.Camera, g: THREE.BufferGeometry) {
   if (r.getRenderTarget() === null) return;
@@ -243,43 +241,29 @@ export class Viewer {
     // three's loop (window frames, or the XR session's while one runs); an AR session draws through xrFrame instead (render/ar.ts)
     this.renderer.setAnimationLoop((t, f) => {
       if (this.xrFrame && f) this.xrFrame(t, f);
-      else if (this.dirty && !this.stillLinking() && !(this.needsBuild && this.buildAndLink())) { this.dirty = false; this.draw(); }
+      else if (this.dirty) { this.dirty = false; if (this.needsBuild) this.buildAndLink(); this.draw(); }
     });
   }
 
-  /** Programs the driver is still linking (startLinks) and since when; the loop draws once they are ready. */
-  private linking: { programs: Linking[]; since: number } | null = null;
-  private stillLinking() {
-    const L = this.linking;
-    if (!L) return false;
-    // a program released meanwhile (its material rebuilt away) no longer counts; after 60 s draw anyway
-    const live = new Set<unknown>(this.renderer.info.programs);
-    if (L.programs.some(p => live.has(p) && !p.isReady()) && performance.now() - L.since < 60_000) return true;
-    this.linking = null;
-    return false;
-  }
-  /** Build now; after a full build, start linking the programs it needs. true = some are still linking. */
+  /** Build now; after a full build, start linking every program it needs before the draw uses them (startLinks). */
   private buildAndLink() {
     this.build();
-    if (!this.lastBuild.includes('full')) return false;
-    const programs = this.startLinks();
-    if (programs.length) this.linking = { programs, since: performance.now() };
-    return this.stillLinking();
+    if (this.lastBuild.includes('full')) this.startLinks();
   }
   private primeRT = new THREE.WebGLRenderTarget(1, 1);
   private primeMats = new Map<number, THREE.Material>();
   /**
-   * Start linking every program the next draw needs, without waiting on any (three's compile; with
-   * KHR_parallel_shader_compile the driver links them in parallel, off the page's thread, and the loop asks each
-   * program whether it is ready instead of waiting on it). On a first visit nothing is
-   * cached, and drawing at once linked them one after another while the page froze: 11-70 s on Windows, where D3D's
-   * shader compiler does the work (lane EF1). Returns the programs it started.
+   * Start linking every program the next draw needs, all at once (three's compile; with KHR_parallel_shader_compile
+   * the driver links them in parallel on its own threads). On a first visit nothing is cached, and the draw linked
+   * them one after another, each at its first use: 26-100 s on Windows, where D3D's shader compiler does the work; now
+   * the draw waits about as long as the slowest one (lane EF1). (Letting the page run on until they are all ready, and
+   * only then drawing, came out the same speed but not pixel-identical on paludarium's stone cracks: not taken.)
    * three's compile() takes the clipping-plane count from the last mesh it drew, not from the material, so the
    * materials are compiled in groups by their plane count, each after a mesh with that many planes was "drawn"
    * (primeClip); without that the glass-clipped hardscape and plants would get the wrong program and link again.
    */
-  private startLinks(): Linking[] {
-    const r = this.renderer, before = new Set<unknown>(r.info.programs);
+  private startLinks() {
+    const r = this.renderer;
     const planes = (o: THREE.Object3D) => (([] as THREE.Material[]).concat((o as THREE.Mesh).material)[0]?.clippingPlanes?.length ?? 0);
     const compile = (objs: THREE.Object3D[], vp: Viewport) => {
       const groups = new Map<number, THREE.Object3D[]>();
@@ -315,7 +299,6 @@ export class Viewer {
         r.setRenderTarget(prev);
       }
     }
-    return (r.info.programs as unknown as Linking[]).filter(p => !before.has(p));
   }
   /** Leave three's clipping state at n planes: "draw" a mesh whose material has n of them (it draws nothing, into a
    *  1x1 target, and its program is a two-line one that links at once). */
