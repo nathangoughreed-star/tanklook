@@ -5,7 +5,8 @@
 // animation frame) and the ms spent in WebGL calls before it, with the calls over 100 ms (the program: gritK marks the
 // hardscape material, "linear" its transmission-pass variant).
 // Options: --rounds 3  --views betta-bowl,iwagumi,... (or scene .json paths)  --shots <dir> (a screenshot per view and build, once settled)
-//          --probe <page expression> (logged per load)  --wait 1500 (x 100 ms before giving up)  --size 1050x850  --out research/efficiency/EF1-cold-ab.json
+//          --probe <page expression> (logged per load)  --done <page expression> (also wait until it is true; lane PL: the reveal's last part)  --wait 1500 (x 100 ms before giving up)  --size 1050x850  --out research/efficiency/EF1-cold-ab.json
+//          --warm N (then N reloads in the same profile, programs cached: warm first frame)
 import { spawn } from 'node:child_process';
 import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
@@ -17,7 +18,7 @@ const opt = (k, d) => { const i = argv.indexOf('--' + k); return i < 0 ? d : arg
 const DIRS = opt('dirs', 'dist').split(',').map(s => { const [n, p] = s.includes('=') ? s.split('=') : [s, s]; return { name: n, dir: p }; });
 const VIEWS = opt('views', readdirSync('src/examples').filter(f => f.endsWith('.json')).map(f => f.slice(0, -5)).join(',')).split(',');
 const ROUNDS = +opt('rounds', 3), OUT = opt('out', 'research/efficiency/EF1-cold-ab.json');
-const SHOTS = opt('shots', null), PROBE = opt('probe', null);
+const SHOTS = opt('shots', null), PROBE = opt('probe', null), DONE = opt('done', null), WARM = +opt('warm', 0);
 const [W, H] = opt('size', '1050x850').split('x').map(Number);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const T0 = Date.now(), log = (...a) => console.log(`[${((Date.now() - T0) / 1000).toFixed(0).padStart(4)} s]`, ...a);
@@ -103,7 +104,21 @@ async function cold(d, view) {
       // done once nothing has linked for 4 s after the first frame: 'settled' = the end of the last WebGL call over 20 ms
       // (a program link), i.e. when the whole picture is up even if the app draws in steps
       const r = await br.ev(`(() => { const p = window.__perf; return p && p.firstFrame != null && performance.now() - Math.max(p.settled, p.firstFrame) > 4000 ? { firstFrame: Math.round(p.firstFrame), settled: Math.round(Math.max(p.settled, p.firstFrame)), glMs: Math.round(p.ms), programs: p.programs, slow: p.slow.sort((a, b) => b.ms - a.ms).slice(0, 6) } : null; })()`).catch(() => null);
-      if (r) { if (PROBE) r.probe = await br.ev(PROBE).catch(e => String(e)); if (SHOTS) writeFileSync(`${SHOTS}/${basename(view, '.json')}-${d.name}.png`, Buffer.from((await br.s('Page.captureScreenshot', { format: 'png' })).data, 'base64')); return r; }
+      if (r && DONE && !(await br.ev(DONE).catch(() => false))) { await sleep(100); continue; } // the page says it is not finished yet (a reveal still running)
+      if (r) {
+        if (PROBE) r.probe = await br.ev(PROBE).catch(e => String(e));
+        if (SHOTS) writeFileSync(`${SHOTS}/${basename(view, '.json')}-${d.name}.png`, Buffer.from((await br.s('Page.captureScreenshot', { format: 'png' })).data, 'base64'));
+        if (WARM) r.warm = [];
+        for (let k = 0; k < WARM; k++) {
+          await br.s('Page.navigate', { url: d.base });
+          for (let j = 0; j < 600; j++) {
+            await sleep(50);
+            const f = await br.ev('window.__perf && window.__perf.firstFrame').catch(() => null);
+            if (f != null && (!DONE || await br.ev(DONE).catch(() => false))) { await sleep(300); r.warm.push({ firstFrame: Math.round(f), probe: PROBE ? await br.ev(PROBE).catch(e => String(e)) : undefined }); break; }
+          }
+        }
+        return r;
+      }
       await sleep(100);
     }
     return { error: 'never drew', probe: PROBE ? await br.ev(PROBE).catch(e => String(e)) : undefined };
@@ -117,11 +132,16 @@ for (let r = 0; r < ROUNDS; r++) for (const view of VIEWS) {
     const x = await cold(d, view);
     result.runs.push({ round: r, view, build: d.name, ...x });
     log(`r${r} ${view} ${d.name}${x.probe !== undefined ? ` probe ${JSON.stringify(x.probe)}` : ''}: first frame ${x.firstFrame} ms, settled ${x.settled} ms, GL ${x.glMs} ms, ${x.programs} programs; slow ${(x.slow ?? []).map(s => `${s.ms}${s.marks?.includes('gritK') ? 'G' : ''}${s.marks?.includes('linear') ? 'L' : ''}`).join(' ')}`);
+    if (x.warm) log(`   warm: ${x.warm.map(w => `${w.firstFrame}${w.probe ? ` (${w.probe})` : ''}`).join(' | ')}`);
   }
 }
 writeFileSync(OUT, JSON.stringify(result, null, 1));
 const med = a => { const s = [...a].sort((x, y) => x - y); return s.length ? s[s.length >> 1] : null; };
 console.log(`\ncold first frame, median of ${ROUNDS} (ms):`);
 for (const view of VIEWS) console.log(`  ${view.padEnd(12)} ${DIRS.map(d => { const xs = result.runs.filter(x => x.view === view && x.build === d.name && x.firstFrame); return `${d.name} ${med(xs.map(x => x.firstFrame))} / ${med(xs.map(x => x.settled))} [${xs.map(x => `${x.firstFrame}/${x.settled}`).join(', ')}]`; }).join('  |  ')}`);
+if (WARM) {
+  console.log(`\nwarm first frame (reloads in the same profile), median (ms):`);
+  for (const view of VIEWS) console.log(`  ${basename(view, '.json').padEnd(12)} ${DIRS.map(d => { const xs = result.runs.filter(x => x.view === view && x.build === d.name).flatMap(x => (x.warm ?? []).map(w => w.firstFrame)); return `${d.name} ${med(xs)} [${xs.join(', ')}]`; }).join('  |  ')}`);
+}
 for (const d of DIRS) d.srv?.close();
 process.exit(0);

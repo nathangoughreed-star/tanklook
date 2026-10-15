@@ -1051,10 +1051,21 @@ function addTerrainDots(sc: THREE.Scene, S: TankSetup, T: Tank, hot: number | nu
   return dots;
 }
 
+/**
+ * The parts a first load (or an opened file / example) shows one after another as their shader programs link (lane PL,
+ * viewer.ts reveal), in this order; each top-level child of a built scene carries its index as userData.part (none = 0).
+ */
+export const PART = { room: 0, glass: 1, ground: 2, hardscape: 3, plants: 4, animals: 5 } as const;
+const tagFrom = (sc: THREE.Scene, n0: number, part: (o: THREE.Object3D) => number) => { for (const o of sc.children.slice(n0)) o.userData.part = part(o); };
+/** Does o (or anything under it) draw with the hardscape's material (the 3D back wall does)? */
+const solidIn = (o: THREE.Object3D) => { let s = false; o.traverse(c => { s ||= !!((c as THREE.Mesh).material as THREE.Material | undefined)?.userData?.solid; }); return s; };
+
 export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: number | null, edit?: { hot: number | null }, selItem: number | null = null): BuiltTank {
   const sc = new THREE.Scene();
-  addTank(sc, S, T); addWater(sc, S, T); if (S.water.on) addAlgae(sc, T, waterY(T, S.water.level), LU); addSubstrate(sc, S, T); addBackdrop(sc, S.backdrop, T, S.render.rim, S.render.bgSides);
-  const n0 = sc.children.length; addStand(sc, S, T);
+  addTank(sc, S, T); addWater(sc, S, T); if (S.water.on) addAlgae(sc, T, waterY(T, S.water.level), LU); tagFrom(sc, 0, () => PART.glass);
+  let n0 = sc.children.length; addSubstrate(sc, S, T); tagFrom(sc, n0, () => PART.ground);
+  n0 = sc.children.length; addBackdrop(sc, S.backdrop, T, S.render.rim, S.render.bgSides); tagFrom(sc, n0, o => solidIn(o) ? PART.hardscape : PART.glass);
+  n0 = sc.children.length; addStand(sc, S, T);
   for (const o of sc.children.slice(n0)) o.userData.stand = true; // AR's stand toggle hides these
   addWall(sc, S, T); addPerson(sc, S, T); addFloor(sc, S, T);
   const b: BuiltTank = { scene: sc, fishMeshes: [], meshById: new Map(), dotMeshes: [], itemMeshes: [], fishParts: [], itemParts: [], contentAt: sc.children.length };
@@ -1179,6 +1190,8 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: number | null, 
     return take(key) ?? fishPart(f, key);
   });
   b.fishMeshes = b.fishParts.flatMap(p => p.meshes);
+  for (const p of b.itemParts) for (const o of p.objs) o.userData.part = o.userData.plant ? PART.plants : o.userData.coral ? PART.animals : p.meshes.length ? PART.hardscape : PART.ground; // no meshes: the roots
+  for (const p of b.fishParts) for (const o of p.objs) o.userData.part = PART.animals;
   b.meshById = new Map();
   for (const m of b.fishMeshes) if (!b.meshById.has(m.userData.id)) b.meshById.set(m.userData.id, m);
   // what was not reused is gone or changed
