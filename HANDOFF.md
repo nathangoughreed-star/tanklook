@@ -44,6 +44,19 @@ Living file. Project state and dated decisions go here; update in place.
 - Tests: `test/scapestyles.test.ts` (every style x composition in bounds, deterministic, density stops as SD, character
   per style, composition weight, Any = old, Shuffle keeps comp, file round-trip). `test/items.test.ts`: Dutch's
   "weight moves" check is by plant height (it covers the floor evenly). Pictures: worktree `shots/ss*_sheet_*.png`.
+- **Quick aquascape setup** (Nathan, same day: style, Shuffle and density in one menu; Hardscape / Plants menus are for
+  hand tweaks; then "the substrate ... type, mixing, and terrain can all be randomized and tailored to the style"): a new
+  section `data-sec="quick"` before Substrate holds Style (`#layout`), one Shuffle, Composition and the Hardscape /
+  Plants density sliders; the Plants Shuffle and both sliders left their menus (the Animals slider and Shuffle stay in
+  Animals). Shuffle = new seed for rock, wood and plants (plantSeed dropped, animalSeed pinned), same style, composition
+  and stops; `shuffleHard` is no longer called from the UI (kept, tested).
+- **Styled ground** (`scene/scapeground.ts`, `LayoutSettings.ground?: true`): `styleGround(s)` picks the style's
+  substrate (preset or custom blend: aquasoil, sand patches, leaf litter...; marine sand in salt water), a slope rising
+  to the back per style, and hills under `styleFoci` (the composition's groups, the designed ones at seed 1) as a custom
+  terrain grid; a swamp keeps its land (terrain off, corners only). Own stream (seed x layer 4). Style change, Shuffle and
+  Composition restyle it; density sliders do not. `groundEdited` / `handEdits(s, what, ground)` add "substrate" to the
+  warning when the ground was changed by hand (a never-styled ground counts as edited only if it is not the default).
+- Pictures: worktree `shots/ss_quick_desktop.jpg`, `shots/ss_quick_375.jpg`. Open: Nathan's look at the new menu.
 
 ## Lane LA: algae on plant leaves + bowl glass film (2026-10-15; branch `leaf-algae`, port 5673; Nathan approved the pictures; pushed to main)
 
@@ -1543,7 +1556,7 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | AL dirty / algae view | `../Glass-Box-algae` / `algae` | 5613 | (released) | DONE 2026-10-15, pushed (see the Lane AL section); files free. Open: algae on plant leaves (after GR4) |
 | PL progressive first load | (worktree removed) | - | the first-picture / startLinks path in `render/viewer.ts`, part grouping in `render/build.ts` (buildTank order only), a small load hint in `index.html` / `style.css` | DONE (`1514e34`, `db60516`): first part shows in 3-4 s instead of a blank 13-18 s; hardscape link (9-15 s cold) is the remaining gap (SG) |
 | SG stone grain | `../Glass-Box-stone-grain` / `stone-grain` | 5653 | `render/items.ts` solidMaterial / GRIT / gritK (cheaper or baked stone grain) | running (session `local_d91c0bfe`) |
-| SS scape styles | `../Glass-Box-scape-styles` / `scape-styles` | 5663 | `scene/items.ts` starter section, `scene/starter.ts`, the layout picker in `ui/panels.ts` / `index.html` | styles + Composition pushed 2026-10-15 (see its section); NOW: Quick Aquascape Setup menu (Nathan: style, Shuffle and density in one menu, Hardscape / Plants menus for hand tweaks) |
+| SS scape styles | `../Glass-Box-scape-styles` / `scape-styles` | 5663 | `scene/items.ts` starter section, `scene/starter.ts`, the layout picker in `ui/panels.ts` / `index.html` | styles, Composition and the Quick aquascape setup (styled substrate) pushed 2026-10-15 (see its section); waiting on Nathan's look at the menu |
 | LA leaf algae + bowl film | (worktree removed) | - | `render/algae.ts`, the plant material hook in `render/plant3d.ts`, bowl glass film | DONE (`e87bc19`). Open: no surface scum on bowls; BBA on leaf ends, not true margins |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 Free (no lane): `render/build.ts`, `render/items.ts`, `scene/items.ts`, `render/viewer.ts`, `main.ts`, `render/lighting.ts`,
