@@ -1593,6 +1593,7 @@ Cancel, then change the name, to keep both.`)) return;
     setOut('oLH', s.lid === 'hood' ? 'In hood' : fmt(l.height) + ' above');
     $('lHRow').style.display = l.type === 'flat' ? 'none' : ''; ($('lH') as HTMLInputElement).disabled = s.lid === 'hood';
     $('lMountRow').style.display = l.type === 'flat' || s.lid === 'hood' ? 'none' : ''; setVal('lMount', mountOf(l));
+    $('lMount').querySelector('option[value=legs]')!.textContent = fx === 'puck' ? 'Clipped to the rim, on goosenecks' : 'On legs, resting on the tank rim';
     // light output (lane K): power, what is inside the fixture, a measured PAR, and the estimate; while the power is
     // set, Brightness is an exposure on top of the brightness the light gives (x1/4-16, in stops)
     // tubes and halide pendants: the power is the lamps' (W each x how many), shown instead of the slider

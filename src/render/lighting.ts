@@ -12,7 +12,7 @@ import type { ConditionSettings, LightSettings, Tank, WaterSettings } from '../s
 import { waterK, waterY } from '../scene/physics';
 import { bowlDims, bowlRadius, footprint, shapeOf } from '../scene/shape';
 
-import { AQ_MAX, LAMP_Y, LUXW, beamExp, emitters, lampHeight, mountOf, lightEnvCached, lightOutCached, renderBright, techOf, tubeLayout, tubeOf, type Emitter, type LightEnv, type LightScene } from '../scene/lightout';
+import { AQ_MAX, LAMP_Y, LUXW, beamExp, emitters, lampHeight, mountOf, lightEnvCached, lightOutCached, renderBright, fixtureOf, techOf, tubeLayout, tubeOf, type Emitter, type LightEnv, type LightScene } from '../scene/lightout';
 // the fixture geometry lives with the light-output model now (lane K); re-exported so importers stay as they were
 export { AQ_MAX, LAMP_Y, emitters, fitSpots, lampHeight, type Emitter } from '../scene/lightout';
 
@@ -447,18 +447,19 @@ export function addFixture(sc: THREE.Scene, T: Tank, l: LightSettings, ceiling?:
     // `overhead`: hidden while the eye is above the fixture (viewer), where it would only cover the tank (audit #20)
     const m = new THREE.Mesh(geo, mat); m.position.set(x, yy, z); m.userData.nolight = true; m.userData.overhead = y; sc.add(m); return m;
   };
-  const E = emitters(T, l), tl = l.type === 'tube' ? tubeLayout(T, l) : null, tubeTop = tl ? y + tl.dia / 2 + 16 : 0;
+  const puck = fixtureOf(l) === 'puck', E = emitters(T, l), tl = l.type === 'tube' ? tubeLayout(T, l) : null, tubeTop = tl ? y + tl.dia / 2 + 16 : 0;
   // hung: from the ceiling on thin cables (two per bar, one per spot)
   const mount = mountOf(l);
   if (mount === 'hang' && ceiling != null) {
-    const top = l.type === 'spot' ? y + 45 : tl ? tubeTop : y + 23, len = Math.max(0, ceiling - top), wire = new THREE.MeshBasicMaterial({ color: 0x9aa0a6 });
+    const top = puck ? y + 22 : l.type === 'spot' ? y + 45 : tl ? tubeTop : y + 23, len = Math.max(0, ceiling - top), wire = new THREE.MeshBasicMaterial({ color: 0x9aa0a6 });
     const at: [number, number][] = l.type === 'spot' ? E.map(e => [e[0], e[2]]) : [[L * 0.15, -D / 2], [L * 0.85, -D / 2]];
     for (const [x, z] of at) add(new THREE.CylinderGeometry(0.8, 0.8, len, 6), wire, x, top + len / 2, z);
   }
   // on legs (Nathan 2026-10-15, after a clip-on LED bar): at each end a bent-wire bracket, two arms out of the bar's end,
   // down to the rim, a cross-wire resting on it and a lip hooked over the outside of the glass; spots hang under a rail
   // along each row
-  if (mount === 'legs') {
+  if (mount === 'legs' && puck) clipOns(T, E, y, add);
+  else if (mount === 'legs') {
     const wireM = new THREE.MeshBasicMaterial({ color: 0x1c1f23 }), foot = H + 3, spot = l.type === 'spot';
     const rod = (x0: number, y0: number, z0: number, x1: number, y1: number, z1: number) => {
       const m = add(new THREE.CylinderGeometry(2, 2, Math.hypot(x1 - x0, y1 - y0, z1 - z0), 8), wireM, (x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2);
@@ -478,7 +479,13 @@ export function addFixture(sc: THREE.Scene, T: Tank, l: LightSettings, ceiling?:
       }
     }
   }
-  if (l.type === 'spot') for (const e of E) {
+  // a puck: a flat round head, a dark bezel round the lens and a ball joint on top where the neck (or cable) meets it
+  if (puck) for (const e of E) {
+    add(new THREE.CylinderGeometry(33, 36, 15, 32), dark, e[0], y + 8, e[2]);
+    add(new THREE.CylinderGeometry(36.5, 36.5, 3, 32), new THREE.MeshBasicMaterial({ color: 0x1a1d21 }), e[0], y + 1, e[2]);
+    add(new THREE.CylinderGeometry(28, 28, 1.5, 32), glow, e[0], y - 0.5, e[2]);
+    add(new THREE.SphereGeometry(7, 16, 10), new THREE.MeshBasicMaterial({ color: 0x3b4047 }), e[0], y + 18, e[2]);
+  } else if (l.type === 'spot') for (const e of E) {
     add(new THREE.CylinderGeometry(32, 40, 45, 24), dark, e[0], y + 22, e[2]);
     add(new THREE.CylinderGeometry(30, 30, 2, 24), glow, e[0], y - 1, e[2]);
   }
@@ -545,6 +552,48 @@ export function addFixture(sc: THREE.Scene, T: Tank, l: LightSettings, ceiling?:
     const dots = new THREE.InstancedMesh(new THREE.CylinderGeometry(3, 3, 1, 10), glow, n * rows.length), mx = new THREE.Matrix4();
     rows.forEach((z, r) => { for (let i = 0; i < n; i++) dots.setMatrixAt(r * n + i, mx.makeTranslation(L / 2 - (bl - 40) / 2 + (bl - 40) * (i + 0.5) / n, y + 0.7, z)); });
     dots.userData.nolight = true; dots.userData.overhead = y; sc.add(dots);
+  }
+}
+
+/**
+ * Clip-on pucks (Nathan 2026-10-15: "craning clip on types rather than the linear bracket that spans the tank"): each
+ * puck on its own gooseneck from a clamp on the rim, on the nearest back or side glass (never the front, which it would
+ * block): a C-clamp over the glass with a thumb screw outside, and a segmented neck that rises from it, arches over and
+ * comes down onto the puck's ball joint.
+ */
+function clipOns(T: Tank, E: Emitter[], y: number, add: (g: THREE.BufferGeometry, m: THREE.Material, x: number, y: number, z: number) => THREE.Mesh) {
+  const { D, H } = T, edges = footprint(T).edges.filter(e => (e.a[1] + e.b[1]) / 2 > D * 0.3), rimTop = H + 4;
+  const clampM = new THREE.MeshBasicMaterial({ color: 0x24282d }), screwM = new THREE.MeshBasicMaterial({ color: 0x8c9196 });
+  const neckM = new THREE.MeshBasicMaterial({ vertexColors: true });
+  for (const em of E) {
+    const x = em[0], d = -em[2];
+    // the nearest point on a back or side pane, and that pane's outward normal
+    let best = { q: [x, D] as [number, number], n: [0, 1] as [number, number], dist: Infinity };
+    for (const e of edges) {
+      const dx = e.b[0] - e.a[0], dd = e.b[1] - e.a[1], t = clamp(((x - e.a[0]) * dx + (d - e.a[1]) * dd) / (e.len * e.len), 0.04, 0.96);
+      const q: [number, number] = [e.a[0] + dx * t, e.a[1] + dd * t], dist = Math.hypot(q[0] - x, q[1] - d);
+      if (dist < best.dist) best = { q, n: e.n, dist };
+    }
+    const [nx, nd] = best.n, cx = best.q[0] + nx * 5, cz = -(best.q[1] + nd * 5), rot = Math.atan2(nx, -nd);
+    // the clamp, built along the outward normal (local +z out of the tank)
+    const part = (g: THREE.BufferGeometry, m: THREE.Material, lx: number, ly: number, lz: number) => {
+      const c = Math.cos(rot), sn = Math.sin(rot), o = add(g, m, cx + lx * c + lz * sn, ly, cz - lx * sn + lz * c); o.rotation.y = rot; return o;
+    };
+    part(new THREE.BoxGeometry(26, 7, 30), clampM, 0, rimTop + 3.5, 0);
+    part(new THREE.BoxGeometry(26, 28, 4), clampM, 0, rimTop - 14, -11);
+    part(new THREE.BoxGeometry(26, 44, 6), clampM, 0, rimTop - 22, 12);
+    part(new THREE.CylinderGeometry(4, 4, 14, 12), screwM, 0, rimTop - 34, 20).rotateX(Math.PI / 2);
+    part(new THREE.CylinderGeometry(5, 9, 12, 12), clampM, 0, rimTop + 13, 0);
+    part(new THREE.CylinderGeometry(9, 9, 2, 12), clampM, 0, rimTop + 7.5, 0);
+    // the gooseneck: up from the clamp, over in an arch, down onto the puck (a gooseneck's rings as vertex shades)
+    const c0 = new THREE.Vector3(cx, rimTop + 18, cz), c3 = new THREE.Vector3(x, y + 22, em[2]);
+    const up = Math.max(c0.y, c3.y) + 35 + 0.2 * best.dist;
+    const curve = new THREE.CubicBezierCurve3(c0, new THREE.Vector3(cx, up, cz), new THREE.Vector3(x, up, em[2]), c3);
+    const len = curve.getLength(), seg = Math.max(24, Math.round(len / 4)), rad = 8;
+    const g = new THREE.TubeGeometry(curve, seg, 3.6, rad, false), col: number[] = [];
+    for (let i = 0; i <= seg; i++) { const k = Math.floor(i * len / seg / 5) % 2 ? 0.2 : 0.13; for (let j = 0; j <= rad; j++) col.push(k, k * 1.05, k * 1.12); }
+    g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+    add(g, neckM, 0, 0, 0);
   }
 }
 
