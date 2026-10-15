@@ -191,14 +191,15 @@ export function tubeOf(l: Pick<LightSettings, 'type' | 'tech'>, T: Pick<Tank, 'L
 export const MH_BULBS = [70, 150, 250, 400] as const;
 /**
  * The light's power draw (W), what the model is fed: tubes and pendants by their lamps (W per tube x tubes; W per bulb
- * x bulbs), the rest the Total Power setting. 0 = not set.
+ * x bulbs), the rest the Total Power setting; not set (0 or absent), the fixture's typical power for the tank
+ * (powerRange's default; Nathan 2026-10-15: no more "set Power first" before PAR and the dark zones show). 0 = no light.
  */
 export function wattsOf(S: { tank: Tank; light: LightSettings }): number {
   const l = S.light, f = fixtureOf(l);
   if (f === 'flat') return 0;
   if (f === 'tube') return tubeOf(l, S.tank).w * l.count;
   if (f === 'pendant') return (l.bulbW ?? 150) * emitters(S.tank, l).length;
-  return l.watts ?? 0;
+  return l.watts && l.watts > 0 ? l.watts : powerRange(l, S.tank)?.[2] ?? 0;
 }
 
 /**
@@ -237,7 +238,7 @@ export function fitFixture(l: LightSettings, T: Tank, fresh: boolean) {
   if (sp.maxCount) l.count = Math.min(l.count, sp.maxCount);
   if (sp.maxRows) l.rows = Math.min(l.rows, sp.maxRows);
   const pw = powerRange(l, T);
-  if (fresh && pw && (l.watts ?? 0) > 0) l.watts = pw[2];
+  if (fresh && pw) delete l.watts; // back to the typical power (it follows the tank until set)
 }
 /** Lux per µmol/m²/s of a tech's light in air. */
 export const luxPer = (t: LightTech) => TECHS[t].split.reduce((a, s, i) => a + s * LUXW[i], 0);
@@ -353,7 +354,7 @@ export function bandsAt(env: LightEnv, p: readonly number[], n: readonly number[
 /** The setup fields the model reads (a TankSetup has them all). */
 export type LightScene = Ground & { tank: Tank; light: LightSettings; lid: LidType | string; water: WaterSettings };
 
-/** The model's inputs from the settings; null when the light is flat or watts is not set. `scale` is 1 here (lightOut sets it). */
+/** The model's inputs from the settings; null when the light is flat or watts is not set (callers pass wattsOf's). `scale` is 1 here (lightOut sets it). */
 export function lightEnv(S: LightScene): LightEnv | null {
   const { tank: T, light: l, water: w } = S;
   if (l.type === 'flat' || !(l.watts && l.watts > 0)) return null;
@@ -481,11 +482,15 @@ export function lightEnvCached(S: LightScene): LightEnv | null {
 }
 
 /** Lux at mid-water that renders at Brightness 1: a 24 x 12 x 12 in tank under a 20 W white LED bar gives about this
- * (typical setups land at 6,000-12,000 lux mid-water, so they render at 0.9-1.25 before the Exposure knob). */
+ * (typical setups land at 6,000-12,000 lux mid-water, so they render at 0.9-1.25 before EXPOSE and the Exposure knob). */
 export const LREF = 8000;
+/** Exposure gain on every light (Nathan 2026-10-15: the default looked dim; 1.8x what x1 used to give). */
+export const EXPOSE = 1.8;
+/** The Exposure knob's range (x1/4 to x16; the slider runs in stops, -2 to +4): past x4 the tank washes out, on purpose. */
+export const EXP_MIN = 0.25, EXP_MAX = 16;
 /** Render brightness while watts is set: (lux / LREF)^0.5 (eyes and cameras adapt: 4x the light looks about 2x as
- * bright), clamped to 0.2-2.5, times the Exposure knob (the Brightness slider, x0.5-2). */
-export const renderBright = (o: LightOut, exposure: number) => clamp(Math.sqrt(o.luxMid / LREF), 0.2, 2.5) * clamp(exposure, 0.5, 2);
+ * bright), clamped to 0.1-5 (a sunlit pond reaches 5), times EXPOSE and the Exposure knob (the Brightness slider). */
+export const renderBright = (o: LightOut, exposure: number) => EXPOSE * clamp(Math.sqrt(o.luxMid / LREF), 0.1, 5) * clamp(exposure, EXP_MIN, EXP_MAX);
 
 const nice = (v: number) => (v >= 20 ? Math.round(v / 5) * 5 : Math.round(v));
 const thou = (v: number) => { const r = v >= 1000 ? Math.round(v / 100) * 100 : Math.round(v / 10) * 10; return r.toLocaleString('en-US'); };

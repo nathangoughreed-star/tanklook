@@ -4,26 +4,22 @@
 import * as THREE from 'three';
 import type { Species } from '../data/species';
 import { cardGeometry } from './build';
-import { fish3d, fishBody, has3D } from './fish3d';
+import { fish3d, fishBody } from './fish3d';
 import { LU, applyLighting } from './lighting';
 import { herpBody, isHerp3D } from './herp3d';
 import { snailBody } from './snail3d';
-import { cardMaterial, fishBodyTexture, fishTexture, snailTexture } from './textures';
+import { cardMaterial, fishBodyTexture, fishTexture } from './textures';
 
 const EDGE = 'a2c' as const, FOV = 28, YAW0 = 0.55, PITCH0 = 0.18, PITCH_MAX = 1.35;
 
 /** The model for a species at width 1 (unit frame: head at +x, card facing +z). */
 export function speciesModel(sp: Species) {
-  const solid = has3D(sp.art), g = new THREE.Group();
-  if (sp.kind === 'snail') {
-    if (solid) g.add(snailBody(sp.art, 1));
-    else g.add(new THREE.Mesh(cardGeometry(1, sp.aspect, 0), cardMaterial(`snail:${sp.art}:side`, snailTexture(sp.art, 'side'), EDGE)));
-    return g;
-  }
-  if (solid && isHerp3D(sp.art)) { g.add(herpBody(sp.art, 1)); return g; }
-  const tex = fishTexture(sp, EDGE, solid, solid && fish3d.fade);
-  const m = new THREE.Mesh(cardGeometry(1, sp.aspect, 0), cardMaterial(`fish:${sp.look}:${solid}:${solid && fish3d.fade}`, tex, EDGE));
-  if (solid) m.add(fishBody(sp.art, sp.aspect, 1, 0, fishBodyTexture(sp), EDGE));
+  const g = new THREE.Group();
+  if (sp.kind === 'snail') { g.add(snailBody(sp.art, 1)); return g; }
+  if (isHerp3D(sp.art)) { g.add(herpBody(sp.art, 1)); return g; }
+  const tex = fishTexture(sp, EDGE, true, fish3d.fade);
+  const m = new THREE.Mesh(cardGeometry(1, sp.aspect, 0), cardMaterial(`fish:${sp.look}:${fish3d.fade}`, tex, EDGE));
+  m.add(fishBody(sp.art, sp.aspect, 1, 0, fishBodyTexture(sp), EDGE));
   g.add(m);
   return g;
 }

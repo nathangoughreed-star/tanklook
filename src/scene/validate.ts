@@ -33,7 +33,7 @@ export const LIMITS = {
   rows: [1, 4] as const,
   spacing: [0, 1500] as const,     // mm, 0 = auto
   cone: [15, 120] as const,        // degrees, full beam angle
-  bright: [0.2, 2.5] as const,
+  bright: [0.2, 16] as const,       // above 2.5 only as Exposure (watts set; was 2.5 before 2026-10-15)
   kelvin: [2700, 20000] as const,
   room: [0, 0.8] as const,
   lampH: [20, 900] as const,

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { defaultScene, defaultSetup } from '../src/scene/defaults';
 import {
-  KWATER, LREF, TECHS, TECH_IDS, bandsAt, beamExp, lightEnv, lightEnvCached, lightOut, lightOutCached, lineNorm, luxOf, luxPer, parOf, pointNorm, readout, renderBright,
+  EXPOSE, EXP_MAX, KWATER, LREF, TECHS, TECH_IDS, bandsAt, beamExp, lightEnv, lightEnvCached, lightOut, lightOutCached, lineNorm, luxOf, luxPer, parOf, pointNorm, readout, renderBright,
   fitFixture, fixtureOf, powerRange, techOf, techsFor, tubeOf, wattsOf, type Band, type Emitter, type LightEnv, type LightScene,
 } from '../src/scene/lightout';
 import { normTank } from '../src/scene/shape';
@@ -138,7 +138,9 @@ describe('light output model', () => {
     const b = { ...defaultSetup().light, type: 'spot', tech: 'halogen', count: 2, rows: 1, pattern: 'grid', watts: 99 } as LightSettings;
     expect(powerRange(b, T)).toEqual([0, 200, 100]);                          // 2 bulbs: up to 100 W each, 50 W halogen
     fitFixture(b, T, true);
-    expect(b.watts).toBe(100);
+    expect(b.watts).toBeUndefined(); expect(wattsOf({ tank: T, light: b })).toBe(100); // the typical power, until set
+    expect(wattsOf({ tank: T, light: { ...b, watts: 0 } })).toBe(100); expect(wattsOf({ tank: T, light: { ...b, watts: 30 } })).toBe(30);
+    expect(wattsOf({ tank: T, light: { ...b, type: 'flat' } })).toBe(0);
     expect(powerRange({ ...b, type: 'led' }, T)![2]).toBe(36);              // LED bar: 1 W per inch of tank
   });
   it('tubes: the longest standard length that fits, power from the tubes', () => {
@@ -153,9 +155,10 @@ describe('light output model', () => {
     expect(readout(o)).toMatch(/^PAR at substrate ≈ \d+-\d+ µmol \([a-z -]+\) · surface ≈ \d+ · ≈ [\d,]+ lux · estimate$/);
     expect(renderBright(o, 1)).toBeGreaterThanOrEqual(0.2);
     expect(renderBright(o, 2) / renderBright(o, 1)).toBeCloseTo(2, 6);
-    expect(renderBright({ ...o, luxMid: 4 * LREF }, 1)).toBeCloseTo(2, 6);
+    expect(renderBright({ ...o, luxMid: 4 * LREF }, 1)).toBeCloseTo(2 * EXPOSE, 6);
     const typical = lightOut(scene({ watts: 20 }))!;
-    expect(renderBright(typical, 1)).toBeGreaterThan(0.85); expect(renderBright(typical, 1)).toBeLessThan(1.15);
+    expect(renderBright(typical, 1) / EXPOSE).toBeGreaterThan(0.85); expect(renderBright(typical, 1) / EXPOSE).toBeLessThan(1.15);
+    expect(renderBright({ ...o, luxMid: 1e9 }, 99)).toBeCloseTo(EXPOSE * 5 * EXP_MAX, 6); // looking at the sun: allowed, capped
   });
   it('older files load unchanged; the new fields are validated', () => {
     const base = defaultScene(), load = (x: unknown) => parseScene(JSON.parse(JSON.stringify(x))).scene;

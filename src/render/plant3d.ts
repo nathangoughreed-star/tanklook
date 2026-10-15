@@ -23,11 +23,10 @@ import { PLANT_ASPECT, PLANT3D, growthLen, growthOf, type Leaf3D, type PlantType
 import { CARPET_H, MAX_STEMS } from '../scene/items';
 import { taperTube } from './fish3d';
 
-/** Switches for review sheets: on (off = the crossed cards), sway (off = every leaf rigid), emerse (off = no emersed
+/** Switches for review sheets: sway (off = every leaf rigid), emerse (off = no emersed
  *  twins: emerging plants lie over at the surface as in GR1), gpu (off = revealPlant on the CPU every growth step, as
  *  before lane GR4: the A/B timings). */
-export const plant3d = { on: true, sway: true, emerse: true, gpu: true };
-export const has3DPlant = (type: PlantType) => plant3d.on && !!PLANT3D[type];
+export const plant3d = { sway: true, emerse: true, gpu: true };
 
 type R = () => number;
 const MAX_LEAFLETS = 3000;

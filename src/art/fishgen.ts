@@ -773,7 +773,7 @@ const SHRIMP: Record<string, ShrimpSpec> = {
   cleanershrimp: { body: ['#c8281e', '#e8a838'], back: '#c42a20', stripe: '#f6f4ee', stripeW: 0.022, ant: ['#f4f2ea', 1.35] },
 };
 /**
- * The shrimp's fish-style plan: only marks shrimp as 3D (has3D) and gives the card its outline; the 3D body itself is
+ * The shrimp's fish-style plan: gives the card its outline; the 3D body itself is
  * render/shrimp3d.ts (art/shrimps.ts), not this loft.
  */
 const shrimpPlan = (s: ShrimpSpec): Plan => ({

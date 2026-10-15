@@ -434,7 +434,7 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
   /** Lean and tip for a solid piece in this style (none for a designed set or a round river stone). */
   const tip = (variant: string, k = 1): Partial<Item> => designed || variant === 'river' ? {} : { pitch: Math.round((r() - 0.5) * 50 * st.wild * k), tilt: Math.round((r() - 0.5) * 40 * st.wild * k) };
   const room = (x: number, d: number, lift = 0) => H - sub(x, d) - lift - 15; // headroom to the water line
-  /** A plant (crossed cards, facing the glass give or take 15°); too little headroom = left out. In a bowl it is cut
+  /** A plant (facing the glass give or take 15°); too little headroom = left out. In a bowl it is cut
    *  down to fit under the sphere where it stands (to half its height at most; clampItem eases the rest in off the
    *  glass), so plants rise towards the middle instead of all moving there. */
   const plant = (type: PlantType, x: number, d: number, h: number, lift = 0, raw = false) => {

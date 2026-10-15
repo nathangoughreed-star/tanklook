@@ -165,7 +165,7 @@ function warmSoon(S: LightScene) {
 /** `S` (the setup; lane K): with watts set, the brightness follows the computed lux and `l.bright` is the exposure. */
 export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams = false, S?: LightScene) {
   const on = l.type !== 'flat'; LU.uMode.value = on ? 1 : 0;
-  const lo = on && S ? lightOutCached({ ...S, tank: T }) : null, bright = lo ? renderBright(lo, l.bright) : l.bright;
+  const lo = on && S ? lightOutCached({ ...S, tank: T }) : null, bright = lo ? renderBright(lo, l.bright) : clamp(l.bright, 0.2, 2.5);
   if (on && S && !lo) warmSoon({ ...S, tank: T });
   // light map: a spot bulb or a tube counts as one light; an LED bar's emitters share the output of four bulbs
   LU.uMapOn.value = on && beams ? 1 : 0;

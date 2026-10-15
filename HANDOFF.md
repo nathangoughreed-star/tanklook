@@ -32,6 +32,22 @@ Living file. Project state and dated decisions go here; update in place.
 - **Open:** the hardscape program is still the slowest link (3-14 s cold here, in parallel with the rest); a cheaper
   stone function or a baked grain (E1 #11) would cut it further. Re-run cold-ab after GR4.
 
+## Lane CC: unreachable 2D card fallbacks deleted (2026-10-15; E2 audit item 14, Nathan: "we can delete those"; pushed to main)
+- **Why:** every PlantType has a PLANT3D entry and every species / female art drew in 3D, so the flat-card branches only
+  ran from the console (`plant3d.on = false`, `fish3d.on = false`). Checked first: a temporary test confirmed has3D was
+  true for every species and female art.
+- **Removed:** the plant card painters + drawPlantCard (art/plants.ts, -184 lines; GREENS kept for the 3D leaves), plantGeo
+  and the card branch in render/items.ts (plantPlan has no `solid` any more), plantTexture / snailTexture
+  (render/textures.ts), `plant3d.on` + has3DPlant (render/plant3d.ts), `fish3d.on` + the `fish3d.species` set + has3D
+  (render/fish3d.ts), the flat whole-fish and flat snail paths (floor and glass) in render/build.ts and
+  render/preview3d.ts, and `on` / cardViews in scripts/shot-helpers.js. **Kept:** the painted fish card texture (the 3D
+  fish's median fins), drawSnailCard / drawFishCard (the panel's 2D preview art, ui/panels.ts), PLANT_ASPECT (sizes).
+  The fish material cache key is now `fish:<look>:<fade>`.
+- **Proof:** tsc; 37 files / 322 tests pass; `npm run sheets -- --record` bumped no model (fingerprints identical);
+  incrementalCheck.runAll 133 edits, 121 incremental, 0 px differ; old vs new exportPNG of all six examples (plain,
+  repeated, a fish selected) + a split view at 1050x850, pixel ratio 1: **19 of 19 byte-identical**. First-load shared
+  chunk -9.3 kB raw / -3.4 kB gzip; no other chunk changed.
+
 ## Edit speed: water colour and light power (2026-10-15; lane EF2, branch `edit-speed`, port 5643; pushed to main)
 - **Water colour / opacity** (E1: 120-170 ms): the slow step was opacity leaving 0 (every example but reef starts at 0):
   envKey held `tinted: opacity > 0`, so the whole tank rebuilt and three relinked its programs (82-243 ms in
@@ -191,7 +207,7 @@ Living file. Project state and dated decisions go here; update in place.
     JSON.stringify ~3x per viewport, viewer.ts:384 placePerson bisect, viewer.ts:391 full-traverse material rank,
     viewer.ts:336/386/401 style reads + viewmap redraw; sent to E1 to time. (4) The examples are 240 of main's 426 kB
     (lazy chunk = ~100 kB gzip off first load). (5) Dead code is small: plant / flat-fish card fallbacks are
-    unreachable (every species is 3D; **Nathan 2026-10-15: delete them** in phase 2 after GR4: plant card painters + drawPlantCard + plantTexture + the card branch in items.ts, the plant3d.on / fish3d.on toggles and the flat whole-fish card path; the fish card texture that carries the 3D fins stays), 3 dead + 4 test-only exports. Split plan: build.ts first (B1-B6, true pure moves
+    unreachable (every species is 3D; **Nathan 2026-10-15: delete them**; DONE by lane CC (see its section): plant card painters + drawPlantCard + plantTexture + the card branch in items.ts, the plant3d.on / fish3d.on toggles and the flat whole-fish card path; the fish card texture that carries the 3D fins stays), 3 dead + 4 test-only exports. Split plan: build.ts first (B1-B6, true pure moves
     into flat render/build*.ts files, build.ts re-exports), then panels.ts (P0 UI-state dump, P1 utils, P2 ctx, P3-P8
     mountX(ctx) per section; behaviour-preserving, not byte-pure), only when GR4 / AL / W have no panels.ts hunks.
 - **Phase 2, later:** the coordinator merges E1 + E2 into one ranked list; Nathan picks. Fixes that touch another active
@@ -1099,6 +1115,8 @@ card stays the fallback and the picking size). `scene/validate.ts` accepts any `
   (separate calculations, same ramp) and a hover tooltip with both values at that spot.
 - Decided (Nathan): Brightness becomes an Exposure knob when watts is set; calibration against published PAR charts
   approved. Runs as its own lane after G and G2 finish (touches scene/, render/lighting.ts, ui/panels.ts).
+- Decided (Nathan 2026-10-15): every light renders 1.8x brighter at a given lux (`EXPOSE` in renderBright); Exposure runs x1/4 to x16 on a stops slider (-2..+4) and the lux term caps at 5, so a user can wash the tank out ("looking at the sun"). LIMITS.bright 0.2-16; manual Brightness stays 0.2-2.5.
+- Decided (Nathan 2026-10-15): no Power gate. Power not set (absent or 0) = the fixture's typical power for the tank (`wattsOf` falls back to powerRange's default; readout "36 W · typical", it follows the tank size until set); a fixture or screw-in lamp change goes back to typical; the slider starts at 1 W and typing 'typical' or 0 resets it. Manual Brightness is left for the flat light only.
 - Calibration first pass done: data `reference/par-calibration-data.md`, results in the draft (LED ~±30%, fluorescent
   ~±50%; T5 fixture efficiency lower than guessed).
 - PAR guide shipped: Lighting menu button "PAR guide" opens `src/ui/parGuide.ts` (own dialog + styles): what PAR is,
@@ -1220,6 +1238,12 @@ Plan approved by Nathan (batches in severity order). Pictures: `shots/g2/` in th
   frog's height alone when the water level changes. Rendering needed nothing new: `onGlass` already lays any
   card + 3D body belly to the pane. Test in scatter.test.ts. Checked in the tree frog terrarium example.
 - Dart frogs, toads, newts unchanged (no `cling`).
+- **On the 3D wall (2026-10-15; Nathan: "animals should cling to the 3d backgrounds surface"):** where the backdrop
+  covers the pane, `onGlass` (build.ts) lays the animal on the relief instead of the glass behind it: `onWall` casts 5
+  rays toward the glass (middle, ± half a body along head and side) at the cached `backdropGeometry`, fits a plane,
+  lifts it over the highest hit, tilts no more than ~70° off the glass. No wall there -> glass as before. Glass parts'
+  reuse key includes the backdrop + bgSides + rim (`wallKey`). Applies to every `onGlass` animal (tree frogs, plecos,
+  otos); snails on glass too (`snailMeshes`: sole on the fitted plane, foot toward the wall, yaw in that plane).
 - **Glass pose (Nathan's two photos, same day):** `HERP3D_GLASS.treefrog` (`frogOnGlass3D`, herps.ts): belly levelled
   flat onto the pane, arms folded under the chin, hind legs folded tight along the flanks, toe pads turned in under
   the belly; cream starts lower round the section. `herpBody(art, w, glass)`; build.ts passes `f.surface === 'glass'`.

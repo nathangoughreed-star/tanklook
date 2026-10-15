@@ -105,21 +105,6 @@
       "port": 5213
     },
     {
-      "name": "audit3d",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "--prefix",
-        "C:/Users/nreed/Glass-Box-audit3d",
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5223",
-        "--strictPort"
-      ],
-      "port": 5223
-    },
-    {
       "name": "alphafix",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
@@ -279,21 +264,6 @@
         "aq"
       ],
       "port": 5333
-    },
-    {
-      "name": "audit-fixes",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "--prefix",
-        "C:/Users/nreed/Glass-Box-audit-fixes",
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5343",
-        "--strictPort"
-      ],
-      "port": 5343
     },
     {
       "name": "reef-polish",
@@ -548,21 +518,6 @@
         "--strictPort"
       ],
       "port": 5544
-    },
-    {
-      "name": "perf2",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "--prefix",
-        "C:/Users/nreed/Glass-Box-perf2",
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5623",
-        "--strictPort"
-      ],
-      "port": 5623
     },
     {
       "name": "shader-link",
