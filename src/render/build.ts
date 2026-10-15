@@ -138,9 +138,14 @@ function silhouetteMaterial(centre?: THREE.Vector3) {
     fragmentShader: `varying vec3 vW; varying vec3 vN;
       void main() {
         float d = abs(dot(normalize(vN), normalize(cameraPosition - vW))), s = d * d, w = fwidth(s);
-        float a = max(1.0 - smoothstep(1.2 * w, 2.4 * w, s), 1.0 - smoothstep(0.045, 0.06, d));
-        if (a < 0.01) discard;
-        gl_FragColor = vec4(0.0, 0.0, 0.0, 0.55 * a);
+        #ifdef USE_NORMALS
+        // a curved pane: about 1 px and fainter than the bowl's (Nathan 2026-10-15: "a little more subtle")
+        float a = 0.3 * max(1.0 - smoothstep(0.6 * w, 1.2 * w, s), 1.0 - smoothstep(0.02, 0.03, d));
+        #else
+        float a = 0.55 * max(1.0 - smoothstep(1.2 * w, 2.4 * w, s), 1.0 - smoothstep(0.045, 0.06, d));
+        #endif
+        if (a < 0.005) discard;
+        gl_FragColor = vec4(0.0, 0.0, 0.0, a);
       }`,
   });
 }
