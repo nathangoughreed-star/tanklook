@@ -1,4 +1,4 @@
-// Pointer: click a fish card to select it and drag it; drag empty space to orbit; wheel zooms (FOV only) toward the
+// Pointer: click a fish card to select it and drag it; drag empty space to orbit (about the point under the pointer); wheel zooms (FOV only) toward the
 // pointer; shift + wheel moves the selected fish forward/back; click empty space to deselect; double-click it for straight-on.
 // Middle-drag pans the picture and it stays panned; double middle-click, Home or the Re-centre button eases it back.
 // With split tanks, a view whose "Edit" box is ticked takes fish and terrain drags (that tank only) and pressing in it
@@ -125,7 +125,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
         const hit0 = viewer.hitTest(e.clientX, e.clientY); if (!hit0) return;
         touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
         try { canvas.setPointerCapture(e.pointerId); } catch { /* not all pointers can be captured */ }
-        if (orbit) { const o = orbit; store.cam(c => { c.az = o.az; c.el = o.el; }, o.i); orbit = null; } // undo the first finger's turn
+        if (orbit) { const o = orbit; store.cam(c => { c.az = o.az; c.el = o.el; }, o.i); orbit = null; viewer.unpinOrbit(); } // undo the first finger's turn
         const f = fingers(), i = hit0.vp.i;
         pinch = { i, d0: Math.max(10, Math.hypot(f[0].x - f[1].x, f[0].y - f[1].y)), z0: store.scene.tanks[i].camera.zoom, mid: midOf(f) };
         return;
@@ -165,7 +165,8 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       return;
     }
     if (!editable || hit.fishId == null || !hit.mesh || !canPick('fish')) {
-      const c = store.scene.tanks[vi].camera; orbit = { i: vi, x: e.clientX, y: e.clientY, az: c.az, el: c.el }; return;
+      const c = store.scene.tanks[vi].camera; orbit = { i: vi, x: e.clientX, y: e.clientY, az: c.az, el: c.el };
+      viewer.pinOrbit(e.clientX, e.clientY); return; // turn about what is under the pointer
     }
     store.select(hit.fishId);
     const t = store.scene.tanks[vi], c = t.camera, f = t.fish.find(q => q.id === hit.fishId), sp = f && speciesOf(f);
@@ -265,7 +266,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
     if (orbit && e.type === 'pointerup' && Math.hypot(e.clientX - orbit.x, e.clientY - orbit.y) < 4) store.select(null);
     if (drag?.moved || orbit || lift?.moved || move?.moved) store.seal();
     if (lift) { viewer.terrainEdit.hot = null; viewer.rebuild(); }
-    drag = orbit = lift = move = null; canvas.classList.remove('dragging');
+    drag = orbit = lift = move = null; viewer.unpinOrbit(); canvas.classList.remove('dragging');
   };
   canvas.addEventListener('pointerup', end);
   canvas.addEventListener('pointercancel', end);

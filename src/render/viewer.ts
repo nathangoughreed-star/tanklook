@@ -150,6 +150,22 @@ export class Viewer {
     // r: eye to orbit centre, so a zoom that steps the eye back (below LENS_ZOOM_MIN) can rescale the point at the tank's depth
     this.anchor = { i, nx, ny, u: w.cx + fx * w.hx, v: w.cy + fy * w.hy, r: vp.cam.position.distanceTo(pivot(vp.T)) };
   }
+  /**
+   * Orbit about the point under the pointer (Nathan 2026-10-15: "if I want to orbit around a fish I hover over the fish
+   * and orbit"): while pinned, every draw pans view i so `P` stays at (nx, ny). The eye still circles the tank centre at
+   * the Eye distance (camera rule); only the image window follows. The fish, rock or plant under the pointer, else the
+   * point under it at the orbit centre's depth. Cleared with unpinOrbit when the drag ends; the pan stays.
+   */
+  private pin: { i: number; nx: number; ny: number; P: THREE.Vector3 } | null = null;
+  pinOrbit(clientX: number, clientY: number) {
+    const hit = this.hitTest(clientX, clientY); if (!hit) return;
+    const vp = hit.vp, r = this.host.getBoundingClientRect(), x = clientX - r.left - vp.x, y = clientY - r.top - vp.y;
+    const meshes = [...(vp.fishMeshes ?? []), ...(vp.itemMeshes ?? [])];
+    const P = new THREE.Raycaster(hit.ray.origin, hit.ray.direction).intersectObjects(meshes, false)[0]?.point
+      ?? hit.ray.closestPointToPoint(pivot(vp.T), new THREE.Vector3());
+    this.pin = { i: vp.i, nx: x / vp.w * 2 - 1, ny: 1 - y / vp.h * 2, P };
+  }
+  unpinOrbit() { this.pin = null; }
   /** Ease every view back to its framing. */
   resetPan() {
     cancelAnimationFrame(this.panAnim);
@@ -314,6 +330,12 @@ export class Viewer {
     if (a && ak >= 0) {
       const { hx, hy, c } = frame(ak), vp = active[ak], k = a.r / vp.cam.position.distanceTo(pivot(vp.T));
       this.setPan(a.i, (c.cx + a.nx * hx - a.u * k) * vp.w / (2 * hx), (a.v * k - c.cy - a.ny * hy) * vp.h / (2 * hy));
+    }
+    // orbit drag: pan so the pinned point is under the pointer again (pinOrbit)
+    const q = this.pin, qk = q ? active.findIndex(v => v.i === q.i) : -1;
+    if (q && qk >= 0) {
+      const { hx, hy, c } = frame(qk), vp = active[qk], v = q.P.clone().applyMatrix4(vp.cam.matrixWorldInverse), d = -v.z;
+      if (d > 1) this.setPan(q.i, (c.cx - v.x / d + q.nx * hx) * vp.w / (2 * hx), (v.y / d - q.ny * hy - c.cy) * vp.h / (2 * hy));
     }
     this.content = [];
     for (const [k, vp] of active.entries()) {
