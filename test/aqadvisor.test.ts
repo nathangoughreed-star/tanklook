@@ -22,7 +22,7 @@ describe('AqAdvisor request', () => {
     const map = ids as Record<string, { standIn?: boolean }>;
     for (const sp of SPECIES) expect(sp.id in map, sp.id).toBe(sp.habitat !== 'land'); // marine ones: AqAdvisorMarine.php ids, kept for when it gives a % again
     for (const sp of SPECIES) expect(!!(map[sp.id] as { salt?: boolean } | undefined)?.salt, sp.id).toBe(!!sp.salt && sp.habitat !== 'land');
-    expect(Object.keys(map).filter(k => map[k].standIn).sort()).toEqual(['adf', 'axolotl', 'cleanershrimp', 'firenewt', 'firetoad', 'hermit', 'turbo']);
+    expect(Object.keys(map).filter(k => map[k].standIn).sort()).toEqual(['axolotl', 'cleanershrimp', 'firenewt', 'firetoad', 'hermit', 'turbo']);
   });
 
   it('counts per species in a stable order, tank in inches', () => {
@@ -32,6 +32,12 @@ describe('AqAdvisor request', () => {
     expect(q.counted).toBe(16);
     expect(aqKey(q)).toBe(aqKey(aqQuery(setup([...fish('bronzecory', 6), ...fish('cardinal', 10)]))!));
     expect(aqAdvisorUrl(q)).toContain('AlreadySelected=200909300034%3A6%3A%3A%2C200909300039%3A10%3A%3A');
+  });
+
+  it('dwarf frogs go as AqAdvisor’s own African Dwarf Frog, not a stand-in (Nathan 2026-10-15)', () => {
+    const q = aqQuery(setup([...fish('pandacory', 6), ...fish('adf', 3)]))!;
+    expect(q.sel).toBe('200910181719:3::,200909300155:6::');
+    expect(q.standIns).toEqual([]);
   });
 
   it('a marine animal in a fresh tank is not counted (its id belongs to the saltwater calculator)', () => {

@@ -22,6 +22,7 @@ import { rng } from '../art/paint';
 import { PLANT_ASPECT, PLANT3D, growthLen, growthOf, type Leaf3D, type PlantType } from '../art/plants';
 import { CARPET_H, MAX_STEMS } from '../scene/items';
 import { taperTube } from './fish3d';
+import { leafAlgaeShader } from './algae';
 
 /** Switches for review sheets: sway (off = every leaf rigid), emerse (off = no emersed
  *  twins: emerging plants lie over at the surface as in GR1), gpu (off = revealPlant on the CPU every growth step, as
@@ -231,6 +232,8 @@ export interface GrowData {
   /** Form tags (lane GR2) when the plant has any: per vertex SUB / EMERSED / PAD (0 = always); `gr0` = the growth tags
    *  as built (in `gr` the emersed twins and the pads are hidden until bendPlant shows them). */
   em?: Float32Array; gr0?: Float32Array;
+  /** How much algae the plant takes (lane LA): 1 a slow grower .. 0 a fast one (its species' speed). */
+  alg?: number;
   /** An 'emerge' plant: it may climb past the water line (bendPlant with room above it). */
   emerge?: boolean;
   /** Rosette leaves and their emersed twins: [twin's piece, leaf's piece]. */
@@ -329,7 +332,7 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
   // (Nathan 2026-10-14: the red stems all bent about the same)
   const sway = plant3d.sway ? P.sway * 1.3 * rng(seed * 15485863 + 5)() : 0;
   const bend = (len = 1): Bend => ({ cx, cz, k: sway * (0.5 + rs()) * len, wob: sway * 0.5 * (rs() - 0.5) * 2 * len, ph: rs() * 6.28 });
-  const done = (g: THREE.BufferGeometry) => { g.computeBoundingBox(); g.computeBoundingSphere(); g.userData.keep = true; keepTags(g, pieces, cx, cz, sway, links, { emerge: !!E, twin: twins, pads: padPieces, stiff: E ? (E.stiff ?? 220) * kStalk ** (2 / 3) : undefined, land: E?.land }); return g; };
+  const done = (g: THREE.BufferGeometry) => { g.computeBoundingBox(); g.computeBoundingSphere(); g.userData.keep = true; keepTags(g, pieces, cx, cz, sway, links, { alg: Gr.speed === 'slow' ? 1 : Gr.speed === 'medium' ? 0.5 : 0, emerge: !!E, twin: twins, pads: padPieces, stiff: E ? (E.stiff ?? 220) * kStalk ** (2 / 3) : undefined, land: E?.land }); return g; };
   if (P.form === 'carpet' || P.form === 'float') {
     // a patch grows wider: a leaflet (rosette) at `rho` of the way to the patch's own edge shows once the patch has grown
     // that wide; past the edge, more of them out to the width at growth 1
@@ -748,6 +751,7 @@ export const GROW_VERT = `{
 export function growShader(sh: THREE.WebGLProgramParametersWithUniforms) {
   sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\n' + GROW_DECL)
     .replace('#include <begin_vertex>', '#include <begin_vertex>\n' + GROW_VERT);
+  leafAlgaeShader(sh); // algae on the leaves (lane LA): the Condition slider, a uniform
 }
 /** No cut (never switches) in the attribute: far past any growth. */
 const NO_CUT = 1e6;
@@ -781,6 +785,8 @@ export function grownView(src: THREE.BufferGeometry, g: number, reveal = () => r
   out.setAttribute('aAnc', p.anc); out.setAttribute('aGrow', p.grow); out.setIndex(p.index);
   out.setAttribute('aGrowth', new THREE.InstancedBufferAttribute(Float32Array.of(g), 1));
   if (!src.boundingSphere) src.computeBoundingSphere();
+  // algae on the leaves (lane LA): how much the plant takes, and its height at full growth (its lower leaves first)
+  out.setAttribute('aAlg', new THREE.InstancedBufferAttribute(Float32Array.of(G.alg ?? 0.5, src.boundingSphere!.center.y + src.boundingSphere!.radius), 2));
   out.boundingSphere = src.boundingSphere;
   let cpu: THREE.BufferGeometry | undefined, box: THREE.Box3 | null = null;
   const shown = () => (cpu ??= reveal());

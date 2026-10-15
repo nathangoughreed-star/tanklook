@@ -128,6 +128,9 @@ export interface LightSettings {
   /** How the fixture is held (added 2026-10-15, Nathan): 'legs' = on legs standing on the tank rim, 'hang' = cables from
    * the ceiling. Absent = by height (lightout mountOf: hung above 110 mm, else on legs). Ignored with a hood. */
   mount?: 'legs' | 'hang';
+  /** Bar fixtures (tubes, LED bar; added 2026-10-15, Nathan): where the fixture sits front to back, mm from the middle,
+   * + toward the back; held over the tank (lightout barZ). Absent = centred. */
+  pos?: number;
   /** Light output (added 2026-10-14, all optional, no version bump; model in scene/lightout.ts). Power draw (W); 0 or
    * absent = off, Brightness stays the manual knob. Set: the render brightness follows the computed lux, `bright` is an exposure. */
   watts?: number;
