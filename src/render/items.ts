@@ -6,8 +6,9 @@
 import * as THREE from 'three';
 import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng } from '../art/paint';
-import { PLANT_ASPECT, growthOf, grownSize, isCarpet, isFloat, type PlantType } from '../art/plants';
+import { PLANT3D, PLANT_ASPECT, growthOf, grownSize, isCarpet, isFloat, type PlantType } from '../art/plants';
 import { CARPET_H, CARPET_W, itemDims, itemSink, seatHook, stoneDims, woodLimbs, type Limb } from '../scene/items';
+import { lampHeight } from '../scene/lightout';
 import { D2R, waterY } from '../scene/physics';
 import { bowlDims, footprint, shapeOf } from '../scene/shape';
 import { clampGround, groundHeight, groundInsideBy } from '../scene/terrain';
@@ -401,7 +402,12 @@ function plantMaterial(T: Tank) {
   m = new THREE.MeshBasicMaterial({ vertexColors: true, clippingPlanes: planes });
   m.onBeforeCompile = patch;
   m.customProgramCacheKey = () => 'plant-clip';
-  Object.assign(m.userData, { cached: true, keep: true, plantClip: true, pre: patch });
+  // above the water (an emersed stem or sword leaf, lane GR2) there is no water haze: it fades out over the first few
+  // mm, so leaves lying at the surface keep theirs
+  const post = (sh: THREE.WebGLProgramParametersWithUniforms) => {
+    sh.fragmentShader = sh.fragmentShader.replace('float aqF = (1.0 - exp(-uWater.w * aqWaterPath()))', '$& * (1.0 - smoothstep(uWater.y + 6.0, uWater.y + 14.0, vAqP.y))');
+  };
+  Object.assign(m.userData, { cached: true, keep: true, plantClip: true, pre: patch, post });
   return remember(plantMats, k, m, 16, x => x.dispose());
 }
 const shapes = new Map<string, THREE.BufferGeometry>(), baked = new Map<string, THREE.BufferGeometry>(), plants = new Map<string, THREE.BufferGeometry>();
@@ -484,7 +490,7 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
     else {
       // full growth, built once per (seed, size, clump); a carpet is then set on the ground (per place)
       // (what grows past g0 is only built once the plant has a growth of its own: a starter set costs what it did)
-      const more = it.growth != null, sw = `3d${plant3d.sway ? 's' : ''}${more ? '+' : ''}|`, kf = sw + (carpet ? `${type}|${it.seed}|${it.size}` : k);
+      const more = it.growth != null, sw = `3d${plant3d.sway ? 's' : ''}${more ? '+' : ''}${plant3d.emerse ? '' : 'n'}|`, kf = sw + (carpet ? `${type}|${it.seed}|${it.size}` : k);
       const full = plants.get(kf) ?? remember(plants, kf, plantGeometry(type, it.seed, h, { spread: it.spread, stems: it.stems }, g0, more, it.size), 300, dispose);
       let src = full, ks = kf;
       if (carpet) { ks = sw + k; src = plants.get(ks) ?? remember(plants, ks, carpetOnGround(full, at), 300, dispose); }
@@ -492,12 +498,16 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
         // longer than the water above it: lies over at the surface (`F` over its base, to 2 mm, so a drag reuses it). A
         // plant with no growth of its own keeps the old allowance (tips up to the lid in a full tank, as they always
         // were) and only lies over when it would poke out further than that
-        const depth = S.water.on ? waterY(T, S.water.level) - y : T.H - 15 - y;
+        const depth = S.water.on ? waterY(T, S.water.level) - y : T.H - 15 - y, P3 = PLANT3D[type]!;
         let F = Math.round((depth - 3) / 2) * 2;
-        if (it.growth == null && h <= depth + 14) F = Infinity;
+        if (it.growth == null && h <= depth + 14 && !P3.pads) F = Infinity; // (a lily's pads always go to the surface)
+        // an emerging plant grown on climbs out of the water up to what is over it (lane GR2): the lid or the hood, or
+        // over an open tank the light (its fixture, a little under the height it hangs at)
+        const C = more && S.water.on && P3.grow.overflow === 'emerge'
+          ? Math.round(((S.lid === 'glass' ? T.H - 4 : T.H + lampHeight(S.light, S.lid) - 20) - y) / 2) * 2 : undefined;
         if (Number.isFinite(F)) {
-          ks = `${kf}|${F}`;
-          src = bent.get(ks) ?? (() => { const b = bendPlant(full, F); return b === full ? b : remember(bent, ks, b, 120, dispose); })();
+          ks = `${kf}|${F}|${C ?? ''}|${S.water.on ? 'w' : ''}`;
+          src = bent.get(ks) ?? (() => { const b = bendPlant(full, F, { ceil: C, water: S.water.on }); return b === full ? b : remember(bent, ks, b, 120, dispose); })();
         }
       }
       // the growth: positions only, from the plant already built (a slider drag never rebuilds it)

@@ -5,16 +5,16 @@ import { hexA, rng } from './paint';
 type Ctx = CanvasRenderingContext2D;
 export type PlantType = 'stem' | 'stemred' | 'grass' | 'sword' | 'fern' | 'anubias' | 'carpet' | 'crypt'
   | 'buce' | 'rotala' | 'ludwigia' | 'balansae' | 'sagittaria' | 'ozelot' | 'moss'
-  | 'redroot' | 'salvinia';
+  | 'redroot' | 'salvinia' | 'frogbit' | 'lettuce' | 'lotus';
 
 /** Card aspect (height / width) per plant type. */
 export const PLANT_ASPECT: Record<PlantType, number> = { stem: 3.2, stemred: 3.2, grass: 3.6, sword: 1.1, fern: 1.3, anubias: 0.8, carpet: 0.32, crypt: 1,
   buce: 0.9, rotala: 3.6, ludwigia: 3, balansae: 3, sagittaria: 0.45, ozelot: 1.1, moss: 0.45,
-  redroot: 0.35, salvinia: 0.25 };
+  redroot: 0.35, salvinia: 0.25, frogbit: 0.4, lettuce: 0.45, lotus: 0.85 };
 /** Plants that grow as a low patch (size = patch width, height = CARPET_H) rather than upright (size = height). */
 export const isCarpet = (v: string) => v === 'carpet';
 /** Plants that float at the water line (size = patch width; roots hang below; not drawn in a dry tank). */
-export const isFloat = (v: string) => v === 'redroot' || v === 'salvinia';
+export const isFloat = (v: string) => v === 'redroot' || v === 'salvinia' || v === 'frogbit' || v === 'lettuce';
 /** Plants that grow as several stems or crowns, so a clump has its own spread and count (Item.spread / stems). */
 export const isClump = (v: string) => PLANT3D[v as PlantType]?.form === 'stem' || !!PLANT3D[v as PlantType]?.crowns;
 /** Plants whose size is the width of a patch, not a height. */
@@ -159,7 +159,7 @@ function moss(ctx: Ctx, W: number, H: number) {
 }
 
 // Floating plants, seen from the side: a thin band of leaves along the top edge, roots hanging under them
-function floater(ctx: Ctx, W: number, H: number, cols: [string, string][], root: string, seed: number, rootLen: number) {
+function floater(ctx: Ctx, W: number, H: number, cols: [string, string][], root: string, seed: number, rootLen: number, leafR = 1) {
   const r = rng(seed), top = H * 0.08;
   ctx.strokeStyle = root; ctx.lineWidth = Math.max(1, W * 0.003); ctx.globalAlpha = 0.8;
   for (let i = 0; i < 70; i++) {
@@ -167,8 +167,8 @@ function floater(ctx: Ctx, W: number, H: number, cols: [string, string][], root:
     ctx.beginPath(); ctx.moveTo(x, top); ctx.quadraticCurveTo(x + (r() - 0.5) * W * 0.02, top + l / 2, x + (r() - 0.5) * W * 0.03, top + l); ctx.stroke();
   }
   ctx.globalAlpha = 1;
-  for (let i = 0; i < 160; i++) {
-    const x = W * (0.02 + r() * 0.96), y = top * (0.4 + r() * 0.9), rr = W * (0.012 + r() * 0.012), [c0, c1] = cols[i % cols.length];
+  for (let i = 0, n = Math.round(160 / leafR); i < n; i++) {
+    const x = W * (0.02 + r() * 0.96), y = top * (0.4 + r() * 0.9), rr = W * (0.012 + r() * 0.012) * leafR, [c0, c1] = cols[i % cols.length];
     const g = ctx.createRadialGradient(x, y - rr * 0.3, 0, x, y, rr); g.addColorStop(0, c1); g.addColorStop(1, c0);
     ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(x, y, rr, rr * 0.35, 0, 0, 7); ctx.fill();
   }
@@ -193,6 +193,9 @@ export function drawPlantCard(type: PlantType, W = 512): HTMLCanvasElement {
     crypt: () => crypt(ctx, W, H), balansae: () => balansae(ctx, W, H), sagittaria: () => sagittaria(ctx, W, H), ozelot: () => ozelot(ctx, W, H), moss: () => moss(ctx, W, H),
     redroot: () => floater(ctx, W, H, [['#3e7a2e', '#7ab04e'], ['#6a5a2a', '#a8803e'], ['#7a3426', '#b45a3e']], '#a05a4a', 45, 0.85),
     salvinia: () => floater(ctx, W, H, [['#4a7e30', '#86b858'], ['#548836', '#92c262']], '#6a5236', 47, 0.6),
+    frogbit: () => floater(ctx, W, H, [['#3a7a2a', '#6cb04a'], ['#42842e', '#78bc54']], '#c8c4aa', 49, 0.9, 1.6),
+    lettuce: () => floater(ctx, W, H, [['#7a9a64', '#aac48c'], ['#86a46c', '#b6cc96']], '#4a4636', 51, 0.8, 2.4),
+    lotus: () => anubias(ctx, W, H, [['#6e2424', '#a4443a'], ['#7a2a26', '#b05040'], ['#5e2a22', '#94463a']], 9, 0.6, 53),
     buce: () => anubias(ctx, W, H, [['#1c3428', '#3a5a46'], ['#262c38', '#46525e'], ['#34282c', '#5a4648']], 9, 0.3, 33),
     rotala: () => stem(ctx, W, H, false, { seed: 35, stalk: '#6a5a3a', low: [['#4a7a34', '#78a856'], ['#52823a', '#86b45e']], top: [['#b0606a', '#e0909a'], ['#b06a50', '#e09a78']], from: 0.6, len: 0.7, wid: 0.75, nodes: 40 }),
     ludwigia: () => stem(ctx, W, H, false, { seed: 37, stalk: '#6a3a2a', low: [['#5a4a2a', '#8a6a3e'], ['#5e4228', '#8e603c']], top: [['#7a2a22', '#b04a3a'], ['#6e2a2a', '#a04440']], from: 0.4, len: 1.1, wid: 2, nodes: 18 }) })[type]();
@@ -258,6 +261,14 @@ export interface Plant3D {
   float?: { per: [number, number]; leaves: [number, number]; roots: [number, number]; rootLen: [number, number] };
   /** How it grows (lane GR1, 2026-10-15). */
   grow: Grow;
+  /** 'emerge' plants: the leaf above the water (lane GR2): stiffer, rounder, darker; `k` = its length over the leaf it
+   *  replaces, `stiff` its stiffness out of the water as a length (mm: about how long a piece can stand out before its
+   *  tip droops 1 rad), `land` the radius (mm) it levels out on coming down onto the water (soft for a sword leaf,
+   *  tight for a creeping stem), the rest overrides the submersed leaf. */
+  emersed?: Partial<Leaf3D> & { k?: number; stiff?: number; land?: number };
+  /** Lily form (lane GR2): pads on long stalks from the crown, lying on the water surface. `n` = pads at growth `from`
+   *  and at growth 1; pad length mm; `out` = how far from the crown they reach by growth 1, mm. */
+  pads?: { n: [number, number]; from: number; len: [number, number]; out: number; leaf: Leaf3D; stalk: string };
 }
 
 /**
@@ -288,7 +299,10 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
     cols: [['#244a22', '#3e7038'], ['#2a5226', '#4a7e40']], under: '#355a30', rib: '#7aa060', tip: ['#3c7034', 0.3], seg: [10, 5] } },
   sword: { grow: { speed: 'medium', overflow: 'emerge', len: [90, 600], more: 4 }, sway: 0.3, form: 'rosette', n: [16, 24], spread: 0.05, stalk: '#3a6a2c', leaf: {
     len: [0.75, 1], wid: 0.15, prof: [0.75, 0.8], rise: [0.05, 0.75], arch: 0.4, twist: 0.5, fold: -0.15, wave: [0.03, 3], pet: 0.3,
-    cols: [['#3d7a2e', '#6aa64e'], ['#468a34', '#7ab85a'], ['#36702a', '#62a048']], under: '#5a8a48', rib: '#b0d098', seg: [10, 5] } },
+    cols: [['#3d7a2e', '#6aa64e'], ['#468a34', '#7ab85a'], ['#36702a', '#62a048']], under: '#5a8a48', rib: '#b0d098', seg: [10, 5] },
+    // emersed: broad oval blades held up on long stiff stalks, a deeper green
+    emersed: { k: 0.95, stiff: 230, land: 70, wid: 0.22, prof: [0.6, 0.6], pet: 0.55, twist: 0.15, fold: -0.08, wave: [0.01, 2],
+      cols: [['#2c5c22', '#4a8236'], ['#32662a', '#528c3c'], ['#2a5420', '#467a32']], under: '#4a6e3a', rib: '#8ab470' } },
   carpet: { grow: { speed: 'medium', overflow: 'spread', len: [50, 450], more: 1 }, sway: 0.1, form: 'carpet', n: [60, 70], spread: 1, stalk: '#3f6a2e', leaf: {
     len: [5, 7.5], wid: 0.75, prof: [0.9, 0.5], rise: [0.9, 1.5], arch: 0.1, twist: 0.3, fold: 0.2, wave: [0, 0], pet: 0,
     cols: LEAF_GREENS, under: '#5e8a48', seg: [2, 3] } },
@@ -300,10 +314,16 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
     cols: LEAF_GREENS, under: '#5e8a48', seg: [12, 3] } },
   stem: { grow: { speed: 'fast', overflow: 'emerge', len: [70, 900], more: 4, shoots: 1 }, sway: 0.65, form: 'stem', n: [5, 7], nodes: 22, spread: 0.5, stalk: '#3f6a2e', top: { cols: [['#4a8a34', '#80b85a']], from: 0.8 }, leaf: {
     len: [0.11, 0.14], wid: 0.3, prof: [0.8, 0.6], rise: [0.5, 1.2], arch: 0.3, twist: 0.3, fold: -0.1, wave: [0, 0], pet: 0,
-    cols: LEAF_GREENS, under: '#5e8a48', seg: [4, 3] } },
+    cols: LEAF_GREENS, under: '#5e8a48', seg: [4, 3] },
+    // emersed: shorter, rounder, held up along the stem, a darker glossy green
+    emersed: { k: 0.8, stiff: 140, land: 35, wid: 0.5, prof: [0.9, 0.55], rise: [0.35, 0.8], arch: 0.12, twist: 0.1, fold: 0.12,
+      cols: [['#2a5622', '#467c34'], ['#2e5c24', '#4c8438']], under: '#4a6a3e' } },
   stemred: { grow: { speed: 'medium', overflow: 'emerge', len: [70, 900], more: 4, shoots: 1 }, sway: 0.65, form: 'stem', n: [5, 7], nodes: 22, spread: 0.5, stalk: '#6a4a2a', top: { cols: [['#8a3a2a', '#c0604a'], ['#7e3426', '#b4583e']], from: 0.55 }, leaf: {
     len: [0.11, 0.14], wid: 0.3, prof: [0.8, 0.6], rise: [0.5, 1.2], arch: 0.3, twist: 0.3, fold: -0.1, wave: [0, 0], pet: 0,
-    cols: [['#4e5a2a', '#7e8a42'], ['#56602e', '#86904a']], under: '#7a7a4a', seg: [4, 3] } },
+    cols: [['#4e5a2a', '#7e8a42'], ['#56602e', '#86904a']], under: '#7a7a4a', seg: [4, 3] },
+    // emersed: rounder, darker, green-bronze rather than red
+    emersed: { k: 0.8, stiff: 140, land: 35, wid: 0.5, prof: [0.9, 0.55], rise: [0.35, 0.8], arch: 0.12, twist: 0.1, fold: 0.12,
+      cols: [['#3a4a22', '#5e6e34'], ['#4a3e22', '#725a34']], under: '#6a4a3a' } },
   // Cryptocoryne wendtii: short stalked lance leaves with rippled edges, olive-brown to bronze, reddish underneath
   crypt: { grow: { speed: 'slow', overflow: 'none', len: [45, 300], more: 5 }, sway: 0.15, form: 'rosette', n: [12, 18], crowns: [1, 3], spread: 0.3, stalk: '#5a4a30', leaf: {
     len: [0.75, 1], wid: 0.32, prof: [0.6, 0.8], rise: [0.15, 0.9], arch: 0.35, twist: 0.15, fold: -0.08, wave: [0.06, 5], pet: 0.28,
@@ -319,20 +339,25 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
   // Ludwigia repens 'Rubin': fewer, thicker stems of broad oval leaves, olive-brown below, deep red at the top, red underneath
   ludwigia: { grow: { speed: 'medium', overflow: 'emerge', len: [70, 800], more: 4, shoots: 1 }, sway: 0.55, form: 'stem', n: [4, 6], nodes: 16, spread: 0.45, stalk: '#6a3a2a', top: { cols: [['#7a2a22', '#b04a3a'], ['#6e2a2a', '#a04440']], from: 0.4 }, leaf: {
     len: [0.12, 0.15], wid: 0.55, prof: [1, 0.6], rise: [0.6, 1.25], arch: 0.25, twist: 0.2, fold: 0.1, wave: [0, 0], pet: 0.05,
-    cols: [['#5a4a2a', '#8a6a3e'], ['#5e4228', '#8e603c']], under: '#8a3a3a', seg: [5, 3] } },
+    cols: [['#5a4a2a', '#8a6a3e'], ['#5e4228', '#8e603c']], under: '#8a3a3a', seg: [5, 3] },
+    // emersed: round, glossy, dark green with a red flush, red underneath
+    emersed: { k: 0.8, stiff: 150, land: 22, wid: 0.7, prof: [1, 0.5], rise: [0.4, 0.85], arch: 0.1, twist: 0.1, fold: 0.15,
+      cols: [['#2e4a22', '#4a6a32'], ['#3e3e22', '#5e5a32']], under: '#7a3434' } },
   // Cryptocoryne balansae: tall narrow straps, the blade puckered all along, green to bronze; gives to the current
   balansae: { grow: { speed: 'medium', overflow: 'trail', len: [120, 900], more: 5 }, sway: 0.6, form: 'rosette', n: [8, 14], crowns: [1, 3], spread: 0.25, stalk: '#4a4a2a', leaf: {
     len: [0.6, 1], wid: 0.08, prof: [0.9, 0.3], rise: [0.03, 0.35], arch: 0.45, twist: 0.4, fold: -0.1, wave: [0.1, 16], pet: 0.08,
     cols: [['#3a5a26', '#5e8040'], ['#4a5428', '#727a3e'], ['#42502a', '#6a7440']], under: '#6a5a3a', seg: [28, 5] } },
   // Dwarf sagittaria (S. subulata): a run of small grassy rosettes joined by runners, the start of a lawn
-  sagittaria: { grow: { speed: 'fast', overflow: 'spread', len: [30, 150], more: 6 }, sway: 0.25, form: 'rosette', n: [40, 60], crowns: [6, 10], spread: 0.9, stalk: '#4a7a34', leaf: {
+  sagittaria: { grow: { speed: 'fast', overflow: 'spread', len: [30, 150], more: 10 }, sway: 0.25, form: 'rosette', n: [40, 60], crowns: [6, 10], spread: 0.9, stalk: '#4a7a34', leaf: {
     len: [0.6, 1], wid: 0.05, prof: [1, 0.25], rise: [0.05, 0.75], arch: 0.4, twist: 0.6, fold: 0, wave: [0, 0], pet: 0,
     cols: [['#3e7a2e', '#6aa64e'], ['#468634', '#76b456'], ['#3a722a', '#62a046']], under: '#5e8a48', seg: [8, 3] } },
   // Echinodorus 'Ozelot': a mid-sized sword, broader leaves speckled maroon, younger leaves a little redder
   ozelot: { grow: { speed: 'medium', overflow: 'emerge', len: [80, 500], more: 4 }, sway: 0.25, form: 'rosette', n: [12, 18], spread: 0.05, stalk: '#4a6a2c', leaf: {
     len: [0.75, 1], wid: 0.22, prof: [0.7, 0.75], rise: [0.08, 0.8], arch: 0.4, twist: 0.4, fold: -0.12, wave: [0.04, 3], pet: 0.25,
     cols: [['#3a6e2c', '#64984a'], ['#42762e', '#70a252'], ['#4a6a2c', '#76904a']], under: '#5a7a46', rib: '#a8c690',
-    spots: { col: '#5e2a1e', n: [14, 24], r: 0.035 }, seg: [24, 7] } },
+    spots: { col: '#5e2a1e', n: [14, 24], r: 0.035 }, seg: [24, 7] },
+    emersed: { k: 0.95, stiff: 210, land: 70, wid: 0.26, prof: [0.6, 0.6], pet: 0.5, twist: 0.15, fold: -0.08, wave: [0.01, 2],
+      cols: [['#2e5a24', '#4a7e38'], ['#34622a', '#52863e']], under: '#4a6a3a', rib: '#88b070' } },
   // Java moss (Taxiphyllum barbieri): a low ragged mound of tiny dark fronds over a dark core, on the ground or lifted
   // onto wood or rock. Frond length: a fraction of the mound's height
   moss: { grow: { speed: 'medium', overflow: 'none', len: [20, 100], more: 6 }, sway: 0.05, form: 'moss', n: [280, 340], spread: 0.95, stalk: '#16281a', leaf: {
@@ -347,6 +372,25 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
   salvinia: { grow: { speed: 'fast', overflow: 'spread', len: [60, 600], more: 1 }, sway: 0, form: 'float', n: [0, 0], spread: 1, stalk: '#4e3e2a', float: { per: [2.5, 3.5], leaves: [4, 8], roots: [1, 2], rootLen: [8, 25] }, leaf: {
     len: [8, 13], wid: 0.75, prof: [0.9, 0.55], rise: [1.3, 1.5], arch: 0.05, twist: 0.1, fold: 0.5, wave: [0, 0], pet: 0,
     cols: [['#4a7e30', '#86b858'], ['#548836', '#92c262'], ['#46782c', '#7eb052']], under: '#6a8a4a', seg: [2, 4] } },
+  // Amazon frogbit (Limnobium laevigatum): rosettes of round, glossy, slightly cupped leaves on short stalks, spongy
+  // and pale underneath; long fine pale roots (lane GR2)
+  frogbit: { grow: { speed: 'fast', overflow: 'spread', len: [70, 700], more: 1 }, sway: 0, form: 'float', n: [0, 0], spread: 1, stalk: '#b8b898', float: { per: [0.45, 0.6], leaves: [4, 6], roots: [3, 6], rootLen: [40, 140] }, leaf: {
+    len: [16, 28], wid: 0.95, prof: [1, 0.45], rise: [1.3, 1.48], arch: 0.05, twist: 0.1, fold: 0.18, wave: [0, 0], pet: 0.3,
+    cols: [['#3a7a2a', '#6cb04a'], ['#42842e', '#78bc54'], ['#367226', '#64a844']], under: '#8a9a6a', rib: '#8cc070', seg: [4, 7] } },
+  // Water lettuce (Pistia stratiotes): open rosettes of thick, velvety, ridged, pale grey-green leaves, broadest at the
+  // tip; feathery dark roots (lane GR2)
+  lettuce: { grow: { speed: 'medium', overflow: 'spread', len: [90, 700], more: 1 }, sway: 0, form: 'float', n: [0, 0], spread: 1, stalk: '#4a4636', float: { per: [0.13, 0.18], leaves: [7, 11], roots: [6, 10], rootLen: [40, 110] }, leaf: {
+    len: [28, 55], wid: 0.62, prof: [1.7, 0.6], rise: [0.55, 1.25], arch: 0.45, twist: 0.1, fold: 0.3, wave: [0.04, 7], pet: 0,
+    cols: [['#6e905a', '#a2be86'], ['#7a9a64', '#aac48c'], ['#729a5e', '#a6c48a']], under: '#b4c0a0', seg: [8, 7] } },
+  // Tiger lotus (Nymphaea zenkeri): a bulb with broad, rounded, red leaves blotched dark maroon; grown on, it sends lily
+  // pads up on long stalks to lie on the water (lane GR2). Size = the submersed leaves' height
+  lotus: { grow: { speed: 'fast', overflow: 'spread', len: [40, 250], more: 3 }, sway: 0.15, form: 'rosette', n: [7, 11], spread: 0.08, stalk: '#5a2a26', leaf: {
+    len: [0.7, 1], wid: 0.72, prof: [0.5, 0.55], rise: [0.25, 1.05], arch: 0.3, twist: 0.2, fold: 0.06, wave: [0.03, 4], pet: 0.4,
+    cols: [['#6e2424', '#a4443a'], ['#7a2a26', '#b05040'], ['#82322a', '#b45a44']], under: '#4e1e2a', rib: '#c0705a',
+    spots: { col: '#34121a', n: [10, 18], r: 0.07 }, seg: [10, 7] },
+    pads: { n: [1, 7], from: 0.35, len: [60, 130], out: 220, stalk: '#5a3a26', leaf: {
+      len: [1, 1], wid: 0.95, prof: [0.75, 0.35], rise: [1.5708, 1.5708], arch: 0, twist: 0, fold: 0.04, wave: [0.01, 3], pet: 0,
+      cols: [['#3e6a2a', '#5e8a3e'], ['#5a5a2a', '#7e7a40'], ['#6a3a26', '#8e5a3a']], under: '#6e2a2e', spots: { col: '#4a1e1a', n: [6, 14], r: 0.08 }, seg: [8, 9] } } },
 };
 
 /** Growth when a plant has none of its own: the growth at which the species reaches its saved size (0..1). */

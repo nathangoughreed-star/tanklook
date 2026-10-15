@@ -40,6 +40,9 @@ export const LIBRARY: Record<string, Variant> = {
   moss: { kind: 'plant', label: 'Java moss', hint: 'A low mound of moss: on the ground, or raise it onto wood or rock.', size: 45, min: 15, max: 150 },
   redroot: { kind: 'plant', label: 'Red root floaters', hint: 'Small round leaves floating at the water line, red roots hanging below.', size: 200, min: 60, max: 600 },
   salvinia: { kind: 'plant', label: 'Salvinia', hint: 'Floating chains of cupped oval leaves at the water line.', size: 200, min: 60, max: 600 },
+  frogbit: { kind: 'plant', label: 'Amazon frogbit', hint: 'Round glossy leaves floating at the water line, long fine roots hanging below.', size: 200, min: 70, max: 700 },
+  lettuce: { kind: 'plant', label: 'Water lettuce', hint: 'Pale velvety rosettes floating at the water line, feathery roots below.', size: 250, min: 90, max: 700 },
+  lotus: { kind: 'plant', label: 'Tiger lotus', hint: 'Broad red leaves blotched dark maroon; grown on, it sends lily pads up to the surface.', size: 120, min: 40, max: 250 },
   carpet: { kind: 'plant', label: 'Carpet patch', hint: 'A low carpet plant.', size: 160, min: 60, max: 400 },
   // corals (2026-10-14): size = width
   acropora: { kind: 'coral', label: 'Branching coral', hint: 'An Acropora-style colony of branches with pale tips. Size = width.', size: 160, min: 40, max: 500, salt: true },

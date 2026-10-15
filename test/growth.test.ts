@@ -9,6 +9,8 @@ import { plantGeometry as plantBefore } from './fixtures/plant3d_before_growth';
 
 // Plant growth (lane GR1, 2026-10-15)
 const TYPES = Object.keys(PLANT3D) as PlantType[];
+/** The species the pre-growth fixture knows (lane GR2 added frogbit, water lettuce and tiger lotus after it). */
+const OLD = TYPES.filter(t => !['frogbit', 'lettuce', 'lotus'].includes(t));
 
 /** The visible triangles as sorted strings of their corners (order-free: the growth build interleaves its extras). */
 function tris(g: THREE.BufferGeometry) {
@@ -20,7 +22,7 @@ function tris(g: THREE.BufferGeometry) {
 
 describe('plant growth', () => {
   it('a plant with no growth of its own draws exactly as before growth existed', () => {
-    for (const type of TYPES) for (const seed of [1, 7, 4242]) {
+    for (const type of OLD) for (const seed of [1, 7, 4242]) {
       const h = { carpet: 160, redroot: 200, salvinia: 200 }[type as string] ?? [60, 150, 320][seed % 3];
       const clump = type === 'stem' && seed === 7 ? { spread: 120, stems: 9 } : {};
       const now = revealPlant(plantGeometry(type, seed, h, clump), growthOf(type, h));

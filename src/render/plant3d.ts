@@ -11,6 +11,11 @@
 // its leaves and stems shrink away and thin out, above it extra leaves, stems, side shoots, crowns or leaflets (their
 // own random stream) come in. revealPlant() shows it at a growth (positions only), bendPlant() lays whatever is longer
 // than the water above it over along the surface.
+//
+// Emersed growth (lane GR2, 2026-10-15): an 'emerge' plant that has a growth of its own also gets an emersed twin of
+// every leaf (stiffer, rounder, darker; hidden until bent), and bendPlant() lets it climb on past the water line up to
+// the lid or the light, upright, showing the emersed twin of each leaf above the water and the submersed one below.
+// A lily (tiger lotus) gets pads on long stalks, shown only with water, stretched or shortened to lie on the surface.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng } from '../art/paint';
@@ -18,8 +23,9 @@ import { PLANT_ASPECT, PLANT3D, growthLen, growthOf, type Leaf3D, type PlantType
 import { CARPET_H, MAX_STEMS } from '../scene/items';
 import { taperTube } from './fish3d';
 
-/** Switches for review sheets: on (off = the crossed cards), sway (off = every leaf rigid). */
-export const plant3d = { on: true, sway: true };
+/** Switches for review sheets: on (off = the crossed cards), sway (off = every leaf rigid), emerse (off = no emersed
+ *  twins: emerging plants lie over at the surface as in GR1). */
+export const plant3d = { on: true, sway: true, emerse: true };
 export const has3DPlant = (type: PlantType) => plant3d.on && !!PLANT3D[type];
 
 type R = () => number;
@@ -35,13 +41,17 @@ const between = (r: R, [a, b]: [number, number]) => lerp(a, b, r());
  * rides on (a leaf or stem whose centreline can lie over at the surface; -1 = none), `par` = where along that piece
  * (index into its centreline), `apar` = the anchor's place on it.
  */
-interface Tag { a: number; w: number; anc: THREE.Vector3; pc: number; par: number; apar: number }
-const TAGS = ['anc', 'gr', 'pc', 'par', 'apar'] as const;
+interface Tag { a: number; w: number; anc: THREE.Vector3; pc: number; par: number; apar: number; em?: number }
+const TAGS = ['anc', 'gr', 'pc', 'par', 'apar', 'em'] as const;
+/** Form tags (lane GR2): 0 always, 1 the submersed leaf of a pair, 2 its emersed twin, 3 a lily pad (with water only). */
+const SUB = 1, EMERSED = 2, PAD = 3;
+/** A growth tag no slider reaches: hidden. */
+const HIDE = 99;
 /** Points along a stem's centreline (where it can bend over at the surface). */
 const SEG = 40;
 /** A leaf's growth: appears at `a`, full at `a + w`; `ext` = grows longer from its base (straps) instead of growing in;
  *  `on` = rides on a stem (its piece, its place there) instead of being a piece of its own. */
-interface LeafTag { a: number; w: number; ext?: boolean; on?: { pc: number; par: number } }
+interface LeafTag { a: number; w: number; ext?: boolean; on?: { pc: number; par: number }; em?: number; anc?: THREE.Vector3 }
 const SHOWN: LeafTag = { a: -1, w: 1e-3 };
 /** Shown from a, full by `by`: w cut so a + w stays at or under `by` (a plant's own part is full at its own growth). */
 const fullBy = (a: number, w: number, by: number) => { a = Math.min(a, by - 0.005); return { a, w: Math.max(1e-4, Math.min(w, (by - a) * 0.999)) }; };
@@ -49,7 +59,7 @@ const fullBy = (a: number, w: number, by: number) => { a = Math.min(a, by - 0.00
 /** Vertices of one plant before merging: positions, base colours, triangles, growth tags. */
 class Sheets {
   pos: number[] = []; col: number[] = []; idx: number[] = [];
-  anc: number[] = []; gr: number[] = []; pc: number[] = []; par: number[] = []; apar: number[] = [];
+  anc: number[] = []; gr: number[] = []; pc: number[] = []; par: number[] = []; apar: number[] = []; em: number[] = [];
   constructor(public pieces: number[][]) {}
   /** A grid of rows x cols points (row-major), with the base colour per point; front = as given, back = reversed. */
   grid(p: THREE.Vector3[], c: THREE.Color[], rows: number, cols: number, back: THREE.Color[] | undefined, tg: Tag[]) {
@@ -58,7 +68,7 @@ class Sheets {
       p.forEach((v, i) => {
         const k = side ? back![i] : c[i], t = tg[i];
         this.pos.push(v.x, v.y, v.z); this.col.push(k.r, k.g, k.b);
-        this.anc.push(t.anc.x, t.anc.y, t.anc.z); this.gr.push(t.a, t.w); this.pc.push(t.pc); this.par.push(t.par); this.apar.push(t.apar);
+        this.anc.push(t.anc.x, t.anc.y, t.anc.z); this.gr.push(t.a, t.w); this.pc.push(t.pc); this.par.push(t.par); this.apar.push(t.apar); this.em.push(t.em ?? 0);
       });
       for (let i = 0; i < rows - 1; i++) for (let j = 0; j < cols - 1; j++) {
         const a = o + i * cols + j, b = a + cols;
@@ -71,25 +81,26 @@ class Sheets {
     g.setAttribute('position', new THREE.Float32BufferAttribute(this.pos, 3));
     g.setAttribute('color', new THREE.Float32BufferAttribute(this.col, 3));
     g.setIndex(this.idx);
-    setTags(g, this.anc, this.gr, this.pc, this.par, this.apar);
+    setTags(g, this.anc, this.gr, this.pc, this.par, this.apar, this.em);
     return g;
   }
 }
-function setTags(g: THREE.BufferGeometry, anc: ArrayLike<number>, gr: ArrayLike<number>, pc: ArrayLike<number>, par: ArrayLike<number>, apar: ArrayLike<number>) {
+function setTags(g: THREE.BufferGeometry, anc: ArrayLike<number>, gr: ArrayLike<number>, pc: ArrayLike<number>, par: ArrayLike<number>, apar: ArrayLike<number>, em: ArrayLike<number>) {
   g.setAttribute('anc', new THREE.Float32BufferAttribute(anc as number[], 3));
   g.setAttribute('gr', new THREE.Float32BufferAttribute(gr as number[], 2));
   g.setAttribute('pc', new THREE.Float32BufferAttribute(pc as number[], 1));
   g.setAttribute('par', new THREE.Float32BufferAttribute(par as number[], 1));
   g.setAttribute('apar', new THREE.Float32BufferAttribute(apar as number[], 1));
+  g.setAttribute('em', new THREE.Float32BufferAttribute(em as number[], 1));
 }
 /** Every vertex of g gets the tag fn(vertex index) gives. */
 function tagEach(g: THREE.BufferGeometry, fn: (i: number) => Tag) {
-  const n = g.attributes.position.count, anc = new Float32Array(n * 3), gr = new Float32Array(n * 2), pc = new Float32Array(n), par = new Float32Array(n), apar = new Float32Array(n);
+  const n = g.attributes.position.count, anc = new Float32Array(n * 3), gr = new Float32Array(n * 2), pc = new Float32Array(n), par = new Float32Array(n), apar = new Float32Array(n), em = new Float32Array(n);
   for (let i = 0; i < n; i++) {
     const t = fn(i);
-    anc[i * 3] = t.anc.x; anc[i * 3 + 1] = t.anc.y; anc[i * 3 + 2] = t.anc.z; gr[i * 2] = t.a; gr[i * 2 + 1] = t.w; pc[i] = t.pc; par[i] = t.par; apar[i] = t.apar;
+    anc[i * 3] = t.anc.x; anc[i * 3 + 1] = t.anc.y; anc[i * 3 + 2] = t.anc.z; gr[i * 2] = t.a; gr[i * 2 + 1] = t.w; pc[i] = t.pc; par[i] = t.par; apar[i] = t.apar; em[i] = t.em ?? 0;
   }
-  setTags(g, anc, gr, pc, par, apar);
+  setTags(g, anc, gr, pc, par, apar, em);
   return g;
 }
 const tagAll = (g: THREE.BufferGeometry, a: number, w: number, anc: THREE.Vector3) => tagEach(g, () => ({ a, w, anc, pc: -1, par: 0, apar: 0 }));
@@ -131,9 +142,9 @@ function leaf(out: Sheets, f: Leaf3D, stalkCol: string, base: THREE.Vector3, yaw
     for (let q = 0; q < 3; q++) c.addScaledVector(dir(tPrev + (t - tPrev) * (q + 0.5) / 3), L * (t - tPrev) / 3); // walk the centreline
     tPrev = t;
     line.push(c.x, c.y, c.z);
-    const rowTag: Tag = tag.on ? { a: tag.a, w: tag.w, anc: b0, pc: tag.on.pc, par: tag.on.par, apar: tag.on.par }
-      : tag.ext ? { a: tag.a + (tag.w - e) * t, w: e, anc: c.clone(), pc: own, par: i, apar: i }
-        : { a: tag.a, w: tag.w, anc: b0, pc: own, par: i, apar: 0 };
+    const em = tag.em ?? 0, rowTag: Tag = tag.on ? { a: tag.a, w: tag.w, anc: tag.anc ?? b0, pc: tag.on.pc, par: tag.on.par, apar: tag.on.par, em }
+      : tag.ext ? { a: tag.a + (tag.w - e) * t, w: e, anc: c.clone(), pc: own, par: i, apar: i, em }
+        : { a: tag.a, w: tag.w, anc: tag.anc ?? b0, pc: own, par: i, apar: 0, em };
     const d = dir(t);
     // across the blade: horizontal and square to the heading, turned about the midrib by the twist
     const side0 = V(-hz, 0, hx), side = side0.addScaledVector(d, -side0.dot(d)).normalize().applyAxisAngle(d, twist * s), up = new THREE.Vector3().crossVectors(side, d).normalize();
@@ -207,11 +218,48 @@ export interface GrowData {
   pieces: Float32Array[]; cx: number; cz: number; sway: number;
   /** Pieces that start on another one (a side shoot on its stem): [piece, parent piece, place on the parent]. */
   links: number[][];
+  /** Form tags (lane GR2) when the plant has any: per vertex SUB / EMERSED / PAD (0 = always); `gr0` = the growth tags
+   *  as built (in `gr` the emersed twins and the pads are hidden until bendPlant shows them). */
+  em?: Float32Array; gr0?: Float32Array;
+  /** An 'emerge' plant: it may climb past the water line (bendPlant with room above it). */
+  emerge?: boolean;
+  /** Rosette leaves and their emersed twins: [twin's piece, leaf's piece]. */
+  twin?: number[][];
+  /** Lily pad stalks (pieces), stretched to the surface. */
+  pads?: number[];
+  /** Emersed stiffness as a length, mm (a piece this long out of the water droops its tip by about 1 rad). */
+  stiff?: number;
+  /** Radius (mm) of the curve a drooping emersed piece levels out on as it comes down onto the water. */
+  land?: number;
+  /** Bent (lane GR2): per vertex the growth from which a SUB / EMERSED pair shows its emersed twin. */
+  cut?: Float32Array;
+  /** With form tags: the triangles that can show at some growth (`idx`) and their vertices (`live`), so a reveal skips
+   *  the form that never shows (a stem leaf's twin under the water, every twin while the plant is not bent). */
+  idx?: Uint32Array; live?: Uint32Array;
+}
+/** The triangles of `index` with a corner that can show (never(v) false), and the vertices they use. */
+function liveOf(index: ArrayLike<number>, n: number, never: (v: number) => boolean) {
+  const idx: number[] = [], used = new Uint8Array(n);
+  for (let t = 0; t < index.length; t += 3) {
+    const a = index[t], b = index[t + 1], c = index[t + 2];
+    if (never(a) && never(b) && never(c)) continue;
+    idx.push(a, b, c); used[a] = used[b] = used[c] = 1;
+  }
+  const live: number[] = [];
+  for (let v = 0; v < n; v++) if (used[v]) live.push(v);
+  return { idx: Uint32Array.from(idx), live: Uint32Array.from(live) };
 }
 /** Move the tag attributes into userData.grow (CPU only: they never go to the GPU). */
-function keepTags(g: THREE.BufferGeometry, pieces: number[][], cx: number, cz: number, sway: number, links: number[][]) {
+function keepTags(g: THREE.BufferGeometry, pieces: number[][], cx: number, cz: number, sway: number, links: number[][], extra: Partial<GrowData> = {}) {
   const A = (k: string) => (g.attributes[k].array as Float32Array);
-  const G: GrowData = { anc: A('anc'), gr: A('gr'), pc: A('pc'), par: A('par'), apar: A('apar'), pieces: pieces.map(p => Float32Array.from(p)), cx, cz, sway, links };
+  const G: GrowData = { anc: A('anc'), gr: A('gr'), pc: A('pc'), par: A('par'), apar: A('apar'), pieces: pieces.map(p => Float32Array.from(p)), cx, cz, sway, links, ...extra };
+  // twins and pads hidden until bendPlant decides (a plant with none keeps no form tags)
+  const em = A('em');
+  if (em.some(e => e > 0)) {
+    G.em = em; G.gr0 = Float32Array.from(G.gr);
+    for (let v = 0; v < em.length; v++) if (em[v] >= EMERSED) G.gr[v * 2] = HIDE;
+    Object.assign(G, liveOf(g.index!.array, em.length, v => em[v] >= EMERSED));
+  }
   for (const k of TAGS) g.deleteAttribute(k);
   g.userData.grow = G;
 }
@@ -248,8 +296,13 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
   const kRise = tri(0.2), kStalk = tri(0.25), kNodes = tri(0.15), kTint = tri(0.06), warm = (rt() - 0.5) * 0.16, f: Leaf3D = { ...P.leaf,
     wid: P.leaf.wid * tri(0.18), len: P.leaf.len.map(v => v * tri(0.12)) as [number, number], rise: P.leaf.rise.map(v => v * kRise) as [number, number], arch: P.leaf.arch * tri(0.3) };
   const Wc = h / PLANT_ASPECT[type];
-  const draws = (q: R) => ({ pick: () => f.cols[Math.floor(q() * f.cols.length)], twist: () => (q() - 0.5) * 2 * f.twist, bright: () => 0.9 + q() * 0.2 });
+  const draws = (q: R, ff = f) => ({ pick: () => ff.cols[Math.floor(q() * ff.cols.length)], twist: () => (q() - 0.5) * 2 * ff.twist, bright: () => 0.9 + q() * 0.2 });
   const { pick, twist, bright } = draws(r), X = draws(re);
+  // emersed twins (lane GR2): only for an 'emerge' plant with a growth of its own, own random stream and own sheets (so
+  // the plant's own part, its scale and its pieces stay exactly as they were)
+  const E = more && plant3d.emerse && Gr.overflow === 'emerge' && P.emersed ? P.emersed : null, rq = rng(seed * 3571 + 41), es = new Sheets(pieces), twins: number[][] = [], padPieces: number[] = [];
+  const fe: Leaf3D = E ? { ...f, ...E, len: f.len.map(v => v * (E.k ?? 1)) as [number, number] } : f, Q = draws(rq, fe);
+  const emTag = <T extends LeafTag>(t: T): T => (E ? { ...t, em: SUB } : t);
   // the water's give: one current direction for the whole plant (mostly along the tank, as a filter's flow runs), each
   // leaf leaning into it by its own amount, longer leaves more (own random stream: the leaf layout stays as it was)
   const rs = rng(seed * 104729 + 71), cur = (rs() < 0.5 ? 0 : Math.PI) + (rs() - 0.5) * 1.2, cx = Math.cos(cur), cz = Math.sin(cur);
@@ -257,7 +310,7 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
   // (Nathan 2026-10-14: the red stems all bent about the same)
   const sway = plant3d.sway ? P.sway * 1.3 * rng(seed * 15485863 + 5)() : 0;
   const bend = (len = 1): Bend => ({ cx, cz, k: sway * (0.5 + rs()) * len, wob: sway * 0.5 * (rs() - 0.5) * 2 * len, ph: rs() * 6.28 });
-  const done = (g: THREE.BufferGeometry) => { g.computeBoundingBox(); g.computeBoundingSphere(); g.userData.keep = true; keepTags(g, pieces, cx, cz, sway, links); return g; };
+  const done = (g: THREE.BufferGeometry) => { g.computeBoundingBox(); g.computeBoundingSphere(); g.userData.keep = true; keepTags(g, pieces, cx, cz, sway, links, { emerge: !!E, twin: twins, pads: padPieces, stiff: E ? (E.stiff ?? 220) * kStalk ** (2 / 3) : undefined, land: E?.land }); return g; };
   if (P.form === 'carpet' || P.form === 'float') {
     // a patch grows wider: a leaflet (rosette) at `rho` of the way to the patch's own edge shows once the patch has grown
     // that wide; past the edge, more of them out to the width at growth 1
@@ -306,7 +359,8 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
     };
     for (let i = 0; i < n; i++) {
       const a = r() * 6.28, rho = Math.sqrt(r()), d = rho * rad * 0.92, c = V(Math.cos(a) * d, 0.6, Math.sin(a) * d);
-      rosette(r, { pick, twist, bright }, c, fullBy(reach(rho) - 0.05, 0.05, g0), extra);
+      // (the first one is there from the start: just planted = one rosette, lane GR2)
+      rosette(r, { pick, twist, bright }, c, fullBy(i === 0 ? Math.min(-0.01, reach(rho) - 0.05) : reach(rho) - 0.05, 0.05, g0), extra);
     }
     // more rosettes out to the patch at growth 1
     const m = Math.round(Math.min(400, Math.PI * rad * rad * (grown * grown - 1) / 1000 * between(re, F.per)));
@@ -340,8 +394,13 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
         rot += Math.PI / 2 + (q() - 0.5) * 0.4;
         const tc = P.top && t > P.top.from ? P.top.cols[Math.floor(q() * P.top.cols.length)] : null;
         const rise = lerp(f.rise[0], f.rise[1], up ** 0.5) * (0.85 + q() * 0.3), cols = tc ?? D.pick(), br = D.bright();
-        const tag: LeafTag = { ...fullBy(T(t) - e, e + 0.1, by), on: { pc, par: t * SEG } };
+        const tag: LeafTag = emTag({ ...fullBy(T(t) - e, e + 0.1, by), on: { pc, par: t * SEG } });
         for (const o of [0, Math.PI]) leaf(into, f, P.stalk, at(t), rot + o, L, rise, D.twist(), cols, br, q, bend(0.4), tag);
+        // the emersed pair: held up stiffly along the stem (no sway: bend() would take draws from the plant's own stream)
+        if (E) {
+          const re2 = lerp(fe.rise[0], fe.rise[1], up ** 0.5) * (0.85 + rq() * 0.3), ce = Q.pick(), be = Q.bright();
+          for (const o of [0, Math.PI]) leaf(es, fe, P.stalk, at(t), rot + o, L * (E.k ?? 1), re2, Q.twist(), ce, be, rq, STIFF, { ...tag, em: EMERSED });
+        }
       }
       return pc;
     };
@@ -364,8 +423,10 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
     // more stems come up in the clump (a little wider as it grows, unless it has its own spread) and grow taller;
     // and side shoots off every stem, from low on it, curving up beside it
     const all = [...own0];
-    for (let j = 0, m = Math.min(extras(n, 60), 60 - n); j < m; j++) {
-      const a0 = extraAt(j, n), up = Math.min(0.25, 0.99 - a0), k = longer(a0 + up), a = re() * 6.28, d = Math.sqrt(re()) * base * (clump.spread ? 1 : 1 + 0.4 * (a0 - g0) / Math.max(0.05, 1 - g0));
+    // (an emerging clump, lane GR2, Nathan 2026-10-15: thinner and wider, so its stems out of the water read one by one)
+    const em = Gr.overflow === 'emerge', thin = em ? 0.6 : 1, wider = em ? 2 : 0.4;
+    for (let j = 0, m = Math.min(Math.round(extras(n, 60) * thin), 60 - n); j < m; j++) {
+      const a0 = extraAt(Math.round(j / thin), n), up = Math.min(0.25, 0.99 - a0), k = longer(a0 + up), a = re() * 6.28, d = Math.sqrt(re()) * base * (clump.spread ? 1 : 1 + wider * (a0 - g0) / Math.max(0.05, 1 - g0));
       const b = V(Math.cos(a) * d, 0, Math.sin(a) * d), top = h * (0.75 + 0.25 * re()) * k, lean = V((re() - 0.5) * Wc * 0.4, 0, (re() - 0.5) * Wc * 0.4);
       // a new stem grows to its full length within a quarter of the growth scale (stem plants grow fast)
       const at = path(b, top, lean, bend()), T = (t: number) => a0 + t * up;
@@ -427,6 +488,13 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
       ? Array.from({ length: crowns }, (_, i) => { const a = i * 2.39996 + (r() - 0.5) * 0.8, d = half * Math.sqrt((i + 0.5) / crowns) * (0.85 + r() * 0.3); return V(Math.cos(a) * d, 0, Math.sin(a) * d); })
       : Array.from({ length: crowns }, (_, i) => V(crowns > 1 ? (i / (crowns - 1) * 2 - 1) * half + (r() - 0.5) * half * 0.3 : 0, 0, (r() - 0.5) * half * 0.4));
     const onRhizome = (q: R) => { const u = q(), k = Math.min(3, Math.floor(u * 4)); return roots[k].clone().lerp(roots[k + 1], u * 4 - k); };
+    /** A leaf's emersed twin (a sword's leaf held up out of the water on its long stiff stalk): same crown, heading and
+     *  growth, its own piece. */
+    const later: (() => void)[] = [];
+    const twin = (base: THREE.Vector3, yaw: number, L: number, outer: number, tag: LeafTag, pc: number, ff: Leaf3D) => {
+      twins.push([pieces.length, pc]);
+      leaf(es, ff, P.stalk, base, yaw, L * (E!.k ?? 1), lerp(ff.rise[0], ff.rise[1], outer) * (0.85 + rq() * 0.3), Q.twist(), Q.pick(), Q.bright(), rq, STIFF, { ...tag, em: EMERSED });
+    };
     for (let i = 0; i < n; i++) {
       const t = i / Math.max(1, n - 1), outer = rz ? r() : 1 - t;
       let base: THREE.Vector3, yaw: number;
@@ -434,25 +502,44 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
       else { base = centres[i % crowns].clone().add(V((r() - 0.5) * h * 0.02, 0, (r() - 0.5) * h * 0.02)); yaw = i * 2.39996 + r() * 0.5; }
       const L = h * between(r, f.len) * (rz ? 1 : 0.75 + 0.25 * outer), rise = lerp(f.rise[0], f.rise[1], outer) * (0.85 + r() * 0.3);
       // below g0 the leaves thin out (the outer, older ones last) and every one is smaller, all full by g0
-      const a0 = own(i, n);
-      leaf(out, f, P.stalk, base, yaw, L, rise, twist(), pick(), bright(), r, bend(L / h), { ...fullBy(a0, Infinity, g0), ext });
+      const a0 = own(i, n), tag = emTag({ ...fullBy(a0, Infinity, g0), ext }), pc = pieces.length;
+      leaf(out, f, P.stalk, base, yaw, L, rise, twist(), pick(), bright(), r, bend(L / h), tag);
+      if (E) later.push(() => twin(base, yaw, L, outer, tag, pc, fe));
     }
-    // more leaves above g0, longer the later they come; a clump also puts out new crowns on runners, further out
-    const more = extras(n, 600 - n), newCrowns: { c: THREE.Vector3; a: number }[] = [];
-    if (more && P.crowns && g0 < 0.97) for (let k = 0, m = Math.round(crowns * Math.sqrt(Gr.more) ** (1 - g0)) - crowns; k < m; k++) {
-      const a0 = g0 + (1 - g0) * (k + 0.5) / m * 0.85, ang = re() * 6.28, d = half * (clump.spread ? Math.sqrt(re()) : 1 + 0.8 * (a0 - g0) / Math.max(0.05, 1 - g0) * (0.6 + 0.4 * re()));
+    // more leaves above g0, longer the later they come; a clump also puts out new crowns on runners, further out. A
+    // spreading clump (sagittaria, lane GR2) makes its lawn: new crowns at the end of runners along the ground from the
+    // crowns it has, the patch reaching out to about 4x its width by growth 1, its leaves lengthening less
+    const more = extras(n, 600 - n), newCrowns: { c: THREE.Vector3; a: number }[] = [], spreads = Gr.overflow === 'spread';
+    if (more && P.crowns && g0 < 0.97) for (let k = 0, m = Math.round(crowns * (spreads ? Gr.more : Math.sqrt(Gr.more)) ** (1 - g0)) - crowns; k < m; k++) {
+      const a0 = g0 + (1 - g0) * (k + 0.5) / m * 0.85, ang = re() * 6.28;
+      if (spreads && !clump.spread) {
+        // the new crown somewhere out toward the lawn's edge by now, on a runner from the nearest crown it has
+        const lim = half * (1 + 3.5 * (a0 - g0) / Math.max(0.05, 1 - g0)), d = lim * Math.sqrt(0.35 + 0.65 * re()), c = V(Math.cos(ang) * d, 0, Math.sin(ang) * d);
+        const from = [...centres, ...newCrowns.map(q => q.c)].reduce((b, q) => (q.distanceToSquared(c) < b.distanceToSquared(c) ? q : b));
+        newCrowns.push({ c, a: a0 });
+        // the runner: a thin stalk along the ground, out from its crown as the new one comes
+        const r0 = Math.max(0.35, h * 0.005), lift = h * 0.015;
+        exTubes.push(tube([0, 0.33, 0.67, 1].map(s => from.clone().lerp(c, s).setY(r0 + lift * Math.sin(Math.PI * s))), r0, P.stalk, 8, 3,
+          (s, cc) => ({ ...fullBy(Math.max(g0 + 1e-3, a0 - 0.05 + 0.04 * s), 0.01, 1), anc: cc, pc: -1, par: 0, apar: 0 })));
+        continue;
+      }
+      const d = half * (clump.spread ? Math.sqrt(re()) : 1 + 0.8 * (a0 - g0) / Math.max(0.05, 1 - g0) * (0.6 + 0.4 * re()));
       newCrowns.push({ c: V(Math.cos(ang) * d, 0, Math.sin(ang) * d), a: a0 });
     }
     for (let j = 0; j < more; j++) {
-      const a0 = extraAt(j, n), k = longer(a0 + 0.1), outer = re();
+      const a0 = extraAt(j, n), k0 = longer(a0 + 0.1), k = spreads ? Math.sqrt(k0) : k0, outer = re();
       const here = [...centres, ...newCrowns.filter(c => c.a <= a0).map(c => c.c)], c = here[Math.floor(re() * here.length)];
       const base = rz ? onRhizome(re) : c.clone().add(V((re() - 0.5) * h * 0.02, 0, (re() - 0.5) * h * 0.02)), yaw = re() * 6.28;
       const L = h * between(re, f.len) * (rz ? 1 : 0.75 + 0.25 * outer) * k, rise = lerp(f.rise[0], f.rise[1], outer) * (0.85 + re() * 0.3);
       // a longer leaf gets more rows (smooth where it lies over) and its ripples keep their spacing
       // (and a broad leaf widens less than it lengthens: width with the square root of the length; a strap keeps its width)
       const fk: Leaf3D = k > 1.05 ? { ...f, wid: ext ? f.wid / k : f.wid / Math.sqrt(k), seg: [Math.round(f.seg[0] * Math.min(3, k)), f.seg[1]], wave: [f.wave[0] / Math.sqrt(k), f.wave[1] * k] } : f;
-      leaf(ex, fk, P.stalk, base, yaw, L, rise, X.twist(), X.pick(), X.bright(), re, bend(Math.min(1.5, L / h)), { ...fullBy(a0, ext ? 0.15 : 0.1, 1), ext });
+      const tag = emTag({ ...fullBy(a0, ext ? 0.15 : 0.1, 1), ext }), pc = pieces.length;
+      leaf(ex, fk, P.stalk, base, yaw, L, rise, X.twist(), X.pick(), X.bright(), re, bend(Math.min(1.5, L / h)), tag);
+      if (E) later.push(() => twin(base, yaw, L, outer, tag, pc, k > 1.05 ? { ...fe, seg: [Math.round(fe.seg[0] * Math.min(3, k)), fe.seg[1]] } : fe));
     }
+    // the emersed twins, after every leaf of the plant (so its pieces keep their numbers)
+    for (const fn of later) fn();
   }
   // scale to the height asked for (the leaves' arch makes their reach less than their length), shade the leaves while
   // they are still one smooth sheet each, then merge with the stalks. Only the plant's own part sets the scale.
@@ -461,10 +548,31 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
   // a plant whose leaves reach out wider than its card is drawn narrower (at most by a quarter), so it fits where the card did
   const reach = Math.max(...parts.map(g => Math.max(-g.boundingBox!.min.x, g.boundingBox!.max.x, -g.boundingBox!.min.z, g.boundingBox!.max.z))) * k;
   const kx = clump.spread ? 1 : Math.max(0.75, Math.min(1, Wc * 0.6 / Math.max(1, reach))); // a clump's own spread is kept
-  const exLeaves = ex.pos.length ? ex.geometry() : null, all = [...parts, ...(exLeaves ? [exLeaves] : []), ...exTubes];
+  const exLeaves = ex.pos.length ? ex.geometry() : null, emLeaves = es.pos.length ? es.geometry() : null;
+  const sheets = [leaves, ...(exLeaves ? [exLeaves] : []), ...(emLeaves ? [emLeaves] : [])], all = [...parts, ...sheets.slice(1), ...exTubes];
   for (const g of all) scalePart(g, k * kx, k, k * kx);
   for (const p of pieces) for (let i = 0; i < p.length; i += 3) { p[i] *= k * kx; p[i + 1] *= k; p[i + 2] *= k * kx; }
-  for (const g of exLeaves ? [leaves, exLeaves] : [leaves]) { shade(g, h, Wc / 2); tint(g, kTint, warm); }
+  for (const g of sheets) { shade(g, h, Wc / 2); tint(g, kTint, warm); }
+  // lily pads (lane GR2), built in mm after the scaling: each on a long stalk from the crown, leaning out (later ones
+  // further), the pad flat across its top. bendPlant stretches or shortens the stalk to lay the pad on the water
+  if (P.pads) {
+    const D = P.pads, rp = rng(seed * 2473 + 59), ps = new Sheets(pieces), Dp = draws(rp, D.leaf), LS = 300;
+    const n1 = Math.max(D.n[0] + 1, Math.round(D.n[1] * (0.8 + 0.4 * rp())));
+    for (let j = 0; j < n1; j++) {
+      // pad j shows from growth a: the first at `from`, then evenly more up to n1 by growth 1
+      const a = Math.min(0.96, D.from + (1 - D.from) * Math.max(0, j + 1 - D.n[0]) / (n1 - D.n[0])), u = (a - D.from) / (1 - D.from);
+      const ang = j * 2.39996 + (rp() - 0.5) * 0.8, d = D.out * (0.25 + 0.75 * u) * (0.6 + 0.4 * rp()), top = V(Math.cos(ang) * d, LS, Math.sin(ang) * d);
+      const b = V((rp() - 0.5) * 6, 0, (rp() - 0.5) * 6), at = (s: number) => b.clone().lerp(top, s ** 1.4).setY(LS * s), pc = pieces.length, line: number[] = [];
+      for (let i = 0; i <= SEG; i++) { const p = at(i / SEG); line.push(p.x, p.y, p.z); }
+      pieces.push(line); padPieces.push(pc);
+      all.push(tube([0, 0.2, 0.4, 0.6, 0.8, 1].map(at), 1.2, D.stalk, 24, 4, (s, c) => ({ ...fullBy(a + 0.05 * s, 0.01, 1), anc: c, pc, par: s * SEG, apar: s * SEG, em: PAD })));
+      const L = between(rp, D.len) * (0.65 + 0.35 * u), yaw = rp() * 6.28, base = top.clone().add(V(-Math.cos(yaw) * L / 2, 0.4, -Math.sin(yaw) * L / 2));
+      leaf(ps, D.leaf, D.stalk, base, yaw, L, Math.PI / 2, 0, Dp.pick(), Dp.bright(), rp, STIFF, { ...fullBy(a + 0.05, 0.06, 1), on: { pc, par: SEG }, em: PAD, anc: top.clone() });
+    }
+    const pads = ps.geometry();
+    shade(pads, 2, 1e9); tint(pads, kTint, warm);
+    all.push(pads);
+  }
   return done(mergeGeometries(all)!);
 }
 
@@ -503,27 +611,46 @@ export function revealPlant(src: THREE.BufferGeometry, g: number) {
   const G = src.userData.grow as GrowData | undefined;
   if (!G) return src;
   const P = src.attributes.position.array as Float32Array, n = P.length / 3, gr = G.gr, anc = G.anc, s = new Float32Array(n);
-  let all = true;
-  for (let v = 0; v < n; v++) { s[v] = (g - gr[v * 2]) / gr[v * 2 + 1]; if (s[v] < 1) all = false; }
+  // (a plant with form tags only walks the vertices that can show at some growth: `live`, `idx`)
+  const cut = G.cut, em = G.em, live = G.live, N = live ? live.length : n;
+  let all = !live;
+  for (let j = 0; j < N; j++) {
+    const v = live ? live[j] : j;
+    s[v] = (g - gr[v * 2]) / gr[v * 2 + 1];
+    // an emersed twin shows from its cut, the leaf it replaces until then (lane GR2)
+    if (cut && em![v] && em![v] < PAD && (em![v] === SUB) === (g >= cut[v])) s[v] = -1;
+    if (s[v] < 1) all = false;
+  }
   if (all) return src;
   const pos = new Float32Array(n * 3);
-  for (let v = 0; v < n; v++) {
-    const k = s[v], o = v * 3;
+  for (let j = 0; j < N; j++) {
+    const v = live ? live[j] : j, k = s[v], o = v * 3;
     if (k >= 1) { pos[o] = P[o]; pos[o + 1] = P[o + 1]; pos[o + 2] = P[o + 2]; }
     else if (k > 0) for (let q = 0; q < 3; q++) pos[o + q] = anc[o + q] + (P[o + q] - anc[o + q]) * k;
     else for (let q = 0; q < 3; q++) pos[o + q] = anc[o + q];
   }
   // only the triangles with something showing go to the GPU
-  const I = src.index!.array, keep: number[] = [];
-  for (let t = 0; t < I.length; t += 3) if (s[I[t]] > 0 || s[I[t + 1]] > 0 || s[I[t + 2]] > 0) keep.push(I[t], I[t + 1], I[t + 2]);
+  const I = G.idx ?? src.index!.array, keep = new Uint32Array(I.length);
+  let m = 0;
+  for (let t = 0; t < I.length; t += 3) if (s[I[t]] > 0 || s[I[t + 1]] > 0 || s[I[t + 2]] > 0) { keep[m++] = I[t]; keep[m++] = I[t + 1]; keep[m++] = I[t + 2]; }
   const out = new THREE.BufferGeometry();
   out.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   for (const k of ['color', 'normal']) if (src.attributes[k]) out.setAttribute(k, src.attributes[k]);
-  out.setIndex(keep);
-  out.computeBoundingBox(); out.computeBoundingSphere(); out.userData.keep = true;
+  out.setIndex(new THREE.BufferAttribute(keep.slice(0, m), 1));
+  // bounds over the vertices that can show (as computeBoundingBox / Sphere would, without walking the dead ones)
+  const box = new THREE.Box3(), c = new THREE.Vector3();
+  for (let j = 0; j < N; j++) box.expandByPoint(c.fromArray(pos, (live ? live[j] : j) * 3));
+  let r2 = 0;
+  const mid = box.getCenter(new THREE.Vector3());
+  for (let j = 0; j < N; j++) r2 = Math.max(r2, mid.distanceToSquared(c.fromArray(pos, (live ? live[j] : j) * 3)));
+  out.boundingBox = box; out.boundingSphere = new THREE.Sphere(mid, Math.sqrt(r2)); out.userData.keep = true;
   return out;
 }
 
+/** Room above the water an emerging plant needs to climb out (mm); with less it lies over at the surface. */
+export const MIN_ROOM = 50;
+/** Share of a sword's leaves reaching out of the water that turn emersed (the rest lie on the surface). */
+const EMERSED_SHARE = 0.75;
 /** How far a leaf or stem flops from its plant's spine heading: the bell curve's sd, rad (about 30°). */
 const SPREAD = 0.5;
 /** A piece's centreline before (a) and after (b) lying over, and per point the turn between them. */
@@ -551,31 +678,54 @@ function moveBy(arr: Float32Array, o: number, R: Rec, t: number) {
  * the current's direction with its own wobble (vallisneria and balansae make sheets, stem tips droop along the top).
  * Leaves riding on a stem go with it. Rebuilds positions and normals (once per water level / place, not per growth
  * step); src itself when nothing reaches the surface.
+ *
+ * Lane GR2: `o.ceil` = the lid or the light over the base (mm). An 'emerge' plant with at least MIN_ROOM above the water
+ * climbs on past it instead, straightening up once out of the water, and lies over only under the ceiling; above the
+ * water each leaf shows its emersed twin. `o.water` = there is water: a lily's pads lie on it (hidden without).
  */
-export function bendPlant(src: THREE.BufferGeometry, F: number) {
+export function bendPlant(src: THREE.BufferGeometry, F: number, o: { ceil?: number; water?: boolean } = {}) {
   const G = src.userData.grow as GrowData | undefined;
   if (!G || !Number.isFinite(F)) return src;
   const parent = new Map(G.links.map(([c, p, t]) => [c, [p, t]] as const)), rec: (Rec | null)[] = [];
+  // emerging: a piece that climbs out (a stem, an emersed twin) lies over under the ceiling (Sc); the water line (F) is
+  // where it turns emersed. A sword's submersed leaves still lie over at the water line
+  const climbs = !!G.emerge && o.ceil != null && o.ceil - F >= MIN_ROOM, Sc = climbs ? o.ceil! - 4 : F, padSet = new Set(G.pads ?? []);
+  const twinned = new Map<number, number>(), twins = new Set<number>();
+  for (const [t, l] of G.twin ?? []) { twinned.set(t, l); twinned.set(l, l); twins.add(t); }
+  /** Does piece p climb out (else it lies over at the water line)? */
+  const up = (p: number) => climbs && (!twinned.has(p) || twins.has(p));
+  const spine = Math.atan2(G.cz, G.cx);
+  /** Bends a centreline: climbing out to the ceiling (emerge) or lying over at the water line. */
+  const bender = (emerge: boolean) => {
+  const S = emerge ? Sc : F;
   // the sweep: a leaf or stem nearing the surface curves over on an arc of radius R (about half the water depth,
   // as overgrown vallisneria and stems do: they lean more and more over the top of the water column, then lie along it),
-  // never steeper than that arc allows for the room left above it
-  const R = Math.max(50, Math.min(250, F * 0.5));
+  // never steeper than that arc allows for the room left above it (emerging: the arc fits in the room above the water)
+  const R = emerge ? Math.max(30, Math.min(250, F * 0.5, (S - F) * 0.8)) : Math.max(50, Math.min(250, F * 0.5));
   /** The steepest a centreline may climb with `room` mm left under the surface (sine of its elevation). */
-  const spine = Math.atan2(G.cz, G.cx);
   const climb = (room: number) => room >= R ? 1 : room <= 0 ? Math.max(-0.2, room / R * 2) : Math.sqrt(1 - (1 - room / R) ** 2);
-  const bendLine = (line: Float32Array, p: number): Bent | null => {
+  return (line: Float32Array, p: number): Bent | null => {
     const m = line.length / 3;
     let top = -Infinity;
     for (let i = 1; i < line.length; i += 3) top = Math.max(top, line[i]);
-    if (top < F - R || m < 2) return null;
-    const reach = top >= F;
+    if ((top < S - R && !(emerge && top > F)) || m < 2) return null;
+    const reach = top >= S;
     // where this one flops: the plant's spine (its current's heading: they all tend the same way) plus its own
     // deviation, drawn from a bell curve round the spine (sd SPREAD; its own stream per piece)
     const qr = rng(p * 7919 + 101 + Math.round(G.cz * 1e5)), gauss = Math.sqrt(-2 * Math.log(1 - qr() * 0.999)) * Math.cos(6.2832 * qr());
     const target = spine + SPREAD * gauss, tx = Math.cos(target), tz = Math.sin(target), ph = p * 2.39996;
     const out = new Float32Array(line.length);
     out[0] = line[0]; out[1] = line[1]; out[2] = line[2];
-    let turning = false, th = 0, along = 0;
+    // out of the water a piece holds itself up as a cantilever (lane GR2, Nathan 2026-10-15: "more flop"): each point
+    // carries the weight of everything beyond it, so it bends by (free length beyond)^2 / stiffness. `Lc` = its stiffness
+    // as a length (a piece Lc long droops its tip by about 1 rad): the species' value, a thicker stem stiffer, each piece
+    // its own draw, and a leaf that starts steeper (an inner sword leaf) stiffer. What sags back to the water lies on it
+    const seg = new Float32Array(m), rest = new Float32Array(m);
+    for (let i = 0; i < m - 1; i++) seg[i] = Math.hypot(line[i * 3 + 3] - line[i * 3], line[i * 3 + 4] - line[i * 3 + 1], line[i * 3 + 5] - line[i * 3 + 2]);
+    for (let i = m - 2, acc = 0; i >= 0; i--) { rest[i] = acc + seg[i] / 2; acc += seg[i]; }
+    const qs = rng(p * 131 + 7 + Math.round(G.cx * 1e4)), steep = seg[0] > 1e-6 ? Math.max(0, (line[4] - line[1]) / seg[0]) : 1;
+    const Lc = (G.stiff ?? 220) * (0.5 + 0.6 * qs()) * (0.8 + 0.35 * steep), Lc3 = Lc * Lc * Lc, Rl = G.land ?? 50;
+    let turning = false, th = 0, along = 0, droop = 0, lying = false;
     for (let i = 0; i < m - 1; i++) {
       const o = i * 3, dx = line[o + 3] - line[o], dy = line[o + 4] - line[o + 1], dz = line[o + 5] - line[o + 2], L = Math.hypot(dx, dy, dz);
       if (L < 1e-6) { out[o + 3] = out[o]; out[o + 4] = out[o + 1]; out[o + 5] = out[o + 2]; continue; }
@@ -583,11 +733,35 @@ export function bendPlant(src: THREE.BufferGeometry, F: number) {
       const y = out[o + 1];
       // below the arc it already starts to lean its way (the curve of the spine), more the higher it gets
       // (only one that reaches the surface; from no lower than 40 % of the depth)
-      const from = Math.max(0.4 * F, F - 2 * R), lean = reach ? 0.4 * Math.max(0, Math.min(1, (y - from) / (F - R - from))) : 0;
+      // (emerging: out of the water its own weight bends it further, the cantilever droop; never straighter than it
+      // grew under water: Nathan 2026-10-15)
+      if (emerge && !turning && y > F - 1) {
+        if (lying) {
+          // on the water: it wanders a little, and its last stretch turns back up into the air
+          th += 0.1 * Math.sin(along / 70 + ph) * L / 70; along += L;
+          const up = 0.55 * Math.max(0, 1 - rest[i] / (0.3 * Lc)), hz = Math.sqrt(1 - up * up);
+          ux = Math.cos(th) * hz; uy = up; uz = Math.sin(th) * hz;
+        }
+        else {
+          const h0 = Math.hypot(ux, uz), hd = h0 > 0.08 ? Math.atan2(uz, ux) : target;
+          // (the lever stops where it would rest on the water again: what lies there is carried by the water)
+          const lever = Math.min(rest[i], 0.8 * Lc);
+          droop += 3 * lever * lever / Lc3 * L;
+          let el = Math.max(-1.45, Math.atan2(uy, h0) - droop);
+          // coming down to the water it levels out on a curve (radius Rl, the species' own: soft for a sword leaf,
+          // tighter for a stem) instead of landing on a kink
+          const above = y - F - 1;
+          if (droop > 0.05 && el < 0 && above < Rl) el = Math.max(el, -Math.asin(Math.sqrt(Math.max(0, 1 - (1 - Math.max(0, above) / Rl) ** 2))));
+          ux = Math.cos(hd) * Math.cos(el); uy = Math.sin(el); uz = Math.sin(hd) * Math.cos(el);
+          // sagged back down to the water: from here it lies on it
+          if ((y + uy * L < F + 1 || (above < 0.5 && uy <= 0.01)) && droop > 0.05) { lying = true; th = Math.atan2(uz, ux); uy = (F + 1 - y) / L; const k = Math.hypot(ux, uz) || 1, hz = Math.sqrt(Math.max(0, 1 - uy * uy)); ux *= hz / k; uz *= hz / k; }
+        }
+      }
+      const from = emerge ? Math.max(F, S - 1.6 * R) : Math.max(0.4 * F, F - 2 * R), lean = reach ? 0.4 * Math.max(0, Math.min(1, (y - from) / Math.max(1, S - R - from))) : 0;
       if (!turning && lean > 0) { ux += tx * lean; uz += tz * lean; const k = Math.hypot(ux, uy, uz); ux /= k; uy /= k; uz /= k; }
       // the climb allowed at the middle of this step (estimated, then once more from the estimate)
-      let lim = climb(F - y - Math.max(0, uy) * L / 2);
-      lim = climb(F - y - Math.max(-0.2, Math.min(uy, lim)) * L / 2);
+      let lim = climb(S - y - Math.max(0, uy) * L / 2);
+      lim = climb(S - y - Math.max(-0.2, Math.min(uy, lim)) * L / 2);
       if (!turning && uy > lim) {
         // starting over: on the way it was heading (straight up: its own way)
         turning = true;
@@ -610,12 +784,21 @@ export function bendPlant(src: THREE.BufferGeometry, F: number) {
     const q = Array.from({ length: m }, (_, i) => new THREE.Quaternion().setFromUnitVectors(tan(line, i), tan(out, i)));
     return { a: line, b: out, q };
   };
+  };
+  const bendUp = bender(true), bendOver = bender(false);
+  /** A lily pad's stalk: stretched or shortened so its top (and the pad on it) lies on the water. */
+  const padLine = (line: Float32Array, p: number): Bent => {
+    const m = line.length / 3, k = (F + 3.4 + (p % 5) * 0.12) / Math.max(1, line[line.length - 2]), out = Float32Array.from(line);
+    for (let i = 1; i < out.length; i += 3) out[i] *= k;
+    return { a: line, b: out, q: Array.from({ length: m }, () => new THREE.Quaternion()) };
+  };
   G.pieces.forEach((line0, p) => {
+    if (padSet.has(p)) { rec[p] = o.water ? { own: padLine(line0, p) } : null; return; }
     // a piece on another one (a side shoot) first goes where its parent took its base, then lies over itself
     const pp = parent.get(p), pre = pp && rec[pp[0]] ? { B: rec[pp[0]]!, t: pp[1] } : undefined;
     let line = line0;
     if (pre) { line = Float32Array.from(line0); for (let o = 0; o < line.length; o += 3) moveBy(line, o, pre.B, pre.t); }
-    const own = bendLine(line, p);
+    const own = (up(p) ? bendUp : bendOver)(line, p);
     rec[p] = own || pre ? { pre, own: own ?? undefined } : null;
   });
   if (rec.every(b => !b)) return src;
@@ -625,14 +808,47 @@ export function bendPlant(src: THREE.BufferGeometry, F: number) {
     if (!B) continue;
     moveBy(pos, v * 3, B, G.par[v]); moveBy(anc, v * 3, B, G.apar[v]);
     // whatever still sticks up past the surface (the leaves on a stem lying along it) is pressed flat against it
-    for (const arr of [pos, anc]) if (arr[v * 3 + 1] > F) arr[v * 3 + 1] = F + (arr[v * 3 + 1] - F) * 0.12;
+    const S = up(p) ? Sc : F;
+    if (!padSet.has(p)) for (const arr of [pos, anc]) if (arr[v * 3 + 1] > S) arr[v * 3 + 1] = S + (arr[v * 3 + 1] - S) * 0.12;
   }
+  // which form each leaf shows (lane GR2): `cut` = the growth from which a leaf shows its emersed twin, before it the
+  // submersed one (revealPlant). A leaf on a stem: emersed once its base on the bent stem is out of the water (from the
+  // start, or never). A sword's leaf: once grown long enough to reach out of the water, for about half its leaves (the
+  // rest lie on the surface as before; a sword out of the water still keeps submersed leaves). Pads: with water only
+  let gr = G.gr, cut: Float32Array | undefined;
+  if (G.em && G.gr0) {
+    gr = Float32Array.from(G.gr0); cut = new Float32Array(n).fill(Infinity);
+    const aw = new Map<number, number>(), at = new Map<number, number>();
+    for (let v = 0; v < n; v++) if (G.em[v] === SUB && twinned.has(G.pc[v]) && !aw.has(G.pc[v])) aw.set(G.pc[v], v);
+    /** The growth at which rosette leaf l (scaling up from its base as it grows) first reaches past the water. */
+    const cutOf = (l: number) => {
+      let c = at.get(l);
+      if (c != null) return c;
+      const line = G.pieces[l], v = aw.get(l), half = ((l * 2654435761) >>> 0) / 2 ** 32 < EMERSED_SHARE;
+      let top = -Infinity;
+      for (let i = 1; i < line.length; i += 3) top = Math.max(top, line[i]);
+      const need = (F + 2 - line[1]) / Math.max(1e-3, top - line[1]);
+      c = !half || v == null || need >= 1 ? Infinity : G.gr0![v * 2] + G.gr0![v * 2 + 1] * Math.max(0, need);
+      at.set(l, c);
+      return c;
+    };
+    for (let v = 0; v < n; v++) {
+      const e = G.em[v];
+      if (!e) continue;
+      if (e === PAD) { if (!o.water) gr[v * 2] = HIDE; continue; }
+      if (!climbs) continue; // (no room: every leaf stays submersed)
+      const l = twinned.get(G.pc[v]);
+      cut[v] = l != null ? cutOf(l) : anc[v * 3 + 1] > F ? -Infinity : Infinity;
+    }
+  }
+  const em = G.em, never = (v: number) => gr[v * 2] >= HIDE || (!!cut && (em![v] === SUB ? cut[v] === -Infinity : em![v] === EMERSED && cut[v] === Infinity));
+  const lv = em ? liveOf(src.index!.array, n, never) : {};
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   g.setAttribute('color', src.attributes.color);
   g.setIndex(src.index);
   g.computeVertexNormals();
   g.computeBoundingBox(); g.computeBoundingSphere();
-  Object.assign(g.userData, src.userData, { grow: { ...G, anc } });
+  Object.assign(g.userData, src.userData, { grow: { ...G, anc, gr, cut, ...lv } });
   return g;
 }

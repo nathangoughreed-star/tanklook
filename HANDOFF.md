@@ -18,7 +18,7 @@ Living file. Project state and dated decisions go here; update in place.
 - Not browser-checked in the app (no dev-server slot): the platy / molly Sex switch and stocking rows; tests cover the data.
 - Before/after composites: worktree `shots/x2/cmp-*.jpg` (gitignored).
 
-## Plant growth (2026-10-15; design agreed in chat; lane GR1 DONE: branch `plants3d`, port 5283, pushed to main; GR3 DONE (`plant-time`, 5593); GR2 open; GPU reveal + prebuild next)
+## Plant growth (2026-10-15; design agreed in chat; lane GR1 DONE: branch `plants3d`, port 5283, pushed to main; GR3 DONE (`plant-time`, 5593); GR2 DONE (pushed); GPU reveal + prebuild next (lane plants3d))
 Nathan: each plant item gets a growth slider from just planted to fully mature / overgrown; what overgrown looks like
 depends on the species (lying along the surface in sheets, growing out of the tank, spreading). Each item (which may
 hold many stems / crowns) has its own growth. Later: a global timeline that grows the whole tank at each species' rate.
@@ -69,8 +69,40 @@ hold many stems / crowns) has its own growth. Later: a global timeline that grow
     `138_spine_{C,D,F}_*.png` (the approved sweep + spine). Helpers `shots/grow.js` (growRow / mixRow), `grow_sheets.py`.
   - Open / not done: lying leaves are cut at the glass (they do not turn along it); colour shading is from the upright
     plant (a lying leaf is not relit); no emerse growth.
-- **For GR2:** `overflow` is in the data; bendPlant is where an 'emerge' piece would keep climbing past F instead (needs
-  room above the line and an emersed leaf form); floaters already widen with growth (patch width from `len`).
+- **GR2 landed (2026-10-15, Nathan: "the leaf plants look perfect" ... "thats good enough, lets ship"):**
+  - Emerge (sword, ozelot, stem, stemred, ludwigia), only for a plant WITH a growth (`more`): every leaf gets an emersed
+    twin (`PLANT3D[t].emersed`: Leaf3D overrides + `k` length, `stiff` mm, `land` mm), own random stream and own sheets
+    (the plant's own part, its scale and piece numbers unchanged). Per-vertex form tag `em` (1 submersed, 2 emersed twin,
+    3 lily pad); twins hidden in the unbent build. `bendPlant(src, F, { ceil, water })`: with `ceil - F >= MIN_ROOM` (50 mm)
+    stems and twins climb past the water to the ceiling (render/items.ts: glass lid T.H - 4; hood / open = T.H + lamp
+    height - 20); a sword's submersed leaves still lie over at F. Above the water every piece droops as a cantilever:
+    bend per mm = 3 lever^2 / Lc^3, lever = free length beyond (capped 0.8 Lc: what lies on the water is carried),
+    Lc = stiff x stalk thickness^(2/3) x per-piece draw x steeper-is-stiffer; never more erect than it grew under water
+    (Nathan); what sags down lands on a curve of radius `land` (sword 70, stems 35, ludwigia 22), creeps on the surface,
+    last stretch turns up. Stiff: sword 230, ozelot 210, stem / stemred 140, ludwigia 150 (thin stems floppy: Nathan,
+    sources say ludwigia grows "half-emersed along the surface").
+  - Form choice per vertex: `cut` = growth from which the emersed twin shows (revealPlant). Stem leaf: emersed iff its
+    base on the bent stem is above F. Sword leaf: 75 % (`EMERSED_SHARE`) of the leaves that reach out switch once grown
+    long enough to reach past F (a young sword stays submersed); the rest lie on the surface.
+  - Emerging stem clumps grow thinner and wider (60 % of the extra stems, out to ~3x the width by growth 1).
+  - No water haze above the water (plant material `post` hook: haze fades out from water + 6 to + 14 mm).
+  - Spread: sagittaria new crowns on runners (thin tubes on the ground from the nearest crown), lawn out to ~4.5x its
+    half-width by growth 1, leaves lengthen sqrt as much; `more` 6 -> 10. Floaters: first rosette shows from growth 0.
+  - New species (library + cards + data): Amazon frogbit (`frogbit`), water lettuce (`lettuce`), both form `float`;
+    tiger lotus (`lotus`, rosette of red blotched leaves + `pads`: stalks stretched / shortened in bendPlant so pads lie
+    on the water, only with water, from growth 0.35, up to ~7).
+  - Reveal: with form tags, `idx` / `live` skip what never shows (a stem leaf's wrong form), bounds over live vertices.
+    Cost (alternate frames, 61-plant dense starter 1200 x 450 x 500, half water, CPU + gl.finish): growth step stem
+    10.4 ms with twins vs 9.6 without, sword 9.5 vs 8.2; revealPlant alone 1.6 vs 1.2 ms; bend once per water level
+    26 vs 13.5 ms. `plant3d.emerse = false` = no twins (review switch, keyed).
+  - Tests: test/emerge.test.ts (climb / no room / no growth / young sword / sagittaria / lotus); growth.test.ts fixture
+    compare limited to the pre-GR2 species. incrementalCheck.runAll: 133 edits, 0 differ.
+  - Sheets (worktree `shots/`): `142_{species}.png` (growth 0 / .5 / 1, full + half tank, front + 3/4), `144_close_new.png`
+    (frogbit / lettuce / lotus / sagittaria), `151_droop.png` (approved leaf plants), `157_stems_spread.png` (approved
+    stems). Helpers `shots/gr2.js` (row / views / close), `gr2_sheets.py`, `gr2_close.py`; cap.js frames on drawn in-tank
+    triangles.
+  - Open: lying stems run on under the light / along the water and are cut at the glass (as GR1); sagittaria lawn still
+    reads as loose tufts; lotus pads read orange under the light; duckweed waits for instancing.
 - **GR3 landed (2026-10-15, Nathan: "keep Time as a saved setting ... ship GR3"):**
   - Data: `TankSetup.grow: { feed: 'low' | 'ferts' | 'co2', time: 0..1 }` (types.ts `GrowSettings`; validate: older files
     low-tech, Time 0; no version bump). `Item.planted` (plants only, -5..1): the growth the plant had at Time 0, written
@@ -1127,7 +1159,7 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | F2 harder fish | (worktree removed) | - | - | DONE (`8febeec`): fantail, kuhli, harlequin, oscar v3. Open: head geometry rejected by Nathan (cory / loach / SAE / marine heads have no generic); fantail doubled anal fin; lane X's leftovers not applied (noseCap on neon / cardinal / chili / cpd, characin dorsal taper, platy / molly gonopodium) |
 | X2 fish leftovers | (worktree removed) | - | `art/fishgen.ts`, `render/fish3d.ts`, `art/paint.ts` (noseCap on neon / cardinal / chili / cpd, characin dorsal taper, platy / molly gonopodium, fantail doubled anal fin) | DONE 2026-10-15, pushed (see its section); fish files free; Sex switch browser-checked PASS (build 436) |
 | GR1 plant growth | `../Glass-Box-plants3d` / `plants3d` | 5283 | see the "Plant growth" section (growth value, Height removed, lying over at the surface) | DONE (`050e2d9`, `4a4e3a8`, build 440) |
-| GR2 emersed growth + floaters | `../Glass-Box-plants3d` / `plants3d` | 5283 | `art/plants.ts`, `render/plant3d.ts` (bendPlant 'emerge' / 'spread'), plant branch of `render/items.ts`, plant entries of `scene/items.ts`, new floater / lily species data | running (session `local_5a6e2d06`); then GPU reveal in the vertex shader + idle prebuild of full-growth extras (from GR3, Nathan 2026-10-15), may simplify ui/panels.ts growStep |
+| GR2 emersed growth + floaters | `../Glass-Box-plants3d` / `plants3d` | 5283 | `art/plants.ts`, `render/plant3d.ts` (bendPlant 'emerge' / 'spread'), plant branch of `render/items.ts`, plant entries of `scene/items.ts`, new floater / lily species data | DONE (pushed); next in this lane: GPU reveal in the vertex shader + idle prebuild of full-growth extras (from GR3, Nathan 2026-10-15), may simplify ui/panels.ts growStep |
 | GR3 growth timeline + tank setting | (worktree removed) | - | see the "Plant growth" section (Feeding + Time, `scene/growtime.ts`) | DONE (`c9d615a`, `5931cb2`, build 452). GPU reveal + idle prebuild (Nathan's call) handed to GR2 |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 Free (no lane): `render/build.ts`, `render/items.ts`, `scene/items.ts`, `render/viewer.ts`, `main.ts`, `render/lighting.ts`,
