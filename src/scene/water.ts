@@ -57,7 +57,7 @@ export function fitFish(f: Fish, s: TankSetup) {
 
 /** Fit every fish into the water (after any scene change: level, tank size, layout, drags, new fish). */
 export function keepInWater(s: TankSetup) {
-  for (const f of s.fish) clampFish(f, s.tank, backdropDepth(s.backdrop, s.tank)); // inside the footprint, glass snails on the glass
+  for (const f of s.fish) clampFish(f, s.tank, backdropDepth(s.backdrop, s.tank), s.render.bgSides); // inside the footprint, glass snails on the glass
   if (!s.water.on) return; // dry tank: fish are hidden, nothing to keep in
   for (const f of s.fish) fitFish(f, s);
 }

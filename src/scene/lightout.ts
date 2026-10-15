@@ -17,6 +17,8 @@ export type Emitter = [number, number, number, number];
 
 /** Fixture height above the tank top (mm): the setting, or LAMP_Y inside a hood. */
 export const lampHeight = (l: LightSettings, lid: string) => (lid === 'hood' ? LAMP_Y : l.height ?? LAMP_Y);
+/** How the fixture is held: its setting, or by height for files from before the choice (hung above 110 mm). */
+export const mountOf = (l: Pick<LightSettings, 'mount' | 'height'>) => l.mount ?? ((l.height ?? LAMP_Y) > 110 ? 'hang' : 'legs');
 
 export function emitters(T: Tank, l: LightSettings, height = l.height ?? LAMP_Y): Emitter[] {
   const { L, H, D } = T, y = H + height, n = l.count, E: Emitter[] = [];

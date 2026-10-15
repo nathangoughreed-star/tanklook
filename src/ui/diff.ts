@@ -5,7 +5,7 @@ import { SUBSTRATES, blendLabel } from '../art/placeholder';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { BACKDROPS } from '../render/backdrop';
 import { fmtSize, fmtLen, glassThickness, rescaleTank, waterY } from '../scene/physics';
-import { FIXTURES, TECHS, fixtureOf, techOf, wattsOf } from '../scene/lightout';
+import { FIXTURES, TECHS, fixtureOf, mountOf, techOf, wattsOf } from '../scene/lightout';
 import { shapeOf } from '../scene/shape';
 import { setWaterLevel } from '../scene/water';
 import type { TankSetup, Units } from '../scene/types';
@@ -133,6 +133,7 @@ export function tankDiff(a: TankSetup, b: TankSetup, u: Units): DiffItem[] {
       add(a.light.cone, b.light.cone, v => `${v}° beam`, ['light.cone']);
     }
     if (a.light.type !== 'flat' && a.lid !== 'hood' && b.lid !== 'hood') add(a.light.height, b.light.height, h => `Light ${len(h)} up`, ['light.height']);
+    if (a.light.type !== 'flat' && a.lid !== 'hood' && b.lid !== 'hood') add(mountOf(a.light), mountOf(b.light), m => m === 'legs' ? 'Light on legs' : 'Light hung from the ceiling', ['light.mount']);
     if (a.light.type !== 'flat') { // light output (lane K)
       const wa = wattsOf(a), wb = wattsOf(b);
       add(wa, wb, w => (w ? `${w} W light` : 'Light power not set'), ['light.watts', 'light.bulbW', 'light.count']);

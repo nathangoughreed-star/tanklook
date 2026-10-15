@@ -11,7 +11,7 @@ import type { LightSettings, Tank, WaterSettings } from '../scene/types';
 import { waterK, waterY } from '../scene/physics';
 import { bowlDims, bowlRadius, footprint, shapeOf } from '../scene/shape';
 
-import { AQ_MAX, LAMP_Y, LUXW, beamExp, emitters, lampHeight, lightEnvCached, lightOutCached, renderBright, type Emitter, type LightEnv, type LightScene } from '../scene/lightout';
+import { AQ_MAX, LAMP_Y, LUXW, beamExp, emitters, lampHeight, mountOf, lightEnvCached, lightOutCached, renderBright, type Emitter, type LightEnv, type LightScene } from '../scene/lightout';
 // the fixture geometry lives with the light-output model now (lane K); re-exported so importers stay as they were
 export { AQ_MAX, LAMP_Y, emitters, fitSpots, lampHeight, type Emitter } from '../scene/lightout';
 
@@ -76,10 +76,10 @@ export const LU = {
   uMapDiv: { value: 1 / 16 }, uMapStep: { value: 0 }, uLoM: { value: 1 }, uLoInd: { value: new THREE.Vector3() },
 };
 /**
- * Light map contour spacing when not set, and the slider's range (Nathan 2026-10-14: PAR 5-100 by 5, default 20). Lux
- * scaled to match at 50 lux per µmol (white LED is about 67 in air, less under water): 250-5000 by 250, default 1000.
+ * Light map contour spacing when not set, and the slider's range (Nathan 2026-10-14: PAR 5-100 by 5; default 10 since 2026-10-15). Lux
+ * scaled to match at 50 lux per µmol (white LED is about 67 in air, less under water): 250-5000 by 250, default 500.
  */
-export const MAP_STEP = { par: { def: 20, min: 5, max: 100, by: 5 }, lux: { def: 1000, min: 250, max: 5000, by: 250 } } as const;
+export const MAP_STEP = { par: { def: 10, min: 5, max: 100, by: 5 }, lux: { def: 500, min: 250, max: 5000, by: 250 } } as const;
 /** The contour spacing in the shown unit, or 0 for a line at each doubling (the relative map, without watts). */
 export const mapStepOf = (l: LightSettings, unit: 'rel' | 'par' | 'lux') =>
   unit === 'par' ? l.mapStep ?? MAP_STEP.par.def : unit === 'lux' ? l.mapStepLux ?? MAP_STEP.lux.def : 0;
@@ -427,11 +427,35 @@ export function addFixture(sc: THREE.Scene, T: Tank, l: LightSettings, ceiling?:
     const m = new THREE.Mesh(geo, mat); m.position.set(x, yy, z); m.userData.nolight = true; m.userData.overhead = y; sc.add(m); return m;
   };
   const E = emitters(T, l);
-  // a raised fixture hangs from the ceiling on thin cables (two per bar, one per spot)
-  if (ceiling != null && (l.height ?? LAMP_Y) > 110) {
+  // hung: from the ceiling on thin cables (two per bar, one per spot)
+  const mount = mountOf(l);
+  if (mount === 'hang' && ceiling != null) {
     const top = l.type === 'spot' ? y + 45 : y + 23, len = Math.max(0, ceiling - top), wire = new THREE.MeshBasicMaterial({ color: 0x9aa0a6 });
     const at: [number, number][] = l.type === 'spot' ? E.map(e => [e[0], e[2]]) : [[L * 0.15, -D / 2], [L * 0.85, -D / 2]];
     for (const [x, z] of at) add(new THREE.CylinderGeometry(0.8, 0.8, len, 6), wire, x, top + len / 2, z);
+  }
+  // on legs (Nathan 2026-10-15, after a clip-on LED bar): at each end a bent-wire bracket, two arms out of the bar's end,
+  // down to the rim, a cross-wire resting on it and a lip hooked over the outside of the glass; spots hang under a rail
+  // along each row
+  if (mount === 'legs') {
+    const wireM = new THREE.MeshBasicMaterial({ color: 0x1c1f23 }), foot = H + 3, spot = l.type === 'spot';
+    const rod = (x0: number, y0: number, z0: number, x1: number, y1: number, z1: number) => {
+      const m = add(new THREE.CylinderGeometry(2, 2, Math.hypot(x1 - x0, y1 - y0, z1 - z0), 8), wireM, (x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2);
+      if (x0 !== x1) m.rotation.z = Math.PI / 2; else if (z0 !== z1) m.rotation.x = Math.PI / 2;
+    };
+    const armY = spot ? y + 49 : l.type === 'tube' ? y + 16 : y + 7, w = spot ? 12 : D * (l.type === 'tube' ? 0.6 : 0.32);
+    const inBar = spot ? 6 : (l.type === 'tube' ? L * 0.01 : L * 0.02) + 12; // where the arms leave the bar (inside its end)
+    for (const z of spot ? [...new Set(E.map(e => e[2]))] : [-D / 2]) {
+      if (spot) add(new THREE.BoxGeometry(L - 4, 8, 16), dark, L / 2, y + 49, z);
+      for (const s of [1, -1]) {
+        const at = (dx: number) => (s > 0 ? dx : L - dx), xp = at(4), xo = at(-6);
+        for (const zz of [z - w / 2, z + w / 2]) {
+          rod(at(inBar), armY, zz, xp, armY, zz); rod(xp, armY, zz, xp, foot, zz);
+          rod(xp, foot, zz, xo, foot, zz); rod(xo, foot, zz, xo, foot - 16, zz);
+        }
+        rod(xp, foot, z - w / 2, xp, foot, z + w / 2);
+      }
+    }
   }
   if (l.type === 'spot') for (const e of E) {
     add(new THREE.CylinderGeometry(32, 40, 45, 24), dark, e[0], y + 22, e[2]);
@@ -442,8 +466,18 @@ export function addFixture(sc: THREE.Scene, T: Tank, l: LightSettings, ceiling?:
     for (const e of E) { const t = add(new THREE.CylinderGeometry(9, 9, e[3] * 2, 12), glow, e[0], y, e[2]); t.rotation.z = Math.PI / 2; }
   }
   if (l.type === 'led') {
-    add(new THREE.BoxGeometry(L * 0.96, 12, D * 0.45), dark, L / 2, y + 8, -D / 2);
-    for (const e of E) add(new THREE.BoxGeometry(10, 2, 10), glow, e[0], y + 1, e[2]);
+    // a slim bar like a clip-on LED light: body, raised ribs along the top, end caps, a smoked lens underneath with two
+    // rows of small LEDs at each emitter row (the emitters stay the lighting samples; the dots are only the look)
+    const bl = L * 0.96, bw = D * 0.45, rib = new THREE.MeshBasicMaterial({ color: 0x3b4047 });
+    const cap = new THREE.MeshBasicMaterial({ color: 0x1e2125 }), lens = new THREE.MeshBasicMaterial({ color: 0x15171a });
+    add(new THREE.BoxGeometry(bl - 16, 10, bw), dark, L / 2, y + 7, -D / 2);
+    for (const s of [1, -1]) add(new THREE.BoxGeometry(8, 12, bw + 2), cap, L / 2 + s * (bl / 2 - 4), y + 7, -D / 2);
+    for (const f of [-0.3, 0, 0.3]) add(new THREE.BoxGeometry(bl - 24, 2, bw * 0.14), rib, L / 2, y + 13, -D / 2 + f * bw);
+    add(new THREE.BoxGeometry(bl - 24, 1, bw * 0.8), lens, L / 2, y + 1.5, -D / 2);
+    const n = Math.max(2, Math.round((bl - 40) / 22)), rows = [...new Set(E.map(e => e[2]))].flatMap(z => [z - 7, z + 7]);
+    const dots = new THREE.InstancedMesh(new THREE.CylinderGeometry(3, 3, 1, 10), glow, n * rows.length), mx = new THREE.Matrix4();
+    rows.forEach((z, r) => { for (let i = 0; i < n; i++) dots.setMatrixAt(r * n + i, mx.makeTranslation(L / 2 - (bl - 40) / 2 + (bl - 40) * (i + 0.5) / n, y + 0.7, z)); });
+    dots.userData.nolight = true; dots.userData.overhead = y; sc.add(dots);
   }
 }
 

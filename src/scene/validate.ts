@@ -28,7 +28,7 @@ export const LIMITS = {
   bgScale: [10, 200] as const,    // a tiled background picture's height, % of the tank height      // degrees of a round tank's shell the background covers
   az: [-180, 180] as const,
   el: [-20, 85] as const,
-  zoom: [0.25, 12] as const, // below 0.5 the eye steps back (scene/orbit.ts eyeDist); was 0.5 before 2026-10-14, older readers clamp
+  zoom: [0.1, 12] as const, // below 0.5 the eye steps back (scene/orbit.ts eyeDist); was 0.5 before 2026-10-14, 0.25 before 2026-10-15; older readers clamp
   count: [1, 12] as const,                   // above 6 only reachable with the optimised spot pattern
   rows: [1, 4] as const,
   spacing: [0, 1500] as const,     // mm, 0 = auto
@@ -223,12 +223,13 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
         : typeof l.tech === 'string' && (TECH_IDS as readonly string[]).includes(l.tech) ? { tech: l.tech as LightTech } : {}),
       ...(l.bulbW != null ? { bulbW: (MH_BULBS as readonly number[]).includes(Number(l.bulbW)) ? Number(l.bulbW) : 150 } : {}),
       ...(l.par != null ? { par: Math.round(num(l.par, 0, ...LIMITS.par)) } : {}),
+      ...(l.mount === 'legs' || l.mount === 'hang' ? { mount: l.mount } : {}),
       ...(l.mapUnit === 'par' || l.mapUnit === 'lux' ? { mapUnit: l.mapUnit } : {}),
-      ...(l.mapStep != null ? { mapStep: Math.round(num(l.mapStep, 20, 5, 100) / 5) * 5 } : {}),
+      ...(l.mapStep != null ? { mapStep: Math.round(num(l.mapStep, 10, 5, 100) / 5) * 5 } : {}),
       ...(l.mapShells === true ? { mapShells: true } : {}),
       ...(l.mapDark != null ? { mapDark: Math.round(num(l.mapDark, 30, 5, 100) / 5) * 5 } : {}),
       ...(l.mapSlice != null && Number(l.mapSlice) > 0 ? { mapSlice: Math.round(num(l.mapSlice, 0, 0, tankA.H)) } : {}),
-      ...(l.mapStepLux != null ? { mapStepLux: Math.round(num(l.mapStepLux, 1000, 250, 5000) / 250) * 250 } : {}),
+      ...(l.mapStepLux != null ? { mapStepLux: Math.round(num(l.mapStepLux, 500, 250, 5000) / 250) * 250 } : {}),
     },
     substrate: {
       show: bool(s.show, d.substrate.show), type: pick(s.type, ['gravel', 'pea', 'clown', 'blue', 'onyx', 'black', 'white', 'aragonite', 'coral', 'custom'] as const, 'gravel'),

@@ -5,9 +5,9 @@
 import { rng } from '../art/paint';
 import { clamp, substrateHeight } from './physics';
 import { PIE_DEFAULT, bowlDims, bowlRadius, clampIn, inside, insideBy, shapeOf } from './shape';
-import type { BackdropSettings, LayoutSettings, SubstrateSettings, Tank, TerrainSettings } from './types';
+import type { BackdropSettings, BgSide, LayoutSettings, SubstrateSettings, Tank, TerrainSettings } from './types';
 
-export interface Ground { substrate: SubstrateSettings; layout: LayoutSettings; terrain?: TerrainSettings; backdrop?: BackdropSettings }
+export interface Ground { substrate: SubstrateSettings; layout: LayoutSettings; terrain?: TerrainSettings; backdrop?: BackdropSettings; render?: { bgSides: BgSide[] } }
 
 /** Land top in the swamp layout, as a fraction of interior height (the water is set below it when it is chosen). */
 export const SWAMP_LAND = 0.62;

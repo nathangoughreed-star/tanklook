@@ -8,7 +8,7 @@ import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { BACKDROPS } from '../render/backdrop';
 import { MAP_DIV, MAP_STEP, emitters, mapStepOf } from '../render/lighting';
 import { darkOf, darkStats } from '../render/lightShells';
-import { FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeOf, wattsOf, type Fixture } from '../scene/lightout';
+import { FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, mountOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeOf, wattsOf, type Fixture } from '../scene/lightout';
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene, TANK_PRESETS } from '../scene/defaults';
@@ -324,9 +324,9 @@ Cancel, then change the name, to keep both.`)) return;
   $<HTMLSelectElement>('bgSel').innerHTML = Object.entries(BACKGROUNDS).map(([k, b]) => `<option value="${k}">${esc(b.label)}</option>`).join('');
   $<HTMLSelectElement>('bgSel').onchange = e => store.edit(s => { s.render.bg = (e.target as HTMLSelectElement).value as TankSetup['render']['bg']; });
   for (const [id, side] of BG_BTNS)
-    $(id).onclick = () => store.edit(s => { const b = s.render.bgSides; s.render.bgSides = b.includes(side) ? b.filter(k => k !== side) : [...b, side]; });
+    $(id).onclick = () => store.edit(s => { const b = s.render.bgSides; s.render.bgSides = b.includes(side) ? b.filter(k => k !== side) : [...b, side]; wallFit(s); }); // the 3D wall follows the sides
   $('bgArc').oninput = e => store.edit(s => { s.render.bgArc = +(e.target as HTMLInputElement).value; }, { coalesce: 'bgArc' });
-  // 3D back wall (Nathan 2026-10-15): animals and plants are pushed in front of it when it appears or grows
+  // 3D wall (Nathan 2026-10-15), on the background's sides: animals and plants are pushed in front of it when it appears or grows
   const wallFit = (s: TankSetup) => { keepInWater(s); for (const it of s.items) clampItem(it, s.tank, s); };
   $<HTMLSelectElement>('bdSel').innerHTML = Object.entries(BACKDROPS).map(([k, l]) => `<option value="${k}">${esc(l)}</option>`).join('');
   $<HTMLSelectElement>('bdSel').onchange = e => store.edit(s => { s.backdrop.kind = (e.target as HTMLSelectElement).value as TankSetup['backdrop']['kind']; wallFit(s); });
@@ -632,7 +632,7 @@ Cancel, then change the name, to keep both.`)) return;
     store.edit(s => {
       const f = s.fish.find(q => q.id === src); if (!f) return;
       const n: Fish = { ...f, id, x: f.x + fishTL(f, speciesOf(f)!) * 0.9 };
-      clampFish(n, s.tank, backdropDepth(s.backdrop, s.tank)); s.fish.push(n);
+      clampFish(n, s.tank, backdropDepth(s.backdrop, s.tank), s.render.bgSides); s.fish.push(n);
     });
     store.select(id);
   };
@@ -785,6 +785,7 @@ Cancel, then change the name, to keep both.`)) return;
   const fitK = (l: TankSetup['light']) => { const [a, b, d] = TECHS[techOf(l)].k; if (l.kelvin < a || l.kelvin > b) l.kelvin = d; };
   const countMax = (l: TankSetup['light']) => FIX_SPEC[fixtureOf(l)]?.maxCount ?? (l.type === 'spot' && l.pattern === 'fit' ? 12 : 6);
   const capCount = (l: TankSetup['light']) => { l.count = Math.min(l.count, countMax(l)); };
+  $<HTMLSelectElement>('lMount').onchange = e => store.edit(s => { s.light.mount = (e.target as HTMLSelectElement).value as 'legs' | 'hang'; });
   $<HTMLSelectElement>('lPat').onchange = e => store.edit(s => { s.light.pattern = (e.target as HTMLSelectElement).value as TankSetup['light']['pattern']; capCount(s.light); });
   // Fixture (Nathan 2026-10-15): the style sets the geometry and which lamps fit; a lamp it does not come in becomes its
   // first, and a colour outside the new lamp's usual range its usual one
@@ -1135,9 +1136,7 @@ Cancel, then change the name, to keep both.`)) return;
     $('aqOut').textContent = got !== undefined ? `${got}% (per AqAdvisor)${got > 100 ? ', overstocked' : ''}`
       : busy ? aqWaitText(key) : aqErr.get(key) ?? '';
     $('aqOut').className = got !== undefined && got > 100 ? 'bad' : '';
-    $('aqNote').textContent = [
-      q.standIns.length ? `Counted as a similar fish (not in AqAdvisor): ${q.standIns.map(k => `${k.count} ${k.name} as ${k.as}`).join(', ')}.` : '',
-      q.skipped.length ? `Not counted (land animals): ${q.skipped.map(k => `${k.count} ${k.name}`).join(', ')}.` : ''].filter(Boolean).join(' ');
+    $('aqNote').textContent = q.skipped.length ? `Not counted (land animals): ${q.skipped.map(k => `${k.count} ${k.name}`).join(', ')}.` : '';
   }
   /** The last answer each view (by its key, A/B) showed, so a change to the fish or the tank keeps the old number,
    *  in yellow, until ↻ is pressed (Nathan 2026-10-09). */
@@ -1228,7 +1227,7 @@ Cancel, then change the name, to keep both.`)) return;
     for (const [id, lid] of LIDS) $(id).classList.toggle('on', s.lid === lid);
     setVal('bgSel', s.render.bg);
     for (const [id, side] of BG_BTNS) { const on = s.render.bgSides.includes(side); $(id).classList.toggle('on', on); $(id).setAttribute('aria-pressed', String(on)); }
-    $('bgSidesRow').style.display = s.render.bg === 'none' ? 'none' : '';
+    $('bgSidesRow').style.display = s.render.bg === 'none' && s.backdrop.kind === 'none' ? 'none' : ''; // sides of the colour and the 3D wall
     $('bgArcRow').style.display = s.render.bg !== 'none' && (sh === 'round' || sh === 'bowl') ? '' : 'none';
     syncPics(s);
     setVal('bdSel', s.backdrop.kind); setVal('bdDepth', s.backdrop.depth); setOut('oBdDepth', fmtLen(s.backdrop.depth, u, 1));
@@ -1372,6 +1371,7 @@ Cancel, then change the name, to keep both.`)) return;
     setVal('lPat', l.pattern); setOut('oLSp', l.spacing ? fmt(l.spacing) : 'Auto'); setOut('oLCone', l.cone + '°');
     setOut('oLH', s.lid === 'hood' ? 'In hood' : fmt(l.height) + ' above');
     $('lHRow').style.display = l.type === 'flat' ? 'none' : ''; ($('lH') as HTMLInputElement).disabled = s.lid === 'hood';
+    $('lMountRow').style.display = l.type === 'flat' || s.lid === 'hood' ? 'none' : ''; setVal('lMount', mountOf(l));
     // light output (lane K): power, what is inside the fixture, a measured PAR, and the estimate; while the power is
     // set, Brightness is an exposure on top of the brightness the light gives (x0.5-2)
     // tubes and halide pendants: the power is the lamps' (W each x how many), shown instead of the slider
