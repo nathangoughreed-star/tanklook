@@ -34,6 +34,12 @@ describe('AqAdvisor request', () => {
     expect(aqAdvisorUrl(q)).toContain('AlreadySelected=200909300034%3A6%3A%3A%2C200909300039%3A10%3A%3A');
   });
 
+  it('a stand-in sharing an id with a real species is sent once, counts added (dwarf frogs + panda corys)', () => {
+    const q = aqQuery(setup([...fish('pandacory', 6), ...fish('adf', 3)]))!;
+    expect(q.sel).toBe('200909300155:9::');
+    expect(q.standIns).toEqual([{ name: 'African dwarf frog', as: 'Panda Cory', count: 3 }]);
+  });
+
   it('a marine animal in a fresh tank is not counted (its id belongs to the saltwater calculator)', () => {
     const q = aqQuery(setup([...fish('neon', 8), ...fish('ocellaris', 2)]))!;
     expect(q.counted).toBe(8);

@@ -1329,7 +1329,8 @@ Cancel, then change the name, to keep both.`)) return;
   const aqQueued = new Set<string>();
   let aqTick = 0;
   /** Is aqadvisor.com up (the proxy's 5-minute check)? Check and ↻ are offered only on 'up'; otherwise the stocking line
-   *  just says AqAdvisor is down (Nathan 2026-10-15). Asked on load, every 2 minutes, and when the window regains focus. */
+   *  points at the AqAdvisor ↗ link (Nathan 2026-10-15). 'down' is the checker's view, not the site's: aqadvisor.com
+   *  shuts the Cloudflare checker out ~30 min at a time while still opening in a browser (health log 2026-10-13..15). Asked on load, every 2 minutes, and when the window regains focus. */
   let aqUp: AqHealth = null;
   const pollAqHealth = async () => {
     const h = await fetchAqHealth();
@@ -1350,9 +1351,13 @@ Cancel, then change the name, to keep both.`)) return;
     $('aqCheck').style.display = AQ_PROXY && got === undefined && aqUp === 'up' ? '' : 'none';
     $<HTMLButtonElement>('aqCheck').disabled = busy;
     $('aqOut').textContent = got !== undefined ? `${got}% (per AqAdvisor)${got > 100 ? ', overstocked' : ''}`
-      : busy ? aqWaitText(key) : AQ_PROXY && aqUp === 'down' ? 'AqAdvisor is down' : aqErr.get(key) ?? '';
+      : busy ? aqWaitText(key) : AQ_PROXY && aqUp === 'down' ? 'can’t check from here right now; AqAdvisor ↗ still opens it' : aqErr.get(key) ?? '';
     $('aqOut').className = got !== undefined && got > 100 ? 'bad' : '';
-    $('aqNote').textContent = q.skipped.length ? `Not counted (land animals): ${q.skipped.map(k => `${k.count} ${k.name}`).join(', ')}.` : '';
+    // stand-ins named, so the list on aqadvisor.com makes sense: it has no dwarf frogs, it shows Panda Cory (Nathan 2026-10-15)
+    $('aqNote').textContent = [
+      q.standIns.length ? `AqAdvisor has no ${q.standIns.map(k => k.name).join(', ')}, so ${q.standIns.length > 1 ? 'they are' : 'it is'} counted as a similar fish: ${q.standIns.map(k => `${k.count} ${k.name} as ${k.as}`).join(', ')}.` : '',
+      q.skipped.length ? `Not counted (land animals): ${q.skipped.map(k => `${k.count} ${k.name}`).join(', ')}.` : '',
+    ].filter(Boolean).join(' ');
   }
   /** The last answer each view (by its key, A/B) showed, so a change to the fish or the tank keeps the old number,
    *  in yellow, until ↻ is pressed (Nathan 2026-10-09). */
@@ -1731,10 +1736,12 @@ Cancel, then change the name, to keep both.`)) return;
     // a failed refresh says so, next to the old number it could not replace (it used to hide behind it)
     const err = aqErr.get(key);
     const down = aqUp === 'down';
-    const text = busy ? `Stocking: ${aqWaitText(key)}` : pct !== undefined ? `Stocking ${pct}% (AqAdvisor)${err ? `, not updated: ${err}` : stale && down ? ', AqAdvisor is down' : ''}`
-      : down ? 'Stocking: AqAdvisor is down' : err ?? 'Stocking: not checked';
+    const text = busy ? `Stocking: ${aqWaitText(key)}` : pct !== undefined ? `Stocking ${pct}% (AqAdvisor)${err ? `, not updated: ${err}` : stale && down ? ', can’t check right now' : ''}`
+      : down ? 'Stocking: open on AqAdvisor ↗' : err ?? 'Stocking: not checked';
     const cls = `aq${stale ? ' stale' : pct !== undefined && pct > 100 ? ' over' : ''}`;
-    const tip = stale && err ? `Out of date, and the refresh failed (${err}). This is the level before the last change.` : stale ? 'Out of date: the fish or the tank changed since this was checked. Press ↻ to refresh.' : 'AqAdvisor’s stocking level for this tank (aqadvisor.com); click for the full report';
+    // 'down' = our checker (a Cloudflare server) can't reach aqadvisor.com. The site often still opens in a browser: it
+    // shuts out the checker for about 30 minutes at a time, several times a day (health log, 2026-10-13..15)
+    const tip = down && !stale ? 'The stocking checker can’t reach aqadvisor.com right now (it is often shut out for about 30 minutes). The site itself usually still opens: click for this tank on aqadvisor.com' : stale && err ? `Out of date, and the refresh failed (${err}). This is the level before the last change.` : stale ? 'Out of date: the fish or the tank changed since this was checked. Press ↻ to refresh.' : 'AqAdvisor’s stocking level for this tank (aqadvisor.com); click for the full report';
     return `<span class="aqwrap"><a class="${cls}" href="${url}" target="_blank" rel="noopener" title="${tip}">${esc(text)}</a>${re}</span>`;
   };
   viewer.onDrawn(() => {
