@@ -2,6 +2,28 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane LA: algae on plant leaves + bowl glass film (2026-10-15; branch `leaf-algae`, port 5673; Nathan approved the pictures; pushed to main)
+
+- Lane AL's two open items, both on the one Condition slider, display only, all uniforms (dragging never rebuilds).
+- **Leaves** (`render/algae.ts` LEAF_GLSL / `leafAlgaeShader`, called from plant3d `growShader`, so it rides the plant
+  material's existing post hook; items.ts untouched): uniform `AU.uAlgL`. Per vertex it reuses GR4's GPU tags: leaf age =
+  mesh growth `aGrowth` - `aGrow.x`, "out along the leaf" = distance from `aAnc` (the leaf's base). Per plant one
+  instanced vec2 `aAlg` on the grownView (slowness from the species' grow.speed: slow 1, medium 0.5, fast 0, stored as
+  `GrowData.alg` so the worker prebuild carries it; height at full growth from the bounding sphere). Noise keyed to the
+  full-growth local position, so spots stay put while a plant grows and move with it.
+  - diatoms (brown dust) on old / low leaves first, every plant (fast ones less); green spot dots and hair algae (strands
+    stretched up the plant) on slow growers, lit upper side most; BBA tufts on the outer ends of old slow-grower leaves at
+    Neglected; salt: red cyano instead of the greens. Fast stems stay cleanest; nothing above the water line.
+  - No true leaf-margin signal without a new geometry tag: BBA uses "far from the leaf base" (22..55 mm) instead.
+  - CPU reveal (`plant3d.gpu = false`) has no `aAlg`: those plants read as fast growers (review switch only).
+- **Bowl film**: `bowlFilm` = a sphere zone 0.6 mm inside the glass, floor to water line, same shader as the panes (shared
+  `FILM_FRAG`; seam at the front, where the looked-through glass is faintest; no pane edges). The "looked through"
+  test is now a soft smoothstep (the sphere has no hard pane boundary). Surface scum still skips bowls (it measures to
+  the glass by the floor's outline).
+- Pristine: SHA-256 of the canvas identical to main (planted + betta bowl, same 1280x720 viewport, A/B by stashing).
+  Tests: test/algae.test.ts (species slowness on the view, uAlgL, patch only after lighting, bowl film on the sphere).
+- Pictures: worktree `shots/LA_1..4_*.jpg` (gitignored); helper `shots/la.js`.
+
 ## Lane EF1: shader link time, first visit 35-87 s -> 10-13 s (2026-10-15; branch `shader-link`, port 5633; DONE, pushed to main)
 - **Measured** with new `scripts/cold-ab.mjs`: every load a FRESH browser profile (no GPU program cache, a first-time
   visitor), production builds before / after served side by side, alternating per example, order swapped each round,
@@ -1328,7 +1350,7 @@ or a type with no `PLANT3D` entry). No scene version bump: plants were already i
   in light.
 - Decisions (Nathan 2026-10-15): NO water haze (his water never went hazy; even 6 % lifted a black background into a veil);
   one slider, no per-effect sliders or algae types; the growth timeline does NOT drive it for now.
-- Open: algae on plant leaves (needs `render/plant3d.ts` / plant branch of items.ts, lane GR4's); bowl glass film.
+- Open: algae on plant leaves; bowl glass film. (Both done by lane LA, 2026-10-15.)
 
 ## Lane E: live rock + corals (2026-10-14; branch `corals`; Nathan approved the style test, live rock salt only; pushed to main)
 
