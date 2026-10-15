@@ -79,6 +79,14 @@ export default {
       }
       return json(out, 200, origin);
     }
+    // GET /health: the latest 5-minute check and the breaker, read from KV (never touches aqadvisor.com); the page only
+    // offers a stocking check while this says up (Nathan 2026-10-15)
+    if (request.method === 'GET' && url.pathname === '/health') {
+      const today = JSON.parse(await env.AQ_CACHE.get(`health:${day()}`) ?? '[]');
+      const last = today.at(-1) ?? JSON.parse(await env.AQ_CACHE.get(`health:${day(Date.now() - 864e5)}`) ?? '[]').at(-1) ?? null;
+      const resting = Number(await env.AQ_CACHE.get(DOWN) ?? 0) || null;
+      return json({ last, resting, now: Date.now() }, 200, origin, 60);
+    }
     if (request.method !== 'GET' || url.pathname !== '/stocking') return json({ error: 'not found' }, 404, origin);
     const q = aqParams(url.searchParams);
     if (!q) return json({ error: 'bad request' }, 400, origin);

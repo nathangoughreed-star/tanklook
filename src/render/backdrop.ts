@@ -1,12 +1,12 @@
-// The 3D back wall (TankSetup.backdrop): a relief panel inside the tank against the back glass, like the foam rock, cork
-// and moss backgrounds sold for tanks and terrariums. One height field per style over the glass (along the back run,
-// up the height), pushed in from the glass by up to `depth` mm, shaded per vertex like the stones (render/items.ts:
+// The 3D wall (TankSetup.backdrop): a relief panel inside the tank against the glass, like the foam rock, cork and moss
+// backgrounds sold for tanks and terrariums, on every side the background is on (render.bgSides; Nathan 2026-10-15),
+// running round the corners where two sides meet. One height field per style over the glass (along each run, up the height), pushed in from the glass by up to `depth` mm, shaded per vertex like the stones (render/items.ts:
 // a baked top-front-left light, darker in the hollows, the grit shader for the fine detail). Nathan 2026-10-15.
 import * as THREE from 'three';
 import { rng } from '../art/paint';
 import { backdropDepth, RIM_H } from '../scene/physics';
-import { backgroundRuns, shapeOf, type P } from '../scene/shape';
-import type { BackdropKind, BackdropSettings, Tank } from '../scene/types';
+import { backgroundRuns, footprint, shapeOf, type P } from '../scene/shape';
+import type { BackdropKind, BackdropSettings, BgSide, Tank } from '../scene/types';
 import { grit, solidMaterial } from './items';
 
 export const BACKDROPS: Record<BackdropKind, string> = {
@@ -158,10 +158,10 @@ const LIGHT = new THREE.Vector3(-0.35, 1, 0.55).normalize();
 const cache = new Map<string, THREE.BufferGeometry>();
 
 /** The wall's geometry for one tank (cached by tank and settings: the scene rebuilds on every edit). */
-export function backdropGeometry(T: Tank, b: BackdropSettings, rim = false): THREE.BufferGeometry | null {
+export function backdropGeometry(T: Tank, b: BackdropSettings, rim = false, sides: readonly BgSide[] = ['back']): THREE.BufferGeometry | null {
   const depth = backdropDepth(b, T);
-  if (!depth) return null;
-  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.bowMin}|${b.kind}|${depth}|${b.seed}|${rim}`;
+  if (!depth || !sides.length) return null;
+  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.bowMin}|${T.pieDeg}|${b.kind}|${depth}|${b.seed}|${rim}|${[...sides].sort()}`;
   const hit = cache.get(key);
   if (hit) return hit;
   const f = field(b.kind, b.seed), col = new THREE.Color(), gap = 1.5;
@@ -169,26 +169,47 @@ export function backdropGeometry(T: Tank, b: BackdropSettings, rim = false): THR
   // rimless, a few mm under the glass top resting on the panes
   const top = rim ? T.H - RIM_H : T.H - 4;
   const pos: number[] = [], cols: number[] = [], idx: number[] = [], inward: number[] = [];
-  for (const run of backgroundRuns(T, ['back'], 145, 0)) {
+  // inward = toward the middle of the footprint (every tank shape is convex)
+  const E = footprint(T).edges, mid: P = [E.reduce((a, e) => a + e.a[0], 0) / E.length, E.reduce((a, e) => a + e.a[1], 0) / E.length];
+  for (const run of backgroundRuns(T, sides, 145, 0)) {
     // run arc length, then the grid along it
     const acc = [0];
     for (let i = 1; i < run.length; i++) acc.push(acc[i - 1] + Math.hypot(run[i][0] - run[i - 1][0], run[i][1] - run[i - 1][1]));
     const len = acc[acc.length - 1];
     if (len < 10) continue;
-    const step = Math.min(8, Math.max(3, Math.max(len, top) / 260)), nu = Math.ceil(len / step) + 1, ny = Math.ceil(top / step) + 1;
-    const pointAt = (s: number): [P, P] => { // point on the glass and the inward normal (toward the front)
+    const step = Math.min(8, Math.max(3, Math.max(len, top) / 260)), ny = Math.ceil(top / step) + 1;
+    const segN = (k: number): P => { // inward normal of segment k-1 -> k
+      const a = run[k - 1], c = run[k], tl = Math.hypot(c[0] - a[0], c[1] - a[1]) || 1;
+      const n: P = [-(c[1] - a[1]) / tl, (c[0] - a[0]) / tl];
+      return n[0] * (mid[0] - a[0]) + n[1] * (mid[1] - a[1]) < 0 ? [-n[0], -n[1]] : n;
+    };
+    // corners where two sides meet get a column of their own, pushed out along the mitre so both faces meet there
+    const corner = new Map<number, P>();
+    const mitre = (n0: P, n1: P): P => { const m: P = [n0[0] + n1[0], n0[1] + n1[1]], ml = Math.hypot(m[0], m[1]) || 1, half = Math.max(0.3, (m[0] * n0[0] + m[1] * n0[1]) / ml); return [m[0] / ml / half, m[1] / ml / half]; };
+    for (let k = 1; k < run.length - 1; k++) {
+      const n0 = segN(k), n1 = segN(k + 1);
+      if (n0[0] * n1[0] + n0[1] * n1[1] < 0.94) corner.set(acc[k], mitre(n0, n1));
+    }
+    // all the way round (every side chosen): the seam is a corner too, and has no ends to close
+    const closed = Math.hypot(run[0][0] - run[run.length - 1][0], run[0][1] - run[run.length - 1][1]) < 1e-6;
+    if (closed) { const m = mitre(segN(run.length - 1), segN(1)); corner.set(0, m); corner.set(len, m); }
+    const ss = Array.from({ length: Math.ceil(len / step) + 1 }, (_, i) => Math.min(len, i * step));
+    for (const s0 of corner.keys()) ss.push(s0);
+    ss.sort((a, b) => a - b);
+    const uq = [...new Set(ss)], us = uq.filter((s0, i) => i === 0 || i === uq.length - 1 || s0 - uq[i - 1] > step * 0.3 || corner.has(s0));
+    for (let i = us.length - 2; i > 0; i--) if (!corner.has(us[i]) && (corner.has(us[i + 1]) || corner.has(us[i - 1])) && Math.min(us[i + 1] - us[i], us[i] - us[i - 1]) < step * 0.3) us.splice(i, 1);
+    const nu = us.length;
+    const pointAt = (s: number): [P, P] => { // point on the glass and the inward normal (mitred at a corner)
       let k = 1; while (k < acc.length - 1 && acc[k] < s) k++;
       const a = run[k - 1], c = run[k], t = (s - acc[k - 1]) / Math.max(1e-9, acc[k] - acc[k - 1]);
-      const tx = c[0] - a[0], td = c[1] - a[1], tl = Math.hypot(tx, td) || 1;
-      let n: P = [-td / tl, tx / tl]; if (n[1] > 0) n = [-n[0], -n[1]];
-      return [[a[0] + tx * t, a[1] + td * t], n];
+      return [[a[0] + (c[0] - a[0]) * t, a[1] + (c[1] - a[1]) * t], corner.get(s) ?? segN(k)];
     };
     const base = pos.length / 3;
     const vert = (p: P, n: P, out: number, y: number, c: THREE.Color) => {
       pos.push(p[0] + n[0] * out, y, -(p[1] + n[1] * out)); cols.push(c.r, c.g, c.b); inward.push(n[0], -n[1]);
     };
     for (let i = 0; i < nu; i++) {
-      const s = Math.min(len, i * step), [p, n] = pointAt(s);
+      const s = us[i], [p, n] = pointAt(s);
       for (let j = 0; j < ny; j++) {
         const y = Math.min(top, j * step), h = sat(f(s, y, col));
         col.multiplyScalar(0.5 + 0.5 * h); // hollows in shadow
@@ -207,9 +228,9 @@ export function backdropGeometry(T: Tank, b: BackdropSettings, rim = false): THR
       for (let k = 0; k < list.length - 1; k++) idx.push(list[k], list[k + 1], b0 + k, list[k + 1], b0 + k + 1, b0 + k);
     };
     const tops = Array.from({ length: nu }, (_, i) => base + i * ny + ny - 1);
-    capRow(tops, k => { const [p, n] = pointAt(Math.min(len, k * step)); return [p, n, top]; });
-    for (const i of [0, nu - 1]) {
-      const colV = Array.from({ length: ny }, (_, j) => base + i * ny + j), [p, n] = pointAt(Math.min(len, i * step));
+    capRow(tops, k => { const [p, n] = pointAt(us[k]); return [p, n, top]; });
+    for (const i of closed ? [] : [0, nu - 1]) {
+      const colV = Array.from({ length: ny }, (_, j) => base + i * ny + j), [p, n] = pointAt(us[i]);
       capRow(colV, k => [p, n, Math.min(top, k * step)]);
     }
   }
@@ -239,10 +260,10 @@ export function backdropGeometry(T: Tank, b: BackdropSettings, rim = false): THR
   return g;
 }
 
-/** Add the wall to a tank's scene (nothing when off or in a bowl). */
-export function addBackdrop(sc: THREE.Scene, b: BackdropSettings | undefined, T: Tank, rim = false) {
+/** Add the wall to a tank's scene on `sides` (nothing when off, no sides, or in a bowl). */
+export function addBackdrop(sc: THREE.Scene, b: BackdropSettings | undefined, T: Tank, rim = false, sides: readonly BgSide[] = ['back']) {
   if (!b) return;
-  const g = backdropGeometry(T, b, rim);
+  const g = backdropGeometry(T, b, rim, sides);
   if (!g) return;
   const m = new THREE.Mesh(g, solidMaterial(T));
   m.userData.backdrop = true;

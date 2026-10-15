@@ -2,6 +2,62 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Efficiency review (2026-10-15; Nathan: the features are in and look right, so review for efficiency; lanes E1 + E2 OPEN, measure / audit only)
+- **Why:** about 470 commits in a week from about 20 lanes; nobody has measured the whole app since lanes J / J2 / K2
+  (2026-10-14), and plant growth, the 3D walls, algae, scape density and the light mount have landed since.
+  src/ui/panels.ts (1630 lines, 109 changes) and src/render/build.ts (1212 lines, 72 changes) are the merge-conflict hotspots.
+- **Phase 1, now (no app code changes, safe beside the running lanes AL and GR4):**
+  - **E1 perf baseline:** `../Glass-Box-perf2` / `perf-baseline`, launch config `perf2` 5623. Owns new
+    `scripts/perf-baseline.mjs` and `research/efficiency/E1-*`. A re-runnable harness (hardware GPU, alternating-frame
+    A/B, every example + split, 1050x850 and phone size, production build for load / size), then a breakdown and a ranked
+    fix list. Prompt: prompts/lane-E1-perf-baseline.md.
+  - **E2 code audit:** `../Glass-Box-audit` / `code-audit`, no dev server. Owns `research/efficiency/E2-*` and optional
+    `scripts/unused-exports.mjs`. Dead code, duplicates, hot-path suspects (file:line, for E1 to time), bundle
+    makeup, and a pure-move split plan for panels.ts / build.ts. Prompt: prompts/lane-E2-code-audit.md.
+    **DONE 2026-10-15** (audited `a93a81f`): `research/efficiency/E2-code-audit.md` (ranked table + split plan;
+    appendices E2-hotpath / E2-dups / E2-splitmap), `scripts/unused-exports.mjs` (oxc via rolldown; TS 7 has no JS API).
+    Findings: (1) **dist-single/tanklook.html is broken** since `d67ac73` (review.html entry splits three + render
+    into chunks; build-single.mjs inlines only main); a fixed file will be ~1.36 MB, not 750 kB. scripts-only fix.
+    (2) Carpet cache key in render/items.ts:476 misses terrain / substrate / swamp, so carpets keep a stale ground shape
+    after a terrain edit (bug; after GR4). Lane J's open item 3 (`Math.round(h)`) is already fixed (`6165d6a`).
+    (3) Per-draw waste (the app draws only when dirty, so per orbit / drag move): lightout.ts:446 unitKey
+    JSON.stringify ~3x per viewport, viewer.ts:384 placePerson bisect, viewer.ts:391 full-traverse material rank,
+    viewer.ts:336/386/401 style reads + viewmap redraw; sent to E1 to time. (4) The examples are 240 of main's 426 kB
+    (lazy chunk = ~100 kB gzip off first load). (5) Dead code is small: plant / flat-fish card fallbacks are
+    unreachable (every species is 3D), 3 dead + 4 test-only exports. Split plan: build.ts first (B1-B6, true pure moves
+    into flat render/build*.ts files, build.ts re-exports), then panels.ts (P0 UI-state dump, P1 utils, P2 ctx, P3-P8
+    mountX(ctx) per section; behaviour-preserving, not byte-pure), only when GR4 / AL / W have no panels.ts hunks.
+- **Phase 2, later:** the coordinator merges E1 + E2 into one ranked list; Nathan picks. Fixes that touch another active
+  lane's files, or panels.ts / build.ts / viewer.ts, wait for a quiet point (no other lane running), and the splits land
+  first after it. A fix confined to a file nobody owns can go in earlier.
+- **Gate for every phase 2 change:** all fingerprints identical (`npm run sheets -- --record` on the hardware GPU,
+  `--use-angle=d3d11`), incrementalCheck 0 px differ, tests pass. Any visible change goes to Nathan with before / after
+  pictures, as J2's frost change did. Re-run E1's harness after each change and after GR4 lands.
+
+## Lane SD: scape density sliders (2026-10-15; branch `scape-density`, port 5603; DONE, pushed to main)
+- **Per-layer random streams:** `starterItems(S, keepHard?)` in scene/items.ts draws each layer from its own stream
+  (seed x layer: hardscape 1, plants 2, style picks 11 / 12; animals 3 in scene/starter.ts). A plant-stop change leaves
+  every rock identical (tested); a plants-only redraw keeps the hardscape where it stands now and plants round it.
+- **Density from settings, not the seed:** `LayoutSettings.dens = { hard, plant, animal }`, stops 0..4. `STYLES` (items.ts)
+  gives each layout its [Sparse, Packed] range per layer (Medium = 1 = the set as designed; `stopDens`), iwagumi its stone
+  count per stop (3, 3, 5, 5, 7: odd, 7 at most), and an animal species pool. Seed 1 at Medium = the designed set
+  (`classic`); seed 1 at other stops keeps the designed materials and groups (`designed`). `starterStyle` still draws the
+  old density roll, so every seed keeps its composition. Old files: `legacyDens(seed)` = stops nearest the old roll, animals None.
+  New styles add a STYLES row + a branch with `layer('hard', ...)` / `layer('plant', ...)`; a composition picker plugs into `foci`.
+- **Animals (scene/starter.ts):** local bioload rule `litresFor` (about 3 L per neon, 30 L per angel, x1.5 marine, x0.3
+  inverts) against the water volume; stops fill 0 / 35 / 60 / 80 / 90 % of it; the lead school always goes in if it fits
+  under the cap; pool filtered by fresh / salt, length (L >= 5-6 x TL) and land. None = the user's own animals untouched.
+- **UI:** three stepped sliders under "Start from" (Hardscape, Plants / Corals in a reef, Animals); dragging only names the
+  stop, release redraws that layer once (`regenerate`), one undo step. Hardscape redraws rocks + plants (animals stay).
+  Shuffle and a new layout keep the stops. Bowl / round planted: ring 0.76 of the radius, front carpet patches spread out.
+- **Hand edits (Nathan 2026-10-15: "redraw completely but with a very obvious warning popup that it will get rid of your
+  current scape"):** every redraw (slider, Shuffle, new layout) is complete; when it would drop hand edits a modal
+  `#scapeWarn` asks first ("Keep my scape" / red "Replace it"; Esc = keep, the control goes back). `handEdits(s, what)`
+  (scene/starter.ts) regenerates the layer from the current settings and compares poses (coral lift ignored; animals by
+  species count); untouched sets redraw with no popup (browser-checked on all six layouts). The dialog resolves from its
+  buttons, not its `close` event, which the background preview pane held back.
+- Pictures: worktree `shots/sd_sheet.png` (iwagumi / planted / reef at Sparse / Medium / Packed).
+
 ## Lane X2: fish leftovers from X and F2 (2026-10-15; branch `fish-x2`, port 5583; Nathan approved all four steps; pushed to main)
 - **Generic, off by default, own commits; every other fingerprint unchanged:** `MedianFin.taper` (dc00232; the soft top falls
   in a straight line from the peak to this share of h at the base end) and `Plan.analSplit` (29ae68f; a doubled anal fin:
@@ -1197,9 +1253,14 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | F2 harder fish | (worktree removed) | - | - | DONE (`8febeec`): fantail, kuhli, harlequin, oscar v3. Open: head geometry rejected by Nathan (cory / loach / SAE / marine heads have no generic); fantail doubled anal fin; lane X's leftovers not applied (noseCap on neon / cardinal / chili / cpd, characin dorsal taper, platy / molly gonopodium) |
 | X2 fish leftovers | (worktree removed) | - | `art/fishgen.ts`, `render/fish3d.ts`, `art/paint.ts` (noseCap on neon / cardinal / chili / cpd, characin dorsal taper, platy / molly gonopodium, fantail doubled anal fin) | DONE 2026-10-15, pushed (see its section); fish files free; Sex switch browser-checked PASS (build 436) |
 | GR1 plant growth | `../Glass-Box-plants3d` / `plants3d` | 5283 | see the "Plant growth" section (growth value, Height removed, lying over at the surface) | DONE (`050e2d9`, `4a4e3a8`, build 440) |
+| SF single-file build fix | `../Glass-Box-single-fix` / `single-fix` | - (opens dist-single/tanklook.html directly) | `vite.config.ts`, `scripts/build-single.mjs` | ready to open (prompt `prompts/lane-SF-single-file.md`); found by E2: broken since d67ac73 |
+| E1 perf baseline | `../Glass-Box-perf2` / `perf-baseline` | 5623 | new `scripts/perf-baseline.mjs`, `research/efficiency/E1-*` (no src edits) | OPEN 2026-10-15 |
+| E2 code audit | `../Glass-Box-audit` / `code-audit` | - | `research/efficiency/E2-*`, `scripts/unused-exports.mjs` (no src edits) | OPEN 2026-10-15 |
 | GR2 emersed growth + floaters | `../Glass-Box-plants3d` / `plants3d` | 5283 | `art/plants.ts`, `render/plant3d.ts` (bendPlant 'emerge' / 'spread'), plant branch of `render/items.ts`, plant entries of `scene/items.ts`, new floater / lily species data | DONE (`2b67f4c`, build 456). Open: lying stems cut at the glass, sagittaria lawn loose tufts, lotus pads orange under light, duckweed waits for instancing |
 | GR4 GPU reveal + idle prebuild | `../Glass-Box-plants3d` / `plants3d` | 5283 | (free) | DONE, pushed (GPU reveal per mesh, worker prebuild; render/lighting.ts untouched: the hook went in the plant material) |
 | GR3 growth timeline + tank setting | (worktree removed) | - | see the "Plant growth" section (Feeding + Time, `scene/growtime.ts`) | DONE (`c9d615a`, `5931cb2`, build 452). GPU reveal + idle prebuild (Nathan's call) handed to GR2 |
+| SD scape density sliders | `../Glass-Box-scape-density` / `scape-density` | 5603 | `scene/items.ts` starterStyle / starterItems, LayoutSettings in `scene/types.ts`, layoutShuffle + layout picker in `ui/panels.ts` / `index.html`, new tests | foundation LIVE (`f3a1859`, build 468); waiting on Nathan: hand edits pinned vs replace the layer (replace ships now) |
+| AL dirty / algae view | `../Glass-Box-algae` / `algae` | 5613 | new `render/algae.ts`, `condition` tank setting in `scene/types.ts` + validate / share, water fog hook in `render/lighting.ts`, Condition section hook in `ui/panels.ts` / `index.html`; NOT plant leaves (GR4's files) | ready to open (prompt `prompts/lane-AL-algae.md`) |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 Free (no lane): `render/build.ts`, `render/items.ts`, `scene/items.ts`, `render/viewer.ts`, `main.ts`, `render/lighting.ts`,
 `render/coral3d.ts`, `render/shrimp3d.ts` / `art/shrimps.ts`, `scene/share.ts`, herps / herp3d / snails / snail3d. A one-line hook in a free file is fine; name it

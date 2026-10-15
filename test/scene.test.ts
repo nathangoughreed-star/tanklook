@@ -177,7 +177,7 @@ describe('scene v4', () => {
   it('migrates the v3 sample plant to a layout preset', () => {
     const v3 = (show: boolean) => { const o = { ...v6(), version: 3, plant: { show, x: 100, depth: 50 } } as Record<string, unknown>; delete o.layout; return o; };
     const on = load(v3(true)), off = load(v3(false));
-    expect(on.layout).toEqual({ id: 'planted', seed: 1 }); expect(off.layout.id).toBe('none');
+    expect(on.layout).toEqual({ id: 'planted', seed: 1, dens: { hard: 2, plant: 2, animal: 0 } }); expect(off.layout.id).toBe('none');
     expect('plant' in on).toBe(false);
   });
   it('keeps a surface for snails only, defaulting to the floor; a v7 pane becomes a point on the glass', () => {

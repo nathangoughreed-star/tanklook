@@ -8,11 +8,12 @@ import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { BACKDROPS } from '../render/backdrop';
 import { MAP_DIV, MAP_STEP, emitters, mapStepOf } from '../render/lighting';
 import { darkOf, darkStats } from '../render/lightShells';
-import { FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeOf, wattsOf, type Fixture } from '../scene/lightout';
+import { FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, mountOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeOf, wattsOf, type Fixture } from '../scene/lightout';
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene, TANK_PRESETS } from '../scene/defaults';
-import { KINDS, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, itemDims, makeItem, starterItems } from '../scene/items';
+import { ANIMAL_STOPS, DEFAULT_DENS, DENS_STOPS, KINDS, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, itemDims, makeItem, type Layer } from '../scene/items';
+import { handEdits, regenerate } from '../scene/starter';
 import { growthOf, isClump, isPatch, type PlantType } from '../art/plants';
 import { clumpAuto } from '../render/plant3d';
 import { canPrebuild, plantWarm, prebuildHooks, prebuildPlants } from '../render/items';
@@ -29,7 +30,7 @@ const ARROWS: Record<string, [string, number]> = { ArrowLeft: ['x', -1], ArrowRi
 import { placeNew, randomPose, randomSize, shuffleFish } from '../scene/scatter';
 import { fitFish, keepInWater, setWaterLevel } from '../scene/water';
 import { tankWeight } from '../scene/weight';
-import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, aqWaitS, fetchStocking } from '../data/aqadvisor';
+import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, aqWaitS, fetchAqHealth, fetchStocking, type AqHealth } from '../data/aqadvisor';
 import { BOWL_DEFAULT, BOWL_MAX, BOWL_MIN, PIE_DEFAULT, POLY_SIDES, SHAPES, bowMinLimit, offsetRing, ringArea, shapeOf } from '../scene/shape';
 import { TABLE_MAX, tableOn, tableRange, wallGap } from '../scene/table';
 import type { BgFit, BgSide, Fish, GrowFeed, Item, ItemKind, LayoutId, LightTech, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
@@ -324,9 +325,9 @@ Cancel, then change the name, to keep both.`)) return;
   $<HTMLSelectElement>('bgSel').innerHTML = Object.entries(BACKGROUNDS).map(([k, b]) => `<option value="${k}">${esc(b.label)}</option>`).join('');
   $<HTMLSelectElement>('bgSel').onchange = e => store.edit(s => { s.render.bg = (e.target as HTMLSelectElement).value as TankSetup['render']['bg']; });
   for (const [id, side] of BG_BTNS)
-    $(id).onclick = () => store.edit(s => { const b = s.render.bgSides; s.render.bgSides = b.includes(side) ? b.filter(k => k !== side) : [...b, side]; });
+    $(id).onclick = () => store.edit(s => { const b = s.render.bgSides; s.render.bgSides = b.includes(side) ? b.filter(k => k !== side) : [...b, side]; wallFit(s); }); // the 3D wall follows the sides
   $('bgArc').oninput = e => store.edit(s => { s.render.bgArc = +(e.target as HTMLInputElement).value; }, { coalesce: 'bgArc' });
-  // 3D back wall (Nathan 2026-10-15): animals and plants are pushed in front of it when it appears or grows
+  // 3D wall (Nathan 2026-10-15), on the background's sides: animals and plants are pushed in front of it when it appears or grows
   const wallFit = (s: TankSetup) => { keepInWater(s); for (const it of s.items) clampItem(it, s.tank, s); };
   $<HTMLSelectElement>('bdSel').innerHTML = Object.entries(BACKDROPS).map(([k, l]) => `<option value="${k}">${esc(l)}</option>`).join('');
   $<HTMLSelectElement>('bdSel').onchange = e => store.edit(s => { s.backdrop.kind = (e.target as HTMLSelectElement).value as TankSetup['backdrop']['kind']; wallFit(s); });
@@ -632,7 +633,7 @@ Cancel, then change the name, to keep both.`)) return;
     store.edit(s => {
       const f = s.fish.find(q => q.id === src); if (!f) return;
       const n: Fish = { ...f, id, x: f.x + fishTL(f, speciesOf(f)!) * 0.9 };
-      clampFish(n, s.tank, backdropDepth(s.backdrop, s.tank)); s.fish.push(n);
+      clampFish(n, s.tank, backdropDepth(s.backdrop, s.tank), s.render.bgSides); s.fish.push(n);
     });
     store.select(id);
   };
@@ -785,6 +786,7 @@ Cancel, then change the name, to keep both.`)) return;
   const fitK = (l: TankSetup['light']) => { const [a, b, d] = TECHS[techOf(l)].k; if (l.kelvin < a || l.kelvin > b) l.kelvin = d; };
   const countMax = (l: TankSetup['light']) => FIX_SPEC[fixtureOf(l)]?.maxCount ?? (l.type === 'spot' && l.pattern === 'fit' ? 12 : 6);
   const capCount = (l: TankSetup['light']) => { l.count = Math.min(l.count, countMax(l)); };
+  $<HTMLSelectElement>('lMount').onchange = e => store.edit(s => { s.light.mount = (e.target as HTMLSelectElement).value as 'legs' | 'hang'; });
   $<HTMLSelectElement>('lPat').onchange = e => store.edit(s => { s.light.pattern = (e.target as HTMLSelectElement).value as TankSetup['light']['pattern']; capCount(s.light); });
   // Fixture (Nathan 2026-10-15): the style sets the geometry and which lamps fit; a lamp it does not come in becomes its
   // first, and a colour outside the new lamp's usual range its usual one
@@ -902,27 +904,70 @@ Cancel, then change the name, to keep both.`)) return;
     else if (d.dataset.sec === 'fish' && store.selId != null) store.select(null);
   });
   $<HTMLSelectElement>('layout').innerHTML = Object.entries(LAYOUTS).map(([k, l]) => `<option value="${k}">${esc(l.label)}</option>`).join('');
-  // a starter set replaces every piece (undoable); the pieces are then ordinary items
-  const replaced = (s: TankSetup) => { s.items = starterItems(s); };
+  // a starter set replaces every piece (undoable), and the animals when its animal stop is above None; the pieces are
+  // then ordinary items
+  let fishId0 = 1;
+  const replaced = (s: TankSetup) => regenerate(s, 'all', fishId0);
+  const dropGoneFish = () => { if (store.selId != null && !S().fish.some(f => f.id === store.selId)) store.select(null); };
+  /** A redraw is complete (Nathan 2026-10-15): when it would throw away pieces or animals placed, moved or removed by
+   *  hand, a warning asks first. Resolves true to go ahead; on "Keep my scape" `revert` puts the control back. */
+  const warnDlg = $<HTMLDialogElement>('scapeWarn');
+  const okToReplace = (what: Layer | 'all', revert: () => void) => new Promise<boolean>(done => {
+    const lost = handEdits(S(), what);
+    if (!lost.length) { done(true); return; }
+    const list = lost.length === 1 ? lost[0] : `${lost.slice(0, -1).join(', ')} and ${lost[lost.length - 1]}`;
+    $('scapeWarnText').textContent = `${what === 'all' ? 'A new starter set' : 'Redrawing this layer'} starts the ${list} again from scratch. Everything you placed, moved or removed there by hand will be gone.`;
+    // answered by the buttons (Esc = keep) rather than the dialog's close event, which a background tab may hold back
+    const answer = (ok: boolean) => { warnDlg.oncancel = $('scapeKeep').onclick = $('scapeReplace').onclick = null; warnDlg.close(); if (!ok) revert(); done(ok); };
+    $('scapeKeep').onclick = () => answer(false); $('scapeReplace').onclick = () => answer(true);
+    warnDlg.oncancel = e => { e.preventDefault(); answer(false); };
+    warnDlg.showModal();
+  });
+  const showDens = () => { const d = S().layout.dens ?? DEFAULT_DENS; for (const [k, inp, out] of DENS_IN) { setVal(inp, d[k]); $(out).textContent = stopName(k, d[k]); } };
   // leaving swamp brings back the level it lowered, unless the level was moved since (audit #13)
   let preSwamp = emptyScene().tanks[0].water.level;
-  $<HTMLSelectElement>('layout').onchange = e => {
-    store.selectItem(null);
+  $<HTMLSelectElement>('layout').onchange = async e => {
+    const to = (e.target as HTMLSelectElement).value as LayoutId;
+    if (!await okToReplace('all', () => setVal('layout', S().layout.id))) return;
+    store.selectItem(null); fishId0 = store.nextId();
     store.edit(s => {
       const was = s.layout.id;
-      s.layout.id = (e.target as HTMLSelectElement).value as LayoutId;
+      s.layout.id = to;
       if (s.layout.id === 'swamp' && s.water.level > SWAMP_LEVEL) { preSwamp = s.water.level; setWaterLevel(s, SWAMP_LEVEL); } // land needs to stand out of the water
       else if (was === 'swamp' && s.layout.id !== 'swamp' && s.water.level === SWAMP_LEVEL) setWaterLevel(s, preSwamp);
       replaced(s);
     });
+    dropGoneFish();
     status('New starter set placed. Ctrl+Z brings the previous pieces back.');
   };
-  $('layoutShuffle').onclick = () => {
+  $('layoutShuffle').onclick = async () => {
+    if (!await okToReplace('all', () => {})) return;
     const seed = 1 + Math.floor(Math.random() * 1e6);
-    store.selectItem(null);
+    store.selectItem(null); fishId0 = store.nextId();
     store.edit(s => { s.layout.seed = seed; replaced(s); });
+    dropGoneFish();
     status('Rearranged. Ctrl+Z brings the previous pieces back.');
   };
+  // Density sliders (lane SD): stepped, Sparse .. Packed (animals None .. Full). Dragging only names the stop; the
+  // layer is redrawn once, on release (Nathan 2026-10-15: a slider that redraws the tank as it moves is too heavy), as
+  // one undo step. Shuffle keeps the stops: only the seed changes.
+  const DENS_IN: [Layer, string, string][] = [['hard', 'densHard', 'oDensHard'], ['plant', 'densPlant', 'oDensPlant'], ['animal', 'densAnimal', 'oDensAnimal']];
+  const stopName = (k: Layer, v: number) => (k === 'animal' ? ANIMAL_STOPS : DENS_STOPS)[v] ?? '';
+  for (const [k, inp, out] of DENS_IN) {
+    const el = $<HTMLInputElement>(inp);
+    el.oninput = () => { $(out).textContent = stopName(k, +el.value); };
+    el.onchange = async () => {
+      const v = +el.value;
+      if (!await okToReplace(k, showDens)) return;
+      if (k !== 'animal') store.selectItem(null);
+      fishId0 = store.nextId();
+      store.edit(s => { s.layout.dens = { ...(s.layout.dens ?? DEFAULT_DENS), [k]: v }; regenerate(s, k, fishId0); });
+      dropGoneFish();
+      status(k === 'plant' ? `Plants redrawn (${stopName(k, v)}); the hardscape stayed put. Ctrl+Z brings the previous ones back.`
+        : k === 'hard' ? `Hardscape redrawn (${stopName(k, v)}), with plants round it. Ctrl+Z brings the previous pieces back.`
+          : v ? `Animals restocked (${stopName(k, v)}), within a safe bioload. Ctrl+Z brings the previous ones back.` : 'Starter animals removed. Ctrl+Z brings them back.');
+    };
+  }
 
   // ---------- Aquascape items: library, selection ----------
   // stones, wood and caves under Hardscape; plants and corals under Plants (Nathan 2026-10-14)
@@ -1118,6 +1163,18 @@ Cancel, then change the name, to keep both.`)) return;
   /** Requests waiting their turn (one at a time, 30 s after a fresh answer): shown as "queued, ~N s", ticking. */
   const aqQueued = new Set<string>();
   let aqTick = 0;
+  /** Is aqadvisor.com up (the proxy's 5-minute check)? Check and ↻ are offered only on 'up'; otherwise the stocking line
+   *  just says AqAdvisor is down (Nathan 2026-10-15). Asked on load, every 2 minutes, and when the window regains focus. */
+  let aqUp: AqHealth = null;
+  const pollAqHealth = async () => {
+    const h = await fetchAqHealth();
+    if (h !== aqUp) { aqUp = h; syncAq(); viewer.invalidate(); }
+  };
+  if (AQ_PROXY) {
+    void pollAqHealth();
+    window.setInterval(() => { if (!document.hidden) void pollAqHealth(); }, 120000);
+    window.addEventListener('focus', () => void pollAqHealth());
+  }
   const aqWaitText = (key: string) => aqQueued.has(key) ? (aqWaitS() ? `queued, ~${aqWaitS()} s` : 'queued') : 'checking…';
   function syncAq() {
     const q = aqQuery(S());
@@ -1125,14 +1182,12 @@ Cancel, then change the name, to keep both.`)) return;
     if (!q) { $('aqNote').textContent = isSalt(S()) && S().fish.length ? 'No stocking check for saltwater tanks yet.' : ''; return; }
     const key = aqKey(q), got = aqDone.get(key), busy = aqBusy.has(key);
     $<HTMLAnchorElement>('aqLink').href = aqAdvisorUrl(q);
-    $('aqCheck').style.display = AQ_PROXY && got === undefined ? '' : 'none';
+    $('aqCheck').style.display = AQ_PROXY && got === undefined && aqUp === 'up' ? '' : 'none';
     $<HTMLButtonElement>('aqCheck').disabled = busy;
     $('aqOut').textContent = got !== undefined ? `${got}% (per AqAdvisor)${got > 100 ? ', overstocked' : ''}`
-      : busy ? aqWaitText(key) : aqErr.get(key) ?? '';
+      : busy ? aqWaitText(key) : AQ_PROXY && aqUp === 'down' ? 'AqAdvisor is down' : aqErr.get(key) ?? '';
     $('aqOut').className = got !== undefined && got > 100 ? 'bad' : '';
-    $('aqNote').textContent = [
-      q.standIns.length ? `Counted as a similar fish (not in AqAdvisor): ${q.standIns.map(k => `${k.count} ${k.name} as ${k.as}`).join(', ')}.` : '',
-      q.skipped.length ? `Not counted (land animals): ${q.skipped.map(k => `${k.count} ${k.name}`).join(', ')}.` : ''].filter(Boolean).join(' ');
+    $('aqNote').textContent = q.skipped.length ? `Not counted (land animals): ${q.skipped.map(k => `${k.count} ${k.name}`).join(', ')}.` : '';
   }
   /** The last answer each view (by its key, A/B) showed, so a change to the fish or the tank keeps the old number,
    *  in yellow, until ↻ is pressed (Nathan 2026-10-09). */
@@ -1145,7 +1200,7 @@ Cancel, then change the name, to keep both.`)) return;
     const key = aqKey(q);
     const keep = () => { for (const v of viewer.active) { const vq = aqQuery(v.S); if (vq && aqKey(vq) === key) aqLast.set(v.key, aqDone.get(key)!); } };
     if (aqDone.has(key)) { keep(); viewer.invalidate(); return; }
-    if (aqBusy.has(key)) return;
+    if (aqBusy.has(key) || aqUp !== 'up') return;
     aqBusy.add(key); aqQueued.add(key); aqErr.delete(key); syncAq(); viewer.invalidate();
     if (!aqTick) aqTick = window.setInterval(() => {
       syncAq(); viewer.invalidate();
@@ -1156,6 +1211,7 @@ Cancel, then change the name, to keep both.`)) return;
     catch (e) {
       const m = e instanceof Error ? e.message : '';
       aqErr.set(key, m === 'proxy 429' ? 'busy, try again in a minute' : m === 'proxy 503' ? 'AqAdvisor is resting, try in 10 minutes' : "AqAdvisor didn't answer, try later");
+      if (m !== 'proxy 429') void pollAqHealth(); // a failure may mean it just went down: hide Check until the next up
     }
     aqQueued.delete(key); aqBusy.delete(key); syncAq(); viewer.invalidate();
   };
@@ -1223,7 +1279,7 @@ Cancel, then change the name, to keep both.`)) return;
     for (const [id, lid] of LIDS) $(id).classList.toggle('on', s.lid === lid);
     setVal('bgSel', s.render.bg);
     for (const [id, side] of BG_BTNS) { const on = s.render.bgSides.includes(side); $(id).classList.toggle('on', on); $(id).setAttribute('aria-pressed', String(on)); }
-    $('bgSidesRow').style.display = s.render.bg === 'none' ? 'none' : '';
+    $('bgSidesRow').style.display = s.render.bg === 'none' && s.backdrop.kind === 'none' ? 'none' : ''; // sides of the colour and the 3D wall
     $('bgArcRow').style.display = s.render.bg !== 'none' && (sh === 'round' || sh === 'bowl') ? '' : 'none';
     syncPics(s);
     setVal('bdSel', s.backdrop.kind); setVal('bdDepth', s.backdrop.depth); setOut('oBdDepth', fmtLen(s.backdrop.depth, u, 1));
@@ -1367,6 +1423,7 @@ Cancel, then change the name, to keep both.`)) return;
     setVal('lPat', l.pattern); setOut('oLSp', l.spacing ? fmt(l.spacing) : 'Auto'); setOut('oLCone', l.cone + '°');
     setOut('oLH', s.lid === 'hood' ? 'In hood' : fmt(l.height) + ' above');
     $('lHRow').style.display = l.type === 'flat' ? 'none' : ''; ($('lH') as HTMLInputElement).disabled = s.lid === 'hood';
+    $('lMountRow').style.display = l.type === 'flat' || s.lid === 'hood' ? 'none' : ''; setVal('lMount', mountOf(l));
     // light output (lane K): power, what is inside the fixture, a measured PAR, and the estimate; while the power is
     // set, Brightness is an exposure on top of the brightness the light gives (x0.5-2)
     // tubes and halide pendants: the power is the lamps' (W each x how many), shown instead of the slider
@@ -1430,6 +1487,9 @@ Cancel, then change the name, to keep both.`)) return;
     setVal('layout', s.layout.id); // "Bare tank" says there is nothing in it, which stops being true once a piece is added by hand (G2, 2026-10-14)
     $('layoutHint').textContent = s.layout.id === 'none' && s.items.length ? 'A starter set replaces every piece; or add, move and remove pieces yourself.' : LAYOUTS[s.layout.id].hint + ' Then move, add or remove any piece.';
     ($('layoutShuffle') as HTMLButtonElement).disabled = s.layout.id === 'none';
+    const dn = s.layout.dens ?? DEFAULT_DENS;
+    for (const [k, inp, out] of DENS_IN) { setVal(inp, dn[k]); setOut(out, stopName(k, dn[k])); ($(inp) as HTMLInputElement).disabled = s.layout.id === 'none'; }
+    $('lDensPlant').textContent = s.layout.id === 'reef' ? 'Corals' : 'Plants';
     const nk = (k: ItemKind) => s.items.filter(q => q.kind === k).length;
     for (const [sec, out, btn] of [['hardscape', 'itemCountHard', 'itemsClearHard'], ['plants', 'itemCountPlant', 'itemsClearPlant']] as const) {
       const ks = (Object.keys(KINDS) as ItemKind[]).filter(k => scapeSec(k) === sec && nk(k));
@@ -1483,11 +1543,13 @@ Cancel, then change the name, to keep both.`)) return;
     const stale = got === undefined && last !== undefined;
     // ↻ only when there is something to fetch (Nathan 2026-10-09): never checked, out of date, or the last try failed;
     // hidden once this tank's current answer is shown
-    const re = got !== undefined ? '' : `<button class="aqre${stale ? ' stale' : ''}" data-aq="${i}"${busy ? ' disabled' : ''} title="${stale ? 'The fish or the tank changed since this was checked: click to refresh the stocking level' : 'Ask AqAdvisor for this tank’s stocking level'}" aria-label="Refresh stocking level">↻</button>`;
+    const re = got !== undefined || aqUp !== 'up' ? '' : `<button class="aqre${stale ? ' stale' : ''}" data-aq="${i}"${busy ? ' disabled' : ''} title="${stale ? 'The fish or the tank changed since this was checked: click to refresh the stocking level' : 'Ask AqAdvisor for this tank’s stocking level'}" aria-label="Refresh stocking level">↻</button>`;
     const pct = got ?? last;
     // a failed refresh says so, next to the old number it could not replace (it used to hide behind it)
     const err = aqErr.get(key);
-    const text = busy ? `Stocking: ${aqWaitText(key)}` : pct !== undefined ? `Stocking ${pct}% (AqAdvisor)${err ? `, not updated: ${err}` : ''}` : err ?? 'Stocking: not checked';
+    const down = aqUp === 'down';
+    const text = busy ? `Stocking: ${aqWaitText(key)}` : pct !== undefined ? `Stocking ${pct}% (AqAdvisor)${err ? `, not updated: ${err}` : stale && down ? ', AqAdvisor is down' : ''}`
+      : down ? 'Stocking: AqAdvisor is down' : err ?? 'Stocking: not checked';
     const cls = `aq${stale ? ' stale' : pct !== undefined && pct > 100 ? ' over' : ''}`;
     const tip = stale && err ? `Out of date, and the refresh failed (${err}). This is the level before the last change.` : stale ? 'Out of date: the fish or the tank changed since this was checked. Press ↻ to refresh.' : 'AqAdvisor’s stocking level for this tank (aqadvisor.com); click for the full report';
     return `<span class="aqwrap"><a class="${cls}" href="${url}" target="_blank" rel="noopener" title="${tip}">${esc(text)}</a>${re}</span>`;

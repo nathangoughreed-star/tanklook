@@ -116,7 +116,7 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
       for (const f of fish) {
         const w = fishTL(f, sp), a = speciesOf(f)!.aspect, p = spot(w / 2, w * a * 1.5);
         Object.assign(f, { x: p.x, depth: p.depth, y: bandY(p.x, p.depth, w * a, 0.1 + r() * 0.5) }, randomPose(sp, r, r() < 0.5 ? 0 : 180));
-        placeOnLand(s, sp, f, r); clampFish(f, A, wb); note(f, w);
+        placeOnLand(s, sp, f, r); clampFish(f, A, wb, s.render.bgSides); note(f, w);
       }
       continue;
     }
@@ -124,7 +124,7 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
       for (const f of fish) {
         const w = fishTL(f, sp), h = w * speciesOf(f)!.aspect;
         const p = roomiest(w, () => { const q = spot(w / 2, h * 1.5); return { ...q, y: sp.zone === 'bottom' ? g(q.x, q.depth) : bandY(q.x, q.depth, h, bandT(sp)) }; });
-        Object.assign(f, p, randomPose(sp, r, r() < 0.5 ? 0 : 180)); clampFish(f, A, wb); note(f, w);
+        Object.assign(f, p, randomPose(sp, r, r() < 0.5 ? 0 : 180)); clampFish(f, A, wb, s.render.bgSides); note(f, w);
       }
       continue;
     }
@@ -158,7 +158,7 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
       // a school all heads one way; in a shoal most roughly follow, the rest wander
       const pose = bottom && !tight ? randomPose(sp, r, 0) : tight ? randomPose(sp, r, head, 24) : r() < 0.7 ? randomPose(sp, r, head, 80) : randomPose(sp, r, r() * 360 - 180, 0);
       if (bottom && r() < 0.6) pose.yaw = wrap(Math.round(head + (r() - 0.5) * 120)); // foraging corys drift the same way
-      Object.assign(f, p, pose); clampFish(f, A, wb); note(f, fw);
+      Object.assign(f, p, pose); clampFish(f, A, wb, s.render.bgSides); note(f, fw);
     }
   }
 }
@@ -185,7 +185,7 @@ export function placeNew(s: TankSetup, r: () => number, ids: Set<number>) {
       }
       const pose = bottom ? randomPose(sp, r, 0) : tight ? randomPose(sp, r, m.yaw, 24) : r() < 0.7 ? randomPose(sp, r, m.yaw, 80) : randomPose(sp, r, r() * 360 - 180, 0);
       if (bottom && r() < 0.6) pose.yaw = wrap(Math.round(m.yaw + (r() - 0.5) * 120));
-      Object.assign(f, p, pose); clampFish(f, A, wb); mates.push(f); joined.add(f.id);
+      Object.assign(f, p, pose); clampFish(f, A, wb, s.render.bgSides); mates.push(f); joined.add(f.id);
     }
   }
   if ([...ids].some(id => !joined.has(id))) shuffleFish(s, r, f => ids.has(f.id) && !joined.has(f.id));

@@ -708,12 +708,12 @@ function addPerson(sc: THREE.Scene, S: TankSetup, T: Tank) {
   m.position.set(p.x, p.floor, p.z); m.name = 'person'; m.userData.room = true; sc.add(m);
 }
 
-/** Room wall width and floor size, mm: big enough that nothing runs out at the minimum zoom (lane V, 2026-10-14). */
-const ROOM_SPAN = 40000;
+/** Room wall width and floor size, mm: big enough that nothing runs out at the minimum zoom (lane V, 2026-10-14; 0.1 zoom, 2026-10-15). */
+const ROOM_SPAN = 120000;
 /** Plain room floor under the stand/wall, so the room doesn't float in a void. One-sided (invisible from below). */
 function addFloor(sc: THREE.Scene, S: TankSetup, T: Tank) {
   if (!S.stand.show && !S.wall.show && !S.person.show) return;
-  // 40 m across so zoomed all the way out (eye stepped back, lane V) its edge never shows; scaled, not resized,
+  // 120 m across so zoomed all the way out (eye stepped back, lane V) its edge never shows; scaled, not resized,
   // because render/ar.ts finds the floor by its 8000 geometry width
   const f = new THREE.Mesh(new THREE.PlaneGeometry(8000, 8000), basic(0xb3aca1));
   f.scale.setScalar(ROOM_SPAN / 8000); f.rotation.x = -Math.PI / 2; f.position.set(T.L / 2, floorY(T, S.render, S.stand) - 0.5, -T.D / 2);
@@ -966,14 +966,14 @@ function addTerrainDots(sc: THREE.Scene, S: TankSetup, T: Tank, hot: number | nu
   const t = S.terrain, g = (x: number, d: number) => groundHeight(S, T, x, d), dots: THREE.Mesh[] = [], pts: number[] = [];
   const rb = shapeOf(T) === 'bowl' ? bowlDims(T).rb : 0, disc = terrainDisc(T);
   const step = t.arc ? T.D / t.rows : t.radial ? disc.rx / t.rows : Math.min(T.L / (t.cols - 1), T.D / (t.rows - 1));
-  const r = clamp(step * 0.09, 3.5, 9);
+  const r = clamp(step * 0.17, 7, 20); // big and easy to grab; still well clear of the neighbouring point
   const geo = new THREE.SphereGeometry(r, 12, 8), ring = new THREE.SphereGeometry(r * 1.45, 12, 8);
   const mat = (c: number) => basic(c, { depthTest: false, transparent: true, opacity: 0.95 });
   const fill = mat(0xffffff), hotM = mat(0xffb020), edge = mat(0x1d2a33);
   terrainPoints(t, T).forEach((p, k) => {
     const y = g(p.x, p.depth);
     if (!inside(T, p.x, p.depth, -1)) return; // outside a round or angled tank: still shapes the ground, not shown
-    const o = new THREE.Mesh(ring, edge); o.position.set(...flare(T, p.x, p.depth, y, rb)); o.renderOrder = 20; o.userData.nolight = true; sc.add(o);
+    const o = new THREE.Mesh(ring, edge); o.position.set(...flare(T, p.x, p.depth, y, rb)); o.renderOrder = 20; o.userData = { nolight: true, dot: k }; sc.add(o); dots.push(o); // the rim grabs too
     const m = new THREE.Mesh(geo, k === hot ? hotM : fill); m.position.copy(o.position); m.renderOrder = 21; m.userData = { nolight: true, dot: k }; sc.add(m); dots.push(m);
   });
   const seg = 10, seg2 = (x0: number, d0: number, x1: number, d1: number) => pts.push(...flare(T, x0, d0, g(x0, d0) + 1, rb), ...flare(T, x1, d1, g(x1, d1) + 1, rb));
@@ -1006,7 +1006,7 @@ function addTerrainDots(sc: THREE.Scene, S: TankSetup, T: Tank, hot: number | nu
 
 export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: number | null, edit?: { hot: number | null }, selItem: number | null = null): BuiltTank {
   const sc = new THREE.Scene();
-  addTank(sc, S, T); addWater(sc, S, T); addSubstrate(sc, S, T); addBackdrop(sc, S.backdrop, T, S.render.rim);
+  addTank(sc, S, T); addWater(sc, S, T); addSubstrate(sc, S, T); addBackdrop(sc, S.backdrop, T, S.render.rim, S.render.bgSides);
   const n0 = sc.children.length; addStand(sc, S, T);
   for (const o of sc.children.slice(n0)) o.userData.stand = true; // AR's stand toggle hides these
   addWall(sc, S, T); addPerson(sc, S, T); addFloor(sc, S, T);

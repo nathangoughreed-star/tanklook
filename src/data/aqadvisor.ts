@@ -74,6 +74,25 @@ export function aqAdvisorUrl(q: AqQuery) {
   });
 }
 
+/** Is aqadvisor.com up? From the proxy's /health (its 5-minute check, Nathan 2026-10-15). 'up' only when the latest
+ *  check passed, is under 15 minutes old and the breaker is not resting; null = not known yet. The stocking check is
+ *  offered only on 'up'. */
+export type AqHealth = 'up' | 'down' | null;
+export const AQ_HEALTH_STALE_MS = 15 * 60000;
+export function aqHealthOf(j: { last?: { t: number; up: boolean } | null; resting?: number | null; now?: number }): AqHealth {
+  const now = j.now ?? Date.now();
+  if (j.resting && j.resting > now) return 'down';
+  return j.last?.up && now - j.last.t < AQ_HEALTH_STALE_MS ? 'up' : 'down';
+}
+/** Asks the proxy now; a failed request counts as down (the page can't reach AqAdvisor either way). */
+export async function fetchAqHealth(): Promise<AqHealth> {
+  if (!AQ_PROXY) return null;
+  try {
+    const res = await fetch(`${AQ_PROXY}/health`, { signal: AbortSignal.timeout(8000) });
+    return res.ok ? aqHealthOf(await res.json()) : 'down';
+  } catch { return 'down'; }
+}
+
 /** Gap after an answer that reached aqadvisor.com before the page asks for the next one: matches the proxy's
  *  2 new requests a minute, so a queue of tanks waits instead of getting "busy". */
 export const AQ_GAP_MS = 30000;
