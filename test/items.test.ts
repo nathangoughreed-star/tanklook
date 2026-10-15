@@ -102,13 +102,14 @@ describe('aquascape items (scene v9)', () => {
     }
   });
   it('Shuffle rolls genuinely different sets: sparse and packed, different materials, groups in different places (2026-10-13)', () => {
+    // density comes from the sliders since lane SD (2026-10-15): the seeds here step through the stops as well
     const s = defaultSetup();
     for (const id of LAYOUT_IDS) {
       if (id === 'none') continue;
       s.layout = { id, seed: 1 };
       const counts: number[] = [], kinds = new Set<string>(), xs: number[] = [];
       for (let seed = 2; seed < 42; seed++) {
-        s.layout.seed = seed; const items = starterItems(s);
+        s.layout.seed = seed; s.layout.dens = { hard: seed % 5, plant: seed % 5, animal: 0 }; const items = starterItems(s);
         counts.push(items.length); items.filter(i => i.kind !== 'plant').forEach(i => kinds.add(i.variant));
         const solid = items.filter(i => i.kind !== 'plant' || i.variant !== 'carpet');
         if (solid.length) xs.push(solid.reduce((a, i) => a + i.x, 0) / solid.length / s.tank.L);

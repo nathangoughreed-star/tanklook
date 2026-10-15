@@ -177,7 +177,14 @@ export interface TerrainSettings { on: boolean; cols: number; rows: number; h: n
  * (2026-10-14): live rock and corals, offered in a saltwater tank only.
  */
 export type LayoutId = 'none' | 'stones' | 'driftwood' | 'planted' | 'iwagumi' | 'swamp' | 'reef';
-export interface LayoutSettings { id: LayoutId; seed: number }
+/**
+ * How full each layer of a starter set is (lane SD, 2026-10-15): a stop 0..4 per layer, set by the stepped sliders
+ * beside the layout picker (Sparse .. Packed; animals None .. Full). Each stop is a fraction of the layout's own range
+ * (scene/items.ts STYLES), so a stop never breaks a style's rules. Absent (files before lane SD) = the stops nearest the
+ * density the seed used to roll (`legacyDens`), animals None.
+ */
+export interface LayerDens { hard: number; plant: number; animal: number }
+export interface LayoutSettings { id: LayoutId; seed: number; dens?: LayerDens }
 
 /** Library item kinds; the variant names the generator (scene/items.ts LIBRARY). */
 export type ItemKind = 'stone' | 'wood' | 'cave' | 'plant' | 'coral';

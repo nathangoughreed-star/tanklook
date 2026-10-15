@@ -1,7 +1,7 @@
 // Load-time validation and migration. Untrusted JSON in, a complete valid Scene out (plus warnings), or an error.
 import { fishTL, getSpecies, hasSpecies } from '../data/species';
 import { defaultSetup } from './defaults';
-import { LIBRARY, MAX_ITEMS, clampItem, starterItems } from './items';
+import { LIBRARY, MAX_ITEMS, clampItem, legacyDens, starterItems } from './items';
 import { CEILING_H, CEILING_MAX, CEILING_MIN, WALL_GAP, WALL_GAP_MAX, clamp, mapToTank } from './physics';
 import { MH_BULBS, TECH_IDS, fitFixture } from './lightout';
 import { normTank } from './shape';
@@ -244,7 +244,11 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       fl: num(s.fl, d.substrate.fl, 0, subMax), fr: num(s.fr, d.substrate.fr, 0, subMax),
       bl: num(s.bl, d.substrate.bl, 0, subMax), br: num(s.br, d.substrate.br, 0, subMax),
     },
-    layout: { id: pick(lay.id, LAYOUT_IDS, d.layout.id), seed: Math.round(num(lay.seed, 1, 1, 1e9)) },
+    layout: (() => {
+      const seed = Math.round(num(lay.seed, 1, 1, 1e9)), ld = isObj(lay.dens) ? lay.dens as Obj : null, old = legacyDens(seed); // before lane SD: the stops nearest the seed's rolled density
+      const stop = (v: unknown, k: keyof typeof old) => Math.round(num(v, old[k], 0, 4));
+      return { id: pick(lay.id, LAYOUT_IDS, d.layout.id), seed, dens: ld ? { hard: stop(ld.hard, 'hard'), plant: stop(ld.plant, 'plant'), animal: stop(ld.animal, 'animal') } : old };
+    })(),
     water: {
       on: bool(wa.on, true), level: num(wa.level, d.water.level, ...LIMITS.level), opacity: num(wa.opacity, d.water.opacity, ...LIMITS.opacity),
       color: typeof wa.color === 'string' && /^#[0-9a-f]{6}$/i.test(wa.color) ? wa.color.toLowerCase() : d.water.color,

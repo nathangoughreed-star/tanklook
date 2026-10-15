@@ -12,7 +12,8 @@ import { FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, powerRange,
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene, TANK_PRESETS } from '../scene/defaults';
-import { KINDS, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, itemDims, makeItem, starterItems } from '../scene/items';
+import { ANIMAL_STOPS, DEFAULT_DENS, DENS_STOPS, KINDS, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, itemDims, makeItem, type Layer } from '../scene/items';
+import { regenerate } from '../scene/starter';
 import { growthOf, isClump, isPatch, type PlantType } from '../art/plants';
 import { clumpAuto } from '../render/plant3d';
 import { tankDiff } from './diff';
@@ -901,12 +902,15 @@ Cancel, then change the name, to keep both.`)) return;
     else if (d.dataset.sec === 'fish' && store.selId != null) store.select(null);
   });
   $<HTMLSelectElement>('layout').innerHTML = Object.entries(LAYOUTS).map(([k, l]) => `<option value="${k}">${esc(l.label)}</option>`).join('');
-  // a starter set replaces every piece (undoable); the pieces are then ordinary items
-  const replaced = (s: TankSetup) => { s.items = starterItems(s); };
+  // a starter set replaces every piece (undoable), and the animals when its animal stop is above None; the pieces are
+  // then ordinary items
+  let fishId0 = 1;
+  const replaced = (s: TankSetup) => regenerate(s, 'all', fishId0);
+  const dropGoneFish = () => { if (store.selId != null && !S().fish.some(f => f.id === store.selId)) store.select(null); };
   // leaving swamp brings back the level it lowered, unless the level was moved since (audit #13)
   let preSwamp = emptyScene().tanks[0].water.level;
   $<HTMLSelectElement>('layout').onchange = e => {
-    store.selectItem(null);
+    store.selectItem(null); fishId0 = store.nextId();
     store.edit(s => {
       const was = s.layout.id;
       s.layout.id = (e.target as HTMLSelectElement).value as LayoutId;
@@ -914,14 +918,35 @@ Cancel, then change the name, to keep both.`)) return;
       else if (was === 'swamp' && s.layout.id !== 'swamp' && s.water.level === SWAMP_LEVEL) setWaterLevel(s, preSwamp);
       replaced(s);
     });
+    dropGoneFish();
     status('New starter set placed. Ctrl+Z brings the previous pieces back.');
   };
   $('layoutShuffle').onclick = () => {
     const seed = 1 + Math.floor(Math.random() * 1e6);
-    store.selectItem(null);
+    store.selectItem(null); fishId0 = store.nextId();
     store.edit(s => { s.layout.seed = seed; replaced(s); });
+    dropGoneFish();
     status('Rearranged. Ctrl+Z brings the previous pieces back.');
   };
+  // Density sliders (lane SD): stepped, Sparse .. Packed (animals None .. Full). Dragging only names the stop; the
+  // layer is redrawn once, on release (Nathan 2026-10-15: a slider that redraws the tank as it moves is too heavy), as
+  // one undo step. Shuffle keeps the stops: only the seed changes.
+  const DENS_IN: [Layer, string, string][] = [['hard', 'densHard', 'oDensHard'], ['plant', 'densPlant', 'oDensPlant'], ['animal', 'densAnimal', 'oDensAnimal']];
+  const stopName = (k: Layer, v: number) => (k === 'animal' ? ANIMAL_STOPS : DENS_STOPS)[v] ?? '';
+  for (const [k, inp, out] of DENS_IN) {
+    const el = $<HTMLInputElement>(inp);
+    el.oninput = () => { $(out).textContent = stopName(k, +el.value); };
+    el.onchange = () => {
+      const v = +el.value;
+      if (k !== 'animal') store.selectItem(null);
+      fishId0 = store.nextId();
+      store.edit(s => { s.layout.dens = { ...(s.layout.dens ?? DEFAULT_DENS), [k]: v }; regenerate(s, k, fishId0); });
+      dropGoneFish();
+      status(k === 'plant' ? `Plants redrawn (${stopName(k, v)}); the hardscape stayed put. Ctrl+Z brings the previous ones back.`
+        : k === 'hard' ? `Hardscape redrawn (${stopName(k, v)}), with plants round it. Ctrl+Z brings the previous pieces back.`
+          : v ? `Animals restocked (${stopName(k, v)}), within a safe bioload. Ctrl+Z brings the previous ones back.` : 'Starter animals removed. Ctrl+Z brings them back.');
+    };
+  }
 
   // ---------- Aquascape items: library, selection ----------
   // stones, wood and caves under Hardscape; plants and corals under Plants (Nathan 2026-10-14)
@@ -1410,6 +1435,9 @@ Cancel, then change the name, to keep both.`)) return;
     setVal('layout', s.layout.id); // "Bare tank" says there is nothing in it, which stops being true once a piece is added by hand (G2, 2026-10-14)
     $('layoutHint').textContent = s.layout.id === 'none' && s.items.length ? 'A starter set replaces every piece; or add, move and remove pieces yourself.' : LAYOUTS[s.layout.id].hint + ' Then move, add or remove any piece.';
     ($('layoutShuffle') as HTMLButtonElement).disabled = s.layout.id === 'none';
+    const dn = s.layout.dens ?? DEFAULT_DENS;
+    for (const [k, inp, out] of DENS_IN) { setVal(inp, dn[k]); setOut(out, stopName(k, dn[k])); ($(inp) as HTMLInputElement).disabled = s.layout.id === 'none'; }
+    $('lDensPlant').textContent = s.layout.id === 'reef' ? 'Corals' : 'Plants';
     const nk = (k: ItemKind) => s.items.filter(q => q.kind === k).length;
     for (const [sec, out, btn] of [['hardscape', 'itemCountHard', 'itemsClearHard'], ['plants', 'itemCountPlant', 'itemsClearPlant']] as const) {
       const ks = (Object.keys(KINDS) as ItemKind[]).filter(k => scapeSec(k) === sec && nk(k));

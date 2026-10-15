@@ -2,6 +2,26 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane SD: scape density sliders (2026-10-15; branch `scape-density`, port 5603; foundation pushed to main)
+- **Per-layer random streams:** `starterItems(S, keepHard?)` in scene/items.ts draws each layer from its own stream
+  (seed x layer: hardscape 1, plants 2, style picks 11 / 12; animals 3 in scene/starter.ts). A plant-stop change leaves
+  every rock identical (tested); a plants-only redraw keeps the hardscape where it stands now and plants round it.
+- **Density from settings, not the seed:** `LayoutSettings.dens = { hard, plant, animal }`, stops 0..4. `STYLES` (items.ts)
+  gives each layout its [Sparse, Packed] range per layer (Medium = 1 = the set as designed; `stopDens`), iwagumi its stone
+  count per stop (3, 3, 5, 5, 7: odd, 7 at most), and an animal species pool. Seed 1 at Medium = the designed set
+  (`classic`); seed 1 at other stops keeps the designed materials and groups (`designed`). `starterStyle` still draws the
+  old density roll, so every seed keeps its composition. Old files: `legacyDens(seed)` = stops nearest the old roll, animals None.
+  New styles add a STYLES row + a branch with `layer('hard', ...)` / `layer('plant', ...)`; a composition picker plugs into `foci`.
+- **Animals (scene/starter.ts):** local bioload rule `litresFor` (about 3 L per neon, 30 L per angel, x1.5 marine, x0.3
+  inverts) against the water volume; stops fill 0 / 35 / 60 / 80 / 90 % of it; the lead school always goes in if it fits
+  under the cap; pool filtered by fresh / salt, length (L >= 5-6 x TL) and land. None = the user's own animals untouched.
+- **UI:** three stepped sliders under "Start from" (Hardscape, Plants / Corals in a reef, Animals); dragging only names the
+  stop, release redraws that layer once (`regenerate`), one undo step. Hardscape redraws rocks + plants (animals stay).
+  Shuffle and a new layout keep the stops. Bowl / round planted: ring 0.76 of the radius, front carpet patches spread out.
+- **Open (asked Nathan 2026-10-15, sheet `shots/sd_handedit.png` in the worktree):** after a hand edit, does a slider move
+  keep pinned / hand-moved / hand-added items (A) or replace the layer (B, what ships now; Ctrl+Z brings it back)?
+- Pictures: worktree `shots/sd_sheet.png` (iwagumi / planted / reef at Sparse / Medium / Packed).
+
 ## Lane X2: fish leftovers from X and F2 (2026-10-15; branch `fish-x2`, port 5583; Nathan approved all four steps; pushed to main)
 - **Generic, off by default, own commits; every other fingerprint unchanged:** `MedianFin.taper` (dc00232; the soft top falls
   in a straight line from the peak to this share of h at the base end) and `Plan.analSplit` (29ae68f; a doubled anal fin:
