@@ -800,8 +800,19 @@ const EMERSED_SHARE = 0.75;
 const SPREAD = 0.5;
 /** A piece's centreline before (a) and after (b) lying over, and per point the turn between them. */
 interface Bent { a: Float32Array; b: Float32Array; q: THREE.Quaternion[] }
-/** How a piece moves: with its parent (a side shoot's base), then by its own lying over. */
-interface Rec { pre?: { B: Rec; t: number }; own?: Bent }
+/** How a piece moves: with its parent (a side shoot's base), then by its own lying over, then along the glass. */
+interface Rec { pre?: { B: Rec; t: number }; own?: Bent; wall?: Bent }
+/** A leaf nearing a pane curves along it on an arc of about this radius (mm), and stays this far off the glass. */
+const GLASS_ARC = 45, GLASS_GAP = 3;
+/** Per point of a centreline: the turn taking its old direction (a) to its new one (b). */
+function turnsOf(a: Float32Array, b: Float32Array) {
+  const m = a.length / 3;
+  const tan = (l: Float32Array, i: number) => {
+    const i0 = Math.max(0, i - 1), i1 = Math.min(m - 1, i + 1);
+    return V(l[i1 * 3] - l[i0 * 3], l[i1 * 3 + 1] - l[i0 * 3 + 1], l[i1 * 3 + 2] - l[i0 * 3 + 2]).normalize();
+  };
+  return Array.from({ length: m }, (_, i) => new THREE.Quaternion().setFromUnitVectors(tan(a, i), tan(b, i)));
+}
 const c0 = new THREE.Vector3(), c1 = new THREE.Vector3(), v3 = new THREE.Vector3(), qq = new THREE.Quaternion();
 /** Move the point at arr[o] as the centreline moves at its place t (index into the centreline). */
 function moveOn(arr: Float32Array, o: number, B: Bent, t: number) {
@@ -815,6 +826,7 @@ function moveOn(arr: Float32Array, o: number, B: Bent, t: number) {
 function moveBy(arr: Float32Array, o: number, R: Rec, t: number) {
   if (R.pre) moveBy(arr, o, R.pre.B, R.pre.t);
   if (R.own) moveOn(arr, o, R.own, t);
+  if (R.wall) moveOn(arr, o, R.wall, t);
 }
 
 /**
@@ -827,10 +839,15 @@ function moveBy(arr: Float32Array, o: number, R: Rec, t: number) {
  * Lane GR2: `o.ceil` = the lid or the light over the base (mm). An 'emerge' plant with at least MIN_ROOM above the water
  * climbs on past it instead, straightening up once out of the water, and lies over only under the ceiling; above the
  * water each leaf shows its emersed twin. `o.water` = there is water: a lily's pads lie on it (hidden without).
+ *
+ * `o.walls` = the panes near the plant, in its own frame: per pane its outward normal (x, z) and its distance from the
+ * base (mm), flat. A leaf or stem nearing one curves along it instead of being cut off at the glass (Nathan
+ * 2026-10-15), keeping its height and how far it reaches sideways; F may then be Infinity (nothing reaches the water).
  */
-export function bendPlant(src: THREE.BufferGeometry, F: number, o: { ceil?: number; water?: boolean } = {}) {
+export function bendPlant(src: THREE.BufferGeometry, F: number, o: { ceil?: number; water?: boolean; walls?: number[] } = {}) {
   const G = src.userData.grow as GrowData | undefined;
-  if (!G || !Number.isFinite(F)) return src;
+  const walls = o.walls ?? [], W = walls.length / 3;
+  if (!G || (!Number.isFinite(F) && !W)) return src;
   const parent = new Map(G.links.map(([c, p, t]) => [c, [p, t]] as const)), rec: (Rec | null)[] = [];
   // emerging: a piece that climbs out (a stem, an emersed twin) lies over under the ceiling (Sc); the water line (F) is
   // where it turns emersed. A sword's submersed leaves still lie over at the water line
@@ -922,12 +939,7 @@ export function bendPlant(src: THREE.BufferGeometry, F: number, o: { ceil?: numb
       out[o + 3] = out[o] + ux * L; out[o + 4] = out[o + 1] + uy * L; out[o + 5] = out[o + 2] + uz * L;
     }
     // per point: the turn taking the old direction to the new one (vertices keep their place round the centreline)
-    const tan = (a: Float32Array, i: number) => {
-      const i0 = Math.max(0, i - 1), i1 = Math.min(m - 1, i + 1);
-      return V(a[i1 * 3] - a[i0 * 3], a[i1 * 3 + 1] - a[i0 * 3 + 1], a[i1 * 3 + 2] - a[i0 * 3 + 2]).normalize();
-    };
-    const q = Array.from({ length: m }, (_, i) => new THREE.Quaternion().setFromUnitVectors(tan(line, i), tan(out, i)));
-    return { a: line, b: out, q };
+    return { a: line, b: out, q: turnsOf(line, out) };
   };
   };
   const bendUp = bender(true), bendOver = bender(false);
@@ -937,14 +949,43 @@ export function bendPlant(src: THREE.BufferGeometry, F: number, o: { ceil?: numb
     for (let i = 1; i < out.length; i += 3) out[i] *= k;
     return { a: line, b: out, q: Array.from({ length: m }, () => new THREE.Quaternion()) };
   };
+  /** The steepest a centreline may head into a pane with `room` mm left before it (cosine share of its sideways run). */
+  const toward = (room: number) => room >= GLASS_ARC ? 1 : room <= 0 ? Math.max(-0.3, room / GLASS_ARC * 2) : Math.sqrt(1 - (1 - room / GLASS_ARC) ** 2);
+  /** Along the glass: each step keeps its rise and its sideways length, but heads into a pane no more than the arc
+   *  allows for the room left, the rest turned along the pane (straight at it: either way, its own draw). */
+  const hug = (line: Float32Array, p: number): Bent | null => {
+    const m = line.length / 3;
+    let near = false;
+    for (let i = 0; i < m && !near; i++) for (let w = 0; w < W; w++) if (line[i * 3] * walls[w * 3] + line[i * 3 + 2] * walls[w * 3 + 1] > walls[w * 3 + 2] - GLASS_GAP - GLASS_ARC) { near = true; break; }
+    if (!near || m < 2) return null;
+    const side = ((p * 2654435761) >>> 0) & 1 ? 1 : -1, out = new Float32Array(line.length);
+    out[0] = line[0]; out[1] = line[1]; out[2] = line[2];
+    for (let i = 0; i < m - 1; i++) {
+      const j = i * 3;
+      let dx = line[j + 3] - line[j], dz = line[j + 5] - line[j + 2];
+      const h = Math.hypot(dx, dz);
+      if (h > 1e-6) for (let w = 0; w < W; w++) {
+        const nx = walls[w * 3], nz = walls[w * 3 + 1], into = (dx * nx + dz * nz) / h;
+        const lim = toward(walls[w * 3 + 2] - GLASS_GAP - (out[j] * nx + out[j + 2] * nz) - Math.max(0, into) * h / 2);
+        if (into <= lim) continue;
+        let tx = dx / h - into * nx, tz = dz / h - into * nz;
+        const t = Math.hypot(tx, tz);
+        if (t < 0.05) { tx = -nz * side; tz = nx * side; } else { tx /= t; tz /= t; }
+        const k = Math.sqrt(Math.max(0, 1 - lim * lim));
+        dx = (tx * k + nx * lim) * h; dz = (tz * k + nz * lim) * h;
+      }
+      out[j + 3] = out[j] + dx; out[j + 4] = line[j + 4] - line[j + 1] + out[j + 1]; out[j + 5] = out[j + 2] + dz;
+    }
+    return { a: line, b: out, q: turnsOf(line, out) };
+  };
   G.pieces.forEach((line0, p) => {
     if (padSet.has(p)) { rec[p] = o.water ? { own: padLine(line0, p) } : null; return; }
     // a piece on another one (a side shoot) first goes where its parent took its base, then lies over itself
     const pp = parent.get(p), pre = pp && rec[pp[0]] ? { B: rec[pp[0]]!, t: pp[1] } : undefined;
     let line = line0;
     if (pre) { line = Float32Array.from(line0); for (let o = 0; o < line.length; o += 3) moveBy(line, o, pre.B, pre.t); }
-    const own = (up(p) ? bendUp : bendOver)(line, p);
-    rec[p] = own || pre ? { pre, own: own ?? undefined } : null;
+    const own = Number.isFinite(F) ? (up(p) ? bendUp : bendOver)(line, p) : null, wall = W ? hug(own?.b ?? line, p) : null;
+    rec[p] = own || pre || wall ? { pre, own: own ?? undefined, wall: wall ?? undefined } : null;
   });
   if (rec.every(b => !b)) return src;
   const P = src.attributes.position.array as Float32Array, n = P.length / 3, pos = Float32Array.from(P), anc = Float32Array.from(G.anc);
@@ -955,6 +996,11 @@ export function bendPlant(src: THREE.BufferGeometry, F: number, o: { ceil?: numb
     // whatever still sticks up past the surface (the leaves on a stem lying along it) is pressed flat against it
     const S = up(p) ? Sc : F;
     if (!padSet.has(p)) for (const arr of [pos, anc]) if (arr[v * 3 + 1] > S) arr[v * 3 + 1] = S + (arr[v * 3 + 1] - S) * 0.12;
+    // and whatever of a blade still reaches past a pane (its edge, turned toward the glass) is pressed in against it
+    for (let w = 0; w < W; w++) for (const arr of [pos, anc]) {
+      const nx = walls[w * 3], nz = walls[w * 3 + 1], s = arr[v * 3] * nx + arr[v * 3 + 2] * nz - (walls[w * 3 + 2] - 1);
+      if (s > 0) { arr[v * 3] -= nx * s; arr[v * 3 + 2] -= nz * s; }
+    }
   }
   // which form each leaf shows (lane GR2): `cut` = the growth from which a leaf shows its emersed twin, before it the
   // submersed one (revealPlant). A leaf on a stem: emersed once its base on the bent stem is out of the water (from the
@@ -1031,7 +1077,7 @@ export function buffersOf(v: unknown, out = new Set<ArrayBuffer>()) {
 }
 /** A prebuild job: plantGeometry's arguments and the lying over (water over the base F, ceiling C) to apply; a carpet
  *  is kept until its `ground` message brings where each leaflet lands (looked up on the main thread). */
-export type PlantJob = { id: number; args: Parameters<typeof plantGeometry>; switches: typeof plant3d; bend?: { F: number; C?: number; water: boolean }; carpet?: boolean }
+export type PlantJob = { id: number; args: Parameters<typeof plantGeometry>; switches: typeof plant3d; bend?: { F: number; C?: number; water: boolean; walls?: number[] }; carpet?: boolean }
   | { id: number; ground: Float32Array };
 export interface JobOut { id: number; full?: Packed; bent?: Packed; ground?: Packed; anchors?: Float32Array }
 const kept = new Map<number, THREE.BufferGeometry>();
@@ -1048,7 +1094,7 @@ export function runJob(j: PlantJob): JobOut {
   Object.assign(plant3d, j.switches);
   const full = plantGeometry(...j.args);
   if (j.carpet) { kept.set(j.id, full); return { id: j.id, anchors: Float32Array.from(full.userData.anchors as Float32Array) }; }
-  const b = j.bend ? bendPlant(full, j.bend.F, { ceil: j.bend.C, water: j.bend.water }) : full;
+  const b = j.bend ? bendPlant(full, j.bend.F, { ceil: j.bend.C, water: j.bend.water, walls: j.bend.walls }) : full;
   return { id: j.id, full: packGeometry(full), bent: b === full ? undefined : packGeometry(b, ['color', 'index']) };
 }
 /** Send a plant's buffers (with its GPU growth tags) to the GPU now, by drawing it into a 1 x 1 target, so its first
