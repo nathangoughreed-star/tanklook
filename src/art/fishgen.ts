@@ -30,7 +30,7 @@ const isMedian = (f: AnyFin): f is MedianFin => 'at' in f;
 /** Is a fin rooted on the back (`top`) or belly at u? (the 3D card keeps the body's rim there, so the fin roots stay) */
 export function finRooted(p: Plan, top: boolean, u: number) {
   const on = (f: AnyFin | undefined) => !!f && (isMedian(f) ? u > f.at - f.len - 0.02 && u < f.at + 0.02 : u > f.u0 - 0.02 && u < f.u1 + 0.02);
-  return top ? on(p.dorsal) || on(p.dorsal2) : p.gono ? Math.abs(u - p.gono.at) < 0.03 : on(p.anal);
+  return top ? on(p.dorsal) || on(p.dorsal2) : p.gono ? Math.abs(u - p.gono.at) < 0.03 : !p.analSplit && on(p.anal);
 }
 type Mark =
   | { k: 'band'; u0: number; u1: number; v0: number; v1: number; c: string; a?: number; f?: number; wave?: number }
@@ -59,6 +59,9 @@ export interface Plan {
   dorsal2?: MedianFin; // a second, separate dorsal behind the first (gobies, cardinals)
   // male livebearers: the anal fin is a gonopodium, a slim rod from `at` lying back along the belly, `len` long
   gono?: { at: number; len: number; tint?: string };
+  // analSplit (3D, off by default): a doubled anal fin (fantail goldfish), two copies hanging side by side whose lower
+  // parts splay apart by this many degrees (fish3d `splitAnal`); the card draws one flat
+  analSplit?: number;
   // ext: the leading ray runs on past the membrane by this much (widths); w: membrane width x the default
   pelvic?: { u: number; len: number; tint?: string; thread?: boolean; angle?: number; ext?: number; w?: number }; // angle: degrees below horizontal (thread)
   pec?: { s?: number; v?: number; u?: number }; // pectoral: size x the default, root height (0 top .. 1 belly, default 0.62), root u (default behind the gill)
@@ -327,6 +330,12 @@ function finDrawer(p: Plan, ctx: Ctx, P: Proj, W: number) {
 export function drawTail(p: Plan, ctx: Ctx, P: Proj, W: number) {
   const g = geometry(p); finDrawer(p, ctx, P, W)(g.tail, [p.pedU + 0.02, g.c], p.tail, 11);
 }
+/** The anal fin alone (a doubled anal's two fins are their own 3D meshes, painted with this). */
+export function drawAnal(p: Plan, ctx: Ctx, P: Proj, W: number) {
+  const g = geometry(p), f = p.anal!, mu = isMedian(f) ? f.at - f.len / 2 : (f.u0 + f.u1) / 2;
+  finDrawer(p, ctx, P, W)(g.anal, [mu, g.prof(mu)[1] - 0.02], f, 13, g.rays.anal);
+}
+export const analBox = (p: Plan) => { const g = geometry(p), us = g.anal!.map(q => q[0]), vs = g.anal!.map(q => q[1]); return { u0: Math.min(...us), u1: Math.max(...us), v0: Math.min(...vs), v1: Math.max(...vs) }; };
 export const tailBox = (p: Plan) => { const g = geometry(p), vs = g.tail.map(q => q[1]); return { u1: Math.max(...g.tail.map(q => q[0])), v0: Math.min(...vs), v1: Math.max(...vs), c: g.c }; };
 
 export function drawPlan(p: Plan, ctx: Ctx, P: Proj, W: number) {
@@ -337,7 +346,7 @@ export function drawPlan(p: Plan, ctx: Ctx, P: Proj, W: number) {
   if (p.dorsal) draw(g.dorsal, [mid(p.dorsal), g.prof(mid(p.dorsal))[0] + 0.02], p.dorsal, 12, g.rays.dorsal);
   if (p.dorsal2) draw(g.dorsal2, [mid(p.dorsal2), g.prof(mid(p.dorsal2))[0] + 0.02], p.dorsal2, 14, g.rays.dorsal2);
   if (p.gono) draw(g.anal, [p.gono.at, g.prof(p.gono.at)[1]], { tint: p.gono.tint, a: 0.85 }, 13, g.rays.anal);
-  else if (p.anal) draw(g.anal, [mid(p.anal), g.prof(mid(p.anal))[1] - 0.02], p.anal, 13, g.rays.anal);
+  else if (p.anal && !(p.analSplit && !style.paired)) drawAnal(p, ctx, P, W); // a 3D fish's doubled anal: fish3d draws its two fins
   const paired = pairedFins(p);
   if (style.paired && paired[0]?.kind === 'pelvic') drawPairedFin(paired[0], ctx, P, W, ray);
   if (p.adipose) {
