@@ -2,6 +2,36 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane EF1: shader link time, first visit 35-87 s -> 10-13 s (2026-10-15; branch `shader-link`, port 5633; DONE, pushed to main)
+- **Measured** with new `scripts/cold-ab.mjs`: every load a FRESH browser profile (no GPU program cache, a first-time
+  visitor), production builds before / after served side by side, alternating per example, order swapped each round,
+  hardware GPU (headless Edge, D3D11). Navigation -> first draw into the canvas + next frame. Raw:
+  `research/efficiency/EF1-cold-ab.json`. Machine loaded (other lanes; CPU high), so absolutes run long; ratios hold.
+  Cold first picture, median of 3 (ms): betta 35068 -> 10060, iwagumi 69791 -> 10526, paludarium 43778 -> 12524,
+  planted 41520 -> 11211, reef 42721 -> 11623, terrarium 34771 -> 9995; all five stone kinds (iwagumi re-stoned)
+  86564 -> 10944; iwagumi seen from behind (solids in the frost pass) 71852 -> 13421.
+- **1. One `gStone` call** (render/items.ts gritK): stones 1-5 pick rough / cracks first, then call it once (the D3D
+  compiler inlined each call site and its 27-cell crack search 5x). Alone: paludarium cold 31.4 -> 17.5 s, pixel-identical.
+- **2. No transmission-pass program for culled meshes** (viewer.ts constructor, a `renderBufferDirect` wrapper): a mesh
+  frostCull blanks (drawRange -1) still made three pick, and on a first visit link, a second program per material for
+  the frost pass (linear output: the 2-character difference that was iwagumi's second 9-25 s hardscape program, plus ~1 s
+  per other material). Skipping the call draws the same.
+- **3. All links started at once** (viewer.ts `startLinks`, after every FULL build, before the draw): three's
+  `compile()` per viewport, plus the frost pass's linear variants for the meshes it really draws and a two-sided
+  film's BackSide; with KHR_parallel_shader_compile the driver links them on its own threads, so the draw waits about
+  as long as the slowest one instead of the sum. three's compile() takes the clipping-plane count from the last mesh
+  drawn, so the materials go in groups by plane count, each after `primeClip(n)` (a RawShaderMaterial with n planes
+  "drawn" with count -1 into a 1x1 target). Warm full rebuilds are no slower (interleaved planted: 190-234 vs 227-276 ms).
+- **Same picture:** screenshots of all 6 examples + stones5 + iwagumi-behind, before vs after: 0 px differ in the tank
+  (only the build-number text and the viewpoint-map box, which also differs between two "before" runs: CSS timing).
+  Model sheets `npm run sheets -- --record` (hardware GPU): no model changed. 322 tests pass. Phone (375 px) checked.
+- **Tried, not taken:** keep the page running and draw only once every program reports ready (isReady polling): same
+  speed, page responsive meanwhile, but ~950 crack-edge pixels on paludarium's stones differed by 1-20 levels for a
+  reason not found (not the shader: compiling the same way and drawing at once is identical). So the first draw still
+  blocks the page for those ~10 s; a responsive wait is open (find what the later draw changes first).
+- **Open:** the hardscape program is still the slowest link (3-14 s cold here, in parallel with the rest); a cheaper
+  stone function or a baked grain (E1 #11) would cut it further. Re-run cold-ab after GR4.
+
 ## Edit speed: water colour and light power (2026-10-15; lane EF2, branch `edit-speed`, port 5643; pushed to main)
 - **Water colour / opacity** (E1: 120-170 ms): the slow step was opacity leaving 0 (every example but reef starts at 0):
   envKey held `tinted: opacity > 0`, so the whole tank rebuilt and three relinked its programs (82-243 ms in
@@ -142,6 +172,8 @@ Living file. Project state and dated decisions go here; update in place.
     Top ranked: #1 the one-gStone refactor (items.ts, GR4's file: coordinate), #2 why iwagumi links two hardscape
     programs, #3 non-blocking first link (compileAsync, viewer.ts: quiet), #4 water colour relinks, #5 merge fish parts
     per fish. Re-run after GR4 and AL land.
+  - **EF1 shader link DONE 2026-10-15** (see its section): cold first visit 35-87 -> 10-13 s per example (E1 #1, #2 and
+    #3: one gStone call, no frost-pass programs for culled meshes, all links started in parallel); same picture.
   - **EF2 edit speed DONE 2026-10-15** (see its section): water colour off opacity 0 208-444 -> 19-54 ms (no rebuild, no
     relink), first light power step 35-101 -> 20-33 ms (model warmed in idle time, narrower cache key); same picture.
   - **EF3 download size DONE 2026-10-15** (see its section): examples are a lazy chunk + image-file thumbnails; main

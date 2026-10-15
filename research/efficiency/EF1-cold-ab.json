@@ -1,0 +1,3419 @@
+{
+ "at": "2026-10-15T18:43:56.844Z",
+ "size": "1050x850",
+ "dirs": [
+  "before",
+  "after"
+ ],
+ "runs": [
+  {
+   "round": 0,
+   "view": "betta-bowl",
+   "build": "before",
+   "firstFrame": 42513,
+   "settled": 42513,
+   "glMs": 41723,
+   "programs": 23,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 29483,
+     "at": 4969,
+     "stack": "",
+     "len": 34921,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 2798,
+     "at": 36021,
+     "stack": "",
+     "len": 28542,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1679,
+     "at": 38960,
+     "stack": "",
+     "len": 28770,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1563,
+     "at": 40710,
+     "stack": "",
+     "len": 28510,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1561,
+     "at": 34456,
+     "stack": "",
+     "len": 29091,
+     "marks": [
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1003,
+     "at": 1288,
+     "stack": "",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "betta-bowl",
+   "build": "after",
+   "firstFrame": 17998,
+   "settled": 17998,
+   "glMs": 17528,
+   "programs": 26,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 14336,
+     "at": 3356,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 35164,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 2143,
+     "at": 746,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getShaderInfoLog",
+     "ms": 331,
+     "at": 2893,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 125,
+     "marks": []
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 304,
+     "at": 367,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "iwagumi",
+   "build": "before",
+   "firstFrame": 103006,
+   "settled": 103006,
+   "glMs": 101711,
+   "programs": 52,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 30643,
+     "at": 9404,
+     "stack": "",
+     "len": 36431,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 27911,
+     "at": 58252,
+     "stack": "",
+     "len": 36429,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 2176,
+     "at": 90153,
+     "stack": "",
+     "len": 28770,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 2153,
+     "at": 40053,
+     "stack": "",
+     "len": 30601,
+     "marks": [
+      "vGlassW",
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 2039,
+     "at": 1818,
+     "stack": "",
+     "len": 28551,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1864,
+     "at": 3866,
+     "stack": "",
+     "len": 28533,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "iwagumi",
+   "build": "after",
+   "firstFrame": 22725,
+   "settled": 22725,
+   "glMs": 7233,
+   "programs": 38,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 4297,
+     "at": 17551,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 639,
+     "at": 15287,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28514,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 457,
+     "at": 17042,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28512,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getShaderInfoLog",
+     "ms": 308,
+     "at": 15927,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 125,
+     "marks": []
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 228,
+     "at": 16492,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 85036,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "shaderSource",
+     "ms": 201,
+     "at": 14195,
+     "stack": "Object.traverse (assets/main-DTFb5irX.js:2:36261)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "paludarium",
+   "build": "before",
+   "firstFrame": 66611,
+   "settled": 66611,
+   "glMs": 61127,
+   "programs": 29,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 41084,
+     "at": 16181,
+     "stack": "",
+     "len": 59166,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 2367,
+     "at": 13805,
+     "stack": "",
+     "len": 53336,
+     "marks": [
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1769,
+     "at": 8691,
+     "stack": "",
+     "len": 28531,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1651,
+     "at": 10562,
+     "stack": "",
+     "len": 28512,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1649,
+     "at": 60189,
+     "stack": "",
+     "len": 28542,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1630,
+     "at": 6921,
+     "stack": "",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "paludarium",
+   "build": "after",
+   "firstFrame": 12524,
+   "settled": 12524,
+   "glMs": 11797,
+   "programs": 31,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 8354,
+     "at": 4013,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 59409,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 2026,
+     "at": 744,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1114,
+     "at": 2894,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 53336,
+     "marks": [
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "planted",
+   "build": "before",
+   "firstFrame": 29473,
+   "settled": 29473,
+   "glMs": 28645,
+   "programs": 33,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 15076,
+     "at": 4264,
+     "stack": "",
+     "len": 36429,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1998,
+     "at": 23497,
+     "stack": "",
+     "len": 28537,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1184,
+     "at": 25500,
+     "stack": "",
+     "len": 28497,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1016,
+     "at": 22038,
+     "stack": "",
+     "len": 28510,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 955,
+     "at": 26687,
+     "stack": "",
+     "len": 28513,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 860,
+     "at": 27644,
+     "stack": "",
+     "len": 28495,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "planted",
+   "build": "after",
+   "firstFrame": 8046,
+   "settled": 8046,
+   "glMs": 6697,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 4169,
+     "at": 3416,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1105,
+     "at": 1647,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 549,
+     "at": 2760,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28494,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "bufferData",
+     "ms": 214,
+     "at": 909,
+     "stack": "t.draw (assets/main-DTFb5irX.js:3:5069)",
+     "len": 125,
+     "marks": []
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 214,
+     "at": 7669,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "reef",
+   "build": "before",
+   "firstFrame": 42721,
+   "settled": 42721,
+   "glMs": 41465,
+   "programs": 29,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 26455,
+     "at": 6653,
+     "stack": "",
+     "len": 48175,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1705,
+     "at": 40753,
+     "stack": "",
+     "len": 28495,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1626,
+     "at": 34523,
+     "stack": "",
+     "len": 28770,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1608,
+     "at": 37615,
+     "stack": "",
+     "len": 28528,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1406,
+     "at": 33113,
+     "stack": "",
+     "len": 28542,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1377,
+     "at": 3952,
+     "stack": "",
+     "len": 28531,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "reef",
+   "build": "after",
+   "firstFrame": 12673,
+   "settled": 12673,
+   "glMs": 11467,
+   "programs": 31,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 8606,
+     "at": 3515,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 48418,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1781,
+     "at": 1042,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 279,
+     "at": 2893,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 239,
+     "at": 12257,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28528,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 148,
+     "at": 3346,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28531,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "terrarium",
+   "build": "before",
+   "firstFrame": 34771,
+   "settled": 34771,
+   "glMs": 34036,
+   "programs": 21,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 23229,
+     "at": 5910,
+     "stack": "",
+     "len": 41732,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1485,
+     "at": 29143,
+     "stack": "",
+     "len": 35902,
+     "marks": [
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1464,
+     "at": 3122,
+     "stack": "",
+     "len": 28887,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1375,
+     "at": 31926,
+     "stack": "",
+     "len": 28528,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1330,
+     "at": 33339,
+     "stack": "",
+     "len": 28510,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1291,
+     "at": 30632,
+     "stack": "",
+     "len": 28533,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "terrarium",
+   "build": "after",
+   "firstFrame": 10403,
+   "settled": 10403,
+   "glMs": 9671,
+   "programs": 23,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 7560,
+     "at": 2749,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 41975,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1463,
+     "at": 749,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 344,
+     "at": 2230,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28905,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 146,
+     "at": 2586,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28887,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "C:/Users/nreed/AppData/Local/Temp/claude/C--Users-nreed-Glass-Box/2062db89-79e6-4a81-b0e1-b1da1194d4c5/scratchpad/scenes/stones5.json",
+   "build": "before",
+   "firstFrame": 88219,
+   "settled": 88219,
+   "glMs": 87539,
+   "programs": 52,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 23723,
+     "at": 47765,
+     "stack": "",
+     "len": 36429,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 23126,
+     "at": 5548,
+     "stack": "",
+     "len": 36431,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1849,
+     "at": 38841,
+     "stack": "t.draw (assets/main-BSvQvBIC.js:2:40384)",
+     "len": 85036,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1812,
+     "at": 33566,
+     "stack": "",
+     "len": 28772,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1757,
+     "at": 81252,
+     "stack": "",
+     "len": 85036,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1754,
+     "at": 84607,
+     "stack": "",
+     "len": 28495,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "C:/Users/nreed/AppData/Local/Temp/claude/C--Users-nreed-Glass-Box/2062db89-79e6-4a81-b0e1-b1da1194d4c5/scratchpad/scenes/stones5.json",
+   "build": "after",
+   "firstFrame": 10709,
+   "settled": 10709,
+   "glMs": 9651,
+   "programs": 38,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 6113,
+     "at": 4302,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1354,
+     "at": 1745,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28514,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 498,
+     "at": 3263,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28496,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "bufferData",
+     "ms": 387,
+     "at": 1210,
+     "stack": "t.draw (assets/main-DTFb5irX.js:3:5069)",
+     "len": 125,
+     "marks": []
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 384,
+     "at": 3780,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 85036,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "shaderSource",
+     "ms": 198,
+     "at": 912,
+     "stack": "Object.traverse (assets/main-DTFb5irX.js:2:36261)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "C:/Users/nreed/AppData/Local/Temp/claude/C--Users-nreed-Glass-Box/2062db89-79e6-4a81-b0e1-b1da1194d4c5/scratchpad/scenes/iwagumi-behind.json",
+   "build": "before",
+   "firstFrame": 78153,
+   "settled": 78153,
+   "glMs": 77440,
+   "programs": 52,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 21779,
+     "at": 5935,
+     "stack": "",
+     "len": 36431,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 21681,
+     "at": 43375,
+     "stack": "",
+     "len": 36429,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1482,
+     "at": 72412,
+     "stack": "",
+     "len": 85036,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1442,
+     "at": 76471,
+     "stack": "",
+     "len": 28495,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1439,
+     "at": 35628,
+     "stack": "t.draw (assets/main-BSvQvBIC.js:2:40384)",
+     "len": 85036,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1332,
+     "at": 40887,
+     "stack": "",
+     "len": 28512,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "C:/Users/nreed/AppData/Local/Temp/claude/C--Users-nreed-Glass-Box/2062db89-79e6-4a81-b0e1-b1da1194d4c5/scratchpad/scenes/iwagumi-behind.json",
+   "build": "after",
+   "firstFrame": 13421,
+   "settled": 13421,
+   "glMs": 12327,
+   "programs": 53,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 7456,
+     "at": 5593,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 36674,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1800,
+     "at": 1175,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28517,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1485,
+     "at": 4045,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28514,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 885,
+     "at": 2993,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28551,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 137,
+     "at": 3905,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28533,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "betta-bowl",
+   "build": "after",
+   "firstFrame": 10060,
+   "settled": 10060,
+   "glMs": 9717,
+   "programs": 26,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 7164,
+     "at": 2658,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 35164,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1503,
+     "at": 572,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 433,
+     "at": 2219,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28494,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 254,
+     "at": 269,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "betta-bowl",
+   "build": "before",
+   "firstFrame": 35068,
+   "settled": 35068,
+   "glMs": 34485,
+   "programs": 23,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 22926,
+     "at": 5528,
+     "stack": "",
+     "len": 34921,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1638,
+     "at": 28458,
+     "stack": "",
+     "len": 29091,
+     "marks": [
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1579,
+     "at": 31654,
+     "stack": "",
+     "len": 28770,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1550,
+     "at": 30101,
+     "stack": "",
+     "len": 28542,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1528,
+     "at": 33299,
+     "stack": "",
+     "len": 28510,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1401,
+     "at": 2682,
+     "stack": "",
+     "len": 28512,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "iwagumi",
+   "build": "after",
+   "firstFrame": 10526,
+   "settled": 10526,
+   "glMs": 9141,
+   "programs": 38,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 6031,
+     "at": 4184,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 997,
+     "at": 1839,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28514,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 732,
+     "at": 2893,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28496,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 387,
+     "at": 3674,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 85036,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "bufferData",
+     "ms": 378,
+     "at": 1436,
+     "stack": "t.draw (assets/main-DTFb5irX.js:3:5069)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "iwagumi",
+   "build": "before",
+   "firstFrame": 69791,
+   "settled": 69791,
+   "glMs": 69166,
+   "programs": 52,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 23981,
+     "at": 5792,
+     "stack": "",
+     "len": 36431,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 17108,
+     "at": 46001,
+     "stack": "",
+     "len": 36429,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1676,
+     "at": 4106,
+     "stack": "",
+     "len": 28496,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1523,
+     "at": 37905,
+     "stack": "t.draw (assets/main-BSvQvBIC.js:2:40384)",
+     "len": 85036,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1489,
+     "at": 33730,
+     "stack": "",
+     "len": 28772,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1390,
+     "at": 43185,
+     "stack": "",
+     "len": 28512,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "paludarium",
+   "build": "after",
+   "firstFrame": 13735,
+   "settled": 13735,
+   "glMs": 12954,
+   "programs": 31,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 9022,
+     "at": 4441,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 59409,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1897,
+     "at": 815,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 862,
+     "at": 3572,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 53336,
+     "marks": [
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getShaderInfoLog",
+     "ms": 736,
+     "at": 2715,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "paludarium",
+   "build": "before",
+   "firstFrame": 43778,
+   "settled": 43778,
+   "glMs": 43109,
+   "programs": 29,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 26414,
+     "at": 7685,
+     "stack": "",
+     "len": 59166,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1953,
+     "at": 5711,
+     "stack": "",
+     "len": 53336,
+     "marks": [
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1711,
+     "at": 34104,
+     "stack": "",
+     "len": 28528,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1559,
+     "at": 41929,
+     "stack": "",
+     "len": 28495,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1524,
+     "at": 40401,
+     "stack": "",
+     "len": 28514,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1489,
+     "at": 35821,
+     "stack": "",
+     "len": 28510,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "planted",
+   "build": "after",
+   "firstFrame": 11211,
+   "settled": 11211,
+   "glMs": 9855,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 5960,
+     "at": 4748,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 2936,
+     "at": 1172,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "texSubImage2D",
+     "ms": 277,
+     "at": 4329,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 244,
+     "at": 10805,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "planted",
+   "build": "before",
+   "firstFrame": 41520,
+   "settled": 41520,
+   "glMs": 40835,
+   "programs": 33,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 23327,
+     "at": 5479,
+     "stack": "",
+     "len": 36429,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1694,
+     "at": 36775,
+     "stack": "",
+     "len": 28537,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1644,
+     "at": 33177,
+     "stack": "",
+     "len": 28770,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1505,
+     "at": 30204,
+     "stack": "",
+     "len": 28533,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1462,
+     "at": 31712,
+     "stack": "",
+     "len": 28542,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1461,
+     "at": 34888,
+     "stack": "",
+     "len": 28510,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "reef",
+   "build": "after",
+   "firstFrame": 8550,
+   "settled": 8550,
+   "glMs": 7510,
+   "programs": 31,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 4975,
+     "at": 3298,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 48418,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1948,
+     "at": 1086,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 135,
+     "at": 3051,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 128,
+     "at": 8345,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28528,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "reef",
+   "build": "before",
+   "firstFrame": 45001,
+   "settled": 45001,
+   "glMs": 44008,
+   "programs": 29,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 26721,
+     "at": 6541,
+     "stack": "",
+     "len": 48175,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1998,
+     "at": 33269,
+     "stack": "",
+     "len": 28542,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1972,
+     "at": 35275,
+     "stack": "",
+     "len": 28770,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1887,
+     "at": 38999,
+     "stack": "",
+     "len": 28528,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1855,
+     "at": 42840,
+     "stack": "",
+     "len": 28495,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1774,
+     "at": 41062,
+     "stack": "",
+     "len": 28514,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "terrarium",
+   "build": "after",
+   "firstFrame": 9995,
+   "settled": 9995,
+   "glMs": 9269,
+   "programs": 23,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 7143,
+     "at": 2760,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 41975,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1468,
+     "at": 744,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 345,
+     "at": 2278,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28905,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 110,
+     "at": 2634,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28887,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "terrarium",
+   "build": "before",
+   "firstFrame": 37451,
+   "settled": 37451,
+   "glMs": 36728,
+   "programs": 21,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 24756,
+     "at": 5869,
+     "stack": "",
+     "len": 41732,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1731,
+     "at": 32263,
+     "stack": "",
+     "len": 28533,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1672,
+     "at": 35667,
+     "stack": "",
+     "len": 28510,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1635,
+     "at": 33998,
+     "stack": "",
+     "len": 28528,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1629,
+     "at": 30630,
+     "stack": "",
+     "len": 35902,
+     "marks": [
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1533,
+     "at": 2902,
+     "stack": "",
+     "len": 28887,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "C:/Users/nreed/AppData/Local/Temp/claude/C--Users-nreed-Glass-Box/2062db89-79e6-4a81-b0e1-b1da1194d4c5/scratchpad/scenes/stones5.json",
+   "build": "after",
+   "firstFrame": 10986,
+   "settled": 10986,
+   "glMs": 9854,
+   "programs": 38,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 6367,
+     "at": 4294,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 2543,
+     "at": 1205,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28514,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 347,
+     "at": 3809,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 85036,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 113,
+     "at": 4170,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28531,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "C:/Users/nreed/AppData/Local/Temp/claude/C--Users-nreed-Glass-Box/2062db89-79e6-4a81-b0e1-b1da1194d4c5/scratchpad/scenes/stones5.json",
+   "build": "before",
+   "firstFrame": 84106,
+   "settled": 84106,
+   "glMs": 83431,
+   "programs": 52,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 27253,
+     "at": 40474,
+     "stack": "",
+     "len": 36429,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 20450,
+     "at": 5424,
+     "stack": "",
+     "len": 36431,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 2095,
+     "at": 81740,
+     "stack": "",
+     "len": 28537,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1772,
+     "at": 76883,
+     "stack": "",
+     "len": 85036,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1752,
+     "at": 79983,
+     "stack": "",
+     "len": 28495,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1745,
+     "at": 70623,
+     "stack": "",
+     "len": 28542,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "C:/Users/nreed/AppData/Local/Temp/claude/C--Users-nreed-Glass-Box/2062db89-79e6-4a81-b0e1-b1da1194d4c5/scratchpad/scenes/iwagumi-behind.json",
+   "build": "after",
+   "firstFrame": 14133,
+   "settled": 14133,
+   "glMs": 11465,
+   "programs": 53,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 8496,
+     "at": 5249,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 36674,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 2071,
+     "at": 2988,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28517,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 118,
+     "at": 5089,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28533,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "C:/Users/nreed/AppData/Local/Temp/claude/C--Users-nreed-Glass-Box/2062db89-79e6-4a81-b0e1-b1da1194d4c5/scratchpad/scenes/iwagumi-behind.json",
+   "build": "before",
+   "firstFrame": 62331,
+   "settled": 62331,
+   "glMs": 61726,
+   "programs": 52,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 23113,
+     "at": 5378,
+     "stack": "",
+     "len": 36431,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 13161,
+     "at": 42458,
+     "stack": "",
+     "len": 36429,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1820,
+     "at": 31383,
+     "stack": "",
+     "len": 28544,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1676,
+     "at": 34875,
+     "stack": "",
+     "len": 28512,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1617,
+     "at": 36620,
+     "stack": "",
+     "len": 28530,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1587,
+     "at": 33208,
+     "stack": "",
+     "len": 28772,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "betta-bowl",
+   "build": "before",
+   "firstFrame": 31318,
+   "settled": 31318,
+   "glMs": 30711,
+   "programs": 23,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 22318,
+     "at": 6314,
+     "stack": "",
+     "len": 34921,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1514,
+     "at": 4785,
+     "stack": "",
+     "len": 28494,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1497,
+     "at": 1834,
+     "stack": "",
+     "len": 28531,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1405,
+     "at": 3334,
+     "stack": "",
+     "len": 28512,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 676,
+     "at": 29877,
+     "stack": "",
+     "len": 28770,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 666,
+     "at": 29208,
+     "stack": "",
+     "len": 28542,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "betta-bowl",
+   "build": "after",
+   "firstFrame": 6025,
+   "settled": 6025,
+   "glMs": 5688,
+   "programs": 26,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 3535,
+     "at": 2378,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 35164,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1525,
+     "at": 622,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 285,
+     "at": 281,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "iwagumi",
+   "build": "before",
+   "firstFrame": 44564,
+   "settled": 44564,
+   "glMs": 43933,
+   "programs": 52,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 13408,
+     "at": 3810,
+     "stack": "",
+     "len": 36431,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 12912,
+     "at": 24916,
+     "stack": "",
+     "len": 36429,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 763,
+     "at": 21076,
+     "stack": "t.draw (assets/main-BSvQvBIC.js:2:40384)",
+     "len": 85036,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 752,
+     "at": 41661,
+     "stack": "",
+     "len": 85036,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 701,
+     "at": 43749,
+     "stack": "",
+     "len": 28537,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 675,
+     "at": 1886,
+     "stack": "",
+     "len": 28533,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "iwagumi",
+   "build": "after",
+   "firstFrame": 6642,
+   "settled": 6642,
+   "glMs": 5852,
+   "programs": 38,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 3136,
+     "at": 3301,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1384,
+     "at": 870,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28514,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 861,
+     "at": 2279,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28496,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "paludarium",
+   "build": "before",
+   "firstFrame": 25217,
+   "settled": 25217,
+   "glMs": 24591,
+   "programs": 29,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 16373,
+     "at": 4686,
+     "stack": "",
+     "len": 59166,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1015,
+     "at": 3668,
+     "stack": "",
+     "len": 53336,
+     "marks": [
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 683,
+     "at": 22342,
+     "stack": "",
+     "len": 28542,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 678,
+     "at": 24435,
+     "stack": "",
+     "len": 28495,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 665,
+     "at": 23768,
+     "stack": "",
+     "len": 28514,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 664,
+     "at": 23026,
+     "stack": "",
+     "len": 28770,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "paludarium",
+   "build": "after",
+   "firstFrame": 11885,
+   "settled": 11885,
+   "glMs": 11037,
+   "programs": 31,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 8157,
+     "at": 3548,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 59409,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1598,
+     "at": 904,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 765,
+     "at": 2781,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 53336,
+     "marks": [
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 173,
+     "at": 2595,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28494,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "planted",
+   "build": "before",
+   "firstFrame": 42373,
+   "settled": 42373,
+   "glMs": 41278,
+   "programs": 33,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 22061,
+     "at": 5786,
+     "stack": "",
+     "len": 36429,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1743,
+     "at": 33924,
+     "stack": "",
+     "len": 28537,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1638,
+     "at": 40485,
+     "stack": "",
+     "len": 28514,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1633,
+     "at": 37226,
+     "stack": "",
+     "len": 28513,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1621,
+     "at": 38860,
+     "stack": "",
+     "len": 28495,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1584,
+     "at": 30380,
+     "stack": "",
+     "len": 28770,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "planted",
+   "build": "after",
+   "firstFrame": 12438,
+   "settled": 12438,
+   "glMs": 11337,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 8530,
+     "at": 3359,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1685,
+     "at": 1498,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 259,
+     "at": 12006,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "bufferData",
+     "ms": 160,
+     "at": 938,
+     "stack": "t.draw (assets/main-DTFb5irX.js:3:5069)",
+     "len": 125,
+     "marks": []
+    },
+    {
+     "call": "bufferData",
+     "ms": 154,
+     "at": 1152,
+     "stack": "t.draw (assets/main-DTFb5irX.js:3:5069)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "reef",
+   "build": "before",
+   "firstFrame": 42552,
+   "settled": 42552,
+   "glMs": 41533,
+   "programs": 29,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 26814,
+     "at": 6673,
+     "stack": "",
+     "len": 48175,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1759,
+     "at": 3435,
+     "stack": "",
+     "len": 28531,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1564,
+     "at": 39479,
+     "stack": "",
+     "len": 28514,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1479,
+     "at": 37857,
+     "stack": "",
+     "len": 28528,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1437,
+     "at": 36385,
+     "stack": "",
+     "len": 28510,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1408,
+     "at": 34909,
+     "stack": "",
+     "len": 28770,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "reef",
+   "build": "after",
+   "firstFrame": 11623,
+   "settled": 11623,
+   "glMs": 10181,
+   "programs": 31,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 7300,
+     "at": 3883,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 48418,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1696,
+     "at": 1054,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 391,
+     "at": 3202,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 189,
+     "at": 11292,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28528,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 166,
+     "at": 3701,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28531,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "terrarium",
+   "build": "before",
+   "firstFrame": 32576,
+   "settled": 32576,
+   "glMs": 31844,
+   "programs": 21,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 21522,
+     "at": 5747,
+     "stack": "",
+     "len": 41732,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1424,
+     "at": 27278,
+     "stack": "",
+     "len": 35902,
+     "marks": [
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1357,
+     "at": 2989,
+     "stack": "",
+     "len": 28887,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1354,
+     "at": 28719,
+     "stack": "",
+     "len": 28533,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1334,
+     "at": 4349,
+     "stack": "",
+     "len": 28512,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1263,
+     "at": 31192,
+     "stack": "",
+     "len": 28510,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "terrarium",
+   "build": "after",
+   "firstFrame": 8672,
+   "settled": 8672,
+   "glMs": 7965,
+   "programs": 23,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 6004,
+     "at": 2572,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 41975,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1381,
+     "at": 727,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 247,
+     "at": 2159,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28905,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 128,
+     "at": 2427,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28887,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "C:/Users/nreed/AppData/Local/Temp/claude/C--Users-nreed-Glass-Box/2062db89-79e6-4a81-b0e1-b1da1194d4c5/scratchpad/scenes/stones5.json",
+   "build": "before",
+   "firstFrame": 86564,
+   "settled": 86564,
+   "glMs": 85922,
+   "programs": 52,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 22820,
+     "at": 5506,
+     "stack": "",
+     "len": 36431,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 22309,
+     "at": 48475,
+     "stack": "",
+     "len": 36429,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1888,
+     "at": 38902,
+     "stack": "t.draw (assets/main-BSvQvBIC.js:2:40384)",
+     "len": 85036,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1823,
+     "at": 36927,
+     "stack": "",
+     "len": 28530,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1819,
+     "at": 33272,
+     "stack": "",
+     "len": 28772,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1769,
+     "at": 79982,
+     "stack": "",
+     "len": 85036,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "C:/Users/nreed/AppData/Local/Temp/claude/C--Users-nreed-Glass-Box/2062db89-79e6-4a81-b0e1-b1da1194d4c5/scratchpad/scenes/stones5.json",
+   "build": "after",
+   "firstFrame": 10944,
+   "settled": 10944,
+   "glMs": 9228,
+   "programs": 38,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 6827,
+     "at": 3815,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 930,
+     "at": 2542,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28496,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "shaderSource",
+     "ms": 468,
+     "at": 695,
+     "stack": "Object.traverse (assets/main-DTFb5irX.js:2:36261)",
+     "len": 125,
+     "marks": []
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 253,
+     "at": 2250,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28514,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 186,
+     "at": 3491,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 85036,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 111,
+     "at": 3692,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28531,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "C:/Users/nreed/AppData/Local/Temp/claude/C--Users-nreed-Glass-Box/2062db89-79e6-4a81-b0e1-b1da1194d4c5/scratchpad/scenes/iwagumi-behind.json",
+   "build": "before",
+   "firstFrame": 71852,
+   "settled": 71852,
+   "glMs": 71210,
+   "programs": 52,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 20933,
+     "at": 43900,
+     "stack": "",
+     "len": 36429,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 20122,
+     "at": 5784,
+     "stack": "",
+     "len": 36431,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1816,
+     "at": 34960,
+     "stack": "t.draw (assets/main-BSvQvBIC.js:2:40384)",
+     "len": 85036,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1764,
+     "at": 31435,
+     "stack": "",
+     "len": 28512,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1725,
+     "at": 42168,
+     "stack": "",
+     "len": 28494,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1666,
+     "at": 27015,
+     "stack": "",
+     "len": 28535,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "C:/Users/nreed/AppData/Local/Temp/claude/C--Users-nreed-Glass-Box/2062db89-79e6-4a81-b0e1-b1da1194d4c5/scratchpad/scenes/iwagumi-behind.json",
+   "build": "after",
+   "firstFrame": 8918,
+   "settled": 8918,
+   "glMs": 6413,
+   "programs": 53,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 4637,
+     "at": 4055,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 36674,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 674,
+     "at": 3211,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28514,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 443,
+     "at": 2253,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28517,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 151,
+     "at": 3900,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28496,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 127,
+     "at": 3077,
+     "stack": "renderer.renderBufferDirect (assets/main-DTFb5irX.js:2:35163)",
+     "len": 28533,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    }
+   ]
+  }
+ ]
+}
