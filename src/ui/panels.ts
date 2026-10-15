@@ -1353,7 +1353,7 @@ Cancel, then change the name, to keep both.`)) return;
     $('aqOut').textContent = got !== undefined ? `${got}% (per AqAdvisor)${got > 100 ? ', overstocked' : ''}`
       : busy ? aqWaitText(key) : AQ_PROXY && aqUp === 'down' ? 'can’t check from here right now; AqAdvisor ↗ still opens it' : aqErr.get(key) ?? '';
     $('aqOut').className = got !== undefined && got > 100 ? 'bad' : '';
-    // stand-ins named, so the list on aqadvisor.com makes sense: it has no dwarf frogs, it shows Panda Cory (Nathan 2026-10-15)
+    // stand-ins named, so the list on aqadvisor.com makes sense: an axolotl shows there as a Dojo Loach (Nathan 2026-10-15)
     $('aqNote').textContent = [
       q.standIns.length ? `AqAdvisor has no ${q.standIns.map(k => k.name).join(', ')}, so ${q.standIns.length > 1 ? 'they are' : 'it is'} counted as a similar fish: ${q.standIns.map(k => `${k.count} ${k.name} as ${k.as}`).join(', ')}.` : '',
       q.skipped.length ? `Not counted (land animals): ${q.skipped.map(k => `${k.count} ${k.name}`).join(', ')}.` : '',

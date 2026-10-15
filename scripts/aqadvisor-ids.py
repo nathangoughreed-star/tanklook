@@ -8,7 +8,7 @@ Usage: python scripts/aqadvisor-ids.py
 """
 import json, re, time, urllib.parse, urllib.request, pathlib
 
-# TankLook species id -> AqAdvisor species list entry (exact option text). Herps have no AqAdvisor entry.
+# TankLook species id -> AqAdvisor species list entry (exact option text). Most herps have no AqAdvisor entry (the dwarf frog does).
 NAMES = {
     'neon': 'Neon Tetra (Paracheirodon innesi)',
     'cardinal': 'Cardinal Tetra (Paracheirodon axelrodi)',
@@ -50,6 +50,7 @@ NAMES = {
     'mystery': 'Mystery Snail (Pomacea cuprina)',
     'ramshorn': 'Ramshorn Snail (Planorbidae)',
     'trumpet': 'Malaysian Trumpet Snail (Melanoides tuberculata)',
+    'adf': 'African Dwarf Frog (Hymenochirus boettgeri)',  # it is on AqAdvisor (Nathan 2026-10-15); was a Panda Cory stand-in
 }
 
 # Not in AqAdvisor: counted as a similar animal in size and type (Nathan 2026-10-09), flagged standIn in the json.
@@ -58,7 +59,6 @@ STAND_INS = {
     'axolotl': 'Dojo Loach (Misgurnus anguillicaudatus)',  # 23 cm, bottom, cold water
     'firenewt': 'Zebra Loach (Botia striata)',  # 9 cm, bottom
     'firetoad': 'White Cloud Mountain Minnow (Tanichthys albonubes)',  # 4.5 cm, semi-aquatic, cool water
-    'adf': 'Panda Cory (Corydoras panda)',  # African dwarf frog: 3.5 cm, bottom, warm water, kept in groups
 }
 
 # Saltwater (lane C's marine species): AqAdvisor's separate marine calculator, AqAdvisorMarine.php, same form and the

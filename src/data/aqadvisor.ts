@@ -40,8 +40,8 @@ export function aqQuery(s: TankSetup): AqQuery | null {
   if (!s.water.on || s.water.salt) return null; // AqAdvisor's saltwater page gives no % (2026-10-14, Nathan: leave it off)
   const counts = new Map<string, number>();
   for (const f of s.fish) counts.set(f.species, (counts.get(f.species) ?? 0) + 1);
-  // per AqAdvisor id: a stand-in can share its id with a real species (dwarf frogs and panda corys are both sent as
-  // Panda Cory), and the calculator wants each species once, so their counts add up
+  // per AqAdvisor id: a stand-in may share its id with a real species, and the calculator wants each species once,
+  // so their counts add up
   const byId = new Map<string, number>(), skipped: AqQuery['skipped'] = [], standIns: AqQuery['standIns'] = [];
   let counted = 0;
   for (const [sp, n] of [...counts].sort(([a], [b]) => a.localeCompare(b))) {
