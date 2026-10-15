@@ -145,6 +145,8 @@ export interface LightSettings {
   /** A Light map layer across the tank at this height above the floor (mm; an app preference, added 2026-10-15); 0 or
    * absent = the substrate only. */
   mapSlice?: number;
+  /** Light map shells: see-through surfaces round the lamps at the contour levels (an app preference, added 2026-10-15). */
+  mapShells?: boolean;
 }
 
 export type LightTech = 'led-white' | 'led-planted' | 'led-reef' | 't5-refl' | 't5-bare' | 't8' | 't12' | 'led-tube' | 'cfl' | 'led-bulb' | 'mh' | 'mh-20k' | 'halogen';

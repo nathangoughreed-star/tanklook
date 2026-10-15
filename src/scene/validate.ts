@@ -223,6 +223,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       ...(l.par != null ? { par: Math.round(num(l.par, 0, ...LIMITS.par)) } : {}),
       ...(l.mapUnit === 'par' || l.mapUnit === 'lux' ? { mapUnit: l.mapUnit } : {}),
       ...(l.mapStep != null ? { mapStep: Math.round(num(l.mapStep, 20, 5, 100) / 5) * 5 } : {}),
+      ...(l.mapShells === true ? { mapShells: true } : {}),
       ...(l.mapSlice != null && Number(l.mapSlice) > 0 ? { mapSlice: Math.round(num(l.mapSlice, 0, 0, tankA.H)) } : {}),
       ...(l.mapStepLux != null ? { mapStepLux: Math.round(num(l.mapStepLux, 1000, 250, 5000) / 250) * 250 } : {}),
     },

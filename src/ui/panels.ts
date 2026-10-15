@@ -786,6 +786,7 @@ Cancel, then change the name, to keep both.`)) return;
   $<HTMLSelectElement>('lBulb').onchange = e => store.edit(s => { s.light.bulbW = +(e.target as HTMLSelectElement).value; });
   $('lBeams').onchange = e => store.edit(s => { s.render.beams = (e.target as HTMLInputElement).checked; });
   $('lSlice').oninput = e => store.edit(s => { const v = +(e.target as HTMLInputElement).value; if (v > 0) s.light.mapSlice = v; else delete s.light.mapSlice; }, { coalesce: 'lSlice' });
+  $('lShells').onchange = e => store.edit(s => { if ((e.target as HTMLInputElement).checked) s.light.mapShells = true; else delete s.light.mapShells; });
   $('lStep').oninput = e => store.edit(s => { const v = +(e.target as HTMLInputElement).value; if ((s.light.mapUnit ?? 'par') === 'lux') s.light.mapStepLux = v; else s.light.mapStep = v; }, { coalesce: 'lStep' });
   $<HTMLSelectElement>('lUnit').onchange = e => store.edit(s => { s.light.mapUnit = (e.target as HTMLSelectElement).value as 'par' | 'lux'; });
   /** The Light map legend: labels at doublings along the ramp (7 steps up from MAP_DIV), and the PAR bands. */
@@ -1324,7 +1325,7 @@ Cancel, then change the name, to keep both.`)) return;
     $('lUnitRow').style.display = mapOn && watts ? '' : 'none'; setVal('lUnit', l.mapUnit ?? 'par'); mapKey(watts ? l.mapUnit ?? 'par' : 'rel');
     // the map layer: from the floor up to the water surface (the tank top when dry)
     { const top = Math.round(s.water.on ? waterY(s.tank, s.water.level) : s.tank.H); $('lSliceRow').style.display = mapOn && watts ? '' : 'none';
-      ($('lSlice') as HTMLInputElement).max = String(top); setVal('lSlice', l.mapSlice ?? 0); setOut('oLSlice', l.mapSlice ? `${fmt(l.mapSlice)} up` : 'Off'); }
+      ($('lSlice') as HTMLInputElement).max = String(top); $('lShellsRow').style.display = mapOn && watts ? '' : 'none'; ($('lShells') as HTMLInputElement).checked = !!l.mapShells; setVal('lSlice', l.mapSlice ?? 0); setOut('oLSlice', l.mapSlice ? `${fmt(l.mapSlice)} up` : 'Off'); }
     { const u = l.mapUnit ?? 'par', r = MAP_STEP[u], v = mapStepOf(l, u); $('lStepRow').style.display = mapOn && watts ? '' : 'none';
       Object.assign($('lStep') as HTMLInputElement, { min: String(r.min), max: String(r.max), step: String(r.by) }); setVal('lStep', v);
       setOut('oLStep', u === 'lux' ? `${v.toLocaleString('en-US')} lux` : `${v} PAR`); }

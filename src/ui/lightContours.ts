@@ -95,7 +95,10 @@ export function attachLightContours(viewer: Viewer) {
       const key = JSON.stringify([vp.T, l, S.lid, S.water, S.substrate, S.layout.id, S.layout.seed, S.terrain]);
       if (cache[k]?.key !== key) cache[k] = { key, labels: contourLabels(S, vp.T) };
       const placed: [number, number][] = []; // on screen: a label that would overlap one already placed is left out
-      for (const lab of cache[k].labels) {
+      // the shells' values, when they are shown (render/lightShells), ahead of the lines so they win a place
+      const sh = vp.scene?.getObjectByName('lightShells'), shellLabs: Label[] = sh?.visible
+        ? (sh.userData.labels as { p: THREE.Vector3; level: number }[]).map(s => ({ p: s.p, text: fmt(s.level, l.mapUnit ?? 'par') })) : [];
+      for (const lab of [...shellLabs, ...cache[k].labels]) {
         v.copy(lab.p).project(vp.cam);
         if (v.z > 1 || Math.abs(v.x) > 0.98 || Math.abs(v.y) > 0.98) continue;
         const sx = vp.x + (v.x + 1) / 2 * vp.w, sy = vp.y + (1 - v.y) / 2 * vp.h;

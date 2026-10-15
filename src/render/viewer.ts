@@ -12,6 +12,7 @@ import { drawViewMap } from './viewmap';
 import { applyFraming, fovFor, frameBox, frameStraightOn, placeCamera, windowCentre } from './camera';
 import { glowColor, lampHeight, placeSlice, roomLevel, setLightUniforms, setWaterUniforms } from './lighting';
 import { wattsOf } from '../scene/lightout';
+import { placeShells } from './lightShells';
 import { onPictureLoad, setMaxAnisotropy } from './textures';
 import { OUTLINE } from './fish3d';
 import { PERSON_BODY, PERSON_HEAD } from '../art/placeholder';
@@ -329,7 +330,7 @@ export class Viewer {
       r.setViewport(vp.x, vp.y, vp.w, vp.h); r.setScissor(vp.x, vp.y, vp.w, vp.h);
       r.setClearColor(new THREE.Color(0xd9dde2).multiplyScalar(0.06 + 0.94 * roomLevel(S.light.room))); r.clear(); // the space beyond the room dims with the room light
       setLightUniforms(vp.T, S.light, S.lid, S.render.beams, S); setWaterUniforms(vp.T, S.water, S.render.pop);
-      placeSlice(vp.scene!, vp.T, { ...S, tank: vp.T }, wattsOf({ ...S, tank: vp.T }) > 0); OUTLINE.uPop.value = S.render.pop; OUTLINE.uVpH.value = vp.h; // placeSlice: the Light map layer at a set height
+      placeSlice(vp.scene!, vp.T, { ...S, tank: vp.T }, wattsOf({ ...S, tank: vp.T }) > 0); placeShells(vp.scene!, vp.T, S); OUTLINE.uPop.value = S.render.pop; OUTLINE.uVpH.value = vp.h; // placeSlice: the Light map layer at a set height
       // keep the cleared alpha (1): alpha-to-coverage fins would otherwise leave a translucent canvas, through which
       // the page shows on screen and a viewer's background (often white) in an exported PNG
       this.rank.clear(); vp.scene!.traverse(o => { const m = (o as THREE.Mesh).material; if (m) for (const x of ([] as THREE.Material[]).concat(m)) if (!this.rank.has(x)) this.rank.set(x, this.rank.size); });
