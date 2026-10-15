@@ -7,7 +7,7 @@
 import * as THREE from 'three';
 import { MAP_DIV, mapStepOf } from '../render/lighting';
 import type { Viewer } from '../render/viewer';
-import { bandsAt, lightEnvCached, luxOf, parOf } from '../scene/lightout';
+import { bandsAt, lightEnvCached, luxOf, parOf, wattsOf } from '../scene/lightout';
 import { groundHeight, groundInsideBy } from '../scene/terrain';
 import type { Tank, TankSetup } from '../scene/types';
 
@@ -88,7 +88,7 @@ export function attachLightContours(viewer: Viewer) {
     let used = 0;
     viewer.active.forEach((vp, k) => {
       const S = vp.S, l = S.light;
-      if (!S.render.beams || l.type === 'flat' || !(l.watts && l.watts > 0) || !S.substrate.show) return;
+      if (!S.render.beams || !(wattsOf({ ...S, tank: vp.T }) > 0) || !S.substrate.show) return;
       const key = JSON.stringify([vp.T, l, S.lid, S.water, S.substrate, S.layout.id, S.layout.seed, S.terrain]);
       if (cache[k]?.key !== key) cache[k] = { key, labels: contourLabels(S, vp.T) };
       const placed: [number, number][] = []; // on screen: a label that would overlap one already placed is left out

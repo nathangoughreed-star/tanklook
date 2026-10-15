@@ -6,7 +6,7 @@
 // the spot instead, shown above the finger; it stays until the next tap, a drag, or a change to the light.
 import * as THREE from 'three';
 import type { Viewer } from '../render/viewer';
-import { bandsAt, lightEnvCached, luxOf, parOf } from '../scene/lightout';
+import { bandsAt, lightEnvCached, luxOf, parOf, wattsOf } from '../scene/lightout';
 import { fmtLen } from '../scene/physics';
 import type { Store } from '../scene/store';
 import { groundHeight, groundInsideBy } from '../scene/terrain';
@@ -49,7 +49,7 @@ export function attachLightHover(viewer: Viewer, store: Store) {
     const r = viewer.host.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
     const vp = viewer.active.find(v => x >= v.x && x <= v.x + v.w && y >= v.y && y <= v.y + v.h);
     const S = vp?.S, l = S?.light;
-    if (!vp || !S || !l || !S.render.beams || l.type === 'flat' || !(l.watts && l.watts > 0) || !S.substrate.show) { tip.hidden = true; return; }
+    if (!vp || !S || !l || !S.render.beams || !(wattsOf({ ...S, tank: vp.T }) > 0) || !S.substrate.show) { tip.hidden = true; return; }
     const env = lightEnvCached({ ...S, tank: vp.T });
     ray.setFromCamera(new THREE.Vector2((x - vp.x) / vp.w * 2 - 1, -(y - vp.y) / vp.h * 2 + 1), vp.cam);
     const p = env && groundHit({ ...S, tank: vp.T }, ray.ray);

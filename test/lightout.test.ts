@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { defaultScene, defaultSetup } from '../src/scene/defaults';
 import {
   KWATER, LREF, TECHS, TECH_IDS, bandsAt, beamExp, lightEnv, lightEnvCached, lightOut, lightOutCached, lineNorm, luxOf, luxPer, parOf, pointNorm, readout, renderBright,
-  techOf, techsFor, type Band, type Emitter, type LightEnv, type LightScene,
+  fixtureOf, techOf, techsFor, tubeOf, wattsOf, type Band, type Emitter, type LightEnv, type LightScene,
 } from '../src/scene/lightout';
 import { normTank } from '../src/scene/shape';
 import { parseScene } from '../src/scene/validate';
@@ -95,18 +95,34 @@ describe('light output model', () => {
     expect(readout(o)).toMatch(/^PAR at substrate 45 µmol \(yours; medium\)/);
   });
   it('lux factors per tech match Apogee / estimates', () => {
-    const want: Record<LightTech, number> = { 'led-white': 67, 'led-planted': 48, 'led-reef': 26, 't5-refl': 74, 't5-bare': 74, 't8': 74, 'cfl': 72, 'mh': 71, 'mh-20k': 55, 'halogen': 49 };
+    const want: Record<LightTech, number> = { 'led-white': 67, 'led-planted': 48, 'led-reef': 26, 't5-refl': 74, 't5-bare': 74, 't8': 74, 't12': 74, 'led-tube': 67, 'cfl': 72, 'led-bulb': 66, 'mh': 71, 'mh-20k': 55, 'halogen': 49 };
     for (const t of TECH_IDS) {
       expect(TECHS[t].split.reduce((a, b) => a + b, 0)).toBeCloseTo(1, 6);
       expect(Math.abs(luxPer(t) / want[t] - 1)).toBeLessThan(0.05);
     }
   });
-  it('techs are filtered by fixture type; an unfit tech falls back to the type default', () => {
+  it('lamps are filtered by fixture; an unfit lamp falls back to the fixture default', () => {
     expect(techsFor('tube')).toContain('t5-refl');
-    expect(techsFor('spot')).not.toContain('t5-refl');
+    expect(techsFor('tube')).not.toContain('led-white');
+    expect(techsFor('puck')).not.toContain('t5-refl');
+    expect(techsFor('pendant')).toEqual(['mh', 'mh-20k']);
     expect(techOf({ type: 'spot', tech: 't8' } as LightSettings)).toBe('led-white');
     expect(techOf({ type: 'tube' } as LightSettings)).toBe('t5-refl');
     expect(techOf({ type: 'led', tech: 'led-reef' } as LightSettings)).toBe('led-reef');
+  });
+  it('spot styles are told apart by the lamp', () => {
+    expect(fixtureOf({ type: 'spot' } as LightSettings)).toBe('puck');
+    expect(fixtureOf({ type: 'spot', tech: 'mh' } as LightSettings)).toBe('pendant');
+    expect(fixtureOf({ type: 'spot', tech: 'halogen' } as LightSettings)).toBe('bulb');
+    expect(fixtureOf({ type: 'spot', tech: 'cfl' } as LightSettings)).toBe('bulb');
+    expect(fixtureOf({ type: 'tube', tech: 'cfl' } as LightSettings)).toBe('tube');
+  });
+  it('tubes: the longest standard length that fits, power from the tubes', () => {
+    const l = { type: 'tube', tech: 't5-refl', count: 2 } as LightSettings;
+    expect(tubeOf(l, { L: 914 })).toMatchObject({ inch: 36, w: 39 });   // 36 in tank
+    expect(tubeOf(l, { L: 1200 })).toMatchObject({ inch: 48, w: 54 });  // 4 ft
+    expect(tubeOf(l, { L: 500 })).toMatchObject({ inch: 24, w: 24 });   // shorter than any: the shortest
+    expect(wattsOf({ tank: { ...defaultSetup().tank, L: 914 }, light: { ...l, watts: 999 } })).toBe(78);
   });
   it('readout line and render brightness', () => {
     const o = lightOut(scene({}))!;

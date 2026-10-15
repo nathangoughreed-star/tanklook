@@ -207,20 +207,22 @@
   </details>
   <details class="sec" data-sec="lighting"><summary><h2>Lighting</h2></summary>
   <div class="row"><label for="lType">Fixture</label><select id="lType" class="span2">
-    <option value="flat">None (flat, even light)</option><option value="spot">Spot bulbs / pucks</option>
-    <option value="tube">Tube lights (T5/T8)</option><option value="led">LED array (full-length bar)</option></select></div>
+    <option value="flat">None (flat, even light)</option><option value="puck">LED pucks / spots</option><option value="bulb">Screw-in bulbs</option>
+    <option value="pendant">Metal halide pendants</option><option value="tube">Tubes (fluorescent / LED)</option><option value="led">LED bar (full length)</option></select></div>
+  <div class="row" id="lTechRow"><label for="lTech" title="What is inside the fixture: sets how much light each watt makes, and its colour mix (lux per µmol)">Light type</label><select id="lTech" class="span2"></select></div>
   <div class="row" id="lCountRow"><label id="lCountLab" for="lCount">Count</label><input id="lCount" type="range" min="1" max="6" step="1"><output id="oCount"></output></div>
   <div class="row" id="lRowsRow"><label for="lRows">Rows</label><input id="lRows" type="range" min="1" max="4" step="1"><output id="oRows"></output></div>
   <div class="row" id="lPatRow"><label for="lPat">Pattern</label><select id="lPat" class="span2"><option value="grid">Grid</option><option value="tri">Triangular (staggered rows)</option><option value="fit">Optimized for the tank shape</option></select></div>
   <div class="row" id="lSpRow"><label for="lSp">Spacing</label><input id="lSp" type="range" min="0" max="1500" step="10"><output id="oLSp"></output></div>
   <div class="row" id="lConeRow"><label for="lCone">Beam angle</label><input id="lCone" type="range" min="15" max="120" step="1"><output id="oLCone"></output></div>
   <div class="row" id="lHRow"><label for="lH" title="How far the fixture hangs above the top of the tank">Height above tank</label><input id="lH" type="range" min="20" max="900" step="5"><output id="oLH"></output></div>
-  <div class="row" id="lWRow"><label for="lW" title="Total power draw of all the lights over the tank together (every fixture, bulb and tube), not per fixture. Set, it estimates PAR and lux at the substrate and the render follows it. 0 = off: Brightness stays a manual knob">Total Power</label><input id="lW" type="range" min="0" max="400" step="1"><output id="oLW"></output></div>
-  <div class="row" id="lTechRow"><label for="lTech" title="What is inside the fixture: sets how much light each watt makes, and its colour mix (lux per µmol)">Light type</label><select id="lTech" class="span2"></select></div>
+  <div class="row" id="lBulbRow"><label for="lBulb" title="Metal halide bulbs come in set sizes; the total power is this times the number of bulbs">Bulb</label><select id="lBulb" class="span2"></select></div>
+  <div class="row" id="lWRow"><label for="lW" title="Total power draw of all the lights over the tank together (every fixture, bulb and tube), not per fixture. Tubes and metal halide pendants: set by the lamps. Set, it estimates PAR and lux at the substrate and the render follows it. 0 = off: Brightness stays a manual knob">Total Power</label><input id="lW" type="range" min="0" max="400" step="1"><span id="lWFixed" class="hint" hidden></span><output id="oLW"></output></div>
   <div class="row" id="lParRow"><label for="lPar" title="Your own PAR-meter reading at the substrate (or the maker's figure), µmol/m²/s. Set, the estimate is scaled to match it. 0 = estimate">PAR (measured)</label><input id="lPar" type="range" min="0" max="300" step="1"><output id="oLPar"></output></div>
   <div id="lOut" class="hint"></div>
   <div class="row"><label for="lBright" id="lBrightLab">Brightness</label><input id="lBright" type="range" min="0.2" max="2.5" step="0.05"><output id="oBright"></output></div>
-  <div class="row"><label for="lK">Colour temp</label><input id="lK" type="range" min="2700" max="14000" step="100"><output id="oK"></output></div>
+  <div class="row"><label for="lK">Colour temp</label><span class="kwrap"><input id="lK" type="range" min="2700" max="20000" step="100"><span id="lKBand" class="kband"></span></span><output id="oK"></output></div>
+  <div id="lKNote" class="hint" hidden></div>
   <div class="row"><label for="lRoom" title="Light from the room around the tank (ambient): 0 = a dark room, only the tank lights">Room light (ambient)</label><input id="lRoom" type="range" min="0" max="0.8" step="0.01"><output id="oRoom"></output></div>
   <div class="btns"><button id="lTop" title="Look straight down on the tank, to watch the light map while you change the lights">Look from above</button><button id="lFront" title="Back to straight on">Straight on</button></div>
   <label><input type="checkbox" id="lBeams"> Light map: beams, and the light on the substrate (hides plants, hardscape and fish)</label>

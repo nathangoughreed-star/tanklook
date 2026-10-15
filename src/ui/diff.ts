@@ -4,7 +4,7 @@
 import { SUBSTRATES, blendLabel } from '../art/placeholder';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { fmtSize, fmtLen, glassThickness, rescaleTank, waterY } from '../scene/physics';
-import { TECHS, techOf } from '../scene/lightout';
+import { FIXTURES, TECHS, fixtureOf, techOf, wattsOf } from '../scene/lightout';
 import { shapeOf } from '../scene/shape';
 import { setWaterLevel } from '../scene/water';
 import type { TankSetup, Units } from '../scene/types';
@@ -15,7 +15,6 @@ export type Match = (to: TankSetup, from: TankSetup) => void;
 export type DiffItem = [a: string, b: string, match: Match];
 
 const same = (x: unknown, y: unknown) => JSON.stringify(x) === JSON.stringify(y);
-const LIGHTS = { flat: 'Flat light', spot: 'Spot lights', tube: 'Tube lights', led: 'LED array' } as const;
 const LIDS = { open: 'Open top', glass: 'Glass lid', hood: 'Hood' } as const;
 const WALLS = { back: 'Wall behind', left: 'Wall at left end', right: 'Wall at right end', corner: 'Room corner' } as const;
 
@@ -122,7 +121,7 @@ export function tankDiff(a: TankSetup, b: TankSetup, u: Units): DiffItem[] {
   }
 
   // light
-  add(a.light.type, b.light.type, t => LIGHTS[t], ['light.type']);
+  add(fixtureOf(a.light), fixtureOf(b.light), f => FIXTURES[f].label, ['light.type', 'light.tech']);
   if (a.light.type === b.light.type) {
     if (a.light.type === 'spot' || a.light.type === 'tube') add(a.light.count, b.light.count, n => `${n} ${a.light.type === 'tube' ? 'tube' : 'bulb'}${n > 1 ? 's' : ''}`, ['light.count']);
     if (a.light.type === 'spot') {
@@ -133,8 +132,9 @@ export function tankDiff(a: TankSetup, b: TankSetup, u: Units): DiffItem[] {
     }
     if (a.light.type !== 'flat' && a.lid !== 'hood' && b.lid !== 'hood') add(a.light.height, b.light.height, h => `Light ${len(h)} up`, ['light.height']);
     if (a.light.type !== 'flat') { // light output (lane K)
-      add(a.light.watts ?? 0, b.light.watts ?? 0, w => (w ? `${w} W light` : 'Light power not set'), ['light.watts']);
-      if (a.light.watts && b.light.watts) {
+      const wa = wattsOf(a), wb = wattsOf(b);
+      add(wa, wb, w => (w ? `${w} W light` : 'Light power not set'), ['light.watts', 'light.bulbW', 'light.count']);
+      if (wa && wb) {
         add(techOf(a.light), techOf(b.light), t => TECHS[t].label, ['light.tech']);
         add(a.light.par ?? 0, b.light.par ?? 0, v => (v ? `Measured PAR ${v} µmol` : 'PAR estimated'), ['light.par']);
       }

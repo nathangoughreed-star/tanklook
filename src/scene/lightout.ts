@@ -32,7 +32,7 @@ export function emitters(T: Tank, l: LightSettings, height = l.height ?? LAMP_Y)
       for (let i = 0; i < k; i++) E.push([L / 2 + (i - (k - 1) / 2) * sx, y, z, 0]);
     }
   }
-  if (l.type === 'tube') for (let i = 0; i < n; i++) E.push([L / 2, y, -D * (i + 0.5) / n, L * 0.45]);
+  if (l.type === 'tube') { const h = tubeOf(l, T).lamp / 2; for (let i = 0; i < n; i++) E.push([L / 2, y, -D * (i + 0.5) / n, h]); }
   if (l.type === 'led') {
     const cols = clamp(Math.round(L * 0.9 / 45), 2, 24);
     for (const r of [0.38, 0.62]) for (let c = 0; c < cols; c++) E.push([L * (0.05 + 0.9 * (c + 0.5) / cols), y, -D * r, 0]);
@@ -100,8 +100,10 @@ export const NWATER = 1.33, FRESNEL = 0.97, GLASS_LID = 0.9, WALL_W = 0.7;
 
 export interface Tech {
   label: string;
-  /** Fixture types it can go in. */
-  on: LightType[];
+  /** Fixtures it comes in (FIXTURES). */
+  on: Fixture[];
+  /** Its usual colour temperatures, K: [low, high, default]. The slider shows the band and goes past it (with a note). */
+  k: [number, number, number];
   /** Photon efficacy (µmol/J) and the fixture's own losses (lens, reflector, ballast, ageing): photons out = W x ppe x eta. */
   ppe: number; eta: number;
   /** Share of its photons in each band (sums to 1). */
@@ -122,24 +124,79 @@ export interface Tech {
 // Bugbee's T8 fixture (0.84, grade A); its eta 0.5 is an ESTIMATE (no PAR data for power compacts found). Halogen: split
 // from a 3000 K blackbody (gives 47 lux per µmol, AGi32 incandescent 49); ppe 0.3 and eta 0.6 are ESTIMATES (blackbody
 // 0.3-0.4 bare, one MR11 spec 0.1; no PAR-at-distance data found). T8: scaled from T5, no dataset.
+// Added 2026-10-15 (Nathan: only real fixture / lamp pairings), all ESTIMATES: LED screw-in bulb (omni, ~90 lm/W, much
+// of it sideways: eta 0.6, warmer split); LED T8 tube (directional, eta 0.8, white LED split); T12 (older, below T8).
+// Colour ranges (k) are what each is usually sold as, not limits.
 export const TECHS: Record<LightTech, Tech> = {
-  'led-white': { label: 'LED, white', on: ['spot', 'tube', 'led'], ppe: 1.6, eta: 0.9, split: [0.22, 0.53, 0.25], unc: 0.3 },
-  'led-planted': { label: 'LED, planted RGB', on: ['spot', 'led'], ppe: 1.8, eta: 0.9, split: [0.33, 0.33, 0.34], unc: 0.3 },
-  'led-reef': { label: 'LED, reef (blue)', on: ['spot', 'led'], ppe: 1.75, eta: 0.9, split: [0.78, 0.13, 0.09], unc: 0.3 },
-  't5-refl': { label: 'T5 HO, own reflectors', on: ['tube'], ppe: 1.2, eta: 0.65, split: [0.2, 0.6, 0.2], unc: 0.5 },
-  't5-bare': { label: 'T5 HO, bare', on: ['tube'], ppe: 1.2, eta: 0.4, split: [0.2, 0.6, 0.2], unc: 0.5 },
-  't8': { label: 'T8', on: ['tube'], ppe: 0.85, eta: 0.45, split: [0.2, 0.6, 0.2], unc: 0.5 },
-  'cfl': { label: 'CFL / power compact', on: ['spot', 'tube'], ppe: 0.8, eta: 0.5, split: [0.2, 0.59, 0.21], unc: 0.5 },
-  'mh': { label: 'Metal halide, 10-14K', on: ['spot'], ppe: 0.83, eta: 0.77, split: [0.24, 0.57, 0.19], unc: 0.5 },
-  'mh-20k': { label: 'Metal halide, 20K', on: ['spot'], ppe: 0.47, eta: 0.77, split: [0.45, 0.42, 0.13], unc: 0.5 },
-  'halogen': { label: 'Incandescent / halogen', on: ['spot'], ppe: 0.3, eta: 0.6, split: [0.1, 0.3, 0.6], unc: 0.5 },
+  'led-white': { label: 'LED, white', on: ['puck', 'led'], k: [5000, 10000, 6500], ppe: 1.6, eta: 0.9, split: [0.22, 0.53, 0.25], unc: 0.3 },
+  'led-planted': { label: 'LED, planted RGB', on: ['puck', 'led'], k: [6000, 8000, 7000], ppe: 1.8, eta: 0.9, split: [0.33, 0.33, 0.34], unc: 0.3 },
+  'led-reef': { label: 'LED, reef (blue)', on: ['puck', 'led'], k: [10000, 20000, 14000], ppe: 1.75, eta: 0.9, split: [0.78, 0.13, 0.09], unc: 0.3 },
+  't5-refl': { label: 'T5 HO, own reflectors', on: ['tube'], k: [5000, 20000, 6500], ppe: 1.2, eta: 0.65, split: [0.2, 0.6, 0.2], unc: 0.5 },
+  't5-bare': { label: 'T5 HO, bare', on: ['tube'], k: [5000, 20000, 6500], ppe: 1.2, eta: 0.4, split: [0.2, 0.6, 0.2], unc: 0.5 },
+  't8': { label: 'T8', on: ['tube'], k: [3000, 10000, 6500], ppe: 0.85, eta: 0.45, split: [0.2, 0.6, 0.2], unc: 0.5 },
+  't12': { label: 'T12 (older)', on: ['tube'], k: [3000, 10000, 6500], ppe: 0.7, eta: 0.45, split: [0.2, 0.6, 0.2], unc: 0.5 },
+  'led-tube': { label: 'LED tube (T8 size)', on: ['tube'], k: [4000, 6500, 6500], ppe: 1.5, eta: 0.8, split: [0.22, 0.53, 0.25], unc: 0.4 },
+  'cfl': { label: 'CFL / power compact', on: ['bulb', 'tube'], k: [2700, 10000, 6500], ppe: 0.8, eta: 0.5, split: [0.2, 0.59, 0.21], unc: 0.5 },
+  'led-bulb': { label: 'LED bulb', on: ['bulb'], k: [2700, 6500, 5000], ppe: 1.3, eta: 0.6, split: [0.18, 0.52, 0.3], unc: 0.4 },
+  'halogen': { label: 'Incandescent / halogen', on: ['bulb'], k: [2700, 3200, 2900], ppe: 0.3, eta: 0.6, split: [0.1, 0.3, 0.6], unc: 0.5 },
+  'mh': { label: 'Metal halide, 10-14K', on: ['pendant'], k: [10000, 14000, 10000], ppe: 0.83, eta: 0.77, split: [0.24, 0.57, 0.19], unc: 0.5 },
+  'mh-20k': { label: 'Metal halide, 20K', on: ['pendant'], k: [18000, 20000, 20000], ppe: 0.47, eta: 0.77, split: [0.45, 0.42, 0.13], unc: 0.5 },
 };
 export const TECH_IDS = Object.keys(TECHS) as LightTech[];
-export const techsFor = (type: LightType) => TECH_IDS.filter(t => TECHS[t].on.includes(type));
-/** The fixture's tech: its setting if that fits the type, else the type's usual one. */
-export function techOf(l: LightSettings): LightTech {
-  if (l.tech && TECHS[l.tech].on.includes(l.type)) return l.tech;
-  return l.type === 'tube' ? 't5-refl' : 'led-white';
+
+/**
+ * The Fixture menu (Nathan 2026-10-15): the style, which sets the geometry (`type`) and which lamps it really comes in.
+ * The three spot styles share `type: 'spot'` and are told apart by the lamp: a metal halide is a pendant, a screw-in
+ * lamp a bulb, anything else (LED) a puck. Pendants never go in a hood (too hot).
+ */
+export type Fixture = 'flat' | 'puck' | 'bulb' | 'pendant' | 'tube' | 'led';
+export const FIXTURES: Record<Fixture, { label: string; type: LightType }> = {
+  flat: { label: 'None (flat, even light)', type: 'flat' },
+  puck: { label: 'LED pucks / spots', type: 'spot' },
+  bulb: { label: 'Screw-in bulbs', type: 'spot' },
+  pendant: { label: 'Metal halide pendants', type: 'spot' },
+  tube: { label: 'Tubes (fluorescent / LED)', type: 'tube' },
+  led: { label: 'LED bar (full length)', type: 'led' },
+};
+export const techsFor = (f: Fixture) => TECH_IDS.filter(t => TECHS[t].on.includes(f));
+export function fixtureOf(l: Pick<LightSettings, 'type' | 'tech'>): Fixture {
+  if (l.type !== 'spot') return l.type;
+  const on = l.tech ? TECHS[l.tech].on : [];
+  return on.includes('pendant') ? 'pendant' : on.includes('bulb') ? 'bulb' : 'puck';
+}
+/** The fixture's lamp: its setting if that fits the fixture, else the fixture's first. */
+export function techOf(l: Pick<LightSettings, 'type' | 'tech'>): LightTech {
+  const f = fixtureOf(l);
+  return l.tech && TECHS[l.tech].on.includes(f) ? l.tech : techsFor(f)[0] ?? 'led-white';
+}
+
+/**
+ * Tubes come in set lengths, each at a set power (Nathan 2026-10-15: power follows the tubes). [fixture length in,
+ * W per tube]; the longest that fits the tank is used, the shortest if none does. Lamp = the glowing length (end caps
+ * and fittings off, ~92%). PC (straight power compact) and LED tube watts are ESTIMATES from common aquarium lamps.
+ */
+const TUBES: Partial<Record<LightTech, [number, number][]>> = {
+  't5-refl': [[24, 24], [36, 39], [48, 54], [60, 80]], 't5-bare': [[24, 24], [36, 39], [48, 54], [60, 80]],
+  't8': [[18, 15], [24, 17], [36, 25], [48, 32]], 't12': [[18, 15], [24, 20], [36, 30], [48, 40]],
+  'cfl': [[12, 32], [16, 36], [21, 55], [34, 96]], 'led-tube': [[24, 9], [36, 14], [48, 18]],
+};
+export function tubeOf(l: Pick<LightSettings, 'type' | 'tech'>, T: Pick<Tank, 'L'>) {
+  const sizes = TUBES[techOf(l)] ?? [[24, 24]], fit = sizes.filter(([inch]) => inch * 25.4 <= T.L + 40);
+  const [inch, w] = fit.length ? fit[fit.length - 1] : sizes[0];
+  return { inch, w, lamp: Math.min(inch * 25.4 * 0.92, T.L * 0.95) };
+}
+/** Metal halide bulb sizes (W each). */
+export const MH_BULBS = [70, 150, 250, 400] as const;
+/**
+ * The light's power draw (W), what the model is fed: tubes and pendants by their lamps (W per tube x tubes; W per bulb
+ * x bulbs), the rest the Total Power setting. 0 = not set.
+ */
+export function wattsOf(S: { tank: Tank; light: LightSettings }): number {
+  const l = S.light, f = fixtureOf(l);
+  if (f === 'flat') return 0;
+  if (f === 'tube') return tubeOf(l, S.tank).w * l.count;
+  if (f === 'pendant') return (l.bulbW ?? 150) * emitters(S.tank, l).length;
+  return l.watts ?? 0;
 }
 /** Lux per µmol/m²/s of a tech's light in air. */
 export const luxPer = (t: LightTech) => TECHS[t].split.reduce((a, s, i) => a + s * LUXW[i], 0);
@@ -347,7 +404,7 @@ export function lightOut(S: LightScene): LightOut | null {
 // so the caches hold one run at 1 W with no PAR override and scale it (lane J2: a Power step re-ran the model, ~100 ms).
 // The key leaves out the light fields the model does not read (Exposure, colour, room light, map unit).
 const unitKey = (S: LightScene) => {
-  const { watts: _w, par: _p, bright: _b, kelvin: _k, room: _r, mapUnit: _m, mapStep: _ms, mapStepLux: _ml, ...l } = S.light;
+  const { watts: _w, par: _p, bright: _b, kelvin: _k, room: _r, mapUnit: _m, mapStep: _ms, mapStepLux: _ml, bulbW: _bw, ...l } = S.light;
   return JSON.stringify([S.tank, l, S.lid, S.water, S.substrate, S.layout.id, S.layout.seed, S.terrain]);
 };
 const unitS = (S: LightScene): LightScene => ({ ...S, light: { ...S.light, watts: 1, par: undefined } });
@@ -359,10 +416,10 @@ const outCache = new Map<string, LightOut | null>(), envCache = new Map<string, 
 /** lightOut, cached on the settings it reads (the viewer asks every frame, per viewport; the panel on every edit). */
 export function lightOutCached(S: LightScene): LightOut | null {
   const l = S.light;
-  if (l.type === 'flat' || !(l.watts && l.watts > 0)) return null;
+  if (!(wattsOf(S) > 0)) return null;
   const u = cached(outCache, unitKey(S), () => lightOut(unitS(S)));
   if (!u) return null;
-  const w = l.watts, scale = l.par && l.par > 0 && u.mean > 0 ? l.par / (u.mean * w) : 1, f = w * scale;
+  const w = wattsOf(S), scale = l.par && l.par > 0 && u.mean > 0 ? l.par / (u.mean * w) : 1, f = w * scale;
   return {
     surface: u.surface * f, mean: u.mean * f, min: u.min * f, max: u.max * f, luxMean: u.luxMean * f, luxMid: u.luxMid * f,
     band: parBand(u.mean * f), scale, tech: u.tech,
@@ -375,7 +432,7 @@ export function lightEnvCached(S: LightScene): LightEnv | null {
   if (!o) return null;
   const e = cached(envCache, unitKey(S), () => lightEnv(unitS(S)));
   if (!e) return null;
-  const w = S.light.watts!;
+  const w = wattsOf(S);
   return { ...e, phi: e.phi * w, ind: e.ind.map(v => v * w) as Band, scale: o.scale };
 }
 

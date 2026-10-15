@@ -3,7 +3,7 @@ import { fishTL, getSpecies, hasSpecies } from '../data/species';
 import { defaultSetup } from './defaults';
 import { LIBRARY, MAX_ITEMS, clampItem, starterItems } from './items';
 import { CEILING_H, CEILING_MAX, CEILING_MIN, WALL_GAP, WALL_GAP_MAX, clamp, mapToTank } from './physics';
-import { TECH_IDS } from './lightout';
+import { MH_BULBS, TECH_IDS } from './lightout';
 import { normTank } from './shape';
 import { TABLE_MAX, fitTable } from './table';
 import { keepInWater } from './water';
@@ -33,7 +33,7 @@ export const LIMITS = {
   spacing: [0, 1500] as const,     // mm, 0 = auto
   cone: [15, 120] as const,        // degrees, full beam angle
   bright: [0.2, 2.5] as const,
-  kelvin: [2700, 14000] as const,
+  kelvin: [2700, 20000] as const,
   room: [0, 0.8] as const,
   lampH: [20, 900] as const,
   watts: [0, 2000] as const,
@@ -215,7 +215,11 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       height: num(l.height, 50, ...LIMITS.lampH), // added 2026-10-08; older files: the old fixed 50 mm
       // light output (added 2026-10-14, no version bump): kept only when present, so older files load unchanged
       ...(l.watts != null ? { watts: Math.round(num(l.watts, 0, ...LIMITS.watts) * 10) / 10 } : {}),
-      ...(typeof l.tech === 'string' && (TECH_IDS as readonly string[]).includes(l.tech) ? { tech: l.tech as LightTech } : {}),
+      // tubes no longer take a white LED (2026-10-15): that is now the LED tube; pendants never sit in a hood
+      ...(l.type === 'tube' && l.tech === 'led-white' ? { tech: 'led-tube' as LightTech }
+        : (l.tech === 'mh' || l.tech === 'mh-20k') && raw.lid === 'hood' ? { tech: 'led-white' as LightTech }
+        : typeof l.tech === 'string' && (TECH_IDS as readonly string[]).includes(l.tech) ? { tech: l.tech as LightTech } : {}),
+      ...(l.bulbW != null ? { bulbW: (MH_BULBS as readonly number[]).includes(Number(l.bulbW)) ? Number(l.bulbW) : 150 } : {}),
       ...(l.par != null ? { par: Math.round(num(l.par, 0, ...LIMITS.par)) } : {}),
       ...(l.mapUnit === 'par' || l.mapUnit === 'lux' ? { mapUnit: l.mapUnit } : {}),
       ...(l.mapStep != null ? { mapStep: Math.round(num(l.mapStep, 20, 5, 100) / 5) * 5 } : {}),

@@ -128,8 +128,12 @@ export interface LightSettings {
   /** Light output (added 2026-10-14, all optional, no version bump; model in scene/lightout.ts). Power draw (W); 0 or
    * absent = off, Brightness stays the manual knob. Set: the render brightness follows the computed lux, `bright` is an exposure. */
   watts?: number;
-  /** What is inside the fixture; the allowed techs depend on `type` (TECHS[t].on); absent or not allowed = the type's default. */
+  /** The lamp; it also tells the spot styles apart (scene/lightout fixtureOf: halide = pendant, screw-in = bulb, else LED
+   * puck). Absent or not one the fixture comes in = the fixture's first. */
   tech?: LightTech;
+  /** Metal halide pendants: W per bulb (MH_BULBS; added 2026-10-15); absent = 150. Tubes and pendants take their power
+   * from the lamps, not `watts` (lightout wattsOf). */
+  bulbW?: number;
   /** Measured or published PAR at the substrate (µmol/m²/s); 0 or absent = estimate. Set, the estimate is scaled to match. */
   par?: number;
   /** What the Light map shows when watts is set (an app preference, like `beams`); absent = 'par'. */
@@ -140,7 +144,7 @@ export interface LightSettings {
   mapStepLux?: number;
 }
 
-export type LightTech = 'led-white' | 'led-planted' | 'led-reef' | 't5-refl' | 't5-bare' | 't8' | 'cfl' | 'mh' | 'mh-20k' | 'halogen';
+export type LightTech = 'led-white' | 'led-planted' | 'led-reef' | 't5-refl' | 't5-bare' | 't8' | 't12' | 'led-tube' | 'cfl' | 'led-bulb' | 'mh' | 'mh-20k' | 'halogen';
 
 export interface SubstrateSettings {
   show: boolean;
