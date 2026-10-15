@@ -326,13 +326,15 @@ float gWood(vec3 g) {
 }
 float gritK() {
   int t = int(vGrit.w + 0.5); vec3 p = vGrit.xyz; float px = length(fwidth(p)), k = 1.0; vec3 q = gR * p;
-  if (t == 1) k = gStone(q, px, 0.25, 0.3);
-  else if (t == 2) k = gStone(q, px, 0.6, 1.0);
-  else if (t == 3) k = gStone(q, px, 1.1, 0.6);
-  else if (t == 4) k = gStone(q, px, 1.4, 0.35);
-  else if (t == 5) {  // slate: fissures along the layers over the fine grain
-    float e = abs(gN(vec3(p.x * 0.02, p.y * 0.35, p.z * 0.02)) * 2.0 - 1.0), m = smoothstep(0.4, 0.6, gN(p * 0.03 + 4.0));
-    k = gStone(q, px, 0.4, 0.5) * (1.0 - 0.55 * gLine(e, 0.05) * m);
+  // stones 1-5 share ONE gStone call (roughness and cracks picked first): the D3D compiler inlines each call site, and
+  // five copies of its crack search made this program take 10-22 s to link on a first visit (lane E1 / EF1)
+  if (t >= 1 && t <= 5) {
+    float rough = t == 1 ? 0.25 : t == 2 ? 0.6 : t == 3 ? 1.1 : t == 4 ? 1.4 : 0.4, cracks = t == 1 ? 0.3 : t == 2 ? 1.0 : t == 3 ? 0.6 : t == 4 ? 0.35 : 0.5;
+    k = gStone(q, px, rough, cracks);
+    if (t == 5) {  // slate: fissures along the layers over the fine grain
+      float e = abs(gN(vec3(p.x * 0.02, p.y * 0.35, p.z * 0.02)) * 2.0 - 1.0), m = smoothstep(0.4, 0.6, gN(p * 0.03 + 4.0));
+      k *= 1.0 - 0.55 * gLine(e, 0.05) * m;
+    }
   }
   else if (t == 6) k = gWood(p);
   else if (t == 7) k = (1.0 + (gF(q * 0.4) - 0.5) * 0.34 * gFade(0.4, px) + (gF(q * 0.05) - 0.5) * 0.3   // clay grain and firing blotches
