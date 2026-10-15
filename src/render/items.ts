@@ -417,7 +417,7 @@ function plantMaterial(T: Tank) {
 }
 const shapes = new Map<string, THREE.BufferGeometry>(), baked = new Map<string, THREE.BufferGeometry>(), plants = new Map<string, THREE.BufferGeometry>();
 /** 3D plants lying over at the surface (per water level), and shown at a growth on the CPU (picking, the USDZ export). */
-const PLANTS_MAX = 600, BENT_MAX = 360, bent = new Map<string, THREE.BufferGeometry>(), shown = new Map<string, THREE.BufferGeometry>(), shownCpu = new Map<string, THREE.BufferGeometry>();
+const PLANTS_MAX = 600, BENT_MAX = 360, bent = new Map<string, THREE.BufferGeometry>(), unbent = new Set<string>(), shown = new Map<string, THREE.BufferGeometry>(), shownCpu = new Map<string, THREE.BufferGeometry>();
 function remember<T>(m: Map<string, T>, k: string, v: T, max: number, drop?: (v: T) => void) {
   m.set(k, v);
   if (m.size > max) { const [k0, v0] = m.entries().next().value!; m.delete(k0); drop?.(v0); }
@@ -511,7 +511,7 @@ function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
   // (what grows past g0 is only built once the plant has a growth of its own: a starter set costs what it did)
   const sw = `3d${plant3d.sway ? 's' : ''}${more ? '+' : ''}${plant3d.emerse ? '' : 'n'}|`, kf = sw + (carpet ? `${type}|${it.seed}|${it.size}` : k);
   const args = [type, it.seed, h, { spread: it.spread, stems: it.stems }, g0, more, it.size] as const;
-  let bend: { F: number; C?: number; water: boolean; ks: string } | undefined;
+  let bend: { F: number; C?: number; water: boolean; walls: number[]; ks: string } | undefined;
   if (solid && !carpet && !float) {
     // longer than the water above it: lies over at the surface (`F` over its base, to 2 mm, so a drag reuses it). A
     // plant with no growth of its own keeps the old allowance (tips up to the lid in a full tank, as they always
@@ -523,7 +523,21 @@ function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
     // over an open tank the light (its fixture, a little under the height it hangs at)
     const C = more && S.water.on && P3.grow.overflow === 'emerge'
       ? Math.round(((S.lid === 'glass' ? T.H - 4 : T.H + lampHeight(S.light, S.lid) - 20) - y) / 2) * 2 : undefined;
-    if (Number.isFinite(F)) bend = { F, C, water: S.water.on, ks: `${kf}|${F}|${C ?? ''}|${S.water.on ? 'w' : ''}` };
+    // the panes within its reach, in its own frame (to 2 mm and a degree, so a drag along the glass reuses it): its
+    // leaves curve along them instead of being cut off at the glass (Nathan 2026-10-15). Not in a bowl (the glass is
+    // a sphere there) nor for a tipped plant: those are still cut off
+    const walls: number[] = [];
+    if (shapeOf(T) !== 'bowl' && !it.pitch && !it.tilt) for (const e of footprint(T).edges) {
+      const d = -((it.x - e.a[0]) * e.n[0] + (it.depth - e.a[1]) * e.n[1]);
+      if (d > h + 40) continue;
+      // the outward normal in the tank (x, z = -depth), turned into the plant's frame (its yaw)
+      const wx = e.n[0], wz = -e.n[1], a = Math.round(Math.atan2(wx * s + wz * c, wx * c - wz * s) / D2R), dd = Math.round(d / 2) * 2;
+      let dup = false;
+      for (let i = 0; i < walls.length; i += 4) if (walls[i + 3] === a && walls[i + 2] === dd) dup = true;
+      if (!dup) walls.push(+Math.cos(a * D2R).toFixed(4), +Math.sin(a * D2R).toFixed(4), dd, a);
+    }
+    const W = walls.filter((_, i) => i % 4 !== 3);
+    if (Number.isFinite(F) || W.length) bend = { F, C, water: S.water.on, walls: W, ks: `${kf}|${F}|${C ?? ''}|${S.water.on ? 'w' : ''}|${walls.filter((_, i) => i % 4 > 1).join(',')}` };
   }
   // a clump on sloping ground (sitting on it, not on a piece): each crown on the ground under it (clumpOnGround)
   const off = solid && !carpet && !float && it.lift <= 2
@@ -562,7 +576,7 @@ const toUpload = (g: THREE.BufferGeometry) => { if (prebuildHooks.renderer && up
 /** Is this plant's full growth (with its lying over at the water) built? Then its first growth costs nothing extra. */
 export function plantWarm(S: TankSetup, it: Item) {
   const P = it.kind === 'plant' ? plantPlan(S, S.tank, it, true) : null;
-  return !P || !P.solid || (plants.has(P.kf) && (!P.carpet || plants.has(P.ks)) && (!P.bend || bent.has(P.bend.ks)));
+  return !P || !P.solid || (plants.has(P.kf) && (!P.carpet || plants.has(P.ks)) && (!P.bend || bent.has(P.bend.ks) || unbent.has(P.bend.ks)));
 }
 /** Where the prebuild stands (debugging, timings). */
 export const prebuildState = () => ({ queued: queue.length, busy, inFlight: [...inFlight.values()].map(w => w.key), worker: !!worker, uploads: uploads.length });
@@ -593,11 +607,11 @@ function pump() {
   const w = queue.shift();
   if (!w) return;
   const { P } = w;
-  if (plants.has(P.kf) && (!P.bend || bent.has(P.bend.ks)) && (!P.carpet || plants.has(P.ks))) return pump(); // (built on the main thread meanwhile)
+  if (plants.has(P.kf) && (!P.bend || bent.has(P.bend.ks) || unbent.has(P.bend.ks)) && (!P.carpet || plants.has(P.ks))) return pump(); // (built on the main thread meanwhile)
   busy = true;
   const id = ++jobId;
   inFlight.set(id, w);
-  worker.postMessage({ id, args: [...P.args], switches: { ...plant3d }, bend: P.bend && { F: P.bend.F, C: P.bend.C, water: P.bend.water }, carpet: P.carpet } satisfies PlantJob);
+  worker.postMessage({ id, args: [...P.args], switches: { ...plant3d }, bend: P.bend && { F: P.bend.F, C: P.bend.C, water: P.bend.water, walls: P.bend.walls }, carpet: P.carpet } satisfies PlantJob);
 }
 function landed(out: JobOut) {
   const w = inFlight.get(out.id);
@@ -610,6 +624,7 @@ function landed(out: JobOut) {
   const full = plants.get(P.kf) ?? remember(plants, P.kf, unpackGeometry(out.full!), PLANTS_MAX, dropPlant);
   let drawn = full;
   if (out.bent && P.bend && !bent.has(P.bend.ks)) drawn = remember(bent, P.bend.ks, unpackGeometry(out.bent, full), BENT_MAX, dropPlant);
+  else if (P.bend && !out.bent) noBend(P.bend.ks);
   if (out.ground && !plants.has(P.ks)) {
     // (sharing the colours, normals and triangles of the built carpet in the cache, as carpetOnGround would)
     const g = unpackGeometry(out.ground, full);
@@ -632,6 +647,9 @@ function spotsFor(P: Want['P'], a: Float32Array, done: (q: Float32Array) => void
   slice();
 }
 
+/** A bend that changes nothing (nothing reaches the water or the glass): remembered so it is not tried again. */
+const noBend = (ks: string) => { if (unbent.size > 4000) unbent.clear(); unbent.add(ks); };
+
 /** One placed item as a mesh in tank space (userData.item = its id, userData.plant for plants). Null = no room for it. */
 export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
   const ground = groundHeight(S, T, it.x, it.depth), y = ground + it.lift - itemSink(it);
@@ -648,9 +666,9 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
       let src = full, ks = P.kf;
       if (carpet) { ks = P.ks; src = plants.get(ks) ?? remember(plants, ks, carpetOnGround(full, at), PLANTS_MAX, dropPlant); }
       else if (P.bend) {
-        const { F, C, water } = P.bend;
+        const { F, C, water, walls } = P.bend;
         ks = P.bend.ks;
-        src = bent.get(ks) ?? (() => { const b = bendPlant(full, F, { ceil: C, water }); return b === full ? b : remember(bent, ks, b, BENT_MAX, dropPlant); })();
+        src = bent.get(ks) ?? (unbent.has(ks) ? full : (() => { const b = bendPlant(full, F, { ceil: C, water, walls }); if (b === full) noBend(ks); return b === full ? b : remember(bent, ks, b, BENT_MAX, dropPlant); })());
       }
       const cg = P.off && clumpOnGround(src, P.off, P.bend?.F);
       if (cg) { ks = `${ks}|${cg.key}`; src = plants.get(ks) ?? remember(plants, ks, cg.build(), PLANTS_MAX, dropPlant); }
