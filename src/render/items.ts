@@ -13,7 +13,7 @@ import { D2R, waterY } from '../scene/physics';
 import { bowlDims, footprint, shapeOf } from '../scene/shape';
 import { clampGround, groundHeight, groundInsideBy } from '../scene/terrain';
 import type { Item, Tank, TankSetup } from '../scene/types';
-import { bendPlant, carpetOnGround, has3DPlant, plant3d, plantGeometry, revealPlant } from './plant3d';
+import { bendPlant, carpetOnGround, dropPlant, growShader, grownView, has3DPlant, plant3d, plantGeometry, plantRaycast, revealPlant, unpackGeometry, uploadPlant, type JobOut, type PlantJob } from './plant3d';
 import { reefShape } from './coral3d';
 import { cardMaterial, plantTexture } from './textures';
 
@@ -392,7 +392,8 @@ export function solidMaterial(T: Tank) {
   Object.assign(m.userData, { keep: true, solid: true, pre });
   return remember(glassMats, k, m, 16, x => x.dispose());
 }
-/** 3D plants are cut off at the glass the same way (a leaf arching past a pane stops at it), one material per outline. */
+/** 3D plants are cut off at the glass the same way (a leaf arching past a pane stops at it), one material per outline;
+ *  its shader shows each plant at its own growth (plant3d growShader, lane GR4). */
 const plantMats = new Map<string, THREE.MeshBasicMaterial>();
 function plantMaterial(T: Tank) {
   const k = glassKey(T);
@@ -400,19 +401,20 @@ function plantMaterial(T: Tank) {
   if (m) return m;
   const { planes, patch } = glassClip(T);
   m = new THREE.MeshBasicMaterial({ vertexColors: true, clippingPlanes: planes });
-  m.onBeforeCompile = patch;
+  m.onBeforeCompile = sh => { patch(sh); growShader(sh); };
   m.customProgramCacheKey = () => 'plant-clip';
   // above the water (an emersed stem or sword leaf, lane GR2) there is no water haze: it fades out over the first few
   // mm, so leaves lying at the surface keep theirs
   const post = (sh: THREE.WebGLProgramParametersWithUniforms) => {
     sh.fragmentShader = sh.fragmentShader.replace('float aqF = (1.0 - exp(-uWater.w * aqWaterPath()))', '$& * (1.0 - smoothstep(uWater.y + 6.0, uWater.y + 14.0, vAqP.y))');
+    growShader(sh); // (after the lighting's vAqP: the haze and the light need the grown position)
   };
   Object.assign(m.userData, { cached: true, keep: true, plantClip: true, pre: patch, post });
   return remember(plantMats, k, m, 16, x => x.dispose());
 }
 const shapes = new Map<string, THREE.BufferGeometry>(), baked = new Map<string, THREE.BufferGeometry>(), plants = new Map<string, THREE.BufferGeometry>();
-/** 3D plants lying over at the surface (per water level), and shown at a growth (per growth step). */
-const bent = new Map<string, THREE.BufferGeometry>(), shown = new Map<string, THREE.BufferGeometry>();
+/** 3D plants lying over at the surface (per water level), and shown at a growth on the CPU (picking, the USDZ export). */
+const PLANTS_MAX = 600, BENT_MAX = 360, bent = new Map<string, THREE.BufferGeometry>(), shown = new Map<string, THREE.BufferGeometry>(), shownCpu = new Map<string, THREE.BufferGeometry>();
 function remember<T>(m: Map<string, T>, k: string, v: T, max: number, drop?: (v: T) => void) {
   m.set(k, v);
   if (m.size > max) { const [k0, v0] = m.entries().next().value!; m.delete(k0); drop?.(v0); }
@@ -456,66 +458,188 @@ function bakedShape(it: Item) {
   return remember(baked, k, g, 400, dispose);
 }
 
+/**
+ * How a plant item is built (itemMesh, and the idle prebuild, which must land on the same cache keys): its height `h`,
+ * cache keys, plantGeometry's arguments, and how it lies over (`bend`: water over its base F, ceiling C). `more` = with
+ * what grows past its own growth (a plant that has a growth of its own; the prebuild asks for it ahead of time).
+ * Null = nothing to draw (a floater in a dry tank, no room under the lid).
+ */
+function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
+  const ground = groundHeight(S, T, it.x, it.depth), y = ground + it.lift - itemSink(it);
+  const type = it.variant as PlantType, carpet = isCarpet(type), float = isFloat(type);
+  if (float && !S.water.on) return null; // floaters need water
+  // a 3D plant is built at full growth from its saved size (`h`: as before growth, capped under the lid) and shown at
+  // its growth; the crossed-card fallback is drawn at the grown size
+  const solid = has3DPlant(type), g0 = growthOf(type, it.size), gr = it.growth ?? g0;
+  const cap = (s: number) => carpet || float ? s : Math.min(s, T.H - y - 15); // stops at the lid (the old layouts' rule)
+  const h = solid ? cap(it.size) : cap(grownSize(type, it.size, it.growth));
+  if (h < 15) return null;
+  const c = Math.cos(it.yaw * D2R), s = Math.sin(it.yaw * D2R);
+  // a carpet hugs the ground under each card: its key carries the spot (rebuilt only while it moves); the rest key on
+  // the exact height they are built with (a rounded one let two near-equal plants share the first one's mesh)
+  const k = carpet ? `${type}|${it.seed}|${it.size}|${h}|${it.x}|${it.depth}|${it.yaw}|${it.lift}|${T.shape}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}` : `${type}|${it.seed}|${it.size}|${h}|${it.spread ?? ''}|${it.stems ?? ''}`;
+  // near the glass a card is cut down to the width it has room for, so the carpet runs right up to the glass without
+  // poking through; a card past the edge line is mirrored back in by as much (keeping the edge thick), and one more
+  // than half a card past it is left out
+  const EDGE = 8;
+  const at = (lx: number, lz: number) => {
+    let x = it.x + lx * c + lz * s, d = it.depth + lx * s - lz * c;
+    const e = EDGE - groundInsideBy(S, T, x, d);
+    if (e > CARPET_W / 2) return null;
+    if (e > 0) ({ x, depth: d } = clampGround(S, T, x, d, EDGE + e));
+    const dx = x - it.x, dd = d - it.depth;
+    return { x: dx * c + dd * s, y: groundHeight(S, T, x, d) - ground, z: dx * s - dd * c, w: Math.min(CARPET_W, 2 * groundInsideBy(S, T, x, d)) };
+  };
+  // (what grows past g0 is only built once the plant has a growth of its own: a starter set costs what it did)
+  const sw = `3d${plant3d.sway ? 's' : ''}${more ? '+' : ''}${plant3d.emerse ? '' : 'n'}|`, kf = sw + (carpet ? `${type}|${it.seed}|${it.size}` : k);
+  const args = [type, it.seed, h, { spread: it.spread, stems: it.stems }, g0, more, it.size] as const;
+  let bend: { F: number; C?: number; water: boolean; ks: string } | undefined;
+  if (solid && !carpet && !float) {
+    // longer than the water above it: lies over at the surface (`F` over its base, to 2 mm, so a drag reuses it). A
+    // plant with no growth of its own keeps the old allowance (tips up to the lid in a full tank, as they always
+    // were) and only lies over when it would poke out further than that
+    const depth = S.water.on ? waterY(T, S.water.level) - y : T.H - 15 - y, P3 = PLANT3D[type]!;
+    let F = Math.round((depth - 3) / 2) * 2;
+    if (!more && h <= depth + 14 && !P3.pads) F = Infinity; // (a lily's pads always go to the surface)
+    // an emerging plant grown on climbs out of the water up to what is over it (lane GR2): the lid or the hood, or
+    // over an open tank the light (its fixture, a little under the height it hangs at)
+    const C = more && S.water.on && P3.grow.overflow === 'emerge'
+      ? Math.round(((S.lid === 'glass' ? T.H - 4 : T.H + lampHeight(S.light, S.lid) - 20) - y) / 2) * 2 : undefined;
+    if (Number.isFinite(F)) bend = { F, C, water: S.water.on, ks: `${kf}|${F}|${C ?? ''}|${S.water.on ? 'w' : ''}` };
+  }
+  return { type, carpet, float, solid, gr, h, k, at, kf, ks: sw + k, args, bend };
+}
+
+// ---------- Idle prebuild (lane GR4) ----------
+// A plant's first growth builds what grows past its own growth (plantGeometry with `more`) and lies it over at the
+// water: 65..350 ms on the main thread. prebuildPlants() has a worker build them ahead of time (after a tank loads and
+// when the Plants panel opens), one plant at a time, and drops each into the caches itemMesh reads, so the first drag
+// finds it there. Without a worker (tests, the single-file build opened from disk) nothing is built ahead.
+let worker: Worker | null | undefined, busy = false, jobId = 0;
+type Want = { key: string; P: NonNullable<ReturnType<typeof plantPlan>> };
+const queue: Want[] = [], inFlight = new Map<number, Want>();
+function plantWorker() {
+  if (worker !== undefined) return worker;
+  try { worker = typeof Worker === 'undefined' ? null : new Worker(new URL('./plantWorker.ts', import.meta.url), { type: 'module' }); } catch { worker = null; }
+  if (worker) {
+    worker.onmessage = (e: MessageEvent<JobOut>) => { busy = false; landed(e.data); pump(); };
+    worker.onerror = () => { worker?.terminate(); worker = null; busy = false; queue.length = 0; };
+  }
+  return worker;
+}
+/** The renderer to send prebuilt plants to the GPU with (set by the UI); without one they upload on their first draw. */
+export const prebuildHooks: { renderer: THREE.WebGLRenderer | null } = { renderer: null };
+const uploads: [THREE.BufferGeometry, number][] = [];
+/** One buffer of a plant to the GPU per slice (a few ms each), between frames. */
+function uploadNext() {
+  const u = uploads[0], r = prebuildHooks.renderer!;
+  const next = u[0].attributes.position ? uploadPlant(r, u[0], u[1]) : -1; // (dropped from the cache meanwhile: nothing to send)
+  if (next < 0) uploads.shift(); else u[1] = next;
+  if (uploads.length) setTimeout(uploadNext, 0);
+}
+const toUpload = (g: THREE.BufferGeometry) => { if (prebuildHooks.renderer && uploads.push([g, 0]) === 1) setTimeout(uploadNext, 0); };
+/** Is this plant's full growth (with its lying over at the water) built? Then its first growth costs nothing extra. */
+export function plantWarm(S: TankSetup, it: Item) {
+  const P = it.kind === 'plant' ? plantPlan(S, S.tank, it, true) : null;
+  return !P || !P.solid || (plants.has(P.kf) && (!P.carpet || plants.has(P.ks)) && (!P.bend || bent.has(P.bend.ks)));
+}
+/** Where the prebuild stands (debugging, timings). */
+export const prebuildState = () => ({ queued: queue.length, busy, inFlight: [...inFlight.values()].map(w => w.key), worker: !!worker, uploads: uploads.length });
+/** Can plants be built ahead (a worker)? Without one a cold plant builds on the main thread on its first growth. */
+export const canPrebuild = () => plant3d.gpu && !!plantWorker();
+/**
+ * Build every plant of the tanks ahead of its first growth, in a worker. `first` = plants of tank S as they are about
+ * to be (a drag's next step: their new growth and place), built before the rest, which are left out while it runs. The
+ * queue is made afresh (plants since removed drop out); cheap when everything is built: it only looks the plants up.
+ */
+export function prebuildPlants(tanks: TankSetup | TankSetup[], first?: { S: TankSetup; items: Item[] }) {
+  if (!plant3d.gpu || !plantWorker()) return;
+  const front: Want[] = [], rest: Want[] = [], seen = new Set([...inFlight.values()].map(w => w.key));
+  const all: [TankSetup, Item, boolean][] = first ? first.items.map(it => [first.S, it, true]) : [];
+  if (!first) for (const S of ([] as TankSetup[]).concat(tanks)) for (const it of S.items) all.push([S, it, false]);
+  for (const [S, it, urgent] of all) {
+    if (it.kind !== 'plant' || plantWarm(S, it)) continue;
+    const P = plantPlan(S, S.tank, it, true)!, key = `${P.kf}|${P.bend?.ks ?? ''}|${P.carpet ? P.ks : ''}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    (urgent ? front : rest).push({ key, P });
+  }
+  queue.length = 0; queue.push(...front, ...rest);
+  pump();
+}
+function pump() {
+  if (busy || !worker) return;
+  const w = queue.shift();
+  if (!w) return;
+  const { P } = w;
+  if (plants.has(P.kf) && (!P.bend || bent.has(P.bend.ks)) && (!P.carpet || plants.has(P.ks))) return pump(); // (built on the main thread meanwhile)
+  busy = true;
+  const id = ++jobId;
+  inFlight.set(id, w);
+  worker.postMessage({ id, args: [...P.args], switches: { ...plant3d }, bend: P.bend && { F: P.bend.F, C: P.bend.C, water: P.bend.water }, carpet: P.carpet } satisfies PlantJob);
+}
+function landed(out: JobOut) {
+  const w = inFlight.get(out.id);
+  if (!w) return;
+  const { P } = w;
+  // a carpet: where each leaflet lands is looked up here (the ground), a few ms at a time between frames; the worker
+  // then sets it on the ground (12..40 ms in one go on this thread)
+  if (out.anchors) { busy = true; spotsFor(P, out.anchors, q => worker?.postMessage({ id: out.id, ground: q } satisfies PlantJob, [q.buffer])); return; }
+  inFlight.delete(out.id);
+  const full = plants.get(P.kf) ?? remember(plants, P.kf, unpackGeometry(out.full!), PLANTS_MAX, dropPlant);
+  let drawn = full;
+  if (out.bent && P.bend && !bent.has(P.bend.ks)) drawn = remember(bent, P.bend.ks, unpackGeometry(out.bent, full), BENT_MAX, dropPlant);
+  if (out.ground && !plants.has(P.ks)) {
+    // (sharing the colours, normals and triangles of the built carpet in the cache, as carpetOnGround would)
+    const g = unpackGeometry(out.ground, full);
+    if (g.userData.grow && full.userData.grow) g.userData.grow = { ...full.userData.grow, anc: (g.userData.grow as { anc: Float32Array }).anc };
+    drawn = remember(plants, P.ks, g, PLANTS_MAX, dropPlant);
+  }
+  toUpload(drawn);
+}
+/** Each leaflet's spot on the ground (x, y, z, w; NaN = left out), looked up at most ~4 ms at a time. */
+function spotsFor(P: Want['P'], a: Float32Array, done: (q: Float32Array) => void) {
+  const n = a.length / 2, q = new Float32Array(n * 4);
+  let i = 0;
+  const slice = () => {
+    for (const t0 = performance.now(); i < n && performance.now() - t0 < 4; i++) {
+      const p = P.at(a[i * 2], a[i * 2 + 1]);
+      if (p) q.set([p.x, p.y, p.z, p.w], i * 4); else q[i * 4] = NaN;
+    }
+    if (i < n) setTimeout(slice, 0); else done(q);
+  };
+  slice();
+}
+
 /** One placed item as a mesh in tank space (userData.item = its id, userData.plant for plants). Null = no room for it. */
 export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
   const ground = groundHeight(S, T, it.x, it.depth), y = ground + it.lift - itemSink(it);
   let m: THREE.Mesh;
   if (it.kind === 'plant') {
-    const type = it.variant as PlantType, carpet = isCarpet(type), float = isFloat(type);
-    if (float && !S.water.on) return null; // floaters need water
-    // a 3D plant is built at full growth from its saved size (`h`: as before growth, capped under the lid) and shown at
-    // its growth; the crossed-card fallback is drawn at the grown size
-    const solid = has3DPlant(type), g0 = growthOf(type, it.size), gr = it.growth ?? g0;
-    const cap = (s: number) => carpet || float ? s : Math.min(s, T.H - y - 15); // stops at the lid (the old layouts' rule)
-    const h = solid ? cap(it.size) : cap(grownSize(type, it.size, it.growth));
-    if (h < 15) return null;
-    const c = Math.cos(it.yaw * D2R), s = Math.sin(it.yaw * D2R);
-    // a carpet hugs the ground under each card: its key carries the spot (rebuilt only while it moves); the rest key on
-    // the exact height they are built with (a rounded one let two near-equal plants share the first one's mesh)
-    const k = carpet ? `${type}|${it.seed}|${it.size}|${h}|${it.x}|${it.depth}|${it.yaw}|${it.lift}|${T.shape}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}` : `${type}|${it.seed}|${it.size}|${h}|${it.spread ?? ''}|${it.stems ?? ''}`;
-    // near the glass a card is cut down to the width it has room for, so the carpet runs right up to the glass without
-    // poking through; a card past the edge line is mirrored back in by as much (keeping the edge thick), and one more
-    // than half a card past it is left out
-    const EDGE = 8;
-    const at = (lx: number, lz: number) => {
-      let x = it.x + lx * c + lz * s, d = it.depth + lx * s - lz * c;
-      const e = EDGE - groundInsideBy(S, T, x, d);
-      if (e > CARPET_W / 2) return null;
-      if (e > 0) ({ x, depth: d } = clampGround(S, T, x, d, EDGE + e));
-      const dx = x - it.x, dd = d - it.depth;
-      return { x: dx * c + dd * s, y: groundHeight(S, T, x, d) - ground, z: dx * s - dd * c, w: Math.min(CARPET_W, 2 * groundInsideBy(S, T, x, d)) };
-    };
+    const P = plantPlan(S, T, it);
+    if (!P) return null;
+    const { type, carpet, solid, gr, h, k, at } = P;
     let g: THREE.BufferGeometry;
-    if (!solid) g = plants.get(k) ?? remember(plants, k, plantGeo(type, it.seed, h, carpet ? at : undefined, it.spread), 300, dispose);
+    if (!solid) g = plants.get(k) ?? remember(plants, k, plantGeo(type, it.seed, h, carpet ? at : undefined, it.spread), PLANTS_MAX, dropPlant);
     else {
       // full growth, built once per (seed, size, clump); a carpet is then set on the ground (per place)
-      // (what grows past g0 is only built once the plant has a growth of its own: a starter set costs what it did)
-      const more = it.growth != null, sw = `3d${plant3d.sway ? 's' : ''}${more ? '+' : ''}${plant3d.emerse ? '' : 'n'}|`, kf = sw + (carpet ? `${type}|${it.seed}|${it.size}` : k);
-      const full = plants.get(kf) ?? remember(plants, kf, plantGeometry(type, it.seed, h, { spread: it.spread, stems: it.stems }, g0, more, it.size), 300, dispose);
-      let src = full, ks = kf;
-      if (carpet) { ks = sw + k; src = plants.get(ks) ?? remember(plants, ks, carpetOnGround(full, at), 300, dispose); }
-      else if (!float) {
-        // longer than the water above it: lies over at the surface (`F` over its base, to 2 mm, so a drag reuses it). A
-        // plant with no growth of its own keeps the old allowance (tips up to the lid in a full tank, as they always
-        // were) and only lies over when it would poke out further than that
-        const depth = S.water.on ? waterY(T, S.water.level) - y : T.H - 15 - y, P3 = PLANT3D[type]!;
-        let F = Math.round((depth - 3) / 2) * 2;
-        if (it.growth == null && h <= depth + 14 && !P3.pads) F = Infinity; // (a lily's pads always go to the surface)
-        // an emerging plant grown on climbs out of the water up to what is over it (lane GR2): the lid or the hood, or
-        // over an open tank the light (its fixture, a little under the height it hangs at)
-        const C = more && S.water.on && P3.grow.overflow === 'emerge'
-          ? Math.round(((S.lid === 'glass' ? T.H - 4 : T.H + lampHeight(S.light, S.lid) - 20) - y) / 2) * 2 : undefined;
-        if (Number.isFinite(F)) {
-          ks = `${kf}|${F}|${C ?? ''}|${S.water.on ? 'w' : ''}`;
-          src = bent.get(ks) ?? (() => { const b = bendPlant(full, F, { ceil: C, water: S.water.on }); return b === full ? b : remember(bent, ks, b, 120, dispose); })();
-        }
+      const full = plants.get(P.kf) ?? remember(plants, P.kf, plantGeometry(...P.args), PLANTS_MAX, dropPlant);
+      let src = full, ks = P.kf;
+      if (carpet) { ks = P.ks; src = plants.get(ks) ?? remember(plants, ks, carpetOnGround(full, at), PLANTS_MAX, dropPlant); }
+      else if (P.bend) {
+        const { F, C, water } = P.bend;
+        ks = P.bend.ks;
+        src = bent.get(ks) ?? (() => { const b = bendPlant(full, F, { ceil: C, water }); return b === full ? b : remember(bent, ks, b, BENT_MAX, dropPlant); })();
       }
-      // the growth: positions only, from the plant already built (a slider drag never rebuilds it)
-      const kr = `${ks}|${gr}`;
-      g = shown.get(kr) ?? (() => { const v = revealPlant(src, gr); return v === src ? v : remember(shown, kr, v, 80, dispose); })();
+      // the growth: the plant already built, revealed at gr by its material's shader (a slider drag touches no geometry);
+      // what the CPU needs of it (picking, the selection box, the USDZ export) is revealed on the CPU when asked
+      const kr = `${ks}|${gr}`, from = src;
+      if (plant3d.gpu) g = grownView(src, gr, () => shown.get(kr) ?? remember(shown, kr, revealPlant(from, gr), 80));
+      else g = shownCpu.get(kr) ?? (() => { const v = revealPlant(src, gr); return v === src ? v : remember(shownCpu, kr, v, 80, dispose); })(); // (review switch: GR3's CPU reveal)
     }
-    if (carpet) g.computeBoundingBox();
+    if (carpet && !solid) g.computeBoundingBox();
     m = new THREE.Mesh(g, solid ? plantMaterial(T) : cardMaterial('plant:' + type, plantTexture(type), S.render.edge));
+    if (g.userData.cpu) m.raycast = plantRaycast;
     m.userData.plant = true;
   } else m = new THREE.Mesh(bakedShape(it), solidMaterial(T));
   m.position.set(it.x, it.kind === 'plant' && isFloat(it.variant) ? waterY(T, S.water.level) : y + (m.geometry.userData.rise ?? 0), -it.depth);

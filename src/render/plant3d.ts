@@ -24,13 +24,15 @@ import { CARPET_H, MAX_STEMS } from '../scene/items';
 import { taperTube } from './fish3d';
 
 /** Switches for review sheets: on (off = the crossed cards), sway (off = every leaf rigid), emerse (off = no emersed
- *  twins: emerging plants lie over at the surface as in GR1). */
-export const plant3d = { on: true, sway: true, emerse: true };
+ *  twins: emerging plants lie over at the surface as in GR1), gpu (off = revealPlant on the CPU every growth step, as
+ *  before lane GR4: the A/B timings). */
+export const plant3d = { on: true, sway: true, emerse: true, gpu: true };
 export const has3DPlant = (type: PlantType) => plant3d.on && !!PLANT3D[type];
 
 type R = () => number;
 const MAX_LEAFLETS = 3000;
-type Spot = (lx: number, lz: number) => { x: number; y: number; z: number; w: number } | null;
+/** Where a carpet's leaflet `i` (its anchor at lx, lz) lands on the ground (null = left out). */
+type Spot = (lx: number, lz: number, i: number) => { x: number; y: number; z: number; w: number } | null;
 const V = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const between = (r: R, [a, b]: [number, number]) => lerp(a, b, r());
@@ -584,7 +586,7 @@ export function carpetOnGround(base: THREE.BufferGeometry, spot: Spot) {
   const { anchors, owner } = base.userData as { anchors: Float32Array; owner: Uint32Array }, n = anchors.length / 2, G = base.userData.grow as GrowData;
   const off = new Float32Array(n * 3), gone = new Uint8Array(n);
   for (let i = 0; i < n; i++) {
-    const x = anchors[i * 2], z = anchors[i * 2 + 1], p = spot(x, z);
+    const x = anchors[i * 2], z = anchors[i * 2 + 1], p = spot(x, z, i);
     if (!p) gone[i] = 1; else { off[i * 3] = p.x - x; off[i * 3 + 1] = p.y; off[i * 3 + 2] = p.z - z; }
   }
   const src = base.attributes.position, pos = new Float32Array(src.count * 3), anc = new Float32Array(src.count * 3);
@@ -645,6 +647,105 @@ export function revealPlant(src: THREE.BufferGeometry, g: number) {
   for (let j = 0; j < N; j++) r2 = Math.max(r2, mid.distanceToSquared(c.fromArray(pos, (live ? live[j] : j) * 3)));
   out.boundingBox = box; out.boundingSphere = new THREE.Sphere(mid, Math.sqrt(r2)); out.userData.keep = true;
   return out;
+}
+
+// ---------- GPU reveal (lane GR4, 2026-10-15) ----------
+// The same reveal as revealPlant, in the vertex shader: each vertex carries its anchor (`aAnc`) and its growth tags
+// (`aGrow` = a, w, form, cut) and its mesh's growth (`aGrowth`: one value for the whole draw, an instanced attribute
+// on the mesh's own light view of the plant, so every plant shares one material) places it, so a Growth or Time drag
+// touches no geometry and makes no new material (a material per growth cost three.js 2..8 ms each). Hidden vertices wait at their anchors; a triangle with every corner hidden has at most two distinct anchors
+// (a leaf's base, or two points on its midrib or stem), so it draws nothing, as revealPlant drops it (test/gpureveal).
+// What runs on the CPU (picking, the selection box, the USDZ export) gets revealPlant's geometry from the view's `cpu()`.
+
+/** Vertex shader: after begin_vertex (and after the lighting's vAqP, which needs the grown position). */
+export const GROW_DECL = 'attribute vec3 aAnc; attribute vec4 aGrow; attribute float aGrowth;';
+export const GROW_VERT = `{
+  float aqS = aGrow.y > 0.0 ? (aGrowth - aGrow.x) / aGrow.y : (aGrowth >= aGrow.x ? 1.0 : -1.0);
+  if (aGrow.z > 0.5 && aGrow.z < 2.5 && ((aGrow.z < 1.5) == (aGrowth >= aGrow.w))) aqS = -1.0;
+  if (aqS < 1.0) transformed = aAnc + (transformed - aAnc) * max(aqS, 0.0);
+}`;
+/** Patch a plant material's shader to reveal at each mesh's growth (call after the lighting patch, which also edits
+ *  begin_vertex). A geometry without the tags (no growth data) draws as it is: missing attributes read as 0. */
+export function growShader(sh: THREE.WebGLProgramParametersWithUniforms) {
+  sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\n' + GROW_DECL)
+    .replace('#include <begin_vertex>', '#include <begin_vertex>\n' + GROW_VERT);
+}
+/** No cut (never switches) in the attribute: far past any growth. */
+const NO_CUT = 1e6;
+/** The growth tags as GPU attributes on src (once per built / bent / grounded plant) and the triangles that can show. */
+function gpuParts(src: THREE.BufferGeometry, G: GrowData) {
+  let p = src.userData.gpu as { anc: THREE.BufferAttribute; grow: THREE.BufferAttribute; index: THREE.BufferAttribute } | undefined;
+  if (p) return p;
+  const n = G.anc.length / 3, t = new Float32Array(n * 4);
+  for (let v = 0; v < n; v++) {
+    t[v * 4] = G.gr[v * 2]; t[v * 4 + 1] = G.gr[v * 2 + 1]; t[v * 4 + 2] = G.em?.[v] ?? 0;
+    const c = G.cut?.[v] ?? Infinity;
+    t[v * 4 + 3] = c === Infinity ? NO_CUT : c === -Infinity ? -NO_CUT : c;
+  }
+  p = { anc: new THREE.BufferAttribute(G.anc, 3), grow: new THREE.BufferAttribute(t, 4), index: G.idx ? new THREE.BufferAttribute(G.idx, 1) : src.index! };
+  src.userData.gpu = p;
+  return p;
+}
+const SHARED = ['position', 'color', 'normal', 'aAnc', 'aGrow'] as const;
+/**
+ * The plant at growth g for the GPU: a light geometry sharing src's buffers (nothing is copied or uploaded again) plus
+ * its growth (`aGrowth`, one value), drawn with the plant material; one per mesh, disposed with it (its dispose frees only its own vertex array
+ * state, never src's buffers). Its bounding box is what shows at g (revealPlant's, worked out only when something asks:
+ * the selection box, picking); its sphere is src's (culling). `userData.cpu()` = revealPlant(src, g), from `reveal` when
+ * given (a cache). src itself when it has no growth tags.
+ */
+export function grownView(src: THREE.BufferGeometry, g: number, reveal = () => revealPlant(src, g)) {
+  const G = src.userData.grow as GrowData | undefined;
+  if (!G) return src;
+  const p = gpuParts(src, G), out = new THREE.BufferGeometry();
+  for (const k of ['position', 'color', 'normal'] as const) if (src.attributes[k]) out.setAttribute(k, src.attributes[k]);
+  out.setAttribute('aAnc', p.anc); out.setAttribute('aGrow', p.grow); out.setIndex(p.index);
+  out.setAttribute('aGrowth', new THREE.InstancedBufferAttribute(Float32Array.of(g), 1));
+  if (!src.boundingSphere) src.computeBoundingSphere();
+  out.boundingSphere = src.boundingSphere;
+  let cpu: THREE.BufferGeometry | undefined, box: THREE.Box3 | null = null;
+  const shown = () => (cpu ??= reveal());
+  Object.defineProperty(out, 'boundingBox', {
+    get: () => box ??= (shown().boundingBox ?? (shown().computeBoundingBox(), shown().boundingBox)),
+    set: (b: THREE.Box3 | null) => { box = b; }, configurable: true,
+  });
+  out.userData.growth = g; out.userData.cpu = shown;
+  out.dispose = function (this: THREE.BufferGeometry) {
+    for (const k of SHARED) this.deleteAttribute(k);
+    this.setIndex(null);
+    THREE.BufferGeometry.prototype.dispose.call(this);
+  };
+  return out;
+}
+/** Dispose a built / bent / grounded plant with its GPU growth tags (dispose alone would leave their buffers behind). */
+export function dropPlant(g: THREE.BufferGeometry) {
+  const p = g.userData.gpu as { anc: THREE.BufferAttribute; grow: THREE.BufferAttribute; index: THREE.BufferAttribute } | undefined;
+  if (p) { g.setAttribute('aAnc', p.anc); g.setAttribute('aGrow', p.grow); if (p.index !== g.index) g.setAttribute('aIdx', p.index); }
+  g.dispose();
+}
+/** Raycast a plant mesh against what shows (its view's revealPlant geometry), not the full-growth buffers it draws. */
+export function plantRaycast(this: THREE.Mesh, rc: THREE.Raycaster, hits: THREE.Intersection[]) {
+  const v = this.geometry, cpu = (v.userData.cpu as (() => THREE.BufferGeometry) | undefined)?.();
+  if (!cpu) return THREE.Mesh.prototype.raycast.call(this, rc, hits);
+  this.geometry = cpu;
+  try { THREE.Mesh.prototype.raycast.call(this, rc, hits); } finally { this.geometry = v; }
+}
+/** What the CPU sees of a mesh: a plant view's revealed geometry, else the mesh's own (the USDZ export). */
+export const cpuGeometry = (m: THREE.Mesh) => (m.geometry.userData.cpu as (() => THREE.BufferGeometry) | undefined)?.() ?? m.geometry;
+/**
+ * GPU reveal, on the CPU (tests): the positions GROW_VERT gives every vertex at growth g (float32, as the GPU) and the
+ * triangles drawn (the view's index).
+ */
+export function shaderReveal(src: THREE.BufferGeometry, g: number) {
+  const G = src.userData.grow as GrowData, p = gpuParts(src, G), P = src.attributes.position.array as Float32Array, A = p.anc.array as Float32Array, T = p.grow.array as Float32Array;
+  const f = Math.fround, u = f(g), pos = new Float32Array(P.length);
+  for (let v = 0; v < P.length / 3; v++) {
+    const a = T[v * 4], w = T[v * 4 + 1], e = T[v * 4 + 2], c = T[v * 4 + 3];
+    let s = w > 0 ? f(f(u - a) / w) : u >= a ? 1 : -1;
+    if (e > 0.5 && e < 2.5 && ((e < 1.5) === (u >= c))) s = -1;
+    for (let q = 0; q < 3; q++) { const o = v * 3 + q; pos[o] = s < 1 ? f(A[o] + f(f(P[o] - A[o]) * Math.max(s, 0))) : P[o]; }
+  }
+  return { pos, index: p.index.array as ArrayLike<number> };
 }
 
 /** Room above the water an emerging plant needs to climb out (mm); with less it lies over at the surface. */
@@ -850,5 +951,79 @@ export function bendPlant(src: THREE.BufferGeometry, F: number, o: { ceil?: numb
   g.computeVertexNormals();
   g.computeBoundingBox(); g.computeBoundingSphere();
   Object.assign(g.userData, src.userData, { grow: { ...G, anc, gr, cut, ...lv } });
+  delete g.userData.gpu; // (src's GPU tags: this one gets its own)
   return g;
+}
+
+// ---------- Prebuild in a worker (lane GR4, 2026-10-15) ----------
+// A plant's full growth (65..350 ms to build, more to bend) is built off the main thread ahead of its first growth
+// (render/plantWorker.ts), so the first drag is warm. The geometry crosses as plain arrays (moved, not copied).
+
+/** A geometry as plain arrays: attributes, index, bounds, userData (growth tags: typed arrays and numbers only). */
+export interface Packed { attrs: Record<string, [Float32Array, number]>; index?: Uint32Array | Uint16Array; box?: number[]; sphere?: number[]; userData: Record<string, unknown> }
+/** Pack g; `skip` = attributes and index left out (a bent plant shares its colours and triangles with the built one). */
+export function packGeometry(g: THREE.BufferGeometry, skip: string[] = []): Packed {
+  const attrs: Packed['attrs'] = {};
+  for (const [k, a] of Object.entries(g.attributes)) if (!skip.includes(k)) attrs[k] = [a.array as Float32Array, a.itemSize];
+  const b = g.boundingBox, s = g.boundingSphere;
+  return { attrs, index: skip.includes('index') || !g.index ? undefined : g.index.array as Uint32Array, box: b ? [...b.min.toArray(), ...b.max.toArray()] : undefined, sphere: s ? [...s.center.toArray(), s.radius] : undefined, userData: g.userData };
+}
+export function unpackGeometry(p: Packed, base?: THREE.BufferGeometry) {
+  const g = new THREE.BufferGeometry();
+  for (const [k, [a, n]] of Object.entries(p.attrs)) g.setAttribute(k, new THREE.BufferAttribute(a, n));
+  if (base) for (const k of ['color', 'normal']) if (!p.attrs[k] && base.attributes[k]) g.setAttribute(k, base.attributes[k]);
+  g.setIndex(p.index ? new THREE.BufferAttribute(p.index, 1) : base?.index ?? null);
+  if (p.box) g.boundingBox = new THREE.Box3(new THREE.Vector3().fromArray(p.box), new THREE.Vector3().fromArray(p.box, 3));
+  if (p.sphere) g.boundingSphere = new THREE.Sphere(new THREE.Vector3().fromArray(p.sphere), p.sphere[3]);
+  Object.assign(g.userData, p.userData);
+  return g;
+}
+/** Every distinct ArrayBuffer under v (the transfer list). */
+export function buffersOf(v: unknown, out = new Set<ArrayBuffer>()) {
+  if (ArrayBuffer.isView(v)) out.add(v.buffer as ArrayBuffer);
+  else if (Array.isArray(v)) for (const x of v) buffersOf(x, out);
+  else if (v && typeof v === 'object') for (const x of Object.values(v)) buffersOf(x, out);
+  return out;
+}
+/** A prebuild job: plantGeometry's arguments and the lying over (water over the base F, ceiling C) to apply; a carpet
+ *  is kept until its `ground` message brings where each leaflet lands (looked up on the main thread). */
+export type PlantJob = { id: number; args: Parameters<typeof plantGeometry>; switches: typeof plant3d; bend?: { F: number; C?: number; water: boolean }; carpet?: boolean }
+  | { id: number; ground: Float32Array };
+export interface JobOut { id: number; full?: Packed; bent?: Packed; ground?: Packed; anchors?: Float32Array }
+const kept = new Map<number, THREE.BufferGeometry>();
+/** Run a job (in the worker): the built plant and, when it lies over, the bent one (its colours and triangles shared).
+ *  A carpet first hands back only its leaflets' anchors; its `ground` (x, y, z, w per leaflet, NaN = left out) then
+ *  brings back the built carpet and the carpet set on the ground (its colours, normals and triangles shared). */
+export function runJob(j: PlantJob): JobOut {
+  if ('ground' in j) {
+    const full = kept.get(j.id)!, q = j.ground;
+    kept.delete(j.id);
+    const g = carpetOnGround(full, (_x, _z, i) => Number.isNaN(q[i * 4]) ? null : { x: q[i * 4], y: q[i * 4 + 1], z: q[i * 4 + 2], w: q[i * 4 + 3] });
+    return { id: j.id, full: packGeometry(full), ground: packGeometry(g, ['color', 'normal', 'index']) };
+  }
+  Object.assign(plant3d, j.switches);
+  const full = plantGeometry(...j.args);
+  if (j.carpet) { kept.set(j.id, full); return { id: j.id, anchors: Float32Array.from(full.userData.anchors as Float32Array) }; }
+  const b = j.bend ? bendPlant(full, j.bend.F, { ceil: j.bend.C, water: j.bend.water }) : full;
+  return { id: j.id, full: packGeometry(full), bent: b === full ? undefined : packGeometry(b, ['color', 'index']) };
+}
+/** Send a plant's buffers (with its GPU growth tags) to the GPU now, by drawing it into a 1 x 1 target, so its first
+ *  draw in the tank uploads nothing (several MB for a grown stem clump or carpet): one buffer per call (each draw
+ *  uploads only what is new), `step` 0, 1, ... Returns the next step, or -1 once everything is up. */
+let upTarget: THREE.WebGLRenderTarget | undefined;
+const upScene = new THREE.Scene(), upCam = new THREE.OrthographicCamera(), upMat = new THREE.MeshBasicMaterial();
+export function uploadPlant(r: THREE.WebGLRenderer, src: THREE.BufferGeometry, step = 0) {
+  const all = grownView(src, 1);
+  if (all === src) return -1;
+  // (positions first, drawn without triangles; then the triangles; then one attribute at a time)
+  const has = ['position', 'index', 'color', 'normal', 'aAnc', 'aGrow'].filter(k => k === 'index' || all.attributes[k]), ks = has.slice(0, step + 1), v = new THREE.BufferGeometry();
+  for (const k of ks) if (k !== 'index') v.setAttribute(k, all.attributes[k]);
+  v.setIndex(ks.includes('index') ? all.index : null); v.boundingSphere = all.boundingSphere; v.dispose = all.dispose;
+  const m = new THREE.Mesh(v, upMat), was = r.getRenderTarget();
+  m.frustumCulled = false; upScene.add(m);
+  r.setRenderTarget(upTarget ??= new THREE.WebGLRenderTarget(1, 1));
+  r.render(upScene, upCam);
+  r.setRenderTarget(was);
+  upScene.remove(m); v.dispose(); all.dispose();
+  return ks.length < has.length ? step + 1 : -1;
 }

@@ -15,6 +15,7 @@ import { emptyScene, TANK_PRESETS } from '../scene/defaults';
 import { KINDS, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, itemDims, makeItem, starterItems } from '../scene/items';
 import { growthOf, isClump, isPatch, type PlantType } from '../art/plants';
 import { clumpAuto } from '../render/plant3d';
+import { canPrebuild, plantWarm, prebuildHooks, prebuildPlants } from '../render/items';
 import { tankDiff } from './diff';
 import { attachTypeIns, parseLen, plainNum, tidy, type TypeIn } from './typein';
 import {
@@ -952,28 +953,47 @@ Cancel, then change the name, to keep both.`)) return;
   };
   $('iSize').oninput = e => editItem(it => { it.size = +(e.target as HTMLInputElement).value; }, 'iSize');
   $('iGrowth').oninput = e => editItem((it, s) => setPlantGrowth(it, +(e.target as HTMLInputElement).value / 100, s), 'iGrowth');
-  // the tank's growth Time and feeding (lane GR3): every plant grows from its planted growth. Each plant's new growth
-  // costs a reveal (1..5 ms, more for big carpets) and its first growth builds its extras once (65..170 ms), so a dense
-  // tank catches up over a few frames: one first build per frame, and as many other plants as keep a frame near 40 ms,
-  // longest-waiting first. The whole move is one undo step.
-  let growGoal: { t: number; feed: GrowFeed } | null = null, growRaf = 0, growHeld = false, growLast = 0, growN = 8, growTick = 0, growLeft = 0;
-  const growSeen = new Map<number, number>();
+  // the tank's growth Time and feeding (lane GR3): every plant grows from its planted growth. A growth step costs no
+  // geometry (the plant material's shader reveals it, lane GR4); a plant's first growth needs its full growth built (and
+  // lain over at the water, or a carpet set on the ground, at its place), which the worker does ahead of time
+  // (prebuildPlants), so a plant not built yet waits for it while the rest move (without a worker: one such plant built
+  // per frame). The whole move is one undo step.
+  let growGoal: { t: number; feed: GrowFeed } | null = null, growRaf = 0, growHeld = false, growLeft = 0;
+  const growWaits = new Map<number, number>();
   const growStep = () => {
     growRaf = 0; if (!growGoal) return;
-    const now = performance.now(), dt = now - growLast; growLast = now;
-    if (dt < 200) growN = Math.round(Math.min(400, Math.max(2, growN * (dt > 60 ? 0.7 : dt < 35 ? 1.3 : 1))));
-    const { t, feed } = growGoal, tick = ++growTick; let left = 0;
-    growLeft = 0;
+    const { t, feed } = growGoal, worker = canPrebuild();
+    let left = 0;
     store.edit(s => {
-      const cs = timeChanges(s, t, feed).sort((a, b) => (growSeen.get(a.id) ?? 0) - (growSeen.get(b.id) ?? 0));
-      let firsts = 1, rest = growN;
-      const ok = new Set(cs.filter(c => (c.first && !growSeen.has(c.id) ? firsts-- : rest--) > 0).map(c => c.id)); // (built before: cached)
-      for (const id of ok) growSeen.set(id, tick);
-      left += setGrowTime(s, t, feed, c => ok.has(c.id)).length; growLeft = left;
+      // where each plant will be at its new growth (a grown clump near the glass is pushed in, onto other ground): not
+      // built there yet = it waits for the worker, built first. At most one plant a frame is built here: without a
+      // worker, or one that has waited 20 frames (the worker never holds a plant back for good)
+      const byId = new Map(s.items.map(it => [it.id, it])), next: Item[] = [];
+      let here = worker ? 0 : 1;
+      for (const c of timeChanges(s, t, feed)) {
+        const it = { ...byId.get(c.id)!, growth: c.growth, planted: c.planted };
+        clampItem(it, s.tank, s);
+        if (plantWarm(s, it)) { growWaits.delete(c.id); continue; }
+        const n = growWaits.get(c.id) ?? 0;
+        if ((n >= 20 || !worker) && here-- > 0) { growWaits.delete(c.id); continue; }
+        growWaits.set(c.id, n + 1); next.push(it);
+      }
+      const wait = new Set(next.map(it => it.id));
+      left += setGrowTime(s, t, feed, c => !wait.has(c.id)).length;
+      if (next.length) prebuildPlants(s, { S: s, items: next });
+      growLeft = left; // (the hint reads it as the edit lands)
     }, { coalesce: 'growTime' });
     if (left) growRaf = requestAnimationFrame(growStep);
     else { growGoal = null; growLeft = 0; if (!growHeld) store.seal(); }
   };
+  // build every plant's full growth ahead (in a worker): after a tank loads, and while the Plants panel is open
+  const plantsSec = secs.find(d => d.dataset.sec === 'plants');
+  prebuildHooks.renderer = viewer.renderer; // (built plants go to the GPU between frames too)
+  let warmT = 0;
+  const warmSoon = () => { clearTimeout(warmT); warmT = window.setTimeout(() => { prebuildPlants(store.scene.tanks); }, 300); };
+  store.subscribe(kind => { if (kind === 'load' || (kind !== 'select' && plantsSec?.open)) warmSoon(); });
+  plantsSec?.addEventListener('toggle', () => { if (plantsSec.open) warmSoon(); });
+  warmSoon();
   const growTo = (t: number, feed: GrowFeed) => { growGoal = { t, feed }; if (!growRaf) growStep(); };
   $<HTMLSelectElement>('growFeed').innerHTML = Object.entries(FEED_NAMES).map(([k, l]) => `<option value="${k}">${esc(l)}</option>`).join('');
   $<HTMLSelectElement>('growFeed').onchange = e => { store.seal(); growTo(store.tank.grow.time, (e.target as HTMLSelectElement).value as GrowFeed); };

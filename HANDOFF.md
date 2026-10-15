@@ -18,7 +18,7 @@ Living file. Project state and dated decisions go here; update in place.
 - Not browser-checked in the app (no dev-server slot): the platy / molly Sex switch and stocking rows; tests cover the data.
 - Before/after composites: worktree `shots/x2/cmp-*.jpg` (gitignored).
 
-## Plant growth (2026-10-15; design agreed in chat; lane GR1 DONE: branch `plants3d`, port 5283, pushed to main; GR3 DONE (`plant-time`, 5593); GR2 DONE (pushed); GPU reveal + prebuild next (lane plants3d))
+## Plant growth (2026-10-15; design agreed in chat; lane GR1 DONE: branch `plants3d`, port 5283, pushed to main; GR3 DONE (`plant-time`, 5593); GR2 DONE (pushed); GR4 DONE (GPU reveal + worker prebuild, pushed))
 Nathan: each plant item gets a growth slider from just planted to fully mature / overgrown; what overgrown looks like
 depends on the species (lying along the surface in sheets, growing out of the tank, spreading). Each item (which may
 hold many stems / crowns) has its own growth. Later: a global timeline that grows the whole tank at each species' rate.
@@ -122,12 +122,50 @@ hold many stems / crowns) has its own growth. Later: a global timeline that grow
   - Sheets (worktree `shots/`, not in git): `142_time_sheet.png` (Planted community at Time 0 / 15 / 40 %),
     `143_controls.png`, `144_controls_375.png`, `146_proxy_sheet.png` (stretch-preview mock, rejected).
   - Not done: shaded plants growing slower from the light map (optional, not asked yet).
-- **Next (Nathan 2026-10-15): GPU reveal + background prebuild** (chosen over a stretch preview while dragging, which got
-  the shape wrong). (1) revealPlant moves to the vertex shader: every vertex already has its growth tag, so a per-plant
-  growth uniform hides / shrinks what has not grown; a Time or Growth drag then shows the real plant every frame at ~0
-  cost, no buffers rebuilt. (2) Build each plant's full-growth extras in idle time after load / when the Plants panel
-  opens, so the first drag is warm. Files: render/plant3d.ts, render/items.ts (GR2's while GR2 is open); the
-  ui/panels.ts stagger can then go.
+- **GR4 landed (2026-10-15, Nathan: "Go with the GPU reveal plus background prebuild"):**
+  - GPU reveal (render/plant3d.ts): revealPlant's math in the vertex shader (`GROW_VERT`, patched into the plant
+    material after the lighting patch, so vAqP / haze / light see the grown position). Per vertex `aAnc` (anchor) and
+    `aGrow` (a, w, form em, cut; cut +-inf as +-1e6), built once per built / bent / grounded plant (`gpuParts`, kept in
+    userData.gpu). Each mesh draws `grownView(src, g)`: a light geometry sharing src's buffers plus its own growth as a
+    one-value instanced attribute `aGrowth`, so every plant keeps ONE material per outline (a material per growth value
+    cost three.js 2..8 ms of setup each, tried and dropped). A growth or Time step makes a new view per changed plant
+    (no buffers built or uploaded). Its boundingBox is lazy: revealPlant's box, worked out only when asked (selection
+    box, pick core); sphere = src's. `plantRaycast` picks against what shows; `cpuGeometry(mesh)` gives the USDZ export
+    (render/arUsdz.ts, 2 lines) the CPU reveal; the PNG export renders through WebGL, so it runs the shader. A view's
+    dispose frees only its own vertex array state; `dropPlant` disposes a cached plant with its GPU tags.
+  - Same triangles as the CPU path: hidden vertices wait at their anchors, and a triangle with every corner hidden has
+    at most two distinct anchors, so it draws nothing. test/gpureveal.test.ts mirrors the shader on the CPU
+    (`shaderReveal`, float32) for every species x built / lying over / climbing out / on the ground x 13 growths: kept
+    triangles land where revealPlant puts them (1e-3 mm), dropped ones have no area (a mutation check fails it). In the
+    browser, GPU vs CPU path on the dense tank: 1..5 of 259 k pixels differ (triangle edges). Side effect: a fully shown
+    plant with form tags no longer draws its hidden emersed twins (revealPlant handed back src with them in it).
+  - Prebuild (render/items.ts): `plantPlan()` = the plant branch's keys and arguments (itemMesh and the prebuild share
+    it). `prebuildPlants(tanks)` has a module worker (render/plantWorker.ts, `runJob`) build each plant's full growth
+    (`more`) and bend it at the water, one plant at a time, arrays moved back (`packGeometry` / `unpackGeometry`,
+    transfer list). A carpet comes back as anchors first: its ground spots are looked up on the main thread in <= 4 ms
+    slices, the worker sets it on the ground. Each landed plant then goes to the GPU one buffer per slice (`uploadPlant`:
+    positions, triangles, colours, normals, tags into a 1 x 1 target). Runs after a tank loads and while the Plants
+    panel is open (ui/panels.ts `warmSoon`, 300 ms after the last change). No worker (tests; dist-single opened from
+    disk) = nothing built ahead. Caches: plants 600, bent 360. `plant3d.gpu = false` = GR3's CPU reveal (A/B switch).
+  - growStep (ui/panels.ts, GR3's stagger gone): each step predicts every changing plant's place at its new growth
+    (clampItem: a grown clump near the glass is pushed in, onto other ground, so its bend or ground changes); one not
+    built there yet waits for the worker (sent to the front of its queue) while the rest move. At most one plant a frame
+    builds on the main thread: without a worker, or one that has waited 20 frames.
+  - Numbers (61-plant dense starter `shots/gr4.js` dense(): planted, seed 47, 1200 x 450 x 500, half water; CPU +
+    gl.finish; alternate steps GPU / CPU):
+    - Time step, fresh growth values every step: GPU 4.7 / 7.9 ms vs CPU 64.6 / 97.9 ms (two passes).
+    - One plant's Growth step (whole tank edit + draw): stem 3.7 vs 5.6, carpet 3.9 vs 8.9, grass 4.0 vs 4.8, fern 3.5 vs
+      4.4, anubias 3.3 vs 3.5; a yaw step on the same plant 1.9..3.2 (carpet 15): the reveal's own share is now ~0.
+    - First drag (Time slider 0 -> 30 % in 30 input events, as the UI does it): after the prebuild worst frame 10.6 ms,
+      median 0.5, plants that moved catch up 0.6 s after release; CPU path, nothing built: worst frames 164 / 86 / 68 ms,
+      1.4 s catch-up. A cold plant's first growth on the main thread: median 32, p90 308, max 460 ms.
+    - Prebuild of the 61 plants: 13..30 s in the worker on the busy machine; main thread per message 0.2..0.3 ms
+      (worst 5), upload slices median 0.4 ms; frame gaps meanwhile no worse than with nothing running (the machine's own
+      noise: 10..37 ms gaps either way).
+    - The GPU draws full-growth triangles at any growth (dense tank at Time 12 %: 1.4 M drawn, 0.67 M showing); draw
+      time stayed 5..7 ms.
+  - Open: the single plant Growth slider still builds a moved plant (pushed in from the glass) on the main thread (only
+    the Time drag waits for the worker); prebuilt full growths roughly double plant geometry memory once built.
 
 ## 3D back wall (2026-10-15; main checkout; Nathan chose "3D panel inside" over a flat printed sheet; pushed to main)
 Nathan: textured backgrounds, e.g. a plant mat for terrariums, a live rock / coral wall for saltwater, river rocks for fresh.
@@ -1160,7 +1198,7 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | X2 fish leftovers | (worktree removed) | - | `art/fishgen.ts`, `render/fish3d.ts`, `art/paint.ts` (noseCap on neon / cardinal / chili / cpd, characin dorsal taper, platy / molly gonopodium, fantail doubled anal fin) | DONE 2026-10-15, pushed (see its section); fish files free; Sex switch browser-checked PASS (build 436) |
 | GR1 plant growth | `../Glass-Box-plants3d` / `plants3d` | 5283 | see the "Plant growth" section (growth value, Height removed, lying over at the surface) | DONE (`050e2d9`, `4a4e3a8`, build 440) |
 | GR2 emersed growth + floaters | `../Glass-Box-plants3d` / `plants3d` | 5283 | `art/plants.ts`, `render/plant3d.ts` (bendPlant 'emerge' / 'spread'), plant branch of `render/items.ts`, plant entries of `scene/items.ts`, new floater / lily species data | DONE (`2b67f4c`, build 456). Open: lying stems cut at the glass, sagittaria lawn loose tufts, lotus pads orange under light, duckweed waits for instancing |
-| GR4 GPU reveal + idle prebuild | `../Glass-Box-plants3d` / `plants3d` | 5283 | `render/plant3d.ts`, plant branch of `render/items.ts`, growth uniform hook in `render/lighting.ts`, growStep in `ui/panels.ts` | ready to open (prompt `prompts/lane-GR4-gpu-reveal.md`) |
+| GR4 GPU reveal + idle prebuild | `../Glass-Box-plants3d` / `plants3d` | 5283 | (free) | DONE, pushed (GPU reveal per mesh, worker prebuild; render/lighting.ts untouched: the hook went in the plant material) |
 | GR3 growth timeline + tank setting | (worktree removed) | - | see the "Plant growth" section (Feeding + Time, `scene/growtime.ts`) | DONE (`c9d615a`, `5931cb2`, build 452). GPU reveal + idle prebuild (Nathan's call) handed to GR2 |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 Free (no lane): `render/build.ts`, `render/items.ts`, `scene/items.ts`, `render/viewer.ts`, `main.ts`, `render/lighting.ts`,

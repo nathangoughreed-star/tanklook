@@ -14,6 +14,7 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { MM, baseCentre, roomObjects } from './ar';
 import type { Viewport } from './viewer';
+import { cpuGeometry } from './plant3d';
 
 /**
  * Triangles in the whole export at most (~100 bytes a triangle after trimUsda). Nathan 2026-10-14: 250k (~25 MB) over
@@ -79,7 +80,7 @@ export const rootMatrix = (c: THREE.Vector3) => new THREE.Matrix4().makeScale(MM
 
 /** A mesh's geometry (one material group) in world space, indexed, with position + normal (+ uv, + color). */
 function worldPart(mesh: THREE.Mesh, start: number, count: number, uv: boolean, vc: boolean) {
-  const src = mesh.geometry, g = new THREE.BufferGeometry();
+  const src = cpuGeometry(mesh), g = new THREE.BufferGeometry(); // (a plant: what shows at its growth, revealed on the CPU)
   for (const k of ['position', 'normal', ...(uv ? ['uv'] : []), ...(vc ? ['color'] : [])]) if (src.attributes[k]) g.setAttribute(k, src.attributes[k].clone());
   const n = src.index ? src.index.count : src.attributes.position.count, end = Math.min(n, start + count);
   const idx: number[] = [];
@@ -402,7 +403,7 @@ export async function usdzScene(vp: Viewport, budget = BUDGET) {
   const planes: ColourPlane[] = [];
   let meshes = 0, trisIn = 0;
   const add = (mesh: THREE.Mesh) => {
-    const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material], src = mesh.geometry;
+    const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material], src = cpuGeometry(mesh);
     const groups = Array.isArray(mesh.material) && src.groups.length ? src.groups : [{ start: 0, count: Infinity, materialIndex: 0 }];
     for (const gr of groups) {
       const m = mats[gr.materialIndex ?? 0];
