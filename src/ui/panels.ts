@@ -12,7 +12,7 @@ import { FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, mountOf, po
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene, TANK_PRESETS } from '../scene/defaults';
-import { DEFAULT_DENS, KINDS, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
+import { DEFAULT_DENS, EPIPHYTES, KINDS, perch, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
 import { handEdits, regenerate, shuffleHard } from '../scene/starter';
 import { growthOf, isClump, isFloat, isPatch, type PlantType } from '../art/plants';
 import { clumpAuto } from '../render/plant3d';
@@ -1057,6 +1057,9 @@ Cancel, then change the name, to keep both.`)) return;
         const gap = Math.min(...s.items.filter(q => q.kind !== 'plant' || !isPatch(q.variant)).map(q => Math.hypot(q.x - x, q.depth - d)), 1e6) - Math.abs(x - T.L / 2) * 0.15;
         if (gap > best) { best = gap; it.x = x; it.depth = d; }
       }
+      // a fern, anubias, buce or moss goes on the stone or wood nearest that open spot (on the floor if there is none)
+      const at = EPIPHYTES.has(variant) ? perch(s, it.x, it.depth, r) : null;
+      if (at) Object.assign(it, at);
       clampItem(it, T, s); s.items.push(it);
     });
     store.selectItem(id); openSec(scapeSec(LIBRARY[variant].kind));

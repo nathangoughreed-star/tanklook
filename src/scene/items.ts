@@ -250,9 +250,9 @@ export function itemToTank(S: TankSetup, it: Item, p: V3) {
  * area (mm²) and a random spot on them in proportion to it, (x, depth) and an estimate of the height there. The renderer
  * finds the exact top under (x, depth); this only has to land on the piece.
  */
-export function hardscape(S: TankSetup) {
+export function hardscape(S: TankSetup, pieces = S.items) {
   const parts: { area: number; spot: (r: () => number) => { x: number; depth: number; y: number } }[] = [];
-  for (const it of S.items) {
+  for (const it of pieces) {
     if (it.kind === 'plant' || it.kind === 'coral') continue; // no grazing on live coral (Nathan 2026-10-14)
     if (it.kind === 'wood') {
       for (const l of woodLimbs(it.variant, it.seed, it.size)) {
@@ -275,6 +275,23 @@ export function hardscape(S: TankSetup) {
   };
 }
 export type Hardscape = ReturnType<typeof hardscape>;
+
+/** Plants grown tied onto wood or rock rather than planted in the substrate (Nathan 2026-10-15: substrate, hardscape,
+ *  then plants, some of them attached to the hardscape by type, then animals). */
+export const EPIPHYTES: ReadonlySet<string> = new Set(['fern', 'anubias', 'buce', 'moss']);
+/**
+ * A spot on the stone or wood nearest (x, depth) to tie an epiphyte on: (x, depth) on the piece and the lift above the
+ * ground there. `pieces`: where to look (default the tank's). Null when the tank has no stone or wood.
+ */
+export function perch(S: TankSetup, x: number, depth: number, r: () => number, pieces = S.items) {
+  const solid = pieces.filter(it => it.kind === 'stone' || it.kind === 'wood');
+  if (!solid.length) return null;
+  const near = solid.reduce((a, b) => Math.hypot(b.x - x, b.depth - depth) < Math.hypot(a.x - x, a.depth - depth) ? b : a);
+  const hs = hardscape(S, [near]);
+  let best: { x: number; depth: number; y: number } | null = null;
+  for (let k = 0; k < 6; k++) { const p = hs.spot(r); if (p && (!best || Math.hypot(p.x - x, p.depth - depth) < Math.hypot(best.x - x, best.depth - depth))) best = p; }
+  return best && { x: best.x, depth: best.depth, lift: Math.max(0, Math.round(best.y - groundHeight(S, S.tank, best.x, best.depth))) };
+}
 
 export const nextItemId = (s: TankSetup) => s.items.reduce((m, it) => Math.max(m, it.id), 0) + 1;
 
@@ -422,6 +439,8 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
    *  glass), so plants rise towards the middle instead of all moving there. */
   const plant = (type: PlantType, x: number, d: number, h: number, lift = 0, raw = false) => {
     const p = raw ? { x, d } : map(x, d);
+    // a fern, anubias, buce or moss set on the floor goes onto the nearest stone or wood instead
+    if (!lift && EPIPHYTES.has(type)) { const at = perch({ ...S, items: out }, p.x, p.d, r, solids()); if (at) { p.x = at.x; p.d = at.depth; lift = at.lift; } }
     let hh = Math.min(h, room(p.x, p.d, lift), (Math.min(L, D) - 6) * PLANT_ASPECT[type]);
     if (bowl) {
       const { R, c } = bowlDims(T), y0 = sub(p.x, p.d) + lift, q0 = Math.hypot(p.x - L / 2, p.d - D / 2);
