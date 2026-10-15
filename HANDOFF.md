@@ -129,7 +129,7 @@ Living file. Project state and dated decisions go here; update in place.
     JSON.stringify ~3x per viewport, viewer.ts:384 placePerson bisect, viewer.ts:391 full-traverse material rank,
     viewer.ts:336/386/401 style reads + viewmap redraw; sent to E1 to time. (4) The examples are 240 of main's 426 kB
     (lazy chunk = ~100 kB gzip off first load). (5) Dead code is small: plant / flat-fish card fallbacks are
-    unreachable (every species is 3D), 3 dead + 4 test-only exports. Split plan: build.ts first (B1-B6, true pure moves
+    unreachable (every species is 3D; **Nathan 2026-10-15: delete them** in phase 2 after GR4: plant card painters + drawPlantCard + plantTexture + the card branch in items.ts, the plant3d.on / fish3d.on toggles and the flat whole-fish card path; the fish card texture that carries the 3D fins stays), 3 dead + 4 test-only exports. Split plan: build.ts first (B1-B6, true pure moves
     into flat render/build*.ts files, build.ts re-exports), then panels.ts (P0 UI-state dump, P1 utils, P2 ctx, P3-P8
     mountX(ctx) per section; behaviour-preserving, not byte-pure), only when GR4 / AL / W have no panels.ts hunks.
 - **Phase 2, later:** the coordinator merges E1 + E2 into one ranked list; Nathan picks. Fixes that touch another active
