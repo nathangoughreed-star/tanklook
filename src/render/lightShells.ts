@@ -1,9 +1,9 @@
 // Dark spots (Nathan 2026-10-15: "the point of this feature is to identify any dark spots in the tank like at upper
-// edges or corners"): one see-through surface round every pocket of water where the light is below a set level (PAR 30
+// edges or corners"): an opaque solid filling every pocket of water where the light is below a set level (PAR 30
 // by default, the low / medium line), the darkest point labelled, and the share of the water that is dark. The light
 // model (scene/lightout.ts bandsAt, on a surface facing up, as the substrate map and the layer read it) is sampled on a
-// grid through the water, right up to the glass and the surface, and the level traced by marching tetrahedra; the
-// surface is left open where it meets the glass or the ground. Built again only when the light, tank or ground changes.
+// grid through the water, right up to the glass and the surface, and the level traced by marching tetrahedra into
+// opaque solids, closed where they meet the glass, the surface or the ground. Built again only when the light, tank or ground changes.
 import * as THREE from 'three';
 import { bandsAt, lightEnvCached, luxOf, parOf, wattsOf } from '../scene/lightout';
 import { bowlRadius, insideBy } from '../scene/shape';
@@ -16,15 +16,15 @@ const CORNER = [[0, 0, 0], [1, 0, 0], [0, 1, 0], [1, 1, 0], [0, 0, 1], [1, 0, 1]
 const TETS = [[0, 1, 3, 7], [0, 3, 2, 7], [0, 2, 6, 7], [0, 6, 4, 7], [0, 4, 5, 7], [0, 5, 1, 7]];
 
 /** Triangles of the surface v = level through a grid of values (NaN-free), as world positions. */
-function trace(v: Float32Array, inside: Uint8Array, n: [number, number, number], at: (i: number, j: number, k: number) => THREE.Vector3, level: number) {
+function trace(v: Float32Array, n: [number, number, number], at: (i: number, j: number, k: number) => THREE.Vector3, level: number) {
   const [nx, ny, nz] = n, idx = (i: number, j: number, k: number) => (i * (ny + 1) + j) * (nz + 1) + k, tris: number[] = [];
   const P = Array.from({ length: 8 }, () => new THREE.Vector3()), val = new Array<number>(8);
   const mid = (a: number, b: number) => { const f = (level - val[a]) / (val[b] - val[a]); return P[a].clone().lerp(P[b], f); };
   const tri = (a: THREE.Vector3, b: THREE.Vector3, c: THREE.Vector3) => tris.push(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z);
   for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) for (let k = 0; k < nz; k++) {
-    let any = 0, out = false;
-    for (let c = 0; c < 8; c++) { const [a, b, d] = CORNER[c], q = idx(i + a, j + b, k + d); val[c] = v[q]; out ||= !inside[q]; any |= (val[c] > level ? 1 : 2); }
-    if (any !== 3 || out) continue; // no surface here, or the cube reaches past the glass or into the ground
+    let any = 0;
+    for (let c = 0; c < 8; c++) { const [a, b, d] = CORNER[c]; val[c] = v[idx(i + a, j + b, k + d)]; any |= (val[c] > level ? 1 : 2); }
+    if (any !== 3) continue;
     for (let c = 0; c < 8; c++) { const [a, b, d] = CORNER[c]; P[c].copy(at(i + a, j + b, k + d)); }
     for (const t of TETS) {
       const ins = t.filter(c => val[c] > level), outs = t.filter(c => val[c] <= level);
@@ -57,14 +57,15 @@ function sampleLight(S: TankSetup, T: Tank): Grid | null {
   const env = lightEnvCached({ ...S, tank: T });
   let g: Grid | null = null;
   if (env) {
-    const unit = S.light.mapUnit ?? 'par', top = (S.water.on ? waterY(T, S.water.level) : T.H) - 3, e = 4;
+    const unit = S.light.mapUnit ?? 'par', top = S.water.on ? waterY(T, S.water.level) : T.H;
     const nx = 40, ny = Math.max(8, Math.round(nx * top / T.L)), nz = Math.max(8, Math.round(nx * T.D / T.L));
-    const X = (i: number) => e + (T.L - 2 * e) * i / nx, Y = (j: number) => e + (top - 2 * e) * j / ny, Dp = (k: number) => e + (T.D - 2 * e) * k / nz;
+    // the outer nodes lie on the glass, the floor and the surface (read for the share and the darkest point; the solids close there)
+    const X = (i: number) => T.L * i / nx, Y = (j: number) => top * j / ny, Dp = (k: number) => T.D * k / nz;
     const v = new Float32Array((nx + 1) * (ny + 1) * (nz + 1)), inside = new Uint8Array(v.length);
     let n = 0;
     for (let i = 0; i <= nx; i++) for (let j = 0; j <= ny; j++) for (let k = 0; k <= nz; k++, n++) {
       const x = X(i), y = Y(j), d = Dp(k);
-      inside[n] = insideBy(T, x, d) > 0 && Math.hypot(x - T.L / 2, d - T.D / 2) <= bowlRadius(T, y) && y >= groundHeight(S, T, x, d) ? 1 : 0;
+      inside[n] = insideBy(T, x, d) > -0.5 && Math.hypot(x - T.L / 2, d - T.D / 2) <= bowlRadius(T, y) && y >= groundHeight(S, T, x, d) ? 1 : 0;
       const b = bandsAt(env, [x, y, -d]);
       v[n] = unit === 'lux' ? luxOf(b) : parOf(b);
     }
@@ -94,10 +95,24 @@ export function buildShells(S: TankSetup, T: Tank): THREE.Group {
   const grp = new THREE.Group(), g = sampleLight(S, T), st = darkStats(S, T);
   grp.userData.labels = [];
   if (!g || !st) return grp;
-  const pos = trace(g.v, g.inside, g.n, g.at, st.thr);
+  // solids (Nathan 2026-10-15): every node on the water's outer faces or out of the water reads as at least just above the level,
+  // so each dark pocket closes on the glass, the surface and the ground instead of staying open there
+  const [nx, ny, nz] = g.n, closed = new Float32Array(g.v.length), lit = st.thr * (1 + 1e-4) + 1e-6;
+  let q = 0;
+  for (let i = 0; i <= nx; i++) for (let j = 0; j <= ny; j++) for (let k = 0; k <= nz; k++, q++)
+    closed[q] = g.inside[q] && i > 0 && i < nx && j > 0 && j < ny && k > 0 && k < nz ? g.v[q] : Math.max(g.v[q], lit); // real where bright: a smooth rim
+  const pos = trace(closed, g.n, g.at, st.thr);
   if (pos.length) {
-    const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-    const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: 0x3b2bd0, transparent: true, opacity: 0.42, depthWrite: false, side: THREE.DoubleSide }));
+    // opaque, shaded by how each face turns to a light from above and in front, so the shape reads (no scene lights)
+    const col: number[] = [], base = new THREE.Color(0x3b2bd0), L = new THREE.Vector3(0.3, 1, 0.6).normalize();
+    const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3();
+    for (let t = 0; t < pos.length; t += 9) {
+      a.fromArray(pos, t); b.fromArray(pos, t + 3); c.fromArray(pos, t + 6);
+      const s = 0.3 + 0.7 * Math.abs(c.sub(b).cross(a.sub(b)).normalize().dot(L));
+      for (let v = 0; v < 3; v++) col.push(base.r * s, base.g * s, base.b * s);
+    }
+    const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); geo.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+    const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide }));
     m.userData = { nolight: true }; m.renderOrder = 11; grp.add(m);
   }
   if (st.share > 0) grp.userData.labels = [{ p: st.p, text: `darkest ${Math.round(st.min).toLocaleString('en-US')}` }];
