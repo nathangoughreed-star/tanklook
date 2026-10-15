@@ -1,7 +1,7 @@
 // Inline the single-file Vite pass (`vite build --mode single` -> dist-single/.build/) into one self-contained HTML file that
 // opens straight from disk (file://). Inline scripts are not subject to the module-script CORS block that stops
-// dist/index.html working from disk, so nothing may be left to fetch: the single pass folds every dynamic import into one
-// script, the plant prebuild worker becomes a data: URL, and the guard at the end fails the build on any leftover .js file.
+// dist/index.html working from disk, so nothing may be left to fetch: the single pass folds every dynamic import (the lazy
+// example scenes, the AR exporters) into one script and inlines the thumbnails as data: URLs, the plant prebuild worker becomes a data: URL, and the guard at the end fails the build on any leftover .js file.
 // Usage: npm run build:single  ->  dist-single/tanklook.html
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -45,6 +45,7 @@ const left = [
   ...html.matchAll(/(?:src|href)="(?!data:|https?:|#|\$\{)[^"]+"/g),                               // tags pointing at local files
   ...html.matchAll(/(?:from\s*|import\s*\(\s*)["'`][^"'`]+\.m?js["'`]/g),                          // static / dynamic imports
   ...html.matchAll(/new URL\(\s*["'`][^"'`]+\.m?js["'`]\s*,\s*import\.meta\.url/g),                // workers, chunk URLs
+  ...html.matchAll(/["'`](?:\.\/)?assets\/[^"'`]+["'`]/g),                                          // emitted files (images)
 ].map(m => m[0]);
 if (left.length) fail('the single file still references external files:', [...new Set(left)]);
 if (!scripts) fail(`no script found in ${SRC}/index.html.`);

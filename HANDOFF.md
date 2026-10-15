@@ -9,7 +9,8 @@ Living file. Project state and dated decisions go here; update in place.
   GR4's plantWorker chunk were never inlined either.
 - **Fix (chosen: its own Vite pass, simpler and robust to any future chunking):** `vite build --mode single`
   (vite.config.ts) builds only index.html into `dist-single/.build/` with `codeSplitting: false`, so every static and
-  dynamic import is one script; build-single.mjs inlines it and deletes `.build/`. `npm run build:single` still runs
+  dynamic import is one script (incl. EF3's lazy `scenes` chunk and the AR exporters), and `assetsInlineLimit: 1e8` makes the
+  six example thumbnails data: URLs; build-single.mjs inlines it and deletes `.build/`. `npm run build:single` still runs
   the normal `npm run build` first (dist/ with review.html unchanged; E1's perf harness measures dist/ after it).
   Following and inlining chunks in the inliner was rejected: ES module chunks import each other by relative URL, which
   needs an import map / rewriting per chunk.
@@ -20,13 +21,13 @@ Living file. Project state and dated decisions go here; update in place.
 - Also dropped from the single file: the manifest and apple-touch-icon links (files that do not travel with it; the
   manifest logged a CORS error from disk).
 - **Guard:** build-single.mjs fails (exit 1) if the output still references any local src/href, `from "./x.js"`,
-  `import("./x.js")` or `new URL("x.js", import.meta.url)`. Checked against the old broken dist: it lists the three
+  `import("./x.js")`, `new URL("x.js", import.meta.url)` or any `assets/...` string (a thumbnail URL). Checked against the old broken dist: it lists the three
   chunk imports and fails.
-- Size: 1.95 MB (was 480 kB broken, without three.js); the single file now carries the AR exporters and the worker.
-- Verified (headless Edge over CDP, from disk): start menu with thumbnails, Planted community opens in 3D with fish /
+- Size: 1.96 MB (was 480 kB broken, without three.js); the single file now carries the AR exporters and the worker.
+- Verified (headless Edge over CDP, from disk): start menu with all six thumbnails loaded, Planted community opens in 3D with fish /
   plants, AR button hidden, no console errors (only the known ANGLE X4000 shader warnings); 1400 px and 375 px.
-  dist/ over http: app + /review.html (71 models) fine. tsc clean; vitest 317/319 in the full run, the 2 failures
-  (reef layout, swamp terrain) pass alone, with and without this change (load-timing flakes).
+  dist/ over http: app + /review.html (71 models) fine. Re-verified after merging EF3 (76ed8a6). tsc clean; vitest 321/321
+  (an earlier full run had 2 load-timing flakes, reef layout and swamp terrain, that pass alone).
 
 ## First download: examples on demand (2026-10-15; lane EF3, branch `download-size`, port 5653; pushed to main)
 - **The six example scenes are a lazy chunk** (`src/examples/scenes.ts`, ~131 kB / 21 kB gzip): `exampleScenes()` in
