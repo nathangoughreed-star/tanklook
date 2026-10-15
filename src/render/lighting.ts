@@ -164,7 +164,9 @@ function warmSoon(S: LightScene) {
 
 /** `S` (the setup; lane K): with watts set, the brightness follows the computed lux and `l.bright` is the exposure. */
 export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams = false, S?: LightScene) {
-  const on = l.type !== 'flat'; LU.uMode.value = on ? 1 : 0;
+  // no fixture (Nathan 2026-10-15): mode 2, the tank is lit by the room light alone (a dark room = a dark tank); mode 0
+  // (the flat reference key) is only for the fish preview and the review sheet
+  const on = l.type !== 'flat'; LU.uMode.value = on ? 1 : 2; if (!on) LU.uAmb.value = roomLevel(l.room);
   const lo = on && S ? lightOutCached({ ...S, tank: T }) : null, bright = lo ? renderBright(lo, l.bright) : clamp(l.bright, 0.2, 2.5);
   if (on && S && !lo) warmSoon({ ...S, tank: T });
   // light map: a spot bulb or a tube counts as one light; an LED bar's emitters share the output of four bulbs
@@ -179,7 +181,7 @@ export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams 
   // the spill shows most in a dark room (in a lit room the eye adapts and it barely registers); a raised fixture
   // throws more of its light past the tank (up to ~1.8x at 450 mm and above)
   const spill = 0.9 * (1 - 0.75 * roomLevel(l.room)) * (1 + 0.8 * clamp((up - LAMP_Y) / 400, 0, 1));
-  if (on) LU.uSpill.value.setRGB(...kelvinRGB(l.kelvin)).multiplyScalar(spill * bright); else LU.uSpill.value.setRGB(spill, spill, spill);
+  if (on) LU.uSpill.value.setRGB(...kelvinRGB(l.kelvin)).multiplyScalar(spill * bright); else LU.uSpill.value.setRGB(0, 0, 0); // no fixture: no light leaves the tank
   if (!on) return;
   const E = emitters(T, l, hgt), m = beamExp(l), gain = beamGain(l), ref: LightSettings = { ...l, spacing: 0, cone: 52 };
   E.forEach((e, i) => LU.uEm.value[i].set(...e)); LU.uEmN.value = E.length;
@@ -246,12 +248,14 @@ vec3 aqLight() {
     return vec3(uRoomK) + uSpill * (facing / (1.0 + r * r));
   }
   float sum = 0.0; vec3 n = normalize(vAqN);
-  if (uMode < 0.5) {
-    if (uFish < 0.5) return vec3(1.0);
-    // flat light: 3D fish still need form, so a fixed soft key from above and slightly in front
+  if (uMode < 0.5 || uMode > 1.5) {
+    // flat light (mode 0, full) or no fixture (mode 2, the room light only)
+    float k = uMode > 1.5 ? uAmb : 1.0;
+    if (uFish < 0.5) return vec3(k);
+    // 3D fish still need form, so a fixed soft key from above and slightly in front
     vec3 ld = normalize(vec3(-0.2, 1.0, 0.35)), hv = normalize(ld + normalize(cameraPosition - vAqP));
-    aqSpec = 0.6 * pow(max(dot(n, hv), 0.0), 40.0);
-    return vec3(aqFishFacing(n, ld));
+    aqSpec = 0.6 * k * pow(max(dot(n, hv), 0.0), 40.0);
+    return vec3(k * aqFishFacing(n, ld));
   }
   for (int i = 0; i < ${AQ_MAX}; i++) {
     if (i >= uEmN) break;

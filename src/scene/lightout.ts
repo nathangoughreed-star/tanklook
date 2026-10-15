@@ -154,7 +154,7 @@ export const TECH_IDS = Object.keys(TECHS) as LightTech[];
  */
 export type Fixture = 'flat' | 'puck' | 'bulb' | 'pendant' | 'tube' | 'led';
 export const FIXTURES: Record<Fixture, { label: string; type: LightType }> = {
-  flat: { label: 'None (flat, even light)', type: 'flat' },
+  flat: { label: 'None (room light only)', type: 'flat' },
   puck: { label: 'LED pucks / spots', type: 'spot' },
   bulb: { label: 'Screw-in bulbs', type: 'spot' },
   pendant: { label: 'Metal halide pendants', type: 'spot' },

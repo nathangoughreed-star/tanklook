@@ -99,7 +99,7 @@ type LightU = Record<string, THREE.IUniform>;
 
 /** Light on the film and scum: the tank light's colour and brightness (they sit in it), or plain with a flat light. */
 const LIT = `uniform float uMode, uAmb, uBright; uniform vec3 uLCol;
-vec3 algLit() { return uMode > 0.5 ? vec3(uAmb) + uLCol * min(uBright, 1.3) * 0.75 : vec3(1.0); }
+vec3 algLit() { return uMode > 1.5 ? vec3(uAmb) : uMode > 0.5 ? vec3(uAmb) + uLCol * min(uBright, 1.3) * 0.75 : vec3(1.0); }
 float aH(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float aN(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
   return mix(mix(aH(i), aH(i + vec2(1, 0)), f.x), mix(aH(i + vec2(0, 1)), aH(i + vec2(1, 1)), f.x), f.y); }`;

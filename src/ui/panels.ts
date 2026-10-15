@@ -1623,6 +1623,7 @@ Cancel, then change the name, to keep both.`)) return;
     const lo = watts ? lightOutCached(s) : null;
     $('lOut').textContent = lo ? lightReadout(lo) : 'Set Power to estimate the light (PAR and lux) at the substrate.'; $('lOut').hidden = l.type === 'flat';
     $('lBrightLab').textContent = watts ? 'Exposure' : 'Brightness';
+    $('lBrightLab').parentElement!.style.display = l.type === 'flat' ? 'none' : ''; // no fixture: nothing to brighten
     $('lBrightLab').title = watts ? 'Like a camera: how bright the render looks for the light the fixture gives (x1/4 to x16; high washes out). The PAR and lux do not change' : '';
     Object.assign($('lBright') as HTMLInputElement, watts ? { min: String(Math.log2(EXP_MIN)), max: String(Math.log2(EXP_MAX)) } : { min: '0.2', max: '2.5' });
     setVal('lBright', watts ? Math.log2(Math.min(Math.max(l.bright, EXP_MIN), EXP_MAX)) : l.bright);
