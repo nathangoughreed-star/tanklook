@@ -6,7 +6,7 @@ import { drawSnailCard } from '../art/snails';
 import { CATEGORIES, SPECIES, fishTL, getSpecies, needsWater, searchSpecies, speciesOf, speciesTag, type Category, type Sex, type Species } from '../data/species';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { MAP_DIV, MAP_STEP, emitters, mapStepOf } from '../render/lighting';
-import { FIXTURES, MH_BULBS, TECHS, fixtureOf, lightOutCached, readout as lightReadout, techOf, techsFor, tubeOf, wattsOf, type Fixture } from '../scene/lightout';
+import { FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeOf, wattsOf, type Fixture } from '../scene/lightout';
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene, TANK_PRESETS } from '../scene/defaults';
@@ -313,7 +313,7 @@ Cancel, then change the name, to keep both.`)) return;
   const LIDS = [['lidOpen', 'open'], ['lidGlass', 'glass'], ['lidHood', 'hood']] as const;
   const BG_BTNS = [['bgBack', 'back'], ['bgLeft', 'left'], ['bgRight', 'right'], ['bgFront', 'front']] as const;
   // a hood has no room for a metal halide pendant (too hot): it becomes LED pucks
-  for (const [id, lid] of LIDS) $(id).onclick = () => store.edit(s => { s.lid = lid; if (lid === 'hood' && fixtureOf(s.light) === 'pendant') { s.light.tech = 'led-white'; fitK(s.light); } });
+  for (const [id, lid] of LIDS) $(id).onclick = () => store.edit(s => { s.lid = lid; if (lid === 'hood' && fixtureOf(s.light) === 'pendant') { s.light.tech = 'led-white'; fitK(s.light); fitFixture(s.light, s.tank, true); } });
   $<HTMLSelectElement>('bgSel').innerHTML = Object.entries(BACKGROUNDS).map(([k, b]) => `<option value="${k}">${esc(b.label)}</option>`).join('');
   $<HTMLSelectElement>('bgSel').onchange = e => store.edit(s => { s.render.bg = (e.target as HTMLSelectElement).value as TankSetup['render']['bg']; });
   for (const [id, side] of BG_BTNS)
@@ -770,7 +770,7 @@ Cancel, then change the name, to keep both.`)) return;
   // up to 12 bulbs when placed to fit the tank (no rows to multiply them), 6 otherwise
   /** A colour outside the lamp's usual range moves to its usual one (on a lamp or fixture change only; the slider goes past). */
   const fitK = (l: TankSetup['light']) => { const [a, b, d] = TECHS[techOf(l)].k; if (l.kelvin < a || l.kelvin > b) l.kelvin = d; };
-  const countMax = (l: TankSetup['light']) => (l.type === 'spot' && l.pattern === 'fit' ? 12 : 6);
+  const countMax = (l: TankSetup['light']) => FIX_SPEC[fixtureOf(l)]?.maxCount ?? (l.type === 'spot' && l.pattern === 'fit' ? 12 : 6);
   const capCount = (l: TankSetup['light']) => { l.count = Math.min(l.count, countMax(l)); };
   $<HTMLSelectElement>('lPat').onchange = e => store.edit(s => { s.light.pattern = (e.target as HTMLSelectElement).value as TankSetup['light']['pattern']; capCount(s.light); });
   // Fixture (Nathan 2026-10-15): the style sets the geometry and which lamps fit; a lamp it does not come in becomes its
@@ -780,7 +780,7 @@ Cancel, then change the name, to keep both.`)) return;
     l.type = FIXTURES[f].type;
     if (f !== 'flat' && !(l.tech && TECHS[l.tech].on.includes(f))) l.tech = techsFor(f)[0];
     if (f !== 'flat') fitK(l);
-    capCount(l);
+    capCount(l); fitFixture(l, s.tank, true); // the style's usual height, beam and power
   });
   $<HTMLSelectElement>('lBulb').replaceChildren(...MH_BULBS.map(w => new Option(`${w} W`, String(w))));
   $<HTMLSelectElement>('lBulb').onchange = e => store.edit(s => { s.light.bulbW = +(e.target as HTMLSelectElement).value; });
@@ -811,7 +811,11 @@ Cancel, then change the name, to keep both.`)) return;
       : unit === 'par' ? 'PAR at the substrate, µmol/m²/s, from the power and light type: a colour step per doubling. Below: the planted-tank light classes.'
       : 'Lux at the substrate, from the power and light type: a colour step per doubling. Water takes red first, so lux and PAR fall off at different rates.';
   };
-  $<HTMLSelectElement>('lTech').onchange = e => store.edit(s => { s.light.tech = (e.target as HTMLSelectElement).value as LightTech; fitK(s.light); });
+  // a screw-in lamp change also takes that lamp's usual power (a 50 W halogen is a 10 W LED bulb), when the power is set
+  $<HTMLSelectElement>('lTech').onchange = e => store.edit(s => {
+    const l = s.light; l.tech = (e.target as HTMLSelectElement).value as LightTech; fitK(l);
+    const pw = fixtureOf(l) === 'bulb' && (l.watts ?? 0) > 0 ? powerRange(l, s.tank) : null; if (pw) l.watts = pw[2];
+  });
   let techFor = ''; // the fixture the Lamp list was built for
 
   // ---------- Viewer (camera): saved with the scene, but not undoable ----------
@@ -1277,6 +1281,9 @@ Cancel, then change the name, to keep both.`)) return;
 
     const l = s.light, fx = fixtureOf(l); setVal('lType', fx);
     ($('lType') as HTMLSelectElement).querySelector<HTMLOptionElement>('option[value=pendant]')!.disabled = s.lid === 'hood'; ($('lCount') as HTMLInputElement).max = String(countMax(l));
+    // the fixture's usual ranges on the sliders (lightout FIX_SPEC); set before the values so they are not clipped
+    { const sp = FIX_SPEC[fx], pw = powerRange(l, s.tank), lim = (id: string, lo: number, hi: number) => Object.assign($(id) as HTMLInputElement, { min: String(lo), max: String(hi) });
+      lim('lH', Math.max(sp?.h[0] ?? 20, 20), sp?.h[1] ?? 900); lim('lCone', sp?.cone?.[0] ?? 15, sp?.cone?.[1] ?? 120); lim('lW', 0, pw?.[1] ?? 400); lim('lRows', 1, sp?.maxRows ?? 4); }
     for (const [id, k] of Object.entries(lKeys)) setVal(id, l[k] ?? 0);
     // spots: the slider sets the longest row; say the total when the rows make it more (Nathan 2026-10-12: "3" showed 5)
     const total = l.type === 'spot' ? emitters(s.tank, l).length : l.count;

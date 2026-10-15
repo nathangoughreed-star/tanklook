@@ -3,7 +3,7 @@ import { fishTL, getSpecies, hasSpecies } from '../data/species';
 import { defaultSetup } from './defaults';
 import { LIBRARY, MAX_ITEMS, clampItem, starterItems } from './items';
 import { CEILING_H, CEILING_MAX, CEILING_MIN, WALL_GAP, WALL_GAP_MAX, clamp, mapToTank } from './physics';
-import { MH_BULBS, TECH_IDS } from './lightout';
+import { MH_BULBS, TECH_IDS, fitFixture } from './lightout';
 import { normTank } from './shape';
 import { TABLE_MAX, fitTable } from './table';
 import { keepInWater } from './water';
@@ -283,6 +283,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
   const te2 = setup.terrain;
   if (te2.h.length && !sameGrid(te2, setup.tank)) setup.terrain = { ...sampleTerrain(setup, setup.tank, te2.cols), on: te2.on };
   keepInWater(setup); fitTable(setup);
+  fitFixture(setup.light, setup.tank, false); // 2026-10-15: older lights clamped into their fixture's usual ranges
   return setup;
 }
 

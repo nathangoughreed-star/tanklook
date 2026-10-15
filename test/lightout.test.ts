@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { defaultScene, defaultSetup } from '../src/scene/defaults';
 import {
   KWATER, LREF, TECHS, TECH_IDS, bandsAt, beamExp, lightEnv, lightEnvCached, lightOut, lightOutCached, lineNorm, luxOf, luxPer, parOf, pointNorm, readout, renderBright,
-  fixtureOf, techOf, techsFor, tubeOf, wattsOf, type Band, type Emitter, type LightEnv, type LightScene,
+  fitFixture, fixtureOf, powerRange, techOf, techsFor, tubeOf, wattsOf, type Band, type Emitter, type LightEnv, type LightScene,
 } from '../src/scene/lightout';
 import { normTank } from '../src/scene/shape';
 import { parseScene } from '../src/scene/validate';
@@ -116,6 +116,19 @@ describe('light output model', () => {
     expect(fixtureOf({ type: 'spot', tech: 'halogen' } as LightSettings)).toBe('bulb');
     expect(fixtureOf({ type: 'spot', tech: 'cfl' } as LightSettings)).toBe('bulb');
     expect(fixtureOf({ type: 'tube', tech: 'cfl' } as LightSettings)).toBe('tube');
+  });
+  it('fixture ranges: a style change takes its usual height, beam and power; old values are clamped', () => {
+    const T = { ...defaultSetup().tank, L: 914 };
+    const p = { ...defaultSetup().light, type: 'spot', tech: 'mh', count: 6, rows: 3, height: 50, cone: 30, watts: 0 } as LightSettings;
+    fitFixture(p, T, false);
+    expect(p).toMatchObject({ height: 150, cone: 60, count: 4, rows: 2 });   // clamped
+    fitFixture(p, T, true);
+    expect(p).toMatchObject({ height: 250, cone: 90 });                      // the pendant's usual
+    const b = { ...defaultSetup().light, type: 'spot', tech: 'halogen', count: 2, rows: 1, pattern: 'grid', watts: 99 } as LightSettings;
+    expect(powerRange(b, T)).toEqual([0, 200, 100]);                          // 2 bulbs: up to 100 W each, 50 W halogen
+    fitFixture(b, T, true);
+    expect(b.watts).toBe(100);
+    expect(powerRange({ ...b, type: 'led' }, T)![2]).toBe(36);              // LED bar: 1 W per inch of tank
   });
   it('tubes: the longest standard length that fits, power from the tubes', () => {
     const l = { type: 'tube', tech: 't5-refl', count: 2 } as LightSettings;

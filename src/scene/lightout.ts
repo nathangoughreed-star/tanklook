@@ -198,6 +198,45 @@ export function wattsOf(S: { tank: Tank; light: LightSettings }): number {
   if (f === 'pendant') return (l.bulbW ?? 150) * emitters(S.tank, l).length;
   return l.watts ?? 0;
 }
+
+/**
+ * What each fixture style is usually like (Nathan 2026-10-15), [low, high, default]: hanging height above the tank (mm;
+ * a hood fixes it), beam angle (°; spots only), power per bulb or puck (W; per inch of tank for an LED bar), and the
+ * most bulbs. A fixture change sets the defaults; older files are clamped into the ranges on load. Pendants hang well
+ * clear of the water (heat, spread); pucks have lenses; a screw-in bulb is a wide bare lamp or a narrow halogen spot.
+ */
+type Range = readonly [number, number, number];
+export const FIX_SPEC: Partial<Record<Fixture, { h: Range; cone?: Range; perW?: Range; maxCount?: number; maxRows?: number }>> = {
+  puck: { h: [20, 600, 150], cone: [30, 120, 90], perW: [10, 200, 40] },
+  bulb: { h: [10, 400, 50], cone: [10, 120, 90], perW: [5, 100, 15] },
+  pendant: { h: [150, 600, 250], cone: [60, 120, 90], maxCount: 4, maxRows: 2 },
+  tube: { h: [0, 300, 20] },
+  led: { h: [0, 600, 50], perW: [0.3, 3, 1] },
+};
+/** A screw-in bulb's usual power by lamp (W): a 50 W halogen, a 15 W CFL, a 10 W LED bulb. */
+const BULB_W: Partial<Record<LightTech, number>> = { halogen: 50, cfl: 15, 'led-bulb': 10 };
+/** The Total Power slider's range for a fixture that takes it, [0, high, default] (W); null = set by the lamps or no light. */
+export function powerRange(l: LightSettings, T: Tank): Range | null {
+  const f = fixtureOf(l), p = FIX_SPEC[f]?.perW;
+  if (!p) return null;
+  const units = f === 'led' ? T.L / 25.4 : emitters(T, l).length, def = f === 'bulb' ? BULB_W[techOf(l)] ?? p[2] : p[2];
+  return [0, Math.max(10, Math.ceil(units * p[1] / 10) * 10), Math.round(units * def)];
+}
+/**
+ * Keep the light within its fixture's ranges. `fresh` (the fixture or lamp was just changed): its usual height, beam and
+ * power too; otherwise only clamped (old files, a hood). The count and rows are capped for pendants.
+ */
+export function fitFixture(l: LightSettings, T: Tank, fresh: boolean) {
+  const sp = FIX_SPEC[fixtureOf(l)];
+  if (!sp) return;
+  const fit = (v: number, r: Range) => clamp(v, r[0], r[1]);
+  l.height = fresh ? sp.h[2] : fit(l.height, sp.h);
+  if (sp.cone) l.cone = fresh ? sp.cone[2] : fit(l.cone, sp.cone);
+  if (sp.maxCount) l.count = Math.min(l.count, sp.maxCount);
+  if (sp.maxRows) l.rows = Math.min(l.rows, sp.maxRows);
+  const pw = powerRange(l, T);
+  if (fresh && pw && (l.watts ?? 0) > 0) l.watts = pw[2];
+}
 /** Lux per µmol/m²/s of a tech's light in air. */
 export const luxPer = (t: LightTech) => TECHS[t].split.reduce((a, s, i) => a + s * LUXW[i], 0);
 export const parOf = (b: Band) => b[0] + b[1] + b[2];
