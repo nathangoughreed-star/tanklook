@@ -220,6 +220,10 @@ hold many stems / crowns) has its own growth. Later: a global timeline that grow
       noise: 10..37 ms gaps either way).
     - The GPU draws full-growth triangles at any growth (dense tank at Time 12 %: 1.4 M drawn, 0.67 M showing); draw
       time stayed 5..7 ms.
+  - Lane E2 fixes folded in (coordinator 2026-10-15): #2 a carpet's ground cache key now carries the ground
+    (`groundKey`: custom terrain grid and heights, else substrate corners + swamp seed; plus T.H), so a terrain or
+    substrate edit re-grounds it (test/carpetground.test.ts; fails with the old key). #10 a lid-capped plant's height is
+    capped to whole mm, so dragging it up or down reuses its build until the room changes by a mm (<= 1 mm change).
   - Open: the single plant Growth slider still builds a moved plant (pushed in from the glass) on the main thread (only
     the Time drag waits for the worker); prebuilt full growths roughly double plant geometry memory once built.
 

@@ -458,6 +458,13 @@ function bakedShape(it: Item) {
   return remember(baked, k, g, 400, dispose);
 }
 
+/** What the ground's shape depends on (terrain.ts groundHeight): custom terrain, else the substrate's corner depths and a
+ *  swamp layout's land. */
+function groundKey(S: TankSetup) {
+  const t = S.terrain, b = S.substrate;
+  if (t?.on && t.h.length) return `t${t.cols},${t.rows},${t.radial ? 'r' : ''}${t.arc ?? ''},${t.h.join(',')}`;
+  return `s${b.show ? [b.fl, b.fr, b.bl, b.br].join(',') : '-'}${S.layout.id === 'swamp' ? `|w${S.layout.seed}` : ''}`;
+}
 /**
  * How a plant item is built (itemMesh, and the idle prebuild, which must land on the same cache keys): its height `h`,
  * cache keys, plantGeometry's arguments, and how it lies over (`bend`: water over its base F, ceiling C). `more` = with
@@ -471,13 +478,16 @@ function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
   // a 3D plant is built at full growth from its saved size (`h`: as before growth, capped under the lid) and shown at
   // its growth; the crossed-card fallback is drawn at the grown size
   const solid = has3DPlant(type), g0 = growthOf(type, it.size), gr = it.growth ?? g0;
-  const cap = (s: number) => carpet || float ? s : Math.min(s, T.H - y - 15); // stops at the lid (the old layouts' rule)
+  // stops at the lid (the old layouts' rule), to whole mm: a capped plant dragged up or down reuses its build until the
+  // room under the lid changes by a mm (lane E2 #10: it rebuilt on every move)
+  const cap = (s: number) => carpet || float ? s : Math.min(s, Math.floor(T.H - y - 15));
   const h = solid ? cap(it.size) : cap(grownSize(type, it.size, it.growth));
   if (h < 15) return null;
   const c = Math.cos(it.yaw * D2R), s = Math.sin(it.yaw * D2R);
   // a carpet hugs the ground under each card: its key carries the spot (rebuilt only while it moves); the rest key on
   // the exact height they are built with (a rounded one let two near-equal plants share the first one's mesh)
-  const k = carpet ? `${type}|${it.seed}|${it.size}|${h}|${it.x}|${it.depth}|${it.yaw}|${it.lift}|${T.shape}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}` : `${type}|${it.seed}|${it.size}|${h}|${it.spread ?? ''}|${it.stems ?? ''}`;
+  // (a carpet's ground: everything groundHeight reads, lane E2 #2: a terrain or substrate edit left it on the old ground)
+  const k = carpet ? `${type}|${it.seed}|${it.size}|${h}|${it.x}|${it.depth}|${it.yaw}|${it.lift}|${T.shape}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}|${groundKey(S)}` : `${type}|${it.seed}|${it.size}|${h}|${it.spread ?? ''}|${it.stems ?? ''}`;
   // near the glass a card is cut down to the width it has room for, so the carpet runs right up to the glass without
   // poking through; a card past the edge line is mirrored back in by as much (keeping the edge thick), and one more
   // than half a card past it is left out
