@@ -4,7 +4,8 @@
 // stalked eyes, antennules and long antennae; five pairs of jointed walking legs under the carapace (the first two
 // small, carried forward), five pairs of small biramous swimmerets under the abdomen; and a flat tail fan (telson and
 // two uropods each side) spread horizontally. Species data and paint: art/shrimps.ts. Unit frame as a fish card:
-// width 1, x = u - 0.5 (head at +x, the rostrum tip at x = 0.5), y up, z to the side; the legs stand on y = -REST.
+// width 1, x = u - 0.5 (head at +x, the rostrum tip at x = 0.5), y up, z to the side; the legs stand on y = -REST,
+// the body carried s.stand above its default ride height (the legs reach down the extra).
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { SHRIMP3D, type Shrimp3D } from '../art/shrimps';
@@ -169,7 +170,7 @@ function jointed(pts: THREE.Vector3[], r: number[]) {
 
 /** The + side's legs and swimmerets (one geometry; the far side is the mirror). */
 function legGeometry(s: Shrimp3D) {
-  const sp = spine(s), G = -REST, L = s.legL, parts: THREE.BufferGeometry[] = [];
+  const sp = spine(s), G = -REST - s.stand, L = s.legL, parts: THREE.BufferGeometry[] = [];
   // five pairs of walking legs (pereiopods) under the carapace, front to rear
   [0.3, 0.24, 0.18, 0.12, 0.065].forEach((t, i) => {
     const f = sp.at(t), y0 = f.c.y - HV * s.deep * 0.75, x0 = f.c.x, b = V(x0, y0, 0.02);
@@ -280,6 +281,7 @@ export function shrimpBody(art: string, w: number) {
     const st = new THREE.Mesh(stalk, lm); st.scale.z = side; grp.add(st);
     const e = new THREE.Mesh(ball, em); e.scale.set(eyeR * 1.1, eyeR, eyeR); e.position.copy(f.c).add(V(0.009, 0.028, side * (0.038 + eyeR * 0.55))); grp.add(e);
   }
+  for (const o of grp.children) o.position.y += s.stand; // body up on its legs; the feet (at -REST - stand) land on -REST
   grp.scale.setScalar(w);
   return grp;
 }
