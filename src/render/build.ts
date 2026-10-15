@@ -119,15 +119,25 @@ const glassLine = () => new THREE.LineBasicMaterial({ color: 0x000000, transpare
  * at right angles to the view). About 2 px wide at any zoom (n.v squared grows about linearly away from the edge, so
  * its screen derivative sets the width), and never thinner than the facets' own slack at the mesh's edge.
  */
-function silhouetteMaterial(centre: THREE.Vector3) {
+function silhouetteMaterial(centre?: THREE.Vector3) {
+  // no centre: the geometry's own (smooth) normals, as on a curved pane
   return new THREE.ShaderMaterial({
-    uniforms: { centre: { value: centre } },
+    uniforms: { centre: { value: centre ?? new THREE.Vector3() } },
+    defines: centre ? {} : { USE_NORMALS: '' },
     transparent: true, depthWrite: false,
-    vertexShader: `varying vec3 vW; varying vec3 vC; uniform vec3 centre;
-      void main() { vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; vC = (modelMatrix * vec4(centre, 1.0)).xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
-    fragmentShader: `varying vec3 vW; varying vec3 vC;
+    vertexShader: `varying vec3 vW; varying vec3 vN; uniform vec3 centre;
       void main() {
-        float d = abs(dot(normalize(vW - vC), normalize(cameraPosition - vW))), s = d * d, w = fwidth(s);
+        vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz;
+        #ifdef USE_NORMALS
+        vN = mat3(modelMatrix) * normal;
+        #else
+        vN = w.xyz - (modelMatrix * vec4(centre, 1.0)).xyz;
+        #endif
+        gl_Position = projectionMatrix * viewMatrix * w;
+      }`,
+    fragmentShader: `varying vec3 vW; varying vec3 vN;
+      void main() {
+        float d = abs(dot(normalize(vN), normalize(cameraPosition - vW))), s = d * d, w = fwidth(s);
         float a = max(1.0 - smoothstep(1.2 * w, 2.4 * w, s), 1.0 - smoothstep(0.045, 0.06, d));
         if (a < 0.01) discard;
         gl_FragColor = vec4(0.0, 0.0, 0.0, 0.55 * a);
@@ -258,6 +268,23 @@ function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
     fp.walls.forEach((w, i) => {
       const front = fp.edges.some(e => e.wall === i && e.n[1] < -0.5);
       add(wallGeometry(w.pts, outer[i], 0, H, fp.walls.length === 1), front ? 6 : 5);
+      // a curved shell has no edge where it turns away from the view, so its silhouette is drawn there (as on a bowl):
+      // the outer face again, with smooth normals across the polyline (Nathan 2026-10-15: the bow's end read as empty space)
+      if (R.edges && w.curved) {
+        const o = outer[i], n = o.length, pos: number[] = [], nor: number[] = [];
+        const nrm = (k: number) => { // horizontal normal at point k, from its neighbours (floor-plan d maps to world -z)
+          const a = o[Math.max(0, k - 1)], b = o[Math.min(n - 1, k + 1)], tx = b[0] - a[0], td = b[1] - a[1], l = Math.hypot(tx, td) || 1;
+          return [td / l, 0, tx / l];
+        };
+        for (let k = 0; k < n - 1; k++) {
+          const v = [at(o[k], 0), at(o[k + 1], 0), at(o[k + 1], H), at(o[k], 0), at(o[k + 1], H), at(o[k], H)];
+          const m = [nrm(k), nrm(k + 1), nrm(k + 1), nrm(k), nrm(k + 1), nrm(k)];
+          v.forEach((p, j) => { pos.push(...p); nor.push(...m[j]); });
+        }
+        const g = new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)).setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
+        const sm = silhouetteMaterial(); sm.side = THREE.DoubleSide;
+        const mesh = new THREE.Mesh(g, sm); mesh.renderOrder = 7; sc.add(mesh);
+      }
     });
     // interior outline: top and bottom loops, and the vertical corners where panes meet
     const box: number[] = [...ringLines(fp.ring, 0), ...ringLines(fp.ring, H)];
