@@ -134,6 +134,7 @@ export function tankDiff(a: TankSetup, b: TankSetup, u: Units): DiffItem[] {
     }
     if (a.light.type !== 'flat' && a.lid !== 'hood' && b.lid !== 'hood') add(a.light.height, b.light.height, h => `Light ${len(h)} up`, ['light.height']);
     if (a.light.type !== 'flat' && a.lid !== 'hood' && b.lid !== 'hood') add(mountOf(a.light), mountOf(b.light), m => m === 'legs' ? 'Light on legs' : 'Light hung from the ceiling', ['light.mount']);
+    if ((a.light.type === 'tube' || a.light.type === 'led') && a.lid !== 'hood' && b.lid !== 'hood') add(a.light.pos ?? 0, b.light.pos ?? 0, v => (v ? `Light ${len(Math.abs(v))} ${v > 0 ? 'back' : 'forward'}` : 'Light centred front to back'), ['light.pos']);
     if (a.light.type !== 'flat') { // light output (lane K)
       const wa = wattsOf(a), wb = wattsOf(b);
       add(wa, wb, w => (w ? `${w} W light` : 'Light power not set'), ['light.watts', 'light.bulbW', 'light.count']);

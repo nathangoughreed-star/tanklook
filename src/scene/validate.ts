@@ -224,6 +224,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       ...(l.bulbW != null ? { bulbW: (MH_BULBS as readonly number[]).includes(Number(l.bulbW)) ? Number(l.bulbW) : 150 } : {}),
       ...(l.par != null ? { par: Math.round(num(l.par, 0, ...LIMITS.par)) } : {}),
       ...(l.mount === 'legs' || l.mount === 'hang' ? { mount: l.mount } : {}),
+      ...(l.pos != null && Number(l.pos) !== 0 ? { pos: Math.round(num(l.pos, 0, -1500, 1500)) } : {}),
       ...(l.mapUnit === 'par' || l.mapUnit === 'lux' ? { mapUnit: l.mapUnit } : {}),
       ...(l.mapStep != null ? { mapStep: Math.round(num(l.mapStep, 10, 5, 100) / 5) * 5 } : {}),
       ...(l.mapShells === true ? { mapShells: true } : {}),
