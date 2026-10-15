@@ -290,7 +290,10 @@ export interface BackdropSettings { kind: BackdropKind; depth: number; seed: num
  *  `time` (0 = as planted .. 1 = everything overgrown in a low-tech tank) is where the tank's growth Time slider stands.
  *  Older files: low-tech, Time 0. */
 export type GrowFeed = 'low' | 'ferts' | 'co2';
-export interface GrowSettings { feed: GrowFeed; time: number }
+/** Where Time 0 stands (2026-10-15): 'rel' = the tank as it is now, 'abs' = every plant just planted (a baby). A Time
+ *  move is a preview kept or undone when it ends; `time` stays where it was kept in 'abs' (the tank's age), 0 in 'rel'. */
+export type GrowMode = 'rel' | 'abs';
+export interface GrowSettings { feed: GrowFeed; time: number; mode: GrowMode }
 
 /** How clean the tank looks (lane AL, 2026-10-15), display only: 0 = pristine .. 1 = neglected (algae on the glass,
  *  hardscape and substrate). One slider. Older files: pristine. */

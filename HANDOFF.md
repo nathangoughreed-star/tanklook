@@ -436,6 +436,15 @@ hold many stems / crowns) has its own growth. Later: a global timeline that grow
     catches a dense tank up over frames: one first build per frame, as many others as keep frames near 40 ms,
     longest-waiting first. First growth per plant measured 200..350 ms on the busy machine (GR1: 65..170), so the first
     Time move on a dense tank takes seconds to catch up; later moves catch up within ~0.7 s of release.
+  - **Time = a preview, two modes (2026-10-15, Nathan: "one relative ... where zero is now, the other absolute where
+    zero is every plant freshly planted ... ask if you want to keep these changes"):** `GrowSettings.mode` 'rel' | 'abs'
+    (Plants panel "Grow from: Now / Planting"; older files 'rel'). A drag opens a preview: `beginGrow` (rel: Time 0 = the
+    tank as it is; abs: every plant's planted = 0, a baby), then the usual setGrowTime steps; once the plants have grown
+    the panel shows "Keep these changes? Keep / Undo". Keep = `endGrow` + `store.squash(mark)` (the whole preview is one
+    undo step; rel Time goes back to 0, abs keeps Time as the tank's age); Undo = `store.rollback(mark)` (no history
+    trace). Any other edit during the preview keeps it as it stands; an undo / load drops it. A plant's own Growth slider
+    no longer keeps a planted growth. Feeding change: regrows an open preview, else just the setting.
+    Note for testing: the browser pane hidden = no rAF, so growStep stalls; shim rAF with setTimeout.
   - Sheets (worktree `shots/`, not in git): `142_time_sheet.png` (Planted community at Time 0 / 15 / 40 %),
     `143_controls.png`, `144_controls_375.png`, `146_proxy_sheet.png` (stretch-preview mock, rejected).
   - Not done: shaded plants growing slower from the light map (optional, not asked yet).

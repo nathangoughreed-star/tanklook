@@ -35,8 +35,8 @@ import { tankWeight } from '../scene/weight';
 import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, aqWaitS, fetchAqHealth, fetchStocking, type AqHealth } from '../data/aqadvisor';
 import { BOWL_DEFAULT, BOWL_MAX, BOWL_MIN, PIE_DEFAULT, POLY_SIDES, SHAPES, bowMinLimit, offsetRing, ringArea, shapeOf } from '../scene/shape';
 import { TABLE_MAX, tableOn, tableRange, wallGap } from '../scene/table';
-import type { BgFit, BgSide, CompId, Fish, GrowFeed, Item, ItemKind, LayoutId, LightTech, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
-import { FEED_NAMES, setGrowTime, setPlantGrowth, timeChanges } from '../scene/growtime';
+import type { BgFit, BgSide, CompId, Fish, GrowFeed, GrowMode, Item, ItemKind, LayoutId, LightTech, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
+import { FEED_NAMES, beginGrow, endGrow, setGrowTime, setPlantGrowth, timeChanges } from '../scene/growtime';
 import { GLASS_CHOICES, LIMITS, SceneError, parseScene } from '../scene/validate';
 import { deleteFromLib, listLib, loadFromLib, saveToLib } from '../scene/library';
 import { EXAMPLES, exampleScenes } from '../examples';
@@ -1113,14 +1113,19 @@ Cancel, then change the name, to keep both.`)) return;
   // geometry (the plant material's shader reveals it, lane GR4); a plant's first growth needs its full growth built (and
   // lain over at the water, or a carpet set on the ground, at its place), which the worker does ahead of time
   // (prebuildPlants), so a plant not built yet waits for it while the rest move (without a worker: one such plant built
-  // per frame). The whole move is one undo step.
+  // per frame). A move is a preview from Time 0 = now or = planting (Grow from); when it ends the panel asks whether to
+  // keep it (one undo step) or undo it. Any other edit meanwhile keeps it as it stands.
   let growGoal: { t: number; feed: GrowFeed } | null = null, growRaf = 0, growHeld = false, growLeft = 0;
+  let growSess: { mark: number } | null = null, growOwn = false;
+  const growEdit = (fn: (s: TankSetup) => void, opts: { coalesce?: string; history?: boolean } = { coalesce: 'growTime' }) => {
+    growOwn = true; try { store.edit(fn, opts); } finally { growOwn = false; }
+  };
   const growWaits = new Map<number, number>();
   const growStep = () => {
     growRaf = 0; if (!growGoal) return;
     const { t, feed } = growGoal, worker = canPrebuild();
     let left = 0;
-    store.edit(s => {
+    growEdit(s => {
       // where each plant will be at its new growth (a grown clump near the glass is pushed in, onto other ground): not
       // built there yet = it waits for the worker, built first. At most one plant a frame is built here: without a
       // worker, or one that has waited 20 frames (the worker never holds a plant back for good)
@@ -1138,9 +1143,9 @@ Cancel, then change the name, to keep both.`)) return;
       left += setGrowTime(s, t, feed, c => !wait.has(c.id)).length;
       if (next.length) prebuildPlants(s, { S: s, items: next });
       growLeft = left; // (the hint reads it as the edit lands)
-    }, { coalesce: 'growTime' });
+    });
     if (left) growRaf = requestAnimationFrame(growStep);
-    else { growGoal = null; growLeft = 0; if (!growHeld) store.seal(); }
+    else { growGoal = null; growLeft = 0; sync(false); } // (the panel shows the keep question)
   };
   // build every plant's full growth ahead (in a worker): after a tank loads, and while the Plants panel is open
   const plantsSec = secs.find(d => d.dataset.sec === 'plants');
@@ -1150,11 +1155,33 @@ Cancel, then change the name, to keep both.`)) return;
   store.subscribe(kind => { if (kind === 'load' || (kind !== 'select' && plantsSec?.open)) warmSoon(); });
   plantsSec?.addEventListener('toggle', () => { if (plantsSec.open) warmSoon(); });
   warmSoon();
-  const growTo = (t: number, feed: GrowFeed) => { growGoal = { t, feed }; if (!growRaf) growStep(); };
+  const growTo = (t: number, feed: GrowFeed) => {
+    if (!growSess) { store.seal(); growSess = { mark: store.mark }; growEdit(s => beginGrow(s)); }
+    growGoal = { t, feed }; if (!growRaf) growStep();
+  };
+  const growStop = () => { cancelAnimationFrame(growRaf); growRaf = 0; growGoal = null; growLeft = 0; growWaits.clear(); growSess = null; };
+  const growKeep = () => {
+    const sess = growSess; if (!sess) return;
+    growStop(); growEdit(s => endGrow(s), { history: false }); store.squash(sess.mark);
+  };
+  const growUndo = () => { const sess = growSess; if (!sess) return; growStop(); store.rollback(sess.mark); };
+  store.subscribe(kind => { if (growSess && !growOwn && (kind === 'scene' || kind === 'load')) { if (kind === 'load') growStop(); else growKeep(); } });
+  $('growKeep').onclick = growKeep;
+  $('growUndo').onclick = growUndo;
   $<HTMLSelectElement>('growFeed').innerHTML = Object.entries(FEED_NAMES).map(([k, l]) => `<option value="${k}">${esc(l)}</option>`).join('');
-  $<HTMLSelectElement>('growFeed').onchange = e => { store.seal(); growTo(store.tank.grow.time, (e.target as HTMLSelectElement).value as GrowFeed); };
+  $<HTMLSelectElement>('growFeed').onchange = e => {
+    const feed = (e.target as HTMLSelectElement).value as GrowFeed;
+    if (growSess) growTo(growGoal?.t ?? store.tank.grow.time, feed); // the preview regrows at the new speed
+    else { store.seal(); growEdit(s => { s.grow.feed = feed; }, {}); }
+  };
+  $<HTMLSelectElement>('growMode').onchange = e => {
+    const mode = (e.target as HTMLSelectElement).value as GrowMode, t = growGoal?.t ?? (growSess ? store.tank.grow.time : 0), feed = growGoal?.feed ?? store.tank.grow.feed;
+    if (growSess) { const { mark } = growSess; growStop(); store.rollback(mark); } // a preview starts over from the new Time 0
+    store.seal(); growEdit(s => { s.grow.mode = mode; s.grow.time = 0; }, {});
+    if (t > 0) growTo(t, feed); else store.seal();
+  };
   $('growTime').oninput = e => { growHeld = true; growTo(+(e.target as HTMLInputElement).value / 100, growGoal?.feed ?? store.tank.grow.feed); };
-  $('growTime').onchange = () => { growHeld = false; if (!growGoal) store.seal(); };
+  $('growTime').onchange = () => { growHeld = false; sync(false); };
   // a floater's spread is the patch fully grown: one not grown yet is shown fully grown once it has one, so the patch
   // covers what the slider says
   const fullFloat = (it: Item, s: TankSetup) => { if (isFloat(it.variant) && it.growth == null) setPlantGrowth(it, 1, s); };
@@ -1398,6 +1425,16 @@ Cancel, then change the name, to keep both.`)) return;
   /** Pull every control back from the scene. `full` = false (the store listener): only the groups whose inputs changed,
    *  so a drag step, which moves one fish or item or turns the camera, leaves the rest alone (lane J2: 6-7 ms per step on
    *  a big tank). The panel's own handlers call it full, e.g. to put back a typed value that was refused. */
+  // growth Time (every sync: a growth step changes no tank setting): while a move is still growing plants, the slider
+  // shows where it is going; once it has, the panel asks whether to keep it
+  function syncGrow(s: TankSetup) {
+    // (at rest: 0 from now, the tank's age from planting)
+    const t = growGoal?.t ?? (growSess || s.grow.mode === 'abs' ? s.grow.time : 0), plants = s.items.filter(it => it.kind === 'plant'), over = plants.filter(it => (it.growth ?? 0) >= 1).length;
+    setVal('growFeed', growGoal?.feed ?? s.grow.feed); setVal('growMode', s.grow.mode); setVal('growTime', Math.round(t * 100));
+    setOut('oGrowTime', `${Math.round(t * 100)} %`);
+    $('growHint').textContent = !plants.length ? '' : growLeft ? `Growing: ${growLeft} plant${growLeft > 1 ? 's' : ''} to go` : t === 0 ? (s.grow.mode === 'rel' ? 'Time 0: the tank as it is now' : growSess ? 'Time 0: every plant just planted' : 'Move Time: every plant starts again just planted') : `${over} of ${plants.length} plants overgrown`;
+    $('growAsk').hidden = !growSess || growHeld || !!growGoal;
+  }
   function sync(full = true) {
     const s = S(), A = s.tank, u = G().units;
     $<HTMLButtonElement>('undo').disabled = !store.canUndo; $<HTMLButtonElement>('redo').disabled = !store.canRedo;
@@ -1407,6 +1444,7 @@ Cancel, then change the name, to keep both.`)) return;
       JSON.stringify(it0 && { ...it0, x: 0, depth: 0 }), // the item box shows no position
     ];
     const [env, fishSet, itemSet, cam, item] = keys.map((k, i) => full || k !== syncKeys[i]); syncKeys = keys;
+    syncGrow(s);
     if (env) {
     setVal('sceneName', G().name);
     $('uIn').classList.toggle('on', u === 'in'); $('uCm').classList.toggle('on', u === 'cm');
@@ -1566,12 +1604,6 @@ Cancel, then change the name, to keep both.`)) return;
     for (const id of ['wReef', 'wOcean']) $(id).style.display = wa.salt ? '' : 'none';
     document.querySelectorAll<HTMLElement>('.lib [data-salt], #layout option[value="reef"]').forEach(e => e.style.display = isSalt(s) ? '' : 'none');
     $('plantsTitle').textContent = isSalt(s) ? 'Plants & Corals' : 'Plants';
-    { // growth Time: while a move is still growing plants, the slider shows where it is going
-      const t = growGoal?.t ?? s.grow.time, plants = s.items.filter(it => it.kind === 'plant'), over = plants.filter(it => (it.growth ?? 0) >= 1).length;
-      setVal('growFeed', growGoal?.feed ?? s.grow.feed); setVal('growTime', Math.round(t * 100));
-      setOut('oGrowTime', `${Math.round(t * 100)} %`);
-      $('growHint').textContent = !plants.length ? '' : growLeft ? `Growing: ${growLeft} plant${growLeft > 1 ? 's' : ''} to go` : t === 0 ? 'Time 0: as planted' : `${over} of ${plants.length} plants overgrown`;
-    }
     const mis = misfits(s);
     $('wMisfitRow').style.display = mis.length ? '' : 'none';
     if (mis.length) {

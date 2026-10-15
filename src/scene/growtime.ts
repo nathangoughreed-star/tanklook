@@ -2,8 +2,10 @@
 // runs 0 = as planted .. 1 = everything overgrown in a low-tech tank, each species grows at its speed (slow / medium /
 // fast, PLANT3D[].grow.speed) and the tank's feeding scales that. Moving Time writes each plant's growth (so the
 // renderer's cheap reveal path draws it) and keeps the growth it had at Time 0 in `planted`, so Time runs both ways.
+// A move is a preview (2026-10-15, Nathan): beginGrow sets Time 0 to the tank as it is ('rel') or to every plant just
+// planted ('abs'), and endGrow keeps where it ended (the panel asks; undone = the store rolls back).
 import { PLANT3D, growthOf, type PlantType } from '../art/plants';
-import type { GrowFeed, Item, TankSetup } from './types';
+import type { GrowFeed, GrowMode, Item, TankSetup } from './types';
 
 type Speed = 'slow' | 'medium' | 'fast';
 
@@ -72,9 +74,21 @@ export function setGrowTime(s: TankSetup, t: number, feed: GrowFeed = s.grow.fee
   return waiting;
 }
 
-/** A plant's own Growth slider while Time stands at `t`: it shows `g` now, so its planted growth moves with it. */
-export function setPlantGrowth(it: Item, g: number, s: TankSetup) {
+/** Start a Time preview: Time 0 = the tank as it is now ('rel') or every plant just planted ('abs'). */
+export function beginGrow(s: TankSetup, mode: GrowMode = s.grow.mode) {
+  s.grow.mode = mode; s.grow.time = 0;
+  for (const it of s.items) if (it.kind === 'plant') { if (mode === 'abs') it.planted = 0; else delete it.planted; }
+}
+
+/** Keep a Time preview: each plant keeps the growth it shows. Time stays as the tank's age from planting ('abs'), or
+ *  goes back to 0 ('rel': the tank as it is now is where the next move starts). */
+export function endGrow(s: TankSetup) {
+  for (const it of s.items) if (it.kind === 'plant') delete it.planted;
+  if (s.grow.mode === 'rel') s.grow.time = 0;
+}
+
+/** A plant's own Growth slider: it shows `g` now (no preview to keep its place in). */
+export function setPlantGrowth(it: Item, g: number, _s?: TankSetup) {
   it.growth = r3(clamp01(g));
-  if (s.grow.time > 0) it.planted = r3(Math.max(-GROW_RATE_MAX, it.growth - s.grow.time * growRate(it.variant, s.grow.feed)));
-  else delete it.planted;
+  delete it.planted;
 }

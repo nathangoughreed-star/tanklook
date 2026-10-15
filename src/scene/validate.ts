@@ -284,6 +284,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
     },
     grow: { // added 2026-10-15 (lane GR3); older files: low-tech, Time 0
       feed: pick(gw.feed, ['low', 'ferts', 'co2'] as const, 'low'), time: Math.round(num(gw.time, 0, 0, 1) * 1000) / 1000,
+      mode: pick(gw.mode, ['rel', 'abs'] as const, 'rel'), // added 2026-10-15; older files: from now
     },
     condition: { level: Math.round(num(cd.level, 0, 0, 1) * 1000) / 1000 }, // added 2026-10-15 (lane AL); older files: pristine
     person: {

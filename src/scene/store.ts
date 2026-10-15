@@ -184,9 +184,22 @@ export class Store {
   get canRedo() { return this.redoStack.length > 0; }
   undo() { this.step(this.undoStack, this.redoStack); }
   redo() { this.step(this.redoStack, this.undoStack); }
+  /** The undo depth now, for squash / rollback: a preview (the growth Time slider) that is kept or undone as a whole. */
+  get mark() { return this.undoStack.length; }
+  /** Every step since `mark` becomes one undo step (the preview kept). */
+  squash(mark: number) { if (this.undoStack.length > mark + 1) this.undoStack.length = mark + 1; this.seal(); }
+  /** Back to the scene at `mark`, the steps since dropped from history (the preview undone). */
+  rollback(mark: number) {
+    if (this.undoStack.length <= mark) return;
+    const snap = this.undoStack[mark]; this.undoStack.length = mark;
+    this.restore(snap);
+  }
   private step(from: string[], to: string[]) {
     const snap = from.pop(); if (!snap) return;
     to.push(JSON.stringify(this.scene));
+    this.restore(snap);
+  }
+  private restore(snap: string) {
     const cams = this.scene.tanks.map(t => t.camera), lock = this.scene.camLock; // the view is not part of history
     this.scene = JSON.parse(snap) as Scene;
     this.scene.tanks.forEach((t, i) => { if (cams[i]) t.camera = cams[i]; });

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { growthOf } from '../src/art/plants';
 import { defaultScene } from '../src/scene/defaults';
 import { makeItem } from '../src/scene/items';
-import { GROW_RATE, growRate, setGrowTime, setPlantGrowth, speedOf, timeChanges } from '../src/scene/growtime';
+import { GROW_RATE, beginGrow, endGrow, growRate, setGrowTime, setPlantGrowth, speedOf, timeChanges } from '../src/scene/growtime';
 import { Store } from '../src/scene/store';
 import { parseScene } from '../src/scene/validate';
 import type { Item, TankSetup } from '../src/scene/types';
@@ -119,17 +119,17 @@ describe('growth timeline', () => {
     s.items[0].growth = 0.2;
     setGrowTime(s, 0.2, 'ferts');
     const back = parseScene(JSON.parse(JSON.stringify(sc))).scene;
-    expect(back.tanks[0].grow).toEqual({ feed: 'ferts', time: 0.2 });
+    expect(back.tanks[0].grow).toEqual({ feed: 'ferts', time: 0.2, mode: 'rel' });
     expect(back.tanks[0].items[0].planted).toBe(0.2);
     expect(back.tanks[0].items[0].growth).toBeCloseTo(0.2 + 0.2 * 3);
 
     const old = JSON.parse(JSON.stringify(sc));
     delete old.tanks[0].grow;
-    expect(parseScene(old).scene.tanks[0].grow).toEqual({ feed: 'low', time: 0 });
+    expect(parseScene(old).scene.tanks[0].grow).toEqual({ feed: 'low', time: 0, mode: 'rel' });
     old.tanks[0].grow = { feed: 'nitro', time: 7 };
     old.tanks[0].items[1] = { ...old.tanks[0].items[0], id: 99, variant: 'river', planted: 0.5 };
     const bad = parseScene(old).scene.tanks[0];
-    expect(bad.grow).toEqual({ feed: 'low', time: 1 });
+    expect(bad.grow).toEqual({ feed: 'low', time: 1, mode: 'rel' });
     expect(bad.items.find(it => it.id === 99)?.planted).toBeUndefined(); // only plants have one
   });
 
@@ -141,5 +141,55 @@ describe('growth timeline', () => {
     expect(store.scene.tanks[0].grow.time).toBe(0.5);
     store.undo();
     expect(JSON.stringify(store.scene)).toBe(start);
+  });
+
+  it('a preview from now grows on from the tank as it is; kept, Time is back at 0 there', () => {
+    const { s } = tank('anubias', 'rotala');
+    s.items[0].growth = 0.4; s.items[1].growth = 0.1;
+    beginGrow(s, 'rel');
+    setGrowTime(s, 0.2);
+    expect(s.items[0].growth).toBeCloseTo(0.6);
+    expect(s.items[1].growth).toBeCloseTo(0.5);
+    endGrow(s);
+    expect(s.grow.time).toBe(0);
+    expect(s.items.every(it => it.planted == null)).toBe(true);
+    beginGrow(s, 'rel'); // the next move starts from what was kept
+    setGrowTime(s, 0.1);
+    expect(s.items[0].growth).toBeCloseTo(0.7);
+  });
+
+  it('a preview from planting starts every plant as a baby; kept, Time stays as the age of the tank', () => {
+    const { s } = tank('anubias', 'rotala');
+    s.items[0].growth = 0.9; s.items[1].growth = 1;
+    beginGrow(s, 'abs');
+    setGrowTime(s, 0);
+    expect(s.items.map(it => it.growth ?? 0)).toEqual([0, 0]);
+    setGrowTime(s, 0.25);
+    expect(s.items[0].growth).toBeCloseTo(0.25);
+    expect(s.items[1].growth).toBeCloseTo(0.5);
+    endGrow(s);
+    expect(s.grow).toMatchObject({ mode: 'abs', time: 0.25 });
+    beginGrow(s); // again from planting, not from what it shows
+    setGrowTime(s, 0.1);
+    expect(s.items[0].growth).toBeCloseTo(0.1);
+  });
+
+  it('the store keeps a preview as one undo step, or rolls it back with no trace', () => {
+    const { sc } = tank('rotala', 'grass');
+    const store = new Store(sc);
+    const start = JSON.stringify(store.scene);
+    let mark = store.mark;
+    store.edit(s => beginGrow(s, 'rel'), { coalesce: 'growTime' });
+    for (const t of [0.1, 0.3]) { store.seal(); store.edit(s => { setGrowTime(s, t); }, { coalesce: 'growTime' }); }
+    store.rollback(mark);
+    expect(JSON.stringify(store.scene)).toBe(start);
+    expect(store.canUndo).toBe(false);
+    mark = store.mark;
+    for (const t of [0.1, 0.3]) { store.seal(); store.edit(s => { setGrowTime(s, t); }, { coalesce: 'growTime' }); }
+    store.edit(s => endGrow(s), { history: false }); store.squash(mark);
+    expect(store.scene.tanks[0].items[0].growth).toBeGreaterThan(0);
+    store.undo();
+    expect(JSON.stringify(store.scene)).toBe(start);
+    expect(store.canUndo).toBe(false);
   });
 });
