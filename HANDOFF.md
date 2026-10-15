@@ -1066,8 +1066,8 @@ card stays the fallback and the picking size). `scene/validate.ts` accepts any `
   plus refraction, side-glass reflection, water absorption in three colour bands. Light map gets a PAR / Lux switch
   (separate calculations, same ramp) and a hover tooltip with both values at that spot.
 - Decided (Nathan): Brightness becomes an Exposure knob when watts is set; calibration against published PAR charts
-- Decided (Nathan 2026-10-15): every light renders 1.8x brighter at a given lux (`EXPOSE` in renderBright); Exposure runs x1/4 to x16 on a stops slider (-2..+4) and the lux term caps at 5, so a user can wash the tank out ("looking at the sun"). LIMITS.bright 0.2-16; manual Brightness stays 0.2-2.5.
   approved. Runs as its own lane after G and G2 finish (touches scene/, render/lighting.ts, ui/panels.ts).
+- Decided (Nathan 2026-10-15): every light renders 1.8x brighter at a given lux (`EXPOSE` in renderBright); Exposure runs x1/4 to x16 on a stops slider (-2..+4) and the lux term caps at 5, so a user can wash the tank out ("looking at the sun"). LIMITS.bright 0.2-16; manual Brightness stays 0.2-2.5.
 - Calibration first pass done: data `reference/par-calibration-data.md`, results in the draft (LED ~±30%, fluorescent
   ~±50%; T5 fixture efficiency lower than guessed).
 - PAR guide shipped: Lighting menu button "PAR guide" opens `src/ui/parGuide.ts` (own dialog + styles): what PAR is,
