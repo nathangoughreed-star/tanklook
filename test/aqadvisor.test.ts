@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import ids from '../src/data/aqadvisor.json';
-import { aqAdvisorUrl, aqKey, aqQuery } from '../src/data/aqadvisor';
+import { aqAdvisorUrl, aqHealthOf, aqKey, aqQuery } from '../src/data/aqadvisor';
 import { SPECIES } from '../src/data/species';
 import { defaultScene } from '../src/scene/defaults';
 import { footprint, normTank, volumeBetween } from '../src/scene/shape';
@@ -128,6 +128,22 @@ describe('AqAdvisor proxy', () => {
       expect(await checkHealth(e)).toMatchObject({ up: false, why: 'unreachable' });
       const log = await (await worker.fetch(new Request('https://x/log?days=1'), e, ctx) as Response).json();
       expect(log[0].health.map((h: { up: boolean }) => h.up)).toEqual([true, false]);
+    });
+
+    it('/health reports the latest check and the breaker; the page reads up only when fresh, passing and not resting', async () => {
+      vi.spyOn(console, 'log').mockImplementation(() => {});
+      const e = env(), health = async () => (await worker.fetch(new Request('https://x/health'), e, ctx) as Response).json();
+      expect(aqHealthOf(await health())).toBe('down'); // no checks yet
+      vi.stubGlobal('fetch', vi.fn(async () => new Response(null, { status: 200 })));
+      await checkHealth(e);
+      expect(aqHealthOf(await health())).toBe('up');
+      vi.stubGlobal('fetch', vi.fn(async () => { throw new TypeError('network'); }));
+      await checkHealth(e);
+      expect(aqHealthOf(await health())).toBe('down');
+      const now = Date.now(), last = { t: now, up: true };
+      expect(aqHealthOf({ last, resting: now + 60000, now })).toBe('down');
+      expect(aqHealthOf({ last: { t: now - 16 * 60000, up: true }, resting: null, now })).toBe('down');
+      expect(aqHealthOf({ last, resting: now - 1, now })).toBe('up');
     });
 
     it('stops at the daily cap', async () => {

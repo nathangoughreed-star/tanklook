@@ -29,7 +29,7 @@ const ARROWS: Record<string, [string, number]> = { ArrowLeft: ['x', -1], ArrowRi
 import { placeNew, randomPose, randomSize, shuffleFish } from '../scene/scatter';
 import { fitFish, keepInWater, setWaterLevel } from '../scene/water';
 import { tankWeight } from '../scene/weight';
-import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, aqWaitS, fetchStocking } from '../data/aqadvisor';
+import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, aqWaitS, fetchAqHealth, fetchStocking, type AqHealth } from '../data/aqadvisor';
 import { BOWL_DEFAULT, BOWL_MAX, BOWL_MIN, PIE_DEFAULT, POLY_SIDES, SHAPES, bowMinLimit, offsetRing, ringArea, shapeOf } from '../scene/shape';
 import { TABLE_MAX, tableOn, tableRange, wallGap } from '../scene/table';
 import type { BgFit, BgSide, Fish, GrowFeed, Item, ItemKind, LayoutId, LightTech, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
@@ -1143,6 +1143,18 @@ Cancel, then change the name, to keep both.`)) return;
   /** Requests waiting their turn (one at a time, 30 s after a fresh answer): shown as "queued, ~N s", ticking. */
   const aqQueued = new Set<string>();
   let aqTick = 0;
+  /** Is aqadvisor.com up (the proxy's 5-minute check)? Check and ↻ are offered only on 'up'; otherwise the stocking line
+   *  just says AqAdvisor is down (Nathan 2026-10-15). Asked on load, every 2 minutes, and when the window regains focus. */
+  let aqUp: AqHealth = null;
+  const pollAqHealth = async () => {
+    const h = await fetchAqHealth();
+    if (h !== aqUp) { aqUp = h; syncAq(); viewer.invalidate(); }
+  };
+  if (AQ_PROXY) {
+    void pollAqHealth();
+    window.setInterval(() => { if (!document.hidden) void pollAqHealth(); }, 120000);
+    window.addEventListener('focus', () => void pollAqHealth());
+  }
   const aqWaitText = (key: string) => aqQueued.has(key) ? (aqWaitS() ? `queued, ~${aqWaitS()} s` : 'queued') : 'checking…';
   function syncAq() {
     const q = aqQuery(S());
@@ -1150,10 +1162,10 @@ Cancel, then change the name, to keep both.`)) return;
     if (!q) { $('aqNote').textContent = isSalt(S()) && S().fish.length ? 'No stocking check for saltwater tanks yet.' : ''; return; }
     const key = aqKey(q), got = aqDone.get(key), busy = aqBusy.has(key);
     $<HTMLAnchorElement>('aqLink').href = aqAdvisorUrl(q);
-    $('aqCheck').style.display = AQ_PROXY && got === undefined ? '' : 'none';
+    $('aqCheck').style.display = AQ_PROXY && got === undefined && aqUp === 'up' ? '' : 'none';
     $<HTMLButtonElement>('aqCheck').disabled = busy;
     $('aqOut').textContent = got !== undefined ? `${got}% (per AqAdvisor)${got > 100 ? ', overstocked' : ''}`
-      : busy ? aqWaitText(key) : aqErr.get(key) ?? '';
+      : busy ? aqWaitText(key) : AQ_PROXY && aqUp === 'down' ? 'AqAdvisor is down' : aqErr.get(key) ?? '';
     $('aqOut').className = got !== undefined && got > 100 ? 'bad' : '';
     $('aqNote').textContent = q.skipped.length ? `Not counted (land animals): ${q.skipped.map(k => `${k.count} ${k.name}`).join(', ')}.` : '';
   }
@@ -1168,7 +1180,7 @@ Cancel, then change the name, to keep both.`)) return;
     const key = aqKey(q);
     const keep = () => { for (const v of viewer.active) { const vq = aqQuery(v.S); if (vq && aqKey(vq) === key) aqLast.set(v.key, aqDone.get(key)!); } };
     if (aqDone.has(key)) { keep(); viewer.invalidate(); return; }
-    if (aqBusy.has(key)) return;
+    if (aqBusy.has(key) || aqUp !== 'up') return;
     aqBusy.add(key); aqQueued.add(key); aqErr.delete(key); syncAq(); viewer.invalidate();
     if (!aqTick) aqTick = window.setInterval(() => {
       syncAq(); viewer.invalidate();
@@ -1179,6 +1191,7 @@ Cancel, then change the name, to keep both.`)) return;
     catch (e) {
       const m = e instanceof Error ? e.message : '';
       aqErr.set(key, m === 'proxy 429' ? 'busy, try again in a minute' : m === 'proxy 503' ? 'AqAdvisor is resting, try in 10 minutes' : "AqAdvisor didn't answer, try later");
+      if (m !== 'proxy 429') void pollAqHealth(); // a failure may mean it just went down: hide Check until the next up
     }
     aqQueued.delete(key); aqBusy.delete(key); syncAq(); viewer.invalidate();
   };
@@ -1510,11 +1523,13 @@ Cancel, then change the name, to keep both.`)) return;
     const stale = got === undefined && last !== undefined;
     // ↻ only when there is something to fetch (Nathan 2026-10-09): never checked, out of date, or the last try failed;
     // hidden once this tank's current answer is shown
-    const re = got !== undefined ? '' : `<button class="aqre${stale ? ' stale' : ''}" data-aq="${i}"${busy ? ' disabled' : ''} title="${stale ? 'The fish or the tank changed since this was checked: click to refresh the stocking level' : 'Ask AqAdvisor for this tank’s stocking level'}" aria-label="Refresh stocking level">↻</button>`;
+    const re = got !== undefined || aqUp !== 'up' ? '' : `<button class="aqre${stale ? ' stale' : ''}" data-aq="${i}"${busy ? ' disabled' : ''} title="${stale ? 'The fish or the tank changed since this was checked: click to refresh the stocking level' : 'Ask AqAdvisor for this tank’s stocking level'}" aria-label="Refresh stocking level">↻</button>`;
     const pct = got ?? last;
     // a failed refresh says so, next to the old number it could not replace (it used to hide behind it)
     const err = aqErr.get(key);
-    const text = busy ? `Stocking: ${aqWaitText(key)}` : pct !== undefined ? `Stocking ${pct}% (AqAdvisor)${err ? `, not updated: ${err}` : ''}` : err ?? 'Stocking: not checked';
+    const down = aqUp === 'down';
+    const text = busy ? `Stocking: ${aqWaitText(key)}` : pct !== undefined ? `Stocking ${pct}% (AqAdvisor)${err ? `, not updated: ${err}` : stale && down ? ', AqAdvisor is down' : ''}`
+      : down ? 'Stocking: AqAdvisor is down' : err ?? 'Stocking: not checked';
     const cls = `aq${stale ? ' stale' : pct !== undefined && pct > 100 ? ' over' : ''}`;
     const tip = stale && err ? `Out of date, and the refresh failed (${err}). This is the level before the last change.` : stale ? 'Out of date: the fish or the tank changed since this was checked. Press ↻ to refresh.' : 'AqAdvisor’s stocking level for this tank (aqadvisor.com); click for the full report';
     return `<span class="aqwrap"><a class="${cls}" href="${url}" target="_blank" rel="noopener" title="${tip}">${esc(text)}</a>${re}</span>`;
