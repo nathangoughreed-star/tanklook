@@ -151,7 +151,7 @@
   <div class="hint" id="terHint">Custom terrain turns the floor into a grid of points you can push down or pull up, with a smooth surface through them. It starts from the current floor.</div>
   </details>
   <details class="sec" data-sec="hardscape"><summary><h2>Hardscape</h2></summary>
-  <div class="field"><label class="flabel" for="layout">Start from</label><select id="layout"></select><button id="layoutShuffle" title="Replace every piece with a new arrangement of this starter set (Ctrl+Z brings the old one back)">Shuffle</button></div>
+  <div class="field"><label class="flabel" for="layout">Start from</label><select id="layout"></select><button id="layoutShuffle" title="A new arrangement of this starter set's rock and wood; plants and animals stay where they are (Ctrl+Z brings the old one back)">Shuffle</button></div>
   <div class="hint" id="layoutHint"></div>
   <div class="row dens"><label for="densHard" id="lDensHard" title="How much rock and wood the starter set places, from one piece to far too much. The main pieces stay where they are and more or fewer go round them; Shuffle gives a new layout. Redraws the hardscape and the plants round it when you let go (Ctrl+Z brings the old ones back)">Density</label><input id="densHard" type="range" min="-1" max="6" step="any" list="densTicks"><output id="oDensHard"></output></div>
   <datalist id="densTicks"><option value="-1"></option><option value="0"></option><option value="1"></option><option value="2"></option><option value="3"></option><option value="4"></option><option value="5"></option><option value="6"></option></datalist>
@@ -182,6 +182,7 @@
   </details>
   <details class="sec" data-sec="plants"><summary><h2 id="plantsTitle">Plants</h2></summary>
   <div class="row dens"><label for="densPlant" id="lDensPlant" title="How full the starter set plants the tank, from one plant to far too much. Redraws only the plants (corals in a reef) when you let go; the rocks stay where they are">Density</label><input id="densPlant" type="range" min="-1" max="6" step="any" list="densTicks"><output id="oDensPlant"></output></div>
+  <div class="btns"><button id="plantShuffle" title="A new arrangement of the starter set's plants (corals in a reef) round the rocks where they stand (Ctrl+Z brings the old one back)">Shuffle</button></div>
   <div class="lib" id="libPlant"></div>
   <div class="btns"><span class="hint" id="itemCountPlant"></span><span class="grow"></span><button id="itemsClearPlant">Remove all</button></div>
   <div id="plantList" class="plist" aria-label="Plants in the tank" hidden></div>

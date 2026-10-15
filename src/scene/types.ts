@@ -187,7 +187,9 @@ export type LayoutId = 'none' | 'stones' | 'driftwood' | 'planted' | 'iwagumi' |
  * density the seed used to roll (`legacyDens`), animals None.
  */
 export interface LayerDens { hard: number; plant: number; animal: number }
-export interface LayoutSettings { id: LayoutId; seed: number; dens?: LayerDens }
+/** `seed` draws the style and the hardscape (and a swamp's land); `plantSeed` / `animalSeed` draw the plants and the
+ *  starter animals, so each menu's Shuffle redraws its own layer only (Nathan 2026-10-15). Absent = `seed`. */
+export interface LayoutSettings { id: LayoutId; seed: number; plantSeed?: number; animalSeed?: number; dens?: LayerDens }
 
 /** Library item kinds; the variant names the generator (scene/items.ts LIBRARY). */
 export type ItemKind = 'stone' | 'wood' | 'cave' | 'plant' | 'coral';

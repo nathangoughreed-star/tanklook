@@ -51,7 +51,7 @@ function stocking(sp: Species) {
 export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
   const id = s.layout.id, stop = (s.layout.dens ?? DEFAULT_DENS).animal;
   if (id === 'none' || stop <= 0) return [];
-  const r = rng(s.layout.seed * 7919 + id.length * 104729 + 3 * 1000003), salt = s.water.on && !!s.water.salt;
+  const r = rng((s.layout.animalSeed ?? s.layout.seed) * 7919 + id.length * 104729 + 3 * 1000003), salt = s.water.on && !!s.water.salt;
   const swamp = id === 'swamp', T = s.tank;
   const pool = STYLES[id].animals.map(getSpecies).filter((sp): sp is Species => !!sp && !!sp.salt === salt
     && T.L >= sp.tl * (sp.salt ? 6 : 5) && (sp.habitat === 'water' ? s.water.on : swamp));
@@ -123,4 +123,17 @@ export function handEdits(s: TankSetup, what: Layer | 'all'): ('hardscape' | 'pl
   }
   if ((what === 'animal' || (what === 'all' && dens.animal > 0)) && s.fish.length && speciesCount(s.fish) !== speciesCount(starterAnimals(s, 1))) out.push('animals');
   return out;
+}
+
+/**
+ * Hardscape's Shuffle (Nathan 2026-10-15: "should only be hardscape"): a new style and hardscape from `seed`; the plants
+ * and animals stay as they are. The plant and animal seeds are pinned first so their layers keep drawing as before.
+ * A plant or coral that stood on a piece now gone settles to the floor.
+ */
+export function shuffleHard(s: TankSetup, seed: number) {
+  s.layout.plantSeed ??= s.layout.seed; s.layout.animalSeed ??= s.layout.seed;
+  s.layout.seed = seed;
+  const plants = s.items.filter(it => layerOf(it) === 'plant').map(it => it.lift > 0 ? { ...it, lift: 0 } : it);
+  let id = plants.reduce((m, it) => Math.max(m, it.id), 0);
+  s.items = [...starterItems(s).filter(it => layerOf(it) === 'hard').map(it => ({ ...it, id: ++id })), ...plants];
 }

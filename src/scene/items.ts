@@ -321,10 +321,10 @@ export function starterStyle(seed: number): Style {
 export const DENS_RANGE = [-1, 6] as const, ANIMAL_RANGE = [0, 6] as const;
 export const DENS_NAMES = ['One piece', 'Sparse', 'Light', 'Medium', 'Full', 'Packed', 'Overgrown', 'Far too much'] as const;
 export const ANIMAL_NAMES = ['None', 'Few', 'Some', 'Many', 'Full', 'Overstocked', 'Far overstocked'] as const;
-/** The name nearest a slider value. */
+/** A slider value shown as 1..10 (Nathan 2026-10-15: numbers, not names); animals at 0 are None. */
 export function densName(k: 'hard' | 'plant' | 'animal', v: number) {
-  if (k === 'animal') return v <= 0 ? 'None' : v < 0.5 ? 'One or two' : ANIMAL_NAMES[clamp(Math.round(v), 0, 6)];
-  return DENS_NAMES[clamp(Math.round(v), -1, 6) + 1];
+  if (k === 'animal') return v <= 0 ? 'None' : String(clamp(Math.round(v / ANIMAL_RANGE[1] * 10), 1, 10));
+  return String(1 + Math.round((clamp(v, ...DENS_RANGE) - DENS_RANGE[0]) / (DENS_RANGE[1] - DENS_RANGE[0]) * 9));
 }
 /** Medium hardscape and plants (the set as designed), no animals: what a new tank and an old file's seed 1 get. */
 export const DEFAULT_DENS: LayerDens = { hard: 2, plant: 2, animal: 0 };
@@ -379,14 +379,14 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
   if (id === 'none') return out;
   const spec = STYLES[id], DS = S.layout.dens ?? DEFAULT_DENS, sub = (x: number, d: number) => groundHeight(S, T, x, d);
   const st = starterStyle(S.layout.seed), designed = st.classic; // designed: seed 1, the set's own materials and groups
-  const stream = (k: number) => rng(S.layout.seed * 7919 + id.length * 104729 + k * 1000003);
+  const stream = (k: number, sd = S.layout.seed) => rng(sd * 7919 + id.length * 104729 + k * 1000003);
   // the layer being drawn: its random stream, a second one for style picks (so a pick does not shift with the count of
   // pieces drawn before it), its density, and `classic` = the set exactly as designed (seed 1 at Medium)
   let r = stream(1), q = stream(11), dens = 1, classic = false, nid = out.reduce((m, it) => Math.max(m, it.id), 0) + 1;
   const pick = <T>(a: T[]) => a[Math.floor(q() * a.length) % a.length];
   const layer = (k: 'hard' | 'plant', draw: () => void) => {
     if (k === 'hard' && keepHard) return;
-    const stop = DS[k], n0 = out.length; r = stream(k === 'hard' ? 1 : 2); q = stream(k === 'hard' ? 11 : 12);
+    const stop = DS[k], n0 = out.length; const sd = k === 'plant' ? S.layout.plantSeed ?? S.layout.seed : S.layout.seed; r = stream(k === 'hard' ? 1 : 2, sd); q = stream(k === 'hard' ? 11 : 12, sd);
     dens = stopDens(stop, spec[k]); classic = designed && stop === 2; draw();
     if (stop < 0) { // below Sparse: keep the first pieces the layer placed (the main ones come first), one at the least
       const mine = out.slice(n0).filter(it => layerOf(it) === k), keep = new Set(mine.slice(0, Math.max(1, Math.round(mine.length * keepShare(stop)))));
@@ -580,12 +580,18 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
       // one piece of wood per group (three at most; one at the sparsest stop), pebbles round it; mostly one kind of wood
       const same = q() < 0.65, k0 = designed ? 'branch' : pick(kinds), pebble = designed ? 'river' : pick(['river', 'river', 'lava', 'dragon']);
       const vs = st.foci.map(() => same || designed ? k0 : pick(kinds));
-      st.foci.slice(0, dens < 0.5 ? 1 : 3).forEach((f, fi) => {
-        const v = vs[fi], g = Math.sqrt(f.k) * st.scale;
-        const size = v === 'manzanita' ? H * (0.6 + r() * 0.3) * g : v === 'mopani' ? Math.min(L * 0.35, D * 1.2) * g : v === 'spider' ? Math.min(L * 0.55, D * 1.6) * g : Math.min(L * 0.7, H * 0.82 / 0.68, D * 2.2) * g;
-        put(v, L * f.x, D * (f.d + 0.08), size, { yaw: Math.round((r() - 0.5) * 360) });
+      const groups = st.foci.slice(0, dens < 0.5 ? 1 : 3);
+      const woodSize = (v: string, g: number) => v === 'manzanita' ? H * (0.6 + r() * 0.3) * g : v === 'mopani' ? Math.min(L * 0.35, D * 1.2) * g : v === 'spider' ? Math.min(L * 0.55, D * 1.6) * g : Math.min(L * 0.7, H * 0.82 / 0.68, D * 2.2) * g;
+      groups.forEach((f, fi) => {
+        put(vs[fi], L * f.x, D * (f.d + 0.08), woodSize(vs[fi], Math.sqrt(f.k) * st.scale), { yaw: Math.round((r() - 0.5) * 360) });
         for (let i = 0, n = many(5, f.k); i < n; i++) { const s = 12 + r() * 22; put(pebble, L * (f.x + (r() - 0.5) * 0.3), D * (f.d + (r() - 0.3) * 0.35), s * 1.2, tip(pebble)); }
       });
+      // above Medium the wood itself thickens too (Nathan 2026-10-15: "far too much" looked like Medium): smaller pieces
+      // piled round each group, drawn after the main ones so those stay put
+      for (let j = groups.length, n = Math.min(16, Math.round(groups.length * dens)); j < n; j++) {
+        const fi = j % groups.length, f = groups[fi], v = same || designed ? vs[fi] : pick(kinds);
+        put(v, L * clamp(f.x + (r() - 0.5) * 0.45, 0.08, 0.92), D * clamp(f.d + (r() - 0.5) * 0.45, 0.15, 0.9), woodSize(v, Math.sqrt(f.k) * st.scale * (0.4 + r() * 0.3)), { yaw: Math.round((r() - 0.5) * 360), ...tip(v, 0.5) });
+      }
     });
     layer('plant', () => {
       // ferns and anubias tied onto the wood, wherever it stands now
