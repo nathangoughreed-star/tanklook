@@ -14,6 +14,19 @@ Living file. Project state and dated decisions go here; update in place.
   - **E2 code audit:** `../Glass-Box-audit` / `code-audit`, no dev server. Owns `research/efficiency/E2-*` and optional
     `scripts/unused-exports.mjs`. Dead code, duplicates, hot-path suspects (file:line, for E1 to time), bundle
     makeup, and a pure-move split plan for panels.ts / build.ts. Prompt: prompts/lane-E2-code-audit.md.
+    **DONE 2026-10-15** (audited `a93a81f`): `research/efficiency/E2-code-audit.md` (ranked table + split plan;
+    appendices E2-hotpath / E2-dups / E2-splitmap), `scripts/unused-exports.mjs` (oxc via rolldown; TS 7 has no JS API).
+    Findings: (1) **dist-single/tanklook.html is broken** since `d67ac73` (review.html entry splits three + render
+    into chunks; build-single.mjs inlines only main); a fixed file will be ~1.36 MB, not 750 kB. scripts-only fix.
+    (2) Carpet cache key in render/items.ts:476 misses terrain / substrate / swamp, so carpets keep a stale ground shape
+    after a terrain edit (bug; after GR4). Lane J's open item 3 (`Math.round(h)`) is already fixed (`6165d6a`).
+    (3) Per-draw waste (the app draws only when dirty, so per orbit / drag move): lightout.ts:446 unitKey
+    JSON.stringify ~3x per viewport, viewer.ts:384 placePerson bisect, viewer.ts:391 full-traverse material rank,
+    viewer.ts:336/386/401 style reads + viewmap redraw; sent to E1 to time. (4) The examples are 240 of main's 426 kB
+    (lazy chunk = ~100 kB gzip off first load). (5) Dead code is small: plant / flat-fish card fallbacks are
+    unreachable (every species is 3D), 3 dead + 4 test-only exports. Split plan: build.ts first (B1-B6, true pure moves
+    into flat render/build*.ts files, build.ts re-exports), then panels.ts (P0 UI-state dump, P1 utils, P2 ctx, P3-P8
+    mountX(ctx) per section; behaviour-preserving, not byte-pure), only when GR4 / AL / W have no panels.ts hunks.
 - **Phase 2, later:** the coordinator merges E1 + E2 into one ranked list; Nathan picks. Fixes that touch another active
   lane's files, or panels.ts / build.ts / viewer.ts, wait for a quiet point (no other lane running), and the splits land
   first after it. A fix confined to a file nobody owns can go in earlier.
