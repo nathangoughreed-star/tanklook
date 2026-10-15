@@ -320,6 +320,7 @@ function parseItems(raw: unknown[], T: Tank, warn: (m: string) => void, g: Groun
       yaw: Math.round(fin(o.yaw, 0)), pitch: Math.round(fin(o.pitch, 0)), tilt: Math.round(fin(o.tilt, 0)), size: fin(o.size, v.size),
       ...(typeof o.spread === 'number' && Number.isFinite(o.spread) ? { spread: o.spread } : {}),
       ...(typeof o.stems === 'number' && Number.isFinite(o.stems) ? { stems: o.stems } : {}),
+      ...(typeof o.dens === 'number' && Number.isFinite(o.dens) ? { dens: o.dens } : {}),
       ...(typeof o.growth === 'number' && Number.isFinite(o.growth) ? { growth: o.growth } : {}),
       ...(v.kind === 'plant' && typeof o.planted === 'number' && Number.isFinite(o.planted) ? { planted: Math.round(clamp(o.planted, -GROW_RATE_MAX, 1) * 1000) / 1000 } : {}),
     };

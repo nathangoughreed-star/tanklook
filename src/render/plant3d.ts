@@ -31,6 +31,8 @@ export const has3DPlant = (type: PlantType) => plant3d.on && !!PLANT3D[type];
 
 type R = () => number;
 const MAX_LEAFLETS = 3000;
+/** Most rosettes a floater with its own spread builds (one that fills a big tank at the most density). */
+const FLOAT_MAX = 1000;
 /** Where a carpet's leaflet `i` (its anchor at lx, lz) lands on the ground (null = left out). */
 type Spot = (lx: number, lz: number, i: number) => { x: number; y: number; z: number; w: number } | null;
 const V = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
@@ -204,7 +206,14 @@ function tint(g: THREE.BufferGeometry, k: number, warm: number) {
 
 /** A clump's own spread (mm across the circle its stems or crowns start in) and count; absent = the species' own, drawn
  *  from the seed (Nathan 2026-10-14: "5 stems over 12 inches" or "10 stems in 4 inches"). */
-export interface Clump { spread?: number; stems?: number }
+export interface Clump {
+  spread?: number; stems?: number;
+  /** A floater's density: times the species' own rosettes per area (absent = 1). */
+  dens?: number;
+  /** The glass within its own spread, in its own frame: [nx, nz, e] per pane, a point (x, z) is inside by
+   *  e - (x nx + z nz) mm. Stems, crowns and rosettes are only set down inside (a spread may reach past the glass). */
+  clip?: number[];
+}
 
 /** The spread and count a clump has when it has none of its own: the seed's draws, as plantGeometry makes them. */
 export function clumpAuto(type: PlantType, seed: number, h: number) {
@@ -285,6 +294,15 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
   // growth beyond the plant's own part: its own random stream, drawn after everything else, so the part stays as it was
   const re = rng(seed * 6007 + 29), ex = new Sheets(pieces), exTubes: THREE.BufferGeometry[] = [];
   const Gr = P.grow, lg = Math.log(Math.max(1.0001, Gr.more)), size0 = growthLen(type, g0);
+  /** Is (x, z) at least m mm inside the glass (clump.clip)? */
+  const inTank = (x: number, z: number, m = 0) => { const c = clump.clip; if (c) for (let i = 0; i < c.length; i += 3) if (c[i + 2] - (x * c[i] + z * c[i + 1]) < m) return false; return true; };
+  /** A point at distance k(q) * R in direction a(q) (q's draws), drawn again until it is inside the glass (no clip, or
+   *  inside at once: exactly the draws it always made). */
+  const inside = (q: R, R: number, k: (t: number) => number, a = (_t: number) => q() * 6.28) => {
+    let x = 0, z = 0;
+    for (let t = 0; t < 40; t++) { const an = a(t), d = k(t) * R; x = Math.cos(an) * d; z = Math.sin(an) * d; if (inTank(x, z, 3)) break; if (t === 39) x = z = 0; }
+    return V(x, 0, z);
+  };
   /** Growth at which the i-th of the n0 own leaves / stems shows (they thin out below g0 at the species' rate). */
   const own = (i: number, n0: number) => Math.max(-0.3, g0 + Math.log((i + 1) / n0) / lg);
   /** Extra ones past n0: how many by growth 1, and when the j-th comes in. */
@@ -349,7 +367,7 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
     }
     // y = 0 is the water surface: rosettes lie on it over a disc h wide (salvinia-like chains are rosettes too, just
     // more oval leaves), roots hang under each one
-    const F = P.float!, n = Math.round(Math.min(600, Math.PI * rad * rad / 1000 * between(r, F.per)));
+    const F = P.float!, n = Math.round(Math.min(600, Math.PI * rad * rad / 1000 * between(r, F.per) * (clump.dens ?? 1)));
     const rosette = (q: R, D: ReturnType<typeof draws>, c: THREE.Vector3, t: { a: number; w: number }, into: THREE.BufferGeometry[]) => {
       const k = Math.round(between(q, F.leaves)), y0 = q() * 6.28, on = { ...t, on: { pc: -1, par: 0 } };
       for (let j = 0; j < k; j++) leaf(out, f, P.stalk, c, y0 + j * 6.28 / k + (q() - 0.5) * 0.4, between(q, f.len), between(q, f.rise), D.twist(), D.pick(), D.bright(), q, STIFF, on);
@@ -359,6 +377,23 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
         into.push(tagAll(tube([0, 0.25, 0.5, 0.75, 1].map(s => V(c.x + dx * s * s + wx * Math.sin(s * 6), -L * s, c.z + dz * s * s + wz * Math.sin(s * 5))), 0.25, P.stalk, 6, 3), t.a, t.w, c));
       }
     };
+    if (clump.spread) {
+      // its own spread (Nathan 2026-10-15: "the same as regular plants"): rosettes over the whole circle at the species'
+      // density times its own, the patch reaching out from the first one as it grows and over all of it by growth 1.
+      // Only those inside the glass are built (the circle may reach past it); past FLOAT_MAX the first ones drawn
+      const R1 = clump.spread / 2, lk = Math.log(Gr.len[1] / Gr.len[0]), at = (d: number) => 1 + Math.log(Math.max(1e-3, d / R1)) / lk;
+      const rp = rng(seed * 4513 + 17), want = Math.round(Math.min(2e5, Math.PI * R1 * R1 / 1000 * between(rp, F.per) * (clump.dens ?? 1))), m0 = f.len[0] * 0.4;
+      rosette(r, { pick, twist, bright }, V(0, 0.6, 0), fullBy(-0.06, 0.05, 1), extra); // (just planted = this one)
+      for (let i = 1, built = 1; i < want && built < FLOAT_MAX; i++) {
+        const a = rp() * 6.28, d = Math.sqrt(rp()) * R1, x = Math.cos(a) * d, z = Math.sin(a) * d;
+        if (!inTank(x, z, m0)) continue;
+        rosette(r, { pick, twist, bright }, V(x, 0.6, z), fullBy(at(d) - 0.05, 0.05, 1), extra); built++;
+      }
+      const leaves = out.geometry();
+      shade(leaves, 2, 1e9);
+      tint(leaves, kTint, warm);
+      return done(mergeGeometries([leaves, ...extra.map(e => { e.computeVertexNormals(); return e; })])!);
+    }
     for (let i = 0; i < n; i++) {
       const a = r() * 6.28, rho = Math.sqrt(r()), d = rho * rad * 0.92, c = V(Math.cos(a) * d, 0.6, Math.sin(a) * d);
       // (the first one is there from the start: just planted = one rosette, lane GR2)
@@ -415,7 +450,7 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
     // the plant's own stems: a cutting (the lower third) shows from when the stem comes in, the rest grows up by g0
     const CUT = 0.35, own0: { at: (t: number) => THREE.Vector3; top: number; T: (t: number) => number; pc: number }[] = [];
     for (let s = 0; s < n; s++) {
-      const a = r() * 6.28, d = Math.sqrt(r()) * base, b = V(Math.cos(a) * d, 0, Math.sin(a) * d);
+      const b = inside(r, base, () => Math.sqrt(r()));
       const top = h * (0.75 + 0.25 * r()), lean = V((r() - 0.5) * Wc * 0.4, 0, (r() - 0.5) * Wc * 0.4);
       // (a stem comes in as a cutting no earlier than growth 0: just planted = a few short cuttings)
       const at = path(b, top, lean, bend()), a0 = Math.min(Math.max(-0.02, own(s, n)), g0 - 0.06);
@@ -428,8 +463,8 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
     // (an emerging clump, lane GR2, Nathan 2026-10-15: thinner and wider, so its stems out of the water read one by one)
     const em = Gr.overflow === 'emerge', thin = em ? 0.6 : 1, wider = em ? 2 : 0.4;
     for (let j = 0, m = Math.min(Math.round(extras(n, 60) * thin), 60 - n); j < m; j++) {
-      const a0 = extraAt(Math.round(j / thin), n), up = Math.min(0.25, 0.99 - a0), k = longer(a0 + up), a = re() * 6.28, d = Math.sqrt(re()) * base * (clump.spread ? 1 : 1 + wider * (a0 - g0) / Math.max(0.05, 1 - g0));
-      const b = V(Math.cos(a) * d, 0, Math.sin(a) * d), top = h * (0.75 + 0.25 * re()) * k, lean = V((re() - 0.5) * Wc * 0.4, 0, (re() - 0.5) * Wc * 0.4);
+      const a0 = extraAt(Math.round(j / thin), n), up = Math.min(0.25, 0.99 - a0), k = longer(a0 + up);
+      const b = inside(re, base * (clump.spread ? 1 : 1 + wider * (a0 - g0) / Math.max(0.05, 1 - g0)), () => Math.sqrt(re())), top = h * (0.75 + 0.25 * re()) * k, lean = V((re() - 0.5) * Wc * 0.4, 0, (re() - 0.5) * Wc * 0.4);
       // a new stem grows to its full length within a quarter of the growth scale (stem plants grow fast)
       const at = path(b, top, lean, bend()), T = (t: number) => a0 + t * up;
       all.push({ at, top, T, pc: stem(at, Math.round(nodes * Math.min(2, k)), T, 1, re, X, ex, exTubes, rad, Math.round(12 * Math.min(3, k))) }); // more rings: smooth where it lies over
@@ -487,7 +522,7 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
     // crowns: along a short row (the species' own look), or spread evenly over the clump's circle when it has its own
     // spread (a sunflower spiral, nudged so it does not read as a pattern)
     const centres = P.crowns && clump.spread
-      ? Array.from({ length: crowns }, (_, i) => { const a = i * 2.39996 + (r() - 0.5) * 0.8, d = half * Math.sqrt((i + 0.5) / crowns) * (0.85 + r() * 0.3); return V(Math.cos(a) * d, 0, Math.sin(a) * d); })
+      ? Array.from({ length: crowns }, (_, i) => inside(r, half, t => (t ? Math.sqrt(r()) : Math.sqrt((i + 0.5) / crowns) * (0.85 + r() * 0.3)), t => (t ? r() * 6.28 : i * 2.39996 + (r() - 0.5) * 0.8))) // (past the glass: anywhere inside)
       : Array.from({ length: crowns }, (_, i) => V(crowns > 1 ? (i / (crowns - 1) * 2 - 1) * half + (r() - 0.5) * half * 0.3 : 0, 0, (r() - 0.5) * half * 0.4));
     const onRhizome = (q: R) => { const u = q(), k = Math.min(3, Math.floor(u * 4)); return roots[k].clone().lerp(roots[k + 1], u * 4 - k); };
     /** A leaf's emersed twin (a sword's leaf held up out of the water on its long stiff stalk): same crown, heading and
@@ -525,7 +560,8 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
           (s, cc) => ({ ...fullBy(Math.max(g0 + 1e-3, a0 - 0.05 + 0.04 * s), 0.01, 1), anc: cc, pc: -1, par: 0, apar: 0 })));
         continue;
       }
-      const d = half * (clump.spread ? Math.sqrt(re()) : 1 + 0.8 * (a0 - g0) / Math.max(0.05, 1 - g0) * (0.6 + 0.4 * re()));
+      if (clump.spread) { newCrowns.push({ c: inside(re, half, () => Math.sqrt(re()), t => (t ? re() * 6.28 : ang)), a: a0 }); continue; }
+      const d = half * (1 + 0.8 * (a0 - g0) / Math.max(0.05, 1 - g0) * (0.6 + 0.4 * re()));
       newCrowns.push({ c: V(Math.cos(ang) * d, 0, Math.sin(ang) * d), a: a0 });
     }
     for (let j = 0; j < more; j++) {

@@ -12,9 +12,9 @@ import { FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, mountOf, po
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene, TANK_PRESETS } from '../scene/defaults';
-import { DEFAULT_DENS, KINDS, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, itemDims, makeItem, type Layer } from '../scene/items';
+import { DEFAULT_DENS, KINDS, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
 import { handEdits, regenerate } from '../scene/starter';
-import { growthOf, isClump, isPatch, type PlantType } from '../art/plants';
+import { growthOf, isClump, isFloat, isPatch, type PlantType } from '../art/plants';
 import { clumpAuto } from '../render/plant3d';
 import { canPrebuild, plantWarm, prebuildHooks, prebuildPlants } from '../render/items';
 import { placeAt, type PlaceAt } from '../interact/pointer';
@@ -1135,7 +1135,11 @@ Cancel, then change the name, to keep both.`)) return;
   $<HTMLSelectElement>('growFeed').onchange = e => { store.seal(); growTo(store.tank.grow.time, (e.target as HTMLSelectElement).value as GrowFeed); };
   $('growTime').oninput = e => { growHeld = true; growTo(+(e.target as HTMLInputElement).value / 100, growGoal?.feed ?? store.tank.grow.feed); };
   $('growTime').onchange = () => { growHeld = false; if (!growGoal) store.seal(); };
-  $('iSpread').oninput = e => editItem(it => { it.spread = +(e.target as HTMLInputElement).value; }, 'iSpread');
+  // a floater's spread is the patch fully grown: one not grown yet is shown fully grown once it has one, so the patch
+  // covers what the slider says
+  const fullFloat = (it: Item, s: TankSetup) => { if (isFloat(it.variant) && it.growth == null) setPlantGrowth(it, 1, s); };
+  $('iSpread').oninput = e => editItem((it, s) => { it.spread = +(e.target as HTMLInputElement).value; fullFloat(it, s); }, 'iSpread');
+  $('iDens').oninput = e => editItem((it, s) => { it.dens = +(e.target as HTMLInputElement).value / 100; fullFloat(it, s); }, 'iDens');
   $('iStems').oninput = e => editItem(it => { it.stems = +(e.target as HTMLInputElement).value; }, 'iStems');
   $('iYaw').oninput = e => editItem(it => { it.yaw = +(e.target as HTMLInputElement).value; }, 'iYaw');
   $('iPitch').oninput = e => editItem(it => { it.pitch = +(e.target as HTMLInputElement).value; }, 'iPitch');
@@ -1215,7 +1219,7 @@ Cancel, then change the name, to keep both.`)) return;
     return v == null ? null : neg.test(t) ? -Math.abs(v) : v;
   } });
   const lens = ['bowMin', 'bowlFloor', 'bowlTop', 'standH', 'tableL', 'tableD', 'subBL', 'subBR', 'subFL', 'subFR', 'lH', 'cDist', 'iSize', 'iSpread', 'iLift', 'personH', 'wallGap', 'ceilH'];
-  const nums = { pieDeg: 0, bgArc: 0, iYaw: 0, iPitch: 0, iTilt: 0, iStems: 0, iGrowth: 0, lCount: 0, lRows: 0, lCone: 0, lK: 0, lBright: 2, lRoom: 2, lW: 0, lPar: 0, cAz: 0, cEl: 0, cZoom: 2, terCols: 0, addSize: 0 };
+  const nums = { pieDeg: 0, bgArc: 0, iYaw: 0, iPitch: 0, iTilt: 0, iStems: 0, iDens: 0, iGrowth: 0, lCount: 0, lRows: 0, lCone: 0, lK: 0, lBright: 2, lRoom: 2, lW: 0, lPar: 0, cAz: 0, cEl: 0, cZoom: 2, terCols: 0, addSize: 0 };
   attachTypeIns({
     ...Object.fromEntries(lens.map(id => [id, len])),
     ...Object.fromEntries(Object.entries(nums).map(([id, d]) => [id, num(d)])),
@@ -1659,15 +1663,18 @@ Cancel, then change the name, to keep both.`)) return;
       const plant = it.kind === 'plant';
       $('iSizeRow').style.display = plant ? 'none' : ''; $('iGrowthRow').style.display = plant ? '' : 'none';
       if (plant) { const g = it.growth ?? growthOf(it.variant as PlantType, it.size); setVal('iGrowth', Math.round(g * 100)); setOut('oIGrowth', growthWord(g)); }
-      // a clump's spread and count: its own once moved, else what the seed gives it ("auto")
-      const clump = it.kind === 'plant' && isClump(it.variant);
-      document.querySelectorAll<HTMLElement>('#itemBox .clump').forEach(e => { e.style.display = clump ? '' : 'none'; }); // (.row sets display, so not hidden)
-      if (clump) {
-        const auto = clumpAuto(it.variant as PlantType, it.seed, it.size), sp = it.spread ?? auto.spread, n = it.stems ?? auto.stems;
-        $('iSpread').min = '10'; $('iSpread').max = String(Math.max(10, Math.round(Math.min(A.L, A.D) - 6)));
+      // a clump's spread and count, a floater's spread and density: its own once moved, else what the seed gives it
+      // ("auto"); a spread up to the far corner of the tank from where it stands
+      const clump = it.kind === 'plant' && isClump(it.variant), float = it.kind === 'plant' && isFloat(it.variant);
+      const show = (sel: string, on: boolean) => document.querySelectorAll<HTMLElement>(sel).forEach(e => { e.style.display = on ? '' : 'none'; }); // (.row sets display, so not hidden)
+      show('#itemBox .clump', clump); show('#itemBox .float', float); show('#itemBox .spread', hasSpread(it.variant) && it.kind === 'plant');
+      if (clump || float) {
+        const auto = clump ? clumpAuto(it.variant as PlantType, it.seed, it.size).spread : Math.round(itemDims({ ...it, spread: undefined, growth: 1 })[0]), sp = it.spread ?? auto;
+        $('iSpread').min = '10'; $('iSpread').max = String(Math.max(sp, spreadMax(A, it.x, it.depth)));
         setVal('iSpread', sp); setOut('oISpread', fmt(sp) + (it.spread == null ? ' auto' : ''));
-        setVal('iStems', n); setOut('oIStems', n + (it.stems == null ? ' auto' : ''));
       }
+      if (clump) { const n = it.stems ?? clumpAuto(it.variant as PlantType, it.seed, it.size).stems; setVal('iStems', n); setOut('oIStems', n + (it.stems == null ? ' auto' : '')); }
+      if (float) { const d = it.dens ?? 1; setVal('iDens', Math.round(d * 100)); setOut('oIDens', Math.round(d * 100) + '%' + (it.dens == null ? ' auto' : '')); }
       setVal('iYaw', it.yaw); setOut('oIYaw', it.yaw + '°'); setVal('iPitch', it.pitch); setOut('oIPitch', it.pitch + '°'); setVal('iTilt', it.tilt); setOut('oITilt', it.tilt + '°');
       $('iLift').min = String(-Math.round(A.H * LIFT_SINK)); $('iLift').max = String(Math.round(A.H)); setVal('iLift', Math.round(it.lift));
       setOut('oILift', Math.abs(it.lift) < 1 ? 'On the ground' : it.lift < 0 ? fmt(-it.lift) + ' in' : fmt(it.lift));

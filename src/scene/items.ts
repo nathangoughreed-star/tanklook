@@ -2,9 +2,9 @@
 // renderer builds them from (so placement code can find a branch to tie a fern to without three.js), and the starter
 // sets that replace the old fixed layouts. All sizes physical (mm): a bigger tank gets more pieces, not bigger ones.
 import { rng } from '../art/paint';
-import { PLANT3D, PLANT_ASPECT, grownSize, isCarpet, isClump, isFloat, isPatch, type PlantType } from '../art/plants';
+import { PLANT3D, PLANT_ASPECT, grownSize, growthLen, growthOf, isCarpet, isClump, isFloat, isPatch, type PlantType } from '../art/plants';
 import { backdropDepth, clamp, clearOfWall, D2R } from './physics';
-import { bowlDims, bowlRadius, clampIn, shapeOf } from './shape';
+import { bowlDims, bowlRadius, clampIn, footprint, shapeOf } from './shape';
 import { clampGround, groundHeight, radialTerrain, type Ground } from './terrain';
 import type { Item, ItemKind, LayerDens, LayoutId, Tank, TankSetup } from './types';
 
@@ -52,6 +52,8 @@ export const LIBRARY: Record<string, Variant> = {
 };
 export const KINDS: Record<ItemKind, string> = { stone: 'Stones', wood: 'Wood', cave: 'Caves', plant: 'Plants', coral: 'Corals' };
 export const MAX_ITEMS = 600;
+/** A floater's density range (times the species' own rosettes per area). */
+export const DENS = [0.1, 3] as const;
 /** Most stems or crowns one clump may have (a stem is about 1.5 k triangles). */
 export const MAX_STEMS = 40;
 /** Carpet cards, mm (about 3 cm tall, like a trimmed Monte Carlo carpet). */
@@ -147,13 +149,29 @@ export function woodLimbs(variant: string, seed: number, size: number): Limb[] {
 }
 
 /** Overall size of a piece: [length, height, width] in its own frame, mm (plants: card width, height, width). */
+/** Plants with a Spread: clumps (with a count) and floaters (with a density instead). */
+export const hasSpread = (v: string) => isClump(v) || isFloat(v);
+/** A floater with its own spread: how wide its patch is at growth g (all of the spread at growth 1). */
+export const floatWidth = (it: Pick<Item, 'variant' | 'size' | 'spread' | 'growth'>) =>
+  it.spread! * growthLen(it.variant as PlantType, it.growth ?? growthOf(it.variant as PlantType, it.size)) / growthLen(it.variant as PlantType, 1);
+/** The most a spread may be (mm across): enough from anywhere in the tank to reach its far corner (Nathan 2026-10-15:
+ *  "all the way to fill the entire tank area regardless of where the plant sits"); from (x, depth) when given (the
+ *  slider), else from the worst spot (clampItem). A bowl keeps the old rule (its glass closes in above). */
+export function spreadMax(T: Tank, x?: number, depth?: number) {
+  if (shapeOf(T) === 'bowl') return Math.max(10, Math.min(T.L, T.D) - 6);
+  const ring = footprint(T).ring;
+  let m = 0;
+  for (const p of ring) for (const q of x == null ? ring : [[x, depth!]]) m = Math.max(m, Math.hypot(p[0] - q[0], p[1] - q[1]));
+  return Math.ceil(2 * m + 2);
+}
+
 export function itemDims(it: Pick<Item, 'kind' | 'variant' | 'seed' | 'size' | 'spread' | 'growth'>): V3 {
   const s = it.kind === 'plant' ? grownSize(it.variant as PlantType, it.size, it.growth) : it.size; // a plant at its growth
   if (it.kind === 'stone') return stoneDims(it.variant, it.seed, s);
   // an upright plant grown past its saved size gets longer much faster than its footprint widens (long leaves and stems
   // lie over at the surface), so its width follows its length only up to 1.4x the saved size
   const sw = Math.min(s, it.size * 1.4);
-  if (it.kind === 'plant') return isCarpet(it.variant) ? [s, CARPET_H, s] : isFloat(it.variant) ? [s, s * PLANT_ASPECT[it.variant as PlantType], s] : ((w: number) => [w, s, w])(it.spread ? Math.max(it.spread, sw / PLANT_ASPECT[it.variant as PlantType]) : sw / PLANT_ASPECT[it.variant as PlantType]) as [number, number, number];
+  if (it.kind === 'plant') return isCarpet(it.variant) ? [s, CARPET_H, s] : isFloat(it.variant) ? ((w: number) => [w, s * PLANT_ASPECT[it.variant as PlantType], w])(it.spread ? floatWidth(it) : s) : ((w: number) => [w, s, w])(it.spread ? Math.max(it.spread, sw / PLANT_ASPECT[it.variant as PlantType]) : sw / PLANT_ASPECT[it.variant as PlantType]) as [number, number, number];
   if (it.kind === 'coral') return [s, s * ({ acropora: 0.6, montipora: 0.45, mushroom: 0.4, leather: 0.6 } as Record<string, number>)[it.variant], s];
   if (it.kind === 'cave') return it.variant === 'arch' ? [s, 0.5 * s, 0.45 * s] : it.variant === 'tube' ? [s, 0.42 * s, 0.42 * s] : [s, 0.5 * s, s];
   return it.variant === 'manzanita' ? [0.7 * s, s, 0.7 * s] : it.variant === 'spider' ? [s, 0.5 * s, 0.8 * s] : it.variant === 'mopani' ? [s, 0.45 * s, 0.3 * s] : [s, 0.65 * s, 0.45 * s];
@@ -193,7 +211,9 @@ export function clampItem(it: Item, T: Tank, g?: Ground) {
   // upright plant keeps its base (the circle its crowns or stems start in) inside, so it can be planted right against
   // the glass; leaves arching past a pane are cut off there like hardscape (Nathan 2026-10-15). A bowl still keeps the
   // whole plant clear (its glass closes in above)
-  const [l, , w] = itemDims(it), half = it.kind === 'plant' ? (isPatch(it.variant) ? Math.max(l, w) * 0.35 : shapeOf(T) === 'bowl' ? l / 2 + 3 : plantBaseR(it) + 2) : 0;
+  // (a plant's own spread does not push it in from the glass: what would land past it is set down inside instead)
+  const own = { ...it, spread: shapeOf(T) === 'bowl' ? it.spread : undefined };
+  const [l, , w] = itemDims(own), half = it.kind === 'plant' ? (isPatch(it.variant) ? (it.spread && !own.spread ? 20 : Math.max(l, w) * 0.35) : shapeOf(T) === 'bowl' ? l / 2 + 3 : Math.min(plantBaseR(it), plantBaseR(own)) + 2) : 0;
   const inset = Math.min(half, Math.min(T.L, T.D) * 0.45);
   it.x = clamp(it.x, inset, T.L - inset); it.depth = clamp(it.depth, inset, T.D - inset);
   if (g && shapeOf(T) === 'bowl') { // a plant stays clear of the glass over its whole height (the sphere closes in above)
@@ -204,11 +224,13 @@ export function clampItem(it: Item, T: Tank, g?: Ground) {
   const wall = it.kind === 'plant' ? backdropDepth(g?.backdrop, T) : 0;
   if (wall) ({ x: it.x, depth: it.depth } = clearOfWall(T, it.x, it.depth, wall * 0.7 + half * 0.5, g?.render?.bgSides));
   it.lift = clamp(it.lift, -LIFT_SINK * T.H, T.H);
-  // a clump's own spread and count (absent = the species' own); dropped on anything that is not a clump
-  if (it.kind === 'plant' && isClump(it.variant)) {
-    if (it.spread != null) it.spread = Math.round(clamp(it.spread, 10, Math.max(10, Math.min(T.L, T.D) - 6)));
-    if (it.stems != null) it.stems = Math.round(clamp(it.stems, 1, MAX_STEMS));
-  } else { delete it.spread; delete it.stems; }
+  // a clump's own spread and count, a floater's spread and density (absent = the species' own); dropped elsewhere
+  if (it.kind === 'plant' && hasSpread(it.variant) && it.spread != null) it.spread = Math.round(clamp(it.spread, 10, spreadMax(T)));
+  else delete it.spread;
+  if (it.kind === 'plant' && isClump(it.variant) && it.stems != null) it.stems = Math.round(clamp(it.stems, 1, MAX_STEMS));
+  else delete it.stems;
+  if (it.kind === 'plant' && isFloat(it.variant) && it.dens != null) it.dens = Math.round(clamp(it.dens, DENS[0], DENS[1]) * 100) / 100;
+  else delete it.dens;
   // a plant's growth, 0..1 (absent = back-solved from its size); nothing else has one
   if (it.kind === 'plant' && it.growth != null) it.growth = Math.round(clamp(it.growth, 0, 1) * 1000) / 1000;
   else delete it.growth;
