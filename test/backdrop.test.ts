@@ -31,7 +31,7 @@ describe('3D back wall (2026-10-15)', () => {
       expect(maxD, kind).toBeLessThanOrEqual(T.D + 1e-6);
       expect(minD, kind).toBeGreaterThanOrEqual(T.D - 60 - 1e-6);
       expect(maxD - minD, kind).toBeGreaterThan(25); // real relief, not a flat sheet
-      expect(minX).toBeCloseTo(0); expect(maxX).toBeCloseTo(T.L); expect(maxY).toBeGreaterThan(T.H - 5);
+      expect(minX).toBeCloseTo(1.5); expect(maxX).toBeCloseTo(T.L - 1.5); expect(maxY).toBeGreaterThan(T.H - 5);
     }
   });
 
@@ -58,7 +58,7 @@ describe('3D back wall (2026-10-15)', () => {
     const box = (sides: ('back' | 'left' | 'right' | 'front')[]) => { const g = backdropGeometry(T, b, false, sides)!; g.computeBoundingBox(); return g.boundingBox!; };
     const back = box(['back']), bl = box(['back', 'left']), all = box(['back', 'left', 'right', 'front']);
     expect(-back.max.z).toBeGreaterThan(T.D - 51); // back only: nothing out in the middle of the tank
-    expect(bl.max.x).toBeCloseTo(T.L); expect(-bl.max.z).toBeLessThan(1); // the left wall runs to the front glass
+    expect(bl.max.x).toBeCloseTo(T.L - 1.5); expect(-bl.max.z).toBeLessThan(2); // the left wall runs to the front glass, its open end 1.5 mm short of it (no z-fight)
     expect(backdropGeometry(T, b, false, [])).toBeNull();
     expect(all.min.x).toBeLessThan(2); expect(all.max.x).toBeGreaterThan(T.L - 2); expect(-all.max.z).toBeLessThan(2); // a closed ring, just in from the glass
     // the left wall is in from the left glass only by its depth
