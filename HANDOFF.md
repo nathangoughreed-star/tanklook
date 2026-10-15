@@ -28,6 +28,18 @@ Living file. Project state and dated decisions go here; update in place.
   shows no pictures from disk. Tests: `test/examples.test.ts` checks every thumb is a .jpg URL and SCENES matches EXAMPLES;
   algae / share / examples tests read `SCENES` directly.
 
+## Plants against the glass, roots at the glass (2026-10-15; main)
+- **Plants plant right up to the glass** (Nathan: "I should be able to put it right up against it"): `clampItem` keeps an
+  upright plant's base inside (`plantBaseR` in scene/items.ts: a clump's own spread / 2, else the species' share of its
+  width, at least 4 mm) instead of half its whole leaf spread; leaves past a pane are clipped by the existing glass clip.
+  Bowls keep the old full-width rule (their glass closes in above; test/items.test.ts asserts it).
+- **Roots show in the substrate face at the glass** (render/roots.ts, one mesh per tank, a part in addContents keyed by
+  `rootsKey`; not picked): ribbons in the plane of each straight pane 0.2 mm outside the skirt. Per kind a `HABIT`
+  (reach, depth, roots per 10 mm, thickness, side roots, runners, young / aged colour); scaled by growth (more, longer,
+  thicker, browner), closeness to the pane, own stems / crowns and neighbours (crowding pushes roots out and thickens the
+  bed); depth capped by the ground there, a shallow bed turns them along the bottom glass. Not on floaters, moss, plants
+  up on hardscape (lift > 2), or bowls (curved glass, not yet).
+
 ## Drag-in, plant list, clumps on slopes (2026-10-15; branch `drag-place`, port 5613; pushed to main)
 - **Drag from the panel into the tank** (Nathan: keep click-to-add too): library chips (hardscape, plants, corals) and
   species rows / the Add button. Past 6 px a press becomes a drag with a label at the pointer (`dragOut` in panels.ts;
