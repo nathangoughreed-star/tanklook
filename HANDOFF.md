@@ -2,6 +2,22 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane X2: fish leftovers from X and F2 (2026-10-15; branch `fish-x2`, port 5583; Nathan approved all four steps; pushed to main)
+- **Generic, off by default, own commits; every other fingerprint unchanged:** `MedianFin.taper` (dc00232; the soft top falls
+  in a straight line from the peak to this share of h at the base end) and `Plan.analSplit` (29ae68f; a doubled anal fin:
+  fish3d `splitAnal` draws two copies splayed apart by this many degrees below the belly, the card leaves its own anal out,
+  `finRooted` drops the anal's rim; fishgen `drawAnal` / `analBox`).
+- **Models (v3, build 434):** noseCap 0.03 on neon (`tetra`), cardinal, chili, cpd (cpd~f inherits); dorsal `rake` 0.12 +
+  `taper` 0.4 on neon, cardinal, ember, rummynose; goldfish `analSplit` 45 with a larger anal (u0 0.37, h 0.13).
+- **Platy / molly males (build 435; Nathan chose the guppy convention):** `platy` / `molly` are the males with `gono`
+  (40 / 60 mm); today's looks became `platy~f` / `molly~f` = `her(male, { gono: undefined })` (55 / 80 mm), in species.json
+  `female` and fish3d's species list. Bodies identical; Nathan: fine. (Real females are rounder; not done.)
+- **Headless Record (d64bf79):** `npm run sheets -- --record` does the review page's Record button without a dev-server slot
+  (all 5 were taken). It must run on the hardware GPU (`--use-angle=d3d11`): under SwiftShader EVERY fingerprint differs.
+  Checked: it changed exactly my looks. Build stamped = commit count + 1 at start, like the button.
+- Not browser-checked in the app (no dev-server slot): the platy / molly Sex switch and stocking rows; tests cover the data.
+- Before/after composites: worktree `shots/x2/cmp-*.jpg` (gitignored).
+
 ## Plant growth (2026-10-15; design agreed in chat, lane GR1 prompt `prompts/lane-GR1-plant-growth.md`, not started)
 Nathan: each plant item gets a growth slider from just planted to fully mature / overgrown; what overgrown looks like
 depends on the species (lying along the surface in sheets, growing out of the tank, spreading). Each item (which may
@@ -1049,7 +1065,7 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | ADF African dwarf frog | `../Glass-Box-adf` / `adf-frog` | 5553 | `FROGS.adf` + new FrogSpec fields in `art/herps.ts` / `render/herp3d.ts`, the `adf` entries in `data/species.json`, `data/aqadvisor.json`, one line in `fish3d.species` | running (session `local_37002c35`), v1 sheet awaiting Nathan |
 | Z coral seating | `../Glass-Box-coral-seat` / `coral-seat` | 5563 | coral seating in `render/items.ts` (seatCorals) / `scene/items.ts` (seatHook), the coral drop in `src/interact/*`, `src/examples/reef.json` + `reef.jpg` | DONE, pushed (see its section) |
 | F2 harder fish | (worktree removed) | - | - | DONE (`8febeec`): fantail, kuhli, harlequin, oscar v3. Open: head geometry rejected by Nathan (cory / loach / SAE / marine heads have no generic); fantail doubled anal fin; lane X's leftovers not applied (noseCap on neon / cardinal / chili / cpd, characin dorsal taper, platy / molly gonopodium) |
-| X2 fish leftovers | `../Glass-Box-fish-x2` / `fish-x2` | 5583 | `art/fishgen.ts`, `render/fish3d.ts`, `art/paint.ts` (noseCap on neon / cardinal / chili / cpd, characin dorsal taper, platy / molly gonopodium, fantail doubled anal fin) | running (session `local_241f16c9`): steps 1, 2, 4 built, waiting on Nathan's yes + the platy / molly choice |
+| X2 fish leftovers | (worktree removed) | - | `art/fishgen.ts`, `render/fish3d.ts`, `art/paint.ts` (noseCap on neon / cardinal / chili / cpd, characin dorsal taper, platy / molly gonopodium, fantail doubled anal fin) | DONE 2026-10-15, pushed (see its section); fish files free; Sex switch browser-checked PASS (build 436) |
 | GR1 plant growth | `../Glass-Box-plants3d` / `plants3d` | 5283 | see the "Plant growth" section (growth value, Height removed, lying over at the surface) | ready to open (prompt `prompts/lane-GR1-plant-growth.md`); GR2 / GR3 after it |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 Free (no lane): `render/build.ts`, `render/items.ts`, `scene/items.ts`, `render/viewer.ts`, `main.ts`, `render/lighting.ts`,

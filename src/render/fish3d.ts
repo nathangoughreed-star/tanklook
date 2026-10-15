@@ -4,7 +4,7 @@
 // card stays as the fins (thin membranes); its painted body sits inside the solid. Nose and tail tips are unchanged,
 // so nose-to-tail stays adult TL.
 import * as THREE from 'three';
-import { bodyPlan, drawTail, eyeSpot, pairedFins, profile, tailBox, type Plan } from '../art/fishgen';
+import { analBox, bodyPlan, drawAnal, drawTail, eyeSpot, pairedFins, profile, tailBox, type Plan } from '../art/fishgen';
 import { FIN_A, rng, style } from '../art/paint';
 import { HERP3D } from '../art/herps';
 import { SNAILS } from '../art/snails';
@@ -15,7 +15,7 @@ import { isShrimp3D, shrimpBody } from './shrimp3d';
 /** Species drawn in 3D (test set) and switches for before/after pictures. `fade` = the session-10 fixes (turned-away paint fades, card body cut out, body-shape fields, barbels); off = session 9, for pictures. `wrap` = the turned-away paint is smeared lengthwise (bars and spots don't close into hoops over the back and throat); off = session 11's round blur. */
 export const fish3d = { on: true, fade: true, wrap: true, species: new Set(['cardinal', 'discus', 'bronzecory', 'tigerbarb', 'bristlenose', 'kuhli', 'angel', 'danio', 'guppy', 'dwarfgourami', 'gbr', 'harlequin', 'oto', 'clownloach', 'goldfish', 'ember', 'rummynose', 'chili', 'cherrybarb', 'platy', 'molly', 'swordtail', 'betta', 'honeygourami', 'bolivianram', 'kribensis', 'oscar', 'pandacory', 'sae', 'tetra', 'gourami', 'ocellaris', 'royalgramma', 'yellowtang', 'firefish', 'banggai', 'sixline', 'chromis', 'coralbeauty', 'watchman', 'cherryshrimp', 'amano', 'cleanershrimp', 'nerite', 'mystery', 'ramshorn', 'trumpet', 'turbo', 'hermit', 'dartfrog', 'treefrog', 'firetoad', 'adf', 'firenewt', 'axolotl',
   // females of the dimorphic species (species.json `female`)
-  'betta_f', 'guppy_f', 'swordtail_f', 'dwarfgourami_f', 'honeygourami_f', 'cherrybarb_f', 'kribensis_f', 'gbr_f', 'gourami_f', 'peapuffer', 'peapuffer_f', 'hatchet', 'cpd', 'cpd_f']) };
+  'betta_f', 'guppy_f', 'swordtail_f', 'dwarfgourami_f', 'honeygourami_f', 'cherrybarb_f', 'kribensis_f', 'gbr_f', 'gourami_f', 'peapuffer', 'peapuffer_f', 'hatchet', 'cpd', 'cpd_f', 'platy_f', 'molly_f']) };
 
 export const has3D = (art: string) => fish3d.on && fish3d.species.has(art) && (bodyPlan(art)?.thick != null || art in SNAILS || art in HERP3D);
 
@@ -243,6 +243,40 @@ function splitTail(art: string, p: Plan, bend: number, edge: EdgeMode) {
   });
 }
 const texCache = new Map<string, THREE.Texture>();
+
+/**
+ * Doubled anal fin (`analSplit`, fantail goldfish): two copies of the anal, the card's own left out. Along the belly
+ * they lie together in the card plane; lower down they splay apart to either side (an inverted V from the front).
+ */
+function splitAnal(art: string, p: Plan, bend: number, edge: EdgeMode) {
+  const ab = analBox(p), m = 0.01, box = { u0: ab.u0 - m, v0: ab.v0 - m, w: ab.u1 - ab.u0 + 2 * m, h: ab.v1 - ab.v0 + 2 * m };
+  const prof = profile(p), tan = Math.tan(p.analSplit! * Math.PI / 180);
+  const R = 1024, key = `anal2:${art}`;
+  let tex = texCache.get(key + edge);
+  if (!tex) {
+    const c = document.createElement('canvas'); c.width = Math.ceil(box.w * R); c.height = Math.ceil(box.h * R);
+    const ctx = c.getContext('2d')!; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    style.finA = edge === 'a2c' ? 0.36 : FIN_A; style.features = false; style.paired = false;
+    drawAnal(p, ctx, (u, v) => [(u - box.u0) * R, (v - box.v0) * R], R);
+    style.finA = FIN_A; style.features = true; style.paired = true;
+    tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8; texCache.set(key + edge, tex);
+  }
+  const mat = cardMaterial(key, tex, edge); mat.userData.fishCard = true;
+  return [1, -1].map(side => {
+    const gk = `${key}:${bend}:${side}`;
+    let g = geoCache.get(gk);
+    if (!g) {
+      g = new THREE.PlaneGeometry(box.w, box.h, 12, 12); g.translate(box.u0 + box.w / 2 - 0.5, -(box.v0 + box.h / 2), 0);
+      const pos = g.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        const x = pos.getX(i), u = x + 0.5, v = -pos.getY(i), below = Math.max(0, v - prof(Math.min(1, Math.max(0, u)))[1] + 0.02);
+        pos.setZ(i, bendZ(bend, x) + side * (below * tan + 0.003));
+      }
+      g.computeVertexNormals(); g.computeBoundingSphere(); g.userData.keep = true; geoCache.set(gk, g);
+    }
+    return new THREE.Mesh(g, mat);
+  });
+}
 
 const SPREAD = { pelvic: 0.6, pectoral: 0.75 };
 /** Swing of the paired fins on a fish clinging to glass: pressed out flat against the pane, pectorals swept back. */
@@ -506,6 +540,7 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
   }
   const belly = bellyPlate(art, p, b); if (belly) grp.add(belly);
   if (p.tail.split) for (const m of splitTail(art, p, b, edge)) grp.add(m);
+  if (p.analSplit && p.anal && !p.gono) for (const m of splitAnal(art, p, b, edge)) grp.add(m);
   for (const f of finMeshes(art, p, b, edge, cling)) grp.add(f);
   if (p.limbs) {
     const mat = (c?: string) => fishMat(`limb:${art}:${c ?? ''}`, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(c ?? p.shade[0]).multiplyScalar(0.9) })); // own colour (cleaner shrimp's white antennae) or the back's
