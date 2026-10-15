@@ -22,6 +22,7 @@ export interface MedianFin {
   rake?: number; tip?: 'round' | 'point'; trail?: number; drop?: number; // drop: the rear tip's height (share of h)
   lead?: number; // height where the soft part starts, share of h (default 0.55; low = a raked pennant)
   fringe?: boolean; // the soft part's edge ragged with free ray tips (pearl gourami male's anal fin)
+  taper?: number; // the soft top falls in a straight line from the peak to this share of h at the base end (characins: high in front, low at the rear; off by default)
   tint?: string; a?: number; edge?: string;
 }
 type AnyFin = FinSpec | MedianFin;
@@ -178,7 +179,7 @@ function medianPts(f: MedianFin, base: (u: number) => number, sg: number): { pts
   const r = Math.min(f.rake ?? 0.4, 0.999), n = 7, h0 = S > 0 ? hEnd * 0.85 : h * (f.lead ?? 0.55), pointy = f.tip === 'point';
   for (let i = S > 0 ? 1 : 0; i <= n; i++) {
     const t = i / n, s = S + (1 - S) * t, u = at(s);
-    const hh = t < r ? h0 + (h - h0) * Math.sin(t / r * Math.PI / 2) : h * (1 - (pointy ? 0 : 0.25) * ((t - r) / (1 - r)) ** 2);
+    const hh = t < r ? h0 + (h - h0) * Math.sin(t / r * Math.PI / 2) : f.taper !== undefined ? h * (1 - (1 - f.taper) * (t - r) / (1 - r)) : h * (1 - (pointy ? 0 : 0.25) * ((t - r) / (1 - r)) ** 2);
     if (f.fringe && i > 0) { const um = at(S + (1 - S) * (i - 0.5) / n); top.push([um, T(um, hh * 0.86)], [u, T(u, hh * 1.06), 'c']); }
     else top.push(i === 0 ? [u, T(u, hh), 'c'] : [u, T(u, hh)]);
     ray(u, hh, i === 0 && S === 0 ? 2.2 : 1);
