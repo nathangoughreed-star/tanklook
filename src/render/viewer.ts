@@ -87,6 +87,42 @@ export function exportCrop(content: { x0: number; x1: number; y0: number; y1: nu
 /** The orbit centre (placeCamera looks at it), so tan units are measured from the direction to it. */
 const pivot = (T: Tank) => new THREE.Vector3(T.L / 2, T.H / 2, -T.D / 2);
 
+/**
+ * The first surface the eye actually sees along `ray` (the orbit pivot, Viewer.pinOrbit): any mesh in the scene (rock,
+ * gravel, backdrop, stand, room...), but not see-through overlays (glass, water, shadows, outlines: transparent without
+ * depth writes), not where a clipping plane cuts the mesh away, and not through the clear part of a fish or plant card.
+ */
+function seenAt(scene: THREE.Scene, ray: THREE.Ray) {
+  const shown = (o: THREE.Object3D | null): boolean => !o || (o.visible && shown(o.parent));
+  for (const h of new THREE.Raycaster(ray.origin, ray.direction).intersectObject(scene, true)) {
+    const o = h.object as THREE.Mesh; if (!o.isMesh || o.userData.dot != null || !shown(o)) continue;
+    const ms = ([] as THREE.Material[]).concat(o.material), m = Array.isArray(o.material) ? ms[h.face?.materialIndex ?? 0] : ms[0];
+    if (!m || !m.visible || !m.colorWrite || (m.transparent && !m.depthWrite) || m.depthTest === false) continue;
+    if (m.clippingPlanes?.some(pl => pl.distanceToPoint(h.point) < 0)) continue;
+    const map = (m as THREE.MeshBasicMaterial).map;
+    if (map && h.uv && (m.alphaTest > 0 || m.alphaToCoverage || m.transparent) && alphaAt(map, h.uv) * m.opacity < Math.max(m.alphaTest, 0.3)) continue;
+    return h.point.clone();
+  }
+  return null;
+}
+/** Texture alpha at uv, 0-1 (1 when the image cannot be read). Each texture is copied to a canvas once. */
+const alphaCache = new WeakMap<THREE.Texture, ImageData | null>();
+function alphaAt(t: THREE.Texture, uv: THREE.Vector2) {
+  if (!alphaCache.has(t)) {
+    let d: ImageData | null = null;
+    try {
+      const img = t.image as CanvasImageSource & { width: number; height: number };
+      const c = document.createElement('canvas'); c.width = img.width; c.height = img.height;
+      const g = c.getContext('2d', { willReadFrequently: true })!; g.drawImage(img, 0, 0); d = g.getImageData(0, 0, c.width, c.height);
+    } catch { /* not drawable (a data texture) */ }
+    alphaCache.set(t, d);
+  }
+  const d = alphaCache.get(t); if (!d) return 1;
+  const p = uv.clone(); t.transformUv(p);
+  const x = Math.min(d.width - 1, Math.max(0, Math.floor(p.x * d.width))), y = Math.min(d.height - 1, Math.max(0, Math.floor(p.y * d.height)));
+  return d.data[(y * d.width + x) * 4 + 3] / 255;
+}
+
 /** The faces of a frosted sheet as planes whose normal points away from the tank's centre (outside = the room side). */
 function outwardPlanes(m: THREE.Mesh, T: Tank): THREE.Plane[] {
   const pos = m.geometry.attributes.position, idx = m.geometry.index, n = idx ? idx.count : pos.count;
@@ -158,11 +194,9 @@ export class Viewer {
    */
   private pin: { i: number; nx: number; ny: number; P: THREE.Vector3 } | null = null;
   pinOrbit(clientX: number, clientY: number) {
-    const hit = this.hitTest(clientX, clientY); if (!hit) return;
+    const hit = this.hitTest(clientX, clientY); if (!hit || !this.shown[hit.vp.i]) return; // not drawn yet: no camera to aim from
     const vp = hit.vp, r = this.host.getBoundingClientRect(), x = clientX - r.left - vp.x, y = clientY - r.top - vp.y;
-    const meshes = [...(vp.fishMeshes ?? []), ...(vp.itemMeshes ?? [])];
-    const P = new THREE.Raycaster(hit.ray.origin, hit.ray.direction).intersectObjects(meshes, false)[0]?.point
-      ?? hit.ray.closestPointToPoint(pivot(vp.T), new THREE.Vector3());
+    const P = (vp.scene && seenAt(vp.scene, hit.ray)) ?? hit.ray.closestPointToPoint(pivot(vp.T), new THREE.Vector3());
     this.pin = { i: vp.i, nx: x / vp.w * 2 - 1, ny: 1 - y / vp.h * 2, P };
   }
   unpinOrbit() { this.pin = null; }
