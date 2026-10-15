@@ -12,7 +12,7 @@ import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixt
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene, TANK_PRESETS } from '../scene/defaults';
-import { DEFAULT_DENS, EPIPHYTES, KINDS, perch, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
+import { COMPS, DEFAULT_DENS, EPIPHYTES, KINDS, perch, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
 import { handEdits, regenerate, shuffleHard } from '../scene/starter';
 import { growthOf, isClump, isFloat, isPatch, type PlantType } from '../art/plants';
 import { clumpAuto } from '../render/plant3d';
@@ -34,7 +34,7 @@ import { tankWeight } from '../scene/weight';
 import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, aqWaitS, fetchAqHealth, fetchStocking, type AqHealth } from '../data/aqadvisor';
 import { BOWL_DEFAULT, BOWL_MAX, BOWL_MIN, PIE_DEFAULT, POLY_SIDES, SHAPES, bowMinLimit, offsetRing, ringArea, shapeOf } from '../scene/shape';
 import { TABLE_MAX, tableOn, tableRange, wallGap } from '../scene/table';
-import type { BgFit, BgSide, Fish, GrowFeed, Item, ItemKind, LayoutId, LightTech, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
+import type { BgFit, BgSide, CompId, Fish, GrowFeed, Item, ItemKind, LayoutId, LightTech, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
 import { FEED_NAMES, setGrowTime, setPlantGrowth, timeChanges } from '../scene/growtime';
 import { GLASS_CHOICES, LIMITS, SceneError, parseScene } from '../scene/validate';
 import { deleteFromLib, listLib, loadFromLib, saveToLib } from '../scene/library';
@@ -968,6 +968,7 @@ Cancel, then change the name, to keep both.`)) return;
     else if (d.dataset.sec === 'fish' && store.selId != null) store.select(null);
   });
   $<HTMLSelectElement>('layout').innerHTML = Object.entries(LAYOUTS).map(([k, l]) => `<option value="${k}">${esc(l.label)}</option>`).join('');
+  $<HTMLSelectElement>('layoutComp').innerHTML = Object.entries(COMPS).map(([k, c]) => `<option value="${k}" title="${esc(c.hint)}">${esc(c.label)}</option>`).join('');
   // a starter set replaces every piece (undoable), and the animals when its animal stop is above None; the pieces are
   // then ordinary items
   let fishId0 = 1;
@@ -1003,6 +1004,15 @@ Cancel, then change the name, to keep both.`)) return;
     });
     dropGoneFish();
     status('New starter set placed. Ctrl+Z brings the previous pieces back.');
+  };
+  // Composition (lane SS, 2026-10-15): where the weight of any style sits; redraws the hardscape and the plants round it
+  // (animals stay). Shuffle and the density sliders keep it.
+  $<HTMLSelectElement>('layoutComp').onchange = async e => {
+    const to = (e.target as HTMLSelectElement).value as CompId;
+    if (!await okToReplace('hard', () => setVal('layoutComp', S().layout.comp ?? 'any'))) return;
+    store.selectItem(null);
+    store.edit(s => { if (to === 'any') delete s.layout.comp; else s.layout.comp = to; regenerate(s, 'hard', 0); });
+    status(`Composition: ${COMPS[to].label}. Ctrl+Z brings the previous pieces back.`);
   };
   // each menu's Shuffle redraws its own layer only (Nathan 2026-10-15); Animals' Shuffle moves the animals (above)
   $('layoutShuffle').onclick = async () => {
@@ -1655,6 +1665,7 @@ Cancel, then change the name, to keep both.`)) return;
     ($('split') as HTMLButtonElement).disabled = store.split;
     $('splitHint').textContent = store.split ? 'Two tanks is the most: Delete one on its tab to split again. Each view’s tab (top of the view) opens on hover: what differs, Download that tank on its own, or Delete it. Save and Download at the top keep both tanks together.' : 'Copy this tank into a second, independent one beside it, then change anything in either.';
     setVal('edge', s.render.edge); $('gridOn').checked = s.render.grid; setVal('pop', Math.round(s.render.pop * 100)); setOut('oPop', s.render.pop ? `${Math.round(s.render.pop * 100)} %` : 'off');
+    setVal('layoutComp', s.layout.comp ?? 'any'); ($('layoutComp') as HTMLSelectElement).disabled = s.layout.id === 'none';
     setVal('layout', s.layout.id); // "Bare tank" says there is nothing in it, which stops being true once a piece is added by hand (G2, 2026-10-14)
     $('layoutHint').textContent = s.layout.id === 'none' && s.items.length ? 'A starter set replaces every piece; or add, move and remove pieces yourself.' : LAYOUTS[s.layout.id].hint + ' Then move, add or remove any piece.';
     ($('layoutShuffle') as HTMLButtonElement).disabled = ($('plantShuffle') as HTMLButtonElement).disabled = s.layout.id === 'none';

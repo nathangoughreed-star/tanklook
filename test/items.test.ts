@@ -112,11 +112,13 @@ describe('aquascape items (scene v9)', () => {
         s.layout.seed = seed; s.layout.dens = { hard: seed % 5, plant: seed % 5, animal: 0 }; const items = starterItems(s);
         counts.push(items.length); items.filter(i => i.kind !== 'plant').forEach(i => kinds.add(i.variant));
         const solid = items.filter(i => i.kind !== 'plant' || i.variant !== 'carpet');
-        if (solid.length) xs.push(solid.reduce((a, i) => a + i.x, 0) / solid.length / s.tank.L);
+        // Dutch fills the whole floor; its composition is in how tall the terraces stand, so it is weighed by plant height
+        const w = (i: { size: number }) => id === 'dutch' ? i.size : 1, W = solid.reduce((a, i) => a + w(i), 0);
+        if (solid.length) xs.push(solid.reduce((a, i) => a + i.x * w(i), 0) / W / s.tank.L);
       }
       expect(Math.max(...counts) / Math.max(1, Math.min(...counts))).toBeGreaterThan(id === 'swamp' ? 2 : 2.5);
       if (id === 'stones' || id === 'iwagumi' || id === 'driftwood') expect(kinds.size).toBeGreaterThan(2);
-      if (id !== 'swamp') expect(Math.max(...xs) - Math.min(...xs)).toBeGreaterThan(id === 'planted' ? 0.1 : 0.2); // the weight of the set moves about
+      if (id !== 'swamp') expect(Math.max(...xs) - Math.min(...xs)).toBeGreaterThan(id === 'planted' || id === 'dutch' ? 0.1 : 0.2); // the weight of the set moves about
     }
   });
   it('selecting an item clears the fish selection and the other way round; undo keeps it valid', () => {

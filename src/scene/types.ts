@@ -179,7 +179,11 @@ export interface TerrainSettings { on: boolean; cols: number; rows: number; h: n
  * the tank size and the seed. It stays recorded as the set the tank started from; 'swamp' also shapes the land. 'reef'
  * (2026-10-14): live rock and corals, offered in a saltwater tank only.
  */
-export type LayoutId = 'none' | 'stones' | 'driftwood' | 'planted' | 'iwagumi' | 'swamp' | 'reef';
+export type LayoutId = 'none' | 'stones' | 'driftwood' | 'planted' | 'iwagumi' | 'swamp' | 'reef' | 'nature' | 'dutch' | 'jungle' | 'forest';
+/** Where a starter set's weight sits (lane SS, 2026-10-15): 'any' = the seed rolls it (as before); the others fix the
+ *  groups (scene/items.ts `starterStyle`): one centred mound, one side (a triangle), U (both sides high, open middle),
+ *  V (two islands, a valley between), scattered groups. */
+export type CompId = 'any' | 'mound' | 'side' | 'u' | 'v' | 'scattered';
 /**
  * How full each layer of a starter set is (lane SD, 2026-10-15): a stop 0..4 per layer, set by the stepped sliders
  * beside the layout picker (Sparse .. Packed; animals None .. Full). Each stop is a fraction of the layout's own range
@@ -189,7 +193,7 @@ export type LayoutId = 'none' | 'stones' | 'driftwood' | 'planted' | 'iwagumi' |
 export interface LayerDens { hard: number; plant: number; animal: number }
 /** `seed` draws the style and the hardscape (and a swamp's land); `plantSeed` / `animalSeed` draw the plants and the
  *  starter animals, so each menu's Shuffle redraws its own layer only (Nathan 2026-10-15). Absent = `seed`. */
-export interface LayoutSettings { id: LayoutId; seed: number; plantSeed?: number; animalSeed?: number; dens?: LayerDens }
+export interface LayoutSettings { id: LayoutId; seed: number; plantSeed?: number; animalSeed?: number; dens?: LayerDens; comp?: CompId }
 
 /** Library item kinds; the variant names the generator (scene/items.ts LIBRARY). */
 export type ItemKind = 'stone' | 'wood' | 'cave' | 'plant' | 'coral';
