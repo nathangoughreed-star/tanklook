@@ -1110,9 +1110,7 @@ Cancel, then change the name, to keep both.`)) return;
     $('aqOut').textContent = got !== undefined ? `${got}% (per AqAdvisor)${got > 100 ? ', overstocked' : ''}`
       : busy ? aqWaitText(key) : aqErr.get(key) ?? '';
     $('aqOut').className = got !== undefined && got > 100 ? 'bad' : '';
-    $('aqNote').textContent = [
-      q.standIns.length ? `Counted as a similar fish (not in AqAdvisor): ${q.standIns.map(k => `${k.count} ${k.name} as ${k.as}`).join(', ')}.` : '',
-      q.skipped.length ? `Not counted (land animals): ${q.skipped.map(k => `${k.count} ${k.name}`).join(', ')}.` : ''].filter(Boolean).join(' ');
+    $('aqNote').textContent = q.skipped.length ? `Not counted (land animals): ${q.skipped.map(k => `${k.count} ${k.name}`).join(', ')}.` : '';
   }
   /** The last answer each view (by its key, A/B) showed, so a change to the fish or the tank keeps the old number,
    *  in yellow, until ↻ is pressed (Nathan 2026-10-09). */
