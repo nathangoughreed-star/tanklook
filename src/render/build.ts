@@ -339,7 +339,11 @@ function addWater(sc: THREE.Scene, S: TankSetup, T: Tank) {
     const n = 24, prof = Array.from({ length: n + 1 }, (_, i) => new THREE.Vector2(Math.max(0.5, bowlRadius(T, y * i / n)), y * i / n));
     vol = new THREE.LatheGeometry([new THREE.Vector2(0, 0), ...prof, new THREE.Vector2(0, y)], 48).translate(T.L / 2, 0, -T.D / 2);
   } else vol = prismGeometry(footprint(T).ring, 0, y);
-  const m = new THREE.Mesh(vol, waterVolumeMaterial()); m.userData.nolight = true; m.userData.waterVol = true; m.renderOrder = 3; m.visible = S.water.opacity > 0; sc.add(m);
+  const m = new THREE.Mesh(vol, waterVolumeMaterial()); m.userData.nolight = true; m.renderOrder = 3; sc.add(m);
+  // at opacity 0 it still draws in the tank's first frame (uWater.w = 0, so alpha is exactly 0: no pixel changes), so
+  // its program links with the rest of the build, not on the first opacity step; then it hides (patchLook shows it)
+  m.userData.waterVol = S.water.opacity > 0 ? 'on' : 'off';
+  m.onAfterRender = () => { m.visible = m.userData.waterVol === 'on'; };
 }
 
 export const STAND_FINISHES: Record<TankSetup['stand']['finish'], { label: string; color: number }> = {
@@ -964,7 +968,7 @@ export function patchLook(sc: THREE.Scene, S: TankSetup) {
   sc.traverse(o => {
     const m = (o as THREE.Mesh).material as THREE.MeshBasicMaterial | undefined;
     if (!m?.userData) return;
-    if (o.userData.waterVol) o.visible = S.water.opacity > 0;
+    if (o.userData.waterVol) { o.userData.waterVol = S.water.opacity > 0 ? 'on' : 'off'; o.visible = o.userData.waterVol === 'on'; }
     if (m.userData.waterSurf) { m.color.copy(s.color); m.opacity = s.opacity; }
     else if (m.userData.wallPaint) m.color.set(S.wall.color);
     else if (m.userData.sub && S.substrate.type === 'custom') {

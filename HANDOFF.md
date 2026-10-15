@@ -2,6 +2,35 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Edit speed: water colour and light power (2026-10-15; lane EF2, branch `edit-speed`, port 5643; pushed to main)
+- **Water colour / opacity** (E1: 120-170 ms): the slow step was opacity leaving 0 (every example but reef starts at 0):
+  envKey held `tinted: opacity > 0`, so the whole tank rebuilt and three relinked its programs (82-243 ms in
+  `getProgramInfoLog`, about two thirds of it in the frost transmission pass). Now `addWater` builds the water volume
+  at opacity 0 too and `patchLook` shows / hides it (`userData.waterVol` 'on' / 'off'); envKey no longer sees opacity.
+  At opacity 0 the volume still draws in the tank's first frame (uWater.w = 0, so alpha is exactly 0: first and second
+  frame byte-identical, checked) so its program links with the build; `onAfterRender` then hides it.
+- **Light power** (E1: 33-41 ms "in store listeners"): it was the panel `sync` calling `lightOutCached`, which ran the
+  light model (~35-70 ms, `bandsAt` / `addSrc` over 576 points) on the first Power step, because with watts unset
+  nothing had run it. Two changes: (1) `unitKey` (scene/lightout.ts) holds only what the model reads: water on / level /
+  opacity (not colour or salt), substrate show / fl / fr / bl / br + albedo (not custom colour2 / share / mix / grain),
+  so a water colour or substrate colour step under a powered light no longer re-runs it; (2) with power unset,
+  `setLightUniforms` warms the model's 1 W cache (`warmSoon`, render/lighting.ts) 400 ms after the last draw, in an
+  idle callback (an orbit or drag keeps pushing it back). The app asks for a frame every frame, so idle periods are
+  at most ~16 ms: the 35-70 ms block cannot fit one, hence the debounce. Water opacity is a real model input, so an
+  opacity step with power set still re-runs it (correct: the readout changes).
+- **Numbers** (scripts/perf-baseline.mjs `--profile-edits 'water colour,light power' --idle-ms 1500`, one profiled
+  edit + its draw + readback, ms, interleaved before / after / before / after, Intel Arc D3D11, under load):
+  water colour iwagumi 357 / 444 -> 27 / 54, planted 208 / 208 -> 28 / 32, paludarium 295 / 274 -> 24 / 19, reef
+  35 / 32 -> 30 / 43 (no change: starts at 0.22); light power iwagumi 95 / 101 -> 23 / 33, planted 101 / 101 -> 20 / 25,
+  paludarium 44 / 35 -> 21 / 20, reef 44 / 40 -> 29 / 30. Shader link time on these edits now 0; the model not in the profile.
+- **Same picture:** incrementalCheck 133 edits, 0 differ; canvas byte diff before / after on all six examples + split,
+  as loaded and at water opacity 0.3: identical (betta 1 px / terrarium 15 px came from one base run's own jitter; base
+  re-runs match the after shots byte for byte). New tests: incremental (volume patched in / out), lightout (cache key).
+- **Not done:** E2's unitKey note (JSON.stringify per draw, <0.1 ms) left as is: the store mutates objects in place, so
+  memoising on object identity would be wrong. The frost transmission pass re-resolving programs per frame (E1 #6) is
+  untouched (not an edit cost). Harness additions: `--profile-edits`, `--idle-ms`, `--no-buckets`, `--shots dir`,
+  `--incremental`, `--checks-only`; edits keep the first round apart (`firstTotal`, a step off a default).
+
 ## First download: examples on demand (2026-10-15; lane EF3, branch `download-size`, port 5653; pushed to main)
 - **The six example scenes are a lazy chunk** (`src/examples/scenes.ts`, ~131 kB / 21 kB gzip): `exampleScenes()` in
   `src/examples/index.ts` imports it once (shared promise, retried after a failure). `renderExamples` in panels.ts starts
@@ -87,6 +116,8 @@ Living file. Project state and dated decisions go here; update in place.
     Top ranked: #1 the one-gStone refactor (items.ts, GR4's file: coordinate), #2 why iwagumi links two hardscape
     programs, #3 non-blocking first link (compileAsync, viewer.ts: quiet), #4 water colour relinks, #5 merge fish parts
     per fish. Re-run after GR4 and AL land.
+  - **EF2 edit speed DONE 2026-10-15** (see its section): water colour off opacity 0 208-444 -> 19-54 ms (no rebuild, no
+    relink), first light power step 35-101 -> 20-33 ms (model warmed in idle time, narrower cache key); same picture.
   - **EF3 download size DONE 2026-10-15** (see its section): examples are a lazy chunk + image-file thumbnails; main
     176 -> 69 KiB gzip, first-load code 455 -> 349 KiB gzip. Model sheets were never in the first load (left as is).
   - **E2 code audit:** `../Glass-Box-audit` / `code-audit`, no dev server. Owns `research/efficiency/E2-*` and optional
@@ -1354,7 +1385,7 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | GR1 plant growth | `../Glass-Box-plants3d` / `plants3d` | 5283 | see the "Plant growth" section (growth value, Height removed, lying over at the surface) | DONE (`050e2d9`, `4a4e3a8`, build 440) |
 | SF single-file build fix | `../Glass-Box-single-fix` / `single-fix` | - (opens dist-single/tanklook.html directly) | `vite.config.ts`, `scripts/build-single.mjs` | ready to open (prompt `prompts/lane-SF-single-file.md`); found by E2: broken since d67ac73; also inline GR4's plantWorker chunk |
 | EF1 shader link time | `../Glass-Box-shader-link` / `shader-link` | 5633 | `render/items.ts` solidMaterial / GRIT / gritK, the first-picture / compile path in `render/viewer.ts` | ready to open (prompt `prompts/lane-EF1-shader-link.md`) |
-| EF2 edit speed | `../Glass-Box-edit-speed` / `edit-speed` | 5643 | `render/lighting.ts`, the water / frost rebuild in `render/build.ts`, store listeners in `scene/store.ts`, `scene/lightout.ts` | ready to open (prompt `prompts/lane-EF2-edit-speed.md`) |
+| EF2 edit speed | `../Glass-Box-edit-speed` / `edit-speed` | 5643 | `render/lighting.ts`, the water / frost rebuild in `render/build.ts`, store listeners in `scene/store.ts`, `scene/lightout.ts` | DONE 2026-10-15 (files free) |
 | EF3 download size | `../Glass-Box-download-size` / `download-size` | 5653 | `src/examples/index.ts` + the examples hooks in `ui/panels.ts` (start menu / Open dialog), model-sheet packaging after SF (SF owns `vite.config.ts`) | DONE 2026-10-15 (files free) |
 | E1 perf baseline | `../Glass-Box-perf2` / `perf-baseline` | 5623 | new `scripts/perf-baseline.mjs`, `research/efficiency/E1-*` (no src edits) | OPEN 2026-10-15 |
 | E2 code audit | `../Glass-Box-audit` / `code-audit` | - | `research/efficiency/E2-*`, `scripts/unused-exports.mjs` (no src edits) | OPEN 2026-10-15 |

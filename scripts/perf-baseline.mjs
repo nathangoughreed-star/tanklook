@@ -379,6 +379,8 @@ if (worst.length) {
     b.editProfiles = {};
     for (const name of opt('profile-edits', 'water colour').split(',').filter(Boolean)) {
       await open(DEV, view); await install(); await br.ev('__pb.settle()');
+      // --idle-ms: a pause before the edit, as a person leaves between clicks (idle-time work, e.g. the light model warm-up, runs)
+      if (+opt('idle-ms', 0)) { await sleep(+opt('idle-ms')); b.idleProbe = await br.ev('new Promise(r => requestIdleCallback(d => r(d.timeRemaining()), { timeout: 2000 }))'); }
       b.editProfiles[name] = await profileDraws(1, `(async () => { const ic = await import('/src/render/incrementalCheck.ts'); const e = ic.edits().find(x => x[0] === ${JSON.stringify(name)}); e[1](__gb.store); __gb.viewer.draw(); __gb.viewer.renderer.getContext().readPixels(0, 0, 1, 1, 6408, 5121, new Uint8Array(4)); })()`);
     }
     for (const x of extraAB) b.extra[x.name] = await br.ev(`__pb.ab(() => { ${x.a} }, () => { ${x.b} }, ${PAIRS})`);

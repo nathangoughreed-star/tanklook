@@ -36,7 +36,9 @@ describe('envKey / lookKey', () => {
     }
     const S = tank(); S.water.opacity = 0;
     const sc = buildTank({ ...S, units: 'cm' }, S.tank, null).scene, vol = () => { let v: THREE.Object3D | undefined; sc.traverse(o => { if (o.userData.waterVol) v = o; }); return v!; };
-    expect(vol().visible).toBe(false);
+    // drawn in the first frame (alpha 0, so its program links with the build), hidden after it
+    expect(vol().visible).toBe(true); expect(vol().userData.waterVol).toBe('off');
+    vol().onAfterRender(null!, sc, null!, null!, null!, null!); expect(vol().visible).toBe(false);
     S.water.opacity = 0.2; patchLook(sc, S); expect(vol().visible).toBe(true);
     S.water.opacity = 0; patchLook(sc, S); expect(vol().visible).toBe(false);
   });
