@@ -1122,6 +1122,23 @@ or a type with no `PLANT3D` entry). No scene version bump: plants were already i
 - To turn it on if AqAdvisor fixes the page: pass a `salt` flag through `AqQuery` -> proxy `sw=1` -> `AqAdvisorMarine.php`
   (no filter fields), include it in the worker's cache key, redeploy the worker.
 
+## Lane AL: condition / algae view (2026-10-15; branch `algae`; Nathan approved v2; pushed to main)
+
+- One manual **Condition** slider in the Water section: Pristine (0) .. A few weeks .. Overdue .. Neglected (1). Saved as
+  `condition: { level }` on the tank (validate clamps 0-1; old files load pristine; share links carry it).
+- Display only, all uniforms (`render/algae.ts` AU, set in `setWaterUniforms`): dragging never rebuilds; envKey ignores it.
+  At 0 every branch is skipped / discarded, so a pristine tank renders as before (tested).
+- Glass: one film mesh just inside the panes (not on a bowl yet): blotches growing in from pane edges, corners and the
+  waterline, spot algae dots (coralline in salt); the pane looked through grows less and fainter. Surface: scum band along
+  the glass only (an even film veiled the whole tank seen from above).
+- Hardscape (items.ts solidMaterial, backdrop too): brown diatoms first, then green fuzz on lit tops (weighted by the light
+  on the face), BBA on edges; salt: red cyano + bubble algae. Keyed to the piece's seeded local position (vGrit), so it
+  moves with the rock. Corals stay clean (aNoAlg attribute). Substrate: diatom patches, mulm along the glass, green/cyano
+  in light.
+- Decisions (Nathan 2026-10-15): NO water haze (his water never went hazy; even 6 % lifted a black background into a veil);
+  one slider, no per-effect sliders or algae types; the growth timeline does NOT drive it for now.
+- Open: algae on plant leaves (needs `render/plant3d.ts` / plant branch of items.ts, lane GR4's); bowl glass film.
+
 ## Lane E: live rock + corals (2026-10-14; branch `corals`; Nathan approved the style test, live rock salt only; pushed to main)
 
 - **Library** (`scene/items.ts`): `liverock` (kind `stone`, size = length) and new kind `coral` ("Corals" row): `acropora`
@@ -1264,7 +1281,7 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | GR4 GPU reveal + idle prebuild | `../Glass-Box-plants3d` / `plants3d` | 5283 | (free) | DONE (`d2f95c2`, `9aa4a13`): Time step 4.7-7.9 ms (was 65-98), first drag 10.6 ms (was 164). Open: single-plant Growth slider still builds on the main thread near the glass; prebuilt growth ~2x plant memory; carpet cache-key bug (E2) sent to it |
 | GR3 growth timeline + tank setting | (worktree removed) | - | see the "Plant growth" section (Feeding + Time, `scene/growtime.ts`) | DONE (`c9d615a`, `5931cb2`, build 452). GPU reveal + idle prebuild (Nathan's call) handed to GR2 |
 | SD scape density sliders | `../Glass-Box-scape-density` / `scape-density` | 5603 | `scene/items.ts` starterStyle / starterItems, LayoutSettings in `scene/types.ts`, layoutShuffle + layout picker in `ui/panels.ts` / `index.html`, new tests | foundation LIVE (`f3a1859`, build 468); waiting on Nathan: hand edits pinned vs replace the layer (replace ships now) |
-| AL dirty / algae view | `../Glass-Box-algae` / `algae` | 5613 | new `render/algae.ts`, `condition` tank setting in `scene/types.ts` + validate / share, water fog hook in `render/lighting.ts`, Condition section hook in `ui/panels.ts` / `index.html`; NOT plant leaves (GR4's files) | ready to open (prompt `prompts/lane-AL-algae.md`) |
+| AL dirty / algae view | `../Glass-Box-algae` / `algae` | 5613 | (released) | DONE 2026-10-15, pushed (see the Lane AL section); files free. Open: algae on plant leaves (after GR4) |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 Free (no lane): `render/build.ts`, `render/items.ts`, `scene/items.ts`, `render/viewer.ts`, `main.ts`, `render/lighting.ts`,
 `render/coral3d.ts`, `render/shrimp3d.ts` / `art/shrimps.ts`, `scene/share.ts`, herps / herp3d / snails / snail3d. A one-line hook in a free file is fine; name it
