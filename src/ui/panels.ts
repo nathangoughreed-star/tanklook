@@ -739,6 +739,8 @@ Cancel, then change the name, to keep both.`)) return;
   };
   $('wLevel').oninput = e => store.edit(s => setWaterLevel(s, +(e.target as HTMLInputElement).value), { coalesce: 'wLevel' });
   $('wOpac').oninput = e => store.edit(s => { s.water.opacity = +(e.target as HTMLInputElement).value; }, { coalesce: 'wOpac' });
+  // condition (lane AL): uniforms only, so it is live while dragging
+  $('cond').oninput = e => store.edit(s => { s.condition = { level: +(e.target as HTMLInputElement).value / 100 }; }, { coalesce: 'cond' });
   $('wColor').oninput = e => store.edit(s => {
     s.water.color = (e.target as HTMLInputElement).value;
     if (s.water.opacity < 0.05) s.water.opacity = 0.3; // picking a colour on clear water should show it
@@ -1382,7 +1384,7 @@ Cancel, then change the name, to keep both.`)) return;
 
     const wa = s.water;
     $('wOn').checked = wa.on;
-    for (const id of ['wLevel', 'wOpac', 'wColor', 'wClear', 'wTannin', 'wGreen', 'wReef', 'wOcean', 'wFresh', 'wSalt']) ($(id) as HTMLInputElement).disabled = !wa.on;
+    for (const id of ['cond', 'wLevel', 'wOpac', 'wColor', 'wClear', 'wTannin', 'wGreen', 'wReef', 'wOcean', 'wFresh', 'wSalt']) ($(id) as HTMLInputElement).disabled = !wa.on;
     $('wTypeOff').hidden = wa.on; // says why Type is greyed (audit #37)
     $('wFresh').classList.toggle('on', !wa.salt); $('wSalt').classList.toggle('on', !!wa.salt);
     for (const id of ['wTannin', 'wGreen']) $(id).style.display = wa.salt ? 'none' : '';
@@ -1405,6 +1407,7 @@ Cancel, then change the name, to keep both.`)) return;
     }
     const wk = `${isSalt(s)}`; if (wk !== waterKind) { waterKind = wk; renderResults(); } // the species list follows the water
     setVal('wLevel', wa.level); setOut('oLevel', wa.level >= 1 ? 'Full' : `${fmt(waterY(A, wa.level))} high`);
+    const cl = s.condition.level; setVal('cond', Math.round(cl * 100)); setOut('oCond', cl <= 0 ? 'Pristine' : cl < 0.35 ? 'A few weeks' : cl < 0.7 ? 'Overdue' : 'Neglected');
     setVal('wOpac', wa.opacity); setOut('oOpac', wa.opacity < 0.01 ? 'Clear' : Math.round(wa.opacity * 100) + '%'); setVal('wColor', wa.color);
 
     const l = s.light, fx = fixtureOf(l); setVal('lType', fx);

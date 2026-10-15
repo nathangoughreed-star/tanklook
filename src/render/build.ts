@@ -11,7 +11,8 @@ import { TABLE_TOP, cornerWalls, wallGap, tableCentre, tableOn, tableRing, wallP
 import { groundHeight, pieSegs, terrainDisc, terrainPoints } from '../scene/terrain';
 import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
 import { getImage } from '../scene/images';
-import { addBeams, addFixture, applyLighting, waterVolumeMaterial } from './lighting';
+import { LU, addBeams, addFixture, applyLighting, waterVolumeMaterial } from './lighting';
+import { addAlgae } from './algae';
 import { itemMesh } from './items';
 import { addBackdrop } from './backdrop';
 import { drapedCard, fish3d, fishBody, has3D, hullMaterial } from './fish3d';
@@ -934,7 +935,8 @@ export function envKey(S: TankSetup) {
   const { kelvin: _k, room: _r, bright: _b, watts: _w, tech: _t, par: _q, mapUnit: _u, mapStep: _ms, mapStepLux: _ml, bulbW: _bw, mapSlice: _sl, mapShells: _sh, mapDark: _dk, ...light } = S.light, { pop: _p, ...render } = S.render;
   const { color: _wc, opacity, ...water } = S.water, { color: _c, ...wall } = S.wall;
   const { color: _c1, color2: _c2, share: _s, mix: _m, ...custom } = S.substrate.custom;
-  return JSON.stringify({ ...S, fish: null, items: null, camera: null, grow: null, light, render, water: { ...water, tinted: opacity > 0 }, wall, substrate: { ...S.substrate, custom } });
+  // the condition (lane AL) is uniforms only
+  return JSON.stringify({ ...S, fish: null, items: null, camera: null, grow: null, condition: null, light, render, water: { ...water, tinted: opacity > 0 }, wall, substrate: { ...S.substrate, custom } });
 }
 /** The values `patchLook` sets. */
 export const lookKey = (S: TankSetup) => JSON.stringify([S.water.color, S.water.opacity, S.wall.color, S.substrate.custom]);
@@ -1006,7 +1008,7 @@ function addTerrainDots(sc: THREE.Scene, S: TankSetup, T: Tank, hot: number | nu
 
 export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: number | null, edit?: { hot: number | null }, selItem: number | null = null): BuiltTank {
   const sc = new THREE.Scene();
-  addTank(sc, S, T); addWater(sc, S, T); addSubstrate(sc, S, T); addBackdrop(sc, S.backdrop, T, S.render.rim, S.render.bgSides);
+  addTank(sc, S, T); addWater(sc, S, T); if (S.water.on) addAlgae(sc, T, waterY(T, S.water.level), LU); addSubstrate(sc, S, T); addBackdrop(sc, S.backdrop, T, S.render.rim, S.render.bgSides);
   const n0 = sc.children.length; addStand(sc, S, T);
   for (const o of sc.children.slice(n0)) o.userData.stand = true; // AR's stand toggle hides these
   addWall(sc, S, T); addPerson(sc, S, T); addFloor(sc, S, T);

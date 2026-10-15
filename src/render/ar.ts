@@ -356,7 +356,7 @@ async function runAR(viewer: Viewer, store: Store, _button?: HTMLButtonElement) 
     prep.reticle.visible = hit.ok;
     if (hit.ok) { prep.reticle.matrix.multiplyMatrices(rig.matrix, hit.m); prep.reticle.matrixWorldNeedsUpdate = true; }
     prep.sway(t);
-    setLightUniforms(vp.T, S.light, S.lid, S.render.beams, S); setWaterUniforms(vp.T, S.water, S.render.pop);
+    setLightUniforms(vp.T, S.light, S.lid, S.render.beams, S); setWaterUniforms(vp.T, S.water, S.render.pop, S.condition);
     LU.uWater.value.w *= AR_WATER;
     OUTLINE.uPop.value = S.render.pop; OUTLINE.uVpH.value = r.getDrawingBufferSize(new THREE.Vector2()).y;
     r.setClearColor(0x000000, 0);

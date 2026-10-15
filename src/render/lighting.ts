@@ -6,8 +6,9 @@
 // Room surfaces (wall, floor, stand, hood, person) are lit by the room light, plus light spilling out of the tank:
 // with the room light off, the tank is the only light in the room (Nathan, 2026-10-08).
 import * as THREE from 'three';
+import { ALGAE_GLSL, ALGAE_STEP, AU, setAlgaeUniforms } from './algae';
 import { clamp } from '../scene/physics';
-import type { LightSettings, Tank, WaterSettings } from '../scene/types';
+import type { ConditionSettings, LightSettings, Tank, WaterSettings } from '../scene/types';
 import { waterK, waterY } from '../scene/physics';
 import { bowlDims, bowlRadius, footprint, shapeOf } from '../scene/shape';
 
@@ -86,10 +87,11 @@ export const mapStepOf = (l: LightSettings, unit: 'rel' | 'par' | 'lux') =>
 /** The Light map ramp's bottom (navy) per unit: a colour step per doubling, yellow (4 steps up) on the "medium" band. */
 export const MAP_DIV = { rel: 1 / 16, par: 2.5, lux: 125 } as const;
 /** Water box (L, surface y, D) and tint per mm, and how far fish stand out (render.pop); set per viewport like the light. */
-export function setWaterUniforms(T: Tank, w: WaterSettings, pop = 0) {
+export function setWaterUniforms(T: Tank, w: WaterSettings, pop = 0, cond?: ConditionSettings) {
   LU.uPop.value = pop;
   LU.uWater.value.set(T.L, waterY(T, w.level), T.D, w.on ? waterK(w.opacity) : 0);
   LU.uWCol.value.set(w.color);
+  setAlgaeUniforms(cond, !!w.salt); // the tank's condition (lane AL), shared by every lit material
   // any tank but a box: the water is the box cut by the footprint's sides (half-planes in plan), else the box corners
   // outside curved or angled glass tint whatever is seen through them (the cabinet below). Was the bow's circle only
   // (73aabd9); a half round, corner, round or hexagon tank still hazed its stand (Nathan 2026-10-15). A bowl is a
@@ -187,7 +189,7 @@ const AQ_VERT = 'varying vec3 vAqP; varying vec3 vAqN;';
 const AQ_FRAG = `
 uniform vec4 uEm[${AQ_MAX}]; uniform int uEmN; uniform float uMode, uAmb, uBright, uNorm, uBeamM, uRef, uCard, uSub, uFish; uniform vec3 uLCol;
 float aqSpec = 0.0;
-uniform float uRoomMat, uRoomK, uSpillR, uTankRound; uniform vec3 uSpill, uTankMin, uTankMax; uniform vec4 uWater; uniform vec3 uWCol; uniform float uPop, uFishCard;
+uniform float uRoomMat, uRoomK, uSpillR, uTankRound, uAlgH; uniform vec3 uSpill, uTankMin, uTankMax; uniform vec4 uWater; uniform vec3 uWCol; uniform float uPop, uFishCard;
 varying vec3 vAqP; varying vec3 vAqN;
 ${BOW_GLSL}
 float aqHash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -318,7 +320,8 @@ vec3 aqRamp(float t) {  // t = log2(level) + 4, 0..7 -> navy, blue, cyan, green,
     vec3(0.95, 0.9, 0.1), vec3(1.0, 0.55, 0.05), vec3(0.9, 0.1, 0.1), vec3(1.0, 0.9, 0.9));
   t = clamp(t, 0.0, 7.0); int k = int(min(floor(t), 6.0));
   return mix(c[k], c[k + 1], t - float(k));
-}`;
+}
+${ALGAE_GLSL}`;
 // substrate anti-tiling: two copies of the texture (rotated + rescaled) blended by low-frequency noise, plus soft light/dark patches
 const AQ_MAP = `#ifdef USE_MAP
   vec4 aqTex = texture2D(map, vMapUv);
@@ -342,11 +345,11 @@ const AQ_MAP = `#ifdef USE_MAP
 
 function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithUniforms) {
   this.userData.pre?.(shader); // the material's own patch (hardscape: glass clip and grit) still applies under the lighting
-  Object.assign(shader.uniforms, LU, { uCard: { value: this.userData.card ? 1 : 0 }, uSub: { value: this.userData.sub ? 1 : 0 }, uFish: { value: this.userData.fish ? 1 : 0 }, uRoomMat: { value: this.userData.room ? 1 : 0 }, uFishCard: { value: this.userData.fishCard ? 1 : 0 } });
+  Object.assign(shader.uniforms, LU, AU, { uAlgH: { value: this.userData.solid ? 1 : 0 }, uCard: { value: this.userData.card ? 1 : 0 }, uSub: { value: this.userData.sub ? 1 : 0 }, uFish: { value: this.userData.fish ? 1 : 0 }, uRoomMat: { value: this.userData.room ? 1 : 0 }, uFishCard: { value: this.userData.fishCard ? 1 : 0 } });
   shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\n' + AQ_VERT)
     .replace('#include <begin_vertex>', '#include <begin_vertex>\nvAqP = (modelMatrix * vec4(transformed, 1.0)).xyz; vAqN = normalize(mat3(modelMatrix) * normal);');
   shader.fragmentShader = shader.fragmentShader.replace('#include <common>', '#include <common>\n' + AQ_FRAG)
-    .replace('#include <opaque_fragment>', 'vec3 aqLt = aqLight(); outgoingLight *= aqLt;\n' +
+    .replace('#include <opaque_fragment>', 'vec3 aqLt = aqLight(); outgoingLight *= aqLt;\n' + ALGAE_STEP +
       'if (uCard > 0.5) { float aqL = dot(outgoingLight, vec3(0.2126, 0.7152, 0.0722)); outgoingLight = max(mix(vec3(aqL), outgoingLight, 1.35 + 0.35 * uPop * uFishCard), 0.0) * (1.0 + 0.2 * uPop * uFishCard); }\n' +
       'float aqM = max(max(outgoingLight.r, outgoingLight.g), outgoingLight.b);\n' +
       // 3D fish body: the card's saturation, then a shoulder instead of the hard clamp (which flattens the form shading

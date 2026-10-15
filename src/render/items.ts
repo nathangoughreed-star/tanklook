@@ -382,8 +382,9 @@ export function solidMaterial(T: Tank) {
   // the lighting pass (render/lighting.ts aqPatch) takes over onBeforeCompile and runs userData.pre first
   const pre = (sh: THREE.WebGLProgramParametersWithUniforms) => {
     patch(sh);
-    sh.vertexShader = 'attribute vec4 aGrit;\nvarying vec4 vGrit;\n' + sh.vertexShader.replace('vGlassW = ', 'vGrit = aGrit; vGlassW = ');
-    sh.fragmentShader = GRIT + sh.fragmentShader
+    sh.vertexShader = 'attribute vec4 aGrit;\nvarying vec4 vGrit;\nattribute float aNoAlg;\nvarying float vNoAlg;\n' + sh.vertexShader.replace('vGlassW = ', 'vGrit = aGrit; vNoAlg = aNoAlg; vGlassW = ');
+    // condition view (lane AL, render/algae.ts): algae keyed to the piece's seeded local position, none on corals
+    sh.fragmentShader = 'varying float vNoAlg;\n#define ALG_MASK (1.0 - vNoAlg)\n#define ALG_POS vGrit.xyz\n' + GRIT + sh.fragmentShader
       .replace('#include <color_fragment>', '#include <color_fragment>\n  diffuseColor.rgb *= gritK();')
       .replace('#include <dithering_fragment>', '#include <dithering_fragment>\n  if (!gl_FrontFacing) gl_FragColor.rgb *= 0.55;');
   };
@@ -424,8 +425,13 @@ const dispose = (g: THREE.BufferGeometry) => g.dispose();
 
 function solidShape(it: Item) {
   const k = `${it.variant}|${it.seed}|${it.size}`;
-  const make = () => grit(it.kind === 'coral' || it.variant === 'liverock' ? reefShape(it.variant, it.seed, it.size) : it.kind === 'stone' ? stoneShape(it.variant, it.seed, it.size) : it.kind === 'wood' ? woodShape(it.variant, it.seed, it.size) : caveShape(it.variant, it.seed, it.size), GRIT_KIND[it.variant] ?? 2, it.seed);
+  const make = () => noAlgae(it, grit(it.kind === 'coral' || it.variant === 'liverock' ? reefShape(it.variant, it.seed, it.size) : it.kind === 'stone' ? stoneShape(it.variant, it.seed, it.size) : it.kind === 'wood' ? woodShape(it.variant, it.seed, it.size) : caveShape(it.variant, it.seed, it.size), GRIT_KIND[it.variant] ?? 2, it.seed));
   return shapes.get(k) ?? remember(shapes, k, make(), 150, dispose);
+}
+/** Corals stay clean in the condition view (lane AL, render/algae.ts): aNoAlg = 1 (absent = 0, algae allowed). */
+function noAlgae(it: Item, g: THREE.BufferGeometry) {
+  if (it.kind === 'coral') g.setAttribute('aNoAlg', new THREE.Float32BufferAttribute(new Float32Array(g.attributes.position.count).fill(1), 1));
+  return g;
 }
 /** A piece's turn: yaw about the vertical, then pitch (tip forward / back), then roll (lean sideways). */
 const itemEuler = (it: Item) => new THREE.Euler(it.pitch * D2R, it.yaw * D2R, it.tilt * D2R, 'YXZ');

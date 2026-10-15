@@ -32,6 +32,7 @@ export function defaultSetup(): TankSetup {
     person: { show: false, height: 1750, side: 'left' },
     backdrop: { kind: 'none', depth: 50, seed: 1 },
     grow: { feed: 'low', time: 0 },
+    condition: { level: 0 },
     fish: [
       fish('angel', 0.45 * A.L, 0.55 * A.H, 0.5 * A.D),
       fish('neon', 0.8 * A.L, 0.22 * A.H, 0.05 * A.D),

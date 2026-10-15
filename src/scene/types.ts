@@ -278,6 +278,10 @@ export interface BackdropSettings { kind: BackdropKind; depth: number; seed: num
 export type GrowFeed = 'low' | 'ferts' | 'co2';
 export interface GrowSettings { feed: GrowFeed; time: number }
 
+/** How clean the tank looks (lane AL, 2026-10-15), display only: 0 = pristine .. 1 = neglected (algae on the glass,
+ *  hardscape and substrate). One slider. Older files: pristine. */
+export interface ConditionSettings { level: number }
+
 export interface TankSetup {
   tank: Tank;
   camera: CameraSettings;
@@ -293,6 +297,7 @@ export interface TankSetup {
   person: PersonSettings;
   backdrop: BackdropSettings;
   grow: GrowSettings;
+  condition: ConditionSettings;
   fish: Fish[];
   /** Rocks, wood, caves and plants (scene v9). */
   items: Item[];

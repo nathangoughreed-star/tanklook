@@ -163,7 +163,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
 
   const tankA = tank(raw.tank, d.tank);
   const c = sub('camera'), r = sub('render'), l = sub('light'), s = sub('substrate'), lay = sub('layout');
-  const te = sub('terrain'), wa = sub('water'), st = sub('stand'), w = sub('wall'), pe = sub('person'), bd = sub('backdrop'), gw = sub('grow');
+  const te = sub('terrain'), wa = sub('water'), st = sub('stand'), w = sub('wall'), pe = sub('person'), bd = sub('backdrop'), gw = sub('grow'), cd = sub('condition');
   const glass = r.glass === 'auto' ? 'auto' : typeof r.glass === 'number' && GLASS_CHOICES.includes(r.glass) ? r.glass : 'auto';
   const subMax = tankA.H * 0.5;
 
@@ -281,6 +281,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
     grow: { // added 2026-10-15 (lane GR3); older files: low-tech, Time 0
       feed: pick(gw.feed, ['low', 'ferts', 'co2'] as const, 'low'), time: Math.round(num(gw.time, 0, 0, 1) * 1000) / 1000,
     },
+    condition: { level: Math.round(num(cd.level, 0, 0, 1) * 1000) / 1000 }, // added 2026-10-15 (lane AL); older files: pristine
     person: {
       show: bool(pe.show, d.person.show), height: num(pe.height, d.person.height, ...LIMITS.person),
       side: pick(pe.side, ['left', 'right'] as const, d.person.side),
