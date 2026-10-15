@@ -1206,6 +1206,12 @@ Plan approved by Nathan (batches in severity order). Pictures: `shots/g2/` in th
   frog's height alone when the water level changes. Rendering needed nothing new: `onGlass` already lays any
   card + 3D body belly to the pane. Test in scatter.test.ts. Checked in the tree frog terrarium example.
 - Dart frogs, toads, newts unchanged (no `cling`).
+- **On the 3D wall (2026-10-15; Nathan: "animals should cling to the 3d backgrounds surface"):** where the backdrop
+  covers the pane, `onGlass` (build.ts) lays the animal on the relief instead of the glass behind it: `onWall` casts 5
+  rays toward the glass (middle, ± half a body along head and side) at the cached `backdropGeometry`, fits a plane,
+  lifts it over the highest hit, tilts no more than ~70° off the glass. No wall there -> glass as before. Glass parts'
+  reuse key includes the backdrop + bgSides + rim (`wallKey`). Applies to every `onGlass` animal (tree frogs, plecos,
+  otos); snails on glass (`snailMeshes`) still sit on the pane.
 - **Glass pose (Nathan's two photos, same day):** `HERP3D_GLASS.treefrog` (`frogOnGlass3D`, herps.ts): belly levelled
   flat onto the pane, arms folded under the chin, hind legs folded tight along the flanks, toe pads turned in under
   the belly; cream starts lower round the section. `herpBody(art, w, glass)`; build.ts passes `f.surface === 'glass'`.
