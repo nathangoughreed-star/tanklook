@@ -52,4 +52,24 @@ describe('3D back wall (2026-10-15)', () => {
     const plant = makeItem(T, 'anubias', 9, 1, T.L / 2, T.D, {}, s.tanks[0]);
     expect(plant.depth).toBeLessThanOrEqual(T.D - 42);
   });
+
+  it('covers every chosen side, round the corner, and keeps fish and plants clear of each (Nathan 2026-10-15)', () => {
+    const s = defaultScene(), T = s.tanks[0].tank, b = { kind: 'cork' as const, depth: 50, seed: 2 };
+    const box = (sides: ('back' | 'left' | 'right' | 'front')[]) => { const g = backdropGeometry(T, b, false, sides)!; g.computeBoundingBox(); return g.boundingBox!; };
+    const back = box(['back']), bl = box(['back', 'left']), all = box(['back', 'left', 'right', 'front']);
+    expect(-back.max.z).toBeGreaterThan(T.D - 51); // back only: nothing out in the middle of the tank
+    expect(bl.max.x).toBeCloseTo(T.L); expect(-bl.max.z).toBeLessThan(1); // the left wall runs to the front glass
+    expect(backdropGeometry(T, b, false, [])).toBeNull();
+    expect(all.min.x).toBeLessThan(2); expect(all.max.x).toBeGreaterThan(T.L - 2); expect(-all.max.z).toBeLessThan(2); // a closed ring, just in from the glass
+    // the left wall is in from the left glass only by its depth
+    const g = backdropGeometry(T, b, false, ['left'])!, p = g.attributes.position;
+    let maxX = 0; for (let i = 0; i < p.count; i++) maxX = Math.max(maxX, p.getX(i));
+    expect(maxX).toBeLessThanOrEqual(50 + 1e-6);
+    const f = { id: 1, species: 'neon', x: 0, y: 100, depth: T.D } as Fish;
+    clampFish(f, T, 50, ['back', 'left']);
+    expect(f.x).toBeCloseTo(60); expect(f.depth).toBeCloseTo(T.D - 60);
+    s.tanks[0].backdrop = { kind: 'moss', depth: 60, seed: 1 }; s.tanks[0].render.bgSides = ['right'];
+    const plant = makeItem(T, 'anubias', 9, 1, T.L, T.D / 2, {}, s.tanks[0]);
+    expect(plant.x).toBeLessThanOrEqual(T.L - 42);
+  });
 });

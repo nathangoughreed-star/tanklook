@@ -323,9 +323,9 @@ Cancel, then change the name, to keep both.`)) return;
   $<HTMLSelectElement>('bgSel').innerHTML = Object.entries(BACKGROUNDS).map(([k, b]) => `<option value="${k}">${esc(b.label)}</option>`).join('');
   $<HTMLSelectElement>('bgSel').onchange = e => store.edit(s => { s.render.bg = (e.target as HTMLSelectElement).value as TankSetup['render']['bg']; });
   for (const [id, side] of BG_BTNS)
-    $(id).onclick = () => store.edit(s => { const b = s.render.bgSides; s.render.bgSides = b.includes(side) ? b.filter(k => k !== side) : [...b, side]; });
+    $(id).onclick = () => store.edit(s => { const b = s.render.bgSides; s.render.bgSides = b.includes(side) ? b.filter(k => k !== side) : [...b, side]; wallFit(s); }); // the 3D wall follows the sides
   $('bgArc').oninput = e => store.edit(s => { s.render.bgArc = +(e.target as HTMLInputElement).value; }, { coalesce: 'bgArc' });
-  // 3D back wall (Nathan 2026-10-15): animals and plants are pushed in front of it when it appears or grows
+  // 3D wall (Nathan 2026-10-15), on the background's sides: animals and plants are pushed in front of it when it appears or grows
   const wallFit = (s: TankSetup) => { keepInWater(s); for (const it of s.items) clampItem(it, s.tank, s); };
   $<HTMLSelectElement>('bdSel').innerHTML = Object.entries(BACKDROPS).map(([k, l]) => `<option value="${k}">${esc(l)}</option>`).join('');
   $<HTMLSelectElement>('bdSel').onchange = e => store.edit(s => { s.backdrop.kind = (e.target as HTMLSelectElement).value as TankSetup['backdrop']['kind']; wallFit(s); });
@@ -631,7 +631,7 @@ Cancel, then change the name, to keep both.`)) return;
     store.edit(s => {
       const f = s.fish.find(q => q.id === src); if (!f) return;
       const n: Fish = { ...f, id, x: f.x + fishTL(f, speciesOf(f)!) * 0.9 };
-      clampFish(n, s.tank, backdropDepth(s.backdrop, s.tank)); s.fish.push(n);
+      clampFish(n, s.tank, backdropDepth(s.backdrop, s.tank), s.render.bgSides); s.fish.push(n);
     });
     store.select(id);
   };
@@ -1203,7 +1203,7 @@ Cancel, then change the name, to keep both.`)) return;
     for (const [id, lid] of LIDS) $(id).classList.toggle('on', s.lid === lid);
     setVal('bgSel', s.render.bg);
     for (const [id, side] of BG_BTNS) { const on = s.render.bgSides.includes(side); $(id).classList.toggle('on', on); $(id).setAttribute('aria-pressed', String(on)); }
-    $('bgSidesRow').style.display = s.render.bg === 'none' ? 'none' : '';
+    $('bgSidesRow').style.display = s.render.bg === 'none' && s.backdrop.kind === 'none' ? 'none' : ''; // sides of the colour and the 3D wall
     $('bgArcRow').style.display = s.render.bg !== 'none' && (sh === 'round' || sh === 'bowl') ? '' : 'none';
     syncPics(s);
     setVal('bdSel', s.backdrop.kind); setVal('bdDepth', s.backdrop.depth); setOut('oBdDepth', fmtLen(s.backdrop.depth, u, 1));
