@@ -16,10 +16,10 @@ import { addAlgae } from './algae';
 import { itemMesh } from './items';
 import { rootsKey, rootsMesh } from './roots';
 import { addBackdrop } from './backdrop';
-import { drapedCard, fish3d, fishBody, has3D, hullMaterial } from './fish3d';
+import { drapedCard, fish3d, fishBody, hullMaterial } from './fish3d';
 import { herpBody, herpFloatTop, isHerp3D } from './herp3d';
 import { sagShell, snailBody } from './snail3d';
-import { blendTexture, cardMaterial, pictureTexture, fishBodyTexture, fishTexture, gradientTexture, personTexture, snailTexture, substrateMaskTexture, substrateTexture } from './textures';
+import { blendTexture, cardMaterial, pictureTexture, fishBodyTexture, fishTexture, gradientTexture, personTexture, substrateMaskTexture, substrateTexture } from './textures';
 
 /** Back-wall options; color null = no background (back glass only); light = use dark grid lines. */
 export const BACKGROUNDS: Record<Background, { label: string; color: number | null; gradient?: boolean; light?: boolean; frost?: boolean }> = {
@@ -1135,16 +1135,16 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: number | null, 
     const sp = speciesOf(f); if (!sp) return;
     if (sp.kind === 'snail') {
       for (const [m, w, h] of snailMeshes(S, T, f, sp, base(f))) register(m, w, h);
-      if (has3D(sp.art) && (f.surface ?? 'floor') === 'floor') { const w = fishTL(f, sp); add(contactShadow(S, T, f.x, f.depth, groundHeight(S, T, f.x, f.depth), w, w * 0.45, f.yaw)); }
+      if ((f.surface ?? 'floor') === 'floor') { const w = fishTL(f, sp); add(contactShadow(S, T, f.x, f.depth, groundHeight(S, T, f.x, f.depth), w, w * 0.45, f.yaw)); }
       return;
     }
     if (!S.water.on && needsWater(sp)) return; // dry tank: fish stay in the scene data, hidden until the water is back
     const w = fishTL(f, sp), h = w * sp.aspect, p = f;
-    const solid = has3D(sp.art), herp = solid && isHerp3D(sp.art);
-    const m = new THREE.Mesh((solid && drapedCard(sp.art, w, h, f.bend)) || cardGeometry(w, h, f.bend), herp ? HIDDEN : cardMaterial(`fish:${sp.look}:${solid}:${solid && fish3d.fade}`, fishTexture(sp, S.render.edge, solid, solid && fish3d.fade), S.render.edge));
+    const herp = isHerp3D(sp.art);
+    const m = new THREE.Mesh(drapedCard(sp.art, w, h, f.bend) || cardGeometry(w, h, f.bend), herp ? HIDDEN : cardMaterial(`fish:${sp.look}:${fish3d.fade}`, fishTexture(sp, S.render.edge, true, fish3d.fade), S.render.edge));
     if (!herp) (m.material as THREE.Material).userData.fishCard = true; // fish stand out (render.pop) lifts the card too
     if (herp) m.add(herpBody(sp.art, w, f.surface)); // the card stays as the invisible picking target
-    else if (solid) m.add(fishBody(sp.art, sp.aspect, w, f.bend, fishBodyTexture(sp), S.render.edge, f.surface === 'glass')); // solid body + paired fins; the card keeps the median fins
+    else m.add(fishBody(sp.art, sp.aspect, w, f.bend, fishBodyTexture(sp), S.render.edge, f.surface === 'glass')); // solid body + paired fins; the card keeps the median fins
     if (f.surface === 'glass') { onGlass(S, T, f, sp, m, w); register(m, w, h); return; }
     // floating at the water surface (dwarf frog): the pose's `top` line just under the water line, wherever it is
     const ft = f.surface === 'top' ? herpFloatTop(sp.art) : undefined;
@@ -1213,14 +1213,14 @@ function onGlass(S: TankSetup, T: Tank, f: Fish, sp: Species, m: THREE.Mesh, w: 
  * facing the glass (what you see through that pane) and the shell facing into the tank; yaw = heading in the pane.
  */
 function snailMeshes(S: TankSetup, T: Tank, f: Fish, sp: Species, ground: number): [THREE.Mesh, number, number][] {
-  const p = f, surf = f.surface ?? 'floor', w = fishTL(f, sp), edge = S.render.edge;
+  const p = f, surf = f.surface ?? 'floor', w = fishTL(f, sp);
   const sub = (x: number, d: number) => groundHeight(S, T, x, d);
   if (surf !== 'glass') {
-    // 3D: the card stays as the (invisible) picking target, the solid snail stands on its sole under it
-    const h = w * sp.aspect, solid = has3D(sp.art);
-    const m = new THREE.Mesh(cardGeometry(w, h, 0), solid ? HIDDEN : cardMaterial(`snail:${sp.art}:side`, snailTexture(sp.art, 'side'), edge));
+    // the card stays as the (invisible) picking target, the solid snail stands on its sole under it
+    const h = w * sp.aspect;
+    const m = new THREE.Mesh(cardGeometry(w, h, 0), HIDDEN);
     m.position.set(p.x, ground + sp.rest * w - 0.5, -p.depth); m.rotation.set(0, f.yaw * D2R, 0, 'YXZ');
-    if (solid) { const b = snailBody(sp.art, w); b.position.y = 0.5 - sp.rest * w; m.add(b); }
+    const b = snailBody(sp.art, w); b.position.y = 0.5 - sp.rest * w; m.add(b);
     return [[m, w, h]];
   }
   // on the glass at the point nearest its (x, depth), just off the inside face, foot (local +z) toward the glass
@@ -1230,21 +1230,13 @@ function snailMeshes(S: TankSetup, T: Tank, f: Fish, sp: Species, ground: number
   const y0 = clamp(p.y, sub(g0.x, g0.depth) + h / 2, Math.max(sub(g0.x, g0.depth) + h / 2, top - w / 2));
   const g = glassFrame(T, p.x, p.depth, y0), ry = Math.atan2(g.n[0], -g.n[2]), rx = -Math.asin(g.n[1]);
   const x = g.x - g.n[0] * PANE_GAP, d = g.depth - g.n[2] * PANE_GAP, y = y0 - g.n[1] * PANE_GAP;
-  if (has3D(sp.art)) {
-    // solid: an invisible picking card in the pane, the 3D snail on its sole against the glass (its up = card -z, into the tank)
-    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), HIDDEN);
-    m.position.set(x, y, -d); m.rotation.set(rx, ry, f.yaw * D2R, 'YXZ');
-    const b = snailBody(sp.art, w); b.rotation.x = -Math.PI / 2; m.add(b);
-    m.updateMatrixWorld(true); // the shell hangs down the pane under its weight
-    sagShell(b, new THREE.Vector3(0, -1, 0).applyQuaternion(b.getWorldQuaternion(new THREE.Quaternion()).invert()));
-    return [[m, w, h]];
-  }
-  const foot =new THREE.Mesh(new THREE.PlaneGeometry(w, h), cardMaterial(`snail:${sp.art}:foot`, snailTexture(sp.art, 'foot'), edge, THREE.FrontSide));
-  const sg = new THREE.PlaneGeometry(w, h).rotateY(Math.PI), uv = sg.attributes.uv; // face into the tank, texture not mirrored
-  for (let i = 0; i < uv.count; i++) uv.setX(i, 1 - uv.getX(i));
-  const shell = new THREE.Mesh(sg, cardMaterial(`snail:${sp.art}:shell`, snailTexture(sp.art, 'shell'), edge, THREE.FrontSide));
-  for (const m of [foot, shell]) { m.position.set(x, y, -d); m.rotation.set(rx, ry, f.yaw * D2R, 'YXZ'); }
-  return [[foot, w, h], [shell, w, h]];
+  // an invisible picking card in the pane, the 3D snail on its sole against the glass (its up = card -z, into the tank)
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), HIDDEN);
+  m.position.set(x, y, -d); m.rotation.set(rx, ry, f.yaw * D2R, 'YXZ');
+  const b = snailBody(sp.art, w); b.rotation.x = -Math.PI / 2; m.add(b);
+  m.updateMatrixWorld(true); // the shell hangs down the pane under its weight
+  sagShell(b, new THREE.Vector3(0, -1, 0).applyQuaternion(b.getWorldQuaternion(new THREE.Quaternion()).invert()));
+  return [[m, w, h]];
 }
 
 export function disposeScene(sc: THREE.Object3D | undefined) {

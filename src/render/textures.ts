@@ -2,8 +2,6 @@ import * as THREE from 'three';
 import { drawBlendTile, drawFishCard, drawPerson, drawSubstrate, substrateMask, type PresetSubstrate } from '../art/placeholder';
 import { drawPairedFin, type PairedFin } from '../art/fishgen';
 import { FIN_A, style } from '../art/paint';
-import { drawPlantCard, type PlantType } from '../art/plants';
-import { drawSnailCard, type SnailView } from '../art/snails';
 import type { Species } from '../data/species';
 import type { BgFit, EdgeMode, SubstrateBlend } from '../scene/types';
 
@@ -72,8 +70,6 @@ export function substrateMaskTexture() {
   t.wrapS = t.wrapT = THREE.RepeatWrapping; t.magFilter = t.minFilter = THREE.LinearFilter; t.needsUpdate = true; t.userData.keep = true;
   return (maskTex = t);
 }
-export const plantTexture = (type: PlantType) => cached('plant:' + type, () => finish(drawPlantCard(type)));
-export const snailTexture = (art: string, view: SnailView) => cached(`snail:${art}:${view}`, () => finish(drawSnailCard(art, view)));
 export const personTexture = () => cached('person', () => {
   const c = document.createElement('canvas'); c.height = 1536; c.width = Math.round(1536 * 0.34);
   drawPerson(c.getContext('2d')!, c.width, c.height);

@@ -5,9 +5,9 @@
 
 const wait = ms => new Promise(r => setTimeout(r, ms));
 
-export async function shot(name, { species = 'discus', az = 0, el = 0, dist = 1200, zoom = 1.8, fade = true, wrap = true, on = true, crop = 0.62, mult = 2, frame = null, sex } = {}) {
+export async function shot(name, { species = 'discus', az = 0, el = 0, dist = 1200, zoom = 1.8, fade = true, wrap = true, crop = 0.62, mult = 2, frame = null, sex } = {}) {
   const { store, viewer, fish3d } = window.__gb;
-  fish3d.fade = fade; fish3d.wrap = wrap; fish3d.on = on;
+  fish3d.fade = fade; fish3d.wrap = wrap;
   // one tank (split views shrink the picture), no hardscape
   if (store.scene.tanks.length > 1) store.update(s => { s.tanks = [s.tanks[s.active]]; s.active = 0; });
   store.edit(t => {
@@ -30,7 +30,7 @@ export async function shot(name, { species = 'discus', az = 0, el = 0, dist = 12
         box.x0 = Math.min(box.x0, x); box.x1 = Math.max(box.x1, x); box.y0 = Math.min(box.y0, y); box.y1 = Math.max(box.y1, y); } });
     cx = (box.x0 + box.x1) / 2; cy = (box.y0 + box.y1) / 2; h = 1.25 * Math.max(box.x1 - box.x0, box.y1 - box.y0);
   }
-  if (frame) ({ cx, cy, h } = frame); // reuse another shot's framing (card vs 3D at the same scale)
+  if (frame) ({ cx, cy, h } = frame); // reuse another shot's framing (two shots at the same scale)
   c.getContext('2d').drawImage(im, cx - h / 2, cy - h / 2, h, h, 0, 0, 560, 560);
   await fetch('/__shot?name=' + name, { method: 'POST', body: await c.convertToBlob({ type: 'image/png' }) });
   return { cx, cy, h };
@@ -48,15 +48,5 @@ export async function views(pre, species, o = {}) {
 export async function wrapViews(pre, species, o = {}) {
   for (const [k, [az, el]] of Object.entries(VIEWS))
     for (const wrap of [false, true]) await shot(`${pre}_${k}_${wrap ? 'after' : 'before'}`, { species, az, el, wrap, ...o });
-  return 'ok';
-}
-
-/** Card vs 3D (review sheets): shots/<pre>_<view>_{card,3d}.png. */
-export async function cardViews(pre, species, o = {}) {
-  for (const [k, [az, el]] of Object.entries(VIEWS)) {
-    const frame = await shot(`${pre}_${k}_3d`, { species, az, el, on: true, ...o }); // the card at the 3D shot's framing
-    await shot(`${pre}_${k}_card`, { species, az, el, on: false, ...o, frame });
-  }
-  window.__gb.fish3d.on = true;
   return 'ok';
 }

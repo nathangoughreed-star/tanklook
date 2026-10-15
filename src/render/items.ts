@@ -1,21 +1,19 @@
 // Meshes for aquascape items (scene/items.ts). Stones, wood and caves are real 3D, shaded per vertex (a top-front-left
-// light baked in, like the hood and substrate); plants are real 3D where the species has a `PLANT3D` entry
-// (render/plant3d.ts), crossed cards otherwise (one facing the glass, one edge-on, so they keep some body when orbiting).
+// light baked in, like the hood and substrate); plants are real 3D from their `PLANT3D` entry (render/plant3d.ts).
 // Each item is ONE mesh, so picking and the selection box are simple. Shapes are cached by (variant, seed, size) and the
 // baked colours by turn as well: the scene rebuilds on every drag step.
 import * as THREE from 'three';
 import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng } from '../art/paint';
-import { PLANT3D, PLANT_ASPECT, growthOf, grownSize, isCarpet, isFloat, type PlantType } from '../art/plants';
-import { CARPET_H, CARPET_W, itemDims, itemSink, seatHook, stoneDims, woodLimbs, type Limb } from '../scene/items';
+import { PLANT3D, growthOf, isCarpet, isFloat, type PlantType } from '../art/plants';
+import { CARPET_W, itemDims, itemSink, seatHook, stoneDims, woodLimbs, type Limb } from '../scene/items';
 import { lampHeight } from '../scene/lightout';
 import { D2R, waterY } from '../scene/physics';
 import { bowlDims, footprint, shapeOf } from '../scene/shape';
 import { clampGround, groundHeight, groundInsideBy } from '../scene/terrain';
 import type { Item, Tank, TankSetup } from '../scene/types';
-import { bendPlant, carpetOnGround, clumpOnGround, dropPlant, growShader, grownView, has3DPlant, plant3d, plantGeometry, plantRaycast, revealPlant, unpackGeometry, uploadPlant, type JobOut, type PlantJob } from './plant3d';
+import { bendPlant, carpetOnGround, clumpOnGround, dropPlant, growShader, grownView, plant3d, plantGeometry, plantRaycast, revealPlant, unpackGeometry, uploadPlant, type JobOut, type PlantJob } from './plant3d';
 import { reefShape } from './coral3d';
-import { cardMaterial, plantTexture } from './textures';
 
 type R = () => number;
 const LIGHT = new THREE.Vector3(-0.35, 1, 0.55).normalize();
@@ -240,31 +238,6 @@ function caveShape(variant: string, seed: number, size: number) {
 }
 
 // ---------- Plants ----------
-/** Crossed cards, base at y = 0; a carpet patch = many small crossed cards in a disc, each set on the ground under it
- *  (spot() moves a card in from the glass and gives the width it has room for, or null leaves it out). */
-function plantGeo(type: PlantType, seed: number, h: number, spot?: (lx: number, lz: number) => { x: number; y: number; z: number; w: number } | null, spread?: number) {
-  const cards: THREE.BufferGeometry[] = [];
-  const card = (w: number, hh: number, x: number, y: number, z: number, turn: number, crop = 1) => {
-    for (const k of [0, 1]) {
-      const pg = new THREE.PlaneGeometry(w, hh), uv = pg.attributes.uv;
-      if (crop < 1) for (let i = 0; i < uv.count; i++) uv.setX(i, 0.5 + (uv.getX(i) - 0.5) * crop); // a narrowed card shows the middle of the picture, not a squeezed one
-      cards.push(pg.translate(0, hh / 2, 0).rotateY(turn + k * Math.PI / 2).translate(x, y, z));
-    }
-  };
-  if (isCarpet(type)) {
-    const r = rng(seed), rad = h / 2 - CARPET_W * 0.35, n = Math.max(3, Math.round(h * h / 4200));
-    for (let i = 0; i < n; i++) {
-      const a = r() * Math.PI * 2, d = Math.sqrt(r()) * Math.max(0, rad), x = Math.cos(a) * d, z = Math.sin(a) * d;
-      const hh = CARPET_H * (0.8 + r() * 0.4), turn = (r() - 0.5) * 0.5, p = spot ? spot(x, z) : { x, y: 0, z, w: CARPET_W }; // draws taken even for a dropped card: the rest stay put
-      if (p) card(p.w, hh, p.x, p.y, p.z, turn, p.w / CARPET_W);
-    }
-  } else if (isFloat(type)) card(h, h * PLANT_ASPECT[type], 0, -h * PLANT_ASPECT[type] * 0.92, 0, 0); // the card's top band at the surface
-  else card(spread ? Math.max(spread, h / PLANT_ASPECT[type]) : h / PLANT_ASPECT[type], h, 0, 0, 0, 0);
-  const g = mergeGeometries(cards)!;
-  g.userData.keep = true;
-  return g;
-}
-
 // ---------- Grit shader ----------
 /** Fragment code: gritK() = how much darker or lighter this pixel of a solid is, from vGrit (see grit()). Detail finer than
  *  about a pixel fades out (px = mm per pixel), so distant pieces do not shimmer. */
@@ -481,30 +454,29 @@ function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
   const ground = groundHeight(S, T, it.x, it.depth), y = ground + it.lift - itemSink(it);
   const type = it.variant as PlantType, carpet = isCarpet(type), float = isFloat(type);
   if (float && !S.water.on) return null; // floaters need water
-  // a 3D plant is built at full growth from its saved size (`h`: as before growth, capped under the lid) and shown at
-  // its growth; the crossed-card fallback is drawn at the grown size
-  const solid = has3DPlant(type), g0 = growthOf(type, it.size), gr = it.growth ?? g0;
+  // built at full growth from its saved size (`h`: as before growth, capped under the lid) and shown at its growth
+  const g0 = growthOf(type, it.size), gr = it.growth ?? g0;
   // stops at the lid (the old layouts' rule), to whole mm: a capped plant dragged up or down reuses its build until the
   // room under the lid changes by a mm (lane E2 #10: it rebuilt on every move)
   const cap = (s: number) => carpet || float ? s : Math.min(s, Math.floor(T.H - y - 15));
-  const h = solid ? cap(it.size) : cap(grownSize(type, it.size, it.growth));
+  const h = cap(it.size);
   if (h < 15) return null;
   const c = Math.cos(it.yaw * D2R), s = Math.sin(it.yaw * D2R);
   // a plant whose own spread reaches the glass: the panes it reaches, in its own frame (plantGeometry sets its stems,
   // crowns or rosettes down inside them), to 4 mm and 3 decimals so a drag reuses a build until it moves that far. Not
   // in a bowl (its spread is kept inside) nor tipped
   const clip: number[] = [];
-  if (it.spread && solid && !carpet && shapeOf(T) !== 'bowl' && !it.pitch && !it.tilt) for (const e of footprint(T).edges) {
+  if (it.spread && !carpet && shapeOf(T) !== 'bowl' && !it.pitch && !it.tilt) for (const e of footprint(T).edges) {
     const e0 = -((it.x - e.a[0]) * e.n[0] + (it.depth - e.a[1]) * e.n[1]);
     if (e0 < it.spread / 2 + 4) clip.push(+(c * e.n[0] + s * e.n[1]).toFixed(3), +(s * e.n[0] - c * e.n[1]).toFixed(3), Math.round(e0 / 4) * 4);
   }
-  // a carpet hugs the ground under each card: its key carries the spot (rebuilt only while it moves); the rest key on
+  // a carpet hugs the ground under each leaflet: its key carries the spot (rebuilt only while it moves); the rest key on
   // the exact height they are built with (a rounded one let two near-equal plants share the first one's mesh)
   // (a carpet's ground: everything groundHeight reads, lane E2 #2: a terrain or substrate edit left it on the old ground)
   const k = carpet ? `${type}|${it.seed}|${it.size}|${h}|${it.x}|${it.depth}|${it.yaw}|${it.lift}|${T.shape}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}|${groundKey(S)}` : `${type}|${it.seed}|${it.size}|${h}|${it.spread ?? ''}|${it.stems ?? ''}|${it.dens ?? ''}|${clip.join(',')}`;
-  // near the glass a card is cut down to the width it has room for, so the carpet runs right up to the glass without
-  // poking through; a card past the edge line is mirrored back in by as much (keeping the edge thick), and one more
-  // than half a card past it is left out
+  // near the glass a leaflet is cut down to the width it has room for, so the carpet runs right up to the glass without
+  // poking through; a leaflet past the edge line is mirrored back in by as much (keeping the edge thick), and one more
+  // than half a leaflet past it is left out
   const EDGE = 8;
   const at = (lx: number, lz: number) => {
     let x = it.x + lx * c + lz * s, d = it.depth + lx * s - lz * c;
@@ -518,7 +490,7 @@ function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
   const sw = `3d${plant3d.sway ? 's' : ''}${more ? '+' : ''}${plant3d.emerse ? '' : 'n'}|`, kf = sw + (carpet ? `${type}|${it.seed}|${it.size}` : k);
   const args = [type, it.seed, h, { spread: it.spread, stems: it.stems, dens: it.dens, clip: clip.length ? clip : undefined }, g0, more, it.size] as const;
   let bend: { F: number; C?: number; water: boolean; walls: number[]; ks: string } | undefined;
-  if (solid && !carpet && !float) {
+  if (!carpet && !float) {
     // longer than the water above it: lies over at the surface (`F` over its base, to 2 mm, so a drag reuses it). A
     // plant with no growth of its own keeps the old allowance (tips up to the lid in a full tank, as they always
     // were) and only lies over when it would poke out further than that
@@ -546,9 +518,9 @@ function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
     if (Number.isFinite(F) || W.length) bend = { F, C, water: S.water.on, walls: W, ks: `${kf}|${F}|${C ?? ''}|${S.water.on ? 'w' : ''}|${walls.filter((_, i) => i % 4 > 1).join(',')}` };
   }
   // a clump on sloping ground (sitting on it, not on a piece): each crown on the ground under it (clumpOnGround)
-  const off = solid && !carpet && !float && it.lift <= 2
+  const off = !carpet && !float && it.lift <= 2
     ? (lx: number, lz: number) => groundHeight(S, T, it.x + lx * c + lz * s, it.depth + lx * s - lz * c) - ground : undefined;
-  return { type, carpet, float, solid, gr, h, k, at, off, kf, ks: sw + k, args, bend };
+  return { type, carpet, float, gr, h, k, at, off, kf, ks: sw + k, args, bend };
 }
 
 // ---------- Idle prebuild (lane GR4) ----------
@@ -582,7 +554,7 @@ const toUpload = (g: THREE.BufferGeometry) => { if (prebuildHooks.renderer && up
 /** Is this plant's full growth (with its lying over at the water) built? Then its first growth costs nothing extra. */
 export function plantWarm(S: TankSetup, it: Item) {
   const P = it.kind === 'plant' ? plantPlan(S, S.tank, it, true) : null;
-  return !P || !P.solid || (plants.has(P.kf) && (!P.carpet || plants.has(P.ks)) && (!P.bend || bent.has(P.bend.ks) || unbent.has(P.bend.ks)));
+  return !P || (plants.has(P.kf) && (!P.carpet || plants.has(P.ks)) && (!P.bend || bent.has(P.bend.ks) || unbent.has(P.bend.ks)));
 }
 /** Where the prebuild stands (debugging, timings). */
 export const prebuildState = () => ({ queued: queue.length, busy, inFlight: [...inFlight.values()].map(w => w.key), worker: !!worker, uploads: uploads.length });
@@ -663,10 +635,9 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
   if (it.kind === 'plant') {
     const P = plantPlan(S, T, it);
     if (!P) return null;
-    const { type, carpet, solid, gr, h, k, at } = P;
+    const { carpet, gr, at } = P;
     let g: THREE.BufferGeometry;
-    if (!solid) g = plants.get(k) ?? remember(plants, k, plantGeo(type, it.seed, h, carpet ? at : undefined, it.spread), PLANTS_MAX, dropPlant);
-    else {
+    {
       // full growth, built once per (seed, size, clump); a carpet is then set on the ground (per place)
       const full = plants.get(P.kf) ?? remember(plants, P.kf, plantGeometry(...P.args), PLANTS_MAX, dropPlant);
       let src = full, ks = P.kf;
@@ -684,8 +655,7 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
       if (plant3d.gpu) g = grownView(src, gr, () => shown.get(kr) ?? remember(shown, kr, revealPlant(from, gr), 80));
       else g = shownCpu.get(kr) ?? (() => { const v = revealPlant(src, gr); return v === src ? v : remember(shownCpu, kr, v, 80, dispose); })(); // (review switch: GR3's CPU reveal)
     }
-    if (carpet && !solid) g.computeBoundingBox();
-    m = new THREE.Mesh(g, solid ? plantMaterial(T) : cardMaterial('plant:' + type, plantTexture(type), S.render.edge));
+    m = new THREE.Mesh(g, plantMaterial(T));
     if (g.userData.cpu) m.raycast = plantRaycast;
     m.userData.plant = true;
   } else m = new THREE.Mesh(bakedShape(it), solidMaterial(T));
