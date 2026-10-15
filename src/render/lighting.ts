@@ -76,10 +76,10 @@ export const LU = {
   uMapDiv: { value: 1 / 16 }, uMapStep: { value: 0 }, uLoM: { value: 1 }, uLoInd: { value: new THREE.Vector3() },
 };
 /**
- * Light map contour spacing when not set, and the slider's range (Nathan 2026-10-14: PAR 5-100 by 5, default 20). Lux
- * scaled to match at 50 lux per µmol (white LED is about 67 in air, less under water): 250-5000 by 250, default 1000.
+ * Light map contour spacing when not set, and the slider's range (Nathan 2026-10-14: PAR 5-100 by 5; default 10 since 2026-10-15). Lux
+ * scaled to match at 50 lux per µmol (white LED is about 67 in air, less under water): 250-5000 by 250, default 500.
  */
-export const MAP_STEP = { par: { def: 20, min: 5, max: 100, by: 5 }, lux: { def: 1000, min: 250, max: 5000, by: 250 } } as const;
+export const MAP_STEP = { par: { def: 10, min: 5, max: 100, by: 5 }, lux: { def: 500, min: 250, max: 5000, by: 250 } } as const;
 /** The contour spacing in the shown unit, or 0 for a line at each doubling (the relative map, without watts). */
 export const mapStepOf = (l: LightSettings, unit: 'rel' | 'par' | 'lux') =>
   unit === 'par' ? l.mapStep ?? MAP_STEP.par.def : unit === 'lux' ? l.mapStepLux ?? MAP_STEP.lux.def : 0;

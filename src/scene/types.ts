@@ -138,9 +138,9 @@ export interface LightSettings {
   par?: number;
   /** What the Light map shows when watts is set (an app preference, like `beams`); absent = 'par'. */
   mapUnit?: 'par' | 'lux';
-  /** PAR between the Light map's contour lines, a multiple of 5 (5-100; an app preference); absent = 20. */
+  /** PAR between the Light map's contour lines, a multiple of 5 (5-100; an app preference); absent = 10. */
   mapStep?: number;
-  /** Lux between the contour lines when the map shows lux, a multiple of 250 (250-5000); absent = 1000. */
+  /** Lux between the contour lines when the map shows lux, a multiple of 250 (250-5000); absent = 500. */
   mapStepLux?: number;
   /** A Light map layer across the tank at this height above the floor (mm; an app preference, added 2026-10-15); 0 or
    * absent = the substrate only. */
