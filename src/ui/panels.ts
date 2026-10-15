@@ -38,7 +38,7 @@ import type { BgFit, BgSide, Fish, GrowFeed, Item, ItemKind, LayoutId, LightTech
 import { FEED_NAMES, setGrowTime, setPlantGrowth, timeChanges } from '../scene/growtime';
 import { GLASS_CHOICES, LIMITS, SceneError, parseScene } from '../scene/validate';
 import { deleteFromLib, listLib, loadFromLib, saveToLib } from '../scene/library';
-import { EXAMPLES } from '../examples';
+import { EXAMPLES, exampleScenes } from '../examples';
 import { LONG_LINK, readShare, shareUrl } from '../scene/share';
 import { getImage, putImage, readPicture, sceneImageIds, sidesTouch, withImages } from '../scene/images';
 
@@ -167,21 +167,28 @@ export function attachPanels(store: Store, viewer: Viewer) {
       : '<p class="hint">No tanks saved in this browser yet. <i>Save</i> puts the current tank here.</p>';
   }
   // Examples (lane F): bundled scenes, opened like a file (a new, unsaved tank; Undo brings the previous one back)
+  // The scene files are a lazy chunk (lane EF3): fetched once the list's pictures are in (on a slow line they would
+  // otherwise share it with them), so it has arrived before a click; a click before that waits for it
   function renderExamples(id = 'exList') {
     const box = $<HTMLDivElement>(id);
-    if (box.childElementCount) return;
-    box.innerHTML = EXAMPLES.map(x =>
+    if (!box.childElementCount) box.innerHTML = EXAMPLES.map(x =>
       `<div class="libcard"><button class="libopen" data-ex="${esc(x.id)}" title="${esc(x.hint)}">` +
       `<img src="${esc(x.thumb)}" alt=""><b>${esc(x.name)}</b><span class="hint">${esc(x.hint)}</span></button></div>`).join('');
+    Promise.allSettled([...box.querySelectorAll('img')].map(i => i.decode()))
+      .then(exampleScenes).catch(() => { /* offline: a click tries again and says so */ });
   }
   $('exList').onclick = e => openExample(e, dlg);
-  function openExample(e: MouseEvent, from: HTMLDialogElement) {
+  async function openExample(e: MouseEvent, from: HTMLDialogElement) {
     const op = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-ex]'), x = op && EXAMPLES.find(q => q.id === op.dataset.ex);
     if (!x) return;
     from.close();
+    let text: string;
+    try { text = (await exampleScenes())[x.id]; } catch {
+      status('Could not load the examples (no connection?). Try again in a moment.', true); return;
+    }
     whileOpening(x.name, () => {
       try {
-        const { scene } = parseScene(x.scene);
+        const { scene } = parseScene(text);
         store.replace(scene); setLibId(null);
         status(`Opened the example "${scene.name}". Undo brings the previous tank back; Save keeps your own copy.`);
         return true;

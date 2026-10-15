@@ -8,6 +8,7 @@ import { emptyScene } from '../src/scene/defaults';
 import { readShare, shareHash } from '../src/scene/share';
 import { parseScene } from '../src/scene/validate';
 import { EXAMPLES } from '../src/examples';
+import { SCENES } from '../src/examples/scenes';
 
 const tank = () => structuredClone(emptyScene().tanks[0]);
 
@@ -37,8 +38,8 @@ describe('condition (lane AL)', () => {
   });
 
   it('old files load pristine; the level is clamped and round-trips through a share link', async () => {
-    for (const x of EXAMPLES) expect(parseScene(x.scene).scene.tanks[0].condition).toEqual({ level: 0 });
-    const raw = JSON.parse(EXAMPLES[0].scene);
+    for (const x of EXAMPLES) expect(parseScene(SCENES[x.id]).scene.tanks[0].condition).toEqual({ level: 0 });
+    const raw = JSON.parse(SCENES[EXAMPLES[0].id]);
     raw.tanks[0].condition = { level: 7 };
     expect(parseScene(JSON.stringify(raw)).scene.tanks[0].condition).toEqual({ level: 1 });
     raw.tanks[0].condition = { level: 0.4567 };
