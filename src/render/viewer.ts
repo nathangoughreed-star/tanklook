@@ -7,7 +7,7 @@ import { tableOn, tableRing } from '../scene/table';
 import { footprint } from '../scene/shape';
 import type { Store } from '../scene/store';
 import type { Fish, Tank, TankSetup } from '../scene/types';
-import { HOOD_H, buildTank, disposeScene, envKey, lookKey, patchLook, patchTank, personSpot, type BuiltTank } from './build';
+import { HOOD_H, PART, buildTank, disposeScene, envKey, lookKey, patchLook, patchTank, personSpot, type BuiltTank } from './build';
 import { drawViewMap } from './viewmap';
 import { applyFraming, fovFor, frameBox, frameStraightOn, placeCamera, windowCentre } from './camera';
 import { glowColor, placeSlice, roomLevel, setLightUniforms, setWaterUniforms } from './lighting';
@@ -253,21 +253,112 @@ export class Viewer {
       || (this.rank.get(a.material) ?? 0) - (this.rank.get(b.material) ?? 0) || a.z - b.z || a.id - b.id);
     const S = store.scene;
     this.vps = (['A', 'B'] as const).map((key, i) => ({ i, key, cam: new THREE.PerspectiveCamera(40, 1, 10, 40000), S: S.tanks[0], T: S.tanks[0].tank, x: 0, y: 0, w: 1, h: 1 }));
-    store.subscribe(kind => { if (kind !== 'view') this.needsBuild = true; this.dirty = true; });
+    store.subscribe(kind => { if (kind !== 'view') this.needsBuild = true; if (kind === 'load') this.revealNext = true; this.dirty = true; });
     new ResizeObserver(() => { this.dirty = true; }).observe(host);
     matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { this.dirty = true; });
     onPictureLoad(() => { this.dirty = true; }); // a background picture finished decoding into its texture
     // three's loop (window frames, or the XR session's while one runs); an AR session draws through xrFrame instead (render/ar.ts)
     this.renderer.setAnimationLoop((t, f) => {
       if (this.xrFrame && f) this.xrFrame(t, f);
-      else if (this.dirty) { this.dirty = false; if (this.needsBuild) this.buildAndLink(); this.draw(); }
+      else {
+        if (this.dirty && this.needsBuild) this.buildAndLink();
+        if (this.reveal) this.revealTick(performance.now());
+        if (this.dirty && !this.reveal?.wait) { this.dirty = false; this.draw(); }
+      }
     });
   }
 
-  /** Build now; after a full build, start linking every program it needs before the draw uses them (startLinks). */
+  /** Build now; after a full build, start linking every program it needs before the draw uses them (startLinks). The
+   *  first load and an opened file or example are then shown part by part as their programs are ready (reveal). */
   private buildAndLink() {
     this.build();
-    if (this.lastBuild.includes('full')) this.startLinks();
+    if (!this.lastBuild.includes('full')) return;
+    this.startLinks();
+    if (this.revealNext) this.startReveal();
+    this.revealNext = false;
+  }
+
+  // ---------- Reveal: the tank builds piece by piece while its programs link (lane PL) ----------
+  /** The next full build is a first load or an opened file / example (a store 'load'): reveal it. */
+  private revealNext = true;
+  /**
+   * While set, each view draws only its parts (build.ts PART, in order) up to `shown`: a part shows once every
+   * program of it and of the parts before it has linked (asked without waiting: KHR_parallel_shader_compile), so the
+   * page never waits on a link and no part shows with a program still linking. `wait`: the first REVEAL_GRACE ms, in
+   * which nothing new is drawn; all ready by then (a warm load) = the whole tank at once, no animation and no hint.
+   */
+  private reveal: { t0: number; wait: boolean; shown: number[]; step: number; fade: number } | null = null;
+  private overlay: HTMLCanvasElement | null = null;
+  private lastFrame: HTMLCanvasElement | null = null;
+  private static REVEAL_GRACE = 150; private static REVEAL_STEP = 160; private static REVEAL_FADE = 260;
+  private startReveal() {
+    this.reveal = { t0: performance.now(), wait: true, shown: [-1, -1], step: 0, fade: 0 };
+  }
+  /** How many parts of view vp could show now: the longest run, from the first part, whose programs are all linked. */
+  private readyParts(vp: Viewport) {
+    if (!vp.scene) return PART.animals;
+    const props = this.renderer.properties, live = new Set<unknown>(this.renderer.info.programs);
+    const parts = Array.from({ length: PART.animals + 1 }, () => [] as THREE.Object3D[]);
+    for (const o of vp.scene.children) parts[o.userData.part ?? 0].push(o);
+    // in order, stopping at the first part still linking (a program once ready stays so: three asks the driver no more)
+    for (const [p, objs] of parts.entries()) {
+      let ready = true;
+      for (const o of objs) o.traverse(c => {
+        if (ready) for (const m of ([] as THREE.Material[]).concat((c as THREE.Mesh).material ?? [])) {
+          // every variant startLinks made of this material (the canvas pass and the frost pass's linear one)
+          const progs = (props.get(m) as { programs?: Map<string, { isReady(): boolean }> }).programs;
+          for (const g of progs?.values() ?? []) if (live.has(g) && !g.isReady()) { ready = false; return; }
+        }
+      });
+      if (!ready) return p - 1;
+    }
+    return PART.animals;
+  }
+  private revealTick(now: number) {
+    const R = this.reveal!, views = this.active, ready = views.map(vp => this.readyParts(vp));
+    if (R.wait) {
+      if (ready.every(k => k === PART.animals)) { this.endReveal(); return; } // warm: the whole tank at once
+      if (now - R.t0 < Viewer.REVEAL_GRACE) return;
+      R.wait = false; this.hint(true); this.dirty = true; // the empty room first: the picture the first part fades in over
+      return;
+    }
+    // one part per REVEAL_STEP at most, so parts linked together still come in one after another
+    if (now - R.step >= Viewer.REVEAL_STEP && views.some((vp, k) => R.shown[vp.i] < ready[k])) {
+      this.fadeFrom(now);
+      for (const [k, vp] of views.entries()) if (R.shown[vp.i] < ready[k]) R.shown[vp.i]++;
+      R.step = now; this.dirty = true;
+      performance.mark(`tank part ${Math.min(...views.map(vp => R.shown[vp.i]))}`); // for timing (scripts/cold-ab.mjs --probe)
+    }
+    const a = 1 - (now - R.fade) / Viewer.REVEAL_FADE;
+    if (this.overlay) this.overlay.style.opacity = String(Math.max(0, a));
+    if (a <= 0 && views.every(vp => R.shown[vp.i] >= PART.animals)) this.endReveal();
+  }
+  /** Start a cross-fade from the picture on screen now (the last frame, under what is left of a fade still running). */
+  private fadeFrom(now: number) {
+    const R = this.reveal!, c = this.canvas, last = this.lastFrame;
+    let o = this.overlay;
+    if (!o) {
+      o = this.overlay = document.createElement('canvas'); o.className = 'revealFade'; o.setAttribute('aria-hidden', 'true');
+      c.after(o);
+    }
+    Object.assign(o.style, { left: c.offsetLeft + 'px', top: c.offsetTop + 'px', width: c.clientWidth + 'px', height: c.clientHeight + 'px' });
+    const g = o.getContext('2d')!, a = Math.max(0, 1 - (now - R.fade) / Viewer.REVEAL_FADE);
+    if (o.width !== c.width || o.height !== c.height) { o.width = c.width; o.height = c.height; if (last) g.drawImage(last, 0, 0, o.width, o.height); }
+    else if (last) { g.globalAlpha = 1 - a; g.drawImage(last, 0, 0, o.width, o.height); g.globalAlpha = 1; } // on screen: a x overlay + (1 - a) x last frame
+    o.style.opacity = '1'; R.fade = now;
+  }
+  private endReveal() {
+    performance.mark(this.reveal?.wait ? 'tank at once' : 'tank complete');
+    this.reveal = null; this.hint(false); this.dirty = true;
+    this.overlay?.remove(); this.overlay = null; this.lastFrame = null;
+  }
+  /** The small "Building the tank…" note while a reveal runs (index.html #buildHint). */
+  private hint(on: boolean) { const h = document.getElementById('buildHint'); if (h) h.hidden = !on; }
+  /** During a reveal, keep a copy of each frame (the canvas is cleared once shown): the next part fades in over it. */
+  private keepFrame() {
+    const c = this.canvas, l = this.lastFrame ??= document.createElement('canvas');
+    if (l.width !== c.width || l.height !== c.height) { l.width = c.width; l.height = c.height; }
+    const g = l.getContext('2d')!; g.clearRect(0, 0, l.width, l.height); g.drawImage(c, 0, 0);
   }
   private primeRT = new THREE.WebGLRenderTarget(1, 1);
   private primeMats = new Map<number, THREE.Material>();
@@ -492,11 +583,16 @@ export class Viewer {
       const cb = r.state.buffers.color, gl = r.getContext();
       cb.setMask(true); gl.colorMask(true, true, true, false); cb.setLocked(true);
       const culled = this.frostCull(vp);
+      // a reveal running: only the parts shown so far (the rest are still linking; see revealTick)
+      const upTo = this.reveal ? this.reveal.shown[vp.i] : PART.animals, held: THREE.Object3D[] = [];
+      if (upTo < PART.animals) for (const o of vp.scene!.children) if (o.visible && (o.userData.part ?? 0) > upTo) { o.visible = false; held.push(o); }
       r.render(vp.scene!, vp.cam);
+      for (const o of held) o.visible = true;
       for (const o of culled) { o.onBeforeRender = THREE.Object3D.prototype.onBeforeRender; o.onAfterRender = THREE.Object3D.prototype.onAfterRender; }
       cb.setLocked(false); cb.setMask(true); gl.colorMask(true, true, true, true);
     }
     r.setScissorTest(false);
+    if (this.reveal) this.keepFrame();
     // one viewpoint map per view, at its bottom-left corner, drawn from that view's own camera, tank and person
     const mapOn = (document.getElementById('mapOn') as HTMLInputElement | null)?.checked ?? true;
     for (const k of [0, 1]) {

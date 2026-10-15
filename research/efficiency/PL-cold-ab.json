@@ -1,0 +1,1881 @@
+{
+ "at": "2026-10-15T20:03:39.281Z",
+ "size": "1050x850",
+ "dirs": [
+  "before",
+  "after"
+ ],
+ "runs": [
+  {
+   "round": 0,
+   "view": "betta-bowl",
+   "build": "before",
+   "firstFrame": 12641,
+   "settled": 12641,
+   "glMs": 11973,
+   "programs": 26,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 9074,
+     "at": 3388,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 35164,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1688,
+     "at": 1053,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 575,
+     "at": 2758,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 396,
+     "at": 580,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ],
+   "probe": ""
+  },
+  {
+   "round": 0,
+   "view": "betta-bowl",
+   "build": "after",
+   "firstFrame": 3212,
+   "settled": 15942,
+   "glMs": 547,
+   "programs": 26,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 365,
+     "at": 486,
+     "stack": "renderer.renderBufferDirect (assets/main-C0DvkTJ9.js:2:35263)",
+     "len": 125,
+     "marks": []
+    }
+   ],
+   "probe": "tank part 0 3186, tank part 1 3352, tank part 2 3518, tank part 3 15535, tank part 4 15701, tank part 5 15868, tank complete 16135"
+  },
+  {
+   "round": 0,
+   "view": "iwagumi",
+   "build": "before",
+   "firstFrame": 13973,
+   "settled": 13973,
+   "glMs": 11060,
+   "programs": 41,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 7917,
+     "at": 5038,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1216,
+     "at": 3713,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 85036,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 695,
+     "at": 13200,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 38056,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 563,
+     "at": 2976,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28514,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 126,
+     "at": 3566,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28496,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    }
+   ],
+   "probe": ""
+  },
+  {
+   "round": 0,
+   "view": "iwagumi",
+   "build": "after",
+   "firstFrame": 4385,
+   "settled": 12766,
+   "glMs": 367,
+   "programs": 41,
+   "slow": [],
+   "probe": "tank part 0 4337, tank part 1 4853, tank part 2 5019, tank part 3 12318, tank part 4 12485, tank part 5 12652, tank complete 12918"
+  },
+  {
+   "round": 0,
+   "view": "paludarium",
+   "build": "before",
+   "firstFrame": 14119,
+   "settled": 14119,
+   "glMs": 13024,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 9604,
+     "at": 3961,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 59409,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1459,
+     "at": 1230,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 581,
+     "at": 2697,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 555,
+     "at": 3392,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 53336,
+     "marks": [
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 348,
+     "at": 13729,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 60795,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ],
+   "probe": ""
+  },
+  {
+   "round": 0,
+   "view": "paludarium",
+   "build": "after",
+   "firstFrame": 3394,
+   "settled": 14913,
+   "glMs": 264,
+   "programs": 35,
+   "slow": [],
+   "probe": "tank part 0 3356, tank part 1 3521, tank part 2 3688, tank part 3 14471, tank part 4 14638, tank part 5 14804, tank complete 15071"
+  },
+  {
+   "round": 0,
+   "view": "planted",
+   "build": "before",
+   "firstFrame": 14039,
+   "settled": 14039,
+   "glMs": 12892,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 9525,
+     "at": 3923,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1859,
+     "at": 1311,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 582,
+     "at": 3197,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 278,
+     "at": 13569,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "bufferData",
+     "ms": 125,
+     "at": 1166,
+     "stack": "t.draw (assets/main-Cxga8Shq.js:3:5067)",
+     "len": 125,
+     "marks": []
+    }
+   ],
+   "probe": ""
+  },
+  {
+   "round": 0,
+   "view": "planted",
+   "build": "after",
+   "firstFrame": 3992,
+   "settled": 11953,
+   "glMs": 493,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 207,
+     "at": 11746,
+     "stack": "renderer.renderBufferDirect (assets/main-C0DvkTJ9.js:2:35263)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ],
+   "probe": "tank part 0 3949, tank part 1 4115, tank part 2 4282, tank part 3 11332, tank part 4 11498, tank part 5 11665, tank complete 12009"
+  },
+  {
+   "round": 0,
+   "view": "reef",
+   "build": "before",
+   "firstFrame": 16258,
+   "settled": 16258,
+   "glMs": 14942,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 10815,
+     "at": 3851,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 48418,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 2204,
+     "at": 1075,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1085,
+     "at": 15100,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 49804,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 206,
+     "at": 14795,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28528,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 169,
+     "at": 3539,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28531,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ],
+   "probe": ""
+  },
+  {
+   "round": 0,
+   "view": "reef",
+   "build": "after",
+   "firstFrame": 3927,
+   "settled": 20184,
+   "glMs": 733,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 304,
+     "at": 19806,
+     "stack": "renderer.renderBufferDirect (assets/main-C0DvkTJ9.js:2:35263)",
+     "len": 28528,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ],
+   "probe": "tank part 0 3814, tank part 1 3986, tank part 2 4152, tank part 3 18269, tank part 4 18435, tank part 5 19620, tank complete 20224"
+  },
+  {
+   "round": 0,
+   "view": "terrarium",
+   "build": "before",
+   "firstFrame": 14386,
+   "settled": 14386,
+   "glMs": 13187,
+   "programs": 26,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 9308,
+     "at": 4093,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 41975,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 2326,
+     "at": 1224,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 889,
+     "at": 13453,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 43361,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 320,
+     "at": 3564,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28905,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 154,
+     "at": 3915,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28887,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ],
+   "probe": ""
+  },
+  {
+   "round": 0,
+   "view": "terrarium",
+   "build": "after",
+   "firstFrame": 2796,
+   "settled": 13147,
+   "glMs": 246,
+   "programs": 26,
+   "slow": [],
+   "probe": "tank part 0 2726, tank part 1 2885, tank part 2 3051, tank part 3 12784, tank part 4 12951, tank part 5 13117, tank complete 13384"
+  },
+  {
+   "round": 0,
+   "view": "C:/Users/nreed/AppData/Local/Temp/claude/C--Users-nreed-Glass-Box/178af2a2-cfc3-4ddc-8c7b-d6db93c39980/scratchpad/split.json",
+   "build": "before",
+   "firstFrame": 17476,
+   "settled": 17476,
+   "glMs": 14215,
+   "programs": 46,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 8745,
+     "at": 7213,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 3780,
+     "at": 2315,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 554,
+     "at": 16884,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 38056,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 281,
+     "at": 16073,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 236,
+     "at": 16632,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28528,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ],
+   "probe": ""
+  },
+  {
+   "round": 0,
+   "view": "C:/Users/nreed/AppData/Local/Temp/claude/C--Users-nreed-Glass-Box/178af2a2-cfc3-4ddc-8c7b-d6db93c39980/scratchpad/split.json",
+   "build": "after",
+   "firstFrame": 6362,
+   "settled": 18110,
+   "glMs": 725,
+   "programs": 46,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 240,
+     "at": 16724,
+     "stack": "renderer.renderBufferDirect (assets/main-C0DvkTJ9.js:2:35263)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ],
+   "probe": "tank part -1 6295, tank part -1 6549, tank part -1 6684, tank part 0 7199, tank part 1 7681, tank part 2 7848, tank part 2 16297, tank part 2 16465, tank part 2 16631, tank part 3 17681, tank part 4 17847, tank part 5 18014, tank complete 18281"
+  },
+  {
+   "round": 1,
+   "view": "betta-bowl",
+   "build": "after",
+   "firstFrame": 3561,
+   "settled": 13626,
+   "glMs": 522,
+   "programs": 26,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 315,
+     "at": 435,
+     "stack": "renderer.renderBufferDirect (assets/main-C0DvkTJ9.js:2:35263)",
+     "len": 125,
+     "marks": []
+    }
+   ],
+   "probe": "tank part 0 3535, tank part 1 3701, tank part 2 3868, tank part 3 13202, tank part 4 13367, tank part 5 13534, tank complete 13801"
+  },
+  {
+   "round": 1,
+   "view": "betta-bowl",
+   "build": "before",
+   "firstFrame": 15541,
+   "settled": 15541,
+   "glMs": 15038,
+   "programs": 26,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 11672,
+     "at": 3568,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 35164,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 2035,
+     "at": 1100,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 627,
+     "at": 405,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 125,
+     "marks": []
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 277,
+     "at": 3166,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ],
+   "probe": ""
+  },
+  {
+   "round": 1,
+   "view": "iwagumi",
+   "build": "after",
+   "firstFrame": 7017,
+   "settled": 18025,
+   "glMs": 757,
+   "programs": 41,
+   "slow": [
+    {
+     "call": "shaderSource",
+     "ms": 163,
+     "at": 910,
+     "stack": "Object.traverse (assets/main-C0DvkTJ9.js:2:38860)",
+     "len": 125,
+     "marks": []
+    }
+   ],
+   "probe": "tank part 0 6965, tank part 1 7135, tank part 2 7301, tank part 3 17450, tank part 4 17617, tank part 5 17783, tank complete 18059"
+  },
+  {
+   "round": 1,
+   "view": "iwagumi",
+   "build": "before",
+   "firstFrame": 16821,
+   "settled": 16821,
+   "glMs": 15517,
+   "programs": 41,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 9527,
+     "at": 6312,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 3541,
+     "at": 1289,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28514,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 950,
+     "at": 5171,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 85036,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 625,
+     "at": 16103,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 38056,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 217,
+     "at": 4934,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28496,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 158,
+     "at": 6138,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28531,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ],
+   "probe": ""
+  },
+  {
+   "round": 1,
+   "view": "paludarium",
+   "build": "after",
+   "firstFrame": 5269,
+   "settled": 25048,
+   "glMs": 733,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramParameter",
+     "ms": 173,
+     "at": 2606,
+     "stack": "(assets/main-C0DvkTJ9.js:2:36810 < e.readyParts (assets/main-C0DvkTJ9.js:2:36681) < (assets/main-C0DvkTJ9.js:2:36947 < e.revealTick (assets/main-C0DvkTJ9.js:2:36935) < (assets/main-C0DvkTJ9.js:2:36036",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 119,
+     "at": 5134,
+     "stack": "renderer.renderBufferDirect (assets/main-C0DvkTJ9.js:2:35263)",
+     "len": 13536,
+     "marks": [
+      "transmission"
+     ]
+    }
+   ],
+   "probe": "tank part 0 5041, tank part 1 5269, tank part 2 5440, tank part 3 24489, tank part 4 24656, tank part 5 24823, tank complete 25089"
+  },
+  {
+   "round": 1,
+   "view": "paludarium",
+   "build": "before",
+   "firstFrame": 19828,
+   "settled": 19828,
+   "glMs": 18705,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 14135,
+     "at": 5206,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 59409,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 2553,
+     "at": 1004,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1291,
+     "at": 3895,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 53336,
+     "marks": [
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 140,
+     "at": 19589,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 60795,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ],
+   "probe": ""
+  },
+  {
+   "round": 1,
+   "view": "planted",
+   "build": "after",
+   "firstFrame": 5655,
+   "settled": 16447,
+   "glMs": 755,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 341,
+     "at": 16106,
+     "stack": "renderer.renderBufferDirect (assets/main-C0DvkTJ9.js:2:35263)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ],
+   "probe": "tank part 0 5492, tank part 1 5655, tank part 2 5821, tank part 3 15637, tank part 4 15803, tank part 5 15970, tank complete 16526"
+  },
+  {
+   "round": 1,
+   "view": "planted",
+   "build": "before",
+   "firstFrame": 17999,
+   "settled": 17999,
+   "glMs": 16016,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 10530,
+     "at": 6775,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 4572,
+     "at": 1941,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 279,
+     "at": 17530,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 116,
+     "at": 6617,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28531,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ],
+   "probe": ""
+  },
+  {
+   "round": 1,
+   "view": "reef",
+   "build": "after",
+   "firstFrame": 4446,
+   "settled": 19944,
+   "glMs": 441,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 166,
+     "at": 19734,
+     "stack": "renderer.renderBufferDirect (assets/main-C0DvkTJ9.js:2:35263)",
+     "len": 28528,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ],
+   "probe": "tank part 0 4312, tank part 1 4476, tank part 2 4644, tank part 3 17843, tank part 4 18009, tank part 5 19627, tank complete 19962"
+  },
+  {
+   "round": 1,
+   "view": "reef",
+   "build": "before",
+   "firstFrame": 18193,
+   "settled": 18193,
+   "glMs": 16479,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 10791,
+     "at": 6276,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 48418,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 4011,
+     "at": 1939,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 649,
+     "at": 17488,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 49804,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 209,
+     "at": 17176,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28528,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 169,
+     "at": 6086,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28531,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "bufferData",
+     "ms": 145,
+     "at": 1708,
+     "stack": "t.draw (assets/main-Cxga8Shq.js:3:5067)",
+     "len": 125,
+     "marks": []
+    }
+   ],
+   "probe": ""
+  },
+  {
+   "round": 1,
+   "view": "terrarium",
+   "build": "after",
+   "firstFrame": 3573,
+   "settled": 15519,
+   "glMs": 337,
+   "programs": 26,
+   "slow": [],
+   "probe": "tank part 0 3269, tank part 1 3573, tank part 2 3733, tank part 3 15133, tank part 4 15300, tank part 5 15466, tank complete 15732"
+  },
+  {
+   "round": 1,
+   "view": "terrarium",
+   "build": "before",
+   "firstFrame": 17844,
+   "settled": 17844,
+   "glMs": 16391,
+   "programs": 26,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 12208,
+     "at": 5171,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 41975,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 3388,
+     "at": 1467,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 365,
+     "at": 17435,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 43361,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 186,
+     "at": 4957,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28887,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ],
+   "probe": ""
+  },
+  {
+   "round": 1,
+   "view": "C:/Users/nreed/AppData/Local/Temp/claude/C--Users-nreed-Glass-Box/178af2a2-cfc3-4ddc-8c7b-d6db93c39980/scratchpad/split.json",
+   "build": "after",
+   "firstFrame": 10007,
+   "settled": 20660,
+   "glMs": 783,
+   "programs": 46,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 275,
+     "at": 20240,
+     "stack": "renderer.renderBufferDirect (assets/main-C0DvkTJ9.js:2:35263)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ],
+   "probe": "tank part 0 9925, tank part 1 10093, tank part 2 10260, tank part 3 19792, tank part 4 19960, tank part 5 20127, tank complete 20675"
+  },
+  {
+   "round": 1,
+   "view": "C:/Users/nreed/AppData/Local/Temp/claude/C--Users-nreed-Glass-Box/178af2a2-cfc3-4ddc-8c7b-d6db93c39980/scratchpad/split.json",
+   "build": "before",
+   "firstFrame": 20638,
+   "settled": 20638,
+   "glMs": 18605,
+   "programs": 46,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 10809,
+     "at": 9151,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 6836,
+     "at": 2112,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 222,
+     "at": 20053,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 155,
+     "at": 20448,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28528,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ],
+   "probe": ""
+  },
+  {
+   "round": 2,
+   "view": "betta-bowl",
+   "build": "before",
+   "firstFrame": 10550,
+   "settled": 10550,
+   "glMs": 9968,
+   "programs": 26,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 6944,
+     "at": 3445,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 35164,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1742,
+     "at": 953,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 658,
+     "at": 2715,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 378,
+     "at": 513,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ],
+   "probe": ""
+  },
+  {
+   "round": 2,
+   "view": "betta-bowl",
+   "build": "after",
+   "firstFrame": 3053,
+   "settled": 10912,
+   "glMs": 502,
+   "programs": 26,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 336,
+     "at": 520,
+     "stack": "renderer.renderBufferDirect (assets/main-C0DvkTJ9.js:2:35263)",
+     "len": 125,
+     "marks": []
+    }
+   ],
+   "probe": "tank part 0 3025, tank part 1 3191, tank part 2 3358, tank part 3 10524, tank part 4 10691, tank part 5 10857, tank complete 11124"
+  },
+  {
+   "round": 2,
+   "view": "iwagumi",
+   "build": "before",
+   "firstFrame": 15142,
+   "settled": 15142,
+   "glMs": 13880,
+   "programs": 41,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 9363,
+     "at": 5045,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1889,
+     "at": 1334,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28514,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1613,
+     "at": 3297,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 85036,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 484,
+     "at": 14602,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 38056,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 107,
+     "at": 4924,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28531,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ],
+   "probe": ""
+  },
+  {
+   "round": 2,
+   "view": "iwagumi",
+   "build": "after",
+   "firstFrame": 4227,
+   "settled": 13463,
+   "glMs": 390,
+   "programs": 41,
+   "slow": [],
+   "probe": "tank part 0 4192, tank part 1 4841, tank part 2 5008, tank part 3 12990, tank part 4 13157, tank part 5 13324, tank complete 13590"
+  },
+  {
+   "round": 2,
+   "view": "paludarium",
+   "build": "before",
+   "firstFrame": 14577,
+   "settled": 14577,
+   "glMs": 13497,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 9912,
+     "at": 4010,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 59409,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1610,
+     "at": 1158,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 607,
+     "at": 2920,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28512,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 455,
+     "at": 3549,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 53336,
+     "marks": [
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 433,
+     "at": 14106,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 60795,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ],
+   "probe": ""
+  },
+  {
+   "round": 2,
+   "view": "paludarium",
+   "build": "after",
+   "firstFrame": 3390,
+   "settled": 14996,
+   "glMs": 254,
+   "programs": 35,
+   "slow": [],
+   "probe": "tank part 0 3357, tank part 1 3523, tank part 2 3689, tank part 3 14605, tank part 4 14772, tank part 5 14939, tank complete 15205"
+  },
+  {
+   "round": 2,
+   "view": "planted",
+   "build": "before",
+   "firstFrame": 12171,
+   "settled": 12171,
+   "glMs": 10736,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 7283,
+     "at": 4484,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1822,
+     "at": 1517,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 586,
+     "at": 3392,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 468,
+     "at": 3999,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28531,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 206,
+     "at": 11857,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ],
+   "probe": ""
+  },
+  {
+   "round": 2,
+   "view": "planted",
+   "build": "after",
+   "firstFrame": 3664,
+   "settled": 12125,
+   "glMs": 500,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 228,
+     "at": 11897,
+     "stack": "renderer.renderBufferDirect (assets/main-C0DvkTJ9.js:2:35263)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ],
+   "probe": "tank part 0 3609, tank part 1 3772, tank part 2 4255, tank part 3 11488, tank part 4 11655, tank part 5 11821, tank complete 12164"
+  },
+  {
+   "round": 2,
+   "view": "reef",
+   "build": "before",
+   "firstFrame": 19248,
+   "settled": 19248,
+   "glMs": 17642,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 13595,
+     "at": 4073,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 48418,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1718,
+     "at": 1663,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1039,
+     "at": 18145,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 49804,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 416,
+     "at": 3407,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 207,
+     "at": 17809,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28528,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 188,
+     "at": 3857,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28531,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ],
+   "probe": ""
+  },
+  {
+   "round": 2,
+   "view": "reef",
+   "build": "after",
+   "firstFrame": 4591,
+   "settled": 21808,
+   "glMs": 965,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 409,
+     "at": 21270,
+     "stack": "renderer.renderBufferDirect (assets/main-C0DvkTJ9.js:2:35263)",
+     "len": 28528,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 108,
+     "at": 21700,
+     "stack": "renderer.renderBufferDirect (assets/main-C0DvkTJ9.js:2:35263)",
+     "len": 14168,
+     "marks": [
+      "vGlassW",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 100,
+     "at": 21159,
+     "stack": "renderer.renderBufferDirect (assets/main-C0DvkTJ9.js:2:35263)",
+     "len": 28494,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ],
+   "probe": "tank part 0 4541, tank part 1 4712, tank part 2 4888, tank part 3 19805, tank part 4 19972, tank part 5 21055, tank complete 21848"
+  },
+  {
+   "round": 2,
+   "view": "terrarium",
+   "build": "before",
+   "firstFrame": 16660,
+   "settled": 16660,
+   "glMs": 15286,
+   "programs": 26,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 11370,
+     "at": 4840,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 41975,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 2562,
+     "at": 1396,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 518,
+     "at": 4010,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28905,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 352,
+     "at": 16266,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 43361,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 254,
+     "at": 4558,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28887,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ],
+   "probe": ""
+  },
+  {
+   "round": 2,
+   "view": "terrarium",
+   "build": "after",
+   "firstFrame": 3292,
+   "settled": 15638,
+   "glMs": 328,
+   "programs": 26,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 105,
+     "at": 3784,
+     "stack": "renderer.renderBufferDirect (assets/main-C0DvkTJ9.js:2:35263)",
+     "len": 28887,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ],
+   "probe": "tank part 0 3176, tank part 1 3398, tank part 2 3775, tank part 3 15257, tank part 4 15423, tank part 5 15590, tank complete 15857"
+  },
+  {
+   "round": 2,
+   "view": "C:/Users/nreed/AppData/Local/Temp/claude/C--Users-nreed-Glass-Box/178af2a2-cfc3-4ddc-8c7b-d6db93c39980/scratchpad/split.json",
+   "build": "before",
+   "firstFrame": 17181,
+   "settled": 17181,
+   "glMs": 14773,
+   "programs": 46,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 9034,
+     "at": 5914,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 3142,
+     "at": 2279,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1262,
+     "at": 15885,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 38056,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 287,
+     "at": 15089,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 229,
+     "at": 5542,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 214,
+     "at": 15656,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28528,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ],
+   "probe": ""
+  },
+  {
+   "round": 2,
+   "view": "C:/Users/nreed/AppData/Local/Temp/claude/C--Users-nreed-Glass-Box/178af2a2-cfc3-4ddc-8c7b-d6db93c39980/scratchpad/split.json",
+   "build": "after",
+   "firstFrame": 4601,
+   "settled": 15731,
+   "glMs": 752,
+   "programs": 46,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 236,
+     "at": 14545,
+     "stack": "renderer.renderBufferDirect (assets/main-C0DvkTJ9.js:2:35263)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ],
+   "probe": "tank part -1 4521, tank part -1 4684, tank part -1 4850, tank part 0 5767, tank part 1 6216, tank part 2 6387, tank part 2 14133, tank part 2 14299, tank part 2 14466, tank part 3 15333, tank part 4 15499, tank part 5 15666, tank complete 15933"
+  }
+ ]
+}
