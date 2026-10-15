@@ -12,7 +12,7 @@ import { FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, mountOf, po
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene, TANK_PRESETS } from '../scene/defaults';
-import { ANIMAL_STOPS, DEFAULT_DENS, DENS_STOPS, KINDS, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, itemDims, makeItem, type Layer } from '../scene/items';
+import { DEFAULT_DENS, KINDS, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, itemDims, makeItem, type Layer } from '../scene/items';
 import { handEdits, regenerate } from '../scene/starter';
 import { growthOf, isClump, isPatch, type PlantType } from '../art/plants';
 import { clumpAuto } from '../render/plant3d';
@@ -950,11 +950,11 @@ Cancel, then change the name, to keep both.`)) return;
     dropGoneFish();
     status('Rearranged. Ctrl+Z brings the previous pieces back.');
   };
-  // Density sliders (lane SD): stepped, Sparse .. Packed (animals None .. Full). Dragging only names the stop; the
-  // layer is redrawn once, on release (Nathan 2026-10-15: a slider that redraws the tank as it moves is too heavy), as
-  // one undo step. Shuffle keeps the stops: only the seed changes.
+  // Density sliders (lane SD): one in each of Hardscape, Plants and Animals, continuous from one piece (one animal) to
+  // far too much (Nathan 2026-10-15). Dragging only names the level; the layer is redrawn once, on release (a slider
+  // that redraws the tank as it moves is too heavy), as one undo step. Shuffle keeps the levels: only the seed changes.
   const DENS_IN: [Layer, string, string][] = [['hard', 'densHard', 'oDensHard'], ['plant', 'densPlant', 'oDensPlant'], ['animal', 'densAnimal', 'oDensAnimal']];
-  const stopName = (k: Layer, v: number) => (k === 'animal' ? ANIMAL_STOPS : DENS_STOPS)[v] ?? '';
+  const stopName = densName;
   for (const [k, inp, out] of DENS_IN) {
     const el = $<HTMLInputElement>(inp);
     el.oninput = () => { $(out).textContent = stopName(k, +el.value); };
@@ -967,6 +967,7 @@ Cancel, then change the name, to keep both.`)) return;
       dropGoneFish();
       status(k === 'plant' ? `Plants redrawn (${stopName(k, v)}); the hardscape stayed put. Ctrl+Z brings the previous ones back.`
         : k === 'hard' ? `Hardscape redrawn (${stopName(k, v)}), with plants round it. Ctrl+Z brings the previous pieces back.`
+          : v > 4 ? `Animals restocked (${stopName(k, v)}): more than a safe bioload. Ctrl+Z brings the previous ones back.`
           : v ? `Animals restocked (${stopName(k, v)}), within a safe bioload. Ctrl+Z brings the previous ones back.` : 'Starter animals removed. Ctrl+Z brings them back.');
     };
   }
@@ -1492,7 +1493,6 @@ Cancel, then change the name, to keep both.`)) return;
     ($('layoutShuffle') as HTMLButtonElement).disabled = s.layout.id === 'none';
     const dn = s.layout.dens ?? DEFAULT_DENS;
     for (const [k, inp, out] of DENS_IN) { setVal(inp, dn[k]); setOut(out, stopName(k, dn[k])); ($(inp) as HTMLInputElement).disabled = s.layout.id === 'none'; }
-    $('lDensPlant').textContent = s.layout.id === 'reef' ? 'Corals' : 'Plants';
     const nk = (k: ItemKind) => s.items.filter(q => q.kind === k).length;
     for (const [sec, out, btn] of [['hardscape', 'itemCountHard', 'itemsClearHard'], ['plants', 'itemCountPlant', 'itemsClearPlant']] as const) {
       const ks = (Object.keys(KINDS) as ItemKind[]).filter(k => scapeSec(k) === sec && nk(k));

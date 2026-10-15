@@ -1,7 +1,7 @@
 // Load-time validation and migration. Untrusted JSON in, a complete valid Scene out (plus warnings), or an error.
 import { fishTL, getSpecies, hasSpecies } from '../data/species';
 import { defaultSetup } from './defaults';
-import { LIBRARY, MAX_ITEMS, clampItem, legacyDens, starterItems } from './items';
+import { ANIMAL_RANGE, DENS_RANGE, LIBRARY, MAX_ITEMS, clampItem, legacyDens, starterItems } from './items';
 import { CEILING_H, CEILING_MAX, CEILING_MIN, WALL_GAP, WALL_GAP_MAX, clamp, mapToTank } from './physics';
 import { MH_BULBS, TECH_IDS, fitFixture } from './lightout';
 import { normTank } from './shape';
@@ -247,7 +247,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
     },
     layout: (() => {
       const seed = Math.round(num(lay.seed, 1, 1, 1e9)), ld = isObj(lay.dens) ? lay.dens as Obj : null, old = legacyDens(seed); // before lane SD: the stops nearest the seed's rolled density
-      const stop = (v: unknown, k: keyof typeof old) => Math.round(num(v, old[k], 0, 4));
+      const stop = (v: unknown, k: keyof typeof old) => Math.round(num(v, old[k], k === 'animal' ? ANIMAL_RANGE[0] : DENS_RANGE[0], k === 'animal' ? ANIMAL_RANGE[1] : DENS_RANGE[1]) * 100) / 100; // continuous since 2026-10-15
       return { id: pick(lay.id, LAYOUT_IDS, d.layout.id), seed, dens: ld ? { hard: stop(ld.hard, 'hard'), plant: stop(ld.plant, 'plant'), animal: stop(ld.animal, 'animal') } : old };
     })(),
     water: {

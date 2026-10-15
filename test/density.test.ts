@@ -123,3 +123,28 @@ describe('density sliders and per-layer streams (lane SD, 2026-10-15)', () => {
     expect(handEdits(u, 'all')).not.toContain('animals'); // at None a new set leaves them alone
   });
 });
+
+describe('continuous, widened density (2026-10-15)', () => {
+  it('hardscape and plants run from one piece at -1 to far more than Packed at 6', () => {
+    for (const id of LAYOUTS) for (let seed = 1; seed < 6; seed++) {
+      const at = (h: number, p: number) => starterItems(setup(id, seed, { hard: h, plant: p, animal: 0 }));
+      expect(hard(at(-1, 2)).length).toBeLessThanOrEqual(1); // planted and swamp may have no hardscape when sparse
+      expect(plants(at(2, -1)).length).toBeLessThanOrEqual(1);
+      expect(plants(at(2, 6)).length).toBeGreaterThanOrEqual(plants(at(2, 4)).length);
+      if (id !== 'stones') expect(plants(at(2, 6)).length).toBeGreaterThan(1.5 * plants(at(2, 4)).length);
+      expect(hard(at(6, 2)).length).toBeGreaterThan(hard(at(4, 2)).length);
+      expect(plants(at(2, 2.5)).length).toBeGreaterThanOrEqual(plants(at(2, 0)).length); // in-between values work
+    }
+  });
+  it('animals: one at the bottom of the range, past a safe bioload at the top', () => {
+    const s = setup('planted', 3, { hard: 2, plant: 2, animal: 0.05 });
+    expect(starterAnimals(s, 1).length).toBe(1);
+    s.layout.dens!.animal = 6;
+    expect(bioload(starterAnimals(s, 1))).toBeGreaterThan(bioloadLitres(s));
+  });
+  it('fractional levels round-trip through a saved file; out-of-range ones are clamped', () => {
+    const sc = defaultScene(), t = sc.tanks[0];
+    t.layout = { id: 'stones', seed: 7, dens: { hard: -0.37, plant: 5.5, animal: 9 } };
+    expect(parseScene(JSON.parse(JSON.stringify(sc))).scene.tanks[0].layout.dens).toEqual({ hard: -0.37, plant: 5.5, animal: 6 });
+  });
+});

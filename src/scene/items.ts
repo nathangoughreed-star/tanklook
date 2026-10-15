@@ -280,9 +280,20 @@ export function starterStyle(seed: number): Style {
   return { classic: false, scale, foci, wild: q(), open };
 }
 
-/** The stops of the stepped density sliders (lane SD): hardscape and plants / corals, then animals. */
-export const DENS_STOPS = ['Sparse', 'Light', 'Medium', 'Full', 'Packed'] as const;
-export const ANIMAL_STOPS = ['None', 'Few', 'Some', 'Many', 'Full'] as const;
+/**
+ * The density sliders (lane SD; continuous and widened 2026-10-15, Nathan: "from a single plant / rock / fish all the
+ * way up to a level where it no longer looks good at all"). A value is in stop units: 0..4 are the old stops (Sparse ..
+ * Packed, animals None .. Full), hardscape and plants run on down to -1 (one piece) and up to 6 (far too dense), animals
+ * up to 6 (well past a safe bioload). `DENS_NAMES[i]` names value i - 1; `ANIMAL_NAMES[i]` names value i.
+ */
+export const DENS_RANGE = [-1, 6] as const, ANIMAL_RANGE = [0, 6] as const;
+export const DENS_NAMES = ['One piece', 'Sparse', 'Light', 'Medium', 'Full', 'Packed', 'Overgrown', 'Far too much'] as const;
+export const ANIMAL_NAMES = ['None', 'Few', 'Some', 'Many', 'Full', 'Overstocked', 'Far overstocked'] as const;
+/** The name nearest a slider value. */
+export function densName(k: 'hard' | 'plant' | 'animal', v: number) {
+  if (k === 'animal') return v <= 0 ? 'None' : v < 0.5 ? 'One or two' : ANIMAL_NAMES[clamp(Math.round(v), 0, 6)];
+  return DENS_NAMES[clamp(Math.round(v), -1, 6) + 1];
+}
 /** Medium hardscape and plants (the set as designed), no animals: what a new tank and an old file's seed 1 get. */
 export const DEFAULT_DENS: LayerDens = { hard: 2, plant: 2, animal: 0 };
 /** The layers a starter set is drawn in, each from its own random stream: hardscape first, plants and corals placed
@@ -305,11 +316,15 @@ export const STYLES: Record<Exclude<LayoutId, 'none'>, StyleSpec> = {
   swamp: { hard: [0.3, 2.5], plant: [0.5, 2], animals: ['dartfrog', 'treefrog', 'firetoad', 'firenewt', 'guppy', 'ember', 'ramshorn'] },
   reef: { hard: [0.4, 2], plant: [0.4, 2.2], animals: ['ocellaris', 'royalgramma', 'firefish', 'banggai', 'chromis', 'sixline', 'watchman', 'coralbeauty', 'yellowtang', 'cleanershrimp', 'turbo', 'hermit'] },
 };
-/** A stop 0..4 as a density within a style's [Sparse, Packed] range: Medium (2) is 1. */
+/** A slider value as a density within a style's [Sparse, Packed] range: Medium (2) is 1, smooth in between. Past
+ *  Packed it keeps climbing, to three times Packed at 6; below Sparse it stays Sparse (the layer is then thinned to a
+ *  share of its pieces, `keepShare`). */
 export function stopDens(stop: number, [lo, hi]: readonly [number, number]) {
-  const s = clamp(Math.round(stop), 0, 4);
-  return s <= 2 ? lo + (1 - lo) * s / 2 : 1 + (hi - 1) * (s - 2) / 2;
+  const s = clamp(stop, 0, 6);
+  return s <= 2 ? lo + (1 - lo) * s / 2 : s <= 4 ? 1 + (hi - 1) * (s - 2) / 2 : hi * (1 + (s - 4));
 }
+/** Below Sparse (value -1..0): the share of the Sparse layer's pieces kept, down to one piece at -1. */
+export const keepShare = (stop: number) => stop >= 0 ? 1 : clamp(stop + 1, 0, 1);
 /** A file from before lane SD: the stops nearest the density its seed rolled then (sparse 0.3-0.6, medium 0.8-1.2,
  *  packed 1.5-2.4), no animals (the starter sets never placed any). */
 export function legacyDens(seed: number): LayerDens {
@@ -339,8 +354,12 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
   const pick = <T>(a: T[]) => a[Math.floor(q() * a.length) % a.length];
   const layer = (k: 'hard' | 'plant', draw: () => void) => {
     if (k === 'hard' && keepHard) return;
-    const stop = DS[k]; r = stream(k === 'hard' ? 1 : 2); q = stream(k === 'hard' ? 11 : 12);
+    const stop = DS[k], n0 = out.length; r = stream(k === 'hard' ? 1 : 2); q = stream(k === 'hard' ? 11 : 12);
     dens = stopDens(stop, spec[k]); classic = designed && stop === 2; draw();
+    if (stop < 0) { // below Sparse: keep the first pieces the layer placed (the main ones come first), one at the least
+      const mine = out.slice(n0).filter(it => layerOf(it) === k), keep = new Set(mine.slice(0, Math.max(1, Math.round(mine.length * keepShare(stop)))));
+      out.splice(n0, out.length - n0, ...out.slice(n0).filter(it => layerOf(it) !== k || keep.has(it)));
+    }
   };
   const seed = () => 1 + Math.floor(r() * 1e9);
   const many = (n: number, k = 1) => Math.max(0, Math.round(n * dens * k + (classic ? 0 : r() - 0.5)));
@@ -493,7 +512,7 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
       // (odd, 7 at most: the style's rule) and how far apart they stand. The designed set: 5 in fixed spots.
       const stone = designed ? 'seiryu' : pick(['seiryu', 'seiryu', 'dragon', 'lava', 'river']), side = (st.foci[0].x <= 0.5 ? 1 : -1) * (classic && r() < 0.5 ? -1 : 1);
       const lean = designed ? 7 : Math.round(4 + st.wild * 22), ratio = STONE_RATIO[stone] ?? 0.8; // size from the wanted height
-      const total = spec.stones![DS.hard] ?? 5, foci = st.foci.slice(0, total), sk = foci.reduce((a, f) => a + f.k, 0);
+      const total = DS.hard > 4 ? 7 + 2 * Math.round(DS.hard - 4) : spec.stones![clamp(Math.round(DS.hard), 0, 4)] ?? 5, foci = st.foci.slice(0, total), sk = foci.reduce((a, f) => a + f.k, 0);
       const share = foci.map(f => Math.floor((total - foci.length) * f.k / sk));
       share[0] += total - foci.length - share.reduce((a, b) => a + b, 0);
       foci.forEach((f, fi) => {

@@ -12,6 +12,12 @@ import type { Fish, Item, TankSetup } from './types';
 export const ANIMAL_FILL = [0, 0.35, 0.6, 0.8, 0.9] as const;
 /** Species tried per stop: a few kinds in a light tank, a community in a full one. */
 const KINDS_PER_STOP = [0, 2, 3, 4, 5] as const;
+/** A continuous animal value (0..6) between the stops: below Few it is Few thinned to a share of its animals (one at
+ *  the least); past Full the fill keeps climbing, to a little over twice the safe cap at 6, more kinds, bigger groups
+ *  (Nathan 2026-10-15: the slider goes on to where it no longer looks good). */
+const lerpStops = (a: readonly number[], v: number) => { const i = Math.min(Math.floor(v), a.length - 2); return a[i] + (a[i + 1] - a[i]) * (v - i); };
+const fillAt = (v: number) => v <= 4 ? lerpStops(ANIMAL_FILL, Math.max(v, 1)) : ANIMAL_FILL[4] + 0.6 * (v - 4);
+const kindsAt = (v: number) => Math.round(v <= 4 ? lerpStops(KINDS_PER_STOP, Math.max(v, 1)) : KINDS_PER_STOP[4] + (v - 4));
 
 const isInvert = (sp: Species) => sp.kind === 'snail' || sp.cat.endsWith('invert');
 /**
@@ -55,7 +61,7 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
   const cap = bioloadLitres(s) * ANIMAL_FILL[4];
   const lead = pool.findIndex(sp => sp.group && sp.zone !== 'bottom' && !isInvert(sp) && sp.habitat === 'water' && stocking(sp).start * litresFor(sp) <= cap);
   if (lead > 0) pool.unshift(...pool.splice(lead, 1));
-  const chosen = pool.slice(0, KINDS_PER_STOP[stop]), budget = bioloadLitres(s) * ANIMAL_FILL[stop];
+  const chosen = pool.slice(0, kindsAt(stop)), budget = bioloadLitres(s) * fillAt(stop), big = Math.max(1, fillAt(stop) / ANIMAL_FILL[4]);
   const count = new Map<Species, number>();
   let used = 0;
   const add = (sp: Species, n: number, most = budget) => {
@@ -64,10 +70,14 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
   };
   // the lead group goes in at any stop above None if it fits under the cap at all (a small tank's Few is then just
   // that one school); the rest join while the stop's share lasts
-  chosen.forEach((sp, i) => add(sp, stocking(sp).start, i === 0 && lead >= 0 ? cap : budget));
+  chosen.forEach((sp, i) => add(sp, stocking(sp).start, i === 0 && lead >= 0 ? Math.max(cap, budget) : budget));
   for (let grew = true; grew;) { // grow each group in turn while the budget lasts
     grew = false;
-    for (const [sp, n] of count) { const { step, max } = stocking(sp); if (n + step <= max && add(sp, step)) grew = true; }
+    for (const [sp, n] of count) { const { step, max } = stocking(sp); if (step && n + step <= Math.round(max * big) && add(sp, step)) grew = true; }
+  }
+  if (stop < 1) { // below Few: the first animals only, one at the least
+    let keep = Math.max(1, Math.round([...count.values()].reduce((a, n) => a + n, 0) * stop));
+    for (const [sp, n] of count) { const k = Math.min(n, keep); keep -= k; if (k) count.set(sp, k); else count.delete(sp); }
   }
   const fish: Fish[] = [], ids = new Set<number>();
   let next = firstId;
