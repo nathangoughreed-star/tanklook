@@ -739,6 +739,11 @@ function addWall(sc: THREE.Scene, S: TankSetup, T: Tank) {
     wall.position.set(off, ROOM_H / 2, 0); wall.userData.room = true; w.add(wall);
     const skirt = shadedBox(SPAN, SKIRT_H, SKIRT_D, 0xf1efe9); skirt.position.set(off, SKIRT_H / 2, SKIRT_D / 2); w.add(skirt);
   };
+  // a faint line down an inside corner where two walls meet, so the flat-shaded walls read as a corner (Nathan,
+  // 2026-10-15); x along the wall, a step out into the room (toward -sx) so neither wall's face hides it
+  const seam = (w: THREE.Group, x: number, sx: number) => {
+    const l = lines([x - sx * 2, 0, 2, x - sx * 2, ROOM_H, 2], 0x000000, 0.14); l.userData.room = true; w.add(l);
+  };
   // a ceiling at the wall's top, so zoomed far out the room has a lid instead of the space beyond; one-sided (seen
   // only from below), in the (first) wall group so whatever hides the walls (the AR view) hides it too
   const ceiling = (w: THREE.Group) => {
@@ -751,7 +756,7 @@ function addWall(sc: THREE.Scene, S: TankSetup, T: Tank) {
     for (const a of [Math.PI / 4, -Math.PI / 4]) {
       const w = new THREE.Group(); panel(w, a > 0 ? -SPAN / 2 : SPAN / 2);
       w.position.set(cw.corner[0], fy, cw.corner[1]); w.rotation.y = a; sc.add(w);
-      if (a > 0) ceiling(w);
+      if (a > 0) { ceiling(w); seam(w, 0, 1); } // this wall runs from the corner along local -x
     }
     return;
   }
@@ -760,7 +765,7 @@ function addWall(sc: THREE.Scene, S: TankSetup, T: Tank) {
   // off forever (Nathan, 2026-10-15); in the wall's group, so they hide with it
   for (const s of [-1, 1]) {
     const e = new THREE.Group(); e.position.set(s * ROOM_HALF, 0, SPAN / 2); e.rotation.y = -s * Math.PI / 2; g.add(e);
-    panel(e, 0);
+    panel(e, 0); seam(g, s * ROOM_HALF, s);
   }
   if (S.wall.side === 'back') g.position.set(L / 2, fy, wp.back);
   else if (S.wall.side === 'right') { g.position.set(wp.right, fy, -D / 2); g.rotation.y = -Math.PI / 2; }
