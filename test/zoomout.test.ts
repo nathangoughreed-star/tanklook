@@ -15,8 +15,8 @@ const withZoom = (zoom: number) => {
 };
 
 describe('zoom out further', () => {
-  it('the limit is 0.25 to 12', () => {
-    expect(LIMITS.zoom).toEqual([0.25, 12]);
+  it('the limit is 0.1 to 12', () => {
+    expect(LIMITS.zoom).toEqual([0.1, 12]);
   });
 
   it('loads zooms in the old range unchanged, keeps the new ones, clamps below the minimum; no version bump', () => {
@@ -27,7 +27,7 @@ describe('zoom out further', () => {
       // round trip: save the loaded scene and load it again
       expect(parseScene(JSON.parse(JSON.stringify(scene))).scene.tanks[0].camera.zoom).toBe(z);
     }
-    expect(parseScene(withZoom(0.1)).scene.tanks[0].camera.zoom).toBe(0.25);
+    expect(parseScene(withZoom(0.05)).scene.tanks[0].camera.zoom).toBe(0.1);
   });
 
   it('at and above 0.5 the eye stays at the Eye distance; below it the eye steps back and the lens holds', () => {
@@ -54,5 +54,16 @@ describe('zoom out further', () => {
     expect(width(0.25) / width(0.5)).toBeGreaterThan(0.45);
     expect(width(0.25) / width(0.5)).toBeLessThan(0.55);
     expect(width(0.49) / width(0.5)).toBeGreaterThan(0.97); // no jump at the switch
+  });
+
+  it('at 0.1 the eye steps back 5x and the clip planes grow with it, so the far room is not cut off', () => {
+    const S = defaultSetup(), T = S.tank, cam = new THREE.PerspectiveCamera();
+    const c = { ...S.camera, dist: 5000, zoom: 0.1 };
+    expect(eyeDist(c)).toBe(25000);
+    placeCamera(cam, T, c);
+    expect(cam.far).toBeGreaterThan(cam.position.distanceTo(new THREE.Vector3(T.L / 2, T.H / 2, -T.D / 2)) + 40000);
+    expect(cam.far / cam.near).toBe(4000); // same depth precision as the fixed eye
+    placeCamera(cam, T, { ...c, zoom: 1 });
+    expect([cam.near, cam.far]).toEqual([10, 40000]);
   });
 });

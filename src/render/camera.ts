@@ -10,6 +10,9 @@ export function placeCamera(cam: THREE.PerspectiveCamera, T: Tank, c: CameraSett
   const az = c.az * D2R, el = c.el * D2R, P = new THREE.Vector3(T.L / 2, T.H / 2, -T.D / 2), r = eyeDist(c) + T.D / 2;
   cam.position.set(P.x + r * Math.sin(az) * Math.cos(el), P.y + r * Math.sin(el), P.z + r * Math.cos(az) * Math.cos(el));
   cam.lookAt(P); cam.updateMatrixWorld();
+  // clip planes grow with the step-back (zoom below LENS_ZOOM_MIN), so the far room isn't cut off; same depth precision
+  const back = r / (c.dist + T.D / 2);
+  cam.near = 10 * back; cam.far = 40000 * back;
 }
 
 /**

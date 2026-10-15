@@ -708,12 +708,12 @@ function addPerson(sc: THREE.Scene, S: TankSetup, T: Tank) {
   m.position.set(p.x, p.floor, p.z); m.name = 'person'; m.userData.room = true; sc.add(m);
 }
 
-/** Room wall width and floor size, mm: big enough that nothing runs out at the minimum zoom (lane V, 2026-10-14). */
-const ROOM_SPAN = 40000;
+/** Room wall width and floor size, mm: big enough that nothing runs out at the minimum zoom (lane V, 2026-10-14; 0.1 zoom, 2026-10-15). */
+const ROOM_SPAN = 120000;
 /** Plain room floor under the stand/wall, so the room doesn't float in a void. One-sided (invisible from below). */
 function addFloor(sc: THREE.Scene, S: TankSetup, T: Tank) {
   if (!S.stand.show && !S.wall.show && !S.person.show) return;
-  // 40 m across so zoomed all the way out (eye stepped back, lane V) its edge never shows; scaled, not resized,
+  // 120 m across so zoomed all the way out (eye stepped back, lane V) its edge never shows; scaled, not resized,
   // because render/ar.ts finds the floor by its 8000 geometry width
   const f = new THREE.Mesh(new THREE.PlaneGeometry(8000, 8000), basic(0xb3aca1));
   f.scale.setScalar(ROOM_SPAN / 8000); f.rotation.x = -Math.PI / 2; f.position.set(T.L / 2, floorY(T, S.render, S.stand) - 0.5, -T.D / 2);
@@ -1006,7 +1006,7 @@ function addTerrainDots(sc: THREE.Scene, S: TankSetup, T: Tank, hot: number | nu
 
 export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: number | null, edit?: { hot: number | null }, selItem: number | null = null): BuiltTank {
   const sc = new THREE.Scene();
-  addTank(sc, S, T); addWater(sc, S, T); addSubstrate(sc, S, T); addBackdrop(sc, S.backdrop, T, S.render.rim);
+  addTank(sc, S, T); addWater(sc, S, T); addSubstrate(sc, S, T); addBackdrop(sc, S.backdrop, T, S.render.rim, S.render.bgSides);
   const n0 = sc.children.length; addStand(sc, S, T);
   for (const o of sc.children.slice(n0)) o.userData.stand = true; // AR's stand toggle hides these
   addWall(sc, S, T); addPerson(sc, S, T); addFloor(sc, S, T);
