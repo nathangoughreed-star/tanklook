@@ -1,0 +1,922 @@
+{
+ "commit": "17736769653548fdff99bc30d37fa577baa5fe49",
+ "build": 474,
+ "dirty": false,
+ "when": "2026-10-15T16:41:11.389Z",
+ "browser": "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
+ "load": {
+  "before": {
+   "at": "2026-10-15T16:41:10.415Z",
+   "cpuBusyPct": 24,
+   "node": 3,
+   "msedge": 7,
+   "chrome": 32,
+   "claude": 25,
+   "devPorts": [],
+   "underLoad": false
+  },
+  "after": {
+   "at": "2026-10-15T16:44:12.856Z",
+   "cpuBusyPct": 28,
+   "node": 7,
+   "msedge": 7,
+   "chrome": 33,
+   "claude": 25,
+   "devPorts": [],
+   "underLoad": true
+  }
+ },
+ "sizes": {
+  "desktop": {
+   "betta-bowl": {
+    "firstDrawMs": 814,
+    "firstFrameMs": 12096,
+    "shaderMs": 11256,
+    "programs": 21,
+    "domContentLoadedMs": 243,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      700,
+      850
+     ],
+     "pixelRatio": 1
+    },
+    "memory": {
+     "geometries": 51,
+     "textures": 10,
+     "programs": 21
+    },
+    "heapMB": 13.6,
+    "steady": {
+     "gpu": 1.12,
+     "gpuMin": 1.11,
+     "cpu": 2,
+     "calls": 230,
+     "triangles": 56686,
+     "samples": 5
+    },
+    "rebuild": {
+     "cpu": 50.9,
+     "wall": 52.2,
+     "gpu": 30.33,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 3,
+      "triangles": 182
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 5,
+      "triangles": 8844
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 5,
+      "triangles": 0
+     },
+     "ShaderMaterial (transparent)": {
+      "meshes": 1,
+      "triangles": 4176
+     },
+     "sub": {
+      "meshes": 2,
+      "triangles": 1308
+     },
+     "room": {
+      "meshes": 10,
+      "triangles": 570
+     },
+     "LineBasicMaterial": {
+      "meshes": 7,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 8,
+      "triangles": 2776
+     },
+     "solid": {
+      "meshes": 2,
+      "triangles": 1284
+     },
+     "plantClip+card+post": {
+      "meshes": 3,
+      "triangles": 15344
+     },
+     "fishCard+card": {
+      "meshes": 5,
+      "triangles": 1288
+     },
+     "fish+plain": {
+      "meshes": 1,
+      "triangles": 2212
+     },
+     "fish": {
+      "meshes": 11,
+      "triangles": 18760
+     },
+     "card": {
+      "meshes": 1,
+      "triangles": 2
+     },
+     "glow": {
+      "meshes": 1,
+      "triangles": 96
+     }
+    }
+   }
+  }
+ },
+ "breakdown": {},
+ "prod": {
+  "distKB": 6311,
+  "codeKB": 1459,
+  "codeGzipKB": 490,
+  "files": [
+   {
+    "file": "assets/three.module-_L6HqVjY.js",
+    "kb": 512,
+    "gzipKB": 129
+   },
+   {
+    "file": "assets/main-DabvE8zF.js",
+    "kb": 416,
+    "gzipKB": 174
+   },
+   {
+    "file": "assets/preview3d-Bz6Wmp8M.js",
+    "kb": 210,
+    "gzipKB": 82
+   },
+   {
+    "file": "assets/fish3d-BNSm0tas.js",
+    "kb": 135,
+    "gzipKB": 47
+   },
+   {
+    "file": "model-sheets/firetoad.jpg",
+    "kb": 100,
+    "gzipKB": null
+   },
+   {
+    "file": "model-sheets/dartfrog.jpg",
+    "kb": 98,
+    "gzipKB": null
+   },
+   {
+    "file": "model-sheets/nerite.jpg",
+    "kb": 94,
+    "gzipKB": null
+   },
+   {
+    "file": "model-sheets/hermit.jpg",
+    "kb": 92,
+    "gzipKB": null
+   },
+   {
+    "file": "model-sheets/cleanershrimp.jpg",
+    "kb": 89,
+    "gzipKB": null
+   },
+   {
+    "file": "model-sheets/treefrog.jpg",
+    "kb": 87,
+    "gzipKB": null
+   },
+   {
+    "file": "model-sheets/gbr-f.jpg",
+    "kb": 79,
+    "gzipKB": null
+   },
+   {
+    "file": "model-sheets/ocellaris.jpg",
+    "kb": 78,
+    "gzipKB": null
+   },
+   {
+    "file": "model-sheets/cherryshrimp.jpg",
+    "kb": 77,
+    "gzipKB": null
+   },
+   {
+    "file": "model-sheets/peapuffer.jpg",
+    "kb": 77,
+    "gzipKB": null
+   },
+   {
+    "file": "model-sheets/kribensis-f.jpg",
+    "kb": 76,
+    "gzipKB": null
+   }
+  ],
+  "single": {
+   "kb": 472,
+   "gzipKB": 189,
+   "broken": true
+  },
+  "load": {
+   "desktop": {
+    "betta-bowl": {
+     "coldFirstFrameMs": 12800,
+     "coldShaderMs": 12182,
+     "coldByCall": {
+      "getParameter": 71,
+      "getProgramInfoLog": 12086
+     },
+     "coldSlowPrograms": [
+      {
+       "call": "getProgramInfoLog",
+       "ms": 10275,
+       "name": "",
+       "len": 30833,
+       "defines": [
+        "USE_COLOR"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "vGlassW",
+        "gritK",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      },
+      {
+       "call": "getProgramInfoLog",
+       "ms": 216,
+       "name": "",
+       "len": 24523,
+       "defines": [
+        "USE_MAP"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      },
+      {
+       "call": "getProgramInfoLog",
+       "ms": 215,
+       "name": "",
+       "len": 24762,
+       "defines": [
+        "USE_MAP",
+        "USE_COLOR"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      },
+      {
+       "call": "getProgramInfoLog",
+       "ms": 197,
+       "name": "",
+       "len": 24502,
+       "defines": [
+        "USE_MAP"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      },
+      {
+       "call": "getProgramInfoLog",
+       "ms": 195,
+       "name": "",
+       "len": 24541,
+       "defines": [
+        "USE_MAP",
+        "USE_COLOR"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      },
+      {
+       "call": "getProgramInfoLog",
+       "ms": 191,
+       "name": "",
+       "len": 24534,
+       "defines": [
+        "ALPHA_TO_COVERAGE",
+        "USE_MAP"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      },
+      {
+       "call": "getProgramInfoLog",
+       "ms": 178,
+       "name": "",
+       "len": 25083,
+       "defines": [
+        "USE_COLOR"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "vGlassW",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      },
+      {
+       "call": "getProgramInfoLog",
+       "ms": 168,
+       "name": "",
+       "len": 24507,
+       "defines": [],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      },
+      {
+       "call": "getProgramInfoLog",
+       "ms": 168,
+       "name": "",
+       "len": 24504,
+       "defines": [
+        "USE_COLOR"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      },
+      {
+       "call": "getProgramInfoLog",
+       "ms": 161,
+       "name": "",
+       "len": 24486,
+       "defines": [],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      }
+     ],
+     "shaderMs": 180,
+     "programs": 21,
+     "firstDrawMs": 427,
+     "firstFrameMs": 612,
+     "domContentLoadedMs": 121,
+     "heapMB": 7
+    },
+    "iwagumi": {
+     "coldFirstFrameMs": 23498,
+     "coldShaderMs": 22947,
+     "coldByCall": {
+      "getProgramInfoLog": 22893
+     },
+     "coldSlowPrograms": [
+      {
+       "call": "getProgramInfoLog",
+       "ms": 10107,
+       "name": "",
+       "len": 32343,
+       "defines": [
+        "USE_COLOR"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "vGlassW",
+        "gritK",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      },
+      {
+       "call": "getProgramInfoLog",
+       "ms": 9269,
+       "name": "",
+       "len": 32341,
+       "defines": [
+        "USE_COLOR"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "vGlassW",
+        "gritK",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      },
+      {
+       "call": "getProgramInfoLog",
+       "ms": 258,
+       "name": "",
+       "len": 81028,
+       "defines": [
+        "USE_TRANSMISSION",
+        "USE_SPECULAR"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      },
+      {
+       "call": "getProgramInfoLog",
+       "ms": 247,
+       "name": "",
+       "len": 81028,
+       "defines": [
+        "USE_TRANSMISSION",
+        "USE_SPECULAR"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      },
+      {
+       "call": "getProgramInfoLog",
+       "ms": 244,
+       "name": "",
+       "len": 24525,
+       "defines": [
+        "USE_MAP"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      },
+      {
+       "call": "getProgramInfoLog",
+       "ms": 202,
+       "name": "",
+       "len": 24520,
+       "defines": [
+        "USE_MAP",
+        "USE_COLOR"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      },
+      {
+       "call": "getProgramInfoLog",
+       "ms": 199,
+       "name": "",
+       "len": 24764,
+       "defines": [
+        "USE_MAP",
+        "USE_COLOR"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      },
+      {
+       "call": "getProgramInfoLog",
+       "ms": 192,
+       "name": "",
+       "len": 24487,
+       "defines": [
+        "USE_MAP"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      },
+      {
+       "call": "getProgramInfoLog",
+       "ms": 192,
+       "name": "",
+       "len": 24529,
+       "defines": [
+        "USE_MAP",
+        "USE_COLOR",
+        "USE_COLOR_ALPHA"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      },
+      {
+       "call": "getProgramInfoLog",
+       "ms": 190,
+       "name": "",
+       "len": 24543,
+       "defines": [
+        "USE_MAP",
+        "USE_COLOR"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      },
+      {
+       "call": "getProgramInfoLog",
+       "ms": 190,
+       "name": "",
+       "len": 24506,
+       "defines": [
+        "USE_MAP"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      },
+      {
+       "call": "getProgramInfoLog",
+       "ms": 184,
+       "name": "",
+       "len": 26593,
+       "defines": [
+        "USE_COLOR"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "vGlassW",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      }
+     ],
+     "shaderMs": 368,
+     "programs": 47,
+     "firstDrawMs": 565,
+     "firstFrameMs": 882,
+     "domContentLoadedMs": 131,
+     "heapMB": 10.9
+    },
+    "paludarium": {
+     "coldFirstFrameMs": 22525,
+     "coldShaderMs": 419,
+     "coldByCall": {
+      "getProgramInfoLog": 347
+     },
+     "coldSlowPrograms": [],
+     "shaderMs": 448,
+     "programs": 25,
+     "firstDrawMs": 2340,
+     "firstFrameMs": 2803,
+     "domContentLoadedMs": 1569,
+     "heapMB": 9.1
+    },
+    "planted": {
+     "coldFirstFrameMs": 3403,
+     "coldShaderMs": 1902,
+     "coldByCall": {
+      "getProgramInfoLog": 1809
+     },
+     "coldSlowPrograms": [
+      {
+       "call": "getProgramInfoLog",
+       "ms": 657,
+       "name": "",
+       "len": 24489,
+       "defines": [
+        "USE_COLOR"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      },
+      {
+       "call": "getProgramInfoLog",
+       "ms": 498,
+       "name": "",
+       "len": 24505,
+       "defines": [
+        "USE_MAP",
+        "USE_COLOR"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      },
+      {
+       "call": "getProgramInfoLog",
+       "ms": 300,
+       "name": "",
+       "len": 24541,
+       "defines": [
+        "USE_MAP",
+        "USE_COLOR"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      }
+     ],
+     "shaderMs": 719,
+     "programs": 28,
+     "firstDrawMs": 1476,
+     "firstFrameMs": 3403,
+     "domContentLoadedMs": 356,
+     "heapMB": 9.2
+    },
+    "reef": {
+     "coldFirstFrameMs": 24577,
+     "coldShaderMs": 22792,
+     "coldByCall": {
+      "getProgramInfoLog": 22705
+     },
+     "coldSlowPrograms": [
+      {
+       "call": "getProgramInfoLog",
+       "ms": 21994,
+       "name": "",
+       "len": 44087,
+       "defines": [
+        "USE_COLOR"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "vGlassW",
+        "gritK",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      },
+      {
+       "call": "getProgramInfoLog",
+       "ms": 255,
+       "name": "",
+       "len": 24520,
+       "defines": [
+        "USE_MAP",
+        "USE_COLOR"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      },
+      {
+       "call": "getProgramInfoLog",
+       "ms": 138,
+       "name": "",
+       "len": 24523,
+       "defines": [
+        "USE_MAP"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      }
+     ],
+     "shaderMs": 996,
+     "programs": 27,
+     "firstDrawMs": 2211,
+     "firstFrameMs": 3201,
+     "domContentLoadedMs": 289,
+     "heapMB": 8.3
+    },
+    "terrarium": {
+     "coldFirstFrameMs": 23453,
+     "coldShaderMs": 21861,
+     "coldByCall": {
+      "getProgramInfoLog": 21781
+     },
+     "coldSlowPrograms": [
+      {
+       "call": "getProgramInfoLog",
+       "ms": 19831,
+       "name": "",
+       "len": 37644,
+       "defines": [
+        "USE_COLOR"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "vGlassW",
+        "gritK",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      },
+      {
+       "call": "getProgramInfoLog",
+       "ms": 655,
+       "name": "",
+       "len": 24879,
+       "defines": [
+        "USE_MAP"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      },
+      {
+       "call": "getProgramInfoLog",
+       "ms": 599,
+       "name": "",
+       "len": 31894,
+       "defines": [
+        "USE_COLOR"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "vGlassW",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      },
+      {
+       "call": "getProgramInfoLog",
+       "ms": 569,
+       "name": "",
+       "len": 24897,
+       "defines": [
+        "USE_MAP",
+        "USE_COLOR"
+       ],
+       "marks": [
+        "aqLight",
+        "aqIrrAbs",
+        "aqFishFacing",
+        "aqWaterPath",
+        "aqNoise",
+        "uClip",
+        "transmission"
+       ]
+      }
+     ],
+     "shaderMs": 371,
+     "programs": 19,
+     "firstDrawMs": 1567,
+     "firstFrameMs": 1940,
+     "domContentLoadedMs": 341,
+     "heapMB": 7
+    }
+   }
+  }
+ },
+ "gpu": {
+  "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "timerQuery": true,
+  "buffer": [
+   700,
+   850
+  ],
+  "pixelRatio": 1
+ },
+ "seconds": 184
+}

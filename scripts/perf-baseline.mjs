@@ -13,9 +13,9 @@
 // Last, `npm run build:single` and the single-file build's size and load -> first frame per example.
 // Instrumentation lives in this script (injected into the page), never in src/.
 //
-// Options: --sizes desktop,phone  --views planted,iwagumi,...,split  --frames 40  --rounds 2 (edit rounds)
+// Options: --sizes desktop,phone (also desktop2x: 1050x850 at DPR 2, a high-DPI laptop)  --views planted,iwagumi,...,split  --frames 40  --rounds 2 (edit rounds)
 //          --breakdown 3 (worst N views, or a list: planted,iwagumi; 0 = none)  --pairs 30 (A/B frame pairs)
-//          --no-edits  --no-prod  --no-build (measure the existing dist-single/)  --out research/efficiency/E1-baseline.json
+//          (a view may also be a path to a scene .json)  --no-edits  --no-prod  --no-build (measure the existing dist-single/)  --out research/efficiency/E1-baseline.json
 //          --ab file.mjs: extra A/B in each breakdown view; the module exports [{ name, a: 'js', b: 'js' }], each a page
 //          expression run before the frame of that side (handle: __gb.viewer / __gb.store, helpers: __pb)
 import { spawn, execSync } from 'node:child_process';
@@ -32,13 +32,15 @@ const opt = (k, d) => { const i = argv.indexOf('--' + k); return i < 0 ? d : arg
 const flag = k => argv.includes('--' + k);
 const EXAMPLES = readdirSync('src/examples').filter(f => f.endsWith('.json')).map(f => f.slice(0, -5));
 const VIEWS = opt('views', [...EXAMPLES, 'split'].join(',')).split(',');
-const SIZES = { desktop: { width: 1050, height: 850, deviceScaleFactor: 1, mobile: false }, phone: { width: 375, height: 812, deviceScaleFactor: 3, mobile: true } };
+const SIZES = { desktop: { width: 1050, height: 850, deviceScaleFactor: 1, mobile: false }, desktop2x: { width: 1050, height: 850, deviceScaleFactor: 2, mobile: false }, phone: { width: 375, height: 812, deviceScaleFactor: 3, mobile: true } };
 const sizes = opt('sizes', 'desktop,phone').split(',');
+if (flag('shaders') && !argv.includes('--sizes')) sizes.length = 0; // --shaders alone: only the compile A/B
 const FRAMES = +opt('frames', 40), ROUNDS = +opt('rounds', 2), PAIRS = +opt('pairs', 30);
 const BREAK = opt('breakdown', '3'), OUT = opt('out', 'research/efficiency/E1-baseline.json');
 const extraAB = flag('ab') ? (await import(pathToFileURL(opt('ab')).href)).default : [];
 const STORAGE_KEY = 'tanklook.scene';
-const sceneText = n => readFileSync(`src/examples/${n === 'split' ? 'planted' : n}.json`, 'utf8');
+// a view is an example name, 'split' (planted, split), or a path to a scene file (a variant, e.g. an example with a 3D wall)
+const sceneText = n => readFileSync(n.endsWith('.json') ? n : `src/examples/${n === 'split' ? 'planted' : n}.json`, 'utf8');
 const T0 = Date.now(), log = (...a) => console.log(`[${((Date.now() - T0) / 1000).toFixed(0).padStart(4)} s]`, ...a);
 
 // ---------- machine load: who else is running (other chats' dev servers and browsers steal GPU and CPU) ----------
@@ -92,15 +94,37 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 // Before any app script: count WebGL draw calls and stamp the first one (load -> first frame works on the production
 // build too, which has no debugging handle).
 const INSTRUMENT = () => {
-  const P = window.__perf = { calls: 0, firstDraw: null, firstFrame: null };
+  const P = window.__perf = { calls: 0, firstDraw: null, firstFrame: null, shader: { programs: 0, ms: 0, beforeFirstFrame: 0, byCall: {}, slow: [] } };
+  // Until the first frame, every WebGL call is timed: on D3D11 (ANGLE -> HLSL) a cold program costs seconds, paid in
+  // whichever call first needs the linked program (link status, a uniform lookup, the first draw with it). `byCall` =
+  // ms per call name, `slow` = calls over 100 ms with the program in use (three's SHADER_NAME, #defines, app markers).
+  const src = new WeakMap(), progInfo = new WeakMap(); let cur = null;
+  const info = s => ({ name: (s.match(/#define SHADER_NAME (\S+)/) ?? [])[1] ?? '', len: s.length,
+    defines: [...new Set(s.match(/#define (USE_\w+|\w*TRANSMISSION\w*|NUM_CLIPPING_PLANES \d+|ALPHA_TO_COVERAGE)/g) ?? [])].map(d => d.slice(8)),
+    marks: ['aqLight', 'aqIrrAbs', 'aqFishFacing', 'vGlassW', 'gritK', 'aqWaterPath', 'aqNoise', 'uClip', 'transmission'].filter(m => s.includes(m)) });
+  const orig = []; // restored at the first frame, so the steady numbers carry only the draw-call counter
+  const DRAW = new Set(['drawElements', 'drawArrays', 'drawElementsInstanced', 'drawArraysInstanced', 'drawRangeElements']);
   for (const C of [window.WebGL2RenderingContext, window.WebGLRenderingContext]) {
     if (!C) continue;
-    for (const k of ['drawElements', 'drawArrays', 'drawElementsInstanced', 'drawArraysInstanced', 'drawRangeElements']) {
-      const f = C.prototype[k]; if (!f) continue;
-      C.prototype[k] = function (a, b, c, d, e) {
-        P.calls++;
-        if (P.firstDraw === null) { P.firstDraw = performance.now(); requestAnimationFrame(() => { P.firstFrame = performance.now(); }); }
-        return f.call(this, a, b, c, d, e);
+    for (const k of Object.getOwnPropertyNames(C.prototype)) {
+      const d = Object.getOwnPropertyDescriptor(C.prototype, k);
+      if (!d || typeof d.value !== 'function' || k === 'constructor') continue;
+      const f = d.value, draw = DRAW.has(k);
+      if (!draw) orig.push([C, k, f]);
+      C.prototype[k] = function (...a) {
+        if (draw) {
+          P.calls++;
+          if (P.firstDraw === null) { P.firstDraw = performance.now(); requestAnimationFrame(() => { P.firstFrame = performance.now(); for (const [C2, k2, f2] of orig) C2.prototype[k2] = f2; }); }
+        }
+        if (k === 'shaderSource') src.set(a[0], a[1]);
+        else if (k === 'attachShader') { const s = src.get(a[1]) ?? ''; if (/gl_FragColor|pc_fragColor|out\s+highp\s+vec4/.test(s) || !progInfo.has(a[0])) progInfo.set(a[0], info(s)); }
+        else if (k === 'useProgram') cur = a[0];
+        else if (k === 'linkProgram') P.shader.programs++;
+        if (P.firstFrame !== null) return f.apply(this, a);
+        const t = performance.now(), r = f.apply(this, a), dt = performance.now() - t;
+        P.shader.beforeFirstFrame += dt; P.shader.byCall[k] = (P.shader.byCall[k] ?? 0) + dt;
+        if (dt > 100) P.shader.slow.push({ call: k, ms: Math.round(dt), ...(progInfo.get(a[0] instanceof WebGLProgram ? a[0] : cur) ?? {}) });
+        return r;
       };
     }
   }
@@ -169,7 +193,11 @@ const PAGE = () => {
     async edits(rounds) {
       const ic = await import('/src/render/incrementalCheck.ts'), out = {};
       v().incremental = true;
-      for (let r = 0; r < rounds; r++) for (const [name, fn] of ic.edits()) {
+      // plus a drag step of the tallest plant (E2 suspect 12: a plant capped under the lid gets a new height, and so a new
+      // cache key, at every step where the ground height changes), three steps per round
+      const t0s = s => s.scene.tanks[0], tall = s => t0s(s).items.filter(i => i.kind === 'plant').sort((a, b) => b.size - a.size)[0];
+      const drag = ['tall plant drag', s => s.editTank(0, () => { const i = tall(s); if (i) i.x += 3; })];
+      for (let r = 0; r < rounds; r++) for (const [name, fn] of [...ic.edits(), drag, drag, drag]) {
         await raf(); await raf();
         const t0 = performance.now(); fn(st()); const t1 = performance.now();
         const t = timed(() => v().draw()); sync(); const t2 = performance.now();
@@ -208,6 +236,34 @@ const PAGE = () => {
       }
       return out;
     },
+    /**
+     * Compile-time A/B of the app's own slowest shader (the one whose fragment source contains `mark`): its source is
+     * read back from the live program, each variant (a string edit) is compiled + linked on a separate WebGL2 context
+     * with a nonce comment (no cache hit), variants interleaved, `reps` rounds. Only the compile time is measured;
+     * a variant need not draw the same picture.
+     */
+    async shaderAB(mark, variants, reps) {
+      const g = gl(), progs = (v().renderer.info.programs ?? []).map(p => p.program);
+      const srcs = progs.map(p => { const o = {}; for (const x of g.getAttachedShaders(p)) o[g.getShaderParameter(x, g.SHADER_TYPE) === g.VERTEX_SHADER ? 'vs' : 'fs'] = g.getShaderSource(x); return o; });
+      const hits = srcs.filter(o => o.fs?.includes(mark)).sort((a, b) => b.fs.length - a.fs.length);
+      if (!hits.length) return { error: `no program contains ${mark}` };
+      const base = hits[0], c = document.createElement('canvas').getContext('webgl2'), out = {};
+      const compile = (vs, fs) => {
+        const n = `
+// nonce ${Math.random()}
+`, t = performance.now(), p = c.createProgram();
+        for (const [type, s] of [[c.VERTEX_SHADER, vs + n], [c.FRAGMENT_SHADER, fs + n]]) { const sh = c.createShader(type); c.shaderSource(sh, s); c.compileShader(sh); c.attachShader(p, sh); }
+        c.linkProgram(p); const ok = c.getProgramParameter(p, c.LINK_STATUS), log = ok ? '' : String(c.getProgramInfoLog(p)).slice(0, 200);
+        return { ms: performance.now() - t, ok, log };
+      };
+      for (let r = 0; r < reps; r++) for (const [name, edit] of Object.entries(variants)) {
+        const fs = new Function(`return (${edit})`)()(base.fs), x = compile(base.vs, fs);
+        const o = out[name] ??= { ms: [], ok: x.ok, log: x.log, changed: fs !== base.fs }; o.ms.push(Math.round(x.ms));
+      }
+      return { fsLength: base.fs.length, programs: hits.length, variants: out };
+    },
+    /** n plain draws, a frame apart (for the CPU profiler). */
+    async drawLoop(n) { for (let i = 0; i < n; i++) { v().draw(); await raf(); } },
     /** Programs in use with what they draw: three's program cache keys of the materials on screen. */
     programs() { return (v().renderer.info.programs ?? []).map(p => ({ name: p.name, usedTimes: p.usedTimes, key: String(p.cacheKey).slice(0, 60) })); },
   };
@@ -221,7 +277,7 @@ await dev.listen();
 const DEV = dev.resolvedUrls.local[0];
 log('dev server', DEV);
 
-const br = await launch();
+let br = await launch();
 const result = {
   commit: execSync('git rev-parse HEAD').toString().trim(), build: +execSync('git rev-list --count HEAD').toString().trim(),
   dirty: execSync('git status --porcelain -- src').toString().trim() !== '', when: new Date().toISOString(), browser: exe,
@@ -241,7 +297,7 @@ async function open(base, view, needHandle = true) {
 }
 async function waitUp(needHandle) {
   for (let i = 0; i < 1200; i++) {
-    const r = await br.ev(`(() => { const p = window.__perf; return p && p.firstFrame != null && (${!needHandle} || !!window.__gb) ? { firstDraw: p.firstDraw, firstFrame: p.firstFrame, dcl: performance.getEntriesByType('navigation')[0]?.domContentLoadedEventEnd ?? null } : null; })()`).catch(() => null);
+    const r = await br.ev(`(() => { const p = window.__perf; return p && p.firstFrame != null && (${!needHandle} || !!window.__gb) ? { firstDraw: p.firstDraw, firstFrame: p.firstFrame, shaderMs: Math.round(p.shader.beforeFirstFrame), programs: p.shader.programs, slow: p.shader.slow, byCall: Object.fromEntries(Object.entries(p.shader.byCall).filter(e => e[1] > 50).map(([k, ms]) => [k, Math.round(ms)])), dcl: performance.getEntriesByType('navigation')[0]?.domContentLoadedEventEnd ?? null } : null; })()`).catch(() => null);
     if (r) return r;
     await sleep(100);
   }
@@ -249,6 +305,32 @@ async function waitUp(needHandle) {
 }
 const heap = async () => { await br.s('HeapProfiler.collectGarbage').catch(() => {}); const h = await br.s('Runtime.getHeapUsage'); return +(h.usedSize / 1048576).toFixed(1); };
 const install = () => br.ev(`window.__pb = (${PAGE})(); 1`);
+
+// ---------- --shaders: compile-time A/B of the slowest shader (the hardscape grit material, 10-22 s cold on D3D11) ----------
+if (flag('shaders')) {
+  // each variant is a function of the fragment source (sent to the page as its source text)
+  const EDGE = 'for (int z = -1; z <= 1; z++) for (int y = -1; y <= 1; y++) for (int x = -1; x <= 1; x++)';
+  const VARIANTS = {
+    original: s => s,
+    'crack loop: runtime bound': s => s.replace('varying vec4 vGrit;', 'varying vec4 vGrit; uniform int gOne;')
+      .replace('for (int z = -1; z <= 1; z++) for (int y = -1; y <= 1; y++) for (int x = -1; x <= 1; x++)', 'for (int z = -1; z <= gOne; z++) for (int y = -1; y <= gOne; y++) for (int x = -1; x <= gOne; x++)'),
+    'no cracks (gEdge unused)': s => s.replace('float e = gEdge(q)', 'float e = 1.0'),
+    // same picture: the five stone kinds share ONE gStone call (their roughness / cracks picked first), so the
+    // compiler inlines gStone (and its unrolled 27-cell crack search) once instead of five times
+    'one gStone call (same output)': s => s.replace(/  if \(t == 1\) k = gStone[\s\S]*?\n  \}\n  else if \(t == 6\)/, `  if (t >= 1 && t <= 5) {
+    float rough = t == 1 ? 0.25 : t == 2 ? 0.6 : t == 3 ? 1.1 : t == 4 ? 1.4 : 0.4, cracks = t == 1 ? 0.3 : t == 2 ? 1.0 : t == 3 ? 0.6 : t == 4 ? 0.35 : 0.5;
+    k = gStone(q, px, rough, cracks);
+    if (t == 5) { float e = abs(gN(vec3(p.x * 0.02, p.y * 0.35, p.z * 0.02)) * 2.0 - 1.0), m = smoothstep(0.4, 0.6, gN(p * 0.03 + 4.0)); k *= 1.0 - 0.55 * gLine(e, 0.05) * m; }
+  }
+  else if (t == 6)`),
+    'no grit at all': s => s.replace('diffuseColor.rgb *= gritK();', ''),
+  };
+  await br.s('Emulation.setDeviceMetricsOverride', SIZES.desktop);
+  await open(DEV, 'iwagumi'); await install(); await br.ev('__pb.settle()');
+  result.shaderAB = await br.ev(`__pb.shaderAB('gritK', ${JSON.stringify(Object.fromEntries(Object.entries(VARIANTS).map(([k, f]) => [k, String(f)])))}, ${+opt('reps', 2)})`, 1_800_000);
+  for (const [k, x] of Object.entries(result.shaderAB.variants ?? {})) log(`shader ${k}: ${x.ms.join(' / ')} ms${x.ok ? '' : ' LINK FAILED ' + x.log}${x.changed || k === 'original' ? '' : ' (edit did not apply)'}`);
+  if (result.shaderAB.error) log(result.shaderAB.error);
+}
 
 // ---------- per size, per view ----------
 let gpuInfo = null;
@@ -259,9 +341,14 @@ for (const size of sizes) {
   const rows = result.sizes[size] = {};
   for (const view of VIEWS) {
     log(size, view);
+    try { await measureView(size, view, rows); } catch (e) { rows[view] = { error: String(e.message) }; log('  FAILED', e.message); }
+  }
+}
+async function measureView(size, view, rows) {
+  {
     const up = await open(DEV, view); await install();
     gpuInfo ??= await br.ev('__pb.gpuName()');
-    const row = rows[view] = { firstDrawMs: Math.round(up.firstDraw), firstFrameMs: Math.round(up.firstFrame), domContentLoadedMs: up.dcl && Math.round(up.dcl), gpu: await br.ev('__pb.gpuName()') };
+    const row = rows[view] = { firstDrawMs: Math.round(up.firstDraw), firstFrameMs: Math.round(up.firstFrame), shaderMs: up.shaderMs, programs: up.programs, domContentLoadedMs: up.dcl && Math.round(up.dcl), gpu: await br.ev('__pb.gpuName()') };
     await br.ev('__pb.settle()');
     row.memory = await br.ev('__pb.memory()'); row.heapMB = await heap();
     row.steady = await br.ev(`__pb.steady(${FRAMES})`);
@@ -283,35 +370,68 @@ if (worst.length) {
     log('breakdown', view);
     await open(DEV, view); await install(); await br.ev('__pb.settle()');
     const b = result.breakdown[view] = { buckets: await br.ev(`__pb.bucketCosts(${PAIRS})`), programs: await br.ev('__pb.programs()'), extra: {} };
+    b.cpuProfile = await profileDraws(60);
+    // the slowest edit in the baseline (water colour, 120-170 ms): one edit + its draw, profiled
+    b.waterColourProfile = await profileDraws(1, `(async () => { const ic = await import('/src/render/incrementalCheck.ts'); const e = ic.edits().find(x => x[0] === 'water colour'); e[1](__gb.store); __gb.viewer.draw(); __gb.viewer.renderer.getContext().readPixels(0, 0, 1, 1, 6408, 5121, new Uint8Array(4)); })()`);
     for (const x of extraAB) b.extra[x.name] = await br.ev(`__pb.ab(() => { ${x.a} }, () => { ${x.b} }, ${PAIRS})`);
+    if (extraAB.length) b.extraApplied = await br.ev('window.__abApplied ?? null');
   }
 }
 
+/**
+ * CPU profile of n steady draws (V8 sampling profiler, 100 us): self and inclusive ms per draw for the top functions
+ * (app code by file:line). Times the per-draw CPU suspects (lane E2) in place, without touching the app.
+ */
+async function profileDraws(n, expr = `__pb.drawLoop(${n})`) {
+  await br.s('Profiler.enable'); await br.s('Profiler.setSamplingInterval', { interval: 100 });
+  await br.ev('__pb.drawLoop(5)'); await br.s('Profiler.start'); await br.ev(expr);
+  const { profile } = await br.s('Profiler.stop'); await br.s('Profiler.disable');
+  const byId = new Map(profile.nodes.map(x => [x.id, x])), parent = new Map();
+  for (const x of profile.nodes) for (const c of x.children ?? []) parent.set(c, x.id);
+  const key = x => { const f = x.callFrame, file = f.url.replace(/^.*?\/src\//, 'src/').replace(/\?.*$/, '').replace(/^.*node_modules\/\.vite\/deps\//, 'deps/'); return `${f.functionName || '(anon)'} ${file ? `${file}:${f.lineNumber + 1}` : ''}`.trim(); };
+  const self = new Map(), incl = new Map();
+  profile.samples.forEach((id, i) => {
+    const dt = (profile.timeDeltas[i] ?? 0) / 1000, seen = new Set();
+    self.set(key(byId.get(id)), (self.get(key(byId.get(id))) ?? 0) + dt);
+    for (let c = id; c != null; c = parent.get(c)) { const k = key(byId.get(c)); if (!seen.has(k)) { seen.add(k); incl.set(k, (incl.get(k) ?? 0) + dt); } }
+  });
+  const top = (m, k) => [...m].filter(([f]) => !/^\((idle|program|garbage collector|root)\)/.test(f)).sort((a, b) => b[1] - a[1]).slice(0, k).map(([f, ms]) => ({ f, msPerDraw: +(ms / n).toFixed(3) }));
+  return { draws: n, self: top(self, 30), inclusive: top(incl, 40), gcMsPerDraw: +((self.get('(garbage collector)') ?? 0) / n).toFixed(3) };
+}
+
 // ---------- production build: size, load -> first frame ----------
+// Load is measured on dist/ served over http (what the site serves). The single file is sized, and flagged when it still
+// imports a chunk it did not inline (broken since d67ac73 split three into its own chunk; lane SF fixes the inliner).
 if (!flag('no-prod')) {
-  if (!flag('no-build')) { log('npm run build:single'); execSync('npm run build:single', { stdio: 'ignore' }); }
-  const single = 'dist-single/tanklook.html', html = readFileSync(single);
-  const assets = existsSync('dist/assets') ? readdirSync('dist/assets').map(f => ({ f, b: readFileSync(join('dist/assets', f)) })) : [];
-  const kb = n => Math.round(n / 1024);
+  if (!flag('no-build')) { log('npm run build:single'); try { execSync('npm run build:single', { stdio: 'ignore' }); } catch { log('build:single failed (the single-file step); measuring dist/'); } }
+  const kb = n => Math.round(n / 1024), walk = d => readdirSync(d, { withFileTypes: true }).flatMap(e => e.isDirectory() ? walk(join(d, e.name)) : [join(d, e.name)]);
+  const files = walk('dist').map(f => ({ file: f.split('\\').join('/').replace(/^dist\//, ''), b: readFileSync(f) }));
+  const code = files.filter(f => /\.(js|css|html)$/.test(f.file));
+  const single = existsSync('dist-single/tanklook.html') ? readFileSync('dist-single/tanklook.html') : null;
   const prod = result.prod = {
-    singleKB: kb(html.length), singleGzipKB: kb(gzipSync(html).length),
-    assets: assets.map(a => ({ file: a.f, kb: kb(a.b.length), gzipKB: kb(gzipSync(a.b).length) })).sort((a, b) => b.kb - a.kb).slice(0, 12),
+    distKB: kb(files.reduce((a, f) => a + f.b.length, 0)), codeKB: kb(code.reduce((a, f) => a + f.b.length, 0)), codeGzipKB: kb(code.reduce((a, f) => a + gzipSync(f.b).length, 0)),
+    files: files.map(f => ({ file: f.file, kb: kb(f.b.length), gzipKB: /\.(js|css|html|json|svg)$/.test(f.file) ? kb(gzipSync(f.b).length) : null })).sort((a, b) => b.kb - a.kb).slice(0, 15),
+    single: single && { kb: kb(single.length), gzipKB: kb(gzipSync(single).length), broken: /from\s*["']\.\/[^"']+\.js["']|import\(["']\.\/[^"']+\.js["']\)/.test(single.toString()) },
     load: {},
   };
+  const TYPES = { html: 'text/html', js: 'text/javascript', css: 'text/css', json: 'application/json', svg: 'image/svg+xml', png: 'image/png', jpg: 'image/jpeg', webp: 'image/webp', webmanifest: 'application/manifest+json', woff2: 'font/woff2' };
   const srv = httpServer((req, res) => {
-    if (req.url === '/' || req.url.startsWith('/?')) { res.writeHead(200, { 'content-type': 'text/html' }); res.end(html); }
-    else { res.writeHead(404); res.end(); }
+    const path = decodeURIComponent(req.url.split('?')[0]).replace(/^\/+/, '') || 'index.html', f = files.find(x => x.file === path);
+    if (!f) { res.writeHead(404); res.end(); return; }
+    res.writeHead(200, { 'content-type': TYPES[path.split('.').pop()] ?? 'application/octet-stream', 'cache-control': 'no-store' }); res.end(f.b);
   });
   await new Promise(r => srv.listen(0, '127.0.0.1', r));
   const PROD = `http://127.0.0.1:${srv.address().port}/`;
+  // a fresh browser profile: the first example pays the cold shader compiles (D3D11 HLSL) a first-time visitor pays
+  await br.close(); br = await launch();
   for (const size of sizes) {
     await br.s('Emulation.setDeviceMetricsOverride', SIZES[size]);
     prod.load[size] = {};
     for (const view of EXAMPLES) {
       const runs = [];
-      for (let i = 0; i < 3; i++) runs.push(await open(PROD, view, false));
+      try { for (let i = 0; i < 3; i++) runs.push(await open(PROD, view, false)); } catch (e) { prod.load[size][view] = { error: String(e.message) }; continue; }
       const m = k => runs.map(r => r[k]).sort((a, b) => a - b)[1];
-      prod.load[size][view] = { firstDrawMs: Math.round(m('firstDraw')), firstFrameMs: Math.round(m('firstFrame')), domContentLoadedMs: Math.round(m('dcl')), heapMB: await heap() };
+      prod.load[size][view] = { coldFirstFrameMs: Math.round(runs[0].firstFrame), coldShaderMs: runs[0].shaderMs, coldByCall: runs[0].byCall, coldSlowPrograms: runs[0].slow.sort((a, b) => b.ms - a.ms).slice(0, 12), shaderMs: m('shaderMs'), programs: runs[0].programs, firstDrawMs: Math.round(m('firstDraw')), firstFrameMs: Math.round(m('firstFrame')), domContentLoadedMs: Math.round(m('dcl')), heapMB: await heap() };
     }
     log('prod', size, JSON.stringify(prod.load[size]));
   }
@@ -338,11 +458,13 @@ for (const [size, rows] of Object.entries(result.sizes)) {
 for (const [view, b] of Object.entries(result.breakdown)) {
   const top = Object.entries(b.buckets).sort((a, b) => (b[1].saves ?? 0) - (a[1].saves ?? 0)).slice(0, 6);
   console.log(`\nbreakdown ${view} (GPU ms saved by hiding, alternating frames): ${top.map(([k, x]) => `${k} ${x.saves} (${x.meshes})`).join(', ')}`);
+  if (b.cpuProfile) console.log(`  CPU self ms per draw: ${b.cpuProfile.self.slice(0, 8).map(x => `${x.f} ${x.msPerDraw}`).join(', ')}`);
   for (const [k, x] of Object.entries(b.extra)) console.log(`  ${k}: A ${x.gpuA} / B ${x.gpuB} ms GPU, B - A ${x.delta}; CPU ${x.cpuDelta}`);
 }
 if (result.prod) {
-  console.log(`\nproduction single file ${result.prod.singleKB} KB (${result.prod.singleGzipKB} KB gzip); first frame per example (median of 3):`);
-  for (const [size, rows] of Object.entries(result.prod.load)) console.log(`  ${size}: ${Object.entries(rows).map(([v, r]) => `${v} ${r.firstFrameMs}`).join(', ')} ms`);
+  const P = result.prod;
+  console.log(`\nproduction dist/ ${P.distKB} KB, code ${P.codeKB} KB (${P.codeGzipKB} KB gzip); single file ${P.single ? `${P.single.kb} KB${P.single.broken ? ' (BROKEN: imports a chunk it did not inline)' : ''}` : 'none'}; first frame on dist/, cold (fresh profile) / warm median of 3, ms:`);
+  for (const [size, rows] of Object.entries(P.load)) console.log(`  ${size}: ${Object.entries(rows).map(([v, r]) => `${v} ${r.coldFirstFrameMs}${r.coldShaderMs != null ? ` (shaders ${r.coldShaderMs})` : ''} / ${r.firstFrameMs}`).join(', ')}`);
 }
 console.log(`\nWritten ${OUT} in ${result.seconds} s.`);
 process.exit(0);

@@ -1,0 +1,92 @@
+{
+ "commit": "17736769653548fdff99bc30d37fa577baa5fe49",
+ "build": 474,
+ "dirty": false,
+ "when": "2026-10-15T16:47:53.002Z",
+ "browser": "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
+ "load": {
+  "before": {
+   "at": "2026-10-15T16:47:51.918Z",
+   "cpuBusyPct": 13,
+   "node": 3,
+   "msedge": 7,
+   "chrome": 31,
+   "claude": 26,
+   "devPorts": [],
+   "underLoad": false
+  },
+  "after": {
+   "at": "2026-10-15T16:49:58.707Z",
+   "cpuBusyPct": 16,
+   "node": 5,
+   "msedge": 7,
+   "chrome": 31,
+   "claude": 27,
+   "devPorts": [
+    5173
+   ],
+   "underLoad": false
+  }
+ },
+ "sizes": {},
+ "breakdown": {},
+ "prod": null,
+ "shaderAB": {
+  "fsLength": 32343,
+  "programs": 2,
+  "variants": {
+   "original": {
+    "ms": [
+     11053,
+     10977,
+     10155
+    ],
+    "ok": true,
+    "log": "",
+    "changed": false
+   },
+   "crack loop: runtime bound": {
+    "ms": [
+     15214,
+     10507,
+     10021
+    ],
+    "ok": true,
+    "log": "",
+    "changed": true
+   },
+   "no cracks (gEdge unused)": {
+    "ms": [
+     5902,
+     5479,
+     5220
+    ],
+    "ok": true,
+    "log": "",
+    "changed": true
+   },
+   "one gStone call (same output)": {
+    "ms": [
+     2979,
+     2801,
+     2902
+    ],
+    "ok": true,
+    "log": "",
+    "changed": true
+   },
+   "no grit at all": {
+    "ms": [
+     184,
+     180,
+     176
+    ],
+    "ok": true,
+    "log": "",
+    "changed": true
+   }
+  }
+ },
+ "gpu": null,
+ "seconds": 129
+}

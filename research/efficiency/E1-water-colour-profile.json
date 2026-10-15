@@ -1,0 +1,2650 @@
+{
+ "commit": "17736769653548fdff99bc30d37fa577baa5fe49",
+ "build": 474,
+ "dirty": false,
+ "when": "2026-10-15T16:52:28.129Z",
+ "browser": "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
+ "load": {
+  "before": {
+   "at": "2026-10-15T16:52:27.044Z",
+   "cpuBusyPct": 26,
+   "node": 3,
+   "msedge": 7,
+   "chrome": 33,
+   "claude": 27,
+   "devPorts": [],
+   "underLoad": true
+  },
+  "after": {
+   "at": "2026-10-15T16:54:49.324Z",
+   "cpuBusyPct": 23,
+   "node": 5,
+   "msedge": 7,
+   "chrome": 32,
+   "claude": 28,
+   "devPorts": [
+    5613
+   ],
+   "underLoad": false
+  }
+ },
+ "sizes": {
+  "desktop": {
+   "terrarium": {
+    "firstDrawMs": 525,
+    "firstFrameMs": 14002,
+    "shaderMs": 13437,
+    "programs": 19,
+    "domContentLoadedMs": 123,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      700,
+      850
+     ],
+     "pixelRatio": 1
+    },
+    "memory": {
+     "geometries": 88,
+     "textures": 7,
+     "programs": 19
+    },
+    "heapMB": 13.8,
+    "steady": {
+     "gpu": 4.14,
+     "gpuMin": 4.03,
+     "cpu": 1.9,
+     "calls": 164,
+     "triangles": 259404,
+     "samples": 5
+    },
+    "rebuild": {
+     "cpu": 55.6,
+     "wall": 57.5,
+     "gpu": 40.44,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 29,
+      "triangles": 968
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 9,
+      "triangles": 314
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 8,
+      "triangles": 0
+     },
+     "ShaderMaterial (transparent)": {
+      "meshes": 1,
+      "triangles": 32
+     },
+     "sub+post": {
+      "meshes": 2,
+      "triangles": 484
+     },
+     "room": {
+      "meshes": 12,
+      "triangles": 294
+     },
+     "LineBasicMaterial": {
+      "meshes": 9,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 9,
+      "triangles": 288
+     },
+     "solid": {
+      "meshes": 4,
+      "triangles": 12976
+     },
+     "plantClip+card+post": {
+      "meshes": 7,
+      "triangles": 134384
+     },
+     "card": {
+      "meshes": 3,
+      "triangles": 96
+     },
+     "fish": {
+      "meshes": 27,
+      "triangles": 105504
+     },
+     "glow": {
+      "meshes": 1,
+      "triangles": 4160
+     }
+    }
+   }
+  }
+ },
+ "breakdown": {
+  "reef": {
+   "buckets": {
+    "MeshBasicMaterial": {
+     "meshes": 48,
+     "saves": 0.11,
+     "gpuShown": 10.64,
+     "cpuSaves": 0
+    },
+    "MeshBasicMaterial (transparent)": {
+     "meshes": 13,
+     "saves": 0.08,
+     "gpuShown": 10.6,
+     "cpuSaves": 0
+    },
+    "LineBasicMaterial (transparent)": {
+     "meshes": 8,
+     "saves": 0.11,
+     "gpuShown": 10.8,
+     "cpuSaves": 0
+    },
+    "ShaderMaterial (transparent)": {
+     "meshes": 2,
+     "saves": 0.21,
+     "gpuShown": 10.66,
+     "cpuSaves": 0.1
+    },
+    "sub": {
+     "meshes": 2,
+     "saves": 0.07,
+     "gpuShown": 10.61,
+     "cpuSaves": 0.1
+    },
+    "room": {
+     "meshes": 9,
+     "saves": 0.88,
+     "gpuShown": 10.64,
+     "cpuSaves": 0.1
+    },
+    "LineBasicMaterial": {
+     "meshes": 6,
+     "saves": 0.06,
+     "gpuShown": 10.62,
+     "cpuSaves": 0
+    },
+    "ShaderMaterial": {
+     "meshes": 12,
+     "saves": -0.01,
+     "gpuShown": 10.71,
+     "cpuSaves": 0.1
+    },
+    "solid": {
+     "meshes": 35,
+     "saves": 8.44,
+     "gpuShown": 10.72,
+     "cpuSaves": 0.1
+    },
+    "fishCard+card": {
+     "meshes": 26,
+     "saves": 0.33,
+     "gpuShown": 10.66,
+     "cpuSaves": 0.35
+    },
+    "fish+plain": {
+     "meshes": 5,
+     "saves": 0.05,
+     "gpuShown": 10.65,
+     "cpuSaves": 0.1
+    },
+    "fish": {
+     "meshes": 83,
+     "saves": 0.39,
+     "gpuShown": 10.97,
+     "cpuSaves": 0.25
+    },
+    "fish (transparent)": {
+     "meshes": 1,
+     "saves": 0.05,
+     "gpuShown": 10.69,
+     "cpuSaves": 0
+    },
+    "card": {
+     "meshes": 5,
+     "saves": 0.23,
+     "gpuShown": 10.77,
+     "cpuSaves": 0.1
+    },
+    "glow": {
+     "meshes": 6,
+     "saves": -0.02,
+     "gpuShown": 10.68,
+     "cpuSaves": 0
+    }
+   },
+   "programs": [
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "0,1,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 9,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 13,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 4,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,3,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 6,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 4,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "4,3,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 4,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 4,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 7,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "5,6,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "7,8,USE_NORMALS,,highp,srgb,false,,false,false,false,false,f"
+    }
+   ],
+   "extra": {
+    "hardscape grit: one gStone call (same picture), B - A = what it saves when negative": {
+     "gpuA": 6.33,
+     "gpuB": 6.55,
+     "delta": 0.7,
+     "cpuA": 1.95,
+     "cpuB": 2,
+     "cpuDelta": 0.05
+    }
+   },
+   "cpuProfile": {
+    "draws": 60,
+    "self": [
+     {
+      "f": "setValueV3fArray deps/three.js:10614",
+      "msPerDraw": 0.408
+     },
+     {
+      "f": "needsUpdate deps/three.js:8671",
+      "msPerDraw": 0.184
+     },
+     {
+      "f": "projectObject deps/three.js:16227",
+      "msPerDraw": 0.085
+     },
+     {
+      "f": "setup deps/three.js:8606",
+      "msPerDraw": 0.083
+     },
+     {
+      "f": "updateMatrixWorld deps/three.js:4562",
+      "msPerDraw": 0.073
+     },
+     {
+      "f": "WebGLRenderer.renderBufferDirect deps/three.js:15996",
+      "msPerDraw": 0.067
+     },
+     {
+      "f": "setProgram deps/three.js:16459",
+      "msPerDraw": 0.061
+     },
+     {
+      "f": "setValue deps/three.js:10806",
+      "msPerDraw": 0.058
+     },
+     {
+      "f": "drawViewMap src/render/viewmap.ts:7",
+      "msPerDraw": 0.057
+     },
+     {
+      "f": "bindVertexArray",
+      "msPerDraw": 0.053
+     },
+     {
+      "f": "upload deps/three.js:10814",
+      "msPerDraw": 0.048
+     },
+     {
+      "f": "setValueV4fArray deps/three.js:10618",
+      "msPerDraw": 0.047
+     },
+     {
+      "f": "multiplyMatrices deps/three.js:3741",
+      "msPerDraw": 0.044
+     },
+     {
+      "f": "drawArrays",
+      "msPerDraw": 0.043
+     },
+     {
+      "f": "getProgram deps/three.js:16372",
+      "msPerDraw": 0.039
+     },
+     {
+      "f": "getObjectByProperty deps/three.js:4507",
+      "msPerDraw": 0.037
+     },
+     {
+      "f": "onAnimationFrame deps/three.js:7707",
+      "msPerDraw": 0.037
+     },
+     {
+      "f": "setValueV1f deps/three.js:10325",
+      "msPerDraw": 0.032
+     },
+     {
+      "f": "getParameters deps/three.js:11500",
+      "msPerDraw": 0.03
+     },
+     {
+      "f": "readout src/ui/panels.ts:2838",
+      "msPerDraw": 0.024
+     },
+     {
+      "f": "sort deps/three.js:11972",
+      "msPerDraw": 0.024
+     },
+     {
+      "f": "(anon) src/render/viewer.ts:559",
+      "msPerDraw": 0.022
+     },
+     {
+      "f": "update deps/three.js:9935",
+      "msPerDraw": 0.021
+     },
+     {
+      "f": "setMaterial deps/three.js:13113",
+      "msPerDraw": 0.02
+     },
+     {
+      "f": "C.<computed>",
+      "msPerDraw": 0.02
+     },
+     {
+      "f": "draw src/render/viewer.ts:408",
+      "msPerDraw": 0.019
+     },
+     {
+      "f": "refreshUniformsCommon deps/three.js:15233",
+      "msPerDraw": 0.017
+     },
+     {
+      "f": "traverse deps/three.js:4540",
+      "msPerDraw": 0.014
+     },
+     {
+      "f": "getPropertyValue",
+      "msPerDraw": 0.013
+     },
+     {
+      "f": "update deps/three.js:10171",
+      "msPerDraw": 0.012
+     }
+    ],
+    "inclusive": [
+     {
+      "f": "drawLoop",
+      "msPerDraw": 1.883
+     },
+     {
+      "f": "draw src/render/viewer.ts:408",
+      "msPerDraw": 1.871
+     },
+     {
+      "f": "WebGLRenderer.render deps/three.js:16153",
+      "msPerDraw": 1.629
+     },
+     {
+      "f": "renderObjects deps/three.js:16345",
+      "msPerDraw": 1.361
+     },
+     {
+      "f": "renderScene deps/three.js:16271",
+      "msPerDraw": 1.361
+     },
+     {
+      "f": "renderObject deps/three.js:16356",
+      "msPerDraw": 1.351
+     },
+     {
+      "f": "WebGLRenderer.renderBufferDirect deps/three.js:15996",
+      "msPerDraw": 1.342
+     },
+     {
+      "f": "setProgram deps/three.js:16459",
+      "msPerDraw": 0.829
+     },
+     {
+      "f": "upload deps/three.js:10814",
+      "msPerDraw": 0.566
+     },
+     {
+      "f": "setValueV3fArray deps/three.js:10614",
+      "msPerDraw": 0.42
+     },
+     {
+      "f": "setup deps/three.js:8606",
+      "msPerDraw": 0.325
+     },
+     {
+      "f": "needsUpdate deps/three.js:8671",
+      "msPerDraw": 0.184
+     },
+     {
+      "f": "projectObject deps/three.js:16227",
+      "msPerDraw": 0.119
+     },
+     {
+      "f": "updateMatrixWorld deps/three.js:4562",
+      "msPerDraw": 0.117
+     },
+     {
+      "f": "drawViewMap src/render/viewmap.ts:7",
+      "msPerDraw": 0.107
+     },
+     {
+      "f": "getProgram deps/three.js:16372",
+      "msPerDraw": 0.085
+     },
+     {
+      "f": "C.<computed>",
+      "msPerDraw": 0.072
+     },
+     {
+      "f": "setValue deps/three.js:10806",
+      "msPerDraw": 0.068
+     },
+     {
+      "f": "(anon)",
+      "msPerDraw": 0.063
+     },
+     {
+      "f": "render deps/three.js:8874",
+      "msPerDraw": 0.062
+     },
+     {
+      "f": "bindVertexArray",
+      "msPerDraw": 0.053
+     },
+     {
+      "f": "setValueV4fArray deps/three.js:10618",
+      "msPerDraw": 0.047
+     },
+     {
+      "f": "multiplyMatrices deps/three.js:3741",
+      "msPerDraw": 0.044
+     },
+     {
+      "f": "drawArrays",
+      "msPerDraw": 0.043
+     },
+     {
+      "f": "getObjectByProperty deps/three.js:4507",
+      "msPerDraw": 0.037
+     },
+     {
+      "f": "getObjectByName deps/three.js:4504",
+      "msPerDraw": 0.037
+     },
+     {
+      "f": "onAnimationFrame deps/three.js:7707",
+      "msPerDraw": 0.037
+     },
+     {
+      "f": "traverse deps/three.js:4540",
+      "msPerDraw": 0.036
+     },
+     {
+      "f": "update deps/three.js:10171",
+      "msPerDraw": 0.034
+     },
+     {
+      "f": "bindVertexArrayObject deps/three.js:8625",
+      "msPerDraw": 0.034
+     },
+     {
+      "f": "(anon) src/ui/panels.ts:2741",
+      "msPerDraw": 0.034
+     },
+     {
+      "f": "sort deps/three.js:11972",
+      "msPerDraw": 0.033
+     },
+     {
+      "f": "setValueV1f deps/three.js:10325",
+      "msPerDraw": 0.032
+     },
+     {
+      "f": "getParameters deps/three.js:11500",
+      "msPerDraw": 0.03
+     },
+     {
+      "f": "setMaterial deps/three.js:13113",
+      "msPerDraw": 0.029
+     },
+     {
+      "f": "render deps/three.js:10000",
+      "msPerDraw": 0.029
+     },
+     {
+      "f": "refreshMaterialUniforms deps/three.js:15202",
+      "msPerDraw": 0.027
+     },
+     {
+      "f": "readout src/ui/panels.ts:2838",
+      "msPerDraw": 0.024
+     },
+     {
+      "f": "(anon) src/render/viewer.ts:559",
+      "msPerDraw": 0.022
+     },
+     {
+      "f": "update deps/three.js:9935",
+      "msPerDraw": 0.021
+     }
+    ],
+    "gcMsPerDraw": 0.029
+   },
+   "waterColourProfile": {
+    "draws": 1,
+    "self": [
+     {
+      "f": "readPixels",
+      "msPerDraw": 8.105
+     },
+     {
+      "f": "sync src/ui/panels.ts:2142",
+      "msPerDraw": 1.576
+     },
+     {
+      "f": "footprint src/scene/shape.ts:229",
+      "msPerDraw": 1.155
+     },
+     {
+      "f": "insideBy src/scene/shape.ts:268",
+      "msPerDraw": 0.932
+     },
+     {
+      "f": "uniformMatrix4fv",
+      "msPerDraw": 0.799
+     },
+     {
+      "f": "setVal src/ui/panels.ts:2014",
+      "msPerDraw": 0.747
+     },
+     {
+      "f": "inside src/scene/shape.ts:274",
+      "msPerDraw": 0.647
+     },
+     {
+      "f": "draw src/render/viewer.ts:408",
+      "msPerDraw": 0.627
+     },
+     {
+      "f": "setValueV3fArray deps/three.js:10614",
+      "msPerDraw": 0.615
+     },
+     {
+      "f": "update src/scene/store.ts:159",
+      "msPerDraw": 0.605
+     },
+     {
+      "f": "update deps/three.js:7798",
+      "msPerDraw": 0.6
+     },
+     {
+      "f": "build src/render/viewer.ts:357",
+      "msPerDraw": 0.587
+     },
+     {
+      "f": "setProgram deps/three.js:16459",
+      "msPerDraw": 0.584
+     },
+     {
+      "f": "querySelectorAll",
+      "msPerDraw": 0.573
+     },
+     {
+      "f": "tankWeight src/scene/weight.ts:16",
+      "msPerDraw": 0.566
+     },
+     {
+      "f": "WebGLRenderer.renderBufferDirect deps/three.js:15996",
+      "msPerDraw": 0.566
+     },
+     {
+      "f": "getElementById",
+      "msPerDraw": 0.501
+     },
+     {
+      "f": "onAnimationFrame deps/three.js:7707",
+      "msPerDraw": 0.454
+     },
+     {
+      "f": "intersectsObject deps/three.js:7658",
+      "msPerDraw": 0.41
+     },
+     {
+      "f": "emitters src/scene/lightout.ts:16",
+      "msPerDraw": 0.266
+     },
+     {
+      "f": "needsUpdate deps/three.js:8671",
+      "msPerDraw": 0.137
+     }
+    ],
+    "inclusive": [
+     {
+      "f": "(anon)",
+      "msPerDraw": 18.335
+     },
+     {
+      "f": "readPixels",
+      "msPerDraw": 8.105
+     },
+     {
+      "f": "update src/scene/store.ts:159",
+      "msPerDraw": 7.067
+     },
+     {
+      "f": "editTank src/scene/store.ts:73",
+      "msPerDraw": 7.067
+     },
+     {
+      "f": "ed src/render/incrementalCheck.ts:8",
+      "msPerDraw": 7.067
+     },
+     {
+      "f": "(anon) src/render/incrementalCheck.ts:62",
+      "msPerDraw": 7.067
+     },
+     {
+      "f": "sync src/ui/panels.ts:2142",
+      "msPerDraw": 6.462
+     },
+     {
+      "f": "(anon) src/ui/panels.ts:2860",
+      "msPerDraw": 6.462
+     },
+     {
+      "f": "emit src/scene/store.ts:39",
+      "msPerDraw": 6.462
+     },
+     {
+      "f": "draw src/render/viewer.ts:408",
+      "msPerDraw": 5.426
+     },
+     {
+      "f": "WebGLRenderer.render deps/three.js:16153",
+      "msPerDraw": 3.711
+     },
+     {
+      "f": "WebGLRenderer.renderBufferDirect deps/three.js:15996",
+      "msPerDraw": 3.301
+     },
+     {
+      "f": "renderObject deps/three.js:16356",
+      "msPerDraw": 3.301
+     },
+     {
+      "f": "renderObjects deps/three.js:16345",
+      "msPerDraw": 3.301
+     },
+     {
+      "f": "renderScene deps/three.js:16271",
+      "msPerDraw": 3.301
+     },
+     {
+      "f": "tankWeight src/scene/weight.ts:16",
+      "msPerDraw": 3.3
+     },
+     {
+      "f": "inside src/scene/shape.ts:274",
+      "msPerDraw": 2.734
+     },
+     {
+      "f": "onAnimationFrame deps/three.js:7707",
+      "msPerDraw": 2.717
+     },
+     {
+      "f": "(anon) src/render/viewer.ts:297",
+      "msPerDraw": 2.263
+     },
+     {
+      "f": "onAnimationFrame deps/three.js:16134",
+      "msPerDraw": 2.263
+     },
+     {
+      "f": "insideBy src/scene/shape.ts:268",
+      "msPerDraw": 2.087
+     },
+     {
+      "f": "setProgram deps/three.js:16459",
+      "msPerDraw": 1.998
+     },
+     {
+      "f": "footprint src/scene/shape.ts:229",
+      "msPerDraw": 1.155
+     },
+     {
+      "f": "uniformMatrix4fv",
+      "msPerDraw": 0.799
+     },
+     {
+      "f": "setValue deps/three.js:10806",
+      "msPerDraw": 0.799
+     },
+     {
+      "f": "setVal src/ui/panels.ts:2014",
+      "msPerDraw": 0.747
+     },
+     {
+      "f": "setup deps/three.js:8606",
+      "msPerDraw": 0.737
+     },
+     {
+      "f": "setValueV3fArray deps/three.js:10614",
+      "msPerDraw": 0.615
+     },
+     {
+      "f": "upload deps/three.js:10814",
+      "msPerDraw": 0.615
+     },
+     {
+      "f": "update deps/three.js:7798",
+      "msPerDraw": 0.6
+     },
+     {
+      "f": "build src/render/viewer.ts:357",
+      "msPerDraw": 0.587
+     },
+     {
+      "f": "querySelectorAll",
+      "msPerDraw": 0.573
+     },
+     {
+      "f": "getElementById",
+      "msPerDraw": 0.501
+     },
+     {
+      "f": "intersectsObject deps/three.js:7658",
+      "msPerDraw": 0.41
+     },
+     {
+      "f": "projectObject deps/three.js:16227",
+      "msPerDraw": 0.41
+     },
+     {
+      "f": "emitters src/scene/lightout.ts:16",
+      "msPerDraw": 0.266
+     },
+     {
+      "f": "powerRange src/scene/lightout.ts:579",
+      "msPerDraw": 0.266
+     },
+     {
+      "f": "needsUpdate deps/three.js:8671",
+      "msPerDraw": 0.137
+     }
+    ],
+    "gcMsPerDraw": 0.573
+   }
+  },
+  "iwagumi": {
+   "buckets": {
+    "MeshBasicMaterial": {
+     "meshes": 26,
+     "saves": 0.05,
+     "gpuShown": 9.12,
+     "cpuSaves": 0.1
+    },
+    "frost": {
+     "meshes": 1,
+     "saves": 2.45,
+     "gpuShown": 9.2,
+     "cpuSaves": 2
+    },
+    "MeshBasicMaterial (transparent)": {
+     "meshes": 16,
+     "saves": 0.16,
+     "gpuShown": 8.27,
+     "cpuSaves": 0.3
+    },
+    "LineBasicMaterial (transparent)": {
+     "meshes": 8,
+     "saves": 0.13,
+     "gpuShown": 14.24,
+     "cpuSaves": 0.1
+    },
+    "sub": {
+     "meshes": 2,
+     "saves": 0.08,
+     "gpuShown": 10.87,
+     "cpuSaves": 0.2
+    },
+    "room": {
+     "meshes": 9,
+     "saves": 0.48,
+     "gpuShown": 9.81,
+     "cpuSaves": 0.6
+    },
+    "LineBasicMaterial": {
+     "meshes": 6,
+     "saves": 0.08,
+     "gpuShown": 8.95,
+     "cpuSaves": 0.2
+    },
+    "ShaderMaterial": {
+     "meshes": 39,
+     "saves": 0.13,
+     "gpuShown": 8.91,
+     "cpuSaves": 0.1
+    },
+    "solid": {
+     "meshes": 24,
+     "saves": 0.32,
+     "gpuShown": 8.95,
+     "cpuSaves": 0.1
+    },
+    "plantClip+card+post": {
+     "meshes": 150,
+     "saves": 3.41,
+     "gpuShown": 8.92,
+     "cpuSaves": 0.6
+    },
+    "fishCard+card": {
+     "meshes": 125,
+     "saves": 1.39,
+     "gpuShown": 9,
+     "cpuSaves": 1.6
+    },
+    "fish+plain": {
+     "meshes": 23,
+     "saves": 0.2,
+     "gpuShown": 9.11,
+     "cpuSaves": 0.15
+    },
+    "fish": {
+     "meshes": 176,
+     "saves": 0.81,
+     "gpuShown": 8.87,
+     "cpuSaves": 0.4
+    },
+    "fish (transparent)": {
+     "meshes": 13,
+     "saves": 0.06,
+     "gpuShown": 8.98,
+     "cpuSaves": 0.3
+    },
+    "glow": {
+     "meshes": 1,
+     "saves": 0.02,
+     "gpuShown": 9.07,
+     "cpuSaves": -0.1
+    }
+   },
+   "programs": [
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb-linear,false,,false,false,false,false,false"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb-linear,false,,uv,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb-linear,false,,uv,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb-linear,false,,false,false,false,false,false"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb-linear,false,,false,false,false,false,false"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "0,1,highp,srgb-linear,false,,false,false,false,false,false,f"
+    },
+    {
+     "name": "",
+     "usedTimes": 9,
+     "key": "basic,highp,srgb-linear,false,,false,false,false,false,false"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb-linear,false,,false,false,false,false,false"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb-linear,false,,false,false,false,false,false"
+    },
+    {
+     "name": "",
+     "usedTimes": 7,
+     "key": "basic,highp,srgb-linear,false,,uv,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb-linear,false,,uv,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,3,highp,srgb-linear,false,,false,false,false,false,false,f"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb-linear,false,,uv,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb-linear,false,,false,false,false,false,false"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb-linear,false,,uv,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "4,3,highp,srgb-linear,false,,false,false,false,false,false,f"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb-linear,false,,false,false,false,false,false"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb-linear,false,,false,false,false,false,false"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb-linear,false,,false,false,false,false,false"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "physical,STANDARD,,PHYSICAL,,highp,srgb-linear,false,,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "0,1,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 9,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 7,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,3,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "4,3,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "physical,STANDARD,,PHYSICAL,,highp,srgb,false,,false,false,f"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 4,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 10,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    }
+   ],
+   "extra": {
+    "hardscape grit: one gStone call (same picture), B - A = what it saves when negative": {
+     "gpuA": 10.92,
+     "gpuB": 10.91,
+     "delta": 0.02,
+     "cpuA": 4.5,
+     "cpuB": 4.4,
+     "cpuDelta": -0.1
+    }
+   },
+   "cpuProfile": {
+    "draws": 60,
+    "self": [
+     {
+      "f": "getParameters deps/three.js:11500",
+      "msPerDraw": 0.488
+     },
+     {
+      "f": "renderObjects deps/three.js:16345",
+      "msPerDraw": 0.229
+     },
+     {
+      "f": "setProgram deps/three.js:16459",
+      "msPerDraw": 0.215
+     },
+     {
+      "f": "bindVertexArray",
+      "msPerDraw": 0.214
+     },
+     {
+      "f": "setValueM4 deps/three.js:10411",
+      "msPerDraw": 0.208
+     },
+     {
+      "f": "(anon) src/render/viewer.ts:559",
+      "msPerDraw": 0.178
+     },
+     {
+      "f": "sort deps/three.js:11972",
+      "msPerDraw": 0.173
+     },
+     {
+      "f": "renderObject deps/three.js:16356",
+      "msPerDraw": 0.162
+     },
+     {
+      "f": "multiplyMatrices deps/three.js:3741",
+      "msPerDraw": 0.143
+     },
+     {
+      "f": "needsUpdate deps/three.js:8671",
+      "msPerDraw": 0.138
+     },
+     {
+      "f": "uniformMatrix4fv",
+      "msPerDraw": 0.127
+     },
+     {
+      "f": "WebGLRenderer.renderBufferDirect deps/three.js:15996",
+      "msPerDraw": 0.106
+     },
+     {
+      "f": "projectObject deps/three.js:16227",
+      "msPerDraw": 0.087
+     },
+     {
+      "f": "seqWithValue deps/three.js:10820",
+      "msPerDraw": 0.087
+     },
+     {
+      "f": "drawViewMap src/render/viewmap.ts:7",
+      "msPerDraw": 0.083
+     },
+     {
+      "f": "getObjectByProperty deps/three.js:4507",
+      "msPerDraw": 0.082
+     },
+     {
+      "f": "getProgram deps/three.js:16372",
+      "msPerDraw": 0.078
+     },
+     {
+      "f": "getBindingState deps/three.js:8631",
+      "msPerDraw": 0.076
+     },
+     {
+      "f": "flatten deps/three.js:10290",
+      "msPerDraw": 0.069
+     },
+     {
+      "f": "setValue deps/three.js:10806",
+      "msPerDraw": 0.068
+     },
+     {
+      "f": "traverse deps/three.js:4540",
+      "msPerDraw": 0.067
+     },
+     {
+      "f": "updateMatrixWorld deps/three.js:4562",
+      "msPerDraw": 0.065
+     },
+     {
+      "f": "(anon) src/render/viewer.ts:270",
+      "msPerDraw": 0.058
+     },
+     {
+      "f": "setFromPoints deps/three.js:2922",
+      "msPerDraw": 0.057
+     },
+     {
+      "f": "upload deps/three.js:10814",
+      "msPerDraw": 0.057
+     },
+     {
+      "f": "C.<computed>",
+      "msPerDraw": 0.047
+     },
+     {
+      "f": "restoreRange src/render/viewer.ts:143",
+      "msPerDraw": 0.047
+     },
+     {
+      "f": "setValueV1f deps/three.js:10325",
+      "msPerDraw": 0.04
+     },
+     {
+      "f": "toArray deps/three.js:1920",
+      "msPerDraw": 0.04
+     },
+     {
+      "f": "uniform4fv",
+      "msPerDraw": 0.039
+     }
+    ],
+    "inclusive": [
+     {
+      "f": "drawLoop",
+      "msPerDraw": 4.547
+     },
+     {
+      "f": "draw src/render/viewer.ts:408",
+      "msPerDraw": 4.528
+     },
+     {
+      "f": "WebGLRenderer.render deps/three.js:16153",
+      "msPerDraw": 3.546
+     },
+     {
+      "f": "renderObjects deps/three.js:16345",
+      "msPerDraw": 3.07
+     },
+     {
+      "f": "renderObject deps/three.js:16356",
+      "msPerDraw": 2.859
+     },
+     {
+      "f": "WebGLRenderer.renderBufferDirect deps/three.js:15996",
+      "msPerDraw": 2.518
+     },
+     {
+      "f": "renderScene deps/three.js:16271",
+      "msPerDraw": 1.892
+     },
+     {
+      "f": "setProgram deps/three.js:16459",
+      "msPerDraw": 1.734
+     },
+     {
+      "f": "renderTransmissionPass deps/three.js:16286",
+      "msPerDraw": 1.239
+     },
+     {
+      "f": "getProgram deps/three.js:16372",
+      "msPerDraw": 0.624
+     },
+     {
+      "f": "getParameters deps/three.js:11500",
+      "msPerDraw": 0.488
+     },
+     {
+      "f": "setup deps/three.js:8606",
+      "msPerDraw": 0.458
+     },
+     {
+      "f": "setValue deps/three.js:10806",
+      "msPerDraw": 0.404
+     },
+     {
+      "f": "traverse deps/three.js:4540",
+      "msPerDraw": 0.383
+     },
+     {
+      "f": "setValueM4 deps/three.js:10411",
+      "msPerDraw": 0.336
+     },
+     {
+      "f": "upload deps/three.js:10814",
+      "msPerDraw": 0.328
+     },
+     {
+      "f": "frostCull src/render/viewer.ts:618",
+      "msPerDraw": 0.264
+     },
+     {
+      "f": "bindVertexArrayObject deps/three.js:8625",
+      "msPerDraw": 0.233
+     },
+     {
+      "f": "sort deps/three.js:11972",
+      "msPerDraw": 0.231
+     },
+     {
+      "f": "bindVertexArray",
+      "msPerDraw": 0.214
+     },
+     {
+      "f": "drawViewMap src/render/viewmap.ts:7",
+      "msPerDraw": 0.188
+     },
+     {
+      "f": "(anon) src/render/viewer.ts:559",
+      "msPerDraw": 0.178
+     },
+     {
+      "f": "projectObject deps/three.js:16227",
+      "msPerDraw": 0.164
+     },
+     {
+      "f": "multiplyMatrices deps/three.js:3741",
+      "msPerDraw": 0.143
+     },
+     {
+      "f": "(anon) src/render/viewer.ts:625",
+      "msPerDraw": 0.138
+     },
+     {
+      "f": "needsUpdate deps/three.js:8671",
+      "msPerDraw": 0.138
+     },
+     {
+      "f": "uniformMatrix4fv",
+      "msPerDraw": 0.127
+     },
+     {
+      "f": "flatten deps/three.js:10290",
+      "msPerDraw": 0.119
+     },
+     {
+      "f": "updateMatrixWorld deps/three.js:4562",
+      "msPerDraw": 0.113
+     },
+     {
+      "f": "setValueV4fArray deps/three.js:10618",
+      "msPerDraw": 0.11
+     },
+     {
+      "f": "applyMatrix4 deps/three.js:3127",
+      "msPerDraw": 0.108
+     },
+     {
+      "f": "setMaterial deps/three.js:13113",
+      "msPerDraw": 0.106
+     },
+     {
+      "f": "(anon) src/ui/panels.ts:2741",
+      "msPerDraw": 0.098
+     },
+     {
+      "f": "C.<computed>",
+      "msPerDraw": 0.095
+     },
+     {
+      "f": "(anon)",
+      "msPerDraw": 0.091
+     },
+     {
+      "f": "seqWithValue deps/three.js:10820",
+      "msPerDraw": 0.087
+     },
+     {
+      "f": "getUniformList deps/three.js:16433",
+      "msPerDraw": 0.087
+     },
+     {
+      "f": "getBindingState deps/three.js:8631",
+      "msPerDraw": 0.086
+     },
+     {
+      "f": "getObjectByProperty deps/three.js:4507",
+      "msPerDraw": 0.082
+     },
+     {
+      "f": "setValueV3fArray deps/three.js:10614",
+      "msPerDraw": 0.077
+     }
+    ],
+    "gcMsPerDraw": 0.017
+   },
+   "waterColourProfile": {
+    "draws": 1,
+    "self": [
+     {
+      "f": "getProgramInfoLog",
+      "msPerDraw": 73.913
+     },
+     {
+      "f": "shaderSource",
+      "msPerDraw": 7.162
+     },
+     {
+      "f": "getShaderInfoLog",
+      "msPerDraw": 6.313
+     },
+     {
+      "f": "f src/art/fishgen.ts:32",
+      "msPerDraw": 3.528
+     },
+     {
+      "f": "getProgramParameter",
+      "msPerDraw": 2.925
+     },
+     {
+      "f": "renderObject deps/three.js:16356",
+      "msPerDraw": 2.181
+     },
+     {
+      "f": "sync src/ui/panels.ts:2142",
+      "msPerDraw": 2.014
+     },
+     {
+      "f": "readPixels",
+      "msPerDraw": 1.942
+     },
+     {
+      "f": "getProgram deps/three.js:16372",
+      "msPerDraw": 1.923
+     },
+     {
+      "f": "Object3D deps/three.js:4298",
+      "msPerDraw": 1.839
+     },
+     {
+      "f": "revealPlant src/render/plant3d.ts:938",
+      "msPerDraw": 1.782
+     },
+     {
+      "f": "setFromBufferAttribute deps/three.js:2917",
+      "msPerDraw": 1.666
+     },
+     {
+      "f": "getParameters deps/three.js:11500",
+      "msPerDraw": 1.199
+     },
+     {
+      "f": "itemMesh src/render/items.ts:615",
+      "msPerDraw": 1.196
+     },
+     {
+      "f": "uniformMatrix4fv",
+      "msPerDraw": 1.17
+     },
+     {
+      "f": "WebGLRenderer.renderBufferDirect deps/three.js:15996",
+      "msPerDraw": 1.17
+     },
+     {
+      "f": "includeReplacer deps/three.js:10963",
+      "msPerDraw": 1.166
+     },
+     {
+      "f": "(anon) src/render/fish3d.ts:105",
+      "msPerDraw": 1.147
+     },
+     {
+      "f": "renderObjects deps/three.js:16345",
+      "msPerDraw": 1.128
+     },
+     {
+      "f": "_computeIntersections deps/three.js:6755",
+      "msPerDraw": 1.062
+     },
+     {
+      "f": "WebGLProgram.getUniforms deps/three.js:11374",
+      "msPerDraw": 1.039
+     },
+     {
+      "f": "onGeometryDispose deps/three.js:9909",
+      "msPerDraw": 1.028
+     },
+     {
+      "f": "ringPt src/render/fish3d.ts:132",
+      "msPerDraw": 0.941
+     },
+     {
+      "f": "WebGLProgram deps/three.js:11056",
+      "msPerDraw": 0.927
+     },
+     {
+      "f": "checkGeometryIntersection deps/three.js:6848",
+      "msPerDraw": 0.737
+     },
+     {
+      "f": "get targets src/scene/store.ts:57",
+      "msPerDraw": 0.683
+     },
+     {
+      "f": "draw src/render/viewer.ts:408",
+      "msPerDraw": 0.649
+     },
+     {
+      "f": "addSubstrate src/render/build.ts:1140",
+      "msPerDraw": 0.644
+     },
+     {
+      "f": "unrollLoops deps/three.js:10975",
+      "msPerDraw": 0.611
+     },
+     {
+      "f": "setProgram deps/three.js:16459",
+      "msPerDraw": 0.607
+     }
+    ],
+    "inclusive": [
+     {
+      "f": "draw src/render/viewer.ts:408",
+      "msPerDraw": 137.981
+     },
+     {
+      "f": "(anon)",
+      "msPerDraw": 137.789
+     },
+     {
+      "f": "WebGLRenderer.render deps/three.js:16153",
+      "msPerDraw": 114.048
+     },
+     {
+      "f": "renderObject deps/three.js:16356",
+      "msPerDraw": 110.257
+     },
+     {
+      "f": "WebGLRenderer.renderBufferDirect deps/three.js:15996",
+      "msPerDraw": 106.907
+     },
+     {
+      "f": "setProgram deps/three.js:16459",
+      "msPerDraw": 104.335
+     },
+     {
+      "f": "renderObjects deps/three.js:16345",
+      "msPerDraw": 101.472
+     },
+     {
+      "f": "WebGLProgram.getUniforms deps/three.js:11374",
+      "msPerDraw": 84.758
+     },
+     {
+      "f": "onFirstUse deps/three.js:11338",
+      "msPerDraw": 83.719
+     },
+     {
+      "f": "getProgramInfoLog",
+      "msPerDraw": 73.913
+     },
+     {
+      "f": "renderScene deps/three.js:16271",
+      "msPerDraw": 56.246
+     },
+     {
+      "f": "renderTransmissionPass deps/three.js:16286",
+      "msPerDraw": 55.602
+     },
+     {
+      "f": "build src/render/viewer.ts:357",
+      "msPerDraw": 21.56
+     },
+     {
+      "f": "buildTank src/render/build.ts:1576",
+      "msPerDraw": 19.288
+     },
+     {
+      "f": "getProgram deps/three.js:16372",
+      "msPerDraw": 15.42
+     },
+     {
+      "f": "addContents src/render/build.ts:1622",
+      "msPerDraw": 14.97
+     },
+     {
+      "f": "WebGLProgram deps/three.js:11056",
+      "msPerDraw": 11.01
+     },
+     {
+      "f": "acquireProgram deps/three.js:11837",
+      "msPerDraw": 11.01
+     },
+     {
+      "f": "animal src/render/build.ts:1697",
+      "msPerDraw": 10.273
+     },
+     {
+      "f": "fishPart src/render/build.ts:1739",
+      "msPerDraw": 10.273
+     },
+     {
+      "f": "(anon) src/render/build.ts:1751",
+      "msPerDraw": 10.273
+     },
+     {
+      "f": "WebGLShader deps/three.js:10829",
+      "msPerDraw": 7.73
+     },
+     {
+      "f": "onAnimationFrame deps/three.js:7707",
+      "msPerDraw": 7.342
+     },
+     {
+      "f": "shaderSource",
+      "msPerDraw": 7.162
+     },
+     {
+      "f": "fishBody src/render/fish3d.ts:797",
+      "msPerDraw": 7.035
+     },
+     {
+      "f": "getShaderInfoLog",
+      "msPerDraw": 6.313
+     },
+     {
+      "f": "(anon) src/render/build.ts:1640",
+      "msPerDraw": 4.697
+     },
+     {
+      "f": "sections src/render/fish3d.ts:103",
+      "msPerDraw": 4.677
+     },
+     {
+      "f": "itemMesh src/render/items.ts:615",
+      "msPerDraw": 4.633
+     },
+     {
+      "f": "(anon) src/render/build.ts:1642",
+      "msPerDraw": 4.633
+     },
+     {
+      "f": "(anon) src/render/fish3d.ts:105",
+      "msPerDraw": 4.097
+     },
+     {
+      "f": "sync src/ui/panels.ts:2142",
+      "msPerDraw": 4.065
+     },
+     {
+      "f": "(anon) src/ui/panels.ts:2860",
+      "msPerDraw": 4.065
+     },
+     {
+      "f": "emit src/scene/store.ts:39",
+      "msPerDraw": 4.065
+     },
+     {
+      "f": "update src/scene/store.ts:159",
+      "msPerDraw": 4.065
+     },
+     {
+      "f": "editTank src/scene/store.ts:73",
+      "msPerDraw": 4.065
+     },
+     {
+      "f": "ed src/render/incrementalCheck.ts:8",
+      "msPerDraw": 4.065
+     },
+     {
+      "f": "(anon) src/render/incrementalCheck.ts:62",
+      "msPerDraw": 4.065
+     },
+     {
+      "f": "eyePlacements src/render/fish3d.ts:192",
+      "msPerDraw": 3.891
+     },
+     {
+      "f": "f src/art/fishgen.ts:32",
+      "msPerDraw": 3.528
+     }
+    ],
+    "gcMsPerDraw": 1.207
+   }
+  },
+  "research/efficiency/E1-variants/planted-rockwall.json": {
+   "buckets": {
+    "MeshBasicMaterial": {
+     "meshes": 29,
+     "saves": -0.14,
+     "gpuShown": 15.1,
+     "cpuSaves": 0.15
+    },
+    "MeshBasicMaterial (transparent)": {
+     "meshes": 18,
+     "saves": 0.05,
+     "gpuShown": 13.54,
+     "cpuSaves": -0.1
+    },
+    "LineBasicMaterial (transparent)": {
+     "meshes": 8,
+     "saves": -0.09,
+     "gpuShown": 6.18,
+     "cpuSaves": 0.1
+    },
+    "sub": {
+     "meshes": 2,
+     "saves": -0.62,
+     "gpuShown": 7.28,
+     "cpuSaves": 0
+    },
+    "solid": {
+     "meshes": 3,
+     "saves": 4.13,
+     "gpuShown": 11.59,
+     "cpuSaves": 0.1
+    },
+    "room": {
+     "meshes": 9,
+     "saves": 0.06,
+     "gpuShown": 11.63,
+     "cpuSaves": -0.15
+    },
+    "LineBasicMaterial": {
+     "meshes": 6,
+     "saves": 0.01,
+     "gpuShown": 11.62,
+     "cpuSaves": 0.35
+    },
+    "ShaderMaterial": {
+     "meshes": 40,
+     "saves": 0.12,
+     "gpuShown": 8.39,
+     "cpuSaves": 0.05
+    },
+    "plantClip+card+post": {
+     "meshes": 54,
+     "saves": 4.97,
+     "gpuShown": 11.66,
+     "cpuSaves": 0.2
+    },
+    "fishCard+card": {
+     "meshes": 174,
+     "saves": 1.46,
+     "gpuShown": 18.3,
+     "cpuSaves": 1.2
+    },
+    "fish+plain": {
+     "meshes": 34,
+     "saves": 0.39,
+     "gpuShown": 14.69,
+     "cpuSaves": 0.1
+    },
+    "fish": {
+     "meshes": 142,
+     "saves": 0.13,
+     "gpuShown": 12.99,
+     "cpuSaves": 0.4
+    },
+    "fish (transparent)": {
+     "meshes": 39,
+     "saves": 0.37,
+     "gpuShown": 12.82,
+     "cpuSaves": 0.2
+    },
+    "card": {
+     "meshes": 2,
+     "saves": 0.06,
+     "gpuShown": 12.76,
+     "cpuSaves": 0.05
+    },
+    "glow": {
+     "meshes": 1,
+     "saves": 0,
+     "gpuShown": 12.41,
+     "cpuSaves": 0
+    }
+   },
+   "programs": [
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "0,1,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 9,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 16,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,3,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 6,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 4,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 12,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    }
+   ],
+   "extra": {
+    "hardscape grit: one gStone call (same picture), B - A = what it saves when negative": {
+     "gpuA": 11.24,
+     "gpuB": 11.17,
+     "delta": -0.05,
+     "cpuA": 2.4,
+     "cpuB": 2.4,
+     "cpuDelta": 0
+    }
+   },
+   "cpuProfile": {
+    "draws": 60,
+    "self": [
+     {
+      "f": "(anon) src/render/viewer.ts:559",
+      "msPerDraw": 0.169
+     },
+     {
+      "f": "getObjectByProperty deps/three.js:4507",
+      "msPerDraw": 0.119
+     },
+     {
+      "f": "upload deps/three.js:10814",
+      "msPerDraw": 0.118
+     },
+     {
+      "f": "updateMatrixWorld deps/three.js:4562",
+      "msPerDraw": 0.115
+     },
+     {
+      "f": "sort deps/three.js:11972",
+      "msPerDraw": 0.106
+     },
+     {
+      "f": "get deps/three.js:11883",
+      "msPerDraw": 0.104
+     },
+     {
+      "f": "WebGLRenderer.renderBufferDirect deps/three.js:15996",
+      "msPerDraw": 0.095
+     },
+     {
+      "f": "lightSum src/render/lighting.ts:17",
+      "msPerDraw": 0.085
+     },
+     {
+      "f": "bindVertexArray",
+      "msPerDraw": 0.076
+     },
+     {
+      "f": "getParameters deps/three.js:11500",
+      "msPerDraw": 0.075
+     },
+     {
+      "f": "renderObjects deps/three.js:16345",
+      "msPerDraw": 0.07
+     },
+     {
+      "f": "update deps/three.js:9935",
+      "msPerDraw": 0.069
+     },
+     {
+      "f": "drawViewMap src/render/viewmap.ts:7",
+      "msPerDraw": 0.068
+     },
+     {
+      "f": "needsUpdate deps/three.js:8671",
+      "msPerDraw": 0.066
+     },
+     {
+      "f": "flatten deps/three.js:10290",
+      "msPerDraw": 0.061
+     },
+     {
+      "f": "projectObject deps/three.js:16227",
+      "msPerDraw": 0.058
+     },
+     {
+      "f": "renderObject deps/three.js:16356",
+      "msPerDraw": 0.057
+     },
+     {
+      "f": "setValueM4 deps/three.js:10411",
+      "msPerDraw": 0.056
+     },
+     {
+      "f": "(anon) src/ui/panels.ts:2741",
+      "msPerDraw": 0.049
+     },
+     {
+      "f": "uniformMatrix4fv",
+      "msPerDraw": 0.049
+     },
+     {
+      "f": "intersectsObject deps/three.js:7658",
+      "msPerDraw": 0.048
+     },
+     {
+      "f": "setValue deps/three.js:10806",
+      "msPerDraw": 0.048
+     },
+     {
+      "f": "setProgram deps/three.js:16459",
+      "msPerDraw": 0.047
+     },
+     {
+      "f": "readout src/ui/panels.ts:2838",
+      "msPerDraw": 0.04
+     },
+     {
+      "f": "enable deps/three.js:12955",
+      "msPerDraw": 0.039
+     },
+     {
+      "f": "getBindingState deps/three.js:8631",
+      "msPerDraw": 0.038
+     },
+     {
+      "f": "multiplyMatrices deps/three.js:3741",
+      "msPerDraw": 0.038
+     },
+     {
+      "f": "setValueV1f deps/three.js:10325",
+      "msPerDraw": 0.038
+     },
+     {
+      "f": "URLSearchParams",
+      "msPerDraw": 0.038
+     },
+     {
+      "f": "seqWithValue deps/three.js:10820",
+      "msPerDraw": 0.029
+     }
+    ],
+    "inclusive": [
+     {
+      "f": "drawLoop",
+      "msPerDraw": 2.764
+     },
+     {
+      "f": "draw src/render/viewer.ts:408",
+      "msPerDraw": 2.754
+     },
+     {
+      "f": "WebGLRenderer.render deps/three.js:16153",
+      "msPerDraw": 1.926
+     },
+     {
+      "f": "renderObjects deps/three.js:16345",
+      "msPerDraw": 1.446
+     },
+     {
+      "f": "renderScene deps/three.js:16271",
+      "msPerDraw": 1.446
+     },
+     {
+      "f": "renderObject deps/three.js:16356",
+      "msPerDraw": 1.367
+     },
+     {
+      "f": "WebGLRenderer.renderBufferDirect deps/three.js:15996",
+      "msPerDraw": 1.291
+     },
+     {
+      "f": "setProgram deps/three.js:16459",
+      "msPerDraw": 0.821
+     },
+     {
+      "f": "upload deps/three.js:10814",
+      "msPerDraw": 0.367
+     },
+     {
+      "f": "setup deps/three.js:8606",
+      "msPerDraw": 0.219
+     },
+     {
+      "f": "(anon) src/ui/panels.ts:2741",
+      "msPerDraw": 0.193
+     },
+     {
+      "f": "traverse deps/three.js:4540",
+      "msPerDraw": 0.187
+     },
+     {
+      "f": "projectObject deps/three.js:16227",
+      "msPerDraw": 0.184
+     },
+     {
+      "f": "drawViewMap src/render/viewmap.ts:7",
+      "msPerDraw": 0.17
+     },
+     {
+      "f": "(anon) src/render/viewer.ts:559",
+      "msPerDraw": 0.169
+     },
+     {
+      "f": "setValue deps/three.js:10806",
+      "msPerDraw": 0.152
+     },
+     {
+      "f": "sort deps/three.js:11972",
+      "msPerDraw": 0.125
+     },
+     {
+      "f": "updateMatrixWorld deps/three.js:4562",
+      "msPerDraw": 0.124
+     },
+     {
+      "f": "getObjectByProperty deps/three.js:4507",
+      "msPerDraw": 0.119
+     },
+     {
+      "f": "flatten deps/three.js:10290",
+      "msPerDraw": 0.107
+     },
+     {
+      "f": "get deps/three.js:11883",
+      "msPerDraw": 0.104
+     },
+     {
+      "f": "refreshUniformsCommon deps/three.js:15233",
+      "msPerDraw": 0.104
+     },
+     {
+      "f": "refreshMaterialUniforms deps/three.js:15202",
+      "msPerDraw": 0.104
+     },
+     {
+      "f": "setValueM4 deps/three.js:10411",
+      "msPerDraw": 0.104
+     },
+     {
+      "f": "getProgram deps/three.js:16372",
+      "msPerDraw": 0.103
+     },
+     {
+      "f": "bindVertexArrayObject deps/three.js:8625",
+      "msPerDraw": 0.095
+     },
+     {
+      "f": "setMaterial deps/three.js:13113",
+      "msPerDraw": 0.088
+     },
+     {
+      "f": "setValueV4fArray deps/three.js:10618",
+      "msPerDraw": 0.088
+     },
+     {
+      "f": "lightSum src/render/lighting.ts:17",
+      "msPerDraw": 0.085
+     },
+     {
+      "f": "setLightUniforms src/render/lighting.ts:208",
+      "msPerDraw": 0.085
+     },
+     {
+      "f": "getObjectByName deps/three.js:4504",
+      "msPerDraw": 0.08
+     },
+     {
+      "f": "update deps/three.js:10171",
+      "msPerDraw": 0.079
+     },
+     {
+      "f": "bindVertexArray",
+      "msPerDraw": 0.076
+     },
+     {
+      "f": "getParameters deps/three.js:11500",
+      "msPerDraw": 0.075
+     },
+     {
+      "f": "placeSlice src/render/lighting.ts:745",
+      "msPerDraw": 0.071
+     },
+     {
+      "f": "update deps/three.js:9935",
+      "msPerDraw": 0.069
+     },
+     {
+      "f": "(anon)",
+      "msPerDraw": 0.067
+     },
+     {
+      "f": "aqChip src/ui/panels.ts:2722",
+      "msPerDraw": 0.066
+     },
+     {
+      "f": "(anon) src/ui/panels.ts:2753",
+      "msPerDraw": 0.066
+     },
+     {
+      "f": "needsUpdate deps/three.js:8671",
+      "msPerDraw": 0.066
+     }
+    ],
+    "gcMsPerDraw": 0.009
+   },
+   "waterColourProfile": {
+    "draws": 1,
+    "self": [
+     {
+      "f": "getProgramInfoLog",
+      "msPerDraw": 39.582
+     },
+     {
+      "f": "(anon) src/render/items.ts:685",
+      "msPerDraw": 3.304
+     },
+     {
+      "f": "readPixels",
+      "msPerDraw": 2.273
+     },
+     {
+      "f": "f src/art/fishgen.ts:32",
+      "msPerDraw": 2.143
+     },
+     {
+      "f": "(anon) src/render/fish3d.ts:105",
+      "msPerDraw": 1.777
+     },
+     {
+      "f": "getProgramParameter",
+      "msPerDraw": 1.642
+     },
+     {
+      "f": "getShaderInfoLog",
+      "msPerDraw": 1.553
+     },
+     {
+      "f": "createBuffer",
+      "msPerDraw": 1.318
+     },
+     {
+      "f": "getProgram deps/three.js:16372",
+      "msPerDraw": 1.28
+     },
+     {
+      "f": "inside src/scene/shape.ts:274",
+      "msPerDraw": 1.155
+     },
+     {
+      "f": "Object3D deps/three.js:4298",
+      "msPerDraw": 1.141
+     },
+     {
+      "f": "setProgram deps/three.js:16459",
+      "msPerDraw": 1.116
+     },
+     {
+      "f": "onFirstUse deps/three.js:11338",
+      "msPerDraw": 0.92
+     },
+     {
+      "f": "projectObject deps/three.js:16227",
+      "msPerDraw": 0.884
+     },
+     {
+      "f": "unrollLoops deps/three.js:10975",
+      "msPerDraw": 0.877
+     },
+     {
+      "f": "get deps/three.js:11883",
+      "msPerDraw": 0.707
+     },
+     {
+      "f": "setVal src/ui/panels.ts:2014",
+      "msPerDraw": 0.662
+     },
+     {
+      "f": "build src/render/viewer.ts:357",
+      "msPerDraw": 0.631
+     },
+     {
+      "f": "cardGeometry src/render/build.ts:1331",
+      "msPerDraw": 0.622
+     },
+     {
+      "f": "Matrix4 deps/three.js:3509",
+      "msPerDraw": 0.621
+     },
+     {
+      "f": "addSubstrate src/render/build.ts:1140",
+      "msPerDraw": 0.618
+     },
+     {
+      "f": "tankWeight src/scene/weight.ts:16",
+      "msPerDraw": 0.61
+     },
+     {
+      "f": "buildTank src/render/build.ts:1576",
+      "msPerDraw": 0.602
+     },
+     {
+      "f": "(anon) src/render/lighting.ts:478",
+      "msPerDraw": 0.601
+     },
+     {
+      "f": "WebGLLights deps/three.js:12112",
+      "msPerDraw": 0.597
+     },
+     {
+      "f": "resolveIncludes deps/three.js:10959",
+      "msPerDraw": 0.597
+     },
+     {
+      "f": "getElementById",
+      "msPerDraw": 0.588
+     },
+     {
+      "f": "traverse deps/three.js:4540",
+      "msPerDraw": 0.579
+     },
+     {
+      "f": "buildPlane deps/three.js:6907",
+      "msPerDraw": 0.576
+     },
+     {
+      "f": "setValueV1f deps/three.js:10325",
+      "msPerDraw": 0.571
+     }
+    ],
+    "inclusive": [
+     {
+      "f": "(anon)",
+      "msPerDraw": 84.856
+     },
+     {
+      "f": "draw src/render/viewer.ts:408",
+      "msPerDraw": 80.899
+     },
+     {
+      "f": "WebGLRenderer.render deps/three.js:16153",
+      "msPerDraw": 59.493
+     },
+     {
+      "f": "renderScene deps/three.js:16271",
+      "msPerDraw": 55.461
+     },
+     {
+      "f": "renderObject deps/three.js:16356",
+      "msPerDraw": 55.442
+     },
+     {
+      "f": "renderObjects deps/three.js:16345",
+      "msPerDraw": 55.442
+     },
+     {
+      "f": "WebGLRenderer.renderBufferDirect deps/three.js:15996",
+      "msPerDraw": 54.985
+     },
+     {
+      "f": "setProgram deps/three.js:16459",
+      "msPerDraw": 53.129
+     },
+     {
+      "f": "onFirstUse deps/three.js:11338",
+      "msPerDraw": 43.697
+     },
+     {
+      "f": "WebGLProgram.getUniforms deps/three.js:11374",
+      "msPerDraw": 43.697
+     },
+     {
+      "f": "getProgramInfoLog",
+      "msPerDraw": 39.582
+     },
+     {
+      "f": "build src/render/viewer.ts:357",
+      "msPerDraw": 19.182
+     },
+     {
+      "f": "buildTank src/render/build.ts:1576",
+      "msPerDraw": 17.411
+     },
+     {
+      "f": "addContents src/render/build.ts:1622",
+      "msPerDraw": 13.258
+     },
+     {
+      "f": "fishPart src/render/build.ts:1739",
+      "msPerDraw": 9.043
+     },
+     {
+      "f": "(anon) src/render/build.ts:1751",
+      "msPerDraw": 9.043
+     },
+     {
+      "f": "animal src/render/build.ts:1697",
+      "msPerDraw": 8.494
+     },
+     {
+      "f": "fishBody src/render/fish3d.ts:797",
+      "msPerDraw": 6.743
+     },
+     {
+      "f": "getProgram deps/three.js:16372",
+      "msPerDraw": 5.828
+     },
+     {
+      "f": "update src/scene/store.ts:159",
+      "msPerDraw": 4.676
+     },
+     {
+      "f": "editTank src/scene/store.ts:73",
+      "msPerDraw": 4.676
+     },
+     {
+      "f": "ed src/render/incrementalCheck.ts:8",
+      "msPerDraw": 4.676
+     },
+     {
+      "f": "(anon) src/render/incrementalCheck.ts:62",
+      "msPerDraw": 4.676
+     },
+     {
+      "f": "sections src/render/fish3d.ts:103",
+      "msPerDraw": 4.444
+     },
+     {
+      "f": "itemMesh src/render/items.ts:615",
+      "msPerDraw": 4.215
+     },
+     {
+      "f": "(anon) src/render/build.ts:1642",
+      "msPerDraw": 4.215
+     },
+     {
+      "f": "(anon) src/render/build.ts:1640",
+      "msPerDraw": 4.215
+     },
+     {
+      "f": "sync src/ui/panels.ts:2142",
+      "msPerDraw": 4.119
+     },
+     {
+      "f": "(anon) src/ui/panels.ts:2860",
+      "msPerDraw": 4.119
+     },
+     {
+      "f": "emit src/scene/store.ts:39",
+      "msPerDraw": 4.119
+     },
+     {
+      "f": "onAnimationFrame deps/three.js:7707",
+      "msPerDraw": 4.092
+     },
+     {
+      "f": "(anon) src/render/fish3d.ts:105",
+      "msPerDraw": 3.92
+     },
+     {
+      "f": "WebGLProgram deps/three.js:11056",
+      "msPerDraw": 3.848
+     },
+     {
+      "f": "acquireProgram deps/three.js:11837",
+      "msPerDraw": 3.848
+     },
+     {
+      "f": "(anon) src/render/items.ts:685",
+      "msPerDraw": 3.659
+     },
+     {
+      "f": "eyePlacements src/render/fish3d.ts:192",
+      "msPerDraw": 3.445
+     },
+     {
+      "f": "Object3D deps/three.js:4298",
+      "msPerDraw": 2.891
+     },
+     {
+      "f": "Mesh deps/three.js:6682",
+      "msPerDraw": 2.891
+     },
+     {
+      "f": "pointAt src/render/fish3d.ts:207",
+      "msPerDraw": 2.89
+     },
+     {
+      "f": "(anon) src/render/fish3d.ts:196",
+      "msPerDraw": 2.89
+     }
+    ],
+    "gcMsPerDraw": 0
+   }
+  }
+ },
+ "prod": null,
+ "gpu": {
+  "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "timerQuery": true,
+  "buffer": [
+   700,
+   850
+  ],
+  "pixelRatio": 1
+ },
+ "seconds": 144
+}

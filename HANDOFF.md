@@ -30,6 +30,25 @@ Living file. Project state and dated decisions go here; update in place.
     `scripts/perf-baseline.mjs` and `research/efficiency/E1-*`. A re-runnable harness (hardware GPU, alternating-frame
     A/B, every example + split, 1050x850 and phone size, production build for load / size), then a breakdown and a ranked
     fix list. Prompt: prompts/lane-E1-perf-baseline.md.
+    **DONE 2026-10-15** (measured `1773676` = `a93a81f` + harness; Intel Arc, D3D11; under load from GR4 / AL dev servers,
+    CPU 24-36 %): `research/efficiency/E1-perf-baseline.md` (table, breakdown, ranked fixes) + raw JSON beside it.
+    Re-run: `node scripts/perf-baseline.mjs` (~15 min; `--sizes desktop,desktop2x,phone`, `--views` takes a scene path,
+    `--shaders` = compile A/B of the hardscape shader, `--ab <module>` = live alternating-frame A/B, see E1-ab-grit.mjs).
+    Findings: (1) **a first visit on Windows waits 11-46 s for the first picture** (prod build, fresh browser profile;
+    warm 0.6-3.4 s): 92-98 % is shader linking, and one program is 10-22 s of it, the hardscape material
+    (`solidMaterial` + `GRIT` / `gritK` in render/items.ts; iwagumi links it twice). (2) **Same-picture fix found:**
+    `gritK` inlines `gStone` five times (stone kinds 1-5); one call with the kind's rough / cracks picked first links in
+    2.9 s instead of 10.5 s (-73 %, interleaved x3); no steady-draw change (A/B'd live). (3) Steady draw is fine at the
+    default size: GPU 1.2-12.4 ms, CPU 2.6-12 ms per draw (1050x850, canvas 700x850); DPR 2 roughly doubles GPU (to
+    9.8-17.8 ms). Biggest GPU buckets: hardscape grit on reef 8.4 of ~10.7 ms, lit plants 3.4-7.4 ms, frost on iwagumi
+    2.4 ms (J2: 5-8), fish fin cards 1.3-2 ms GPU + 2.3-4.2 ms CPU (one material per card, 125-348 meshes). (4) Edits
+    9-24 ms median; water colour 120-170 ms (links new programs on iwagumi / wall, 84 ms); light power 33-41 ms in store
+    listeners (unprofiled). (5) E2's per-draw suspects are small: rank traverse 0.1-0.4 ms, getObjectByName('person')
+    0.15-0.48, drawViewMap 0.13-0.31; unitKey / placePerson / placeShells / setSize under ~0.1 ms each; tall-plant drag
+    = any plant move. (6) dist/ ships 4.8 MB of review JPEGs (`public/model-sheets/`); code 490 KB gzip.
+    Top ranked: #1 the one-gStone refactor (items.ts, GR4's file: coordinate), #2 why iwagumi links two hardscape
+    programs, #3 non-blocking first link (compileAsync, viewer.ts: quiet), #4 water colour relinks, #5 merge fish parts
+    per fish. Re-run after GR4 and AL land.
   - **E2 code audit:** `../Glass-Box-audit` / `code-audit`, no dev server. Owns `research/efficiency/E2-*` and optional
     `scripts/unused-exports.mjs`. Dead code, duplicates, hot-path suspects (file:line, for E1 to time), bundle
     makeup, and a pure-move split plan for panels.ts / build.ts. Prompt: prompts/lane-E2-code-audit.md.

@@ -1,0 +1,8265 @@
+{
+ "commit": "17736769653548fdff99bc30d37fa577baa5fe49",
+ "build": 474,
+ "dirty": false,
+ "when": "2026-10-15T16:18:24.134Z",
+ "browser": "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
+ "load": {
+  "before": {
+   "at": "2026-10-15T16:18:22.981Z",
+   "cpuBusyPct": 32,
+   "node": 7,
+   "msedge": 7,
+   "chrome": 33,
+   "claude": 30,
+   "devPorts": [
+    5283,
+    5613
+   ],
+   "underLoad": true
+  },
+  "after": {
+   "at": "2026-10-15T16:32:48.254Z",
+   "cpuBusyPct": 24,
+   "node": 7,
+   "msedge": 7,
+   "chrome": 33,
+   "claude": 33,
+   "devPorts": [
+    5283,
+    5613
+   ],
+   "underLoad": false
+  }
+ },
+ "sizes": {
+  "desktop": {
+   "betta-bowl": {
+    "firstDrawMs": 880,
+    "firstFrameMs": 20627,
+    "domContentLoadedMs": 304,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      700,
+      850
+     ],
+     "pixelRatio": 1
+    },
+    "memory": {
+     "geometries": 51,
+     "textures": 10,
+     "programs": 21
+    },
+    "heapMB": 12.8,
+    "steady": {
+     "gpu": 1.23,
+     "gpuMin": 1.17,
+     "cpu": 3.5,
+     "calls": 230,
+     "triangles": 56686,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 100.7,
+     "wall": 103,
+     "gpu": 58.5,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 3,
+      "triangles": 182
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 5,
+      "triangles": 8844
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 5,
+      "triangles": 0
+     },
+     "ShaderMaterial (transparent)": {
+      "meshes": 1,
+      "triangles": 4176
+     },
+     "sub": {
+      "meshes": 2,
+      "triangles": 1308
+     },
+     "room": {
+      "meshes": 10,
+      "triangles": 570
+     },
+     "LineBasicMaterial": {
+      "meshes": 7,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 8,
+      "triangles": 2776
+     },
+     "solid": {
+      "meshes": 2,
+      "triangles": 1284
+     },
+     "plantClip+card+post": {
+      "meshes": 3,
+      "triangles": 15344
+     },
+     "fishCard+card": {
+      "meshes": 5,
+      "triangles": 1288
+     },
+     "fish+plain": {
+      "meshes": 1,
+      "triangles": 2212
+     },
+     "fish": {
+      "meshes": 11,
+      "triangles": 18760
+     },
+     "card": {
+      "meshes": 1,
+      "triangles": 2
+     },
+     "glow": {
+      "meshes": 1,
+      "triangles": 96
+     }
+    },
+    "edits": {
+     "fish move": {
+      "store": 0.8,
+      "draw": 9.05,
+      "total": 12.6,
+      "gpu": 4.82,
+      "build": "patch 1"
+     },
+     "fish rotate": {
+      "store": 0.35,
+      "draw": 5.5,
+      "total": 8.95,
+      "gpu": 3.01,
+      "build": "patch 1"
+     },
+     "fish resize": {
+      "store": 0.5,
+      "draw": 3.75,
+      "total": 7.75,
+      "gpu": 1.74,
+      "build": "patch 1"
+     },
+     "fish raise": {
+      "store": 0.55,
+      "draw": 3.9,
+      "total": 8,
+      "gpu": 1.87,
+      "build": "patch 1"
+     },
+     "select fish": {
+      "store": 0.3,
+      "draw": 7.15,
+      "total": 10.8,
+      "gpu": 2.13,
+      "build": "patch 2"
+     },
+     "stone move": {
+      "store": 0.55,
+      "draw": 3.45,
+      "total": 8.5,
+      "gpu": 1.8,
+      "build": "patch 1"
+     },
+     "stone turn": {
+      "store": 0.65,
+      "draw": 5.05,
+      "total": 8.65,
+      "gpu": 2.28,
+      "build": "patch 1"
+     },
+     "stone resize": {
+      "store": 0.55,
+      "draw": 6.8,
+      "total": 10.85,
+      "gpu": 1.96,
+      "build": "patch 1"
+     },
+     "plant move": {
+      "store": 0.6,
+      "draw": 4.1,
+      "total": 8.95,
+      "gpu": 1.65,
+      "build": "patch 1"
+     },
+     "select item": {
+      "store": 0.7,
+      "draw": 12.15,
+      "total": 15.5,
+      "gpu": 1.69,
+      "build": "patch 2"
+     },
+     "delete fish": {
+      "store": 2.15,
+      "draw": 4.25,
+      "total": 9.5,
+      "gpu": 1.55,
+      "build": "same"
+     },
+     "duplicate fish": {
+      "store": 3.6,
+      "draw": 5.45,
+      "total": 11.8,
+      "gpu": 2.05,
+      "build": "patch 1"
+     },
+     "undo": {
+      "store": 7.6,
+      "draw": 4.85,
+      "total": 16,
+      "gpu": 1.44,
+      "build": "same"
+     },
+     "water colour": {
+      "store": 8.2,
+      "draw": 72.7,
+      "total": 83.75,
+      "gpu": 50.43,
+      "build": "look"
+     },
+     "wall colour": {
+      "store": 2.85,
+      "draw": 4.1,
+      "total": 10.05,
+      "gpu": 1.96,
+      "build": "same"
+     },
+     "substrate colours": {
+      "store": 3.25,
+      "draw": 3.4,
+      "total": 9.85,
+      "gpu": 1.67,
+      "build": "same"
+     },
+     "light power": {
+      "store": 8.35,
+      "draw": 5.1,
+      "total": 18.05,
+      "gpu": 1.82,
+      "build": "same"
+     },
+     "fish stand out": {
+      "store": 3.6,
+      "draw": 4.35,
+      "total": 12.45,
+      "gpu": 1.89,
+      "build": "same"
+     },
+     "redo": {
+      "store": 0.1,
+      "draw": 3.35,
+      "total": 7.9,
+      "gpu": 2.14,
+      "build": "same"
+     },
+     "tall plant drag": {
+      "store": 0.4,
+      "draw": 4,
+      "total": 8.8,
+      "gpu": 1.91,
+      "build": "patch 1"
+     }
+    }
+   },
+   "iwagumi": {
+    "firstDrawMs": 2761,
+    "firstFrameMs": 23593,
+    "domContentLoadedMs": 275,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      700,
+      850
+     ],
+     "pixelRatio": 1
+    },
+    "memory": {
+     "geometries": 320,
+     "textures": 19,
+     "programs": 47
+    },
+    "heapMB": 15.5,
+    "steady": {
+     "gpu": 9.29,
+     "gpuMin": 8.65,
+     "cpu": 11.85,
+     "calls": 695,
+     "triangles": 862018,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 259.8,
+     "wall": 263.3,
+     "gpu": 161.49,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 26,
+      "triangles": 662
+     },
+     "frost": {
+      "meshes": 1,
+      "triangles": 2
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 16,
+      "triangles": 82
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 8,
+      "triangles": 0
+     },
+     "sub": {
+      "meshes": 2,
+      "triangles": 688
+     },
+     "room": {
+      "meshes": 9,
+      "triangles": 78
+     },
+     "LineBasicMaterial": {
+      "meshes": 6,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 39,
+      "triangles": 145188
+     },
+     "solid": {
+      "meshes": 24,
+      "triangles": 7680
+     },
+     "plantClip+card+post": {
+      "meshes": 150,
+      "triangles": 401120
+     },
+     "fishCard+card": {
+      "meshes": 125,
+      "triangles": 1240
+     },
+     "fish+plain": {
+      "meshes": 23,
+      "triangles": 50876
+     },
+     "fish": {
+      "meshes": 176,
+      "triangles": 229920
+     },
+     "fish (transparent)": {
+      "meshes": 13,
+      "triangles": 9012
+     },
+     "glow": {
+      "meshes": 1,
+      "triangles": 4000
+     }
+    },
+    "edits": {
+     "fish move": {
+      "store": 1.15,
+      "draw": 14.65,
+      "total": 22.95,
+      "gpu": 10.16,
+      "build": "patch 1"
+     },
+     "fish rotate": {
+      "store": 0.8,
+      "draw": 13.95,
+      "total": 22.6,
+      "gpu": 10.25,
+      "build": "patch 1"
+     },
+     "fish resize": {
+      "store": 0.85,
+      "draw": 14.4,
+      "total": 22.25,
+      "gpu": 10.47,
+      "build": "patch 1"
+     },
+     "fish raise": {
+      "store": 0.65,
+      "draw": 13.85,
+      "total": 21.9,
+      "gpu": 10.36,
+      "build": "patch 1"
+     },
+     "select fish": {
+      "store": 0.45,
+      "draw": 17.3,
+      "total": 25.25,
+      "gpu": 10.26,
+      "build": "patch 2"
+     },
+     "stone move": {
+      "store": 0.75,
+      "draw": 18.4,
+      "total": 25.95,
+      "gpu": 10.25,
+      "build": "patch 3"
+     },
+     "stone turn": {
+      "store": 0.7,
+      "draw": 16.55,
+      "total": 25.9,
+      "gpu": 9.86,
+      "build": "patch 3"
+     },
+     "stone resize": {
+      "store": 1.15,
+      "draw": 20.6,
+      "total": 27.7,
+      "gpu": 11.75,
+      "build": "patch 3"
+     },
+     "plant move": {
+      "store": 1.15,
+      "draw": 24.25,
+      "total": 32.95,
+      "gpu": 9.87,
+      "build": "patch 1"
+     },
+     "select item": {
+      "store": 0.6,
+      "draw": 16.7,
+      "total": 23.95,
+      "gpu": 9.65,
+      "build": "patch 2"
+     },
+     "delete fish": {
+      "store": 3.85,
+      "draw": 12.55,
+      "total": 23.65,
+      "gpu": 9.18,
+      "build": "same"
+     },
+     "duplicate fish": {
+      "store": 3.25,
+      "draw": 13.8,
+      "total": 23.6,
+      "gpu": 9.23,
+      "build": "patch 1"
+     },
+     "undo": {
+      "store": 7.9,
+      "draw": 16.1,
+      "total": 29.2,
+      "gpu": 9.07,
+      "build": "same"
+     },
+     "water colour": {
+      "store": 32.75,
+      "draw": 132.25,
+      "total": 169.75,
+      "gpu": 83.25,
+      "build": "look"
+     },
+     "wall colour": {
+      "store": 3.15,
+      "draw": 14.4,
+      "total": 23.65,
+      "gpu": 9.23,
+      "build": "same"
+     },
+     "substrate colours": {
+      "store": 3.45,
+      "draw": 11.75,
+      "total": 22.25,
+      "gpu": 9.27,
+      "build": "same"
+     },
+     "light power": {
+      "store": 33.4,
+      "draw": 15.5,
+      "total": 56.25,
+      "gpu": 9.45,
+      "build": "same"
+     },
+     "fish stand out": {
+      "store": 2.95,
+      "draw": 11.4,
+      "total": 21.15,
+      "gpu": 9.18,
+      "build": "same"
+     },
+     "redo": {
+      "store": 0.05,
+      "draw": 12.4,
+      "total": 19.2,
+      "gpu": 8.97,
+      "build": "same"
+     },
+     "tall plant drag": {
+      "store": 0.75,
+      "draw": 12.75,
+      "total": 20.7,
+      "gpu": 9.09,
+      "build": "patch 1"
+     }
+    }
+   },
+   "paludarium": {
+    "firstDrawMs": 1329,
+    "firstFrameMs": 23873,
+    "domContentLoadedMs": 416,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      700,
+      850
+     ],
+     "pixelRatio": 1
+    },
+    "memory": {
+     "geometries": 223,
+     "textures": 17,
+     "programs": 25
+    },
+    "heapMB": 14.4,
+    "steady": {
+     "gpu": 6.49,
+     "gpuMin": 4.95,
+     "cpu": 5.55,
+     "calls": 552,
+     "triangles": 757124,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 214.8,
+     "wall": 217.1,
+     "gpu": 88.27,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 62,
+      "triangles": 2166
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 19,
+      "triangles": 858
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 5,
+      "triangles": 0
+     },
+     "ShaderMaterial (transparent)": {
+      "meshes": 1,
+      "triangles": 128
+     },
+     "sub": {
+      "meshes": 2,
+      "triangles": 8960
+     },
+     "room": {
+      "meshes": 9,
+      "triangles": 478
+     },
+     "LineBasicMaterial": {
+      "meshes": 6,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 22,
+      "triangles": 79136
+     },
+     "plantClip+card+post": {
+      "meshes": 53,
+      "triangles": 171920
+     },
+     "solid": {
+      "meshes": 10,
+      "triangles": 3200
+     },
+     "card": {
+      "meshes": 6,
+      "triangles": 192
+     },
+     "fish": {
+      "meshes": 148,
+      "triangles": 461456
+     },
+     "fishCard+card": {
+      "meshes": 56,
+      "triangles": 592
+     },
+     "fish+plain": {
+      "meshes": 10,
+      "triangles": 22120
+     },
+     "fish (transparent)": {
+      "meshes": 6,
+      "triangles": 2880
+     },
+     "glow": {
+      "meshes": 3,
+      "triangles": 288
+     }
+    },
+    "edits": {
+     "fish move": {
+      "store": 1.5,
+      "draw": 8.8,
+      "total": 16.75,
+      "gpu": 7.35,
+      "build": "patch 1"
+     },
+     "fish rotate": {
+      "store": 0.85,
+      "draw": 7.5,
+      "total": 14.7,
+      "gpu": 7.42,
+      "build": "patch 1"
+     },
+     "fish resize": {
+      "store": 0.9,
+      "draw": 8.1,
+      "total": 14.95,
+      "gpu": 7.4,
+      "build": "patch 1"
+     },
+     "fish raise": {
+      "store": 0.85,
+      "draw": 6.65,
+      "total": 14.75,
+      "gpu": 7.75,
+      "build": "patch 1"
+     },
+     "select fish": {
+      "store": 0.4,
+      "draw": 11.45,
+      "total": 18.1,
+      "gpu": 7.95,
+      "build": "patch 2"
+     },
+     "stone move": {
+      "store": 1.05,
+      "draw": 7.55,
+      "total": 14.7,
+      "gpu": 6.94,
+      "build": "patch 1"
+     },
+     "stone turn": {
+      "store": 0.7,
+      "draw": 6.85,
+      "total": 14.45,
+      "gpu": 7.71,
+      "build": "patch 1"
+     },
+     "stone resize": {
+      "store": 1,
+      "draw": 10.9,
+      "total": 18.2,
+      "gpu": 7.5,
+      "build": "patch 1"
+     },
+     "plant move": {
+      "store": 1.05,
+      "draw": 6.5,
+      "total": 14.05,
+      "gpu": 7.25,
+      "build": "patch 1"
+     },
+     "select item": {
+      "store": 0.65,
+      "draw": 10,
+      "total": 17.6,
+      "gpu": 7.67,
+      "build": "patch 2"
+     },
+     "delete fish": {
+      "store": 4.55,
+      "draw": 7.2,
+      "total": 17.2,
+      "gpu": 6.86,
+      "build": "same"
+     },
+     "duplicate fish": {
+      "store": 4.1,
+      "draw": 7.9,
+      "total": 18.4,
+      "gpu": 7.12,
+      "build": "patch 1"
+     },
+     "undo": {
+      "store": 12,
+      "draw": 7.35,
+      "total": 24.75,
+      "gpu": 6.82,
+      "build": "same"
+     },
+     "water colour": {
+      "store": 10.25,
+      "draw": 106.75,
+      "total": 122,
+      "gpu": 50.71,
+      "build": "look"
+     },
+     "wall colour": {
+      "store": 3.5,
+      "draw": 7.05,
+      "total": 18.45,
+      "gpu": 9.04,
+      "build": "same"
+     },
+     "substrate colours": {
+      "store": 3.65,
+      "draw": 7.3,
+      "total": 18.75,
+      "gpu": 9.09,
+      "build": "same"
+     },
+     "light power": {
+      "store": 9.6,
+      "draw": 6.4,
+      "total": 24.6,
+      "gpu": 8.97,
+      "build": "same"
+     },
+     "fish stand out": {
+      "store": 4.25,
+      "draw": 6.15,
+      "total": 18.15,
+      "gpu": 9.33,
+      "build": "same"
+     },
+     "redo": {
+      "store": 0,
+      "draw": 6.2,
+      "total": 13.45,
+      "gpu": 9.02,
+      "build": "same"
+     },
+     "tall plant drag": {
+      "store": 0.75,
+      "draw": 7,
+      "total": 15.95,
+      "gpu": 9.34,
+      "build": "patch 1"
+     }
+    }
+   },
+   "planted": {
+    "firstDrawMs": 1405,
+    "firstFrameMs": 2167,
+    "domContentLoadedMs": 289,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      700,
+      850
+     ],
+     "pixelRatio": 1
+    },
+    "memory": {
+     "geometries": 224,
+     "textures": 38,
+     "programs": 28
+    },
+    "heapMB": 14.3,
+    "steady": {
+     "gpu": 7.88,
+     "gpuMin": 7.76,
+     "cpu": 5.05,
+     "calls": 573,
+     "triangles": 913794,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 142.1,
+     "wall": 144,
+     "gpu": 87.21,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 29,
+      "triangles": 728
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 18,
+      "triangles": 86
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 8,
+      "triangles": 0
+     },
+     "sub": {
+      "meshes": 2,
+      "triangles": 704
+     },
+     "room": {
+      "meshes": 9,
+      "triangles": 78
+     },
+     "LineBasicMaterial": {
+      "meshes": 6,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 40,
+      "triangles": 75280
+     },
+     "solid": {
+      "meshes": 2,
+      "triangles": 1000
+     },
+     "plantClip+card+post": {
+      "meshes": 54,
+      "triangles": 543216
+     },
+     "fishCard+card": {
+      "meshes": 174,
+      "triangles": 1488
+     },
+     "fish+plain": {
+      "meshes": 34,
+      "triangles": 75208
+     },
+     "fish": {
+      "meshes": 142,
+      "triangles": 90832
+     },
+     "fish (transparent)": {
+      "meshes": 39,
+      "triangles": 117172
+     },
+     "card": {
+      "meshes": 2,
+      "triangles": 4
+     },
+     "glow": {
+      "meshes": 1,
+      "triangles": 6080
+     }
+    },
+    "edits": {
+     "fish move": {
+      "store": 0.9,
+      "draw": 7.95,
+      "total": 18.65,
+      "gpu": 10.04,
+      "build": "patch 1"
+     },
+     "fish rotate": {
+      "store": 0.75,
+      "draw": 7.8,
+      "total": 19.05,
+      "gpu": 9.95,
+      "build": "patch 1"
+     },
+     "fish resize": {
+      "store": 0.7,
+      "draw": 6.8,
+      "total": 17.25,
+      "gpu": 10,
+      "build": "patch 1"
+     },
+     "fish raise": {
+      "store": 0.85,
+      "draw": 8.35,
+      "total": 19.35,
+      "gpu": 9.93,
+      "build": "patch 1"
+     },
+     "select fish": {
+      "store": 0.55,
+      "draw": 10.7,
+      "total": 20.95,
+      "gpu": 10.31,
+      "build": "patch 2"
+     },
+     "stone move": {
+      "store": 0.7,
+      "draw": 6.55,
+      "total": 16.05,
+      "gpu": 9.6,
+      "build": "patch 1"
+     },
+     "stone turn": {
+      "store": 0.7,
+      "draw": 8.9,
+      "total": 18.7,
+      "gpu": 10.3,
+      "build": "patch 1"
+     },
+     "stone resize": {
+      "store": 0.85,
+      "draw": 12.15,
+      "total": 22.25,
+      "gpu": 9.67,
+      "build": "patch 1"
+     },
+     "plant move": {
+      "store": 0.65,
+      "draw": 5.9,
+      "total": 15.5,
+      "gpu": 9.38,
+      "build": "patch 1"
+     },
+     "select item": {
+      "store": 0.85,
+      "draw": 9.5,
+      "total": 20.75,
+      "gpu": 9.91,
+      "build": "patch 2"
+     },
+     "delete fish": {
+      "store": 3.95,
+      "draw": 6.15,
+      "total": 18.95,
+      "gpu": 9.63,
+      "build": "same"
+     },
+     "duplicate fish": {
+      "store": 2.7,
+      "draw": 6.95,
+      "total": 19.05,
+      "gpu": 9.75,
+      "build": "patch 1"
+     },
+     "undo": {
+      "store": 8.7,
+      "draw": 8.1,
+      "total": 26.5,
+      "gpu": 9.81,
+      "build": "same"
+     },
+     "water colour": {
+      "store": 46.45,
+      "draw": 79.85,
+      "total": 132.1,
+      "gpu": 51.55,
+      "build": "look"
+     },
+     "wall colour": {
+      "store": 2.35,
+      "draw": 5.65,
+      "total": 17.75,
+      "gpu": 9.57,
+      "build": "same"
+     },
+     "substrate colours": {
+      "store": 2.45,
+      "draw": 6.15,
+      "total": 17.65,
+      "gpu": 9.71,
+      "build": "same"
+     },
+     "light power": {
+      "store": 41.55,
+      "draw": 10.85,
+      "total": 61.2,
+      "gpu": 9.5,
+      "build": "same"
+     },
+     "fish stand out": {
+      "store": 2.6,
+      "draw": 6.4,
+      "total": 17.45,
+      "gpu": 9.73,
+      "build": "same"
+     },
+     "redo": {
+      "store": 0.05,
+      "draw": 4.8,
+      "total": 14,
+      "gpu": 9.8,
+      "build": "same"
+     },
+     "tall plant drag": {
+      "store": 0.6,
+      "draw": 6.85,
+      "total": 16.3,
+      "gpu": 9.59,
+      "build": "patch 1"
+     }
+    }
+   },
+   "reef": {
+    "firstDrawMs": 1827,
+    "firstFrameMs": 23676,
+    "domContentLoadedMs": 293,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      700,
+      850
+     ],
+     "pixelRatio": 1
+    },
+    "memory": {
+     "geometries": 174,
+     "textures": 34,
+     "programs": 27
+    },
+    "heapMB": 13.6,
+    "steady": {
+     "gpu": 10.71,
+     "gpuMin": 10.53,
+     "cpu": 4.6,
+     "calls": 330,
+     "triangles": 323923,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 149.1,
+     "wall": 151.3,
+     "gpu": 93.62,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 48,
+      "triangles": 2347
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 13,
+      "triangles": 479
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 8,
+      "triangles": 0
+     },
+     "ShaderMaterial (transparent)": {
+      "meshes": 2,
+      "triangles": 200
+     },
+     "sub": {
+      "meshes": 2,
+      "triangles": 766
+     },
+     "room": {
+      "meshes": 9,
+      "triangles": 458
+     },
+     "LineBasicMaterial": {
+      "meshes": 6,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 12,
+      "triangles": 20936
+     },
+     "solid": {
+      "meshes": 35,
+      "triangles": 159028
+     },
+     "fishCard+card": {
+      "meshes": 26,
+      "triangles": 232
+     },
+     "fish+plain": {
+      "meshes": 5,
+      "triangles": 11060
+     },
+     "fish": {
+      "meshes": 83,
+      "triangles": 126848
+     },
+     "fish (transparent)": {
+      "meshes": 1,
+      "triangles": 480
+     },
+     "card": {
+      "meshes": 5,
+      "triangles": 130
+     },
+     "glow": {
+      "meshes": 6,
+      "triangles": 576
+     }
+    },
+    "edits": {
+     "fish move": {
+      "store": 1.15,
+      "draw": 7.75,
+      "total": 20.5,
+      "gpu": 11.49,
+      "build": "patch 1"
+     },
+     "fish rotate": {
+      "store": 0.65,
+      "draw": 6.3,
+      "total": 18.55,
+      "gpu": 11.23,
+      "build": "patch 1"
+     },
+     "fish resize": {
+      "store": 0.5,
+      "draw": 5.9,
+      "total": 17.5,
+      "gpu": 11.05,
+      "build": "patch 1"
+     },
+     "fish raise": {
+      "store": 0.6,
+      "draw": 6.15,
+      "total": 17.7,
+      "gpu": 10.76,
+      "build": "patch 1"
+     },
+     "select fish": {
+      "store": 0.4,
+      "draw": 8.75,
+      "total": 20.25,
+      "gpu": 11.12,
+      "build": "patch 2"
+     },
+     "stone move": {
+      "store": 0.8,
+      "draw": 22.5,
+      "total": 33.05,
+      "gpu": 10.74,
+      "build": "patch 4"
+     },
+     "stone turn": {
+      "store": 0.55,
+      "draw": 19.55,
+      "total": 31.1,
+      "gpu": 11.01,
+      "build": "patch 4"
+     },
+     "stone resize": {
+      "store": 0.95,
+      "draw": 53.05,
+      "total": 64.2,
+      "gpu": 10.97,
+      "build": "patch 4"
+     },
+     "plant move": {
+      "store": 0.6,
+      "draw": 4.4,
+      "total": 15.35,
+      "gpu": 10.73,
+      "build": "same"
+     },
+     "select item": {
+      "store": 0.7,
+      "draw": 10.4,
+      "total": 22.95,
+      "gpu": 11.6,
+      "build": "patch 2"
+     },
+     "delete fish": {
+      "store": 3.2,
+      "draw": 4.7,
+      "total": 19.1,
+      "gpu": 10.71,
+      "build": "same"
+     },
+     "duplicate fish": {
+      "store": 2.7,
+      "draw": 5.8,
+      "total": 19.05,
+      "gpu": 11.09,
+      "build": "patch 1"
+     },
+     "undo": {
+      "store": 10.75,
+      "draw": 6.1,
+      "total": 27.45,
+      "gpu": 10.68,
+      "build": "same"
+     },
+     "water colour": {
+      "store": 10.15,
+      "draw": 5,
+      "total": 27.15,
+      "gpu": 10.8,
+      "build": "look"
+     },
+     "wall colour": {
+      "store": 3.2,
+      "draw": 5.1,
+      "total": 18.9,
+      "gpu": 10.93,
+      "build": "same"
+     },
+     "substrate colours": {
+      "store": 2.9,
+      "draw": 5.1,
+      "total": 19.1,
+      "gpu": 10.6,
+      "build": "same"
+     },
+     "light power": {
+      "store": 8.5,
+      "draw": 5.2,
+      "total": 25.9,
+      "gpu": 10.66,
+      "build": "same"
+     },
+     "fish stand out": {
+      "store": 2.75,
+      "draw": 4.9,
+      "total": 17.85,
+      "gpu": 10.63,
+      "build": "same"
+     },
+     "redo": {
+      "store": 0.05,
+      "draw": 4.45,
+      "total": 16.25,
+      "gpu": 10.83,
+      "build": "same"
+     },
+     "tall plant drag": {
+      "store": 0.55,
+      "draw": 4.75,
+      "total": 16.8,
+      "gpu": 10.59,
+      "build": "same"
+     }
+    }
+   },
+   "terrarium": {
+    "firstDrawMs": 1030,
+    "firstFrameMs": 26920,
+    "domContentLoadedMs": 255,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      700,
+      850
+     ],
+     "pixelRatio": 1
+    },
+    "memory": {
+     "geometries": 88,
+     "textures": 7,
+     "programs": 19
+    },
+    "heapMB": 12.6,
+    "steady": {
+     "gpu": 4.38,
+     "gpuMin": 4.32,
+     "cpu": 2.7,
+     "calls": 164,
+     "triangles": 259404,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 113.8,
+     "wall": 115.5,
+     "gpu": 85.04,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 29,
+      "triangles": 968
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 9,
+      "triangles": 314
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 8,
+      "triangles": 0
+     },
+     "ShaderMaterial (transparent)": {
+      "meshes": 1,
+      "triangles": 32
+     },
+     "sub+post": {
+      "meshes": 2,
+      "triangles": 484
+     },
+     "room": {
+      "meshes": 12,
+      "triangles": 294
+     },
+     "LineBasicMaterial": {
+      "meshes": 9,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 9,
+      "triangles": 288
+     },
+     "solid": {
+      "meshes": 4,
+      "triangles": 12976
+     },
+     "plantClip+card+post": {
+      "meshes": 7,
+      "triangles": 134384
+     },
+     "card": {
+      "meshes": 3,
+      "triangles": 96
+     },
+     "fish": {
+      "meshes": 27,
+      "triangles": 105504
+     },
+     "glow": {
+      "meshes": 1,
+      "triangles": 4160
+     }
+    },
+    "edits": {
+     "fish move": {
+      "store": 0.85,
+      "draw": 4.35,
+      "total": 11.7,
+      "gpu": 4.14,
+      "build": "patch 1"
+     },
+     "fish rotate": {
+      "store": 0.55,
+      "draw": 3.55,
+      "total": 9.65,
+      "gpu": 4.14,
+      "build": "patch 1"
+     },
+     "fish resize": {
+      "store": 0.45,
+      "draw": 3.1,
+      "total": 9.9,
+      "gpu": 4.11,
+      "build": "same"
+     },
+     "fish raise": {
+      "store": 0.6,
+      "draw": 3.75,
+      "total": 10.35,
+      "gpu": 4.17,
+      "build": "patch 1"
+     },
+     "select fish": {
+      "store": 0.3,
+      "draw": 6.1,
+      "total": 12.35,
+      "gpu": 4.42,
+      "build": "patch 2"
+     },
+     "stone move": {
+      "store": 0.45,
+      "draw": 3.3,
+      "total": 10,
+      "gpu": 4.16,
+      "build": "patch 1"
+     },
+     "stone turn": {
+      "store": 0.45,
+      "draw": 4.25,
+      "total": 10.4,
+      "gpu": 4.65,
+      "build": "patch 1"
+     },
+     "stone resize": {
+      "store": 0.5,
+      "draw": 9,
+      "total": 15.35,
+      "gpu": 4.53,
+      "build": "patch 1"
+     },
+     "plant move": {
+      "store": 0.5,
+      "draw": 3.25,
+      "total": 11.65,
+      "gpu": 4.21,
+      "build": "patch 1"
+     },
+     "select item": {
+      "store": 0.65,
+      "draw": 6.15,
+      "total": 12.9,
+      "gpu": 4.32,
+      "build": "patch 2"
+     },
+     "delete fish": {
+      "store": 3.4,
+      "draw": 3.35,
+      "total": 11.5,
+      "gpu": 3.98,
+      "build": "same"
+     },
+     "duplicate fish": {
+      "store": 2.95,
+      "draw": 3.95,
+      "total": 12.5,
+      "gpu": 4.09,
+      "build": "patch 1"
+     },
+     "undo": {
+      "store": 6.9,
+      "draw": 3.8,
+      "total": 17.15,
+      "gpu": 3.99,
+      "build": "same"
+     },
+     "water colour": {
+      "store": 8.3,
+      "draw": 60.5,
+      "total": 73.55,
+      "gpu": 45.06,
+      "build": "look"
+     },
+     "wall colour": {
+      "store": 2.45,
+      "draw": 3.3,
+      "total": 11.55,
+      "gpu": 3.99,
+      "build": "same"
+     },
+     "substrate colours": {
+      "store": 3.6,
+      "draw": 147.4,
+      "total": 252.4,
+      "gpu": 37.85,
+      "build": "same"
+     },
+     "light power": {
+      "store": 9.6,
+      "draw": 4,
+      "total": 19.35,
+      "gpu": 3.85,
+      "build": "same"
+     },
+     "fish stand out": {
+      "store": 2.35,
+      "draw": 3.1,
+      "total": 11.7,
+      "gpu": 4.02,
+      "build": "same"
+     },
+     "redo": {
+      "store": 0.1,
+      "draw": 2.85,
+      "total": 8.05,
+      "gpu": 3.86,
+      "build": "same"
+     },
+     "tall plant drag": {
+      "store": 0.4,
+      "draw": 3,
+      "total": 9.55,
+      "gpu": 3.87,
+      "build": "patch 1"
+     }
+    }
+   },
+   "split": {
+    "firstDrawMs": 1509,
+    "firstFrameMs": 2326,
+    "domContentLoadedMs": 480,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      700,
+      850
+     ],
+     "pixelRatio": 1
+    },
+    "memory": {
+     "geometries": 325,
+     "textures": 38,
+     "programs": 28
+    },
+    "heapMB": 15.9,
+    "steady": {
+     "gpu": 11.3,
+     "gpuMin": 11.15,
+     "cpu": 9.65,
+     "calls": 1146,
+     "triangles": 1827588,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 174.2,
+     "wall": 186.7,
+     "gpu": 105.08,
+     "build": "full / full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 58,
+      "triangles": 1456
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 36,
+      "triangles": 172
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 16,
+      "triangles": 0
+     },
+     "sub": {
+      "meshes": 4,
+      "triangles": 1408
+     },
+     "room": {
+      "meshes": 18,
+      "triangles": 156
+     },
+     "LineBasicMaterial": {
+      "meshes": 12,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 80,
+      "triangles": 150560
+     },
+     "solid": {
+      "meshes": 4,
+      "triangles": 2000
+     },
+     "plantClip+card+post": {
+      "meshes": 108,
+      "triangles": 1086432
+     },
+     "fishCard+card": {
+      "meshes": 348,
+      "triangles": 2976
+     },
+     "fish+plain": {
+      "meshes": 68,
+      "triangles": 150416
+     },
+     "fish": {
+      "meshes": 284,
+      "triangles": 181664
+     },
+     "fish (transparent)": {
+      "meshes": 78,
+      "triangles": 234344
+     },
+     "card": {
+      "meshes": 4,
+      "triangles": 8
+     },
+     "glow": {
+      "meshes": 2,
+      "triangles": 12160
+     }
+    },
+    "edits": {
+     "fish move": {
+      "store": 1.25,
+      "draw": 11.5,
+      "total": 18.9,
+      "gpu": 10.15,
+      "build": "patch 1 / same"
+     },
+     "fish rotate": {
+      "store": 0.95,
+      "draw": 11.2,
+      "total": 17.85,
+      "gpu": 10.29,
+      "build": "patch 1 / same"
+     },
+     "fish resize": {
+      "store": 0.75,
+      "draw": 11.35,
+      "total": 17.5,
+      "gpu": 10.26,
+      "build": "patch 1 / same"
+     },
+     "fish raise": {
+      "store": 0.75,
+      "draw": 10.95,
+      "total": 17.75,
+      "gpu": 10.66,
+      "build": "patch 1 / same"
+     },
+     "select fish": {
+      "store": 0.5,
+      "draw": 14.25,
+      "total": 22,
+      "gpu": 12.19,
+      "build": "same / patch 2"
+     },
+     "stone move": {
+      "store": 0.75,
+      "draw": 12.5,
+      "total": 21.15,
+      "gpu": 10.43,
+      "build": "patch 1 / same"
+     },
+     "stone turn": {
+      "store": 0.65,
+      "draw": 11.5,
+      "total": 20.05,
+      "gpu": 12.89,
+      "build": "patch 1 / same"
+     },
+     "stone resize": {
+      "store": 1,
+      "draw": 16.3,
+      "total": 25.15,
+      "gpu": 9.78,
+      "build": "patch 1 / same"
+     },
+     "plant move": {
+      "store": 0.85,
+      "draw": 10.9,
+      "total": 16.05,
+      "gpu": 8.91,
+      "build": "patch 1 / same"
+     },
+     "select item": {
+      "store": 0.55,
+      "draw": 14.25,
+      "total": 18.9,
+      "gpu": 9.42,
+      "build": "same / patch 2"
+     },
+     "delete fish": {
+      "store": 1,
+      "draw": 11.65,
+      "total": 15.45,
+      "gpu": 8.52,
+      "build": "same / same"
+     },
+     "duplicate fish": {
+      "store": 0.8,
+      "draw": 11.9,
+      "total": 16.6,
+      "gpu": 9.95,
+      "build": "patch 1 / same"
+     },
+     "undo": {
+      "store": 6.75,
+      "draw": 12.85,
+      "total": 23.75,
+      "gpu": 9.47,
+      "build": "same / same"
+     },
+     "water colour": {
+      "store": 0.9,
+      "draw": 69.15,
+      "total": 73.4,
+      "gpu": 17.06,
+      "build": "look / same"
+     },
+     "wall colour": {
+      "store": 0.75,
+      "draw": 11.65,
+      "total": 18.55,
+      "gpu": 9.8,
+      "build": "same / same"
+     },
+     "substrate colours": {
+      "store": 0.7,
+      "draw": 9.7,
+      "total": 17.7,
+      "gpu": 12.17,
+      "build": "same / same"
+     },
+     "light power": {
+      "store": 1,
+      "draw": 50.4,
+      "total": 56.4,
+      "gpu": 8.66,
+      "build": "same / same"
+     },
+     "fish stand out": {
+      "store": 0.9,
+      "draw": 10.8,
+      "total": 15.1,
+      "gpu": 9.09,
+      "build": "same / same"
+     },
+     "redo": {
+      "store": 0.1,
+      "draw": 9.25,
+      "total": 12.5,
+      "gpu": 8.61,
+      "build": "same / same"
+     },
+     "tall plant drag": {
+      "store": 0.7,
+      "draw": 10.5,
+      "total": 15.2,
+      "gpu": 9.01,
+      "build": "patch 1 / same"
+     }
+    }
+   },
+   "research/efficiency/E1-variants/planted-overgrown.json": {
+    "firstDrawMs": 5071,
+    "firstFrameMs": 5805,
+    "domContentLoadedMs": 265,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      700,
+      850
+     ],
+     "pixelRatio": 1
+    },
+    "memory": {
+     "geometries": 224,
+     "textures": 38,
+     "programs": 28
+    },
+    "heapMB": 14.7,
+    "steady": {
+     "gpu": 10.81,
+     "gpuMin": 10.74,
+     "cpu": 5.4,
+     "calls": 573,
+     "triangles": 2232490,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 160.6,
+     "wall": 163.5,
+     "gpu": 89.98,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 29,
+      "triangles": 728
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 18,
+      "triangles": 86
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 8,
+      "triangles": 0
+     },
+     "sub": {
+      "meshes": 2,
+      "triangles": 704
+     },
+     "room": {
+      "meshes": 9,
+      "triangles": 78
+     },
+     "LineBasicMaterial": {
+      "meshes": 6,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 40,
+      "triangles": 75280
+     },
+     "solid": {
+      "meshes": 2,
+      "triangles": 1000
+     },
+     "plantClip+card+post": {
+      "meshes": 54,
+      "triangles": 1861912
+     },
+     "fishCard+card": {
+      "meshes": 174,
+      "triangles": 1488
+     },
+     "fish+plain": {
+      "meshes": 34,
+      "triangles": 75208
+     },
+     "fish": {
+      "meshes": 142,
+      "triangles": 90832
+     },
+     "fish (transparent)": {
+      "meshes": 39,
+      "triangles": 117172
+     },
+     "card": {
+      "meshes": 2,
+      "triangles": 4
+     },
+     "glow": {
+      "meshes": 1,
+      "triangles": 6080
+     }
+    },
+    "edits": {
+     "fish move": {
+      "store": 1.1,
+      "draw": 7.85,
+      "total": 21.55,
+      "gpu": 12.62,
+      "build": "patch 1"
+     },
+     "fish rotate": {
+      "store": 0.7,
+      "draw": 6.65,
+      "total": 20.7,
+      "gpu": 12.54,
+      "build": "patch 1"
+     },
+     "fish resize": {
+      "store": 0.85,
+      "draw": 7.9,
+      "total": 20.7,
+      "gpu": 12.55,
+      "build": "patch 1"
+     },
+     "fish raise": {
+      "store": 0.65,
+      "draw": 6.95,
+      "total": 20.05,
+      "gpu": 12.66,
+      "build": "patch 1"
+     },
+     "select fish": {
+      "store": 0.5,
+      "draw": 9.55,
+      "total": 22,
+      "gpu": 12.89,
+      "build": "patch 2"
+     },
+     "stone move": {
+      "store": 0.9,
+      "draw": 6.5,
+      "total": 19.45,
+      "gpu": 12.34,
+      "build": "patch 1"
+     },
+     "stone turn": {
+      "store": 0.55,
+      "draw": 7.35,
+      "total": 20.2,
+      "gpu": 12.92,
+      "build": "patch 1"
+     },
+     "stone resize": {
+      "store": 0.85,
+      "draw": 11.3,
+      "total": 24.35,
+      "gpu": 12.96,
+      "build": "patch 1"
+     },
+     "plant move": {
+      "store": 0.6,
+      "draw": 6.1,
+      "total": 18.1,
+      "gpu": 12.39,
+      "build": "patch 1"
+     },
+     "select item": {
+      "store": 0.55,
+      "draw": 8.4,
+      "total": 21.3,
+      "gpu": 12.85,
+      "build": "patch 2"
+     },
+     "delete fish": {
+      "store": 3.7,
+      "draw": 5.55,
+      "total": 21.85,
+      "gpu": 12.64,
+      "build": "same"
+     },
+     "duplicate fish": {
+      "store": 3.35,
+      "draw": 6.4,
+      "total": 22.4,
+      "gpu": 12.74,
+      "build": "patch 1"
+     },
+     "undo": {
+      "store": 9.55,
+      "draw": 6.75,
+      "total": 27.65,
+      "gpu": 12.28,
+      "build": "same"
+     },
+     "water colour": {
+      "store": 40,
+      "draw": 90.1,
+      "total": 138.7,
+      "gpu": 56.17,
+      "build": "look"
+     },
+     "wall colour": {
+      "store": 2.6,
+      "draw": 5.6,
+      "total": 20.15,
+      "gpu": 12.39,
+      "build": "same"
+     },
+     "substrate colours": {
+      "store": 2.6,
+      "draw": 6.55,
+      "total": 19.95,
+      "gpu": 12.41,
+      "build": "same"
+     },
+     "light power": {
+      "store": 41.2,
+      "draw": 11.05,
+      "total": 64.1,
+      "gpu": 12.49,
+      "build": "same"
+     },
+     "fish stand out": {
+      "store": 3.2,
+      "draw": 5.8,
+      "total": 20.95,
+      "gpu": 12.52,
+      "build": "same"
+     },
+     "redo": {
+      "store": 0.1,
+      "draw": 5.8,
+      "total": 18.3,
+      "gpu": 12.4,
+      "build": "same"
+     },
+     "tall plant drag": {
+      "store": 0.65,
+      "draw": 6.3,
+      "total": 19,
+      "gpu": 12.9,
+      "build": "patch 1"
+     }
+    }
+   },
+   "research/efficiency/E1-variants/planted-rockwall.json": {
+    "firstDrawMs": 1593,
+    "firstFrameMs": 2242,
+    "domContentLoadedMs": 309,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      700,
+      850
+     ],
+     "pixelRatio": 1
+    },
+    "memory": {
+     "geometries": 225,
+     "textures": 38,
+     "programs": 28
+    },
+    "heapMB": 14.5,
+    "steady": {
+     "gpu": 12.41,
+     "gpuMin": 12.13,
+     "cpu": 5.6,
+     "calls": 574,
+     "triangles": 971954,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 149.7,
+     "wall": 152.4,
+     "gpu": 91.9,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 29,
+      "triangles": 728
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 18,
+      "triangles": 86
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 8,
+      "triangles": 0
+     },
+     "sub": {
+      "meshes": 2,
+      "triangles": 704
+     },
+     "solid": {
+      "meshes": 3,
+      "triangles": 59160
+     },
+     "room": {
+      "meshes": 9,
+      "triangles": 78
+     },
+     "LineBasicMaterial": {
+      "meshes": 6,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 40,
+      "triangles": 75280
+     },
+     "plantClip+card+post": {
+      "meshes": 54,
+      "triangles": 543216
+     },
+     "fishCard+card": {
+      "meshes": 174,
+      "triangles": 1488
+     },
+     "fish+plain": {
+      "meshes": 34,
+      "triangles": 75208
+     },
+     "fish": {
+      "meshes": 142,
+      "triangles": 90832
+     },
+     "fish (transparent)": {
+      "meshes": 39,
+      "triangles": 117172
+     },
+     "card": {
+      "meshes": 2,
+      "triangles": 4
+     },
+     "glow": {
+      "meshes": 1,
+      "triangles": 6080
+     }
+    },
+    "edits": {
+     "fish move": {
+      "store": 1.4,
+      "draw": 7.25,
+      "total": 23.65,
+      "gpu": 15.02,
+      "build": "patch 1"
+     },
+     "fish rotate": {
+      "store": 0.75,
+      "draw": 6.45,
+      "total": 21.95,
+      "gpu": 14.96,
+      "build": "patch 1"
+     },
+     "fish resize": {
+      "store": 0.8,
+      "draw": 6.85,
+      "total": 22.2,
+      "gpu": 15.01,
+      "build": "patch 1"
+     },
+     "fish raise": {
+      "store": 0.85,
+      "draw": 7.4,
+      "total": 22.7,
+      "gpu": 15.15,
+      "build": "patch 1"
+     },
+     "select fish": {
+      "store": 0.4,
+      "draw": 9.8,
+      "total": 24.55,
+      "gpu": 15.03,
+      "build": "patch 2"
+     },
+     "stone move": {
+      "store": 1.15,
+      "draw": 6.8,
+      "total": 22.7,
+      "gpu": 14.6,
+      "build": "patch 1"
+     },
+     "stone turn": {
+      "store": 0.85,
+      "draw": 7.2,
+      "total": 22.05,
+      "gpu": 15.26,
+      "build": "patch 1"
+     },
+     "stone resize": {
+      "store": 0.95,
+      "draw": 12.5,
+      "total": 27.4,
+      "gpu": 15.07,
+      "build": "patch 1"
+     },
+     "plant move": {
+      "store": 0.75,
+      "draw": 6.65,
+      "total": 22.65,
+      "gpu": 15.36,
+      "build": "patch 1"
+     },
+     "select item": {
+      "store": 0.65,
+      "draw": 9.1,
+      "total": 24.1,
+      "gpu": 15.15,
+      "build": "patch 2"
+     },
+     "delete fish": {
+      "store": 4.05,
+      "draw": 5.9,
+      "total": 24.75,
+      "gpu": 14.67,
+      "build": "same"
+     },
+     "duplicate fish": {
+      "store": 3.25,
+      "draw": 6.7,
+      "total": 24.65,
+      "gpu": 14.91,
+      "build": "patch 1"
+     },
+     "undo": {
+      "store": 6.75,
+      "draw": 6.35,
+      "total": 27.9,
+      "gpu": 15.05,
+      "build": "same"
+     },
+     "water colour": {
+      "store": 39.2,
+      "draw": 74.35,
+      "total": 121.95,
+      "gpu": 49.77,
+      "build": "look"
+     },
+     "wall colour": {
+      "store": 2.7,
+      "draw": 5.75,
+      "total": 22.2,
+      "gpu": 14.63,
+      "build": "same"
+     },
+     "substrate colours": {
+      "store": 3.15,
+      "draw": 5.7,
+      "total": 24.1,
+      "gpu": 15.09,
+      "build": "same"
+     },
+     "light power": {
+      "store": 41.1,
+      "draw": 9.3,
+      "total": 65.3,
+      "gpu": 14.9,
+      "build": "same"
+     },
+     "fish stand out": {
+      "store": 2.95,
+      "draw": 5.9,
+      "total": 23.95,
+      "gpu": 14.65,
+      "build": "same"
+     },
+     "redo": {
+      "store": 0.1,
+      "draw": 5.45,
+      "total": 19.65,
+      "gpu": 14.63,
+      "build": "same"
+     },
+     "tall plant drag": {
+      "store": 0.75,
+      "draw": 5.85,
+      "total": 21,
+      "gpu": 14.78,
+      "build": "patch 1"
+     }
+    }
+   }
+  },
+  "desktop2x": {
+   "betta-bowl": {
+    "firstDrawMs": 856,
+    "firstFrameMs": 1223,
+    "domContentLoadedMs": 256,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      1400,
+      1700
+     ],
+     "pixelRatio": 2
+    },
+    "memory": {
+     "geometries": 51,
+     "textures": 10,
+     "programs": 21
+    },
+    "heapMB": 12.9,
+    "steady": {
+     "gpu": 3.28,
+     "gpuMin": 3.21,
+     "cpu": 3.4,
+     "calls": 230,
+     "triangles": 56686,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 107.2,
+     "wall": 110.9,
+     "gpu": 68.61,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 3,
+      "triangles": 182
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 5,
+      "triangles": 8844
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 5,
+      "triangles": 0
+     },
+     "ShaderMaterial (transparent)": {
+      "meshes": 1,
+      "triangles": 4176
+     },
+     "sub": {
+      "meshes": 2,
+      "triangles": 1308
+     },
+     "room": {
+      "meshes": 10,
+      "triangles": 570
+     },
+     "LineBasicMaterial": {
+      "meshes": 7,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 8,
+      "triangles": 2776
+     },
+     "solid": {
+      "meshes": 2,
+      "triangles": 1284
+     },
+     "plantClip+card+post": {
+      "meshes": 3,
+      "triangles": 15344
+     },
+     "fishCard+card": {
+      "meshes": 5,
+      "triangles": 1288
+     },
+     "fish+plain": {
+      "meshes": 1,
+      "triangles": 2212
+     },
+     "fish": {
+      "meshes": 11,
+      "triangles": 18760
+     },
+     "card": {
+      "meshes": 1,
+      "triangles": 2
+     },
+     "glow": {
+      "meshes": 1,
+      "triangles": 96
+     }
+    },
+    "edits": {
+     "fish move": {
+      "store": 0.9,
+      "draw": 9.7,
+      "total": 14.4,
+      "gpu": 6.15,
+      "build": "patch 1"
+     },
+     "fish rotate": {
+      "store": 0.5,
+      "draw": 6.55,
+      "total": 11.55,
+      "gpu": 4.51,
+      "build": "patch 1"
+     },
+     "fish resize": {
+      "store": 0.6,
+      "draw": 4,
+      "total": 10.8,
+      "gpu": 3.89,
+      "build": "patch 1"
+     },
+     "fish raise": {
+      "store": 0.45,
+      "draw": 4.5,
+      "total": 11.2,
+      "gpu": 3.92,
+      "build": "patch 1"
+     },
+     "select fish": {
+      "store": 0.3,
+      "draw": 6.85,
+      "total": 12.45,
+      "gpu": 3.98,
+      "build": "patch 2"
+     },
+     "stone move": {
+      "store": 0.5,
+      "draw": 3.95,
+      "total": 10,
+      "gpu": 3.88,
+      "build": "patch 1"
+     },
+     "stone turn": {
+      "store": 0.7,
+      "draw": 4.45,
+      "total": 10.5,
+      "gpu": 4.14,
+      "build": "patch 1"
+     },
+     "stone resize": {
+      "store": 0.65,
+      "draw": 6.95,
+      "total": 13.3,
+      "gpu": 4.26,
+      "build": "patch 1"
+     },
+     "plant move": {
+      "store": 0.5,
+      "draw": 3.65,
+      "total": 9.6,
+      "gpu": 3.7,
+      "build": "patch 1"
+     },
+     "select item": {
+      "store": 0.6,
+      "draw": 7,
+      "total": 13.3,
+      "gpu": 3.97,
+      "build": "patch 2"
+     },
+     "delete fish": {
+      "store": 2,
+      "draw": 3.75,
+      "total": 11.2,
+      "gpu": 3.81,
+      "build": "same"
+     },
+     "duplicate fish": {
+      "store": 3.3,
+      "draw": 5.15,
+      "total": 14.1,
+      "gpu": 4.53,
+      "build": "patch 1"
+     },
+     "undo": {
+      "store": 8.2,
+      "draw": 4.9,
+      "total": 18.75,
+      "gpu": 3.88,
+      "build": "same"
+     },
+     "water colour": {
+      "store": 7.5,
+      "draw": 63.2,
+      "total": 74.9,
+      "gpu": 41.48,
+      "build": "look"
+     },
+     "wall colour": {
+      "store": 3.85,
+      "draw": 4.5,
+      "total": 14.5,
+      "gpu": 4.23,
+      "build": "same"
+     },
+     "substrate colours": {
+      "store": 3,
+      "draw": 3.8,
+      "total": 13,
+      "gpu": 4.13,
+      "build": "same"
+     },
+     "light power": {
+      "store": 8,
+      "draw": 4.45,
+      "total": 18.7,
+      "gpu": 4.14,
+      "build": "same"
+     },
+     "fish stand out": {
+      "store": 3.05,
+      "draw": 3.65,
+      "total": 12.85,
+      "gpu": 4.43,
+      "build": "same"
+     },
+     "redo": {
+      "store": 0.1,
+      "draw": 3.3,
+      "total": 9.25,
+      "gpu": 4.13,
+      "build": "same"
+     },
+     "tall plant drag": {
+      "store": 0.45,
+      "draw": 3.55,
+      "total": 10.8,
+      "gpu": 4.05,
+      "build": "patch 1"
+     }
+    }
+   },
+   "iwagumi": {
+    "firstDrawMs": 1348,
+    "firstFrameMs": 1998,
+    "domContentLoadedMs": 314,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      1400,
+      1700
+     ],
+     "pixelRatio": 2
+    },
+    "memory": {
+     "geometries": 320,
+     "textures": 19,
+     "programs": 47
+    },
+    "heapMB": 15.5,
+    "steady": {
+     "gpu": 16.4,
+     "gpuMin": 15.14,
+     "cpu": 10.85,
+     "calls": 695,
+     "triangles": 862018,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 272.3,
+     "wall": 276.5,
+     "gpu": 151.42,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 26,
+      "triangles": 662
+     },
+     "frost": {
+      "meshes": 1,
+      "triangles": 2
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 16,
+      "triangles": 82
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 8,
+      "triangles": 0
+     },
+     "sub": {
+      "meshes": 2,
+      "triangles": 688
+     },
+     "room": {
+      "meshes": 9,
+      "triangles": 78
+     },
+     "LineBasicMaterial": {
+      "meshes": 6,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 39,
+      "triangles": 145188
+     },
+     "solid": {
+      "meshes": 24,
+      "triangles": 7680
+     },
+     "plantClip+card+post": {
+      "meshes": 150,
+      "triangles": 401120
+     },
+     "fishCard+card": {
+      "meshes": 125,
+      "triangles": 1240
+     },
+     "fish+plain": {
+      "meshes": 23,
+      "triangles": 50876
+     },
+     "fish": {
+      "meshes": 176,
+      "triangles": 229920
+     },
+     "fish (transparent)": {
+      "meshes": 13,
+      "triangles": 9012
+     },
+     "glow": {
+      "meshes": 1,
+      "triangles": 4000
+     }
+    },
+    "edits": {
+     "fish move": {
+      "store": 1.15,
+      "draw": 12.15,
+      "total": 31.45,
+      "gpu": 18.38,
+      "build": "patch 1"
+     },
+     "fish rotate": {
+      "store": 0.75,
+      "draw": 13.05,
+      "total": 29.55,
+      "gpu": 18.19,
+      "build": "patch 1"
+     },
+     "fish resize": {
+      "store": 0.9,
+      "draw": 15.15,
+      "total": 30.55,
+      "gpu": 19.96,
+      "build": "patch 1"
+     },
+     "fish raise": {
+      "store": 0.85,
+      "draw": 13.4,
+      "total": 30.25,
+      "gpu": 18.51,
+      "build": "patch 1"
+     },
+     "select fish": {
+      "store": 0.5,
+      "draw": 16.5,
+      "total": 33.65,
+      "gpu": 17.72,
+      "build": "patch 2"
+     },
+     "stone move": {
+      "store": 0.7,
+      "draw": 17.3,
+      "total": 34.2,
+      "gpu": 20.48,
+      "build": "patch 3"
+     },
+     "stone turn": {
+      "store": 0.65,
+      "draw": 15.85,
+      "total": 33.55,
+      "gpu": 17.84,
+      "build": "patch 3"
+     },
+     "stone resize": {
+      "store": 1.15,
+      "draw": 19.1,
+      "total": 36.55,
+      "gpu": 18.4,
+      "build": "patch 3"
+     },
+     "plant move": {
+      "store": 0.95,
+      "draw": 22.4,
+      "total": 38.25,
+      "gpu": 18.85,
+      "build": "patch 1"
+     },
+     "select item": {
+      "store": 0.6,
+      "draw": 13.4,
+      "total": 32,
+      "gpu": 21.3,
+      "build": "patch 2"
+     },
+     "delete fish": {
+      "store": 3.65,
+      "draw": 10.95,
+      "total": 31.55,
+      "gpu": 17.79,
+      "build": "same"
+     },
+     "duplicate fish": {
+      "store": 3.65,
+      "draw": 12.9,
+      "total": 31.45,
+      "gpu": 18.13,
+      "build": "patch 1"
+     },
+     "undo": {
+      "store": 7.8,
+      "draw": 13.15,
+      "total": 36,
+      "gpu": 17.91,
+      "build": "same"
+     },
+     "water colour": {
+      "store": 30.95,
+      "draw": 146.45,
+      "total": 187.55,
+      "gpu": 91.37,
+      "build": "look"
+     },
+     "wall colour": {
+      "store": 3.15,
+      "draw": 16.65,
+      "total": 131.85,
+      "gpu": 119.22,
+      "build": "same"
+     },
+     "substrate colours": {
+      "store": 3.5,
+      "draw": 12,
+      "total": 31.3,
+      "gpu": 17.99,
+      "build": "same"
+     },
+     "light power": {
+      "store": 34,
+      "draw": 15.6,
+      "total": 62.35,
+      "gpu": 16.12,
+      "build": "same"
+     },
+     "fish stand out": {
+      "store": 3.75,
+      "draw": 11.75,
+      "total": 31.65,
+      "gpu": 15.43,
+      "build": "same"
+     },
+     "redo": {
+      "store": 0.1,
+      "draw": 11.75,
+      "total": 26.95,
+      "gpu": 16.02,
+      "build": "same"
+     },
+     "tall plant drag": {
+      "store": 0.7,
+      "draw": 11.5,
+      "total": 27.95,
+      "gpu": 15.73,
+      "build": "patch 1"
+     }
+    }
+   },
+   "paludarium": {
+    "firstDrawMs": 1101,
+    "firstFrameMs": 1551,
+    "domContentLoadedMs": 311,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      1400,
+      1700
+     ],
+     "pixelRatio": 2
+    },
+    "memory": {
+     "geometries": 223,
+     "textures": 17,
+     "programs": 25
+    },
+    "heapMB": 14.4,
+    "steady": {
+     "gpu": 9.03,
+     "gpuMin": 7.92,
+     "cpu": 5.8,
+     "calls": 552,
+     "triangles": 757124,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 173.6,
+     "wall": 177.6,
+     "gpu": 77.77,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 62,
+      "triangles": 2166
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 19,
+      "triangles": 858
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 5,
+      "triangles": 0
+     },
+     "ShaderMaterial (transparent)": {
+      "meshes": 1,
+      "triangles": 128
+     },
+     "sub": {
+      "meshes": 2,
+      "triangles": 8960
+     },
+     "room": {
+      "meshes": 9,
+      "triangles": 478
+     },
+     "LineBasicMaterial": {
+      "meshes": 6,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 22,
+      "triangles": 79136
+     },
+     "plantClip+card+post": {
+      "meshes": 53,
+      "triangles": 171920
+     },
+     "solid": {
+      "meshes": 10,
+      "triangles": 3200
+     },
+     "card": {
+      "meshes": 6,
+      "triangles": 192
+     },
+     "fish": {
+      "meshes": 148,
+      "triangles": 461456
+     },
+     "fishCard+card": {
+      "meshes": 56,
+      "triangles": 592
+     },
+     "fish+plain": {
+      "meshes": 10,
+      "triangles": 22120
+     },
+     "fish (transparent)": {
+      "meshes": 6,
+      "triangles": 2880
+     },
+     "glow": {
+      "meshes": 3,
+      "triangles": 288
+     }
+    },
+    "edits": {
+     "fish move": {
+      "store": 1.45,
+      "draw": 8.35,
+      "total": 20.7,
+      "gpu": 11.44,
+      "build": "patch 1"
+     },
+     "fish rotate": {
+      "store": 0.9,
+      "draw": 7.3,
+      "total": 17.95,
+      "gpu": 11.42,
+      "build": "patch 1"
+     },
+     "fish resize": {
+      "store": 0.85,
+      "draw": 7.85,
+      "total": 20.1,
+      "gpu": 11.97,
+      "build": "patch 1"
+     },
+     "fish raise": {
+      "store": 0.9,
+      "draw": 8.45,
+      "total": 21.05,
+      "gpu": 12.74,
+      "build": "patch 1"
+     },
+     "select fish": {
+      "store": 0.35,
+      "draw": 9.45,
+      "total": 21.55,
+      "gpu": 12.79,
+      "build": "patch 2"
+     },
+     "stone move": {
+      "store": 0.7,
+      "draw": 7.75,
+      "total": 18.95,
+      "gpu": 12.04,
+      "build": "patch 1"
+     },
+     "stone turn": {
+      "store": 0.85,
+      "draw": 8.2,
+      "total": 21.25,
+      "gpu": 12.52,
+      "build": "patch 1"
+     },
+     "stone resize": {
+      "store": 0.95,
+      "draw": 9.6,
+      "total": 23,
+      "gpu": 12.94,
+      "build": "patch 1"
+     },
+     "plant move": {
+      "store": 1.1,
+      "draw": 6.3,
+      "total": 19.1,
+      "gpu": 11.95,
+      "build": "patch 1"
+     },
+     "select item": {
+      "store": 0.6,
+      "draw": 9.45,
+      "total": 21.55,
+      "gpu": 12.54,
+      "build": "patch 2"
+     },
+     "delete fish": {
+      "store": 3.95,
+      "draw": 6.25,
+      "total": 21.95,
+      "gpu": 11.85,
+      "build": "same"
+     },
+     "duplicate fish": {
+      "store": 3.2,
+      "draw": 6.9,
+      "total": 21.5,
+      "gpu": 12.42,
+      "build": "patch 1"
+     },
+     "undo": {
+      "store": 12.3,
+      "draw": 6.9,
+      "total": 31.65,
+      "gpu": 12.6,
+      "build": "same"
+     },
+     "water colour": {
+      "store": 9.5,
+      "draw": 91.55,
+      "total": 109.75,
+      "gpu": 47.48,
+      "build": "look"
+     },
+     "wall colour": {
+      "store": 3.85,
+      "draw": 6.85,
+      "total": 28.1,
+      "gpu": 18.12,
+      "build": "same"
+     },
+     "substrate colours": {
+      "store": 3.2,
+      "draw": 6.55,
+      "total": 26.75,
+      "gpu": 17.87,
+      "build": "same"
+     },
+     "light power": {
+      "store": 9.15,
+      "draw": 7.45,
+      "total": 34.7,
+      "gpu": 18.59,
+      "build": "same"
+     },
+     "fish stand out": {
+      "store": 3.7,
+      "draw": 6.3,
+      "total": 27.7,
+      "gpu": 18.47,
+      "build": "same"
+     },
+     "redo": {
+      "store": 0.1,
+      "draw": 6.05,
+      "total": 22.95,
+      "gpu": 18.29,
+      "build": "same"
+     },
+     "tall plant drag": {
+      "store": 0.75,
+      "draw": 6.8,
+      "total": 21.75,
+      "gpu": 15.42,
+      "build": "patch 1"
+     }
+    }
+   },
+   "planted": {
+    "firstDrawMs": 1417,
+    "firstFrameMs": 2171,
+    "domContentLoadedMs": 283,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      1400,
+      1700
+     ],
+     "pixelRatio": 2
+    },
+    "memory": {
+     "geometries": 224,
+     "textures": 38,
+     "programs": 28
+    },
+    "heapMB": 14.5,
+    "steady": {
+     "gpu": 17.13,
+     "gpuMin": 16.01,
+     "cpu": 5.7,
+     "calls": 573,
+     "triangles": 913794,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 148.5,
+     "wall": 152.1,
+     "gpu": 91.39,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 29,
+      "triangles": 728
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 18,
+      "triangles": 86
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 8,
+      "triangles": 0
+     },
+     "sub": {
+      "meshes": 2,
+      "triangles": 704
+     },
+     "room": {
+      "meshes": 9,
+      "triangles": 78
+     },
+     "LineBasicMaterial": {
+      "meshes": 6,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 40,
+      "triangles": 75280
+     },
+     "solid": {
+      "meshes": 2,
+      "triangles": 1000
+     },
+     "plantClip+card+post": {
+      "meshes": 54,
+      "triangles": 543216
+     },
+     "fishCard+card": {
+      "meshes": 174,
+      "triangles": 1488
+     },
+     "fish+plain": {
+      "meshes": 34,
+      "triangles": 75208
+     },
+     "fish": {
+      "meshes": 142,
+      "triangles": 90832
+     },
+     "fish (transparent)": {
+      "meshes": 39,
+      "triangles": 117172
+     },
+     "card": {
+      "meshes": 2,
+      "triangles": 4
+     },
+     "glow": {
+      "meshes": 1,
+      "triangles": 6080
+     }
+    },
+    "edits": {
+     "fish move": {
+      "store": 1.1,
+      "draw": 7.25,
+      "total": 24.8,
+      "gpu": 15.95,
+      "build": "patch 1"
+     },
+     "fish rotate": {
+      "store": 0.6,
+      "draw": 6.95,
+      "total": 23.6,
+      "gpu": 16.06,
+      "build": "patch 1"
+     },
+     "fish resize": {
+      "store": 0.65,
+      "draw": 6.55,
+      "total": 22.95,
+      "gpu": 15.88,
+      "build": "patch 1"
+     },
+     "fish raise": {
+      "store": 0.5,
+      "draw": 6,
+      "total": 22.65,
+      "gpu": 15.64,
+      "build": "patch 1"
+     },
+     "select fish": {
+      "store": 0.4,
+      "draw": 8.95,
+      "total": 25.4,
+      "gpu": 15.87,
+      "build": "patch 2"
+     },
+     "stone move": {
+      "store": 0.65,
+      "draw": 5.75,
+      "total": 21.65,
+      "gpu": 15.48,
+      "build": "patch 1"
+     },
+     "stone turn": {
+      "store": 0.55,
+      "draw": 7.4,
+      "total": 23.3,
+      "gpu": 16.01,
+      "build": "patch 1"
+     },
+     "stone resize": {
+      "store": 0.85,
+      "draw": 11.35,
+      "total": 28.1,
+      "gpu": 15.89,
+      "build": "patch 1"
+     },
+     "plant move": {
+      "store": 0.65,
+      "draw": 5.6,
+      "total": 21.6,
+      "gpu": 15.58,
+      "build": "patch 1"
+     },
+     "select item": {
+      "store": 0.6,
+      "draw": 8.45,
+      "total": 25.2,
+      "gpu": 15.98,
+      "build": "patch 2"
+     },
+     "delete fish": {
+      "store": 3.8,
+      "draw": 5.85,
+      "total": 26.2,
+      "gpu": 15.51,
+      "build": "same"
+     },
+     "duplicate fish": {
+      "store": 3.6,
+      "draw": 7.85,
+      "total": 26.85,
+      "gpu": 15.81,
+      "build": "patch 1"
+     },
+     "undo": {
+      "store": 8.5,
+      "draw": 6.55,
+      "total": 30.65,
+      "gpu": 15.49,
+      "build": "same"
+     },
+     "water colour": {
+      "store": 36.4,
+      "draw": 79.95,
+      "total": 125.45,
+      "gpu": 55.85,
+      "build": "look"
+     },
+     "wall colour": {
+      "store": 2.4,
+      "draw": 5.35,
+      "total": 22.85,
+      "gpu": 15.11,
+      "build": "same"
+     },
+     "substrate colours": {
+      "store": 2.45,
+      "draw": 5.3,
+      "total": 21.1,
+      "gpu": 13.53,
+      "build": "same"
+     },
+     "light power": {
+      "store": 38.65,
+      "draw": 8.9,
+      "total": 62.05,
+      "gpu": 14.67,
+      "build": "same"
+     },
+     "fish stand out": {
+      "store": 2.85,
+      "draw": 5.5,
+      "total": 21.55,
+      "gpu": 13.85,
+      "build": "same"
+     },
+     "redo": {
+      "store": 0.05,
+      "draw": 4.75,
+      "total": 19,
+      "gpu": 13.71,
+      "build": "same"
+     },
+     "tall plant drag": {
+      "store": 0.45,
+      "draw": 5.25,
+      "total": 19.8,
+      "gpu": 13.69,
+      "build": "patch 1"
+     }
+    }
+   },
+   "reef": {
+    "firstDrawMs": 1708,
+    "firstFrameMs": 2460,
+    "domContentLoadedMs": 277,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      1400,
+      1700
+     ],
+     "pixelRatio": 2
+    },
+    "memory": {
+     "geometries": 174,
+     "textures": 34,
+     "programs": 27
+    },
+    "heapMB": 13.6,
+    "steady": {
+     "gpu": 16.41,
+     "gpuMin": 16.31,
+     "cpu": 4.8,
+     "calls": 330,
+     "triangles": 323923,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 136.6,
+     "wall": 140.2,
+     "gpu": 86.65,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 48,
+      "triangles": 2347
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 13,
+      "triangles": 479
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 8,
+      "triangles": 0
+     },
+     "ShaderMaterial (transparent)": {
+      "meshes": 2,
+      "triangles": 200
+     },
+     "sub": {
+      "meshes": 2,
+      "triangles": 766
+     },
+     "room": {
+      "meshes": 9,
+      "triangles": 458
+     },
+     "LineBasicMaterial": {
+      "meshes": 6,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 12,
+      "triangles": 20936
+     },
+     "solid": {
+      "meshes": 35,
+      "triangles": 159028
+     },
+     "fishCard+card": {
+      "meshes": 26,
+      "triangles": 232
+     },
+     "fish+plain": {
+      "meshes": 5,
+      "triangles": 11060
+     },
+     "fish": {
+      "meshes": 83,
+      "triangles": 126848
+     },
+     "fish (transparent)": {
+      "meshes": 1,
+      "triangles": 480
+     },
+     "card": {
+      "meshes": 5,
+      "triangles": 130
+     },
+     "glow": {
+      "meshes": 6,
+      "triangles": 576
+     }
+    },
+    "edits": {
+     "fish move": {
+      "store": 1.1,
+      "draw": 6.65,
+      "total": 26.35,
+      "gpu": 18.36,
+      "build": "patch 1"
+     },
+     "fish rotate": {
+      "store": 0.65,
+      "draw": 6.1,
+      "total": 25.65,
+      "gpu": 18.46,
+      "build": "patch 1"
+     },
+     "fish resize": {
+      "store": 0.6,
+      "draw": 5.5,
+      "total": 24.75,
+      "gpu": 18.04,
+      "build": "patch 1"
+     },
+     "fish raise": {
+      "store": 0.6,
+      "draw": 8.1,
+      "total": 26.85,
+      "gpu": 17.83,
+      "build": "patch 1"
+     },
+     "select fish": {
+      "store": 0.45,
+      "draw": 8,
+      "total": 25.55,
+      "gpu": 16.99,
+      "build": "patch 2"
+     },
+     "stone move": {
+      "store": 0.65,
+      "draw": 16.3,
+      "total": 34.5,
+      "gpu": 16.77,
+      "build": "patch 4"
+     },
+     "stone turn": {
+      "store": 0.55,
+      "draw": 18.45,
+      "total": 36.45,
+      "gpu": 16.94,
+      "build": "patch 4"
+     },
+     "stone resize": {
+      "store": 1.1,
+      "draw": 53.3,
+      "total": 71.65,
+      "gpu": 17.2,
+      "build": "patch 4"
+     },
+     "plant move": {
+      "store": 0.6,
+      "draw": 4.6,
+      "total": 21.55,
+      "gpu": 16.78,
+      "build": "same"
+     },
+     "select item": {
+      "store": 0.85,
+      "draw": 7.7,
+      "total": 26.45,
+      "gpu": 17.41,
+      "build": "patch 2"
+     },
+     "delete fish": {
+      "store": 3.05,
+      "draw": 5.05,
+      "total": 24.7,
+      "gpu": 16.68,
+      "build": "same"
+     },
+     "duplicate fish": {
+      "store": 2.95,
+      "draw": 6.7,
+      "total": 26.65,
+      "gpu": 17.05,
+      "build": "patch 1"
+     },
+     "undo": {
+      "store": 9.3,
+      "draw": 6.2,
+      "total": 32.25,
+      "gpu": 16.88,
+      "build": "same"
+     },
+     "water colour": {
+      "store": 8.6,
+      "draw": 5.85,
+      "total": 31.95,
+      "gpu": 16.76,
+      "build": "look"
+     },
+     "wall colour": {
+      "store": 3.05,
+      "draw": 5.1,
+      "total": 24.85,
+      "gpu": 16.75,
+      "build": "same"
+     },
+     "substrate colours": {
+      "store": 3.45,
+      "draw": 5.05,
+      "total": 25.7,
+      "gpu": 17.17,
+      "build": "same"
+     },
+     "light power": {
+      "store": 9.35,
+      "draw": 6.15,
+      "total": 32.6,
+      "gpu": 16.63,
+      "build": "same"
+     },
+     "fish stand out": {
+      "store": 3.05,
+      "draw": 5.3,
+      "total": 24.4,
+      "gpu": 16.74,
+      "build": "same"
+     },
+     "redo": {
+      "store": 0.05,
+      "draw": 4.5,
+      "total": 23.6,
+      "gpu": 16.64,
+      "build": "same"
+     },
+     "tall plant drag": {
+      "store": 0.5,
+      "draw": 5,
+      "total": 21.05,
+      "gpu": 15.25,
+      "build": "same"
+     }
+    }
+   },
+   "terrarium": {
+    "firstDrawMs": 1100,
+    "firstFrameMs": 1454,
+    "domContentLoadedMs": 324,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      1400,
+      1700
+     ],
+     "pixelRatio": 2
+    },
+    "memory": {
+     "geometries": 88,
+     "textures": 7,
+     "programs": 19
+    },
+    "heapMB": 12.7,
+    "steady": {
+     "gpu": 9.76,
+     "gpuMin": 9.56,
+     "cpu": 2.6,
+     "calls": 164,
+     "triangles": 259404,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 118.4,
+     "wall": 122,
+     "gpu": 86.15,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 29,
+      "triangles": 968
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 9,
+      "triangles": 314
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 8,
+      "triangles": 0
+     },
+     "ShaderMaterial (transparent)": {
+      "meshes": 1,
+      "triangles": 32
+     },
+     "sub+post": {
+      "meshes": 2,
+      "triangles": 484
+     },
+     "room": {
+      "meshes": 12,
+      "triangles": 294
+     },
+     "LineBasicMaterial": {
+      "meshes": 9,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 9,
+      "triangles": 288
+     },
+     "solid": {
+      "meshes": 4,
+      "triangles": 12976
+     },
+     "plantClip+card+post": {
+      "meshes": 7,
+      "triangles": 134384
+     },
+     "card": {
+      "meshes": 3,
+      "triangles": 96
+     },
+     "fish": {
+      "meshes": 27,
+      "triangles": 105504
+     },
+     "glow": {
+      "meshes": 1,
+      "triangles": 4160
+     }
+    },
+    "edits": {
+     "fish move": {
+      "store": 0.8,
+      "draw": 4.35,
+      "total": 18.45,
+      "gpu": 10.95,
+      "build": "patch 1"
+     },
+     "fish rotate": {
+      "store": 0.45,
+      "draw": 3.4,
+      "total": 17.25,
+      "gpu": 10.94,
+      "build": "patch 1"
+     },
+     "fish resize": {
+      "store": 0.45,
+      "draw": 3.15,
+      "total": 16.95,
+      "gpu": 10.92,
+      "build": "same"
+     },
+     "fish raise": {
+      "store": 0.5,
+      "draw": 3.3,
+      "total": 16.6,
+      "gpu": 10.98,
+      "build": "patch 1"
+     },
+     "select fish": {
+      "store": 0.35,
+      "draw": 6.8,
+      "total": 19.5,
+      "gpu": 11.15,
+      "build": "patch 2"
+     },
+     "stone move": {
+      "store": 0.4,
+      "draw": 3.25,
+      "total": 16.75,
+      "gpu": 11.04,
+      "build": "patch 1"
+     },
+     "stone turn": {
+      "store": 0.45,
+      "draw": 4.4,
+      "total": 17.4,
+      "gpu": 11.25,
+      "build": "patch 1"
+     },
+     "stone resize": {
+      "store": 0.45,
+      "draw": 8.4,
+      "total": 22.45,
+      "gpu": 11.6,
+      "build": "patch 1"
+     },
+     "plant move": {
+      "store": 0.45,
+      "draw": 3.1,
+      "total": 15.7,
+      "gpu": 10.82,
+      "build": "patch 1"
+     },
+     "select item": {
+      "store": 0.6,
+      "draw": 5.4,
+      "total": 18.8,
+      "gpu": 10.7,
+      "build": "patch 2"
+     },
+     "delete fish": {
+      "store": 3.3,
+      "draw": 3.05,
+      "total": 19.05,
+      "gpu": 10.64,
+      "build": "same"
+     },
+     "duplicate fish": {
+      "store": 2.75,
+      "draw": 3.55,
+      "total": 18.75,
+      "gpu": 10.77,
+      "build": "patch 1"
+     },
+     "undo": {
+      "store": 6.4,
+      "draw": 3.75,
+      "total": 23.7,
+      "gpu": 10.52,
+      "build": "same"
+     },
+     "water colour": {
+      "store": 8.2,
+      "draw": 54.35,
+      "total": 71.65,
+      "gpu": 44.02,
+      "build": "look"
+     },
+     "wall colour": {
+      "store": 2.35,
+      "draw": 2.9,
+      "total": 18,
+      "gpu": 10.95,
+      "build": "same"
+     },
+     "substrate colours": {
+      "store": 2.75,
+      "draw": 143.05,
+      "total": 254.15,
+      "gpu": 45.3,
+      "build": "same"
+     },
+     "light power": {
+      "store": 9.3,
+      "draw": 3.15,
+      "total": 25.9,
+      "gpu": 10.56,
+      "build": "same"
+     },
+     "fish stand out": {
+      "store": 2.55,
+      "draw": 2.75,
+      "total": 18.45,
+      "gpu": 10.57,
+      "build": "same"
+     },
+     "redo": {
+      "store": 0.05,
+      "draw": 2.35,
+      "total": 14.55,
+      "gpu": 10.67,
+      "build": "same"
+     },
+     "tall plant drag": {
+      "store": 0.35,
+      "draw": 2.8,
+      "total": 17.35,
+      "gpu": 10.6,
+      "build": "patch 1"
+     }
+    }
+   },
+   "split": {
+    "firstDrawMs": 1456,
+    "firstFrameMs": 2191,
+    "domContentLoadedMs": 470,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      1400,
+      1700
+     ],
+     "pixelRatio": 2
+    },
+    "memory": {
+     "geometries": 325,
+     "textures": 38,
+     "programs": 28
+    },
+    "heapMB": 15.9,
+    "steady": {
+     "gpu": 16.3,
+     "gpuMin": 14.78,
+     "cpu": 9.45,
+     "calls": 1146,
+     "triangles": 1827588,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 179.2,
+     "wall": 191.7,
+     "gpu": 99.57,
+     "build": "full / full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 58,
+      "triangles": 1456
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 36,
+      "triangles": 172
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 16,
+      "triangles": 0
+     },
+     "sub": {
+      "meshes": 4,
+      "triangles": 1408
+     },
+     "room": {
+      "meshes": 18,
+      "triangles": 156
+     },
+     "LineBasicMaterial": {
+      "meshes": 12,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 80,
+      "triangles": 150560
+     },
+     "solid": {
+      "meshes": 4,
+      "triangles": 2000
+     },
+     "plantClip+card+post": {
+      "meshes": 108,
+      "triangles": 1086432
+     },
+     "fishCard+card": {
+      "meshes": 348,
+      "triangles": 2976
+     },
+     "fish+plain": {
+      "meshes": 68,
+      "triangles": 150416
+     },
+     "fish": {
+      "meshes": 284,
+      "triangles": 181664
+     },
+     "fish (transparent)": {
+      "meshes": 78,
+      "triangles": 234344
+     },
+     "card": {
+      "meshes": 4,
+      "triangles": 8
+     },
+     "glow": {
+      "meshes": 2,
+      "triangles": 12160
+     }
+    },
+    "edits": {
+     "fish move": {
+      "store": 0.85,
+      "draw": 12.05,
+      "total": 23.6,
+      "gpu": 15.15,
+      "build": "patch 1 / same"
+     },
+     "fish rotate": {
+      "store": 0.95,
+      "draw": 11.75,
+      "total": 24.5,
+      "gpu": 15.41,
+      "build": "patch 1 / same"
+     },
+     "fish resize": {
+      "store": 0.75,
+      "draw": 10.8,
+      "total": 23.1,
+      "gpu": 15.11,
+      "build": "patch 1 / same"
+     },
+     "fish raise": {
+      "store": 0.75,
+      "draw": 11,
+      "total": 21.85,
+      "gpu": 14.62,
+      "build": "patch 1 / same"
+     },
+     "select fish": {
+      "store": 0.5,
+      "draw": 13.6,
+      "total": 23.45,
+      "gpu": 15.29,
+      "build": "same / patch 2"
+     },
+     "stone move": {
+      "store": 0.75,
+      "draw": 11.4,
+      "total": 24.45,
+      "gpu": 15.4,
+      "build": "patch 1 / same"
+     },
+     "stone turn": {
+      "store": 0.7,
+      "draw": 11.2,
+      "total": 21.35,
+      "gpu": 14.13,
+      "build": "patch 1 / same"
+     },
+     "stone resize": {
+      "store": 0.95,
+      "draw": 15.4,
+      "total": 26.2,
+      "gpu": 14.2,
+      "build": "patch 1 / same"
+     },
+     "plant move": {
+      "store": 0.8,
+      "draw": 10.95,
+      "total": 21.85,
+      "gpu": 14.59,
+      "build": "patch 1 / same"
+     },
+     "select item": {
+      "store": 0.55,
+      "draw": 13.45,
+      "total": 23.95,
+      "gpu": 14.55,
+      "build": "same / patch 2"
+     },
+     "delete fish": {
+      "store": 1,
+      "draw": 11.55,
+      "total": 21.6,
+      "gpu": 14.49,
+      "build": "same / same"
+     },
+     "duplicate fish": {
+      "store": 0.85,
+      "draw": 12.85,
+      "total": 22.7,
+      "gpu": 14.96,
+      "build": "patch 1 / same"
+     },
+     "undo": {
+      "store": 6.65,
+      "draw": 12.8,
+      "total": 27.8,
+      "gpu": 13.99,
+      "build": "same / same"
+     },
+     "water colour": {
+      "store": 0.85,
+      "draw": 82.4,
+      "total": 90.6,
+      "gpu": 20.66,
+      "build": "look / same"
+     },
+     "wall colour": {
+      "store": 0.7,
+      "draw": 12.85,
+      "total": 23.5,
+      "gpu": 15.08,
+      "build": "same / same"
+     },
+     "substrate colours": {
+      "store": 1,
+      "draw": 13.75,
+      "total": 25.2,
+      "gpu": 15.96,
+      "build": "same / same"
+     },
+     "light power": {
+      "store": 0.7,
+      "draw": 50.95,
+      "total": 61.45,
+      "gpu": 14.97,
+      "build": "same / same"
+     },
+     "fish stand out": {
+      "store": 0.65,
+      "draw": 10.8,
+      "total": 20.65,
+      "gpu": 14.15,
+      "build": "same / same"
+     },
+     "redo": {
+      "store": 0.05,
+      "draw": 9.45,
+      "total": 18.95,
+      "gpu": 13.94,
+      "build": "same / same"
+     },
+     "tall plant drag": {
+      "store": 0.7,
+      "draw": 10.1,
+      "total": 20.45,
+      "gpu": 13.52,
+      "build": "patch 1 / same"
+     }
+    }
+   },
+   "research/efficiency/E1-variants/planted-overgrown.json": {
+    "firstDrawMs": 4890,
+    "firstFrameMs": 5655,
+    "domContentLoadedMs": 307,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      1400,
+      1700
+     ],
+     "pixelRatio": 2
+    },
+    "memory": {
+     "geometries": 224,
+     "textures": 38,
+     "programs": 28
+    },
+    "heapMB": 14.7,
+    "steady": {
+     "gpu": 15.13,
+     "gpuMin": 14.7,
+     "cpu": 5.4,
+     "calls": 573,
+     "triangles": 2232490,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 149.9,
+     "wall": 153.6,
+     "gpu": 85.88,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 29,
+      "triangles": 728
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 18,
+      "triangles": 86
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 8,
+      "triangles": 0
+     },
+     "sub": {
+      "meshes": 2,
+      "triangles": 704
+     },
+     "room": {
+      "meshes": 9,
+      "triangles": 78
+     },
+     "LineBasicMaterial": {
+      "meshes": 6,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 40,
+      "triangles": 75280
+     },
+     "solid": {
+      "meshes": 2,
+      "triangles": 1000
+     },
+     "plantClip+card+post": {
+      "meshes": 54,
+      "triangles": 1861912
+     },
+     "fishCard+card": {
+      "meshes": 174,
+      "triangles": 1488
+     },
+     "fish+plain": {
+      "meshes": 34,
+      "triangles": 75208
+     },
+     "fish": {
+      "meshes": 142,
+      "triangles": 90832
+     },
+     "fish (transparent)": {
+      "meshes": 39,
+      "triangles": 117172
+     },
+     "card": {
+      "meshes": 2,
+      "triangles": 4
+     },
+     "glow": {
+      "meshes": 1,
+      "triangles": 6080
+     }
+    },
+    "edits": {
+     "fish move": {
+      "store": 1,
+      "draw": 7.2,
+      "total": 27.55,
+      "gpu": 18.68,
+      "build": "patch 1"
+     },
+     "fish rotate": {
+      "store": 0.6,
+      "draw": 6.75,
+      "total": 24.45,
+      "gpu": 17.15,
+      "build": "patch 1"
+     },
+     "fish resize": {
+      "store": 0.65,
+      "draw": 7.05,
+      "total": 24.15,
+      "gpu": 16.48,
+      "build": "patch 1"
+     },
+     "fish raise": {
+      "store": 0.65,
+      "draw": 6.1,
+      "total": 24.3,
+      "gpu": 16.66,
+      "build": "patch 1"
+     },
+     "select fish": {
+      "store": 0.4,
+      "draw": 9.15,
+      "total": 26.2,
+      "gpu": 16.57,
+      "build": "patch 2"
+     },
+     "stone move": {
+      "store": 0.8,
+      "draw": 6.4,
+      "total": 23.2,
+      "gpu": 16.06,
+      "build": "patch 1"
+     },
+     "stone turn": {
+      "store": 0.6,
+      "draw": 7.05,
+      "total": 23.7,
+      "gpu": 16.36,
+      "build": "patch 1"
+     },
+     "stone resize": {
+      "store": 0.7,
+      "draw": 12.05,
+      "total": 29.5,
+      "gpu": 16.48,
+      "build": "patch 1"
+     },
+     "plant move": {
+      "store": 0.75,
+      "draw": 6.55,
+      "total": 23.35,
+      "gpu": 16.17,
+      "build": "patch 1"
+     },
+     "select item": {
+      "store": 0.55,
+      "draw": 8.35,
+      "total": 25.5,
+      "gpu": 16.8,
+      "build": "patch 2"
+     },
+     "delete fish": {
+      "store": 3.8,
+      "draw": 5.85,
+      "total": 26.55,
+      "gpu": 16.17,
+      "build": "same"
+     },
+     "duplicate fish": {
+      "store": 3.35,
+      "draw": 6.75,
+      "total": 27.2,
+      "gpu": 17,
+      "build": "patch 1"
+     },
+     "undo": {
+      "store": 8.25,
+      "draw": 6.25,
+      "total": 30.95,
+      "gpu": 15.7,
+      "build": "same"
+     },
+     "water colour": {
+      "store": 35.85,
+      "draw": 85.35,
+      "total": 130.35,
+      "gpu": 54.47,
+      "build": "look"
+     },
+     "wall colour": {
+      "store": 2.7,
+      "draw": 5.8,
+      "total": 24.8,
+      "gpu": 16.71,
+      "build": "same"
+     },
+     "substrate colours": {
+      "store": 3.95,
+      "draw": 6.05,
+      "total": 26.05,
+      "gpu": 16.35,
+      "build": "same"
+     },
+     "light power": {
+      "store": 43.4,
+      "draw": 10.05,
+      "total": 69.9,
+      "gpu": 16.5,
+      "build": "same"
+     },
+     "fish stand out": {
+      "store": 3.3,
+      "draw": 5.9,
+      "total": 25.15,
+      "gpu": 16.19,
+      "build": "same"
+     },
+     "redo": {
+      "store": 0.15,
+      "draw": 4.8,
+      "total": 22.75,
+      "gpu": 16.38,
+      "build": "same"
+     },
+     "tall plant drag": {
+      "store": 0.65,
+      "draw": 5.7,
+      "total": 22.1,
+      "gpu": 15.77,
+      "build": "patch 1"
+     }
+    }
+   },
+   "research/efficiency/E1-variants/planted-rockwall.json": {
+    "firstDrawMs": 1617,
+    "firstFrameMs": 2320,
+    "domContentLoadedMs": 334,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      1400,
+      1700
+     ],
+     "pixelRatio": 2
+    },
+    "memory": {
+     "geometries": 225,
+     "textures": 38,
+     "programs": 28
+    },
+    "heapMB": 14.5,
+    "steady": {
+     "gpu": 17.82,
+     "gpuMin": 17.22,
+     "cpu": 5.55,
+     "calls": 574,
+     "triangles": 971954,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 153.8,
+     "wall": 157.7,
+     "gpu": 96.46,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 29,
+      "triangles": 728
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 18,
+      "triangles": 86
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 8,
+      "triangles": 0
+     },
+     "sub": {
+      "meshes": 2,
+      "triangles": 704
+     },
+     "solid": {
+      "meshes": 3,
+      "triangles": 59160
+     },
+     "room": {
+      "meshes": 9,
+      "triangles": 78
+     },
+     "LineBasicMaterial": {
+      "meshes": 6,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 40,
+      "triangles": 75280
+     },
+     "plantClip+card+post": {
+      "meshes": 54,
+      "triangles": 543216
+     },
+     "fishCard+card": {
+      "meshes": 174,
+      "triangles": 1488
+     },
+     "fish+plain": {
+      "meshes": 34,
+      "triangles": 75208
+     },
+     "fish": {
+      "meshes": 142,
+      "triangles": 90832
+     },
+     "fish (transparent)": {
+      "meshes": 39,
+      "triangles": 117172
+     },
+     "card": {
+      "meshes": 2,
+      "triangles": 4
+     },
+     "glow": {
+      "meshes": 1,
+      "triangles": 6080
+     }
+    },
+    "edits": {
+     "fish move": {
+      "store": 1.25,
+      "draw": 7.35,
+      "total": 25.25,
+      "gpu": 16.12,
+      "build": "patch 1"
+     },
+     "fish rotate": {
+      "store": 0.75,
+      "draw": 7.35,
+      "total": 26,
+      "gpu": 16.4,
+      "build": "patch 1"
+     },
+     "fish resize": {
+      "store": 0.75,
+      "draw": 7.3,
+      "total": 24.25,
+      "gpu": 15.97,
+      "build": "patch 1"
+     },
+     "fish raise": {
+      "store": 0.8,
+      "draw": 6.85,
+      "total": 21.6,
+      "gpu": 14.43,
+      "build": "patch 1"
+     },
+     "select fish": {
+      "store": 0.4,
+      "draw": 10.9,
+      "total": 22.65,
+      "gpu": 11.6,
+      "build": "patch 2"
+     },
+     "stone move": {
+      "store": 1,
+      "draw": 6.4,
+      "total": 18.45,
+      "gpu": 11.08,
+      "build": "patch 1"
+     },
+     "stone turn": {
+      "store": 0.7,
+      "draw": 7.8,
+      "total": 19.65,
+      "gpu": 11.96,
+      "build": "patch 1"
+     },
+     "stone resize": {
+      "store": 0.9,
+      "draw": 12.15,
+      "total": 24.3,
+      "gpu": 11.58,
+      "build": "patch 1"
+     },
+     "plant move": {
+      "store": 0.85,
+      "draw": 6.4,
+      "total": 18.7,
+      "gpu": 11.92,
+      "build": "patch 1"
+     },
+     "select item": {
+      "store": 0.6,
+      "draw": 9.7,
+      "total": 23.05,
+      "gpu": 13.04,
+      "build": "patch 2"
+     },
+     "delete fish": {
+      "store": 4.6,
+      "draw": 6.45,
+      "total": 23.75,
+      "gpu": 12.43,
+      "build": "same"
+     },
+     "duplicate fish": {
+      "store": 3.3,
+      "draw": 7.65,
+      "total": 24.15,
+      "gpu": 13.06,
+      "build": "patch 1"
+     },
+     "undo": {
+      "store": 6.6,
+      "draw": 6.9,
+      "total": 25.1,
+      "gpu": 11.59,
+      "build": "same"
+     },
+     "water colour": {
+      "store": 39.9,
+      "draw": 79.9,
+      "total": 127.2,
+      "gpu": 54.43,
+      "build": "look"
+     },
+     "wall colour": {
+      "store": 2.75,
+      "draw": 5.8,
+      "total": 20.55,
+      "gpu": 12.04,
+      "build": "same"
+     },
+     "substrate colours": {
+      "store": 3.55,
+      "draw": 6.25,
+      "total": 20.8,
+      "gpu": 11.62,
+      "build": "same"
+     },
+     "light power": {
+      "store": 43,
+      "draw": 9.6,
+      "total": 64.7,
+      "gpu": 12.19,
+      "build": "same"
+     },
+     "fish stand out": {
+      "store": 3.05,
+      "draw": 5.7,
+      "total": 20.95,
+      "gpu": 12.54,
+      "build": "same"
+     },
+     "redo": {
+      "store": 0.1,
+      "draw": 5.5,
+      "total": 17.2,
+      "gpu": 11.94,
+      "build": "same"
+     },
+     "tall plant drag": {
+      "store": 0.65,
+      "draw": 6.55,
+      "total": 18.9,
+      "gpu": 12.45,
+      "build": "patch 1"
+     }
+    }
+   }
+  },
+  "phone": {
+   "betta-bowl": {
+    "firstDrawMs": 867,
+    "firstFrameMs": 1242,
+    "domContentLoadedMs": 285,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      750,
+      812
+     ],
+     "pixelRatio": 2
+    },
+    "memory": {
+     "geometries": 51,
+     "textures": 10,
+     "programs": 21
+    },
+    "heapMB": 12.9,
+    "steady": {
+     "gpu": 1.2,
+     "gpuMin": 1.15,
+     "cpu": 2.9,
+     "calls": 230,
+     "triangles": 56686,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 124,
+     "wall": 126.7,
+     "gpu": 70.78,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 3,
+      "triangles": 182
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 5,
+      "triangles": 8844
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 5,
+      "triangles": 0
+     },
+     "ShaderMaterial (transparent)": {
+      "meshes": 1,
+      "triangles": 4176
+     },
+     "sub": {
+      "meshes": 2,
+      "triangles": 1308
+     },
+     "room": {
+      "meshes": 10,
+      "triangles": 570
+     },
+     "LineBasicMaterial": {
+      "meshes": 7,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 8,
+      "triangles": 2776
+     },
+     "solid": {
+      "meshes": 2,
+      "triangles": 1284
+     },
+     "plantClip+card+post": {
+      "meshes": 3,
+      "triangles": 15344
+     },
+     "fishCard+card": {
+      "meshes": 5,
+      "triangles": 1288
+     },
+     "fish+plain": {
+      "meshes": 1,
+      "triangles": 2212
+     },
+     "fish": {
+      "meshes": 11,
+      "triangles": 18760
+     },
+     "card": {
+      "meshes": 1,
+      "triangles": 2
+     },
+     "glow": {
+      "meshes": 1,
+      "triangles": 96
+     }
+    },
+    "edits": {
+     "fish move": {
+      "store": 0.85,
+      "draw": 9.75,
+      "total": 13,
+      "gpu": 4.92,
+      "build": "patch 1"
+     },
+     "fish rotate": {
+      "store": 0.45,
+      "draw": 6.1,
+      "total": 9.1,
+      "gpu": 3.17,
+      "build": "patch 1"
+     },
+     "fish resize": {
+      "store": 0.45,
+      "draw": 3.6,
+      "total": 7.8,
+      "gpu": 1.57,
+      "build": "patch 1"
+     },
+     "fish raise": {
+      "store": 0.55,
+      "draw": 3.85,
+      "total": 7.85,
+      "gpu": 1.9,
+      "build": "patch 1"
+     },
+     "select fish": {
+      "store": 0.3,
+      "draw": 6.3,
+      "total": 9.25,
+      "gpu": 1.72,
+      "build": "patch 2"
+     },
+     "stone move": {
+      "store": 0.55,
+      "draw": 3.7,
+      "total": 9.05,
+      "gpu": 1.74,
+      "build": "patch 1"
+     },
+     "stone turn": {
+      "store": 0.65,
+      "draw": 4.5,
+      "total": 8.5,
+      "gpu": 2.2,
+      "build": "patch 1"
+     },
+     "stone resize": {
+      "store": 0.5,
+      "draw": 5.8,
+      "total": 9.2,
+      "gpu": 1.81,
+      "build": "patch 1"
+     },
+     "plant move": {
+      "store": 0.5,
+      "draw": 3.6,
+      "total": 7.85,
+      "gpu": 1.67,
+      "build": "patch 1"
+     },
+     "select item": {
+      "store": 0.65,
+      "draw": 7.3,
+      "total": 11.65,
+      "gpu": 2.04,
+      "build": "patch 2"
+     },
+     "delete fish": {
+      "store": 2,
+      "draw": 3.1,
+      "total": 8,
+      "gpu": 1.41,
+      "build": "same"
+     },
+     "duplicate fish": {
+      "store": 2.85,
+      "draw": 5.05,
+      "total": 12.6,
+      "gpu": 2.56,
+      "build": "patch 1"
+     },
+     "undo": {
+      "store": 7.45,
+      "draw": 3.75,
+      "total": 14.7,
+      "gpu": 1.76,
+      "build": "same"
+     },
+     "water colour": {
+      "store": 7.7,
+      "draw": 57.3,
+      "total": 68.45,
+      "gpu": 36.82,
+      "build": "look"
+     },
+     "wall colour": {
+      "store": 3,
+      "draw": 3.9,
+      "total": 10.05,
+      "gpu": 1.94,
+      "build": "same"
+     },
+     "substrate colours": {
+      "store": 3.8,
+      "draw": 3.95,
+      "total": 12.15,
+      "gpu": 1.96,
+      "build": "same"
+     },
+     "light power": {
+      "store": 8.35,
+      "draw": 4.75,
+      "total": 16.7,
+      "gpu": 2.06,
+      "build": "same"
+     },
+     "fish stand out": {
+      "store": 4.25,
+      "draw": 4.1,
+      "total": 12.05,
+      "gpu": 2,
+      "build": "same"
+     },
+     "redo": {
+      "store": 0.05,
+      "draw": 3.4,
+      "total": 7.5,
+      "gpu": 2.18,
+      "build": "same"
+     },
+     "tall plant drag": {
+      "store": 0.45,
+      "draw": 3.05,
+      "total": 7.85,
+      "gpu": 2.06,
+      "build": "patch 1"
+     }
+    }
+   },
+   "iwagumi": {
+    "firstDrawMs": 1223,
+    "firstFrameMs": 1864,
+    "domContentLoadedMs": 283,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      750,
+      812
+     ],
+     "pixelRatio": 2
+    },
+    "memory": {
+     "geometries": 320,
+     "textures": 19,
+     "programs": 47
+    },
+    "heapMB": 15.4,
+    "steady": {
+     "gpu": 9.47,
+     "gpuMin": 9.1,
+     "cpu": 10.3,
+     "calls": 695,
+     "triangles": 862018,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 256.8,
+     "wall": 259.7,
+     "gpu": 149.25,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 26,
+      "triangles": 662
+     },
+     "frost": {
+      "meshes": 1,
+      "triangles": 2
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 16,
+      "triangles": 82
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 8,
+      "triangles": 0
+     },
+     "sub": {
+      "meshes": 2,
+      "triangles": 688
+     },
+     "room": {
+      "meshes": 9,
+      "triangles": 78
+     },
+     "LineBasicMaterial": {
+      "meshes": 6,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 39,
+      "triangles": 145188
+     },
+     "solid": {
+      "meshes": 24,
+      "triangles": 7680
+     },
+     "plantClip+card+post": {
+      "meshes": 150,
+      "triangles": 401120
+     },
+     "fishCard+card": {
+      "meshes": 125,
+      "triangles": 1240
+     },
+     "fish+plain": {
+      "meshes": 23,
+      "triangles": 50876
+     },
+     "fish": {
+      "meshes": 176,
+      "triangles": 229920
+     },
+     "fish (transparent)": {
+      "meshes": 13,
+      "triangles": 9012
+     },
+     "glow": {
+      "meshes": 1,
+      "triangles": 4000
+     }
+    },
+    "edits": {
+     "fish move": {
+      "store": 1.1,
+      "draw": 12.6,
+      "total": 21.7,
+      "gpu": 9.63,
+      "build": "patch 1"
+     },
+     "fish rotate": {
+      "store": 0.7,
+      "draw": 13.9,
+      "total": 22.75,
+      "gpu": 10.14,
+      "build": "patch 1"
+     },
+     "fish resize": {
+      "store": 0.6,
+      "draw": 12.55,
+      "total": 20.9,
+      "gpu": 9.86,
+      "build": "patch 1"
+     },
+     "fish raise": {
+      "store": 0.55,
+      "draw": 11.8,
+      "total": 19.65,
+      "gpu": 10.19,
+      "build": "patch 1"
+     },
+     "select fish": {
+      "store": 0.5,
+      "draw": 15.05,
+      "total": 21.95,
+      "gpu": 9.86,
+      "build": "patch 2"
+     },
+     "stone move": {
+      "store": 0.65,
+      "draw": 14.75,
+      "total": 23.6,
+      "gpu": 11.93,
+      "build": "patch 3"
+     },
+     "stone turn": {
+      "store": 0.55,
+      "draw": 15.85,
+      "total": 23.8,
+      "gpu": 10.29,
+      "build": "patch 3"
+     },
+     "stone resize": {
+      "store": 1.05,
+      "draw": 18.3,
+      "total": 26.4,
+      "gpu": 10.23,
+      "build": "patch 3"
+     },
+     "plant move": {
+      "store": 0.7,
+      "draw": 19.55,
+      "total": 27.55,
+      "gpu": 10.3,
+      "build": "patch 1"
+     },
+     "select item": {
+      "store": 0.65,
+      "draw": 14.35,
+      "total": 22.6,
+      "gpu": 8.87,
+      "build": "patch 2"
+     },
+     "delete fish": {
+      "store": 3.65,
+      "draw": 10.95,
+      "total": 21.65,
+      "gpu": 8.98,
+      "build": "same"
+     },
+     "duplicate fish": {
+      "store": 3.15,
+      "draw": 13.15,
+      "total": 23.3,
+      "gpu": 9.66,
+      "build": "patch 1"
+     },
+     "undo": {
+      "store": 6.85,
+      "draw": 12.5,
+      "total": 27,
+      "gpu": 9.54,
+      "build": "same"
+     },
+     "water colour": {
+      "store": 28.75,
+      "draw": 123.85,
+      "total": 157.55,
+      "gpu": 79.13,
+      "build": "look"
+     },
+     "wall colour": {
+      "store": 2.65,
+      "draw": 11.15,
+      "total": 20.75,
+      "gpu": 9.79,
+      "build": "same"
+     },
+     "substrate colours": {
+      "store": 2.65,
+      "draw": 10.9,
+      "total": 19.7,
+      "gpu": 8.64,
+      "build": "same"
+     },
+     "light power": {
+      "store": 33.65,
+      "draw": 14.75,
+      "total": 56.05,
+      "gpu": 9.51,
+      "build": "same"
+     },
+     "fish stand out": {
+      "store": 2.85,
+      "draw": 12.6,
+      "total": 23.75,
+      "gpu": 8.93,
+      "build": "same"
+     },
+     "redo": {
+      "store": 0.05,
+      "draw": 10.7,
+      "total": 16.95,
+      "gpu": 8.52,
+      "build": "same"
+     },
+     "tall plant drag": {
+      "store": 0.7,
+      "draw": 11.55,
+      "total": 19.2,
+      "gpu": 9.18,
+      "build": "patch 1"
+     }
+    }
+   },
+   "paludarium": {
+    "firstDrawMs": 1115,
+    "firstFrameMs": 1572,
+    "domContentLoadedMs": 345,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      750,
+      812
+     ],
+     "pixelRatio": 2
+    },
+    "memory": {
+     "geometries": 221,
+     "textures": 17,
+     "programs": 25
+    },
+    "heapMB": 14.4,
+    "steady": {
+     "gpu": 5.07,
+     "gpuMin": 4.3,
+     "cpu": 5.2,
+     "calls": 550,
+     "triangles": 757060,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 187.4,
+     "wall": 190.7,
+     "gpu": 78.07,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 62,
+      "triangles": 2166
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 19,
+      "triangles": 858
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 5,
+      "triangles": 0
+     },
+     "ShaderMaterial (transparent)": {
+      "meshes": 1,
+      "triangles": 128
+     },
+     "sub": {
+      "meshes": 2,
+      "triangles": 8960
+     },
+     "room": {
+      "meshes": 9,
+      "triangles": 478
+     },
+     "LineBasicMaterial": {
+      "meshes": 6,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 22,
+      "triangles": 79136
+     },
+     "plantClip+card+post": {
+      "meshes": 53,
+      "triangles": 171920
+     },
+     "solid": {
+      "meshes": 10,
+      "triangles": 3200
+     },
+     "card": {
+      "meshes": 6,
+      "triangles": 192
+     },
+     "fish": {
+      "meshes": 148,
+      "triangles": 461456
+     },
+     "fishCard+card": {
+      "meshes": 56,
+      "triangles": 592
+     },
+     "fish+plain": {
+      "meshes": 10,
+      "triangles": 22120
+     },
+     "fish (transparent)": {
+      "meshes": 6,
+      "triangles": 2880
+     },
+     "glow": {
+      "meshes": 3,
+      "triangles": 288
+     }
+    },
+    "edits": {
+     "fish move": {
+      "store": 1.35,
+      "draw": 7.05,
+      "total": 14.3,
+      "gpu": 6.2,
+      "build": "patch 1"
+     },
+     "fish rotate": {
+      "store": 0.9,
+      "draw": 6.2,
+      "total": 12.25,
+      "gpu": 5.91,
+      "build": "patch 1"
+     },
+     "fish resize": {
+      "store": 0.8,
+      "draw": 6.6,
+      "total": 15.9,
+      "gpu": 8.9,
+      "build": "patch 1"
+     },
+     "fish raise": {
+      "store": 0.75,
+      "draw": 6.45,
+      "total": 13.4,
+      "gpu": 6.48,
+      "build": "patch 1"
+     },
+     "select fish": {
+      "store": 0.45,
+      "draw": 9.3,
+      "total": 16.05,
+      "gpu": 6.46,
+      "build": "patch 2"
+     },
+     "stone move": {
+      "store": 0.9,
+      "draw": 6.25,
+      "total": 13,
+      "gpu": 6.03,
+      "build": "patch 1"
+     },
+     "stone turn": {
+      "store": 0.7,
+      "draw": 7.6,
+      "total": 14.7,
+      "gpu": 6.68,
+      "build": "patch 1"
+     },
+     "stone resize": {
+      "store": 1.1,
+      "draw": 9.1,
+      "total": 15.8,
+      "gpu": 6.33,
+      "build": "patch 1"
+     },
+     "plant move": {
+      "store": 1,
+      "draw": 5.65,
+      "total": 16.05,
+      "gpu": 10.06,
+      "build": "patch 1"
+     },
+     "select item": {
+      "store": 0.5,
+      "draw": 8.2,
+      "total": 17.5,
+      "gpu": 9.75,
+      "build": "patch 2"
+     },
+     "delete fish": {
+      "store": 3.95,
+      "draw": 5.85,
+      "total": 15.9,
+      "gpu": 6.09,
+      "build": "same"
+     },
+     "duplicate fish": {
+      "store": 3.5,
+      "draw": 7.3,
+      "total": 17.3,
+      "gpu": 6.59,
+      "build": "patch 1"
+     },
+     "undo": {
+      "store": 12.25,
+      "draw": 6.3,
+      "total": 24.15,
+      "gpu": 6.05,
+      "build": "same"
+     },
+     "water colour": {
+      "store": 9.75,
+      "draw": 88,
+      "total": 102.15,
+      "gpu": 41.85,
+      "build": "look"
+     },
+     "wall colour": {
+      "store": 3.3,
+      "draw": 5.7,
+      "total": 17.5,
+      "gpu": 8.63,
+      "build": "same"
+     },
+     "substrate colours": {
+      "store": 3.1,
+      "draw": 6.9,
+      "total": 17.5,
+      "gpu": 8.39,
+      "build": "same"
+     },
+     "light power": {
+      "store": 10.55,
+      "draw": 6.9,
+      "total": 25.85,
+      "gpu": 8.41,
+      "build": "same"
+     },
+     "fish stand out": {
+      "store": 3.65,
+      "draw": 5.85,
+      "total": 16.8,
+      "gpu": 7.85,
+      "build": "same"
+     },
+     "redo": {
+      "store": 0.15,
+      "draw": 4.7,
+      "total": 12.4,
+      "gpu": 7.88,
+      "build": "same"
+     },
+     "tall plant drag": {
+      "store": 0.75,
+      "draw": 5.7,
+      "total": 13.8,
+      "gpu": 7.75,
+      "build": "patch 1"
+     }
+    }
+   },
+   "planted": {
+    "firstDrawMs": 1304,
+    "firstFrameMs": 2028,
+    "domContentLoadedMs": 291,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      750,
+      812
+     ],
+     "pixelRatio": 2
+    },
+    "memory": {
+     "geometries": 224,
+     "textures": 38,
+     "programs": 28
+    },
+    "heapMB": 14.4,
+    "steady": {
+     "gpu": 8.45,
+     "gpuMin": 5.23,
+     "cpu": 4.85,
+     "calls": 573,
+     "triangles": 913794,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 140.7,
+     "wall": 143,
+     "gpu": 91.89,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 29,
+      "triangles": 728
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 18,
+      "triangles": 86
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 8,
+      "triangles": 0
+     },
+     "sub": {
+      "meshes": 2,
+      "triangles": 704
+     },
+     "room": {
+      "meshes": 9,
+      "triangles": 78
+     },
+     "LineBasicMaterial": {
+      "meshes": 6,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 40,
+      "triangles": 75280
+     },
+     "solid": {
+      "meshes": 2,
+      "triangles": 1000
+     },
+     "plantClip+card+post": {
+      "meshes": 54,
+      "triangles": 543216
+     },
+     "fishCard+card": {
+      "meshes": 174,
+      "triangles": 1488
+     },
+     "fish+plain": {
+      "meshes": 34,
+      "triangles": 75208
+     },
+     "fish": {
+      "meshes": 142,
+      "triangles": 90832
+     },
+     "fish (transparent)": {
+      "meshes": 39,
+      "triangles": 117172
+     },
+     "card": {
+      "meshes": 2,
+      "triangles": 4
+     },
+     "glow": {
+      "meshes": 1,
+      "triangles": 6080
+     }
+    },
+    "edits": {
+     "fish move": {
+      "store": 1.3,
+      "draw": 7,
+      "total": 15.55,
+      "gpu": 7.4,
+      "build": "patch 1"
+     },
+     "fish rotate": {
+      "store": 0.65,
+      "draw": 6.75,
+      "total": 14.5,
+      "gpu": 7.71,
+      "build": "patch 1"
+     },
+     "fish resize": {
+      "store": 0.65,
+      "draw": 6.5,
+      "total": 14.55,
+      "gpu": 7.43,
+      "build": "patch 1"
+     },
+     "fish raise": {
+      "store": 0.6,
+      "draw": 6.05,
+      "total": 14.65,
+      "gpu": 7.44,
+      "build": "patch 1"
+     },
+     "select fish": {
+      "store": 0.55,
+      "draw": 8,
+      "total": 16.75,
+      "gpu": 7.93,
+      "build": "patch 2"
+     },
+     "stone move": {
+      "store": 0.7,
+      "draw": 5.3,
+      "total": 13.8,
+      "gpu": 7.57,
+      "build": "patch 1"
+     },
+     "stone turn": {
+      "store": 0.55,
+      "draw": 6.5,
+      "total": 14.7,
+      "gpu": 8.11,
+      "build": "patch 1"
+     },
+     "stone resize": {
+      "store": 0.75,
+      "draw": 12.35,
+      "total": 20.65,
+      "gpu": 8.09,
+      "build": "patch 1"
+     },
+     "plant move": {
+      "store": 0.65,
+      "draw": 5.7,
+      "total": 13.7,
+      "gpu": 7.7,
+      "build": "patch 1"
+     },
+     "select item": {
+      "store": 0.6,
+      "draw": 8.5,
+      "total": 17.65,
+      "gpu": 8.75,
+      "build": "patch 2"
+     },
+     "delete fish": {
+      "store": 3.5,
+      "draw": 5.2,
+      "total": 17.75,
+      "gpu": 7.95,
+      "build": "same"
+     },
+     "duplicate fish": {
+      "store": 3.55,
+      "draw": 6.95,
+      "total": 21.95,
+      "gpu": 11.99,
+      "build": "patch 1"
+     },
+     "undo": {
+      "store": 8,
+      "draw": 5.85,
+      "total": 22.05,
+      "gpu": 7.68,
+      "build": "same"
+     },
+     "water colour": {
+      "store": 39.9,
+      "draw": 78.05,
+      "total": 123.25,
+      "gpu": 50.73,
+      "build": "look"
+     },
+     "wall colour": {
+      "store": 3.35,
+      "draw": 5.35,
+      "total": 17.5,
+      "gpu": 8.87,
+      "build": "same"
+     },
+     "substrate colours": {
+      "store": 2.5,
+      "draw": 5.55,
+      "total": 20.75,
+      "gpu": 11.22,
+      "build": "same"
+     },
+     "light power": {
+      "store": 41.85,
+      "draw": 10.2,
+      "total": 60.7,
+      "gpu": 9.19,
+      "build": "same"
+     },
+     "fish stand out": {
+      "store": 2.7,
+      "draw": 5.6,
+      "total": 17.15,
+      "gpu": 8.69,
+      "build": "same"
+     },
+     "redo": {
+      "store": 0.05,
+      "draw": 5.3,
+      "total": 14.15,
+      "gpu": 8.76,
+      "build": "same"
+     },
+     "tall plant drag": {
+      "store": 0.55,
+      "draw": 5.45,
+      "total": 16.1,
+      "gpu": 9.53,
+      "build": "patch 1"
+     }
+    }
+   },
+   "reef": {
+    "firstDrawMs": 1916,
+    "firstFrameMs": 2627,
+    "domContentLoadedMs": 329,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      750,
+      812
+     ],
+     "pixelRatio": 2
+    },
+    "memory": {
+     "geometries": 174,
+     "textures": 34,
+     "programs": 27
+    },
+    "heapMB": 13.6,
+    "steady": {
+     "gpu": 9.51,
+     "gpuMin": 9.41,
+     "cpu": 4.2,
+     "calls": 330,
+     "triangles": 323923,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 148,
+     "wall": 150.5,
+     "gpu": 90.43,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 48,
+      "triangles": 2347
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 13,
+      "triangles": 479
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 8,
+      "triangles": 0
+     },
+     "ShaderMaterial (transparent)": {
+      "meshes": 2,
+      "triangles": 200
+     },
+     "sub": {
+      "meshes": 2,
+      "triangles": 766
+     },
+     "room": {
+      "meshes": 9,
+      "triangles": 458
+     },
+     "LineBasicMaterial": {
+      "meshes": 6,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 12,
+      "triangles": 20936
+     },
+     "solid": {
+      "meshes": 35,
+      "triangles": 159028
+     },
+     "fishCard+card": {
+      "meshes": 26,
+      "triangles": 232
+     },
+     "fish+plain": {
+      "meshes": 5,
+      "triangles": 11060
+     },
+     "fish": {
+      "meshes": 83,
+      "triangles": 126848
+     },
+     "fish (transparent)": {
+      "meshes": 1,
+      "triangles": 480
+     },
+     "card": {
+      "meshes": 5,
+      "triangles": 130
+     },
+     "glow": {
+      "meshes": 6,
+      "triangles": 576
+     }
+    },
+    "edits": {
+     "fish move": {
+      "store": 1.15,
+      "draw": 6.3,
+      "total": 19.95,
+      "gpu": 12.42,
+      "build": "patch 1"
+     },
+     "fish rotate": {
+      "store": 0.7,
+      "draw": 5.55,
+      "total": 16.6,
+      "gpu": 10.55,
+      "build": "patch 1"
+     },
+     "fish resize": {
+      "store": 0.75,
+      "draw": 5.95,
+      "total": 17.75,
+      "gpu": 10.58,
+      "build": "patch 1"
+     },
+     "fish raise": {
+      "store": 0.55,
+      "draw": 8.75,
+      "total": 20.7,
+      "gpu": 11.01,
+      "build": "patch 1"
+     },
+     "select fish": {
+      "store": 0.35,
+      "draw": 7.75,
+      "total": 19.15,
+      "gpu": 11.19,
+      "build": "patch 2"
+     },
+     "stone move": {
+      "store": 0.7,
+      "draw": 23.95,
+      "total": 35.2,
+      "gpu": 10.38,
+      "build": "patch 4"
+     },
+     "stone turn": {
+      "store": 0.65,
+      "draw": 23.8,
+      "total": 35.5,
+      "gpu": 10.81,
+      "build": "patch 4"
+     },
+     "stone resize": {
+      "store": 0.7,
+      "draw": 58.65,
+      "total": 70.15,
+      "gpu": 10.84,
+      "build": "patch 4"
+     },
+     "plant move": {
+      "store": 0.55,
+      "draw": 4.8,
+      "total": 16.35,
+      "gpu": 10.45,
+      "build": "same"
+     },
+     "select item": {
+      "store": 0.6,
+      "draw": 7.65,
+      "total": 22.35,
+      "gpu": 13.17,
+      "build": "patch 2"
+     },
+     "delete fish": {
+      "store": 3.3,
+      "draw": 4.65,
+      "total": 18.75,
+      "gpu": 10.77,
+      "build": "same"
+     },
+     "duplicate fish": {
+      "store": 2.5,
+      "draw": 5.6,
+      "total": 19.05,
+      "gpu": 11.02,
+      "build": "patch 1"
+     },
+     "undo": {
+      "store": 9.05,
+      "draw": 5.3,
+      "total": 24.9,
+      "gpu": 10.16,
+      "build": "same"
+     },
+     "water colour": {
+      "store": 8.45,
+      "draw": 5.25,
+      "total": 23.95,
+      "gpu": 9.66,
+      "build": "look"
+     },
+     "wall colour": {
+      "store": 3.45,
+      "draw": 4.75,
+      "total": 20.7,
+      "gpu": 11.25,
+      "build": "same"
+     },
+     "substrate colours": {
+      "store": 2.9,
+      "draw": 5.3,
+      "total": 18.65,
+      "gpu": 9.83,
+      "build": "same"
+     },
+     "light power": {
+      "store": 10.05,
+      "draw": 6.6,
+      "total": 26.35,
+      "gpu": 9.79,
+      "build": "same"
+     },
+     "fish stand out": {
+      "store": 3,
+      "draw": 4.15,
+      "total": 17.5,
+      "gpu": 9.69,
+      "build": "same"
+     },
+     "redo": {
+      "store": 0.05,
+      "draw": 3.9,
+      "total": 14.05,
+      "gpu": 9.81,
+      "build": "same"
+     },
+     "tall plant drag": {
+      "store": 0.55,
+      "draw": 4.45,
+      "total": 16.05,
+      "gpu": 9.84,
+      "build": "same"
+     }
+    }
+   },
+   "terrarium": {
+    "firstDrawMs": 1069,
+    "firstFrameMs": 1394,
+    "domContentLoadedMs": 297,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      750,
+      812
+     ],
+     "pixelRatio": 2
+    },
+    "memory": {
+     "geometries": 88,
+     "textures": 7,
+     "programs": 19
+    },
+    "heapMB": 12.7,
+    "steady": {
+     "gpu": 4.68,
+     "gpuMin": 4.62,
+     "cpu": 2.3,
+     "calls": 164,
+     "triangles": 259404,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 116.2,
+     "wall": 118.9,
+     "gpu": 85.23,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 29,
+      "triangles": 968
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 9,
+      "triangles": 314
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 8,
+      "triangles": 0
+     },
+     "ShaderMaterial (transparent)": {
+      "meshes": 1,
+      "triangles": 32
+     },
+     "sub+post": {
+      "meshes": 2,
+      "triangles": 484
+     },
+     "room": {
+      "meshes": 12,
+      "triangles": 294
+     },
+     "LineBasicMaterial": {
+      "meshes": 9,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 9,
+      "triangles": 288
+     },
+     "solid": {
+      "meshes": 4,
+      "triangles": 12976
+     },
+     "plantClip+card+post": {
+      "meshes": 7,
+      "triangles": 134384
+     },
+     "card": {
+      "meshes": 3,
+      "triangles": 96
+     },
+     "fish": {
+      "meshes": 27,
+      "triangles": 105504
+     },
+     "glow": {
+      "meshes": 1,
+      "triangles": 4160
+     }
+    },
+    "edits": {
+     "fish move": {
+      "store": 1,
+      "draw": 3.9,
+      "total": 12.35,
+      "gpu": 4.76,
+      "build": "patch 1"
+     },
+     "fish rotate": {
+      "store": 0.75,
+      "draw": 3.95,
+      "total": 11.6,
+      "gpu": 4.77,
+      "build": "patch 1"
+     },
+     "fish resize": {
+      "store": 0.5,
+      "draw": 2.95,
+      "total": 10.15,
+      "gpu": 4.38,
+      "build": "same"
+     },
+     "fish raise": {
+      "store": 0.5,
+      "draw": 3.5,
+      "total": 10.25,
+      "gpu": 4.52,
+      "build": "patch 1"
+     },
+     "select fish": {
+      "store": 0.35,
+      "draw": 6.15,
+      "total": 12.3,
+      "gpu": 4.71,
+      "build": "patch 2"
+     },
+     "stone move": {
+      "store": 0.55,
+      "draw": 3.1,
+      "total": 10.15,
+      "gpu": 4.55,
+      "build": "patch 1"
+     },
+     "stone turn": {
+      "store": 0.55,
+      "draw": 3.85,
+      "total": 10.7,
+      "gpu": 4.91,
+      "build": "patch 1"
+     },
+     "stone resize": {
+      "store": 0.5,
+      "draw": 9.3,
+      "total": 15.85,
+      "gpu": 4.86,
+      "build": "patch 1"
+     },
+     "plant move": {
+      "store": 0.4,
+      "draw": 2.9,
+      "total": 9.6,
+      "gpu": 4.42,
+      "build": "patch 1"
+     },
+     "select item": {
+      "store": 0.6,
+      "draw": 5,
+      "total": 14,
+      "gpu": 4.82,
+      "build": "patch 2"
+     },
+     "delete fish": {
+      "store": 3.65,
+      "draw": 3.3,
+      "total": 14.45,
+      "gpu": 4.61,
+      "build": "same"
+     },
+     "duplicate fish": {
+      "store": 2.55,
+      "draw": 3.5,
+      "total": 12.3,
+      "gpu": 4.58,
+      "build": "patch 1"
+     },
+     "undo": {
+      "store": 6,
+      "draw": 3.7,
+      "total": 15.9,
+      "gpu": 4.18,
+      "build": "same"
+     },
+     "water colour": {
+      "store": 9.75,
+      "draw": 60.45,
+      "total": 74,
+      "gpu": 46.43,
+      "build": "look"
+     },
+     "wall colour": {
+      "store": 2.3,
+      "draw": 2.95,
+      "total": 11.1,
+      "gpu": 4.2,
+      "build": "same"
+     },
+     "substrate colours": {
+      "store": 2.7,
+      "draw": 145.45,
+      "total": 262.65,
+      "gpu": 43.36,
+      "build": "same"
+     },
+     "light power": {
+      "store": 9.65,
+      "draw": 3.7,
+      "total": 19.85,
+      "gpu": 4.43,
+      "build": "same"
+     },
+     "fish stand out": {
+      "store": 2.25,
+      "draw": 2.95,
+      "total": 10.9,
+      "gpu": 4.27,
+      "build": "same"
+     },
+     "redo": {
+      "store": 0.05,
+      "draw": 2.3,
+      "total": 9,
+      "gpu": 4.17,
+      "build": "same"
+     },
+     "tall plant drag": {
+      "store": 0.45,
+      "draw": 2.9,
+      "total": 10.4,
+      "gpu": 4.62,
+      "build": "patch 1"
+     }
+    }
+   },
+   "split": {
+    "firstDrawMs": 1483,
+    "firstFrameMs": 2228,
+    "domContentLoadedMs": 515,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      750,
+      812
+     ],
+     "pixelRatio": 2
+    },
+    "memory": {
+     "geometries": 325,
+     "textures": 38,
+     "programs": 28
+    },
+    "heapMB": 15.9,
+    "steady": {
+     "gpu": 12.4,
+     "gpuMin": 12.18,
+     "cpu": 9.3,
+     "calls": 1146,
+     "triangles": 1827588,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 177.4,
+     "wall": 189.6,
+     "gpu": 109.12,
+     "build": "full / full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 58,
+      "triangles": 1456
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 36,
+      "triangles": 172
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 16,
+      "triangles": 0
+     },
+     "sub": {
+      "meshes": 4,
+      "triangles": 1408
+     },
+     "room": {
+      "meshes": 18,
+      "triangles": 156
+     },
+     "LineBasicMaterial": {
+      "meshes": 12,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 80,
+      "triangles": 150560
+     },
+     "solid": {
+      "meshes": 4,
+      "triangles": 2000
+     },
+     "plantClip+card+post": {
+      "meshes": 108,
+      "triangles": 1086432
+     },
+     "fishCard+card": {
+      "meshes": 348,
+      "triangles": 2976
+     },
+     "fish+plain": {
+      "meshes": 68,
+      "triangles": 150416
+     },
+     "fish": {
+      "meshes": 284,
+      "triangles": 181664
+     },
+     "fish (transparent)": {
+      "meshes": 78,
+      "triangles": 234344
+     },
+     "card": {
+      "meshes": 4,
+      "triangles": 8
+     },
+     "glow": {
+      "meshes": 2,
+      "triangles": 12160
+     }
+    },
+    "edits": {
+     "fish move": {
+      "store": 0.9,
+      "draw": 11.35,
+      "total": 21.4,
+      "gpu": 12.73,
+      "build": "patch 1 / same"
+     },
+     "fish rotate": {
+      "store": 0.85,
+      "draw": 10.35,
+      "total": 19.7,
+      "gpu": 12.59,
+      "build": "patch 1 / same"
+     },
+     "fish resize": {
+      "store": 0.8,
+      "draw": 10.55,
+      "total": 20.45,
+      "gpu": 12.85,
+      "build": "patch 1 / same"
+     },
+     "fish raise": {
+      "store": 0.8,
+      "draw": 10.25,
+      "total": 19.7,
+      "gpu": 12.91,
+      "build": "patch 1 / same"
+     },
+     "select fish": {
+      "store": 0.45,
+      "draw": 12.05,
+      "total": 20.45,
+      "gpu": 13.14,
+      "build": "same / patch 2"
+     },
+     "stone move": {
+      "store": 0.75,
+      "draw": 9.9,
+      "total": 18.55,
+      "gpu": 12.37,
+      "build": "patch 1 / same"
+     },
+     "stone turn": {
+      "store": 0.7,
+      "draw": 10.7,
+      "total": 20.15,
+      "gpu": 12.89,
+      "build": "patch 1 / same"
+     },
+     "stone resize": {
+      "store": 0.95,
+      "draw": 15.3,
+      "total": 28.7,
+      "gpu": 16.98,
+      "build": "patch 1 / same"
+     },
+     "plant move": {
+      "store": 0.85,
+      "draw": 10.75,
+      "total": 19.85,
+      "gpu": 12.35,
+      "build": "patch 1 / same"
+     },
+     "select item": {
+      "store": 0.6,
+      "draw": 13.2,
+      "total": 22.95,
+      "gpu": 12.82,
+      "build": "same / patch 2"
+     },
+     "delete fish": {
+      "store": 1,
+      "draw": 10.65,
+      "total": 19.15,
+      "gpu": 12.42,
+      "build": "same / same"
+     },
+     "duplicate fish": {
+      "store": 0.85,
+      "draw": 12.55,
+      "total": 21.35,
+      "gpu": 13.23,
+      "build": "patch 1 / same"
+     },
+     "undo": {
+      "store": 6.5,
+      "draw": 11.85,
+      "total": 25,
+      "gpu": 12.33,
+      "build": "same / same"
+     },
+     "water colour": {
+      "store": 0.8,
+      "draw": 72.9,
+      "total": 79.45,
+      "gpu": 17.42,
+      "build": "look / same"
+     },
+     "wall colour": {
+      "store": 0.6,
+      "draw": 10.65,
+      "total": 19.6,
+      "gpu": 12.73,
+      "build": "same / same"
+     },
+     "substrate colours": {
+      "store": 0.7,
+      "draw": 10.1,
+      "total": 20.55,
+      "gpu": 12.83,
+      "build": "same / same"
+     },
+     "light power": {
+      "store": 0.7,
+      "draw": 49.4,
+      "total": 57.8,
+      "gpu": 12.45,
+      "build": "same / same"
+     },
+     "fish stand out": {
+      "store": 0.7,
+      "draw": 8.85,
+      "total": 18.2,
+      "gpu": 12.29,
+      "build": "same / same"
+     },
+     "redo": {
+      "store": 0.05,
+      "draw": 9.05,
+      "total": 17.45,
+      "gpu": 12.73,
+      "build": "same / same"
+     },
+     "tall plant drag": {
+      "store": 0.7,
+      "draw": 9.75,
+      "total": 18.65,
+      "gpu": 12.47,
+      "build": "patch 1 / same"
+     }
+    }
+   },
+   "research/efficiency/E1-variants/planted-overgrown.json": {
+    "firstDrawMs": 5047,
+    "firstFrameMs": 5772,
+    "domContentLoadedMs": 302,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      750,
+      812
+     ],
+     "pixelRatio": 2
+    },
+    "memory": {
+     "geometries": 224,
+     "textures": 38,
+     "programs": 28
+    },
+    "heapMB": 14.8,
+    "steady": {
+     "gpu": 18.25,
+     "gpuMin": 18.05,
+     "cpu": 4.75,
+     "calls": 573,
+     "triangles": 2232490,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 157.5,
+     "wall": 160.2,
+     "gpu": 90.5,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 29,
+      "triangles": 728
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 18,
+      "triangles": 86
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 8,
+      "triangles": 0
+     },
+     "sub": {
+      "meshes": 2,
+      "triangles": 704
+     },
+     "room": {
+      "meshes": 9,
+      "triangles": 78
+     },
+     "LineBasicMaterial": {
+      "meshes": 6,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 40,
+      "triangles": 75280
+     },
+     "solid": {
+      "meshes": 2,
+      "triangles": 1000
+     },
+     "plantClip+card+post": {
+      "meshes": 54,
+      "triangles": 1861912
+     },
+     "fishCard+card": {
+      "meshes": 174,
+      "triangles": 1488
+     },
+     "fish+plain": {
+      "meshes": 34,
+      "triangles": 75208
+     },
+     "fish": {
+      "meshes": 142,
+      "triangles": 90832
+     },
+     "fish (transparent)": {
+      "meshes": 39,
+      "triangles": 117172
+     },
+     "card": {
+      "meshes": 2,
+      "triangles": 4
+     },
+     "glow": {
+      "meshes": 1,
+      "triangles": 6080
+     }
+    },
+    "edits": {
+     "fish move": {
+      "store": 1.35,
+      "draw": 7.8,
+      "total": 26.45,
+      "gpu": 16.92,
+      "build": "patch 1"
+     },
+     "fish rotate": {
+      "store": 0.65,
+      "draw": 6.55,
+      "total": 24.45,
+      "gpu": 17.13,
+      "build": "patch 1"
+     },
+     "fish resize": {
+      "store": 0.65,
+      "draw": 6.2,
+      "total": 24.05,
+      "gpu": 17,
+      "build": "patch 1"
+     },
+     "fish raise": {
+      "store": 0.65,
+      "draw": 5.8,
+      "total": 23.55,
+      "gpu": 16.87,
+      "build": "patch 1"
+     },
+     "select fish": {
+      "store": 0.35,
+      "draw": 7.75,
+      "total": 25.35,
+      "gpu": 17.37,
+      "build": "patch 2"
+     },
+     "stone move": {
+      "store": 0.7,
+      "draw": 5.55,
+      "total": 22.65,
+      "gpu": 16.7,
+      "build": "patch 1"
+     },
+     "stone turn": {
+      "store": 0.65,
+      "draw": 6.6,
+      "total": 23.55,
+      "gpu": 16.89,
+      "build": "patch 1"
+     },
+     "stone resize": {
+      "store": 0.75,
+      "draw": 11.3,
+      "total": 27.2,
+      "gpu": 15.53,
+      "build": "patch 1"
+     },
+     "plant move": {
+      "store": 0.75,
+      "draw": 5.75,
+      "total": 21.3,
+      "gpu": 15.33,
+      "build": "patch 1"
+     },
+     "select item": {
+      "store": 0.55,
+      "draw": 8.5,
+      "total": 24.2,
+      "gpu": 16.05,
+      "build": "patch 2"
+     },
+     "delete fish": {
+      "store": 3.6,
+      "draw": 5.4,
+      "total": 24.6,
+      "gpu": 15.49,
+      "build": "same"
+     },
+     "duplicate fish": {
+      "store": 3.15,
+      "draw": 7.15,
+      "total": 25.95,
+      "gpu": 15.87,
+      "build": "patch 1"
+     },
+     "undo": {
+      "store": 8.35,
+      "draw": 5.95,
+      "total": 29.25,
+      "gpu": 15.2,
+      "build": "same"
+     },
+     "water colour": {
+      "store": 39.35,
+      "draw": 90.8,
+      "total": 138.8,
+      "gpu": 56.1,
+      "build": "look"
+     },
+     "wall colour": {
+      "store": 2.9,
+      "draw": 5.55,
+      "total": 24.15,
+      "gpu": 16.3,
+      "build": "same"
+     },
+     "substrate colours": {
+      "store": 3,
+      "draw": 5.85,
+      "total": 24.45,
+      "gpu": 16.17,
+      "build": "same"
+     },
+     "light power": {
+      "store": 41.6,
+      "draw": 10.8,
+      "total": 67.35,
+      "gpu": 15.24,
+      "build": "same"
+     },
+     "fish stand out": {
+      "store": 2.8,
+      "draw": 5.2,
+      "total": 24.85,
+      "gpu": 15.45,
+      "build": "same"
+     },
+     "redo": {
+      "store": 0.05,
+      "draw": 4.6,
+      "total": 19.55,
+      "gpu": 15.16,
+      "build": "same"
+     },
+     "tall plant drag": {
+      "store": 0.6,
+      "draw": 5.4,
+      "total": 21.1,
+      "gpu": 15.22,
+      "build": "patch 1"
+     }
+    }
+   },
+   "research/efficiency/E1-variants/planted-rockwall.json": {
+    "firstDrawMs": 1442,
+    "firstFrameMs": 2191,
+    "domContentLoadedMs": 290,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      750,
+      812
+     ],
+     "pixelRatio": 2
+    },
+    "memory": {
+     "geometries": 225,
+     "textures": 38,
+     "programs": 28
+    },
+    "heapMB": 14.6,
+    "steady": {
+     "gpu": 13.26,
+     "gpuMin": 13.05,
+     "cpu": 5.25,
+     "calls": 574,
+     "triangles": 971954,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 146.6,
+     "wall": 149.8,
+     "gpu": 89.26,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 29,
+      "triangles": 728
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 18,
+      "triangles": 86
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 8,
+      "triangles": 0
+     },
+     "sub": {
+      "meshes": 2,
+      "triangles": 704
+     },
+     "solid": {
+      "meshes": 3,
+      "triangles": 59160
+     },
+     "room": {
+      "meshes": 9,
+      "triangles": 78
+     },
+     "LineBasicMaterial": {
+      "meshes": 6,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 40,
+      "triangles": 75280
+     },
+     "plantClip+card+post": {
+      "meshes": 54,
+      "triangles": 543216
+     },
+     "fishCard+card": {
+      "meshes": 174,
+      "triangles": 1488
+     },
+     "fish+plain": {
+      "meshes": 34,
+      "triangles": 75208
+     },
+     "fish": {
+      "meshes": 142,
+      "triangles": 90832
+     },
+     "fish (transparent)": {
+      "meshes": 39,
+      "triangles": 117172
+     },
+     "card": {
+      "meshes": 2,
+      "triangles": 4
+     },
+     "glow": {
+      "meshes": 1,
+      "triangles": 6080
+     }
+    },
+    "edits": {
+     "fish move": {
+      "store": 1.2,
+      "draw": 6.7,
+      "total": 24.05,
+      "gpu": 15.91,
+      "build": "patch 1"
+     },
+     "fish rotate": {
+      "store": 0.8,
+      "draw": 5.5,
+      "total": 22.45,
+      "gpu": 15.92,
+      "build": "patch 1"
+     },
+     "fish resize": {
+      "store": 0.7,
+      "draw": 5.55,
+      "total": 22.6,
+      "gpu": 15.9,
+      "build": "patch 1"
+     },
+     "fish raise": {
+      "store": 0.75,
+      "draw": 6.25,
+      "total": 22.75,
+      "gpu": 16.07,
+      "build": "patch 1"
+     },
+     "select fish": {
+      "store": 0.3,
+      "draw": 6.8,
+      "total": 23.5,
+      "gpu": 16.03,
+      "build": "patch 2"
+     },
+     "stone move": {
+      "store": 0.75,
+      "draw": 4.85,
+      "total": 21.45,
+      "gpu": 15.57,
+      "build": "patch 1"
+     },
+     "stone turn": {
+      "store": 0.6,
+      "draw": 6,
+      "total": 22.15,
+      "gpu": 15.91,
+      "build": "patch 1"
+     },
+     "stone resize": {
+      "store": 1,
+      "draw": 10.55,
+      "total": 27.4,
+      "gpu": 16.18,
+      "build": "patch 1"
+     },
+     "plant move": {
+      "store": 0.7,
+      "draw": 5,
+      "total": 21.5,
+      "gpu": 15.61,
+      "build": "patch 1"
+     },
+     "select item": {
+      "store": 0.55,
+      "draw": 7.3,
+      "total": 24.65,
+      "gpu": 16.09,
+      "build": "patch 2"
+     },
+     "delete fish": {
+      "store": 3.5,
+      "draw": 4.75,
+      "total": 24.5,
+      "gpu": 15.65,
+      "build": "same"
+     },
+     "duplicate fish": {
+      "store": 2.95,
+      "draw": 5.95,
+      "total": 25.3,
+      "gpu": 16.15,
+      "build": "patch 1"
+     },
+     "undo": {
+      "store": 6.95,
+      "draw": 5.75,
+      "total": 28.2,
+      "gpu": 15.56,
+      "build": "same"
+     },
+     "water colour": {
+      "store": 35.95,
+      "draw": 67.7,
+      "total": 112.7,
+      "gpu": 45.83,
+      "build": "look"
+     },
+     "wall colour": {
+      "store": 2.55,
+      "draw": 5.6,
+      "total": 23.85,
+      "gpu": 15.72,
+      "build": "same"
+     },
+     "substrate colours": {
+      "store": 2.55,
+      "draw": 5.1,
+      "total": 23.9,
+      "gpu": 15.79,
+      "build": "same"
+     },
+     "light power": {
+      "store": 42.6,
+      "draw": 8.3,
+      "total": 67.45,
+      "gpu": 15.99,
+      "build": "same"
+     },
+     "fish stand out": {
+      "store": 2.35,
+      "draw": 4.75,
+      "total": 22.3,
+      "gpu": 15.79,
+      "build": "same"
+     },
+     "redo": {
+      "store": 0.05,
+      "draw": 4,
+      "total": 20.15,
+      "gpu": 15.99,
+      "build": "same"
+     },
+     "tall plant drag": {
+      "store": 0.6,
+      "draw": 5.55,
+      "total": 22.3,
+      "gpu": 15.83,
+      "build": "patch 1"
+     }
+    }
+   }
+  }
+ },
+ "breakdown": {
+  "research/efficiency/E1-variants/planted-rockwall.json": {
+   "buckets": {
+    "MeshBasicMaterial": {
+     "meshes": 29,
+     "saves": -0.07,
+     "gpuShown": 5.79,
+     "cpuSaves": 0
+    },
+    "MeshBasicMaterial (transparent)": {
+     "meshes": 18,
+     "saves": 0.06,
+     "gpuShown": 7.9,
+     "cpuSaves": 0.3
+    },
+    "LineBasicMaterial (transparent)": {
+     "meshes": 8,
+     "saves": 0.03,
+     "gpuShown": 9.12,
+     "cpuSaves": -0.1
+    },
+    "sub": {
+     "meshes": 2,
+     "saves": -1.05,
+     "gpuShown": 10.38,
+     "cpuSaves": 0.05
+    },
+    "solid": {
+     "meshes": 3,
+     "saves": 4.44,
+     "gpuShown": 12.28,
+     "cpuSaves": -0.65
+    },
+    "room": {
+     "meshes": 9,
+     "saves": 0.29,
+     "gpuShown": 14.57,
+     "cpuSaves": 0.45
+    },
+    "LineBasicMaterial": {
+     "meshes": 6,
+     "saves": 0,
+     "gpuShown": 14.34,
+     "cpuSaves": -0.3
+    },
+    "ShaderMaterial": {
+     "meshes": 40,
+     "saves": 0.09,
+     "gpuShown": 13.35,
+     "cpuSaves": 0.3
+    },
+    "plantClip+card+post": {
+     "meshes": 54,
+     "saves": 6.19,
+     "gpuShown": 14.55,
+     "cpuSaves": -0.7
+    },
+    "fishCard+card": {
+     "meshes": 174,
+     "saves": 1.27,
+     "gpuShown": 14.66,
+     "cpuSaves": 3.1
+    },
+    "fish+plain": {
+     "meshes": 34,
+     "saves": 0.25,
+     "gpuShown": 6.88,
+     "cpuSaves": 0.3
+    },
+    "fish": {
+     "meshes": 142,
+     "saves": 0.1,
+     "gpuShown": 8.47,
+     "cpuSaves": 0.55
+    },
+    "fish (transparent)": {
+     "meshes": 39,
+     "saves": 0.3,
+     "gpuShown": 11.63,
+     "cpuSaves": 0.6
+    },
+    "card": {
+     "meshes": 2,
+     "saves": 0.01,
+     "gpuShown": 14.4,
+     "cpuSaves": 0.7
+    },
+    "glow": {
+     "meshes": 1,
+     "saves": -0.02,
+     "gpuShown": 12.25,
+     "cpuSaves": 0
+    }
+   },
+   "programs": [
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "0,1,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 9,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 16,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,3,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 6,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 4,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 12,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    }
+   ],
+   "extra": {},
+   "cpuProfile": {
+    "draws": 60,
+    "self": [
+     {
+      "f": "(anon) src/render/viewer.ts:559",
+      "msPerDraw": 0.354
+     },
+     {
+      "f": "bindVertexArray",
+      "msPerDraw": 0.248
+     },
+     {
+      "f": "setProgram deps/three.js:16459",
+      "msPerDraw": 0.24
+     },
+     {
+      "f": "uniformMatrix4fv",
+      "msPerDraw": 0.234
+     },
+     {
+      "f": "getParameters deps/three.js:11500",
+      "msPerDraw": 0.225
+     },
+     {
+      "f": "multiplyMatrices deps/three.js:3741",
+      "msPerDraw": 0.216
+     },
+     {
+      "f": "WebGLRenderer.renderBufferDirect deps/three.js:15996",
+      "msPerDraw": 0.203
+     },
+     {
+      "f": "upload deps/three.js:10814",
+      "msPerDraw": 0.193
+     },
+     {
+      "f": "projectObject deps/three.js:16227",
+      "msPerDraw": 0.189
+     },
+     {
+      "f": "intersectsObject deps/three.js:7658",
+      "msPerDraw": 0.185
+     },
+     {
+      "f": "flatten deps/three.js:10290",
+      "msPerDraw": 0.146
+     },
+     {
+      "f": "drawViewMap src/render/viewmap.ts:7",
+      "msPerDraw": 0.146
+     },
+     {
+      "f": "needsUpdate deps/three.js:8671",
+      "msPerDraw": 0.138
+     },
+     {
+      "f": "update deps/three.js:7798",
+      "msPerDraw": 0.124
+     },
+     {
+      "f": "drawElements",
+      "msPerDraw": 0.123
+     },
+     {
+      "f": "renderObjects deps/three.js:16345",
+      "msPerDraw": 0.122
+     },
+     {
+      "f": "setValue deps/three.js:10806",
+      "msPerDraw": 0.115
+     },
+     {
+      "f": "sort deps/three.js:11972",
+      "msPerDraw": 0.111
+     },
+     {
+      "f": "refreshUniformsCommon deps/three.js:15233",
+      "msPerDraw": 0.111
+     },
+     {
+      "f": "getObjectByProperty deps/three.js:4507",
+      "msPerDraw": 0.081
+     },
+     {
+      "f": "updateMatrixWorld deps/three.js:4562",
+      "msPerDraw": 0.075
+     },
+     {
+      "f": "draw src/render/viewer.ts:408",
+      "msPerDraw": 0.07
+     },
+     {
+      "f": "setup deps/three.js:8606",
+      "msPerDraw": 0.07
+     },
+     {
+      "f": "setMaterial deps/three.js:13113",
+      "msPerDraw": 0.065
+     },
+     {
+      "f": "onAnimationFrame deps/three.js:7707",
+      "msPerDraw": 0.063
+     },
+     {
+      "f": "uniform3fv",
+      "msPerDraw": 0.06
+     },
+     {
+      "f": "setValueM4 deps/three.js:10411",
+      "msPerDraw": 0.059
+     },
+     {
+      "f": "update deps/three.js:9935",
+      "msPerDraw": 0.059
+     },
+     {
+      "f": "toArray deps/three.js:2866",
+      "msPerDraw": 0.056
+     },
+     {
+      "f": "copyArray deps/three.js:10313",
+      "msPerDraw": 0.055
+     }
+    ],
+    "inclusive": [
+     {
+      "f": "drawLoop",
+      "msPerDraw": 5.546
+     },
+     {
+      "f": "draw src/render/viewer.ts:408",
+      "msPerDraw": 5.495
+     },
+     {
+      "f": "WebGLRenderer.render deps/three.js:16153",
+      "msPerDraw": 4.398
+     },
+     {
+      "f": "renderObjects deps/three.js:16345",
+      "msPerDraw": 3.542
+     },
+     {
+      "f": "renderScene deps/three.js:16271",
+      "msPerDraw": 3.542
+     },
+     {
+      "f": "renderObject deps/three.js:16356",
+      "msPerDraw": 3.42
+     },
+     {
+      "f": "WebGLRenderer.renderBufferDirect deps/three.js:15996",
+      "msPerDraw": 3.142
+     },
+     {
+      "f": "setProgram deps/three.js:16459",
+      "msPerDraw": 1.974
+     },
+     {
+      "f": "upload deps/three.js:10814",
+      "msPerDraw": 0.706
+     },
+     {
+      "f": "projectObject deps/three.js:16227",
+      "msPerDraw": 0.586
+     },
+     {
+      "f": "setup deps/three.js:8606",
+      "msPerDraw": 0.486
+     },
+     {
+      "f": "setValue deps/three.js:10806",
+      "msPerDraw": 0.472
+     },
+     {
+      "f": "traverse deps/three.js:4540",
+      "msPerDraw": 0.389
+     },
+     {
+      "f": "setValueM4 deps/three.js:10411",
+      "msPerDraw": 0.357
+     },
+     {
+      "f": "(anon) src/render/viewer.ts:559",
+      "msPerDraw": 0.354
+     },
+     {
+      "f": "getProgram deps/three.js:16372",
+      "msPerDraw": 0.337
+     },
+     {
+      "f": "bindVertexArray",
+      "msPerDraw": 0.248
+     },
+     {
+      "f": "bindVertexArrayObject deps/three.js:8625",
+      "msPerDraw": 0.248
+     },
+     {
+      "f": "flatten deps/three.js:10290",
+      "msPerDraw": 0.234
+     },
+     {
+      "f": "drawViewMap src/render/viewmap.ts:7",
+      "msPerDraw": 0.234
+     },
+     {
+      "f": "uniformMatrix4fv",
+      "msPerDraw": 0.234
+     },
+     {
+      "f": "getParameters deps/three.js:11500",
+      "msPerDraw": 0.225
+     },
+     {
+      "f": "multiplyMatrices deps/three.js:3741",
+      "msPerDraw": 0.216
+     },
+     {
+      "f": "C.<computed>",
+      "msPerDraw": 0.203
+     },
+     {
+      "f": "update deps/three.js:10171",
+      "msPerDraw": 0.202
+     },
+     {
+      "f": "(anon)",
+      "msPerDraw": 0.189
+     },
+     {
+      "f": "intersectsObject deps/three.js:7658",
+      "msPerDraw": 0.185
+     },
+     {
+      "f": "setValueV4fArray deps/three.js:10618",
+      "msPerDraw": 0.177
+     },
+     {
+      "f": "render deps/three.js:10000",
+      "msPerDraw": 0.173
+     },
+     {
+      "f": "update deps/three.js:9935",
+      "msPerDraw": 0.172
+     },
+     {
+      "f": "setValueV3fArray deps/three.js:10614",
+      "msPerDraw": 0.169
+     },
+     {
+      "f": "(anon) src/ui/panels.ts:2741",
+      "msPerDraw": 0.165
+     },
+     {
+      "f": "setMaterial deps/three.js:13113",
+      "msPerDraw": 0.162
+     },
+     {
+      "f": "refreshMaterialUniforms deps/three.js:15202",
+      "msPerDraw": 0.142
+     },
+     {
+      "f": "sort deps/three.js:11972",
+      "msPerDraw": 0.142
+     },
+     {
+      "f": "needsUpdate deps/three.js:8671",
+      "msPerDraw": 0.138
+     },
+     {
+      "f": "update deps/three.js:7798",
+      "msPerDraw": 0.124
+     },
+     {
+      "f": "drawElements",
+      "msPerDraw": 0.123
+     },
+     {
+      "f": "refreshUniformsCommon deps/three.js:15233",
+      "msPerDraw": 0.111
+     },
+     {
+      "f": "updateMatrixWorld deps/three.js:4562",
+      "msPerDraw": 0.097
+     }
+    ],
+    "gcMsPerDraw": 0.063
+   }
+  },
+  "split": {
+   "buckets": {
+    "MeshBasicMaterial": {
+     "meshes": 58,
+     "saves": 0.09,
+     "gpuShown": 11.26,
+     "cpuSaves": 0.35
+    },
+    "MeshBasicMaterial (transparent)": {
+     "meshes": 36,
+     "saves": 0,
+     "gpuShown": 11.26,
+     "cpuSaves": -0.05
+    },
+    "LineBasicMaterial (transparent)": {
+     "meshes": 16,
+     "saves": -0.02,
+     "gpuShown": 11.26,
+     "cpuSaves": 0.85
+    },
+    "sub": {
+     "meshes": 4,
+     "saves": -0.13,
+     "gpuShown": 11.29,
+     "cpuSaves": 0.7
+    },
+    "room": {
+     "meshes": 18,
+     "saves": 0.34,
+     "gpuShown": 11.22,
+     "cpuSaves": 0.3
+    },
+    "LineBasicMaterial": {
+     "meshes": 12,
+     "saves": -0.05,
+     "gpuShown": 10.41,
+     "cpuSaves": -0.15
+    },
+    "ShaderMaterial": {
+     "meshes": 80,
+     "saves": 0.09,
+     "gpuShown": 10.81,
+     "cpuSaves": 0.35
+    },
+    "solid": {
+     "meshes": 4,
+     "saves": 0.44,
+     "gpuShown": 11.3,
+     "cpuSaves": -0.1
+    },
+    "plantClip+card+post": {
+     "meshes": 108,
+     "saves": 4.94,
+     "gpuShown": 11.28,
+     "cpuSaves": 0.45
+    },
+    "fishCard+card": {
+     "meshes": 348,
+     "saves": 1.95,
+     "gpuShown": 11.29,
+     "cpuSaves": 4.15
+    },
+    "fish+plain": {
+     "meshes": 68,
+     "saves": 0.23,
+     "gpuShown": 11.31,
+     "cpuSaves": 0.4
+    },
+    "fish": {
+     "meshes": 284,
+     "saves": 0.2,
+     "gpuShown": 11.34,
+     "cpuSaves": 0.85
+    },
+    "fish (transparent)": {
+     "meshes": 78,
+     "saves": 0.9,
+     "gpuShown": 11.31,
+     "cpuSaves": 1.1
+    },
+    "card": {
+     "meshes": 4,
+     "saves": 0.15,
+     "gpuShown": 11.34,
+     "cpuSaves": 0.15
+    },
+    "glow": {
+     "meshes": 2,
+     "saves": 0.02,
+     "gpuShown": 11.3,
+     "cpuSaves": -0.25
+    }
+   },
+   "programs": [
+    {
+     "name": "",
+     "usedTimes": 4,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 10,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "0,1,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 18,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 16,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,3,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 6,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 10,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 8,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 24,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 6,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    }
+   ],
+   "extra": {},
+   "cpuProfile": {
+    "draws": 60,
+    "self": [
+     {
+      "f": "setProgram deps/three.js:16459",
+      "msPerDraw": 0.495
+     },
+     {
+      "f": "getObjectByProperty deps/three.js:4507",
+      "msPerDraw": 0.476
+     },
+     {
+      "f": "upload deps/three.js:10814",
+      "msPerDraw": 0.419
+     },
+     {
+      "f": "(anon) src/render/viewer.ts:559",
+      "msPerDraw": 0.417
+     },
+     {
+      "f": "bindVertexArray",
+      "msPerDraw": 0.402
+     },
+     {
+      "f": "uniformMatrix4fv",
+      "msPerDraw": 0.375
+     },
+     {
+      "f": "getParameters deps/three.js:11500",
+      "msPerDraw": 0.33
+     },
+     {
+      "f": "projectObject deps/three.js:16227",
+      "msPerDraw": 0.328
+     },
+     {
+      "f": "setValueM4 deps/three.js:10411",
+      "msPerDraw": 0.298
+     },
+     {
+      "f": "sort deps/three.js:11972",
+      "msPerDraw": 0.298
+     },
+     {
+      "f": "multiplyMatrices deps/three.js:3741",
+      "msPerDraw": 0.293
+     },
+     {
+      "f": "WebGLRenderer.renderBufferDirect deps/three.js:15996",
+      "msPerDraw": 0.28
+     },
+     {
+      "f": "drawElements",
+      "msPerDraw": 0.245
+     },
+     {
+      "f": "setValue deps/three.js:10806",
+      "msPerDraw": 0.232
+     },
+     {
+      "f": "flatten deps/three.js:10290",
+      "msPerDraw": 0.217
+     },
+     {
+      "f": "get deps/three.js:11883",
+      "msPerDraw": 0.216
+     },
+     {
+      "f": "intersectsObject deps/three.js:7658",
+      "msPerDraw": 0.198
+     },
+     {
+      "f": "needsUpdate deps/three.js:8671",
+      "msPerDraw": 0.185
+     },
+     {
+      "f": "renderObjects deps/three.js:16345",
+      "msPerDraw": 0.185
+     },
+     {
+      "f": "toArray deps/three.js:1920",
+      "msPerDraw": 0.161
+     },
+     {
+      "f": "draw src/render/viewer.ts:408",
+      "msPerDraw": 0.154
+     },
+     {
+      "f": "updateMatrixWorld deps/three.js:4562",
+      "msPerDraw": 0.153
+     },
+     {
+      "f": "disable deps/three.js:12961",
+      "msPerDraw": 0.146
+     },
+     {
+      "f": "drawViewMap src/render/viewmap.ts:7",
+      "msPerDraw": 0.144
+     },
+     {
+      "f": "traverse deps/three.js:4540",
+      "msPerDraw": 0.139
+     },
+     {
+      "f": "renderObject deps/three.js:16356",
+      "msPerDraw": 0.104
+     },
+     {
+      "f": "(anon) src/render/viewer.ts:270",
+      "msPerDraw": 0.101
+     },
+     {
+      "f": "createBuffer deps/three.js:7732",
+      "msPerDraw": 0.1
+     },
+     {
+      "f": "C.<computed>",
+      "msPerDraw": 0.088
+     },
+     {
+      "f": "uniform4fv",
+      "msPerDraw": 0.086
+     }
+    ],
+    "inclusive": [
+     {
+      "f": "drawLoop",
+      "msPerDraw": 9.6
+     },
+     {
+      "f": "draw src/render/viewer.ts:408",
+      "msPerDraw": 9.591
+     },
+     {
+      "f": "WebGLRenderer.render deps/three.js:16153",
+      "msPerDraw": 7.524
+     },
+     {
+      "f": "renderObjects deps/three.js:16345",
+      "msPerDraw": 6.054
+     },
+     {
+      "f": "renderScene deps/three.js:16271",
+      "msPerDraw": 6.054
+     },
+     {
+      "f": "renderObject deps/three.js:16356",
+      "msPerDraw": 5.869
+     },
+     {
+      "f": "WebGLRenderer.renderBufferDirect deps/three.js:15996",
+      "msPerDraw": 5.513
+     },
+     {
+      "f": "setProgram deps/three.js:16459",
+      "msPerDraw": 3.624
+     },
+     {
+      "f": "upload deps/three.js:10814",
+      "msPerDraw": 1.293
+     },
+     {
+      "f": "setValue deps/three.js:10806",
+      "msPerDraw": 0.895
+     },
+     {
+      "f": "projectObject deps/three.js:16227",
+      "msPerDraw": 0.809
+     },
+     {
+      "f": "setup deps/three.js:8606",
+      "msPerDraw": 0.732
+     },
+     {
+      "f": "setValueM4 deps/three.js:10411",
+      "msPerDraw": 0.673
+     },
+     {
+      "f": "flatten deps/three.js:10290",
+      "msPerDraw": 0.595
+     },
+     {
+      "f": "traverse deps/three.js:4540",
+      "msPerDraw": 0.556
+     },
+     {
+      "f": "getProgram deps/three.js:16372",
+      "msPerDraw": 0.527
+     },
+     {
+      "f": "getObjectByProperty deps/three.js:4507",
+      "msPerDraw": 0.476
+     },
+     {
+      "f": "bindVertexArrayObject deps/three.js:8625",
+      "msPerDraw": 0.444
+     },
+     {
+      "f": "sort deps/three.js:11972",
+      "msPerDraw": 0.426
+     },
+     {
+      "f": "(anon) src/render/viewer.ts:559",
+      "msPerDraw": 0.417
+     },
+     {
+      "f": "C.<computed>",
+      "msPerDraw": 0.405
+     },
+     {
+      "f": "setMaterial deps/three.js:13113",
+      "msPerDraw": 0.403
+     },
+     {
+      "f": "bindVertexArray",
+      "msPerDraw": 0.402
+     },
+     {
+      "f": "uniformMatrix4fv",
+      "msPerDraw": 0.375
+     },
+     {
+      "f": "(anon) src/ui/panels.ts:2741",
+      "msPerDraw": 0.365
+     },
+     {
+      "f": "getParameters deps/three.js:11500",
+      "msPerDraw": 0.356
+     },
+     {
+      "f": "render deps/three.js:10000",
+      "msPerDraw": 0.333
+     },
+     {
+      "f": "setValueV4fArray deps/three.js:10618",
+      "msPerDraw": 0.33
+     },
+     {
+      "f": "drawViewMap src/render/viewmap.ts:7",
+      "msPerDraw": 0.317
+     },
+     {
+      "f": "toArray deps/three.js:1920",
+      "msPerDraw": 0.298
+     },
+     {
+      "f": "multiplyMatrices deps/three.js:3741",
+      "msPerDraw": 0.293
+     },
+     {
+      "f": "update deps/three.js:10171",
+      "msPerDraw": 0.272
+     },
+     {
+      "f": "setValueV3fArray deps/three.js:10614",
+      "msPerDraw": 0.265
+     },
+     {
+      "f": "drawElements",
+      "msPerDraw": 0.245
+     },
+     {
+      "f": "refreshMaterialUniforms deps/three.js:15202",
+      "msPerDraw": 0.229
+     },
+     {
+      "f": "get deps/three.js:11883",
+      "msPerDraw": 0.216
+     },
+     {
+      "f": "updateMatrixWorld deps/three.js:4562",
+      "msPerDraw": 0.213
+     },
+     {
+      "f": "intersectsObject deps/three.js:7658",
+      "msPerDraw": 0.198
+     },
+     {
+      "f": "aqChip src/ui/panels.ts:2722",
+      "msPerDraw": 0.189
+     },
+     {
+      "f": "(anon) src/ui/panels.ts:2753",
+      "msPerDraw": 0.189
+     }
+    ],
+    "gcMsPerDraw": 0.026
+   }
+  },
+  "research/efficiency/E1-variants/planted-overgrown.json": {
+   "buckets": {
+    "MeshBasicMaterial": {
+     "meshes": 29,
+     "saves": -0.07,
+     "gpuShown": 9.36,
+     "cpuSaves": 0.05
+    },
+    "MeshBasicMaterial (transparent)": {
+     "meshes": 18,
+     "saves": 0.03,
+     "gpuShown": 9.44,
+     "cpuSaves": 0.2
+    },
+    "LineBasicMaterial (transparent)": {
+     "meshes": 8,
+     "saves": 0.15,
+     "gpuShown": 9.77,
+     "cpuSaves": 0.15
+    },
+    "sub": {
+     "meshes": 2,
+     "saves": -0.06,
+     "gpuShown": 9.58,
+     "cpuSaves": 0
+    },
+    "room": {
+     "meshes": 9,
+     "saves": 0.23,
+     "gpuShown": 9.77,
+     "cpuSaves": 0.3
+    },
+    "LineBasicMaterial": {
+     "meshes": 6,
+     "saves": -0.17,
+     "gpuShown": 10.42,
+     "cpuSaves": 0.05
+    },
+    "ShaderMaterial": {
+     "meshes": 40,
+     "saves": 0.15,
+     "gpuShown": 9.91,
+     "cpuSaves": -0.05
+    },
+    "solid": {
+     "meshes": 2,
+     "saves": -0.08,
+     "gpuShown": 9.45,
+     "cpuSaves": 0.1
+    },
+    "plantClip+card+post": {
+     "meshes": 54,
+     "saves": 7.37,
+     "gpuShown": 9.95,
+     "cpuSaves": 0.35
+    },
+    "fishCard+card": {
+     "meshes": 174,
+     "saves": 1.62,
+     "gpuShown": 12.58,
+     "cpuSaves": 2.25
+    },
+    "fish+plain": {
+     "meshes": 34,
+     "saves": 0.13,
+     "gpuShown": 16.54,
+     "cpuSaves": 0.2
+    },
+    "fish": {
+     "meshes": 142,
+     "saves": 0.04,
+     "gpuShown": 11.63,
+     "cpuSaves": 0.55
+    },
+    "fish (transparent)": {
+     "meshes": 39,
+     "saves": 0.23,
+     "gpuShown": 10.26,
+     "cpuSaves": 0.6
+    },
+    "card": {
+     "meshes": 2,
+     "saves": -0.01,
+     "gpuShown": 10.23,
+     "cpuSaves": 0.25
+    },
+    "glow": {
+     "meshes": 1,
+     "saves": -0.02,
+     "gpuShown": 10.98,
+     "cpuSaves": -0.05
+    }
+   },
+   "programs": [
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "0,1,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 9,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 16,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,3,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 6,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 4,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 12,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    }
+   ],
+   "extra": {},
+   "cpuProfile": {
+    "draws": 60,
+    "self": [
+     {
+      "f": "(anon) src/render/viewer.ts:559",
+      "msPerDraw": 0.337
+     },
+     {
+      "f": "setProgram deps/three.js:16459",
+      "msPerDraw": 0.273
+     },
+     {
+      "f": "bindVertexArray",
+      "msPerDraw": 0.223
+     },
+     {
+      "f": "upload deps/three.js:10814",
+      "msPerDraw": 0.2
+     },
+     {
+      "f": "getParameters deps/three.js:11500",
+      "msPerDraw": 0.187
+     },
+     {
+      "f": "drawElements",
+      "msPerDraw": 0.183
+     },
+     {
+      "f": "drawViewMap src/render/viewmap.ts:7",
+      "msPerDraw": 0.175
+     },
+     {
+      "f": "uniformMatrix4fv",
+      "msPerDraw": 0.174
+     },
+     {
+      "f": "sort deps/three.js:11972",
+      "msPerDraw": 0.172
+     },
+     {
+      "f": "multiplyMatrices deps/three.js:3741",
+      "msPerDraw": 0.168
+     },
+     {
+      "f": "draw src/render/viewer.ts:408",
+      "msPerDraw": 0.145
+     },
+     {
+      "f": "createBuffer deps/three.js:7732",
+      "msPerDraw": 0.143
+     },
+     {
+      "f": "WebGLRenderer.renderBufferDirect deps/three.js:15996",
+      "msPerDraw": 0.141
+     },
+     {
+      "f": "projectObject deps/three.js:16227",
+      "msPerDraw": 0.141
+     },
+     {
+      "f": "get deps/three.js:11883",
+      "msPerDraw": 0.129
+     },
+     {
+      "f": "getObjectByProperty deps/three.js:4507",
+      "msPerDraw": 0.128
+     },
+     {
+      "f": "renderObject deps/three.js:16356",
+      "msPerDraw": 0.12
+     },
+     {
+      "f": "intersectsObject deps/three.js:7658",
+      "msPerDraw": 0.116
+     },
+     {
+      "f": "setValueM4 deps/three.js:10411",
+      "msPerDraw": 0.094
+     },
+     {
+      "f": "renderObjects deps/three.js:16345",
+      "msPerDraw": 0.087
+     },
+     {
+      "f": "enable deps/three.js:12955",
+      "msPerDraw": 0.082
+     },
+     {
+      "f": "setValue deps/three.js:10806",
+      "msPerDraw": 0.08
+     },
+     {
+      "f": "toArray deps/three.js:1920",
+      "msPerDraw": 0.08
+     },
+     {
+      "f": "disable deps/three.js:12961",
+      "msPerDraw": 0.074
+     },
+     {
+      "f": "getProgramCacheKey deps/three.js:11709",
+      "msPerDraw": 0.063
+     },
+     {
+      "f": "getProgram deps/three.js:16372",
+      "msPerDraw": 0.061
+     },
+     {
+      "f": "flatten deps/three.js:10290",
+      "msPerDraw": 0.05
+     },
+     {
+      "f": "URLSearchParams",
+      "msPerDraw": 0.05
+     },
+     {
+      "f": "setValueV1f deps/three.js:10325",
+      "msPerDraw": 0.047
+     },
+     {
+      "f": "uniform3fv",
+      "msPerDraw": 0.043
+     }
+    ],
+    "inclusive": [
+     {
+      "f": "drawLoop",
+      "msPerDraw": 5.012
+     },
+     {
+      "f": "draw src/render/viewer.ts:408",
+      "msPerDraw": 5.003
+     },
+     {
+      "f": "WebGLRenderer.render deps/three.js:16153",
+      "msPerDraw": 3.865
+     },
+     {
+      "f": "renderScene deps/three.js:16271",
+      "msPerDraw": 3.188
+     },
+     {
+      "f": "renderObjects deps/three.js:16345",
+      "msPerDraw": 3.177
+     },
+     {
+      "f": "renderObject deps/three.js:16356",
+      "msPerDraw": 3.091
+     },
+     {
+      "f": "WebGLRenderer.renderBufferDirect deps/three.js:15996",
+      "msPerDraw": 2.787
+     },
+     {
+      "f": "setProgram deps/three.js:16459",
+      "msPerDraw": 1.761
+     },
+     {
+      "f": "upload deps/three.js:10814",
+      "msPerDraw": 0.558
+     },
+     {
+      "f": "projectObject deps/three.js:16227",
+      "msPerDraw": 0.412
+     },
+     {
+      "f": "setup deps/three.js:8606",
+      "msPerDraw": 0.373
+     },
+     {
+      "f": "traverse deps/three.js:4540",
+      "msPerDraw": 0.366
+     },
+     {
+      "f": "setValue deps/three.js:10806",
+      "msPerDraw": 0.348
+     },
+     {
+      "f": "(anon) src/render/viewer.ts:559",
+      "msPerDraw": 0.337
+     },
+     {
+      "f": "getProgram deps/three.js:16372",
+      "msPerDraw": 0.316
+     },
+     {
+      "f": "drawViewMap src/render/viewmap.ts:7",
+      "msPerDraw": 0.314
+     },
+     {
+      "f": "setValueM4 deps/three.js:10411",
+      "msPerDraw": 0.268
+     },
+     {
+      "f": "C.<computed>",
+      "msPerDraw": 0.26
+     },
+     {
+      "f": "flatten deps/three.js:10290",
+      "msPerDraw": 0.241
+     },
+     {
+      "f": "setMaterial deps/three.js:13113",
+      "msPerDraw": 0.234
+     },
+     {
+      "f": "bindVertexArrayObject deps/three.js:8625",
+      "msPerDraw": 0.233
+     },
+     {
+      "f": "bindVertexArray",
+      "msPerDraw": 0.223
+     },
+     {
+      "f": "render deps/three.js:10000",
+      "msPerDraw": 0.219
+     },
+     {
+      "f": "getParameters deps/three.js:11500",
+      "msPerDraw": 0.204
+     },
+     {
+      "f": "sort deps/three.js:11972",
+      "msPerDraw": 0.192
+     },
+     {
+      "f": "drawElements",
+      "msPerDraw": 0.183
+     },
+     {
+      "f": "uniformMatrix4fv",
+      "msPerDraw": 0.174
+     },
+     {
+      "f": "multiplyMatrices deps/three.js:3741",
+      "msPerDraw": 0.168
+     },
+     {
+      "f": "toArray deps/three.js:1920",
+      "msPerDraw": 0.163
+     },
+     {
+      "f": "createBuffer deps/three.js:7732",
+      "msPerDraw": 0.143
+     },
+     {
+      "f": "update deps/three.js:7798",
+      "msPerDraw": 0.143
+     },
+     {
+      "f": "setValueV3fArray deps/three.js:10614",
+      "msPerDraw": 0.138
+     },
+     {
+      "f": "update deps/three.js:10171",
+      "msPerDraw": 0.135
+     },
+     {
+      "f": "get deps/three.js:11883",
+      "msPerDraw": 0.129
+     },
+     {
+      "f": "getObjectByProperty deps/three.js:4507",
+      "msPerDraw": 0.128
+     },
+     {
+      "f": "intersectsObject deps/three.js:7658",
+      "msPerDraw": 0.125
+     },
+     {
+      "f": "update deps/three.js:9935",
+      "msPerDraw": 0.116
+     },
+     {
+      "f": "(anon) src/ui/panels.ts:2741",
+      "msPerDraw": 0.111
+     },
+     {
+      "f": "refreshUniformsCommon deps/three.js:15233",
+      "msPerDraw": 0.11
+     },
+     {
+      "f": "setValueV4fArray deps/three.js:10618",
+      "msPerDraw": 0.103
+     }
+    ],
+    "gcMsPerDraw": 0.095
+   }
+  }
+ },
+ "prod": {
+  "distKB": 6311,
+  "codeKB": 1459,
+  "codeGzipKB": 490,
+  "files": [
+   {
+    "file": "assets/three.module-_L6HqVjY.js",
+    "kb": 512,
+    "gzipKB": 129
+   },
+   {
+    "file": "assets/main-DabvE8zF.js",
+    "kb": 416,
+    "gzipKB": 174
+   },
+   {
+    "file": "assets/preview3d-Bz6Wmp8M.js",
+    "kb": 210,
+    "gzipKB": 82
+   },
+   {
+    "file": "assets/fish3d-BNSm0tas.js",
+    "kb": 135,
+    "gzipKB": 47
+   },
+   {
+    "file": "model-sheets/firetoad.jpg",
+    "kb": 100,
+    "gzipKB": null
+   },
+   {
+    "file": "model-sheets/dartfrog.jpg",
+    "kb": 98,
+    "gzipKB": null
+   },
+   {
+    "file": "model-sheets/nerite.jpg",
+    "kb": 94,
+    "gzipKB": null
+   },
+   {
+    "file": "model-sheets/hermit.jpg",
+    "kb": 92,
+    "gzipKB": null
+   },
+   {
+    "file": "model-sheets/cleanershrimp.jpg",
+    "kb": 89,
+    "gzipKB": null
+   },
+   {
+    "file": "model-sheets/treefrog.jpg",
+    "kb": 87,
+    "gzipKB": null
+   },
+   {
+    "file": "model-sheets/gbr-f.jpg",
+    "kb": 79,
+    "gzipKB": null
+   },
+   {
+    "file": "model-sheets/ocellaris.jpg",
+    "kb": 78,
+    "gzipKB": null
+   },
+   {
+    "file": "model-sheets/cherryshrimp.jpg",
+    "kb": 77,
+    "gzipKB": null
+   },
+   {
+    "file": "model-sheets/peapuffer.jpg",
+    "kb": 77,
+    "gzipKB": null
+   },
+   {
+    "file": "model-sheets/kribensis-f.jpg",
+    "kb": 76,
+    "gzipKB": null
+   }
+  ],
+  "single": {
+   "kb": 472,
+   "gzipKB": 189,
+   "broken": true
+  },
+  "load": {
+   "desktop": {
+    "betta-bowl": {
+     "coldFirstFrameMs": 24529,
+     "firstDrawMs": 1913,
+     "firstFrameMs": 2420,
+     "domContentLoadedMs": 1253,
+     "heapMB": 6.3
+    },
+    "iwagumi": {
+     "coldFirstFrameMs": 45867,
+     "firstDrawMs": 1150,
+     "firstFrameMs": 1765,
+     "domContentLoadedMs": 268,
+     "heapMB": 9.2
+    },
+    "paludarium": {
+     "coldFirstFrameMs": 29549,
+     "firstDrawMs": 1117,
+     "firstFrameMs": 3227,
+     "domContentLoadedMs": 321,
+     "heapMB": 8.3
+    },
+    "planted": {
+     "coldFirstFrameMs": 2723,
+     "firstDrawMs": 3017,
+     "firstFrameMs": 3719,
+     "domContentLoadedMs": 2023,
+     "heapMB": 8.2
+    },
+    "reef": {
+     "coldFirstFrameMs": 27205,
+     "firstDrawMs": 1876,
+     "firstFrameMs": 4602,
+     "domContentLoadedMs": 328,
+     "heapMB": 7.4
+    },
+    "terrarium": {
+     "coldFirstFrameMs": 27241,
+     "firstDrawMs": 1242,
+     "firstFrameMs": 23945,
+     "domContentLoadedMs": 197,
+     "heapMB": 6.4
+    }
+   },
+   "desktop2x": {
+    "betta-bowl": {
+     "coldFirstFrameMs": 21143,
+     "firstDrawMs": 1017,
+     "firstFrameMs": 1430,
+     "domContentLoadedMs": 306,
+     "heapMB": 6.2
+    },
+    "iwagumi": {
+     "coldFirstFrameMs": 49491,
+     "firstDrawMs": 2940,
+     "firstFrameMs": 3665,
+     "domContentLoadedMs": 1867,
+     "heapMB": 9.1
+    },
+    "paludarium": {
+     "coldFirstFrameMs": 24667,
+     "firstDrawMs": 2446,
+     "firstFrameMs": 2901,
+     "domContentLoadedMs": 1591,
+     "heapMB": 8.2
+    },
+    "planted": {
+     "coldFirstFrameMs": 2856,
+     "firstDrawMs": 1391,
+     "firstFrameMs": 2081,
+     "domContentLoadedMs": 244,
+     "heapMB": 8.2
+    },
+    "reef": {
+     "coldFirstFrameMs": 26307,
+     "firstDrawMs": 2593,
+     "firstFrameMs": 3476,
+     "domContentLoadedMs": 369,
+     "heapMB": 7.4
+    },
+    "terrarium": {
+     "coldFirstFrameMs": 1803,
+     "firstDrawMs": 1288,
+     "firstFrameMs": 1803,
+     "domContentLoadedMs": 270,
+     "heapMB": 6.3
+    }
+   },
+   "phone": {
+    "betta-bowl": {
+     "coldFirstFrameMs": 2266,
+     "firstDrawMs": 1756,
+     "firstFrameMs": 2335,
+     "domContentLoadedMs": 545,
+     "heapMB": 6.1
+    },
+    "iwagumi": {
+     "coldFirstFrameMs": 2356,
+     "firstDrawMs": 1637,
+     "firstFrameMs": 2356,
+     "domContentLoadedMs": 373,
+     "heapMB": 9.1
+    },
+    "paludarium": {
+     "coldFirstFrameMs": 1847,
+     "firstDrawMs": 1230,
+     "firstFrameMs": 1847,
+     "domContentLoadedMs": 354,
+     "heapMB": 8.1
+    },
+    "planted": {
+     "coldFirstFrameMs": 2135,
+     "firstDrawMs": 1537,
+     "firstFrameMs": 2135,
+     "domContentLoadedMs": 764,
+     "heapMB": 8.1
+    },
+    "reef": {
+     "coldFirstFrameMs": 2946,
+     "firstDrawMs": 953,
+     "firstFrameMs": 1418,
+     "domContentLoadedMs": 178,
+     "heapMB": 7.4
+    },
+    "terrarium": {
+     "coldFirstFrameMs": 826,
+     "firstDrawMs": 565,
+     "firstFrameMs": 791,
+     "domContentLoadedMs": 140,
+     "heapMB": 6.3
+    }
+   }
+  }
+ },
+ "gpu": {
+  "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "timerQuery": true,
+  "buffer": [
+   700,
+   850
+  ],
+  "pixelRatio": 1
+ },
+ "seconds": 867
+}
