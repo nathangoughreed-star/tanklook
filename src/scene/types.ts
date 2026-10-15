@@ -212,6 +212,9 @@ export interface Item {
    *  growth at which the species reaches `size` (growthOf in art/plants.ts), so older files draw as they did. With it,
    *  `size` stays the plant's own scale and growth sets how big and how dense it is. */
   growth?: number;
+  /** Plants, set by the tank's growth Time (scene/growtime.ts, lane GR3): the growth this plant had at Time 0, so
+   *  moving Time back returns it exactly. Below 0 = put in after Time 0 (it shows as just planted until then). */
+  planted?: number;
 }
 
 /**
@@ -259,6 +262,12 @@ export interface PersonSettings { show: boolean; height: number; side: 'left' | 
 export type BackdropKind = 'none' | 'rock' | 'river' | 'reef' | 'cork' | 'moss';
 export interface BackdropSettings { kind: BackdropKind; depth: number; seed: number }
 
+/** How fast plants grow (lane GR3, 2026-10-15; no calendar units): the tank's feeding scales each species' speed, and
+ *  `time` (0 = as planted .. 1 = everything overgrown in a low-tech tank) is where the tank's growth Time slider stands.
+ *  Older files: low-tech, Time 0. */
+export type GrowFeed = 'low' | 'ferts' | 'co2';
+export interface GrowSettings { feed: GrowFeed; time: number }
+
 export interface TankSetup {
   tank: Tank;
   camera: CameraSettings;
@@ -273,6 +282,7 @@ export interface TankSetup {
   wall: WallSettings;
   person: PersonSettings;
   backdrop: BackdropSettings;
+  grow: GrowSettings;
   fish: Fish[];
   /** Rocks, wood, caves and plants (scene v9). */
   items: Item[];

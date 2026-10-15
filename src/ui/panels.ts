@@ -31,7 +31,8 @@ import { tankWeight } from '../scene/weight';
 import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, aqWaitS, fetchStocking } from '../data/aqadvisor';
 import { BOWL_DEFAULT, BOWL_MAX, BOWL_MIN, PIE_DEFAULT, POLY_SIDES, SHAPES, bowMinLimit, offsetRing, ringArea, shapeOf } from '../scene/shape';
 import { TABLE_MAX, tableOn, tableRange, wallGap } from '../scene/table';
-import type { BgFit, BgSide, Fish, Item, ItemKind, LayoutId, LightTech, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
+import type { BgFit, BgSide, Fish, GrowFeed, Item, ItemKind, LayoutId, LightTech, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
+import { FEED_NAMES, setGrowTime, setPlantGrowth, timeChanges } from '../scene/growtime';
 import { GLASS_CHOICES, LIMITS, SceneError, parseScene } from '../scene/validate';
 import { deleteFromLib, listLib, loadFromLib, saveToLib } from '../scene/library';
 import { EXAMPLES } from '../examples';
@@ -950,7 +951,34 @@ Cancel, then change the name, to keep both.`)) return;
     store.edit(s => { const it = s.items.find(q => q.id === id); if (it) { fn(it, s); clampItem(it, s.tank, s); } }, { coalesce });
   };
   $('iSize').oninput = e => editItem(it => { it.size = +(e.target as HTMLInputElement).value; }, 'iSize');
-  $('iGrowth').oninput = e => editItem(it => { it.growth = +(e.target as HTMLInputElement).value / 100; }, 'iGrowth');
+  $('iGrowth').oninput = e => editItem((it, s) => setPlantGrowth(it, +(e.target as HTMLInputElement).value / 100, s), 'iGrowth');
+  // the tank's growth Time and feeding (lane GR3): every plant grows from its planted growth. Each plant's new growth
+  // costs a reveal (1..5 ms, more for big carpets) and its first growth builds its extras once (65..170 ms), so a dense
+  // tank catches up over a few frames: one first build per frame, and as many other plants as keep a frame near 40 ms,
+  // longest-waiting first. The whole move is one undo step.
+  let growGoal: { t: number; feed: GrowFeed } | null = null, growRaf = 0, growHeld = false, growLast = 0, growN = 8, growTick = 0, growLeft = 0;
+  const growSeen = new Map<number, number>();
+  const growStep = () => {
+    growRaf = 0; if (!growGoal) return;
+    const now = performance.now(), dt = now - growLast; growLast = now;
+    if (dt < 200) growN = Math.round(Math.min(400, Math.max(2, growN * (dt > 60 ? 0.7 : dt < 35 ? 1.3 : 1))));
+    const { t, feed } = growGoal, tick = ++growTick; let left = 0;
+    growLeft = 0;
+    store.edit(s => {
+      const cs = timeChanges(s, t, feed).sort((a, b) => (growSeen.get(a.id) ?? 0) - (growSeen.get(b.id) ?? 0));
+      let firsts = 1, rest = growN;
+      const ok = new Set(cs.filter(c => (c.first && !growSeen.has(c.id) ? firsts-- : rest--) > 0).map(c => c.id)); // (built before: cached)
+      for (const id of ok) growSeen.set(id, tick);
+      left += setGrowTime(s, t, feed, c => ok.has(c.id)).length; growLeft = left;
+    }, { coalesce: 'growTime' });
+    if (left) growRaf = requestAnimationFrame(growStep);
+    else { growGoal = null; growLeft = 0; if (!growHeld) store.seal(); }
+  };
+  const growTo = (t: number, feed: GrowFeed) => { growGoal = { t, feed }; if (!growRaf) growStep(); };
+  $<HTMLSelectElement>('growFeed').innerHTML = Object.entries(FEED_NAMES).map(([k, l]) => `<option value="${k}">${esc(l)}</option>`).join('');
+  $<HTMLSelectElement>('growFeed').onchange = e => { store.seal(); growTo(store.tank.grow.time, (e.target as HTMLSelectElement).value as GrowFeed); };
+  $('growTime').oninput = e => { growHeld = true; growTo(+(e.target as HTMLInputElement).value / 100, growGoal?.feed ?? store.tank.grow.feed); };
+  $('growTime').onchange = () => { growHeld = false; if (!growGoal) store.seal(); };
   $('iSpread').oninput = e => editItem(it => { it.spread = +(e.target as HTMLInputElement).value; }, 'iSpread');
   $('iStems').oninput = e => editItem(it => { it.stems = +(e.target as HTMLInputElement).value; }, 'iStems');
   $('iYaw').oninput = e => editItem(it => { it.yaw = +(e.target as HTMLInputElement).value; }, 'iYaw');
@@ -1019,7 +1047,7 @@ Cancel, then change the name, to keep both.`)) return;
     try { download(await viewer.exportPNG(mult), `${slug(G().name)}-${mult}x.png`); }
     catch (e) { status((e as Error).message, true); }
   });
-  for (const el of document.querySelectorAll<HTMLInputElement>('input[type=range]')) el.addEventListener('change', () => store.seal());
+  for (const el of document.querySelectorAll<HTMLInputElement>('input[type=range]:not(#growTime)')) el.addEventListener('change', () => store.seal()); // Time seals once its last plant has grown
 
   // ---------- type-in values: click a slider's readout to type an exact number (in the scene's units for lengths) ----------
   const toU = (mm: number) => tidy(toUnit(mm, G().units), 1);
@@ -1285,6 +1313,12 @@ Cancel, then change the name, to keep both.`)) return;
     for (const id of ['wReef', 'wOcean']) $(id).style.display = wa.salt ? '' : 'none';
     document.querySelectorAll<HTMLElement>('.lib [data-salt], #layout option[value="reef"]').forEach(e => e.style.display = isSalt(s) ? '' : 'none');
     $('plantsTitle').textContent = isSalt(s) ? 'Plants & Corals' : 'Plants';
+    { // growth Time: while a move is still growing plants, the slider shows where it is going
+      const t = growGoal?.t ?? s.grow.time, plants = s.items.filter(it => it.kind === 'plant'), over = plants.filter(it => (it.growth ?? 0) >= 1).length;
+      setVal('growFeed', growGoal?.feed ?? s.grow.feed); setVal('growTime', Math.round(t * 100));
+      setOut('oGrowTime', `${Math.round(t * 100)} %`);
+      $('growHint').textContent = !plants.length ? '' : growLeft ? `Growing: ${growLeft} plant${growLeft > 1 ? 's' : ''} to go` : t === 0 ? 'Time 0: as planted' : `${over} of ${plants.length} plants overgrown`;
+    }
     const mis = misfits(s);
     $('wMisfitRow').style.display = mis.length ? '' : 'none';
     if (mis.length) {
