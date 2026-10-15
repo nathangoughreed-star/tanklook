@@ -716,6 +716,8 @@ function addPerson(sc: THREE.Scene, S: TankSetup, T: Tank) {
 
 /** Room wall width and floor size, mm: big enough that nothing runs out at the minimum zoom (lane V, 2026-10-14; 0.1 zoom, 2026-10-15). */
 const ROOM_SPAN = 120000;
+/** Half the room's width along the wall, mm: the end walls stand this far either side of the tank centre. */
+const ROOM_HALF = 2500;
 /** Plain room floor under the stand/wall, so the room doesn't float in a void. One-sided (invisible from below). */
 function addFloor(sc: THREE.Scene, S: TankSetup, T: Tank) {
   if (!S.stand.show && !S.wall.show && !S.person.show) return;
@@ -754,6 +756,12 @@ function addWall(sc: THREE.Scene, S: TankSetup, T: Tank) {
     return;
   }
   panel(g, 0);
+  // end walls square to the wall, ROOM_HALF either side of the tank, so the room has sides instead of a wall running
+  // off forever (Nathan, 2026-10-15); in the wall's group, so they hide with it
+  for (const s of [-1, 1]) {
+    const e = new THREE.Group(); e.position.set(s * ROOM_HALF, 0, SPAN / 2); e.rotation.y = -s * Math.PI / 2; g.add(e);
+    panel(e, 0);
+  }
   if (S.wall.side === 'back') g.position.set(L / 2, fy, wp.back);
   else if (S.wall.side === 'right') { g.position.set(wp.right, fy, -D / 2); g.rotation.y = -Math.PI / 2; }
   else { g.position.set(wp.left, fy, -D / 2); g.rotation.y = Math.PI / 2; }
