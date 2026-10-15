@@ -284,8 +284,11 @@ function step() {
   if (next < LOOKS.length) setTimeout(step, 0);
   else {
     applyFilter();
-    // `npm run sheets` (scripts/export-sheets.mjs) opens ?export in a headless browser: write every sheet, no versions
-    if (import.meta.env.DEV && new URLSearchParams(location.search).has('export')) save(LOOKS, false);
+    // `npm run sheets` (scripts/export-sheets.mjs) opens ?export in a headless browser: write every sheet, no versions;
+    // `npm run sheets -- --record` opens ?record: the Record button's work (changed models' versions + sheets)
+    const q = new URLSearchParams(location.search);
+    if (import.meta.env.DEV && q.has('export')) save(LOOKS, false);
+    else if (import.meta.env.DEV && q.has('record')) save(changed(), true);
   }
 }
 if (gl) setTimeout(step, 0);
