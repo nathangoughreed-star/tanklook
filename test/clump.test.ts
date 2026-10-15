@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { defaultScene } from '../src/scene/defaults';
-import { MAX_STEMS, clampItem, itemDims, makeItem } from '../src/scene/items';
+import { MAX_STEMS, clampItem, itemDims, makeItem, spreadMax } from '../src/scene/items';
 import { parseScene } from '../src/scene/validate';
 
 // Per-plant spread + stem count (2026-10-14): optional, absent = the species' own look
@@ -13,7 +13,7 @@ describe('clump spread and stems', () => {
     const back = parseScene(JSON.stringify(s)).scene.tanks[0].items;
     expect(back[0]).toMatchObject({ spread: 120, stems: 9 });
     expect(back[1].stems).toBe(MAX_STEMS);
-    expect(back[1].spread).toBeLessThanOrEqual(Math.min(t.tank.L, t.tank.D));
+    expect(back[1].spread).toBeLessThanOrEqual(spreadMax(t.tank));
     expect(back[2].spread).toBeUndefined();
     expect(back[2].stems).toBeUndefined();
   });
