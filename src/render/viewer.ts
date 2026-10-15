@@ -305,7 +305,13 @@ export class Viewer {
         for (const o of culled) { o.onBeforeRender = THREE.Object3D.prototype.onBeforeRender; o.onAfterRender = THREE.Object3D.prototype.onAfterRender; }
         const prev = r.getRenderTarget();
         r.setRenderTarget(this.primeRT);
-        compile(objs.filter(o => !culled.has(o) && ([] as THREE.Material[]).concat((o as THREE.Mesh).material).some(m => !m.transparent && !(m as THREE.MeshPhysicalMaterial).transmission)), vp);
+        const mats = (o: THREE.Object3D) => ([] as THREE.Material[]).concat((o as THREE.Mesh).material);
+        compile(objs.filter(o => !culled.has(o) && mats(o).some(m => !m.transparent && !(m as THREE.MeshPhysicalMaterial).transmission)), vp);
+        // and a two-sided film's back faces, which three draws into that picture too (as BackSide)
+        const back = objs.filter(o => mats(o).some(m => (m as THREE.MeshPhysicalMaterial).transmission > 0 && m.side === THREE.DoubleSide));
+        for (const o of back) for (const m of mats(o)) { m.side = THREE.BackSide; m.needsUpdate = true; }
+        compile(back, vp);
+        for (const o of back) for (const m of mats(o)) { m.side = THREE.DoubleSide; m.needsUpdate = true; }
         r.setRenderTarget(prev);
       }
     }

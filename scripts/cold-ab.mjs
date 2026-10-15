@@ -4,12 +4,13 @@
 // so load from other chats lands on both alike. Records navigation -> first frame (the first WebGL draw call + the next
 // animation frame) and the ms spent in WebGL calls before it, with the calls over 100 ms (the program: gritK marks the
 // hardscape material, "linear" its transmission-pass variant).
-// Options: --rounds 3  --views betta-bowl,iwagumi,...  --size 1050x850  --out research/efficiency/EF1-cold-ab.json
+// Options: --rounds 3  --views betta-bowl,iwagumi,... (or scene .json paths)  --shots <dir> (a screenshot per view and build, once settled)
+//          --probe <page expression> (logged per load)  --wait 1500 (x 100 ms before giving up)  --size 1050x850  --out research/efficiency/EF1-cold-ab.json
 import { spawn } from 'node:child_process';
 import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 
 const argv = process.argv.slice(2);
 const opt = (k, d) => { const i = argv.indexOf('--' + k); return i < 0 ? d : argv[i + 1]; };
@@ -40,7 +41,7 @@ const INSTRUMENT = () => {
   const P = window.__perf = { firstFrame: null, ms: 0, programs: 0, slow: [], settled: 0 };
   // the app's own frames (src/ on the dev server, the main chunk in a build), where a draw or a slow call came from
   const appStack = () => new Error().stack.split('\n').map(l => l.trim()).filter(l => /\/src\/|assets\/(index|main)/.test(l) && !/three/.test(l)).slice(0, 5).map(l => l.replace(/^at /, '').replace(/\(?https?:\/\/[^/]+\//, '(')).join(' < ');
-  const src = new WeakMap(), progInfo = new WeakMap(); let cur = null; const orig = [];
+  const src = new WeakMap(), progInfo = new WeakMap(); let cur = null, fb = null; const orig = [];
   const DRAW = new Set(['drawElements', 'drawArrays', 'drawElementsInstanced', 'drawArraysInstanced', 'drawRangeElements']);
   const info = s => ({ len: s.length, marks: ['gritK', 'vGlassW', 'aqLight', 'transmission'].filter(m => s.includes(m)).concat(/return LinearTransferOETF\( vec4/.test(s) ? ['linear'] : []) });
   for (const C of [window.WebGL2RenderingContext, window.WebGLRenderingContext]) {
@@ -48,12 +49,13 @@ const INSTRUMENT = () => {
     for (const k of Object.getOwnPropertyNames(C.prototype)) {
       const d = Object.getOwnPropertyDescriptor(C.prototype, k);
       if (!d || typeof d.value !== 'function' || k === 'constructor') continue;
-      const f = d.value, draw = DRAW.has(k); orig.push([C, k, f]); // first frame: a draw on the tank view's canvas #c
+      const f = d.value, draw = DRAW.has(k); orig.push([C, k, f]); // first frame: a draw into the tank view's canvas #c itself (not an off-screen target, e.g. plant3d uploadPlant)
       C.prototype[k] = function (...a) {
-        if (draw && P.first == null && this.canvas?.id === 'c') { P.first = performance.now(); P.stack = appStack(); requestAnimationFrame(() => { P.firstFrame = performance.now(); }); }
+        if (draw && P.first == null && fb === null && this.canvas?.id === 'c') { P.first = performance.now(); P.stack = appStack(); requestAnimationFrame(() => { P.firstFrame = performance.now(); }); }
         if (k === 'shaderSource') src.set(a[0], a[1]);
         else if (k === 'attachShader') { const s = src.get(a[1]) ?? ''; if (/gl_FragColor|pc_fragColor|out\s+highp\s+vec4/.test(s) || !progInfo.has(a[0])) progInfo.set(a[0], info(s)); }
         else if (k === 'useProgram') cur = a[0];
+        else if (k === 'bindFramebuffer' && a[0] !== 0x8ca8) fb = a[1]; // not READ_FRAMEBUFFER
         else if (k === 'linkProgram') P.programs++;
         const t = performance.now(), r = f.apply(this, a), dt = performance.now() - t;
         P.ms += dt; if (dt > 20) P.settled = performance.now();
@@ -95,16 +97,16 @@ async function cold(d, view) {
     // the scene goes into localStorage on a page of the same origin where the app does not run (__none), so the app's
     // first start is already this example and nothing has warmed the program cache
     await br.s('Page.navigate', { url: d.base + '__none' }); await sleep(300);
-    await br.ev(`localStorage.setItem('tanklook.scene', ${JSON.stringify(readFileSync(`src/examples/${view}.json`, 'utf8'))}); 1`);
+    await br.ev(`localStorage.setItem('tanklook.scene', ${JSON.stringify(readFileSync(view.endsWith('.json') ? view : `src/examples/${view}.json`, 'utf8'))}); 1`);
     await br.s('Page.navigate', { url: d.base });
-    for (let i = 0; i < 1500; i++) {
+    for (let i = 0; i < +opt('wait', 1500); i++) {
       // done once nothing has linked for 4 s after the first frame: 'settled' = the end of the last WebGL call over 20 ms
       // (a program link), i.e. when the whole picture is up even if the app draws in steps
       const r = await br.ev(`(() => { const p = window.__perf; return p && p.firstFrame != null && performance.now() - Math.max(p.settled, p.firstFrame) > 4000 ? { firstFrame: Math.round(p.firstFrame), settled: Math.round(Math.max(p.settled, p.firstFrame)), glMs: Math.round(p.ms), programs: p.programs, slow: p.slow.sort((a, b) => b.ms - a.ms).slice(0, 6) } : null; })()`).catch(() => null);
-      if (r) { if (PROBE) r.probe = await br.ev(PROBE).catch(e => String(e)); if (SHOTS) writeFileSync(`${SHOTS}/${view}-${d.name}.png`, Buffer.from((await br.s('Page.captureScreenshot', { format: 'png' })).data, 'base64')); return r; }
+      if (r) { if (PROBE) r.probe = await br.ev(PROBE).catch(e => String(e)); if (SHOTS) writeFileSync(`${SHOTS}/${basename(view, '.json')}-${d.name}.png`, Buffer.from((await br.s('Page.captureScreenshot', { format: 'png' })).data, 'base64')); return r; }
       await sleep(100);
     }
-    return { error: 'never drew' };
+    return { error: 'never drew', probe: PROBE ? await br.ev(PROBE).catch(e => String(e)) : undefined };
   } finally { await br.close(); }
 }
 
