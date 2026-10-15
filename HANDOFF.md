@@ -18,7 +18,7 @@ Living file. Project state and dated decisions go here; update in place.
 - Not browser-checked in the app (no dev-server slot): the platy / molly Sex switch and stocking rows; tests cover the data.
 - Before/after composites: worktree `shots/x2/cmp-*.jpg` (gitignored).
 
-## Plant growth (2026-10-15; design agreed in chat, lane GR1 prompt `prompts/lane-GR1-plant-growth.md`, not started)
+## Plant growth (2026-10-15; design agreed in chat; lane GR1 DONE: branch `plants3d`, port 5283, pushed to main; GR2 / GR3 open)
 Nathan: each plant item gets a growth slider from just planted to fully mature / overgrown; what overgrown looks like
 depends on the species (lying along the surface in sheets, growing out of the tank, spreading). Each item (which may
 hold many stems / crowns) has its own growth. Later: a global timeline that grows the whole tank at each species' rate.
@@ -36,6 +36,43 @@ hold many stems / crowns) has its own growth. Later: a global timeline that grow
 - **Lanes:** GR1 growth value + reveal + lying over at the surface (trail), Height removed. GR2 emersed growth (stems
   and swords above water, needs room above the line), floaters spreading, frogbit / water lettuce, lily form (tiger
   lotus). GR3 timeline + tank setting (optional: light map slows shaded plants). Duckweed waits for instancing.
+- **GR1 landed (2026-10-15, Nathan: "ship it"):**
+  - Data: `Item.growth` (0..1, optional; clampItem rounds to 0.001, drops it on non-plants; validate keeps a finite number).
+    Absent = `growthOf(type, size)` (art/plants.ts), and the plant draws EXACTLY as before: `test/growth.test.ts` compares
+    every species triangle for triangle with the pre-growth generator kept in `test/fixtures/plant3d_before_growth.ts`.
+    `size` stays as the plant's own scale (hidden for plants); `grownSize()` = its size at a growth; itemDims follows it
+    (width capped at 1.4x the saved size so a grown plant can still sit near the glass).
+  - `PLANT3D[type].grow`: `speed` (GR3), `overflow` ('trail' grass / balansae / rotala; 'emerge' sword / ozelot / stem /
+    stemred / ludwigia; 'spread' carpet / floaters / sagittaria; 'none' fern / anubias / buce / crypt / moss; stored only,
+    GR1 trails everything that reaches the surface), `len` (mm at growth 0 and 1, even ratio per step), `more` (count
+    multiplier 0 -> 1), `shoots` (stem side shoots).
+  - render/plant3d.ts: `plantGeometry(type, seed, h, clump, g0, more, size)` builds once at full growth; every vertex has a
+    growth tag (a, w, anchor, piece, place). The plant's own part (same random draws as before) thins and shrinks below g0;
+    extras past g0 come from their own stream (`rng(seed * 6007 + 29)`): more / longer leaves (width grows with the square
+    root of the length; straps keep their width), new crowns on runners (clumps widen), more stems and side shoots
+    (a new stem reaches full length within 0.25 growth), a wider carpet / floater patch, denser moss. Extras are only
+    built once the item HAS a growth (`more` = it.growth != null), so starter sets and old files cost what they did.
+    `revealPlant(g, growth)` = positions only (hidden triangles dropped from the index), every drag step;
+    `bendPlant(g, F)` = lying over, once per (water level, place): F = water surface over the base - 3 mm.
+  - Lying over (Nathan 2026-10-15, two rounds): no sharp bend; a leaf / stem climbs no steeper than an arc of radius
+    R = half the water depth (50..250 mm) allows, so it sweeps over and lies along the surface. Each plant has a SPINE
+    heading (its current's direction); every leaf / stem that reaches the surface leans toward its own heading drawn from
+    a bell curve round the spine (sd `SPREAD` 0.5 rad), from 40 % of the depth up, and turns round to it through the arc.
+    Leaves riding a lying stem are pressed flat against the surface; side shoots move with their stem first (`links`).
+    A plant with no growth keeps the old allowance (only lies over when it would poke out more than 14 mm).
+  - UI: plant edit box shows Growth (0..100 %, "just planted / growing in / established / grown / overgrown") instead of
+    Height (index.html `iGrowthRow`, ui/panels.ts `growthWord`); plant library hints no longer say "Size = height".
+  - Cost: drag on the 139-plant dense starter, median 16.3 ms per growth step vs 15.6 ms per yaw step (alternate frames).
+    First move of a plant builds its full growth once (65..170 ms). Full growth tris: stem 39 k, rotala 93 k, red root
+    patch 216 k (600 mm), grass 9 k.
+  - Sheets (worktree `shots/`, not in git): `135_grow_{A..F}_*.png` (every species at 0 / .25 / .5 / .75 / 1),
+    `138_spine_{C,D,F}_*.png` (the approved sweep + spine). Helpers `shots/grow.js` (growRow / mixRow), `grow_sheets.py`.
+  - Open / not done: lying leaves are cut at the glass (they do not turn along it); colour shading is from the upright
+    plant (a lying leaf is not relit); no emerse growth.
+- **For GR2:** `overflow` is in the data; bendPlant is where an 'emerge' piece would keep climbing past F instead (needs
+  room above the line and an emersed leaf form); floaters already widen with growth (patch width from `len`).
+- **For GR3:** set `it.growth` from a tank time x `grow.speed` x tank setting; the slider path (reveal only) is the cheap
+  one, but each plant's first growth builds its extras once (stagger the first frame over many plants).
 
 ## 3D back wall (2026-10-15; main checkout; Nathan chose "3D panel inside" over a flat printed sheet; pushed to main)
 Nathan: textured backgrounds, e.g. a plant mat for terrariums, a live rock / coral wall for saltwater, river rocks for fresh.
