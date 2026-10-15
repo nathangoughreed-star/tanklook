@@ -2,6 +2,24 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane SS: scape styles + Composition picker (2026-10-15; branch `scape-styles`, port 5663; styles approved by Nathan, pushed to main)
+- **Four new starter styles** (scene/items.ts `starterItems` branches + `STYLES` rows + `LAYOUTS` labels; `LayoutId` and
+  `LAYOUT_IDS` grew): **Nature aquarium** (stones stepping down in front of wood rising over them, moss / fern / buce on
+  wood and stone, crypts at the feet, mixed stems behind, an open carpet midground); **Dutch** (no hardscape up to Medium,
+  no carpet; diagonal streets of one stem species each, red / green alternating, four terraces rising to the back, a rare
+  Ozelot specimen; lotus left out, its pads rode the surface); **Jungle** (big wood + spider-wood roots, vals and crypt
+  balansae to the surface, crypts / sagittaria over the floor, floater patches drifting over the groups; the "dim look"
+  is only the floaters' shade, lighting is not this lane's); **Forest** (manzanita stands as trunks, moss high in the
+  twigs, fine carpet, a sand path 70 % of the time from its own stream). Manzanita is still chunky, not "thin".
+- **Composition** (`LayoutSettings.comp?: CompId`, absent = 'any'; `COMPS`, `COMP_IDS`): `starterStyle(seed, comp)` fixes
+  the foci (mound, one side, U, V / two islands, scattered; jittered by the seed); 'any' = the old roll, so every old
+  tank and seed draws exactly as before (tested). `heightAt(foci, x)` shapes plant heights for an explicit composition
+  in the older sets too (scatter `prof`), and always in the new ones; Jungle also gathers clumps there (`crowd`). Not
+  followed: the round-tank planted mound, a swamp's land. No scene version bump (optional field).
+- Tests: `test/scapestyles.test.ts` (every style x composition in bounds, deterministic, density stops as SD, character
+  per style, composition weight, Any = old, Shuffle keeps comp, file round-trip). `test/items.test.ts`: Dutch's
+  "weight moves" check is by plant height (it covers the floor evenly). Pictures: worktree `shots/ss*_sheet_*.png`.
+
 ## Lane LA: algae on plant leaves + bowl glass film (2026-10-15; branch `leaf-algae`, port 5673; Nathan approved the pictures; pushed to main)
 
 - Lane AL's two open items, both on the one Condition slider, display only, all uniforms (dragging never rebuilds).
@@ -1500,7 +1518,7 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | AL dirty / algae view | `../Glass-Box-algae` / `algae` | 5613 | (released) | DONE 2026-10-15, pushed (see the Lane AL section); files free. Open: algae on plant leaves (after GR4) |
 | PL progressive first load | `../Glass-Box-progressive-load` / `progressive-load` | 5633 | the first-picture / startLinks path in `render/viewer.ts`, part grouping in `render/build.ts` (buildTank order only), a small load hint in `index.html` / `style.css` | running (session `local_61a222bb`) |
 | SG stone grain | `../Glass-Box-stone-grain` / `stone-grain` | 5653 | `render/items.ts` solidMaterial / GRIT / gritK (cheaper or baked stone grain) | running (session `local_d91c0bfe`) |
-| SS scape styles | `../Glass-Box-scape-styles` / `scape-styles` | 5663 | `scene/items.ts` starter section, `scene/starter.ts` STYLES + layer branches + Style.foci, the layout picker in `ui/panels.ts` / `index.html` | running (session `local_9d633375`) |
+| SS scape styles | `../Glass-Box-scape-styles` / `scape-styles` | 5663 | `scene/items.ts` starter section, `scene/starter.ts`, the layout picker in `ui/panels.ts` / `index.html` | styles + Composition pushed 2026-10-15 (see its section); NOW: Quick Aquascape Setup menu (Nathan: style, Shuffle and density in one menu, Hardscape / Plants menus for hand tweaks) |
 | LA leaf algae + bowl film | (worktree removed) | - | `render/algae.ts`, the plant material hook in `render/plant3d.ts`, bowl glass film | DONE (`e87bc19`). Open: no surface scum on bowls; BBA on leaf ends, not true margins |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 Free (no lane): `render/build.ts`, `render/items.ts`, `scene/items.ts`, `render/viewer.ts`, `main.ts`, `render/lighting.ts`,
