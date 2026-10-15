@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { defaultScene, defaultSetup } from '../src/scene/defaults';
 import { DEFAULT_DENS, LIBRARY, heightAt, layerOf, starterItems, starterStyle } from '../src/scene/items';
 import { IN } from '../src/scene/physics';
-import { shuffleHard } from '../src/scene/starter';
+import { handEdits, regenerate, shuffleHard } from '../src/scene/starter';
+import { groundEdited, styleGround } from '../src/scene/scapeground';
+import { groundHeight } from '../src/scene/terrain';
 import { COMP_IDS, parseScene } from '../src/scene/validate';
 import type { CompId, Item, LayerDens, LayoutId } from '../src/scene/types';
 
@@ -106,5 +108,53 @@ describe('new scape styles and the composition picker (lane SS)', () => {
     expect(parseScene(JSON.parse(JSON.stringify(sc))).scene.tanks[0].layout.comp).toBeUndefined();
     (sc.tanks[0].layout as { comp?: string }).comp = 'spiral';
     expect(parseScene(JSON.parse(JSON.stringify(sc))).scene.tanks[0].layout.comp).toBeUndefined();
+  });
+});
+
+describe('Quick aquascape setup: the style draws its substrate and terrain too (Nathan 2026-10-15)', () => {
+  const ALL = ['stones', 'driftwood', 'planted', 'iwagumi', 'swamp', 'nature', 'dutch', 'jungle', 'forest'] as const;
+  it('every style: deterministic, its own kind of substrate, a terrain sloping up to the back, inside the limits', () => {
+    for (const id of ALL) for (const seed of [1, 4, 23]) for (const comp of ['any', 'u'] as CompId[]) {
+      const a = setup(id, seed, comp), b = setup(id, seed, comp);
+      styleGround(a); styleGround(b);
+      expect(a.substrate).toEqual(b.substrate); expect(a.terrain).toEqual(b.terrain);
+      expect(a.layout.ground).toBe(true);
+      expect(['aragonite', 'coral']).not.toContain(a.substrate.type); // fresh water: no marine sand
+      const H = a.tank.H;
+      if (id === 'swamp') { expect(a.terrain.on).toBe(false); continue; } // the swamp keeps its own land
+      expect(a.terrain.on).toBe(true);
+      for (const h of a.terrain.h) { expect(h).toBeGreaterThanOrEqual(8); expect(h).toBeLessThanOrEqual(H * 0.35 + 1e-9); }
+      expect(a.substrate.bl + a.substrate.br).toBeGreaterThan(a.substrate.fl + a.substrate.fr);
+    }
+  });
+  it('a salt tank gets marine sand; seeds give different grounds; the density sliders leave it alone', () => {
+    const s = setup('reef', 3); s.water.salt = true; styleGround(s);
+    expect(['aragonite', 'coral']).toContain(s.substrate.type);
+    const keys = new Set<string>();
+    for (let seed = 2; seed < 12; seed++) { const t = setup('nature', seed); styleGround(t); keys.add(JSON.stringify([t.substrate, t.terrain.h])); }
+    expect(keys.size).toBe(10);
+    const t = setup('jungle', 5); styleGround(t); const before = JSON.stringify([t.substrate, t.terrain]);
+    t.layout.dens = { hard: 4, plant: 0, animal: 2 }; regenerate(t, 'hard', 1); regenerate(t, 'plant', 1);
+    expect(JSON.stringify([t.substrate, t.terrain])).toBe(before);
+  });
+  it('hills stand under the groups: a U composition is higher at both ends than in the middle', () => {
+    for (const seed of [2, 7, 11]) {
+      const s = setup('nature', seed, 'u'); styleGround(s);
+      const g = (x: number) => groundHeight(s, s.tank, s.tank.L * x, s.tank.D * 0.62);
+      expect(Math.min(g(0.15), g(0.85))).toBeGreaterThan(g(0.5));
+    }
+  });
+  it('a hand edit of the ground is spotted (warning first); a ground never styled is only "edited" when it is not the default', () => {
+    const s = setup('forest', 4); expect(groundEdited(s)).toBe(false); // the default substrate, never styled
+    expect(handEdits(s, 'all', true)).not.toContain('substrate');
+    styleGround(s); regenerate(s, 'all', 1);
+    expect(groundEdited(s)).toBe(false); expect(handEdits(s, 'hard', true)).toEqual([]);
+    s.terrain.h[3] += 20;
+    expect(handEdits(s, 'hard', true)).toContain('substrate');
+    expect(handEdits(s, 'hard')).not.toContain('substrate'); // a density slider does not touch the ground
+    const u = setup('forest', 4); u.substrate.type = 'blue';
+    expect(groundEdited(u)).toBe(true);
+    const sc = defaultScene(); sc.tanks[0].layout = { id: 'nature', seed: 2, dens: { ...DEFAULT_DENS }, ground: true };
+    expect(parseScene(JSON.parse(JSON.stringify(sc))).scene.tanks[0].layout.ground).toBe(true);
   });
 });

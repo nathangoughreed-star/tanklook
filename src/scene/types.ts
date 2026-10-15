@@ -196,7 +196,9 @@ export type CompId = 'any' | 'mound' | 'side' | 'u' | 'v' | 'scattered';
 export interface LayerDens { hard: number; plant: number; animal: number }
 /** `seed` draws the style and the hardscape (and a swamp's land); `plantSeed` / `animalSeed` draw the plants and the
  *  starter animals, so each menu's Shuffle redraws its own layer only (Nathan 2026-10-15). Absent = `seed`. */
-export interface LayoutSettings { id: LayoutId; seed: number; plantSeed?: number; animalSeed?: number; dens?: LayerDens; comp?: CompId }
+export interface LayoutSettings { id: LayoutId; seed: number; plantSeed?: number; animalSeed?: number; dens?: LayerDens; comp?: CompId;
+  /** The substrate and terrain were drawn for this style by the Quick aquascape setup (scene/scapeground.ts). */
+  ground?: boolean }
 
 /** Library item kinds; the variant names the generator (scene/items.ts LIBRARY). */
 export type ItemKind = 'stone' | 'wood' | 'cave' | 'plant' | 'coral';

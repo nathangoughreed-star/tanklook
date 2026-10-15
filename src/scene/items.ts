@@ -342,6 +342,20 @@ export function starterStyle(seed: number, comp: CompId = 'any'): Style {
   const open = comp === 'side' ? s(0.8) : comp === 'u' ? 0.5 : comp === 'v' ? (foci[0].x + foci[1].x) / 2 : -1;
   return { ...st, classic: false, foci, open, comp };
 }
+/** The groups of a set as designed (seed 1, Medium), where a style places its own instead of the centred one. */
+const DESIGNED_FOCI: Partial<Record<LayoutId, Focus[]>> = {
+  reef: [{ x: 0.3, d: 0.55, k: 1 }, { x: 0.73, d: 0.5, k: 0.7 }],
+  nature: [{ x: 0.3, d: 0.6, k: 1 }, { x: 0.68, d: 0.45, k: 0.4 }],
+  dutch: [{ x: 0.3, d: 0.6, k: 1 }, { x: 0.76, d: 0.6, k: 0.8 }],
+  jungle: [{ x: 0.25, d: 0.62, k: 1 }, { x: 0.74, d: 0.55, k: 0.7 }],
+  forest: [{ x: 0.28, d: 0.62, k: 1 }, { x: 0.74, d: 0.58, k: 0.7 }],
+  iwagumi: [{ x: 0.38, d: 0.55, k: 1 }],
+};
+/** Where a set's groups stand (fractions of L and D, weight k): what the substrate's hills follow (scene/scapeground.ts). */
+export function styleFoci(id: LayoutId, seed: number, comp?: CompId): readonly Focus[] {
+  const st = starterStyle(seed, comp);
+  return (st.classic && DESIGNED_FOCI[id]) || st.foci;
+}
 /** Plant height across the tank for a composition: tallest at the groups (by weight), down to 0.35 between them. */
 export const heightAt = (foci: readonly Focus[], xf: number) => 0.35 + 0.65 * Math.max(0, ...foci.map(f => Math.sqrt(f.k) * Math.exp(-(((xf - f.x) / 0.24) ** 2))));
 function rolledStyle(seed: number): Style {
@@ -767,7 +781,7 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
   } else if (id === 'reef') {
     // live rock islands (two in the designed set, a channel between), a few rocks stacked on each; branching and plate
     // corals up on the rock, mushrooms and leathers lower down and on the sand. Offered in a saltwater tank only (the UI).
-    const foci = designed ? [{ x: 0.3, d: 0.55, k: 1 }, { x: 0.73, d: 0.5, k: 0.7 }] : st.foci;
+    const foci = designed ? DESIGNED_FOCI.reef! : st.foci;
     // a long tank gets wider islands of more rocks, not bigger rocks
     const base = clamp(Math.min(L, D * 1.5, H * 1.3) * 0.3, 60, 240) * st.scale, wide = clamp(L / (base * 3.5), 1, 2.5);
     layer('hard', () => {
@@ -831,7 +845,7 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
     // Nature aquarium (Amano): wood and stone together, the stones stepping down in front of the main one and the wood
     // rising over them (the substrate slopes up to the back already); moss, ferns and buce on the wood and stone, crypts
     // at their feet, mixed stems and grasses behind (tallest behind the main group), an open midground of carpet.
-    const F = designed ? [{ x: 0.3, d: 0.6, k: 1 }, { x: 0.68, d: 0.45, k: 0.4 }] : st.foci, open = designed ? 0.55 : st.open;
+    const F = designed ? DESIGNED_FOCI.nature! : st.foci, open = designed ? 0.55 : st.open;
     const sb = clamp(Math.min(L, D * 1.6, H * 1.4) * 0.15, 30, 130) * st.scale;
     layer('hard', () => {
       const stone = designed ? 'seiryu' : pick(['seiryu', 'seiryu', 'dragon', 'river']), wood = designed ? 'branch' : pick(['branch', 'branch', 'spider', 'manzanita']);
@@ -871,7 +885,7 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
     // Dutch: no carpet and little or no hardscape. Streets of one species each run back at a slant, neighbours in
     // contrasting colours (red / green), cut in terraces that step up from front to back; the composition sets where the
     // terraces stand tallest; now and then a specimen plant (an Ozelot sword) on a low terrace.
-    const F = designed ? [{ x: 0.3, d: 0.6, k: 1 }, { x: 0.76, d: 0.6, k: 0.8 }] : st.foci;
+    const F = designed ? DESIGNED_FOCI.dutch! : st.foci;
     layer('hard', () => {
       for (let i = 0, n = Math.floor(dens * 1.2 - 0.3); i < n; i++) {
         const v = pick(['river', 'dragon', 'mopani', 'lava']), x = L * (0.15 + r() * 0.7), d = D * (0.2 + r() * 0.35);
@@ -902,7 +916,7 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
     // Jungle: thick and wild. Big wood with tangled roots (spider wood), tall vallisneria and crypt balansae up to the
     // surface, crypts and swords filling the floor so little sand shows, ferns and anubias on the wood, floating plants
     // over part of the surface for the dim, shaded look.
-    const F = designed ? [{ x: 0.25, d: 0.62, k: 1 }, { x: 0.74, d: 0.55, k: 0.7 }] : st.foci;
+    const F = designed ? DESIGNED_FOCI.jungle! : st.foci;
     layer('hard', () => {
       const wood = designed ? 'branch' : pick(['branch', 'branch', 'spider', 'mopani']), stone = designed ? 'river' : pick(['river', 'lava']);
       F.forEach((f, fi) => {
@@ -931,7 +945,7 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
     // Forest: thin upright wood (manzanita) standing like trunks in one stand per group, moss tied high in the twigs as a
     // canopy, ferns and buce at the feet, a fine carpet over the floor and, most of the time, a sand path winding back
     // between the stands. The path comes from its own stream, so the hardscape and the plant layer agree on it.
-    const F = designed ? [{ x: 0.28, d: 0.62, k: 1 }, { x: 0.74, d: 0.58, k: 0.7 }] : st.foci;
+    const F = designed ? DESIGNED_FOCI.forest! : st.foci;
     const pr = rng(S.layout.seed * 7919 + 4243), hasPath = designed || pr() < 0.7;
     const p0 = designed ? 0.52 : st.open >= 0 ? st.open : 0.3 + pr() * 0.4, p1 = clamp(p0 + (pr() - 0.5) * 0.3, 0.2, 0.8);
     const pathX = (t: number) => p0 + (p1 - p0) * t + 0.04 * Math.sin(t * 5 + p0 * 9);

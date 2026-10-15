@@ -5,6 +5,7 @@ import { rng } from '../art/paint';
 import { getSpecies, type Species } from '../data/species';
 import { DEFAULT_DENS, EPIPHYTES, STYLES, clampItem, layerOf, perch, starterItems, type Layer } from './items';
 import { volume } from './physics';
+import { groundEdited } from './scapeground';
 import { placeNew, randomPose, randomSize } from './scatter';
 import type { Fish, Item, TankSetup } from './types';
 
@@ -110,10 +111,12 @@ const speciesCount = (fish: Fish[]) => fish.map(f => f.species + (f.sex ?? '')).
 /**
  * What a redraw of `what` would throw away that is not the starter set as drawn for the tank's current settings: pieces
  * moved, added, removed or resized by hand, or animals other than the stop's (Nathan 2026-10-15: redraw completely,
- * but warn first that it gets rid of the current scape). Empty = nothing of the user's is lost; the caller just redraws.
+ * but warn first that it gets rid of the current scape). `ground`: the redraw restyles the substrate as well (the Quick
+ * aquascape setup). Empty = nothing of the user's is lost; the caller just redraws.
  */
-export function handEdits(s: TankSetup, what: Layer | 'all'): ('hardscape' | 'plants' | 'animals')[] {
-  const out: ('hardscape' | 'plants' | 'animals')[] = [], dens = s.layout.dens ?? DEFAULT_DENS;
+export function handEdits(s: TankSetup, what: Layer | 'all', ground = false): ('substrate' | 'hardscape' | 'plants' | 'animals')[] {
+  const out: ('substrate' | 'hardscape' | 'plants' | 'animals')[] = [], dens = s.layout.dens ?? DEFAULT_DENS;
+  if (ground && groundEdited(s)) out.push('substrate'); // the quick setup redraws the ground too
   const hardNow = s.items.filter(it => layerOf(it) === 'hard'), plantNow = s.items.filter(it => layerOf(it) === 'plant');
   if (what === 'hard' || what === 'all') {
     if (!sameItems(hardNow, starterItems(s).filter(it => layerOf(it) === 'hard'))) out.push('hardscape');

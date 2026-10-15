@@ -13,7 +13,8 @@ import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene, TANK_PRESETS } from '../scene/defaults';
 import { COMPS, DEFAULT_DENS, EPIPHYTES, KINDS, perch, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
-import { handEdits, regenerate, shuffleHard } from '../scene/starter';
+import { handEdits, regenerate } from '../scene/starter';
+import { styleGround } from '../scene/scapeground';
 import { growthOf, isClump, isFloat, isPatch, type PlantType } from '../art/plants';
 import { clumpAuto } from '../render/plant3d';
 import { canPrebuild, plantWarm, prebuildHooks, prebuildPlants } from '../render/items';
@@ -978,8 +979,8 @@ Cancel, then change the name, to keep both.`)) return;
   /** A redraw is complete (Nathan 2026-10-15): when it would throw away pieces or animals placed, moved or removed by
    *  hand, a warning asks first. Resolves true to go ahead; on "Keep my scape" `revert` puts the control back. */
   const warnDlg = $<HTMLDialogElement>('scapeWarn');
-  const okToReplace = (what: Layer | 'all', revert: () => void, only?: 'hardscape') => new Promise<boolean>(done => {
-    const lost = handEdits(S(), what).filter(l => !only || l === only);
+  const okToReplace = (what: Layer | 'all', revert: () => void, ground = false) => new Promise<boolean>(done => {
+    const lost = handEdits(S(), what, ground);
     if (!lost.length) { done(true); return; }
     const list = lost.length === 1 ? lost[0] : `${lost.slice(0, -1).join(', ')} and ${lost[lost.length - 1]}`;
     $('scapeWarnText').textContent = `${what === 'all' ? 'A new starter set' : 'Redrawing this layer'} starts the ${list} again from scratch. Everything you placed, moved or removed there by hand will be gone.`;
@@ -994,13 +995,14 @@ Cancel, then change the name, to keep both.`)) return;
   let preSwamp = emptyScene().tanks[0].water.level;
   $<HTMLSelectElement>('layout').onchange = async e => {
     const to = (e.target as HTMLSelectElement).value as LayoutId;
-    if (!await okToReplace('all', () => setVal('layout', S().layout.id))) return;
+    if (!await okToReplace('all', () => setVal('layout', S().layout.id), to !== 'none')) return;
     store.selectItem(null); fishId0 = store.nextId();
     store.edit(s => {
       const was = s.layout.id;
       s.layout.id = to;
       if (s.layout.id === 'swamp' && s.water.level > SWAMP_LEVEL) { preSwamp = s.water.level; setWaterLevel(s, SWAMP_LEVEL); } // land needs to stand out of the water
       else if (was === 'swamp' && s.layout.id !== 'swamp' && s.water.level === SWAMP_LEVEL) setWaterLevel(s, preSwamp);
+      styleGround(s); // the style's own substrate and terrain (Quick aquascape setup); a bare tank keeps its ground
       replaced(s);
     });
     dropGoneFish();
@@ -1010,25 +1012,20 @@ Cancel, then change the name, to keep both.`)) return;
   // (animals stay). Shuffle and the density sliders keep it.
   $<HTMLSelectElement>('layoutComp').onchange = async e => {
     const to = (e.target as HTMLSelectElement).value as CompId;
-    if (!await okToReplace('hard', () => setVal('layoutComp', S().layout.comp ?? 'any'))) return;
+    if (!await okToReplace('hard', () => setVal('layoutComp', S().layout.comp ?? 'any'), true)) return;
     store.selectItem(null);
-    store.edit(s => { if (to === 'any') delete s.layout.comp; else s.layout.comp = to; regenerate(s, 'hard', 0); });
+    store.edit(s => { if (to === 'any') delete s.layout.comp; else s.layout.comp = to; styleGround(s); regenerate(s, 'hard', 0); });
     status(`Composition: ${COMPS[to].label}. Ctrl+Z brings the previous pieces back.`);
   };
-  // each menu's Shuffle redraws its own layer only (Nathan 2026-10-15); Animals' Shuffle moves the animals (above)
+  // Quick aquascape setup (Nathan 2026-10-15): one Shuffle for the whole set, the substrate and terrain, rock and wood,
+  // and plants, at the same style, composition and densities; the animals stay (Animals has its own Shuffle). The
+  // Hardscape and Plants menus are for tweaking the pieces by hand afterwards.
   $('layoutShuffle').onclick = async () => {
-    if (!await okToReplace('hard', () => {}, 'hardscape')) return;
+    if (!await okToReplace('hard', () => {}, true)) return;
     const seed = 1 + Math.floor(Math.random() * 1e6);
     store.selectItem(null);
-    store.edit(s => shuffleHard(s, seed));
-    status('Hardscape rearranged; plants and animals stayed. Ctrl+Z brings the previous pieces back.');
-  };
-  $('plantShuffle').onclick = async () => {
-    if (!await okToReplace('plant', () => {})) return;
-    const seed = 1 + Math.floor(Math.random() * 1e6);
-    store.selectItem(null);
-    store.edit(s => { s.layout.plantSeed = seed; regenerate(s, 'plant', 0); });
-    status(`${isSalt(S()) ? 'Corals' : 'Plants'} rearranged round the hardscape. Ctrl+Z brings the previous ones back.`);
+    store.edit(s => { s.layout.animalSeed ??= s.layout.seed; s.layout.seed = seed; delete s.layout.plantSeed; styleGround(s); regenerate(s, 'hard', 0); });
+    status('New substrate, hardscape and plants in the same style; the animals stayed. Ctrl+Z brings the previous ones back.');
   };
   // Density sliders (lane SD): one in each of Hardscape, Plants and Animals, continuous from one piece (one animal) to
   // far too much (Nathan 2026-10-15). Dragging only names the level; the layer is redrawn once, on release (a slider
@@ -1681,8 +1678,8 @@ Cancel, then change the name, to keep both.`)) return;
     setVal('edge', s.render.edge); $('gridOn').checked = s.render.grid; setVal('pop', Math.round(s.render.pop * 100)); setOut('oPop', s.render.pop ? `${Math.round(s.render.pop * 100)} %` : 'off');
     setVal('layoutComp', s.layout.comp ?? 'any'); ($('layoutComp') as HTMLSelectElement).disabled = s.layout.id === 'none';
     setVal('layout', s.layout.id); // "Bare tank" says there is nothing in it, which stops being true once a piece is added by hand (G2, 2026-10-14)
-    $('layoutHint').textContent = s.layout.id === 'none' && s.items.length ? 'A starter set replaces every piece; or add, move and remove pieces yourself.' : LAYOUTS[s.layout.id].hint + ' Then move, add or remove any piece.';
-    ($('layoutShuffle') as HTMLButtonElement).disabled = ($('plantShuffle') as HTMLButtonElement).disabled = s.layout.id === 'none';
+    $('layoutHint').textContent = s.layout.id === 'none' && s.items.length ? 'A starter set replaces every piece; or add, move and remove pieces yourself.' : LAYOUTS[s.layout.id].hint;
+    ($('layoutShuffle') as HTMLButtonElement).disabled = s.layout.id === 'none';
     const dn = s.layout.dens ?? DEFAULT_DENS;
     for (const [k, inp, out] of DENS_IN) { setVal(inp, dn[k]); setOut(out, stopName(k, dn[k])); ($(inp) as HTMLInputElement).disabled = s.layout.id === 'none'; }
     const nk = (k: ItemKind) => s.items.filter(q => q.kind === k).length;
