@@ -8,7 +8,7 @@ import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { BACKDROPS } from '../render/backdrop';
 import { MAP_DIV, MAP_STEP, emitters, mapStepOf } from '../render/lighting';
 import { darkOf, darkStats } from '../render/lightShells';
-import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, mountOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeOf, wattsOf, type Fixture } from '../scene/lightout';
+import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, mountOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeLayout, tubeOf, TUBE_SP_MAX, wattsOf, type Fixture } from '../scene/lightout';
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene, TANK_PRESETS } from '../scene/defaults';
@@ -841,10 +841,10 @@ Cancel, then change the name, to keep both.`)) return;
 
   // ---------- Lighting ----------
   const lKeys = { lCount: 'count', lRows: 'rows', lSp: 'spacing', lCone: 'cone', lH: 'height', lBright: 'bright', lK: 'kelvin', lRoom: 'room', lW: 'watts', lPar: 'par' } as const;
-  // spacing below a bulb's width snaps to 0 = auto (fill the tank)
+  // spacing below a bulb's width (tubes: 20 mm) snaps to 0 = auto (fill the tank)
   // while the power is set the Brightness slider is Exposure, in stops (bright = 2^v)
   const expo = () => wattsOf(S()) > 0;
-  for (const [id, k] of Object.entries(lKeys)) $(id).oninput = e => store.edit(s => { const v = +(e.target as HTMLInputElement).value; s.light[k] = k === 'spacing' && v < 80 ? 0 : k === 'bright' && wattsOf(s) > 0 ? +(2 ** v).toFixed(3) : v; }, { coalesce: id });
+  for (const [id, k] of Object.entries(lKeys)) $(id).oninput = e => store.edit(s => { const v = +(e.target as HTMLInputElement).value; s.light[k] = k === 'spacing' && v < (s.light.type === 'tube' ? 20 : 80) ? 0 : k === 'bright' && wattsOf(s) > 0 ? +(2 ** v).toFixed(3) : v; }, { coalesce: id });
   // up to 12 bulbs when placed to fit the tank (no rows to multiply them), 6 otherwise
   /** A colour outside the lamp's usual range moves to its usual one (on a lamp or fixture change only; the slider goes past). */
   const fitK = (l: TankSetup['light']) => { const [a, b, d] = TECHS[techOf(l)].k; if (l.kelvin < a || l.kelvin > b) l.kelvin = d; };
@@ -1584,8 +1584,12 @@ Cancel, then change the name, to keep both.`)) return;
     $('lCountRow').style.display = l.type === 'spot' || l.type === 'tube' ? '' : 'none';
     $('lCountLab').textContent = l.type === 'tube' ? 'Tubes' : 'Bulbs';
     for (const id of ['lRowsRow', 'lPatRow', 'lSpRow', 'lConeRow']) $(id).style.display = l.type === 'spot' ? '' : 'none';
-    if (l.pattern === 'fit') for (const id of ['lRowsRow', 'lSpRow']) $(id).style.display = 'none'; // placed by the outline
-    setVal('lPat', l.pattern); setOut('oLSp', l.spacing ? fmt(l.spacing) : 'Auto'); setOut('oLCone', l.cone + '°');
+    if (l.pattern === 'fit' && l.type === 'spot') for (const id of ['lRowsRow', 'lSpRow']) $(id).style.display = 'none'; // placed by the outline
+    // tubes: centre-to-centre spacing too, which sizes the hood (lightout tubeLayout); shown as the spacing in effect
+    const tl = l.type === 'tube' ? tubeLayout(s.tank, l) : null;
+    if (tl) $('lSpRow').style.display = '';
+    Object.assign($('lSp') as HTMLInputElement, tl ? { max: String(TUBE_SP_MAX), step: '5' } : { max: '1500', step: '10' }); setVal('lSp', l.spacing ?? 0);
+    setVal('lPat', l.pattern); setOut('oLSp', tl ? (tl.set ? `${fmt(tl.s)} · hood ${fmt(tl.depth)} deep` : 'Auto') : l.spacing ? fmt(l.spacing) : 'Auto'); setOut('oLCone', l.cone + '°');
     setOut('oLH', s.lid === 'hood' ? 'In hood' : fmt(l.height) + ' above');
     $('lHRow').style.display = l.type === 'flat' ? 'none' : ''; ($('lH') as HTMLInputElement).disabled = s.lid === 'hood';
     $('lMountRow').style.display = l.type === 'flat' || s.lid === 'hood' ? 'none' : ''; setVal('lMount', mountOf(l));

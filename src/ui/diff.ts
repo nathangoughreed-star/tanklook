@@ -129,7 +129,7 @@ export function tankDiff(a: TankSetup, b: TankSetup, u: Units): DiffItem[] {
     if (a.light.type === 'spot') {
       add(a.light.rows, b.light.rows, r => `${r} row${r > 1 ? 's' : ''} of bulbs`, ['light.rows']);
       add(a.light.pattern, b.light.pattern, p => p === 'tri' ? 'Triangular bulb pattern' : p === 'fit' ? 'Bulbs placed to fit the tank' : 'Grid bulb pattern', ['light.pattern']);
-      add(a.light.spacing, b.light.spacing, v => v ? `Bulbs ${len(v)} apart` : 'Bulbs spread to fit', ['light.spacing']);
+      add(a.light.spacing, b.light.spacing, v => v ? `Lights ${len(v)} apart` : 'Lights spread to fit', ['light.spacing']);
       add(a.light.cone, b.light.cone, v => `${v}° beam`, ['light.cone']);
     }
     if (a.light.type !== 'flat' && a.lid !== 'hood' && b.lid !== 'hood') add(a.light.height, b.light.height, h => `Light ${len(h)} up`, ['light.height']);

@@ -12,7 +12,7 @@ import type { ConditionSettings, LightSettings, Tank, WaterSettings } from '../s
 import { waterK, waterY } from '../scene/physics';
 import { bowlDims, bowlRadius, footprint, shapeOf } from '../scene/shape';
 
-import { AQ_MAX, LAMP_Y, LUXW, beamExp, emitters, lampHeight, mountOf, lightEnvCached, lightOutCached, renderBright, type Emitter, type LightEnv, type LightScene } from '../scene/lightout';
+import { AQ_MAX, LAMP_Y, LUXW, beamExp, emitters, lampHeight, mountOf, lightEnvCached, lightOutCached, renderBright, techOf, tubeLayout, tubeOf, type Emitter, type LightEnv, type LightScene } from '../scene/lightout';
 // the fixture geometry lives with the light-output model now (lane K); re-exported so importers stay as they were
 export { AQ_MAX, LAMP_Y, emitters, fitSpots, lampHeight, type Emitter } from '../scene/lightout';
 
@@ -447,11 +447,11 @@ export function addFixture(sc: THREE.Scene, T: Tank, l: LightSettings, ceiling?:
     // `overhead`: hidden while the eye is above the fixture (viewer), where it would only cover the tank (audit #20)
     const m = new THREE.Mesh(geo, mat); m.position.set(x, yy, z); m.userData.nolight = true; m.userData.overhead = y; sc.add(m); return m;
   };
-  const E = emitters(T, l);
+  const E = emitters(T, l), tl = l.type === 'tube' ? tubeLayout(T, l) : null, tubeTop = tl ? y + tl.dia / 2 + 16 : 0;
   // hung: from the ceiling on thin cables (two per bar, one per spot)
   const mount = mountOf(l);
   if (mount === 'hang' && ceiling != null) {
-    const top = l.type === 'spot' ? y + 45 : y + 23, len = Math.max(0, ceiling - top), wire = new THREE.MeshBasicMaterial({ color: 0x9aa0a6 });
+    const top = l.type === 'spot' ? y + 45 : tl ? tubeTop : y + 23, len = Math.max(0, ceiling - top), wire = new THREE.MeshBasicMaterial({ color: 0x9aa0a6 });
     const at: [number, number][] = l.type === 'spot' ? E.map(e => [e[0], e[2]]) : [[L * 0.15, -D / 2], [L * 0.85, -D / 2]];
     for (const [x, z] of at) add(new THREE.CylinderGeometry(0.8, 0.8, len, 6), wire, x, top + len / 2, z);
   }
@@ -464,7 +464,7 @@ export function addFixture(sc: THREE.Scene, T: Tank, l: LightSettings, ceiling?:
       const m = add(new THREE.CylinderGeometry(2, 2, Math.hypot(x1 - x0, y1 - y0, z1 - z0), 8), wireM, (x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2);
       if (x0 !== x1) m.rotation.z = Math.PI / 2; else if (z0 !== z1) m.rotation.x = Math.PI / 2;
     };
-    const armY = spot ? y + 49 : l.type === 'tube' ? y + 16 : y + 7, w = spot ? 12 : D * (l.type === 'tube' ? 0.6 : 0.32);
+    const armY = spot ? y + 49 : tl ? tubeTop - 8 : y + 7, w = spot ? 12 : tl ? tl.depth * 0.66 : D * 0.32;
     const inBar = spot ? 6 : (l.type === 'tube' ? L * 0.01 : L * 0.02) + 12; // where the arms leave the bar (inside its end)
     for (const z of spot ? [...new Set(E.map(e => e[2]))] : [-D / 2]) {
       if (spot) add(new THREE.BoxGeometry(L - 4, 8, 16), dark, L / 2, y + 49, z);
@@ -482,9 +482,55 @@ export function addFixture(sc: THREE.Scene, T: Tank, l: LightSettings, ceiling?:
     add(new THREE.CylinderGeometry(32, 40, 45, 24), dark, e[0], y + 22, e[2]);
     add(new THREE.CylinderGeometry(30, 30, 2, 24), glow, e[0], y - 1, e[2]);
   }
-  if (l.type === 'tube') {
-    add(new THREE.BoxGeometry(L * 0.98, 14, D * 0.9), dark, L / 2, y + 16, -D / 2);
-    for (const e of E) { const t = add(new THREE.CylinderGeometry(9, 9, e[3] * 2, 12), glow, e[0], y, e[2]); t.rotation.z = Math.PI / 2; }
+  if (tl) {
+    // a hood like a T5 / T8 fixture (Nathan 2026-10-15): a top plate, front and back skirts down to the lamps' middle,
+    // end plates, and under it per tube a socket at each end, capped lamp ends and (T5 with own reflectors) a polished half-pipe reflector; otherwise a white-painted ceiling. LED tubes are half aluminium
+    // (they light downward only); a power compact is two thin legs side by side. The housing's depth is the layout's,
+    // so more tubes or a wider spacing make a deeper hood. The glow mesh is the lamp; a faint additive halo round it.
+    const tech = techOf(l), r = tl.dia / 2, lamp = tubeOf(l, T).lamp, hl = Math.max(L * 0.98, lamp + 60), dep = tl.depth, zc = -D / 2;
+    const ceil = y + r + 9, low = y + 1, top = tubeTop; // the skirts end at the lamps' middle: their lower half shows
+    const mat = (c: number, side = false) => new THREE.MeshBasicMaterial({ color: c, side: side ? THREE.DoubleSide : THREE.FrontSide });
+    const skirt = mat(0x33383e), edge = mat(0x4a5058), endM = mat(0x1e2125), sock = mat(0x16181b);
+    const capM = mat(tech === 'led-tube' ? 0xd6d8da : 0xc4c8cc), alu = mat(0xaab0b6);
+    const halo = new THREE.MeshBasicMaterial({ color: glowColor(l.kelvin), transparent: true, opacity: 0.16, depthWrite: false, blending: THREE.AdditiveBlending });
+    halo.userData.glow = true;
+    const bar = (geo: THREE.BufferGeometry, m: THREE.Material, x: number, yy: number, z: number) => { const o = add(geo, m, x, yy, z); o.rotation.z = Math.PI / 2; return o; };
+    add(new THREE.BoxGeometry(hl, top - ceil, dep), dark, L / 2, (top + ceil) / 2, zc);
+    for (const sz of [1, -1]) {
+      add(new THREE.BoxGeometry(hl, top - low, 3), skirt, L / 2, (top + low) / 2, zc + sz * (dep / 2 - 1.5));
+      add(new THREE.BoxGeometry(hl + 2, 2.5, 5), edge, L / 2, top - 1, zc + sz * (dep / 2 - 2));       // the top edge's highlight
+      add(new THREE.BoxGeometry(8, top - low + 2, dep + 4), endM, L / 2 + sz * (hl / 2 + 2), (top + low) / 2, zc);
+    }
+    add(new THREE.BoxGeometry(hl - 4, 1, dep - 6), mat(tech === 't5-refl' ? 0x8e949a : tech === 'led-tube' ? 0x3a3f45 : 0xb9bec3), L / 2, ceil - 0.5, zc);
+    // the reflector: unlit, so its polish is baked in as vertex shades, the lamp's bright reflection straight above it
+    // and a second band either side, darker toward the open edges
+    const rr = Math.min(tl.wide / 2 + 9, tl.s / 2 - 1), refl = new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide });
+    const reflGeo = () => {
+      const g = new THREE.CylinderGeometry(rr, rr, lamp + 20, 32, 1, true, 0, Math.PI), p = g.attributes.position, c: number[] = [];
+      for (let i = 0; i < p.count; i++) {
+        const a = Math.atan2(p.getX(i), p.getZ(i)), up = Math.sin(a), k = 0.42 + 0.5 * up ** 8 + 0.22 * Math.sin(2 * a) ** 6 + 0.12 * up;
+        c.push(k * 0.97, k * 0.99, Math.min(1, k * 1.03));
+      }
+      g.setAttribute('color', new THREE.Float32BufferAttribute(c, 3)); return g;
+    };
+    for (const e of E) {
+      if (tech === 't5-refl') bar(reflGeo(), refl, L / 2, y, e[2]);
+      const legs = tl.twin ? [e[2] - r - 1.5, e[2] + r + 1.5] : [e[2]];
+      for (const z of legs) {
+        if (tech === 'led-tube') {
+          bar(new THREE.CylinderGeometry(r, r, lamp, 20, 1, false, Math.PI, Math.PI), glow, L / 2, y, z);
+          bar(new THREE.CylinderGeometry(r, r, lamp, 20, 1, false, 0, Math.PI), alu, L / 2, y, z);
+        } else bar(new THREE.CylinderGeometry(r, r, lamp, 20), glow, L / 2, y, z);
+        bar(new THREE.CylinderGeometry(r * 1.9, r * 1.9, lamp - r, 20, 1, true), halo, L / 2, y, z);
+      }
+      for (const sx of [1, -1]) {
+        const xe = L / 2 + sx * lamp / 2;
+        if (!tl.twin || sx > 0) for (const z of legs) bar(new THREE.CylinderGeometry(r + 0.6, r + 0.6, 14, 16), capM, xe + sx * 7, y, z);
+        // the socket ("tombstone") holding the lamp's end, from the housing ceiling down past the lamp
+        add(new THREE.BoxGeometry(12, ceil - y + r + 4, tl.wide + 10), sock, xe + sx * 20, (ceil + y - r - 4) / 2, e[2]);
+      }
+      if (tl.twin) bar(new THREE.CylinderGeometry(r * 0.8, r * 0.8, tl.wide - 2, 12), glow, L / 2 - lamp / 2 - 1, y, e[2]).rotation.set(Math.PI / 2, 0, 0);
+    }
   }
   if (l.type === 'led') {
     // a slim bar like a clip-on LED light: body, raised ribs along the top, end caps, a smoked lens underneath with two

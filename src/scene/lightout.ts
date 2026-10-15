@@ -34,7 +34,7 @@ export function emitters(T: Tank, l: LightSettings, height = l.height ?? LAMP_Y)
       for (let i = 0; i < k; i++) E.push([L / 2 + (i - (k - 1) / 2) * sx, y, z, 0]);
     }
   }
-  if (l.type === 'tube') { const h = tubeOf(l, T).lamp / 2; for (let i = 0; i < n; i++) E.push([L / 2, y, -D * (i + 0.5) / n, h]); }
+  if (l.type === 'tube') { const h = tubeOf(l, T).lamp / 2; for (const z of tubeLayout(T, l).zs) E.push([L / 2, y, z, h]); }
   if (l.type === 'led') {
     const cols = clamp(Math.round(L * 0.9 / 45), 2, 24);
     for (const r of [0.38, 0.62]) for (let c = 0; c < cols; c++) E.push([L * (0.05 + 0.9 * (c + 0.5) / cols), y, -D * r, 0]);
@@ -186,6 +186,24 @@ export function tubeOf(l: Pick<LightSettings, 'type' | 'tech'>, T: Pick<Tank, 'L
   const sizes = TUBES[techOf(l)] ?? [[24, 24]], fit = sizes.filter(([inch]) => inch * 25.4 <= T.L + 40);
   const [inch, w] = fit.length ? fit[fit.length - 1] : sizes[0];
   return { inch, w, lamp: Math.min(inch * 25.4 * 0.92, T.L * 0.95) };
+}
+/** Tube diameter (mm) by lamp: T5 16, T8 and the LED T8 26, T12 38; a straight power compact is twin 17 mm legs. */
+const TUBE_DIA: Partial<Record<LightTech, number>> = { 't5-refl': 16, 't5-bare': 16, 't8': 26, 't12': 38, 'led-tube': 26, 'cfl': 17 };
+/** Tube spacing slider's top (mm, centre to centre). */
+export const TUBE_SP_MAX = 300;
+/**
+ * Where a tube fixture's tubes sit front to back and how deep its housing is (Nathan 2026-10-15). Auto spacing (0)
+ * spreads the tubes over the tank's depth in a housing 90% of it; a set spacing is centre to centre (never closer
+ * than the tubes allow), centred over the tank, and the housing follows: the tubes' spread plus a margin each side
+ * of half a spacing (at least clear of the reflector), so more or wider-spaced tubes make a deeper hood.
+ * `wide` = one lamp's width (a power compact's two legs side by side).
+ */
+export function tubeLayout(T: Pick<Tank, 'D'>, l: Pick<LightSettings, 'type' | 'tech' | 'count' | 'spacing'>) {
+  const n = Math.max(1, l.count), tech = techOf(l), dia = TUBE_DIA[tech] ?? 26, twin = tech === 'cfl', wide = twin ? dia * 2 + 3 : dia;
+  const set = (l.spacing ?? 0) > 0, s = set ? clamp(l.spacing, wide + 8, TUBE_SP_MAX) : T.D / n;
+  const zs = Array.from({ length: n }, (_, i) => -T.D / 2 - (i - (n - 1) / 2) * s);
+  const depth = set ? (n - 1) * s + 2 * Math.max(s / 2, wide / 2 + 22) : T.D * 0.9;
+  return { zs, s, set, dia, twin, wide, depth };
 }
 /** Metal halide bulb sizes (W each). */
 export const MH_BULBS = [70, 150, 250, 400] as const;
