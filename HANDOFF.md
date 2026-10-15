@@ -2,6 +2,31 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane PL: progressive first load, the tank builds part by part (2026-10-15; branch `progressive-load`, port 5633; Nathan approved the look; pushed to main)
+- **What:** the first load and an opened file / example / undo restore (a store `'load'`) no longer block the page on shader
+  links. viewer.ts `startLinks` starts every link as before, then `revealTick` asks each part's programs `isReady()`
+  (KHR_parallel_shader_compile; every variant in three's `properties.get(material).programs`, so the frost pass's
+  linear ones too) and shows the parts in order: room + stand, glass + water, substrate, hardscape, plants, animals
+  (build.ts `PART`, `userData.part` on each top-level child; the 3D back wall uses the hardscape material, so it comes
+  with the hardscape; corals with the animals). One part per 160 ms at most, each a 260 ms cross-fade (a 2D canvas
+  `.revealFade` over #c holding the last frame); a part whose programs are not all linked is hidden for that draw
+  (`visible` false around `r.render`), so it never shows half-linked and nothing waits. "Building the tank…"
+  (index.html #buildHint) while it runs. **Warm:** all ready within 150 ms = the whole tank at once, no fade, no note.
+  Ordinary edits are unchanged (still a blocking draw after startLinks). performance marks `tank part N`,
+  `tank complete` / `tank at once` for timing.
+- **Measured** (`scripts/cold-ab.mjs`, now with `--done <expr>` and `--warm N`; raw `research/efficiency/PL-cold-ab.json`,
+  `PL-warm-ab.json`; fresh profile, D3D11, machine loaded by other lanes). Cold, median of 3, before (whole tank) ->
+  after first part / whole tank, s: betta 12.6 -> 3.2 / 13.8, iwagumi 15.1 -> 4.3 / 13.6, paludarium 14.6 -> 3.4 / 15.2,
+  planted 14.0 -> 3.9 / 12.2, reef 18.2 -> 4.3 / 20.2, terrarium 16.7 -> 3.2 / 15.7, split (planted + iwagumi)
+  17.5 -> 7.2 / 18.3. Whole-tank time is unchanged within the noise (+-2 s; it includes ~0.8 s of fades). The wait
+  between substrate and hardscape is still the hardscape program (9-15 s here). Warm reload medians (8 each), before ->
+  after: planted 1.45 -> 1.28, reef 1.92 -> 1.64, paludarium 0.91 -> 1.10, split 3.35 -> 1.90 s; all "at once".
+- **Same picture:** screenshots after the reveal, before vs after, all 6 examples + split: 0 px differ in the tank (the split's
+  only difference is the "Stocking: AqAdvisor" label, network timing). EF1's ~950 crack-edge px on paludarium did not
+  come back in 4 cold paludarium runs here; its cause was not found (whatever it was, this path does not show it).
+- **Open:** the hardscape link (E1 #11 baked grain / lane SG) is now the only thing between "substrate shown" and the
+  finished tank on a first visit.
+
 ## Lane SS: scape styles + Composition picker (2026-10-15; branch `scape-styles`, port 5663; styles approved by Nathan, pushed to main)
 - **Four new starter styles** (scene/items.ts `starterItems` branches + `STYLES` rows + `LAYOUTS` labels; `LayoutId` and
   `LAYOUT_IDS` grew): **Nature aquarium** (stones stepping down in front of wood rising over them, moss / fern / buce on
