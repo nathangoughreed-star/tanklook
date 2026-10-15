@@ -5,6 +5,7 @@ import { GRAIN_LOOK, SUBSTRATES, drawFishCard } from '../art/placeholder';
 import { drawSnailCard } from '../art/snails';
 import { CATEGORIES, SPECIES, fishTL, getSpecies, needsWater, searchSpecies, speciesOf, speciesTag, type Category, type Sex, type Species } from '../data/species';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
+import { BACKDROPS } from '../render/backdrop';
 import { MAP_DIV, MAP_STEP, emitters, mapStepOf } from '../render/lighting';
 import { darkOf, darkStats } from '../render/lightShells';
 import { FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeOf, wattsOf, type Fixture } from '../scene/lightout';
@@ -17,7 +18,7 @@ import { clumpAuto } from '../render/plant3d';
 import { tankDiff } from './diff';
 import { attachTypeIns, parseLen, plainNum, tidy, type TypeIn } from './typein';
 import {
-  CEILING_MAX, CEILING_MIN, IN, ceilingH, clamp, clampFish, fmtLen, fromUnit, glassThickness, rescaleTank, toUnit, volume, WALL_GAP_MAX, waterY,
+  CEILING_MAX, CEILING_MIN, IN, backdropDepth, ceilingH, clamp, clampFish, fmtLen, fromUnit, glassThickness, rescaleTank, toUnit, volume, WALL_GAP_MAX, waterY,
 } from '../scene/physics';
 import type { Store } from '../scene/store';
 import { SWAMP_LEVEL, groundHeight, nearestLand, sameGrid, sampleTerrain } from '../scene/terrain';
@@ -25,7 +26,7 @@ import { SWAMP_LEVEL, groundHeight, nearestLand, sameGrid, sampleTerrain } from 
 /** Arrow keys move the selected piece: [axis, direction] (depth grows toward the back). */
 const ARROWS: Record<string, [string, number]> = { ArrowLeft: ['x', -1], ArrowRight: ['x', 1], ArrowUp: ['d', 1], ArrowDown: ['d', -1], PageUp: ['y', 1], PageDown: ['y', -1] };
 import { placeNew, randomPose, randomSize, shuffleFish } from '../scene/scatter';
-import { fitFish, setWaterLevel } from '../scene/water';
+import { fitFish, keepInWater, setWaterLevel } from '../scene/water';
 import { tankWeight } from '../scene/weight';
 import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, aqWaitS, fetchStocking } from '../data/aqadvisor';
 import { BOWL_DEFAULT, BOWL_MAX, BOWL_MIN, PIE_DEFAULT, POLY_SIDES, SHAPES, bowMinLimit, offsetRing, ringArea, shapeOf } from '../scene/shape';
@@ -320,6 +321,12 @@ Cancel, then change the name, to keep both.`)) return;
   for (const [id, side] of BG_BTNS)
     $(id).onclick = () => store.edit(s => { const b = s.render.bgSides; s.render.bgSides = b.includes(side) ? b.filter(k => k !== side) : [...b, side]; });
   $('bgArc').oninput = e => store.edit(s => { s.render.bgArc = +(e.target as HTMLInputElement).value; }, { coalesce: 'bgArc' });
+  // 3D back wall (Nathan 2026-10-15): animals and plants are pushed in front of it when it appears or grows
+  const wallFit = (s: TankSetup) => { keepInWater(s); for (const it of s.items) clampItem(it, s.tank, s); };
+  $<HTMLSelectElement>('bdSel').innerHTML = Object.entries(BACKDROPS).map(([k, l]) => `<option value="${k}">${esc(l)}</option>`).join('');
+  $<HTMLSelectElement>('bdSel').onchange = e => store.edit(s => { s.backdrop.kind = (e.target as HTMLSelectElement).value as TankSetup['backdrop']['kind']; wallFit(s); });
+  $('bdShuffle').onclick = () => store.edit(s => { s.backdrop.seed = 1 + Math.floor(Math.random() * 1e6); });
+  $('bdDepth').oninput = e => store.edit(s => { s.backdrop.depth = +(e.target as HTMLInputElement).value; wallFit(s); }, { coalesce: 'bdDepth' });
   // Background pictures (Nathan 2026-10-14): each on one side or across touching sides; a side belongs to one picture.
   // Rows are keyed by picture id, so the same edit reaches both tanks of a linked split.
   const PIC_SIDES: [BgSide, string][] = [['left', 'Left'], ['back', 'Back'], ['right', 'Right'], ['front', 'Front']];
@@ -620,7 +627,7 @@ Cancel, then change the name, to keep both.`)) return;
     store.edit(s => {
       const f = s.fish.find(q => q.id === src); if (!f) return;
       const n: Fish = { ...f, id, x: f.x + fishTL(f, speciesOf(f)!) * 0.9 };
-      clampFish(n, s.tank); s.fish.push(n);
+      clampFish(n, s.tank, backdropDepth(s.backdrop, s.tank)); s.fish.push(n);
     });
     store.select(id);
   };
@@ -1167,6 +1174,9 @@ Cancel, then change the name, to keep both.`)) return;
     $('bgSidesRow').style.display = s.render.bg === 'none' ? 'none' : '';
     $('bgArcRow').style.display = s.render.bg !== 'none' && (sh === 'round' || sh === 'bowl') ? '' : 'none';
     syncPics(s);
+    setVal('bdSel', s.backdrop.kind); setVal('bdDepth', s.backdrop.depth); setOut('oBdDepth', fmtLen(s.backdrop.depth, u, 1));
+    $('bdRow').style.display = sh === 'bowl' ? 'none' : ''; $('bdDepthRow').style.display = sh !== 'bowl' && s.backdrop.kind !== 'none' ? '' : 'none';
+    ($('bdShuffle') as HTMLButtonElement).disabled = s.backdrop.kind === 'none';
     setVal('bgArc', s.render.bgArc); setOut('oBgArc', s.render.bgArc >= 360 ? '360° (all round)' : `${s.render.bgArc}°`); setVal('glassSel', String(s.render.glass)); setVal('glassType', s.render.glassType);
     const t = glassThickness(A, s.render.glass);
     $('glassHint').textContent = (s.render.glass === 'auto' ? 'Auto: ' : 'Glass: ') + t + ' mm (' + fmtLen(t, u, 2) + ')';

@@ -2,6 +2,23 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## 3D back wall (2026-10-15; main checkout; Nathan chose "3D panel inside" over a flat printed sheet; pushed to main)
+Nathan: textured backgrounds, e.g. a plant mat for terrariums, a live rock / coral wall for saltwater, river rocks for fresh.
+- **Data:** `TankSetup.backdrop: { kind: none|rock|river|reef|cork|moss, depth (mm, 20..100, default 50), seed }` (types.ts
+  `BackdropSettings`; older files: none). Not tied to the water type: any style in any tank.
+- **Render (`src/render/backdrop.ts`):** a relief panel INSIDE the tank on the back glass (`backgroundRuns(T, ['back'], 145, 0)`,
+  so a round tank gets its back arc; bowl: none). One height field per style (jittered-grid pieces via `scatter` + rotated
+  value noise), pushed in 1.5 mm .. `depth` along the run's inward normal; top and end caps close it to the glass. Shaded like
+  the stones: colour darkened in hollows, the stones' light baked in, `solidMaterial(T)` (now exported) + grit kinds
+  rock 2, river 1, reef 3, cork 10, moss 12. Geometry cached (6) and `keep`; added in `buildTank` after the substrate.
+- **Bounds:** `backdropDepth(b, T)` / `frontOfWall` (physics.ts). `clampFish(f, A, back)` keeps fish `back + 10` mm off the
+  back glass (chord at x); every caller passes the wall depth. Plants (`clampItem`, via `Ground.backdrop`) stay
+  `0.7 * depth + half` in front; rocks and wood may sink into the wall, like into the glass. Changing the wall re-fits fish + items.
+- **UI:** Tank > Background: "3D wall" select + Shuffle (new seed), Wall depth slider (hidden for none / bowls). Split diff entry.
+- Not done: water volume / weight ignore the wall's displacement; light map / dark spots ignore it; no side walls; plant-mat
+  style is moss cushions only (no leaves). Tests `test/backdrop.test.ts` (file round trip, bounds per style, bowl / round, fish /
+  plant clamps). 275/275. Pictures `shots/backdrop_*` (gitignored).
+
 ## Aquascape menu split into Hardscape and Plants (2026-10-14; Nathan asked; pushed to main)
 - **Hardscape** (`data-sec="hardscape"`): Start from + Shuffle, stones / wood / caves, its own count and Remove all.
   **Plants** (`data-sec="plants"`, titled "Plants & Corals" in saltwater): plants and corals, own count and Remove all

@@ -250,6 +250,11 @@ export interface WallSettings { show: boolean; side: WallSide; color: string; ga
 export interface PersonSettings { show: boolean; height: number; side: 'left' | 'right' }
 
 /** Everything that belongs to one tank. Split tanks are fully independent (Nathan 2026-10-08), camera included. */
+/** A 3D background panel inside the tank against the back glass: a relief wall of rock, river stones, live rock, cork bark
+ * or moss (added 2026-10-15; older files: none). `depth` = how far it reaches in from the glass at its deepest (mm). */
+export type BackdropKind = 'none' | 'rock' | 'river' | 'reef' | 'cork' | 'moss';
+export interface BackdropSettings { kind: BackdropKind; depth: number; seed: number }
+
 export interface TankSetup {
   tank: Tank;
   camera: CameraSettings;
@@ -263,6 +268,7 @@ export interface TankSetup {
   stand: StandSettings;
   wall: WallSettings;
   person: PersonSettings;
+  backdrop: BackdropSettings;
   fish: Fish[];
   /** Rocks, wood, caves and plants (scene v9). */
   items: Item[];

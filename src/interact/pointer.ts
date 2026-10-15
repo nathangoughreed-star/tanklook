@@ -11,7 +11,7 @@
 import * as THREE from 'three';
 import { clingsTo, fishTL, getSpecies, restsOnFloor, speciesOf } from '../data/species';
 import { restsOnGround } from '../scene/water';
-import { D2R, clamp, clampFish } from '../scene/physics';
+import { D2R, backdropDepth, clamp, clampFish } from '../scene/physics';
 import { clampItem } from '../scene/items';
 import { glassFrame, nearestGlass } from '../scene/shape';
 import { coralSeat } from '../render/items';
@@ -245,7 +245,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       if (d.mode !== 'side') f.x = clamp(p.x, 0, T.L);
       if (d.mode !== 'top') f.y = clamp(p.y, 0, T.H);
       if (d.mode !== 'front') f.depth = clamp(-p.z, 0, T.D);
-      clampFish(f, T);
+      clampFish(f, T, backdropDepth(t.backdrop, T));
       // over a rock, wood or cave it climbs on top (if it can), off it back down to the floor
       const sp = getSpecies(f.species);
       if (d.mode === 'top' && sp && clingsTo(sp, 'hardscape')) f.surface = supportLift(d.vp, t, f.x, f.depth, new Set()) > 0 ? 'hardscape' : 'floor';
@@ -299,7 +299,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       const f = t.fish.find(f => f.id === store.selId)!;
       if (f.surface === 'glass') return; // on the glass: depth is set by where on the glass it is
       f.depth = clamp(f.depth + dir * t.tank.D * 0.03, 0, t.tank.D);
-      clampFish(f, t.tank);
+      clampFish(f, t.tank, backdropDepth(t.backdrop, t.tank));
     }, { coalesce: 'wheel-depth' });
   }, { passive: false });
 }

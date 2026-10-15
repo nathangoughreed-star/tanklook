@@ -30,6 +30,7 @@ export function defaultSetup(): TankSetup {
     stand: { show: true, height: 30 * IN, finish: 'black', style: 'cabinet', table: { shape: 'rect', L: 36 * IN, D: 18 * IN, x: 0, z: 0 } },
     wall: { show: false, side: 'back', color: '#d8d2c6' },
     person: { show: false, height: 1750, side: 'left' },
+    backdrop: { kind: 'none', depth: 50, seed: 1 },
     fish: [
       fish('angel', 0.45 * A.L, 0.55 * A.H, 0.5 * A.D),
       fish('neon', 0.8 * A.L, 0.22 * A.H, 0.05 * A.D),

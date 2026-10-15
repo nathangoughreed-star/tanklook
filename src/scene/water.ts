@@ -2,7 +2,7 @@
 // animals on the glass below the water line (tree frogs above it), land animals on ground above it; amphibious ('both') animals swim where the water is
 // deep enough for them and rest on the ground elsewhere. Floor snails may sit anywhere, emerged land included.
 import { fishTL, speciesOf, type Species } from '../data/species';
-import { clamp, clampFish, waterY } from './physics';
+import { backdropDepth, clamp, clampFish, waterY } from './physics';
 import { groundHeight, nearestLand, nearestWater } from './terrain';
 import type { Fish, Tank, TankSetup } from './types';
 
@@ -57,7 +57,7 @@ export function fitFish(f: Fish, s: TankSetup) {
 
 /** Fit every fish into the water (after any scene change: level, tank size, layout, drags, new fish). */
 export function keepInWater(s: TankSetup) {
-  for (const f of s.fish) clampFish(f, s.tank); // inside the footprint, glass snails on the glass
+  for (const f of s.fish) clampFish(f, s.tank, backdropDepth(s.backdrop, s.tank)); // inside the footprint, glass snails on the glass
   if (!s.water.on) return; // dry tank: fish are hidden, nothing to keep in
   for (const f of s.fish) fitFish(f, s);
 }

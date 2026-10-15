@@ -371,7 +371,7 @@ function glassClip(T: Tank) {
   };
   return { planes, patch };
 }
-function solidMaterial(T: Tank) {
+export function solidMaterial(T: Tank) {
   const k = glassKey(T);
   let m = glassMats.get(k);
   if (m) return m;

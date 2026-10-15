@@ -3,7 +3,7 @@
 // sets that replace the old fixed layouts. All sizes physical (mm): a bigger tank gets more pieces, not bigger ones.
 import { rng } from '../art/paint';
 import { PLANT_ASPECT, isCarpet, isClump, isFloat, isPatch, type PlantType } from '../art/plants';
-import { clamp, D2R } from './physics';
+import { backdropDepth, clamp, D2R, frontOfWall } from './physics';
 import { bowlDims, bowlRadius, clampIn, shapeOf } from './shape';
 import { clampGround, groundHeight, radialTerrain, type Ground } from './terrain';
 import type { Item, ItemKind, LayoutId, Tank, TankSetup } from './types';
@@ -184,6 +184,9 @@ export function clampItem(it: Item, T: Tank, g?: Ground) {
     const lift = clamp(it.lift, 0, T.H), up = it.kind === 'plant' && !isPatch(it.variant) ? itemDims(it)[1] : 0;
     ({ x: it.x, depth: it.depth } = clampGround(g, T, it.x, it.depth, inset, lift, lift + up));
   } else if (shapeOf(T) !== 'rect') ({ x: it.x, depth: it.depth } = clampIn(T, it.x, it.depth, inset));
+  // a plant stands in front of the 3D back wall (rocks and wood may sink into it, like into the glass)
+  const wall = it.kind === 'plant' ? backdropDepth(g?.backdrop, T) : 0;
+  if (wall) it.depth = frontOfWall(T, it.x, it.depth, wall * 0.7 + half * 0.5);
   it.lift = clamp(it.lift, -LIFT_SINK * T.H, T.H);
   // a clump's own spread and count (absent = the species' own); dropped on anything that is not a clump
   if (it.kind === 'plant' && isClump(it.variant)) {

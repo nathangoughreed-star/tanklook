@@ -3,6 +3,7 @@
 // "Water tint A" vs "Water tint B"). Nothing different = no entries: the tanks are the same.
 import { SUBSTRATES, blendLabel } from '../art/placeholder';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
+import { BACKDROPS } from '../render/backdrop';
 import { fmtSize, fmtLen, glassThickness, rescaleTank, waterY } from '../scene/physics';
 import { FIXTURES, TECHS, fixtureOf, techOf, wattsOf } from '../scene/lightout';
 import { shapeOf } from '../scene/shape';
@@ -54,6 +55,7 @@ export function tankDiff(a: TankSetup, b: TankSetup, u: Units): DiffItem[] {
     add(a.render.bgSides, b.render.bgSides, v => `Background on ${sidesTxt(v)}`, ['render.bgSides']);
     if (shapeOf(a.tank) === 'round' && shapeOf(b.tank) === 'round') add(a.render.bgArc, b.render.bgArc, v => `Background arc ${v}°`, ['render.bgArc']);
   }
+  add(a.backdrop, b.backdrop, v => (v.kind === 'none' ? 'No 3D wall' : `3D wall: ${BACKDROPS[v.kind].toLowerCase()}`), ['backdrop']);
   add(a.render.grid, b.render.grid, g => (g ? 'Grid' : 'No grid'), ['render.grid']);
 
   // stand, room, person: details only when both have one

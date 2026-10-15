@@ -1,7 +1,7 @@
 // Pure physical rules shared by the renderer, the UI and the tests. No three.js here.
-import { bowlRadius, clampIn, footprint, glassAt, inside, nearestGlass, normTank, shapeOf, volumeBetween, wallSpan } from './shape';
+import { bowlRadius, chord, clampIn, footprint, glassAt, inside, nearestGlass, normTank, shapeOf, volumeBetween, wallSpan } from './shape';
 import type { Hardscape } from './items';
-import type { Fish, RenderSettings, StandSettings, SubstrateSettings, Surface, Tank, TankSetup, Units } from './types';
+import type { BackdropSettings, Fish, RenderSettings, StandSettings, SubstrateSettings, Surface, Tank, TankSetup, Units } from './types';
 
 export const IN = 25.4;
 export const D2R = Math.PI / 180;
@@ -112,11 +112,20 @@ export function rescaleTank(s: TankSetup, next: Tank) {
   s.tank = { ...next };
 }
 
+/** How far the 3D back wall reaches in from the back glass (mm); 0 = none, or a bowl (it has no back pane). */
+export const backdropDepth = (b: BackdropSettings | undefined, T: Tank) => (b && b.kind !== 'none' && shapeOf(T) !== 'bowl' ? b.depth : 0);
+/** Depth kept at least `back` mm in front of the back glass at x (left alone where that leaves no room). */
+export function frontOfWall(T: Tank, x: number, depth: number, back: number) {
+  if (!back) return depth;
+  const c = chord(T, 0, x);
+  return c && c[1] - back > c[0] + 10 ? Math.min(depth, c[1] - back) : depth;
+}
+
 /**
  * Keep a fish inside its tank: within the footprint (a glass snail on the glass), between the floor and the top. In a
  * bowl, within the sphere's circle at the fish's height.
  */
-export function clampFish(f: Fish, A: Tank) {
+export function clampFish(f: Fish, A: Tank, back = 0) {
   f.y = clamp(f.y, 0, A.H);
   if (f.surface === 'glass') { const g = nearestGlass(A, f.x, f.depth, f.y); f.x = g.x; f.depth = g.depth; return; }
   if (shapeOf(A) === 'bowl') {
@@ -125,7 +134,7 @@ export function clampFish(f: Fish, A: Tank) {
     return;
   }
   const p = clampIn(A, clamp(f.x, 0, A.L), clamp(f.depth, 0, A.D));
-  f.x = p.x; f.depth = p.depth;
+  f.x = p.x; f.depth = frontOfWall(A, p.x, p.depth, back && back + 10); // `back`: the 3D back wall's depth, kept clear by 10 mm
 }
 
 // ---------- Units & formatting ----------

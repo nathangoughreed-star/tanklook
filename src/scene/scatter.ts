@@ -4,7 +4,7 @@
 // favoured band of the water column ('level'), groups of 3+ of a 'school' species in a tight aligned school and of a
 // 'shoal' species in a loose group, everyone else spread apart.
 import { clingsTo, fishTL, getSpecies, speciesOf, type Species } from '../data/species';
-import { clamp, clampFish, spawnSnail, waterY } from './physics';
+import { backdropDepth, clamp, clampFish, spawnSnail, waterY } from './physics';
 import { hardscape } from './items';
 import { inside } from './shape';
 import { groundHeight, randomLand } from './terrain';
@@ -43,7 +43,7 @@ export function placeOnLand(s: TankSetup, sp: Species, f: Fish, r: () => number)
 /** `only` = move just that species, or the animals the test picks; everyone else stays put and is kept clear of.
  *  `sizePct` = also re-roll each moved animal's size around that % of adult (randomSize). */
 export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: Fish) => boolean), sizePct?: number) {
-  const A = s.tank, top = s.water.on ? waterY(A, s.water.level) : A.H - 10, g = (x: number, d: number) => groundHeight(s, A, x, d);
+  const A = s.tank, top = s.water.on ? waterY(A, s.water.level) : A.H - 10, g = (x: number, d: number) => groundHeight(s, A, x, d), wb = backdropDepth(s.backdrop, A);
   const placed: { x: number; y: number; depth: number; w: number }[] = [];
   const note = (f: Fish, w: number) => placed.push({ x: f.x, y: f.y, depth: f.depth, w });
   /** A random footprint spot `inset` from the glass with at least `need` mm of water over the ground (best effort). */
@@ -116,7 +116,7 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
       for (const f of fish) {
         const w = fishTL(f, sp), a = speciesOf(f)!.aspect, p = spot(w / 2, w * a * 1.5);
         Object.assign(f, { x: p.x, depth: p.depth, y: bandY(p.x, p.depth, w * a, 0.1 + r() * 0.5) }, randomPose(sp, r, r() < 0.5 ? 0 : 180));
-        placeOnLand(s, sp, f, r); clampFish(f, A); note(f, w);
+        placeOnLand(s, sp, f, r); clampFish(f, A, wb); note(f, w);
       }
       continue;
     }
@@ -124,7 +124,7 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
       for (const f of fish) {
         const w = fishTL(f, sp), h = w * speciesOf(f)!.aspect;
         const p = roomiest(w, () => { const q = spot(w / 2, h * 1.5); return { ...q, y: sp.zone === 'bottom' ? g(q.x, q.depth) : bandY(q.x, q.depth, h, bandT(sp)) }; });
-        Object.assign(f, p, randomPose(sp, r, r() < 0.5 ? 0 : 180)); clampFish(f, A); note(f, w);
+        Object.assign(f, p, randomPose(sp, r, r() < 0.5 ? 0 : 180)); clampFish(f, A, wb); note(f, w);
       }
       continue;
     }
@@ -158,7 +158,7 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
       // a school all heads one way; in a shoal most roughly follow, the rest wander
       const pose = bottom && !tight ? randomPose(sp, r, 0) : tight ? randomPose(sp, r, head, 24) : r() < 0.7 ? randomPose(sp, r, head, 80) : randomPose(sp, r, r() * 360 - 180, 0);
       if (bottom && r() < 0.6) pose.yaw = wrap(Math.round(head + (r() - 0.5) * 120)); // foraging corys drift the same way
-      Object.assign(f, p, pose); clampFish(f, A); note(f, fw);
+      Object.assign(f, p, pose); clampFish(f, A, wb); note(f, fw);
     }
   }
 }
@@ -166,7 +166,7 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
 /** Place just the animals in `ids` (newly added), leaving everyone else where they are. A newcomer to a school or shoal
  *  already in the tank joins it: next to a random member (either sex), heading its way. The rest go by the shuffle rules. */
 export function placeNew(s: TankSetup, r: () => number, ids: Set<number>) {
-  const A = s.tank, top = s.water.on ? waterY(A, s.water.level) : A.H - 10, g = (x: number, d: number) => groundHeight(s, A, x, d);
+  const A = s.tank, top = s.water.on ? waterY(A, s.water.level) : A.H - 10, g = (x: number, d: number) => groundHeight(s, A, x, d), wb = backdropDepth(s.backdrop, A);
   const joined = new Set<number>();
   for (const id of new Set(s.fish.filter(f => ids.has(f.id)).map(f => f.species))) {
     const sp = getSpecies(id); if (!sp || sp.surfaces || !grouped(sp, s.fish.filter(f => f.species === id).length)) continue;
@@ -185,7 +185,7 @@ export function placeNew(s: TankSetup, r: () => number, ids: Set<number>) {
       }
       const pose = bottom ? randomPose(sp, r, 0) : tight ? randomPose(sp, r, m.yaw, 24) : r() < 0.7 ? randomPose(sp, r, m.yaw, 80) : randomPose(sp, r, r() * 360 - 180, 0);
       if (bottom && r() < 0.6) pose.yaw = wrap(Math.round(m.yaw + (r() - 0.5) * 120));
-      Object.assign(f, p, pose); clampFish(f, A); mates.push(f); joined.add(f.id);
+      Object.assign(f, p, pose); clampFish(f, A, wb); mates.push(f); joined.add(f.id);
     }
   }
   if ([...ids].some(id => !joined.has(id))) shuffleFish(s, r, f => ids.has(f.id) && !joined.has(f.id));

@@ -44,6 +44,7 @@ export const LIMITS = {
   maxFish: 500,
   stand: [12 * 25.4, 48 * 25.4] as const, // mm
   person: [900, 2100] as const,            // mm
+  backdrop: [20, 100] as const,            // mm, 3D back wall depth
   size: [0.15, 1.3] as const,              // custom fish length, fraction of the adult length
   level: [0.1, 1] as const,
   terrainCols: [3, 25] as const,             // custom terrain grid points along the length
@@ -161,7 +162,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
 
   const tankA = tank(raw.tank, d.tank);
   const c = sub('camera'), r = sub('render'), l = sub('light'), s = sub('substrate'), lay = sub('layout');
-  const te = sub('terrain'), wa = sub('water'), st = sub('stand'), w = sub('wall'), pe = sub('person');
+  const te = sub('terrain'), wa = sub('water'), st = sub('stand'), w = sub('wall'), pe = sub('person'), bd = sub('backdrop');
   const glass = r.glass === 'auto' ? 'auto' : typeof r.glass === 'number' && GLASS_CHOICES.includes(r.glass) ? r.glass : 'auto';
   const subMax = tankA.H * 0.5;
 
@@ -266,6 +267,10 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
         const L = num(tb.L, dt.L, 0, TABLE_MAX), D = shape === 'round' ? L : num(tb.D, dt.D, 0, TABLE_MAX);
         return { shape, L, D, x: num(tb.x, 0, -TABLE_MAX, TABLE_MAX), z: num(tb.z, 0, -TABLE_MAX, TABLE_MAX) };
       })(),
+    },
+    backdrop: { // added 2026-10-15; older files: none
+      kind: pick(bd.kind, ['none', 'rock', 'river', 'reef', 'cork', 'moss'] as const, d.backdrop.kind),
+      depth: Math.round(num(bd.depth, d.backdrop.depth, ...LIMITS.backdrop)), seed: Math.round(num(bd.seed, 1, 1, 1e9)),
     },
     person: {
       show: bool(pe.show, d.person.show), height: num(pe.height, d.person.height, ...LIMITS.person),
