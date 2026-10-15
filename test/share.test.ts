@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { EXAMPLES } from '../src/examples';
+import { SCENES } from '../src/examples/scenes';
 import { defaultScene } from '../src/scene/defaults';
 import { SHARE_PREFIX, isShareHash, readShare, shareHash, shareUrl } from '../src/scene/share';
 import { SceneError, parseScene } from '../src/scene/validate';
@@ -12,7 +13,7 @@ const link = async (x: string | Uint8Array) => SHARE_PREFIX + b64url(await defla
 
 describe('share links (lane N, R12)', () => {
   it('round-trips every example and the default scene: scene -> link -> the same scene', async () => {
-    const scenes = [defaultScene(), ...EXAMPLES.map(x => x.scene)].map(s => parseScene(s).scene); // as Save holds them, after validate
+    const scenes = [defaultScene(), ...EXAMPLES.map(x => SCENES[x.id])].map(s => parseScene(s).scene); // as Save holds them, after validate
     for (const scene of scenes) {
       const hash = await shareHash(scene);
       expect(isShareHash(hash)).toBe(true);

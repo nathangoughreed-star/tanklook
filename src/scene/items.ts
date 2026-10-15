@@ -2,7 +2,7 @@
 // renderer builds them from (so placement code can find a branch to tie a fern to without three.js), and the starter
 // sets that replace the old fixed layouts. All sizes physical (mm): a bigger tank gets more pieces, not bigger ones.
 import { rng } from '../art/paint';
-import { PLANT_ASPECT, grownSize, isCarpet, isClump, isFloat, isPatch, type PlantType } from '../art/plants';
+import { PLANT3D, PLANT_ASPECT, grownSize, isCarpet, isClump, isFloat, isPatch, type PlantType } from '../art/plants';
 import { backdropDepth, clamp, clearOfWall, D2R } from './physics';
 import { bowlDims, bowlRadius, clampIn, shapeOf } from './shape';
 import { clampGround, groundHeight, radialTerrain, type Ground } from './terrain';
@@ -159,6 +159,13 @@ export function itemDims(it: Pick<Item, 'kind' | 'variant' | 'seed' | 'size' | '
   return it.variant === 'manzanita' ? [0.7 * s, s, 0.7 * s] : it.variant === 'spider' ? [s, 0.5 * s, 0.8 * s] : it.variant === 'mopani' ? [s, 0.45 * s, 0.3 * s] : [s, 0.65 * s, 0.45 * s];
 }
 
+/** The radius of an upright plant's base, mm: the circle its crowns or stems start in (a clump's own spread, else the
+ *  species' share of its width), at least a few mm for the stalk. */
+export function plantBaseR(it: Pick<Item, 'kind' | 'variant' | 'seed' | 'size' | 'spread' | 'growth'>) {
+  const P = PLANT3D[it.variant as PlantType];
+  return Math.max(4, it.spread ? it.spread / 2 : itemDims(it)[0] * (P?.spread ?? 0.5) / 2);
+}
+
 /** How far into the ground a piece is set, mm (stones nest in, plants are planted). */
 export function itemSink(it: Item): number {
   if (it.kind === 'plant') return 4;
@@ -182,8 +189,11 @@ export function clampItem(it: Item, T: Tank, g?: Ground) {
     else max = Math.min(max, Math.max(T.L, T.D) * 1.1);
     it.size = Math.round(clamp(it.size, Math.min(v.min, max), max));
   }
-  // hardscape may run through the glass (cut off there by the renderer, 2026-10-12): only its anchor stays inside
-  const [l, , w] = itemDims(it), half = it.kind === 'plant' ? (!isPatch(it.variant) ? l / 2 + 3 : Math.max(l, w) * 0.35) : 0;
+  // hardscape may run through the glass (cut off there by the renderer, 2026-10-12): only its anchor stays inside. An
+  // upright plant keeps its base (the circle its crowns or stems start in) inside, so it can be planted right against
+  // the glass; leaves arching past a pane are cut off there like hardscape (Nathan 2026-10-15). A bowl still keeps the
+  // whole plant clear (its glass closes in above)
+  const [l, , w] = itemDims(it), half = it.kind === 'plant' ? (isPatch(it.variant) ? Math.max(l, w) * 0.35 : shapeOf(T) === 'bowl' ? l / 2 + 3 : plantBaseR(it) + 2) : 0;
   const inset = Math.min(half, Math.min(T.L, T.D) * 0.45);
   it.x = clamp(it.x, inset, T.L - inset); it.depth = clamp(it.depth, inset, T.D - inset);
   if (g && shapeOf(T) === 'bowl') { // a plant stays clear of the glass over its whole height (the sphere closes in above)

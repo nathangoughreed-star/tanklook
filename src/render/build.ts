@@ -14,6 +14,7 @@ import { getImage } from '../scene/images';
 import { LU, addBeams, addFixture, applyLighting, waterVolumeMaterial } from './lighting';
 import { addAlgae } from './algae';
 import { itemMesh } from './items';
+import { rootsKey, rootsMesh } from './roots';
 import { addBackdrop } from './backdrop';
 import { drapedCard, fish3d, fishBody, has3D, hullMaterial } from './fish3d';
 import { herpBody, herpFloatTop, isHerp3D } from './herp3d';
@@ -1076,6 +1077,8 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: number | null, 
     if (m.meshes.some(o => !o.userData.plant)) hard.push(data);
     return m;
   });
+  // roots showing in the substrate at the glass (not picked: objects only)
+  if (!bare) { const key = rootsKey(S); b.itemParts.push(take(key) ?? ((m: THREE.Mesh | null) => part(key, m ? [m] : [], []))(rootsMesh(S, T))); }
   b.itemMeshes = b.itemParts.flatMap(p => p.meshes);
   const solids = b.itemMeshes.filter(m => !m.userData.plant); for (const m of solids) m.updateMatrixWorld(true);
   const hardKey = hard.join('|');

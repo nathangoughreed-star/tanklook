@@ -2,6 +2,44 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## First download: examples on demand (2026-10-15; lane EF3, branch `download-size`, port 5653; pushed to main)
+- **The six example scenes are a lazy chunk** (`src/examples/scenes.ts`, ~131 kB / 21 kB gzip): `exampleScenes()` in
+  `src/examples/index.ts` imports it once (shared promise, retried after a failure). `renderExamples` in panels.ts starts
+  it once the start menu's / Open…'s pictures have decoded (started together they shared a slow line and the menu's
+  pictures came 0.2 s later), so it has arrived before a click; `openExample` awaits it (offline: a status
+  line, nothing else changes). `EXAMPLES` keeps id / name / hint / thumb only.
+- **Thumbnails are plain image files** (`?url`, assets/*.jpg, 11-20 kB each) instead of base64 in main (they were ~113 kB
+  of it and do not gzip). The cards render at once with their text; the pictures load in parallel.
+- **Sizes (KiB, vite build, before = `19da7f4`):** main 422 -> 183 raw, **176 -> 69 gzip**; first-load code (index.html
+  + main + three + preview3d + css) **455 -> 349 gzip (-107)**; dist/ 6.55 -> 6.52 MB (the six JPEGs now ship once as
+  files).
+- **Timed first visit** (A/B interleaved per run, fresh browser context each, dist/ served gzip; medians; script
+  `abload.mjs` in the lane's scratchpad, not kept): DOMContentLoaded slow 4G (1.6 Mbps, 150 ms) **2.77 -> 2.21 s**, 4G
+  (9 Mbps, 40 ms) 0.68 -> 0.56 s; start menu with all six pictures 2.89 -> 2.85 s / 0.79 -> 0.74 s; click -> tank drawn
+  unchanged (1.9 s slow 4G; the build and shader link dominate). A first visit that shows the start menu still fetches
+  about the same bytes in all (the pictures + scenes, 456 -> 456 KiB); **a returning visit (tank restored) or a share
+  link skips them: about 107 KiB gzip less**, and the app starts sooner on every visit.
+- **Model sheets: left as they are.** They are already on demand: nothing in the app or its service worker requests
+  `model-sheets/`; only review.html's link and its no-WebGL message point there, and that gallery's 71 images are
+  `loading="lazy"`. They cost dist/ size only (4.73 of 6.52 MB), i.e. deploy upload time, not any visitor's download.
+  Taking them out of dist/ would need a second host for the no-WebGL reviewers; not worth it. vite.config.ts untouched.
+- **For lane SF (single file):** the single-file pass must now also inline the dynamic `scenes` chunk
+  (`inlineDynamicImports`) and the six thumbnail JPEGs (e.g. `assetsInlineLimit` large for that pass), or the start menu
+  shows no pictures from disk. Tests: `test/examples.test.ts` checks every thumb is a .jpg URL and SCENES matches EXAMPLES;
+  algae / share / examples tests read `SCENES` directly.
+
+## Plants against the glass, roots at the glass (2026-10-15; main)
+- **Plants plant right up to the glass** (Nathan: "I should be able to put it right up against it"): `clampItem` keeps an
+  upright plant's base inside (`plantBaseR` in scene/items.ts: a clump's own spread / 2, else the species' share of its
+  width, at least 4 mm) instead of half its whole leaf spread; leaves past a pane are clipped by the existing glass clip.
+  Bowls keep the old full-width rule (their glass closes in above; test/items.test.ts asserts it).
+- **Roots show in the substrate face at the glass** (render/roots.ts, one mesh per tank, a part in addContents keyed by
+  `rootsKey`; not picked): ribbons in the plane of each straight pane 0.2 mm outside the skirt. Per kind a `HABIT`
+  (reach, depth, roots per 10 mm, thickness, side roots, runners, young / aged colour); scaled by growth (more, longer,
+  thicker, browner), closeness to the pane, own stems / crowns and neighbours (crowding pushes roots out and thickens the
+  bed); depth capped by the ground there, a shallow bed turns them along the bottom glass. Not on floaters, moss, plants
+  up on hardscape (lift > 2), or bowls (curved glass, not yet).
+
 ## Drag-in, plant list, clumps on slopes (2026-10-15; branch `drag-place`, port 5613; pushed to main)
 - **Drag from the panel into the tank** (Nathan: keep click-to-add too): library chips (hardscape, plants, corals) and
   species rows / the Add button. Past 6 px a press becomes a drag with a label at the pointer (`dragOut` in panels.ts;
@@ -49,6 +87,8 @@ Living file. Project state and dated decisions go here; update in place.
     Top ranked: #1 the one-gStone refactor (items.ts, GR4's file: coordinate), #2 why iwagumi links two hardscape
     programs, #3 non-blocking first link (compileAsync, viewer.ts: quiet), #4 water colour relinks, #5 merge fish parts
     per fish. Re-run after GR4 and AL land.
+  - **EF3 download size DONE 2026-10-15** (see its section): examples are a lazy chunk + image-file thumbnails; main
+    176 -> 69 KiB gzip, first-load code 455 -> 349 KiB gzip. Model sheets were never in the first load (left as is).
   - **E2 code audit:** `../Glass-Box-audit` / `code-audit`, no dev server. Owns `research/efficiency/E2-*` and optional
     `scripts/unused-exports.mjs`. Dead code, duplicates, hot-path suspects (file:line, for E1 to time), bundle
     makeup, and a pure-move split plan for panels.ts / build.ts. Prompt: prompts/lane-E2-code-audit.md.
@@ -1315,7 +1355,7 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | SF single-file build fix | `../Glass-Box-single-fix` / `single-fix` | - (opens dist-single/tanklook.html directly) | `vite.config.ts`, `scripts/build-single.mjs` | ready to open (prompt `prompts/lane-SF-single-file.md`); found by E2: broken since d67ac73; also inline GR4's plantWorker chunk |
 | EF1 shader link time | `../Glass-Box-shader-link` / `shader-link` | 5633 | `render/items.ts` solidMaterial / GRIT / gritK, the first-picture / compile path in `render/viewer.ts` | ready to open (prompt `prompts/lane-EF1-shader-link.md`) |
 | EF2 edit speed | `../Glass-Box-edit-speed` / `edit-speed` | 5643 | `render/lighting.ts`, the water / frost rebuild in `render/build.ts`, store listeners in `scene/store.ts`, `scene/lightout.ts` | ready to open (prompt `prompts/lane-EF2-edit-speed.md`) |
-| EF3 download size | `../Glass-Box-download-size` / `download-size` | 5653 | `src/examples/index.ts` + the examples hooks in `ui/panels.ts` (start menu / Open dialog), model-sheet packaging after SF (SF owns `vite.config.ts`) | ready to open (prompt `prompts/lane-EF3-download-size.md`) |
+| EF3 download size | `../Glass-Box-download-size` / `download-size` | 5653 | `src/examples/index.ts` + the examples hooks in `ui/panels.ts` (start menu / Open dialog), model-sheet packaging after SF (SF owns `vite.config.ts`) | DONE 2026-10-15 (files free) |
 | E1 perf baseline | `../Glass-Box-perf2` / `perf-baseline` | 5623 | new `scripts/perf-baseline.mjs`, `research/efficiency/E1-*` (no src edits) | OPEN 2026-10-15 |
 | E2 code audit | `../Glass-Box-audit` / `code-audit` | - | `research/efficiency/E2-*`, `scripts/unused-exports.mjs` (no src edits) | OPEN 2026-10-15 |
 | GR2 emersed growth + floaters | `../Glass-Box-plants3d` / `plants3d` | 5283 | `art/plants.ts`, `render/plant3d.ts` (bendPlant 'emerge' / 'spread'), plant branch of `render/items.ts`, plant entries of `scene/items.ts`, new floater / lily species data | DONE (`2b67f4c`, build 456). Open: lying stems cut at the glass, sagittaria lawn loose tufts, lotus pads orange under light, duckweed waits for instancing |
