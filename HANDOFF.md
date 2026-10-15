@@ -2,6 +2,25 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Efficiency review (2026-10-15; Nathan: the features are in and look right, so review for efficiency; lanes E1 + E2 OPEN, measure / audit only)
+- **Why:** about 470 commits in a week from about 20 lanes; nobody has measured the whole app since lanes J / J2 / K2
+  (2026-10-14), and plant growth, the 3D walls, algae, scape density and the light mount have landed since.
+  src/ui/panels.ts (1630 lines, 109 changes) and src/render/build.ts (1212 lines, 72 changes) are the merge-conflict hotspots.
+- **Phase 1, now (no app code changes, safe beside the running lanes AL and GR4):**
+  - **E1 perf baseline:** `../Glass-Box-perf2` / `perf-baseline`, launch config `perf2` 5623. Owns new
+    `scripts/perf-baseline.mjs` and `research/efficiency/E1-*`. A re-runnable harness (hardware GPU, alternating-frame
+    A/B, every example + split, 1050x850 and phone size, production build for load / size), then a breakdown and a ranked
+    fix list. Prompt: prompts/lane-E1-perf-baseline.md.
+  - **E2 code audit:** `../Glass-Box-audit` / `code-audit`, no dev server. Owns `research/efficiency/E2-*` and optional
+    `scripts/unused-exports.mjs`. Dead code, duplicates, hot-path suspects (file:line, for E1 to time), bundle
+    makeup, and a pure-move split plan for panels.ts / build.ts. Prompt: prompts/lane-E2-code-audit.md.
+- **Phase 2, later:** the coordinator merges E1 + E2 into one ranked list; Nathan picks. Fixes that touch another active
+  lane's files, or panels.ts / build.ts / viewer.ts, wait for a quiet point (no other lane running), and the splits land
+  first after it. A fix confined to a file nobody owns can go in earlier.
+- **Gate for every phase 2 change:** all fingerprints identical (`npm run sheets -- --record` on the hardware GPU,
+  `--use-angle=d3d11`), incrementalCheck 0 px differ, tests pass. Any visible change goes to Nathan with before / after
+  pictures, as J2's frost change did. Re-run E1's harness after each change and after GR4 lands.
+
 ## Lane SD: scape density sliders (2026-10-15; branch `scape-density`, port 5603; DONE, pushed to main)
 - **Per-layer random streams:** `starterItems(S, keepHard?)` in scene/items.ts draws each layer from its own stream
   (seed x layer: hardscape 1, plants 2, style picks 11 / 12; animals 3 in scene/starter.ts). A plant-stop change leaves
@@ -1183,6 +1202,8 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | F2 harder fish | (worktree removed) | - | - | DONE (`8febeec`): fantail, kuhli, harlequin, oscar v3. Open: head geometry rejected by Nathan (cory / loach / SAE / marine heads have no generic); fantail doubled anal fin; lane X's leftovers not applied (noseCap on neon / cardinal / chili / cpd, characin dorsal taper, platy / molly gonopodium) |
 | X2 fish leftovers | (worktree removed) | - | `art/fishgen.ts`, `render/fish3d.ts`, `art/paint.ts` (noseCap on neon / cardinal / chili / cpd, characin dorsal taper, platy / molly gonopodium, fantail doubled anal fin) | DONE 2026-10-15, pushed (see its section); fish files free; Sex switch browser-checked PASS (build 436) |
 | GR1 plant growth | `../Glass-Box-plants3d` / `plants3d` | 5283 | see the "Plant growth" section (growth value, Height removed, lying over at the surface) | DONE (`050e2d9`, `4a4e3a8`, build 440) |
+| E1 perf baseline | `../Glass-Box-perf2` / `perf-baseline` | 5623 | new `scripts/perf-baseline.mjs`, `research/efficiency/E1-*` (no src edits) | OPEN 2026-10-15 |
+| E2 code audit | `../Glass-Box-audit` / `code-audit` | - | `research/efficiency/E2-*`, `scripts/unused-exports.mjs` (no src edits) | OPEN 2026-10-15 |
 | GR2 emersed growth + floaters | `../Glass-Box-plants3d` / `plants3d` | 5283 | `art/plants.ts`, `render/plant3d.ts` (bendPlant 'emerge' / 'spread'), plant branch of `render/items.ts`, plant entries of `scene/items.ts`, new floater / lily species data | DONE (`2b67f4c`, build 456). Open: lying stems cut at the glass, sagittaria lawn loose tufts, lotus pads orange under light, duckweed waits for instancing |
 | GR4 GPU reveal + idle prebuild | `../Glass-Box-plants3d` / `plants3d` | 5283 | `render/plant3d.ts`, plant branch of `render/items.ts`, growth uniform hook in `render/lighting.ts`, growStep in `ui/panels.ts` | running (session `local_71ef0f3a`) |
 | GR3 growth timeline + tank setting | (worktree removed) | - | see the "Plant growth" section (Feeding + Time, `scene/growtime.ts`) | DONE (`c9d615a`, `5931cb2`, build 452). GPU reveal + idle prebuild (Nathan's call) handed to GR2 |
