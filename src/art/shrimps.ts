@@ -11,6 +11,7 @@ export interface Shrimp3D {
   hump: number;   // abdominal bend: 0 straight .. 1 strongly arched with the tail carried low (cleaner)
   deep: number;   // body depth x the default
   legL: number;   // walking-leg spread x the default (long, stilted legs > 1)
+  stand: number;  // body carried this far (widths) above the default ride height on longer legs
   ant: number;    // antenna length x the default
   glass?: number; // body and limb opacity (translucent shrimp)
   leg: string; antC: string; eye: string;
@@ -46,7 +47,7 @@ function blade(x: CanvasRenderingContext2D, W: number, H: number, c: string, a: 
 export const SHRIMP3D: Record<string, Shrimp3D> = {
   // cherry shrimp (Neocaridina davidi, red): solid deep red, a little paler and clearer low on the flanks, mottled
   cherryshrimp: {
-    rost: 0.085, up: 0.004, hump: 0.45, deep: 1, legL: 1, ant: 1, leg: '#b02a2c', antC: '#a03030', eye: '#140c0a',
+    rost: 0.085, up: 0.004, hump: 0.45, deep: 1, legL: 1, stand: 0.035, ant: 1, leg: '#b02a2c', antC: '#a03030', eye: '#140c0a',
     skin: (x, W, H) => {
       bands(x, W, H, [[0, '#9a161c'], [0.35, '#b8242a'], [0.75, '#cc3c40'], [1, '#d65a5c']]);
       mottle(x, W, H, 31, 260, 5, ['#8a1218', '#d8484c', '#e06a66'], 0.25);
@@ -56,7 +57,7 @@ export const SHRIMP3D: Record<string, Shrimp3D> = {
   // Amano (Caridina multidentata): a translucent grey-green glass body, a pale line down the back and rows of broken
   // red-brown dashes and dots along the flanks
   amano: {
-    rost: 0.1, up: 0.012, hump: 0.4, deep: 0.92, legL: 1, ant: 1.05, glass: 0.32, leg: '#8a9694', antC: '#7a8684', eye: '#18120e',
+    rost: 0.1, up: 0.012, hump: 0.4, deep: 0.92, legL: 1.05, stand: 0.045, ant: 1.05, glass: 0.32, leg: '#8a9694', antC: '#7a8684', eye: '#18120e',
     skin: (x, W, H) => bands(x, W, H, [[0, '#7e8a88'], [0.5, '#98a4a2'], [1, '#b0b8b4']]),
     marks: (x, W, H) => {
       const R = rng(7);
@@ -79,7 +80,7 @@ export const SHRIMP3D: Record<string, Shrimp3D> = {
   // broad red band each side of it, yellow-orange flanks; long white antennae; red tail fan with white spots; the
   // abdomen arched, the tail carried low
   cleanershrimp: {
-    rost: 0.07, up: 0.006, hump: 1, deep: 1.05, legL: 1.2, ant: 1.35, leg: '#e0603a', antC: '#f4f2ea', eye: '#120c0a',
+    rost: 0.07, up: 0.006, hump: 1, deep: 1.05, legL: 1.3, stand: 0.08, ant: 1.35, leg: '#e0603a', antC: '#f4f2ea', eye: '#120c0a',
     skin: (x, W, H) => {
       bands(x, W, H, [[0, '#f6f4ee'], [0.05, '#f6f4ee'], [0.075, '#c42a20'], [0.38, '#c8281e'], [0.5, '#e08a30'], [0.62, '#eca838'], [1, '#f2be58']]);
       mottle(x, W, H, 41, 120, 4, ['#d8a040', '#f0c060'], 0.2);

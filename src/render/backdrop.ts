@@ -4,7 +4,7 @@
 // a baked top-front-left light, darker in the hollows, the grit shader for the fine detail). Nathan 2026-10-15.
 import * as THREE from 'three';
 import { rng } from '../art/paint';
-import { backdropDepth } from '../scene/physics';
+import { backdropDepth, RIM_H } from '../scene/physics';
 import { backgroundRuns, shapeOf, type P } from '../scene/shape';
 import type { BackdropKind, BackdropSettings, Tank } from '../scene/types';
 import { grit, solidMaterial } from './items';
@@ -158,13 +158,16 @@ const LIGHT = new THREE.Vector3(-0.35, 1, 0.55).normalize();
 const cache = new Map<string, THREE.BufferGeometry>();
 
 /** The wall's geometry for one tank (cached by tank and settings: the scene rebuilds on every edit). */
-export function backdropGeometry(T: Tank, b: BackdropSettings): THREE.BufferGeometry | null {
+export function backdropGeometry(T: Tank, b: BackdropSettings, rim = false): THREE.BufferGeometry | null {
   const depth = backdropDepth(b, T);
   if (!depth) return null;
-  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.bowMin}|${b.kind}|${depth}|${b.seed}`;
+  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.bowMin}|${b.kind}|${depth}|${b.seed}|${rim}`;
   const hit = cache.get(key);
   if (hit) return hit;
-  const f = field(b.kind, b.seed), col = new THREE.Color(), top = T.H - 1, gap = 1.5;
+  const f = field(b.kind, b.seed), col = new THREE.Color(), gap = 1.5;
+  // stop just under the lid (Nathan 2026-10-15): rimmed, under the rim band (it hides the cut top from the front);
+  // rimless, a few mm under the glass top resting on the panes
+  const top = rim ? T.H - RIM_H : T.H - 4;
   const pos: number[] = [], cols: number[] = [], idx: number[] = [], inward: number[] = [];
   for (const run of backgroundRuns(T, ['back'], 145, 0)) {
     // run arc length, then the grid along it
@@ -237,9 +240,9 @@ export function backdropGeometry(T: Tank, b: BackdropSettings): THREE.BufferGeom
 }
 
 /** Add the wall to a tank's scene (nothing when off or in a bowl). */
-export function addBackdrop(sc: THREE.Scene, b: BackdropSettings | undefined, T: Tank) {
+export function addBackdrop(sc: THREE.Scene, b: BackdropSettings | undefined, T: Tank, rim = false) {
   if (!b) return;
-  const g = backdropGeometry(T, b);
+  const g = backdropGeometry(T, b, rim);
   if (!g) return;
   const m = new THREE.Mesh(g, solidMaterial(T));
   m.userData.backdrop = true;

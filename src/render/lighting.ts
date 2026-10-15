@@ -54,6 +54,8 @@ export function kelvinRGB(K: number): [number, number, number] {
   return [r / lum, g / lum, b / lum];
 }
 
+/** Most half-planes the water is clipped to (a round tank's ring has 64). */
+const AQ_CLIP = 72;
 /** Shared uniforms; set per viewport before each render because Tank A and Tank B have different fixtures. */
 export const LU = {
   uEm: { value: Array.from({ length: AQ_MAX }, () => new THREE.Vector4()) }, uEmN: { value: 0 }, uMode: { value: 0 },
@@ -61,7 +63,7 @@ export const LU = {
   uRef: { value: REF }, uLCol: { value: new THREE.Color(1, 1, 1) },
   uRoomK: { value: 1 }, uSpill: { value: new THREE.Color(1, 1, 1) }, uSpillR: { value: 500 },
   uTankMin: { value: new THREE.Vector3() }, uTankMax: { value: new THREE.Vector3() }, uTankRound: { value: 0 },
-  uWater: { value: new THREE.Vector4() }, uBow: { value: new THREE.Vector3() }, uWCol: { value: new THREE.Color() }, uPop: { value: 0 },
+  uWater: { value: new THREE.Vector4() }, uClip: { value: Array.from({ length: AQ_CLIP }, () => new THREE.Vector3()) }, uClipN: { value: 0 }, uWCol: { value: new THREE.Color() }, uPop: { value: 0 },
   // light map (beam overlay): on, weight per emitter, the beam's concentration (see aqIrr)
   uMapOn: { value: 0 }, uMapW: { value: 1 }, uMapGain: { value: 1 },
   // light output (lane K; watts set): the map in real units, a port of scene/lightout.ts bandsAt. uLoA: phi x 1e6 /
@@ -88,19 +90,31 @@ export function setWaterUniforms(T: Tank, w: WaterSettings, pop = 0) {
   LU.uPop.value = pop;
   LU.uWater.value.set(T.L, waterY(T, w.level), T.D, w.on ? waterK(w.opacity) : 0);
   LU.uWCol.value.set(w.color);
-  // a bowfront's water is the box cut by the bow's circle (centre (L/2, -R), radius R): without it the box corners in
-  // front of the curved glass tint whatever is seen through them (the cabinet below). A near-flat bow (huge R) is skipped.
-  const e = shapeOf(T) === 'bow' ? clamp(T.D - (T.bowMin ?? T.D), 0, T.L / 2) : 0, R = e > 20 ? (T.L * T.L / 4 + e * e) / (2 * e) : 0;
-  LU.uBow.value.set(T.L / 2, -R, R);
+  // any tank but a box: the water is the box cut by the footprint's sides (half-planes in plan), else the box corners
+  // outside curved or angled glass tint whatever is seen through them (the cabinet below). Was the bow's circle only
+  // (73aabd9); a half round, corner, round or hexagon tank still hazed its stand (Nathan 2026-10-15). A bowl is a
+  // sphere wider than its floor, so it keeps the box.
+  const s = shapeOf(T), ring = s === 'rect' || s === 'bowl' ? [] : footprint(T).ring;
+  const cx = ring.reduce((a, p) => a + p[0], 0) / (ring.length || 1), cd = ring.reduce((a, p) => a + p[1], 0) / (ring.length || 1);
+  let n = 0;
+  for (let i = 0; i < ring.length && n < AQ_CLIP; i++) {
+    const a = ring[i], b = ring[(i + 1) % ring.length], tx = b[0] - a[0], tz = -(b[1] - a[1]), l = Math.hypot(tx, tz);
+    if (l < 1e-6) continue;
+    let nx = tz / l, nz = -tx / l; // world plan (x, z = -d); flipped to point away from the centroid
+    if (nx * (a[0] - cx) + nz * (-a[1] + cd) < 0) { nx = -nx; nz = -nz; }
+    LU.uClip.value[n++].set(nx, nz, nx * a[0] - nz * a[1] + 0.5); // inside: nx x + nz z <= c (0.5 mm: the glass's own face)
+  }
+  LU.uClipN.value = n;
 }
-/** Clips the water slab segment [a, b] (fractions of dv from o) to a bowfront's circle in plan (uBow.z = 0: no bow). */
-const BOW_GLSL = `uniform vec3 uBow;
+/** Clips the water slab segment [a, b] (fractions of dv from o) to the footprint's half-planes in plan (uClipN = 0: the box). */
+const BOW_GLSL = `uniform vec3 uClip[${AQ_CLIP}]; uniform int uClipN;
 void aqBow(vec3 o, vec3 dv, inout float a, inout float b) {
-  if (uBow.z <= 0.0) return;
-  vec2 f = o.xz - uBow.xy, d = dv.xz; float lf = length(f);
-  float A = dot(d, d), B = dot(f, d), C = (lf - uBow.z) * (lf + uBow.z), q = B * B - A * C;
-  if (A < 1e-9 || q < 0.0) { if (C > 0.0) b = a; return; }
-  float s = sqrt(q); a = max(a, (-B - s) / A); b = min(b, (-B + s) / A);
+  for (int i = 0; i < ${AQ_CLIP}; i++) {
+    if (i >= uClipN) break;
+    vec3 h = uClip[i]; float num = h.z - (h.x * o.x + h.y * o.z), den = h.x * dv.x + h.y * dv.z;
+    if (abs(den) < 1e-9) { if (num < 0.0) b = a; }
+    else if (den > 0.0) b = min(b, num / den); else a = max(a, num / den);
+  }
 }`;
 /**
  * The empty water's own colour (audit #18): drawn on the far faces of the water volume, as much of the water colour as
@@ -110,7 +124,7 @@ void aqBow(vec3 o, vec3 dv, inout float a, inout float b) {
  */
 export function waterVolumeMaterial() {
   return new THREE.ShaderMaterial({
-    uniforms: { uWater: LU.uWater, uBow: LU.uBow, uWCol: LU.uWCol, uPopV: LU.uPop },
+    uniforms: { uWater: LU.uWater, uClip: LU.uClip, uClipN: LU.uClipN, uWCol: LU.uWCol, uPopV: LU.uPop },
     vertexShader: 'varying vec3 vP; void main() { vec4 w = modelMatrix * vec4(position, 1.0); vP = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }',
     fragmentShader: `uniform vec4 uWater; uniform vec3 uWCol; varying vec3 vP;
 ${BOW_GLSL}

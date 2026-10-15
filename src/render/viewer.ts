@@ -1,7 +1,7 @@
 // Owns the WebGL renderer and the one or two viewports (one per tank setup; two after a split). Render-on-demand.
 import * as THREE from 'three';
 import { fishTL, speciesOf } from '../data/species';
-import { D2R, clamp, depthRatio, floorY, fmtLen, tankUnderside } from '../scene/physics';
+import { D2R, clamp, depthRatio, floorY, tankUnderside } from '../scene/physics';
 import { eyeDist, lensZoom } from '../scene/orbit';
 import { tableOn, tableRing } from '../scene/table';
 import { footprint } from '../scene/shape';
@@ -10,7 +10,7 @@ import type { Fish, Tank, TankSetup } from '../scene/types';
 import { HOOD_H, buildTank, disposeScene, envKey, lookKey, patchLook, patchTank, personSpot, type BuiltTank } from './build';
 import { drawViewMap } from './viewmap';
 import { applyFraming, fovFor, frameBox, frameStraightOn, placeCamera, windowCentre } from './camera';
-import { glowColor, lampHeight, placeSlice, roomLevel, setLightUniforms, setWaterUniforms } from './lighting';
+import { glowColor, placeSlice, roomLevel, setLightUniforms, setWaterUniforms } from './lighting';
 import { wattsOf } from '../scene/lightout';
 import { placeShells } from './lightShells';
 import { onPictureLoad, setMaxAnisotropy } from './textures';
@@ -150,6 +150,22 @@ export class Viewer {
     // r: eye to orbit centre, so a zoom that steps the eye back (below LENS_ZOOM_MIN) can rescale the point at the tank's depth
     this.anchor = { i, nx, ny, u: w.cx + fx * w.hx, v: w.cy + fy * w.hy, r: vp.cam.position.distanceTo(pivot(vp.T)) };
   }
+  /**
+   * Orbit about the point under the pointer (Nathan 2026-10-15: "if I want to orbit around a fish I hover over the fish
+   * and orbit"): while pinned, every draw pans view i so `P` stays at (nx, ny). The eye still circles the tank centre at
+   * the Eye distance (camera rule); only the image window follows. The fish, rock or plant under the pointer, else the
+   * point under it at the orbit centre's depth. Cleared with unpinOrbit when the drag ends; the pan stays.
+   */
+  private pin: { i: number; nx: number; ny: number; P: THREE.Vector3 } | null = null;
+  pinOrbit(clientX: number, clientY: number) {
+    const hit = this.hitTest(clientX, clientY); if (!hit) return;
+    const vp = hit.vp, r = this.host.getBoundingClientRect(), x = clientX - r.left - vp.x, y = clientY - r.top - vp.y;
+    const meshes = [...(vp.fishMeshes ?? []), ...(vp.itemMeshes ?? [])];
+    const P = new THREE.Raycaster(hit.ray.origin, hit.ray.direction).intersectObjects(meshes, false)[0]?.point
+      ?? hit.ray.closestPointToPoint(pivot(vp.T), new THREE.Vector3());
+    this.pin = { i: vp.i, nx: x / vp.w * 2 - 1, ny: 1 - y / vp.h * 2, P };
+  }
+  unpinOrbit() { this.pin = null; }
   /** Ease every view back to its framing. */
   resetPan() {
     cancelAnimationFrame(this.panAnim);
@@ -315,6 +331,12 @@ export class Viewer {
       const { hx, hy, c } = frame(ak), vp = active[ak], k = a.r / vp.cam.position.distanceTo(pivot(vp.T));
       this.setPan(a.i, (c.cx + a.nx * hx - a.u * k) * vp.w / (2 * hx), (a.v * k - c.cy - a.ny * hy) * vp.h / (2 * hy));
     }
+    // orbit drag: pan so the pinned point is under the pointer again (pinOrbit)
+    const q = this.pin, qk = q ? active.findIndex(v => v.i === q.i) : -1;
+    if (q && qk >= 0) {
+      const { hx, hy, c } = frame(qk), vp = active[qk], v = q.P.clone().applyMatrix4(vp.cam.matrixWorldInverse), d = -v.z;
+      if (d > 1) this.setPan(q.i, (c.cx - v.x / d + q.nx * hx) * vp.w / (2 * hx), (v.y / d - q.ny * hy - c.cy) * vp.h / (2 * hy));
+    }
     this.content = [];
     for (const [k, vp] of active.entries()) {
       const S = vp.S, { fov, hx, hy, c } = frame(k);
@@ -324,7 +346,6 @@ export class Viewer {
       const a = wins[k].all, px = (t: number) => vp.x + ((t - c.cx) / hx + 1) / 2 * vp.w, py = (t: number) => vp.y + (1 - ((t - c.cy) / hy + 1) / 2) * vp.h;
       this.content[k] = { x0: Math.max(vp.x, px(a.x0)), x1: Math.min(vp.x + vp.w, px(a.x1)), y0: Math.max(vp.y, py(a.y1)), y1: Math.min(vp.y + vp.h, py(a.y0)), vx: vp.x, vw: vp.w };
       applyFraming(vp.cam, fov, vp.w, vp.h, c.cx, c.cy);
-      this.markLights(k, vp);
       const person = vp.scene?.getObjectByName('person');
       if (person) this.placePerson(vp, person, headroom(S), bottom(S));
       r.setViewport(vp.x, vp.y, vp.w, vp.h); r.setScissor(vp.x, vp.y, vp.w, vp.h);
@@ -342,7 +363,6 @@ export class Viewer {
       cb.setLocked(false); cb.setMask(true); gl.colorMask(true, true, true, true);
     }
     r.setScissorTest(false);
-    for (let k = active.length; k < 2; k++) this.markLights(k, undefined);
     // one viewpoint map per view, at its bottom-left corner, drawn from that view's own camera, tank and person
     const mapOn = (document.getElementById('mapOn') as HTMLInputElement | null)?.checked ?? true;
     for (const k of [0, 1]) {
@@ -509,35 +529,6 @@ export class Viewer {
     g.imageSmoothingQuality = 'high';
     g.drawImage(c, 0, 0, t.width, t.height);
     return t.toDataURL('image/jpeg', 0.75);
-  }
-
-  /**
-   * A raised fixture above the top of a view: a small "▲ Light … above" note at the top of that view (audit #19). The
-   * framing never counts the lights (Nathan 2026-10-09), so zoomed in they leave the picture; this says they are there.
-   */
-  private lightMarks: HTMLDivElement[] = [];
-  private markLights(k: number, vp: Viewport | undefined) {
-    let el = this.lightMarks[k];
-    const S = vp?.S, l = S?.light, show = !!vp && !!S && !!l && l.type !== 'flat' && S.lid !== 'hood' && (() => {
-      const p = new THREE.Vector3(vp.T.L / 2, vp.T.H + lampHeight(l, S.lid), -vp.T.D / 2).project(vp.cam);
-      return p.y > 1 && p.z < 1;
-    })();
-    if (!show) { if (el) el.style.display = 'none'; return; }
-    if (!el) {
-      el = this.lightMarks[k] = document.createElement('div');
-      el.style.cssText = 'position:absolute;top:44px;transform:translateX(-50%);padding:2px 8px;border-radius:10px;font:600 12px system-ui,"Segoe UI",sans-serif;'
-        + 'background:rgba(20,24,30,0.7);color:#fff;pointer-events:none;white-space:nowrap;z-index:2';
-      this.host.appendChild(el);
-    }
-    el.style.display = ''; el.style.left = (vp!.x + vp!.w / 2) + 'px';
-    // below the overlays at the top of this view (Undo / Redo, the tank label), which drop lower on a phone (lane G)
-    let top = 44;
-    for (const o of this.host.querySelectorAll<HTMLElement>('.viewtools, .lab')) {
-      if (!o.offsetParent || o.offsetLeft >= vp!.x + vp!.w || o.offsetLeft + o.offsetWidth <= vp!.x) continue;
-      top = Math.max(top, o.offsetTop + o.offsetHeight + 6);
-    }
-    el.style.top = top + 'px';
-    el.textContent = `▲ Light ${fmtLen(lampHeight(l!, S!.lid), this.store.scene.units, 1)} above the tank`;
   }
 
   /** Per drawn view: the tank + stand's box on the canvas (CSS px) and the view's own left / width. */
