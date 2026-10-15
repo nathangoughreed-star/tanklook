@@ -605,6 +605,50 @@ export function carpetOnGround(base: THREE.BufferGeometry, spot: Spot) {
 }
 
 /**
+ * A clump set on sloping ground (Nathan 2026-10-15: its crowns sat on one level plane): every leaf or stem moves up or
+ * down with the ground under its own base (`off(x, z)`: the ground there less the ground under the plant's origin, in
+ * the plant's own frame), fading out by the height F over the base where a plant lying over at the surface turns (so
+ * the sheet on the water stays on the water). Bases are where each top piece starts (a side shoot rides its stem);
+ * what belongs to no piece (runners, a core) moves with the ground under itself. Null = the ground is level under it
+ * (within half a mm), so the plant as built stands; else its cache key and how to build it. Shares colours, normals
+ * and triangles.
+ */
+export function clumpOnGround(src: THREE.BufferGeometry, off: (x: number, z: number) => number, F = Infinity): { key: string; build: () => THREE.BufferGeometry } | null {
+  const G = src.userData.grow as GrowData | undefined;
+  if (!G || G.pieces.length < 2) return null;
+  const parent = new Map(G.links.map(([c, p]) => [c, p] as const));
+  const top = (p: number) => { for (let k = 0; parent.has(p) && k < 8; k++) p = parent.get(p)!; return p; };
+  // the ground under each base, looked up once per 2 mm cell (a crown's leaves start a few mm apart), to half a mm
+  const cells = new Map<string, number>(), dyOf = new Float32Array(G.pieces.length);
+  const at = (x: number, z: number) => { const c = `${Math.round(x / 2)},${Math.round(z / 2)}`; let v = cells.get(c); if (v == null) cells.set(c, v = Math.round(off(x, z) * 2) / 2); return v; };
+  let any = false, h = 0;
+  for (let p = 0; p < G.pieces.length; p++) {
+    const b = G.pieces[top(p)]; dyOf[p] = b && b.length >= 3 ? at(b[0], b[2]) : 0;
+    if (Math.abs(dyOf[p]) >= 0.5) any = true;
+    h = (Math.imul(h, 31) + dyOf[p] * 2) | 0;
+  }
+  if (!any) return null;
+  // the key: the ground offsets themselves (a drag that keeps the slope under it reuses the build)
+  return { key: `g${G.pieces.length}:${h}`, build: () => {
+    const wt = (y: number) => (Number.isFinite(F) && F > 0 ? Math.min(1, Math.max(0, 1 - y / F)) : 1);
+    const P = src.attributes.position, pos = new Float32Array(P.count * 3), anc = new Float32Array(G.anc);
+    for (let v = 0; v < P.count; v++) {
+      const x = P.getX(v), y = P.getY(v), z = P.getZ(v), pc = G.pc[v];
+      const dy = pc >= 0 ? dyOf[pc] : at(x, z);
+      pos[v * 3] = x; pos[v * 3 + 1] = y + dy * wt(y); pos[v * 3 + 2] = z;
+      anc[v * 3 + 1] += dy * wt(anc[v * 3 + 1]);
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    for (const k of ['color', 'normal']) if (src.attributes[k]) g.setAttribute(k, src.attributes[k]);
+    g.setIndex(src.index);
+    g.computeBoundingBox(); g.computeBoundingSphere();
+    Object.assign(g.userData, src.userData, { keep: true, grow: { ...G, anc } });
+    return g;
+  } };
+}
+
+/**
  * The plant at growth g: every vertex at its place (shown), pulled toward its anchor (growing), or dropped (not there
  * yet). Positions only; colours and normals are shared with src, and so is src itself when everything is shown (a
  * plant at its own growth draws exactly as it was built). Cheap: it runs on every step of a slider drag.

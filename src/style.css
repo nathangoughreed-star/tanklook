@@ -122,6 +122,22 @@ button.on, button.primary { background: var(--accent); color: #fff; border-color
 .lib .chips { margin: 3px 0 }
 #itemBox { border-top: 1px solid var(--line, #0002); margin-top: 6px; padding-top: 4px }
 #itemBox[hidden] { display: none }
+/* the running plant list (a row opens to the item box) */
+.plist { margin: 4px 0 8px; display: grid; gap: 2px } .plist[hidden] { display: none }
+.plist .pr { display: grid; grid-template-columns: 1fr auto; gap: 2px 4px; align-items: center }
+.plist .pr.open { background: var(--chip); border: 1px solid var(--line); border-radius: 6px; padding: 2px 6px 4px }
+.plist .pn { display: flex; gap: 6px; align-items: baseline; text-align: left; background: none; border: 0; padding: 3px 2px; min-width: 0; color: inherit; cursor: pointer }
+.plist .pn .car { flex: none; width: 10px; color: var(--muted) }
+.plist .pn .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.plist .pn .gw { flex: none; color: var(--muted); font-size: 11.5px }
+.plist .px { width: 24px; padding: 2px 0 }
+.plist .pg > .pn { width: 100% }
+.plist .prs { display: grid; gap: 2px; margin: 0 0 4px 12px }
+.plist .pr #itemBox { grid-column: 1 / -1; border-top: 0; margin-top: 0 }
+/* a chip or species row dragged toward the tank */
+.dragGhost { position: fixed; left: 0; top: 0; z-index: 1000; pointer-events: none; background: var(--chip); border: 1px dashed var(--line); border-radius: 6px; padding: 3px 8px; font-size: 12px; opacity: .85; white-space: nowrap }
+.dragGhost.ok { border-style: solid; opacity: 1 }
+body.placing, body.placing * { cursor: copy !important; user-select: none }
 .nudge { display: grid; grid-template-columns: 92px 1fr 1fr; gap: 4px 6px; align-items: center; margin: 6px 0 }
 .nudge .nl { color: var(--muted); grid-row: span 3 }
 .itemName { font-weight: 600; margin: 2px 0 4px }

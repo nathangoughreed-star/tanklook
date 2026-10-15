@@ -17,6 +17,7 @@ import { handEdits, regenerate } from '../scene/starter';
 import { growthOf, isClump, isPatch, type PlantType } from '../art/plants';
 import { clumpAuto } from '../render/plant3d';
 import { canPrebuild, plantWarm, prebuildHooks, prebuildPlants } from '../render/items';
+import { placeAt, type PlaceAt } from '../interact/pointer';
 import { tankDiff } from './diff';
 import { attachTypeIns, parseLen, plainNum, tidy, type TypeIn } from './typein';
 import {
@@ -58,6 +59,35 @@ export function attachPanels(store: Store, viewer: Viewer) {
   const S = () => store.tank;    // the tank the panel shows; edits go to every view with "Edit" ticked (store.edit)
   const fmt = (mm: number) => fmtLen(mm, G().units);
   const sel = () => store.selected;
+  /** Drag something out of the panel into the tank (Nathan 2026-10-15: a library chip, a species row); a plain click
+   *  still does what it did. Past a few px the press becomes a drag: a label rides with the pointer, `move` hears where
+   *  it would land (null = not over a tank's floor) and `drop` where it was let go; the click that follows is swallowed.
+   *  Mouse and pen only: a finger on the panel scrolls it. */
+  const dragOut = (e: PointerEvent, label: string, h: { move?: (at: PlaceAt | null) => void; drop: (at: PlaceAt | null) => void; skip?: () => Set<number> }) => {
+    if (e.button !== 0 || e.pointerType === 'touch') return;
+    e.preventDefault(); // (no text selection while dragging)
+    const x0 = e.clientX, y0 = e.clientY;
+    let ghost: HTMLElement | null = null;
+    const at = (ev: PointerEvent) => placeAt(viewer, store, ev.clientX, ev.clientY, h.skip?.());
+    const mv = (ev: PointerEvent) => {
+      if (!ghost) {
+        if (Math.hypot(ev.clientX - x0, ev.clientY - y0) < 6) return;
+        ghost = document.createElement('div'); ghost.className = 'dragGhost'; ghost.textContent = label;
+        document.body.append(ghost); document.body.classList.add('placing');
+      }
+      ghost.style.transform = `translate(${ev.clientX + 14}px, ${ev.clientY + 10}px)`;
+      const p = at(ev); ghost.classList.toggle('ok', !!p); h.move?.(p);
+    };
+    const end = (ev: PointerEvent) => {
+      removeEventListener('pointermove', mv); removeEventListener('pointerup', end); removeEventListener('pointercancel', end);
+      if (!ghost) return;
+      ghost.remove(); document.body.classList.remove('placing');
+      const eat = (c: Event) => { c.stopPropagation(); c.preventDefault(); };
+      addEventListener('click', eat, { capture: true, once: true }); setTimeout(() => removeEventListener('click', eat, { capture: true }), 0);
+      h.drop(ev.type === 'pointerup' ? at(ev) : null);
+    };
+    addEventListener('pointermove', mv); addEventListener('pointerup', end); addEventListener('pointercancel', end);
+  };
   /** Mutate the selected fish (undoable, coalesced per control). */
   const editSel = (fn: (f: Fish, s: TankSetup) => void, coalesce?: string) => {
     if (!store.selected) return;
@@ -506,6 +536,7 @@ Cancel, then change the name, to keep both.`)) return;
       if (sp.note) b.title = sp.note;
       b.onclick = () => { pickId = sp.id; preview.hidden = false; renderResults(); };
       b.ondblclick = () => addOne(sp);
+      b.onpointerdown = e => dragOut(e, sp.name, { drop: at => at && dropSpecies(sp, sp.id === pickId && sp.female ? previewSex : undefined, at) });
       results.append(b);
     }
     const pick = getSpecies(pickId), why = pick ? blocked(pick) : '';
@@ -571,7 +602,7 @@ Cancel, then change the name, to keep both.`)) return;
    *  species' sizes from "New fish size"; only they are placed (joining their species' school if it is already in the
    *  tank, else by the shuffle rules), everyone else stays put (Nathan 2026-10-13). 0 takes the species off the list.
    *  One undo step per burst of clicks. */
-  function setCount(sp: Species, to: (n: number) => number, sex?: Sex) {
+  function setCount(sp: Species, to: (n: number) => number, sex?: Sex, at?: PlaceAt) {
     const want = Math.round(to(S().fish.filter(f => inRow(f, sp, sex)).length));
     if (want > 0) { const why = blocked(sp); if (why) { status(why, true); renderResults(); return; } }
     const have = S().fish.filter(f => inRow(f, sp, sex)).length;
@@ -588,6 +619,20 @@ Cancel, then change the name, to keep both.`)) return;
         mine.push(f); s.fish.push(f); added.add(id);
       }
       placeNew(s, r, added);
+      // dropped into the tank: the newcomers, placed as above, move over together so they gather round the drop point,
+      // each at its height above the ground there, and off the front and back glass (seen from the front, the ground
+      // under the pointer is right behind the glass); the glass and land animals keep the spots their rules gave them
+      if (at && sp.habitat === 'water') {
+        const fs = s.fish.filter(f => added.has(f.id) && f.surface !== 'glass'), T = s.tank, g = (x: number, d: number) => groundHeight(s, T, x, d);
+        const top = s.water.on ? waterY(T, s.water.level) : T.H, wb = backdropDepth(s.backdrop, T);
+        const dx = at.x - fs.reduce((a, f) => a + f.x, 0) / (fs.length || 1), dd = clamp(at.depth, T.D * 0.25, T.D * 0.75) - fs.reduce((a, f) => a + f.depth, 0) / (fs.length || 1);
+        for (const f of fs) {
+          const up = f.y - g(f.x, f.depth);
+          f.x += dx; f.depth += dd; clampFish(f, T, wb, s.render.bgSides);
+          f.y = clamp(g(f.x, f.depth) + up, 0, top);
+          clampFish(f, T, wb, s.render.bgSides);
+        }
+      }
     }, { coalesce: `count:${sp.id}:${sex ?? ''}` });
     if (store.selId != null && !S().fish.some(f => f.id === store.selId)) store.select(null);
   }
@@ -597,9 +642,17 @@ Cancel, then change the name, to keep both.`)) return;
     if (S().fish.some(f => inRow(f, sp, sex))) { status(`${rowName(sp, sex)} is already in the stocking list: use + or type a number.`); return; }
     setCount(sp, () => startCount(sp), sex);
   }
+  /** A species dragged into the tank: its start count gathered round the drop point, or one more there if it is already
+   *  in the list. In a split view, the tank it was dropped in becomes the one the panel shows. */
+  function dropSpecies(sp: Species, sex: Sex | undefined, at: PlaceAt) {
+    if (at.vi !== store.scene.active) store.setActive(at.vi);
+    setCount(sp, k => k + (k ? 1 : startCount(sp)), sex, at);
+    store.seal();
+  }
   /** Stocking name: "Betta (male)" / "Betta (female)" for a dimorphic species, else the name. */
   const rowName = (sp: Species, sex?: Sex) => sp.name + (sp.female ? (sex ? ' (female)' : ' (male)') : '');
   $('addFish').onclick = () => { const sp = getSpecies(pickId); if (sp) addOne(sp); };
+  $('addFish').onpointerdown = e => { const sp = getSpecies(pickId); if (sp && !$<HTMLButtonElement>('addFish').disabled) dragOut(e, sp.name, { drop: at => at && dropSpecies(sp, sp.female ? previewSex : undefined, at) }); };
   $('shuffle').onclick = () => {
     if (!S().fish.length) return;
     const seed = Math.random() * 1e9;
@@ -994,7 +1047,35 @@ Cancel, then change the name, to keep both.`)) return;
     });
     store.selectItem(id); openSec(scapeSec(LIBRARY[variant].kind));
   };
-  document.querySelectorAll<HTMLButtonElement>('[data-lib]').forEach(b => b.onclick = () => addItem(b.dataset.lib!));
+  /** A chip dragged into the tank: the piece appears under the pointer as soon as it is over a tank's floor and follows
+   *  it there, resting on the ground or the piece under it; let go over the tank to place it, anywhere else to take it
+   *  back out. One undo step. */
+  const dragItem = (e: PointerEvent, variant: string) => {
+    let id: number | null = null, vi = -1;
+    const key = `place:${Math.random()}`, yaw = LIBRARY[variant].kind === 'plant' ? 0 : Math.round((Math.random() - 0.5) * 60);
+    const put = (at: PlaceAt) => {
+      if (id == null) {
+        if (at.vi !== store.scene.active) store.setActive(at.vi);
+        id = store.nextItemId(); vi = at.vi;
+        const nid = id, seed = 1 + Math.floor(Math.random() * 1e9);
+        store.edit(s => { const it = makeItem(s.tank, variant, nid, seed, at.x, at.depth, { yaw }, s); it.lift = at.lift; clampItem(it, s.tank, s); s.items.push(it); }, { coalesce: key });
+        store.selectItem(nid); return;
+      }
+      if (at.vi !== vi) return;
+      const nid = id;
+      store.edit(s => { const it = s.items.find(q => q.id === nid); if (!it) return; it.x = at.x; it.depth = at.depth; it.lift = at.lift; clampItem(it, s.tank, s); }, { coalesce: key });
+    };
+    dragOut(e, LIBRARY[variant].label, {
+      skip: () => new Set(id == null ? [] : [id]),
+      move: at => { if (at) put(at); },
+      drop: at => {
+        if (at) put(at);
+        else if (id != null) { const nid = id; store.edit(s => { s.items = s.items.filter(q => q.id !== nid); }, { coalesce: key }); store.selectItem(null); }
+        store.seal();
+      },
+    });
+  };
+  document.querySelectorAll<HTMLButtonElement>('[data-lib]').forEach(b => { b.onclick = () => addItem(b.dataset.lib!); b.onpointerdown = e => dragItem(e, b.dataset.lib!); });
   const editItem = (fn: (it: Item, s: TankSetup) => void, coalesce?: string) => {
     const id = store.selItem; if (id == null) return;
     store.edit(s => { const it = s.items.find(q => q.id === id); if (it) { fn(it, s); clampItem(it, s.tank, s); } }, { coalesce });
@@ -1150,6 +1231,61 @@ Cancel, then change the name, to keep both.`)) return;
   let mapHeld = false;
   let listSig = '', jsonOpen = false, lastSelId: number | null = store.selId; // a selection restored on load does not open Fish
   let lastItem: number | null = null;
+  // the running list of plants (and corals) under Plants, like the animals' stocking list (Nathan 2026-10-15): one row per
+  // piece, "Vallisneria cluster 1", under a row per species ("Vallisneria cluster ×4") that opens and closes (a starter
+  // set plants over a hundred); a species with one piece shows that piece's row alone. A piece's row opens to its
+  // settings (the item box moves under it), a click on an open row closes it; selecting a piece in the tank opens its
+  // row. Rebuilt only when pieces come or go, the selection changes or a group opens (the item box's sliders must stay
+  // in the page while dragged); each row's growth is refreshed in place.
+  let plistSig = '';
+  const openGroups = new Set<string>();
+  const plantName = (s: TankSetup, it: Item) => {
+    const n = s.items.filter(q => q.variant === it.variant && q.id <= it.id).length;
+    return `${groupName(it)} ${n}`;
+  };
+  const groupName = (it: Item) => `${LIBRARY[it.variant]?.label ?? it.variant}${it.kind === 'plant' && isClump(it.variant) ? ' cluster' : ''}`;
+  const plantGrowth = (it: Item) => (it.kind === 'plant' ? growthWord(it.growth ?? growthOf(it.variant as PlantType, it.size)) : '');
+  function plantList(s: TankSetup) {
+    const list = $<HTMLDivElement>('plantList'), box = $('itemBox'), edit = $('itemEdit');
+    const ps = s.items.filter(it => scapeSec(it.kind) === 'plants'), sel0 = store.selectedItem, selId = ps.some(it => it.id === sel0?.id) ? sel0!.id : null;
+    const groups = new Map<string, Item[]>();
+    for (const it of ps) { const g = groups.get(it.variant); if (g) g.push(it); else groups.set(it.variant, [it]); }
+    if (selId != null) openGroups.add(sel0!.variant);
+    const sig = ps.map(it => `${it.id}:${it.variant}`).join() + '|' + selId + '|' + [...openGroups].join();
+    if (sig !== plistSig) {
+      plistSig = sig;
+      edit.prepend(box); // (back home before the rows go)
+      list.innerHTML = '';
+      const pieceRow = (it: Item, into: HTMLElement) => {
+        const open = it.id === selId, row = document.createElement('div'), name = esc(plantName(s, it));
+        row.className = open ? 'pr open' : 'pr'; row.dataset.id = String(it.id);
+        row.innerHTML = `<button class="pn" aria-expanded="${open}" title="${open ? 'Close its settings' : 'Select it and open its settings: growth, spread, stems, turn, raise'}"><span class="car">${open ? '▾' : '▸'}</span><span class="nm">${name}</span><span class="gw"></span></button><button class="px" title="Remove it" aria-label="Remove ${name}">×</button>`;
+        const id = it.id;
+        row.querySelector<HTMLButtonElement>('.pn')!.onclick = () => store.selectItem(store.selectedItem?.id === id ? null : id);
+        row.querySelector<HTMLButtonElement>('.px')!.onclick = () => { store.edit(t => { t.items = t.items.filter(q => q.id !== id); }); if (store.selectedItem?.id === id) store.selectItem(null); };
+        into.append(row);
+        if (open) row.append(box);
+      };
+      for (const [v, its] of groups) {
+        if (its.length === 1) { pieceRow(its[0], list); continue; }
+        const open = openGroups.has(v), grp = document.createElement('div');
+        grp.className = open ? 'pg open' : 'pg';
+        grp.innerHTML = `<button class="pn" aria-expanded="${open}"><span class="car">${open ? '▾' : '▸'}</span><span class="nm">${esc(groupName(its[0]))}</span><span class="gw">×${its.length}</span></button>`;
+        grp.querySelector<HTMLButtonElement>('.pn')!.onclick = () => {
+          if (openGroups.delete(v)) { if (store.selectedItem?.variant === v) store.selectItem(null); } else openGroups.add(v);
+          plantList(S());
+        };
+        list.append(grp);
+        if (open) { const rows = document.createElement('div'); rows.className = 'prs'; grp.append(rows); for (const it of its) pieceRow(it, rows); }
+      }
+      for (const v of openGroups) if (!groups.has(v)) openGroups.delete(v);
+      list.hidden = !ps.length;
+    }
+    for (const row of list.querySelectorAll<HTMLElement>('.pr')) {
+      const it = ps.find(q => q.id === +row.dataset.id!), gw = row.querySelector(':scope > .pn .gw');
+      if (it && gw) gw.textContent = plantGrowth(it);
+    }
+  }
   const jsonDetails = $('json').parentElement as HTMLDetailsElement;
   jsonDetails.addEventListener('toggle', () => { jsonOpen = jsonDetails.open; syncJson(); });
   // floats rounded to 0.01 so 609.5999999999999 reads 609.6 (audit #48)
@@ -1530,6 +1666,7 @@ Cancel, then change the name, to keep both.`)) return;
       setOut('oILift', Math.abs(it.lift) < 1 ? 'On the ground' : it.lift < 0 ? fmt(-it.lift) + ' in' : fmt(it.lift));
     }
     }
+    plantList(s);
     syncJson();
   }
 

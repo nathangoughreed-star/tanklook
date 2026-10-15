@@ -2,6 +2,25 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Drag-in, plant list, clumps on slopes (2026-10-15; branch `drag-place`, port 5613; pushed to main)
+- **Drag from the panel into the tank** (Nathan: keep click-to-add too): library chips (hardscape, plants, corals) and
+  species rows / the Add button. Past 6 px a press becomes a drag with a label at the pointer (`dragOut` in panels.ts;
+  mouse and pen only, a finger scrolls the panel). A piece appears under the pointer once it is over a tank's floor and
+  follows it (ground or the solid piece under it, `placeAt` in interact/pointer.ts); let go outside the tank = taken back
+  out; one undo step. A species drops its start count (or one more if listed) gathered round the drop point, kept off the
+  front / back quarter of the depth (front-on, the ground under the pointer is right at the glass).
+- **Plant list** under Plants (`#plantList`): a row per species ("Vallisneria cluster x4") that opens to numbered rows
+  ("Vallisneria cluster 1", growth word, x to remove); one piece of a species shows its row alone. A piece's row opens to
+  the item box (it moves under the row); selecting in the tank opens it. Numbers are by order of id per variant, so
+  they renumber when one is removed (no stored names).
+- **Clumps follow the ground** (`clumpOnGround`, plant3d.ts; hooked after the lie-over bend in render/items.ts itemMesh):
+  each leaf moves with the ground under its top piece's base, fading to 0 at the lie-over height F (the sheet on the water
+  stays put). Only for solid, non-carpet, non-floater plants sitting on the ground (lift <= 2). Cached under the bent key
+  + a hash of the per-piece offsets; level ground returns null (build unchanged, fingerprints unaffected). Main thread
+  only (the worker prebuild still builds the level plant).
+- pointer.ts surfaceHit: the ground march starts 0.01 mm inside the tank box (a ray entering exactly on the front face
+  read as outside and missed the floor in near-front views).
+
 ## Efficiency review (2026-10-15; Nathan: the features are in and look right, so review for efficiency; lanes E1 + E2 OPEN, measure / audit only)
 - **Why:** about 470 commits in a week from about 20 lanes; nobody has measured the whole app since lanes J / J2 / K2
   (2026-10-14), and plant growth, the 3D walls, algae, scape density and the light mount have landed since.

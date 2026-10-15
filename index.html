@@ -183,6 +183,7 @@
   <div class="row dens"><label for="densPlant" id="lDensPlant" title="How full the starter set plants the tank, from one plant to far too much. Redraws only the plants (corals in a reef) when you let go; the rocks stay where they are">Density</label><input id="densPlant" type="range" min="-1" max="6" step="any" list="densTicks"><output id="oDensPlant"></output></div>
   <div class="lib" id="libPlant"></div>
   <div class="btns"><span class="hint" id="itemCountPlant"></span><span class="grow"></span><button id="itemsClearPlant">Remove all</button></div>
+  <div id="plantList" class="plist" aria-label="Plants in the tank" hidden></div>
   <div class="field" id="growFeedRow"><label class="flabel" for="growFeed" title="How the tank is run. Fed and CO2-injected tanks grow faster, fast growers (stem plants, grass) most of all; slow ones (anubias, java fern, bucephalandra) hardly notice.">Feeding</label><select id="growFeed"></select></div>
   <div class="row" id="growTimeRow"><label for="growTime" title="Grow the whole tank: 0 = as planted, the end = everything overgrown. No days or weeks: how fast plants really grow depends on light, CO2 and ferts. Each plant grows at its own speed from where you set its Growth; Ctrl+Z steps back.">Time</label><input id="growTime" type="range" min="0" max="100" step="1"><output id="oGrowTime"></output></div>
   <div class="hint" id="growHint" style="margin-bottom:10px"></div>

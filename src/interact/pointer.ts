@@ -43,7 +43,7 @@ function surfaceHit(vp: Viewport, S: TankSetup, ray: THREE.Ray, skip: Set<number
   const box = new THREE.Box3(new THREE.Vector3(0, 0, -T.D), new THREE.Vector3(T.L, T.H * 2, 0)), start = ray.intersectBox(box, new THREE.Vector3());
   let ground: THREE.Vector3 | null = null;
   if (start) {
-    const t0 = ray.origin.distanceTo(start), step = 3, p = new THREE.Vector3();
+    const t0 = ray.origin.distanceTo(start) + 0.01, step = 3, p = new THREE.Vector3(); // (just inside: on the box face it can read as outside)
     for (let t = t0; t < t0 + 3 * (T.L + T.D + T.H); t += step) {
       ray.at(t, p);
       if (p.y <= g(p.x, p.z)) { // bisect between the last point above and this one
@@ -74,6 +74,17 @@ function supportLift(vp: Viewport, S: TankSetup, x: number, depth: number, skip:
   const hit = ray.intersectObjects(solids(vp, skip), false)[0];
   return hit ? Math.max(0, hit.point.y - groundHeight(S, S.tank, x, depth)) : 0;
 }
+
+/** Where a piece or an animal dragged in from the panel would land under the pointer (Nathan 2026-10-15): the view's
+ *  tank (one being edited), the ground or the solid piece there (minus `skip`), and the lift above the ground that
+ *  rests it on that piece. Null = not over a tank's floor. */
+export function placeAt(viewer: Viewer, store: Store, clientX: number, clientY: number, skip = new Set<number>()) {
+  const hit = viewer.hitTest(clientX, clientY); if (!hit || !store.isEditing(hit.vp.i)) return null;
+  const S = store.scene.tanks[hit.vp.i], p = surfaceHit(hit.vp, S, hit.ray, skip); if (!p) return null;
+  const x = p.x, depth = -p.z;
+  return { vi: hit.vp.i, x, depth, lift: supportLift(hit.vp, S, x, depth, skip) };
+}
+export type PlaceAt = NonNullable<ReturnType<typeof placeAt>>;
 
 /** `canPick`: whether aquascape pieces (of this kind) / animals can be picked and dragged now (only while their menu,
  *  Hardscape / Plants / Animals, is open); otherwise a press on one orbits like empty space. */

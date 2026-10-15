@@ -13,7 +13,7 @@ import { D2R, waterY } from '../scene/physics';
 import { bowlDims, footprint, shapeOf } from '../scene/shape';
 import { clampGround, groundHeight, groundInsideBy } from '../scene/terrain';
 import type { Item, Tank, TankSetup } from '../scene/types';
-import { bendPlant, carpetOnGround, dropPlant, growShader, grownView, has3DPlant, plant3d, plantGeometry, plantRaycast, revealPlant, unpackGeometry, uploadPlant, type JobOut, type PlantJob } from './plant3d';
+import { bendPlant, carpetOnGround, clumpOnGround, dropPlant, growShader, grownView, has3DPlant, plant3d, plantGeometry, plantRaycast, revealPlant, unpackGeometry, uploadPlant, type JobOut, type PlantJob } from './plant3d';
 import { reefShape } from './coral3d';
 import { cardMaterial, plantTexture } from './textures';
 
@@ -523,7 +523,10 @@ function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
       ? Math.round(((S.lid === 'glass' ? T.H - 4 : T.H + lampHeight(S.light, S.lid) - 20) - y) / 2) * 2 : undefined;
     if (Number.isFinite(F)) bend = { F, C, water: S.water.on, ks: `${kf}|${F}|${C ?? ''}|${S.water.on ? 'w' : ''}` };
   }
-  return { type, carpet, float, solid, gr, h, k, at, kf, ks: sw + k, args, bend };
+  // a clump on sloping ground (sitting on it, not on a piece): each crown on the ground under it (clumpOnGround)
+  const off = solid && !carpet && !float && it.lift <= 2
+    ? (lx: number, lz: number) => groundHeight(S, T, it.x + lx * c + lz * s, it.depth + lx * s - lz * c) - ground : undefined;
+  return { type, carpet, float, solid, gr, h, k, at, off, kf, ks: sw + k, args, bend };
 }
 
 // ---------- Idle prebuild (lane GR4) ----------
@@ -647,6 +650,8 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
         ks = P.bend.ks;
         src = bent.get(ks) ?? (() => { const b = bendPlant(full, F, { ceil: C, water }); return b === full ? b : remember(bent, ks, b, BENT_MAX, dropPlant); })();
       }
+      const cg = P.off && clumpOnGround(src, P.off, P.bend?.F);
+      if (cg) { ks = `${ks}|${cg.key}`; src = plants.get(ks) ?? remember(plants, ks, cg.build(), PLANTS_MAX, dropPlant); }
       // the growth: the plant already built, revealed at gr by its material's shader (a slider drag touches no geometry);
       // what the CPU needs of it (picking, the selection box, the USDZ export) is revealed on the CPU when asked
       const kr = `${ks}|${gr}`, from = src;
