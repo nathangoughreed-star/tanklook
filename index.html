@@ -129,8 +129,9 @@
   <div class="row"><label for="personH">Person height</label><input id="personH" type="range" step="10"><output id="oPersonH"></output></div>
   <div class="hint">Cabinet and frame stands match the tank's footprint; a custom-size cabinet or a table can be bigger, with the tank anywhere on it, and the wall and person keep clear of its edge. <i>Peninsula</i> puts the tank's end against the wall; the background moves to that end and the long back glass is clear.</div>
   </details>
-  <details class="sec" data-sec="quick"><summary><h2>Quick aquascape setup</h2></summary>
+  <details class="sec" data-sec="quick"><summary><h2>Quick Setup</h2></summary>
   <div class="field"><label class="flabel" for="layout">Style</label><select id="layout"></select><button id="layoutShuffle" title="A new arrangement of this style's rock, wood and plants, at the same composition and densities (Ctrl+Z brings the old one back)">Shuffle</button></div>
+  <div class="field shuffleKeep" title="Shuffle redraws only the ticked parts; untick a part to keep it as it is while you keep shuffling the rest"><span class="flabel">Shuffle</span><label><input type="checkbox" id="shufGround" checked> Substrate</label> <label><input type="checkbox" id="shufHard" checked> Hardscape</label> <label><input type="checkbox" id="shufPlant" checked> Plants</label></div>
   <div class="hint" id="layoutHint"></div>
   <div class="field"><label class="flabel" for="layoutFit">Plants fit</label><select id="layoutFit" title="Redraw the plants (corals in a reef) using only kinds that suit this light and the care below. Any = whatever the style draws. Advice, not a rule: you can still add anything by hand"></select></div>
   <div class="field"><label class="flabel" for="layoutCare">Care</label><select id="layoutCare" title="What the owner will give: nothing extra, fertiliser, or CO2 and fertiliser (a reef: the dosing). Sets the growth feed. Needs Time at 0"></select></div>
@@ -138,6 +139,17 @@
   <div class="field"><label class="flabel" for="layoutComp">Composition</label><select id="layoutComp" title="Where the weight of the starter set sits, in any style: Any lets Shuffle pick. Redraws the hardscape and the plants round it (Ctrl+Z brings the old ones back)"></select></div>
   <div class="row dens"><label for="densHard" id="lDensHard" title="How much rock and wood the starter set places, from one piece to far too much. The main pieces stay where they are and more or fewer go round them; Shuffle gives a new layout. Redraws the hardscape and the plants round it when you let go (Ctrl+Z brings the old ones back)">Hardscape</label><input id="densHard" type="range" min="-1" max="6" step="any" list="densTicks"><output id="oDensHard"></output></div>
   <div class="row dens"><label for="densPlant" id="lDensPlant" title="How full the starter set plants the tank, from one plant to far too much. Redraws only the plants (corals in a reef) when you let go; the rocks stay where they are">Plants</label><input id="densPlant" type="range" min="-1" max="6" step="any" list="densTicks"><output id="oDensPlant"></output></div>
+  <div class="subhead">Animals</div>
+  <div class="row dens"><label for="densAnimal" id="lDensAnimal" title="Stocks the tank from species that suit this style, from one animal to well past a safe bioload (past Full it is overstocked). Replaces the animals when you let go; at None your own animals stay">Stocking</label><input id="densAnimal" type="range" min="0" max="6" step="any" list="animalTicks"><output id="oDensAnimal"></output></div>
+  <datalist id="animalTicks"><option value="0"></option><option value="1"></option><option value="2"></option><option value="3"></option><option value="4"></option><option value="5"></option><option value="6"></option></datalist>
+  <div class="field"><button id="animalShuffle" title="A new draw of animals for this tank at the same stocking (Ctrl+Z brings the old ones back). The rock, wood and plants stay">Shuffle animals</button></div>
+  <div class="field"><label><input type="checkbox" id="gateStock" title="Stock and shuffle only animals that suit the level below, this tank's size and each other"> Stock by care gates</label></div>
+  <div id="gateBox" hidden>
+  <div class="row dens"><label for="expertise" title="How much care and effort the keeper can give. Animals needing more are left out of the stocking and grayed in the list">Care level</label><input id="expertise" type="range" min="1" max="3" step="1"><output id="oExpertise"></output></div>
+  <div class="hint" id="expertiseHint"></div>
+  <div class="field"><label><input type="checkbox" id="gateAnimals" title="Sinks the animals that do not suit this tank (care level, size, the animals already in it) to the bottom of the Animals list, grayed, each with its reason. Advice only: you can still add any of them"> Gray out unsuitable animals in the list</label></div>
+  </div>
+  <div class="hint" id="gateAnimalsHint" hidden></div>
   <datalist id="densTicks"><option value="-1"></option><option value="0"></option><option value="1"></option><option value="2"></option><option value="3"></option><option value="4"></option><option value="5"></option><option value="6"></option></datalist>
   <div class="hint">Sets the substrate, hardscape and plants together. Then reshape the ground under Substrate and move, add or remove any piece under Hardscape and Plants; or skip this and build the tank there by hand.</div>
   </details>
@@ -215,11 +227,6 @@
   <div class="btns" id="growAsk" hidden><span class="hint">Keep these changes?</span><span class="grow"></span><button id="growKeep">Keep</button><button id="growUndo">Undo</button></div>
   </details>
   <details class="sec" data-sec="fish"><summary><h2>Animals</h2></summary>
-  <div class="row dens"><label for="densAnimal" id="lDensAnimal" title="Stocks the tank from species that suit this style, from one animal to well past a safe bioload (past Full it is overstocked). Replaces the animals when you let go; at None your own animals stay">Stocking</label><input id="densAnimal" type="range" min="0" max="6" step="any" list="animalTicks"><output id="oDensAnimal"></output></div>
-  <datalist id="animalTicks"><option value="0"></option><option value="1"></option><option value="2"></option><option value="3"></option><option value="4"></option><option value="5"></option><option value="6"></option></datalist>
-  <div class="field"><label class="flabel" for="expertise" title="How experienced the keeper is. Used by the toggle below">Expertise</label><select id="expertise"><option value="">Choose...</option><option value="1">Beginner</option><option value="2">Intermediate</option><option value="3">Expert</option></select></div>
-  <div class="field"><label><input type="checkbox" id="gateAnimals" title="Sinks the animals that do not suit this tank (expertise, size, the animals already in it) to the bottom of the list, grayed, each with its reason. Advice only: you can still add any of them"> Show only tank-appropriate animals</label></div>
-  <div class="hint" id="gateAnimalsHint" hidden></div>
   <div id="spCats" class="cats" role="tablist" aria-label="Animal groups"></div>
   <input id="spSearch" type="search" placeholder="Search species (common or scientific name)" aria-label="Search species">
   <div id="spResults" class="results" role="listbox" aria-label="Species"></div>

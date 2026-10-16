@@ -454,7 +454,8 @@ export function starterStyle(seed: number, comp: CompId = 'any'): Style {
     side: () => [{ x: s(0.22) + j(), d: 0.6 + j(), k: 1 }, { x: s(0.45) + j(), d: 0.45 + j(), k: 0.35 + q() * 0.15 }],
     u: () => [{ x: 0.15 + j(), d: 0.62 + j(), k: 1 }, { x: 0.85 + j(), d: 0.62 + j(), k: 0.75 + q() * 0.2 }],
     v: () => [{ x: s(0.28) + j(), d: 0.52 + j(), k: 1 }, { x: s(0.73) + j(), d: 0.48 + j(), k: 0.55 + q() * 0.25 }],
-    scattered: (n = 3 + Math.floor(q() * 2)) => Array.from({ length: n }, (_, i) => ({ x: (i + 0.5 + (q() - 0.5) * 0.5) / n, d: 0.3 + q() * 0.45, k: 0.4 + q() * 0.35 })),
+    // groups zig-zag between the back and the front (not one row across the middle), so a deep or round tank fills
+    scattered: (n = 3 + Math.floor(q() * 2), flip = Math.floor(q() * 2)) => Array.from({ length: n }, (_, i) => ({ x: (i + 0.5 + (q() - 0.5) * 0.5) / n, d: ((i + flip) % 2 ? 0.72 : 0.28) + (q() - 0.5) * 0.14, k: 0.4 + q() * 0.35 })),
   }[comp]();
   const open = comp === 'side' ? s(0.8) : comp === 'u' ? 0.5 : comp === 'v' ? (foci[0].x + foci[1].x) / 2 : -1;
   return { ...st, classic: false, foci, open, comp };

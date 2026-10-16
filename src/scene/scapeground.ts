@@ -65,22 +65,23 @@ const SS2_IDS: ReadonlySet<string> = new Set(['rainforest', 'arid', 'jumper', 'p
 export function styleGround(s: TankSetup): void {
   const id = s.layout.id;
   if (id === 'none') return;
-  const T = s.tank, r = rng(s.layout.seed * 7919 + id.length * 104729 + 4 * 1000003);
+  const gs = s.layout.gSeed ?? s.layout.seed, T = s.tank, r = rng(gs * 7919 + id.length * 104729 + 4 * 1000003);
   const salt = !!(s.water.on && s.water.salt), subs = SUBS[salt ? 'reef' : id], sub = subs[Math.floor(r() * subs.length) % subs.length];
   s.substrate = { ...s.substrate, show: true, type: sub.type, ...(sub.custom ? { custom: { ...sub.custom } } : {}) };
   if (SS2_IDS.has(id) && !salt) { if (sub.litter) s.substrate.litter = { ...sub.litter, seed: 1 + Math.floor(r() * 1e6) }; else delete s.substrate.litter; }
-  const sh = SHAPE[id], f = clamp(T.H * 0.05, 15, 40), back = sh.back[0] + r() * (sh.back[1] - sh.back[0]);
-  const tilt = (r() - 0.5) * 0.4, ph = [r() * 6.28, r() * 6.28], foci = styleFoci(id, s.layout.seed, s.layout.comp);
+  const sh = SHAPE[id], f = clamp(T.H * 0.08, 20, 70), back = sh.back[0] + r() * (sh.back[1] - sh.back[0]);
+  const tilt = (r() - 0.5) * 0.4, ph = [r() * 6.28, r() * 6.28], relief = 0.6 + r() * 1.8, bumps = Array.from({ length: 2 + Math.floor(r() * 3) }, () => ({ u: 0.1 + r() * 0.8, t: 0.15 + r() * 0.7, a: (r() < 0.75 ? 1 : -0.7) * (0.4 + r() * 0.6), w: 0.015 + r() * 0.03 })), foci = styleFoci(id, s.layout.gFoc ?? s.layout.seed, s.layout.comp);
   const height = (x: number, d: number) => {
     const u = clamp(x / T.L, 0, 1), t = clamp(d / T.D, 0, 1), ease = t * t * (3 - 2 * t);
     let h = f * (1 + (back - 1) * ease) * (1 + tilt * (u - 0.5));
-    for (const g of foci) h += sh.hill * f * Math.sqrt(g.k) * Math.exp(-(((u - g.x) ** 2) / 0.03 + ((t - g.d) ** 2) / 0.06));
-    h += sh.rough * f * (Math.sin(u * 7 + ph[0]) * Math.sin(t * 5 + ph[1]));
+    for (const g of foci) h += relief * sh.hill * f * Math.sqrt(g.k) * Math.exp(-(((u - g.x) ** 2) / 0.03 + ((t - g.d) ** 2) / 0.06));
+    h += relief * sh.rough * f * (Math.sin(u * 7 + ph[0]) * Math.sin(t * 5 + ph[1]));
+    if (sh.hill > 0) for (const b of bumps) h += relief * Math.max(0.3, sh.hill) * f * b.a * Math.exp(-(((u - b.u) ** 2) + ((t - b.t) ** 2)) / b.w); // the style's own mounds and dips, new with every shuffle
     return +clamp(h, 8, T.H * 0.35).toFixed(1);
   };
   // corners on the sliders' 1 mm step, so a hand can set them exactly (generator audit 2026-10-16)
   s.substrate.fl = Math.round(height(0, 0)); s.substrate.fr = Math.round(height(T.L, 0)); s.substrate.bl = Math.round(height(0, T.D)); s.substrate.br = Math.round(height(T.L, T.D));
-  if (isSwampy(id)) s.terrain = swampTerrain(s, T, s.layout.seed); // its land and pools, as terrain the user edits
+  if (isSwampy(id)) s.terrain = swampTerrain(s, T, gs); // its land and pools, as terrain the user edits
   else {
     const t = sampleTerrain({ ...s, terrain: undefined }, T, s.terrain.cols || 7); // no pools: hills only
     t.h = terrainPoints(t, T).map(p => height(p.x, p.depth));

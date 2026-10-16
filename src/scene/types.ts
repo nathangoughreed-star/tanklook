@@ -217,7 +217,9 @@ export type CompId = 'any' | 'mound' | 'side' | 'u' | 'v' | 'scattered';
 export interface LayerDens { hard: number; plant: number; animal: number }
 /** `seed` draws the style and the hardscape (and a swamp's land); `plantSeed` / `animalSeed` draw the plants and the
  *  starter animals, so each menu's Shuffle redraws its own layer only (Nathan 2026-10-15). Absent = `seed`. */
-export interface LayoutSettings { id: LayoutId; seed: number; plantSeed?: number; animalSeed?: number; dens?: LayerDens; comp?: CompId;
+export interface LayoutSettings { id: LayoutId; seed: number; plantSeed?: number; animalSeed?: number;
+  /** The ground's own draws (Shuffle with parts locked, 2026-10-16): `gSeed` the substrate and terrain, `gFoc` where its hills stand (the groups' seed). Absent = `seed`. */
+  gSeed?: number; gFoc?: number; dens?: LayerDens; comp?: CompId;
   /** The substrate and terrain were drawn for this style by the Quick aquascape setup (scene/scapeground.ts). */
   ground?: boolean;
   /** Auto-populate by light (lane PG step 4, 2026-10-16): the starter set keeps only plants / corals that fit this light level and the tank's care (grow.feed). Absent = every plant the style draws. */
@@ -225,7 +227,7 @@ export interface LayoutSettings { id: LayoutId; seed: number; plantSeed?: number
   /** The owner picked a care level (Care menu), so gating can use it (lane AD, 2026-10-16). */
   careSet?: true;
   /** "Show only tank-appropriate" toggles in the Plants and Animals lists: unfit ones sink to the bottom, grayed, each with its reason. Advice only. */
-  gatePlants?: true; gateAnimals?: true;
+  gatePlants?: true; gateAnimals?: true; gateStock?: true;
   /** The keeper's expertise (1 beginner .. 3 expert), chosen in Animals; gating waits for it. */
   expertise?: 1 | 2 | 3 }
 
