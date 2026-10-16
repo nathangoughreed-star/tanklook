@@ -42,6 +42,8 @@ export interface Species {
   /** The part of the water column a swimmer favours (steers Shuffle only). Absent = mid water. */
   level?: 'top' | 'low';
   note?: string;
+  /** 'snake': a limbless body (render/snake3d.ts); its pose family rides in `Fish.bend` and Shuffle picks its size by life stage (lane BP). */
+  body?: 'snake';
   /** Texture / material cache key: the id, or `<id>~f` for the female look. */
   look: string;
   /** Sexually dimorphic species: the female look (own drawing, adult length, card aspect). The species itself is the male. */
@@ -51,7 +53,7 @@ export interface Species {
 /** 'f' = female; absent = male (or a species drawn the same either way). */
 export type Sex = 'f';
 
-interface RawSpecies { id: string; cat?: string; name: string; sci: string; tl: number; art: string; aspect?: number; zone?: string; kind?: string; group?: string; pair?: boolean; level?: string; habitat?: string; cling?: string; note?: string; female?: { art: string; tl: number } }
+interface RawSpecies { id: string; cat?: string; name: string; sci: string; tl: number; art: string; aspect?: number; zone?: string; kind?: string; group?: string; pair?: boolean; level?: string; habitat?: string; cling?: string; note?: string; body?: string; female?: { art: string; tl: number } }
 
 function resolve(r: RawSpecies): Species {
   const kind = r.kind === 'snail' ? 'snail' as const : undefined, zone = r.zone === 'bottom' ? 'bottom' as const : undefined;
@@ -61,7 +63,7 @@ function resolve(r: RawSpecies): Species {
   const group = r.group === 'school' || r.group === 'shoal' ? r.group : undefined, level = r.level === 'top' || r.level === 'low' ? r.level : undefined;
   const surfaces: Surface[] | undefined = kind || r.cling === 'any' ? ['floor', 'glass', 'hardscape'] : r.cling === 'hardscape' ? ['floor', 'hardscape']
     : r.cling === 'top' ? ['floor', 'top'] : undefined; // 'top': rests on the bottom or floats at the water surface (dwarf frog)
-  const sp: Species = { id: r.id, name: r.name, sci: r.sci, tl: r.tl, art: r.art, aspect, rest, zone, kind, surfaces, habitat, cat: CATEGORIES.some(c => c[0] === r.cat) ? r.cat as Category : 'fw-fish', group, level, note: r.note, look: r.id, ...(r.pair ? { pair: true } : {}) };
+  const sp: Species = { id: r.id, name: r.name, sci: r.sci, tl: r.tl, art: r.art, aspect, rest, zone, kind, surfaces, habitat, cat: CATEGORIES.some(c => c[0] === r.cat) ? r.cat as Category : 'fw-fish', group, level, note: r.note, look: r.id, ...(r.pair ? { pair: true } : {}), ...(r.body === 'snake' ? { body: 'snake' as const } : {}) };
   if ((r as { salt?: unknown }).salt === true) sp.salt = true; // marine (lane B hook 2026-10-13; absent = freshwater)
   if (r.female) {
     const m = (artMeta(r.female.art) ?? herpMeta(r.female.art))!;

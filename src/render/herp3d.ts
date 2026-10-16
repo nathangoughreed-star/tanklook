@@ -12,8 +12,9 @@ import { taperTube } from './fish3d';
 import { shellMesh } from './snail3d';
 import { isLizard, lizardBody } from './lizard3d';
 import { isSpider, spiderBody } from './spider3d';
+import { isSnake, snakeBody } from './snake3d';
 
-export const isHerp3D = (art: string) => art in HERP3D || isLizard(art) || isSpider(art);
+export const isHerp3D = (art: string) => art in HERP3D || isLizard(art) || isSpider(art) || isSnake(art);
 /** Floating at the water surface: the card-frame line v that sits at the surface (its float pose's `top`). */
 export const herpFloatTop = (art: string) => HERP3D_FLOAT[art]?.top;
 
@@ -421,9 +422,10 @@ function gillGeometry(gl: NonNullable<Herp3D['gills']>) {
  *  `surface` 'glass' = clinging to a pane: its glass pose if it has one (tree frog), belly on the ground line; 'top' =
  *  floating at the water surface: its float pose (African dwarf frog); 'perch' = on a branch or shelf: its perch pose.
  *  Lizards (render/lizard3d.ts) take their own poses; `limbR` = the branch's radius (mm) they grip round. */
-export function herpBody(art: string, w: number, surface?: Surface | 'perch', limbR?: number, alert = false) {
+export function herpBody(art: string, w: number, surface?: Surface | 'perch', limbR?: number, alert = false, bend = 0) {
   if (isLizard(art)) return lizardBody(art, w, surface, limbR);
   if (isSpider(art)) return spiderBody(art, w, surface, limbR, alert);
+  if (isSnake(art)) return snakeBody(art, w, surface, limbR, bend); // the pose family rides in `bend` (lane BP)
   const pose = surface === 'glass' ? HERP3D_GLASS[art] : surface === 'top' ? HERP3D_FLOAT[art] : surface === 'perch' ? HERP3D_PERCH[art] : undefined;
   const h = pose || HERP3D[art], b = bodyShape(h), grp = new THREE.Group(), key = pose ? art + '~' + surface : art;
   const K = (k: string, make: () => THREE.BufferGeometry) => geo(key + k, make);

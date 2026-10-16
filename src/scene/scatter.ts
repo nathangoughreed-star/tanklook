@@ -3,6 +3,7 @@
 // (snails, shrimp, plecos) on the substrate, the glass or the hardscape as their species allows, swimmers in their
 // favoured band of the water column ('level'), groups of 3+ of a 'school' species in a tight aligned school and of a
 // 'shoal' species in a loose group, everyone else spread apart.
+import { snakeFoot, snakeStageFor } from '../art/snakes';
 import { clingsTo, fishTL, getSpecies, speciesOf, type Species } from '../data/species';
 import { backdropDepth, clamp, clampFish, spawnSnail, waterY } from './physics';
 import { hardscape, itemDims } from './items';
@@ -84,7 +85,7 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
   const groups = [...bySpecies.entries()].map(([id, fish]) => ({ sp: getSpecies(id)!, fish })).filter(e => e.sp)
     .sort((a, b) => +grouped(b.sp, b.fish.length) - +grouped(a.sp, a.fish.length));
 
-  const hard = hardscape(s), perchy = hardscape(s, s.items, PERCH_FROG), hosts = anemones(s);
+  const hard = hardscape(s), perchy = hardscape(s, s.items, PERCH_FROG), perchSnake = hardscape(s, s.items, PERCH_SNAKE), hosts = anemones(s);
   for (const e of groups) {
     const sp = e.sp;
     if (hosts.length && HOSTED.has(sp.id)) { // clownfish settle in a bubble-tip anemone: the whole group in one of them
@@ -104,8 +105,9 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
       // the glass at a third of its area: in a tall tank the panes outsize the floor two to one and would hold nearly all
       // A land climber (tree frog) takes the dry glass and hardscape above the water line; on the floor it goes to land.
       const land = sp.habitat === 'land', glass = clingsTo(sp, 'glass') && (sp.kind === 'snail' || (land ? GLASS_FROG : GLASS_FISH));
-      const on = { glass, hard: clingsTo(sp, 'hardscape') ? (land ? perchy : hard) : undefined, above: land && s.water.on ? waterY(A, s.water.level) : undefined }, left: Fish[] = [];
+      const on = { glass, hard: clingsTo(sp, 'hardscape') ? (land ? (sp.body === 'snake' ? perchSnake : perchy) : hard) : undefined, above: land && s.water.on ? waterY(A, s.water.level) : undefined }, left: Fish[] = [];
       for (const f of e.fish) {
+        if (sp.body === 'snake' && f.tl === undefined) { const fit = snakeStageFor(A.L, sp.tl); if (fit < sp.tl) f.tl = fit; } // a snake with no size of its own takes the life stage that fits the tank (lane BP)
         // a dwarf frog floats at the surface (its "zen" pose) about a third of the time, else it rests on the bottom
         if (clingsTo(sp, 'top')) {
           if (!s.water.on || r() >= FLOAT_FROG) { f.surface = 'floor'; left.push(f); continue; }
@@ -122,6 +124,9 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
         // a spider walks the glass at any heading, and about a quarter of them stand alert, front pair raised (bend 1; lane JS)
         let alert = 0;
         if (land && sp.cat === 'land-invert') { if (p.surface === 'glass') p.yaw = Math.round(r() * 360 - 180); alert = r() < SPIDER_ALERT ? 1 : 0; }
+        // a snake: its pose family rides in bend (ball, extended, coiled, alert, serpentine; on a branch wrap or drape) and, with no
+        // size of its own, it takes the largest life stage that fits the tank (lane BP)
+        if (sp.body === 'snake') alert = snakeBend(r, p.surface === 'hardscape');
         Object.assign(f, p, { pitch: 0, roll: 0, bend: sp.kind === 'snail' || land ? alert : +((r() - 0.5) * 0.4).toFixed(2) }); note(f, fishTL(f, sp));
       }
       if (sp.kind === 'snail' || !left.length) continue;
@@ -133,6 +138,7 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
         const w = fishTL(f, sp), a = speciesOf(f)!.aspect, p = spot(w / 2, w * a * 1.5);
         Object.assign(f, { x: p.x, depth: p.depth, y: bandY(p.x, p.depth, w * a, 0.1 + r() * 0.5) }, randomPose(sp, r, r() < 0.5 ? 0 : 180));
         placeOnLand(s, sp, f, r); clampFish(f, A, wb, s.render.bgSides); note(f, w);
+        if (sp.body === 'snake') { f.bend = snakeBend(r, false); f.pitch = 0; f.roll = 0; snakeLie(f, w, A, r); } // on the floor: a pose family, laid inside the glass
       }
       continue;
     }
@@ -225,10 +231,35 @@ const GLASS_FISH = 0.35;
 const GLASS_FROG = 0.6;
 /** How much more a tree frog favours a perch (climbing branch, ledge) than the same area of other hardscape (lane T3). */
 const PERCH_FROG = 4;
+/** How much more a snake favours a branch or ledge than the same area of other hardscape (lane BP): it mostly lies on the floor. */
+const PERCH_SNAKE = 1.5;
 /** Share of geckos on the glass resting head down. */
 const GECKO_HEAD_DOWN = 0.35;
 /** Share of spiders standing alert, the front pair raised. */
 const SPIDER_ALERT = 0.25;
+/**
+ * Turn a snake on the floor to a heading whose whole footprint (its pose's half extents, the long one along the heading) fits
+ * the tank, then move its centre inside the glass by those half extents (rectangular tanks; others keep their spot).
+ */
+function snakeLie(f: Fish, w: number, A: TankSetup['tank'], r: () => number) {
+  const [hx, hz] = snakeFoot(f.bend), m = 6, rect = !A.shape || A.shape === 'rect';
+  const ext = (yaw: number) => { const c = Math.abs(Math.cos(yaw)), s = Math.abs(Math.sin(yaw)); return [w * (hx * c + hz * s), w * (hx * s + hz * c)]; };
+  let yaw = r() * 2 * Math.PI, best = yaw, bv = Infinity;
+  for (let k = 0; k < 40; k++) {
+    const [ex, ed] = ext(yaw), over = Math.max(0, ex - (A.L / 2 - m)) + Math.max(0, ed - (A.D / 2 - m));
+    if (over < bv) { bv = over; best = yaw; }
+    if (over === 0) break;
+    yaw = r() * 2 * Math.PI;
+  }
+  f.yaw = wrap(Math.round(best * 180 / Math.PI));
+  if (rect) { const [ex, ed] = ext(f.yaw * Math.PI / 180); f.x = clamp(f.x, Math.min(ex + m, A.L / 2), Math.max(A.L - ex - m, A.L / 2)); f.depth = clamp(f.depth, Math.min(ed + m, A.D / 2), Math.max(A.D - ed - m, A.D / 2)); }
+}
+
+/** A snake's pose family as a bend value: on the floor ball / extended / coiled / alert / serpentine, on a perch wrap / alert / drape (render/snake3d.ts). */
+function snakeBend(r: () => number, perch: boolean) {
+  const u = r(), idx = perch ? (u < 0.45 ? 2 : u < 0.7 ? 3 : u < 0.85 ? 1 : 4) : u < 0.25 ? 0 : u < 0.45 ? 1 : u < 0.75 ? 2 : u < 0.9 ? 3 : 4;
+  return +Math.max(-1, Math.min(1, idx / 2 - 1 + (r() - 0.5) * 0.4)).toFixed(2);
+}
 
 /** Does this many of a species move as a group? */
 const grouped = (sp: Species, n: number) => !!sp.group && n >= 3 && sp.kind !== 'snail' && sp.habitat === 'water';
