@@ -353,6 +353,7 @@ export interface Limb3D {
   thigh?: number;              // frog thigh: peak radius of the smooth, flattened teardrop over the first segment
   blunt?: boolean;             // toes as jointed digits (a knuckle, round tips) instead of tapering spikes
   web?: number;                // webbing between neighbouring toes, out to this fraction of their length (toad hind feet)
+  toeV?: number;               // the line v (card frame) the toe tips reach, else the ground line (a perch: below it, round the branch)
   seg?: string;                // an arthropod leg: segments swelling between narrow joints, the joints in this colour (hermit crab)
   claw?: { palm: number; r: number; finger: number }; // a chela on the end: palm length, palm half-height, finger length (widths)
   c?: [string, string];        // own colour (top, underside), else the species' legCol (hermit crab antennae)
@@ -483,6 +484,8 @@ const TREEFROG_MARKS: Mark3D[] = [
 
 /** The pose an animal takes clinging to glass, where it differs from its resting one. */
 export const HERP3D_GLASS: Record<string, Herp3D> = {};
+/** The pose an animal takes perched on a branch or a shelf (scene/anchors.ts PERCHES), where it differs. */
+export const HERP3D_PERCH: Record<string, Herp3D> = {};
 /** The pose an animal takes floating at the water surface (species `cling: "top"`). */
 export const HERP3D_FLOAT: Record<string, Herp3D> = {};
 
@@ -551,6 +554,21 @@ export const HERP3D: Record<string, Herp3D> = {
 };
 // on the glass the flat belly turns the lower flank toward you: the cream starts lower round the section
 HERP3D_GLASS.treefrog = frogOnGlass3D(FROGS.treefrog, 1.12, [[0, '#5f9a4a'], [0.45, '#7cb35d'], [0.66, '#a9c98a'], [0.74, '#e8e2c4'], [1, '#efe9cf']], TREEFROG_MARKS);
+// perched (lane T3, 2026-10-16): the sitting frog hunched over a branch, legs folded in tight under the body, feet
+// gripping: toe tips curled down round the sides of the branch below the belly line, turned in under it
+HERP3D_PERCH.treefrog = (() => {
+  const s = FROGS.treefrog, fat = 1.1, V = (v: number) => frogV(s.aspect, v), J = (u: number, v: number, z: number, r: number): Joint => [u, V(v), z, r];
+  const pad = s.pads, toe = 0.009, base = frog3D(s, fat, TREEFROG_TONE, TREEFROG_MARKS);
+  return {
+    ...base,
+    limbs: [
+      { js: [J(0.13, 0.12, 0.08 * fat, 0.066), J(0.44, 0.16, 0.165 * fat, 0.046), J(0.17, 0.235, 0.175 * fat, 0.022), J(0.31, 0.27, 0.13 * fat, 0.015)],
+        toes: [[0.1, -0.075], [0.135, -0.06], [0.125, -0.04], [0.085, -0.02], [0.045, -0.005]], toe, pad, thigh: 0.1, blunt: true, toeV: V(0.335) },
+      { js: [J(0.7, 0.08, 0.1 * fat, 0.032), J(0.69, 0.18, 0.14 * fat, 0.024), J(0.735, 0.262, 0.11 * fat, 0.017)],
+        toes: [[0.06, -0.055], [0.075, -0.035], [0.06, -0.012], [0.02, 0.012]], toe, pad, blunt: true, toeV: V(0.315) },
+    ],
+  };
+})();
 // the African dwarf frog's "zen" float: hanging at the water line, back and snout just at the surface, all four legs
 // spread out limp and drooping a little (the toe tips set the ground line below the belly)
 HERP3D_FLOAT.adf = (() => {

@@ -4,16 +4,17 @@ import * as THREE from 'three';
 import { SUBSTRATES, blendTile, maskQuantile } from '../art/placeholder';
 import { snailAspect } from '../art/snails';
 import { fishTL, needsWater, speciesOf, type Species } from '../data/species';
+import { PERCHES, anchors, type Anchor, type Anchors, type V3 } from '../scene/anchors';
 import { glassBand, restsOnGround } from '../scene/water';
 import { backdropDepth, D2R, IN, ceilingH, clamp, floorY, glassThickness, RIM_DROP, RIM_H, tankUnderside, waterY } from '../scene/physics';
-import { alongRun, backgroundRuns, bowlDims, bowlRadius, chord, circleRing, clipToFootprint, facingRuns, footprint, glassFrame, halfWidth, inside, nearestGlass, offsetRing, offsetWalls, runLength, shapeOf, subRun, type P } from '../scene/shape';
+import { alongRun, backgroundRuns, bowlDims, bowlRadius, chord, circleRing, clipToFootprint, facingRuns, footprint, halfWidth, inside, nearestGlass, offsetRing, offsetWalls, runLength, shapeOf, subRun, type P } from '../scene/shape';
 import { TABLE_TOP, cornerWalls, wallGap, tableCentre, tableOn, tableRing, wallPlane } from '../scene/table';
 import { groundHeight, pieSegs, terrainDisc, terrainPoints } from '../scene/terrain';
 import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
 import { getImage } from '../scene/images';
 import { LU, addBeams, addFixture, applyLighting, waterVolumeMaterial } from './lighting';
 import { addAlgae } from './algae';
-import { itemMesh } from './items';
+import { itemMesh, solidProbe } from './items';
 import { rootsKey, rootsMesh } from './roots';
 import { addBackdrop, backdropGeometry } from './backdrop';
 import { drapedCard, fish3d, fishBody, hullMaterial } from './fish3d';
@@ -1119,14 +1120,11 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: number | null, 
   const hardKey = hard.join('|');
   // glass climbers sit on the 3D wall where it covers the pane
   const wallKey = JSON.stringify([S.backdrop, S.render.rim, S.render.bgSides]);
-  // the top of the solid piece (stone, wood, cave) under (x, depth), for animals on the hardscape; else the ground
+  // where animals rest and cling (scene/anchors.ts): the top of the solid piece (stone, wood, cave) under (x, depth) for
+  // animals on the hardscape, else the ground; the glass, or the 3D wall where it covers the pane
   const rests = solids.filter(m => !m.userData.coral); // animals rest on rock, wood and caves, never on coral
-  const down = new THREE.Raycaster(), from = new THREE.Vector3(), DOWN = new THREE.Vector3(0, -1, 0);
-  const top = (x: number, depth: number, hard: boolean) => {
-    const g = groundHeight(S, T, x, depth); if (!hard) return g;
-    down.set(from.set(x, T.H * 3 + 1000, -depth), DOWN);
-    return Math.max(g, down.intersectObjects(rests, false)[0]?.point.y ?? g);
-  };
+  const A = anchors(S, T, { down: solidProbe(T, rests), wall: (at, out, head, w) => onWall(S, T, at, out, head, w) });
+  const top = (x: number, depth: number, hard: boolean) => A.rest(x, depth, hard).p[1];
   const base = (f: Fish) => top(f.x, f.depth, f.surface === 'hardscape');
   // an animal (mesh m, length w, its centre k above its belly) resting on a slope: tipped to the ground's slope under its
   // head, tail and both sides (at most MAX_TILT), its centre k off the ground along that tilt, then lifted just clear
@@ -1148,28 +1146,55 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: number | null, 
     }
     m.position.y += Math.min(lift, w);
   };
+  // perched on a branch or a shelf (anchor kinds PERCHES, lane T3 2026-10-16): on top of it, gripping, instead of tipped
+  // to the slope round it (off a thin limb or a shelf's edge that slope reaches the ground). Along a branch: the body
+  // along the limb (head the way it faces; head up a limb steeper than 45°), belly on the limb's top, wherever on the
+  // limb's width (x, depth) is, in its gripping pose. On a ledge: sitting level on its top face (tipped at most
+  // MAX_TILT), head along yaw.
+  const perchOn = (f: Fish, m: THREE.Mesh, k: number, a: Anchor) => {
+    const face = new THREE.Vector3(Math.cos(f.yaw * D2R), 0, -Math.sin(f.yaw * D2R));
+    let head: THREE.Vector3, up: THREE.Vector3, at: THREE.Vector3;
+    if (a.limb) {
+      head = W(a.limb.along);
+      if (Math.abs(head.y) > Math.SQRT1_2 ? head.y < 0 : head.dot(face) < 0) head.negate();
+      up = UP.clone().addScaledVector(head, -head.y);
+      if (up.lengthSq() < 0.01) up.copy(face).addScaledVector(head, -face.dot(head)); // an upright limb: back toward where it faces
+      up.normalize();
+      at = W(a.limb.c).addScaledVector(up, a.limb.r);
+    } else {
+      up = W(a.n);
+      if (up.y < Math.cos(MAX_TILT)) { const q = Math.hypot(up.x, up.z) || 1; up.set(up.x / q * Math.sin(MAX_TILT), Math.cos(MAX_TILT), up.z / q * Math.sin(MAX_TILT)); }
+      head = face.clone().addScaledVector(up, -face.dot(up)).normalize();
+      at = W(a.p);
+    }
+    m.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(head, up, head.clone().cross(up)));
+    m.position.copy(at).addScaledVector(up, k);
+    m.userData.perch = a.kind;
+  };
   // one animal's meshes (`register`: picked, outlined when selected) and its contact shadow (`add`)
   const animal = (f: Fish, register: (m: THREE.Mesh, w: number, h: number) => void, add: (o: THREE.Object3D | null) => void) => {
     const sp = speciesOf(f); if (!sp) return;
     if (sp.kind === 'snail') {
-      for (const [m, w, h] of snailMeshes(S, T, f, sp, base(f))) register(m, w, h);
+      for (const [m, w, h] of snailMeshes(S, T, f, sp, base(f), A)) register(m, w, h);
       if ((f.surface ?? 'floor') === 'floor') { const w = fishTL(f, sp); add(contactShadow(S, T, f.x, f.depth, groundHeight(S, T, f.x, f.depth), w, w * 0.45, f.yaw)); }
       return;
     }
     if (!S.water.on && needsWater(sp)) return; // dry tank: fish stay in the scene data, hidden until the water is back
     const w = fishTL(f, sp), h = w * sp.aspect, p = f;
     const herp = isHerp3D(sp.art);
+    const on = f.surface === 'hardscape' ? A.rest(f.x, f.depth) : null, perch = on && PERCHES.has(on.kind) ? on : null;
     const m = new THREE.Mesh(drapedCard(sp.art, w, h, f.bend) || cardGeometry(w, h, f.bend), herp ? HIDDEN : cardMaterial(`fish:${sp.look}:${fish3d.fade}`, fishTexture(sp, S.render.edge, true, fish3d.fade), S.render.edge));
     if (!herp) (m.material as THREE.Material).userData.fishCard = true; // fish stand out (render.pop) lifts the card too
-    if (herp) m.add(herpBody(sp.art, w, f.surface)); // the card stays as the invisible picking target
+    if (herp) m.add(herpBody(sp.art, w, perch?.limb ? 'perch' : f.surface)); // the card stays as the invisible picking target
     else m.add(fishBody(sp.art, sp.aspect, w, f.bend, fishBodyTexture(sp), S.render.edge, f.surface === 'glass')); // solid body + paired fins; the card keeps the median fins
-    if (f.surface === 'glass') { onGlass(S, T, f, sp, m, w); register(m, w, h); return; }
+    if (f.surface === 'glass') { onGlass(S, T, f, sp, m, w, A); register(m, w, h); return; }
     // floating at the water surface (dwarf frog): the pose's `top` line just under the water line, wherever it is
     const ft = f.surface === 'top' ? herpFloatTop(sp.art) : undefined;
     if (ft !== undefined) {
       m.position.set(p.x, waterY(T, S.water.level) - 0.5 + ft * w, -p.depth); m.rotation.set(f.roll * D2R, f.yaw * D2R, f.pitch * D2R, 'YXZ');
       register(m, w, h); return;
     }
+    if (perch) { perchOn(f, m, sp.rest * w - 1, perch); register(m, w, h); return; }
     // bottom dwellers and animals on land rest on the ground (or the hardscape) wherever they are (their stored height is ignored)
     const rests = restsOnGround(S, T, sp, p.x, p.depth, h);
     const y = rests ? base(f) + sp.rest * w - 1 : Math.min(p.y, Math.max(0, waterY(T, S.water.level) - h / 2));
@@ -1212,38 +1237,35 @@ const UP = new THREE.Vector3(0, 1, 0), MAX_TILT = 45 * D2R;
 /** How far a snail or pleco on the glass sits off the inside of the pane (mm). */
 const PANE_GAP = 0.8;
 
+/** Tank axes [x, height, depth] -> the scene's (z = -depth). */
+const W = (v: V3) => new THREE.Vector3(v[0], v[1], -v[2]);
+const Tk = (v: THREE.Vector3): V3 => [v.x, v.y, -v.z];
+
 /**
  * An animal clinging to the glass (a pleco, an oto or a tree frog) at the point nearest its (x, depth): belly on the pane, back into the
- * tank, head along yaw in the plane of the pane (0 = level, 90 = straight up).
+ * tank, head along yaw in the plane of the pane (0 = level, 90 = straight up). On the 3D wall where it covers this pane:
+ * belly on the relief, not on the glass behind it (Nathan 2026-10-15). The surface comes from the anchors (A.glass).
  */
-function onGlass(S: TankSetup, T: Tank, f: Fish, sp: Species, m: THREE.Mesh, w: number) {
+function onGlass(S: TankSetup, T: Tank, f: Fish, sp: Species, m: THREE.Mesh, w: number, A: Anchors) {
   const g0 = nearestGlass(T, f.x, f.depth, f.y);
   const y = clamp(f.y, ...glassBand(S, T, sp, w, groundHeight(S, T, g0.x, g0.depth))), off = sp.rest * w + PANE_GAP;
-  // outward normal toward the glass (tilted on a bowl); "up" for the heading = straight up, laid onto the glass
-  const g = glassFrame(T, f.x, f.depth, y), n = new THREE.Vector3(g.n[0], g.n[1], -g.n[2]);
-  const up = n.clone().negate(), along = new THREE.Vector3(n.z, 0, -n.x).normalize(), a = f.yaw * D2R;
-  const climb = new THREE.Vector3(0, 1, 0).addScaledVector(n, -n.y).normalize();
-  const head = along.multiplyScalar(Math.cos(a)).addScaledVector(climb, Math.sin(a)), side = head.clone().cross(up);
-  // on the 3D wall where it covers this pane: belly on the relief, not on the glass behind it (Nathan 2026-10-15)
-  const wall = onWall(S, T, new THREE.Vector3(g.x, y, -g.depth), n, head, side, w);
-  if (wall) {
-    const [p, nw] = wall;
-    up.copy(nw); head.addScaledVector(nw, -head.dot(nw)).normalize(); side.copy(head).cross(up);
-    m.position.copy(p).addScaledVector(nw, off);
-  } else m.position.set(g.x - n.x * off, y - n.y * off, -g.depth - n.z * off);
+  const a = A.glass(f.x, f.depth, y, f.yaw, w), up = W(a.n), head = W(a.head), side = head.clone().cross(up);
+  m.position.copy(W(a.p)).addScaledVector(up, off);
   m.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(head, up, side));
 }
 
 const WALL_RAY = new THREE.Raycaster(), wallMesh = new THREE.Mesh();
 /**
- * Where an animal at glass point `at` (outward normal `n`) lies on the 3D wall: five rays toward the glass (the middle
- * and half a body length along `head` and `side`), a plane through the hits, raised so no hit pokes through the belly.
- * Returns the point on that plane under the middle and its normal into the tank, or null where no wall covers the pane.
+ * The anchors' 3D wall probe: where an animal at glass point `at` (outward normal `out`, tank axes) lies on the 3D
+ * wall: five rays toward the glass (the middle and half a body length along `head` and across it), a plane through the
+ * hits, raised so no hit pokes through the belly. Returns the point on that plane under the middle and its normal into
+ * the tank (tank axes), or null where no wall covers the pane.
  */
-function onWall(S: TankSetup, T: Tank, at: THREE.Vector3, n: THREE.Vector3, head: THREE.Vector3, side: THREE.Vector3, w: number): [THREE.Vector3, THREE.Vector3] | null {
+function onWall(S: TankSetup, T: Tank, at0: V3, out: V3, head0: V3, w: number): [V3, V3] | null {
   const geo = S.backdrop && backdropGeometry(T, S.backdrop, S.render.rim, S.render.bgSides);
   if (!geo) return null;
   wallMesh.geometry = geo; wallMesh.updateMatrixWorld();
+  const at = W(at0), n = W(out), head = W(head0), side = head.clone().cross(n.clone().negate());
   const reach = backdropDepth(S.backdrop!, T) + 10; // start just in front of the wall's deepest relief
   const hit = (dh: number, ds: number) => {
     const o = at.clone().addScaledVector(head, dh).addScaledVector(side, ds).addScaledVector(n, -reach);
@@ -1260,14 +1282,14 @@ function onWall(S: TankSetup, T: Tank, at: THREE.Vector3, n: THREE.Vector3, head
   if (nw.dot(n) > -0.3) nw.add(n.clone().multiplyScalar(-1)).normalize(); // no steeper than ~70° off the glass
   // raise the plane over the highest hit
   const lift = Math.max(...pts.map(p => p.clone().sub(c).dot(nw)), 0);
-  return [c.addScaledVector(nw, lift), nw];
+  return [Tk(c.addScaledVector(nw, lift)), Tk(nw)];
 }
 
 /**
  * Snail cards. On the substrate or hardscape (`ground` = the height under it): one upright side-view card. On glass: two one-sided cards back to back, the foot
  * facing the glass (what you see through that pane) and the shell facing into the tank; yaw = heading in the pane.
  */
-function snailMeshes(S: TankSetup, T: Tank, f: Fish, sp: Species, ground: number): [THREE.Mesh, number, number][] {
+function snailMeshes(S: TankSetup, T: Tank, f: Fish, sp: Species, ground: number, A: Anchors): [THREE.Mesh, number, number][] {
   const p = f, surf = f.surface ?? 'floor', w = fishTL(f, sp);
   const sub = (x: number, d: number) => groundHeight(S, T, x, d);
   if (surf !== 'glass') {
@@ -1283,20 +1305,16 @@ function snailMeshes(S: TankSetup, T: Tank, f: Fish, sp: Species, ground: number
   const h = w * snailAspect(sp.art, 'foot'), g0 = nearestGlass(T, p.x, p.depth, p.y);
   const top = S.water.on ? waterY(T, S.water.level) : T.H; // dry: the whole pane
   const y0 = clamp(p.y, sub(g0.x, g0.depth) + h / 2, Math.max(sub(g0.x, g0.depth) + h / 2, top - w / 2));
-  const g = glassFrame(T, p.x, p.depth, y0), ry = Math.atan2(g.n[0], -g.n[2]), rx = -Math.asin(g.n[1]);
-  const x = g.x - g.n[0] * PANE_GAP, d = g.depth - g.n[2] * PANE_GAP, y = y0 - g.n[1] * PANE_GAP;
-  // an invisible picking card in the pane, the 3D snail on its sole against the glass (its up = card -z, into the tank)
+  // the surface from the anchors: the glass (head straight up the pane) or the 3D wall where it covers it
+  const a = A.glass(p.x, p.depth, y0, 90, Math.max(w, h)), gn = a.out, ry = Math.atan2(gn[0], -gn[2]), rx = -Math.asin(gn[1]);
   const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), HIDDEN);
-  m.position.set(x, y, -d); m.rotation.set(rx, ry, f.yaw * D2R, 'YXZ');
-  // on the 3D wall where it covers this pane: the sole on the relief (Nathan 2026-10-15)
-  const n = new THREE.Vector3(g.n[0], g.n[1], -g.n[2]), climb = new THREE.Vector3(0, 1, 0).addScaledVector(n, -n.y).normalize();
-  const wall = onWall(S, T, new THREE.Vector3(g.x, y0, -g.depth), n, climb, climb.clone().cross(n).normalize(), Math.max(w, h));
-  if (wall) {
-    const [pw, nw] = wall, z = nw.clone().negate(); // the foot (local +z) toward the wall
-    const up = climb.clone().addScaledVector(z, -climb.dot(z)).normalize(), right = up.clone().cross(z);
+  if (a.kind === 'wall') { // the sole on the relief (Nathan 2026-10-15), the foot (local +z) toward the wall
+    const nw = W(a.n), z = nw.clone().negate(), up = W(a.head), right = up.clone().cross(z);
     m.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(right, up, z))
       .multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), f.yaw * D2R));
-    m.position.copy(pw).addScaledVector(nw, PANE_GAP);
+    m.position.copy(W(a.p)).addScaledVector(nw, PANE_GAP);
+  } else { // an invisible picking card in the pane, the 3D snail on its sole against the glass (its up = card -z, into the tank)
+    m.position.set(a.p[0] - gn[0] * PANE_GAP, a.p[1] - gn[1] * PANE_GAP, -(a.p[2] - gn[2] * PANE_GAP)); m.rotation.set(rx, ry, f.yaw * D2R, 'YXZ');
   }
   const b = snailBody(sp.art, w); b.rotation.x = -Math.PI / 2; m.add(b);
   m.updateMatrixWorld(true); // the shell hangs down the pane under its weight

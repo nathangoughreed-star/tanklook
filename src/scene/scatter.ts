@@ -84,7 +84,7 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
   const groups = [...bySpecies.entries()].map(([id, fish]) => ({ sp: getSpecies(id)!, fish })).filter(e => e.sp)
     .sort((a, b) => +grouped(b.sp, b.fish.length) - +grouped(a.sp, a.fish.length));
 
-  const hard = hardscape(s);
+  const hard = hardscape(s), perchy = hardscape(s, s.items, PERCH_FROG);
   for (const e of groups) {
     const sp = e.sp;
     if (sp.surfaces) {
@@ -93,7 +93,7 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
       // the glass at a third of its area: in a tall tank the panes outsize the floor two to one and would hold nearly all
       // A land climber (tree frog) takes the dry glass and hardscape above the water line; on the floor it goes to land.
       const land = sp.habitat === 'land', glass = clingsTo(sp, 'glass') && (sp.kind === 'snail' || (land ? GLASS_FROG : GLASS_FISH));
-      const on = { glass, hard: clingsTo(sp, 'hardscape') ? hard : undefined, above: land && s.water.on ? waterY(A, s.water.level) : undefined }, left: Fish[] = [];
+      const on = { glass, hard: clingsTo(sp, 'hardscape') ? (land ? perchy : hard) : undefined, above: land && s.water.on ? waterY(A, s.water.level) : undefined }, left: Fish[] = [];
       for (const f of e.fish) {
         // a dwarf frog floats at the surface (its "zen" pose) about a third of the time, else it rests on the bottom
         if (clingsTo(sp, 'top')) {
@@ -195,6 +195,8 @@ export function placeNew(s: TankSetup, r: () => number, ids: Set<number>) {
 const GLASS_FISH = 0.35;
 /** The same for a tree frog: dry glass is where you mostly see one. */
 const GLASS_FROG = 0.6;
+/** How much more a tree frog favours a perch (climbing branch, ledge) than the same area of other hardscape (lane T3). */
+const PERCH_FROG = 4;
 
 /** Does this many of a species move as a group? */
 const grouped = (sp: Species, n: number) => !!sp.group && n >= 3 && sp.kind !== 'snail' && sp.habitat === 'water';

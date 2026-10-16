@@ -5,7 +5,7 @@
 // adds tail-fin membranes and gill stalks. Unit frame as a fish card: width 1, x = u - 0.5, y = -v, z to the side.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { HERP3D, HERP3D_FLOAT, HERP3D_GLASS, type Herp3D, type Limb3D, type Mark3D } from '../art/herps';
+import { HERP3D, HERP3D_FLOAT, HERP3D_GLASS, HERP3D_PERCH, type Herp3D, type Limb3D, type Mark3D } from '../art/herps';
 import { rng, type Pt } from '../art/paint';
 import type { Surface } from '../scene/types';
 import { taperTube } from './fish3d';
@@ -269,9 +269,9 @@ function limbGeometry(l: Limb3D, ground: number, col: (ny: number) => THREE.Colo
     s.deleteAttribute('uv'); const g = s.toNonIndexed(); parts.push(g); bands.push([at, at + g.attributes.position.count]);
   }
   if (l.claw) parts.push(...clawGeometry(js[js.length - 2], end, l.claw));
-  const digits: THREE.Curve<THREE.Vector3>[] = [];
+  const digits: THREE.Curve<THREE.Vector3>[] = [], gv = l.toeV ?? ground; // a perch: the toes reach below the ground line
   for (const [du, dz] of l.toes) {
-    const tip = P3(l.js[l.js.length - 1][0] + du, ground - l.toe * (l.blunt ? 0.8 : 0.34), l.js[l.js.length - 1][2] + dz);
+    const tip = P3(l.js[l.js.length - 1][0] + du, gv - l.toe * (l.blunt ? 0.8 : 0.34), l.js[l.js.length - 1][2] + dz);
     if (l.blunt) {
       // a jointed digit: thick at the base, a raised knuckle, a round tip (capped by the disc on padded toes)
       const k = end.clone().lerp(tip, 0.42); k.y = Math.max(k.y, tip.y + l.toe * 1.4);
@@ -283,7 +283,7 @@ function limbGeometry(l: Limb3D, ground: number, col: (ny: number) => THREE.Colo
     }
     if (l.pad) { // the toe disc: a flattened round pad at the tip, a little ahead of it
       const d = tip.clone().sub(end).setY(0).normalize().multiplyScalar(l.pad * 0.35);
-      const s = new THREE.SphereGeometry(l.pad, 12, 8).scale(1, 0.5, 1).translate(tip.x + d.x, -ground + l.pad * 0.5, tip.z + d.z); s.deleteAttribute('uv'); parts.push(s.toNonIndexed());
+      const s = new THREE.SphereGeometry(l.pad, 12, 8).scale(1, 0.5, 1).translate(tip.x + d.x, -gv + l.pad * 0.5, tip.z + d.z); s.deleteAttribute('uv'); parts.push(s.toNonIndexed());
     }
   }
   if (l.web && digits.length > 1) parts.push(webGeometry(digits, l.web));
@@ -417,9 +417,9 @@ function gillGeometry(gl: NonNullable<Herp3D['gills']>) {
 
 /** The 3D amphibian for a card of width w, origin at the card's centre (the card frame's v = 0); add it as the card's child.
  *  `surface` 'glass' = clinging to a pane: its glass pose if it has one (tree frog), belly on the ground line; 'top' =
- *  floating at the water surface: its float pose (African dwarf frog). */
-export function herpBody(art: string, w: number, surface?: Surface) {
-  const pose = surface === 'glass' ? HERP3D_GLASS[art] : surface === 'top' ? HERP3D_FLOAT[art] : undefined;
+ *  floating at the water surface: its float pose (African dwarf frog); 'perch' = on a branch or shelf: its perch pose. */
+export function herpBody(art: string, w: number, surface?: Surface | 'perch') {
+  const pose = surface === 'glass' ? HERP3D_GLASS[art] : surface === 'top' ? HERP3D_FLOAT[art] : surface === 'perch' ? HERP3D_PERCH[art] : undefined;
   const h = pose || HERP3D[art], b = bodyShape(h), grp = new THREE.Group(), key = pose ? art + '~' + surface : art;
   const K = (k: string, make: () => THREE.BufferGeometry) => geo(key + k, make);
   grp.add(new THREE.Mesh(K(':body', () => bodyGeometry(b, h.warts)), mat('body:' + key, () => new THREE.MeshBasicMaterial({ map: bodyTexture(h, b), vertexColors: true }))));

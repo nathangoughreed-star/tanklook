@@ -2,6 +2,40 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane T3: dry hardscape pieces + surface anchors, tree frogs perch (2026-10-16; branch `dry-hardscape`, port 5663; Nathan approved the pictures; pushed to main)
+- **New pieces** (scene/items.ts LIBRARY, geometry in render/items.ts, no new ItemKind, no scene version bump): `climb`
+  Climbing branch (wood: thin pale dry limb leaning 40-70°, 1-2 forks; woodLimbs 'climb'), `corkflat` Cork bark flat
+  and `corktube` Cork tube (wood), `halflog` Half-log hide (cave), `ledge` Rock ledge (stone: thick slab with a level top,
+  sandstone colours, grit 2; lift it against the glass or 3D wall as a shelf). The cork pieces and the half-log are bark
+  shells (`SHELLS` in scene/items.ts: radius, arc, wall; `shellShape` in render/items.ts): bark outside with deep furrows
+  along the length (grit 10), plain wood or a dark hollow inside, end grain on the cut ends (grit 9), ragged long edges on
+  a flat. Lying along x; stand a tube or flat up with roll (tilt) 90. `isLimbWood` keeps the shells out of the limb code;
+  woodLimbs gives a shell its ridge line for callers that want a limb. GRIT shader core untouched.
+- **Surface anchors** (new `scene/anchors.ts`): `anchors(S, T, probe)` returns `rest(x, depth, hard)` (floor, or the top
+  of the solid piece under it: kind rock / ledge / branch / cork / wood, normal, item, `limb` {axis point, direction, radius}
+  on a branch, `toTank` frame map), `glass(x, depth, y, yaw, w)` (glass, or the 3D wall where it covers the pane: point,
+  normal into the tank, heading laid in), `nearest(x, depth, y)`. `limbPaths(item, toTank)` gives every limb as a tank-axes
+  path (for vines: lane T2). `anchorKind`, `PERCHES` (branch, ledge), `turnOut` (a piece's YXZ turn in scene code).
+  The renderer's probes: `solidProbe` (render/items.ts, the down ray onto the solid meshes) and `onWall`
+  (render/build.ts, the 5-ray wall fit). **Hook** in render/build.ts addContents: `top`, `onGlass`, `onWall` and the glass
+  branch of `snailMeshes` go through the anchors. Proven unchanged: `test/anchorbase.test.ts` holds 1110 animal poses
+  (6 examples, Shuffled with and without rock / cork walls; floor, glass, wall, hardscape) to the pre-anchor fixture,
+  measured identical to 0.002 mm. Re-record only on purpose: `RECORD=1 npx vitest run test/anchorbase.test.ts`.
+- **Perching**: an animal on the hardscape whose anchor is a branch or a ledge perches (`perchOn` in build.ts): on a
+  branch the body lies along the limb (head the way it faces; head up a limb steeper than 45°), belly on the limb top,
+  in a gripping pose (`HERP3D_PERCH.treefrog`, art/herps.ts: legs tucked, toe tips curled below the belly line round the
+  limb; new `Limb3D.toeV`); on a ledge it sits level on the top face in its normal pose (the grip pose put toes into the
+  stone). Mesh `userData.perch` = the kind. Shuffle: a tree frog weights perches 4x (`PERCH_FROG`, scene/scatter.ts;
+  `hardscape(S, pieces, perchK)`, a branch counted by length x 40 mm). Tests `test/anchors.test.ts`: every kind, the
+  turn, glass / wall plumbing, frogs perched after Shuffle stay perched (same place, same turn) through save and load.
+- **Fixed on the way (pushed alone first, `2572022`):** glass cap passes took their render order from a running counter,
+  so an incremental edit stacked two overlapping capped pieces differently from a full rebuild (terrarium stone edits,
+  38-204 px; from 09103c6). Now by item id; incrementalCheck 133 edits, 0 differ (also 0 with the new pieces + perched frogs).
+- **Pictures:** shots/T3_sheet1_pieces.jpg, shots/T3_sheet2_scenes_frogs.jpg (not in git); helpers shots/t3.js.
+- **Open:** a frog on a branch can overlap a fork right at it (no clearance check); the half-log bark is close to the
+  cork's; no Shuffle / starter places the new pieces yet (starter styles batch 2); next queued: crested gecko + lizard
+  body plan on these anchors.
+
 ## Lane FM: fish parts merged per material (2026-10-16; branch `fish-merge`, no preview server; Nathan approved shipping the few changed edge pixels, phase 2 skipped; pushed to main)
 E1 fix #5. A 3D fish was 11 meshes (card, body, 2 eyes, 2 gape lines, 4 paired fins, outline hull; +4 barbels on corys).
 - **What changed:** `fishBody` (render/fish3d.ts) ends with `mergeShared`: a fish's parts that share a material (the two
@@ -1662,7 +1696,7 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | LA leaf algae + bowl film | (worktree removed) | - | `render/algae.ts`, the plant material hook in `render/plant3d.ts`, bowl glass film | DONE (`e87bc19`). Open: no surface scum on bowls; BBA on leaf ends, not true margins |
 | T1 dry ground (roadmap R1) | `../Glass-Box-dry-ground` / `dry-ground` | 5633 | substrate types in `scene/types.ts` / `validate.ts` / `defaults.ts` (substrate only), the ground build in `render/build.ts`, substrate tiles in `art/placeholder.ts` / `render/textures.ts`, new `render/scatter.ts` (leaf litter), the Substrate section of `ui/panels.ts` / `index.html` | running (session `local_6ae6a2e0`) |
 | T2 terrestrial plants (roadmap R1) | `../Glass-Box-terra-plants` / `terra-plants` | 5653 | `art/plants.ts`, `render/plant3d.ts`, plant branch of `render/items.ts`, plant entries of `scene/items.ts` LIBRARY | running (session `local_7d35229e`) |
-| T3 dry hardscape + anchors (roadmap R1/R2) | `../Glass-Box-dry-hardscape` / `dry-hardscape` | 5663 | non-plant branches of `render/items.ts` (not the GRIT shader core), stone / wood / cave / hide entries of `scene/items.ts` LIBRARY, new `scene/anchors.ts` + its hook in the cling / rest code; anchor hook in `render/build.ts` addContents rest / cling helpers (`top`, `restOn`, start of `animal()`, `onGlass`, `onWall`, glass branch of `snailMeshes`); perch pose in `art/herps.ts` / `render/herp3d.ts` | running (session `local_adf731d2`) |
+| T3 dry hardscape + anchors (roadmap R1/R2) | `../Glass-Box-dry-hardscape` / `dry-hardscape` | 5663 | non-plant branches of `render/items.ts` (not the GRIT shader core), stone / wood / cave / hide entries of `scene/items.ts` LIBRARY, new `scene/anchors.ts` + its hook in the cling / rest code; anchor hook in `render/build.ts` addContents rest / cling helpers (`top`, `restOn`, start of `animal()`, `onGlass`, `onWall`, glass branch of `snailMeshes`); perch pose in `art/herps.ts` / `render/herp3d.ts` | DONE (see the Lane T3 section): anchors API for T2 vines (`limbPaths`); files free |
 | T4 aquatic roster | `../Glass-Box-aqua-roster` / `aqua-roster` | 5673 | `data/species.json`, `data/aqadvisor.json`, NEW species' PLANS / her() entries in `art/fishgen.ts`, `render/coral3d.ts` + coral entries of `scene/items.ts` LIBRARY | batches 1-2 pushed (9 fish); corals running (session `local_c8325e61`) |
 | FM fish mesh merge | `../Glass-Box-fish-merge` / `fish-merge` | 5683 (headless checks preferred) | fish mesh assembly in `render/fish3d.ts`, the animal-mesh part of `render/build.ts` | DONE 2026-10-16 (see its section), files free |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T3: crested gecko + lizard body plan; after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits | queued |
