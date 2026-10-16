@@ -27,7 +27,6 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 **Current lanes** (coordinator "Lanes coordinator 3", `local_f068e2c9`):
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
-| SS2 starter styles batch 2 | `../Glass-Box-starters2` / `starters2` | 5683 | styles in `scene/items.ts` (`starterStyle`, style data), `scene/starter.ts`, `examples/`, the style picker | ready to open (prompt `prompts/lane-SS2-starters2.md`); shares `items.ts` with PG, keep both sides |
 | SB scatter brush | `../Glass-Box-brush` / `scatter-brush` | 5693 | new `scene/brush.ts`, `ui/brush.ts`, `src/interact` brush mode, `render/scatter.ts` | ready to open (prompt `prompts/lane-SB-scatter-brush.md`) |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
@@ -35,14 +34,6 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
-
-## Lane SS2: starter styles batch 2 (2026-10-16; branch `starters2`, port 5683; opened by coordinator 3; DONE: Nathan approved all styles 2026-10-16; pushed to main)
-Scope: terrestrial starters, freshwater biotopes, marine sub-styles. Owns styles in scene/items.ts, scene/starter.ts, scene/scapeground.ts, examples/, the style picker.
-- **Built (uncommitted on `starters2`)**: 14 new `LayoutId`s (types.ts, validate.ts LAYOUT_IDS): terrarium `rainforest` `arid` `jumper` `python` `burrow` `frogs` (water switched off by the picker) + `paludarium` (swamp terrain, water kept); biotopes `blackwater` (tea tint set by the picker, catappa litter) `malawi` `stream` `hillstream`; marine `softreef` `spsreef` `clownnano` (reuse the reef branch with `REEF_MIX`, taller / lower stacks, an anemone on the nano). items.ts: LAYOUTS rows, `STYLE_KIND` / `STYLE_GROUPS` / `isLandStyle` / `isSwampy` / `isReefy`, STYLES rows (animal pools), DESIGNED_FOCI, new branches at the end of `starterItems`; ZONE / CAP rows for the T2 plants. scapeground.ts: SUBS (terra grounds + litter, only SS2 ids set or clear litter), SHAPE. starter.ts: land animals are not bioload-counted (`LAND_MOST`, `landCount`), land species allowed in land styles, snakes pass the length rule. panels.ts: optgroup picker, marine / fresh-only options hidden by water type, land style turns water off (and back on when replaced), paludarium lowers the water like swamp.
-- Old styles: reef branch unchanged for id 'reef' (same pick stream); swamp pool filter unchanged.
-- Review pictures: `scripts/ss2-shots.js` (console: `(await import('/scripts/ss2-shots.js')).sheet(['arid'])`, ONE style per call, each takes ~10 s) then `python scripts/ss2-sheet.py <id>` -> shots/ss2_sheet_<id>.png.
-- Nathan approved every style; one change: rainforest climbing branches now head at least 35 degrees (mod 180) off each other, with random lean and roll (never parallel). Tests: test/starters2.test.ts; density / items / scapestyles / examples tests widened for the new ids. Five new examples (rainforest gecko, leopard gecko desert, ball python, blackwater, clownfish nano: src/examples/ss2-*.json + jpg); anchor-baseline fixture extended (old entries kept byte for byte). 375 px picker checked (no horizontal scroll; marine styles hidden in fresh water, a terrarium turns the water off, blackwater tints it).
-- Gaps to tell Nathan: no water-dish piece (python), no succulent plants (arid uses hairgrass + small bromeliads), only yellowlab / cockatoo for Malawi.
 
 ## Lane SB: scatter brush (2026-10-16; branch `scatter-brush`, port 5693; opened by coordinator 3, not started)
 Scope: paint-on litter / pebbles / moss / carpet plants with seeded variation, erase, surface-aware via anchors, instanced. Decision to bring to Nathan early: strokes as a seeded "patch" (recommended) or individual items. Owns new scene/brush.ts, ui/brush.ts, brush mode in src/interact, render/scatter.ts. State: nothing built yet.
@@ -214,6 +205,7 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane SS2: starter styles batch 2 (2026-10-16; branch `starters2`, port 5683; opened by coordinator 3; DONE: Nathan approved all styles 2026-10-16; pushed to main)
 - Lane BP2: ball python follow-ups (2026-10-16; branch `python2`, port 5703; built + tested on the branch, NOT pushed: pictures sent to Nathan, awaiting his verdict)
 - Lane PG: plant / coral light and care gating (2026-10-16; branch `plant-gates`, port 5673; opened by coordinator 3, not started)
 - Lane BP: ball python, serpentine body plan (2026-10-16; branch `python`, port 5673; built + tested, committed on the branch, NOT pushed: pictures sent to Nathan, awaiting his verdict)
