@@ -5,6 +5,7 @@
 // Legs on the far side are drawn first and darker; legs on the near side over the body.
 import { type Ctx, type Proj, type Pt, type Stops, blob, body, fin, rng, soft } from './paint';
 import type { Shell3D } from './snails';
+import { LIZARD_ART, lizardMeta } from './lizards';
 
 type J = [number, number, number]; // joint: u, v, radius (widths)
 
@@ -329,12 +330,13 @@ export const HERP_ART: Record<string, (ctx: Ctx, P: Proj, W: number) => void> = 
   ...Object.fromEntries(Object.entries(FROGS).map(([k, s]) => [k, (c: Ctx, P: Proj, W: number) => drawFrog(s, c, P, W)])),
   ...Object.fromEntries(Object.entries(SALS).map(([k, s]) => [k, (c: Ctx, P: Proj, W: number) => drawSal(s, c, P, W)])),
   ...Object.fromEntries(Object.entries(HERMITS).map(([k, s]) => [k, (c: Ctx, P: Proj, W: number) => drawHermit(s, c, P, W)])),
+  ...LIZARD_ART,
 };
 
 /** Aspect + resting offset (the ground line) for amphibian art keys. */
 export function herpMeta(art: string): { aspect: number; rest: number } | undefined {
   if (HERMITS[art]) return { aspect: HERMIT_A, rest: HG };
-  const s = FROGS[art] ?? SALS[art]; if (!s) return undefined;
+  const s = FROGS[art] ?? SALS[art]; if (!s) return lizardMeta(art);
   return { aspect: s.aspect, rest: s.aspect / 2 - 0.015 };
 }
 
