@@ -62,13 +62,18 @@ const SS2_IDS: ReadonlySet<string> = new Set(['rainforest', 'arid', 'jumper', 'p
 
 /** The ground a style draws for the tank's layout (id, seed, composition): substrate type and blend, corner depths and
  *  terrain. Leaves a bare tank alone. Marks the layout as styled (`ground`), so a later hand edit can be spotted. */
-export function styleGround(s: TankSetup): void {
+export function styleGround(s: TankSetup, part: 'both' | 'type' | 'shape' = 'both'): void {
   const id = s.layout.id;
   if (id === 'none') return;
   const gs = s.layout.gSeed ?? s.layout.seed, T = s.tank, r = rng(gs * 7919 + id.length * 104729 + 4 * 1000003);
-  const salt = !!(s.water.on && s.water.salt), subs = SUBS[salt ? 'reef' : id], sub = subs[Math.floor(r() * subs.length) % subs.length];
-  s.substrate = { ...s.substrate, show: true, type: sub.type, ...(sub.custom ? { custom: { ...sub.custom } } : {}) };
-  if (SS2_IDS.has(id) && !salt) { if (sub.litter) s.substrate.litter = { ...sub.litter, seed: 1 + Math.floor(r() * 1e6) }; else delete s.substrate.litter; }
+  r(); // the substrate's pick used to come off this stream: skipped, so the shape is drawn as before the type got its own seed
+  const salt = !!(s.water.on && s.water.salt);
+  if (part !== 'shape') {
+    const ts = s.layout.tSeed ?? gs, rt = rng(ts * 7919 + id.length * 104729 + 5 * 1000003), subs = SUBS[salt ? 'reef' : id], sub = subs[Math.floor(rt() * subs.length) % subs.length];
+    s.substrate = { ...s.substrate, show: true, type: sub.type, ...(sub.custom ? { custom: { ...sub.custom } } : {}) };
+    if (SS2_IDS.has(id) && !salt) { if (sub.litter) s.substrate.litter = { ...sub.litter, seed: 1 + Math.floor(rt() * 1e6) }; else delete s.substrate.litter; }
+  }
+  if (part === 'type') { s.layout.ground = true; return; }
   const sh = SHAPE[id], f = clamp(T.H * 0.08, 20, 70), back = sh.back[0] + r() * (sh.back[1] - sh.back[0]);
   const tilt = (r() - 0.5) * 0.4, ph = [r() * 6.28, r() * 6.28], relief = 0.6 + r() * 1.8, bumps = Array.from({ length: 2 + Math.floor(r() * 3) }, () => ({ u: 0.1 + r() * 0.8, t: 0.15 + r() * 0.7, a: (r() < 0.75 ? 1 : -0.7) * (0.4 + r() * 0.6), w: 0.015 + r() * 0.03 })), foci = styleFoci(id, s.layout.gFoc ?? s.layout.seed, s.layout.comp);
   const height = (x: number, d: number) => {

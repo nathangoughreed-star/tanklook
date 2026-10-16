@@ -183,3 +183,26 @@ describe('Quick Setup: shuffle with parts kept, ground relief, care-gated stocki
     }
   });
 });
+
+describe('one Shuffle with locks: substrate type and shape drawn apart, Any style (2026-10-16)', () => {
+  it('a new type seed changes the substrate and leaves the shape; a new shape seed does the reverse', () => {
+    const s = setup('planted', 5); styleGround(s);
+    const shape = () => JSON.stringify([s.substrate.fl, s.substrate.fr, s.substrate.bl, s.substrate.br, s.terrain.h]);
+    const type0 = JSON.stringify([s.substrate.type, s.substrate.custom]), shape0 = shape();
+    const types = new Set<string>(), shapes = new Set<string>();
+    for (let seed = 1; seed <= 12; seed++) { s.layout.tSeed = seed; styleGround(s, 'type'); types.add(JSON.stringify([s.substrate.type, s.substrate.custom])); expect(shape()).toBe(shape0); }
+    expect(types.size).toBeGreaterThan(1);
+    const type1 = JSON.stringify([s.substrate.type, s.substrate.custom]);
+    for (let seed = 1; seed <= 12; seed++) { s.layout.gSeed = seed; styleGround(s, 'shape'); shapes.add(shape()); expect(JSON.stringify([s.substrate.type, s.substrate.custom])).toBe(type1); }
+    expect(shapes.size).toBeGreaterThan(1);
+    expect(type0).toBeTypeOf('string');
+  });
+  it('Any style draws from the tank\'s own kind: never a terrarium in a fish tank, nor a reef in fresh water', async () => {
+    const { randomStyle } = await import('../src/scene/starter');
+    const { isLandStyle, isSwampy, STYLE_KIND } = await import('../src/scene/items');
+    for (const [water, salt, check] of [[true, false, (id: LayoutId) => !isLandStyle(id) && !isSwampy(id) && STYLE_KIND[id] !== 'salt'], [true, true, (id: LayoutId) => STYLE_KIND[id] === 'salt'], [false, false, (id: LayoutId) => isLandStyle(id) || isSwampy(id)]] as const) {
+      const s = setup('none', 1); s.water.on = water; s.water.salt = salt;
+      for (let i = 0; i < 40; i++) { const id = randomStyle(s, Math.random); expect(check(id), `${water} ${salt} ${id}`).toBe(true); }
+    }
+  });
+});

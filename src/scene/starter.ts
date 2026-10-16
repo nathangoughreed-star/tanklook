@@ -3,12 +3,12 @@
 // from its own random stream (seed x layer), so redrawing one leaves the layers it does not feed exactly as they were.
 import { rng } from '../art/paint';
 import { getSpecies, type Species } from '../data/species';
-import { DEFAULT_DENS, EPIPHYTES, STYLES, clampItem, isLandStyle, isSwampy, layerOf, perch, starterItems, type Layer } from './items';
+import { DEFAULT_DENS, EPIPHYTES, STYLES, STYLE_KIND, clampItem, isLandStyle, isSwampy, layerOf, perch, starterItems, type Layer } from './items';
 import { volume } from './physics';
 import { whyAnimal } from './animalfit';
 import { groundEdited } from './scapeground';
 import { placeNew, randomPose, randomSize } from './scatter';
-import type { Fish, Item, TankSetup } from './types';
+import type { Fish, Item, LayoutId, TankSetup } from './types';
 
 /** Share of the tank's bioload cap each animal stop fills (None .. Full). Full stays under the cap. */
 export const ANIMAL_FILL = [0, 0.35, 0.6, 0.8, 0.9] as const;
@@ -114,6 +114,15 @@ export function regenerate(s: TankSetup, what: Layer | 'all', firstFishId: numbe
   if (what === 'plant') s.items = starterItems(s, s.items.filter(it => layerOf(it) === 'hard'));
   else if (what !== 'animal') s.items = starterItems(s);
   if (what === 'animal' || (what === 'all' && (s.layout.dens ?? DEFAULT_DENS).animal > 0)) s.fish = starterAnimals(s, firstFishId);
+}
+
+/** A style drawn at random for "Any style" (Quick Setup): from the tank's own family, so a shuffle never turns a fish tank
+ *  into a terrarium or a freshwater tank into a reef; a different one from the current style when there is a choice. */
+export function randomStyle(s: TankSetup, roll: () => number): Exclude<LayoutId, 'none'> {
+  const cur = s.layout.id, land = !s.water.on || isLandStyle(cur) || isSwampy(cur), salt = !land && !!s.water.salt;
+  const ids = (Object.keys(STYLES) as Exclude<LayoutId, 'none'>[]).filter(id => land ? isLandStyle(id) || isSwampy(id) : salt ? STYLE_KIND[id] === 'salt' : STYLE_KIND[id] !== 'salt' && STYLE_KIND[id] !== 'land' && !isSwampy(id));
+  const pool = ids.filter(id => id !== cur);
+  return (pool.length ? pool : ids)[Math.floor(roll() * (pool.length || ids.length))];
 }
 
 /** The parts of an item a hand edit changes (a coral's lift is left out: the renderer seats it on the rock). */

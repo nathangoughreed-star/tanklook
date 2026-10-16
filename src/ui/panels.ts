@@ -11,14 +11,14 @@ import { MAP_DIV, MAP_STEP, emitters, mapStepOf } from '../render/lighting';
 import { darkOf, darkStats } from '../render/lightShells';
 import { whyAnimal, type AnimalWhy } from '../scene/animalfit';
 import { EXPERTISE_NAME } from '../data/care';
-import { CARE_NAME, FIT_LABEL, FIT_LIGHTS, FIT_PAR, fitCaption, whyNot, type FitLight } from '../scene/plantfit';
+import { CARE_NAME, FIT_PAR, fitCaption, whyNot, type FitLight } from '../scene/plantfit';
 import { VERDICT_TEXT, itemLights, tankSummary } from '../scene/lightcheck';
 import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, mountOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeLayout, tubeOf, TUBE_SP_MAX, bestPos, ledBarDepth, posMax, wattsOf, type Fixture } from '../scene/lightout';
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene, TANK_PRESETS } from '../scene/defaults';
 import { COMPS, DEFAULT_DENS, STYLE_GROUPS, STYLE_KIND, isLandStyle, EPIPHYTES, KINDS, perch, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
-import { handEdits, regenerate, shuffleHard } from '../scene/starter';
+import { handEdits, randomStyle, regenerate, shuffleHard } from '../scene/starter';
 import { styleGround } from '../scene/scapeground';
 import { growthOf, isClump, isFloat, isPatch, type PlantType } from '../art/plants';
 import { clumpAuto } from '../render/plant3d';
@@ -1037,7 +1037,14 @@ Cancel, then change the name, to keep both.`)) return;
   // the picker (lane SS2): Bare tank, then Freshwater / biotopes / Marine / Terrarium groups; the marine styles show in a
   // saltwater tank only and the freshwater biotopes in a freshwater one (refreshed with the water type, below)
   const styleOpt = (k: LayoutId) => `<option value="${k}" title="${esc(LAYOUTS[k].hint)}">${esc(LAYOUTS[k].label)}</option>`;
-  $<HTMLSelectElement>('layout').innerHTML = styleOpt('none') + STYLE_GROUPS.map(g => `<optgroup label="${g.label}">${g.ids.map(styleOpt).join('')}</optgroup>`).join('');
+  /** "Any style": each Shuffle draws the style too, from the tank's own kind of water. A picker state only, not saved with the tank. */
+  let anyStyle = false;
+  const showStyle = (s: TankSetup) => {
+    setVal('layout', anyStyle ? 'any' : s.layout.id); // "Bare tank" says there is nothing in it, which stops being true once a piece is added by hand (G2, 2026-10-14)
+    $('layoutHint').textContent = anyStyle ? `Any style: each Shuffle draws a new style too${s.layout.id === 'none' ? '' : ` (now ${LAYOUTS[s.layout.id].label})`}.` : s.layout.id === 'none' && s.items.length ? 'A starter set replaces every piece; or add, move and remove pieces yourself.' : LAYOUTS[s.layout.id].hint;
+    ($('layoutShuffle') as HTMLButtonElement).disabled = s.layout.id === 'none' && !anyStyle;
+  };
+  $<HTMLSelectElement>('layout').innerHTML = '<option value="any" title="Every Shuffle draws a new style as well. Pick a style to keep the shuffles to it">Any style (random)</option>' + styleOpt('none') + STYLE_GROUPS.map(g => `<optgroup label="${g.label}">${g.ids.map(styleOpt).join('')}</optgroup>`).join('');
   $<HTMLSelectElement>('layoutComp').innerHTML = Object.entries(COMPS).map(([k, c]) => `<option value="${k}" title="${esc(c.hint)}">${esc(c.label)}</option>`).join('');
   // a starter set replaces every piece (undoable), and the animals when its animal stop is above None; the pieces are
   // then ordinary items
@@ -1061,20 +1068,27 @@ Cancel, then change the name, to keep both.`)) return;
   const showDens = () => { const d = S().layout.dens ?? DEFAULT_DENS; for (const [k, inp, out] of DENS_IN) { setVal(inp, d[k]); $(out).textContent = stopName(k, d[k]); } };
   // leaving swamp brings back the level it lowered, unless the level was moved since (audit #13)
   let preSwamp = emptyScene().tanks[0].water.level;
+  /** Move the layout to style `to` with what goes with it: land for a swamp, the water off for a terrarium, tea water for blackwater. */
+  const applyStyle = (s: TankSetup, to: LayoutId) => {
+    const was = s.layout.id;
+    s.layout.id = to;
+    if ((s.layout.id === 'swamp' || s.layout.id === 'paludarium') && s.water.level > SWAMP_LEVEL) { preSwamp = s.water.level; setWaterLevel(s, SWAMP_LEVEL); } // land needs to stand out of the water
+    else if ((was === 'swamp' || was === 'paludarium') && s.layout.id !== 'swamp' && s.layout.id !== 'paludarium' && s.water.level === SWAMP_LEVEL) setWaterLevel(s, preSwamp);
+    // a terrarium starter (lane SS2) is dry: the water goes off, and comes back when a water style replaces it
+    if (isLandStyle(to)) s.water.on = false; else if (isLandStyle(was) && to !== 'none') s.water.on = true;
+    // blackwater tints the water tea; leaving it clears that tint again (a colour the user set is left alone)
+    if (to === 'blackwater') Object.assign(s.water, { color: BLACKWATER[0], opacity: BLACKWATER[1] });
+    else if (was === 'blackwater' && s.water.color === BLACKWATER[0] && s.water.opacity === BLACKWATER[1]) [s.water.color, s.water.opacity] = s.water.salt ? SALT_CLEAR : FRESH_CLEAR;
+  };
   $<HTMLSelectElement>('layout').onchange = async e => {
-    const to = (e.target as HTMLSelectElement).value as LayoutId;
+    const v = (e.target as HTMLSelectElement).value;
+    if (v === 'any') { anyStyle = true; showStyle(S()); status('Any style: each Shuffle now draws a new style too.'); return; }
+    anyStyle = false;
+    const to = v as LayoutId;
     if (!await okToReplace('all', () => setVal('layout', S().layout.id), to !== 'none')) return;
     store.selectItem(null); fishId0 = store.nextId();
     store.edit(s => {
-      const was = s.layout.id;
-      s.layout.id = to;
-      if ((s.layout.id === 'swamp' || s.layout.id === 'paludarium') && s.water.level > SWAMP_LEVEL) { preSwamp = s.water.level; setWaterLevel(s, SWAMP_LEVEL); } // land needs to stand out of the water
-      else if ((was === 'swamp' || was === 'paludarium') && s.layout.id !== 'swamp' && s.layout.id !== 'paludarium' && s.water.level === SWAMP_LEVEL) setWaterLevel(s, preSwamp);
-      // a terrarium starter (lane SS2) is dry: the water goes off, and comes back when a water style replaces it
-      if (isLandStyle(to)) s.water.on = false; else if (isLandStyle(was) && to !== 'none') s.water.on = true;
-      // blackwater tints the water tea; leaving it clears that tint again (a colour the user set is left alone)
-      if (to === 'blackwater') Object.assign(s.water, { color: BLACKWATER[0], opacity: BLACKWATER[1] });
-      else if (was === 'blackwater' && s.water.color === BLACKWATER[0] && s.water.opacity === BLACKWATER[1]) [s.water.color, s.water.opacity] = s.water.salt ? SALT_CLEAR : FRESH_CLEAR;
+      applyStyle(s, to);
       styleGround(s); // the style's own substrate and terrain (Quick aquascape setup); a bare tank keeps its ground
       replaced(s);
     });
@@ -1090,49 +1104,72 @@ Cancel, then change the name, to keep both.`)) return;
     store.edit(s => { if (to === 'any') delete s.layout.comp; else s.layout.comp = to; styleGround(s); regenerate(s, 'hard', 0); });
     status(`Composition: ${COMPS[to].label}. Ctrl+Z brings the previous pieces back.`);
   };
-  // Auto-populate by light and care (lane PG step 4): the plants are redrawn from only the kinds that fit
-  $<HTMLSelectElement>('layoutFit').innerHTML = '<option value="any">Any plants</option>' + FIT_LIGHTS.map(k => `<option value="${k}"></option>`).join('');
-  $<HTMLSelectElement>('layoutCare').innerHTML = (Object.keys(CARE_NAME) as GrowFeed[]).map(k => `<option value="${k}">${esc(CARE_NAME[k][0].toUpperCase() + CARE_NAME[k].slice(1))}</option>`).join('');
+  // Plant care (2026-10-16): light, CO2 + fertiliser and the effort they ask are one setting, since they move together in a
+  // real tank (more light needs more CO2 and feeding, which needs more trimming and testing). One slider: Any, then Low,
+  // Medium, High, which sets the light band the plants are drawn for (`layout.fit`) and the growth feed (`grow.feed`).
+  // The light is a band (a low-light plant fails in strong light); the effort only a ceiling.
+  const TIERS: (FitLight | null)[] = [null, 'low', 'medium', 'high'], TIER_FEED: Record<FitLight, GrowFeed> = { low: 'low', medium: 'ferts', high: 'co2' };
+  const TIER_NAME = ['Any', 'Low', 'Medium', 'High'];
+  const TIER_HINT: Record<'fresh' | 'reef', string[]> = {
+    fresh: ['Any plant the style draws, whatever it needs.',
+      'About 25 PAR, no CO2 and no fertiliser beyond root tabs: ferns, anubias, crypts, mosses. Easy to keep, about 15 minutes a week.',
+      'About 40 PAR, liquid fertiliser, CO2 optional: most stem plants and some carpets. About 30 minutes a week.',
+      'About 65 PAR, CO2 and daily dosing: demanding stems and carpets. Trimming two or three times a week, and algae punishes slips.'],
+    reef: ['Any coral the style draws, whatever it needs.',
+      'Soft corals, about 75 PAR: leathers, mushrooms, zoanthids. Basic dosing and weekly water changes.',
+      'LPS corals, about 110 PAR: stable alkalinity and calcium, and regular dosing.',
+      'SPS corals, about 250 PAR: tight parameters, daily dosing and testing, and a daily check.'] };
+  const tierOf = (s: TankSetup) => s.layout.fit ? TIERS.indexOf(s.layout.fit) : 0;
+  const showTier = (s: TankSetup) => { const i = tierOf(s); setVal('plantTier', i); $('oPlantTier').textContent = TIER_NAME[i]; $('plantTierHint').textContent = TIER_HINT[s.water.salt ? 'reef' : 'fresh'][i]; };
+  const tierEl = $<HTMLInputElement>('plantTier');
+  tierEl.oninput = () => { const i = +tierEl.value; $('oPlantTier').textContent = TIER_NAME[i]; $('plantTierHint').textContent = TIER_HINT[S().water.salt ? 'reef' : 'fresh'][i]; };
   const refit = async (revert: () => void, edit: (s: TankSetup) => void, msg: string) => {
     if (!await okToReplace('plant', revert)) return;
     store.selectItem(null); fishId0 = store.nextId();
     store.edit(s => { edit(s); regenerate(s, 'plant', fishId0); });
     status(msg + ' Ctrl+Z brings the previous plants back.');
   };
-  const showFit = () => { const s = S(); setVal('layoutFit', s.layout.fit ?? 'any'); setVal('layoutCare', s.grow.feed); };
-  $<HTMLSelectElement>('layoutFit').onchange = e => {
-    const v = (e.target as HTMLSelectElement).value;
-    refit(showFit, s => { if (v === 'any') delete s.layout.fit; else s.layout.fit = v as FitLight; }, v === 'any' ? 'Plants redrawn: any kind.' : 'Plants redrawn for the light and care.');
+  tierEl.onchange = () => {
+    const fit = TIERS[+tierEl.value];
+    refit(() => showTier(S()), s => { if (!fit) delete s.layout.fit; else { s.layout.fit = fit; s.grow.feed = TIER_FEED[fit]; s.layout.careSet = true; } }, fit ? `Plants redrawn for ${TIER_NAME[TIERS.indexOf(fit)].toLowerCase()} light and care.` : 'Plants redrawn: any kind.');
   };
-  $<HTMLSelectElement>('layoutCare').onchange = e => {
-    const v = (e.target as HTMLSelectElement).value as GrowFeed;
-    refit(showFit, s => { s.grow.feed = v; s.layout.careSet = true; }, `Care set to ${CARE_NAME[v]}.`);
-  };
-  // Quick aquascape setup (Nathan 2026-10-15): one Shuffle for the whole set, the substrate and terrain, rock and wood,
-  // and plants, at the same style, composition and densities; the animals stay (Animals has its own Shuffle). The
-  // Hardscape and Plants menus are for tweaking the pieces by hand afterwards.
-  // Parts can be left out of the shuffle (2026-10-16): untick Hardscape to keep the rocks you like and shuffle the substrate
-  // and plants round them. The seeds pin what is kept: `gSeed` / `gFoc` the ground, `plantSeed` the plants.
+  // Quick aquascape setup (Nathan 2026-10-15): one Shuffle for the whole tank. The ticks say what it redraws; untick a part
+  // to lock it (2026-10-16) and keep shuffling the rest. The style gates everything it draws; "Any style" has no gate and
+  // draws the style too. Seeds pin what is locked: `tSeed` the substrate type, `gSeed` / `gFoc` its shape, `plantSeed` the
+  // plants, `animalSeed` the animals. The Hardscape and Plants menus are for tweaking the pieces by hand afterwards.
+  const tick = (id: string) => $<HTMLInputElement>(id).checked;
   $('layoutShuffle').onclick = async () => {
-    const g = $<HTMLInputElement>('shufGround').checked, h = $<HTMLInputElement>('shufHard').checked, p = $<HTMLInputElement>('shufPlant').checked;
-    if (!g && !h && !p) { status('Tick at least one of Substrate, Hardscape and Plants to shuffle.'); return; }
-    if (!await okToReplace(h ? 'hard' : p ? 'plant' : 'none', () => {}, g)) return;
+    const t = tick('shufType'), g = tick('shufShape'), h = tick('shufHard'), p = tick('shufPlant'), a = tick('shufAnimal');
+    if (!(t || g || h || p || a)) { status('Tick at least one part to shuffle.'); return; }
+    if (S().layout.id === 'none' && !anyStyle) { status('Pick a style, or Any style, first.'); return; }
+    const stocked = (S().layout.dens ?? DEFAULT_DENS).animal > 0;
+    // a locked part is never touched; the redrawn ones ask first when a hand edit would be lost
+    const checks: (Layer | 'all')[] = h ? [a && stocked ? 'all' : 'hard'] : [];
+    if (!h && p) checks.push('plant');
+    if (!h && a && stocked) checks.push('animal');
+    if (!checks.length) checks.push('none' as 'all');
+    for (const [i, c] of checks.entries()) if (!await okToReplace(c, () => {}, (t || g) && i === 0)) return;
     const seed = 1 + Math.floor(Math.random() * 1e6);
-    store.selectItem(null);
+    store.selectItem(null); fishId0 = store.nextId();
     store.edit(s => {
-      const L = s.layout, old = L.seed;
+      const L = s.layout, old = L.seed, gm = t && g ? 'both' : t ? 'type' : 'shape';
+      if (anyStyle) applyStyle(s, randomStyle(s, Math.random));
       L.animalSeed ??= old;
+      if (t) L.tSeed = seed; else L.tSeed ??= L.gSeed ?? old;
       if (h) {
         if (g) { delete L.gSeed; delete L.gFoc; } else { L.gSeed ??= old; L.gFoc ??= old; }
-        if (p) { L.seed = seed; delete L.plantSeed; if (g) styleGround(s); regenerate(s, 'hard', 0); }
-        else { shuffleHard(s, seed); if (g) styleGround(s); }
+        if (p) { L.seed = seed; delete L.plantSeed; if (t || g) styleGround(s, gm); regenerate(s, 'hard', 0); }
+        else { shuffleHard(s, seed); if (t || g) styleGround(s, gm); }
       } else {
-        if (g) { L.gSeed = seed; styleGround(s); }
+        if (g) L.gSeed = seed;
+        if (t || g) styleGround(s, gm);
         if (p) { L.plantSeed = seed; regenerate(s, 'plant', 0); }
       }
+      if (a) { L.animalSeed = seed; if ((L.dens ?? DEFAULT_DENS).animal > 0) regenerate(s, 'animal', fishId0); }
     });
-    const parts = [g && 'substrate', h && 'hardscape', p && 'plants'].filter(Boolean).join(', ');
-    status(`New ${parts} in the same style; ${g && h && p ? 'the animals' : 'the animals and the unticked parts'} stayed. Ctrl+Z brings the previous ones back.`);
+    dropGoneFish();
+    const names = [t && 'substrate type', g && 'substrate shape', h && 'hardscape', p && 'plants', a && stocked && 'animals'].filter(Boolean).join(', ');
+    status(`${anyStyle ? `New style (${LAYOUTS[S().layout.id].label}) and ` : 'New '}${names}${a && !stocked ? '; Stocking is None, so no animals' : ''}${t && g && h && p && a ? '' : '; the unticked parts stayed'}. Ctrl+Z brings the previous ones back.`);
   };
   // Density sliders (lane SD): one in each of Hardscape, Plants and Animals, continuous from one piece (one animal) to
   // far too much (Nathan 2026-10-15). Dragging only names the level; the layer is redrawn once, on release (a slider
@@ -1165,10 +1202,6 @@ Cancel, then change the name, to keep both.`)) return;
     store.edit(s => { edit(s); if ((s.layout.dens ?? DEFAULT_DENS).animal > 0) regenerate(s, 'animal', fishId0); });
     dropGoneFish();
     status(stocked ? `${msg} Ctrl+Z brings the previous animals back.` : msg);
-  };
-  $('animalShuffle').onclick = () => {
-    if ((S().layout.dens ?? DEFAULT_DENS).animal <= 0) { status('Raise Stocking above None first, then Shuffle animals draws a new set.'); return; }
-    restock(() => {}, s => { s.layout.animalSeed = 1 + Math.floor(Math.random() * 1e6); }, 'New animals drawn; the rock, wood and plants stayed.');
   };
   $('gateStock').onchange = e => {
     const on = (e.target as HTMLInputElement).checked;
@@ -1884,15 +1917,11 @@ Cancel, then change the name, to keep both.`)) return;
     ($('split') as HTMLButtonElement).disabled = store.split;
     $('splitHint').textContent = store.split ? 'Two tanks is the most: Delete one on its tab to split again. Each view’s tab (top of the view) opens on hover: what differs, Download that tank on its own, or Delete it. Save and Download at the top keep both tanks together.' : 'Copy this tank into a second, independent one beside it, then change anything in either.';
     setVal('edge', s.render.edge); $('gridOn').checked = s.render.grid; setVal('pop', Math.round(s.render.pop * 100)); setOut('oPop', s.render.pop ? `${Math.round(s.render.pop * 100)} %` : 'off');
-    { const salt = !!s.water.salt, fs = $<HTMLSelectElement>('layoutFit'), fit = s.layout.fit;
-      [...fs.options].forEach(o => { if (o.value !== 'any') o.textContent = FIT_LABEL[o.value as FitLight][salt ? 'reef' : 'fresh']; });
-      setVal('layoutFit', fit ?? 'any'); setVal('layoutCare', s.grow.feed);
-      fs.disabled = s.layout.id === 'none'; ($('layoutCare') as HTMLSelectElement).disabled = s.layout.id === 'none' || s.grow.time > 0;
-      const n = $('fitNote'); n.hidden = !fit; if (fit) n.textContent = fitCaption(s.items, fit, s.grow.feed, salt, v => LIBRARY[v]?.label ?? v); }
+    { const fit = s.layout.fit;
+      showTier(s); ($('plantTier') as HTMLInputElement).disabled = s.layout.id === 'none' || s.grow.time > 0; $('plantTier').title = s.grow.time > 0 ? 'Needs Time (Growth) at 0: the care sets the growth feed' : '';
+      const n = $('fitNote'); n.hidden = !fit; if (fit) n.textContent = fitCaption(s.items, fit, s.grow.feed, !!s.water.salt, v => LIBRARY[v]?.label ?? v); }
     setVal('layoutComp', s.layout.comp ?? 'any'); ($('layoutComp') as HTMLSelectElement).disabled = s.layout.id === 'none';
-    setVal('layout', s.layout.id); // "Bare tank" says there is nothing in it, which stops being true once a piece is added by hand (G2, 2026-10-14)
-    $('layoutHint').textContent = s.layout.id === 'none' && s.items.length ? 'A starter set replaces every piece; or add, move and remove pieces yourself.' : LAYOUTS[s.layout.id].hint;
-    ($('layoutShuffle') as HTMLButtonElement).disabled = s.layout.id === 'none';
+    showStyle(s);
     const dn = s.layout.dens ?? DEFAULT_DENS;
     for (const [k, inp, out] of DENS_IN) { setVal(inp, dn[k]); setOut(out, stopName(k, dn[k])); ($(inp) as HTMLInputElement).disabled = s.layout.id === 'none'; }
     const nk = (k: ItemKind) => s.items.filter(q => q.kind === k).length;

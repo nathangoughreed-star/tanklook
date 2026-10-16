@@ -221,7 +221,9 @@ export interface LayerDens { hard: number; plant: number; animal: number }
  *  starter animals, so each menu's Shuffle redraws its own layer only (Nathan 2026-10-15). Absent = `seed`. */
 export interface LayoutSettings { id: LayoutId; seed: number; plantSeed?: number; animalSeed?: number;
   /** The ground's own draws (Shuffle with parts locked, 2026-10-16): `gSeed` the substrate and terrain, `gFoc` where its hills stand (the groups' seed). Absent = `seed`. */
-  gSeed?: number; gFoc?: number; dens?: LayerDens; comp?: CompId;
+  gSeed?: number; gFoc?: number;
+  /** The substrate's type and blend have their own draw, so Shuffle can keep the type while it reshapes the ground (and the reverse). Absent = `gSeed`, then `seed`. */
+  tSeed?: number; dens?: LayerDens; comp?: CompId;
   /** The substrate and terrain were drawn for this style by the Quick aquascape setup (scene/scapeground.ts). */
   ground?: boolean;
   /** Auto-populate by light (lane PG step 4, 2026-10-16): the starter set keeps only plants / corals that fit this light level and the tank's care (grow.feed). Absent = every plant the style draws. */
