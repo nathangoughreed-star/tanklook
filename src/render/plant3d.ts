@@ -350,7 +350,7 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
   const extras = (n0: number, cap: number) => !more ? 0 : Math.max(0, Math.min(cap, Math.round(n0 * Gr.more ** (1 - g0))) - n0);
   const extraAt = (j: number, n0: number) => Math.min(0.97, Math.max(g0 + 0.04, g0 + Math.log((n0 + j + 1) / n0) / lg));
   /** How much longer than the plant's own part something that grows in at growth a is. */
-  const longer = (a: number) => growthLen(type, Math.min(1, a)) / size0 * size / h;
+  const longer = (a: number) => Math.min(P.cap ?? Infinity, growthLen(type, Math.min(1, a)) / size0 * size / h); // (cap: lane PP, fittonia stays compact)
   // this plant's own build: leaf width, length, rise, droop, stalk thickness, leaf pairs and tint drawn round the
   // species' values (a triangular spread, most plants near the middle; own random stream, so the layout stays)
   const rt = rng(seed * 7907 + 3), tri = (a: number) => 1 + a * (rt() + rt() - 1);
@@ -684,11 +684,24 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
       const up = Math.acos(Math.min(1, nrm.y)) + (q() - 0.5) * 1.6, yaw = a + (q() - 0.5) * 2.4;
       leaf(into, f, P.stalk, base, yaw, h * between(q, f.len), Math.max(0, up), D.twist(), D.pick(), D.bright() * (0.75 + 0.25 * d), q, bend(0.2), tag);
     };
-    const n = Math.round(Math.min(MAX_LEAFLETS, area / 1000 * between(r, P.n)));
-    for (let i = 0; i < n; i++) frond(r, { pick, twist, bright }, oTag, out);
+    // heads (lane PP: sphagnum capitula): a short star of fronds on a spot of the dome, the spots a sunflower spiral so the
+    // dark core shows between them; each head its own colour. Only a species with `heads` (the spacing, times its height)
+    const head = (q: R, D: ReturnType<typeof draws>, tag: LeafTag, into: Sheets, a: number, d: number) => {
+      const e = rim(a), top = domeY(d, a) * 0.9, base = V(Math.cos(a) * d * e, top + h * 0.012, Math.sin(a) * d * e);
+      const nrm = V(Math.cos(a) * d / R, Math.max(0.05, Math.sqrt(1 - d * d)) / h, Math.sin(a) * d / R).normalize(), up0 = Math.acos(Math.min(1, nrm.y));
+      const m = 11 + Math.floor(q() * 4), yaw0 = q() * 6.28, cols = D.pick(), br = D.bright() * (0.75 + 0.2 * d) * (0.9 + 0.2 * q());
+      for (let i = 0; i < m; i++) leaf(into, f, P.stalk, base, yaw0 + i * 6.2832 / m + (q() - 0.5) * 0.4, h * between(q, f.len) * 0.95, Math.max(0.1, up0 + 0.2 + 0.55 * q()), D.twist(), cols, br, q, bend(0.2), tag);
+    };
+    const nh = P.heads ? Math.max(8, Math.min(Math.floor(MAX_LEAFLETS / 8), Math.round(area / (P.heads * h) ** 2))) : 0;
+    const n = nh ? nh : Math.round(Math.min(MAX_LEAFLETS, area / 1000 * between(r, P.n)));
+    if (nh) for (let i = 0; i < nh; i++) head(r, { pick, twist, bright }, oTag, out, i * 2.39996 + (r() - 0.5) * 0.5, Math.sqrt((i + 0.5) / nh) * 0.97);
+    else for (let i = 0; i < n; i++) frond(r, { pick, twist, bright }, oTag, out);
     // the clump's own fronds shrink toward the middle below g0 (anchored at the centre, not each frond's base)
     for (let v = 0; v < out.anc.length; v += 3) out.anc[v] = out.anc[v + 1] = out.anc[v + 2] = 0;
-    for (let j = 0, m = Math.min(n, extras(n, 2 * n)); j < m; j++) { const a0 = extraAt(j, n); frond(re, X, { ...fullBy(a0, 0.08, 1), on: { pc: -1, par: 0 } }, ex); }
+    for (let j = 0, m = Math.min(n, extras(n, 2 * n)); j < m; j++) {
+      const a0 = extraAt(j, n), tg = { ...fullBy(a0, 0.08, 1), on: { pc: -1, par: 0 } };
+      if (nh) head(re, X, tg, ex, re() * 6.28, Math.sqrt(re()) * 0.97); else frond(re, X, tg, ex);
+    }
     const core = new THREE.SphereGeometry(1, 14, 7, 0, Math.PI * 2, 0, Math.PI / 2);
     const cp = core.attributes.position;
     for (let i = 0; i < cp.count; i++) {
@@ -740,12 +753,12 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
     // more leaves above g0, longer the later they come; a clump also puts out new crowns on runners, further out. A
     // spreading clump (sagittaria, lane GR2) makes its lawn: new crowns at the end of runners along the ground from the
     // crowns it has, the patch reaching out to about 4x its width by growth 1, its leaves lengthening less
-    const more = extras(n, 600 - n), newCrowns: { c: THREE.Vector3; a: number }[] = [], spreads = Gr.overflow === 'spread';
-    if (more && P.crowns && g0 < 0.97) for (let k = 0, m = Math.round(crowns * (spreads ? Gr.more : Math.sqrt(Gr.more)) ** (1 - g0)) - crowns; k < m; k++) {
+    const more = P.lawn && g0 < 0.97 ? Math.max(0, P.lawn - n) : extras(n, 600 - n), newCrowns: { c: THREE.Vector3; a: number }[] = [], spreads = Gr.overflow === 'spread';
+    if (more && P.crowns && g0 < 0.97) for (let k = 0, m = P.lawn ? Math.round(P.lawn / 30) - crowns : Math.round(crowns * (spreads ? Gr.more : Math.sqrt(Gr.more)) ** (1 - g0)) - crowns; k < m; k++) {
       const a0 = g0 + (1 - g0) * (k + 0.5) / m * 0.85, ang = re() * 6.28;
       if (spreads && !clump.spread) {
         // the new crown somewhere out toward the lawn's edge by now, on a runner from the nearest crown it has
-        const lim = half * (1 + 3.5 * (a0 - g0) / Math.max(0.05, 1 - g0)), d = lim * Math.sqrt(0.35 + 0.65 * re()), c = V(Math.cos(ang) * d, 0, Math.sin(ang) * d);
+        const lim = half * (1 + (P.lawn ? 2.6 : 3.5) * (a0 - g0) / Math.max(0.05, 1 - g0)), d = lim * Math.sqrt(0.35 + 0.65 * re()), c = V(Math.cos(ang) * d, 0, Math.sin(ang) * d);
         const from = [...centres, ...newCrowns.map(q => q.c)].reduce((b, q) => (q.distanceToSquared(c) < b.distanceToSquared(c) ? q : b));
         newCrowns.push({ c, a: a0 });
         // the runner: a thin stalk along the ground, out from its crown as the new one comes
@@ -759,8 +772,9 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
       newCrowns.push({ c: V(Math.cos(ang) * d, 0, Math.sin(ang) * d), a: a0 });
     }
     for (let j = 0; j < more; j++) {
-      const a0 = extraAt(j, n), k0 = longer(a0 + 0.1), k = spreads ? Math.sqrt(k0) : k0, outer = re();
-      const here = [...centres, ...newCrowns.filter(c => c.a <= a0).map(c => c.c)], c = here[Math.floor(re() * here.length)];
+      const a0 = extraAt(j, n), k0 = longer(a0 + 0.1), k = P.lawn ? Math.min(1.1, Math.sqrt(k0)) : spreads ? Math.sqrt(k0) : k0, outer = re();
+      // (a lawn, lane PP: the new blades go round the crowns in turn, so each new crown fills out instead of a few getting all)
+      const here = [...centres, ...newCrowns.filter(c => c.a <= a0).map(c => c.c)], u = re(), c = here[P.lawn ? j % here.length : Math.floor(u * here.length)];
       const base = rz ? onRhizome(re) : c.clone().add(V((re() - 0.5) * h * 0.02, 0, (re() - 0.5) * h * 0.02)), yaw = re() * 6.28;
       const L = h * between(re, f.len) * (rz ? 1 : 0.75 + 0.25 * outer) * k, rise = lerp(f.rise[0], f.rise[1], outer) * (0.85 + re() * 0.3);
       // a longer leaf gets more rows (smooth where it lies over) and its ripples keep their spacing

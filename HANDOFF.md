@@ -38,8 +38,14 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
-## Lane PP: plant polish (2026-10-16; branch `plant-polish`, port 5673; opened by coordinator 3, not started)
-Scope: pothos / vine follow branches via scene/anchors.ts; sphagnum capitula; fittonia less leggy; hairgrass full lawn. All four were left open by T2 (archive: Lane T2). Owns art/plants.ts, render/plant3d.ts, plant branch of render/items.ts. State: nothing built yet.
+## Lane PP: plant polish (2026-10-16; branch `plant-polish`, port 5673; Nathan approved the pictures; pushed to main)
+- **Vines on branches**: already shipped by T2 (archive: Lane T2, "Vines on wood", commit 1fd0ce3); not rebuilt.
+- **New optional `Plant3D` fields** (art/plants.ts; absent = old behaviour, so older files and every other species draw exactly as before):
+  `cap` (most that later growth lengthens stems / leaves; fittonia 1.3 = compact mound, nodes 4, spread .55), `lawn` (rosette: leaves it
+  grows to, new crowns = lawn / 30, extras go round the crowns in turn, blade length capped 1.1x; hairgrass 2400 = a full lawn at growth 1),
+  `heads` (moss: distinct capitula, spacing x height, 11-14 fronds each on a sunflower spiral; sphagnum 0.15, leaf wid .42). Java moss unchanged.
+- Cost (one-time build, worker prebuild covers it): hairgrass ~126 ms / 116k verts, sphagnum ~84 ms / 128k verts. 419 tests pass.
+- Pictures: worktree `shots/pp_{species}_sheet.png`; helpers `scripts/pp-shots.js` (dev console `row(species)`), `scripts/pp-sheet.py`.
 
 ## Lane MS: multi-select, duplicate, controlled variation (2026-10-16; branch `multiselect`, port 5683; opened by coordinator 3, not started)
 Scope: roadmap section 5 P0: group select + move/turn/resize/delete, duplicate with seeded jitter. Scatter brush is NOT here (waits on T1's render/scatter.ts). Owns src/interact/*, selection part of ui/panels.ts. State: nothing built yet.

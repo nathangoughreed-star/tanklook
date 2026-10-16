@@ -107,6 +107,13 @@ export interface Plant3D {
   whorl?: number;
   /** Stem plants: how far the stems lean out by the top, times the usual (lane T2: fittonia sprawls; absent = 1). */
   lean?: number;
+  /** The most a plant's later growth lengthens its stems / leaves, times their length at the species' `size` (absent = no cap;
+   *  lane PP: fittonia stays a compact mound instead of sending up tall bare stems). */
+  cap?: number;
+  /** Rosettes: the most leaves the plant has grown to (absent = 600; lane PP: a hairgrass patch fills out to a lawn). */
+  lawn?: number;
+  /** Moss: grown as distinct heads (capitula) this far apart, times its height (lane PP: sphagnum; absent = fronds all over). */
+  heads?: number;
   /** 'emerge' plants: the leaf above the water (lane GR2): stiffer, rounder, darker; `k` = its length over the leaf it
    *  replaces, `stiff` its stiffness out of the water as a length (mm: about how long a piece can stand out before its
    *  tip droops 1 rad), `land` the radius (mm) it levels out on coming down onto the water (soft for a sword leaf,
@@ -262,12 +269,12 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
       len: [0.12, 0.14], wid: 0.26, prof: [0.7, 0.6], rise: [0, 0], arch: 0.2, twist: 0, fold: 0.25, wave: [0, 0], pet: 0,
       cols: [['#3a7a2c', '#62a046'], ['#42822e', '#6aa84c'], ['#367226', '#5a9840']], under: '#6a9050', seg: [3, 3] } } } },
   // Fittonia (nerve plant): a low, spreading mound of soft oval leaves, dark green netted with bright pink veins
-  fittonia: { land: true, grow: { speed: 'medium', overflow: 'none', len: [35, 160], more: 4, shoots: 1.5 }, sway: 0, form: 'stem', n: [10, 16], nodes: 3, lean: 3, spread: 0.45, stalk: '#6a4a3e', leaf: {
+  fittonia: { land: true, grow: { speed: 'medium', overflow: 'none', len: [35, 160], more: 4, shoots: 1.5 }, sway: 0, form: 'stem', n: [10, 16], nodes: 4, lean: 3, cap: 1.3, spread: 0.55, stalk: '#6a4a3e', leaf: {
     len: [0.62, 0.72], wid: 0.62, prof: [0.85, 0.55], rise: [1.1, 1.5], arch: 0.3, twist: 0.15, fold: 0.18, wave: [0.01, 2], pet: 0.12,
     cols: [['#1e3a1e', '#2a4a26'], ['#22401e', '#2e5028']], under: '#5a6a4a', veins: { col: '#d8687e', n: 5, w: 0.11 }, seg: [12, 9] } },
   // Sphagnum moss: soft, springy cushions of small starry heads, lime-green to straw, a few blushing pink-brown
-  sphagnum: { land: true, grow: { speed: 'slow', overflow: 'none', len: [20, 90], more: 5 }, sway: 0, form: 'moss', n: [420, 500], spread: 0.95, stalk: '#3e4a22', leaf: {
-    len: [0.1, 0.16], wid: 0.5, prof: [0.6, 0.5], rise: [0, 0], arch: 0.3, twist: 0.8, fold: 0.35, wave: [0, 0], pet: 0,
+  sphagnum: { land: true, grow: { speed: 'slow', overflow: 'none', len: [20, 90], more: 5 }, sway: 0, form: 'moss', n: [420, 500], heads: 0.15, spread: 0.95, stalk: '#3e4a22', leaf: {
+    len: [0.1, 0.16], wid: 0.42, prof: [0.6, 0.5], rise: [0, 0], arch: 0.3, twist: 0.8, fold: 0.35, wave: [0, 0], pet: 0,
     cols: [['#4a6a2a', '#7a9a44'], ['#527430', '#86a44c'], ['#5e7a32', '#94aa56'], ['#46602a', '#72903e'], ['#6e6a3c', '#9a9058']], under: '#5a6a34', seg: [2, 3] } },
   // Creeping fig (Ficus pumila): a flexible vine of small round-heart leaves that climbs flat up the back wall and links
   // up branches; mostly climbers. Size = the longest vine
@@ -278,7 +285,7 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
 
   // ---------- Aquatic follow-ons (lane T2, roadmap section 6; Monte Carlo stays the existing carpet: Nathan 2026-10-14) ----------
   // Dwarf hairgrass (Eleocharis acicularis): dense tufts of needle-fine bright green blades on runners, a fine lawn
-  hairgrass: { grow: { speed: 'medium', overflow: 'spread', len: [25, 140], more: 10 }, sway: 0.35, form: 'rosette', n: [320, 420], crowns: [9, 14], spread: 0.9, stalk: '#4a7a30', leaf: {
+  hairgrass: { grow: { speed: 'medium', overflow: 'spread', len: [25, 140], more: 10 }, sway: 0.35, form: 'rosette', n: [320, 420], lawn: 2400, crowns: [9, 14], spread: 0.9, stalk: '#4a7a30', leaf: {
     len: [0.5, 1], wid: 0.014, prof: [1, 0.2], rise: [0.04, 0.6], arch: 0.5, twist: 0.4, fold: 0, wave: [0, 0], pet: 0,
     cols: [['#3e8a2e', '#6ab84e'], ['#468e34', '#74bc56'], ['#3a8028', '#62ae46']], under: '#5e9a48', seg: [6, 3] } },
   // Hornwort (Ceratophyllum demersum): bushy stems of whorled, stiff, needle-like dark green leaves, a foxtail at each tip
