@@ -8,7 +8,7 @@ import { normTank } from './shape';
 import { TABLE_MAX, fitTable } from './table';
 import { GROW_RATE_MAX } from './growtime';
 import { keepInWater } from './water';
-import { pieSize, radialSize, sameGrid, sampleTerrain, type Ground } from './terrain';
+import { pieSize, radialSize, sameGrid, sampleTerrain, swampTerrain, type Ground } from './terrain';
 import { SCENE_VERSION, type BgImage, type BgSide, type Fish, type Item, type LightTech, type Scene, type Tank, type TankSetup } from './types';
 import { adoptImages, sidesTouch } from './images';
 
@@ -268,7 +268,12 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       const size = radial ? (rows >= 1 ? (arc ? pieSize(rows, arc) : radialSize(rows)) : -1) : rows >= 2 ? cols * rows : -1;
       const h = Array.isArray(te.h) && te.h.length === size && te.h.every(v => typeof v === 'number' && Number.isFinite(v))
         ? (te.h as number[]).map(v => clamp(v, 0, tankA.H * LIMITS.terrainMax)) : [];
-      return h.length ? { on: bool(te.on, false), cols, rows, h, ...(radial ? { radial } : {}), ...(arc ? { arc } : {}) } : { on: false, cols, rows: 0, h: [] };
+      // pools (2026-10-16): clamped to the tank; a file saved before them has none (its swamp land is converted below)
+      const pools = (Array.isArray(te.pools) ? te.pools : []).filter(isObj).slice(0, 12).map(p => {
+        const q = p as Obj, f = (v: unknown, lo: number, hi: number, dv: number) => Math.round(num(v, dv, lo, hi) * 1e4) / 1e4;
+        return { x: f(q.x, 0, 1, 0.5), d: f(q.d, 0, 1, 0.5), rx: f(q.rx, 0.02, 1, 0.2), rd: f(q.rd, 0.02, 1, 0.2), bank: f(q.bank, 0.05, 1, 0.35) };
+      });
+      return h.length ? { on: bool(te.on, false), cols, rows, h, ...(radial ? { radial } : {}), ...(arc ? { arc } : {}), pools } : { on: false, cols, rows: 0, h: [], pools };
     })(),
     lid: pick(raw.lid, ['open', 'glass', 'hood'] as const, d.lid),
     stand: { // no `show` = a file older than stands: off (new tanks start with one on, audit #29)
@@ -303,6 +308,13 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
     fish,
     items: [],
   };
+  // a swamp saved before its land was terrain data (2026-10-16; no pools list): its land, drawn from the seed then, is
+  // written into the terrain now, the same ground (test/swampground.test.ts). A swamp that had custom terrain on kept
+  // only the grid then, so it stays as it is.
+  if (setup.layout.id === 'swamp' && !Array.isArray(te.pools) && !setup.terrain.on) {
+    setup.substrate.show = true; // the old swamp always showed its substrate (audit #15)
+    setup.terrain = swampTerrain(setup, setup.tank, setup.layout.seed);
+  }
   setup.items = Array.isArray(raw.items) ? parseItems(raw.items, tankA, warn, setup) : starterItems(setup);
   // a grid saved before its tank's shape had its own kind (a pie slice before 2026-10-13 kept the rectangular grid):
   // resample the same surface onto the tank's grid, as changing the shape in the panel does

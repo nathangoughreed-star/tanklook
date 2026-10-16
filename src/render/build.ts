@@ -3,6 +3,7 @@
 import * as THREE from 'three';
 import { LECA, SUBSTRATES, blendTile, maskQuantile } from '../art/placeholder';
 import { litterMeshes } from './scatter';
+import { glassGrains, grainLook, grainMeshes, grainTop } from './grains';
 import { snailAspect } from '../art/snails';
 import { fishTL, needsWater, speciesOf, type Species } from '../data/species';
 import { PERCHES, anchors, type Anchor, type Anchors, type V3 } from '../scene/anchors';
@@ -10,7 +11,7 @@ import { glassBand, restsOnGround } from '../scene/water';
 import { backdropDepth, D2R, IN, ceilingH, clamp, floorY, glassThickness, RIM_DROP, RIM_H, tankUnderside, waterY } from '../scene/physics';
 import { alongRun, backgroundRuns, bowlDims, bowlRadius, chord, circleRing, clipToFootprint, facingRuns, footprint, halfWidth, inside, nearestGlass, offsetRing, offsetWalls, runLength, shapeOf, subRun, type P } from '../scene/shape';
 import { TABLE_TOP, cornerWalls, wallGap, tableCentre, tableOn, tableRing, wallPlane } from '../scene/table';
-import { groundHeight, pieSegs, terrainDisc, terrainPoints } from '../scene/terrain';
+import { groundHeight, pieSegs, poolHandles, poolWet, terrainDisc, terrainPoints, type PoolPart } from '../scene/terrain';
 import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
 import { getImage } from '../scene/images';
 import { LU, addBeams, addFixture, applyLighting, waterVolumeMaterial } from './lighting';
@@ -23,6 +24,7 @@ import { herpBody, herpFloatTop, isHerp3D } from './herp3d';
 import { isLizard } from './lizard3d';
 import { isSpider } from './spider3d';
 import { isSnake } from './snake3d';
+import { isTarantula } from './tarantula3d';
 import { sagShell, snailBody } from './snail3d';
 import { blendTexture, lecaTexture, meshTexture, cardMaterial, pictureTexture, fishBodyTexture, fishTexture, gradientTexture, personTexture, substrateMaskTexture, substrateTexture } from './textures';
 
@@ -229,7 +231,7 @@ function addBowl(sc: THREE.Scene, S: TankSetup, T: Tank, add: (geo: THREE.Buffer
 function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
   const { H } = T, R = S.render, fp = footprint(T), bowl = shapeOf(T) === 'bowl';
   // backing under the substrate; a bare-bottom tank has none, so the stand top or the room shows through the bottom pane
-  if (S.substrate.show || S.layout.id === 'swamp' || S.terrain.on) sc.add(new THREE.Mesh(flatGeometry(fp.ring, 0), basic(0xcdb98f, { side: THREE.DoubleSide })));
+  if (S.substrate.show || S.terrain.on) sc.add(new THREE.Mesh(flatGeometry(fp.ring, 0), basic(0xcdb98f, { side: THREE.DoubleSide })));
   const bg = BACKGROUNDS[R.bg], t = glassThickness(T, R.glass);
   // uploaded pictures take their sides whatever the background is; the plain background keeps its other sides
   const pics = R.bgImages.flatMap(b => { const data = b.sides.length ? getImage(b.img) : undefined; return data ? [{ ...b, data }] : []; });
@@ -786,7 +788,7 @@ function flare(T: Tank, x: number, d: number, y: number, rb: number): [number, n
 }
 
 function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
-  const swamp = S.layout.id === 'swamp' || S.terrain.on;
+  const swamp = S.terrain.on; // shaped ground (custom terrain, a swamp's pools): finer mesh
   if (!S.substrate.show && !swamp) return;
   const sub = S.substrate, { L, D } = T, tile = sub.type === 'custom' ? blendTile(sub.custom) : SUBSTRATES[sub.type].tile * 2, h = (x: number, d: number) => groundHeight(S, T, x, d);
   // top surface as a 16x16 grid (bilinear surfaces curve along diagonals) clipped to the outline, and a skirt round the
@@ -825,8 +827,24 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
     const c00 = vcol[i * (N + 1) + j], c10 = vcol[(i + 1) * (N + 1) + j], c01 = vcol[i * (N + 1) + j + 1], c11 = vcol[(i + 1) * (N + 1) + j + 1];
     return [0, 1, 2, 3, 4, 5, 6].map(c => (c00[c] * (1 - u) + c10[c] * u) * (1 - w) + (c01[c] * (1 - u) + c11[c] * u) * w);
   };
+  // coarse grounds in 3D (render/grains.ts): the painted top and skirt step back from the glass by `gsh`, behind the row
+  // of grains pressed against it (both cut it: a seam where the surface sliced the stones, a bare strip where it did not)
+  const gl = sub.show ? grainLook(sub) : null, gsh = gl && !bowl ? (gl.size[0] + gl.size[1]) / 2 * 0.55 : 0;
+  const clipIn = (poly: P[]) => { // keep the part at least gsh from every pane (the outlines are convex)
+    if (!gsh) return poly;
+    for (const e of footprint(T).edges) {
+      const at = (p: P) => -((p[0] - e.a[0]) * e.n[0] + (p[1] - e.a[1]) * e.n[1]) - gsh, out: P[] = [];
+      poly.forEach((p, i) => {
+        const q = poly[(i + 1) % poly.length], a = at(p), b = at(q);
+        if (a >= 0) out.push(p);
+        if ((a >= 0) !== (b >= 0)) { const t = a / (a - b); out.push([p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t]); }
+      });
+      poly = out; if (poly.length < 3) return [];
+    }
+    return poly;
+  };
   for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
-    const cell = clipToFootprint(T, [[L * i / N, D * j / N], [L * (i + 1) / N, D * j / N], [L * (i + 1) / N, D * (j + 1) / N], [L * i / N, D * (j + 1) / N]]);
+    const cell = clipIn(clipToFootprint(T, [[L * i / N, D * j / N], [L * (i + 1) / N, D * j / N], [L * (i + 1) / N, D * (j + 1) / N], [L * i / N, D * (j + 1) / N]]));
     if (cell.length < 3) continue;
     const q = [P3(i, j), P3(i + 1, j), P3(i + 1, j + 1), P3(i, j + 1)];
     const a = new THREE.Vector3(...q[1]).sub(new THREE.Vector3(...q[0])), b = new THREE.Vector3(...q[3]).sub(new THREE.Vector3(...q[0]));
@@ -859,7 +877,8 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   for (const e of edges) {
     const m = Math.max(1, Math.ceil(e.len / seg));
     for (let k = 0; k < m; k++) {
-      const p: P = [e.a[0] + (e.b[0] - e.a[0]) * k / m, e.a[1] + (e.b[1] - e.a[1]) * k / m], q: P = [e.a[0] + (e.b[0] - e.a[0]) * (k + 1) / m, e.a[1] + (e.b[1] - e.a[1]) * (k + 1) / m];
+      // with 3D grains pressed against the glass, the painted skirt steps back behind them (it hid them)
+      const p: P = [e.a[0] + (e.b[0] - e.a[0]) * k / m - e.n[0] * gsh, e.a[1] + (e.b[1] - e.a[1]) * k / m - e.n[1] * gsh], q: P = [e.a[0] + (e.b[0] - e.a[0]) * (k + 1) / m - e.n[0] * gsh, e.a[1] + (e.b[1] - e.a[1]) * (k + 1) / m - e.n[1] * gsh];
       const s0 = e.s0 + e.len * k / m, s1 = e.s0 + e.len * (k + 1) / m, gp = G(p), gq = G(q);
       if (banded) {
         for (let c = 0; c < cuts.length - 1; c++) {
@@ -895,9 +914,12 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
     if (wet && terra) wetSheen(m, g, wet);
     sc.add(new THREE.Mesh(g, m));
   };
-  mk(top, 0xffffff, topCol, topNrm, topWet); mk(side, 0xb4b4b4, sideCol); // the skirt a touch darker so the layer reads through the glass
+  // coarse grounds in 3D (render/grains.ts): the painted surface darkened to the shadowed gaps between the grains
+  mk(top, gl ? 0x6e6e6e : 0xffffff, topCol, topNrm, topWet); mk(side, gl ? 0x5a5a5a : 0xb4b4b4, sideCol); // the skirt a touch darker so the layer reads through the glass
   mk(leca, 0xb4b4b4, lecaCol, undefined, undefined, lecaTexture()); mk(mesh, 0x3a3d38, meshCol, undefined, undefined, meshTexture());
-  if (sub.litter?.density) for (const o of litterMeshes(S, T, (x, d) => G([x, d]))) sc.add(o);
+  if (gl) for (const o of [...grainMeshes(S, T, (x, d) => G([x, d])), ...(bowl ? [] : glassGrains(S, T, (x, d) => G([x, d])[1]))]) sc.add(o);
+  const gt = grainTop(gl); // litter lies on the grains
+  if (sub.litter?.density) for (const o of litterMeshes(S, T, (x, d) => { const p = G([x, d]); p[1] += gt; return p; })) sc.add(o);
 }
 
 /**
@@ -1030,7 +1052,7 @@ export function envKey(S: TankSetup) {
   const { color: _wc, opacity: _o, ...water } = S.water, { color: _c, ...wall } = S.wall;
   const { color: _c1, color2: _c2, share: _s, mix: _m, ...custom } = S.substrate.custom;
   // the condition (lane AL) is uniforms only
-  return JSON.stringify({ ...S, fish: null, items: null, camera: null, grow: null, condition: null, light, render, water, wall, substrate: { ...S.substrate, custom } });
+  return JSON.stringify({ ...S, fish: null, items: null, camera: null, grow: null, condition: null, light, render, water, wall, substrate: { ...S.substrate, custom: S.substrate.type === 'custom' && grainLook(S.substrate) ? S.substrate.custom : custom } }); // 3D stones take their colours at build
 }
 /** The values `patchLook` sets. */
 export const lookKey = (S: TankSetup) => JSON.stringify([S.water.color, S.water.opacity, S.wall.color, S.substrate.custom]);
@@ -1059,7 +1081,8 @@ export function patchLook(sc: THREE.Scene, S: TankSetup) {
  * Custom terrain editing aids: a dot on every grid point (drawn over everything so plants never hide one) and faint
  * grid lines following the ground between them. `hot` = the point being dragged.
  */
-function addTerrainDots(sc: THREE.Scene, S: TankSetup, T: Tank, hot: number | null): THREE.Mesh[] {
+function addTerrainDots(sc: THREE.Scene, S: TankSetup, T: Tank, edit: TerrainEdit): THREE.Mesh[] {
+  const hot = edit.hot;
   const t = S.terrain, g = (x: number, d: number) => groundHeight(S, T, x, d), dots: THREE.Mesh[] = [], pts: number[] = [];
   const rb = shapeOf(T) === 'bowl' ? bowlDims(T).rb : 0, disc = terrainDisc(T);
   const step = t.arc ? T.D / t.rows : t.radial ? disc.rx / t.rows : Math.min(T.L / (t.cols - 1), T.D / (t.rows - 1));
@@ -1070,14 +1093,17 @@ function addTerrainDots(sc: THREE.Scene, S: TankSetup, T: Tank, hot: number | nu
   // faint orange
   const mat = (c: number, opacity: number) => basic(c, { depthTest: false, depthWrite: false, transparent: true, opacity, colorWrite: opacity > 0 });
   const fill = mat(0xffffff, 0), hotM = mat(0xffb020, 0.35);
-  const edge = new THREE.ShaderMaterial({ transparent: true, depthTest: false, depthWrite: false, uniforms: { uCol: { value: new THREE.Color(0x1d2a33) } },
+  const edge = new THREE.ShaderMaterial({ transparent: true, depthTest: false, depthWrite: false, uniforms: { uCol: { value: new THREE.Color(0x1d2a33) }, uA: { value: 0.8 } },
     vertexShader: 'varying vec3 vN, vV; void main() { vec4 mv = modelViewMatrix * vec4(position, 1.0); vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }',
     // a hairline at the silhouette: 1 - n.v past ~0.65 is the outer ~5 % of the ring's radius
-    fragmentShader: 'uniform vec3 uCol; varying vec3 vN, vV; void main() { float f = 1.0 - abs(dot(normalize(vN), normalize(vV))); gl_FragColor = vec4(uCol, 0.8 * smoothstep(0.55, 0.7, f)); }' });
+    fragmentShader: 'uniform vec3 uCol; uniform float uA; varying vec3 vN, vV; void main() { float f = 1.0 - abs(dot(normalize(vN), normalize(vV))); gl_FragColor = vec4(uCol, uA * smoothstep(0.55, 0.7, f)); }' });
+  // a point in a pool's core shapes nothing you see (the floor there is the corner slope): faded
+  const faint = edge.clone(); faint.uniforms = { uCol: edge.uniforms.uCol, uA: { value: 0.22 } };
+  const pools = S.terrain.pools ?? [];
   terrainPoints(t, T).forEach((p, k) => {
     const y = g(p.x, p.depth);
     if (!inside(T, p.x, p.depth, -1)) return; // outside a round or angled tank: still shapes the ground, not shown
-    const o = new THREE.Mesh(ring, edge); o.position.set(...flare(T, p.x, p.depth, y, rb)); o.renderOrder = 20; o.userData = { nolight: true, dot: k }; sc.add(o); dots.push(o); // the rim grabs too
+    const o = new THREE.Mesh(ring, pools.length && poolWet(pools, T, p.x, p.depth) >= 1 ? faint : edge); o.position.set(...flare(T, p.x, p.depth, y, rb)); o.renderOrder = 20; o.userData = { nolight: true, dot: k }; sc.add(o); dots.push(o); // the rim grabs too
     const m = new THREE.Mesh(geo, k === hot ? hotM : fill); m.position.copy(o.position); m.renderOrder = 21; m.userData = { nolight: true, dot: k }; sc.add(m); dots.push(m);
   });
   const seg = 10, seg2 = (x0: number, d0: number, x1: number, d1: number) => pts.push(...flare(T, x0, d0, g(x0, d0) + 1, rb), ...flare(T, x1, d1, g(x1, d1) + 1, rb));
@@ -1105,7 +1131,42 @@ function addTerrainDots(sc: THREE.Scene, S: TankSetup, T: Tank, hot: number | nu
     }
   }
   sc.add(lines(pts, 0xffffff, 0.35));
-  return dots;
+  return [...dots, ...addPoolHandles(sc, S, T, edit)];
+}
+
+/** The terrain editor's grip on one pool: which pool (index in terrain.pools) and which handle. */
+export interface PoolGrab { k: number; part: PoolPart }
+/** UI state of the terrain editor: on, the grid point being dragged, the pool the panel shows and its handle in a drag. */
+export interface TerrainEdit { on: boolean; hot: number | null; pool: number; poolHot?: PoolGrab | null }
+const POOL_COL: Record<PoolPart, number> = { c: 0xffb020, w: 0x78c8ff, l: 0x78c8ff, b: 0xbee6a0 };
+/**
+ * Pool editing aids (Pools tool, Nathan 2026-10-16): each pool's outline on the ground (solid: where its bank meets the
+ * land; dashed: its core, where the floor is the corner slope) and, on the pool the panel shows, four square handles:
+ * centre (move), width, length and bank. Drawn over everything, like the grid dots.
+ */
+function addPoolHandles(sc: THREE.Scene, S: TankSetup, T: Tank, edit: TerrainEdit): THREE.Mesh[] {
+  const pools = S.terrain.pools ?? [], out: THREE.Mesh[] = [], g = (x: number, d: number) => groundHeight(S, T, x, d) + 2;
+  const r = clamp(Math.min(T.L, T.D) * 0.018, 7, 16), box = new THREE.BoxGeometry(r * 1.6, r * 1.6, r * 1.6);
+  pools.forEach((p, k) => {
+    const sel = k === edit.pool, pts: number[] = [], core: number[] = [], n = 96;
+    for (let i = 0; i < n; i++) for (const [e, arr, dash] of [[1, pts, false], [1 - p.bank, core, true]] as const) {
+      if (dash && i % 2) continue;
+      const P = (a: number) => { const x = clamp(p.x + p.rx * e * Math.cos(a), 0, 1) * T.L, d = clamp(p.d + p.rd * e * Math.sin(a), 0, 1) * T.D; return inside(T, x, d, -1) ? [x, g(x, d), -d] : null; };
+      const a0 = P(2 * Math.PI * i / n), a1 = P(2 * Math.PI * (i + 1) / n);
+      if (a0 && a1) arr.push(...a0, ...a1);
+    }
+    for (const arr of [pts, core]) if (arr.length) {
+      const l = lines(arr, sel ? 0x2a6fd0 : 0xffffff, sel ? 0.95 : 0.5); l.renderOrder = 20;
+      (l.material as THREE.Material).depthTest = false; l.userData.nolight = true; sc.add(l);
+    }
+    if (!sel) return;
+    for (const [part, h] of Object.entries(poolHandles(p)) as [PoolPart, { u: number; v: number }][]) {
+      const hot = edit.poolHot?.k === k && edit.poolHot.part === part, x = h.u * T.L, d = h.v * T.D;
+      const m = new THREE.Mesh(box, basic(hot ? 0xffffff : POOL_COL[part], { depthTest: false, depthWrite: false, transparent: true, opacity: 0.9 }));
+      m.position.set(x, g(x, d) + r, -d); m.renderOrder = 22; m.userData = { nolight: true, pool: { k, part } }; sc.add(m); out.push(m);
+    }
+  });
+  return out;
 }
 
 /**
@@ -1117,7 +1178,7 @@ const tagFrom = (sc: THREE.Scene, n0: number, part: (o: THREE.Object3D) => numbe
 /** Does o (or anything under it) draw with the hardscape's material (the 3D back wall does)? */
 const solidIn = (o: THREE.Object3D) => { let s = false; o.traverse(c => { s ||= !!((c as THREE.Mesh).material as THREE.Material | undefined)?.userData?.solid; }); return s; };
 
-export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: Sel, edit?: { hot: number | null }, selItem: Sel = null): BuiltTank {
+export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: Sel, edit?: TerrainEdit, selItem: Sel = null): BuiltTank {
   const sc = new THREE.Scene();
   addTank(sc, S, T); addWater(sc, S, T); if (S.water.on) addAlgae(sc, T, waterY(T, S.water.level), LU); tagFrom(sc, 0, () => PART.glass);
   let n0 = sc.children.length; addSubstrate(sc, S, T); tagFrom(sc, n0, () => PART.ground);
@@ -1130,7 +1191,7 @@ export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: Sel, 
   addLid(sc, S, T);
   if (S.lid !== 'hood') addFixture(sc, T, S.light, floorY(T, S.render, S.stand) + ceilingH(S.wall)); // ceiling: the wall's room height // with a hood the fixture is inside it; its light still applies
   if (S.render.beams) addBeams(sc, T, S.light, S.lid);
-  b.dotMeshes = edit && S.terrain.on ? addTerrainDots(sc, S, T, edit.hot) : [];
+  b.dotMeshes = edit && S.terrain.on ? addTerrainDots(sc, S, T, edit) : [];
   applyLighting(sc);
   sc.updateMatrixWorld(true);
   return b;
@@ -1185,6 +1246,7 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
   const A = anchors(S, T, { down: solidProbe(T, rests), wall: (at, out, head, w) => onWall(S, T, at, out, head, w) });
   const top = (x: number, depth: number, hard: boolean) => A.rest(x, depth, hard).p[1];
   const base = (f: Fish) => top(f.x, f.depth, f.surface === 'hardscape');
+  const isArachnid = (art: string) => isSpider(art) || isTarantula(art) || isSnake(art); // legs on the surface: no sink, a flat card; `bend` is the pose
   // an animal (mesh m, length w, its centre k above its belly) resting on a slope: tipped to the ground's slope under its
   // head, tail and both sides (at most MAX_TILT), its centre k off the ground along that tilt, then lifted just clear
   // where the ground still rises into its belly (a bank's curve, a slope past MAX_TILT)
@@ -1242,9 +1304,9 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
     const w = fishTL(f, sp), h = w * sp.aspect, p = f;
     const herp = isHerp3D(sp.art);
     const on = f.surface === 'hardscape' ? A.rest(f.x, f.depth) : null, perch = on && PERCHES.has(on.kind) ? on : null;
-    const m = new THREE.Mesh(drapedCard(sp.art, w, h, f.bend) || cardGeometry(w, h, isSpider(sp.art) || isSnake(sp.art) ? 0 : f.bend), herp ? HIDDEN : cardMaterial(`fish:${sp.look}:${fish3d.fade}`, fishTexture(sp, S.render.edge, true, fish3d.fade), S.render.edge));
+    const m = new THREE.Mesh(drapedCard(sp.art, w, h, f.bend) || cardGeometry(w, h, isArachnid(sp.art) ? 0 : f.bend), herp ? HIDDEN : cardMaterial(`fish:${sp.look}:${fish3d.fade}`, fishTexture(sp, S.render.edge, true, fish3d.fade), S.render.edge));
     if (!herp) (m.material as THREE.Material).userData.fishCard = true; // fish stand out (render.pop) lifts the card too
-    if (herp) m.add(herpBody(sp.art, w, perch?.limb ? 'perch' : f.surface, perch?.limb?.r, isSpider(sp.art) && f.bend > 0.5, f.bend)); // the card stays as the invisible picking target
+    if (herp) m.add(herpBody(sp.art, w, perch?.limb ? 'perch' : f.surface, perch?.limb?.r, isArachnid(sp.art) ? f.bend : 0)); // the card stays as the invisible picking target
     else m.add(fishBody(sp.art, sp.aspect, w, f.bend, fishBodyTexture(sp), S.render.edge, f.surface === 'glass')); // solid body + paired fins; the card keeps the median fins
     if (f.surface === 'glass') { onGlass(S, T, f, sp, m, w, A); register(m, w, h); return; }
     // floating at the water surface (dwarf frog): the pose's `top` line just under the water line, wherever it is
@@ -1254,13 +1316,13 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
       register(m, w, h); return;
     }
     // a lizard's belly lies on the bark (its toes and tail are built round the limb), not 1 mm into it as a frog's
-    if (perch) { perchOn(f, m, sp.rest * w - (isLizard(sp.art) || isSpider(sp.art) || isSnake(sp.art) ? 0 : 1), perch); register(m, w, h); return; }
+    if (perch) { perchOn(f, m, sp.rest * w - (isLizard(sp.art) || isArachnid(sp.art) ? 0 : 1), perch); register(m, w, h); return; }
     // bottom dwellers and animals on land rest on the ground (or the hardscape) wherever they are (their stored height is ignored)
     const rests = restsOnGround(S, T, sp, p.x, p.depth, h);
-    const y = rests ? base(f) + sp.rest * w - (isSpider(sp.art) || isSnake(sp.art) ? 0 : 1) : Math.min(p.y, Math.max(0, waterY(T, S.water.level) - h / 2));
+    const y = rests ? base(f) + sp.rest * w - (isArachnid(sp.art) ? 0 : 1) : Math.min(p.y, Math.max(0, waterY(T, S.water.level) - h / 2));
     m.position.set(p.x, y, -p.depth); m.rotation.set(f.roll * D2R, f.yaw * D2R, f.pitch * D2R, 'YXZ');
     // on a slope: lying along the ground, not level with it (Nathan 2026-10-13: a treefrog on a bank sat half in the substrate)
-    if (rests) restOn(f, m, w, sp.rest * w - (isSpider(sp.art) || isSnake(sp.art) ? 0 : 1));
+    if (rests) restOn(f, m, w, sp.rest * w - (isArachnid(sp.art) ? 0 : 1));
     register(m, w, h);
     if (f.surface === 'hardscape') return;
     add(contactShadow(S, T, p.x, p.depth, y - h / 2, w, h, f.yaw));

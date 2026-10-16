@@ -6,7 +6,8 @@
 import { snakeFoot, snakeStageFor } from '../art/snakes';
 import { clingsTo, fishTL, getSpecies, speciesOf, type Species } from '../data/species';
 import { backdropDepth, clamp, clampFish, spawnSnail, waterY } from './physics';
-import { hardscape, itemDims } from './items';
+import { hardscape, itemDims, itemToTank } from './items';
+import { isTarantula, tarantulaBend } from '../art/tarantulas';
 import { inside } from './shape';
 import { groundHeight, randomLand } from './terrain';
 import type { Fish, TankSetup } from './types';
@@ -85,7 +86,7 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
   const groups = [...bySpecies.entries()].map(([id, fish]) => ({ sp: getSpecies(id)!, fish })).filter(e => e.sp)
     .sort((a, b) => +grouped(b.sp, b.fish.length) - +grouped(a.sp, a.fish.length));
 
-  const hard = hardscape(s), perchy = hardscape(s, s.items, PERCH_FROG), perchSnake = hardscape(s, s.items, PERCH_SNAKE), hosts = anemones(s);
+  const hides = s.items.filter(it => HIDES.has(it.variant)), hard = hardscape(s), perchy = hardscape(s, s.items, PERCH_FROG), perchSnake = hardscape(s, s.items, PERCH_SNAKE), hosts = anemones(s);
   for (const e of groups) {
     const sp = e.sp;
     if (hosts.length && HOSTED.has(sp.id)) { // clownfish settle in a bubble-tip anemone: the whole group in one of them
@@ -104,7 +105,7 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
       // the rest of a group of shrimp or otos left on the floor forage there as usual. A clinging fish (oto, pleco) takes
       // the glass at a third of its area: in a tall tank the panes outsize the floor two to one and would hold nearly all
       // A land climber (tree frog) takes the dry glass and hardscape above the water line; on the floor it goes to land.
-      const land = sp.habitat === 'land', glass = clingsTo(sp, 'glass') && (sp.kind === 'snail' || (land ? GLASS_FROG : GLASS_FISH));
+      const land = sp.habitat === 'land', glass = clingsTo(sp, 'glass') && (sp.kind === 'snail' || (land ? (isTarantula(sp.art) ? GLASS_TARANTULA : GLASS_FROG) : GLASS_FISH));
       const on = { glass, hard: clingsTo(sp, 'hardscape') ? (land ? (sp.body === 'snake' ? perchSnake : perchy) : hard) : undefined, above: land && s.water.on ? waterY(A, s.water.level) : undefined }, left: Fish[] = [];
       for (const f of e.fish) {
         if (sp.body === 'snake' && f.tl === undefined) { const fit = snakeStageFor(A.L, sp.tl); if (fit < sp.tl) f.tl = fit; } // a snake with no size of its own takes the life stage that fits the tank (lane BP)
@@ -115,6 +116,15 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
           Object.assign(f, q, { surface: 'top' as const, yaw: Math.round(r() * 360 - 180), pitch: Math.round(4 + r() * 8), roll: 0, bend: 0 }); note(f, w);
           continue;
         }
+        // a tarantula takes a hide when there is one big enough: the rear of the body just inside the mouth, facing out (lane TA)
+        if (land && isTarantula(sp.art)) {
+          const w = fishTL(f, sp), roomy = hides.filter(it => it.size >= 3 * w);
+          if (roomy.length && r() < TARANTULA_HIDE) {
+            const it = roomy[Math.floor(r() * roomy.length)], end = r() < 0.5 ? 1 : -1, q = itemToTank(s, it, [end * (it.size / 2 - 0.1 * w), 0, 0]);
+            Object.assign(f, { x: q.x, depth: q.depth, y: g(q.x, q.depth), surface: 'floor' as const, yaw: wrap(Math.round(it.yaw + (end < 0 ? 180 : 0) + (r() - 0.5) * 40)), pitch: 0, roll: 0, bend: tarantulaBend(r() * 0.5 + 0.1) }); note(f, w);
+            continue;
+          }
+        }
         const p = spawnSnail(g, A, fishTL(f, sp), r, land ? A.H - 10 : top, on);
         if (sp.kind !== 'snail' && p.surface === 'floor') { f.surface = 'floor'; left.push(f); continue; }
         // a frog on the glass sits head up, more or less
@@ -123,10 +133,8 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
         if (land && p.surface === 'glass' && sp.cat === 'reptile' && r() < GECKO_HEAD_DOWN) p.yaw -= 180;
         // a spider walks the glass at any heading, and about a quarter of them stand alert, front pair raised (bend 1; lane JS)
         let alert = 0;
-        if (land && sp.cat === 'land-invert') { if (p.surface === 'glass') p.yaw = Math.round(r() * 360 - 180); alert = r() < SPIDER_ALERT ? 1 : 0; }
-        // a snake: its pose family rides in bend (ball, extended, coiled, alert, serpentine; on a branch wrap or drape) and, with no
-        // size of its own, it takes the largest life stage that fits the tank (lane BP)
-        if (sp.body === 'snake') alert = snakeBend(r, p.surface === 'hardscape');
+        if (land && sp.cat === 'land-invert') { if (p.surface === 'glass') p.yaw = Math.round(r() * 360 - 180); alert = isTarantula(sp.art) ? tarantulaBend(r(), p.surface === 'glass') : r() < SPIDER_ALERT ? 1 : 0; }
+        if (sp.body === 'snake') alert = snakeBend(r, p.surface === 'hardscape'); // a snake's pose family rides in bend (lane BP)
         Object.assign(f, p, { pitch: 0, roll: 0, bend: sp.kind === 'snail' || land ? alert : +((r() - 0.5) * 0.4).toFixed(2) }); note(f, fishTL(f, sp));
       }
       if (sp.kind === 'snail' || !left.length) continue;
@@ -139,6 +147,7 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
         Object.assign(f, { x: p.x, depth: p.depth, y: bandY(p.x, p.depth, w * a, 0.1 + r() * 0.5) }, randomPose(sp, r, r() < 0.5 ? 0 : 180));
         placeOnLand(s, sp, f, r); clampFish(f, A, wb, s.render.bgSides); note(f, w);
         if (sp.body === 'snake') { f.bend = snakeBend(r, false); f.pitch = 0; f.roll = 0; snakeLie(f, w, A, r); } // on the floor: a pose family, laid inside the glass
+        if (isTarantula(sp.art)) { f.yaw = Math.round(r() * 360 - 180); f.bend = tarantulaBend(r()); } // any heading on the floor, a pose of its own (lane TA)
       }
       continue;
     }
@@ -233,6 +242,11 @@ const GLASS_FROG = 0.6;
 const PERCH_FROG = 4;
 /** How much more a snake favours a branch or ledge than the same area of other hardscape (lane BP): it mostly lies on the floor. */
 const PERCH_SNAKE = 1.5;
+/** The same for a tarantula: a terrestrial animal, only now and then up the glass. */
+const GLASS_TARANTULA = 0.08;
+/** Share of tarantulas that take a hide (half-log, cork tube) big enough for them, when the tank has one. */
+const TARANTULA_HIDE = 0.7;
+const HIDES: ReadonlySet<string> = new Set(['halflog', 'corktube']);
 /** Share of geckos on the glass resting head down. */
 const GECKO_HEAD_DOWN = 0.35;
 /** Share of spiders standing alert, the front pair raised. */

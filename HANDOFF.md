@@ -27,9 +27,7 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 **Current lanes** (coordinator "Lanes coordinator 3", `local_f068e2c9`):
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
-| T1 dry ground (roadmap R1) | `../Glass-Box-dry-ground` / `dry-ground` | 5633 | substrate types in `scene/types.ts` / `validate.ts` / `defaults.ts` (substrate only), the ground build in `render/build.ts`, substrate tiles in `art/placeholder.ts` / `render/textures.ts`, new `render/scatter.ts` (leaf litter, shared scatter) + new `render/grains.ts` (3D grains), the Substrate section of `ui/panels.ts` / `index.html` | running (session `local_6ae6a2e0`): litter + new grounds pushed (`2ec2000`, build 592); 3D grains prototype (bark, gravel, pebbles) waiting on Nathan's look check |
 | BP ball python (roadmap R2) | `../Glass-Box-python` / `python` | 5673 | new `render/snake3d.ts`, `art/snakes.ts`; one-line hooks in `render/herp3d.ts`, `art/herps.ts`, animal() in `render/build.ts`, `scene/scatter.ts`, `data/species.json` / `species.ts` | ready to open (prompt `prompts/lane-BP-ball-python.md`) |
-| TA tarantula (roadmap R2) | `../Glass-Box-tarantula` / `tarantula` | 5683 | new `render/tarantula3d.ts`, `art/tarantulas.ts`; same one-line hooks as BP (keep both sides) | ready to open (prompt `prompts/lane-TA-tarantula.md`) |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 
@@ -58,37 +56,6 @@ Scope: new render/spider3d.ts + art/spiders.ts (8 eyes, chelicerae, palps, abdom
 - **Tests** `test/snake.test.ts` (40): length, spheres clear, on the ground line, footprints, head broader than neck, thin tail, alert raises the head, limbs (nothing inside the bark, a wrap winds >1 turn), stages, Shuffle sizes / poses / save-load identical, branch, floor, paludarium.
 - **Pictures:** shots/BP_sheet1_floor_poses.jpg, BP_sheet2_close.jpg, BP_sheet3_branch.jpg (worktree only; made in the app with scripts/bp-shots.js `scene` / `focus` / `closeup` and scripts/bp-sheet.py; untracked `snake-lab.html` is a no-lighting test page).
 - **Open:** a snake that rests on uneven ground (cork slab edge) lies on the highest point under its card (rigid pose); hardscape spawns do not avoid other animals (two snakes can share a ledge); the limb frame is the local straight cylinder (a sharply bent limb is not followed); `wrap` leaves the tail lying straight along the limb, past its end on a short limb; the lighting pass raises saturation of fish materials, so authored colours are muted; no tongue; no life-stage picker in the animal panel (size slider only); nothing in starters / examples places a snake yet.
-
-## Lane TA: tarantula, large arachnid body plan (2026-10-16; branch `tarantula`, port 5683; opened by coordinator 3, not started)
-Scope: new render/tarantula3d.ts + art/tarantulas.ts (default Grammostola pulchripes): heavy carapace, fangs, 8 stout segmented legs with scopulae, dense hair, poses floor / hide / wall / threat / tucked, sizes by life stage. Pattern: archive Lane JS; shares render/limbs.ts. State: nothing built yet.
-
-## Lane T1: dry ground, terrestrial substrates + leaf litter (2026-10-16; branch `dry-ground`, port 5633; Nathan: "leaf litter looks great", ship; pushed to main)
-- **New substrate presets** (`SubstrateType` + validate pick list, no scene version bump; art/placeholder.ts SUBSTRATES, flag
-  `terra`): `soil` (Soil / coco fibre: crumbs, coco strands, perlite flecks), `tsand` (Terrarium sand), `clay` (terracotta,
-  seamless wandering dry-crack network), `bark` (Orchid bark: blocky chips in layers), `layered` (soil over a flat clay-ball
-  drainage layer, 50 % of the shallowest ground at the glass, 8-45 mm, and a 2.5 mm dark mesh sheet; `LECA` look,
-  textures.ts `lecaTexture` / `meshTexture`). The type list is grouped Aquarium / Terrarium (optgroups). SUB_ALBEDO entries
-  added in scene/lightout.ts.
-- **Wet / dry** (render/build.ts addSubstrate, terra types only; old types keep the old damp-soil tint above water): own colour
-  dry; darker (x0.47/0.44/0.41) below the water line and in a 35 mm damp band above it; the skirt is cut in height bands
-  (water line, band, drainage) so the line is crisp through the glass. A faint wet sheen in the band (`aWet` attribute,
-  `wetSheen`, its own define AQ_WET so its program is apart from the custom blend's post patch). Not in a bowl (old skirt path).
-- **Leaf litter** (`substrate.litter?: { leaf: mixed|oak|magnolia|catappa, density 0-100, seed }`, absent = none): new
-  render/scatter.ts. `scatter(T, ground, spec)` is the shared tool (pebbles / grass later): seeded points thinned by a clumping
-  field, rejected on steep ground (normal y < 0.55), where an end or side would poke through the glass, hang over a drop or
-  hit a wall (bank foot); each copy on the ground's tilt, lifted over small humps, piled on what is under it (10 mm height
-  grid, +2.5 mm per leaf), tinted, darker under water (`shade`). Leaves: canvas atlas 3 kinds x (2 upper, 1 under, 1 broken
-  piece), 12 cupped / curled geometries trimmed to the leaf's width, one alpha-tested lit material, InstancedMesh per variant.
-  render/lighting.ts aqPatch now uses instanceMatrix for vAqP / vAqN under USE_INSTANCING; disposeScene disposes
-  InstancedMeshes. Panel: Leaf litter select + Shuffle (seed + 1) + Density (0 = None).
-- **Perf** (terrarium example, litter 100 % = 284 leaves, 12 draws, alternate frames, 4 runs of 60): +0.3 / 0.9 / 1.6 / 2.6 ms,
-  about 1.2 ms typical (was ~3.6 ms before trimming the leaf cards to the leaf's width).
-- Tests: test/dryground.test.ts (types load, unknown -> gravel, old files keep no litter, litter clamped; scatter deterministic,
-  off the glass, never under the ground, piled not floating, not straddling a step). Pictures: worktree `shots/t1_sheet_*.png`
-  (helpers scripts/ground-shots.js in the dev console, scripts/t1-sheet.py).
-- **Open (Nathan 2026-10-16):** coarse grounds (bark, pebbles, gravel) read flat: a painted tile. Next in this lane: real 3D
-  grains on the top layer and against the glass via `scatter` (bark + pebbles first), relief shading for mid grains; pictures
-  and a perf number before shipping.
 
 ## Lane W: Android app (2026-10-14; OPENED same day, Nathan: "start work on the android app"; prompt `prompts/lane-W-android-app.md`)
 - **Route: Trusted Web Activity (TWA)** around https://tanklook.com/ (Bubblewrap or PWABuilder). Real Chrome, so WebXR
@@ -175,6 +142,31 @@ Plan:
 2. Sample the PAR at each item's position (the light hover already does this) and compare with its band.
 3. Show a small badge on the item (too dim / too bright / fine) and a tank summary, e.g. "medium light with stems and
    carpets: CO2 recommended, full ferts", "Acropora at 90 PAR: too dim", "reef with SPS: daily dosing".
+
+Auto-populate from the tank's setup (Nathan 2026-10-16, the headline use of the data above): the user states the light
+level (or it is read from the fixture's PAR at the substrate) and the care they will give (`GrowFeed`: low-tech /
+ferts / CO2 + ferts, already in `growtime.ts`); `starterItems` (`items.ts`) then scapes only plants whose band and
+demand fit, with the same layout quality either way:
+- Low care / low light: a beautiful scape from the undemanding set (anubias, java fern, crypts, mosses, swords,
+  floaters), placed on wood and rock the way the existing styles do.
+- High care / high light: full freedom, stems, reds, carpets, with CO2 where the plants need it.
+- Reef: the same idea with PAR band deciding soft, LPS or SPS corals.
+Needs: 29 plant variants tagged with band and demand (step 1), a plant-pick filter in `starterItems`, two clear
+controls (light level, care level) in the starter-set UI, and a one-line caption saying what was chosen and why.
+Open for Nathan: does "care" also set the dosing advice shown, and do we offer a "stretch" slider (one tier above the
+tank's means, with a warning)?
+
+Step 0, scape shading in the light map (Nathan 2026-10-16): today PAR (`lightout.ts` `bandsAt`, the light-map shader
+in `render/lighting.ts` and the hover readout) is open water; plants and hardscape block nothing. Add a toggle in
+Light map mode, "Account for the aquascape" (off = today's numbers, so the fixture-only view stays available):
+- Floaters: per-species transmission at full cover (salvinia, water lettuce, frogbit, red root, duckweed; sources to
+  be checked, my first guesses were 70-95 % blocked) times the patch's cover from its spread and density, soft edges.
+- Canopy: stems reaching the surface, broad leaves (sword, lily), overhanging wood.
+- Hardscape: stone and wood shadow, a shadow-casting pass from the fixture's emitters.
+- The JS and the shader must stay in step (the shader is a port); the hover must honour the toggle too.
+- The badges and auto-populate below read the shaded PAR when the toggle is on, so a frogbit-covered tank counts as
+  low light underneath.
+
 Advice only, never a hard gate. Keep the tier numbers in one place so the guide and the checks cannot drift.
 
 ## Still open (rewritten 2026-10-14, lane D)
@@ -223,6 +215,9 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane T1: dry ground, terrestrial substrates + leaf litter (2026-10-16; branch `dry-ground`, port 5633; Nathan: "leaf litter looks great", ship; pushed to main)
+- Lane TA: tarantula, large arachnid body plan (2026-10-16; branch `tarantula`, port 5683; built + tested, committed on the branch, NOT pushed: pictures sent to Nathan, awaiting his verdict)
+- Lane SW: swamp land as editable terrain (2026-10-16; worktree `agitated-lumiere-a79eba`, port 5663; side session of T1)
 - Lane JS: regal jumping spider, first arthropod body plan (2026-10-16; branch `spider`, port 5673; built + tested, committed on the branch, NOT pushed: pictures sent to Nathan, awaiting his verdict)
 - Lane MS: multi-select, duplicate, controlled variation (2026-10-16; branch `multiselect`, port 5683; pushed to main, awaiting Nathan's verdict on the pictures)
 - Lane SH: setup sheet / shopping list (2026-10-16; branch `setup-sheet`, port 5683; built, waiting on Nathan's look at the 3 example sheets before push)

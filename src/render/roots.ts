@@ -44,7 +44,7 @@ interface Rooted { it: Item; x: number; d: number; reach: number; deep: number; 
 
 /** The ribbons of every plant's roots that show at the glass, one mesh (null: none show). */
 export function rootsMesh(S: TankSetup, T: Tank): THREE.Mesh | null {
-  if (!S.substrate.show && !(S.layout.id === 'swamp' || S.terrain.on)) return null;
+  if (!S.substrate.show && !S.terrain.on) return null;
   if (shapeOf(T) === 'bowl') return null; // curved glass: not yet
   const plants: Rooted[] = [];
   for (const it of S.items) {

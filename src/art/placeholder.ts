@@ -373,7 +373,7 @@ function hslToHex(h: number, s: number, l: number) {
   return '#' + [r, g, b].map(v => Math.round(Math.min(1, Math.max(0, v + m)) * 255).toString(16).padStart(2, '0')).join('');
 }
 /** Natural variation round one picked colour: small hue and saturation drift, wider lightness, a few greyer stones. */
-function shadesOf(hex: string, n: number, r: () => number, spread = 1) {
+export function shadesOf(hex: string, n: number, r: () => number, spread = 1) {
   const [h, s, l] = hexToHsl(hex);
   return Array.from({ length: n }, () => {
     const grey = r() < 0.2 ? 0.55 : 1;

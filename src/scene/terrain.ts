@@ -1,11 +1,12 @@
-// The ground: the substrate (four corner depths) plus, for the swamp layout, land masses rising above the water with
-// pools cut into them. Pure functions of scene data, shared by the renderer (substrate mesh, layouts, fish) and the
-// placement rules (fish stay in the water). Pool shapes are fractions of L and D, the land height a fraction of H, so
-// Tank B gets the same arrangement at the same relative spots.
+// The ground: the substrate (four corner depths), or the custom terrain (a grid of heights plus pools cut into it). Pure
+// functions of scene data, shared by the renderer (substrate mesh, layouts, fish) and the placement rules (fish stay in
+// the water). Pool shapes are fractions of L and D, so Tank B gets the same arrangement at the same relative spots.
+// The swamp layout's land is drawn here from its seed (swampTerrain), but only as terrain data the user then edits: no
+// height is ever read from a seed (Nathan 2026-10-16: nothing generated that the manual mode could not recreate exactly).
 import { rng } from '../art/paint';
 import { clamp, substrateHeight } from './physics';
 import { PIE_DEFAULT, bowlDims, bowlRadius, clampIn, inside, insideBy, shapeOf } from './shape';
-import type { BackdropSettings, BgSide, LayoutSettings, SubstrateSettings, Tank, TerrainSettings } from './types';
+import type { BackdropSettings, BgSide, LayoutSettings, SubstrateSettings, Tank, TerrainPool, TerrainSettings } from './types';
 
 export interface Ground { substrate: SubstrateSettings; layout: LayoutSettings; terrain?: TerrainSettings; backdrop?: BackdropSettings; render?: { bgSides: BgSide[] } }
 
@@ -13,38 +14,76 @@ export interface Ground { substrate: SubstrateSettings; layout: LayoutSettings; 
 export const SWAMP_LAND = 0.62;
 /** Water level the swamp layout starts with (fraction of full), well below the land. */
 export const SWAMP_LEVEL = 0.42;
+/** Grid the swamp's land is written on (points across, about one per 50 mm): its rolling bank to within 1 mm. */
+const swampCols = (T: Tank) => clamp(Math.round(T.L / 50) + 1, 13, 25);
+/** A pool's bank, as a fraction of its radius, that the swamp layout draws. */
+const SWAMP_BANK = 0.35;
 
-interface Pool { x: number; d: number; rx: number; rd: number }
-interface Swamp { pools: Pool[]; waves: [number, number, number, number][] }
-
-const swamps = new Map<number, Swamp>();
 /** The swamp's pools and land undulation for a seed (fractions of L, D). */
-function swamp(seed: number): Swamp {
-  let s = swamps.get(seed);
-  if (s) return s;
+function swamp(seed: number): { pools: TerrainPool[]; waves: [number, number, number, number][] } {
   const r = rng(seed * 2654435761 + 17);
   // one pool always opens onto the front glass, so the water (and the fish) can be seen; often a second one behind
-  const pools: Pool[] = [{ x: 0.3 + r() * 0.4, d: r() * 0.15, rx: 0.2 + r() * 0.12, rd: 0.45 + r() * 0.2 }];
+  const pools: TerrainPool[] = [{ x: 0.3 + r() * 0.4, d: r() * 0.15, rx: 0.2 + r() * 0.12, rd: 0.45 + r() * 0.2, bank: SWAMP_BANK }];
   if (r() < 0.6) {
     const left = pools[0].x > 0.5;
-    pools.push({ x: left ? 0.12 + r() * 0.12 : 0.76 + r() * 0.12, d: 0.35 + r() * 0.4, rx: 0.1 + r() * 0.06, rd: 0.18 + r() * 0.1 });
+    pools.push({ x: left ? 0.12 + r() * 0.12 : 0.76 + r() * 0.12, d: 0.35 + r() * 0.4, rx: 0.1 + r() * 0.06, rd: 0.18 + r() * 0.1, bank: SWAMP_BANK });
   }
   const waves = Array.from({ length: 4 }, () => [(r() - 0.5) * 14, (r() - 0.5) * 14, r() * 6.28, 0.4 + r() * 0.6] as [number, number, number, number]);
-  s = { pools, waves }; swamps.set(seed, s);
-  return s;
+  const q = (v: number) => Math.round(v * 1e4) / 1e4; // as a file stores it (validate.ts)
+  return { pools: pools.map(p => ({ x: q(p.x), d: q(p.d), rx: q(p.rx), rd: q(p.rd), bank: p.bank })), waves };
 }
 
-/** Swamp land height (mm) at (x, depth): a rolling bank at ~SWAMP_LAND x H, falling to 0 inside the pools. */
-export function swampLand(T: Tank, seed: number, x: number, depth: number): number {
-  const { pools, waves } = swamp(seed), u = clamp(x / T.L, 0, 1), v = clamp(depth / T.D, 0, 1);
-  let wet = 0; // 1 inside a pool's core, easing to 0 across its bank
+/**
+ * The swamp layout's land as custom terrain: a rolling bank at ~SWAMP_LAND x H (a little lower toward the front, never
+ * below the substrate) on a grid about 50 mm apart, and one or two pools from the seed. The pools' floors are the substrate's
+ * corner slope. Plain data from here on: the Substrate panel edits it like any terrain.
+ */
+export function swampTerrain(g: Ground, T: Tank, seed: number): TerrainSettings {
+  const { pools, waves } = swamp(seed), sub = { ...g.substrate, show: true };
+  const t = { ...sampleTerrain({ ...g, terrain: undefined }, T, swampCols(T)), pools: pools.map(p => ({ ...p })) };
+  t.h = terrainPoints(t, T).map(p => {
+    const u = clamp(p.x / T.L, 0, 1), v = clamp(p.depth / T.D, 0, 1);
+    let n = 0; for (const [a, b, ph, amp] of waves) n += amp * Math.sin(a * u + b * v + ph);
+    const top = T.H * (SWAMP_LAND + 0.05 * n / waves.length) - 0.06 * T.H * (1 - v);
+    return +clamp(Math.max(substrateHeight(sub, T, p.x, p.depth), top), 0, T.H * 0.95).toFixed(1);
+  });
+  return t;
+}
+
+/** How far into the pools (x, depth) lies: 1 in a pool's core, easing (smoothstep) to 0 across its bank. */
+export function poolWet(pools: TerrainPool[], T: Tank, x: number, depth: number): number {
+  const u = clamp(x / T.L, 0, 1), v = clamp(depth / T.D, 0, 1);
+  let wet = 0;
   for (const p of pools) {
-    const e = Math.hypot((u - p.x) / p.rx, (v - p.d) / p.rd), k = clamp((1 - e) / 0.35, 0, 1);
+    const e = Math.hypot((u - p.x) / p.rx, (v - p.d) / p.rd), k = clamp((1 - e) / p.bank, 0, 1);
     wet = Math.max(wet, k * k * (3 - 2 * k));
   }
-  let n = 0; for (const [a, b, ph, amp] of waves) n += amp * Math.sin(a * u + b * v + ph);
-  const top = T.H * (SWAMP_LAND + 0.05 * n / waves.length) - 0.06 * T.H * (1 - v); // a little lower toward the front
-  return Math.max(0, top) * (1 - wet);
+  return wet;
+}
+
+/** The parts of a pool the terrain editor's handles grab: centre, width (x half-axis), length (depth half-axis), bank. */
+export type PoolPart = 'c' | 'w' | 'l' | 'b';
+const POOL_R = [0.02, 1] as const, q4 = (v: number) => Math.round(v * 1e4) / 1e4; // the panel sliders' step (validate.ts)
+/** A new pool (Add pool): in the middle, cut down to the corner depths. */
+export const NEW_POOL: TerrainPool = { x: 0.5, d: 0.35, rx: 0.15, rd: 0.2, bank: 0.35 };
+/**
+ * Where a pool's handles sit (fractions of L, D): the centre; the width handle on the side edge, the length handle on
+ * the back edge (the front edge when the back one is past the glass), the bank handle where the bank meets the core
+ * on the width handle's side.
+ */
+export function poolHandles(p: TerrainPool): Record<PoolPart, { u: number; v: number }> {
+  const sx = p.x + p.rx <= 0.98 || p.x - p.rx < 0.02 ? 1 : -1, sd = p.d + p.rd <= 0.98 || p.d - p.rd < 0.02 ? 1 : -1;
+  return {
+    c: { u: p.x, v: p.d }, w: { u: clamp(p.x + sx * p.rx, 0, 1), v: p.d }, l: { u: p.x, v: clamp(p.d + sd * p.rd, 0, 1) },
+    b: { u: p.x + sx * p.rx * (1 - p.bank), v: p.d },
+  };
+}
+/** The pool with handle `part` dragged to (u, v) (fractions of L, D), on the panel's steps. */
+export function dragPool(p: TerrainPool, part: PoolPart, u: number, v: number): TerrainPool {
+  if (part === 'c') return { ...p, x: q4(clamp(u, 0, 1)), d: q4(clamp(v, 0, 1)) };
+  if (part === 'w') return { ...p, rx: q4(clamp(Math.abs(u - p.x), ...POOL_R)) };
+  if (part === 'l') return { ...p, rd: q4(clamp(Math.abs(v - p.d), ...POOL_R)) };
+  return { ...p, bank: Math.round(clamp(1 - Math.abs(u - p.x) / p.rx, 0.05, 1) * 100) / 100 };
 }
 
 /** Catmull-Rom through p1..p2 at t (passes through every point; smooth slopes across them). */
@@ -169,26 +208,30 @@ export function terrainPoints(t: TerrainSettings, T: Tank): { x: number; depth: 
 }
 
 /**
- * A fresh grid sampled from the current ground (custom terrain if on, else substrate / swamp land): `cols` points across
+ * A fresh grid sampled from the current ground (custom terrain if on, else the substrate): `cols` points across
  * for a rectangular grid, or for a round tank or bowl concentric rings at that spacing, a dot at the centre and the outer ring
- * on the glass; a pie slice, arcs round its apex at that spacing, the outer one on the curved glass.
+ * on the glass; a pie slice, arcs round its apex at that spacing, the outer one on the curved glass. Pools are kept,
+ * and the grid samples the surface they are cut into, not the cut.
  */
 export function sampleTerrain(g: Ground, T: Tank, cols: number): TerrainSettings {
   const grid = terrainGrid(T);
   const rows = grid.arc ? Math.max(1, Math.round((cols - 1) * T.D / T.L)) : grid.radial ? terrainRings(cols) : terrainRows(T, cols);
-  const t: TerrainSettings = { on: true, cols, rows, h: [], ...grid };
+  const pools = g.terrain?.pools ?? [], t: TerrainSettings = { on: true, cols, rows, h: [], ...grid, pools: pools.map(p => ({ ...p })) };
   // custom terrain always shows a substrate, so sample as if it were shown: from a bare bottom the grid starts at the
   // corner depths, not all zeros (audit #14: a zero-thickness floor that z-fought into stripes)
   const shown = { ...g, substrate: { ...g.substrate, show: true } };
-  t.h = terrainPoints(t, T).map(p => +groundHeight(shown, T, p.x, p.depth).toFixed(1));
+  const te = g.terrain?.on && g.terrain.h.length ? g.terrain : null;
+  t.h = terrainPoints(t, T).map(p => +(te ? terrainHeight(te, T, p.x, p.depth) : groundHeight(shown, T, p.x, p.depth)).toFixed(1));
   return t;
 }
 
-/** Ground height (mm above the tank floor) at (x, depth): custom terrain, else substrate or swamp land where higher. */
+/** Ground height (mm above the tank floor) at (x, depth): custom terrain with its pools cut down to the substrate's
+ *  corner slope, else the substrate. */
 export function groundHeight(g: Ground, T: Tank, x: number, depth: number): number {
-  if (g.terrain?.on && g.terrain.h.length) return terrainHeight(g.terrain, T, x, depth);
-  const base = substrateHeight(g.substrate, T, x, depth);
-  return g.layout.id === 'swamp' ? Math.max(base, swampLand(T, g.layout.seed, x, depth)) : base;
+  const t = g.terrain;
+  if (!t?.on || !t.h.length) return substrateHeight(g.substrate, T, x, depth);
+  const h = terrainHeight(t, T, x, depth), wet = t.pools?.length ? poolWet(t.pools, T, x, depth) : 0;
+  return wet > 0 ? Math.max(substrateHeight({ ...g.substrate, show: true }, T, x, depth), h * (1 - wet)) : h;
 }
 
 /**

@@ -1,6 +1,100 @@
 # HANDOFF archive
 Finished lane and feature sections moved out of HANDOFF.md on 2026-10-16, verbatim, newest first.
 
+## Lane T1: dry ground, terrestrial substrates + leaf litter (2026-10-16; branch `dry-ground`, port 5633; Nathan: "leaf litter looks great", ship; pushed to main)
+- **New substrate presets** (`SubstrateType` + validate pick list, no scene version bump; art/placeholder.ts SUBSTRATES, flag
+  `terra`): `soil` (Soil / coco fibre: crumbs, coco strands, perlite flecks), `tsand` (Terrarium sand), `clay` (terracotta,
+  seamless wandering dry-crack network), `bark` (Orchid bark: blocky chips in layers), `layered` (soil over a flat clay-ball
+  drainage layer, 50 % of the shallowest ground at the glass, 8-45 mm, and a 2.5 mm dark mesh sheet; `LECA` look,
+  textures.ts `lecaTexture` / `meshTexture`). The type list is grouped Aquarium / Terrarium (optgroups). SUB_ALBEDO entries
+  added in scene/lightout.ts.
+- **Wet / dry** (render/build.ts addSubstrate, terra types only; old types keep the old damp-soil tint above water): own colour
+  dry; darker (x0.47/0.44/0.41) below the water line and in a 35 mm damp band above it; the skirt is cut in height bands
+  (water line, band, drainage) so the line is crisp through the glass. A faint wet sheen in the band (`aWet` attribute,
+  `wetSheen`, its own define AQ_WET so its program is apart from the custom blend's post patch). Not in a bowl (old skirt path).
+- **Leaf litter** (`substrate.litter?: { leaf: mixed|oak|magnolia|catappa, density 0-100, seed }`, absent = none): new
+  render/scatter.ts. `scatter(T, ground, spec)` is the shared tool (pebbles / grass later): seeded points thinned by a clumping
+  field, rejected on steep ground (normal y < 0.55), where an end or side would poke through the glass, hang over a drop or
+  hit a wall (bank foot); each copy on the ground's tilt, lifted over small humps, piled on what is under it (10 mm height
+  grid, +2.5 mm per leaf), tinted, darker under water (`shade`). Leaves: canvas atlas 3 kinds x (2 upper, 1 under, 1 broken
+  piece), 12 cupped / curled geometries trimmed to the leaf's width, one alpha-tested lit material, InstancedMesh per variant.
+  render/lighting.ts aqPatch now uses instanceMatrix for vAqP / vAqN under USE_INSTANCING; disposeScene disposes
+  InstancedMeshes. Panel: Leaf litter select + Shuffle (seed + 1) + Density (0 = None).
+- **Perf** (terrarium example, litter 100 % = 284 leaves, 12 draws, alternate frames, 4 runs of 60): +0.3 / 0.9 / 1.6 / 2.6 ms,
+  about 1.2 ms typical (was ~3.6 ms before trimming the leaf cards to the leaf's width).
+- Tests: test/dryground.test.ts (types load, unknown -> gravel, old files keep no litter, litter clamped; scatter deterministic,
+  off the glass, never under the ground, piled not floating, not straddling a step). Pictures: worktree `shots/t1_sheet_*.png`
+  (helpers scripts/ground-shots.js in the dev console, scripts/t1-sheet.py).
+- **3D grains** (2026-10-16, Nathan: coarse grounds read flat; "this direction is right", ship; pushed to main): new
+  render/grains.ts. `grainLook(sub)`: bark (chips) and every gravel preset (gravel, pea, clown, blue, onyx; sizes from the
+  tile art) and a custom single grain of gravel or pebbles (stones); null for sand / mud / soil / clay / layered and for
+  two-grain custom blends (not yet). `grainMeshes` = one packed layer through `scatter` (stones sunk 0-18 %, chips about
+  level, pile grid a third of a grain, colours from the ground's shades, darker under water if terrestrial);
+  `glassGrains` = a row pressed against each pane from the floor up to the surface (stones long side along the glass,
+  chips on edge), unlit with a fixed soft light baked into their own geometry copies (lit, side-on they went near black);
+  not in a bowl. render/build.ts addSubstrate: with grains the painted top and skirt step back from the glass by 55 % of a
+  grain (`clipIn`, convex outlines), so the glass row and the top layer meet (the surface had sliced the stones: a seam);
+  painted ground darkened to the gaps (0x6e / 0x5a); litter lifted by `grainTop`. Stones: subdivided icosahedron, detail 0
+  (20 tris) under 8 mm, 1 above; chips: jittered slabs with a fibre texture. Grains draw first (renderOrder -1), so the
+  depth test skips the ground under them (fill was most of the cost). envKey keeps a custom ground's colours when it has
+  grains (they are baked at build). Made grains are cached per ground key (6) and reused for rebuilds that do not move
+  the ground. scatter: flat arrays, scratch objects, a Float32Array pile grid, `insideIn` (insideBy's outline lookup per
+  call was 80 % of the time); placements unchanged (litter layouts identical).
+- **Perf** (GPU timer, EXT_disjoint_timer_query_webgl2, `gpuPerf` in scripts/ground-shots.js, on vs off alternating):
+  20-gal: pebbles +0.08 ms (1.5k), bark +0.12 (3.4k), natural gravel +0.29 (18k); planted example (36 in, black gravel,
+  42k) +0.85; litter 100 % about 0. Build: the 36 in tank's grains took ~160 ms per ground rebuild at first, now about a
+  third of that (machine was loaded, so measured as a ratio to groundHeight), and none when the ground key is unchanged.
+- Examples that change look (data unchanged): planted (onyx), paludarium (gravel), betta bowl (pea, top layer only).
+  Pictures: shots/t1_sheet_3d_a.png, shots/t1_sheet_3d_b.png. Dev note: a hidden pane runs no frames; the helpers call
+  `viewer.buildNow()`.
+- **Open:** two-grain custom blends with a coarse grain still painted; coated gravel has no glint; big custom pebbles look a
+  little egg-like from above; bowl has no glass row. Swamp land is seed-drawn, not editable ground (Nathan's rule: every
+  generated scape must be recreatable by hand): proposed as its own session (task card "Swamp land into editable terrain").
+
+
+## Lane TA: tarantula, large arachnid body plan (2026-10-16; branch `tarantula`, port 5683; built + tested, committed on the branch, NOT pushed: pictures sent to Nathan, awaiting his verdict)
+- **Species**: Chaco golden knee (Grammostola pulchripes), `chacogoldenknee` in data/species.json (cat land-invert, cling any; male art `gpulchripes` tl 45 mm, female `gpulchripes_f` tl 50 mm; life stages = `Fish.tl`). Unit = BODY length (= card width); leg span about 3x.
+- **Built** (new `render/tarantula3d.ts`, data `art/tarantulas.ts`, on the JS spider's pattern): heavy rounded carapace lofted with a dented central fovea (3D dip + dark slit), eye tubercle with 8 small eyes in two rows, big chelicerae + curved fangs (folded back; swung out forward and apart in the threat), thick palps, big round abdomen with a bald urticating patch of short red bristles, 8 legs of 7 real segments (coxa, trochanter, femur, patella, tibia, metatarsus, tarsus; two-bone IK from the trochanter end, pale golden patella = the knee), scopula pad of short pale hair under each tarsus, claws, long dense coat (`fuzz`: ~26000 body + 6500 per leg strands). The male: slimmer, darker, two tibial hooks on each front leg (the only differences besides colour).
+- **Poses** `tarantulaBody(art, w, surface, limbR, bend)`: surfaces 'ground' (floor, ledge, cork, rock), 'glass' (pane or wall, all 8 feet planted, any heading), 'perch' (over a branch); modes from `Fish.bend` (no new field, no version bump): walk (bend < .45; alternating tetrapod, the swinging four lifted), tuck (.45-.85; resting, knees up, belly low), threat (>= .85; rears up on the hind legs, front pair raised, fangs out). `TAR_BEND` / `tarantulaBend` in art/tarantulas.ts, `tarMode` in the renderer. Random floor bends stay under .4 so older animals read as walking.
+- **Shuffle** (scene/scatter.ts, extra rng draws only for tarantulas, anchorbase fixture unchanged): 70 % take a hide (half-log or cork tube at least 3 body lengths long) when the tank has one: body centre 0.1 body in from a mouth, facing out, resting / walking / threat mix, on the floor; the rest go to the floor (any heading; 65 % walk, 25 % tucked, 10 % threat), up the glass only rarely (`GLASS_TARANTULA` 0.08 of the area weight; walking only), or over hardscape tops.
+- **Hooks in others' files (one-liners):** render/herp3d.ts (isHerp3D, herpBody passes `alert` as a number: spiders read > .5, tarantulas the mode), art/herps.ts (TARANTULA_ART, herpMeta), render/build.ts animal() (`isArachnid` = spider or tarantula: flat card, no sink, `f.bend` passed on), scene/scatter.ts (above), data/species.json. **Shared:** render/spider3d.ts now EXPORTS loft / paint / texture / eyeTexture / grainTexture / clampAbove / mat / geo / rgb / col (keyword only, nothing changed in them). render/limbs.ts untouched. The tank light roughly doubles and saturates vertex colours (render/lighting.ts aqFish), so tarantula colours are authored darker (`LIT` 0.42) and the lab page (tarantula-lab.html, untracked) looks too dark: review in the real tank (`scripts/ta-shots.js`, `scripts/ta-sheet.py`).
+- **Tests** `test/tarantula.test.ts` (27): finite, 8 eyes, 8 chains of 7 links, feet on the surface (4 planted + 4 swinging when walking on the floor; 8 on glass / tucked; 4 in the threat), span about 3 body lengths, threat head up, tucked lower, male hooks, Shuffle (hides, floor, glass, all three modes, identical through save / load), hide mouth heading, glass at any heading, cork, paludarium.
+- **Pictures:** shots/TA_sheet1_poses.jpg, TA_sheet2_places.jpg, TA_sheet3_close.jpg (worktree only).
+- **Open:** first build of a pose takes ~1.5 s (hair generation; cached per pose); the base tubes show a metallic sheen between strands in extreme close-ups (the fish shader's spec); the 2D card is a plain side silhouette (picking / no-WebGL); no animation; the hide placement does not check that the legs clear the shell wall (a tucked animal in a 3-body-length hide is a tight fit); `/review.html` lists the pair as "new, not recorded" until Nathan records it.
+
+
+## Lane SW: swamp land as editable terrain (2026-10-16; worktree `agitated-lumiere-a79eba`, port 5663; side session of T1)
+Nathan's rule (2026-10-16): "The program should never be able to generate a scape that couldn't theoretically be exactly
+recreated in the manual mode."
+- **Swamp land is data now.** `TerrainSettings.pools?: TerrainPool[]` holds ellipses (x, d, rx, rd as fractions of L / D, and
+  bank as a fraction of the radius). Inside a pool core the ground is the substrate's corner slope; across the bank it rises
+  (smoothstep) to the grid surface (terrain.ts `poolWet`, `groundHeight`). The swamp layout's `styleGround` writes
+  `swampTerrain`: the rolling bank on a grid about 50 mm apart (13-25 points) plus the seed's pools. `groundHeight` no longer
+  reads `layout.id` / `seed`. `sampleTerrain` (grid slider, regrid) keeps the pools and samples the uncut surface.
+- **Old files** (layout swamp, no `terrain.pools` key, terrain off) are converted in validate.ts, before their items are
+  parsed. Every file saved since has `pools` (`[]` by default), so nothing is converted twice. Proof:
+  test/swampground.test.ts (fixture `swamp-baseline.json`, recorded from the old code). Over 21 old files (paludarium,
+  rect / round / bowl / pie / long), ground heights sit within 0.74 mm, mean 0.07 mm. Known: a bowl's grid stops at its floor
+  disc, so the land's roll out to the sloping glass is held flat there (up to 8 mm). A pixel diff of the paludarium
+  before and after, from two servers at the same camera: 1.6 % of pixels differ by more than 8/255, all grain-texture
+  shimmer from sub-mm moves. Side by side, the two are the same.
+- **Hooks in T1 files (one line each):** build.ts backing plate and addSubstrate `swamp` flag now key on `terrain.on`.
+  panels.ts Substrate: the corner sliders stay on while pools exist, because they set the pools' floor, and the hint says
+  so. Also: roots.ts and render/items.ts groundKey (adds pools + corners), store `swampGround` (now: terrain on -> substrate
+  shown), and diff.ts (the "Swamp land" line is gone, since Terrain covers it). styleGround rounds corner depths to the
+  slider's 1 mm step.
+- **Pools tool (Nathan 2026-10-16: "Yes, build option A")**: Substrate > Custom terrain > Pools: a pool picker, Add pool, Remove,
+  and sliders Across / From front / Width / Length (fractions of the tank, step 0.01 %, the file's own precision) and Bank
+  (1 %). With Edit points on, each pool's outline is drawn (solid: the bank top; dashed: the core). The pool shown in the
+  panel has four handles: orange = move, blue = width and length, green = bank. Grid dots in a core are faded, because they
+  shape nothing there. Code: terrain.ts `poolHandles` / `dragPool` / `NEW_POOL`, build.ts `addPoolHandles`, pointer.ts
+  `pool` drag, viewer `terrainEdit.pool`. Tests: a hand-made pool on the sliders' steps gives the swamp style's ground
+  exactly, and generated pools sit on those steps. Also fixed: the Water on/off box was switching terrain editing too
+  (a stray line from lane P, 2026-10-14).
+- Generator audit: side-session notes `generator-audit-2026-10-16.md`. Non-ground gaps still open: fish pose and size, plant
+  growth step, item seed and lift step. The litter seed has no typed entry.
+
+
 ## Lane JS: regal jumping spider, first arthropod body plan (2026-10-16; branch `spider`, port 5673; built + tested, committed on the branch, NOT pushed: pictures sent to Nathan, awaiting his verdict)
 - **Body plan** (new `render/spider3d.ts`, data `art/spiders.ts`, shared helper new `render/limbs.ts`): unit = BODY length (= card width = `tl`: male 12 mm, female 15 mm; legs reach ~2x past it). Carapace and abdomen are lofts (stations x / half-width / top / bottom / centre line, boxy eye field), painted by a CPU-raster texture (marks: ell / band / mottle, in body-length units) whose same buffer colours the hair. 8 eyes in real arrangement (big AME forward, ALE front corners, tiny PME, PLE on the sides), chelicerae (iridescent) + fangs, palps (male: white, dark bulb), spinnerets, 8 legs of 6 real segments (coxa..tarsus; `bandedChain`, a knuckle per joint, spines on tibia / metatarsus, claws) by two-bone IK (coxa end -> knee at patella/tibia -> tarsus tip on the surface, `TIP` radius off it). Hair: `fuzz()` = ~14000 body + ~2600 per leg single-triangle blades (double-sided, `sphair` material), colour from the paint under the root; a puff of white round the face. Everything unlit, shading baked.
 - **Poses** `spiderPose(surface, R)`: 'ground' (floor, ledge, cork, 3D top), 'glass' (pane or 3D wall: body 0.1 off, legs spread 10 % wider), 'perch' (on top of a branch, feet round it by cylinder angle); each with `alert` (front pair raised and apart, head pitched up). Alert is stored as `Fish.bend > 0.5` (a land animal's bend is otherwise 0; no new field, no version bump); Shuffle sets it for 25 % of spiders (`SPIDER_ALERT`, scene/scatter.ts) and gives a spider on the glass any heading (extra rng draws for `cat 'land-invert'` only; anchorbase fixture unchanged).

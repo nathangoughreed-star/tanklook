@@ -26,23 +26,23 @@ const NX = 64, RG = 36;
 const TIP = 0.016;
 
 const matCache = new Map<string, THREE.Material>();
-function mat<M extends THREE.Material>(key: string, make: () => M): M {
+export function mat<M extends THREE.Material>(key: string, make: () => M): M {
   let m = matCache.get(key) as M | undefined;
   if (!m) { m = make(); m.userData.cached = true; m.userData.fish = true; matCache.set(key, m); }
   return m;
 }
 const geoCache = new Map<string, THREE.BufferGeometry>();
-function geo(key: string, make: () => THREE.BufferGeometry) {
+export function geo(key: string, make: () => THREE.BufferGeometry) {
   let g = geoCache.get(key); if (!g) { g = make(); g.userData.keep = true; geoCache.set(key, g); }
   return g;
 }
-const rgb = (h: string) => { const n = parseInt(h.slice(1), 16); return [(n >> 16) / 255, (n >> 8 & 255) / 255, (n & 255) / 255] as [number, number, number]; };
-const col = (h: string, k = 1) => { const [r, g, b] = rgb(h); return new THREE.Color(r * k, g * k, b * k); };
+export const rgb = (h: string) => { const n = parseInt(h.slice(1), 16); return [(n >> 16) / 255, (n >> 8 & 255) / 255, (n & 255) / 255] as [number, number, number]; };
+export const col = (h: string, k = 1) => { const [r, g, b] = rgb(h); return new THREE.Color(r * k, g * k, b * k); };
 const spE = (c: number, e: number) => Math.sign(c) * Math.abs(c) ** (2 / e);
 
 // ---------- loft (carapace, abdomen) ----------
 
-interface Loft { geo: THREE.BufferGeometry; x0: number; x1: number; sec: (x: number) => { hw: number; top: number; bot: number; yc: number } }
+export interface Loft { geo: THREE.BufferGeometry; x0: number; x1: number; sec: (x: number) => { hw: number; top: number; bot: number; yc: number } }
 function secFn(st: Stn[]) {
   const c = [1, 2, 3, 4].map(k => curveOf(st.slice().reverse().map(s => [s[0], s[k]] as [number, number])));
   return (x: number) => ({ hw: c[0](x), top: c[1](x), bot: c[2](x), yc: c[3](x) });
@@ -52,7 +52,7 @@ function ring(c: ReturnType<ReturnType<typeof secFn>>, th: number, eT: number, e
   const cs = Math.cos(th), sn = Math.sin(th), e = cs >= 0 ? eT : eB;
   return [cs >= 0 ? c.top * spE(cs, eT) : c.bot * spE(cs, eB), c.hw * spE(sn, e)];
 }
-function loft(st: Stn[], eT: number, eB: number, ends: [number, number]): Loft {
+export function loft(st: Stn[], eT: number, eB: number, ends: [number, number]): Loft {
   const sec = secFn(st), x0 = st[st.length - 1][0], x1 = st[0][0], pos: number[] = [], uv: number[] = [];
   for (let i = 0; i <= NX; i++) {
     const u = i / NX, x = x0 + (x1 - x0) * u;
@@ -87,9 +87,9 @@ function topY(S: SpiderSpec, L: Loft, x: number, z: number) {
 
 // ---------- paint ----------
 
-interface Paint { W: number; H: number; px: Float32Array; at(u: number, a: number, out: THREE.Color): THREE.Color }
+export interface Paint { W: number; H: number; px: Float32Array; at(u: number, a: number, out: THREE.Color): THREE.Color }
 /** Raster a part's marks into an RGB buffer (u along the part from the rear, a = 0 dorsal midline .. 1 underside). */
-function paint(base: string, marks: SMark[], x0: number, x1: number, halfPerim: number, W = 512, H = 160): Paint {
+export function paint(base: string, marks: SMark[], x0: number, x1: number, halfPerim: number, W = 512, H = 160): Paint {
   const px = new Float32Array(W * H * 3), b = rgb(base), len = x1 - x0;
   for (let i = 0; i < W * H; i++) { px[3 * i] = b[0]; px[3 * i + 1] = b[1]; px[3 * i + 2] = b[2]; }
   const blend = (i: number, c: number[], o: number) => { for (let k = 0; k < 3; k++) px[3 * i + k] += (c[k] - px[3 * i + k]) * Math.min(1, o); };
@@ -129,7 +129,7 @@ function paint(base: string, marks: SMark[], x0: number, x1: number, halfPerim: 
     },
   };
 }
-function texture(p: Paint) {
+export function texture(p: Paint) {
   const c = document.createElement('canvas'); c.width = p.W; c.height = p.H;
   const x = c.getContext('2d')!, img = x.createImageData(p.W, p.H), r = rng(3);
   for (let i = 0; i < p.W * p.H; i++) {
@@ -270,7 +270,7 @@ function spinnerets(cx: PoseCx, xEnd: number, yc: number) {
 
 // ---------- eyes ----------
 
-function eyeTexture(ring: boolean) {
+export function eyeTexture(ring: boolean) {
   const N = 96, c = document.createElement('canvas'); c.width = N; c.height = N;
   const x = c.getContext('2d')!, img = x.createImageData(N, N);
   for (let py = 0; py < N; py++) for (let px = 0; px < N; px++) {
@@ -288,7 +288,7 @@ function eyeTexture(ring: boolean) {
 
 /** A fine grain multiplied over the legs and palps (a bare tube looks like plastic; this is the coat under the hair). */
 let grain: THREE.CanvasTexture | null = null;
-function grainTexture() {
+export function grainTexture() {
   if (grain) return grain;
   const N = 128, c = document.createElement('canvas'); c.width = N; c.height = N;
   const x = c.getContext('2d')!, img = x.createImageData(N, N), r = rng(23);
@@ -308,7 +308,7 @@ type Built = { chains: THREE.Vector3[][]; body: THREE.BufferGeometry[]; limbs: T
 const poseCache = new Map<string, Built>();
 
 /** Keep a built part off the surface (no strand through the pane or the bark). */
-function clampAbove(g: THREE.BufferGeometry, surf: Surf, margin = 0.0008) {
+export function clampAbove(g: THREE.BufferGeometry, surf: Surf, margin = 0.0008) {
   const p = g.attributes.position, q = V();
   for (let i = 0; i < p.count; i++) {
     q.fromBufferAttribute(p, i);

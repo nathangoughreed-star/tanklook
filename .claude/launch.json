@@ -533,21 +533,6 @@
       "port": 5643
     },
     {
-      "name": "dry-ground",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "--prefix",
-        "C:/Users/nreed/Glass-Box-dry-ground",
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5633",
-        "--strictPort"
-      ],
-      "port": 5633
-    },
-    {
       "name": "python",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
@@ -563,19 +548,19 @@
       "port": 5673
     },
     {
-      "name": "tarantula",
+      "name": "swamp-ground",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "--prefix",
-        "C:/Users/nreed/Glass-Box-tarantula",
+        "C:/Users/nreed/Glass Box/.claude/worktrees/agitated-lumiere-a79eba",
         "run",
         "dev",
         "--",
         "--port",
-        "5683",
+        "5663",
         "--strictPort"
       ],
-      "port": 5683
+      "port": 5663
     }
   ]
 }
