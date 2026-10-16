@@ -1,6 +1,14 @@
 # HANDOFF archive
 Finished lane and feature sections moved out of HANDOFF.md on 2026-10-16, verbatim, newest first.
 
+## Lane SH: setup sheet / shopping list (2026-10-16; branch `setup-sheet`, port 5683; built, waiting on Nathan's look at the 3 example sheets before push)
+- **scene/setupsheet.ts** (new, pure): `buildSheet(scene, index, {bagL})` -> sections Tank (shape, size, glass, capacity, water, land/water split, lid, stand, filled weight incl. hardscape), Substrate (bags from the real ground volume by a floor grid; layered ground splits the clay-ball drainage layer, 50 % of the shallowest ground at the glass, 8-45 mm), Hardscape (per variant: count, size range, approx kg = bounding box x fill x density, `FILL` table), Plants, Corals, Animals (count, species, adult length), Equipment (light fixture/tech/K/W/PAR only when set). `sheetCsv`, `sheetText`. Bags: default 9 kg (20 lb) bag of aquarium gravel = 5.6 L, 8 US qt = 7.6 L for terrarium soil, +10 % spare; editable in the sheet bar (L or qt by the scene's units).
+- **ui/setupsheet.ts** (new): "Setup sheet" button -> paper-white overlay (`#sheetView`) with Print / .txt / .csv / Close, live-updating, Esc closes; print stylesheet shows only the page. Works offline (all inline). 375 px checked (no sideways scroll).
+- **Hooks in others' files:** one button line in index.html (Display & export, above Export PNG), two lines in main.ts (import + attach), a CSS block appended to style.css (`#sheetView`, print rules). panels.ts untouched.
+- **Not in the data, so not on the sheet:** plant light / CO2 demand (no field in art/plants.ts), prices. Weights are approximate by design.
+- test/setupsheet.test.ts. No scene version bump.
+
+
 ## Lane PP: plant polish (2026-10-16; branch `plant-polish`, port 5673; Nathan approved the pictures; pushed to main)
 - **Vines on branches**: already shipped by T2 (archive: Lane T2, "Vines on wood", commit 1fd0ce3); not rebuilt.
 - **New optional `Plant3D` fields** (art/plants.ts; absent = old behaviour, so older files and every other species draw exactly as before):

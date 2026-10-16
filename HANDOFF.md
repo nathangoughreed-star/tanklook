@@ -30,7 +30,6 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 | T1 dry ground (roadmap R1) | `../Glass-Box-dry-ground` / `dry-ground` | 5633 | substrate types in `scene/types.ts` / `validate.ts` / `defaults.ts` (substrate only), the ground build in `render/build.ts`, substrate tiles in `art/placeholder.ts` / `render/textures.ts`, new `render/scatter.ts` (leaf litter, shared scatter) + new `render/grains.ts` (3D grains), the Substrate section of `ui/panels.ts` / `index.html` | running (session `local_6ae6a2e0`): litter + new grounds pushed (`2ec2000`, build 592); 3D grains prototype (bark, gravel, pebbles) waiting on Nathan's look check |
 | MS multi-select / duplicate / variation (roadmap P0) | `../Glass-Box-multiselect` / `multiselect` | 5683 | `src/interact/*`, selection part of `ui/panels.ts` / `index.html`, new `scene/duplicate.ts` | ready to open (prompt `prompts/lane-MS-multiselect.md`); scatter brush waits on T1 |
 | JS regal jumping spider (roadmap R2) | `../Glass-Box-spider` / `spider` | 5673 | new `render/spider3d.ts`, `art/spiders.ts`; hooks in `render/herp3d.ts`, `art/herps.ts`, animal() in `render/build.ts`, `scene/scatter.ts`, `data/species.json` | ready to open (prompt `prompts/lane-JS-jumping-spider.md`); ball python + tarantula follow it, one at a time |
-| SH setup sheet / shopping list | `../Glass-Box-setup-sheet` / `setup-sheet` | 5683 | new `scene/setupsheet.ts`, `ui/setupsheet.ts`; one-line hooks in `ui/panels.ts` / `index.html` / `main.ts` / `style.css` | ready to open (prompt `prompts/lane-SH-setup-sheet.md`) |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 
@@ -49,13 +48,6 @@ Scope: roadmap section 5 P0. Scatter brush is NOT here (waits on T1's render/sca
 
 ## Lane JS: regal jumping spider, first arthropod body plan (2026-10-16; branch `spider`, port 5673; opened by coordinator 3, not started)
 Scope: new render/spider3d.ts + art/spiders.ts (8 eyes, chelicerae, palps, abdomen pattern, 8 IK legs with hair), poses via scene/anchors.ts (floor, glass / wall, branch, alert), male + female, species.json entries. Pattern: archive Lane G1. Keep IK / hair in a shared helper for the ball python and tarantula lanes that follow. State: nothing built yet.
-
-## Lane SH: setup sheet / shopping list (2026-10-16; branch `setup-sheet`, port 5683; built, waiting on Nathan's look at the 3 example sheets before push)
-- **scene/setupsheet.ts** (new, pure): `buildSheet(scene, index, {bagL})` -> sections Tank (shape, size, glass, capacity, water, land/water split, lid, stand, filled weight incl. hardscape), Substrate (bags from the real ground volume by a floor grid; layered ground splits the clay-ball drainage layer, 50 % of the shallowest ground at the glass, 8-45 mm), Hardscape (per variant: count, size range, approx kg = bounding box x fill x density, `FILL` table), Plants, Corals, Animals (count, species, adult length), Equipment (light fixture/tech/K/W/PAR only when set). `sheetCsv`, `sheetText`. Bags: default 9 kg (20 lb) bag of aquarium gravel = 5.6 L, 8 US qt = 7.6 L for terrarium soil, +10 % spare; editable in the sheet bar (L or qt by the scene's units).
-- **ui/setupsheet.ts** (new): "Setup sheet" button -> paper-white overlay (`#sheetView`) with Print / .txt / .csv / Close, live-updating, Esc closes; print stylesheet shows only the page. Works offline (all inline). 375 px checked (no sideways scroll).
-- **Hooks in others' files:** one button line in index.html (Display & export, above Export PNG), two lines in main.ts (import + attach), a CSS block appended to style.css (`#sheetView`, print rules). panels.ts untouched.
-- **Not in the data, so not on the sheet:** plant light / CO2 demand (no field in art/plants.ts), prices. Weights are approximate by design.
-- test/setupsheet.test.ts. No scene version bump.
 
 ## Lane T1: dry ground, terrestrial substrates + leaf litter (2026-10-16; branch `dry-ground`, port 5633; Nathan: "leaf litter looks great", ship; pushed to main)
 - **New substrate presets** (`SubstrateType` + validate pick list, no scene version bump; art/placeholder.ts SUBSTRATES, flag
@@ -204,6 +196,7 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane SH: setup sheet / shopping list (2026-10-16; branch `setup-sheet`, port 5683; built, waiting on Nathan's look at the 3 example sheets before push)
 - Lane PP: plant polish (2026-10-16; branch `plant-polish`, port 5673; Nathan approved the pictures; pushed to main)
 - Lane G1: lizard body plan, crested gecko + leopard gecko (2026-10-16; branch `gecko`, port 5663; Nathan approved the pictures, "ship it"; pushed to main)
 - Clownfish host in the bubble-tip anemone (2026-10-16; worktree `musing-snyder-0e96c4`, port 5693 `clown-host`; Nathan approved the pictures; pushed to main)
