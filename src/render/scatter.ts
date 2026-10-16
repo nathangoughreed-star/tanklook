@@ -6,7 +6,7 @@
 import * as THREE from 'three';
 import { rng } from '../art/paint';
 import { clamp, waterY } from '../scene/physics';
-import { footprint, insideBy } from '../scene/shape';
+import { footprint } from '../scene/shape';
 import type { LeafKind, Litter, Tank, TankSetup } from '../scene/types';
 
 /** World position [x, y, z] of the ground at floor-plan point (x, depth); z = -depth (render/build.ts `G`). */
@@ -23,38 +23,52 @@ export interface ScatterSpec {
   tilt: number; slope: number; clump: number;
   /** Colour factor by height (mm): soaked leaves under the water are darker. */
   shade?: (y: number) => number;
+  /** Grains (3D substrate): lift and pile also in units of each copy's size (sunk in: negative lift), the pile grid's
+   *  cell (mm, default 10), and a palette each copy's colour is drawn from (default: a warm jitter round white). */
+  liftK?: [number, number]; pileK?: number; cell?: number; palette?: THREE.Color[];
 }
 
+/** Signed distance (mm) to the tank's outline, positive inside: shape.ts `insideBy` with the outline fetched once. */
+export function insideIn(T: Tank) {
+  const E = footprint(T).edges.map(e => [e.a[0], e.a[1], e.n[0], e.n[1]]);
+  return (x: number, d: number) => { let m = Infinity; for (const [ax, ad, nx, nd] of E) m = Math.min(m, -((x - ax) * nx + (d - ad) * nd)); return m; };
+}
 /** Strew spec.count copies over the tank floor; one InstancedMesh per kind that got any. */
 export function scatter(T: Tank, ground: GroundAt, spec: ScatterSpec): THREE.InstancedMesh[] {
   const r = rng(spec.seed * 7919 + 13), { L, D } = T, tot = spec.kinds.reduce((a, k) => a + k.weight, 0);
   const ph = Array.from({ length: 6 }, () => r() * Math.PI * 2), f1 = 1 / (90 + r() * 60), f2 = 1 / (130 + r() * 80);
   // clumping field: two crossed, warped waves (drifts 150-300 mm across), 0..1
   const field = (x: number, d: number) => 0.5 + 0.3 * Math.sin(x * f1 + ph[0] + 1.3 * Math.sin(d * f2 + ph[1])) + 0.2 * Math.sin(d * f1 * 1.3 + ph[2] + Math.sin(x * f2 + ph[3]));
-  const per: THREE.Matrix4[][] = spec.kinds.map(() => []), tint: THREE.Color[][] = spec.kinds.map(() => []);
-  const n = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0), q = new THREE.Quaternion(), qy = new THREE.Quaternion(), qt = new THREE.Quaternion();
-  const ax = new THREE.Vector3(), pos = new THREE.Vector3(), scl = new THREE.Vector3(), e = 4;
+  // flat arrays and scratch objects throughout (a fresh vector / matrix / colour per copy made 30k grains take 160 ms)
+  const per: number[][] = spec.kinds.map(() => []), tint: number[][] = spec.kinds.map(() => []);
+  const n = new THREE.Vector3(), b = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0), q = new THREE.Quaternion(), qy = new THREE.Quaternion(), qt = new THREE.Quaternion();
+  const ax = new THREE.Vector3(), pos = new THREE.Vector3(), scl = new THREE.Vector3(), mx = new THREE.Matrix4(), col = new THREE.Color(), e = 4;
+  const PROBES = [[-1, 0], [1, 0], [0, -0.5], [0, 0.5]];
+  const inBy = insideIn(T); // shape.ts insideBy without its outline lookup per call (that was most of the time)
   let placed = 0;
-  const PC = 10, pile = new Map<number, number>(), cells = (x: number, d: number, rad: number, f: (k: number) => void) => {
+  // the pile: a height grid over the floor (padded past the glass by the widest copy's half reach)
+  const PC = spec.cell ?? 10, pad = Math.ceil(Math.max(...spec.kinds.map(k => k.size[1] * k.reach)) * 0.5 / PC) + 2;
+  const NX = Math.ceil(L / PC) + 2 * pad, NZ = Math.ceil(D / PC) + 2 * pad, pile = new Float32Array(NX * NZ);
+  const cells = (x: number, d: number, rad: number, f: (k: number) => void) => {
     for (let i = Math.floor((x - rad) / PC); i <= Math.floor((x + rad) / PC); i++) for (let j = Math.floor((d - rad) / PC); j <= Math.floor((d + rad) / PC); j++)
-      if (((i + 0.5) * PC - x) ** 2 + ((j + 0.5) * PC - d) ** 2 <= rad * rad + PC * PC / 2) f(i * 4096 + j);
+      if (((i + 0.5) * PC - x) ** 2 + ((j + 0.5) * PC - d) ** 2 <= rad * rad + PC * PC / 2) f((i + pad) * NZ + j + pad);
   };
   for (let tries = 0; placed < spec.count && tries < spec.count * 6; tries++) {
     const x = r() * L, d = r() * D, pick = r() * tot, a = r() * Math.PI * 2, u = r(), mirror = r() < 0.5, tilt = r(), tiltA = r() * Math.PI * 2;
-    const keep = r(), lift = spec.lift[0] + r() * (spec.lift[1] - spec.lift[0]), shade = r(), hue = r();
+    const keep = r(), lift01 = r(), lift = spec.lift[0] + lift01 * (spec.lift[1] - spec.lift[0]), shade = r(), hue = r(), pal = spec.palette ? r() : 0; // pal only for grains: litter layouts unchanged
     if (keep > 1 - spec.clump + spec.clump * clamp((field(x, d) - 0.25) / 0.5, 0, 1)) continue;
     let ki = 0; for (let acc = spec.kinds[0].weight; acc < pick && ki < spec.kinds.length - 1;) acc += spec.kinds[++ki].weight;
     const K = spec.kinds[ki], size = K.size[0] + u * (K.size[1] - K.size[0]), reach = size * K.reach;
-    if (insideBy(T, x, d) < reach * 0.25) continue; // near the glass: its ends and sides are checked below
+    if (inBy(x, d) < reach * 0.25) continue; // near the glass: its ends and sides are checked below
     const g = ground(x, d), gx0 = ground(x - e, d), gx1 = ground(x + e, d), gd0 = ground(x, d - e), gd1 = ground(x, d + e);
-    n.set(gx1[0] - gx0[0], gx1[1] - gx0[1], gx1[2] - gx0[2]).cross(new THREE.Vector3(gd0[0] - gd1[0], gd0[1] - gd1[1], gd0[2] - gd1[2])).normalize();
+    n.set(gx1[0] - gx0[0], gx1[1] - gx0[1], gx1[2] - gx0[2]).cross(b.set(gd0[0] - gd1[0], gd0[1] - gd1[1], gd0[2] - gd1[2])).normalize();
     if (n.y < 0) n.negate();
     if (n.y < spec.slope) continue; // too steep to stay put
     // its two ends clear the ground (a long leaf over a hump would dip into it): lift by the worst shortfall
     const cx = Math.cos(a), cz = -Math.sin(a); let under = 0, over = 0, out = false;
     // both ends and both sides (half as far: the long axis is the reach)
-    for (const [s, w] of [[-1, 0], [1, 0], [0, -0.5], [0, 0.5]]) {
-      const ex = x + (cx * s - cz * w) * reach, ed = d - (cz * s + cx * w) * reach; if (insideBy(T, ex, ed) < 1) { out = true; break; }
+    for (const [s, w] of PROBES) {
+      const ex = x + (cx * s - cz * w) * reach, ed = d - (cz * s + cx * w) * reach; if (inBy(ex, ed) < 1) { out = true; break; }
       const plane = g[1] - (n.x * (ex - x) + n.z * (-(ed - d))) / n.y, gy = ground(ex, ed)[1];
       under = Math.max(under, gy - plane); over = Math.max(over, plane - gy);
     }
@@ -63,21 +77,25 @@ export function scatter(T: Tank, ground: GroundAt, spec: ScatterSpec): THREE.Ins
     if (out || over > reach * 0.25 || under > reach * 0.25) continue; // `out`: would poke through the glass
     q.setFromUnitVectors(up, n); qy.setFromAxisAngle(up, a); ax.set(Math.cos(tiltA), 0, Math.sin(tiltA)); qt.setFromAxisAngle(ax, tilt * spec.tilt);
     q.multiply(qt).multiply(qy);
-    let top = 0; cells(x, d, reach * 0.5, k => { top = Math.max(top, pile.get(k) ?? 0); });
-    const h = lift + under + top;
-    if (spec.pile) cells(x, d, reach * 0.5, k => pile.set(k, top + spec.pile));
+    let top = 0; cells(x, d, reach * 0.5, k => { top = Math.max(top, pile[k]); });
+    const lk = spec.liftK ? (spec.liftK[0] + lift01 * (spec.liftK[1] - spec.liftK[0])) * size : 0;
+    const h = lift + lk + under + top, inc = spec.pile + (spec.pileK ?? 0) * size;
+    if (inc) cells(x, d, reach * 0.5, k => { pile[k] = top + inc; });
     pos.set(g[0] + n.x * h, g[1] + n.y * h, g[2] + n.z * h); scl.set(size, size, mirror ? -size : size);
-    per[ki].push(new THREE.Matrix4().compose(pos, q, scl));
+    const pm = per[ki]; for (const v of mx.compose(pos, q, scl).elements) pm.push(v);
     const k = spec.shade?.(pos.y) ?? 1;
-    tint[ki].push(new THREE.Color(0.82 + shade * 0.3, 0.82 + shade * 0.3 - (hue - 0.5) * 0.06, 0.82 + shade * 0.3 - (hue - 0.5) * 0.12).multiplyScalar(k));
+    if (spec.palette) col.copy(spec.palette[Math.floor(pal * spec.palette.length)]).multiplyScalar(0.85 + shade * 0.3);
+    else col.setRGB(0.82 + shade * 0.3, 0.82 + shade * 0.3 - (hue - 0.5) * 0.06, 0.82 + shade * 0.3 - (hue - 0.5) * 0.12);
+    tint[ki].push(col.r * k, col.g * k, col.b * k);
     placed++;
   }
   const out: THREE.InstancedMesh[] = [];
   spec.kinds.forEach((K, i) => {
     if (!per[i].length) return;
-    const m = new THREE.InstancedMesh(K.geo, K.mat, per[i].length);
-    per[i].forEach((mx, j) => { m.setMatrixAt(j, mx); m.setColorAt(j, tint[i][j]); });
-    m.instanceMatrix.needsUpdate = true; m.computeBoundingSphere(); m.userData.scatter = true;
+    const m = new THREE.InstancedMesh(K.geo, K.mat, per[i].length / 16);
+    m.instanceMatrix = new THREE.InstancedBufferAttribute(new Float32Array(per[i]), 16);
+    m.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(tint[i]), 3);
+    m.computeBoundingSphere(); m.userData.scatter = true;
     out.push(m);
   });
   return out;

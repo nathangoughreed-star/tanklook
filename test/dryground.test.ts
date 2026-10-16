@@ -3,6 +3,7 @@
 import * as THREE from 'three';
 import { describe, expect, it } from 'vitest';
 import { SUBSTRATES } from '../src/art/placeholder';
+import { grainLook } from '../src/render/grains';
 import { scatter, type GroundAt } from '../src/render/scatter';
 import { defaultScene } from '../src/scene/defaults';
 import { insideBy } from '../src/scene/shape';
@@ -24,6 +25,18 @@ describe('terrestrial ground (lane T1)', () => {
   it('litter is validated and clamped', () => {
     expect(load({ litter: { leaf: 'oak', density: 140, seed: 7.4 } }).litter).toEqual({ leaf: 'oak', density: 100, seed: 7 });
     expect(load({ litter: { leaf: 'fern', density: 'x' } }).litter).toEqual({ leaf: 'mixed', density: 50, seed: 1 });
+  });
+});
+
+describe('3D grains (render/grains.ts)', () => {
+  const sub = (type: string, custom = {}) => ({ ...defaultScene().tanks[0].substrate, type, custom: { ...defaultScene().tanks[0].substrate.custom, ...custom } }) as never;
+  it('coarse grounds get grains, fine ones stay painted', () => {
+    expect(grainLook(sub('bark'))?.shape).toBe('chip');
+    for (const t of ['gravel', 'pea', 'clown', 'blue', 'onyx']) expect(grainLook(sub(t))?.shape).toBe('stone');
+    for (const t of ['soil', 'tsand', 'clay', 'layered', 'white', 'black', 'aragonite', 'coral']) expect(grainLook(sub(t))).toBeNull();
+    expect(grainLook(sub('custom', { grain: 'pebble', grain2: 'none' }))?.size).toEqual([12, 26]);
+    expect(grainLook(sub('custom', { grain: 'sand', grain2: 'none' }))).toBeNull();
+    expect(grainLook(sub('custom', { grain: 'pebble', grain2: 'sand' }))).toBeNull(); // blends: not yet
   });
 });
 

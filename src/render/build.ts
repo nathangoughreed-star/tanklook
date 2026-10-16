@@ -3,6 +3,7 @@
 import * as THREE from 'three';
 import { LECA, SUBSTRATES, blendTile, maskQuantile } from '../art/placeholder';
 import { litterMeshes } from './scatter';
+import { glassGrains, grainLook, grainMeshes, grainTop } from './grains';
 import { snailAspect } from '../art/snails';
 import { fishTL, needsWater, speciesOf, type Species } from '../data/species';
 import { PERCHES, anchors, type Anchor, type Anchors, type V3 } from '../scene/anchors';
@@ -825,8 +826,24 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
     const c00 = vcol[i * (N + 1) + j], c10 = vcol[(i + 1) * (N + 1) + j], c01 = vcol[i * (N + 1) + j + 1], c11 = vcol[(i + 1) * (N + 1) + j + 1];
     return [0, 1, 2, 3, 4, 5, 6].map(c => (c00[c] * (1 - u) + c10[c] * u) * (1 - w) + (c01[c] * (1 - u) + c11[c] * u) * w);
   };
+  // coarse grounds in 3D (render/grains.ts): the painted top and skirt step back from the glass by `gsh`, behind the row
+  // of grains pressed against it (both cut it: a seam where the surface sliced the stones, a bare strip where it did not)
+  const gl = sub.show ? grainLook(sub) : null, gsh = gl && !bowl ? (gl.size[0] + gl.size[1]) / 2 * 0.55 : 0;
+  const clipIn = (poly: P[]) => { // keep the part at least gsh from every pane (the outlines are convex)
+    if (!gsh) return poly;
+    for (const e of footprint(T).edges) {
+      const at = (p: P) => -((p[0] - e.a[0]) * e.n[0] + (p[1] - e.a[1]) * e.n[1]) - gsh, out: P[] = [];
+      poly.forEach((p, i) => {
+        const q = poly[(i + 1) % poly.length], a = at(p), b = at(q);
+        if (a >= 0) out.push(p);
+        if ((a >= 0) !== (b >= 0)) { const t = a / (a - b); out.push([p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t]); }
+      });
+      poly = out; if (poly.length < 3) return [];
+    }
+    return poly;
+  };
   for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
-    const cell = clipToFootprint(T, [[L * i / N, D * j / N], [L * (i + 1) / N, D * j / N], [L * (i + 1) / N, D * (j + 1) / N], [L * i / N, D * (j + 1) / N]]);
+    const cell = clipIn(clipToFootprint(T, [[L * i / N, D * j / N], [L * (i + 1) / N, D * j / N], [L * (i + 1) / N, D * (j + 1) / N], [L * i / N, D * (j + 1) / N]]));
     if (cell.length < 3) continue;
     const q = [P3(i, j), P3(i + 1, j), P3(i + 1, j + 1), P3(i, j + 1)];
     const a = new THREE.Vector3(...q[1]).sub(new THREE.Vector3(...q[0])), b = new THREE.Vector3(...q[3]).sub(new THREE.Vector3(...q[0]));
@@ -859,7 +876,8 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   for (const e of edges) {
     const m = Math.max(1, Math.ceil(e.len / seg));
     for (let k = 0; k < m; k++) {
-      const p: P = [e.a[0] + (e.b[0] - e.a[0]) * k / m, e.a[1] + (e.b[1] - e.a[1]) * k / m], q: P = [e.a[0] + (e.b[0] - e.a[0]) * (k + 1) / m, e.a[1] + (e.b[1] - e.a[1]) * (k + 1) / m];
+      // with 3D grains pressed against the glass, the painted skirt steps back behind them (it hid them)
+      const p: P = [e.a[0] + (e.b[0] - e.a[0]) * k / m - e.n[0] * gsh, e.a[1] + (e.b[1] - e.a[1]) * k / m - e.n[1] * gsh], q: P = [e.a[0] + (e.b[0] - e.a[0]) * (k + 1) / m - e.n[0] * gsh, e.a[1] + (e.b[1] - e.a[1]) * (k + 1) / m - e.n[1] * gsh];
       const s0 = e.s0 + e.len * k / m, s1 = e.s0 + e.len * (k + 1) / m, gp = G(p), gq = G(q);
       if (banded) {
         for (let c = 0; c < cuts.length - 1; c++) {
@@ -895,9 +913,12 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
     if (wet && terra) wetSheen(m, g, wet);
     sc.add(new THREE.Mesh(g, m));
   };
-  mk(top, 0xffffff, topCol, topNrm, topWet); mk(side, 0xb4b4b4, sideCol); // the skirt a touch darker so the layer reads through the glass
+  // coarse grounds in 3D (render/grains.ts): the painted surface darkened to the shadowed gaps between the grains
+  mk(top, gl ? 0x6e6e6e : 0xffffff, topCol, topNrm, topWet); mk(side, gl ? 0x5a5a5a : 0xb4b4b4, sideCol); // the skirt a touch darker so the layer reads through the glass
   mk(leca, 0xb4b4b4, lecaCol, undefined, undefined, lecaTexture()); mk(mesh, 0x3a3d38, meshCol, undefined, undefined, meshTexture());
-  if (sub.litter?.density) for (const o of litterMeshes(S, T, (x, d) => G([x, d]))) sc.add(o);
+  if (gl) for (const o of [...grainMeshes(S, T, (x, d) => G([x, d])), ...(bowl ? [] : glassGrains(S, T, (x, d) => G([x, d])[1]))]) sc.add(o);
+  const gt = grainTop(gl); // litter lies on the grains
+  if (sub.litter?.density) for (const o of litterMeshes(S, T, (x, d) => { const p = G([x, d]); p[1] += gt; return p; })) sc.add(o);
 }
 
 /**
@@ -1030,7 +1051,7 @@ export function envKey(S: TankSetup) {
   const { color: _wc, opacity: _o, ...water } = S.water, { color: _c, ...wall } = S.wall;
   const { color: _c1, color2: _c2, share: _s, mix: _m, ...custom } = S.substrate.custom;
   // the condition (lane AL) is uniforms only
-  return JSON.stringify({ ...S, fish: null, items: null, camera: null, grow: null, condition: null, light, render, water, wall, substrate: { ...S.substrate, custom } });
+  return JSON.stringify({ ...S, fish: null, items: null, camera: null, grow: null, condition: null, light, render, water, wall, substrate: { ...S.substrate, custom: S.substrate.type === 'custom' && grainLook(S.substrate) ? S.substrate.custom : custom } }); // 3D stones take their colours at build
 }
 /** The values `patchLook` sets. */
 export const lookKey = (S: TankSetup) => JSON.stringify([S.water.color, S.water.opacity, S.wall.color, S.substrate.custom]);
