@@ -131,6 +131,9 @@
   <details class="sec" data-sec="quick"><summary><h2>Quick aquascape setup</h2></summary>
   <div class="field"><label class="flabel" for="layout">Style</label><select id="layout"></select><button id="layoutShuffle" title="A new arrangement of this style's rock, wood and plants, at the same composition and densities (Ctrl+Z brings the old one back)">Shuffle</button></div>
   <div class="hint" id="layoutHint"></div>
+  <div class="field"><label class="flabel" for="layoutFit">Plants fit</label><select id="layoutFit" title="Redraw the plants (corals in a reef) using only kinds that suit this light and the care below. Any = whatever the style draws. Advice, not a rule: you can still add anything by hand"></select></div>
+  <div class="field"><label class="flabel" for="layoutCare">Care</label><select id="layoutCare" title="What the owner will give: nothing extra, fertiliser, or CO2 and fertiliser (a reef: the dosing). Sets the growth feed. Needs Time at 0"></select></div>
+  <div id="fitNote" class="hint" hidden></div>
   <div class="field"><label class="flabel" for="layoutComp">Composition</label><select id="layoutComp" title="Where the weight of the starter set sits, in any style: Any lets Shuffle pick. Redraws the hardscape and the plants round it (Ctrl+Z brings the old ones back)"></select></div>
   <div class="row dens"><label for="densHard" id="lDensHard" title="How much rock and wood the starter set places, from one piece to far too much. The main pieces stay where they are and more or fewer go round them; Shuffle gives a new layout. Redraws the hardscape and the plants round it when you let go (Ctrl+Z brings the old ones back)">Hardscape</label><input id="densHard" type="range" min="-1" max="6" step="any" list="densTicks"><output id="oDensHard"></output></div>
   <div class="row dens"><label for="densPlant" id="lDensPlant" title="How full the starter set plants the tank, from one plant to far too much. Redraws only the plants (corals in a reef) when you let go; the rocks stay where they are">Plants</label><input id="densPlant" type="range" min="-1" max="6" step="any" list="densTicks"><output id="oDensPlant"></output></div>
@@ -177,6 +180,7 @@
   <div id="itemEdit">
   <div id="itemBox">
     <div class="itemName" id="itemName"></div>
+    <div class="hint" id="iLight" hidden></div>
     <div class="row" id="iSizeRow"><label for="iSize" id="iSizeLab">Size</label><input id="iSize" type="range" step="1"><output id="oISize"></output></div>
     <div class="row" id="iGrowthRow"><label for="iGrowth" title="From just planted to fully grown. How big and how dense it gets depends on the species; once longer than the water above it, it lies over along the surface.">Growth</label><input id="iGrowth" type="range" min="0" max="100" step="1"><output id="oIGrowth"></output></div>
     <div class="row spread"><label for="iSpread" id="iSpreadLab" title="Across the circle its stems start in. Up to the whole tank: what would land past the glass grows inside it. Until you move it, the plant picks its own.">Spread</label><input id="iSpread" type="range" step="1"><output id="oISpread"></output></div>
@@ -263,6 +267,7 @@
   <div class="row" id="lWRow"><label for="lW" title="Total power draw of all the lights over the tank together (every fixture, bulb and tube), not per fixture. Tubes and metal halide pendants: set by the lamps. Starts at a typical power for the fixture and tank; it estimates PAR and lux at the substrate and the render follows it. Type 'typical' to go back to the typical power">Total Power</label><input id="lW" type="range" min="0" max="400" step="1"><span id="lWFixed" class="hint" hidden></span><output id="oLW"></output></div>
   <div class="row" id="lParRow"><label for="lPar" title="Your own PAR-meter reading at the substrate (or the maker's figure), µmol/m²/s. Set, the estimate is scaled to match it. 0 = estimate">PAR (measured)</label><input id="lPar" type="range" min="0" max="300" step="1"><output id="oLPar"></output></div>
   <div id="lOut" class="hint"></div>
+  <div id="lCheck" class="hint" hidden></div>
   <div class="row"><label for="lBright" id="lBrightLab">Brightness</label><input id="lBright" type="range" min="0.2" max="2.5" step="0.05"><output id="oBright"></output></div>
   <div class="row"><label for="lK">Colour temp</label><span class="kwrap"><input id="lK" type="range" min="2700" max="20000" step="100"><span id="lKBand" class="kband"></span></span><output id="oK"></output></div>
   <div id="lKNote" class="hint" hidden></div>
@@ -275,6 +280,7 @@
   <span id="lMapText"></span></div>
   <div class="row" id="lUnitRow"><label for="lUnit" title="PAR counts the photons plants use; lux weighs the light by the eye's response. Each is calculated, not relabelled: water takes red light first, so they fall off at different rates with depth">Map shows</label><select id="lUnit" class="span2"><option value="par">PAR (µmol/m²/s): what plants use</option><option value="lux">Lux: brightness to the eye</option></select></div>
   <div class="row" id="lSliceRow"><label for="lSlice" title="Show the light on a layer across the tank at this height above the floor, to see it at every depth. Off = on the substrate only">Layer height</label><input id="lSlice" type="range" min="0" max="600" step="5"><output id="oLSlice"></output></div>
+  <label id="lShadeRow" title="Count the shade the floaters, plant canopy and stones or wood cast, in the map and the readout. Off: the fixture only."><input type="checkbox" id="lShade"> Account for the aquascape (shade from plants and hardscape)</label>
   <label id="lShellsRow" title="A see-through surface round every pocket of water where the light is below the level set here, through the whole tank up to the glass and the surface, with the darkest point marked"><input type="checkbox" id="lShells"> Dark spots: where the water gets too little light</label>
   <div id="lShellsNote" class="hint" hidden>Set Total Power above to find dark spots: they need the light in PAR or lux.</div>
   <div class="row" id="lDarkRow"><label for="lDark" title="Below this the water counts as dark. 30 PAR is where low light ends for plants">Dark below</label><input id="lDark" type="range" min="5" max="100" step="5"><output id="oLDark"></output></div>

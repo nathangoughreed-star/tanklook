@@ -229,6 +229,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       ...(l.mapUnit === 'par' || l.mapUnit === 'lux' ? { mapUnit: l.mapUnit } : {}),
       ...(l.mapStep != null ? { mapStep: Math.round(num(l.mapStep, 10, 5, 100) / 5) * 5 } : {}),
       ...(l.mapShells === true ? { mapShells: true } : {}),
+      ...(l.mapShade === true ? { mapShade: true } : {}),
       ...(l.mapDark != null ? { mapDark: Math.round(num(l.mapDark, 30, 5, 100) / 5) * 5 } : {}),
       ...(l.mapSlice != null && Number(l.mapSlice) > 0 ? { mapSlice: Math.round(num(l.mapSlice, 0, 0, tankA.H)) } : {}),
       ...(l.mapStepLux != null ? { mapStepLux: Math.round(num(l.mapStepLux, 500, 250, 5000) / 250) * 250 } : {}),
@@ -255,7 +256,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       const stop = (v: unknown, k: keyof typeof old) => Math.round(num(v, old[k], k === 'animal' ? ANIMAL_RANGE[0] : DENS_RANGE[0], k === 'animal' ? ANIMAL_RANGE[1] : DENS_RANGE[1]) * 100) / 100; // continuous since 2026-10-15
       const own = (v: unknown) => typeof v === 'number' && Number.isFinite(v) ? { v: Math.round(num(v, seed, 1, 1e9)) } : null;
       const ps = own(lay.plantSeed), as = own(lay.animalSeed), comp = pick(lay.comp, COMP_IDS, 'any');
-      return { id: pick(lay.id, LAYOUT_IDS, d.layout.id), seed, ...(ps ? { plantSeed: ps.v } : {}), ...(as ? { animalSeed: as.v } : {}), dens: ld ? { hard: stop(ld.hard, 'hard'), plant: stop(ld.plant, 'plant'), animal: stop(ld.animal, 'animal') } : old, ...(comp !== 'any' ? { comp } : {}), ...(lay.ground === true ? { ground: true } : {}) };
+      return { id: pick(lay.id, LAYOUT_IDS, d.layout.id), seed, ...(ps ? { plantSeed: ps.v } : {}), ...(as ? { animalSeed: as.v } : {}), dens: ld ? { hard: stop(ld.hard, 'hard'), plant: stop(ld.plant, 'plant'), animal: stop(ld.animal, 'animal') } : old, ...(comp !== 'any' ? { comp } : {}), ...(lay.ground === true ? { ground: true } : {}), ...(lay.fit === 'low' || lay.fit === 'medium' || lay.fit === 'high' ? { fit: lay.fit } : {}) };
     })(),
     water: {
       on: bool(wa.on, true), level: num(wa.level, d.water.level, ...LIMITS.level), opacity: num(wa.opacity, d.water.opacity, ...LIMITS.opacity),

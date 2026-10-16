@@ -9,6 +9,8 @@ import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { BACKDROPS } from '../render/backdrop';
 import { MAP_DIV, MAP_STEP, emitters, mapStepOf } from '../render/lighting';
 import { darkOf, darkStats } from '../render/lightShells';
+import { CARE_NAME, FIT_LABEL, FIT_LIGHTS, fitCaption, type FitLight } from '../scene/plantfit';
+import { VERDICT_TEXT, itemLights, tankSummary } from '../scene/lightcheck';
 import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, mountOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeLayout, tubeOf, TUBE_SP_MAX, bestPos, ledBarDepth, posMax, wattsOf, type Fixture } from '../scene/lightout';
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
@@ -903,6 +905,7 @@ Cancel, then change the name, to keep both.`)) return;
   $<HTMLSelectElement>('lBulb').onchange = e => store.edit(s => { s.light.bulbW = +(e.target as HTMLSelectElement).value; });
   $('lBeams').onchange = e => store.edit(s => { s.render.beams = (e.target as HTMLInputElement).checked; });
   $('lSlice').oninput = e => store.edit(s => { const v = +(e.target as HTMLInputElement).value; if (v > 0) s.light.mapSlice = v; else delete s.light.mapSlice; }, { coalesce: 'lSlice' });
+  $('lShade').onchange = e => store.edit(s => { if ((e.target as HTMLInputElement).checked) s.light.mapShade = true; else delete s.light.mapShade; });
   $('lShells').onchange = e => store.edit(s => { if ((e.target as HTMLInputElement).checked) s.light.mapShells = true; else delete s.light.mapShells; });
   $('lDark').oninput = e => store.edit(s => { const v = +(e.target as HTMLInputElement).value; s.light.mapDark = (s.light.mapUnit ?? 'par') === 'lux' ? v / 50 : v; }, { coalesce: 'lDark' });
   $('lStep').oninput = e => store.edit(s => { const v = +(e.target as HTMLInputElement).value; if ((s.light.mapUnit ?? 'par') === 'lux') s.light.mapStepLux = v; else s.light.mapStep = v; }, { coalesce: 'lStep' });
@@ -1052,6 +1055,24 @@ Cancel, then change the name, to keep both.`)) return;
     store.selectItem(null);
     store.edit(s => { if (to === 'any') delete s.layout.comp; else s.layout.comp = to; styleGround(s); regenerate(s, 'hard', 0); });
     status(`Composition: ${COMPS[to].label}. Ctrl+Z brings the previous pieces back.`);
+  };
+  // Auto-populate by light and care (lane PG step 4): the plants are redrawn from only the kinds that fit
+  $<HTMLSelectElement>('layoutFit').innerHTML = '<option value="any">Any plants</option>' + FIT_LIGHTS.map(k => `<option value="${k}"></option>`).join('');
+  $<HTMLSelectElement>('layoutCare').innerHTML = (Object.keys(CARE_NAME) as GrowFeed[]).map(k => `<option value="${k}">${esc(CARE_NAME[k][0].toUpperCase() + CARE_NAME[k].slice(1))}</option>`).join('');
+  const refit = async (revert: () => void, edit: (s: TankSetup) => void, msg: string) => {
+    if (!await okToReplace('plant', revert)) return;
+    store.selectItem(null); fishId0 = store.nextId();
+    store.edit(s => { edit(s); regenerate(s, 'plant', fishId0); });
+    status(msg + ' Ctrl+Z brings the previous plants back.');
+  };
+  const showFit = () => { const s = S(); setVal('layoutFit', s.layout.fit ?? 'any'); setVal('layoutCare', s.grow.feed); };
+  $<HTMLSelectElement>('layoutFit').onchange = e => {
+    const v = (e.target as HTMLSelectElement).value;
+    refit(showFit, s => { if (v === 'any') delete s.layout.fit; else s.layout.fit = v as FitLight; }, v === 'any' ? 'Plants redrawn: any kind.' : 'Plants redrawn for the light and care.');
+  };
+  $<HTMLSelectElement>('layoutCare').onchange = e => {
+    const v = (e.target as HTMLSelectElement).value as GrowFeed;
+    refit(showFit, s => { s.grow.feed = v; }, `Care set to ${CARE_NAME[v]}.`);
   };
   // Quick aquascape setup (Nathan 2026-10-15): one Shuffle for the whole set, the substrate and terrain, rock and wood,
   // and plants, at the same style, composition and densities; the animals stay (Animals has its own Shuffle). The
@@ -1715,6 +1736,7 @@ Cancel, then change the name, to keep both.`)) return;
     $('lParRow').style.display = watts ? '' : 'none'; setOut('oLPar', l.par ? `${l.par} µmol` : 'Estimate');
     const lo = watts ? lightOutCached(s) : null;
     $('lOut').textContent = lo ? lightReadout(lo) : 'Set Power to estimate the light (PAR and lux) at the substrate.'; $('lOut').hidden = l.type === 'flat';
+    { const c = $('lCheck'), t = lo ? tankSummary(s) : null; c.hidden = !t; c.textContent = t ?? ''; }
     $('lBrightLab').textContent = watts ? 'Exposure' : 'Brightness';
     $('lBrightLab').parentElement!.style.display = l.type === 'flat' ? 'none' : ''; // no fixture: nothing to brighten
     $('lBrightLab').title = watts ? 'Like a camera: how bright the render looks for the light the fixture gives (x1/4 to x16; high washes out). The PAR and lux do not change' : '';
@@ -1725,7 +1747,7 @@ Cancel, then change the name, to keep both.`)) return;
     $('lUnitRow').style.display = mapOn && watts ? '' : 'none'; setVal('lUnit', l.mapUnit ?? 'par'); mapKey(watts ? l.mapUnit ?? 'par' : 'rel');
     // the map layer: from the floor up to the water surface (the tank top when dry)
     { const top = Math.round(s.water.on ? waterY(s.tank, s.water.level) : s.tank.H); $('lSliceRow').style.display = mapOn && watts ? '' : 'none';
-      ($('lSlice') as HTMLInputElement).max = String(top); $('lShellsRow').style.display = mapOn ? '' : 'none'; ($('lShells') as HTMLInputElement).checked = !!l.mapShells;
+      ($('lSlice') as HTMLInputElement).max = String(top); $('lShellsRow').style.display = mapOn ? '' : 'none'; $('lShadeRow').style.display = mapOn && watts ? '' : 'none'; ($('lShade') as HTMLInputElement).checked = !!l.mapShade; ($('lShells') as HTMLInputElement).checked = !!l.mapShells;
       // without Power the level has no PAR to compare with: the row stays in sight, greyed, with a note (Nathan 2026-10-15)
       ($('lShells') as HTMLInputElement).disabled = !watts; $('lShellsRow').classList.toggle('off', !watts);
       $('lShellsNote').hidden = !(mapOn && !watts);
@@ -1757,6 +1779,11 @@ Cancel, then change the name, to keep both.`)) return;
     ($('split') as HTMLButtonElement).disabled = store.split;
     $('splitHint').textContent = store.split ? 'Two tanks is the most: Delete one on its tab to split again. Each view’s tab (top of the view) opens on hover: what differs, Download that tank on its own, or Delete it. Save and Download at the top keep both tanks together.' : 'Copy this tank into a second, independent one beside it, then change anything in either.';
     setVal('edge', s.render.edge); $('gridOn').checked = s.render.grid; setVal('pop', Math.round(s.render.pop * 100)); setOut('oPop', s.render.pop ? `${Math.round(s.render.pop * 100)} %` : 'off');
+    { const salt = !!s.water.salt, fs = $<HTMLSelectElement>('layoutFit'), fit = s.layout.fit;
+      [...fs.options].forEach(o => { if (o.value !== 'any') o.textContent = FIT_LABEL[o.value as FitLight][salt ? 'reef' : 'fresh']; });
+      setVal('layoutFit', fit ?? 'any'); setVal('layoutCare', s.grow.feed);
+      fs.disabled = s.layout.id === 'none'; ($('layoutCare') as HTMLSelectElement).disabled = s.layout.id === 'none' || s.grow.time > 0;
+      const n = $('fitNote'); n.hidden = !fit; if (fit) n.textContent = fitCaption(s.items, fit, s.grow.feed, salt, v => LIBRARY[v]?.label ?? v); }
     setVal('layoutComp', s.layout.comp ?? 'any'); ($('layoutComp') as HTMLSelectElement).disabled = s.layout.id === 'none';
     setVal('layout', s.layout.id); // "Bare tank" says there is nothing in it, which stops being true once a piece is added by hand (G2, 2026-10-14)
     $('layoutHint').textContent = s.layout.id === 'none' && s.items.length ? 'A starter set replaces every piece; or add, move and remove pieces yourself.' : LAYOUTS[s.layout.id].hint;
@@ -1777,6 +1804,8 @@ Cancel, then change the name, to keep both.`)) return;
     $('itemBox').hidden = !it;
     if (it) {
       const v = LIBRARY[it.variant], [l, h, w] = itemDims(it);
+      { const b = $('iLight'), lt = it.kind === 'plant' || it.kind === 'coral' ? itemLights(s)?.get(it.id) : undefined;
+        b.hidden = !lt; if (lt) { b.textContent = `Light here: ${Math.round(lt.par)} PAR, ${VERDICT_TEXT[lt.verdict]}`; b.dataset.verdict = lt.verdict; } }
       $('itemName').innerHTML = `${esc(v.label)} <i>${fmt(l)} × ${fmt(h)} high × ${fmt(w)}</i>`;
       $('iSizeLab').textContent = it.kind === 'plant' ? (isPatch(it.variant) ? 'Width' : 'Height') : it.variant === 'manzanita' ? 'Height' : it.kind === 'coral' ? 'Width' : 'Length';
       const probe = { ...it, size: 1e6 }; clampItem(probe, A);
