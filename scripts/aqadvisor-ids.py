@@ -71,6 +71,11 @@ STAND_INS = {
     'firenewt': 'Zebra Loach (Botia striata)',  # 9 cm, bottom
     'firetoad': 'White Cloud Mountain Minnow (Tanichthys albonubes)',  # 4.5 cm, semi-aquatic, cool water
     'hillstream': 'Hillstream Loach (Gastromyzon ctenocephalus)',
+    # lane CP batch 3: AqAdvisor was unreachable (2026-10-16); mbuna of the same size and habit stand in until it is asked again
+    'labeo': 'Pseudotropheus Demasoni (Pseudotropheus demasoni)',
+    'auratus': 'Pseudotropheus Demasoni (Pseudotropheus demasoni)',
+    'afra': 'Pseudotropheus Demasoni (Pseudotropheus demasoni)',
+    'livingstonii': 'Grants Peacock (Aulonocara stuartgranti)',  # a 20 cm Malawi predator
     'syno': 'Synodontis Petricola (Synodontis petricola)',  # S. njassae is not listed; same genus, size and habit  # Sewellia is not listed; same family, size and habit
 }
 

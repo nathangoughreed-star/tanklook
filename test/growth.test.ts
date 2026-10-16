@@ -11,7 +11,7 @@ import { plantGeometry as plantBefore } from './fixtures/plant3d_before_growth';
 const TYPES = Object.keys(PLANT3D) as PlantType[];
 /** The species the pre-growth fixture knows (lane GR2 added frogbit, water lettuce and tiger lotus after it; lane T2 the
  *  land plants). */
-const OLD = TYPES.filter(t => !['frogbit', 'lettuce', 'lotus', 'pothos', 'bromeliad', 'tropfern', 'fittonia', 'sphagnum', 'creeper', 'hairgrass', 'hornwort', 'anacharis', 'echeveria', 'haworthia', 'jade', 'aloe', 'burrotail', 'barrel'].includes(t));
+const OLD = TYPES.filter(t => !['frogbit', 'lettuce', 'lotus', 'pothos', 'bromeliad', 'tropfern', 'fittonia', 'sphagnum', 'creeper', 'hairgrass', 'hornwort', 'anacharis', 'echeveria', 'haworthia', 'jade', 'aloe', 'burrotail', 'barrel', 'sansevieria', 'agave', 'columnar'].includes(t));
 
 /** The visible triangles as sorted strings of their corners (order-free: the growth build interleaves its extras). */
 function tris(g: THREE.BufferGeometry) {

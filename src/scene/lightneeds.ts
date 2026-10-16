@@ -100,6 +100,9 @@ export const NEEDS: Record<string, PlantNeed | CoralNeed | LandNeed> = {
   aloe: P('high', 'none', 'none', { par: [50, 400], note: 'succulent' }),
   burrotail: P('high', 'none', 'none', { par: [50, 400], note: 'succulent' }),
   barrel: P('high', 'none', 'none', { par: [60, 400], note: 'succulent' }),
+  sansevieria: P('high', 'none', 'none', { par: [10, 400], note: 'succulent' }), // takes almost any light
+  agave: P('high', 'none', 'none', { par: [60, 400], note: 'succulent' }),
+  columnar: P('high', 'none', 'none', { par: [60, 400], note: 'succulent' }),
   // reef
   mushroom: C('soft', 'none', [30, 100]), // lowest-light coral: bleaches shrink above ~100
   zoanthid: C('soft', 'light', [50, 200]),

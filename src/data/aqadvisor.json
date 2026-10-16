@@ -296,5 +296,25 @@
   "name": "Yellow Clown Goby (Gobiodon okinawae)",
   "standIn": true,
   "salt": true
+ },
+ "labeo": {
+  "aq": "200909300168",
+  "name": "Pseudotropheus Demasoni (Pseudotropheus demasoni)",
+  "standIn": true
+ },
+ "auratus": {
+  "aq": "200909300168",
+  "name": "Pseudotropheus Demasoni (Pseudotropheus demasoni)",
+  "standIn": true
+ },
+ "afra": {
+  "aq": "200909300168",
+  "name": "Pseudotropheus Demasoni (Pseudotropheus demasoni)",
+  "standIn": true
+ },
+ "livingstonii": {
+  "aq": "200909300091",
+  "name": "Grants Peacock (Aulonocara stuartgranti)",
+  "standIn": true
  }
 }

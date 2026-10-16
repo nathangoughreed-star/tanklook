@@ -91,6 +91,11 @@
   "peacock": {"v":1,"hash":"087360bd","build":667,"date":"2026-10-16"},
   "peacock~f": {"v":1,"hash":"d680a6e1","build":667,"date":"2026-10-16"},
   "syno": {"v":1,"hash":"86af656f","build":667,"date":"2026-10-16"},
+  "afra": {"v":1,"hash":"151aca9d","build":667,"date":"2026-10-16"},
+  "auratus": {"v":1,"hash":"a43ec0ec","build":667,"date":"2026-10-16"},
+  "auratus~f": {"v":1,"hash":"0c742a58","build":667,"date":"2026-10-16"},
+  "labeo": {"v":1,"hash":"10dfff3e","build":667,"date":"2026-10-16"},
+  "livingstonii": {"v":1,"hash":"a5f712c7","build":667,"date":"2026-10-16"},
   "yellowlab": {"v":1,"hash":"e77c80ea","build":567,"date":"2026-10-16"},
   "yellowlab~f": {"v":1,"hash":"1caad183","build":567,"date":"2026-10-16"},
   "yellowtang": {"v":2,"hash":"933463ae","build":348,"date":"2026-10-14"}

@@ -28,7 +28,6 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
 | EN enclosure presentation (roadmap section 7) | `../Glass-Box-enclosure` / `enclosure` | 5673 | tank presets + tank section of `ui/panels.ts` / `index.html`, new `scene/equipment.ts` + `render/equipment.ts`, lids / doors block in `render/build.ts`, presets in `scene/defaults.ts` | ready to open (prompt `prompts/lane-EN-enclosure.md`); starts with an audit table for Nathan |
-| CP content pack | `../Glass-Box-content` / `content-pack` | 5683 | new piece / plant entries of `scene/items.ts` LIBRARY, `art/plants.ts`, `render/plant3d.ts`, `render/items.ts` (dish), `scene/lightneeds.ts` rows, species data + fish art, the Malawi starter | ready to open (prompt `prompts/lane-CP-content-pack.md`); shares `scene/items.ts` with EN's one hook line |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 
@@ -58,12 +57,6 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 Scope: roadmap section 7. Audit (2026-10-16): presets PARTIAL, backdrops DONE (no botanical / plain), lids+doors NOT BUILT, equipment PARTIAL (lights only), light mood PARTIAL (no direction / mood presets), bowls DONE.
 **Batch 1 (2026-10-16, Nathan approved pictures `shots/enclosure/EN1-2`):** 9 terrarium presets in `TANK_PRESETS` (nano 8", cubes 12/18", tall arboreal 12x18x12 / 18x24x18 / 24x48x24, wide terrestrial 36x18x18 / 48x18x24 / 48x24x24); lid 'mesh' (screen top: dark frame + textured weave in `build.ts` addLid via `meshMaterial`, light x0.8 `MESH_LID` in lightout, plants cap at lid like glass); new optional `TankSetup.doors` 'hinged' | 'sliding' (absent = none; rectangles only; `addFrontDoors` in build.ts; Lid row has Mesh top, new Front doors row in the Tank section). No version bump (additive, validate keeps old files). One-line hooks outside my files: `render/items.ts` (lid cap), `ui/diff.ts`, `scene/setupsheet.ts`, `scene/lightout.ts`.
 Open: equipment (heater, hang-on filter, canister outlet, mister nozzle, light bar) in new scene/equipment.ts + render/equipment.ts; light mood / direction; botanical / plain backdrop. Weight of a mesh lid is not counted.
-
-## Lane CP: content pack (2026-10-16; branch `content-pack`, port 5683; batch 1 pushed, Nathan approved the pictures)
-- **Dish** (`dish` ceramic, `stonedish`; kind `cave`, no new ItemKind): lathed bowl + flat blue water disc with a bright meniscus ring (`dishShape`, render/items.ts); grit kind 0 on glaze and water. Same water in a wet tank (opaque disc, no waterline test).
-- **Succulents** (`echeveria haworthia jade aloe burrotail barrel`, land, slow): data in `PLANT3D`; new options `Leaf3D.thick` (fleshy leaf: top bulges up, underside down; old plants untouched) and `Plant3D.stemK` (stem radius; jade trunk). Barrel = ribs curling in (negative arch). `cap` keeps echeveria / haworthia / barrel / aloe compact at growth 1. lightneeds rows: high band, no CO2, no ferts (haworthia PAR from 30). Open: jade at growth 0 is a bare cutting (stem-form rule); burro's tail is thin-ish; haworthia white bands barely show; arid starter still uses hairgrass + bromeliads (not switched to succulents).
-- **Malawi fish** (`peacock`+f, `demasoni`, `kadango`+f, `syno`): plans in fishgen.ts PLANS, species.json, care.ts, aqadvisor (syno = S. petricola stand-in). Recorded v1 build 667 in model-versions.json (only these six keys; the rest of the review page shows many older models as "changed", NOT re-recorded) + their sheets; gallery index.html not regenerated. Malawi starter animals now yellowlab, peacock, demasoni, kadango, syno, nerite (was yellowlab, cockatoo, bristlenose, nerite): old malawi layouts reshuffle their animals.
-- Pictures: shots/cp_*.png (worktree only); helpers scripts/cp-shots.js, cp-sheet.py.
 
 ## Lane W: Android app (2026-10-14; OPENED same day, Nathan: "start work on the android app"; prompt `prompts/lane-W-android-app.md`)
 - **Route: Trusted Web Activity (TWA)** around https://tanklook.com/ (Bubblewrap or PWABuilder). Real Chrome, so WebXR
@@ -238,6 +231,7 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane CP: content pack (2026-10-16; branch `content-pack`, port 5683; batch 1 pushed, Nathan approved the pictures)
 - Lane SB: scatter brush (2026-10-16; branch `scatter-brush`, port 5693; opened by coordinator 3; started)
 - Lane SS2: starter styles batch 2 (2026-10-16; branch `starters2`, port 5683; opened by coordinator 3; DONE: Nathan approved all styles 2026-10-16; pushed to main)
 - Lane BP2: ball python follow-ups (2026-10-16; branch `python2`, port 5703; built + tested on the branch, NOT pushed: pictures sent to Nathan, awaiting his verdict)

@@ -67,6 +67,9 @@ export const LIBRARY: Record<string, Variant> = {
   aloe: { kind: 'plant', label: 'Small aloe', hint: 'Terrarium: upright, fleshy grey-green spears flecked cream. Slow; bright light, sparing water.', size: 150, min: 40, max: 360 },
   burrotail: { kind: 'plant', label: "Burro's tail", hint: 'Terrarium: trailing stems of plump blue-green leaves; raise it onto a rock or wood and let it hang. Size = stem length.', size: 220, min: 50, max: 600 },
   barrel: { kind: 'plant', label: 'Barrel cactus', hint: 'Terrarium: a squat ribbed green ball with pale spines. Very slow; full sun, almost no water.', size: 90, min: 30, max: 240 },
+  sansevieria: { kind: 'plant', label: 'Snake plant', hint: 'Terrarium: stiff upright sword leaves, banded dark green with yellow rims. Very tough; tolerates dim light and dry soil.', size: 220, min: 50, max: 520 },
+  agave: { kind: 'plant', label: 'Agave', hint: 'Terrarium: a tight rosette of thick blue-grey spears. Slow; full sun, very little water.', size: 130, min: 40, max: 320 },
+  columnar: { kind: 'plant', label: 'Columnar cactus', hint: 'Terrarium: a tall ribbed blue-green column with pale spines. Very slow; full sun, almost no water. Size = height.', size: 220, min: 60, max: 520 },
   hornwort: { kind: 'plant', label: 'Hornwort', hint: 'Bushy stems of whorled needle leaves; fast, trails along the surface.', size: 300, min: 60, max: 900 },
   anacharis: { kind: 'plant', label: 'Anacharis', hint: 'Long stems densely set with whorls of small bright leaves; fast.', size: 300, min: 60, max: 900 },
   // corals (2026-10-14): size = width
@@ -158,7 +161,7 @@ export interface Limb { pts: V3[]; r0: number; r1: number; tone: number }
 /** Stone length, height and width (mm) for its variant and seed. */
 export function stoneDims(variant: string, seed: number, size: number): V3 {
   const r = rng(seed * 31 + 7);
-  const [h0, h1, w0, w1] = ({ river: [0.45, 0.65, 0.7, 0.85], seiryu: [0.9, 1.4, 0.55, 0.75], dragon: [0.55, 0.9, 0.6, 0.8], lava: [0.5, 0.8, 0.65, 0.85], slate: [0.12, 0.24, 0.5, 0.8], ledge: [0.2, 0.28, 0.55, 0.72], liverock: [0.5, 0.75, 0.6, 0.85] } as Record<string, number[]>)[variant] ?? [0.6, 0.6, 0.7, 0.7];
+  const [h0, h1, w0, w1] = ({ river: [0.45, 0.65, 0.7, 0.85], seiryu: [0.9, 1.4, 0.55, 0.75], dragon: [0.55, 0.9, 0.6, 0.8], lava: [0.5, 0.8, 0.65, 0.85], slate: [0.12, 0.24, 0.5, 0.8], ledge: [0.12, 0.5, 0.55, 0.72], liverock: [0.5, 0.75, 0.6, 0.85] } as Record<string, number[]>)[variant] ?? [0.6, 0.6, 0.7, 0.7];
   return [size, size * (h0 + r() * (h1 - h0)), size * (w0 + r() * (w1 - w0))];
 }
 
@@ -1187,7 +1190,7 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
     });
   } else if (id === 'arid') {
     // Leopard-gecko desert: a stack of rock ledges on the warm side to bask on, a hide at each end (warm and cool), a few
-    // lumps of rock and dry tufts; the plants are sparse stand-ins (there are no succulents in the library yet).
+    // lumps of rock and dry tufts; the plants are succulents (lane CP) and a few dry tufts.
     const F = designed ? DESIGNED_FOCI.arid! : st.foci, warm = F[0].x < 0.5 ? 1 : -1;
     layer('hard', () => {
       const f = F[0], base = clamp(Math.min(L * 0.3, D * 1.2), 90, 320) * (designed ? 1 : 0.85 + 0.25 * st.scale), mat = designed ? 'ledge' : 'ledge';
@@ -1204,8 +1207,13 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
       if (dens > 0.5) put('corktube', L * (warm > 0 ? 0.82 : 0.18), D * 0.3, hide * 1.1, { yaw: Math.round((r() - 0.5) * 40) });
     });
     layer('plant', () => {
-      for (let i = 0, n = many(5); i < n; i++) put('hairgrass', L * (0.08 + r() * 0.84), D * (0.35 + r() * 0.55), clamp(H * 0.12, 40, 90) * (0.7 + r() * 0.6));
-      for (let i = 0, n = many(2); i < n; i++) plant('bromeliad', L * (0.1 + r() * 0.8), D * (0.55 + r() * 0.35), clamp(H * 0.13, 45, 100));
+      // succulents (lane CP): each kind with the height it reaches in a desert tank; a few dry hairgrass tufts between
+      const SUCC: [PlantType, number][] = [['echeveria', 0.17], ['haworthia', 0.12], ['aloe', 0.22], ['echeveria', 0.2], ['barrel', 0.16], ['burrotail', 0.2]];
+      for (let i = 0, n = many(6); i < n; i++) {
+        const [t, k] = SUCC[Math.floor(r() * SUCC.length)];
+        put(t, L * (0.08 + r() * 0.84), D * (0.3 + r() * 0.6), clamp(H * k, 40, 160) * (0.75 + r() * 0.5));
+      }
+      for (let i = 0, n = many(2); i < n; i++) put('hairgrass', L * (0.08 + r() * 0.84), D * (0.35 + r() * 0.55), clamp(H * 0.12, 40, 90) * (0.7 + r() * 0.6));
     });
   } else if (id === 'python') {
     // Ball python: bark floor, a hide at each end (warm side and cool side), a ledge to bask on under a branch, the rest

@@ -2,7 +2,9 @@
 // puts a leaf-sitter on it (and never a species that cannot), and Shuffle perches some dwarf frogs on plants and hardscape.
 import { describe, expect, it } from 'vitest';
 import { rng } from '../src/art/paint';
-import { itemMesh, leafProbe } from '../src/render/items';
+import * as THREE from 'three';
+import { buildTank } from '../src/render/build';
+import { itemMesh, leafProbe, leafUnderProbe } from '../src/render/items';
 import { anchors } from '../src/scene/anchors';
 import { emptyScene } from '../src/scene/defaults';
 import { LIBRARY } from '../src/scene/items';
@@ -55,5 +57,35 @@ describe('leaf anchors', () => {
       for (const f of S.fish) { all++; expect(f.surface).not.toBe('glass'); if (f.surface === 'hardscape') perched++; }
     }
     expect(perched / all).toBeGreaterThan(0.1);
+  });
+
+  it('animals hang under a leaf: belly on the underside, back down, head in its plane; none there = the ground', () => {
+    const S = tank(), m = itemMesh(S, S.tank, crypt)!; m.updateMatrixWorld(true);
+    const ground = (x: number, d: number) => groundHeight(S, S.tank, x, d), under = leafUnderProbe([m], ground);
+    let spot: { x: number; d: number; u: { y: number; n: number[] } } | null = null;
+    for (let k = 0; k < 400 && !spot; k++) { const x = crypt.x + (Math.random() - 0.5) * 120, d = crypt.depth + (Math.random() - 0.5) * 120, u = under(x, d, 40, 0.3); if (u) spot = { x, d, u }; }
+    expect(spot).toBeTruthy();
+    expect(spot!.u.n[1]).toBeLessThan(-0.29);
+    for (const sp of ['oto', 'cherryshrimp', 'nerite']) {
+      S.fish = [{ id: 1, species: sp, x: spot!.x, y: spot!.u.y, depth: spot!.d, yaw: 30, pitch: 0, roll: 0, bend: 0, surface: 'under' }];
+      const mesh = buildTank({ ...S, units: 'cm' }, S.tank, null).fishMeshes[0];
+      const up = new THREE.Vector3(0, 1, 0).applyQuaternion(mesh.quaternion);
+      expect(up.y, sp).toBeLessThan(-0.29);                       // back down
+      expect(mesh.position.y, sp).toBeLessThan(spot!.u.y);        // under the leaf
+      expect(spot!.u.y - mesh.position.y, sp).toBeLessThan(30);   // and touching it
+    }
+    S.fish = [{ id: 1, species: 'cherryshrimp', x: 20, y: 100, depth: 20, yaw: 0, pitch: 0, roll: 0, bend: 0, surface: 'under' }]; // no leaf there
+    const down = buildTank({ ...S, units: 'cm' }, S.tank, null).fishMeshes[0];
+    expect(new THREE.Vector3(0, 1, 0).applyQuaternion(down.quaternion).y).toBeGreaterThan(0.5);
+  });
+  it('Shuffle hangs some clingers under leaves; dwarf frogs and tree frogs never', () => {
+    let under = 0, all = 0;
+    for (let seed = 1; seed <= 30; seed++) {
+      const S = tank();
+      for (let i = 0; i < 6; i++) for (const [j, sp] of ['cherryshrimp', 'nerite', 'oto', 'adf'].entries()) S.fish.push({ id: i * 4 + j + 1, species: sp, x: 300, y: 100, depth: 200, yaw: 0, pitch: 0, roll: 0, bend: 0 });
+      shuffleFish(S, rng(seed));
+      for (const f of S.fish) { if (f.species === 'adf') expect(f.surface).not.toBe('under'); else { all++; if (f.surface === 'under') under++; } }
+    }
+    expect(under / all).toBeGreaterThan(0.1);
   });
 });

@@ -61,7 +61,8 @@ function resolve(r: RawSpecies): Species {
   const aspect = r.aspect ?? meta?.aspect ?? 0.4, rest = meta?.rest ?? aspect / 2;
   const habitat: Habitat = kind ? 'both' : r.habitat === 'land' || r.habitat === 'both' ? r.habitat : 'water';
   const group = r.group === 'school' || r.group === 'shoal' ? r.group : undefined, level = r.level === 'top' || r.level === 'low' ? r.level : undefined;
-  const surfaces: Surface[] | undefined = kind || r.cling === 'any' ? ['floor', 'glass', 'hardscape'] : r.cling === 'hardscape' ? ['floor', 'hardscape']
+  const surfaces: Surface[] | undefined = kind || r.cling === 'any' ? (habitat === 'land' ? ['floor', 'glass', 'hardscape'] : ['floor', 'glass', 'hardscape', 'under']) : // land climbers (frogs, geckos, spiders) do not hang under aquatic leaves
+     r.cling === 'hangs' ? ['floor', 'hardscape', 'under'] : r.cling === 'hardscape' ? ['floor', 'hardscape']
     : r.cling === 'top' ? ['floor', 'top', 'hardscape'] : undefined; // 'top': perches on the bottom, on hardscape or leaves, or floats at the water surface, never on glass (dwarf frog)
   const sp: Species = { id: r.id, name: r.name, sci: r.sci, tl: r.tl, art: r.art, aspect, rest, zone, kind, surfaces, habitat, cat: CATEGORIES.some(c => c[0] === r.cat) ? r.cat as Category : 'fw-fish', group, level, note: r.note, look: r.id, ...(r.pair ? { pair: true } : {}), ...(r.body === 'snake' ? { body: 'snake' as const } : {}) };
   if ((r as { salt?: unknown }).salt === true) sp.salt = true; // marine (lane B hook 2026-10-13; absent = freshwater)
@@ -88,8 +89,8 @@ export const clingsTo = (sp: Species, surface: Surface) => !!sp.surfaces?.includ
 /** May sit on the top of a plant leaf: a water or snail animal that uses hardscape (not land climbers, which perch on dry wood). */
 export const onLeaves = (sp: Species) => sp.habitat !== 'land' && clingsTo(sp, 'hardscape');
 /** How level a leaf must be for it to sit there (the y of its normal): a perching animal (dwarf frog: no glass) needs a fairly flat
- *  one, one that clings (snail, shrimp, oto) a steeper one. 0 = not on leaves. */
-export const leafUp = (sp: Species) => !onLeaves(sp) ? 0 : clingsTo(sp, 'glass') ? 0.3 : 0.6;
+ *  one, one that clings (snail, shrimp, oto: they hang under leaves too) a steeper one. 0 = not on leaves. */
+export const leafUp = (sp: Species) => !onLeaves(sp) ? 0 : clingsTo(sp, 'under') ? 0.3 : 0.6;
 /** Needs water: hidden in a dry tank. */
 export const needsWater = (sp: Species) => sp.habitat === 'water';
 /** Short list tag: snail, bottom, land or amphibious. */

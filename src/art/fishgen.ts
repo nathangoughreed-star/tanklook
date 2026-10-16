@@ -795,6 +795,29 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { at: 0.5, len: 0.16, h: 0.2, spines: 0.12, nSp: 1, spineH: 0.24, rake: 0.2, drop: 0.3, a: 0.9 }, anal: { u0: 0.34, u1: 0.4, h: 0.06 }, adipose: true, pelvic: { u: 0.58, len: 0.1, w: 1.3 },
     marks: [{ k: 'spots', n: 60, u0: 0.2, u1: 0.95, v0: -0.2, v1: 0.1, r: 0.012, c: '#1c1610', a: 0.6 }, { k: 'blob', u: 0.45, v: -0.1, ru: 0.3, rv: 0.1, c: '#2a2018', a: 0.3 }],
     finMarks: [{ k: 'spots', n: 18, u0: 0.1, u1: 0.8, v0: -0.4, v1: 0.1, r: 0.012, c: '#1c1610', a: 0.55 }], barbels: 0.075, eye: { r: 0.03, iris: ['#c8b890', '#20180e'], dv: -0.03 } },
+  // blunt-nosed mbuna (Labeotropheus trewavasae, male): the fleshy overhanging snout, a deep blue body with a long
+  // orange-edged dorsal
+  labeo: { gape: 0.03, gapeDrop: 0.016, thick: 0.46, belly: 0.1, depth: 0.31, pedU: 0.2, ped: 0.06, peak: 0.55, snout: 0.15, mouth: 0.03, shade: ['#2a4a8a', '#4a76b8', '#a0c0e0'], tail: { type: 'round', h: 0.15, tint: '#5a82c0' }, fin: '#4a78b8',
+    dorsal: { at: 0.8, len: 0.68, h: 0.1, spines: 0.7, nSp: 17, spineH: [0.06, 0.085], notch: 0.15, rake: 0.55, tip: 'point', trail: 0.04, drop: 0.75, edge: '#f09a3a' },
+    anal: { at: 0.48, len: 0.25, h: 0.1, spines: 0.3, nSp: 3, spineH: [0.04, 0.07], tip: 'point', trail: 0.03, tint: '#3a5a98' }, pelvic: { u: 0.68, len: 0.12, ext: 0.03, tint: '#2a3a68' },
+    marks: [{ k: 'bars', us: [0.28, 0.4, 0.52, 0.64, 0.76], w: 0.03, c: '#1a2a52', a: 0.35 }, { k: 'blob', u: 0.6, v: -0.05, ru: 0.22, rv: 0.07, c: '#9cc4f0', a: 0.2 }], eye: { r: 0.03, iris: ['#c8b080', '#1a1408'] } },
+  // golden mbuna (Melanochromis auratus, male): near black with a pale yellow-white stripe along the back and flank
+  auratus: { gape: 0.035, gapeDrop: 0.008, thick: 0.4, belly: 0.1, depth: 0.26, pedU: 0.2, ped: 0.055, peak: 0.55, snout: 0.42, mouth: 0.01, shade: ['#1a1814', '#2a2822', '#5a5444'], tail: { type: 'round', h: 0.15, tint: '#242018' }, fin: '#2a2620',
+    dorsal: { at: 0.78, len: 0.64, h: 0.1, spines: 0.65, nSp: 18, spineH: [0.055, 0.08], notch: 0.15, rake: 0.55, tip: 'point', trail: 0.04, drop: 0.75, edge: '#e8d070' },
+    anal: { at: 0.48, len: 0.25, h: 0.09, spines: 0.3, nSp: 3, spineH: [0.04, 0.065], tip: 'point', trail: 0.03, tint: '#1e1c18' }, pelvic: { u: 0.68, len: 0.11, ext: 0.03, tint: '#181612' },
+    marks: [{ k: 'band', u0: 0.12, u1: 0.96, v0: -0.075, v1: -0.045, c: '#f0e090', a: 0.9, f: 0.012 }, { k: 'band', u0: 0.2, u1: 0.94, v0: 0.04, v1: 0.07, c: '#f0e090', a: 0.8, f: 0.012 }],
+    eye: { r: 0.03, iris: ['#d8c060', '#0a0806'] } },
+  // Livingstone's cichlid (Nimbochromis livingstonii): a big, deep-headed predator; mottled yellow-grey with irregular blue-black blotches
+  livingstonii: { gape: 0.06, gapeDrop: 0.012, thick: 0.4, belly: 0.14, depth: 0.32, pedU: 0.22, ped: 0.06, peak: 0.5, snout: 0.5, mouth: 0.012, shade: ['#625638', '#8e7e4c', '#bcb088'], tail: { type: 'round', h: 0.16, tint: '#b8a060', edge: '#4a6a9a' }, fin: '#b0a068',
+    dorsal: { at: 0.8, len: 0.6, h: 0.11, spines: 0.55, nSp: 15, spineH: [0.06, 0.09], notch: 0.15, rake: 0.6, tip: 'point', trail: 0.1, drop: 0.8, edge: '#4a78b0' },
+    anal: { at: 0.5, len: 0.26, h: 0.11, spines: 0.3, nSp: 3, spineH: [0.04, 0.07], tip: 'point', trail: 0.06 }, pelvic: { u: 0.67, len: 0.13, ext: 0.04, tint: '#a09060' },
+    marks: [{ k: 'spots', n: 16, u0: 0.18, u1: 0.94, v0: -0.14, v1: 0.1, r: 0.045, c: '#2a3a6a', a: 0.65 }, { k: 'spots', n: 36, u0: 0.1, u1: 0.96, v0: -0.16, v1: 0.12, r: 0.016, c: '#2a2a40', a: 0.5 }],
+    finMarks: [{ k: 'spots', n: 22, u0: 0.1, u1: 0.8, v0: -0.4, v1: 0.1, r: 0.012, c: '#2a3a6a', a: 0.5 }], eye: { r: 0.032, iris: ['#d0b060', '#1a1408'] } },
+  // dogtooth cichlid (Cynotilapia afra, male): slim and blue-grey with seven black bars, a bright yellow dorsal
+  afra: { gape: 0.042, gapeDrop: 0.008, thick: 0.38, belly: 0.08, depth: 0.25, pedU: 0.2, ped: 0.052, peak: 0.55, snout: 0.42, mouth: 0.01, shade: ['#3a6aa8', '#6a9cd0', '#c8dcf0'], tail: { type: 'round', h: 0.14, tint: '#6a98cc' }, fin: '#7aa4d4',
+    dorsal: { at: 0.78, len: 0.64, h: 0.1, spines: 0.65, nSp: 17, spineH: [0.055, 0.08], notch: 0.15, rake: 0.55, tip: 'point', trail: 0.05, drop: 0.7, tint: '#f0d030', edge: '#fff0a0' },
+    anal: { at: 0.48, len: 0.24, h: 0.09, spines: 0.3, nSp: 3, spineH: [0.04, 0.065], tip: 'point', trail: 0.03 }, pelvic: { u: 0.68, len: 0.11, ext: 0.03, tint: '#5a88bc' },
+    marks: [{ k: 'bars', us: [0.24, 0.33, 0.42, 0.51, 0.6, 0.69, 0.78], w: 0.03, c: '#141c2c', a: 0.8 }], eye: { r: 0.031, iris: ['#9ab4d0', '#0a0c14'] } },
 };
 
 // ---------- females of the dimorphic species (species.json `female`): the male's plan with the female's shape, fins and
@@ -869,6 +892,11 @@ Object.assign(PLANS, {
     dorsal: { at: 0.78, len: 0.58, h: 0.09, spines: 0.55, nSp: 15, spineH: [0.05, 0.07], notch: 0.15, rake: 0.6, tip: 'point', trail: 0.03, drop: 0.7 },
     anal: { at: 0.5, len: 0.23, h: 0.09, spines: 0.3, nSp: 3, spineH: [0.04, 0.06], tip: 'point', trail: 0.02 }, pelvic: { u: 0.67, len: 0.11, tint: '#c8cccc' },
     marks: [{ k: 'band', u0: 0.22, u1: 0.93, v0: -0.012, v1: 0.012, c: '#3a4048', a: 0.45, f: 0.01 }] }),
+  // golden mbuna female: gold with black stripes (the male is the dark one)
+  auratus_f: her('auratus', { shade: ['#a07818', '#e0b030', '#f4dc80'], tail: { type: 'round', h: 0.14, tint: '#e0b838' }, fin: '#dcb030',
+    dorsal: { at: 0.78, len: 0.64, h: 0.09, spines: 0.65, nSp: 18, spineH: [0.05, 0.07], notch: 0.15, rake: 0.55, tip: 'point', trail: 0.03, drop: 0.75, edge: '#f4e8a0' },
+    anal: { at: 0.48, len: 0.24, h: 0.09, spines: 0.3, nSp: 3, spineH: [0.04, 0.06], tip: 'point', trail: 0.02, tint: '#d8b030' }, pelvic: { u: 0.68, len: 0.1, tint: '#d8b030' },
+    marks: [{ k: 'band', u0: 0.12, u1: 0.96, v0: -0.075, v1: -0.045, c: '#1a1814', a: 0.9, f: 0.012 }, { k: 'band', u0: 0.2, u1: 0.94, v0: 0.04, v1: 0.07, c: '#1a1814', a: 0.85, f: 0.012 }] }),
   // yellow pelvics and anal, the dorsal's black band fainter
   yellowlab_f: her('yellowlab', { anal: { at: 0.48, len: 0.25, h: 0.09, spines: 0.3, nSp: 3, spineH: [0.04, 0.065], notch: 0.2, tip: 'point', trail: 0.03 }, pelvic: { u: 0.68, len: 0.1, tint: '#e8c43a' },
     finMarks: [{ k: 'band', u0: 0.18, u1: 0.8, v0: -0.4, v1: -0.196, c: '#2a2820', a: 0.5, f: 0.008 }] }),

@@ -92,7 +92,7 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
   const groups = [...bySpecies.entries()].map(([id, fish]) => ({ sp: getSpecies(id)!, fish })).filter(e => e.sp)
     .sort((a, b) => +grouped(b.sp, b.fish.length) - +grouped(a.sp, a.fish.length));
 
-  const hides = s.items.filter(it => HIDES.has(it.variant)), hard = hardscape(s), hardLeaf = hardscape(s, s.items, 1, true), perchy = hardscape(s, s.items, PERCH_FROG), perchSnake = hardscape(s, s.items, PERCH_SNAKE), hosts = anemones(s);
+  const hides = s.items.filter(it => HIDES.has(it.variant)), hard = hardscape(s), hardLeaf = hardscape(s, s.items, 1, true), leafSpots = hardscape(s, s.items.filter(it => it.kind === 'plant'), 1, true), perchy = hardscape(s, s.items, PERCH_FROG), perchSnake = hardscape(s, s.items, PERCH_SNAKE), hosts = anemones(s);
   for (const e of groups) {
     const sp = e.sp;
     if (hosts.length && HOSTED.has(sp.id)) { // clownfish settle in a bubble-tip anemone: the whole group in one of them
@@ -140,6 +140,14 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
           }
         }
         const fw = fishTL(f, sp);
+        // some of the clingers that can hang under a broad leaf do (the renderer finds the underside there; none: the ground)
+        if (!land && s.water.on && clingsTo(sp, 'under') && leafSpots.area > 0 && r() < UNDER_LEAF) {
+          const q = leafSpots.spot(r);
+          if (q && q.y + fw / 2 < top && inside(A, q.x, q.depth, 0)) {
+            Object.assign(f, { x: q.x, depth: q.depth, y: q.y * 0.7, surface: 'under' as const, yaw: Math.round(r() * 360 - 180), pitch: 0, roll: 0, bend: sp.kind === 'snail' ? 0 : +((r() - 0.5) * 0.4).toFixed(2) }); note(f, fw);
+            continue;
+          }
+        }
         let p = spawnSnail(g, A, fw, r, land ? A.H - 10 : top, on);
         // not on a ledge or branch spot another animal already holds: a few more tries (draws only on a clash)
         if (p.surface === 'hardscape' && crowded(p, fw)) { // its own draws: the shuffle's stream, and so every other animal's spot, stays as it was
@@ -266,6 +274,8 @@ const GLASS_FROG = 0.6;
 const PERCH_FROG = 4;
 /** How much more a snake favours a branch or ledge than the same area of other hardscape (lane BP): it mostly lies on the floor. */
 const PERCH_SNAKE = 1.5;
+/** Share of the clingers that can hang under leaves that do, in a tank with broad-leaved plants. */
+const UNDER_LEAF = 0.3;
 /** Nearest two animals on hardscape may sit: this share of the two body lengths added (lane BP2). */
 const HARD_ROOM = 0.3;
 /** The same for a tarantula: a terrestrial animal, only now and then up the glass. */
