@@ -29,12 +29,20 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 |---|---|---|---|---|
 | T1 dry ground (roadmap R1) | `../Glass-Box-dry-ground` / `dry-ground` | 5633 | substrate types in `scene/types.ts` / `validate.ts` / `defaults.ts` (substrate only), the ground build in `render/build.ts`, substrate tiles in `art/placeholder.ts` / `render/textures.ts`, new `render/scatter.ts` (leaf litter), the Substrate section of `ui/panels.ts` / `index.html` | running (session `local_6ae6a2e0`) |
 | G1 crested gecko + lizard body plan (roadmap R2) | `../Glass-Box-gecko` / `gecko` | 5663 | new `render/lizard3d.ts` (+ art data), `art/herps.ts` / `render/herp3d.ts` hooks, the gecko entries in `data/species.json` / `aqadvisor.json` (T4 also edits those: keep both sides), perch / cling poses on `scene/anchors.ts` | running (session `local_6031245c`) |
+| PP plant polish | `../Glass-Box-plant-polish` / `plant-polish` | 5673 | `art/plants.ts`, `render/plant3d.ts`, plant branch of `render/items.ts`, plant entries of `scene/items.ts` | ready to open (prompt `prompts/lane-PP-plant-polish.md`) |
+| MS multi-select / duplicate / variation (roadmap P0) | `../Glass-Box-multiselect` / `multiselect` | 5683 | `src/interact/*`, selection part of `ui/panels.ts` / `index.html`, new `scene/duplicate.ts` | ready to open (prompt `prompts/lane-MS-multiselect.md`); scatter brush waits on T1 |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
+
+## Lane PP: plant polish (2026-10-16; branch `plant-polish`, port 5673; opened by coordinator 3, not started)
+Scope: pothos / vine follow branches via scene/anchors.ts; sphagnum capitula; fittonia less leggy; hairgrass full lawn. All four were left open by T2 (archive: Lane T2). Owns art/plants.ts, render/plant3d.ts, plant branch of render/items.ts. State: nothing built yet.
+
+## Lane MS: multi-select, duplicate, controlled variation (2026-10-16; branch `multiselect`, port 5683; opened by coordinator 3, not started)
+Scope: roadmap section 5 P0: group select + move/turn/resize/delete, duplicate with seeded jitter. Scatter brush is NOT here (waits on T1's render/scatter.ts). Owns src/interact/*, selection part of ui/panels.ts. State: nothing built yet.
 
 ## Lane T1: dry ground, terrestrial substrates + leaf litter (2026-10-16; branch `dry-ground`, port 5633; Nathan: "leaf litter looks great", ship; pushed to main)
 - **New substrate presets** (`SubstrateType` + validate pick list, no scene version bump; art/placeholder.ts SUBSTRATES, flag
