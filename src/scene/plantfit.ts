@@ -2,7 +2,7 @@
 // (corals in a reef) whose light band and care demand fit the tank: the style draws its usual scape, then any plant that
 // does not fit is swapped for the most similar one that does (same spot, same relative size), so the layout quality is
 // the same either way. Care is the tank's growth feed (low-tech / ferts / CO2 + ferts). Absent `fit` = nothing changes.
-import { NEEDS, isCoralNeed, isLand, parRange, type CoralNeed, type Dosing, type PlantNeed } from './lightneeds';
+import { NEEDS, isCoralNeed, isLand, minPar, parRange, type CoralNeed, type Dosing, type PlantNeed } from './lightneeds';
 import type { GrowFeed, Item } from './types';
 
 export type FitLight = 'low' | 'medium' | 'high';
@@ -38,6 +38,31 @@ export function whyNot(variant: string, par: number, care: GrowFeed): WhyNot | n
   if (p.ferts === 'required' && care === 'low') return { kind: 'care', text: 'care level: needs regular fertiliser (your care: low-tech)' };
   return null;
 }
+/** What a tank will do to one plant or coral (lane OC, 2026-10-16). 'thrive' = inside its range; 'ok' = outside it but a hardy
+ *  species that lives fine, so only a recommendation; 'struggle' = a real warning. `severity` 0-1 is how hard it struggles (0 unless
+ *  it does), `short` is the few-word reason, `text` the sentence for the item panel. */
+export interface Outcome { state: 'thrive' | 'ok' | 'struggle'; severity: number; why: 'dim' | 'bright' | 'care' | null; short: string; text: string }
+const OK: Outcome = { state: 'thrive', severity: 0, why: null, short: '', text: '' };
+const TOO_BRIGHT = 1.4; // a plant takes this much over its range before it counts as struggling (algae, bleaching)
+export function outcomeOf(variant: string, par: number, care: GrowFeed): Outcome {
+  const n = NEEDS[variant];
+  if (!n || isLand(n)) return OK;
+  const [lo, hi] = parRange(n), min = minPar(variant);
+  const range = `${rnd(lo)}${hi < 300 ? `-${rnd(hi)}` : '+'} PAR`;
+  if (par < min) return { state: 'struggle', severity: Math.min(1, Math.max(0.35, (min - par) / Math.max(min, 1) * 1.5)), why: 'dim', short: 'too dim', text: `This will struggle at ${rnd(par)} PAR: it needs at least ${rnd(min)}, and thrives at ${range}.` };
+  if (par > hi * TOO_BRIGHT) return { state: 'struggle', severity: 0, why: 'bright', short: 'too bright', text: `This will struggle at ${rnd(par)} PAR: too bright, it thrives at ${range}.` };
+  if (isCoralNeed(n)) {
+    const d = (n as CoralNeed).dosing;
+    if (DOSE[d] > DOSE[DOSE_MAX[care]]) return { state: 'struggle', severity: 0, why: 'care', short: `needs ${d} dosing`, text: `This will struggle with ${CARE_NAME[care]}: it needs ${d} dosing.` };
+  } else {
+    const p = n as PlantNeed;
+    if (p.co2 === 'required' && care !== 'co2') return { state: 'struggle', severity: 0.5, why: 'care', short: 'needs CO2', text: `This will struggle without CO2 injection (your care: ${CARE_NAME[care]}).` };
+    if (p.ferts === 'required' && care === 'low') return { state: 'struggle', severity: 0.5, why: 'care', short: 'needs ferts', text: 'This will struggle without regular fertiliser (your care: low-tech).' };
+  }
+  if (par < lo || par > hi) return { state: 'ok', severity: 0, why: null, short: '', text: `Thrives best at ${range}, but will live fine at ${rnd(par)} PAR.` };
+  return OK;
+}
+
 /** Does this variant fit a tank giving `par` at the plants and the owner's care? Land plants and unknowns always do. */
 export const fits = (variant: string, par: number, care: GrowFeed): boolean => !whyNot(variant, par, care);
 

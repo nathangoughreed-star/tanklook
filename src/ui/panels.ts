@@ -12,7 +12,7 @@ import { darkOf, darkStats } from '../render/lightShells';
 import { whyAnimal, type AnimalWhy } from '../scene/animalfit';
 import { EXPERTISE_NAME } from '../data/care';
 import { CARE_NAME, FIT_PAR, fitCaption, whyNot, type FitLight } from '../scene/plantfit';
-import { VERDICT_TEXT, itemLights, tankSummary } from '../scene/lightcheck';
+import { itemLights, tankSummary } from '../scene/lightcheck';
 import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, mountOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeLayout, tubeOf, TUBE_SP_MAX, bestPos, ledBarDepth, posMax, wattsOf, type Fixture } from '../scene/lightout';
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
@@ -932,6 +932,7 @@ Cancel, then change the name, to keep both.`)) return;
   $('lBeams').onchange = e => store.edit(s => { s.render.beams = (e.target as HTMLInputElement).checked; });
   $('lSlice').oninput = e => store.edit(s => { const v = +(e.target as HTMLInputElement).value; if (v > 0) s.light.mapSlice = v; else delete s.light.mapSlice; }, { coalesce: 'lSlice' });
   $('lShade').onchange = e => store.edit(s => { if ((e.target as HTMLInputElement).checked) s.light.mapShade = true; else delete s.light.mapShade; });
+  $('lOutcomes').onchange = e => store.edit(s => { if ((e.target as HTMLInputElement).checked) s.light.outcomes = true; else delete s.light.outcomes; });
   $('lShells').onchange = e => store.edit(s => { if ((e.target as HTMLInputElement).checked) s.light.mapShells = true; else delete s.light.mapShells; });
   $('lDark').oninput = e => store.edit(s => { const v = +(e.target as HTMLInputElement).value; s.light.mapDark = (s.light.mapUnit ?? 'par') === 'lux' ? v / 50 : v; }, { coalesce: 'lDark' });
   $('lStep').oninput = e => store.edit(s => { const v = +(e.target as HTMLInputElement).value; if ((s.light.mapUnit ?? 'par') === 'lux') s.light.mapStepLux = v; else s.light.mapStep = v; }, { coalesce: 'lStep' });
@@ -1875,6 +1876,7 @@ Cancel, then change the name, to keep both.`)) return;
     const lo = watts ? lightOutCached(s) : null;
     $('lOut').textContent = lo ? lightReadout(lo) : 'Set Power to estimate the light (PAR and lux) at the substrate.'; $('lOut').hidden = l.type === 'flat';
     { const c = $('lCheck'), t = lo ? tankSummary(s) : null; c.hidden = !t; c.textContent = t ?? ''; }
+    $('lOutcomesRow').style.display = lo ? '' : 'none'; ($('lOutcomes') as HTMLInputElement).checked = !!l.outcomes;
     $('lBrightLab').textContent = watts ? 'Exposure' : 'Brightness';
     $('lBrightLab').parentElement!.style.display = l.type === 'flat' ? 'none' : ''; // no fixture: nothing to brighten
     $('lBrightLab').title = watts ? 'Like a camera: how bright the render looks for the light the fixture gives (x1/4 to x16; high washes out). The PAR and lux do not change' : '';
@@ -1939,7 +1941,7 @@ Cancel, then change the name, to keep both.`)) return;
     if (it) {
       const v = LIBRARY[it.variant], [l, h, w] = itemDims(it);
       { const b = $('iLight'), lt = it.kind === 'plant' || it.kind === 'coral' ? itemLights(s)?.get(it.id) : undefined;
-        b.hidden = !lt; if (lt) { b.textContent = `Light here: ${Math.round(lt.par)} PAR, ${VERDICT_TEXT[lt.verdict]}`; b.dataset.verdict = lt.verdict; } }
+        b.hidden = !lt; if (lt) { const o = lt.outcome; b.textContent = `Light here: ${Math.round(lt.par)} PAR${o.state === 'thrive' ? ', fine' : `. ${o.text}`}`; b.dataset.verdict = o.state === 'struggle' ? (lt.verdict === 'bright' ? 'bright' : 'dim') : 'fine'; } }
       $('itemName').innerHTML = `${esc(v.label)} <i>${fmt(l)} × ${fmt(h)} high × ${fmt(w)}</i>`;
       $('iSizeLab').textContent = it.kind === 'plant' ? (isPatch(it.variant) ? 'Width' : 'Height') : it.variant === 'manzanita' ? 'Height' : it.kind === 'coral' ? 'Width' : 'Length';
       const probe = { ...it, size: 1e6 }; clampItem(probe, A);

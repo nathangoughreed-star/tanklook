@@ -3,11 +3,14 @@
 import { isCarpet, isFloat } from '../art/plants';
 import { LIBRARY, itemDims } from './items';
 import { bandsAt, lightEnvCached, lightOutCached, parOf, wattsOf, type LightScene } from './lightout';
-import { FRESH_TIERS, NEEDS, isCoralNeed, isLand, lightVerdict, parRange, type LightVerdict } from './lightneeds';
+import { FRESH_TIERS, NEEDS, isCoralNeed, isLand, parRange, type LightVerdict } from './lightneeds';
+import { outcomeOf, type Outcome } from './plantfit';
 import { groundHeight } from './terrain';
-import type { Item } from './types';
+import type { GrowFeed, Item } from './types';
 
-export interface ItemLight { par: number; verdict: LightVerdict }
+/** `verdict` is 'dim' / 'bright' only when the item will really struggle with the light (hardy plants outside their range are 'fine'
+ *  with a recommendation in `outcome`; lane OC). */
+export interface ItemLight { par: number; verdict: LightVerdict; outcome: Outcome }
 export const VERDICT_TEXT: Record<LightVerdict, string> = { dim: 'too dim', fine: 'fine', bright: 'too bright' };
 
 /** PAR at each plant (at its base: the substrate figure the guide uses) and coral (at its top), with the aquascape's shade
@@ -17,14 +20,23 @@ export function itemLights(S: LightScene & { items: Item[] }): Map<number, ItemL
   const env = lightEnvCached(S);
   if (!env) return null;
   const out = new Map<number, ItemLight>();
-  for (const it of S.items) {
-    const n = NEEDS[it.variant];
-    if (!n || isLand(n) || isFloat(it.variant)) continue;
-    const base = groundHeight(S, S.tank, it.x, it.depth) + it.lift, h = itemDims(it)[1];
-    const par = parOf(bandsAt(env, [it.x, base + (it.kind === 'coral' ? h * 0.8 : 4), -it.depth]));
-    out.set(it.id, { par, verdict: lightVerdict(it.variant, par) });
-  }
+  for (const it of S.items) { const l = lightOfItem(S, env, it); if (l) out.set(it.id, l); }
   return out;
+}
+/** One item's light and outcome (null for items that need none); `env` from lightEnvCached. The tank's care is its growth feed. */
+export function lightOfItem(S: LightScene & { grow?: { feed: GrowFeed } }, env: NonNullable<ReturnType<typeof lightEnvCached>>, it: Item): ItemLight | null {
+  const n = NEEDS[it.variant];
+  if (!n || isLand(n) || isFloat(it.variant)) return null;
+  const base = groundHeight(S, S.tank, it.x, it.depth) + it.lift, h = itemDims(it)[1];
+  const par = parOf(bandsAt(env, [it.x, base + (it.kind === 'coral' ? h * 0.8 : 4), -it.depth]));
+  const outcome = outcomeOf(it.variant, par, S.grow?.feed ?? 'low');
+  return { par, outcome, verdict: outcome.why === 'dim' ? 'dim' : outcome.why === 'bright' ? 'bright' : 'fine' };
+}
+/** What this plant will look like in this tank, if it struggles: 0 = healthy .. 1 = badly (null/0 when the light is not set). */
+export function struggleOf(S: LightScene & { grow?: { feed: GrowFeed } }, it: Item): number {
+  if (it.kind !== 'plant' || !(wattsOf(S) > 0)) return 0;
+  const env = lightEnvCached(S);
+  return env ? lightOfItem(S, env, it)?.outcome.severity ?? 0 : 0;
 }
 
 const STEM = new Set(['stem', 'stemred', 'rotala', 'ludwigia', 'hornwort', 'anacharis']);
@@ -47,16 +59,16 @@ export function tankSummary(S: LightScene & { items: Item[] }): string | null {
     bits.push(`${tier.name} light (${Math.round(lo.mean)} PAR)${kinds.length ? ` with ${kinds.join(' and ')}` : ''}: ${care}`);
   }
   // the first two items outside their range, worst first
-  const groups = new Map<string, { gap: number; par: number; n: number; label: string; v: LightVerdict }>();
+  const groups = new Map<string, { gap: number; par: number; n: number; label: string; v: string; care: boolean }>();
   for (const i of S.items) {
     const l = lights.get(i.id);
-    if (!l || l.verdict === 'fine') continue;
-    const r = parRange(NEEDS[i.variant] as never), gap = l.par < r[0] ? r[0] / Math.max(l.par, 1) : l.par / r[1], key = i.variant + l.verdict, g = groups.get(key);
-    if (!g) groups.set(key, { gap, par: l.par, n: 1, label: labelOf(i), v: l.verdict });
+    if (!l || l.outcome.state !== 'struggle') continue;
+    const r = parRange(NEEDS[i.variant] as never), gap = l.outcome.why === 'care' ? 1.5 : l.par < r[0] ? r[0] / Math.max(l.par, 1) : l.par / r[1], key = i.variant + l.outcome.short, g = groups.get(key);
+    if (!g) groups.set(key, { gap, par: l.par, n: 1, label: labelOf(i), v: l.outcome.short, care: l.outcome.why === 'care' });
     else { g.n++; if (gap > g.gap) { g.gap = gap; g.par = l.par; } }
   }
   const uniq = [...groups.values()].sort((a, b) => b.gap - a.gap);
-  if (uniq.length) bits.push(uniq.slice(0, 2).map(g => `${g.label}${g.n > 1 ? ` (${g.n})` : ''} at ${Math.round(g.par)} PAR: ${VERDICT_TEXT[g.v]}`).join('; ') + (uniq.length > 2 ? ` (+${uniq.length - 2} more kinds)` : ''));
+  if (uniq.length) bits.push(uniq.slice(0, 2).map(g => `${g.label}${g.n > 1 ? ` (${g.n})` : ''}${g.care ? '' : ` at ${Math.round(g.par)} PAR`}: ${g.v}`).join('; ') + (uniq.length > 2 ? ` (+${uniq.length - 2} more kinds)` : ''));
   else if (corals.length && isCoralNeed(NEEDS[corals[0].variant])) bits.push('corals suit the light');
   return bits.join('. ') + '.';
 }

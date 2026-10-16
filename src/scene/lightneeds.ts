@@ -118,6 +118,21 @@ export const NEEDS: Record<string, PlantNeed | CoralNeed | LandNeed> = {
   acrofine: C('sps', 'daily', [250, 400]),
 };
 
+/** The lowest PAR a species still lives fine at (below its thriving range): between here and the range's low end it only
+ *  grows slower and plainer, so the advice is a recommendation; below it the plant struggles and is warned about (lane OC,
+ *  2026-10-16). Absent = 85 % of the range's low end. Hardy species only; the ones marked `check` are for Nathan to review. */
+const MIN_PAR: Record<string, number> = {
+  buce: 5, moss: 5, crypt: 5, balansae: 8, anubias: 0, fern: 0,
+  sword: 8, ozelot: 10, grass: 10, sagittaria: 10, lotus: 12, hornwort: 0, anacharis: 0,
+  ludwigia: 25, hairgrass: 20, // check: hairgrass lives at 20 but will not spread into a lawn
+  redroot: 0, salvinia: 0, frogbit: 0, lettuce: 0, sansevieria: 0, haworthia: 10,
+  mushroom: 15, zoanthid: 30, leather: 30, macroalgae: 20,
+};
+export function minPar(variant: string): number {
+  const n = NEEDS[variant];
+  if (!n || isLand(n)) return 0;
+  return MIN_PAR[variant] ?? parRange(n)[0] * 0.85;
+}
 export const needOf = (variant: string) => NEEDS[variant];
 export const isLand = (n: unknown): n is LandNeed => (n as LandNeed)?.band === 'land';
 export const isCoralNeed = (n: unknown): n is CoralNeed => !!n && 'dosing' in (n as object);

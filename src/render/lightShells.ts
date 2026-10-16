@@ -51,7 +51,7 @@ const gridCache = new Map<string, Grid | null>();
  * finding the dark spots there). Points below the ground or outside a curved outline are marked out. Cached.
  */
 function sampleLight(S: TankSetup, T: Tank): Grid | null {
-  const { mapSlice: _s, bright: _b, kelvin: _k, room: _r, mapShells: _m, mapShade: _ms2, mapDark: _d, mapStep: _p, mapStepLux: _x, ...l } = S.light;
+  const { mapSlice: _s, bright: _b, kelvin: _k, room: _r, mapShells: _m, mapShade: _ms2, outcomes: _oc, mapDark: _d, mapStep: _p, mapStepLux: _x, ...l } = S.light;
   const key = JSON.stringify([T, l, S.lid, S.water, S.substrate, S.layout.id, S.layout.seed, S.terrain]);
   if (gridCache.has(key)) return gridCache.get(key)!;
   const env = lightEnvCached({ ...S, tank: T });

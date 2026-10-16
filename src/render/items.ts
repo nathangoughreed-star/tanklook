@@ -9,6 +9,7 @@ import { BREED, PLANT3D, growthOf, isCarpet, isFloat, isVine, type PlantType } f
 import { CARPET_W, SHELLS, itemDims, itemSink, seatHook, stoneDims, woodLimbs, type Limb } from '../scene/items';
 import { turnOut, type AnchorProbe, type V3 } from '../scene/anchors';
 import { lampHeight } from '../scene/lightout';
+import { struggleOf } from '../scene/lightcheck';
 import { D2R, waterY } from '../scene/physics';
 import { bowlDims, footprint, shapeOf } from '../scene/shape';
 import { clampGround, groundHeight, groundInsideBy } from '../scene/terrain';
@@ -574,7 +575,19 @@ function capMaterials(T: Tank): CapMats {
   };
   const cap = new THREE.MeshBasicMaterial({ vertexColors: true, clippingPlanes: planes, side: THREE.BackSide,
     stencilWrite: true, stencilRef: 0, stencilFunc: THREE.NotEqualStencilFunc, stencilZFail: THREE.ZeroStencilOp, stencilZPass: THREE.ZeroStencilOp });
-  const pre = (sh: THREE.WebGLProgramParametersWithUniforms) => { patch(sh); look(sh); };
+  // the cap draws the piece's far-side back faces, whose vertex colours carry the light baked for THEIR normals (facets of the
+  // inside, so the cut face read as a hollow); the cap takes the albedo back out (aBake) and bakes in the light for its own
+  // flat face, the glass's outward normal (the same 0.42 + 0.72 (n.L) + 0.08 n.y as bakedShape, LIGHT in the room's frame)
+  const pre = (sh: THREE.WebGLProgramParametersWithUniforms) => {
+    patch(sh); look(sh);
+    sh.vertexShader = 'attribute float aBake;
+varying float vBake;
+' + sh.vertexShader.replace('vGlassW = ', 'vBake = aBake; vGlassW = ');
+    sh.fragmentShader = 'varying float vBake;
+' + sh.fragmentShader.replace('#include <color_fragment>',
+      `#include <color_fragment>
+  { vec3 Lw = normalize(vec3(${LIGHT.x.toFixed(5)}, ${LIGHT.y.toFixed(5)}, ${LIGHT.z.toFixed(5)})); diffuseColor.rgb *= (0.42 + 0.72 * max(0.0, dot(aqCapN, Lw)) + 0.08 * aqCapN.y) / max(vBake, 0.05); }`);
+  };
   cap.onBeforeCompile = pre;
   cap.customProgramCacheKey = () => 'glass-cap';
   Object.assign(cap.userData, { keep: true, solid: true, pre, post: capShader });
@@ -664,13 +677,15 @@ function bakedShape(it: Item) {
   const src = solidShape(it), q = new THREE.Quaternion().setFromEuler(itemEuler(it)).invert();
   const L = LIGHT.clone().applyQuaternion(q), U = V(0, 1, 0).applyQuaternion(q);
   g = src.clone();
-  const n = g.attributes.normal, a = src.attributes.color, out = new Float32Array(n.count * 3), nn = new THREE.Vector3();
+  const n = g.attributes.normal, a = src.attributes.color, out = new Float32Array(n.count * 3), bake = new Float32Array(n.count), nn = new THREE.Vector3();
   for (let i = 0; i < n.count; i++) {
     nn.fromBufferAttribute(n, i);
     const k2 = 0.42 + 0.72 * Math.max(0, nn.dot(L)) + 0.08 * nn.dot(U);
+    bake[i] = k2;
     out[i * 3] = a.getX(i) * k2; out[i * 3 + 1] = a.getY(i) * k2; out[i * 3 + 2] = a.getZ(i) * k2;
   }
   g.setAttribute('color', new THREE.BufferAttribute(out, 3));
+  g.setAttribute('aBake', new THREE.BufferAttribute(bake, 1)); // the baked light's factor per vertex (the glass cap relights: capPasses)
   g.computeBoundingBox(); g.computeBoundingSphere();
   const pos = src.attributes.position, qt = q.clone().invert(), pv = new THREE.Vector3();
   let low0 = Infinity, low = Infinity;
@@ -713,6 +728,10 @@ function vineLimbs(S: TankSetup, T: Tank, it: Item, y: number, c: number, s: num
 /** What else an item's mesh depends on besides its own data (render/build.ts item key): for a vine, the wood it runs
  *  along (lane T2); '' for everything else. */
 export function itemDeps(S: TankSetup, it: Item) {
+  const st = S.light.outcomes && it.kind === 'plant' ? struggleBucket(S, it) : 0; // (a struggling plant is drawn pale and stretched: lane OC)
+  return (st ? `|S${st}` : '') + vineDeps(S, it);
+}
+function vineDeps(S: TankSetup, it: Item) {
   if (it.kind !== 'plant' || !isVine(it.variant) || it.pitch || it.tilt) return '';
   const y = groundHeight(S, S.tank, it.x, it.depth) + it.lift - itemSink(it), c = Math.cos(it.yaw * D2R), s = Math.sin(it.yaw * D2R), l = vineLimbs(S, S.tank, it, y, c, s);
   return l.length ? `|L${hashNums(l)}` : '';
@@ -905,6 +924,39 @@ function spotsFor(P: Want['P'], a: Float32Array, done: (q: Float32Array) => void
   slice();
 }
 
+/** Show expected plant outcomes (lane OC): how hard a plant struggles in this tank's light and care, in steps of 0.2 so a
+ *  light nudge does not rebuild every plant (0 = healthy). */
+const struggleBucket = (S: TankSetup, it: Item) => Math.round(struggleOf(S, it) * 5);
+const REDS = new Set(['stemred', 'rotala', 'ludwigia', 'redroot']), LEGGY = new Set(['stem', 'stemred', 'rotala', 'ludwigia', 'hornwort', 'anacharis', 'sagittaria', 'grass', 'balansae']);
+const tinted = new WeakMap<THREE.BufferAttribute | THREE.InterleavedBufferAttribute, Map<string, THREE.BufferAttribute>>();
+/** The colours of a plant that struggles (k 0-1): paler, yellower, the reds losing their red; shared per source colours. */
+function strugglingColors(c: THREE.BufferAttribute | THREE.InterleavedBufferAttribute, k: number, red: boolean) {
+  const key = `${k}${red ? 'r' : ''}`;
+  let m = tinted.get(c);
+  if (!m) tinted.set(c, m = new Map());
+  let a = m.get(key);
+  if (a) return a;
+  const out = new Float32Array(c.count * 3), w = 0.55 * k;
+  for (let i = 0; i < c.count; i++) {
+    let r = c.getX(i), g = c.getY(i), b = c.getZ(i);
+    if (red) { r *= 1 - 0.4 * k; g *= 1 + 0.2 * k; }
+    const l = 0.3 * r + 0.59 * g + 0.11 * b;
+    out[i * 3] = r + (l * 1.15 + 0.05 - r) * w; out[i * 3 + 1] = g + (l * 1.15 + 0.04 - g) * w; out[i * 3 + 2] = b + (l * 0.6 - b) * w;
+  }
+  m.set(key, a = new THREE.BufferAttribute(out, 3));
+  return a;
+}
+/** g with its colours replaced (every other attribute and the growth data shared, so it costs one colour buffer per look). */
+function withColors(g: THREE.BufferGeometry, c: THREE.BufferAttribute) {
+  const t = new THREE.BufferGeometry();
+  for (const k of Object.keys(g.attributes)) t.setAttribute(k, g.attributes[k]);
+  t.setAttribute('color', c);
+  if (g.index) t.setIndex(g.index);
+  t.boundingBox = g.boundingBox; t.boundingSphere = g.boundingSphere;
+  Object.assign(t.userData, g.userData);
+  return t;
+}
+
 /** A bend that changes nothing (nothing reaches the water or the glass): remembered so it is not tried again. */
 const noBend = (ks: string) => { if (unbent.size > 4000) unbent.clear(); unbent.add(ks); };
 
@@ -935,13 +987,17 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
       if (plant3d.gpu) g = grownView(src, gr, () => shown.get(kr) ?? remember(shown, kr, revealPlant(from, gr), 80));
       else g = shownCpu.get(kr) ?? (() => { const v = revealPlant(src, gr); return v === src ? v : remember(shownCpu, kr, v, 80, dispose); })(); // (review switch: GR3's CPU reveal)
     }
+    // expected outcome (lane OC): a plant that will struggle here looks it: paler, and stems leggy and thin, the rest smaller
+    const st = S.light.outcomes ? struggleBucket(S, it) / 5 : 0;
+    if (st > 0 && g.attributes.color) g = withColors(g, strugglingColors(g.attributes.color, st, REDS.has(it.variant)));
     m = new THREE.Mesh(g, plantMaterial(T));
+    if (st > 0 && !isFloat(it.variant)) { const leggy = LEGGY.has(it.variant); m.scale.set(1 - (leggy ? 0.15 : 0.1) * st, 1 + (leggy ? 0.2 : -0.2) * st, 1 - (leggy ? 0.15 : 0.1) * st); }
     if (g.userData.cpu) m.raycast = plantRaycast;
     m.userData.plant = true;
     // a mat (moss) spreads with Time: its patch widens past the size it was planted at, no new plants (lane PR)
     const mat = BREED[it.variant as PlantType];
     const g0 = growthOf(it.variant as PlantType, it.size);
-    if (mat?.mode === 'mat' && it.growth != null && gr > g0) { const k = 1 + (mat.rate - 1) * (gr - g0) / (1 - g0 || 1); m.scale.set(k, 1, k); }
+    if (mat?.mode === 'mat' && it.growth != null && gr > g0) { const k = 1 + (mat.rate - 1) * (gr - g0) / (1 - g0 || 1); m.scale.set(k * m.scale.x, m.scale.y, k * m.scale.z); }
   } else m = new THREE.Mesh(bakedShape(it), solidMaterial(T));
   m.position.set(it.x, it.kind === 'plant' && isFloat(it.variant) ? waterY(T, S.water.level) : y + (m.geometry.userData.rise ?? 0), -it.depth);
   m.rotation.copy(itemEuler(it));

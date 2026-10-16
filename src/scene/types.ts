@@ -165,6 +165,8 @@ export interface LightSettings {
   mapShells?: boolean;
   /** Light map: count the aquascape's shade (floaters, canopy, hardscape); absent = the fixture only (an app preference, added 2026-10-16). */
   mapShade?: boolean;
+  /** Show expected plant outcomes (an app preference, added 2026-10-16): a plant that will struggle in this tank's light or care is drawn the way it would look (pale, leggy, small). Absent = every plant drawn healthy. */
+  outcomes?: boolean;
   /** Dark spots: the level below which the water counts as dark, PAR (lux: x 50); absent = 30. */
   mapDark?: number;
 }

@@ -510,7 +510,7 @@ export function lightOut(S: LightScene): LightOut | null {
 // and substrate fields it does not read (water colour; the substrate's look but for its albedo), so a water colour or
 // substrate colour step under a powered light does not re-run it (~45 ms; lane EF2).
 const unitKey = (S: LightScene) => {
-  const { watts: _w, par: _p, bright: _b, kelvin: _k, room: _r, mapUnit: _m, mapStep: _ms, mapStepLux: _ml, bulbW: _bw, mapSlice: _sl, mapShells: _sh, mapShade: _ms2, mapDark: _dk, ...l } = S.light;
+  const { watts: _w, par: _p, bright: _b, kelvin: _k, room: _r, mapUnit: _m, mapStep: _ms, mapStepLux: _ml, bulbW: _bw, mapSlice: _sl, mapShells: _sh, mapShade: _ms2, outcomes: _oc, mapDark: _dk, ...l } = S.light;
   const w = S.water, b = S.substrate;
   return JSON.stringify([S.tank, l, S.lid, [w.on, w.level, w.opacity], [b.show, b.fl, b.fr, b.bl, b.br, subAlbedo(b)], S.layout.id, S.layout.seed, S.terrain]);
 };
