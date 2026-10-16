@@ -841,7 +841,8 @@ function flare(T: Tank, x: number, d: number, y: number, rb: number): [number, n
 function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   const swamp = S.terrain.on; // shaped ground (custom terrain, a swamp's pools): finer mesh
   if (!S.substrate.show && !swamp) return;
-  const sub = S.substrate, { L, D } = T, tile = sub.type === 'custom' ? blendTile(sub.custom) : SUBSTRATES[sub.type].tile * 2, h = (x: number, d: number) => groundHeight(S, T, x, d);
+  // Light map on: the ground is plain flat-looking sand (3D stones and a busy texture hid the contour lines and labels)
+  const sub = S.render.beams && S.light.type !== 'flat' ? { ...S.substrate, type: 'white' as const, litter: undefined } : S.substrate, { L, D } = T, tile = sub.type === 'custom' ? blendTile(sub.custom) : SUBSTRATES[sub.type].tile * 2, h = (x: number, d: number) => groundHeight(S, T, x, d);
   // top surface as a 16x16 grid (bilinear surfaces curve along diagonals) clipped to the outline, and a skirt round the
   // outline; UVs from physical mm so grain size is constant
   type V3 = [number, number, number];
