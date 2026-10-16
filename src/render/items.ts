@@ -892,7 +892,9 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
   } else m = new THREE.Mesh(bakedShape(it), solidMaterial(T));
   m.position.set(it.x, it.kind === 'plant' && isFloat(it.variant) ? waterY(T, S.water.level) : y + (m.geometry.userData.rise ?? 0), -it.depth);
   m.rotation.copy(itemEuler(it));
-  if (it.kind !== 'plant') capPasses(m, T, it.id);
+  // stencil capping counts surfaces along a sightline, so it needs a watertight mesh: only stone is (wood limbs have a
+  // seam crack and open joints, caves and bark shells are open shells), and a leaking one paints black blobs through it
+  if (it.kind === 'stone') capPasses(m, T, it.id);
   m.userData.item = it.id;
   if (it.kind === 'coral') m.userData.coral = true;
   return m;
