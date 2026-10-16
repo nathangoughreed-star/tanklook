@@ -1132,12 +1132,19 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
       jumper: { br: 1.4, tall: 0.85, panels: 2, tubes: 1, hide: 0, vines: 4, brom: 5, fern: 0.6, low: 1.4 },
       frogs: { br: 0.8, tall: 0.95, panels: 1, tubes: 0, hide: 1, vines: 3, brom: 3, fern: 2, low: 1.6 } }[id];
     layer('hard', () => {
+      // climbing branches lean every which way: each new heading keeps at least 35 degrees (mod 180) off the others, so
+      // two sticks are very unlikely to stand parallel; lean and roll vary too
+      const heads: number[] = [];
+      const heading = () => {
+        let best = 0, bd = -1;
+        for (let k = 0; k < 12; k++) { const y = r() * 360, d = Math.min(180, ...heads.map(h => { const e = Math.abs(y - h) % 180; return Math.min(e, 180 - e); })); if (d > bd) { bd = d; best = y; } if (d >= 35 && k >= 2) break; }
+        heads.push(best); return Math.round(best);
+      };
       F.forEach(f => {
         const k0 = Math.sqrt(f.k), n = Math.max(1, many(cfg.br, f.k));
         for (let b = 0; b < n; b++) {
           const len = clamp(H * cfg.tall * (0.75 + 0.3 * k0) / (b ? 1.35 : 1), 150, 1000) * (designed ? 1 : 0.85 + 0.2 * st.scale);
-          const lean = (f.x < 0.5 ? 1 : -1) * (b % 2 ? -1 : 1);
-          put('climb', L * clamp(f.x + b * 0.07 * lean, 0.1, 0.9), D * clamp(f.d + (r() - 0.5) * 0.2, 0.3, 0.8), len, { yaw: Math.round((lean > 0 ? 0 : 180) + (r() - 0.5) * 50), pitch: designed ? 0 : Math.round((r() - 0.5) * 16) });
+          put('climb', L * clamp(f.x + (r() - 0.5) * 0.25, 0.1, 0.9), D * clamp(f.d + (r() - 0.5) * 0.3, 0.3, 0.8), len, { yaw: heading(), pitch: Math.round((r() - 0.5) * 36), tilt: Math.round((r() - 0.5) * 24) });
         }
       });
       for (let i = 0, n = Math.max(1, many(cfg.panels)); i < n; i++) put('corkflat', L * (0.18 + 0.64 * (n === 1 ? 0.5 + (r() - 0.5) * 0.4 : (i + r() * 0.5) / n)), back, clamp(H * (0.5 + r() * 0.3), 90, 600), { tilt: 90, yaw: Math.round((r() - 0.5) * 16) });
