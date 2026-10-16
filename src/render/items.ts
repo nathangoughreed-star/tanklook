@@ -7,7 +7,7 @@ import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferG
 import { rng } from '../art/paint';
 import { PLANT3D, growthOf, isCarpet, isFloat, isVine, type PlantType } from '../art/plants';
 import { CARPET_W, SHELLS, itemDims, itemSink, seatHook, stoneDims, woodLimbs, type Limb } from '../scene/items';
-import type { AnchorProbe } from '../scene/anchors';
+import { turnOut, type AnchorProbe } from '../scene/anchors';
 import { lampHeight } from '../scene/lightout';
 import { D2R, waterY } from '../scene/physics';
 import { bowlDims, footprint, shapeOf } from '../scene/shape';
@@ -638,6 +638,38 @@ function groundKey(S: TankSetup) {
   if (t?.on && t.h.length) return `t${t.cols},${t.rows},${t.radial ? 'r' : ''}${t.arc ?? ''},${t.h.join(',')}`;
   return `s${b.show ? [b.fl, b.fr, b.bl, b.br].join(',') : '-'}${S.layout.id === 'swamp' ? `|w${S.layout.seed}` : ''}`;
 }
+/** How far from a vine's crown (mm, sideways) wood must come for its vines to find it (lane T2). */
+const VINE_REACH = 320;
+/**
+ * The limbs of the wood near a vine (lane T2, on T3's anchors): every limb of a piece with one within VINE_REACH of its
+ * crown, placed as the piece's mesh is (turnOut + its rise) and given in the vine's own frame (base at its origin, its
+ * yaw undone), to 1 mm. Flat: per limb [n, r0, r1, x, y, z x n]. Empty = nothing to run along.
+ */
+function vineLimbs(S: TankSetup, T: Tank, it: Item, y: number, c: number, s: number): number[] {
+  const out: number[] = [];
+  for (const w of S.items) {
+    if (w.kind !== 'wood' && !(w.variant in SHELLS)) continue;
+    const ls = woodLimbs(w.variant, w.seed, w.size);
+    if (!ls.length) continue;
+    const wy = groundHeight(S, T, w.x, w.depth) + w.lift - itemSink(w) + (bakedShape(w).userData.rise ?? 0);
+    const tank = ls.map(l => l.pts.map(p => { const t = turnOut(w, p); return [w.x + t[0], wy + t[1], w.depth + t[2]] as const; }));
+    if (!tank.some(l => l.some(p => Math.hypot(p[0] - it.x, p[2] - it.depth) < VINE_REACH))) continue;
+    ls.forEach((l, i) => {
+      out.push(l.pts.length, Math.round(l.r0 * 10) / 10, Math.round(l.r1 * 10) / 10);
+      for (const p of tank[i]) { const dx = p[0] - it.x, dd = p[2] - it.depth; out.push(Math.round(dx * c + dd * s), Math.round(p[1] - y), Math.round(dx * s - dd * c)); }
+    });
+  }
+  return out;
+}
+/** What else an item's mesh depends on besides its own data (render/build.ts item key): for a vine, the wood it runs
+ *  along (lane T2); '' for everything else. */
+export function itemDeps(S: TankSetup, it: Item) {
+  if (it.kind !== 'plant' || !isVine(it.variant) || it.pitch || it.tilt) return '';
+  const y = groundHeight(S, S.tank, it.x, it.depth) + it.lift - itemSink(it), c = Math.cos(it.yaw * D2R), s = Math.sin(it.yaw * D2R), l = vineLimbs(S, S.tank, it, y, c, s);
+  return l.length ? `|L${hashNums(l)}` : '';
+}
+/** A short hash of a number list (cache keys). */
+const hashNums = (a: number[]) => { let h = 0; for (const v of a) h = (Math.imul(h, 31) + Math.round(v * 10)) | 0; return `${a.length}:${h}`; };
 /**
  * How a plant item is built (itemMesh, and the idle prebuild, which must land on the same cache keys): its height `h`,
  * cache keys, plantGeometry's arguments, and how it lies over (`bend`: water over its base F, ceiling C). `more` = with
@@ -659,6 +691,8 @@ function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
   const c = Math.cos(it.yaw * D2R), s = Math.sin(it.yaw * D2R);
   // a vine lifted onto wood or rock: how high it sits over the ground (its trailers hang down to it), to 5 mm
   const drop = vine ? Math.max(0, Math.round(it.lift / 5) * 5) : 0;
+  // the wood near it, in its own frame: its vines run along the limbs and across to the next (lane T2; not tipped)
+  const limbs = vine && !it.pitch && !it.tilt ? vineLimbs(S, T, it, y, c, s) : [];
   // a plant whose own spread reaches the glass: the panes it reaches, in its own frame (plantGeometry sets its stems,
   // crowns or rosettes down inside them), to 4 mm and 3 decimals so a drag reuses a build until it moves that far. Not
   // in a bowl (its spread is kept inside) nor tipped
@@ -670,7 +704,7 @@ function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
   // a carpet hugs the ground under each leaflet: its key carries the spot (rebuilt only while it moves); the rest key on
   // the exact height they are built with (a rounded one let two near-equal plants share the first one's mesh)
   // (a carpet's ground: everything groundHeight reads, lane E2 #2: a terrain or substrate edit left it on the old ground)
-  const k = carpet ? `${type}|${it.seed}|${it.size}|${h}|${it.x}|${it.depth}|${it.yaw}|${it.lift}|${T.shape}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}|${groundKey(S)}` : `${type}|${it.seed}|${it.size}|${h}|${it.spread ?? ''}|${it.stems ?? ''}|${it.dens ?? ''}|${clip.join(',')}${vine ? `|d${drop}` : ''}`;
+  const k = carpet ? `${type}|${it.seed}|${it.size}|${h}|${it.x}|${it.depth}|${it.yaw}|${it.lift}|${T.shape}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}|${groundKey(S)}` : `${type}|${it.seed}|${it.size}|${h}|${it.spread ?? ''}|${it.stems ?? ''}|${it.dens ?? ''}|${clip.join(',')}${vine ? `|d${drop}|L${limbs.length ? hashNums(limbs) : ''}` : ''}`;
   // near the glass a leaflet is cut down to the width it has room for, so the carpet runs right up to the glass without
   // poking through; a leaflet past the edge line is mirrored back in by as much (keeping the edge thick), and one more
   // than half a leaflet past it is left out
@@ -685,7 +719,7 @@ function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
   };
   // (what grows past g0 is only built once the plant has a growth of its own: a starter set costs what it did)
   const sw = `3d${plant3d.sway ? 's' : ''}${more ? '+' : ''}${plant3d.emerse ? '' : 'n'}|`, kf = sw + (carpet ? `${type}|${it.seed}|${it.size}` : k);
-  const args = [type, it.seed, h, { spread: it.spread, stems: it.stems, dens: it.dens, clip: clip.length ? clip : undefined, drop: drop || undefined }, g0, more, it.size] as const;
+  const args = [type, it.seed, h, { spread: it.spread, stems: it.stems, dens: it.dens, clip: clip.length ? clip : undefined, drop: drop || undefined, limbs: limbs.length ? limbs : undefined }, g0, more, it.size] as const;
   let bend: { F: number; C?: number; water: boolean; walls: number[]; ks: string } | undefined;
   if (!carpet && !float) {
     // longer than the water above it: lies over at the surface (`F` over its base, to 2 mm, so a drag reuses it). A

@@ -60,7 +60,7 @@ E1 fix #5. A 3D fish was 11 meshes (card, body, 2 eyes, 2 gape lines, 4 paired f
   coordinator).
 - **AR Quick Look note:** USDZ export transforms normals with the normal matrix; merged barbel normals (non-uniform part
   scale) are mat3-carried, so their exported shading may differ very slightly. The app view is the reference.
-## Lane T2: terrestrial plants (2026-10-16; branch `terra-plants`, port 5653; batches 1 + 2 approved by Nathan and pushed; vines on branches waits for T3's anchors)
+## Lane T2: terrestrial plants (2026-10-16; branch `terra-plants`, port 5653; batches 1 + 2 and vines on wood approved by Nathan and pushed; DONE)
 Roadmap R1 section 3 (land plants) and section 6 (aquatic plant follow-ons). Data in `PLANT3D` (art/plants.ts), generator
 render/plant3d.ts, `LIBRARY` entries (scene/items.ts); no scene version bump (plants are items; new variants only).
 - **Batch 1, land plants** (`land: true`, sway 0: no current): pothos (`pothos`), bromeliad (`bromeliad`), tropical fern
@@ -89,8 +89,19 @@ render/plant3d.ts, `LIBRARY` entries (scene/items.ts); no scene version bump (pl
   recurved straps; absent = the old pair, the same draws), fast, `trail` at the surface. Monte Carlo NOT built: the
   existing carpet covers it (Nathan dropped a Monte Carlo variant 2026-10-14). Sheets `shots/T2_v2_{hairgrass,hornwort,anacharis}.png`
   (full planted tank). Open: a hairgrass patch at growth 1 is a strip of tufts, not yet a full lawn.
-- **Next (after T3 lands `scene/anchors.ts`; T3 sends its API, coordinator 2026-10-16):** pothos / creeping fig following
-  branches and linking wood.
+- **Vines on wood** (on T3's anchors; Nathan 2026-10-16: "looks good, ship"): render/items.ts `vineLimbs` takes every
+  limb (`woodLimbs`) of wood / bark-shell pieces within `VINE_REACH` 320 mm of a vine's crown, placed as the piece's mesh
+  is (T3's `turnOut` + its baked `rise`), into the vine's own frame, to 1 mm (`Clump.limbs`, hashed into the plant key).
+  plant3d.ts vine form: with limbs, a share (`vine.follow` 0.6) of the vines take a `route`: up / over onto one of the
+  three nearest limbs (within `VINE_FIND` 320 mm), along it toward its tip (pothos on top, wobbling; creeper wraps round,
+  `vine.wrap` 140 mm a turn), across to the next limb within `VINE_LINK` 110 mm (up to three limbs), then on as a
+  trailer hanging down to the ground. Steep stretches hold their leaves out like a climber (`FACE`). No wood = no extra
+  draws: the vine builds exactly as before. A tipped or rolled vine ignores the wood.
+  - The item key in render/build.ts addContents now adds `itemDeps(S, it)` (render/items.ts): '' for everything but a
+    vine with wood in reach, which gets the wood's limb hash, so moving the wood rebuilds the vine (one line outside
+    T2's files). Test `test/vinewood.test.ts` (key follows the wood; a limb pulls vine points along it). 414 tests pass.
+  - Sheet `shots/T2_vines_on_wood_v1.png` (pothos on the climbing branch, creeper by the manzanita, growth .4 / .7 / 1);
+    helper `shots/t2b.js`.
 
 ## Lane T4: aquatic roster (2026-10-16; branch `aqua-roster`, port 5673; fish batches 1-2 and reef P1 approved by Nathan and pushed; reef P2 running)
 Roadmap section 6: species that add new silhouettes, scales or habitats, in batches of about five, each on a review sheet.

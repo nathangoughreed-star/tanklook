@@ -14,7 +14,7 @@ import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
 import { getImage } from '../scene/images';
 import { LU, addBeams, addFixture, applyLighting, waterVolumeMaterial } from './lighting';
 import { addAlgae } from './algae';
-import { itemMesh, solidProbe } from './items';
+import { itemDeps, itemMesh, solidProbe } from './items';
 import { rootsKey, rootsMesh } from './roots';
 import { addBackdrop, backdropGeometry } from './backdrop';
 import { drapedCard, fish3d, fishBody, hullMaterial } from './fish3d';
@@ -1104,7 +1104,7 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: number | null, 
   const bare = S.render.beams && S.light.type !== 'flat';
   const hard: string[] = []; // the solid pieces' data: an animal on the hardscape is rebuilt when any of them changes
   b.itemParts = (bare ? [] : S.items).map(it => {
-    const data = JSON.stringify(it), key = 'i' + data + (it.id === selItem ? '*' : '');
+    const data = JSON.stringify(it), key = 'i' + data + itemDeps(S, it) + (it.id === selItem ? '*' : ''); // (a vine: + the wood it runs along)
     const m = take(key) ?? (() => {
       const m = itemMesh(S, T, it); if (!m) return part(key, [], []);
       if (it.id === selItem) m.add(boxOutline(m.geometry));
