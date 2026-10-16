@@ -55,7 +55,7 @@ export function clean(g: THREE.BufferGeometry, indexed: boolean) {
 // grain, pits and cracks on stone, grain, splits and knots on wood. Kinds: 1 river, 2 seiryu / arch, 3 dragon, 4 lava,
 // 5 slate, 6 bark (coordinates = along the limb, angle around, radius), 7 terracotta, 8 coconut, 9 end grain, 10 plain wood,
 // 11 hard coral (corallite dots), 12 soft coral tissue (polyp fuzz); the reef pieces (render/coral3d.ts) set their own.
-const GRIT_KIND: Record<string, number> = { river: 1, seiryu: 2, dragon: 3, lava: 4, slate: 5, ledge: 2, tube: 7, coconut: 8, arch: 2 };
+const GRIT_KIND: Record<string, number> = { river: 1, seiryu: 2, dragon: 3, lava: 4, slate: 5, ledge: 2, tube: 7, coconut: 8, arch: 2, dish: 7, stonedish: 2 };
 const gritOffset = (seed: number) => [0.6180339, 0.4142135, 0.7320508].map((k, i) => ((seed * k + i * 0.37) % 1) * 400);
 /** aGrit from the vertex positions (shifted per seed so no two pieces share a pattern); left alone if already set. */
 export function grit(g: THREE.BufferGeometry, kind: number, seed: number) {
@@ -247,7 +247,35 @@ function shellShape(variant: string, seed: number, size: number) {
 }
 
 // ---------- Caves ----------
+/** A shallow water / feeding dish, lathed: wall, rolled rim, floor, and a clear slightly blue water surface (a darker
+ *  ring at the wall where it climbs in a meniscus, a pale line at the rim of the water). Width = s, height 0.2 s. */
+function dishShape(variant: string, seed: number, s: number) {
+  const r = rng(seed * 5 + 3), stone = variant === 'stonedish', R = s / 2, H = 0.2 * s, wall = Math.max(1.6, 0.045 * s), nz = waves(r, 4);
+  const body = stone ? [C('#7d8084'), C('#9a9c9c')] : [C('#c9633c'), C('#e8e0cf')], inner = stone ? C('#8f9296') : C('#efe8d8'), glaze = stone ? C('#8c8f92') : C('#35607a');
+  const level = 0.84 * H, floorY = 0.1 * H, parts: THREE.BufferGeometry[] = [];
+  const lathe = (pts: [number, number][], col: (q: THREE.Vector3) => THREE.Color, flip: boolean) => {
+    let g: THREE.BufferGeometry = new THREE.LatheGeometry(pts.map(q => new THREE.Vector2(q[0], q[1])), 48);
+    if (flip) g = inward(g); else g.computeVertexNormals();
+    return paint(clean(g, true), col);
+  };
+  const out: [number, number][] = [[0.001, 0], [R * 0.55, 0], [R * 0.8, 0.05 * H], [R * 0.96, 0.4 * H], [R, 0.9 * H], [R * 0.985, H]];
+  const rim: [number, number][] = [[R * 0.985, H], [R - wall * 0.5, H * 1.03], [R - wall, H]];
+  const inn: [number, number][] = [[R - wall, H], [R - wall * 1.6, 0.8 * H], [R * 0.78, 0.35 * H], [R * 0.5, floorY], [0.001, floorY]];
+  parts.push(lathe(out, q => shade(body[0].clone().lerp(body[1], stone ? 0.1 + 0.2 * nz(q.clone().multiplyScalar(0.05)) : Math.max(0, q.y / H - 0.7) * 3), 1 + 0.06 * nz(q.clone().multiplyScalar(0.08))), false));
+  parts.push(lathe(rim, () => shade(body[1], 0.95), false));
+  parts.push(lathe(inn, q => shade(stone ? inner : glaze.clone().lerp(inner, 0.35), q.y > level ? 1.15 : 0.85), true));
+  // the water: a flat disc, clear blue-green over the pale floor, brighter ring at the edge (the meniscus line)
+  const rw = R - wall * 1.6 - (H * 0.8 - level) / (0.8 * H - 0.35 * H) * (R - wall * 1.6 - R * 0.78) ;
+  const w = new THREE.CircleGeometry(rw, 48).rotateX(-Math.PI / 2).translate(0, level, 0);
+  const ring = new THREE.RingGeometry(rw * 0.965, rw, 48).rotateX(-Math.PI / 2).translate(0, level + 0.15, 0);
+  parts.push(paint(clean(w, true), q => C('#4a8fa8').lerp(C('#79b6c8'), Math.min(1, Math.hypot(q.x, q.z) / rw) ** 2 * 0.6).multiplyScalar(1 + 0.025 * nz(q.clone().multiplyScalar(0.12)))));
+  parts.push(paint(clean(ring, true), () => C('#b8dde8')));
+  // glaze and water are smooth (grit kind 0); a stone dish's own body takes the stone grain
+  parts.forEach((g, i) => grit(g, stone && i < 3 ? 2 : 0, seed));
+  return mergeGeometries(parts)!;
+}
 function caveShape(variant: string, seed: number, size: number) {
+  if (variant === 'dish' || variant === 'stonedish') return dishShape(variant, seed, size);
   const r = rng(seed * 7 + 11), s = size;
   if (variant === 'tube') {
     const rad = 0.21 * s, outer = C('#b0603a'), inner = C('#6a3a24'), nz = waves(r, 4);

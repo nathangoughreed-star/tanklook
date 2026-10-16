@@ -70,10 +70,10 @@ class Sheets {
   anc: number[] = []; gr: number[] = []; pc: number[] = []; par: number[] = []; apar: number[] = []; em: number[] = [];
   constructor(public pieces: number[][]) {}
   /** A grid of rows x cols points (row-major), with the base colour per point; front = as given, back = reversed. */
-  grid(p: THREE.Vector3[], c: THREE.Color[], rows: number, cols: number, back: THREE.Color[] | undefined, tg: Tag[]) {
+  grid(p: THREE.Vector3[], c: THREE.Color[], rows: number, cols: number, back: THREE.Color[] | undefined, tg: Tag[], pb?: THREE.Vector3[]) {
     for (const side of back ? [0, 1] : [0]) {
       const o = this.pos.length / 3;
-      p.forEach((v, i) => {
+      (side && pb ? pb : p).forEach((v, i) => {
         const k = side ? back![i] : c[i], t = tg[i];
         this.pos.push(v.x, v.y, v.z); this.col.push(k.r, k.g, k.b);
         this.anc.push(t.anc.x, t.anc.y, t.anc.z); this.gr.push(t.a, t.w); this.pc.push(t.pc); this.par.push(t.par); this.apar.push(t.apar); this.em.push(t.em ?? 0);
@@ -127,7 +127,7 @@ function leaf(out: Sheets, f: Leaf3D, stalkCol: string, base: THREE.Vector3, yaw
   if (f.rib) us.splice(us.length >> 1, 1, -0.07, 0, 0.07);
   // rows: a few up the bare stalk (a narrow strip in the stalk colour), then the blade
   const NS = f.seg[0], NP = f.pet > 0 ? 3 : 0, NC = us.length, rows = NP + NS + 1, W = L * f.wid, SW = Math.max(0.6, W * 0.07);
-  const rib = f.rib ? new THREE.Color(f.rib) : null, stalk = new THREE.Color(stalkCol), pts: THREE.Vector3[] = [], cs: THREE.Color[] = [], bs: THREE.Color[] = [];
+  const rib = f.rib ? new THREE.Color(f.rib) : null, stalk = new THREE.Color(stalkCol), pts: THREE.Vector3[] = [], pbs: THREE.Vector3[] = [], cs: THREE.Color[] = [], bs: THREE.Color[] = [];
   const edge = new THREE.Color(cols[0]), mid = new THREE.Color(cols[1]), under = new THREE.Color(f.under), tip = f.tip ? new THREE.Color(f.tip[0]) : null;
   const hx = Math.cos(yaw), hz = Math.sin(yaw), ph = r() * 6.28;
   // spots (optional): soft round blobs at (along, across), round on the leaf itself (across scaled by the width)
@@ -171,7 +171,9 @@ function leaf(out: Sheets, f: Leaf3D, stalkCol: string, base: THREE.Vector3, yaw
     for (let j = 0; j < NC; j++) {
       const u = us[j];
       const lift = blade ? f.fold * u * u * w / 2 + f.wave[0] * W * Math.abs(u) * Math.sin(s * Math.PI * f.wave[1] + ph + u) : 0;
-      pts.push(c.clone().addScaledVector(side, u * w / 2).addScaledVector(up, lift));
+      const at = c.clone().addScaledVector(side, u * w / 2).addScaledVector(up, lift);
+      // a thick (fleshy) leaf, lane CP: the upper side bulges up and the underside down, meeting at the rim
+      if (blade && f.thick) { const th = f.thick * w / 2 * Math.max(0, 1 - u * u); pts.push(at.clone().addScaledVector(up, th)); pbs.push(at.addScaledVector(up, -th)); } else { pts.push(at); pbs.push(at); }
       tg.push(rowTag);
       const k = blade ? edge.clone().lerp(mid, (1 - Math.abs(u)) ** 1.5) : stalk.clone();
       if (blade && rib && u === 0 && s > 0.02 && s < 0.9) k.lerp(rib, 0.55);
@@ -200,7 +202,7 @@ function leaf(out: Sheets, f: Leaf3D, stalkCol: string, base: THREE.Vector3, yaw
     }
   }
   if (!tag.on) out.pieces.push(line);
-  out.grid(pts, cs, rows, NC, bs, tg);
+  out.grid(pts, cs, rows, NC, bs, tg, f.thick ? pbs : undefined);
   return c;
 }
 
@@ -454,7 +456,7 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
   if (P.form === 'stem') {
     // upright stems, leaf pairs crossing at each node, the top ones smaller and more upright
     const n0 = Math.round(between(r, P.n)), n = clump.stems ? Math.min(MAX_STEMS, Math.round(clump.stems)) : n0, nodes = Math.round((P.nodes ?? 20) * kNodes);
-    const base = clump.spread ? clump.spread / 2 : Wc * P.spread / 2, rad = Math.max(0.8, h * 0.006 * kStalk), e = 0.03;
+    const base = clump.spread ? clump.spread / 2 : Wc * P.spread / 2, rad = Math.max(0.8, h * (P.stemK ?? 0.006) * kStalk), e = 0.03;
     // a pair of leaves at each node, or a whorl of them (lane T2: hornwort, anacharis)
     const whorl = P.whorl ? Array.from({ length: P.whorl }, (_, j) => j * 2 * Math.PI / P.whorl!) : [0, Math.PI];
     /**

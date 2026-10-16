@@ -3,14 +3,16 @@ export type PlantType = 'stem' | 'stemred' | 'grass' | 'sword' | 'fern' | 'anubi
   | 'buce' | 'rotala' | 'ludwigia' | 'balansae' | 'sagittaria' | 'ozelot' | 'moss'
   | 'redroot' | 'salvinia' | 'frogbit' | 'lettuce' | 'lotus'
   | 'pothos' | 'bromeliad' | 'tropfern' | 'fittonia' | 'sphagnum' | 'creeper'
-  | 'hairgrass' | 'hornwort' | 'anacharis';
+  | 'hairgrass' | 'hornwort' | 'anacharis'
+  | 'echeveria' | 'haworthia' | 'jade' | 'aloe' | 'burrotail' | 'barrel';
 
 /** Height / width per plant type (sizes and footprints; the ratio of the old 2D cards). */
 export const PLANT_ASPECT: Record<PlantType, number> = { stem: 3.2, stemred: 3.2, grass: 3.6, sword: 1.1, fern: 1.3, anubias: 0.8, carpet: 0.32, crypt: 1,
   buce: 0.9, rotala: 3.6, ludwigia: 3, balansae: 3, sagittaria: 0.45, ozelot: 1.1, moss: 0.45,
   redroot: 0.35, salvinia: 0.25, frogbit: 0.4, lettuce: 0.45, lotus: 0.85,
   pothos: 1.3, bromeliad: 0.6, tropfern: 1, fittonia: 0.5, sphagnum: 0.35, creeper: 1.2,
-  hairgrass: 0.4, hornwort: 3, anacharis: 3.2 };
+  hairgrass: 0.4, hornwort: 3, anacharis: 3.2,
+  echeveria: 0.55, haworthia: 0.7, jade: 1.1, aloe: 1.1, burrotail: 0.5, barrel: 1 };
 /** Plants that grow as a low patch (size = patch width, height = CARPET_H) rather than upright (size = height). */
 export const isCarpet = (v: string) => v === 'carpet';
 /** Plants that float at the water line (size = patch width; roots hang below; not drawn in a dry tank). */
@@ -65,6 +67,9 @@ export interface Leaf3D {
   /** A compound frond (lane T2): the blade is a thin rachis carrying `n` pairs of leaflets (`leaf`, its len a fraction
    *  of the frond's length), `ang` off the rachis toward the tip, rad; their length along the frond as `prof`. */
   pinnae?: { n: [number, number]; ang: number; prof: [number, number]; leaf: Leaf3D };
+  /** A fleshy leaf (lane CP, succulents): half its thickness over the blade's width at the middle; the upper side bulges up
+   *  and the underside down, meeting at the rim (absent = a flat sheet). */
+  thick?: number;
   /** Samples along the blade and across it (3 = a midrib, 5 = room for a cup or a ripple). */
   seg: [number, number];
 }
@@ -105,6 +110,8 @@ export interface Plant3D {
     follow?: number; wrap?: number };
   /** Stem plants: leaves per node, set round the stem (absent = a pair; lane T2: hornwort, anacharis). */
   whorl?: number;
+  /** Stem plants: stem radius as a fraction of the height (absent = 0.006; lane CP: a jade plant's thick trunk). */
+  stemK?: number;
   /** Stem plants: how far the stems lean out by the top, times the usual (lane T2: fittonia sprawls; absent = 1). */
   lean?: number;
   /** The most a plant's later growth lengthens its stems / leaves, times their length at the species' `size` (absent = no cap;
@@ -282,6 +289,33 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
     vine: { climb: 0.85, node: 11, back: 0.5, fan: 0.85, thick: 0.9, wander: 0.6, branch: 3, follow: 0.6, wrap: 140 }, leaf: {
     len: [14, 26], wid: 0.78, prof: [0.5, 0.55], rise: [1.15, 1.45], arch: 0.25, twist: 0.15, fold: 0.15, wave: [0, 0], pet: 0.18,
     cols: [['#2e5a24', '#4a7e36'], ['#34622a', '#52863c'], ['#2a5422', '#467a34']], under: '#5a7a46', seg: [5, 5] } },
+
+  // ---------- Succulents (lane CP, 2026-10-16): the arid starter's plants, drawn dry; slow, high light, hardly any care ----------
+  // Echeveria: a tight rosette of thick, spoon-shaped blue-grey leaves, the tips blushing pink; inner leaves stand up cupped
+  echeveria: { land: true, grow: { speed: 'slow', overflow: 'none', len: [30, 150], more: 3, prop: true }, cap: 1.5, sway: 0, form: 'rosette', n: [60, 80], crowns: [1, 1], spread: 0.03, stalk: '#7a8a72', leaf: {
+    len: [0.5, 1], wid: 0.6, prof: [1.2, 0.45], rise: [0.1, 1.1], arch: -0.05, twist: 0.05, fold: 0.3, thick: 0.4, wave: [0, 0], pet: 0,
+    cols: [['#6f8f86', '#9bb8ac'], ['#7a9a8e', '#a6c2b4'], ['#6a8a84', '#94b0a6']], under: '#86a498', tip: ['#c4687a', 0.22], seg: [8, 5] } },
+  // Haworthia (zebra type): a small rosette of stiff, pointed, dark leaves banded with white tubercles
+  haworthia: { land: true, grow: { speed: 'slow', overflow: 'none', len: [25, 110], more: 3, prop: true }, cap: 1.6, sway: 0, form: 'rosette', n: [14, 22], crowns: [1, 3], spread: 0.1, stalk: '#4a5a3a', leaf: {
+    len: [0.5, 0.95], wid: 0.4, prof: [0.6, 0.5], rise: [0.08, 0.75], arch: 0.2, twist: 0.05, fold: 0.15, thick: 0.5, wave: [0, 0], pet: 0,
+    cols: [['#26462a', '#46743c'], ['#2c4e2e', '#4c7a42']], under: '#4a6e3e', spots: { col: '#e8f0e0', n: [12, 24], r: 0.022 }, seg: [8, 5] } },
+  // Jade plant (Crassula ovata): a thick brown trunk branching into fat, glossy, oval leaves in pairs, red at the rims
+  jade: { land: true, grow: { speed: 'slow', overflow: 'none', len: [50, 420], more: 3, shoots: 1 }, sway: 0, form: 'stem', n: [2, 3], nodes: 7, lean: 0.8, stemK: 0.03, spread: 0.18, stalk: '#7a6a52', leaf: {
+    len: [0.14, 0.2], wid: 0.8, prof: [1, 0.5], rise: [0.8, 1.45], arch: 0.2, twist: 0.1, fold: 0.25, thick: 0.7, wave: [0, 0], pet: 0,
+    cols: [['#2e6a3a', '#58a060'], ['#34723e', '#62aa66'], ['#2a6236', '#4e9658']], under: '#4a8a52', tip: ['#b04a3e', 0.18], seg: [5, 5] } },
+  // Small aloe (Aloe vera type): thick, upright, spear-shaped grey-green leaves, flecked cream, a brown tip
+  aloe: { land: true, grow: { speed: 'slow', overflow: 'none', len: [40, 240], more: 3, prop: true }, cap: 1.5, sway: 0, form: 'rosette', n: [12, 18], crowns: [1, 1], spread: 0.04, stalk: '#5a7a52', leaf: {
+    len: [0.7, 1], wid: 0.17, prof: [0.6, 0.65], rise: [0.05, 0.85], arch: 0.3, twist: 0.1, fold: 0.5, thick: 0.55, wave: [0, 0], pet: 0,
+    cols: [['#4a7a56', '#74a47c'], ['#52825c', '#7aaa84']], under: '#5e8a62', tip: ['#7a6a4a', 0.08], spots: { col: '#d6e4cc', n: [6, 14], r: 0.02 }, seg: [10, 5] } },
+  // Burro's tail (Sedum morganianum): trailing stems packed with plump, pale blue-green teardrop leaves
+  burrotail: { land: true, grow: { speed: 'slow', overflow: 'trail', len: [50, 500], more: 2.5 }, sway: 0, form: 'vine', n: [4, 6], spread: 0.1, stalk: '#7a9a84',
+    vine: { climb: 0, node: 6, back: 0, fan: 1.3, thick: 3.2, wander: 0.2, follow: 0.8 }, leaf: {
+    len: [13, 18], wid: 0.7, prof: [0.8, 0.7], rise: [0.9, 1.4], arch: 0.1, twist: 0.2, fold: 0.5, thick: 0.9, wave: [0, 0], pet: 0,
+    cols: [['#6a9a84', '#98c4aa'], ['#74a48c', '#a0ccb2']], under: '#88b09a', seg: [3, 4] } },
+  // Barrel cactus (Echinocactus type): a squat ribbed ball of green with rows of pale spines
+  barrel: { land: true, grow: { speed: 'slow', overflow: 'none', len: [30, 150], more: 1.5, prop: true }, cap: 1.2, sway: 0, form: 'rosette', n: [14, 18], crowns: [1, 1], spread: 0.02, stalk: '#3a6a3a', leaf: {
+    len: [1, 1], wid: 0.7, prof: [0.5, 0.45], rise: [0.8, 1.2], arch: -1.8, twist: 0, fold: 0.1, thick: 0.8, wave: [0, 0], pet: 0,
+    cols: [['#2a5a34', '#42744a'], ['#2e6038', '#487a4e']], under: '#2a5a34', tip: ['#e8dcb0', 0.1], seg: [10, 5] } },
 
   // ---------- Aquatic follow-ons (lane T2, roadmap section 6; Monte Carlo stays the existing carpet: Nathan 2026-10-14) ----------
   // Dwarf hairgrass (Eleocharis acicularis): dense tufts of needle-fine bright green blades on runners, a fine lawn

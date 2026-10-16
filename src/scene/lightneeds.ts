@@ -93,6 +93,13 @@ export const NEEDS: Record<string, PlantNeed | CoralNeed | LandNeed> = {
   // land plants (terrarium)
   pothos: { band: 'land' }, bromeliad: { band: 'land' }, tropfern: { band: 'land' },
   fittonia: { band: 'land' }, sphagnum: { band: 'land' }, creeper: { band: 'land' },
+  // succulents (lane CP): the PG tiers' high light, low care, no CO2 (they grow above water: the PAR is read at the plant)
+  echeveria: P('high', 'none', 'none', { par: [50, 400], note: 'succulent' }),
+  haworthia: P('high', 'none', 'none', { par: [30, 400], note: 'succulent' }), // shades a little: low end of the band
+  jade: P('high', 'none', 'none', { par: [50, 400], note: 'succulent' }),
+  aloe: P('high', 'none', 'none', { par: [50, 400], note: 'succulent' }),
+  burrotail: P('high', 'none', 'none', { par: [50, 400], note: 'succulent' }),
+  barrel: P('high', 'none', 'none', { par: [60, 400], note: 'succulent' }),
   // reef
   mushroom: C('soft', 'none', [30, 100]), // lowest-light coral: bleaches shrink above ~100
   zoanthid: C('soft', 'light', [50, 200]),

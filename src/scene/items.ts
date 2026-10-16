@@ -30,6 +30,8 @@ export const LIBRARY: Record<string, Variant> = {
   tube: { kind: 'cave', label: 'Clay tube', hint: 'A terracotta spawning tube (plecos, cichlids).', size: 130, min: 40, max: 400 },
   coconut: { kind: 'cave', label: 'Coconut cave', hint: 'Half a coconut shell with a doorway.', size: 110, min: 50, max: 250 },
   halflog: { kind: 'cave', label: 'Half-log hide', hint: 'Half a hollow log, bark outside, open at both ends: a hide for frogs, geckos and other small animals.', size: 200, min: 60, max: 500 },
+  dish: { kind: 'cave', label: 'Water dish (ceramic)', hint: 'A shallow glazed bowl holding clear water: a drinking and soaking dish for reptiles, amphibians and small mammals. Size = width.', size: 120, min: 40, max: 400 },
+  stonedish: { kind: 'cave', label: 'Water dish (stone)', hint: 'A shallow bowl of grey stone holding clear water: a drinking dish or a feeding bowl. Size = width.', size: 120, min: 40, max: 400 },
   fern: { kind: 'plant', label: 'Java fern', hint: 'Grows on wood and rock.', size: 150, min: 30, max: 450 },
   anubias: { kind: 'plant', label: 'Anubias', hint: 'Grows on wood and rock.', size: 90, min: 25, max: 300 },
   sword: { kind: 'plant', label: 'Amazon sword', hint: 'A big rosette.', size: 250, min: 50, max: 600 },
@@ -58,6 +60,13 @@ export const LIBRARY: Record<string, Variant> = {
   sphagnum: { kind: 'plant', label: 'Sphagnum moss', hint: 'Terrarium: soft pale-green cushions; spread them over the ground or raise them onto wood.', size: 40, min: 15, max: 90 },
   creeper: { kind: 'plant', label: 'Creeping fig', hint: 'Terrarium: a flexible vine of small leaves that climbs flat up the back wall. Size = vine length.', size: 450, min: 60, max: 1400 },
   hairgrass: { kind: 'plant', label: 'Dwarf hairgrass', hint: 'Needle-fine tufts that spread on runners into a fine lawn.', size: 60, min: 25, max: 140 },
+  // succulents (lane CP): drought plants for the arid terrarium, slow growing
+  echeveria: { kind: 'plant', label: 'Echeveria', hint: 'Terrarium: a tight rosette of thick blue-grey leaves with pink tips. Slow; wants bright light and little water.', size: 90, min: 30, max: 220 },
+  haworthia: { kind: 'plant', label: 'Haworthia', hint: 'Terrarium: a small rosette of stiff dark leaves banded with white. Slow; takes less sun than most succulents.', size: 70, min: 25, max: 150 },
+  jade: { kind: 'plant', label: 'Jade plant', hint: 'Terrarium: a thick trunk with fat, glossy oval leaves. Slow; bright light, sparing water. Size = height.', size: 200, min: 50, max: 500 },
+  aloe: { kind: 'plant', label: 'Small aloe', hint: 'Terrarium: upright, fleshy grey-green spears flecked cream. Slow; bright light, sparing water.', size: 150, min: 40, max: 360 },
+  burrotail: { kind: 'plant', label: "Burro's tail", hint: 'Terrarium: trailing stems of plump blue-green leaves; raise it onto a rock or wood and let it hang. Size = stem length.', size: 220, min: 50, max: 600 },
+  barrel: { kind: 'plant', label: 'Barrel cactus', hint: 'Terrarium: a squat ribbed green ball with pale spines. Very slow; full sun, almost no water.', size: 90, min: 30, max: 240 },
   hornwort: { kind: 'plant', label: 'Hornwort', hint: 'Bushy stems of whorled needle leaves; fast, trails along the surface.', size: 300, min: 60, max: 900 },
   anacharis: { kind: 'plant', label: 'Anacharis', hint: 'Long stems densely set with whorls of small bright leaves; fast.', size: 300, min: 60, max: 900 },
   // corals (2026-10-14): size = width
@@ -289,6 +298,7 @@ export function itemDims(it: Pick<Item, 'kind' | 'variant' | 'seed' | 'size' | '
   if (it.kind === 'plant') return isCarpet(it.variant) ? [s, CARPET_H, s] : isFloat(it.variant) ? ((w: number) => [w, s * PLANT_ASPECT[it.variant as PlantType], w])(it.spread ? floatWidth(it) : s) : ((w: number) => [w, s, w])(it.spread ? Math.max(it.spread, sw / PLANT_ASPECT[it.variant as PlantType]) : sw / PLANT_ASPECT[it.variant as PlantType]) as [number, number, number];
   if (it.kind === 'coral') return [s, s * ({ acropora: 0.6, montipora: 0.45, mushroom: 0.4, leather: 0.6, acrofine: 0.55, zoanthid: 0.3, hammer: 0.4, torch: 0.55, anemone: 0.4, montiplate: 0.35, seafan: 0.8, macroalgae: 0.55 } as Record<string, number>)[it.variant], s];
   if (it.kind === 'cave' && it.variant in SHELLS) return shellDims(it.variant, s);
+  if (it.kind === 'cave' && (it.variant === 'dish' || it.variant === 'stonedish')) return [s, 0.2 * s, s];
   if (it.kind === 'cave') return it.variant === 'arch' ? [s, 0.5 * s, 0.45 * s] : it.variant === 'tube' ? [s, 0.42 * s, 0.42 * s] : [s, 0.5 * s, s];
   if (it.variant in SHELLS) return shellDims(it.variant, s);
   if (it.variant === 'climb') { const b = limbBox(woodLimbs(it.variant, it.seed, s)); return [b[0], b[1], b[2]]; }
