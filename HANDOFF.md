@@ -29,7 +29,6 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 |---|---|---|---|---|
 | SS2 starter styles batch 2 | `../Glass-Box-starters2` / `starters2` | 5683 | styles in `scene/items.ts` (`starterStyle`, style data), `scene/starter.ts`, `examples/`, the style picker | ready to open (prompt `prompts/lane-SS2-starters2.md`); shares `items.ts` with PG, keep both sides |
 | SB scatter brush | `../Glass-Box-brush` / `scatter-brush` | 5693 | new `scene/brush.ts`, `ui/brush.ts`, `src/interact` brush mode, `render/scatter.ts` | ready to open (prompt `prompts/lane-SB-scatter-brush.md`) |
-| BP2 ball python follow-ups | `../Glass-Box-python2` / `python2` | 5703 | `render/snake3d.ts`, `art/snakes.ts`, life-stage picker in the animal box of `ui/panels.ts`, clearance check in `scene/scatter.ts` | ready to open (prompt `prompts/lane-BP2-python-followups.md`) |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 
@@ -42,15 +41,6 @@ Scope: terrestrial starters (rainforest gecko, arid leopard gecko, jumping spide
 
 ## Lane SB: scatter brush (2026-10-16; branch `scatter-brush`, port 5693; opened by coordinator 3, not started)
 Scope: paint-on litter / pebbles / moss / carpet plants with seeded variation, erase, surface-aware via anchors, instanced. Decision to bring to Nathan early: strokes as a seeded "patch" (recommended) or individual items. Owns new scene/brush.ts, ui/brush.ts, brush mode in src/interact, render/scatter.ts. State: nothing built yet.
-
-## Lane BP2: ball python follow-ups (2026-10-16; branch `python2`, port 5703; built + tested on the branch, NOT pushed: pictures sent to Nathan, awaiting his verdict)
-- **1 Uneven ground**: `snakeContacts` / `settleSnake` (render/snake3d.ts) + one block in `animal()` (build.ts): of the spots within ~1 reach of where the snake was put and the tilts up to 30 deg, the one with the least air under the touching coils and none inside the ground (floor and hardscape tops). A coil half over a slab edge slides onto the slab (or off it onto the soil): it renders up to ~1 reach from its stored x / depth. Tests in test/snake.test.ts.
-- **2 Shared ledge**: `shuffleFish` (scene/scatter.ts) rerolls a hardscape spawn that crowds another animal on hardscape (0.3 x the two lengths, `HARD_ROOM`, own rng so the shuffle stream is untouched; every animal, not only snakes; placeNew goes through it). 5th arg `room` (0 = off). test/anchorbase.test.ts passes room 0: its fixture holds two otos 6 mm apart on one spot, so with the rule on the fixture would change; fixture JSON NOT touched.
-- **3 Wrap**: tail winds from its tip (no straight lead-in); the helix tightens (advance 2.3 -> 1.1 widths) and slides along the limb to fit the room each side of the anchor; a drape on a limb shorter than the snake becomes a wrap; the limb's curve and taper are followed (`limbFrames` / `bendOnLimb`: parallel-transport frames along the limb's CatmullRom, new geometry per snake, cache keeps the straight pose). build.ts builds a limb snake after perchOn (`limbPathOf`).
-- **4 Life stages**: src/data/lifestages.ts; picker row `#stageRow` under the new-animal size slider (reptiles, arachnids; snakes real lengths, others shares of adult), slider step now 1. Buttons 38 px, wrap to two rows at 375 px, no horizontal scroll.
-- **5 375 px**: checked the picker row and a snake on a branch.
-- Hooks in others' files: build.ts animal() (settle block, snake-on-limb), scatter.ts (clearance), index.html / style.css / panels.ts (picker, one function). Pictures: shots/BP2_sheet1.jpg.
-- Open: no tongue; a wrap on a very short stub (< ~0.3 length) still overhangs its end.
 
 ## Lane W: Android app (2026-10-14; OPENED same day, Nathan: "start work on the android app"; prompt `prompts/lane-W-android-app.md`)
 - **Route: Trusted Web Activity (TWA)** around https://tanklook.com/ (Bubblewrap or PWABuilder). Real Chrome, so WebXR
@@ -219,6 +209,7 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane BP2: ball python follow-ups (2026-10-16; branch `python2`, port 5703; built + tested on the branch, NOT pushed: pictures sent to Nathan, awaiting his verdict)
 - Lane PG: plant / coral light and care gating (2026-10-16; branch `plant-gates`, port 5673; opened by coordinator 3, not started)
 - Lane BP: ball python, serpentine body plan (2026-10-16; branch `python`, port 5673; built + tested, committed on the branch, NOT pushed: pictures sent to Nathan, awaiting his verdict)
 - Lane T1: dry ground, terrestrial substrates + leaf litter (2026-10-16; branch `dry-ground`, port 5633; Nathan: "leaf litter looks great", ship; pushed to main)
