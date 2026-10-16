@@ -10,7 +10,7 @@ import { glassBand, restsOnGround } from '../scene/water';
 import { backdropDepth, D2R, IN, ceilingH, clamp, floorY, glassThickness, RIM_DROP, RIM_H, tankUnderside, waterY } from '../scene/physics';
 import { alongRun, backgroundRuns, bowlDims, bowlRadius, chord, circleRing, clipToFootprint, facingRuns, footprint, halfWidth, inside, nearestGlass, offsetRing, offsetWalls, runLength, shapeOf, subRun, type P } from '../scene/shape';
 import { TABLE_TOP, cornerWalls, wallGap, tableCentre, tableOn, tableRing, wallPlane } from '../scene/table';
-import { groundHeight, pieSegs, terrainDisc, terrainPoints } from '../scene/terrain';
+import { groundHeight, pieSegs, poolHandles, poolWet, terrainDisc, terrainPoints, type PoolPart } from '../scene/terrain';
 import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
 import { getImage } from '../scene/images';
 import { LU, addBeams, addFixture, applyLighting, waterVolumeMaterial } from './lighting';
@@ -229,7 +229,7 @@ function addBowl(sc: THREE.Scene, S: TankSetup, T: Tank, add: (geo: THREE.Buffer
 function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
   const { H } = T, R = S.render, fp = footprint(T), bowl = shapeOf(T) === 'bowl';
   // backing under the substrate; a bare-bottom tank has none, so the stand top or the room shows through the bottom pane
-  if (S.substrate.show || S.layout.id === 'swamp' || S.terrain.on) sc.add(new THREE.Mesh(flatGeometry(fp.ring, 0), basic(0xcdb98f, { side: THREE.DoubleSide })));
+  if (S.substrate.show || S.terrain.on) sc.add(new THREE.Mesh(flatGeometry(fp.ring, 0), basic(0xcdb98f, { side: THREE.DoubleSide })));
   const bg = BACKGROUNDS[R.bg], t = glassThickness(T, R.glass);
   // uploaded pictures take their sides whatever the background is; the plain background keeps its other sides
   const pics = R.bgImages.flatMap(b => { const data = b.sides.length ? getImage(b.img) : undefined; return data ? [{ ...b, data }] : []; });
@@ -786,7 +786,7 @@ function flare(T: Tank, x: number, d: number, y: number, rb: number): [number, n
 }
 
 function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
-  const swamp = S.layout.id === 'swamp' || S.terrain.on;
+  const swamp = S.terrain.on; // shaped ground (custom terrain, a swamp's pools): finer mesh
   if (!S.substrate.show && !swamp) return;
   const sub = S.substrate, { L, D } = T, tile = sub.type === 'custom' ? blendTile(sub.custom) : SUBSTRATES[sub.type].tile * 2, h = (x: number, d: number) => groundHeight(S, T, x, d);
   // top surface as a 16x16 grid (bilinear surfaces curve along diagonals) clipped to the outline, and a skirt round the
@@ -1059,7 +1059,8 @@ export function patchLook(sc: THREE.Scene, S: TankSetup) {
  * Custom terrain editing aids: a dot on every grid point (drawn over everything so plants never hide one) and faint
  * grid lines following the ground between them. `hot` = the point being dragged.
  */
-function addTerrainDots(sc: THREE.Scene, S: TankSetup, T: Tank, hot: number | null): THREE.Mesh[] {
+function addTerrainDots(sc: THREE.Scene, S: TankSetup, T: Tank, edit: TerrainEdit): THREE.Mesh[] {
+  const hot = edit.hot;
   const t = S.terrain, g = (x: number, d: number) => groundHeight(S, T, x, d), dots: THREE.Mesh[] = [], pts: number[] = [];
   const rb = shapeOf(T) === 'bowl' ? bowlDims(T).rb : 0, disc = terrainDisc(T);
   const step = t.arc ? T.D / t.rows : t.radial ? disc.rx / t.rows : Math.min(T.L / (t.cols - 1), T.D / (t.rows - 1));
@@ -1070,14 +1071,17 @@ function addTerrainDots(sc: THREE.Scene, S: TankSetup, T: Tank, hot: number | nu
   // faint orange
   const mat = (c: number, opacity: number) => basic(c, { depthTest: false, depthWrite: false, transparent: true, opacity, colorWrite: opacity > 0 });
   const fill = mat(0xffffff, 0), hotM = mat(0xffb020, 0.35);
-  const edge = new THREE.ShaderMaterial({ transparent: true, depthTest: false, depthWrite: false, uniforms: { uCol: { value: new THREE.Color(0x1d2a33) } },
+  const edge = new THREE.ShaderMaterial({ transparent: true, depthTest: false, depthWrite: false, uniforms: { uCol: { value: new THREE.Color(0x1d2a33) }, uA: { value: 0.8 } },
     vertexShader: 'varying vec3 vN, vV; void main() { vec4 mv = modelViewMatrix * vec4(position, 1.0); vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }',
     // a hairline at the silhouette: 1 - n.v past ~0.65 is the outer ~5 % of the ring's radius
-    fragmentShader: 'uniform vec3 uCol; varying vec3 vN, vV; void main() { float f = 1.0 - abs(dot(normalize(vN), normalize(vV))); gl_FragColor = vec4(uCol, 0.8 * smoothstep(0.55, 0.7, f)); }' });
+    fragmentShader: 'uniform vec3 uCol; uniform float uA; varying vec3 vN, vV; void main() { float f = 1.0 - abs(dot(normalize(vN), normalize(vV))); gl_FragColor = vec4(uCol, uA * smoothstep(0.55, 0.7, f)); }' });
+  // a point in a pool's core shapes nothing you see (the floor there is the corner slope): faded
+  const faint = edge.clone(); faint.uniforms = { uCol: edge.uniforms.uCol, uA: { value: 0.22 } };
+  const pools = S.terrain.pools ?? [];
   terrainPoints(t, T).forEach((p, k) => {
     const y = g(p.x, p.depth);
     if (!inside(T, p.x, p.depth, -1)) return; // outside a round or angled tank: still shapes the ground, not shown
-    const o = new THREE.Mesh(ring, edge); o.position.set(...flare(T, p.x, p.depth, y, rb)); o.renderOrder = 20; o.userData = { nolight: true, dot: k }; sc.add(o); dots.push(o); // the rim grabs too
+    const o = new THREE.Mesh(ring, pools.length && poolWet(pools, T, p.x, p.depth) >= 1 ? faint : edge); o.position.set(...flare(T, p.x, p.depth, y, rb)); o.renderOrder = 20; o.userData = { nolight: true, dot: k }; sc.add(o); dots.push(o); // the rim grabs too
     const m = new THREE.Mesh(geo, k === hot ? hotM : fill); m.position.copy(o.position); m.renderOrder = 21; m.userData = { nolight: true, dot: k }; sc.add(m); dots.push(m);
   });
   const seg = 10, seg2 = (x0: number, d0: number, x1: number, d1: number) => pts.push(...flare(T, x0, d0, g(x0, d0) + 1, rb), ...flare(T, x1, d1, g(x1, d1) + 1, rb));
@@ -1105,7 +1109,42 @@ function addTerrainDots(sc: THREE.Scene, S: TankSetup, T: Tank, hot: number | nu
     }
   }
   sc.add(lines(pts, 0xffffff, 0.35));
-  return dots;
+  return [...dots, ...addPoolHandles(sc, S, T, edit)];
+}
+
+/** The terrain editor's grip on one pool: which pool (index in terrain.pools) and which handle. */
+export interface PoolGrab { k: number; part: PoolPart }
+/** UI state of the terrain editor: on, the grid point being dragged, the pool the panel shows and its handle in a drag. */
+export interface TerrainEdit { on: boolean; hot: number | null; pool: number; poolHot?: PoolGrab | null }
+const POOL_COL: Record<PoolPart, number> = { c: 0xffb020, w: 0x78c8ff, l: 0x78c8ff, b: 0xbee6a0 };
+/**
+ * Pool editing aids (Pools tool, Nathan 2026-10-16): each pool's outline on the ground (solid: where its bank meets the
+ * land; dashed: its core, where the floor is the corner slope) and, on the pool the panel shows, four square handles:
+ * centre (move), width, length and bank. Drawn over everything, like the grid dots.
+ */
+function addPoolHandles(sc: THREE.Scene, S: TankSetup, T: Tank, edit: TerrainEdit): THREE.Mesh[] {
+  const pools = S.terrain.pools ?? [], out: THREE.Mesh[] = [], g = (x: number, d: number) => groundHeight(S, T, x, d) + 2;
+  const r = clamp(Math.min(T.L, T.D) * 0.018, 7, 16), box = new THREE.BoxGeometry(r * 1.6, r * 1.6, r * 1.6);
+  pools.forEach((p, k) => {
+    const sel = k === edit.pool, pts: number[] = [], core: number[] = [], n = 96;
+    for (let i = 0; i < n; i++) for (const [e, arr, dash] of [[1, pts, false], [1 - p.bank, core, true]] as const) {
+      if (dash && i % 2) continue;
+      const P = (a: number) => { const x = clamp(p.x + p.rx * e * Math.cos(a), 0, 1) * T.L, d = clamp(p.d + p.rd * e * Math.sin(a), 0, 1) * T.D; return inside(T, x, d, -1) ? [x, g(x, d), -d] : null; };
+      const a0 = P(2 * Math.PI * i / n), a1 = P(2 * Math.PI * (i + 1) / n);
+      if (a0 && a1) arr.push(...a0, ...a1);
+    }
+    for (const arr of [pts, core]) if (arr.length) {
+      const l = lines(arr, sel ? 0x2a6fd0 : 0xffffff, sel ? 0.95 : 0.5); l.renderOrder = 20;
+      (l.material as THREE.Material).depthTest = false; l.userData.nolight = true; sc.add(l);
+    }
+    if (!sel) return;
+    for (const [part, h] of Object.entries(poolHandles(p)) as [PoolPart, { u: number; v: number }][]) {
+      const hot = edit.poolHot?.k === k && edit.poolHot.part === part, x = h.u * T.L, d = h.v * T.D;
+      const m = new THREE.Mesh(box, basic(hot ? 0xffffff : POOL_COL[part], { depthTest: false, depthWrite: false, transparent: true, opacity: 0.9 }));
+      m.position.set(x, g(x, d) + r, -d); m.renderOrder = 22; m.userData = { nolight: true, pool: { k, part } }; sc.add(m); out.push(m);
+    }
+  });
+  return out;
 }
 
 /**
@@ -1117,7 +1156,7 @@ const tagFrom = (sc: THREE.Scene, n0: number, part: (o: THREE.Object3D) => numbe
 /** Does o (or anything under it) draw with the hardscape's material (the 3D back wall does)? */
 const solidIn = (o: THREE.Object3D) => { let s = false; o.traverse(c => { s ||= !!((c as THREE.Mesh).material as THREE.Material | undefined)?.userData?.solid; }); return s; };
 
-export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: Sel, edit?: { hot: number | null }, selItem: Sel = null): BuiltTank {
+export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: Sel, edit?: TerrainEdit, selItem: Sel = null): BuiltTank {
   const sc = new THREE.Scene();
   addTank(sc, S, T); addWater(sc, S, T); if (S.water.on) addAlgae(sc, T, waterY(T, S.water.level), LU); tagFrom(sc, 0, () => PART.glass);
   let n0 = sc.children.length; addSubstrate(sc, S, T); tagFrom(sc, n0, () => PART.ground);
@@ -1130,7 +1169,7 @@ export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: Sel, 
   addLid(sc, S, T);
   if (S.lid !== 'hood') addFixture(sc, T, S.light, floorY(T, S.render, S.stand) + ceilingH(S.wall)); // ceiling: the wall's room height // with a hood the fixture is inside it; its light still applies
   if (S.render.beams) addBeams(sc, T, S.light, S.lid);
-  b.dotMeshes = edit && S.terrain.on ? addTerrainDots(sc, S, T, edit.hot) : [];
+  b.dotMeshes = edit && S.terrain.on ? addTerrainDots(sc, S, T, edit) : [];
   applyLighting(sc);
   sc.updateMatrixWorld(true);
   return b;

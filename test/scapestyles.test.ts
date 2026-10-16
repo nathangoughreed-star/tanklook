@@ -121,8 +121,8 @@ describe('Quick aquascape setup: the style draws its substrate and terrain too (
       expect(a.layout.ground).toBe(true);
       expect(['aragonite', 'coral']).not.toContain(a.substrate.type); // fresh water: no marine sand
       const H = a.tank.H;
-      if (id === 'swamp') { expect(a.terrain.on).toBe(false); continue; } // the swamp keeps its own land
       expect(a.terrain.on).toBe(true);
+      if (id === 'swamp') { expect(a.terrain.pools!.length).toBeGreaterThan(0); continue; } // land with pools, as terrain data
       for (const h of a.terrain.h) { expect(h).toBeGreaterThanOrEqual(8); expect(h).toBeLessThanOrEqual(H * 0.35 + 1e-9); }
       expect(a.substrate.bl + a.substrate.br).toBeGreaterThan(a.substrate.fl + a.substrate.fr);
     }

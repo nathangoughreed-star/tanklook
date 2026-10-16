@@ -24,9 +24,9 @@ export interface UpdateOptions {
 const COALESCE_MS = 1200, MAX_HISTORY = 200;
 export const STORAGE_KEY = 'tanklook.scene';
 
-/** Swamp land is drawn in the substrate, so a swamp layout always has its substrate shown: the Substrate panel then
- *  says what you see, not "Bare bottom" (audit #15). */
-const swampGround = (t: TankSetup) => { if (t.layout.id === 'swamp') t.substrate.show = true; };
+/** Custom terrain (a swamp's land, since 2026-10-16) is drawn in the substrate, so it always has its substrate shown:
+ *  the Substrate panel then says what you see, not "Bare bottom" (audit #15). */
+const swampGround = (t: TankSetup) => { if (t.terrain.on) t.substrate.show = true; };
 
 export class Store {
   scene: Scene;

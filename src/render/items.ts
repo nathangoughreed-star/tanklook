@@ -631,12 +631,12 @@ function bakedShape(it: Item) {
   return remember(baked, k, g, 400, dispose);
 }
 
-/** What the ground's shape depends on (terrain.ts groundHeight): custom terrain, else the substrate's corner depths and a
- *  swamp layout's land. */
+/** What the ground's shape depends on (terrain.ts groundHeight): custom terrain (with pools, cut down to the substrate's
+ *  corner depths), else the substrate's corner depths. */
 function groundKey(S: TankSetup) {
-  const t = S.terrain, b = S.substrate;
-  if (t?.on && t.h.length) return `t${t.cols},${t.rows},${t.radial ? 'r' : ''}${t.arc ?? ''},${t.h.join(',')}`;
-  return `s${b.show ? [b.fl, b.fr, b.bl, b.br].join(',') : '-'}${S.layout.id === 'swamp' ? `|w${S.layout.seed}` : ''}`;
+  const t = S.terrain, b = S.substrate, c = [b.fl, b.fr, b.bl, b.br].join(',');
+  if (t?.on && t.h.length) return `t${t.cols},${t.rows},${t.radial ? 'r' : ''}${t.arc ?? ''},${t.h.join(',')}${t.pools?.length ? `|p${t.pools.map(p => [p.x, p.d, p.rx, p.rd, p.bank].join(',')).join(';')}|${c}` : ''}`;
+  return `s${b.show ? c : '-'}`;
 }
 /** How far from a vine's crown (mm, sideways) wood must come for its vines to find it (lane T2). */
 const VINE_REACH = 320;

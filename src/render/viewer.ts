@@ -7,7 +7,7 @@ import { tableOn, tableRing } from '../scene/table';
 import { footprint } from '../scene/shape';
 import type { Store } from '../scene/store';
 import type { Fish, Tank, TankSetup } from '../scene/types';
-import { HOOD_H, PART, buildTank, disposeScene, envKey, lookKey, patchLook, patchTank, personSpot, type BuiltTank } from './build';
+import { HOOD_H, PART, buildTank, disposeScene, envKey, lookKey, patchLook, patchTank, personSpot, type BuiltTank, type PoolGrab, type TerrainEdit } from './build';
 import { drawViewMap } from './viewmap';
 import { applyFraming, fovFor, frameBox, frameStraightOn, placeCamera, windowCentre } from './camera';
 import { glowColor, placeSlice, roomLevel, setLightUniforms, setWaterUniforms } from './lighting';
@@ -169,7 +169,7 @@ export class Viewer {
   private dirty = true;
   private needsBuild = true;
   /** Custom terrain editing: show grid dots in the edited tanks; `hot` = the dot being dragged. UI state, not scene data. */
-  terrainEdit: { on: boolean; hot: number | null } = { on: false, hot: null };
+  terrainEdit: TerrainEdit = { on: false, hot: null, pool: 0 };
   private drawnListeners = new Set<() => void>();
   /**
    * Middle-drag pan per view, screen px: slides the image window (a lens shift, like the framing), so the eye,
@@ -720,9 +720,9 @@ export class Viewer {
     if (!vp) return null;
     const ndc = new THREE.Vector2((x - vp.x) / vp.w * 2 - 1, -(y - vp.y) / vp.h * 2 + 1);
     this.ray.setFromCamera(ndc, vp.cam);
-    const dot = this.terrainEdit.on ? this.ray.intersectObjects(vp.dotMeshes ?? [], false)[0] : undefined;
-    const none = { fishId: null as number | null, itemId: null as number | null, dot: null as number | null };
-    if (dot) return { vp, ray: this.ray.ray.clone(), ...none, mesh: dot.object as THREE.Mesh, dot: dot.object.userData.dot as number };
+    const dot = this.terrainEdit.on ? this.ray.intersectObjects(vp.dotMeshes ?? [], false).sort((a, b) => (b.object.userData.pool ? 1 : 0) - (a.object.userData.pool ? 1 : 0))[0] : undefined;
+    const none = { fishId: null as number | null, itemId: null as number | null, dot: null as number | null, pool: null as PoolGrab | null };
+    if (dot) return { vp, ray: this.ray.ray.clone(), ...none, mesh: dot.object as THREE.Mesh, dot: (dot.object.userData.dot ?? null) as number | null, pool: (dot.object.userData.pool ?? null) as PoolGrab | null };
     // while shaping the ground only its dots are live: a near miss turns the view instead of moving a fish or a rock
     if (this.terrainEdit.on) return { vp, ray: this.ray.ray.clone(), ...none, mesh: undefined as THREE.Mesh | undefined };
     // the nearest fish, rock, wood or cave; a plant only when nothing else is under the pointer (its cards are mostly

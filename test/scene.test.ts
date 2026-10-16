@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { SPECIES, getSpecies, searchSpecies } from '../src/data/species';
 import { defaultScene, defaultSetup } from '../src/scene/defaults';
+import { styleGround } from '../src/scene/scapeground';
 import { Store } from '../src/scene/store';
 import { SCENE_VERSION, type TankSetup } from '../src/scene/types';
 import { keepInWater, restsOnGround, setWaterLevel } from '../src/scene/water';
-import { SWAMP_LEVEL, groundHeight, nearestLand, pieSize, radialSize, randomLand, sameGrid, ringCount, sampleTerrain, terrainHeight, terrainPoints } from '../src/scene/terrain';
+import { SWAMP_LEVEL, groundHeight, nearestLand, pieSize, radialSize, randomLand, sameGrid, ringCount, sampleTerrain, swampTerrain, terrainHeight, terrainPoints } from '../src/scene/terrain';
 import { tankWeight } from '../src/scene/weight';
 import { WATERLINE_GAP, spawnSnail, substrateHeight, waterK, waterY } from '../src/scene/physics';
 import { SceneError, parseScene } from '../src/scene/validate';
@@ -67,7 +68,7 @@ describe('custom terrain from a bare bottom (audit #14)', () => {
 describe('swamp layout (audit #15)', () => {
   it('shows its substrate, so the Substrate panel matches the land you see', () => {
     const st = new Store(defaultScene());
-    st.edit(s => { s.substrate.show = false; s.layout.id = 'swamp'; });
+    st.edit(s => { s.substrate.show = false; s.layout.id = 'swamp'; styleGround(s); });
     expect(st.tank.substrate.show).toBe(true);
   });
 });
@@ -296,7 +297,7 @@ describe('water (scene v5)', () => {
 
 describe('swamp terrain', () => {
   const swampScene = (seed: number) => {
-    const s = defaultSetup(); s.layout = { id: 'swamp', seed }; setWaterLevel(s, SWAMP_LEVEL); return s;
+    const s = defaultSetup(); s.layout = { id: 'swamp', seed }; s.terrain = swampTerrain(s, s.tank, seed); setWaterLevel(s, SWAMP_LEVEL); return s;
   };
   it('has land above the water and a pool open to the front glass, for many seeds', () => {
     for (let seed = 1; seed <= 50; seed++) {
@@ -434,7 +435,7 @@ describe('approximate tank weight', () => {
 });
 
 describe('land and amphibious animals (habitat)', () => {
-  const swamp = (seed: number) => { const s = defaultSetup(); s.layout = { id: 'swamp', seed }; setWaterLevel(s, SWAMP_LEVEL); return s; };
+  const swamp = (seed: number) => { const s = defaultSetup(); s.layout = { id: 'swamp', seed }; s.terrain = swampTerrain(s, s.tank, seed); setWaterLevel(s, SWAMP_LEVEL); return s; };
   const animal = (id: number, species: string, x: number, y: number, depth: number) => ({ id, species, x, y, depth, yaw: 0, pitch: 0, roll: 0, bend: 0 });
   it('resolves habitat: fish water, snails both, frogs land, toad and newt both, axolotl a water bottom dweller', () => {
     expect(getSpecies('neon')!.habitat).toBe('water');

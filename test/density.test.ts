@@ -4,13 +4,16 @@ import { defaultScene, defaultSetup } from '../src/scene/defaults';
 import { DEFAULT_DENS, STYLES, layerOf, legacyDens, starterItems, stopDens } from '../src/scene/items';
 import { IN } from '../src/scene/physics';
 import { bioload, bioloadLitres, handEdits, regenerate, starterAnimals } from '../src/scene/starter';
+import { swampTerrain } from '../src/scene/terrain';
 import { LAYOUT_IDS, parseScene } from '../src/scene/validate';
 import type { Item, LayerDens, LayoutId, TankSetup } from '../src/scene/types';
 
 const LAYOUTS = LAYOUT_IDS.filter(id => id !== 'none') as Exclude<LayoutId, 'none'>[];
 const setup = (id: LayoutId, seed: number, dens: LayerDens = DEFAULT_DENS, salt = id === 'reef') => {
   const s = defaultSetup(); s.tank = { ...s.tank, L: 36 * IN, H: 18 * IN, D: 18 * IN };
-  s.layout = { id, seed, dens: { ...dens } }; s.water.salt = salt; s.fish = []; return s;
+  s.layout = { id, seed, dens: { ...dens } }; s.water.salt = salt; s.fish = [];
+  if (id === 'swamp') s.terrain = swampTerrain(s, s.tank, seed); // its land, as choosing it in the panel draws it
+  return s;
 };
 const hard = (items: Item[]) => items.filter(it => layerOf(it) === 'hard');
 const plants = (items: Item[]) => items.filter(it => layerOf(it) === 'plant');

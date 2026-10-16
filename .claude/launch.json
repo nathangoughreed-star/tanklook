@@ -576,6 +576,21 @@
         "--strictPort"
       ],
       "port": 5683
+    },
+    {
+      "name": "swamp-ground",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "C:/Users/nreed/Glass Box/.claude/worktrees/agitated-lumiere-a79eba",
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5663",
+        "--strictPort"
+      ],
+      "port": 5663
     }
   ]
 }

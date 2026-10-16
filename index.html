@@ -157,6 +157,14 @@
   </div>
   <div class="field"><label class="flabel"><input type="checkbox" id="terOn"> Custom terrain</label><button id="terEdit" title="Show the grid points in the tank; drag one up or down">Edit points</button><button id="terFlat" title="Every point at the substrate's average depth">Flatten</button></div>
   <div class="row" id="terColsRow"><label for="terCols">Grid</label><input id="terCols" type="range" min="3" max="25" step="1"><output id="oTerCols"></output></div>
+  <div id="terPools">
+  <div class="field"><span class="flabel">Pools</span><select id="poolSel" aria-label="Pool"></select><button id="poolAdd" title="A new pool in the middle of the tank, cut down to the corner depths">Add pool</button><button id="poolDel">Remove</button></div>
+  <div class="row"><label for="poolX">Across</label><input id="poolX" type="range" min="0" max="100" step="0.01"><output id="oPoolX"></output></div>
+  <div class="row"><label for="poolD">From front</label><input id="poolD" type="range" min="0" max="100" step="0.01"><output id="oPoolD"></output></div>
+  <div class="row"><label for="poolW">Width</label><input id="poolW" type="range" min="2" max="100" step="0.01"><output id="oPoolW"></output></div>
+  <div class="row"><label for="poolL">Length</label><input id="poolL" type="range" min="2" max="100" step="0.01"><output id="oPoolL"></output></div>
+  <div class="row"><label for="poolBank">Bank</label><input id="poolBank" type="range" min="5" max="100" step="1"><output id="oPoolBank"></output></div>
+  </div>
   <div class="hint" id="terHint">Custom terrain turns the floor into a grid of points you can push down or pull up, with a smooth surface through them. It starts from the current floor.</div>
   <div id="subLitter">
   <div class="field"><span class="flabel">Leaf litter</span><select id="litLeaf" aria-label="Leaf litter kind"></select><button id="litShuffle" title="The same leaves, fallen in new places">Shuffle</button></div>

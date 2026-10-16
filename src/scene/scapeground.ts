@@ -7,7 +7,7 @@ import { rng } from '../art/paint';
 import { defaultSetup } from './defaults';
 import { styleFoci } from './items';
 import { clamp } from './physics';
-import { sampleTerrain, terrainPoints } from './terrain';
+import { sampleTerrain, swampTerrain, terrainPoints } from './terrain';
 import type { Grain, LayoutId, SubstrateBlend, SubstrateType, TankSetup } from './types';
 
 type Sub = { type: SubstrateType; custom?: SubstrateBlend };
@@ -29,7 +29,7 @@ const SUBS: Record<StyleId, Sub[]> = {
   forest: [blend('gravel', SOIL, 'sand', SAND, 25, 0.05), blend('gravel', SOIL, 'sand', PALE, 20, 0.1)],
 };
 /** Slope and relief per style: back depth as [lo, hi] times the front's, hills under the groups (times the front
- *  depth), and roughness (soft waves over the floor). A swamp keeps its own land (no terrain grid). */
+ *  depth), and roughness (soft waves over the floor). A swamp's land and pools are drawn by swampTerrain. */
 const SHAPE: Record<StyleId, { back: [number, number]; hill: number; rough: number }> = {
   stones: { back: [1.5, 2.2], hill: 0.6, rough: 0.1 }, driftwood: { back: [1.5, 2.5], hill: 0.5, rough: 0.1 },
   planted: { back: [2, 3], hill: 0.3, rough: 0 }, iwagumi: { back: [2.5, 3.5], hill: 1.2, rough: 0.1 },
@@ -55,10 +55,11 @@ export function styleGround(s: TankSetup): void {
     h += sh.rough * f * (Math.sin(u * 7 + ph[0]) * Math.sin(t * 5 + ph[1]));
     return +clamp(h, 8, T.H * 0.35).toFixed(1);
   };
-  s.substrate.fl = height(0, 0); s.substrate.fr = height(T.L, 0); s.substrate.bl = height(0, T.D); s.substrate.br = height(T.L, T.D);
-  if (id === 'swamp') s.terrain = { ...s.terrain, on: false };
+  // corners on the sliders' 1 mm step, so a hand can set them exactly (generator audit 2026-10-16)
+  s.substrate.fl = Math.round(height(0, 0)); s.substrate.fr = Math.round(height(T.L, 0)); s.substrate.bl = Math.round(height(0, T.D)); s.substrate.br = Math.round(height(T.L, T.D));
+  if (id === 'swamp') s.terrain = swampTerrain(s, T, s.layout.seed); // its land and pools, as terrain the user edits
   else {
-    const t = sampleTerrain(s, T, s.terrain.cols || 7);
+    const t = sampleTerrain({ ...s, terrain: undefined }, T, s.terrain.cols || 7); // no pools: hills only
     t.h = terrainPoints(t, T).map(p => height(p.x, p.depth));
     s.terrain = t;
   }

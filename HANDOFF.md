@@ -175,6 +175,31 @@ Plan:
 2. Sample the PAR at each item's position (the light hover already does this) and compare with its band.
 3. Show a small badge on the item (too dim / too bright / fine) and a tank summary, e.g. "medium light with stems and
    carpets: CO2 recommended, full ferts", "Acropora at 90 PAR: too dim", "reef with SPS: daily dosing".
+
+Auto-populate from the tank's setup (Nathan 2026-10-16, the headline use of the data above): the user states the light
+level (or it is read from the fixture's PAR at the substrate) and the care they will give (`GrowFeed`: low-tech /
+ferts / CO2 + ferts, already in `growtime.ts`); `starterItems` (`items.ts`) then scapes only plants whose band and
+demand fit, with the same layout quality either way:
+- Low care / low light: a beautiful scape from the undemanding set (anubias, java fern, crypts, mosses, swords,
+  floaters), placed on wood and rock the way the existing styles do.
+- High care / high light: full freedom, stems, reds, carpets, with CO2 where the plants need it.
+- Reef: the same idea with PAR band deciding soft, LPS or SPS corals.
+Needs: 29 plant variants tagged with band and demand (step 1), a plant-pick filter in `starterItems`, two clear
+controls (light level, care level) in the starter-set UI, and a one-line caption saying what was chosen and why.
+Open for Nathan: does "care" also set the dosing advice shown, and do we offer a "stretch" slider (one tier above the
+tank's means, with a warning)?
+
+Step 0, scape shading in the light map (Nathan 2026-10-16): today PAR (`lightout.ts` `bandsAt`, the light-map shader
+in `render/lighting.ts` and the hover readout) is open water; plants and hardscape block nothing. Add a toggle in
+Light map mode, "Account for the aquascape" (off = today's numbers, so the fixture-only view stays available):
+- Floaters: per-species transmission at full cover (salvinia, water lettuce, frogbit, red root, duckweed; sources to
+  be checked, my first guesses were 70-95 % blocked) times the patch's cover from its spread and density, soft edges.
+- Canopy: stems reaching the surface, broad leaves (sword, lily), overhanging wood.
+- Hardscape: stone and wood shadow, a shadow-casting pass from the fixture's emitters.
+- The JS and the shader must stay in step (the shader is a port); the hover must honour the toggle too.
+- The badges and auto-populate below read the shaded PAR when the toggle is on, so a frogbit-covered tank counts as
+  low light underneath.
+
 Advice only, never a hard gate. Keep the tier numbers in one place so the guide and the checks cannot drift.
 
 ## Still open (rewritten 2026-10-14, lane D)
@@ -223,6 +248,7 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane SW: swamp land as editable terrain (2026-10-16; worktree `agitated-lumiere-a79eba`, port 5663; side session of T1)
 - Lane JS: regal jumping spider, first arthropod body plan (2026-10-16; branch `spider`, port 5673; built + tested, committed on the branch, NOT pushed: pictures sent to Nathan, awaiting his verdict)
 - Lane MS: multi-select, duplicate, controlled variation (2026-10-16; branch `multiselect`, port 5683; pushed to main, awaiting Nathan's verdict on the pictures)
 - Lane SH: setup sheet / shopping list (2026-10-16; branch `setup-sheet`, port 5683; built, waiting on Nathan's look at the 3 example sheets before push)
