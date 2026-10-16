@@ -95,7 +95,42 @@ export const LAYOUTS: Record<LayoutId, { label: string; hint: string }> = {
   dutch: { label: 'Dutch', hint: 'Terraced streets of stem plants in contrasting colours, little or no hardscape, no carpet.' },
   jungle: { label: 'Jungle', hint: 'Thick and wild: tall vallisneria and crypts, roots, floating plants shading the water.' },
   forest: { label: 'Forest', hint: 'Thin upright wood like tree trunks, a moss canopy, a fine carpet, often a sand path.' },
+  // lane SS2 (2026-10-16): terrariums (the water is switched off), freshwater biotopes, marine sub-styles
+  rainforest: { label: 'Rainforest (crested gecko)', hint: 'A tall humid vivarium: climbing branches and cork panels, vines up the back, bromeliads on the wood, leaf litter. Turns the water off.' },
+  arid: { label: 'Arid (leopard gecko)', hint: 'Dry desert terrarium: sand and clay, stacked rock ledges to bask on, a hide at each end. Turns the water off.' },
+  jumper: { label: 'Jumping spider cage', hint: 'A small planted cage with branches and cork to climb, vines and bromeliads. Turns the water off.' },
+  python: { label: 'Ball python enclosure', hint: 'Bark floor, a hide at each end (warm side and cool side), a basking ledge and a climbing branch. Turns the water off.' },
+  burrow: { label: 'Tarantula burrow', hint: 'Deep soil with a cork-tube burrow and a bark roof, a few dry tufts. Turns the water off.' },
+  frogs: { label: 'Tree frog terrarium', hint: 'Planted and humid: ferns, pothos and bromeliads on branches and cork for tree frogs to perch on. Turns the water off.' },
+  paludarium: { label: 'Paludarium (land + pools)', hint: 'Land rising round one or two pools, planted with tropical foliage on cork and branches; frogs on land, small fish in the water. Lowers the water when chosen.' },
+  blackwater: { label: 'Amazon blackwater', hint: 'Tea-stained water, tangled roots and branches, a floor of leaf litter, floating plants for shade. Tints the water.' },
+  malawi: { label: 'Lake Malawi rock tank', hint: 'Stacked rock caves and arches on pale sand, almost no plants.' },
+  stream: { label: 'Southeast Asian planted stream', hint: 'River stones and wood along a sand bed, crypts, ferns and vallisneria in the current.' },
+  hillstream: { label: 'Hillstream', hint: 'Heaps of rounded stones and slate, ferns and moss on the rock, gravel and bare sand.' },
+  softreef: { label: 'Soft-coral reef', hint: 'Low live rock, leathers, mushrooms, zoanthids, hammer and torch corals and macroalgae. Saltwater tanks only.' },
+  spsreef: { label: 'SPS reef', hint: 'Tall stacked live rock with branching Acropora and plating Montipora. Saltwater tanks only.' },
+  clownnano: { label: 'Clownfish and anemone nano', hint: 'A small live rock arch, a bubble-tip anemone for the clownfish pair, a few corals. Saltwater tanks only.' },
 };
+/** Where each style belongs in the picker (lane SS2): freshwater only, saltwater only, or a terrarium (turns the water
+ *  off; `paludarium` keeps water in its pools). Styles not listed here (the first nine) suit any water. */
+export type StyleKind = 'any' | 'fresh' | 'salt' | 'land';
+export const STYLE_KIND: Partial<Record<LayoutId, StyleKind>> = {
+  reef: 'salt', softreef: 'salt', spsreef: 'salt', clownnano: 'salt',
+  blackwater: 'fresh', malawi: 'fresh', stream: 'fresh', hillstream: 'fresh',
+  rainforest: 'land', arid: 'land', jumper: 'land', python: 'land', burrow: 'land', frogs: 'land',
+};
+/** The terrarium styles: drawn with the water off. */
+export const isLandStyle = (id: LayoutId) => STYLE_KIND[id] === 'land';
+/** Styles with pools and land in one tank (the swamp's terrain). */
+export const isSwampy = (id: LayoutId) => id === 'swamp' || id === 'paludarium';
+export const isReefy = (id: LayoutId) => STYLE_KIND[id] === 'salt';
+/** The picker's groups, in order. */
+export const STYLE_GROUPS: { label: string; ids: LayoutId[] }[] = [
+  { label: 'Freshwater', ids: ['stones', 'driftwood', 'planted', 'iwagumi', 'nature', 'dutch', 'jungle', 'forest'] },
+  { label: 'Freshwater biotopes', ids: ['blackwater', 'malawi', 'stream', 'hillstream'] },
+  { label: 'Marine', ids: ['reef', 'softreef', 'spsreef', 'clownnano'] },
+  { label: 'Terrarium', ids: ['rainforest', 'arid', 'jumper', 'python', 'burrow', 'frogs', 'swamp', 'paludarium'] },
+];
 /** The Composition picker (lane SS, 2026-10-15): where the weight of any style sits. */
 export const COMPS: Record<CompId, { label: string; hint: string }> = {
   any: { label: 'Any', hint: 'Shuffle picks where the groups go.' },
@@ -421,7 +456,30 @@ const DESIGNED_FOCI: Partial<Record<LayoutId, Focus[]>> = {
   jungle: [{ x: 0.25, d: 0.62, k: 1 }, { x: 0.74, d: 0.55, k: 0.7 }],
   forest: [{ x: 0.28, d: 0.62, k: 1 }, { x: 0.74, d: 0.58, k: 0.7 }],
   iwagumi: [{ x: 0.38, d: 0.55, k: 1 }],
+  // lane SS2
+  softreef: [{ x: 0.22, d: 0.55, k: 0.7 }, { x: 0.5, d: 0.45, k: 0.55 }, { x: 0.8, d: 0.55, k: 0.7 }],
+  spsreef: [{ x: 0.3, d: 0.55, k: 1 }, { x: 0.74, d: 0.5, k: 0.75 }],
+  clownnano: [{ x: 0.45, d: 0.55, k: 1 }],
+  rainforest: [{ x: 0.25, d: 0.6, k: 1 }, { x: 0.74, d: 0.55, k: 0.7 }],
+  jumper: [{ x: 0.3, d: 0.6, k: 1 }, { x: 0.72, d: 0.55, k: 0.7 }],
+  frogs: [{ x: 0.3, d: 0.6, k: 1 }, { x: 0.75, d: 0.55, k: 0.6 }],
+  arid: [{ x: 0.7, d: 0.6, k: 1 }],
+  python: [{ x: 0.3, d: 0.65, k: 1 }],
+  burrow: [{ x: 0.3, d: 0.6, k: 1 }],
+  paludarium: [{ x: 0.3, d: 0.7, k: 1 }, { x: 0.78, d: 0.65, k: 0.6 }],
+  blackwater: [{ x: 0.3, d: 0.6, k: 1 }, { x: 0.72, d: 0.5, k: 0.7 }],
+  malawi: [{ x: 0.27, d: 0.6, k: 1 }, { x: 0.74, d: 0.55, k: 0.85 }],
+  stream: [{ x: 0.28, d: 0.6, k: 1 }, { x: 0.7, d: 0.5, k: 0.6 }],
+  hillstream: [{ x: 0.35, d: 0.6, k: 1 }, { x: 0.72, d: 0.5, k: 0.5 }],
 };
+/** Coral mixes of the reef sub-styles (lane SS2; the plain reef keeps its own rolled mixes). */
+const REEF_MIX: Record<string, Record<string, number>> = {
+  softreef: { leather: 2, mushroom: 2, zoanthid: 2, hammer: 1.2, torch: 1.2, macroalgae: 1, seafan: 0.4 },
+  spsreef: { acropora: 2, acrofine: 2, montiplate: 1.5, montipora: 1.5, mushroom: 0.3 },
+  clownnano: { zoanthid: 1.5, mushroom: 1.5, hammer: 1, montipora: 1, macroalgae: 0.5 },
+};
+/** Corals that stand up high on the rock (the rest sit low and on the sand). */
+const HIGH_CORAL: ReadonlySet<string> = new Set(['acropora', 'montipora', 'acrofine', 'montiplate', 'seafan']);
 /** Where a set's groups stand (fractions of L and D, weight k): what the substrate's hills follow (scene/scapeground.ts). */
 export function styleFoci(id: LayoutId, seed: number, comp?: CompId): readonly Focus[] {
   const st = starterStyle(seed, comp);
@@ -485,6 +543,21 @@ export const STYLES: Record<Exclude<LayoutId, 'none'>, StyleSpec> = {
   dutch: { hard: [0.2, 1.6], plant: [0.5, 2.2], animals: ['neon', 'cardinal', 'rummynose', 'harlequin', 'platy', 'dwarfgourami', 'bolivianram', 'sae', 'oto', 'amano', 'cherryshrimp', 'nerite'] },
   jungle: { hard: [0.4, 2], plant: [0.6, 2.4], animals: ['angel', 'cardinal', 'rummynose', 'hatchet', 'gbr', 'bolivianram', 'pandacory', 'bronzecory', 'bristlenose', 'kuhli', 'honeygourami', 'nerite'] },
   forest: { hard: [0.4, 2], plant: [0.4, 2], animals: ['ember', 'chili', 'cpd', 'harlequin', 'neon', 'pandacory', 'oto', 'amano', 'cherryshrimp', 'nerite'] },
+  // lane SS2 (2026-10-16)
+  rainforest: { hard: [0.4, 2], plant: [0.4, 2.2], animals: ['crestedgecko', 'crestedharlequin'] },
+  arid: { hard: [0.4, 2], plant: [0.3, 2], animals: ['leopardgecko'] },
+  jumper: { hard: [0.4, 2], plant: [0.4, 2.2], animals: ['regaljumper'] },
+  python: { hard: [0.5, 2], plant: [0.3, 2], animals: ['ballpython'] },
+  burrow: { hard: [0.5, 2], plant: [0.3, 2], animals: ['chacogoldenknee'] },
+  frogs: { hard: [0.4, 2], plant: [0.4, 2.2], animals: ['treefrog', 'dartfrog'] },
+  paludarium: { hard: [0.3, 2.5], plant: [0.5, 2.2], animals: ['dartfrog', 'treefrog', 'firetoad', 'firenewt', 'chili', 'ember', 'guppy', 'ramshorn'] },
+  blackwater: { hard: [0.5, 2.2], plant: [0.3, 1.8], animals: ['cardinal', 'rummynose', 'harlequin', 'ember', 'angel', 'bolivianram', 'pandacory', 'bristlenose', 'kuhli', 'hatchet'] },
+  malawi: { hard: [0.5, 2], plant: [0.2, 1.4], animals: ['yellowlab', 'cockatoo', 'bristlenose', 'nerite'] },
+  stream: { hard: [0.4, 2], plant: [0.5, 2.2], animals: ['danio', 'whitecloud', 'tigerbarb', 'cherrybarb', 'chili', 'ember', 'kuhli', 'oto', 'amano', 'nerite'] },
+  hillstream: { hard: [0.5, 2.2], plant: [0.3, 1.8], animals: ['hillstream', 'danio', 'whitecloud', 'oto', 'nerite', 'cherryshrimp'] },
+  softreef: { hard: [0.4, 2], plant: [0.4, 2.2], animals: ['ocellaris', 'royalgramma', 'firefish', 'banggai', 'chromis', 'watchman', 'cleanershrimp', 'turbo', 'hermit'] },
+  spsreef: { hard: [0.4, 2], plant: [0.4, 2.2], animals: ['royalgramma', 'firefish', 'chromis', 'sixline', 'coralbeauty', 'yellowtang', 'cleanershrimp', 'turbo', 'hermit'] },
+  clownnano: { hard: [0.4, 1.8], plant: [0.4, 2], animals: ['ocellaris', 'royalgramma', 'firefish', 'cleanershrimp', 'turbo', 'hermit'] },
 };
 /** A slider value as a density within a style's [Sparse, Packed] range: Medium (2) is 1, smooth in between. Past
  *  Packed it keeps climbing, to three times Packed at 6; below Sparse it stays Sparse (the layer is then thinned to a
@@ -605,9 +678,11 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
    * open-water `gap` (fraction of L, the front 60 %) a clump is mostly turned away. Clumps keep off the hardscape.
    */
   const ZONE: Partial<Record<PlantType, [number, number]>> = { anubias: [0.2, 0.35], fern: [0.4, 0.38], sword: [0.5, 0.35], grass: [0.78, 0.4], stem: [0.75, 0.38], stemred: [0.78, 0.36],
-    crypt: [0.3, 0.35], buce: [0.2, 0.3], rotala: [0.78, 0.36], ludwigia: [0.72, 0.36], balansae: [0.85, 0.35], ozelot: [0.45, 0.35], sagittaria: [0.08, 0.25], lotus: [0.5, 0.3] };
+    crypt: [0.3, 0.35], buce: [0.2, 0.3], rotala: [0.78, 0.36], ludwigia: [0.72, 0.36], balansae: [0.85, 0.35], ozelot: [0.45, 0.35], sagittaria: [0.08, 0.25], lotus: [0.5, 0.3],
+    tropfern: [0.5, 0.4], fittonia: [0.2, 0.3], bromeliad: [0.35, 0.3], sphagnum: [0.2, 0.3], hairgrass: [0.3, 0.3] };
   const CAP: Partial<Record<PlantType, number>> = { anubias: clamp(H * 0.22, 60, 130), fern: clamp(H * 0.4, 90, 240), sword: clamp(H * 0.6, 120, 380),
-    crypt: clamp(H * 0.25, 60, 160), buce: clamp(H * 0.15, 40, 100), ozelot: clamp(H * 0.45, 100, 300), sagittaria: clamp(H * 0.12, 40, 80), lotus: clamp(H * 0.35, 80, 220) };
+    crypt: clamp(H * 0.25, 60, 160), buce: clamp(H * 0.15, 40, 100), ozelot: clamp(H * 0.45, 100, 300), sagittaria: clamp(H * 0.12, 40, 80), lotus: clamp(H * 0.35, 80, 220),
+    tropfern: clamp(H * 0.3, 80, 200), fittonia: clamp(H * 0.12, 40, 90), bromeliad: clamp(H * 0.14, 45, 95), sphagnum: 50, hairgrass: 80 };
   const STEMLIKE = new Set<PlantType>(['stem', 'stemred', 'rotala', 'ludwigia']);
   const scatter = (w: Partial<Record<PlantType, number>>, n: number, o: { d0?: number; d1?: number; gap?: number; half?: number; prof?: readonly Focus[]; low?: number; crowd?: number } = {}) => {
     const { d0 = 0.08, d1 = 0.96, gap = -1, half = 0, prof, low = 0, crowd = 0 } = o, hs = designed ? 1 : 0.75 + 0.25 * st.scale;
@@ -849,10 +924,10 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
         else if (k < 0.78) plant('sword', xx, dd, clamp(H * (0.2 + r() * 0.1), 60, 200) * hs);
       } else if (k < 0.3) plant(r() < 0.5 ? 'stem' : 'grass', xx, dd, (H - sub(xx, dd)) * (0.6 + r() * 0.3));
     }));
-  } else if (id === 'reef') {
+  } else if (id === 'reef' || isReefy(id)) {
     // live rock islands (two in the designed set, a channel between), a few rocks stacked on each; branching and plate
     // corals up on the rock, mushrooms and leathers lower down and on the sand. Offered in a saltwater tank only (the UI).
-    const foci = designed ? DESIGNED_FOCI.reef! : st.foci;
+    const foci = designed ? DESIGNED_FOCI[id]! : st.foci, nano = id === 'clownnano';
     // a long tank gets wider islands of more rocks, not bigger rocks
     const base = clamp(Math.min(L, D * 1.5, H * 1.3) * 0.3, 60, 240) * st.scale, wide = clamp(L / (base * 3.5), 1, 2.5);
     layer('hard', () => {
@@ -865,7 +940,7 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
         }
         // stacked: one or two rocks up on the base, smaller as they go, and more until the main island stands about half
         // the water deep (a smaller island a little less), so a big tank's reef is not a low strip (Nathan 2026-10-14)
-        const want = ((S.water.on ? H * S.water.level : H) - sub(cx, cz)) * 0.5 * (f.k < 1 ? 0.85 : 1);
+        const want = ((S.water.on ? H * S.water.level : H) - sub(cx, cz)) * ({ spsreef: 0.68, softreef: 0.34, clownnano: 0.45 }[id as string] ?? 0.5) * (f.k < 1 ? 0.85 : 1);
         let top = itemDims(rocks[0])[1] * 0.75;
         for (let i = 0, n = dens < 0.5 ? 1 : 1 + Math.floor(r() * 2); i < 6 && (i < n || top < want) && room(cx, cz, top) > 60; i++) {
           const it = put('liverock', rocks[0].x + (r() - 0.5) * s0 * 0.4, rocks[0].depth + (r() - 0.5) * s0 * 0.2, s0 * Math.max(0.45, 0.75 - 0.1 * i), { lift: Math.round(top), ...tip('liverock', 0.5) }, true);
@@ -876,11 +951,11 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
       for (let i = 0, n = many(5); i < n; i++) put('liverock', L * (0.05 + r() * 0.9), D * (0.1 + r() * 0.8), 30 + r() * 25);
     });
     layer('plant', () => {
-      const mix: Record<string, number> = designed ? { acropora: 2, montipora: 1.5, mushroom: 1, leather: 1 }
+      const mix: Record<string, number> = REEF_MIX[id] ?? (designed ? { acropora: 2, montipora: 1.5, mushroom: 1, leather: 1 }
         : pick([{ acropora: 2, montipora: 1.5, mushroom: 1, leather: 1 }, { acropora: 3, montipora: 2, mushroom: 0.5, leather: 0.3 }, // SPS
-          { mushroom: 2, leather: 2, acropora: 0.5, montipora: 0.5 }, { montipora: 3, acropora: 1, mushroom: 1, leather: 0.5 }]);    // soft, plates
+          { mushroom: 2, leather: 2, acropora: 0.5, montipora: 0.5 }, { montipora: 3, acropora: 1, mushroom: 1, leather: 0.5 }]));    // soft, plates
       const coral = (high: boolean) => { // weighted pick, branching and plates preferred up high, soft corals down low
-        const w = Object.entries(mix).map(([v, n]) => [v, n * ((v === 'acropora' || v === 'montipora') === high ? 1.6 : 0.6)] as const);
+        const w = Object.entries(mix).map(([v, n]) => [v, n * (HIGH_CORAL.has(v) === high ? 1.6 : 0.6)] as const);
         let k = r() * w.reduce((a, [, n]) => a + n, 0);
         for (const [v, n] of w) if ((k -= n) <= 0) return v;
         return w[0][0];
@@ -910,6 +985,8 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
           const a = Math.PI * (0.15 + r() * 0.7);
           grow(coral(false), clamp(cx + Math.cos(a) * s0 * 1.1, 30, L - 30), clamp(cz - Math.sin(a) * s0 * 0.75, 30, D - 30), s0 * (0.45 + r() * 0.3), 0);
         }
+        // the nano: a bubble-tip anemone on the highest rock, where the clownfish pair settle in it
+        if (nano && fi === 0 && tops.length) { const { rk, y } = tops[0]; grow('anemone', rk.x + (r() - 0.5) * 20, rk.depth - itemDims(rk)[2] * 0.2, s0 * 0.75, y); }
       });
     });
   } else if (id === 'nature') {
@@ -1043,6 +1120,206 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
       for (const f of F) for (let i = 0, n = many(2, f.k); i < n; i++) plant(r() < 0.5 ? 'buce' : 'fern', L * f.x + (r() - 0.5) * L * 0.12, D * (f.d - 0.05), r() < 0.5 ? clamp(H * 0.12, 35, 90) : clamp(H * 0.28, 70, 180));
       scatter({ rotala: 1, grass: 1.5, stem: 1, fern: 0.5 }, L * D / 45000, { d0: 0.7, prof: F });
       carpet(0.03, 0.95, (x, d) => onPath(x, d) || sol.some(it => it.kind === 'stone' && Math.hypot(x - it.x, d - it.depth) < itemDims(it)[0] * 0.45), dens > 1 ? 1 / Math.sqrt(dens) : 1);
+    });
+  } else if (isLandStyle(id) && (id === 'rainforest' || id === 'jumper' || id === 'frogs')) {
+    // Humid climbing terrariums (lane SS2): the crested gecko's rainforest, the jumping spider's cage and the tree frogs'
+    // planted terrarium share one skeleton: climbing branches leaning from the groups, cork panels and tubes stood
+    // against the back wall, a hide on the floor, vines up the back and over the wood, bromeliads tied on the limbs, ferns
+    // and low foliage on the floor. They differ in weights: tall and open (rainforest), small and crowded (spider cage),
+    // lush and leafy under a few big perches (frogs).
+    const F = designed ? DESIGNED_FOCI[id]! : st.foci, back = D - 26;
+    const cfg = { rainforest: { br: 1, tall: 1.05, panels: 2, tubes: 1, hide: 1, vines: 3, brom: 4, fern: 1, low: 1 },
+      jumper: { br: 1.4, tall: 0.85, panels: 2, tubes: 1, hide: 0, vines: 4, brom: 5, fern: 0.6, low: 1.4 },
+      frogs: { br: 0.8, tall: 0.95, panels: 1, tubes: 0, hide: 1, vines: 3, brom: 3, fern: 2, low: 1.6 } }[id];
+    layer('hard', () => {
+      F.forEach(f => {
+        const k0 = Math.sqrt(f.k), n = Math.max(1, many(cfg.br, f.k));
+        for (let b = 0; b < n; b++) {
+          const len = clamp(H * cfg.tall * (0.75 + 0.3 * k0) / (b ? 1.35 : 1), 150, 1000) * (designed ? 1 : 0.85 + 0.2 * st.scale);
+          const lean = (f.x < 0.5 ? 1 : -1) * (b % 2 ? -1 : 1);
+          put('climb', L * clamp(f.x + b * 0.07 * lean, 0.1, 0.9), D * clamp(f.d + (r() - 0.5) * 0.2, 0.3, 0.8), len, { yaw: Math.round((lean > 0 ? 0 : 180) + (r() - 0.5) * 50), pitch: designed ? 0 : Math.round((r() - 0.5) * 16) });
+        }
+      });
+      for (let i = 0, n = Math.max(1, many(cfg.panels)); i < n; i++) put('corkflat', L * (0.18 + 0.64 * (n === 1 ? 0.5 + (r() - 0.5) * 0.4 : (i + r() * 0.5) / n)), back, clamp(H * (0.5 + r() * 0.3), 90, 600), { tilt: 90, yaw: Math.round((r() - 0.5) * 16) });
+      for (let i = 0, n = many(cfg.tubes); i < n; i++) put('corktube', L * (0.2 + r() * 0.6), D * (0.55 + r() * 0.25), clamp(H * (0.35 + r() * 0.25), 70, 360), { tilt: 90 });
+      for (let i = 0, n = many(cfg.hide); i < n; i++) put('halflog', L * (0.15 + r() * 0.7), D * (0.16 + r() * 0.15), clamp(Math.min(L, D * 2) * 0.28, 70, 220), { yaw: Math.round((r() - 0.5) * 60) });
+    });
+    layer('plant', () => {
+      const wood = solids().filter(it => it.kind === 'wood');
+      // vines gather round the wood (T2 sends them along its limbs), the creeping fig climbs the back wall
+      for (const w of wood.filter(it => it.variant === 'climb')) for (let i = 0, n = Math.max(1, many(cfg.vines / 2)); i < n; i++) plant(i % 2 ? 'creeper' : 'pothos', w.x + (r() - 0.5) * 70, w.depth + (r() - 0.5) * 60, clamp(H * (0.9 + r() * 0.5), 200, 1100));
+      for (let i = 0, n = Math.max(1, many(cfg.vines / 2)); i < n; i++) plant('creeper', L * (0.12 + r() * 0.76), back - 6, clamp(H * (0.8 + r() * 0.5), 200, 1100));
+      for (const w of wood) {
+        const limbs = limbsOf(w);
+        for (let i = 0, n = many(cfg.brom / Math.max(1, wood.length / 3)); i < n; i++) onLimb(w, 'bromeliad', Math.floor(r() * limbs.length), 0.2 + r() * 0.6, clamp(H * (0.09 + r() * 0.05), 45, 100));
+        if (r() < 0.6 * dens) onLimb(w, 'sphagnum', Math.floor(r() * limbs.length), 0.1 + r() * 0.8, 45);
+      }
+      scatter({ tropfern: 1.2 * cfg.fern, fittonia: 1.6 * cfg.low, sphagnum: 0.8 * cfg.low, bromeliad: 0.4 }, L * D / 40000 * cfg.low, { d0: 0.25, prof: compProf ?? F, low: 0.6 });
+    });
+  } else if (id === 'arid') {
+    // Leopard-gecko desert: a stack of rock ledges on the warm side to bask on, a hide at each end (warm and cool), a few
+    // lumps of rock and dry tufts; the plants are sparse stand-ins (there are no succulents in the library yet).
+    const F = designed ? DESIGNED_FOCI.arid! : st.foci, warm = F[0].x < 0.5 ? 1 : -1;
+    layer('hard', () => {
+      const f = F[0], base = clamp(Math.min(L * 0.3, D * 1.2), 90, 320) * (designed ? 1 : 0.85 + 0.25 * st.scale), mat = designed ? 'ledge' : 'ledge';
+      const low = put(mat, L * f.x, D * clamp(f.d, 0.45, 0.8), base, { yaw: Math.round((r() - 0.5) * 30) });
+      let top = itemDims(low)[1] * 0.92;
+      for (let i = 0, n = Math.max(1, many(2, f.k)); i < n; i++) {
+        const it = put(mat, low.x + (r() - 0.5) * base * 0.3, low.depth + (r() - 0.5) * base * 0.15, base * (0.78 - 0.14 * i), { lift: Math.round(top), yaw: Math.round((r() - 0.5) * 30) }, true);
+        top += itemDims(it)[1] * 0.92;
+      }
+      const rock = designed ? 'dragon' : pick(['dragon', 'lava', 'slate']);
+      for (let i = 0, n = many(4); i < n; i++) put(rock, L * (0.1 + r() * 0.8), D * (0.12 + r() * 0.75), clamp(H * (0.1 + r() * 0.1), 30, 130), tip(rock));
+      const hide = clamp(Math.min(L * 0.22, D * 0.9), 70, 200);
+      put('halflog', L * (warm > 0 ? 0.2 : 0.8), D * 0.3, hide, { yaw: Math.round((r() - 0.5) * 40) });
+      if (dens > 0.5) put('corktube', L * (warm > 0 ? 0.82 : 0.18), D * 0.3, hide * 1.1, { yaw: Math.round((r() - 0.5) * 40) });
+    });
+    layer('plant', () => {
+      for (let i = 0, n = many(5); i < n; i++) put('hairgrass', L * (0.08 + r() * 0.84), D * (0.35 + r() * 0.55), clamp(H * 0.12, 40, 90) * (0.7 + r() * 0.6));
+      for (let i = 0, n = many(2); i < n; i++) plant('bromeliad', L * (0.1 + r() * 0.8), D * (0.55 + r() * 0.35), clamp(H * 0.13, 45, 100));
+    });
+  } else if (id === 'python') {
+    // Ball python: bark floor, a hide at each end (warm side and cool side), a ledge to bask on under a branch, the rest
+    // open. No water dish yet (no such piece in the library).
+    const F = designed ? DESIGNED_FOCI.python! : st.foci, warm = F[0].x < 0.5 ? 1 : -1;
+    layer('hard', () => {
+      const hide = clamp(Math.min(L * 0.26, D * 1.1), 120, 340);
+      put('halflog', L * (warm > 0 ? 0.15 : 0.85), D * 0.32, hide, { yaw: Math.round((r() - 0.5) * 30) });
+      put(dens < 0.5 ? 'halflog' : 'corktube', L * (warm > 0 ? 0.85 : 0.15), D * 0.3, hide, { yaw: Math.round((r() - 0.5) * 30) });
+      const f = F[0], base = clamp(Math.min(L * 0.28, D * 1.1), 100, 340);
+      const ledge = put('ledge', L * (warm > 0 ? 0.3 : 0.7), D * 0.7, base, { yaw: warm > 0 ? 0 : 180 });
+      put('climb', ledge.x + (warm > 0 ? 0.05 : -0.05) * L, D * clamp(f.d, 0.55, 0.8), clamp(H * 1.1, 200, 900), { yaw: warm > 0 ? 25 : 155 });
+      for (let i = 0, n = many(2); i < n; i++) put('branch', L * (0.3 + r() * 0.4), D * (0.55 + r() * 0.3), clamp(L * 0.3, 200, 500), { yaw: Math.round((r() - 0.5) * 80) });
+      for (let i = 0, n = many(2); i < n; i++) put('corkflat', L * (0.25 + r() * 0.5), D - 26, clamp(H * 0.6, 120, 500), { tilt: 90 });
+    });
+    layer('plant', () => {
+      for (const w of solids().filter(it => it.variant === 'climb')) plant('pothos', w.x + (r() - 0.5) * 60, w.depth + 25, clamp(H * (0.8 + r() * 0.5), 200, 900));
+      scatter({ tropfern: 1, bromeliad: 0.6, fittonia: 0.6 }, L * D / 90000, { d0: 0.6, prof: compProf ?? F, low: 0.5 });
+    });
+  } else if (id === 'burrow') {
+    // Tarantula burrow: deep soil, a half-log burrow in a back corner with a cork roof laid across it and stones at the
+    // mouth, dry tufts and a bromeliad. The tarantula takes the hide (Shuffle's hide rule).
+    const F = designed ? DESIGNED_FOCI.burrow! : st.foci;
+    layer('hard', () => {
+      const f = F[0], size = clamp(Math.min(L * 0.32, D * 1.3), 120, 300), x = L * clamp(f.x, 0.2, 0.8), d = D * clamp(f.d, 0.45, 0.75);
+      const log = put('halflog', x, d, size, { yaw: Math.round((r() - 0.5) * 40) });
+      put('corkflat', x + (r() - 0.5) * 20, d, size * 1.15, { lift: Math.round(itemDims(log)[1] * 0.95), yaw: log.yaw + Math.round((r() - 0.5) * 20), tilt: Math.round((r() - 0.5) * 16) }, true);
+      for (let i = 0, n = many(3); i < n; i++) { const a = r() * 6.28; put(pick(['dragon', 'lava', 'slate']), x + Math.cos(a) * size * 0.75, d - Math.abs(Math.sin(a)) * size * 0.5, clamp(H * (0.07 + r() * 0.07), 28, 100)); }
+      if (dens > 0.7) put('climb', L * (f.x < 0.5 ? 0.75 : 0.25), D * 0.72, clamp(H * 0.8, 150, 600), { yaw: f.x < 0.5 ? 160 : 20 });
+    });
+    layer('plant', () => {
+      for (let i = 0, n = many(6); i < n; i++) put('hairgrass', L * (0.06 + r() * 0.88), D * (0.15 + r() * 0.75), clamp(H * 0.14, 40, 100) * (0.7 + r() * 0.6));
+      for (let i = 0, n = many(2); i < n; i++) plant('bromeliad', L * (0.1 + r() * 0.8), D * (0.55 + r() * 0.35), clamp(H * 0.12, 45, 100));
+      for (let i = 0, n = many(2); i < n; i++) put('sphagnum', L * (0.1 + r() * 0.8), D * (0.2 + r() * 0.3), 40);
+    });
+  } else if (id === 'paludarium') {
+    // Land round the swamp's pools (its terrain, scene/terrain.ts), planted with the terrarium kit: wood and cork on the
+    // land, vines and bromeliads on them, ferns and fittonia on the ground, a creeping-fig back wall; a few stems and
+    // grasses grow in the pools.
+    const land = (x: number, d: number) => { const p = map(x, d); return sub(p.x, p.d) > H * 0.3; };
+    const F = designed ? DESIGNED_FOCI.paludarium! : st.foci;
+    const walk = (at: (x: number, d: number) => void) => {
+      const step = 1 / Math.sqrt(dens);
+      for (let x = 25; x < L - 25; x += (45 + r() * 35) * step) for (let d = D * 0.08; d < D * 0.97; d += (50 + r() * 30) * step) at(x + (r() - 0.5) * 30, d + (r() - 0.5) * 25);
+    };
+    layer('hard', () => {
+      for (const f of F) {
+        const x = L * f.x, d = D * clamp(f.d, 0.5, 0.88), len = clamp(H * 0.9, 150, 800) * Math.sqrt(f.k);
+        if (land(x, d)) put('climb', x, d, len, { yaw: Math.round(r() * 360) });
+      }
+      for (let i = 0, n = Math.max(1, many(1)); i < n; i++) put('corkflat', L * (0.2 + r() * 0.6), D - 26, clamp(H * 0.5, 90, 450), { tilt: 90 });
+      const stone = designed ? 'river' : pick(['river', 'dragon', 'lava']);
+      walk((x, d) => { if (r() < 0.04 && land(x, d)) put(stone, x, d, (14 + r() * 24) * 1.2, tip(stone)); });
+    });
+    layer('plant', () => {
+      const wood = solids().filter(it => it.variant === 'climb');
+      for (const w of wood) { plant('pothos', w.x + (r() - 0.5) * 60, w.depth + 20, clamp(H * (0.7 + r() * 0.4), 200, 900)); onLimb(w, 'bromeliad', 0, 0.3 + r() * 0.4, clamp(H * 0.14, 50, 130)); }
+      plant('creeper', L * (0.2 + r() * 0.6), D - 30, clamp(H * 0.9, 200, 900));
+      walk((xx, dd) => {
+        const k = r();
+        if (land(xx, dd)) {
+          if (k < 0.3) plant('tropfern', xx, dd, clamp(H * (0.2 + r() * 0.15), 60, 260));
+          else if (k < 0.5) plant('fittonia', xx, dd, clamp(H * 0.1, 40, 110));
+          else if (k < 0.58) plant('bromeliad', xx, dd, clamp(H * 0.12, 45, 110));
+          else if (k < 0.66) put('sphagnum', xx, dd, 40);
+        } else if (k < 0.28) plant(r() < 0.5 ? 'stem' : 'grass', xx, dd, (H - sub(xx, dd)) * (0.55 + r() * 0.3));
+      });
+    });
+  } else if (id === 'blackwater') {
+    // Amazon blackwater: a tangle of roots and branches piled over each other on a floor of fallen leaves (the ground's
+    // litter), a few crypts and swords in the lee of the wood, floating plants thick enough to shade it. The tea-coloured
+    // water is set by the picker, not drawn here.
+    const F = designed ? DESIGNED_FOCI.blackwater! : st.foci;
+    layer('hard', () => {
+      for (const f of F) {
+        const k0 = Math.sqrt(f.k), cx = L * f.x, cz = D * f.d, kinds = designed ? ['branch', 'spider', 'mopani', 'branch'] : [pick(['branch', 'spider']), pick(['branch', 'mopani', 'spider']), pick(['spider', 'mopani'])];
+        const base = put(kinds[0], cx, cz, woodSize(kinds[0], k0) * 0.9, { yaw: Math.round((r() - 0.5) * 80), ...(designed ? {} : { tilt: Math.round((r() - 0.5) * 20) }) });
+        for (let i = 0, n = Math.max(1, many(3, f.k)); i < n; i++) {
+          const v = kinds[(i + 1) % kinds.length], a = r() * 6.28, dd = woodSize(v, k0) * 0.3;
+          put(v, cx + Math.cos(a) * dd, clamp(cz + Math.sin(a) * dd * 0.6, 40, D - 40), woodSize(v, k0) * (0.6 + r() * 0.3), { yaw: Math.round(r() * 360), lift: i % 2 ? Math.round(itemDims(base)[1] * 0.4) : 0 });
+        }
+      }
+    });
+    layer('plant', () => {
+      const sol = solids();
+      for (const w of sol.filter(it => it.kind === 'wood' && it.variant !== 'mopani')) for (let i = 0, n = many(2); i < n; i++) plant(i ? 'fern' : 'anubias', w.x + (r() - 0.5) * 60, w.depth + (r() - 0.5) * 40, i ? clamp(H * 0.15, 45, 120) : clamp(H * 0.1, 30, 70));
+      scatter({ crypt: 2, sword: 1, ozelot: 0.5, anubias: 0.4 }, L * D / 90000, { d0: 0.3, prof: compProf ?? F, low: 0.5 });
+      for (let i = 0, n = Math.max(1, many(3)); i < n; i++) floater(pick<PlantType>(['frogbit', 'redroot', 'frogbit', 'salvinia']), L * (0.1 + r() * 0.8), D * (0.2 + r() * 0.65), 220 + r() * 200);
+    });
+  } else if (id === 'malawi') {
+    // Lake Malawi: rockwork in two or three tall stacks and a loose wall along the back, with arches and holes to dive into,
+    // pale sand open in front, a few anubias and ferns tucked in the rock (a cichlid tank has almost no plants).
+    const F = designed ? DESIGNED_FOCI.malawi! : st.foci, mat = designed ? 'dragon' : pick(['dragon', 'seiryu', 'lava', 'dragon']);
+    layer('hard', () => {
+      const base = clamp(Math.min(L * 0.2, H * 0.85, D * 1.2), 90, 300) * (designed ? 1 : 0.85 + 0.25 * st.scale);
+      for (const f of F) {
+        const s0 = base * Math.sqrt(f.k), cx = L * f.x, cz = D * clamp(f.d, 0.5, 0.85), main = put(mat, cx, cz, s0 * 1.4, tip(mat, 0.5));
+        let top = itemDims(main)[1] * 0.75;
+        for (let i = 0, n = Math.max(1, many(2, f.k)); i < n && room(cx, cz, top) > 60; i++) { const it = put(mat, cx + (r() - 0.5) * s0 * 0.5, cz + (r() - 0.5) * s0 * 0.3, s0 * (0.95 - 0.2 * i), { lift: Math.round(top), ...tip(mat, 0.5) }, true); top += itemDims(it)[1] * 0.7; }
+        for (let i = 0, n = many(4, f.k); i < n; i++) { const a = r() * 6.28, dist = s0 * (0.8 + r() * 0.5); put(mat, clamp(cx + Math.cos(a) * dist, 30, L - 30), clamp(cz + Math.sin(a) * dist * 0.6, 30, D - 30), s0 * (0.5 + r() * 0.4), tip(mat)); }
+        if (dens > 0.5) put('arch', cx + (r() < 0.5 ? -1 : 1) * s0 * 1.1, clamp(cz - s0 * 0.4, 40, D - 40), s0 * 1.2, { yaw: Math.round((r() - 0.5) * 50) });
+      }
+      for (let i = 0, n = many(5); i < n; i++) put(mat, L * (0.05 + r() * 0.9), D * (0.78 + r() * 0.17), base * (0.5 + r() * 0.4), tip(mat));
+      for (let i = 0, n = many(8); i < n; i++) put(mat, L * (0.05 + r() * 0.9), D * (0.15 + r() * 0.6), 20 + r() * 20, tip(mat));
+    });
+    layer('plant', () => {
+      scatter({ anubias: 2, fern: 1.5 }, L * D / 130000, { d0: 0.35, prof: compProf ?? F, low: 0.5 });
+    });
+  } else if (id === 'stream') {
+    // Southeast Asian stream: rounded river stones heaped in drifts down the bed, a branch or two lying in the current,
+    // ferns and buce on the wood and stone, crypts among the stones, stands of vallisneria on the far side, a low lawn.
+    const F = designed ? DESIGNED_FOCI.stream! : st.foci;
+    layer('hard', () => {
+      for (const f of F) {
+        const s0 = clamp(Math.min(L * 0.13, H * 0.45), 50, 170) * Math.sqrt(f.k) * (designed ? 1 : 0.8 + 0.3 * st.scale), cx = L * f.x, cz = D * f.d;
+        put('river', cx, cz, s0 * 1.4, tip('river'));
+        for (let i = 0, n = many(8, f.k); i < n; i++) { const a = r() * 6.28, dist = s0 * (0.6 + r() * 1.3); put('river', clamp(cx + Math.cos(a) * dist * 1.4, 30, L - 30), clamp(cz + Math.sin(a) * dist * 0.6, 30, D - 30), s0 * (0.3 + r() * 0.6), tip('river')); }
+      }
+      for (let i = 0, n = Math.max(1, many(1.5)); i < n; i++) { const f = F[i % F.length]; put(pick(['branch', 'spider']), L * clamp(f.x + (r() - 0.5) * 0.2, 0.1, 0.9), D * clamp(f.d + 0.15, 0.3, 0.85), woodSize('branch', 0.8), { yaw: Math.round((r() - 0.5) * 30) }); }
+      for (let i = 0, n = many(14); i < n; i++) put('river', L * (0.04 + r() * 0.92), D * (0.08 + r() * 0.85), 14 + r() * 14, tip('river'));
+    });
+    layer('plant', () => {
+      for (const it of solids()) if (r() < 0.3 * dens && (it.kind === 'wood' || itemDims(it)[0] > 70)) plant(pick<PlantType>(['fern', 'buce', 'anubias']), it.x, it.depth, clamp(H * 0.13, 40, 110));
+      scatter({ crypt: 2, grass: 1.6, sagittaria: 1, sword: 0.4, fern: 0.5 }, L * D / 40000, { d0: 0.2, prof: compProf ?? F, low: 0.5 });
+      carpet(0.05, 0.4, (x, d) => solids().some(it => it.kind === 'stone' && Math.hypot(x - it.x, d - it.depth) < itemDims(it)[0] * 0.5), 1.4);
+    });
+  } else if (id === 'hillstream') {
+    // Hillstream: heaps of river stones piled high against the back with flat slate slabs stacked among them, gravel and
+    // bare sand in front, ferns, anubias and moss on the rock.
+    const F = designed ? DESIGNED_FOCI.hillstream! : st.foci;
+    layer('hard', () => {
+      for (const f of F) {
+        const s0 = clamp(Math.min(L * 0.14, H * 0.5), 55, 190) * Math.sqrt(f.k) * (designed ? 1 : 0.8 + 0.3 * st.scale), cx = L * f.x, cz = D * clamp(f.d, 0.45, 0.85);
+        const main = put('river', cx, cz, s0 * 1.5, tip('river'));
+        let top = itemDims(main)[1] * 0.7;
+        for (let i = 0, n = Math.max(1, many(3, f.k)); i < n && room(cx, cz, top) > 60; i++) { const it = put(i % 2 ? 'river' : 'slate', cx + (r() - 0.5) * s0 * 0.7, cz + (r() - 0.5) * s0 * 0.3, s0 * (1.1 - 0.15 * i), { lift: Math.round(top), pitch: Math.round((r() - 0.5) * 14) }, true); top += itemDims(it)[1] * 0.75; }
+        for (let i = 0, n = many(9, f.k); i < n; i++) { const a = r() * 6.28, dist = s0 * (0.7 + r() * 1.1); put(r() < 0.25 ? 'slate' : 'river', clamp(cx + Math.cos(a) * dist * 1.4, 30, L - 30), clamp(cz + Math.sin(a) * dist * 0.6, 30, D - 30), s0 * (0.35 + r() * 0.6), tip('river')); }
+      }
+      for (let i = 0, n = many(10); i < n; i++) put('river', L * (0.04 + r() * 0.92), D * (0.08 + r() * 0.5), 12 + r() * 14, tip('river'));
+    });
+    layer('plant', () => {
+      for (const it of solids()) if (r() < 0.35 * dens && itemDims(it)[0] > 60) plant(pick<PlantType>(['fern', 'anubias', 'moss', 'buce']), it.x, it.depth, clamp(H * 0.12, 35, 100));
+      scatter({ anubias: 1, fern: 1 }, L * D / 120000, { d0: 0.3, prof: compProf ?? F, low: 0.5 });
     });
   }
   const items = out.slice(0, MAX_ITEMS);

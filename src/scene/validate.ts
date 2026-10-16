@@ -57,7 +57,8 @@ export const SURFACES = ['floor', 'glass', 'hardscape'] as const;
 const OLD_PANES: Record<string, (f: Obj, T: Tank) => void> = {
   front: f => { f.depth = 0; }, back: (f, T) => { f.depth = T.D; }, left: f => { f.x = 0; }, right: (f, T) => { f.x = T.L; },
 };
-export const LAYOUT_IDS = ['none', 'stones', 'driftwood', 'planted', 'iwagumi', 'swamp', 'reef', 'nature', 'dutch', 'jungle', 'forest'] as const;
+export const LAYOUT_IDS = ['none', 'stones', 'driftwood', 'planted', 'iwagumi', 'swamp', 'reef', 'nature', 'dutch', 'jungle', 'forest',
+  'rainforest', 'arid', 'jumper', 'python', 'burrow', 'frogs', 'paludarium', 'blackwater', 'malawi', 'stream', 'hillstream', 'softreef', 'spsreef', 'clownnano'] as const;
 export const COMP_IDS = ['any', 'mound', 'side', 'u', 'v', 'scattered'] as const;
 export const GLASS_CHOICES = [4, 5, 6, 8, 10, 12, 15, 19];
 

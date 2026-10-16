@@ -12,7 +12,7 @@ import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixt
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene, TANK_PRESETS } from '../scene/defaults';
-import { COMPS, DEFAULT_DENS, EPIPHYTES, KINDS, perch, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
+import { COMPS, DEFAULT_DENS, STYLE_GROUPS, STYLE_KIND, isLandStyle, EPIPHYTES, KINDS, perch, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
 import { handEdits, regenerate } from '../scene/starter';
 import { styleGround } from '../scene/scapeground';
 import { growthOf, isClump, isFloat, isPatch, type PlantType } from '../art/plants';
@@ -488,6 +488,7 @@ Cancel, then change the name, to keep both.`)) return;
 
   // ---------- Species search & adding animals ----------
   /** Clear water for each type (2026-10-13): marine clear is bluer than the fresh default. */
+  const BLACKWATER: [string, number] = ['#6b3d14', 0.42]; // blackwater's tea tint (lane SS2)
   const FRESH_CLEAR: [string, number] = ['#7fb8a8', 0], SALT_CLEAR: [string, number] = ['#8ec9ec', 0];
   /** A saltwater tank: salt set and water on (a dry tank lists the freshwater and land animals). */
   const isSalt = (s: TankSetup) => s.water.on && !!s.water.salt;
@@ -844,7 +845,7 @@ Cancel, then change the name, to keep both.`)) return;
     store.edit(s => {
       if (salt) s.water.salt = true; else delete s.water.salt;
       // the reef starter is salt only: back in fresh water its pieces stay, but Start from no longer claims it (final check item 6)
-      if (!salt && s.layout.id === 'reef') s.layout = { ...s.layout, id: 'none' };
+      if (STYLE_KIND[s.layout.id] === (salt ? 'fresh' : 'salt')) s.layout = { ...s.layout, id: 'none' };
       // the other type's clear water becomes this type's clear water; any other colour is the user's and stays
       const [c, o] = salt ? FRESH_CLEAR : SALT_CLEAR;
       if (s.water.color === c && s.water.opacity === o) [s.water.color, s.water.opacity] = salt ? SALT_CLEAR : FRESH_CLEAR;
@@ -992,7 +993,10 @@ Cancel, then change the name, to keep both.`)) return;
     else if (scape && store.selectedItem && scapeSec(store.selectedItem.kind) === d.dataset.sec) store.selectItem(null);
     else if (d.dataset.sec === 'fish' && store.selId != null) store.select(null);
   });
-  $<HTMLSelectElement>('layout').innerHTML = Object.entries(LAYOUTS).map(([k, l]) => `<option value="${k}">${esc(l.label)}</option>`).join('');
+  // the picker (lane SS2): Bare tank, then Freshwater / biotopes / Marine / Terrarium groups; the marine styles show in a
+  // saltwater tank only and the freshwater biotopes in a freshwater one (refreshed with the water type, below)
+  const styleOpt = (k: LayoutId) => `<option value="${k}" title="${esc(LAYOUTS[k].hint)}">${esc(LAYOUTS[k].label)}</option>`;
+  $<HTMLSelectElement>('layout').innerHTML = styleOpt('none') + STYLE_GROUPS.map(g => `<optgroup label="${g.label}">${g.ids.map(styleOpt).join('')}</optgroup>`).join('');
   $<HTMLSelectElement>('layoutComp').innerHTML = Object.entries(COMPS).map(([k, c]) => `<option value="${k}" title="${esc(c.hint)}">${esc(c.label)}</option>`).join('');
   // a starter set replaces every piece (undoable), and the animals when its animal stop is above None; the pieces are
   // then ordinary items
@@ -1023,8 +1027,13 @@ Cancel, then change the name, to keep both.`)) return;
     store.edit(s => {
       const was = s.layout.id;
       s.layout.id = to;
-      if (s.layout.id === 'swamp' && s.water.level > SWAMP_LEVEL) { preSwamp = s.water.level; setWaterLevel(s, SWAMP_LEVEL); } // land needs to stand out of the water
-      else if (was === 'swamp' && s.layout.id !== 'swamp' && s.water.level === SWAMP_LEVEL) setWaterLevel(s, preSwamp);
+      if ((s.layout.id === 'swamp' || s.layout.id === 'paludarium') && s.water.level > SWAMP_LEVEL) { preSwamp = s.water.level; setWaterLevel(s, SWAMP_LEVEL); } // land needs to stand out of the water
+      else if ((was === 'swamp' || was === 'paludarium') && s.layout.id !== 'swamp' && s.layout.id !== 'paludarium' && s.water.level === SWAMP_LEVEL) setWaterLevel(s, preSwamp);
+      // a terrarium starter (lane SS2) is dry: the water goes off, and comes back when a water style replaces it
+      if (isLandStyle(to)) s.water.on = false; else if (isLandStyle(was) && to !== 'none') s.water.on = true;
+      // blackwater tints the water tea; leaving it clears that tint again (a colour the user set is left alone)
+      if (to === 'blackwater') Object.assign(s.water, { color: BLACKWATER[0], opacity: BLACKWATER[1] });
+      else if (was === 'blackwater' && s.water.color === BLACKWATER[0] && s.water.opacity === BLACKWATER[1]) [s.water.color, s.water.opacity] = s.water.salt ? SALT_CLEAR : FRESH_CLEAR;
       styleGround(s); // the style's own substrate and terrain (Quick aquascape setup); a bare tank keeps its ground
       replaced(s);
     });
@@ -1638,7 +1647,9 @@ Cancel, then change the name, to keep both.`)) return;
     $('wFresh').classList.toggle('on', !wa.salt); $('wSalt').classList.toggle('on', !!wa.salt);
     for (const id of ['wTannin', 'wGreen']) $(id).style.display = wa.salt ? 'none' : '';
     for (const id of ['wReef', 'wOcean']) $(id).style.display = wa.salt ? '' : 'none';
-    document.querySelectorAll<HTMLElement>('.lib [data-salt], #layout option[value="reef"]').forEach(e => e.style.display = isSalt(s) ? '' : 'none');
+    document.querySelectorAll<HTMLElement>('.lib [data-salt]').forEach(e => e.style.display = isSalt(s) ? '' : 'none');
+    // the style picker: marine styles in salt water only, freshwater biotopes in fresh only (terrariums turn the water off, so show always)
+    document.querySelectorAll<HTMLOptionElement>('#layout option').forEach(o => { const k = STYLE_KIND[o.value as LayoutId]; o.hidden = k === 'salt' ? !isSalt(s) : k === 'fresh' ? isSalt(s) : false; });
     $('plantsTitle').textContent = isSalt(s) ? 'Plants & Corals' : 'Plants';
     const mis = misfits(s);
     $('wMisfitRow').style.display = mis.length ? '' : 'none';

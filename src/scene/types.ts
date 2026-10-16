@@ -199,7 +199,9 @@ export interface TerrainPool { x: number; d: number; rx: number; rd: number; ban
  * the tank size and the seed. It stays recorded as the set the tank started from; 'swamp' also shapes the land. 'reef'
  * (2026-10-14): live rock and corals, offered in a saltwater tank only.
  */
-export type LayoutId = 'none' | 'stones' | 'driftwood' | 'planted' | 'iwagumi' | 'swamp' | 'reef' | 'nature' | 'dutch' | 'jungle' | 'forest';
+export type LayoutId = 'none' | 'stones' | 'driftwood' | 'planted' | 'iwagumi' | 'swamp' | 'reef' | 'nature' | 'dutch' | 'jungle' | 'forest'
+  // lane SS2 (2026-10-16): terrarium starters (water off; 'paludarium' keeps its pools), freshwater biotopes, marine sub-styles
+  | 'rainforest' | 'arid' | 'jumper' | 'python' | 'burrow' | 'frogs' | 'paludarium' | 'blackwater' | 'malawi' | 'stream' | 'hillstream' | 'softreef' | 'spsreef' | 'clownnano';
 /** Where a starter set's weight sits (lane SS, 2026-10-15): 'any' = the seed rolls it (as before); the others fix the
  *  groups (scene/items.ts `starterStyle`): one centred mound, one side (a triangle), U (both sides high, open middle),
  *  V (two islands, a valley between), scattered groups. */

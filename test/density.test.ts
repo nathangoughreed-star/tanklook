@@ -6,13 +6,15 @@ import { IN } from '../src/scene/physics';
 import { bioload, bioloadLitres, handEdits, regenerate, starterAnimals } from '../src/scene/starter';
 import { swampTerrain } from '../src/scene/terrain';
 import { LAYOUT_IDS, parseScene } from '../src/scene/validate';
+import { isLandStyle, isReefy, isSwampy } from '../src/scene/items';
 import type { Item, LayerDens, LayoutId, TankSetup } from '../src/scene/types';
 
 const LAYOUTS = LAYOUT_IDS.filter(id => id !== 'none') as Exclude<LayoutId, 'none'>[];
-const setup = (id: LayoutId, seed: number, dens: LayerDens = DEFAULT_DENS, salt = id === 'reef') => {
+const setup = (id: LayoutId, seed: number, dens: LayerDens = DEFAULT_DENS, salt = isReefy(id)) => {
   const s = defaultSetup(); s.tank = { ...s.tank, L: 36 * IN, H: 18 * IN, D: 18 * IN };
   s.layout = { id, seed, dens: { ...dens } }; s.water.salt = salt; s.fish = [];
-  if (id === 'swamp') s.terrain = swampTerrain(s, s.tank, seed); // its land, as choosing it in the panel draws it
+  if (isLandStyle(id)) s.water.on = false;
+  if (isSwampy(id)) s.terrain = swampTerrain(s, s.tank, seed); // its land, as choosing it in the panel draws it
   return s;
 };
 const hard = (items: Item[]) => items.filter(it => layerOf(it) === 'hard');
@@ -81,13 +83,13 @@ describe('density sliders and per-layer streams (lane SD, 2026-10-15)', () => {
       let last = 0;
       for (let stop = 1; stop <= 4; stop++) {
         const s = setup(id, seed, { hard: 2, plant: 2, animal: stop }), fish = starterAnimals(s, 1);
-        expect(bioload(fish)).toBeLessThanOrEqual(bioloadLitres(s) * 0.9 + 1e-9);
+        if (!isLandStyle(id) && id !== 'paludarium') expect(bioload(fish)).toBeLessThanOrEqual(bioloadLitres(s) * 0.9 + 1e-9);
         expect(bioload(fish)).toBeGreaterThanOrEqual(last);
         last = bioload(fish);
-        for (const f of fish) expect(!!getSpecies(f.species)!.salt).toBe(id === 'reef');
+        for (const f of fish) expect(!!getSpecies(f.species)!.salt).toBe(isReefy(id));
         expect(new Set(fish.map(f => f.id)).size).toBe(fish.length);
       }
-      if (id !== 'swamp') expect(last, id).toBeGreaterThan(0);
+      if (id !== 'swamp' && id !== 'paludarium' && !isLandStyle(id)) expect(last, id).toBeGreaterThan(0);
     }
   });
   it('animal stop None: a new layout or Shuffle leaves the user\'s own animals alone', () => {
