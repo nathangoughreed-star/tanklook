@@ -40,8 +40,10 @@ export interface AnchorProbe {
   /** The top of the highest broad plant leaf under (x, depth) above the ground (leaf tops only: facing up, not carpet), its
    *  normal into the open, or null. For animals that may sit on leaves (species `onLeaves`). */
   leaf?(x: number, depth: number, up: number): { y: number; n: V3 } | null;
-  /** The underside of the leaf or solid piece (`item`: not coral) over (x, depth) nearest height y (facing down at least `up`), its normal pointing down, or null. */
-  under?(x: number, depth: number, y: number, up: number): { y: number; n: V3; item?: number } | null;
+  /** The face of a leaf or solid piece (`item`: not coral) a clinger takes from the point (x, y, depth): the underside over it nearest
+   *  height y (normal pointing down, at least `up`), or a steep side face (a rock's flank, a cave wall) within `reach` mm sideways,
+   *  whichever is nearer (`at`: where that side face is, in tank axes), (facing down at least `up`), its normal pointing down, or null. */
+  under?(x: number, depth: number, y: number, up: number, reach?: number): { y: number; n: V3; item?: number; at?: V3 } | null;
 }
 
 /** The kind of surface a piece offers. */
@@ -136,11 +138,11 @@ export function anchors(S: TankSetup, T: Tank = S.tank, probe: AnchorProbe = {})
     return Math.hypot(g.p[0] - x, g.p[1] - y, g.p[2] - depth) < Math.abs(y - r.p[1]) ? g : r;
   };
   /** Hanging under a leaf or the underside of a solid piece over (x, depth) at about height y: the point on the underside and its normal (pointing down), or null. */
-  const under = (x: number, depth: number, y: number, up: number): Anchor | null => {
-    const u = up ? probe.under?.(x, depth, y, up) : null;
+  const under = (x: number, depth: number, y: number, up: number, reach?: number): Anchor | null => {
+    const u = up ? probe.under?.(x, depth, y, up, reach) : null;
     if (!u) return null;
     const it = u.item === undefined ? undefined : items.get(u.item);
-    return { kind: u.item === undefined ? 'leaf' : it ? anchorKind(it) : 'rock', p: [x, u.y, depth], n: u.n, ...(u.item === undefined ? {} : { item: u.item }) };
+    return { kind: u.item === undefined ? 'leaf' : it ? anchorKind(it) : 'rock', p: u.at ?? [x, u.y, depth], n: u.n, ...(u.item === undefined ? {} : { item: u.item }) };
   };
   return { floor, rest, glass, nearest, under };
 }

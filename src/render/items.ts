@@ -993,25 +993,52 @@ export function leafProbe(T: Tank, plants: THREE.Object3D[], ground: (x: number,
   };
 }
 
+/** How far sideways (mm) a clinger looks for a steep face to take, and the steepest that still counts (|normal.y|). */
+export const SIDE_REACH = 150;
+const SIDE_STEEP = 0.5, SIDE_RAYS = 16;
 /**
- * The anchors' look straight up from the ground at what a clinger can hang under (anchors `under`): of the plant leaves
- * (`leaves`: one thin surface, so either face counts, turned to point down) and the solid pieces (`solids`: only a true
- * downward face, a ledge's or a roof's) over (x, depth) that face down at least `up` (their normal's -y) and clear the
- * ground by `clear` mm, the one nearest height `y0`, its normal pointing down. Solids carry their piece's id.
+ * The anchors' look for something to cling to (anchors `under`) from the point (x, y0, depth): straight up from the ground
+ * at what it can hang under (the plant `leaves`: one thin surface, so either face counts, turned to point down; the `solids`:
+ * only a true downward face, a ledge's or a roof's), facing down at least `up` (normal -y), clearing the ground by `clear` mm,
+ * the one nearest y0; and sideways in 16 directions at the steep faces (|normal.y| <= SIDE_STEEP; solids from outside only)
+ * within `reach` mm. The nearer of the two wins. Solids carry their piece's id; a side face carries where it is (`at`).
  */
 export function underProbe(leaves: THREE.Object3D[], solids: THREE.Object3D[], ground: (x: number, depth: number) => number, clear = 8): NonNullable<AnchorProbe['under']> {
-  const rc = new THREE.Raycaster(), nm = new THREE.Matrix3(), UPV = V(0, 1, 0);
-  return (x, depth, y0, up) => {
+  const rc = new THREE.Raycaster(), nm = new THREE.Matrix3(), UPV = V(0, 1, 0), dir = V(0, 0, 0);
+  const orient = (h: THREE.Intersection, thin: boolean, d: THREE.Vector3) => {
+    const n = h.face!.normal.clone().applyMatrix3(nm.getNormalMatrix(h.object.matrixWorld)).normalize();
+    if (thin ? n.dot(d) > 0 : false) n.negate();
+    return n;
+  };
+  return (x, depth, y0, up, reach = SIDE_REACH) => {
     const g = ground(x, depth);
     rc.set(_o.set(x, g + 1, -depth), UPV);
-    let best: { y: number; n: V3; item?: number } | null = null;
+    let best: { y: number; n: V3; item?: number; at?: V3 } | null = null;
     for (const set of [leaves, solids]) for (const h of rc.intersectObjects(set, false)) {
       if (!h.face || h.point.y < g + clear) continue;
       const n = h.face.normal.clone().applyMatrix3(nm.getNormalMatrix(h.object.matrixWorld)).normalize();
       if (set === leaves && n.y > 0) n.negate();
       if (-n.y >= up && (!best || Math.abs(h.point.y - y0) < Math.abs(best.y - y0))) best = { y: h.point.y, n: [n.x, n.y, -n.z], ...(set === solids ? { item: h.object.userData.item } : {}) };
     }
-    return best;
+    // sideways from the point itself: the nearest steep face; nearer than the underside's vertical gap, it wins
+    let gap = best ? Math.abs(best.y - y0) : Infinity, side: typeof best = null;
+    const o = new THREE.Vector3(x, y0, -depth);
+    rc.far = Math.min(reach, gap);
+    for (let k = 0; k < SIDE_RAYS; k++) {
+      const a = k / SIDE_RAYS * 2 * Math.PI;
+      rc.set(o, dir.set(Math.cos(a), 0, Math.sin(a)));
+      for (const set of [leaves, solids]) {
+        const h = rc.intersectObjects(set, false)[0];
+        if (!h || !h.face || h.point.y < g + clear || h.distance >= rc.far) continue;
+        const n = orient(h, set === leaves, dir);
+        if (set === solids && n.dot(dir) >= 0) continue; // from inside a solid: no face to cling to
+        if (Math.abs(n.y) > SIDE_STEEP) continue;
+        rc.far = h.distance;
+        side = { y: h.point.y, n: [n.x, n.y, -n.z], at: [h.point.x, h.point.y, -h.point.z], ...(set === solids ? { item: h.object.userData.item } : {}) };
+      }
+    }
+    rc.far = Infinity;
+    return side ?? best;
   };
 }
 

@@ -425,19 +425,30 @@ function leafPart(S: TankSetup, it: Item): SpotPart {
   return { area: l * w * 0.35 * LEAF_SHARE * LEAFY[it.variant], spot: r => { const ang = r() * 2 * Math.PI, d = Math.sqrt(r()) * 0.35; return { x: it.x + Math.cos(ang) * d * l, depth: it.depth + Math.sin(ang) * d * w, y: groundHeight(S, S.tank, it.x, it.depth) + h * 0.45 }; } };
 }
 /** Pieces with an underside to hang from: a ledge's, the roof of a cave, tube, hide or cork round, a cork slab. */
+/** How much of a piece's side area counts as somewhere to cling, against the floor and the tops. */
+const SIDE_SHARE = 0.6;
 const OVERHANGS: ReadonlySet<string> = new Set(['ledge', 'arch', 'tube', 'coconut', 'halflog', 'corkflat', 'corktube']);
 /**
- * Somewhere a clinging animal can hang under, as `hardscape` is somewhere to sit on: the broad leaves of the plants and the
- * undersides of ledges and roofs. A spot is only a guess (x, depth, height); the renderer finds the underside nearest it,
+ * Somewhere a clinging animal can hang or cling to, as `hardscape` is somewhere to sit on: the broad leaves of the plants, the
+ * undersides of ledges and roofs, and the sides of every rock, piece of wood and cave. A spot is only a guess (x, depth, height); the renderer finds the underside nearest it,
  * and the animal rests on the ground if there is none.
  */
 export function underside(S: TankSetup, pieces = S.items) {
   const parts: SpotPart[] = [];
   for (const it of pieces) {
     if (it.kind === 'plant') { if (it.variant in LEAFY) parts.push(leafPart(S, it)); continue; }
-    if (!OVERHANGS.has(it.variant)) continue;
+    if (it.kind === 'coral') continue;
     const [l, h, w] = itemDims(it);
-    parts.push({ area: l * w * 0.5, spot: r => itemToTank(S, it, [(r() - 0.5) * l * 0.5, it.variant === 'ledge' || it.variant === 'corkflat' ? 0 : h * 0.4, (r() - 0.5) * w * 0.5]) });
+    if (OVERHANGS.has(it.variant)) parts.push({ area: l * w * 0.5, spot: r => itemToTank(S, it, [(r() - 0.5) * l * 0.5, it.variant === 'ledge' || it.variant === 'corkflat' ? 0 : h * 0.4, (r() - 0.5) * w * 0.5]) });
+    // the sides: a point just outside the piece at about its half height (the renderer looks sideways from there for the face)
+    if (it.kind === 'wood' && isLimbWood(it.variant)) {
+      for (const lb of woodLimbs(it.variant, it.seed, it.size)) {
+        const len = lb.pts.slice(1).reduce((a, p, i) => a + Math.hypot(p[0] - lb.pts[i][0], p[1] - lb.pts[i][1], p[2] - lb.pts[i][2]), 0);
+        parts.push({ area: len * (lb.r0 + lb.r1) * 2 * SIDE_SHARE, spot: r => { const t = 0.1 + r() * 0.8, p = itemToTank(S, it, along(lb.pts, t)), a = r() * 2 * Math.PI, o = 1.5 * (lb.r0 + (lb.r1 - lb.r0) * t) + 10; return { x: p.x + Math.cos(a) * o, depth: p.depth + Math.sin(a) * o, y: p.y }; } });
+      }
+      continue;
+    }
+    parts.push({ area: (l + w) * h * 0.4 * SIDE_SHARE, spot: r => { const a = r() * 2 * Math.PI; return itemToTank(S, it, [Math.cos(a) * l * 0.53, h * (0.2 + r() * 0.6), Math.sin(a) * w * 0.53]); } });
   }
   return pickFrom(parts);
 }

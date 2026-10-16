@@ -9,7 +9,7 @@ import { clingsTo, fishTL, getSpecies, onLeaves, speciesOf, type Species } from 
 import { backdropDepth, clamp, clampFish, spawnSnail, waterY } from './physics';
 import { hardscape, itemDims, itemToTank, underside } from './items';
 import { isTarantula, tarantulaBend } from '../art/tarantulas';
-import { inside } from './shape';
+import { footprint, inside } from './shape';
 import { groundHeight, randomLand } from './terrain';
 import type { Fish, TankSetup } from './types';
 
@@ -113,6 +113,8 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
       // A land climber (tree frog) takes the dry glass and hardscape above the water line; on the floor it goes to land.
       const land = sp.habitat === 'land', glass = clingsTo(sp, 'glass') && (sp.kind === 'snail' || (land ? (isTarantula(sp.art) ? GLASS_TARANTULA : GLASS_FROG) : GLASS_FISH));
       const on = { glass, hard: clingsTo(sp, 'hardscape') ? (land ? (sp.body === 'snake' ? perchSnake : perchy) : onLeaves(sp) ? hardLeaf : hard) : undefined, above: land && s.water.on ? waterY(A, s.water.level) : undefined }, left: Fish[] = [];
+      // the share that cling to leaf and rock faces (undersides and sides) is their area against the floor and the tops
+      const underP = Math.min(0.6, leafSpots.area / (leafSpots.area + footprint(A).area + hard.area * 2 || 1));
       for (const f of e.fish) {
         if (sp.body === 'snake' && f.tl === undefined) { const fit = snakeStageFor(A.L, sp.tl); if (fit < sp.tl) f.tl = fit; } // a snake with no size of its own takes the life stage that fits the tank (lane BP)
         // a dwarf frog floats at the surface (its "zen" pose) about a third of the time, else it rests on the bottom
@@ -141,10 +143,10 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
         }
         const fw = fishTL(f, sp);
         // some of the clingers that can hang under a broad leaf do (the renderer finds the underside there; none: the ground)
-        if (!land && s.water.on && clingsTo(sp, 'under') && leafSpots.area > 0 && r() < UNDER_LEAF) {
+        if (!land && s.water.on && clingsTo(sp, 'under') && leafSpots.area > 0 && r() < underP) {
           const q = leafSpots.spot(r);
           if (q && q.y + fw / 2 < top && inside(A, q.x, q.depth, 0)) {
-            Object.assign(f, { x: q.x, depth: q.depth, y: q.y * 0.7, surface: 'under' as const, yaw: Math.round(r() * 360 - 180), pitch: 0, roll: 0, bend: sp.kind === 'snail' ? 0 : +((r() - 0.5) * 0.4).toFixed(2) }); note(f, fw);
+            Object.assign(f, { x: q.x, depth: q.depth, y: q.y, surface: 'under' as const, yaw: Math.round(r() * 360 - 180), pitch: 0, roll: 0, bend: sp.kind === 'snail' ? 0 : +((r() - 0.5) * 0.4).toFixed(2) }); note(f, fw);
             continue;
           }
         }
@@ -274,8 +276,6 @@ const GLASS_FROG = 0.6;
 const PERCH_FROG = 4;
 /** How much more a snake favours a branch or ledge than the same area of other hardscape (lane BP): it mostly lies on the floor. */
 const PERCH_SNAKE = 1.5;
-/** Share of the clingers that can hang under leaves that do, in a tank with broad-leaved plants. */
-const UNDER_LEAF = 0.3;
 /** Nearest two animals on hardscape may sit: this share of the two body lengths added (lane BP2). */
 const HARD_ROOM = 0.3;
 /** The same for a tarantula: a terrestrial animal, only now and then up the glass. */

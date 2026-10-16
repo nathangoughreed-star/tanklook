@@ -1451,9 +1451,15 @@ const PANE_GAP = 0.8;
 /** An animal hanging under a surface (anchor `a`, normal `n` pointing away from it, down for a leaf): its back along the normal,
  *  belly on the surface, head along its yaw turned into the plane (shared by the cards and the snails). */
 function hang3(f: Fish, m: THREE.Mesh, k: number, a: Anchor) {
-  const up = W(a.n).normalize(), face = new THREE.Vector3(Math.cos(f.yaw * D2R), 0, -Math.sin(f.yaw * D2R));
-  const head = face.addScaledVector(up, -face.dot(up));
-  if (head.lengthSq() < 1e-6) head.set(1, 0, 0).addScaledVector(up, -up.x);
+  const up = W(a.n).normalize(), c = Math.cos(f.yaw * D2R), s = Math.sin(f.yaw * D2R);
+  let head: THREE.Vector3;
+  if (Math.abs(up.y) < 0.7) { // a steep face (a rock's flank): yaw runs in its plane, 0 level along it, 90 straight up, as on the glass
+    const along = new THREE.Vector3(0, 1, 0).cross(up).normalize(), climb = new THREE.Vector3(0, 1, 0).addScaledVector(up, -up.y).normalize();
+    head = along.multiplyScalar(c).addScaledVector(climb, s);
+  } else { // under a roof or a leaf: heading along yaw, flattened into the surface
+    head = new THREE.Vector3(c, 0, -s); head.addScaledVector(up, -head.dot(up));
+    if (head.lengthSq() < 1e-6) head.set(1, 0, 0).addScaledVector(up, -up.x);
+  }
   head.normalize();
   m.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(head, up, head.clone().cross(up)));
   m.position.copy(W(a.p)).addScaledVector(up, k);

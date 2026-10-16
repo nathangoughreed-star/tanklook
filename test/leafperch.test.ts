@@ -78,17 +78,18 @@ describe('leaf anchors', () => {
     const down = buildTank({ ...S, units: 'cm' }, S.tank, null).fishMeshes[0];
     expect(new THREE.Vector3(0, 1, 0).applyQuaternion(down.quaternion).y).toBeGreaterThan(0.5);
   });
-  it('Shuffle hangs some clingers under leaves; dwarf frogs and tree frogs never', () => {
+  it('Shuffle puts some clingers on leaf and rock faces, in proportion to their area; dwarf frogs never', () => {
     let under = 0, all = 0;
     for (let seed = 1; seed <= 30; seed++) {
       const S = tank();
+      const rk = (id: number, variant: string, x: number, d: number, e: Partial<Item> = {}): Item => ({ id, kind: LIBRARY[variant].kind, variant, seed: 3, x, depth: d, lift: 0, yaw: 0, pitch: 0, tilt: 0, size: LIBRARY[variant].size, ...e });
+      S.items = [crypt, { ...crypt, id: 2, x: 150, depth: 120 }, { ...crypt, id: 3, x: 450, depth: 280 }, rk(4, 'river', 100, 300, { size: 250 }), rk(5, 'ledge', 450, 100, { lift: 80 }), rk(6, 'seiryu', 300, 330, { size: 300 })];
       for (let i = 0; i < 6; i++) for (const [j, sp] of ['cherryshrimp', 'nerite', 'oto', 'adf'].entries()) S.fish.push({ id: i * 4 + j + 1, species: sp, x: 300, y: 100, depth: 200, yaw: 0, pitch: 0, roll: 0, bend: 0 });
       shuffleFish(S, rng(seed));
       for (const f of S.fish) { if (f.species === 'adf') expect(f.surface).not.toBe('under'); else { all++; if (f.surface === 'under') under++; } }
     }
-    expect(under / all).toBeGreaterThan(0.1);
+    expect(under / all).toBeGreaterThan(0.05);
   });
-
   it('hangs under a ledge, and a rock on the ground has no underside to hang from', () => {
     const S = tank(), mk = (variant: string, id: number, x: number, d: number, e: Partial<Item> = {}): Item => ({ id, kind: LIBRARY[variant].kind, variant, seed: 3, x, depth: d, lift: 0, yaw: 0, pitch: 0, tilt: 0, size: LIBRARY[variant].size, ...e });
     const ledge = mk('ledge', 1, 200, 200, { lift: 120 }), rock = mk('river', 2, 450, 200);
@@ -101,5 +102,25 @@ describe('leaf anchors', () => {
     const m = buildTank({ ...S, units: 'cm' }, S.tank, null).fishMeshes[0];
     expect(new THREE.Vector3(0, 1, 0).applyQuaternion(m.quaternion).y).toBeLessThan(-0.29);
     expect(m.position.y).toBeLessThan(hit!.y);
+  });
+
+  it('clings to the side of a rock: belly on the flank, back out from it, within reach; far from any face it rests on the ground', () => {
+    const S = tank(), rock: Item = { id: 1, kind: 'stone', variant: 'river', seed: 3, x: 300, depth: 200, lift: 0, yaw: 0, pitch: 0, tilt: 0, size: 200 };
+    S.items = [rock];
+    const m = itemMesh(S, S.tank, rock)!; m.updateMatrixWorld(true);
+    const ground = (x: number, d: number) => groundHeight(S, S.tank, x, d), un = underProbe([], [m], ground);
+    const hit = un(300 + 140, 200, 40, 0.3);
+    expect(hit).toBeTruthy(); expect(hit!.at).toBeTruthy(); expect(hit!.item).toBe(1);
+    expect(Math.abs(hit!.n[1])).toBeLessThanOrEqual(0.5);                 // a steep face
+    expect(hit!.n[0]).toBeGreaterThan(0.3);                               // facing out toward +x
+    expect(hit!.at![0]).toBeGreaterThan(300); expect(hit!.at![0]).toBeLessThan(440);
+    expect(un(300 + 140, 200, 40, 0.3, 5)).toBeNull();                    // out of reach
+    for (const sp of ['cherryshrimp', 'nerite', 'oto']) {
+      S.fish = [{ id: 1, species: sp, x: 440, y: 40, depth: 200, yaw: 45, pitch: 0, roll: 0, bend: 0, surface: 'under' }];
+      const mesh = buildTank({ ...S, units: 'cm' }, S.tank, null).fishMeshes[0];
+      const up = new THREE.Vector3(0, 1, 0).applyQuaternion(mesh.quaternion);
+      expect(Math.abs(up.y), sp).toBeLessThan(0.75);                      // back out from a flank, not up or down
+      expect(mesh.position.x, sp).toBeLessThan(440);                      // moved in to the face
+    }
   });
 });
