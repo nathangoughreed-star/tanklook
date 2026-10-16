@@ -214,6 +214,144 @@ function leather(r: R, s: number) {
   ].map(g => clean(g, true)));
 }
 
+// ---------- Lane T4 (2026-10-16): zoanthids, Euphyllia (hammer, torch), fine Acropora, bubble-tip anemone ----------
+/** Highest rock top in a coarse grid over the rock's footprint, for setting polyps on it: top(x, z). */
+function topGrid(g: G, n = 28) {
+  g.computeBoundingBox();
+  const bb = g.boundingBox!, p = g.attributes.position, sx = (bb.max.x - bb.min.x) / n || 1, sz = (bb.max.z - bb.min.z) / n || 1, h = new Float32Array(n * n).fill(-1);
+  const cell = (x: number, z: number) => Math.min(n - 1, Math.max(0, Math.floor((x - bb.min.x) / sx))) * n + Math.min(n - 1, Math.max(0, Math.floor((z - bb.min.z) / sz)));
+  for (let i = 0; i < p.count; i++) { const k = cell(p.getX(i), p.getZ(i)); h[k] = Math.max(h[k], p.getY(i)); }
+  return (x: number, z: number) => h[cell(x, z)];
+}
+/** A unit sphere squashed to (rx, ry, rz), coloured by col(unit-sphere position), then turned to `q` and moved to `at`. */
+function blob3(rx: number, ry: number, rz: number, seg: number, col: (u: THREE.Vector3) => THREE.Color, q: THREE.Quaternion, at: THREE.Vector3) {
+  const g = new THREE.SphereGeometry(1, seg, Math.max(3, seg >> 1));
+  paint(g, u => col(u));
+  return g.scale(rx, ry, rz).applyQuaternion(q).translate(at.x, at.y, at.z);
+}
+const UP = V(0, 1, 0);
+const along = (d: THREE.Vector3) => new THREE.Quaternion().setFromUnitVectors(UP, d.clone().normalize());
+/** Generator pieces (tubes, spheres, cylinders) ready to merge: no uv, normals from the final shape, grit. */
+const soft = (g: G, s: number, indexed = false) => { g.deleteAttribute('uv'); g.deleteAttribute('normal'); g.computeVertexNormals(); return clean(part(g, SOFT, Math.round(s)), indexed); };
+
+// [skirt, disc, mouth]: rasta, fruit loop, sunny, dragon eye, eagle eye
+const ZOA: [string, string, string][] = [['#2fa860', '#f07a28', '#3ac0d8'], ['#d83a7a', '#f2c84a', '#38a858'], ['#f2a020', '#2a7ad8', '#f2e05a'], ['#3ab0c8', '#8a3ab0', '#f07a28'], ['#5a9a3a', '#3a5ac8', '#f2e8b0']];
+/** Zoanthid colony: a low mat of short polyps packed over the crown of a small rock, each a column under a round oral
+ *  disc ringed by a short-tentacle skirt, the mouth a contrasting dot (roadmap: dense, low polyp mats). */
+function zoanthid(r: R, s: number) {
+  const rl = s * 0.9, rh = s * 0.2, rock = rockGeo(r, rl, rh, rl * 0.75), parts: G[] = [clean(part(rock, ROCK, Math.round(s)), false)], top = topGrid(rock);
+  const [k0, k1, k2] = ZOA[Math.floor(r() * ZOA.length)].map(C), stem = k0.clone().lerp(C('#6a5a3a'), 0.55), rp = Math.max(3, s * 0.04);
+  // hex grid over the rock's footprint, jittered; only where the rock top is high enough (the mat stays on the crown)
+  const step = rp * 1.85;
+  for (let zi = -rl, row = 0; zi <= rl; zi += step * 0.866, row++) for (let xi = -rl; xi <= rl; xi += step) {
+    const x = xi + (row & 1 ? step / 2 : 0) + (r() - 0.5) * rp * 0.5, z = zi + (r() - 0.5) * rp * 0.5;
+    if ((x / (rl * 0.5)) ** 2 + (z / (rl * 0.4)) ** 2 > 1) continue;
+    const y0 = top(x, z); if (y0 < rh * 0.25) continue;
+    const hp = rp * (0.5 + r() * 0.6), rr = rp * (0.85 + r() * 0.3), d = V((r() - 0.5) * 0.5 + x / rl * 0.6, 1, (r() - 0.5) * 0.5 + z / rl * 0.6).normalize(), q = along(d);
+    const base = V(x, y0 - rp * 0.3, z), col = new THREE.CylinderGeometry(rr * 0.7, rr * 0.8, hp, 7, 1, true).translate(0, hp / 2, 0);
+    paint(col, v => stem.clone().multiplyScalar(0.7 + 0.3 * v.y / hp));
+    parts.push(soft(col.applyQuaternion(q).translate(base.x, base.y, base.z), s));
+    const jag = r() * 6.28;
+    parts.push(soft(blob3(rr * 1.15, rr * 0.32, rr * 1.15, 10, u => {
+      const rad = Math.hypot(u.x, u.z), a = Math.atan2(u.z, u.x);
+      if (u.y < 0) return stem.clone();
+      if (rad > 0.78 + 0.08 * Math.sin(a * 14 + jag)) return k0.clone(); // the skirt of short tentacles
+      return rad < 0.22 ? k2.clone() : k1.clone().lerp(k2, 0.25 * (1 - rad));
+    }, q, base.clone().addScaledVector(d, hp)), s));
+  }
+  return stand(parts);
+}
+
+const HAMMER: [string, string][] = [['#4a7a5a', '#a8f0c8'], ['#7a6a3a', '#f2d070'], ['#5a6a8a', '#b8d8f8']];
+const TORCH: [string, string][] = [['#6a7a3a', '#e8e070'], ['#8a6a4a', '#7af0e0'], ['#4a7a6a', '#f0c060']];
+/**
+ * Euphyllia: a few heads on short skeleton walls, each a dense bundle of fleshy tentacles. Hammer: short thick tentacles
+ * ending in a crosswise "hammer" (anchor-shaped) tip. Torch: long, slim tentacles flowing to one side, each ending in a
+ * small round, paler tip (roadmap: fleshy formations; long projecting tentacles).
+ */
+function euphyllia(r: R, s: number, torch: boolean) {
+  const [c0, c1] = (torch ? TORCH : HAMMER)[Math.floor(r() * 3)].map(C), wall = C('#8a8070'), parts: G[] = [];
+  const heads = 5 + Math.floor(r() * 4), flow = V(r() - 0.5, 0, r() - 0.5).normalize(), sway = torch ? 0.55 : 0.15;
+  for (let h = 0; h < heads; h++) {
+    const a = h * 2.39996 + r() * 0.6, q = s * 0.27 * Math.sqrt((h + 0.5) / heads), hy = s * (torch ? 0.14 : 0.16) * (1 - 0.4 * q / (s * 0.27)) + s * 0.04;
+    const hc = V(Math.cos(a) * q, hy, Math.sin(a) * q), hr = s * (torch ? 0.07 : 0.08);
+    // the skeleton wall under the head: a short stalk from the base
+    parts.push(...tube([V(hc.x * 0.3, 0, hc.z * 0.3), V(hc.x * 0.7, hy * 0.5, hc.z * 0.7), hc.clone().add(V(0, -hr * 0.3, 0))], s * 0.035, hr * 0.7, () => wall));
+    const n = torch ? 16 + Math.floor(r() * 8) : 14 + Math.floor(r() * 6);
+    for (let t = 0; t < n; t++) {
+      const b = t * 2.39996 + r() * 0.3, k = Math.sqrt((t + 0.5) / n), root = hc.clone().add(V(Math.cos(b) * hr * k, hr * 0.15, Math.sin(b) * hr * k));
+      const out = V(Math.cos(b) * k * 0.8, 1, Math.sin(b) * k * 0.8).normalize();
+      if (torch) {
+        const len = s * (0.26 + r() * 0.12), rad = s * 0.012, side = out.clone().multiplyScalar(0.6).add(flow.clone().multiplyScalar(sway)).normalize();
+        const p1 = root.clone().addScaledVector(out, len * 0.45), p2 = p1.clone().addScaledVector(side, len * 0.4).add(V(0, len * 0.05, 0)), p3 = p2.clone().addScaledVector(side, len * 0.25).add(V(0, -len * 0.12, 0));
+        parts.push(...tube([root, p1, p2, p3], rad * 1.2, rad * 0.85, tt => c0.clone().lerp(c1, Math.max(0, tt - 0.75) * 2.5), true));
+      } else {
+        const len = s * (0.08 + r() * 0.05), rad = s * 0.017, end = root.clone().addScaledVector(out, len);
+        parts.push(...tube([root, root.clone().lerp(end, 0.5).add(V((r() - 0.5) * len * 0.15, 0, (r() - 0.5) * len * 0.15)), end], rad, rad * 0.9, () => c0.clone()));
+        // the hammer: a sausage lying across the tentacle's end, paler at its two ends
+        const across = out.clone().cross(V(r() - 0.5, 0, r() - 0.5)).normalize(), qh = new THREE.Quaternion().setFromUnitVectors(V(1, 0, 0), across);
+        parts.push(blob3(rad * 2.6, rad * 1.2, rad * 1.2, 10, u => c0.clone().lerp(c1, 0.35 + 0.65 * Math.abs(u.x) ** 2), qh, end));
+      }
+    }
+  }
+  parts.push(paint(new THREE.SphereGeometry(0.14 * s, 14, 7).scale(1, 0.4, 1), () => wall.clone().multiplyScalar(0.8)));
+  return stand(parts.map(g => soft(g, s, true)));
+}
+
+/** Fine-branching Acropora (bushy / tenuis style): many trunks splitting four times into slim branchlets with pale,
+ *  bluntly rounded tips; spreads wider than tall (roadmap: fine-branching stony coral). */
+function acroFine(r: R, s: number) {
+  const [b0, b1] = ACRO[Math.floor(r() * ACRO.length)].map(C), parts: G[] = [], DEPTH = 4;
+  const col = (gen: number) => (t: number) => { const f = (gen + Math.min(t, 1)) / (DEPTH + 1); return b0.clone().lerp(b1, Math.max(0, (f - 0.55) / 0.45) ** 1.3 + (t > 1 ? 0.3 : 0)); };
+  const turn = (d: THREE.Vector3, ang: number) => d.clone().applyAxisAngle(V(r() - 0.5, r() - 0.5, r() - 0.5).cross(d).normalize(), ang).add(V(0, 0.3, 0)).normalize();
+  const grow = (p: THREE.Vector3, d: THREE.Vector3, len: number, rad: number, gen: number) => {
+    const end = p.clone().addScaledVector(d, len), last = gen === DEPTH;
+    parts.push(...tube([p, p.clone().lerp(end, 0.5).add(V(r() - 0.5, r() - 0.5, r() - 0.5).multiplyScalar(len * 0.1)), end], rad, rad * 0.82, col(gen), last));
+    if (last) return;
+    const kids = 2 + (r() < 0.3 ? 1 : 0);
+    for (let k = 0; k < kids; k++) grow(end, turn(d, k === 0 ? (4 + r() * 10) * Math.PI / 180 : (28 + r() * 20) * Math.PI / 180), len * (0.7 + r() * 0.15), rad * 0.78, gen + 1);
+  };
+  const n = 10 + Math.floor(r() * 4), a0 = r() * 6.28;
+  for (let i = 0; i < n; i++) {
+    const a = a0 + (i / n) * 6.28 + (r() - 0.5) * 0.5, el = (22 + r() * 40) * Math.PI / 180;
+    grow(V(Math.cos(a) * 0.03 * s, 0, Math.sin(a) * 0.03 * s), V(Math.cos(a) * Math.cos(el), Math.sin(el), Math.sin(a) * Math.cos(el)), 0.12 * s, 0.02 * s, 0);
+  }
+  parts.push(paint(new THREE.SphereGeometry(0.1 * s, 12, 6).scale(1, 0.4, 1), () => b0.clone().multiplyScalar(0.85)));
+  const g = stand(parts.map(q => part(q, HARD, Math.round(s))));
+  const bb = g.boundingBox!, wide = Math.max(bb.max.x - bb.min.x, bb.max.z - bb.min.z) || 1;
+  return g.scale(s / wide, s / wide, s / wide);
+}
+
+// [column / disc, tentacle, bubble tip]: rose, green, red, tan
+const BTA: [string, string, string][] = [['#8a3a3a', '#c85a6a', '#f27a98'], ['#6a5a3a', '#7aa060', '#c8f080'], ['#5a1a1a', '#a82a2a', '#e8504a'], ['#7a6a4a', '#b8a070', '#e8d0a0']];
+/** Bubble-tip anemone: a short flared column under an oral disc crowded with tentacles, each swelling into a bulb
+ *  just below its tip (the "bubble"); not a coral, a soft focal point (roadmap). */
+function anemone(r: R, s: number) {
+  const [c0, c1, c2] = BTA[Math.floor(r() * BTA.length)].map(C), parts: G[] = [], R0 = s * 0.2, ch = s * 0.08;
+  const prof: THREE.Vector2[] = [];
+  for (let i = 0; i <= 6; i++) { const t = i / 6; prof.push(new THREE.Vector2(R0 * (0.75 + 0.35 * t * t), t * ch)); }
+  prof.push(new THREE.Vector2(0, ch * 1.05));
+  parts.push(paint(new THREE.LatheGeometry(prof, 20), q => c0.clone().multiplyScalar(0.75 + 0.25 * q.y / ch)));
+  const n = 70 + Math.floor(r() * 30);
+  for (let t = 0; t < n; t++) {
+    const b = t * 2.39996, k = Math.sqrt((t + 0.5) / n), root = V(Math.cos(b) * R0 * 1.05 * k, ch, Math.sin(b) * R0 * 1.05 * k);
+    const out = V(Math.cos(b) * (0.25 + 0.9 * k), 1.1 - 0.5 * k, Math.sin(b) * (0.25 + 0.9 * k)).normalize(), len = s * (0.17 + 0.07 * (1 - k) + r() * 0.05), rad = s * 0.014;
+    const bend = out.clone().add(V((r() - 0.5) * 0.4, -0.15 * k, (r() - 0.5) * 0.4)).normalize();
+    const p1 = root.clone().addScaledVector(out, len * 0.5), bulb = p1.clone().addScaledVector(bend, len * 0.32), tip = bulb.clone().addScaledVector(bend, len * 0.18);
+    parts.push(...tube([root, p1, bulb], rad, rad * 1.1, () => c1.clone()));
+    parts.push(blob3(rad * 1.55, rad * 2, rad * 1.55, 9, u => c1.clone().lerp(c2, 0.5 + 0.5 * u.y), along(bend), bulb)); // the bubble
+    parts.push(...tube([bulb, bulb.clone().lerp(tip, 0.5), tip], rad * 0.9, rad * 0.55, () => c2.clone(), true));
+  }
+  return stand(parts.map(g => soft(g, s, true)));
+}
+
+/** Scale a piece (standing on y = 0) so its spread = size. */
+function fit(g: G, s: number) {
+  g.computeBoundingBox();
+  const bb = g.boundingBox!, k = s / (Math.max(bb.max.x - bb.min.x, bb.max.z - bb.min.z) || 1);
+  return g.scale(k, k, k);
+}
+
 /** The shape of a reef piece (unlit colours + aGrit), base on y = 0. */
 export function reefShape(variant: string, seed: number, size: number): G {
   const r = rng(seed * 23 + 9);
@@ -221,5 +359,10 @@ export function reefShape(variant: string, seed: number, size: number): G {
   if (variant === 'acropora') return branching(r, size);
   if (variant === 'montipora') return plate(r, size);
   if (variant === 'mushroom') return mushroom(r, size);
+  if (variant === 'zoanthid') return fit(zoanthid(r, size), size);
+  if (variant === 'hammer') return fit(euphyllia(r, size, false), size);
+  if (variant === 'torch') return fit(euphyllia(r, size, true), size);
+  if (variant === 'acrofine') return acroFine(r, size);
+  if (variant === 'anemone') return fit(anemone(r, size), size);
   return leather(r, size);
 }
