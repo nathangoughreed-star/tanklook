@@ -324,6 +324,7 @@ export function lineNorm(m: number) {
 /** Diffuse reflectance (PAR) of each substrate, for the light it bounces back into the tank; bare glass bottom 0.1. */
 export const SUB_ALBEDO: Record<string, number> = {
   gravel: 0.2, pea: 0.3, clown: 0.15, blue: 0.08, onyx: 0.05, black: 0.06, white: 0.55, aragonite: 0.6, coral: 0.55,
+  soil: 0.07, tsand: 0.35, clay: 0.18, bark: 0.1, layered: 0.07, // terrestrial (lane T1)
 };
 const hexLum = (h: string) => { const c = [1, 3, 5].map(i => (parseInt(h.slice(i, i + 2), 16) / 255) ** 2.2); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
 export function subAlbedo(sub: { show: boolean; type: string; custom?: { color: string } }) {

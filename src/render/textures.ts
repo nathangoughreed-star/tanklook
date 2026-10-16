@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { drawBlendTile, drawFishCard, drawPerson, drawSubstrate, substrateMask, type PresetSubstrate } from '../art/placeholder';
+import { LECA, drawBlendTile, drawFishCard, drawLook, drawPerson, drawSubstrate, substrateMask, type PresetSubstrate } from '../art/placeholder';
 import { drawPairedFin, type PairedFin } from '../art/fishgen';
 import { FIN_A, style } from '../art/paint';
 import type { Species } from '../data/species';
@@ -44,6 +44,19 @@ export const pairedFinTexture = (art: string, f: PairedFin, box: { u0: number; v
 export const substrateTexture = (type: PresetSubstrate) => cached('sub:' + type, () => {
   const c = document.createElement('canvas'); c.width = c.height = 512;
   drawSubstrate(c.getContext('2d')!, 512, type);
+  return finish(c, true);
+});
+/** The clay-ball drainage layer of 'layered' ground (its cross-section at the glass). */
+export const lecaTexture = () => cached('sub:leca', () => {
+  const c = document.createElement('canvas'); c.width = c.height = 512;
+  drawLook(c.getContext('2d')!, 512, LECA);
+  return finish(c, true);
+});
+/** The mesh sheet between the drainage layer and the soil: a fine dark weave. */
+export const meshTexture = () => cached('sub:mesh', () => {
+  const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d')!;
+  x.fillStyle = '#1c1e1b'; x.fillRect(0, 0, 64, 64); x.fillStyle = '#4a4f47';
+  for (let i = 0; i < 64; i += 8) { x.fillRect(i, 0, 3, 64); x.fillRect(0, i, 64, 3); }
   return finish(c, true);
 });
 /**

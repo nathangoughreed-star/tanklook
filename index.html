@@ -158,6 +158,10 @@
   <div class="field"><label class="flabel"><input type="checkbox" id="terOn"> Custom terrain</label><button id="terEdit" title="Show the grid points in the tank; drag one up or down">Edit points</button><button id="terFlat" title="Every point at the substrate's average depth">Flatten</button></div>
   <div class="row" id="terColsRow"><label for="terCols">Grid</label><input id="terCols" type="range" min="3" max="25" step="1"><output id="oTerCols"></output></div>
   <div class="hint" id="terHint">Custom terrain turns the floor into a grid of points you can push down or pull up, with a smooth surface through them. It starts from the current floor.</div>
+  <div id="subLitter">
+  <div class="field"><span class="flabel">Leaf litter</span><select id="litLeaf" aria-label="Leaf litter kind"></select><button id="litShuffle" title="The same leaves, fallen in new places">Shuffle</button></div>
+  <div class="row"><label for="litDens">Density</label><input id="litDens" type="range" min="0" max="100" step="5"><output id="oLitDens"></output></div>
+  </div>
   </details>
   <details class="sec" data-sec="hardscape"><summary><h2>Hardscape</h2></summary>
   <div class="lib" id="libHard"></div>

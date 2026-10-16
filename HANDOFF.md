@@ -2,6 +2,34 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane T1: dry ground, terrestrial substrates + leaf litter (2026-10-16; branch `dry-ground`, port 5633; Nathan: "leaf litter looks great", ship; pushed to main)
+- **New substrate presets** (`SubstrateType` + validate pick list, no scene version bump; art/placeholder.ts SUBSTRATES, flag
+  `terra`): `soil` (Soil / coco fibre: crumbs, coco strands, perlite flecks), `tsand` (Terrarium sand), `clay` (terracotta,
+  seamless wandering dry-crack network), `bark` (Orchid bark: blocky chips in layers), `layered` (soil over a flat clay-ball
+  drainage layer, 50 % of the shallowest ground at the glass, 8-45 mm, and a 2.5 mm dark mesh sheet; `LECA` look,
+  textures.ts `lecaTexture` / `meshTexture`). The type list is grouped Aquarium / Terrarium (optgroups). SUB_ALBEDO entries
+  added in scene/lightout.ts.
+- **Wet / dry** (render/build.ts addSubstrate, terra types only; old types keep the old damp-soil tint above water): own colour
+  dry; darker (x0.47/0.44/0.41) below the water line and in a 35 mm damp band above it; the skirt is cut in height bands
+  (water line, band, drainage) so the line is crisp through the glass. A faint wet sheen in the band (`aWet` attribute,
+  `wetSheen`, its own define AQ_WET so its program is apart from the custom blend's post patch). Not in a bowl (old skirt path).
+- **Leaf litter** (`substrate.litter?: { leaf: mixed|oak|magnolia|catappa, density 0-100, seed }`, absent = none): new
+  render/scatter.ts. `scatter(T, ground, spec)` is the shared tool (pebbles / grass later): seeded points thinned by a clumping
+  field, rejected on steep ground (normal y < 0.55), where an end or side would poke through the glass, hang over a drop or
+  hit a wall (bank foot); each copy on the ground's tilt, lifted over small humps, piled on what is under it (10 mm height
+  grid, +2.5 mm per leaf), tinted, darker under water (`shade`). Leaves: canvas atlas 3 kinds x (2 upper, 1 under, 1 broken
+  piece), 12 cupped / curled geometries trimmed to the leaf's width, one alpha-tested lit material, InstancedMesh per variant.
+  render/lighting.ts aqPatch now uses instanceMatrix for vAqP / vAqN under USE_INSTANCING; disposeScene disposes
+  InstancedMeshes. Panel: Leaf litter select + Shuffle (seed + 1) + Density (0 = None).
+- **Perf** (terrarium example, litter 100 % = 284 leaves, 12 draws, alternate frames, 4 runs of 60): +0.3 / 0.9 / 1.6 / 2.6 ms,
+  about 1.2 ms typical (was ~3.6 ms before trimming the leaf cards to the leaf's width).
+- Tests: test/dryground.test.ts (types load, unknown -> gravel, old files keep no litter, litter clamped; scatter deterministic,
+  off the glass, never under the ground, piled not floating, not straddling a step). Pictures: worktree `shots/t1_sheet_*.png`
+  (helpers scripts/ground-shots.js in the dev console, scripts/t1-sheet.py).
+- **Open (Nathan 2026-10-16):** coarse grounds (bark, pebbles, gravel) read flat: a painted tile. Next in this lane: real 3D
+  grains on the top layer and against the glass via `scatter` (bark + pebbles first), relief shading for mid grains; pictures
+  and a perf number before shipping.
+
 ## Lane T3: dry hardscape pieces + surface anchors, tree frogs perch (2026-10-16; branch `dry-hardscape`, port 5663; Nathan approved the pictures; pushed to main)
 - **New pieces** (scene/items.ts LIBRARY, geometry in render/items.ts, no new ItemKind, no scene version bump): `climb`
   Climbing branch (wood: thin pale dry limb leaning 40-70°, 1-2 forks; woodLimbs 'climb'), `corkflat` Cork bark flat
