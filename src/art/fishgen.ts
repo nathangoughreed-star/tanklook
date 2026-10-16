@@ -607,6 +607,17 @@ export const PLANS: Record<string, Plan> = {
       { k: 'spots', n: 14, u0: 0.25, u1: 0.85, v0: -0.12, v1: 0.06, r: 0.016, c: '#3e3c1e', a: 0.6 }, { k: 'band', u0: 0.4, u1: 0.8, v0: 0.125, v1: 0.15, c: '#34321e', a: 0.6, f: 0.025 },
       ...[0.8, 0.818, 0.836].map(u => ({ k: 'poly' as const, pts: [[u, 0.02], [u + 0.007, 0.02], [u - 0.004, 0.075], [u - 0.011, 0.075]] as [number, number][], c: '#5a3a1e', a: 0.55 })), { k: 'spots', n: 120, u0: 0.22, u1: 0.92, v0: -0.17, v1: 0.15, r: 0.006, c: '#5a5428', a: 0.3 }],
     eye: { r: 0.05, iris: ['#9ad0b8', '#1e2a24'], up: 0.3, bulge: 0.65 } },
+  // white cloud mountain minnow: slim cool-water schooler; bronze back, a gold line over a dark band, red tail root,
+  // red fins edged white
+  whitecloud: { gape: 0.025, gapeDrop: 0.006, thick: 0.45, depth: 0.2, pedU: 0.2, ped: 0.035, peak: 0.55, snout: 0.45, mouth: -0.015, shade: ['#5a4a32', '#9a8458', '#dcd0b4'], tail: { type: 'fork', h: 0.13, tint: '#c8483a', a: 0.75 }, fin: '#d87850',
+    dorsal: { at: 0.52, len: 0.1, h: 0.085, rake: 0.3, lead: 0.7, drop: 0.5, trail: 0.02, tint: '#c8483a', edge: '#f0ece0' }, anal: { at: 0.46, len: 0.12, h: 0.07, rake: 0.3, lead: 0.7, drop: 0.5, trail: 0.02, tint: '#c8483a', edge: '#f0ece0' }, pelvic: { u: 0.58, len: 0.05, tint: '#d87850' },
+    marks: [{ k: 'band', u0: 0.2, u1: 0.9, v0: -0.012, v1: 0.01, c: '#3a3428', a: 0.6, f: 0.008 }, { k: 'band', u0: 0.22, u1: 0.9, v0: -0.026, v1: -0.012, c: '#e8d880', a: 0.85, f: 0.005 },
+      { k: 'blob', u: 0.23, v: 0, ru: 0.05, rv: 0.025, c: '#c83a28', a: 0.75 }],
+    finMarks: [{ k: 'band', u0: 0, u1: 0.18, v0: -0.03, v1: 0.03, c: '#a82a20', a: 0.6, f: 0.01 }], eye: { r: 0.03, iris: ['#c8b080', '#3a2a10'] } },
+  // comet goldfish: the single-tailed, long-bodied goldfish; long deeply forked tail, big scales, orange-red
+  comet: { gape: 0.02, gapeDrop: 0.004, scale: 0.032, thick: 0.5, depth: 0.29, pedU: 0.3, ped: 0.045, peak: 0.5, snout: 0.6, shade: ['#c84a1e', '#e8742e', '#f0a868'], tail: { type: 'fork', h: 0.24, tint: '#ec8a4a', a: 0.8 }, fin: '#ec8a4a',
+    dorsal: { at: 0.66, len: 0.25, h: 0.12, spines: 0.08, nSp: 1, spineH: 0.13, rake: 0.2, drop: 0.45, trail: 0.03, a: 0.85 }, anal: { at: 0.4, len: 0.07, h: 0.08, rake: 0.3, drop: 0.5, trail: 0.02, a: 0.85 }, pelvic: { u: 0.58, len: 0.09 }, pec: { s: 1.3 },
+    marks: [{ k: 'blob', u: 0.62, v: -0.07, ru: 0.22, rv: 0.08, c: '#ffffff', a: 0.12 }], eye: { r: 0.028, iris: ['#2a2420', '#0a0806'] } },
   // ---------- marine (lane C, 2026-10-13) ----------
   // ocellaris clownfish: orange, three white bars edged black (head, mid-body bulging forward, peduncle), fins edged black
   ocellaris: { pec: { s: 1.6 }, gape: 0.03, gapeDrop: 0.003, thick: 0.45, depth: 0.36, pedU: 0.2, ped: 0.065, peak: 0.55, snout: 0.6, shade: ['#c8561a', '#ec7a24', '#f09440'], tail: { type: 'round', h: 0.15, tint: '#e8762a', edge: '#1a1614' }, fin: '#e8762a',
@@ -675,6 +686,22 @@ export const PLANS: Record<string, Plan> = {
     marks: [{ k: 'bars', us: [0.3, 0.44, 0.58, 0.72], w: 0.05, c: '#a07a20', a: 0.3 }, { k: 'spots', n: 12, u0: 0.78, u1: 0.98, v0: -0.06, v1: 0.05, r: 0.008, c: '#5ab0e0', a: 0.85 }],
     finMarks: [{ k: 'spots', n: 10, u0: 0.25, u1: 0.6, v0: -0.2, v1: -0.1, r: 0.008, c: '#5ab0e0', a: 0.7 }],
     eye: { r: 0.03, iris: ['#c8a040', '#2a1a08'], dv: -0.16, up: 0.55 } },
+  // blue tang: royal blue oval with the black "palette" from eye to tail, a yellow tail and peduncle wedge
+  bluetang: { gape: 0.02, gapeDrop: 0.004, scale: 0.012, thick: 0.25, angular: 0.3, depth: 0.5, pedU: 0.2, ped: 0.045, peak: 0.5, snout: 0.4, mouth: 0.01, shade: ['#1a3a9a', '#2a5ac8', '#3a6ad0'], tail: { type: 'notch', h: 0.2, tint: '#f0c820', edge: '#141420' }, fin: '#2a4ab8',
+    dorsal: { at: 0.8, len: 0.62, h: 0.1, spines: 0.3, nSp: 9, spineH: [0.05, 0.08], notch: 0.2, rake: 0.5, trail: 0.03, drop: 0.8, edge: '#141420' },
+    anal: { at: 0.62, len: 0.42, h: 0.09, spines: 0.1, nSp: 3, spineH: [0.05, 0.07], notch: 0.2, rake: 0.5, trail: 0.03, drop: 0.8, edge: '#141420' }, pelvic: { u: 0.7, len: 0.08 }, pec: { s: 1.4 },
+    marks: [{ k: 'poly', pts: [[0.88, -0.07], [0.72, -0.19], [0.42, -0.19], [0.22, -0.05], [0.2, 0.03], [0.4, -0.04], [0.56, -0.02], [0.74, 0.03], [0.86, 0.01]], c: '#141420', a: 0.95 },
+      { k: 'blob', u: 0.56, v: -0.11, ru: 0.13, rv: 0.04, c: '#2a5ac8', a: 1 }, { k: 'band', u0: 0.16, u1: 0.24, v0: -0.04, v1: 0.05, c: '#f0c820', a: 0.95, f: 0.015 }],
+    eye: { r: 0.034, u: 0.82, iris: ['#2a2420', '#0a0806'] } },
+  // mandarin dragonet (male): bottom-oriented, scaleless, broad head with high domed eyes, big fan pectorals, a tall
+  // first dorsal; blue-green covered in wavy orange lines
+  mandarin: { gape: 0.03, gapeDrop: 0.006, scale: 0, thick: 0.9, belly: 0.6, wide: 0.4, noseW: 0.5, depth: 0.2, pedU: 0.2, ped: 0.045, peak: 0.7, back: 0.62, snout: 0.7, mouth: 0.02, shade: ['#2a6a8a', '#2a8aa8', '#3a6ab8'], tail: { type: 'round', h: 0.12, tint: '#d0602a' }, fin: '#d0602a',
+    dorsal: { at: 0.66, len: 0.1, h: 0.2, spines: 1, nSp: 4, spineH: [0.3, 0.15], notch: 0.2, tint: '#d0602a' }, dorsal2: { at: 0.52, len: 0.3, h: 0.11, rake: 0.6, trail: 0.04, drop: 0.8 },
+    anal: { at: 0.5, len: 0.3, h: 0.08, rake: 0.5, trail: 0.03 }, pelvic: { u: 0.74, len: 0.1, w: 1.5 }, pec: { s: 2.4, v: 0.55 },
+    marks: [...[-0.09, -0.06, -0.03, 0, 0.03, 0.06].map(v => ({ k: 'band' as const, u0: 0.18, u1: 0.96, v0: v - 0.0045, v1: v + 0.0045, c: '#ec7a2a', a: 0.9, wave: 0.012 })),
+      { k: 'spots', n: 18, u0: 0.2, u1: 0.95, v0: -0.1, v1: 0.08, r: 0.006, c: '#ec7a2a', a: 0.8 }],
+    finMarks: [...[-0.2, -0.15, 0.12, 0.16].map(v => ({ k: 'band' as const, u0: 0, u1: 0.6, v0: v - 0.008, v1: v + 0.008, c: '#2a6ab8', a: 0.8, wave: 0.01 })), { k: 'bars', us: [0.06, 0.12], w: 0.015, c: '#2a6ab8', a: 0.7 }],
+    eye: { r: 0.045, iris: ['#c84a2a', '#2a0a06'], dv: -0.1, up: 0.6, bulge: 0.6 } },
   // ---------- bottom dwellers ----------
   bronzecory: { pec: { s: 1.9, v: 0.85 }, plates: true, thick: 0.72, belly: 0.9, wide: 0.5, pedT: 0.28, step: 0.18, noseW: 0.4, depth: 0.35, pedU: 0.18, ped: 0.06, peak: 0.6, back: 0.68, snout: 0.6, mouth: 0.06, shade: ['#4a5a48', '#8a8a62', '#d8c8a0'], tail: { type: 'fork', h: 0.15 }, fin: '#b0a888',
     // triangular dorsal on one stout spine, highest at the front
@@ -820,6 +847,8 @@ Object.assign(PLANS, {
     anal: { at: 0.5, len: 0.25, h: 0.08, spines: 0.25, nSp: 3, spineH: [0.035, 0.055], trail: 0.02 }, pelvic: { u: 0.67, len: 0.1, tint: '#1a1a18' },
     marks: [{ k: 'band', u0: 0.22, u1: 0.93, v0: -0.018, v1: 0.018, c: '#1a1810', a: 0.95, f: 0.008 }, { k: 'blob', u: 0.55, v: 0, ru: 0.035, rv: 0.035, c: '#1a1810', a: 0.9 },
       { k: 'blob', u: 0.9, v: 0.06, ru: 0.02, rv: 0.035, c: '#1a1810', a: 0.7 }], finMarks: [] }),
+  // smaller, the first dorsal only a little taller than the second
+  mandarin_f: her('mandarin', { dorsal: { at: 0.66, len: 0.1, h: 0.1, spines: 1, nSp: 4, spineH: [0.13, 0.1], notch: 0.2, tint: '#d0602a' } }),
 });
 
 const SHRIMP: Record<string, ShrimpSpec> = {

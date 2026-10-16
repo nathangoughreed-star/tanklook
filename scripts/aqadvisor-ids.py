@@ -56,6 +56,8 @@ NAMES = {
     'yellowlab': 'Yellow Lab (Labidochromis caeruleus)',
     'boesemani': 'Boesemans Rainbowfish (Melanotaenia boesemani)',
     'cockatoo': 'Cockatoo Apisto (Apistogramma cacatuoides)',
+    'whitecloud': 'White Cloud Mountain Minnow (Tanichthys albonubes)',
+    'comet': 'Comet Goldfish (Carassius auratus)',
 }
 
 # Not in AqAdvisor: counted as a similar animal in size and type (Nathan 2026-10-09), flagged standIn in the json.
@@ -80,6 +82,8 @@ MARINE = {
     'chromis': 'Green Chromis (Chromis viridis)',
     'coralbeauty': 'Coral Beauty Angelfish (Centropyge bispinosa)',
     'watchman': 'Yellow Watchman Goby (Cryptocentrus cinctus)',
+    'bluetang': 'Blue Tang (Paracanthurus hepatus)',
+    'mandarin': 'Green Mandarin (Synchiropus splendidus)',
 }
 MARINE_STAND_INS = {
     'cleanershrimp': 'Neon Goby (Gobiosoma oceanops)',  # 5 cm, a cleaner itself
