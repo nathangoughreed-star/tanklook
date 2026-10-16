@@ -1,7 +1,8 @@
 // Builds a three.js scene for one tank from scene data. Rebuilt on every content change (cheap at this scale);
 // textures and card materials are cached across rebuilds.
 import * as THREE from 'three';
-import { SUBSTRATES, blendTile, maskQuantile } from '../art/placeholder';
+import { LECA, SUBSTRATES, blendTile, maskQuantile } from '../art/placeholder';
+import { litterMeshes } from './scatter';
 import { snailAspect } from '../art/snails';
 import { fishTL, needsWater, speciesOf, type Species } from '../data/species';
 import { PERCHES, anchors, type Anchor, type Anchors, type V3 } from '../scene/anchors';
@@ -14,13 +15,13 @@ import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
 import { getImage } from '../scene/images';
 import { LU, addBeams, addFixture, applyLighting, waterVolumeMaterial } from './lighting';
 import { addAlgae } from './algae';
-import { itemMesh, solidProbe } from './items';
+import { itemDeps, itemMesh, solidProbe } from './items';
 import { rootsKey, rootsMesh } from './roots';
 import { addBackdrop, backdropGeometry } from './backdrop';
 import { drapedCard, fish3d, fishBody, hullMaterial } from './fish3d';
 import { herpBody, herpFloatTop, isHerp3D } from './herp3d';
 import { sagShell, snailBody } from './snail3d';
-import { blendTexture, cardMaterial, pictureTexture, fishBodyTexture, fishTexture, gradientTexture, personTexture, substrateMaskTexture, substrateTexture } from './textures';
+import { blendTexture, lecaTexture, meshTexture, cardMaterial, pictureTexture, fishBodyTexture, fishTexture, gradientTexture, personTexture, substrateMaskTexture, substrateTexture } from './textures';
 
 /** Back-wall options; color null = no background (back glass only); light = use dark grid lines. */
 export const BACKGROUNDS: Record<Background, { label: string; color: number | null; gradient?: boolean; light?: boolean; frost?: boolean }> = {
@@ -798,21 +799,28 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   // blended across each cell (one flat shade per cell showed the 16x16 grid as sharp-edged squares on gentle slopes);
   // the lit shader's normal likewise per grid vertex and blended (computeVertexNormals on these unshared triangles gave
   // one normal per triangle, so the fixture light drew every triangle's edge)
-  const light = new THREE.Vector3(-0.35, 1, 0.45).normalize(), topCol: number[] = [], topNrm: number[] = [];
+  const light = new THREE.Vector3(-0.35, 1, 0.45).normalize(), topCol: number[] = [], topNrm: number[] = [], topWet: number[] = [];
+  // terrestrial ground (lane T1): its own colour when dry; darker below the water line (a paludarium's pool) and in a
+  // damp band above it where the water wicks up, which also gets a faint wet sheen (`aWet`, see wetSheen)
+  const terra = sub.type !== 'custom' && !!SUBSTRATES[sub.type].terra, wetY = S.water.on ? wy : -Infinity;
+  const wetAt = (y: number) => y <= wetY ? 1 : clamp(1 - (y - wetY) / 35, 0, 1) ** 1.6;
+  const sheenAt = (y: number) => y <= wetY ? 0.25 : wetAt(y); // under water the sheen is the water's, not the ground's
+  const WET = [0.47, 0.44, 0.41]; // wet ground: darker, a little richer (blue drops most)
   const vcol: number[][] = [];
   for (let i = 0; i <= N; i++) for (let j = 0; j <= N; j++) {
     const i0 = Math.max(0, i - 1), i1 = Math.min(N, i + 1), j0 = Math.max(0, j - 1), j1 = Math.min(N, j + 1);
     const a = new THREE.Vector3(...P3(i1, j)).sub(new THREE.Vector3(...P3(i0, j))), b = new THREE.Vector3(...P3(i, j1)).sub(new THREE.Vector3(...P3(i, j0)));
     const n = new THREE.Vector3().crossVectors(a, b).normalize(); if (n.y < 0) n.negate();
     const k = clamp(0.55 + 0.6 * n.dot(light), 0, 1.15) / 1.15, q = P3(i, j);
+    if (terra) { const w = wetAt(q[1]); vcol[i * (N + 1) + j] = [...WET.map(c => k * (1 - w * (1 - c))), n.x, n.y, n.z, sheenAt(q[1])]; continue; }
     // emerged ground reads as damp soil and moss (mottled), not aquarium gravel
     const dry = clamp((q[1] - wy) / 12, 0, 1), mo = 0.5 + 0.5 * Math.sin(q[0] * 0.045 + Math.sin(q[2] * 0.05) * 2.4);
-    vcol[i * (N + 1) + j] = [k * (1 - dry * (0.42 + 0.12 * mo)), k * (1 - dry * (0.3 - 0.12 * mo)), k * (1 - dry * (0.62 + 0.05 * mo)), n.x, n.y, n.z];
+    vcol[i * (N + 1) + j] = [k * (1 - dry * (0.42 + 0.12 * mo)), k * (1 - dry * (0.3 - 0.12 * mo)), k * (1 - dry * (0.62 + 0.05 * mo)), n.x, n.y, n.z, 0];
   }
-  const colAt = (p: P) => { // colour and normal, bilinear between the grid vertices round p
+  const colAt = (p: P) => { // colour, normal and sheen, bilinear between the grid vertices round p
     const fx = clamp(p[0] / L * N, 0, N), fz = clamp(p[1] / D * N, 0, N), i = Math.min(N - 1, Math.floor(fx)), j = Math.min(N - 1, Math.floor(fz)), u = fx - i, w = fz - j;
     const c00 = vcol[i * (N + 1) + j], c10 = vcol[(i + 1) * (N + 1) + j], c01 = vcol[i * (N + 1) + j + 1], c11 = vcol[(i + 1) * (N + 1) + j + 1];
-    return [0, 1, 2, 3, 4, 5].map(c => (c00[c] * (1 - u) + c10[c] * u) * (1 - w) + (c01[c] * (1 - u) + c11[c] * u) * w);
+    return [0, 1, 2, 3, 4, 5, 6].map(c => (c00[c] * (1 - u) + c10[c] * u) * (1 - w) + (c01[c] * (1 - u) + c11[c] * u) * w);
   };
   for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
     const cell = clipToFootprint(T, [[L * i / N, D * j / N], [L * (i + 1) / N, D * j / N], [L * (i + 1) / N, D * (j + 1) / N], [L * i / N, D * (j + 1) / N]]);
@@ -826,18 +834,40 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
     const uv = n.y > 0.6 ? (p: V3) => [p[0] / tile, -p[2] / tile] : Math.abs(n.x) > Math.abs(n.z) ? (p: V3) => [-p[2] / tile, p[1] / tile] : (p: V3) => [p[0] / tile, p[1] / tile];
     const cc = cell.map(colAt);
     for (let m = 1; m < v.length - 1; m++) for (const t of [0, m, m + 1]) {
-      top.push(v[t], uv(v[t])); topCol.push(...cc[t].slice(0, 3));
+      top.push(v[t], uv(v[t])); topCol.push(...cc[t].slice(0, 3)); topWet.push(cc[t][6]);
       const nn = new THREE.Vector3(...cc[t].slice(3)).normalize(); topNrm.push(nn.x, nn.y, nn.z);
     }
   }
   // the skirt round the outline in short strips, so its top edge follows the ground (swamp banks are not straight);
   // the back shows through clear back glass (peninsula, orbiting round the back)
-  const seg = Math.min(L, D) / N;
-  for (const e of footprint(T).edges) {
+  const seg = Math.min(L, D) / N, edges = footprint(T).edges;
+  // terrestrial ground (not in a bowl): the skirt in height bands, each vertex shaded wet or dry by its height, cut at
+  // the water line and its damp band; 'layered': a flat clay-ball drainage layer at the bottom (40 % of the shallowest
+  // ground at the glass, 6-40 mm) and a thin dark mesh sheet on it, the soil above
+  const banded = terra && !bowl, sideCol: number[] = [], leca: number[][] = [], lecaCol: number[] = [], mesh: number[][] = [], meshCol: number[] = [];
+  let dh = 0;
+  if (sub.type === 'layered' && banded) {
+    let lo = Infinity;
+    for (const e of edges) for (let k = 0; k <= 8; k++) lo = Math.min(lo, G([e.a[0] + (e.b[0] - e.a[0]) * k / 8, e.a[1] + (e.b[1] - e.a[1]) * k / 8])[1]);
+    dh = clamp(0.5 * lo, 8, 45);
+  }
+  const cuts = !banded ? [] : [...new Set([0, ...(dh ? [dh, dh + 2.5] : []), ...[wetY, wetY + 12, wetY + 35].filter(y => y > 0), Infinity])].sort((a, b) => a - b);
+  const lecaTile = LECA.tile * 2;
+  for (const e of edges) {
     const m = Math.max(1, Math.ceil(e.len / seg));
     for (let k = 0; k < m; k++) {
       const p: P = [e.a[0] + (e.b[0] - e.a[0]) * k / m, e.a[1] + (e.b[1] - e.a[1]) * k / m], q: P = [e.a[0] + (e.b[0] - e.a[0]) * (k + 1) / m, e.a[1] + (e.b[1] - e.a[1]) * (k + 1) / m];
       const s0 = e.s0 + e.len * k / m, s1 = e.s0 + e.len * (k + 1) / m, gp = G(p), gq = G(q);
+      if (banded) {
+        for (let c = 0; c < cuts.length - 1; c++) {
+          const y0 = cuts[c], y1 = cuts[c + 1], a0 = Math.min(y0, gp[1]), a1 = Math.min(y1, gp[1]), b0 = Math.min(y0, gq[1]), b1 = Math.min(y1, gq[1]);
+          if (a1 - a0 < 1e-3 && b1 - b0 < 1e-3) continue;
+          const [arr, col, tl] = y1 <= dh ? [leca, lecaCol, lecaTile] : y1 <= dh + 2.5 ? [mesh, meshCol, tile] : [side, sideCol, tile];
+          const pts: V3[] = [[p[0], a0, -p[1]], [q[0], b0, -q[1]], [q[0], b1, -q[1]], [p[0], a1, -p[1]]], ss = [s0, s1, s1, s0];
+          for (const i of [0, 1, 2, 0, 2, 3]) { arr.push(pts[i], [ss[i] / tl, pts[i][1] / tl]); const w = wetAt(pts[i][1]); col.push(...WET.map(c => 1 - w * (1 - c))); }
+        }
+        continue;
+      }
       // a bowl: in bands up the curve of the glass (one straight strip would cut inside the sphere, a cone)
       const bands = bowl ? 8 : 1, cx = L / 2, cd = D / 2;
       const on = (c: P, top: number, j: number): V3 => {
@@ -851,16 +881,39 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
       }
     }
   }
-  const mk = (arr: number[][], shade: number, cols?: number[], nrm?: number[]) => {
-    const g = new THREE.BufferGeometry(); if (cols) g.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
+  const mk = (arr: number[][], shade: number, cols?: number[], nrm?: number[], wet?: number[], map?: THREE.Texture) => {
+    if (!arr.length) return;
+    const g = new THREE.BufferGeometry(); if (cols?.length) g.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
     if (nrm) g.setAttribute('normal', new THREE.Float32BufferAttribute(nrm, 3)); // applyLighting keeps a normal it finds
     g.setAttribute('position', new THREE.Float32BufferAttribute(arr.filter((_, i) => i % 2 === 0).flat(), 3));
     g.setAttribute('uv', new THREE.Float32BufferAttribute(arr.filter((_, i) => i % 2 === 1).flat(), 2));
-    const m = new THREE.MeshBasicMaterial({ map: sub.type === 'custom' ? blendTexture(sub.custom, 'a') : substrateTexture(sub.type), color: shade, vertexColors: !!cols, side: THREE.DoubleSide });
+    const m = new THREE.MeshBasicMaterial({ map: map ?? (sub.type === 'custom' ? blendTexture(sub.custom, 'a') : substrateTexture(sub.type)), color: shade, vertexColors: !!cols?.length, side: THREE.DoubleSide });
     m.userData.sub = true; if (sub.type === 'custom') blendGrains(m, sub.custom, tile);
+    if (wet && terra) wetSheen(m, g, wet);
     sc.add(new THREE.Mesh(g, m));
   };
-  mk(top, 0xffffff, topCol, topNrm); mk(side, 0xb4b4b4); // the skirt a touch darker so the layer reads through the glass
+  mk(top, 0xffffff, topCol, topNrm, topWet); mk(side, 0xb4b4b4, sideCol); // the skirt a touch darker so the layer reads through the glass
+  mk(leca, 0xb4b4b4, lecaCol, undefined, undefined, lecaTexture()); mk(mesh, 0x3a3d38, meshCol, undefined, undefined, meshTexture());
+  if (sub.litter?.density) for (const o of litterMeshes(S, T, (x, d) => G([x, d]))) sc.add(o);
+}
+
+/**
+ * Wet sheen on terrestrial ground (lane T1): where `aWet` > 0 (the damp band above a paludarium's water line, faintly
+ * below it) a soft highlight of the light above, seen in the view direction. Its own define keeps its program apart
+ * from the custom blend's (both patch the lit shader through userData.post).
+ */
+function wetSheen(m: THREE.MeshBasicMaterial, g: THREE.BufferGeometry, wet: number[]) {
+  if (!wet.some(v => v > 0.01)) return;
+  g.setAttribute('aWet', new THREE.Float32BufferAttribute(wet, 1));
+  m.defines = { AQ_WET: '' };
+  m.userData.post = (sh: THREE.WebGLProgramParametersWithUniforms) => {
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nattribute float aWet; varying float vAqWet;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvAqWet = aWet;');
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying float vAqWet;')
+      .replace('vec3 aqLt = aqLight(); outgoingLight *= aqLt;', `vec3 aqLt = aqLight(); outgoingLight *= aqLt;
+if (vAqWet > 0.01) { vec3 aqH = normalize(normalize(vec3(-0.2, 1.0, 0.35)) + normalize(cameraPosition - vAqP));
+  outgoingLight += vAqWet * 0.2 * pow(max(dot(normalize(vAqN), aqH), 0.0), 18.0) * min(aqLt, vec3(1.5)); }`);
+  };
 }
 
 /**
@@ -1104,7 +1157,7 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: number | null, 
   const bare = S.render.beams && S.light.type !== 'flat';
   const hard: string[] = []; // the solid pieces' data: an animal on the hardscape is rebuilt when any of them changes
   b.itemParts = (bare ? [] : S.items).map(it => {
-    const data = JSON.stringify(it), key = 'i' + data + (it.id === selItem ? '*' : '');
+    const data = JSON.stringify(it), key = 'i' + data + itemDeps(S, it) + (it.id === selItem ? '*' : ''); // (a vine: + the wood it runs along)
     const m = take(key) ?? (() => {
       const m = itemMesh(S, T, it); if (!m) return part(key, [], []);
       if (it.id === selItem) m.add(boxOutline(m.geometry));
@@ -1325,6 +1378,7 @@ function snailMeshes(S: TankSetup, T: Tank, f: Fish, sp: Species, ground: number
 export function disposeScene(sc: THREE.Object3D | undefined) {
   sc?.traverse(o => {
     const m = o as THREE.Mesh;
+    if ((o as THREE.InstancedMesh).isInstancedMesh) (o as THREE.InstancedMesh).dispose(); // its instance buffers (leaf litter)
     if (!m.geometry?.userData.keep) m.geometry?.dispose();
     if (m.material) for (const mat of ([] as THREE.Material[]).concat(m.material)) if (!mat.userData.cached && !mat.userData.keep) mat.dispose();
   });

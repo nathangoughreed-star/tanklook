@@ -99,7 +99,10 @@ export interface Plant3D {
   /** Vines (lane T2): share that climb (the rest trail), leaf spacing along a vine (mm), how far the climbers lean back
    *  from upright (rad: toward the wall behind, where the glass turns them up along it), how wide they fan (rad either
    *  side of upright), vine thickness (mm), how much a vine wanders (rad). */
-  vine?: { climb: number; node: number; back: number; fan: number; thick: number; wander: number; branch?: number };
+  vine?: { climb: number; node: number; back: number; fan: number; thick: number; wander: number; branch?: number;
+    /** With wood in reach (lane T2, T3's anchors): share of the vines that run along it, and mm per turn round a limb
+     *  (0 / absent = along its top). */
+    follow?: number; wrap?: number };
   /** Stem plants: leaves per node, set round the stem (absent = a pair; lane T2: hornwort, anacharis). */
   whorl?: number;
   /** Stem plants: how far the stems lean out by the top, times the usual (lane T2: fittonia sprawls; absent = 1). */
@@ -242,7 +245,7 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
   // Golden pothos (Epipremnum aureum): long vines of glossy heart-shaped leaves streaked gold; some climb up behind it,
   // the rest trail along the ground or hang down off what it sits on. Size = the longest vine. Leaf length in mm
   pothos: { land: true, grow: { speed: 'fast', overflow: 'trail', len: [80, 1800], more: 2.5 }, sway: 0, form: 'vine', n: [4, 6], spread: 0.15, stalk: '#5e7a34',
-    vine: { climb: 0.4, node: 30, back: 0.35, fan: 0.55, thick: 1.8, wander: 0.35, branch: 1 }, leaf: {
+    vine: { climb: 0.4, node: 30, back: 0.35, fan: 0.55, thick: 1.8, wander: 0.35, branch: 1, follow: 0.6 }, leaf: {
     len: [48, 92], wid: 0.8, prof: [0.45, 0.45], rise: [0.9, 1.35], arch: 0.55, twist: 0.2, fold: 0.12, wave: [0.015, 2], pet: 0.3,
     cols: [['#22501e', '#3a742c'], ['#285a22', '#427e32'], ['#204a1c', '#386e2c']], under: '#4e7038', rib: '#7aa04e',
     spots: { col: '#c4b85a', n: [1, 5], r: 0.09 }, seg: [10, 7] } },
@@ -269,7 +272,7 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
   // Creeping fig (Ficus pumila): a flexible vine of small round-heart leaves that climbs flat up the back wall and links
   // up branches; mostly climbers. Size = the longest vine
   creeper: { land: true, grow: { speed: 'medium', overflow: 'trail', len: [60, 1400], more: 3 }, sway: 0, form: 'vine', n: [8, 12], spread: 0.25, stalk: '#6a6a3a',
-    vine: { climb: 0.85, node: 11, back: 0.5, fan: 0.85, thick: 0.9, wander: 0.6, branch: 3 }, leaf: {
+    vine: { climb: 0.85, node: 11, back: 0.5, fan: 0.85, thick: 0.9, wander: 0.6, branch: 3, follow: 0.6, wrap: 140 }, leaf: {
     len: [14, 26], wid: 0.78, prof: [0.5, 0.55], rise: [1.15, 1.45], arch: 0.25, twist: 0.15, fold: 0.15, wave: [0, 0], pet: 0.18,
     cols: [['#2e5a24', '#4a7e36'], ['#34622a', '#52863c'], ['#2a5422', '#467a34']], under: '#5a7a46', seg: [5, 5] } },
 

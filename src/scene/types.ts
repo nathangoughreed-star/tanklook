@@ -21,7 +21,15 @@ export type BgFit = 'fill' | 'fit' | 'stretch' | 'tile';
 export interface BgImage { img: string; fit: BgFit; sides: BgSide[]; scale: number }
 export type GlassType = 'standard' | 'lowiron';
 export type LightType = 'flat' | 'spot' | 'tube' | 'led';
-export type SubstrateType = 'gravel' | 'pea' | 'clown' | 'blue' | 'onyx' | 'black' | 'white' | 'aragonite' | 'coral' | 'custom';
+export type SubstrateType = 'gravel' | 'pea' | 'clown' | 'blue' | 'onyx' | 'black' | 'white' | 'aragonite' | 'coral'
+  // terrestrial ground (lane T1, 2026-10-16; no version bump): soil / coco fibre, terrarium sand, clay, orchid bark, and
+  // 'layered' = a clay-ball drainage layer under soil, its cross-section showing through the glass
+  | 'soil' | 'tsand' | 'clay' | 'bark' | 'layered' | 'custom';
+/** Leaf litter look (lane T1): one leaf kind, or a mix of all three. */
+export type LeafKind = 'mixed' | 'oak' | 'magnolia' | 'catappa';
+/** Leaf litter scattered over the ground (render/scatter.ts). `density` 0-100 %: 100 = the floor mostly covered,
+ *  piled in drifts; `seed` = where the leaves fall. Absent (older files) = no litter. */
+export interface Litter { leaf: LeafKind; density: number; seed: number }
 /** Grain size of a custom substrate, finest to coarsest. */
 export type Grain = 'mud' | 'sand' | 'gravel' | 'pebble';
 /**
@@ -163,6 +171,7 @@ export interface SubstrateSettings {
   show: boolean;
   type: SubstrateType;
   custom: SubstrateBlend; // used when type is 'custom'
+  litter?: Litter; // leaf litter on the ground (lane T1, 2026-10-16); absent = none
   fl: number; fr: number; bl: number; br: number; // depth at each corner, mm
 }
 

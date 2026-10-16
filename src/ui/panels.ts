@@ -732,9 +732,18 @@ Cancel, then change the name, to keep both.`)) return;
 
   // ---------- Substrate ----------
   // 'bare' = bare-bottom glass (substrate.show off; the last type is kept for when it comes back)
+  // aquarium grounds, then the terrestrial ones (lane T1), each kind under its own heading
+  const subOpts = (terra: boolean) => Object.entries(SUBSTRATES).filter(([, t]) => !!t.terra === terra).map(([k, t]) => `<option value="${k}">${esc(t.label)}</option>`).join('');
   $<HTMLSelectElement>('subType').innerHTML = '<option value="bare">Bare bottom (no substrate)</option>' +
-    Object.entries(SUBSTRATES).map(([k, t]) => `<option value="${k}">${esc(t.label)}</option>`).join('') +
+    `<optgroup label="Aquarium">${subOpts(false)}</optgroup><optgroup label="Terrarium">${subOpts(true)}</optgroup>` +
     '<option value="custom">Custom grain and colour</option>';
+  // leaf litter (lane T1): a leaf look, a density (0 = none) and a Shuffle for where the leaves fall
+  $<HTMLSelectElement>('litLeaf').innerHTML = [['mixed', 'Mixed leaves'], ['oak', 'Oak'], ['magnolia', 'Magnolia'], ['catappa', 'Indian almond (catappa)']]
+    .map(([k, l]) => `<option value="${k}">${l}</option>`).join('');
+  const litter = (s: TankSetup) => (s.substrate.litter ??= { leaf: 'mixed', density: 0, seed: 1 });
+  $('litLeaf').onchange = e => store.edit(s => { const l = litter(s); l.leaf = (e.target as HTMLSelectElement).value as typeof l.leaf; if (!l.density) l.density = 40; });
+  $('litDens').oninput = e => store.edit(s => { litter(s).density = +(e.target as HTMLInputElement).value; }, { coalesce: 'litDens' });
+  $('litShuffle').onclick = () => store.edit(s => { const l = litter(s); l.seed = l.seed % 999999 + 1; if (!l.density) l.density = 40; });
   // custom substrate (Nathan 2026-10-13): grain + colour, optionally a second grain, its share and how mixed the two are
   const grainOpts = Object.entries(GRAIN_LOOK).map(([k, g]) => `<option value="${k}">${esc(g.label)}</option>`).join('');
   $<HTMLSelectElement>('subG1').innerHTML = grainOpts;
@@ -1593,6 +1602,8 @@ Cancel, then change the name, to keep both.`)) return;
     $('terHint').textContent = !te.on ? 'Custom terrain turns the floor into a grid of points you can push down or pull up, with a smooth surface through them. It starts from the current floor.'
       : editing ? 'Drag a dot up or down. Drag empty space to orbit; look from above to reach the back points.' : 'Corner sliders are off while custom terrain is on.';
     $('subDepth').hidden = !sub.show; $('subBare').hidden = sub.show; // no depth to set on a bare bottom (audit #40)
+    const lit = sub.litter; $('subLitter').hidden = !sub.show;
+    setVal('litLeaf', lit?.leaf ?? 'mixed'); setVal('litDens', lit?.density ?? 0); setOut('oLitDens', lit?.density ? `${lit.density} %` : 'None');
     for (const id of ['subBL', 'subBR', 'subFL', 'subFR', 'subLevel', 'subFB', 'subLR', 'subCorner']) ($(id) as HTMLInputElement).disabled = te.on || !sub.show;
 
     const wa = s.water;
