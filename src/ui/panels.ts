@@ -42,6 +42,7 @@ import { BOWL_DEFAULT, BOWL_MAX, BOWL_MIN, PIE_DEFAULT, POLY_SIDES, SHAPES, bowM
 import { TABLE_MAX, tableOn, tableRange, wallGap } from '../scene/table';
 import type { BgFit, BgSide, CompId, Fish, GrowFeed, GrowMode, Item, ItemKind, LayoutId, LightTech, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
 import { FEED_NAMES, beginGrow, endGrow, setGrowTime, setPlantGrowth, timeChanges } from '../scene/growtime';
+import { syncBroods } from '../scene/propagate';
 import { GLASS_CHOICES, LIMITS, SceneError, parseScene } from '../scene/validate';
 import { deleteFromLib, listLib, loadFromLib, saveToLib } from '../scene/library';
 import { EXAMPLES, exampleScenes } from '../examples';
@@ -1285,6 +1286,7 @@ Cancel, then change the name, to keep both.`)) return;
       // where each plant will be at its new growth (a grown clump near the glass is pushed in, onto other ground): not
       // built there yet = it waits for the worker, built first. At most one plant a frame is built here: without a
       // worker, or one that has waited 20 frames (the worker never holds a plant back for good)
+      syncBroods(s, t, feed); // (daughters born by this Time are plants too, from here on)
       const byId = new Map(s.items.map(it => [it.id, it])), next: Item[] = [];
       let here = worker ? 0 : 1;
       for (const c of timeChanges(s, t, feed)) {

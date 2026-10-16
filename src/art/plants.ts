@@ -349,3 +349,55 @@ export function grownSize(type: PlantType, size: number, growth?: number) {
   if (growth == null) return size;
   return size * growthLen(type, growth) / growthLen(type, growthOf(type, size));
 }
+
+// ---------- Breeding (lane PR, 2026-10-16; scene/propagate.ts) ----------
+/**
+ * How a plant makes more plants as Time runs (design in research/plant-propagation.md). `runner`: a daughter crown on a
+ * thin runner `hop` mm away; `offset`: a pup beside the crown; `rhizome`: a new crown along the rhizome, kept on the wood
+ * or rock the parent sits on; `bulb`: a daughter bulb a little way off; `cuttings`: a side shoot that roots (stem plants,
+ * once tall); `float`: a new patch at the water line, beside the first (stops when the surface is covered); `mat`: no new
+ * plants, the patch just widens (`rate` = how many times wider by growth 1).
+ */
+export type BreedMode = 'runner' | 'offset' | 'rhizome' | 'mat' | 'float' | 'bulb' | 'cuttings';
+export interface Breed {
+  mode: BreedMode;
+  /** Daughters per unit of Time from a mature plant in a low-tech tank (feeding scales it like growth); for 'mat' the widening. */
+  rate: number;
+  /** Distance of a daughter from its parent, mm (min, max); floaters: as a fraction of the parent's patch width. */
+  hop: [number, number];
+  /** The most daughters one plant makes (absent = 10). */
+  cap?: number;
+  /** The parent's growth from which it breeds (absent = 0.3). */
+  from?: number;
+}
+export const BREED: Partial<Record<PlantType, Breed>> = {
+  sagittaria: { mode: 'runner', rate: 5, hop: [40, 150], cap: 12 },
+  grass: { mode: 'runner', rate: 4, hop: [60, 160], cap: 10 }, // vallisneria
+  hairgrass: { mode: 'runner', rate: 5, hop: [30, 90], cap: 12 },
+  sword: { mode: 'runner', rate: 1.5, hop: [150, 300], cap: 4, from: 0.5 },
+  ozelot: { mode: 'runner', rate: 1.5, hop: [120, 250], cap: 4, from: 0.5 },
+  crypt: { mode: 'offset', rate: 2.5, hop: [15, 80], cap: 8 },
+  balansae: { mode: 'offset', rate: 2, hop: [30, 120], cap: 8 },
+  bromeliad: { mode: 'offset', rate: 1.5, hop: [10, 60], cap: 4, from: 0.5 },
+  echeveria: { mode: 'offset', rate: 1.5, hop: [15, 60], cap: 5, from: 0.5 },
+  haworthia: { mode: 'offset', rate: 1.2, hop: [15, 50], cap: 5, from: 0.5 },
+  aloe: { mode: 'offset', rate: 1, hop: [20, 70], cap: 4, from: 0.5 },
+  barrel: { mode: 'offset', rate: 0.8, hop: [20, 60], cap: 3, from: 0.6 },
+  anubias: { mode: 'rhizome', rate: 1.5, hop: [20, 60], cap: 5 },
+  buce: { mode: 'rhizome', rate: 1.5, hop: [20, 60], cap: 5 },
+  fern: { mode: 'rhizome', rate: 1.5, hop: [20, 70], cap: 5 },
+  tropfern: { mode: 'rhizome', rate: 1.2, hop: [20, 70], cap: 4 },
+  lotus: { mode: 'bulb', rate: 1.5, hop: [100, 250], cap: 4, from: 0.5 },
+  stem: { mode: 'cuttings', rate: 2.5, hop: [30, 90], cap: 6, from: 0.7 },
+  stemred: { mode: 'cuttings', rate: 2.5, hop: [30, 90], cap: 6, from: 0.7 },
+  rotala: { mode: 'cuttings', rate: 3, hop: [30, 90], cap: 6, from: 0.7 },
+  ludwigia: { mode: 'cuttings', rate: 2, hop: [30, 90], cap: 6, from: 0.7 },
+  hornwort: { mode: 'cuttings', rate: 3, hop: [40, 120], cap: 6, from: 0.7 },
+  anacharis: { mode: 'cuttings', rate: 3, hop: [40, 120], cap: 6, from: 0.7 },
+  redroot: { mode: 'float', rate: 6, hop: [0.4, 0.9], cap: 8, from: 0.4 },
+  salvinia: { mode: 'float', rate: 7, hop: [0.4, 0.9], cap: 8, from: 0.4 },
+  frogbit: { mode: 'float', rate: 5, hop: [0.4, 0.9], cap: 8, from: 0.4 },
+  lettuce: { mode: 'float', rate: 4, hop: [0.4, 0.9], cap: 8, from: 0.4 },
+  moss: { mode: 'mat', rate: 3, hop: [0, 0] },
+  sphagnum: { mode: 'mat', rate: 2.5, hop: [0, 0] },
+};

@@ -83,7 +83,8 @@ export function beginGrow(s: TankSetup, mode: GrowMode = s.grow.mode) {
 /** Keep a Time preview: each plant keeps the growth it shows. Time stays as the tank's age from planting ('abs'), or
  *  goes back to 0 ('rel': the tank as it is now is where the next move starts). */
 export function endGrow(s: TankSetup) {
-  for (const it of s.items) if (it.kind === 'plant') delete it.planted;
+  // (a preview's daughters stop being previews: real plants, still with their `parent`; scene/propagate.ts)
+  for (const it of s.items) if (it.kind === 'plant') { delete it.planted; delete it.brood; }
   if (s.grow.mode === 'rel') s.grow.time = 0;
 }
 

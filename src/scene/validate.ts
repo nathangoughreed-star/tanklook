@@ -347,10 +347,14 @@ function parseItems(raw: unknown[], T: Tank, warn: (m: string) => void, g: Groun
       ...(typeof o.stems === 'number' && Number.isFinite(o.stems) ? { stems: o.stems } : {}),
       ...(typeof o.dens === 'number' && Number.isFinite(o.dens) ? { dens: o.dens } : {}),
       ...(typeof o.growth === 'number' && Number.isFinite(o.growth) ? { growth: o.growth } : {}),
+      ...(v.kind === 'plant' && typeof o.parent === 'number' && Number.isInteger(o.parent) && o.parent > 0 && o.parent !== id ? { parent: o.parent } : {}),
       ...(v.kind === 'plant' && typeof o.planted === 'number' && Number.isFinite(o.planted) ? { planted: Math.round(clamp(o.planted, -GROW_RATE_MAX, 1) * 1000) / 1000 } : {}),
     };
     clampItem(it, T, g); out.push(it);
   }
+  // a parent that is gone (or never was) is just no parent
+  const ids = new Set(out.map(it => it.id));
+  for (const it of out) if (it.parent != null && !ids.has(it.parent)) delete it.parent;
   if (bad) warn(`${bad} unknown aquascape items were skipped.`);
   if (raw.length > MAX_ITEMS) warn(`Only the first ${MAX_ITEMS} aquascape items were loaded.`);
   return out;

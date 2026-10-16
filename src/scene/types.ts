@@ -270,6 +270,12 @@ export interface Item {
   /** Plants, set by the tank's growth Time (scene/growtime.ts, lane GR3): the growth this plant had at Time 0, so
    *  moving Time back returns it exactly. Below 0 = put in after Time 0 (it shows as just planted until then). */
   planted?: number;
+  /** Plants that spread (lane PR, 2026-10-16, no version bump): the plant this one grew from (a runner's daughter, a pup, a
+   *  cutting). Only a note: it is a real plant that can be selected, moved and deleted on its own. Absent = planted. */
+  parent?: number;
+  /** A daughter shown in a Time preview (scene/propagate.ts): who and which (`<root id>/<n>/...`). Never saved: keeping
+   *  the preview drops it and the daughter stays as a plant. */
+  brood?: string;
 }
 
 /**
