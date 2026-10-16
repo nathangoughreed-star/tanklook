@@ -3,6 +3,7 @@
 import * as THREE from 'three';
 import { LECA, SUBSTRATES, blendTile, maskQuantile } from '../art/placeholder';
 import { litterMeshes } from './scatter';
+import { patchMeshes } from './brushmesh';
 import { glassGrains, grainLook, grainMeshes, grainTop } from './grains';
 import { snailAspect } from '../art/snails';
 import { fishTL, needsWater, speciesOf, type Species } from '../data/species';
@@ -1245,6 +1246,15 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
   const rests = solids.filter(m => !m.userData.coral); // animals rest on rock, wood and caves, never on coral
   const A = anchors(S, T, { down: solidProbe(T, rests), wall: (at, out, head, w) => onWall(S, T, at, out, head, w) });
   const top = (x: number, depth: number, hard: boolean) => A.rest(x, depth, hard).p[1];
+  // painted scatter patches (lane SB, render/brushmesh.ts): lying on the ground or the piece under each point; rebuilt only when
+  // the patch, the solid pieces or the ground change
+  if (!bare && S.patches?.length) {
+    const gk = JSON.stringify([S.tank, S.terrain, S.substrate.type, S.substrate.custom, S.water.on && S.water.level]) + hardKey, gt = grainTop(grainLook(S.substrate));
+    for (const p of S.patches) {
+      const key = 'b' + JSON.stringify(p) + gk;
+      b.itemParts.push(take(key) ?? part(key, patchMeshes(S, T, (x, d) => [x, A.rest(x, d).p[1] + gt, -d], p), []));
+    }
+  }
   const base = (f: Fish) => top(f.x, f.depth, f.surface === 'hardscape');
   const isArachnid = (art: string) => isSpider(art) || isTarantula(art) || isSnake(art); // legs on the surface: no sink, a flat card; `bend` is the pose
   // an animal (mesh m, length w, its centre k above its belly) resting on a slope: tipped to the ground's slope under its

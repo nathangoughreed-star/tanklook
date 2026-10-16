@@ -335,7 +335,18 @@ export interface TankSetup {
   fish: Fish[];
   /** Rocks, wood, caves and plants (scene v9). */
   items: Item[];
+  /** Painted scatter (lane SB, 2026-10-16, no version bump): seeded patches of leaves, pebbles, moss, twigs and carpet. Absent = none. */
+  patches?: Patch[];
 }
+
+/** What a scatter brush drops (lane SB). */
+export type BrushId = 'leaf' | 'pebble' | 'gravel' | 'moss' | 'twig' | 'hairgrass' | 'javamoss' | 'sphagnum';
+/**
+ * One painted patch: a seed, the stroke's path and the brush settings; the things themselves are redrawn from these, so a
+ * patch is tiny in the file and moves / copies / erases as a unit. `path` = x, depth pairs (mm, flat); `size` = brush
+ * radius (mm); `density` 0-100; `cuts` = x, depth, radius triples erased from it afterwards; `leaf` = the leaf look.
+ */
+export interface Patch { id: number; brush: BrushId; seed: number; size: number; density: number; path: number[]; cuts?: number[]; leaf?: LeafKind }
 
 export interface Scene {
   version: number;

@@ -35,7 +35,7 @@ const grainGeo = new Map<string, THREE.BufferGeometry[]>();
 /** Six stone shapes for a roundness: a smooth-shaded subdivided icosahedron, its radius nudged by three broad bumps and
  *  a finer ripple (rougher the less round), flattened (stones settle on a flat side) and a little elongated; colour
  *  mottled per vertex (flecks for natural stone). Long axis = x, diameter 1. */
-function stoneGeos(round: number, speckle: boolean, detail: number) {
+export function stoneGeos(round: number, speckle: boolean, detail: number) {
   const key = `s${round}${speckle}${detail}`; let gs = grainGeo.get(key); if (gs) return gs;
   const r = rng(91);
   gs = Array.from({ length: 6 }, () => {

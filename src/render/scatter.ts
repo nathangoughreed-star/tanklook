@@ -26,6 +26,8 @@ export interface ScatterSpec {
   /** Grains (3D substrate): lift and pile also in units of each copy's size (sunk in: negative lift), the pile grid's
    *  cell (mm, default 10), and a palette each copy's colour is drawn from (default: a warm jitter round white). */
   liftK?: [number, number]; pileK?: number; cell?: number; palette?: THREE.Color[];
+  /** Brush patches (lane SB): the floor-plan points to use, in order, instead of random ones over the whole floor (count / clump ignored). */
+  at?: [number, number][];
 }
 
 /** Signed distance (mm) to the tank's outline, positive inside: shape.ts `insideBy` with the outline fetched once. */
@@ -53,8 +55,8 @@ export function scatter(T: Tank, ground: GroundAt, spec: ScatterSpec): THREE.Ins
     for (let i = Math.floor((x - rad) / PC); i <= Math.floor((x + rad) / PC); i++) for (let j = Math.floor((d - rad) / PC); j <= Math.floor((d + rad) / PC); j++)
       if (((i + 0.5) * PC - x) ** 2 + ((j + 0.5) * PC - d) ** 2 <= rad * rad + PC * PC / 2) f((i + pad) * NZ + j + pad);
   };
-  for (let tries = 0; placed < spec.count && tries < spec.count * 6; tries++) {
-    const x = r() * L, d = r() * D, pick = r() * tot, a = r() * Math.PI * 2, u = r(), mirror = r() < 0.5, tilt = r(), tiltA = r() * Math.PI * 2;
+  for (let tries = 0; spec.at ? tries < spec.at.length : placed < spec.count && tries < spec.count * 6; tries++) {
+    const rx = r() * L, rd = r() * D, x = spec.at ? spec.at[tries][0] : rx, d = spec.at ? spec.at[tries][1] : rd, pick = r() * tot, a = r() * Math.PI * 2, u = r(), mirror = r() < 0.5, tilt = r(), tiltA = r() * Math.PI * 2;
     const keep = r(), lift01 = r(), lift = spec.lift[0] + lift01 * (spec.lift[1] - spec.lift[0]), shade = r(), hue = r(), pal = spec.palette ? r() : 0; // pal only for grains: litter layouts unchanged
     if (keep > 1 - spec.clump + spec.clump * clamp((field(x, d) - 0.25) / 0.5, 0, 1)) continue;
     let ki = 0; for (let acc = spec.kinds[0].weight; acc < pick && ki < spec.kinds.length - 1;) acc += spec.kinds[++ki].weight;
@@ -225,7 +227,7 @@ function leafGeometry(kind: number, variant: number, r: () => number) {
 }
 let kinds: { geo: THREE.BufferGeometry; kind: number; variant: number }[] | undefined, leafMat: THREE.MeshBasicMaterial | undefined;
 /** Leaf-litter scatter kinds for the setting's leaf look: per leaf kind two upper sides, an under side and a piece. */
-function leafKinds(leaf: LeafKind): ScatterKind[] {
+export function leafKinds(leaf: LeafKind): ScatterKind[] {
   if (!kinds) { const r = rng(77); kinds = KINDS.flatMap((_, k) => [0, 1, 2, 3].map(v => ({ geo: leafGeometry(k, v, r), kind: k, variant: v }))); }
   if (!leafMat) { leafMat = new THREE.MeshBasicMaterial({ map: leafAtlas(), alphaTest: 0.5, side: THREE.DoubleSide }); leafMat.userData.keep = true; }
   const share = leaf === 'mixed' ? [0.4, 0.3, 0.3] : KINDS.map(k => (k === leaf ? 1 : 0));
