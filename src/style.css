@@ -392,3 +392,5 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .gatedList { margin: 0 0 6px; border-top: 1px dashed var(--line, #444) }
 .gatedRow { display: flex; align-items: center; gap: 6px; margin: 3px 0 }
 .gatedRow .hint { margin: 0; font-size: 11px }
+.results button.gated { opacity: .5 }
+.results button .why { grid-column: 1 / -1; font-size: 11px; font-style: italic }

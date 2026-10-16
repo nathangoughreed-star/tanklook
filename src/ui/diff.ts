@@ -16,7 +16,7 @@ export type Match = (to: TankSetup, from: TankSetup) => void;
 export type DiffItem = [a: string, b: string, match: Match];
 
 const same = (x: unknown, y: unknown) => JSON.stringify(x) === JSON.stringify(y);
-const LIDS = { open: 'Open top', glass: 'Glass lid', hood: 'Hood' } as const;
+const LIDS = { open: 'Open top', glass: 'Glass lid', hood: 'Hood', mesh: 'Mesh lid' } as const;
 const WALLS = { back: 'Wall behind', left: 'Wall at left end', right: 'Wall at right end', corner: 'Room corner' } as const;
 
 /** Copy settings by path ("light.bright") from one tank to the other. */

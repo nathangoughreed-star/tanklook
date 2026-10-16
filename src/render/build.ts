@@ -604,6 +604,54 @@ function addHood(sc: THREE.Scene, S: TankSetup, T: Tank) {
   sc.add(lines(hp, 0x45484e, 0.95));
 }
 
+/** Fine screen: a dark translucent weave (lane EN); `w` x `d` mm sets how many cells the texture repeats (one cell per 5 mm). */
+let meshTex: THREE.CanvasTexture | null = null;
+function meshMaterial(w = 0, d = 0) {
+  if (!meshTex) {
+    const c = document.createElement('canvas'); c.width = c.height = 16;
+    const g = c.getContext('2d')!; g.clearRect(0, 0, 16, 16); g.fillStyle = 'rgba(40,44,50,0.85)'; g.fillRect(0, 0, 16, 3); g.fillRect(0, 0, 3, 16);
+    meshTex = new THREE.CanvasTexture(c); meshTex.wrapS = meshTex.wrapT = THREE.RepeatWrapping; meshTex.colorSpace = THREE.SRGBColorSpace;
+  }
+  const t = meshTex.clone(); t.needsUpdate = true; t.repeat.set(Math.max(1, w / 5), Math.max(1, d / 5));
+  return w ? new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false }) : basic(0x30353b, { transparent: true, opacity: 0.35, depthWrite: false });
+}
+
+/** Front doors (lane EN): glass doors in a dark frame over the front pane of a rectangular tank. */
+function addFrontDoors(sc: THREE.Scene, S: TankSetup, T: Tank) {
+  if (!S.doors || S.doors === 'none' || shapeOf(T) !== 'rect') return;
+  const { L, H } = T, t = glassThickness(T, S.render.glass), z = t + 3, FR = 0x2b2e33, bar = 14;
+  const rimTop = S.render.rim ? RIM_H : 0, y0 = 40, y1 = H - rimTop - 4, h = y1 - y0;
+  const glassM = basic(0xbfe0ee, { transparent: true, opacity: 0.08, depthWrite: false });
+  const put = (m: THREE.Object3D, x: number, y: number, zz: number) => { m.position.set(x, y, zz); m.renderOrder = 9; sc.add(m); };
+  const box = (w: number, hh: number, d: number, x: number, y: number, zz: number) => put(shadedBox(w, hh, d, FR), x, y, zz);
+  const pane = (w: number, x: number, zz: number) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), glassM); put(m, x, y0 + h / 2, zz); };
+  box(L, y0, 8, L / 2, y0 / 2, z);                                  // kick strip across the bottom
+  if (S.doors === 'hinged') {
+    const dw = (L - 2 * bar) / 2;
+    for (const i of [0, 1]) {
+      const x0 = bar + i * dw, cx = x0 + dw / 2;
+      pane(dw, cx, z);
+      box(dw, bar, 8, cx, y1 - bar / 2, z); box(dw, bar, 8, cx, y0 + bar / 2, z);
+      box(bar, h, 8, x0 + (i ? dw - bar / 2 : bar / 2), y0 + h / 2, z);
+      box(6, 70, 10, i ? x0 + 9 : x0 + dw - 9, y0 + h / 2, z + 8);   // handle on the meeting edge
+      for (const f of [0.2, 0.8]) box(10, 24, 10, i ? x0 + dw - 3 : x0 + 3, y0 + h * f, z + 2); // hinge knuckles on the outer edge
+    }
+    box(bar, h, 10, L / 2, y0 + h / 2, z);                         // meeting stile
+    box(bar, h, 10, bar / 2, y0 + h / 2, z); box(bar, h, 10, L - bar / 2, y0 + h / 2, z);
+  } else {
+    // two panes in a top and bottom track, the right one in front, overlapping in the middle
+    const ov = 60, pw = L / 2 + ov / 2;
+    box(L, bar, 14, L / 2, y1 - bar / 2, z + 2); box(L, bar, 14, L / 2, y0 + bar / 2, z + 2);
+    for (const i of [0, 1]) {
+      const cx = i ? L - pw / 2 : pw / 2, zz = z + (i ? 6 : 1);
+      pane(pw, cx, zz);
+      box(bar / 2, h - bar * 2, 5, i ? cx - pw / 2 + bar / 4 : cx + pw / 2 - bar / 4, y0 + h / 2, zz);
+      box(bar / 2, h - bar * 2, 5, i ? cx + pw / 2 - bar / 4 : cx - pw / 2 + bar / 4, y0 + h / 2, zz);
+      box(6, 70, 8, i ? cx - pw / 2 + 14 : cx + pw / 2 - 14, y0 + h / 2, zz + 6);
+    }
+  }
+}
+
 /** Lid: classic black moulded hood with a hinged front flap, or two glass canopy panels on a plastic hinge strip. */
 function addLid(sc: THREE.Scene, S: TankSetup, T: Tank) {
   if (S.lid === 'open') return;
@@ -612,13 +660,15 @@ function addLid(sc: THREE.Scene, S: TankSetup, T: Tank) {
   // glass top: two panels split along the length, resting on the inner rim lip (rimmed) or on the panes (rimless)
   const pt = 4, y = rim ? H - RIM_H + RIM_DROP + 6 + pt / 2 : H + pt / 2, gap = 3, inset = rim ? 2 : -t;
   const lowIron = S.render.glassType === 'lowiron';
-  const faceM = basic(0xbfe0ee, { transparent: true, opacity: 0.1, depthWrite: false });
-  const edgeM = basic(lowIron ? 0xa9d3da : 0x3f8f72, { transparent: true, opacity: 0.8, depthWrite: false });
+  const mesh = S.lid === 'mesh';
+  const faceM = mesh ? meshMaterial() : basic(0xbfe0ee, { transparent: true, opacity: 0.1, depthWrite: false });
+  const edgeM = mesh ? basic(0x2b2e33) : basic(lowIron ? 0xa9d3da : 0x3f8f72, { transparent: true, opacity: 0.8, depthWrite: false });
   const lineM = glassLine(), edges = S.render.edges;
   if (shapeOf(T) !== 'rect') { addShapedCanopy(sc, T, y, pt, inset, faceM, edgeM, edges ? lineM : null); return; }
   const w = (L - 2 * inset - gap) / 2, dp = D - 2 * inset;
   for (const cx of [inset + w / 2, L - inset - w / 2]) {
     const geo = new THREE.BoxGeometry(w, pt, dp), m = [edgeM, edgeM, faceM, faceM, edgeM, edgeM];
+    if (mesh) m[2] = m[3] = meshMaterial(w, dp);
     const g = new THREE.Mesh(geo, m); g.position.set(cx, y, -D / 2); g.renderOrder = 7; sc.add(g);
     if (edges) { const e = new THREE.LineSegments(new THREE.EdgesGeometry(geo), lineM); e.position.copy(g.position); e.renderOrder = 8; sc.add(e); }
   }
@@ -1189,7 +1239,7 @@ export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: Sel, 
   addWall(sc, S, T); addPerson(sc, S, T); addFloor(sc, S, T);
   const b: BuiltTank = { scene: sc, fishMeshes: [], meshById: new Map(), dotMeshes: [], itemMeshes: [], fishParts: [], itemParts: [], contentAt: sc.children.length };
   addContents(b, S, T, selId, selItem);
-  addLid(sc, S, T);
+  addLid(sc, S, T); addFrontDoors(sc, S, T);
   if (S.lid !== 'hood') addFixture(sc, T, S.light, floorY(T, S.render, S.stand) + ceilingH(S.wall)); // ceiling: the wall's room height // with a hood the fixture is inside it; its light still applies
   if (S.render.beams) addBeams(sc, T, S.light, S.lid);
   b.dotMeshes = edit && S.terrain.on ? addTerrainDots(sc, S, T, edit) : [];

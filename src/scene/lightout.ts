@@ -100,7 +100,7 @@ export const LUXW: Band = [13, 111, 21];
 export const KWATER: Band = [0.012, 0.07, 0.35];
 /** How much of the water's visual tint (`opacity`, as `waterK`) also dims the light. */
 export const TINT_SHARE = 0.5;
-export const NWATER = 1.33, FRESNEL = 0.97, GLASS_LID = 0.9, WALL_W = 0.7;
+export const NWATER = 1.33, FRESNEL = 0.97, GLASS_LID = 0.9, MESH_LID = 0.8, WALL_W = 0.7;
 
 export interface Tech {
   label: string;
@@ -425,7 +425,7 @@ export function lightEnv(S: LightScene): LightEnv | null {
   const env: LightEnv = {
     E, phi: (l.watts * tech.ppe * tech.eta) / Math.max(E.length, 1), m, norm: line ? lineNorm(m) : pointNorm(m), ind: [0, 0, 0],
     split: tech.split, k: KWATER.map(k => k / 1000 + tint) as Band,
-    ys: w.on ? waterY(T, w.level) : -Infinity, trans: S.lid === 'glass' ? GLASS_LID : 1,
+    ys: w.on ? waterY(T, w.level) : -Infinity, trans: S.lid === 'glass' ? GLASS_LID : S.lid === 'mesh' ? MESH_LID : 1,
     walls: shapeOf(T) === 'rect' ? { L: T.L, D: T.D, w: WALL_W } : null, scale: 1,
   };
   env.ind = bounce(S, env);

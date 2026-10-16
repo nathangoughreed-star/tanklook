@@ -759,7 +759,7 @@ function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
     // an emerging plant grown on climbs out of the water up to what is over it (lane GR2): the lid or the hood, or
     // over an open tank the light (its fixture, a little under the height it hangs at)
     const C = more && S.water.on && P3.grow.overflow === 'emerge'
-      ? Math.round(((S.lid === 'glass' ? T.H - 4 : T.H + lampHeight(S.light, S.lid) - 20) - y) / 2) * 2 : undefined;
+      ? Math.round(((S.lid === 'glass' || S.lid === 'mesh' ? T.H - 4 : T.H + lampHeight(S.light, S.lid) - 20) - y) / 2) * 2 : undefined;
     // the panes within its reach, in its own frame (to 2 mm and a degree, so a drag along the glass reuses it): its
     // leaves curve along them instead of being cut off at the glass (Nathan 2026-10-15). Not in a bowl (the glass is
     // a sphere there) nor for a tipped plant: those are still cut off

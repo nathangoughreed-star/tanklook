@@ -9,6 +9,7 @@ import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { BACKDROPS } from '../render/backdrop';
 import { MAP_DIV, MAP_STEP, emitters, mapStepOf } from '../render/lighting';
 import { darkOf, darkStats } from '../render/lightShells';
+import { whyAnimal, type AnimalWhy } from '../scene/animalfit';
 import { CARE_NAME, FIT_LABEL, FIT_LIGHTS, FIT_PAR, fitCaption, whyNot, type FitLight } from '../scene/plantfit';
 import { VERDICT_TEXT, itemLights, tankSummary } from '../scene/lightcheck';
 import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, mountOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeLayout, tubeOf, TUBE_SP_MAX, bestPos, ledBarDepth, posMax, wattsOf, type Fixture } from '../scene/lightout';
@@ -359,7 +360,8 @@ Cancel, then change the name, to keep both.`)) return;
   $('rimN').onclick = () => store.edit(s => { s.render.rim = false; });
   $('edgesY').onclick = () => store.edit(s => { s.render.edges = true; });
   $('edgesN').onclick = () => store.edit(s => { s.render.edges = false; });
-  const LIDS = [['lidOpen', 'open'], ['lidGlass', 'glass'], ['lidHood', 'hood']] as const;
+  const LIDS = [['lidOpen', 'open'], ['lidGlass', 'glass'], ['lidMesh', 'mesh'], ['lidHood', 'hood']] as const;
+  for (const [id, d] of [['doorNone', 'none'], ['doorHinged', 'hinged'], ['doorSliding', 'sliding']] as const) $(id).onclick = () => store.edit(s => { if (d === 'none') delete s.doors; else s.doors = d; });
   const BG_BTNS = [['bgBack', 'back'], ['bgLeft', 'left'], ['bgRight', 'right'], ['bgFront', 'front']] as const;
   // a hood has no room for a metal halide pendant (too hot): it becomes LED pucks
   for (const [id, lid] of LIDS) $(id).onclick = () => store.edit(s => { s.lid = lid; if (lid === 'hood' && fixtureOf(s.light) === 'pendant') { s.light.tech = 'led-white'; fitK(s.light); fitFixture(s.light, s.tank, true); } });
@@ -514,6 +516,17 @@ Cancel, then change the name, to keep both.`)) return;
   /** The species list shows only animals for this tank's water (2026-10-13): salt species in a saltwater tank, the rest
    *  (no `salt` flag) in a freshwater or dry one. */
   const findSpecies = (q: string, c?: Category) => searchSpecies(q, c).filter(sp => fitsWater(sp, S()));
+  /** "Show only tank-appropriate animals": null while off or until an expertise is chosen (the hint says so). */
+  function animalGate(s: TankSetup): ((sp: Species) => AnimalWhy | null) | null {
+    const on = !!s.layout.gateAnimals, ex = s.layout.expertise, hint = $('gateAnimalsHint');
+    $<HTMLInputElement>('gateAnimals').checked = on; setVal('expertise', ex ? String(ex) : '');
+    hint.hidden = !on; hint.textContent = on && !ex ? 'Choose an expertise level above first, then this list can be filtered to what suits the tank.' : on ? 'Grayed: does not suit this tank, your expertise or the animals already in it. They can still be added.' : '';
+    if (!on || !ex) return null;
+    const litres = volume(s.tank).litres, present = [...new Set(s.fish.map(f => f.species))].map(getSpecies).filter((x): x is Species => !!x);
+    return sp => whyAnimal(sp, litres, ex, present);
+  }
+  $('gateAnimals').onchange = e => store.edit(s => { if ((e.target as HTMLInputElement).checked) s.layout.gateAnimals = true; else delete s.layout.gateAnimals; });
+  $('expertise').onchange = e => { const v = +(e.target as HTMLSelectElement).value; store.edit(s => { if (v) s.layout.expertise = v as 1 | 2 | 3; else delete s.layout.expertise; }); };
   function renderResults() {
     const salt = isSalt(S());
     for (const b of cats.children as HTMLCollectionOf<HTMLButtonElement>) {
@@ -539,12 +552,15 @@ Cancel, then change the name, to keep both.`)) return;
     if (all) all.onclick = e => { e.preventDefault(); cat = undefined; renderResults(); };
     const sw = results.querySelector<HTMLButtonElement>('#spSwap');
     if (sw) sw.onclick = () => { if (!S().water.on) store.edit(s => { s.water.on = true; }); setSalt(toSalt); };
+    const gate = animalGate(S()), whyOf = (sp: Species) => gate?.(sp) ?? null;
+    list.sort((a, b) => +!!whyOf(a) - +!!whyOf(b)); // stable: the unfit sink, order kept
     for (const sp of list) {
-      const b = document.createElement('button');
+      const b = document.createElement('button'), gw = whyOf(sp);
       b.setAttribute('role', 'option'); b.setAttribute('aria-selected', String(sp.id === pickId));
       b.className = sp.id === pickId ? 'on' : '';
       const tag = speciesTag(sp) ? `<b class="tag">${speciesTag(sp)}</b>` : '';
-      b.innerHTML = `<span class="nm">${esc(sp.name)} ${tag}</span><span>${fmt(sp.tl)}</span><i class="sci" title="${esc(sp.sci)}">${esc(sp.sci)}</i>`;
+      b.innerHTML = `<span class="nm">${esc(sp.name)} ${tag}</span><span>${fmt(sp.tl)}</span><i class="sci" title="${esc(sp.sci)}">${esc(sp.sci)}</i>${gw ? `<small class="why">${esc(gw.text)}</small>` : ''}`;
+      if (gw) b.classList.add('gated');
       if (sp.note) b.title = sp.note;
       b.onclick = () => { pickId = sp.id; preview.hidden = false; renderResults(); };
       b.ondblclick = () => addOne(sp);
@@ -1586,6 +1602,7 @@ Cancel, then change the name, to keep both.`)) return;
     $('rimY').classList.toggle('on', s.render.rim); $('rimN').classList.toggle('on', !s.render.rim);
     $('edgesY').classList.toggle('on', s.render.edges); $('edgesN').classList.toggle('on', !s.render.edges);
     for (const [id, lid] of LIDS) $(id).classList.toggle('on', s.lid === lid);
+    for (const [id, d] of [['doorNone', 'none'], ['doorHinged', 'hinged'], ['doorSliding', 'sliding']] as const) { $(id).classList.toggle('on', (s.doors ?? 'none') === d); ($(id) as HTMLButtonElement).disabled = d !== 'none' && shapeOf(s.tank) !== 'rect'; }
     setVal('bgSel', s.render.bg);
     for (const [id, side] of BG_BTNS) { const on = s.render.bgSides.includes(side); $(id).classList.toggle('on', on); $(id).setAttribute('aria-pressed', String(on)); }
     $('bgSidesRow').style.display = s.render.bg === 'none' && s.backdrop.kind === 'none' ? 'none' : ''; // sides of the colour and the 3D wall
@@ -1722,7 +1739,7 @@ Cancel, then change the name, to keep both.`)) return;
       $('wMisfit').textContent = `Not ${isSalt(s) ? 'saltwater' : 'freshwater'} animals: ${[...by].map(([nm, n]) => `${n} ${nm}`).join(', ')}.`;
       $('wMisfitDel').textContent = `Remove ${mis.length}`;
     }
-    const wk = `${isSalt(s)}`; if (wk !== waterKind) { waterKind = wk; renderResults(); } // the species list follows the water
+    const wk = `${isSalt(s)}|${s.layout.gateAnimals ? s.layout.expertise ?? 0 : 'off'}|${s.layout.gateAnimals ? Math.round(volume(s.tank).litres) + [...new Set(s.fish.map(f => f.species))].join() : ''}`; if (wk !== waterKind) { waterKind = wk; renderResults(); } // the species list follows the water
     setVal('wLevel', wa.level); setOut('oLevel', wa.level >= 1 ? 'Full' : `${fmt(waterY(A, wa.level))} high`);
     const cl = s.condition.level; setVal('cond', Math.round(cl * 100)); setOut('oCond', cl <= 0 ? 'Pristine' : cl < 0.35 ? 'A few weeks' : cl < 0.7 ? 'Overdue' : 'Neglected');
     setVal('wOpac', wa.opacity); setOut('oOpac', wa.opacity < 0.01 ? 'Clear' : Math.round(wa.opacity * 100) + '%'); setVal('wColor', wa.color);

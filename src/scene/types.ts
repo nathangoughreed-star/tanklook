@@ -225,7 +225,9 @@ export interface LayoutSettings { id: LayoutId; seed: number; plantSeed?: number
   /** The owner picked a care level (Care menu), so gating can use it (lane AD, 2026-10-16). */
   careSet?: true;
   /** "Show only tank-appropriate" toggles in the Plants and Animals lists: unfit ones sink to the bottom, grayed, each with its reason. Advice only. */
-  gatePlants?: true; gateAnimals?: true }
+  gatePlants?: true; gateAnimals?: true;
+  /** The keeper's expertise (1 beginner .. 3 expert), chosen in Animals; gating waits for it. */
+  expertise?: 1 | 2 | 3 }
 
 /** Library item kinds; the variant names the generator (scene/items.ts LIBRARY). */
 export type ItemKind = 'stone' | 'wood' | 'cave' | 'plant' | 'coral';
@@ -294,7 +296,9 @@ export interface TableSettings { shape: 'rect' | 'round'; L: number; D: number; 
 export interface StandSettings { show: boolean; height: number; finish: StandFinish; style: StandStyle; table: TableSettings }
 
 /** Top of the tank: open, glass canopy panels, or a classic black moulded hood (lights inside). */
-export type LidType = 'open' | 'glass' | 'hood';
+export type LidType = 'open' | 'glass' | 'hood' | 'mesh';
+/** Front opening (lane EN, 2026-10-16; absent = none): a terrarium's hinged or sliding glass doors, drawn on a rectangle's front pane. */
+export type DoorType = 'none' | 'hinged' | 'sliding';
 
 /** 'back' = wall behind the tank; 'left' / 'right' = peninsula, that end of the tank against the wall (Nathan 2026-10-08:
  * the user picks the end, reversing the earlier single 'peninsula' = right end). 'corner' = two walls meeting behind the
@@ -336,6 +340,7 @@ export interface TankSetup {
   terrain: TerrainSettings;
   water: WaterSettings;
   lid: LidType;
+  doors?: DoorType;
   stand: StandSettings;
   wall: WallSettings;
   person: PersonSettings;
