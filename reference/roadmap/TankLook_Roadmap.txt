@@ -1,0 +1,444 @@
+TANKLOOK  /  PRODUCT ROADMAP  /  BUILD 560
+TANKLOOK  •  DEVELOPMENT PLANNING  |  1
+PRODUCT DIRECTION  /  OCTOBER 2026
+TankLook
+Development priorities & roadmap
+Build 560  •  Based on the supplied roster and previously reviewed model sheets
+A visual sandbox for arranging realistically scaled living things and objects inside transparent 
+enclosures—freshwater, marine, terrestrial, mixed, or unconventional.
+Illustrative enclosure concepts: freshwater aquarium, arboreal vivarium, paludarium, arid terrarium, jumping-spider enclosure, and coral 
+reef.
+Executive recommendation
+Prioritize capabilities that unlock entire enclosure categories before continuing broad species expansion. First, make 
+dry terrestrial scenes convincing. Then add surface-aware placement and the initial reptile/invertebrate body plans. 
+Continue marine and freshwater coverage selectively.
+Product rule — One shared placement and visualization system, not a separate editor for each ecosystem.
+Primary success metric — Can a user create a convincing representative scene quickly, at realistic scale, without 
+workarounds?
+All illustrations in this document are AI-generated conceptual references, not screenshots of TankLook or validated animal-model renders.
+
+
+=== page ===
+
+TANKLOOK  /  PRODUCT ROADMAP  /  BUILD 560
+TANKLOOK  •  DEVELOPMENT PLANNING  |  2
+1  |  Ranked development priorities
+The roster is already strong for freshwater community aquariums. The highest-value gaps are in dry habitats, 
+terrestrial life, mixed land/water composition, and the tools needed to arrange believable scenes.
+Rank
+Addition
+Value
+Est. effort
+1
+Dry terrestrial substrate and land regions
+Very high
+Medium–high
+2
+Surface-aware placement; depth and occlusion
+Very high
+Medium–high
+3
+Terrestrial plants, wood, and habitat materials
+Very high
+Medium
+4
+Reusable animal anatomy and pose systems
+Very high
+High
+5
+First reptiles and terrestrial invertebrates
+High
+High
+6
+Bulk placement, grouping, and natural variation
+High
+Medium
+7
+Custom 2D asset import
+High
+Medium
+8
+Enclosure presentation and structural customization
+High
+Medium
+9
+Expanded marine life and coral forms
+Medium–high
+Medium
+10
+Additional freshwater fish and variants
+Medium
+Low–medium
+Why this order?
+One new environment capability may serve dozens of species and asset types. By contrast, a new tetra adds little if the 
+application already supports similar silhouettes, sizes, and swimming positions. Similarly, a new reptile is less useful 
+if it cannot sit on a branch or stand naturally on the ground.
+Current inventory: build 560
+Library area
+Entries
+Assessment
+Freshwater fish
+34
+Good coverage of common community fish
+Freshwater invertebrates
+6
+Useful starter set
+Saltwater fish / inverts
+9 / 3
+Functional starting point; limited variety
+Amphibians
+6
+Existing bridge into terrestrial scenes
+Reptiles / terrestrial inverts
+0 / 0
+Entirely missing categories
+Plants / corals
+19 / 4
+Aquatic bias; coral groups generic
+Stones / wood / caves
+6 / 4 / 3
+Good basics; limited dry-habitat coverage
+Effort ratings are directional architectural estimates. Feature completion was not verified against the live editor.
+
+
+=== page ===
+
+TANKLOOK  /  PRODUCT ROADMAP  /  BUILD 560
+TANKLOOK  •  DEVELOPMENT PLANNING  |  3
+2  |  Environment capabilities
+The fundamental expansion is from “an underwater world” to “a glass container that can hold any combination of air, 
+water, terrain, and living things.” Avoid exclusive aquarium/terrarium modes: control the environment through its 
+properties.
+Mixed land/water composition
+Elevated and vertical structure
+Feature
+Priority
+Implementation direction
+Dry tank; zero water level
+P0
+Keep all placement tools functional without water.
+Terrestrial substrates
+P0
+Soil, sand, clay, bark, leaf litter, and layered ground.
+Substrate thickness
+P0
+Editable depth with visible cross-section.
+Land/water boundaries
+P1
+Simple editable regions; defer unrestricted terrain sculpting.
+Elevated surfaces
+P1
+Branches, stones, shelves, and ledges serve as anchors.
+Textured backgrounds
+P1
+Cork panels, rock walls, botanical surfaces.
+Portrait/landscape enclosure
+P1
+Arbitrary rectangular proportions with correct viewport.
+Irregular terrain
+P2
+Slopes, steps, banks, and raised land masses.
+Architecture principle
+A dry terrarium is a scene with no water; a paludarium is a scene with a partial water volume. They should use the 
+same object, scale, placement, grouping, and rendering machinery. Do not introduce an ecosystem selector that 
+arbitrarily disallows objects.
+
+
+=== page ===
+
+TANKLOOK  /  PRODUCT ROADMAP  /  BUILD 560
+TANKLOOK  •  DEVELOPMENT PLANNING  |  4
+3  |  First terrestrial asset batch
+Build a small, versatile environment kit before producing many terrestrial animals. These assets immediately 
+enhance the existing dart frog, White’s tree frog, and fire-bellied toad while supporting later reptile/invertebrate 
+additions.
+Asset
+Priority
+Core visual purpose
+Soil / coco fiber
+P0
+Foundational planted-terrarium substrate
+Sand
+P0
+Arid ground and contrasting surface texture
+Cork bark flat / tube
+P0
+Backgrounds, shelters, climbing volumes
+Leaf litter
+P0
+Forest floor and natural density
+Pothos
+P0
+Large trailing and climbing foliage
+Bromeliad
+P0
+Distinct tropical silhouette
+Tropical fern
+P0
+Fine-structured midground mass
+Fittonia
+P1
+Compact patterned foreground plant
+Sphagnum moss
+P1
+Mossy coverage and surface texture
+Flexible vine
+P1
+Connects branches and vertical features
+Rock ledge / slab
+P1
+Stone shelves and arid scene structure
+Terrestrial hide
+P1
+Reptile and invertebrate microhabitats
+Climbing branch
+P1
+Natural supports distinct from submerged driftwood
+Modeling ROI
+Do not individually model every leaf or clump. Use reusable foliage forms plus scattering/instancing for moss, leaf 
+litter, fine grass, and substrate textures. These techniques create density without multiplying library-management 
+costs.
+Tropical surface coverage
+Dry textures, stones, and shelters
+
+
+=== page ===
+
+TANKLOOK  /  PRODUCT ROADMAP  /  BUILD 560
+TANKLOOK  •  DEVELOPMENT PLANNING  |  5
+4  |  First terrestrial animal models
+Select animals that introduce genuinely different body plans and positioning requirements—not merely five popular 
+names.
+Crested gecko · arboreal climbing
+Leopard gecko · terrestrial stance
+Regal jumping spider · fine appendages
+Ball python · coiled / extended body
+Tarantula · articulated legs and hair
+Animal
+Pipeline capability established
+Crested gecko
+Lizard anatomy; gripping toe pads; branch/wall poses
+Leopard gecko
+Ground-contact stance; tail and limb proportions
+Regal jumping spider
+Small-scale arthropod anatomy and leg segmentation
+Ball python
+Serpentine bodies; coiled and extended pose families
+Tarantula
+Large arachnid proportions; joint chains and hair coverage
+Pipeline prerequisite
+Earlier model-sheet reviews found recurring structural issues in shrimp, snail shells, and species-defining fish fins. 
+Those findings came from model v1 (build 217), not build 560; verify whether they remain before using the same 
+generators to scale into reptiles and terrestrial invertebrates.
+Fish can appear natural in an arbitrary suspended pose. Land animals usually cannot: a gecko must visibly cling to a 
+surface, and a leopard gecko needs a convincing ground-contact stance. Pose and anchors are core visual 
+requirements, not later polish.
+
+
+=== page ===
+
+TANKLOOK  /  PRODUCT ROADMAP  /  BUILD 560
+TANKLOOK  •  DEVELOPMENT PLANNING  |  6
+5  |  Composition tools and unlimited variation
+TankLook is an arrangement application. Efficient composition is potentially more valuable than adding dozens of 
+additional closely related species.
+Feature
+Priority
+User-visible result
+Multi-select and duplication
+P0
+Replicate fish schools, repeated plants, or rock clusters.
+Brush / scatter placement
+P0
+Quickly populate litter, moss, pebbles, and carpeting plants.
+Controlled random variation
+P0
+Small changes in angle, scale, and spacing to avoid repetition.
+Surface anchors
+P0
+Attach animals/plants to floor, glass, wood, stone, or wall.
+Depth and occlusion
+P0
+Correct foreground/background order, overlap, and contact.
+Pose variants
+P1
+Perching, climbing, resting, swimming, and coiling poses.
+Reusable object groups
+P1
+Move, rotate, copy, and save multi-object arrangements.
+Custom asset import
+P1
+Import transparent PNGs with real-world length and depth placement.
+Appearance overrides
+P2
+Color and dimensional customization where desired.
+Custom assets: the escape hatch
+No finite official species library can cover everything. A transparent PNG import with a user-specified real-world size 
+could instantly support unusual organisms or decorations. Full 3D imports can come later; both should honor the 
+same coordinate and scaling system.
+Modeling quality as shared infrastructure
+Body plans — Use separate anatomical templates rather than adapting a generic fish-like shape.
+Attachments — Parameterize fin bases, joints, legs, shell openings, eyes, mouths, and other structural landmarks.
+Pose validation — Test front/side/top silhouettes and representative mounted poses before production release.
+Lighting and materials — Evaluate transparent fins, hair, shells, and other materials in bright preview and tank 
+lighting.
+
+
+=== page ===
+
+TANKLOOK  /  PRODUCT ROADMAP  /  BUILD 560
+TANKLOOK  •  DEVELOPMENT PLANNING  |  7
+6  |  Selective aquatic expansion
+Continue freshwater and reef development, but target missing visual types: body plans, growth forms, scale classes, 
+and structural diversity.
+Corals and marine forms remain underrepresented
+Freshwater: favor different silhouettes and scales
+Marine priorities
+Addition
+Priority
+What it adds visually
+Zoanthid colony
+P1
+Dense, low polyp mats
+Hammer coral
+P1
+Fleshy branching or wall formation
+Bubble-tip anemone
+P1
+Tentacular non-coral focal point
+Torch coral
+P1
+Long projecting tentacles
+Acropora
+P1
+Fine-branching stony coral
+Plating Montipora
+P2
+Horizontal shelves and plates
+Sea fan / gorgonian
+P2
+Vertical branching plane
+Macroalgae
+P2
+Marine planted-display aesthetics
+Blue tang / mandarin dragonet
+P2
+Distinctive large and bottom-oriented fish
+Freshwater priorities
+Addition
+Priority
+Coverage gap addressed
+Pygmy corydoras
+P1
+Miniature bottom-dweller scale
+Hillstream loach
+P1
+Flattened substrate-hugging silhouette
+Yellow lab cichlid
+P1
+First African mbuna
+Boesemani rainbowfish
+P1
+Rainbowfish body form and larger active fish
+Cockatoo apistogramma
+P2
+Dwarf cichlid and distinct fins
+White cloud mountain minnow
+P2
+Cool-water schooler
+Comet goldfish
+P2
+Long-bodied goldfish distinct from fancy varieties
+Plant follow-ons: Monte Carlo, dwarf hairgrass, hornwort, and Anacharis where existing generic assets do not already capture their growth 
+forms.
+
+
+=== page ===
+
+TANKLOOK  /  PRODUCT ROADMAP  /  BUILD 560
+TANKLOOK  •  DEVELOPMENT PLANNING  |  8
+7  |  The enclosure itself
+Structural customization expands presentation without requiring a different editor. Prioritize the common enclosure 
+shapes and elements that visibly change the scene.
+Feature
+Priority
+Why it matters
+Tall / horizontal rectangular presets
+P1
+Quick layouts for arboreal vs. terrestrial displays
+Background panels and wall textures
+P1
+Large effect on the visible finished environment
+Mesh lids and front doors
+P2
+Recognizable terrarium construction
+Equipment models
+P2
+Lights, filters, heaters, mister lines, feeding dishes
+Lighting direction and intensity
+P2
+Scene mood, shadows, and presentation
+Cylinders and bowls
+P3
+Unconventional glass display shapes
+Custom irregular enclosure geometry
+P3
+Broad flexibility with high implementation cost
+What not to build yet
+Defer arbitrary 3D enclosure geometry and full animal motion/behavior simulation until the static placement system 
+convincingly handles rectangular aquarium, terrarium, paludarium, and reef displays.
+8  |  Four release milestones
+Release 1 — Convincing dry enclosure
+Dry substrates, terrestrial texture layers, wall materials, and a dozen starter plants/hardscape assets.
+Acceptance test: A believable planted glass terrarium with no animal whatsoever.
+Release 2 — Terrestrial animals
+Surface anchoring, appropriate static poses, and five representative terrestrial species.
+Acceptance test: Build crested gecko, leopard gecko, and jumping-spider setups without placement hacks.
+Release 3 — Unified land and water
+Partial-water regions, raised banks, emergent plants, and correct occlusion across the interface.
+Acceptance test: Build a believable mixed land/water paludarium with branches, aquatic planting and frogs.
+Release 4 — Diversity and freedom
+Marine forms, selective freshwater species, efficient duplication/scattering, and initial custom import.
+Acceptance test: Build reef, freshwater, terrestrial and mixed displays from the same editor.
+
+
+=== page ===
+
+TANKLOOK  /  PRODUCT ROADMAP  /  BUILD 560
+TANKLOOK  •  DEVELOPMENT PLANNING  |  9
+9  |  Quality benchmarks and decisions
+Use a small set of finished example scenes as the completion metric. These measure whether the editor supports 
+attractive, recognizable arrangements at realistic scale, with minimal workarounds.
+Benchmark scene
+Capabilities under test
+20-gallon planted community aquarium
+Scale; schooling groups; foliage density; visual depth
+40-gallon reef aquarium
+Coral forms; rockwork; saltwater invertebrates
+18 × 18 × 24 in arboreal vivarium
+Vertical structures; branches; climbing poses
+20-gallon-long leopard gecko terrarium
+Dry substrate; hides; stones; floor contact
+Jumping spider microhabitat
+Small-enclosure scale; fine appendages; close-up view
+Mixed paludarium
+Land/water boundary; emergent plants; amphibians
+Closed botanical terrarium
+Dense foliage; layered textures; plant-only composition
+Final recommendation
+Make a fully convincing planted terrestrial enclosure the next major milestone, then add the first reptile and 
+terrestrial-invertebrate body plans. Keep the composition editor ecosystem-neutral. Add aquatic species selectively 
+where they introduce distinctly new silhouettes or habitats.
+Decisions to confirm against the live build
+
+Which dry substrate, surface, and water-level capabilities already exist?
+
+Does object depth and occlusion work consistently across every asset class?
+
+Can fish, plants, and decorations be grouped, cloned, scattered, and rotated?
+
+Can 3D animal meshes attach to floor, rock, branch, or background planes?
+
+Which model-build-217 audit defects have been resolved in build 560?
+Planning basis: user-supplied build 560 roster and TankLook model anatomy audit dated 2026-10-14. Illustrations are generated concepts, not 
+photographs or captures of the actual application. Effort estimates are provisional.
