@@ -1,6 +1,16 @@
 # HANDOFF archive
 Finished lane and feature sections moved out of HANDOFF.md on 2026-10-16, verbatim, newest first.
 
+## Lane PP: plant polish (2026-10-16; branch `plant-polish`, port 5673; Nathan approved the pictures; pushed to main)
+- **Vines on branches**: already shipped by T2 (archive: Lane T2, "Vines on wood", commit 1fd0ce3); not rebuilt.
+- **New optional `Plant3D` fields** (art/plants.ts; absent = old behaviour, so older files and every other species draw exactly as before):
+  `cap` (most that later growth lengthens stems / leaves; fittonia 1.3 = compact mound, nodes 4, spread .55), `lawn` (rosette: leaves it
+  grows to, new crowns = lawn / 30, extras go round the crowns in turn, blade length capped 1.1x; hairgrass 2400 = a full lawn at growth 1),
+  `heads` (moss: distinct capitula, spacing x height, 11-14 fronds each on a sunflower spiral; sphagnum 0.15, leaf wid .42). Java moss unchanged.
+- Cost (one-time build, worker prebuild covers it): hairgrass ~126 ms / 116k verts, sphagnum ~84 ms / 128k verts. 419 tests pass.
+- Pictures: worktree `shots/pp_{species}_sheet.png`; helpers `scripts/pp-shots.js` (dev console `row(species)`), `scripts/pp-sheet.py`.
+
+
 ## Lane G1: lizard body plan, crested gecko + leopard gecko (2026-10-16; branch `gecko`, port 5663; Nathan approved the pictures, "ship it"; pushed to main)
 - **Body plan** (new `render/lizard3d.ts`, data `art/lizards.ts`; not an adapted frog or fish): a loft round a spine built in
   steps of exactly 1/280 TL out from the vent (so it bends without changing length), section by s = half-width / back /

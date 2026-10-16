@@ -28,7 +28,6 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
 | T1 dry ground (roadmap R1) | `../Glass-Box-dry-ground` / `dry-ground` | 5633 | substrate types in `scene/types.ts` / `validate.ts` / `defaults.ts` (substrate only), the ground build in `render/build.ts`, substrate tiles in `art/placeholder.ts` / `render/textures.ts`, new `render/scatter.ts` (leaf litter, shared scatter) + new `render/grains.ts` (3D grains), the Substrate section of `ui/panels.ts` / `index.html` | running (session `local_6ae6a2e0`): litter + new grounds pushed (`2ec2000`, build 592); 3D grains prototype (bark, gravel, pebbles) waiting on Nathan's look check |
-| PP plant polish | `../Glass-Box-plant-polish` / `plant-polish` | 5673 | `art/plants.ts`, `render/plant3d.ts`, plant branch of `render/items.ts`, plant entries of `scene/items.ts` | ready to open (prompt `prompts/lane-PP-plant-polish.md`) |
 | MS multi-select / duplicate / variation (roadmap P0) | `../Glass-Box-multiselect` / `multiselect` | 5683 | `src/interact/*`, selection part of `ui/panels.ts` / `index.html`, new `scene/duplicate.ts` | ready to open (prompt `prompts/lane-MS-multiselect.md`); scatter brush waits on T1 |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
@@ -36,15 +35,6 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
-
-## Lane PP: plant polish (2026-10-16; branch `plant-polish`, port 5673; Nathan approved the pictures; pushed to main)
-- **Vines on branches**: already shipped by T2 (archive: Lane T2, "Vines on wood", commit 1fd0ce3); not rebuilt.
-- **New optional `Plant3D` fields** (art/plants.ts; absent = old behaviour, so older files and every other species draw exactly as before):
-  `cap` (most that later growth lengthens stems / leaves; fittonia 1.3 = compact mound, nodes 4, spread .55), `lawn` (rosette: leaves it
-  grows to, new crowns = lawn / 30, extras go round the crowns in turn, blade length capped 1.1x; hairgrass 2400 = a full lawn at growth 1),
-  `heads` (moss: distinct capitula, spacing x height, 11-14 fronds each on a sunflower spiral; sphagnum 0.15, leaf wid .42). Java moss unchanged.
-- Cost (one-time build, worker prebuild covers it): hairgrass ~126 ms / 116k verts, sphagnum ~84 ms / 128k verts. 419 tests pass.
-- Pictures: worktree `shots/pp_{species}_sheet.png`; helpers `scripts/pp-shots.js` (dev console `row(species)`), `scripts/pp-sheet.py`.
 
 ## Lane MS: multi-select, duplicate, controlled variation (2026-10-16; branch `multiselect`, port 5683; pushed to main, awaiting Nathan's verdict on the pictures)
 Scope: roadmap section 5 P0. Scatter brush is NOT here (waits on T1's render/scatter.ts). Built:
@@ -202,6 +192,7 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane PP: plant polish (2026-10-16; branch `plant-polish`, port 5673; Nathan approved the pictures; pushed to main)
 - Lane G1: lizard body plan, crested gecko + leopard gecko (2026-10-16; branch `gecko`, port 5663; Nathan approved the pictures, "ship it"; pushed to main)
 - Clownfish host in the bubble-tip anemone (2026-10-16; worktree `musing-snyder-0e96c4`, port 5693 `clown-host`; Nathan approved the pictures; pushed to main)
 - Lane T3: dry hardscape pieces + surface anchors, tree frogs perch (2026-10-16; branch `dry-hardscape`, port 5663; Nathan approved the pictures; pushed to main)
