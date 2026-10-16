@@ -157,6 +157,20 @@ Scope: new render/spider3d.ts + art/spiders.ts (8 eyes, chelicerae, palps, abdom
   Edge/Chrome with SwiftShader, ~80 s; `scripts/export-sheets.mjs`), no dev-server slot needed. JPEG 0.9: 4.7 MB the set
   (PNG was 18 MB).
 
+## Feature to add: plant / coral light-and-feeding advice (2026-10-16, Nathan asked; NOT started)
+
+Today there is only static advice: the PAR guide (`src/ui/parGuide.ts`, Lighting menu: freshwater and reef tiers with
+what grows, CO2 and fert / dosing level), the light hover (PAR, lux, depth) and the growth feed setting
+(`src/scene/growtime.ts`, speed only). Nothing checks the tank: no per-species light need in `LIBRARY`
+(`src/scene/items.ts`), no per-item or tank-level warning, nothing in `validate.ts`.
+Plan:
+1. Add to each plant and coral variant a light band (low / medium / high, from the PAR guide tiers) and a CO2 / fert
+   demand (none, recommended, required; reef: dosing level).
+2. Sample the PAR at each item's position (the light hover already does this) and compare with its band.
+3. Show a small badge on the item (too dim / too bright / fine) and a tank summary, e.g. "medium light with stems and
+   carpets: CO2 recommended, full ferts", "Acropora at 90 PAR: too dim", "reef with SPS: daily dosing".
+Advice only, never a hard gate. Keep the tier numbers in one place so the guide and the checks cannot drift.
+
 ## Still open (rewritten 2026-10-14, lane D)
 
 Review pack R1-R12 (`shots/review/REVIEW.md`) decided 2026-10-14 (Nathan: "go ahead with the models, take the

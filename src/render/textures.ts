@@ -25,7 +25,7 @@ function cached(key: string, make: () => THREE.Texture) {
  * of a 3D fish: only the median fins (paired fins are their own meshes; the body is cut out, as it showed past the solid).
  */
 export const fishTexture = (sp: Species, edge: EdgeMode = 'cutout', solid = false, hollow = solid) => cached(`fish:${sp.look}:${edge}:${solid}:${hollow}`, () => {
-  return finish(drawFishCard(sp.art, sp.aspect, 1024, edge === 'a2c' ? 0.36 : undefined, true, !solid, hollow));
+  return finish(drawFishCard(sp.art, sp.aspect, 1024, edge === 'a2c' ? FIN_A2C : undefined, true, !solid, hollow));
 });
 /** The 3D body's texture: the card painting without eye, gill and mouth (fins are hidden inside the solid anyway). */
 export const fishBodyTexture = (sp: Species) => cached(`fishbody:${sp.look}`, () => {
