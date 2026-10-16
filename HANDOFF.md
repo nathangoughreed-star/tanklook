@@ -13,8 +13,8 @@ asking Nathan. Shipping: in the worktree `git fetch` + `git merge origin/main`, 
 `git push origin HEAD:main` and `git -C "C:/Users/nreed/Glass Box" merge --ff-only origin/main`. HANDOFF.md
 conflicts on merge: keep both sections. Each lane adds its own dated section under "Lane sections (current)" below.
 
-**Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_d0390f66-339c-4fa1-ab38-43e9c2a35958`
-("Lanes coordinator 2", took over 2026-10-14 from `local_e1923781`). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
+**Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_f068e2c9-f5e4-4bb9-ae20-3c37e545df0b`
+("Lanes coordinator 3", took over 2026-10-16 from `local_d0390f66`). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
 and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says
 what landed (commit), what is still open, and which files are now free. The coordinator then sends Nathan the prompts
 for any chats that can start now. If a prompt is still waiting when another lane opens, it sends all waiting prompts again
@@ -24,11 +24,11 @@ New since 2026-10-16: lane prompts are one line ("You are lane X. Read prompts/l
 whose chat gets long hands off to a fresh chat at a work-unit boundary (write its state into its HANDOFF section
 first); dev servers are swept when a lane reports done and on "check" (no hourly sweep).
 
-**Current lanes** (coordinator "Lanes coordinator 2", `local_d0390f66`):
+**Current lanes** (coordinator "Lanes coordinator 3", `local_f068e2c9`):
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
 | T1 dry ground (roadmap R1) | `../Glass-Box-dry-ground` / `dry-ground` | 5633 | substrate types in `scene/types.ts` / `validate.ts` / `defaults.ts` (substrate only), the ground build in `render/build.ts`, substrate tiles in `art/placeholder.ts` / `render/textures.ts`, new `render/scatter.ts` (leaf litter), the Substrate section of `ui/panels.ts` / `index.html` | running (session `local_6ae6a2e0`) |
-| G1 crested gecko + lizard body plan (roadmap R2) | `../Glass-Box-gecko` / `gecko` | 5663 | new `render/lizard3d.ts` (+ art data), `art/herps.ts` / `render/herp3d.ts` hooks, the gecko entries in `data/species.json` / `aqadvisor.json` (T4 also edits those: keep both sides), perch / cling poses on `scene/anchors.ts` | ready to open (prompt `prompts/lane-G1-crested-gecko.md`) |
+| G1 crested gecko + lizard body plan (roadmap R2) | `../Glass-Box-gecko` / `gecko` | 5663 | new `render/lizard3d.ts` (+ art data), `art/herps.ts` / `render/herp3d.ts` hooks, the gecko entries in `data/species.json` / `aqadvisor.json` (T4 also edits those: keep both sides), perch / cling poses on `scene/anchors.ts` | running (session `local_6031245c`) |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 
