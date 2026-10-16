@@ -546,21 +546,6 @@
         "--strictPort"
       ],
       "port": 5663
-    },
-    {
-      "name": "scatter-brush",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "--prefix",
-        "C:/Users/nreed/Glass-Box-brush",
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5693",
-        "--strictPort"
-      ],
-      "port": 5693
     }
   ]
 }
