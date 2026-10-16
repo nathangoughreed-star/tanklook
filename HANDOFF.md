@@ -27,7 +27,7 @@ Living file. Project state and dated decisions go here; update in place.
 - **Open:** the hardscape link (E1 #11 baked grain / lane SG) is now the only thing between "substrate shown" and the
   finished tank on a first visit.
 
-## Lane SS: scape styles + Composition picker (2026-10-15; branch `scape-styles`, port 5663; styles approved by Nathan, pushed to main)
+## Lane SS: scape styles, Composition picker, Quick aquascape setup (2026-10-15; branch `scape-styles`, port 5663; DONE: Nathan approved the styles and the menu; pushed to main)
 - **Four new starter styles** (scene/items.ts `starterItems` branches + `STYLES` rows + `LAYOUTS` labels; `LayoutId` and
   `LAYOUT_IDS` grew): **Nature aquarium** (stones stepping down in front of wood rising over them, moss / fern / buce on
   wood and stone, crypts at the feet, mixed stems behind, an open carpet midground); **Dutch** (no hardscape up to Medium,
@@ -56,7 +56,7 @@ Living file. Project state and dated decisions go here; update in place.
   terrain grid; a swamp keeps its land (terrain off, corners only). Own stream (seed x layer 4). Style change, Shuffle and
   Composition restyle it; density sliders do not. `groundEdited` / `handEdits(s, what, ground)` add "substrate" to the
   warning when the ground was changed by hand (a never-styled ground counts as edited only if it is not the default).
-- Pictures: worktree `shots/ss_quick_desktop.jpg`, `shots/ss_quick_375.jpg`. Open: Nathan's look at the new menu.
+- Pictures: worktree `shots/ss_quick_desktop.jpg`, `shots/ss_quick_375.jpg`. Nathan approved the menu 2026-10-16.
 
 ## Lane LA: algae on plant leaves + bowl glass film (2026-10-15; branch `leaf-algae`, port 5673; Nathan approved the pictures; pushed to main)
 
@@ -1565,7 +1565,7 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | AL dirty / algae view | `../Glass-Box-algae` / `algae` | 5613 | (released) | DONE 2026-10-15, pushed (see the Lane AL section); files free. Open: algae on plant leaves (after GR4) |
 | PL progressive first load | (worktree removed) | - | the first-picture / startLinks path in `render/viewer.ts`, part grouping in `render/build.ts` (buildTank order only), a small load hint in `index.html` / `style.css` | DONE (`1514e34`, `db60516`): first part shows in 3-4 s instead of a blank 13-18 s; hardscape link (9-15 s cold) is the remaining gap (SG) |
 | SG stone grain | `../Glass-Box-stone-grain` / `stone-grain` | 5653 | `render/items.ts` solidMaterial / GRIT / gritK (cheaper or baked stone grain) | running (session `local_d91c0bfe`) |
-| SS scape styles | `../Glass-Box-scape-styles` / `scape-styles` | 5663 | `scene/items.ts` starter section, `scene/starter.ts`, the layout picker in `ui/panels.ts` / `index.html` | styles, Composition and the Quick aquascape setup (styled substrate) pushed 2026-10-15 (see its section); waiting on Nathan's look at the menu |
+| SS scape styles | `../Glass-Box-scape-styles` / `scape-styles` | 5663 | `scene/items.ts` starter section, `scene/starter.ts`, the layout picker in `ui/panels.ts` / `index.html` | DONE 2026-10-16: styles, Composition and Quick aquascape setup approved and pushed (see its section); files free; optional batch (biotopes, marine sub-styles) not started |
 | LA leaf algae + bowl film | (worktree removed) | - | `render/algae.ts`, the plant material hook in `render/plant3d.ts`, bowl glass film | DONE (`e87bc19`). Open: no surface scum on bowls; BBA on leaf ends, not true margins |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 Free (no lane): `render/build.ts`, `render/items.ts`, `scene/items.ts`, `render/viewer.ts`, `main.ts`, `render/lighting.ts`,
