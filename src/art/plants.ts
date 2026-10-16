@@ -4,7 +4,8 @@ export type PlantType = 'stem' | 'stemred' | 'grass' | 'sword' | 'fern' | 'anubi
   | 'redroot' | 'salvinia' | 'frogbit' | 'lettuce' | 'lotus'
   | 'pothos' | 'bromeliad' | 'tropfern' | 'fittonia' | 'sphagnum' | 'creeper'
   | 'hairgrass' | 'hornwort' | 'anacharis'
-  | 'echeveria' | 'haworthia' | 'jade' | 'aloe' | 'burrotail' | 'barrel';
+  | 'echeveria' | 'haworthia' | 'jade' | 'aloe' | 'burrotail' | 'barrel'
+  | 'sansevieria' | 'agave' | 'columnar';
 
 /** Height / width per plant type (sizes and footprints; the ratio of the old 2D cards). */
 export const PLANT_ASPECT: Record<PlantType, number> = { stem: 3.2, stemred: 3.2, grass: 3.6, sword: 1.1, fern: 1.3, anubias: 0.8, carpet: 0.32, crypt: 1,
@@ -12,7 +13,8 @@ export const PLANT_ASPECT: Record<PlantType, number> = { stem: 3.2, stemred: 3.2
   redroot: 0.35, salvinia: 0.25, frogbit: 0.4, lettuce: 0.45, lotus: 0.85,
   pothos: 1.3, bromeliad: 0.6, tropfern: 1, fittonia: 0.5, sphagnum: 0.35, creeper: 1.2,
   hairgrass: 0.4, hornwort: 3, anacharis: 3.2,
-  echeveria: 0.55, haworthia: 0.7, jade: 1.1, aloe: 1.1, burrotail: 0.5, barrel: 1 };
+  echeveria: 0.55, haworthia: 0.7, jade: 1.1, aloe: 1.1, burrotail: 0.5, barrel: 1,
+  sansevieria: 1.6, agave: 0.8, columnar: 2.4 };
 /** Plants that grow as a low patch (size = patch width, height = CARPET_H) rather than upright (size = height). */
 export const isCarpet = (v: string) => v === 'carpet';
 /** Plants that float at the water line (size = patch width; roots hang below; not drawn in a dry tank). */
@@ -317,6 +319,18 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
     len: [1, 1], wid: 0.7, prof: [0.5, 0.45], rise: [0.8, 1.2], arch: -1.8, twist: 0, fold: 0.1, thick: 0.8, wave: [0, 0], pet: 0,
     cols: [['#2a5a34', '#42744a'], ['#2e6038', '#487a4e']], under: '#2a5a34', tip: ['#e8dcb0', 0.1], seg: [10, 5] } },
 
+  // Snake plant (Sansevieria / Dracaena trifasciata): stiff, upright, sword-shaped leaves, dark green banded, yellow rims
+  sansevieria: { land: true, grow: { speed: 'slow', overflow: 'none', len: [60, 420], more: 3, prop: true }, cap: 1.4, sway: 0, form: 'rosette', n: [7, 11], crowns: [1, 2], spread: 0.12, stalk: '#3a5a2e', leaf: {
+    len: [0.7, 1], wid: 0.16, prof: [0.7, 0.6], rise: [0.02, 0.28], arch: 0.1, twist: 0.25, fold: 0.15, thick: 0.45, wave: [0, 0], pet: 0,
+    cols: [['#7e8a3a', '#2e5a34'], ['#88903e', '#366238'], ['#747e36', '#2a5030']], under: '#3a6a3c', spots: { col: '#8aae7a', n: [14, 22], r: 0.05 }, seg: [12, 5] } },
+  // Agave (small, Agave americana / Parryi type): a tight rosette of thick, stiff, blue-grey spears with a dark tip
+  agave: { land: true, grow: { speed: 'slow', overflow: 'none', len: [40, 260], more: 3, prop: true }, cap: 1.4, sway: 0, form: 'rosette', n: [22, 32], crowns: [1, 1], spread: 0.03, stalk: '#6a8a7a', leaf: {
+    len: [0.6, 1], wid: 0.17, prof: [0.65, 0.6], rise: [0.08, 1.0], arch: 0.1, twist: 0.05, fold: 0.35, thick: 0.6, wave: [0, 0], pet: 0,
+    cols: [['#6a8a86', '#9ab4ae'], ['#72928c', '#a2bab2']], under: '#7a9a92', tip: ['#5a3a2a', 0.07], seg: [10, 5] } },
+  // Columnar cactus (Cereus type): a tall, ribbed, blue-green column with pale spines
+  columnar: { land: true, grow: { speed: 'slow', overflow: 'none', len: [60, 420], more: 1.5, prop: true }, cap: 1.2, sway: 0, form: 'rosette', n: [10, 12], crowns: [1, 1], spread: 0.02, stalk: '#3a6a4a', leaf: {
+    len: [1, 1], wid: 0.17, prof: [0.4, 0.4], rise: [0.12, 0.22], arch: -0.2, twist: 0, fold: 0.1, thick: 0.9, wave: [0, 0], pet: 0,
+    cols: [['#3a6a56', '#58907a'], ['#3e705a', '#5c9480']], under: '#3a6a56', tip: ['#e8dcb0', 0.06], seg: [12, 5] } },
   // ---------- Aquatic follow-ons (lane T2, roadmap section 6; Monte Carlo stays the existing carpet: Nathan 2026-10-14) ----------
   // Dwarf hairgrass (Eleocharis acicularis): dense tufts of needle-fine bright green blades on runners, a fine lawn
   hairgrass: { grow: { speed: 'medium', overflow: 'spread', len: [25, 140], more: 10 }, sway: 0.35, form: 'rosette', n: [320, 420], lawn: 2400, crowns: [9, 14], spread: 0.9, stalk: '#4a7a30', leaf: {

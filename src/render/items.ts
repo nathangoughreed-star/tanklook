@@ -106,16 +106,37 @@ function stoneShape(variant: string, seed: number, size: number) {
 }
 /** Slate: a slab with chipped edges and layered bands. */
 function slab(r: R, l: number, h: number, w: number, base: THREE.Color, level = false) {
-  const g = new THREE.BoxGeometry(1, 1, 1, 6, 3, 5), nz = waves(r), p = g.attributes.position, v = new THREE.Vector3();
+  const g = new THREE.BoxGeometry(1, 1, 1, level ? 12 : 6, level ? 6 : 3, level ? 10 : 5), nz = waves(r), p = g.attributes.position, v = new THREE.Vector3();
+  // a ledge (lane CP, Nathan 2026-10-16): each one draws how worn it is, wv (0 = fractured: flat facets, chipped rim, sharp
+  // corners; 1 = weathered: rolled corners and rim, smooth faces), how irregular it is, nv (0.05 = near a clean block), and
+  // how much its sides lean and swell, so no two ledges look alike. A ledge keeps a top flat enough to sit on.
+  const wv = level ? r() : 0, nv = level ? 0.05 + 0.2 * r() : 0.12, lk = level ? 0.1 + 0.35 * r() : 0;
+  const lean = level ? [(r() - 0.5) * lk, (r() - 0.5) * lk, (0.04 + r() * 0.2) * lk * 2, (r() - 0.5) * 0.1, (r() - 0.5) * 0.08] : [0, 0, 0, 0, 0];
+  const soft = level ? waves(r, 2) : () => 0, chip = level ? waves(r, 9) : () => 0, coarse = level ? waves(r, 3) : () => 0;
   for (let i = 0; i < p.count; i++) {
     v.fromBufferAttribute(p, i);
-    const e = nz(v.clone().multiplyScalar(3.2)), edge = Math.max(Math.abs(v.x), Math.abs(v.z)) * 2; // 1 at the rim
-    const x = v.x * (1 + 0.12 * e), z = v.z * (1 + 0.12 * nz(v.clone().addScalar(3).multiplyScalar(2.6)));
-    // a ledge keeps a level top to sit on (only its rim is worn)
-    const y = (v.y + 0.5) * (v.y > 0 ? (level ? 1 - 0.18 * Math.max(0, edge - 0.85) + 0.015 * e : 1 - 0.25 * Math.max(0, edge - 0.6) + 0.06 * e) : 1);
+    const e = nz(v.clone().multiplyScalar(3.2)), ax = Math.abs(v.x) * 2, az = Math.abs(v.z) * 2, edge = Math.max(ax, az); // 1 at the rim
+    const yy = v.y + 0.5, tp = level ? 1 - lean[2] * yy : 1, k = nv;
+    let x = v.x * tp * (1 + k * e) + lean[0] * yy * 0.5, z = v.z * tp * (1 + k * nz(v.clone().addScalar(3).multiplyScalar(2.6))) + lean[1] * yy * 0.5;
+    let y = yy * (v.y > 0 ? (level ? 1 + 0.04 * soft(v.clone().multiplyScalar(2)) + lean[3] * v.x + lean[4] * v.z : 1 - 0.25 * Math.max(0, edge - 0.6) + 0.06 * e) : 1);
+    if (level) {
+      const fr = 1 - wv, roll = Math.max(0, edge - 0.7) / 0.3, mid = Math.sin(Math.PI * Math.min(1, Math.max(0, yy)));
+      // fractured: a chipped, ragged rim
+      if (edge > 0.6 && fr > 0.05) {
+        const c = 0.07 * fr * (edge - 0.6) * (chip(v.clone().multiplyScalar(7)) + 0.6 * coarse(v.clone().multiplyScalar(2)));
+        x += v.x * c * 2; z += v.z * c * 2;
+        if (v.y > 0) y *= 1 - 0.3 * fr * Math.max(0, edge - 0.72) * (0.55 + 0.9 * Math.abs(chip(v.clone().multiplyScalar(5)))) + c * 0.6;
+      }
+      // weathered: the middle swells, the corners and the top rim roll over
+      const corner = ax * az;
+      x *= 1 + 0.06 * wv * mid; z *= 1 + 0.06 * wv * mid;
+      x *= 1 - 0.2 * wv * corner * corner * corner; z *= 1 - 0.2 * wv * corner * corner * corner;
+      if (v.y > 0) { const f = wv * roll * roll; x *= 1 - 0.1 * f; z *= 1 - 0.1 * f; y *= 1 - 0.12 * f; }
+    }
     p.setXYZ(i, x * l, y * h, z * w);
   }
-  const ng = clean(g, false) as THREE.BufferGeometry;
+  let ng = clean(g, false) as THREE.BufferGeometry;
+  if (level && wv > 0.5) { ng.deleteAttribute('normal'); ng.deleteAttribute('uv'); ng = mergeVertices(ng); } // smooth, worn faces
   ng.computeVertexNormals();
   return paint(ng, q => shade(base, 1 + 0.1 * Math.sin(q.y / h * 22 + q.x * 0.01) + 0.06 * Math.sin(q.x * 0.05 + q.z * 0.07)));
 }

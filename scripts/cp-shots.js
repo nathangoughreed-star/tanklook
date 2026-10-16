@@ -1,13 +1,13 @@
 // Dev server only (lane CP): pictures of new pieces. Console: `const c = await import('/scripts/cp-shots.js');
 // await c.line('dish', [['dish',80],['dish',120],['stonedish',120]], {type:'tsand'})` -> shots/cp_<name>_{front,q}.png
 const wait = ms => new Promise(r => setTimeout(r, ms));
-export async function line(name, list, { type = 'tsand', wet = false, dist = 330, zoom = 2.2, views = { front: [0, 18], q: [35, 28] }, y = 0.5 } = {}) {
+export async function line(name, list, { type = 'tsand', wet = false, dist = 330, zoom = 2.2, views = { front: [0, 18], q: [35, 28] }, y = 0.5, gap = 0.17 } = {}) {
   const g = await import('/scripts/ground-shots.js'), { makeItem } = await import('/src/scene/items.ts');
   const { store } = window.__gb;
   await g.dry20(type);
   if (wet) store.edit(t => { t.water.on = true; });
   store.edit(t => {
-    t.items = list.map(([v, size, extra], i) => makeItem(t.tank, v, i + 1, 7 + i, t.tank.L * (0.5 + (i - (list.length - 1) / 2) * 0.17), t.tank.D * y, { ...(size ? { size } : {}), ...(extra ?? {}) }));
+    t.items = list.map(([v, size, extra], i) => makeItem(t.tank, v, i + 1, 7 + i, t.tank.L * (0.5 + (i - (list.length - 1) / 2) * gap), t.tank.D * y, { ...(size ? { size } : {}), ...(extra ?? {}) }));
   });
   await wait(500);
   for (const [k, [az, el]] of Object.entries(views)) await g.snap(`cp_${name}_${k}`, { az, el, dist, zoom, w: 1000, crop: [0.1, 0.3, 0.9, 0.8] });

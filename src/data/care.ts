@@ -34,6 +34,7 @@ export const CARE: Record<string, AnimalCare> = {
   honeygourami: A(1, 40, 0, [22, 28]), gourami: A(1, 110, 0, [24, 28]), gbr: A(3, 60, 1, [26, 30]), bolivianram: A(2, 60, 0, [22, 26]),
   kribensis: A(2, 80, 1, [22, 26]), cockatoo: A(2, 60, 1, [22, 26]), yellowlab: A(2, 200, 2, [24, 28]),
   peacock: A(2, 200, 1, [24, 28]), demasoni: A(2, 200, 2, [24, 28]), kadango: A(2, 250, 1, [24, 28]), syno: A(2, 200, 0, [24, 28]),
+  labeo: A(2, 250, 2, [24, 28]), auratus: A(2, 250, 2, [24, 28]), livingstonii: A(2, 400, 2, [24, 28], { prey: { mm: 80 } }), afra: A(2, 250, 2, [24, 28]),
   angel: A(2, 200, 1, [24, 28], { prey: { mm: 30 }, slow: true }), discus: A(3, 250, 0, [28, 31], { slow: true }),
   oscar: A(2, 400, 2, [22, 28], { prey: { mm: 100 } }), goldfish: A(1, 150, 0, [16, 23]), comet: A(1, 300, 0, [10, 24]),
   bronzecory: A(1, 80, 0, [22, 26]), pandacory: A(1, 60, 0, [20, 24]), pygmycory: A(1, 30, 0, [22, 26]), bristlenose: A(1, 110, 0, [22, 27]),
