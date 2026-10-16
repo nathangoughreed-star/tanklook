@@ -10,7 +10,7 @@ import { woodLimbs } from './items';
 import type { Item, Tank, TankSetup } from './types';
 
 export type V3 = [number, number, number];
-export type AnchorKind = 'floor' | 'glass' | 'wall' | 'rock' | 'ledge' | 'branch' | 'cork' | 'wood';
+export type AnchorKind = 'floor' | 'glass' | 'wall' | 'rock' | 'ledge' | 'branch' | 'cork' | 'wood' | 'leaf';
 
 export interface Anchor {
   kind: AnchorKind;
@@ -37,6 +37,9 @@ export interface AnchorProbe {
   /** Where a body of length w at glass point `at` (outward normal `out`, heading `head`) lies on the 3D wall: the point
    *  and the normal into the tank, or null where no wall covers the pane. */
   wall?(at: V3, out: V3, head: V3, w: number): [V3, V3] | null;
+  /** The top of the highest broad plant leaf under (x, depth) above the ground (leaf tops only: facing up, not carpet), its
+   *  normal into the open, or null. For animals that may sit on leaves (species `onLeaves`). */
+  leaf?(x: number, depth: number, up: number): { y: number; n: V3 } | null;
 }
 
 /** The kind of surface a piece offers. */
@@ -48,7 +51,7 @@ export function anchorKind(it: Pick<Item, 'kind' | 'variant'>): AnchorKind {
 }
 /** Surfaces an animal perches on (on top, gripping, along a limb or on the level top of a shelf) instead of lying on
  *  the slope it samples round itself, which off a thin branch or the edge of a shelf reaches the ground far below. */
-export const PERCHES: ReadonlySet<AnchorKind> = new Set(['branch', 'ledge']);
+export const PERCHES: ReadonlySet<AnchorKind> = new Set(['branch', 'ledge', 'leaf']);
 
 const dot = (a: V3, b: V3) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 const add = (a: V3, b: V3, k = 1): V3 => [a[0] + b[0] * k, a[1] + b[1] * k, a[2] + b[2] * k];
@@ -95,11 +98,13 @@ export function anchors(S: TankSetup, T: Tank = S.tank, probe: AnchorProbe = {})
   const items = new Map(S.items.map(it => [it.id, it]));
   const floor = (x: number, depth: number): Anchor => ({ kind: 'floor', p: [x, groundHeight(S, T, x, depth), depth], n: [0, 1, 0] });
   /** What an animal at (x, depth) rests on: with `hard`, the top of the solid piece under it where that is above the
-   *  ground (rock, wood and caves; never coral), else the ground. */
-  const rest = (x: number, depth: number, hard = true): Anchor => {
+   *  ground (rock, wood and caves; never coral), else the ground; with `leaves` (the least a leaf's normal may point up, see leafUp; 0 = not on leaves) too, a plant leaf above both. */
+  const rest = (x: number, depth: number, hard = true, leaves = 0): Anchor => {
     const f = floor(x, depth);
-    if (!hard || !probe.down) return f;
-    const h = probe.down(x, depth);
+    if (!hard) return f;
+    const h = probe.down?.(x, depth), lf = leaves ? probe.leaf?.(x, depth, leaves) : null;
+    // a leaf higher than the solid piece (or the ground) under it: sit on the leaf
+    if (lf && lf.y > Math.max(f.p[1], h?.y ?? -Infinity)) return { kind: 'leaf', p: [x, lf.y, depth], n: lf.n };
     if (!h || !(h.y > f.p[1])) return f;
     const it = items.get(h.item), kind = it ? anchorKind(it) : 'rock', a: Anchor = { kind, p: [x, h.y, depth], n: h.n, item: h.item, toTank: h.toTank };
     if (it && kind === 'branch') {
