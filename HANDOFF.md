@@ -27,7 +27,6 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 **Current lanes** (coordinator "Lanes coordinator 3", `local_f068e2c9`):
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
-| T1 dry ground (roadmap R1) | `../Glass-Box-dry-ground` / `dry-ground` | 5633 | substrate types in `scene/types.ts` / `validate.ts` / `defaults.ts` (substrate only), the ground build in `render/build.ts`, substrate tiles in `art/placeholder.ts` / `render/textures.ts`, new `render/scatter.ts` (leaf litter, shared scatter) + new `render/grains.ts` (3D grains), the Substrate section of `ui/panels.ts` / `index.html` | running (session `local_6ae6a2e0`): litter + new grounds pushed (`2ec2000`); 3D grains for bark + all gravels pushed (see T1 section); lane wrapping up |
 | BP ball python (roadmap R2) | `../Glass-Box-python` / `python` | 5673 | new `render/snake3d.ts`, `art/snakes.ts`; one-line hooks in `render/herp3d.ts`, `art/herps.ts`, animal() in `render/build.ts`, `scene/scatter.ts`, `data/species.json` / `species.ts` | ready to open (prompt `prompts/lane-BP-ball-python.md`) |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
@@ -50,56 +49,6 @@ Scope: new render/spider3d.ts + art/spiders.ts (8 eyes, chelicerae, palps, abdom
 
 ## Lane BP: ball python, serpentine body plan (2026-10-16; branch `python`, port 5673; opened by coordinator 3, not started)
 Scope: new render/snake3d.ts + art/snakes.ts, constant-length spine, pose families coiled / extended / draped on a branch / ball / alert, blotch pattern, sizes by life stage. Pattern: archive Lane G1 + Lane JS; shares render/limbs.ts. State: nothing built yet.
-
-## Lane T1: dry ground, terrestrial substrates + leaf litter (2026-10-16; branch `dry-ground`, port 5633; Nathan: "leaf litter looks great", ship; pushed to main)
-- **New substrate presets** (`SubstrateType` + validate pick list, no scene version bump; art/placeholder.ts SUBSTRATES, flag
-  `terra`): `soil` (Soil / coco fibre: crumbs, coco strands, perlite flecks), `tsand` (Terrarium sand), `clay` (terracotta,
-  seamless wandering dry-crack network), `bark` (Orchid bark: blocky chips in layers), `layered` (soil over a flat clay-ball
-  drainage layer, 50 % of the shallowest ground at the glass, 8-45 mm, and a 2.5 mm dark mesh sheet; `LECA` look,
-  textures.ts `lecaTexture` / `meshTexture`). The type list is grouped Aquarium / Terrarium (optgroups). SUB_ALBEDO entries
-  added in scene/lightout.ts.
-- **Wet / dry** (render/build.ts addSubstrate, terra types only; old types keep the old damp-soil tint above water): own colour
-  dry; darker (x0.47/0.44/0.41) below the water line and in a 35 mm damp band above it; the skirt is cut in height bands
-  (water line, band, drainage) so the line is crisp through the glass. A faint wet sheen in the band (`aWet` attribute,
-  `wetSheen`, its own define AQ_WET so its program is apart from the custom blend's post patch). Not in a bowl (old skirt path).
-- **Leaf litter** (`substrate.litter?: { leaf: mixed|oak|magnolia|catappa, density 0-100, seed }`, absent = none): new
-  render/scatter.ts. `scatter(T, ground, spec)` is the shared tool (pebbles / grass later): seeded points thinned by a clumping
-  field, rejected on steep ground (normal y < 0.55), where an end or side would poke through the glass, hang over a drop or
-  hit a wall (bank foot); each copy on the ground's tilt, lifted over small humps, piled on what is under it (10 mm height
-  grid, +2.5 mm per leaf), tinted, darker under water (`shade`). Leaves: canvas atlas 3 kinds x (2 upper, 1 under, 1 broken
-  piece), 12 cupped / curled geometries trimmed to the leaf's width, one alpha-tested lit material, InstancedMesh per variant.
-  render/lighting.ts aqPatch now uses instanceMatrix for vAqP / vAqN under USE_INSTANCING; disposeScene disposes
-  InstancedMeshes. Panel: Leaf litter select + Shuffle (seed + 1) + Density (0 = None).
-- **Perf** (terrarium example, litter 100 % = 284 leaves, 12 draws, alternate frames, 4 runs of 60): +0.3 / 0.9 / 1.6 / 2.6 ms,
-  about 1.2 ms typical (was ~3.6 ms before trimming the leaf cards to the leaf's width).
-- Tests: test/dryground.test.ts (types load, unknown -> gravel, old files keep no litter, litter clamped; scatter deterministic,
-  off the glass, never under the ground, piled not floating, not straddling a step). Pictures: worktree `shots/t1_sheet_*.png`
-  (helpers scripts/ground-shots.js in the dev console, scripts/t1-sheet.py).
-- **3D grains** (2026-10-16, Nathan: coarse grounds read flat; "this direction is right", ship; pushed to main): new
-  render/grains.ts. `grainLook(sub)`: bark (chips) and every gravel preset (gravel, pea, clown, blue, onyx; sizes from the
-  tile art) and a custom single grain of gravel or pebbles (stones); null for sand / mud / soil / clay / layered and for
-  two-grain custom blends (not yet). `grainMeshes` = one packed layer through `scatter` (stones sunk 0-18 %, chips about
-  level, pile grid a third of a grain, colours from the ground's shades, darker under water if terrestrial);
-  `glassGrains` = a row pressed against each pane from the floor up to the surface (stones long side along the glass,
-  chips on edge), unlit with a fixed soft light baked into their own geometry copies (lit, side-on they went near black);
-  not in a bowl. render/build.ts addSubstrate: with grains the painted top and skirt step back from the glass by 55 % of a
-  grain (`clipIn`, convex outlines), so the glass row and the top layer meet (the surface had sliced the stones: a seam);
-  painted ground darkened to the gaps (0x6e / 0x5a); litter lifted by `grainTop`. Stones: subdivided icosahedron, detail 0
-  (20 tris) under 8 mm, 1 above; chips: jittered slabs with a fibre texture. Grains draw first (renderOrder -1), so the
-  depth test skips the ground under them (fill was most of the cost). envKey keeps a custom ground's colours when it has
-  grains (they are baked at build). Made grains are cached per ground key (6) and reused for rebuilds that do not move
-  the ground. scatter: flat arrays, scratch objects, a Float32Array pile grid, `insideIn` (insideBy's outline lookup per
-  call was 80 % of the time); placements unchanged (litter layouts identical).
-- **Perf** (GPU timer, EXT_disjoint_timer_query_webgl2, `gpuPerf` in scripts/ground-shots.js, on vs off alternating):
-  20-gal: pebbles +0.08 ms (1.5k), bark +0.12 (3.4k), natural gravel +0.29 (18k); planted example (36 in, black gravel,
-  42k) +0.85; litter 100 % about 0. Build: the 36 in tank's grains took ~160 ms per ground rebuild at first, now about a
-  third of that (machine was loaded, so measured as a ratio to groundHeight), and none when the ground key is unchanged.
-- Examples that change look (data unchanged): planted (onyx), paludarium (gravel), betta bowl (pea, top layer only).
-  Pictures: shots/t1_sheet_3d_a.png, shots/t1_sheet_3d_b.png. Dev note: a hidden pane runs no frames; the helpers call
-  `viewer.buildNow()`.
-- **Open:** two-grain custom blends with a coarse grain still painted; coated gravel has no glint; big custom pebbles look a
-  little egg-like from above; bowl has no glass row. Swamp land is seed-drawn, not editable ground (Nathan's rule: every
-  generated scape must be recreatable by hand): proposed as its own session (task card "Swamp land into editable terrain").
 
 ## Lane W: Android app (2026-10-14; OPENED same day, Nathan: "start work on the android app"; prompt `prompts/lane-W-android-app.md`)
 - **Route: Trusted Web Activity (TWA)** around https://tanklook.com/ (Bubblewrap or PWABuilder). Real Chrome, so WebXR
@@ -259,6 +208,7 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane T1: dry ground, terrestrial substrates + leaf litter (2026-10-16; branch `dry-ground`, port 5633; Nathan: "leaf litter looks great", ship; pushed to main)
 - Lane TA: tarantula, large arachnid body plan (2026-10-16; branch `tarantula`, port 5683; built + tested, committed on the branch, NOT pushed: pictures sent to Nathan, awaiting his verdict)
 - Lane SW: swamp land as editable terrain (2026-10-16; worktree `agitated-lumiere-a79eba`, port 5663; side session of T1)
 - Lane JS: regal jumping spider, first arthropod body plan (2026-10-16; branch `spider`, port 5673; built + tested, committed on the branch, NOT pushed: pictures sent to Nathan, awaiting his verdict)

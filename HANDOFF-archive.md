@@ -1,6 +1,57 @@
 # HANDOFF archive
 Finished lane and feature sections moved out of HANDOFF.md on 2026-10-16, verbatim, newest first.
 
+## Lane T1: dry ground, terrestrial substrates + leaf litter (2026-10-16; branch `dry-ground`, port 5633; Nathan: "leaf litter looks great", ship; pushed to main)
+- **New substrate presets** (`SubstrateType` + validate pick list, no scene version bump; art/placeholder.ts SUBSTRATES, flag
+  `terra`): `soil` (Soil / coco fibre: crumbs, coco strands, perlite flecks), `tsand` (Terrarium sand), `clay` (terracotta,
+  seamless wandering dry-crack network), `bark` (Orchid bark: blocky chips in layers), `layered` (soil over a flat clay-ball
+  drainage layer, 50 % of the shallowest ground at the glass, 8-45 mm, and a 2.5 mm dark mesh sheet; `LECA` look,
+  textures.ts `lecaTexture` / `meshTexture`). The type list is grouped Aquarium / Terrarium (optgroups). SUB_ALBEDO entries
+  added in scene/lightout.ts.
+- **Wet / dry** (render/build.ts addSubstrate, terra types only; old types keep the old damp-soil tint above water): own colour
+  dry; darker (x0.47/0.44/0.41) below the water line and in a 35 mm damp band above it; the skirt is cut in height bands
+  (water line, band, drainage) so the line is crisp through the glass. A faint wet sheen in the band (`aWet` attribute,
+  `wetSheen`, its own define AQ_WET so its program is apart from the custom blend's post patch). Not in a bowl (old skirt path).
+- **Leaf litter** (`substrate.litter?: { leaf: mixed|oak|magnolia|catappa, density 0-100, seed }`, absent = none): new
+  render/scatter.ts. `scatter(T, ground, spec)` is the shared tool (pebbles / grass later): seeded points thinned by a clumping
+  field, rejected on steep ground (normal y < 0.55), where an end or side would poke through the glass, hang over a drop or
+  hit a wall (bank foot); each copy on the ground's tilt, lifted over small humps, piled on what is under it (10 mm height
+  grid, +2.5 mm per leaf), tinted, darker under water (`shade`). Leaves: canvas atlas 3 kinds x (2 upper, 1 under, 1 broken
+  piece), 12 cupped / curled geometries trimmed to the leaf's width, one alpha-tested lit material, InstancedMesh per variant.
+  render/lighting.ts aqPatch now uses instanceMatrix for vAqP / vAqN under USE_INSTANCING; disposeScene disposes
+  InstancedMeshes. Panel: Leaf litter select + Shuffle (seed + 1) + Density (0 = None).
+- **Perf** (terrarium example, litter 100 % = 284 leaves, 12 draws, alternate frames, 4 runs of 60): +0.3 / 0.9 / 1.6 / 2.6 ms,
+  about 1.2 ms typical (was ~3.6 ms before trimming the leaf cards to the leaf's width).
+- Tests: test/dryground.test.ts (types load, unknown -> gravel, old files keep no litter, litter clamped; scatter deterministic,
+  off the glass, never under the ground, piled not floating, not straddling a step). Pictures: worktree `shots/t1_sheet_*.png`
+  (helpers scripts/ground-shots.js in the dev console, scripts/t1-sheet.py).
+- **3D grains** (2026-10-16, Nathan: coarse grounds read flat; "this direction is right", ship; pushed to main): new
+  render/grains.ts. `grainLook(sub)`: bark (chips) and every gravel preset (gravel, pea, clown, blue, onyx; sizes from the
+  tile art) and a custom single grain of gravel or pebbles (stones); null for sand / mud / soil / clay / layered and for
+  two-grain custom blends (not yet). `grainMeshes` = one packed layer through `scatter` (stones sunk 0-18 %, chips about
+  level, pile grid a third of a grain, colours from the ground's shades, darker under water if terrestrial);
+  `glassGrains` = a row pressed against each pane from the floor up to the surface (stones long side along the glass,
+  chips on edge), unlit with a fixed soft light baked into their own geometry copies (lit, side-on they went near black);
+  not in a bowl. render/build.ts addSubstrate: with grains the painted top and skirt step back from the glass by 55 % of a
+  grain (`clipIn`, convex outlines), so the glass row and the top layer meet (the surface had sliced the stones: a seam);
+  painted ground darkened to the gaps (0x6e / 0x5a); litter lifted by `grainTop`. Stones: subdivided icosahedron, detail 0
+  (20 tris) under 8 mm, 1 above; chips: jittered slabs with a fibre texture. Grains draw first (renderOrder -1), so the
+  depth test skips the ground under them (fill was most of the cost). envKey keeps a custom ground's colours when it has
+  grains (they are baked at build). Made grains are cached per ground key (6) and reused for rebuilds that do not move
+  the ground. scatter: flat arrays, scratch objects, a Float32Array pile grid, `insideIn` (insideBy's outline lookup per
+  call was 80 % of the time); placements unchanged (litter layouts identical).
+- **Perf** (GPU timer, EXT_disjoint_timer_query_webgl2, `gpuPerf` in scripts/ground-shots.js, on vs off alternating):
+  20-gal: pebbles +0.08 ms (1.5k), bark +0.12 (3.4k), natural gravel +0.29 (18k); planted example (36 in, black gravel,
+  42k) +0.85; litter 100 % about 0. Build: the 36 in tank's grains took ~160 ms per ground rebuild at first, now about a
+  third of that (machine was loaded, so measured as a ratio to groundHeight), and none when the ground key is unchanged.
+- Examples that change look (data unchanged): planted (onyx), paludarium (gravel), betta bowl (pea, top layer only).
+  Pictures: shots/t1_sheet_3d_a.png, shots/t1_sheet_3d_b.png. Dev note: a hidden pane runs no frames; the helpers call
+  `viewer.buildNow()`.
+- **Open:** two-grain custom blends with a coarse grain still painted; coated gravel has no glint; big custom pebbles look a
+  little egg-like from above; bowl has no glass row. Swamp land is seed-drawn, not editable ground (Nathan's rule: every
+  generated scape must be recreatable by hand): proposed as its own session (task card "Swamp land into editable terrain").
+
+
 ## Lane TA: tarantula, large arachnid body plan (2026-10-16; branch `tarantula`, port 5683; built + tested, committed on the branch, NOT pushed: pictures sent to Nathan, awaiting his verdict)
 - **Species**: Chaco golden knee (Grammostola pulchripes), `chacogoldenknee` in data/species.json (cat land-invert, cling any; male art `gpulchripes` tl 45 mm, female `gpulchripes_f` tl 50 mm; life stages = `Fish.tl`). Unit = BODY length (= card width); leg span about 3x.
 - **Built** (new `render/tarantula3d.ts`, data `art/tarantulas.ts`, on the JS spider's pattern): heavy rounded carapace lofted with a dented central fovea (3D dip + dark slit), eye tubercle with 8 small eyes in two rows, big chelicerae + curved fangs (folded back; swung out forward and apart in the threat), thick palps, big round abdomen with a bald urticating patch of short red bristles, 8 legs of 7 real segments (coxa, trochanter, femur, patella, tibia, metatarsus, tarsus; two-bone IK from the trochanter end, pale golden patella = the knee), scopula pad of short pale hair under each tarsus, claws, long dense coat (`fuzz`: ~26000 body + 6500 per leg strands). The male: slimmer, darker, two tibial hooks on each front leg (the only differences besides colour).
