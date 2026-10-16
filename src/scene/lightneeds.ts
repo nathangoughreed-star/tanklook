@@ -78,7 +78,7 @@ export const NEEDS: Record<string, PlantNeed | CoralNeed | LandNeed> = {
   lotus: P('medium', 'none', 'recommended', { par: [20, 90] }),
   hornwort: P('medium', 'none', 'none', { par: [10, 80] }), // grows in any light, floats; check
   anacharis: P('medium', 'none', 'none', { par: [10, 80] }),
-  stem: P('medium', 'recommended', 'recommended'),
+  stem: P('medium', 'recommended', 'recommended', { par: [30, 100] }), // generic stems: below ~30 only the slow green ones cope
   // high: reds and carpets
   stemred: P('high', 'required', 'required', { par: [40, 150] }),
   ludwigia: P('medium', 'recommended', 'recommended', { par: [30, 120] }), // reds from 40+

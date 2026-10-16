@@ -3,6 +3,7 @@
 // sets that replace the old fixed layouts. All sizes physical (mm): a bigger tank gets more pieces, not bigger ones.
 import { rng } from '../art/paint';
 import { PLANT3D, PLANT_ASPECT, grownSize, growthLen, growthOf, isCarpet, isClump, isFloat, isPatch, type PlantType } from '../art/plants';
+import { fitItems } from './plantfit';
 import { backdropDepth, clamp, clearOfWall, D2R } from './physics';
 import { bowlDims, bowlRadius, clampIn, footprint, shapeOf } from './shape';
 import { clampGround, groundHeight, radialTerrain, type Ground } from './terrain';
@@ -1045,7 +1046,8 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
       carpet(0.03, 0.95, (x, d) => onPath(x, d) || sol.some(it => it.kind === 'stone' && Math.hypot(x - it.x, d - it.depth) < itemDims(it)[0] * 0.45), dens > 1 ? 1 / Math.sqrt(dens) : 1);
     });
   }
-  const items = out.slice(0, MAX_ITEMS);
+  let items = out.slice(0, MAX_ITEMS);
+  if (S.layout.fit) items = fitItems(items, S.layout.fit, S.grow.feed, !!S.water.salt, LIBRARY); // lane PG step 4: only plants that fit the light and care
   seatHook.corals?.({ ...S, items });
   return items;
 }
