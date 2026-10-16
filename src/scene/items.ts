@@ -70,6 +70,9 @@ export const LIBRARY: Record<string, Variant> = {
   hammer: { kind: 'coral', label: 'Hammer coral', hint: 'Euphyllia heads of short fleshy tentacles with anchor-shaped tips. Size = width.', size: 150, min: 40, max: 400, salt: true },
   torch: { kind: 'coral', label: 'Torch coral', hint: 'Euphyllia heads of long flowing tentacles with round pale tips. Size = width.', size: 150, min: 40, max: 400, salt: true },
   anemone: { kind: 'coral', label: 'Bubble-tip anemone', hint: 'Not a coral: a disc of tentacles each swelling into a bulb; clownfish host in it. Size = width.', size: 150, min: 50, max: 350, salt: true },
+  montiplate: { kind: 'coral', label: 'Plating Montipora', hint: 'Broad thin shelves held nearly flat, stacked in tiers to one side. Size = width.', size: 200, min: 50, max: 500, salt: true },
+  seafan: { kind: 'coral', label: 'Sea fan', hint: 'A gorgonian: a fine fan of branches in one upright plane. Size = width.', size: 180, min: 50, max: 500, salt: true },
+  macroalgae: { kind: 'coral', label: 'Macroalgae', hint: 'Marine algae for a planted reef: feather or grape caulerpa, or red ogo (by seed). Size = width.', size: 160, min: 40, max: 450, salt: true },
 };
 export const KINDS: Record<ItemKind, string> = { stone: 'Stones', wood: 'Wood', cave: 'Caves', plant: 'Plants', coral: 'Corals' };
 export const MAX_ITEMS = 600;
@@ -248,7 +251,7 @@ export function itemDims(it: Pick<Item, 'kind' | 'variant' | 'seed' | 'size' | '
   // lie over at the surface), so its width follows its length only up to 1.4x the saved size
   const sw = Math.min(s, it.size * 1.4);
   if (it.kind === 'plant') return isCarpet(it.variant) ? [s, CARPET_H, s] : isFloat(it.variant) ? ((w: number) => [w, s * PLANT_ASPECT[it.variant as PlantType], w])(it.spread ? floatWidth(it) : s) : ((w: number) => [w, s, w])(it.spread ? Math.max(it.spread, sw / PLANT_ASPECT[it.variant as PlantType]) : sw / PLANT_ASPECT[it.variant as PlantType]) as [number, number, number];
-  if (it.kind === 'coral') return [s, s * ({ acropora: 0.6, montipora: 0.45, mushroom: 0.4, leather: 0.6, acrofine: 0.55, zoanthid: 0.3, hammer: 0.4, torch: 0.55, anemone: 0.4 } as Record<string, number>)[it.variant], s];
+  if (it.kind === 'coral') return [s, s * ({ acropora: 0.6, montipora: 0.45, mushroom: 0.4, leather: 0.6, acrofine: 0.55, zoanthid: 0.3, hammer: 0.4, torch: 0.55, anemone: 0.4, montiplate: 0.35, seafan: 0.8, macroalgae: 0.55 } as Record<string, number>)[it.variant], s];
   if (it.kind === 'cave' && it.variant in SHELLS) return shellDims(it.variant, s);
   if (it.kind === 'cave') return it.variant === 'arch' ? [s, 0.5 * s, 0.45 * s] : it.variant === 'tube' ? [s, 0.42 * s, 0.42 * s] : [s, 0.5 * s, s];
   if (it.variant in SHELLS) return shellDims(it.variant, s);

@@ -103,7 +103,7 @@ render/plant3d.ts, `LIBRARY` entries (scene/items.ts); no scene version bump (pl
   - Sheet `shots/T2_vines_on_wood_v1.png` (pothos on the climbing branch, creeper by the manzanita, growth .4 / .7 / 1);
     helper `shots/t2b.js`.
 
-## Lane T4: aquatic roster (2026-10-16; branch `aqua-roster`, port 5673; fish batches 1-2 and reef P1 approved by Nathan and pushed; reef P2 running)
+## Lane T4: aquatic roster (2026-10-16; branch `aqua-roster`, port 5673; DONE: fish batches 1-2 and reef P1 + P2 approved by Nathan and pushed)
 Roadmap section 6: species that add new silhouettes, scales or habitats, in batches of about five, each on a review sheet.
 - **Batch 1 (Nathan approved, v1 at build 567)**: pygmy corydoras (`pygmycory`, 25 mm, slim mini cory, black stripe),
   reticulated hillstream loach (`hillstream`, *Sewellia lineolata*, 60 mm, flat disc body, eyes on top, paired fins held
@@ -123,6 +123,13 @@ Roadmap section 6: species that add new silhouettes, scales or habitats, in batc
   Height ratios added to `itemDims`; `test/reef.test.ts` covers all ten pieces (30 s timeout). Not done: clownfish do
   not host in the anemone (fish behaviour, not this lane's files); the reef starter's coral mix is unchanged (would
   reshuffle every approved reef layout; belongs with the queued marine sub-styles).
+- **Reef P2 (Nathan approved the pictures)**: `montiplate` "Plating Montipora" (broad thin shelves held nearly flat in
+  overlapping tiers to one side; the old `montipora` "Plate coral" whorl is unchanged), `seafan` "Sea fan" (gorgonian:
+  a short trunk splitting seven times in one bowed upright plane, turned only a little so it faces the front; 4 colours),
+  `macroalgae` "Macroalgae" (the seed picks feather caulerpa on a runner, grape caulerpa, or red ogo / Gracilaria).
+- **Lane DONE.** Roster: 9 fish species (+5 females), 8 reef pieces; research/roster/ROSTER.md (main checkout, untracked)
+  updated. Follow-ups: clownfish hosting in the anemone (fish behaviour); new corals in the reef starter mix (with the
+  queued marine sub-styles); macroalgae could later move to the plant system for growth / sway.
 - AqAdvisor: all on it (ids via `scripts/aqadvisor-ids.py`, now with a T4 block); hillstream is a stand-in (AqAdvisor lists
   only *Gastromyzon ctenocephalus*, same family, size and habit). Tests: stand-in list + "cory" search updated.
 - **New generic options (own commit `5fbf6ce`, off by default, every recorded fingerprint unchanged)**: `pec.flat` /
@@ -1725,7 +1732,7 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | T1 dry ground (roadmap R1) | `../Glass-Box-dry-ground` / `dry-ground` | 5633 | substrate types in `scene/types.ts` / `validate.ts` / `defaults.ts` (substrate only), the ground build in `render/build.ts`, substrate tiles in `art/placeholder.ts` / `render/textures.ts`, new `render/scatter.ts` (leaf litter), the Substrate section of `ui/panels.ts` / `index.html` | running (session `local_6ae6a2e0`) |
 | T2 terrestrial plants (roadmap R1) | `../Glass-Box-terra-plants` / `terra-plants` | 5653 | `art/plants.ts`, `render/plant3d.ts`, plant branch of `render/items.ts`, plant entries of `scene/items.ts` LIBRARY | running (session `local_7d35229e`) |
 | T3 dry hardscape + anchors (roadmap R1/R2) | `../Glass-Box-dry-hardscape` / `dry-hardscape` | 5663 | non-plant branches of `render/items.ts` (not the GRIT shader core), stone / wood / cave / hide entries of `scene/items.ts` LIBRARY, new `scene/anchors.ts` + its hook in the cling / rest code; anchor hook in `render/build.ts` addContents rest / cling helpers (`top`, `restOn`, start of `animal()`, `onGlass`, `onWall`, glass branch of `snailMeshes`); perch pose in `art/herps.ts` / `render/herp3d.ts` | DONE (see the Lane T3 section): anchors API for T2 vines (`limbPaths`); files free |
-| T4 aquatic roster | `../Glass-Box-aqua-roster` / `aqua-roster` | 5673 | `data/species.json`, `data/aqadvisor.json`, NEW species' PLANS / her() entries in `art/fishgen.ts`, `render/coral3d.ts` + coral entries of `scene/items.ts` LIBRARY | 9 fish + 5 reef pieces pushed; reef P2 running (session `local_c8325e61`) |
+| T4 aquatic roster | `../Glass-Box-aqua-roster` / `aqua-roster` | 5673 | `data/species.json`, `data/aqadvisor.json`, NEW species' PLANS / her() entries in `art/fishgen.ts`, `render/coral3d.ts` + coral entries of `scene/items.ts` LIBRARY | DONE (9 fish + 8 reef pieces, see its section); files free |
 | FM fish mesh merge | `../Glass-Box-fish-merge` / `fish-merge` | 5683 (headless checks preferred) | fish mesh assembly in `render/fish3d.ts`, the animal-mesh part of `render/build.ts` | DONE 2026-10-16 (see its section), files free |
 | G1 crested gecko + lizard body plan (roadmap R2) | `../Glass-Box-gecko` / `gecko` | 5663 | new `render/lizard3d.ts` (+ art data), `art/herps.ts` / `render/herp3d.ts` hooks, the gecko entries in `data/species.json` / `aqadvisor.json` (T4 also edits those: keep both sides), perch / cling poses on `scene/anchors.ts` | ready to open (prompt `prompts/lane-G1-crested-gecko.md`) |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone (fish behaviour, small lane, T4 found it) | queued |
