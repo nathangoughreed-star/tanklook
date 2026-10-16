@@ -5,7 +5,7 @@
 import * as THREE from 'three';
 import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng } from '../art/paint';
-import { PLANT3D, growthOf, isCarpet, isFloat, isVine, type PlantType } from '../art/plants';
+import { BREED, PLANT3D, growthOf, isCarpet, isFloat, isVine, type PlantType } from '../art/plants';
 import { CARPET_W, SHELLS, itemDims, itemSink, seatHook, stoneDims, woodLimbs, type Limb } from '../scene/items';
 import { turnOut, type AnchorProbe } from '../scene/anchors';
 import { lampHeight } from '../scene/lightout';
@@ -917,6 +917,10 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
     m = new THREE.Mesh(g, plantMaterial(T));
     if (g.userData.cpu) m.raycast = plantRaycast;
     m.userData.plant = true;
+    // a mat (moss) spreads with Time: its patch widens past the size it was planted at, no new plants (lane PR)
+    const mat = BREED[it.variant as PlantType];
+    const g0 = growthOf(it.variant as PlantType, it.size);
+    if (mat?.mode === 'mat' && it.growth != null && gr > g0) { const k = 1 + (mat.rate - 1) * (gr - g0) / (1 - g0 || 1); m.scale.set(k, 1, k); }
   } else m = new THREE.Mesh(bakedShape(it), solidMaterial(T));
   m.position.set(it.x, it.kind === 'plant' && isFloat(it.variant) ? waterY(T, S.water.level) : y + (m.geometry.userData.rise ?? 0), -it.depth);
   m.rotation.copy(itemEuler(it));

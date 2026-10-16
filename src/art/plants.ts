@@ -398,6 +398,6 @@ export const BREED: Partial<Record<PlantType, Breed>> = {
   salvinia: { mode: 'float', rate: 7, hop: [0.4, 0.9], cap: 8, from: 0.4 },
   frogbit: { mode: 'float', rate: 5, hop: [0.4, 0.9], cap: 8, from: 0.4 },
   lettuce: { mode: 'float', rate: 4, hop: [0.4, 0.9], cap: 8, from: 0.4 },
-  moss: { mode: 'mat', rate: 3, hop: [0, 0] },
-  sphagnum: { mode: 'mat', rate: 2.5, hop: [0, 0] },
+  moss: { mode: 'mat', rate: 2.2, hop: [0, 0] },
+  sphagnum: { mode: 'mat', rate: 2, hop: [0, 0] },
 };

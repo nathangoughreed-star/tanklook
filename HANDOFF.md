@@ -36,6 +36,24 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
+## Lane PR: plant propagation, step 1 (2026-10-16; branch `plant-propagation`, port 5693; design + Nathan's decisions in research/plant-propagation.md)
+- **Built:** `BREED` table in `art/plants.ts` (mode runner / offset / rhizome / bulb / cuttings / float / mat, rate = daughters per Time per mature
+  plant in a low-tech tank, hop mm, cap, from = parent growth to start). Sagittaria / vallisneria (`grass`) / hairgrass / sword / ozelot runners; crypt,
+  balansae, succulents + bromeliad pups; anubias, buce, ferns rhizome (stay on their wood or rock); lotus bulb; stem plants cuttings (from growth 0.7);
+  the four floaters (stop at 90 % water-line cover, none without water); moss + sphagnum `mat` (no new Items: `render/items.ts` widens the mesh x/z).
+- **`scene/propagate.ts`:** `daughtersAt(item, t, feed, tank, planted)` pure + seeded (n-th daughter's direction / distance / birth Time never change; 8 placement
+  tries, rejected = slot used up); `planBroods` = whole tank incl. grandchildren in birth order, plant cap `MAX_PLANTS` 250 (earliest births kept, so Time only
+  adds); `syncBroods(s, t, feed)` puts preview daughters in `s.items` (`Item.brood` key, growth 0, `planted = -born * rate` so GR3's Time machinery grows them from
+  birth). Called at the top of `growStep` (ui/panels.ts). Feeding scales the breeding rate by the same factor as growth. Daughters use a pool of 3 seeds per species
+  (shared built mesh, GR4 GPU reveal, no rebuild per step).
+- **Keep / undo:** `endGrow` strips `brood`; daughters stay as ordinary Items with optional `parent` (validate.ts keeps it only if that id exists; no scene
+  version bump). Undo = store rollback; Time back = daughters removed. A later preview of the same parent skips its kept daughters' directions (salt).
+- **Cost:** syncBroods median 1.9 ms per step at 150 plants (alternating A/B per step against growth alone; 0.1 ms), ~250 plants at the cap. Rendering cost is the
+  extra plants themselves.
+- **Not built (step 2):** competition (suppression, shading, overlap), light-map scaling, rhizome limited to a piece's real top, mat limited by glass / wood.
+  Defaults are conservative: carpet, pothos, creeper, vines, tiger-less species have no breed data yet.
+- **Test:** `test/propagate.test.ts` (determinism, scrub round trip, cap, containment, rhizome host, floater cover, keep + file round trip).
+
 ## Lane EN: enclosure presentation (2026-10-16; branch `enclosure`, port 5673; opened by coordinator 3)
 Scope: roadmap section 7. Audit (2026-10-16): presets PARTIAL, backdrops DONE (no botanical / plain), lids+doors NOT BUILT, equipment PARTIAL (lights only), light mood PARTIAL (no direction / mood presets), bowls DONE.
 **Batch 1 (2026-10-16, Nathan approved pictures `shots/enclosure/EN1-2`):** 9 terrarium presets in `TANK_PRESETS` (nano 8", cubes 12/18", tall arboreal 12x18x12 / 18x24x18 / 24x48x24, wide terrestrial 36x18x18 / 48x18x24 / 48x24x24); lid 'mesh' (screen top: dark frame + textured weave in `build.ts` addLid via `meshMaterial`, light x0.8 `MESH_LID` in lightout, plants cap at lid like glass); new optional `TankSetup.doors` 'hinged' | 'sliding' (absent = none; rectangles only; `addFrontDoors` in build.ts; Lid row has Mesh top, new Front doors row in the Tank section). No version bump (additive, validate keeps old files). One-line hooks outside my files: `render/items.ts` (lid cap), `ui/diff.ts`, `scene/setupsheet.ts`, `scene/lightout.ts`.
@@ -252,7 +270,7 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Efficiency review (2026-10-15; Nathan: the features are in and look right, so review for efficiency; lanes E1 + E2 OPEN, measure / audit only)
 - Lane SD: scape density sliders (2026-10-15; branch `scape-density`, port 5603; DONE, pushed to main)
 - Lane X2: fish leftovers from X and F2 (2026-10-15; branch `fish-x2`, port 5583; Nathan approved all four steps; pushed to main)
-- Plant growth (2026-10-15; design agreed in chat; lane GR1 DONE: branch `plants3d`, port 5283, pushed to main; GR3 DONE (`plant-time`, 5593); GR2 DONE (pushed); GR4 DONE (GPU reveal + worker prebuild, pushed))
+- Plant growth (2026-10-15; design agreed in chat; lane GR1 DONE: branch `plants3d`, port 5283, pushed to main; GR3 DONE (`plant-time`, 5593); GR2 DONE (pushed); GR4 DONE (GPU reveal + worker prebuild, pushed); PR step 1 propagation: see "Lane PR" above)
 - 3D back wall (2026-10-15; main checkout; Nathan chose "3D panel inside" over a flat printed sheet; pushed to main)
 - Aquascape menu split into Hardscape and Plants (2026-10-14; Nathan asked; pushed to main)
 - Lane Z: corals sit on the rock (2026-10-14; branch `coral-seat`, port 5563; Nathan approved; pushed to main)
