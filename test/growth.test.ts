@@ -9,8 +9,9 @@ import { plantGeometry as plantBefore } from './fixtures/plant3d_before_growth';
 
 // Plant growth (lane GR1, 2026-10-15)
 const TYPES = Object.keys(PLANT3D) as PlantType[];
-/** The species the pre-growth fixture knows (lane GR2 added frogbit, water lettuce and tiger lotus after it). */
-const OLD = TYPES.filter(t => !['frogbit', 'lettuce', 'lotus'].includes(t));
+/** The species the pre-growth fixture knows (lane GR2 added frogbit, water lettuce and tiger lotus after it; lane T2 the
+ *  land plants). */
+const OLD = TYPES.filter(t => !['frogbit', 'lettuce', 'lotus', 'pothos', 'bromeliad', 'tropfern', 'fittonia', 'sphagnum', 'creeper'].includes(t));
 
 /** The visible triangles as sorted strings of their corners (order-free: the growth build interleaves its extras). */
 function tris(g: THREE.BufferGeometry) {

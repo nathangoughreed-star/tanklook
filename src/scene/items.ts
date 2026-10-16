@@ -44,6 +44,13 @@ export const LIBRARY: Record<string, Variant> = {
   lettuce: { kind: 'plant', label: 'Water lettuce', hint: 'Pale velvety rosettes floating at the water line, feathery roots below.', size: 250, min: 90, max: 700 },
   lotus: { kind: 'plant', label: 'Tiger lotus', hint: 'Broad red leaves blotched dark maroon; grown on, it sends lily pads up to the surface.', size: 120, min: 40, max: 250 },
   carpet: { kind: 'plant', label: 'Carpet patch', hint: 'A low carpet plant.', size: 160, min: 60, max: 400 },
+  // land plants (lane T2): for terrariums, grown above the water
+  pothos: { kind: 'plant', label: 'Pothos', hint: 'Terrarium: long vines of gold-streaked heart leaves that climb, trail along the ground and hang off wood. Size = vine length.', size: 450, min: 80, max: 1800 },
+  bromeliad: { kind: 'plant', label: 'Bromeliad', hint: 'Terrarium: a stiff rosette with a red heart; raise it onto wood or cork like an epiphyte.', size: 150, min: 50, max: 320 },
+  tropfern: { kind: 'plant', label: 'Tropical fern', hint: 'Terrarium: arching fronds of fine leaflets, a soft midground mass.', size: 260, min: 60, max: 480 },
+  fittonia: { kind: 'plant', label: 'Fittonia', hint: 'Terrarium: a low mound of dark leaves netted with pink veins, for the foreground.', size: 90, min: 35, max: 160 },
+  sphagnum: { kind: 'plant', label: 'Sphagnum moss', hint: 'Terrarium: soft pale-green cushions; spread them over the ground or raise them onto wood.', size: 40, min: 15, max: 90 },
+  creeper: { kind: 'plant', label: 'Creeping fig', hint: 'Terrarium: a flexible vine of small leaves that climbs flat up the back wall. Size = vine length.', size: 450, min: 60, max: 1400 },
   // corals (2026-10-14): size = width
   acropora: { kind: 'coral', label: 'Branching coral', hint: 'An Acropora-style colony of branches with pale tips. Size = width.', size: 160, min: 40, max: 500, salt: true },
   montipora: { kind: 'coral', label: 'Plate coral', hint: 'A whorl of thin cupped plates. Size = width.', size: 180, min: 40, max: 500, salt: true },

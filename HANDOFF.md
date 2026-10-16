@@ -2,6 +2,30 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane T2: terrestrial plants (2026-10-16; branch `terra-plants`, port 5653; batch 1 approved by Nathan "all six look good" and pushed; batch 2 running)
+Roadmap R1 section 3 (land plants) and section 6 (aquatic plant follow-ons). Data in `PLANT3D` (art/plants.ts), generator
+render/plant3d.ts, `LIBRARY` entries (scene/items.ts); no scene version bump (plants are items; new variants only).
+- **Batch 1, land plants** (`land: true`, sway 0: no current): pothos (`pothos`), bromeliad (`bromeliad`), tropical fern
+  (`tropfern`, Nephrolepis-type), fittonia (`fittonia`), sphagnum moss (`sphagnum`), creeping fig (`creeper`, the
+  "flexible vine"). Library hints start "Terrarium:". Each has growth (Growth slider + Time, GR3 speed).
+  - New form `vine` (pothos, creeper): vines from a crown, built in mm (no fit-to-height: size = the longest vine's
+    length, `isVine`); `PLANT3D[t].vine` = climb share, leaf spacing, back lean, fan, thickness, wander, branch. Climbers
+    fan up leaning back toward the wall (bendPlant's glass hug turns them up along the back pane; at the lid they lie
+    along it), their leaves held flat toward the viewer (`leaf(..., face)`); trailers arch out and run along the ground;
+    lifted onto wood (`Clump.drop` = lift, to 5 mm, in the plant key) they run out ~30-80 mm then hang down to the ground.
+    A vine lengthens from its base at the species' rate (point s mm along it shows at g0 + ln(s / L) / ln(len1 / len0));
+    extra vines and side branches past g0 (own stream). A vine is not capped under the lid (plantPlan `cap`).
+  - Leaf3D additions: `pinnae` (compound frond: leaflet pairs riding on the rachis), `veins` (fittonia net, no random
+    draws), `heart` (bromeliad red base). `Plant3D.lean` (stem lean x, fittonia sprawls), `Grow.prop` (grown-on leaves keep
+    their width ratio: bromeliad). `isClump` includes vines (Spread / Stems sliders).
+  - Unchanged for every older species: the new fields are absent there (`x * (P.lean ?? 1)` is exact); growth.test.ts
+    fixture compare skips the new species (as for GR2's three); gpureveal.test.ts covers them all (every PLANT3D key).
+    The worker prebuild goes through plantPlan, so it covers them. 341 tests pass.
+  - Sheets (worktree `shots/`, not in git): `T2_v1_{species}.png` (growth 0 / .5 / 1 front + 3/4 in a dry tank, glass lid,
+    close-ups at growth 1). Helpers `shots/t2.js` (row / views / close), `t2_species.py`, `t2_sheet.py`.
+  - Open: pothos / vines do not follow branches or link wood yet (needs T3's `scene/anchors.ts`); sphagnum is a soft
+    cushion without distinct capitula; fittonia gets a little leggy at growth 1; land plants in a wet tank draw submersed.
+
 ## Lane T4: aquatic roster (2026-10-16; branch `aqua-roster`, port 5673; batch 1 approved by Nathan and pushed; batches 2-3 running)
 Roadmap section 6: species that add new silhouettes, scales or habitats, in batches of about five, each on a review sheet.
 - **Batch 1 (Nathan approved, v1 at build 567)**: pygmy corydoras (`pygmycory`, 25 mm, slim mini cory, black stripe),

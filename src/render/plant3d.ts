@@ -57,6 +57,8 @@ const SEG = 40;
  *  `on` = rides on a stem (its piece, its place there) instead of being a piece of its own. */
 interface LeafTag { a: number; w: number; ext?: boolean; on?: { pc: number; par: number }; em?: number; anc?: THREE.Vector3 }
 const SHOWN: LeafTag = { a: -1, w: 1e-3 };
+/** A climbing vine's leaves face this way: toward the viewer, a little up (lane T2). */
+const FACE = new THREE.Vector3(0, 0.35, 1).normalize();
 /** Shown from a, full by `by`: w cut so a + w stays at or under `by` (a plant's own part is full at its own growth). */
 const fullBy = (a: number, w: number, by: number) => { a = Math.min(a, by - 0.005); return { a, w: Math.max(1e-4, Math.min(w, (by - a) * 0.999)) }; };
 
@@ -117,7 +119,7 @@ const STIFF: Bend = { cx: 0, cz: 0, k: 0, wob: 0, ph: 0 };
  * One leaf from `base`, heading `yaw` (0 = +x, toward the viewer = +pi/2), length L. `rise` / `arch` / `twist` / `bright`
  * are this leaf's draws; the colour pair is picked by the caller. `tag` = when it grows. Returns the blade's tip.
  */
-function leaf(out: Sheets, f: Leaf3D, stalkCol: string, base: THREE.Vector3, yaw: number, L: number, rise: number, twist: number, cols: [string, string], bright: number, r: R, bend: Bend = STIFF, tag: LeafTag = SHOWN) {
+function leaf(out: Sheets, f: Leaf3D, stalkCol: string, base: THREE.Vector3, yaw: number, L: number, rise: number, twist: number, cols: [string, string], bright: number, r: R, bend: Bend = STIFF, tag: LeafTag = SHOWN, face?: THREE.Vector3) {
   // across the blade: evenly spaced, plus two columns hugging the middle when there is a midrib line
   const us = Array.from({ length: f.seg[1] }, (_, j) => (j / (f.seg[1] - 1)) * 2 - 1);
   if (f.rib) us.splice(us.length >> 1, 1, -0.07, 0, 0.07);
@@ -137,6 +139,16 @@ function leaf(out: Sheets, f: Leaf3D, stalkCol: string, base: THREE.Vector3, yaw
     const a = rise + f.arch * t ** 1.5, w = bend.wob * Math.sin(t * Math.PI * 1.6 + bend.ph) * t;
     return V(Math.sin(a) * hx + bend.cx * bend.k * t ** 1.5 - hz * w, Math.cos(a), Math.sin(a) * hz + bend.cz * bend.k * t ** 1.5 + hx * w).normalize();
   };
+  // a heart colour up from the base, a net of veins (lane T2: bromeliad, fittonia); no random draws
+  const heart = f.heart ? new THREE.Color(f.heart[0]) : null, vein = f.veins ? new THREE.Color(f.veins.col) : null;
+  const veinAt = (s: number, u: number) => {
+    const Vn = f.veins!, au = Math.abs(u), lw = Vn.w / 2;
+    // the midrib, side veins sweeping out toward the tip, and a finer cross net between them
+    const mid = au < 0.09 ? 1 : 0, side = Math.abs(((s * Vn.n - au * 0.7) % 1 + 1) % 1 - 0.5) > 0.5 - lw ? 1 : 0;
+    const net = Math.abs(((au * Vn.n * 0.9 + s * Vn.n * 0.35) % 1) - 0.5) > 0.5 - lw * 0.6 ? 0.45 : 0;
+    return s < 0.02 || s > 0.97 || au > 0.92 ? 0 : Math.max(mid, side, net);
+  };
+  const rowsAt: { c: THREE.Vector3; d: THREE.Vector3; side: THREE.Vector3; up: THREE.Vector3; s: number; i: number }[] = [];
   const c = base.clone(), line: number[] = [], tg: Tag[] = [], own = tag.on ? -1 : out.pieces.length, b0 = base.clone();
   // a strap gets longer: each row shows once the leaf has grown past it, the last stretch tapering in as it comes
   const e = Math.max(1e-4, tag.w * 0.15);
@@ -151,7 +163,8 @@ function leaf(out: Sheets, f: Leaf3D, stalkCol: string, base: THREE.Vector3, yaw
         : { a: tag.a, w: tag.w, anc: tag.anc ?? b0, pc: own, par: i, apar: 0, em };
     const d = dir(t);
     // across the blade: horizontal and square to the heading, turned about the midrib by the twist
-    const side0 = V(-hz, 0, hx), side = side0.addScaledVector(d, -side0.dot(d)).normalize().applyAxisAngle(d, twist * s), up = new THREE.Vector3().crossVectors(side, d).normalize();
+    // (`face`, lane T2: the blade's upper side turned toward it, e.g. a climber's leaf held flat against its wall)
+    const fx = face ? new THREE.Vector3().crossVectors(d, face) : null, side0 = fx && fx.lengthSq() > 0.01 ? fx.normalize() : V(-hz, 0, hx), side = side0.addScaledVector(d, -side0.dot(d)).normalize().applyAxisAngle(d, twist * s), up = new THREE.Vector3().crossVectors(side, d).normalize();
     const w = !blade ? SW : s >= 1 ? 0 : Math.max(NP ? SW : 0, W * Math.sin(Math.PI * Math.max(1e-3, s) ** f.prof[0]) ** f.prof[1]);
     for (let j = 0; j < NC; j++) {
       const u = us[j];
@@ -162,7 +175,26 @@ function leaf(out: Sheets, f: Leaf3D, stalkCol: string, base: THREE.Vector3, yaw
       if (blade && rib && u === 0 && s > 0.02 && s < 0.9) k.lerp(rib, 0.55);
       if (blade && tip && s > 1 - f.tip![1]) k.lerp(tip, ((s - 1 + f.tip![1]) / f.tip![1]) ** 1.5);
       if (blade && spot) k.lerp(spot, 0.85 * spotAt(s, u));
+      if (blade && heart && s < f.heart![1]) k.lerp(heart, (1 - s / f.heart![1]) ** 1.3);
+      if (blade && vein) k.lerp(vein, 0.9 * veinAt(s, u));
       cs.push(k.multiplyScalar(bright)); bs.push(blade ? under.clone().lerp(k, 0.3).multiplyScalar(bright) : k);
+    }
+    if (blade && f.pinnae) rowsAt.push({ c: c.clone(), d, side: side.clone(), up: up.clone(), s, i });
+  }
+  // a compound frond (lane T2): pairs of leaflets along the rachis, riding on it (they lie over and grow with it)
+  if (f.pinnae) {
+    const Pn = f.pinnae, np = Math.round(between(r, Pn.n)), on = tag.on ?? { pc: own, par: 0 };
+    for (let k = 0; k < np; k++) {
+      const sk = (k + 0.6) / (np + 0.2), j = Math.min(rowsAt.length - 2, Math.floor(sk * (rowsAt.length - 1))), R0 = rowsAt[j], R1 = rowsAt[j + 1], q = sk * (rowsAt.length - 1) - j;
+      const at = R0.c.clone().lerp(R1.c, q), d = R0.d.clone().lerp(R1.d, q).normalize(), side = R0.side.clone().lerp(R1.side, q).normalize(), up = R0.up.clone().lerp(R1.up, q).normalize();
+      const Lp = L * between(r, Pn.leaf.len) * Math.sin(Math.PI * Math.max(0.03, sk) ** Pn.prof[0]) ** Pn.prof[1];
+      if (Lp < 0.6) continue;
+      for (const sg of [-1, 1]) {
+        // off the rachis toward the tip, tipped up a little (the frond's leaflets lie nearly in its plane)
+        const v = side.clone().multiplyScalar(sg * Math.sin(Pn.ang)).addScaledVector(d, Math.cos(Pn.ang)).addScaledVector(up, 0.25).normalize();
+        const pt: LeafTag = { a: tag.a, w: tag.w, em: tag.em, anc: tag.anc ?? b0, on: { pc: on.pc, par: tag.on ? on.par : R0.i + q } };
+        leaf(out, Pn.leaf, stalkCol, at, Math.atan2(v.z, v.x), Lp, Math.acos(Math.max(-1, Math.min(1, v.y))), (r() - 0.5) * 0.3, Pn.leaf.cols[Math.floor(r() * Pn.leaf.cols.length)], bright * (0.92 + r() * 0.16), r, STIFF, pt);
+      }
     }
   }
   if (!tag.on) out.pieces.push(line);
@@ -210,6 +242,8 @@ export interface Clump {
   spread?: number; stems?: number;
   /** A floater's density: times the species' own rosettes per area (absent = 1). */
   dens?: number;
+  /** Vines (lane T2): how high its base sits over the ground, mm (trailers hang down to it). */
+  drop?: number;
   /** The glass within its own spread, in its own frame: [nx, nz, e] per pane, a point (x, z) is inside by
    *  e - (x nx + z nz) mm. Stems, crowns and rosettes are only set down inside (a spread may reach past the glass). */
   clip?: number[];
@@ -220,7 +254,7 @@ export function clumpAuto(type: PlantType, seed: number, h: number) {
   const P = PLANT3D[type], r = rng(seed * 7919 + 13);
   if (!P) return { spread: h / PLANT_ASPECT[type], stems: 1 };
   const n0 = Math.round(between(r, P.n)), c0 = Math.round(between(r, P.crowns ?? [1, 1]));
-  return { spread: Math.round(h / PLANT_ASPECT[type] * P.spread), stems: P.form === 'stem' ? n0 : c0 };
+  return { spread: Math.round(h / PLANT_ASPECT[type] * P.spread), stems: P.form === 'stem' || P.form === 'vine' ? n0 : c0 };
 }
 
 /** What the growth tags need besides the vertices: the pieces' centrelines and the plant's current. */
@@ -453,7 +487,7 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
     const CUT = 0.35, own0: { at: (t: number) => THREE.Vector3; top: number; T: (t: number) => number; pc: number }[] = [];
     for (let s = 0; s < n; s++) {
       const b = inside(r, base, () => Math.sqrt(r()));
-      const top = h * (0.75 + 0.25 * r()), lean = V((r() - 0.5) * Wc * 0.4, 0, (r() - 0.5) * Wc * 0.4);
+      const top = h * (0.75 + 0.25 * r()), lean = V((r() - 0.5) * Wc * 0.4 * (P.lean ?? 1), 0, (r() - 0.5) * Wc * 0.4 * (P.lean ?? 1));
       // (a stem comes in as a cutting no earlier than growth 0: just planted = a few short cuttings)
       const at = path(b, top, lean, bend()), a0 = Math.min(Math.max(-0.02, own(s, n)), g0 - 0.06);
       const T = (t: number) => t <= CUT ? a0 : a0 + (t - CUT) / (1 - CUT) * (g0 - 0.02 - a0);
@@ -466,7 +500,7 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
     const em = Gr.overflow === 'emerge', thin = em ? 0.6 : 1, wider = em ? 2 : 0.4;
     for (let j = 0, m = Math.min(Math.round(extras(n, 60) * thin), 60 - n); j < m; j++) {
       const a0 = extraAt(Math.round(j / thin), n), up = Math.min(0.25, 0.99 - a0), k = longer(a0 + up);
-      const b = inside(re, base * (clump.spread ? 1 : 1 + wider * (a0 - g0) / Math.max(0.05, 1 - g0)), () => Math.sqrt(re())), top = h * (0.75 + 0.25 * re()) * k, lean = V((re() - 0.5) * Wc * 0.4, 0, (re() - 0.5) * Wc * 0.4);
+      const b = inside(re, base * (clump.spread ? 1 : 1 + wider * (a0 - g0) / Math.max(0.05, 1 - g0)), () => Math.sqrt(re())), top = h * (0.75 + 0.25 * re()) * k, lean = V((re() - 0.5) * Wc * 0.4 * (P.lean ?? 1), 0, (re() - 0.5) * Wc * 0.4 * (P.lean ?? 1));
       // a new stem grows to its full length within a quarter of the growth scale (stem plants grow fast)
       const at = path(b, top, lean, bend()), T = (t: number) => a0 + t * up;
       all.push({ at, top, T, pc: stem(at, Math.round(nodes * Math.min(2, k)), T, 1, re, X, ex, exTubes, rad, Math.round(12 * Math.min(3, k))) }); // more rings: smooth where it lies over
@@ -477,6 +511,87 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
       const up = Math.min(0.25, 0.99 - a0), len = p.top * (1 - tb) * (0.6 + 0.5 * re()) * longer(a0 + up) / longer(g0), yaw = re() * 6.28;
       const at = path(p.at(tb), len, V((re() - 0.5) * Wc * 0.3, 0, (re() - 0.5) * Wc * 0.3), bend(), V(Math.cos(yaw), 0, Math.sin(yaw)).multiplyScalar(Math.min(len * 0.25, Wc * 0.3)));
       stem(at, Math.max(3, Math.round(nodes * Math.min(1.5, len / Math.max(1, p.top)))), t => a0 + t * up, 1, re, X, ex, exTubes, rad * 0.7, Math.round(12 * Math.min(3, Math.max(1, len / h))), { pc: p.pc, par: tb * SEG }); // rides on its stem
+    }
+  } else if (P.form === 'vine') {
+    // vines from a crown (lane T2), in mm: h = the longest vine's length at g0 (not a height). Climbers rise up behind the
+    // crown in a fan, leaning back toward the wall (where the glass turns them up along it, bendPlant), wandering, their
+    // leaves held out toward the viewer; trailers arch up, come down and run along the ground (off what the plant sits
+    // on: clump.drop mm over the ground, they hang down to it first). A vine gets longer from its base at the species'
+    // rate (the point s mm along it shows at gAt(s)); more vines come up as it grows
+    const Vn = P.vine!, n0 = Math.round(between(r, P.n)), n = clump.stems ? Math.min(MAX_STEMS, Math.round(clump.stems)) : n0;
+    const lk = Math.log(Gr.len[1] / Gr.len[0]), base = clump.spread ? clump.spread / 2 : Math.max(6, Wc * P.spread / 2), drop = Math.max(0, clump.drop ?? 0);
+    const r0 = Vn.thick * kStalk, e = 0.03;
+    /** One vine from b, L1 mm long at full growth; `o` = a branch: its climbing angle or its heading, the piece it rides on. */
+    const vine = (q: R, D: ReturnType<typeof draws>, into: Sheets, tubes: THREE.BufferGeometry[], b: THREE.Vector3, L1: number, gAt: (s: number) => number, climbs: boolean, o: { fan?: number; yaw?: number; on?: [number, number] } = {}) => {
+      // the path, every ~8 mm: heading (yaw in the ground plane) and elevation, walked from the crown
+      const step = Math.max(4, Math.min(12, L1 / 120)), m = Math.max(4, Math.ceil(L1 / step)), pts: THREE.Vector3[] = [b.clone()];
+      const fan = o.fan ?? (q() - 0.5) * 2 * Vn.fan, ramp = o.fan == null ? 120 : 1, ph = q() * 6.28, ph2 = q() * 6.28, wv = Vn.wander * (0.6 + 0.8 * q());
+      let yaw = o.yaw ?? q() * 6.28, el = climbs ? 1.45 : o.yaw != null ? 0.25 : 0.75 + q() * 0.5, lying = o.yaw != null && b.y <= -drop + 3, hung = false, off = o.yaw != null ? 1e9 : 0;
+      const reachOut = 30 + q() * 50; // (lifted: how far out it runs before it hangs over the edge)
+      const p = b.clone();
+      for (let i = 1; i <= m; i++) {
+        const s = i * step;
+        let dx: number, dy: number, dz: number;
+        if (climbs) {
+          // up a plane tilted back by `back`, fanned out sideways and wandering
+          const a = fan * Math.min(1, s / ramp) + wv * Math.sin(s / 140 + ph) * 0.6;
+          dx = Math.sin(a); dy = Math.cos(a) * Math.cos(Vn.back); dz = -Math.cos(a) * Math.sin(Vn.back) + 0.15 * Math.sin(s / 90 + ph2);
+        } else {
+          yaw += wv * Math.sin(s / 110 + ph) * step / 110 + (q() - 0.5) * 0.05;
+          if (o.yaw == null) off = Math.hypot(p.x - b.x, p.z - b.z);
+          const floor = -drop + 1.5;
+          if (lying) el = 0.02 * Math.sin(s / 60 + ph2);
+          else if (drop > 2 && !hung && off < reachOut) el = Math.max(0, el - step / 60); // out along what it sits on
+          else if (drop > 2 && p.y > floor + 20) { hung = true; el = Math.max(-1.45, el - step / 25); } // over the edge: down
+          else { el = Math.max(-0.9, el - step / 45); if (p.y + Math.sin(el) * step <= floor) { lying = true; el = 0; } }
+          dx = Math.cos(yaw) * Math.cos(el); dy = Math.sin(el); dz = Math.sin(yaw) * Math.cos(el);
+        }
+        p.add(V(dx, dy, dz).normalize().multiplyScalar(step));
+        if (!climbs && p.y < -drop + 1.5) p.y = -drop + 1.5;
+        pts.push(p.clone());
+      }
+      const pc = pieces.length, line: number[] = [], M = pts.length - 1;
+      for (const v of pts) line.push(v.x, v.y, v.z);
+      pieces.push(line);
+      if (o.on) links.push([pc, o.on[0], o.on[1]]);
+      const at =(s: number) => { const t = Math.max(0, Math.min(M, s / step)), j = Math.min(M - 1, Math.floor(t)); return pts[j].clone().lerp(pts[j + 1], t - j); };
+      const nc = Math.max(6, Math.round(M / 3)), ctl = Array.from({ length: nc + 1 }, (_, i) => at(L1 * i / nc));
+      tubes.push(tube(ctl, r0, P.stalk, Math.max(8, M), 4, (s, cc) => ({ ...fullBy(gAt(s * L1) - e, e, 1), anc: cc, pc, par: s * M, apar: s * M })));
+      // leaves every `node` mm, alternate sides; the older ones (near the base) larger, held out toward the viewer on a
+      // climber, up off the ground on a trailer
+      let side = q() < 0.5 ? 1 : -1;
+      for (let s = Vn.node * (0.4 + 0.6 * q()); s < L1 - 4; s += Vn.node * (0.75 + 0.5 * q())) {
+        side = -side;
+        const j = Math.min(M - 1, Math.floor(s / step)), tan = pts[j + 1].clone().sub(pts[j]).normalize(), hy = Math.atan2(tan.z, tan.x);
+        const age = 1 - s / L1, Lf = between(q, f.len) * (0.55 + 0.45 * Math.sqrt(age)) * (climbs ? 1 : 0.9);
+        // (a climber's leaf: out to its side and a little forward, hanging a little, its face to the viewer)
+        const yawL = climbs ? (side > 0 ? 0.35 : Math.PI - 0.35) + (q() - 0.5) * 0.5 : hy + side * (1 + 0.5 * q());
+        const rise = climbs ? 1.45 + 0.5 * q() : lerp(f.rise[0], f.rise[1], q()), a = gAt(s);
+        leaf(into, f, P.stalk, at(s), yawL, Lf, rise, D.twist(), D.pick(), D.bright(), q, STIFF, { ...fullBy(a, 0.08, Math.max(a + 0.01, 1)), on: { pc, par: s / step } }, climbs ? FACE : undefined);
+      }
+      // branches, once grown on (from the plant's growth stream): off a point along it, out to one side, getting longer
+      // at the species' rate from when they start
+      if (more && g0 < 0.95) for (let k = 0, nb = Math.floor((Vn.branch ?? 0) * (0.5 + re())); k < nb; k++) {
+        const sb = L1 * (0.12 + 0.6 * re()), a0 = Math.max(gAt(sb) + 0.06, g0 + 0.03);
+        if (a0 > 0.92) continue;
+        const L0 = 20, Lb = Math.min((L1 - sb) * 0.9, L0 * Math.exp(lk * (1 - a0))), j = Math.min(M - 1, Math.floor(sb / step)), tan = pts[j + 1].clone().sub(pts[j]);
+        if (Lb < 30) continue;
+        const sg = re() < 0.5 ? -1 : 1;
+        vine(re, X, ex, exTubes, at(sb), Lb, s => a0 + Math.max(0, Math.log(Math.max(1e-3, s / L0)) / lk), climbs,
+          climbs ? { fan: Math.max(-1.3, Math.min(1.3, fan + sg * (0.45 + 0.5 * re()))), on: [pc, sb / step] } : { yaw: Math.atan2(tan.z, tan.x) + sg * (0.5 + 0.6 * re()), on: [pc, sb / step] });
+      }
+    };
+    /** Vine lengths (fraction of the longest), and how many climb. */
+    for (let i = 0; i < n; i++) {
+      const fi = i === 0 ? 1 : 0.45 + 0.55 * r(), Li = h * fi, climbs = r() < Vn.climb, b = inside(r, base, () => Math.sqrt(r()));
+      // grown on it keeps getting longer at the species' rate; a plant nobody has grown stops at its own length
+      const L1 = more ? Li * Math.exp(lk * (1 - g0)) : Li, a0 = own(i, n);
+      vine(r, { pick, twist, bright }, out, extra, b, L1, s => Math.max(a0, g0 + Math.log(Math.max(1e-3, s / Li)) / lk), climbs);
+    }
+    for (let j = 0, m = extras(n, 24); j < m; j++) {
+      const a0 = extraAt(j, n), L0 = Math.max(30, h * 0.12), L1 = L0 * Math.exp(lk * (1 - a0)), climbs = re() < Vn.climb;
+      const b = inside(re, base * (1 + 0.6 * (a0 - g0) / Math.max(0.05, 1 - g0)), () => Math.sqrt(re()));
+      vine(re, X, ex, exTubes, b, L1, s => a0 + Math.max(0, Math.log(Math.max(1e-3, s / L0)) / lk), climbs);
     }
   } else if (P.form === 'moss') {
     // a ragged dome (radius = half the card width, height h) over a dark core; fronds all over it, pointing outward
@@ -515,7 +630,7 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
     const crowns = P.crowns && clump.stems ? Math.min(MAX_STEMS, Math.round(clump.stems)) : c0, n = Math.min(600, Math.round(n0 * crowns / c0));
     const half = (P.crowns && clump.spread ? clump.spread : Wc * P.spread) / 2, roots: THREE.Vector3[] = [];
     // straps (vallisneria, balansae, sagittaria) grow longer from the crown; broader leaves grow in whole
-    const ext = !rz && P.leaf.wid < 0.1;
+    const ext = !rz && P.leaf.wid < 0.1 && !P.leaf.pinnae; // (a fern's frond unrolls whole)
     if (rz) {
       const yaw = (r() - 0.5) * 0.6, dz = Math.sin(yaw) * half;
       for (let i = 0; i <= 4; i++) { const t = i / 4 * 2 - 1; roots.push(V(t * half * Math.cos(yaw), h * 0.012 + (r() - 0.5) * h * 0.01, t * dz + (r() - 0.5) * half * 0.15)); }
@@ -572,8 +687,9 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
       const base = rz ? onRhizome(re) : c.clone().add(V((re() - 0.5) * h * 0.02, 0, (re() - 0.5) * h * 0.02)), yaw = re() * 6.28;
       const L = h * between(re, f.len) * (rz ? 1 : 0.75 + 0.25 * outer) * k, rise = lerp(f.rise[0], f.rise[1], outer) * (0.85 + re() * 0.3);
       // a longer leaf gets more rows (smooth where it lies over) and its ripples keep their spacing
-      // (and a broad leaf widens less than it lengthens: width with the square root of the length; a strap keeps its width)
-      const fk: Leaf3D = k > 1.05 ? { ...f, wid: ext ? f.wid / k : f.wid / Math.sqrt(k), seg: [Math.round(f.seg[0] * Math.min(3, k)), f.seg[1]], wave: [f.wave[0] / Math.sqrt(k), f.wave[1] * k] } : f;
+      // (and a broad leaf widens less than it lengthens: width with the square root of the length; a strap keeps its width;
+      // a land rosette that keeps its proportions, lane T2, widens as much)
+      const fk: Leaf3D = k > 1.05 ? { ...f, wid: Gr.prop ? f.wid : ext ? f.wid / k : f.wid / Math.sqrt(k), seg: [Math.round(f.seg[0] * Math.min(3, k)), f.seg[1]], wave: [f.wave[0] / Math.sqrt(k), f.wave[1] * k] } : f;
       const tag = emTag({ ...fullBy(a0, ext ? 0.15 : 0.1, 1), ext }), pc = pieces.length;
       leaf(ex, fk, P.stalk, base, yaw, L, rise, X.twist(), X.pick(), X.bright(), re, bend(Math.min(1.5, L / h)), tag);
       if (E) later.push(() => twin(base, yaw, L, outer, tag, pc, k > 1.05 ? { ...fe, seg: [Math.round(fe.seg[0] * Math.min(3, k)), fe.seg[1]] } : fe));
@@ -584,10 +700,10 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
   // scale to the height asked for (the leaves' arch makes their reach less than their length), shade the leaves while
   // they are still one smooth sheet each, then merge with the stalks. Only the plant's own part sets the scale.
   const leaves = out.geometry(), parts = [leaves, ...extra];
-  const top = Math.max(...parts.map(g => { g.computeBoundingBox(); return g.boundingBox!.max.y; })), k = h / Math.max(1, top);
+  const vn = P.form === 'vine', top = Math.max(...parts.map(g => { g.computeBoundingBox(); return g.boundingBox!.max.y; })), k = vn ? 1 : h / Math.max(1, top); // (vines: built in mm)
   // a plant whose leaves reach out wider than its card is drawn narrower (at most by a quarter), so it fits where the card did
   const reach = Math.max(...parts.map(g => Math.max(-g.boundingBox!.min.x, g.boundingBox!.max.x, -g.boundingBox!.min.z, g.boundingBox!.max.z))) * k;
-  const kx = clump.spread ? 1 : Math.max(0.75, Math.min(1, Wc * 0.6 / Math.max(1, reach))); // a clump's own spread is kept
+  const kx = clump.spread || vn ? 1 : Math.max(0.75, Math.min(1, Wc * 0.6 / Math.max(1, reach))); // a clump's own spread is kept
   const exLeaves = ex.pos.length ? ex.geometry() : null, emLeaves = es.pos.length ? es.geometry() : null;
   const sheets = [leaves, ...(exLeaves ? [exLeaves] : []), ...(emLeaves ? [emLeaves] : [])], all = [...parts, ...sheets.slice(1), ...exTubes];
   for (const g of all) scalePart(g, k * kx, k, k * kx);
