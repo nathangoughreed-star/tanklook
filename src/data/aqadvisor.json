@@ -179,6 +179,18 @@
   "aq": "200909300048",
   "name": "Cockatoo Apisto (Apistogramma cacatuoides)"
  },
+ "peacock": {
+  "aq": "200909300091",
+  "name": "Grants Peacock (Aulonocara stuartgranti)"
+ },
+ "demasoni": {
+  "aq": "200909300168",
+  "name": "Pseudotropheus Demasoni (Pseudotropheus demasoni)"
+ },
+ "kadango": {
+  "aq": "200909300053",
+  "name": "Copadichromis Borleyi (Copadichromis borleyi)"
+ },
  "whitecloud": {
   "aq": "200909300241",
   "name": "White Cloud Mountain Minnow (Tanichthys albonubes)"
@@ -205,6 +217,11 @@
  "hillstream": {
   "aq": "200909300097",
   "name": "Hillstream Loach (Gastromyzon ctenocephalus)",
+  "standIn": true
+ },
+ "syno": {
+  "aq": "200909300224",
+  "name": "Synodontis Petricola (Synodontis petricola)",
   "standIn": true
  },
  "ocellaris": {

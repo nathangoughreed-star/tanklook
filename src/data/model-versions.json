@@ -85,6 +85,12 @@
   "turbo": {"v":2,"hash":"05ee593b","build":288,"date":"2026-10-14"},
   "watchman": {"v":2,"hash":"553e0528","build":348,"date":"2026-10-14"},
   "whitecloud": {"v":1,"hash":"88b68a84","build":568,"date":"2026-10-16"},
+  "demasoni": {"v":1,"hash":"78c6035d","build":667,"date":"2026-10-16"},
+  "kadango": {"v":1,"hash":"8d9805f3","build":667,"date":"2026-10-16"},
+  "kadango~f": {"v":1,"hash":"4694954f","build":667,"date":"2026-10-16"},
+  "peacock": {"v":1,"hash":"087360bd","build":667,"date":"2026-10-16"},
+  "peacock~f": {"v":1,"hash":"d680a6e1","build":667,"date":"2026-10-16"},
+  "syno": {"v":1,"hash":"86af656f","build":667,"date":"2026-10-16"},
   "yellowlab": {"v":1,"hash":"e77c80ea","build":567,"date":"2026-10-16"},
   "yellowlab~f": {"v":1,"hash":"1caad183","build":567,"date":"2026-10-16"},
   "yellowtang": {"v":2,"hash":"933463ae","build":348,"date":"2026-10-14"}

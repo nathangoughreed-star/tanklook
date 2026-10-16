@@ -56,6 +56,10 @@ NAMES = {
     'yellowlab': 'Yellow Lab (Labidochromis caeruleus)',
     'boesemani': 'Boesemans Rainbowfish (Melanotaenia boesemani)',
     'cockatoo': 'Cockatoo Apisto (Apistogramma cacatuoides)',
+    # lane CP (Malawi, 2026-10-16)
+    'peacock': 'Grants Peacock (Aulonocara stuartgranti)',
+    'demasoni': 'Pseudotropheus Demasoni (Pseudotropheus demasoni)',
+    'kadango': 'Copadichromis Borleyi (Copadichromis borleyi)',
     'whitecloud': 'White Cloud Mountain Minnow (Tanichthys albonubes)',
     'comet': 'Comet Goldfish (Carassius auratus)',
 }
@@ -66,7 +70,8 @@ STAND_INS = {
     'axolotl': 'Dojo Loach (Misgurnus anguillicaudatus)',  # 23 cm, bottom, cold water
     'firenewt': 'Zebra Loach (Botia striata)',  # 9 cm, bottom
     'firetoad': 'White Cloud Mountain Minnow (Tanichthys albonubes)',  # 4.5 cm, semi-aquatic, cool water
-    'hillstream': 'Hillstream Loach (Gastromyzon ctenocephalus)',  # Sewellia is not listed; same family, size and habit
+    'hillstream': 'Hillstream Loach (Gastromyzon ctenocephalus)',
+    'syno': 'Synodontis Petricola (Synodontis petricola)',  # S. njassae is not listed; same genus, size and habit  # Sewellia is not listed; same family, size and habit
 }
 
 # Saltwater (lane C's marine species): AqAdvisor's separate marine calculator, AqAdvisorMarine.php, same form and the

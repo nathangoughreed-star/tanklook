@@ -770,6 +770,31 @@ export const PLANS: Record<string, Plan> = {
       { k: 'spots', n: 18, u0: 0.72, u1: 0.92, v0: 0.01, v1: 0.09, r: 0.008, c: '#5a8ac8', a: 0.75 }, { k: 'blob', u: 0.9, v: 0.06, ru: 0.02, rv: 0.035, c: '#2a2418', a: 0.6 }],
     finMarks: [{ k: 'spots', n: 40, u0: 0.01, u1: 0.22, v0: -0.18, v1: 0.18, r: 0.009, c: '#c8402a', a: 0.85 }, { k: 'spots', n: 20, u0: 0.25, u1: 0.75, v0: -0.3, v1: -0.12, r: 0.008, c: '#c8402a', a: 0.6 }],
     eye: { r: 0.03, iris: ['#c8a040', '#2a1a08'] } },
+  // ---------- Lake Malawi roster (lane CP, 2026-10-16) ----------
+  // peacock (Aulonocara, male): deeper than a mbuna, steep forehead, big sensory-pit chin; electric blue, a yellow-orange
+  // wash over the back and rear, long blue-edged dorsal and anal fins that trail behind
+  peacock: { gape: 0.045, gapeDrop: 0.01, thick: 0.4, belly: 0.12, depth: 0.31, pedU: 0.2, ped: 0.055, peak: 0.5, back: 0.5, snout: 0.38, mouth: 0.012, shade: ['#1c4fa8', '#2e7ad8', '#8cc4f0'], tail: { type: 'round', h: 0.16, tint: '#4a8ce0', edge: '#f0c040' }, fin: '#3a80d8',
+    dorsal: { at: 0.8, len: 0.66, h: 0.1, spines: 0.6, nSp: 16, spineH: [0.05, 0.075], notch: 0.15, rake: 0.7, tip: 'point', trail: 0.12, drop: 0.8, edge: '#f0c848' },
+    anal: { at: 0.5, len: 0.26, h: 0.1, spines: 0.3, nSp: 3, spineH: [0.04, 0.07], tip: 'point', trail: 0.08, tint: '#4a88d8' }, pelvic: { u: 0.67, len: 0.13, ext: 0.05, tint: '#3070c8' },
+    marks: [{ k: 'band', u0: 0.45, u1: 0.98, v0: -1, v1: 0.2, c: '#f0b830', a: 0.6, f: 0.22 }, { k: 'band', u0: 0.2, u1: 0.8, v0: -0.04, v1: -0.01, c: '#2a50a0', a: 0.3, f: 0.01 },
+      { k: 'blob', u: 0.6, v: -0.06, ru: 0.22, rv: 0.07, c: '#a8d8ff', a: 0.25 }], eye: { r: 0.033, iris: ['#c8d8e8', '#0a1830'] } },
+  // Demasoni (Pseudotropheus demasoni): a small slim mbuna, blue-grey with a ladder of black vertical bars
+  demasoni: { gape: 0.04, gapeDrop: 0.008, thick: 0.4, belly: 0.1, depth: 0.25, pedU: 0.2, ped: 0.055, peak: 0.55, snout: 0.4, mouth: 0.01, shade: ['#5a8cc0', '#8cb8e0', '#d8e8f4'], tail: { type: 'round', h: 0.14, tint: '#7aa8d4' }, fin: '#8ab4dc',
+    dorsal: { at: 0.78, len: 0.62, h: 0.09, spines: 0.65, nSp: 17, spineH: [0.055, 0.075], notch: 0.15, rake: 0.5, tip: 'point', trail: 0.04, drop: 0.7 },
+    anal: { at: 0.48, len: 0.24, h: 0.09, spines: 0.3, nSp: 3, spineH: [0.04, 0.06], tip: 'point', trail: 0.03 }, pelvic: { u: 0.68, len: 0.11, ext: 0.03, tint: '#6a98c8' },
+    marks: [{ k: 'bars', us: [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], w: 0.034, c: '#141c2c', a: 0.88 }], finMarks: [{ k: 'band', u0: 0.18, u1: 0.8, v0: -0.4, v1: -0.2, c: '#18202c', a: 0.5, f: 0.008 }], eye: { r: 0.032, iris: ['#6a8ab0', '#0a0c14'] } },
+  // kadango (Copadichromis borleyi, male): a slim open-water haplochromine; blue-grey body flushing red over the back and
+  // the whole of the dorsal, anal and tail fins, a long jawed head
+  kadango: { gape: 0.05, gapeDrop: 0.01, thick: 0.36, belly: 0.08, depth: 0.25, pedU: 0.2, ped: 0.05, peak: 0.55, snout: 0.5, mouth: 0.012, shade: ['#3a5a88', '#7a9ac0', '#d0d8e0'], tail: { type: 'fork', h: 0.17, tint: '#d8402e', edge: '#f08a50' }, fin: '#d84a34',
+    dorsal: { at: 0.78, len: 0.58, h: 0.1, spines: 0.55, nSp: 15, spineH: [0.055, 0.08], notch: 0.15, rake: 0.6, tip: 'point', trail: 0.1, drop: 0.7, tint: '#d8402e', edge: '#f08a50' },
+    anal: { at: 0.5, len: 0.24, h: 0.1, spines: 0.3, nSp: 3, spineH: [0.04, 0.07], tip: 'point', trail: 0.06, tint: '#d8402e' }, pelvic: { u: 0.67, len: 0.12, ext: 0.04, tint: '#c83a2a' },
+    marks: [{ k: 'band', u0: 0.4, u1: 0.98, v0: -1, v1: -0.12, c: '#d03a2a', a: 0.55, f: 0.08 }, { k: 'bars', us: [0.3, 0.42, 0.54, 0.66], w: 0.03, c: '#2a3a58', a: 0.3 }], eye: { r: 0.033, iris: ['#d0d8e0', '#101820'] } },
+  // Malawi squeaker (Synodontis njassae): a humped, forward-heavy catfish; mottled brown with dark spots, long
+  // barbels, a tall stout dorsal spine, a big adipose fin and a deeply forked tail
+  syno: { pec: { s: 2, v: 0.85 }, thick: 0.9, belly: 0.9, wide: 0.5, pedT: 0.3, noseW: 0.5, depth: 0.28, pedU: 0.18, ped: 0.05, peak: 0.42, back: 0.5, snout: 0.7, mouth: 0.04, shade: ['#3a2c20', '#7a6448', '#c8b490'], tail: { type: 'fork', h: 0.2, tint: '#6a5a44', a: 0.9 }, fin: '#6a5a44',
+    dorsal: { at: 0.5, len: 0.16, h: 0.2, spines: 0.12, nSp: 1, spineH: 0.24, rake: 0.2, drop: 0.3, a: 0.9 }, anal: { u0: 0.34, u1: 0.4, h: 0.06 }, adipose: true, pelvic: { u: 0.58, len: 0.1, w: 1.3 },
+    marks: [{ k: 'spots', n: 60, u0: 0.2, u1: 0.95, v0: -0.2, v1: 0.1, r: 0.012, c: '#1c1610', a: 0.6 }, { k: 'blob', u: 0.45, v: -0.1, ru: 0.3, rv: 0.1, c: '#2a2018', a: 0.3 }],
+    finMarks: [{ k: 'spots', n: 18, u0: 0.1, u1: 0.8, v0: -0.4, v1: 0.1, r: 0.012, c: '#1c1610', a: 0.55 }], barbels: 0.075, eye: { r: 0.03, iris: ['#c8b890', '#20180e'], dv: -0.03 } },
 };
 
 // ---------- females of the dimorphic species (species.json `female`): the male's plan with the female's shape, fins and
@@ -834,6 +859,16 @@ Object.assign(PLANS, {
     anal: { at: 0.7, len: 0.5, h: 0.09, spines: 0.4, nSp: 7, spineH: [0.03, 0.065], notch: 0.18, rake: 0.6, trail: 0.03 }, pelvic: { u: 0.72, len: 0.35, thread: true, tint: '#d8ccb0' },
     marks: PLANS.gourami.marks!.slice(1) }),
   // ---------- aquatic roster females (lane T4) ----------
+  // peacock female: drab silver-brown with faint bars, short colourless fins
+  peacock_f: her('peacock', { shade: ['#6a5a48', '#a89878', '#d8cdb0'], tail: { type: 'round', h: 0.15, tint: '#b8a888' }, fin: '#b8a888',
+    dorsal: { at: 0.8, len: 0.64, h: 0.08, spines: 0.6, nSp: 16, spineH: [0.045, 0.06], notch: 0.15, rake: 0.7, tip: 'point', trail: 0.03, drop: 0.8 },
+    anal: { at: 0.5, len: 0.25, h: 0.08, spines: 0.3, nSp: 3, spineH: [0.04, 0.06], tip: 'point', trail: 0.02 }, pelvic: { u: 0.67, len: 0.11, tint: '#b8a888' },
+    marks: [{ k: 'bars', us: [0.3, 0.42, 0.54, 0.66, 0.78], w: 0.028, c: '#4a3c2c', a: 0.35 }] }),
+  // kadango female: silver, a faint dark midline, pale fins
+  kadango_f: her('kadango', { shade: ['#6a7078', '#a8b0b4', '#e0e2e0'], tail: { type: 'fork', h: 0.16, tint: '#c0c4c4' }, fin: '#c4c8c8',
+    dorsal: { at: 0.78, len: 0.58, h: 0.09, spines: 0.55, nSp: 15, spineH: [0.05, 0.07], notch: 0.15, rake: 0.6, tip: 'point', trail: 0.03, drop: 0.7 },
+    anal: { at: 0.5, len: 0.23, h: 0.09, spines: 0.3, nSp: 3, spineH: [0.04, 0.06], tip: 'point', trail: 0.02 }, pelvic: { u: 0.67, len: 0.11, tint: '#c8cccc' },
+    marks: [{ k: 'band', u0: 0.22, u1: 0.93, v0: -0.012, v1: 0.012, c: '#3a4048', a: 0.45, f: 0.01 }] }),
   // yellow pelvics and anal, the dorsal's black band fainter
   yellowlab_f: her('yellowlab', { anal: { at: 0.48, len: 0.25, h: 0.09, spines: 0.3, nSp: 3, spineH: [0.04, 0.065], notch: 0.2, tip: 'point', trail: 0.03 }, pelvic: { u: 0.68, len: 0.1, tint: '#e8c43a' },
     finMarks: [{ k: 'band', u0: 0.18, u1: 0.8, v0: -0.4, v1: -0.196, c: '#2a2820', a: 0.5, f: 0.008 }] }),
