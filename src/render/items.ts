@@ -14,6 +14,7 @@ import { clampGround, groundHeight, groundInsideBy } from '../scene/terrain';
 import type { Item, Tank, TankSetup } from '../scene/types';
 import { bendPlant, carpetOnGround, clumpOnGround, dropPlant, growShader, grownView, plant3d, plantGeometry, plantRaycast, revealPlant, unpackGeometry, uploadPlant, type JobOut, type PlantJob } from './plant3d';
 import { reefShape } from './coral3d';
+import { CELL_N, NOISE_N, gritUniforms } from './gritTex';
 
 type R = () => number;
 const LIGHT = new THREE.Vector3(-0.35, 1, 0.55).normalize();
@@ -242,18 +243,19 @@ function caveShape(variant: string, seed: number, size: number) {
 /** Fragment code: gritK() = how much darker or lighter this pixel of a solid is, from vGrit (see grit()). Detail finer than
  *  about a pixel fades out (px = mm per pixel), so distant pieces do not shimmer. */
 const GRIT = `varying vec4 vGrit;
-float gH(vec3 p) { p = fract(p * 0.3183099 + 0.1); p *= 17.0; return fract(p.x * p.y * p.z * (p.x + p.y + p.z)); }
-float gN(vec3 x) {
-  vec3 i = floor(x), f = fract(x); f = f * f * (3.0 - 2.0 * f);
-  return mix(mix(mix(gH(i), gH(i + vec3(1, 0, 0)), f.x), mix(gH(i + vec3(0, 1, 0)), gH(i + vec3(1, 1, 0)), f.x), f.y),
-             mix(mix(gH(i + vec3(0, 0, 1)), gH(i + vec3(1, 0, 1)), f.x), mix(gH(i + vec3(0, 1, 1)), gH(i + vec3(1, 1, 1)), f.x), f.y), f.z);
-}
+uniform mediump sampler3D gNoiseT;
+uniform mediump sampler3D gCellT;
+// random numbers from the baked tables (render/gritTex.ts), not hashed here: the D3D compiler inlines every hash, which
+// made this the slowest program to link and most of the reef's GPU time (lane SG)
+float gH(vec3 id) { return texelFetch(gNoiseT, ivec3(id) & ${NOISE_N - 1}, 0).r; }  // id: whole numbers
+// value noise: one trilinear fetch at the lattice cell plus the smoothstepped fraction = the 8-corner smoothstep blend
+float gN(vec3 x) { vec3 i = floor(x), f = fract(x); return textureLod(gNoiseT, (i + f * f * (3.0 - 2.0 * f) + 0.5) / ${NOISE_N}.0, 0.0).r; }
 float gF(vec3 p) { float a = 0.0, w = 0.5; for (int k = 0; k < 3; k++) { a += w * gN(p); p = p * 2.03 + vec3(1.7, 9.2, 3.1); w *= 0.5; } return a / 0.875; }
 // distance to the nearest cell border of a jittered grid: zero along a network of cracks
 float gEdge(vec3 p) {
-  vec3 i = floor(p), f = fract(p); float d1 = 8.0, d2 = 8.0;
+  vec3 i = floor(p), f = fract(p); ivec3 c = ivec3(i); float d1 = 8.0, d2 = 8.0;
   for (int z = -1; z <= 1; z++) for (int y = -1; y <= 1; y++) for (int x = -1; x <= 1; x++) {
-    vec3 g = vec3(x, y, z), o = vec3(gH(i + g), gH(i + g + 11.3), gH(i + g + 27.1));
+    vec3 g = vec3(x, y, z), o = texelFetch(gCellT, (c + ivec3(x, y, z)) & ${CELL_N - 1}, 0).rgb;
     float d = length(g + o - f);
     if (d < d1) { d2 = d1; d1 = d; } else if (d < d2) d2 = d;
   }
@@ -280,9 +282,9 @@ float gWood(vec3 g) {
   float core = 0.0, ring = 0.0, warp = 0.0, cs = 55.0, i0 = floor(s / cs);
   for (int a = -1; a <= 1; a++) for (int j = 0; j < 3; j++) {
     vec3 id = vec3(i0 + float(a), float(j), 3.0);
-    if (gH(id + 41.9) > 0.42) continue;
-    float sc = (id.x + 0.2 + 0.6 * gH(id + 0.5)) * cs, tc = (float(j) + gH(id + 17.3)) * 2.094395;
-    float dt = mod(th - tc + 3.14159, 6.28318) - 3.14159, sz = r * (0.22 + 0.3 * gH(id + 63.1));
+    if (gH(id + vec3(41, 9, 0)) > 0.42) continue;
+    float sc = (id.x + 0.2 + 0.6 * gH(id + vec3(0, 5, 1))) * cs, tc = (float(j) + gH(id + vec3(17, 3, 2))) * 2.094395;
+    float dt = mod(th - tc + 3.14159, 6.28318) - 3.14159, sz = r * (0.22 + 0.3 * gH(id + vec3(63, 1, 4)));
     float dd = length(vec2((s - sc) / (sz * 1.7), dt * r / sz));
     core = max(core, 1.0 - smoothstep(0.5, 0.75, dd));
     ring = max(ring, (1.0 - smoothstep(0.9, 2.4, dd)) * (0.5 + 0.5 * sin(dd * 9.0)));
@@ -353,6 +355,7 @@ function glassClip(T: Tank) {
 }
 /** The hardscape's grain and algae, and its inside (seen where the glass cuts it open) drawn darker by `k`. */
 const solidLook = (k: number) => (sh: THREE.WebGLProgramParametersWithUniforms) => {
+  Object.assign(sh.uniforms, gritUniforms());
   sh.vertexShader = 'attribute vec4 aGrit;\nvarying vec4 vGrit;\nattribute float aNoAlg;\nvarying float vNoAlg;\n' + sh.vertexShader.replace('vGlassW = ', 'vGrit = aGrit; vNoAlg = aNoAlg; vGlassW = ');
   // condition view (lane AL, render/algae.ts): algae keyed to the piece's seeded local position, none on corals
   sh.fragmentShader = 'varying float vNoAlg;\n#define ALG_MASK (1.0 - vNoAlg)\n#define ALG_POS vGrit.xyz\n' + GRIT + sh.fragmentShader

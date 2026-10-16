@@ -18,6 +18,7 @@
 //          --profile-edits 'water colour,light power' (CPU profile of one such edit per breakdown view)  --no-buckets (skip the bucket A/B)
 //          --breakdown 3 (worst N views, or a list: planted,iwagumi; 0 = none)  --pairs 30 (A/B frame pairs)
 //          (a view may also be a path to a scene .json)  --no-edits  --no-prod  --no-build (measure the existing dist-single/)  --out research/efficiency/E1-baseline.json
+//          --shaders --variants file.mjs: compile A/B of the module's edits (default export: { name: fs => fs })
 //          --ab file.mjs: extra A/B in each breakdown view; the module exports [{ name, a: 'js', b: 'js' }], each a page
 //          expression run before the frame of that side (handle: __gb.viewer / __gb.store, helpers: __pb)
 import { spawn, execSync } from 'node:child_process';
@@ -313,7 +314,8 @@ const install = () => br.ev(`window.__pb = (${PAGE})(); 1`);
 if (flag('shaders')) {
   // each variant is a function of the fragment source (sent to the page as its source text)
   const EDGE = 'for (int z = -1; z <= 1; z++) for (int y = -1; y <= 1; y++) for (int x = -1; x <= 1; x++)';
-  const VARIANTS = {
+  // --variants file.mjs: the module's default export (name -> fragment-source edit) instead of these (lane SG)
+  const VARIANTS = flag('variants') ? (await import(pathToFileURL(opt('variants')).href)).default : {
     original: s => s,
     'crack loop: runtime bound': s => s.replace('varying vec4 vGrit;', 'varying vec4 vGrit; uniform int gOne;')
       .replace('for (int z = -1; z <= 1; z++) for (int y = -1; y <= 1; y++) for (int x = -1; x <= 1; x++)', 'for (int z = -1; z <= gOne; z++) for (int y = -1; y <= gOne; y++) for (int x = -1; x <= gOne; x++)'),
@@ -364,7 +366,7 @@ async function measureView(size, view, rows) {
 result.gpu = gpuInfo;
 
 // ---------- breakdown of the worst views (desktop size) ----------
-const worst = BREAK === '0' ? [] : /^\d+$/.test(BREAK)
+const worst = BREAK === '0' || !sizes.length && /^\d+$/.test(BREAK) ? [] : /^\d+$/.test(BREAK)
   ? Object.entries(result.sizes.desktop ?? result.sizes[sizes[0]]).sort((a, b) => (b[1].steady.gpu ?? 0) - (a[1].steady.gpu ?? 0)).slice(0, +BREAK).map(e => e[0])
   : BREAK.split(',');
 if (worst.length) {

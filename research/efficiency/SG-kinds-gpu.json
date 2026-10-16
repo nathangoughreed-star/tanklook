@@ -1,0 +1,1923 @@
+{
+ "commit": "78d50723820ffec0657adb1d83eaf33fa1472c40",
+ "build": 539,
+ "dirty": true,
+ "when": "2026-10-15T20:03:33.887Z",
+ "browser": "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
+ "load": {
+  "before": {
+   "at": "2026-10-15T20:03:32.455Z",
+   "cpuBusyPct": 51,
+   "node": 15,
+   "msedge": 7,
+   "chrome": 31,
+   "claude": 24,
+   "devPorts": [
+    5173,
+    5174,
+    5653,
+    5673
+   ],
+   "underLoad": true
+  },
+  "after": {
+   "at": "2026-10-15T20:18:43.643Z",
+   "cpuBusyPct": 41,
+   "node": 16,
+   "msedge": 36,
+   "chrome": 39,
+   "claude": 27,
+   "devPorts": [
+    5173,
+    5174,
+    5653,
+    5663,
+    5673
+   ],
+   "underLoad": true
+  }
+ },
+ "sizes": {
+  "desktop": {
+   "research/efficiency/SG-variants/pieces.json": {
+    "firstDrawMs": 484,
+    "firstFrameMs": 605,
+    "shaderMs": 176,
+    "programs": 18,
+    "domContentLoadedMs": 213,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      700,
+      850
+     ],
+     "pixelRatio": 1
+    },
+    "memory": {
+     "geometries": 80,
+     "textures": 2,
+     "programs": 18
+    },
+    "heapMB": 13.6,
+    "steady": {
+     "gpu": 4.74,
+     "gpuMin": 4.72,
+     "cpu": 1.9,
+     "calls": 108,
+     "triangles": 33044,
+     "samples": 5
+    },
+    "rebuild": {
+     "cpu": 81.7,
+     "wall": 84.4,
+     "gpu": 64.02,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 29,
+      "triangles": 728
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 6,
+      "triangles": 62
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 10,
+      "triangles": 0
+     },
+     "ShaderMaterial (transparent)": {
+      "meshes": 2,
+      "triangles": 10
+     },
+     "sub": {
+      "meshes": 2,
+      "triangles": 704
+     },
+     "room": {
+      "meshes": 13,
+      "triangles": 106
+     },
+     "LineBasicMaterial": {
+      "meshes": 8,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 8,
+      "triangles": 96
+     },
+     "solid": {
+      "meshes": 10,
+      "triangles": 25256
+     },
+     "glow": {
+      "meshes": 1,
+      "triangles": 6080
+     }
+    }
+   }
+  }
+ },
+ "breakdown": {
+  "reef": {
+   "buckets": null,
+   "programs": [
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "0,1,onBeforeCompile() {}"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 6,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,3,USE_NORMALS,,highp,srgb,false,,false,false,false,false,f"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "4,5,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "6,7,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "4,8,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "9,10,highp,srgb,false,,false,false,false,false,false,false,f"
+    },
+    {
+     "name": "",
+     "usedTimes": 23,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 13,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 4,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "11,12,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 6,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 4,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 7,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "13,12,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 4,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 16,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    }
+   ],
+   "extra": {
+    "stone 1-5 off": {
+     "gpuA": 11.67,
+     "gpuB": 9.61,
+     "delta": -2.02,
+     "cpuA": 6.25,
+     "cpuB": 6.45,
+     "cpuDelta": 0.2
+    },
+    "stone cracks off": {
+     "gpuA": 21.41,
+     "gpuB": 18.86,
+     "delta": -2.87,
+     "cpuA": 3.05,
+     "cpuB": 3.15,
+     "cpuDelta": 0.1
+    },
+    "wood 6 + 9 off": {
+     "gpuA": 19.79,
+     "gpuB": 20.1,
+     "delta": 0.15,
+     "cpuA": 4.25,
+     "cpuB": 4.75,
+     "cpuDelta": 0.5
+    },
+    "clay/coconut 7-8 off": {
+     "gpuA": 27.45,
+     "gpuB": 27.84,
+     "delta": 0.25,
+     "cpuA": 5.4,
+     "cpuB": 5.25,
+     "cpuDelta": -0.15
+    },
+    "cork/plain wood 10 off": {
+     "gpuA": 9.89,
+     "gpuB": 9.93,
+     "delta": 0.04,
+     "cpuA": 5.2,
+     "cpuB": 5.1,
+     "cpuDelta": -0.1
+    },
+    "coral 11 off": {
+     "gpuA": 20.63,
+     "gpuB": 19.57,
+     "delta": -1.01,
+     "cpuA": 5.9,
+     "cpuB": 6.4,
+     "cpuDelta": 0.5
+    },
+    "moss/soft 12 off": {
+     "gpuA": 10.1,
+     "gpuB": 11.24,
+     "delta": 1.14,
+     "cpuA": 5.65,
+     "cpuB": 5.5,
+     "cpuDelta": -0.15
+    },
+    "all grit off": {
+     "gpuA": 9.88,
+     "gpuB": 9.01,
+     "delta": -0.89,
+     "cpuA": 5.15,
+     "cpuB": 5.1,
+     "cpuDelta": -0.05
+    }
+   },
+   "editProfiles": {},
+   "extraApplied": {
+    "off15": true,
+    "offCr": true,
+    "off69": true,
+    "off78": true,
+    "off10": true,
+    "off11": true,
+    "off12": true,
+    "offAll": true
+   }
+  },
+  "iwagumi": {
+   "buckets": null,
+   "programs": [
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "0,1,onBeforeCompile() {}"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "physical,STANDARD,,PHYSICAL,,highp,srgb,false,,false,false,f"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 6,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,3,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "4,5,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,6,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "7,8,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 23,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 7,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "9,10,highp,srgb,false,,false,false,false,false,false,false,f"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "11,10,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 10,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb-linear,false,,false,false,false,false,false"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb-linear,false,,false,false,false,false,false"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "7,8,highp,srgb-linear,false,,false,false,false,false,false,f"
+    },
+    {
+     "name": "",
+     "usedTimes": 23,
+     "key": "basic,highp,srgb-linear,false,,false,false,false,false,false"
+    },
+    {
+     "name": "",
+     "usedTimes": 6,
+     "key": "basic,highp,srgb-linear,false,,false,false,false,false,false"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "physical,STANDARD,,PHYSICAL,,highp,srgb-linear,false,,false,"
+    }
+   ],
+   "extra": {
+    "stone 1-5 off": {
+     "gpuA": 10.03,
+     "gpuB": 9.49,
+     "delta": -0.66,
+     "cpuA": 13.15,
+     "cpuB": 12.7,
+     "cpuDelta": -0.45
+    },
+    "stone cracks off": {
+     "gpuA": 11.81,
+     "gpuB": 11.1,
+     "delta": -0.7,
+     "cpuA": 13.1,
+     "cpuB": 13.2,
+     "cpuDelta": 0.1
+    },
+    "wood 6 + 9 off": {
+     "gpuA": 10.61,
+     "gpuB": 10.33,
+     "delta": -0.3,
+     "cpuA": 12,
+     "cpuB": 12.5,
+     "cpuDelta": 0.5
+    },
+    "clay/coconut 7-8 off": {
+     "gpuA": 7.88,
+     "gpuB": 7.42,
+     "delta": 0.03,
+     "cpuA": 12.25,
+     "cpuB": 11.9,
+     "cpuDelta": -0.35
+    },
+    "cork/plain wood 10 off": {
+     "gpuA": 13.79,
+     "gpuB": 13.98,
+     "delta": 0.23,
+     "cpuA": 16.3,
+     "cpuB": 17.05,
+     "cpuDelta": 0.75
+    },
+    "coral 11 off": {
+     "gpuA": 10.33,
+     "gpuB": 10.13,
+     "delta": -0.01,
+     "cpuA": 12.3,
+     "cpuB": 12.3,
+     "cpuDelta": 0
+    },
+    "moss/soft 12 off": {
+     "gpuA": 10.24,
+     "gpuB": 10.33,
+     "delta": 0.1,
+     "cpuA": 11.6,
+     "cpuB": 11.65,
+     "cpuDelta": 0.05
+    },
+    "all grit off": {
+     "gpuA": 7.15,
+     "gpuB": 7.6,
+     "delta": -0.78,
+     "cpuA": 11.25,
+     "cpuB": 11.25,
+     "cpuDelta": 0
+    }
+   },
+   "editProfiles": {},
+   "extraApplied": {
+    "off15": true,
+    "offCr": true,
+    "off69": true,
+    "off78": true,
+    "off10": true,
+    "off11": true,
+    "off12": true,
+    "offAll": true
+   }
+  },
+  "terrarium": {
+   "buckets": null,
+   "programs": [
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "0,1,onBeforeCompile() {}"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 4,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 6,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,3,USE_NORMALS,,highp,srgb,false,,false,false,false,false,f"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 7,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 4,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 4,
+     "key": "4,5,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 29,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb-linear,false,,false,false,false,false,false"
+    }
+   ],
+   "extra": {
+    "stone 1-5 off": {
+     "gpuA": 5.9,
+     "gpuB": 6,
+     "delta": 0.09,
+     "cpuA": 3.9,
+     "cpuB": 3.9,
+     "cpuDelta": 0
+    },
+    "stone cracks off": {
+     "gpuA": 5.99,
+     "gpuB": 6.17,
+     "delta": 0.18,
+     "cpuA": 3.3,
+     "cpuB": 3.3,
+     "cpuDelta": 0
+    },
+    "wood 6 + 9 off": {
+     "gpuA": 9.39,
+     "gpuB": 10.18,
+     "delta": -0.69,
+     "cpuA": 2.7,
+     "cpuB": 2.75,
+     "cpuDelta": 0.05
+    },
+    "clay/coconut 7-8 off": {
+     "gpuA": 9.32,
+     "gpuB": 9.8,
+     "delta": 0.13,
+     "cpuA": 1.85,
+     "cpuB": 1.8,
+     "cpuDelta": -0.05
+    },
+    "cork/plain wood 10 off": {
+     "gpuA": 3.8,
+     "gpuB": 3.98,
+     "delta": 0.16,
+     "cpuA": 2.75,
+     "cpuB": 2.3,
+     "cpuDelta": -0.45
+    },
+    "coral 11 off": {
+     "gpuA": 9.9,
+     "gpuB": 10.06,
+     "delta": 0.18,
+     "cpuA": 1.6,
+     "cpuB": 1.7,
+     "cpuDelta": 0.1
+    },
+    "moss/soft 12 off": {
+     "gpuA": 9.93,
+     "gpuB": 10.1,
+     "delta": 0.17,
+     "cpuA": 2,
+     "cpuB": 1.9,
+     "cpuDelta": -0.1
+    },
+    "all grit off": {
+     "gpuA": 9.91,
+     "gpuB": 9.15,
+     "delta": -0.74,
+     "cpuA": 2.3,
+     "cpuB": 2.25,
+     "cpuDelta": -0.05
+    }
+   },
+   "editProfiles": {},
+   "extraApplied": {
+    "off15": true,
+    "offCr": true,
+    "off69": true,
+    "off78": true,
+    "off10": true,
+    "off11": true,
+    "off12": true,
+    "offAll": true
+   }
+  },
+  "research/efficiency/SG-variants/pieces.json": {
+   "buckets": null,
+   "programs": [
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "0,1,onBeforeCompile() {}"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 6,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,3,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "4,5,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,6,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "7,8,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 23,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    }
+   ],
+   "extra": {
+    "stone 1-5 off": {
+     "gpuA": 5.24,
+     "gpuB": 4.83,
+     "delta": -0.41,
+     "cpuA": 1.85,
+     "cpuB": 1.85,
+     "cpuDelta": 0
+    },
+    "stone cracks off": {
+     "gpuA": 4.32,
+     "gpuB": 4.08,
+     "delta": -0.25,
+     "cpuA": 1.5,
+     "cpuB": 1.35,
+     "cpuDelta": -0.15
+    },
+    "wood 6 + 9 off": {
+     "gpuA": 4.8,
+     "gpuB": 4.63,
+     "delta": -0.15,
+     "cpuA": 1.8,
+     "cpuB": 1.9,
+     "cpuDelta": 0.1
+    },
+    "clay/coconut 7-8 off": {
+     "gpuA": 4.82,
+     "gpuB": 4.68,
+     "delta": -0.09,
+     "cpuA": 1.6,
+     "cpuB": 1.6,
+     "cpuDelta": 0
+    },
+    "cork/plain wood 10 off": {
+     "gpuA": 5.24,
+     "gpuB": 5.25,
+     "delta": 0.01,
+     "cpuA": 1.7,
+     "cpuB": 1.65,
+     "cpuDelta": -0.05
+    },
+    "coral 11 off": {
+     "gpuA": 4.61,
+     "gpuB": 4.54,
+     "delta": -0.01,
+     "cpuA": 1.6,
+     "cpuB": 1.4,
+     "cpuDelta": -0.2
+    },
+    "moss/soft 12 off": {
+     "gpuA": 3.48,
+     "gpuB": 3.53,
+     "delta": 0.17,
+     "cpuA": 2.55,
+     "cpuB": 2.65,
+     "cpuDelta": 0.1
+    },
+    "all grit off": {
+     "gpuA": 2.89,
+     "gpuB": 2.43,
+     "delta": -0.4,
+     "cpuA": 2.7,
+     "cpuB": 2.7,
+     "cpuDelta": 0
+    }
+   },
+   "editProfiles": {},
+   "extraApplied": {
+    "off15": true,
+    "offCr": true,
+    "off69": true,
+    "off78": true,
+    "off10": true,
+    "off11": true,
+    "off12": true,
+    "offAll": true
+   }
+  },
+  "research/efficiency/SG-variants/wall-rock.json": {
+   "buckets": null,
+   "programs": [
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "0,1,onBeforeCompile() {}"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 6,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,3,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "4,5,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,6,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "7,8,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 23,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    }
+   ],
+   "extra": {
+    "stone 1-5 off": {
+     "gpuA": 7.99,
+     "gpuB": 5.9,
+     "delta": -2.15,
+     "cpuA": 1.85,
+     "cpuB": 1.8,
+     "cpuDelta": -0.05
+    },
+    "stone cracks off": {
+     "gpuA": 7.24,
+     "gpuB": 5.54,
+     "delta": -1.28,
+     "cpuA": 1.8,
+     "cpuB": 1.8,
+     "cpuDelta": 0
+    },
+    "wood 6 + 9 off": {
+     "gpuA": 8.62,
+     "gpuB": 8.34,
+     "delta": -0.17,
+     "cpuA": 1.85,
+     "cpuB": 2,
+     "cpuDelta": 0.15
+    },
+    "clay/coconut 7-8 off": {
+     "gpuA": 12.41,
+     "gpuB": 12.49,
+     "delta": 0.08,
+     "cpuA": 1.7,
+     "cpuB": 1.7,
+     "cpuDelta": 0
+    },
+    "cork/plain wood 10 off": {
+     "gpuA": 12.31,
+     "gpuB": 12.45,
+     "delta": 0.07,
+     "cpuA": 1.7,
+     "cpuB": 1.7,
+     "cpuDelta": 0
+    },
+    "coral 11 off": {
+     "gpuA": 6.67,
+     "gpuB": 6.91,
+     "delta": 0.14,
+     "cpuA": 1.65,
+     "cpuB": 1.6,
+     "cpuDelta": -0.05
+    },
+    "moss/soft 12 off": {
+     "gpuA": 6.75,
+     "gpuB": 6.78,
+     "delta": 0.13,
+     "cpuA": 1.75,
+     "cpuB": 1.7,
+     "cpuDelta": -0.05
+    },
+    "all grit off": {
+     "gpuA": 7.14,
+     "gpuB": 5,
+     "delta": -2.13,
+     "cpuA": 2.05,
+     "cpuB": 1.9,
+     "cpuDelta": -0.15
+    }
+   },
+   "editProfiles": {},
+   "extraApplied": {
+    "off15": true,
+    "offCr": true,
+    "off69": true,
+    "off78": true,
+    "off10": true,
+    "off11": true,
+    "off12": true,
+    "offAll": true
+   }
+  },
+  "research/efficiency/SG-variants/wall-river.json": {
+   "buckets": null,
+   "programs": [
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "0,1,onBeforeCompile() {}"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 6,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,3,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "4,5,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,6,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "7,8,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 23,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    }
+   ],
+   "extra": {
+    "stone 1-5 off": {
+     "gpuA": 25.24,
+     "gpuB": 17.84,
+     "delta": -6.77,
+     "cpuA": 2.3,
+     "cpuB": 2.25,
+     "cpuDelta": -0.05
+    },
+    "stone cracks off": {
+     "gpuA": 22.75,
+     "gpuB": 17.99,
+     "delta": -4.63,
+     "cpuA": 1.9,
+     "cpuB": 2.1,
+     "cpuDelta": 0.2
+    },
+    "wood 6 + 9 off": {
+     "gpuA": 23.98,
+     "gpuB": 23.8,
+     "delta": -0.25,
+     "cpuA": 2.1,
+     "cpuB": 2,
+     "cpuDelta": -0.1
+    },
+    "clay/coconut 7-8 off": {
+     "gpuA": 22.59,
+     "gpuB": 22.69,
+     "delta": 0.14,
+     "cpuA": 1.95,
+     "cpuB": 2,
+     "cpuDelta": 0.05
+    },
+    "cork/plain wood 10 off": {
+     "gpuA": 20.35,
+     "gpuB": 20.26,
+     "delta": 0.17,
+     "cpuA": 2,
+     "cpuB": 1.85,
+     "cpuDelta": -0.15
+    },
+    "coral 11 off": {
+     "gpuA": 22.59,
+     "gpuB": 23.51,
+     "delta": 0.13,
+     "cpuA": 1.95,
+     "cpuB": 1.95,
+     "cpuDelta": 0
+    },
+    "moss/soft 12 off": {
+     "gpuA": 25.42,
+     "gpuB": 27.08,
+     "delta": 0.28,
+     "cpuA": 1.95,
+     "cpuB": 1.9,
+     "cpuDelta": -0.05
+    },
+    "all grit off": {
+     "gpuA": 28.95,
+     "gpuB": 20.18,
+     "delta": -8.63,
+     "cpuA": 1.8,
+     "cpuB": 1.9,
+     "cpuDelta": 0.1
+    }
+   },
+   "editProfiles": {},
+   "extraApplied": {
+    "off15": true,
+    "offCr": true,
+    "off69": true,
+    "off78": true,
+    "off10": true,
+    "off11": true,
+    "off12": true,
+    "offAll": true
+   }
+  },
+  "research/efficiency/SG-variants/wall-reef.json": {
+   "buckets": null,
+   "programs": [
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "0,1,onBeforeCompile() {}"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 6,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,3,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "4,5,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,6,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "7,8,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 23,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    }
+   ],
+   "extra": {
+    "stone 1-5 off": {
+     "gpuA": 4.91,
+     "gpuB": 3.69,
+     "delta": -1.28,
+     "cpuA": 2.65,
+     "cpuB": 2.4,
+     "cpuDelta": -0.25
+    },
+    "stone cracks off": {
+     "gpuA": 4.91,
+     "gpuB": 4.2,
+     "delta": -0.75,
+     "cpuA": 2.95,
+     "cpuB": 2.35,
+     "cpuDelta": -0.6
+    },
+    "wood 6 + 9 off": {
+     "gpuA": 20.53,
+     "gpuB": 20.18,
+     "delta": -0.41,
+     "cpuA": 1.9,
+     "cpuB": 2.1,
+     "cpuDelta": 0.2
+    },
+    "clay/coconut 7-8 off": {
+     "gpuA": 18.69,
+     "gpuB": 18.85,
+     "delta": 0.1,
+     "cpuA": 2,
+     "cpuB": 1.95,
+     "cpuDelta": -0.05
+    },
+    "cork/plain wood 10 off": {
+     "gpuA": 6.01,
+     "gpuB": 6.28,
+     "delta": -0.01,
+     "cpuA": 2,
+     "cpuB": 1.9,
+     "cpuDelta": -0.1
+    },
+    "coral 11 off": {
+     "gpuA": 4.83,
+     "gpuB": 4.84,
+     "delta": 0.02,
+     "cpuA": 3.55,
+     "cpuB": 3.4,
+     "cpuDelta": -0.15
+    },
+    "moss/soft 12 off": {
+     "gpuA": 6.77,
+     "gpuB": 6.9,
+     "delta": 0.14,
+     "cpuA": 1.9,
+     "cpuB": 1.8,
+     "cpuDelta": -0.1
+    },
+    "all grit off": {
+     "gpuA": 7.95,
+     "gpuB": 5.67,
+     "delta": -2.21,
+     "cpuA": 1.8,
+     "cpuB": 1.8,
+     "cpuDelta": 0
+    }
+   },
+   "editProfiles": {},
+   "extraApplied": {
+    "off15": true,
+    "offCr": true,
+    "off69": true,
+    "off78": true,
+    "off10": true,
+    "off11": true,
+    "off12": true,
+    "offAll": true
+   }
+  },
+  "research/efficiency/SG-variants/wall-cork.json": {
+   "buckets": null,
+   "programs": [
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "0,1,onBeforeCompile() {}"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 6,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,3,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "4,5,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,6,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "7,8,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 23,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    }
+   ],
+   "extra": {
+    "stone 1-5 off": {
+     "gpuA": 5.04,
+     "gpuB": 4.92,
+     "delta": 0.01,
+     "cpuA": 1.9,
+     "cpuB": 1.9,
+     "cpuDelta": 0
+    },
+    "stone cracks off": {
+     "gpuA": 6.16,
+     "gpuB": 6.18,
+     "delta": 0.13,
+     "cpuA": 1.9,
+     "cpuB": 1.9,
+     "cpuDelta": 0
+    },
+    "wood 6 + 9 off": {
+     "gpuA": 6.94,
+     "gpuB": 7.06,
+     "delta": 0.13,
+     "cpuA": 2,
+     "cpuB": 2.1,
+     "cpuDelta": 0.1
+    },
+    "clay/coconut 7-8 off": {
+     "gpuA": 4.96,
+     "gpuB": 5,
+     "delta": 0.06,
+     "cpuA": 1.8,
+     "cpuB": 1.8,
+     "cpuDelta": 0
+    },
+    "cork/plain wood 10 off": {
+     "gpuA": 5.47,
+     "gpuB": 4.68,
+     "delta": -0.24,
+     "cpuA": 1.9,
+     "cpuB": 1.8,
+     "cpuDelta": -0.1
+    },
+    "coral 11 off": {
+     "gpuA": 4.4,
+     "gpuB": 4.43,
+     "delta": -0.02,
+     "cpuA": 1.75,
+     "cpuB": 1.8,
+     "cpuDelta": 0.05
+    },
+    "moss/soft 12 off": {
+     "gpuA": 4.5,
+     "gpuB": 4.51,
+     "delta": 0.11,
+     "cpuA": 1.7,
+     "cpuB": 1.7,
+     "cpuDelta": 0
+    },
+    "all grit off": {
+     "gpuA": 5.76,
+     "gpuB": 5.25,
+     "delta": -0.34,
+     "cpuA": 1.7,
+     "cpuB": 1.7,
+     "cpuDelta": 0
+    }
+   },
+   "editProfiles": {},
+   "extraApplied": {
+    "off15": true,
+    "offCr": true,
+    "off69": true,
+    "off78": true,
+    "off10": true,
+    "off11": true,
+    "off12": true,
+    "offAll": true
+   }
+  },
+  "research/efficiency/SG-variants/wall-moss.json": {
+   "buckets": null,
+   "programs": [
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "0,1,onBeforeCompile() {}"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 6,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,3,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "4,5,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,6,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "7,8,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 23,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    }
+   ],
+   "extra": {
+    "stone 1-5 off": {
+     "gpuA": 11.75,
+     "gpuB": 11.99,
+     "delta": 0.22,
+     "cpuA": 2.2,
+     "cpuB": 2.2,
+     "cpuDelta": 0
+    },
+    "stone cracks off": {
+     "gpuA": 9.7,
+     "gpuB": 9.94,
+     "delta": 0.23,
+     "cpuA": 1.7,
+     "cpuB": 1.8,
+     "cpuDelta": 0.1
+    },
+    "wood 6 + 9 off": {
+     "gpuA": 4.74,
+     "gpuB": 4.74,
+     "delta": 0.01,
+     "cpuA": 1.7,
+     "cpuB": 1.7,
+     "cpuDelta": 0
+    },
+    "clay/coconut 7-8 off": {
+     "gpuA": 6.91,
+     "gpuB": 7.2,
+     "delta": 0.23,
+     "cpuA": 2,
+     "cpuB": 1.9,
+     "cpuDelta": -0.1
+    },
+    "cork/plain wood 10 off": {
+     "gpuA": 5.16,
+     "gpuB": 5.27,
+     "delta": -0.08,
+     "cpuA": 1.8,
+     "cpuB": 1.8,
+     "cpuDelta": 0
+    },
+    "coral 11 off": {
+     "gpuA": 5.44,
+     "gpuB": 5.5,
+     "delta": 0.13,
+     "cpuA": 1.9,
+     "cpuB": 1.7,
+     "cpuDelta": -0.2
+    },
+    "moss/soft 12 off": {
+     "gpuA": 5.89,
+     "gpuB": 5.61,
+     "delta": -0.34,
+     "cpuA": 1.8,
+     "cpuB": 1.8,
+     "cpuDelta": 0
+    },
+    "all grit off": {
+     "gpuA": 11.01,
+     "gpuB": 10.35,
+     "delta": -0.65,
+     "cpuA": 1.8,
+     "cpuB": 1.8,
+     "cpuDelta": 0
+    }
+   },
+   "editProfiles": {},
+   "extraApplied": {
+    "off15": true,
+    "offCr": true,
+    "off69": true,
+    "off78": true,
+    "off10": true,
+    "off11": true,
+    "off12": true,
+    "offAll": true
+   }
+  }
+ },
+ "prod": null,
+ "gpu": {
+  "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "timerQuery": true,
+  "buffer": [
+   700,
+   850
+  ],
+  "pixelRatio": 1
+ },
+ "seconds": 913
+}

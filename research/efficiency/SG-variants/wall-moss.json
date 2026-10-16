@@ -1,0 +1,112 @@
+{
+ "version": 9,
+ "name": "wall-moss",
+ "units": "in",
+ "tanks": [
+  {
+   "tank": {
+    "L": 914.4,
+    "H": 406.4,
+    "D": 457.2
+   },
+   "camera": {
+    "dist": 3000,
+    "az": 0,
+    "el": 5,
+    "zoom": 1.8
+   },
+   "render": {
+    "edge": "a2c",
+    "grid": false,
+    "rim": true,
+    "edges": true,
+    "beams": false,
+    "pop": 0.15,
+    "bg": "black",
+    "glass": "auto",
+    "bgSides": [
+     "back"
+    ],
+    "bgArc": 145,
+    "glassType": "standard"
+   },
+   "light": {
+    "type": "led",
+    "count": 1,
+    "rows": 1,
+    "pattern": "grid",
+    "spacing": 0,
+    "cone": 52,
+    "bright": 1,
+    "kelvin": 6500,
+    "room": 0.15,
+    "height": 50
+   },
+   "substrate": {
+    "show": true,
+    "type": "onyx",
+    "custom": {
+     "grain": "sand",
+     "color": "#cbb894",
+     "grain2": "none",
+     "color2": "#6f6556",
+     "share": 30,
+     "mix": 0.5
+    },
+    "fl": 38.099999999999994,
+    "fr": 38.099999999999994,
+    "bl": 76.19999999999999,
+    "br": 76.19999999999999
+   },
+   "layout": {
+    "id": "planted",
+    "seed": 7
+   },
+   "water": {
+    "on": true,
+    "level": 1,
+    "opacity": 0,
+    "color": "#7fb8a8"
+   },
+   "terrain": {
+    "on": false,
+    "cols": 7,
+    "rows": 0,
+    "h": []
+   },
+   "lid": "open",
+   "stand": {
+    "show": true,
+    "height": 762,
+    "finish": "black",
+    "style": "cabinet",
+    "table": {
+     "shape": "rect",
+     "L": 943,
+     "D": 486,
+     "x": 0,
+     "z": 0
+    }
+   },
+   "person": {
+    "show": false,
+    "height": 1750,
+    "side": "left"
+   },
+   "wall": {
+    "show": true,
+    "side": "back",
+    "color": "#d8d2c6"
+   },
+   "fish": [],
+   "items": [],
+   "backdrop": {
+    "kind": "moss",
+    "depth": 50,
+    "seed": 1
+   }
+  }
+ ],
+ "active": 0,
+ "camLock": true
+}

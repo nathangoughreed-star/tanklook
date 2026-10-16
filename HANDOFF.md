@@ -2,6 +2,30 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane SG: stone grain from baked tables, first visit about halved (2026-10-16; branch `stone-grain`, port 5653; Nathan approved the pictures; pushed to main)
+- **What:** the hardscape grit (render/items.ts `GRIT` / `gritK`) hashed every random number in the shader: 8 hashes per
+  noise lookup, 81 for gStone's 27-cell crack search, all inlined by the D3D compiler. Now they come from two baked 3D
+  tables (new render/gritTex.ts, made on first use, shared by every hardscape material): a 128^3 R8 table of lattice
+  values (gN = ONE trilinear fetch at the cell + smoothstepped fraction, which blends exactly like the 8-corner hashed
+  noise did; repeats every 128 lattice units) and a 32^3 RGBA8 table of crack-cell jitter (texelFetch per cell). gH is
+  now a table read (whole-number ids; the wood knot offsets became integer vectors). Same grain, pits, cracks and knots,
+  laid out from other random numbers. 2 MB + 128 kB of GPU memory.
+- **Measured** (hardware GPU, D3D11, machine loaded by other lanes; old and new alternated, so ratios hold):
+  hardscape program link 5.5-11.2 -> 1.7-3.1 s (grit's own share ~5 -> ~1.1 s; what is left: crack loop ~0.5 s, wood
+  knots ~0.4 s). Cold first picture (`scripts/cold-ab.mjs`, prod builds, median of 3): reef 13.2 -> 7.7 s, paludarium
+  18.3 -> 6.1, iwagumi 11.6 -> 5.6, terrarium 9.8 -> 5.1; close-ups and the five back walls 5.2-8.5 -> 2.5-3.5 s.
+  GPU per frame (alternate frames, old vs new in one page): river wall 25.2 -> 20.2 ms, rock wall 18.9 -> 15.2, reef
+  19.5 -> 16.7, reef wall 6.1 -> 5.2, iwagumi 16.6 -> 15.6; cork / moss / wood / terrarium under 0.4 ms change (their
+  grit was cheap). Baseline per kind before the change: stone grain about half the link, cracks ~1.3 s, wood ~1.5 s;
+  GPU: stones 2-7 ms on rock / river walls and reef, the crack search most of it.
+- **Files:** `research/efficiency/SG-*` (raw JSON; A/B modules: SG-kinds-compile / SG-kinds-gpu = per kind,
+  SG-old-new / SG-old-new-ab = old vs new on the new code; scenes in SG-variants/: close-stones, close-driftwood,
+  close-cave, close-liverock, wall-rock/river/reef/cork/moss, pieces). `scripts/perf-baseline.mjs` gained
+  `--shaders --variants file.mjs` (and no longer crashes on --shaders alone). Pictures: shots/sg/*.jpg (not in git).
+- **Not done / open:** a 2x2x2 crack search would cut the last ~0.5 s of link but makes the cracks more regular (not
+  tried). Fingerprints (`npm run sheets -- --record`) were not re-recorded: the hardscape look changed on purpose.
+  341 tests pass; phone (375 px) checked.
+
 ## Lane PL: progressive first load, the tank builds part by part (2026-10-15; branch `progressive-load`, port 5633; Nathan approved the look; pushed to main)
 - **What:** the first load and an opened file / example / undo restore (a store `'load'`) no longer block the page on shader
   links. viewer.ts `startLinks` starts every link as before, then `revealTick` asks each part's programs `isReady()`

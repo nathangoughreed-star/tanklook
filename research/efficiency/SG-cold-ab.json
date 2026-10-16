@@ -1,0 +1,4071 @@
+{
+ "at": "2026-10-15T20:25:46.286Z",
+ "size": "1050x850",
+ "dirs": [
+  "before",
+  "after"
+ ],
+ "runs": [
+  {
+   "round": 0,
+   "view": "reef",
+   "build": "before",
+   "firstFrame": 14893,
+   "settled": 14893,
+   "glMs": 13044,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 8337,
+     "at": 4354,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 48418,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1664,
+     "at": 13152,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 49804,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "bufferData",
+     "ms": 1205,
+     "at": 1848,
+     "stack": "t.draw (assets/main-Cxga8Shq.js:3:5067)",
+     "len": 125,
+     "marks": []
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 740,
+     "at": 3406,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28494,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 298,
+     "at": 3089,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 220,
+     "at": 12827,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28528,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "reef",
+   "build": "after",
+   "firstFrame": 9320,
+   "settled": 9320,
+   "glMs": 7404,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 3803,
+     "at": 4461,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 48640,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 2312,
+     "at": 1958,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 408,
+     "at": 8853,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 50026,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 292,
+     "at": 8436,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28528,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 118,
+     "at": 4323,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28531,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "iwagumi",
+   "build": "before",
+   "firstFrame": 11645,
+   "settled": 11645,
+   "glMs": 9613,
+   "programs": 41,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 5916,
+     "at": 5035,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "bufferData",
+     "ms": 1276,
+     "at": 2070,
+     "stack": "t.draw (assets/main-Cxga8Shq.js:3:5067)",
+     "len": 125,
+     "marks": []
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 924,
+     "at": 3989,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 85036,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 463,
+     "at": 11129,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 38056,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 314,
+     "at": 3407,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28514,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 215,
+     "at": 3748,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28496,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "iwagumi",
+   "build": "after",
+   "firstFrame": 6859,
+   "settled": 6859,
+   "glMs": 5428,
+   "programs": 41,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1288,
+     "at": 2581,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28514,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1146,
+     "at": 3944,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 85036,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "bufferData",
+     "ms": 891,
+     "at": 1464,
+     "stack": "t.draw (assets/main-032z3ufv.js:3:5067)",
+     "len": 125,
+     "marks": []
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 603,
+     "at": 6117,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 38278,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 586,
+     "at": 5289,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 36894,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "bufferData",
+     "ms": 180,
+     "at": 2388,
+     "stack": "",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "paludarium",
+   "build": "before",
+   "firstFrame": 19925,
+   "settled": 19925,
+   "glMs": 17974,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 13384,
+     "at": 5479,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 59409,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1311,
+     "at": 4160,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 53336,
+     "marks": [
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1284,
+     "at": 2668,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 811,
+     "at": 19070,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 60795,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "bufferData",
+     "ms": 684,
+     "at": 1644,
+     "stack": "",
+     "len": 125,
+     "marks": []
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 149,
+     "at": 3980,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28531,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "paludarium",
+   "build": "after",
+   "firstFrame": 15880,
+   "settled": 15880,
+   "glMs": 9957,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 3694,
+     "at": 5283,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 59631,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1847,
+     "at": 1110,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1690,
+     "at": 14139,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28495,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 886,
+     "at": 4373,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 53336,
+     "marks": [
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 731,
+     "at": 2994,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 131,
+     "at": 13858,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28542,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "terrarium",
+   "build": "before",
+   "firstFrame": 11985,
+   "settled": 11985,
+   "glMs": 10889,
+   "programs": 26,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 7709,
+     "at": 3620,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 41975,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1693,
+     "at": 1111,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 568,
+     "at": 11395,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 43361,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 469,
+     "at": 2947,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28905,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 157,
+     "at": 3443,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28887,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 125,
+     "at": 2818,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28494,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "terrarium",
+   "build": "after",
+   "firstFrame": 5058,
+   "settled": 5058,
+   "glMs": 4053,
+   "programs": 26,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1777,
+     "at": 1039,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1463,
+     "at": 3263,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 42197,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 258,
+     "at": 2850,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28905,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 257,
+     "at": 4770,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 43583,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 118,
+     "at": 3128,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28887,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "research/efficiency/SG-variants/close-stones.json",
+   "build": "before",
+   "firstFrame": 8453,
+   "settled": 8453,
+   "glMs": 7791,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 6046,
+     "at": 2375,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1408,
+     "at": 814,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 171,
+     "at": 582,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "research/efficiency/SG-variants/close-stones.json",
+   "build": "after",
+   "firstFrame": 2832,
+   "settled": 2832,
+   "glMs": 2321,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1198,
+     "at": 630,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 803,
+     "at": 2006,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 36894,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 132,
+     "at": 1857,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28531,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 130,
+     "at": 448,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "research/efficiency/SG-variants/close-driftwood.json",
+   "build": "before",
+   "firstFrame": 5322,
+   "settled": 5322,
+   "glMs": 4814,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 3399,
+     "at": 1908,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1022,
+     "at": 664,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 164,
+     "at": 449,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "research/efficiency/SG-variants/close-driftwood.json",
+   "build": "after",
+   "firstFrame": 2941,
+   "settled": 2941,
+   "glMs": 2592,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1129,
+     "at": 1782,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 36894,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1081,
+     "at": 480,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 145,
+     "at": 273,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 125,
+     "marks": []
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 135,
+     "at": 1584,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "research/efficiency/SG-variants/close-cave.json",
+   "build": "before",
+   "firstFrame": 11001,
+   "settled": 11001,
+   "glMs": 10350,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 8476,
+     "at": 2484,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1634,
+     "at": 764,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 132,
+     "at": 569,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "research/efficiency/SG-variants/close-cave.json",
+   "build": "after",
+   "firstFrame": 3501,
+   "settled": 3501,
+   "glMs": 3035,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1422,
+     "at": 625,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1253,
+     "at": 2222,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 36894,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 166,
+     "at": 387,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "research/efficiency/SG-variants/close-liverock.json",
+   "build": "before",
+   "firstFrame": 7732,
+   "settled": 7732,
+   "glMs": 6854,
+   "programs": 19,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 5326,
+     "at": 2381,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 48418,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1306,
+     "at": 901,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "research/efficiency/SG-variants/close-liverock.json",
+   "build": "after",
+   "firstFrame": 2985,
+   "settled": 2985,
+   "glMs": 2336,
+   "programs": 19,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1109,
+     "at": 1852,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 48640,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1007,
+     "at": 690,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "research/efficiency/SG-variants/wall-rock.json",
+   "build": "before",
+   "firstFrame": 7143,
+   "settled": 7143,
+   "glMs": 6508,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 4954,
+     "at": 2152,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1367,
+     "at": 701,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "research/efficiency/SG-variants/wall-rock.json",
+   "build": "after",
+   "firstFrame": 3685,
+   "settled": 3685,
+   "glMs": 2626,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1553,
+     "at": 1187,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 854,
+     "at": 2797,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 36894,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 125,
+     "at": 987,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "research/efficiency/SG-variants/wall-river.json",
+   "build": "before",
+   "firstFrame": 6413,
+   "settled": 6413,
+   "glMs": 5830,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 4434,
+     "at": 1955,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1212,
+     "at": 684,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 102,
+     "at": 530,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "research/efficiency/SG-variants/wall-river.json",
+   "build": "after",
+   "firstFrame": 3406,
+   "settled": 3406,
+   "glMs": 2978,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1620,
+     "at": 636,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 991,
+     "at": 2371,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 36894,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 219,
+     "at": 324,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "research/efficiency/SG-variants/wall-reef.json",
+   "build": "before",
+   "firstFrame": 11759,
+   "settled": 11759,
+   "glMs": 11111,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 8617,
+     "at": 3096,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1656,
+     "at": 724,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 275,
+     "at": 2803,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28531,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 145,
+     "at": 2585,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "research/efficiency/SG-variants/wall-reef.json",
+   "build": "after",
+   "firstFrame": 3185,
+   "settled": 3185,
+   "glMs": 2511,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1350,
+     "at": 760,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 930,
+     "at": 2226,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 36894,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "research/efficiency/SG-variants/wall-cork.json",
+   "build": "before",
+   "firstFrame": 7682,
+   "settled": 7682,
+   "glMs": 7076,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 5304,
+     "at": 2333,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1517,
+     "at": 741,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 153,
+     "at": 539,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "research/efficiency/SG-variants/wall-cork.json",
+   "build": "after",
+   "firstFrame": 3273,
+   "settled": 3273,
+   "glMs": 2642,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1340,
+     "at": 791,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 930,
+     "at": 2315,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 36894,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 164,
+     "at": 556,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 125,
+     "marks": []
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 101,
+     "at": 2150,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "research/efficiency/SG-variants/wall-moss.json",
+   "build": "before",
+   "firstFrame": 5210,
+   "settled": 5210,
+   "glMs": 4876,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 3721,
+     "at": 1468,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 949,
+     "at": 425,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "research/efficiency/SG-variants/wall-moss.json",
+   "build": "after",
+   "firstFrame": 2740,
+   "settled": 2740,
+   "glMs": 2382,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1390,
+     "at": 437,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 803,
+     "at": 1913,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 36894,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "reef",
+   "build": "after",
+   "firstFrame": 7672,
+   "settled": 7672,
+   "glMs": 5887,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 2119,
+     "at": 4559,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 48640,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1387,
+     "at": 1843,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1073,
+     "at": 3238,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28494,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 320,
+     "at": 6825,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28528,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 312,
+     "at": 7293,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 50026,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 204,
+     "at": 4330,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28531,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "reef",
+   "build": "before",
+   "firstFrame": 13170,
+   "settled": 13170,
+   "glMs": 11075,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 8505,
+     "at": 3971,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 48418,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1019,
+     "at": 2592,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "bufferData",
+     "ms": 415,
+     "at": 2033,
+     "stack": "t.draw (assets/main-Cxga8Shq.js:3:5067)",
+     "len": 125,
+     "marks": []
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 358,
+     "at": 12784,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 49804,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 167,
+     "at": 3773,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28531,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 150,
+     "at": 12570,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28528,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "iwagumi",
+   "build": "after",
+   "firstFrame": 5558,
+   "settled": 5558,
+   "glMs": 3526,
+   "programs": 41,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1529,
+     "at": 2090,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28514,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 946,
+     "at": 3682,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 85036,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 563,
+     "at": 4737,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 36894,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "iwagumi",
+   "build": "before",
+   "firstFrame": 15310,
+   "settled": 15310,
+   "glMs": 12526,
+   "programs": 41,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 8887,
+     "at": 5721,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1549,
+     "at": 3562,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28514,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "bufferData",
+     "ms": 605,
+     "at": 2874,
+     "stack": "t.draw (assets/main-Cxga8Shq.js:3:5067)",
+     "len": 125,
+     "marks": []
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 429,
+     "at": 14812,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 38056,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 391,
+     "at": 5154,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 85036,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 139,
+     "at": 5565,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28531,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "paludarium",
+   "build": "after",
+   "firstFrame": 6111,
+   "settled": 6111,
+   "glMs": 5227,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1660,
+     "at": 4007,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 59631,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1587,
+     "at": 943,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 934,
+     "at": 2539,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 440,
+     "at": 3561,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 53336,
+     "marks": [
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 258,
+     "at": 5816,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 61017,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "paludarium",
+   "build": "before",
+   "firstFrame": 18263,
+   "settled": 18263,
+   "glMs": 14607,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 10449,
+     "at": 7071,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 59409,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 975,
+     "at": 4471,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 952,
+     "at": 6107,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 53336,
+     "marks": [
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "shaderSource",
+     "ms": 785,
+     "at": 3396,
+     "stack": "Object.traverse (assets/main-Cxga8Shq.js:2:36372)",
+     "len": 125,
+     "marks": []
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 514,
+     "at": 17700,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 60795,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 435,
+     "at": 5665,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28494,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "terrarium",
+   "build": "after",
+   "firstFrame": 5095,
+   "settled": 5095,
+   "glMs": 3832,
+   "programs": 26,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1609,
+     "at": 1306,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1172,
+     "at": 3624,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 42197,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 451,
+     "at": 3036,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28905,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 223,
+     "at": 4845,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 43583,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 107,
+     "at": 2922,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28494,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 106,
+     "at": 3504,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28887,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "terrarium",
+   "build": "before",
+   "firstFrame": 9594,
+   "settled": 9594,
+   "glMs": 8845,
+   "programs": 26,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 5946,
+     "at": 2799,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 41975,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1569,
+     "at": 769,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 776,
+     "at": 8785,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 43361,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 214,
+     "at": 2422,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28905,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 131,
+     "at": 2652,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28887,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "research/efficiency/SG-variants/close-stones.json",
+   "build": "after",
+   "firstFrame": 5128,
+   "settled": 5128,
+   "glMs": 4566,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 2087,
+     "at": 2980,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 36894,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1828,
+     "at": 787,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 260,
+     "at": 458,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 125,
+     "marks": []
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 192,
+     "at": 2659,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "research/efficiency/SG-variants/close-stones.json",
+   "build": "before",
+   "firstFrame": 14244,
+   "settled": 14244,
+   "glMs": 13647,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 11305,
+     "at": 2864,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1849,
+     "at": 782,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 229,
+     "at": 457,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "research/efficiency/SG-variants/close-driftwood.json",
+   "build": "after",
+   "firstFrame": 4294,
+   "settled": 4294,
+   "glMs": 3747,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1863,
+     "at": 790,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1461,
+     "at": 2781,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 36894,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 263,
+     "at": 447,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "research/efficiency/SG-variants/close-driftwood.json",
+   "build": "before",
+   "firstFrame": 18316,
+   "settled": 18316,
+   "glMs": 17674,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 15154,
+     "at": 3044,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1945,
+     "at": 822,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 260,
+     "at": 501,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 125,
+     "marks": []
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 115,
+     "at": 2810,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "research/efficiency/SG-variants/close-cave.json",
+   "build": "after",
+   "firstFrame": 3845,
+   "settled": 3845,
+   "glMs": 3269,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1574,
+     "at": 712,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1381,
+     "at": 2439,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 36894,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 143,
+     "at": 491,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "research/efficiency/SG-variants/close-cave.json",
+   "build": "before",
+   "firstFrame": 6128,
+   "settled": 6128,
+   "glMs": 5798,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 4237,
+     "at": 1876,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1316,
+     "at": 448,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 125,
+     "at": 278,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "research/efficiency/SG-variants/close-liverock.json",
+   "build": "after",
+   "firstFrame": 2836,
+   "settled": 2836,
+   "glMs": 2133,
+   "programs": 19,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 943,
+     "at": 1872,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 48640,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 934,
+     "at": 746,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "research/efficiency/SG-variants/close-liverock.json",
+   "build": "before",
+   "firstFrame": 6675,
+   "settled": 6675,
+   "glMs": 6038,
+   "programs": 19,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 4782,
+     "at": 1870,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 48418,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 995,
+     "at": 688,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "research/efficiency/SG-variants/wall-rock.json",
+   "build": "after",
+   "firstFrame": 2860,
+   "settled": 2860,
+   "glMs": 2334,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1244,
+     "at": 597,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 829,
+     "at": 1995,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 36894,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "research/efficiency/SG-variants/wall-rock.json",
+   "build": "before",
+   "firstFrame": 6941,
+   "settled": 6941,
+   "glMs": 6522,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 5235,
+     "at": 1678,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1073,
+     "at": 478,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "research/efficiency/SG-variants/wall-river.json",
+   "build": "after",
+   "firstFrame": 3260,
+   "settled": 3260,
+   "glMs": 2422,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1421,
+     "at": 1037,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 688,
+     "at": 2540,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 36894,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 201,
+     "at": 763,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "research/efficiency/SG-variants/wall-river.json",
+   "build": "before",
+   "firstFrame": 8072,
+   "settled": 8072,
+   "glMs": 7336,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 5290,
+     "at": 2747,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1739,
+     "at": 897,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 177,
+     "at": 665,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "research/efficiency/SG-variants/wall-reef.json",
+   "build": "after",
+   "firstFrame": 3235,
+   "settled": 3235,
+   "glMs": 2561,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1402,
+     "at": 737,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 949,
+     "at": 2236,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 36894,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "research/efficiency/SG-variants/wall-reef.json",
+   "build": "before",
+   "firstFrame": 8173,
+   "settled": 8173,
+   "glMs": 7405,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 5473,
+     "at": 2659,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1602,
+     "at": 873,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 113,
+     "at": 698,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "research/efficiency/SG-variants/wall-cork.json",
+   "build": "after",
+   "firstFrame": 2522,
+   "settled": 2522,
+   "glMs": 2199,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1089,
+     "at": 443,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 802,
+     "at": 1691,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 36894,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 127,
+     "at": 260,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "research/efficiency/SG-variants/wall-cork.json",
+   "build": "before",
+   "firstFrame": 5357,
+   "settled": 5357,
+   "glMs": 5055,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 3774,
+     "at": 1563,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1084,
+     "at": 424,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 126,
+     "at": 257,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "research/efficiency/SG-variants/wall-moss.json",
+   "build": "after",
+   "firstFrame": 2601,
+   "settled": 2601,
+   "glMs": 2116,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1093,
+     "at": 639,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 746,
+     "at": 1828,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 36894,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 159,
+     "at": 415,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "research/efficiency/SG-variants/wall-moss.json",
+   "build": "before",
+   "firstFrame": 6719,
+   "settled": 6719,
+   "glMs": 6043,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 4429,
+     "at": 2266,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1405,
+     "at": 787,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 106,
+     "at": 638,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "reef",
+   "build": "before",
+   "firstFrame": 12365,
+   "settled": 12365,
+   "glMs": 10685,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 6862,
+     "at": 4662,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 48418,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1785,
+     "at": 1711,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 963,
+     "at": 3531,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 475,
+     "at": 11862,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 49804,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 173,
+     "at": 11614,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28528,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 144,
+     "at": 4502,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28531,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "reef",
+   "build": "after",
+   "firstFrame": 5776,
+   "settled": 5776,
+   "glMs": 4318,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1589,
+     "at": 1510,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1334,
+     "at": 3988,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 48640,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 528,
+     "at": 3107,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28494,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 316,
+     "at": 3659,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28531,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 157,
+     "at": 5415,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28528,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 101,
+     "at": 5641,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 50026,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "iwagumi",
+   "build": "before",
+   "firstFrame": 9575,
+   "settled": 9575,
+   "glMs": 8361,
+   "programs": 41,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 4916,
+     "at": 4250,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 2425,
+     "at": 1318,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28514,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 366,
+     "at": 3799,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 85036,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 194,
+     "at": 9337,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 38056,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "iwagumi",
+   "build": "after",
+   "firstFrame": 5262,
+   "settled": 5262,
+   "glMs": 4095,
+   "programs": 41,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1853,
+     "at": 1569,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28514,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 982,
+     "at": 3503,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 85036,
+     "marks": [
+      "aqLight",
+      "transmission",
+      "linear"
+     ]
+    },
+    {
+     "call": "bufferData",
+     "ms": 297,
+     "at": 1246,
+     "stack": "t.draw (assets/main-032z3ufv.js:3:5067)",
+     "len": 125,
+     "marks": []
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 277,
+     "at": 4600,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 36894,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "paludarium",
+   "build": "before",
+   "firstFrame": 11410,
+   "settled": 11410,
+   "glMs": 10479,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 6910,
+     "at": 3727,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 59409,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 2024,
+     "at": 992,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 632,
+     "at": 3091,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 53336,
+     "marks": [
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 588,
+     "at": 10785,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 60795,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "paludarium",
+   "build": "after",
+   "firstFrame": 5687,
+   "settled": 5687,
+   "glMs": 4710,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1730,
+     "at": 1060,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1318,
+     "at": 3912,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 59631,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 601,
+     "at": 3308,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 53336,
+     "marks": [
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 340,
+     "at": 2923,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28512,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 283,
+     "at": 5374,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 61017,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "terrarium",
+   "build": "before",
+   "firstFrame": 9835,
+   "settled": 9835,
+   "glMs": 8636,
+   "programs": 26,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 5690,
+     "at": 3736,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 41975,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1829,
+     "at": 1232,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 496,
+     "at": 3087,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28905,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 340,
+     "at": 9470,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 43361,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 127,
+     "at": 3592,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28887,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "terrarium",
+   "build": "after",
+   "firstFrame": 5101,
+   "settled": 5101,
+   "glMs": 3742,
+   "programs": 26,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1969,
+     "at": 1390,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 957,
+     "at": 3971,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 42197,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 267,
+     "at": 3378,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28494,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 193,
+     "at": 3649,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28905,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 109,
+     "at": 3850,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28887,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 104,
+     "at": 4973,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 43583,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "research/efficiency/SG-variants/close-stones.json",
+   "build": "before",
+   "firstFrame": 5371,
+   "settled": 5371,
+   "glMs": 4923,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 3470,
+     "at": 1883,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1092,
+     "at": 683,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 237,
+     "at": 393,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "research/efficiency/SG-variants/close-stones.json",
+   "build": "after",
+   "firstFrame": 2427,
+   "settled": 2427,
+   "glMs": 2136,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1143,
+     "at": 434,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 656,
+     "at": 1751,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 36894,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 150,
+     "at": 239,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "research/efficiency/SG-variants/close-driftwood.json",
+   "build": "before",
+   "firstFrame": 5455,
+   "settled": 5455,
+   "glMs": 5145,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 3658,
+     "at": 1779,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1138,
+     "at": 453,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 152,
+     "at": 257,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 125,
+     "marks": []
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 112,
+     "at": 1613,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "research/efficiency/SG-variants/close-driftwood.json",
+   "build": "after",
+   "firstFrame": 2012,
+   "settled": 2012,
+   "glMs": 1727,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 813,
+     "at": 413,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 639,
+     "at": 1353,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 36894,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 135,
+     "at": 230,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "research/efficiency/SG-variants/close-cave.json",
+   "build": "before",
+   "firstFrame": 4800,
+   "settled": 4800,
+   "glMs": 4501,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 3441,
+     "at": 1342,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 787,
+     "at": 414,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 124,
+     "at": 247,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "research/efficiency/SG-variants/close-cave.json",
+   "build": "after",
+   "firstFrame": 2054,
+   "settled": 2054,
+   "glMs": 1745,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 850,
+     "at": 410,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 640,
+     "at": 1397,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 36894,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 107,
+     "at": 255,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "research/efficiency/SG-variants/close-liverock.json",
+   "build": "before",
+   "firstFrame": 5957,
+   "settled": 5957,
+   "glMs": 5312,
+   "programs": 19,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 4267,
+     "at": 1668,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 48418,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 857,
+     "at": 687,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "research/efficiency/SG-variants/close-liverock.json",
+   "build": "after",
+   "firstFrame": 3262,
+   "settled": 3262,
+   "glMs": 2611,
+   "programs": 19,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1469,
+     "at": 694,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 961,
+     "at": 2276,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 48640,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "research/efficiency/SG-variants/wall-rock.json",
+   "build": "before",
+   "firstFrame": 5854,
+   "settled": 5854,
+   "glMs": 5079,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 3603,
+     "at": 2218,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1253,
+     "at": 891,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 119,
+     "at": 718,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "research/efficiency/SG-variants/wall-rock.json",
+   "build": "after",
+   "firstFrame": 3289,
+   "settled": 3289,
+   "glMs": 2452,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1380,
+     "at": 962,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 793,
+     "at": 2461,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 36894,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 127,
+     "at": 770,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "research/efficiency/SG-variants/wall-river.json",
+   "build": "before",
+   "firstFrame": 5844,
+   "settled": 5844,
+   "glMs": 5251,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 3852,
+     "at": 1970,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 1132,
+     "at": 754,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 158,
+     "at": 541,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "research/efficiency/SG-variants/wall-river.json",
+   "build": "after",
+   "firstFrame": 2369,
+   "settled": 2369,
+   "glMs": 2052,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 933,
+     "at": 434,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 825,
+     "at": 1520,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 36894,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 127,
+     "at": 259,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "research/efficiency/SG-variants/wall-reef.json",
+   "build": "before",
+   "firstFrame": 4632,
+   "settled": 4632,
+   "glMs": 4265,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 3236,
+     "at": 1373,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 759,
+     "at": 429,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 109,
+     "at": 1225,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28549,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "research/efficiency/SG-variants/wall-reef.json",
+   "build": "after",
+   "firstFrame": 2091,
+   "settled": 2091,
+   "glMs": 1726,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 856,
+     "at": 433,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 726,
+     "at": 1340,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 36894,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "research/efficiency/SG-variants/wall-cork.json",
+   "build": "before",
+   "firstFrame": 4840,
+   "settled": 4840,
+   "glMs": 4552,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 3462,
+     "at": 1358,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 880,
+     "at": 407,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 126,
+     "at": 242,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "research/efficiency/SG-variants/wall-cork.json",
+   "build": "after",
+   "firstFrame": 1993,
+   "settled": 1993,
+   "glMs": 1689,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 877,
+     "at": 434,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 589,
+     "at": 1380,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 36894,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 136,
+     "at": 249,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "research/efficiency/SG-variants/wall-moss.json",
+   "build": "before",
+   "firstFrame": 4365,
+   "settled": 4365,
+   "glMs": 4032,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 3052,
+     "at": 1293,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 36672,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 816,
+     "at": 424,
+     "stack": "renderer.renderBufferDirect (assets/main-Cxga8Shq.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "research/efficiency/SG-variants/wall-moss.json",
+   "build": "after",
+   "firstFrame": 2256,
+   "settled": 2256,
+   "glMs": 1910,
+   "programs": 18,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 896,
+     "at": 442,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28515,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 723,
+     "at": 1396,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 36894,
+     "marks": [
+      "gritK",
+      "vGlassW",
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 113,
+     "at": 2122,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 28512,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    },
+    {
+     "call": "getProgramInfoLog",
+     "ms": 103,
+     "at": 288,
+     "stack": "renderer.renderBufferDirect (assets/main-032z3ufv.js:2:35273)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  }
+ ]
+}

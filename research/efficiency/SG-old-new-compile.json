@@ -1,0 +1,162 @@
+{
+ "commit": "78d50723820ffec0657adb1d83eaf33fa1472c40",
+ "build": 539,
+ "dirty": true,
+ "when": "2026-10-15T20:20:01.595Z",
+ "browser": "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
+ "load": {
+  "before": {
+   "at": "2026-10-15T20:19:57.195Z",
+   "cpuBusyPct": 26,
+   "node": 13,
+   "msedge": 7,
+   "chrome": 38,
+   "claude": 27,
+   "devPorts": [
+    5173,
+    5174,
+    5653,
+    5663,
+    5673
+   ],
+   "underLoad": true
+  },
+  "after": {
+   "at": "2026-10-15T20:21:20.317Z",
+   "cpuBusyPct": 54,
+   "node": 12,
+   "msedge": 20,
+   "chrome": 38,
+   "claude": 27,
+   "devPorts": [
+    5174,
+    5653,
+    5663,
+    5673
+   ],
+   "underLoad": true
+  }
+ },
+ "sizes": {},
+ "breakdown": {},
+ "prod": {
+  "distKB": 6699,
+  "codeKB": 1764,
+  "codeGzipKB": 518,
+  "files": [
+   {
+    "file": "assets/three.module-cIZc4-4L.js",
+    "kb": 512,
+    "gzipKB": 129
+   },
+   {
+    "file": "assets/plantWorker-D2maE9Xb.js",
+    "kb": 374,
+    "gzipKB": 97
+   },
+   {
+    "file": "assets/main-DRm9Jk7K.js",
+    "kb": 187,
+    "gzipKB": 71
+   },
+   {
+    "file": "assets/preview3d-D26lx52Y.js",
+    "kb": 146,
+    "gzipKB": 57
+   },
+   {
+    "file": "assets/scenes-CN2IDtC3.js",
+    "kb": 128,
+    "gzipKB": 21
+   },
+   {
+    "file": "assets/lighting-DZKYsaJx.js",
+    "kb": 115,
+    "gzipKB": 45
+   },
+   {
+    "file": "assets/fish3d-BmdFfzD6.js",
+    "kb": 112,
+    "gzipKB": 39
+   },
+   {
+    "file": "model-sheets/firetoad.jpg",
+    "kb": 100,
+    "gzipKB": null
+   },
+   {
+    "file": "model-sheets/dartfrog.jpg",
+    "kb": 98,
+    "gzipKB": null
+   },
+   {
+    "file": "model-sheets/nerite.jpg",
+    "kb": 94,
+    "gzipKB": null
+   },
+   {
+    "file": "model-sheets/hermit.jpg",
+    "kb": 92,
+    "gzipKB": null
+   },
+   {
+    "file": "model-sheets/cleanershrimp.jpg",
+    "kb": 89,
+    "gzipKB": null
+   },
+   {
+    "file": "model-sheets/treefrog.jpg",
+    "kb": 87,
+    "gzipKB": null
+   },
+   {
+    "file": "model-sheets/gbr-f.jpg",
+    "kb": 79,
+    "gzipKB": null
+   },
+   {
+    "file": "model-sheets/ocellaris.jpg",
+    "kb": 78,
+    "gzipKB": null
+   }
+  ],
+  "single": {
+   "kb": 1968,
+   "gzipKB": 644,
+   "broken": false
+  },
+  "load": {}
+ },
+ "shaderAB": {
+  "fsLength": 38278,
+  "programs": 2,
+  "variants": {
+   "new (baked tables)": {
+    "ms": [
+     2383,
+     1696,
+     2037,
+     1775,
+     3133
+    ],
+    "ok": true,
+    "log": "",
+    "changed": false
+   },
+   "old (hashed)": {
+    "ms": [
+     7206,
+     10563,
+     5451,
+     6602,
+     11199
+    ],
+    "ok": true,
+    "log": "",
+    "changed": true
+   }
+  }
+ },
+ "gpu": null,
+ "seconds": 85
+}

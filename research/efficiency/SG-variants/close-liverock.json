@@ -1,0 +1,423 @@
+{
+ "version": 9,
+ "name": "close-liverock",
+ "units": "in",
+ "tanks": [
+  {
+   "tank": {
+    "L": 1219.1999999999998,
+    "H": 558.8,
+    "D": 457.2,
+    "shape": "bow",
+    "bowMin": 304.8
+   },
+   "camera": {
+    "dist": 3000,
+    "az": 0,
+    "el": 8,
+    "zoom": 1.5
+   },
+   "render": {
+    "edge": "a2c",
+    "grid": false,
+    "rim": true,
+    "edges": true,
+    "beams": false,
+    "pop": 0.15,
+    "bg": "black",
+    "glass": "auto",
+    "bgSides": [
+     "back"
+    ],
+    "bgArc": 145,
+    "glassType": "standard"
+   },
+   "light": {
+    "type": "spot",
+    "count": 3,
+    "rows": 2,
+    "pattern": "grid",
+    "spacing": 0,
+    "cone": 52,
+    "bright": 1,
+    "kelvin": 14000,
+    "room": 0.15,
+    "height": 50
+   },
+   "substrate": {
+    "show": true,
+    "type": "aragonite",
+    "custom": {
+     "grain": "sand",
+     "color": "#cbb894",
+     "grain2": "none",
+     "color2": "#6f6556",
+     "share": 30,
+     "mix": 0.5
+    },
+    "fl": 25.4,
+    "fr": 25.4,
+    "bl": 50.8,
+    "br": 50.8
+   },
+   "layout": {
+    "id": "reef",
+    "seed": 1
+   },
+   "water": {
+    "on": true,
+    "level": 1,
+    "opacity": 0.22,
+    "color": "#2f86d0",
+    "salt": true
+   },
+   "terrain": {
+    "on": false,
+    "cols": 7,
+    "rows": 0,
+    "h": []
+   },
+   "lid": "open",
+   "stand": {
+    "show": true,
+    "height": 762,
+    "finish": "black",
+    "style": "cabinet",
+    "table": {
+     "shape": "rect",
+     "L": 1256,
+     "D": 494,
+     "x": 0,
+     "z": 0
+    }
+   },
+   "person": {
+    "show": false,
+    "height": 1750,
+    "side": "left"
+   },
+   "wall": {
+    "show": true,
+    "side": "back",
+    "color": "#d8d2c6"
+   },
+   "fish": [],
+   "items": [
+    {
+     "id": 1,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 886368634,
+     "x": 365.75999999999993,
+     "depth": 251.46,
+     "lift": 0,
+     "yaw": -151,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 267
+    },
+    {
+     "id": 2,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 418768053,
+     "x": 626.7641244406609,
+     "depth": 262.78838025040403,
+     "lift": 0,
+     "yaw": -75,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 158
+    },
+    {
+     "id": 3,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 83396991,
+     "x": 469.4614680363028,
+     "depth": 321.1347728153371,
+     "lift": 0,
+     "yaw": -165,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 165
+    },
+    {
+     "id": 4,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 906230293,
+     "x": 237.19629780205932,
+     "depth": 310.29998914217794,
+     "lift": 0,
+     "yaw": -144,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 178
+    },
+    {
+     "id": 5,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 641240837,
+     "x": 179.61398689079473,
+     "depth": 285.523704069435,
+     "lift": 0,
+     "yaw": -120,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 148
+    },
+    {
+     "id": 6,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 69477940,
+     "x": 249.25903260222466,
+     "depth": 208.50621153220996,
+     "lift": 0,
+     "yaw": 165,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 171
+    },
+    {
+     "id": 7,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 81448191,
+     "x": 413.14737267334186,
+     "depth": 188.46689321376724,
+     "lift": 0,
+     "yaw": 49,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 174
+    },
+    {
+     "id": 8,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 619040612,
+     "x": 502.2378208012837,
+     "depth": 215.0098325824036,
+     "lift": 0,
+     "yaw": -110,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 161
+    },
+    {
+     "id": 9,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 798385310,
+     "x": 398.2674755947775,
+     "depth": 265.0063326151902,
+     "lift": 145,
+     "yaw": 131,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 154
+    },
+    {
+     "id": 10,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 387231844,
+     "x": 357.04735625375986,
+     "depth": 271.6157018534364,
+     "lift": 205,
+     "yaw": 144,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 134
+    },
+    {
+     "id": 18,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 703259833,
+     "x": 890.0159999999998,
+     "depth": 228.6,
+     "lift": 0,
+     "yaw": 156,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 224
+    },
+    {
+     "id": 19,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 174923009,
+     "x": 1024.647790279481,
+     "depth": 234.47227299650288,
+     "lift": 0,
+     "yaw": -118,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 117
+    },
+    {
+     "id": 20,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 700188543,
+     "x": 908.1580177483836,
+     "depth": 298.1087114787077,
+     "lift": 0,
+     "yaw": 148,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 127
+    },
+    {
+     "id": 21,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 986540869,
+     "x": 678.6334288930263,
+     "depth": 237.72347667205324,
+     "lift": 0,
+     "yaw": -51,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 121
+    },
+    {
+     "id": 22,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 815262179,
+     "x": 819.351789939903,
+     "depth": 156.4395827427963,
+     "lift": 0,
+     "yaw": -6,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 136
+    },
+    {
+     "id": 23,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 516408228,
+     "x": 999.5356533920545,
+     "depth": 170.99378505885636,
+     "lift": 0,
+     "yaw": -16,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 130
+    },
+    {
+     "id": 24,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 888528995,
+     "x": 865.4617478788028,
+     "depth": 219.102950707098,
+     "lift": 122,
+     "yaw": 100,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 129
+    },
+    {
+     "id": 25,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 876316903,
+     "x": 911.5090890327464,
+     "depth": 215.8096972707756,
+     "lift": 175,
+     "yaw": 17,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 112
+    },
+    {
+     "id": 26,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 749707301,
+     "x": 864.1021884109834,
+     "depth": 227.90787658217906,
+     "lift": 216,
+     "yaw": -152,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 95
+    },
+    {
+     "id": 31,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 46932521,
+     "x": 529.9783240044861,
+     "depth": 46.142907280325886,
+     "lift": 0,
+     "yaw": 87,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 31
+    },
+    {
+     "id": 32,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 572015835,
+     "x": 579.197601180598,
+     "depth": 245.32337225072087,
+     "lift": 0,
+     "yaw": 137,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 51
+    },
+    {
+     "id": 33,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 510534458,
+     "x": 145.19241600573062,
+     "depth": 328.7350381974131,
+     "lift": 0,
+     "yaw": 32,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 53
+    },
+    {
+     "id": 34,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 663553346,
+     "x": 691.6950809582322,
+     "depth": 196.28540040850638,
+     "lift": 0,
+     "yaw": -130,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 30
+    },
+    {
+     "id": 35,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 121978078,
+     "x": 462.25040711760516,
+     "depth": 296.38513743013146,
+     "lift": 0,
+     "yaw": 136,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 41
+    }
+   ]
+  }
+ ],
+ "active": 0,
+ "camLock": true
+}
