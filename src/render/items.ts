@@ -580,13 +580,9 @@ function capMaterials(T: Tank): CapMats {
   // flat face, the glass's outward normal (the same 0.42 + 0.72 (n.L) + 0.08 n.y as bakedShape, LIGHT in the room's frame)
   const pre = (sh: THREE.WebGLProgramParametersWithUniforms) => {
     patch(sh); look(sh);
-    sh.vertexShader = 'attribute float aBake;
-varying float vBake;
-' + sh.vertexShader.replace('vGlassW = ', 'vBake = aBake; vGlassW = ');
-    sh.fragmentShader = 'varying float vBake;
-' + sh.fragmentShader.replace('#include <color_fragment>',
-      `#include <color_fragment>
-  { vec3 Lw = normalize(vec3(${LIGHT.x.toFixed(5)}, ${LIGHT.y.toFixed(5)}, ${LIGHT.z.toFixed(5)})); diffuseColor.rgb *= (0.42 + 0.72 * max(0.0, dot(aqCapN, Lw)) + 0.08 * aqCapN.y) / max(vBake, 0.05); }`);
+    sh.vertexShader = 'attribute float aBake;\nvarying float vBake;\n' + sh.vertexShader.replace('vGlassW = ', 'vBake = aBake; vGlassW = ');
+    sh.fragmentShader = 'varying float vBake;\n' + sh.fragmentShader.replace('#include <color_fragment>',
+      `#include <color_fragment>\n  { vec3 Lw = normalize(vec3(${LIGHT.x.toFixed(5)}, ${LIGHT.y.toFixed(5)}, ${LIGHT.z.toFixed(5)})); diffuseColor.rgb *= (0.42 + 0.72 * max(0.0, dot(aqCapN, Lw)) + 0.08 * aqCapN.y) / max(vBake, 0.05); }`);
   };
   cap.onBeforeCompile = pre;
   cap.customProgramCacheKey = () => 'glass-cap';
