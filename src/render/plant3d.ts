@@ -31,6 +31,8 @@ export const plant3d = { sway: true, emerse: true, gpu: true };
 
 type R = () => number;
 const MAX_LEAFLETS = 3000;
+/** Vines (lane T2): how far a vine looks for wood to run along (mm), and how far it reaches across to the next limb. */
+const VINE_FIND = 320, VINE_LINK = 110;
 /** Most rosettes a floater with its own spread builds (one that fills a big tank at the most density). */
 const FLOAT_MAX = 1000;
 /** Where a carpet's leaflet `i` (its anchor at lx, lz) lands on the ground (null = left out). */
@@ -244,6 +246,9 @@ export interface Clump {
   dens?: number;
   /** Vines (lane T2): how high its base sits over the ground, mm (trailers hang down to it). */
   drop?: number;
+  /** Vines (lane T2): the limbs of the wood near it, in its own frame: per limb [n, r0, r1, x, y, z x n] (its vines run
+   *  along them; render/items.ts vineLimbs). */
+  limbs?: number[];
   /** The glass within its own spread, in its own frame: [nx, nz, e] per pane, a point (x, z) is inside by
    *  e - (x nx + z nz) mm. Stems, crowns and rosettes are only set down inside (a spread may reach past the glass). */
   clip?: number[];
@@ -523,16 +528,81 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
     const Vn = P.vine!, n0 = Math.round(between(r, P.n)), n = clump.stems ? Math.min(MAX_STEMS, Math.round(clump.stems)) : n0;
     const lk = Math.log(Gr.len[1] / Gr.len[0]), base = clump.spread ? clump.spread / 2 : Math.max(6, Wc * P.spread / 2), drop = Math.max(0, clump.drop ?? 0);
     const r0 = Vn.thick * kStalk, e = 0.03;
+    // the wood near it (lane T2, on T3's anchors: clump.limbs, in its own frame): a smooth curve per limb, as the
+    // renderer bends it, with its radius foot to tip
+    const LB: { c: THREE.CatmullRomCurve3; len: number; r0: number; r1: number }[] = [];
+    for (let i = 0, L = clump.limbs ?? []; i < L.length;) {
+      const k = L[i], r0l = L[i + 1], r1l = L[i + 2], ps = Array.from({ length: k }, (_, j) => V(L[i + 3 + j * 3], L[i + 4 + j * 3], L[i + 5 + j * 3]));
+      i += 3 + k * 3;
+      if (k < 2) continue;
+      const cv = new THREE.CatmullRomCurve3(ps);
+      LB.push({ c: cv, len: cv.getLength(), r0: r0l, r1: r1l });
+    }
+    /** The nearest point of each limb to p (its place u 0..1 and the distance), skipping limb `not`. */
+    const nearOn = (p: THREE.Vector3, not = -1) => LB.map((l, li) => {
+      let bu = 0, bd = Infinity;
+      if (li !== not) for (let j = 0, N = Math.max(8, Math.ceil(l.len / 10)); j <= N; j++) { const d = l.c.getPointAt(j / N).distanceTo(p); if (d < bd) { bd = d; bu = j / N; } }
+      return { li, u: bu, d: bd };
+    }).sort((a, b) => a.d - b.d);
+    /**
+     * A vine's way along the wood from b, every `step` mm, up to L1 mm: up and over onto the nearest limb (one of the
+     * closest three), along it toward its tip (round it, `wrap` mm a turn, or along its top, wobbling), and at the end
+     * across to the next limb within reach (linking the wood), up to three limbs. Null = no wood in reach.
+     */
+    const route = (q: R, b: THREE.Vector3, L1: number): THREE.Vector3[] | null => {
+      const step = Math.max(4, Math.min(12, L1 / 120)), cand = nearOn(b).filter(c => c.d < Math.min(VINE_FIND, L1 * 0.6)).slice(0, 3);
+      if (!cand.length) return null;
+      const out: THREE.Vector3[] = [b.clone()], push = (v: THREE.Vector3) => { if (v.distanceTo(out[out.length - 1]) >= step * 0.5) out.push(v); };
+      /** From the last point to e: rising first, then over (a sag across when it does not climb). */
+      const reach = (e: THREE.Vector3) => {
+        const a = out[out.length - 1].clone(), D = a.distanceTo(e), N = Math.max(2, Math.ceil(D / step)), up = e.y > a.y + 10;
+        for (let j = 1; j <= N; j++) {
+          const t = j / N, v = a.clone().lerp(e, up ? Math.sqrt(t) * 0.35 + t * 0.65 : t);
+          if (up) v.y = a.y + (e.y - a.y) * Math.min(1, t * 1.25); else v.y -= 0.18 * D * Math.sin(Math.PI * t);
+          push(v);
+        }
+      };
+      let { li, u } = cand[Math.floor(q() * cand.length)], used = 0, run = 0, th = q() * 6.28;
+      const wob = q() * 6.28, wrap = Vn.wrap ?? 0;
+      for (let hop = 0; hop < 3 && run < L1; hop++) {
+        const l = LB[li], dir = (1 - u) * l.len > 60 || u < 0.5 ? 1 : -1;
+        const onAt = (uu: number, s: number) => {
+          const c = l.c.getPointAt(uu), t = l.c.getTangentAt(uu), rr = lerp(l.r0, l.r1, uu) + Vn.thick + 0.6;
+          const n0 = V(0, 1, 0).addScaledVector(t, -t.y);
+          if (n0.lengthSq() < 1e-4) n0.set(1, 0, 0).addScaledVector(t, -t.x);
+          n0.normalize().applyAxisAngle(t, wrap > 0 ? th + s * 6.2832 / wrap : 0.9 * Math.sin(s / 70 + wob));
+          return c.addScaledVector(n0, rr);
+        };
+        reach(onAt(u, 0));
+        for (let s = step; ; s += step) {
+          const uu = u + dir * s / l.len;
+          if (uu < 0 || uu > 1) break;
+          push(onAt(uu, s));
+          run = (out.length - 1) * step;
+          if (run >= L1) break;
+        }
+        used++;
+        // the next limb within reach of where this one ends
+        const end = out[out.length - 1], nx = nearOn(end, li).find(c => c.d < VINE_LINK && c.d > 1);
+        if (!nx) break;
+        th += 1.3; ({ li, u } = nx);
+      }
+      return used ? out : null;
+    };
     /** One vine from b, L1 mm long at full growth; `o` = a branch: its climbing angle or its heading, the piece it rides on. */
-    const vine = (q: R, D: ReturnType<typeof draws>, into: Sheets, tubes: THREE.BufferGeometry[], b: THREE.Vector3, L1: number, gAt: (s: number) => number, climbs: boolean, o: { fan?: number; yaw?: number; on?: [number, number] } = {}) => {
+    const vine = (q: R, D: ReturnType<typeof draws>, into: Sheets, tubes: THREE.BufferGeometry[], b: THREE.Vector3, L1: number, gAt: (s: number) => number, climbs: boolean, o: { fan?: number; yaw?: number; on?: [number, number]; route?: THREE.Vector3[] } = {}) => {
       // the path, every ~8 mm: heading (yaw in the ground plane) and elevation, walked from the crown
       const step = Math.max(4, Math.min(12, L1 / 120)), m = Math.max(4, Math.ceil(L1 / step)), pts: THREE.Vector3[] = [b.clone()];
       const fan = o.fan ?? (q() - 0.5) * 2 * Vn.fan, ramp = o.fan == null ? 120 : 1, ph = q() * 6.28, ph2 = q() * 6.28, wv = Vn.wander * (0.6 + 0.8 * q());
       let yaw = o.yaw ?? q() * 6.28, el = climbs ? 1.45 : o.yaw != null ? 0.25 : 0.75 + q() * 0.5, lying = o.yaw != null && b.y <= -drop + 3, hung = false, off = o.yaw != null ? 1e9 : 0;
       const reachOut = 30 + q() * 50; // (lifted: how far out it runs before it hangs over the edge)
+      // along the wood (lane T2, T3's anchors): its route first, then on from the end as a trailer, hanging down to the ground
+      const way = o.route ?? null;
+      if (way) { off = 1e9; const t = way[way.length - 1].clone().sub(way[Math.max(0, way.length - 2)]); yaw = Math.atan2(t.z, t.x); el = 0; }
       const p = b.clone();
       for (let i = 1; i <= m; i++) {
         const s = i * step;
+        if (way && i < way.length) { p.copy(way[i]); pts.push(p.clone()); continue; }
         let dx: number, dy: number, dz: number;
         if (climbs) {
           // up a plane tilted back by `back`, fanned out sideways and wandering
@@ -544,7 +614,7 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
           const floor = -drop + 1.5;
           if (lying) el = 0.02 * Math.sin(s / 60 + ph2);
           else if (drop > 2 && !hung && off < reachOut) el = Math.max(0, el - step / 60); // out along what it sits on
-          else if (drop > 2 && p.y > floor + 20) { hung = true; el = Math.max(-1.45, el - step / 25); } // over the edge: down
+          else if ((drop > 2 || way) && p.y > floor + 20) { hung = true; el = Math.max(-1.45, el - step / 25); } // over the edge: down
           else { el = Math.max(-0.9, el - step / 45); if (p.y + Math.sin(el) * step <= floor) { lying = true; el = 0; } }
           dx = Math.cos(yaw) * Math.cos(el); dy = Math.sin(el); dz = Math.sin(yaw) * Math.cos(el);
         }
@@ -557,7 +627,7 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
       pieces.push(line);
       if (o.on) links.push([pc, o.on[0], o.on[1]]);
       const at =(s: number) => { const t = Math.max(0, Math.min(M, s / step)), j = Math.min(M - 1, Math.floor(t)); return pts[j].clone().lerp(pts[j + 1], t - j); };
-      const nc = Math.max(6, Math.round(M / 3)), ctl = Array.from({ length: nc + 1 }, (_, i) => at(L1 * i / nc));
+      const nc = way ? M : Math.max(6, Math.round(M / 3)), ctl = Array.from({ length: nc + 1 }, (_, i) => at(L1 * i / nc));
       tubes.push(tube(ctl, r0, P.stalk, Math.max(8, M), 4, (s, cc) => ({ ...fullBy(gAt(s * L1) - e, e, 1), anc: cc, pc, par: s * M, apar: s * M })));
       // leaves every `node` mm, alternate sides; the older ones (near the base) larger, held out toward the viewer on a
       // climber, up off the ground on a trailer
@@ -567,9 +637,11 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
         const j = Math.min(M - 1, Math.floor(s / step)), tan = pts[j + 1].clone().sub(pts[j]).normalize(), hy = Math.atan2(tan.z, tan.x);
         const age = 1 - s / L1, Lf = between(q, f.len) * (0.55 + 0.45 * Math.sqrt(age)) * (climbs ? 1 : 0.9);
         // (a climber's leaf: out to its side and a little forward, hanging a little, its face to the viewer)
-        const yawL = climbs ? (side > 0 ? 0.35 : Math.PI - 0.35) + (q() - 0.5) * 0.5 : hy + side * (1 + 0.5 * q());
-        const rise = climbs ? 1.45 + 0.5 * q() : lerp(f.rise[0], f.rise[1], q()), a = gAt(s);
-        leaf(into, f, P.stalk, at(s), yawL, Lf, rise, D.twist(), D.pick(), D.bright(), q, STIFF, { ...fullBy(a, 0.08, Math.max(a + 0.01, 1)), on: { pc, par: s / step } }, climbs ? FACE : undefined);
+        // (a vine running steeply up the wood holds its leaves out like a climber, lane T2)
+        const up = climbs || (!!way && Math.abs(tan.y) > 0.55);
+        const yawL = up ? (side > 0 ? 0.35 : Math.PI - 0.35) + (q() - 0.5) * 0.5 : hy + side * (1 + 0.5 * q());
+        const rise = up ? 1.45 + 0.5 * q() : lerp(f.rise[0], f.rise[1], q()), a = gAt(s);
+        leaf(into, f, P.stalk, at(s), yawL, Lf, rise, D.twist(), D.pick(), D.bright(), q, STIFF, { ...fullBy(a, 0.08, Math.max(a + 0.01, 1)), on: { pc, par: s / step } }, up ? FACE : undefined);
       }
       // branches, once grown on (from the plant's growth stream): off a point along it, out to one side, getting longer
       // at the species' rate from when they start
@@ -588,12 +660,15 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
       const fi = i === 0 ? 1 : 0.45 + 0.55 * r(), Li = h * fi, climbs = r() < Vn.climb, b = inside(r, base, () => Math.sqrt(r()));
       // grown on it keeps getting longer at the species' rate; a plant nobody has grown stops at its own length
       const L1 = more ? Li * Math.exp(lk * (1 - g0)) : Li, a0 = own(i, n);
-      vine(r, { pick, twist, bright }, out, extra, b, L1, s => Math.max(a0, g0 + Math.log(Math.max(1e-3, s / Li)) / lk), climbs);
+      // (with wood in reach, a share of them run along it instead: no extra draws without wood)
+      const way = LB.length && r() < (Vn.follow ?? 0.6) ? route(r, b, L1) : null;
+      vine(r, { pick, twist, bright }, out, extra, b, L1, s => Math.max(a0, g0 + Math.log(Math.max(1e-3, s / Li)) / lk), climbs && !way, way ? { route: way } : {});
     }
     for (let j = 0, m = extras(n, 24); j < m; j++) {
       const a0 = extraAt(j, n), L0 = Math.max(30, h * 0.12), L1 = L0 * Math.exp(lk * (1 - a0)), climbs = re() < Vn.climb;
       const b = inside(re, base * (1 + 0.6 * (a0 - g0) / Math.max(0.05, 1 - g0)), () => Math.sqrt(re()));
-      vine(re, X, ex, exTubes, b, L1, s => a0 + Math.max(0, Math.log(Math.max(1e-3, s / L0)) / lk), climbs);
+      const way = LB.length && re() < (Vn.follow ?? 0.6) ? route(re, b, L1) : null;
+      vine(re, X, ex, exTubes, b, L1, s => a0 + Math.max(0, Math.log(Math.max(1e-3, s / L0)) / lk), climbs && !way, way ? { route: way } : {});
     }
   } else if (P.form === 'moss') {
     // a ragged dome (radius = half the card width, height h) over a dark core; fronds all over it, pointing outward

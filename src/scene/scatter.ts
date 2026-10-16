@@ -5,7 +5,7 @@
 // 'shoal' species in a loose group, everyone else spread apart.
 import { clingsTo, fishTL, getSpecies, speciesOf, type Species } from '../data/species';
 import { backdropDepth, clamp, clampFish, spawnSnail, waterY } from './physics';
-import { hardscape } from './items';
+import { hardscape, itemDims } from './items';
 import { inside } from './shape';
 import { groundHeight, randomLand } from './terrain';
 import type { Fish, TankSetup } from './types';
@@ -84,9 +84,20 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
   const groups = [...bySpecies.entries()].map(([id, fish]) => ({ sp: getSpecies(id)!, fish })).filter(e => e.sp)
     .sort((a, b) => +grouped(b.sp, b.fish.length) - +grouped(a.sp, a.fish.length));
 
-  const hard = hardscape(s), perchy = hardscape(s, s.items, PERCH_FROG);
+  const hard = hardscape(s), perchy = hardscape(s, s.items, PERCH_FROG), hosts = anemones(s);
   for (const e of groups) {
     const sp = e.sp;
+    if (hosts.length && HOSTED.has(sp.id)) { // clownfish settle in a bubble-tip anemone: the whole group in one of them
+      const a = hosts[Math.floor(r() * hosts.length)];
+      for (const f of e.fish) {
+        const w = fishTL(f, sp), h = w * sp.aspect, ang = r() * 2 * Math.PI, d = r() * a.r * 0.6;
+        const y = Math.min(a.top + h * (0.1 + r() * 0.9), Math.max(a.top, top - h / 2)); // nestled in the tentacles or hovering just over them
+        Object.assign(f, { x: a.x + Math.cos(ang) * d, depth: a.depth + Math.sin(ang) * d, y }, randomPose(sp, r, r() * 360 - 180, 0));
+        f.pitch = Math.round(-5 - r() * 15); // nose a little down into the tentacles
+        clampFish(f, A, wb, s.render.bgSides); note(f, w);
+      }
+      continue;
+    }
     if (sp.surfaces) {
       // clinging animals: a spot on any surface they can use, in proportion to its area; snails stay wherever that is,
       // the rest of a group of shrimp or otos left on the floor forage there as usual. A clinging fish (oto, pleco) takes
@@ -191,6 +202,18 @@ export function placeNew(s: TankSetup, r: () => number, ids: Set<number>) {
     }
   }
   if ([...ids].some(id => !joined.has(id))) shuffleFish(s, r, f => ids.has(f.id) && !joined.has(f.id));
+}
+
+/** Species that host in a bubble-tip anemone when the tank has one (clownfish; follow-up from lane T4, 2026-10-16). */
+const HOSTED = new Set(['ocellaris']);
+
+/** The bubble-tip anemones of a salt tank: centre, disc radius and the height of the tentacle tops (mm). */
+function anemones(s: TankSetup) {
+  if (!s.water.on || !s.water.salt) return [];
+  return s.items.filter(it => it.kind === 'coral' && it.variant === 'anemone').map(it => {
+    const [, ht] = itemDims(it);
+    return { x: it.x, depth: it.depth, r: it.size / 2, top: groundHeight(s, s.tank, it.x, it.depth) + it.lift + ht * 0.8 };
+  });
 }
 
 /** Weight of the glass, per mm², for a clinging fish choosing where to sit (floor 1, hardscape tops GRAZE). */

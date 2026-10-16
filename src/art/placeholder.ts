@@ -75,10 +75,15 @@ export function drawFishCard(art: string, aspect: number, W = 1024, finA = FIN_A
  * radii in tile pixels (tile 90 → 512 px per 180 mm, so ~0.35 mm per pixel).
  */
 export interface SubstrateLook {
-  label: string; kind: 'sand' | 'pebble'; base: string; shades: string[]; size: [number, number]; tile: number;
+  label: string; kind: 'sand' | 'pebble' | 'soil' | 'clay' | 'bark'; base: string; shades: string[]; size: [number, number]; tile: number;
   gloss?: number; speckle?: boolean; round?: number;
+  /** Terrestrial ground (lane T1): its own colour when dry (no damp-soil tint above the water), darker when wet. */
+  terra?: boolean;
+  /** Second shade set: soil's coco fibres. */
+  fibre?: string[];
 }
 export type PresetSubstrate = Exclude<SubstrateType, 'custom'>;
+const SOIL = ['#3d2b1e', '#4a3424', '#22170f', '#57402c', '#33241a', '#614731'], COCO = ['#9a6638', '#7f522d', '#b07a46', '#6a4426', '#c08a55'];
 export const SUBSTRATES: Record<PresetSubstrate, SubstrateLook> = {
   gravel: { label: 'Natural gravel', kind: 'pebble', base: '#241e17', tile: 90, size: [5, 11], speckle: true, gloss: 0.12, round: 0.75,
     shades: ['#9c8a70', '#7a6a55', '#b5a58c', '#8d8a82', '#6b6258', '#c9bfae', '#5a4f43', '#a39383', '#857565', '#4b4640', '#b39a7a', '#d6cdbd'] },
@@ -97,13 +102,160 @@ export const SUBSTRATES: Record<PresetSubstrate, SubstrateLook> = {
   aragonite: { label: 'Aragonite sand (marine)', kind: 'sand', base: '#e9e3d4', shades: ['#f6f2e8', '#ddd3bf', '#fbf8f1', '#e8d9cc'], size: [1.2, 3], tile: 40 },
   coral:  { label: 'Crushed coral (marine)', kind: 'sand', base: '#bdb4a2', size: [2.5, 6.5], tile: 70,
     shades: ['#efe9dc', '#e2d8c4', '#f7f3ea', '#d3c7ae', '#e8d6cc', '#b9b2a6', '#f1e4d2', '#ddd5c9', '#a8a196'] },
+  // terrestrial (lane T1, 2026-10-16). Soil / coco fibre: dark crumbly humus with ginger coco strands and the odd perlite
+  // fleck; terrarium sand: warm tan desert sand; clay: terracotta with a fine dry-crack network; orchid bark: flat
+  // reddish-brown chips with fibrous grain, packed like gravel. 'layered' = the soil on top of a clay-ball drainage layer.
+  soil:   { label: 'Soil / coco fibre', kind: 'soil', base: '#2b1e15', tile: 60, size: [1.5, 5], terra: true, shades: SOIL, fibre: COCO },
+  tsand:  { label: 'Terrarium sand', kind: 'sand', base: '#b8915f', size: [1.5, 3.5], tile: 40, terra: true,
+    shades: ['#cfa877', '#a77f50', '#dcbc8f', '#9c7347', '#c49b69', '#e3c9a0', '#8f6a42'] },
+  clay:   { label: 'Clay', kind: 'clay', base: '#8e5236', size: [1, 2.5], tile: 120, terra: true,
+    shades: ['#9d5f40', '#83492f', '#a8694a', '#774229', '#b07554'] },
+  bark:   { label: 'Orchid bark', kind: 'bark', base: '#1c110b', tile: 160, size: [14, 30], terra: true,
+    shades: ['#6e3a22', '#7f4629', '#5c301c', '#8e5333', '#4f2a19', '#9a6040', '#6a4030'] },
+  layered: { label: 'Layered: clay balls under soil', kind: 'soil', base: '#2b1e15', tile: 60, size: [1.5, 5], terra: true, shades: SOIL, fibre: COCO },
 };
+/** Expanded clay balls (LECA), the drainage layer of 'layered' ground, seen only in its cross-section at the glass. */
+export const LECA: SubstrateLook = { label: 'Clay balls', kind: 'pebble', base: '#2a160c', tile: 90, size: [14, 24], speckle: true, gloss: 0, round: 0.97,
+  shades: ['#b5653a', '#a35a33', '#c4774a', '#8f4e2d', '#b86d45', '#9c5634'] };
+/** Seamless tile of a look that is not a preset (LECA). */
+export function drawLook(ctx: Ctx, W: number, t: SubstrateLook) {
+  const r = rng(17); ctx.fillStyle = t.base; ctx.fillRect(0, 0, W, W); drawPebbles(ctx, W, t, r, 2.2);
+}
 const rgbOf = (hex: string) => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16));
 const rgbStr = (c: number[], k = 1, a = 1) => `rgba(${c.map(v => Math.round(Math.min(255, Math.max(0, v * k)))).join(',')},${a})`;
+/** Call f at (x, y) and at each wrapped copy that reaches into the W x W tile. */
+function wrap9(W: number, x: number, y: number, rad: number, f: (x: number, y: number) => void) {
+  for (const dx of [-W, 0, W]) for (const dy of [-W, 0, W]) if (x + dx < W + rad && x + dx > -rad && y + dy < W + rad && y + dy > -rad) f(x + dx, y + dy);
+}
+/** Soft light and dark blotches over the base (moisture and humus patches). */
+function mottle(ctx: Ctx, W: number, r: () => number, n: number, r0: number, r1: number, a: number) {
+  for (let i = 0; i < n; i++) {
+    const rad = r0 + r() * (r1 - r0), dark = r() < 0.5, x = r() * W, y = r() * W;
+    wrap9(W, x, y, rad, (px, py) => {
+      const g = ctx.createRadialGradient(px, py, 0, px, py, rad);
+      g.addColorStop(0, dark ? `rgba(0,0,0,${a})` : `rgba(255,235,210,${a * 0.6})`); g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g; ctx.fillRect(px - rad, py - rad, rad * 2, rad * 2);
+    });
+  }
+}
+/** Per-pixel grain: each pixel times 1 +- amp, so flat fills do not read as plastic. */
+function grain(ctx: Ctx, W: number, r: () => number, amp: number) {
+  const im = ctx.getImageData(0, 0, W, W), d = im.data;
+  for (let i = 0; i < d.length; i += 4) { const k = 1 + (r() - 0.5) * 2 * amp; d[i] *= k; d[i + 1] *= k; d[i + 2] *= k; }
+  ctx.putImageData(im, 0, 0);
+}
+/**
+ * Soil / coco fibre: humus blotches, packed crumbs (each lit at the top left, a dark rim at the bottom right), coco
+ * strands lying in loose curls over and between the crumbs, and a few white perlite flecks.
+ */
+function drawSoil(ctx: Ctx, W: number, t: SubstrateLook, r: () => number) {
+  mottle(ctx, W, r, 70, 20, 90, 0.35);
+  const [s0, s1] = t.size, n = Math.round(W * W / 26);
+  for (let i = 0; i < n; i++) {
+    const x = r() * W, y = r() * W, rad = s0 + Math.pow(r(), 2) * (s1 - s0), c = rgbOf(t.shades[Math.floor(r() * t.shades.length)]), k = 0.8 + r() * 0.4;
+    const asp = 0.7 + r() * 0.3, rot = r() * 3;
+    wrap9(W, x, y, rad + 2, (px, py) => {
+      ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.beginPath(); ctx.ellipse(px + rad * 0.3, py + rad * 0.35, rad, rad * 0.8, 0, 0, 7); ctx.fill();
+      ctx.fillStyle = rgbStr(c, k); ctx.beginPath(); ctx.ellipse(px, py, rad, rad * asp, rot, 0, 7); ctx.fill();
+      if (rad > 2) { ctx.fillStyle = rgbStr(c, k * 1.35, 0.6); ctx.beginPath(); ctx.arc(px - rad * 0.3, py - rad * 0.3, rad * 0.4, 0, 7); ctx.fill(); }
+    });
+  }
+  const F = t.fibre ?? t.shades;
+  ctx.lineCap = 'round';
+  for (let i = 0; i < 220; i++) { // coco strands: thin curved hairs
+    const x = r() * W, y = r() * W, len = 20 + r() * 90, a = r() * Math.PI * 2, bend = (r() - 0.5) * 1.6;
+    const c = rgbOf(F[Math.floor(r() * F.length)]), w = 0.5 + r() * 0.9, k = 0.7 + r() * 0.4;
+    const x1 = x + Math.cos(a) * len, y1 = y + Math.sin(a) * len, mx = (x + x1) / 2 - Math.sin(a) * len * bend * 0.5, my = (y + y1) / 2 + Math.cos(a) * len * bend * 0.5;
+    const cx = (x + x1) / 2, cy = (y + y1) / 2;
+    wrap9(W, cx, cy, len, (px, py) => {
+      const ox = px - cx, oy = py - cy, stroke = (d: number) => { ctx.beginPath(); ctx.moveTo(x + ox + d, y + oy + d); ctx.quadraticCurveTo(mx + ox + d, my + oy + d, x1 + ox + d, y1 + oy + d); ctx.stroke(); };
+      ctx.strokeStyle = 'rgba(0,0,0,0.35)'; ctx.lineWidth = w + 1.2; stroke(0.9);
+      ctx.strokeStyle = rgbStr(c, k, 0.9); ctx.lineWidth = w; stroke(0);
+    });
+  }
+  for (let i = 0; i < 26; i++) { // perlite
+    const x = r() * W, y = r() * W, rad = 1.2 + r() * 2.2, rot = r() * 3;
+    wrap9(W, x, y, rad, (px, py) => { ctx.fillStyle = 'rgba(232,230,222,0.85)'; ctx.beginPath(); ctx.ellipse(px, py, rad, rad * 0.8, rot, 0, 7); ctx.fill(); });
+  }
+  grain(ctx, W, r, 0.06);
+}
+/**
+ * Clay: smooth terracotta with broad tonal drift, a fine silt grain, and a seamless network of dry cracks (cell borders
+ * of a Voronoi pattern on the torus: dark where a pixel is about as near its second-nearest centre as its nearest),
+ * each crack's lip a touch lighter where the plate curls up.
+ */
+function drawClay(ctx: Ctx, W: number, t: SubstrateLook, r: () => number) {
+  mottle(ctx, W, r, 60, 20, 90, 0.14);
+  const [s0, s1] = t.size, n = Math.round(W * W / 14);
+  for (let i = 0; i < n; i++) {
+    ctx.fillStyle = rgbStr(rgbOf(t.shades[Math.floor(r() * t.shades.length)]), 0.9 + r() * 0.25, 0.5);
+    const w = s0 + r() * (s1 - s0); ctx.fillRect(r() * W, r() * W, w, w);
+  }
+  const cx = Array.from({ length: 34 }, () => [r() * W, r() * W]);
+  const im = ctx.getImageData(0, 0, W, W), d = im.data;
+  const tw = Math.PI * 2 / W; // the crack lines wander: the cells are looked up at a wobbled point (whole waves per tile, seamless)
+  for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) {
+    let a = 1e9, b = 1e9;
+    const sx = x + 4 * Math.sin(tw * 9 * y + 1.7) + 2 * Math.sin(tw * 23 * y), sy = y + 4 * Math.sin(tw * 11 * x + 0.4) + 2 * Math.sin(tw * 19 * x);
+    for (const [px, py] of cx) {
+      let dx = Math.abs(sx - px) % W, dy = Math.abs(sy - py) % W; if (dx > W / 2) dx = W - dx; if (dy > W / 2) dy = W - dy;
+      const q = Math.sqrt(dx * dx + dy * dy); if (q < a) { b = a; a = q; } else if (q < b) b = q;
+    }
+    const gap = b - a, i = (y * W + x) * 4, k = gap < 1.2 ? 0.35 + gap * 0.25 : gap < 4 ? 1.08 - (gap - 1.2) * 0.028 : 1;
+    d[i] *= k; d[i + 1] *= k; d[i + 2] *= k;
+  }
+  ctx.putImageData(im, 0, 0);
+  grain(ctx, W, r, 0.05);
+}
+/**
+ * Orchid bark: flat, angular chips dropped in layers (like the gravel pile, each layer darkening the one under it).
+ * Each chip an irregular polygon longer than wide, its fibrous grain as fine streaks along its length, a darker rough
+ * outer face on some, a soft contact shadow and a thin lit edge.
+ */
+function drawBark(ctx: Ctx, W: number, t: SubstrateLook, r: () => number) {
+  const [s0, s1] = t.size, avg = (s0 + s1) / 2, n = Math.round(W * W * 2.6 / (Math.PI * avg * avg * 0.15));
+  const pool = Array.from({ length: 90 }, () => barkSprite(t, r));
+  for (let i = 0; i < n; i++) {
+    if (i && i % Math.ceil(n / 4) === 0) { ctx.fillStyle = 'rgba(0,0,0,0.16)'; ctx.fillRect(0, 0, W, W); }
+    const sp = pool[Math.floor(r() * pool.length)], h = sp.width / 2, x = r() * W, y = r() * W;
+    wrap9(W, x, y, h, (px, py) => ctx.drawImage(sp, px - h, py - h));
+  }
+  grain(ctx, W, r, 0.05);
+}
+function barkSprite(t: SubstrateLook, r: () => number) {
+  const [s0, s1] = t.size, len = s0 + Math.pow(r(), 1.3) * (s1 - s0), wid = len * (0.5 + r() * 0.4), rot = r() * Math.PI;
+  const o = Math.ceil(len * 0.75), cv = document.createElement('canvas'); cv.width = cv.height = o * 2;
+  const x = cv.getContext('2d')!, c = rgbOf(t.shades[Math.floor(r() * t.shades.length)]), tint = 0.85 + r() * 0.3, outer = r() < 0.4;
+  // a blocky chunk: points round a squarish outline (superellipse), each corner knocked about, the odd one broken off
+  const K = 7 + Math.floor(r() * 4), pts = Array.from({ length: K }, (_, k) => {
+    const a = (k + (r() - 0.5) * 0.5) / K * Math.PI * 2, c = Math.cos(a), sn = Math.sin(a), q = (r() < 0.15 ? 0.7 : 0.88) + r() * 0.16;
+    return [Math.sign(c) * Math.abs(c) ** 0.45 * len * 0.5 * q, Math.sign(sn) * Math.abs(sn) ** 0.45 * wid * 0.5 * q];
+  });
+  const path = (dx: number, dy: number) => { x.beginPath(); pts.forEach(([px, py], k) => k ? x.lineTo(px + dx, py + dy) : x.moveTo(px + dx, py + dy)); x.closePath(); };
+  x.translate(o, o); x.rotate(rot);
+  x.fillStyle = 'rgba(0,0,0,0.45)'; path(len * 0.06, wid * 0.1); x.fill(); // contact shadow
+  path(0, 0); x.fillStyle = rgbStr(c, tint * (outer ? 0.7 : 1)); x.fill(); x.save(); x.clip();
+  for (let k = 0; k < 10; k++) { // grain streaks along the chip, faint
+    const yy = (r() - 0.5) * wid, l = len * (0.3 + r() * 0.7), xx = (r() - 0.5) * (len - l);
+    x.strokeStyle = r() < 0.55 ? rgbStr(c, tint * 0.75, 0.35) : rgbStr(c, tint * 1.15, 0.25); x.lineWidth = 0.5 + r() * 0.8;
+    x.beginPath(); x.moveTo(xx - l / 2, yy); x.lineTo(xx + l / 2, yy + (r() - 0.5) * 2); x.stroke();
+  }
+  if (outer) for (let k = 0; k < 6; k++) { // rough outer face: dark fissures
+    x.strokeStyle = 'rgba(20,10,5,0.6)'; x.lineWidth = 1 + r() * 1.5; const yy = (r() - 0.5) * wid;
+    x.beginPath(); x.moveTo(-len / 2, yy); x.lineTo(len / 2, yy + (r() - 0.5) * wid * 0.4); x.stroke();
+  }
+  const g = x.createLinearGradient(-len * 0.3, -wid * 0.5, len * 0.3, wid * 0.5); // light from the upper left
+  g.addColorStop(0, 'rgba(255,230,200,0.18)'); g.addColorStop(1, 'rgba(0,0,0,0.25)'); x.fillStyle = g; x.fillRect(-len, -len, len * 2, len * 2);
+  x.restore(); path(0, 0); x.strokeStyle = rgbStr(c, tint * 1.4, 0.5); x.lineWidth = 1; x.stroke();
+  return cv;
+}
 /** Seamless substrate tile (grains and stones wrap across the edges). */
 export function drawSubstrate(ctx: Ctx, W: number, type: PresetSubstrate) {
   const t = SUBSTRATES[type], r = rng(11); ctx.fillStyle = t.base; ctx.fillRect(0, 0, W, W);
   if (t.kind === 'pebble') return drawPebbles(ctx, W, t, r);
+  if (t.kind === 'soil') return drawSoil(ctx, W, t, r);
+  if (t.kind === 'clay') return drawClay(ctx, W, t, r);
+  if (t.kind === 'bark') return drawBark(ctx, W, t, r);
   const n = Math.round(W * W / (t.size[1] * t.size[1] * 2.2));
   for (let i = 0; i < n; i++) {
     const x = r() * W, y = r() * W, rx = t.size[0] + r() * (t.size[1] - t.size[0]), ry = rx * (0.6 + r() * 0.4), a = r() * 3;

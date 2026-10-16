@@ -6,7 +6,7 @@ import { defaultSetup } from '../src/scene/defaults';
 import { LAYOUT_IDS } from '../src/scene/validate';
 import { parseScene } from '../src/scene/validate';
 
-const REEF = ['liverock', 'acropora', 'montipora', 'mushroom', 'leather'];
+const REEF = ['liverock', 'acropora', 'montipora', 'mushroom', 'leather', 'acrofine', 'zoanthid', 'hammer', 'torch', 'anemone', 'montiplate', 'seafan', 'macroalgae'];
 
 describe('live rock and corals (lane E, 2026-10-14)', () => {
   it('are library variants offered in salt tanks only; corals are their own kind, live rock a stone', () => {
@@ -35,7 +35,7 @@ describe('live rock and corals (lane E, 2026-10-14)', () => {
       expect(wide).toBeGreaterThan(0.6 * l); expect(wide).toBeLessThan(1.35 * l);
       expect(bb.max.y).toBeGreaterThan(0.4 * h); expect(bb.max.y).toBeLessThan(2 * h);
     }
-  });
+  }, 30000); // thirteen pieces x three seeds, each built twice and compared
 });
 
 describe('Reef starter set (lane I, 2026-10-14)', () => {
