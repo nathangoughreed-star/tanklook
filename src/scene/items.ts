@@ -376,15 +376,25 @@ export function itemToTank(S: TankSetup, it: Item, p: V3) {
   return { x: it.x + p[0] * c + p[2] * s, depth: it.depth - (-p[0] * s + p[2] * c), y: groundHeight(S, S.tank, it.x, it.depth) + it.lift - itemSink(it) + p[1] };
 }
 
+/** Plants with broad leaves an animal can sit on, and how their area counts against the hardscape's tops in Shuffle. */
+const LEAFY: Readonly<Record<string, number>> = { crypt: 1, anubias: 0.6, lotus: 0.6, ozelot: 0.5, sagittaria: 0.4, buce: 0.3, sword: 0.3, fern: 0.3, balansae: 0.2 };
+const LEAF_SHARE = 0.5;
 /**
  * The tops of the solid pieces (stones, wood, caves) as somewhere a clinging animal can sit: their rough upward-facing
  * area (mm²) and a random spot on them in proportion to it, (x, depth) and an estimate of the height there. The renderer
  * finds the exact top under (x, depth); this only has to land on the piece. `perchK` weights the perches (climbing
  * branch, ledge) over their area: a tree frog's Shuffle favours them.
  */
-export function hardscape(S: TankSetup, pieces = S.items, perchK = 1) {
+export function hardscape(S: TankSetup, pieces = S.items, perchK = 1, leaves = false) {
   const parts: { area: number; spot: (r: () => number) => { x: number; depth: number; y: number } }[] = [];
   for (const it of pieces) {
+    // broad leaves (anubias, swords, ferns...) as somewhere to sit, when asked: a spot on the crown's spread at about half
+    // its height; the renderer finds the leaf there (none: the animal lands on the ground under it)
+    if (leaves && it.kind === 'plant' && it.variant in LEAFY) {
+      const [l, h, w] = itemDims(it);
+      parts.push({ area: l * w * 0.35 * LEAF_SHARE * LEAFY[it.variant], spot: r => { const ang = r() * 2 * Math.PI, d = Math.sqrt(r()) * 0.35; return { x: it.x + Math.cos(ang) * d * l, depth: it.depth + Math.sin(ang) * d * w, y: groundHeight(S, S.tank, it.x, it.depth) + h * 0.45 }; } });
+      continue;
+    }
     if (it.kind === 'plant' || it.kind === 'coral') continue; // no grazing on live coral (Nathan 2026-10-14)
     if (it.kind === 'wood' && isLimbWood(it.variant)) {
       for (const l of woodLimbs(it.variant, it.seed, it.size)) {

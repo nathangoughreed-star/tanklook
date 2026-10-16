@@ -6,7 +6,7 @@ import { litterMeshes } from './scatter';
 import { patchHighlight, patchMeshes, patchSel } from './brushmesh';
 import { glassGrains, grainLook, grainMeshes, grainTop } from './grains';
 import { snailAspect } from '../art/snails';
-import { fishTL, needsWater, speciesOf, type Species } from '../data/species';
+import { fishTL, leafUp, needsWater, speciesOf, type Species } from '../data/species';
 import { PERCHES, anchors, limbPaths, type Anchor, type Anchors, type V3 } from '../scene/anchors';
 import { glassBand, restsOnGround } from '../scene/water';
 import { backdropDepth, D2R, IN, ceilingH, clamp, floorY, glassThickness, RIM_DROP, RIM_H, tankUnderside, waterY } from '../scene/physics';
@@ -17,7 +17,7 @@ import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
 import { getImage } from '../scene/images';
 import { LU, addBeams, addFixture, applyLighting, waterVolumeMaterial } from './lighting';
 import { addAlgae } from './algae';
-import { itemDeps, itemMesh, solidProbe } from './items';
+import { itemDeps, itemMesh, leafProbe, solidProbe } from './items';
 import { rootsKey, rootsMesh } from './roots';
 import { addBackdrop, backdropGeometry } from './backdrop';
 import { drapedCard, fish3d, fishBody, hullMaterial } from './fish3d';
@@ -1289,14 +1289,16 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
   if (!bare) { const key = rootsKey(S); b.itemParts.push(take(key) ?? ((m: THREE.Mesh | null) => part(key, m ? [m] : [], []))(rootsMesh(S, T))); }
   b.itemMeshes = b.itemParts.flatMap(p => p.meshes);
   const solids = b.itemMeshes.filter(m => !m.userData.plant); for (const m of solids) m.updateMatrixWorld(true);
-  const hardKey = hard.join('|');
+  // the plant meshes, for animals that sit on leaves (anchors `leaf`); an animal on a plant is rebuilt when any plant changes
+  const leaves = b.itemMeshes.filter(m => m.userData.plant); for (const m of leaves) m.updateMatrixWorld(true);
+  const hardKey = hard.join('|'), leafKey = leaves.map(m => m.uuid + m.geometry.uuid).join('|');
   // glass climbers sit on the 3D wall where it covers the pane
   const wallKey = JSON.stringify([S.backdrop, S.render.rim, S.render.bgSides]);
   // where animals rest and cling (scene/anchors.ts): the top of the solid piece (stone, wood, cave) under (x, depth) for
   // animals on the hardscape, else the ground; the glass, or the 3D wall where it covers the pane
   const rests = solids.filter(m => !m.userData.coral); // animals rest on rock, wood and caves, never on coral
-  const A = anchors(S, T, { down: solidProbe(T, rests), wall: (at, out, head, w) => onWall(S, T, at, out, head, w) });
-  const top = (x: number, depth: number, hard: boolean) => A.rest(x, depth, hard).p[1];
+  const A = anchors(S, T, { down: solidProbe(T, rests), leaf: leafProbe(T, leaves, (x, d) => groundHeight(S, T, x, d)), wall: (at, out, head, w) => onWall(S, T, at, out, head, w) });
+  const top = (x: number, depth: number, hard: boolean, lv = 0) => A.rest(x, depth, hard, lv).p[1];
   // painted scatter patches (lane SB, render/brushmesh.ts): lying on the ground or the piece under each point; rebuilt only when
   // the patch, the solid pieces or the ground change
   if (!bare && S.patches?.length) {
@@ -1310,13 +1312,14 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
       if (on) { const hk = 'bh' + JSON.stringify(p) + gk; b.itemParts.push(take(hk) ?? part(hk, patchHighlight(gnd, p), [])); }
     }
   }
-  const base = (f: Fish) => top(f.x, f.depth, f.surface === 'hardscape');
+  const base = (f: Fish) => top(f.x, f.depth, f.surface === 'hardscape', sitsOnLeaves(f));
+  const sitsOnLeaves = (f: Fish) => { const sp = speciesOf(f); return sp ? leafUp(sp) : 0; };
   const isArachnid = (art: string) => isSpider(art) || isTarantula(art) || isSnake(art); // legs on the surface: no sink, a flat card; `bend` is the pose
   // an animal (mesh m, length w, its centre k above its belly) resting on a slope: tipped to the ground's slope under its
   // head, tail and both sides (at most MAX_TILT), its centre k off the ground along that tilt, then lifted just clear
   // where the ground still rises into its belly (a bank's curve, a slope past MAX_TILT)
   const restOn = (f: Fish, m: THREE.Mesh, w: number, k: number) => {
-    const hard = f.surface === 'hardscape', g = (x: number, dp: number) => top(x, dp, hard), a = f.yaw * D2R;
+    const hard = f.surface === 'hardscape', lv = sitsOnLeaves(f), g = (x: number, dp: number) => top(x, dp, hard, lv), a = f.yaw * D2R;
     const hx = Math.cos(a), hd = Math.sin(a), L = w * 0.4, Wd = w * 0.2; // heading in (x, depth); side = (hd, -hx)
     const sH = (g(f.x + hx * L, f.depth + hd * L) - g(f.x - hx * L, f.depth - hd * L)) / (2 * L);
     const sS = (g(f.x + hd * Wd, f.depth - hx * Wd) - g(f.x - hd * Wd, f.depth + hx * Wd)) / (2 * Wd);
@@ -1377,7 +1380,7 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
     if (!S.water.on && needsWater(sp)) return; // dry tank: fish stay in the scene data, hidden until the water is back
     const w = fishTL(f, sp), h = w * sp.aspect, p = f;
     const herp = isHerp3D(sp.art);
-    const on = f.surface === 'hardscape' ? A.rest(f.x, f.depth) : null, perch = on && PERCHES.has(on.kind) ? on : null;
+    const on = f.surface === 'hardscape' ? A.rest(f.x, f.depth, true, sitsOnLeaves(f)) : null, perch = on && PERCHES.has(on.kind) ? on : null;
     const m = new THREE.Mesh(drapedCard(sp.art, w, h, f.bend) || cardGeometry(w, h, isArachnid(sp.art) ? 0 : f.bend), herp ? HIDDEN : cardMaterial(`fish:${sp.look}:${fish3d.fade}`, fishTexture(sp, S.render.edge, true, fish3d.fade), S.render.edge));
     if (!herp) (m.material as THREE.Material).userData.fishCard = true; // fish stand out (render.pop) lifts the card too
     const snakeLimb = herp && isSnake(sp.art) && !!perch?.limb; // a snake on a limb follows its curve: built once the card is placed on it (below)
@@ -1402,7 +1405,7 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
     m.position.set(p.x, y, -p.depth); m.rotation.set(f.roll * D2R, f.yaw * D2R, f.pitch * D2R, 'YXZ');
     // on a slope: lying along the ground, not level with it (Nathan 2026-10-13: a treefrog on a bank sat half in the substrate)
     if (rests && isSnake(sp.art)) { // a rigid coil or ball: the tilt and height that leave the least air under it, none of it in the ground (lane BP2)
-      const hard = f.surface === 'hardscape', st = settleSnake(snakeContacts(sp.art, w, f.bend), m.quaternion, { x: p.x, z: -p.depth }, (x, z) => top(x, -z, hard), Math.min(MAX_TILT, 30 * D2R));
+      const hard = f.surface === 'hardscape', st = settleSnake(snakeContacts(sp.art, w, f.bend), m.quaternion, { x: p.x, z: -p.depth }, (x, z) => top(x, -z, hard, 0), Math.min(MAX_TILT, 30 * D2R));
       m.quaternion.premultiply(st.rot); m.position.set(st.x, st.y, st.z);
     } else if (rests) restOn(f, m, w, sp.rest * w - (isArachnid(sp.art) ? 0 : 1));
     register(m, w, h);
@@ -1415,7 +1418,7 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
     return part(key, objs, meshes);
   };
   b.fishParts = (bare ? [] : S.fish).map(f => {
-    const key = 'f' + JSON.stringify(f) + (isSel(selId, f.id) ? '*' : '') + (f.surface === 'hardscape' ? hardKey : '') + (f.surface === 'glass' ? wallKey : '');
+    const key = 'f' + JSON.stringify(f) + (isSel(selId, f.id) ? '*' : '') + (f.surface === 'hardscape' ? hardKey + (sitsOnLeaves(f) ? leafKey : '') : '') + (f.surface === 'glass' ? wallKey : '');
     return take(key) ?? fishPart(f, key);
   });
   b.fishMeshes = b.fishParts.flatMap(p => p.meshes);

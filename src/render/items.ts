@@ -968,6 +968,27 @@ export function solidProbe(T: Tank, solids: THREE.Object3D[]): NonNullable<Ancho
   };
 }
 
+/**
+ * The anchors' look straight down onto plant leaves (scene/anchors.ts `leaf`): the first leaf surface under (x, depth)
+ * whose normal points up at least `up` (its y component: 0.6 = a perch, 0.3 = steep enough for an animal that clings) and
+ * that sits at least `clear` mm above the ground there (the carpet and the crowns are the ground's).
+ * `plants` = the plant meshes (matrices up to date); they are raycast on what shows at their growth (plantRaycast).
+ */
+export function leafProbe(T: Tank, plants: THREE.Object3D[], ground: (x: number, depth: number) => number, clear = 8): NonNullable<AnchorProbe['leaf']> {
+  const rc = new THREE.Raycaster(), nm = new THREE.Matrix3();
+  return (x, depth, up) => {
+    rc.set(_o.set(x, T.H * 3 + 1000, -depth), PROBE_DOWN);
+    const g = ground(x, depth);
+    for (const h of rc.intersectObjects(plants, false)) {
+      if (!h.face || h.point.y < g + clear) continue;
+      const n = h.face.normal.clone().applyMatrix3(nm.getNormalMatrix(h.object.matrixWorld)).normalize();
+      if (n.y < 0) n.negate();
+      if (n.y >= up) return { y: h.point.y, n: [n.x, n.y, -n.z] };
+    }
+    return null;
+  };
+}
+
 /** mm a seated coral's base goes into the rock (it rests on it, never a hair above). */
 export const SEAT_SINK = 3;
 

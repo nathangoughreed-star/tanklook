@@ -12,12 +12,12 @@
 // member of a group of two or more moves or turns them all, the layout between them kept.
 // Pieces take presses only while their menu (Hardscape, or Plants for plants and corals) is open, animals only while the Animals menu is.
 import * as THREE from 'three';
-import { clingsTo, fishTL, getSpecies, restsOnFloor, speciesOf } from '../data/species';
+import { clingsTo, fishTL, getSpecies, leafUp, restsOnFloor, speciesOf } from '../data/species';
 import { restsOnGround } from '../scene/water';
 import { D2R, backdropDepth, clamp, clampFish } from '../scene/physics';
 import { clampItem } from '../scene/items';
 import { glassFrame, nearestGlass } from '../scene/shape';
-import { coralSeat } from '../render/items';
+import { coralSeat, leafProbe } from '../render/items';
 import { dragPool, groundHeight, type PoolPart } from '../scene/terrain';
 import type { Store } from '../scene/store';
 import type { ItemKind, Tank, TankSetup } from '../scene/types';
@@ -375,7 +375,11 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       clampFish(f, T, backdropDepth(t.backdrop, T), t.render.bgSides);
       // over a rock, wood or cave it climbs on top (if it can), off it back down to the floor
       const sp = getSpecies(f.species);
-      if (d.mode === 'top' && sp && clingsTo(sp, 'hardscape')) f.surface = supportLift(d.vp, t, f.x, f.depth, new Set()) > 0 ? 'hardscape' : 'floor';
+      if (d.mode === 'top' && sp && clingsTo(sp, 'hardscape')) {
+        // ... or onto a broad plant leaf, for the animals that sit on those
+        const up = leafUp(sp), leaf = up > 0 && leafProbe(T, (d.vp.itemMeshes ?? []).filter(m => m.userData.plant), (x, dp) => groundHeight(t, t.tank, x, dp))(f.x, f.depth, up);
+        f.surface = supportLift(d.vp, t, f.x, f.depth, new Set()) > 0 || leaf ? 'hardscape' : 'floor';
+      }
       // the rest of the group moves by the same amount
       const rest = store.group; rest.fish = rest.fish.filter(id => id !== f.id);
       if (groupSize(rest)) moveGroup(t, rest, f.x - x0, f.depth - d0, f.y - y0);

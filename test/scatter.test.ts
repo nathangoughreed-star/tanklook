@@ -68,7 +68,7 @@ describe('shuffle', () => {
       const top = waterY(s.tank, s.water.level);
       for (const f of s.fish.filter(q => q.species === 'adf')) {
         all++;
-        expect(['floor', 'top']).toContain(f.surface);
+        expect(['floor', 'top', 'hardscape']).toContain(f.surface);
         expect(inside(s.tank, f.x, f.depth, -1)).toBe(true);
         if (f.surface === 'top') { afloat++; expect(f.y).toBeCloseTo(top, 6); }
       }

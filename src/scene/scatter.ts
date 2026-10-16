@@ -5,7 +5,7 @@
 // 'shoal' species in a loose group, everyone else spread apart.
 import { rng } from '../art/paint';
 import { snakeFoot, snakeStageFor } from '../art/snakes';
-import { clingsTo, fishTL, getSpecies, speciesOf, type Species } from '../data/species';
+import { clingsTo, fishTL, getSpecies, onLeaves, speciesOf, type Species } from '../data/species';
 import { backdropDepth, clamp, clampFish, spawnSnail, waterY } from './physics';
 import { hardscape, itemDims, itemToTank } from './items';
 import { isTarantula, tarantulaBend } from '../art/tarantulas';
@@ -31,6 +31,8 @@ export function randomSize(f: Fish, sp: Species, pct: number, r: () => number) {
 
 /** Share of a species with `cling: "top"` (African dwarf frog) floating at the surface after a Shuffle. */
 export const FLOAT_FROG = 1 / 3;
+/** Share of the dwarf frogs not floating that perch on hardscape or a leaf (when there is any). */
+const PERCH_DWARF = 0.4;
 
 /** Part of the water column (0 = just above the ground, 1 = just under the surface) each level favours. */
 const BANDS = { top: [0.65, 0.98], mid: [0.2, 0.8], low: [0.02, 0.4] } as const;
@@ -90,7 +92,7 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
   const groups = [...bySpecies.entries()].map(([id, fish]) => ({ sp: getSpecies(id)!, fish })).filter(e => e.sp)
     .sort((a, b) => +grouped(b.sp, b.fish.length) - +grouped(a.sp, a.fish.length));
 
-  const hides = s.items.filter(it => HIDES.has(it.variant)), hard = hardscape(s), perchy = hardscape(s, s.items, PERCH_FROG), perchSnake = hardscape(s, s.items, PERCH_SNAKE), hosts = anemones(s);
+  const hides = s.items.filter(it => HIDES.has(it.variant)), hard = hardscape(s), hardLeaf = hardscape(s, s.items, 1, true), perchy = hardscape(s, s.items, PERCH_FROG), perchSnake = hardscape(s, s.items, PERCH_SNAKE), hosts = anemones(s);
   for (const e of groups) {
     const sp = e.sp;
     if (hosts.length && HOSTED.has(sp.id)) { // clownfish settle in a bubble-tip anemone: the whole group in one of them
@@ -110,12 +112,20 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
       // the glass at a third of its area: in a tall tank the panes outsize the floor two to one and would hold nearly all
       // A land climber (tree frog) takes the dry glass and hardscape above the water line; on the floor it goes to land.
       const land = sp.habitat === 'land', glass = clingsTo(sp, 'glass') && (sp.kind === 'snail' || (land ? (isTarantula(sp.art) ? GLASS_TARANTULA : GLASS_FROG) : GLASS_FISH));
-      const on = { glass, hard: clingsTo(sp, 'hardscape') ? (land ? (sp.body === 'snake' ? perchSnake : perchy) : hard) : undefined, above: land && s.water.on ? waterY(A, s.water.level) : undefined }, left: Fish[] = [];
+      const on = { glass, hard: clingsTo(sp, 'hardscape') ? (land ? (sp.body === 'snake' ? perchSnake : perchy) : onLeaves(sp) ? hardLeaf : hard) : undefined, above: land && s.water.on ? waterY(A, s.water.level) : undefined }, left: Fish[] = [];
       for (const f of e.fish) {
         if (sp.body === 'snake' && f.tl === undefined) { const fit = snakeStageFor(A.L, sp.tl); if (fit < sp.tl) f.tl = fit; } // a snake with no size of its own takes the life stage that fits the tank (lane BP)
         // a dwarf frog floats at the surface (its "zen" pose) about a third of the time, else it rests on the bottom
         if (clingsTo(sp, 'top')) {
-          if (!s.water.on || r() >= FLOAT_FROG) { f.surface = 'floor'; left.push(f); continue; }
+          if (!s.water.on || r() >= FLOAT_FROG) {
+            // a perched frog sits on top of a rock, a piece of wood or a broad leaf (never the glass); the rest stay on the floor
+            const w = fishTL(f, sp), q = s.water.on && r() < PERCH_DWARF ? hardLeaf.spot(r) : null;
+            if (q && q.y + w / 2 < top && inside(A, q.x, q.depth, 0)) {
+              Object.assign(f, { x: q.x, depth: q.depth, y: q.y, surface: 'hardscape' as const, yaw: Math.round(r() * 360 - 180), pitch: 0, roll: 0, bend: 0 }); note(f, w);
+              continue;
+            }
+            f.surface = 'floor'; left.push(f); continue;
+          }
           const w = fishTL(f, sp), q = roomiest(w, () => { const c = spot(w / 2, w); return { ...c, y: top }; });
           Object.assign(f, q, { surface: 'top' as const, yaw: Math.round(r() * 360 - 180), pitch: Math.round(4 + r() * 8), roll: 0, bend: 0 }); note(f, w);
           continue;
