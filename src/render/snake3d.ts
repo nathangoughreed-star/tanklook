@@ -456,11 +456,8 @@ function build(S: SnakeSpec, surface: string | undefined, R: number, bend: numbe
   return { body, head, scales, sheen: sh, eyes, spine: sp };
 }
 
-/**
- * The 3D snake for a card of width w mm (the total length; origin at the card's centre; add it as the card's child), in the pose
- * for its surface and `bend` (the pose family, see the header): 'perch' with Rmm = the branch's radius in mm wraps or drapes it.
- */
-export function snakeBody(art: string, w: number, surface?: string, Rmm?: number, bend = 0) {
+/** The built pose (cached) for a length w, surface and bend. */
+function builtPose(art: string, w: number, surface: string | undefined, Rmm: number | undefined, bend: number) {
   const S = SNAKES[art], R = Rmm ? Math.round(Rmm / w * 200) / 200 : 0, baby = babyOf(S, w), pp = snakePoseOf(surface, R || undefined, bend);
   const surf = pp.cyl ? 'perch' : 'floor', key = `${art}~${pp.pose}~${pp.sign}~${pp.mag}~${pp.cyl ?? 0}~${baby}`;
   let built = poseCache.get(key);
@@ -469,6 +466,27 @@ export function snakeBody(art: string, w: number, surface?: string, Rmm?: number
     // a few dozen poses at most (about 3 MB each): the oldest goes, its buffers with it (a mesh still showing it re-uploads)
     if (poseCache.size > 24) { const [k, old] = poseCache.entries().next().value!; poseCache.delete(k); for (const g of [old.body, old.head, old.scales, old.sheen]) g.dispose(); }
   }
+  return { pp, built };
+}
+
+/**
+ * The parts of a floor pose that touch the ground, for settling it on uneven ground (render/build.ts restOn): sample points
+ * of the spine as [x, y, z, r] (mm, the body frame: the surface is y = -ground), r = the coil sphere's radius, every point
+ * whose underside is near the ground line, plus `ground` (mm).
+ */
+export function snakeContacts(art: string, w: number, bend = 0) {
+  const { built } = builtPose(art, w, 'floor', undefined, bend), sp = built.spine, pts: [number, number, number, number][] = [];
+  const lo = -sp.ground;
+  for (let i = 0; i <= SPINE_N; i += 4) { const p = sp.P[i], r = sp.rr[i]; if (p.y - r < lo + 0.9 * r) pts.push([p.x * w, p.y * w, p.z * w, r * w]); }
+  return { pts, ground: sp.ground * w };
+}
+
+/**
+ * The 3D snake for a card of width w mm (the total length; origin at the card's centre; add it as the card's child), in the pose
+ * for its surface and `bend` (the pose family, see the header): 'perch' with Rmm = the branch's radius in mm wraps or drapes it.
+ */
+export function snakeBody(art: string, w: number, surface?: string, Rmm?: number, bend = 0) {
+  const S = SNAKES[art], baby = babyOf(S, w), { pp, built } = builtPose(art, w, surface, Rmm, bend);
   let tex = paintCache.get(art);
   if (!tex) {
     tex = { body: dataTex(paintBuffer(S, 0, S.neck, 2048, 384), 2048, 384, true), head: dataTex(paintBuffer(S, S.neck, 1, 384, 384), 384, 384, true) };
@@ -502,4 +520,43 @@ export function snakeSpine(art: string, w: number, surface?: string, Rmm?: numbe
   const S = SNAKES[art], R = Rmm ? Math.round(Rmm / w * 200) / 200 : 0, pp = snakePoseOf(surface, R || undefined, bend);
   const sp = spineOf(S, pp.cyl ? 'perch' : 'floor', R, bend, babyOf(S, w));
   return { pts: sp.P.map(p => p.clone().multiplyScalar(w)), rr: sp.rr.map(r => r * w), pose: sp.pose, ground: sp.ground * w, cyl: sp.cyl === null ? null : sp.cyl * w };
+}
+
+/**
+ * Settle a rigid floor pose on uneven ground (a slope, a bank, the edge of a cork slab): of the spots within a short slide of
+ * where it was put (so a coil half over a slab's edge slides onto the slab) and the tilts up to `maxTilt` there, the one that
+ * leaves the least air under the parts that touch (`snakeContacts`) with none of them inside the ground. `q` = the pose's
+ * heading (the card's rotation), `at` = the origin's scene x, z, `ground(x, z)` = the ground's height at scene (x, z).
+ * Returns the rotation to premultiply onto `q`, the origin's new x, z and its height.
+ */
+export function settleSnake(c: ReturnType<typeof snakeContacts>, q: THREE.Quaternion, at: { x: number; z: number }, ground: (x: number, z: number) => number, maxTilt: number) {
+  const up = V(0, 1, 0), o = c.pts.map(([x, y, z]) => V(x, y, z).applyQuaternion(q)), r = c.pts.map(p => p[3]), n = o.length;
+  const cands: { rot: THREE.Quaternion; phi: number; y: number[] }[] = [];
+  const add = (phi: number, th: number) => {
+    const rot = new THREE.Quaternion().setFromUnitVectors(up, V(Math.sin(phi) * Math.cos(th), Math.cos(phi), Math.sin(phi) * Math.sin(th)));
+    cands.push({ rot, phi, y: o.map(p => p.clone().applyQuaternion(rot).y) });
+  };
+  add(0, 0);
+  for (let d = 5; d <= maxTilt * 180 / Math.PI + 1e-6; d += 5) for (let k = 0; k < 16; k++) add(d * Math.PI / 180, k * Math.PI / 8);
+  /** The air under the contacts for tilt `cd` over ground heights g, and the origin height that rests it. */
+  const evalG = (cd: { y: number[] }, g: number[]) => {
+    let y0 = -Infinity; for (let i = 0; i < n; i++) y0 = Math.max(y0, g[i] - cd.y[i] + r[i]);
+    let air = 0; for (let i = 0; i < n; i++) air += y0 + cd.y[i] - r[i] - g[i];
+    return { y0, air };
+  };
+  const sr = r.reduce((a, b) => a + b, 0), reach = Math.max(...c.pts.map(p => Math.hypot(p[0], p[2]))), slide = 1.1 * reach;
+  const offs: [number, number][] = [[0, 0]];
+  for (const f of [0.25, 0.5, 0.75, 1]) for (let k = 0; k < 8; k++) offs.push([Math.cos(k * Math.PI / 4) * slide * f, Math.sin(k * Math.PI / 4) * slide * f]);
+  const sample = (ox: number, oz: number, cd: { rot: THREE.Quaternion }) => o.map(p => { const t = p.clone().applyQuaternion(cd.rot); return ground(at.x + ox + t.x, at.z + oz + t.z); });
+  let best = { off: offs[0], cd: cands[0] }, bs = Infinity;
+  for (const off of offs) {
+    const g = o.map(p => ground(at.x + off[0] + p.x, at.z + off[1] + p.z)), pen = 0.01 * Math.hypot(off[0], off[1]) * n;
+    for (const cd of cands) { const sc = evalG(cd, g).air + 0.6 * cd.phi * sr + pen; if (sc < bs) { bs = sc; best = { off, cd }; } }
+  }
+  // the ground under the tilted body, not the level one: choose the tilt again there (same spot), then rest it
+  const g1 = sample(best.off[0], best.off[1], best.cd);
+  let cd = best.cd, sc1 = Infinity;
+  for (const k of cands) { const e = evalG(k, g1).air + 0.6 * k.phi * sr; if (e < sc1) { sc1 = e; cd = k; } }
+  const g2 = sample(best.off[0], best.off[1], cd);
+  return { rot: cd.rot, x: at.x + best.off[0], z: at.z + best.off[1], y: evalG(cd, g2).y0 };
 }

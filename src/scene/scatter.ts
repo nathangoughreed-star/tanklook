@@ -3,6 +3,7 @@
 // (snails, shrimp, plecos) on the substrate, the glass or the hardscape as their species allows, swimmers in their
 // favoured band of the water column ('level'), groups of 3+ of a 'school' species in a tight aligned school and of a
 // 'shoal' species in a loose group, everyone else spread apart.
+import { rng } from '../art/paint';
 import { snakeFoot, snakeStageFor } from '../art/snakes';
 import { clingsTo, fishTL, getSpecies, speciesOf, type Species } from '../data/species';
 import { backdropDepth, clamp, clampFish, spawnSnail, waterY } from './physics';
@@ -43,11 +44,14 @@ export function placeOnLand(s: TankSetup, sp: Species, f: Fish, r: () => number)
 
 /** Move every animal in the tank to a new spot and pose under the rules above. */
 /** `only` = move just that species, or the animals the test picks; everyone else stays put and is kept clear of.
- *  `sizePct` = also re-roll each moved animal's size around that % of adult (randomSize). */
-export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: Fish) => boolean), sizePct?: number) {
+ *  `sizePct` = also re-roll each moved animal's size around that % of adult (randomSize). `room` = how close two animals on
+ *  hardscape may sit, as a share of their two lengths added (0 = no rule: test/anchorbase pins the older placements). */
+export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: Fish) => boolean), sizePct?: number, room = HARD_ROOM) {
   const A = s.tank, top = s.water.on ? waterY(A, s.water.level) : A.H - 10, g = (x: number, d: number) => groundHeight(s, A, x, d), wb = backdropDepth(s.backdrop, A);
-  const placed: { x: number; y: number; depth: number; w: number }[] = [];
-  const note = (f: Fish, w: number) => placed.push({ x: f.x, y: f.y, depth: f.depth, w });
+  const placed: { x: number; y: number; depth: number; w: number; hard?: boolean }[] = [];
+  const note = (f: Fish, w: number) => placed.push({ x: f.x, y: f.y, depth: f.depth, w, hard: f.surface === 'hardscape' });
+  /** Is a body of length w at this spot on hardscape crowding an animal already on hardscape? (lane BP2: two on one ledge or branch spot) */
+  const crowded = (p: { x: number; y: number; depth: number }, w: number) => placed.some(q => q.hard && Math.hypot(p.x - q.x, p.y - q.y, p.depth - q.depth) < room * (w + q.w));
   /** A random footprint spot `inset` from the glass with at least `need` mm of water over the ground (best effort). */
   const spot = (inset: number, need: number) => {
     let best = { x: A.L / 2, depth: A.D / 2 }, bw = -Infinity;
@@ -125,7 +129,17 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
             continue;
           }
         }
-        const p = spawnSnail(g, A, fishTL(f, sp), r, land ? A.H - 10 : top, on);
+        const fw = fishTL(f, sp);
+        let p = spawnSnail(g, A, fw, r, land ? A.H - 10 : top, on);
+        // not on a ledge or branch spot another animal already holds: a few more tries (draws only on a clash)
+        if (p.surface === 'hardscape' && crowded(p, fw)) { // its own draws: the shuffle's stream, and so every other animal's spot, stays as it was
+          const r2 = rng(Math.round(p.x * 7 + p.depth * 13 + p.y * 3) + 1);
+          const ceil = land ? A.H - 10 : top;
+          for (let k = 0; k < 24 && on.hard; k++) {
+            const q = on.hard.spot(r2);
+            if (q && q.y + fw / 2 < ceil && q.y > (on.above ?? -Infinity) && inside(A, q.x, q.depth, 0) && !crowded(q, fw)) { p = { ...p, x: q.x, depth: q.depth, y: q.y }; break; }
+          }
+        }
         if (sp.kind !== 'snail' && p.surface === 'floor') { f.surface = 'floor'; left.push(f); continue; }
         // a frog on the glass sits head up, more or less
         if (land && p.surface === 'glass') p.yaw = Math.round(90 + (r() - 0.5) * 80);
@@ -242,6 +256,8 @@ const GLASS_FROG = 0.6;
 const PERCH_FROG = 4;
 /** How much more a snake favours a branch or ledge than the same area of other hardscape (lane BP): it mostly lies on the floor. */
 const PERCH_SNAKE = 1.5;
+/** Nearest two animals on hardscape may sit: this share of the two body lengths added (lane BP2). */
+const HARD_ROOM = 0.3;
 /** The same for a tarantula: a terrestrial animal, only now and then up the glass. */
 const GLASS_TARANTULA = 0.08;
 /** Share of tarantulas that take a hide (half-log, cork tube) big enough for them, when the tank has one. */

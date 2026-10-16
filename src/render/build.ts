@@ -23,7 +23,7 @@ import { drapedCard, fish3d, fishBody, hullMaterial } from './fish3d';
 import { herpBody, herpFloatTop, isHerp3D } from './herp3d';
 import { isLizard } from './lizard3d';
 import { isSpider } from './spider3d';
-import { isSnake } from './snake3d';
+import { isSnake, settleSnake, snakeContacts } from './snake3d';
 import { isTarantula } from './tarantula3d';
 import { sagShell, snailBody } from './snail3d';
 import { blendTexture, lecaTexture, meshTexture, cardMaterial, pictureTexture, fishBodyTexture, fishTexture, gradientTexture, personTexture, substrateMaskTexture, substrateTexture } from './textures';
@@ -1322,7 +1322,10 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
     const y = rests ? base(f) + sp.rest * w - (isArachnid(sp.art) ? 0 : 1) : Math.min(p.y, Math.max(0, waterY(T, S.water.level) - h / 2));
     m.position.set(p.x, y, -p.depth); m.rotation.set(f.roll * D2R, f.yaw * D2R, f.pitch * D2R, 'YXZ');
     // on a slope: lying along the ground, not level with it (Nathan 2026-10-13: a treefrog on a bank sat half in the substrate)
-    if (rests) restOn(f, m, w, sp.rest * w - (isArachnid(sp.art) ? 0 : 1));
+    if (rests && isSnake(sp.art)) { // a rigid coil or ball: the tilt and height that leave the least air under it, none of it in the ground (lane BP2)
+      const hard = f.surface === 'hardscape', st = settleSnake(snakeContacts(sp.art, w, f.bend), m.quaternion, { x: p.x, z: -p.depth }, (x, z) => top(x, -z, hard), Math.min(MAX_TILT, 30 * D2R));
+      m.quaternion.premultiply(st.rot); m.position.set(st.x, st.y, st.z);
+    } else if (rests) restOn(f, m, w, sp.rest * w - (isArachnid(sp.art) ? 0 : 1));
     register(m, w, h);
     if (f.surface === 'hardscape') return;
     add(contactShadow(S, T, p.x, p.depth, y - h / 2, w, h, f.yaw));
