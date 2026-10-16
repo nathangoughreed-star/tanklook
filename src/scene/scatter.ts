@@ -117,6 +117,8 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
         if (sp.kind !== 'snail' && p.surface === 'floor') { f.surface = 'floor'; left.push(f); continue; }
         // a frog on the glass sits head up, more or less
         if (land && p.surface === 'glass') p.yaw = Math.round(90 + (r() - 0.5) * 80);
+        // a gecko rests either way up on the glass: head down about a third of the time (lane G1)
+        if (land && p.surface === 'glass' && sp.cat === 'reptile' && r() < GECKO_HEAD_DOWN) p.yaw -= 180;
         Object.assign(f, p, { pitch: 0, roll: 0, bend: sp.kind === 'snail' || land ? 0 : +((r() - 0.5) * 0.4).toFixed(2) }); note(f, fishTL(f, sp));
       }
       if (sp.kind === 'snail' || !left.length) continue;
@@ -220,6 +222,8 @@ const GLASS_FISH = 0.35;
 const GLASS_FROG = 0.6;
 /** How much more a tree frog favours a perch (climbing branch, ledge) than the same area of other hardscape (lane T3). */
 const PERCH_FROG = 4;
+/** Share of geckos on the glass resting head down. */
+const GECKO_HEAD_DOWN = 0.35;
 
 /** Does this many of a species move as a group? */
 const grouped = (sp: Species, n: number) => !!sp.group && n >= 3 && sp.kind !== 'snail' && sp.habitat === 'water';

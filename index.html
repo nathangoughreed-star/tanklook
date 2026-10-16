@@ -184,7 +184,7 @@
       <button data-nudge="y1">▲ Up</button><button data-nudge="y-1">Down ▼</button>
       <button data-nudge="d-1">Forward</button><button data-nudge="d1">Back</button>
     </div>
-    <div class="btns"><button id="iReshape" title="Same kind and size, a new shape">New shape</button><button id="iDrop" title="Set it down on the ground">Drop</button><button id="iDup">Duplicate</button><button id="iDel">Delete</button></div>
+    <div class="btns"><button id="iReshape" title="Same kind and size, a new shape">New shape</button><button id="iDrop" title="Set it down on the ground">Drop</button><button id="iDup">Duplicate</button><button id="iCopies" title="Several copies with a little random variation">Copies…</button><button id="iDel">Delete</button></div>
   </div>
   <div class="hint" id="itemHint">Click a piece in the tank to select it; drag it to move it. It rests on the ground or on the piece under it, and carries whatever rests on it. Shift + wheel or R turns it; + and − resize it; the arrow keys move it left / right and forward / back, Page Up / Down up and down. Moved that way it stays put anywhere in the water, passing through other pieces if you like.</div>
   </div>
@@ -220,7 +220,7 @@
   <div class="hint" id="aqNote"></div>
   <div id="selBox">
     <div class="field" id="sexRow" hidden><span class="flabel">Sex</span><span class="seg"><button id="sexM">♂ Male</button><button id="sexF">♀ Female</button></span></div>
-    <div class="btns"><button id="flip">Flip (F)</button><button id="dup">Duplicate</button><button id="del">Delete</button></div>
+    <div class="btns"><button id="flip">Flip (F)</button><button id="dup">Duplicate</button><button id="fCopies" title="Several copies with a little random variation: a school">Copies…</button><button id="del">Delete</button></div>
     <div class="readout" id="ro"></div>
   </div>
   </details>
@@ -306,8 +306,30 @@
     <button id="sideOpen" class="sidetog" title="Show the panel" aria-label="Show the panel">› Edit</button>
     <button id="undo" class="sidetog" title="Undo (Ctrl+Z)">↶ Undo</button>
     <button id="redo" class="sidetog" title="Redo (Ctrl+Shift+Z)">↷ Redo</button>
+    <button id="multiBtn" class="sidetog" aria-pressed="false" title="Multi-select: tap animals and pieces to add them to the selection or take them out; drag on empty water to draw a box round some. On a computer: Shift-click and Shift-drag.">☐ Multi</button>
     <button id="arView" class="sidetog" title="See this tank at real size in your room (phone camera)" hidden>◱ AR</button>
     <button id="recenter" class="sidetog" title="Re-centre the panned view (Home, or double middle-click)" hidden>⌖ Re-centre</button>
+  </div>
+  <div id="groupBar" role="toolbar" aria-label="Selected animals and pieces" hidden>
+    <div class="gbRow">
+      <b id="gbCount"></b>
+      <button id="gbDup" title="Copy the selection beside it (Ctrl+D)">Duplicate</button>
+      <button id="gbCopies" aria-expanded="false" title="Several copies with a little random variation, so repeats do not look cloned">Copies…</button>
+      <button id="gbTurnL" title="Turn the group 15° (Shift + wheel, Shift+R)" aria-label="Turn left">⟲</button>
+      <button id="gbTurnR" title="Turn the group 15° (Shift + wheel, R)" aria-label="Turn right">⟳</button>
+      <button id="gbSmall" title="Resize the group 10 % smaller (−)" aria-label="Smaller">−</button>
+      <button id="gbBig" title="Resize the group 10 % larger (+)" aria-label="Larger">+</button>
+      <button id="gbDel" title="Delete the selection">Delete</button>
+      <button id="gbClear" title="Deselect (Esc)" aria-label="Deselect">✕</button>
+    </div>
+    <div class="gbCopies" id="gbCopyBox" hidden>
+      <div class="row"><label for="gbN" title="How many copies of the whole selection">Copies</label><input id="gbN" type="range" min="1" max="50" value="5"><output id="oGbN"></output></div>
+      <div class="row"><label for="gbAngle" title="Each copy turns a random amount up to this many degrees either way">Angle ±</label><input id="gbAngle" type="range" min="0" max="90" value="20"><output id="oGbAngle"></output></div>
+      <div class="row"><label for="gbScale" title="Each copy is a random amount bigger or smaller, up to this percent">Size ±</label><input id="gbScale" type="range" min="0" max="50" value="12"><output id="oGbScale"></output></div>
+      <div class="row"><label for="gbSpace" title="Each copy sits off its place in the row by a random amount, up to this percent of the step">Spacing ±</label><input id="gbSpace" type="range" min="0" max="100" value="25"><output id="oGbSpace"></output></div>
+      <label class="gbShape"><input type="checkbox" id="gbShape" checked> A new shape for each copied piece</label>
+      <div class="btns"><button id="gbMake" class="primary">Make copies</button><span class="hint">Ctrl+Z takes them back; Make copies again for a different roll.</span></div>
+    </div>
   </div>
   <button id="sideTab" title="Hide the panel" aria-label="Hide the panel" aria-expanded="true"><span>▾</span></button>
   <canvas id="c" aria-label="Tank view"></canvas>

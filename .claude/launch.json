@@ -548,21 +548,6 @@
       "port": 5633
     },
     {
-      "name": "gecko",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "--prefix",
-        "C:/Users/nreed/Glass-Box-gecko",
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5663",
-        "--strictPort"
-      ],
-      "port": 5663
-    },
-    {
       "name": "plant-polish",
       "runtimeExecutable": "npm",
       "runtimeArgs": [

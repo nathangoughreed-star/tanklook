@@ -10,8 +10,9 @@ import { rng, type Pt } from '../art/paint';
 import type { Surface } from '../scene/types';
 import { taperTube } from './fish3d';
 import { shellMesh } from './snail3d';
+import { isLizard, lizardBody } from './lizard3d';
 
-export const isHerp3D = (art: string) => art in HERP3D;
+export const isHerp3D = (art: string) => art in HERP3D || isLizard(art);
 /** Floating at the water surface: the card-frame line v that sits at the surface (its float pose's `top`). */
 export const herpFloatTop = (art: string) => HERP3D_FLOAT[art]?.top;
 
@@ -171,7 +172,7 @@ function bodyTexture(h: Herp3D, b: Body) {
   return tex;
 }
 
-function paintMark(x: CanvasRenderingContext2D, m: Mark3D, W: number, H: number, ry: (u: number, r: number) => number) {
+export function paintMark(x: CanvasRenderingContext2D, m: Mark3D, W: number, H: number, ry: (u: number, r: number) => number) {
   x.save(); x.globalAlpha = m.o;
   if (m.k === 'band') {
     // a band on a midline carries on past it (the far half of the body mirrors this one), so its edge there stays sharp
@@ -223,7 +224,7 @@ function eyeTexture(e: Herp3D['eye'], lid: string) {
 /** A tube through the joints (Catmull-Rom), its radius blended between the joints' radii, with round ends.
  *  `thigh` = a frog's thigh over the first segment: a smooth teardrop swelling to that radius near the hip, flattened
  *  against the flank (squeezed in z), and built with smooth normals (finer rings) so it reads as a muscle, not a faceted tube. */
-function jointTube(pts: THREE.Vector3[], radii: number[], thigh = 0, seg = false) {
+export function jointTube(pts: THREE.Vector3[], radii: number[], thigh = 0, seg = false) {
   const curve = new THREE.CatmullRomCurve3(pts, false, 'centripetal'), N = (thigh ? 18 : 10) * (pts.length - 1), R = thigh ? 24 : 12;
   const tube = new THREE.TubeGeometry(curve, N, 1, R, false), pos = tube.attributes.position, c = new THREE.Vector3(), q = new THREE.Vector3();
   const len: number[] = [0]; for (let i = 1; i < pts.length; i++) len.push(len[i - 1] + pts[i].distanceTo(pts[i - 1]));
@@ -333,7 +334,7 @@ function webGeometry(digits: THREE.Curve<THREE.Vector3>[], reach: number) {
 }
 
 /** Box mapping per triangle (non-indexed): uv from the position seen along the face's dominant axis, so spots stay round on tubes at any angle. */
-function boxUV(g: THREE.BufferGeometry) {
+export function boxUV(g: THREE.BufferGeometry) {
   const p = g.attributes.position, uv = new Float32Array(p.count * 2), a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3();
   for (let i = 0; i < p.count; i += 3) {
     a.fromBufferAttribute(p, i); b.fromBufferAttribute(p, i + 1); c.fromBufferAttribute(p, i + 2);
@@ -417,8 +418,10 @@ function gillGeometry(gl: NonNullable<Herp3D['gills']>) {
 
 /** The 3D amphibian for a card of width w, origin at the card's centre (the card frame's v = 0); add it as the card's child.
  *  `surface` 'glass' = clinging to a pane: its glass pose if it has one (tree frog), belly on the ground line; 'top' =
- *  floating at the water surface: its float pose (African dwarf frog); 'perch' = on a branch or shelf: its perch pose. */
-export function herpBody(art: string, w: number, surface?: Surface | 'perch') {
+ *  floating at the water surface: its float pose (African dwarf frog); 'perch' = on a branch or shelf: its perch pose.
+ *  Lizards (render/lizard3d.ts) take their own poses; `limbR` = the branch's radius (mm) they grip round. */
+export function herpBody(art: string, w: number, surface?: Surface | 'perch', limbR?: number) {
+  if (isLizard(art)) return lizardBody(art, w, surface, limbR);
   const pose = surface === 'glass' ? HERP3D_GLASS[art] : surface === 'top' ? HERP3D_FLOAT[art] : surface === 'perch' ? HERP3D_PERCH[art] : undefined;
   const h = pose || HERP3D[art], b = bodyShape(h), grp = new THREE.Group(), key = pose ? art + '~' + surface : art;
   const K = (k: string, make: () => THREE.BufferGeometry) => geo(key + k, make);

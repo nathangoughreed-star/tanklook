@@ -20,6 +20,7 @@ import { rootsKey, rootsMesh } from './roots';
 import { addBackdrop, backdropGeometry } from './backdrop';
 import { drapedCard, fish3d, fishBody, hullMaterial } from './fish3d';
 import { herpBody, herpFloatTop, isHerp3D } from './herp3d';
+import { isLizard } from './lizard3d';
 import { sagShell, snailBody } from './snail3d';
 import { blendTexture, lecaTexture, meshTexture, cardMaterial, pictureTexture, fishBodyTexture, fishTexture, gradientTexture, personTexture, substrateMaskTexture, substrateTexture } from './textures';
 
@@ -1114,7 +1115,7 @@ const tagFrom = (sc: THREE.Scene, n0: number, part: (o: THREE.Object3D) => numbe
 /** Does o (or anything under it) draw with the hardscape's material (the 3D back wall does)? */
 const solidIn = (o: THREE.Object3D) => { let s = false; o.traverse(c => { s ||= !!((c as THREE.Mesh).material as THREE.Material | undefined)?.userData?.solid; }); return s; };
 
-export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: number | null, edit?: { hot: number | null }, selItem: number | null = null): BuiltTank {
+export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: Sel, edit?: { hot: number | null }, selItem: Sel = null): BuiltTank {
   const sc = new THREE.Scene();
   addTank(sc, S, T); addWater(sc, S, T); if (S.water.on) addAlgae(sc, T, waterY(T, S.water.level), LU); tagFrom(sc, 0, () => PART.glass);
   let n0 = sc.children.length; addSubstrate(sc, S, T); tagFrom(sc, n0, () => PART.ground);
@@ -1139,14 +1140,17 @@ export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: numbe
  * disposed (audit #52-53: moving one fish rebuilt all 40 fish and 56 items, ~65 ms per drag step). Returns how many
  * parts were built.
  */
-export function patchTank(b: BuiltTank, S: TankSetup & { units: Units }, T: Tank, selId: number | null, selItem: number | null = null) {
+export function patchTank(b: BuiltTank, S: TankSetup & { units: Units }, T: Tank, selId: Sel, selItem: Sel = null) {
   const n = addContents(b, S, T, selId, selItem, true);
   if (n) { applyLighting(b.scene); b.scene.updateMatrixWorld(true); }
   return n;
 }
 
 /** Add the items and animals to b.scene (reusing b's parts whose key is unchanged when `reuse`); fills b's lists. */
-function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: number | null, selItem: number | null, reuse = false) {
+/** What is selected: one id, none, or (a group, lane MS) a set of ids. */
+export type Sel = number | null | ReadonlySet<number>;
+const isSel = (s: Sel, id: number) => typeof s === 'object' && s !== null ? s.has(id) : s === id;
+function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: Sel, reuse = false) {
   const sc = b.scene, pool = new Map<string, Part[]>();
   if (reuse) for (const p of [...b.itemParts, ...b.fishParts]) pool.set(p.key, [...pool.get(p.key) ?? [], p]);
   let built = 0;
@@ -1157,10 +1161,10 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: number | null, 
   const bare = S.render.beams && S.light.type !== 'flat';
   const hard: string[] = []; // the solid pieces' data: an animal on the hardscape is rebuilt when any of them changes
   b.itemParts = (bare ? [] : S.items).map(it => {
-    const data = JSON.stringify(it), key = 'i' + data + itemDeps(S, it) + (it.id === selItem ? '*' : ''); // (a vine: + the wood it runs along)
+    const data = JSON.stringify(it), key = 'i' + data + itemDeps(S, it) + (isSel(selItem, it.id) ? '*' : ''); // (a vine: + the wood it runs along)
     const m = take(key) ?? (() => {
       const m = itemMesh(S, T, it); if (!m) return part(key, [], []);
-      if (it.id === selItem) m.add(boxOutline(m.geometry));
+      if (isSel(selItem, it.id)) m.add(boxOutline(m.geometry));
       return part(key, [m], [m]);
     })();
     if (m.meshes.some(o => !o.userData.plant)) hard.push(data);
@@ -1238,7 +1242,7 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: number | null, 
     const on = f.surface === 'hardscape' ? A.rest(f.x, f.depth) : null, perch = on && PERCHES.has(on.kind) ? on : null;
     const m = new THREE.Mesh(drapedCard(sp.art, w, h, f.bend) || cardGeometry(w, h, f.bend), herp ? HIDDEN : cardMaterial(`fish:${sp.look}:${fish3d.fade}`, fishTexture(sp, S.render.edge, true, fish3d.fade), S.render.edge));
     if (!herp) (m.material as THREE.Material).userData.fishCard = true; // fish stand out (render.pop) lifts the card too
-    if (herp) m.add(herpBody(sp.art, w, perch?.limb ? 'perch' : f.surface)); // the card stays as the invisible picking target
+    if (herp) m.add(herpBody(sp.art, w, perch?.limb ? 'perch' : f.surface, perch?.limb?.r)); // the card stays as the invisible picking target
     else m.add(fishBody(sp.art, sp.aspect, w, f.bend, fishBodyTexture(sp), S.render.edge, f.surface === 'glass')); // solid body + paired fins; the card keeps the median fins
     if (f.surface === 'glass') { onGlass(S, T, f, sp, m, w, A); register(m, w, h); return; }
     // floating at the water surface (dwarf frog): the pose's `top` line just under the water line, wherever it is
@@ -1247,7 +1251,8 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: number | null, 
       m.position.set(p.x, waterY(T, S.water.level) - 0.5 + ft * w, -p.depth); m.rotation.set(f.roll * D2R, f.yaw * D2R, f.pitch * D2R, 'YXZ');
       register(m, w, h); return;
     }
-    if (perch) { perchOn(f, m, sp.rest * w - 1, perch); register(m, w, h); return; }
+    // a lizard's belly lies on the bark (its toes and tail are built round the limb), not 1 mm into it as a frog's
+    if (perch) { perchOn(f, m, sp.rest * w - (isLizard(sp.art) ? 0 : 1), perch); register(m, w, h); return; }
     // bottom dwellers and animals on land rest on the ground (or the hardscape) wherever they are (their stored height is ignored)
     const rests = restsOnGround(S, T, sp, p.x, p.depth, h);
     const y = rests ? base(f) + sp.rest * w - 1 : Math.min(p.y, Math.max(0, waterY(T, S.water.level) - h / 2));
@@ -1260,11 +1265,11 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: number | null, 
   };
   const fishPart = (f: Fish, key: string) => {
     const objs: THREE.Object3D[] = [], meshes: THREE.Mesh[] = [];
-    animal(f, (m, w, h) => { m.userData.id = f.id; if (f.id === selId) m.add(outline(w, h)); objs.push(m); meshes.push(m); }, o => { if (o) objs.push(o); });
+    animal(f, (m, w, h) => { m.userData.id = f.id; if (isSel(selId, f.id)) m.add(outline(w, h)); objs.push(m); meshes.push(m); }, o => { if (o) objs.push(o); });
     return part(key, objs, meshes);
   };
   b.fishParts = (bare ? [] : S.fish).map(f => {
-    const key = 'f' + JSON.stringify(f) + (f.id === selId ? '*' : '') + (f.surface === 'hardscape' ? hardKey : '') + (f.surface === 'glass' ? wallKey : '');
+    const key = 'f' + JSON.stringify(f) + (isSel(selId, f.id) ? '*' : '') + (f.surface === 'hardscape' ? hardKey : '') + (f.surface === 'glass' ? wallKey : '');
     return take(key) ?? fishPart(f, key);
   });
   b.fishMeshes = b.fishParts.flatMap(p => p.meshes);

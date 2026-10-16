@@ -6,6 +6,7 @@ import { fitTable } from './table';
 import { sameGrid, sampleTerrain } from './terrain';
 import { keepInWater } from './water';
 import { clampItem } from './items';
+import { groupSize, type Group } from './duplicate';
 import type { CameraSettings, Fish, Item, Scene, TankSetup } from './types';
 
 /** 'scene' = 3D content changed (rebuild), 'view' = camera only (redraw), 'select' = selection only. */
@@ -32,6 +33,11 @@ export class Store {
   selId: number | null = null;
   /** The selected aquascape item (rock, wood, cave, plant); at most one of selId / selItem is set. */
   selItem: number | null = null;
+  /** More animals / pieces selected along with the one above (lane MS): the group is selId / selItem plus these. */
+  extraFish: number[] = [];
+  extraItems: number[] = [];
+  /** Multi mode (the Multi button, for touch): a plain tap adds to or takes from the group, an empty drag draws a box. */
+  multi = false;
   /** Per view: does the panel's editing apply to that tank (the "Edit" box on each view's tab). UI state, not saved. */
   editOn: boolean[] = [true, false];
   private undoStack: string[] = [];
@@ -56,6 +62,16 @@ export class Store {
   get split() { return this.scene.tanks.length > 1; }
   get selected(): Fish | undefined { return this.tank.fish.find(f => f.id === this.selId); }
   get selectedItem(): Item | undefined { return this.tank.items.find(it => it.id === this.selItem); }
+  /** Everything selected, of the shown tank (the lead one first; ids that no longer exist are dropped). */
+  get group(): Group {
+    const T = this.tank, uniq = (a: (number | null)[]) => [...new Set(a.filter((v): v is number => v != null))];
+    return {
+      fish: uniq([this.selId, ...this.extraFish]).filter(id => T.fish.some(f => f.id === id)),
+      items: uniq([this.selItem, ...this.extraItems]).filter(id => T.items.some(it => it.id === id)),
+    };
+  }
+  get groupCount() { return groupSize(this.group); }
+  inGroup(kind: 'fish' | 'item', id: number) { return (kind === 'fish' ? this.group.fish : this.group.items).includes(id); }
 
   /** Indices of the tanks the panel edits (the views with "Edit" ticked); the shown tank first. A single tank is
    *  always edited; split, it is empty while no box is ticked (the panel is then closed). */
@@ -160,6 +176,7 @@ export class Store {
     if (kind === 'scene') { for (const t of this.scene.tanks) { regrid(t); swampGround(t); keepInWater(t); fitTable(t); for (const it of t.items) clampItem(it, t.tank, t); } clearCams(this.scene.tanks, this.scene.camLock); }
     if (this.selId != null && !this.tank.fish.some(f => f.id === this.selId)) this.selId = null;
     if (this.selItem != null && !this.tank.items.some(it => it.id === this.selItem)) this.selItem = null;
+    this.pruneExtras();
     this.emit(kind);
   }
 
@@ -167,12 +184,47 @@ export class Store {
   seal() { this.lastKey = null; }
 
   select(id: number | null) {
-    if (id === this.selId && (id != null || this.selItem == null)) return;
-    this.selId = id; this.selItem = null; this.emit('select');
+    if (id === this.selId && (id != null || this.selItem == null) && !this.extraFish.length && !this.extraItems.length) return;
+    this.selId = id; this.selItem = null; this.extraFish = []; this.extraItems = []; this.emit('select');
   }
   selectItem(id: number | null) {
-    if (id === this.selItem && this.selId == null) return;
-    this.selItem = id; this.selId = null; this.emit('select');
+    if (id === this.selItem && this.selId == null && !this.extraFish.length && !this.extraItems.length) return;
+    this.selItem = id; this.selId = null; this.extraFish = []; this.extraItems = []; this.emit('select');
+  }
+  /** Select exactly this group (the lead is the first animal, else the first piece). */
+  selectGroup(g: Group) {
+    const [lf, ...rf] = g.fish, [li, ...ri] = g.items;
+    this.selId = lf ?? null; this.selItem = lf == null ? li ?? null : null;
+    this.extraFish = rf; this.extraItems = lf == null ? ri : g.items;
+    this.emit('select');
+  }
+  /** Add an animal / piece to the group, or take it out if it is in (shift-click, the Multi button). */
+  toggle(kind: 'fish' | 'item', id: number) {
+    const g = this.group, list = kind === 'fish' ? g.fish : g.items, at = list.indexOf(id);
+    if (at >= 0) list.splice(at, 1); else list.push(id);
+    this.selectGroup(g);
+  }
+  /** Make a member of the group the lead (the one the panel shows and a drag follows) without changing the group. */
+  lead(kind: 'fish' | 'item', id: number) {
+    const g = this.group; if (!(kind === 'fish' ? g.fish : g.items).includes(id)) return;
+    const rest = (a: number[]) => a.filter(v => v !== id);
+    this.selId = null; this.selItem = null;
+    if (kind === 'fish') { this.selId = id; this.extraFish = rest(g.fish); this.extraItems = g.items; }
+    else { this.selItem = id; this.extraItems = rest(g.items); this.extraFish = g.fish; }
+    this.emit('select');
+  }
+  /** Add these to the group (a box select with shift held). */
+  addToGroup(g: Group) {
+    const cur = this.group;
+    this.selectGroup({ fish: [...new Set([...cur.fish, ...g.fish])], items: [...new Set([...cur.items, ...g.items])] });
+  }
+  setMulti(on: boolean) { if (this.multi !== on) { this.multi = on; this.emit('select'); } }
+
+  /** Drop group members that no longer exist (deleted, undone, another tank). */
+  private pruneExtras() {
+    const T = this.tank;
+    this.extraFish = this.extraFish.filter(id => T.fish.some(f => f.id === id));
+    this.extraItems = this.extraItems.filter(id => T.items.some(it => it.id === id));
   }
 
   private pushUndo() {
@@ -210,6 +262,7 @@ export class Store {
     this.seal();
     if (this.selId != null && !this.tank.fish.some(f => f.id === this.selId)) this.selId = this.tank.fish.at(-1)?.id ?? null;
     if (this.selItem != null && !this.tank.items.some(it => it.id === this.selItem)) this.selItem = null;
+    this.pruneExtras();
     this.emit('load');
   }
 
@@ -230,7 +283,7 @@ export class Store {
     this.pushUndo(); this.seal();
     this.scene = scene;
     this.editOn = [0, 1].map(k => k === scene.active);
-    this.selId = null; this.selItem = null;
+    this.selId = null; this.selItem = null; this.extraFish = []; this.extraItems = [];
     this.emit('load');
   }
 

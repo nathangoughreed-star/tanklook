@@ -3,6 +3,7 @@ import { attachPointer } from './interact/pointer';
 import { Viewer } from './render/viewer';
 import { Store } from './scene/store';
 import { attachPanels, scapeSec } from './ui/panels';
+import { attachGroupBar } from './ui/group';
 import { attachParGuide } from './ui/parGuide';
 import { attachLightHover } from './ui/lightHover';
 import { attachLightContours } from './ui/lightContours';
@@ -33,6 +34,7 @@ if (!webglAvailable()) {
   attachPointer(viewer, store, (what, kind) => !!document.querySelector<HTMLDetailsElement>(`details.sec[data-sec="${what === 'fish' ? 'fish' : scapeSec(kind!)}"]`)?.open
     && !document.getElementById('app')!.classList.contains('collapsed'));
   const ui = attachPanels(store, viewer);
+  attachGroupBar(store, viewer, ui.status);
   attachParGuide(() => store.tank.water.on && !!store.tank.water.salt);
   attachLightHover(viewer, store); // Light map hover readout (lane K)
   attachLightContours(viewer); // Light map contour labels
