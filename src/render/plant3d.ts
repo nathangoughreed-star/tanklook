@@ -450,6 +450,8 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
     // upright stems, leaf pairs crossing at each node, the top ones smaller and more upright
     const n0 = Math.round(between(r, P.n)), n = clump.stems ? Math.min(MAX_STEMS, Math.round(clump.stems)) : n0, nodes = Math.round((P.nodes ?? 20) * kNodes);
     const base = clump.spread ? clump.spread / 2 : Wc * P.spread / 2, rad = Math.max(0.8, h * 0.006 * kStalk), e = 0.03;
+    // a pair of leaves at each node, or a whorl of them (lane T2: hornwort, anacharis)
+    const whorl = P.whorl ? Array.from({ length: P.whorl }, (_, j) => j * 2 * Math.PI / P.whorl!) : [0, Math.PI];
     /**
      * One stem along at(t) (t = 0 base .. 1 top) with `nn` leaf pairs; T(t) = the growth at which it has grown up to t
      * (a stem gets longer from its base); its leaves grow in from there (the newest, at the tip, still small), full by
@@ -468,11 +470,11 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
         const tc = P.top && t > P.top.from ? P.top.cols[Math.floor(q() * P.top.cols.length)] : null;
         const rise = lerp(f.rise[0], f.rise[1], up ** 0.5) * (0.85 + q() * 0.3), cols = tc ?? D.pick(), br = D.bright();
         const tag: LeafTag = emTag({ ...fullBy(T(t) - e, e + 0.1, by), on: { pc, par: t * SEG } });
-        for (const o of [0, Math.PI]) leaf(into, f, P.stalk, at(t), rot + o, L, rise, D.twist(), cols, br, q, bend(0.4), tag);
+        for (const o of whorl) leaf(into, f, P.stalk, at(t), rot + o, L, rise, D.twist(), cols, br, q, bend(0.4), tag);
         // the emersed pair: held up stiffly along the stem (no sway: bend() would take draws from the plant's own stream)
         if (E) {
           const re2 = lerp(fe.rise[0], fe.rise[1], up ** 0.5) * (0.85 + rq() * 0.3), ce = Q.pick(), be = Q.bright();
-          for (const o of [0, Math.PI]) leaf(es, fe, P.stalk, at(t), rot + o, L * (E.k ?? 1), re2, Q.twist(), ce, be, rq, STIFF, { ...tag, em: EMERSED });
+          for (const o of whorl) leaf(es, fe, P.stalk, at(t), rot + o, L * (E.k ?? 1), re2, Q.twist(), ce, be, rq, STIFF, { ...tag, em: EMERSED });
         }
       }
       return pc;

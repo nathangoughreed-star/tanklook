@@ -60,7 +60,7 @@ E1 fix #5. A 3D fish was 11 meshes (card, body, 2 eyes, 2 gape lines, 4 paired f
   coordinator).
 - **AR Quick Look note:** USDZ export transforms normals with the normal matrix; merged barbel normals (non-uniform part
   scale) are mat3-carried, so their exported shading may differ very slightly. The app view is the reference.
-## Lane T2: terrestrial plants (2026-10-16; branch `terra-plants`, port 5653; batch 1 approved by Nathan "all six look good" and pushed; batch 2 running)
+## Lane T2: terrestrial plants (2026-10-16; branch `terra-plants`, port 5653; batches 1 + 2 approved by Nathan and pushed; vines on branches waits for T3's anchors)
 Roadmap R1 section 3 (land plants) and section 6 (aquatic plant follow-ons). Data in `PLANT3D` (art/plants.ts), generator
 render/plant3d.ts, `LIBRARY` entries (scene/items.ts); no scene version bump (plants are items; new variants only).
 - **Batch 1, land plants** (`land: true`, sway 0: no current): pothos (`pothos`), bromeliad (`bromeliad`), tropical fern
@@ -83,6 +83,14 @@ render/plant3d.ts, `LIBRARY` entries (scene/items.ts); no scene version bump (pl
     close-ups at growth 1). Helpers `shots/t2.js` (row / views / close), `t2_species.py`, `t2_sheet.py`.
   - Open: pothos / vines do not follow branches or link wood yet (needs T3's `scene/anchors.ts`); sphagnum is a soft
     cushion without distinct capitula; fittonia gets a little leggy at growth 1; land plants in a wet tank draw submersed.
+- **Batch 2, aquatic follow-ons** (roadmap section 6; Nathan 2026-10-16: "all three look good"): dwarf hairgrass
+  (`hairgrass`: sagittaria-style spreading rosettes of needle blades, ~30 per tuft, data only), hornwort (`hornwort`) and
+  Anacharis (`anacharis`): stem form with `Plant3D.whorl` = leaves per node set evenly round the stem (9 needles / 4
+  recurved straps; absent = the old pair, the same draws), fast, `trail` at the surface. Monte Carlo NOT built: the
+  existing carpet covers it (Nathan dropped a Monte Carlo variant 2026-10-14). Sheets `shots/T2_v2_{hairgrass,hornwort,anacharis}.png`
+  (full planted tank). Open: a hairgrass patch at growth 1 is a strip of tufts, not yet a full lawn.
+- **Next (after T3 lands `scene/anchors.ts`; T3 sends its API, coordinator 2026-10-16):** pothos / creeping fig following
+  branches and linking wood.
 
 ## Lane T4: aquatic roster (2026-10-16; branch `aqua-roster`, port 5673; batches 1-2 approved by Nathan and pushed; corals running)
 Roadmap section 6: species that add new silhouettes, scales or habitats, in batches of about five, each on a review sheet.

@@ -56,6 +56,9 @@ export const LIBRARY: Record<string, Variant> = {
   fittonia: { kind: 'plant', label: 'Fittonia', hint: 'Terrarium: a low mound of dark leaves netted with pink veins, for the foreground.', size: 90, min: 35, max: 160 },
   sphagnum: { kind: 'plant', label: 'Sphagnum moss', hint: 'Terrarium: soft pale-green cushions; spread them over the ground or raise them onto wood.', size: 40, min: 15, max: 90 },
   creeper: { kind: 'plant', label: 'Creeping fig', hint: 'Terrarium: a flexible vine of small leaves that climbs flat up the back wall. Size = vine length.', size: 450, min: 60, max: 1400 },
+  hairgrass: { kind: 'plant', label: 'Dwarf hairgrass', hint: 'Needle-fine tufts that spread on runners into a fine lawn.', size: 60, min: 25, max: 140 },
+  hornwort: { kind: 'plant', label: 'Hornwort', hint: 'Bushy stems of whorled needle leaves; fast, trails along the surface.', size: 300, min: 60, max: 900 },
+  anacharis: { kind: 'plant', label: 'Anacharis', hint: 'Long stems densely set with whorls of small bright leaves; fast.', size: 300, min: 60, max: 900 },
   // corals (2026-10-14): size = width
   acropora: { kind: 'coral', label: 'Branching coral', hint: 'An Acropora-style colony of branches with pale tips. Size = width.', size: 160, min: 40, max: 500, salt: true },
   montipora: { kind: 'coral', label: 'Plate coral', hint: 'A whorl of thin cupped plates. Size = width.', size: 180, min: 40, max: 500, salt: true },
