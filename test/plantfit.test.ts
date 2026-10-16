@@ -35,3 +35,13 @@ describe('auto-populate by light and care (lane PG step 4)', () => {
   });
   it('every swapped-in variant exists in the library', () => { for (const k of kinds(make('planted', 'low', 'low'))) expect(LIBRARY[k], k).toBeTruthy(); });
 });
+
+describe('whyNot (gating reasons)', () => {
+  it('names the light or care reason, null when it suits', async () => {
+    const { whyNot } = await import('../src/scene/plantfit');
+    expect(whyNot('anubias', 25, 'low')).toBeNull();
+    expect(whyNot('stemred', 25, 'co2')?.kind).toBe('light');
+    expect(whyNot('stemred', 65, 'low')?.text).toMatch(/CO2/);
+    expect(whyNot('acropora', 250, 'low')?.kind).toBe('care');
+  });
+});

@@ -221,7 +221,11 @@ export interface LayoutSettings { id: LayoutId; seed: number; plantSeed?: number
   /** The substrate and terrain were drawn for this style by the Quick aquascape setup (scene/scapeground.ts). */
   ground?: boolean;
   /** Auto-populate by light (lane PG step 4, 2026-10-16): the starter set keeps only plants / corals that fit this light level and the tank's care (grow.feed). Absent = every plant the style draws. */
-  fit?: 'low' | 'medium' | 'high' }
+  fit?: 'low' | 'medium' | 'high';
+  /** The owner picked a care level (Care menu), so gating can use it (lane AD, 2026-10-16). */
+  careSet?: true;
+  /** "Show only tank-appropriate" toggles in the Plants and Animals lists: unfit ones sink to the bottom, grayed, each with its reason. Advice only. */
+  gatePlants?: true; gateAnimals?: true }
 
 /** Library item kinds; the variant names the generator (scene/items.ts LIBRARY). */
 export type ItemKind = 'stone' | 'wood' | 'cave' | 'plant' | 'coral';

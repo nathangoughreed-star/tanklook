@@ -9,7 +9,7 @@ import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { BACKDROPS } from '../render/backdrop';
 import { MAP_DIV, MAP_STEP, emitters, mapStepOf } from '../render/lighting';
 import { darkOf, darkStats } from '../render/lightShells';
-import { CARE_NAME, FIT_LABEL, FIT_LIGHTS, fitCaption, type FitLight } from '../scene/plantfit';
+import { CARE_NAME, FIT_LABEL, FIT_LIGHTS, FIT_PAR, fitCaption, whyNot, type FitLight } from '../scene/plantfit';
 import { VERDICT_TEXT, itemLights, tankSummary } from '../scene/lightcheck';
 import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, mountOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeLayout, tubeOf, TUBE_SP_MAX, bestPos, ledBarDepth, posMax, wattsOf, type Fixture } from '../scene/lightout';
 import { SpeciesPreview } from '../render/preview3d';
@@ -1081,7 +1081,7 @@ Cancel, then change the name, to keep both.`)) return;
   };
   $<HTMLSelectElement>('layoutCare').onchange = e => {
     const v = (e.target as HTMLSelectElement).value as GrowFeed;
-    refit(showFit, s => { s.grow.feed = v; }, `Care set to ${CARE_NAME[v]}.`);
+    refit(showFit, s => { s.grow.feed = v; s.layout.careSet = true; }, `Care set to ${CARE_NAME[v]}.`);
   };
   // Quick aquascape setup (Nathan 2026-10-15): one Shuffle for the whole set, the substrate and terrain, rock and wood,
   // and plants, at the same style, composition and densities; the animals stay (Animals has its own Shuffle). The
@@ -1121,6 +1121,34 @@ Cancel, then change the name, to keep both.`)) return;
   const libHtml = (sec: ScapeSec) => (Object.keys(KINDS) as ItemKind[]).filter(k => scapeSec(k) === sec).map(k => `<div class="libRow"${k === 'coral' ? ' data-salt' : ''}><span class="flabel">${KINDS[k]}</span><div class="chips">${
     Object.entries(LIBRARY).filter(([, v]) => v.kind === k).map(([id, v]) => `<button data-lib="${id}"${v.salt ? ' data-salt' : ''} title="Add: ${esc(v.hint)}">${esc(v.label)}</button>`).join('')}</div></div>`).join('');
   $('libHard').innerHTML = libHtml('hardscape'); $('libPlant').innerHTML = libHtml('plants');
+  /** "Show only tank-appropriate plants" (lane AD, 2026-10-16): the plants (corals in a reef) that do not suit the tank's light and
+   *  care sink below their row, grayed, each with its reason. Needs a light level (Plants fit, or the fixture's Power set) and a
+   *  care level (Care menu); until both are chosen the toggle only says so. Advice: grayed ones can still be added. */
+  function renderPlantGate(s: TankSetup) {
+    const on = !!s.layout.gatePlants, tog = $<HTMLInputElement>('gatePlants'), hint = $('gatePlantsHint');
+    tog.checked = on;
+    const lo = lightOutCached(s), salt = isSalt(s);
+    const par = s.layout.fit ? FIT_PAR[salt ? 'reef' : 'fresh'][s.layout.fit] : lo && wattsOf(s) > 0 ? lo.mean : null;
+    const missing = [par == null && 'a light level (Plants fit above, or set the fixture Power in Lighting)', !s.layout.careSet && 'a care level (Care above)'].filter(Boolean);
+    const active = on && !missing.length;
+    hint.hidden = !on; hint.textContent = on && missing.length ? `Choose ${missing.join(' and ')} first, then this list can be filtered to what suits the tank.` : on ? `Grayed: does not suit ${Math.round(par!)} PAR at ${CARE_NAME[s.grow.feed]} care. They can still be added.` : '';
+    for (const row of document.querySelectorAll<HTMLElement>('#libPlant .libRow')) {
+      const chips = row.querySelector<HTMLElement>('.chips')!;
+      if (row.nextElementSibling?.classList.contains('gatedList')) row.nextElementSibling.remove();
+      chips.querySelectorAll('button').forEach(b => { b.classList.remove('gated'); (chips.querySelector('.gateKept') ?? chips).append(b); });
+      if (!active) continue;
+      const bad = [...chips.querySelectorAll<HTMLButtonElement>('button')].map(b => ({ b, why: whyNot(b.dataset.lib!, par!, s.grow.feed) })).filter(x => x.why && !(x.b.dataset.salt !== undefined && !salt));
+      if (!bad.length) continue;
+      const list = document.createElement('div'); list.className = 'gatedList';
+      for (const { b, why } of bad) {
+        b.classList.add('gated');
+        const r = document.createElement('div'); r.className = 'gatedRow'; r.append(b);
+        const t = document.createElement('span'); t.className = 'hint'; t.textContent = why!.text; r.append(t); list.append(r);
+      }
+      row.after(list);
+    }
+  }
+  $('gatePlants').onchange = e => store.edit(s => { if ((e.target as HTMLInputElement).checked) s.layout.gatePlants = true; else delete s.layout.gatePlants; });
   /** Add a piece at an open spot (the candidate farthest from every other piece, front-middle preferred). Same id and
    *  seed in every tank being edited. */
   const addItem = (variant: string) => {
@@ -1682,6 +1710,7 @@ Cancel, then change the name, to keep both.`)) return;
     for (const id of ['wTannin', 'wGreen']) $(id).style.display = wa.salt ? 'none' : '';
     for (const id of ['wReef', 'wOcean']) $(id).style.display = wa.salt ? '' : 'none';
     document.querySelectorAll<HTMLElement>('.lib [data-salt]').forEach(e => e.style.display = isSalt(s) ? '' : 'none');
+    renderPlantGate(s);
     // the style picker: marine styles in salt water only, freshwater biotopes in fresh only (terrariums turn the water off, so show always)
     document.querySelectorAll<HTMLOptionElement>('#layout option').forEach(o => { const k = STYLE_KIND[o.value as LayoutId]; o.hidden = k === 'salt' ? !isSalt(s) : k === 'fresh' ? isSalt(s) : false; });
     $('plantsTitle').textContent = isSalt(s) ? 'Plants & Corals' : 'Plants';

@@ -387,3 +387,8 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 #iLight[data-verdict="dim"] { color: #b8860b }
 #iLight[data-verdict="bright"] { color: #c0392b }
 #iLight[data-verdict="fine"] { color: #2e7d32 }
+
+.chips button.gated { opacity: .45; filter: grayscale(1) }
+.gatedList { margin: 0 0 6px; border-top: 1px dashed var(--line, #444) }
+.gatedRow { display: flex; align-items: center; gap: 6px; margin: 3px 0 }
+.gatedRow .hint { margin: 0; font-size: 11px }
