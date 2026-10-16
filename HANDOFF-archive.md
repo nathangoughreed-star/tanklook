@@ -1,6 +1,15 @@
 # HANDOFF archive
 Finished lane and feature sections moved out of HANDOFF.md on 2026-10-16, verbatim, newest first.
 
+## Clownfish host in the bubble-tip anemone (2026-10-16; worktree `musing-snyder-0e96c4`, port 5693 `clown-host`; Nathan approved the pictures; pushed to main)
+T4's follow-up. In `scene/scatter.ts` shuffleFish (so also placeNew for newcomers with no mates in the tank): in a salt tank
+with water and at least one `coral` / `anemone` item, every species in `HOSTED` (just `ocellaris`) goes to one anemone,
+picked at random per Shuffle: within 0.6 of the disc radius of its centre, the body centre from the tentacle tops
+(ground + lift + 0.8 x the itemDims height) to about a body height above, any heading, nose 5-20 deg down. No anemone,
+fresh water or a dry tank: unchanged. Adding an anemone later does not move the fish until the next Shuffle. Test in
+`test/scatter.test.ts`. Review sheet: `clownfish-anemone-review.png` in the coordinator's side-session-notes folder.
+Open: other clownfish species would join `HOSTED` when added; no live animation (the scene is a still).
+
 ## Lane T3: dry hardscape pieces + surface anchors, tree frogs perch (2026-10-16; branch `dry-hardscape`, port 5663; Nathan approved the pictures; pushed to main)
 - **New pieces** (scene/items.ts LIBRARY, geometry in render/items.ts, no new ItemKind, no scene version bump): `climb`
   Climbing branch (wood: thin pale dry limb leaning 40-70°, 1-2 forks; woodLimbs 'climb'), `corkflat` Cork bark flat

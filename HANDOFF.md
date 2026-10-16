@@ -36,15 +36,6 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
-## Clownfish host in the bubble-tip anemone (2026-10-16; worktree `musing-snyder-0e96c4`, port 5693 `clown-host`; Nathan approved the pictures; pushed to main)
-T4's follow-up. In `scene/scatter.ts` shuffleFish (so also placeNew for newcomers with no mates in the tank): in a salt tank
-with water and at least one `coral` / `anemone` item, every species in `HOSTED` (just `ocellaris`) goes to one anemone,
-picked at random per Shuffle: within 0.6 of the disc radius of its centre, the body centre from the tentacle tops
-(ground + lift + 0.8 x the itemDims height) to about a body height above, any heading, nose 5-20 deg down. No anemone,
-fresh water or a dry tank: unchanged. Adding an anemone later does not move the fish until the next Shuffle. Test in
-`test/scatter.test.ts`. Review sheet: `clownfish-anemone-review.png` in the coordinator's side-session-notes folder.
-Open: other clownfish species would join `HOSTED` when added; no live animation (the scene is a still).
-
 ## Lane T1: dry ground, terrestrial substrates + leaf litter (2026-10-16; branch `dry-ground`, port 5633; Nathan: "leaf litter looks great", ship; pushed to main)
 - **New substrate presets** (`SubstrateType` + validate pick list, no scene version bump; art/placeholder.ts SUBSTRATES, flag
   `terra`): `soil` (Soil / coco fibre: crumbs, coco strands, perlite flecks), `tsand` (Terrarium sand), `clay` (terracotta,
@@ -192,6 +183,7 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Clownfish host in the bubble-tip anemone (2026-10-16; worktree `musing-snyder-0e96c4`, port 5693 `clown-host`; Nathan approved the pictures; pushed to main)
 - Lane T3: dry hardscape pieces + surface anchors, tree frogs perch (2026-10-16; branch `dry-hardscape`, port 5663; Nathan approved the pictures; pushed to main)
 - Lane FM: fish parts merged per material (2026-10-16; branch `fish-merge`, no preview server; Nathan approved shipping the few changed edge pixels, phase 2 skipped; pushed to main)
 - Lane T2: terrestrial plants (2026-10-16; branch `terra-plants`, port 5653; batches 1 + 2 and vines on wood approved by Nathan and pushed; DONE)
