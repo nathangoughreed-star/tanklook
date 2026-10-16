@@ -546,21 +546,6 @@
         "--strictPort"
       ],
       "port": 5653
-    },
-    {
-      "name": "scape-styles",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "--prefix",
-        "C:/Users/nreed/Glass-Box-scape-styles",
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5663",
-        "--strictPort"
-      ],
-      "port": 5663
     }
   ]
 }
