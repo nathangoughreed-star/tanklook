@@ -16,14 +16,19 @@ export const LIBRARY: Record<string, Variant> = {
   dragon: { kind: 'stone', label: 'Dragon stone', hint: 'Clay-brown, pitted with holes.', size: 140, min: 20, max: 600 },
   lava: { kind: 'stone', label: 'Lava rock', hint: 'Dark red-brown, rough and porous.', size: 90, min: 15, max: 500 },
   slate: { kind: 'stone', label: 'Slate', hint: 'Flat layered slab; stack them into ledges.', size: 150, min: 30, max: 600 },
+  ledge: { kind: 'stone', label: 'Rock ledge', hint: 'A thick flat slab with a level top: lift it and set it against the glass or the 3D wall as a shelf.', size: 200, min: 60, max: 600 },
   liverock: { kind: 'stone', label: 'Live rock', hint: 'Porous reef rock crusted with pink and purple coralline algae; stack it and set corals on it.', size: 180, min: 30, max: 600, salt: true },
   branch: { kind: 'wood', label: 'Driftwood branch', hint: 'A rising trunk with side branches.', size: 380, min: 80, max: 1500 },
   spider: { kind: 'wood', label: 'Spider wood', hint: 'Thin pale roots spreading from a knot.', size: 320, min: 80, max: 1200 },
   manzanita: { kind: 'wood', label: 'Manzanita', hint: 'A red-brown tree that forks into fine twigs. Size = height.', size: 300, min: 80, max: 1200 },
   mopani: { kind: 'wood', label: 'Mopani', hint: 'A chunky two-tone piece, dark and honey.', size: 200, min: 60, max: 800 },
+  climb: { kind: 'wood', label: 'Climbing branch', hint: 'A thin, dry, pale branch, leaning or upright, for frogs and lizards to perch on. Size = length.', size: 400, min: 100, max: 1200 },
+  corkflat: { kind: 'wood', label: 'Cork bark flat', hint: 'A curved slab of cork bark: lay it over as a shelter, or stand it up as a panel to climb. Size = length.', size: 300, min: 80, max: 900 },
+  corktube: { kind: 'wood', label: 'Cork tube', hint: 'A hollow cork round: lay it down as a hide, or stand it up as a climbing volume. Size = length.', size: 250, min: 60, max: 800 },
   arch: { kind: 'cave', label: 'Stone arch', hint: 'A rock arch to swim through.', size: 170, min: 50, max: 600 },
   tube: { kind: 'cave', label: 'Clay tube', hint: 'A terracotta spawning tube (plecos, cichlids).', size: 130, min: 40, max: 400 },
   coconut: { kind: 'cave', label: 'Coconut cave', hint: 'Half a coconut shell with a doorway.', size: 110, min: 50, max: 250 },
+  halflog: { kind: 'cave', label: 'Half-log hide', hint: 'Half a hollow log, bark outside, open at both ends: a hide for frogs, geckos and other small animals.', size: 200, min: 60, max: 500 },
   fern: { kind: 'plant', label: 'Java fern', hint: 'Grows on wood and rock.', size: 150, min: 30, max: 450 },
   anubias: { kind: 'plant', label: 'Anubias', hint: 'Grows on wood and rock.', size: 90, min: 25, max: 300 },
   sword: { kind: 'plant', label: 'Amazon sword', hint: 'A big rosette.', size: 250, min: 50, max: 600 },
@@ -44,6 +49,16 @@ export const LIBRARY: Record<string, Variant> = {
   lettuce: { kind: 'plant', label: 'Water lettuce', hint: 'Pale velvety rosettes floating at the water line, feathery roots below.', size: 250, min: 90, max: 700 },
   lotus: { kind: 'plant', label: 'Tiger lotus', hint: 'Broad red leaves blotched dark maroon; grown on, it sends lily pads up to the surface.', size: 120, min: 40, max: 250 },
   carpet: { kind: 'plant', label: 'Carpet patch', hint: 'A low carpet plant.', size: 160, min: 60, max: 400 },
+  // land plants (lane T2): for terrariums, grown above the water
+  pothos: { kind: 'plant', label: 'Pothos', hint: 'Terrarium: long vines of gold-streaked heart leaves that climb, trail along the ground and hang off wood. Size = vine length.', size: 450, min: 80, max: 1800 },
+  bromeliad: { kind: 'plant', label: 'Bromeliad', hint: 'Terrarium: a stiff rosette with a red heart; raise it onto wood or cork like an epiphyte.', size: 150, min: 50, max: 320 },
+  tropfern: { kind: 'plant', label: 'Tropical fern', hint: 'Terrarium: arching fronds of fine leaflets, a soft midground mass.', size: 260, min: 60, max: 480 },
+  fittonia: { kind: 'plant', label: 'Fittonia', hint: 'Terrarium: a low mound of dark leaves netted with pink veins, for the foreground.', size: 90, min: 35, max: 160 },
+  sphagnum: { kind: 'plant', label: 'Sphagnum moss', hint: 'Terrarium: soft pale-green cushions; spread them over the ground or raise them onto wood.', size: 40, min: 15, max: 90 },
+  creeper: { kind: 'plant', label: 'Creeping fig', hint: 'Terrarium: a flexible vine of small leaves that climbs flat up the back wall. Size = vine length.', size: 450, min: 60, max: 1400 },
+  hairgrass: { kind: 'plant', label: 'Dwarf hairgrass', hint: 'Needle-fine tufts that spread on runners into a fine lawn.', size: 60, min: 25, max: 140 },
+  hornwort: { kind: 'plant', label: 'Hornwort', hint: 'Bushy stems of whorled needle leaves; fast, trails along the surface.', size: 300, min: 60, max: 900 },
+  anacharis: { kind: 'plant', label: 'Anacharis', hint: 'Long stems densely set with whorls of small bright leaves; fast.', size: 300, min: 60, max: 900 },
   // corals (2026-10-14): size = width
   acropora: { kind: 'coral', label: 'Branching coral', hint: 'An Acropora-style colony of branches with pale tips. Size = width.', size: 160, min: 40, max: 500, salt: true },
   montipora: { kind: 'coral', label: 'Plate coral', hint: 'A whorl of thin cupped plates. Size = width.', size: 180, min: 40, max: 500, salt: true },
@@ -95,7 +110,7 @@ export interface Limb { pts: V3[]; r0: number; r1: number; tone: number }
 /** Stone length, height and width (mm) for its variant and seed. */
 export function stoneDims(variant: string, seed: number, size: number): V3 {
   const r = rng(seed * 31 + 7);
-  const [h0, h1, w0, w1] = ({ river: [0.45, 0.65, 0.7, 0.85], seiryu: [0.9, 1.4, 0.55, 0.75], dragon: [0.55, 0.9, 0.6, 0.8], lava: [0.5, 0.8, 0.65, 0.85], slate: [0.12, 0.24, 0.5, 0.8], liverock: [0.5, 0.75, 0.6, 0.85] } as Record<string, number[]>)[variant] ?? [0.6, 0.6, 0.7, 0.7];
+  const [h0, h1, w0, w1] = ({ river: [0.45, 0.65, 0.7, 0.85], seiryu: [0.9, 1.4, 0.55, 0.75], dragon: [0.55, 0.9, 0.6, 0.8], lava: [0.5, 0.8, 0.65, 0.85], slate: [0.12, 0.24, 0.5, 0.8], ledge: [0.2, 0.28, 0.55, 0.72], liverock: [0.5, 0.75, 0.6, 0.85] } as Record<string, number[]>)[variant] ?? [0.6, 0.6, 0.7, 0.7];
   return [size, size * (h0 + r() * (h1 - h0)), size * (w0 + r() * (w1 - w0))];
 }
 
@@ -112,9 +127,28 @@ export function along(pts: V3[], t: number): V3 {
   return pts[pts.length - 1];
 }
 
+/** Bark shells (cork flat and tube, the half-log hide), lying along x: outer radius, arc (radians round the top), wall
+ *  thickness, all for size s. The renderer builds them from this; animals sit on their top. */
+export const SHELLS: Record<string, { R: number; arc: number; t: number }> = {
+  corkflat: { R: 0.24, arc: 2.5, t: 0.075 },
+  corktube: { R: 0.2, arc: 2 * Math.PI, t: 0.07 },
+  halflog: { R: 0.27, arc: Math.PI, t: 0.07 },
+};
+/** Wood drawn as limbs (woodLimbs); the cork pieces are shells. */
+export const isLimbWood = (variant: string) => !(variant in SHELLS);
+/** A shell's [length, height, width] for size s (lying: the arc's chord is its width, its rise its height). */
+function shellDims(variant: string, s: number): V3 {
+  const { R, arc } = SHELLS[variant], a = Math.min(arc, 2 * Math.PI) / 2;
+  return arc >= Math.PI ? [s, (arc >= 2 * Math.PI ? 2 : 1) * R * s, 2 * R * s] : [s, R * (1 - Math.cos(a)) * s, 2 * R * Math.sin(a) * s];
+}
+
 /** The limbs of a piece of wood, in its own frame: length along x, centred, base on y = 0. */
 export function woodLimbs(variant: string, seed: number, size: number): Limb[] {
   const r = rng(seed * 17 + 3), s = size, j = (k: number) => (r() - 0.5) * k * s;
+  if (variant in SHELLS) { // a bark shell: its ridge, for anything that looks for a limb to sit on or tie to
+    const [l, h] = shellDims(variant, s);
+    return [{ pts: [[-0.42 * l, h, 0], [0, h, 0], [0.42 * l, h, 0]], r0: 0.02 * s, r1: 0.02 * s, tone: 0 }];
+  }
   if (variant === 'spider') {
     const rad = 0.03 * s, c: V3 = [0, 0.05 * s, 0], out: Limb[] = [{ pts: [[-0.03 * s, 0.02 * s, 0], c, [0.04 * s, 0.09 * s, 0.01 * s]], r0: rad * 3, r1: rad * 2, tone: 0 }];
     const n = 7 + Math.floor(r() * 4);
@@ -147,6 +181,22 @@ export function woodLimbs(variant: string, seed: number, size: number): Limb[] {
     for (let k = 0; k < 3; k++) { const a = r() * Math.PI * 2, l = (0.12 + r() * 0.1) * s; out.push({ pts: [[0, 0.03 * s, 0], [Math.cos(a) * l * 0.5, 0.02 * s, Math.sin(a) * l * 0.5], [Math.cos(a) * l, 0.008 * s, Math.sin(a) * l]], r0: 0.042 * s, r1: 0.012 * s, tone: 0 }); }
     return out;
   }
+  if (variant === 'climb') {
+    // a thin, dry branch leaning up from its foot (40-70° off the floor), gently bowed, one or two forks near the top half
+    const lean = (40 + r() * 30) * D2R, dir = norm3([Math.cos(lean), Math.sin(lean), (r() - 0.5) * 0.25]), rad = 0.02 * s;
+    const bow: V3 = norm3([-Math.sin(lean), Math.cos(lean), (r() - 0.5) * 0.5]), b = (r() - 0.3) * 0.06 * s;
+    const foot: V3 = [-0.25 * s * Math.cos(lean), 0, 0];
+    const main: V3[] = [0, 0.33, 0.66, 1].map(t => add3(add3(foot, dir, t * s), bow, Math.sin(t * Math.PI) * b + j(0.015) * (t > 0 ? 1 : 0)));
+    const out: Limb[] = [{ pts: main, r0: rad, r1: rad * 0.45, tone: 0 }];
+    const forks = 1 + (r() < 0.6 ? 1 : 0);
+    for (let k = 0; k < forks; k++) {
+      const t = 0.45 + r() * 0.3, p0 = along(main, t), side = k % 2 ? -1 : 1, len = (0.22 + r() * 0.14) * s;
+      const fd = norm3(add3(add3(dir, bow, side * (0.9 + r() * 0.5)), [0, 0.35, (r() - 0.5) * 0.8]));
+      const p1 = add3(p0, fd, len * 0.5), p2 = add3(add3(p0, fd, len), [0, 0.03 * s, 0]);
+      out.push({ pts: [p0, add3(p1, [j(0.02), 0, j(0.02)]), p2], r0: rad * (0.62 - 0.4 * (t - 0.45)), r1: rad * 0.28, tone: 0 });
+    }
+    return out;
+  }
   if (variant === 'mopani') {
     const rad = 0.125 * s, main: V3[] = [[-0.42 * s, 0.09 * s, j(0.08)], [-0.18 * s, 0.26 * s + j(0.06), j(0.1)], [0.12 * s, 0.28 * s + j(0.06), j(0.1)], [0.4 * s, 0.08 * s, j(0.08)]];
     const p = along(main, 0.45 + r() * 0.15);
@@ -165,6 +215,13 @@ export function woodLimbs(variant: string, seed: number, size: number): Limb[] {
   }
   out.push({ pts: [[0.5 * s, 0.25 * rad, 0.2 * s], [0.3 * s, 0.07 * s, 0.1 * s], [0.08 * s, 0.06 * s, -0.08 * s]], r0: rad * 0.75, r1: rad * 0.3, tone: 1 });
   return out;
+}
+
+/** The extent of a set of limbs: [length (x), height (y), width (z)], mm. */
+function limbBox(ls: Limb[]): V3 {
+  const lo = [Infinity, Infinity, Infinity], hi = [-Infinity, -Infinity, -Infinity];
+  for (const l of ls) for (const p of l.pts) for (let i = 0; i < 3; i++) { lo[i] = Math.min(lo[i], p[i] - l.r0); hi[i] = Math.max(hi[i], p[i] + l.r0); }
+  return [hi[0] - lo[0], hi[1] - Math.max(0, lo[1]), hi[2] - lo[2]];
 }
 
 /** Overall size of a piece: [length, height, width] in its own frame, mm (plants: card width, height, width). */
@@ -192,7 +249,10 @@ export function itemDims(it: Pick<Item, 'kind' | 'variant' | 'seed' | 'size' | '
   const sw = Math.min(s, it.size * 1.4);
   if (it.kind === 'plant') return isCarpet(it.variant) ? [s, CARPET_H, s] : isFloat(it.variant) ? ((w: number) => [w, s * PLANT_ASPECT[it.variant as PlantType], w])(it.spread ? floatWidth(it) : s) : ((w: number) => [w, s, w])(it.spread ? Math.max(it.spread, sw / PLANT_ASPECT[it.variant as PlantType]) : sw / PLANT_ASPECT[it.variant as PlantType]) as [number, number, number];
   if (it.kind === 'coral') return [s, s * ({ acropora: 0.6, montipora: 0.45, mushroom: 0.4, leather: 0.6, acrofine: 0.55, zoanthid: 0.3, hammer: 0.4, torch: 0.55, anemone: 0.4 } as Record<string, number>)[it.variant], s];
+  if (it.kind === 'cave' && it.variant in SHELLS) return shellDims(it.variant, s);
   if (it.kind === 'cave') return it.variant === 'arch' ? [s, 0.5 * s, 0.45 * s] : it.variant === 'tube' ? [s, 0.42 * s, 0.42 * s] : [s, 0.5 * s, s];
+  if (it.variant in SHELLS) return shellDims(it.variant, s);
+  if (it.variant === 'climb') { const b = limbBox(woodLimbs(it.variant, it.seed, s)); return [b[0], b[1], b[2]]; }
   return it.variant === 'manzanita' ? [0.7 * s, s, 0.7 * s] : it.variant === 'spider' ? [s, 0.5 * s, 0.8 * s] : it.variant === 'mopani' ? [s, 0.45 * s, 0.3 * s] : [s, 0.65 * s, 0.45 * s];
 }
 
@@ -267,21 +327,23 @@ export function itemToTank(S: TankSetup, it: Item, p: V3) {
 /**
  * The tops of the solid pieces (stones, wood, caves) as somewhere a clinging animal can sit: their rough upward-facing
  * area (mm²) and a random spot on them in proportion to it, (x, depth) and an estimate of the height there. The renderer
- * finds the exact top under (x, depth); this only has to land on the piece.
+ * finds the exact top under (x, depth); this only has to land on the piece. `perchK` weights the perches (climbing
+ * branch, ledge) over their area: a tree frog's Shuffle favours them.
  */
-export function hardscape(S: TankSetup, pieces = S.items) {
+export function hardscape(S: TankSetup, pieces = S.items, perchK = 1) {
   const parts: { area: number; spot: (r: () => number) => { x: number; depth: number; y: number } }[] = [];
   for (const it of pieces) {
     if (it.kind === 'plant' || it.kind === 'coral') continue; // no grazing on live coral (Nathan 2026-10-14)
-    if (it.kind === 'wood') {
+    if (it.kind === 'wood' && isLimbWood(it.variant)) {
       for (const l of woodLimbs(it.variant, it.seed, it.size)) {
         const len = l.pts.slice(1).reduce((a, p, i) => a + Math.hypot(p[0] - l.pts[i][0], p[1] - l.pts[i][1], p[2] - l.pts[i][2]), 0);
-        parts.push({ area: len * (l.r0 + l.r1), spot: r => { const t = 0.1 + r() * 0.8, p = itemToTank(S, it, along(l.pts, t)); return { ...p, y: p.y + l.r0 + (l.r1 - l.r0) * t }; } });
+        // a perch counts by its length and a frog's width (on a thin limb its own area would be next to nothing)
+        parts.push({ area: it.variant === 'climb' ? len * Math.max(l.r0 + l.r1, 40) * perchK : len * (l.r0 + l.r1), spot: r => { const t = 0.1 + r() * 0.8, p = itemToTank(S, it, along(l.pts, t)); return { ...p, y: p.y + l.r0 + (l.r1 - l.r0) * t }; } });
       }
       continue;
     }
     const [l, h, w] = itemDims(it);
-    parts.push({ area: l * w * 0.5, spot: r => itemToTank(S, it, [(r() - 0.5) * l * 0.4, h, (r() - 0.5) * w * 0.4]) });
+    parts.push({ area: l * w * 0.5 * (it.variant === 'ledge' ? perchK : 1), spot: r => itemToTank(S, it, [(r() - 0.5) * l * 0.4, h, (r() - 0.5) * w * 0.4]) });
   }
   const area = parts.reduce((a, p) => a + p.area, 0);
   return {

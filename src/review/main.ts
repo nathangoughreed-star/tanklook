@@ -5,7 +5,7 @@
 import * as THREE from 'three';
 import { CATEGORIES, SPECIES, type Species } from '../data/species';
 import { speciesModel } from '../render/preview3d';
-import { OUTLINE } from '../render/fish3d';
+import { OUTLINE, fish3d } from '../render/fish3d';
 import { LU, applyLighting, setLightUniforms, setWaterUniforms } from '../render/lighting';
 import { defaultSetup } from '../scene/defaults';
 import manifest from '../data/model-versions.json';
@@ -87,7 +87,11 @@ function shoot(scene: THREE.Scene, model: THREE.Object3D, yaw: number, pitch: nu
 /** The look's views in both lights, and its fingerprint. */
 function renderLook(sp: Species) {
   const scene = new THREE.Scene(), model = speciesModel(sp);
-  const hash = fingerprint(sp, model);
+  // fingerprinted part by part as before lane FM merged a fish's same-material parts (one mesh per material draws the
+  // same model; its baked vertices would bump every fish)
+  const merge = fish3d.merge; fish3d.merge = false; const parts = speciesModel(sp); fish3d.merge = merge;
+  const hash = fingerprint(sp, parts);
+  parts.traverse(o => { const g = (o as THREE.Mesh).geometry; if (g && !g.userData.keep) g.dispose(); });
   scene.add(model); applyLighting(scene);
   const out: Record<string, HTMLCanvasElement[]> = {};
   LU.uMode.value = 0; LU.uWater.value.w = 0;

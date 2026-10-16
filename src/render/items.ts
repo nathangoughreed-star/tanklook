@@ -5,8 +5,9 @@
 import * as THREE from 'three';
 import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng } from '../art/paint';
-import { PLANT3D, growthOf, isCarpet, isFloat, type PlantType } from '../art/plants';
-import { CARPET_W, itemDims, itemSink, seatHook, stoneDims, woodLimbs, type Limb } from '../scene/items';
+import { PLANT3D, growthOf, isCarpet, isFloat, isVine, type PlantType } from '../art/plants';
+import { CARPET_W, SHELLS, itemDims, itemSink, seatHook, stoneDims, woodLimbs, type Limb } from '../scene/items';
+import type { AnchorProbe } from '../scene/anchors';
 import { lampHeight } from '../scene/lightout';
 import { D2R, waterY } from '../scene/physics';
 import { bowlDims, footprint, shapeOf } from '../scene/shape';
@@ -54,7 +55,7 @@ export function clean(g: THREE.BufferGeometry, indexed: boolean) {
 // grain, pits and cracks on stone, grain, splits and knots on wood. Kinds: 1 river, 2 seiryu / arch, 3 dragon, 4 lava,
 // 5 slate, 6 bark (coordinates = along the limb, angle around, radius), 7 terracotta, 8 coconut, 9 end grain, 10 plain wood,
 // 11 hard coral (corallite dots), 12 soft coral tissue (polyp fuzz); the reef pieces (render/coral3d.ts) set their own.
-const GRIT_KIND: Record<string, number> = { river: 1, seiryu: 2, dragon: 3, lava: 4, slate: 5, tube: 7, coconut: 8, arch: 2 };
+const GRIT_KIND: Record<string, number> = { river: 1, seiryu: 2, dragon: 3, lava: 4, slate: 5, ledge: 2, tube: 7, coconut: 8, arch: 2 };
 const gritOffset = (seed: number) => [0.6180339, 0.4142135, 0.7320508].map((k, i) => ((seed * k + i * 0.37) % 1) * 400);
 /** aGrit from the vertex positions (shifted per seed so no two pieces share a pattern); left alone if already set. */
 export function grit(g: THREE.BufferGeometry, kind: number, seed: number) {
@@ -72,10 +73,11 @@ const STONE: Record<string, string[]> = {
   dragon: ['#8b6b4a', '#7d6248', '#94785a'],
   lava: ['#5a2f28', '#4a2b26', '#63362b'],
   slate: ['#4c5058', '#55534f', '#4a4d52'],
+  ledge: ['#7e7262', '#8a7d6a', '#736a5e'], // weathered sandstone
 };
 function stoneShape(variant: string, seed: number, size: number) {
   const r = rng(seed), [l, h, w] = stoneDims(variant, seed, size), base = C(STONE[variant][Math.floor(r() * STONE[variant].length)]);
-  if (variant === 'slate') return slab(r, l, h, w, base);
+  if (variant === 'slate' || variant === 'ledge') return slab(r, l, h, w, base, variant === 'ledge');
   const angular = variant !== 'river', crag = variant === 'seiryu';
   let g: THREE.BufferGeometry = new THREE.IcosahedronGeometry(1, crag ? 3 : 4);
   const nz = waves(r), fine = waves(r, 8), p = g.attributes.position, v = new THREE.Vector3(), cut = -0.55;
@@ -103,13 +105,14 @@ function stoneShape(variant: string, seed: number, size: number) {
   });
 }
 /** Slate: a slab with chipped edges and layered bands. */
-function slab(r: R, l: number, h: number, w: number, base: THREE.Color) {
+function slab(r: R, l: number, h: number, w: number, base: THREE.Color, level = false) {
   const g = new THREE.BoxGeometry(1, 1, 1, 6, 3, 5), nz = waves(r), p = g.attributes.position, v = new THREE.Vector3();
   for (let i = 0; i < p.count; i++) {
     v.fromBufferAttribute(p, i);
     const e = nz(v.clone().multiplyScalar(3.2)), edge = Math.max(Math.abs(v.x), Math.abs(v.z)) * 2; // 1 at the rim
     const x = v.x * (1 + 0.12 * e), z = v.z * (1 + 0.12 * nz(v.clone().addScalar(3).multiplyScalar(2.6)));
-    const y = (v.y + 0.5) * (v.y > 0 ? 1 - 0.25 * Math.max(0, edge - 0.6) + 0.06 * e : 1);
+    // a ledge keeps a level top to sit on (only its rim is worn)
+    const y = (v.y + 0.5) * (v.y > 0 ? (level ? 1 - 0.18 * Math.max(0, edge - 0.85) + 0.015 * e : 1 - 0.25 * Math.max(0, edge - 0.6) + 0.06 * e) : 1);
     p.setXYZ(i, x * l, y * h, z * w);
   }
   const ng = clean(g, false) as THREE.BufferGeometry;
@@ -118,7 +121,7 @@ function slab(r: R, l: number, h: number, w: number, base: THREE.Color) {
 }
 
 // ---------- Wood ----------
-const WOOD: Record<string, [string, string]> = { branch: ['#6b4a2e', '#5e4128'], spider: ['#a3845e', '#8e7050'], manzanita: ['#74392a', '#8b4a36'], mopani: ['#3e2a1c', '#a3855c'] };
+const WOOD: Record<string, [string, string]> = { climb: ['#8d8170', '#7a6e60'], branch: ['#6b4a2e', '#5e4128'], spider: ['#a3845e', '#8e7050'], manzanita: ['#74392a', '#8b4a36'], mopani: ['#3e2a1c', '#a3855c'] };
 /** Limb radius at t: linear taper, a flared root on thick limbs, and the last 14% rounding off into a worn tip (no flat cut). */
 function tipRad(L: Limb, t: number) {
   const flare = L.r0 > 6 ? 1 + 0.3 * Math.pow(1 - t, 4) : 1, e = Math.max(0, (t - 0.86) / 0.14);
@@ -167,8 +170,80 @@ function limbGeo(r: R, rs: R, L: Limb, cols: [string, string], variant: string, 
   return mergeGeometries(parts)!;
 }
 function woodShape(variant: string, seed: number, size: number) {
+  if (variant in SHELLS) return shellShape(variant, seed, size);
   const r = rng(seed * 13 + 5), rs = rng(seed * 29 + 1), o = gritOffset(seed)[0];
   return mergeGeometries(woodLimbs(variant, seed, size).map((L, i) => limbGeo(r, rs, L, WOOD[variant] ?? WOOD.branch, variant, o + i * 977)))!;
+}
+
+// ---------- Bark shells: cork flat, cork tube, half-log hide ----------
+// Lying along x (scene/items.ts SHELLS). Bark outside: thick plates between furrows that run along the length; plain
+// wood (a flat, the log) or a dark hollow (the tube) inside; the cut ends in end grain; a flat's long edges broken.
+const SHELL_LOOK: Record<string, { bark: [string, string, string]; inner: string; end: string; deep: number; plate: number }> = {
+  corkflat: { bark: ['#241911', '#5e4733', '#8f7656'], inner: '#8a6a4a', end: '#9a7a58', deep: 0.045, plate: 9 },
+  corktube: { bark: ['#241911', '#5e4733', '#8f7656'], inner: '#3e2c1f', end: '#9a7a58', deep: 0.04, plate: 9 },
+  halflog: { bark: ['#2a2019', '#4f3e2e', '#6f5b45'], inner: '#b39670', end: '#bf9f76', deep: 0.025, plate: 6 },
+};
+function shellShape(variant: string, seed: number, size: number) {
+  const r = rng(seed * 19 + 5), { R, arc, t } = SHELLS[variant], L = SHELL_LOOK[variant], s = size, full = arc >= 2 * Math.PI;
+  const Ro = R * s, Ri = (R - t) * s, a = Math.min(arc, 2 * Math.PI) / 2, cy = full ? Ro : -Ro * Math.cos(a);
+  // rows every ~3 mm round the bark (its plates must not alias into a sawtooth), ~6 mm along it
+  const NX = Math.max(16, Math.min(96, Math.round(s / 6))), NT = Math.max(24, Math.min(160, Math.round(arc * Ro / 3)));
+  const furrow = waves(r, 7), knob = waves(r, 5), rag = waves(r, 4), wob = waves(r, 4), deep = L.deep * s, pl = L.plate;
+  // bark relief 0 (furrow) .. 1 (plate top) on the cylinder: ridged noise, stretched along the length
+  const relief = (th: number, x: number) => {
+    const q = V(Math.cos(th) * Ro / (pl * 1.8), Math.sin(th) * Ro / (pl * 1.8), x / (pl * 9));
+    const f = Math.abs(furrow(q) + 0.45 * furrow(q.clone().multiplyScalar(2.1).addScalar(4)) + 0.2 * furrow(V(q.x * 5, q.y * 5, x / pl)));
+    return Math.min(1, Math.max(0, (f - 0.05) / 0.18)) ** 0.6; // flat-topped plates, narrow deep furrows
+  };
+  // ragged ends (and a flat's long edges): the grid's edges pulled in a little by noise
+  const xEnd = (th: number, side: number) => side * s / 2 * (1 - 0.04 * (1 + rag(V(Math.cos(th) * 3, Math.sin(th) * 3, side * 5))));
+  const thEdge = (x: number, side: number) => side * a * (1 - 0.05 * (1 + rag(V(x / (s * 0.25), side * 7, 1))));
+  const grid = (outer: boolean) => {
+    const pos: number[] = [], col: number[] = [], gr: number[] = [], idx: number[] = [];
+    const [c0, c1, c2] = L.bark.map(C), inner = C(L.inner), c = new THREE.Color();
+    for (let i = 0; i <= NX; i++) for (let j = 0; j <= NT; j++) {
+      const u = i / NX, v = j / NT, xm = (u - 0.5) * s;
+      const th = full ? (v - 0.5) * 2 * Math.PI : thEdge(xm, -1) + (thEdge(xm, 1) - thEdge(xm, -1)) * v;
+      const x = xEnd(th, -1) + (xEnd(th, 1) - xEnd(th, -1)) * u;
+      const h = relief(th, x), k = 0.5 + 0.5 * knob(V(Math.cos(th) * Ro / 18, Math.sin(th) * Ro / 18, x / 25));
+      const rad = outer ? Ro - deep * (1 - h) + deep * 0.12 * h * k : Ri + 0.012 * s * wob(V(Math.cos(th) * 2, Math.sin(th) * 2, x / (s * 0.15)));
+      const y = cy + rad * Math.cos(th), z = rad * Math.sin(th);
+      pos.push(x, y, z); gr.push(x, y, z, 10);
+      if (outer) c.copy(c0).lerp(c1, Math.min(1, h * h * 1.6)).lerp(c2, Math.max(0, Math.min(0.55, (h * (0.4 + k) - 0.55) * 1.6)));
+      else c.copy(inner).multiplyScalar(0.9 + 0.2 * k);
+      col.push(c.r, c.g, c.b);
+    }
+    for (let i = 0; i < NX; i++) for (let j = 0; j < NT; j++) { const p0 = i * (NT + 1) + j, p1 = p0 + NT + 1; idx.push(p0, p0 + 1, p1, p1, p0 + 1, p1 + 1); }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+    g.setAttribute('aGrit', new THREE.Float32BufferAttribute(gr, 4)); g.setIndex(idx); g.computeVertexNormals();
+    // winding: the outer skin faces away from the axis, the inner one toward it
+    const P = g.attributes.position, N = g.attributes.normal, m = (NX >> 1) * (NT + 1) + (NT >> 1);
+    if (((P.getY(m) - cy) * N.getY(m) + P.getZ(m) * N.getZ(m) > 0) !== outer) {
+      for (let q = 0; q < idx.length; q += 3) [idx[q + 1], idx[q + 2]] = [idx[q + 2], idx[q + 1]];
+      g.setIndex(idx); g.computeVertexNormals();
+    }
+    return { g, pos };
+  };
+  const o = grid(true), i = grid(false);
+  // the rims joining outer and inner skins: the two cut ends (end grain) and a flat's long broken edges
+  const rim: number[] = [], rimGr: number[] = [], rimCol: number[] = [], endC = C(L.end);
+  const at = (q: number[], k: number) => [q[k * 3], q[k * 3 + 1], q[k * 3 + 2]];
+  const strip = (ks: number[], end: boolean) => {
+    for (let n = 0; n + 1 < ks.length; n++) {
+      const A = at(o.pos, ks[n]), B = at(o.pos, ks[n + 1]), Ci = at(i.pos, ks[n]), Di = at(i.pos, ks[n + 1]), k = end ? 1 : 0.62;
+      for (const v of [A, Ci, B, B, Ci, Di, A, B, Ci, B, Di, Ci]) { // both windings: it faces whichever way it is seen
+        rim.push(...v); rimGr.push(...(end ? [v[1] - cy, v[2], 0, 9] : [v[0], v[1], v[2], 10])); rimCol.push(endC.r * k, endC.g * k, endC.b * k);
+      }
+    }
+  };
+  const ring = (i0: number) => Array.from({ length: NT + 1 }, (_, j) => i0 * (NT + 1) + j);
+  strip(ring(0), true); strip(ring(NX), true);
+  if (!full) for (const j of [0, NT]) strip(Array.from({ length: NX + 1 }, (_, k) => k * (NT + 1) + j), false);
+  const rg = new THREE.BufferGeometry();
+  rg.setAttribute('position', new THREE.Float32BufferAttribute(rim, 3)); rg.setAttribute('color', new THREE.Float32BufferAttribute(rimCol, 3));
+  rg.setAttribute('aGrit', new THREE.Float32BufferAttribute(rimGr, 4)); rg.computeVertexNormals();
+  return mergeGeometries([o.g.toNonIndexed(), i.g.toNonIndexed(), rg])!;
 }
 
 // ---------- Caves ----------
@@ -224,6 +299,7 @@ function caveShape(variant: string, seed: number, size: number) {
     paint(rg, () => shade(inner, 0.78));
     return mergeGeometries([o, i, rg])!;
   }
+  if (variant in SHELLS) return shellShape(variant, seed, size);
   // arch: half a rough torus standing on its two feet
   const tr = 0.16 * s, R0 = 0.5 * s - tr, g0 = new THREE.TorusGeometry(R0, tr, 9, 30, Math.PI), nz = waves(r), p = g0.attributes.position, v = new THREE.Vector3();
   for (let i = 0; i < p.count; i++) {
@@ -458,10 +534,11 @@ function capMaterials(T: Tank): CapMats {
 }
 /** Whether pieces crossing the glass are capped: only where the renderer has a stencil buffer (render/viewer.ts). */
 export const capping = { on: false };
-let capSeq = 0;
 const _box = new THREE.Box3(), _p = new THREE.Vector3(), _c = new THREE.Vector3();
-/** The cap passes for solid piece `m` (placed) if its bounds cross the glass: children of it, never picked or exported. */
-function capPasses(m: THREE.Mesh, T: Tank) {
+/** The cap passes for solid piece `m` (placed) if its bounds cross the glass: children of it, never picked or exported.
+ *  Each piece's three passes draw together, in an order set by its item `id`: a running count made an incremental build
+ *  (one piece rebuilt, numbered last) stack two overlapping capped pieces differently from a full rebuild. */
+function capPasses(m: THREE.Mesh, T: Tank, id: number) {
   if (!capping.on) return;
   const g = m.geometry;
   if (!g.boundingBox) g.computeBoundingBox();
@@ -475,7 +552,7 @@ function capPasses(m: THREE.Mesh, T: Tank) {
     cut = planes.some(pl => pl.distanceToPoint(_p) < 0) || (!!bowl && _p.y < bowl.H && _p.distanceTo(_c) > bowl.R);
   }
   if (!cut) return;
-  const M = capMaterials(T), ro = 6 + (capSeq = (capSeq + 1) % 4000) * 2e-4;
+  const M = capMaterials(T), ro = 6 + (Math.abs(id) % 4000) * 2e-4;
   for (const [mat, r] of [[M.back, ro], [M.front, ro], [M.cap, ro + 1e-4]] as const) {
     const o = new THREE.Mesh(g, mat);
     o.renderOrder = r; o.raycast = () => {};
@@ -569,16 +646,19 @@ function groundKey(S: TankSetup) {
  */
 function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
   const ground = groundHeight(S, T, it.x, it.depth), y = ground + it.lift - itemSink(it);
-  const type = it.variant as PlantType, carpet = isCarpet(type), float = isFloat(type);
+  const type = it.variant as PlantType, carpet = isCarpet(type), float = isFloat(type), vine = isVine(type);
   if (float && !S.water.on) return null; // floaters need water
   // built at full growth from its saved size (`h`: as before growth, capped under the lid) and shown at its growth
   const g0 = growthOf(type, it.size), gr = it.growth ?? g0;
   // stops at the lid (the old layouts' rule), to whole mm: a capped plant dragged up or down reuses its build until the
   // room under the lid changes by a mm (lane E2 #10: it rebuilt on every move)
-  const cap = (s: number) => carpet || float ? s : Math.min(s, Math.floor(T.H - y - 15));
+  // (a vine's size is its length, not a height: it runs along the lid instead, lane T2)
+  const cap = (s: number) => carpet || float || vine ? s : Math.min(s, Math.floor(T.H - y - 15));
   const h = cap(it.size);
   if (h < 15) return null;
   const c = Math.cos(it.yaw * D2R), s = Math.sin(it.yaw * D2R);
+  // a vine lifted onto wood or rock: how high it sits over the ground (its trailers hang down to it), to 5 mm
+  const drop = vine ? Math.max(0, Math.round(it.lift / 5) * 5) : 0;
   // a plant whose own spread reaches the glass: the panes it reaches, in its own frame (plantGeometry sets its stems,
   // crowns or rosettes down inside them), to 4 mm and 3 decimals so a drag reuses a build until it moves that far. Not
   // in a bowl (its spread is kept inside) nor tipped
@@ -590,7 +670,7 @@ function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
   // a carpet hugs the ground under each leaflet: its key carries the spot (rebuilt only while it moves); the rest key on
   // the exact height they are built with (a rounded one let two near-equal plants share the first one's mesh)
   // (a carpet's ground: everything groundHeight reads, lane E2 #2: a terrain or substrate edit left it on the old ground)
-  const k = carpet ? `${type}|${it.seed}|${it.size}|${h}|${it.x}|${it.depth}|${it.yaw}|${it.lift}|${T.shape}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}|${groundKey(S)}` : `${type}|${it.seed}|${it.size}|${h}|${it.spread ?? ''}|${it.stems ?? ''}|${it.dens ?? ''}|${clip.join(',')}`;
+  const k = carpet ? `${type}|${it.seed}|${it.size}|${h}|${it.x}|${it.depth}|${it.yaw}|${it.lift}|${T.shape}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}|${groundKey(S)}` : `${type}|${it.seed}|${it.size}|${h}|${it.spread ?? ''}|${it.stems ?? ''}|${it.dens ?? ''}|${clip.join(',')}${vine ? `|d${drop}` : ''}`;
   // near the glass a leaflet is cut down to the width it has room for, so the carpet runs right up to the glass without
   // poking through; a leaflet past the edge line is mirrored back in by as much (keeping the edge thick), and one more
   // than half a leaflet past it is left out
@@ -605,7 +685,7 @@ function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
   };
   // (what grows past g0 is only built once the plant has a growth of its own: a starter set costs what it did)
   const sw = `3d${plant3d.sway ? 's' : ''}${more ? '+' : ''}${plant3d.emerse ? '' : 'n'}|`, kf = sw + (carpet ? `${type}|${it.seed}|${it.size}` : k);
-  const args = [type, it.seed, h, { spread: it.spread, stems: it.stems, dens: it.dens, clip: clip.length ? clip : undefined }, g0, more, it.size] as const;
+  const args = [type, it.seed, h, { spread: it.spread, stems: it.stems, dens: it.dens, clip: clip.length ? clip : undefined, drop: drop || undefined }, g0, more, it.size] as const;
   let bend: { F: number; C?: number; water: boolean; walls: number[]; ks: string } | undefined;
   if (!carpet && !float) {
     // longer than the water above it: lies over at the surface (`F` over its base, to 2 mm, so a drag reuses it). A
@@ -613,7 +693,7 @@ function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
     // were) and only lies over when it would poke out further than that
     const depth = S.water.on ? waterY(T, S.water.level) - y : T.H - 15 - y, P3 = PLANT3D[type]!;
     let F = Math.round((depth - 3) / 2) * 2;
-    if (!more && h <= depth + 14 && !P3.pads) F = Infinity; // (a lily's pads always go to the surface)
+    if (!more && h <= depth + 14 && !P3.pads && !vine) F = Infinity; // (a vine's h is a length: it may reach the lid) // (a lily's pads always go to the surface)
     // an emerging plant grown on climbs out of the water up to what is over it (lane GR2): the lid or the hood, or
     // over an open tank the light (its fixture, a little under the height it hangs at)
     const C = more && S.water.on && P3.grow.overflow === 'emerge'
@@ -778,10 +858,29 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
   } else m = new THREE.Mesh(bakedShape(it), solidMaterial(T));
   m.position.set(it.x, it.kind === 'plant' && isFloat(it.variant) ? waterY(T, S.water.level) : y + (m.geometry.userData.rise ?? 0), -it.depth);
   m.rotation.copy(itemEuler(it));
-  if (it.kind !== 'plant') capPasses(m, T);
+  if (it.kind !== 'plant') capPasses(m, T, it.id);
   m.userData.item = it.id;
   if (it.kind === 'coral') m.userData.coral = true;
   return m;
+}
+
+const PROBE_RAY = new THREE.Raycaster(), PROBE_DOWN = V(0, -1, 0), _o = V(0, 0, 0), _nm = new THREE.Matrix3();
+/**
+ * The anchors' look straight down onto the solid pieces (scene/anchors.ts): the highest hit on `solids` (matrices up to
+ * date; no corals) under (x, depth), from above the room. `T` sets how high the ray starts.
+ */
+export function solidProbe(T: Tank, solids: THREE.Object3D[]): NonNullable<AnchorProbe['down']> {
+  return (x, depth) => {
+    PROBE_RAY.set(_o.set(x, T.H * 3 + 1000, -depth), PROBE_DOWN);
+    const h = PROBE_RAY.intersectObjects(solids, false)[0];
+    if (!h) return null;
+    const o = h.object, n = h.face ? h.face.normal.clone().applyMatrix3(_nm.getNormalMatrix(o.matrixWorld)).normalize() : V(0, 1, 0);
+    const l = o.worldToLocal(h.point.clone());
+    return {
+      y: h.point.y, n: [n.x, n.y, -n.z], item: o.userData.item, local: [l.x, l.y, l.z],
+      toTank: v => { const w = o.localToWorld(V(...v)); return [w.x, w.y, -w.z]; },
+    };
+  };
 }
 
 /** mm a seated coral's base goes into the rock (it rests on it, never a hair above). */

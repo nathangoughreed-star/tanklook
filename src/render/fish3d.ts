@@ -10,8 +10,8 @@ import type { EdgeMode } from '../scene/types';
 import { cardMaterial, pairedFinTexture } from './textures';
 import { isShrimp3D, shrimpBody } from './shrimp3d';
 
-/** Switches for before/after pictures (every species is drawn in 3D; the flat whole-fish card was removed 2026-10-15). `fade` = the session-10 fixes (turned-away paint fades, card body cut out, body-shape fields, barbels); off = session 9, for pictures. `wrap` = the turned-away paint is smeared lengthwise (bars and spots don't close into hoops over the back and throat); off = session 11's round blur. */
-export const fish3d = { fade: true, wrap: true };
+/** Switches for before/after pictures (every species is drawn in 3D; the flat whole-fish card was removed 2026-10-15). `fade` = the session-10 fixes (turned-away paint fades, card body cut out, body-shape fields, barbels); off = session 9, for pictures. `wrap` = the turned-away paint is smeared lengthwise (bars and spots don't close into hoops over the back and throat); off = session 11's round blur. `merge` = a fish's parts that share a material are one mesh (lane FM: fewer draw calls, same picture); off = one mesh per part, for A/B timing. */
+export const fish3d = { fade: true, wrap: true, merge: true };
 
 const STATIONS = 40, RING = 28, EXP = 2.4; // superellipse exponent: slightly boxy flanks
 /** Pull the solid this far inside the painted outline (widths), so its edge never samples the card's transparent rim. */
@@ -546,7 +546,60 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
     const mat = fishMat('barbel:' + art, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(p.shade[2]).multiplyScalar(0.85) }));
     for (const m of barbelMeshes(p, b, mat)) grp.add(m);
   }
+  if (fish3d.merge) mergeShared(grp);
   return grp;
+}
+
+/**
+ * One draw per material (lane FM): the group's meshes that share a material (the two eyes, the two gape lines, each pair
+ * of paired fins, the barbels, a doubled tail or anal) become one mesh, their own transforms baked into the vertices,
+ * in the place of the first of them (so the material's first appearance, and its rank in the opaque sort, stay). Normals
+ * are carried by mat3 of the transform, unnormalized, as the lit shader's `mat3(modelMatrix) * normal` takes them.
+ */
+export function mergeShared(grp: THREE.Group) {
+  const by = new Map<THREE.Material, THREE.Mesh[]>();
+  for (const o of grp.children) { const m = o as THREE.Mesh; if (m.isMesh && !Array.isArray(m.material)) by.set(m.material, [...by.get(m.material) ?? [], m]); }
+  for (const [mat, parts] of by) {
+    if (parts.length < 2) continue;
+    for (const m of parts) m.updateMatrix();
+    const key = 'merge:' + parts.map(m => m.geometry.uuid + ':' + m.matrix.elements.join(',')).join('|');
+    let g = geoCache.get(key);
+    if (!g) { const b = bakeMerge(parts); if (!b) continue; geoCache.set(key, g = b); }
+    const one = new THREE.Mesh(g, mat);
+    grp.children[grp.children.indexOf(parts[0])] = one; one.parent = grp;
+    for (const m of parts) { if (m !== parts[0]) grp.remove(m); m.parent = null; }
+  }
+}
+
+/** The parts' geometries in the group's frame, one after the other (null if their attributes differ or one is mirrored). */
+function bakeMerge(parts: THREE.Mesh[]) {
+  const names = Object.keys(parts[0].geometry.attributes).sort();
+  if (parts.some(m => Object.keys(m.geometry.attributes).sort().join() !== names.join() || !m.geometry.index || m.matrix.determinant() <= 0)) return null;
+  const n = parts.reduce((s, m) => s + m.geometry.attributes.position.count, 0), out: Record<string, Float32Array> = {}, idx: number[] = [];
+  for (const k of names) out[k] = new Float32Array(n * parts[0].geometry.attributes[k].itemSize);
+  const v = new THREE.Vector3(), N = new THREE.Matrix3();
+  let base = 0;
+  for (const m of parts) {
+    const ga = m.geometry.attributes, c = ga.position.count; N.setFromMatrix4(m.matrix);
+    for (const k of names) {
+      const a = ga[k], s = a.itemSize, o = out[k];
+      for (let i = 0; i < c; i++) {
+        if (k === 'position') { v.fromBufferAttribute(a, i).applyMatrix4(m.matrix); o.set([v.x, v.y, v.z], (base + i) * 3); }
+        else if (k === 'normal') { v.fromBufferAttribute(a, i).applyMatrix3(N); o.set([v.x, v.y, v.z], (base + i) * 3); }
+        else for (let j = 0; j < s; j++) o[(base + i) * s + j] = a.array[i * s + j];
+      }
+    }
+    const ix = m.geometry.index!;
+    for (let i = 0; i < ix.count; i++) idx.push(base + ix.getX(i));
+    base += c;
+  }
+  const g = new THREE.BufferGeometry();
+  for (const k of names) g.setAttribute(k, new THREE.BufferAttribute(out[k], parts[0].geometry.attributes[k].itemSize));
+  g.setIndex(idx); g.userData.keep = true; // shared across rebuilds
+  // the parts' own boxes, turned: what Box3.setFromObject took from them (the review sheets and preview tile frame by it)
+  g.boundingBox = new THREE.Box3();
+  for (const m of parts) { if (!m.geometry.boundingBox) m.geometry.computeBoundingBox(); g.boundingBox.union(m.geometry.boundingBox!.clone().applyMatrix4(m.matrix)); }
+  return g;
 }
 
 /**

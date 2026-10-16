@@ -2,6 +2,96 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane T3: dry hardscape pieces + surface anchors, tree frogs perch (2026-10-16; branch `dry-hardscape`, port 5663; Nathan approved the pictures; pushed to main)
+- **New pieces** (scene/items.ts LIBRARY, geometry in render/items.ts, no new ItemKind, no scene version bump): `climb`
+  Climbing branch (wood: thin pale dry limb leaning 40-70°, 1-2 forks; woodLimbs 'climb'), `corkflat` Cork bark flat
+  and `corktube` Cork tube (wood), `halflog` Half-log hide (cave), `ledge` Rock ledge (stone: thick slab with a level top,
+  sandstone colours, grit 2; lift it against the glass or 3D wall as a shelf). The cork pieces and the half-log are bark
+  shells (`SHELLS` in scene/items.ts: radius, arc, wall; `shellShape` in render/items.ts): bark outside with deep furrows
+  along the length (grit 10), plain wood or a dark hollow inside, end grain on the cut ends (grit 9), ragged long edges on
+  a flat. Lying along x; stand a tube or flat up with roll (tilt) 90. `isLimbWood` keeps the shells out of the limb code;
+  woodLimbs gives a shell its ridge line for callers that want a limb. GRIT shader core untouched.
+- **Surface anchors** (new `scene/anchors.ts`): `anchors(S, T, probe)` returns `rest(x, depth, hard)` (floor, or the top
+  of the solid piece under it: kind rock / ledge / branch / cork / wood, normal, item, `limb` {axis point, direction, radius}
+  on a branch, `toTank` frame map), `glass(x, depth, y, yaw, w)` (glass, or the 3D wall where it covers the pane: point,
+  normal into the tank, heading laid in), `nearest(x, depth, y)`. `limbPaths(item, toTank)` gives every limb as a tank-axes
+  path (for vines: lane T2). `anchorKind`, `PERCHES` (branch, ledge), `turnOut` (a piece's YXZ turn in scene code).
+  The renderer's probes: `solidProbe` (render/items.ts, the down ray onto the solid meshes) and `onWall`
+  (render/build.ts, the 5-ray wall fit). **Hook** in render/build.ts addContents: `top`, `onGlass`, `onWall` and the glass
+  branch of `snailMeshes` go through the anchors. Proven unchanged: `test/anchorbase.test.ts` holds 1110 animal poses
+  (6 examples, Shuffled with and without rock / cork walls; floor, glass, wall, hardscape) to the pre-anchor fixture,
+  measured identical to 0.002 mm. Re-record only on purpose: `RECORD=1 npx vitest run test/anchorbase.test.ts`.
+- **Perching**: an animal on the hardscape whose anchor is a branch or a ledge perches (`perchOn` in build.ts): on a
+  branch the body lies along the limb (head the way it faces; head up a limb steeper than 45°), belly on the limb top,
+  in a gripping pose (`HERP3D_PERCH.treefrog`, art/herps.ts: legs tucked, toe tips curled below the belly line round the
+  limb; new `Limb3D.toeV`); on a ledge it sits level on the top face in its normal pose (the grip pose put toes into the
+  stone). Mesh `userData.perch` = the kind. Shuffle: a tree frog weights perches 4x (`PERCH_FROG`, scene/scatter.ts;
+  `hardscape(S, pieces, perchK)`, a branch counted by length x 40 mm). Tests `test/anchors.test.ts`: every kind, the
+  turn, glass / wall plumbing, frogs perched after Shuffle stay perched (same place, same turn) through save and load.
+- **Fixed on the way (pushed alone first, `2572022`):** glass cap passes took their render order from a running counter,
+  so an incremental edit stacked two overlapping capped pieces differently from a full rebuild (terrarium stone edits,
+  38-204 px; from 09103c6). Now by item id; incrementalCheck 133 edits, 0 differ (also 0 with the new pieces + perched frogs).
+- **Pictures:** shots/T3_sheet1_pieces.jpg, shots/T3_sheet2_scenes_frogs.jpg (not in git); helpers shots/t3.js.
+- **Open:** a frog on a branch can overlap a fork right at it (no clearance check); the half-log bark is close to the
+  cork's; no Shuffle / starter places the new pieces yet (starter styles batch 2); next queued: crested gecko + lizard
+  body plan on these anchors.
+
+## Lane FM: fish parts merged per material (2026-10-16; branch `fish-merge`, no preview server; Nathan approved shipping the few changed edge pixels, phase 2 skipped; pushed to main)
+E1 fix #5. A 3D fish was 11 meshes (card, body, 2 eyes, 2 gape lines, 4 paired fins, outline hull; +4 barbels on corys).
+- **What changed:** `fishBody` (render/fish3d.ts) ends with `mergeShared`: a fish's parts that share a material (the two
+  eyes, the two gape lines, each paired-fin pair, the barbels, a doubled tail / anal, same-colour limbs) are one mesh, the
+  part transforms baked into the vertices (normals by mat3 of the transform, as the lit shader takes them), placed where
+  the first part was (material first-appearance rank in the opaque sort unchanged). A typical fish is now 7 meshes. Merged
+  geometries are cached by part geometry + transform (`userData.keep`). The merged box is the union of the parts' turned
+  boxes, so `Box3.setFromObject` framing (review sheets, species preview tile) is unchanged (without it the corys' sheets
+  moved: 2,400-2,600 px). Switch: `fish3d.merge` (off = one mesh per part, for A/B). render/build.ts untouched.
+- **Measured** (alternating frames, same scene, twins swapped; `research/efficiency/FM-ab.mjs`, census `FM-probe.mjs`;
+  under load from 4 dev servers): draw calls planted 595 -> 451, iwagumi 747 -> 648, paludarium 567 -> 509; CPU per draw
+  planted -0.3 ms, split -0.4 ms (120 pairs), iwagumi / paludarium within noise; GPU unchanged (+-0.1 ms). About 2-3 us
+  per draw call: E1's -2 to -4 ms estimate (from hiding whole buckets) was far too high. Phase 2 (one draw per material
+  class: card + fins, body + eyes + gape, via two-texture shaders in lighting.ts) would save maybe another 0.3-0.4 ms and
+  needs new programs: **skipped (Nathan 2026-10-16).**
+- **Picture:** NOT byte-identical: baked transforms round differently on the GPU, so 0-4 single edge pixels per view move
+  (planted 3, iwagumi water 0.3: 4, reef 1, others 0; pictures `research/efficiency/FM-pictures/`), and 30 of 79 review
+  sheets (software GL) differ in at most 13 px. Nathan approved shipping that. `npm run sheets -- --record` bumps nothing:
+  the review page fingerprints a build with `fish3d.merge` off (src/review/main.ts), since merged vertices would change
+  every fish's hash with no look change. incrementalCheck: no new differences; **4 terrarium stone edits (move / turn /
+  resize / select item, 32-152 px) differ from a full rebuild on main already** (same with merge off; reported to the
+  coordinator).
+- **AR Quick Look note:** USDZ export transforms normals with the normal matrix; merged barbel normals (non-uniform part
+  scale) are mat3-carried, so their exported shading may differ very slightly. The app view is the reference.
+## Lane T2: terrestrial plants (2026-10-16; branch `terra-plants`, port 5653; batches 1 + 2 approved by Nathan and pushed; vines on branches waits for T3's anchors)
+Roadmap R1 section 3 (land plants) and section 6 (aquatic plant follow-ons). Data in `PLANT3D` (art/plants.ts), generator
+render/plant3d.ts, `LIBRARY` entries (scene/items.ts); no scene version bump (plants are items; new variants only).
+- **Batch 1, land plants** (`land: true`, sway 0: no current): pothos (`pothos`), bromeliad (`bromeliad`), tropical fern
+  (`tropfern`, Nephrolepis-type), fittonia (`fittonia`), sphagnum moss (`sphagnum`), creeping fig (`creeper`, the
+  "flexible vine"). Library hints start "Terrarium:". Each has growth (Growth slider + Time, GR3 speed).
+  - New form `vine` (pothos, creeper): vines from a crown, built in mm (no fit-to-height: size = the longest vine's
+    length, `isVine`); `PLANT3D[t].vine` = climb share, leaf spacing, back lean, fan, thickness, wander, branch. Climbers
+    fan up leaning back toward the wall (bendPlant's glass hug turns them up along the back pane; at the lid they lie
+    along it), their leaves held flat toward the viewer (`leaf(..., face)`); trailers arch out and run along the ground;
+    lifted onto wood (`Clump.drop` = lift, to 5 mm, in the plant key) they run out ~30-80 mm then hang down to the ground.
+    A vine lengthens from its base at the species' rate (point s mm along it shows at g0 + ln(s / L) / ln(len1 / len0));
+    extra vines and side branches past g0 (own stream). A vine is not capped under the lid (plantPlan `cap`).
+  - Leaf3D additions: `pinnae` (compound frond: leaflet pairs riding on the rachis), `veins` (fittonia net, no random
+    draws), `heart` (bromeliad red base). `Plant3D.lean` (stem lean x, fittonia sprawls), `Grow.prop` (grown-on leaves keep
+    their width ratio: bromeliad). `isClump` includes vines (Spread / Stems sliders).
+  - Unchanged for every older species: the new fields are absent there (`x * (P.lean ?? 1)` is exact); growth.test.ts
+    fixture compare skips the new species (as for GR2's three); gpureveal.test.ts covers them all (every PLANT3D key).
+    The worker prebuild goes through plantPlan, so it covers them. 341 tests pass.
+  - Sheets (worktree `shots/`, not in git): `T2_v1_{species}.png` (growth 0 / .5 / 1 front + 3/4 in a dry tank, glass lid,
+    close-ups at growth 1). Helpers `shots/t2.js` (row / views / close), `t2_species.py`, `t2_sheet.py`.
+  - Open: pothos / vines do not follow branches or link wood yet (needs T3's `scene/anchors.ts`); sphagnum is a soft
+    cushion without distinct capitula; fittonia gets a little leggy at growth 1; land plants in a wet tank draw submersed.
+- **Batch 2, aquatic follow-ons** (roadmap section 6; Nathan 2026-10-16: "all three look good"): dwarf hairgrass
+  (`hairgrass`: sagittaria-style spreading rosettes of needle blades, ~30 per tuft, data only), hornwort (`hornwort`) and
+  Anacharis (`anacharis`): stem form with `Plant3D.whorl` = leaves per node set evenly round the stem (9 needles / 4
+  recurved straps; absent = the old pair, the same draws), fast, `trail` at the surface. Monte Carlo NOT built: the
+  existing carpet covers it (Nathan dropped a Monte Carlo variant 2026-10-14). Sheets `shots/T2_v2_{hairgrass,hornwort,anacharis}.png`
+  (full planted tank). Open: a hairgrass patch at growth 1 is a strip of tufts, not yet a full lawn.
+- **Next (after T3 lands `scene/anchors.ts`; T3 sends its API, coordinator 2026-10-16):** pothos / creeping fig following
+  branches and linking wood.
+
 ## Lane T4: aquatic roster (2026-10-16; branch `aqua-roster`, port 5673; fish batches 1-2 and reef P1 approved by Nathan and pushed; reef P2 running)
 Roadmap section 6: species that add new silhouettes, scales or habitats, in batches of about five, each on a review sheet.
 - **Batch 1 (Nathan approved, v1 at build 567)**: pygmy corydoras (`pygmycory`, 25 mm, slim mini cory, black stripe),
@@ -322,6 +412,8 @@ Roadmap section 6: species that add new silhouettes, scales or habitats, in batc
     #3: one gStone call, no frost-pass programs for culled meshes, all links started in parallel); same picture.
   - **EF2 edit speed DONE 2026-10-15** (see its section): water colour off opacity 0 208-444 -> 19-54 ms (no rebuild, no
     relink), first light power step 35-101 -> 20-33 ms (model warmed in idle time, narrower cache key); same picture.
+  - **FM fish merge DONE 2026-10-16** (see its section; E1 #5): same-material fish parts merged, draw calls -10 to -24 %,
+    CPU -0.3 to -0.4 ms per draw on planted / split, GPU unchanged; 0-4 edge pixels per view moved (Nathan approved).
   - **EF3 download size DONE 2026-10-15** (see its section): examples are a lazy chunk + image-file thumbnails; main
     176 -> 69 KiB gzip, first-load code 455 -> 349 KiB gzip. Model sheets were never in the first load (left as is).
   - **E2 code audit:** `../Glass-Box-audit` / `code-audit`, no dev server. Owns `research/efficiency/E2-*` and optional
@@ -1621,10 +1713,11 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | LA leaf algae + bowl film | (worktree removed) | - | `render/algae.ts`, the plant material hook in `render/plant3d.ts`, bowl glass film | DONE (`e87bc19`). Open: no surface scum on bowls; BBA on leaf ends, not true margins |
 | T1 dry ground (roadmap R1) | `../Glass-Box-dry-ground` / `dry-ground` | 5633 | substrate types in `scene/types.ts` / `validate.ts` / `defaults.ts` (substrate only), the ground build in `render/build.ts`, substrate tiles in `art/placeholder.ts` / `render/textures.ts`, new `render/scatter.ts` (leaf litter), the Substrate section of `ui/panels.ts` / `index.html` | running (session `local_6ae6a2e0`) |
 | T2 terrestrial plants (roadmap R1) | `../Glass-Box-terra-plants` / `terra-plants` | 5653 | `art/plants.ts`, `render/plant3d.ts`, plant branch of `render/items.ts`, plant entries of `scene/items.ts` LIBRARY | running (session `local_7d35229e`) |
-| T3 dry hardscape + anchors (roadmap R1/R2) | `../Glass-Box-dry-hardscape` / `dry-hardscape` | 5663 | non-plant branches of `render/items.ts` (not the GRIT shader core), stone / wood / cave / hide entries of `scene/items.ts` LIBRARY, new `scene/anchors.ts` + its hook in the cling / rest code; anchor hook in `render/build.ts` addContents rest / cling helpers (`top`, `restOn`, start of `animal()`, `onGlass`, `onWall`, glass branch of `snailMeshes`); perch pose in `art/herps.ts` / `render/herp3d.ts` | running (session `local_adf731d2`) |
+| T3 dry hardscape + anchors (roadmap R1/R2) | `../Glass-Box-dry-hardscape` / `dry-hardscape` | 5663 | non-plant branches of `render/items.ts` (not the GRIT shader core), stone / wood / cave / hide entries of `scene/items.ts` LIBRARY, new `scene/anchors.ts` + its hook in the cling / rest code; anchor hook in `render/build.ts` addContents rest / cling helpers (`top`, `restOn`, start of `animal()`, `onGlass`, `onWall`, glass branch of `snailMeshes`); perch pose in `art/herps.ts` / `render/herp3d.ts` | DONE (see the Lane T3 section): anchors API for T2 vines (`limbPaths`); files free |
 | T4 aquatic roster | `../Glass-Box-aqua-roster` / `aqua-roster` | 5673 | `data/species.json`, `data/aqadvisor.json`, NEW species' PLANS / her() entries in `art/fishgen.ts`, `render/coral3d.ts` + coral entries of `scene/items.ts` LIBRARY | 9 fish + 5 reef pieces pushed; reef P2 running (session `local_c8325e61`) |
-| FM fish mesh merge | `../Glass-Box-fish-merge` / `fish-merge` | 5683 (headless checks preferred) | fish mesh assembly in `render/fish3d.ts`, the animal-mesh part of `render/build.ts` | running (session `local_7e5d4a5f`) |
-| Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T3: crested gecko + lizard body plan; after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits | queued |
+| FM fish mesh merge | `../Glass-Box-fish-merge` / `fish-merge` | 5683 (headless checks preferred) | fish mesh assembly in `render/fish3d.ts`, the animal-mesh part of `render/build.ts` | DONE 2026-10-16 (see its section), files free |
+| G1 crested gecko + lizard body plan (roadmap R2) | `../Glass-Box-gecko` / `gecko` | 5663 | new `render/lizard3d.ts` (+ art data), `art/herps.ts` / `render/herp3d.ts` hooks, the gecko entries in `data/species.json` / `aqadvisor.json` (T4 also edits those: keep both sides), perch / cling poses on `scene/anchors.ts` | ready to open (prompt `prompts/lane-G1-crested-gecko.md`) |
+| Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits | queued |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 Free (no lane): `render/build.ts`, `render/items.ts`, `scene/items.ts`, `render/viewer.ts`, `main.ts`, `render/lighting.ts`,
 `render/coral3d.ts`, `render/shrimp3d.ts` / `art/shrimps.ts`, `scene/share.ts`, herps / herp3d / snails / snail3d. A one-line hook in a free file is fine; name it
