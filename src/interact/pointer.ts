@@ -7,6 +7,9 @@
 // (round corners and curved shells).
 // Aquascape items (rocks, wood, caves, plants) go where the pointer meets the ground or another piece, and rest on
 // whatever is under them there; anything resting on the dragged piece rides along. Shift + wheel turns the selected piece.
+// Groups (lane MS): shift / ctrl / cmd + click, or a tap while the Multi button is on, adds an animal or piece to the selection or takes
+// it out; shift + drag on empty water, or any drag there in Multi mode, draws a box that adds what it covers. Dragging or turning one
+// member of a group of two or more moves or turns them all, the layout between them kept.
 // Pieces take presses only while their menu (Hardscape, or Plants for plants and corals) is open, animals only while the Animals menu is.
 import * as THREE from 'three';
 import { clingsTo, fishTL, getSpecies, restsOnFloor, speciesOf } from '../data/species';
@@ -20,6 +23,7 @@ import type { Store } from '../scene/store';
 import type { ItemKind, Tank, TankSetup } from '../scene/types';
 import type { Viewer, Viewport } from '../render/viewer';
 import { LIMITS } from '../scene/validate';
+import { groupSize, moveGroup, settleFish, turnGroup, type Group } from '../scene/duplicate';
 
 type DragMode = 'front' | 'top' | 'side' | 'glass';
 
@@ -69,7 +73,7 @@ export function wallPlane(cam: THREE.Camera, el: number, at: THREE.Vector3): THR
 }
 
 /** Height (above the ground) of the top of whatever solid piece is under (x, depth), excluding `skip`; 0 = bare ground. */
-function supportLift(vp: Viewport, S: TankSetup, x: number, depth: number, skip: Set<number>) {
+export function supportLift(vp: Viewport, S: TankSetup, x: number, depth: number, skip: Set<number>) {
   const ray = new THREE.Raycaster(new THREE.Vector3(x, S.tank.H * 3 + 1000, -depth), new THREE.Vector3(0, -1, 0));
   const hit = ray.intersectObjects(solids(vp, skip), false)[0];
   return hit ? Math.max(0, hit.point.y - groundHeight(S, S.tank, x, depth)) : 0;
@@ -86,10 +90,29 @@ export function placeAt(viewer: Viewer, store: Store, clientX: number, clientY: 
 }
 export type PlaceAt = NonNullable<ReturnType<typeof placeAt>>;
 
+/** Animals and pieces whose middle lies inside the dragged rectangle (client coordinates) of a view: the box select. */
+function boxPickIn(viewer: Viewer, store: Store, vp: Viewport, x0: number, y0: number, x1: number, y1: number): Group {
+  const r = viewer.host.getBoundingClientRect(), S = store.scene.tanks[vp.i], g: Group = { fish: [], items: [] };
+  const lx = Math.min(x0, x1) - r.left, hx = Math.max(x0, x1) - r.left, ly = Math.min(y0, y1) - r.top, hy = Math.max(y0, y1) - r.top;
+  const c = new THREE.Vector3(), inside = (m: THREE.Mesh) => {
+    if (!m.geometry.boundingBox) m.geometry.computeBoundingBox();
+    c.copy(m.geometry.boundingBox!.getCenter(new THREE.Vector3())).applyMatrix4(m.matrixWorld).project(vp.cam);
+    const px = vp.x + (c.x + 1) / 2 * vp.w, py = vp.y + (1 - c.y) / 2 * vp.h;
+    return c.z < 1 && px >= lx && px <= hx && py >= ly && py <= hy;
+  };
+  for (const m of vp.fishMeshes ?? []) { const id = m.userData.id as number | undefined; if (id != null && !g.fish.includes(id) && inside(m)) g.fish.push(id); }
+  for (const m of vp.itemMeshes ?? []) {
+    const id = m.userData.item as number | undefined, it = id != null ? S.items.find(q => q.id === id) : undefined;
+    if (it && !g.items.includes(id!) && inside(m)) g.items.push(id!);
+  }
+  return g;
+}
+
 /** `canPick`: whether aquascape pieces (of this kind) / animals can be picked and dragged now (only while their menu,
  *  Hardscape / Plants / Animals, is open); otherwise a press on one orbits like empty space. */
 export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'items' | 'fish', kind?: ItemKind) => boolean = () => true) {
   const canvas = viewer.canvas;
+  const boxPick = (vp: Viewport, x0: number, y0: number, x1: number, y1: number) => boxPickIn(viewer, store, vp, x0, y0, x1, y1);
   // dragging an aquascape item: `grab` = the grabbed point relative to the piece's base, kept under the pointer while
   // the base slides over the ground and other pieces; riders = pieces resting on it, which move with it
   type Rider = { id: number; dx: number; dd: number; dy: number };
@@ -97,7 +120,10 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
   // `float` = the piece was placed off any surface (the Move buttons / arrow keys): it slides level at its height instead;
   // `wall` = the view is near edge-on, so the pointer's ray grazes the floor: the piece slides across on an upright plane
   // facing the eye (left / right, depth kept) and rests on whatever is under it (audit #3)
-  let move: { vp: Viewport; id: number; grab: THREE.Vector3; riders: Rider[]; skip: Set<number>; float: THREE.Plane | null; wall: THREE.Plane | null; coral: boolean; moved: boolean } | null = null;
+  let box: { vp: Viewport; x: number; y: number; moved: boolean } | null = null;
+  const boxEl = document.createElement('div'); boxEl.className = 'selbox'; boxEl.hidden = true; viewer.host.appendChild(boxEl);
+  type FishRider = { id: number; dx: number; dd: number; dy: number };
+  let move: { vp: Viewport; id: number; grab: THREE.Vector3; riders: Rider[]; fishRiders: FishRider[]; skip: Set<number>; float: THREE.Plane | null; wall: THREE.Plane | null; coral: boolean; moved: boolean } | null = null;
   let drag: { vp: Viewport; plane: THREE.Plane; mode: DragMode; off: THREE.Vector3; moved: boolean } | null = null;
   let orbit: { i: number; x: number; y: number; az: number; el: number } | null = null;
   // custom terrain: dragging a grid dot up/down; the height follows the pointer at the dot's on-screen scale
@@ -150,6 +176,13 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       hit = viewer.hitTest(e.clientX, e.clientY); if (!hit) return;
     }
     try { canvas.setPointerCapture(e.pointerId); } catch { /* not all pointers can be captured */ }
+    // group select: modifier or Multi mode; a piece or animal toggles, empty water starts a box
+    if (editable && hit.dot == null && (e.shiftKey || e.ctrlKey || e.metaKey || store.multi)) {
+      const it = hit.itemId != null ? store.scene.tanks[vi].items.find(q => q.id === hit!.itemId) : undefined;
+      if (it) { store.toggle('item', it.id); return; } // (a group takes anything, whichever menu is open)
+      if (hit.fishId != null) { store.toggle('fish', hit.fishId); return; }
+      box = { vp: hit.vp, x: e.clientX, y: e.clientY, moved: false }; return;
+    }
     canvas.classList.add('dragging');
     if (editable && hit.dot != null && hit.mesh) {
       const cam = hit.vp.cam, dist = cam.position.distanceTo(hit.mesh.position);
@@ -157,8 +190,9 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       viewer.terrainEdit.hot = hit.dot; viewer.rebuild();
       return;
     }
-    if (editable && hit.itemId != null && hit.mesh && canPick('items', store.scene.tanks[vi].items.find(q => q.id === hit!.itemId)?.kind ?? 'stone')) {
-      store.selectItem(hit.itemId);
+    if (editable && hit.itemId != null && hit.mesh && (canPick('items', store.scene.tanks[vi].items.find(q => q.id === hit!.itemId)?.kind ?? 'stone') || (store.groupCount > 1 && store.inGroup('item', hit.itemId)))) {
+      const inGroup = store.groupCount > 1 && store.inGroup('item', hit.itemId);
+      if (inGroup) store.lead('item', hit.itemId); else store.selectItem(hit.itemId);
       const S = store.scene.tanks[vi], it = S.items.find(q => q.id === hit!.itemId);
       if (!it) return;
       // riders: pieces standing on this one (a stone on the pile, a fern tied to the wood); they move along with it
@@ -169,17 +203,27 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
         const under = down.intersectObjects(solids(hit.vp, new Set([q.id])), false)[0];
         if (under?.object === hit.mesh) riders.push({ id: q.id, dx: q.x - it.x, dd: q.depth - it.depth, dy: base(q) - base(it) });
       }
+      // the rest of the group goes along at its place relative to this piece (kept at its height above the ground)
+      const fishRiders: FishRider[] = [];
+      if (inGroup) {
+        const grp = store.group;
+        for (const id of grp.items) {
+          const q = S.items.find(z => z.id === id); if (!q || q.id === it.id || riders.some(r => r.id === id)) continue;
+          riders.push({ id, dx: q.x - it.x, dd: q.depth - it.depth, dy: base(q) - base(it) });
+        }
+        for (const id of grp.fish) { const f = S.fish.find(z => z.id === id); if (f) fishRiders.push({ id, dx: f.x - it.x, dd: f.depth - it.depth, dy: f.y - base(it) }); }
+      }
       const at = new THREE.Raycaster(hit.ray.origin, hit.ray.direction).intersectObject(hit.mesh, false)[0]?.point ?? hit.mesh.position;
       const skip = new Set([it.id, ...riders.map(r => r.id)]);
       const coral = it.kind === 'coral', float = !coral && Math.abs(it.lift - supportLift(hit.vp, S, it.x, it.depth, skip)) > 2 ? new THREE.Plane(new THREE.Vector3(0, 1, 0), -at.y) : null;
-      move = { vp: hit.vp, id: it.id, grab: at.clone().sub(hit.mesh.position), riders, skip, float, wall: wallPlane(hit.vp.cam, S.camera.el, at), coral, moved: false };
+      move = { vp: hit.vp, id: it.id, grab: at.clone().sub(hit.mesh.position), riders, fishRiders, skip, float, wall: wallPlane(hit.vp.cam, S.camera.el, at), coral, moved: false };
       return;
     }
-    if (!editable || hit.fishId == null || !hit.mesh || !canPick('fish')) {
+    if (!editable || hit.fishId == null || !hit.mesh || !(canPick('fish') || (store.groupCount > 1 && store.inGroup('fish', hit.fishId)))) {
       const c = store.scene.tanks[vi].camera; orbit = { i: vi, x: e.clientX, y: e.clientY, az: c.az, el: c.el };
       viewer.pinOrbit(e.clientX, e.clientY); return; // turn about what is under the pointer
     }
-    store.select(hit.fishId);
+    if (store.groupCount > 1 && store.inGroup('fish', hit.fishId)) store.lead('fish', hit.fishId); else store.select(hit.fishId);
     const t = store.scene.tanks[vi], c = t.camera, f = t.fish.find(q => q.id === hit.fishId), sp = f && speciesOf(f);
     // the drag plane: the floor or the snail's pane for animals that cling to a surface, else it follows the view
     const surf = f?.surface ?? 'floor';
@@ -204,6 +248,14 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
     }
     if (e.pointerType === 'touch' && first != null && e.pointerId !== first) return;
     if (pan) { viewer.setPan(pan.i, e.clientX - pan.x, e.clientY - pan.y); return; }
+    if (box) {
+      if (!box.moved && Math.hypot(e.clientX - box.x, e.clientY - box.y) < 4) return;
+      box.moved = true;
+      const r = viewer.host.getBoundingClientRect();
+      Object.assign(boxEl.style, { left: Math.min(box.x, e.clientX) - r.left + 'px', top: Math.min(box.y, e.clientY) - r.top + 'px', width: Math.abs(e.clientX - box.x) + 'px', height: Math.abs(e.clientY - box.y) + 'px' });
+      boxEl.hidden = false;
+      return;
+    }
     if (lift) {
       const l = lift, h = +clamp(l.h0 + (l.y0 - e.clientY) * l.mmPerPx, 0, store.scene.tanks[l.i].tank.H * LIMITS.terrainMax).toFixed(1);
       store.editTank(l.i, t => { t.terrain.h[l.k] = h; }, { coalesce: 'terrain' }); l.moved = true;
@@ -236,6 +288,10 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
           q.x = it.x + r.dx; q.depth = it.depth + r.dd; clampItem(q, t.tank, t);
           q.lift = Math.max(0, top + r.dy - groundHeight(t, t.tank, q.x, q.depth));
         }
+        for (const r of m.fishRiders) {
+          const f = t.fish.find(z => z.id === r.id); if (!f) continue;
+          f.x = it.x + r.dx; f.depth = it.depth + r.dd; f.y = top + r.dy; settleFish(t, f);
+        }
       }, { coalesce: 'item-drag' });
       m.moved = true;
       return;
@@ -247,6 +303,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
     const d = drag, T = d.vp.T;
     store.editTank(d.vp.i, t => {
       const f = t.fish.find(f => f.id === store.selId); if (!f) return;
+      const x0 = f.x, y0 = f.y, d0 = f.depth;
       if (d.mode === 'glass') {
         // slide over the glass: onto the nearest point of the outline, then the drag plane turns to the glass there,
         // so a snail can crawl round a curved shell or a corner
@@ -261,6 +318,9 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       // over a rock, wood or cave it climbs on top (if it can), off it back down to the floor
       const sp = getSpecies(f.species);
       if (d.mode === 'top' && sp && clingsTo(sp, 'hardscape')) f.surface = supportLift(d.vp, t, f.x, f.depth, new Set()) > 0 ? 'hardscape' : 'floor';
+      // the rest of the group moves by the same amount
+      const rest = store.group; rest.fish = rest.fish.filter(id => id !== f.id);
+      if (groupSize(rest)) moveGroup(t, rest, f.x - x0, f.depth - d0, f.y - y0);
     }, { coalesce: 'drag' });
     d.moved = true;
   });
@@ -273,6 +333,11 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       first = null;
     }
     if (pan) { pan = null; canvas.classList.remove('panning'); return; }
+    if (box) {
+      const b = box; box = null; boxEl.hidden = true;
+      if (b.moved && e.type === 'pointerup') store.addToGroup(boxPick(b.vp, b.x, b.y, e.clientX, e.clientY));
+      return;
+    }
     // a plain click on empty space (no orbit drag) clears the selection, so nothing is highlighted
     if (orbit && e.type === 'pointerup' && Math.hypot(e.clientX - orbit.x, e.clientY - orbit.y) < 4) store.select(null);
     if (drag?.moved || orbit || lift?.moved || move?.moved) store.seal();
@@ -301,6 +366,11 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       return;
     }
     const dir = Math.sign(e.deltaY || e.deltaX);
+    if (store.groupCount > 1) { // turn the whole group 15° a notch about its centre
+      const g = store.group;
+      store.edit(t => turnGroup(t, g, dir * 15), { coalesce: 'wheel-turn' });
+      return;
+    }
     if (store.selectedItem) { // turn the selected piece 15° a notch
       const id = store.selItem;
       store.edit(t => { const it = t.items.find(q => q.id === id); if (it) { it.yaw = it.yaw + dir * 15; clampItem(it, t.tank, t); } }, { coalesce: 'wheel-turn' });

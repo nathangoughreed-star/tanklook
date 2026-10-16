@@ -475,12 +475,12 @@ export class Viewer {
       vp.S = S; vp.T = S.tank;
       if (this.incremental && vp.scene && old?.env === env) {
         if (old.look !== look) patchLook(vp.scene, S);
-        const n = patchTank(vp as BuiltTank, units, S.tank, on ? this.store.selId : null, on ? this.store.selItem : null);
+        const n = patchTank(vp as BuiltTank, units, S.tank, on ? this.sel.fish : null, on ? this.sel.items : null);
         vp.scene.traverse(o => { const m = (o as THREE.Mesh).material as THREE.MeshBasicMaterial | undefined; if (m?.userData?.glow) m.color.copy(glowColor(S.light.kelvin)); });
         this.lastBuild[vp.i] = n ? `patch ${n}` : old.look !== look ? 'look' : 'same';
       } else {
         disposeScene(vp.scene);
-        Object.assign(vp, buildTank(units, S.tank, on ? this.store.selId : null, on && this.terrainEdit.on ? this.terrainEdit : undefined, on ? this.store.selItem : null));
+        Object.assign(vp, buildTank(units, S.tank, on ? this.sel.fish : null, on && this.terrainEdit.on ? this.terrainEdit : undefined, on ? this.sel.items : null));
         vp.overhead = []; vp.frost = [];
         (vp.scene as THREE.Scene | undefined)?.traverse(o => {
           if (o.userData.overhead != null) vp.overhead!.push(o);
@@ -711,6 +711,9 @@ export class Viewer {
   // ---------- Picking ----------
   private ray = new THREE.Raycaster();
   /** Viewport and normalised device coords under a client point. */
+  /** What the selection highlights: every animal / piece of the group (null = none). */
+  private get sel() { const g = this.store.group; return { fish: g.fish.length ? new Set(g.fish) : null, items: g.items.length ? new Set(g.items) : null }; }
+
   hitTest(clientX: number, clientY: number) {
     const r = this.host.getBoundingClientRect(), x = clientX - r.left, y = clientY - r.top;
     const vp = this.active.find(v => x >= v.x && x <= v.x + v.w);

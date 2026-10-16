@@ -172,6 +172,17 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 /* top-left of the view: panel toggle, then Undo / Redo (out of the scrolling panel, there even when it is hidden) */
 .viewtools { position: absolute; top: 10px; left: 10px; z-index: 3; display: flex; gap: 5px }
 .viewtools .sidetog { box-shadow: 0 1px 4px rgba(0, 0, 0, .25) }
+/* group select (lane MS): the box being dragged, the Multi button and the group bar over the view */
+.selbox { position: absolute; z-index: 4; border: 1px dashed var(--accent); background: rgb(31 111 235 / .14); pointer-events: none }
+.sidetog.on { background: var(--accent); border-color: var(--accent); color: #fff }
+#groupBar { position: absolute; z-index: 3; left: 10px; top: 48px; max-width: calc(100% - 20px); box-sizing: border-box; padding: 6px; border-radius: 8px; background: var(--panel); border: 1px solid var(--line); box-shadow: 0 2px 10px rgb(0 0 0 / .3); font-size: 13px }
+#groupBar[hidden], #groupBar .gbCopies[hidden] { display: none }
+#groupBar .gbRow { display: flex; flex-wrap: wrap; gap: 5px; align-items: center }
+#groupBar button { min-height: 38px; min-width: 38px }
+#groupBar .gbCopies { margin-top: 6px; width: 300px; max-width: 100%; display: grid; gap: 4px }
+#groupBar .gbCopies .row { display: grid; grid-template-columns: 78px 1fr 40px; align-items: center; gap: 6px }
+#groupBar .gbShape { display: flex; gap: 6px; align-items: center }
+@media (max-width: 760px) { #groupBar { top: auto; bottom: 34px; left: 8px; max-width: calc(100% - 16px); max-height: calc(100% - 100px); overflow: auto } #groupBar .gbRow { gap: 4px } #groupBar #gbCount { flex: 1 0 100% } } /* over the cabinet, clear of the tank and the panel tab */
 .viewtools .sidetog:disabled { opacity: .55; cursor: default }
 #sideClose { font-size: 16px; line-height: 1; padding: 3px 8px }
 #sideOpen, #sideTab { display: none }
