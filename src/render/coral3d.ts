@@ -345,6 +345,86 @@ function anemone(r: R, s: number) {
   return stand(parts.map(g => soft(g, s, true)));
 }
 
+// ---------- Lane T4 P2: plating Montipora, sea fan, macroalgae ----------
+const SHELF: [string, string][] = [['#7a3a2a', '#f08a52'], ['#4a6a3a', '#b8e078'], ['#5a3a6a', '#d0a0ec'], ['#6a5a3a', '#e8c880']];
+/** Plating Montipora (capricornis style): broad thin shelves held nearly flat, stacked in overlapping tiers that grow
+ *  out to one side from a small base, edges wavy and brighter (roadmap: horizontal shelves and plates). */
+function shelves(r: R, s: number) {
+  const [c0, c1] = SHELF[Math.floor(r() * SHELF.length)].map(C), parts: G[] = [], n = 3 + Math.floor(r() * 3), dir = r() * 6.28;
+  const col = (_: number, rr: number, top: boolean) => c0.clone().lerp(c1, Math.max(0, rr - 0.55) / 0.45).multiplyScalar(top ? 1 : 0.7);
+  for (let i = 0; i < n; i++) {
+    const R = s * (0.36 - 0.035 * i) * (0.9 + r() * 0.2), th = Math.max(1.2, 0.018 * s), ph = r() * 6.28, ph2 = r() * 6.28;
+    const g = disc(R, th, (a, rr) => ({ r: 1 + 0.14 * Math.sin(2 * a + ph) + 0.06 * Math.sin(6 * a + ph2), y: R * (0.05 * rr * rr + 0.035 * rr ** 3 * Math.sin(5 * a + ph2)) }), col);
+    part(g, HARD, Math.round(s) + i * 29);
+    // each tier fans out a little further round, its inner edge on the colony's axis, tipped just off level
+    const a = dir + (i - (n - 1) / 2) * 0.9 + (r() - 0.5) * 0.4, off = R * 0.75;
+    g.applyQuaternion(new THREE.Quaternion().setFromAxisAngle(V(-Math.sin(a), 0, Math.cos(a)), 0.04 + r() * 0.1)).translate(Math.cos(a) * off, s * (0.05 + 0.05 * i), Math.sin(a) * off);
+    parts.push(g);
+  }
+  parts.push(part(paint(new THREE.SphereGeometry(0.1 * s, 14, 7).scale(1, 1.1, 1).translate(0, 0.06 * s, 0), () => c0.clone().multiplyScalar(0.8)), HARD, Math.round(s) + 5));
+  return stand(parts.map(g => clean(g, true)));
+}
+
+const FAN: [string, string][] = [['#6a1a5a', '#b04898'], ['#8a1e1a', '#d84a3a'], ['#9a6a10', '#e8b830'], ['#5a4a6a', '#a898c8']];
+/** Sea fan (gorgonian): a short trunk splitting again and again in one vertical plane into a fine fan of thin branches,
+ *  the plane bowed a little (roadmap: vertical branching plane). */
+function seafan(r: R, s: number) {
+  const [c0, c1] = FAN[Math.floor(r() * FAN.length)].map(C), parts: G[] = [], DEPTH = 7, bow = (r() - 0.5) * 0.8, yaw = (r() - 0.5) * 1.2; // turned only a little: the fan faces the front
+  const P = (x: number, y: number) => V(x, y, bow * x * x / s); // the fan's plane, bowed
+  const grow = (x: number, y: number, ang: number, len: number, rad: number, gen: number) => {
+    const x1 = x + Math.sin(ang) * len, y1 = y + Math.cos(ang) * len, xm = (x + x1) / 2 + (r() - 0.5) * len * 0.15, ym = (y + y1) / 2;
+    parts.push(...tube([P(x, y), P(xm, ym), P(x1, y1)], rad, rad * 0.85, t => c0.clone().lerp(c1, Math.min(1, (gen + t) / DEPTH)), gen === DEPTH));
+    if (gen === DEPTH) return;
+    const spread = (0.38 + r() * 0.22) * (gen < 2 ? 1.6 : 1);
+    for (const k of [-1, 1]) if (gen < 2 || r() < 0.92) grow(x1, y1, ang + k * spread * (0.6 + r() * 0.6) + (r() - 0.5) * 0.1 - ang * 0.15, len * (0.7 + r() * 0.12), Math.max(s * 0.003, rad * 0.75), gen + 1);
+  };
+  grow(0, 0, (r() - 0.5) * 0.2, s * 0.09, s * 0.014, 0);
+  parts.push(paint(new THREE.SphereGeometry(0.035 * s, 10, 5).scale(1, 0.5, 1), () => c0.clone().multiplyScalar(0.7)));
+  return stand(parts.map(g => soft(g, s, true))).rotateY(yaw);
+}
+
+/** Macroalgae for a marine planted display; the seed picks the alga. Feather caulerpa: upright fronds on a creeping
+ *  runner, each a midrib with paired flat pinnules. Grape caulerpa: upright stalks crowded with round bladders. Red
+ *  ogo (Gracilaria): a loose bush of slim, irregularly forking red branches (roadmap: marine planted-display aesthetics). */
+function macroalgae(r: R, s: number) {
+  const kind = Math.floor(r() * 3), parts: G[] = [];
+  if (kind === 2) { // Gracilaria
+    const c0 = C('#7a1e22'), c1 = C('#d0505a');
+    const grow = (p: THREE.Vector3, d: THREE.Vector3, len: number, rad: number, gen: number) => {
+      const end = p.clone().addScaledVector(d, len);
+      parts.push(...tube([p, p.clone().lerp(end, 0.5).add(V(r() - 0.5, 0, r() - 0.5).multiplyScalar(len * 0.25)), end], rad, rad * 0.85, t => c0.clone().lerp(c1, Math.min(1, (gen + t) / 4)), gen === 4));
+      if (gen === 4) return;
+      for (let k = 0, n = 1 + (r() < 0.7 ? 1 : 0); k <= n; k++) grow(end, d.clone().add(V(r() - 0.5, 0.15, r() - 0.5).multiplyScalar(k ? 1.4 : 0.5)).normalize(), len * (0.72 + r() * 0.2), rad * 0.85, gen + 1);
+    };
+    for (let i = 0, n = 5 + Math.floor(r() * 3); i < n; i++) { const a = r() * 6.28; grow(V(Math.cos(a) * s * 0.05, 0, Math.sin(a) * s * 0.05), V(Math.cos(a) * 0.5, 1, Math.sin(a) * 0.5).normalize(), s * 0.16, s * 0.012, 0); }
+    return stand(parts.map(g => soft(g, s, true)));
+  }
+  const green = [C('#2f6a2a'), C('#6ab848')], runner: THREE.Vector3[] = [], a0 = r() * 6.28;
+  for (let i = 0; i <= 5; i++) runner.push(V(Math.cos(a0) * (i / 5 - 0.5) * s * 0.7 + (r() - 0.5) * s * 0.08, s * 0.008, Math.sin(a0) * (i / 5 - 0.5) * s * 0.7 + (r() - 0.5) * s * 0.08));
+  parts.push(...tube(runner, s * 0.008, s * 0.008, () => green[0].clone()));
+  const curve = new THREE.CatmullRomCurve3(runner);
+  for (let i = 0, n = 9 + Math.floor(r() * 5); i < n; i++) {
+    const base = curve.getPointAt((i + 0.5) / n), h = s * (0.32 + r() * 0.3), lean = V(r() - 0.5, 0, r() - 0.5).multiplyScalar(0.5);
+    const top = base.clone().add(V(lean.x * h, h, lean.z * h)), mid = base.clone().lerp(top, 0.5).add(V((r() - 0.5) * h * 0.1, 0, (r() - 0.5) * h * 0.1));
+    const ax = new THREE.CatmullRomCurve3([base, mid, top]), side = V(-lean.z - 0.3 + r() * 0.6, 0, lean.x + 0.3 - r() * 0.6).normalize();
+    parts.push(...tube([base, mid, top], s * 0.006, s * 0.004, t => green[0].clone().lerp(green[1], t * 0.6)));
+    const m = 14;
+    for (let j = 1; j < m; j++) {
+      const t = j / m, p = ax.getPointAt(t), w = 1 - t * 0.6;
+      if (kind === 0) for (const k of [-1, 1]) { // feather: a pair of flat pinnules, swept up
+        const tip = p.clone().addScaledVector(side, k * s * 0.05 * w).add(V(0, s * 0.02 * w, 0));
+        const leaf = new THREE.SphereGeometry(1, 6, 3); paint(leaf, () => green[0].clone().lerp(green[1], 0.4 + 0.5 * t));
+        const d = tip.clone().sub(p), L = d.length() / 2, q = new THREE.Quaternion().setFromUnitVectors(V(1, 0, 0), d.normalize());
+        parts.push(leaf.scale(L, s * 0.006, s * 0.0015).applyQuaternion(q).translate((p.x + tip.x) / 2, (p.y + tip.y) / 2, (p.z + tip.z) / 2));
+      } else for (let k = 0; k < 3; k++) { // grape: bladders on short stalks round the axis
+        const b = j * 2.4 + k * 2.09, off = V(Math.cos(b), 0.3, Math.sin(b)).normalize().multiplyScalar(s * 0.018);
+        parts.push(paint(new THREE.SphereGeometry(s * 0.012 * (0.8 + 0.4 * w), 7, 5).translate(p.x + off.x, p.y + off.y, p.z + off.z), () => green[1].clone().lerp(green[0], 0.3 * (1 - t))));
+      }
+    }
+  }
+  return stand(parts.map(g => soft(g, s, true)));
+}
+
 /** Scale a piece (standing on y = 0) so its spread = size. */
 function fit(g: G, s: number) {
   g.computeBoundingBox();
@@ -364,5 +444,8 @@ export function reefShape(variant: string, seed: number, size: number): G {
   if (variant === 'torch') return fit(euphyllia(r, size, true), size);
   if (variant === 'acrofine') return acroFine(r, size);
   if (variant === 'anemone') return fit(anemone(r, size), size);
+  if (variant === 'montiplate') return fit(shelves(r, size), size);
+  if (variant === 'seafan') return fit(seafan(r, size), size);
+  if (variant === 'macroalgae') return fit(macroalgae(r, size), size);
   return leather(r, size);
 }
