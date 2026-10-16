@@ -499,7 +499,7 @@ const capShader = (sh: THREE.WebGLProgramParametersWithUniforms) => {
   if (capT > 0.0 && capT <= 1.0) {
     aqCapP = mix(cameraPosition, vGlassW, capT); aqCapN = capN;
     vec4 cp = projectionMatrix * viewMatrix * vec4(aqCapP, 1.0); gl_FragDepth = 0.5 + 0.5 * cp.z / cp.w;
-  }`);
+  } else discard; // no glass entry along this sightline (open top, camera inside the piece): nothing to cap, never show the piece's raw back faces`);
 };
 type CapMats = { front: THREE.MeshBasicMaterial; back: THREE.MeshBasicMaterial; cap: THREE.MeshBasicMaterial };
 const capMats = new Map<string, CapMats>();
@@ -892,7 +892,9 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
   } else m = new THREE.Mesh(bakedShape(it), solidMaterial(T));
   m.position.set(it.x, it.kind === 'plant' && isFloat(it.variant) ? waterY(T, S.water.level) : y + (m.geometry.userData.rise ?? 0), -it.depth);
   m.rotation.copy(itemEuler(it));
-  if (it.kind !== 'plant') capPasses(m, T, it.id);
+  // stencil capping counts surfaces along a sightline, so it needs a watertight mesh: only stone is (wood limbs have a
+  // seam crack and open joints, caves and bark shells are open shells), and a leaking one paints black blobs through it
+  if (it.kind === 'stone') capPasses(m, T, it.id);
   m.userData.item = it.id;
   if (it.kind === 'coral') m.userData.coral = true;
   return m;

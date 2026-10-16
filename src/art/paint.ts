@@ -28,7 +28,9 @@ export function shape(ctx: Ctx, P: Proj, pts: Pt[]) {
   ctx.closePath();
 }
 
-export const FIN_A = 0.62;
+export const FIN_A = 0.75;
+/** Fin alpha under alpha-to-coverage: how dense the dither is (0.36 read as too see-through). */
+export const FIN_A2C = 0.6;
 /**
  * Paint settings for the card being drawn: fin alpha is lower with alpha-to-coverage (see-through fins), FIN_A in cutout;
  * features = false leaves out eye, gill and mouth (the 3D body's texture: those would smear over the curved head);

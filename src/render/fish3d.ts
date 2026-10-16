@@ -5,7 +5,7 @@
 // so nose-to-tail stays adult TL.
 import * as THREE from 'three';
 import { analBox, bodyPlan, drawAnal, drawTail, eyeSpot, pairedFins, profile, tailBox, type Plan } from '../art/fishgen';
-import { FIN_A, rng, style } from '../art/paint';
+import { FIN_A, FIN_A2C, rng, style } from '../art/paint';
 import type { EdgeMode } from '../scene/types';
 import { cardMaterial, pairedFinTexture } from './textures';
 import { isShrimp3D, shrimpBody } from './shrimp3d';
@@ -215,7 +215,7 @@ function splitTail(art: string, p: Plan, bend: number, edge: EdgeMode) {
   if (!tex) {
     const c = document.createElement('canvas'); c.width = Math.ceil(box.w * R); c.height = Math.ceil(box.h * R);
     const ctx = c.getContext('2d')!; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-    style.finA = edge === 'a2c' ? 0.36 : FIN_A; style.features = false; style.paired = false;
+    style.finA = edge === 'a2c' ? FIN_A2C : FIN_A; style.features = false; style.paired = false;
     drawTail(p, ctx, (u, v) => [(u - box.u0) * R, (v - box.v0) * R], R);
     style.finA = FIN_A; style.features = true; style.paired = true;
     tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8; texCache.set(key + edge, tex);
@@ -250,7 +250,7 @@ function splitAnal(art: string, p: Plan, bend: number, edge: EdgeMode) {
   if (!tex) {
     const c = document.createElement('canvas'); c.width = Math.ceil(box.w * R); c.height = Math.ceil(box.h * R);
     const ctx = c.getContext('2d')!; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-    style.finA = edge === 'a2c' ? 0.36 : FIN_A; style.features = false; style.paired = false;
+    style.finA = edge === 'a2c' ? FIN_A2C : FIN_A; style.features = false; style.paired = false;
     drawAnal(p, ctx, (u, v) => [(u - box.u0) * R, (v - box.v0) * R], R);
     style.finA = FIN_A; style.features = true; style.paired = true;
     tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8; texCache.set(key + edge, tex);

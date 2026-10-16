@@ -343,3 +343,28 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .bgPic .ctl .seg button { padding-left: 7px; padding-right: 7px }
 .bgPic .ctl .row { flex-basis: 100%; margin: 0; grid-template-columns: 40px 1fr 44px }
 #lShellsRow.off { opacity: .45; cursor: default }
+
+/* Setup sheet (lane SH): a paper-white page over the app; print shows only the page */
+#sheetView { position: fixed; inset: 0; z-index: 60; overflow: auto; background: #e9ebef; color: #1d2330 }
+#sheetView .sheetBar { position: sticky; top: 0; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 14px; background: #fff; border-bottom: 1px solid #cfd4dc }
+#sheetView .sheetBar .sp { flex: 1 }
+#sheetView .sheetBar input { width: 64px }
+#sheetView .sheetPage { max-width: 780px; margin: 14px auto; padding: 22px 26px 30px; background: #fff; color: #1d2330; box-shadow: 0 1px 6px #0003; font-size: 13.5px }
+#sheetView h1 { margin: 0; font-size: 22px } #sheetView .sheetSub { margin: 2px 0 8px; color: #5d6676 }
+#sheetView h2 { margin: 18px 0 4px; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; border-bottom: 2px solid #1d2330; padding-bottom: 2px }
+#sheetView table { width: 100%; border-collapse: collapse }
+#sheetView th, #sheetView td { text-align: left; vertical-align: top; padding: 4px 6px 4px 0; border-bottom: 1px solid #e3e6eb; font-weight: normal }
+#sheetView th { font-weight: 600; width: 30% } #sheetView td.q { width: 14%; white-space: nowrap; font-variant-numeric: tabular-nums }
+#sheetView .sheetNote { margin-top: 18px; color: #5d6676; font-size: 12px }
+@media (max-width: 520px) {
+  #sheetView .sheetPage { margin: 0; padding: 14px 14px 24px; box-shadow: none }
+  #sheetView th { width: 36% } #sheetView td.q { width: 18% }
+}
+@media print {
+  body.sheet-open #app { display: none }
+  body.sheet-open, body.sheet-open html { background: #fff; height: auto }
+  #sheetView { position: static; background: #fff; overflow: visible }
+  #sheetView .sheetBar { display: none }
+  #sheetView .sheetPage { margin: 0; padding: 0; box-shadow: none; max-width: none }
+  #sheetView tr, #sheetView h2 { break-inside: avoid } #sheetView h2 { break-after: avoid }
+}

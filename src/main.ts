@@ -8,6 +8,7 @@ import { attachParGuide } from './ui/parGuide';
 import { attachLightHover } from './ui/lightHover';
 import { attachLightContours } from './ui/lightContours';
 import { attachAR } from './render/ar';
+import { attachSetupSheet } from './ui/setupsheet';
 import { isShareHash } from './scene/share';
 
 function webglAvailable() {
@@ -38,6 +39,7 @@ if (!webglAvailable()) {
   attachParGuide(() => store.tank.water.on && !!store.tank.water.salt);
   attachLightHover(viewer, store); // Light map hover readout (lane K)
   attachLightContours(viewer); // Light map contour labels
+  attachSetupSheet(store, document.getElementById('sheetBtn')!); // Setup sheet (lane SH)
   attachAR(viewer, store, document.getElementById('arView') as HTMLButtonElement); // AR view, only where immersive-ar works (lane Q)
   if (import.meta.env.DEV) import('./render/fish3d').then(({ fish3d }) => Object.assign(window, { __gb: { store, viewer, fish3d, ar: import('./render/ar') } })); // debugging handle, dev server only
   // the start menu only when there is no saved tank to come back to (Nathan 2026-10-14)

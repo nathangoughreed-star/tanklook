@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { LECA, drawBlendTile, drawFishCard, drawLook, drawPerson, drawSubstrate, substrateMask, type PresetSubstrate } from '../art/placeholder';
 import { drawPairedFin, type PairedFin } from '../art/fishgen';
-import { FIN_A, style } from '../art/paint';
+import { FIN_A, FIN_A2C, style } from '../art/paint';
 import type { Species } from '../data/species';
 import type { BgFit, EdgeMode, SubstrateBlend } from '../scene/types';
 
@@ -36,7 +36,7 @@ export const pairedFinTexture = (art: string, f: PairedFin, box: { u0: number; v
   cached(`fin:${art}:${f.kind}:${edge}`, () => {
     const R = 1024, c = document.createElement('canvas'); c.width = Math.ceil(box.w * R); c.height = Math.ceil(box.h * R);
     const ctx = c.getContext('2d')!; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-    style.finA = edge === 'a2c' ? 0.36 : FIN_A;
+    style.finA = edge === 'a2c' ? FIN_A2C : FIN_A;
     drawPairedFin({ ...f, a: f.kind === 'pectoral' ? undefined : f.a }, ctx, (u, v) => [(u - box.u0) * R, (v - box.v0) * R], R);
     style.finA = FIN_A;
     return finish(c);
