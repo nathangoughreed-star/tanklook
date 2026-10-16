@@ -27,12 +27,20 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 **Current lanes** (coordinator "Lanes coordinator 3", `local_f068e2c9`):
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
+| EN enclosure presentation (roadmap section 7) | `../Glass-Box-enclosure` / `enclosure` | 5673 | tank presets + tank section of `ui/panels.ts` / `index.html`, new `scene/equipment.ts` + `render/equipment.ts`, lids / doors block in `render/build.ts`, presets in `scene/defaults.ts` | ready to open (prompt `prompts/lane-EN-enclosure.md`); starts with an audit table for Nathan |
+| CP content pack | `../Glass-Box-content` / `content-pack` | 5683 | new piece / plant entries of `scene/items.ts` LIBRARY, `art/plants.ts`, `render/plant3d.ts`, `render/items.ts` (dish), `scene/lightneeds.ts` rows, species data + fish art, the Malawi starter | ready to open (prompt `prompts/lane-CP-content-pack.md`); shares `scene/items.ts` with EN's one hook line |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
+
+## Lane EN: enclosure presentation (2026-10-16; branch `enclosure`, port 5673; opened by coordinator 3, not started)
+Scope: roadmap section 7. Step 1 an audit table (DONE / PARTIAL / NOT BUILT per item: presets, backgrounds, mesh lids and doors, equipment, lighting mood, bowls); Nathan picks the gaps; step 2 builds them. Known: 3D wall (render/backdrop.ts) and tank shapes (scene/shape.ts) exist. The water / food dish belongs to lane CP. State: nothing built yet.
+
+## Lane CP: content pack (2026-10-16; branch `content-pack`, port 5683; opened by coordinator 3, not started)
+Scope: SS2's Open list: a water / food dish piece, succulents for the arid starter (with lightneeds rows), Malawi fish (peacock, small mbuna, Haplochromis, Synodontis) and the Malawi starter updated. State: nothing built yet.
 
 ## Lane W: Android app (2026-10-14; OPENED same day, Nathan: "start work on the android app"; prompt `prompts/lane-W-android-app.md`)
 - **Route: Trusted Web Activity (TWA)** around https://tanklook.com/ (Bubblewrap or PWABuilder). Real Chrome, so WebXR
@@ -152,6 +160,12 @@ Light map mode, "Account for the aquascape" (off = today's numbers, so the fixtu
 - The JS and the shader must stay in step (the shader is a port); the hover must honour the toggle too.
 - The badges and auto-populate below read the shaded PAR when the toggle is on, so a frogbit-covered tank counts as
   low light underneath.
+
+Nathan 2026-10-16 (lane AD): no stretch slider. Care becomes effort tiers (0 watch only, 1 root tabs, ... a pareto front of
+growth impact and plant freedom against effort, time and cost, each level showing what you commit to) and sets dosing advice.
+Light and effort must correlate: high effort without high light gives mediocre results, high light without high effort gives
+algae (a mismatch badge on the tank summary). The tool works both ways: pick plants, get suggested light and effort; or pick
+light and/or effort, get the plant list recommended or gated to fit.
 
 Advice only, never a hard gate. Keep the tier numbers in one place so the guide and the checks cannot drift.
 
