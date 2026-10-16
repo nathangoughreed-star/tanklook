@@ -499,7 +499,7 @@ const capShader = (sh: THREE.WebGLProgramParametersWithUniforms) => {
   if (capT > 0.0 && capT <= 1.0) {
     aqCapP = mix(cameraPosition, vGlassW, capT); aqCapN = capN;
     vec4 cp = projectionMatrix * viewMatrix * vec4(aqCapP, 1.0); gl_FragDepth = 0.5 + 0.5 * cp.z / cp.w;
-  }`);
+  } else discard; // no glass entry along this sightline (open top, camera inside the piece): nothing to cap, never show the piece's raw back faces`);
 };
 type CapMats = { front: THREE.MeshBasicMaterial; back: THREE.MeshBasicMaterial; cap: THREE.MeshBasicMaterial };
 const capMats = new Map<string, CapMats>();
