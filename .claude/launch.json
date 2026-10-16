@@ -563,21 +563,6 @@
       "port": 5653
     },
     {
-      "name": "aqua-roster",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "--prefix",
-        "C:/Users/nreed/Glass-Box-aqua-roster",
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5673",
-        "--strictPort"
-      ],
-      "port": 5673
-    },
-    {
       "name": "gecko",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
