@@ -458,10 +458,11 @@ function capMaterials(T: Tank): CapMats {
 }
 /** Whether pieces crossing the glass are capped: only where the renderer has a stencil buffer (render/viewer.ts). */
 export const capping = { on: false };
-let capSeq = 0;
 const _box = new THREE.Box3(), _p = new THREE.Vector3(), _c = new THREE.Vector3();
 /** The cap passes for solid piece `m` (placed) if its bounds cross the glass: children of it, never picked or exported. */
-function capPasses(m: THREE.Mesh, T: Tank) {
+// Each piece's three passes draw together, in an order set by its item `id`: a running count made an incremental build
+// (one piece rebuilt, numbered last) stack two overlapping capped pieces differently from a full rebuild.
+function capPasses(m: THREE.Mesh, T: Tank, id: number) {
   if (!capping.on) return;
   const g = m.geometry;
   if (!g.boundingBox) g.computeBoundingBox();
@@ -475,7 +476,7 @@ function capPasses(m: THREE.Mesh, T: Tank) {
     cut = planes.some(pl => pl.distanceToPoint(_p) < 0) || (!!bowl && _p.y < bowl.H && _p.distanceTo(_c) > bowl.R);
   }
   if (!cut) return;
-  const M = capMaterials(T), ro = 6 + (capSeq = (capSeq + 1) % 4000) * 2e-4;
+  const M = capMaterials(T), ro = 6 + (Math.abs(id) % 4000) * 2e-4;
   for (const [mat, r] of [[M.back, ro], [M.front, ro], [M.cap, ro + 1e-4]] as const) {
     const o = new THREE.Mesh(g, mat);
     o.renderOrder = r; o.raycast = () => {};
@@ -781,7 +782,7 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
   } else m = new THREE.Mesh(bakedShape(it), solidMaterial(T));
   m.position.set(it.x, it.kind === 'plant' && isFloat(it.variant) ? waterY(T, S.water.level) : y + (m.geometry.userData.rise ?? 0), -it.depth);
   m.rotation.copy(itemEuler(it));
-  if (it.kind !== 'plant') capPasses(m, T);
+  if (it.kind !== 'plant') capPasses(m, T, it.id);
   m.userData.item = it.id;
   if (it.kind === 'coral') m.userData.coral = true;
   return m;
