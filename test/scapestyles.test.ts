@@ -158,3 +158,28 @@ describe('Quick aquascape setup: the style draws its substrate and terrain too (
     expect(parseScene(JSON.parse(JSON.stringify(sc))).scene.tanks[0].layout.ground).toBe(true);
   });
 });
+
+describe('Quick Setup: shuffle with parts kept, ground relief, care-gated stocking (2026-10-16)', () => {
+  it('shuffleHard keeps the plants; a ground shuffle (gSeed) leaves the rocks alone and changes the ground', () => {
+    const s = setup('stones', 5, undefined, { hard: 3, plant: 3, animal: 0 }); s.items = starterItems(s);
+    const rocks = JSON.stringify(hard(s.items).map(it => [it.variant, it.x, it.depth]));
+    const g0 = JSON.stringify([s.substrate, s.terrain]);
+    s.layout.gSeed = 777; styleGround(s);
+    expect(JSON.stringify(hard(starterItems(s)).map(it => [it.variant, it.x, it.depth]))).toBe(rocks);
+    expect(JSON.stringify([s.substrate, s.terrain])).not.toBe(g0);
+    expect(groundEdited(s)).toBe(false);
+  });
+  it('ground relief varies from one seed to the next', () => {
+    const range = (seed: number) => { const s = setup('stones', seed); styleGround(s); const h = s.terrain.h; return Math.max(...h) - Math.min(...h); };
+    const r = [1, 2, 3, 4, 5, 6].map(range);
+    expect(Math.max(...r) - Math.min(...r)).toBeGreaterThan(10);
+  });
+  it('stocking by the care gates leaves out animals above the care level', async () => {
+    const { starterAnimals } = await import('../src/scene/starter');
+    const { CARE } = await import('../src/data/care');
+    for (let seed = 1; seed <= 12; seed++) {
+      const s = setup('planted', seed, undefined, { hard: 2, plant: 2, animal: 4 }); s.layout.gateStock = true; s.layout.expertise = 1;
+      for (const f of starterAnimals(s, 1)) expect(CARE[f.species]?.care ?? 1).toBeLessThanOrEqual(1);
+    }
+  });
+});

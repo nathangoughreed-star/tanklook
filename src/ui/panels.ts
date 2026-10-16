@@ -10,6 +10,7 @@ import { BACKDROPS } from '../render/backdrop';
 import { MAP_DIV, MAP_STEP, emitters, mapStepOf } from '../render/lighting';
 import { darkOf, darkStats } from '../render/lightShells';
 import { whyAnimal, type AnimalWhy } from '../scene/animalfit';
+import { EXPERTISE_NAME } from '../data/care';
 import { CARE_NAME, FIT_LABEL, FIT_LIGHTS, FIT_PAR, fitCaption, whyNot, type FitLight } from '../scene/plantfit';
 import { VERDICT_TEXT, itemLights, tankSummary } from '../scene/lightcheck';
 import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, mountOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeLayout, tubeOf, TUBE_SP_MAX, bestPos, ledBarDepth, posMax, wattsOf, type Fixture } from '../scene/lightout';
@@ -17,7 +18,7 @@ import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene, TANK_PRESETS } from '../scene/defaults';
 import { COMPS, DEFAULT_DENS, STYLE_GROUPS, STYLE_KIND, isLandStyle, EPIPHYTES, KINDS, perch, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
-import { handEdits, regenerate } from '../scene/starter';
+import { handEdits, regenerate, shuffleHard } from '../scene/starter';
 import { styleGround } from '../scene/scapeground';
 import { growthOf, isClump, isFloat, isPatch, type PlantType } from '../art/plants';
 import { clumpAuto } from '../render/plant3d';
@@ -516,17 +517,24 @@ Cancel, then change the name, to keep both.`)) return;
   /** The species list shows only animals for this tank's water (2026-10-13): salt species in a saltwater tank, the rest
    *  (no `salt` flag) in a freshwater or dry one. */
   const findSpecies = (q: string, c?: Category) => searchSpecies(q, c).filter(sp => fitsWater(sp, S()));
-  /** "Show only tank-appropriate animals": null while off or until an expertise is chosen (the hint says so). */
+  /** What each care level asks of the keeper: rough, typical aquarium / vivarium practice, not a rule. */
+  const CARE_LEVEL: Record<1 | 2 | 3, string> = {
+    1: 'Hardy, forgiving animals that take small mistakes: a basic filter or a simple setup, a weekly water change of about a quarter, and 15 to 30 minutes of care a week.',
+    2: 'Animals that are fussier about temperature, water chemistry or food: stable, tested water, steady routines, a tuned or planted setup, and about an hour a week.',
+    3: 'Demanding or delicate animals: tight water parameters with frequent tests and changes, special foods, quarantine for new arrivals, and several hours a week plus a daily check.',
+  };
+  /** The care gates (Quick Setup): the box is shown while "Stock by care gates" is on; the list is grayed by them when its own box is ticked too. Null while off. */
   function animalGate(s: TankSetup): ((sp: Species) => AnimalWhy | null) | null {
-    const on = !!s.layout.gateAnimals, ex = s.layout.expertise, hint = $('gateAnimalsHint');
-    $<HTMLInputElement>('gateAnimals').checked = on; setVal('expertise', ex ? String(ex) : '');
-    hint.hidden = !on; hint.textContent = on && !ex ? 'Choose an expertise level above first, then this list can be filtered to what suits the tank.' : on ? 'Grayed: does not suit this tank, your expertise or the animals already in it. They can still be added.' : '';
-    if (!on || !ex) return null;
+    const stock = !!s.layout.gateStock, on = stock && !!s.layout.gateAnimals, ex = (s.layout.expertise ?? 1) as 1 | 2 | 3, hint = $('gateAnimalsHint');
+    $<HTMLInputElement>('gateStock').checked = stock; $('gateBox').hidden = !stock;
+    $<HTMLInputElement>('gateAnimals').checked = !!s.layout.gateAnimals; setVal('expertise', ex);
+    $('oExpertise').textContent = EXPERTISE_NAME[ex]; $('expertiseHint').textContent = CARE_LEVEL[ex];
+    hint.hidden = !on; hint.textContent = on ? 'Grayed in the list: does not suit this tank, the care level or the animals already in it. They can still be added.' : '';
+    if (!on) return null;
     const litres = volume(s.tank).litres, present = [...new Set(s.fish.map(f => f.species))].map(getSpecies).filter((x): x is Species => !!x);
     return sp => whyAnimal(sp, litres, ex, present);
   }
   $('gateAnimals').onchange = e => store.edit(s => { if ((e.target as HTMLInputElement).checked) s.layout.gateAnimals = true; else delete s.layout.gateAnimals; });
-  $('expertise').onchange = e => { const v = +(e.target as HTMLSelectElement).value; store.edit(s => { if (v) s.layout.expertise = v as 1 | 2 | 3; else delete s.layout.expertise; }); };
   function renderResults() {
     const salt = isSalt(S());
     for (const b of cats.children as HTMLCollectionOf<HTMLButtonElement>) {
@@ -1038,7 +1046,7 @@ Cancel, then change the name, to keep both.`)) return;
   /** A redraw is complete (Nathan 2026-10-15): when it would throw away pieces or animals placed, moved or removed by
    *  hand, a warning asks first. Resolves true to go ahead; on "Keep my scape" `revert` puts the control back. */
   const warnDlg = $<HTMLDialogElement>('scapeWarn');
-  const okToReplace = (what: Layer | 'all', revert: () => void, ground = false) => new Promise<boolean>(done => {
+  const okToReplace = (what: Layer | 'all' | 'none', revert: () => void, ground = false) => new Promise<boolean>(done => {
     const lost = handEdits(S(), what, ground);
     if (!lost.length) { done(true); return; }
     const list = lost.length === 1 ? lost[0] : `${lost.slice(0, -1).join(', ')} and ${lost[lost.length - 1]}`;
@@ -1102,12 +1110,28 @@ Cancel, then change the name, to keep both.`)) return;
   // Quick aquascape setup (Nathan 2026-10-15): one Shuffle for the whole set, the substrate and terrain, rock and wood,
   // and plants, at the same style, composition and densities; the animals stay (Animals has its own Shuffle). The
   // Hardscape and Plants menus are for tweaking the pieces by hand afterwards.
+  // Parts can be left out of the shuffle (2026-10-16): untick Hardscape to keep the rocks you like and shuffle the substrate
+  // and plants round them. The seeds pin what is kept: `gSeed` / `gFoc` the ground, `plantSeed` the plants.
   $('layoutShuffle').onclick = async () => {
-    if (!await okToReplace('hard', () => {}, true)) return;
+    const g = $<HTMLInputElement>('shufGround').checked, h = $<HTMLInputElement>('shufHard').checked, p = $<HTMLInputElement>('shufPlant').checked;
+    if (!g && !h && !p) { status('Tick at least one of Substrate, Hardscape and Plants to shuffle.'); return; }
+    if (!await okToReplace(h ? 'hard' : p ? 'plant' : 'none', () => {}, g)) return;
     const seed = 1 + Math.floor(Math.random() * 1e6);
     store.selectItem(null);
-    store.edit(s => { s.layout.animalSeed ??= s.layout.seed; s.layout.seed = seed; delete s.layout.plantSeed; styleGround(s); regenerate(s, 'hard', 0); });
-    status('New substrate, hardscape and plants in the same style; the animals stayed. Ctrl+Z brings the previous ones back.');
+    store.edit(s => {
+      const L = s.layout, old = L.seed;
+      L.animalSeed ??= old;
+      if (h) {
+        if (g) { delete L.gSeed; delete L.gFoc; } else { L.gSeed ??= old; L.gFoc ??= old; }
+        if (p) { L.seed = seed; delete L.plantSeed; if (g) styleGround(s); regenerate(s, 'hard', 0); }
+        else { shuffleHard(s, seed); if (g) styleGround(s); }
+      } else {
+        if (g) { L.gSeed = seed; styleGround(s); }
+        if (p) { L.plantSeed = seed; regenerate(s, 'plant', 0); }
+      }
+    });
+    const parts = [g && 'substrate', h && 'hardscape', p && 'plants'].filter(Boolean).join(', ');
+    status(`New ${parts} in the same style; ${g && h && p ? 'the animals' : 'the animals and the unticked parts'} stayed. Ctrl+Z brings the previous ones back.`);
   };
   // Density sliders (lane SD): one in each of Hardscape, Plants and Animals, continuous from one piece (one animal) to
   // far too much (Nathan 2026-10-15). Dragging only names the level; the layer is redrawn once, on release (a slider
@@ -1130,6 +1154,28 @@ Cancel, then change the name, to keep both.`)) return;
           : v ? `Animals restocked (${stopName(k, v)} of 10), within a safe bioload. Ctrl+Z brings the previous ones back.` : 'Starter animals removed. Ctrl+Z brings them back.');
     };
   }
+
+  // Animals in Quick Setup: their own Shuffle, and the care gates. With "Stock by care gates" on, the stocking and its Shuffle
+  // keep to animals that suit the care level, the tank and each other; moving the level or the toggle restocks.
+  const restock = async (revert: () => void, edit: (s: TankSetup) => void, msg: string) => {
+    const stocked = (S().layout.dens ?? DEFAULT_DENS).animal > 0;
+    if (stocked && !await okToReplace('animal', revert)) return;
+    fishId0 = store.nextId();
+    store.edit(s => { edit(s); if ((s.layout.dens ?? DEFAULT_DENS).animal > 0) regenerate(s, 'animal', fishId0); });
+    dropGoneFish();
+    status(stocked ? `${msg} Ctrl+Z brings the previous animals back.` : msg);
+  };
+  $('animalShuffle').onclick = () => {
+    if ((S().layout.dens ?? DEFAULT_DENS).animal <= 0) { status('Raise Stocking above None first, then Shuffle animals draws a new set.'); return; }
+    restock(() => {}, s => { s.layout.animalSeed = 1 + Math.floor(Math.random() * 1e6); }, 'New animals drawn; the rock, wood and plants stayed.');
+  };
+  $('gateStock').onchange = e => {
+    const on = (e.target as HTMLInputElement).checked;
+    restock(() => { $<HTMLInputElement>('gateStock').checked = !!S().layout.gateStock; }, s => { if (on) { s.layout.gateStock = true; s.layout.expertise ??= 1; } else delete s.layout.gateStock; }, on ? 'Stocking now keeps to animals that suit the care level.' : 'Care gates off: stocking is free again.');
+  };
+  const exEl = $<HTMLInputElement>('expertise');
+  exEl.oninput = () => { const v = +exEl.value as 1 | 2 | 3; $('oExpertise').textContent = EXPERTISE_NAME[v]; $('expertiseHint').textContent = CARE_LEVEL[v]; };
+  exEl.onchange = () => { const v = +exEl.value as 1 | 2 | 3; restock(() => setVal('expertise', S().layout.expertise ?? 1), s => { s.layout.expertise = v; }, `Care level ${EXPERTISE_NAME[v].toLowerCase()}.`); };
 
   // ---------- Aquascape items: library, selection ----------
   // stones, wood and caves under Hardscape; plants and corals under Plants (Nathan 2026-10-14)
@@ -1739,7 +1785,7 @@ Cancel, then change the name, to keep both.`)) return;
       $('wMisfit').textContent = `Not ${isSalt(s) ? 'saltwater' : 'freshwater'} animals: ${[...by].map(([nm, n]) => `${n} ${nm}`).join(', ')}.`;
       $('wMisfitDel').textContent = `Remove ${mis.length}`;
     }
-    const wk = `${isSalt(s)}|${s.layout.gateAnimals ? s.layout.expertise ?? 0 : 'off'}|${s.layout.gateAnimals ? Math.round(volume(s.tank).litres) + [...new Set(s.fish.map(f => f.species))].join() : ''}`; if (wk !== waterKind) { waterKind = wk; renderResults(); } // the species list follows the water
+    const wk = `${isSalt(s)}|${s.layout.gateStock ? 1 : 0}${s.layout.gateAnimals ? 1 : 0}${s.layout.expertise ?? 1}|${s.layout.gateStock && s.layout.gateAnimals ? Math.round(volume(s.tank).litres) + [...new Set(s.fish.map(f => f.species))].join() : ''}`; if (wk !== waterKind) { waterKind = wk; renderResults(); } // the species list follows the water
     setVal('wLevel', wa.level); setOut('oLevel', wa.level >= 1 ? 'Full' : `${fmt(waterY(A, wa.level))} high`);
     const cl = s.condition.level; setVal('cond', Math.round(cl * 100)); setOut('oCond', cl <= 0 ? 'Pristine' : cl < 0.35 ? 'A few weeks' : cl < 0.7 ? 'Overdue' : 'Neglected');
     setVal('wOpac', wa.opacity); setOut('oOpac', wa.opacity < 0.01 ? 'Clear' : Math.round(wa.opacity * 100) + '%'); setVal('wColor', wa.color);

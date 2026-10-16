@@ -394,3 +394,6 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .gatedRow .hint { margin: 0; font-size: 11px }
 .results button.gated { opacity: .5 }
 .results button .why { grid-column: 1 / -1; font-size: 11px; font-style: italic }
+.subhead { margin: 12px 0 4px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.shuffleKeep { flex-wrap: wrap; gap: 4px 12px; }
+.shuffleKeep label { white-space: nowrap; }

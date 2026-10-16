@@ -5,6 +5,7 @@ import { rng } from '../art/paint';
 import { getSpecies, type Species } from '../data/species';
 import { DEFAULT_DENS, EPIPHYTES, STYLES, clampItem, isLandStyle, isSwampy, layerOf, perch, starterItems, type Layer } from './items';
 import { volume } from './physics';
+import { whyAnimal } from './animalfit';
 import { groundEdited } from './scapeground';
 import { placeNew, randomPose, randomSize } from './scatter';
 import type { Fish, Item, TankSetup } from './types';
@@ -64,6 +65,11 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
   // shuffled, with a schooling or shoaling swimmer up front (one whose group fits the tank) so there is a group to
   // watch; the same order at every stop, so a fuller stop adds to the tank rather than swapping its species
   for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+  if (s.layout.gateStock) { // stock by the care gates (Quick Setup): only animals that suit the care level, the tank and each other
+    const ex = s.layout.expertise ?? 1, litres = volume(T).litres, kept: Species[] = [];
+    for (const sp of pool) if (!whyAnimal(sp, litres, ex, kept)) kept.push(sp);
+    pool.splice(0, pool.length, ...kept);
+  }
   const cap = bioloadLitres(s) * ANIMAL_FILL[4];
   const lead = pool.findIndex(sp => sp.group && sp.zone !== 'bottom' && !isInvert(sp) && sp.habitat === 'water' && stocking(sp).start * litresFor(sp) <= cap);
   if (lead > 0) pool.unshift(...pool.splice(lead, 1));
@@ -121,14 +127,14 @@ const speciesCount = (fish: Fish[]) => fish.map(f => f.species + (f.sex ?? '')).
  * but warn first that it gets rid of the current scape). `ground`: the redraw restyles the substrate as well (the Quick
  * aquascape setup). Empty = nothing of the user's is lost; the caller just redraws.
  */
-export function handEdits(s: TankSetup, what: Layer | 'all', ground = false): ('substrate' | 'hardscape' | 'plants' | 'animals')[] {
+export function handEdits(s: TankSetup, what: Layer | 'all' | 'none', ground = false): ('substrate' | 'hardscape' | 'plants' | 'animals')[] {
   const out: ('substrate' | 'hardscape' | 'plants' | 'animals')[] = [], dens = s.layout.dens ?? DEFAULT_DENS;
   if (ground && groundEdited(s)) out.push('substrate'); // the quick setup redraws the ground too
   const hardNow = s.items.filter(it => layerOf(it) === 'hard'), plantNow = s.items.filter(it => layerOf(it) === 'plant');
   if (what === 'hard' || what === 'all') {
     if (!sameItems(hardNow, starterItems(s).filter(it => layerOf(it) === 'hard'))) out.push('hardscape');
   }
-  if (what !== 'animal') {
+  if (what !== 'animal' && what !== 'none') {
     if (!sameItems(plantNow, starterItems(s, hardNow).filter(it => layerOf(it) === 'plant'))) out.push('plants');
   }
   if ((what === 'animal' || (what === 'all' && dens.animal > 0)) && s.fish.length && speciesCount(s.fish) !== speciesCount(starterAnimals(s, 1))) out.push('animals');
