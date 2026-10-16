@@ -28,7 +28,6 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
 | T1 dry ground (roadmap R1) | `../Glass-Box-dry-ground` / `dry-ground` | 5633 | substrate types in `scene/types.ts` / `validate.ts` / `defaults.ts` (substrate only), the ground build in `render/build.ts`, substrate tiles in `art/placeholder.ts` / `render/textures.ts`, new `render/scatter.ts` (leaf litter), the Substrate section of `ui/panels.ts` / `index.html` | running (session `local_6ae6a2e0`) |
-| G1 crested gecko + lizard body plan (roadmap R2) | `../Glass-Box-gecko` / `gecko` | 5663 | (released) | DONE 2026-10-16 (see its section; Nathan approved the pictures): crested gecko flame + harlequin, leopard gecko, v1 at build 604; files free |
 | PP plant polish | `../Glass-Box-plant-polish` / `plant-polish` | 5673 | `art/plants.ts`, `render/plant3d.ts`, plant branch of `render/items.ts`, plant entries of `scene/items.ts` | ready to open (prompt `prompts/lane-PP-plant-polish.md`) |
 | MS multi-select / duplicate / variation (roadmap P0) | `../Glass-Box-multiselect` / `multiselect` | 5683 | `src/interact/*`, selection part of `ui/panels.ts` / `index.html`, new `scene/duplicate.ts` | ready to open (prompt `prompts/lane-MS-multiselect.md`); scatter brush waits on T1 |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
@@ -37,39 +36,6 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
-
-## Lane G1: lizard body plan, crested gecko + leopard gecko (2026-10-16; branch `gecko`, port 5663; Nathan approved the pictures, "ship it"; pushed to main)
-- **Body plan** (new `render/lizard3d.ts`, data `art/lizards.ts`; not an adapted frog or fish): a loft round a spine built in
-  steps of exactly 1/280 TL out from the vent (so it bends without changing length), section by s = half-width / back /
-  belly + exponents. Head: lower jaw set in under a grooved mouth line (`jaw`), the head swells round each eye (an orbit
-  bump in the loft) and the eye dome sits in it (wavy vertical slit pupil, scale ring; `lid: true` = a lid mound, leopard).
-  Crested: `lash` (spine fringe round the top of each eye) + `crest` (spines from behind the eye along head and back).
-  Limbs: two-bone IK from the girdle (inside the body, joint capped to the belly depth) to a wrist set on the pose's surface,
-  hand / foot walked along that surface, five toes fanned and walked over it (a discrete geodesic, so on a branch they curl
-  round the bark); toe pads broad + flat with lamellae ridged across the underside (`pad`), small claws; leopard: slender
-  clawed toes. Tail: crested tip pad (flat, ridged underside), leopard ring grooves; tubercle bumps (`bumps`). Unlit like
-  the herps (shading baked into vertex colours, belly shaded lightly: it is the view through the glass).
-- **Poses** (`lizardPose`): 'ground' (floor, cork, rock, a ledge; head raised; tail curved on the ground; `stance` sprawl or
-  raised = leopard body carried on its legs), 'glass' (pane or 3D wall: belly flat, legs splayed, hind feet back), 'perch'
-  (branch: along the limb, feet round it, prehensile tail wound round it as a helix; built per branch radius, cached by
-  radius / TL to 1/400). A lizard that does not climb (`climbs: false`, leopard) takes the ground pose everywhere.
-- **Hooks:** `isHerp3D` / `herpBody(art, w, surface, limbR)` hand lizards over (herp3d.ts; `jointTube`, `paintMark`,
-  `boxUV` exported); build.ts animal() passes the anchor's limb radius and perches a lizard with its belly on the bark (no
-  -1 mm); herps.ts HERP_ART / herpMeta include the lizards' plain 2D card (no-WebGL fallback). scene/scatter.ts: a gecko
-  on the glass is head down 35 % of the time (`GECKO_HEAD_DOWN`; extra rng draw for reptiles only, so other species'
-  Shuffles are unchanged; anchorbase fixture identical).
-- **Species** (species.json, cat `reptile`, land; not in aqadvisor.json): `crestedgecko` "Crested gecko (flame)" and
-  `crestedharlequin` "(harlequin)" 200 mm, `cling: any`; `leopardgecko` 220 mm, floor only. Models v1 at build 604.
-- **Tests** `test/lizard.test.ts` (17): every look x pose finite, about its length, nothing below its plane / inside the
-  branch, toes round the limb; in a dry tank Shuffle puts crested geckos on glass, branch, ledge and floor (leopards on the
-  floor), all identical through save / load; on the glass nothing through the pane, head up and head down both occur; on
-  the climbing branch nothing inside the bark within a body length; in a paludarium none on the glass / hardscape under water.
-- **Pictures:** shots/g1/G1_sheet1_models.jpg, G1_sheet2_crested_poses.jpg, G1_sheet3_leopard_perch.jpg (worktree only).
-- **Open:** the perch clip check uses the anchor's local cylinder (a sharply curving limb or a fork right at the gecko can
-  still cross a toe or the tail, as with the frogs); the harlequin leg patches are a position field (stripy rather than
-  blotchy); no starter / example places geckos yet (starter styles batch 2); the gecko on the glass is picked through its
-  card, which lies edge-on to the pane (as frogs).
-
 
 ## Lane PP: plant polish (2026-10-16; branch `plant-polish`, port 5673; opened by coordinator 3, not started)
 Scope: pothos / vine follow branches via scene/anchors.ts; sphagnum capitula; fittonia less leggy; hairgrass full lawn. All four were left open by T2 (archive: Lane T2). Owns art/plants.ts, render/plant3d.ts, plant branch of render/items.ts. State: nothing built yet.
@@ -230,6 +196,7 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane G1: lizard body plan, crested gecko + leopard gecko (2026-10-16; branch `gecko`, port 5663; Nathan approved the pictures, "ship it"; pushed to main)
 - Clownfish host in the bubble-tip anemone (2026-10-16; worktree `musing-snyder-0e96c4`, port 5693 `clown-host`; Nathan approved the pictures; pushed to main)
 - Lane T3: dry hardscape pieces + surface anchors, tree frogs perch (2026-10-16; branch `dry-hardscape`, port 5663; Nathan approved the pictures; pushed to main)
 - Lane FM: fish parts merged per material (2026-10-16; branch `fish-merge`, no preview server; Nathan approved shipping the few changed edge pixels, phase 2 skipped; pushed to main)
