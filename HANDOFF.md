@@ -27,6 +27,9 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 **Current lanes** (coordinator "Lanes coordinator 3", `local_f068e2c9`):
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
+| PG plant / coral light + care gating | `../Glass-Box-plant-gates` / `plant-gates` | 5673 | plant / coral entries of `scene/items.ts`, plant filter in `starterItems`, `ui/parGuide.ts`, `scene/lightout.ts`, `render/lighting.ts`, `scene/growtime.ts`, starter-set controls in `ui/panels.ts` | ready to open (prompt `prompts/lane-PG-plant-gates.md`) |
+| SS2 starter styles batch 2 | `../Glass-Box-starters2` / `starters2` | 5683 | styles in `scene/items.ts` (`starterStyle`, style data), `scene/starter.ts`, `examples/`, the style picker | ready to open (prompt `prompts/lane-SS2-starters2.md`); shares `items.ts` with PG, keep both sides |
+| SB scatter brush | `../Glass-Box-brush` / `scatter-brush` | 5693 | new `scene/brush.ts`, `ui/brush.ts`, `src/interact` brush mode, `render/scatter.ts` | ready to open (prompt `prompts/lane-SB-scatter-brush.md`) |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 
@@ -34,17 +37,14 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
-## Lane MS: multi-select, duplicate, controlled variation (2026-10-16; branch `multiselect`, port 5683; pushed to main, awaiting Nathan's verdict on the pictures)
-Scope: roadmap section 5 P0. Scatter brush is NOT here (waits on T1's render/scatter.ts). Built:
-- **Selection** (`scene/store.ts`): the lead (`selId` / `selItem`, as before) plus `extraFish` / `extraItems`; `store.group` (ids that still exist), `groupCount`, `toggle`, `selectGroup`, `addToGroup`, `lead`, `multi` flag. Plain `select` / `selectItem` clear the group. No scene field: a group is UI state, never saved.
-- **Select**: shift / ctrl / cmd + click toggles an animal or piece (any menu, not only the open one); the **Multi** button (view toolbar, touch) makes plain taps toggle and an empty drag draw a box (shift + drag on empty water on a computer); the box takes what its middle covers (`boxPickIn` in interact/pointer.ts). Highlights: `render/build.ts` takes a `Sel` (id or set), the viewer passes the group's sets (one-line hooks in build.ts / viewer.ts).
-- **Act on the group** (`scene/duplicate.ts`, pure, tested in test/duplicate.test.ts): dragging any member moves all (items: the others ride like riders, keeping their height; animals: same delta); Shift + wheel / R turn about the group centre (positions and yaw); + / - resize about the centre (pieces, spacing, animal lengths 15-130 %); Delete; Esc. Keys in ui/group.ts take precedence over the single-selection keys when 2+ are selected.
-- **Duplicate / Copies** (`ui/group.ts`, bar `#groupBar` over the view, also opened from "Copies..." in the item and animal boxes): `copyGroup(S, group, {n, angle, scale, spacing, reshape, seed, support}, ids)`. Pieces in a row beside the group (side with more room, wrapping in depth); animal-only groups = a cloud around the originals (a school stays a school). Each copy: whole-copy turn +/- angle, scale +/- %, step offset +/- %, members a third as much again; `reshape` gives each copied piece a new shape seed. Species and sex kept; animals go through clampFish / fitFish, clingers (snails, shrimp, plecos) through `placeNew` like new animals; a copied piece rests on the piece under it that is not in the group (viewer raycast, `supportLift` exported from pointer.ts) else the ground. The jitter is rolled once from a fresh seed and stored as plain positions (saves, shares and undoes like any edit; no scene version bump, no new field). One undo step per action.
-- Hooks in others' files: render/build.ts (Sel type, 5 lines), render/viewer.ts (`sel` getter, 2 call sites), main.ts (attachGroupBar), index.html (Multi button, #groupBar, Copies buttons), style.css (group bar). panels.ts untouched.
-- Open: the panel's item sliders still edit only the lead piece when a group is selected (the bar says "N pieces"); a copied plant that lands on another piece's side is not nudged off it (pieces may overlap, as before); no "save as reusable group" (roadmap P1). Pictures before / after sent to Nathan (school, rock cluster, plant row); verdict pending.
+## Lane PG: plant / coral light and care gating (2026-10-16; branch `plant-gates`, port 5673; opened by coordinator 3, not started)
+Scope: the four steps in the plain-words summary under "Feature to add: plant / coral light-and-feeding advice". Owns plant / coral LIBRARY entries, the plant filter in starterItems, parGuide, lightout, lighting, growtime, the starter-set controls. Open for Nathan: does care also set the dosing advice, and a "stretch" slider? State: nothing built yet.
 
-## Lane JS: regal jumping spider, first arthropod body plan (2026-10-16; branch `spider`, port 5673; opened by coordinator 3, not started)
-Scope: new render/spider3d.ts + art/spiders.ts (8 eyes, chelicerae, palps, abdomen pattern, 8 IK legs with hair), poses via scene/anchors.ts (floor, glass / wall, branch, alert), male + female, species.json entries. Pattern: archive Lane G1. Keep IK / hair in a shared helper for the ball python and tarantula lanes that follow. State: nothing built yet.
+## Lane SS2: starter styles batch 2 (2026-10-16; branch `starters2`, port 5683; opened by coordinator 3, not started)
+Scope: terrestrial starters (rainforest gecko, arid leopard gecko, jumping spider, ball python, tarantula, tree-frog, paludarium), freshwater biotopes, marine sub-styles, using T1 / T2 / T3 / T4 / PP and the new animals. Owns styles in scene/items.ts, scene/starter.ts, examples/. Shares items.ts with PG. State: nothing built yet.
+
+## Lane SB: scatter brush (2026-10-16; branch `scatter-brush`, port 5693; opened by coordinator 3, not started)
+Scope: paint-on litter / pebbles / moss / carpet plants with seeded variation, erase, surface-aware via anchors, instanced. Decision to bring to Nathan early: strokes as a seeded "patch" (recommended) or individual items. Owns new scene/brush.ts, ui/brush.ts, brush mode in src/interact, render/scatter.ts. State: nothing built yet.
 
 ## Lane W: Android app (2026-10-14; OPENED same day, Nathan: "start work on the android app"; prompt `prompts/lane-W-android-app.md`)
 - **Route: Trusted Web Activity (TWA)** around https://tanklook.com/ (Bubblewrap or PWABuilder). Real Chrome, so WebXR
@@ -120,6 +120,15 @@ Scope: new render/spider3d.ts + art/spiders.ts (8 eyes, chelicerae, palps, abdom
   (PNG was 18 MB).
 
 ## Feature to add: plant / coral light-and-feeding advice (2026-10-16, Nathan asked; NOT started)
+
+**In plain words (coordinator 3, 2026-10-16):** the tank has a light level (the fixture's PAR at the plants) and the owner a
+care level (low-tech, ferts, or CO2 + ferts). Every plant and coral needs a certain light band and care. Four steps, each
+pushed on its own: (1) tag each plant / coral with its light band and care demand; (2) let the light map count shade from
+floaters, canopy and hardscape (a toggle, off = today); (3) check each plant against the light it really gets and show a small
+badge (too dim / fine / too bright) plus one tank summary line, advice only, never blocking; (4) the starter-set UI gets
+light level and care level controls and auto-populate picks only plants that fit, so a low-light low-tech tank gets a
+beautiful scape from anubias, java fern, crypts, mosses, swords and floaters. Lane PG (`prompts/lane-PG-plant-gates.md`)
+builds it; the detailed plan follows.
 
 Today there is only static advice: the PAR guide (`src/ui/parGuide.ts`, Lighting menu: freshwater and reef tiers with
 what grows, CO2 and fert / dosing level), the light hover (PAR, lux, depth) and the growth feed setting
