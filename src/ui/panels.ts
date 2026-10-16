@@ -25,7 +25,7 @@ import {
   CEILING_MAX, CEILING_MIN, IN, backdropDepth, ceilingH, clamp, clampFish, fmtLen, fromUnit, glassThickness, rescaleTank, toUnit, volume, WALL_GAP_MAX, waterY,
 } from '../scene/physics';
 import type { Store } from '../scene/store';
-import { SWAMP_LEVEL, groundHeight, nearestLand, sameGrid, sampleTerrain } from '../scene/terrain';
+import { NEW_POOL, SWAMP_LEVEL, groundHeight, nearestLand, sameGrid, sampleTerrain } from '../scene/terrain';
 
 /** Arrow keys move the selected piece: [axis, direction] (depth grows toward the back). */
 const ARROWS: Record<string, [string, number]> = { ArrowLeft: ['x', -1], ArrowRight: ['x', 1], ArrowUp: ['d', 1], ArrowDown: ['d', -1], PageUp: ['y', 1], PageDown: ['y', -1] };
@@ -797,11 +797,25 @@ Cancel, then change the name, to keep both.`)) return;
     const t = s.terrain, avg = t.h.reduce((a, v) => a + v, 0) / Math.max(1, t.h.length);
     t.h = t.h.map(() => +avg.toFixed(1));
   });
+  // Pools (Nathan 2026-10-16, option A): hollows cut into the terrain down to the corner depths, the swamp's pools
+  // among them; the sliders hold exactly what a file (and the swamp style) stores: positions and sizes as fractions of
+  // the tank to 0.01 %, the bank to 1 %. In the tank (Edit points) the shown pool has handles: centre, width, length, bank.
+  const poolK = () => clamp(viewer.terrainEdit.pool, 0, Math.max(0, (S().terrain.pools?.length ?? 1) - 1));
+  const showPool = (k: number) => { viewer.terrainEdit.pool = k; viewer.rebuild(); sync(); };
+  $<HTMLSelectElement>('poolSel').onchange = e => showPool(+(e.target as HTMLSelectElement).value);
+  $('poolAdd').onclick = () => {
+    store.edit(s => { (s.terrain.pools ??= []).push({ ...NEW_POOL }); s.substrate.show = true; });
+    viewer.terrainEdit.on = true; showPool(S().terrain.pools!.length - 1);
+  };
+  $('poolDel').onclick = () => { const k = poolK(); store.edit(s => { s.terrain.pools?.splice(k, 1); }); showPool(Math.max(0, k - 1)); };
+  const POOLK = { poolX: 'x', poolD: 'd', poolW: 'rx', poolL: 'rd', poolBank: 'bank' } as const;
+  for (const [id, f] of Object.entries(POOLK)) $(id).oninput = e => store.edit(s => {
+    const p = s.terrain.pools?.[poolK()]; if (p) p[f] = Math.round(+(e.target as HTMLInputElement).value * 100) / 1e4;
+  }, { coalesce: id });
 
   // ---------- Water ----------
   $('wOn').onchange = e => {
     const on = (e.target as HTMLInputElement).checked;
-    viewer.terrainEdit.on = on; // before the edit, so its sync already says "Done editing" and moves the map (final check item 4)
     store.edit(s => { s.water.on = on; });
     const n = S().fish.filter(f => { const sp = getSpecies(f.species); return sp && needsWater(sp); }).length;
     if (!on && n) status(`${n} fish hidden while the tank is dry. Turn Water back on to see them.`);
@@ -1598,9 +1612,19 @@ Cancel, then change the name, to keep both.`)) return;
     $('terOn').checked = te.on; setVal('terCols', te.cols);
     setOut('oTerCols', !te.h.length ? `${te.cols} across` : te.radial ? `${te.rows} ${te.arc ? 'arc' : 'ring'}${te.rows > 1 ? 's' : ''}, ${te.h.length} points` : `${te.cols} × ${te.rows} points`);
     for (const id of ['terEdit', 'terFlat', 'terCols']) ($(id) as HTMLInputElement).disabled = !te.on;
+    const pools = te.pools ?? [], pk = poolK(), pl = pools[pk];
+    $('terPools').hidden = !te.on;
+    $<HTMLSelectElement>('poolSel').innerHTML = pools.length ? pools.map((_, k) => `<option value="${k}">Pool ${k + 1}</option>`).join('') : '<option>None</option>';
+    setVal('poolSel', pools.length ? pk : 'None'); ($('poolSel') as HTMLSelectElement).disabled = !pools.length;
+    ($('poolDel') as HTMLButtonElement).disabled = !pl;
+    for (const [id, f] of Object.entries(POOLK)) { ($(id) as HTMLInputElement).disabled = !pl; if (pl) setVal(id, Math.round(pl[f] * 1e4) / 100); }
+    if (pl) {
+      setOut('oPoolX', fmt(pl.x * s.tank.L)); setOut('oPoolD', fmt(pl.d * s.tank.D));
+      setOut('oPoolW', fmt(2 * pl.rx * s.tank.L)); setOut('oPoolL', fmt(2 * pl.rd * s.tank.D)); setOut('oPoolBank', `${Math.round(pl.bank * 100)} %`);
+    } else for (const id of ['oPoolX', 'oPoolD', 'oPoolW', 'oPoolL', 'oPoolBank']) setOut(id, '');
     $('terEdit').classList.toggle('on', editing); $('terEdit').textContent = editing ? 'Done editing' : 'Edit points';
     $('terHint').textContent = !te.on ? 'Custom terrain turns the floor into a grid of points you can push down or pull up, with a smooth surface through them. It starts from the current floor.'
-      : editing ? 'Drag a dot up or down. Drag empty space to orbit; look from above to reach the back points.' : te.pools?.length ? 'The corner sliders set the floor of the pools.' : 'Corner sliders are off while custom terrain is on.';
+      : editing ? `Drag a dot up or down${pools.length ? '; drag a square to move or size the pool (blue: width and length, green: bank)' : ''}. Drag empty space to orbit; look from above to reach the back points.` : te.pools?.length ? 'The corner sliders set the floor of the pools.' : 'Corner sliders are off while custom terrain is on.';
     $('subDepth').hidden = !sub.show; $('subBare').hidden = sub.show; // no depth to set on a bare bottom (audit #40)
     const lit = sub.litter; $('subLitter').hidden = !sub.show;
     setVal('litLeaf', lit?.leaf ?? 'mixed'); setVal('litDens', lit?.density ?? 0); setOut('oLitDens', lit?.density ? `${lit.density} %` : 'None');

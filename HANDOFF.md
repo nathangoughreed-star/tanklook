@@ -66,10 +66,16 @@ recreated in the manual mode."
   so. Also: roots.ts and render/items.ts groundKey (adds pools + corners), store `swampGround` (now: terrain on -> substrate
   shown), and diff.ts (the "Swamp land" line is gone, since Terrain covers it). styleGround rounds corner depths to the
   slider's 1 mm step.
-- **Open, waiting on Nathan:** a pool editor UI, option A (add / remove pools, drag the centre, width / length / bank
-  handles). Until it lands, pools are exact data, but only the swamp style creates them. Pictures:
-  worktree `shots/sw_q_*.png`. Generator audit: side-session notes `generator-audit-2026-10-16.md`. Non-ground gaps:
-  fish pose and size, plant growth step, item seed and lift step. Litter seed has no typed entry.
+- **Pools tool (Nathan 2026-10-16: "Yes, build option A")**: Substrate > Custom terrain > Pools: a pool picker, Add pool, Remove,
+  and sliders Across / From front / Width / Length (fractions of the tank, step 0.01 %, the file's own precision) and Bank
+  (1 %). With Edit points on, each pool's outline is drawn (solid: the bank top; dashed: the core). The pool shown in the
+  panel has four handles: orange = move, blue = width and length, green = bank. Grid dots in a core are faded, because they
+  shape nothing there. Code: terrain.ts `poolHandles` / `dragPool` / `NEW_POOL`, build.ts `addPoolHandles`, pointer.ts
+  `pool` drag, viewer `terrainEdit.pool`. Tests: a hand-made pool on the sliders' steps gives the swamp style's ground
+  exactly, and generated pools sit on those steps. Also fixed: the Water on/off box was switching terrain editing too
+  (a stray line from lane P, 2026-10-14).
+- Generator audit: side-session notes `generator-audit-2026-10-16.md`. Non-ground gaps still open: fish pose and size, plant
+  growth step, item seed and lift step. The litter seed has no typed entry.
 
 ## Lane JS: regal jumping spider, first arthropod body plan (2026-10-16; branch `spider`, port 5673; opened by coordinator 3, not started)
 Scope: new render/spider3d.ts + art/spiders.ts (8 eyes, chelicerae, palps, abdomen pattern, 8 IK legs with hair), poses via scene/anchors.ts (floor, glass / wall, branch, alert), male + female, species.json entries. Pattern: archive Lane G1. Keep IK / hair in a shared helper for the ball python and tarantula lanes that follow. State: nothing built yet.

@@ -18,7 +18,7 @@ import { D2R, backdropDepth, clamp, clampFish } from '../scene/physics';
 import { clampItem } from '../scene/items';
 import { glassFrame, nearestGlass } from '../scene/shape';
 import { coralSeat } from '../render/items';
-import { groundHeight } from '../scene/terrain';
+import { dragPool, groundHeight, type PoolPart } from '../scene/terrain';
 import type { Store } from '../scene/store';
 import type { ItemKind, Tank, TankSetup } from '../scene/types';
 import type { Viewer, Viewport } from '../render/viewer';
@@ -128,6 +128,8 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
   let orbit: { i: number; x: number; y: number; az: number; el: number } | null = null;
   // custom terrain: dragging a grid dot up/down; the height follows the pointer at the dot's on-screen scale
   let lift: { i: number; k: number; y0: number; h0: number; mmPerPx: number; moved: boolean } | null = null;
+  /** A pool handle being dragged (Pools tool): across the level of the handle where it was grabbed. */
+  let pool: { i: number; k: number; part: PoolPart; plane: THREE.Plane; moved: boolean } | null = null;
 
   // touch (audit #6): two fingers on a view pinch to zoom and move together to pan, toward the point between them; a
   // second finger while a fish, piece or terrain dot is being dragged is ignored. `first` = the finger that started the
@@ -177,13 +179,19 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
     }
     try { canvas.setPointerCapture(e.pointerId); } catch { /* not all pointers can be captured */ }
     // group select: modifier or Multi mode; a piece or animal toggles, empty water starts a box
-    if (editable && hit.dot == null && (e.shiftKey || e.ctrlKey || e.metaKey || store.multi)) {
+    if (editable && hit.dot == null && !hit.pool && (e.shiftKey || e.ctrlKey || e.metaKey || store.multi)) {
       const it = hit.itemId != null ? store.scene.tanks[vi].items.find(q => q.id === hit!.itemId) : undefined;
       if (it) { store.toggle('item', it.id); return; } // (a group takes anything, whichever menu is open)
       if (hit.fishId != null) { store.toggle('fish', hit.fishId); return; }
       box = { vp: hit.vp, x: e.clientX, y: e.clientY, moved: false }; return;
     }
     canvas.classList.add('dragging');
+    if (editable && hit.pool && hit.mesh) {
+      pool = { i: vi, ...hit.pool, plane: new THREE.Plane(new THREE.Vector3(0, 1, 0), -hit.mesh.position.y), moved: false };
+      viewer.terrainEdit.pool = hit.pool.k; viewer.terrainEdit.poolHot = hit.pool; viewer.rebuild();
+      store.update(() => {}, { kind: 'select', history: false }); // the panel shows the grabbed pool
+      return;
+    }
     if (editable && hit.dot != null && hit.mesh) {
       const cam = hit.vp.cam, dist = cam.position.distanceTo(hit.mesh.position);
       lift = { i: vi, k: hit.dot, y0: e.clientY, h0: store.scene.tanks[vi].terrain.h[hit.dot], mmPerPx: dist * 2 * Math.tan(cam.fov * D2R / 2) / cam.zoom / hit.vp.h, moved: false };
@@ -254,6 +262,15 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       const r = viewer.host.getBoundingClientRect();
       Object.assign(boxEl.style, { left: Math.min(box.x, e.clientX) - r.left + 'px', top: Math.min(box.y, e.clientY) - r.top + 'px', width: Math.abs(e.clientX - box.x) + 'px', height: Math.abs(e.clientY - box.y) + 'px' });
       boxEl.hidden = false;
+      return;
+    }
+    if (pool) {
+      const P = pool, hit = viewer.hitTest(e.clientX, e.clientY), at = hit && hit.vp.i === P.i ? hit.ray.intersectPlane(P.plane, new THREE.Vector3()) : null;
+      if (!at) return;
+      store.editTank(P.i, t => {
+        const ps = t.terrain.pools; if (!ps?.[P.k]) return;
+        ps[P.k] = dragPool(ps[P.k], P.part, at.x / t.tank.L, -at.z / t.tank.D);
+      }, { coalesce: 'pool' }); P.moved = true;
       return;
     }
     if (lift) {
@@ -340,9 +357,10 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
     }
     // a plain click on empty space (no orbit drag) clears the selection, so nothing is highlighted
     if (orbit && e.type === 'pointerup' && Math.hypot(e.clientX - orbit.x, e.clientY - orbit.y) < 4) store.select(null);
-    if (drag?.moved || orbit || lift?.moved || move?.moved) store.seal();
+    if (drag?.moved || orbit || lift?.moved || move?.moved || pool?.moved) store.seal();
     if (lift) { viewer.terrainEdit.hot = null; viewer.rebuild(); }
-    drag = orbit = lift = move = null; viewer.unpinOrbit(); canvas.classList.remove('dragging');
+    if (pool) { viewer.terrainEdit.poolHot = null; viewer.rebuild(); }
+    drag = orbit = lift = move = pool = null; viewer.unpinOrbit(); canvas.classList.remove('dragging');
   };
   canvas.addEventListener('pointerup', end);
   canvas.addEventListener('pointercancel', end);

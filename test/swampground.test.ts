@@ -7,7 +7,7 @@ import { describe, expect, it } from 'vitest';
 import { SCENES } from '../src/examples/scenes';
 import { defaultSetup } from '../src/scene/defaults';
 import { shapeOf } from '../src/scene/shape';
-import { groundHeight, groundInsideBy, sampleTerrain, terrainDisc } from '../src/scene/terrain';
+import { NEW_POOL, dragPool, groundHeight, groundInsideBy, poolHandles, sampleTerrain, swampTerrain, terrainDisc } from '../src/scene/terrain';
 import { parseScene } from '../src/scene/validate';
 import type { TankSetup } from '../src/scene/types';
 import BASE from './fixtures/swamp-baseline.json';
@@ -96,5 +96,40 @@ describe('swamp land is plain terrain data', () => {
     const p = S.terrain.pools![0], x = p.x * T.L, d = Math.min(p.d + p.rd * 0.2, 1) * T.D; // inside the pool: its floor
     expect(groundHeight(r, T, x, d)).toBeCloseTo(groundHeight(S, T, x, d), 1);
     expect(Math.abs(groundHeight(r, T, T.L * 0.5, T.D * 0.9) - groundHeight(S, T, T.L * 0.5, T.D * 0.9))).toBeLessThan(1);
+  });
+});
+
+describe('Pools tool (manual pools)', () => {
+  it('every pool the swamp style draws sits on the panel sliders\' steps, so a hand can set it exactly', () => {
+    for (let seed = 1; seed <= 60; seed++) {
+      const s = defaultSetup(); s.layout = { id: 'swamp', seed };
+      for (const p of swampTerrain(s, s.tank, seed).pools!) {
+        for (const v of [p.x, p.d, p.rx, p.rd]) expect(Math.abs(v * 1e4 - Math.round(v * 1e4))).toBeLessThan(1e-6);
+        expect(Math.abs(p.bank * 100 - Math.round(p.bank * 100))).toBeLessThan(1e-6);
+        expect(p.rx).toBeGreaterThanOrEqual(0.02); expect(p.rd).toBeGreaterThanOrEqual(0.02);
+      }
+    }
+  });
+  it('a pool made by hand on a plain terrain is the same ground as the swamp style\'s', () => {
+    const S = parseScene(SCENES.paludarium).scene.tanks[0], T = S.tank, want = heights(S);
+    const hand = structuredClone(S); hand.terrain.pools = [];
+    for (const p of S.terrain.pools!) { // Add pool, then the five sliders
+      const q = { ...NEW_POOL };
+      Object.assign(q, { x: Math.round(p.x * 1e4) / 1e4, d: Math.round(p.d * 1e4) / 1e4, rx: Math.round(p.rx * 1e4) / 1e4, rd: Math.round(p.rd * 1e4) / 1e4, bank: Math.round(p.bank * 100) / 100 });
+      hand.terrain.pools.push(q);
+    }
+    expect(heights(hand)).toEqual(want);
+    expect(groundHeight(hand, T, T.L / 2, T.D / 2)).toBe(groundHeight(S, T, T.L / 2, T.D / 2));
+  });
+  it('handles drag the centre, width, length and bank, on the sliders\' steps', () => {
+    const p = { x: 0.5, d: 0.3, rx: 0.2, rd: 0.25, bank: 0.35 }, h = poolHandles(p);
+    expect(h.w).toEqual({ u: 0.7, v: 0.3 }); expect(h.l).toEqual({ u: 0.5, v: 0.55 }); expect(h.b.u).toBeCloseTo(0.63, 6);
+    expect(dragPool(p, 'c', 0.412345, 0.6)).toMatchObject({ x: 0.4123, d: 0.6, rx: 0.2 });
+    expect(dragPool(p, 'w', 0.2, 0).rx).toBe(0.3);
+    expect(dragPool(p, 'l', 0, 0.9).rd).toBe(0.6);
+    expect(dragPool(p, 'b', 0.6, 0).bank).toBe(0.5);
+    expect(dragPool(p, 'w', 0.5, 0).rx).toBe(0.02); // never thinner than the slider allows
+    // a pool at the front glass: its length handle is on the back edge; one near the back, on the front edge
+    expect(poolHandles({ ...p, d: 0.9, rd: 0.3 }).l.v).toBeCloseTo(0.6, 6);
   });
 });

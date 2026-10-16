@@ -61,6 +61,31 @@ export function poolWet(pools: TerrainPool[], T: Tank, x: number, depth: number)
   return wet;
 }
 
+/** The parts of a pool the terrain editor's handles grab: centre, width (x half-axis), length (depth half-axis), bank. */
+export type PoolPart = 'c' | 'w' | 'l' | 'b';
+const POOL_R = [0.02, 1] as const, q4 = (v: number) => Math.round(v * 1e4) / 1e4; // the panel sliders' step (validate.ts)
+/** A new pool (Add pool): in the middle, cut down to the corner depths. */
+export const NEW_POOL: TerrainPool = { x: 0.5, d: 0.35, rx: 0.15, rd: 0.2, bank: 0.35 };
+/**
+ * Where a pool's handles sit (fractions of L, D): the centre; the width handle on the side edge, the length handle on
+ * the back edge (the front edge when the back one is past the glass), the bank handle where the bank meets the core
+ * on the width handle's side.
+ */
+export function poolHandles(p: TerrainPool): Record<PoolPart, { u: number; v: number }> {
+  const sx = p.x + p.rx <= 0.98 || p.x - p.rx < 0.02 ? 1 : -1, sd = p.d + p.rd <= 0.98 || p.d - p.rd < 0.02 ? 1 : -1;
+  return {
+    c: { u: p.x, v: p.d }, w: { u: clamp(p.x + sx * p.rx, 0, 1), v: p.d }, l: { u: p.x, v: clamp(p.d + sd * p.rd, 0, 1) },
+    b: { u: p.x + sx * p.rx * (1 - p.bank), v: p.d },
+  };
+}
+/** The pool with handle `part` dragged to (u, v) (fractions of L, D), on the panel's steps. */
+export function dragPool(p: TerrainPool, part: PoolPart, u: number, v: number): TerrainPool {
+  if (part === 'c') return { ...p, x: q4(clamp(u, 0, 1)), d: q4(clamp(v, 0, 1)) };
+  if (part === 'w') return { ...p, rx: q4(clamp(Math.abs(u - p.x), ...POOL_R)) };
+  if (part === 'l') return { ...p, rd: q4(clamp(Math.abs(v - p.d), ...POOL_R)) };
+  return { ...p, bank: Math.round(clamp(1 - Math.abs(u - p.x) / p.rx, 0.05, 1) * 100) / 100 };
+}
+
 /** Catmull-Rom through p1..p2 at t (passes through every point; smooth slopes across them). */
 const cr = (p0: number, p1: number, p2: number, p3: number, t: number) =>
   p1 + 0.5 * t * (p2 - p0 + t * (2 * p0 - 5 * p1 + 4 * p2 - p3 + t * (3 * (p1 - p2) + p3 - p0)));
