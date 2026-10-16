@@ -531,21 +531,6 @@
         "--strictPort"
       ],
       "port": 5643
-    },
-    {
-      "name": "stone-grain",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "--prefix",
-        "C:/Users/nreed/Glass-Box-stone-grain",
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5653",
-        "--strictPort"
-      ],
-      "port": 5653
     }
   ]
 }
