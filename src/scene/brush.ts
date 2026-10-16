@@ -4,6 +4,8 @@
 // to the very same layout, and moves, erases and copies as a unit. Erasing adds `cuts` (circles) to the patches it
 // touches; a patch with nothing left is dropped.
 import { rng } from '../art/paint';
+import { isCarpet, isFloat, isVine } from '../art/plants';
+import { LIBRARY } from './items';
 import { clamp } from './physics';
 import type { BrushId, LeafKind, Patch, TankSetup } from './types';
 
@@ -26,7 +28,16 @@ export const BRUSHES: BrushDef[] = [
 ];
 /** The brush tool's settings (a UI state, in the Store). */
 export interface BrushState { on: boolean; erase: boolean; id: BrushId; size: number; density: number; leaf: LeafKind }
-export const brushDef = (id: BrushId) => BRUSHES.find(b => b.id === id) ?? BRUSHES[0];
+export const isPlantBrush = (id: string): id is `plant:${string}` => id.startsWith('plant:');
+/** Plants with a painted look of their own above (tufts, cushions), left out of the plant list. */
+const LITE_PLANTS = new Set(['hairgrass', 'sphagnum', 'moss']);
+/** The plants a brush can paint: every upright plant of the library (not floaters, vines or the carpet patch). */
+export const plantBrushes = (): BrushDef[] => Object.entries(LIBRARY).filter(([v, d]) => d.kind === 'plant' && !isFloat(v) && !isVine(v) && !isCarpet(v) && !LITE_PLANTS.has(v))
+  .map(([v, d]) => ({ id: `plant:${v}` as BrushId, label: d.label, area: Math.max(500, (d.size * 0.45) ** 2), radius: [25, 250] as [number, number] }));
+export function brushDef(id: BrushId): BrushDef {
+  if (isPlantBrush(id)) return plantBrushes().find(b => b.id === id) ?? BRUSHES[0];
+  return BRUSHES.find(b => b.id === id) ?? BRUSHES[0];
+}
 export const MAX_PATCHES = 200, MAX_PATH = 400, MAX_POINTS = 6000;
 
 /** Things per disc of radius `r` (mm) at `density` % for the brush. */
@@ -138,7 +149,7 @@ export function parsePatches(raw: unknown): Patch[] | undefined {
   const out: Patch[] = [], ids = new Set<number>(), ok = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
   for (const q of raw.slice(0, MAX_PATCHES)) {
     if (!q || typeof q !== 'object') continue;
-    const o = q as Record<string, unknown>, def = BRUSHES.find(b => b.id === o.brush); if (!def || !Array.isArray(o.path)) continue;
+    const o = q as Record<string, unknown>, def = typeof o.brush === 'string' && isPlantBrush(o.brush) ? plantBrushes().find(b => b.id === o.brush) : BRUSHES.find(b => b.id === o.brush); if (!def || !Array.isArray(o.path)) continue;
     const path = (o.path as unknown[]).slice(0, MAX_PATH * 2).filter(ok); if (path.length < 2) continue;
     path.length -= path.length % 2;
     let id = ok(o.id) ? Math.round(o.id) : 0; while (id < 1 || ids.has(id)) id++; ids.add(id);

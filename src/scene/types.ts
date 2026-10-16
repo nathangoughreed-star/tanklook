@@ -342,7 +342,9 @@ export interface TankSetup {
 }
 
 /** What a scatter brush drops (lane SB). */
-export type BrushId = 'leaf' | 'pebble' | 'gravel' | 'moss' | 'twig' | 'hairgrass' | 'javamoss' | 'sphagnum';
+export type LiteBrushId = 'leaf' | 'pebble' | 'gravel' | 'moss' | 'twig' | 'hairgrass' | 'javamoss' | 'sphagnum';
+/** A built-in scatter, or `plant:<library variant>`: that plant's own clumps painted over the area. */
+export type BrushId = LiteBrushId | `plant:${string}`;
 /**
  * One painted patch: a seed, the stroke's path and the brush settings; the things themselves are redrawn from these, so a
  * patch is tiny in the file and moves / copies / erases as a unit. `path` = x, depth pairs (mm, flat); `size` = brush

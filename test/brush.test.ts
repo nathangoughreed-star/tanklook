@@ -103,3 +103,14 @@ describe('erase and groups', () => {
     st.undo(); expect(st.tank.patches).toBeUndefined();
   });
 });
+
+describe('plant brushes', () => {
+  it('list the upright library plants, parse from a file and size from the plant', async () => {
+    const { plantBrushes, brushDef } = await import('../src/scene/brush');
+    const ids = plantBrushes().map(b => b.id);
+    expect(ids).toContain('plant:crypt'); expect(ids).not.toContain('plant:salvinia'); expect(ids).not.toContain('plant:hairgrass');
+    expect(brushDef('plant:crypt').area).toBeGreaterThan(400);
+    const q = parsePatches([{ brush: 'plant:crypt', path: [1, 2, 30, 40] }, { brush: 'plant:nonsense', path: [1, 2] }]);
+    expect(q).toHaveLength(1); expect(q![0].brush).toBe('plant:crypt');
+  });
+});

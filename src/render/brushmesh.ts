@@ -5,13 +5,16 @@ import * as THREE from 'three';
 import { rng } from '../art/paint';
 import { patchPoints } from '../scene/brush';
 import { waterY } from '../scene/physics';
-import type { BrushId, Patch, Tank, TankSetup } from '../scene/types';
+import { isPlantBrush } from '../scene/brush';
+import type { Item, LiteBrushId, Patch, Tank, TankSetup } from '../scene/types';
+import { itemMesh } from './items';
+import { LIBRARY } from '../scene/items';
 import { stoneGeos } from './grains';
 import { leafKinds, scatter, type GroundAt, type ScatterKind } from './scatter';
 
 const C = (...h: string[]) => h.map(c => new THREE.Color(c));
 /** Colours each brush draws its things from (times the geometry's own grey). */
-const PALETTE: Record<Exclude<BrushId, 'leaf'>, THREE.Color[]> = {
+const PALETTE: Record<Exclude<LiteBrushId, 'leaf'>, THREE.Color[]> = {
   pebble: C('#8d8a82', '#a29b8c', '#6f6c68', '#b3a58d', '#7a7f80', '#948572', '#c0b8a8'),
   gravel: C('#8a8378', '#a89f8e', '#6c675f', '#b8ad98', '#7b7466', '#968c7a'),
   moss: C('#3f7a2e', '#4d8a35', '#356a28', '#5b9440', '#44782f'),
@@ -21,7 +24,7 @@ const PALETTE: Record<Exclude<BrushId, 'leaf'>, THREE.Color[]> = {
   sphagnum: C('#9bb44a', '#a8c056', '#8aa43f', '#b3c765'),
 };
 /** Palette dimming per brush: unlit colours come out brighter than they look in the tank. */
-const DIM: Record<Exclude<BrushId, 'leaf'>, number> = { pebble: 0.62, gravel: 0.7, moss: 0.5, twig: 0.9, hairgrass: 0.78, javamoss: 0.62, sphagnum: 0.8 };
+const DIM: Record<Exclude<LiteBrushId, 'leaf'>, number> = { pebble: 0.62, gravel: 0.7, moss: 0.5, twig: 0.9, hairgrass: 0.78, javamoss: 0.62, sphagnum: 0.8 };
 const cache = new Map<string, ScatterKind[]>();
 const mats = new Map<string, THREE.MeshBasicMaterial>();
 /** Double-sided: a mirrored copy's winding flips. */
@@ -79,7 +82,7 @@ function twig(r: () => number) {
 }
 
 /** The scatter kinds of a brush (geometry and material built once). */
-function kindsFor(brush: Exclude<BrushId, 'leaf'>): ScatterKind[] {
+function kindsFor(brush: Exclude<LiteBrushId, 'leaf'>): ScatterKind[] {
   let ks = cache.get(brush); if (ks) return ks;
   const r = rng(brush.length * 131 + 7), vars = <T,>(n: number, f: () => T) => Array.from({ length: n }, f);
   switch (brush) {
@@ -95,7 +98,7 @@ function kindsFor(brush: Exclude<BrushId, 'leaf'>): ScatterKind[] {
 }
 
 /** Per brush: sink into the ground (mm lift range), pile (stack on neighbours, mm), tilt off the ground (radians). */
-const FEEL: Record<BrushId, { lift: [number, number]; pile: number; tilt: number; liftK?: [number, number] }> = {
+const FEEL: Record<LiteBrushId, { lift: [number, number]; pile: number; tilt: number; liftK?: [number, number] }> = {
   leaf: { lift: [0.5, 1.5], pile: 2.5, tilt: 0.12 },
   pebble: { lift: [0, 0], pile: 0, tilt: 0.5, liftK: [-0.2, 0.0] },
   gravel: { lift: [0, 0], pile: 0, tilt: 0.5, liftK: [-0.2, 0.0] },
@@ -106,15 +109,42 @@ const FEEL: Record<BrushId, { lift: [number, number]; pile: number; tilt: number
   twig: { lift: [0.5, 1.5], pile: 2, tilt: 0.1 },
 };
 
+const plantCache = new Map<string, ScatterKind[]>();
+/** Most vertices one patch of plants may draw (a heavy species gets fewer clumps rather than a slow frame). */
+const PLANT_VERTS = 1_200_000;
+/** The painted plant's own clumps: three seeds of the library plant built once (its real geometry, a small clump), instanced. */
+function plantKinds(S: TankSetup, T: Tank, variant: string): ScatterKind[] {
+  const key = `${variant}|${JSON.stringify([T, S.water.on && S.water.level, S.lid])}`;
+  let ks = plantCache.get(key); if (ks) return ks;
+  ks = [];
+  for (let k = 0; k < 3; k++) {
+    const it = { id: 9000 + k, kind: 'plant', variant, seed: 11 + k * 17, x: T.L / 2, depth: T.D / 2, lift: 0, yaw: 0, pitch: 0, tilt: 0, size: libSize(variant), spread: 45 } as Item;
+    const m = itemMesh(S, T, it); if (!m) continue;
+    const geo = m.geometry.clone(); geo.userData.keep = true; geo.computeBoundingBox();
+    const bb = geo.boundingBox!, reach = Math.max(bb.max.x, -bb.min.x, bb.max.z, -bb.min.z) * 0.55;
+    const mt = m.material as THREE.MeshBasicMaterial; mt.userData.keep = true;
+    ks.push({ geo, mat: mt, weight: 1, size: [0.8, 1.2], reach });
+  }
+  if (plantCache.size >= 24) { const first = plantCache.keys().next().value!; for (const o of plantCache.get(first)!) o.geo.dispose(); plantCache.delete(first); }
+  plantCache.set(key, ks); return ks;
+}
+const libSize = (variant: string) => (LIBRARY[variant]?.size ?? 100) * 0.8;
+
 /** The instanced meshes of one patch lying on `ground`. */
 export function patchMeshes(S: TankSetup, T: Tank, ground: GroundAt, p: Patch): THREE.InstancedMesh[] {
-  const at = patchPoints(p); if (!at.length) return [];
-  const f = FEEL[p.brush], wy = S.water.on ? waterY(T, S.water.level) : -Infinity;
-  const kinds = p.brush === 'leaf' ? leafKinds(p.leaf ?? 'mixed') : kindsFor(p.brush);
-  const pal = p.brush === 'leaf' ? undefined : PALETTE[p.brush].map(c => c.clone().multiplyScalar(DIM[p.brush as Exclude<BrushId, 'leaf'>]));
+  let at = patchPoints(p); if (!at.length) return [];
+  if (isPlantBrush(p.brush)) {
+    const kinds = plantKinds(S, T, p.brush.slice(6)); if (!kinds.length) return [];
+    const verts = kinds.reduce((a, k) => a + k.geo.attributes.position.count, 0) / kinds.length;
+    at = at.slice(0, Math.max(1, Math.floor(PLANT_VERTS / verts)));
+    return scatter(T, ground, { seed: p.seed, count: at.length, at, kinds, lift: [0, 0], pile: 0, tilt: 0.04, slope: 0.5, clump: 0, palette: [new THREE.Color(1, 1, 1)] });
+  }
+  const b = p.brush as LiteBrushId, f = FEEL[b], wy = S.water.on ? waterY(T, S.water.level) : -Infinity;
+  const kinds = b === 'leaf' ? leafKinds(p.leaf ?? 'mixed') : kindsFor(b);
+  const pal = b === 'leaf' ? undefined : PALETTE[b].map(c => c.clone().multiplyScalar(DIM[b]));
   return scatter(T, ground, {
-    seed: p.seed, count: at.length, at, kinds, lift: f.lift, liftK: f.liftK, pile: f.pile, tilt: f.tilt, slope: p.brush === 'leaf' ? 0.55 : 0.4, clump: 0,
+    seed: p.seed, count: at.length, at, kinds, lift: f.lift, liftK: f.liftK, pile: f.pile, tilt: f.tilt, slope: b === 'leaf' ? 0.55 : 0.4, clump: 0,
     ...(pal ? { palette: pal } : {}),
-    shade: y => (y < wy ? (p.brush === 'leaf' ? 0.55 : 0.9) : 1),
+    shade: y => (y < wy ? (b === 'leaf' ? 0.55 : 0.9) : 1),
   });
 }

@@ -1,7 +1,7 @@
 // The brush bar (lane SB): the Brush button in the view toolbar and the strip over the view with the brush, Paint / Erase,
 // size and density. The state lives in the Store (`store.brush`, never saved); strokes are handled in interact/pointer.ts,
 // the patches themselves in scene/brush.ts.
-import { BRUSHES, brushDef } from '../scene/brush';
+import { BRUSHES, brushDef, plantBrushes } from '../scene/brush';
 import type { Store } from '../scene/store';
 import type { BrushId, LeafKind } from '../scene/types';
 
@@ -9,7 +9,8 @@ export function attachBrushBar(store: Store) {
   const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
   const bar = $('brushBar'), btn = $('brushBtn'), kind = $<HTMLSelectElement>('brKind'), leaf = $<HTMLSelectElement>('brLeaf');
   const size = $<HTMLInputElement>('brSize'), dens = $<HTMLInputElement>('brDens'), paint = $('brPaint'), erase = $('brErase');
-  kind.innerHTML = BRUSHES.map(b => `<option value="${b.id}">${b.label}</option>`).join('');
+  const opt = (b: { id: string; label: string }) => `<option value="${b.id}">${b.label}</option>`;
+  kind.innerHTML = BRUSHES.map(opt).join('') + `<optgroup label="Plants">${plantBrushes().map(opt).join('')}</optgroup>`;
   const show = () => {
     const B = store.brush, def = brushDef(B.id);
     bar.hidden = !B.on; btn.classList.toggle('on', B.on); btn.setAttribute('aria-pressed', String(B.on));
