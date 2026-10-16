@@ -11,7 +11,7 @@ is done the coordinator moves it to the archive.
 **Lane rules:** Rules: touch another lane's file only for a one-line hook, and say so in your section. No scene version bump without
 asking Nathan. Shipping: in the worktree `git fetch` + `git merge origin/main`, tsc + tests + browser check, then
 `git push origin HEAD:main` and `git -C "C:/Users/nreed/Glass Box" merge --ff-only origin/main`. HANDOFF.md
-conflicts on merge: keep both sections. Each lane adds its own dated section at the top of this file.
+conflicts on merge: keep both sections. Each lane adds its own dated section under "Lane sections (current)" below.
 
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_d0390f66-339c-4fa1-ab38-43e9c2a35958`
 ("Lanes coordinator 2", took over 2026-10-14 from `local_e1923781`). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
