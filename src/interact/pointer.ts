@@ -24,6 +24,7 @@ import type { ItemKind, Tank, TankSetup } from '../scene/types';
 import type { Viewer, Viewport } from '../render/viewer';
 import { LIMITS } from '../scene/validate';
 import { groupSize, moveGroup, settleFish, turnGroup, type Group } from '../scene/duplicate';
+import { MAX_PATCHES, erasable, erasePatches, extendPath, newPatch, patchAt } from '../scene/brush';
 
 type DragMode = 'front' | 'top' | 'side' | 'glass';
 
@@ -130,6 +131,20 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
   let lift: { i: number; k: number; y0: number; h0: number; mmPerPx: number; moved: boolean } | null = null;
   /** A pool handle being dragged (Pools tool): across the level of the handle where it was grabbed. */
   let pool: { i: number; k: number; part: PoolPart; plane: THREE.Plane; moved: boolean } | null = null;
+  // scatter brush (lane SB): a stroke in progress (paint: the patch it extends; erase: cuts); a held patch being dragged (Multi mode)
+  let stroke: { vi: number; id: number | null; erase: boolean } | null = null;
+  let pdrag: { vi: number; x: number; d: number; moved: boolean } | null = null;
+  const brushAt = (clientX: number, clientY: number) => {
+    if (!stroke) return;
+    const pl = placeAt(viewer, store, clientX, clientY); if (!pl || pl.vi !== stroke.vi) return;
+    const B = store.brush, st = stroke, S = store.scene.tanks[st.vi];
+    if (st.erase) { if (erasable(S, pl.x, pl.depth, B.size)) store.update(sc => { erasePatches(sc.tanks[st.vi], pl.x, pl.depth, B.size); }, { coalesce: 'brush-erase' }); return; }
+    store.update(sc => {
+      const t = sc.tanks[st.vi]; let q = st.id != null ? t.patches?.find(v => v.id === st.id) : undefined;
+      if (!q) { if ((t.patches?.length ?? 0) >= MAX_PATCHES) return; q = newPatch(t, B.id, B.size, B.density, 1 + Math.floor(Math.random() * 999999), B.leaf); (t.patches ??= []).push(q); st.id = q.id; }
+      extendPath(q, pl.x, pl.depth);
+    }, { coalesce: 'brush-stroke' });
+  };
 
   // touch (audit #6): two fingers on a view pinch to zoom and move together to pan, toward the point between them; a
   // second finger while a fish, piece or terrain dot is being dragged is ignored. `first` = the finger that started the
@@ -160,7 +175,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
     if (e.pointerType === 'touch') {
       if (pinch || touches.size >= 2) return;
       if (touches.size === 1) { // the second finger: a pinch, unless something is being dragged
-        if (drag || move || lift) return;
+        if (drag || move || lift || stroke || pdrag) return;
         const hit0 = viewer.hitTest(e.clientX, e.clientY); if (!hit0) return;
         touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
         try { canvas.setPointerCapture(e.pointerId); } catch { /* not all pointers can be captured */ }
@@ -183,7 +198,16 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       const it = hit.itemId != null ? store.scene.tanks[vi].items.find(q => q.id === hit!.itemId) : undefined;
       if (it) { store.toggle('item', it.id); return; } // (a group takes anything, whichever menu is open)
       if (hit.fishId != null) { store.toggle('fish', hit.fishId); return; }
+      const pl = placeAt(viewer, store, e.clientX, e.clientY), pa = pl ? patchAt(store.scene.tanks[vi], pl.x, pl.depth) : null;
+      if (pa) { // a painted patch: tap toggles it; dragging a selected one moves the whole selection
+        if (store.group.patches?.includes(pa.id) && pl) { pdrag = { vi, x: pl.x, d: pl.depth, moved: false }; canvas.classList.add('dragging'); return; }
+        store.togglePatch(pa.id); return;
+      }
       box = { vp: hit.vp, x: e.clientX, y: e.clientY, moved: false }; return;
+    }
+    // scatter brush: paint or erase along the drag (a touch finger paints too; two fingers still pinch)
+    if (editable && store.brush.on && !e.altKey && hit.dot == null && !hit.pool) { // (Alt held: orbit as usual)
+      stroke = { vi, id: null, erase: store.brush.erase }; canvas.classList.add('dragging'); brushAt(e.clientX, e.clientY); return;
     }
     canvas.classList.add('dragging');
     if (editable && hit.pool && hit.mesh) {
@@ -256,6 +280,12 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
     }
     if (e.pointerType === 'touch' && first != null && e.pointerId !== first) return;
     if (pan) { viewer.setPan(pan.i, e.clientX - pan.x, e.clientY - pan.y); return; }
+    if (stroke) { brushAt(e.clientX, e.clientY); return; }
+    if (pdrag) {
+      const pl = placeAt(viewer, store, e.clientX, e.clientY), g = store.group, pd = pdrag; if (!pl || pl.vi !== pd.vi) return;
+      const dx = pl.x - pd.x, dd = pl.depth - pd.d; if (!dx && !dd) return;
+      store.edit(t => moveGroup(t, g, dx, dd), { coalesce: 'drag' }); pd.x = pl.x; pd.d = pl.depth; pd.moved = true; return;
+    }
     if (box) {
       if (!box.moved && Math.hypot(e.clientX - box.x, e.clientY - box.y) < 4) return;
       box.moved = true;
@@ -350,6 +380,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       first = null;
     }
     if (pan) { pan = null; canvas.classList.remove('panning'); return; }
+    if (stroke || pdrag) { stroke = null; pdrag = null; store.seal(); canvas.classList.remove('dragging'); return; }
     if (box) {
       const b = box; box = null; boxEl.hidden = true;
       if (b.moved && e.type === 'pointerup') store.addToGroup(boxPick(b.vp, b.x, b.y, e.clientX, e.clientY));

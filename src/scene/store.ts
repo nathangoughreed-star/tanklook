@@ -7,6 +7,7 @@ import { sameGrid, sampleTerrain } from './terrain';
 import { keepInWater } from './water';
 import { clampItem } from './items';
 import { groupSize, type Group } from './duplicate';
+import type { BrushState } from './brush';
 import type { CameraSettings, Fish, Item, Scene, TankSetup } from './types';
 
 /** 'scene' = 3D content changed (rebuild), 'view' = camera only (redraw), 'select' = selection only. */
@@ -36,6 +37,11 @@ export class Store {
   /** More animals / pieces selected along with the one above (lane MS): the group is selId / selItem plus these. */
   extraFish: number[] = [];
   extraItems: number[] = [];
+  /** Painted patches in the selection (lane SB); cleared by a plain select. */
+  selPatches: number[] = [];
+  /** Scatter brush (lane SB): the brush tool's state; a UI state, never saved. */
+  brush: BrushState = { on: false, erase: false, id: 'leaf', size: 60, density: 60, leaf: 'mixed' };
+  setBrush(b: Partial<BrushState>) { Object.assign(this.brush, b); if (b.on) this.multi = false; this.emit('select'); }
   /** Multi mode (the Multi button, for touch): a plain tap adds to or takes from the group, an empty drag draws a box. */
   multi = false;
   /** Per view: does the panel's editing apply to that tank (the "Edit" box on each view's tab). UI state, not saved. */
@@ -68,6 +74,7 @@ export class Store {
     return {
       fish: uniq([this.selId, ...this.extraFish]).filter(id => T.fish.some(f => f.id === id)),
       items: uniq([this.selItem, ...this.extraItems]).filter(id => T.items.some(it => it.id === id)),
+      ...(this.selPatches.length ? { patches: this.selPatches.filter(id => T.patches?.some(p => p.id === id)) } : {}),
     };
   }
   get groupCount() { return groupSize(this.group); }
@@ -184,18 +191,18 @@ export class Store {
   seal() { this.lastKey = null; }
 
   select(id: number | null) {
-    if (id === this.selId && (id != null || this.selItem == null) && !this.extraFish.length && !this.extraItems.length) return;
-    this.selId = id; this.selItem = null; this.extraFish = []; this.extraItems = []; this.emit('select');
+    if (id === this.selId && (id != null || this.selItem == null) && !this.extraFish.length && !this.extraItems.length && !this.selPatches.length) return;
+    this.selId = id; this.selItem = null; this.extraFish = []; this.extraItems = []; this.selPatches = []; this.emit('select');
   }
   selectItem(id: number | null) {
-    if (id === this.selItem && this.selId == null && !this.extraFish.length && !this.extraItems.length) return;
-    this.selItem = id; this.selId = null; this.extraFish = []; this.extraItems = []; this.emit('select');
+    if (id === this.selItem && this.selId == null && !this.extraFish.length && !this.extraItems.length && !this.selPatches.length) return;
+    this.selItem = id; this.selId = null; this.extraFish = []; this.extraItems = []; this.selPatches = []; this.emit('select');
   }
   /** Select exactly this group (the lead is the first animal, else the first piece). */
   selectGroup(g: Group) {
     const [lf, ...rf] = g.fish, [li, ...ri] = g.items;
     this.selId = lf ?? null; this.selItem = lf == null ? li ?? null : null;
-    this.extraFish = rf; this.extraItems = lf == null ? ri : g.items;
+    this.extraFish = rf; this.extraItems = lf == null ? ri : g.items; this.selPatches = [...(g.patches ?? [])];
     this.emit('select');
   }
   /** Add an animal / piece to the group, or take it out if it is in (shift-click, the Multi button). */
@@ -203,6 +210,12 @@ export class Store {
     const g = this.group, list = kind === 'fish' ? g.fish : g.items, at = list.indexOf(id);
     if (at >= 0) list.splice(at, 1); else list.push(id);
     this.selectGroup(g);
+  }
+  /** Add a painted patch to the selection, or take it out. */
+  togglePatch(id: number) {
+    const g = this.group, list = g.patches ?? [], at = list.indexOf(id);
+    if (at >= 0) list.splice(at, 1); else list.push(id);
+    this.selectGroup({ ...g, patches: list });
   }
   /** Make a member of the group the lead (the one the panel shows and a drag follows) without changing the group. */
   lead(kind: 'fish' | 'item', id: number) {
@@ -216,15 +229,16 @@ export class Store {
   /** Add these to the group (a box select with shift held). */
   addToGroup(g: Group) {
     const cur = this.group;
-    this.selectGroup({ fish: [...new Set([...cur.fish, ...g.fish])], items: [...new Set([...cur.items, ...g.items])] });
+    this.selectGroup({ fish: [...new Set([...cur.fish, ...g.fish])], items: [...new Set([...cur.items, ...g.items])], patches: [...new Set([...(cur.patches ?? []), ...(g.patches ?? [])])] });
   }
-  setMulti(on: boolean) { if (this.multi !== on) { this.multi = on; this.emit('select'); } }
+  setMulti(on: boolean) { if (this.multi !== on) { this.multi = on; if (on) this.brush.on = false; this.emit('select'); } }
 
   /** Drop group members that no longer exist (deleted, undone, another tank). */
   private pruneExtras() {
     const T = this.tank;
     this.extraFish = this.extraFish.filter(id => T.fish.some(f => f.id === id));
     this.extraItems = this.extraItems.filter(id => T.items.some(it => it.id === id));
+    this.selPatches = this.selPatches.filter(id => T.patches?.some(p => p.id === id));
   }
 
   private pushUndo() {
@@ -283,7 +297,7 @@ export class Store {
     this.pushUndo(); this.seal();
     this.scene = scene;
     this.editOn = [0, 1].map(k => k === scene.active);
-    this.selId = null; this.selItem = null; this.extraFish = []; this.extraItems = [];
+    this.selId = null; this.selItem = null; this.extraFish = []; this.extraItems = []; this.selPatches = [];
     this.emit('load');
   }
 

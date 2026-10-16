@@ -316,8 +316,22 @@
     <button id="undo" class="sidetog" title="Undo (Ctrl+Z)">↶ Undo</button>
     <button id="redo" class="sidetog" title="Redo (Ctrl+Shift+Z)">↷ Redo</button>
     <button id="multiBtn" class="sidetog" aria-pressed="false" title="Multi-select: tap animals and pieces to add them to the selection or take them out; drag on empty water to draw a box round some. On a computer: Shift-click and Shift-drag.">☐ Multi</button>
+    <button id="brushBtn" class="sidetog" aria-pressed="false" title="Scatter brush: paint leaf litter, pebbles, moss, twigs or a carpet of plants onto the ground or a piece; Erase takes them off again.">🖌 Brush</button>
     <button id="arView" class="sidetog" title="See this tank at real size in your room (phone camera)" hidden>◱ AR</button>
     <button id="recenter" class="sidetog" title="Re-centre the panned view (Home, or double middle-click)" hidden>⌖ Re-centre</button>
+  </div>
+  <div id="brushBar" role="toolbar" aria-label="Scatter brush" hidden>
+    <div class="gbRow">
+      <select id="brKind" aria-label="Brush"></select>
+      <select id="brLeaf" aria-label="Leaf kind"><option value="mixed">Mixed leaves</option><option value="oak">Oak</option><option value="magnolia">Magnolia</option><option value="catappa">Catappa</option></select>
+      <button id="brPaint" class="on" aria-pressed="true" title="Drag over the ground or a piece to drop things">Paint</button>
+      <button id="brErase" aria-pressed="false" title="Drag to take away what the brush covers">Erase</button>
+      <button id="brDone" title="Close the brush (Esc)">Done</button>
+    </div>
+    <div class="gbRow brSliders">
+      <label>Size <input id="brSize" type="range" min="20" max="250" step="5"><output id="oBrSize"></output></label>
+      <label>Density <input id="brDens" type="range" min="5" max="100" step="5"><output id="oBrDens"></output></label>
+    </div>
   </div>
   <div id="groupBar" role="toolbar" aria-label="Selected animals and pieces" hidden>
     <div class="gbRow">

@@ -15,15 +15,17 @@ export interface BrushDef {
   radius: [number, number];
 }
 export const BRUSHES: BrushDef[] = [
-  { id: 'leaf', label: 'Leaf litter', area: 2200, radius: [30, 250] },
+  { id: 'leaf', label: 'Leaf litter', area: 1300, radius: [30, 250] },
   { id: 'pebble', label: 'Pebbles', area: 330, radius: [20, 200] },
   { id: 'gravel', label: 'Gravel', area: 40, radius: [15, 150] },
-  { id: 'moss', label: 'Moss patches', area: 420, radius: [20, 200] },
+  { id: 'moss', label: 'Moss patches', area: 110, radius: [20, 200] },
   { id: 'twig', label: 'Fallen twigs', area: 4500, radius: [40, 250] },
-  { id: 'hairgrass', label: 'Hairgrass lawn', area: 320, radius: [20, 200] },
-  { id: 'javamoss', label: 'Java moss', area: 500, radius: [20, 200] },
-  { id: 'sphagnum', label: 'Sphagnum', area: 450, radius: [20, 200] },
+  { id: 'hairgrass', label: 'Hairgrass lawn', area: 190, radius: [20, 200] },
+  { id: 'javamoss', label: 'Java moss', area: 150, radius: [20, 200] },
+  { id: 'sphagnum', label: 'Sphagnum', area: 140, radius: [20, 200] },
 ];
+/** The brush tool's settings (a UI state, in the Store). */
+export interface BrushState { on: boolean; erase: boolean; id: BrushId; size: number; density: number; leaf: LeafKind }
 export const brushDef = (id: BrushId) => BRUSHES.find(b => b.id === id) ?? BRUSHES[0];
 export const MAX_PATCHES = 200, MAX_PATH = 400, MAX_POINTS = 6000;
 
@@ -32,9 +34,15 @@ export const perDisc = (b: BrushDef, r: number, density: number) => density / 10
 
 /** Append a stroke point (x, depth), thinned: ignored when within a quarter radius of the last one. */
 export function extendPath(p: Patch, x: number, d: number) {
-  const n = p.path.length;
-  if (n >= 2 && Math.hypot(x - p.path[n - 2], d - p.path[n - 1]) < Math.max(6, p.size / 4)) return false;
-  if (n / 2 >= MAX_PATH) return false;
+  const n = p.path.length, step = Math.max(6, p.size / 4);
+  if (n >= 2) {
+    const px = p.path[n - 2], pd = p.path[n - 1], L = Math.hypot(x - px, d - pd);
+    if (L < step) return false;
+    // a fast drag skips ground: fill the gap with points a quarter radius apart (a straight line over the floor plan)
+    const k = Math.floor(L / step);
+    for (let i = 1; i <= k && p.path.length / 2 < MAX_PATH; i++) p.path.push(Math.round((px + (x - px) * i / k) * 10) / 10, Math.round((pd + (d - pd) * i / k) * 10) / 10);
+    return true;
+  }
   p.path.push(Math.round(x * 10) / 10, Math.round(d * 10) / 10); return true;
 }
 
@@ -94,6 +102,30 @@ export function erasePatches(S: TankSetup, x: number, d: number, r: number) {
   return hit;
 }
 
+/** Map every point of a patch (path and erased circles' centres) through f. */
+export function mapPatch(p: Patch, f: (x: number, d: number) => [number, number]) {
+  for (let i = 0; i + 1 < p.path.length; i += 2) { const [x, d] = f(p.path[i], p.path[i + 1]); p.path[i] = Math.round(x * 10) / 10; p.path[i + 1] = Math.round(d * 10) / 10; }
+  if (p.cuts) for (let i = 0; i + 2 < p.cuts.length; i += 3) { const [x, d] = f(p.cuts[i], p.cuts[i + 1]); p.cuts[i] = Math.round(x); p.cuts[i + 1] = Math.round(d); }
+}
+/** Centre of a patch's stroke and its reach from it (mm, brush radius included). */
+export function patchBox(p: Patch) {
+  let x0 = Infinity, x1 = -Infinity, d0 = Infinity, d1 = -Infinity;
+  for (let i = 0; i + 1 < p.path.length; i += 2) { x0 = Math.min(x0, p.path[i]); x1 = Math.max(x1, p.path[i]); d0 = Math.min(d0, p.path[i + 1]); d1 = Math.max(d1, p.path[i + 1]); }
+  return { cx: (x0 + x1) / 2, cd: (d0 + d1) / 2, rx: (x1 - x0) / 2 + p.size, rd: (d1 - d0) / 2 + p.size };
+}
+/** The patch whose cover the floor point (x, d) lies in (nearest stroke point within the brush radius), or null. */
+export function patchAt(S: TankSetup, x: number, d: number): Patch | null {
+  let best: Patch | null = null, bd = Infinity;
+  for (const p of S.patches ?? []) for (let i = 0; i + 1 < p.path.length; i += 2) {
+    const k = Math.hypot(p.path[i] - x, p.path[i + 1] - d) / p.size; if (k < 1.1 && k < bd) { bd = k; best = p; }
+  }
+  return best;
+}
+/** Does erasing at (x, d, r) touch any patch's cover? */
+export function erasable(S: TankSetup, x: number, d: number, r: number) {
+  for (const p of S.patches ?? []) for (let i = 0; i + 1 < p.path.length; i += 2) if (Math.hypot(p.path[i] - x, p.path[i + 1] - d) < p.size + r) return true;
+  return false;
+}
 /** Move a patch by (dx, dd) mm (path and erased circles together). */
 export function movePatch(p: Patch, dx: number, dd: number) {
   for (let i = 0; i + 1 < p.path.length; i += 2) { p.path[i] += dx; p.path[i + 1] += dd; }

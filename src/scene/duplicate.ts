@@ -7,19 +7,21 @@ import { rng } from '../art/paint';
 import { D2R, backdropDepth, clamp, clampFish } from './physics';
 import { MAX_ITEMS, clampItem, itemDims } from './items';
 import { placeNew } from './scatter';
+import { MAX_PATCHES, brushDef, mapPatch, movePatch, patchBox } from './brush';
 import { fitFish } from './water';
 import { groundHeight } from './terrain';
 import { LIMITS } from './validate';
-import type { Fish, Item, TankSetup } from './types';
+import type { Fish, Item, Patch, TankSetup } from './types';
 
 /** The ids of a selection, per kind (the two id spaces are separate). */
-export interface Group { fish: number[]; items: number[] }
-export const groupSize = (g: Group) => g.fish.length + g.items.length;
+export interface Group { fish: number[]; items: number[]; /** Painted brush patches (lane SB). */ patches?: number[] }
+export const groupSize = (g: Group) => g.fish.length + g.items.length + (g.patches?.length ?? 0);
 
 /** The members that still exist in this tank. */
 export function members(S: TankSetup, g: Group) {
   const fi = new Set(g.fish), ii = new Set(g.items);
-  return { fish: S.fish.filter(f => fi.has(f.id)), items: S.items.filter(it => ii.has(it.id)) };
+  const pi = new Set(g.patches ?? []);
+  return { fish: S.fish.filter(f => fi.has(f.id)), items: S.items.filter(it => ii.has(it.id)), patches: (S.patches ?? []).filter(p => pi.has(p.id)) };
 }
 
 /** Footprint centre and size of a group (x / depth, mm): its fish by body length, its pieces by their own size. */
@@ -29,16 +31,18 @@ export function groupBox(S: TankSetup, g: Group) {
   const take = (x: number, d: number, rx: number, rd: number) => { x0 = Math.min(x0, x - rx); x1 = Math.max(x1, x + rx); d0 = Math.min(d0, d - rd); d1 = Math.max(d1, d + rd); };
   for (const f of m.fish) { const sp = speciesOf(f), r = sp ? fishTL(f, sp) / 2 : 20; take(f.x, f.depth, r, r * 0.5); }
   for (const it of m.items) { const [l, , w] = itemDims(it), r = it.kind === 'plant' ? Math.max(l, w) / 2 : Math.max(l, w) / 2; take(it.x, it.depth, r, r); }
+  for (const p of m.patches) { const b = patchBox(p); take(b.cx, b.cd, b.rx, b.rd); }
   if (x0 === Infinity) return null;
   return { cx: (x0 + x1) / 2, cd: (d0 + d1) / 2, w: x1 - x0, d: d1 - d0 };
 }
 
 /** Mean x / depth / height of the members' anchors: the point turns and resizes are about. */
 export function groupCentre(S: TankSetup, g: Group) {
-  const m = members(S, g), n = m.fish.length + m.items.length; if (!n) return null;
+  const m = members(S, g), n = m.fish.length + m.items.length + m.patches.length; if (!n) return null;
   let x = 0, d = 0, y = 0;
   for (const f of m.fish) { x += f.x; d += f.depth; y += f.y; }
   for (const it of m.items) { x += it.x; d += it.depth; y += groundHeight(S, S.tank, it.x, it.depth) + it.lift; }
+  for (const p of m.patches) { const b = patchBox(p); x += b.cx; d += b.cd; y += groundHeight(S, S.tank, b.cx, b.cd); }
   return { x: x / n, depth: d / n, y: y / n };
 }
 
@@ -54,6 +58,7 @@ export function moveGroup(S: TankSetup, g: Group, dx: number, dd: number, dy = 0
   const m = members(S, g);
   for (const f of m.fish) { f.x += dx; f.depth += dd; f.y += dy; settleFish(S, f); }
   for (const it of m.items) { it.x += dx; it.depth += dd; clampItem(it, S.tank, S); }
+  for (const p of m.patches) movePatch(p, dx, dd);
 }
 
 /** Turn the whole group `deg` degrees about its centre (positions and headings together, the same way a piece's yaw
@@ -67,6 +72,7 @@ export function turnGroup(S: TankSetup, g: Group, deg: number) {
   };
   for (const f of m.fish) { spin(f); if (f.surface !== 'glass') f.yaw = wrap(f.yaw + deg); settleFish(S, f); }
   for (const it of m.items) { spin(it); it.yaw = wrap(it.yaw + deg); clampItem(it, S.tank, S); }
+  for (const p of m.patches) mapPatch(p, (x, d) => { const o = { x, depth: d }; spin(o); return [o.x, o.depth]; });
 }
 
 /** Resize the whole group by `k` about its centre: pieces and animals grow or shrink and their spacing with them. */
@@ -79,12 +85,14 @@ export function scaleGroup(S: TankSetup, g: Group, k: number) {
     it.size = Math.round(it.size * k); if (it.spread != null) it.spread = Math.round(it.spread * k);
     it.lift = Math.round(it.lift * k); clampItem(it, S.tank, S);
   }
+  for (const p of m.patches) { mapPatch(p, (x, d) => [c.x + (x - c.x) * k, c.depth + (d - c.depth) * k]); p.size = Math.round(clamp(p.size * k, brushDef(p.brush).radius[0], brushDef(p.brush).radius[1])); }
 }
 
 /** Remove the members from the tank. */
 export function removeGroup(S: TankSetup, g: Group) {
   const fi = new Set(g.fish), ii = new Set(g.items);
   S.fish = S.fish.filter(f => !fi.has(f.id)); S.items = S.items.filter(it => !ii.has(it.id));
+  if (g.patches?.length) { const pi = new Set(g.patches); S.patches = (S.patches ?? []).filter(p => !pi.has(p.id)); if (!S.patches.length) delete S.patches; }
 }
 
 const wrap = (a: number) => Math.round(((a + 540) % 360) - 180);
@@ -121,12 +129,12 @@ export const MAX_COPIES = 50;
  * Returns the new members, in the order made.
  */
 export function copyGroup(S: TankSetup, g: Group, o: CopyOpts, ids: { fish: number; item: number }): Group {
-  const src = members(S, g), out: Group = { fish: [], items: [] };
+  const src = members(S, g), out: Group = { fish: [], items: [], patches: [] };
   const box = groupBox(S, g); if (!box) return out;
   const r = rng(o.seed), rr = (a: number) => (r() * 2 - 1) * a, T = S.tank;
   const room = LIMITS.maxFish - S.fish.length, roomI = MAX_ITEMS - S.items.length;
   const n = clamp(Math.round(o.n), 0, MAX_COPIES);
-  const cloud = !src.items.length;
+  const cloud = !src.items.length && !src.patches.length;
   // the step between copies: the group's own size and a small gap; toward the side with more room
   const gap = Math.max(15, Math.min(box.w, 200) * 0.1);
   const sx = box.w + gap, sd = box.d + gap;
@@ -176,6 +184,13 @@ export function copyGroup(S: TankSetup, g: Group, o: CopyOpts, ids: { fish: numb
       clampItem(n0, T, S);
       if (!rode && o.support) n0.lift = Math.max(0, Math.round(o.support(n0.x, n0.depth, skip)));
       S.items.push(n0); out.items.push(n0.id);
+    }
+    for (const q of src.patches) { // a patch: its stroke moved and turned with the copy, a new seed (the same brush, a different scatter)
+      if ((S.patches?.length ?? 0) >= MAX_PATCHES) break;
+      const n0: Patch = { ...q, id: (S.patches ?? []).reduce((a, v) => Math.max(a, v.id), 0) + 1, seed: 1 + Math.floor(r() * 999999), path: [...q.path], ...(q.cuts ? { cuts: [...q.cuts] } : {}) };
+      mapPatch(n0, (x, d) => { const p = place({ x, depth: d }); return [p.x, p.depth]; });
+      n0.size = Math.round(clamp(q.size * grow, brushDef(q.brush).radius[0], brushDef(q.brush).radius[1]));
+      (S.patches ??= []).push(n0); out.patches!.push(n0.id);
     }
   }
   // clinging animals (snails, shrimp, plecos): the same placement as a new animal, so they land on a surface they can use

@@ -85,7 +85,7 @@ function kindsFor(brush: Exclude<BrushId, 'leaf'>): ScatterKind[] {
   switch (brush) {
     case 'pebble': ks = stoneGeos(0.85, true, 1).map(geo => ({ geo, mat: mat('stone'), weight: 1, size: [10, 26] as [number, number], reach: 0.5 })); break;
     case 'gravel': ks = stoneGeos(0.6, true, 0).map(geo => ({ geo, mat: mat('stone'), weight: 1, size: [4, 9] as [number, number], reach: 0.5 })); break;
-    case 'moss': ks = vars(4, () => dome(r, 0.3, 0.22, 3)).map(geo => ({ geo, mat: mat('moss'), weight: 1, size: [14, 30] as [number, number], reach: 0.5 })); break;
+    case 'moss': ks = vars(4, () => dome(r, 0.3, 0.22, 3)).map(geo => ({ geo, mat: mat('moss'), weight: 1, size: [10, 24] as [number, number], reach: 0.5 })); break;
     case 'javamoss': ks = vars(4, () => dome(r, 0.7, 0.5, 3)).map(geo => ({ geo, mat: mat('moss'), weight: 1, size: [18, 38] as [number, number], reach: 0.5 })); break;
     case 'sphagnum': ks = vars(4, () => dome(r, 0.6, 0.2, 3)).map(geo => ({ geo, mat: mat('moss'), weight: 1, size: [16, 32] as [number, number], reach: 0.5 })); break;
     case 'hairgrass': ks = vars(5, () => tuft(r, 9, 0.35)).map(geo => ({ geo, mat: mat('blade', { side: THREE.DoubleSide }), weight: 1, size: [25, 45] as [number, number], reach: 0.3 })); break;

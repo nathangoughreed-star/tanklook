@@ -4,6 +4,7 @@ import { Viewer } from './render/viewer';
 import { Store } from './scene/store';
 import { attachPanels, scapeSec } from './ui/panels';
 import { attachGroupBar } from './ui/group';
+import { attachBrushBar } from './ui/brush';
 import { attachParGuide } from './ui/parGuide';
 import { attachLightHover } from './ui/lightHover';
 import { attachLightContours } from './ui/lightContours';
@@ -36,6 +37,7 @@ if (!webglAvailable()) {
     && !document.getElementById('app')!.classList.contains('collapsed'));
   const ui = attachPanels(store, viewer);
   attachGroupBar(store, viewer, ui.status);
+  attachBrushBar(store);
   attachParGuide(() => store.tank.water.on && !!store.tank.water.salt);
   attachLightHover(viewer, store); // Light map hover readout (lane K)
   attachLightContours(viewer); // Light map contour labels

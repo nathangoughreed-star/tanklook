@@ -14,13 +14,13 @@ export function attachGroupBar(store: Store, viewer: Viewer, status: (msg: strin
   let copiesOpen = false;
 
   const noun = (g: Group) => {
-    const a = g.fish.length, b = g.items.length;
-    return [a && `${a} animal${a > 1 ? 's' : ''}`, b && `${b} piece${b > 1 ? 's' : ''}`].filter(Boolean).join(' + ');
+    const a = g.fish.length, b = g.items.length, c = g.patches?.length ?? 0;
+    return [a && `${a} animal${a > 1 ? 's' : ''}`, b && `${b} piece${b > 1 ? 's' : ''}`, c && `${c} patch${c > 1 ? 'es' : ''}`].filter(Boolean).join(' + ');
   };
   const show = () => {
     const g = store.group, n = groupSize(g);
     multi.classList.toggle('on', store.multi); multi.setAttribute('aria-pressed', String(store.multi));
-    bar.hidden = n < 2 && !(copiesOpen && n === 1);
+    bar.hidden = n < 2 && !(copiesOpen && n === 1) && !g.patches?.length;
     $('gbCount').textContent = noun(g) || 'Nothing selected';
     copyBox.hidden = !copiesOpen || bar.hidden; $('gbCopies').setAttribute('aria-expanded', String(!copyBox.hidden));
   };
@@ -40,7 +40,7 @@ export function attachGroupBar(store: Store, viewer: Viewer, status: (msg: strin
     const T = store.tank;
     if ((g.fish.length && T.fish.length >= LIMITS.maxFish) || (g.items.length && T.items.length >= MAX_ITEMS)) { status(`A tank holds at most ${LIMITS.maxFish} animals and ${MAX_ITEMS} pieces.`, true); return; }
     const seed = 1 + Math.floor(Math.random() * 1e9), ids = { fish: store.nextId(), item: store.nextItemId() }, vp = viewer.vps[store.scene.active];
-    let made: Group = { fish: [], items: [] };
+    let made: Group = { fish: [], items: [], patches: [] };
     store.edit(t => {
       const m = copyGroup(t, g, { ...COPY_DEFAULTS, ...o, seed, support: (x, d, skip) => supportLift(vp, t, x, d, skip) }, ids);
       if (!groupSize(made)) made = m;
@@ -61,7 +61,7 @@ export function attachGroupBar(store: Store, viewer: Viewer, status: (msg: strin
   // keys: with two or more selected they act on all (ahead of the single-selection keys in the panel code)
   addEventListener('keydown', e => {
     const t = e.target as HTMLElement, typing = (t.tagName === 'INPUT' && (t as HTMLInputElement).type !== 'range' && (t as HTMLInputElement).type !== 'checkbox') || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT';
-    if (typing || e.altKey || store.groupCount < 2) return;
+    if (typing || e.altKey || store.groupCount < 1 || (store.groupCount < 2 && !store.group.patches?.length)) return;
     const mod = e.ctrlKey || e.metaKey, k = e.key.toLowerCase();
     const take = (fn: () => void) => { e.preventDefault(); e.stopImmediatePropagation(); fn(); };
     if (mod) { if (k === 'd') take(dup); return; }
