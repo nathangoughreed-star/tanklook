@@ -225,7 +225,9 @@ export interface LayoutSettings { id: LayoutId; seed: number; plantSeed?: number
   /** The owner picked a care level (Care menu), so gating can use it (lane AD, 2026-10-16). */
   careSet?: true;
   /** "Show only tank-appropriate" toggles in the Plants and Animals lists: unfit ones sink to the bottom, grayed, each with its reason. Advice only. */
-  gatePlants?: true; gateAnimals?: true }
+  gatePlants?: true; gateAnimals?: true;
+  /** The keeper's expertise (1 beginner .. 3 expert), chosen in Animals; gating waits for it. */
+  expertise?: 1 | 2 | 3 }
 
 /** Library item kinds; the variant names the generator (scene/items.ts LIBRARY). */
 export type ItemKind = 'stone' | 'wood' | 'cave' | 'plant' | 'coral';

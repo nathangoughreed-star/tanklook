@@ -1,0 +1,53 @@
+// Animal care data for gating (lane AD, 2026-10-16): who can keep what, in which tank, with whom. Advice only: the Animals list
+// grays what does not suit and says why, nothing is blocked. ESTIMATES from common aquarium / vivarium practice (not a source
+// of record): minL is the smallest tank (litres) for the usual first group or one adult, temp is the comfortable water range.
+import type { Category } from './species';
+
+/** 1 beginner, 2 intermediate, 3 expert. */
+export type Expertise = 1 | 2 | 3;
+export const EXPERTISE_NAME: Record<Expertise, string> = { 1: 'Beginner', 2: 'Intermediate', 3: 'Expert' };
+export interface AnimalCare {
+  care: Expertise;
+  /** smallest tank or enclosure volume, litres */
+  minL: number;
+  /** 0 peaceful, 1 territorial or pushy (harasses slow, long-finned or shy tankmates), 2 aggressive (bullies most things) */
+  temper: 0 | 1 | 2;
+  /** comfortable water temperature, deg C (aquatic species; absent = no water-temperature check) */
+  temp?: [number, number];
+  /** eats animals up to this length (mm), optionally only of these groups */
+  prey?: { mm: number; cats?: Category[] };
+  /** one of its kind per tank (a bonded pair is fine); `fam` extends that to look-alike rivals (tangs) */
+  solo?: true;
+  fam?: string;
+  /** long, flowing fins: a target for nippers and territorial fish */
+  slow?: true;
+  /** nips fins */
+  nip?: true;
+}
+const A = (care: Expertise, minL: number, temper: 0 | 1 | 2, temp?: [number, number], x: Partial<AnimalCare> = {}): AnimalCare => ({ care, minL, temper, ...(temp ? { temp } : {}), ...x });
+export const CARE: Record<string, AnimalCare> = {
+  neon: A(1, 40, 0, [22, 26]), cardinal: A(2, 60, 0, [24, 28]), ember: A(1, 30, 0, [23, 28]), rummynose: A(2, 60, 0, [24, 28]),
+  harlequin: A(1, 40, 0, [22, 27]), chili: A(2, 20, 0, [22, 28]), danio: A(1, 40, 1, [18, 25], { nip: true }), whitecloud: A(1, 40, 0, [16, 22]),
+  cpd: A(2, 40, 0, [22, 26]), hatchet: A(2, 60, 0, [23, 27]), cherrybarb: A(1, 60, 0, [22, 27]), tigerbarb: A(1, 80, 1, [20, 26], { nip: true }),
+  boesemani: A(1, 200, 0, [24, 27]), guppy: A(1, 40, 0, [22, 28], { slow: true }), platy: A(1, 60, 0, [18, 26]), molly: A(2, 110, 0, [22, 28]),
+  swordtail: A(1, 110, 1, [18, 26]), betta: A(1, 20, 1, [24, 28], { solo: true, slow: true }), dwarfgourami: A(2, 60, 1, [24, 28], { solo: true }),
+  honeygourami: A(1, 40, 0, [22, 28]), gourami: A(1, 110, 0, [24, 28]), gbr: A(3, 60, 1, [26, 30]), bolivianram: A(2, 60, 0, [22, 26]),
+  kribensis: A(2, 80, 1, [22, 26]), cockatoo: A(2, 60, 1, [22, 26]), yellowlab: A(2, 200, 2, [24, 28]),
+  angel: A(2, 200, 1, [24, 28], { prey: { mm: 30 }, slow: true }), discus: A(3, 250, 0, [28, 31], { slow: true }),
+  oscar: A(2, 400, 2, [22, 28], { prey: { mm: 100 } }), goldfish: A(1, 150, 0, [16, 23]), comet: A(1, 300, 0, [10, 24]),
+  bronzecory: A(1, 80, 0, [22, 26]), pandacory: A(1, 60, 0, [20, 24]), pygmycory: A(1, 30, 0, [22, 26]), bristlenose: A(1, 110, 0, [22, 27]),
+  oto: A(2, 40, 0, [22, 26]), kuhli: A(2, 80, 0, [24, 28]), clownloach: A(2, 400, 0, [24, 28], { prey: { mm: 30, cats: ['fw-invert'] } }),
+  sae: A(2, 110, 0, [22, 26]), hillstream: A(3, 60, 0, [18, 24]), peapuffer: A(2, 20, 2, [24, 28], { prey: { mm: 45, cats: ['fw-invert'] }, nip: true }),
+  cherryshrimp: A(1, 20, 0, [18, 26]), amano: A(1, 40, 0, [18, 26]), nerite: A(1, 20, 0, [22, 28]), mystery: A(1, 40, 0, [20, 26]),
+  ramshorn: A(1, 20, 0, [18, 28]), trumpet: A(1, 20, 0, [18, 28]),
+  ocellaris: A(1, 75, 0, [24, 27]), royalgramma: A(2, 115, 1, [24, 27], { solo: true }), yellowtang: A(2, 455, 1, [24, 27], { solo: true, fam: 'tang' }),
+  bluetang: A(3, 570, 1, [24, 27], { solo: true, fam: 'tang' }), firefish: A(2, 75, 0, [24, 27]), banggai: A(2, 115, 0, [24, 27]),
+  sixline: A(2, 115, 2, [24, 27], { solo: true, prey: { mm: 30, cats: ['sw-invert'] } }), chromis: A(1, 115, 0, [24, 27]),
+  coralbeauty: A(2, 265, 1, [24, 27], { solo: true }), watchman: A(1, 75, 0, [24, 27]), mandarin: A(3, 265, 0, [24, 27]),
+  cleanershrimp: A(2, 75, 0, [24, 27]), turbo: A(1, 75, 0, [24, 27]), hermit: A(1, 40, 1, [24, 27], { prey: { mm: 50, cats: ['sw-invert'] } }),
+  dartfrog: A(2, 40, 0), treefrog: A(1, 150, 0, undefined, { prey: { mm: 50, cats: ['amphibian', 'land-invert'] } }), firetoad: A(1, 75, 0), firenewt: A(2, 75, 0),
+  adf: A(1, 40, 0, [22, 27]), axolotl: A(2, 150, 0, [14, 20], { prey: { mm: 80 } }),
+  crestedgecko: A(1, 75, 0, undefined, { solo: true, prey: { mm: 40, cats: ['land-invert'] } }), crestedharlequin: A(1, 75, 0, undefined, { solo: true, prey: { mm: 40, cats: ['land-invert'] } }),
+  leopardgecko: A(1, 150, 0, undefined, { solo: true, prey: { mm: 60, cats: ['land-invert'] } }), regaljumper: A(2, 5, 0, undefined, { solo: true, prey: { mm: 15 } }),
+  ballpython: A(2, 450, 0, undefined, { solo: true, prey: { mm: 600 } }), chacogoldenknee: A(1, 40, 0, undefined, { solo: true, prey: { mm: 60 } }),
+};

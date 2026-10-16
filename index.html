@@ -217,6 +217,9 @@
   <details class="sec" data-sec="fish"><summary><h2>Animals</h2></summary>
   <div class="row dens"><label for="densAnimal" id="lDensAnimal" title="Stocks the tank from species that suit this style, from one animal to well past a safe bioload (past Full it is overstocked). Replaces the animals when you let go; at None your own animals stay">Stocking</label><input id="densAnimal" type="range" min="0" max="6" step="any" list="animalTicks"><output id="oDensAnimal"></output></div>
   <datalist id="animalTicks"><option value="0"></option><option value="1"></option><option value="2"></option><option value="3"></option><option value="4"></option><option value="5"></option><option value="6"></option></datalist>
+  <div class="field"><label class="flabel" for="expertise" title="How experienced the keeper is. Used by the toggle below">Expertise</label><select id="expertise"><option value="">Choose...</option><option value="1">Beginner</option><option value="2">Intermediate</option><option value="3">Expert</option></select></div>
+  <div class="field"><label><input type="checkbox" id="gateAnimals" title="Sinks the animals that do not suit this tank (expertise, size, the animals already in it) to the bottom of the list, grayed, each with its reason. Advice only: you can still add any of them"> Show only tank-appropriate animals</label></div>
+  <div class="hint" id="gateAnimalsHint" hidden></div>
   <div id="spCats" class="cats" role="tablist" aria-label="Animal groups"></div>
   <input id="spSearch" type="search" placeholder="Search species (common or scientific name)" aria-label="Search species">
   <div id="spResults" class="results" role="listbox" aria-label="Species"></div>
