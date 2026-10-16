@@ -29,12 +29,21 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 |---|---|---|---|---|
 | T1 dry ground (roadmap R1) | `../Glass-Box-dry-ground` / `dry-ground` | 5633 | substrate types in `scene/types.ts` / `validate.ts` / `defaults.ts` (substrate only), the ground build in `render/build.ts`, substrate tiles in `art/placeholder.ts` / `render/textures.ts`, new `render/scatter.ts` (leaf litter), the Substrate section of `ui/panels.ts` / `index.html` | running (session `local_6ae6a2e0`) |
 | G1 crested gecko + lizard body plan (roadmap R2) | `../Glass-Box-gecko` / `gecko` | 5663 | new `render/lizard3d.ts` (+ art data), `art/herps.ts` / `render/herp3d.ts` hooks, the gecko entries in `data/species.json` / `aqadvisor.json` (T4 also edits those: keep both sides), perch / cling poses on `scene/anchors.ts` | ready to open (prompt `prompts/lane-G1-crested-gecko.md`) |
-| Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone (fish behaviour, small lane, T4 found it) | queued |
+| Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
+
+## Clownfish host in the bubble-tip anemone (2026-10-16; worktree `musing-snyder-0e96c4`, port 5693 `clown-host`; Nathan approved the pictures; pushed to main)
+T4's follow-up. In `scene/scatter.ts` shuffleFish (so also placeNew for newcomers with no mates in the tank): in a salt tank
+with water and at least one `coral` / `anemone` item, every species in `HOSTED` (just `ocellaris`) goes to one anemone,
+picked at random per Shuffle: within 0.6 of the disc radius of its centre, the body centre from the tentacle tops
+(ground + lift + 0.8 x the itemDims height) to about a body height above, any heading, nose 5-20 deg down. No anemone,
+fresh water or a dry tank: unchanged. Adding an anemone later does not move the fish until the next Shuffle. Test in
+`test/scatter.test.ts`. Review sheet: `clownfish-anemone-review.png` in the coordinator's side-session-notes folder.
+Open: other clownfish species would join `HOSTED` when added; no live animation (the scene is a still).
 
 ## Lane T1: dry ground, terrestrial substrates + leaf litter (2026-10-16; branch `dry-ground`, port 5633; Nathan: "leaf litter looks great", ship; pushed to main)
 - **New substrate presets** (`SubstrateType` + validate pick list, no scene version bump; art/placeholder.ts SUBSTRATES, flag
