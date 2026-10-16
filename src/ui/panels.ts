@@ -890,6 +890,7 @@ Cancel, then change the name, to keep both.`)) return;
   $<HTMLSelectElement>('lBulb').onchange = e => store.edit(s => { s.light.bulbW = +(e.target as HTMLSelectElement).value; });
   $('lBeams').onchange = e => store.edit(s => { s.render.beams = (e.target as HTMLInputElement).checked; });
   $('lSlice').oninput = e => store.edit(s => { const v = +(e.target as HTMLInputElement).value; if (v > 0) s.light.mapSlice = v; else delete s.light.mapSlice; }, { coalesce: 'lSlice' });
+  $('lShade').onchange = e => store.edit(s => { if ((e.target as HTMLInputElement).checked) s.light.mapShade = true; else delete s.light.mapShade; });
   $('lShells').onchange = e => store.edit(s => { if ((e.target as HTMLInputElement).checked) s.light.mapShells = true; else delete s.light.mapShells; });
   $('lDark').oninput = e => store.edit(s => { const v = +(e.target as HTMLInputElement).value; s.light.mapDark = (s.light.mapUnit ?? 'par') === 'lux' ? v / 50 : v; }, { coalesce: 'lDark' });
   $('lStep').oninput = e => store.edit(s => { const v = +(e.target as HTMLInputElement).value; if ((s.light.mapUnit ?? 'par') === 'lux') s.light.mapStepLux = v; else s.light.mapStep = v; }, { coalesce: 'lStep' });
@@ -1712,7 +1713,7 @@ Cancel, then change the name, to keep both.`)) return;
     $('lUnitRow').style.display = mapOn && watts ? '' : 'none'; setVal('lUnit', l.mapUnit ?? 'par'); mapKey(watts ? l.mapUnit ?? 'par' : 'rel');
     // the map layer: from the floor up to the water surface (the tank top when dry)
     { const top = Math.round(s.water.on ? waterY(s.tank, s.water.level) : s.tank.H); $('lSliceRow').style.display = mapOn && watts ? '' : 'none';
-      ($('lSlice') as HTMLInputElement).max = String(top); $('lShellsRow').style.display = mapOn ? '' : 'none'; ($('lShells') as HTMLInputElement).checked = !!l.mapShells;
+      ($('lSlice') as HTMLInputElement).max = String(top); $('lShellsRow').style.display = mapOn ? '' : 'none'; $('lShadeRow').style.display = mapOn && watts ? '' : 'none'; ($('lShade') as HTMLInputElement).checked = !!l.mapShade; ($('lShells') as HTMLInputElement).checked = !!l.mapShells;
       // without Power the level has no PAR to compare with: the row stays in sight, greyed, with a note (Nathan 2026-10-15)
       ($('lShells') as HTMLInputElement).disabled = !watts; $('lShellsRow').classList.toggle('off', !watts);
       $('lShellsNote').hidden = !(mapOn && !watts);

@@ -7,7 +7,8 @@
 import { D2R, clamp, waterK, waterY } from './physics';
 import { footprint, insideBy, shapeOf, type P } from './shape';
 import { groundHeight, groundInsideBy, type Ground } from './terrain';
-import type { LidType, LightSettings, LightTech, LightType, Tank, WaterSettings } from './types';
+import { shadeAt, shadesOf, type Shade } from './shade';
+import type { Item, LidType, LightSettings, LightTech, LightType, Tank, WaterSettings } from './types';
 
 // ---------- fixture geometry (was render/lighting.ts) ----------
 
@@ -357,6 +358,8 @@ export interface LightEnv {
   walls: { L: number; D: number; w: number } | null;
   /** PAR override: scales every value so the substrate mean matches the user's reading (1 = estimate). */
   scale: number;
+  /** The aquascape's shadow columns (scene/shade.ts), when the Light map counts them; applied to the direct light. */
+  shade?: Shade[];
 }
 
 /** Add one emitter's light at p (normal n) into out, by band; weight w (a wall image: WALL_W x the gate). */
@@ -404,13 +407,14 @@ export function bandsAt(env: LightEnv, p: readonly number[], n: readonly number[
       if (g > 0) addSrc(env, px, py, pz, nx, ny, nz, ix, ey, iz, h, W.w * g, out);
     }
   }
+  if (env.shade?.length) { const f = shadeAt(env.shade, px, py, pz); for (let i = 0; i < 3; i++) out[i] *= f; } // direct light only
   if (under || !Number.isFinite(env.ys)) for (let i = 0; i < 3; i++) out[i] += env.ind[i];
   if (env.scale !== 1) for (let i = 0; i < 3; i++) out[i] *= env.scale;
   return out;
 }
 
 /** The setup fields the model reads (a TankSetup has them all). */
-export type LightScene = Ground & { tank: Tank; light: LightSettings; lid: LidType | string; water: WaterSettings };
+export type LightScene = Ground & { tank: Tank; light: LightSettings; lid: LidType | string; water: WaterSettings; items?: Item[] };
 
 /** The model's inputs from the settings; null when the light is flat or watts is not set (callers pass wattsOf's). `scale` is 1 here (lightOut sets it). */
 export function lightEnv(S: LightScene): LightEnv | null {
@@ -506,7 +510,7 @@ export function lightOut(S: LightScene): LightOut | null {
 // and substrate fields it does not read (water colour; the substrate's look but for its albedo), so a water colour or
 // substrate colour step under a powered light does not re-run it (~45 ms; lane EF2).
 const unitKey = (S: LightScene) => {
-  const { watts: _w, par: _p, bright: _b, kelvin: _k, room: _r, mapUnit: _m, mapStep: _ms, mapStepLux: _ml, bulbW: _bw, mapSlice: _sl, mapShells: _sh, mapDark: _dk, ...l } = S.light;
+  const { watts: _w, par: _p, bright: _b, kelvin: _k, room: _r, mapUnit: _m, mapStep: _ms, mapStepLux: _ml, bulbW: _bw, mapSlice: _sl, mapShells: _sh, mapShade: _ms2, mapDark: _dk, ...l } = S.light;
   const w = S.water, b = S.substrate;
   return JSON.stringify([S.tank, l, S.lid, [w.on, w.level, w.opacity], [b.show, b.fl, b.fr, b.bl, b.br, subAlbedo(b)], S.layout.id, S.layout.seed, S.terrain]);
 };
@@ -536,7 +540,8 @@ export function lightEnvCached(S: LightScene): LightEnv | null {
   const e = cached(envCache, unitKey(S), () => lightEnv(unitS(S)));
   if (!e) return null;
   const w = wattsOf(S);
-  return { ...e, phi: e.phi * w, ind: e.ind.map(v => v * w) as Band, scale: o.scale };
+  const shade = S.light.mapShade ? shadesOf(S, e.ys) : undefined;
+  return { ...e, phi: e.phi * w, ind: e.ind.map(v => v * w) as Band, scale: o.scale, ...(shade?.length ? { shade } : {}) };
 }
 
 /** Lux at mid-water that renders at Brightness 1: a 24 x 12 x 12 in tank under a 20 W white LED bar gives about this

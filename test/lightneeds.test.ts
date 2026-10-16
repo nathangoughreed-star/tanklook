@@ -28,3 +28,18 @@ describe('light needs', () => {
     expect(lightVerdict('pothos', 5)).toBe('fine');
   });
 });
+
+import { shadeAt, shadesOf } from '../src/scene/shade';
+describe('scape shade', () => {
+  it('a column passes less light under its disc, none above its top, and fades at the edge', () => {
+    const list = [[100, -50, 40, 0.1, 200] as [number, number, number, number, number]];
+    expect(shadeAt(list, 100, 50, -50)).toBeCloseTo(0.1, 5);
+    expect(shadeAt(list, 100, 250, -50)).toBe(1);
+    expect(shadeAt(list, 300, 50, -50)).toBe(1);
+    const edge = shadeAt(list, 130, 50, -50);
+    expect(edge).toBeGreaterThan(0.1); expect(edge).toBeLessThan(1);
+  });
+  it('no items, no shade', () => {
+    expect(shadesOf({ items: [] } as never, 300)).toEqual([]);
+  });
+});
