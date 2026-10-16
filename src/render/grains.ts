@@ -107,7 +107,7 @@ function glassGeo(g: THREE.BufferGeometry) {
   }
   b.userData.keep = true; glassGeos.set(g, b); return b;
 }
-const glassMat = (m: THREE.MeshBasicMaterial) => { let g = glassMats.get(m); if (!g) { g = m.clone(); g.userData.keep = true; delete g.userData.aq; /* clone() copies userData but not onBeforeCompile: a copied aq flag leaves it unlit */ glassMats.set(m, g); } return g; };
+const glassMat = (m: THREE.MeshBasicMaterial) => { let g = glassMats.get(m); if (!g) { g = m.clone(); g.userData.keep = true; g.userData.pane = true; delete g.userData.aq; /* clone() copies userData but not onBeforeCompile: a copied aq flag leaves it unlit */ glassMats.set(m, g); } return g; };
 function grainKinds(g: GrainLook): ScatterKind[] {
   // small grains (gravel, under 8 mm): 20 triangles each, not 80 (18k stones in a 20-gal made it 2-3 ms)
   const geos = g.shape === 'chip' ? chipGeos() : stoneGeos(g.round, g.speckle, (g.size[0] + g.size[1]) / 2 < 8 ? 0 : 1);
