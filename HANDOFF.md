@@ -30,6 +30,7 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 | PG plant / coral light + care gating | `../Glass-Box-plant-gates` / `plant-gates` | 5673 | plant / coral entries of `scene/items.ts`, plant filter in `starterItems`, `ui/parGuide.ts`, `scene/lightout.ts`, `render/lighting.ts`, `scene/growtime.ts`, starter-set controls in `ui/panels.ts` | ready to open (prompt `prompts/lane-PG-plant-gates.md`) |
 | SS2 starter styles batch 2 | `../Glass-Box-starters2` / `starters2` | 5683 | styles in `scene/items.ts` (`starterStyle`, style data), `scene/starter.ts`, `examples/`, the style picker | ready to open (prompt `prompts/lane-SS2-starters2.md`); shares `items.ts` with PG, keep both sides |
 | SB scatter brush | `../Glass-Box-brush` / `scatter-brush` | 5693 | new `scene/brush.ts`, `ui/brush.ts`, `src/interact` brush mode, `render/scatter.ts` | ready to open (prompt `prompts/lane-SB-scatter-brush.md`) |
+| BP2 ball python follow-ups | `../Glass-Box-python2` / `python2` | 5703 | `render/snake3d.ts`, `art/snakes.ts`, life-stage picker in the animal box of `ui/panels.ts`, clearance check in `scene/scatter.ts` | ready to open (prompt `prompts/lane-BP2-python-followups.md`) |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 
@@ -45,6 +46,9 @@ Scope: terrestrial starters (rainforest gecko, arid leopard gecko, jumping spide
 
 ## Lane SB: scatter brush (2026-10-16; branch `scatter-brush`, port 5693; opened by coordinator 3, not started)
 Scope: paint-on litter / pebbles / moss / carpet plants with seeded variation, erase, surface-aware via anchors, instanced. Decision to bring to Nathan early: strokes as a seeded "patch" (recommended) or individual items. Owns new scene/brush.ts, ui/brush.ts, brush mode in src/interact, render/scatter.ts. State: nothing built yet.
+
+## Lane BP2: ball python follow-ups (2026-10-16; branch `python2`, port 5703; opened by coordinator 3, not started)
+Scope (from lane BP's Open list, archive): rigid poses settle on uneven ground; no two animals on one ledge spot (all animals); wrap follows a bent limb and fits a short one; life-stage picker for reptiles and arachnids; the 375 px check. Starter placing a snake is SS2's. State: nothing built yet.
 
 ## Lane W: Android app (2026-10-14; OPENED same day, Nathan: "start work on the android app"; prompt `prompts/lane-W-android-app.md`)
 - **Route: Trusted Web Activity (TWA)** around https://tanklook.com/ (Bubblewrap or PWABuilder). Real Chrome, so WebXR
