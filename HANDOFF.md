@@ -38,7 +38,7 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 ## Lane sections (current)
 
 ## Lane PG: plant / coral light and care gating (2026-10-16; branch `plant-gates`, port 5673; opened by coordinator 3, not started)
-Scope: the four steps in the plain-words summary under "Feature to add: plant / coral light-and-feeding advice". Owns plant / coral LIBRARY entries, the plant filter in starterItems, parGuide, lightout, lighting, growtime, the starter-set controls. Open for Nathan: does care also set the dosing advice, and a "stretch" slider? State: nothing built yet.
+Scope: the four steps in the plain-words summary under "Feature to add: plant / coral light-and-feeding advice". Owns plant / coral LIBRARY entries, the plant filter in starterItems, parGuide, lightout, lighting, growtime, the starter-set controls. Open for Nathan: does care also set the dosing advice, and a "stretch" slider? State (2026-10-16): step 1 DONE: `src/scene/lightneeds.ts` holds the tier numbers (parGuide imports them), per-variant `NEEDS` (band, co2, ferts / dosing, optional own PAR range) and `lightVerdict`; kept out of items.ts to avoid clashing with SS2. Unsure species (marked `check`): hornwort, anacharis, macroalgae, seafan, anemone, Montipora lower bound. Next: step 2 scape shading toggle.
 
 ## Lane SS2: starter styles batch 2 (2026-10-16; branch `starters2`, port 5683; opened by coordinator 3, not started)
 Scope: terrestrial starters (rainforest gecko, arid leopard gecko, jumping spider, ball python, tarantula, tree-frog, paludarium), freshwater biotopes, marine sub-styles, using T1 / T2 / T3 / T4 / PP and the new animals. Owns styles in scene/items.ts, scene/starter.ts, examples/. Shares items.ts with PG. State: nothing built yet.
