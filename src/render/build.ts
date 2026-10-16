@@ -1049,7 +1049,7 @@ export interface BuiltTank {
  * the wall colour; a custom substrate's colours, share and mix).
  */
 export function envKey(S: TankSetup) {
-  const { kelvin: _k, room: _r, bright: _b, watts: _w, tech: _t, par: _q, mapUnit: _u, mapStep: _ms, mapStepLux: _ml, bulbW: _bw, mapSlice: _sl, mapShells: _sh, mapDark: _dk, ...light } = S.light, { pop: _p, ...render } = S.render;
+  const { kelvin: _k, room: _r, bright: _b, watts: _w, tech: _t, par: _q, mapUnit: _u, mapStep: _ms, mapStepLux: _ml, bulbW: _bw, mapSlice: _sl, mapShells: _sh, mapShade: _msh, mapDark: _dk, ...light } = S.light, { pop: _p, ...render } = S.render;
   const { color: _wc, opacity: _o, ...water } = S.water, { color: _c, ...wall } = S.wall;
   const { color: _c1, color2: _c2, share: _s, mix: _m, ...custom } = S.substrate.custom;
   // the condition (lane AL) is uniforms only

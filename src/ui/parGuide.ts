@@ -2,62 +2,66 @@
 // planted tanks and for reefs, what grows at each, and whether CO2 / fertiliser (fresh) or dosing (reef) goes with it.
 // Self-contained: builds its own dialog and styles, so the only hooks are a button in index.html and one call in main.ts.
 
-interface Tier { par: string; lo: number; hi: number; name: string; rows: [string, string][] }
+import { FRESH_TIERS, REEF_TIERS, type Tier as TierNums } from '../scene/lightneeds';
 
-const FRESH: Tier[] = [
-  { par: 'under 15', lo: 0, hi: 15, name: 'Very low', rows: [
+// the tier numbers live in scene/lightneeds.ts (shared with the per-item checks); this file adds the prose
+interface Tier extends TierNums { rows: [string, string][] }
+const withRows = (nums: TierNums[], rows: [string, string][][]): Tier[] => nums.map((t, i) => ({ ...t, rows: rows[i] }));
+
+const FRESH: Tier[] = withRows(FRESH_TIERS, [
+  [
     ['Grows', 'Anubias, Java fern, Bucephalandra, Java moss, marimo balls, floating plants near the surface'],
     ['Struggles', 'Almost all stem plants, any carpet; red plants stay green or brown'],
     ['CO2', 'No'],
     ['Fertiliser', 'Very little: fish waste is often enough; an occasional dose of an all-in-one liquid'],
-  ] },
-  { par: '15–30', lo: 15, hi: 30, name: 'Low', rows: [
+  ],
+  [
     ['Grows', 'The above, plus Cryptocoryne, Amazon sword, Vallisneria, Sagittaria, water sprite, Hygrophila, Ludwigia repens, Rotala rotundifolia (green, slow)'],
     ['Struggles', 'Carpets (Monte Carlo, HC Cuba) thin out or melt; reds stay pale'],
     ['CO2', 'Not needed. A liquid carbon product is optional'],
     ['Fertiliser', 'Lean all-in-one liquid weekly; root tabs under swords and crypts'],
-  ] },
-  { par: '30–50', lo: 30, hi: 50, name: 'Medium', rows: [
+  ],
+  [
     ['Grows', 'Most stem plants grow well; red tints start (Ludwigia, Rotala); dwarf hairgrass and Monte Carlo spread slowly'],
     ['Struggles', 'Deep reds and dense carpets without CO2; algae if nutrients run short'],
     ['CO2', 'Recommended. Without it, keep the light on 6–7 h a day and dose lightly'],
     ['Fertiliser', 'Full liquid dosing (macro + micro) several times a week, plus root tabs'],
-  ] },
-  { par: '50–80', lo: 50, hi: 80, name: 'High', rows: [
+  ],
+  [
     ['Grows', 'Carpets (HC Cuba, Monte Carlo, Glossostigma), deep reds (Rotala macrandra, Alternanthera reineckii), fast compact growth'],
     ['Struggles', 'Shade plants: Anubias and Java fern collect algae on their leaves unless shaded'],
     ['CO2', 'Required: injected, about 30 ppm (drop checker lime green)'],
     ['Fertiliser', 'Heavy: full macro + micro dosing (e.g. EI), weekly big water changes, frequent trimming'],
-  ] },
-  { par: '80+', lo: 80, hi: 150, name: 'Very high', rows: [
+  ],
+  [
     ['Grows', 'Competition / Dutch style; the most demanding species, grown fast and dense'],
     ['Struggles', 'Any imbalance shows as algae within days; more light than most plants can use'],
     ['CO2', 'Essential, closely controlled'],
     ['Fertiliser', 'Heavy and exact; most hobbyists never need this level'],
-  ] },
-];
+  ],
+]);
 
-const REEF: Tier[] = [
-  { par: '25–50', lo: 25, hi: 50, name: 'Fish only', rows: [
+const REEF: Tier[] = withRows(REEF_TIERS, [
+  [
     ['Keeps', 'Fish only or fish with live rock (FOWLR); light just for viewing and for the coralline algae on the rock'],
     ['Dosing', 'None beyond water changes'],
-  ] },
-  { par: '50–150', lo: 50, hi: 150, name: 'Soft corals', rows: [
+  ],
+  [
     ['Keeps', 'Mushrooms and Ricordea (low end, 50–100), zoanthids, leathers, Kenya tree, green star polyps'],
     ['Struggles', 'Mushrooms bleach or shrink under strong light; give them the shaded spots'],
     ['Dosing', 'Little: water changes usually hold calcium and alkalinity; spot-feed some'],
-  ] },
-  { par: '75–150', lo: 75, hi: 150, name: 'LPS', rows: [
+  ],
+  [
     ['Keeps', 'Hammer, torch and frogspawn, brains, Duncan, Acan, chalices (some take up to 200)'],
     ['Struggles', 'Too much light shows as bleaching or tissue pulling back; place low or mid-rock'],
     ['Dosing', 'Calcium, alkalinity and magnesium tested weekly, dosed as needed; regular feeding'],
-  ] },
-  { par: '150–400', lo: 150, hi: 400, name: 'SPS and clams', rows: [
+  ],
+  [
     ['Keeps', 'Montipora (150–250), Acropora (250–400+), maxima and crocea clams (300+); derasa and squamosa clams from 150'],
     ['Struggles', 'Unstable water: SPS need steady parameters more than any light level'],
     ['Dosing', 'Daily: two-part or a calcium reactor; strict alkalinity stability; nitrate and phosphate low but not zero'],
-  ] },
-];
+  ],
+]);
 
 const ABOUT = `<p><b>PAR</b> is the light plants and corals can use: the photons between 400 and 700 nm landing on a
 square metre each second (µmol/m²/s). It is not the same as brightness. Lux counts what the eye sees, mostly green and

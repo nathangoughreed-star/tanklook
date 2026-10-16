@@ -161,6 +161,8 @@ export interface LightSettings {
   mapSlice?: number;
   /** Dark spots: a surface round every pocket of water below `mapDark` (an app preference, added 2026-10-15). */
   mapShells?: boolean;
+  /** Light map: count the aquascape's shade (floaters, canopy, hardscape); absent = the fixture only (an app preference, added 2026-10-16). */
+  mapShade?: boolean;
   /** Dark spots: the level below which the water counts as dark, PAR (lux: x 50); absent = 30. */
   mapDark?: number;
 }

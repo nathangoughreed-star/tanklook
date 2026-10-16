@@ -376,3 +376,8 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
   #sheetView .sheetPage { margin: 0; padding: 0; box-shadow: none; max-width: none }
   #sheetView tr, #sheetView h2 { break-inside: avoid } #sheetView h2 { break-after: avoid }
 }
+
+/* light verdict on a selected plant / coral (lane PG step 3) */
+#iLight[data-verdict="dim"] { color: #b8860b }
+#iLight[data-verdict="bright"] { color: #c0392b }
+#iLight[data-verdict="fine"] { color: #2e7d32 }
