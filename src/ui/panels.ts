@@ -1,5 +1,6 @@
 // Sidebar wiring. Inputs write through store.update(); one sync() pulls every control back from the scene,
 // so undo/redo, file open and pointer drags all refresh the panels the same way.
+import { lifeStages } from '../data/lifestages';
 import { rng } from '../art/paint';
 import { GRAIN_LOOK, SUBSTRATES, drawFishCard } from '../art/placeholder';
 import { drawSnailCard } from '../art/snails';
@@ -8,12 +9,13 @@ import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { BACKDROPS } from '../render/backdrop';
 import { MAP_DIV, MAP_STEP, emitters, mapStepOf } from '../render/lighting';
 import { darkOf, darkStats } from '../render/lightShells';
+import { CARE_NAME, FIT_LABEL, FIT_LIGHTS, fitCaption, type FitLight } from '../scene/plantfit';
 import { VERDICT_TEXT, itemLights, tankSummary } from '../scene/lightcheck';
 import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, mountOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeLayout, tubeOf, TUBE_SP_MAX, bestPos, ledBarDepth, posMax, wattsOf, type Fixture } from '../scene/lightout';
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene, TANK_PRESETS } from '../scene/defaults';
-import { COMPS, DEFAULT_DENS, EPIPHYTES, KINDS, perch, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
+import { COMPS, DEFAULT_DENS, STYLE_GROUPS, STYLE_KIND, isLandStyle, EPIPHYTES, KINDS, perch, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
 import { handEdits, regenerate } from '../scene/starter';
 import { styleGround } from '../scene/scapeground';
 import { growthOf, isClump, isFloat, isPatch, type PlantType } from '../art/plants';
@@ -489,6 +491,7 @@ Cancel, then change the name, to keep both.`)) return;
 
   // ---------- Species search & adding animals ----------
   /** Clear water for each type (2026-10-13): marine clear is bluer than the fresh default. */
+  const BLACKWATER: [string, number] = ['#6b3d14', 0.42]; // blackwater's tea tint (lane SS2)
   const FRESH_CLEAR: [string, number] = ['#7fb8a8', 0], SALT_CLEAR: [string, number] = ['#8ec9ec', 0];
   /** A saltwater tank: salt set and water on (a dry tank lists the freshwater and land animals). */
   const isSalt = (s: TankSetup) => s.water.on && !!s.water.salt;
@@ -554,6 +557,7 @@ Cancel, then change the name, to keep both.`)) return;
     $('addFish').title = why;
     $('addWhy').textContent = why; $('addWhy').hidden = !why || !list.length; // said under Add, not only in a tooltip (audit #9)
     setOut('oAddSize', sizeLabel(addPct(), getSpecies(pickId)));
+    renderStages();
   }
   search.oninput = renderResults;
 
@@ -592,7 +596,18 @@ Cancel, then change the name, to keep both.`)) return;
   const addPct = () => clamp(Math.round(+$('addSize').value || 100), 15, 130);
   // each new animal varies around this size like real ones, so a few come out bigger than the adult length (audit #39)
   const sizeLabel = (pct: number, sp?: Species) => (pct === 100 ? 'Adult ±10 %' : `${pct}%${sp ? ' · ' + fmt(sp.tl * pct / 100) : ''} ±10 %`);
-  $('addSize').oninput = () => setOut('oAddSize', sizeLabel(addPct(), getSpecies(pickId)));
+  $('addSize').oninput = () => { setOut('oAddSize', sizeLabel(addPct(), getSpecies(pickId))); renderStages(); };
+  /** Life-stage picker (reptiles, arachnids; lane BP2): each button sets the size slider to that stage's length, the slider stays for fine control. */
+  function renderStages() {
+    const sp = getSpecies(pickId), st = sp && lifeStages(sp), row = $('stageRow'), box = $('stageBtns');
+    row.hidden = !st; if (!st || !sp) return;
+    const cur = addPct(), pcts = st.map(([, mm]) => clamp(Math.round(mm / sp.tl * 100), 15, 130));
+    box.replaceChildren(...st.map(([n, mm], i) => {
+      const b = document.createElement('button'); b.textContent = n; b.title = `${n}: ${fmt(mm)}`; b.className = pcts[i] === cur ? 'on' : '';
+      b.onclick = () => { const r = $<HTMLInputElement>('addSize'); r.value = String(pcts[i]); r.dispatchEvent(new Event('input')); };
+      return b;
+    }));
+  }
   /** Water surface for placement: the water line, or -1 in a dry tank (all ground counts as land). */
   const surfaceY = (s: TankSetup) => (s.water.on ? waterY(s.tank, s.water.level) : -1);
   /** Why this species cannot be added right now ('' = it can). */
@@ -845,7 +860,7 @@ Cancel, then change the name, to keep both.`)) return;
     store.edit(s => {
       if (salt) s.water.salt = true; else delete s.water.salt;
       // the reef starter is salt only: back in fresh water its pieces stay, but Start from no longer claims it (final check item 6)
-      if (!salt && s.layout.id === 'reef') s.layout = { ...s.layout, id: 'none' };
+      if (STYLE_KIND[s.layout.id] === (salt ? 'fresh' : 'salt')) s.layout = { ...s.layout, id: 'none' };
       // the other type's clear water becomes this type's clear water; any other colour is the user's and stays
       const [c, o] = salt ? FRESH_CLEAR : SALT_CLEAR;
       if (s.water.color === c && s.water.opacity === o) [s.water.color, s.water.opacity] = salt ? SALT_CLEAR : FRESH_CLEAR;
@@ -994,7 +1009,10 @@ Cancel, then change the name, to keep both.`)) return;
     else if (scape && store.selectedItem && scapeSec(store.selectedItem.kind) === d.dataset.sec) store.selectItem(null);
     else if (d.dataset.sec === 'fish' && store.selId != null) store.select(null);
   });
-  $<HTMLSelectElement>('layout').innerHTML = Object.entries(LAYOUTS).map(([k, l]) => `<option value="${k}">${esc(l.label)}</option>`).join('');
+  // the picker (lane SS2): Bare tank, then Freshwater / biotopes / Marine / Terrarium groups; the marine styles show in a
+  // saltwater tank only and the freshwater biotopes in a freshwater one (refreshed with the water type, below)
+  const styleOpt = (k: LayoutId) => `<option value="${k}" title="${esc(LAYOUTS[k].hint)}">${esc(LAYOUTS[k].label)}</option>`;
+  $<HTMLSelectElement>('layout').innerHTML = styleOpt('none') + STYLE_GROUPS.map(g => `<optgroup label="${g.label}">${g.ids.map(styleOpt).join('')}</optgroup>`).join('');
   $<HTMLSelectElement>('layoutComp').innerHTML = Object.entries(COMPS).map(([k, c]) => `<option value="${k}" title="${esc(c.hint)}">${esc(c.label)}</option>`).join('');
   // a starter set replaces every piece (undoable), and the animals when its animal stop is above None; the pieces are
   // then ordinary items
@@ -1025,8 +1043,13 @@ Cancel, then change the name, to keep both.`)) return;
     store.edit(s => {
       const was = s.layout.id;
       s.layout.id = to;
-      if (s.layout.id === 'swamp' && s.water.level > SWAMP_LEVEL) { preSwamp = s.water.level; setWaterLevel(s, SWAMP_LEVEL); } // land needs to stand out of the water
-      else if (was === 'swamp' && s.layout.id !== 'swamp' && s.water.level === SWAMP_LEVEL) setWaterLevel(s, preSwamp);
+      if ((s.layout.id === 'swamp' || s.layout.id === 'paludarium') && s.water.level > SWAMP_LEVEL) { preSwamp = s.water.level; setWaterLevel(s, SWAMP_LEVEL); } // land needs to stand out of the water
+      else if ((was === 'swamp' || was === 'paludarium') && s.layout.id !== 'swamp' && s.layout.id !== 'paludarium' && s.water.level === SWAMP_LEVEL) setWaterLevel(s, preSwamp);
+      // a terrarium starter (lane SS2) is dry: the water goes off, and comes back when a water style replaces it
+      if (isLandStyle(to)) s.water.on = false; else if (isLandStyle(was) && to !== 'none') s.water.on = true;
+      // blackwater tints the water tea; leaving it clears that tint again (a colour the user set is left alone)
+      if (to === 'blackwater') Object.assign(s.water, { color: BLACKWATER[0], opacity: BLACKWATER[1] });
+      else if (was === 'blackwater' && s.water.color === BLACKWATER[0] && s.water.opacity === BLACKWATER[1]) [s.water.color, s.water.opacity] = s.water.salt ? SALT_CLEAR : FRESH_CLEAR;
       styleGround(s); // the style's own substrate and terrain (Quick aquascape setup); a bare tank keeps its ground
       replaced(s);
     });
@@ -1041,6 +1064,24 @@ Cancel, then change the name, to keep both.`)) return;
     store.selectItem(null);
     store.edit(s => { if (to === 'any') delete s.layout.comp; else s.layout.comp = to; styleGround(s); regenerate(s, 'hard', 0); });
     status(`Composition: ${COMPS[to].label}. Ctrl+Z brings the previous pieces back.`);
+  };
+  // Auto-populate by light and care (lane PG step 4): the plants are redrawn from only the kinds that fit
+  $<HTMLSelectElement>('layoutFit').innerHTML = '<option value="any">Any plants</option>' + FIT_LIGHTS.map(k => `<option value="${k}"></option>`).join('');
+  $<HTMLSelectElement>('layoutCare').innerHTML = (Object.keys(CARE_NAME) as GrowFeed[]).map(k => `<option value="${k}">${esc(CARE_NAME[k][0].toUpperCase() + CARE_NAME[k].slice(1))}</option>`).join('');
+  const refit = async (revert: () => void, edit: (s: TankSetup) => void, msg: string) => {
+    if (!await okToReplace('plant', revert)) return;
+    store.selectItem(null); fishId0 = store.nextId();
+    store.edit(s => { edit(s); regenerate(s, 'plant', fishId0); });
+    status(msg + ' Ctrl+Z brings the previous plants back.');
+  };
+  const showFit = () => { const s = S(); setVal('layoutFit', s.layout.fit ?? 'any'); setVal('layoutCare', s.grow.feed); };
+  $<HTMLSelectElement>('layoutFit').onchange = e => {
+    const v = (e.target as HTMLSelectElement).value;
+    refit(showFit, s => { if (v === 'any') delete s.layout.fit; else s.layout.fit = v as FitLight; }, v === 'any' ? 'Plants redrawn: any kind.' : 'Plants redrawn for the light and care.');
+  };
+  $<HTMLSelectElement>('layoutCare').onchange = e => {
+    const v = (e.target as HTMLSelectElement).value as GrowFeed;
+    refit(showFit, s => { s.grow.feed = v; }, `Care set to ${CARE_NAME[v]}.`);
   };
   // Quick aquascape setup (Nathan 2026-10-15): one Shuffle for the whole set, the substrate and terrain, rock and wood,
   // and plants, at the same style, composition and densities; the animals stay (Animals has its own Shuffle). The
@@ -1640,7 +1681,9 @@ Cancel, then change the name, to keep both.`)) return;
     $('wFresh').classList.toggle('on', !wa.salt); $('wSalt').classList.toggle('on', !!wa.salt);
     for (const id of ['wTannin', 'wGreen']) $(id).style.display = wa.salt ? 'none' : '';
     for (const id of ['wReef', 'wOcean']) $(id).style.display = wa.salt ? '' : 'none';
-    document.querySelectorAll<HTMLElement>('.lib [data-salt], #layout option[value="reef"]').forEach(e => e.style.display = isSalt(s) ? '' : 'none');
+    document.querySelectorAll<HTMLElement>('.lib [data-salt]').forEach(e => e.style.display = isSalt(s) ? '' : 'none');
+    // the style picker: marine styles in salt water only, freshwater biotopes in fresh only (terrariums turn the water off, so show always)
+    document.querySelectorAll<HTMLOptionElement>('#layout option').forEach(o => { const k = STYLE_KIND[o.value as LayoutId]; o.hidden = k === 'salt' ? !isSalt(s) : k === 'fresh' ? isSalt(s) : false; });
     $('plantsTitle').textContent = isSalt(s) ? 'Plants & Corals' : 'Plants';
     const mis = misfits(s);
     $('wMisfitRow').style.display = mis.length ? '' : 'none';
@@ -1747,6 +1790,11 @@ Cancel, then change the name, to keep both.`)) return;
     ($('split') as HTMLButtonElement).disabled = store.split;
     $('splitHint').textContent = store.split ? 'Two tanks is the most: Delete one on its tab to split again. Each view’s tab (top of the view) opens on hover: what differs, Download that tank on its own, or Delete it. Save and Download at the top keep both tanks together.' : 'Copy this tank into a second, independent one beside it, then change anything in either.';
     setVal('edge', s.render.edge); $('gridOn').checked = s.render.grid; setVal('pop', Math.round(s.render.pop * 100)); setOut('oPop', s.render.pop ? `${Math.round(s.render.pop * 100)} %` : 'off');
+    { const salt = !!s.water.salt, fs = $<HTMLSelectElement>('layoutFit'), fit = s.layout.fit;
+      [...fs.options].forEach(o => { if (o.value !== 'any') o.textContent = FIT_LABEL[o.value as FitLight][salt ? 'reef' : 'fresh']; });
+      setVal('layoutFit', fit ?? 'any'); setVal('layoutCare', s.grow.feed);
+      fs.disabled = s.layout.id === 'none'; ($('layoutCare') as HTMLSelectElement).disabled = s.layout.id === 'none' || s.grow.time > 0;
+      const n = $('fitNote'); n.hidden = !fit; if (fit) n.textContent = fitCaption(s.items, fit, s.grow.feed, salt, v => LIBRARY[v]?.label ?? v); }
     setVal('layoutComp', s.layout.comp ?? 'any'); ($('layoutComp') as HTMLSelectElement).disabled = s.layout.id === 'none';
     setVal('layout', s.layout.id); // "Bare tank" says there is nothing in it, which stops being true once a piece is added by hand (G2, 2026-10-14)
     $('layoutHint').textContent = s.layout.id === 'none' && s.items.length ? 'A starter set replaces every piece; or add, move and remove pieces yourself.' : LAYOUTS[s.layout.id].hint;

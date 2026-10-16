@@ -548,36 +548,6 @@
       "port": 5663
     },
     {
-      "name": "plant-gates",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "--prefix",
-        "C:/Users/nreed/Glass-Box-plant-gates",
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5673",
-        "--strictPort"
-      ],
-      "port": 5673
-    },
-    {
-      "name": "starters2",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "--prefix",
-        "C:/Users/nreed/Glass-Box-starters2",
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5683",
-        "--strictPort"
-      ],
-      "port": 5683
-    },
-    {
       "name": "scatter-brush",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
@@ -591,21 +561,6 @@
         "--strictPort"
       ],
       "port": 5693
-    },
-    {
-      "name": "python2",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "--prefix",
-        "C:/Users/nreed/Glass-Box-python2",
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5703",
-        "--strictPort"
-      ],
-      "port": 5703
     }
   ]
 }

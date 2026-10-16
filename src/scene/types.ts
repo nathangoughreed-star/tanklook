@@ -201,7 +201,9 @@ export interface TerrainPool { x: number; d: number; rx: number; rd: number; ban
  * the tank size and the seed. It stays recorded as the set the tank started from; 'swamp' also shapes the land. 'reef'
  * (2026-10-14): live rock and corals, offered in a saltwater tank only.
  */
-export type LayoutId = 'none' | 'stones' | 'driftwood' | 'planted' | 'iwagumi' | 'swamp' | 'reef' | 'nature' | 'dutch' | 'jungle' | 'forest';
+export type LayoutId = 'none' | 'stones' | 'driftwood' | 'planted' | 'iwagumi' | 'swamp' | 'reef' | 'nature' | 'dutch' | 'jungle' | 'forest'
+  // lane SS2 (2026-10-16): terrarium starters (water off; 'paludarium' keeps its pools), freshwater biotopes, marine sub-styles
+  | 'rainforest' | 'arid' | 'jumper' | 'python' | 'burrow' | 'frogs' | 'paludarium' | 'blackwater' | 'malawi' | 'stream' | 'hillstream' | 'softreef' | 'spsreef' | 'clownnano';
 /** Where a starter set's weight sits (lane SS, 2026-10-15): 'any' = the seed rolls it (as before); the others fix the
  *  groups (scene/items.ts `starterStyle`): one centred mound, one side (a triangle), U (both sides high, open middle),
  *  V (two islands, a valley between), scattered groups. */
@@ -217,7 +219,9 @@ export interface LayerDens { hard: number; plant: number; animal: number }
  *  starter animals, so each menu's Shuffle redraws its own layer only (Nathan 2026-10-15). Absent = `seed`. */
 export interface LayoutSettings { id: LayoutId; seed: number; plantSeed?: number; animalSeed?: number; dens?: LayerDens; comp?: CompId;
   /** The substrate and terrain were drawn for this style by the Quick aquascape setup (scene/scapeground.ts). */
-  ground?: boolean }
+  ground?: boolean;
+  /** Auto-populate by light (lane PG step 4, 2026-10-16): the starter set keeps only plants / corals that fit this light level and the tank's care (grow.feed). Absent = every plant the style draws. */
+  fit?: 'low' | 'medium' | 'high' }
 
 /** Library item kinds; the variant names the generator (scene/items.ts LIBRARY). */
 export type ItemKind = 'stone' | 'wood' | 'cave' | 'plant' | 'coral';

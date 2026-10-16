@@ -6,8 +6,8 @@ import { insideBy, shapeOf } from '../src/scene/shape';
 import { parseScene } from '../src/scene/validate';
 
 describe('example tanks (lane F, 2026-10-13)', () => {
-  it('ships six examples, each with a picture', () => {
-    expect(EXAMPLES.length).toBe(6);
+  it('ships eleven examples, each with a picture', () => {
+    expect(EXAMPLES.length).toBe(11);
     expect(new Set(EXAMPLES.map(x => x.id)).size).toBe(EXAMPLES.length);
     for (const x of EXAMPLES) expect(x.thumb).toMatch(/\.jpg$/); // an image file, not base64 in the main bundle (lane EF3)
     expect(Object.keys(SCENES).sort()).toEqual(EXAMPLES.map(x => x.id).sort());
@@ -31,7 +31,7 @@ describe('example tanks (lane F, 2026-10-13)', () => {
     for (const f of t.fish) expect(getSpecies(f.species)!.salt, f.species).toBe(true);
   });
   it('each sits on a stand, in its own shape, with every piece and animal inside the glass (lane I, 2026-10-14)', () => {
-    const shapes: Record<string, string> = { planted: 'rect', iwagumi: 'rect', betta: 'bowl', paludarium: 'round', terrarium: 'pie', reef: 'bow' };
+    const shapes: Record<string, string> = { planted: 'rect', iwagumi: 'rect', betta: 'bowl', paludarium: 'round', terrarium: 'pie', reef: 'bow', rainforest: 'rect', arid: 'rect', python: 'rect', blackwater: 'rect', clownnano: 'rect' }; // SS2 examples on the planted tank's rectangle
     for (const x of EXAMPLES) {
       const t = parseScene(SCENES[x.id]).scene.tanks[0];
       expect(shapeOf(t.tank), x.id).toBe(shapes[x.id]);

@@ -1,0 +1,458 @@
+{
+ "version": 9,
+ "name": "Ball python enclosure",
+ "units": "in",
+ "tanks": [
+  {
+   "tank": {
+    "L": 1219,
+    "D": 609,
+    "H": 457
+   },
+   "camera": {
+    "dist": 3000,
+    "az": 12,
+    "el": 8,
+    "zoom": 0.8
+   },
+   "render": {
+    "edge": "a2c",
+    "grid": false,
+    "rim": true,
+    "edges": true,
+    "beams": false,
+    "pop": 0.15,
+    "bg": "black",
+    "glass": "auto",
+    "bgSides": [
+     "back"
+    ],
+    "bgArc": 145,
+    "bgImages": [],
+    "glassType": "standard"
+   },
+   "light": {
+    "type": "led",
+    "count": 1,
+    "rows": 1,
+    "pattern": "grid",
+    "spacing": 0,
+    "cone": 52,
+    "bright": 1,
+    "kelvin": 6500,
+    "room": 0.15,
+    "height": 50
+   },
+   "substrate": {
+    "show": true,
+    "type": "soil",
+    "custom": {
+     "grain": "sand",
+     "color": "#cbb894",
+     "grain2": "none",
+     "color2": "#6f6556",
+     "share": 30,
+     "mix": 0.5
+    },
+    "fl": 23,
+    "fr": 23,
+    "bl": 30,
+    "br": 33
+   },
+   "layout": {
+    "id": "python",
+    "seed": 1,
+    "dens": {
+     "hard": 2,
+     "plant": 2,
+     "animal": 3
+    },
+    "ground": true
+   },
+   "water": {
+    "on": false,
+    "level": 1,
+    "opacity": 0,
+    "color": "#7fb8a8"
+   },
+   "terrain": {
+    "on": true,
+    "cols": 7,
+    "rows": 4,
+    "h": [
+     22.5,
+     22.6,
+     22.7,
+     22.9,
+     23,
+     23.1,
+     23.2,
+     25.8,
+     23.8,
+     23.7,
+     25.2,
+     27.3,
+     27.1,
+     24.8,
+     29,
+     31.9,
+     34,
+     30.6,
+     29.1,
+     29.3,
+     29.9,
+     30.3,
+     33.2,
+     34.1,
+     31.9,
+     29.8,
+     30.3,
+     32.7
+    ],
+    "pools": []
+   },
+   "lid": "open",
+   "stand": {
+    "show": true,
+    "height": 762,
+    "finish": "black",
+    "style": "cabinet",
+    "table": {
+     "shape": "rect",
+     "L": 943,
+     "D": 486,
+     "x": 0,
+     "z": 0
+    }
+   },
+   "backdrop": {
+    "kind": "none",
+    "depth": 50,
+    "seed": 1
+   },
+   "grow": {
+    "feed": "low",
+    "time": 0,
+    "mode": "rel"
+   },
+   "condition": {
+    "level": 0
+   },
+   "person": {
+    "show": false,
+    "height": 1750,
+    "side": "left"
+   },
+   "wall": {
+    "show": true,
+    "side": "back",
+    "color": "#d8d2c6"
+   },
+   "fish": [
+    {
+     "id": 1000,
+     "species": "ballpython",
+     "x": 947.4697103724117,
+     "y": 26.18176386861541,
+     "depth": 142.92422534842976,
+     "yaw": -152,
+     "pitch": 0,
+     "roll": 0,
+     "bend": -1,
+     "tl": 1064,
+     "surface": "floor"
+    }
+   ],
+   "items": [
+    {
+     "id": 1,
+     "kind": "cave",
+     "variant": "halflog",
+     "seed": 634774354,
+     "x": 182.85,
+     "depth": 194.88,
+     "lift": 0,
+     "yaw": 14,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 317
+    },
+    {
+     "id": 2,
+     "kind": "wood",
+     "variant": "corktube",
+     "seed": 161750877,
+     "x": 1036.1499999999999,
+     "depth": 182.7,
+     "lift": 0,
+     "yaw": 8,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 317
+    },
+    {
+     "id": 3,
+     "kind": "stone",
+     "variant": "ledge",
+     "seed": 917858538,
+     "x": 365.7,
+     "depth": 426.29999999999995,
+     "lift": 0,
+     "yaw": 0,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 340
+    },
+    {
+     "id": 4,
+     "kind": "wood",
+     "variant": "climb",
+     "seed": 964110862,
+     "x": 426.65,
+     "depth": 395.85,
+     "lift": 0,
+     "yaw": 25,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 503
+    },
+    {
+     "id": 5,
+     "kind": "wood",
+     "variant": "branch",
+     "seed": 708068073,
+     "x": 458.3590206647292,
+     "depth": 412.36716796054975,
+     "lift": 0,
+     "yaw": -34,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 366
+    },
+    {
+     "id": 6,
+     "kind": "wood",
+     "variant": "branch",
+     "seed": 603345453,
+     "x": 462.581745222304,
+     "depth": 335.3912614208647,
+     "lift": 0,
+     "yaw": -6,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 366
+    },
+    {
+     "id": 7,
+     "kind": "wood",
+     "variant": "corkflat",
+     "seed": 628627434,
+     "x": 593.4894517681096,
+     "depth": 583,
+     "lift": 0,
+     "yaw": 163,
+     "pitch": 0,
+     "tilt": 90,
+     "size": 274
+    },
+    {
+     "id": 8,
+     "kind": "wood",
+     "variant": "corkflat",
+     "seed": 19475683,
+     "x": 548.3109542097664,
+     "depth": 583,
+     "lift": 0,
+     "yaw": -13,
+     "pitch": 0,
+     "tilt": 90,
+     "size": 274
+    },
+    {
+     "id": 9,
+     "kind": "plant",
+     "variant": "pothos",
+     "seed": 457390272,
+     "x": 447.1598141962662,
+     "depth": 420.85,
+     "lift": 0,
+     "yaw": 13,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 408
+    },
+    {
+     "id": 10,
+     "kind": "plant",
+     "variant": "fittonia",
+     "seed": 925066613,
+     "x": 821.1702112703631,
+     "depth": 576.6663277509715,
+     "lift": 0,
+     "yaw": -14,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 41
+    },
+    {
+     "id": 11,
+     "kind": "plant",
+     "variant": "fittonia",
+     "seed": 253883833,
+     "x": 819.8499643387114,
+     "depth": 573.152073734444,
+     "lift": 0,
+     "yaw": 13,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 45
+    },
+    {
+     "id": 12,
+     "kind": "plant",
+     "variant": "tropfern",
+     "seed": 944312550,
+     "x": 209.6539087374648,
+     "depth": 482.25609355456197,
+     "lift": 0,
+     "yaw": 8,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 106
+    },
+    {
+     "id": 13,
+     "kind": "plant",
+     "variant": "tropfern",
+     "seed": 293975167,
+     "x": 220.99074377192284,
+     "depth": 461.4410519309337,
+     "lift": 0,
+     "yaw": 12,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 84
+    },
+    {
+     "id": 14,
+     "kind": "plant",
+     "variant": "tropfern",
+     "seed": 396149693,
+     "x": 632.2075954197346,
+     "depth": 385.49405218387955,
+     "lift": 0,
+     "yaw": 6,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 115
+    },
+    {
+     "id": 15,
+     "kind": "plant",
+     "variant": "tropfern",
+     "seed": 445108181,
+     "x": 931.7719946051715,
+     "depth": 492.7208973069024,
+     "lift": 0,
+     "yaw": -5,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 143
+    },
+    {
+     "id": 16,
+     "kind": "plant",
+     "variant": "fittonia",
+     "seed": 808435812,
+     "x": 720.494949436402,
+     "depth": 522.4884708040394,
+     "lift": 0,
+     "yaw": 10,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 44
+    },
+    {
+     "id": 17,
+     "kind": "plant",
+     "variant": "fittonia",
+     "seed": 36879366,
+     "x": 744.4111426951131,
+     "depth": 519.5388627994244,
+     "lift": 0,
+     "yaw": -9,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 41
+    },
+    {
+     "id": 18,
+     "kind": "plant",
+     "variant": "bromeliad",
+     "seed": 949339704,
+     "x": 1119.1300887645361,
+     "depth": 497.79184578929096,
+     "lift": 0,
+     "yaw": -14,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 50
+    },
+    {
+     "id": 19,
+     "kind": "plant",
+     "variant": "bromeliad",
+     "seed": 848576138,
+     "x": 1137.515833369151,
+     "depth": 474.2439632158275,
+     "lift": 0,
+     "yaw": 11,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 50
+    },
+    {
+     "id": 20,
+     "kind": "plant",
+     "variant": "tropfern",
+     "seed": 554172668,
+     "x": 1015.9165124037862,
+     "depth": 541.8459792978969,
+     "lift": 0,
+     "yaw": 10,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 103
+    },
+    {
+     "id": 21,
+     "kind": "plant",
+     "variant": "tropfern",
+     "seed": 214671905,
+     "x": 1147.0065731450543,
+     "depth": 398.8712300626561,
+     "lift": 0,
+     "yaw": -1,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 120
+    },
+    {
+     "id": 22,
+     "kind": "plant",
+     "variant": "tropfern",
+     "seed": 760353229,
+     "x": 1148.1951207585457,
+     "depth": 410.8464811390521,
+     "lift": 0,
+     "yaw": 8,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 134
+    }
+   ]
+  }
+ ],
+ "active": 0,
+ "camLock": true
+}

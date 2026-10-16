@@ -1,0 +1,534 @@
+{
+ "version": 9,
+ "name": "Clownfish and anemone nano",
+ "units": "in",
+ "tanks": [
+  {
+   "tank": {
+    "L": 609.6,
+    "D": 304.8,
+    "H": 406.4
+   },
+   "camera": {
+    "dist": 3000,
+    "az": -12,
+    "el": 8,
+    "zoom": 0.8
+   },
+   "render": {
+    "edge": "a2c",
+    "grid": false,
+    "rim": true,
+    "edges": true,
+    "beams": false,
+    "pop": 0.15,
+    "bg": "black",
+    "glass": "auto",
+    "bgSides": [
+     "back"
+    ],
+    "bgArc": 145,
+    "bgImages": [],
+    "glassType": "standard"
+   },
+   "light": {
+    "type": "spot",
+    "count": 3,
+    "rows": 2,
+    "pattern": "grid",
+    "spacing": 0,
+    "cone": 52,
+    "bright": 1,
+    "kelvin": 14000,
+    "room": 0.15,
+    "height": 50
+   },
+   "substrate": {
+    "show": true,
+    "type": "aragonite",
+    "custom": {
+     "grain": "sand",
+     "color": "#cbb894",
+     "grain2": "none",
+     "color2": "#6f6556",
+     "share": 30,
+     "mix": 0.5
+    },
+    "fl": 20,
+    "fr": 21,
+    "bl": 20,
+    "br": 22
+   },
+   "layout": {
+    "id": "clownnano",
+    "seed": 1,
+    "dens": {
+     "hard": 2,
+     "plant": 2,
+     "animal": 3
+    },
+    "ground": true
+   },
+   "water": {
+    "on": true,
+    "level": 1,
+    "opacity": 0.22,
+    "color": "#2f86d0",
+    "salt": true
+   },
+   "terrain": {
+    "on": true,
+    "cols": 7,
+    "rows": 4,
+    "h": [
+     19.9,
+     18.3,
+     18.3,
+     20.4,
+     22.4,
+     22.3,
+     20.6,
+     19.6,
+     19.4,
+     20.7,
+     22.2,
+     21.7,
+     21.5,
+     21.2,
+     19,
+     21.7,
+     24.2,
+     23.5,
+     19.8,
+     19.9,
+     22.4,
+     19.7,
+     20.2,
+     20.7,
+     20.8,
+     20.9,
+     21.2,
+     21.8
+    ],
+    "pools": []
+   },
+   "lid": "open",
+   "stand": {
+    "show": true,
+    "height": 762,
+    "finish": "black",
+    "style": "cabinet",
+    "table": {
+     "shape": "rect",
+     "L": 1256,
+     "D": 494,
+     "x": 0,
+     "z": 0
+    }
+   },
+   "backdrop": {
+    "kind": "none",
+    "depth": 50,
+    "seed": 1
+   },
+   "grow": {
+    "feed": "low",
+    "time": 0,
+    "mode": "rel"
+   },
+   "condition": {
+    "level": 0
+   },
+   "person": {
+    "show": false,
+    "height": 1750,
+    "side": "left"
+   },
+   "wall": {
+    "show": true,
+    "side": "back",
+    "color": "#d8d2c6"
+   },
+   "fish": [
+    {
+     "id": 1000,
+     "species": "ocellaris",
+     "x": 301.7052182749098,
+     "y": 273.15056475066837,
+     "depth": 157.59608646904874,
+     "yaw": 70,
+     "pitch": -8,
+     "roll": 0,
+     "bend": -0.37,
+     "tl": 67
+    },
+    {
+     "id": 1001,
+     "species": "ocellaris",
+     "x": 315.20877137392694,
+     "y": 269.0104280850524,
+     "depth": 155.9946850995103,
+     "yaw": -88,
+     "pitch": -12,
+     "roll": 0,
+     "bend": 0,
+     "tl": 64
+    },
+    {
+     "id": 1002,
+     "species": "hermit",
+     "x": 234.71577151391708,
+     "y": 110.64011777299855,
+     "depth": 150.72670617349024,
+     "yaw": 105,
+     "pitch": 0,
+     "roll": 0,
+     "bend": 0.13,
+     "tl": 28,
+     "surface": "hardscape"
+    },
+    {
+     "id": 1003,
+     "species": "hermit",
+     "x": 56.205869027227166,
+     "y": 19.030225100666694,
+     "depth": 16.478225343301894,
+     "yaw": 26,
+     "pitch": 0,
+     "roll": 0,
+     "bend": -0.21,
+     "tl": 27,
+     "surface": "floor"
+    },
+    {
+     "id": 1004,
+     "species": "hermit",
+     "x": 303.7239545818057,
+     "y": 231.83862827739839,
+     "depth": 147.5013466761392,
+     "yaw": -173,
+     "pitch": 0,
+     "roll": 0,
+     "bend": 0.06,
+     "tl": 27,
+     "surface": "hardscape"
+    },
+    {
+     "id": 1005,
+     "species": "cleanershrimp",
+     "x": 537.7899789065123,
+     "y": 20.63115154239315,
+     "depth": 179.19328906852752,
+     "yaw": -37,
+     "pitch": 0,
+     "roll": 0,
+     "bend": 0.37,
+     "tl": 49,
+     "surface": "floor"
+    },
+    {
+     "id": 1006,
+     "species": "cleanershrimp",
+     "x": 392.47363452091815,
+     "y": 20.412729983410696,
+     "depth": 254.71083894297482,
+     "yaw": 164,
+     "pitch": 0,
+     "roll": 0,
+     "bend": -0.24,
+     "tl": 48,
+     "surface": "floor"
+    },
+    {
+     "id": 1007,
+     "species": "royalgramma",
+     "x": 69.29155739173294,
+     "y": 69.23805602167639,
+     "depth": 139.23710070122033,
+     "yaw": 180,
+     "pitch": 5,
+     "roll": 1,
+     "bend": 0.06,
+     "tl": 70
+    }
+   ],
+   "items": [
+    {
+     "id": 1,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 192849798,
+     "x": 274.32,
+     "depth": 167.64000000000001,
+     "lift": 0,
+     "yaw": -119,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 178
+    },
+    {
+     "id": 2,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 208478039,
+     "x": 373.3105131857365,
+     "depth": 173.06234253203064,
+     "lift": 0,
+     "yaw": -173,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 112
+    },
+    {
+     "id": 3,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 463689210,
+     "x": 287.63078944717057,
+     "depth": 227.78106298962655,
+     "lift": 0,
+     "yaw": -142,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 114
+    },
+    {
+     "id": 4,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 762067290,
+     "x": 193.40523123835055,
+     "depth": 194.2660013988035,
+     "lift": 0,
+     "yaw": -57,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 90
+    },
+    {
+     "id": 5,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 498126366,
+     "x": 201.59071670997741,
+     "depth": 114.70914150320544,
+     "lift": 0,
+     "yaw": 9,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 128
+    },
+    {
+     "id": 6,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 503565226,
+     "x": 305.68689330009346,
+     "depth": 129.94802354391047,
+     "lift": 0,
+     "yaw": 92,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 122
+    },
+    {
+     "id": 7,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 308696767,
+     "x": 282.35385619421305,
+     "depth": 176.96067147708314,
+     "lift": 71,
+     "yaw": 126,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 103
+    },
+    {
+     "id": 8,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 881966441,
+     "x": 255.1205391053818,
+     "depth": 162.0759128351994,
+     "lift": 121,
+     "yaw": 156,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 89
+    },
+    {
+     "id": 9,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 604910155,
+     "x": 301.23927887155116,
+     "depth": 157.06200009901823,
+     "lift": 159,
+     "yaw": -27,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 75
+    },
+    {
+     "id": 10,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 150195830,
+     "x": 111.933544870466,
+     "depth": 194.82565240278842,
+     "lift": 0,
+     "yaw": 158,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 49
+    },
+    {
+     "id": 11,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 286626738,
+     "x": 342.3303234261275,
+     "depth": 221.8914031943679,
+     "lift": 0,
+     "yaw": -154,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 54
+    },
+    {
+     "id": 12,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 610261608,
+     "x": 367.33593786980964,
+     "depth": 192.69912528365853,
+     "lift": 0,
+     "yaw": -69,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 34
+    },
+    {
+     "id": 13,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 409460680,
+     "x": 208.40512489870193,
+     "depth": 160.5861639453471,
+     "lift": 0,
+     "yaw": 117,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 44
+    },
+    {
+     "id": 14,
+     "kind": "stone",
+     "variant": "liverock",
+     "seed": 672061213,
+     "x": 170.00568471416832,
+     "depth": 145.48761044651272,
+     "lift": 0,
+     "yaw": -19,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 33
+    },
+    {
+     "id": 15,
+     "kind": "coral",
+     "variant": "hammer",
+     "seed": 735667656,
+     "x": 308.438775132861,
+     "depth": 160.06800497680425,
+     "lift": 202,
+     "yaw": 95,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 99
+    },
+    {
+     "id": 16,
+     "kind": "coral",
+     "variant": "mushroom",
+     "seed": 255349714,
+     "x": 259.75760324539243,
+     "depth": 168.2470939233646,
+     "lift": 164,
+     "yaw": -176,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 107
+    },
+    {
+     "id": 17,
+     "kind": "coral",
+     "variant": "mushroom",
+     "seed": 385035640,
+     "x": 293.49311092289446,
+     "depth": 166.81140263356207,
+     "lift": 128,
+     "yaw": 117,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 110
+    },
+    {
+     "id": 18,
+     "kind": "coral",
+     "variant": "zoanthid",
+     "seed": 656849543,
+     "x": 243.50865953308994,
+     "depth": 164.91874359764964,
+     "lift": 76,
+     "yaw": 58,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 94
+    },
+    {
+     "id": 19,
+     "kind": "coral",
+     "variant": "hammer",
+     "seed": 634510535,
+     "x": 187.65500408666588,
+     "depth": 83.4340857876932,
+     "lift": 0,
+     "yaw": -52,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 95
+    },
+    {
+     "id": 20,
+     "kind": "coral",
+     "variant": "montipora",
+     "seed": 608796556,
+     "x": 157.9503422368478,
+     "depth": 102.16532224353378,
+     "lift": 0,
+     "yaw": 166,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 76
+    },
+    {
+     "id": 21,
+     "kind": "coral",
+     "variant": "anemone",
+     "seed": 194676854,
+     "x": 292.9422359177694,
+     "depth": 146.35878887478776,
+     "lift": 202,
+     "yaw": -113,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 103
+    }
+   ]
+  }
+ ],
+ "active": 0,
+ "camLock": true
+}

@@ -3,7 +3,7 @@
 // from its own random stream (seed x layer), so redrawing one leaves the layers it does not feed exactly as they were.
 import { rng } from '../art/paint';
 import { getSpecies, type Species } from '../data/species';
-import { DEFAULT_DENS, EPIPHYTES, STYLES, clampItem, layerOf, perch, starterItems, type Layer } from './items';
+import { DEFAULT_DENS, EPIPHYTES, STYLES, clampItem, isLandStyle, isSwampy, layerOf, perch, starterItems, type Layer } from './items';
 import { volume } from './physics';
 import { groundEdited } from './scapeground';
 import { placeNew, randomPose, randomSize } from './scatter';
@@ -44,6 +44,11 @@ function stocking(sp: Species) {
   return sp.group ? { start: 6, step: 2, max: 30 } : { start: 1, step: 0, max: 1 }; // a school or shoal; else a single fish
 }
 
+/** Most of a land species a terrarium starter keeps (lane SS2): geckos in a pair or a trio, a snake, spider or tarantula alone,
+ *  frogs in a group. Land animals are not counted against the bioload (there is no water to foul). */
+const LAND_MOST: Record<string, number> = { ballpython: 1, chacogoldenknee: 1, regaljumper: 1, leopardgecko: 2, crestedgecko: 2, crestedharlequin: 2, treefrog: 4, dartfrog: 5, firetoad: 5, firenewt: 4 };
+const landCount = (sp: Species, v: number) => { const m = LAND_MOST[sp.id] ?? 3; return Math.max(1, Math.min(m, Math.round(m * fillAt(v) / ANIMAL_FILL[4]))); };
+
 /**
  * The animal layer of a starter set at its animal stop: a few species from the style's pool that suit the tank (fresh
  * or salt, room to swim, land for land animals), groups grown in turn until the stop's share of the bioload cap is
@@ -53,9 +58,9 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
   const id = s.layout.id, stop = (s.layout.dens ?? DEFAULT_DENS).animal;
   if (id === 'none' || stop <= 0) return [];
   const r = rng((s.layout.animalSeed ?? s.layout.seed) * 7919 + id.length * 104729 + 3 * 1000003), salt = s.water.on && !!s.water.salt;
-  const swamp = id === 'swamp', T = s.tank;
+  const swamp = isSwampy(id), land = isLandStyle(id), T = s.tank;
   const pool = STYLES[id].animals.map(getSpecies).filter((sp): sp is Species => !!sp && !!sp.salt === salt
-    && T.L >= sp.tl * (sp.salt ? 6 : 5) && (sp.habitat === 'water' ? s.water.on : swamp));
+    && T.L >= (sp.body === 'snake' ? 60 : sp.tl) * (sp.salt ? 6 : land || (swamp && id !== 'swamp') ? (sp.habitat === 'water' ? 5 : 2.5) : 5) && (sp.habitat === 'water' ? s.water.on : swamp || land));
   // shuffled, with a schooling or shoaling swimmer up front (one whose group fits the tank) so there is a group to
   // watch; the same order at every stop, so a fuller stop adds to the tank rather than swapping its species
   for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
@@ -64,6 +69,7 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
   if (lead > 0) pool.unshift(...pool.splice(lead, 1));
   const chosen = pool.slice(0, kindsAt(stop)), budget = bioloadLitres(s) * fillAt(stop), big = Math.max(1, fillAt(stop) / ANIMAL_FILL[4]);
   const count = new Map<Species, number>();
+  const dry = (sp: Species) => (land || id === 'paludarium') && sp.habitat !== 'water'; // land animals in a terrarium style
   let used = 0;
   const add = (sp: Species, n: number, most = budget) => {
     if (n <= 0 || used + n * litresFor(sp) > most) return false;
@@ -71,10 +77,11 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
   };
   // the lead group goes in at any stop above None if it fits under the cap at all (a small tank's Few is then just
   // that one school); the rest join while the stop's share lasts
-  chosen.forEach((sp, i) => add(sp, stocking(sp).start, i === 0 && lead >= 0 ? Math.max(cap, budget) : budget));
+  for (const sp of chosen) if (dry(sp)) count.set(sp, landCount(sp, stop));
+  chosen.forEach((sp, i) => !dry(sp) && add(sp, stocking(sp).start, i === 0 && lead >= 0 ? Math.max(cap, budget) : budget));
   for (let grew = true; grew;) { // grow each group in turn while the budget lasts
     grew = false;
-    for (const [sp, n] of count) { const { step, max } = stocking(sp); if (step && n + step <= Math.round(max * big) && add(sp, step)) grew = true; }
+    for (const [sp, n] of count) { if (dry(sp)) continue; const { step, max } = stocking(sp); if (step && n + step <= Math.round(max * big) && add(sp, step)) grew = true; }
   }
   if (stop < 1) { // below Few: the first animals only, one at the least
     let keep = Math.max(1, Math.round([...count.values()].reduce((a, n) => a + n, 0) * stop));

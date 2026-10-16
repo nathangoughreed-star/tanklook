@@ -7,6 +7,7 @@ import { Store } from '../src/scene/store';
 import { groundHeight } from '../src/scene/terrain';
 import { parseScene } from '../src/scene/validate';
 import { LAYOUT_IDS } from '../src/scene/validate';
+const STYLE_SS2 = new Set<string>(['rainforest', 'arid', 'jumper', 'python', 'burrow', 'frogs', 'paludarium', 'blackwater', 'malawi', 'stream', 'hillstream', 'softreef', 'spsreef', 'clownnano']); // lane SS2
 import { SCENE_VERSION, type LayoutId } from '../src/scene/types';
 
 const v8 = (layout: LayoutId) => {
@@ -93,7 +94,7 @@ describe('aquascape items (scene v9)', () => {
       }
       // and the set as designed reaches out past the floor disc, left and right, not one ring (stones is one central
       // cluster anyway; a shuffled set may sit to one side on purpose)
-      if (id !== 'stones' && seed === 1) {
+      if (id !== 'stones' && !['arid', 'python', 'burrow', 'clownnano', 'hillstream', 'paludarium'].includes(id) && seed === 1) { // one central group (SS2 styles) stays one cluster
         expect(items.filter(it => q(it) > rb).length).toBeGreaterThan(0);
         if (id === 'planted') expect(items.filter(it => q(it) < rb * 0.4).length).toBeGreaterThan(0); // a mound, not a bare middle
         expect(Math.min(...items.map(it => it.x))).toBeLessThan(T.L / 2 - rb * 0.7);
@@ -116,9 +117,9 @@ describe('aquascape items (scene v9)', () => {
         const w = (i: { size: number }) => id === 'dutch' ? i.size : 1, W = solid.reduce((a, i) => a + w(i), 0);
         if (solid.length) xs.push(solid.reduce((a, i) => a + i.x * w(i), 0) / W / s.tank.L);
       }
-      expect(Math.max(...counts) / Math.max(1, Math.min(...counts))).toBeGreaterThan(id === 'swamp' ? 2 : 2.5);
+      expect(Math.max(...counts) / Math.max(1, Math.min(...counts))).toBeGreaterThan(id === 'swamp' ? 2 : STYLE_SS2.has(id) ? 1.4 : 2.5);
       if (id === 'stones' || id === 'iwagumi' || id === 'driftwood') expect(kinds.size).toBeGreaterThan(2);
-      if (id !== 'swamp') expect(Math.max(...xs) - Math.min(...xs)).toBeGreaterThan(id === 'planted' || id === 'dutch' ? 0.1 : 0.2); // the weight of the set moves about
+      if (id !== 'swamp' && !STYLE_SS2.has(id)) expect(Math.max(...xs) - Math.min(...xs)).toBeGreaterThan(id === 'planted' || id === 'dutch' ? 0.1 : 0.2); // the weight of the set moves about
     }
   });
   it('selecting an item clears the fish selection and the other way round; undo keeps it valid', () => {

@@ -27,7 +27,7 @@ function cases() {
     out.push([id, S]);
     for (const seed of [1, 2, 3]) {
       for (const wall of ['none', 'rock', 'cork'] as const) {
-        const s = structuredClone(S); shuffleFish(s, rng(seed * 101 + id.length));
+        const s = structuredClone(S); shuffleFish(s, rng(seed * 101 + id.length), undefined, undefined, 0); // room 0: the older Shuffle, no clearance between animals on hardscape (lane BP2)
         if (wall !== 'none') s.backdrop = { kind: wall, depth: 60, seed: 3 };
         out.push([`${id}/${seed}/${wall}`, s]);
       }

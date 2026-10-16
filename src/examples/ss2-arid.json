@@ -1,0 +1,391 @@
+{
+ "version": 9,
+ "name": "Leopard gecko desert",
+ "units": "in",
+ "tanks": [
+  {
+   "tank": {
+    "L": 1219,
+    "D": 609,
+    "H": 457
+   },
+   "camera": {
+    "dist": 3000,
+    "az": 12,
+    "el": 8,
+    "zoom": 0.8
+   },
+   "render": {
+    "edge": "a2c",
+    "grid": false,
+    "rim": true,
+    "edges": true,
+    "beams": false,
+    "pop": 0.15,
+    "bg": "black",
+    "glass": "auto",
+    "bgSides": [
+     "back"
+    ],
+    "bgArc": 145,
+    "bgImages": [],
+    "glassType": "standard"
+   },
+   "light": {
+    "type": "led",
+    "count": 1,
+    "rows": 1,
+    "pattern": "grid",
+    "spacing": 0,
+    "cone": 52,
+    "bright": 1,
+    "kelvin": 6500,
+    "room": 0.15,
+    "height": 50
+   },
+   "substrate": {
+    "show": true,
+    "type": "tsand",
+    "custom": {
+     "grain": "sand",
+     "color": "#cbb894",
+     "grain2": "none",
+     "color2": "#6f6556",
+     "share": 30,
+     "mix": 0.5
+    },
+    "fl": 28,
+    "fr": 23,
+    "bl": 46,
+    "br": 42
+   },
+   "layout": {
+    "id": "arid",
+    "seed": 1,
+    "dens": {
+     "hard": 2,
+     "plant": 2,
+     "animal": 3
+    },
+    "ground": true
+   },
+   "water": {
+    "on": false,
+    "level": 1,
+    "opacity": 0,
+    "color": "#7fb8a8"
+   },
+   "terrain": {
+    "on": true,
+    "cols": 7,
+    "rows": 4,
+    "h": [
+     27.6,
+     22.6,
+     18.7,
+     20.2,
+     24.9,
+     26.7,
+     23.1,
+     29.4,
+     28.8,
+     28.4,
+     28.9,
+     31.1,
+     29.4,
+     27.1,
+     35.6,
+     39.7,
+     42.9,
+     43.3,
+     45.1,
+     38.1,
+     35.6,
+     45.5,
+     44.1,
+     42.9,
+     42.8,
+     43.6,
+     43,
+     41.5
+    ],
+    "pools": []
+   },
+   "lid": "open",
+   "stand": {
+    "show": true,
+    "height": 762,
+    "finish": "black",
+    "style": "cabinet",
+    "table": {
+     "shape": "rect",
+     "L": 943,
+     "D": 486,
+     "x": 0,
+     "z": 0
+    }
+   },
+   "backdrop": {
+    "kind": "none",
+    "depth": 50,
+    "seed": 1
+   },
+   "grow": {
+    "feed": "low",
+    "time": 0,
+    "mode": "rel"
+   },
+   "condition": {
+    "level": 0
+   },
+   "person": {
+    "show": false,
+    "height": 1750,
+    "side": "left"
+   },
+   "wall": {
+    "show": true,
+    "side": "back",
+    "color": "#d8d2c6"
+   },
+   "fish": [
+    {
+     "id": 1000,
+     "species": "leopardgecko",
+     "x": 754.9722669039155,
+     "y": 30.716506173884692,
+     "depth": 203.12127777993678,
+     "yaw": -143,
+     "pitch": 4,
+     "roll": 1,
+     "bend": 0.17,
+     "tl": 174
+    },
+    {
+     "id": 1001,
+     "species": "leopardgecko",
+     "x": 340.3901161398273,
+     "y": 26.042229385831952,
+     "depth": 158.98737846890464,
+     "yaw": -26,
+     "pitch": -1,
+     "roll": -2,
+     "bend": -0.1,
+     "tl": 224
+    }
+   ],
+   "items": [
+    {
+     "id": 1,
+     "kind": "stone",
+     "variant": "ledge",
+     "seed": 462720840,
+     "x": 853.3,
+     "depth": 365.4,
+     "lift": 0,
+     "yaw": -2,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 320
+    },
+    {
+     "id": 2,
+     "kind": "stone",
+     "variant": "ledge",
+     "seed": 673542616,
+     "x": 838.7751460626721,
+     "depth": 345.90125738605855,
+     "lift": 68,
+     "yaw": 1,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 250
+    },
+    {
+     "id": 3,
+     "kind": "stone",
+     "variant": "ledge",
+     "seed": 30545512,
+     "x": 820.1856018856167,
+     "depth": 368.4421030372381,
+     "lift": 116,
+     "yaw": -10,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 205
+    },
+    {
+     "id": 4,
+     "kind": "stone",
+     "variant": "dragon",
+     "seed": 735487623,
+     "x": 354.78014539033177,
+     "depth": 275.0041502266377,
+     "lift": 0,
+     "yaw": 54,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 67
+    },
+    {
+     "id": 5,
+     "kind": "stone",
+     "variant": "dragon",
+     "seed": 933339616,
+     "x": 872.7799706347287,
+     "depth": 354.78089761476264,
+     "lift": 0,
+     "yaw": 151,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 78
+    },
+    {
+     "id": 6,
+     "kind": "stone",
+     "variant": "dragon",
+     "seed": 946269784,
+     "x": 782.8960029451176,
+     "depth": 427.77875033054266,
+     "lift": 0,
+     "yaw": 61,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 86
+    },
+    {
+     "id": 7,
+     "kind": "stone",
+     "variant": "dragon",
+     "seed": 116695832,
+     "x": 527.5032788256184,
+     "depth": 95.38231766420184,
+     "lift": 0,
+     "yaw": -34,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 74
+    },
+    {
+     "id": 8,
+     "kind": "cave",
+     "variant": "halflog",
+     "seed": 371229199,
+     "x": 975.2,
+     "depth": 182.7,
+     "lift": 0,
+     "yaw": -16,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 200
+    },
+    {
+     "id": 9,
+     "kind": "wood",
+     "variant": "corktube",
+     "seed": 510895792,
+     "x": 219.42,
+     "depth": 182.7,
+     "lift": 0,
+     "yaw": -20,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 220
+    },
+    {
+     "id": 10,
+     "kind": "plant",
+     "variant": "hairgrass",
+     "seed": 5375209,
+     "x": 788.5839807354007,
+     "depth": 283.8425092489924,
+     "lift": 0,
+     "yaw": 43,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 47
+    },
+    {
+     "id": 11,
+     "kind": "plant",
+     "variant": "hairgrass",
+     "seed": 672023369,
+     "x": 755.8336927297617,
+     "depth": 455.17471309307734,
+     "lift": 0,
+     "yaw": -8,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 60
+    },
+    {
+     "id": 12,
+     "kind": "plant",
+     "variant": "hairgrass",
+     "seed": 74043175,
+     "x": 591.9862893959134,
+     "depth": 362.8203699265025,
+     "lift": 0,
+     "yaw": 12,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 66
+    },
+    {
+     "id": 13,
+     "kind": "plant",
+     "variant": "hairgrass",
+     "seed": 417958295,
+     "x": 877.2230652664881,
+     "depth": 390.6130763629451,
+     "lift": 0,
+     "yaw": 153,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 64
+    },
+    {
+     "id": 14,
+     "kind": "plant",
+     "variant": "hairgrass",
+     "seed": 984644953,
+     "x": 617.2216462698113,
+     "depth": 385.7796313572675,
+     "lift": 0,
+     "yaw": -135,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 51
+    },
+    {
+     "id": 15,
+     "kind": "plant",
+     "variant": "bromeliad",
+     "seed": 447337303,
+     "x": 805.9610912879929,
+     "depth": 446.1852145795478,
+     "lift": 0,
+     "yaw": -8,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 59
+    },
+    {
+     "id": 16,
+     "kind": "plant",
+     "variant": "bromeliad",
+     "seed": 982789308,
+     "x": 840.6134321441874,
+     "depth": 391.80431042594137,
+     "lift": 0,
+     "yaw": -4,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 59
+    }
+   ]
+  }
+ ],
+ "active": 0,
+ "camLock": true
+}
