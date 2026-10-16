@@ -547,8 +547,8 @@ export function lightEnvCached(S: LightScene): LightEnv | null {
 /** Lux at mid-water that renders at Brightness 1: a 24 x 12 x 12 in tank under a 20 W white LED bar gives about this
  * (typical setups land at 6,000-12,000 lux mid-water, so they render at 0.9-1.25 before EXPOSE and the Exposure knob). */
 export const LREF = 8000;
-/** Exposure gain on every light (Nathan 2026-10-15: the default looked dim; 1.8x what x1 used to give). */
-export const EXPOSE = 1.8;
+/** Exposure gain on every light (Nathan 2026-10-15: the default looked dim; 1.8x what x1 used to give; 2026-10-16: still dim at 80 PAR, 2.5x). */
+export const EXPOSE = 2.5;
 /** The Exposure knob's range (x1/4 to x16; the slider runs in stops, -2 to +4): past x4 the tank washes out, on purpose. */
 export const EXP_MIN = 0.25, EXP_MAX = 16;
 /** Render brightness while watts is set: (lux / LREF)^0.5 (eyes and cameras adapt: 4x the light looks about 2x as

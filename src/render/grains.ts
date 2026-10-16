@@ -107,7 +107,7 @@ function glassGeo(g: THREE.BufferGeometry) {
   }
   b.userData.keep = true; glassGeos.set(g, b); return b;
 }
-const glassMat = (m: THREE.MeshBasicMaterial) => { let g = glassMats.get(m); if (!g) { g = m.clone(); g.userData.keep = true; glassMats.set(m, g); } return g; };
+const glassMat = (m: THREE.MeshBasicMaterial) => { let g = glassMats.get(m); if (!g) { g = m.clone(); g.userData.keep = true; delete g.userData.aq; /* clone() copies userData but not onBeforeCompile: a copied aq flag leaves it unlit */ glassMats.set(m, g); } return g; };
 function grainKinds(g: GrainLook): ScatterKind[] {
   // small grains (gravel, under 8 mm): 20 triangles each, not 80 (18k stones in a 20-gal made it 2-3 ms)
   const geos = g.shape === 'chip' ? chipGeos() : stoneGeos(g.round, g.speckle, (g.size[0] + g.size[1]) / 2 < 8 ? 0 : 1);
@@ -167,9 +167,10 @@ function paneGrains(S: TankSetup, T: Tank, groundY: (x: number, d: number) => nu
     const m = new THREE.InstancedMesh(K.geo, K.mat, per[i].length);
     per[i].forEach((mx, j) => { m.setMatrixAt(j, mx); m.setColorAt(j, tint[i][j]); });
     m.instanceMatrix.needsUpdate = true; m.computeBoundingSphere(); m.userData.scatter = true; m.userData.grains = true; m.renderOrder = -1;
-    // in the substrate's own shade: one even shade, not the fixture's light (side-on to it they lit near black, with white
-    // crescents where a top caught it); a material of its own, as the lit shader is set up per material
-    m.userData.nolight = true; m.material = glassMat(K.mat as THREE.MeshBasicMaterial); m.geometry = glassGeo(K.geo);
+    // lit like the top grains (Nathan 2026-10-16: with the room dark the cross-section must be darker than the top, and
+    // follow the exposure, not sit at a fixed shade); the baked soft shade keeps the stones round side-on, and the
+    // material is its own, as the lit shader is set up per material
+    m.material = glassMat(K.mat as THREE.MeshBasicMaterial); m.geometry = glassGeo(K.geo);
     return [m];
   });
 }
