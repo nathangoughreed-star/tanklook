@@ -2,6 +2,31 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
+## Lane FM: fish parts merged per material (2026-10-16; branch `fish-merge`, no preview server; Nathan approved shipping the few changed edge pixels, phase 2 skipped; pushed to main)
+E1 fix #5. A 3D fish was 11 meshes (card, body, 2 eyes, 2 gape lines, 4 paired fins, outline hull; +4 barbels on corys).
+- **What changed:** `fishBody` (render/fish3d.ts) ends with `mergeShared`: a fish's parts that share a material (the two
+  eyes, the two gape lines, each paired-fin pair, the barbels, a doubled tail / anal, same-colour limbs) are one mesh, the
+  part transforms baked into the vertices (normals by mat3 of the transform, as the lit shader takes them), placed where
+  the first part was (material first-appearance rank in the opaque sort unchanged). A typical fish is now 7 meshes. Merged
+  geometries are cached by part geometry + transform (`userData.keep`). The merged box is the union of the parts' turned
+  boxes, so `Box3.setFromObject` framing (review sheets, species preview tile) is unchanged (without it the corys' sheets
+  moved: 2,400-2,600 px). Switch: `fish3d.merge` (off = one mesh per part, for A/B). render/build.ts untouched.
+- **Measured** (alternating frames, same scene, twins swapped; `research/efficiency/FM-ab.mjs`, census `FM-probe.mjs`;
+  under load from 4 dev servers): draw calls planted 595 -> 451, iwagumi 747 -> 648, paludarium 567 -> 509; CPU per draw
+  planted -0.3 ms, split -0.4 ms (120 pairs), iwagumi / paludarium within noise; GPU unchanged (+-0.1 ms). About 2-3 us
+  per draw call: E1's -2 to -4 ms estimate (from hiding whole buckets) was far too high. Phase 2 (one draw per material
+  class: card + fins, body + eyes + gape, via two-texture shaders in lighting.ts) would save maybe another 0.3-0.4 ms and
+  needs new programs: **skipped (Nathan 2026-10-16).**
+- **Picture:** NOT byte-identical: baked transforms round differently on the GPU, so 0-4 single edge pixels per view move
+  (planted 3, iwagumi water 0.3: 4, reef 1, others 0; pictures `research/efficiency/FM-pictures/`), and 30 of 79 review
+  sheets (software GL) differ in at most 13 px. Nathan approved shipping that. `npm run sheets -- --record` bumps nothing:
+  the review page fingerprints a build with `fish3d.merge` off (src/review/main.ts), since merged vertices would change
+  every fish's hash with no look change. incrementalCheck: no new differences; **4 terrarium stone edits (move / turn /
+  resize / select item, 32-152 px) differ from a full rebuild on main already** (same with merge off; reported to the
+  coordinator).
+- **AR Quick Look note:** USDZ export transforms normals with the normal matrix; merged barbel normals (non-uniform part
+  scale) are mat3-carried, so their exported shading may differ very slightly. The app view is the reference.
+
 ## Lane T4: aquatic roster (2026-10-16; branch `aqua-roster`, port 5673; batch 1 approved by Nathan and pushed; batches 2-3 running)
 Roadmap section 6: species that add new silhouettes, scales or habitats, in batches of about five, each on a review sheet.
 - **Batch 1 (Nathan approved, v1 at build 567)**: pygmy corydoras (`pygmycory`, 25 mm, slim mini cory, black stripe),
@@ -309,6 +334,8 @@ Roadmap section 6: species that add new silhouettes, scales or habitats, in batc
     #3: one gStone call, no frost-pass programs for culled meshes, all links started in parallel); same picture.
   - **EF2 edit speed DONE 2026-10-15** (see its section): water colour off opacity 0 208-444 -> 19-54 ms (no rebuild, no
     relink), first light power step 35-101 -> 20-33 ms (model warmed in idle time, narrower cache key); same picture.
+  - **FM fish merge DONE 2026-10-16** (see its section; E1 #5): same-material fish parts merged, draw calls -10 to -24 %,
+    CPU -0.3 to -0.4 ms per draw on planted / split, GPU unchanged; 0-4 edge pixels per view moved (Nathan approved).
   - **EF3 download size DONE 2026-10-15** (see its section): examples are a lazy chunk + image-file thumbnails; main
     176 -> 69 KiB gzip, first-load code 455 -> 349 KiB gzip. Model sheets were never in the first load (left as is).
   - **E2 code audit:** `../Glass-Box-audit` / `code-audit`, no dev server. Owns `research/efficiency/E2-*` and optional
@@ -1610,7 +1637,7 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | T2 terrestrial plants (roadmap R1) | `../Glass-Box-terra-plants` / `terra-plants` | 5653 | `art/plants.ts`, `render/plant3d.ts`, plant branch of `render/items.ts`, plant entries of `scene/items.ts` LIBRARY | running (session `local_7d35229e`) |
 | T3 dry hardscape + anchors (roadmap R1/R2) | `../Glass-Box-dry-hardscape` / `dry-hardscape` | 5663 | non-plant branches of `render/items.ts` (not the GRIT shader core), stone / wood / cave / hide entries of `scene/items.ts` LIBRARY, new `scene/anchors.ts` + its hook in the cling / rest code; anchor hook in `render/build.ts` addContents rest / cling helpers (`top`, `restOn`, start of `animal()`, `onGlass`, `onWall`, glass branch of `snailMeshes`); perch pose in `art/herps.ts` / `render/herp3d.ts` | running (session `local_adf731d2`) |
 | T4 aquatic roster | `../Glass-Box-aqua-roster` / `aqua-roster` | 5673 | `data/species.json`, `data/aqadvisor.json`, NEW species' PLANS / her() entries in `art/fishgen.ts`, `render/coral3d.ts` + coral entries of `scene/items.ts` LIBRARY | batch 1 pushed (5 fish); batches 2 (fish) + 3 (corals) running (session `local_c8325e61`) |
-| FM fish mesh merge | `../Glass-Box-fish-merge` / `fish-merge` | 5683 (headless checks preferred) | fish mesh assembly in `render/fish3d.ts`, the animal-mesh part of `render/build.ts` | running (session `local_7e5d4a5f`) |
+| FM fish mesh merge | `../Glass-Box-fish-merge` / `fish-merge` | 5683 (headless checks preferred) | fish mesh assembly in `render/fish3d.ts`, the animal-mesh part of `render/build.ts` | DONE 2026-10-16 (see its section), files free |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T3: crested gecko + lizard body plan; after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits | queued |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 Free (no lane): `render/build.ts`, `render/items.ts`, `scene/items.ts`, `render/viewer.ts`, `main.ts`, `render/lighting.ts`,
