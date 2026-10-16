@@ -6,5 +6,10 @@ import betta from './betta-bowl.json?raw';
 import paludarium from './paludarium.json?raw';
 import terrarium from './terrarium.json?raw';
 import reef from './reef.json?raw';
+import rainforest from './ss2-rainforest.json?raw';
+import arid from './ss2-arid.json?raw';
+import python from './ss2-python.json?raw';
+import blackwater from './ss2-blackwater.json?raw';
+import clownnano from './ss2-clownnano.json?raw';
 
-export const SCENES: Record<string, string> = { planted, iwagumi, betta, paludarium, terrarium, reef };
+export const SCENES: Record<string, string> = { planted, iwagumi, betta, paludarium, terrarium, reef, rainforest, arid, python, blackwater, clownnano };
