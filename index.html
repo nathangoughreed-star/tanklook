@@ -337,6 +337,18 @@
     </div>
   </div>
   <div id="groupBar" role="toolbar" aria-label="Selected animals and pieces" hidden>
+    <div id="gbPatch" hidden>
+      <div class="gbRow">
+        <b id="gpName"></b>
+        <button id="gpAdd" title="Paint more area onto this patch">+ Add area</button>
+        <button id="gpRemove" title="Erase area from this patch">− Remove area</button>
+      </div>
+      <div class="gbRow brSliders">
+        <label>Density <input id="gpDens" type="range" min="5" max="100" step="5"><output id="oGpDens"></output></label>
+        <label id="gpGrowL">Growth <input id="gpGrow" type="range" min="0" max="100" step="5"><output id="oGpGrow"></output></label>
+        <label>Width <input id="gpWidth" type="range" min="20" max="250" step="5"><output id="oGpWidth"></output></label>
+      </div>
+    </div>
     <div class="gbRow">
       <b id="gbCount"></b>
       <button id="gbDup" title="Copy the selection beside it (Ctrl+D)">Duplicate</button>

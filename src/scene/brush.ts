@@ -27,7 +27,7 @@ export const BRUSHES: BrushDef[] = [
   { id: 'sphagnum', label: 'Sphagnum', area: 140, radius: [20, 200] },
 ];
 /** The brush tool's settings (a UI state, in the Store). */
-export interface BrushState { on: boolean; erase: boolean; id: BrushId; size: number; density: number; leaf: LeafKind }
+export interface BrushState { on: boolean; erase: boolean; /** A patch being edited: painting adds area to it, erasing takes area from it only. */ target?: number | null; id: BrushId; size: number; density: number; leaf: LeafKind }
 export const isPlantBrush = (id: string): id is `plant:${string}` => id.startsWith('plant:');
 /** Plants with a painted look of their own above (tufts, cushions), left out of the plant list. */
 const LITE_PLANTS = new Set(['hairgrass', 'sphagnum', 'moss']);
@@ -97,10 +97,11 @@ export function newPatch(S: TankSetup, brush: BrushId, size: number, density: nu
 }
 
 /** Erase every patch's things inside the circle (x, depth, r). Patches that lose their last stroke point's cover vanish. */
-export function erasePatches(S: TankSetup, x: number, d: number, r: number) {
+export function erasePatches(S: TankSetup, x: number, d: number, r: number, only?: number | null) {
   if (!S.patches?.length) return false;
   let hit = false;
   for (const p of S.patches) {
+    if (only != null && p.id !== only) continue;
     let near = false; for (let i = 0; i + 1 < p.path.length; i += 2) if (Math.hypot(p.path[i] - x, p.path[i + 1] - d) < p.size + r) { near = true; break; }
     if (!near) continue;
     const c = p.cuts ?? (p.cuts = []), l = c.length;
@@ -133,9 +134,15 @@ export function patchAt(S: TankSetup, x: number, d: number): Patch | null {
   return best;
 }
 /** Does erasing at (x, d, r) touch any patch's cover? */
-export function erasable(S: TankSetup, x: number, d: number, r: number) {
-  for (const p of S.patches ?? []) for (let i = 0; i + 1 < p.path.length; i += 2) if (Math.hypot(p.path[i] - x, p.path[i + 1] - d) < p.size + r) return true;
+export function erasable(S: TankSetup, x: number, d: number, r: number, only?: number | null) {
+  for (const p of (S.patches ?? []).filter(q => only == null || q.id === only)) for (let i = 0; i + 1 < p.path.length; i += 2) if (Math.hypot(p.path[i] - x, p.path[i + 1] - d) < p.size + r) return true;
   return false;
+}
+/** Painting more area onto a patch: its new stroke point (see extendPath) also lifts any erased circles it covers. */
+export function addArea(p: Patch, x: number, d: number) {
+  const ok = extendPath(p, x, d);
+  if (p.cuts) { const k: number[] = []; for (let i = 0; i + 2 < p.cuts.length; i += 3) if (Math.hypot(p.cuts[i] - x, p.cuts[i + 1] - d) >= p.size) k.push(p.cuts[i], p.cuts[i + 1], p.cuts[i + 2]); if (k.length !== p.cuts.length) { if (k.length) p.cuts = k; else delete p.cuts; } }
+  return ok;
 }
 /** Move a patch by (dx, dd) mm (path and erased circles together). */
 export function movePatch(p: Patch, dx: number, dd: number) {
@@ -159,6 +166,7 @@ export function parsePatches(raw: unknown): Patch[] | undefined {
       id, brush: def.id, seed: ok(o.seed) ? Math.round(clamp(o.seed, 1, 1e6)) : 1, size: ok(o.size) ? Math.round(clamp(o.size, def.radius[0], def.radius[1])) : def.radius[0],
       density: ok(o.density) ? Math.round(clamp(o.density, 1, 100)) : 50, path,
       ...(cuts.length ? { cuts } : {}),
+      ...(ok(o.growth) && isPlantBrush(def.id) ? { growth: Math.round(clamp(o.growth, 0, 1) * 100) / 100 } : {}),
       ...(def.id === 'leaf' ? { leaf: (['mixed', 'oak', 'magnolia', 'catappa'] as const).find(l => l === o.leaf) ?? 'mixed' } : {}),
     });
   }

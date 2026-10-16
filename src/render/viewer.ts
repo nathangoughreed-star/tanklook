@@ -494,6 +494,19 @@ export class Viewer {
   }
 
   /** Lay out viewports, frame cameras, render. Synchronous, so readouts are never a frame behind. */
+  /** Fade what the first pass drew toward the room colour, then draw only `focus` over it (depth kept, so the rest still hides it). */
+  private drawFocus(vp: Viewport, focus: THREE.Object3D[], room: THREE.Color) {
+    const r = this.renderer;
+    this.dim ??= (() => { const sc = new THREE.Scene(), m = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.68, depthTest: false, depthWrite: false })); m.frustumCulled = false; sc.add(m); return { sc, m, cam: new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1) }; })();
+    (this.dim.m.material as THREE.MeshBasicMaterial).color.copy(room);
+    const auto = r.autoClear; r.autoClear = false;
+    r.render(this.dim.sc, this.dim.cam);
+    const others = vp.scene!.children.filter(o => o.visible && !focus.includes(o)); for (const o of others) o.visible = false;
+    r.render(vp.scene!, vp.cam);
+    for (const o of others) o.visible = true;
+    r.autoClear = auto;
+  }
+  private dim?: { sc: THREE.Scene; m: THREE.Mesh; cam: THREE.OrthographicCamera };
   draw() {
     if (this.needsBuild) this.build();
     const sc = this.store.scene, w = this.host.clientWidth, h = this.host.clientHeight, r = this.renderer;
@@ -586,7 +599,12 @@ export class Viewer {
       // a reveal running: only the parts shown so far (the rest are still linking; see revealTick)
       const upTo = this.reveal ? this.reveal.shown[vp.i] : PART.animals, held: THREE.Object3D[] = [];
       if (upTo < PART.animals) for (const o of vp.scene!.children) if (o.visible && (o.userData.part ?? 0) > upTo) { o.visible = false; held.push(o); }
+      // a painted patch being edited (render/brushmesh.ts): the rest of the tank is drawn, faded toward the room, then the patch over it
+      const focus = vp.scene!.children.filter(o => o.userData.focus && o.visible);
+      for (const o of focus) o.visible = false;
       r.render(vp.scene!, vp.cam);
+      for (const o of focus) o.visible = true;
+      if (focus.length) this.drawFocus(vp, focus, r.getClearColor(new THREE.Color()));
       for (const o of held) o.visible = true;
       for (const o of culled) { o.onBeforeRender = THREE.Object3D.prototype.onBeforeRender; o.onAfterRender = THREE.Object3D.prototype.onAfterRender; }
       cb.setLocked(false); cb.setMask(true); gl.colorMask(true, true, true, true);

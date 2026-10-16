@@ -113,12 +113,12 @@ const plantCache = new Map<string, ScatterKind[]>();
 /** Most vertices one patch of plants may draw (a heavy species gets fewer clumps rather than a slow frame). */
 const PLANT_VERTS = 1_200_000;
 /** The painted plant's own clumps: three seeds of the library plant built once (its real geometry, a small clump), instanced. */
-function plantKinds(S: TankSetup, T: Tank, variant: string): ScatterKind[] {
-  const key = `${variant}|${JSON.stringify([T, S.water.on && S.water.level, S.lid])}`;
+function plantKinds(S: TankSetup, T: Tank, variant: string, growth?: number): ScatterKind[] {
+  const key = `${variant}|${growth ?? ''}|${JSON.stringify([T, S.water.on && S.water.level, S.lid])}`;
   let ks = plantCache.get(key); if (ks) return ks;
   ks = [];
   for (let k = 0; k < 3; k++) {
-    const it = { id: 9000 + k, kind: 'plant', variant, seed: 11 + k * 17, x: T.L / 2, depth: T.D / 2, lift: 0, yaw: 0, pitch: 0, tilt: 0, size: libSize(variant), spread: 45 } as Item;
+    const it = { id: 9000 + k, kind: 'plant', variant, seed: 11 + k * 17, x: T.L / 2, depth: T.D / 2, lift: 0, yaw: 0, pitch: 0, tilt: 0, size: libSize(variant), spread: 45, ...(growth != null ? { growth } : {}) } as Item;
     const m = itemMesh(S, T, it); if (!m) continue;
     const geo = m.geometry.clone(); geo.userData.keep = true; geo.computeBoundingBox();
     const bb = geo.boundingBox!, reach = Math.max(bb.max.x, -bb.min.x, bb.max.z, -bb.min.z) * 0.55;
@@ -134,7 +134,7 @@ const libSize = (variant: string) => (LIBRARY[variant]?.size ?? 100) * 0.8;
 export function patchMeshes(S: TankSetup, T: Tank, ground: GroundAt, p: Patch): THREE.InstancedMesh[] {
   let at = patchPoints(p); if (!at.length) return [];
   if (isPlantBrush(p.brush)) {
-    const kinds = plantKinds(S, T, p.brush.slice(6)); if (!kinds.length) return [];
+    const kinds = plantKinds(S, T, p.brush.slice(6), p.growth != null ? Math.round(p.growth * 10) / 10 : undefined); if (!kinds.length) return [];
     const verts = kinds.reduce((a, k) => a + k.geo.attributes.position.count, 0) / kinds.length;
     at = at.slice(0, Math.max(1, Math.floor(PLANT_VERTS / verts)));
     return scatter(T, ground, { seed: p.seed, count: at.length, at, kinds, lift: [0, 0], pile: 0, tilt: 0.04, slope: 0.5, clump: 0, palette: [new THREE.Color(1, 1, 1)] });
@@ -146,5 +146,34 @@ export function patchMeshes(S: TankSetup, T: Tank, ground: GroundAt, p: Patch): 
     seed: p.seed, count: at.length, at, kinds, lift: f.lift, liftK: f.liftK, pile: f.pile, tilt: f.tilt, slope: b === 'leaf' ? 0.55 : 0.4, clump: 0,
     ...(pal ? { palette: pal } : {}),
     shade: y => (y < wy ? (b === 'leaf' ? 0.55 : 0.9) : 1),
+  });
+}
+
+/** Painted patches that are selected (set by ui/brush.ts; build.ts reads it): they are drawn with a tinted footprint. */
+export const patchSel = { ids: new Set<number>() };
+let disc: THREE.BufferGeometry | undefined;
+const hlMats: THREE.MeshBasicMaterial[] = [];
+/** One of the three highlight materials: stencil bits make each pixel take part once, whatever the discs overlap
+ *  (0x80 = inside the shape, 0x40 = rim drawn, 0x20 = fill drawn). */
+function hlMat(k: 0 | 1 | 2) {
+  if (hlMats[k]) return hlMats[k];
+  const m = new THREE.MeshBasicMaterial({ color: k === 1 ? 0x2fc4ff : 0x3d8bff, transparent: true, opacity: k === 1 ? 0.8 : 0.26, depthWrite: false, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2,
+    ...(k === 1 ? { blending: THREE.AdditiveBlending } : {}), ...(k === 0 ? { colorWrite: false } : {}) });
+  m.stencilWrite = true;
+  if (k === 0) { m.stencilFunc = THREE.AlwaysStencilFunc; m.stencilRef = 0x80; m.stencilWriteMask = 0x80; m.stencilZPass = THREE.ReplaceStencilOp; }
+  else if (k === 1) { m.stencilFunc = THREE.EqualStencilFunc; m.stencilRef = 0; m.stencilFuncMask = 0xc0; m.stencilWriteMask = 0x40; m.stencilZPass = THREE.InvertStencilOp; }
+  else { m.stencilFunc = THREE.EqualStencilFunc; m.stencilRef = 0x80; m.stencilFuncMask = 0xa0; m.stencilWriteMask = 0x20; m.stencilZPass = THREE.InvertStencilOp; }
+  m.userData.keep = true; return (hlMats[k] = m);
+}
+/** The selected patch's area, made obvious: its shape glows (a bright rim round a tinted fill) laid over the ground. The
+ *  three meshes are drawn in order (shape into the stencil, then the rim outside it, then the fill inside it). */
+export function patchHighlight(ground: GroundAt, p: Patch): THREE.InstancedMesh[] {
+  disc ??= new THREE.CircleGeometry(1, 28).rotateX(-Math.PI / 2); disc.userData.keep = true;
+  const n = Math.floor(p.path.length / 2), mx = new THREE.Matrix4(), q = new THREE.Quaternion(), pos = new THREE.Vector3(), sc = new THREE.Vector3();
+  return ([0, 1, 2] as const).map(k => {
+    const m = new THREE.InstancedMesh(disc!, hlMat(k), n), r = k === 1 ? p.size + 9 : p.size;
+    for (let i = 0; i < n; i++) { const g = ground(p.path[2 * i], p.path[2 * i + 1]); m.setMatrixAt(i, mx.compose(pos.set(g[0], g[1] + 2, g[2]), q, sc.set(r, 1, r))); }
+    m.renderOrder = 6 + k; m.frustumCulled = false; m.userData.scatter = true; m.userData.focus = true;
+    return m;
   });
 }

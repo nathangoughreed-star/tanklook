@@ -40,7 +40,7 @@ export class Store {
   /** Painted patches in the selection (lane SB); cleared by a plain select. */
   selPatches: number[] = [];
   /** Scatter brush (lane SB): the brush tool's state; a UI state, never saved. */
-  brush: BrushState = { on: false, erase: false, id: 'leaf', size: 60, density: 60, leaf: 'mixed' };
+  brush: BrushState = { on: false, erase: false, target: null, id: 'leaf', size: 60, density: 60, leaf: 'mixed' };
   setBrush(b: Partial<BrushState>) { Object.assign(this.brush, b); if (b.on) this.multi = false; this.emit('select'); }
   /** Multi mode (the Multi button, for touch): a plain tap adds to or takes from the group, an empty drag draws a box. */
   multi = false;
@@ -211,6 +211,8 @@ export class Store {
     if (at >= 0) list.splice(at, 1); else list.push(id);
     this.selectGroup(g);
   }
+  /** Select exactly this painted patch (a click on it). */
+  selectPatch(id: number | null) { this.selectGroup({ fish: [], items: [], ...(id != null ? { patches: [id] } : {}) }); }
   /** Add a painted patch to the selection, or take it out. */
   togglePatch(id: number) {
     const g = this.group, list = g.patches ?? [], at = list.indexOf(id);

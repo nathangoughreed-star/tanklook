@@ -114,3 +114,20 @@ describe('plant brushes', () => {
     expect(q).toHaveLength(1); expect(q![0].brush).toBe('plant:crypt');
   });
 });
+
+describe('editing a patch', () => {
+  it('erase can be limited to one patch, adding area lifts the cuts it covers, a click selects it alone', async () => {
+    const { addArea, erasable } = await import('../src/scene/brush');
+    const S = tank(), a = stroke(S, 'pebble', 100, 100, 200), b = stroke(S, 'pebble', 100, 120, 200);
+    expect(erasable(S, 150, 100, 20, b.id)).toBe(true);
+    erasePatches(S, 150, 110, 30, a.id);
+    expect(a.cuts?.length).toBe(3); expect(b.cuts).toBeUndefined();
+    addArea(a, 150, 100); a.size = a.size; expect(a.cuts).toBeUndefined();
+    const st = new Store(); st.replace(emptyScene()); st.edit(t => { (t.patches ??= []).push({ ...a, id: 1 }); });
+    st.selectPatch(1); expect(st.group.patches).toEqual([1]); expect(st.groupCount).toBe(1);
+  });
+  it('plant patches keep a growth stage through save / load', () => {
+    const q = parsePatches([{ brush: 'plant:crypt', path: [1, 2], growth: 0.8 }, { brush: 'pebble', path: [1, 2], growth: 0.8 }])!;
+    expect(q[0].growth).toBe(0.8); expect(q[1].growth).toBeUndefined();
+  });
+});

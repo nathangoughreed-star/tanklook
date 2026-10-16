@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import { LECA, SUBSTRATES, blendTile, maskQuantile } from '../art/placeholder';
 import { litterMeshes } from './scatter';
-import { patchMeshes } from './brushmesh';
+import { patchHighlight, patchMeshes, patchSel } from './brushmesh';
 import { glassGrains, grainLook, grainMeshes, grainTop } from './grains';
 import { snailAspect } from '../art/snails';
 import { fishTL, needsWater, speciesOf, type Species } from '../data/species';
@@ -1252,7 +1252,11 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
     const gk = JSON.stringify([S.tank, S.terrain, S.substrate.type, S.substrate.custom, S.water.on && S.water.level]) + hardKey, gt = grainTop(grainLook(S.substrate));
     for (const p of S.patches) {
       const key = 'b' + JSON.stringify(p) + gk;
-      b.itemParts.push(take(key) ?? part(key, patchMeshes(S, T, (x, d) => [x, A.rest(x, d).p[1] + gt, -d], p), []));
+      const gnd = (x: number, d: number): [number, number, number] => [x, A.rest(x, d).p[1] + gt, -d];
+      const pp = take(key) ?? part(key, patchMeshes(S, T, gnd, p), []), on = patchSel.ids.has(p.id);
+      for (const o of pp.objs) o.userData.focus = on; // the viewer fades everything but these while a patch is being edited
+      b.itemParts.push(pp);
+      if (on) { const hk = 'bh' + JSON.stringify(p) + gk; b.itemParts.push(take(hk) ?? part(hk, patchHighlight(gnd, p), [])); }
     }
   }
   const base = (f: Fish) => top(f.x, f.depth, f.surface === 'hardscape');

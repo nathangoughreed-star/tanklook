@@ -10,3 +10,13 @@ export async function setup(type = 'soil', patches = []) {
   await wait(300);
 }
 export async function shot(name, o = {}) { return snap('sb_' + name, { az: 0, el: 35, ...o }); }
+/** Like shot() but keeps the selection (snap() clears it). */
+export async function shotSel(name, { az = 0, el = 50, crop = [0, 0, 1, 1], w = 1200 } = {}) {
+  const { store, viewer } = window.__gb;
+  store.cam(c => { c.az = az; c.el = el; });
+  await viewer.buildNow?.(); await viewer.exportPNG(1);
+  const im = await createImageBitmap(await viewer.exportPNG(1));
+  const [x0, y0, x1, y1] = crop, sw = (x1 - x0) * im.width, sh = (y1 - y0) * im.height, h = Math.round(w * sh / sw);
+  const c = new OffscreenCanvas(w, h); c.getContext('2d').drawImage(im, x0 * im.width, y0 * im.height, sw, sh, 0, 0, w, h);
+  await fetch('/__shot?name=sb_' + name, { method: 'POST', body: await c.convertToBlob({ type: 'image/png' }) });
+}

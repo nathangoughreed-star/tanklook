@@ -24,7 +24,7 @@ import type { ItemKind, Tank, TankSetup } from '../scene/types';
 import type { Viewer, Viewport } from '../render/viewer';
 import { LIMITS } from '../scene/validate';
 import { groupSize, moveGroup, settleFish, turnGroup, type Group } from '../scene/duplicate';
-import { MAX_PATCHES, erasable, erasePatches, extendPath, newPatch, patchAt } from '../scene/brush';
+import { MAX_PATCHES, addArea, erasable, erasePatches, extendPath, newPatch, patchAt } from '../scene/brush';
 
 type DragMode = 'front' | 'top' | 'side' | 'glass';
 
@@ -134,11 +134,16 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
   // scatter brush (lane SB): a stroke in progress (paint: the patch it extends; erase: cuts); a held patch being dragged (Multi mode)
   let stroke: { vi: number; id: number | null; erase: boolean } | null = null;
   let pdrag: { vi: number; x: number; d: number; moved: boolean } | null = null;
+  let patchPick: number | null = null; // a plain click on painted ground selects that patch (on release, unless it turned the view)
   const brushAt = (clientX: number, clientY: number) => {
     if (!stroke) return;
     const pl = placeAt(viewer, store, clientX, clientY); if (!pl || pl.vi !== stroke.vi) return;
     const B = store.brush, st = stroke, S = store.scene.tanks[st.vi];
-    if (st.erase) { if (erasable(S, pl.x, pl.depth, B.size)) store.update(sc => { erasePatches(sc.tanks[st.vi], pl.x, pl.depth, B.size); }, { coalesce: 'brush-erase' }); return; }
+    if (st.erase) { if (erasable(S, pl.x, pl.depth, B.size, B.target)) store.update(sc => { erasePatches(sc.tanks[st.vi], pl.x, pl.depth, B.size, B.target); }, { coalesce: 'brush-erase' }); return; }
+    if (B.target != null) { // adding area to the patch being edited
+      if (!S.patches?.some(v => v.id === B.target)) return;
+      store.update(sc => { const q = sc.tanks[st.vi].patches?.find(v => v.id === B.target); if (q) addArea(q, pl.x, pl.depth); }, { coalesce: 'brush-stroke' }); return;
+    }
     store.update(sc => {
       const t = sc.tanks[st.vi]; let q = st.id != null ? t.patches?.find(v => v.id === st.id) : undefined;
       if (!q) { if ((t.patches?.length ?? 0) >= MAX_PATCHES) return; q = newPatch(t, B.id, B.size, B.density, 1 + Math.floor(Math.random() * 999999), B.leaf); (t.patches ??= []).push(q); st.id = q.id; }
@@ -186,6 +191,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       }
       touches.set(e.pointerId, { x: e.clientX, y: e.clientY }); first = e.pointerId;
     }
+    patchPick = null;
     let hit = viewer.hitTest(e.clientX, e.clientY); if (!hit) return;
     const vi = hit.vp.i, editable = store.isEditing(vi);
     if (editable && vi !== store.scene.active) {  // show that tank in the panel first (rebuilds: the selection moves there)
@@ -209,6 +215,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
     if (editable && store.brush.on && !e.altKey && hit.dot == null && !hit.pool) { // (Alt held: orbit as usual)
       stroke = { vi, id: null, erase: store.brush.erase }; canvas.classList.add('dragging'); brushAt(e.clientX, e.clientY); return;
     }
+    if (editable && hit.itemId == null && hit.fishId == null && hit.dot == null && !hit.pool && !store.brush.on) { const pl = placeAt(viewer, store, e.clientX, e.clientY); patchPick = pl ? patchAt(store.scene.tanks[vi], pl.x, pl.depth)?.id ?? null : null; }
     canvas.classList.add('dragging');
     if (editable && hit.pool && hit.mesh) {
       pool = { i: vi, ...hit.pool, plane: new THREE.Plane(new THREE.Vector3(0, 1, 0), -hit.mesh.position.y), moved: false };
@@ -387,7 +394,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       return;
     }
     // a plain click on empty space (no orbit drag) clears the selection, so nothing is highlighted
-    if (orbit && e.type === 'pointerup' && Math.hypot(e.clientX - orbit.x, e.clientY - orbit.y) < 4) store.select(null);
+    if (orbit && e.type === 'pointerup' && Math.hypot(e.clientX - orbit.x, e.clientY - orbit.y) < 4) { if (patchPick != null) store.selectPatch(patchPick); else store.select(null); }
     if (drag?.moved || orbit || lift?.moved || move?.moved || pool?.moved) store.seal();
     if (lift) { viewer.terrainEdit.hot = null; viewer.rebuild(); }
     if (pool) { viewer.terrainEdit.poolHot = null; viewer.rebuild(); }
