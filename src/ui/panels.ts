@@ -359,7 +359,8 @@ Cancel, then change the name, to keep both.`)) return;
   $('rimN').onclick = () => store.edit(s => { s.render.rim = false; });
   $('edgesY').onclick = () => store.edit(s => { s.render.edges = true; });
   $('edgesN').onclick = () => store.edit(s => { s.render.edges = false; });
-  const LIDS = [['lidOpen', 'open'], ['lidGlass', 'glass'], ['lidHood', 'hood']] as const;
+  const LIDS = [['lidOpen', 'open'], ['lidGlass', 'glass'], ['lidMesh', 'mesh'], ['lidHood', 'hood']] as const;
+  for (const [id, d] of [['doorNone', 'none'], ['doorHinged', 'hinged'], ['doorSliding', 'sliding']] as const) $(id).onclick = () => store.edit(s => { if (d === 'none') delete s.doors; else s.doors = d; });
   const BG_BTNS = [['bgBack', 'back'], ['bgLeft', 'left'], ['bgRight', 'right'], ['bgFront', 'front']] as const;
   // a hood has no room for a metal halide pendant (too hot): it becomes LED pucks
   for (const [id, lid] of LIDS) $(id).onclick = () => store.edit(s => { s.lid = lid; if (lid === 'hood' && fixtureOf(s.light) === 'pendant') { s.light.tech = 'led-white'; fitK(s.light); fitFixture(s.light, s.tank, true); } });
@@ -1558,6 +1559,7 @@ Cancel, then change the name, to keep both.`)) return;
     $('rimY').classList.toggle('on', s.render.rim); $('rimN').classList.toggle('on', !s.render.rim);
     $('edgesY').classList.toggle('on', s.render.edges); $('edgesN').classList.toggle('on', !s.render.edges);
     for (const [id, lid] of LIDS) $(id).classList.toggle('on', s.lid === lid);
+    for (const [id, d] of [['doorNone', 'none'], ['doorHinged', 'hinged'], ['doorSliding', 'sliding']] as const) { $(id).classList.toggle('on', (s.doors ?? 'none') === d); ($(id) as HTMLButtonElement).disabled = d !== 'none' && shapeOf(s.tank) !== 'rect'; }
     setVal('bgSel', s.render.bg);
     for (const [id, side] of BG_BTNS) { const on = s.render.bgSides.includes(side); $(id).classList.toggle('on', on); $(id).setAttribute('aria-pressed', String(on)); }
     $('bgSidesRow').style.display = s.render.bg === 'none' && s.backdrop.kind === 'none' ? 'none' : ''; // sides of the colour and the 3D wall

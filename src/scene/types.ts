@@ -290,7 +290,9 @@ export interface TableSettings { shape: 'rect' | 'round'; L: number; D: number; 
 export interface StandSettings { show: boolean; height: number; finish: StandFinish; style: StandStyle; table: TableSettings }
 
 /** Top of the tank: open, glass canopy panels, or a classic black moulded hood (lights inside). */
-export type LidType = 'open' | 'glass' | 'hood';
+export type LidType = 'open' | 'glass' | 'hood' | 'mesh';
+/** Front opening (lane EN, 2026-10-16; absent = none): a terrarium's hinged or sliding glass doors, drawn on a rectangle's front pane. */
+export type DoorType = 'none' | 'hinged' | 'sliding';
 
 /** 'back' = wall behind the tank; 'left' / 'right' = peninsula, that end of the tank against the wall (Nathan 2026-10-08:
  * the user picks the end, reversing the earlier single 'peninsula' = right end). 'corner' = two walls meeting behind the
@@ -332,6 +334,7 @@ export interface TankSetup {
   terrain: TerrainSettings;
   water: WaterSettings;
   lid: LidType;
+  doors?: DoorType;
   stand: StandSettings;
   wall: WallSettings;
   person: PersonSettings;

@@ -36,8 +36,10 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
-## Lane EN: enclosure presentation (2026-10-16; branch `enclosure`, port 5673; opened by coordinator 3, not started)
-Scope: roadmap section 7. Step 1 an audit table (DONE / PARTIAL / NOT BUILT per item: presets, backgrounds, mesh lids and doors, equipment, lighting mood, bowls); Nathan picks the gaps; step 2 builds them. Known: 3D wall (render/backdrop.ts) and tank shapes (scene/shape.ts) exist. The water / food dish belongs to lane CP. State: nothing built yet.
+## Lane EN: enclosure presentation (2026-10-16; branch `enclosure`, port 5673; opened by coordinator 3)
+Scope: roadmap section 7. Audit (2026-10-16): presets PARTIAL, backdrops DONE (no botanical / plain), lids+doors NOT BUILT, equipment PARTIAL (lights only), light mood PARTIAL (no direction / mood presets), bowls DONE.
+**Batch 1 (2026-10-16, Nathan approved pictures `shots/enclosure/EN1-2`):** 9 terrarium presets in `TANK_PRESETS` (nano 8", cubes 12/18", tall arboreal 12x18x12 / 18x24x18 / 24x48x24, wide terrestrial 36x18x18 / 48x18x24 / 48x24x24); lid 'mesh' (screen top: dark frame + textured weave in `build.ts` addLid via `meshMaterial`, light x0.8 `MESH_LID` in lightout, plants cap at lid like glass); new optional `TankSetup.doors` 'hinged' | 'sliding' (absent = none; rectangles only; `addFrontDoors` in build.ts; Lid row has Mesh top, new Front doors row in the Tank section). No version bump (additive, validate keeps old files). One-line hooks outside my files: `render/items.ts` (lid cap), `ui/diff.ts`, `scene/setupsheet.ts`, `scene/lightout.ts`.
+Open: equipment (heater, hang-on filter, canister outlet, mister nozzle, light bar) in new scene/equipment.ts + render/equipment.ts; light mood / direction; botanical / plain backdrop. Weight of a mesh lid is not counted.
 
 ## Lane CP: content pack (2026-10-16; branch `content-pack`, port 5683; opened by coordinator 3, not started)
 Scope: SS2's Open list: a water / food dish piece, succulents for the arid starter (with lightneeds rows), Malawi fish (peacock, small mbuna, Haplochromis, Synodontis) and the Malawi starter updated. State: nothing built yet.

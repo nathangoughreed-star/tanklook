@@ -80,7 +80,8 @@ export function buildSheet(scene: Scene, index = scene.active, opts: SheetOpts =
     tank.push({ item: 'Water', qty: '', detail: `${vol(wt.waterLitres)} at the water line${S.water.salt ? ' (saltwater)' : ''}` });
     if (gv && gv.landShare > 0.02) tank.push({ item: 'Land / water split', qty: '', detail: `${Math.round(gv.landShare * 100)} % land, ${Math.round((1 - gv.landShare) * 100)} % water (by floor area)` });
   } else tank.push({ item: 'Water', qty: '', detail: 'none (dry tank)' });
-  tank.push({ item: 'Lid', qty: '', detail: { open: 'open top', glass: 'glass canopy', hood: 'hood with lights inside' }[S.lid] });
+  tank.push({ item: 'Lid', qty: '', detail: { open: 'open top', glass: 'glass canopy', hood: 'hood with lights inside', mesh: 'screen (mesh) top' }[S.lid] });
+  if (S.doors === 'hinged' || S.doors === 'sliding') tank.push({ item: 'Front doors', qty: '', detail: S.doors === 'hinged' ? 'hinged glass doors' : 'sliding glass doors' });
   if (S.stand.show) tank.push({ item: 'Stand', qty: '', detail: `${S.stand.style}, ${S.stand.finish}, ${fmtLen(S.stand.height, u, 0)} high` });
   // hardscape weight is shown below; the filled total adds it
   const hard = S.items.filter(i => i.kind === 'stone' || i.kind === 'wood' || i.kind === 'cave');
