@@ -513,7 +513,7 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { u0: 0.58, u1: 0.7, h: 0.07 }, gono: { at: 0.69, len: 0.09 }, pelvic: { u: 0.74, len: 0.04 },
     finMarks: [{ k: 'band', u0: 0, u1: 0.33, v0: 0.062, v1: 0.09, c: '#1c1c1c', a: 0.85, f: 0.006 }], eye: { r: 0.022, iris: ['#cfb890', '#4a3e2c'] } },
   // anal fin from just behind the pelvics back to the peduncle, long pointed pelvics, upturned jaw
-  betta: { drape: 0.03, gape: 0.04, gapeDrop: 0.008, thick: 0.45, depth: 0.24, pedU: 0.36, ped: 0.08, peak: 0.4, snout: 0.5, mouth: -0.035, shade: ['#4a1428', '#8a1f34', '#a33a44'], tail: { type: 'veil', h: 0.38, tint: '#9c2236', a: 0.8 }, fin: '#a02a3c', ray: '#5a0f1c',
+  betta: { drape: 0.03, gape: 0.04, gapeDrop: 0.008, thick: 0.45, depth: 0.24, pedU: 0.36, ped: 0.08, peak: 0.4, snout: 0.5, mouth: -0.035, shade: ['#4a1428', '#8a1f34', '#a33a44'], tail: { type: 'veil', h: 0.38, tint: '#9c2236', a: 0.92 }, fin: '#a02a3c', ray: '#5a0f1c',
     dorsal: { at: 0.56, len: 0.2, h: 0.2, rake: 0.65, trail: 0.1, drop: 0.6, a: 0.8 }, anal: { at: 0.65, len: 0.3, h: 0.24, rake: 0.75, trail: 0.1, drop: 0.7, a: 0.8 },
     pelvic: { u: 0.69, len: 0.15, ext: 0.05, w: 0.6, tint: '#9c2236' },
     marks: [{ k: 'spots', n: 60, u0: 0.38, u1: 0.85, v0: -0.08, v1: 0.08, r: 0.01, c: '#4f7fb8', a: 0.35 }],
