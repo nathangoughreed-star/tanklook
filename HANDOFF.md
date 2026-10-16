@@ -207,6 +207,17 @@ controls (light level, care level) in the starter-set UI, and a one-line caption
 Open for Nathan: does "care" also set the dosing advice shown, and do we offer a "stretch" slider (one tier above the
 tank's means, with a warning)?
 
+Step 0, scape shading in the light map (Nathan 2026-10-16): today PAR (`lightout.ts` `bandsAt`, the light-map shader
+in `render/lighting.ts` and the hover readout) is open water; plants and hardscape block nothing. Add a toggle in
+Light map mode, "Account for the aquascape" (off = today's numbers, so the fixture-only view stays available):
+- Floaters: per-species transmission at full cover (salvinia, water lettuce, frogbit, red root, duckweed; sources to
+  be checked, my first guesses were 70-95 % blocked) times the patch's cover from its spread and density, soft edges.
+- Canopy: stems reaching the surface, broad leaves (sword, lily), overhanging wood.
+- Hardscape: stone and wood shadow, a shadow-casting pass from the fixture's emitters.
+- The JS and the shader must stay in step (the shader is a port); the hover must honour the toggle too.
+- The badges and auto-populate below read the shaded PAR when the toggle is on, so a frogbit-covered tank counts as
+  low light underneath.
+
 Advice only, never a hard gate. Keep the tier numbers in one place so the guide and the checks cannot drift.
 
 ## Still open (rewritten 2026-10-14, lane D)
