@@ -27,7 +27,7 @@ export const BRUSHES: BrushDef[] = [
   { id: 'sphagnum', label: 'Sphagnum', area: 140, radius: [20, 200] },
 ];
 /** The brush tool's settings (a UI state, in the Store). */
-export interface BrushState { on: boolean; erase: boolean; /** A patch being edited: painting adds area to it, erasing takes area from it only. */ target?: number | null; id: BrushId; size: number; density: number; leaf: LeafKind }
+export interface BrushState { on: boolean; erase: boolean; /** One thing per click instead of a stroke. */ single?: boolean; /** A patch being edited: painting adds area to it, erasing takes area from it only. */ target?: number | null; id: BrushId; size: number; density: number; leaf: LeafKind }
 export const isPlantBrush = (id: string): id is `plant:${string}` => id.startsWith('plant:');
 /** Plants with a painted look of their own above (tufts, cushions), left out of the plant list. */
 const LITE_PLANTS = new Set(['hairgrass', 'sphagnum', 'moss']);
@@ -71,6 +71,7 @@ export function cut(p: Patch, x: number, d: number) {
  * where it was.
  */
 export function patchPoints(p: Patch): [number, number][] {
+  if (p.single) { const o: [number, number][] = []; for (let i = 0; i + 1 < p.path.length && o.length < MAX_POINTS; i += 2) if (!cut(p, p.path[i], p.path[i + 1])) o.push([p.path[i], p.path[i + 1]]); return o; }
   const b = brushDef(p.brush), n = Math.floor(p.path.length / 2), out: [number, number][] = [], r = p.size;
   for (let i = 0; i < n && out.length < MAX_POINTS; i++) {
     const cx = p.path[2 * i], cd = p.path[2 * i + 1], g = rng(p.seed * 104729 + i * 7919 + 17);
@@ -138,6 +139,14 @@ export function erasable(S: TankSetup, x: number, d: number, r: number, only?: n
   for (const p of (S.patches ?? []).filter(q => only == null || q.id === only)) for (let i = 0; i + 1 < p.path.length; i += 2) if (Math.hypot(p.path[i] - x, p.path[i + 1] - d) < p.size + r) return true;
   return false;
 }
+/** Put one thing exactly at (x, d): onto the tank's "singles" patch of this brush (made if there is none), so any number of
+ *  hand-placed leaves or pebbles share one small patch. Returns false when the patch limit stops a new one. */
+export function placeSingle(S: TankSetup, brush: BrushId, leaf: LeafKind | undefined, x: number, d: number, seed: number) {
+  let q = (S.patches ?? []).find(v => v.single && v.brush === brush && (brush !== 'leaf' || v.leaf === (leaf ?? 'mixed')) && v.path.length / 2 < MAX_PATH);
+  if (!q) { if ((S.patches?.length ?? 0) >= MAX_PATCHES) return false; q = newPatch(S, brush, brushDef(brush).radius[0], 100, seed, leaf); q.single = true; q.size = Math.max(20, Math.round(Math.sqrt(brushDef(brush).area / Math.PI))); (S.patches ??= []).push(q); }
+  q.path.push(Math.round(x * 10) / 10, Math.round(d * 10) / 10);
+  return true;
+}
 /** Painting more area onto a patch: its new stroke point (see extendPath) also lifts any erased circles it covers. */
 export function addArea(p: Patch, x: number, d: number) {
   const ok = extendPath(p, x, d);
@@ -166,6 +175,7 @@ export function parsePatches(raw: unknown): Patch[] | undefined {
       id, brush: def.id, seed: ok(o.seed) ? Math.round(clamp(o.seed, 1, 1e6)) : 1, size: ok(o.size) ? Math.round(clamp(o.size, def.radius[0], def.radius[1])) : def.radius[0],
       density: ok(o.density) ? Math.round(clamp(o.density, 1, 100)) : 50, path,
       ...(cuts.length ? { cuts } : {}),
+      ...(o.single === true ? { single: true } : {}),
       ...(ok(o.growth) && isPlantBrush(def.id) ? { growth: Math.round(clamp(o.growth, 0, 1) * 100) / 100 } : {}),
       ...(def.id === 'leaf' ? { leaf: (['mixed', 'oak', 'magnolia', 'catappa'] as const).find(l => l === o.leaf) ?? 'mixed' } : {}),
     });

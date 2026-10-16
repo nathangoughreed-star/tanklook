@@ -9,7 +9,7 @@ import type { BrushId, LeafKind } from '../scene/types';
 export function attachBrushBar(store: Store) {
   const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
   const bar = $('brushBar'), btn = $('brushBtn'), kind = $<HTMLSelectElement>('brKind'), leaf = $<HTMLSelectElement>('brLeaf');
-  const size = $<HTMLInputElement>('brSize'), dens = $<HTMLInputElement>('brDens'), paint = $('brPaint'), erase = $('brErase');
+  const single = $('brSingle'), size = $<HTMLInputElement>('brSize'), dens = $<HTMLInputElement>('brDens'), paint = $('brPaint'), erase = $('brErase');
   const opt = (b: { id: string; label: string }) => `<option value="${b.id}">${b.label}</option>`;
   kind.innerHTML = BRUSHES.map(opt).join('') + `<optgroup label="Plants">${plantBrushes().map(opt).join('')}</optgroup>`;
   const sel = () => store.group.patches?.length === 1 && store.groupCount === 1 ? store.tank.patches?.find(p => p.id === store.group.patches![0]) : undefined;
@@ -19,6 +19,7 @@ export function attachBrushBar(store: Store) {
     const P = sel(); patchRow.hidden = !P;
     if (P) {
       const plant = isPlantBrush(P.brush), d = brushDef(P.brush);
+      for (const id of ['gpDens', 'gpWidth']) $(id).parentElement!.hidden = !!P.single; $('gpAdd').hidden = !!P.single;
       $('gpName').textContent = d.label; $('gpGrowL').hidden = !plant;
       const dn = $<HTMLInputElement>('gpDens'), gr = $<HTMLInputElement>('gpGrow'), wd = $<HTMLInputElement>('gpWidth');
       dn.value = String(P.density); gr.value = String(Math.round((P.growth ?? 0.5) * 100)); wd.min = String(d.radius[0]); wd.max = String(d.radius[1]); wd.value = String(P.size);
@@ -35,7 +36,8 @@ export function attachBrushBar(store: Store) {
     $('oBrSize').textContent = `${B.size} mm`; $('oBrDens').textContent = `${B.density}%`;
     paint.classList.toggle('on', !B.erase); paint.setAttribute('aria-pressed', String(!B.erase));
     erase.classList.toggle('on', B.erase); erase.setAttribute('aria-pressed', String(B.erase));
-    size.parentElement!.hidden = false; dens.parentElement!.hidden = B.erase || tgt;
+    single.classList.toggle('on', !!B.single); single.setAttribute('aria-pressed', String(!!B.single)); single.hidden = tgt;
+    size.parentElement!.hidden = !!B.single && !B.erase; dens.parentElement!.hidden = B.erase || tgt || !!B.single;
   };
   store.subscribe(show); show();
   btn.onclick = () => store.setBrush({ on: !store.brush.on, target: null });
@@ -50,6 +52,7 @@ export function attachBrushBar(store: Store) {
   size.oninput = () => store.setBrush({ size: +size.value });
   dens.oninput = () => store.setBrush({ density: +dens.value });
   paint.onclick = () => store.setBrush({ erase: false });
+  single.onclick = () => store.setBrush({ single: !store.brush.single, erase: false });
   erase.onclick = () => store.setBrush({ erase: true });
   $('brDone').onclick = () => store.setBrush({ on: false, target: null });
   addEventListener('keydown', e => {

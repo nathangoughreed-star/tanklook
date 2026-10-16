@@ -131,3 +131,16 @@ describe('editing a patch', () => {
     expect(q[0].growth).toBe(0.8); expect(q[1].growth).toBeUndefined();
   });
 });
+
+describe('single things', () => {
+  it('each click puts one thing exactly there, on one shared patch per brush', async () => {
+    const { placeSingle } = await import('../src/scene/brush');
+    const S = tank();
+    placeSingle(S, 'pebble', undefined, 100, 120, 1); placeSingle(S, 'pebble', undefined, 300, 200, 2); placeSingle(S, 'leaf', 'oak', 50, 50, 3);
+    expect(S.patches).toHaveLength(2);
+    const pb = S.patches!.find(p => p.brush === 'pebble')!;
+    expect(patchPoints(pb)).toEqual([[100, 120], [300, 200]]);
+    erasePatches(S, 100, 120, 10); expect(patchPoints(S.patches!.find(p => p.brush === 'pebble')!)).toEqual([[300, 200]]);
+    expect(parsePatches(JSON.parse(JSON.stringify(S.patches)))![0].single).toBe(true);
+  });
+});

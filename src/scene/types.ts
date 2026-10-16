@@ -350,7 +350,7 @@ export type BrushId = LiteBrushId | `plant:${string}`;
  * patch is tiny in the file and moves / copies / erases as a unit. `path` = x, depth pairs (mm, flat); `size` = brush
  * radius (mm); `density` 0-100; `cuts` = x, depth, radius triples erased from it afterwards; `leaf` = the leaf look.
  */
-export interface Patch { id: number; brush: BrushId; seed: number; size: number; density: number; path: number[]; cuts?: number[]; leaf?: LeafKind; /** Plant brushes: growth stage 0-1 (absent = the plant's own). */ growth?: number }
+export interface Patch { id: number; brush: BrushId; seed: number; size: number; density: number; path: number[]; cuts?: number[]; leaf?: LeafKind; /** Plant brushes: growth stage 0-1 (absent = the plant's own). */ growth?: number; /** One thing per path point, exactly there (a single pebble or leaf placed by hand). */ single?: boolean }
 
 export interface Scene {
   version: number;

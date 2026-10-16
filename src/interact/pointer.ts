@@ -24,7 +24,7 @@ import type { ItemKind, Tank, TankSetup } from '../scene/types';
 import type { Viewer, Viewport } from '../render/viewer';
 import { LIMITS } from '../scene/validate';
 import { groupSize, moveGroup, settleFish, turnGroup, type Group } from '../scene/duplicate';
-import { MAX_PATCHES, addArea, erasable, erasePatches, extendPath, newPatch, patchAt } from '../scene/brush';
+import { MAX_PATCHES, addArea, placeSingle, erasable, erasePatches, extendPath, newPatch, patchAt } from '../scene/brush';
 
 type DragMode = 'front' | 'top' | 'side' | 'glass';
 
@@ -140,6 +140,10 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
     const pl = placeAt(viewer, store, clientX, clientY); if (!pl || pl.vi !== stroke.vi) return;
     const B = store.brush, st = stroke, S = store.scene.tanks[st.vi];
     if (st.erase) { if (erasable(S, pl.x, pl.depth, B.size, B.target)) store.update(sc => { erasePatches(sc.tanks[st.vi], pl.x, pl.depth, B.size, B.target); }, { coalesce: 'brush-erase' }); return; }
+    if (B.single && B.target == null) { // one thing per click
+      if (st.id === -1) return; st.id = -1;
+      store.update(sc => { placeSingle(sc.tanks[st.vi], B.id, B.leaf, pl.x, pl.depth, 1 + Math.floor(Math.random() * 999999)); }, { coalesce: 'brush-single' }); return;
+    }
     if (B.target != null) { // adding area to the patch being edited
       if (!S.patches?.some(v => v.id === B.target)) return;
       store.update(sc => { const q = sc.tanks[st.vi].patches?.find(v => v.id === B.target); if (q) addArea(q, pl.x, pl.depth); }, { coalesce: 'brush-stroke' }); return;
