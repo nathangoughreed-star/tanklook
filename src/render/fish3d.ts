@@ -294,12 +294,13 @@ function finMeshes(art: string, p: Plan, bend: number, edge: EdgeMode, cling = f
     }
     const mat = cardMaterial(key, pairedFinTexture(art, f, box, edge), edge); mat.userData.fishCard = true; // outlined by fish stand out
     for (const side of [1, -1]) {
-      const mesh = new THREE.Mesh(g, mat), a = (cling ? SPLAY : SPREAD)[f.kind];
+      // flat (plan option, off by default): held out flat like a fish on the glass all the time (hillstream loach)
+      const flat = cling || !!(f.kind === 'pelvic' ? p.pelvic?.flat : p.pec?.flat), mesh = new THREE.Mesh(g, mat), a = (flat ? SPLAY : SPREAD)[f.kind];
       // root slightly inside the surface so the base never shows a gap
       const s = surfaceAt(p, f.root[0], f.root[1], side, bend), z0 = bendZ(bend, s.x);
       mesh.position.set(s.x, s.y, z0 + (s.z - z0) * 0.85);
       if (f.kind === 'pelvic') mesh.rotation.x = -side * a;
-      else if (cling) mesh.rotation.set(-side * a, side * 0.35, 0, 'YXZ');
+      else if (flat) mesh.rotation.set(-side * a, side * 0.35, 0, 'YXZ');
       else mesh.rotation.set(-side * 0.25, side * a, 0, 'YXZ');
       out.push(mesh);
     }

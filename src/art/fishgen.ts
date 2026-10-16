@@ -63,8 +63,9 @@ export interface Plan {
   // parts splay apart by this many degrees (fish3d `splitAnal`); the card draws one flat
   analSplit?: number;
   // ext: the leading ray runs on past the membrane by this much (widths); w: membrane width x the default
-  pelvic?: { u: number; len: number; tint?: string; thread?: boolean; angle?: number; ext?: number; w?: number }; // angle: degrees below horizontal (thread)
-  pec?: { s?: number; v?: number; u?: number }; // pectoral: size x the default, root height (0 top .. 1 belly, default 0.62), root u (default behind the gill)
+  // flat (3D, pelvic and pec, off by default): the fins held out flat to the sides all the time, as on the glass (hillstream loach)
+  pelvic?: { u: number; len: number; tint?: string; thread?: boolean; angle?: number; ext?: number; w?: number; flat?: boolean }; // angle: degrees below horizontal (thread)
+  pec?: { s?: number; v?: number; u?: number; flat?: boolean; w?: number }; // pectoral: size x the default, root height (0 top .. 1 belly, default 0.62), root u (default behind the gill), w: fan width x the default
   fin: string;        // default membrane tint
   ray?: string;
   marks?: Mark[];     // painted inside the body
@@ -295,7 +296,10 @@ export function pairedFins(p: Plan): PairedFin[] {
   if (g.pelvic) out.push({ kind: 'pelvic', pts: g.pelvic, root: [p.pelvic!.u, g.prof(p.pelvic!.u)[1]], tint: p.pelvic!.tint ?? p.fin, a: p.pelvic!.thread ? 0.85 : undefined, rays: p.pelvic!.thread ? 0 : 5 });
   if (p.pectoral === false) return out;
   const pu = p.pec?.u ?? 1 - (1 - p.pedU) * 0.24, [pt, pb] = g.prof(pu), pm = pt + (pb - pt) * (p.pec?.v ?? 0.62), pl = Math.min((1 - p.pedU) * 0.17, p.depth * 0.75) * (p.pec?.s ?? 1); // slender fish (loaches) keep small pectorals
-  out.push({ kind: 'pectoral', pts: [[pu, pm - 0.01], [pu - pl, pm + pl * 0.3, 'c'], [pu - pl * 0.7, pm + pl * 0.55], [pu + 0.005, pm + 0.015]], root: [pu, pm], tint: mixHex(p.fin, p.shade[1], 0.35), a: 0.3, rays: 5 }); // pectoral takes on some flank colour: it lies against the body
+  // w (off by default): a broad fan, the trailing edge this many times deeper (hillstream loach)
+  const w = p.pec?.w ?? 1, pts: Pt[] = w === 1 ? [[pu, pm - 0.01], [pu - pl, pm + pl * 0.3, 'c'], [pu - pl * 0.7, pm + pl * 0.55], [pu + 0.005, pm + 0.015]]
+    : [[pu, pm - 0.01], [pu - pl, pm + pl * 0.3, 'c'], [pu - pl * 0.8, pm + pl * (0.3 + 0.25 * w)], [pu - pl * 0.4, pm + pl * 0.3 * w], [pu + 0.005, pm + 0.015 * w]];
+  out.push({ kind: 'pectoral', pts, root: [pu, pm], tint: mixHex(p.fin, p.shade[1], 0.35), a: 0.3, rays: 5 }); // pectoral takes on some flank colour: it lies against the body
   return out;
 }
 export function drawPairedFin(f: PairedFin, ctx: Ctx, P: Proj, W: number, ray = '#7d7a70') {
