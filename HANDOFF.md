@@ -28,6 +28,8 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
 | T1 dry ground (roadmap R1) | `../Glass-Box-dry-ground` / `dry-ground` | 5633 | substrate types in `scene/types.ts` / `validate.ts` / `defaults.ts` (substrate only), the ground build in `render/build.ts`, substrate tiles in `art/placeholder.ts` / `render/textures.ts`, new `render/scatter.ts` (leaf litter, shared scatter) + new `render/grains.ts` (3D grains), the Substrate section of `ui/panels.ts` / `index.html` | running (session `local_6ae6a2e0`): litter + new grounds pushed (`2ec2000`, build 592); 3D grains prototype (bark, gravel, pebbles) waiting on Nathan's look check |
+| BP ball python (roadmap R2) | `../Glass-Box-python` / `python` | 5673 | new `render/snake3d.ts`, `art/snakes.ts`; one-line hooks in `render/herp3d.ts`, `art/herps.ts`, animal() in `render/build.ts`, `scene/scatter.ts`, `data/species.json` / `species.ts` | ready to open (prompt `prompts/lane-BP-ball-python.md`) |
+| TA tarantula (roadmap R2) | `../Glass-Box-tarantula` / `tarantula` | 5683 | new `render/tarantula3d.ts`, `art/tarantulas.ts`; same one-line hooks as BP (keep both sides) | ready to open (prompt `prompts/lane-TA-tarantula.md`) |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 
@@ -46,6 +48,12 @@ Scope: roadmap section 5 P0. Scatter brush is NOT here (waits on T1's render/sca
 
 ## Lane JS: regal jumping spider, first arthropod body plan (2026-10-16; branch `spider`, port 5673; opened by coordinator 3, not started)
 Scope: new render/spider3d.ts + art/spiders.ts (8 eyes, chelicerae, palps, abdomen pattern, 8 IK legs with hair), poses via scene/anchors.ts (floor, glass / wall, branch, alert), male + female, species.json entries. Pattern: archive Lane G1. Keep IK / hair in a shared helper for the ball python and tarantula lanes that follow. State: nothing built yet.
+
+## Lane BP: ball python, serpentine body plan (2026-10-16; branch `python`, port 5673; opened by coordinator 3, not started)
+Scope: new render/snake3d.ts + art/snakes.ts, constant-length spine, pose families coiled / extended / draped on a branch / ball / alert, blotch pattern, sizes by life stage. Pattern: archive Lane G1 + Lane JS; shares render/limbs.ts. State: nothing built yet.
+
+## Lane TA: tarantula, large arachnid body plan (2026-10-16; branch `tarantula`, port 5683; opened by coordinator 3, not started)
+Scope: new render/tarantula3d.ts + art/tarantulas.ts (default Grammostola pulchripes): heavy carapace, fangs, 8 stout segmented legs with scopulae, dense hair, poses floor / hide / wall / threat / tucked, sizes by life stage. Pattern: archive Lane JS; shares render/limbs.ts. State: nothing built yet.
 
 ## Lane T1: dry ground, terrestrial substrates + leaf litter (2026-10-16; branch `dry-ground`, port 5633; Nathan: "leaf litter looks great", ship; pushed to main)
 - **New substrate presets** (`SubstrateType` + validate pick list, no scene version bump; art/placeholder.ts SUBSTRATES, flag
