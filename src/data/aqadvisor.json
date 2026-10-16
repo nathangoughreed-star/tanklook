@@ -179,6 +179,14 @@
   "aq": "200909300048",
   "name": "Cockatoo Apisto (Apistogramma cacatuoides)"
  },
+ "whitecloud": {
+  "aq": "200909300241",
+  "name": "White Cloud Mountain Minnow (Tanichthys albonubes)"
+ },
+ "comet": {
+  "aq": "201006201233",
+  "name": "Comet Goldfish (Carassius auratus)"
+ },
  "axolotl": {
   "aq": "200911041032",
   "name": "Dojo Loach (Misgurnus anguillicaudatus)",
@@ -242,6 +250,16 @@
  "watchman": {
   "aq": "201005021933",
   "name": "Yellow Watchman Goby (Cryptocentrus cinctus)",
+  "salt": true
+ },
+ "bluetang": {
+  "aq": "201003260005",
+  "name": "Blue Tang (Paracanthurus hepatus)",
+  "salt": true
+ },
+ "mandarin": {
+  "aq": "201005021934",
+  "name": "Green Mandarin (Synchiropus splendidus)",
   "salt": true
  },
  "cleanershrimp": {

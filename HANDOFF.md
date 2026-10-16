@@ -2,13 +2,17 @@
 
 Living file. Project state and dated decisions go here; update in place.
 
-## Lane T4: aquatic roster (2026-10-16; branch `aqua-roster`, port 5673; batch 1 approved by Nathan and pushed; batches 2-3 running)
+## Lane T4: aquatic roster (2026-10-16; branch `aqua-roster`, port 5673; batches 1-2 approved by Nathan and pushed; corals running)
 Roadmap section 6: species that add new silhouettes, scales or habitats, in batches of about five, each on a review sheet.
 - **Batch 1 (Nathan approved, v1 at build 567)**: pygmy corydoras (`pygmycory`, 25 mm, slim mini cory, black stripe),
   reticulated hillstream loach (`hillstream`, *Sewellia lineolata*, 60 mm, flat disc body, eyes on top, paired fins held
   flat, cling any), yellow lab (`yellowlab` / `~f`, 100 / 90 mm, first mbuna: black-banded white-edged dorsal, male black
   pelvics), Boeseman's rainbowfish (`boesemani` / `~f`, 100 / 80 mm, blue front, orange rear, two dorsals), cockatoo dwarf
   cichlid (`cockatoo` / `~f`, 85 / 50 mm, the male's notched crest dorsal and spotted lyre tail; yellow female).
+- **Batch 2 (Nathan approved, v1 at build 568)**: white cloud mountain minnow (`whitecloud`, 40 mm, cool-water schooler),
+  comet goldfish (`comet`, 200 mm, long body, single deeply forked tail, big scales), blue tang (`bluetang`, 250 mm, the
+  black palette, yellow tail), mandarin dragonet (`mandarin` / `~f`, 60 / 50 mm, bottom, scaleless, domed red-ringed eyes,
+  fan pectorals, tall first dorsal on the male; wavy orange lines on blue-green). All on AqAdvisor (marine page for the two).
 - AqAdvisor: all on it (ids via `scripts/aqadvisor-ids.py`, now with a T4 block); hillstream is a stand-in (AqAdvisor lists
   only *Gastromyzon ctenocephalus*, same family, size and habit). Tests: stand-in list + "cory" search updated.
 - **New generic options (own commit `5fbf6ce`, off by default, every recorded fingerprint unchanged)**: `pec.flat` /
@@ -1609,7 +1613,7 @@ hermit shell is a tilted turbo-like coil, its side view shows the aperture lip a
 | T1 dry ground (roadmap R1) | `../Glass-Box-dry-ground` / `dry-ground` | 5633 | substrate types in `scene/types.ts` / `validate.ts` / `defaults.ts` (substrate only), the ground build in `render/build.ts`, substrate tiles in `art/placeholder.ts` / `render/textures.ts`, new `render/scatter.ts` (leaf litter), the Substrate section of `ui/panels.ts` / `index.html` | running (session `local_6ae6a2e0`) |
 | T2 terrestrial plants (roadmap R1) | `../Glass-Box-terra-plants` / `terra-plants` | 5653 | `art/plants.ts`, `render/plant3d.ts`, plant branch of `render/items.ts`, plant entries of `scene/items.ts` LIBRARY | running (session `local_7d35229e`) |
 | T3 dry hardscape + anchors (roadmap R1/R2) | `../Glass-Box-dry-hardscape` / `dry-hardscape` | 5663 | non-plant branches of `render/items.ts` (not the GRIT shader core), stone / wood / cave / hide entries of `scene/items.ts` LIBRARY, new `scene/anchors.ts` + its hook in the cling / rest code; anchor hook in `render/build.ts` addContents rest / cling helpers (`top`, `restOn`, start of `animal()`, `onGlass`, `onWall`, glass branch of `snailMeshes`); perch pose in `art/herps.ts` / `render/herp3d.ts` | running (session `local_adf731d2`) |
-| T4 aquatic roster | `../Glass-Box-aqua-roster` / `aqua-roster` | 5673 | `data/species.json`, `data/aqadvisor.json`, NEW species' PLANS / her() entries in `art/fishgen.ts`, `render/coral3d.ts` + coral entries of `scene/items.ts` LIBRARY | batch 1 pushed (5 fish); batches 2 (fish) + 3 (corals) running (session `local_c8325e61`) |
+| T4 aquatic roster | `../Glass-Box-aqua-roster` / `aqua-roster` | 5673 | `data/species.json`, `data/aqadvisor.json`, NEW species' PLANS / her() entries in `art/fishgen.ts`, `render/coral3d.ts` + coral entries of `scene/items.ts` LIBRARY | batches 1-2 pushed (9 fish); corals running (session `local_c8325e61`) |
 | FM fish mesh merge | `../Glass-Box-fish-merge` / `fish-merge` | 5683 (headless checks preferred) | fish mesh assembly in `render/fish3d.ts`, the animal-mesh part of `render/build.ts` | running (session `local_7e5d4a5f`) |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T3: crested gecko + lizard body plan; after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits | queued |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
