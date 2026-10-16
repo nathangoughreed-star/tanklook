@@ -8,7 +8,7 @@ import { rng } from '../src/art/paint';
 import { getSpecies, fishTL } from '../src/data/species';
 import { buildTank } from '../src/render/build';
 import { itemMesh, solidProbe } from '../src/render/items';
-import { snakeBody, snakePoseOf, snakeSpine, SPINE_N } from '../src/render/snake3d';
+import { settleSnake, snakeBody, snakeContacts, snakePoseOf, snakeSpine, SPINE_N } from '../src/render/snake3d';
 import { anchors } from '../src/scene/anchors';
 import { emptyScene } from '../src/scene/defaults';
 import { LIBRARY } from '../src/scene/items';
@@ -197,5 +197,48 @@ describe('snakes in the tank', { timeout: 120000 }, () => {
         if (f.surface === 'hardscape') expect(m.position.y, `snake ${f.id}`).toBeGreaterThan(wy);
       }
     }
+  });
+});
+
+describe('settling on uneven ground (lane BP2)', () => {
+  const MAXT = 45 * Math.PI / 180;
+  const check = (bend: number, ground: (x: number, z: number) => number) => {
+    const w = 800, c = snakeContacts('ballpython', w, bend), q = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0.7, 0, 'YXZ'));
+    const st = settleSnake(c, q, { x: 100, z: -50 }, ground, MAXT), qq = q.clone().premultiply(st.rot);
+    let low = Infinity, air = 0;
+    for (const [x, y, z, r] of c.pts) {
+      const p = new THREE.Vector3(x, y, z).applyQuaternion(qq); p.y += st.y; p.x += 0; 
+      const gap = p.y - r - ground(st.x + p.x, st.z + p.z); low = Math.min(low, gap); air = Math.max(air, gap);
+    }
+    return { low, air, w };
+  };
+  it('lies on a slope without clipping', () => {
+    for (const bend of [-1, -0.5, 0, 0.5, 1]) { const r = check(bend, (x) => x * 0.2); expect(r.low).toBeGreaterThan(-0.5 - 1e-6); }
+  });
+  it('flat ground: no tilt, resting on it', () => {
+    const r = check(-1, () => 0); expect(Math.abs(r.low)).toBeLessThan(1); expect(r.air).toBeLessThan(0.05 * r.w);
+  });
+  it('over a step it never clips and floats less than the plain highest-point rest', () => {
+    const step = (x: number) => (x > 100 ? 40 : 0), r = check(-1, step);
+    expect(r.low).toBeGreaterThan(-1e-6);
+  });
+});
+
+describe('clearance on hardscape (lane BP2)', () => {
+  it('Shuffle keeps animals off two animals on one spot on a ledge or branch', () => {
+    const count = (room?: number) => {
+      let bad = 0, onHard = 0;
+      for (let seed = 1; seed <= 40; seed++) {
+        const S = dry([piece(1, 'ledge', 300, 200, { size: 300, lift: 120 }), piece(2, 'climb', 150, 200, { size: 380 })]);
+        S.fish = [1, 2, 3].map(i => snake(i, { tl: 250, surface: 'hardscape' }));
+        shuffleFish(S, rng(seed), undefined, undefined, room);
+        const h = S.fish.filter(f => f.surface === 'hardscape'); onHard += h.length;
+        for (let a = 0; a < h.length; a++) for (let b = a + 1; b < h.length; b++) if (Math.hypot(h[a].x - h[b].x, h[a].y - h[b].y, h[a].depth - h[b].depth) < 0.3 * 500) bad++;
+      }
+      return { bad, onHard };
+    };
+    const off = count(0), on = count();
+    expect(on.onHard).toBeGreaterThan(20); expect(off.bad).toBeGreaterThan(0);
+    expect(on.bad).toBeLessThan(off.bad / 2);
   });
 });

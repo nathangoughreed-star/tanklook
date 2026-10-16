@@ -161,6 +161,8 @@ export interface LightSettings {
   mapSlice?: number;
   /** Dark spots: a surface round every pocket of water below `mapDark` (an app preference, added 2026-10-15). */
   mapShells?: boolean;
+  /** Light map: count the aquascape's shade (floaters, canopy, hardscape); absent = the fixture only (an app preference, added 2026-10-16). */
+  mapShade?: boolean;
   /** Dark spots: the level below which the water counts as dark, PAR (lux: x 50); absent = 30. */
   mapDark?: number;
 }
@@ -217,7 +219,9 @@ export interface LayerDens { hard: number; plant: number; animal: number }
  *  starter animals, so each menu's Shuffle redraws its own layer only (Nathan 2026-10-15). Absent = `seed`. */
 export interface LayoutSettings { id: LayoutId; seed: number; plantSeed?: number; animalSeed?: number; dens?: LayerDens; comp?: CompId;
   /** The substrate and terrain were drawn for this style by the Quick aquascape setup (scene/scapeground.ts). */
-  ground?: boolean }
+  ground?: boolean;
+  /** Auto-populate by light (lane PG step 4, 2026-10-16): the starter set keeps only plants / corals that fit this light level and the tank's care (grow.feed). Absent = every plant the style draws. */
+  fit?: 'low' | 'medium' | 'high' }
 
 /** Library item kinds; the variant names the generator (scene/items.ts LIBRARY). */
 export type ItemKind = 'stone' | 'wood' | 'cave' | 'plant' | 'coral';

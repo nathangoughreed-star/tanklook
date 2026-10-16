@@ -70,12 +70,14 @@ function section(S: SnakeSpec, hw: number, top: number, bot: number, a: number, 
 
 // ---------- the spine ----------
 
-export interface Spine { P: THREE.Vector3[]; U: THREE.Vector3[]; rr: number[]; pose: SnakePose; cyl: number | null; ground: number }
-export const snakePoseOf = (surface: string | undefined, R: number | undefined, bend: number) => {
+export interface Spine { P: THREE.Vector3[]; U: THREE.Vector3[]; rr: number[]; pose: SnakePose; cyl: number | null; ground: number; ext?: number }
+/** The room on a limb either side of the snake's anchor, in lengths of the snake: [behind, ahead]. */
+export type Room = [number, number];
+export const snakePoseOf = (surface: string | undefined, R: number | undefined, bend: number, room?: Room) => {
   const q = (Math.min(1, Math.max(-1, bend || 0)) + 1) * 2, idx = Math.min(4, Math.max(0, Math.round(q))), v = q - idx;
   const cyl = surface === 'perch' && R && R > 0 ? R : null;
   // on the top of a rock or ledge (not a limb) only the small poses (ball, coil) fit: the others settle into the coil
-  const pose: SnakePose = cyl ? (cyl < 0.012 ? 'drape' : PC[idx]) : surface === 'hardscape' && idx !== 0 && idx !== 2 ? 'coiled' : PL[idx];
+  const short = !!room && room[0] + room[1] < 0.95, pose: SnakePose = cyl ? (cyl < 0.012 || (PC[idx] === 'drape' && !short) ? 'drape' : PC[idx] === 'drape' ? 'wrap' : PC[idx]) : surface === 'hardscape' && idx !== 0 && idx !== 2 ? 'coiled' : PL[idx];
   return { pose, idx, sign: v < 0 ? -1 : 1, mag: Math.round(Math.min(1, Math.abs(v) * 2) * 2) / 2, cyl };
 };
 
@@ -89,7 +91,7 @@ const spiralOut = (rho0: number, pitch: number) => { const c = pitch / TAU; retu
 
 interface Curves { th: number[]; lift: number[]; phi0?: boolean }
 /** The heading and the profile lift (raised head, rising neck) of each pose along the spine. */
-function curves(S: SnakeSpec, pose: SnakePose, sign: number, mag: number, cylR: number | null, ss: number[], dmax: number): Curves {
+function curves(S: SnakeSpec, pose: SnakePose, sign: number, mag: number, cylR: number | null, ss: number[], dmax: number, advK = 2.3): Curves {
   const N = ss.length - 1, th: number[] = new Array(N + 1).fill(0), lift: number[] = new Array(N + 1).fill(0), ds = 1 / N;
   const integ = (kappa: (s: number) => number) => { let t = 0; for (let i = 0; i <= N; i++) { th[i] = t; t += sign * kappa(ss[i] + ds / 2) * ds; } };
   const ph = S.blotch.seed * 1.7;
@@ -105,13 +107,13 @@ function curves(S: SnakeSpec, pose: SnakePose, sign: number, mag: number, cylR: 
     const A = pose === 'extended' ? 0.5 + 0.25 * mag : 0.95 + 0.2 * mag, f = pose === 'extended' ? 1.45 : 2.2;
     for (let i = 0; i <= N; i++) { th[i] = sign * A * Math.sin(TAU * f * ss[i] + ph) * (1 - 0.8 * smooth(0.78, 1, ss[i])) * (0.5 + 0.5 * smooth(0, 0.12, ss[i])); lift[i] = 0.012 * smooth(0.9, 1, ss[i]); }
   } else if (cylR !== null) {
-    // helix round a limb: heading off the axis so each turn advances 2.3 body widths (a loose wrap), the tail lying straight along it first, the head straight along the top
-    const Rc = cylR + 0.02, circ = TAU * Rc, adv = 2.3 * dmax, al = Math.atan2(circ, adv), end = pose === 'drape' ? 0 : 0.74 + 0.04 * mag;
+    // helix round a limb: heading off the axis so each turn advances `advK` body widths (2.3 = a loose wrap), the tail winding from its tip, the head straight along the top
+    const Rc = cylR + 0.02, circ = TAU * Rc, adv = advK * dmax, al = Math.atan2(circ, adv), end = pose === 'drape' ? 0 : 0.74 + 0.04 * mag;
     if (pose === 'drape') {
       const A = 0.28 + 0.25 * mag;
       for (let i = 0; i <= N; i++) th[i] = sign * A * Math.sin(TAU * 1.05 * ss[i] + ph) * (0.35 + 0.65 * Math.sin(Math.PI * ss[i]) ** 0.6);
     } else {
-      for (let i = 0; i <= N; i++) th[i] = sign * al * (1 - smooth(end - 0.06, end + 0.03, ss[i])) * smooth(0.05, 0.13, ss[i]);
+      for (let i = 0; i <= N; i++) th[i] = sign * al * (1 - smooth(end - 0.06, end + 0.03, ss[i])) * smooth(0, 0.05, ss[i]); // the tail winds from its tip
       if (pose === 'wrapalert') for (let i = 0; i <= N; i++) lift[i] = 0.05 * smooth(0.86, 0.97, ss[i]);
       else for (let i = 0; i <= N; i++) lift[i] = 0.01 * smooth(0.92, 1, ss[i]);
     }
@@ -150,10 +152,10 @@ function stack(base: number[], pos: { a: number[]; lat: number[] }, rr: number[]
 const smoothSeries = (x: number[], w: number) => x.map((_, i) => { let s = 0, n = 0; for (let k = -w; k <= w; k++) { const j = i + k; if (j >= 0 && j < x.length) { s += x[j]; n++; } } return s / n; });
 
 /** The spine of a surface pose: heading curves traced on a plane or a limb, lifted over its own coils, then turned and centred. */
-function planeSpine(S: SnakeSpec, P: Prof, pose: SnakePose, sign: number, mag: number, cylR: number | null, G: number): Spine {
+function planeSpine(S: SnakeSpec, P: Prof, pose: SnakePose, sign: number, mag: number, cylR: number | null, G: number, room?: Room, advK = 2.3): Spine {
   const N = SPINE_N, ss = Array.from({ length: N + 1 }, (_, i) => i / N), hw = ss.map(P.hw), bot = ss.map(P.bot);
   const rr = ss.map((s, i) => 0.5 * (hw[i] + 0.5 * (P.top(s) + bot[i])));
-  const dmax = 2 * Math.max(...hw), cv = curves(S, pose, sign, mag, cylR, ss, dmax);
+  const dmax = 2 * Math.max(...hw), cv = curves(S, pose, sign, mag, cylR, ss, dmax, advK);
   let lift = cv.lift.slice(), pos = trace(cv.th, lift, bot, cylR);
   for (let pass = 0; pass < 8; pass++) {
     const st = stack(cv.lift, pos, rr, ss, cylR, bot), sm = smoothSeries(st, 3);
@@ -161,6 +163,7 @@ function planeSpine(S: SnakeSpec, P: Prof, pose: SnakePose, sign: number, mag: n
     pos = trace(cv.th, lift, bot, cylR);
   }
   const Pt: THREE.Vector3[] = [], Ut: THREE.Vector3[] = [];
+  let ext_ = 0;
   if (cylR === null) {
     // turn the head's heading to +x, then centre the footprint
     const k = N - 6, ang = Math.atan2(pos.lat[N] - pos.lat[k], pos.a[N] - pos.a[k]), c = Math.cos(-ang), s2 = Math.sin(-ang);
@@ -170,13 +173,14 @@ function planeSpine(S: SnakeSpec, P: Prof, pose: SnakePose, sign: number, mag: n
   } else {
     // the helix ends on the top of the limb: shift the angle so the head's end is at phi = 0
     const shift = cv.phi0 ? -pos.lat[N] : -pos.lat[N] / 2 + (pos.lat[0] - pos.lat[0]);
-    const cx = (Math.min(...pos.a) + Math.max(...pos.a)) / 2, yA = -G - cylR;
+    const lo = Math.min(...pos.a), hi = Math.max(...pos.a), ext = hi - lo, c = room && room[0] + room[1] >= ext ? Math.max(-room[0] + ext / 2, Math.min(room[1] - ext / 2, 0)) : 0;
+    const cx = (lo + hi) / 2 - c, yA = -G - cylR; ext_ = ext; // centred on the anchor, slid along the limb where an end would run out
     for (let i = 0; i <= N; i++) {
       const phi = pos.lat[i] + shift, n = V(0, Math.cos(phi), Math.sin(phi)), r = cylR + bot[i] + lift[i];
       Pt.push(V(pos.a[i] - cx, yA + r * n.y, r * n.z)); Ut.push(n);
     }
   }
-  return { P: Pt, U: Ut, rr, pose, cyl: cylR, ground: G };
+  return { P: Pt, U: Ut, rr, pose, cyl: cylR, ground: G, ext: ext_ };
 }
 
 /** The defensive ball: a spiral over a sphere (the tail round the bottom to the top), the head diving into the middle. Rs by bisection so the length is 1. */
@@ -212,9 +216,16 @@ function ballSpine(S: SnakeSpec, P: Prof, sign: number, mag: number, G: number):
   return { P: Pt, U: Ut, rr, pose: 'ball', cyl: null, ground: G };
 }
 
-export function spineOf(S: SnakeSpec, surface: string | undefined, R: number | undefined, bend: number, babyK = 1): Spine {
-  const { pose, sign, mag, cyl } = snakePoseOf(surface, R, bend), P = profile(S, babyK), G = snakeGround(S);
-  return pose === 'ball' ? ballSpine(S, P, sign, mag, G) : planeSpine(S, P, pose, sign, mag, cyl, G);
+export function spineOf(S: SnakeSpec, surface: string | undefined, R: number | undefined, bend: number, babyK = 1, room?: Room): Spine {
+  const { pose, sign, mag, cyl } = snakePoseOf(surface, R, bend, room), P = profile(S, babyK), G = snakeGround(S);
+  if (pose === 'ball') return ballSpine(S, P, sign, mag, G);
+  // on a limb with little room: wind the coils tighter (a turn advances fewer body widths) until the wrap fits between its ends
+  if (cyl !== null && room && pose !== 'drape') {
+    let sp = planeSpine(S, P, pose, sign, mag, cyl, G, room);
+    for (const k of [1.9, 1.55, 1.3, 1.1]) { if ((sp.ext ?? 0) <= room[0] + room[1] - 0.02) break; sp = planeSpine(S, P, pose, sign, mag, cyl, G, room, k); }
+    return sp;
+  }
+  return planeSpine(S, P, pose, sign, mag, cyl, G, room);
 }
 
 // ---------- loft ----------
@@ -390,8 +401,8 @@ const paintCache = new Map<string, { body: THREE.DataTexture; head: THREE.DataTe
 /** The length-based enlargement of the head and eye of a small animal (1 = adult). */
 export const babyOf = (S: SnakeSpec, wmm: number) => Math.round(Math.min(1.6, Math.max(1, (S.adult / Math.max(40, wmm)) ** 0.3)) * 20) / 20;
 
-function build(S: SnakeSpec, surface: string | undefined, R: number, bend: number, baby: number): Built {
-  const sp = spineOf(S, surface, R, bend, baby), prof = profile(S, baby), rs = rings(S, prof, sp), g = loft(S, rs), C = RG + 1;
+function build(S: SnakeSpec, surface: string | undefined, R: number, bend: number, baby: number, room?: Room): Built {
+  const sp = spineOf(S, surface, R, bend, baby, room), prof = profile(S, baby), rs = rings(S, prof, sp), g = loft(S, rs), C = RG + 1;
   const { cyl, ground } = sp, pos = g.attributes.position, nrm = g.attributes.normal, q = V();
   // keep every vertex off the surface it lies on (a ring turned on a slope, a coil crossing)
   for (let i = 0; i < pos.count; i++) {
@@ -456,19 +467,96 @@ function build(S: SnakeSpec, surface: string | undefined, R: number, bend: numbe
   return { body, head, scales, sheen: sh, eyes, spine: sp };
 }
 
+/** A limb the snake lies along, in the card's frame (mm): the control points from foot to tip (render/items.ts draws a smooth curve through them) and the radius at each end. */
+export interface LimbPath { pts: THREE.Vector3[]; r0: number; r1: number }
+interface Frames { Lc: number; sA: number; C: THREE.Vector3[]; T: THREE.Vector3[]; N: THREE.Vector3[]; rad: number[]; room: Room; bent: boolean }
+const FR_N = 96;
+/**
+ * The limb as frames along it (position, tangent, a parallel-transported up, radius), turned so the snake's heading runs along +arclength,
+ * the anchor `axisDown` mm below the card's origin (the axis point under the belly): the room each side of it in snake lengths,
+ * and whether the limb bends or tapers enough under the snake to be worth following.
+ */
+function limbFrames(limb: LimbPath, w: number, axisDown: number): Frames {
+  const curve = new THREE.CatmullRomCurve3(limb.pts.map(p => p.clone())), Lc = curve.getLength(), n = FR_N;
+  let C = Array.from({ length: n + 1 }, (_, i) => curve.getPointAt(i / n)), T = Array.from({ length: n + 1 }, (_, i) => curve.getTangentAt(i / n).normalize());
+  let rad = Array.from({ length: n + 1 }, (_, i) => limb.r0 + (limb.r1 - limb.r0) * i / n);
+  const A0 = V(0, -axisDown, 0);
+  let i0 = 0, bd = Infinity; C.forEach((c, i) => { const d = c.distanceTo(A0); if (d < bd) { bd = d; i0 = i; } });
+  if (T[i0].x < 0) { C = C.reverse(); T = T.reverse().map(t => t.clone().negate()); rad = rad.reverse(); i0 = n - i0; }
+  const N: THREE.Vector3[] = new Array(n + 1), up = V(0, 1, 0);
+  N[i0] = up.clone().addScaledVector(T[i0], -up.dot(T[i0])).normalize();
+  if (!(N[i0].lengthSq() > 0.5)) N[i0] = V(0, 0, 1).addScaledVector(T[i0], -T[i0].z).normalize();
+  for (let i = i0 + 1; i <= n; i++) N[i] = N[i - 1].clone().addScaledVector(T[i], -N[i - 1].dot(T[i])).normalize();
+  for (let i = i0 - 1; i >= 0; i--) N[i] = N[i + 1].clone().addScaledVector(T[i], -N[i + 1].dot(T[i])).normalize();
+  const sA = i0 / n * Lc, win = Math.max(1, Math.ceil(w / Lc * n * 0.6));
+  let bent = false;
+  for (let i = Math.max(0, i0 - win); i <= Math.min(n, i0 + win); i++) if (T[i].dot(T[i0]) < Math.cos(5 * Math.PI / 180) || Math.abs(rad[i] - rad[i0]) > 0.2 * rad[i0] || N[i].dot(N[i0]) < Math.cos(5 * Math.PI / 180)) bent = true;
+  return { Lc, sA, C, T, N, rad, room: [Math.min(2, Math.round(sA / w * 20) / 20), Math.min(2, Math.round((Lc - sA) / w * 20) / 20)], bent };
+}
+
+/** The built pose laid along the limb instead of the straight cylinder: new geometry (the cache keeps the straight one). */
+function bendOnLimb(b: Built, w: number, fr: Frames): Built {
+  const { sp, n } = { sp: b.spine, n: FR_N }, yA = -sp.ground - (sp.cyl ?? 0), radA = fr.rad[Math.round(fr.sA / fr.Lc * n)];
+  const c = V(), t = V(), u = V(), bb = V(), o = V(), q = V();
+  /** The frame at body x (units): position (mm), tangent, up, side, radius. */
+  const frame = (x: number) => {
+    const s = fr.sA + x * w, f = Math.max(0, Math.min(n, s / fr.Lc * n)), i = Math.min(n - 1, Math.floor(f)), k = f - i;
+    c.copy(fr.C[i]).lerp(fr.C[i + 1], k); t.copy(fr.T[i]).lerp(fr.T[i + 1], k).normalize(); u.copy(fr.N[i]).lerp(fr.N[i + 1], k); u.addScaledVector(t, -u.dot(t)).normalize();
+    bb.crossVectors(t, u);
+    const beyond = s - Math.max(0, Math.min(fr.Lc, s)); if (beyond) c.addScaledVector(t, beyond);
+    return fr.rad[i] + (fr.rad[i + 1] - fr.rad[i]) * k;
+  };
+  const point = (v: THREE.Vector3, out: THREE.Vector3) => {
+    const rad = frame(v.x), ry = v.y - yA, rz = v.z, rho = Math.hypot(ry, rz) || 1, dR = (rad - radA) / w;
+    return out.copy(c).multiplyScalar(1 / w).addScaledVector(u, ry + ry / rho * dR).addScaledVector(bb, rz + rz / rho * dR);
+  };
+  const dir = (d: THREE.Vector3, x: number, out: THREE.Vector3) => { frame(x); return out.copy(t).multiplyScalar(d.x).addScaledVector(u, d.y).addScaledVector(bb, d.z); };
+  const bend = (g: THREE.BufferGeometry) => {
+    const h = g.clone(), pos = h.attributes.position, nrm = h.attributes.normal;
+    for (let i = 0; i < pos.count; i++) {
+      q.fromBufferAttribute(pos, i); const x = q.x; point(q, o); const pp = o.clone();
+      o.fromBufferAttribute(nrm, i); const nn = dir(o, x, V()); // the frame at x is current again after dir()
+      pos.setXYZ(i, pp.x, pp.y, pp.z); nrm.setXYZ(i, nn.x, nn.y, nn.z);
+    }
+    h.userData.keep = false; return h;
+  };
+  const eyes = b.eyes.map(e => ({ p: point(e.p, V()), look: dir(e.look, e.p.x, V()), f: dir(e.f, e.p.x, V()) }));
+  return { body: bend(b.body), head: bend(b.head), scales: bend(b.scales), sheen: bend(b.sheen), eyes, spine: sp };
+}
+
+/** The built pose (cached) for a length w, surface and bend. */
+function builtPose(art: string, w: number, surface: string | undefined, Rmm: number | undefined, bend: number, room?: Room) {
+  const S = SNAKES[art], R = Rmm ? Math.round(Rmm / w * 200) / 200 : 0, baby = babyOf(S, w), pp = snakePoseOf(surface, R || undefined, bend, room);
+  const surf = pp.cyl ? 'perch' : 'floor', key = `${art}~${pp.pose}~${pp.sign}~${pp.mag}~${pp.cyl ?? 0}~${baby}~${pp.cyl && room ? room.join(',') : ''}`;
+  let built = poseCache.get(key);
+  if (!built) {
+    built = build(S, surf, R, bend, baby, room); poseCache.set(key, built);
+    // a few dozen poses at most (about 3 MB each): the oldest goes, its buffers with it (a mesh still showing it re-uploads)
+    if (poseCache.size > 24) { const [k, old] = poseCache.entries().next().value!; poseCache.delete(k); for (const g of [old.body, old.head, old.scales, old.sheen]) g.dispose(); }
+  }
+  return { pp, built };
+}
+
+/**
+ * The parts of a floor pose that touch the ground, for settling it on uneven ground (render/build.ts restOn): sample points
+ * of the spine as [x, y, z, r] (mm, the body frame: the surface is y = -ground), r = the coil sphere's radius, every point
+ * whose underside is near the ground line, plus `ground` (mm).
+ */
+export function snakeContacts(art: string, w: number, bend = 0) {
+  const { built } = builtPose(art, w, 'floor', undefined, bend), sp = built.spine, pts: [number, number, number, number][] = [];
+  const lo = -sp.ground;
+  for (let i = 0; i <= SPINE_N; i += 4) { const p = sp.P[i], r = sp.rr[i]; if (p.y - r < lo + 0.9 * r) pts.push([p.x * w, p.y * w, p.z * w, r * w]); }
+  return { pts, ground: sp.ground * w };
+}
+
 /**
  * The 3D snake for a card of width w mm (the total length; origin at the card's centre; add it as the card's child), in the pose
  * for its surface and `bend` (the pose family, see the header): 'perch' with Rmm = the branch's radius in mm wraps or drapes it.
  */
-export function snakeBody(art: string, w: number, surface?: string, Rmm?: number, bend = 0) {
-  const S = SNAKES[art], R = Rmm ? Math.round(Rmm / w * 200) / 200 : 0, baby = babyOf(S, w), pp = snakePoseOf(surface, R || undefined, bend);
-  const surf = pp.cyl ? 'perch' : 'floor', key = `${art}~${pp.pose}~${pp.sign}~${pp.mag}~${pp.cyl ?? 0}~${baby}`;
-  let built = poseCache.get(key);
-  if (!built) {
-    built = build(S, surf, R, bend, baby); poseCache.set(key, built);
-    // a few dozen poses at most (about 3 MB each): the oldest goes, its buffers with it (a mesh still showing it re-uploads)
-    if (poseCache.size > 24) { const [k, old] = poseCache.entries().next().value!; poseCache.delete(k); for (const g of [old.body, old.head, old.scales, old.sheen]) g.dispose(); }
-  }
+export function snakeBody(art: string, w: number, surface?: string, Rmm?: number, bend = 0, limb?: LimbPath) {
+  const S = SNAKES[art], baby = babyOf(S, w), fr = limb && surface === 'perch' && Rmm ? limbFrames(limb, w, snakeGround(S) * w + Rmm) : null;
+  let { pp, built } = builtPose(art, w, surface, Rmm, bend, fr?.room);
+  if (fr?.bent) built = bendOnLimb(built, w, fr);
   let tex = paintCache.get(art);
   if (!tex) {
     tex = { body: dataTex(paintBuffer(S, 0, S.neck, 2048, 384), 2048, 384, true), head: dataTex(paintBuffer(S, S.neck, 1, 384, 384), 384, 384, true) };
@@ -502,4 +590,43 @@ export function snakeSpine(art: string, w: number, surface?: string, Rmm?: numbe
   const S = SNAKES[art], R = Rmm ? Math.round(Rmm / w * 200) / 200 : 0, pp = snakePoseOf(surface, R || undefined, bend);
   const sp = spineOf(S, pp.cyl ? 'perch' : 'floor', R, bend, babyOf(S, w));
   return { pts: sp.P.map(p => p.clone().multiplyScalar(w)), rr: sp.rr.map(r => r * w), pose: sp.pose, ground: sp.ground * w, cyl: sp.cyl === null ? null : sp.cyl * w };
+}
+
+/**
+ * Settle a rigid floor pose on uneven ground (a slope, a bank, the edge of a cork slab): of the spots within a short slide of
+ * where it was put (so a coil half over a slab's edge slides onto the slab) and the tilts up to `maxTilt` there, the one that
+ * leaves the least air under the parts that touch (`snakeContacts`) with none of them inside the ground. `q` = the pose's
+ * heading (the card's rotation), `at` = the origin's scene x, z, `ground(x, z)` = the ground's height at scene (x, z).
+ * Returns the rotation to premultiply onto `q`, the origin's new x, z and its height.
+ */
+export function settleSnake(c: ReturnType<typeof snakeContacts>, q: THREE.Quaternion, at: { x: number; z: number }, ground: (x: number, z: number) => number, maxTilt: number) {
+  const up = V(0, 1, 0), o = c.pts.map(([x, y, z]) => V(x, y, z).applyQuaternion(q)), r = c.pts.map(p => p[3]), n = o.length;
+  const cands: { rot: THREE.Quaternion; phi: number; y: number[] }[] = [];
+  const add = (phi: number, th: number) => {
+    const rot = new THREE.Quaternion().setFromUnitVectors(up, V(Math.sin(phi) * Math.cos(th), Math.cos(phi), Math.sin(phi) * Math.sin(th)));
+    cands.push({ rot, phi, y: o.map(p => p.clone().applyQuaternion(rot).y) });
+  };
+  add(0, 0);
+  for (let d = 5; d <= maxTilt * 180 / Math.PI + 1e-6; d += 5) for (let k = 0; k < 16; k++) add(d * Math.PI / 180, k * Math.PI / 8);
+  /** The air under the contacts for tilt `cd` over ground heights g, and the origin height that rests it. */
+  const evalG = (cd: { y: number[] }, g: number[]) => {
+    let y0 = -Infinity; for (let i = 0; i < n; i++) y0 = Math.max(y0, g[i] - cd.y[i] + r[i]);
+    let air = 0; for (let i = 0; i < n; i++) air += y0 + cd.y[i] - r[i] - g[i];
+    return { y0, air };
+  };
+  const sr = r.reduce((a, b) => a + b, 0), reach = Math.max(...c.pts.map(p => Math.hypot(p[0], p[2]))), slide = 1.1 * reach;
+  const offs: [number, number][] = [[0, 0]];
+  for (const f of [0.25, 0.5, 0.75, 1]) for (let k = 0; k < 8; k++) offs.push([Math.cos(k * Math.PI / 4) * slide * f, Math.sin(k * Math.PI / 4) * slide * f]);
+  const sample = (ox: number, oz: number, cd: { rot: THREE.Quaternion }) => o.map(p => { const t = p.clone().applyQuaternion(cd.rot); return ground(at.x + ox + t.x, at.z + oz + t.z); });
+  let best = { off: offs[0], cd: cands[0] }, bs = Infinity;
+  for (const off of offs) {
+    const g = o.map(p => ground(at.x + off[0] + p.x, at.z + off[1] + p.z)), pen = 0.01 * Math.hypot(off[0], off[1]) * n;
+    for (const cd of cands) { const sc = evalG(cd, g).air + 0.6 * cd.phi * sr + pen; if (sc < bs) { bs = sc; best = { off, cd }; } }
+  }
+  // the ground under the tilted body, not the level one: choose the tilt again there (same spot), then rest it
+  const g1 = sample(best.off[0], best.off[1], best.cd);
+  let cd = best.cd, sc1 = Infinity;
+  for (const k of cands) { const e = evalG(k, g1).air + 0.6 * k.phi * sr; if (e < sc1) { sc1 = e; cd = k; } }
+  const g2 = sample(best.off[0], best.off[1], cd);
+  return { rot: cd.rot, x: at.x + best.off[0], z: at.z + best.off[1], y: evalG(cd, g2).y0 };
 }

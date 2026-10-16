@@ -12,6 +12,7 @@ import type { ConditionSettings, LightSettings, Tank, WaterSettings } from '../s
 import { waterK, waterY } from '../scene/physics';
 import { bowlDims, bowlRadius, clampIn, footprint, insideBy, shapeOf } from '../scene/shape';
 
+import { SHADE_MAX } from '../scene/shade';
 import { AQ_MAX, LAMP_Y, LUXW, barZ, beamExp, emitters, ledBarDepth, lampHeight, mountOf, lightEnvCached, lightOutCached, renderBright, fixtureOf, techOf, tubeLayout, tubeOf, type Emitter, type LightEnv, type LightScene } from '../scene/lightout';
 // the fixture geometry lives with the light-output model now (lane K); re-exported so importers stay as they were
 export { AQ_MAX, LAMP_Y, emitters, fitSpots, lampHeight, type Emitter } from '../scene/lightout';
@@ -72,6 +73,8 @@ export const LU = {
   // uLoM: beam exponent (cos^m); uLoInd: bounced light per band (x the override scale); uLoWall: tank L, D; uLoK: absorption per mm per band; uLoSplit: photon share per band; uLoOut: per-band weight of
   // what is shown (PAR 1,1,1; lux LUXW); uMapDiv: the level at the bottom of the ramp (relative 1/16, PAR 2.5, lux 125);
   // uMapStep: contour lines every this much in the shown unit (light.mapStep / mapStepLux), 0 = a line at each doubling
+  // scape shading (scene/shade.ts): uShA = x, z, radius, light passed; uShT = top; uShN columns
+  uShA: { value: Array.from({ length: SHADE_MAX }, () => new THREE.Vector4()) }, uShT: { value: new Array<number>(SHADE_MAX).fill(0) }, uShN: { value: 0 },
   uLoOn: { value: 0 }, uLoA: { value: new THREE.Vector4() }, uLoWall: { value: new THREE.Vector2() },
   uLoK: { value: new THREE.Vector3() }, uLoSplit: { value: new THREE.Vector3() }, uLoOut: { value: new THREE.Vector3(1, 1, 1) },
   uMapDiv: { value: 1 / 16 }, uMapStep: { value: 0 }, uLoM: { value: 1 }, uLoInd: { value: new THREE.Vector3() },
@@ -196,6 +199,8 @@ export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams 
   LU.uLoOn.value = env ? 1 : 0; LU.uMapDiv.value = env ? MAP_DIV[l.mapUnit ?? 'par'] : MAP_DIV.rel;
   LU.uMapStep.value = env ? mapStepOf(l, l.mapUnit ?? 'par') : 0;
   if (env) setLoUniforms(env, lo!.scale, l.mapUnit ?? 'par');
+  const sh = env?.shade ?? [];
+  LU.uShN.value = sh.length; sh.forEach((s, i) => { LU.uShA.value[i].set(s[0], s[1], s[2], s[3]); LU.uShT.value[i] = s[4]; });
 }
 function setLoUniforms(env: LightEnv, scale: number, unit: 'par' | 'lux') {
   LU.uLoA.value.set(env.phi * 1e6 / env.norm, Number.isFinite(env.ys) ? env.ys : -1e6, env.trans * scale, env.walls ? env.walls.w : 0);
@@ -280,7 +285,7 @@ vec3 aqLight() {
 // square of the distance (a tube, a line source: inverse distance), summed over the lights. Relative to one standard
 // spot bulb (52°) 300 mm straight above a level surface = 1 (times Brightness), shown on a log scale, a colour step per
 // doubling: 1/16 navy (dimmed below), 1/8 blue, 1/4 cyan, 1/2 green, 1 yellow, 2 orange, 4 red, 8 white.
-uniform float uMapOn, uMapW, uMapGain, uLoOn, uMapDiv, uMapStep, uLoM; uniform vec4 uLoA; uniform vec2 uLoWall; uniform vec3 uLoK, uLoSplit, uLoOut, uLoInd;
+uniform float uMapOn, uMapW, uMapGain, uLoOn, uMapDiv, uMapStep, uLoM; uniform vec4 uLoA; uniform vec4 uShA[${SHADE_MAX}]; uniform float uShT[${SHADE_MAX}]; uniform int uShN; uniform vec2 uLoWall; uniform vec3 uLoK, uLoSplit, uLoOut, uLoInd;
 // one emitter (or a wall image of it, weight w) at p: a port of scene/lightout.ts addSrc, PAR or lux by uLoOut
 float aqSrc(vec3 p, vec3 n, vec3 ep, float h, float w) {
   float ys = uLoA.y, wd = p.y < ys ? ys - p.y : 0.0;
@@ -302,6 +307,17 @@ float aqSrc(vec3 p, vec3 n, vec3 ep, float h, float w) {
   if (wd > 0.0) { float s = sinA / 1.33; a = 0.97 * exp(-uLoK * (wd / sqrt(1.0 - s * s))); }
   return e0 * dot(uLoSplit * uLoOut, a);
 }
+// scape shading (scene/shade.ts shadeAt): the share of direct light left after the shadow columns above p
+float aqShade(vec3 p) {
+  float f = 1.0;
+  for (int i = 0; i < ${SHADE_MAX}; i++) {
+    if (i >= uShN) break;
+    if (p.y >= uShT[i]) continue;
+    vec4 s = uShA[i];
+    f *= 1.0 - (1.0 - s.w) * (1.0 - smoothstep(s.z * 0.6, s.z, length(p.xz - s.xy)));
+  }
+  return f;
+}
 // light output at this point (µmol/m²/s or lux): the emitters plus, under water in a rectangular tank, one mirror
 // image of each across each side wall, counted where its ray meets the glass below the surface (lightout bandsAt)
 float aqIrrAbs(vec3 p, vec3 n) {
@@ -320,6 +336,7 @@ float aqIrrAbs(vec3 p, vec3 n) {
       if (g > 0.0) sum += aqSrc(p, n, im, e.w, uLoA.w * g);
     }
   }
+  if (uShN > 0) sum *= aqShade(p); // direct light only
   // bounced light (lightout bounce): under water, or everywhere in a dry tank
   if (p.y < ys || ys < -1e5) sum += dot(uLoInd, uLoOut);
   return sum;

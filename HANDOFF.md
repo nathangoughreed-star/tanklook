@@ -27,7 +27,6 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 **Current lanes** (coordinator "Lanes coordinator 3", `local_f068e2c9`):
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
-| PG plant / coral light + care gating | `../Glass-Box-plant-gates` / `plant-gates` | 5673 | plant / coral entries of `scene/items.ts`, plant filter in `starterItems`, `ui/parGuide.ts`, `scene/lightout.ts`, `render/lighting.ts`, `scene/growtime.ts`, starter-set controls in `ui/panels.ts` | ready to open (prompt `prompts/lane-PG-plant-gates.md`) |
 | SS2 starter styles batch 2 | `../Glass-Box-starters2` / `starters2` | 5683 | styles in `scene/items.ts` (`starterStyle`, style data), `scene/starter.ts`, `examples/`, the style picker | ready to open (prompt `prompts/lane-SS2-starters2.md`); shares `items.ts` with PG, keep both sides |
 | SB scatter brush | `../Glass-Box-brush` / `scatter-brush` | 5693 | new `scene/brush.ts`, `ui/brush.ts`, `src/interact` brush mode, `render/scatter.ts` | ready to open (prompt `prompts/lane-SB-scatter-brush.md`) |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
@@ -36,9 +35,6 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
-
-## Lane PG: plant / coral light and care gating (2026-10-16; branch `plant-gates`, port 5673; opened by coordinator 3, not started)
-Scope: the four steps in the plain-words summary under "Feature to add: plant / coral light-and-feeding advice". Owns plant / coral LIBRARY entries, the plant filter in starterItems, parGuide, lightout, lighting, growtime, the starter-set controls. Open for Nathan: does care also set the dosing advice, and a "stretch" slider? State: nothing built yet.
 
 ## Lane SS2: starter styles batch 2 (2026-10-16; branch `starters2`, port 5683; opened by coordinator 3; DONE: Nathan approved all styles 2026-10-16; pushed to main)
 Scope: terrestrial starters, freshwater biotopes, marine sub-styles. Owns styles in scene/items.ts, scene/starter.ts, scene/scapeground.ts, examples/, the style picker.
@@ -124,7 +120,7 @@ Scope: paint-on litter / pebbles / moss / carpet plants with seeded variation, e
   Edge/Chrome with SwiftShader, ~80 s; `scripts/export-sheets.mjs`), no dev-server slot needed. JPEG 0.9: 4.7 MB the set
   (PNG was 18 MB).
 
-## Feature to add: plant / coral light-and-feeding advice (2026-10-16, Nathan asked; NOT started)
+## Plant / coral light-and-care advice (BUILT 2026-10-16 by lane PG, see archive; OPEN for Nathan: eyeball the shaded Light map, care sets dosing advice?, stretch slider?, estimate numbers)
 
 **In plain words (coordinator 3, 2026-10-16):** the tank has a light level (the fixture's PAR at the plants) and the owner a
 care level (low-tech, ferts, or CO2 + ferts). Every plant and coral needs a certain light band and care. Four steps, each
@@ -218,6 +214,8 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane BP2: ball python follow-ups (2026-10-16; branch `python2`, port 5703; built + tested on the branch, NOT pushed: pictures sent to Nathan, awaiting his verdict)
+- Lane PG: plant / coral light and care gating (2026-10-16; branch `plant-gates`, port 5673; opened by coordinator 3, not started)
 - Lane BP: ball python, serpentine body plan (2026-10-16; branch `python`, port 5673; built + tested, committed on the branch, NOT pushed: pictures sent to Nathan, awaiting his verdict)
 - Lane T1: dry ground, terrestrial substrates + leaf litter (2026-10-16; branch `dry-ground`, port 5633; Nathan: "leaf litter looks great", ship; pushed to main)
 - Lane TA: tarantula, large arachnid body plan (2026-10-16; branch `tarantula`, port 5683; built + tested, committed on the branch, NOT pushed: pictures sent to Nathan, awaiting his verdict)
