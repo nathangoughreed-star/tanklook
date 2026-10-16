@@ -705,6 +705,44 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { at: 0.63, len: 0.13, h: 0.11, rake: 0.12, tip: 'point', drop: 0.35 }, anal: { at: 0.37, len: 0.08, h: 0.055, rake: 0.3, drop: 0.5 }, pelvic: { u: 0.55, len: 0.07, w: 1.1 },
     marks: [{ k: 'band', u0: 0.18, u1: 0.99, v0: -0.02, v1: 0.02, c: '#1c1a18', a: 0.92, f: 0.008 }], finMarks: [{ k: 'band', u0: 0.08, u1: 0.22, v0: -0.02, v1: 0.02, c: '#1c1a18', a: 0.85, f: 0.006 }], barbels: 0.012,
     eye: { r: 0.022, iris: ['#c8b890', '#3a3020'] } },
+  // ---------- aquatic roster (lane T4, 2026-10-16): new silhouettes, scales and habitats ----------
+  // pygmy corydoras: a miniature, slimmer cory; silver-grey with a black stripe snout to tail root, a pale line above it
+  pygmycory: { pec: { s: 1.7, v: 0.85 }, plates: true, thick: 0.7, belly: 0.8, wide: 0.45, pedT: 0.3, step: 0.15, noseW: 0.35, depth: 0.27, pedU: 0.18, ped: 0.05, peak: 0.6, back: 0.64, snout: 0.62, mouth: 0.05, shade: ['#6a6e66', '#b4b6ac', '#e4e2d8'], tail: { type: 'fork', h: 0.14, a: 0.6 }, fin: '#d0cec4',
+    dorsal: { at: 0.66, len: 0.12, h: 0.14, spines: 0.12, nSp: 1, spineH: 0.16, rake: 0.1, drop: 0.3, a: 0.65 }, anal: { u0: 0.32, u1: 0.4, h: 0.05, a: 0.6 }, adipose: true, pelvic: { u: 0.55, len: 0.08, w: 1.2 },
+    marks: [{ k: 'band', u0: 0.15, u1: 0.97, v0: -0.006, v1: 0.02, c: '#1c1c1a', a: 0.9, f: 0.008 }, { k: 'band', u0: 0.22, u1: 0.9, v0: -0.03, v1: -0.017, c: '#f2f0e6', a: 0.45, f: 0.006 },
+      { k: 'band', u0: 0.18, u1: 0.95, v0: -1, v1: -0.06, c: '#4e504a', a: 0.35, f: 0.03 }], barbels: 0.028, eye: { r: 0.034, iris: ['#c8c0a8', '#2a2a24'], dv: -0.05 } },
+  // reticulated hillstream loach (Sewellia): flat as a sucker disc, round head, eyes on top, broad low paired fins;
+  // golden with dark vermiculations, fins banded
+  hillstream: { pec: { s: 2.4, v: 0.92, flat: true, w: 2.4 }, thick: 1.9, belly: 1, wide: 0.6, noseW: 1, pedT: 0.35, depth: 0.15, pedU: 0.16, ped: 0.032, peak: 0.72, back: 0.78, snout: 0.95, mouth: 0.05, scale: 0, shade: ['#4a3e22', '#c8a442', '#e8dcb0'], tail: { type: 'notch', h: 0.09, tint: '#d0ac50' }, fin: '#d8b858',
+    dorsal: { at: 0.6, len: 0.17, h: 0.07, rake: 0.3, drop: 0.6 }, anal: { at: 0.34, len: 0.07, h: 0.04, rake: 0.3 }, pelvic: { u: 0.52, len: 0.28, w: 1.6, flat: true },
+    marks: [...[-0.1, -0.07, -0.04, -0.012].map(v => ({ k: 'band' as const, u0: 0.18, u1: 0.95, v0: v - 0.008, v1: v + 0.008, c: '#20190e', a: 0.8, wave: 0.012 })),
+      { k: 'spots', n: 90, u0: 0.18, u1: 0.96, v0: -0.12, v1: 0.02, r: 0.011, c: '#20190e', a: 0.75 }],
+    finMarks: [{ k: 'bars', us: [0.04, 0.1], w: 0.022, c: '#20190e', a: 0.8 }, { k: 'spots', n: 30, u0: 0.3, u1: 0.7, v0: -0.2, v1: -0.06, r: 0.01, c: '#20190e', a: 0.7 }],
+    eye: { r: 0.022, iris: ['#b0a070', '#1a160e'], dv: -0.15, up: 0.75 } },
+  // yellow lab (male): the first mbuna; lemon yellow, the long spiny dorsal with a black band under a white edge,
+  // black pelvics and a dark anal fin
+  yellowlab: { gape: 0.035, gapeDrop: 0.008, thick: 0.42, belly: 0.1, depth: 0.29, pedU: 0.2, ped: 0.055, peak: 0.55, snout: 0.42, mouth: 0.01, shade: ['#d4a812', '#f2d02a', '#f6e070'], tail: { type: 'round', h: 0.15, tint: '#f0cc2a' }, fin: '#f0cc2a',
+    dorsal: { at: 0.78, len: 0.6, h: 0.1, spines: 0.65, nSp: 14, spineH: [0.06, 0.085], notch: 0.2, rake: 0.6, tip: 'point', trail: 0.05, drop: 0.75, edge: '#f6f4ee' },
+    anal: { at: 0.48, len: 0.26, h: 0.1, spines: 0.3, nSp: 3, spineH: [0.04, 0.07], notch: 0.2, tip: 'point', trail: 0.04, tint: '#2a2820', a: 0.85 }, pelvic: { u: 0.68, len: 0.11, ext: 0.03, tint: '#1a1a18' },
+    marks: [{ k: 'blob', u: 0.6, v: -0.07, ru: 0.25, rv: 0.08, c: '#fff6c0', a: 0.18 }],
+    finMarks: [{ k: 'band', u0: 0.18, u1: 0.8, v0: -0.4, v1: -0.192, c: '#1a1a18', a: 0.9, f: 0.008 }], eye: { r: 0.031, iris: ['#2a2420', '#0a0806'] } },
+  // Boeseman's rainbowfish (male): deep, keeled back, small pointed head, big eye; blue-grey front, orange rear,
+  // dark bars between; a small first dorsal, a long second dorsal and a long anal reaching far forward
+  boesemani: { gape: 0.02, gapeDrop: 0.004, thick: 0.3, angular: 0.3, depth: 0.38, pedU: 0.2, ped: 0.045, peak: 0.55, back: 0.56, snout: 0.3, mouth: -0.01, shade: ['#34446e', '#6e80a8', '#c8b878'], tail: { type: 'fork', h: 0.16, tint: '#e0902e' }, fin: '#d89a40',
+    dorsal: { at: 0.58, len: 0.06, h: 0.06, spines: 1, nSp: 5, spineH: [0.065, 0.05], notch: 0.3, tint: '#6e7488' }, dorsal2: { at: 0.48, len: 0.27, h: 0.12, lead: 0.35, rake: 0.85, tip: 'point', trail: 0.06, drop: 1 },
+    anal: { at: 0.62, len: 0.44, h: 0.11, lead: 0.3, rake: 0.85, tip: 'point', trail: 0.06, drop: 1 }, pelvic: { u: 0.64, len: 0.08 },
+    marks: [{ k: 'band', u0: 0.08, u1: 0.5, v0: -1, v1: 1, c: '#e8902a', a: 0.95, f: 0.06 }, { k: 'band', u0: 0.4, u1: 0.62, v0: -1, v1: 1, c: '#e0c050', a: 0.45, f: 0.05 },
+      { k: 'bars', us: [0.5, 0.55, 0.6], w: 0.022, c: '#24263a', a: 0.6 }, { k: 'blob', u: 0.75, v: -0.08, ru: 0.2, rv: 0.08, c: '#a8b8e0', a: 0.25 }],
+    finMarks: [{ k: 'band', u0: 0, u1: 0.5, v0: -1, v1: 1, c: '#e8902a', a: 0.6, f: 0.05 }], eye: { r: 0.036, iris: ['#d8d0c0', '#2a2a2a'] } },
+  // cockatoo dwarf cichlid (male): the "crest", tall front dorsal spines with deep notches; dark band eye to tail, lyre
+  // tail spotted red; big mouth
+  cockatoo: { gape: 0.05, gapeDrop: 0.01, thick: 0.4, belly: 0.15, depth: 0.29, pedU: 0.22, ped: 0.055, peak: 0.55, snout: 0.4, mouth: 0.01, shade: ['#6a6248', '#c4b480', '#e8dcb0'], tail: { type: 'lyre', h: 0.18, cut: 0.32, tint: '#e0b050', edge: '#c8402a' }, fin: '#dcc070',
+    dorsal: { at: 0.8, len: 0.58, h: 0.1, spines: 0.6, nSp: 10, spineH: [0.22, 0.075], notch: 0.5, rake: 0.6, tip: 'point', trail: 0.08, drop: 0.8, edge: '#d8603a' },
+    anal: { at: 0.5, len: 0.26, h: 0.11, spines: 0.25, nSp: 3, spineH: [0.04, 0.07], tip: 'point', trail: 0.07 }, pelvic: { u: 0.67, len: 0.12, ext: 0.05, tint: '#d8b060' },
+    marks: [{ k: 'band', u0: 0.22, u1: 0.93, v0: -0.016, v1: 0.016, c: '#2a2418', a: 0.8, f: 0.01 }, ...[0.05, 0.085].map(v => ({ k: 'band' as const, u0: 0.3, u1: 0.72, v0: v - 0.006, v1: v + 0.006, c: '#5a4a30', a: 0.45, f: 0.006 })),
+      { k: 'spots', n: 18, u0: 0.72, u1: 0.92, v0: 0.01, v1: 0.09, r: 0.008, c: '#5a8ac8', a: 0.75 }, { k: 'blob', u: 0.9, v: 0.06, ru: 0.02, rv: 0.035, c: '#2a2418', a: 0.6 }],
+    finMarks: [{ k: 'spots', n: 40, u0: 0.01, u1: 0.22, v0: -0.18, v1: 0.18, r: 0.009, c: '#c8402a', a: 0.85 }, { k: 'spots', n: 20, u0: 0.25, u1: 0.75, v0: -0.3, v1: -0.12, r: 0.008, c: '#c8402a', a: 0.6 }],
+    eye: { r: 0.03, iris: ['#c8a040', '#2a1a08'] } },
 };
 
 // ---------- females of the dimorphic species (species.json `female`): the male's plan with the female's shape, fins and
@@ -768,6 +806,20 @@ Object.assign(PLANS, {
   gourami_f: her('gourami', { dorsal: { at: 0.5, len: 0.26, h: 0.08, spines: 0.35, nSp: 5, spineH: [0.05, 0.065], notch: 0.3, trail: 0.025 },
     anal: { at: 0.7, len: 0.5, h: 0.09, spines: 0.4, nSp: 7, spineH: [0.03, 0.065], notch: 0.18, rake: 0.6, trail: 0.03 }, pelvic: { u: 0.72, len: 0.35, thread: true, tint: '#d8ccb0' },
     marks: PLANS.gourami.marks!.slice(1) }),
+  // ---------- aquatic roster females (lane T4) ----------
+  // yellow pelvics and anal, the dorsal's black band fainter
+  yellowlab_f: her('yellowlab', { anal: { at: 0.48, len: 0.25, h: 0.09, spines: 0.3, nSp: 3, spineH: [0.04, 0.065], notch: 0.2, tip: 'point', trail: 0.03 }, pelvic: { u: 0.68, len: 0.1, tint: '#e8c43a' },
+    finMarks: [{ k: 'band', u0: 0.18, u1: 0.8, v0: -0.4, v1: -0.196, c: '#2a2820', a: 0.5, f: 0.008 }] }),
+  // slimmer, silver with a yellow wash, no deep keel; faint bars
+  boesemani_f: her('boesemani', { depth: 0.31, angular: 0.15, shade: ['#5a6070', '#a8aab0', '#dcd4b4'], tail: { type: 'fork', h: 0.15, tint: '#d8c08a' }, fin: '#d4c094',
+    marks: [{ k: 'band', u0: 0.08, u1: 0.5, v0: -1, v1: 1, c: '#d8b86a', a: 0.6, f: 0.06 }, { k: 'bars', us: [0.52, 0.58], w: 0.02, c: '#3a3a44', a: 0.3 }],
+    finMarks: [{ k: 'band', u0: 0, u1: 0.5, v0: -1, v1: 1, c: '#d8b86a', a: 0.4, f: 0.05 }] }),
+  // small and yellow, a bold black stripe and flank spot, black leading edge on the pelvics, short round fins
+  cockatoo_f: her('cockatoo', { depth: 0.31, shade: ['#a08a3a', '#e4c440', '#f0e090'], tail: { type: 'round', h: 0.14, tint: '#e0c860' }, fin: '#e0c860',
+    dorsal: { at: 0.8, len: 0.56, h: 0.08, spines: 0.6, nSp: 10, spineH: [0.06, 0.06], notch: 0.25, rake: 0.6, trail: 0.025, edge: '#1a1a18' },
+    anal: { at: 0.5, len: 0.25, h: 0.08, spines: 0.25, nSp: 3, spineH: [0.035, 0.055], trail: 0.02 }, pelvic: { u: 0.67, len: 0.1, tint: '#1a1a18' },
+    marks: [{ k: 'band', u0: 0.22, u1: 0.93, v0: -0.018, v1: 0.018, c: '#1a1810', a: 0.95, f: 0.008 }, { k: 'blob', u: 0.55, v: 0, ru: 0.035, rv: 0.035, c: '#1a1810', a: 0.9 },
+      { k: 'blob', u: 0.9, v: 0.06, ru: 0.02, rv: 0.035, c: '#1a1810', a: 0.7 }], finMarks: [] }),
 });
 
 const SHRIMP: Record<string, ShrimpSpec> = {

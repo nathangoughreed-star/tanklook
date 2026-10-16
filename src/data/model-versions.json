@@ -8,6 +8,8 @@
   "banggai": {"v":2,"hash":"a18f1205","build":348,"date":"2026-10-14"},
   "betta": {"v":2,"hash":"bdf17288","build":351,"date":"2026-10-14"},
   "betta~f": {"v":2,"hash":"62f6b73a","build":351,"date":"2026-10-14"},
+  "boesemani": {"v":1,"hash":"0fbc4dff","build":567,"date":"2026-10-16"},
+  "boesemani~f": {"v":1,"hash":"d8c993ff","build":567,"date":"2026-10-16"},
   "bolivianram": {"v":2,"hash":"87620201","build":330,"date":"2026-10-14"},
   "bristlenose": {"v":2,"hash":"581a798e","build":334,"date":"2026-10-14"},
   "bronzecory": {"v":2,"hash":"86b39ea4","build":359,"date":"2026-10-14"},
@@ -19,6 +21,8 @@
   "chromis": {"v":2,"hash":"10a38889","build":365,"date":"2026-10-14"},
   "cleanershrimp": {"v":4,"hash":"d9e9238a","build":448,"date":"2026-10-15"},
   "clownloach": {"v":2,"hash":"f38a4110","build":359,"date":"2026-10-14"},
+  "cockatoo": {"v":1,"hash":"42693e0e","build":567,"date":"2026-10-16"},
+  "cockatoo~f": {"v":1,"hash":"601ed248","build":567,"date":"2026-10-16"},
   "coralbeauty": {"v":2,"hash":"2198d280","build":348,"date":"2026-10-14"},
   "cpd": {"v":3,"hash":"3e56d853","build":434,"date":"2026-10-15"},
   "cpd~f": {"v":3,"hash":"96fc15ec","build":434,"date":"2026-10-15"},
@@ -41,6 +45,7 @@
   "harlequin": {"v":2,"hash":"e9e9f466","build":386,"date":"2026-10-14"},
   "hatchet": {"v":2,"hash":"993cd028","build":351,"date":"2026-10-14"},
   "hermit": {"v":3,"hash":"a87a1447","build":297,"date":"2026-10-14"},
+  "hillstream": {"v":1,"hash":"c30ac7ec","build":567,"date":"2026-10-16"},
   "honeygourami": {"v":3,"hash":"048d42f3","build":330,"date":"2026-10-14"},
   "honeygourami~f": {"v":2,"hash":"59c4b0e0","build":330,"date":"2026-10-14"},
   "kribensis": {"v":2,"hash":"bbd8f0f4","build":334,"date":"2026-10-14"},
@@ -59,6 +64,7 @@
   "peapuffer~f": {"v":2,"hash":"fad4a3d1","build":351,"date":"2026-10-14"},
   "platy": {"v":3,"hash":"ed7d9662","build":435,"date":"2026-10-15"},
   "platy~f": {"v":1,"hash":"23aaa371","build":435,"date":"2026-10-15"},
+  "pygmycory": {"v":1,"hash":"8656b4a4","build":567,"date":"2026-10-16"},
   "ramshorn": {"v":2,"hash":"aea7870a","build":288,"date":"2026-10-14"},
   "royalgramma": {"v":2,"hash":"06d414b1","build":365,"date":"2026-10-14"},
   "rummynose": {"v":3,"hash":"6c786d9f","build":434,"date":"2026-10-15"},
@@ -71,6 +77,8 @@
   "trumpet": {"v":2,"hash":"cc7a6025","build":288,"date":"2026-10-14"},
   "turbo": {"v":2,"hash":"05ee593b","build":288,"date":"2026-10-14"},
   "watchman": {"v":2,"hash":"553e0528","build":348,"date":"2026-10-14"},
+  "yellowlab": {"v":1,"hash":"e77c80ea","build":567,"date":"2026-10-16"},
+  "yellowlab~f": {"v":1,"hash":"1caad183","build":567,"date":"2026-10-16"},
   "yellowtang": {"v":2,"hash":"933463ae","build":348,"date":"2026-10-14"}
  }
 }

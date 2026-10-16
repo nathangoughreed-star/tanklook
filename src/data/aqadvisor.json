@@ -163,6 +163,22 @@
   "aq": "200910181719",
   "name": "African Dwarf Frog (Hymenochirus boettgeri)"
  },
+ "pygmycory": {
+  "aq": "200909300175",
+  "name": "Pygmy Cory (Corydoras pygmaeus)"
+ },
+ "yellowlab": {
+  "aq": "200909300243",
+  "name": "Yellow Lab (Labidochromis caeruleus)"
+ },
+ "boesemani": {
+  "aq": "200909300030",
+  "name": "Boesemans Rainbowfish (Melanotaenia boesemani)"
+ },
+ "cockatoo": {
+  "aq": "200909300048",
+  "name": "Cockatoo Apisto (Apistogramma cacatuoides)"
+ },
  "axolotl": {
   "aq": "200911041032",
   "name": "Dojo Loach (Misgurnus anguillicaudatus)",
@@ -176,6 +192,11 @@
  "firetoad": {
   "aq": "200909300241",
   "name": "White Cloud Mountain Minnow (Tanichthys albonubes)",
+  "standIn": true
+ },
+ "hillstream": {
+  "aq": "200909300097",
+  "name": "Hillstream Loach (Gastromyzon ctenocephalus)",
   "standIn": true
  },
  "ocellaris": {
