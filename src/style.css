@@ -368,3 +368,7 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
   #sheetView .sheetPage { margin: 0; padding: 0; box-shadow: none; max-width: none }
   #sheetView tr, #sheetView h2 { break-inside: avoid } #sheetView h2 { break-after: avoid }
 }
+
+/* life-stage picker in the add-animal box (lane BP2) */
+#stageRow .seg { display: flex; flex-wrap: wrap; gap: 4px }
+#stageBtns button { min-height: 38px; min-width: 38px; border-radius: 5px; margin-left: 0 }

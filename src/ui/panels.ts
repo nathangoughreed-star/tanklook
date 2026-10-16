@@ -1,5 +1,6 @@
 // Sidebar wiring. Inputs write through store.update(); one sync() pulls every control back from the scene,
 // so undo/redo, file open and pointer drags all refresh the panels the same way.
+import { lifeStages } from '../data/lifestages';
 import { rng } from '../art/paint';
 import { GRAIN_LOOK, SUBSTRATES, drawFishCard } from '../art/placeholder';
 import { drawSnailCard } from '../art/snails';
@@ -553,6 +554,7 @@ Cancel, then change the name, to keep both.`)) return;
     $('addFish').title = why;
     $('addWhy').textContent = why; $('addWhy').hidden = !why || !list.length; // said under Add, not only in a tooltip (audit #9)
     setOut('oAddSize', sizeLabel(addPct(), getSpecies(pickId)));
+    renderStages();
   }
   search.oninput = renderResults;
 
@@ -591,7 +593,18 @@ Cancel, then change the name, to keep both.`)) return;
   const addPct = () => clamp(Math.round(+$('addSize').value || 100), 15, 130);
   // each new animal varies around this size like real ones, so a few come out bigger than the adult length (audit #39)
   const sizeLabel = (pct: number, sp?: Species) => (pct === 100 ? 'Adult ±10 %' : `${pct}%${sp ? ' · ' + fmt(sp.tl * pct / 100) : ''} ±10 %`);
-  $('addSize').oninput = () => setOut('oAddSize', sizeLabel(addPct(), getSpecies(pickId)));
+  $('addSize').oninput = () => { setOut('oAddSize', sizeLabel(addPct(), getSpecies(pickId))); renderStages(); };
+  /** Life-stage picker (reptiles, arachnids; lane BP2): each button sets the size slider to that stage's length, the slider stays for fine control. */
+  function renderStages() {
+    const sp = getSpecies(pickId), st = sp && lifeStages(sp), row = $('stageRow'), box = $('stageBtns');
+    row.hidden = !st; if (!st || !sp) return;
+    const cur = addPct(), pcts = st.map(([, mm]) => clamp(Math.round(mm / sp.tl * 100), 15, 130));
+    box.replaceChildren(...st.map(([n, mm], i) => {
+      const b = document.createElement('button'); b.textContent = n; b.title = `${n}: ${fmt(mm)}`; b.className = pcts[i] === cur ? 'on' : '';
+      b.onclick = () => { const r = $<HTMLInputElement>('addSize'); r.value = String(pcts[i]); r.dispatchEvent(new Event('input')); };
+      return b;
+    }));
+  }
   /** Water surface for placement: the water line, or -1 in a dry tank (all ground counts as land). */
   const surfaceY = (s: TankSetup) => (s.water.on ? waterY(s.tank, s.water.level) : -1);
   /** Why this species cannot be added right now ('' = it can). */

@@ -222,7 +222,8 @@
     <button id="delAll">Delete all</button>
   </div>
   <div id="addWhy" class="hint why" hidden></div>
-  <div class="row"><label for="addSize">New animal size</label><input id="addSize" type="range" min="15" max="130" step="5" value="100"><output id="oAddSize"></output></div>
+  <div class="row"><label for="addSize">New animal size</label><input id="addSize" type="range" min="15" max="130" step="1" value="100"><output id="oAddSize"></output></div>
+  <div class="row" id="stageRow" hidden><label>Life stage</label><span class="seg" id="stageBtns"></span></div>
   <div id="list" class="stock" aria-label="Stocking"></div>
   <div class="field" id="aqRow"><span class="flabel">Stocking</span><button id="aqCheck" title="Ask AqAdvisor for this tank's stocking level (one request)">Check</button><span id="aqOut"></span><a id="aqLink" target="_blank" rel="noopener" title="Open this tank and stocking in AqAdvisor's calculator for the full report">AqAdvisor ↗</a></div>
   <div class="hint" id="aqNote"></div>
