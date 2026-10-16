@@ -44,6 +44,31 @@ Scope: roadmap section 5 P0. Scatter brush is NOT here (waits on T1's render/sca
 - Hooks in others' files: render/build.ts (Sel type, 5 lines), render/viewer.ts (`sel` getter, 2 call sites), main.ts (attachGroupBar), index.html (Multi button, #groupBar, Copies buttons), style.css (group bar). panels.ts untouched.
 - Open: the panel's item sliders still edit only the lead piece when a group is selected (the bar says "N pieces"); a copied plant that lands on another piece's side is not nudged off it (pieces may overlap, as before); no "save as reusable group" (roadmap P1). Pictures before / after sent to Nathan (school, rock cluster, plant row); verdict pending.
 
+## Lane SW: swamp land as editable terrain (2026-10-16; worktree `agitated-lumiere-a79eba`, port 5663; side session of T1)
+Nathan's rule (2026-10-16): "The program should never be able to generate a scape that couldn't theoretically be exactly
+recreated in the manual mode."
+- **Swamp land is data now.** `TerrainSettings.pools?: TerrainPool[]` holds ellipses (x, d, rx, rd as fractions of L / D, and
+  bank as a fraction of the radius). Inside a pool core the ground is the substrate's corner slope; across the bank it rises
+  (smoothstep) to the grid surface (terrain.ts `poolWet`, `groundHeight`). The swamp layout's `styleGround` writes
+  `swampTerrain`: the rolling bank on a grid about 50 mm apart (13-25 points) plus the seed's pools. `groundHeight` no longer
+  reads `layout.id` / `seed`. `sampleTerrain` (grid slider, regrid) keeps the pools and samples the uncut surface.
+- **Old files** (layout swamp, no `terrain.pools` key, terrain off) are converted in validate.ts, before their items are
+  parsed. Every file saved since has `pools` (`[]` by default), so nothing is converted twice. Proof:
+  test/swampground.test.ts (fixture `swamp-baseline.json`, recorded from the old code). Over 21 old files (paludarium,
+  rect / round / bowl / pie / long), ground heights sit within 0.74 mm, mean 0.07 mm. Known: a bowl's grid stops at its floor
+  disc, so the land's roll out to the sloping glass is held flat there (up to 8 mm). A pixel diff of the paludarium
+  before and after, from two servers at the same camera: 1.6 % of pixels differ by more than 8/255, all grain-texture
+  shimmer from sub-mm moves. Side by side, the two are the same.
+- **Hooks in T1 files (one line each):** build.ts backing plate and addSubstrate `swamp` flag now key on `terrain.on`.
+  panels.ts Substrate: the corner sliders stay on while pools exist, because they set the pools' floor, and the hint says
+  so. Also: roots.ts and render/items.ts groundKey (adds pools + corners), store `swampGround` (now: terrain on -> substrate
+  shown), and diff.ts (the "Swamp land" line is gone, since Terrain covers it). styleGround rounds corner depths to the
+  slider's 1 mm step.
+- **Open, waiting on Nathan:** a pool editor UI, option A (add / remove pools, drag the centre, width / length / bank
+  handles). Until it lands, pools are exact data, but only the swamp style creates them. Pictures:
+  worktree `shots/sw_q_*.png`. Generator audit: side-session notes `generator-audit-2026-10-16.md`. Non-ground gaps:
+  fish pose and size, plant growth step, item seed and lift step. Litter seed has no typed entry.
+
 ## Lane JS: regal jumping spider, first arthropod body plan (2026-10-16; branch `spider`, port 5673; opened by coordinator 3, not started)
 Scope: new render/spider3d.ts + art/spiders.ts (8 eyes, chelicerae, palps, abdomen pattern, 8 IK legs with hair), poses via scene/anchors.ts (floor, glass / wall, branch, alert), male + female, species.json entries. Pattern: archive Lane G1. Keep IK / hair in a shared helper for the ball python and tarantula lanes that follow. State: nothing built yet.
 

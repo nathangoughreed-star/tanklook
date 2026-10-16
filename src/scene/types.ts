@@ -178,13 +178,21 @@ export interface SubstrateSettings {
 /**
  * Custom terrain: a cols x rows grid of ground heights (mm above the tank floor, Tank A) spread evenly over the
  * floor, corners included, with a smooth curve through every point. When on, it replaces the substrate's corner
- * slopes and the swamp land. Heights are physical (like the substrate).
+ * slopes. Heights are physical (like the substrate).
  * Radial (round tanks and bowls, added 2026-10-12, no version bump): `rows` concentric rings round a centre point, ring k holding
  * round(2 pi k) points evenly spaced (so arc spacing matches ring spacing), the outer ring on the glass (a bowl's: at the floor); h runs centre,
  * ring 1, ring 2, ... each ring starting at the front. `cols` stays the slider value it was made from.
  */
-/** radial: rings round the centre (round tank, bowl); with arc (degrees): arcs round a pie slice's apex (2026-10-13). */
-export interface TerrainSettings { on: boolean; cols: number; rows: number; h: number[]; radial?: boolean; arc?: number }
+/** radial: rings round the centre (round tank, bowl); with arc (degrees): arcs round a pie slice's apex (2026-10-13).
+ *  pools (2026-10-16): sharp-banked hollows cut into the grid surface down to the substrate's corner slope (the swamp's
+ *  pools, now plain data). Every file saved since has the list, empty or not; its absence marks an older file. */
+export interface TerrainSettings { on: boolean; cols: number; rows: number; h: number[]; radial?: boolean; arc?: number; pools?: TerrainPool[] }
+/**
+ * A pool in the custom terrain: an ellipse centred at (x, d) with half-axes rx, rd, all fractions of the tank's L and
+ * D (so Tank B has it at the same relative spot). Inside the core (1 - bank of the way out) the ground is the
+ * substrate's corner slope; across the bank it rises (smoothstep) to the grid surface.
+ */
+export interface TerrainPool { x: number; d: number; rx: number; rd: number; bank: number }
 
 /**
  * Starter set (scene v9; before that the whole aquascape): choosing one places a fresh set of editable items made from

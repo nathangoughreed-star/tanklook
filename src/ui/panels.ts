@@ -781,7 +781,7 @@ Cancel, then change the name, to keep both.`)) return;
     const on = (e.target as HTMLInputElement).checked;
     viewer.terrainEdit.on = on; // before the edit, so its sync already says "Done editing" and moves the map (final check item 4)
     store.edit(s => {
-      // turning on starts from the floor you see (slopes or swamp land); a grid kept from before is reused
+      // turning on starts from the floor you see (the slopes); a grid kept from before (a swamp's land) is reused
       if (on && !s.terrain.h.length) s.terrain = sampleTerrain(s, s.tank, s.terrain.cols);
       s.terrain.on = on;
       if (on) s.substrate.show = true; // shaped ground on a bare bottom: bring back the last substrate type
@@ -1600,11 +1600,12 @@ Cancel, then change the name, to keep both.`)) return;
     for (const id of ['terEdit', 'terFlat', 'terCols']) ($(id) as HTMLInputElement).disabled = !te.on;
     $('terEdit').classList.toggle('on', editing); $('terEdit').textContent = editing ? 'Done editing' : 'Edit points';
     $('terHint').textContent = !te.on ? 'Custom terrain turns the floor into a grid of points you can push down or pull up, with a smooth surface through them. It starts from the current floor.'
-      : editing ? 'Drag a dot up or down. Drag empty space to orbit; look from above to reach the back points.' : 'Corner sliders are off while custom terrain is on.';
+      : editing ? 'Drag a dot up or down. Drag empty space to orbit; look from above to reach the back points.' : te.pools?.length ? 'The corner sliders set the floor of the pools.' : 'Corner sliders are off while custom terrain is on.';
     $('subDepth').hidden = !sub.show; $('subBare').hidden = sub.show; // no depth to set on a bare bottom (audit #40)
     const lit = sub.litter; $('subLitter').hidden = !sub.show;
     setVal('litLeaf', lit?.leaf ?? 'mixed'); setVal('litDens', lit?.density ?? 0); setOut('oLitDens', lit?.density ? `${lit.density} %` : 'None');
-    for (const id of ['subBL', 'subBR', 'subFL', 'subFR', 'subLevel', 'subFB', 'subLR', 'subCorner']) ($(id) as HTMLInputElement).disabled = te.on || !sub.show;
+    // with pools the corner depths are the pools' floor, so they stay editable (swamp land as terrain, 2026-10-16)
+    for (const id of ['subBL', 'subBR', 'subFL', 'subFR', 'subLevel', 'subFB', 'subLR', 'subCorner']) ($(id) as HTMLInputElement).disabled = (te.on && !te.pools?.length) || !sub.show;
 
     const wa = s.water;
     $('wOn').checked = wa.on;

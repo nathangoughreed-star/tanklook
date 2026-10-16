@@ -99,13 +99,12 @@ export function tankDiff(a: TankSetup, b: TankSetup, u: Units): DiffItem[] {
   }
   add(a.terrain.on, b.terrain.on, on => (on ? 'Custom terrain' : 'No custom terrain'), ['terrain']);
   if (a.terrain.on && b.terrain.on) add(a.terrain, b.terrain, named('Terrain'), ['terrain']);
-  // aquascape: which pieces and plants (by variant); where they sit is the arrangement. The swamp's land is a layout.
+  // aquascape: which pieces and plants (by variant); where they sit is the arrangement. A swamp's land is its terrain.
   const scape = (t: TankSetup) => { const n: Record<string, number> = {}; for (const it of t.items) n[it.variant] = (n[it.variant] ?? 0) + 1; return Object.keys(n).sort().map(k => [k, n[k]]); };
   const copyScape: Match = (to, from) => {
     to.layout = { ...from.layout };
     to.items = from.items.map(it => ({ ...it, x: it.x * to.tank.L / from.tank.L, depth: it.depth * to.tank.D / from.tank.D }));
   };
-  add(a.layout.id === 'swamp', b.layout.id === 'swamp', on => (on ? 'Swamp land' : 'No swamp land'), copyScape);
   add(scape(a), scape(b), named('Aquascape'), copyScape);
   // positions relative to the tank (to 1 %), so resizing a tank alone is not a new arrangement
   const placed = (t: TankSetup) => t.items.map(it => ({ ...it, x: Math.round(it.x / t.tank.L * 100), depth: Math.round(it.depth / t.tank.D * 100), lift: Math.round(it.lift) }));
