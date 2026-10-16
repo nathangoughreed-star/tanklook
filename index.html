@@ -177,6 +177,7 @@
   <div id="itemEdit">
   <div id="itemBox">
     <div class="itemName" id="itemName"></div>
+    <div class="hint" id="iLight" hidden></div>
     <div class="row" id="iSizeRow"><label for="iSize" id="iSizeLab">Size</label><input id="iSize" type="range" step="1"><output id="oISize"></output></div>
     <div class="row" id="iGrowthRow"><label for="iGrowth" title="From just planted to fully grown. How big and how dense it gets depends on the species; once longer than the water above it, it lies over along the surface.">Growth</label><input id="iGrowth" type="range" min="0" max="100" step="1"><output id="oIGrowth"></output></div>
     <div class="row spread"><label for="iSpread" id="iSpreadLab" title="Across the circle its stems start in. Up to the whole tank: what would land past the glass grows inside it. Until you move it, the plant picks its own.">Spread</label><input id="iSpread" type="range" step="1"><output id="oISpread"></output></div>
@@ -262,6 +263,7 @@
   <div class="row" id="lWRow"><label for="lW" title="Total power draw of all the lights over the tank together (every fixture, bulb and tube), not per fixture. Tubes and metal halide pendants: set by the lamps. Starts at a typical power for the fixture and tank; it estimates PAR and lux at the substrate and the render follows it. Type 'typical' to go back to the typical power">Total Power</label><input id="lW" type="range" min="0" max="400" step="1"><span id="lWFixed" class="hint" hidden></span><output id="oLW"></output></div>
   <div class="row" id="lParRow"><label for="lPar" title="Your own PAR-meter reading at the substrate (or the maker's figure), µmol/m²/s. Set, the estimate is scaled to match it. 0 = estimate">PAR (measured)</label><input id="lPar" type="range" min="0" max="300" step="1"><output id="oLPar"></output></div>
   <div id="lOut" class="hint"></div>
+  <div id="lCheck" class="hint" hidden></div>
   <div class="row"><label for="lBright" id="lBrightLab">Brightness</label><input id="lBright" type="range" min="0.2" max="2.5" step="0.05"><output id="oBright"></output></div>
   <div class="row"><label for="lK">Colour temp</label><span class="kwrap"><input id="lK" type="range" min="2700" max="20000" step="100"><span id="lKBand" class="kband"></span></span><output id="oK"></output></div>
   <div id="lKNote" class="hint" hidden></div>

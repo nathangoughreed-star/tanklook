@@ -8,6 +8,7 @@ import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { BACKDROPS } from '../render/backdrop';
 import { MAP_DIV, MAP_STEP, emitters, mapStepOf } from '../render/lighting';
 import { darkOf, darkStats } from '../render/lightShells';
+import { VERDICT_TEXT, itemLights, tankSummary } from '../scene/lightcheck';
 import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, mountOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeLayout, tubeOf, TUBE_SP_MAX, bestPos, ledBarDepth, posMax, wattsOf, type Fixture } from '../scene/lightout';
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
@@ -1703,6 +1704,7 @@ Cancel, then change the name, to keep both.`)) return;
     $('lParRow').style.display = watts ? '' : 'none'; setOut('oLPar', l.par ? `${l.par} µmol` : 'Estimate');
     const lo = watts ? lightOutCached(s) : null;
     $('lOut').textContent = lo ? lightReadout(lo) : 'Set Power to estimate the light (PAR and lux) at the substrate.'; $('lOut').hidden = l.type === 'flat';
+    { const c = $('lCheck'), t = lo ? tankSummary(s) : null; c.hidden = !t; c.textContent = t ?? ''; }
     $('lBrightLab').textContent = watts ? 'Exposure' : 'Brightness';
     $('lBrightLab').parentElement!.style.display = l.type === 'flat' ? 'none' : ''; // no fixture: nothing to brighten
     $('lBrightLab').title = watts ? 'Like a camera: how bright the render looks for the light the fixture gives (x1/4 to x16; high washes out). The PAR and lux do not change' : '';
@@ -1765,6 +1767,8 @@ Cancel, then change the name, to keep both.`)) return;
     $('itemBox').hidden = !it;
     if (it) {
       const v = LIBRARY[it.variant], [l, h, w] = itemDims(it);
+      { const b = $('iLight'), lt = it.kind === 'plant' || it.kind === 'coral' ? itemLights(s)?.get(it.id) : undefined;
+        b.hidden = !lt; if (lt) { b.textContent = `Light here: ${Math.round(lt.par)} PAR, ${VERDICT_TEXT[lt.verdict]}`; b.dataset.verdict = lt.verdict; } }
       $('itemName').innerHTML = `${esc(v.label)} <i>${fmt(l)} × ${fmt(h)} high × ${fmt(w)}</i>`;
       $('iSizeLab').textContent = it.kind === 'plant' ? (isPatch(it.variant) ? 'Width' : 'Height') : it.variant === 'manzanita' ? 'Height' : it.kind === 'coral' ? 'Width' : 'Length';
       const probe = { ...it, size: 1e6 }; clampItem(probe, A);
