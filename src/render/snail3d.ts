@@ -154,9 +154,9 @@ function shellTexture(s: Shell3D, sp: Pick<SnailSpec, 'shell' | 'mark'>) {
   if (s.mark === 'axial') { // zebra: wavy stripes across the whorl, fourteen per turn
     // one whole sine wave round the whorl, so a stripe meets itself where the paint wraps (an S-curve chevroned there);
     // drawn on past both edges so the slanted stroke's flat ends do not notch the rows the wrap lands on
-    const n = Math.round(s.turns * 14);
+    const n = Math.round(s.turns * 8); // broad dark bands, as the live zebra nerite
     for (let i = 0; i < n; i++) {
-      const u = (i + 0.5) / n * W; x.globalAlpha = 0.85; x.lineWidth = W / n * 0.38;
+      const u = (i + 0.5) / n * W; x.globalAlpha = 0.85; x.lineWidth = W / n * 0.45;
       x.beginPath(); for (let k = -4; k <= 36; k++) x.lineTo(u + W / n * 0.3 * Math.sin(k / 32 * Math.PI * 2), H * k / 32); x.stroke();
     }
   } else if (s.mark === 'spiral') { // faint bands along the coil
