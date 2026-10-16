@@ -112,4 +112,14 @@ describe('shuffle', () => {
     shuffleFish(a, rng(7)); shuffleFish(b, rng(7));
     expect(a.fish).toEqual(b.fish);
   });
+  it('clownfish host in a bubble-tip anemone in a salt tank, and swim anywhere without one', () => {
+    const s = defaultSetup(); s.water.salt = true; s.fish = [];
+    s.items = [{ id: 1, kind: 'coral', variant: 'anemone', seed: 5, x: 200, depth: 150, lift: 0, yaw: 0, pitch: 0, tilt: 0, size: 160 }];
+    for (let i = 1; i <= 2; i++) s.fish.push({ id: i, species: 'ocellaris', x: 500, y: 100, depth: 100, yaw: 0, pitch: 0, roll: 0, bend: 0 });
+    const near = () => s.fish.every(f => Math.hypot(f.x - 200, f.depth - 150) <= 80 && f.y - groundHeight(s, s.tank, f.x, f.depth) < 160);
+    for (let k = 1; k <= 5; k++) { shuffleFish(s, rng(k)); expect(near()).toBe(true); }
+    s.items = []; let all = true;
+    for (let k = 1; k <= 5; k++) { shuffleFish(s, rng(k)); all &&= near(); }
+    expect(all).toBe(false);
+  });
 });
