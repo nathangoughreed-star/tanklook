@@ -1,18 +1,24 @@
 // Plant types, their sizing rules and the 3D plant table (render/plant3d.ts builds the meshes).
 export type PlantType = 'stem' | 'stemred' | 'grass' | 'sword' | 'fern' | 'anubias' | 'carpet' | 'crypt'
   | 'buce' | 'rotala' | 'ludwigia' | 'balansae' | 'sagittaria' | 'ozelot' | 'moss'
-  | 'redroot' | 'salvinia' | 'frogbit' | 'lettuce' | 'lotus';
+  | 'redroot' | 'salvinia' | 'frogbit' | 'lettuce' | 'lotus'
+  | 'pothos' | 'bromeliad' | 'tropfern' | 'fittonia' | 'sphagnum' | 'creeper';
 
 /** Height / width per plant type (sizes and footprints; the ratio of the old 2D cards). */
 export const PLANT_ASPECT: Record<PlantType, number> = { stem: 3.2, stemred: 3.2, grass: 3.6, sword: 1.1, fern: 1.3, anubias: 0.8, carpet: 0.32, crypt: 1,
   buce: 0.9, rotala: 3.6, ludwigia: 3, balansae: 3, sagittaria: 0.45, ozelot: 1.1, moss: 0.45,
-  redroot: 0.35, salvinia: 0.25, frogbit: 0.4, lettuce: 0.45, lotus: 0.85 };
+  redroot: 0.35, salvinia: 0.25, frogbit: 0.4, lettuce: 0.45, lotus: 0.85,
+  pothos: 1.3, bromeliad: 0.6, tropfern: 1, fittonia: 0.5, sphagnum: 0.35, creeper: 1.2 };
 /** Plants that grow as a low patch (size = patch width, height = CARPET_H) rather than upright (size = height). */
 export const isCarpet = (v: string) => v === 'carpet';
 /** Plants that float at the water line (size = patch width; roots hang below; not drawn in a dry tank). */
 export const isFloat = (v: string) => v === 'redroot' || v === 'salvinia' || v === 'frogbit' || v === 'lettuce';
 /** Plants that grow as several stems or crowns, so a clump has its own spread and count (Item.spread / stems). */
-export const isClump = (v: string) => PLANT3D[v as PlantType]?.form === 'stem' || !!PLANT3D[v as PlantType]?.crowns;
+export const isClump = (v: string) => PLANT3D[v as PlantType]?.form === 'stem' || PLANT3D[v as PlantType]?.form === 'vine' || !!PLANT3D[v as PlantType]?.crowns;
+/** Vines (lane T2): size = the longest vine's length, not a height (it climbs, trails and hangs). */
+export const isVine = (v: string) => PLANT3D[v as PlantType]?.form === 'vine';
+/** Land plants (lane T2): grown above water, in a terrarium (no current: they stand still). */
+export const isLand = (v: string) => !!PLANT3D[v as PlantType]?.land;
 /** Plants whose size is the width of a patch, not a height. */
 export const isPatch = (v: string) => isCarpet(v) || isFloat(v);
 
@@ -49,14 +55,23 @@ export interface Leaf3D {
   tip?: [string, number];
   /** Spots on the upper side, optional: colour, spots per leaf (min, max), radius as a fraction of the blade length. */
   spots?: { col: string; n: [number, number]; r: number };
+  /** Base colour and how far up the blade it runs (0..1), optional: a bromeliad's red heart (lane T2). */
+  heart?: [string, number];
+  /** A net of veins on the upper side, optional (fittonia, lane T2): colour, side veins per blade, line width (fraction
+   *  of a vein's spacing). Drawn from the shape alone (no random draws). */
+  veins?: { col: string; n: number; w: number };
+  /** A compound frond (lane T2): the blade is a thin rachis carrying `n` pairs of leaflets (`leaf`, its len a fraction
+   *  of the frond's length), `ang` off the rachis toward the tip, rad; their length along the frond as `prof`. */
+  pinnae?: { n: [number, number]; ang: number; prof: [number, number]; leaf: Leaf3D };
   /** Samples along the blade and across it (3 = a midrib, 5 = room for a cup or a ripple). */
   seg: [number, number];
 }
 export interface Plant3D {
   /** rosette = leaves from one crown; rhizome = leaves along a creeping root; stem = upright stems with paired leaves;
    *  carpet = tiny leaflets over a patch; moss = tiny fronds all over a low ragged mound; float = small rosettes lying
-   *  on the water over a patch, roots hanging under them. */
-  form: 'rosette' | 'rhizome' | 'stem' | 'carpet' | 'moss' | 'float';
+   *  on the water over a patch, roots hanging under them; vine = long vines from a crown (lane T2), climbing up behind
+   *  it or trailing along the ground, leaves (len in mm) on them. */
+  form: 'rosette' | 'rhizome' | 'stem' | 'carpet' | 'moss' | 'float' | 'vine';
   /** Leaves (rosette, rhizome), stems (stem), or leaflets per 1000 mm² of patch (carpet) or of the mound's footprint
    *  (moss): min, max. */
   n: [number, number];
@@ -77,6 +92,14 @@ export interface Plant3D {
   float?: { per: [number, number]; leaves: [number, number]; roots: [number, number]; rootLen: [number, number] };
   /** How it grows (lane GR1, 2026-10-15). */
   grow: Grow;
+  /** A land plant (lane T2): grows above the water, in a terrarium. */
+  land?: true;
+  /** Vines (lane T2): share that climb (the rest trail), leaf spacing along a vine (mm), how far the climbers lean back
+   *  from upright (rad: toward the wall behind, where the glass turns them up along it), how wide they fan (rad either
+   *  side of upright), vine thickness (mm), how much a vine wanders (rad). */
+  vine?: { climb: number; node: number; back: number; fan: number; thick: number; wander: number; branch?: number };
+  /** Stem plants: how far the stems lean out by the top, times the usual (lane T2: fittonia sprawls; absent = 1). */
+  lean?: number;
   /** 'emerge' plants: the leaf above the water (lane GR2): stiffer, rounder, darker; `k` = its length over the leaf it
    *  replaces, `stiff` its stiffness out of the water as a length (mm: about how long a piece can stand out before its
    *  tip droops 1 rad), `land` the radius (mm) it levels out on coming down onto the water (soft for a sword leaf,
@@ -106,6 +129,9 @@ export interface Grow {
   more: number;
   /** Stem plants: side shoots per stem by growth 1. */
   shoots?: number;
+  /** Leaves grown on keep their shape (as wide for their length as the plant's own; lane T2: a bromeliad), instead of
+   *  widening with the square root of their length. */
+  prop?: boolean;
 }
 
 const LEAF_GREENS: [string, string][] = GREENS;
@@ -207,6 +233,41 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
     pads: { n: [1, 7], from: 0.35, len: [60, 130], out: 220, stalk: '#5a3a26', leaf: {
       len: [1, 1], wid: 0.95, prof: [0.75, 0.35], rise: [1.5708, 1.5708], arch: 0, twist: 0, fold: 0.04, wave: [0.01, 3], pet: 0,
       cols: [['#3e6a2a', '#5e8a3e'], ['#5a5a2a', '#7e7a40'], ['#6a3a26', '#8e5a3a']], under: '#6e2a2e', spots: { col: '#4a1e1a', n: [6, 14], r: 0.08 }, seg: [8, 9] } } },
+
+  // ---------- Land plants (lane T2, 2026-10-16): terrarium plants, grown above water (no current: sway 0) ----------
+  // Golden pothos (Epipremnum aureum): long vines of glossy heart-shaped leaves streaked gold; some climb up behind it,
+  // the rest trail along the ground or hang down off what it sits on. Size = the longest vine. Leaf length in mm
+  pothos: { land: true, grow: { speed: 'fast', overflow: 'trail', len: [80, 1800], more: 2.5 }, sway: 0, form: 'vine', n: [4, 6], spread: 0.15, stalk: '#5e7a34',
+    vine: { climb: 0.4, node: 30, back: 0.35, fan: 0.55, thick: 1.8, wander: 0.35, branch: 1 }, leaf: {
+    len: [48, 92], wid: 0.8, prof: [0.45, 0.45], rise: [0.9, 1.35], arch: 0.55, twist: 0.2, fold: 0.12, wave: [0.015, 2], pet: 0.3,
+    cols: [['#22501e', '#3a742c'], ['#285a22', '#427e32'], ['#204a1c', '#386e2c']], under: '#4e7038', rib: '#7aa04e',
+    spots: { col: '#c4b85a', n: [1, 5], r: 0.09 }, seg: [10, 7] } },
+  // Neoregelia-type bromeliad: a stiff open rosette of broad, channelled straps, olive-green flushing wine-red into the
+  // heart (the cup), maroon underneath; sits on wood or cork like an epiphyte. Grown on, it puts out a pup
+  bromeliad: { land: true, grow: { speed: 'slow', overflow: 'none', len: [50, 320], more: 4, prop: true }, sway: 0, form: 'rosette', n: [18, 26], crowns: [1, 1], spread: 0.05, stalk: '#4a5a2a', leaf: {
+    len: [0.55, 0.8], wid: 0.3, prof: [0.2, 0.12], rise: [0.6, 1.35], arch: 0.6, twist: 0.1, fold: 0.3, wave: [0.01, 2], pet: 0,
+    cols: [['#3e6a2a', '#5e8e3e'], ['#447030', '#66944a'], ['#4a6a2c', '#6a8e44']], under: '#6a4a3a', heart: ['#b02a3e', 0.35], seg: [12, 7] } },
+  // Tropical fern (Nephrolepis-type, Boston / sword fern): arching fronds of many small leaflets, a fine-textured mass
+  tropfern: { land: true, grow: { speed: 'medium', overflow: 'none', len: [60, 480], more: 3 }, sway: 0, form: 'rosette', n: [16, 24], crowns: [1, 3], spread: 0.15, stalk: '#5a6a34', leaf: {
+    len: [0.7, 1], wid: 0.012, prof: [1, 0.3], rise: [0.25, 1.3], arch: 1.15, twist: 0.25, fold: 0, wave: [0, 0], pet: 0.12,
+    cols: [['#3e7a2e', '#5a9640']], under: '#5a8040', seg: [24, 3],
+    pinnae: { n: [36, 44], ang: 1.15, prof: [0.6, 0.5], leaf: {
+      len: [0.12, 0.14], wid: 0.26, prof: [0.7, 0.6], rise: [0, 0], arch: 0.2, twist: 0, fold: 0.25, wave: [0, 0], pet: 0,
+      cols: [['#3a7a2c', '#62a046'], ['#42822e', '#6aa84c'], ['#367226', '#5a9840']], under: '#6a9050', seg: [3, 3] } } } },
+  // Fittonia (nerve plant): a low, spreading mound of soft oval leaves, dark green netted with bright pink veins
+  fittonia: { land: true, grow: { speed: 'medium', overflow: 'none', len: [35, 160], more: 4, shoots: 1.5 }, sway: 0, form: 'stem', n: [10, 16], nodes: 3, lean: 3, spread: 0.45, stalk: '#6a4a3e', leaf: {
+    len: [0.62, 0.72], wid: 0.62, prof: [0.85, 0.55], rise: [1.1, 1.5], arch: 0.3, twist: 0.15, fold: 0.18, wave: [0.01, 2], pet: 0.12,
+    cols: [['#1e3a1e', '#2a4a26'], ['#22401e', '#2e5028']], under: '#5a6a4a', veins: { col: '#d8687e', n: 5, w: 0.11 }, seg: [12, 9] } },
+  // Sphagnum moss: soft, springy cushions of small starry heads, lime-green to straw, a few blushing pink-brown
+  sphagnum: { land: true, grow: { speed: 'slow', overflow: 'none', len: [20, 90], more: 5 }, sway: 0, form: 'moss', n: [420, 500], spread: 0.95, stalk: '#3e4a22', leaf: {
+    len: [0.1, 0.16], wid: 0.5, prof: [0.6, 0.5], rise: [0, 0], arch: 0.3, twist: 0.8, fold: 0.35, wave: [0, 0], pet: 0,
+    cols: [['#4a6a2a', '#7a9a44'], ['#527430', '#86a44c'], ['#5e7a32', '#94aa56'], ['#46602a', '#72903e'], ['#6e6a3c', '#9a9058']], under: '#5a6a34', seg: [2, 3] } },
+  // Creeping fig (Ficus pumila): a flexible vine of small round-heart leaves that climbs flat up the back wall and links
+  // up branches; mostly climbers. Size = the longest vine
+  creeper: { land: true, grow: { speed: 'medium', overflow: 'trail', len: [60, 1400], more: 3 }, sway: 0, form: 'vine', n: [8, 12], spread: 0.25, stalk: '#6a6a3a',
+    vine: { climb: 0.85, node: 11, back: 0.5, fan: 0.85, thick: 0.9, wander: 0.6, branch: 3 }, leaf: {
+    len: [14, 26], wid: 0.78, prof: [0.5, 0.55], rise: [1.15, 1.45], arch: 0.25, twist: 0.15, fold: 0.15, wave: [0, 0], pet: 0.18,
+    cols: [['#2e5a24', '#4a7e36'], ['#34622a', '#52863c'], ['#2a5422', '#467a34']], under: '#5a7a46', seg: [5, 5] } },
 };
 
 /** Growth when a plant has none of its own: the growth at which the species reaches its saved size (0..1). */
