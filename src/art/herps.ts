@@ -80,9 +80,14 @@ const TOAD_TORSO: Pt[] = [[1.0, 0.05, 'c'], [0.975, -0.015], [0.91, -0.08], [0.8
   [0.19, 0.02], [0.16, 0.13], [0.2, 0.215], [0.3, 0.245], [0.45, 0.235], [0.62, 0.2], [0.78, 0.15], [0.9, 0.11], [0.97, 0.085]];
 const TOAD_WID: [number, number][] = [[0.17, 0.13], [0.28, 0.2], [0.45, 0.225], [0.62, 0.215], [0.78, 0.19], [0.9, 0.145], [1, 0.08]];
 /** African dwarf frog: flat and low, the head running straight into a long pointed snout, no neck, a flat belly. */
-const ADF_TORSO: Pt[] = [[1.0, 0.1, 'c'], [0.97, 0.06], [0.9, 0.0], [0.8, -0.04], [0.68, -0.06], [0.52, -0.07], [0.36, -0.065], [0.22, -0.035],
-  [0.11, 0.04], [0.08, 0.13], [0.12, 0.21], [0.24, 0.24], [0.44, 0.24], [0.62, 0.225], [0.78, 0.19], [0.9, 0.155], [0.97, 0.125]];
-const ADF_WID: [number, number][] = [[0.1, 0.1], [0.24, 0.15], [0.44, 0.16], [0.62, 0.145], [0.74, 0.115], [0.84, 0.075], [0.92, 0.04], [0.97, 0.02], [1, 0.008]];
+// dorso-ventrally compressed (Nathan 2026-10-16): the body is flat, its height about half its width. The outline was drawn
+// round, so its heights are squashed toward the belly line, and the width widened a little
+const ADF_FLAT = 0.55, ADF_BELLY = 0.24, adfV = (v: number) => ADF_BELLY - (ADF_BELLY - v) * ADF_FLAT;
+const ADF_TORSO: Pt[] = ([[1.0, 0.1, 'c'], [0.97, 0.06], [0.9, 0.0], [0.8, -0.04], [0.68, -0.06], [0.52, -0.07], [0.36, -0.065], [0.22, -0.035],
+  [0.11, 0.04], [0.08, 0.13], [0.12, 0.21], [0.24, 0.24], [0.44, 0.24], [0.62, 0.225], [0.78, 0.19], [0.9, 0.155], [0.97, 0.125]] as Pt[])
+  .map(p => (p.length > 2 ? [p[0], adfV(p[1]), 'c'] : [p[0], adfV(p[1])]) as Pt);
+const ADF_WID: [number, number][] = ([[0.1, 0.1], [0.24, 0.15], [0.44, 0.16], [0.62, 0.145], [0.74, 0.115], [0.84, 0.075], [0.92, 0.04], [0.97, 0.02], [1, 0.008]] as [number, number][])
+  .map(([u, w]) => [u, w * 1.12]);
 /** The frog's design height v (ground 0.265) in the card frame of aspect `aspect` (flatter frames squash toward the ground). */
 const frogV = (aspect: number, v: number) => { const g = aspect / 2 - 0.015, k = (g + 0.25) / (0.265 + 0.25); return g - (0.265 - v) * k; };
 
@@ -173,7 +178,7 @@ const FROGS: Record<string, FrogSpec> = {
   adf: {
     aspect: 0.44, skin: ['#5f5a46', '#6e6852', '#9a9682'], leg: ['#635d48', '#6f6953', '#8e8a76'],
     iris: ['#a39a6a', '#3b3826'], pupil: 'round', warts: '#4f4a39', torso: ADF_TORSO, wid: ADF_WID, web: 1,
-    eye: { u: 0.86, v: -0.015, r: 0.03, th: 1.05 },
+    eye: { u: 0.86, v: adfV(-0.015), r: 0.03, th: 1.05 },
     marks: (l, P, W) => {
       const r = rng(17); for (let i = 0; i < 22; i++) blob(l, P, W, 0.14 + r() * 0.74, -0.06 + r() * 0.14, 0.014, 0.011, '#2f2c21', 0.75);
       soft(l, P, 0.1, 0.98, 0.14, 0.25, '#a8a490', 0.8, [0.05, 0.04], [0.04, 0.0]);
@@ -590,6 +595,6 @@ HERP3D_FLOAT.adf = (() => {
       { js: [J(0.7, 0.1, 0.09, 0.03), J(0.74, 0.2, 0.22, 0.022), J(0.8, 0.29, 0.3, 0.015)],
         toes: [[0.07, -0.03], [0.085, 0.01], [0.07, 0.05], [0.035, 0.08]], toe, blunt: true, web: 1 },
     ],
-    ground: V(0.34), top: V(-0.07),
+    ground: V(0.34), top: V(adfV(-0.07)),
   };
 })();

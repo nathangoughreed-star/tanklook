@@ -88,7 +88,7 @@ export const clingsTo = (sp: Species, surface: Surface) => !!sp.surfaces?.includ
 /** May sit on the top of a plant leaf: a water or snail animal that uses hardscape (not land climbers, which perch on dry wood). */
 export const onLeaves = (sp: Species) => sp.habitat !== 'land' && clingsTo(sp, 'hardscape');
 /** How level a leaf must be for it to sit there (the y of its normal): a perching animal (dwarf frog: no glass) needs a fairly flat
- *  one, one that clings (snail, shrimp, oto) a steeper one. 0 = not on leaves. */
+ *  one, one that clings (snail, oto: they have glass) a steeper one. 0 = not on leaves. */
 export const leafUp = (sp: Species) => !onLeaves(sp) ? 0 : clingsTo(sp, 'glass') ? 0.3 : 0.6;
 /** Needs water: hidden in a dry tank. */
 export const needsWater = (sp: Species) => sp.habitat === 'water';
