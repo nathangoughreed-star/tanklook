@@ -18,18 +18,28 @@ export const CARE_NAME: Record<GrowFeed, string> = { low: 'low-tech', ferts: 'fe
 const DOSE_MAX: Record<GrowFeed, Dosing> = { low: 'light', ferts: 'regular', co2: 'daily' };
 const DOSE = { none: 0, light: 1, regular: 2, daily: 3 } as const;
 
-/** Does this variant fit a tank giving `par` at the plants and the owner's care? Land plants and unknowns always do. */
-export function fits(variant: string, par: number, care: GrowFeed): boolean {
+export interface WhyNot { kind: 'light' | 'care'; text: string }
+const rnd = (n: number) => Math.round(n);
+/** Why this variant does not suit a tank giving `par` at the plants and the owner's care (null = it suits). */
+export function whyNot(variant: string, par: number, care: GrowFeed): WhyNot | null {
   const n = NEEDS[variant];
-  if (!n || isLand(n)) return true;
+  if (!n || isLand(n)) return null;
   const [lo, hi] = parRange(n);
   // shade plants (low band) are kept up to 80 PAR: they go under floaters and canopy, where the light is far less
   const top = !isCoralNeed(n) && (n as PlantNeed).band === 'low' ? Math.max(hi, 80) : hi;
-  if (par < lo * 0.85 || par > top) return false;
-  if (isCoralNeed(n)) return DOSE[(n as CoralNeed).dosing] <= DOSE[DOSE_MAX[care]];
+  if (par < lo * 0.85) return { kind: 'light', text: `light level: needs ${rnd(lo)}+ PAR, this tank gives about ${rnd(par)}` };
+  if (par > top) return { kind: 'light', text: `light level: too bright above ${rnd(top)} PAR, this tank gives about ${rnd(par)}` };
+  if (isCoralNeed(n)) {
+    const d = (n as CoralNeed).dosing;
+    return DOSE[d] <= DOSE[DOSE_MAX[care]] ? null : { kind: 'care', text: `care level: needs ${d} dosing, more than ${CARE_NAME[care]}` };
+  }
   const p = n as PlantNeed;
-  return !(p.co2 === 'required' && care !== 'co2') && !(p.ferts === 'required' && care === 'low');
+  if (p.co2 === 'required' && care !== 'co2') return { kind: 'care', text: `care level: needs CO2 injection (your care: ${CARE_NAME[care]})` };
+  if (p.ferts === 'required' && care === 'low') return { kind: 'care', text: 'care level: needs regular fertiliser (your care: low-tech)' };
+  return null;
 }
+/** Does this variant fit a tank giving `par` at the plants and the owner's care? Land plants and unknowns always do. */
+export const fits = (variant: string, par: number, care: GrowFeed): boolean => !whyNot(variant, par, care);
 
 /** Swap-ins for each variant, most similar first (a shape-alike that fits the light and care, then the safe ones). */
 const SWAP: Record<string, string[]> = {
