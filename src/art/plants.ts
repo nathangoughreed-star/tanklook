@@ -2,13 +2,15 @@
 export type PlantType = 'stem' | 'stemred' | 'grass' | 'sword' | 'fern' | 'anubias' | 'carpet' | 'crypt'
   | 'buce' | 'rotala' | 'ludwigia' | 'balansae' | 'sagittaria' | 'ozelot' | 'moss'
   | 'redroot' | 'salvinia' | 'frogbit' | 'lettuce' | 'lotus'
-  | 'pothos' | 'bromeliad' | 'tropfern' | 'fittonia' | 'sphagnum' | 'creeper';
+  | 'pothos' | 'bromeliad' | 'tropfern' | 'fittonia' | 'sphagnum' | 'creeper'
+  | 'hairgrass' | 'hornwort' | 'anacharis';
 
 /** Height / width per plant type (sizes and footprints; the ratio of the old 2D cards). */
 export const PLANT_ASPECT: Record<PlantType, number> = { stem: 3.2, stemred: 3.2, grass: 3.6, sword: 1.1, fern: 1.3, anubias: 0.8, carpet: 0.32, crypt: 1,
   buce: 0.9, rotala: 3.6, ludwigia: 3, balansae: 3, sagittaria: 0.45, ozelot: 1.1, moss: 0.45,
   redroot: 0.35, salvinia: 0.25, frogbit: 0.4, lettuce: 0.45, lotus: 0.85,
-  pothos: 1.3, bromeliad: 0.6, tropfern: 1, fittonia: 0.5, sphagnum: 0.35, creeper: 1.2 };
+  pothos: 1.3, bromeliad: 0.6, tropfern: 1, fittonia: 0.5, sphagnum: 0.35, creeper: 1.2,
+  hairgrass: 0.4, hornwort: 3, anacharis: 3.2 };
 /** Plants that grow as a low patch (size = patch width, height = CARPET_H) rather than upright (size = height). */
 export const isCarpet = (v: string) => v === 'carpet';
 /** Plants that float at the water line (size = patch width; roots hang below; not drawn in a dry tank). */
@@ -98,6 +100,8 @@ export interface Plant3D {
    *  from upright (rad: toward the wall behind, where the glass turns them up along it), how wide they fan (rad either
    *  side of upright), vine thickness (mm), how much a vine wanders (rad). */
   vine?: { climb: number; node: number; back: number; fan: number; thick: number; wander: number; branch?: number };
+  /** Stem plants: leaves per node, set round the stem (absent = a pair; lane T2: hornwort, anacharis). */
+  whorl?: number;
   /** Stem plants: how far the stems lean out by the top, times the usual (lane T2: fittonia sprawls; absent = 1). */
   lean?: number;
   /** 'emerge' plants: the leaf above the water (lane GR2): stiffer, rounder, darker; `k` = its length over the leaf it
@@ -268,6 +272,20 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
     vine: { climb: 0.85, node: 11, back: 0.5, fan: 0.85, thick: 0.9, wander: 0.6, branch: 3 }, leaf: {
     len: [14, 26], wid: 0.78, prof: [0.5, 0.55], rise: [1.15, 1.45], arch: 0.25, twist: 0.15, fold: 0.15, wave: [0, 0], pet: 0.18,
     cols: [['#2e5a24', '#4a7e36'], ['#34622a', '#52863c'], ['#2a5422', '#467a34']], under: '#5a7a46', seg: [5, 5] } },
+
+  // ---------- Aquatic follow-ons (lane T2, roadmap section 6; Monte Carlo stays the existing carpet: Nathan 2026-10-14) ----------
+  // Dwarf hairgrass (Eleocharis acicularis): dense tufts of needle-fine bright green blades on runners, a fine lawn
+  hairgrass: { grow: { speed: 'medium', overflow: 'spread', len: [25, 140], more: 10 }, sway: 0.35, form: 'rosette', n: [320, 420], crowns: [9, 14], spread: 0.9, stalk: '#4a7a30', leaf: {
+    len: [0.5, 1], wid: 0.014, prof: [1, 0.2], rise: [0.04, 0.6], arch: 0.5, twist: 0.4, fold: 0, wave: [0, 0], pet: 0,
+    cols: [['#3e8a2e', '#6ab84e'], ['#468e34', '#74bc56'], ['#3a8028', '#62ae46']], under: '#5e9a48', seg: [6, 3] } },
+  // Hornwort (Ceratophyllum demersum): bushy stems of whorled, stiff, needle-like dark green leaves, a foxtail at each tip
+  hornwort: { grow: { speed: 'fast', overflow: 'trail', len: [80, 900], more: 4, shoots: 1.5 }, sway: 0.55, form: 'stem', n: [5, 8], nodes: 34, whorl: 9, lean: 1.6, spread: 0.9, stalk: '#3a5a26', leaf: {
+    len: [0.075, 0.095], wid: 0.05, prof: [1, 0.35], rise: [0.35, 0.9], arch: -0.25, twist: 0.3, fold: 0, wave: [0, 0], pet: 0,
+    cols: [['#2a5a20', '#467e32'], ['#2e6224', '#4c8638'], ['#264e1e', '#3e722e']], under: '#3e6a30', seg: [5, 3] } },
+  // Anacharis (Egeria densa): long stems densely set with whorls of small, bright green strap leaves, curled back
+  anacharis: { grow: { speed: 'fast', overflow: 'trail', len: [80, 900], more: 4, shoots: 1 }, sway: 0.6, form: 'stem', n: [5, 8], nodes: 46, whorl: 4, lean: 1.6, spread: 0.9, stalk: '#5a8a3a', leaf: {
+    len: [0.065, 0.08], wid: 0.17, prof: [0.8, 0.45], rise: [0.9, 1.45], arch: 0.45, twist: 0.2, fold: 0.1, wave: [0, 0], pet: 0,
+    cols: [['#3a7a2a', '#5e9e42'], ['#428430', '#66a648'], ['#367026', '#58963e']], under: '#5a8a46', seg: [4, 3] } },
 };
 
 /** Growth when a plant has none of its own: the growth at which the species reaches its saved size (0..1). */
