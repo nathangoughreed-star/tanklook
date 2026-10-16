@@ -64,7 +64,7 @@ function resolve(r: RawSpecies): Species {
   const sp: Species = { id: r.id, name: r.name, sci: r.sci, tl: r.tl, art: r.art, aspect, rest, zone, kind, surfaces, habitat, cat: CATEGORIES.some(c => c[0] === r.cat) ? r.cat as Category : 'fw-fish', group, level, note: r.note, look: r.id, ...(r.pair ? { pair: true } : {}) };
   if ((r as { salt?: unknown }).salt === true) sp.salt = true; // marine (lane B hook 2026-10-13; absent = freshwater)
   if (r.female) {
-    const m = artMeta(r.female.art)!;
+    const m = (artMeta(r.female.art) ?? herpMeta(r.female.art))!;
     sp.female = { ...sp, art: r.female.art, tl: r.female.tl, aspect: m.aspect, rest: m.rest, look: r.id + '~f', sex: 'f', female: undefined };
   }
   return sp;

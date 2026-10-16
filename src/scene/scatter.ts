@@ -119,7 +119,10 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
         if (land && p.surface === 'glass') p.yaw = Math.round(90 + (r() - 0.5) * 80);
         // a gecko rests either way up on the glass: head down about a third of the time (lane G1)
         if (land && p.surface === 'glass' && sp.cat === 'reptile' && r() < GECKO_HEAD_DOWN) p.yaw -= 180;
-        Object.assign(f, p, { pitch: 0, roll: 0, bend: sp.kind === 'snail' || land ? 0 : +((r() - 0.5) * 0.4).toFixed(2) }); note(f, fishTL(f, sp));
+        // a spider walks the glass at any heading, and about a quarter of them stand alert, front pair raised (bend 1; lane JS)
+        let alert = 0;
+        if (land && sp.cat === 'land-invert') { if (p.surface === 'glass') p.yaw = Math.round(r() * 360 - 180); alert = r() < SPIDER_ALERT ? 1 : 0; }
+        Object.assign(f, p, { pitch: 0, roll: 0, bend: sp.kind === 'snail' || land ? alert : +((r() - 0.5) * 0.4).toFixed(2) }); note(f, fishTL(f, sp));
       }
       if (sp.kind === 'snail' || !left.length) continue;
       e.fish = left;
@@ -224,6 +227,8 @@ const GLASS_FROG = 0.6;
 const PERCH_FROG = 4;
 /** Share of geckos on the glass resting head down. */
 const GECKO_HEAD_DOWN = 0.35;
+/** Share of spiders standing alert, the front pair raised. */
+const SPIDER_ALERT = 0.25;
 
 /** Does this many of a species move as a group? */
 const grouped = (sp: Species, n: number) => !!sp.group && n >= 3 && sp.kind !== 'snail' && sp.habitat === 'water';

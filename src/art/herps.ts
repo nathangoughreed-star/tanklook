@@ -6,6 +6,7 @@
 import { type Ctx, type Proj, type Pt, type Stops, blob, body, fin, rng, soft } from './paint';
 import type { Shell3D } from './snails';
 import { LIZARD_ART, lizardMeta } from './lizards';
+import { SPIDER_ART, spiderMeta } from './spiders';
 
 type J = [number, number, number]; // joint: u, v, radius (widths)
 
@@ -331,12 +332,13 @@ export const HERP_ART: Record<string, (ctx: Ctx, P: Proj, W: number) => void> = 
   ...Object.fromEntries(Object.entries(SALS).map(([k, s]) => [k, (c: Ctx, P: Proj, W: number) => drawSal(s, c, P, W)])),
   ...Object.fromEntries(Object.entries(HERMITS).map(([k, s]) => [k, (c: Ctx, P: Proj, W: number) => drawHermit(s, c, P, W)])),
   ...LIZARD_ART,
+  ...SPIDER_ART,
 };
 
 /** Aspect + resting offset (the ground line) for amphibian art keys. */
 export function herpMeta(art: string): { aspect: number; rest: number } | undefined {
   if (HERMITS[art]) return { aspect: HERMIT_A, rest: HG };
-  const s = FROGS[art] ?? SALS[art]; if (!s) return lizardMeta(art);
+  const s = FROGS[art] ?? SALS[art]; if (!s) return lizardMeta(art) ?? spiderMeta(art);
   return { aspect: s.aspect, rest: s.aspect / 2 - 0.015 };
 }
 

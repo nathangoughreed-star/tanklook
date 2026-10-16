@@ -1,3 +1,4 @@
+import { herpMeta } from '../src/art/herps';
 import { describe, expect, it } from 'vitest';
 import { artMeta } from '../src/art/fishgen';
 import { SPECIES, fishTL, getSpecies, speciesOf } from '../src/data/species';
@@ -14,7 +15,7 @@ describe('male / female looks', () => {
     expect(dim.length).toBeGreaterThanOrEqual(9);
     for (const s of dim) {
       const f = s.female!;
-      expect(artMeta(f.art), f.art).toBeTruthy();
+      expect(artMeta(f.art) ?? herpMeta(f.art), f.art).toBeTruthy();
       expect(f.art).not.toBe(s.art);
       expect(f.look).toBe(s.id + '~f');
       expect(f.sex).toBe('f');

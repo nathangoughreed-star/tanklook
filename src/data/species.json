@@ -71,6 +71,7 @@
   {"id": "axolotl", "cat": "amphibian", "name": "Axolotl", "sci": "Ambystoma mexicanum", "tl": 230, "zone": "bottom", "art": "axolotl"},
   {"id": "crestedgecko", "cat": "reptile", "name": "Crested gecko (flame)", "sci": "Correlophus ciliatus", "tl": 200, "habitat": "land", "cling": "any", "art": "crestedgecko", "note": "Arboreal; climbs glass and branches on its toe pads; prehensile tail."},
   {"id": "crestedharlequin", "cat": "reptile", "name": "Crested gecko (harlequin)", "sci": "Correlophus ciliatus", "tl": 200, "habitat": "land", "cling": "any", "art": "crestedharlequin", "note": "Arboreal; climbs glass and branches on its toe pads; prehensile tail."},
-  {"id": "leopardgecko", "cat": "reptile", "name": "Leopard gecko", "sci": "Eublepharis macularius", "tl": 220, "habitat": "land", "art": "leopardgecko", "note": "Ground dweller; no toe pads, so it does not climb glass."}
+  {"id": "leopardgecko", "cat": "reptile", "name": "Leopard gecko", "sci": "Eublepharis macularius", "tl": 220, "habitat": "land", "art": "leopardgecko", "note": "Ground dweller; no toe pads, so it does not climb glass."},
+  {"id": "regaljumper", "cat": "land-invert", "name": "Regal jumping spider", "sci": "Phidippus regius", "tl": 12, "habitat": "land", "cling": "any", "art": "regaljumper", "female": {"art": "regaljumper_f", "tl": 15}, "note": "Body length: the male about 12 mm, black with white bands and white palps; the female about 15 mm, grey-brown. Climbs glass and branches; the legs span about twice that."}
  ]
 }
