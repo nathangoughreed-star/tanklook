@@ -390,11 +390,7 @@ export function hardscape(S: TankSetup, pieces = S.items, perchK = 1, leaves = f
   for (const it of pieces) {
     // broad leaves (anubias, swords, ferns...) as somewhere to sit, when asked: a spot on the crown's spread at about half
     // its height; the renderer finds the leaf there (none: the animal lands on the ground under it)
-    if (leaves && it.kind === 'plant' && it.variant in LEAFY) {
-      const [l, h, w] = itemDims(it);
-      parts.push({ area: l * w * 0.35 * LEAF_SHARE * LEAFY[it.variant], spot: r => { const ang = r() * 2 * Math.PI, d = Math.sqrt(r()) * 0.35; return { x: it.x + Math.cos(ang) * d * l, depth: it.depth + Math.sin(ang) * d * w, y: groundHeight(S, S.tank, it.x, it.depth) + h * 0.45 }; } });
-      continue;
-    }
+    if (leaves && it.kind === 'plant' && it.variant in LEAFY) { parts.push(leafPart(S, it)); continue; }
     if (it.kind === 'plant' || it.kind === 'coral') continue; // no grazing on live coral (Nathan 2026-10-14)
     if (it.kind === 'wood' && isLimbWood(it.variant)) {
       for (const l of woodLimbs(it.variant, it.seed, it.size)) {
@@ -407,6 +403,12 @@ export function hardscape(S: TankSetup, pieces = S.items, perchK = 1, leaves = f
     const [l, h, w] = itemDims(it);
     parts.push({ area: l * w * 0.5 * (it.variant === 'ledge' ? perchK : 1), spot: r => itemToTank(S, it, [(r() - 0.5) * l * 0.4, h, (r() - 0.5) * w * 0.4]) });
   }
+  return pickFrom(parts);
+}
+export type Hardscape = ReturnType<typeof hardscape>;
+type SpotPart = { area: number; spot: (r: () => number) => { x: number; depth: number; y: number } };
+/** Spots in proportion to the parts' areas. */
+const pickFrom = (parts: SpotPart[]) => {
   const area = parts.reduce((a, p) => a + p.area, 0);
   return {
     area,
@@ -416,8 +418,29 @@ export function hardscape(S: TankSetup, pieces = S.items, perchK = 1, leaves = f
       return parts.length ? parts[parts.length - 1].spot(r) : null;
     },
   };
+};
+/** A broad-leaved plant as a part: a spot on its crown's spread at about half its height (the renderer finds the leaf). */
+function leafPart(S: TankSetup, it: Item): SpotPart {
+  const [l, h, w] = itemDims(it);
+  return { area: l * w * 0.35 * LEAF_SHARE * LEAFY[it.variant], spot: r => { const ang = r() * 2 * Math.PI, d = Math.sqrt(r()) * 0.35; return { x: it.x + Math.cos(ang) * d * l, depth: it.depth + Math.sin(ang) * d * w, y: groundHeight(S, S.tank, it.x, it.depth) + h * 0.45 }; } };
 }
-export type Hardscape = ReturnType<typeof hardscape>;
+/** Pieces with an underside to hang from: a ledge's, the roof of a cave, tube, hide or cork round, a cork slab. */
+const OVERHANGS: ReadonlySet<string> = new Set(['ledge', 'arch', 'tube', 'coconut', 'halflog', 'corkflat', 'corktube']);
+/**
+ * Somewhere a clinging animal can hang under, as `hardscape` is somewhere to sit on: the broad leaves of the plants and the
+ * undersides of ledges and roofs. A spot is only a guess (x, depth, height); the renderer finds the underside nearest it,
+ * and the animal rests on the ground if there is none.
+ */
+export function underside(S: TankSetup, pieces = S.items) {
+  const parts: SpotPart[] = [];
+  for (const it of pieces) {
+    if (it.kind === 'plant') { if (it.variant in LEAFY) parts.push(leafPart(S, it)); continue; }
+    if (!OVERHANGS.has(it.variant)) continue;
+    const [l, h, w] = itemDims(it);
+    parts.push({ area: l * w * 0.5, spot: r => itemToTank(S, it, [(r() - 0.5) * l * 0.5, it.variant === 'ledge' || it.variant === 'corkflat' ? 0 : h * 0.4, (r() - 0.5) * w * 0.5]) });
+  }
+  return pickFrom(parts);
+}
 
 /** Plants grown tied onto wood or rock rather than planted in the substrate (Nathan 2026-10-15: substrate, hardscape,
  *  then plants, some of them attached to the hardscape by type, then animals). */

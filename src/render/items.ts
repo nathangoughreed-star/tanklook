@@ -994,21 +994,22 @@ export function leafProbe(T: Tank, plants: THREE.Object3D[], ground: (x: number,
 }
 
 /**
- * The anchors' look straight up from the ground at the undersides of plant leaves (anchors `under`): of the leaf surfaces
- * over (x, depth) that face down at least `up` (their normal's -y) and clear the ground by `clear` mm, the one nearest
- * height `y0`, with its normal turned to point down.
+ * The anchors' look straight up from the ground at what a clinger can hang under (anchors `under`): of the plant leaves
+ * (`leaves`: one thin surface, so either face counts, turned to point down) and the solid pieces (`solids`: only a true
+ * downward face, a ledge's or a roof's) over (x, depth) that face down at least `up` (their normal's -y) and clear the
+ * ground by `clear` mm, the one nearest height `y0`, its normal pointing down. Solids carry their piece's id.
  */
-export function leafUnderProbe(plants: THREE.Object3D[], ground: (x: number, depth: number) => number, clear = 8): NonNullable<AnchorProbe['under']> {
+export function underProbe(leaves: THREE.Object3D[], solids: THREE.Object3D[], ground: (x: number, depth: number) => number, clear = 8): NonNullable<AnchorProbe['under']> {
   const rc = new THREE.Raycaster(), nm = new THREE.Matrix3(), UPV = V(0, 1, 0);
   return (x, depth, y0, up) => {
     const g = ground(x, depth);
     rc.set(_o.set(x, g + 1, -depth), UPV);
-    let best: { y: number; n: V3 } | null = null;
-    for (const h of rc.intersectObjects(plants, false)) {
+    let best: { y: number; n: V3; item?: number } | null = null;
+    for (const set of [leaves, solids]) for (const h of rc.intersectObjects(set, false)) {
       if (!h.face || h.point.y < g + clear) continue;
       const n = h.face.normal.clone().applyMatrix3(nm.getNormalMatrix(h.object.matrixWorld)).normalize();
-      if (n.y > 0) n.negate();
-      if (-n.y >= up && (!best || Math.abs(h.point.y - y0) < Math.abs(best.y - y0))) best = { y: h.point.y, n: [n.x, n.y, -n.z] };
+      if (set === leaves && n.y > 0) n.negate();
+      if (-n.y >= up && (!best || Math.abs(h.point.y - y0) < Math.abs(best.y - y0))) best = { y: h.point.y, n: [n.x, n.y, -n.z], ...(set === solids ? { item: h.object.userData.item } : {}) };
     }
     return best;
   };

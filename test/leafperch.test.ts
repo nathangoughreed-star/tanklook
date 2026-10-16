@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { rng } from '../src/art/paint';
 import * as THREE from 'three';
 import { buildTank } from '../src/render/build';
-import { itemMesh, leafProbe, leafUnderProbe } from '../src/render/items';
+import { itemMesh, leafProbe, underProbe } from '../src/render/items';
 import { anchors } from '../src/scene/anchors';
 import { emptyScene } from '../src/scene/defaults';
 import { LIBRARY } from '../src/scene/items';
@@ -61,7 +61,7 @@ describe('leaf anchors', () => {
 
   it('animals hang under a leaf: belly on the underside, back down, head in its plane; none there = the ground', () => {
     const S = tank(), m = itemMesh(S, S.tank, crypt)!; m.updateMatrixWorld(true);
-    const ground = (x: number, d: number) => groundHeight(S, S.tank, x, d), under = leafUnderProbe([m], ground);
+    const ground = (x: number, d: number) => groundHeight(S, S.tank, x, d), under = underProbe([m], [], ground);
     let spot: { x: number; d: number; u: { y: number; n: number[] } } | null = null;
     for (let k = 0; k < 400 && !spot; k++) { const x = crypt.x + (Math.random() - 0.5) * 120, d = crypt.depth + (Math.random() - 0.5) * 120, u = under(x, d, 40, 0.3); if (u) spot = { x, d, u }; }
     expect(spot).toBeTruthy();
@@ -87,5 +87,19 @@ describe('leaf anchors', () => {
       for (const f of S.fish) { if (f.species === 'adf') expect(f.surface).not.toBe('under'); else { all++; if (f.surface === 'under') under++; } }
     }
     expect(under / all).toBeGreaterThan(0.1);
+  });
+
+  it('hangs under a ledge, and a rock on the ground has no underside to hang from', () => {
+    const S = tank(), mk = (variant: string, id: number, x: number, d: number, e: Partial<Item> = {}): Item => ({ id, kind: LIBRARY[variant].kind, variant, seed: 3, x, depth: d, lift: 0, yaw: 0, pitch: 0, tilt: 0, size: LIBRARY[variant].size, ...e });
+    const ledge = mk('ledge', 1, 200, 200, { lift: 120 }), rock = mk('river', 2, 450, 200);
+    S.items = [ledge, rock];
+    const ms = S.items.map(it => itemMesh(S, S.tank, it)!); for (const m of ms) m.updateMatrixWorld(true);
+    const un = underProbe([], ms, (x, d) => groundHeight(S, S.tank, x, d)), hit = un(200, 200, 100, 0.3);
+    expect(hit).toBeTruthy(); expect(hit!.item).toBe(1); expect(hit!.n[1]).toBeLessThan(-0.29); expect(hit!.y).toBeGreaterThan(100);
+    expect(un(450, 200, 40, 0.3)).toBeNull();          // inside a rock's footprint on the floor: its top is no underside
+    S.fish = [{ id: 1, species: 'nerite', x: 200, y: hit!.y, depth: 200, yaw: 0, pitch: 0, roll: 0, bend: 0, surface: 'under' }];
+    const m = buildTank({ ...S, units: 'cm' }, S.tank, null).fishMeshes[0];
+    expect(new THREE.Vector3(0, 1, 0).applyQuaternion(m.quaternion).y).toBeLessThan(-0.29);
+    expect(m.position.y).toBeLessThan(hit!.y);
   });
 });

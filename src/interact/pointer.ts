@@ -17,7 +17,7 @@ import { restsOnGround } from '../scene/water';
 import { D2R, backdropDepth, clamp, clampFish } from '../scene/physics';
 import { clampItem } from '../scene/items';
 import { glassFrame, nearestGlass } from '../scene/shape';
-import { coralSeat, leafProbe, leafUnderProbe } from '../render/items';
+import { coralSeat, leafProbe, underProbe } from '../render/items';
 import { dragPool, groundHeight, type PoolPart } from '../scene/terrain';
 import type { Store } from '../scene/store';
 import type { ItemKind, Tank, TankSetup } from '../scene/types';
@@ -382,7 +382,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       }
       // dragged in a side or front view to just under a broad leaf: it clings there (a clinger that hangs); off it again: the floor
       if (sp && clingsTo(sp, 'under') && d.mode !== 'top') {
-        const up = leafUp(sp), u = up > 0 ? leafUnderProbe((d.vp.itemMeshes ?? []).filter(m => m.userData.plant), (x, dp) => groundHeight(t, t.tank, x, dp))(f.x, f.depth, f.y, up) : null;
+        const up = leafUp(sp), u = up > 0 ? underProbe((d.vp.itemMeshes ?? []).filter(m => m.userData.plant), solids(d.vp, new Set()).filter(m => !m.userData.coral), (x, dp) => groundHeight(t, t.tank, x, dp))(f.x, f.depth, f.y, up) : null;
         if (u && Math.abs(u.y - f.y) < Math.max(30, (sp.tl ?? 0))) { f.surface = 'under'; f.y = u.y; } else if (f.surface === 'under') f.surface = 'floor';
       }
       // the rest of the group moves by the same amount

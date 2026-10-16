@@ -17,7 +17,7 @@ import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
 import { getImage } from '../scene/images';
 import { LU, addBeams, addFixture, applyLighting, waterVolumeMaterial } from './lighting';
 import { addAlgae } from './algae';
-import { itemDeps, itemMesh, leafProbe, leafUnderProbe, solidProbe } from './items';
+import { itemDeps, itemMesh, leafProbe, solidProbe, underProbe } from './items';
 import { rootsKey, rootsMesh } from './roots';
 import { addBackdrop, backdropGeometry } from './backdrop';
 import { drapedCard, fish3d, fishBody, hullMaterial } from './fish3d';
@@ -1297,7 +1297,7 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
   // where animals rest and cling (scene/anchors.ts): the top of the solid piece (stone, wood, cave) under (x, depth) for
   // animals on the hardscape, else the ground; the glass, or the 3D wall where it covers the pane
   const rests = solids.filter(m => !m.userData.coral); // animals rest on rock, wood and caves, never on coral
-  const A = anchors(S, T, { down: solidProbe(T, rests), leaf: leafProbe(T, leaves, (x, d) => groundHeight(S, T, x, d)), under: leafUnderProbe(leaves, (x, d) => groundHeight(S, T, x, d)), wall: (at, out, head, w) => onWall(S, T, at, out, head, w) });
+  const A = anchors(S, T, { down: solidProbe(T, rests), leaf: leafProbe(T, leaves, (x, d) => groundHeight(S, T, x, d)), under: underProbe(leaves, rests, (x, d) => groundHeight(S, T, x, d)), wall: (at, out, head, w) => onWall(S, T, at, out, head, w) });
   const top = (x: number, depth: number, hard: boolean, lv = 0) => A.rest(x, depth, hard, lv).p[1];
   // painted scatter patches (lane SB, render/brushmesh.ts): lying on the ground or the piece under each point; rebuilt only when
   // the patch, the solid pieces or the ground change

@@ -7,7 +7,7 @@ import { rng } from '../art/paint';
 import { snakeFoot, snakeStageFor } from '../art/snakes';
 import { clingsTo, fishTL, getSpecies, onLeaves, speciesOf, type Species } from '../data/species';
 import { backdropDepth, clamp, clampFish, spawnSnail, waterY } from './physics';
-import { hardscape, itemDims, itemToTank } from './items';
+import { hardscape, itemDims, itemToTank, underside } from './items';
 import { isTarantula, tarantulaBend } from '../art/tarantulas';
 import { inside } from './shape';
 import { groundHeight, randomLand } from './terrain';
@@ -92,7 +92,7 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
   const groups = [...bySpecies.entries()].map(([id, fish]) => ({ sp: getSpecies(id)!, fish })).filter(e => e.sp)
     .sort((a, b) => +grouped(b.sp, b.fish.length) - +grouped(a.sp, a.fish.length));
 
-  const hides = s.items.filter(it => HIDES.has(it.variant)), hard = hardscape(s), hardLeaf = hardscape(s, s.items, 1, true), leafSpots = hardscape(s, s.items.filter(it => it.kind === 'plant'), 1, true), perchy = hardscape(s, s.items, PERCH_FROG), perchSnake = hardscape(s, s.items, PERCH_SNAKE), hosts = anemones(s);
+  const hides = s.items.filter(it => HIDES.has(it.variant)), hard = hardscape(s), hardLeaf = hardscape(s, s.items, 1, true), leafSpots = underside(s), perchy = hardscape(s, s.items, PERCH_FROG), perchSnake = hardscape(s, s.items, PERCH_SNAKE), hosts = anemones(s);
   for (const e of groups) {
     const sp = e.sp;
     if (hosts.length && HOSTED.has(sp.id)) { // clownfish settle in a bubble-tip anemone: the whole group in one of them
