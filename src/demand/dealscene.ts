@@ -13,8 +13,8 @@ export function sceneFromDeal(d: Deal): Scene | undefined {
   if (!m) return undefined;
   const sc = emptyScene(); let S = sc.tanks[0];
   S.tank = tankFromModel(m);
-  S.stand = { ...S.stand, show: d.includes.includes('stand') };
-  S.lid = d.includes.includes('lid') ? 'hood' : 'open';
+  S.stand = { ...S.stand, show: d.includes.includes('stand'), style: d.look?.style ?? 'cabinet', finish: d.look?.finish ?? 'black' };
+  S.lid = d.includes.includes('lid') ? d.look?.lid ?? 'hood' : 'open';
   const k = d.kit ? kitById(d.kit) : undefined;
   if (k) { S = applyKitLight(S, k as never); S.lid = k.lid; }
   sc.tanks[0] = S; sc.name = `${d.retailer} ${d.name}`;

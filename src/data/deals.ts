@@ -14,6 +14,8 @@ export interface Deal {
   /** kit id (src/data/kits.json) giving the light and lid spec when the bundle is a known kit */
   kit?: string;
   includes: DealPart[];
+  /** the stand as pictured on the listing (default black cabinet) and the lid type (default: hood when a lid is included) */
+  look?: { style?: 'cabinet' | 'frame'; finish?: 'black' | 'white' | 'oak'; lid?: 'glass' | 'hood' | 'mesh' };
   price: { usd: number; /** list price before the sale */ regularUsd?: number };
   /** ISO date the sale ends, when the listing says */
   saleEnds?: string;
