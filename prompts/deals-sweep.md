@@ -25,9 +25,12 @@ change weekly, so rerun this before a release or whenever the list is more than 
 
 ## Starter kits (added 2026-10-19)
 The same file also holds starter kits without a stand (tank + hood + light + filter, usually a heater), from PetSmart, Petco, Walmart, Chewy
-and Amazon. Walmart, Petco, Chewy and Amazon block page reads (bot check / 403 / captcha, never bypass it), so their prices come from
-search snippets: put `price: from a search result ...` in `look.guessed` (shown on the card) and set `est: true` when snippets disagree or
-there is no product page. Map each kit to the nearest catalog tank (`tank`) so it is a one-click start; say so in `guessed` when the shape differs.
+and Amazon. Walmart, Petco, Chewy and Amazon block page reads from WebFetch and the in-app browser (bot check / 403 / captcha, never bypass it),
+but load normally in Nathan's Chrome through the Claude in Chrome extension: open one listing per site, then fetch the others from that tab
+(Walmart: `__NEXT_DATA__` product.priceInfo; Petco: ld+json and the size picker; Chewy: switch the size and read "Chewy Price";
+Amazon: buy-box price and `#availability`). Out of stock = `est: true`; gone = drop the row. A price that only a search snippet gives
+gets `price: from a search result ...` in `look.guessed`. Map each kit to the nearest catalog tank (`tank`) so it is a one-click start;
+say so in `guessed` when the shape differs.
 
 ## Merging
 Append the rows to `deals` in src/data/deals.json (unique ids; replace a row by id on rerun; drop rows whose listing is gone),
