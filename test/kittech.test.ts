@@ -28,7 +28,7 @@ describe('bundle gear', () => {
     for (const { d, S } of bundles) {
       const kit = dealAsKit(d), a = demandOf({ ...S!, tech: undefined }, P, { kit, now: NOW }), b = demandOf(S!, P, { kit, now: NOW });
       expect(b.totals.setupUsd, d.id).toBeCloseTo(a.totals.setupUsd, 6);
-      for (const key of ['filter', 'heater']) if (d.includes.includes(key)) expect(b.items.find(i => i.key === key)?.setup, `${d.id} ${key}`).toBeUndefined();
+      for (const key of ['filter', 'heater'] as const) if (d.includes.includes(key)) expect(b.items.find(i => i.key === key)?.setup, `${d.id} ${key}`).toBeUndefined();
     }
   });
 
