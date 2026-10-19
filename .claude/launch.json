@@ -559,19 +559,6 @@
         "--strictPort"
       ],
       "port": 5693
-    },
-    {
-      "name": "geckosupport",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5743",
-        "--strictPort"
-      ],
-      "port": 5743
     }
   ]
 }

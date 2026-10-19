@@ -1,6 +1,15 @@
 # HANDOFF archive
 Finished lane and feature sections moved out of HANDOFF.md on 2026-10-16, verbatim, newest first.
 
+## Lane GS: gecko support surfaces (2026-10-19, branch `geckosupport`, port 5743)
+- Reproduction: geckos were NOT on leaves (land species never are: `onLeaves(sp)` = false, `leafUp` 0; no new flag needed, anoles inherit it). The floating had two causes in `render/build.ts`: (1) Shuffle's limb spot is on the control polyline, 6-30 mm off the rendered limb, so `A.rest` found only the floor; (2) `restOn`'s lift-clear-of-rising-ground then raised the gecko by up to its own length when any branch / cork piece was inside its footprint. 30 shuffles of the rainforest: 37 of 65 hardscape geckos lifted > 100 mm, only 8 perched on a branch.
+- Fix: `anchors.restNear(x, depth, y, reach, tol)` (scene/anchors.ts) looks in rings to 40 mm for the solid top nearest the spot's height; used for lizards only (`isLizard`) in `animal()`. Lizard lift capped at 0.12 of its length (`LIZARD_LIFT`). After: 38 of 60 on a branch, floating cases 6/76 (measure noise, gaps 8-27 mm on rock slopes).
+- Leopard gecko: `cling: 'hardscape'` in species.json (floor + hardscape tops; still no glass), so it now basks on ledges and rocks. Affects only that species.
+- Frogs / spiders / snakes are NOT given the snap or the lift cap (their behaviour unchanged); the same limb-spot miss likely floats tree frogs too: candidate follow-up.
+- Tests: test/geckosupport.test.ts (new), lizard.test.ts leopard expectation; test/fixtures/anchor-baseline.json re-recorded (main was already off it for python / tree frog from other lanes).
+- Never use `git stash` in a worktree: the stash list is shared by all worktrees (another lane's stash was popped into this one 2026-10-19).
+
+
 ## Lane AN: anole models (2026-10-19, branch `anoles`, port 5753)
 - **State (2026-10-19): built, tests pass, pictures sent to Nathan, NOT yet pushed (waiting for his verdict).**
 - **What:** `art/lizards.ts` (anole shape helper `anoleCurves`, `ANOLE_SHAPE`, five looks: `greenanole`, `greenanole_f`,
