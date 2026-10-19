@@ -448,3 +448,9 @@ with `npm --prefix` (local edit, not committed). Phase 5 (Shuffle and Quick Setu
 - Engine: filter/heater rows take price row and kWh from the matched model; `kit.filter` / `kit.heater` (new optional fields) name the generic in the row label and set power from the real heater watts. `kitGear(kit)` in kits.ts; `Deal` gets optional `filter` / `heater`, and `dealAsKit` passes them (or the linked kit's) only for parts the deal includes.
 - Behaviour change without a kit: heater power now uses the heater class watts (rounded up) instead of the raw 3 W/gal figure; filter power uses the model's watts (3-25 W, was flat 6 W).
 - Not done: no deal in deals.json lists a filter/heater yet; UI does not show the matched generic beyond the demand row label. Full-suite failures in scene/reef/leafperch/growth tests were already there (uncommitted plant3d.ts from another chat).
+**Phase 5 DONE 2026-10-19 (limits steer the build).** `src/demand/fit.ts` `fitToLimits` (greedy: the bar furthest over its limit, best swap among its top drivers, locked swapped-in kinds,
+stops when every limit holds or nothing helps; reports the floor the tank/gear/routine work alone cost). Hooks in `ui/panels.ts`: `fitLimits()` after Shuffle and after the Plant care
+refit (same undo step: second `store.edit` with history false; skipped when both tanks of a split are edited); the Plant care slider (Low / Medium / High) also sets time / upkeep / risk limits via
+`demand.setLimits` (30 min, low, safe / 60, low, moderate / 120, flexible, any; money untouched). Swaps keep floaters floaters, carpets carpets, never a succulent. demandOf's upkeep mean now
+includes the expected loss replacement (`Contribution.lossMo`) so swaps and the panel agree with the Monte Carlo. Not covered: density sliders / restock do not fit to limits. Lane KK is
+finished unless Nathan asks for more; the preview server on 5733 is stopped.
