@@ -28,3 +28,8 @@ Append the rows to `deals` in src/data/deals.json (unique ids; replace a row by 
 bump top-level `asOf`, run `npx vitest run test/kits.test.ts test/demand.test.ts` and `npx tsc --noEmit`.
 The app (demand panel, Quick Setup) shows the best-saving deal that fits the tank size and stand, with its url, the sale end date and
 the as-of date; expired `saleEnds` rows are hidden automatically.
+
+## Card pictures
+Each featured deal needs `src/data/deal-pics/<deal id>.jpg` (400 px wide, like the examples' pictures; without one the card falls back to a
+drawn sketch). Make it: run the dev server, clear localStorage, click the deal's card on the start dialog, close the eye inset, scroll the
+wheel 3 ticks out so the tank and stand fill the frame, crop the canvas to roughly 400x345, save as that jpg. It shows the real starting point.

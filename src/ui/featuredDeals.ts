@@ -19,6 +19,9 @@ function pic(d: Deal, sc: Scene): string {
     : `<rect x="4" y="${ty + h}" width="${W - 8}" height="${sh}" fill="${col}" stroke="#555" stroke-width=".6"/><rect x="${W / 2 - .5}" y="${ty + h + 4}" width="1" height="${sh - 8}" fill="#555"/><circle cx="${W / 2 - 5}" cy="${ty + h + sh / 2}" r="1.2" fill="#aaa"/><circle cx="${W / 2 + 5}" cy="${ty + h + sh / 2}" r="1.2" fill="#aaa"/>`;
   return `<svg viewBox="0 0 ${W} ${ty + h + sh + 4}" width="100%" role="img" aria-label="${esc(d.name)}">${lid}${led}<rect x="6" y="${ty}" width="${W - 12}" height="${h}" fill="#4f7f94" fill-opacity=".35" stroke="#9fc4d4" stroke-width="1"/>${st}</svg>`;
 }
+/** Snapshot of each deal's starting scene, like the examples' pictures (src/data/deal-pics/<deal id>.jpg; procedure in prompts/deals-sweep.md). */
+const PICS = import.meta.glob('../data/deal-pics/*.jpg', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+const picUrl = (id: string) => PICS[`../data/deal-pics/${id}.jpg`];
 const usd = (v: number) => '$' + Math.round(v).toLocaleString();
 
 /** Fill `box` (the start dialog's deals slot); its heading (the previous sibling) hides when nothing qualifies. */
@@ -28,7 +31,7 @@ export function renderFeaturedDeals(box: HTMLElement, open: (name: string, scene
   box.innerHTML = list.map(({ deal: d, savingUsd, scene }, i) => {
     const sc = scene.tanks[0], got = d.includes.map(x => x === 'stand' ? `stand (${sc.stand.finish} ${sc.stand.style})` : x === 'lid' ? `${sc.lid === 'glass' ? 'glass canopy' : sc.lid} lid` : PARTS[x]), no = (['filter', 'heater'] as const).filter(x => !d.includes.includes(x));
     return `<div class="libcard"><button class="libopen" data-deal="${i}" title="Open this setup, then customise it"><b style="white-space:normal">${esc(d.retailer)}: ${esc(d.name)}</b>` +
-      `${pic(d, scene)}<span class="hint">Comes with: ${esc(got.join(', '))}${no.length ? `. Not included: ${no.join(', ')}` : ''}</span>` +
+      `${picUrl(d.id) ? `<img src="${esc(picUrl(d.id))}" alt="" style="height:auto;aspect-ratio:auto">` : pic(d, scene)}<span class="hint">Comes with: ${esc(got.join(', '))}${no.length ? `. Not included: ${no.join(', ')}` : ''}</span>` +
       `<span><b>${usd(d.price.usd)}</b>${d.price.regularUsd ? ` <s>${usd(d.price.regularUsd)}</s>` : ''}${savingUsd > 1 ? ` &middot; about ${usd(savingUsd)} under buying the parts` : ''}</span>` +
       `<span class="hint">${d.saleEnds ? 'sale ends ' + esc(d.saleEnds) + '; ' : ''}as of ${esc(d.asOf)}${d.est ? ' (estimate)' : ''}; ${esc(DEAL_NOTE)}</span></button>` +
       `<a class="hint" href="${esc(d.url)}" target="_blank" rel="noopener">listing</a></div>`;
