@@ -5,10 +5,9 @@
 export interface PerfLevel { name: string; frostPlain: boolean; ratio: number }
 export const LEVELS: PerfLevel[] = [
   { name: 'Full quality', frostPlain: false, ratio: 1 },
-  { name: 'Plain background film', frostPlain: true, ratio: 1 },
-  { name: 'Resolution 75%', frostPlain: true, ratio: 0.75 },
-  { name: 'Resolution 50%', frostPlain: true, ratio: 0.5 },
-  { name: 'Resolution 35%', frostPlain: true, ratio: 0.35 },
+  { name: 'Lighter: 75% resolution, plain film', frostPlain: true, ratio: 0.75 },
+  { name: 'Light: 50% resolution', frostPlain: true, ratio: 0.5 },
+  { name: 'Lightest: 35% resolution', frostPlain: true, ratio: 0.35 },
 ];
 export const MAX_LEVEL = LEVELS.length - 1;
 const KEY = 'tanklook.perf';
@@ -31,11 +30,6 @@ export function setLevel(n: number) {
 }
 export function setAuto(on: boolean) { perf.auto = on; save(); emit(); }
 /** The viewer could not hold 30 fps at the lowest motion-time resolution: one level down, auto stays on. */
-export function autoStep(hasFilm = true) {
-  if (!perf.auto || perf.level >= MAX_LEVEL) return false;
-  perf.level++;
-  if (perf.level === 1 && !hasFilm) perf.level++; // no frosted film in this tank: that step would change nothing
-  save(); emit(); return true;
-}
+export function autoStep() { if (!perf.auto || perf.level >= MAX_LEVEL) return false; perf.level++; save(); emit(); return true; }
 /** Frames per second while the camera moves (the viewer calls this a few times a second). */
 export function setFps(v: number) { perf.fps = v; emit(); }

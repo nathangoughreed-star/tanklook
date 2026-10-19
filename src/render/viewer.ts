@@ -203,7 +203,7 @@ export class Viewer {
     if (!this.adaptive || !motion || built || this.reveal || this.govSkip-- > 0) { this.govSlow = this.govFast = 0; return; }
     this.govGap = this.govGap ? 0.8 * this.govGap + 0.2 * gap : gap;
     if (t1 - this.fpsShown > 300) { this.fpsShown = t1; setFps(Math.min(60, 1000 / this.govGap)); }
-    if (this.govGap > this.govBudget) { this.govFast = 0; if (++this.govSlow >= 8) { if (this.govScale > GOV_MIN) this.govStep(Math.max(GOV_MIN, this.govScale * 0.8)); else if (autoStep(this.vps.some(vp => vp.frost?.length))) this.govStep(1); } }
+    if (this.govGap > this.govBudget) { this.govFast = 0; if (++this.govSlow >= 8) { if (this.govScale > GOV_MIN) this.govStep(Math.max(GOV_MIN, this.govScale * 0.8)); else if (autoStep()) this.govStep(1); } }
     else if (this.govGap < this.govBudget * 0.7 && this.govScale < 1) { this.govSlow = 0; if (++this.govFast >= GOV_PROBE) this.govStep(Math.min(1, this.govScale * 1.15)); }
     else this.govSlow = this.govFast = 0;
   }

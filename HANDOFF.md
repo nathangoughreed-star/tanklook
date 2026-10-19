@@ -394,9 +394,9 @@ moves and draw one full-quality frame ~150 ms after it stops (nothing changes on
   orbit (the first frame of a burst is sharp); 150 ms with nothing drawn draws the full ratio; 600 fast frames probe one step up.
   Skipped on build / reveal frames; `viewer.adaptive = false` turns it off; export always at full ratio. Checked with
   `perf-baseline.mjs --governor` (no change at the default budget on this GPU; forced misses step to 0.5 and restore at rest).
-- BUILT 2026-10-19 (render/perf.ts, viewer.ts, Display & export > Performance row): levels 0 full, 1 plain background film, 2-4 resting
-  resolution 75 / 50 / 35 %. Per-viewer (localStorage `tanklook.perf`). Auto (default on) steps one level down when the motion-time
-  drop is already at half and frames still miss 30 fps while orbiting (skips level 1 on a tank with no frosted film), never back up;
+- BUILT 2026-10-19 (render/perf.ts, viewer.ts, Display & export > Performance row): levels 0 full, 1 plain background film + resting
+  resolution 75 %, 2 = 50 %, 3 = 35 % (the film swap is folded into level 1, so a tank with no film still gains at every step; Nathan 2026-10-19). Per-viewer (localStorage `tanklook.perf`). Auto (default on) steps one level down when the motion-time
+  drop is already at half and frames still miss 30 fps while orbiting, never back up;
   moving the slider locks (auto off), the Auto box re-enables. Readout: fps while moving. The other film variant's programs are linked
   while idle (`precompileVariant`), so a switch adds no program (checked: `perf-baseline.mjs --perfcheck`, 18 ms switch). The level-1 picture
   is pixel-identical to the one Nathan rated. Open: antialiasing off (renderer rebuild; manual only); cheaper plant / stone shaders;

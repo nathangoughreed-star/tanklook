@@ -440,7 +440,7 @@ if (worst.length) {
         out.level1 = { transmission: films()[0]?.transmission ?? null, transparent: films()[0]?.transparent ?? null, newPrograms: progs() - p0, switchMs: sw, ratio: v.renderer.getPixelRatio(), auto: P.perf.auto };
         v.draw(); out.png1 = v.renderer.domElement.toDataURL('image/png');
         await sleep(300); const p1 = progs(); P.setLevel(0); await raf(); await raf(); out.backToFull = { transmission: films()[0]?.transmission ?? null, newPrograms: progs() - p1 };
-        out.ratios = []; for (const n of [2, 3, 4]) { P.setLevel(n); await raf(); await sleep(300); out.ratios.push({ level: n, ratio: +v.renderer.getPixelRatio().toFixed(3) }); }
+        out.ratios = []; for (const n of [2, 3]) { P.setLevel(n); await raf(); await sleep(300); out.ratios.push({ level: n, ratio: +v.renderer.getPixelRatio().toFixed(3) }); }
         // auto: reset, force misses, it must climb; then the slider locks it
         P.setAuto(true); P.setLevel(0); P.setAuto(true); v.govBudget = 1; await orbit(400); out.autoClimb = { level: P.perf.level, auto: P.perf.auto, govScale: +v.govScale.toFixed(2), saved: localStorage.getItem('tanklook.perf') };
         P.setLevel(2); await orbit(200); out.locked = { level: P.perf.level, auto: P.perf.auto };
