@@ -4,8 +4,8 @@ import { KITS } from '../src/data/kits';
 import { TECHS } from '../src/scene/lightout';
 
 // Lane KA's tank catalog, when it has landed.
-const tanksFile = Object.values(import.meta.glob('../src/data/tanks.json', { eager: true, import: 'default' }))[0] as { id: string }[] | undefined;
-const tankIds = tanksFile?.map((x) => x.id);
+const tanksFile = Object.values(import.meta.glob('../src/data/tanks.json', { eager: true, import: 'default' }))[0] as { tanks: { id: string }[] } | undefined;
+const tankIds = tanksFile?.tanks.map((x) => x.id);
 const LIDS = ['open', 'glass', 'hood', 'mesh'];
 
 describe('kit catalog', () => {

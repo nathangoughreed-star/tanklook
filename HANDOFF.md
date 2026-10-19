@@ -47,6 +47,7 @@ State 2026-10-19: DONE, real kit catalog wired (KB kits.json: null watts -> `kit
 - Kit type here is structural (`KitLike`: light, lid, water?), so KB's KitModel fits without an import. Nothing outside the two owned files touched; no scene bump.
 - Browser check (dev server, `__gb.store`): 4 W strip on 30x12x12 -> 13 PAR, carpet and red stem 'dim'; published 70 PAR kit -> anubias 'bright', carpet and stems fine.
   Gotcha: preview_start runs from the session's folder; a lane chat must be started in its worktree or the server serves the main checkout.
+- (also fixed a one-line break in KB's test/kits.test.ts: tanks.json is {tanks: [...]}, not an array)
 - 2026-10-19 real kits x real tanks (KA tanks.ts, KB kits.json; kits carry no `tank` id yet, so kit.tankDims -> tankFromOuter, else the nearest rect catalog tank by rated gal): all 32 kits apply and the test passes (24 tests).
   Found: Red Sea Max Nano kits publish PAR 500 "at the surface" (about 100 at 50 cm); `par` is a substrate figure. Added optional `light.parAt: 'surface'` (kits.ts type, kitlight scales it through the model's surface-to-substrate ratio) and set it on the 3 Red Sea kits in kits.json (one-line data hook in KB's file).
   Swap vs new build limit raised from 3x to 5x after a 4 W 10 gal guess read as "new build" for high light.
