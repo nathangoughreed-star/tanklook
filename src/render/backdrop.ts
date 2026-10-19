@@ -10,10 +10,10 @@ import type { BackdropKind, BackdropSettings, BgSide, Tank } from '../scene/type
 import { grit, solidMaterial } from './items';
 
 export const BACKDROPS: Record<BackdropKind, string> = {
-  none: 'None', rock: 'Rock wall', river: 'River stones', reef: 'Live rock wall', cork: 'Cork bark', moss: 'Moss / plant mat',
+  none: 'None', rock: 'Rock wall', river: 'River stones', reef: 'Live rock wall', cork: 'Cork bark', moss: 'Moss / plant mat', jungle: 'Jungle leaves',
 };
 /** Grit kind per style (see GRIT in render/items.ts). */
-const GRIT: Record<BackdropKind, number> = { none: 0, rock: 2, river: 1, reef: 3, cork: 10, moss: 12 };
+const GRIT: Record<BackdropKind, number> = { none: 0, rock: 2, river: 1, reef: 3, cork: 10, moss: 12, jungle: 12 };
 
 
 // ---------- Noise ----------
@@ -148,6 +148,25 @@ function field(kind: BackdropKind, seed: number): Field {
         const green = wsum ? c.multiplyScalar(1 / wsum) : fibre;
         col.copy(fibre).lerp(top ? green : fibre, smooth(0.02, 0.25, h)).multiplyScalar(0.8 + 0.3 * big(u / 70, y / 70) + tuft * 1.5);
         return sat(0.15 + 0.8 * h + tuft);
+      };
+    }
+    case 'jungle': { // broad overlapping leaves (philodendron / monstera style) with a midrib groove and side veins, dark soil between
+      const greens = ['#2f5a28', '#3b6b2e', '#2a4f26', '#477a35', '#35622c', '#52863a'].map(C), shade = C('#17240f');
+      const leaves = scatter(seed, 150, 150, (r, cx, cy) => ({ cx, cy, rx: 90 + r() * 110, ry: 36 + r() * 36, ang: r() * 6.28, out: 0.5 + r() * 0.5, c: pickOf(greens, r()), vein: 7 + r() * 5 }));
+      return (u, y, col) => {
+        let h = 0, top = null as { c: THREE.Color } | null, rib = 0, vein = 0, rim = 0;
+        leaves(u, y, s => {
+          const ca = Math.cos(s.ang), sa = Math.sin(s.ang), dx = u - s.cx, dy = y - s.cy, a = (dx * ca + dy * sa) / s.rx, b = (-dx * sa + dy * ca) / s.ry;
+          if (a < -1 || a > 1) return;
+          const w = (1 - a * a) ** 0.75 * (a < 0 ? 1 : 1 - 0.25 * a), d = Math.abs(b) / Math.max(w, 0.02);   // pointed tip, rounded base
+          if (d >= 1) return;
+          const edge = smooth(1, 0.82, d), v = s.out * (1 - 0.4 * d * d) * edge; // tapers to nothing at the outline, so the grid shows no steps
+          if (v > h) { h = v; top = s; rim = 1 - edge; rib = smooth(0.12, 0, Math.abs(b) * s.ry / 9) * edge; vein = smooth(0.78, 1, Math.abs(Math.sin((a * s.rx / s.vein) * 1.3 + Math.abs(b) * 2.2))) * (1 - rib) * edge; }
+        });
+        const spot = 0.05 * fine(u / 9, y / 9);
+        if (!top) { col.copy(shade).multiplyScalar(0.8 + 0.4 * big(u / 70, y / 70)); return sat(0.06 + 0.1 * (0.5 + big(u / 90, y / 90))); }
+        col.copy(top.c).lerp(shade, Math.min(1, 0.22 * (1 - h) + 0.7 * rim)).multiplyScalar(0.9 + 0.25 * big(u / 60, y / 60) + spot).lerp(C('#a6c86a'), 0.38 * rib).lerp(shade, 0.28 * vein);
+        return sat(0.2 + 0.7 * h - 0.07 * rib - 0.04 * vein + spot);
       };
     }
     default: return () => 0;

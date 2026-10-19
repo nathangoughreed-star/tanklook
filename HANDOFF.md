@@ -27,9 +27,7 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 **Current lanes** (coordinator "Lanes coordinator 4", `local_408aa124`):
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
-| EN enclosure presentation (roadmap section 7) | `../Glass-Box-enclosure` / `enclosure` | 5673 | tank presets + tank section of `ui/panels.ts` / `index.html`, new `scene/equipment.ts` + `render/equipment.ts`, lids / doors block in `render/build.ts`, presets in `scene/defaults.ts` | ready to open (prompt `prompts/lane-EN-enclosure.md`); starts with an audit table for Nathan |
 | KA tank catalog | `../Glass-Box-tankcat` / `tankcat` | 5703 | `src/data/tanks.*`, preset picker in `ui/panels.ts`, `scene/defaults.ts` presets | opened 2026-10-19 |
-| KB kit catalog (stops after one-brand cost check) | `../Glass-Box-kits` / `kits` | 5713 | kit catalog data + research | opened 2026-10-19 |
 | KC kit light wiring (stub data until KB lands) | `../Glass-Box-kitlight` / `kitlight` | 5723 | kit light wiring | opened 2026-10-19 |
 | KK demand model (panel hook in `ui/panels.ts` only after KA lands) | `../Glass-Box-demand` / `demand` | 5733 | demand model | opened 2026-10-19 |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
@@ -57,11 +55,20 @@ the wizard / KD), checks in `src/data/tankcheck.ts` driven by `node scripts/chec
 - Dev-server gotcha: `preview_start tankcat` serves the MAIN folder, not the worktree; I ran `npx vite --port 5703` in the worktree instead.
 
 
-## Lane KB: kit catalog (stops after one-brand cost check) (2026-10-19, branch `kits`, port 5713)  (lane fills this in)
-
 ## Lane KC: kit light wiring (stub data until KB lands) (2026-10-19, branch `kitlight`, port 5723)  (lane fills this in)
 
-## Lane KK: demand model (panel hook in `ui/panels.ts` only after KA lands) (2026-10-19, branch `demand`, port 5733)  (lane fills this in)
+## Lane KK: demand model (panel hook in `ui/panels.ts` only after KA lands) (2026-10-19, branch `demand`, port 5733)
+**Phase 1 DONE 2026-10-19 (engine, no UI).** `src/demand/` (types, range, engine, cost, index); starter data `src/data/factors.json` and
+`src/data/demand-defaults.json` (category-level rule-of-thumb ranges; phase 2 replaces/extends with per-item rows and sources);
+`test/demand.test.ts`. API: `demandOf(setup, profile, {tankPrice?, now?})` -> items (Range3 per item), means, 0-10 risk;
+`costDistribution(demand, profile)` -> setup / upkeep / minutes as `{mean, p10..p90, q[0..100]}` + each item's variance share
+(Gaussian copula rho 0.3, shared price level, kWh rate, loss rate per domain; 2000 seeded draws, ~100 ms); `limitState` (expected vs
+85th-percentile cap, upkeep chip $10 / $40, minutes, risk ceiling); `drivers(bar)`. Plant difficulty derived from NEEDS. Derived from
+the scene only: volume(), wattsOf(), growRate(), outcomeOf / itemLights, whyAnimal + CARE, water.salt. Risk repeated kinds count
+log-ish (x(1+0.5 ln n)); raw points squashed 10(1-exp(-raw/10)). Cut points 3 / 6 are a PROPOSAL for Nathan (phase 3). Not done: tank
+price lookup (KA / KB; `tankPrice` hook is ready), cycling risk, per-item prices. Starter examples (default novice profile, setup
+p10/mean/p90): betta $200/280/365, planted 45 gal $1049/1421/1823, reef 73 gal $3731/5149/6691.
+
 
 ## Lane CL: animals cling to leaves, undersides and sides of hardscape (2026-10-16..19; main, no branch; Nathan approved the pictures; pushed to main)
 Nathan's rules: things that cling or suck (snails, shrimp, sucker fish: oto, pleco) go on the undersides and sides of
@@ -106,11 +113,6 @@ Shrimp do NOT cling to glass (Nathan, 2026-10-16). Animals can spawn anywhere th
 - **Not built (step 2):** competition (suppression, shading, overlap), light-map scaling, rhizome limited to a piece's real top, mat limited by glass / wood.
   Defaults are conservative: carpet, pothos, creeper, vines, tiger-less species have no breed data yet.
 - **Test:** `test/propagate.test.ts` (determinism, scrub round trip, cap, containment, rhizome host, floater cover, keep + file round trip).
-
-## Lane EN: enclosure presentation (2026-10-16; branch `enclosure`, port 5673; opened by coordinator 3)
-Scope: roadmap section 7. Audit (2026-10-16): presets PARTIAL, backdrops DONE (no botanical / plain), lids+doors NOT BUILT, equipment PARTIAL (lights only), light mood PARTIAL (no direction / mood presets), bowls DONE.
-**Batch 1 (2026-10-16, Nathan approved pictures `shots/enclosure/EN1-2`):** 9 terrarium presets in `TANK_PRESETS` (nano 8", cubes 12/18", tall arboreal 12x18x12 / 18x24x18 / 24x48x24, wide terrestrial 36x18x18 / 48x18x24 / 48x24x24); lid 'mesh' (screen top: dark frame + textured weave in `build.ts` addLid via `meshMaterial`, light x0.8 `MESH_LID` in lightout, plants cap at lid like glass); new optional `TankSetup.doors` 'hinged' | 'sliding' (absent = none; rectangles only; `addFrontDoors` in build.ts; Lid row has Mesh top, new Front doors row in the Tank section). No version bump (additive, validate keeps old files). One-line hooks outside my files: `render/items.ts` (lid cap), `ui/diff.ts`, `scene/setupsheet.ts`, `scene/lightout.ts`.
-Open: equipment (heater, hang-on filter, canister outlet, mister nozzle, light bar) in new scene/equipment.ts + render/equipment.ts; light mood / direction; botanical / plain backdrop. Weight of a mesh lid is not counted.
 
 ## Lane W: Android app (2026-10-14; OPENED same day, Nathan: "start work on the android app"; prompt `prompts/lane-W-android-app.md`)
 - **Route: Trusted Web Activity (TWA)** around https://tanklook.com/ (Bubblewrap or PWABuilder). Real Chrome, so WebXR
@@ -285,6 +287,8 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane KB: kit catalog (2026-10-19, branch `kits`, port 5713)
+- Lane EN: enclosure presentation (2026-10-16; branch `enclosure`, port 5673; opened by coordinator 3)
 - Lane CP: content pack (2026-10-16; branch `content-pack`, port 5683; batch 1 pushed, Nathan approved the pictures)
 - Lane SB: scatter brush (2026-10-16; branch `scatter-brush`, port 5693; opened by coordinator 3; started)
 - Lane SS2: starter styles batch 2 (2026-10-16; branch `starters2`, port 5683; opened by coordinator 3; DONE: Nathan approved all styles 2026-10-16; pushed to main)
