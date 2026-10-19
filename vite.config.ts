@@ -21,6 +21,8 @@ export default defineConfig(({ mode }) => {
       ...(single ? { outDir: 'dist-single/.build', emptyOutDir: true, modulePreload: false, assetsInlineLimit: 1e8 } : {}),
       rollupOptions: { input, ...(single ? { output: { codeSplitting: false } } : {}) },
     },
-    test: { environment: 'node' },
+    // Discovery: only this checkout's test/ (local runs also saw .claude/worktrees/* and aquascape/*, which CI never has).
+    // Timeouts: the scene-building tests take seconds on a quiet machine and 5 s default timed out under load (2-core CI runner).
+    test: { environment: 'node', include: ['test/**/*.test.ts'], exclude: ['**/node_modules/**', '.claude/**', 'aquascape/**', 'dist*/**'], testTimeout: 120000, hookTimeout: 60000 },
   };
 });
