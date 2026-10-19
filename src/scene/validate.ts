@@ -12,6 +12,7 @@ import { keepInWater } from './water';
 import { pieSize, radialSize, sameGrid, sampleTerrain, swampTerrain, type Ground } from './terrain';
 import { SCENE_VERSION, type BgImage, type BgSide, type Fish, type Item, type LightTech, type Scene, type Tank, type TankSetup } from './types';
 import { adoptImages, sidesTouch } from './images';
+import { parseTech } from './tech';
 
 const GRAINS = ['mud', 'sand', 'gravel', 'pebble'] as const;
 
@@ -328,6 +329,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
   const te2 = setup.terrain;
   if (te2.h.length && !sameGrid(te2, setup.tank)) setup.terrain = { ...sampleTerrain(setup, setup.tank, te2.cols), on: te2.on };
   { const pt = parsePatches(raw.patches); if (pt) setup.patches = pt; } // lane SB 2026-10-16: painted scatter, absent = none
+  { const tc = parseTech(raw.tech); if (tc) setup.tech = tc; } // lane TM 2026-10-19: tech level, absent = inferred gear
   keepInWater(setup); fitTable(setup);
   fitFixture(setup.light, setup.tank, false); // 2026-10-15: older lights clamped into their fixture's usual ranges
   return setup;
