@@ -187,6 +187,20 @@ describe('deal guesses (lane KD)', () => {
     expect(dealGuesses({ ...base, look: { light: { watts: 20, par: 40 } } } as never)).toEqual([]);
     expect(dealGuesses({ ...base, includes: ['tank'], look: { guessed: ['stand colour'] } } as never)).toEqual(['stand colour']);
   });
+  it('a catalog tank without the listing\'s dims is a guess; with dims the scene takes the real outer size', async () => {
+    const { dealGuesses, DEALS } = await import('../src/data/deals');
+    const { sceneFromDeal } = await import('../src/demand/dealscene');
+    const base = { id: 'x', retailer: 'R', name: 'n', gal: 10, tank: 'g8c', includes: ['tank'], price: { usd: 1 }, url: 'https://x', asOf: '2026-10-19' };
+    expect(dealGuesses(base as never).some(g => g.startsWith('tank size'))).toBe(true);
+    const d = { ...base, dims: { L_in: 14.09, D_in: 14.09, H_in: 14.09 } };
+    expect(dealGuesses(d as never)).toEqual([]);
+    const T = sceneFromDeal(d as never)!.tanks[0].tank, glass = 4; // g8c glass
+    expect(T.L + 2 * glass).toBeCloseTo(14.09 * 25.4, 0);
+    expect(T.H + glass).toBeCloseTo(14.09 * 25.4, 0);
+    for (const x of DEALS.filter(x => x.dims)) { // every recorded size is a real tank shape (inches, not mm or gallons)
+      for (const v of [x.dims!.L_in, x.dims!.D_in, x.dims!.H_in]) expect(v, x.id).toBeGreaterThan(6), expect(v, x.id).toBeLessThan(80);
+    }
+  });
 });
 
 describe('stacked deal savings', () => {

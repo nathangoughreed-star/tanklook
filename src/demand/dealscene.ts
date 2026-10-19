@@ -1,5 +1,5 @@
 // A new scene built from a bundle deal (lane KD): catalog tank, stand on, the kit's light and lid when the deal names a kit.
-import { getTankModel, tankFromModel } from '../data/tanks';
+import { getTankModel, modelOfVariant, tankFromModel } from '../data/tanks';
 import { kitById } from '../data/kits';
 import { DEALS, type Deal } from '../data/deals';
 import { dealOffers } from './deals';
@@ -9,8 +9,9 @@ import { applyKitLight } from '../scene/kitlight';
 import type { Scene } from '../scene/types';
 
 export function sceneFromDeal(d: Deal): Scene | undefined {
-  const m = d.tank ? getTankModel(d.tank) : undefined;
-  if (!m) return undefined;
+  const cat = d.tank ? getTankModel(d.tank) : undefined;
+  if (!cat) return undefined;
+  const m = d.dims ? modelOfVariant(cat, d.dims) : cat; // the bundle's own size on the catalog shape
   const sc = emptyScene(); let S = sc.tanks[0];
   S.tank = tankFromModel(m);
   S.camera = { ...S.camera, az: 35, el: 22, zoom: 0.8 }; // three-quarter view from above: the picture and the opened scene show the stand and the top

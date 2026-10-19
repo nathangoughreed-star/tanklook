@@ -8,6 +8,11 @@
    "name": "Top Fin Aquarium & Stand Ensemble 36 gal",
    "gal": 36,
    "tank": "g37",
+   "dims": {
+    "L_in": 30.7,
+    "D_in": 15.7,
+    "H_in": 22.6
+   },
    "includes": [
     "tank",
     "stand",
@@ -19,13 +24,12 @@
    },
    "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/top-fin-aquarium-and-stand-ensemble---36-gallon-78697.html",
    "asOf": "2026-10-19",
-   "note": "Tank, hood, light and stand as a set (page checked 2026-10-19: $399.99, no list price, no sale end, no filter or heater). Tank 30.7x15.7x22.6 in, stand 30.7x15.7x30.7 in. Catalog tank is the closest size.",
+   "note": "Tank, hood, light and stand as a set (page checked 2026-10-19: $399.99, no list price, no sale end, no filter or heater). Tank 30.7x15.7x22.6 in, stand 30.7x15.7x30.7 in. The scene uses the listed tank size on the catalog shape.",
    "look": {
     "style": "cabinet",
     "finish": "black",
     "lid": "hood",
     "guessed": [
-     "tank shape: closest catalog size (the listing gives 30.7x15.7x22.6 in)",
      "stand style and colour: a black cabinet is assumed (the listing says only \"two interior shelves\")"
     ],
     "light": {
@@ -40,6 +44,11 @@
    "name": "Marineland High Definition LED Aquarium & Stand Ensemble 45 gal",
    "gal": 45,
    "tank": "n_g45_tall",
+   "dims": {
+    "L_in": 36.25,
+    "D_in": 12.6,
+    "H_in": 24.8
+   },
    "includes": [
     "tank",
     "stand",
@@ -70,6 +79,11 @@
    "name": "Marineland Modern LED Aquarium & Stand Ensemble 60 gal",
    "gal": 60,
    "tank": "g60b",
+   "dims": {
+    "L_in": 48.5,
+    "D_in": 12.75,
+    "H_in": 25
+   },
    "includes": [
     "tank",
     "stand",
@@ -82,13 +96,12 @@
    },
    "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-modern-led-aquarium-and-stand-ensemble---60-gallon-led-fish-tank-kit-34998.html",
    "asOf": "2026-10-19",
-   "note": "Glass canopy, hidden LED, modern stand; no sale end date shown. Catalog tank is the 60 breeder as the closest size; the real footprint may differ.",
+   "note": "Glass canopy, hidden LED, modern stand; no sale end date shown. Tank 48.5x12.75x25 in (maker spec): a tall 60, not a breeder.",
    "look": {
     "style": "cabinet",
     "finish": "black",
     "lid": "glass",
     "guessed": [
-     "tank shape: closest catalog size (the 60 breeder)",
      "stand style and colour: black cabinet assumed"
     ],
     "light": {
@@ -103,6 +116,11 @@
    "name": "Marineland High Definition LED Ensemble 75 gal",
    "gal": 75,
    "tank": "g75",
+   "dims": {
+    "L_in": 48.4,
+    "D_in": 18.4,
+    "H_in": 21.0
+   },
    "includes": [
     "tank",
     "stand",
@@ -163,6 +181,11 @@
    "name": "Top Fin Essentials Aquarium Starter Kit 20 gal",
    "gal": 20,
    "tank": "g20h",
+   "dims": {
+    "L_in": 24.0,
+    "D_in": 12.7,
+    "H_in": 16.0
+   },
    "includes": [
     "tank",
     "lid",
@@ -183,7 +206,6 @@
    "note": "Item 5262265, page read live. Tank 24x12.7x16 in; hood with feeding door, white LED, power filter, heater, thermometer, net. Page says 20% off 20+ gal Essentials kits, no end date.",
    "look": {
     "lid": "hood",
-    "guessed": [],
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
@@ -231,6 +253,11 @@
    "name": "Top Fin Bow Front Aquarium Starter Kit 36 gal",
    "gal": 36,
    "tank": "bow36",
+   "dims": {
+    "L_in": 30.7,
+    "D_in": 15.7,
+    "H_in": 22.2
+   },
    "includes": [
     "tank",
     "lid",
@@ -251,10 +278,9 @@
    },
    "url": "https://www.petsmart.com/fish/starter-kits/top-fin-bow-front-aquarium-starter-kit----36-gallon-51163.html",
    "asOf": "2026-10-19",
-   "note": "Page read live. Tank 30.7x15.7x22.6 in; hood, white LED, Silenstream 40 filter, 200 W heater, thermometer, net. No stand.",
+   "note": "Page read live. Tank 30.7x15.7x22.2 in (PetSmart.ca listing; the .com page redirects); hood, white LED, Silenstream 40 filter, 200 W heater, thermometer, net. No stand.",
    "look": {
     "lid": "hood",
-    "guessed": [],
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
@@ -267,6 +293,11 @@
    "name": "Top Fin Cube Essentials Starter Kit 10 gal",
    "gal": 10,
    "tank": "g8c",
+   "dims": {
+    "L_in": 14.09,
+    "D_in": 14.09,
+    "H_in": 14.09
+   },
    "includes": [
     "tank",
     "lid",
@@ -290,9 +321,6 @@
    "note": "Page read live, half price. Tank 14.09 in cube; hood, white LED, Silenstream PF10, 50 W heater.",
    "look": {
     "lid": "hood",
-    "guessed": [
-     "tank shape: closest catalog size (the 8 gal cube; the real cube is 14.1 in)"
-    ],
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
@@ -305,6 +333,11 @@
    "name": "Top Fin LED Bubble Wall Aquarium Kit 20 gal",
    "gal": 20,
    "tank": "g20h",
+   "dims": {
+    "L_in": 24.2,
+    "D_in": 13.1,
+    "H_in": 16.6
+   },
    "includes": [
     "tank",
     "lid",
@@ -323,7 +356,6 @@
    "note": "Item 5308097, page read live. Tank 24.2x13.1x16.6 in; internal filter, air pump and LED bubble wand. No heater.",
    "look": {
     "lid": "hood",
-    "guessed": [],
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
@@ -336,6 +368,11 @@
    "name": "Top Fin LED Black Glass Aquarium Kit 10 gal",
    "gal": 10,
    "tank": "g10",
+   "dims": {
+    "L_in": 20.1,
+    "D_in": 10.1,
+    "H_in": 12.8
+   },
    "includes": [
     "tank",
     "lid",
@@ -354,7 +391,6 @@
    "note": "Item 5300979, page read live. Tank 20.1x10.1x12.8 in, blue and white LED hood, integrated filter. No heater.",
    "look": {
     "lid": "hood",
-    "guessed": [],
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
@@ -367,6 +403,11 @@
    "name": "GloFish LED Aquarium Kit 5 gal",
    "gal": 5,
    "tank": "g5",
+   "dims": {
+    "L_in": 16.5,
+    "D_in": 10.5,
+    "H_in": 11.0
+   },
    "includes": [
     "tank",
     "lid",
@@ -390,7 +431,6 @@
    "note": "Item 5369363, page read live. Tank 16.5x10.5x11 in; Tetra internal filter, Tetra HT 50 W heater, thermometer, hood with LED.",
    "look": {
     "lid": "hood",
-    "guessed": [],
     "light": {
      "says": "blue GloFish LED in the hood (no watts published)"
     }
@@ -403,6 +443,11 @@
    "name": "Fluval Plant Aquarium Starter Kit 9 gal",
    "gal": 9,
    "tank": "n_flex_9gal",
+   "dims": {
+    "L_in": 14.0,
+    "D_in": 13.0,
+    "H_in": 12.0
+   },
    "includes": [
     "tank",
     "lid",
@@ -422,9 +467,6 @@
    "note": "Page read live. Tank 14x13x12 in, 7000K plant LED, clear glass cover, AquaClear 20 filter. No heater.",
    "look": {
     "lid": "glass",
-    "guessed": [
-     "tank shape: closest catalog size (the Fluval Flex 9 shell; the real tank is a 14x13x12 in rectangle)"
-    ],
     "light": {
      "says": "7000K plant LED (no watts published)"
     }
@@ -470,6 +512,11 @@
    "name": "Marineland Portrait Glass LED Aquarium Kit 5 gal",
    "gal": 5,
    "tank": "g5",
+   "dims": {
+    "L_in": 9.99,
+    "D_in": 9.67,
+    "H_in": 17.2
+   },
    "includes": [
     "tank",
     "lid",
@@ -490,7 +537,7 @@
     "lid": "glass",
     "guessed": [
      "price: from a search result of the listing (the site blocks page checks), so it may be out of date",
-     "tank shape: closest catalog size (5 gal; the real Portrait is a tall shape)"
+     "tank height: the listing gives 17.2 in, which likely includes the LED hood; the glass alone is not published"
     ],
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
@@ -537,6 +584,11 @@
    "name": "Tetra Complete Tropical Aquarium Kit 20 gal with LED",
    "gal": 20,
    "tank": "g20h",
+   "dims": {
+    "L_in": 24.0,
+    "D_in": 12.0,
+    "H_in": 16.0
+   },
    "includes": [
     "tank",
     "lid",
@@ -556,7 +608,6 @@
    "note": "Page read 2026-10-19 in a browser. In stock. Tank 24x12x16 in; hinged LED hood, Whisper PF20, heater, thermometer.",
    "look": {
     "lid": "hood",
-    "guessed": [],
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
@@ -569,6 +620,11 @@
    "name": "Aqueon LED Aquarium Starter Kit 20 High",
    "gal": 20,
    "tank": "g20h",
+   "dims": {
+    "L_in": 24.25,
+    "D_in": 12.5,
+    "H_in": 16.75
+   },
    "includes": [
     "tank",
     "lid",
@@ -604,6 +660,11 @@
    "name": "Tetra Complete LED Aquarium Kit 10 gal",
    "gal": 10,
    "tank": "g10",
+   "dims": {
+    "L_in": 20,
+    "D_in": 10,
+    "H_in": 12
+   },
    "includes": [
     "tank",
     "lid",
@@ -618,7 +679,9 @@
    "note": "Page read 2026-10-19 in a browser. In stock. Whisper PF10, LED hood, no heater.",
    "look": {
     "lid": "hood",
-    "guessed": [],
+    "guessed": [
+     "tank size: Tetra's rounded nominal size (20x10x12 in), not read on the listing"
+    ],
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
@@ -631,6 +694,11 @@
    "name": "Imagitarium LED Aquarium Kit 10 gal",
    "gal": 10,
    "tank": "g10",
+   "dims": {
+    "L_in": 20.15,
+    "D_in": 10.19,
+    "H_in": 12.75
+   },
    "includes": [
     "tank",
     "lid",
@@ -650,7 +718,6 @@
    "note": "Page read 2026-10-19 in a browser. Store pickup only (not shipped); stock depends on the store. LED hood, power filter, heater.",
    "look": {
     "lid": "hood",
-    "guessed": [],
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
@@ -663,6 +730,11 @@
    "name": "Imagitarium LED Aquarium Kit 20 gal",
    "gal": 20,
    "tank": "g20h",
+   "dims": {
+    "L_in": 24.17,
+    "D_in": 12.67,
+    "H_in": 17.32
+   },
    "includes": [
     "tank",
     "lid",
@@ -682,7 +754,6 @@
    "note": "Page read 2026-10-19 in a browser. Store pickup only (not shipped); stock depends on the store. 24.17 in wide, 17.35 in high; LED hood with feeding door, power filter, heater.",
    "look": {
     "lid": "hood",
-    "guessed": [],
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
@@ -695,6 +766,11 @@
    "name": "Imagitarium LED Aquarium Kit 40 gal",
    "gal": 40,
    "tank": "g40b",
+   "dims": {
+    "L_in": 36.33,
+    "D_in": 18.34,
+    "H_in": 15.9
+   },
    "includes": [
     "tank",
     "lid",
@@ -714,9 +790,6 @@
    "note": "Page read 2026-10-19 in a browser. Store pickup only (not shipped); stock depends on the store. 36.33 in wide, 15.9 in high; LED hood, filter, heater.",
    "look": {
     "lid": "hood",
-    "guessed": [
-     "tank shape: closest catalog size (the 40 breeder)"
-    ],
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
@@ -729,6 +802,11 @@
    "name": "Imagitarium LED Aquarium Kit 29 gal",
    "gal": 29,
    "tank": "g29",
+   "dims": {
+    "L_in": 30.19,
+    "D_in": 12.4,
+    "H_in": 20.86
+   },
    "includes": [
     "tank",
     "lid",
@@ -744,7 +822,6 @@
    "note": "Page read 2026-10-19 in a browser. Store pickup only (not shipped); stock depends on the store. Contents as the 10 and 20 gal sizes.",
    "look": {
     "lid": "hood",
-    "guessed": [],
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
@@ -761,6 +838,11 @@
    "name": "Imagitarium LED Aquarium Kit 55 gal",
    "gal": 55,
    "tank": "g55",
+   "dims": {
+    "L_in": 47.75,
+    "D_in": 13.07,
+    "H_in": 23.89
+   },
    "includes": [
     "tank",
     "lid",
@@ -776,7 +858,6 @@
    "note": "Page read 2026-10-19 in a browser. Store pickup only (not shipped); stock depends on the store. Contents as the 40 gal size.",
    "look": {
     "lid": "hood",
-    "guessed": [],
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
@@ -793,6 +874,11 @@
    "name": "Aqueon LED Aquarium Kit 20 High",
    "gal": 20,
    "tank": "g20h",
+   "dims": {
+    "L_in": 24.25,
+    "D_in": 12.5,
+    "H_in": 16.75
+   },
    "includes": [
     "tank",
     "lid",
@@ -828,6 +914,11 @@
    "name": "Tetra Complete Aquarium Kit with LED 10 gal",
    "gal": 10,
    "tank": "g10",
+   "dims": {
+    "L_in": 20.0,
+    "D_in": 10.0,
+    "H_in": 12.0
+   },
    "includes": [
     "tank",
     "lid",
@@ -847,7 +938,6 @@
    "note": "Page read 2026-10-19 in a browser. In stock. Tank 20x10x12 in; LED hood, Tetra internal filter. No heater (reviews confirm).",
    "look": {
     "lid": "hood",
-    "guessed": [],
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
@@ -860,6 +950,11 @@
    "name": "Aqueon SmartClean LED Aquarium Starter Kit 10 gal",
    "gal": 10,
    "tank": "g10",
+   "dims": {
+    "L_in": 20.25,
+    "D_in": 10.5,
+    "H_in": 12.56
+   },
    "includes": [
     "tank",
     "lid",
@@ -893,6 +988,11 @@
    "name": "Tetra Complete Aquarium Kit with LED 29 gal",
    "gal": 29,
    "tank": "g29",
+   "dims": {
+    "L_in": 30,
+    "D_in": 12,
+    "H_in": 18
+   },
    "includes": [
     "tank",
     "lid",
@@ -913,7 +1013,9 @@
    "note": "Page read 2026-10-19 in a browser. In stock. LED hood, Tetra filter and heater (reviews mention the heater).",
    "look": {
     "lid": "hood",
-    "guessed": [],
+    "guessed": [
+     "tank size: Tetra's rounded nominal size (30x12x18 in), not read on the listing"
+    ],
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
@@ -926,6 +1028,11 @@
    "name": "Tetra Aquarium + LED Lighting & Decor 20 gal",
    "gal": 20,
    "tank": "g20h",
+   "dims": {
+    "L_in": 24,
+    "D_in": 12,
+    "H_in": 16
+   },
    "includes": [
     "tank",
     "lid",
@@ -946,7 +1053,9 @@
    "note": "Page read 2026-10-19 in a browser. LED hood, Whisper filter, Tetra mini heater (preset 78F), plants.",
    "look": {
     "lid": "hood",
-    "guessed": [],
+    "guessed": [
+     "tank size: Tetra's rounded nominal size (24x12x16 in), not read on the listing"
+    ],
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
@@ -959,6 +1068,11 @@
    "name": "Aqueon SmartClean LED Aquarium Starter Kit 10 gal",
    "gal": 10,
    "tank": "g10",
+   "dims": {
+    "L_in": 20.25,
+    "D_in": 10.5,
+    "H_in": 12.56
+   },
    "includes": [
     "tank",
     "lid",
@@ -992,6 +1106,11 @@
    "name": "Aqueon SmartClean LED Aquarium Starter Kit 20 gal",
    "gal": 20,
    "tank": "g20h",
+   "dims": {
+    "L_in": 24.25,
+    "D_in": 12.5,
+    "H_in": 16.75
+   },
    "includes": [
     "tank",
     "lid",
@@ -1011,7 +1130,9 @@
    "note": "Page read 2026-10-19 in a browser. In stock, sold by Amazon.com. LED hood, SmartClean filter, preset heater.",
    "look": {
     "lid": "hood",
-    "guessed": [],
+    "guessed": [
+     "tank size: the listing gives none; the Aqueon 20 high is assumed"
+    ],
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
@@ -1024,6 +1145,11 @@
    "name": "Tetra 20 gal Aquarium Kit with LED, Filter & Heater",
    "gal": 20,
    "tank": "g20h",
+   "dims": {
+    "L_in": 24,
+    "D_in": 12,
+    "H_in": 16
+   },
    "includes": [
     "tank",
     "lid",

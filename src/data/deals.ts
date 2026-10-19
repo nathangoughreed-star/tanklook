@@ -13,6 +13,8 @@ export interface Deal {
   gal: number;
   /** TankModel id (src/data/tanks.json) when the bundle's tank is a catalog size */
   tank?: string;
+  /** the bundle tank's own OUTER size in inches, from the listing or the box; it re-sizes the catalog tank (whose shape still applies). Absent = the catalog size stands in, shown as a guess */
+  dims?: { L_in: number; D_in: number; H_in: number };
   /** kit id (src/data/kits.json) giving the light and lid spec when the bundle is a known kit */
   kit?: string;
   includes: DealPart[];
@@ -34,6 +36,7 @@ export interface Deal {
 /** Every guess behind a deal, in plain words: the row's own list plus a light whose power the listing does not give. */
 export function dealGuesses(d: Deal): string[] {
   const g = [...(d.look?.guessed ?? [])];
+  if (d.tank && !d.dims) g.push('tank size: the listing\'s dimensions are not recorded, so the standard catalog tank of this size is used');
   if (d.includes.includes('light')) {
     const L = d.look?.light;
     if (!L?.watts) g.push('light power and brightness: the listing gives no watts, so a typical budget LED for this tank size is assumed');
