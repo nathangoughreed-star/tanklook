@@ -1704,7 +1704,7 @@ Cancel, then change the name, to keep both.`)) return;
     $('stkOut').textContent = stockingLine(r);
     $('stkOut').className = r.percent > 100 ? 'bad' : '';
     $('stkWhy').textContent = r.reasons.join(' ');
-    $('stkBody').innerHTML = stockingDetail(r).map(t => `<li>${esc(t)}</li>`).join('') + `<li class="dim">Water ${Math.round(r.capacity.litres)} L, filter x${r.capacity.filter.toFixed(2)}${r.capacity.plantCount ? `, plants x${r.capacity.plants.toFixed(2)}` : ''}, ${Math.round(r.capacity.tempC)} °C.</li>`;
+    $('stkBody').innerHTML = stockingDetail(r).map(t => `<li>${esc(t)}</li>`).join('') + `<li class="dim">Water ${store.scene.units === 'in' ? `${Math.round(r.capacity.litres / 3.785)} gal` : `${Math.round(r.capacity.litres)} L`}, filter x${r.capacity.filter.toFixed(2)}${r.capacity.plantCount ? `, plants x${r.capacity.plants.toFixed(2)}` : ''}, ${store.scene.units === 'in' ? `${Math.round(r.capacity.tempC * 9 / 5 + 32)} °F` : `${Math.round(r.capacity.tempC)} °C`}.</li>`;
   }
   function syncAq() {
     syncStocking();
@@ -1773,7 +1773,7 @@ Cancel, then change the name, to keep both.`)) return;
     const cl = $('climate'), rows = climateOf(s);
     cl.hidden = !rows.length;
     cl.classList.toggle('open', climateOpen);
-    cl.innerHTML = rows.map(r => `<div><b>${r.label}</b>${climateText(r)}${r.note ? `<span class="hint">${r.note}</span>` : ''}</div>${climateOpen ? climateChart(r) : ''}`).join('')
+    cl.innerHTML = rows.map(r => `<div><b>${r.label}</b>${climateText(r, store.scene.units === 'in')}${r.note ? `<span class="hint">${r.note}</span>` : ''}</div>${climateOpen ? climateChart(r, store.scene.units === 'in') : ''}`).join('')
       + (rows.some(r => r.bands.length) ? `<div class="clCue">${climateOpen ? '▾ Hide' : '▸ Where this comes from'}</div>` : '');
     const st = $('stocking'), issues = herpCheck(s);
     st.hidden = !issues.length;
