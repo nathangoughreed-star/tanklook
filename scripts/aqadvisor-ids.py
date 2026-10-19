@@ -62,6 +62,11 @@ NAMES = {
     'kadango': 'Copadichromis Borleyi (Copadichromis borleyi)',
     'whitecloud': 'White Cloud Mountain Minnow (Tanichthys albonubes)',
     'comet': 'Comet Goldfish (Carassius auratus)',
+    # lane CP batch 3, real entries looked up 2026-10-19 (stand-ins until then: the site was unreachable)
+    'labeo': 'Labeotropheus trewavasae (Labeotropheus trewavasae)',
+    'auratus': 'Melanochromis Auratus (Melanochromis auratus)',
+    'afra': 'Cynotilapia Afra (Cynotilapia afra)',
+    'livingstonii': 'Nimbochromis livingstonii (Nimbochromis livingstonii)',
 }
 
 # Not in AqAdvisor: counted as a similar animal in size and type (Nathan 2026-10-09), flagged standIn in the json.
@@ -71,12 +76,7 @@ STAND_INS = {
     'firenewt': 'Zebra Loach (Botia striata)',  # 9 cm, bottom
     'firetoad': 'White Cloud Mountain Minnow (Tanichthys albonubes)',  # 4.5 cm, semi-aquatic, cool water
     'hillstream': 'Hillstream Loach (Gastromyzon ctenocephalus)',
-    # lane CP batch 3: AqAdvisor was unreachable (2026-10-16); mbuna of the same size and habit stand in until it is asked again
-    'labeo': 'Pseudotropheus Demasoni (Pseudotropheus demasoni)',
-    'auratus': 'Pseudotropheus Demasoni (Pseudotropheus demasoni)',
-    'afra': 'Pseudotropheus Demasoni (Pseudotropheus demasoni)',
-    'livingstonii': 'Grants Peacock (Aulonocara stuartgranti)',  # a 20 cm Malawi predator
-    'syno': 'Synodontis Petricola (Synodontis petricola)',  # S. njassae is not listed; same genus, size and habit  # Sewellia is not listed; same family, size and habit
+    'syno': 'Synodontis Petricola (Synodontis petricola)',  # S. njassae is not listed (checked 2026-10-19); same genus, lake and habit
 }
 
 # Saltwater (lane C's marine species): AqAdvisor's separate marine calculator, AqAdvisorMarine.php, same form and the
