@@ -324,7 +324,15 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .startbtns button { flex: 1 1 200px; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 10px 12px; text-align: left }
 .startbtns button[hidden] { display: none }
 .startbtns span { font-size: 12px; opacity: .85; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100% }
-#startEx { max-height: none; overflow: visible }
+.startdlg .libgrid { max-height: none; overflow: visible }
+.startdlg { overflow-y: auto; margin: 24px auto auto } /* top-anchored: the tab strip stays put while the panes change height */
+.startdlg .libgrid > p { grid-column: 1 / -1; margin: 0 }
+.starttabs { display: flex; flex-wrap: wrap; gap: 4px; margin: 10px 0 2px; border-bottom: 1px solid var(--line) }
+.starttabs button { padding: 6px 10px; border-bottom-color: transparent; border-radius: 6px 6px 0 0; margin-bottom: -1px }
+.starttabs button[aria-selected="true"] { background: var(--panel); border-color: var(--line); border-bottom-color: var(--panel); font-weight: 600; color: var(--accent) }
+.starttabs button[hidden], .startpane[hidden] { display: none }
+.startbtns #startGuided:not([hidden]) { flex: 1 1 200px }
+@media (max-width: 480px) { .starttabs button { flex: 1 1 40%; text-align: center } .startdlg { padding: 10px } }
 /* opening a tank blocks the page for a few seconds while it builds: the spinner is a transform animation, so the
    compositor keeps it turning while the main thread is busy */
 .busy { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: rgb(0 0 0 / .35); cursor: progress }

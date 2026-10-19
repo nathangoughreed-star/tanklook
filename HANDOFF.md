@@ -37,7 +37,12 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
-## Lane SD: one start chooser (2026-10-19, branch `startchooser`, port 5763)  (lane fills this in)
+## Lane SD: one start chooser (2026-10-19, branch `startchooser`, port 5763; Nathan approved the pictures, shipped)
+- One dialog `#startDlg` replaces `#libDlg` + the old start dialog: **Start from scratch** button, then tabs **On sale now / Bundles / Starter tanks / Open a tank** (saved + "Open a downloaded file…"). Shown at first launch (no restored tank), by **New** (first tab) and **Open…** (Open tab). Handlers: `showChooser` in `ui/panels.ts`; pure logic in `ui/startEntries.ts` (`startDeals`, `onSale`, `visibleTabs`, `pickTab`; `test/startEntries.test.ts`).
+- Split: sale = listing with a higher regular price and a live sale (best saving vs parts first); bundles = every other fresh (<=30 d) catalog-tank deal, cheapest first, `est` rows excluded; each deal appears once. Empty sale / bundles tabs hide. Deals "as of" note shown on both deal tabs. Old 3-card cap removed.
+- Behaviour kept: scratch via New still warns when the tank has animals (cancel keeps the chooser open); at first launch scratch just closes; examples / deals / saved open as before (no new warnings).
+- Guided-start hook: empty `<div id="startGuided" hidden>` beside the scratch button; a wizard lane fills and unhides it (comment in `index.html`, `showChooser`).
+- Known: 19 python-anchor failures in `test/anchorbase.test.ts` also fail on clean main (not this lane).
 
 ## Lane GS: gecko support surfaces (2026-10-19, branch `geckosupport`, port 5743)  (lane fills this in)
 

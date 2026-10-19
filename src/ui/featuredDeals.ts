@@ -1,10 +1,10 @@
 // Featured deals on the start dialog (lane KD): live retailer bundles as one-click starts.
 // A card opens a new scene built from the deal with its bundle price pinned to the demand panel (src/demand/pinned.ts).
 import { DEAL_NOTE, dealGuesses, pctOff } from '../data/deals';
-import { featuredDeals } from '../demand/dealscene';
 import { pinDeal } from '../demand/pinned';
 import type { Deal } from '../data/deals';
 import type { Scene } from '../scene/types';
+import type { DealEntry } from './startEntries';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const FINISH = { black: '#1d1f24', white: '#e8e6e0', oak: '#b58a58' };
@@ -24,10 +24,9 @@ const PICS = import.meta.glob('../data/deal-pics/*.jpg', { eager: true, query: '
 const picUrl = (id: string) => PICS[`../data/deal-pics/${id}.jpg`];
 const usd = (v: number) => '$' + Math.round(v).toLocaleString();
 
-/** Fill `box` (the start dialog's deals slot); its heading (the previous sibling) hides when nothing qualifies. */
-export function renderFeaturedDeals(box: HTMLElement, open: (name: string, scene: Scene) => void) {
-  const list = featuredDeals(Date.now(), 3), head = box.previousElementSibling as HTMLElement | null;
-  box.hidden = !list.length; if (head) head.hidden = !list.length;
+/** Fill `box` (a chooser pane's deal grid) with one-click starts for `list`; a click pins the bundle and opens its scene. */
+export function renderFeaturedDeals(box: HTMLElement, list: DealEntry[], open: (name: string, scene: Scene) => void) {
+  box.hidden = !list.length;
   box.innerHTML = list.map(({ deal: d, savingUsd, scene }, i) => {
     const sc = scene.tanks[0], got = d.includes.map(x => x === 'stand' ? `stand (${sc.stand.finish} ${sc.stand.style})` : x === 'lid' ? `${sc.lid === 'glass' ? 'glass canopy' : sc.lid} lid` : PARTS[x]), no = (['filter', 'heater'] as const).filter(x => !d.includes.includes(x));
     return `<div class="libcard"><button class="libopen" data-deal="${i}" title="Open this setup, then customise it"><b style="white-space:normal">${esc(d.retailer)}: ${esc(d.name)}</b>` +

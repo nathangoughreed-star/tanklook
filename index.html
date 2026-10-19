@@ -29,16 +29,6 @@
     <button id="shareScene" title="Copy a link that opens this exact tank for whoever you send it to (no file, no account)">Copy share link</button>
     <input id="fileIn" type="file" accept=".json,.tank" hidden>
   </div>
-  <dialog id="libDlg" class="libdlg" aria-labelledby="libTitle">
-    <form method="dialog" class="libhead"><h2 id="libTitle">Open a tank</h2><button value="close" aria-label="Close">✕</button></form>
-    <h3 class="libsub">Examples</h3>
-    <p class="hint">Ready-made tanks to look at or start from: each opens as a new, unsaved tank.</p>
-    <div id="exList" class="libgrid"></div>
-    <h3 class="libsub">Saved in this browser</h3>
-    <p class="hint">Saved in this browser only: clearing site data removes them, and Safari clears them after 7 days without a visit. <i>Download</i> keeps a file.</p>
-    <div id="libList" class="libgrid"></div>
-    <div class="btns"><button id="openFile">Open a downloaded file…</button></div>
-  </dialog>
   <dialog id="scapeWarn" class="libdlg warndlg" aria-labelledby="scapeWarnTitle" aria-describedby="scapeWarnText">
     <div class="warnhead"><span class="warnicon" aria-hidden="true">⚠</span><h2 id="scapeWarnTitle">This replaces your current scape</h2></div>
     <p id="scapeWarnText"></p>
@@ -46,16 +36,37 @@
     <div class="btns"><span class="grow"></span><button id="scapeKeep" autofocus>Keep my scape</button><button id="scapeReplace" class="danger">Replace it</button></div>
   </dialog>
   <dialog id="startDlg" class="libdlg startdlg" aria-labelledby="startTitle">
-    <h2 id="startTitle">TankLook</h2>
-    <p class="hint">Plan an aquarium, paludarium or terrarium: tank, ground, plants, animals and light, all to scale.</p>
+    <form method="dialog" class="libhead"><h2 id="startTitle">TankLook</h2><button value="close" aria-label="Close">✕</button></form>
+    <p class="hint">Plan an aquarium, paludarium or terrarium: tank, ground, plants, animals and light, all to scale. New and Open… both land here.</p>
     <div class="startbtns">
-      <button id="startFresh"><b>Start fresh</b><span>An empty tank to fill yourself</span></button>
+      <button id="startFresh"><b>Start from scratch</b><span>An empty tank to fill yourself</span></button>
+      <!-- guided start / wizard hook: a future lane fills #startGuided with its entry button and unhides it (see showChooser in ui/panels.ts) -->
+      <div id="startGuided" hidden></div>
     </div>
-    <h3 class="libsub" hidden>Deals running now: pick one, then make it yours</h3>
-    <div id="startDeals" class="libgrid" hidden></div>
-    <h3 class="libsub">Or start from an example</h3>
-    <div id="startEx" class="libgrid"></div>
-    <p class="hint">Drag (one finger on a phone) to look around, wheel or pinch to zoom; <i>How to use</i> at the top of the panel has the rest. <i>Open…</i> brings the examples back later.</p>
+    <div class="starttabs" role="tablist" id="startTabs">
+      <button role="tab" id="tab-sale" data-tab="sale">On sale now</button>
+      <button role="tab" id="tab-bundles" data-tab="bundles">Bundles</button>
+      <button role="tab" id="tab-starters" data-tab="starters">Starter tanks</button>
+      <button role="tab" id="tab-open" data-tab="open">Open a tank</button>
+    </div>
+    <section class="startpane" role="tabpanel" data-pane="sale" aria-labelledby="tab-sale">
+      <p class="hint">Tank-and-stand bundles with a sale price: pick one, then make it yours. <span class="dealasof"></span></p>
+      <div id="startSale" class="libgrid"></div>
+    </section>
+    <section class="startpane" role="tabpanel" data-pane="bundles" aria-labelledby="tab-bundles">
+      <p class="hint">Tank, stand and kit sold as one package: pick one, then make it yours. <span class="dealasof"></span></p>
+      <div id="startBundles" class="libgrid"></div>
+    </section>
+    <section class="startpane" role="tabpanel" data-pane="starters" aria-labelledby="tab-starters">
+      <p class="hint">Ready-made tanks to look at or start from: each opens as a new, unsaved tank.</p>
+      <div id="startEx" class="libgrid"></div>
+    </section>
+    <section class="startpane" role="tabpanel" data-pane="open" aria-labelledby="tab-open">
+      <p class="hint">Saved in this browser only: clearing site data removes them, and Safari clears them after 7 days without a visit. <i>Download</i> keeps a file.</p>
+      <div id="libList" class="libgrid"></div>
+      <div class="btns"><button id="openFile">Open a downloaded file…</button></div>
+    </section>
+    <p class="hint">Drag (one finger on a phone) to look around, wheel or pinch to zoom; <i>How to use</i> at the top of the panel has the rest.</p>
   </dialog>
   <div id="busy" class="busy" role="status" aria-live="polite" hidden><div class="busybox"><span class="spin" aria-hidden="true"></span><span id="busyText">Opening…</span></div></div>
   <div class="namerow"><input id="sceneName" type="text" maxlength="80" aria-label="Scene name"><span id="saveState" class="hint"></span></div>
