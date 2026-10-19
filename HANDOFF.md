@@ -27,21 +27,12 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 **Current lanes** (coordinator "Lanes coordinator 4", `local_408aa124`):
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
-| GS gecko support surfaces | `../Glass-Box-geckosupport` / `geckosupport` | 5743 | `scene/anchors.ts`, `render/items.ts` surface choice, weight / leaf flag in `species.json` | opened 2026-10-19 |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
-
-## Lane GS: gecko support surfaces (2026-10-19, branch `geckosupport`, port 5743)
-- Reproduction: geckos were NOT on leaves (land species never are: `onLeaves(sp)` = false, `leafUp` 0; no new flag needed, anoles inherit it). The floating had two causes in `render/build.ts`: (1) Shuffle's limb spot is on the control polyline, 6-30 mm off the rendered limb, so `A.rest` found only the floor; (2) `restOn`'s lift-clear-of-rising-ground then raised the gecko by up to its own length when any branch / cork piece was inside its footprint. 30 shuffles of the rainforest: 37 of 65 hardscape geckos lifted > 100 mm, only 8 perched on a branch.
-- Fix: `anchors.restNear(x, depth, y, reach, tol)` (scene/anchors.ts) looks in rings to 40 mm for the solid top nearest the spot's height; used for lizards only (`isLizard`) in `animal()`. Lizard lift capped at 0.12 of its length (`LIZARD_LIFT`). After: 38 of 60 on a branch, floating cases 6/76 (measure noise, gaps 8-27 mm on rock slopes).
-- Leopard gecko: `cling: 'hardscape'` in species.json (floor + hardscape tops; still no glass), so it now basks on ledges and rocks. Affects only that species.
-- Frogs / spiders / snakes are NOT given the snap or the lift cap (their behaviour unchanged); the same limb-spot miss likely floats tree frogs too: candidate follow-up.
-- Tests: test/geckosupport.test.ts (new), lizard.test.ts leopard expectation; test/fixtures/anchor-baseline.json re-recorded (main was already off it for python / tree frog from other lanes).
-- Never use `git stash` in a worktree: the stash list is shared by all worktrees (another lane's stash was popped into this one 2026-10-19).
 
 ## Lane KD: bundle deals (2026-10-19)
 - `src/data/deals.json` (+ `deals.ts`): retailer tank+stand bundles {retailer, gal, tank (catalog id, optional), kit (optional), includes, price{usd, regularUsd}, saleEnds, url, asOf, est}. `src/demand/deals.ts` `dealOffers` = saving vs buying the parts (engine `kit` option generalised with `includes` + `label`, no parallel mechanism).
@@ -269,6 +260,7 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane GS: gecko support surfaces (2026-10-19, branch `geckosupport`, port 5743)
 - Lane AN: anole models (2026-10-19, branch `anoles`, port 5753)
 - Lane SD: one start chooser (2026-10-19, branch `startchooser`, port 5763; Nathan approved the pictures, shipped)
 - Lane KK: demand model (panel hook in `ui/panels.ts` only after KA lands) (2026-10-19, branch `demand`, port 5733)
