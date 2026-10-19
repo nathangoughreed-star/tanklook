@@ -63,7 +63,7 @@ describe('leaf anchors', () => {
     const S = tank(), m = itemMesh(S, S.tank, crypt)!; m.updateMatrixWorld(true);
     const ground = (x: number, d: number) => groundHeight(S, S.tank, x, d), under = underProbe([m], [], ground);
     let spot: { x: number; d: number; u: { y: number; n: number[] } } | null = null;
-    for (let k = 0; k < 400 && !spot; k++) { const x = crypt.x + (Math.random() - 0.5) * 120, d = crypt.depth + (Math.random() - 0.5) * 120, u = under(x, d, 40, 0.3); if (u) spot = { x, d, u }; }
+    for (let k = 0; k < 400 && !spot; k++) { const x = crypt.x + (Math.random() - 0.5) * 120, d = crypt.depth + (Math.random() - 0.5) * 120, u = under(x, d, 40, 0.3); if (u && u.n[1] < -0.29) spot = { x, d, u }; } // an underside, not a steep leaf edge (the probe returns those too: flaky before)
     expect(spot).toBeTruthy();
     expect(spot!.u.n[1]).toBeLessThan(-0.29);
     for (const sp of ['oto', 'cherryshrimp', 'nerite']) {
