@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "py",
+            "args": ["-3.12", "C:/Users/nreed/Glass Box/scripts/git_guard.py"],
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

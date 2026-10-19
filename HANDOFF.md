@@ -11,7 +11,10 @@ is done the coordinator moves it to the archive.
 **Lane rules:** Rules: touch another lane's file only for a one-line hook, and say so in your section. No scene version bump without
 asking Nathan. Shipping: in the worktree `git fetch` + `git merge origin/main`, tsc + tests + browser check, then
 `git push origin HEAD:main` and `git -C "C:/Users/nreed/Glass Box" merge --ff-only origin/main`. HANDOFF.md
-conflicts on merge: keep both sections. Each lane adds its own dated section under "Lane sections (current)" below.
+conflicts on merge: keep both sections. **In the shared folder itself** (C:/Users/nreed/Glass Box, any chat not in a
+worktree) commit and push ONLY with `scripts/ship.sh -m "msg" <your files>` (bash): it commits just those files and
+pushes from a throwaway worktree without touching other chats' edits. A hook (`scripts/git_guard.py`) denies stash,
+--autostash, reset --hard, checkout --, restore, clean -f, commit -a, add -A / add ., push and pull there (2026-10-19). Each lane adds its own dated section under "Lane sections (current)" below.
 **Deploy health:** live build = footer of https://tanklook.com/ ; one-line check: `curl -s https://tanklook.com/assets/$(curl -s https://tanklook.com/ | grep -o 'main-[^"]*\.js' | head -1) | grep -oE 'n:.[0-9]+.,sha' | head -1; git rev-list --count origin/main` (live n vs main; equal once the last deploy lands, ~5 min after a push); Actions state = `curl -s https://api.github.com/repos/nathangoughreed-star/tanklook/actions/runs?per_page=5` (status/conclusion per head_sha; `/deployments` for what shipped). A red deploy usually means one slow/failing test: reproduce with `npx vitest run` in a clean worktree.
 
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_408aa124-ce91-4651-abaf-a221f0ceac82`
@@ -74,10 +77,10 @@ Step 1 SHIPPED 2026-10-19 (Nathan: "Gear models pass ... draw the inferred gear 
 - `src/data/deals.json` (+ `deals.ts`): retailer tank+stand bundles {retailer, gal, tank (catalog id, optional), kit (optional), includes, price{usd, regularUsd}, saleEnds, url, asOf, est}. `src/demand/deals.ts` `dealOffers` = saving vs buying the parts (engine `kit` option generalised with `includes` + `label`, no parallel mechanism).
 - Demand panel (Quick Setup) lists up to 2 fitting deals with "as of <date>, check current price"; `src/demand/pinned.ts` pins the bundle when a scene is started from a deal (`Price the parts instead` unpins).
 - Start dialog "Deals running now" strip (`src/ui/featuredDeals.ts`, slot `#startDeals`): best saving first, hides expired `saleEnds` and rows with asOf older than 30 days, needs a catalog `tank` id. One-click start = `sceneFromDeal` (catalog tank, stand, kit light/lid).
+- Bundle / preset price lost on edit (2026-10-19): `src/demand/dealdrift.ts` fingerprints the parts a bundle includes (tank size, stand, lid, light, hand-picked filter / heater); `pinnedKit(S, i)` drops the bundle price once one differs and the panel says so, with a notice + Undo (`src/ui/priceNotice.ts`). A tank picked on sale in Presets (`pinPreset`) warns the same way on a resize. Undo / redo (`store.loadedBy === 'history'`) keeps the pin, so undoing the change prices the bundle again.
 - Sweep: `prompts/deals-sweep.md` (Sonnet only, 3 agents, one search at a time). Measured batch 2026-10-19: 3 agents, ~233k Sonnet tokens (~77k each), 3 verified rows (all PetSmart; ~78k per row). Amazon/Walmart/Chewy and Tractor Supply/Home Depot/That Pet Place/Big Al's/Aquarium Co-Op gave nothing (search cannot reach live listings; petco.com 403s fetch, Aquarium Co-Op geo-blocked). Better next sweep: PetSmart + Petco pages through the browser tools, not web search.
 - Second sweep 2026-10-19 (user-approved): PetSmart full list, Petco, Walmart/Amazon via browser pane; 3 Sonnet agents, ~241k tokens (69k+68k+105k). Added the 75 gal Marineland HD ($499.99, was $799.99, featured) and the 45 gal Simple Modern (est, out of stock). Petco: no combos (403 on fetch, search shows only separate items). Walmart/Amazon: only a third-party 40 gal frame combo at $1,954 with contradictory specs, left out. Next time: PetSmart product pages are the only reliable source; check Petco by hand in a browser.
 - Weak spots: 45 gal HD Marineland has no matching catalog tank (prices in the panel, not featured); 36 and 60 gal rows map to the closest catalog size, footprints differ a little. The 36 gal Top Fin shows no saving vs the app's parts estimate, so it is not featured.
-
 
 ## Lane CL: animals cling to leaves, undersides and sides of hardscape (2026-10-16..19; main, no branch; Nathan approved the pictures; pushed to main)
 Nathan's rules: things that cling or suck (snails, shrimp, sucker fish: oto, pleco) go on the undersides and sides of
@@ -296,6 +299,7 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane DM: deal match, "a bundle close to your build" as Tank B (2026-10-19; Nathan approved the pictures; pushed to main)
 - Lane TM: tech menu (2026-10-19, branch `techmenu`, port 5823)
 - Lane CS: CI workflow split (2026-10-19, branch `cisplit`, port 5803)
 - Lane KW: start wizard (2026-10-19, branch `wizard`, port 5783)  (lane fills this in)

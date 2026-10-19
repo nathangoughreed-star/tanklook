@@ -182,7 +182,7 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 .stocking b { font-weight: 600; margin-right: 4px }
 .clCue { color: var(--muted); font-size: 11px; margin-top: 3px }
 .clAx { --cl-n: 92px; --cl-v: 74px; position: relative; margin: 6px 0 2px }
-.clT { font-weight: 600; font-size: 11px; color: var(--muted); margin-bottom: 2px }
+.clT { font-weight: 600; font-size: 11px; line-height: 13px; color: var(--muted); margin-bottom: 13px }
 .clR { display: flex; align-items: center; height: 17px; gap: 0 }
 .clN { flex: none; width: var(--cl-n); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px }
 .clV { flex: none; width: var(--cl-v); text-align: right; font-size: 10.5px; color: var(--muted) }
@@ -200,7 +200,7 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 .clSum { font-size: 11px; color: var(--muted); margin-top: 3px }
 .clScale { background: none; height: 12px }
 .clScale b { position: absolute; top: 0; font-size: 9.5px; font-weight: 400; color: var(--muted); transform: translateX(-50%) }
-.clLine { position: absolute; top: 14px; bottom: 14px; width: 0; border-left: 2px solid #e5484d; pointer-events: none }
+.clLine { position: absolute; top: 26px; bottom: 14px; width: 0; border-left: 2px solid #e5484d; pointer-events: none }
 .clLine em { position: absolute; top: -13px; left: 0; transform: translateX(-50%); font: 600 10px/1 system-ui, sans-serif; color: #e5484d; font-style: normal; white-space: nowrap }
 .climate b { font-weight: 600; margin-right: 4px }
 .climate .hint { display: block }
@@ -541,3 +541,8 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .ttot { display: flex; justify-content: space-between; gap: 6px; font-size: 12px; font-weight: 600; margin: 6px 0 2px }
 
 #stkList { margin: 2px 0 6px; font-size: 11.5px; color: var(--muted) } #stkList summary { cursor: pointer } #stkList ul { margin: 4px 0 0 16px; padding: 0 } #stkList li.dim { opacity: .7 } #stkOut { font-weight: 600 }
+/* an edit that loses a bundle or sale price (src/ui/priceNotice.ts) */
+.pricenote { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 90; display: flex; align-items: center; gap: 10px; max-width: min(560px, calc(100vw - 32px)); padding: 10px 12px; border: 1px solid var(--warn); border-left-width: 4px; border-radius: 8px; background: var(--panel); color: var(--ink); font-size: 13px; box-shadow: 0 4px 16px rgb(0 0 0 / .18) }
+.pricenote[hidden] { display: none }
+.pricenote span { flex: 1 }
+.pricenote button { flex: none }

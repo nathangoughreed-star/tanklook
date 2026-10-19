@@ -32,13 +32,15 @@ export function startDeals(now = Date.now(), deals: Deal[] = DEALS): { sale: Dea
   return { sale, bundles };
 }
 
-/** Optional orders for the deal tabs: '' keeps the tab's own (sale: best saving; bundles: cheapest), size = rated gallons up,
- *  cost = price up, pct = share saved against buying the parts, most first. */
-export type DealSort = '' | 'size' | 'cost' | 'pct';
+/** Deal-tab orders, each named by what it sorts on (Nathan 2026-10-19: no "Best first" that means different things per
+ *  tab). usd = dollars saved against buying the parts, most first; pct = that saving as a share of the parts, most first;
+ *  cost = price, lowest first; size = rated gallons, smallest first. Ties go to the lower price. */
+export type DealSort = 'usd' | 'pct' | 'cost' | 'size';
+/** Each tab's starting order: sale by dollars saved, bundles by price. */
+export const DEFAULT_SORT: Record<'sale' | 'bundles', DealSort> = { sale: 'usd', bundles: 'cost' };
 export const pctSaved = (e: DealEntry) => e.savingUsd > 0 ? e.savingUsd / (e.deal.price.usd + e.savingUsd) : 0;
 export function sortDeals(list: DealEntry[], by: DealSort): DealEntry[] {
-  if (!by) return list;
-  const key = (e: DealEntry) => by === 'size' ? e.deal.gal : by === 'cost' ? e.deal.price.usd : -pctSaved(e);
+  const key = (e: DealEntry) => by === 'size' ? e.deal.gal : by === 'cost' ? e.deal.price.usd : by === 'usd' ? -e.savingUsd : -pctSaved(e);
   return [...list].sort((a, b) => key(a) - key(b) || a.deal.price.usd - b.deal.price.usd);
 }
 /** Tabs to show, in order: sale and bundles only when they have something; starters and open always. */

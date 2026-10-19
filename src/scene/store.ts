@@ -53,6 +53,8 @@ export class Store {
   private listeners = new Set<Listener>();
   /** The view whose camera moved last (UI state): re-locking copies its camera to the other view. */
   lastCam = 0;
+  /** What the last 'load' was: a new scene (open, new, a start) or undo / redo stepping through history. */
+  loadedBy: 'replace' | 'history' = 'replace';
 
   constructor(scene: Scene = emptyScene()) {
     this.scene = scene;
@@ -148,6 +150,13 @@ export class Store {
     if (this.split) return;
     this.editOn = [false, true]; // before update(), so listeners see the new targets
     this.update(s => { s.tanks.push(structuredClone(s.tanks[0])); s.active = 1; });
+  }
+
+  /** Split with Tank B built from tank A by `make` (lane DM: A with a bundle's gear swapped in), in one undo step. */
+  splitTankWith(make: (a: TankSetup) => TankSetup) {
+    if (this.split) return;
+    this.editOn = [false, true];
+    this.update(s => { s.tanks.push(make(structuredClone(s.tanks[0]))); s.active = 1; });
   }
 
   /** Close tank i; the other one stays as the single tank. Undoable. */
@@ -279,7 +288,7 @@ export class Store {
     if (this.selId != null && !this.tank.fish.some(f => f.id === this.selId)) this.selId = this.tank.fish.at(-1)?.id ?? null;
     if (this.selItem != null && !this.tank.items.some(it => it.id === this.selItem)) this.selItem = null;
     this.pruneExtras();
-    this.emit('load');
+    this.loadedBy = 'history'; this.emit('load');
   }
 
   /** Untick every view (the panel was closed). */
@@ -300,7 +309,7 @@ export class Store {
     this.scene = scene;
     this.editOn = [0, 1].map(k => k === scene.active);
     this.selId = null; this.selItem = null; this.extraFish = []; this.extraItems = []; this.selPatches = [];
-    this.emit('load');
+    this.loadedBy = 'replace'; this.emit('load');
   }
 
   // ---------- Persistence ----------

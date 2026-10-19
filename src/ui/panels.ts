@@ -5,7 +5,7 @@ import { fitToLimits, hasLimits } from '../demand/fit';
 import { attachTechMenu } from './techMenu';
 import { unheatedC } from '../scene/tech';
 import { renderFeaturedDeals } from './featuredDeals';
-import { startDeals, visibleTabs, pickTab, sortDeals, type DealSort, type StartTab } from './startEntries';
+import { startDeals, visibleTabs, pickTab, sortDeals, DEFAULT_SORT, type DealSort, type StartTab } from './startEntries';
 import { DEALS_AS_OF, DEAL_NOTE, NOT_SPONSORED } from '../data/deals';
 import { LEVELS, onPerf, perf, setAuto, setLevel } from '../render/perf';
 import { lifeStages } from '../data/lifestages';
@@ -26,7 +26,8 @@ import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixt
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene } from '../scene/defaults';
-import { BANDS, TANK_MODELS, dimsInches, modelOfVariant, tankFromModel, type TankModel, type TankVariant } from '../data/tanks';
+import { BANDS, TANK_MODELS, dimsInches, modelOfVariant, tankFromModel, tankSaleFor, type TankModel, type TankVariant } from '../data/tanks';
+import { pinPreset } from '../demand/pinned';
 import { COMPS, DEFAULT_DENS, STYLE_GROUPS, STYLE_KIND, isLandStyle, EPIPHYTES, KINDS, perch, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
 import { handEdits, randomStyle, regenerate, shuffleHard } from '../scene/starter';
 import { styleGround } from '../scene/scapeground';
@@ -226,7 +227,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // then tabs On sale now / Bundles / Starter tanks / Open a tank. Shown on first launch when no tank was restored from
   // this browser (Nathan 2026-10-14; Esc keeps the empty tank), and by New and Open…. Empty sale / bundle tabs hide.
   const startDlg = $<HTMLDialogElement>('startDlg');
-  let firstLaunch = false, dealSort: DealSort = '';
+  let firstLaunch = false;
+  const dealSort = { ...DEFAULT_SORT }; // each deal tab keeps its own order
   $('startEx').onclick = e => openExample(e, startDlg);
   $('startFresh').onclick = () => { // at first launch the tank on screen is already a fresh one
     if (firstLaunch) startDlg.close(); else if (newEmptyTank()) startDlg.close();
@@ -242,9 +244,12 @@ export function attachPanels(store: Store, viewer: Viewer) {
     const { sale, bundles } = startDeals(), shown = visibleTabs({ sale: sale.length, bundles: bundles.length });
     for (const b of startDlg.querySelectorAll<HTMLElement>('[data-tab]')) b.hidden = !shown.includes(b.dataset.tab as StartTab);
     for (const n of startDlg.querySelectorAll('.dealasof')) n.textContent = `Prices as of ${DEALS_AS_OF}; ${DEAL_NOTE.replace(/^as of the date shown; /, '')}. ${NOT_SPONSORED}.`;
-    // optional sorts (size / cost / % saved), one choice for both deal tabs
-    const draw = () => { renderFeaturedDeals($('startSale'), sortDeals(sale, dealSort), openDeal); renderFeaturedDeals($('startBundles'), sortDeals(bundles, dealSort), openDeal); };
-    for (const s of startDlg.querySelectorAll<HTMLSelectElement>('.dealsort')) { s.value = dealSort; s.onchange = () => { dealSort = s.value as DealSort; for (const o of startDlg.querySelectorAll<HTMLSelectElement>('.dealsort')) o.value = dealSort; draw(); }; }
+    // each deal tab sorts on its own; the labels name the key and direction ($ saved, % saved, price, size)
+    const draw = () => { renderFeaturedDeals($('startSale'), sortDeals(sale, dealSort.sale), openDeal); renderFeaturedDeals($('startBundles'), sortDeals(bundles, dealSort.bundles), openDeal); };
+    for (const s of startDlg.querySelectorAll<HTMLSelectElement>('.dealsort')) {
+      const tab = s.closest<HTMLElement>('[data-pane]')!.dataset.pane as keyof typeof dealSort;
+      s.value = dealSort[tab]; s.onchange = () => { dealSort[tab] = s.value as DealSort; draw(); };
+    }
     draw();
     renderExamples(); renderLib();
     setTab(pickTab(tab, shown));
@@ -363,7 +368,13 @@ Cancel, then change the name, to keep both.`)) return;
       if (v && /stand|ensemble/i.test(v.line ?? '')) { s.stand.show = true; s.stand.need = undefined; }
       else if (s.stand.need !== 'added') { s.stand.show = false; s.stand.need = 'ask'; }
     };
-    const apply = (m: TankModel, v?: TankVariant) => { const mm = v ? modelOfVariant(m, v) : m; setTank(() => tankFromModel(mm), undefined, mm.glassMm, standFor(v)); dlg.close(); };
+    // a size picked on sale is remembered, so resizing it later says the sale price no longer applies (demandPanel)
+    const saleOf = (m: TankModel, v?: TankVariant) => {
+      if (v) return onSale(v) ? { product: `${v.brand}${v.line ? ' ' + v.line : ''}`, retailer: v.retailer ?? 'a retailer', usd: v.price_usd! } : undefined;
+      const t = tankSaleFor(m.ratedGal, m.shape, Date.now(), undefined, undefined, tankFromModel(m));
+      return t && { product: t.product, retailer: t.retailer, usd: t.usd };
+    };
+    const apply = (m: TankModel, v?: TankVariant) => { const mm = v ? modelOfVariant(m, v) : m; setTank(() => tankFromModel(mm), undefined, mm.glassMm, standFor(v)); pinPreset(store.scene.active, store.tank, saleOf(m, v)); dlg.close(); };
     const draw = () => {
       const needle = q.value.trim().toLowerCase();
       const hit = (m: TankModel) => !needle || [m.name, m.shape, ...(m.tags ?? []), ...(m.variants ?? []).flatMap(v => [v.brand, v.line ?? ''])].join(' ').toLowerCase().includes(needle);

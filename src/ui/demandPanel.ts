@@ -6,8 +6,11 @@ import { swapsFor, type Bar } from '../demand/swaps';
 import type { Demand } from '../demand';
 import type { Store } from '../scene/store';
 import { dealOffers } from '../demand/deals';
-import { onSceneLoad, pinnedDeal, pinnedKit, unpinDeal } from '../demand/pinned';
+import { dealDrift, onSceneLoad, pinnedDeal, pinnedKit, pinnedPreset, presetDrift, unpinDeal } from '../demand/pinned';
+import { partList } from '../demand/dealdrift';
+import { showPriceNotice } from './priceNotice';
 import { DEAL_NOTE, NOT_SPONSORED, dealGuesses, savingLine } from '../data/deals';
+import { renderDealMatch } from './dealMatch';
 
 const KEY = 'tanklook.demand';
 const DOMAIN_LABEL: [keyof UserProfile['skill'], string][] = [['fundamentals', 'Keeping a tank at all'], ['fish', 'Freshwater fish'], ['planted', 'Planted tanks'], ['salt', 'Saltwater'], ['terrarium', 'Terrariums']];
@@ -49,7 +52,7 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
 
   function recompute() {
     const S = store.tank;
-    const kit = pinnedKit();
+    const kit = pinnedKit(S, store.scene.active);
     D = demandOf(S, P, { kit });
     // the same tank without its animals: what keeping just the plants (or the bare tank) costs, so adding animals reads as a jump from it
     B = S.fish.length ? demandOf({ ...S, fish: [] }, P, { kit }) : null;
@@ -63,7 +66,23 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
     render();
   }
   const soon = () => { clearTimeout(timer); timer = window.setTimeout(recompute, 150); };
-  store.subscribe(kind => { if (kind === 'load') onSceneLoad(); if (kind === 'scene' || kind === 'load') soon(); });
+  // an edit to a part the starting price covers: say once that the bundle (or the preset's sale) no longer applies; undo restores it
+  let lost = '', warned: object | null = null;
+  const checkStartPrice = (quiet = false) => {
+    const S = store.tank, i = store.scene.active, pin = pinnedDeal(S), drift = dealDrift(S, i), key = drift.join();
+    if (pin && key && !lost && !quiet) showPriceNotice(`You changed the ${esc(partList(drift))}, so this is no longer the ${esc(pin.retailer + ' ' + pin.name)} bundle: the bundle discount (${usd(pin.price.usd)}) no longer applies and each part is priced on its own.`, () => store.undo());
+    lost = key;
+    const ps = pinnedPreset(), pd = presetDrift(S, i);
+    if (ps && pd && warned !== ps && !quiet) showPriceNotice(`You changed the tank size, so this is no longer the ${esc(ps.product)} on sale at ${esc(ps.retailer)} (${usd(ps.usd)}): that price no longer applies.`, () => store.undo());
+    if (pd) warned = ps; else if (warned === ps) warned = null;
+  };
+  store.subscribe(kind => {
+    // undo / redo keeps the starting price and says nothing: undoing the change that broke a bundle prices the bundle again
+    if (kind === 'load' && store.loadedBy === 'history') checkStartPrice(true);
+    else if (kind === 'load') { onSceneLoad(store.scene.active, store.tank); lost = ''; warned = null; }
+    if (kind === 'scene') checkStartPrice();
+    if (kind === 'scene' || kind === 'load') soon();
+  });
 
   function render() {
     if (!D) return;
@@ -81,9 +100,12 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
 
   /** Retailer tank+stand bundles that fit this build, with what each saves against buying the parts (data: src/data/deals.json). */
   function renderDeals() {
-    const el = q('.dmdeals'), pin = pinnedDeal(), offers = dealOffers(store.tank, P).filter(o => o.savingUsd > 1).slice(0, 2);
-    el.innerHTML = (pin ? `<div>Priced as the ${esc(pin.retailer + ' ' + pin.name)} bundle (${usd(pin.price.usd)}, ${esc(pin.asOf)}). <a href="${esc(pin.url)}" target="_blank" rel="noopener">See it at ${esc(pin.retailer)} &#8599;</a> &middot; <a href="#" class="dmunpin">Price the parts instead</a>${dealGuesses(pin).length ? `<br><i>Guessed: ${esc(dealGuesses(pin).join('; '))}</i>` : ''}</div>` : '') + offers.filter(o => o.deal.id !== pin?.id).map(o => `<div>Deal: <a href="${esc(o.deal.url)}" target="_blank" rel="noopener">${esc(o.deal.retailer + ' ' + o.deal.name)}</a> ${usd(o.deal.price.usd)}${o.deal.price.regularUsd ? ` (was ${usd(o.deal.price.regularUsd)})` : ''}. ${esc(savingLine(o.deal, o.savingUsd))}${o.deal.est ? ' (estimate)' : ''}${o.deal.saleEnds ? `, sale ends ${esc(o.deal.saleEnds)}` : ''}; ${esc(o.deal.asOf)}</div>`).join('') + (offers.length || pin ? `<div style="opacity:.7">Prices ${esc(DEAL_NOTE)}. ${esc(NOT_SPONSORED)}.</div>` : '');
-    el.querySelector<HTMLAnchorElement>('.dmunpin')?.addEventListener('click', e => { e.preventDefault(); unpinDeal(); recompute(); });
+    const el = q('.dmdeals'), pin = pinnedDeal(store.tank), drift = pin ? dealDrift(store.tank, store.scene.active) : [];
+    // priced as a bundle: another deal only counts by what it saves against that bundle (D), not against the parts (lane DM)
+    const vsPin = !!pin && !drift.length, offers = dealOffers(store.tank, P).map(o => (vsPin ? { ...o, savingUsd: D!.totals.setupUsd - o.withDealUsd } : o)).filter(o => o.savingUsd > 1).slice(0, 2);
+    el.innerHTML = (pin && drift.length ? `<div style="color:var(--warn)">Not priced as the ${esc(pin.retailer + ' ' + pin.name)} bundle: you changed its ${esc(partList(drift))}. Put ${drift.length > 1 ? 'them' : 'it'} back (Undo) to price the bundle again.</div>` : pin ? `<div>Priced as the ${esc(pin.retailer + ' ' + pin.name)} bundle (${usd(pin.price.usd)}, ${esc(pin.asOf)}). <a href="${esc(pin.url)}" target="_blank" rel="noopener">See it at ${esc(pin.retailer)} &#8599;</a> &middot; <a href="#" class="dmunpin">Price the parts instead</a>${dealGuesses(pin).length ? `<br><i>Guessed: ${esc(dealGuesses(pin).join('; '))}</i>` : ''}</div>` : '') + offers.filter(o => o.deal.id !== pin?.id).map(o => `<div>Deal: <a href="${esc(o.deal.url)}" target="_blank" rel="noopener">${esc(o.deal.retailer + ' ' + o.deal.name)}</a> ${usd(o.deal.price.usd)}${o.deal.price.regularUsd ? ` (was ${usd(o.deal.price.regularUsd)})` : ''}. ${esc(vsPin ? `About ${usd(o.savingUsd)} less than the ${pin!.retailer} bundle` : savingLine(o.deal, o.savingUsd))}${o.deal.est ? ' (estimate)' : ''}${o.deal.saleEnds ? `, sale ends ${esc(o.deal.saleEnds)}` : ''}; ${esc(o.deal.asOf)}</div>`).join('') + (offers.length || pin ? `<div style="opacity:.7">Prices ${esc(DEAL_NOTE)}. ${esc(NOT_SPONSORED)}.</div>` : '');
+    el.querySelector<HTMLAnchorElement>('.dmunpin')?.addEventListener('click', e => { e.preventDefault(); unpinDeal(store.tank); recompute(); });
+    renderDealMatch(el, store, P, recompute);
   }
 
   function row(b: typeof BARS[number], L: LimitState) {
