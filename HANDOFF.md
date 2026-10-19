@@ -53,9 +53,10 @@ A Tech section where the owner picks the tech level, Walstad to high-tech plante
 ## Lane DS: one expected-cost number (2026-10-19, branch `expectedcost`, port 5793)  (lane fills this in)
 
 ## Lane CS: CI workflow split (2026-10-19, branch `cisplit`, port 5803)
-- `.github/workflows/deploy.yml` is two jobs with job-level concurrency (no workflow-level group): `test` (npm ci, npm test; group `test-<ref>`, cancel-in-progress) and `deploy` (needs test; build, upload-pages-artifact, deploy-pages; group `pages`, cancel-in-progress **false**).
-- Why: the old single job with a workflow-level cancel-in-progress cancelled each run in turn during push bursts (live sat at 771 while main was 793). Now a newer push only cancels older *tests*; a running deploy always finishes; a waiting deploy is replaced by the newer waiting one, so the last commit that passes tests is always the last one deployed. The test gate stays (deploy needs test).
-- Burst test 2026-10-19: two pushes in quick succession (c1e8dac, then this line).
+- `.github/workflows/deploy.yml` is two jobs with job-level concurrency (no workflow-level group): `test` (npm ci, npm test; group `test-<ref>`, cancel-in-progress **false**) and `deploy` (needs test; build, upload-pages-artifact, deploy-pages; group `pages`, cancel-in-progress **false**).
+- Why: the old single job with a workflow-level cancel-in-progress cancelled each run in turn during push bursts (live sat at 771 while main was 793). Now nothing running is cancelled; in each group a newer waiting job replaces the older waiting one, so intermediate pushes are skipped, runs stay in push order, and the latest commit that passes tests is always the last one deployed. Tests are not cancelled mid-run because pushes arrive every 1-4 min and a CI test takes ~3 min: cancelling would starve deploys (seen in the first burst test). The test gate stays (deploy needs test).
+- Burst test 2026-10-19: pushed c1e8dac then bc57788 ~20 s apart; bc57788's test job cancelled c1e8dac's running test (deploy skipped) and ran itself. Both stayed red only because of the anchorbase failures below.
+- Step 0 (red main since 3ea1e44): `test/anchorbase.test.ts` failed 10 cases after 1d084c0 (shrimp slope-lift cap in render/build.ts). Verified by reverting it (111/111 pass) and diffing the re-record: only cleanershrimp/cherryshrimp moved, straight down (max 42.7 mm), as that commit intends. Baseline re-recorded in e2082bc.
 
 ## Lane AQ: AqAdvisor ids + Malawi pool (2026-10-19, branch `aqids`, port 5813)  (lane fills this in)
 
