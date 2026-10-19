@@ -17,7 +17,8 @@ import { itemLights, tankSummary } from '../scene/lightcheck';
 import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, mountOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeLayout, tubeOf, TUBE_SP_MAX, bestPos, ledBarDepth, posMax, wattsOf, type Fixture } from '../scene/lightout';
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
-import { emptyScene, TANK_PRESETS } from '../scene/defaults';
+import { emptyScene } from '../scene/defaults';
+import { tankChoices, tankFromModel } from '../data/tanks';
 import { COMPS, DEFAULT_DENS, STYLE_GROUPS, STYLE_KIND, isLandStyle, EPIPHYTES, KINDS, perch, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
 import { handEdits, randomStyle, regenerate, shuffleHard } from '../scene/starter';
 import { styleGround } from '../scene/scapeground';
@@ -310,19 +311,24 @@ Cancel, then change the name, to keep both.`)) return;
   };
 
   // ---------- Tank ----------
-  const presetOptions = '<option value="">Presets…</option>' + TANK_PRESETS.map((p, i) => `<option value="${i}">${esc(p[0])}</option>`).join('');
+  // the tank catalog as a grouped dropdown (lane KA); tankChoices() is also what the guided-start wizard calls
+  const tankPicks = tankChoices();
+  const presetOptions = '<option value="">Presets…</option>' + [...new Set(tankPicks.map(c => c.group))].map(g =>
+    `<optgroup label="${esc(g)}">${tankPicks.filter(c => c.group === g).map(c => `<option value="${esc(c.value)}">${esc(c.label)}</option>`).join('')}</optgroup>`).join('');
   {
     const s = $<HTMLSelectElement>('presetA'); s.innerHTML = presetOptions;
     s.onchange = () => {
-      if (s.value === '') return;
-      const p = TANK_PRESETS[+s.value]; s.value = '';
-      setTank(T => ({ ...T, L: p[1] * IN, H: p[2] * IN, D: p[3] * IN })); // keeps the shape (round: D follows L)
+      const pick = tankPicks.find(c => c.value === s.value); s.value = '';
+      if (!pick) return;
+      const m = pick.model, t = tankFromModel(m); // interior from the outer size on the label; the glass matches so the outside does too
+      setTank(() => t, undefined, m.glassMm);
     };
   }
   /** Resize / reshape each edited tank from its own current size (so ticking both changes only what was set). */
-  function setTank(next: (T: Tank) => Tank, coalesce?: string) {
+  function setTank(next: (T: Tank) => Tank, coalesce?: string, glass?: number) {
     store.edit(s => {
       const T = next(s.tank);
+      if (glass != null) s.render.glass = glass;
       rescaleTank(s, T); // keep fish at the same relative spot (and apply the shape's rules, e.g. round D = L)
       // round tanks and bowls shape their terrain on rings, a pie slice on arcs, any other on a rectangular grid: resample into the new kind
       const te = s.terrain;
