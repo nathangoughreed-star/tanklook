@@ -138,5 +138,7 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
   }
   limits(); situation();
   recompute();
-  return { recompute, profile: () => P, state: () => (D && C ? { demand: D, cost: C, limits: limitState(D, C, P) } : null) };
+  /** Set some limits from outside (the care slider's shortcut): saved, the form and the bars follow. */
+  const setLimits = (l: Partial<UserProfile['limits']>) => { P.limits = { ...P.limits, ...l }; save(); limits(); render(); };
+  return { recompute, setLimits, profile: () => P, state: () => (D && C ? { demand: D, cost: C, limits: limitState(D, C, P) } : null) };
 }

@@ -1,6 +1,7 @@
 // Sidebar wiring. Inputs write through store.update(); one sync() pulls every control back from the scene,
 // so undo/redo, file open and pointer drags all refresh the panels the same way.
 import { attachDemandPanel } from './demandPanel';
+import { fitToLimits, hasLimits } from '../demand/fit';
 import { renderFeaturedDeals } from './featuredDeals';
 import { LEVELS, onPerf, perf, setAuto, setLevel } from '../render/perf';
 import { lifeStages } from '../data/lifestages';
@@ -66,6 +67,7 @@ export const scapeSec = (k: ItemKind): ScapeSec => k === 'plant' || k === 'coral
 export const growthWord = (g: number) => `${Math.round(g * 100)} % ${g < 0.1 ? 'just planted' : g < 0.35 ? 'growing in' : g < 0.65 ? 'established' : g < 0.9 ? 'grown' : 'overgrown'}`;
 
 export function attachPanels(store: Store, viewer: Viewer) {
+  let demand: ReturnType<typeof attachDemandPanel> | undefined; // lane KK: the demand panel (limits and profile)
   const G = () => store.scene;   // the whole scene: name, units, the tanks
   const S = () => store.tank;    // the tank the panel shows; edits go to every view with "Edit" ticked (store.edit)
   const fmt = (mm: number) => fmtLen(mm, G().units);
@@ -1144,10 +1146,15 @@ Cancel, then change the name, to keep both.`)) return;
     if (!await okToReplace('plant', revert)) return;
     store.selectItem(null); fishId0 = store.nextId();
     store.edit(s => { edit(s); regenerate(s, 'plant', fishId0); });
-    status(msg + ' Ctrl+Z brings the previous plants back.');
+    const fitNote = fitLimits();
+    status(msg + fitNote + ' Ctrl+Z brings the previous plants back.');
   };
   tierEl.onchange = () => {
     const fit = TIERS[+tierEl.value];
+    if (fit) { // lane KK: the care tier is also a shortcut that sets the time, upkeep and risk limits (money stays yours)
+      const L = { low: { upkeep: 'low', minPerWeek: 30, risk: 'safe' }, medium: { upkeep: 'low', minPerWeek: 60, risk: 'moderate' }, high: { upkeep: 'flex', minPerWeek: 120, risk: 'any' } }[fit] as { upkeep: 'low' | 'flex'; minPerWeek: number; risk: 'safe' | 'moderate' | 'any' };
+      demand?.setLimits(L);
+    }
     refit(() => showTier(S()), s => { if (!fit) delete s.layout.fit; else { s.layout.fit = fit; s.grow.feed = TIER_FEED[fit]; s.layout.careSet = true; } }, fit ? `Plants redrawn for ${TIER_NAME[TIERS.indexOf(fit)].toLowerCase()} light and care.` : 'Plants redrawn: any kind.');
   };
   // Quick aquascape setup (Nathan 2026-10-15): one Shuffle for the whole tank. The ticks say what it redraws; untick a part
@@ -1155,6 +1162,17 @@ Cancel, then change the name, to keep both.`)) return;
   // draws the style too. Seeds pin what is locked: `tSeed` the substrate type, `gSeed` / `gFoc` its shape, `plantSeed` the
   // plants, `animalSeed` the animals. The Hardscape and Plants menus are for tweaking the pieces by hand afterwards.
   const tick = (id: string) => $<HTMLInputElement>(id).checked;
+  /** Lane KK phase 5: a build over the user's limits is swapped toward cheaper / easier choices (the panel's swap suggestions),
+   *  in the same undo step as the redraw. Returns a note for the status line. One tank only (split view with both edited: skipped). */
+  const fitLimits = (): string => {
+    const P = demand?.profile();
+    if (!P || !hasLimits(P) || store.targets.length !== 1) return '';
+    const r = fitToLimits(S(), P), nm: Record<string, string> = { setup: 'set-up money', upkeep: 'upkeep', minutes: 'time', risk: 'risk' };
+    if (r.swaps.length) store.edit(s => { s.fish = r.scene.fish; s.items = r.scene.items; }, { history: false });
+    const sw = r.swaps.slice(0, 3).map(x => `${x.from} for ${x.to}`).join(', ') + (r.swaps.length > 3 ? ` and ${r.swaps.length - 3} more` : '');
+    const why = (b: string) => b === 'setup' ? `the tank, stand, light and filter alone cost about $${Math.round(r.floor.setup).toLocaleString()}` : b === 'minutes' ? `water changes and upkeep alone take about ${Math.round(r.floor.minutes)} min` : b === 'upkeep' ? `power, water and filter parts alone come to about $${Math.round(r.floor.upkeep)} a month` : 'nothing easier suits this style';
+    return (r.swaps.length ? ` Swapped ${sw} to stay within your limits.` : '') + r.left.map(b => ` Still over your ${nm[b]} limit: ${why(b)}.`).join('');
+  };
   $('layoutShuffle').onclick = async () => {
     const t = tick('shufType'), g = tick('shufShape'), h = tick('shufHard'), p = tick('shufPlant'), a = tick('shufAnimal');
     if (!(t || g || h || p || a)) { status('Tick at least one part to shuffle.'); return; }
@@ -1185,8 +1203,9 @@ Cancel, then change the name, to keep both.`)) return;
       if (a) { L.animalSeed = seed; if ((L.dens ?? DEFAULT_DENS).animal > 0) regenerate(s, 'animal', fishId0); }
     });
     dropGoneFish();
+    const fitNote = fitLimits();
     const names = [t && 'substrate type', g && 'substrate shape', h && 'hardscape', p && 'plants', a && stocked && 'animals'].filter(Boolean).join(', ');
-    status(`${anyStyle ? `New style (${LAYOUTS[S().layout.id].label}) and ` : 'New '}${names}${a && !stocked ? '; Stocking is None, so no animals' : ''}${t && g && h && p && a ? '' : '; the unticked parts stayed'}. Ctrl+Z brings the previous ones back.`);
+    status(`${anyStyle ? `New style (${LAYOUTS[S().layout.id].label}) and ` : 'New '}${names}${a && !stocked ? '; Stocking is None, so no animals' : ''}${t && g && h && p && a ? '' : '; the unticked parts stayed'}.${fitNote} Ctrl+Z brings the previous ones back.`);
   };
   // Density sliders (lane SD): one in each of Hardscape, Plants and Animals, continuous from one piece (one animal) to
   // far too much (Nathan 2026-10-15). Dragging only names the level; the layer is redrawn once, on release (a slider
@@ -2117,7 +2136,7 @@ Cancel, then change the name, to keep both.`)) return;
   // flush a pending autosave when the tab closes or reloads
   addEventListener('pagehide', () => { if (saveTimer) { clearTimeout(saveTimer); store.saveLocal(); } });
 
-  attachDemandPanel(store, $('demandPanel')); // lane KK: the three demand readouts at the top of Quick Setup
+  demand = attachDemandPanel(store, $('demandPanel')); // lane KK: the three demand readouts at the top of Quick Setup
   renderResults();
   sync();
   return { status, showStart, openShared };

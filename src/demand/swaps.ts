@@ -4,6 +4,7 @@
 import { CARE } from '../data/care';
 import { SPECIES, getSpecies } from '../data/species';
 import { whyAnimal } from '../scene/animalfit';
+import { isCarpet, isFloat } from '../art/plants';
 import { LIBRARY } from '../scene/items';
 import { NEEDS, isCoralNeed, isLand } from '../scene/lightneeds';
 import { volume } from '../scene/physics';
@@ -17,6 +18,7 @@ export interface Swap { key: string; from: string; to: string; toId: string; kin
 
 const totals = (S: TankSetup, P: UserProfile, o: DemandOpts) => { const t = demandOf(S, P, o).totals; return { setup: t.setupUsd, upkeep: t.upkeepUsdMo, minutes: t.minPerWeek, risk: t.risk }; };
 const diff = (a: Delta, b: Delta): Delta => ({ setup: a.setup - b.setup, upkeep: a.upkeep - b.upkeep, minutes: a.minutes - b.minutes, risk: a.risk - b.risk });
+const succulent = (v: string) => (NEEDS[v] as { note?: string } | undefined)?.note === 'succulent';
 const norm: Delta = { setup: 100, upkeep: 10, minutes: 10, risk: 1 };
 
 /** Swaps for one driver row (its key from Demand.items), best first for `bar`. At most `n`; an empty list when nothing helps. */
@@ -45,6 +47,7 @@ export function swapsFor(S: TankSetup, P: UserProfile, key: string, bar: Bar, op
     for (const [v, nd] of Object.entries(NEEDS)) {
       if (v === id || LIBRARY[v]?.kind !== lv.kind || isLand(nd) !== isLand(need) || isCoralNeed(nd) !== isCoralNeed(need)) continue;
       if (plantDifficulty(v) > plantDifficulty(id)) continue;
+      if (isFloat(v) !== isFloat(id) || isCarpet(v) !== isCarpet(id) || succulent(v) !== succulent(id)) continue; // a floater stays a floater, a carpet a carpet
       const d = diff(totals({ ...S, items: S.items.map(i => (i.variant === id ? { ...i, variant: v } : i)) }, P, opts), base);
       if (d[bar] < -1e-6) out.push({ key, from: lv.label, to: LIBRARY[v].label, toId: v, kind: 'plant', delta: d });
     }
@@ -52,4 +55,11 @@ export function swapsFor(S: TankSetup, P: UserProfile, key: string, bar: Bar, op
   // best for the chosen bar, without making the other bars much worse (each bar's change in its own "noticeable" units)
   const worse = (d: Delta) => (['setup', 'upkeep', 'minutes', 'risk'] as Bar[]).reduce((s, k) => s + (k === bar ? 0 : Math.max(0, d[k]) / norm[k]), 0);
   return out.sort((a, b) => a.delta[bar] / norm[bar] + worse(a.delta) - (b.delta[bar] / norm[bar] + worse(b.delta))).slice(0, n);
+}
+
+/** The scene after a swap (pure): every animal of the species, or every plant of the kind, replaced. 'remove' drops them. */
+export function applySwap(S: TankSetup, s: Swap): TankSetup {
+  const [kind, id] = s.key.split(':');
+  if (kind === 'animal') return { ...S, fish: s.kind === 'remove' ? S.fish.filter(f => f.species !== id) : S.fish.map(f => (f.species === id ? { ...f, species: s.toId, tl: undefined } : f)) };
+  return { ...S, items: s.kind === 'remove' ? S.items.filter(i => i.variant !== id) : S.items.map(i => (i.variant === id ? { ...i, variant: s.toId } : i)) };
 }

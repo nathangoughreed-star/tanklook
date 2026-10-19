@@ -84,7 +84,7 @@ export function limitState(D: Demand, C: CostResult, P: UserProfile): LimitState
 export function drivers(D: Demand, C: CostResult, bar: 'setup' | 'upkeep' | 'minutes' | 'risk', top = 8) {
   const rows = D.items.map(c => ({
     key: c.key, label: c.label, n: c.n ?? 1,
-    mean: bar === 'risk' ? c.risk : (c[bar === 'upkeep' ? 'upkeep' : bar === 'setup' ? 'setup' : 'minutes'] ? mean3((c as Required<Contribution>)[bar === 'upkeep' ? 'upkeep' : bar === 'setup' ? 'setup' : 'minutes']) : 0) + (bar === 'upkeep' ? (c.kwhMo ?? 0) * (FACTORS.kwhUsd.mode) : 0),
+    mean: bar === 'risk' ? c.risk : (c[bar === 'upkeep' ? 'upkeep' : bar === 'setup' ? 'setup' : 'minutes'] ? mean3((c as Required<Contribution>)[bar === 'upkeep' ? 'upkeep' : bar === 'setup' ? 'setup' : 'minutes']) : 0) + (bar === 'upkeep' ? (c.kwhMo ?? 0) * (FACTORS.kwhUsd.mode) + (c.lossMo ?? 0) : 0),
     share: bar === 'risk' ? 0 : C.share[bar].get(c.key) ?? 0,
   }));
   return rows.filter(r => r.mean > 0).sort((a, b) => b.mean - a.mean).slice(0, top);

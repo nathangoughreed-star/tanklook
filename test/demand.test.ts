@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { SCENES } from '../src/examples/scenes';
 import { costDistribution, defaultProfile, demandOf, drivers, limitState, pct, plantDifficulty, riskLabel } from '../src/demand';
 import { swapsFor } from '../src/demand/swaps';
+import { fitToLimits, hasLimits } from '../src/demand/fit';
 import { mean3, triInv, var3 } from '../src/demand/range';
 import { parseScene } from '../src/scene/validate';
 
@@ -80,8 +81,23 @@ describe('swaps', () => {
     const sw = swapsFor(S, P, 'plant:stemred', 'setup', { now: NOW });
     expect(sw.length).toBeGreaterThan(0);
     for (const s of sw) expect(s.delta.setup).toBeLessThan(0);
+    for (const v of ['sword', 'hornwort', 'stem']) for (const s of swapsFor(S, P, `plant:${v}`, 'setup', { now: NOW }, 20)) expect(['echeveria', 'haworthia', 'jade', 'aloe', 'burrotail', 'barrel', 'sansevieria', 'agave', 'columnar']).not.toContain(s.toId);
     const an = swapsFor(S, P, 'animal:oto', 'risk', { now: NOW });
     for (const s of an) expect(s.delta.risk).toBeLessThan(0);
+  });
+});
+describe('fit to limits', () => {
+  it('swaps toward cheaper / easier until the limits hold, or says what is left', () => {
+    const S = parseScene(SCENES['planted']).scene.tanks[0], P = defaultProfile();
+    expect(hasLimits(P)).toBe(false);
+    P.limits = { setupUsd: 1200, budgetMode: 'expected' };
+    const r = fitToLimits(S, P, { now: NOW });
+    expect(r.swaps.length).toBeGreaterThan(0);
+    const before = demandOf(S, P, { now: NOW }).totals.setupUsd, after = demandOf(r.scene, P, { now: NOW }).totals.setupUsd;
+    expect(after).toBeLessThan(before);
+    expect(r.after.setup.value).toBeLessThanOrEqual(r.before.setup.value);
+    const none = fitToLimits(S, defaultProfile(), { now: NOW });
+    expect(none.swaps.length).toBe(0);
   });
 });
 describe('costDistribution', () => {

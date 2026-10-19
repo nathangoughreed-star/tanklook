@@ -183,12 +183,14 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
     add('kit', opts.kit.label ?? `Kit (${opts.kit.id})`, 'tank', { setup: widen3({ lo: k * 0.85, mode: k, hi: k * 1.15 }, w) });
   }
   const items = fold(rows), sum = (f: (c: Contribution) => number) => items.reduce((s, c) => s + f(c), 0);
+  const pl = mean3(pick(FACTORS.priceLevel));
+  for (const c of items) if (c.livestock && c.domain && c.setup) c.lossMo = mean3(c.setup) * pl * mean3(pick((FACTORS.annualLoss as Record<Domain, Range3[]>)[c.domain][P.skill[c.domain]])) / 12;
   const kwh = P.kwhUsd ?? mean3(pick(FACTORS.kwhUsd)), riskRaw = sum(c => c.risk);
   return {
     items, domain, gallons: gal, warnings,
     totals: {
       setupUsd: sum(c => (c.setup ? mean3(c.setup) : 0)) * mean3(pick(FACTORS.priceLevel)),
-      upkeepUsdMo: sum(c => (c.upkeep ? mean3(c.upkeep) : 0) + (c.kwhMo ?? 0) * kwh),
+      upkeepUsdMo: sum(c => (c.upkeep ? mean3(c.upkeep) : 0) + (c.kwhMo ?? 0) * kwh + (c.lossMo ?? 0)),
       minPerWeek: sum(c => (c.minutes ? mean3(c.minutes) : 0)),
       riskRaw, risk: riskScore(riskRaw),
     },

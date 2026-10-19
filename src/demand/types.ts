@@ -55,6 +55,8 @@ export interface Contribution {
   domain?: Domain;
   /** replaced when it dies: cost.ts adds setup x annual loss rate / 12 to the upkeep */
   livestock?: boolean;
+  /** USD per month expected replacement of what dies (the mean of the loss term cost.ts samples) */
+  lossMo?: number;
   /** how many of this kind the row stands for (grouping in the driver list) */
   n?: number;
 }
