@@ -128,7 +128,7 @@ export function tankFromOuter(m: OuterSpec, glass: number | 'auto' = 'auto'): { 
 }
 
 /** The catalog entry re-sized to one maker's variant (outer dims and glass from that product), for tankFromModel. */
-export function modelOfVariant(m: TankModel, v: TankVariant): TankModel {
+export function modelOfVariant(m: TankModel, v: Pick<TankVariant, 'L_in' | 'D_in' | 'H_in' | 'glass_mm'>): TankModel {
   return { ...m, outer: { L: v.L_in * IN, D: v.D_in * IN, H: v.H_in * IN }, glassMm: v.glass_mm ?? m.glassMm };
 }
 export const dimsInches = (o: Outer) => `${+(o.L / IN).toFixed(1)}×${+(o.D / IN).toFixed(1)}×${+(o.H / IN).toFixed(1)}`;
