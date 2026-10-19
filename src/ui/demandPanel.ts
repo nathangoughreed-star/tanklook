@@ -8,6 +8,7 @@ import type { Store } from '../scene/store';
 import { dealOffers } from '../demand/deals';
 import { onSceneLoad, pinnedDeal, pinnedKit, unpinDeal } from '../demand/pinned';
 import { DEAL_NOTE, NOT_SPONSORED, dealGuesses, savingLine } from '../data/deals';
+import { renderDealMatch } from './dealMatch';
 
 const KEY = 'tanklook.demand';
 const DOMAIN_LABEL: [keyof UserProfile['skill'], string][] = [['fundamentals', 'Keeping a tank at all'], ['fish', 'Freshwater fish'], ['planted', 'Planted tanks'], ['salt', 'Saltwater'], ['terrarium', 'Terrariums']];
@@ -49,7 +50,7 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
 
   function recompute() {
     const S = store.tank;
-    const kit = pinnedKit();
+    const kit = pinnedKit(S);
     D = demandOf(S, P, { kit });
     // the same tank without its animals: what keeping just the plants (or the bare tank) costs, so adding animals reads as a jump from it
     B = S.fish.length ? demandOf({ ...S, fish: [] }, P, { kit }) : null;
@@ -81,9 +82,12 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
 
   /** Retailer tank+stand bundles that fit this build, with what each saves against buying the parts (data: src/data/deals.json). */
   function renderDeals() {
-    const el = q('.dmdeals'), pin = pinnedDeal(), offers = dealOffers(store.tank, P).filter(o => o.savingUsd > 1).slice(0, 2);
-    el.innerHTML = (pin ? `<div>Priced as the ${esc(pin.retailer + ' ' + pin.name)} bundle (${usd(pin.price.usd)}, ${esc(pin.asOf)}). <a href="${esc(pin.url)}" target="_blank" rel="noopener">See it at ${esc(pin.retailer)} &#8599;</a> &middot; <a href="#" class="dmunpin">Price the parts instead</a>${dealGuesses(pin).length ? `<br><i>Guessed: ${esc(dealGuesses(pin).join('; '))}</i>` : ''}</div>` : '') + offers.filter(o => o.deal.id !== pin?.id).map(o => `<div>Deal: <a href="${esc(o.deal.url)}" target="_blank" rel="noopener">${esc(o.deal.retailer + ' ' + o.deal.name)}</a> ${usd(o.deal.price.usd)}${o.deal.price.regularUsd ? ` (was ${usd(o.deal.price.regularUsd)})` : ''}. ${esc(savingLine(o.deal, o.savingUsd))}${o.deal.est ? ' (estimate)' : ''}${o.deal.saleEnds ? `, sale ends ${esc(o.deal.saleEnds)}` : ''}; ${esc(o.deal.asOf)}</div>`).join('') + (offers.length || pin ? `<div style="opacity:.7">Prices ${esc(DEAL_NOTE)}. ${esc(NOT_SPONSORED)}.</div>` : '');
-    el.querySelector<HTMLAnchorElement>('.dmunpin')?.addEventListener('click', e => { e.preventDefault(); unpinDeal(); recompute(); });
+    const el = q('.dmdeals'), pin = pinnedDeal(store.tank), offers = dealOffers(store.tank, P)
+      // priced as a bundle already: another deal only counts by what it saves against that bundle (D), not against the parts (lane DM)
+      .map(o => (pin ? { ...o, savingUsd: D!.totals.setupUsd - o.withDealUsd } : o)).filter(o => o.savingUsd > 1).slice(0, 2);
+    el.innerHTML = (pin ? `<div>Priced as the ${esc(pin.retailer + ' ' + pin.name)} bundle (${usd(pin.price.usd)}, ${esc(pin.asOf)}). <a href="${esc(pin.url)}" target="_blank" rel="noopener">See it at ${esc(pin.retailer)} &#8599;</a> &middot; <a href="#" class="dmunpin">Price the parts instead</a>${dealGuesses(pin).length ? `<br><i>Guessed: ${esc(dealGuesses(pin).join('; '))}</i>` : ''}</div>` : '') + offers.filter(o => o.deal.id !== pin?.id).map(o => `<div>Deal: <a href="${esc(o.deal.url)}" target="_blank" rel="noopener">${esc(o.deal.retailer + ' ' + o.deal.name)}</a> ${usd(o.deal.price.usd)}${o.deal.price.regularUsd ? ` (was ${usd(o.deal.price.regularUsd)})` : ''}. ${esc(pin ? `About ${usd(o.savingUsd)} less than the ${pin.retailer} bundle` : savingLine(o.deal, o.savingUsd))}${o.deal.est ? ' (estimate)' : ''}${o.deal.saleEnds ? `, sale ends ${esc(o.deal.saleEnds)}` : ''}; ${esc(o.deal.asOf)}</div>`).join('') + (offers.length || pin ? `<div style="opacity:.7">Prices ${esc(DEAL_NOTE)}. ${esc(NOT_SPONSORED)}.</div>` : '');
+    el.querySelector<HTMLAnchorElement>('.dmunpin')?.addEventListener('click', e => { e.preventDefault(); unpinDeal(store.tank); recompute(); });
+    renderDealMatch(el, store, P, recompute);
   }
 
   function row(b: typeof BARS[number], L: LimitState) {

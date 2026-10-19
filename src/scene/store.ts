@@ -150,6 +150,13 @@ export class Store {
     this.update(s => { s.tanks.push(structuredClone(s.tanks[0])); s.active = 1; });
   }
 
+  /** Split with Tank B built from tank A by `make` (lane DM: A with a bundle's gear swapped in), in one undo step. */
+  splitTankWith(make: (a: TankSetup) => TankSetup) {
+    if (this.split) return;
+    this.editOn = [false, true];
+    this.update(s => { s.tanks.push(make(structuredClone(s.tanks[0]))); s.active = 1; });
+  }
+
   /** Close tank i; the other one stays as the single tank. Undoable. */
   closeTank(i: number) {
     if (!this.split) return;
