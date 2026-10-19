@@ -74,6 +74,53 @@
     "finish": "black",
     "lid": "glass"
    }
+  },
+  {
+   "id": "petsmart-marineland-hd-led-ensemble-75",
+   "retailer": "PetSmart",
+   "name": "Marineland High Definition LED Ensemble 75 gal",
+   "gal": 75,
+   "tank": "g75",
+   "includes": [
+    "tank",
+    "stand",
+    "lid",
+    "light"
+   ],
+   "price": {
+    "usd": 499.99,
+    "regularUsd": 799.99
+   },
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-high-definition-led-ensemble---75-gallon-fish-tank-kit-with-led-62017.html",
+   "asOf": "2026-10-19",
+   "look": {
+    "style": "cabinet",
+    "finish": "black",
+    "lid": "glass"
+   },
+   "note": "Item 5306082. Tank 48.4x18.4x21 in; farmhouse-style stand 50x20x28 in (page says gray, colour options Clear/Black, so finish is a guess). Glass canopy, hidden LED. No filter or heater. No sale end date shown."
+  },
+  {
+   "id": "petsmart-marineland-simple-modern-45",
+   "retailer": "PetSmart",
+   "name": "Marineland Simple Modern LED Ensemble 45 gal",
+   "gal": 45,
+   "includes": [
+    "tank",
+    "stand",
+    "light"
+   ],
+   "price": {
+    "usd": 399.99
+   },
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-simple-modern-led-aquarium-and-stand-ensemble---45-gallon-64738.html",
+   "asOf": "2026-10-19",
+   "est": true,
+   "look": {
+    "style": "cabinet",
+    "finish": "black"
+   },
+   "note": "Search snippet only (product page did not load); snippet said out of stock. Black stand with smoked glass door. Lid and dimensions unverified."
   }
  ]
 }
