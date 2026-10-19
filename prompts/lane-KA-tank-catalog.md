@@ -34,7 +34,7 @@ Ship per the lane rules: git fetch + merge origin/main, tsc + tests + browser ch
 git -C "C:/Users/nreed/Glass Box" merge --ff-only origin/main. Stage by path, never commit -a. Add your own dated section under
 "Lane sections (current)" in HANDOFF.md. Record any model changes on /review.html.
 
-Coordinator protocol: message the coordinator COORD_ID (send_message) when work lands on main and when you are done: commit hash,
+Coordinator protocol: message the coordinator local_408aa124-ce91-4651-abaf-a221f0ceac82 (send_message) when work lands on main and when you are done: commit hash,
 what's open, which files are free. preview_stop your dev server when finished. Questions for Nathan stay in your own chat, with a
 picture for anything about a tank shape or layout. If the chat gets long, hand off to a fresh chat at a work-unit boundary after
 writing your state into your HANDOFF section.

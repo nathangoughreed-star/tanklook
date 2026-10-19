@@ -35,6 +35,6 @@ Ship per the lane rules: git fetch + merge origin/main, tsc + tests, git push or
 git -C "C:/Users/nreed/Glass Box" merge --ff-only origin/main. Stage by path, never commit -a. Add your own dated section under
 "Lane sections (current)" in HANDOFF.md.
 
-Coordinator protocol: message the coordinator COORD_ID (send_message) after the cost check (so it can relay Nathan's decision
+Coordinator protocol: message the coordinator local_408aa124-ce91-4651-abaf-a221f0ceac82 (send_message) after the cost check (so it can relay Nathan's decision
 request), whenever work lands on main, and when you are done. preview_stop if you started a server. Questions for Nathan stay in your
 own chat. If the chat gets long, hand off to a fresh chat at a work-unit boundary after writing your state into your HANDOFF section.

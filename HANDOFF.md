@@ -28,12 +28,24 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
 | EN enclosure presentation (roadmap section 7) | `../Glass-Box-enclosure` / `enclosure` | 5673 | tank presets + tank section of `ui/panels.ts` / `index.html`, new `scene/equipment.ts` + `render/equipment.ts`, lids / doors block in `render/build.ts`, presets in `scene/defaults.ts` | ready to open (prompt `prompts/lane-EN-enclosure.md`); starts with an audit table for Nathan |
+| KA tank catalog | `../Glass-Box-tankcat` / `tankcat` | 5703 | `src/data/tanks.*`, preset picker in `ui/panels.ts`, `scene/defaults.ts` presets | opened 2026-10-19 |
+| KB kit catalog (stops after one-brand cost check) | `../Glass-Box-kits` / `kits` | 5713 | kit catalog data + research | opened 2026-10-19 |
+| KC kit light wiring (stub data until KB lands) | `../Glass-Box-kitlight` / `kitlight` | 5723 | kit light wiring | opened 2026-10-19 |
+| KK demand model (panel hook in `ui/panels.ts` only after KA lands) | `../Glass-Box-demand` / `demand` | 5733 | demand model | opened 2026-10-19 |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
+
+## Lane KA: tank catalog (2026-10-19, branch `tankcat`, port 5703)  (lane fills this in)
+
+## Lane KB: kit catalog (stops after one-brand cost check) (2026-10-19, branch `kits`, port 5713)  (lane fills this in)
+
+## Lane KC: kit light wiring (stub data until KB lands) (2026-10-19, branch `kitlight`, port 5723)  (lane fills this in)
+
+## Lane KK: demand model (panel hook in `ui/panels.ts` only after KA lands) (2026-10-19, branch `demand`, port 5733)  (lane fills this in)
 
 ## Lane CL: animals cling to leaves, undersides and sides of hardscape (2026-10-16..19; main, no branch; Nathan approved the pictures; pushed to main)
 Nathan's rules: things that cling or suck (snails, shrimp, sucker fish: oto, pleco) go on the undersides and sides of

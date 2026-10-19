@@ -574,6 +574,58 @@
         "--strictPort"
       ],
       "port": 5693
+    },
+    {
+      "name": "tankcat",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5703",
+        "--strictPort"
+      ],
+      "port": 5703
+    },
+    {
+      "name": "kits",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5713",
+        "--strictPort"
+      ],
+      "port": 5713
+    },
+    {
+      "name": "kitlight",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5723",
+        "--strictPort"
+      ],
+      "port": 5723
+    },
+    {
+      "name": "demand",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5733",
+        "--strictPort"
+      ],
+      "port": 5733
     }
   ]
 }
