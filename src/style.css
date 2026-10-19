@@ -170,8 +170,15 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 .sidetog { font: inherit; cursor: pointer; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 6px; padding: 3px 9px }
 /* the hide button sits in the view, just outside the panel, so it stays reachable however far the panel is scrolled */
 /* top-left of the view: panel toggle, then Undo / Redo (out of the scrolling panel, there even when it is hidden) */
-.climate { position: absolute; right: 10px; bottom: 10px; z-index: 3; max-width: 330px; box-sizing: border-box; padding: 6px 10px; border-radius: 6px; background: color-mix(in srgb, var(--panel) 88%, transparent); border: 1px solid var(--line); font-size: 12px; line-height: 1.4; cursor: pointer }
+.encl { position: absolute; right: 10px; bottom: 10px; z-index: 3; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; max-width: 330px; max-height: calc(100% - 20px); pointer-events: none }
+.encl > * { pointer-events: auto }
+.climate { max-width: 330px; box-sizing: border-box; padding: 6px 10px; border-radius: 6px; background: color-mix(in srgb, var(--panel) 88%, transparent); border: 1px solid var(--line); font-size: 12px; line-height: 1.4; cursor: pointer }
 .climate.open { width: 330px; max-height: calc(100% - 20px); overflow-y: auto }
+.stocking { box-sizing: border-box; padding: 6px 10px; border-radius: 6px; background: color-mix(in srgb, var(--panel) 88%, transparent); border: 1px solid var(--line); font-size: 12px; line-height: 1.4; max-width: 330px; max-height: 40vh; overflow-y: auto }
+.stocking div { margin: 2px 0 }
+.stocking .w b { color: #c0392b }
+.stocking .n b { color: #b9770e }
+.stocking b { font-weight: 600; margin-right: 4px }
 .clCue { color: var(--muted); font-size: 11px; margin-top: 3px }
 .clAx { --cl-n: 92px; --cl-v: 74px; position: relative; margin: 6px 0 2px }
 .clT { font-weight: 600; font-size: 11px; color: var(--muted); margin-bottom: 2px }
