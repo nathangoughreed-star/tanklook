@@ -59,7 +59,7 @@ export function gearPicks(S: TankSetup): GearPick[] {
 /** TechSetup.place (0..1 shares) as mm on the wall the pieces are built on. */
 export function spotOf(S: TankSetup, p?: GearPlace): GearSpot | undefined {
   if (!p) return undefined;
-  const q = p as GearPlace & { y?: number; lean?: number }, wall = q.wall as GearWall | 'floor', at = clamp(q.at ?? 0, 0, 1);
+  const q = p, wall = q.wall, at = clamp(q.at ?? 0, 0, 1);
   const T = S.tank, Db = T.D - backdropDepth(S.backdrop, T), extra = { ...(q.y != null ? { y: clamp(q.y, 0, 1) } : {}), ...(q.lean != null ? { lean: clamp(q.lean, -60, 60) } : {}) };
   if (wall === 'floor') return { wall, u: at * T.L, d: clamp(q.y ?? 0.8, 0, 1) * T.D };
   if (wall === 'back') return { wall, u: at * T.L, ...extra };

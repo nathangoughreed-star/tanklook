@@ -20,7 +20,16 @@ import type { GrowFeed, TankSetup } from './types';
 
 /** Where a row's gear sits (lane TG draws it there): the tank wall it hangs on or stands against, and how far along that
  *  wall, 0 = left end (back wall, seen from the front) or front end (side walls) .. 1 = the other end. */
-export interface GearPlace { wall: 'back' | 'left' | 'right'; at?: number }
+export interface GearPlace {
+  /** 'floor' (lane TG 2026-10-19): gear that stands on the ground (sponge filter, airstone) */
+  wall: 'back' | 'left' | 'right' | 'floor';
+  /** floor: the x share, 0 = left .. 1 = right */
+  at?: number;
+  /** glass mounts: height share from the ground (0) to the water line (1); floor: depth share, 0 = front .. 1 = back */
+  y?: number;
+  /** heaters: degrees off vertical, -60..60 (the owner's Shift + wheel) */
+  lean?: number;
+}
 
 /** The tank's tech (TankSetup.tech; optional, no version bump). A row left out takes the inferred default (inferTech). */
 export interface TechSetup {
@@ -415,7 +424,7 @@ export function techParts(S: TankSetup): TechPiece[] {
 
 // ---- file
 
-const WALLS = new Set(['back', 'left', 'right']);
+const WALLS = new Set(['back', 'left', 'right', 'floor']);
 /** Read a saved `tech` (validate.ts): unknown rows / options dropped, numbers clamped. Undefined when absent or empty. */
 export function parseTech(raw: unknown): TechSetup | undefined {
   if (!raw || typeof raw !== 'object') return undefined;
@@ -430,7 +439,11 @@ export function parseTech(raw: unknown): TechSetup | undefined {
     const place: Record<string, GearPlace> = {};
     for (const [k, v] of Object.entries(r.place as Record<string, unknown>)) {
       const p = v as Partial<GearPlace> | null;
-      if (p && typeof p.wall === 'string' && WALLS.has(p.wall)) place[k] = { wall: p.wall, ...(typeof p.at === 'number' && isFinite(p.at) ? { at: Math.min(1, Math.max(0, p.at)) } : {}) };
+      const num = (n: unknown, lo: number, hi: number) => typeof n === 'number' && isFinite(n) ? Math.min(hi, Math.max(lo, n)) : undefined;
+      if (p && typeof p.wall === 'string' && WALLS.has(p.wall)) {
+        const at = num(p.at, 0, 1), y = num(p.y, 0, 1), lean = num(p.lean, -60, 60);
+        place[k] = { wall: p.wall, ...(at != null ? { at } : {}), ...(y != null ? { y } : {}), ...(lean != null ? { lean } : {}) };
+      }
     }
     if (Object.keys(place).length) t.place = place;
   }

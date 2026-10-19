@@ -5,11 +5,11 @@ import { SCENES } from '../src/examples/scenes';
 import { parseScene } from '../src/scene/validate';
 import { placeFor, withPlace } from '../src/interact/gearDrag';
 import { mountOf, gearPicks } from '../src/render/gear3d';
-import { techOf } from '../src/scene/tech';
+import { parseTech, techOf } from '../src/scene/tech';
 import type { TankSetup } from '../src/scene/types';
 
 const ex = (name: string): TankSetup => { const sc = parseScene(JSON.parse(SCENES[name])).scene; return sc.tanks[sc.active]; };
-const fromFront = (x: number, y: number, S: TankSetup) => new THREE.Ray(new THREE.Vector3(x, y, 2000), new THREE.Vector3(0, 0, -1).add(new THREE.Vector3(0, 0, 0)).normalize());
+const fromFront = (x: number, y: number, _S?: TankSetup) => new THREE.Ray(new THREE.Vector3(x, y, 2000), new THREE.Vector3(0, 0, -1));
 
 describe('gear drag', () => {
   it('gates by mount: heaters on glass, HOBs on the rim, sponges on the floor, stand gear not at all', () => {
@@ -36,5 +36,10 @@ describe('gear drag', () => {
     expect(t.rows).toEqual(before);
     const hob = gearPicks({ ...S, tech: t }).find(p => p.row === 'filter')!;
     expect(hob.place?.wall).toBe('back'); expect(hob.place!.u).toBeCloseTo(0.8 * S.tank.L, 0);
+  });
+  it('a saved spot survives a reload: floor wall, height, lean; junk is dropped or clamped', () => {
+    const t = parseTech({ rows: { filter: 'sponge' }, place: { filter: { wall: 'floor', at: 0.3, y: 0.7 }, heater: { wall: 'left', at: 0.5, y: 2, lean: -90 }, air: { wall: 'roof' }, uv: { wall: 'back', y: 'x', lean: NaN } } })!;
+    expect(t.place).toEqual({ filter: { wall: 'floor', at: 0.3, y: 0.7 }, heater: { wall: 'left', at: 0.5, y: 1, lean: -60 }, uv: { wall: 'back' } });
+    expect(parseTech({ rows: { filter: 'hob' }, place: { filter: { wall: 'back', at: 0.2 } } })!.place).toEqual({ filter: { wall: 'back', at: 0.2 } }); // an old file's spot, as it was
   });
 });

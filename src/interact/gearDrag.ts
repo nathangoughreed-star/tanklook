@@ -40,12 +40,12 @@ export function gearGrab(hit: Hit): GearDrag | null {
 
 /** Where the pointer's ray puts a piece with this mount in tank S (shares as TechSetup.place keeps them), or null. */
 export function placeFor(S: TankSetup, ray: THREE.Ray, mount: GearMount, prev?: GearPlace): GearPlace | null {
-  const T = S.tank, Db = T.D - backdropDepth(S.backdrop, T), lean = (prev as { lean?: number } | undefined)?.lean;
+  const T = S.tank, Db = T.D - backdropDepth(S.backdrop, T), lean = prev?.lean;
   if (mount === 'fixed') return null;
   if (mount === 'floor') {
     const y0 = groundHeight(S, T, T.L / 2, T.D / 2), p = ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), -y0), new THREE.Vector3());
     if (!p) return null;
-    return { wall: 'floor', at: clamp(p.x / T.L, 0.04, 0.96), y: clamp(-p.z / T.D, 0.06, 0.94) } as unknown as GearPlace; // (until TM's GearPlace takes 'floor')
+    return { wall: 'floor', at: clamp(p.x / T.L, 0.04, 0.96), y: clamp(-p.z / T.D, 0.06, 0.94) };
   }
   // the glass the eye looks at through the tank: where the ray leaves the water's box
   const box = new THREE.Box3(new THREE.Vector3(0, 0, -Db), new THREE.Vector3(T.L, T.H, 0)), far = ray.at(1e5, new THREE.Vector3());
@@ -55,7 +55,7 @@ export function placeFor(S: TankSetup, ray: THREE.Ray, mount: GearMount, prev?: 
   const dist = { back: Math.abs(out.z + Db), left: Math.abs(out.x), right: Math.abs(out.x - T.L) };
   const wall = (Object.keys(dist) as (keyof typeof dist)[]).reduce((a, b) => dist[a] <= dist[b] ? a : b);
   const at = wall === 'back' ? clamp(out.x / T.L, 0, 1) : clamp(-out.z / Db, 0, 1);
-  const place: GearPlace & { y?: number; lean?: number } = { wall, at };
+  const place: GearPlace = { wall, at };
   if (mount === 'glass') {
     const g = groundHeight(S, T, clamp(out.x, 1, T.L - 1), clamp(-out.z, 1, T.D - 1)), wy = waterY(T, S.water.level);
     place.y = clamp((out.y - g) / Math.max(1, wy - g), 0, 1);
@@ -84,12 +84,12 @@ export function withPlace(t: TankSetup, row: string, p: GearPlace) {
 export function gearLean(viewer: Viewer, store: Store, clientX: number, clientY: number, dir: number) {
   const hit = viewer.hitTest(clientX, clientY); if (!hit) return false;
   const g = gearGrab(hit); if (!g || g.row !== 'heater') return false;
-  const S = store.scene.tanks[g.vi], prev = S.tech?.place?.[g.row] as (GearPlace & { lean?: number }) | undefined;
+  const S = store.scene.tanks[g.vi], prev = S.tech?.place?.[g.row];
   // not placed yet: where it is drawn now (its box's middle), then leaned
   const piece = hit.vp.scene!.children.flatMap(o => (o.userData.gearPieces ?? []) as GearPiece[]).find(p => p.row === g.row)!;
   const c = piece.box.getCenter(new THREE.Vector3()), from = prev ?? placeFor(S, new THREE.Ray(new THREE.Vector3(c.x, c.y, 5000), new THREE.Vector3(0, 0, -1)), 'glass');
   if (!from) return false;
-  const lean = clamp(((from as { lean?: number }).lean ?? 0) + dir * 10, -60, 60);
-  store.editTank(g.vi, t => { t.tech = withPlace(t, g.row, { ...from, lean } as GearPlace); }, { coalesce: 'gear-lean' });
+  const lean = clamp((from.lean ?? 0) + dir * 10, -60, 60);
+  store.editTank(g.vi, t => { t.tech = withPlace(t, g.row, { ...from, lean }); }, { coalesce: 'gear-lean' });
   return true;
 }
