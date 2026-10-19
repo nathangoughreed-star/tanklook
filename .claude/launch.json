@@ -611,6 +611,19 @@
         "--strictPort"
       ],
       "port": 5813
+    },
+    {
+      "name": "compat-gates",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5823",
+        "--strictPort"
+      ],
+      "port": 5823
     }
   ]
 }

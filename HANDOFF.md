@@ -34,10 +34,19 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 | AQ AqAdvisor ids + Malawi pool | `../Glass-Box-aqids` / `aqids` | 5813 | `scripts/aqadvisor-ids.py`, `data/aqadvisor.json`, Malawi pool in `scene/starter.ts` | opened 2026-10-19 |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 | KW start wizard | `../Glass-Box-wizard` / `wizard` | 5783 | new `ui/wizard.ts`, `#startGuided` slot in `index.html`, wizard CSS | opened 2026-10-19 |
+| CG compat gates | `.claude/worktrees/compat-gates-3aa180` / `claude/compat-gates-3aa180` | 5823 (`compat-gates`) | new `data/waterchem.ts`, `scene/animalfit.ts` gates, `test/compatgates.test.ts` | DONE 2026-10-19, pushed; files free, server stopped |
 
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
+
+## Lane CG: compatibility gates (2026-10-19)
+- `src/data/waterchem.ts`: `CHEM` pH + GH (dGH, only where sources agree) per freshwater aquatic species, `MARINE_PH` [8.0, 8.4] for every salt species (no hardness), `GROUP` smallest group. Merged into `CARE` (`ph`, `gh`, `group`) by a loop at the end of care.ts, like WATER. Checked against FishBase 2026-10-19 (one Sonnet agent, ~80k tokens): most agree; corrected cardinal, harlequin, syno GH, kuhli GH, cockatoo GH. Kept wider than FishBase on purpose: neon GH, cardinal and ram upper pH, Bolivian ram from 6.0 (farmed stock lives in harder water). Many FishBase rows are a generic 6.0-8.0 / 5-19 template, so agreement there is weak evidence. No FishBase data: ember, rummynose, cpd, Malawi mbuna, hillstream, all inverts (hobby consensus).
+- `whyAnimal` (scene/animalfit.ts): pairwise pH (shared band < 0.2) and GH (< 2 dGH) after temperature; coral gate `CARE.coral` 1 caution / 2 eats corals, only with corals in the tank (`env.corals` = `hasCorals(items)`: macroalgae and the anemone do not count). Only the coral beauty is flagged (caution). Invertebrate eaters stay on `prey.cats` (sixline, hermit, clown loach, pea puffer), no second flag, so no double report. New optional 5th arg `env` passed by panels.ts, engine.ts, swaps.ts, starter.ts (one-line hooks).
+- Group advice: `groupShort(sp, n)` "group: wants 6 or more, you have 2", a Demand warning (risk `animalWarnPts.group` 0.3, once per species) for stocked counts. Not a list gray (you would want to add more). Starter hook in `stocking()`: first group = max(6, CARE.group) (embers, chili, harlequin, pygmy cory 8; cherry shrimp 10). demasoni left out (no shoal `group` in species.json; mbuna overstocking is a separate idea).
+- `test/compatgates.test.ts`: fails when any species lacks CARE, or a non-land one lacks temp/tol/pH or has an inverted band.
+- tolEst left flagged (syno, ramshorn): no better source found.
+- Open: the example scenes now warn about their own stocking (planted: 3 otos, 4 amanos; iwagumi: 3 otos; paludarium: 6 cherry shrimp), a reef turbo-vs-clownfish temperature clash (22-25 vs 24-27, from WATER, already there before CG), and `test/anchorbase.test.ts` has 10 failures that were already on main before this lane (clownnano / paludarium cleaner shrimp moved).
 
 ## Lane KW: start wizard (2026-10-19, branch `wizard`, port 5783)  (lane fills this in)
 
