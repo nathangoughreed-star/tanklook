@@ -1,0 +1,1101 @@
+[
+ {
+  "id": "top-fin-essentials-10",
+  "brand": "Top Fin",
+  "name": "Essentials 10 gal",
+  "tankRatedGal": 10,
+  "tankDims": null,
+  "water": "fresh",
+  "light": {
+   "type": "flat",
+   "tech": "led-white",
+   "count": 1,
+   "watts": null,
+   "spec": "guess"
+  },
+  "lid": "hood",
+  "stand": false,
+  "filter": {
+   "kind": "hob"
+  },
+  "tier": "budget",
+  "source": [
+   "https://www.petsmart.com/5355199.html"
+  ],
+  "note": "Dims not published on listing. Price is 50% promo through 11/1 (reg 89.99). Silentstream 10 power filter. LED wattage not published; budget default assumed.",
+  "heater": {
+   "watts": 50
+  },
+  "price": {
+   "usd": 44.99,
+   "asOf": "2026-10-19",
+   "url": "https://www.petsmart.com/5355199.html"
+  }
+ },
+ {
+  "id": "top-fin-cube-10",
+  "brand": "Top Fin",
+  "name": "Cube Essentials 10 gal",
+  "tankRatedGal": 10,
+  "tankDims": {
+   "L": 358,
+   "H": 358,
+   "D": 358
+  },
+  "water": "fresh",
+  "light": {
+   "type": "flat",
+   "tech": "led-white",
+   "count": 1,
+   "watts": null,
+   "spec": "guess"
+  },
+  "lid": "hood",
+  "stand": false,
+  "filter": {
+   "kind": "hob"
+  },
+  "tier": "budget",
+  "source": [
+   "https://www.petsmart.com/fish/starter-kits/top-fin-cube-aquarium-essentials-starter-kit---fish-tank-starter-kit---10-gallon-100213.html"
+  ],
+  "note": "Promo price (reg 89.99). PF10 Silentstream. LED wattage not published.",
+  "heater": {
+   "watts": 50
+  },
+  "price": {
+   "usd": 44.99,
+   "asOf": "2026-10-19",
+   "url": "https://www.petsmart.com/fish/starter-kits/top-fin-cube-aquarium-essentials-starter-kit---fish-tank-starter-kit---10-gallon-100213.html"
+  }
+ },
+ {
+  "id": "top-fin-colorflow-10",
+  "brand": "Top Fin",
+  "name": "Colorflow 10 gal (7 color LEDs)",
+  "tankRatedGal": 10,
+  "tankDims": {
+   "L": 511,
+   "H": 325,
+   "D": 257
+  },
+  "water": "fresh",
+  "light": {
+   "type": "flat",
+   "tech": "led-white",
+   "count": 1,
+   "watts": null,
+   "spec": "guess"
+  },
+  "lid": "hood",
+  "stand": false,
+  "filter": {
+   "kind": "hob"
+  },
+  "tier": "budget",
+  "source": [
+   "https://www.petsmart.com/fish/starter-kits/top-fin-colorflow-aquarium-starter-kit-with-7-color-changing-leds-56740.html"
+  ],
+  "note": "No heater mentioned. Filter kind inferred from 'filter cartridge' (hob assumed, not stated). Color-changing LEDs, mapped to led-white as closest. Wattage unpublished.",
+  "price": {
+   "usd": 89.99,
+   "asOf": "2026-10-19",
+   "url": "https://www.petsmart.com/fish/starter-kits/top-fin-colorflow-aquarium-starter-kit-with-7-color-changing-leds-56740.html"
+  }
+ },
+ {
+  "id": "top-fin-essentials-20",
+  "brand": "Top Fin",
+  "name": "Essentials 20 gal",
+  "tankRatedGal": 20,
+  "tankDims": {
+   "L": 610,
+   "H": 406,
+   "D": 323
+  },
+  "water": "fresh",
+  "light": {
+   "type": "flat",
+   "tech": "led-white",
+   "count": 1,
+   "watts": null,
+   "spec": "guess"
+  },
+  "lid": "hood",
+  "stand": false,
+  "filter": {
+   "kind": "hob"
+  },
+  "tier": "budget",
+  "source": [
+   "https://www.petsmart.com/fish/starter-kits/top-fin-essentials-aquarium-starter-kit-5262266.html"
+  ],
+  "note": "Figures from caller's prior research (heater included, wattage not recorded). LED wattage not published.",
+  "price": {
+   "usd": 119.99,
+   "asOf": "2026-10-19",
+   "url": "https://www.petsmart.com/fish/starter-kits/top-fin-essentials-aquarium-starter-kit-5262266.html"
+  }
+ },
+ {
+  "id": "top-fin-captivate-20-hex",
+  "brand": "Top Fin",
+  "name": "Captivate 20 gal hex",
+  "tankRatedGal": 20,
+  "tankDims": null,
+  "water": "fresh",
+  "light": {
+   "type": "flat",
+   "tech": "led-white",
+   "count": 1,
+   "watts": null,
+   "spec": "guess"
+  },
+  "lid": "hood",
+  "stand": false,
+  "filter": {
+   "kind": "hob"
+  },
+  "tier": "budget",
+  "source": [
+   "https://www.petsmart.com/"
+  ],
+  "note": "From caller's prior research; hex outer dims not found, left null. Filter PF20. LED wattage not published.",
+  "heater": {
+   "watts": 100
+  },
+  "price": {
+   "usd": 119.99,
+   "asOf": "2026-10-19",
+   "url": "https://www.petsmart.com/"
+  }
+ },
+ {
+  "id": "top-fin-led-bubble-wall-20",
+  "brand": "Top Fin",
+  "name": "LED Bubble Wall 20 gal",
+  "tankRatedGal": 20,
+  "tankDims": {
+   "L": 615,
+   "H": 422,
+   "D": 333
+  },
+  "water": "fresh",
+  "light": {
+   "type": "flat",
+   "tech": "led-white",
+   "count": 1,
+   "watts": null,
+   "spec": "listing"
+  },
+  "lid": "glass",
+  "stand": false,
+  "filter": {
+   "kind": "internal"
+  },
+  "tier": "budget",
+  "source": [
+   "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/top-fin-led-bubble-wall-aquarium-kit---fish-tank-starter-kit---10-20-gallon-64706.html"
+  ],
+  "note": "Item 5308097. Glass hood with feeding door; white LED plus color bubble wand; internal filter plus air pump; no heater. Wattage not published.",
+  "price": {
+   "usd": 149.99,
+   "asOf": "2026-10-19",
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/top-fin-led-bubble-wall-aquarium-kit---fish-tank-starter-kit---10-20-gallon-64706.html"
+  }
+ },
+ {
+  "id": "top-fin-bow-front-36",
+  "brand": "Top Fin",
+  "name": "Bow Front 36 gal",
+  "tankRatedGal": 36,
+  "tankDims": {
+   "L": 780,
+   "H": 574,
+   "D": 399
+  },
+  "water": "fresh",
+  "light": {
+   "type": "flat",
+   "tech": "led-white",
+   "count": 1,
+   "watts": null,
+   "spec": "guess"
+  },
+  "lid": "hood",
+  "stand": false,
+  "filter": {
+   "kind": "hob"
+  },
+  "tier": "budget",
+  "source": [
+   "https://www.petsmart.com/"
+  ],
+  "note": "From caller's prior research. LED wattage not published.",
+  "heater": {
+   "watts": 200
+  },
+  "price": {
+   "usd": 143.99,
+   "asOf": "2026-10-19",
+   "url": "https://www.petsmart.com/"
+  }
+ },
+ {
+  "id": "top-fin-essentials-37",
+  "brand": "Top Fin",
+  "name": "Essentials 37 gal",
+  "tankRatedGal": 37,
+  "tankDims": {
+   "L": 772,
+   "H": 565,
+   "D": 393
+  },
+  "water": "fresh",
+  "light": {
+   "type": "flat",
+   "tech": "led-white",
+   "count": 1,
+   "watts": null,
+   "spec": "guess"
+  },
+  "lid": "hood",
+  "stand": false,
+  "filter": {
+   "kind": "hob"
+  },
+  "tier": "budget",
+  "source": [
+   "https://www.petsmart.com/fish/starter-kits/top-fin-essentials-aquarium-starter-kit-5262266.html"
+  ],
+  "note": "Sale price (list 179.99). Hood with feeding door, bright white LED. Heater included, wattage not published. Dims presumed to be the 37 gal (page not explicit).",
+  "price": {
+   "usd": 143.99,
+   "asOf": "2026-10-19",
+   "url": "https://www.petsmart.com/fish/starter-kits/top-fin-essentials-aquarium-starter-kit-5262266.html"
+  }
+ },
+ {
+  "id": "top-fin-essentials-55",
+  "brand": "Top Fin",
+  "name": "Essentials 55 gal",
+  "tankRatedGal": 55,
+  "tankDims": {
+   "L": 1214,
+   "H": 625,
+   "D": 333
+  },
+  "water": "fresh",
+  "light": {
+   "type": "flat",
+   "tech": "led-white",
+   "count": 1,
+   "watts": null,
+   "spec": "guess"
+  },
+  "lid": "hood",
+  "stand": false,
+  "filter": {
+   "kind": "hob"
+  },
+  "tier": "budget",
+  "source": [
+   "https://www.petsmart.com/5262267.html"
+  ],
+  "note": "Sale price (reg 249.99). Heater and filter included; wattage/type unpublished (hob assumed).",
+  "price": {
+   "usd": 199.99,
+   "asOf": "2026-10-19",
+   "url": "https://www.petsmart.com/5262267.html"
+  }
+ },
+ {
+  "id": "tetra-led-10",
+  "brand": "Tetra",
+  "name": "Tetra Complete LED 10 gal",
+  "tankRatedGal": 10,
+  "tankDims": {
+   "L": 508,
+   "H": 305,
+   "D": 254
+  },
+  "water": "fresh",
+  "light": {
+   "type": "flat",
+   "tech": "led-white",
+   "count": 1,
+   "watts": null,
+   "spec": "listing"
+  },
+  "lid": "hood",
+  "stand": false,
+  "filter": {
+   "kind": "hob"
+  },
+  "tier": "budget",
+  "source": [
+   "https://natureaquariums.com/products/tetra-deluxe-led-aquarium-kit"
+  ],
+  "note": "Whisper PF10, no heater, low-profile hinged hood, white LED daylight. Dims are approximate/rounded (20x10x12 in). Price null: only an unverified $84.99 reseller figure."
+ },
+ {
+  "id": "tetra-colorfusion-20",
+  "brand": "Tetra",
+  "name": "Tetra ColorFusion 20 gal",
+  "tankRatedGal": 20,
+  "tankDims": {
+   "L": 615,
+   "H": 424,
+   "D": 315
+  },
+  "water": "fresh",
+  "light": {
+   "type": "flat",
+   "tech": "led-white",
+   "count": 1,
+   "watts": null,
+   "spec": "listing"
+  },
+  "lid": "hood",
+  "stand": false,
+  "filter": {
+   "kind": "hob"
+  },
+  "tier": "budget",
+  "source": [
+   "https://bestreviews.com/pets/fish-reptiles/best-fish-tank-starter-kits"
+  ],
+  "note": "Color-cycling LED mapped to led-white. Heater included, wattage unpublished. Filter conflict: manual says PF20 (hob), a Walmart blurb says internal. Walmart showed ~142.99, unverified, not recorded."
+ },
+ {
+  "id": "tetra-led-29",
+  "brand": "Tetra",
+  "name": "Tetra Complete LED 29 gal",
+  "tankRatedGal": 29,
+  "tankDims": {
+   "L": 762,
+   "H": 457,
+   "D": 305
+  },
+  "water": "fresh",
+  "light": {
+   "type": "flat",
+   "tech": "led-white",
+   "count": 1,
+   "watts": null,
+   "spec": "listing"
+  },
+  "lid": "hood",
+  "stand": false,
+  "filter": {
+   "kind": "hob"
+  },
+  "tier": "budget",
+  "source": [
+   "https://natureaquariums.com/products/tetra-deluxe-led-aquarium-kit"
+  ],
+  "note": "Whisper PF30, 200 W heater. Approx dims. Walmart snippet showed 152.67 sale, unverified.",
+  "heater": {
+   "watts": 200
+  }
+ },
+ {
+  "id": "tetra-led-55",
+  "brand": "Tetra",
+  "name": "Tetra Complete LED 55 gal",
+  "tankRatedGal": 55,
+  "tankDims": {
+   "L": 1219,
+   "H": 508,
+   "D": 330
+  },
+  "water": "fresh",
+  "light": {
+   "type": "flat",
+   "tech": "led-white",
+   "count": 1,
+   "watts": null,
+   "spec": "listing"
+  },
+  "lid": "hood",
+  "stand": false,
+  "filter": {
+   "kind": "hob"
+  },
+  "tier": "budget",
+  "source": [
+   "https://www.petsupermarket.com/fish/supplies/aquariums-starter-kits/starter-kits/tetra-deluxe-led-glass-aquarium-kit/474929429.html"
+  ],
+  "note": "Two hinged hoods with white LED, 200 W heater (per Pet Supermarket, approximate dims 48x13x20 in). Filter model not seen, hob assumed.",
+  "heater": {
+   "watts": 200
+  }
+ },
+ {
+  "id": "aqueon-led-10",
+  "brand": "Aqueon",
+  "name": "LED Aquarium Kit 10 gal (Rectangle LED kit)",
+  "tankRatedGal": 10,
+  "tankDims": {
+   "L": 581,
+   "H": 353,
+   "D": 324
+  },
+  "water": "fresh",
+  "light": {
+   "type": "flat",
+   "tech": "led-white",
+   "count": 1,
+   "watts": null,
+   "spec": "guess"
+  },
+  "lid": "hood",
+  "filter": {
+   "kind": "hob",
+   "rating": "QuietFlow LED PRO (medium cartridge)"
+  },
+  "heater": {
+   "watts": null
+  },
+  "tier": "budget",
+  "source": [
+   "https://www.aqueon.com/products/aquarium-starter-kits/rectangle-led-kits"
+  ],
+  "note": "Dims 22.88x12.75x13.88 in are the only kit spec on the Aqueon page (shown with the 10 gal; likely incl hood/filter, bare tank is smaller). LED watts not published; budget tier default assumed. Preset 78F heater included, watts not stated. No retail price fetched."
+ },
+ {
+  "id": "aqueon-led-20h",
+  "brand": "Aqueon",
+  "name": "LED Aquarium Kit 20 High",
+  "tankRatedGal": 20,
+  "tankDims": {
+   "L": 616,
+   "H": 495,
+   "D": 318
+  },
+  "water": "fresh",
+  "light": {
+   "type": "flat",
+   "tech": "led-white",
+   "count": 1,
+   "watts": null,
+   "spec": "guess"
+  },
+  "lid": "hood",
+  "filter": {
+   "kind": "hob",
+   "rating": "QuietFlow 10 LED PRO"
+  },
+  "heater": {
+   "watts": 100
+  },
+  "tier": "budget",
+  "price": {
+   "usd": 139.99,
+   "asOf": "2026-10-19",
+   "url": "https://www.thatpetplace.com/aqueon-led-aquarium-kit-20-gallon-p-ns"
+  },
+  "source": [
+   "https://www.thatpetplace.com/aqueon-led-aquarium-kit-20-gallon-p-ns",
+   "https://www.aqueon.com/products/aquarium-starter-kits/rectangle-led-kits"
+  ],
+  "note": "Dims from That Pet Place (24.25x12.5x19.5 in); H 19.5 exceeds a bare 20H tank (~16.75), likely includes hood/filter. LED watts unpublished (standalone 30in Aqueon LED hood lists 4 W, not the kit). Price is a pickup-only store listing. Not verified on Petco/Chewy."
+ },
+ {
+  "id": "aqueon-led-29",
+  "brand": "Aqueon",
+  "name": "LED Aquarium Kit 29 gal",
+  "tankRatedGal": 29,
+  "tankDims": {
+   "L": 768,
+   "H": 546,
+   "D": 318
+  },
+  "water": "fresh",
+  "light": {
+   "type": "flat",
+   "tech": "led-white",
+   "count": 1,
+   "watts": null,
+   "spec": "guess"
+  },
+  "lid": "hood",
+  "filter": {
+   "kind": "hob",
+   "rating": "QuietFlow 20 LED PRO"
+  },
+  "heater": {
+   "watts": 100
+  },
+  "tier": "budget",
+  "price": {
+   "usd": 159.99,
+   "asOf": "2026-10-19",
+   "url": "https://www.thatpetplace.com/aqueon-led-aquarium-kit-29-gallon-p-ns"
+  },
+  "source": [
+   "https://www.thatpetplace.com/aqueon-led-aquarium-kit-29-gallon-p-ns",
+   "https://www.aqueon.com/products/aquarium-starter-kits/rectangle-led-kits"
+  ],
+  "note": "Dims from That Pet Place; H likely includes hood. LED watts unpublished. Listing was out of stock when checked."
+ },
+ {
+  "id": "marineland-portrait-5",
+  "brand": "Marineland",
+  "name": "Portrait Glass LED Aquarium Kit 5 gal",
+  "tankRatedGal": 5,
+  "tankDims": {
+   "L": 241,
+   "H": 356,
+   "D": 241
+  },
+  "water": "fresh",
+  "light": {
+   "type": "flat",
+   "tech": "led-white",
+   "count": 1,
+   "watts": null,
+   "spec": "guess"
+  },
+  "lid": "glass",
+  "filter": {
+   "kind": "internal",
+   "rating": "3-stage hidden, Rite-Size Z cartridge"
+  },
+  "tier": "budget",
+  "price": {
+   "usd": 96.99,
+   "asOf": "2026-10-19",
+   "url": "https://www.thatpetplace.com/marineland-portrait-desktop-kit-5-gal"
+  },
+  "source": [
+   "https://www.thatpetplace.com/marineland-portrait-desktop-kit-5-gal",
+   "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-led-aquarium-kit---5-gallon-fish-tank-kit-with-led-and-filter-89094.html"
+  ],
+  "note": "Dims 9.5x9.5x14 in from an Amazon-syndicated listing; PetSmart lists 11.81x11.62x17.05 (package). White+blue LEDs, 3-way switch; watts unpublished. No heater included. Price is a pickup-only store listing. Curved-glass sliding canopy."
+ },
+ {
+  "id": "marineland-modern-led-60",
+  "brand": "Marineland",
+  "name": "Modern LED Aquarium & Stand Ensemble 60 gal",
+  "tankRatedGal": 60,
+  "tankDims": {
+   "L": 1232,
+   "H": 635,
+   "D": 324
+  },
+  "water": "fresh",
+  "light": {
+   "type": "flat",
+   "tech": "led-white",
+   "count": 1,
+   "watts": null,
+   "spec": "guess"
+  },
+  "lid": "glass",
+  "stand": true,
+  "tier": "budget",
+  "price": {
+   "usd": 399.99,
+   "asOf": "2026-10-19",
+   "url": "https://www.petsmart.com/5248474.html"
+  },
+  "source": [
+   "https://www.petsmart.com/5248474.html"
+  ],
+  "note": "PetSmart: tank 48.5x12.75x25 in; glass canopy, hidden LED, stand included. No filter or heater in kit. Prices seen 349.99-699.99 across pages; 399.99 from PetSmart category page."
+ },
+ {
+  "id": "marineland-hd-led-75",
+  "brand": "Marineland",
+  "name": "High Definition LED Ensemble 75 gal",
+  "tankRatedGal": 75,
+  "tankDims": {
+   "L": 1229,
+   "H": 533,
+   "D": 467
+  },
+  "water": "fresh",
+  "light": {
+   "type": "flat",
+   "tech": "led-white",
+   "count": 1,
+   "watts": null,
+   "spec": "guess"
+  },
+  "lid": "glass",
+  "stand": true,
+  "tier": "budget",
+  "price": {
+   "usd": 499.99,
+   "asOf": "2026-10-19",
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-high-definition-led-ensemble---75-gallon-fish-tank-kit-with-led-62017.html"
+  },
+  "source": [
+   "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-high-definition-led-ensemble---75-gallon-fish-tank-kit-with-led-62017.html"
+  ],
+  "note": "PetSmart: tank 48.38W x 18.38D x 21H in, glass canopy, hidden LED, stand included (50x20x28). No filter or heater. Sale price (was 799.99)."
+ },
+ {
+  "id": "fluval-spec-v-5",
+  "brand": "Fluval",
+  "name": "Spec V Aquarium Kit 5 gal",
+  "tankRatedGal": 5,
+  "tankDims": {
+   "L": 520,
+   "H": 295,
+   "D": 190
+  },
+  "water": "fresh",
+  "light": {
+   "type": "flat",
+   "tech": "led-white",
+   "count": 1,
+   "watts": 10,
+   "spec": "listing",
+   "lumens": 821
+  },
+  "lid": "hood",
+  "filter": {
+   "kind": "internal",
+   "rating": "3-stage rear, 53 gph pump"
+  },
+  "tier": "mid",
+  "price": {
+   "usd": 153.99,
+   "asOf": "2026-10-19",
+   "url": "https://www.thatpetplace.com/fluval-spec-5-aquarium-kit-5gal-black"
+  },
+  "source": [
+   "https://www.thatpetplace.com/fluval-spec-5-aquarium-kit-5gal-black",
+   "https://www.liveaquaria.com/products/fluval-spec-v-5-gallon-desktop-aquarium-kit"
+  ],
+  "note": "10 W, 7000-7500K, ~35 white + 2 blue LEDs. PAR not published. Dims conflict: 52x29.5x19 cm (Josh's Frogs) used; That Pet Place says 17.2x11.6x6.3 in (older version). Lid/canopy integrated; no heater. Price is a pickup-only store listing."
+ },
+ {
+  "id": "fluval-flex-9",
+  "brand": "Fluval",
+  "name": "Flex Aquarium Kit 9 gal (34 L)",
+  "tankRatedGal": 9,
+  "tankDims": {
+   "L": 350,
+   "H": 330,
+   "D": 330
+  },
+  "water": "fresh",
+  "light": {
+   "type": "flat",
+   "tech": "led-planted",
+   "count": 1,
+   "watts": 7,
+   "spec": "listing"
+  },
+  "lid": "hood",
+  "filter": {
+   "kind": "internal",
+   "rating": "3-stage rear, ~230 L/h"
+  },
+  "tier": "plant",
+  "source": [
+   "https://www.aquasabi.com/Fluval-Flex-20-34-l-Black",
+   "https://charterhouse-aquatics.com/products/fluval-flex-2-0-aquarium-kit-34l-9-us-gal"
+  ],
+  "note": "7 W, 7500K white + RGB, 36 white + 3 RGB LEDs. PAR not published. Dims from EU retailers (mm). Original vs 2.0 differ slightly. No US price captured; no heater."
+ },
+ {
+  "id": "fluval-flex-15",
+  "brand": "Fluval",
+  "name": "Flex Aquarium Kit 15 gal (57 L)",
+  "tankRatedGal": 15,
+  "tankDims": {
+   "L": 406,
+   "H": 381,
+   "D": 381
+  },
+  "water": "fresh",
+  "light": {
+   "type": "flat",
+   "tech": "led-planted",
+   "count": 1,
+   "watts": 10.8,
+   "spec": "listing",
+   "lumens": 2450
+  },
+  "lid": "hood",
+  "filter": {
+   "kind": "internal",
+   "rating": "3-stage rear, 132 gph pump"
+  },
+  "tier": "plant",
+  "source": [
+   "https://www.bulkreefsupply.com/fluval-flex-15-gallon-aquarium-kit-fluval.html",
+   "https://www.thatpetplace.com/fluval-flex-aquarium-kit-black-15-gal"
+  ],
+  "note": "10.8 W, 2450 lm, 7500K, 48 white + 6 RGB LEDs, remote. PAR not published. Heater sold separately. Price not found on fetched page. Dim order 16 L x 15 x 15 per Fluval table (Flex 2.0 is 16.3x15.75x15)."
+ },
+ {
+  "id": "fluval-evo-13-5",
+  "brand": "Fluval",
+  "name": "Evo Aquarium Kit 13.5 gal",
+  "tankRatedGal": 13.5,
+  "tankDims": {
+   "L": 559,
+   "H": 381,
+   "D": 292
+  },
+  "water": "fresh",
+  "light": {
+   "type": "flat",
+   "tech": "led-white",
+   "count": 1,
+   "watts": 16,
+   "spec": "listing",
+   "lumens": 1383
+  },
+  "lid": "hood",
+  "filter": {
+   "kind": "internal",
+   "rating": "3-stage rear, 132 gph pump"
+  },
+  "tier": "mid",
+  "price": {
+   "usd": 227.99,
+   "asOf": "2026-10-19",
+   "url": "https://joshsfrogs.com/sp/fluval-evo-13-5-gallon-aquarium-kit-pt10531"
+  },
+  "source": [
+   "https://joshsfrogs.com/sp/fluval-evo-13-5-gallon-aquarium-kit-pt10531",
+   "https://fluvalaquatics.com/ca/?p=60472"
+  ],
+  "note": "16 W, 14000K, 31 LEDs, 1383 lm. PAR not published. Dims: US listing 22x11.5x15 in (Fluval CA table says 22x15x11.5; H/D ambiguous). Canopy with feed door; no heater. 14000K is not plant-tuned."
+ },
+ {
+  "id": "fluval-flex-32-5",
+  "brand": "Fluval",
+  "name": "Flex Aquarium Kit 32.5 gal (123 L)",
+  "tankRatedGal": 32.5,
+  "tankDims": {
+   "L": 820,
+   "H": 390,
+   "D": 400
+  },
+  "water": "fresh",
+  "light": {
+   "type": "flat",
+   "tech": "led-planted",
+   "count": 1,
+   "watts": 21,
+   "spec": "listing",
+   "lumens": 1450
+  },
+  "lid": "hood",
+  "filter": {
+   "kind": "internal",
+   "rating": "3-stage rear"
+  },
+  "tier": "plant",
+  "price": {
+   "usd": 329.99,
+   "asOf": "2026-10-19",
+   "url": "https://www.thatpetplace.com/fluval-flex-aquarium-kit-black-325-gal"
+  },
+  "source": [
+   "https://www.thatpetplace.com/fluval-flex-aquarium-kit-black-325-gal",
+   "https://fishtanksdirect.com/hagen-fluval-flex-32-5-gallon---black"
+  ],
+  "note": "21 W, ~1450 lm, 42 white + 21 RGB (one spec sheet; may be a marine-variant light, unverified). PAR not published. Dims 82x40x39 cm (D/H ambiguous). Other US prices 369.99-399.99. Price is That Pet Place (store pickup/delivery)."
+ },
+ {
+  "id": "fluval-sea-evo-xii-13-5",
+  "brand": "Fluval",
+  "name": "Sea Evo XII 13.5 gal marine kit",
+  "tankRatedGal": 13.5,
+  "tankDims": {
+   "L": 560,
+   "H": 380,
+   "D": 290
+  },
+  "water": "salt",
+  "light": {
+   "type": "flat",
+   "tech": "led-reef",
+   "count": 1,
+   "watts": 16,
+   "spec": "listing"
+  },
+  "lid": "glass",
+  "stand": false,
+  "filter": {
+   "kind": "internal"
+  },
+  "tier": "reef",
+  "price": {
+   "usd": 229.99,
+   "asOf": "2026-10-19",
+   "url": "https://www.thatpetplace.com/fluval-evo-saltwater-kit-135-gal"
+  },
+  "source": [
+   "https://www.thatpetplace.com/fluval-evo-saltwater-kit-135-gal",
+   "https://fragbox.ca/fluval-sea-evo-marine-aquarium-kit-13-5-gallons/",
+   "https://natureaquariums.com/products/fluval-sea-evo-xii-saltwater-aquarium-kit-12-gal"
+  ],
+  "note": "Dims 56x29x38 cm (L x D x H) from retailer listing. 16 W from one listing only (14000K, 1383 lm); no PAR published. No heater included (rear chamber fits Fluval M50W, sold separately). Rear 3-stage chamber (foam, carbon, BioMax), small pump. Listing titles say 12 gal vs 13.5 gal body text. That Pet Place page is pickup/local only; Chewy page 429-blocked; Nature Aquariums showed $227."
+ },
+ {
+  "id": "fluval-flex-marine-32-5",
+  "brand": "Fluval",
+  "name": "Flex Marine 32.5 gal saltwater kit",
+  "tankRatedGal": 32.5,
+  "tankDims": {
+   "L": 826,
+   "H": 390,
+   "D": 400
+  },
+  "water": "salt",
+  "light": {
+   "type": "flat",
+   "tech": "led-reef",
+   "count": 1,
+   "watts": 42,
+   "spec": "listing"
+  },
+  "lid": "hood",
+  "stand": false,
+  "filter": {
+   "kind": "internal"
+  },
+  "tier": "reef",
+  "price": {
+   "usd": 519.99,
+   "asOf": "2026-10-19",
+   "url": "https://natureaquariums.com/products/fl-flex-marine-aquarium-kit-325gal-blk"
+  },
+  "source": [
+   "https://natureaquariums.com/products/fl-flex-marine-aquarium-kit-325gal-blk",
+   "https://piscespets.com/products/fl-flex-32-5-gallon-kit",
+   "https://aquaticsunlimited.com/product/02dcd191-aec2-11ea-f336-753013352129",
+   "https://reefbuilders.com/2020/10/12/hagen-launches-fluval-flex-saltwater-aquarium-kit"
+  ],
+  "note": "Dims 32.5 x 15.35 H x 15.75 D in from Pisces Pets. Light is Marine 3.0 LED: 42 W per two retailers, but Fluval Marine 3.0 range lists 46 W for a similar size, so 42 W unconfirmed; no PAR. Lid is a fitted cover/canopy. No heater (M-150W separate). Rear 3-stage chamber, 810 L/h pump. Fluval official page 403-blocked. Price from Nature Aquariums via search snippet, not page-verified; Aquatics Unlimited $444.99 pickup only."
+ },
+ {
+  "id": "coralife-biocube-16-led",
+  "brand": "Coralife",
+  "name": "BioCube 16 LED",
+  "tankRatedGal": 16,
+  "tankDims": {
+   "L": 425,
+   "H": 445,
+   "D": 381
+  },
+  "water": "salt",
+  "light": {
+   "type": "flat",
+   "tech": "led-reef",
+   "count": 1,
+   "watts": null,
+   "par": 38,
+   "spec": "published"
+  },
+  "lid": "hood",
+  "stand": false,
+  "filter": {
+   "kind": "internal"
+  },
+  "tier": "reef",
+  "price": {
+   "usd": 339.99,
+   "asOf": "2026-10-19",
+   "url": "https://www.thatpetplace.com/biocube-led-aquarium-16-gallon"
+  },
+  "source": [
+   "https://www.thatpetplace.com/biocube-led-aquarium-16-gallon",
+   "https://fishtanksdirect.com/coralife-new-style-size-16-led-biocube-aquarium/",
+   "https://www.saltwateraquarium.com/16-gallon-biocube-aquarium-w-led-kit-tank-stand-coralife/"
+  ],
+  "note": "Dims 15 x 17.5 H x 16.75 in; listings disagree on which side is L vs D (footprint same). PAR 38 avg at 12 in (peak 61) from seller; wattage not found. Hinged canopy. No heater listed. Rear AIO chamber: dual intakes, sponge pad, bio balls, 185 GPH pump. Stock unconfirmed (pickup-only at That Pet Place; Fish Tanks Direct $349.99). Tank only; stand separate ($499.99 kit w/ stand at saltwateraquarium.com)."
+ },
+ {
+  "id": "coralife-biocube-32-led",
+  "brand": "Coralife",
+  "name": "BioCube 32 LED",
+  "tankRatedGal": 32,
+  "tankDims": {
+   "L": 514,
+   "H": 546,
+   "D": 556
+  },
+  "water": "salt",
+  "light": {
+   "type": "flat",
+   "tech": "led-reef",
+   "count": 1,
+   "watts": null,
+   "par": 53,
+   "spec": "published"
+  },
+  "lid": "hood",
+  "stand": false,
+  "filter": {
+   "kind": "internal"
+  },
+  "tier": "reef",
+  "price": {
+   "usd": 469.99,
+   "asOf": "2026-10-19",
+   "url": "https://fishtanksdirect.com/coralife-new-style-size-32-led-biocube-aquarium/"
+  },
+  "source": [
+   "https://fishtanksdirect.com/coralife-new-style-size-32-led-biocube-aquarium/",
+   "https://www.reefsupplies.ca/products/coralife-biocube-32g-aquarium-w-leds"
+  ],
+  "note": "Dims 20.25 L x 21.875 W x 21.5 H in per Fish Tanks Direct (one other listing 27.5x25.5x27, likely packaging). Listing text says 30 gal; name says 32. PAR 53 at 12 in from seller; wattage not found. Hinge-top canopy. No heater. Rear chamber with 264 GPH pump, sponge, media basket. Stand separate. Another US listing $429.99 on sale."
+ },
+ {
+  "id": "waterbox-aio-20-cube",
+  "brand": "Waterbox",
+  "name": "AIO 20 Cube + SLED 17 (light sold separately)",
+  "tankRatedGal": 20,
+  "tankDims": {
+   "L": 450,
+   "H": 399,
+   "D": 450
+  },
+  "water": "salt",
+  "light": {
+   "type": "flat",
+   "tech": "led-reef",
+   "count": 1,
+   "watts": 32,
+   "spec": "listing"
+  },
+  "lid": "open",
+  "stand": false,
+  "filter": {
+   "kind": "internal"
+  },
+  "tier": "reef",
+  "price": {
+   "usd": 289.99,
+   "asOf": "2026-10-19",
+   "url": "https://waterboxaquariums.com/products/aio-20-cube"
+  },
+  "source": [
+   "https://waterboxaquariums.com/products/aio-20-cube",
+   "https://waterboxaquariums.com/products/sled-saltwater-led-lighting-system",
+   "https://www.bulkreefsupply.com/cube-20-nano-aio-aquarium-waterbox.html"
+  ],
+  "note": "Price is tank + rear filter + return pump only (listed sold out on Waterbox 10-19; BRS $269.99-289.99). Light NOT included: light fields assume compatible SLED 17 (32 W, $159.99, no PAR published), combined about $449.98. Dims 17.7 x 15.7 H x 17.7 in. AIO chamber: sock, sponge, ceramic rings, carbon; 264 GPH pump. No heater. No lid sold. Waterbox AIO 10/15 'with LED' bundles use freshwater FLED, so not used."
+ },
+ {
+  "id": "red-sea-max-nano-g2-cube",
+  "brand": "Red Sea",
+  "name": "MAX NANO G2 Cube (complete reef system)",
+  "tankRatedGal": 20,
+  "tankDims": {
+   "L": 450,
+   "H": 450,
+   "D": 450
+  },
+  "water": "salt",
+  "light": {
+   "type": "flat",
+   "tech": "led-reef",
+   "count": 1,
+   "watts": 60,
+   "par": 500,
+   "spec": "published"
+  },
+  "lid": "open",
+  "stand": false,
+  "filter": {
+   "kind": "internal"
+  },
+  "tier": "reef",
+  "price": {
+   "usd": 799,
+   "asOf": "2026-10-19",
+   "url": "https://www.bulkreefsupply.com/max-nano-g2-cube-aquarium-20-gal-red-sea.html"
+  },
+  "source": [
+   "https://redseafish.com/aquarium-systems/max-nano-series/",
+   "https://www.bulkreefsupply.com/max-nano-g2-cube-aquarium-20-gal-red-sea.html",
+   "https://www.redseafish.com/reefled-g2",
+   "https://aquasd.com/max-nano-g2-cube-aquarium-20-gal/"
+  ],
+  "note": "Display 45x45x45 cm, 75 L total (19.8 gal) with rear sump. ReefLED G2 60: 60 W, PAR about 500 at surface, about 100 at 50 cm (Red Sea). Includes pump, ATO, Nano XL skimmer, filter sock. No heater. Price is tank-only; cabinet version $1,149 (stand:true). Open top, light on arm. BRS ships from manufacturer. Some retailers still say ReefLED 50."
+ },
+ {
+  "id": "red-sea-max-nano-g2-peninsula",
+  "brand": "Red Sea",
+  "name": "MAX NANO G2 Peninsula (complete reef system)",
+  "tankRatedGal": 26,
+  "tankDims": {
+   "L": 585,
+   "H": 450,
+   "D": 450
+  },
+  "water": "salt",
+  "light": {
+   "type": "flat",
+   "tech": "led-reef",
+   "count": 1,
+   "watts": 60,
+   "par": 500,
+   "spec": "published"
+  },
+  "lid": "open",
+  "stand": false,
+  "filter": {
+   "kind": "internal"
+  },
+  "tier": "reef",
+  "price": {
+   "usd": 949,
+   "asOf": "2026-10-19",
+   "url": "https://www.bulkreefsupply.com/max-nano-g2-peninsula-aquarium-26-gal-red-sea.html"
+  },
+  "source": [
+   "https://redseafish.com/aquarium-systems/max-nano-series/",
+   "https://www.bulkreefsupply.com/max-nano-g2-peninsula-aquarium-26-gal-red-sea.html"
+  ],
+  "note": "Display 45 x 58.5 x 45 cm (17.7 x 23 x 17.7 in), 100 L total (26.4 gal). ReefLED G2 60 included; PAR as for Cube. No heater. Tank-only $949, cabinet $1,249, in stock at BRS. Long side taken as L; L/D assignment inferred from listing order."
+ },
+ {
+  "id": "red-sea-max-nano-g2-xl",
+  "brand": "Red Sea",
+  "name": "MAX NANO G2 XL (complete reef system)",
+  "tankRatedGal": 33,
+  "tankDims": {
+   "L": 600,
+   "H": 500,
+   "D": 500
+  },
+  "water": "salt",
+  "light": {
+   "type": "flat",
+   "tech": "led-reef",
+   "count": 1,
+   "watts": 60,
+   "par": 500,
+   "spec": "published"
+  },
+  "lid": "open",
+  "stand": false,
+  "filter": {
+   "kind": "internal"
+  },
+  "tier": "reef",
+  "price": {
+   "usd": 993.52,
+   "asOf": "2026-10-19",
+   "url": "https://topshelfaquatics.com/products/max-nano-g2-xl-complete-reef-system-red-sea"
+  },
+  "source": [
+   "https://redseafish.com/aquarium-systems/max-nano-series/",
+   "https://topshelfaquatics.com/products/max-nano-g2-xl-complete-reef-system-red-sea",
+   "https://reefsupplies.ca/products/red-sea-max-nano-xl-g2"
+  ],
+  "note": "Display 50 x 60 x 50 cm, 125 L total (33 gal). Retailers disagree which 50/60 side is W vs D (Top Shelf: 20x24x20 in). ReefLED G2 60 included (retail pages may say 50). Skimmer, ATO, pump included; no heater. Sale price (regular $1,129), tank-only variant, cabinet extra. Stock unclear on page."
+ }
+]

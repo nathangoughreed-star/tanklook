@@ -1,6 +1,27 @@
 # HANDOFF archive
 Finished lane and feature sections moved out of HANDOFF.md on 2026-10-16, verbatim, newest first.
 
+## Lane KB: kit catalog (2026-10-19, branch `kits`, port 5713)
+
+**Landed 2026-10-19.** `src/data/kits.json` (32 kits: 13 Top Fin/Tetra, 11 Aqueon/Marineland/Fluval fresh, 8 reef: Fluval Sea/Flex Marine,
+BioCube, Waterbox, Red Sea Max Nano) + typed loader `src/data/kits.ts` + `test/kits.test.ts` + `research/kits/<brand>.md`.
+- Light wattage is NOT published for almost all budget/mid kits: `watts: null`, `spec: 'guess'` (consumer applies the tier default).
+  Reliable watts: Fluval (retailer listings). PAR published only for Red Sea ReefLED G2 60 and BioCube 16/32.
+- `tank` (TankModel id) is absent until KA's tanks.json lands; `tankDims` = outer mm, L/D order ambiguous for a few (see notes); two
+  kits have no dims (Top Fin Captivate hex, Essentials 10). Coordinator reconciles ids.
+- Prices are sale/pickup-store snapshots dated 2026-10-19; Tetra, Aqueon 10, Flex 9/15 have none (blocked fetches), noted per record.
+- Waterbox AIO has no factory light; SLED 17 (32 W) assumed, flagged. Reef kits: none include a heater.
+- Brand list was chosen by the lane (Nathan approved without seeing one): add/replace brands by a refresh in research/kits/.
+
+
+
+## Lane EN: enclosure presentation (2026-10-16; branch `enclosure`, port 5673; opened by coordinator 3)
+Scope: roadmap section 7. Audit (2026-10-16): presets PARTIAL, backdrops DONE (no botanical / plain), lids+doors NOT BUILT, equipment PARTIAL (lights only), light mood PARTIAL (no direction / mood presets), bowls DONE.
+**Batch 1 (2026-10-16, Nathan approved pictures `shots/enclosure/EN1-2`):** 9 terrarium presets in `TANK_PRESETS` (nano 8", cubes 12/18", tall arboreal 12x18x12 / 18x24x18 / 24x48x24, wide terrestrial 36x18x18 / 48x18x24 / 48x24x24); lid 'mesh' (screen top: dark frame + textured weave in `build.ts` addLid via `meshMaterial`, light x0.8 `MESH_LID` in lightout, plants cap at lid like glass); new optional `TankSetup.doors` 'hinged' | 'sliding' (absent = none; rectangles only; `addFrontDoors` in build.ts; Lid row has Mesh top, new Front doors row in the Tank section). No version bump (additive, validate keeps old files). One-line hooks outside my files: `render/items.ts` (lid cap), `ui/diff.ts`, `scene/setupsheet.ts`, `scene/lightout.ts`.
+**Batch 3 (2026-10-19, pushed; Nathan approved EN6-EN8):** 3D wall kind 'jungle' (backdrop.ts: overlapping leaves with midrib and veins, edges tapered so the grid shows no steps); Background 'custom' (Plain colour, `render.bgColor` hex, colour picker next to the Background menu). The equipment batch 2 is still ON HOLD on local branch `enclosure` (commit 6f5f307), not on main.
+Open: equipment (heater, hang-on filter, canister outlet, mister nozzle, light bar) in new scene/equipment.ts + render/equipment.ts; light mood / direction; botanical / plain backdrop. Weight of a mesh lid is not counted.
+
+
 ## Lane CP: content pack (2026-10-16; branch `content-pack`, port 5683; batch 1 pushed, Nathan approved the pictures)
 - **Dish** (`dish` ceramic, `stonedish`; kind `cave`, no new ItemKind): lathed bowl + flat blue water disc with a bright meniscus ring (`dishShape`, render/items.ts); grit kind 0 on glaze and water. Same water in a wet tank (opaque disc, no waterline test).
 - **Succulents** (`echeveria haworthia jade aloe burrotail barrel`, land, slow): data in `PLANT3D`; new options `Leaf3D.thick` (fleshy leaf: top bulges up, underside down; old plants untouched) and `Plant3D.stemK` (stem radius; jade trunk). Barrel = ribs curling in (negative arch). `cap` keeps echeveria / haworthia / barrel / aloe compact at growth 1. lightneeds rows: high band, no CO2, no ferts (haworthia PAR from 30). Open: jade at growth 0 is a bare cutting (stem-form rule); burro's tail is thin-ish; haworthia white bands barely show; arid starter still uses hairgrass + bromeliads (not switched to succulents).

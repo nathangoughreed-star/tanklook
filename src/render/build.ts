@@ -36,6 +36,7 @@ export const BACKGROUNDS: Record<Background, { label: string; color: number | nu
   gradient: { label: 'Blue gradient', color: 0xffffff, gradient: true },
   grey: { label: 'Charcoal grey', color: 0x3a3e44 },
   frosted: { label: 'Frosted white', color: 0xe6ecee, light: true, frost: true },
+  custom: { label: 'Plain colour (pick)', color: 0x2f4a36 },
   none: { label: 'None (clear glass)', color: null, light: true },
 };
 
@@ -233,7 +234,7 @@ function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
   const { H } = T, R = S.render, fp = footprint(T), bowl = shapeOf(T) === 'bowl';
   // backing under the substrate; a bare-bottom tank has none, so the stand top or the room shows through the bottom pane
   if (S.substrate.show || S.terrain.on) sc.add(new THREE.Mesh(flatGeometry(fp.ring, 0), basic(0xcdb98f, { side: THREE.DoubleSide })));
-  const bg = BACKGROUNDS[R.bg], t = glassThickness(T, R.glass);
+  const bg = R.bg === 'custom' ? { ...BACKGROUNDS.custom, color: parseInt((R.bgColor ?? '#2f4a36').slice(1), 16) } : BACKGROUNDS[R.bg], t = glassThickness(T, R.glass);
   // uploaded pictures take their sides whatever the background is; the plain background keeps its other sides
   const pics = R.bgImages.flatMap(b => { const data = b.sides.length ? getImage(b.img) : undefined; return data ? [{ ...b, data }] : []; });
   const picSides = new Set(pics.flatMap(b => b.sides)), plain = bg.color === null ? [] : R.bgSides.filter(k => !picSides.has(k));
