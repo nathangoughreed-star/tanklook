@@ -10,11 +10,14 @@ permissions:
   pages: write
   id-token: write
 
-# No workflow-level concurrency: each job has its own group.
-# - test: a newer push cancels an older run's tests (its result would be superseded anyway).
-# - deploy: never cancelled once running; a newer deploy waiting in the queue replaces an older
-#   waiting one, so the latest commit that passed tests is always the last one deployed.
-# A run whose deploy job has started is past its test job, so a newer push cannot cancel it.
+# No workflow-level concurrency: each job has its own group, and neither cancels a running job.
+# GitHub keeps at most one running and one waiting job per group; a newer waiting job replaces the
+# older waiting one. So during a burst of pushes:
+# - test: the running test finishes (pushes come every 1-4 min and a test takes ~3, so cancelling
+#   running tests would starve deploys); the newest push waits next, intermediate ones are dropped.
+# - deploy: a running deploy always finishes; the newest tested commit waits next.
+# Runs pass test in push order, so an older commit can never deploy after a newer one, and the
+# latest commit on main always ends up deployed once it passes tests.
 
 jobs:
   test:
@@ -22,7 +25,7 @@ jobs:
     timeout-minutes: 20 # a hung test must not hold the run
     concurrency:
       group: test-${{ github.ref }}
-      cancel-in-progress: true
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
