@@ -1,6 +1,20 @@
 # HANDOFF archive
 Finished lane and feature sections moved out of HANDOFF.md on 2026-10-16, verbatim, newest first.
 
+## Lane KB: kit catalog (2026-10-19, branch `kits`, port 5713)
+
+**Landed 2026-10-19.** `src/data/kits.json` (32 kits: 13 Top Fin/Tetra, 11 Aqueon/Marineland/Fluval fresh, 8 reef: Fluval Sea/Flex Marine,
+BioCube, Waterbox, Red Sea Max Nano) + typed loader `src/data/kits.ts` + `test/kits.test.ts` + `research/kits/<brand>.md`.
+- Light wattage is NOT published for almost all budget/mid kits: `watts: null`, `spec: 'guess'` (consumer applies the tier default).
+  Reliable watts: Fluval (retailer listings). PAR published only for Red Sea ReefLED G2 60 and BioCube 16/32.
+- `tank` (TankModel id) is absent until KA's tanks.json lands; `tankDims` = outer mm, L/D order ambiguous for a few (see notes); two
+  kits have no dims (Top Fin Captivate hex, Essentials 10). Coordinator reconciles ids.
+- Prices are sale/pickup-store snapshots dated 2026-10-19; Tetra, Aqueon 10, Flex 9/15 have none (blocked fetches), noted per record.
+- Waterbox AIO has no factory light; SLED 17 (32 W) assumed, flagged. Reef kits: none include a heater.
+- Brand list was chosen by the lane (Nathan approved without seeing one): add/replace brands by a refresh in research/kits/.
+
+
+
 ## Lane EN: enclosure presentation (2026-10-16; branch `enclosure`, port 5673; opened by coordinator 3)
 Scope: roadmap section 7. Audit (2026-10-16): presets PARTIAL, backdrops DONE (no botanical / plain), lids+doors NOT BUILT, equipment PARTIAL (lights only), light mood PARTIAL (no direction / mood presets), bowls DONE.
 **Batch 1 (2026-10-16, Nathan approved pictures `shots/enclosure/EN1-2`):** 9 terrarium presets in `TANK_PRESETS` (nano 8", cubes 12/18", tall arboreal 12x18x12 / 18x24x18 / 24x48x24, wide terrestrial 36x18x18 / 48x18x24 / 48x24x24); lid 'mesh' (screen top: dark frame + textured weave in `build.ts` addLid via `meshMaterial`, light x0.8 `MESH_LID` in lightout, plants cap at lid like glass); new optional `TankSetup.doors` 'hinged' | 'sliding' (absent = none; rectangles only; `addFrontDoors` in build.ts; Lid row has Mesh top, new Front doors row in the Tank section). No version bump (additive, validate keeps old files). One-line hooks outside my files: `render/items.ts` (lid cap), `ui/diff.ts`, `scene/setupsheet.ts`, `scene/lightout.ts`.
