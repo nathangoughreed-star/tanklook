@@ -63,7 +63,13 @@ State 2026-10-19: DONE, Nathan approved the pictures (12 shots, phone + desktop)
 - Bare tanks are judged with a stand-in LED (watts null -> kitlight tier default, flagged a guess): budget tier for fish, mid tier with planted tech for planted (the plant tier read 'very bright' from 40 gal up). Terrariums: catalog terrarium tanks filtered by HERP floor (min / rec sq ft, outer L x D) and hMin; no stand, mesh top, water off, the animal's starter style (arid / rainforest / python / frogs).
 - Open: salt (kits carry it; not offered yet); the named animal is not placed (the result says to add it from Animals); upgrade steps show no $ until someone sets `setUpgradePriceHook`; aquatic herps (axolotl, ADF, newt) not in the terrarium list.
 
-## Lane DS: one expected-cost number (2026-10-19, branch `expectedcost`, port 5793)  (lane fills this in)
+## Lane DS: one expected-cost number (2026-10-19, branch `expectedcost`, port 5793)
+- Decision (Nathan 2026-10-19): ask only "What do you want your expected set-up cost to be?"; every limit is checked against the expected value. No percentile, range or cap mode.
+- Removed: `Limits.budgetMode`, factors.json `budgetCapPercentile` + `correlation`, the Monte Carlo in `src/demand/cost.ts` (now only `limitState(D, P)` and `drivers(D, P, bar, top)`), `costDistribution` / `CostResult` / `Dist` / `pct`, the "likely a to b" text and hover wording, the "% of the doubt" share, the cap radio in the limits form, `.dmband` / `.dmcap` / `.dmshare` / `.dmask` CSS. `UI state()` no longer returns `cost`. `kwhRate(P)` is exported from the engine (expected $/kWh).
+- Public signatures for lane KW: `demandOf(S, P, opts)` and `profile.limits` (`setupUsd`, `upkeep`, `minPerWeek`, `risk`) are unchanged; `limitState` lost its middle argument (`limitState(D, P)`), `drivers` gained `P` (`drivers(D, P, bar, top)`).
+- Kept: lo / mode / hi on contributors and in the data tables (they define the mean and the price-age widening), `lossMo` expected loss replacement, skill-scaled risk.
+- Equivalence: `test/demand.test.ts` "expected cost" pins `Demand.totals` to the old 20000-draw means for 18 fixed setups (< 1 %). Engine totals are unchanged (test/tech.test.ts locks them); the old sample mean sat up to ~2 % higher on upkeep because it carried the mean of the kWh-rate spread (x1.033 on electricity), so the pin allows 3 % on upkeep.
+- Pictures before / after: research/efficiency/ds/. Waiting for Nathan's verdict before pushing.
 
 ## Lane CS: CI workflow split (2026-10-19, branch `cisplit`, port 5803)
 - `.github/workflows/deploy.yml` is two jobs with job-level concurrency (no workflow-level group): `test` (npm ci, npm test; group `test-<ref>`, cancel-in-progress **false**) and `deploy` (needs test; build, upload-pages-artifact, deploy-pages; group `pages`, cancel-in-progress **false**).
