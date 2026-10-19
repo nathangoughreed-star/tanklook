@@ -202,9 +202,10 @@ export const DROP_COLOURS = { low: 0x3a6fd0, ok: 0x41b441, high: 0xd9c93a } as c
 
 // ---------- the frame the gear is placed in ----------
 
-/** A heater's glass length (mm) by its rating: about what the common brands' tubes measure. */
+/** A heater's glass length (mm) by its rating: a typical compact tube of that class (Nathan 2026-10-19: the longer
+ *  brands made them look oversized); a real product's own length comes with the gear catalogue. */
 export function heaterLength(watts: number) {
-  const t: [number, number][] = [[25, 160], [50, 220], [100, 275], [200, 310], [300, 340], [500, 420]];
+  const t: [number, number][] = [[25, 150], [50, 190], [100, 240], [200, 290], [300, 320], [500, 400]];
   for (let i = 1; i < t.length; i++) if (watts <= t[i][0]) { const [w0, l0] = t[i - 1], [w1, l1] = t[i]; return l0 + (l1 - l0) * clamp((watts - w0) / (w1 - w0), 0, 1); }
   return t[t.length - 1][1];
 }
