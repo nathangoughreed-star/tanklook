@@ -1,0 +1,448 @@
+{
+ "neon": {
+  "a": 0.01122,
+  "b": 3.08,
+  "src": "fishbase-bayes"
+ },
+ "discus": {
+  "a": 0.02692,
+  "b": 3.03,
+  "src": "fishbase-bayes"
+ },
+ "kuhli": {
+  "a": 0.00501,
+  "b": 3.08,
+  "src": "fishbase-bayes"
+ },
+ "bristlenose": {
+  "a": 0.01479,
+  "b": 2.98,
+  "src": "fishbase-bayes"
+ },
+ "angel": {
+  "a": 0.03236,
+  "b": 2.98,
+  "src": "fishbase-bayes"
+ },
+ "oscar": {
+  "a": 0.03162,
+  "b": 3.02,
+  "src": "fishbase-bayes"
+ },
+ "guppy": {
+  "a": 0.01288,
+  "b": 3.14,
+  "src": "fishbase-bayes"
+ },
+ "betta": {
+  "a": 0.00977,
+  "b": 2.97,
+  "src": "fishbase-bayes"
+ },
+ "ember": {
+  "a": 0.01202,
+  "b": 3.09,
+  "src": "fishbase-bayes"
+ },
+ "goldfish": {
+  "a": 0.0121,
+  "b": 3.002,
+  "src": "fishbase-measured",
+  "note": "Carassius auratus, USA Florida, TL 2.9-25.2 cm"
+ },
+ "cardinal": {
+  "a": 0.01122,
+  "b": 3.08,
+  "src": "fishbase-bayes"
+ },
+ "rummynose": {
+  "a": 0.00389,
+  "b": 3.12,
+  "src": "fishbase-bayes"
+ },
+ "harlequin": {
+  "a": 0.01995,
+  "b": 3.01,
+  "src": "fishbase-bayes"
+ },
+ "chili": {
+  "a": 0.00891,
+  "b": 3.02,
+  "src": "fishbase-bayes"
+ },
+ "danio": {
+  "a": 0.00977,
+  "b": 3.04,
+  "src": "fishbase-bayes"
+ },
+ "whitecloud": {
+  "a": 0.01023,
+  "b": 3.08,
+  "src": "fishbase-bayes"
+ },
+ "cpd": {
+  "a": 0.00603,
+  "b": 3.13,
+  "src": "fishbase-bayes"
+ },
+ "hatchet": {
+  "a": 0.01622,
+  "b": 3.13,
+  "src": "fishbase-bayes"
+ },
+ "cherrybarb": {
+  "a": 0.01259,
+  "b": 3.02,
+  "src": "fishbase-bayes",
+  "note": "FishBase page Puntius titteya"
+ },
+ "tigerbarb": {
+  "a": 0.01585,
+  "b": 2.94,
+  "src": "fishbase-bayes"
+ },
+ "boesemani": {
+  "a": 0.01122,
+  "b": 3.04,
+  "src": "fishbase-bayes"
+ },
+ "platy": {
+  "a": 0.01047,
+  "b": 3.14,
+  "src": "fishbase-bayes"
+ },
+ "molly": {
+  "a": 0.01514,
+  "b": 3.12,
+  "src": "fishbase-bayes"
+ },
+ "swordtail": {
+  "a": 0.01,
+  "b": 3.06,
+  "src": "fishbase-bayes"
+ },
+ "dwarfgourami": {
+  "a": 0.01445,
+  "b": 2.99,
+  "src": "fishbase-bayes"
+ },
+ "honeygourami": {
+  "a": 0.01479,
+  "b": 2.94,
+  "src": "fishbase-bayes"
+ },
+ "gourami": {
+  "a": 0.01622,
+  "b": 3,
+  "src": "fishbase-bayes"
+ },
+ "gbr": {
+  "a": 0.01445,
+  "b": 3.08,
+  "src": "fishbase-bayes"
+ },
+ "bolivianram": {
+  "a": 0.01445,
+  "b": 3.08,
+  "src": "fishbase-bayes"
+ },
+ "kribensis": {
+  "a": 0.01445,
+  "b": 2.99,
+  "src": "fishbase-bayes"
+ },
+ "cockatoo": {
+  "a": 0.0182,
+  "b": 2.99,
+  "src": "fishbase-bayes"
+ },
+ "yellowlab": {
+  "a": 0.01445,
+  "b": 2.99,
+  "src": "fishbase-bayes"
+ },
+ "peacock": {
+  "a": 0.01445,
+  "b": 2.99,
+  "src": "fishbase-bayes"
+ },
+ "demasoni": {
+  "a": 0.00389,
+  "b": 3.12,
+  "src": "fishbase-bayes"
+ },
+ "kadango": {
+  "a": 0.01445,
+  "b": 2.99,
+  "src": "fishbase-bayes"
+ },
+ "labeo": {
+  "a": 0.00389,
+  "b": 3.12,
+  "src": "fishbase-bayes"
+ },
+ "auratus": {
+  "a": 0.01445,
+  "b": 2.99,
+  "src": "fishbase-bayes"
+ },
+ "livingstonii": {
+  "a": 0.01445,
+  "b": 2.99,
+  "src": "fishbase-bayes"
+ },
+ "afra": {
+  "a": 0.01445,
+  "b": 2.99,
+  "src": "fishbase-bayes"
+ },
+ "syno": {
+  "a": 0.01445,
+  "b": 2.91,
+  "src": "fishbase-bayes"
+ },
+ "comet": {
+  "a": 0.01148,
+  "b": 3.04,
+  "src": "fishbase-bayes"
+ },
+ "bronzecory": {
+  "a": 0.02291,
+  "b": 3.07,
+  "src": "fishbase-bayes"
+ },
+ "pandacory": {
+  "a": 0.00741,
+  "b": 3.14,
+  "src": "fishbase-bayes"
+ },
+ "pygmycory": {
+  "a": 0.0182,
+  "b": 3.02,
+  "src": "fishbase-bayes"
+ },
+ "oto": {
+  "a": 0.01122,
+  "b": 3.11,
+  "src": "fishbase-bayes"
+ },
+ "clownloach": {
+  "a": 0.01047,
+  "b": 2.97,
+  "src": "fishbase-bayes"
+ },
+ "sae": {
+  "a": 0.00813,
+  "b": 3.05,
+  "src": "fishbase-bayes"
+ },
+ "hillstream": {
+  "a": 0.00646,
+  "b": 3.11,
+  "src": "fishbase-bayes"
+ },
+ "peapuffer": {
+  "a": 0.0263,
+  "b": 2.88,
+  "src": "fishbase-bayes"
+ },
+ "ocellaris": {
+  "a": 0.01445,
+  "b": 3,
+  "src": "fishbase-bayes"
+ },
+ "royalgramma": {
+  "a": 0.01122,
+  "b": 3.04,
+  "src": "fishbase-bayes"
+ },
+ "yellowtang": {
+  "a": 0.0195,
+  "b": 2.98,
+  "src": "fishbase-bayes"
+ },
+ "bluetang": {
+  "a": 0.02291,
+  "b": 2.97,
+  "src": "fishbase-bayes"
+ },
+ "firefish": {
+  "a": 0.00389,
+  "b": 3.12,
+  "src": "fishbase-bayes"
+ },
+ "banggai": {
+  "a": 0.02399,
+  "b": 2.91,
+  "src": "fishbase-bayes"
+ },
+ "sixline": {
+  "a": 0.01072,
+  "b": 3.03,
+  "src": "fishbase-bayes"
+ },
+ "chromis": {
+  "a": 0.02042,
+  "b": 2.9,
+  "src": "fishbase-bayes"
+ },
+ "coralbeauty": {
+  "a": 0.04169,
+  "b": 2.75,
+  "src": "fishbase-bayes"
+ },
+ "watchman": {
+  "a": 0.00741,
+  "b": 3.09,
+  "src": "fishbase-bayes"
+ },
+ "mandarin": {
+  "a": 0.01122,
+  "b": 3.02,
+  "src": "fishbase-bayes"
+ },
+ "cherryshrimp": {
+  "a": 0.01111,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 0.3 g (keeper references, not FishBase)"
+ },
+ "amano": {
+  "a": 0.007682,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 0.7 g (keeper references, not FishBase)"
+ },
+ "nerite": {
+  "a": 0.256,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 4 g (keeper references, not FishBase)"
+ },
+ "mystery": {
+  "a": 0.1082,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 18 g (keeper references, not FishBase)"
+ },
+ "ramshorn": {
+  "a": 0.125,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 1 g (keeper references, not FishBase)"
+ },
+ "trumpet": {
+  "a": 0.0384,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 0.6 g (keeper references, not FishBase)"
+ },
+ "cleanershrimp": {
+  "a": 0.01202,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 2 g (keeper references, not FishBase)"
+ },
+ "turbo": {
+  "a": 0.2,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 25 g (keeper references, not FishBase)"
+ },
+ "hermit": {
+  "a": 0.07407,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 2 g (keeper references, not FishBase)"
+ },
+ "dartfrog": {
+  "a": 0.03292,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 3 g (keeper references, not FishBase)"
+ },
+ "treefrog": {
+  "a": 0.06,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 60 g (keeper references, not FishBase)"
+ },
+ "firetoad": {
+  "a": 0.08779,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 8 g (keeper references, not FishBase)"
+ },
+ "firenewt": {
+  "a": 0.00823,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 6 g (keeper references, not FishBase)"
+ },
+ "adf": {
+  "a": 0.06997,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 3 g (keeper references, not FishBase)"
+ },
+ "axolotl": {
+  "a": 0.009863,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 120 g (keeper references, not FishBase)"
+ },
+ "crestedgecko": {
+  "a": 0.005625,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 45 g (keeper references, not FishBase)"
+ },
+ "crestedharlequin": {
+  "a": 0.005625,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 45 g (keeper references, not FishBase)"
+ },
+ "greenanole": {
+  "a": 0.0008573,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 5 g (keeper references, not FishBase)"
+ },
+ "greenanolebrown": {
+  "a": 0.0008573,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 5 g (keeper references, not FishBase)"
+ },
+ "brownanole": {
+  "a": 0.0008573,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 5 g (keeper references, not FishBase)"
+ },
+ "leopardgecko": {
+  "a": 0.005635,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 60 g (keeper references, not FishBase)"
+ },
+ "regaljumper": {
+  "a": 0.3472,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 0.6 g (keeper references, not FishBase)"
+ },
+ "ballpython": {
+  "a": 0.0008681,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 1500 g (keeper references, not FishBase)"
+ },
+ "chacogoldenknee": {
+  "a": 0.1646,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 15 g (keeper references, not FishBase)"
+ }
+}

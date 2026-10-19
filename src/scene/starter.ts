@@ -1,6 +1,7 @@
 // Starter sets, layer by layer (lane SD, 2026-10-15): the hardscape and plants come from scene/items.ts
 // `starterItems`; this adds the animal layer and the regenerate the density sliders and Shuffle call. Each layer draws
 // from its own random stream (seed x layer), so redrawing one leaves the layers it does not feed exactly as they were.
+import { litresPerAnimal } from './stocking';
 import { rng } from '../art/paint';
 import { getSpecies, type Species } from '../data/species';
 import { DEFAULT_DENS, EPIPHYTES, STYLES, STYLE_KIND, clampItem, isLandStyle, isSwampy, layerOf, perch, starterItems, type Layer } from './items';
@@ -23,13 +24,9 @@ const fillAt = (v: number) => v <= 4 ? lerpStops(ANIMAL_FILL, Math.max(v, 1)) : 
 const kindsAt = (v: number) => Math.round(v <= 4 ? lerpStops(KINDS_PER_STOP, Math.max(v, 1)) : KINDS_PER_STOP[4] + (v - 4));
 
 const isInvert = (sp: Species) => sp.kind === 'snail' || sp.cat.endsWith('invert');
-/**
- * Water one animal needs, litres: a rule of thumb near AqAdvisor's for small community fish (about 3 L per neon tetra,
- * about 30 L per angelfish: bioload rises faster than length), half again for marine fish, a third for shrimp and snails.
- */
-export function litresFor(sp: Species) {
-  return 3 * (sp.tl / 35) ** 1.6 * (sp.salt ? 1.5 : 1) * (isInvert(sp) ? 0.3 : 1);
-}
+/** Water one animal needs, litres: its load from the stocking engine (FishBase mass^0.75 x metabolism, scene/stocking.ts; lane SE
+ *  2026-10-19; the rule of thumb it replaced was 3 L x (tl/35)^1.6 per animal, half again for marine, a third for shrimp and snails). */
+export const litresFor = litresPerAnimal;
 /** The water the bioload cap is counted on, litres: the tank to its water line (a swamp's shallow pools still count a
  *  third of the tank, for the animals on land). */
 export function bioloadLitres(s: TankSetup) {
@@ -92,7 +89,7 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
     for (const [sp, n] of count) { if (dry(sp)) continue; const { step, max } = stocking(sp); if (step && n + step <= Math.round(max * big) && add(sp, step)) grew = true; }
   }
   if (stop < 1) { // below Few: the first animals only, one at the least
-    let keep = Math.max(1, Math.round([...count.values()].reduce((a, n) => a + n, 0) * stop));
+    let keep = Math.max(1, Math.floor([...count.values()].reduce((a, n) => a + n, 0) * stop)); // floor: with the engine's cheaper small fish a Few-sized set is 30+ animals, and the bottom of the range must stay one
     for (const [sp, n] of count) { const k = Math.min(n, keep); keep -= k; if (k) count.set(sp, k); else count.delete(sp); }
   }
   const fish: Fish[] = [], ids = new Set<number>();
