@@ -33,6 +33,12 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 | TG tech gear in 3D | `../Glass-Box-techgear` / `techgear` | 5833 | new `render/gear3d.ts`, its build hook, Viewer "Show equipment" toggle | step 1 shipped 2026-10-19; next: movable gear |
 
+**Next batch (Nathan 2026-10-19; coordinator to re-evaluate and write prompts once TG and SE have shipped and the shared checkout is clean):**
+wizard follow-up (salt, the named animal, $ on the upgrade steps, tech preset from goal + budget); beginner setups + gate mode (plan lane E);
+style tiles (plan lane F); wire stockingOf (stockingMemo / stockingLine / stockingDetail) into the demand panel and the wizard;
+then the long list: plant propagation step 2, cling / perch leftovers (tree frogs share the gecko limb-spot miss), re-record the ~70 changed
+models on /review.html (and its drawImage error), snake tongue, PNG import, reusable saved groups; LAST: build.ts / panels.ts splits with nothing else running.
+
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
