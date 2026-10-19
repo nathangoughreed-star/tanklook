@@ -57,10 +57,12 @@
     </div>
     <section class="startpane" role="tabpanel" data-pane="sale" aria-labelledby="tab-sale">
       <p class="hint">Starter kits and tank-and-stand sets on sale: pick one, then make it yours. <span class="dealasof"></span></p>
+      <label class="hint dealsortl">Sort <select class="dealsort" aria-label="Sort the deals"><option value="">Best first</option><option value="size">Size</option><option value="cost">Cost</option><option value="pct">% saved</option></select></label>
       <div id="startSale" class="libgrid"></div>
     </section>
     <section class="startpane" role="tabpanel" data-pane="bundles" aria-labelledby="tab-bundles">
       <p class="hint">Starter kits (tank, hood, light, filter, often a heater) and tank-and-stand sets sold as one package: pick one, then make it yours. <span class="dealasof"></span></p>
+      <label class="hint dealsortl">Sort <select class="dealsort" aria-label="Sort the deals"><option value="">Best first</option><option value="size">Size</option><option value="cost">Cost</option><option value="pct">% saved</option></select></label>
       <div id="startBundles" class="libgrid"></div>
     </section>
     <section class="startpane" role="tabpanel" data-pane="starters" aria-labelledby="tab-starters">
@@ -128,6 +130,7 @@
   </details>
   <details class="sec" data-sec="room"><summary><h2>Room</h2></summary>
   <div class="field"><label class="flabel"><input type="checkbox" id="standOn"> Stand</label><select id="standStyle" aria-label="Stand type"><option value="cabinet">Cabinet</option><option value="frame">Open metal frame</option><option value="custom">Cabinet, custom size</option><option value="table">Table</option></select></div>
+  <div id="standAsk" class="hint standask" hidden>No stand on this tank yet. The budget counts a typical stand until you choose. <button type="button" id="standAdd">Add a stand</button> <button type="button" id="standNone">I don't need a stand</button></div>
   <div class="field"><label class="flabel" for="standFinish">Finish</label><select id="standFinish"></select></div>
   <div class="row"><label for="standH">Stand height</label><input id="standH" type="range" step="5"><output id="oStandH"></output></div>
   <div id="tableRows">

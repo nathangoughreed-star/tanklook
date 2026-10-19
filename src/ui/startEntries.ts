@@ -32,6 +32,15 @@ export function startDeals(now = Date.now(), deals: Deal[] = DEALS): { sale: Dea
   return { sale, bundles };
 }
 
+/** Optional orders for the deal tabs: '' keeps the tab's own (sale: best saving; bundles: cheapest), size = rated gallons up,
+ *  cost = price up, pct = share saved against buying the parts, most first. */
+export type DealSort = '' | 'size' | 'cost' | 'pct';
+export const pctSaved = (e: DealEntry) => e.savingUsd > 0 ? e.savingUsd / (e.deal.price.usd + e.savingUsd) : 0;
+export function sortDeals(list: DealEntry[], by: DealSort): DealEntry[] {
+  if (!by) return list;
+  const key = (e: DealEntry) => by === 'size' ? e.deal.gal : by === 'cost' ? e.deal.price.usd : -pctSaved(e);
+  return [...list].sort((a, b) => key(a) - key(b) || a.deal.price.usd - b.deal.price.usd);
+}
 /** Tabs to show, in order: sale and bundles only when they have something; starters and open always. */
 export function visibleTabs(n: { sale: number; bundles: number }): StartTab[] {
   return [...(n.sale ? ['sale' as const] : []), ...(n.bundles ? ['bundles' as const] : []), 'starters', 'open'];

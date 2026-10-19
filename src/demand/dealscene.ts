@@ -14,7 +14,9 @@ export function sceneFromDeal(d: Deal): Scene | undefined {
   const sc = emptyScene(); let S = sc.tanks[0];
   S.tank = tankFromModel(m);
   S.camera = { ...S.camera, az: 35, el: 22, zoom: 0.8 }; // three-quarter view from above: the picture and the opened scene show the stand and the top
-  S.stand = { ...S.stand, show: d.includes.includes('stand'), style: d.look?.style ?? 'cabinet', finish: d.look?.finish ?? 'black' };
+  // a bundle without a stand does not get one added: the user adds one or says they don't need one (the budget counts one meanwhile)
+  const hasStand = d.includes.includes('stand');
+  S.stand = { ...S.stand, show: hasStand, need: hasStand ? undefined : 'ask', style: d.look?.style ?? 'cabinet', finish: d.look?.finish ?? 'black' };
   S.lid = d.includes.includes('lid') ? d.look?.lid ?? 'hood' : 'open';
   const k = d.kit ? kitById(d.kit) : undefined;
   if (k) { S = applyKitLight(S, k as never); S.lid = k.lid; }

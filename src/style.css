@@ -365,6 +365,8 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .libopen { display: flex; flex-direction: column; gap: 2px; width: 100%; padding: 4px; text-align: left; background: var(--chip) }
 .libopen:hover { border-color: var(--accent) }
 .libopen img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 3px; background: var(--bg) }
+.libopen img.dealphoto { object-fit: contain; background: #fff } /* retailer product shots are on white; show the whole product */
+.dealsortl { display: inline-flex; gap: 6px; align-items: center; margin: 0 0 6px }
 .libopen .nothumb { display: grid; place-items: center; aspect-ratio: 16 / 10; border-radius: 3px; background: var(--bg); color: var(--muted); font-size: 11.5px }
 .libopen b { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
 .libdel { position: absolute; top: 8px; right: 8px; padding: 0 6px; line-height: 20px; background: rgb(0 0 0 / .55); color: #fff; border-color: transparent }
