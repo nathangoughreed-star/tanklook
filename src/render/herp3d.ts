@@ -424,7 +424,7 @@ function gillGeometry(gl: NonNullable<Herp3D['gills']>) {
  *  floating at the water surface: its float pose (African dwarf frog); 'perch' = on a branch or shelf: its perch pose.
  *  Lizards (render/lizard3d.ts) take their own poses; `limbR` = the branch's radius (mm) they grip round. */
 export function herpBody(art: string, w: number, surface?: Surface | 'perch', limbR?: number, alert: boolean | number = false) {
-  if (isLizard(art)) return lizardBody(art, w, surface, limbR);
+  if (isLizard(art)) return lizardBody(art, w, surface, limbR, !!alert);
   if (isSpider(art)) return spiderBody(art, w, surface, limbR, alert === true || +alert > 0.5);
   if (isTarantula(art)) return tarantulaBody(art, w, surface, limbR, alert);
   if (isSnake(art)) return snakeBody(art, w, surface, limbR, +alert); // the pose family rides in `bend` (lane BP)

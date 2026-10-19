@@ -30,7 +30,7 @@ const GAP = 0.0005;
 
 const geoCache = new Map<string, THREE.BufferGeometry>();
 /** Built poses (body, limbs, spines, eye placements) by art + pose + branch radius. */
-const poseCache = new Map<string, { body: THREE.BufferGeometry; limbs: THREE.BufferGeometry; spines: THREE.BufferGeometry | null; eyes: { c: THREE.Vector3; look: THREE.Vector3; F: { T: THREE.Vector3 } }[] }>();
+const poseCache = new Map<string, { body: THREE.BufferGeometry; limbs: THREE.BufferGeometry; spines: THREE.BufferGeometry | null; dew: THREE.BufferGeometry | null; eyes: { c: THREE.Vector3; look: THREE.Vector3; F: { T: THREE.Vector3 } }[] }>();
 const matCache = new Map<string, THREE.Material>();
 function mat<M extends THREE.Material>(key: string, make: () => M): M {
   let m = matCache.get(key) as M | undefined;
@@ -65,7 +65,7 @@ function halfPerim(L: LizardSpec, c: Sec) {
 // ---------- spine (per pose) ----------
 
 interface Spine { p: THREE.Vector3[]; up: THREE.Vector3[] }
-interface PoseCx { L: LizardSpec; G: number; sec: (s: number) => Sec; R: number }
+interface PoseCx { L: LizardSpec; G: number; sec: (s: number) => Sec; R: number; up?: number } // up: extra degrees the head is raised (an anole showing its dewlap)
 
 /** The neck and head raised by `deg` (a smooth bend over the neck): the extra height at s. */
 const headLift = (deg: number, from = 0.79) => (s: number) => {
@@ -95,7 +95,8 @@ function planarSpine(cx: PoseCx, psi: (s: number) => number, lift: (s: number) =
  */
 function perchSpine(cx: PoseCx): Spine {
   const { L, sec, R, G } = cx, yA = -G - R, s0 = L.vent - 0.06, i0 = Math.round(s0 * NS);
-  const sp = planarSpine(cx, () => 0, headLift(8)), p = sp.p, up = sp.up;
+  const sp = planarSpine(cx, () => 0, headLift(8 + (cx.up ?? 0))), p = sp.p, up = sp.up;
+  if (L.tail.trail) return sp; // anoles: the tail lies out along the limb, not wound round it
   let x = p[i0].x, phi = 0;
   for (let i = i0 - 1; i >= 0; i--) {
     const s = i / NS, rho = R + sec(s).b0 + GAP;
@@ -257,6 +258,7 @@ function bodyTexture(L: LizardSpec, sec: (s: number) => Sec) {
     return r * H / h;
   };
   for (const m of L.marks) paintMark(x, m, W, H, ry);
+  if (L.dewlap && L.dewlap.depth > 0.03) paintMark(x, { k: 'band', u: [L.dewlap.sb + 0.01, L.dewlap.sa], a: [0.8, 1], c: L.dewlap.col[1], o: 0.5, blur: 0.008 }, W, H, ry); // the throat blushes round the fan
   // granular scales: fine light and dark grain over everything, a touch darker along the back and belly midlines
   const t = document.createElement('canvas'); t.width = W; t.height = H;
   const tc = t.getContext('2d')!, tg = tc.createLinearGradient(0, 0, 0, H);
@@ -282,7 +284,7 @@ function eyeTexture(e: LizardSpec['eye']) {
     const s = py / N, ph = px / N * TAU, along = Math.abs(Math.sin(ph)) * s, across = Math.abs(Math.cos(ph)) * s;
     const half = 0.022 * (1 + 0.5 * Math.sin(along * 70)) * (1 - (along / 0.4) ** 2);
     let rgb: number[];
-    if (along < 0.4 && across < half) rgb = [6, 6, 6];
+    if (e.round ? s < 0.15 : along < 0.4 && across < half) rgb = [6, 6, 6];
     else if (s < 0.43) {
       const k = s / 0.43, vein = 0.5 + 0.5 * Math.sin(ph * 7 + Math.sin(s * 31 + ph * 3) * 2.5) * Math.sin(s * 47 + Math.sin(ph * 5) * 2);
       rgb = i0.map((v, i) => (v + (i1[i] - v) * k ** 1.6) * (0.9 + 0.12 * vein) * (1 - 0.35 * smooth(0.8, 1, k)));
@@ -394,6 +396,31 @@ function limbGeometry(cx: PoseCx, b: Body, l: LizardLimb, fp: FootPose, side: nu
   return parts;
 }
 
+// ---------- dewlap ----------
+
+/**
+ * The throat fan (anole males): a thin sheet hung from the midline under the chin, in the body's own up / forward plane.
+ * `open` 0 = a fold of coloured skin lying under the throat, 1 = the displayed sail (swept forward and down, rounded, its
+ * rim edge-coloured, faint cartilage rays); never below the surface the lizard stands on.
+ */
+function dewlapGeometry(cx: PoseCx, b: Body, surf: Surf, open: number) {
+  const D = cx.L.dewlap; if (!D) return null;
+  const NU = 30, NV = 8, c0 = new THREE.Color(D.col[0]), c1 = new THREE.Color(D.col[1]), rim = D.rim ? new THREE.Color(D.rim) : null;
+  const H = D.depth * (0.1 + 0.9 * open), A = THREE.MathUtils.lerp(-0.3, 0.45, open), pos: number[] = [], col: number[] = [], c = new THREE.Color();
+  for (let j = 0; j <= NV; j++) for (let i = 0; i <= NU; i++) {
+    const t = i / NU, v = j / NV, s = D.sb + t * (D.sa - D.sb), q = surfAt(b, s, Math.PI);
+    const h = H * Math.pow(Math.sin(Math.PI * Math.pow(t, 0.8)), 0.75), d = q.F.U.clone().multiplyScalar(-Math.cos(A)).addScaledVector(q.F.T, Math.sin(A));
+    const p = q.p.clone().addScaledVector(d, v * h), n = surf.n(p), dist = p.clone().sub(surf.snap(p)).dot(n);
+    if (dist < GAP * 4) p.addScaledVector(n, GAP * 4 - dist);
+    pos.push(p.x, p.y, p.z);
+    const f = smooth(0, 1, Math.pow(v, 1.3)), ray = 1 + 0.07 * v * Math.cos(t * TAU * 8);
+    c.copy(c0).lerp(c1, f).multiplyScalar((0.82 + 0.18 * v) * ray);
+    if (rim && v > 0.86) c.lerp(rim, smooth(0.86, 0.97, v));
+    col.push(c.r, c.g, c.b);
+  }
+  return gridGeometry(pos, NV + 1, NU, { color: [col, 3] });
+}
+
 // ---------- crest and eyes ----------
 
 function spinesGeometry(cx: PoseCx, b: Body, eyes: { c: THREE.Vector3; p: THREE.Vector3; n: THREE.Vector3; look: THREE.Vector3; F: Body['F'][number] }[]) {
@@ -436,15 +463,15 @@ export function lizardPose(art: string, surface?: string, R?: number): LizardPos
  * The 3D lizard for a card of width w (origin at the card's centre; add it as the card's child), in the pose for its
  * surface: 'glass' (pane or 3D wall), 'perch' with R = the branch's radius in mm (gripping round it), else 'ground'.
  */
-export function lizardBody(art: string, w: number, surface?: string, Rmm?: number) {
+export function lizardBody(art: string, w: number, surface?: string, Rmm?: number, display = false) {
   const L = LIZARDS[art], G = lizardGround(L), sec = sectionFn(L);
-  const R = Rmm ? Math.round(Rmm / w * 400) / 400 : 0, pose = lizardPose(art, surface, R), key = `${art}~${pose}${pose === 'perch' ? '~' + R : ''}`;
-  const cx: PoseCx = { L, G, sec, R };
+  const R = Rmm ? Math.round(Rmm / w * 400) / 400 : 0, pose = lizardPose(art, surface, R), open = L.dewlap ? (display ? 1 : L.dewlap.open ?? 0) : 0, key = `${art}~${pose}${pose === 'perch' ? '~' + R : ''}${open ? '~d' + open : ''}`;
+  const cx: PoseCx = { L, G, sec, R, up: open ? 16 : 0 };
   const build = () => {
     const sp = pose === 'perch' ? perchSpine(cx)
-      : pose === 'glass' ? planarSpine(cx, s => (s < L.vent ? 0.5 * Math.sin(Math.PI * (L.vent - s) / L.vent) : 0.03 * Math.sin(Math.PI * (s - L.vent) / (1 - L.vent))), headLift(3))
+      : pose === 'glass' ? planarSpine(cx, s => (s < L.vent ? 0.5 * Math.sin(Math.PI * (L.vent - s) / L.vent) : 0.03 * Math.sin(Math.PI * (s - L.vent) / (1 - L.vent))), headLift(3 + (cx.up ?? 0)))
       : planarSpine(cx, s => (s < L.vent ? (L.stance === 'raised' ? 0.55 : 0.95) * Math.sin(Math.PI * (L.vent - s) / L.vent) : 0.06 * Math.sin(Math.PI * (s - L.vent) / (1 - L.vent))),
-        L.stance === 'raised' ? (s => 0.026 * smooth(L.vent - 0.24, L.vent + 0.04, s) + headLift(9)(s)) : headLift(12));
+        L.stance === 'raised' ? (s => 0.026 * smooth(L.vent - 0.24, L.vent + 0.04, s) + headLift(9)(s)) : headLift(12 + (cx.up ?? 0)));
     const b = bodyGeometry(cx, sp), surf = pose === 'perch' ? cylinder(-G - R, R) : plane(-G);
     const P = POSES[L.stance][pose], limbs: THREE.BufferGeometry[] = [];
     for (const side of [1, -1]) {
@@ -455,18 +482,19 @@ export function lizardBody(art: string, w: number, surface?: string, Rmm?: numbe
       const q = surfAt(b, L.eye.s, side > 0 ? L.eye.th : TAU - L.eye.th), look = q.n.clone().addScaledVector(q.F.T, 0.12).addScaledVector(q.F.S, side * 0.6).normalize();
       return { ...q, look, c: q.p.clone().addScaledVector(q.n, L.eye.r * -0.45) };
     });
-    return { body: b.geo, limbs: boxUV(shadeMul(mergeGeometries(limbs)!, 0.3)), spines: spinesGeometry(cx, b, eyes), eyes };
+    return { body: b.geo, limbs: boxUV(shadeMul(mergeGeometries(limbs)!, 0.3)), spines: spinesGeometry(cx, b, eyes), dew: dewlapGeometry(cx, b, surf, open), eyes };
   };
   let built = poseCache.get(key);
   if (!built) {
     built = build();
-    for (const g of [built.body, built.limbs, built.spines]) if (g) g.userData.keep = true;
+    for (const g of [built.body, built.limbs, built.spines, built.dew]) if (g) g.userData.keep = true;
     poseCache.set(key, built);
   }
   const grp = new THREE.Group();
   grp.add(new THREE.Mesh(built.body, mat('lzbody:' + art, () => new THREE.MeshBasicMaterial({ map: bodyTexture(L, sec), vertexColors: true }))));
   grp.add(new THREE.Mesh(built.limbs, limbMaterial(art, L)));
   if (built.spines) grp.add(new THREE.Mesh(built.spines, mat('lzspine', () => new THREE.MeshBasicMaterial({ vertexColors: true }))));
+  if (built.dew) grp.add(new THREE.Mesh(built.dew, mat('lzdewlap', () => new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide }))));
   // eyes: the dome, the ring of small scales round it, a lid on a lidded eye
   // (a lidded eye: the lids are a mound of skin over the dome, open across the middle)
   const e = L.eye, dome = geo('lzeye', () => new THREE.SphereGeometry(1, 28, 18).scale(1, 0.85, 1));

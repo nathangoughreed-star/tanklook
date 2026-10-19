@@ -50,6 +50,8 @@ export const CARE: Record<string, AnimalCare> = {
   dartfrog: A(2, 40, 0), treefrog: A(1, 150, 0, undefined, { prey: { mm: 50, cats: ['amphibian', 'land-invert'] } }), firetoad: A(1, 75, 0), firenewt: A(2, 75, 0),
   adf: A(1, 40, 0, [22, 27]), axolotl: A(2, 150, 0, [14, 20], { prey: { mm: 80 } }),
   crestedgecko: A(1, 75, 0, undefined, { solo: true, prey: { mm: 40, cats: ['land-invert'] } }), crestedharlequin: A(1, 75, 0, undefined, { solo: true, prey: { mm: 40, cats: ['land-invert'] } }),
+  greenanole: A(1, 75, 0, undefined, { prey: { mm: 25, cats: ['land-invert'] } }), greenanolebrown: A(1, 75, 0, undefined, { prey: { mm: 25, cats: ['land-invert'] } }),
+  brownanole: A(1, 75, 0, undefined, { prey: { mm: 25, cats: ['land-invert'] } }),
   leopardgecko: A(1, 150, 0, undefined, { solo: true, prey: { mm: 60, cats: ['land-invert'] } }), regaljumper: A(2, 5, 0, undefined, { solo: true, prey: { mm: 15 } }),
   ballpython: A(2, 450, 0, undefined, { solo: true, prey: { mm: 600 } }), chacogoldenknee: A(1, 40, 0, undefined, { solo: true, prey: { mm: 60 } }),
 };

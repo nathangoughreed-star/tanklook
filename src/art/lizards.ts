@@ -27,11 +27,12 @@ export interface LizardSpec {
   hB: [number, number][];             // spine to the belly, by s
   eT: number; eB: number;             // section exponents above / below the spine (higher = flatter)
   jaw: { s: number; th: number; k: number }; // the head from s on: mouth line at section angle th, lower jaw k times as wide
-  eye: { s: number; th: number; r: number; iris: [string, string]; lid?: boolean; ring: string };
+  eye: { s: number; th: number; r: number; iris: [string, string]; lid?: boolean; ring: string; round?: boolean }; // round: a round pupil (anoles), else a vertical slit
   lash?: { n: number; len: number };  // crested gecko: the fringe of spines over each eye ("eyelashes")
   crest?: { n: number; len: number; to: number; th: number }; // and on along each side of the head and back to s = to
   front: LizardLimb; hind: LizardLimb;
-  tail: { pad?: number; rings?: number }; // prehensile tip pad over the last `pad` of s; `rings` = segment grooves
+  tail: { pad?: number; rings?: number; trail?: boolean }; // prehensile tip pad over the last `pad` of s; `rings` = segment grooves; `trail`: on a branch the tail lies along it instead of winding round it
+  dewlap?: { sa: number; sb: number; depth: number; col: [string, string]; rim?: string; open?: number }; // the throat fan (males): from the chin s = sa back to s = sb, `depth` hanging when open; `open` 0 folded .. 1 displayed
   bumps?: { n: number; r: [number, number]; h: number; s: [number, number]; a: [number, number]; seed: number }; // tubercles
   stance: 'sprawl' | 'raised';        // body low and legs out (gecko on a branch or glass), or carried high (leopard gecko)
   climbs: boolean;                    // has clinging poses (glass / wall, branch); else every surface gets the ground pose
@@ -131,6 +132,88 @@ export const LIZARDS: Record<string, LizardSpec> = {
     padCol: '#efe4d2', clawCol: '#d9cdb8',
   },
 };
+
+// ---------- anoles (lane AN, 2026-10-19): green anole (Anolis carolinensis), brown anole (Anolis sagrei) ----------
+// Slim, long-tailed, light climbers: ~15-20 cm TL of which the whip tail is ~60 %, a narrow wedge head with a long flat
+// snout, big round-pupilled eyes under lids, long slender toes with a small adhesive pad, no tail pad (the tail trails).
+// Males carry a dewlap, a fan of skin under the throat (folded to a fold of coloured skin, displayed as a sail).
+// `k` swells the body (the brown anole is the stockier lizard); `hd` the head.
+const anoleCurves = (k: number, hd: number, kv = 1.22) => {
+  const sc = (pts: [number, number][], f: (s: number) => number) => pts.map(([s, v]) => [s, +(v * f(s)).toFixed(5)] as [number, number]);
+  const f = (s: number) => (s > 0.89 ? hd : 1) * (s > 0.5 && s < 0.9 ? k : 1), fv = (s: number) => f(s) * (s > 0.5 ? kv * (s > 0.9 ? 1.05 : 1) : 1);
+  return {
+    hw: sc([[0, 0.0015], [0.1, 0.0034], [0.3, 0.0074], [0.5, 0.0128], [0.6, 0.0185], [0.66, 0.0235], [0.75, 0.0262], [0.83, 0.0252], [0.88, 0.0195],
+      [0.91, 0.0185], [0.935, 0.0225], [0.96, 0.0168], [0.985, 0.0095], [1, 0.0036]], f),
+    hT: sc([[0, 0.0014], [0.1, 0.0032], [0.3, 0.007], [0.5, 0.0118], [0.6, 0.0165], [0.66, 0.0225], [0.75, 0.0265], [0.83, 0.0245], [0.88, 0.0195],
+      [0.91, 0.0185], [0.935, 0.0185], [0.96, 0.0135], [0.985, 0.0085], [1, 0.0036]], fv),
+    hB: sc([[0, 0.0014], [0.1, 0.0032], [0.3, 0.0068], [0.5, 0.0112], [0.6, 0.0155], [0.66, 0.0215], [0.75, 0.0245], [0.83, 0.0225], [0.88, 0.0165],
+      [0.91, 0.0125], [0.935, 0.0115], [0.96, 0.0095], [0.985, 0.0068], [1, 0.0034]], fv),
+  };
+};
+const ANOLE_SHAPE = {
+  aspect: 0.11, vent: 0.6, eT: 2.4, eB: 3.2,
+  jaw: { s: 0.925, th: 0.6 * Math.PI, k: 0.92 },
+  front: { s: 0.865, th: 0.62 * Math.PI, len: [0.046, 0.043, 0.022], r: [0.0085, 0.0062, 0.0045, 0.0034],
+    toes: [[0.012, -60], [0.018, -30], [0.023, -2], [0.021, 26], [0.015, 54]], toe: 0.0021, pad: 0.0034, claw: 0.0015 } as LizardLimb,
+  hind: { s: 0.64, th: 0.62 * Math.PI, len: [0.064, 0.064, 0.034], r: [0.0115, 0.0078, 0.0054, 0.0038],
+    toes: [[0.014, -56], [0.023, -27], [0.032, -2], [0.037, 24], [0.026, 50]], toe: 0.0023, pad: 0.0037, claw: 0.0016 } as LizardLimb,
+  tail: { trail: true },
+  stance: 'sprawl' as const, climbs: true,
+  padCol: '#d9d3c0', clawCol: '#cfc7b6',
+};
+/** Mouth line, nostril, the ear opening: common to every anole. */
+const ANOLE_FACE: Mark3D[] = [
+  { k: 'line', pts: [[0.93, 0.6], [0.955, 0.61], [0.98, 0.6], [0.997, 0.55]], c: '#2e2a1c', o: 0.7, w: 0.0016 },
+  { k: 'spots', n: 1, u: [0.992, 0.992], a: [0.33, 0.33], r: [0.0016, 0.0016], c: '#1e1a10', o: 0.8, seed: 2 },
+  { k: 'spots', n: 1, u: [0.912, 0.912], a: [0.47, 0.47], r: [0.0028, 0.0028], c: '#2e2a1c', o: 0.65, seed: 3 },
+];
+const GREEN = anoleCurves(1, 1), BROWN = anoleCurves(1.12, 1.1), BROWN_F = anoleCurves(1.02, 1.0);
+const GREEN_DEW = { sa: 0.975, sb: 0.893, depth: 0.052, col: ['#e45a7c', '#f3a5bb'] as [string, string] };
+const BROWN_DEW = { sa: 0.975, sb: 0.893, depth: 0.056, col: ['#e24f1c', '#f2a526'] as [string, string], rim: '#f4d23a' };
+const GREEN_EYE = { s: 0.962, th: 0.37 * Math.PI, r: 0.0086, iris: ['#b98a3c', '#6e4a1c'] as [string, string], lid: true, ring: '#5d8d3a', round: true };
+const BROWN_EYE = { s: 0.962, th: 0.37 * Math.PI, r: 0.0086, iris: ['#a07038', '#4e3012'] as [string, string], lid: true, ring: '#6e5236', round: true };
+/** Scattered fine dark speckle (scale texture) over the flanks. */
+const speck = (c: string, o: number, seed: number): Mark3D => ({ k: 'spots', n: 360, u: [0.05, 0.99], a: [0.1, 0.9], r: [0.0009, 0.0016], c, o, seed });
+/** The green anole's pale lip line; the female's pale line down the back. */
+const GREEN_MARKS = (stripe: boolean): Mark3D[] => [
+  { k: 'band', u: [0.62, 0.97], a: [0.52, 0.66], c: '#eef2d8', o: 0.35, blur: 0.01 },
+  speck('#2d4a1c', 0.22, 6),
+  ...(stripe ? [{ k: 'band', u: [0.3, 0.93], a: [0.0, 0.1], c: '#f1f0dc', o: 0.7, blur: 0.006 } as Mark3D,
+    { k: 'spots', n: 22, u: [0.62, 0.9], a: [0.08, 0.25], r: [0.004, 0.008], c: '#2f3a1c', o: 0.4, seed: 12 } as Mark3D] : []),
+  { k: 'spots', n: 7, u: [0.64, 0.84], a: [0.28, 0.5], r: [0.003, 0.006], c: '#f2f0d4', o: 0.35, seed: 14 },
+  ...ANOLE_FACE,
+];
+const BROWN_MARKS = (female: boolean): Mark3D[] => [
+  speck('#2a1a0c', 0.3, 7),
+  // a dark chevron / diamond pattern down the back, bold in the female and framed by a pale stripe
+  ...(female ? [{ k: 'band', u: [0.3, 0.93], a: [0.0, 0.09], c: '#e7d8b4', o: 0.85, blur: 0.005 } as Mark3D,
+    { k: 'band', u: [0.3, 0.93], a: [0.09, 0.14], c: '#3b2813', o: 0.55, blur: 0.006 } as Mark3D,
+    { k: 'spots', n: 34, u: [0.62, 0.9], a: [0.1, 0.26], r: [0.004, 0.008], c: '#3b2813', o: 0.6, seed: 21 } as Mark3D] :
+    [{ k: 'spots', n: 30, u: [0.4, 0.9], a: [0.0, 0.22], r: [0.006, 0.012], c: '#4a3319', o: 0.55, seed: 22 } as Mark3D,
+      { k: 'spots', n: 12, u: [0.62, 0.9], a: [0.3, 0.5], r: [0.003, 0.006], c: '#d8c196', o: 0.4, seed: 23 } as Mark3D]),
+  { k: 'band', u: [0.62, 0.93], a: [0.52, 0.64], c: '#e9dcc0', o: 0.4, blur: 0.01 },
+  ...ANOLE_FACE,
+];
+const anole = (o: Partial<LizardSpec> & Pick<LizardSpec, 'hw' | 'hT' | 'hB' | 'eye' | 'tone' | 'marks' | 'limbCol'>): LizardSpec => ({ ...ANOLE_SHAPE, ...o });
+const GREEN_TONE: [number, string][] = [[0, '#62a03c'], [0.22, '#72b046'], [0.5, '#8cbb5c'], [0.7, '#cfdfb0'], [1, '#ecf1de']];
+const GREENBROWN_TONE: [number, string][] = [[0, '#6b5230'], [0.22, '#7c6038'], [0.5, '#8d7248'], [0.7, '#cdbd96'], [1, '#e9e1cc']];
+const BROWN_TONE: [number, string][] = [[0, '#6e5334'], [0.2, '#80623c'], [0.5, '#94744a'], [0.7, '#cdb88f'], [1, '#e8dcc2']];
+const BROWNF_TONE: [number, string][] = [[0, '#8a6c46'], [0.2, '#957650'], [0.5, '#a58760'], [0.7, '#d4c19c'], [1, '#ece2cb']];
+Object.assign(LIZARDS, {
+  // green anole, male: bright green (able to turn brown), a pink dewlap with a paler edge
+  greenanole: anole({ ...GREEN, eye: GREEN_EYE, tone: GREEN_TONE, marks: GREEN_MARKS(false), limbCol: ['#6aa842', '#d9e6bd'], dewlap: GREEN_DEW }),
+  // female: a little smaller, slimmer, a pale line down the back; her dewlap is a small pale-pink flap
+  greenanole_f: anole({ ...anoleCurves(0.92, 0.94), eye: GREEN_EYE, tone: GREEN_TONE, marks: GREEN_MARKS(true), limbCol: ['#6aa842', '#d9e6bd'],
+    dewlap: { ...GREEN_DEW, depth: 0.018, col: ['#f0c4cc', '#f6dde0'] } }),
+  // the same lizard in its brown phase (cold, stressed, on bark)
+  greenanolebrown: anole({ ...GREEN, eye: { ...GREEN_EYE, ring: '#6a5a3a' }, tone: GREENBROWN_TONE, marks: [{ k: 'spots', n: 18, u: [0.64, 0.9], a: [0.0, 0.3], r: [0.004, 0.009], c: '#43321a', o: 0.35, seed: 31 }, ...GREEN_MARKS(false)], limbCol: ['#7a6038', '#d9cfae'], dewlap: GREEN_DEW }),
+  // brown anole, male: brown, mottled, a deep orange-red dewlap edged yellow
+  brownanole: anole({ ...BROWN, eye: BROWN_EYE, tone: BROWN_TONE, marks: BROWN_MARKS(false), limbCol: ['#7a5c38', '#dccdaa'], dewlap: BROWN_DEW }),
+  // female: smaller, paler, the pale vertebral stripe between dark chevrons; no real dewlap
+  brownanole_f: anole({ ...BROWN_F, eye: BROWN_EYE, tone: BROWNF_TONE, marks: BROWN_MARKS(true), limbCol: ['#8a6c46', '#e0d3b4'],
+    dewlap: { ...BROWN_DEW, depth: 0.012, col: ['#d9c9a4', '#e6dcc0'], rim: undefined } }),
+});
+
 export const isLizard = (art: string) => art in LIZARDS;
 
 /** Cosine blend through (s, value) points: the section measures along the body. */

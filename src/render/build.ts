@@ -1388,7 +1388,7 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
     const m = new THREE.Mesh(drapedCard(sp.art, w, h, f.bend) || cardGeometry(w, h, isArachnid(sp.art) ? 0 : f.bend), herp ? HIDDEN : cardMaterial(`fish:${sp.look}:${fish3d.fade}`, fishTexture(sp, S.render.edge, true, fish3d.fade), S.render.edge));
     if (!herp) (m.material as THREE.Material).userData.fishCard = true; // fish stand out (render.pop) lifts the card too
     const snakeLimb = herp && isSnake(sp.art) && !!perch?.limb; // a snake on a limb follows its curve: built once the card is placed on it (below)
-    if (snakeLimb) { /* added below */ } else if (herp) m.add(herpBody(sp.art, w, perch?.limb ? 'perch' : f.surface, perch?.limb?.r, isArachnid(sp.art) ? f.bend : 0)); // the card stays as the invisible picking target
+    if (snakeLimb) { /* added below */ } else if (herp) m.add(herpBody(sp.art, w, perch?.limb ? 'perch' : f.surface, perch?.limb?.r, isArachnid(sp.art) ? f.bend : isLizard(sp.art) && f.sex !== 'f' && f.id % 4 === 0 ? 1 : 0)); // a quarter of the male anoles display the dewlap (by id, so it survives save / load and Shuffle) // the card stays as the invisible picking target
     else m.add(fishBody(sp.art, sp.aspect, w, f.bend, fishBodyTexture(sp), S.render.edge, f.surface === 'glass' || !!hang)); // solid body + paired fins; the card keeps the median fins
     if (f.surface === 'glass') { onGlass(S, T, f, sp, m, w, A); register(m, w, h); return; }
     if (hang) { hangOn(f, m, sp.rest * w + PANE_GAP, hang); register(m, w, h); return; }
