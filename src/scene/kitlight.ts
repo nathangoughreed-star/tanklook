@@ -11,11 +11,24 @@ import type { GrowFeed, LidType, LightSettings, LightTech, LightType, Tank, Tank
 
 /** The part of a kit this lane reads (src/data/kits.ts KitModel.light / .lid; structural, so KB's type fits). */
 export interface KitLight {
-  type: LightType; tech: LightTech; count: number; watts: number; par?: number;
+  type: LightType; tech: LightTech; count: number; /** null = not published (spec 'guess'): the tier default stands in. */ watts: number | null; par?: number;
   /** 'published' = the maker's PAR, 'listing' = type and wattage from the listing, 'guess' = a tier default was used. */
   spec: 'published' | 'listing' | 'guess';
 }
-export interface KitLike { light: KitLight; lid: LidType; water?: 'fresh' | 'salt' }
+export interface KitLike { light: KitLight; lid: LidType; water?: 'fresh' | 'salt'; tier?: 'budget' | 'mid' | 'plant' | 'reef'; tankRatedGal?: number }
+
+/** LED watts per rated gallon when a listing gives none (lane KB: 'guess'), by kit tier; with a floor. ESTIMATES from
+ * typical hood LEDs (budget hoods ~4-15 W) and planted / reef fixtures; the confidence label says "rough" when these are used. */
+export const TIER_W_PER_GAL: Record<NonNullable<KitLike['tier']>, number> = { budget: 0.4, mid: 0.6, plant: 1.1, reef: 1.8 };
+export const TIER_W_MIN = 4;
+/** The kit's watts: its own, else the tier default for its rated gallons (null when neither is known). */
+export function kitWatts(kit: KitLike): number | null {
+  if (kit.light.watts && kit.light.watts > 0) return kit.light.watts;
+  if (!kit.tankRatedGal) return null;
+  return Math.max(TIER_W_MIN, Math.round(kit.tankRatedGal * TIER_W_PER_GAL[kit.tier ?? 'budget']));
+}
+/** Kits list a hood LED as 'flat' (no fixture in the model): a kit's light is a fixture, so an LED tech is an LED bar, a tube tech a tube. */
+const typeOf = (l: KitLight): LightType => l.type !== 'flat' ? l.type : TECHS[l.tech].on.includes('tube') && !TECHS[l.tech].on.includes('led') ? 'tube' : 'led';
 
 /**
  * Write the kit's light and lid into a copy of `setup` (the tank is the caller's: KitModel.tank is a catalog id).
@@ -23,10 +36,11 @@ export interface KitLike { light: KitLight; lid: LidType; water?: 'fresh' | 'sal
  * every field sits in its fixture's range. A kit without a published PAR clears any earlier override.
  */
 export function applyKitLight<S extends Pick<TankSetup, 'tank' | 'light' | 'lid'>>(setup: S, kit: KitLike): S {
-  const light: LightSettings = { ...setup.light, type: kit.light.type, tech: kit.light.tech, count: kit.light.count };
+  const light: LightSettings = { ...setup.light, type: typeOf(kit.light), tech: kit.light.tech, count: kit.light.count };
   delete light.par; delete light.bulbW; delete light.mount; delete light.pos;
   fitFixture(light, setup.tank, true);
-  light.watts = kit.light.watts;
+  const w = kitWatts(kit);
+  if (w) light.watts = w; else delete light.watts;
   if (kit.light.par && kit.light.par > 0) light.par = kit.light.par;
   fitFixture(light, setup.tank, false);
   return { ...setup, light, lid: kit.lid };
@@ -44,10 +58,10 @@ export const PUBLISHED_PM = 0.15;
  * listing (the tech's own uncertainty, LED 30 %, tubes 50 %); rough = a tier default stood in for the wattage, so the
  * tech's band is widened by 30 points. `plusMinus` is a fraction (0.3 = about +-30 %).
  */
-export function lightConfidence(l: KitLight): { level: Confidence; plusMinus: number } {
+export function lightConfidence(l: Pick<KitLight, 'tech' | 'spec' | 'par' | 'watts'>): { level: Confidence; plusMinus: number } {
   const unc = TECHS[l.tech].unc;
   if (l.spec === 'published' && l.par && l.par > 0) return { level: 'published', plusMinus: PUBLISHED_PM };
-  if (l.spec === 'guess' || !(l.watts > 0)) return { level: 'rough', plusMinus: Math.min(1, unc + 0.3) };
+  if (l.spec === 'guess' || !l.watts || !(l.watts > 0)) return { level: 'rough', plusMinus: Math.min(1, unc + 0.3) };
   return { level: 'estimated', plusMinus: unc };
 }
 /** "estimated, about +-30 %" for the UI. */

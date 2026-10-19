@@ -56,7 +56,7 @@ the wizard / KD), checks in `src/data/tankcheck.ts` driven by `node scripts/chec
 
 
 ## Lane KC: kit light wiring (stub data until KB lands) (2026-10-19, branch `kitlight`, port 5723)
-State 2026-10-19: DONE except re-running the tests on KB's real kits (not landed yet). `src/scene/kitlight.ts` + `test/kitlight.test.ts` (19 tests, stub kits).
+State 2026-10-19: DONE, real kit catalog wired (KB kits.json: null watts -> `kitWatts` tier default per rated gal, budget 0.4 / mid 0.6 / plant 1.1 / reef 1.8 W per gal, min 4 W, label 'rough'; type 'flat' + LED tech -> LED bar; 3 extra tests loop all kits with stand-in tanks until KA ids land). `src/scene/kitlight.ts` + `test/kitlight.test.ts` (19 tests, stub kits).
 - API: `applyKitLight(setup, kit)` (pure; fitFixture fresh -> kit watts/par -> clamp; a kit without `par` clears an old override), `applyKitToStore(store, kit)`,
   `lightConfidence(kit.light)` (published +-15 % | estimated = tech `unc` | rough = unc + 30 pts), `confidenceText`, `overridePar(setup, par|null)`,
   `kitCapability(setup)` (level none/low/medium/high from the mean substrate PAR with the scape stripped; plants by cheapest care tier; plain sentence),

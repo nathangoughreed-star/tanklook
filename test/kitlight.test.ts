@@ -6,6 +6,7 @@ import {
   applyKitLight, applyKitToStore, confidenceText, kitCapability, lightConfidence, overridePar, setUpgradePriceHook, upgradePath, type KitLike,
 } from '../src/scene/kitlight';
 import type { Tank, TankSetup } from '../src/scene/types';
+import { KITS } from '../src/data/kits';
 
 const tank = (L: number, H: number, D: number, extra: Partial<Tank> = {}): Tank => ({ L: L * IN, H: H * IN, D: D * IN, ...extra });
 const setupOn = (t: Tank, salt = false): TankSetup => { const s = defaultSetup(); return { ...s, tank: t, items: [], water: { ...s.water, salt } }; };
@@ -147,5 +148,30 @@ describe('upgrade path', () => {
     setUpgradePriceHook(() => ({ lo: 10, mode: 20, hi: 40 }));
     try { expect(upgradePath(STRIP, G10, 'high').steps.every(s => s.priceUsd?.mode === 20)).toBe(true); }
     finally { setUpgradePriceHook(null); }
+  });
+});
+
+describe('the real kit catalog (lane KB)', () => {
+  // Most listings give no outer dimensions yet (tank ids arrive with lane KA): a stand-in tank per rated gallon.
+  const BY_GAL: [number, Tank][] = [[5, tank(16, 10, 8)], [10, G10], [15, tank(24, 13, 12)], [20, tank(24, 16, 12)], [29, G29], [37, tank(30, 20, 13)], [55, tank(48, 21, 13)], [75, tank(48, 21, 18)]];
+  const tankOf = (k: (typeof KITS)[number]): Tank => k.tankDims ? { L: k.tankDims.L - 8, H: k.tankDims.H - 6, D: k.tankDims.D - 8 } : BY_GAL.reduce((a, b) => Math.abs(b[0] - k.tankRatedGal) < Math.abs(a[0] - k.tankRatedGal) ? b : a)[1];
+  it('every kit applies, gets a PAR and a sentence, and a sane upgrade verdict', () => {
+    expect(KITS.length).toBeGreaterThan(20);
+    for (const k of KITS) {
+      const s = applyKitLight(setupOn(tankOf(k), k.water === 'salt'), k), c = kitCapability(s), conf = lightConfidence(k.light);
+      expect(wattsOf(s), k.id).toBeGreaterThan(0);
+      expect(c.par, k.id).toBeGreaterThan(0);
+      expect(c.sentence, k.id).toMatch(/PAR/);
+      expect(conf.plusMinus, k.id).toBeGreaterThan(0);
+      if (k.light.spec === 'guess' || !k.light.watts) expect(conf.level, k.id).toBe(k.light.par ? 'published' : 'rough');
+      for (const g of ['low', 'medium', 'high'] as const) expect(['works as is', 'swap the light', 'effectively a new build'], k.id).toContain(upgradePath(k, tankOf(k), g).verdict);
+    }
+  });
+  it('budget fresh kits are low or medium light, never plant-ready; reef kits give real reef light', () => {
+    for (const k of KITS) {
+      const c = kitCapability(applyKitLight(setupOn(tankOf(k), k.water === 'salt'), k));
+      if (k.tier === 'budget' && k.water === 'fresh') expect(['none', 'low', 'medium'], `${k.id} ${c.par.toFixed(0)}`).toContain(c.level);
+      if (k.tier === 'reef' && k.light.spec !== 'guess') expect(c.par, k.id).toBeGreaterThan(30); // a nano reef LED may sit under soft coral level but still grows mushrooms
+    }
   });
 });
