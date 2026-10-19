@@ -87,3 +87,23 @@ From search summaries, not opened (S):
 4. ADF, axolotl and ball python have no zoo or AZA husbandry manual in this set. One search for the AZA or EAZA manuals would upgrade the grades.
 5. Several ReptiFiles pages (ball python, White's, ADF, axolotl) 404'd on guessed URLs; search for the live ones.
 6. Josh's Frogs White's and ball python care sheets were 404 on guessed URLs.
+
+## Addendum 2026-10-19: juvenile growth, juvenile housing and sexing
+
+Built into `src/data/herpstock.ts` (`grow`, `stages`, `sexing`). Growth is length by age; the stage table says how much of the adult floor a juvenile needs. Grades as above (S = search summary only).
+
+| Species | Growth (S unless noted) | Juvenile housing | Sexable from | How |
+|---|---|---|---|---|
+| Leopard gecko | 3-4 in at hatching, 5 in at 2 months, 5-6 in at 6 months, 8-11 in at 18 months (about 1 in a month early) | Shoebox until 7 in; a 20 long (2.5 sq ft) works for juveniles, not adults | 5-6 in, about 6 months | Hemipenal bulges and a V of pores; pores alone are weaker. Do not squeeze. The incubation temperature of the egg also biases sex. |
+| Crested gecko | 2 g at hatching, 9 g at 6 months, 35-50 g at 12 months, full size 12-24 months | 12x12x12 under 12 g; 12x12x18 for 10-25 g; adult 18x18x24 or taller from 15-25 g | Bulge from about 6 months (18-25 g); pores from about 4 months with a loupe are unreliable | Bulge below the vent |
+| Ball python | About 10 in and 40-60 g at hatching, 16-24 in at 1 year, adult at 3-4 years | 10 gal until about 100 g; 20 long to about 2 ft; 40 long to 4 ft; adult 4x2 | Not visible | Popping (young) or probing (adult) by an experienced keeper or vet; DNA test from a shed |
+| Dyeing dart frog | Froglets sell at 2-3 months, about 5/8 in; mature at 12-18 months | Juveniles can be raised in small same-size groups; separate by about 0.75 in | Guess at 8-10 months | Males have wider toe discs and are smaller; females rounder. Males do not reliably call. DNA test. |
+| White's tree frog | Under 2 in when sold, near adult size in about 10 months, full adult in the second year | 18x18x24 houses up to four juveniles (one source) | About a year | Males: grey wrinkled throat, dark thumb pads. Buy 4-5 to get both. |
+| Fire-bellied toad | Maturity 9-12 months in captivity | Not found | Adults only, in breeding season | Nuptial pads on the first two fingers |
+| Chinese fire-bellied newt | Juveniles are terrestrial; maturity takes 1-4 years | Not found (they start on land) | Adults only, in breeding season | Swollen cloaca, taller tail |
+| African dwarf frog | Half an inch after metamorphosis, adult by 9-12 months | Not found | About 9 months | Male post-axillary gland, humming; female larger and rounder |
+| Axolotl | About 1 in a month early: 3 in at 3 months, 5-7 in at 6, about 23 cm at 8-9 months | 10 gal fine at 5-6 in; upgrade at 7-8 in | 8-12 months | Swollen cloaca (males); early bumps can shrink |
+
+Stage and growth numbers for the amphibians other than the axolotl, and all anole growth, are estimates (marked in the code); the rest follow the table above. How to sex was fetched from search summaries only. Earlier gaps still stand.
+
+Sources (S): https://info.pangovet.com/pet-health-wellness/geckos/leopard-geckos-size-weight-growth-chart ; https://reptifiles.com/leopard-gecko-care/leopard-gecko-diseases-health/leopard-gecko-sexing/ ; https://www.reptifiles.com/wp-content/uploads/2018/05/Crested-Gecko-Shopping-List.pdf ; https://reptifiles.com/crested-gecko-care/sick-crested-gecko/sexing-crested-geckos/ ; https://www.morereptiles.com/how-big-do-ball-pythons-get/ ; https://www.reptifiles.com/ball-python-care-guide/ball-python-diseases-health/ball-python-sexing/ ; https://joshsfrogs.com/blog/how-to-visually-sex-dart-frogs ; https://reptilesmagazine.com/whites-treefrog-care-sheet/ ; https://amphibiaweb.org/species/2045 ; https://caudata.org/cc/articles/sexing.shtml ; https://www.pipidae.org/?p=1252 ; https://www.caudata.org/threads/axolotl-length-to-age-ratio.59137 ; https://www.caudata.org/threads/tank-size.74101/

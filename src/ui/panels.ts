@@ -43,6 +43,7 @@ import { NEW_POOL, SWAMP_LEVEL, groundHeight, nearestLand, sameGrid, sampleTerra
 const ARROWS: Record<string, [string, number]> = { ArrowLeft: ['x', -1], ArrowRight: ['x', 1], ArrowUp: ['d', 1], ArrowDown: ['d', -1], PageUp: ['y', 1], PageDown: ['y', -1] };
 import { climateChart, climateOf, climateText } from '../data/climate';
 import { herpCheck } from '../scene/herpcheck';
+import { HERP } from '../data/herpstock';
 import { placeNew, randomPose, randomSize, shuffleFish } from '../scene/scatter';
 import { fitFish, keepInWater, setWaterLevel } from '../scene/water';
 import { tankWeight } from '../scene/weight';
@@ -789,6 +790,9 @@ Cancel, then change the name, to keep both.`)) return;
     fitFish(f, s);
   });
   $('sexM').onclick = () => setSex(); $('sexF').onclick = () => setSex('f');
+  /** The tracked sex of a reptile or amphibian (stocking check only; the drawing is unchanged). */
+  const setGender = (g?: 'm' | 'f') => editSel(f => { if (g) f.gender = g; else delete f.gender; });
+  $('genU').onclick = () => setGender(); $('genM').onclick = () => setGender('m'); $('genF').onclick = () => setGender('f');
 
   addEventListener('keydown', e => {
     const t = e.target as HTMLElement, typing = (t.tagName === 'INPUT' && (t as HTMLInputElement).type !== 'range' && (t as HTMLInputElement).type !== 'checkbox') || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT';
@@ -1701,10 +1705,10 @@ Cancel, then change the name, to keep both.`)) return;
       + (rows.some(r => r.bands.length) ? `<div class="clCue">${climateOpen ? '▾ Hide' : '▸ Where this comes from'}</div>` : '');
     const st = $('stocking'), issues = herpCheck(s);
     st.hidden = !issues.length;
-    st.innerHTML = issues.map(i => `<div class="${i.level === 'warn' ? 'w' : 'n'}"><b>${i.who}</b>${i.text}</div>`).join('');
+    st.innerHTML = issues.map(i => `<div class="${i.level === 'warn' ? 'w' : i.level === 'info' ? 'i' : 'n'}"><b>${i.who}</b>${i.text}</div>`).join('');
     const it0 = store.selectedItem, keys = [
       JSON.stringify([{ ...s, fish: null, items: null, camera: null }, G().name, u, store.split, store.targets, viewer.terrainEdit.on]),
-      s.fish.map(f => `${f.species}~${f.sex}`).join(), s.items.map(i => i.kind).join(), JSON.stringify(s.camera),
+      s.fish.map(f => `${f.species}~${f.sex}~${f.gender}`).join(), s.items.map(i => i.kind).join(), JSON.stringify(s.camera),
       JSON.stringify(it0 && { ...it0, x: 0, depth: 0 }), // the item box shows no position
     ];
     const [env, fishSet, itemSet, cam, item] = keys.map((k, i) => full || k !== syncKeys[i]); syncKeys = keys;
@@ -1835,6 +1839,9 @@ Cancel, then change the name, to keep both.`)) return;
     const fsp = f && getSpecies(f.species), dim = !!fsp?.female;
     $('sexRow').hidden = !dim;
     $('sexM').classList.toggle('on', dim && f!.sex !== 'f'); $('sexF').classList.toggle('on', dim && f!.sex === 'f');
+    const hr = fsp && HERP[fsp.sci];
+    $('genRow').hidden = !hr; $('genHint').hidden = !hr; $('genHint').textContent = hr ? hr.sexing.how : '';
+    $('genU').classList.toggle('on', !!hr && !f!.gender); $('genM').classList.toggle('on', !!hr && f!.gender === 'm'); $('genF').classList.toggle('on', !!hr && f!.gender === 'f');
 
     if (env || fishSet) {
     const sub = s.substrate, smax = Math.round(A.H * 0.5);

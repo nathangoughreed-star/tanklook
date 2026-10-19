@@ -4,7 +4,7 @@
 import { SNAKE_STAGES } from '../art/snakes';
 import type { Species } from './species';
 
-const SHARE: Record<string, number[]> = { reptile: [0.3, 0.55, 0.8, 1], 'land-invert': [0.15, 0.4, 0.7, 1] };
+const SHARE: Record<string, number[]> = { reptile: [0.3, 0.55, 0.8, 1], 'land-invert': [0.15, 0.4, 0.7, 1], amphibian: [0.25, 0.5, 0.8, 1] };
 const NAMES = ['hatchling', 'juvenile', 'sub-adult', 'adult'];
 
 /** [name, length mm] per stage, or null where the species has no stage picker. */

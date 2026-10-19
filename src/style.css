@@ -178,6 +178,7 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 .stocking div { margin: 2px 0 }
 .stocking .w b { color: #c0392b }
 .stocking .n b { color: #b9770e }
+.stocking .i b { color: #2e86c1 }
 .stocking b { font-weight: 600; margin-right: 4px }
 .clCue { color: var(--muted); font-size: 11px; margin-top: 3px }
 .clAx { --cl-n: 92px; --cl-v: 74px; position: relative; margin: 6px 0 2px }

@@ -73,6 +73,8 @@ export interface Fish {
   tl?: number;
   /** Dimorphic species only (species `female`): 'f' = drawn and sized as a female. Absent = male. */
   sex?: 'f';
+  /** Reptiles and amphibians: the animal's tracked sex, for the stocking check (drawing is unchanged). Absent = not sexed yet. */
+  gender?: 'm' | 'f';
   /** Clinging animals only (species `surfaces`): the surface it clings to. On glass, (x, depth) is a point on the glass and
    * yaw its heading there; on hardscape it sits on top of the solid piece under (x, depth) (the floor if none is). */
   surface?: Surface;
