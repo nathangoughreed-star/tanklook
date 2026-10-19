@@ -1,0 +1,1296 @@
+{
+ "_note": "Per-item retail prices, USD, from retailer listings found by web search (lane KK phase 2, 2026-10-19). Every row: lo/mode/hi, unit and one source url. est:true = no listing found, rule of thumb. Many lo/hi bounds are partly judgement (see unit note). Hardscape stone is per pound; wood and others per piece; plants per pot; animals each; tanks tank-only.",
+ "asOf": "2026-10-19",
+ "rows": {
+  "animal:adf": {
+   "lo": 4,
+   "mode": 6,
+   "hi": 10,
+   "unit": "each frog; $5-$7.99 listings, lo/hi judged",
+   "url": "https://shrimpybusiness.com/products/african-dwarf-frogs"
+  },
+  "animal:afra": {
+   "lo": 10,
+   "mode": 16,
+   "hi": 25,
+   "unit": "each fish, 2.5-3 inch; $16.99 listed",
+   "url": "https://aquaticsunlimited.com/product/cichlid-dogtooth-afra-cobue-cynotilapia-afra-cobue/"
+  },
+  "animal:amano": {
+   "lo": 4.99,
+   "mode": 5.99,
+   "hi": 6.99,
+   "unit": "each; Shrimp Farm $6.99, AquariumFish $5.49",
+   "url": "https://www.theshrimpfarm.com/freshwateraquariumshrimp/amano-shrimp.html"
+  },
+  "animal:angel": {
+   "lo": 7,
+   "mode": 12,
+   "hi": 40,
+   "unit": "each; Aquatics Unlimited/LiveAquaria ranges by morph and size",
+   "url": "https://aquaticsunlimited.com/?p=10075"
+  },
+  "animal:auratus": {
+   "lo": 8,
+   "mode": 11,
+   "hi": 14,
+   "unit": "each; iFish $10.99, Aquatics Unlimited $11.99",
+   "url": "https://theifishstore.com/products/african-cichlid-auratus-cichlid"
+  },
+  "animal:axolotl": {
+   "lo": 40,
+   "mode": 70,
+   "hi": 150,
+   "unit": "each; wild type $60-90, leucistic $90-150",
+   "url": "https://aquaticsunlimited.com/product/axolotl-leucistic-ambystoma-mexicanum/"
+  },
+  "animal:ballpython": {
+   "lo": 30,
+   "mode": 70,
+   "hi": 150,
+   "unit": "normal hatchling; only 2024 wholesale $20 found, rest judgement",
+   "url": "https://dreptiles.com/?p=133073"
+  },
+  "animal:banggai": {
+   "lo": 27,
+   "mode": 35,
+   "hi": 70,
+   "unit": "each; captive bred top of range",
+   "url": "https://reefexclusive.com/products/banggai-cardinalfish"
+  },
+  "animal:betta": {
+   "lo": 5,
+   "mode": 15,
+   "hi": 30,
+   "unit": "one betta; $5 pet store to $20-35 online",
+   "url": "https://aquaticsunlimited.com/?p=11525"
+  },
+  "animal:bluetang": {
+   "lo": 110,
+   "mode": 200,
+   "hi": 260,
+   "unit": "each; size dependent, captive bred higher",
+   "url": "https://aquariumdepot.ca/products/blue-hippo-tang-paracanthurus-hepatus"
+  },
+  "animal:boesemani": {
+   "lo": 9,
+   "mode": 15,
+   "hi": 20,
+   "unit": "each; one US listing $18.99; lo/hi judgement",
+   "url": "https://nuaquashop.com/products/boesemani-rainbowfish-l"
+  },
+  "animal:bolivianram": {
+   "lo": 8,
+   "mode": 13,
+   "hi": 20,
+   "unit": "one fish; Dan's Fish $19.99, others lower",
+   "url": "https://www.dansfish.com/product.detail/1207/Cichlids-South-America-Bolivian-Ram-(Mikrogeophagus-altispinosus)"
+  },
+  "animal:bristlenose": {
+   "lo": 6.99,
+   "mode": 8.99,
+   "hi": 12.49,
+   "unit": "each, standard juvenile; PetSmart/Nu Aqua/Aquatics Unlimited",
+   "url": "https://nuaquashop.com/collections/otocinclus-and-plecostomus"
+  },
+  "animal:bronzecory": {
+   "lo": 4,
+   "mode": 6,
+   "hi": 9,
+   "unit": "each; Dan's Fish $8.99; lo/mode judgement",
+   "url": "https://dansfish.com/product.detail/3682/Bronze-Cory-(Corydoras-aeneus)"
+  },
+  "animal:cardinal": {
+   "lo": 3,
+   "mode": 6,
+   "hi": 9.99,
+   "unit": "each; local $3-4, online $6-10",
+   "url": "https://imperialtropicals.com/products/cardinal-tetra"
+  },
+  "animal:chacogoldenknee": {
+   "lo": 35,
+   "mode": 40,
+   "hi": 70,
+   "unit": "sling $35-40; adult hi judged",
+   "url": "https://tydyeexotic.com/products/grammostola-pulchripes-chaco-golden-knee-tarantula-for-sale-live-arrival-guarantee"
+  },
+  "animal:cherrybarb": {
+   "lo": 4,
+   "mode": 5,
+   "hi": 10,
+   "unit": "each; Aquatics Unlimited $3.99-9.99",
+   "url": "https://aquaticsunlimited.com/product/barb-cherry-puntius-titteya/"
+  },
+  "animal:cherryshrimp": {
+   "lo": 2,
+   "mode": 3.5,
+   "hi": 6,
+   "unit": "each; red cherry grade, range partly judgement",
+   "url": "https://shrimpybusiness.com/collections/neocaridina-shrimp"
+  },
+  "animal:chili": {
+   "lo": 4,
+   "mode": 6,
+   "hi": 8,
+   "unit": "each; Aquatics Unlimited $5.99; lo/hi judgement",
+   "url": "https://aquaticsunlimited.com/product-category/freshwater-livestock"
+  },
+  "animal:chromis": {
+   "lo": 9.59,
+   "mode": 14,
+   "hi": 24,
+   "unit": "each; $9.99 single, cheaper in 6-packs",
+   "url": "https://www.saltwateraquarium.com/live/saltwater-fish-a-c/chromis/"
+  },
+  "animal:cleanershrimp": {
+   "lo": 36,
+   "mode": 46,
+   "hi": 70,
+   "unit": "each; by size S to XL",
+   "url": "https://www.liveaquaria.com/products/scarlet-skunk-cleaner-shrimp"
+  },
+  "animal:clownloach": {
+   "lo": 10,
+   "mode": 23,
+   "hi": 30,
+   "unit": "each, small; Aquatic Arts $28.99, eBay ~$22; judgement",
+   "url": "https://aquaticarts.com/products/clown-loach"
+  },
+  "animal:cockatoo": {
+   "lo": 19.99,
+   "mode": 19.99,
+   "hi": 29.99,
+   "unit": "each; Wattley/Aquatic Arts $19.99, LiveAquaria $29.99",
+   "url": "https://wattleydiscus.com/product/apistogramma-cacatuoides/"
+  },
+  "animal:comet": {
+   "lo": 0.49,
+   "mode": 2.99,
+   "hi": 6.99,
+   "unit": "each, feeder-size to small; PetSmart/Ozark Koi",
+   "url": "https://ozarkkoi.com/products/comet-goldfish"
+  },
+  "animal:coralbeauty": {
+   "lo": 50,
+   "mode": 80,
+   "hi": 125,
+   "unit": "each; by size",
+   "url": "https://reefchasers.com/products/coral-beauty-sl"
+  },
+  "animal:cpd": {
+   "lo": 9.99,
+   "mode": 12.99,
+   "hi": 15.99,
+   "unit": "each; tank-bred",
+   "url": "https://aquaticarts.com/products/celestial-pearl-danios"
+  },
+  "animal:crestedgecko": {
+   "lo": 20,
+   "mode": 60,
+   "hi": 85,
+   "unit": "each juvenile flame; LLL $20 sale, Josh's $60",
+   "url": "https://joshsfrogs.com/sp/crested-gecko-correlophus-ciliatus-flame-keeper-s-choice-kccrgfla"
+  },
+  "animal:crestedharlequin": {
+   "lo": 80,
+   "mode": 110,
+   "hi": 150,
+   "unit": "each harlequin; BHB $80, Herborn $135",
+   "url": "https://www.bhbreptiles.com/collections/crested-geckos"
+  },
+  "animal:danio": {
+   "lo": 2,
+   "mode": 4,
+   "hi": 7,
+   "unit": "each; Aquatics Unlimited $3.99, longfin $6.99",
+   "url": "https://aquaticsunlimited.com/product/danio-zebra-danio-rerio/"
+  },
+  "animal:dartfrog": {
+   "lo": 50,
+   "mode": 55,
+   "hi": 75,
+   "unit": "each; common morphs, rare lines higher",
+   "url": "https://joshsfrogs.com/sp/dendrobates-tinctorius-alanis-dyeing-poison-arrow-frog-captive-bred-5-8-dart085"
+  },
+  "animal:demasoni": {
+   "lo": 11,
+   "mode": 15,
+   "hi": 25,
+   "unit": "each; PetSmart $10.99, iFish $14.99, LiveAquaria $24.99",
+   "url": "https://theifishstore.com/collections/all/products/demasoni"
+  },
+  "animal:discus": {
+   "lo": 30,
+   "mode": 60,
+   "hi": 120,
+   "unit": "each juvenile; iFish 2in ~$29, AU $49-120; judgement",
+   "url": "https://aquaticsunlimited.com/?p=18503"
+  },
+  "animal:dwarfgourami": {
+   "lo": 8,
+   "mode": 12,
+   "hi": 17,
+   "unit": "each; Aquatics Unlimited $10-15, Flip $16.99",
+   "url": "https://aquaticsunlimited.com/product-category/freshwater-livestock/freshwater-fish/gouramis/"
+  },
+  "animal:ember": {
+   "lo": 3,
+   "mode": 8,
+   "hi": 10,
+   "unit": "each; Aquatic Arts $9.99, Imperial $8.99; lo judgement",
+   "url": "https://aquaticarts.com/products/ember-tetra"
+  },
+  "animal:firefish": {
+   "lo": 24,
+   "mode": 30,
+   "hi": 50,
+   "unit": "each",
+   "url": "https://www.liveaquaria.com/products/firefish"
+  },
+  "animal:firenewt": {
+   "lo": 15,
+   "mode": 30,
+   "hi": 65,
+   "unit": "each newt; one US listing $64.99, rest judged",
+   "url": "https://joshsfrogs.com/sp/chinese-fire-bellied-newt---hypselotriton-orientalis--captive-bred--newt002"
+  },
+  "animal:firetoad": {
+   "lo": 15,
+   "mode": 35,
+   "hi": 50,
+   "unit": "each toad; CB adult $39.99-49.99, lo judged",
+   "url": "https://joshsfrogs.com/p/oriental-fire-bellied-toad-bombina-orientalis-captive-bred-toad028"
+  },
+  "animal:gbr": {
+   "lo": 11.99,
+   "mode": 12.99,
+   "hi": 24.99,
+   "unit": "each; Aquatic Arts/Aquatics Unlimited",
+   "url": "https://aquaticarts.com/products/german-blue-ram-cichlids"
+  },
+  "animal:goldfish": {
+   "lo": 7,
+   "mode": 12,
+   "hi": 30,
+   "unit": "each; Petco $6.99+; only CA PetSmart page found; judgement",
+   "url": "https://www.petsmart.ca/fish/fish-shops/goldfish/f/category/live%20fish"
+  },
+  "animal:gourami": {
+   "lo": 8,
+   "mode": 9,
+   "hi": 15,
+   "unit": "each; Aquatic Arts $7.99, Nuaqua $8.55; hi judgement",
+   "url": "https://aquaticarts.com/products/pearl-gourami"
+  },
+  "animal:guppy": {
+   "lo": 3,
+   "mode": 5,
+   "hi": 20,
+   "unit": "each; PetSmart $3-5, fancy morphs $15-20",
+   "url": "https://aquaticarts.com/products/assorted-guppy-poecilia-reticulata-tank-bred"
+  },
+  "animal:harlequin": {
+   "lo": 3.5,
+   "mode": 4.5,
+   "hi": 6,
+   "unit": "each; from $3.99 Nuaqua, packs ~$4/fish; lo/hi judged",
+   "url": "https://nuaquashop.com/collections/rasboras"
+  },
+  "animal:hatchet": {
+   "lo": 2.99,
+   "mode": 4.69,
+   "hi": 9.99,
+   "unit": "each; LiveAquaria $4.69, Nua $2.99, AquaticsUnl $9.99",
+   "url": "https://www.liveaquaria.com/products/marble-hatchet"
+  },
+  "animal:hermit": {
+   "lo": 2,
+   "mode": 3,
+   "hi": 8,
+   "unit": "each; packs ~$2 each, singles $3-8",
+   "url": "https://www.saltwateraquarium.com/10-pack-blue-legged-hermit-crabs-clibanarius-sp-cleanup-crew/"
+  },
+  "animal:hillstream": {
+   "lo": 14,
+   "mode": 17,
+   "hi": 20,
+   "unit": "each; $16.47 Nuaqua, $17.99 store; spread judged",
+   "url": "https://nuaquashop.com/products/reticulated-hillstream-loach"
+  },
+  "animal:honeygourami": {
+   "lo": 4,
+   "mode": 7,
+   "hi": 12,
+   "unit": "each; $6.99 AquaticArts, $9.49 other; ranges judged",
+   "url": "https://aquaticarts.com/products/honey-gourami-trichogaster-chuna"
+  },
+  "animal:kadango": {
+   "lo": 15,
+   "mode": 28,
+   "hi": 35,
+   "unit": "each; Ron's $28, sub-adult $29.99; juvenile $13",
+   "url": "https://ronscichlids.com/products/red-fin-borleyi"
+  },
+  "animal:kribensis": {
+   "lo": 7.99,
+   "mode": 10,
+   "hi": 14.99,
+   "unit": "each; super red males $30 extra, pairs more",
+   "url": "https://aquaticsunlimited.com/?p=11429"
+  },
+  "animal:kuhli": {
+   "lo": 3.5,
+   "mode": 4.5,
+   "hi": 7,
+   "unit": "each; from $3.99 Nuaqua; hi judged",
+   "url": "https://www.nuaquashop.com/collections/botia-and-loach"
+  },
+  "animal:labeo": {
+   "lo": 8,
+   "mode": 14,
+   "hi": 20,
+   "unit": "each; juvenile $16.99, Red Top $7.99; mode judged",
+   "url": "https://www.thatpetplace.com/Labeotropheus-trewavasae-208845"
+  },
+  "animal:leopardgecko": {
+   "lo": 25,
+   "mode": 60,
+   "hi": 80,
+   "unit": "common-morph juvenile each; Ward's $79.95",
+   "url": "https://www.wardsci.com/us/en/product/28306657/wards-juvenile-leopard-gecko"
+  },
+  "animal:livingstonii": {
+   "lo": 15,
+   "mode": 25,
+   "hi": 35,
+   "unit": "each; Ron's $25-28, Aquatics Unlimited $14.99-59.99",
+   "url": "https://ronscichlids.com/products/livinstoni"
+  },
+  "animal:mandarin": {
+   "lo": 37,
+   "mode": 65,
+   "hi": 110,
+   "unit": "each; green cheaper, blue higher; pair $225",
+   "url": "https://aquaticsunlimited.com/?p=29595"
+  },
+  "animal:molly": {
+   "lo": 4.99,
+   "mode": 6.99,
+   "hi": 10,
+   "unit": "each; $4.99-19.99 range, AquaticArts $7.99; hi judged",
+   "url": "https://aquaticsunlimited.com/product-category/freshwater-livestock/freshwater-fish/mollies/"
+  },
+  "animal:mystery": {
+   "lo": 2.5,
+   "mode": 4,
+   "hi": 5,
+   "unit": "each; Nuaqua 3.99, Aquatic Arts 4.99",
+   "url": "https://nuaquashop.com/products/blue-mystery-snail"
+  },
+  "animal:neon": {
+   "lo": 2.49,
+   "mode": 2.99,
+   "hi": 4,
+   "unit": "each; Nua from $2.99; tank-bred premium excluded",
+   "url": "https://nuaquashop.com/collections/tetras"
+  },
+  "animal:nerite": {
+   "lo": 3.99,
+   "mode": 4.99,
+   "hi": 5.99,
+   "unit": "each; Aquatic Arts 3.99, IHSG 4.99, Dan's 5.33",
+   "url": "https://aquaticarts.com/products/zebra-nerite-snails"
+  },
+  "animal:ocellaris": {
+   "lo": 22,
+   "mode": 30,
+   "hi": 50,
+   "unit": "each; standard captive bred, morphs much more",
+   "url": "https://www.liveaquaria.com/products/captive-bred-ocellaris-clownfish-1"
+  },
+  "animal:oscar": {
+   "lo": 20,
+   "mode": 30,
+   "hi": 60,
+   "unit": "each; size-dependent $19.99-89.99 AU, $26.99 Nuaqua",
+   "url": "https://aquaticsunlimited.com/product/cichlid-oscar-red-albino-astronotus-ocellatus/"
+  },
+  "animal:oto": {
+   "lo": 4.99,
+   "mode": 6.99,
+   "hi": 9.99,
+   "unit": "each; wild $4.99, tank-bred higher",
+   "url": "https://nuaquashop.com/products/otocinclus"
+  },
+  "animal:pandacory": {
+   "lo": 6.99,
+   "mode": 8,
+   "hi": 11,
+   "unit": "each; $6.99 Rockland, $10.56 Nuaqua",
+   "url": "https://nuaquashop.com/products/panda-cory-s"
+  },
+  "animal:peacock": {
+   "lo": 15,
+   "mode": 25,
+   "hi": 30,
+   "unit": "each; Usisya $29.99 AU, $14.99 Imperial; mode judged",
+   "url": "https://aquaticsunlimited.com/product/aulonocara-stuartgranti-usisya/"
+  },
+  "animal:peapuffer": {
+   "lo": 4,
+   "mode": 6,
+   "hi": 10,
+   "unit": "each; US listings $3.84-10.19, unreliable pages; judged",
+   "url": "https://nuaquashop.com/products/pea-puffer"
+  },
+  "animal:platy": {
+   "lo": 3.99,
+   "mode": 4.99,
+   "hi": 9.99,
+   "unit": "each; chains ~$4, online $9.99",
+   "url": "https://aquaticarts.com/products/assorted-platy"
+  },
+  "animal:pygmycory": {
+   "lo": 4,
+   "mode": 6,
+   "hi": 9,
+   "unit": "each; BWAquatics $28.95 per group (qty unclear); UK 3 GBP; judged",
+   "url": "https://bwaquatics.com/products/corydoras-pygmaeus-pygmy-cory"
+  },
+  "animal:ramshorn": {
+   "lo": 1,
+   "mode": 1.6,
+   "hi": 3,
+   "unit": "each; packs of 10-12 about 1.6",
+   "url": "https://buceplant.com/products/ramshorn-snails"
+  },
+  "animal:regaljumper": {
+   "lo": 15,
+   "mode": 30,
+   "hi": 55,
+   "unit": "each spider, juvenile to sexed adult",
+   "url": "https://www.mantisplace.com/product-page/jumping-spiders-female-phidippus-regal-s"
+  },
+  "animal:royalgramma": {
+   "lo": 40,
+   "mode": 50,
+   "hi": 75,
+   "unit": "each; by size",
+   "url": "https://aquaticsunlimited.com/product/basslet-royal-gramma-gramma-loreto/"
+  },
+  "animal:rummynose": {
+   "lo": 5,
+   "mode": 7,
+   "hi": 10,
+   "unit": "each; AU $9.99, Nuaqua $6.99; lo judged",
+   "url": "https://aquaticsunlimited.com/product/tetra-rummynose-hemigrammus-rhodostomus/"
+  },
+  "animal:sae": {
+   "lo": 3.99,
+   "mode": 5.99,
+   "hi": 8.99,
+   "unit": "each; $3.99 to $8.99",
+   "url": "https://aquaticarts.com/products/siamese-algae-eater"
+  },
+  "animal:sixline": {
+   "lo": 32,
+   "mode": 55,
+   "hi": 80,
+   "unit": "each; by size",
+   "url": "https://reefchasers.com/products/six-line-wrasse"
+  },
+  "animal:swordtail": {
+   "lo": 4.5,
+   "mode": 6,
+   "hi": 8,
+   "unit": "each; $4.99 AquaticArts, $6.18 Nuaqua, $7.47 koi",
+   "url": "https://aquaticarts.com/products/green-swordtail-tank-bred"
+  },
+  "animal:syno": {
+   "lo": 12,
+   "mode": 18,
+   "hi": 30,
+   "unit": "each; no US listing found, judgement",
+   "url": "",
+   "est": true
+  },
+  "animal:tigerbarb": {
+   "lo": 3.99,
+   "mode": 4.99,
+   "hi": 12.99,
+   "unit": "each; PetSmart $4.99, online $12.99",
+   "url": "https://www.petsmart.com/fish/live-fish/goldfish-betta-and-more/tiger-barb-4031473.html"
+  },
+  "animal:treefrog": {
+   "lo": 40,
+   "mode": 50,
+   "hi": 80,
+   "unit": "each; Australian $39.99, Indonesian $49.99, snowflake $80",
+   "url": "https://joshsfrogs.com/c/live_animals/frogs/tree_frogs/whites_tree_frogs"
+  },
+  "animal:trumpet": {
+   "lo": 0.7,
+   "mode": 2,
+   "hi": 8,
+   "unit": "each; Aquatic Arts 7.99, bulk cheaper; judgement",
+   "url": "https://aquaticarts.com/products/malaysian-trumpet-snail"
+  },
+  "animal:turbo": {
+   "lo": 3,
+   "mode": 5,
+   "hi": 10,
+   "unit": "each; packs cheaper; LiveAquaria $19.99 treated outlier",
+   "url": "https://www.queencitycorals.com/?p=30182"
+  },
+  "animal:watchman": {
+   "lo": 30,
+   "mode": 36,
+   "hi": 60,
+   "unit": "each; captive bred $120 outlier excluded",
+   "url": "https://aquasd.com/yellow-watchman-7731881e7/"
+  },
+  "animal:whitecloud": {
+   "lo": 2.25,
+   "mode": 4,
+   "hi": 6,
+   "unit": "each; PetSmart 2.79, Aquatic Arts 5.99",
+   "url": "https://aquaticarts.com/products/white-cloud-mountain-minnow"
+  },
+  "animal:yellowlab": {
+   "lo": 5.99,
+   "mode": 8.99,
+   "hi": 12.99,
+   "unit": "each; $5.99 to $9.99, albino $12.99",
+   "url": "https://aquaticsunlimited.com/product/cichlid-lab-yellow-labidochromis-caeruleus/"
+  },
+  "animal:yellowtang": {
+   "lo": 189,
+   "mode": 250,
+   "hi": 400,
+   "unit": "each; captive-bred, size dependent; lo/hi partly judgement",
+   "url": "https://aquaticsunlimited.com/?p=27369"
+  },
+  "gear:co2-kit": {
+   "lo": 90,
+   "mode": 230,
+   "hi": 250,
+   "unit": "kit; UNS 227-240, micro regulator only 90",
+   "url": "https://buceplant.com/products/uns-co2-paintball-kit"
+  },
+  "gear:co2-refill": {
+   "lo": 15,
+   "mode": 20,
+   "hi": 30,
+   "unit": "refill; fire/welding shop 15-25, judgement",
+   "url": "https://servicedfireequipment.com/?p=8100"
+  },
+  "gear:conditioner": {
+   "lo": 0.02,
+   "mode": 0.04,
+   "hi": 0.08,
+   "unit": "per 10 gal; no US price found, Prime label dose",
+   "url": "",
+   "est": true
+  },
+  "gear:ferts": {
+   "lo": 2,
+   "mode": 3,
+   "hi": 5,
+   "unit": "per month; Flourish 500mL 11.52; dose judgement",
+   "url": "https://fishtanksdirect.com/seachem-flourish-500-ml-sc05130/"
+  },
+  "gear:filter-canister": {
+   "lo": 100,
+   "mode": 190,
+   "hi": 320,
+   "unit": "unit; Fluval 307 189.99, Cascade up to 316",
+   "url": "https://www.bulkreefsupply.com/brands/fluval.html"
+  },
+  "gear:filter-hob-large": {
+   "lo": 35,
+   "mode": 50,
+   "hi": 70,
+   "unit": "unit; AquaClear 50/70, past US deals, judgement",
+   "url": "https://slickdeals.net/f/16227577-aquaclear-50-aquarium-filter-31-99"
+  },
+  "gear:filter-hob-small": {
+   "lo": 25,
+   "mode": 35,
+   "hi": 45,
+   "unit": "unit; AquaClear 20 ~40 list, judgement",
+   "url": "https://slickdeals.net/f/17954517-fluval-aquaclear-20-30-50-70-aquarium-power-filter-50-off-petco-and-amazon-20-35"
+  },
+  "gear:filter-sponge": {
+   "lo": 5,
+   "mode": 10,
+   "hi": 24,
+   "unit": "Aquaneat 9.99, Hikari Bacto-Surge 8-24 (CAD); size varies",
+   "url": "https://www.walmart.com/ip/seort/10715950051"
+  },
+  "gear:heater-large": {
+   "lo": 30,
+   "mode": 40,
+   "hi": 55,
+   "unit": "unit; Eheim Jager 200W 38.95 Chewy",
+   "url": "https://www.chewy.com/eheim-jager-thermostat-aquarium/dp/183237"
+  },
+  "gear:heater-small": {
+   "lo": 24,
+   "mode": 28,
+   "hi": 33,
+   "unit": "Eheim 50W 29.95, 100W 32.95, Fluval M100 26.94",
+   "url": "https://www.saltwateraquarium.com/ebo-jager-heater-100-watt-eheim/"
+  },
+  "gear:led-planted-24": {
+   "lo": 25,
+   "mode": 80,
+   "hi": 130,
+   "unit": "unit; Nicrew 22-81, Finnex 129, Fluval 22W 118-150",
+   "url": "https://www.bulkreefsupply.com/fluval-plant-3-0-bluetooth-led-light-fluval.html"
+  },
+  "gear:led-planted-48": {
+   "lo": 180,
+   "mode": 200,
+   "hi": 250,
+   "unit": "per fixture; Up Aqua 199, Fluval 240-250",
+   "url": "https://www.petsmart.com/fish/heating-and-lighting/lights/fluval-plant-40-led-aquarium-light-for-planted-aquariums-94276.html"
+  },
+  "gear:led-reef-24": {
+   "lo": 150,
+   "mode": 200,
+   "hi": 280,
+   "unit": "unit; AI Prime 16HD $280, Reef Brite $153; judgement",
+   "url": "https://www.bulkreefsupply.com/two-orbit-r24-led-reef-lights-w-loop-bluetooth-app-current-usa.html"
+  },
+  "gear:lid-glass": {
+   "lo": 23,
+   "mode": 29,
+   "hi": 32,
+   "unit": "unit; 24x12 glass canopy, brand-matched",
+   "url": "https://www.thatpetplace.com/aqueon-versa-top-24-in"
+  },
+  "gear:lid-hood": {
+   "lo": 55,
+   "mode": 65,
+   "hi": 90,
+   "unit": "unit; Aqueon LED hood 24in $65, 30in $80",
+   "url": "https://www.walmart.com/ip/43403099"
+  },
+  "gear:lid-mesh": {
+   "lo": 11,
+   "mode": 20,
+   "hi": 30,
+   "unit": "screen cover; Exo Terra 24.99, Fluker 11-21",
+   "url": "https://www.chewy.com/exo-terra-aquarium-terrarium-screen/dp/191199"
+  },
+  "gear:ro-bought": {
+   "lo": 0.35,
+   "mode": 0.4,
+   "hi": 0.6,
+   "unit": "per gallon; store refill station; weak sources",
+   "url": "https://www.walmart.com/ip/Glacier-Self-Service-Refill-Water-1-Gallon/177783633"
+  },
+  "gear:ro-unit": {
+   "lo": 100,
+   "mode": 190,
+   "hi": 300,
+   "unit": "unit; BRS $283, IceCap $150, eBay $100",
+   "url": "https://www.bulkreefsupply.com/brs-6-stage-drinking-reef-ro-di-system-75gpd-bundle.html"
+  },
+  "gear:salt-mix": {
+   "lo": 0.44,
+   "mode": 0.5,
+   "hi": 0.69,
+   "unit": "Reef Crystals 160 gal bucket 70-110 USD",
+   "url": "https://www.thatpetplace.com/reef-crystals-salt-160-gallon-bucket"
+  },
+  "gear:skimmer": {
+   "lo": 210,
+   "mode": 250,
+   "hi": 400,
+   "unit": "in-sump skimmer; Reef Octopus/Bubble Magus 215-270",
+   "url": "https://www.bulkreefsupply.com/content/post/brstv-buyers-guide-top-protein-skimmers-under-300-up-to-75-gallons"
+  },
+  "gear:stand-20": {
+   "lo": 60,
+   "mode": 85,
+   "hi": 145,
+   "unit": "unit; metal $63-90, wood $98-145",
+   "url": "https://www.walmart.com/ip/Aquatic-Fundamentals-29-37-Gallon-Wood-Metal-Aquarium-Stand/820174290"
+  },
+  "gear:stand-55": {
+   "lo": 150,
+   "mode": 170,
+   "hi": 200,
+   "unit": "unit; Seapora $170, Walmart 55-75 $169-199",
+   "url": "https://www.thatpetplace.com/empress-cabinet-stand-black-48-in-x-12-in"
+  },
+  "gear:substrate-sand": {
+   "lo": 7,
+   "mode": 11,
+   "hi": 16,
+   "unit": "5 lb bag CaribSea; Walmart $10-12, eBay $16",
+   "url": "https://www.walmart.com/ip/CaribSea-ACS05839-Super-Natural-Sunset-Gold-Sand-for-Aquarium-5-Pound/372827728"
+  },
+  "gear:substrate-soil": {
+   "lo": 19,
+   "mode": 37,
+   "hi": 50,
+   "unit": "Fluval Stratum 8.8 lb proxy; ADA 9L US price not found",
+   "url": "https://www.tractorsupply.com/tsc/product/fluval-stratum-88-lb"
+  },
+  "gear:test-kit": {
+   "lo": 35,
+   "mode": 39,
+   "hi": 42,
+   "unit": "API master kit; Walmart $38.64, Dubia $41.84",
+   "url": "https://dubiaroaches.com/products/api-freshwater-master-test-kit"
+  },
+  "hard:arch": {
+   "lo": 4,
+   "mode": 11,
+   "hi": 17,
+   "unit": "one resin arch ornament; $3.99-$16.99",
+   "url": "https://www.liveaquaria.com/products/liveqquaria-12inch-striated-stone-arch"
+  },
+  "hard:branch": {
+   "lo": 15,
+   "mode": 25,
+   "hi": 35,
+   "unit": "one piece; medium 7-12in $29.99, range $20-45",
+   "url": "https://buceplant.com/products/driftwood-tree-branches"
+  },
+  "hard:climb": {
+   "lo": 9,
+   "mode": 19,
+   "hi": 34,
+   "unit": "Exo Terra medium branch each; judgement for spread",
+   "url": "https://shop.bbpetstop.com/products/bb-pet-stop-inc/exo-terra-forest-branch-3"
+  },
+  "hard:coconut": {
+   "lo": 5,
+   "mode": 7,
+   "hi": 12,
+   "unit": "each half shell; $5.49 Josh's, $11.99 Walmart",
+   "url": "https://training.joshsfrogs.com/sp/josh-s-frogs-natural-coco-shell-hide-jfd58108"
+  },
+  "hard:corkflat": {
+   "lo": 8,
+   "mode": 14,
+   "hi": 25,
+   "unit": "one medium flat; Zoo Med $13.98",
+   "url": "https://fishtanksdirect.com/zoo-med-natural-cork-flats-cork-bark-med/"
+  },
+  "hard:corktube": {
+   "lo": 12,
+   "mode": 20,
+   "hi": 30,
+   "unit": "one medium round/tube, ~1 lb; judgement mode",
+   "url": "https://rubberduckyisopods.com/products/virgin-cork-bark-rounds"
+  },
+  "hard:dish": {
+   "lo": 4,
+   "mode": 6,
+   "hi": 8,
+   "unit": "one medium ceramic dish; $3.99-6.49 listed",
+   "url": "https://joshsfrogs.com/sp/zilla-kidney-shaped-terrarium-dish-medium-z11657"
+  },
+  "hard:dragon": {
+   "lo": 3,
+   "mode": 4,
+   "hi": 9,
+   "unit": "per lb; $3 Wattley, bagged ~$2/lb; hi judgement",
+   "url": "https://wattleydiscus.com/product/aquascaping-dragon-stone/"
+  },
+  "hard:halflog": {
+   "lo": 6,
+   "mode": 8,
+   "hi": 18,
+   "unit": "each; Fluker's medium $6-8, ceramic Zoo Med ~$18",
+   "url": "https://shop.premierpetsupply.com/products/westland/Flukers-Critter-Caver-Half-Log-for-Reptiles-2"
+  },
+  "hard:lava": {
+   "lo": 1.3,
+   "mode": 3,
+   "hi": 3.2,
+   "unit": "per lb from bagged lava rock; aquarium-grade scarcer",
+   "url": "https://www.walmart.com/c/kp/lava-stone"
+  },
+  "hard:ledge": {
+   "lo": 1.9,
+   "mode": 2.7,
+   "hi": 4,
+   "unit": "per lb; proxy from layered 15 lb bags, no ledge listing",
+   "url": "https://www.bulkreefsupply.com/alpine-jade-aquascaping-rock-15lbs-aqua-natural.html"
+  },
+  "hard:liverock": {
+   "lo": 3.25,
+   "mode": 6.5,
+   "hi": 10,
+   "unit": "per lb; dry $3-4, cured live $6-10",
+   "url": "https://www.saltwateraquarium.com/money-saver-aquarium-dry-live-rock-by-the-lb-saltwateraquarium/"
+  },
+  "hard:manzanita": {
+   "lo": 22,
+   "mode": 32,
+   "hi": 55,
+   "unit": "one medium branch; Bio Dude $29.95; hi judgement",
+   "url": "https://thebiodude.com/collections/aquaria-woods-and-accents/manzanita"
+  },
+  "hard:mopani": {
+   "lo": 14,
+   "mode": 18,
+   "hi": 30,
+   "unit": "one medium piece; Chewy $13.99, Fluval $17.59",
+   "url": "https://www.chewy.com/zoo-med-mopani-wood-aquarium-decor/dp/154850"
+  },
+  "hard:river": {
+   "lo": 0.98,
+   "mode": 2,
+   "hi": 3.5,
+   "unit": "per lb; bagged Lifegard/landscape stone, 44 lb bags ~$0.70-1",
+   "url": "https://slickdeals.net/f/14954237-44-lbs-lifegard-decorative-garden-rocks-stone-gray-54-30-brown-43-40-free-store-pickup"
+  },
+  "hard:seiryu": {
+   "lo": 3.99,
+   "mode": 4.99,
+   "hi": 6,
+   "unit": "per lb; Fitz 3.99, Aqua Forest 5.99",
+   "url": "https://fitzfishponds.com/seiryu-stone-per-pound"
+  },
+  "hard:slate": {
+   "lo": 1.5,
+   "mode": 4.5,
+   "hi": 7,
+   "unit": "per lb; 20 lb bag $90, bulk cheaper",
+   "url": "https://aesthetic-ally.com/products/natural-slate-stone-for-aquariums-fish-tanks-terrariums-aqua/209688760/"
+  },
+  "hard:spider": {
+   "lo": 15,
+   "mode": 20,
+   "hi": 36,
+   "unit": "one medium piece; BRS $14.79, Castle Dawn $16-36",
+   "url": "https://www.bulkreefsupply.com/spider-wood-ultum-nature-systems.html"
+  },
+  "hard:stonedish": {
+   "lo": 6,
+   "mode": 10,
+   "hi": 18,
+   "unit": "one medium stone-look dish; $9.89-17.99, judged",
+   "url": "https://shop.morphmarket.com/products/zoo-med-repti-rock-reptile-water-dish-medium"
+  },
+  "hard:tube": {
+   "lo": 15,
+   "mode": 21,
+   "hi": 25,
+   "unit": "each; Nature Aquariums $20.95, Co-op $14.99",
+   "url": "https://natureaquariums.com/products/pleco-cave"
+  },
+  "plant:acrofine": {
+   "lo": 30,
+   "mode": 60,
+   "hi": 105,
+   "unit": "one frag; common $30-60, premium $75-105",
+   "url": "https://reefexclusive.com/products/rex-black-sun-acro"
+  },
+  "plant:acropora": {
+   "lo": 20,
+   "mode": 40,
+   "hi": 80,
+   "unit": "one frag; outlet $20-30, standard higher, judged",
+   "url": "https://worldwidecorals.com/products/wwc-goblin-acropora-1"
+  },
+  "plant:agave": {
+   "lo": 6,
+   "mode": 19,
+   "hi": 25,
+   "unit": "4-inch potted; Walmart $18.99, eBay $24.99",
+   "url": "https://www.walmart.com/ip/19979955321"
+  },
+  "plant:aloe": {
+   "lo": 6,
+   "mode": 14,
+   "hi": 26,
+   "unit": "4-inch potted; IKEA $5.99 to HD $25.97",
+   "url": "https://www.homedepot.com/p/p/Delray-Plants-Aloe-Vera-in-4-in-Pot-90408/202676728"
+  },
+  "plant:anacharis": {
+   "lo": 3,
+   "mode": 5,
+   "hi": 10,
+   "unit": "one bunch; LiveAquaria $4.99, Walmart $9.79",
+   "url": "https://www.liveaquaria.com/products/anacharis"
+  },
+  "plant:anemone": {
+   "lo": 40,
+   "mode": 50,
+   "hi": 120,
+   "unit": "each; plain green $40-50, color morphs $115-240",
+   "url": "https://www.liveaquaria.com/products/green-bubble-tip-anemone"
+  },
+  "plant:anubias": {
+   "lo": 9,
+   "mode": 11,
+   "hi": 14,
+   "unit": "one potted plant; $9-13 across stores",
+   "url": "https://www.aquariumplants.com/product/anubias-nana-golden-bareroot-clump/"
+  },
+  "plant:balansae": {
+   "lo": 7,
+   "mode": 8,
+   "hi": 12,
+   "unit": "one potted/bare-root plant; $6.99-10.95",
+   "url": "https://aquaticarts.com/products/cryptocoryne-balansae"
+  },
+  "plant:barrel": {
+   "lo": 10,
+   "mode": 13,
+   "hi": 35,
+   "unit": "4-inch potted; Walmart from $12.99, hi judged",
+   "url": "https://www.walmart.com/ip/Ferocactus-emoryi-Star-Shaped-Emory-s-barrel-cactus-Coville-s-barrel-cactus-5-point-Cactus-in-4-inch-pot-well-rooted-healthy-starter/5004255375"
+  },
+  "plant:bromeliad": {
+   "lo": 15,
+   "mode": 25,
+   "hi": 31,
+   "unit": "4-inch potted; $24.99-30.78, lo from larger pots",
+   "url": "https://www.homedepot.com/p/Costa-Farms-Grower-s-Choice-Bromeliad-Indoor-Plant-in-4-in-Decor-Pot-Avg-Shipping-Height-1-2-ft-Tall-CO-BRO4-3-WHT-G/319495695"
+  },
+  "plant:buce": {
+   "lo": 8,
+   "mode": 15,
+   "hi": 25,
+   "unit": "one pot/portion; BucePlant $7.99-24.99 by variety",
+   "url": "https://buceplant.com/collections/aquarium-plants/collection_bucephalandra"
+  },
+  "plant:burrotail": {
+   "lo": 8,
+   "mode": 14,
+   "hi": 18,
+   "unit": "4-inch potted; Tagawa $14.40 sale, $18 reg",
+   "url": "https://shop.tagawagardens.com/item/165719/BURROS-TAIL-4-IN"
+  },
+  "plant:carpet": {
+   "lo": 5,
+   "mode": 9,
+   "hi": 13,
+   "unit": "one cup/portion; Co-op $8.99, Buce $5-13",
+   "url": "https://www.aquariumcoop.com/collections/type_carpeting-plants/light-requirements_high-light-plants"
+  },
+  "plant:columnar": {
+   "lo": 21,
+   "mode": 24,
+   "hi": 25,
+   "unit": "4-inch potted; Walmart $21-25",
+   "url": "https://www.walmart.com/c/kp/columnar-cactus"
+  },
+  "plant:creeper": {
+   "lo": 16,
+   "mode": 19,
+   "hi": 26,
+   "unit": "4-inch potted; Walmart $15.99-26",
+   "url": "https://www.walmart.com/c/kp/creeping-fig"
+  },
+  "plant:crypt": {
+   "lo": 7,
+   "mode": 10,
+   "hi": 15,
+   "unit": "one potted crypt; Walmart, Buceplant, Co-op",
+   "url": "https://buceplant.com/collections/aquarium-plants/products/cryptocoryne-wendtii-green"
+  },
+  "plant:echeveria": {
+   "lo": 4,
+   "mode": 7,
+   "hi": 11,
+   "unit": "one 4-inch potted plant; mode is judgement",
+   "url": "https://www.walmart.com/ip/8-pots-of-4-Inch-Rosette-Echeveria-Succulent-fully-rooted/848396297"
+  },
+  "plant:fern": {
+   "lo": 6,
+   "mode": 10,
+   "hi": 18,
+   "unit": "one potted plant; few US listings, range judgement",
+   "url": "https://www.ihsgonline.com/products/microsorum-pteropus-potted-008-java-fern/234586893/"
+  },
+  "plant:fittonia": {
+   "lo": 5,
+   "mode": 9,
+   "hi": 22,
+   "unit": "one 3-4 inch pot; Home Depot $40 outlier dropped",
+   "url": "https://www.ebay.com/str/bubblebloomsshop"
+  },
+  "plant:frogbit": {
+   "lo": 5,
+   "mode": 9,
+   "hi": 16,
+   "unit": "one portion/bag; $5.99-$16.99 listings",
+   "url": "https://aquaticarts.com/products/amazon-frogbit-aquatic-arts-grown"
+  },
+  "plant:grass": {
+   "lo": 7,
+   "mode": 10,
+   "hi": 11,
+   "unit": "one potted/bunch; Co-op $10.99, Buce $6.99",
+   "url": "https://www.aquariumcoop.com/products/vallisneria"
+  },
+  "plant:hairgrass": {
+   "lo": 5,
+   "mode": 7,
+   "hi": 10,
+   "unit": "one pot; Nature Aquariums, PetSmart $9.99",
+   "url": "https://natureaquariums.com/products/eleocharis-parvulus-dwarf-hair-grass-potted"
+  },
+  "plant:hammer": {
+   "lo": 35,
+   "mode": 60,
+   "hi": 90,
+   "unit": "one frag; $37-90 listings, judged",
+   "url": "https://worldwidecorals.com/collections/corals-coming-soon/products/wwc-rainbow-branching-hammer"
+  },
+  "plant:haworthia": {
+   "lo": 4,
+   "mode": 6,
+   "hi": 21,
+   "unit": "one 4-inch pot; $6/plant in 4-pack",
+   "url": "https://www.homedepot.com/p/United-Nursery-Grower-s-Choice-Haworthia-Succulent-4-Pack-in-4-inch-Grower-Pot-79047/314962395"
+  },
+  "plant:hornwort": {
+   "lo": 3.5,
+   "mode": 6,
+   "hi": 7,
+   "unit": "one bunch; Josh's Frogs $6.99",
+   "url": "https://joshsfrogs.com/sp/ceratophyllum-demersum--bunches--niwb039"
+  },
+  "plant:jade": {
+   "lo": 12,
+   "mode": 22,
+   "hi": 31,
+   "unit": "4 inch potted plant",
+   "url": "https://www.homedepot.com/p/Costa-Farms-4-in-Jade-Crassula-Plant-in-Ceramic-Pot-4JADEREDCER/306720668"
+  },
+  "plant:leather": {
+   "lo": 25,
+   "mode": 40,
+   "hi": 60,
+   "unit": "one toadstool frag; $39.99 QCC, others judged",
+   "url": "https://www.queencitycorals.com/?p=41457"
+  },
+  "plant:lettuce": {
+   "lo": 1,
+   "mode": 4,
+   "hi": 7,
+   "unit": "one plant",
+   "url": "https://aquaticarts.com/products/water-lettuce"
+  },
+  "plant:lotus": {
+   "lo": 8,
+   "mode": 11,
+   "hi": 25,
+   "unit": "bulb $8-11, potted $24",
+   "url": "https://www.aquariumcoop.com/products/tiger-lotus-bulb-only"
+  },
+  "plant:ludwigia": {
+   "lo": 6,
+   "mode": 8,
+   "hi": 11,
+   "unit": "one bunch, 6-12 stems",
+   "url": "https://www.buceplant.com/products/ludwigia-repens"
+  },
+  "plant:macroalgae": {
+   "lo": 8,
+   "mode": 15,
+   "hi": 35,
+   "unit": "one portion of chaeto/caulerpa; judged from sparse listings",
+   "url": "https://www.saltwateraquarium.com/food/live-foods/macro-algae/"
+  },
+  "plant:montiplate": {
+   "lo": 15,
+   "mode": 40,
+   "hi": 60,
+   "unit": "one frag; ORA $41.92 listing, range judged",
+   "url": "https://www.bulkreefsupply.com/ora-periwinkle-plating-montipora-coral-ora.html"
+  },
+  "plant:montipora": {
+   "lo": 40,
+   "mode": 50,
+   "hi": 100,
+   "unit": "one fungia plate frag/small; $49.99-95.99",
+   "url": "https://topshelfaquatics.com/products/tsa-funky-fungia-plate-coral-almost-wysiwyg"
+  },
+  "plant:moss": {
+   "lo": 8,
+   "mode": 9,
+   "hi": 10,
+   "unit": "one portion/cup",
+   "url": "https://aquaticarts.com/products/deluxe-java-moss"
+  },
+  "plant:mushroom": {
+   "lo": 25,
+   "mode": 50,
+   "hi": 85,
+   "unit": "single Discosoma head; $39.99-$84.99 listings",
+   "url": "https://reefchasers.com/products/fire-red-disco-mushroom"
+  },
+  "plant:ozelot": {
+   "lo": 7.5,
+   "mode": 9,
+   "hi": 18,
+   "unit": "one potted plant; only Green variant priced in USD",
+   "url": "https://www.aquariumplants.com/product/ozelot-green-potted/?rating=2"
+  },
+  "plant:pothos": {
+   "lo": 9,
+   "mode": 22,
+   "hi": 27,
+   "unit": "4 inch pot; multipack per-plant low end",
+   "url": "https://homedepot.com/p/Costa-Farms-Pothos-Indoor-Plant-in-4-in-Decor-Pot-Avg-Shipping-Height-8-in-Tall-CO-GP04-3-WHTCY/319248976"
+  },
+  "plant:redroot": {
+   "lo": 7,
+   "mode": 12,
+   "hi": 14,
+   "unit": "portion of ~10 leaves",
+   "url": "https://aquaticarts.com/products/red-root-floater"
+  },
+  "plant:rotala": {
+   "lo": 8,
+   "mode": 8,
+   "hi": 12,
+   "unit": "one bunch or pot",
+   "url": "https://buceplant.com/products/rotala-rotundifolia-red"
+  },
+  "plant:sagittaria": {
+   "lo": 4,
+   "mode": 6,
+   "hi": 9,
+   "unit": "one potted portion",
+   "url": "https://www.aquariumcoop.com/products/dwarf-sagittaria"
+  },
+  "plant:salvinia": {
+   "lo": 5,
+   "mode": 7,
+   "hi": 8,
+   "unit": "one portion; Buceplant $6.99, spread judgement",
+   "url": "https://buceplant.com/products/salvinia-cucullata"
+  },
+  "plant:sansevieria": {
+   "lo": 12,
+   "mode": 19,
+   "hi": 27,
+   "unit": "4 inch potted plant",
+   "url": "https://homedepot.com/p/Snake-Plant-Gold-Hahnii-Sansevieria-Hahnii-Plant-in-4-in-Grower-Pot-4-SNAKE-GOLD-STAR/317501850"
+  },
+  "plant:seafan": {
+   "lo": 12,
+   "mode": 38,
+   "hi": 110,
+   "unit": "one gorgonian; $12 live-plants to $110 LiveAquaria",
+   "url": "https://www.liveaquaria.com/products/blueberry-sea-fan-expert-only.oembed"
+  },
+  "plant:sphagnum": {
+   "lo": 5,
+   "mode": 12,
+   "hi": 13,
+   "unit": "small bag, 4 qt live",
+   "url": "https://www.chewy.com/galapagos-sphagnum-reptile-amphibian/dp/284071"
+  },
+  "plant:stem": {
+   "lo": 5,
+   "mode": 7,
+   "hi": 10,
+   "unit": "one bunch of 4-8 stems",
+   "url": "https://buceplant.com/collections/stem-plants"
+  },
+  "plant:stemred": {
+   "lo": 8,
+   "mode": 10,
+   "hi": 16,
+   "unit": "one bunch of red stems",
+   "url": "https://buceplant.com/products/rotala-rotundifolia-red"
+  },
+  "plant:sword": {
+   "lo": 8,
+   "mode": 11,
+   "hi": 24,
+   "unit": "potted plant; mother pots ~$23",
+   "url": "https://buceplant.com/collections/echinodorus"
+  },
+  "plant:torch": {
+   "lo": 50,
+   "mode": 120,
+   "hi": 180,
+   "unit": "one torch frag; $49.99-$179.99, judged",
+   "url": "https://www.queencitycorals.com/?p=35068"
+  },
+  "plant:tropfern": {
+   "lo": 6,
+   "mode": 10,
+   "hi": 22,
+   "unit": "one 4-inch Boston fern; Mahoney's $6.99",
+   "url": "https://shop.mahoneysgarden.com/?p=170565"
+  },
+  "plant:zoanthid": {
+   "lo": 15,
+   "mode": 30,
+   "hi": 60,
+   "unit": "one 2-6 polyp frag; $15-$49 listed",
+   "url": "https://worldwidecorals.com/products/la-laker-zoanthids-8538"
+  },
+  "tank:10": {
+   "lo": 18,
+   "mode": 35,
+   "hi": 50,
+   "unit": "tank only; sale $18 to regular $36-50; judgement",
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-open-glass-aquarium-5356063.html"
+  },
+  "tank:125": {
+   "lo": 450,
+   "mode": 650,
+   "hi": 900,
+   "unit": "tank only; only CAD $1150 listing found, judgement",
+   "url": "https://aquariumdepot.ca/products/aqueon-standard-rectangular-aquarium-black-trim-125-gal"
+  },
+  "tank:20": {
+   "lo": 30,
+   "mode": 50,
+   "hi": 80,
+   "unit": "tank only; Pet Supermarket $30-52; sales lower",
+   "url": "https://www.petsupermarket.com/fish/supplies/aquariums-starter-kits/aquariums/marineland-standard-rectangular-high-sided-glass-fish-aquarium/SCM00284.html"
+  },
+  "tank:29": {
+   "lo": 60,
+   "mode": 80,
+   "hi": 130,
+   "unit": "tank only; Marineland $80; judgement on spread",
+   "url": "https://www.petsupermarket.com/fish/supplies/aquariums-starter-kits/aquariums/marineland-fish-aquarium-tank-black-29-gallon-30-x-12-x-18/PSI00861.html"
+  },
+  "tank:40": {
+   "lo": 90,
+   "mode": 120,
+   "hi": 151,
+   "unit": "40 breeder tank only; ThatPetPlace $151",
+   "url": "https://www.thatpetplace.com/40-Gallon-Breeder-Aquarium-Black"
+  },
+  "tank:5": {
+   "lo": 16,
+   "mode": 25,
+   "hi": 50,
+   "unit": "tank only 5.5 gal; Aqueon $16-33, Tetra $50",
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/aqueon-standard-glass-rectangle-aquarium-5345486.html"
+  },
+  "tank:55": {
+   "lo": 100,
+   "mode": 150,
+   "hi": 300,
+   "unit": "tank only; PetSmart $99.99 sale, BBPetStop $189.99",
+   "url": "https://shop.bbpetstop.com/products/aqueon-aquarium-tank-55-gal"
+  },
+  "tank:75": {
+   "lo": 300,
+   "mode": 427,
+   "hi": 520,
+   "unit": "tank only; one listing $427, lo/hi judged",
+   "url": "https://www.thatpetplace.com/75-Gallon-with-1-Corner-Flo-Black-48-in.-x-18-in.-x-21-i"
+  }
+ }
+}

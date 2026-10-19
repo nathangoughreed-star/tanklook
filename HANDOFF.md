@@ -446,3 +446,11 @@ moves and draw one full-quality frame ~150 ms after it stops (nothing changes on
   unmeasured on a genuinely slow machine; the rating sheet's film row on a tank with a picture behind the film.
 - Open: antialiasing off (needs a renderer rebuild, manual option only); cheaper plant / stone shaders (the plant bucket is the
   biggest GPU cost, 3-7 ms); a picture-behind-the-film rating row; then build the governor + slider in render/viewer.ts and ui.
+**Phase 2 DONE 2026-10-19 (data).** `src/data/demand-items.json`: 184 researched rows (animals each, plants per pot, stone per lb, wood per
+piece, gear classes, tank-only prices by gallons; each row lo/mode/hi + unit note + one source url; `est: true` = no listing found, 2 rows:
+`animal:syno`, `gear:conditioner`; many lo/hi are partly judgement, said in the unit note). Research cost: about 2.0M Sonnet tokens in two
+passes (first pass rate-limited: 115 of 169 rows came back as guesses; retry at 3 agents at a time fixed it). `src/demand/prices.ts` looks
+rows up; `engine.ts` prefers a row, falls back to demand-defaults.json. Substrate and the water-source rates stay on the factor defaults
+(the sand row is per branded 5 lb bag, too dear per litre). Weak rows: goldfish, clownloach, discus, bronzecory, ember, tank:75, tank:125,
+ball python, harlequin crested gecko, hard:ledge / lava / river (proxies from bagged landscape rock). Starter examples (setup p10/mean/p90):
+betta $310/379/454 (light row clamps at 24 in; being tuned), planted 45 gal $1187/1410/1640, reef 73 gal $2829/3416/4029.

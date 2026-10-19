@@ -13,9 +13,10 @@ import { growRate } from '../scene/growtime';
 import { LIBRARY } from '../scene/items';
 import { outcomeOf } from '../scene/plantfit';
 import { volume } from '../scene/physics';
-import { groundVolume } from '../scene/setupsheet';
+import { groundVolume, pieceKg } from '../scene/setupsheet';
 import type { TankSetup } from '../scene/types';
 import { add3, mean3, r3, scale3, widen3 } from './range';
+import { interp, price as rowPrice, priceRow } from './prices';
 import type { Contribution, Demand, Domain, Group, Range3, Rangeish, UserProfile } from './types';
 
 export const FACTORS = factorsJson;
@@ -80,30 +81,40 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
 
   // ---- tank, stand, lid, substrate, gear
   const tank = opts.tankPrice?.(S, gal), band = G.tank.find(b => gal <= b.maxGal) ?? G.tank[G.tank.length - 1];
-  add('tank', `Tank (${Math.round(gal)} gal)`, 'tank', { setup: price(tank !== undefined ? r3(tank)! : scale3(pick(band.perGal), gal)) });
-  if (S.stand.show) add('stand', 'Stand', 'gear', { setup: price(add3(pick(G.stand.base), scale3(pick(G.stand.perGal), gal))) });
+  const catTank = interp('tank:', [5, 10, 20, 29, 40, 55, 75, 125], gal), big = gal > 125 ? gal / 125 : gal < 5 ? Math.max(0.3, gal / 5) : 1;
+  add('tank', `Tank (${Math.round(gal)} gal)`, 'tank', { setup: price(tank !== undefined ? r3(tank)! : catTank ? scale3(catTank, big) : scale3(pick(band.perGal), gal)) });
+  const stand = interp('gear:stand-', [20, 55], gal);
+  if (S.stand.show) add('stand', 'Stand', 'gear', { setup: price(stand ? scale3(stand, gal > 55 ? Math.pow(gal / 55, 0.8) : 1) : add3(pick(G.stand.base), scale3(pick(G.stand.perGal), gal))) });
+  const lidRow = S.lid === 'open' ? undefined : rowPrice(`gear:lid-${S.lid === 'glass' ? 'glass' : S.lid === 'mesh' ? 'mesh' : 'hood'}`), lidK = Math.min(2.5, Math.max(0.6, Math.sqrt(gal / 25)));
   const lid = (G.lid as Record<string, Rangeish>)[S.lid];
-  if (lid && r3(lid)!.mode > 0) add('lid', `Lid (${S.lid})`, 'gear', { setup: price(r3(lid)!) });
+  if (lidRow) add('lid', `Lid (${S.lid})`, 'gear', { setup: price(scale3(lidRow, lidK)) });
+  else if (lid && r3(lid)!.mode > 0) add('lid', `Lid (${S.lid})`, 'gear', { setup: price(r3(lid)!) });
   const gv = S.substrate.show ? groundVolume(S, 24).litres : 0;
   if (gv > 0) add('substrate', 'Substrate', 'gear', { setup: price(scale3(pick(G.substrateUsdPerL), gv * 1.1)) });
   const watts = wattsOf(S);
-  if (watts > 0) add('light', `Light (${Math.round(watts)} W)`, 'gear', { setup: price(scale3(pick(G.lightUsdPerW), watts * sMul.setup)), kwhMo: watts * G.lightHoursPerDay * 30 / 1000 });
+  if (watts > 0) {
+    const inch = S.tank.L / 25.4, rowL = salt ? rowPrice('gear:led-reef-24') && scale3(rowPrice('gear:led-reef-24')!, Math.max(0.6, inch / 24)) : interp('gear:led-planted-', [24, 48], inch);
+    const lp = rowL ? scale3(rowL, !salt && inch > 48 ? inch / 48 : !salt && inch < 24 ? Math.max(0.3, inch / 24) : 1) : scale3(pick(G.lightUsdPerW), watts * sMul.setup);
+    add('light', `Light (${Math.round(watts)} W)`, 'gear', { setup: price(lp), kwhMo: watts * G.lightHoursPerDay * 30 / 1000 });
+  }
   if (wet) {
-    add('filter', 'Filter', 'gear', { setup: price(scale3(add3(pick(G.filter.base), scale3(pick(G.filter.perGal), gal)), sMul.setup)), upkeep: scale3(pick(G.filter.upkeepUsdMo), sMul.upkeep), kwhMo: G.filter.watts * 24 * 30 / 1000 });
+    add('filter', 'Filter', 'gear', { setup: price(scale3(rowPrice(gal <= 20 ? 'gear:filter-hob-small' : gal <= 60 ? 'gear:filter-hob-large' : 'gear:filter-canister') ?? add3(pick(G.filter.base), scale3(pick(G.filter.perGal), gal)), sMul.setup)), upkeep: scale3(pick(G.filter.upkeepUsdMo), sMul.upkeep), kwhMo: G.filter.watts * 24 * 30 / 1000 });
     const hw = Math.min(300, Math.max(25, G.heater.wattsPerGal * gal));
-    add('heater', 'Heater', 'gear', { setup: price(scale3(add3(pick(G.heater.base), scale3(pick(G.heater.perGal), gal)), sMul.setup)), kwhMo: hw * 24 * 30 * G.heater.duty / 1000 });
-    if (salt) add('skimmer', 'Protein skimmer', 'gear', { setup: price(pick(G.skimmer.setup)), upkeep: pick(G.skimmer.upkeepUsdMo) });
+    add('heater', 'Heater', 'gear', { setup: price(scale3(rowPrice(gal <= 30 ? 'gear:heater-small' : 'gear:heater-large') ?? add3(pick(G.heater.base), scale3(pick(G.heater.perGal), gal)), sMul.setup)), kwhMo: hw * 24 * 30 * G.heater.duty / 1000 });
+    if (salt) add('skimmer', 'Protein skimmer', 'gear', { setup: price(rowPrice('gear:skimmer') ?? pick(G.skimmer.setup)), upkeep: pick(G.skimmer.upkeepUsdMo) });
     if (plants.some(p => NEEDS[p.variant] && !isLand(NEEDS[p.variant]))) {
-      if (S.grow.feed === 'co2') add('co2', 'CO2 injection', 'gear', { setup: price(pick(G.co2.setup)), upkeep: pick(G.co2.upkeepUsdMo), minutes: r3(G.co2.minPerWeek) });
-      if (S.grow.feed !== 'low') add('ferts', 'Fertilizer', 'consumable', { upkeep: pick(G.ferts.upkeepUsdMo), minutes: r3(G.ferts.minPerWeek) });
+      if (S.grow.feed === 'co2') add('co2', 'CO2 injection', 'gear', { setup: price(rowPrice('gear:co2-kit') ?? pick(G.co2.setup)), upkeep: rowPrice('gear:co2-refill') ? scale3(rowPrice('gear:co2-refill')!, 1 / 3) : pick(G.co2.upkeepUsdMo), minutes: r3(G.co2.minPerWeek) });
+      if (S.grow.feed !== 'low') add('ferts', 'Fertilizer', 'consumable', { upkeep: rowPrice('gear:ferts') ?? pick(G.ferts.upkeepUsdMo), minutes: r3(G.ferts.minPerWeek) });
     }
   }
 
   // ---- hardscape
   for (const it of S.items) {
     if (it.kind === 'plant' || it.kind === 'coral') continue;
-    const h = (DEFAULTS.hardscape as unknown as Record<string, { setup: Range3 }>)[it.variant === 'liverock' ? 'liverock' : it.kind];
-    if (h) add(`hard:${it.variant}`, LIBRARY[it.variant]?.label ?? it.variant, 'hardscape', { setup: price(scale3(pick(h.setup), Math.pow(it.size / 150, 1.5))) });
+    const h = (DEFAULTS.hardscape as unknown as Record<string, { setup: Range3 }>)[it.variant === 'liverock' ? 'liverock' : it.kind], row = rowPrice(`hard:${it.variant}`), perLb = priceRow(`hard:${it.variant}`)?.unit.startsWith('per lb');
+    const label = LIBRARY[it.variant]?.label ?? it.variant;
+    if (row) add(`hard:${it.variant}`, label, 'hardscape', { setup: price(scale3(row, perLb ? pieceKg(it) * 2.2046 : Math.pow(it.size / (LIBRARY[it.variant]?.size ?? 150), 1.5))) });
+    else if (h) add(`hard:${it.variant}`, label, 'hardscape', { setup: price(scale3(pick(h.setup), Math.pow(it.size / 150, 1.5))) });
   }
 
   // ---- plants and corals
@@ -119,7 +130,7 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
     if (out && out.state === 'struggle') { const w = `${label}: ${out.short}`; if (!warnings.includes(w)) warnings.push(w); }
     const raw = (n && !isLand(n) ? DEFAULTS.risk.plantDifficulty[diff] : 0) + struggle;
     add(`plant:${it.variant}`, label, 'plant', {
-      setup: unit ? price(pick(unit.setup)) : undefined, livestock: true, domain: pdom,
+      setup: rowPrice(`plant:${it.variant}`) ? price(rowPrice(`plant:${it.variant}`)!) : unit ? price(pick(unit.setup)) : undefined, livestock: true, domain: pdom,
       minutes: r3(DEFAULTS.plants.minPerWeekEach * growRate(it.variant, S.grow.feed) * (it.size / DEFAULTS.plants.refSizeMm)), risk: raw * skillMul(P, pdom),
     });
   }
@@ -136,7 +147,7 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
     const why = c ? whyAnimal(sp, litres, (P.skill[adom] + 1) as 1 | 2 | 3, present) : null;
     if (why) { raw += DEFAULTS.risk.animalWarnPts[why.kind]; const w = `${sp.name}: ${why.text}`; if (!warnings.includes(w)) warnings.push(w); }
     add(`animal:${sp.id}`, sp.name, 'animal', {
-      setup: price(scale3(pick(u.setup), Math.pow(tl / u.refMm, 1.2))), upkeep: scale3(pick(u.upkeep), Math.pow(tl / u.refMm, 0.8) * sMul.upkeep), minutes: r3(u.mins * sMul.minutes),
+      setup: price(scale3(rowPrice(`animal:${sp.id}`) ?? pick(u.setup), Math.pow(tl / (rowPrice(`animal:${sp.id}`) ? sp.tl : u.refMm), 1.2))), upkeep: scale3(pick(u.upkeep), Math.pow(tl / u.refMm, 0.8) * sMul.upkeep), minutes: r3(u.mins * sMul.minutes),
       livestock: true, domain: adom, risk: raw * skillMul(P, adom),
     });
   }
@@ -147,7 +158,9 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   else {
     const inches = animals.reduce((s, a) => s + (a.f.tl ?? a.sp.tl) / 25.4, 0), stock = Math.min(1.4, Math.max(0.6, 0.5 + inches / Math.max(gal, 1)));
     const frac = T.waterChangeFraction[domain] * stock, galWk = gal * frac;
-    const water = pick((FACTORS.waterUsdPerGal as Record<string, Range3>)[P.waterSource]), per = salt ? add3(water, pick(FACTORS.saltMixUsdPerGal)) : water;
+    const water = (P.waterSource === 'bought-ro' ? rowPrice('gear:ro-bought') : undefined) ?? pick((FACTORS.waterUsdPerGal as Record<string, Range3>)[P.waterSource]), per = salt ? add3(water, rowPrice('gear:salt-mix') ?? pick(FACTORS.saltMixUsdPerGal)) : water;
+    if (P.waterSource === 'own-ro' && rowPrice('gear:ro-unit')) add('rounit', 'RO unit', 'gear', { setup: price(rowPrice('gear:ro-unit')!) });
+    if (rowPrice('gear:test-kit')) add('testkit', 'Water test kit', 'gear', { setup: price(rowPrice('gear:test-kit')!) });
     add('waterchange', `Water changes (${Math.round(frac * 100)} % a week)`, 'work', { upkeep: scale3(per, galWk * 4.33), minutes: add3(scale3(pick(T.waterChangePerGalMin), galWk * sMul.minutes), scale3(pick(T.waterChangeFixedMin), sMul.minutes)) });
     add('testing', 'Testing the water', 'work', { minutes: scale3(pick(T.testingMin), sMul.minutes) });
     add('filterclean', 'Cleaning the filter', 'work', { minutes: pick(T.filterCleanMinPerWeek) });

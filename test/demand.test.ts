@@ -65,6 +65,14 @@ describe('kit pricing', () => {
     expect(kit.totals.upkeepUsdMo).toBeCloseTo(parts.totals.upkeepUsdMo, 5); // electricity still counted
   });
 });
+describe('researched prices (phase 2)', () => {
+  it('every row has an ordered range and a source or an est flag', async () => {
+    const { default: d } = await import('../src/data/demand-items.json');
+    const rows = Object.entries(d.rows as Record<string, { lo: number; mode: number; hi: number; url: string; est?: boolean }>);
+    expect(rows.length).toBeGreaterThan(170);
+    for (const [k, r] of rows) { expect(r.lo, k).toBeLessThanOrEqual(r.mode); expect(r.mode, k).toBeLessThanOrEqual(r.hi); expect(r.est || r.url, k).toBeTruthy(); }
+  });
+});
 describe('costDistribution', () => {
   it('is seeded and stable, percentiles ordered, the likely range brackets the mean', () => {
     const a = run('planted').C, b = run('planted').C;
@@ -82,7 +90,7 @@ describe('costDistribution', () => {
   });
   it('limits: expected vs cap read different numbers; a cap is stricter', () => {
     const { D, C, P } = run('planted');
-    P.limits.setupUsd = Math.round(C.setup.mean);
+    P.limits.setupUsd = Math.ceil(C.setup.mean);
     expect(limitState(D, C, { ...P, limits: { ...P.limits, budgetMode: 'expected' } }).setup.over).toBe(false);
     expect(limitState(D, C, { ...P, limits: { ...P.limits, budgetMode: 'cap' } }).setup.over).toBe(true);
     expect(pct(C.setup, 85)).toBeGreaterThan(C.setup.mean);
