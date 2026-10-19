@@ -42,6 +42,8 @@ export function dealGuesses(d: Deal): string[] {
 export const DEALS = (data as unknown as { deals: Deal[] }).deals;
 export const DEALS_AS_OF = (data as { asOf: string }).asOf;
 export const DEAL_NOTE = 'as of the date shown; sales change, so check the current price';
+/** Shown wherever deals are listed: the links are plain (no affiliate codes) and nobody pays to be listed. */
+export const NOT_SPONSORED = 'We are not sponsored by any retailer or brand, and the links are plain links with no affiliate codes';
 const day = (d: string) => Date.parse(d + 'T23:59:59');
 
 /** Deals worth showing for a tank of `gal` rated gallons (within `tol` gallons), cheapest first; expired sales are dropped.

@@ -33,7 +33,7 @@ export function renderFeaturedDeals(box: HTMLElement, list: DealEntry[], open: (
       `${picUrl(d.id) ? `<img src="${esc(picUrl(d.id))}" alt="" style="height:auto;aspect-ratio:auto">` : pic(d, scene)}<span class="hint">Comes with: ${esc(got.join(', '))}${no.length ? `. Not included: ${no.join(', ')}` : ''}</span>` +
       `<span><b>${usd(d.price.usd)}</b>${d.price.regularUsd ? ` <s>${usd(d.price.regularUsd)}</s>` : ''}${pctOff(d) ? ` <b>${pctOff(d)}% off</b>` : ''}${savingUsd > 1 ? ` &middot; about ${usd(savingUsd)} under buying the parts` : ''}</span>` +
       `${dealGuesses(d).length ? `<span class="hint"><i>Guessed: ${esc(dealGuesses(d).join('; '))}</i></span>` : ''}<span class="hint">${d.saleEnds ? 'sale ends ' + esc(d.saleEnds) + '; ' : ''}as of ${esc(d.asOf)}${d.est ? ' (estimate)' : ''}; ${esc(DEAL_NOTE)}</span></button>` +
-      `<a class="hint" href="${esc(d.url)}" target="_blank" rel="noopener">listing</a></div>`;
+      `<a href="${esc(d.url)}" target="_blank" rel="noopener" title="Opens the retailer's page in a new tab (not a sponsored link)">See it at ${esc(d.retailer)} &#8599;</a></div>`;
   }).join('');
   box.onclick = e => {
     const b = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-deal]'), it = b && list[+b.dataset.deal!];

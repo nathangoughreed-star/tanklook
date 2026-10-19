@@ -4,7 +4,7 @@ import { attachDemandPanel } from './demandPanel';
 import { fitToLimits, hasLimits } from '../demand/fit';
 import { renderFeaturedDeals } from './featuredDeals';
 import { startDeals, visibleTabs, pickTab, type StartTab } from './startEntries';
-import { DEALS_AS_OF, DEAL_NOTE } from '../data/deals';
+import { DEALS_AS_OF, DEAL_NOTE, NOT_SPONSORED } from '../data/deals';
 import { LEVELS, onPerf, perf, setAuto, setLevel } from '../render/perf';
 import { lifeStages } from '../data/lifestages';
 import { rng } from '../art/paint';
@@ -236,7 +236,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     firstLaunch = first;
     const { sale, bundles } = startDeals(), shown = visibleTabs({ sale: sale.length, bundles: bundles.length });
     for (const b of startDlg.querySelectorAll<HTMLElement>('[data-tab]')) b.hidden = !shown.includes(b.dataset.tab as StartTab);
-    for (const n of startDlg.querySelectorAll('.dealasof')) n.textContent = `Prices as of ${DEALS_AS_OF}; ${DEAL_NOTE.replace(/^as of the date shown; /, '')}.`;
+    for (const n of startDlg.querySelectorAll('.dealasof')) n.textContent = `Prices as of ${DEALS_AS_OF}; ${DEAL_NOTE.replace(/^as of the date shown; /, '')}. ${NOT_SPONSORED}.`;
     renderFeaturedDeals($('startSale'), sale, openDeal);
     renderFeaturedDeals($('startBundles'), bundles, openDeal);
     renderExamples(); renderLib();
