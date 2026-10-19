@@ -37,6 +37,8 @@ html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); 
 @media (max-width: 760px) { #buildHint { bottom: 40px } } /* clear of the panel tab at the bottom edge */
 h1 { font-size: 17px; margin: 2px 0 0 }
 .sub { color: var(--muted); font-size: 12px; margin-bottom: 8px }
+header.top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px }
+header.top .units { flex: none; margin-top: 4px }
 h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 16px 0 6px; border-top: 1px solid var(--line); padding-top: 10px }
 .row { display: grid; grid-template-columns: 92px 1fr 72px; gap: 6px; align-items: center; margin: 4px 0 }
 .row[hidden], .hint[hidden] { display: none }

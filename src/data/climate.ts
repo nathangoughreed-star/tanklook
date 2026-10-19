@@ -32,8 +32,8 @@ export interface Fit {
   score: number;
   longTerm: boolean;
   per: Per[];
-  /** one or two plain sentences */
-  summary: string;
+  /** one or two plain sentences, in °F when `us` (temperature only) */
+  summary: (us?: boolean) => string;
 }
 
 /** Stress at which a compromise is still fine long term (a third of the way into the tolerable margin). */
@@ -67,13 +67,14 @@ export function solve(bands: Band[], lo: number, hi: number, step: number, unit:
   const max = Math.max(...per.map(p => p.cost)), mean = per.reduce((a, p) => a + p.cost, 0) / per.length;
   const score = Math.max(0, Math.round(100 - 35 * Math.min(max, 2) - 25 * Math.min(mean, 1)));
   const longTerm = per.every(p => p.status === 'ideal' || p.status === 'fine');
-  const u = unit === '%' ? ' %' : ' °C';
   const off = per.filter(p => p.status !== 'ideal').sort((x, y) => y.cost - x.cost);
-  const dir = (p: Per) => `${Math.abs(p.delta).toFixed(1).replace(/\.0$/, '')}${u} ${p.delta > 0 ? (unit === '%' ? 'wetter' : 'warmer') : (unit === '%' ? 'drier' : 'cooler')} than its comfortable range`;
+  const f = (us?: boolean) => us && unit !== '%';
+  const u = (us?: boolean) => unit === '%' ? ' %' : f(us) ? ' °F' : ' °C';
+  const dir = (p: Per, us?: boolean) => `${Math.abs(f(us) ? p.delta * 1.8 : p.delta).toFixed(1).replace(/\.0$/, '')}${u(us)} ${p.delta > 0 ? (unit === '%' ? 'wetter' : 'warmer') : (unit === '%' ? 'drier' : 'cooler')} than its comfortable range`;
   const verdict = (p: Per) => p.status === 'fine' ? 'a small compromise, fine long term'
     : p.status === 'stretch' ? 'tolerable for a while, not recommended long term' : 'outside what it tolerates: do not keep it with the others';
-  const summary = !off.length ? `Everyone is inside their comfortable range at ${at}${u}.`
-    : off.slice(0, 3).map(p => `${p.name}: ${dir(p)}, ${verdict(p)}${p.est ? ' (tolerance is a rough estimate)' : ''}.`).join(' ') + (off.length > 3 ? ` +${off.length - 3} more.` : '');
+  const summary = (us?: boolean) => !off.length ? `Everyone is inside their comfortable range at ${f(us) ? toF(at) : at}${u(us)}.`
+    : off.slice(0, 3).map(p => `${p.name}: ${dir(p, us)}, ${verdict(p)}${p.est ? ' (tolerance is a rough estimate)' : ''}.`).join(' ') + (off.length > 3 ? ` +${off.length - 3} more.` : '');
   return { at, zone, score, longTerm, per, summary };
 }
 
@@ -158,39 +159,43 @@ export function climateOf(S: TankSetup): Climate[] {
   }
   return rows;
 }
-const F = (c: number) => Math.round(c * 9 / 5 + 32);
-const band = (r: R) => `${r[0]}-${r[1]} °C (${F(r[0])}-${F(r[1])} °F)`;
-/** The collapsed line: "Set to 24 °C (75 °F)", the warm spot and humidity where there are some, and the agreement score. */
-export function climateText(r: Climate) {
+/** °C to °F, to the nearest 0.5 °F (23.5 °C reads 74.5 °F). */
+const toF = (c: number) => Math.round((c * 9 / 5 + 32) * 2) / 2;
+const deg = (c: number, us?: boolean) => us ? `${toF(c)} °F` : `${c} °C`;
+const band = (r: R, us?: boolean) => us ? `${toF(r[0])}-${toF(r[1])} °F` : `${r[0]}-${r[1]} °C`;
+/** The collapsed line: "Set to 24 °C" (or °F with US units), the warm spot and humidity where there are some, and the agreement score. */
+export function climateText(r: Climate, us?: boolean) {
   const score = [r.fit, r.fitRh].filter((f): f is Fit => !!f).map(f => f.score);
-  return `Set to ${r.at} °C (${F(r.at)} °F)${r.warm ? `, warm spot ${band(r.warm)}` : ''}${r.atRh != null ? `, humidity ${r.atRh} %` : ''}`
+  return `Set to ${deg(r.at, us)}${r.warm ? `, warm spot ${band(r.warm, us)}` : ''}${r.atRh != null ? `, humidity ${r.atRh} %` : ''}`
     + (score.length ? ` · Agreement ${Math.min(...score)}/100` : '');
 }
 
 const STATUS_TXT: Record<Status, string> = { ideal: 'ideal', fine: 'ok', stretch: 'not long term', unsafe: 'too far' };
-/** Bands on one axis, one row per inhabitant (tolerable behind, comfortable in front), the recommendation as a vertical line. */
-function axis(title: string, unit: string, fit: Fit, bands: Band[], warm: Record<string, R | undefined>, lo0: number, hi0: number) {
+/** Bands on one axis, one row per inhabitant (tolerable behind, comfortable in front), the recommendation as a vertical line.
+ *  Laid out in °C; `us` only relabels a temperature axis in °F. */
+function axis(title: string, unit: string, fit: Fit, bands: Band[], warm: Record<string, R | undefined>, lo0: number, hi0: number, us = false) {
+  const v = (x: number) => us ? toF(x) : x;
   const lo = Math.min(lo0, ...bands.map(b => b.tol[0])), hi = Math.max(hi0, ...bands.map(b => b.tol[1]), ...Object.values(warm).map(w => w?.[1] ?? -Infinity));
   const span = hi - lo, pc = (v: number) => (100 * (v - lo) / span).toFixed(1);
   const seg = (r: R, cls: string) => `<i class="${cls}" style="left:${pc(r[0])}%;width:${(100 * (r[1] - r[0]) / span).toFixed(1)}%"></i>`;
   const row = (b: Band) => {
     const p = fit.per.find(x => x.name === b.name)!;
-    const w = warm[b.name], d = p.delta ? ` ${p.delta > 0 ? '+' : ''}${p.delta.toFixed(1).replace(/\.0$/, '')}` : '';
+    const w = warm[b.name], d = p.delta ? ` ${p.delta > 0 ? '+' : ''}${(us ? p.delta * 1.8 : p.delta).toFixed(1).replace(/\.0$/, '')}` : '';
     return `<div class="clR"><span class="clN" title="${b.name}${b.est ? ' (tolerable band is thin: few sources)' : ''}">${b.name}${b.est ? '*' : ''}</span><span class="clB">${seg(b.tol, 't')}${seg(b.ok, 'a')}${w ? seg(w, 'w') : ''}</span>`
-      + `<span class="clV s-${p.status}" title="${b.ok[0]}-${b.ok[1]} comfortable, ${b.tol[0]}-${b.tol[1]} tolerable">${STATUS_TXT[p.status]}${d}</span></div>`;
+      + `<span class="clV s-${p.status}" title="${v(b.ok[0])}-${v(b.ok[1])} comfortable, ${v(b.tol[0])}-${v(b.tol[1])} tolerable">${STATUS_TXT[p.status]}${d}</span></div>`;
   };
   return `<div class="clAx"><div class="clT">${title} <span class="clScore ${fit.longTerm ? 'good' : 'bad'}">Agreement ${fit.score}/100${fit.longTerm ? '' : ' · not recommended long term'}</span></div>`
     + bands.map(row).join('')
-    + `<div class="clR"><span class="clN"></span><span class="clB clScale"><b style="left:${pc(lo)}%">${lo}</b><b style="left:${pc(hi)}%">${hi}${unit}</b></span><span class="clV"></span></div>`
-    + `<span class="clLine" style="left:calc(var(--cl-n) + (100% - var(--cl-n) - var(--cl-v)) * ${(+pc(fit.at) / 100).toFixed(4)})" title="Recommended: ${fit.at}${unit}"><em>${fit.at}${unit}</em></span>`
-    + `<div class="clSum">${fit.summary}</div></div>`;
+    + `<div class="clR"><span class="clN"></span><span class="clB clScale"><b style="left:${pc(lo)}%">${v(lo)}</b><b style="left:${pc(hi)}%">${v(hi)}${unit}</b></span><span class="clV"></span></div>`
+    + `<span class="clLine" style="left:calc(var(--cl-n) + (100% - var(--cl-n) - var(--cl-v)) * ${(+pc(fit.at) / 100).toFixed(4)})" title="Recommended: ${v(fit.at)}${unit}"><em>${v(fit.at)}${unit}</em></span>`
+    + `<div class="clSum">${fit.summary(us)}</div></div>`;
 }
 /** The expanded view of one row: where the recommendation comes from and what compromise it makes. */
-export function climateChart(r: Climate) {
+export function climateChart(r: Climate, us?: boolean) {
   if (!r.fit) return '';
   const warm = Object.fromEntries(r.bands.map(b => [b.name, undefined as R | undefined]));
   if (r.warm && r.bands.length === 1) warm[r.bands[0].name] = r.warm;
-  let h = axis(`${r.label} temperature, °C`, '', r.fit, r.bands, warm, Math.floor(r.fit.at) - 4, Math.ceil(r.fit.at) + 4);
+  let h = axis(`${r.label} temperature, ${us ? '°F' : '°C'}`, '', r.fit, r.bands, warm, Math.floor(r.fit.at) - 4, Math.ceil(r.fit.at) + 4, !!us);
   if (r.fitRh) h += axis('Relative humidity, %', '%', r.fitRh, r.rhBands, {}, 0, 100);
   if ([...r.bands, ...r.rhBands].some(b => b.est)) h += '<div class="clSum">* Tolerable band is thin: few sources, partly judgement.</div>';
   return h;
