@@ -9,6 +9,7 @@ import { OUTLINE, fish3d } from '../render/fish3d';
 import { LU, applyLighting, setLightUniforms, setWaterUniforms } from '../render/lighting';
 import { defaultSetup } from '../scene/defaults';
 import manifest from '../data/model-versions.json';
+import { GEAR_LOOKS, gearModel } from '../render/gear3d';
 
 interface Rec { v: number; hash: string; build: number; date: string }
 const RECORDED = (manifest as { models: Record<string, Rec> }).models;
@@ -19,6 +20,9 @@ const LIGHTS = [['flat', 'Preview light'], ['tank', 'Tank light']] as const;
 
 // every look: the species, and the female of a dimorphic one
 const LOOKS: Species[] = SPECIES.flatMap(s => s.female ? [s, s.female] : [s]);
+// the tech gear (lane TG): rows like the species', look 'gear-<id>', true size (tl 1: the model is in mm)
+const GEAR = new Map(GEAR_LOOKS.map(g => ['gear-' + g.id, g]));
+LOOKS.push(...GEAR_LOOKS.map(g => ({ id: 'gear-' + g.id, look: 'gear-' + g.id, name: g.label, sci: 'tech gear', tl: 1, aspect: 1, art: 'gear', cat: 'gear' }) as unknown as Species));
 const title = (sp: Species) => sp.name + (sp.sex === 'f' ? ' ♀' : sp.female ? ' ♂' : '');
 
 // ---- fingerprint ----
@@ -39,7 +43,7 @@ function fingerprint(sp: Species, model: THREE.Object3D) {
     for (const mat of ([] as THREE.Material[]).concat(m.material)) {
       const c = (mat as THREE.MeshBasicMaterial).color; if (c) h = fnv(h, c.getHex());
       const img = (mat as THREE.MeshBasicMaterial).map?.image as CanvasImageSource & { width: number; height: number } | undefined;
-      if (img?.width) {
+      if (img?.width && !(img as { data?: unknown }).data) { // (a DataTexture's image is raw data, not drawable: lane TG 2026-10-19, the ball python stalled the sheet)
         // a 24 px wide thumbnail at 3 bits a channel: a repaint shows, resampling differences do not
         const tw = 24, th = Math.max(1, Math.round(24 * img.height / img.width));
         thumb.canvas.width = tw; thumb.canvas.height = th; thumb.clearRect(0, 0, tw, th); thumb.drawImage(img, 0, 0, tw, th);
@@ -86,10 +90,10 @@ function shoot(scene: THREE.Scene, model: THREE.Object3D, yaw: number, pitch: nu
 
 /** The look's views in both lights, and its fingerprint. */
 function renderLook(sp: Species) {
-  const scene = new THREE.Scene(), model = speciesModel(sp);
+  const gear = GEAR.get(sp.look), scene = new THREE.Scene(), model = gear ? gearModel(setup, gear) : speciesModel(sp);
   // fingerprinted part by part as before lane FM merged a fish's same-material parts (one mesh per material draws the
   // same model; its baked vertices would bump every fish)
-  const merge = fish3d.merge; fish3d.merge = false; const parts = speciesModel(sp); fish3d.merge = merge;
+  const merge = fish3d.merge; fish3d.merge = false; const parts = gear ? gearModel(setup, gear) : speciesModel(sp); fish3d.merge = merge;
   const hash = fingerprint(sp, parts);
   parts.traverse(o => { const g = (o as THREE.Mesh).geometry; if (g && !g.userData.keep) g.dispose(); });
   scene.add(model); applyLighting(scene);
@@ -97,7 +101,7 @@ function renderLook(sp: Species) {
   LU.uMode.value = 0; LU.uWater.value.w = 0;
   out.flat = VIEWS.map(([, y, p]) => shoot(scene, model, y, p));
   // the tank: true size in the middle of the default tank, under its lamps (LED bar) and water
-  model.scale.setScalar(sp.tl); model.position.set(T.L / 2, T.H / 2, -T.D / 2);
+  model.scale.setScalar(sp.tl); model.position.set(T.L / 2, T.H / 2, -T.D / 2); // (gear: true size already)
   setLightUniforms(T, tankLight); setWaterUniforms(T, setup.water);
   out.tank = VIEWS.map(([, y, p]) => shoot(scene, model, y, p));
   model.traverse(o => { const g = (o as THREE.Mesh).geometry; if (g && !g.userData.keep) g.dispose(); });
@@ -158,14 +162,16 @@ function fill(sp: Species, out: Record<string, HTMLCanvasElement[]>) {
 }
 
 const list = $('list');
-for (const [cat, label] of CATEGORIES) {
+for (const [cat, label] of [...CATEGORIES, ['gear', 'Tech gear']] as [string, string][]) {
   const looks = LOOKS.filter(s => s.cat === cat);
   if (!looks.length) continue;
   const h = document.createElement('h2'); h.textContent = label; h.dataset.cat = cat;
   list.append(h, ...looks.map(row));
 }
 
-const changed = () => LOOKS.filter(s => { const h = hashes.get(s.look); return h && RECORDED[s.look]?.hash !== h; });
+// ?only=gear-: Record touches only the looks starting with it (one lane's models, while other lanes' changes wait)
+const ONLY = new URLSearchParams(location.search).get('only') ?? '';
+const changed = () => LOOKS.filter(s => { const h = hashes.get(s.look); return h && RECORDED[s.look]?.hash !== h && s.look.startsWith(ONLY); });
 function applyFilter() {
   const q = ($('filter') as HTMLInputElement).value.trim().toLowerCase();
   const onlyFlag = ($('onlyFlag') as HTMLInputElement).checked, onlyChanged = ($('onlyChanged') as HTMLInputElement).checked;
@@ -218,7 +224,7 @@ function sheet(sp: Species, r: Rec) {
 }
 function gallery(models: Record<string, Rec>) {
   const sw = LAB + VIEWS.length * W, sh = HEAD + COL + LIGHTS.length * H, views = VIEWS.map(v => v[0]).join(', ');
-  const parts = CATEGORIES.map(([cat, label]) => {
+  const parts = ([...CATEGORIES, ['gear', 'Tech gear']] as [string, string][]).map(([cat, label]) => {
     const looks = LOOKS.filter(s => s.cat === cat);
     if (!looks.length) return '';
     return `<h2>${esc(label)}</h2>\n` + looks.map(s => {

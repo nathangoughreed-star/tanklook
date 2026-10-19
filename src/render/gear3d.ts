@@ -633,3 +633,26 @@ export const solidBoxes = (meshes: THREE.Mesh[]) => meshes.filter(m => !m.userDa
 
 /** The part key: what the gear's look depends on beyond the scene's envKey (the hardscape it keeps clear of, the plants' feed). */
 export const gearKey = (S: TankSetup, hard: string[]) => 'gear' + JSON.stringify(gearPicks(S)) + hard.join('');
+
+/** The review sheet's gear models (review.html): id, label, the picks that show it (with what it hangs on) and the tank. */
+export const GEAR_LOOKS: { id: string; label: string; picks: GearPick[]; salt?: boolean }[] = [
+  ...FILTER_MODELS.map(m => ({ id: m.id, label: `${m.label} · ${m.gph} gph`, picks: [{ id: m.id }] })),
+  ...HEATER_MODELS.map(m => ({ id: m.id, label: m.label, picks: [{ id: m.id }] })),
+  { id: 'airstone', label: 'Air pump + airstone', picks: [{ id: 'airstone' }] },
+  { id: 'co2', label: 'CO2: diffuser, bubble counter, drop checker, cylinder', picks: [{ id: 'co2' }] },
+  { id: 'uv-internal', label: 'UV sterilizer (internal)', picks: [{ id: 'uv' }, { id: 'hob-s' }] },
+  { id: 'uv-inline', label: 'UV sterilizer (inline, canister)', picks: [{ id: 'uv' }, { id: 'canister-m' }] },
+  { id: 'powerhead', label: 'Powerhead', picks: [{ id: 'powerhead' }], salt: true },
+  { id: 'wavemaker', label: 'Wavemaker', picks: [{ id: 'wavemaker' }], salt: true },
+  { id: 'skimmer', label: 'Protein skimmer (HOB)', picks: [{ id: 'skimmer' }], salt: true },
+  { id: 'sump', label: 'Sump: overflow, return, skimmer', picks: [{ id: 'sump' }], salt: true },
+  { id: 'ato', label: 'ATO sensor', picks: [{ id: 'ato' }], salt: true },
+];
+/** One review model: its meshes built in tank S (left back corner), as a group centred on its box. */
+export function gearModel(S: TankSetup, look: (typeof GEAR_LOOKS)[number]) {
+  const S2 = { ...S, water: { ...S.water, on: true, salt: !!look.salt }, stand: { ...S.stand, show: true, style: 'frame' as const } };
+  const g = new THREE.Group(); for (const m of buildGear(S2, S2.tank, [], look.picks, 'left')) g.add(m);
+  const c = new THREE.Box3().setFromObject(g).getCenter(new THREE.Vector3());
+  for (const m of g.children) { m.position.sub(c); m.visible = true; } // a review model is always shown
+  return g;
+}
