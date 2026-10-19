@@ -24,6 +24,7 @@ public without messaging the coordinator; the budget input is the existing setup
 Update 2026-10-19: lane TM (tech menu) adds a new src/demand/tech.ts with ONE-LINE hooks into the engine (its step 3). Land your
 simplification early and push; keep demandOf / limits signatures stable; if TM's hook conflicts on merge, keep both sides and tell
 the coordinator. Do not edit tech.ts.
+Update: TM step 3 is already on main (d907700): src/demand/tech.ts plus ONE line (and an import) in src/demand/engine.ts just before the `if (opts.kit)` block. Keep that line on merge; test/tech.test.ts locks the 11 examples' totals, so your "expected value unchanged" test and TM's must both pass.
 Pictures of the panel and limits form (before and after) before shipping; wait for Nathan's verdict.
 
 Files you own: src/demand/*, src/data/demand-defaults.json, factors.json, demand-items.json (values only, columns stay), src/ui/demandPanel.ts, test/demand*.test.ts. Lane KW owns the wizard; lane CS owns .github/ and vite.config.ts.
