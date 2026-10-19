@@ -599,7 +599,7 @@ export function snakeSpine(art: string, w: number, surface?: string, Rmm?: numbe
  * heading (the card's rotation), `at` = the origin's scene x, z, `ground(x, z)` = the ground's height at scene (x, z).
  * Returns the rotation to premultiply onto `q`, the origin's new x, z and its height.
  */
-export function settleSnake(c: ReturnType<typeof snakeContacts>, q: THREE.Quaternion, at: { x: number; z: number }, ground: (x: number, z: number) => number, maxTilt: number) {
+export function settleSnake(c: ReturnType<typeof snakeContacts>, q: THREE.Quaternion, at: { x: number; z: number }, ground: (x: number, z: number) => number, maxTilt: number, blocked?: (x: number, z: number) => boolean) {
   const up = V(0, 1, 0), o = c.pts.map(([x, y, z]) => V(x, y, z).applyQuaternion(q)), r = c.pts.map(p => p[3]), n = o.length;
   const cands: { rot: THREE.Quaternion; phi: number; y: number[] }[] = [];
   const add = (phi: number, th: number) => {
@@ -620,7 +620,9 @@ export function settleSnake(c: ReturnType<typeof snakeContacts>, q: THREE.Quater
   const sample = (ox: number, oz: number, cd: { rot: THREE.Quaternion }) => o.map(p => { const t = p.clone().applyQuaternion(cd.rot); return ground(at.x + ox + t.x, at.z + oz + t.z); });
   let best = { off: offs[0], cd: cands[0] }, bs = Infinity;
   for (const off of offs) {
-    const g = o.map(p => ground(at.x + off[0] + p.x, at.z + off[1] + p.z)), pen = 0.01 * Math.hypot(off[0], off[1]) * n;
+    // hardscape standing on the floor under a coil: a big penalty per touching part (the animal slides clear of it rather than through it)
+    const hit = blocked ? o.reduce((a, p, i) => a + (blocked(at.x + off[0] + p.x, at.z + off[1] + p.z) ? r[i] : 0), 0) : 0;
+    const g = o.map(p => ground(at.x + off[0] + p.x, at.z + off[1] + p.z)), pen = 0.01 * Math.hypot(off[0], off[1]) * n + 50 * hit;
     for (const cd of cands) { const sc = evalG(cd, g).air + 0.6 * cd.phi * sr + pen; if (sc < bs) { bs = sc; best = { off, cd }; } }
   }
   // the ground under the tilted body, not the level one: choose the tilt again there (same spot), then rest it

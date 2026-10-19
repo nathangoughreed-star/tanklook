@@ -1410,7 +1410,7 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
     m.position.set(p.x, y, -p.depth); m.rotation.set(f.roll * D2R, f.yaw * D2R, f.pitch * D2R, 'YXZ');
     // on a slope: lying along the ground, not level with it (Nathan 2026-10-13: a treefrog on a bank sat half in the substrate)
     if (rests && isSnake(sp.art)) { // a rigid coil or ball: the tilt and height that leave the least air under it, none of it in the ground (lane BP2)
-      const hard = f.surface === 'hardscape', st = settleSnake(snakeContacts(sp.art, w, f.bend), m.quaternion, { x: p.x, z: -p.depth }, (x, z) => top(x, -z, hard, 0), Math.min(MAX_TILT, 30 * D2R));
+      const hard = f.surface === 'hardscape', st = settleSnake(snakeContacts(sp.art, w, f.bend), m.quaternion, { x: p.x, z: -p.depth }, (x, z) => top(x, -z, hard, 0), Math.min(MAX_TILT, 30 * D2R), hard ? undefined : (x, z) => top(x, -z, true, 0) > top(x, -z, false, 0) + 3);
       m.quaternion.premultiply(st.rot); m.position.set(st.x, st.y, st.z);
     } else if (rests) restOn(f, m, w, sp.rest * w - (isArachnid(sp.art) ? 0 : 1));
     register(m, w, h);
