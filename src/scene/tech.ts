@@ -13,6 +13,7 @@ import { FILTER_MODELS, HEATER_MODELS, matchHeater, type FilterKind, type Filter
 import { price as rowPrice } from '../demand/prices';
 import type { Range3 } from '../demand/types';
 import { volume } from './physics';
+import { heaterProduct } from '../data/gearCatalog';
 import { footprint } from './shape';
 import type { GrowFeed, TankSetup } from './types';
 
@@ -41,6 +42,8 @@ export interface TechSetup {
   filterModel?: string;
   /** heater watts each (a gear-models.json heater class); absent = sized from the heat loss */
   heaterW?: number;
+  /** a real heater picked from the gear catalogue (data/gear-catalog.json; lane TG): its watts size the heat, its size is drawn */
+  heaterProduct?: string;
   /** room temperature, deg C, where the tank stands; absent = tech.json roomC (21) */
   roomC?: number;
   /** where lane TG draws each row's gear (row id -> place); absent = TG's default side */
@@ -182,7 +185,7 @@ export function withChoice(S: TankSetup, row: string, opt: string): TechSetup {
   if (row === 'filter' && opt !== 'sump' && rows.skimmer === 'sump') rows.skimmer = 'hob';
   const next: TechSetup = { ...t, rows, preset: 'custom' };
   if (row === 'filter') delete next.filterModel;
-  if (row === 'heater') delete next.heaterW;
+  if (row === 'heater') { delete next.heaterW; delete next.heaterProduct; }
   return next;
 }
 
@@ -265,7 +268,7 @@ export function heatLoss(S: TankSetup, t: TechSetup = techOf(S)): HeatLoss {
   const targetC = climateOf(S).find(c => c.label === 'Water')?.at ?? (isSalt(S) ? 25.5 : 24), roomC = t.roomC ?? ROOM_C;
   const dT = targetC - roomC, lossW = Math.max(0, wPerK * dT), needW = Math.max(0, wPerK * (dT + HEAT.nightDropK) * HEAT.headroom);
   const n = t.rows.heater === 'none' ? 0 : t.rows.heater === 'two' ? 2 : 1;
-  const heater = t.heaterW ? matchHeater(t.heaterW) : matchHeater(Math.max(needW / Math.max(n, 1), 1));
+  const pw = heaterProduct(t.heaterProduct)?.watts, heater = t.heaterW ? matchHeater(t.heaterW) : pw ? matchHeater(pw) : matchHeater(Math.max(needW / Math.max(n, 1), 1));
   const duty = n ? Math.min(1, lossW / (heater.watts * n)) : 0;
   const coolW = Math.max(0, -wPerK * dT);
   return {
@@ -434,6 +437,7 @@ export function parseTech(raw: unknown): TechSetup | undefined {
   if (typeof r.preset === 'string' && (r.preset === 'custom' || PRESETS.some(p => p.id === r.preset))) t.preset = r.preset;
   if (typeof r.filterModel === 'string' && FILTER_MODELS.some(m => m.id === r.filterModel)) t.filterModel = r.filterModel;
   if (typeof r.heaterW === 'number' && HEATER_MODELS.some(m => m.watts === r.heaterW)) t.heaterW = r.heaterW;
+  if (typeof r.heaterProduct === 'string' && heaterProduct(r.heaterProduct)) t.heaterProduct = r.heaterProduct;
   if (typeof r.roomC === 'number' && isFinite(r.roomC)) t.roomC = Math.min(40, Math.max(0, r.roomC));
   if (r.place && typeof r.place === 'object') {
     const place: Record<string, GearPlace> = {};

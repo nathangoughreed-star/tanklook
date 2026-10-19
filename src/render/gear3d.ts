@@ -6,7 +6,8 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { FILTER_MODELS, HEATER_MODELS, type FilterModel } from '../demand/gear';
-import { techParts, type GearPlace } from '../scene/tech';
+import { heatLoss, techOf, techParts, type GearPlace } from '../scene/tech';
+import { genericHeaterW, heaterProduct } from '../data/gearCatalog';
 import { backdropDepth, glassThickness, tankUnderside, floorY, waterY, clamp } from '../scene/physics';
 import { chord } from '../scene/shape';
 import { groundHeight } from '../scene/terrain';
@@ -25,6 +26,7 @@ export interface GearPick {
   id: string; /** CO2 only: the drop checker's colour, when the tech model knows the level. */ co2?: 'low' | 'ok' | 'high';
   /** units (two heaters, two powerheads); absent = 1 */ n?: number;
   /** the tech row it comes from (what a drag writes to) */ row?: string;
+  /** heaters: the watts drawn (a generic heater of the size the tank needs) and the real product picked, if any */ watts?: number; product?: string;
   /** the owner's placement; absent = placed by TG (default corner, clear of the hardscape) */ place?: GearSpot;
 }
 /** Which back corner the gear sits in. */
@@ -41,7 +43,8 @@ export function gearPicks(S: TankSetup): GearPick[] {
   for (const p of parts) {
     const place = spotOf(S, p.place), pick = (id: string) => out.push({ id, row: p.row, ...(p.n > 1 ? { n: p.n } : {}), ...(place ? { place } : {}) });
     switch (p.gear) {
-      case 'filter': case 'heater': if (p.model) pick(p.model); break;
+      case 'filter': if (p.model) pick(p.model); break;
+      case 'heater': if (p.model) { const t = techOf(S), hp = heaterProduct(t.heaterProduct), w = hp?.watts ?? t.heaterW ?? genericHeaterW(heatLoss(S, t).needW / Math.max(1, p.n)); out.push({ id: p.model, row: p.row, ...(p.n > 1 ? { n: p.n } : {}), watts: w, ...(hp ? { product: hp.id } : {}), ...(place ? { place } : {}) }); } break;
       case 'sump': pick('sump'); break;
       case 'co2kit': case 'diyco2': pick('co2'); break;
       case 'airpump': pick('airstone'); break;
@@ -300,9 +303,11 @@ function overRim(f: Frame, u: number, from: THREE.Vector3, bIn: number, yEnd: nu
   return [from, f.P(u, Math.max(from.y + 1, f.wy + 20), bIn), f.P(u, rimY - 6, bIn), f.P(u, rimY + 4, (bIn - f.t) / 2), f.P(u, rimY - 6, bOut), f.P(u, Math.min(yEnd + 40, rimY - 60), bOut), f.P(u, yEnd, bOut)];
 }
 
-function heater(f: Frame, watts: number, sp: Spot) {
-  const { kit } = f, len = heaterLength(watts), r = watts >= 500 ? 14 : 11, b = r + 9, u0 = sp.u;
-  const g0 = Math.max(f.ground(u0, b), 0) + 25, room = f.wy - 15 - g0;
+function heater(f: Frame, watts: number, sp: Spot, product?: string) {
+  // a real product at its own size (overall length = tube + the 44 mm cap drawn), else the generic tube for the rating
+  const hp = heaterProduct(product), { kit } = f, len = hp ? Math.max(60, hp.lengthMm - 44) : heaterLength(watts), r = hp ? hp.diaMm / 2 : watts >= 500 ? 14 : 11, b = r + 9, u0 = sp.u;
+  // a heater stands about 10 mm off the gravel with its cap just under the surface (fully submersible)
+  const g0 = Math.max(f.ground(u0, b), 0) + 10, room = f.wy - 5 - g0;
   // vertical when it fits under the water line, else lying flat low along the glass (Nathan 2026-10-19: tilted heaters
   // are rare); turned only when the owner turns it (Shift + wheel), and then never so upright that it leaves the water
   const fits = len + 44 <= room, need = fits ? 0 : Math.acos(clamp(room / (len + 44), 0, 1));
@@ -310,16 +315,25 @@ function heater(f: Frame, watts: number, sp: Spot) {
   const u = f.slot(sp.fixed ? u0 : u0 + span / 2, 2 * r + 6 + span, g0, f.wy, 0, 2 * r + 12, sp.fixed);
   // the cap's top: at most 15 mm under the water line, at least the heater's height off the ground (the owner's height
   // share between; default: high when upright, low when lying flat)
-  const ext = Math.max((len + 44) * Math.cos(tilt), 2 * r + 4), capY = lerp(Math.min(g0 + ext, f.wy - 15), f.wy - 15, sp.y ?? (tilt > 1.2 ? 0 : 1));
+  const ext = Math.max((len + 44) * Math.cos(tilt), 2 * r + 4), capY = lerp(Math.min(g0 + ext, f.wy - 5), f.wy - 5, sp.y ?? (tilt > 1.2 ? 0 : 1));
   const topY = capY - 44 * Math.cos(tilt) - r * Math.sin(tilt), dir = f.along.clone().multiplyScalar(-sgn * Math.sin(tilt)).add(V(0, Math.cos(tilt), 0)); // the cap toward the corner
   const top = f.P(u - sgn * (span / 2 - 44 * Math.sin(tilt)), topY, b), bot = top.clone().addScaledVector(dir, -len);
-  kit.rod('clear', bot, top, r, C.glass, { seg: 20, base: 0.07 });
-  // the ceramic core with its element wound round it, inside the glass
-  const c0 = bot.clone().addScaledVector(dir, len * 0.12), c1 = top.clone().addScaledVector(dir, -len * 0.1);
-  kit.rod('wet', c0, c1, r * 0.6, C.ceramic, { seg: 12 });
-  const turns = Math.round((len * 0.7) / 6), cl = c1.distanceTo(c0), coil: THREE.Vector3[] = [], q = new THREE.Quaternion().setFromUnitVectors(UP, dir);
-  for (let i = 0; i <= turns * 8; i++) { const a = (i / 8) * Math.PI * 2, h = (i / (turns * 8)) * cl; coil.push(V(Math.cos(a) * r * 0.66, h, Math.sin(a) * r * 0.66).applyQuaternion(q).add(c0)); }
-  kit.put('wet', new THREE.TubeGeometry(new THREE.CatmullRomCurve3(coil), turns * 8, 0.45, 4, false), C.copper);
+  const q = new THREE.Quaternion().setFromUnitVectors(UP, dir);
+  if (hp?.look === 'titanium') kit.rod('wet', bot, top, r, 0x8b9096, { seg: 20 }); // a brushed metal tube, nothing to see inside
+  else {
+    kit.rod('clear', bot, top, hp?.look === 'shroud' ? r - 2.5 : r, C.glass, { seg: 20, base: 0.07 });
+    // the ceramic core with its element wound round it, inside the glass
+    const c0 = bot.clone().addScaledVector(dir, len * 0.12), c1 = top.clone().addScaledVector(dir, -len * 0.1), rc = hp?.look === 'shroud' ? r - 2.5 : r;
+    kit.rod('wet', c0, c1, rc * 0.6, C.ceramic, { seg: 12 });
+    const turns = Math.round((len * 0.7) / 6), cl = c1.distanceTo(c0), coil: THREE.Vector3[] = [];
+    for (let i = 0; i <= turns * 8; i++) { const a = (i / 8) * Math.PI * 2, h = (i / (turns * 8)) * cl; coil.push(V(Math.cos(a) * rc * 0.66, h, Math.sin(a) * rc * 0.66).applyQuaternion(q).add(c0)); }
+    kit.put('wet', new THREE.TubeGeometry(new THREE.CatmullRomCurve3(coil), turns * 8, 0.45, 4, false), C.copper);
+    // a plastic guard over the glass: black bars round it, rings at the ends and the middle
+    if (hp?.look === 'shroud') {
+      for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2, o = V(Math.cos(a) * (r - 1), 0, Math.sin(a) * (r - 1)).applyQuaternion(q); kit.rod('wet', bot.clone().add(o), top.clone().add(o), 1.6, C.charcoal, { seg: 5 }); }
+      for (const k of [0.02, 0.5, 0.98]) kit.rod('wet', bot.clone().lerp(top, k - 0.015), bot.clone().lerp(top, k + 0.015), r, C.charcoal, { seg: 20 });
+    }
+  }
   // black cap with the dial, the rounded foot, the amber pilot light
   kit.rod('wet', top, top.clone().addScaledVector(dir, 36), r + 2, C.black, { seg: 20 });
   kit.rod('wet', top.clone().addScaledVector(dir, 36), top.clone().addScaledVector(dir, 44), r - 1, C.charcoal, { seg: 20 });
@@ -651,7 +665,11 @@ export function buildGear(S: TankSetup, T: Tank, solids: THREE.Box3[], picks = g
   const track = (p: GearPick, build: () => void) => {
     const n0 = (Object.keys(kit.parts) as Bucket[]).map(k => kit.parts[k].length); build();
     const box = new THREE.Box3(), v = new THREE.Vector3();
-    (Object.keys(kit.parts) as Bucket[]).forEach((k, i) => { for (const g of kit.parts[k].slice(n0[i])) { const a = g.attributes.position; for (let j = 0; j < a.count; j += 3) { v.fromBufferAttribute(a, j); if (v.y > -25) box.expandByPoint(v); } } });
+    // the parts in the water first (cords, hoses and bodies outside the glass would make a box as big as the tank)
+    for (const only of [['wet', 'clear', 'glow'], ['wet', 'clear', 'glow', 'room']] as Bucket[][]) {
+      (Object.keys(kit.parts) as Bucket[]).forEach((k, i) => { if (only.includes(k)) for (const g of kit.parts[k].slice(n0[i])) { const a = g.attributes.position; for (let j = 0; j < a.count; j += 3) { v.fromBufferAttribute(a, j); if (v.y > -25) box.expandByPoint(v); } } });
+      if (!box.isEmpty()) break;
+    }
     if (!box.isEmpty() && p.row) pieces.push({ row: p.row, id: p.id, mount: mountOf(p.id), box });
   };
   const get = (id: string) => picks.find(p => p.id === id), has = (id: string) => !!get(id);
@@ -664,7 +682,7 @@ export function buildGear(S: TankSetup, T: Tank, solids: THREE.Box3[], picks = g
     const go = (p: GearPick | undefined) => !!p && !!p.place === pass;
     if (go(get('sump'))) { const { f, sp } = spot(get('sump')!, cursor); track(get('sump')!, () => sump(f, sp)); if (f === back && !pass) cursor = after(); outlet = { f, u: sp.u + 40 }; }
     // the heater in the corner, the filter's intake next to it, so the intake draws the warm water through the tank
-    if (hm && go(hp)) for (let i = 0; i < (hp!.n ?? 1); i++) { const { f, sp } = spot(hp!, i ? after() : cursor); if (i && hp!.place) sp.u += 90 * i; /* a second placed heater beside the first */ track(hp!, () => heater(f, hm.watts, sp)); if (!pass) cursor = after(); }
+    if (hm && go(hp)) for (let i = 0; i < (hp!.n ?? 1); i++) { const { f, sp } = spot(hp!, i ? after() : cursor); if (i && hp!.place) sp.u += 90 * i; /* a second placed heater beside the first */ track(hp!, () => heater(f, hp!.watts ?? hm.watts, sp, hp!.product)); if (!pass) cursor = after(); }
     if (fm && go(fp)) {
       const { f, sp } = spot(fp!, cursor), n0 = f.taken.length;
       track(fp!, () => { if (fm.kind === 'hob') hob(f, fm, sp); else if (fm.kind === 'canister') canister(f, fm, sp); else if (fm.kind === 'sponge') sponge(f, fm, sp); else internal(f, fm, sp); });

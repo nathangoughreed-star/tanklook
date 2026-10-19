@@ -1,0 +1,188 @@
+{
+ "asOf": "2026-10-19",
+ "note": "Real aquarium gear by brand (lane TG). lengthMm = tube + cap overall, diaMm = tube diameter; est lists the fields that are estimates. Sources: the maker's page or a major US retailer listing.",
+ "heaters": [
+ {
+  "id": "topfin-50",
+  "brand": "Top Fin",
+  "model": "Submersible Heater 50 W",
+  "watts": 50,
+  "lengthMm": 269,
+  "diaMm": 25,
+  "look": "shroud",
+  "galMin": 5,
+  "galMax": 15,
+  "priceUsd": 31.99,
+  "url": "https://www.petsmart.com/fish/heating-and-lighting/heaters/top-fin-submersible-aquarium-heater---fish-tank-heater---50-300-watt-5343048.html",
+  "est": [
+   "diaMm",
+   "galMin"
+  ],
+  "asOf": "2026-10-19"
+ },
+ {
+  "id": "aqueon-pro-50",
+  "brand": "Aqueon",
+  "model": "Pro Adjustable Heater 50 W",
+  "watts": 50,
+  "lengthMm": 229,
+  "diaMm": 35,
+  "look": "glass",
+  "galMin": 5,
+  "galMax": 20,
+  "priceUsd": 25,
+  "url": "https://www.liveaquaria.com/products/aqueon-proheater",
+  "est": [
+   "diaMm",
+   "galMin",
+   "priceUsd"
+  ],
+  "asOf": "2026-10-19"
+ },
+ {
+  "id": "tetra-ht-50",
+  "brand": "Tetra",
+  "model": "HT10 Submersible Heater 50 W",
+  "watts": 50,
+  "lengthMm": 178,
+  "diaMm": 30,
+  "look": "shroud",
+  "galMin": 2,
+  "galMax": 10,
+  "priceUsd": 22,
+  "url": "https://www.chewy.com/tetra-ht10-submersible-aquarium/dp/191044",
+  "est": [
+   "diaMm",
+   "priceUsd"
+  ],
+  "asOf": "2026-10-19"
+ },
+ {
+  "id": "fluval-e50",
+  "brand": "Fluval",
+  "model": "E 50 Electronic Heater",
+  "watts": 50,
+  "lengthMm": 247,
+  "diaMm": 28,
+  "look": "shroud",
+  "galMin": 3,
+  "galMax": 13,
+  "priceUsd": 38,
+  "url": "https://aquasabi.com/Fluval-E-Serie-Aquarium-Heater-E50",
+  "est": [
+   "galMin",
+   "galMax",
+   "priceUsd"
+  ],
+  "asOf": "2026-10-19"
+ },
+ {
+  "id": "fluval-m50",
+  "brand": "Fluval",
+  "model": "M50 Submersible Heater",
+  "watts": 50,
+  "lengthMm": 280,
+  "diaMm": 25,
+  "look": "glass",
+  "galMin": 5,
+  "galMax": 15,
+  "priceUsd": 30.99,
+  "url": "https://www.petsmart.com/fish/heating-and-lighting/heaters/fluval-m-series-submersible-heater-58652.html",
+  "est": [
+   "galMin"
+  ],
+  "asOf": "2026-10-19"
+ },
+ {
+  "id": "eheim-jager-50",
+  "brand": "Eheim",
+  "model": "Jager TruTemp 50 W",
+  "watts": 50,
+  "lengthMm": 245,
+  "diaMm": 36,
+  "look": "glass",
+  "galMin": 7,
+  "galMax": 16,
+  "priceUsd": 30,
+  "url": "https://plantedaquaria.ca/shop/brands/eheim/eheim-jager-trutemp-submersible-heater-50-w/",
+  "est": [
+   "priceUsd"
+  ],
+  "asOf": "2026-10-19"
+ },
+ {
+  "id": "hygger-50",
+  "brand": "Hygger",
+  "model": "Titanium Heater 50 W",
+  "watts": 50,
+  "lengthMm": 221,
+  "diaMm": 18,
+  "look": "titanium",
+  "galMin": 5,
+  "galMax": 10,
+  "priceUsd": 20,
+  "url": "https://aqualabaquaria.com/products/titanium-pro-heater-hygger",
+  "est": [
+   "diaMm",
+   "priceUsd"
+  ],
+  "asOf": "2026-10-19"
+ },
+ {
+  "id": "cobalt-neotherm-50",
+  "brand": "Cobalt Aquatics",
+  "model": "Neo-Therm 50 W",
+  "watts": 50,
+  "lengthMm": 165,
+  "diaMm": 20,
+  "look": "glass",
+  "galMin": 5,
+  "galMax": 12,
+  "priceUsd": 45,
+  "url": "https://aqualabaquaria.com/products/neo-therm-aquarium-heater-cobalt-aquatics",
+  "est": [
+   "diaMm",
+   "galMin",
+   "priceUsd"
+  ],
+  "asOf": "2026-10-19"
+ },
+ {
+  "id": "aqueon-pro-150",
+  "brand": "Aqueon",
+  "model": "Pro Adjustable Heater 150 W",
+  "watts": 150,
+  "lengthMm": 324,
+  "diaMm": 35,
+  "look": "glass",
+  "galMin": 30,
+  "galMax": 55,
+  "priceUsd": 45,
+  "url": "https://www.liveaquaria.com/products/aqueon-proheater",
+  "est": [
+   "diaMm",
+   "galMin",
+   "priceUsd"
+  ],
+  "asOf": "2026-10-19"
+ },
+ {
+  "id": "fluval-e100",
+  "brand": "Fluval",
+  "model": "E 100 Electronic Heater",
+  "watts": 100,
+  "lengthMm": 298,
+  "diaMm": 28,
+  "look": "shroud",
+  "galMin": 13,
+  "galMax": 30,
+  "priceUsd": 50,
+  "url": "https://www.aquasabi.com/Fluval-E-Serie-Aquarium-Heater-E100",
+  "est": [
+   "galMin",
+   "priceUsd"
+  ],
+  "asOf": "2026-10-19"
+ }
+ ]
+}

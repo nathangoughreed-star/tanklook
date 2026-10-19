@@ -15,11 +15,13 @@ export async function tank(name, example, picks, { az = 0, el = 6, zoom = 1, cro
 }
 
 /** The gear's box on the picture (fractions), square-ish, with a margin: from its meshes' vertices projected by the view's camera. */
-export async function gearCrop(margin = 0.18, yMin = -100) {
+export async function gearCrop(margin = 0.18, yMin = -100, row = null) {
   const { viewer } = window.__gb; await viewer.buildNow?.(); await viewer.exportPNG(1);
   const vp = viewer.vps[0], cam = vp.cam, W = viewer.renderer.domElement.width, H = viewer.renderer.domElement.height;
   let x0 = 1, x1 = 0, y0 = 1, y1 = 0; const v = cam.position.clone();
-  for (const m of vp.scene.children.filter(o => o.userData.gear)) {
+  const pieces = row ? vp.scene.children.flatMap(o => o.userData.gearPieces ?? []).filter(p => p.row === row) : [];
+  for (const pc of pieces) for (let i = 0; i < 8; i++) { v.set(i & 1 ? pc.box.max.x : pc.box.min.x, i & 2 ? pc.box.max.y : pc.box.min.y, i & 4 ? pc.box.max.z : pc.box.min.z).project(cam); const x = (v.x + 1) / 2, y = (1 - v.y) / 2; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+  for (const m of row ? [] : vp.scene.children.filter(o => o.userData.gear)) {
     const p = m.geometry.attributes.position;
     for (let i = 0; i < p.count; i += 5) { v.fromBufferAttribute(p, i).applyMatrix4(m.matrixWorld); if (v.y < yMin) continue; v.project(cam);
       const x = (v.x + 1) / 2, y = (1 - v.y) / 2; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
@@ -87,4 +89,20 @@ export async function bundle(id) {
   await snap(`tg_k_${id}_front`, { az: 0, el: 6, zoom: 1, w: 900 });
   await snap(`tg_k_${id}_34`, { az: 32, el: 18, zoom: 1, w: 900 });
   return JSON.stringify(sc.tanks[0].tech);
+}
+
+/** The same 10 gal tank with each heater (null = the generic one): shots/tg_h_<id>.png, cropped to the heater. */
+export async function heaters(ids = [null, 'topfin-50', 'tetra-ht-50', 'hygger-50']) {
+  const T = await import('/src/scene/tech.ts');
+  for (const id of ids) {
+    await ex('planted');
+    window.__gb.store.edit(s => {
+      s.tank = { L: 508, D: 254, H: 305 }; s.items = []; s.fish = [];
+      const t = T.applyPreset(s, 'midplanted'); if (id) t.heaterProduct = id; s.tech = t;
+    });
+    await wait(400);
+    window.__gb.store.cam(c => { c.az = 0; c.el = 4; c.zoom = 1; });
+    await snap('tg_h_' + (id ?? 'generic'), { az: 0, el: 4, zoom: 1, crop: await gearCrop(0.6, -20, 'heater'), w: 600, mult: 2 });
+  }
+  return 'ok';
 }
