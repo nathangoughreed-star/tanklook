@@ -1,6 +1,15 @@
 # HANDOFF archive
 Finished lane and feature sections moved out of HANDOFF.md on 2026-10-16, verbatim, newest first.
 
+## Lane DS: one expected-cost number (2026-10-19, branch `expectedcost`, port 5793)
+- Decision (Nathan 2026-10-19): ask only "What do you want your expected set-up cost to be?"; every limit is checked against the expected value. No percentile, range or cap mode.
+- Removed: `Limits.budgetMode`, factors.json `budgetCapPercentile` + `correlation`, the Monte Carlo in `src/demand/cost.ts` (now only `limitState(D, P)` and `drivers(D, P, bar, top)`), `costDistribution` / `CostResult` / `Dist` / `pct`, the "likely a to b" text and hover wording, the "% of the doubt" share, the cap radio in the limits form, `.dmband` / `.dmcap` / `.dmshare` / `.dmask` CSS. `UI state()` no longer returns `cost`. `kwhRate(P)` is exported from the engine (expected $/kWh).
+- Public signatures for lane KW: `demandOf(S, P, opts)` and `profile.limits` (`setupUsd`, `upkeep`, `minPerWeek`, `risk`) are unchanged; `limitState` lost its middle argument (`limitState(D, P)`), `drivers` gained `P` (`drivers(D, P, bar, top)`).
+- Kept: lo / mode / hi on contributors and in the data tables (they define the mean and the price-age widening), `lossMo` expected loss replacement, skill-scaled risk.
+- Equivalence: `test/demand.test.ts` "expected cost" pins `Demand.totals` to the old 20000-draw means for 18 fixed setups (< 1 %). Engine totals are unchanged (test/tech.test.ts locks them); the old sample mean sat up to ~2 % higher on upkeep because it carried the mean of the kWh-rate spread (x1.033 on electricity), so the pin allows 3 % on upkeep.
+- Pictures before / after: research/efficiency/ds/. Waiting for Nathan's verdict before pushing.
+
+
 ## Lane AQ: AqAdvisor ids + Malawi pool (2026-10-19, branch `aqids`, port 5813)
 - **AqAdvisor unreachable 2026-10-19** (curl by name and raw IP 162.0.234.17, and the browser pane all time out; GitHub fine). So step 1 (real ids for labeo / auratus / afra / livingstonii / syno, and the AqAdvisor stocking comparison) is NOT done; aqadvisor.json and the script are unchanged. Every water species already has an entry (species.json check: only the 11 land animals are unmapped). Re-run `python scripts/aqadvisor-ids.py` when the site answers, after moving the five from STAND_INS to NAMES with their exact option text.
 - **Malawi pool** (`STYLES.malawi.animals`, it lives in scene/items.ts, not starter.ts): + labeo, auratus, afra. livingstonii left out: CARE prey 80 mm, it would eat demasoni (70 mm) and nerites, and the plain starter does not check compatibility. Note: Malawi species have no `group`, so a starter places one of each (75 gal Packed = 4 cichlids + syno / nerites): sparse for mbuna; asked Nathan.

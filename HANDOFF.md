@@ -29,7 +29,6 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 DONE 2026-10-16 (lane SS2, see archive; its gaps: no water dish, no succulents, Malawi has only yellowlab / cockatoo); multi-select / duplicate (lane MS) + scatter brush (lane SB) DONE 2026-10-16, see archive; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
-| DS one expected-cost number | `../Glass-Box-expectedcost` / `expectedcost` | 5793 | `src/demand/*`, `ui/demandPanel.ts`, demand data | opened 2026-10-19 |
 | CS CI workflow split | `../Glass-Box-cisplit` / `cisplit` | 5803 | `.github/workflows/*` | opened 2026-10-19 |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 | KW start wizard | `../Glass-Box-wizard` / `wizard` | 5783 | new `ui/wizard.ts`, `#startGuided` slot in `index.html`, wizard CSS | opened 2026-10-19 |
@@ -55,14 +54,6 @@ A Tech section where the owner picks the tech level, Walstad to high-tech plante
 ## Lane TG: tech gear in 3D (2026-10-19, branch `techgear`, port 5833)  (lane fills this in)
 
 ## Lane KW: start wizard (2026-10-19, branch `wizard`, port 5783)  (lane fills this in)
-
-## Lane DS: one expected-cost number (2026-10-19, branch `expectedcost`, port 5793)
-- Decision (Nathan 2026-10-19): ask only "What do you want your expected set-up cost to be?"; every limit is checked against the expected value. No percentile, range or cap mode.
-- Removed: `Limits.budgetMode`, factors.json `budgetCapPercentile` + `correlation`, the Monte Carlo in `src/demand/cost.ts` (now only `limitState(D, P)` and `drivers(D, P, bar, top)`), `costDistribution` / `CostResult` / `Dist` / `pct`, the "likely a to b" text and hover wording, the "% of the doubt" share, the cap radio in the limits form, `.dmband` / `.dmcap` / `.dmshare` / `.dmask` CSS. `UI state()` no longer returns `cost`. `kwhRate(P)` is exported from the engine (expected $/kWh).
-- Public signatures for lane KW: `demandOf(S, P, opts)` and `profile.limits` (`setupUsd`, `upkeep`, `minPerWeek`, `risk`) are unchanged; `limitState` lost its middle argument (`limitState(D, P)`), `drivers` gained `P` (`drivers(D, P, bar, top)`).
-- Kept: lo / mode / hi on contributors and in the data tables (they define the mean and the price-age widening), `lossMo` expected loss replacement, skill-scaled risk.
-- Equivalence: `test/demand.test.ts` "expected cost" pins `Demand.totals` to the old 20000-draw means for 18 fixed setups (< 1 %). Engine totals are unchanged (test/tech.test.ts locks them); the old sample mean sat up to ~2 % higher on upkeep because it carried the mean of the kWh-rate spread (x1.033 on electricity), so the pin allows 3 % on upkeep.
-- Pictures before / after: research/efficiency/ds/. Waiting for Nathan's verdict before pushing.
 
 ## Lane CS: CI workflow split (2026-10-19, branch `cisplit`, port 5803)
 - `.github/workflows/deploy.yml` is two jobs with job-level concurrency (no workflow-level group): `test` (npm ci, npm test; group `test-<ref>`, cancel-in-progress **false**) and `deploy` (needs test; build, upload-pages-artifact, deploy-pages; group `pages`, cancel-in-progress **false**).
@@ -296,6 +287,7 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane DS: one expected-cost number (2026-10-19, branch `expectedcost`, port 5793)
 - Lane AQ: AqAdvisor ids + Malawi pool (2026-10-19, branch `aqids`, port 5813)
 - Lane CG: compatibility gates (2026-10-19)
 - Lane CI: deploy health, live site stuck on build 738 (2026-10-19, branch `ci`, port 5773)
