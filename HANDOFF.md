@@ -27,7 +27,6 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 **Current lanes** (coordinator "Lanes coordinator 4", `local_408aa124`):
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
-| KC kit light wiring (stub data until KB lands) | `../Glass-Box-kitlight` / `kitlight` | 5723 | kit light wiring | opened 2026-10-19 |
 | KK demand model (panel hook in `ui/panels.ts` only after KA lands) | `../Glass-Box-demand` / `demand` | 5733 | demand model | opened 2026-10-19 |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
@@ -35,24 +34,6 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
-
-## Lane KC: kit light wiring (stub data until KB lands) (2026-10-19, branch `kitlight`, port 5723)
-State 2026-10-19: DONE, real kit catalog wired (KB kits.json: null watts -> `kitWatts` tier default per rated gal, budget 0.4 / mid 0.6 / plant 1.1 / reef 1.8 W per gal, min 4 W, label 'rough'; type 'flat' + LED tech -> LED bar; 3 extra tests loop all kits with stand-in tanks until KA ids land). `src/scene/kitlight.ts` + `test/kitlight.test.ts` (19 tests, stub kits).
-- API: `applyKitLight(setup, kit)` (pure; fitFixture fresh -> kit watts/par -> clamp; a kit without `par` clears an old override), `applyKitToStore(store, kit)`,
-  `lightConfidence(kit.light)` (published +-15 % | estimated = tech `unc` | rough = unc + 30 pts), `confidenceText`, `overridePar(setup, par|null)`,
-  `kitCapability(setup)` (level none/low/medium/high from the mean substrate PAR with the scape stripped; plants by cheapest care tier; plain sentence),
-  `upgradePath(kit, tank, goal, salt?)` (verdict + steps light / lid / ferts / co2 / dosing; `setUpgradePriceHook` is the lane KK price plug).
-- Level cut points: fresh 15 / 30 / 50 PAR (FRESH_TIERS), reef 50 / 92 / 180. Swap vs new build: ratio of goal PAR to current > 3, or needed watts > 2.5 W/gal fresh (6 reef).
-  These two numbers are heuristics, for Nathan to tune. Tube kits take their power from the tank width (lightout tubeOf), not kit.watts.
-- Kit type here is structural (`KitLike`: light, lid, water?), so KB's KitModel fits without an import. Nothing outside the two owned files touched; no scene bump.
-- Browser check (dev server, `__gb.store`): 4 W strip on 30x12x12 -> 13 PAR, carpet and red stem 'dim'; published 70 PAR kit -> anubias 'bright', carpet and stems fine.
-  Gotcha: preview_start runs from the session's folder; a lane chat must be started in its worktree or the server serves the main checkout.
-- (also fixed a one-line break in KB's test/kits.test.ts: tanks.json is {tanks: [...]}, not an array)
-- 2026-10-19 real kits x real tanks (KA tanks.ts, KB kits.json; kits carry no `tank` id yet, so kit.tankDims -> tankFromOuter, else the nearest rect catalog tank by rated gal): all 32 kits apply and the test passes (24 tests).
-  Found: Red Sea Max Nano kits publish PAR 500 "at the surface" (about 100 at 50 cm); `par` is a substrate figure. Added optional `light.parAt: 'surface'` (kits.ts type, kitlight scales it through the model's surface-to-substrate ratio) and set it on the 3 Red Sea kits in kits.json (one-line data hook in KB's file).
-  Swap vs new build limit raised from 3x to 5x after a 4 W 10 gal guess read as "new build" for high light.
-- THRESHOLDS FOR NATHAN (all heuristics, all in kitlight.ts): level cut points fresh 15 / 30 / 50 PAR, reef 50 / 92 / 180; swap vs new build = goal PAR over 5x the kit's, or needed watts over 2.5 W/gal fresh / 6 reef; tier default watts per rated gal when a listing has none: budget 0.4, mid 0.6, plant 1.1, reef 1.8 (min 4 W); confidence bands: published +-15 %, estimated = tech unc (LED 30 %, tubes 50 %), rough = +30 points.
-  Plausibility of the real data: budget hoods read 19-45 PAR (low to medium), Fluval planted kits 53-78 (high), Red Sea about 100-200 after the surface fix; check the Red Sea number by eye.
 
 ## Lane KK: demand model (panel hook in `ui/panels.ts` only after KA lands) (2026-10-19, branch `demand`, port 5733)
 **Phase 1 DONE 2026-10-19 (engine, no UI).** `src/demand/` (types, range, engine, cost, index); starter data `src/data/factors.json` and
@@ -284,6 +265,7 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane KC: kit light wiring (stub data until KB lands) (2026-10-19, branch `kitlight`, port 5723)
 - Lane KA: tank catalog (2026-10-19, branch `tankcat`, port 5703)
 - Lane KB: kit catalog (2026-10-19, branch `kits`, port 5713)
 - Lane EN: enclosure presentation (2026-10-16; branch `enclosure`, port 5673; opened by coordinator 3)
