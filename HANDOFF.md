@@ -27,7 +27,6 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 **Current lanes** (coordinator "Lanes coordinator 4", `local_408aa124`):
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
-| EN enclosure presentation (roadmap section 7) | `../Glass-Box-enclosure` / `enclosure` | 5673 | tank presets + tank section of `ui/panels.ts` / `index.html`, new `scene/equipment.ts` + `render/equipment.ts`, lids / doors block in `render/build.ts`, presets in `scene/defaults.ts` | ready to open (prompt `prompts/lane-EN-enclosure.md`); starts with an audit table for Nathan |
 | KA tank catalog | `../Glass-Box-tankcat` / `tankcat` | 5703 | `src/data/tanks.*`, preset picker in `ui/panels.ts`, `scene/defaults.ts` presets | opened 2026-10-19 |
 | KB kit catalog (stops after one-brand cost check) | `../Glass-Box-kits` / `kits` | 5713 | kit catalog data + research | opened 2026-10-19 |
 | KC kit light wiring (stub data until KB lands) | `../Glass-Box-kitlight` / `kitlight` | 5723 | kit light wiring | opened 2026-10-19 |
@@ -90,12 +89,6 @@ Shrimp do NOT cling to glass (Nathan, 2026-10-16). Animals can spawn anywhere th
 - **Not built (step 2):** competition (suppression, shading, overlap), light-map scaling, rhizome limited to a piece's real top, mat limited by glass / wood.
   Defaults are conservative: carpet, pothos, creeper, vines, tiger-less species have no breed data yet.
 - **Test:** `test/propagate.test.ts` (determinism, scrub round trip, cap, containment, rhizome host, floater cover, keep + file round trip).
-
-## Lane EN: enclosure presentation (2026-10-16; branch `enclosure`, port 5673; opened by coordinator 3)
-Scope: roadmap section 7. Audit (2026-10-16): presets PARTIAL, backdrops DONE (no botanical / plain), lids+doors NOT BUILT, equipment PARTIAL (lights only), light mood PARTIAL (no direction / mood presets), bowls DONE.
-**Batch 1 (2026-10-16, Nathan approved pictures `shots/enclosure/EN1-2`):** 9 terrarium presets in `TANK_PRESETS` (nano 8", cubes 12/18", tall arboreal 12x18x12 / 18x24x18 / 24x48x24, wide terrestrial 36x18x18 / 48x18x24 / 48x24x24); lid 'mesh' (screen top: dark frame + textured weave in `build.ts` addLid via `meshMaterial`, light x0.8 `MESH_LID` in lightout, plants cap at lid like glass); new optional `TankSetup.doors` 'hinged' | 'sliding' (absent = none; rectangles only; `addFrontDoors` in build.ts; Lid row has Mesh top, new Front doors row in the Tank section). No version bump (additive, validate keeps old files). One-line hooks outside my files: `render/items.ts` (lid cap), `ui/diff.ts`, `scene/setupsheet.ts`, `scene/lightout.ts`.
-**Batch 3 (2026-10-19, pushed; Nathan approved EN6-EN8):** 3D wall kind 'jungle' (backdrop.ts: overlapping leaves with midrib and veins, edges tapered so the grid shows no steps); Background 'custom' (Plain colour, `render.bgColor` hex, colour picker next to the Background menu). The equipment batch 2 is still ON HOLD on local branch `enclosure` (commit 6f5f307), not on main.
-Open: equipment (heater, hang-on filter, canister outlet, mister nozzle, light bar) in new scene/equipment.ts + render/equipment.ts; light mood / direction; botanical / plain backdrop. Weight of a mesh lid is not counted.
 
 ## Lane W: Android app (2026-10-14; OPENED same day, Nathan: "start work on the android app"; prompt `prompts/lane-W-android-app.md`)
 - **Route: Trusted Web Activity (TWA)** around https://tanklook.com/ (Bubblewrap or PWABuilder). Real Chrome, so WebXR
@@ -270,6 +263,7 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane EN: enclosure presentation (2026-10-16; branch `enclosure`, port 5673; opened by coordinator 3)
 - Lane CP: content pack (2026-10-16; branch `content-pack`, port 5683; batch 1 pushed, Nathan approved the pictures)
 - Lane SB: scatter brush (2026-10-16; branch `scatter-brush`, port 5693; opened by coordinator 3; started)
 - Lane SS2: starter styles batch 2 (2026-10-16; branch `starters2`, port 5683; opened by coordinator 3; DONE: Nathan approved all styles 2026-10-16; pushed to main)
