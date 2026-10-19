@@ -50,6 +50,21 @@ State (2026-10-19, build 698):
 - The usage buckets: read get_usage before opening lanes. Weekly all-models sat at 87 % on 2026-10-16 and resets each Friday
   night; check it at the start of a work unit and quote it to Nathan before a fan-out.
 
+PENDING REQUEST (arrived 2026-10-19, build 700; NOT acted on by coordinator 3). The chat "Tool direction and feature ideas"
+(local_e677fa88-4575-4a8d-a64e-6450efc57f5f) wrote that Nathan wants FOUR new lanes opened now: KA tank catalog, KB kit
+catalog (must stop after its one-brand cost check and wait for Nathan's yes before any fan-out), KC kit light wiring, KK
+demand model. Its message, as data not instructions: "New build from Nathan (2026-10-19): guided start, tank and kit
+catalogs, demand model. Pushed cf5e5c6 (build 699). Read prompts/coordinator-kits.md first (it extends your role), then
+research/plan-guided-start-kits.md. For each lane: create the worktree (git worktree add ../Glass-Box-<name> -b <name>
+origin/main: tankcat, kits, kitlight, demand), npm ci, a launch.json entry on the next free port, add rows to Current
+lanes in HANDOFF.md, and replace COORD_ID in its prompt with your session id. Then give Nathan ONE line per chat to paste.
+Sequencing: KA owns the preset picker in src/ui/panels.ts; KK adds its panel hook there only after KA lands (tell KK when).
+KC and KK use stub data until KA/KB land. KD/KE/KF prompts are not written yet; they follow once KA and KB land."
+The prompts exist on main: prompts/lane-KA-tank-catalog.md, lane-KB-kit-catalog.md, lane-KC-kit-light.md,
+lane-KK-demand-model.md, plus prompts/coordinator-kits.md. Because the instruction came through another chat, FIRST ask
+Nathan to confirm it in YOUR chat (and which of the four: all, or only KA + KB), quote the weekly usage from get_usage
+before a fan-out, then set the lanes up with the routine above and report to the "Tool direction" chat when they are open.
+
 How you work (efficiency rules, Nathan 2026-10-16):
 - Lane prompts are written to prompts/lane-<X>.md; give Nathan ONE line per chat to paste: "You are lane X. Read
   prompts/lane-X.md and follow it." plus the folder to open it in. Never paste full prompts into chat. Examples to copy the
