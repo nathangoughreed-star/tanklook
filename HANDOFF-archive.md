@@ -1,6 +1,25 @@
 # HANDOFF archive
 Finished lane and feature sections moved out of HANDOFF.md on 2026-10-16, verbatim, newest first.
 
+## Lane KA: tank catalog (2026-10-19, branch `tankcat`, port 5703)
+DONE 2026-10-19. 50 entries in `src/data/tanks.json` (39 aquaria nano to 10 ft + 11 terrarium presets), loader `src/data/tanks.ts`
+(`tankFromModel`, `tankFromOuter` for a custom tank typed in outer mm with the glass fixed point, `outerOf`, `tankChoices()` = the seam for
+the wizard / KD), checks in `src/data/tankcheck.ts` driven by `node scripts/check-tanks.mjs [--fix]` and `test/tanks.test.ts`.
+- Outer mm is the source of truth; interior = outer minus glass (shapes with slanted or curved panes solve against `offsetRing`). Picking a
+  tank also sets `render.glass` to the catalog glass (4-19 mm) so the outside matches the label. Pie / hex / round entries store the
+  derived outer extent (`--fix` rewrites it). No scene version bump; old scenes untouched.
+- Bands from rated gallons: nano <15, small 15-39, mid 40-74, large 75-124, monster 125+ (the prompt listed 4 ranges for 5 names).
+- Volume tolerance 8 %; two explicit exceptions in `VOL_EXCEPTIONS` (125 -6.9 %, 300 -8.4 %). Custom 6/8/10 ft are rated at their computed 210 / 350 / 430 gal.
+- SOURCES ARE THIN: web search found maker listings only for 5.5, 10, 15, 20 long, 29, 40 breeder, 55, 60 breeder, 65, 75, 125, 150, 180 (URL in each
+  entry's `source`; retailer listings, not maker spec sheets). Everything else is `source: "estimate"` (2.5, 3, 5, 6, 8, 20 high, 30 breeder, 37, 45 cube,
+  50 breeder, 90, 120, all three bowfronts, both corners, hex, 135, 210, 240, 300, custom). Bow / corner / hex footprints are approximations
+  (real corner tanks are often flat-fronted; modelled as a 90 deg quarter round). Worth a pass against maker sheets if exact fit matters.
+- Picker: `presetA` is now optgroups (band, terrariums last), dropdown unchanged otherwise. `setTank` gained an optional `glass` argument. The old
+  `TANK_PRESETS` export is gone; the 2 odd aquarium-list rows (24x12x12, 24x12x24) moved to the terrarium list.
+- Dev-server gotcha: `preview_start tankcat` serves the MAIN folder, not the worktree; I ran `npx vite --port 5703` in the worktree instead.
+
+
+
 ## Lane KB: kit catalog (2026-10-19, branch `kits`, port 5713)
 
 **Landed 2026-10-19.** `src/data/kits.json` (32 kits: 13 Top Fin/Tetra, 11 Aqueon/Marineland/Fluval fresh, 8 reef: Fluval Sea/Flex Marine,
