@@ -13,8 +13,8 @@ asking Nathan. Shipping: in the worktree `git fetch` + `git merge origin/main`, 
 `git push origin HEAD:main` and `git -C "C:/Users/nreed/Glass Box" merge --ff-only origin/main`. HANDOFF.md
 conflicts on merge: keep both sections. Each lane adds its own dated section under "Lane sections (current)" below.
 
-**Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_f068e2c9-f5e4-4bb9-ae20-3c37e545df0b`
-("Lanes coordinator 3", took over 2026-10-16 from `local_d0390f66`). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
+**Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_408aa124-ce91-4651-abaf-a221f0ceac82`
+("Lanes coordinator 4", took over 2026-10-19 from `local_f068e2c9` (coordinator 3)). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
 and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says
 what landed (commit), what is still open, and which files are now free. The coordinator then sends Nathan the prompts
 for any chats that can start now. If a prompt is still waiting when another lane opens, it sends all waiting prompts again
@@ -24,7 +24,7 @@ New since 2026-10-16: lane prompts are one line ("You are lane X. Read prompts/l
 whose chat gets long hands off to a fresh chat at a work-unit boundary (write its state into its HANDOFF section
 first); dev servers are swept when a lane reports done and on "check" (no hourly sweep).
 
-**Current lanes** (coordinator "Lanes coordinator 3", `local_f068e2c9`):
+**Current lanes** (coordinator "Lanes coordinator 4", `local_408aa124`):
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
 | EN enclosure presentation (roadmap section 7) | `../Glass-Box-enclosure` / `enclosure` | 5673 | tank presets + tank section of `ui/panels.ts` / `index.html`, new `scene/equipment.ts` + `render/equipment.ts`, lids / doors block in `render/build.ts`, presets in `scene/defaults.ts` | ready to open (prompt `prompts/lane-EN-enclosure.md`); starts with an audit table for Nathan |
