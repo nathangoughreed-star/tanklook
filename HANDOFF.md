@@ -12,6 +12,7 @@ is done the coordinator moves it to the archive.
 asking Nathan. Shipping: in the worktree `git fetch` + `git merge origin/main`, tsc + tests + browser check, then
 `git push origin HEAD:main` and `git -C "C:/Users/nreed/Glass Box" merge --ff-only origin/main`. HANDOFF.md
 conflicts on merge: keep both sections. Each lane adds its own dated section under "Lane sections (current)" below.
+**Deploy health:** live build = footer of https://nathangoughreed-star.github.io/tanklook/ ; Actions state = `curl -s https://api.github.com/repos/nathangoughreed-star/tanklook/actions/runs?per_page=5` (status/conclusion per head_sha; `/deployments` for what shipped). A red deploy usually means one slow/failing test: reproduce with `npx vitest run` in a clean worktree.
 
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_408aa124-ce91-4651-abaf-a221f0ceac82`
 ("Lanes coordinator 4", took over 2026-10-19 from `local_f068e2c9` (coordinator 3)). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
@@ -260,6 +261,7 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane CI: deploy health, live site stuck on build 738 (2026-10-19, branch `ci`, port 5773)
 - Lane GS: gecko support surfaces (2026-10-19, branch `geckosupport`, port 5743)
 - Lane AN: anole models (2026-10-19, branch `anoles`, port 5753)
 - Lane SD: one start chooser (2026-10-19, branch `startchooser`, port 5763; Nathan approved the pictures, shipped)
