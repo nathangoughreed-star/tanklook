@@ -1,6 +1,15 @@
 # HANDOFF archive
 Finished lane and feature sections moved out of HANDOFF.md on 2026-10-16, verbatim, newest first.
 
+## Lane DM: deal match, "a bundle close to your build" as Tank B (2026-10-19; Nathan approved the pictures; pushed to main)
+- `src/demand/dealmatch.ts` (`dealMatches`, `bestMatch`, `withDealGear`, `sameTank`), UI `src/ui/dealMatch.ts` (one hook in demandPanel `renderDeals`), test `test/dealmatch.test.ts`.
+- Same tank only (Nathan: "don't suggest it if it requires a tank size change"): dealOffers' gallons AND the deal's catalog tank of the same shape, each side within 10 % / 1.5 in. A deal without a catalog `tank` id (the hex, Simple Modern 45) never matches. A 20 L is not offered on a 20 H.
+- Gate: B = the build with the deal's light / lid / stand (filter, heater through the kit price). Dropped when B adds an engine warning (plants or corals too dim / bright, animals), the filter is under 80 % of today's flow (or replaces a sump), the heater is under 80 % of heatLoss().needW with fish, or the risk rises. Budget-LED bundles therefore never reach planted / reef builds (none of the starter examples gets an offer).
+- Shown when the saving is over $10 and 5 % of the replaced parts (saving + deal price), bundles first within $5. "Not now" is kept per scene name in localStorage (`tanklook.dealDismissed`).
+- "Show it as Tank B" = `store.splitTankWith` (one undo step), B pinned with `pinTank`: per-tank pins ride on the tank as `dealPin {id, sig}` (survive undo / split / close, dropped by a saved file, no version bump) and drift like the scene pin. "Make Tank B my tank" = `closeTank` of the other. While a tank is priced as a bundle, the other deal lines say what they save against that bundle.
+
+
+
 ## Lane TM: tech menu (2026-10-19, branch `techmenu`, port 5823)
 **Step 1 DONE 2026-10-19 (types + data + pure model, no UI yet).**
 - `src/data/tech.json`: rows (filter, heater, chiller, co2, ferts, air, uv, conditioner, rodi, ato; salt: skimmer, flow, dosing, salinity, saltmix), each option a list of gear parts; `gear` = price (demand-items row key, else an est `fallback`), watts x hours, consumables / month, minutes / week, all given at `ref` gal and scaled by (gal/ref)^exp; presets ladder (walstad / lowtech / midplanted / hightech; fowlr / soft / lps / sps); heat-loss constants.

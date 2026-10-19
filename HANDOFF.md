@@ -79,14 +79,6 @@ Step 1 SHIPPED 2026-10-19 (Nathan: "Gear models pass ... draw the inferred gear 
 - Second sweep 2026-10-19 (user-approved): PetSmart full list, Petco, Walmart/Amazon via browser pane; 3 Sonnet agents, ~241k tokens (69k+68k+105k). Added the 75 gal Marineland HD ($499.99, was $799.99, featured) and the 45 gal Simple Modern (est, out of stock). Petco: no combos (403 on fetch, search shows only separate items). Walmart/Amazon: only a third-party 40 gal frame combo at $1,954 with contradictory specs, left out. Next time: PetSmart product pages are the only reliable source; check Petco by hand in a browser.
 - Weak spots: 45 gal HD Marineland has no matching catalog tank (prices in the panel, not featured); 36 and 60 gal rows map to the closest catalog size, footprints differ a little. The 36 gal Top Fin shows no saving vs the app's parts estimate, so it is not featured.
 
-## Lane DM: deal match, "a bundle close to your build" as Tank B (2026-10-19; Nathan approved the pictures; pushed to main)
-- `src/demand/dealmatch.ts` (`dealMatches`, `bestMatch`, `withDealGear`, `sameTank`), UI `src/ui/dealMatch.ts` (one hook in demandPanel `renderDeals`), test `test/dealmatch.test.ts`.
-- Same tank only (Nathan: "don't suggest it if it requires a tank size change"): dealOffers' gallons AND the deal's catalog tank of the same shape, each side within 10 % / 1.5 in. A deal without a catalog `tank` id (the hex, Simple Modern 45) never matches. A 20 L is not offered on a 20 H.
-- Gate: B = the build with the deal's light / lid / stand (filter, heater through the kit price). Dropped when B adds an engine warning (plants or corals too dim / bright, animals), the filter is under 80 % of today's flow (or replaces a sump), the heater is under 80 % of heatLoss().needW with fish, or the risk rises. Budget-LED bundles therefore never reach planted / reef builds (none of the starter examples gets an offer).
-- Shown when the saving is over $10 and 5 % of the replaced parts (saving + deal price), bundles first within $5. "Not now" is kept per scene name in localStorage (`tanklook.dealDismissed`).
-- "Show it as Tank B" = `store.splitTankWith` (one undo step), B pinned with `pinTank`: per-tank pins ride on the tank as `dealPin {id, sig}` (survive undo / split / close, dropped by a saved file, no version bump) and drift like the scene pin. "Make Tank B my tank" = `closeTank` of the other. While a tank is priced as a bundle, the other deal lines say what they save against that bundle.
-
-
 ## Lane CL: animals cling to leaves, undersides and sides of hardscape (2026-10-16..19; main, no branch; Nathan approved the pictures; pushed to main)
 Nathan's rules: things that cling or suck (snails, shrimp, sucker fish: oto, pleco) go on the undersides and sides of
 things; things that perch (African dwarf frog) go only on TOP of things (hardscape, leaves, cave tops), never glass.
@@ -304,6 +296,7 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane DM: deal match, "a bundle close to your build" as Tank B (2026-10-19; Nathan approved the pictures; pushed to main)
 - Lane TM: tech menu (2026-10-19, branch `techmenu`, port 5823)
 - Lane CS: CI workflow split (2026-10-19, branch `cisplit`, port 5803)
 - Lane KW: start wizard (2026-10-19, branch `wizard`, port 5783)  (lane fills this in)
