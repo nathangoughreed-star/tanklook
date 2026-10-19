@@ -1077,6 +1077,20 @@
      "url": "https://www.bulkreefsupply.com/frag-85-3-aquarium-system-54-gallons-waterbox.html",
      "checked": "2026-10-19",
      "confidence": "high"
+    },
+    {
+     "brand": "Imagitarium (Petco)",
+     "line": "LED Aquarium Kit 55 gal (taller)",
+     "L_in": 47.75,
+     "D_in": 13.07,
+     "H_in": 23.89,
+     "price_usd": 249.99,
+     "price_kind": "kit",
+     "retailer": "Petco",
+     "price_note": "Petco kit $249.99; page read 2026-10-19; store pickup; the same Imagitarium tank as the bare 55 (the kit lists 47.75 W x 23.89 H), so its dims are used",
+     "url": "https://www.petco.com/product/imagitarium-led-aquarium-kit-4775-w-x-2389-h-55-gallons-3946432",
+     "checked": "2026-10-19",
+     "confidence": "high"
     }
    ]
   },

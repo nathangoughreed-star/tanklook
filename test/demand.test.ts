@@ -216,3 +216,19 @@ describe('bare-tank sales (parts estimate)', () => {
     expect(tankSaleFor(55, 'rect', now, 2.5, [m([v({ price_usd: 50, regular_usd: 99, line: 'acrylic' })])])).toBeUndefined();
   });
 });
+describe('stand not chosen yet', () => {
+  it('counts a typical stand while undecided, nothing after "I don\'t need a stand"', async () => {
+    const { demandOf } = await import('../src/demand/engine');
+    const { defaultProfile } = await import('../src/demand/types');
+    const { emptyScene } = await import('../src/scene/defaults');
+    const { sceneFromDeal } = await import('../src/demand/dealscene');
+    const { DEALS } = await import('../src/data/deals');
+    const S = emptyScene().tanks[0], P = defaultProfile(), row = (st: object) => demandOf({ ...S, stand: { ...S.stand, ...st } }, P).items.find(r => r.key === 'stand');
+    expect(row({ show: false, need: 'ask' })?.label).toMatch(/not chosen yet/);
+    expect(row({ show: false, need: 'none' })).toBeUndefined();
+    expect(row({ show: true, need: 'added' })?.label).toBe('Stand');
+    const kit = DEALS.find(d => d.tank && !d.includes.includes('stand'))!, ens = DEALS.find(d => d.tank && d.includes.includes('stand'))!;
+    expect(sceneFromDeal(kit)!.tanks[0].stand).toMatchObject({ show: false, need: 'ask' });
+    expect(sceneFromDeal(ens)!.tanks[0].stand.show).toBe(true);
+  });
+});

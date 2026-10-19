@@ -15,7 +15,7 @@ import { outcomeOf } from '../scene/plantfit';
 import { volume } from '../scene/physics';
 import { tankSaleFor } from '../data/tanks';
 import { groundVolume, pieceKg } from '../scene/setupsheet';
-import type { TankSetup } from '../scene/types';
+import { standAsked, type TankSetup } from '../scene/types';
 import { add3, mean3, r3, scale3, widen3 } from './range';
 import { interp, price as rowPrice, priceRow } from './prices';
 import { defaultFilter, defaultHeater, filterName, matchFilter, matchHeater, type FilterSpec } from './gear';
@@ -94,7 +94,8 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   if (tSale && tSale.usd < tankTypical.mode) add('tank', `Tank (${Math.round(gal)} gal; on sale at ${tSale.retailer} $${Math.round(tSale.usd)}, was $${Math.round(tSale.regularUsd)}${tSale.saleEnds ? ', ends ' + tSale.saleEnds : ''})`, 'tank', { setup: price({ lo: tSale.usd * 0.97, mode: tSale.usd, hi: Math.min(tankTypical.mode, tSale.usd * 1.15) }) });
   else add('tank', `Tank (${Math.round(gal)} gal)`, 'tank', { setup: price(tankTypical) });
   const stand = interp('gear:stand-', [20, 55], gal);
-  if (S.stand.show) add('stand', 'Stand', 'gear', { setup: price(stand ? scale3(stand, gal > 55 ? Math.pow(gal / 55, 0.8) : 1) : add3(pick(G.stand.base), scale3(pick(G.stand.perGal), gal))) });
+  // undecided (a tank or bundle without a stand was chosen): a typical stand still counts until the user picks one or "I don't need a stand"
+  if (S.stand.show || standAsked(S.stand)) add('stand', S.stand.show ? 'Stand' : 'Stand (not chosen yet: add one, or choose "I don\'t need a stand")', 'gear', { setup: price(stand ? scale3(stand, gal > 55 ? Math.pow(gal / 55, 0.8) : 1) : add3(pick(G.stand.base), scale3(pick(G.stand.perGal), gal))) });
   const lidRow = S.lid === 'open' ? undefined : rowPrice(`gear:lid-${S.lid === 'glass' ? 'glass' : S.lid === 'mesh' ? 'mesh' : 'hood'}`), lidK = Math.min(2.5, Math.max(0.6, Math.sqrt(gal / 25)));
   const lid = (G.lid as Record<string, Rangeish>)[S.lid];
   if (lidRow) add('lid', `Lid (${S.lid})`, 'gear', { setup: price(scale3(lidRow, lidK)) });

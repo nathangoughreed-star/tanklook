@@ -36,3 +36,15 @@ describe('start chooser entries', () => {
     expect(pickTab('sale', ['starters', 'open'])).toBe('starters');
   });
 });
+
+describe('optional deal sorts', () => {
+  it('sorts by size, cost and share saved, and keeps the tab order by default', async () => {
+    const { sortDeals } = await import('../src/ui/startEntries');
+    const e = (id: string, gal: number, usd: number, savingUsd: number) => ({ deal: { ...base, id, gal, price: { usd } }, scene: undefined as never, savingUsd });
+    const L = [e('a', 20, 150, 50), e('b', 10, 50, 50), e('c', 40, 100, 300)];
+    expect(sortDeals(L, '').map(x => x.deal.id)).toEqual(['a', 'b', 'c']);
+    expect(sortDeals(L, 'size').map(x => x.deal.id)).toEqual(['b', 'a', 'c']);
+    expect(sortDeals(L, 'cost').map(x => x.deal.id)).toEqual(['b', 'c', 'a']);
+    expect(sortDeals(L, 'pct').map(x => x.deal.id)).toEqual(['c', 'b', 'a']); // 75 %, 50 %, 25 %
+  });
+});

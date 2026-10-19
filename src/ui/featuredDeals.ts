@@ -24,13 +24,22 @@ const PICS = import.meta.glob('../data/deal-pics/*.jpg', { eager: true, query: '
 const picUrl = (id: string) => PICS[`../data/deal-pics/${id}.jpg`];
 const usd = (v: number) => '$' + Math.round(v).toLocaleString();
 
+/** The listing's own product photo (linked from the retailer, not copied), with `fallback` (snapshot or sketch) shown if it fails to load. */
+const photo = (d: Deal, fallback: string) => d.img
+  ? `<img class="dealphoto" src="${esc(d.img)}" alt="${esc(d.name)}" loading="lazy" referrerpolicy="no-referrer"><span class="dealfb" hidden>${fallback}</span>`
+  : fallback;
+
 /** Fill `box` (a chooser pane's deal grid) with one-click starts for `list`; a click pins the bundle and opens its scene. */
 export function renderFeaturedDeals(box: HTMLElement, list: DealEntry[], open: (name: string, scene: Scene) => void) {
+  if (!box.dataset.photofb) { // a product photo that will not load gives way to the snapshot or sketch (error does not bubble: capture it)
+    box.dataset.photofb = '1';
+    box.addEventListener('error', e => { const im = e.target as HTMLElement; if (im.classList?.contains('dealphoto')) { im.hidden = true; (im.nextElementSibling as HTMLElement | null)?.removeAttribute('hidden'); } }, true);
+  }
   box.hidden = !list.length;
   box.innerHTML = list.map(({ deal: d, savingUsd, scene }, i) => {
     const sc = scene.tanks[0], got = d.includes.map(x => x === 'stand' ? `stand (${sc.stand.finish} ${sc.stand.style})` : x === 'lid' ? `${sc.lid === 'glass' ? 'glass canopy' : sc.lid} lid` : PARTS[x]), no = (['filter', 'heater'] as const).filter(x => !d.includes.includes(x));
     return `<div class="libcard"><button class="libopen" data-deal="${i}" title="Open this setup, then customise it"><b style="white-space:normal">${esc(d.retailer)}: ${esc(d.name)}</b>` +
-      `${picUrl(d.id) ? `<img src="${esc(picUrl(d.id))}" alt="" style="height:auto;aspect-ratio:auto">` : pic(d, scene)}<span class="hint">Comes with: ${esc(got.join(', '))}${no.length ? `. Not included: ${no.join(', ')}` : ''}</span>` +
+      `${photo(d, picUrl(d.id) ? `<img src="${esc(picUrl(d.id))}" alt="" style="height:auto;aspect-ratio:auto">` : pic(d, scene))}<span class="hint">Comes with: ${esc(got.join(', '))}${no.length ? `. Not included: ${no.join(', ')}` : ''}</span>` +
       `<span><b>${usd(d.price.usd)}</b>${d.price.regularUsd ? ` <s>${usd(d.price.regularUsd)}</s>` : ''}${pctOff(d) ? ` <b>${pctOff(d)}% off</b>` : ''}</span><span class="hint">${esc(savingLine(d, savingUsd))}</span>` +
       `${dealGuesses(d).length ? `<span class="hint"><i>Guessed: ${esc(dealGuesses(d).join('; '))}</i></span>` : ''}<span class="hint">${d.saleEnds ? 'sale ends ' + esc(d.saleEnds) + '; ' : ''}as of ${esc(d.asOf)}${d.est ? ' (estimate)' : ''}; ${esc(DEAL_NOTE)}</span></button>` +
       `<a href="${esc(d.url)}" target="_blank" rel="noopener" title="Opens the retailer's page in a new tab (not a sponsored link)">See it at ${esc(d.retailer)} &#8599;</a></div>`;
