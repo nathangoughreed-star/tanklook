@@ -21,7 +21,10 @@ Design (decided by the opening chat 2026-10-19; change only with Nathan):
   this with a test on the five examples).
 - Rows (each a choice, "none" allowed where real): Filtration (none / Walstad, sponge + air pump, internal, HOB,
   canister, sump for salt or large tanks; sized from gear-models.json, auto-picked for the tank, step up / down, shows
-  turnover x/hour); Heating (none, heater sized from gallons AND the room temperature; chiller optional for reef);
+  turnover x/hour); Heating (none, or heater(s) sized from the tank's heat loss: glass + open-water surface area, the
+  target tank temperature (from the stocked species' range) minus the room temperature (climate.ts), lid or no lid; the
+  same heat-loss figure gives the heater's duty cycle and so its kWh; two heaters offered on big tanks; chiller optional
+  for reef when the room runs warmer than the target. Nathan 2026-10-19: area + tank temp + room temp, not gallons);
   Lighting (the whole current Lighting section moves in, no feature lost); CO2 (none, liquid carbon, DIY yeast,
   pressurized with solenoid / drop checker); Ferts (none, root tabs, all-in-one liquid, EI, dosing pump); Aeration (air
   pump / airstone); Water (conditioner, RO/DI, auto top-off); UV sterilizer; salt only: protein skimmer, return pump,
@@ -37,6 +40,11 @@ Design (decided by the opening chat 2026-10-19; change only with Nathan):
   access (no heater = only species whose range fits the room temperature, tropical ones flagged; salt corals by light /
   flow / dosing tier), risk change (CO2 gassing, heater failure, Walstad stability), algae risk when light and care do not
   match. Hovering / focusing an option previews the change in the four demand numbers before it is picked (reuse swaps.ts).
+- Every number is for THIS tank (Nathan 2026-10-19), never a flat per-option figure: gear price by the size class the tank
+  needs; kWh from the real watts x hours (light photoperiod, heater duty cycle from heat loss, pumps 24 h) at the profile's
+  rate; consumables by volume (CO2 refill rate, fert doses, salt mix and RO water per water change); minutes by kind AND
+  size (a canister on a 75 gal vs a sponge on a 10 gal). Test: the same option on a 10 gal and a 75 gal gives different
+  setup, monthly and minutes numbers, and a colder room raises the heater's kWh.
 - Where it lives: a "Tech" section in the panel (next to Water), the Lighting section folded into it.
 
 Work unit (push each step on its own):
