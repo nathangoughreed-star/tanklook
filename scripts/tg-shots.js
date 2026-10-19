@@ -78,3 +78,13 @@ export async function tanks(only = null) {
   }
   return 'ok';
 }
+
+/** A bundle deal opened as a new scene (as the start menu does), front and 3/4: shots/tg_k_<id>_{front,34}.png */
+export async function bundle(id) {
+  const { DEALS } = await import('/src/data/deals.ts'), { sceneFromDeal } = await import('/src/demand/dealscene.ts');
+  const d = DEALS.find(x => x.id === id), sc = sceneFromDeal(d);
+  window.__gb.store.replace(sc); await wait(600);
+  await snap(`tg_k_${id}_front`, { az: 0, el: 6, zoom: 1, w: 900 });
+  await snap(`tg_k_${id}_34`, { az: 32, el: 18, zoom: 1, w: 900 });
+  return JSON.stringify(sc.tanks[0].tech);
+}

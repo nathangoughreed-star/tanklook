@@ -3,7 +3,9 @@
 // scene/tech.ts optionCost; a tank without `tech` keeps the engine's inferred rows untouched (old files do not move).
 // Hooked from engine.ts with one line after the routine work rows, before the kit. Keys 'filter' and 'heater' stay, so a kit's price still covers them.
 import dd from '../data/demand-defaults.json';
-import { coldSpecies, optionCost, optionDef, rowsFor, techOf } from '../scene/tech';
+import { coldSpecies, inferTech, optionCost, optionDef, rowsFor, techOf, type TechSetup } from '../scene/tech';
+import { matchFilter, matchHeater, type FilterSpec } from './gear';
+import { volume } from '../scene/physics';
 import type { TankSetup } from '../scene/types';
 import type { Contribution, Domain, Group, Range3 } from './types';
 
@@ -40,4 +42,16 @@ export function techDemand(S: TankSetup, rows: Contribution[], c: TechCtx) {
       ...(pos(cost.minutes) ? { minutes: cost.minutes } : {}),
     });
   }
+}
+
+/** The tech of a tank started from a bundle (lane TG, 2026-10-19): the inferred rows, with the filter and heater the
+ *  bundle ships with (matched to the nearest generic model), so the drawn gear and the gear rows are the bundle's own.
+ *  The bundle's price still covers their setup (engine.ts: kit parts 'filter' / 'heater'). Undefined: nothing to set. */
+export function kitTech(S: TankSetup, gear: { filter?: FilterSpec; heater?: { watts: number } }): TechSetup | undefined {
+  if (!S.water.on || (!gear.filter && !gear.heater)) return undefined;
+  const t: TechSetup = { rows: { ...inferTech(S).rows } };
+  const fm = gear.filter && matchFilter({ ...gear.filter, gal: gear.filter.gal ?? volume(S.tank).gallons })?.model;
+  if (fm) { t.rows.filter = fm.kind; t.filterModel = fm.id; }
+  if (gear.heater?.watts) { t.rows.heater = 'one'; t.heaterW = matchHeater(gear.heater.watts).watts; }
+  return t;
 }

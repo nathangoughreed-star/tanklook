@@ -1,7 +1,8 @@
 // A new scene built from a bundle deal (lane KD): catalog tank, stand on, the kit's light and lid when the deal names a kit.
 import { getTankModel, modelOfVariant, tankFromModel } from '../data/tanks';
 import { kitById } from '../data/kits';
-import { DEALS, type Deal } from '../data/deals';
+import { DEALS, dealAsKit, type Deal } from '../data/deals';
+import { kitTech } from './tech';
 import { dealOffers } from './deals';
 import { defaultProfile } from './types';
 import { emptyScene } from '../scene/defaults';
@@ -25,6 +26,7 @@ export function sceneFromDeal(d: Deal): Scene | undefined {
     S = applyKitLight(S, { light: { type: 'led', tech: 'led-white', count: 1, watts: d.look?.light?.watts ?? null, par: d.look?.light?.par, spec: d.look?.light?.par ? 'published' : d.look?.light?.watts ? 'listing' : 'guess' }, lid: S.lid, tier: 'budget', tankRatedGal: d.gal });
     if (d.look?.light?.kelvin) S.light = { ...S.light, kelvin: d.look.light.kelvin };
   }
+  { const t = kitTech(S, dealAsKit(d)); if (t) S.tech = t; } // lane TG: the bundle's own filter and heater (drawn, and its gear rows)
   sc.tanks[0] = S; sc.name = `${d.retailer} ${d.name}`;
   return sc;
 }
