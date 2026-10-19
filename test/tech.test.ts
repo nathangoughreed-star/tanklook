@@ -6,6 +6,8 @@ import {
   setFeed, stockCapacity, techOf, techParts, walstadGaps, withChoice,
 } from '../src/scene/tech';
 import type { TankSetup } from '../src/scene/types';
+import { demandOf } from '../src/demand/engine';
+import { defaultProfile } from '../src/demand/types';
 
 const tankOf = (id: string) => parseScene(SCENES[id]).scene.tanks[0];
 /** The planted example, resized (mm) and emptied of animals unless asked. */
@@ -136,5 +138,38 @@ describe('tech menu model (lane TM step 1)', () => {
     scene.tanks[0].tech = t;
     expect(parseScene(JSON.parse(JSON.stringify(scene))).scene.tanks[0].tech).toEqual(t);
     expect(inferTech({ ...S, water: { ...S.water, on: false } }).rows).toEqual({});
+  });
+});
+
+describe('demand rows from the tech (lane TM step 3)', () => {
+  const NOW = Date.parse('2026-10-19');
+  const D = (S: TankSetup) => demandOf(S, defaultProfile(), { now: NOW });
+  it('a file without tech keeps its demand numbers (locked 2026-10-19)', () => {
+    const LOCK: Record<string, number[]> = { planted: [1337.093, 52.933, 54.441, 8.229], iwagumi: [2111.437, 43.006, 67.082, 6.696], betta: [337.872, 9.952, 27.041, 5.64], paludarium: [1645.377, 58.952, 54.649, 8.433], terrarium: [736.198, 19.816, 18.473, 4.294], reef: [3421.776, 156.992, 74.857, 8.65], rainforest: [1463.308, 73.003, 31.583, 4.005], arid: [1380.183, 36.148, 19.883, 3.298], python: [1549.696, 65.682, 19.713, 1.813], blackwater: [1275.347, 51.243, 43.254, 5.613], clownnano: [1579.869, 100.899, 66.678, 7.068] };
+    for (const [id, want] of Object.entries(LOCK)) {
+      const t = D(tankOf(id)).totals;
+      expect([t.setupUsd, t.upkeepUsdMo, t.minPerWeek, t.risk].map(v => Math.round(v * 1000) / 1000), id).toEqual(want);
+    }
+  });
+  it('the chosen tech sets the gear rows: Walstad has no filter, high-tech has CO2 and a canister', () => {
+    const S = G20L();
+    const walstad = D({ ...S, tech: applyPreset(S, 'walstad') }), high = D({ ...S, tech: applyPreset(S, 'hightech') });
+    { const f = walstad.items.find(c => c.key === 'filter')!; expect([f.setup, f.kwhMo]).toEqual([undefined, undefined]); } // its risk only
+    expect(walstad.items.find(c => c.key === 'filter')!.risk).toBeGreaterThan(0);
+    expect(walstad.items.some(c => c.key === 'filterclean')).toBe(false);
+    expect(high.items.find(c => c.key === 'filter')?.label).toMatch(/Canister/);
+    expect(high.items.some(c => c.key === 'co2')).toBe(true);
+    expect(high.totals.setupUsd).toBeGreaterThan(walstad.totals.setupUsd + 150);
+    expect(high.totals.minPerWeek).toBeGreaterThan(walstad.totals.minPerWeek);
+    // no heater: no heater row, and less power
+    const cold = D({ ...S, tech: withChoice({ ...S, tech: applyPreset(S, 'lowtech') }, 'heater', 'none') }), warm = D({ ...S, tech: applyPreset(S, 'lowtech') });
+    expect(cold.items.some(c => c.key === 'heater')).toBe(false);
+    expect(cold.totals.upkeepUsdMo).toBeLessThan(warm.totals.upkeepUsdMo);
+  });
+  it('a kit price still covers the tech filter and heater', () => {
+    const S = { ...G20L(), tech: applyPreset(G20L(), 'midplanted') };
+    const kit = D(S), withKit = demandOf(S, defaultProfile(), { now: NOW, kit: { id: 'x', priceUsd: 60, asOf: '2026-10-19' } });
+    expect(withKit.items.find(c => c.key === 'filter')?.setup).toBeUndefined();
+    expect(kit.items.find(c => c.key === 'filter')?.setup).toBeDefined();
   });
 });
