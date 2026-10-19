@@ -2,8 +2,10 @@
 // change") from our own data, with its reasoning in the open. No network, nothing depends on AqAdvisor.
 //   LOAD     = sum over animals of  mass^0.75 x metabolism x temperature factor   (standard metabolic scaling: a big fish counts for
 //              more than a small one but for less per gram; load units LU).
-//   CAPACITY = water litres x LU_PER_L x filtration (tech.ts stockCapacity) x live-plant factor.
-//   percent  = load / capacity (over 100 = overstocked). Compatibility (waterchem, animalfit, group minimums) stays separate.
+//   Two limits, as AqAdvisor separates them (Nathan 2026-10-19):
+//   SPACE        = load / (litres x LU_PER_L x SPACE_ROOM): how full the tank itself is; no filter fixes it, only more water or fewer animals.
+//   FILTRATION   = load / (litres x LU_PER_L x filter (tech.ts stockCapacity) x live-plant factor): how hard the filter works.
+//   percent      = the larger of the two (over 100 = overstocked). Compatibility (waterchem, animalfit, group minimums) stays separate.
 // Mass is FishBase length-weight at the animal's length (data/bodymass.json; shrimp, snails and herps are keeper-reference
 // estimates, marked 'estimate'). The 3D bodies' volume is only the cross-check that flags outliers (scripts/body-mass.mjs).
 import bm from '../data/bodymass.json';
@@ -50,6 +52,9 @@ export const tempFactor = (c: number) => Q10 ** ((Math.min(32, Math.max(4, c)) -
 const SALT_LOAD = 1.5;
 /** Load units one litre clears at filtration 1 (calibrated in step 3 of lane SE: with it the starters keep about their old animal counts (research/stocking-calibration.md)). */
 export const LU_PER_L = 0.3;
+/** The tank holds this much more load than a standard filter (capacity 1) clears: past it only more water helps (documented guess,
+ *  to be fitted to AqAdvisor's space numbers: scripts/aq-compare.mjs). */
+export const SPACE_ROOM = 1.5;
 /** Live plants take up nitrogen: up to +25 % at 15 plants per 100 L (a painted patch counts as 3 plants). A documented guess. */
 const PLANT_MAX = 0.25, PLANTS_PER_100L_FULL = 15, PATCH_PLANTS = 3;
 
@@ -57,10 +62,14 @@ const PLANT_MAX = 0.25, PLANTS_PER_100L_FULL = 15, PATCH_PLANTS = 3;
 export const countsAgainstWater = (sp: Species) => sp.habitat !== 'land';
 
 export interface Contributor { id: string; name: string; n: number; load: number; share: number; grams: number; cls: MetClass }
-export interface CapacityParts { litres: number; perL: number; filter: number; plants: number; plantCount: number; tempC: number; capacity: number }
+export interface CapacityParts { /** load units the tank's water holds, filter aside */ space: number; litres: number; perL: number; filter: number; plants: number; plantCount: number; tempC: number; capacity: number }
 export interface Stocking {
-  /** load / capacity x 100; over 100 = overstocked. 0 with no animals. */
+  /** the larger of space and filtration, percent; over 100 = overstocked. 0 with no animals. */
   percent: number;
+  /** load / what the tank's water holds, percent (the filter does not change it) */
+  spacePercent: number;
+  /** load / what the chosen filtration (and plants) clear, percent */
+  filtrationPercent: number;
   load: number;
   contributors: Contributor[];
   capacity: CapacityParts;
@@ -87,7 +96,7 @@ export function capacityOf(S: TankSetup): CapacityParts {
   const filter = S.water.on ? stockCapacity(S) : 1;
   const plantCount = S.items.filter(i => i.kind === 'plant').length + (S.patches ?? []).filter(p => p.brush.startsWith('plant:')).length * PATCH_PLANTS;
   const plants = 1 + PLANT_MAX * Math.min(1, plantCount / Math.max(litres / 100, 0.1) / PLANTS_PER_100L_FULL);
-  return { litres, perL: LU_PER_L, filter, plants, plantCount, tempC, capacity: litres * LU_PER_L * filter * plants };
+  return { litres, perL: LU_PER_L, filter, plants, plantCount, tempC, capacity: litres * LU_PER_L * filter * plants, space: litres * LU_PER_L * SPACE_ROOM };
 }
 
 const plural = (n: number, name: string) => n === 1 ? `1 ${name}` : `${n} ${name}${/(s|ish|ox)$/i.test(name) ? '' : 's'}`;
@@ -104,22 +113,27 @@ export function stockingOf(S: TankSetup): Stocking {
   }
   const contributors = [...by.values()].sort((a, b) => b.load - a.load);
   for (const c of contributors) c.share = load ? c.load / load : 0;
-  const percent = cap.capacity > 0 ? load / cap.capacity * 100 : load > 0 ? Infinity : 0;
+  const pc = (cp: number) => cp > 0 ? load / cp * 100 : load > 0 ? Infinity : 0;
+  const spacePercent = pc(cap.space), filtrationPercent = pc(cap.capacity), percent = Math.max(spacePercent, filtrationPercent);
   const reasons: string[] = [];
   let fixFilter: Stocking['fixFilter'];
   if (!contributors.length) reasons.push('No animals in the water.');
   else if (percent > 100) {
     const top = contributors[0];
-    reasons.push(`Overstocked${top.share >= 0.4 ? ' mainly because of the ' + plural(top.n, top.name) : ''}: ${contributors.slice(0, 3).map(c => `${plural(c.n, c.name)} ${Math.round(c.share * 100)}%`).join(', ')} of the load.`);
-    const fr = rowsFor(S).find(r => r.id === 'filter');
-    for (const o of [...(fr?.options ?? [])].sort((a, b) => (a.capacity ?? 1) - (b.capacity ?? 1))) {
-      const p = load / capacityWith(S, cap, o.id) * 100;
-      if (p <= 100) { fixFilter = { option: o.id, percent: Math.round(p) }; reasons.push(`A ${o.label.toLowerCase()} would bring it to ${Math.round(p)}%.`); break; }
+    reasons.push(top.share >= 0.4 ? `Overstocked mainly because of the ${plural(top.n, top.name)} (${Math.round(top.share * 100)}% of the load).`
+      : `Overstocked: ${contributors.slice(0, 3).map(c => `${plural(c.n, c.name)} ${Math.round(c.share * 100)}%`).join(', ')} of the load.`);
+    if (spacePercent > 100) reasons.push(`The tank itself is too small for them (${Math.round(spacePercent)}% of its space): no filter fixes that, it needs about ${Math.ceil(cap.litres * spacePercent / 100)} L of water or fewer animals.`);
+    else {
+      const fr = rowsFor(S).find(r => r.id === 'filter');
+      for (const o of [...(fr?.options ?? [])].sort((a, b) => (a.capacity ?? 1) - (b.capacity ?? 1))) {
+        const p = Math.max(load / capacityWith(S, cap, o.id) * 100, spacePercent);
+        if (p <= 100) { fixFilter = { option: o.id, percent: Math.round(p) }; reasons.push(`A ${o.label.toLowerCase()} would bring it to ${Math.round(p)}%.`); break; }
+      }
+      if (!fixFilter) reasons.push(`Even the best filter leaves it high: it needs about ${Math.ceil(cap.litres * filtrationPercent / 100)} L of water, or fewer animals.`);
     }
-    if (!fixFilter) reasons.push(`Even the best filter leaves it high: it needs about ${Math.ceil(cap.litres * percent / 100)} L of water, or fewer animals.`);
   } else if (percent >= 85) reasons.push('Near full: room for a few small fish, no more.');
   else reasons.push(`Room for about ${Math.round(100 - percent)}% more load.`);
-  return { percent, load, contributors, capacity: cap, reasons, ...(fixFilter ? { fixFilter } : {}) };
+  return { percent, spacePercent, filtrationPercent, load, contributors, capacity: cap, reasons, ...(fixFilter ? { fixFilter } : {}) };
 }
 
 /** Capacity with the filter row set to option `opt` (the other parts as computed). */
@@ -127,3 +141,18 @@ function capacityWith(S: TankSetup, cap: CapacityParts, opt: string) {
   const f = S.water.on ? stockCapacity(S, withChoice(S, 'filter', opt)) : 1;
   return cap.litres * cap.perL * f * cap.plants;
 }
+
+/** `stockingOf` remembered by what it reads (the UI asks every frame): animals and lengths, tank, water, tech, plants. */
+const memo = new Map<string, Stocking>();
+export function stockingMemo(S: TankSetup): Stocking {
+  const key = JSON.stringify([S.fish.map(f => [f.species, f.tl]), S.tank, S.water.on, S.water.level, S.water.salt, S.tech, S.lid,
+    S.items.filter(i => i.kind === 'plant').length, (S.patches ?? []).filter(p => p.brush.startsWith('plant:')).length]);
+  let r = memo.get(key);
+  if (!r) { r = stockingOf(S); if (memo.size > 16) memo.delete(memo.keys().next().value!); memo.set(key, r); }
+  return r;
+}
+
+/** One line for the panel and the view label: "Stocking 78%", "Stocking 240%, overstocked". */
+export const stockingLine = (r: Stocking) => `Stocking ${r.percent === Infinity ? 'over 999' : Math.round(r.percent)}%${r.percent > 100 ? ', overstocked' : ''}`;
+/** The breakdown for a tooltip or list: every contributor with its count, mass and share of the load. */
+export const stockingDetail = (r: Stocking) => [`Space ${Math.round(r.spacePercent)}% of the tank's water, filtration ${Math.round(r.filtrationPercent)}% of what the filter clears`].concat(r.contributors.map(c => `${c.n} ${c.name}: ${Math.round(c.share * 100)}% of the load (${c.grams >= 10 ? Math.round(c.grams / c.n) : (c.grams / c.n).toFixed(1)} g each)`));

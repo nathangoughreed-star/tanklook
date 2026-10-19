@@ -1,3 +1,4 @@
+// DEMOTED 2026-10-19 (lane SE): our own engine (scene/stocking.ts) gives the stocking level; this file only feeds the optional "compare with AqAdvisor" Check and link, shown when the site is up. Nothing depends on it.
 // AqAdvisor (aqadvisor.com) stocking level. AqAdvisor has no API; its calculator is a GET form whose whole state fits in
 // one URL: tank size plus `AlreadySelected` = "<species id>:<count>::,...". The ids come from
 // scripts/aqadvisor-ids.py (src/data/aqadvisor.json). The site is http-only and sends no CORS headers, so the page

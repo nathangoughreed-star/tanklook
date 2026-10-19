@@ -5,7 +5,7 @@ import { fitToLimits, hasLimits } from '../demand/fit';
 import { attachTechMenu } from './techMenu';
 import { unheatedC } from '../scene/tech';
 import { renderFeaturedDeals } from './featuredDeals';
-import { startDeals, visibleTabs, pickTab, type StartTab } from './startEntries';
+import { startDeals, visibleTabs, pickTab, sortDeals, type DealSort, type StartTab } from './startEntries';
 import { DEALS_AS_OF, DEAL_NOTE, NOT_SPONSORED } from '../data/deals';
 import { LEVELS, onPerf, perf, setAuto, setLevel } from '../render/perf';
 import { lifeStages } from '../data/lifestages';
@@ -50,10 +50,12 @@ import { HERP } from '../data/herpstock';
 import { placeNew, randomPose, randomSize, shuffleFish } from '../scene/scatter';
 import { fitFish, keepInWater, setWaterLevel } from '../scene/water';
 import { tankWeight } from '../scene/weight';
+import { stockingDetail, stockingLine, stockingMemo } from '../scene/stocking';
 import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, aqWaitS, fetchAqHealth, fetchStocking, type AqHealth } from '../data/aqadvisor';
 import { BOWL_DEFAULT, BOWL_MAX, BOWL_MIN, PIE_DEFAULT, POLY_SIDES, SHAPES, bowMinLimit, offsetRing, ringArea, shapeOf } from '../scene/shape';
 import { TABLE_MAX, tableOn, tableRange, wallGap } from '../scene/table';
 import type { BgFit, BgSide, CompId, Fish, GrowFeed, GrowMode, Item, ItemKind, LayoutId, LightTech, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
+import { standAsked } from '../scene/types';
 import { FEED_NAMES, beginGrow, endGrow, setGrowTime, setPlantGrowth, timeChanges } from '../scene/growtime';
 import { syncBroods } from '../scene/propagate';
 import { GLASS_CHOICES, LIMITS, SceneError, parseScene } from '../scene/validate';
@@ -224,7 +226,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // then tabs On sale now / Bundles / Starter tanks / Open a tank. Shown on first launch when no tank was restored from
   // this browser (Nathan 2026-10-14; Esc keeps the empty tank), and by New and Open…. Empty sale / bundle tabs hide.
   const startDlg = $<HTMLDialogElement>('startDlg');
-  let firstLaunch = false;
+  let firstLaunch = false, dealSort: DealSort = '';
   $('startEx').onclick = e => openExample(e, startDlg);
   $('startFresh').onclick = () => { // at first launch the tank on screen is already a fresh one
     if (firstLaunch) startDlg.close(); else if (newEmptyTank()) startDlg.close();
@@ -240,8 +242,10 @@ export function attachPanels(store: Store, viewer: Viewer) {
     const { sale, bundles } = startDeals(), shown = visibleTabs({ sale: sale.length, bundles: bundles.length });
     for (const b of startDlg.querySelectorAll<HTMLElement>('[data-tab]')) b.hidden = !shown.includes(b.dataset.tab as StartTab);
     for (const n of startDlg.querySelectorAll('.dealasof')) n.textContent = `Prices as of ${DEALS_AS_OF}; ${DEAL_NOTE.replace(/^as of the date shown; /, '')}. ${NOT_SPONSORED}.`;
-    renderFeaturedDeals($('startSale'), sale, openDeal);
-    renderFeaturedDeals($('startBundles'), bundles, openDeal);
+    // optional sorts (size / cost / % saved), one choice for both deal tabs
+    const draw = () => { renderFeaturedDeals($('startSale'), sortDeals(sale, dealSort), openDeal); renderFeaturedDeals($('startBundles'), sortDeals(bundles, dealSort), openDeal); };
+    for (const s of startDlg.querySelectorAll<HTMLSelectElement>('.dealsort')) { s.value = dealSort; s.onchange = () => { dealSort = s.value as DealSort; for (const o of startDlg.querySelectorAll<HTMLSelectElement>('.dealsort')) o.value = dealSort; draw(); }; }
+    draw();
     renderExamples(); renderLib();
     setTab(pickTab(tab, shown));
     if (!startDlg.open) startDlg.showModal();
@@ -354,7 +358,12 @@ Cancel, then change the name, to keep both.`)) return;
       ? `<b>${$r(v.price_usd)}</b> <s>${$r(v.regular_usd!)}</s> ${Math.round((1 - v.price_usd / v.regular_usd!) * 100)}% off${v.retailer ? ` at ${esc(v.retailer)}` : ''}${v.sale_ends ? `, ends ${esc(v.sale_ends)}` : ''}`
       : `~${$r(v.price_usd)}${v.price_kind === 'kit' ? ' (kit)' : ''}`;
     // interior from the outer size on the label; the glass matches so the outside does too
-    const apply = (m: TankModel, v?: TankVariant) => { const mm = v ? modelOfVariant(m, v) : m; setTank(() => tankFromModel(mm), undefined, mm.glassMm); dlg.close(); };
+    // a tank sold with a stand (an ensemble) shows it; any other does not add one: the stand section asks, unless the user added one
+    const standFor = (v?: TankVariant) => (s: TankSetup) => {
+      if (v && /stand|ensemble/i.test(v.line ?? '')) { s.stand.show = true; s.stand.need = undefined; }
+      else if (s.stand.need !== 'added') { s.stand.show = false; s.stand.need = 'ask'; }
+    };
+    const apply = (m: TankModel, v?: TankVariant) => { const mm = v ? modelOfVariant(m, v) : m; setTank(() => tankFromModel(mm), undefined, mm.glassMm, standFor(v)); dlg.close(); };
     const draw = () => {
       const needle = q.value.trim().toLowerCase();
       const hit = (m: TankModel) => !needle || [m.name, m.shape, ...(m.tags ?? []), ...(m.variants ?? []).flatMap(v => [v.brand, v.line ?? ''])].join(' ').toLowerCase().includes(needle);
@@ -388,8 +397,9 @@ Cancel, then change the name, to keep both.`)) return;
     $('presetA').onclick = () => { draw(); dlg.showModal(); q.focus(); };
   }
   /** Resize / reshape each edited tank from its own current size (so ticking both changes only what was set). */
-  function setTank(next: (T: Tank) => Tank, coalesce?: string, glass?: number) {
+  function setTank(next: (T: Tank) => Tank, coalesce?: string, glass?: number, also?: (s: TankSetup) => void) {
     store.edit(s => {
+      also?.(s);
       const T = next(s.tank);
       if (glass != null) s.render.glass = glass;
       rescaleTank(s, T); // keep fish at the same relative spot (and apply the shape's rules, e.g. round D = L)
@@ -527,13 +537,16 @@ Cancel, then change the name, to keep both.`)) return;
 
   // ---------- Room: stand + wall ----------
   $<HTMLSelectElement>('standFinish').innerHTML = Object.entries(STAND_FINISHES).map(([k, f]) => `<option value="${k}">${esc(f.label)}</option>`).join('');
-  $('standOn').onchange = e => store.edit(s => { s.stand.show = (e.target as HTMLInputElement).checked; });
-  $<HTMLSelectElement>('standFinish').onchange = e => store.edit(s => { s.stand.finish = (e.target as HTMLSelectElement).value as TankSetup['stand']['finish']; s.stand.show = true; });
-  $<HTMLSelectElement>('standStyle').onchange = e => store.edit(s => { s.stand.style = (e.target as HTMLSelectElement).value as TankSetup['stand']['style']; s.stand.show = true; });
+  // a tank or bundle without a stand asks instead of adding one (Nathan 2026-10-19)
+  $('standAdd').onclick = () => store.edit(s => { s.stand.show = true; s.stand.need = 'added'; });
+  $('standNone').onclick = () => store.edit(s => { s.stand.show = false; s.stand.need = 'none'; });
+  $('standOn').onchange = e => store.edit(s => { s.stand.show = (e.target as HTMLInputElement).checked; s.stand.need = s.stand.show ? 'added' : 'none'; });
+  $<HTMLSelectElement>('standFinish').onchange = e => store.edit(s => { s.stand.finish = (e.target as HTMLSelectElement).value as TankSetup['stand']['finish']; s.stand.show = true; s.stand.need = 'added'; });
+  $<HTMLSelectElement>('standStyle').onchange = e => store.edit(s => { s.stand.style = (e.target as HTMLSelectElement).value as TankSetup['stand']['style']; s.stand.show = true; s.stand.need = 'added'; });
   $('standH').min = String(LIMITS.stand[0]); $('standH').max = String(LIMITS.stand[1]);
-  $('standH').oninput = e => store.edit(s => { s.stand.height = +(e.target as HTMLInputElement).value; s.stand.show = true; }, { coalesce: 'standH' });
+  $('standH').oninput = e => store.edit(s => { s.stand.height = +(e.target as HTMLInputElement).value; s.stand.show = true; s.stand.need = 'added'; }, { coalesce: 'standH' });
   // table stand: top shape and size, and where the tank sits on it (store.update -> fitTable keeps it on the top)
-  const editTable = (fn: (tb: TableSettings, s: TankSetup) => void, coalesce?: string) => store.edit(s => { fn(s.stand.table, s); if (s.stand.style !== 'custom') s.stand.style = 'table'; s.stand.show = true; }, coalesce ? { coalesce } : {});
+  const editTable = (fn: (tb: TableSettings, s: TankSetup) => void, coalesce?: string) => store.edit(s => { fn(s.stand.table, s); if (s.stand.style !== 'custom') s.stand.style = 'table'; s.stand.show = true; s.stand.need = 'added'; }, coalesce ? { coalesce } : {});
   $('tableRect').onclick = () => editTable(tb => { tb.shape = 'rect'; });
   $('tableRound').onclick = () => editTable(tb => { tb.shape = 'round'; tb.L = tb.D = Math.max(tb.L, tb.D); });
   for (const id of ['tableL', 'tableD', 'tableX', 'tableZ']) { $(id).min = String(-TABLE_MAX); $(id).max = String(TABLE_MAX); }
@@ -1671,10 +1684,22 @@ Cancel, then change the name, to keep both.`)) return;
     window.addEventListener('focus', () => void pollAqHealth());
   }
   const aqWaitText = (key: string) => aqQueued.has(key) ? (aqWaitS() ? `queued, ~${aqWaitS()} s` : 'queued') : 'checking…';
+  /** Our own stocking line: percent, why, and the contributors (lane SE). AqAdvisor below it is only a comparison. */
+  function syncStocking() {
+    const s = S(), has = s.water.on && s.fish.length > 0, r = has ? stockingMemo(s) : null;
+    $('stkRow').hidden = !r || !r.contributors.length;
+    $('stkList').hidden = $('stkRow').hidden;
+    if (!r || !r.contributors.length) { $('stkWhy').textContent = ''; return; }
+    $('stkOut').textContent = stockingLine(r);
+    $('stkOut').className = r.percent > 100 ? 'bad' : '';
+    $('stkWhy').textContent = r.reasons.join(' ');
+    $('stkBody').innerHTML = stockingDetail(r).map(t => `<li>${esc(t)}</li>`).join('') + `<li class="dim">Water ${Math.round(r.capacity.litres)} L, filter x${r.capacity.filter.toFixed(2)}${r.capacity.plantCount ? `, plants x${r.capacity.plants.toFixed(2)}` : ''}, ${Math.round(r.capacity.tempC)} °C.</li>`;
+  }
   function syncAq() {
+    syncStocking();
     const q = aqQuery(S());
     $('aqRow').style.display = q ? '' : 'none';
-    if (!q) { $('aqNote').textContent = isSalt(S()) && S().fish.length ? 'No stocking check for saltwater tanks yet.' : ''; return; }
+    if (!q) { $('aqNote').textContent = isSalt(S()) && S().fish.length ? 'AqAdvisor has no saltwater comparison.' : ''; return; }
     const key = aqKey(q), got = aqDone.get(key), busy = aqBusy.has(key);
     $<HTMLAnchorElement>('aqLink').href = aqAdvisorUrl(q);
     $('aqCheck').style.display = AQ_PROXY && got === undefined && aqUp === 'up' ? '' : 'none';
@@ -1809,7 +1834,7 @@ Cancel, then change the name, to keep both.`)) return;
     const t = glassThickness(A, s.render.glass);
     $('glassHint').textContent = (s.render.glass === 'auto' ? 'Auto: ' : 'Glass: ') + t + ' mm (' + fmtLen(t, u, 2) + ')';
 
-    $('standOn').checked = s.stand.show; setVal('standFinish', s.stand.finish); setVal('standStyle', s.stand.style); setVal('standH', s.stand.height);
+    $('standOn').checked = s.stand.show; $('standAsk').hidden = !standAsked(s.stand); setVal('standFinish', s.stand.finish); setVal('standStyle', s.stand.style); setVal('standH', s.stand.height);
     setOut('oStandH', fmt(s.stand.height));
     const tb = s.stand.table, tr = tableRange(s);
     $('tableRows').style.display = tableOn(s) ? '' : 'none';
@@ -2091,27 +2116,12 @@ Cancel, then change the name, to keep both.`)) return;
   let tabSig = '';
   /** The stocking level in a view's label, always there (Nathan 2026-10-09): a hint with no fish; the AqAdvisor answer
    *  with ↻ to ask again; the last answer in yellow once the fish or the tank have changed since it was asked. */
-  const aqChip = (s: TankSetup, slot: string, i: number) => {
-    const q = aqQuery(s);
-    if (!q) return `<span class="aq none">${!s.fish.length ? 'Add fish to show stocking level' : !s.water.on ? 'Add water to show stocking level' : isSalt(s) ? 'Stocking: not available for saltwater (AqAdvisor gives none)' : 'No fish AqAdvisor can count'}</span>`;
-    const url = esc(aqAdvisorUrl(q));
-    if (!AQ_PROXY) return `<a class="aq" href="${url}" target="_blank" rel="noopener" title="This tank's stocking on aqadvisor.com">Stocking on AqAdvisor ↗</a>`;
-    const key = aqKey(q), got = aqDone.get(key), last = aqLast.get(slot), busy = aqBusy.has(key);
-    const stale = got === undefined && last !== undefined;
-    // ↻ only when there is something to fetch (Nathan 2026-10-09): never checked, out of date, or the last try failed;
-    // hidden once this tank's current answer is shown
-    const re = got !== undefined || aqUp !== 'up' ? '' : `<button class="aqre${stale ? ' stale' : ''}" data-aq="${i}"${busy ? ' disabled' : ''} title="${stale ? 'The fish or the tank changed since this was checked: click to refresh the stocking level' : 'Ask AqAdvisor for this tank’s stocking level'}" aria-label="Refresh stocking level">↻</button>`;
-    const pct = got ?? last;
-    // a failed refresh says so, next to the old number it could not replace (it used to hide behind it)
-    const err = aqErr.get(key);
-    const down = aqUp === 'down';
-    const text = busy ? `Stocking: ${aqWaitText(key)}` : pct !== undefined ? `Stocking ${pct}% (AqAdvisor)${err ? `, not updated: ${err}` : stale && down ? ', can’t check right now' : ''}`
-      : down ? 'Stocking: open on AqAdvisor ↗' : err ?? 'Stocking: not checked';
-    const cls = `aq${stale ? ' stale' : pct !== undefined && pct > 100 ? ' over' : ''}`;
-    // 'down' = our checker (a Cloudflare server) can't reach aqadvisor.com. The site often still opens in a browser: it
-    // shuts out the checker for about 30 minutes at a time, several times a day (health log, 2026-10-13..15)
-    const tip = down && !stale ? 'The stocking checker can’t reach aqadvisor.com right now (it is often shut out for about 30 minutes). The site itself usually still opens: click for this tank on aqadvisor.com' : stale && err ? `Out of date, and the refresh failed (${err}). This is the level before the last change.` : stale ? 'Out of date: the fish or the tank changed since this was checked. Press ↻ to refresh.' : 'AqAdvisor’s stocking level for this tank (aqadvisor.com); click for the full report';
-    return `<span class="aqwrap"><a class="${cls}" href="${url}" target="_blank" rel="noopener" title="${tip}">${esc(text)}</a>${re}</span>`;
+  const aqChip = (s: TankSetup, _slot: string, _i: number) => {
+    if (!s.fish.length || !s.water.on) return `<span class="aq none">${!s.fish.length ? 'Add fish to show stocking level' : 'Add water to show stocking level'}</span>`;
+    const r = stockingMemo(s);
+    if (!r.contributors.length) return '<span class="aq none">No animals in the water</span>';
+    const tip = [...r.reasons, ...stockingDetail(r)].map(esc).join('&#10;');
+    return `<span class="aq${r.percent > 100 ? ' over' : ''}" title="${tip}">${esc(stockingLine(r))}</span>`;
   };
   viewer.onDrawn(() => {
     const g = G(), active = viewer.active, split = active.length > 1;
@@ -2120,6 +2130,7 @@ Cancel, then change the name, to keep both.`)) return;
     const sig = JSON.stringify([diff, hidden, g.units, g.active, store.targets, g.camLock, active.map(v => [v.x, v.w]), active.map((v, i) => aqChip(v.S, v.key, i))]);
     if (sig !== tabSig) {
       tabSig = sig;
+      syncStocking(); // the tech menu, the water and the plants change the capacity without a fish edit
       for (const [i, id] of [[0, 'labA'], [1, 'labB']] as const) {
         const el = $<HTMLDivElement>(id), vp = active[i];
         // only while comparing (Nathan 2026-10-14): one tank's size, stocking and Split all live in the panel already

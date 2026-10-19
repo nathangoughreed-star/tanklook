@@ -311,7 +311,12 @@ export interface TableSettings { shape: 'rect' | 'round'; L: number; D: number; 
  * Stand under the tank, adjustable height (mm, floor to tank bottom). Cabinet and frame: the tank's footprint.
  * `table` is kept while another style is chosen (added 2026-10-09; older files get one sized to the tank).
  */
-export interface StandSettings { show: boolean; height: number; finish: StandFinish; style: StandStyle; table: TableSettings }
+/** need (Nathan 2026-10-19; absent = the old behaviour, `show` alone): after a tank or bundle that comes without a stand is
+ *  chosen the stand is not added for the user. 'ask' = undecided (none drawn, the budget still counts a typical stand),
+ *  'none' = "I don't need a stand" (nothing counted), 'added' = the user added one. */
+export interface StandSettings { show: boolean; height: number; finish: StandFinish; style: StandStyle; table: TableSettings; need?: 'ask' | 'none' | 'added' }
+/** Undecided: no stand on the tank yet, but one is still expected in the budget. */
+export const standAsked = (st: StandSettings) => !st.show && st.need === 'ask';
 
 /** Top of the tank: open, glass canopy panels, or a classic black moulded hood (lights inside). */
 export type LidType = 'open' | 'glass' | 'hood' | 'mesh';

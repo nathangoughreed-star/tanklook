@@ -25,6 +25,8 @@ export interface Deal {
   /** ISO date the sale ends, when the listing says */
   saleEnds?: string;
   url: string;
+  /** the listing's own product photo (the retailer's image server, linked not copied); absent = the scene snapshot or sketch */
+  img?: string;
   asOf: string;
   est?: boolean;
   note?: string;

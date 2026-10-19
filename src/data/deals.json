@@ -31,7 +31,8 @@
     "light": {
      "says": "hidden LED, natural daylight and moonlight effects (no watts, Kelvin or PAR published)"
     }
-   }
+   },
+   "img": "https://s7d2.scene7.com/is/image/PetSmart/5342773"
   },
   {
    "id": "petsmart-marineland-hd-45",
@@ -60,7 +61,8 @@
     "light": {
      "says": "hidden LED, natural daylight and moonlight effects (no watts, Kelvin or PAR published)"
     }
-   }
+   },
+   "img": "https://s7d2.scene7.com/is/image/PetSmart/5370777"
   },
   {
    "id": "petsmart-marineland-modern-60",
@@ -92,7 +94,8 @@
     "light": {
      "says": "hidden LED, natural daylight and moonlight effects (no watts, Kelvin or PAR published)"
     }
-   }
+   },
+   "img": "https://s7d2.scene7.com/is/image/PetSmart/5248474"
   },
   {
    "id": "petsmart-marineland-hd-led-ensemble-75",
@@ -123,7 +126,8 @@
      "says": "hidden LED, natural daylight and moonlight effects (no watts, Kelvin or PAR published)"
     }
    },
-   "note": "Item 5306082. Tank 48.4x18.4x21 in; farmhouse-style stand 50x20x28 in (page says gray, colour options Clear/Black, so finish is a guess). Glass canopy, hidden LED. No filter or heater. No sale end date shown."
+   "note": "Item 5306082. Tank 48.4x18.4x21 in; farmhouse-style stand 50x20x28 in (page says gray, colour options Clear/Black, so finish is a guess). Glass canopy, hidden LED. No filter or heater. No sale end date shown.",
+   "img": "https://s7d2.scene7.com/is/image/PetSmart/5306082"
   },
   {
    "id": "petsmart-marineland-simple-modern-45",
@@ -183,7 +187,8 @@
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
-   }
+   },
+   "img": "https://s7d2.scene7.com/is/image/PetSmart/5262265"
   },
   {
    "id": "petsmart-top-fin-captivate-hex-20",
@@ -217,7 +222,8 @@
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
-   }
+   },
+   "img": "https://s7d2.scene7.com/is/image/PetSmart/5277168"
   },
   {
    "id": "petsmart-top-fin-bow-front-36",
@@ -252,7 +258,8 @@
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
-   }
+   },
+   "img": "https://s7d2.scene7.com/is/image/PetSmart/5282370"
   },
   {
    "id": "petsmart-top-fin-cube-10",
@@ -289,7 +296,8 @@
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
-   }
+   },
+   "img": "https://s7d2.scene7.com/is/image/PetSmart/5382038"
   },
   {
    "id": "petsmart-top-fin-bubble-wall-20",
@@ -319,7 +327,8 @@
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
-   }
+   },
+   "img": "https://s7d2.scene7.com/is/image/PetSmart/5308097"
   },
   {
    "id": "petsmart-top-fin-led-black-glass-10",
@@ -349,7 +358,8 @@
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
-   }
+   },
+   "img": "https://s7d2.scene7.com/is/image/PetSmart/5300979"
   },
   {
    "id": "petsmart-glofish-led-kit-5",
@@ -384,7 +394,8 @@
     "light": {
      "says": "blue GloFish LED in the hood (no watts published)"
     }
-   }
+   },
+   "img": "https://s7d2.scene7.com/is/image/PetSmart/5369363"
   },
   {
    "id": "petsmart-fluval-plant-9",
@@ -450,7 +461,8 @@
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
    },
-   "est": true
+   "est": true,
+   "img": "https://i5.walmartimages.com/seo/Aqua-Culture-5-Gallon-Glass-Aquarium-Starter-Kit_0a95ac0b-ac07-423c-9e38-fc938b20e6f6.26a01d248c439263165ed589e78b638e.jpeg"
   },
   {
    "id": "walmart-marineland-portrait-5",
@@ -484,7 +496,8 @@
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
    },
-   "est": true
+   "est": true,
+   "img": "https://i5.walmartimages.com/seo/Marineland-Portrait-Glass-LED-aquarium-Kit-5-Gallons-Hidden-Filtration_03b2cae0-9a46-474c-acf1-ce523a027605.e59a95c5b644c64960d11d387583bde5.png"
   },
   {
    "id": "walmart-vibrant-life-10",
@@ -515,7 +528,8 @@
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
-   }
+   },
+   "img": "https://i5.walmartimages.com/seo/Vibrant-Life-10-Gallon-Aquarium-Starter-Kit-with-Blue-and-White-LED-Lights_39dba9cb-5e88-4a2e-b8dc-55ba354abbbb.9930a91cd4ca13e427c7a7e4f13600cb.jpeg"
   },
   {
    "id": "walmart-tetra-complete-20",
@@ -546,7 +560,8 @@
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
-   }
+   },
+   "img": "https://i5.walmartimages.com/seo/Tetra-Aquarium-20-Gallon-Complete-Tropical-Fish-Tank-Kit-with-LED-Lighting-and-Decor-for-Freshwater-Fish_2161d241-91ba-40b4-892f-6d8a4022bc64.81da9eaf51bec60c74d5e01adf3c36da.jpeg"
   },
   {
    "id": "walmart-aqueon-led-20h",
@@ -580,7 +595,8 @@
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
-   }
+   },
+   "img": "https://i5.walmartimages.com/seo/Aqueon-Aquarium-Starter-Kit-with-LED-Lighting-20-High_d1345f53-adc9-4d8f-8a05-b0a5f1b04a0b.a52aaac5f35fe11111c0a3e886c9e3e0.jpeg"
   },
   {
    "id": "walmart-tetra-led-10",
@@ -606,7 +622,8 @@
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
-   }
+   },
+   "img": "https://i5.walmartimages.com/seo/Tetra-10-Gallon-Glass-LED-Aquarium-Kit_037f040c-06c1-410f-932e-43f2d6526f4a.c311126b07ac88aac95b293d0e3bc8d9.jpeg"
   },
   {
    "id": "petco-imagitarium-led-10",
@@ -628,7 +645,7 @@
    "price": {
     "usd": 92.99
    },
-   "url": "https://www.petco.com/shop/en/petcostore/product/imagitarium-led-aquarium-kit",
+   "url": "https://www.petco.com/product/imagitarium-led-aquarium-kit-2015-w-x-126-h-10-gallon-3946395",
    "asOf": "2026-10-19",
    "note": "Page read 2026-10-19 in a browser. Store pickup only (not shipped); stock depends on the store. LED hood, power filter, heater.",
    "look": {
@@ -637,7 +654,8 @@
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
-   }
+   },
+   "img": "https://assets.petco.com/petco/image/upload/f_auto,q_auto/3946395-center-1"
   },
   {
    "id": "petco-imagitarium-led-20",
@@ -668,7 +686,8 @@
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
-   }
+   },
+   "img": "https://assets.petco.com/petco/image/upload/f_auto,q_auto/3946408-center-1"
   },
   {
    "id": "petco-imagitarium-led-40",
@@ -701,7 +720,8 @@
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
-   }
+   },
+   "img": "https://assets.petco.com/petco/image/upload/f_auto,q_auto/3946424-center-1"
   },
   {
    "id": "petco-imagitarium-led-29",
@@ -719,7 +739,7 @@
    "price": {
     "usd": 162.99
    },
-   "url": "https://www.petco.com/shop/en/petcostore/product/imagitarium-led-aquarium-kit",
+   "url": "https://www.petco.com/product/imagitarium-led-aquarium-kit-3012-w-x-2082-h-29-gallon-3946416",
    "asOf": "2026-10-19",
    "note": "Page read 2026-10-19 in a browser. Store pickup only (not shipped); stock depends on the store. Contents as the 10 and 20 gal sizes.",
    "look": {
@@ -732,7 +752,8 @@
    "filter": {
     "kind": "hob",
     "name": "Imagitarium power filter"
-   }
+   },
+   "img": "https://assets.petco.com/petco/image/upload/f_auto,q_auto/3946416-center-1"
   },
   {
    "id": "petco-imagitarium-led-55",
@@ -750,7 +771,7 @@
    "price": {
     "usd": 249.99
    },
-   "url": "https://www.petco.com/product/imagitarium-led-aquarium-kit-3633-w-x-159-h-40-gallons-3946424",
+   "url": "https://www.petco.com/product/imagitarium-led-aquarium-kit-4775-w-x-2389-h-55-gallons-3946432",
    "asOf": "2026-10-19",
    "note": "Page read 2026-10-19 in a browser. Store pickup only (not shipped); stock depends on the store. Contents as the 40 gal size.",
    "look": {
@@ -763,7 +784,8 @@
    "filter": {
     "kind": "hob",
     "name": "Imagitarium power filter"
-   }
+   },
+   "img": "https://assets.petco.com/petco/image/upload/f_auto,q_auto/3946432-center-1"
   },
   {
    "id": "petco-aqueon-led-20h",
@@ -797,7 +819,8 @@
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
-   }
+   },
+   "img": "https://assets.petco.com/petco/image/upload/f_auto,q_auto/2471092-center-3"
   },
   {
    "id": "chewy-tetra-complete-10",
@@ -828,7 +851,8 @@
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
-   }
+   },
+   "img": "https://image.chewy.com/catalog/general/images/tetra-complete-tropical-fish-aquarium-kit-with-led-lighting-10gal/img-8737._AC_SX500_SY400_QL75_V1_.jpg"
   },
   {
    "id": "chewy-aqueon-smartclean-10",
@@ -860,7 +884,8 @@
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
-   }
+   },
+   "img": "https://image.chewy.com/catalog/general/images/moe/067dc82d-197a-70cf-8000-4faf777d3d53._AC_SX500_SY400_QL75_V1_.jpg"
   },
   {
    "id": "chewy-tetra-complete-29",
@@ -892,7 +917,8 @@
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
-   }
+   },
+   "img": "https://image.chewy.com/catalog/general/images/tetra-complete-tropical-fish-aquarium-kit-with-led-lighting-29gal/img-91567._AC_SX500_SY400_QL75_V1_.jpg"
   },
   {
    "id": "chewy-tetra-led-decor-20",
@@ -924,7 +950,8 @@
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
-   }
+   },
+   "img": "https://image.chewy.com/catalog/general/images/tetra-aquarium-led-lighting-decor-fish-aquariums-20gal/img-108774._AC_SX500_SY400_QL75_V1_.jpg"
   },
   {
    "id": "amazon-aqueon-smartclean-10",
@@ -956,7 +983,8 @@
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
-   }
+   },
+   "img": "https://m.media-amazon.com/images/I/81QdeLGZJjL._AC_SL500_.jpg"
   },
   {
    "id": "amazon-aqueon-smartclean-20",
@@ -987,7 +1015,8 @@
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
-   }
+   },
+   "img": "https://m.media-amazon.com/images/I/818DIQk9KHL._AC_SL500_.jpg"
   },
   {
    "id": "amazon-tetra-complete-20",
@@ -1018,7 +1047,8 @@
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
-   }
+   },
+   "img": "https://m.media-amazon.com/images/I/81MlYD1+FdL._AC_SL500_.jpg"
   }
  ]
 }

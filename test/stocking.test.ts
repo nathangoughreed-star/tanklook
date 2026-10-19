@@ -69,8 +69,8 @@ describe('stocking engine (lane SE)', () => {
     const base = (n: number) => tank(36, 18, 18, [['danio', n]]);
     for (let n = 1; n < 12; n++) expect(pct(base(n + 1))).toBeGreaterThan(pct(base(n)));
     expect(pct(tank(48, 18, 18, [['danio', 10]]))).toBeLessThan(pct(tank(36, 18, 18, [['danio', 10]])));
-    const fil = ['none', 'sponge', 'hob', 'canister'].map(f => pct(tank(36, 18, 18, [['danio', 20]], { filter: f })));
-    for (let i = 1; i < fil.length; i++) expect(fil[i]).toBeLessThan(fil[i - 1]);
+    const fil = ['none', 'sponge', 'hob', 'canister'].map(f => stockingOf(tank(36, 18, 18, [['danio', 20]], { filter: f })));
+    for (let i = 1; i < fil.length; i++) { expect(fil[i].filtrationPercent).toBeLessThan(fil[i - 1].filtrationPercent); expect(fil[i].percent).toBeLessThanOrEqual(fil[i - 1].percent); }
     expect(pct(tank(36, 18, 18, [['danio', 20]], { plants: 20 }))).toBeLessThan(pct(tank(36, 18, 18, [['danio', 20]])));
   });
   it('warmer water raises the load (Q10), and a juvenile loads less than the adult', () => {
@@ -84,6 +84,13 @@ describe('stocking engine (lane SE)', () => {
     expect(stockingOf(geckos).percent).toBe(0);
     expect(pct(tank(36, 18, 18, [['axolotl', 2]]))).toBeGreaterThan(0);
     expect(pct(tank(36, 18, 18, [['firenewt', 3]]))).toBeGreaterThan(0);
+  });
+  it('space and filtration are separate: a better filter lowers filtration only, space only moves with water and animals', () => {
+    const a = stockingOf(tank(36, 18, 18, [['danio', 14]], { filter: 'sponge' })), b = stockingOf(tank(36, 18, 18, [['danio', 14]], { filter: 'canister' }));
+    expect(b.spacePercent).toBeCloseTo(a.spacePercent, 9); expect(b.filtrationPercent).toBeLessThan(a.filtrationPercent);
+    expect(a.percent).toBeCloseTo(Math.max(a.spacePercent, a.filtrationPercent), 9);
+    const crammed = stockingOf(tank(20, 10, 12, [['danio', 40]], { filter: 'sump' }));
+    expect(crammed.spacePercent).toBeGreaterThan(100); expect(crammed.reasons.join(' ')).toMatch(/no filter fixes that/);
   });
   it('an overstocked tank names a filter that fixes it when one does, and capacity parts add up', () => {
     const s = tank(36, 18, 18, [['goldfish', 3]], { filter: 'sponge' });
