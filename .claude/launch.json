@@ -559,6 +559,19 @@
         "--strictPort"
       ],
       "port": 5693
+    },
+    {
+      "name": "stocking",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5843",
+        "--strictPort"
+      ],
+      "port": 5843
     }
   ]
 }
