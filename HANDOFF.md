@@ -47,7 +47,11 @@ State 2026-10-19: DONE, real kit catalog wired (KB kits.json: null watts -> `kit
 - Kit type here is structural (`KitLike`: light, lid, water?), so KB's KitModel fits without an import. Nothing outside the two owned files touched; no scene bump.
 - Browser check (dev server, `__gb.store`): 4 W strip on 30x12x12 -> 13 PAR, carpet and red stem 'dim'; published 70 PAR kit -> anubias 'bright', carpet and stems fine.
   Gotcha: preview_start runs from the session's folder; a lane chat must be started in its worktree or the server serves the main checkout.
-
+- 2026-10-19 real kits x real tanks (KA tanks.ts, KB kits.json; kits carry no `tank` id yet, so kit.tankDims -> tankFromOuter, else the nearest rect catalog tank by rated gal): all 32 kits apply and the test passes (24 tests).
+  Found: Red Sea Max Nano kits publish PAR 500 "at the surface" (about 100 at 50 cm); `par` is a substrate figure. Added optional `light.parAt: 'surface'` (kits.ts type, kitlight scales it through the model's surface-to-substrate ratio) and set it on the 3 Red Sea kits in kits.json (one-line data hook in KB's file).
+  Swap vs new build limit raised from 3x to 5x after a 4 W 10 gal guess read as "new build" for high light.
+- THRESHOLDS FOR NATHAN (all heuristics, all in kitlight.ts): level cut points fresh 15 / 30 / 50 PAR, reef 50 / 92 / 180; swap vs new build = goal PAR over 5x the kit's, or needed watts over 2.5 W/gal fresh / 6 reef; tier default watts per rated gal when a listing has none: budget 0.4, mid 0.6, plant 1.1, reef 1.8 (min 4 W); confidence bands: published +-15 %, estimated = tech unc (LED 30 %, tubes 50 %), rough = +30 points.
+  Plausibility of the real data: budget hoods read 19-45 PAR (low to medium), Fluval planted kits 53-78 (high), Red Sea about 100-200 after the surface fix; check the Red Sea number by eye.
 
 ## Lane KK: demand model (panel hook in `ui/panels.ts` only after KA lands) (2026-10-19, branch `demand`, port 5733)
 **Phase 1 DONE 2026-10-19 (engine, no UI).** `src/demand/` (types, range, engine, cost, index); starter data `src/data/factors.json` and

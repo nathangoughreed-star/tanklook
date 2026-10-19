@@ -12,6 +12,8 @@ import type { GrowFeed, LidType, LightSettings, LightTech, LightType, Tank, Tank
 /** The part of a kit this lane reads (src/data/kits.ts KitModel.light / .lid; structural, so KB's type fits). */
 export interface KitLight {
   type: LightType; tech: LightTech; count: number; /** null = not published (spec 'guess'): the tier default stands in. */ watts: number | null; par?: number;
+  /** Where the published `par` was measured: 'substrate' (default; the model's own reading point) or 'surface' (just under the water, a maker's headline figure: scaled through the model's own surface-to-substrate ratio). */
+  parAt?: 'surface' | 'substrate';
   /** 'published' = the maker's PAR, 'listing' = type and wattage from the listing, 'guess' = a tier default was used. */
   spec: 'published' | 'listing' | 'guess';
 }
@@ -35,14 +37,20 @@ const typeOf = (l: KitLight): LightType => l.type !== 'flat' ? l.type : TECHS[l.
  * The fixture's usual height and beam come first (fitFixture fresh), then the kit's own power and PAR, then a clamp so
  * every field sits in its fixture's range. A kit without a published PAR clears any earlier override.
  */
-export function applyKitLight<S extends Pick<TankSetup, 'tank' | 'light' | 'lid'>>(setup: S, kit: KitLike): S {
+export function applyKitLight<S extends TankSetup>(setup: S, kit: KitLike): S {
   const light: LightSettings = { ...setup.light, type: typeOf(kit.light), tech: kit.light.tech, count: kit.light.count };
   delete light.par; delete light.bulbW; delete light.mount; delete light.pos;
   fitFixture(light, setup.tank, true);
   const w = kitWatts(kit);
   if (w) light.watts = w; else delete light.watts;
-  if (kit.light.par && kit.light.par > 0) light.par = kit.light.par;
   fitFixture(light, setup.tank, false);
+  if (kit.light.par && kit.light.par > 0) {
+    light.par = kit.light.par;
+    if (kit.light.parAt === 'surface') { // the model's surface and substrate readings share one scale: par(substrate) = par(surface) x mean / surface
+      const o = lightOutCached(bare({ ...setup, light: { ...light, par: undefined }, lid: kit.lid }));
+      if (o && o.surface > 0) light.par = kit.light.par * o.mean / o.surface;
+    }
+  }
   return { ...setup, light, lid: kit.lid };
 }
 /** The thin store hook: the same, as one undoable edit of the active setup. */
@@ -150,7 +158,7 @@ let priceHook: UpgradePriceHook = () => null;
 export function setUpgradePriceHook(h: UpgradePriceHook | null) { priceHook = h ?? (() => null); }
 
 /** More than this many times the kit's light is a new build, not a swap (the tank, hood and wiring all change). */
-export const SWAP_MAX_RATIO = 3;
+export const SWAP_MAX_RATIO = 5;
 /** Most LED watts per gallon a freshwater / reef swap can reasonably ask for before the tank is the problem. */
 export const MAX_W_PER_GAL: Record<'fresh' | 'reef', number> = { fresh: 2.5, reef: 6 };
 
