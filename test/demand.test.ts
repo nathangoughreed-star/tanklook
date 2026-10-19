@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { SCENES } from '../src/examples/scenes';
-import { costDistribution, defaultProfile, demandOf, drivers, limitState, pct, plantDifficulty, riskLabel } from '../src/demand';
+import { defaultProfile, demandOf, drivers, limitState, plantDifficulty, riskLabel } from '../src/demand';
 import { swapsFor } from '../src/demand/swaps';
 import { fitToLimits, hasLimits } from '../src/demand/fit';
-import { mean3, triInv, var3 } from '../src/demand/range';
+import { mean3 } from '../src/demand/range';
 import { parseScene } from '../src/scene/validate';
 
 // Demand model engine (lane KK phase 1, 2026-10-19). Fixed `now` keeps the price-age widening stable.
@@ -11,19 +11,13 @@ const NOW = Date.parse('2026-10-19');
 const run = (id: string, mod: (p: ReturnType<typeof defaultProfile>) => void = () => {}) => {
   const S = parseScene(SCENES[id]).scene.tanks[0], P = defaultProfile(); mod(P);
   const D = demandOf(S, P, { now: NOW });
-  return { S, P, D, C: costDistribution(D, P) };
+  return { S, P, D };
 };
 const ids = ['planted', 'iwagumi', 'betta', 'reef', 'terrarium', 'paludarium'];
-const fmt = (id: string) => { const { D, C } = run(id); return `${id}: ${Math.round(D.gallons)} gal setup ${C.setup.p10.toFixed(0)}/${C.setup.mean.toFixed(0)}/${C.setup.p90.toFixed(0)} upkeep ${C.upkeep.mean.toFixed(1)} min ${C.minutes.mean.toFixed(0)} risk ${D.totals.risk.toFixed(1)}`; };
+const fmt = (id: string) => { const { D } = run(id); return `${id}: ${Math.round(D.gallons)} gal setup ${D.totals.setupUsd.toFixed(0)} upkeep ${D.totals.upkeepUsdMo.toFixed(1)} min ${D.totals.minPerWeek.toFixed(0)} risk ${D.totals.risk.toFixed(1)}`; };
 
-describe('triangular helpers', () => {
-  it('mean and variance match the closed form; inverse cdf stays in range and is monotone', () => {
-    const r = { lo: 2, mode: 3, hi: 10 };
-    expect(mean3(r)).toBeCloseTo(5);
-    expect(var3(r)).toBeCloseTo((4 + 9 + 100 - 6 - 20 - 30) / 18);
-    let prev = -1;
-    for (let u = 0.01; u < 1; u += 0.01) { const v = triInv(r, u); expect(v).toBeGreaterThanOrEqual(prev); expect(v).toBeGreaterThanOrEqual(2); expect(v).toBeLessThanOrEqual(10); prev = v; }
-  });
+describe('triangle mean', () => {
+  it('mean3 is the mean of the triangle', () => { expect(mean3({ lo: 2, mode: 3, hi: 10 })).toBeCloseTo(5); });
 });
 describe('plant difficulty is derived from NEEDS', () => {
   it('floaters and epiphytes easy, CO2-required reds and carpets hard', () => {
@@ -38,12 +32,12 @@ describe('demandOf on the starter examples', () => {
   });
   it('plausible ranges', () => {
     const betta = run('betta'), planted = run('planted'), reef = run('reef');
-    expect(betta.C.setup.mean).toBeGreaterThan(40); expect(betta.C.setup.mean).toBeLessThan(400);
-    expect(planted.C.setup.mean).toBeGreaterThan(betta.C.setup.mean);
-    expect(planted.C.upkeep.mean).toBeGreaterThan(5); expect(planted.C.upkeep.mean).toBeLessThan(120);
-    expect(planted.C.minutes.mean).toBeGreaterThan(20); expect(planted.C.minutes.mean).toBeLessThan(180);
-    expect(reef.C.setup.mean).toBeGreaterThan(planted.C.setup.mean); // salt costs more
-    expect(reef.C.minutes.mean).toBeGreaterThan(planted.C.minutes.mean * 0.8);
+    expect(betta.D.totals.setupUsd).toBeGreaterThan(40); expect(betta.D.totals.setupUsd).toBeLessThan(400);
+    expect(planted.D.totals.setupUsd).toBeGreaterThan(betta.D.totals.setupUsd);
+    expect(planted.D.totals.upkeepUsdMo).toBeGreaterThan(5); expect(planted.D.totals.upkeepUsdMo).toBeLessThan(120);
+    expect(planted.D.totals.minPerWeek).toBeGreaterThan(20); expect(planted.D.totals.minPerWeek).toBeLessThan(180);
+    expect(reef.D.totals.setupUsd).toBeGreaterThan(planted.D.totals.setupUsd); // salt costs more
+    expect(reef.D.totals.minPerWeek).toBeGreaterThan(planted.D.totals.minPerWeek * 0.8);
     expect(reef.D.totals.risk).toBeGreaterThan(planted.D.totals.risk);
   });
   it('risk falls with skill and the salt multiplier shows up', () => {
@@ -53,7 +47,7 @@ describe('demandOf on the starter examples', () => {
   });
   it('a terrarium has no water changes, a water source changes the upkeep', () => {
     expect(run('terrarium').D.items.some(i => i.key === 'waterchange')).toBe(false);
-    const tap = run('planted').C.upkeep.mean, ro = run('planted', p => { p.waterSource = 'bought-ro'; }).C.upkeep.mean;
+    const tap = run('planted').D.totals.upkeepUsdMo, ro = run('planted', p => { p.waterSource = 'bought-ro'; }).D.totals.upkeepUsdMo;
     expect(ro).toBeGreaterThan(tap);
   });
 });
@@ -90,7 +84,7 @@ describe('fit to limits', () => {
   it('swaps toward cheaper / easier until the limits hold, or says what is left', () => {
     const S = parseScene(SCENES['planted']).scene.tanks[0], P = defaultProfile();
     expect(hasLimits(P)).toBe(false);
-    P.limits = { setupUsd: 1200, budgetMode: 'expected' };
+    P.limits = { setupUsd: 1200 };
     const r = fitToLimits(S, P, { now: NOW });
     expect(r.swaps.length).toBeGreaterThan(0);
     const before = demandOf(S, P, { now: NOW }).totals.setupUsd, after = demandOf(r.scene, P, { now: NOW }).totals.setupUsd;
@@ -100,34 +94,34 @@ describe('fit to limits', () => {
     expect(none.swaps.length).toBe(0);
   });
 });
-describe('costDistribution', () => {
-  it('is seeded and stable, percentiles ordered, the likely range brackets the mean', () => {
-    const a = run('planted').C, b = run('planted').C;
-    expect(a.setup.q).toEqual(b.setup.q);
-    for (const d of [a.setup, a.upkeep, a.minutes]) { expect(d.p10).toBeLessThan(d.p50); expect(d.p50).toBeLessThan(d.p90); expect(d.p10).toBeLessThan(d.mean); expect(d.mean).toBeLessThan(d.p90); }
+describe('expected cost (lane DS: one number, no spread)', () => {
+  // Means of the old 20000-draw Monte Carlo (cost.ts, deleted 2026-10-19) for fixed setups; the expected value must not move.
+  const GOLD: Record<string, number[]> = {"planted/0": [1338.05, 53.46, 54.43], "planted/1": [1338.05, 55.75, 54.43], "planted/2": [1338.05, 73.44, 54.43], "iwagumi/0": [2109.82, 43.26, 67.06], "iwagumi/1": [2109.82, 43.09, 67.06], "iwagumi/2": [2109.82, 44.22, 67.06], "betta/0": [337.49, 10.09, 27.02], "betta/1": [337.49, 11.33, 27.02], "betta/2": [337.49, 11.62, 27.02], "reef/0": [3420.1, 158.15, 74.82], "reef/1": [3420.1, 170.17, 74.82], "reef/2": [3420.1, 144.77, 74.82], "terrarium/0": [735.47, 19.78, 18.49], "terrarium/1": [735.47, 20.26, 18.49], "terrarium/2": [735.47, 19.78, 18.49], "paludarium/0": [1645.61, 59.51, 54.64], "paludarium/1": [1645.61, 61, 54.64], "paludarium/2": [1645.61, 74.06, 54.64]};
+  const prof = (v: number) => (P: ReturnType<typeof defaultProfile>) => { if (v === 1) { P.kwhUsd = 0.3; P.skill.fish = 1; } if (v === 2) { P.skill.salt = 2; P.skill.planted = 2; P.waterSource = 'bought-ro'; } };
+  it('the expected value equals the old Monte Carlo mean for fixed setups', () => {
+    for (const [k, [setup, upkeep, minutes]] of Object.entries(GOLD)) {
+      const [id, v] = k.split('/'), { D } = run(id, prof(+v));
+      expect(Math.abs(D.totals.setupUsd / setup - 1), k + ' setup').toBeLessThan(0.01);
+      expect(Math.abs(D.totals.upkeepUsdMo / upkeep - 1), k + ' upkeep').toBeLessThan(0.01);
+      expect(Math.abs(D.totals.minPerWeek / minutes - 1), k + ' minutes').toBeLessThan(0.01);
+    }
   });
-  it('the sample mean agrees with the sum of the item means (price level included)', () => {
-    const { D, C } = run('planted');
-    expect(Math.abs(C.setup.mean / D.totals.setupUsd - 1)).toBeLessThan(0.05);
-    expect(Math.abs(C.minutes.mean / D.totals.minPerWeek - 1)).toBeLessThan(0.05);
+  it('a limit is read against the expected value, nothing else', () => {
+    const { D, P } = run('planted');
+    P.limits.setupUsd = Math.ceil(D.totals.setupUsd);
+    expect(limitState(D, P).setup.over).toBe(false);
+    P.limits.setupUsd = Math.floor(D.totals.setupUsd) - 1;
+    expect(limitState(D, P).setup.over).toBe(true);
+    expect(limitState(D, { ...P, limits: { ...P.limits, budgetMode: 'cap' } as typeof P.limits }).setup.over).toBe(true);
   });
-  it('variance shares sum to 1', () => {
-    const { C } = run('planted');
-    for (const f of ['setup', 'upkeep', 'minutes'] as const) expect([...C.share[f].values()].reduce((s, v) => s + v, 0)).toBeCloseTo(1, 5);
-  });
-  it('limits: expected vs cap read different numbers; a cap is stricter', () => {
-    const { D, C, P } = run('planted');
-    P.limits.setupUsd = Math.ceil(C.setup.mean);
-    expect(limitState(D, C, { ...P, limits: { ...P.limits, budgetMode: 'expected' } }).setup.over).toBe(false);
-    expect(limitState(D, C, { ...P, limits: { ...P.limits, budgetMode: 'cap' } }).setup.over).toBe(true);
-    expect(pct(C.setup, 85)).toBeGreaterThan(C.setup.mean);
-  });
-  it('drivers lists the biggest first', () => {
-    const { D, C } = run('planted'), d = drivers(D, C, 'setup');
+  it('drivers lists the biggest first and adds up to the bar', () => {
+    const { D, P } = run('planted'), d = drivers(D, P, 'setup', 99);
     expect(d.length).toBeGreaterThan(2);
     for (let i = 1; i < d.length; i++) expect(d[i - 1].mean).toBeGreaterThanOrEqual(d[i].mean);
+    expect(d.reduce((t, r) => t + r.mean, 0)).toBeCloseTo(D.totals.setupUsd, 0);
+    const u = drivers(D, P, 'upkeep', 99);
+    expect(u.reduce((t, r) => t + r.mean, 0)).toBeCloseTo(D.totals.upkeepUsdMo, 1);
   });
-  it('2000 draws are quick', () => { const t = performance.now(); run('paludarium'); expect(performance.now() - t).toBeLessThan(1500); });
 });
 
 describe('bundle deals (lane KD)', () => {

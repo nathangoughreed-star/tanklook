@@ -1,7 +1,7 @@
 // The demand panel (lane KK phase 4): three live readouts for the current tank (money, time, risk), in Quick Setup. Each is an
-// expected value with a likely range; limits turn a bar red; a click lists what drives it and which swap lowers it.
+// one expected number per bar; limits turn a bar red; a click lists what drives it and which swap lowers it.
 // Computed when the scene settles (debounced), never per frame. The profile (skill, water, kWh rate, limits) is an app pref.
-import { costDistribution, defaultProfile, demandOf, drivers, limitState, pct, type CostResult, type LimitState, type UserProfile } from '../demand';
+import { defaultProfile, demandOf, drivers, limitState, type LimitState, type UserProfile } from '../demand';
 import { swapsFor, type Bar } from '../demand/swaps';
 import type { Demand } from '../demand';
 import type { Store } from '../scene/store';
@@ -23,12 +23,12 @@ const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;
 
 function load(): UserProfile {
   const d = defaultProfile();
-  try { const j = JSON.parse(localStorage.getItem(KEY) ?? 'null') as Partial<UserProfile> | null; if (j) return { ...d, ...j, skill: { ...d.skill, ...j.skill }, limits: { ...j.limits } }; } catch { /* ignore */ }
+  try { const j = JSON.parse(localStorage.getItem(KEY) ?? 'null') as Partial<UserProfile> | null; if (j) { const { budgetMode: _old, ...limits } = (j.limits ?? {}) as Partial<UserProfile['limits']> & { budgetMode?: string }; return { ...d, ...j, skill: { ...d.skill, ...j.skill }, limits }; } } catch { /* ignore */ } // an old save's budgetMode is dropped, the number kept
   return d;
 }
 
 export function attachDemandPanel(store: Store, mount: HTMLElement) {
-  let P = load(), D: Demand | null = null, C: CostResult | null = null, B: { D: Demand; C: CostResult } | null = null, open: Bar | null = null, timer = 0;
+  let P = load(), D: Demand | null = null, B: Demand | null = null, open: Bar | null = null, timer = 0;
   /** What the last edit moved each bar by, shown as a chip for a few seconds so a change is seen as it happens. */
   let prev: Record<Bar, number> | null = null, chips: Partial<Record<Bar, { d: number; until: number }>> = {}, chipTimer = 0;
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(P)); } catch { /* ignore */ } };
@@ -50,10 +50,10 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
   function recompute() {
     const S = store.tank;
     const kit = pinnedKit();
-    D = demandOf(S, P, { kit }); C = costDistribution(D, P);
+    D = demandOf(S, P, { kit });
     // the same tank without its animals: what keeping just the plants (or the bare tank) costs, so adding animals reads as a jump from it
-    B = S.fish.length ? (() => { const d0 = demandOf({ ...S, fish: [] }, P, { kit }); return { D: d0, C: costDistribution(d0, P, { draws: 600 }) }; })() : null;
-    const now = { setup: C.setup.mean, upkeep: C.upkeep.mean, minutes: C.minutes.mean, risk: D.totals.risk };
+    B = S.fish.length ? demandOf({ ...S, fish: [] }, P, { kit }) : null;
+    const now = { setup: D.totals.setupUsd, upkeep: D.totals.upkeepUsdMo, minutes: D.totals.minPerWeek, risk: D.totals.risk };
     if (prev) {
       const T: Record<Bar, number> = { setup: 1, upkeep: 0.5, minutes: 0.5, risk: 0.05 }, until = Date.now() + 6000;
       for (const b of Object.keys(now) as Bar[]) { const d = now[b] - prev[b]; if (Math.abs(d) >= T[b]) chips[b] = { d, until }; }
@@ -66,14 +66,14 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
   store.subscribe(kind => { if (kind === 'load') onSceneLoad(); if (kind === 'scene' || kind === 'load') soon(); });
 
   function render() {
-    if (!D || !C) return;
-    const L = limitState(D, C, P);
+    if (!D) return;
+    const L = limitState(D, P);
     bars.innerHTML = '';
     for (const b of BARS) bars.append(row(b, L));
     const S = store.tank, nA = S.fish.length, nP = S.items.filter(i => i.kind === 'plant' || i.kind === 'coral').length;
-    q('.dmmode').textContent = nA ? `With ${nA} animal${nA > 1 ? 's' : ''}${B ? `; without them: ${usd(B.C.setup.mean)} to set up, ${usd(B.C.upkeep.mean)} a month` : ''}`
+    q('.dmmode').textContent = nA ? `With ${nA} animal${nA > 1 ? 's' : ''}${B ? `; without them: ${usd(B.totals.setupUsd)} to set up, ${usd(B.totals.upkeepUsdMo)} a month` : ''}`
       : nP ? 'Plants only: what it costs to keep this planted tank running. Add animals and watch it climb.' : 'Empty tank: the gear and upkeep before anything lives in it.';
-    q('.dmsum').textContent = `${usd(C.setup.mean)} · ${usd(C.upkeep.mean)}/mo · ${Math.round(C.minutes.mean)} min/wk · risk ${D.totals.risk.toFixed(1)}`;
+    q('.dmsum').textContent = `${usd(D.totals.setupUsd)} · ${usd(D.totals.upkeepUsdMo)}/mo · ${Math.round(D.totals.minPerWeek)} min/wk · risk ${D.totals.risk.toFixed(1)}`;
     renderDeals();
     drill.hidden = !open;
     if (open) fillDrill(open);
@@ -87,25 +87,26 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
   }
 
   function row(b: typeof BARS[number], L: LimitState) {
-    const el = document.createElement('div'), st = L[b.bar === 'minutes' ? 'minutes' : b.bar], dist = b.bar === 'risk' ? null : C![b.bar];
+    const el = document.createElement('div'), st = L[b.bar];
     el.className = 'dmrow' + (st.over ? ' over' : '') + (open === b.bar ? ' sel' : '');
-    const max = b.bar === 'risk' ? 10 : Math.max(dist!.p90 * 1.15, (st.limit ?? 0) * 1.1, 1);
+    const max = b.bar === 'risk' ? 10 : Math.max(st.value * 1.3, (st.limit ?? 0) * 1.1, 1);
     const x = (v: number) => `${Math.min(100, Math.max(0, v / max * 100)).toFixed(1)}%`;
     let value: string, range: string, track: string;
-    if (dist) {
-      const per = b.bar === 'setup' ? usd : b.bar === 'upkeep' ? (v: number) => usd(v) : (v: number) => `${Math.round(v)} min`;
-      const shown = b.bar === 'setup' && P.limits.budgetMode === 'cap' ? pct(dist, 85) : dist.mean;
-      value = per(dist.mean); range = `likely ${per(dist.p10)} to ${per(dist.p90)}`;
-      track = `<i class="dmband" style="left:${x(dist.p10)};width:calc(${x(dist.p90)} - ${x(dist.p10)})"></i><i class="dmmean" style="left:${x(dist.mean)}"></i>`
-        + (st.limit !== undefined ? `<i class="dmlim" style="left:${x(st.limit)}"></i>` : '') + (b.bar === 'setup' && P.limits.budgetMode === 'cap' ? `<i class="dmcap" style="left:${x(shown)}"></i>` : '');
-      el.title = `${b.tip}\nExpected ${per(dist.mean)}; 10 in 100 times it comes in under ${per(dist.p10)}, and 10 in 100 over ${per(dist.p90)}.${st.limit !== undefined ? `\nYour limit: ${per(st.limit)} (${P.limits.budgetMode === 'cap' ? 'checked against a bad-luck 85-in-100 figure' : 'checked against the expected figure'}).` : ''}`;
+    if (b.bar !== 'risk') {
+      const per = b.bar === 'setup' || b.bar === 'upkeep' ? usd : (v: number) => `${Math.round(v)} min`;
+      value = per(st.value); range = '';
+      track = `<i class="dmmean" style="left:${x(st.value)}"></i>` + (st.limit !== undefined ? `<i class="dmlim" style="left:${x(st.limit)}"></i>` : '');
+      el.title = `${b.tip}
+Expected ${per(st.value)}.${st.limit !== undefined ? `
+Your limit: ${per(st.limit)}.` : ''}`;
     } else {
       const r = L.risk;
       value = `${D!.totals.risk.toFixed(1)} / 10`; range = r.label;
       track = `<i class="dmz" style="left:0;width:30%"></i><i class="dmz m" style="left:30%;width:30%"></i><i class="dmz d" style="left:60%;width:40%"></i><i class="dmmean" style="left:${x(D!.totals.risk)}"></i>`;
-      el.title = `${b.tip}\nRelative to your stated experience (see Your situation).`;
+      el.title = `${b.tip}
+Relative to your stated experience (see Your situation).`;
     }
-    const base = B ? (b.bar === 'risk' ? B.D.totals.risk : B.C[b.bar].mean) : undefined, chip = chips[b.bar];
+    const base = B ? (b.bar === 'risk' ? B.totals.risk : b.bar === 'setup' ? B.totals.setupUsd : b.bar === 'upkeep' ? B.totals.upkeepUsdMo : B.totals.minPerWeek) : undefined, chip = chips[b.bar];
     if (base !== undefined) track += `<i class="dmbase" style="left:${x(base)}" title="Without the animals"></i>`;
     const dtxt = chip && chip.until > Date.now() ? `<span class="dmchg ${chip.d > 0 ? 'up' : 'down'}">${chip.d > 0 ? '+' : '−'}${b.bar === 'risk' ? Math.abs(chip.d).toFixed(1) : b.bar === 'minutes' ? `${Math.round(Math.abs(chip.d))} min` : usd(Math.abs(chip.d))}</span>` : '';
     el.innerHTML = `<div class="dmtop"><span class="dmname">${b.title}</span><b class="dmval">${esc(value)}</b>${dtxt}<span class="dmrange">${esc(range)}</span></div><div class="dmtrack">${track}</div>`;
@@ -114,12 +115,12 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
   }
 
   function fillDrill(bar: Bar) {
-    const dr = drivers(D!, C!, bar, 6), S = store.tank, unit = bar === 'setup' || bar === 'upkeep' ? usd : (v: number) => (bar === 'risk' ? v.toFixed(1) : `${Math.round(v)} min`);
+    const dr = drivers(D!, P, bar, 6), S = store.tank, unit = bar === 'setup' || bar === 'upkeep' ? usd : (v: number) => (bar === 'risk' ? v.toFixed(1) : `${Math.round(v)} min`);
     const head = BARS.find(b => b.bar === bar)!.title;
     let h = `<div class="dmdt">What drives “${head}”</div>`;
     for (const r of dr) {
       const sw = r.key.startsWith('animal:') || r.key.startsWith('plant:') ? swapsFor(S, P, r.key, bar, {}, 2) : [];
-      h += `<div class="dmitem"><span>${esc(r.label)}${r.n > 1 ? ` ×${r.n}` : ''}</span><b>${unit(r.mean)}</b>${bar !== 'risk' ? `<span class="dmshare" title="How much of the uncertainty in this number comes from this item">${Math.round(r.share * 100)}% of the doubt</span>` : '<span></span>'}</div>`;
+      h += `<div class="dmitem"><span>${esc(r.label)}${r.n > 1 ? ` ×${r.n}` : ''}</span><b>${unit(r.mean)}</b><span></span></div>`;
       for (const s of sw) h += `<div class="dmswap">${s.kind === 'remove' ? 'Leave them out' : `Swap for <b>${esc(s.to)}</b>`}: ${eff(s.delta)}</div>`;
     }
     if (D!.warnings.length && bar === 'risk') h += `<div class="dmdt">Why</div>` + D!.warnings.slice(0, 8).map(w => `<div class="dmwarn">${esc(w)}</div>`).join('');
@@ -133,10 +134,7 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
   const lim = q('.dmlimits'), sit = q('.dmsit');
   function limits() {
     const L = P.limits;
-    lim.innerHTML = `<label>Set-up money <input type="number" min="0" step="10" id="dmSetup" placeholder="no limit" value="${L.setupUsd ?? ''}"> $</label>
-      <div class="dmask" ${L.setupUsd === undefined ? 'hidden' : ''}>Is that what you expect to spend, or the most you can spend?
-        <label><input type="radio" name="dmMode" value="expected" ${L.budgetMode === 'expected' ? 'checked' : ''}> What I expect to spend</label>
-        <label><input type="radio" name="dmMode" value="cap" ${L.budgetMode === 'cap' ? 'checked' : ''}> The most I can spend</label></div>
+    lim.innerHTML = `<label>What do you want your expected set-up cost to be? <input type="number" min="0" step="10" id="dmSetup" placeholder="no limit" value="${L.setupUsd ?? ''}"> $</label>
       <label>Upkeep <select id="dmUpkeep"><option value="">no limit</option><option value="free">near free (under $10 a month)</option><option value="low">low (under $40 a month)</option><option value="flex">flexible</option></select></label>
       <label>Time <input type="number" min="0" step="5" id="dmMin" placeholder="no limit" value="${L.minPerWeek ?? ''}"> minutes a week</label>
       <label>Risk <select id="dmRisk"><option value="any">no limit</option><option value="moderate">moderate at most</option><option value="safe">safe only</option></select></label>`;
@@ -144,9 +142,6 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
     const num = (id: string) => { const v = (q(id) as HTMLInputElement).value; return v === '' ? undefined : Math.max(0, +v); };
     const change = () => {
       P.limits = { ...P.limits, setupUsd: num('#dmSetup'), minPerWeek: num('#dmMin'), upkeep: ((q('#dmUpkeep') as HTMLSelectElement).value || undefined) as UserProfile['limits']['upkeep'], risk: (q('#dmRisk') as HTMLSelectElement).value as UserProfile['limits']['risk'] };
-      const m = mount.querySelector('input[name=dmMode]:checked') as HTMLInputElement | null;
-      if (m) P.limits.budgetMode = m.value as 'expected' | 'cap';
-      (q('.dmask') as HTMLElement).hidden = P.limits.setupUsd === undefined;
       save(); render();
     };
     lim.querySelectorAll('input,select').forEach(e => e.addEventListener('change', change));
@@ -168,5 +163,5 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
   recompute();
   /** Set some limits from outside (the care slider's shortcut): saved, the form and the bars follow. */
   const setLimits = (l: Partial<UserProfile['limits']>) => { P.limits = { ...P.limits, ...l }; save(); limits(); render(); };
-  return { recompute, setLimits, profile: () => P, state: () => (D && C ? { demand: D, cost: C, limits: limitState(D, C, P) } : null) };
+  return { recompute, setLimits, profile: () => P, state: () => (D ? { demand: D, limits: limitState(D, P) } : null) };
 }

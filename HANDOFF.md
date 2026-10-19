@@ -50,7 +50,13 @@ A Tech section where the owner picks the tech level, Walstad to high-tech plante
 
 ## Lane KW: start wizard (2026-10-19, branch `wizard`, port 5783)  (lane fills this in)
 
-## Lane DS: one expected-cost number (2026-10-19, branch `expectedcost`, port 5793)  (lane fills this in)
+## Lane DS: one expected-cost number (2026-10-19, branch `expectedcost`, port 5793)
+- Decision (Nathan 2026-10-19): ask only "What do you want your expected set-up cost to be?"; every limit is checked against the expected value. No percentile, range or cap mode.
+- Removed: `Limits.budgetMode`, factors.json `budgetCapPercentile` + `correlation`, the Monte Carlo in `src/demand/cost.ts` (now only `limitState(D, P)` and `drivers(D, P, bar, top)`), `costDistribution` / `CostResult` / `Dist` / `pct`, the "likely a to b" text and hover wording, the "% of the doubt" share, the cap radio in the limits form, `.dmband` / `.dmcap` / `.dmshare` / `.dmask` CSS. `UI state()` no longer returns `cost`. `kwhRate(P)` is exported from the engine (expected $/kWh).
+- Public signatures for lane KW: `demandOf(S, P, opts)` and `profile.limits` (`setupUsd`, `upkeep`, `minPerWeek`, `risk`) are unchanged; `limitState` lost its middle argument (`limitState(D, P)`), `drivers` gained `P` (`drivers(D, P, bar, top)`).
+- Kept: lo / mode / hi on contributors and in the data tables (they define the mean and the price-age widening), `lossMo` expected loss replacement, skill-scaled risk.
+- Equivalence: `test/demand.test.ts` "expected cost" pins `Demand.totals` to the old 20000-draw means for 18 fixed setups (< 1 %). The engine's default electricity rate now includes the mean of the rate spread (x1.033), as the old sample mean did.
+- Pictures before / after: research/efficiency/ds/. Waiting for Nathan's verdict before pushing.
 
 ## Lane CS: CI workflow split (2026-10-19, branch `cisplit`, port 5803)
 - `.github/workflows/deploy.yml` is two jobs with job-level concurrency (no workflow-level group): `test` (npm ci, npm test; group `test-<ref>`, cancel-in-progress) and `deploy` (needs test; build, upload-pages-artifact, deploy-pages; group `pages`, cancel-in-progress **false**).

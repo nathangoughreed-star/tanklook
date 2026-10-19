@@ -1,8 +1,8 @@
 // Fit a build to the user's limits (lane KK phase 5): after Shuffle (or any restock) the build that goes over a limit is
 // swapped toward cheaper / easier choices, using the same driver list and swap suggestions the panel shows. Greedy: take the
 // bar that is furthest over its limit, try the best swap among its top drivers, repeat until every limit holds or nothing helps.
-import { costDistribution, limitState, type LimitState } from './cost';
-import { demandOf, FACTORS, type DemandOpts } from './engine';
+import { limitState, type LimitState } from './cost';
+import { demandOf, FACTORS, kwhRate, type DemandOpts } from './engine';
 import { mean3 } from './range';
 import { applySwap, swapsFor, type Bar, type Swap } from './swaps';
 import type { Demand, UserProfile } from './types';
@@ -19,7 +19,7 @@ function overBy(L: LimitState, D: Demand): Record<Bar, number> {
 /** What the tank, gear and routine work alone ask (no swap can lower it): the least each bar can reach by swapping plants and animals. */
 export interface FitResult { swaps: Swap[]; scene: TankSetup; left: Bar[]; before: LimitState; after: LimitState; floor: { setup: number; upkeep: number; minutes: number } }
 export function fitToLimits(S0: TankSetup, P: UserProfile, opts: DemandOpts = {}, maxSteps = 8): FitResult {
-  const eval1 = (S: TankSetup) => { const D = demandOf(S, P, opts), C = costDistribution(D, P, { draws: 300 }); return { D, C, L: limitState(D, C, P) }; };
+  const eval1 = (S: TankSetup) => { const D = demandOf(S, P, opts); return { D, L: limitState(D, P) }; };
   let S = S0, cur = eval1(S);
   const before = cur.L, swaps: Swap[] = [], tried = new Set<string>(), locked = new Set<string>(); // locked: a swapped-in kind is not swapped again
   for (let step = 0; step < maxSteps; step++) {
@@ -40,7 +40,7 @@ export function fitToLimits(S0: TankSetup, P: UserProfile, opts: DemandOpts = {}
     locked.add(`${best.swap.key.split(':')[0]}:${best.swap.toId}`); swaps.push(best.swap); S = applySwap(S, best.swap); cur = eval1(S);
   }
   const over = overBy(cur.L, cur.D);
-  const fixed = cur.D.items.filter(c => c.group !== 'plant' && c.group !== 'animal'), kwh = P.kwhUsd ?? mean3(FACTORS.kwhUsd);
+  const fixed = cur.D.items.filter(c => c.group !== 'plant' && c.group !== 'animal'), kwh = kwhRate(P);
   const floor = {
     setup: fixed.reduce((t, c) => t + (c.setup ? mean3(c.setup) : 0), 0) * mean3(FACTORS.priceLevel),
     upkeep: fixed.reduce((t, c) => t + (c.upkeep ? mean3(c.upkeep) : 0) + (c.kwhMo ?? 0) * kwh, 0),

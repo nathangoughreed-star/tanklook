@@ -130,11 +130,9 @@
   0.35
  ],
  "fundamentalsShare": 0.4,
- "correlation": 0.3,
  "limits": {
   "upkeepNearFreeUsdMo": 10,
   "upkeepLowUsdMo": 40,
   "_note": "chip mapping, PROPOSAL awaiting Nathan"
- },
- "budgetCapPercentile": 85
+ }
 }

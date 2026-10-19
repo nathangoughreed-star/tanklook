@@ -207,3 +207,12 @@ The choice is stored with the limit in UserProfile.limits (budgetMode: expected 
 
 ## Decision 2026-10-19 (Nathan): one expected-cost number
 No percentiles, no ranges, no cap mode. The user is asked one question: "What do you want your expected cost to be?" and every limit is checked against the expected value. Supersedes the 80th / 85th percentile and "likely range" text above (lane DS removes it from the engine and panel).
+
+**Done by lane DS (2026-10-19).** Removed: `budgetMode` and the cap choice, `budgetCapPercentile` and `correlation` in factors.json, the Monte Carlo
+(`costDistribution`, `Dist`, `pct`, `triInv`, `var3`, `phi`, `rng`), the "likely" range, the 10-in-100 hover text and the "% of the doubt" share in
+the driver list. One number per limit, read against `Demand.totals` (the expected value). Old saves: `budgetMode` is ignored, the number kept.
+Kept on purpose: the lo / mode / hi triangle on every contributor and in `demand-items.json` / `demand-defaults.json`. It is not only spread: the mean
+of a triangle is not its mode, and the price-age widening moves lo and hi, so collapsing the columns would change the expected value. Also kept:
+the expected loss replacement in upkeep (`lossMo`, KK phase 5) and the skill-scaled risk. The expected value is unchanged: a test pins it to the old
+20000-draw sample mean for 18 fixed setups (within 1 %); the one correction is that the engine's electricity rate now carries the mean of the
+rate spread (x1.033 on the default US rate), which is what the old sample mean already did.
