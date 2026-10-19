@@ -1229,16 +1229,17 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
     layer('hard', () => {
       const f = F[0], base = clamp(Math.min(L * 0.3, D * 1.2), 90, 320) * (designed ? 1 : 0.85 + 0.25 * st.scale), mat = designed ? 'ledge' : 'ledge';
       const low = put(mat, L * f.x, D * clamp(f.d, 0.45, 0.8), base, { yaw: Math.round((r() - 0.5) * 30) });
-      let top = itemDims(low)[1] * 0.92;
+      let top = itemDims(low)[1] * 0.8;
       for (let i = 0, n = Math.max(1, many(2, f.k)); i < n; i++) {
         const it = put(mat, low.x + (r() - 0.5) * base * 0.3, low.depth + (r() - 0.5) * base * 0.15, base * (0.78 - 0.14 * i), { lift: Math.round(top), yaw: Math.round((r() - 0.5) * 30) }, true);
-        top += itemDims(it)[1] * 0.92;
+        top += itemDims(it)[1] * 0.8;
       }
       const rock = designed ? 'dragon' : pick(['dragon', 'lava', 'slate']);
       for (let i = 0, n = many(4); i < n; i++) put(rock, L * (0.1 + r() * 0.8), D * (0.12 + r() * 0.75), clamp(H * (0.1 + r() * 0.1), 30, 130), tip(rock));
       const hide = clamp(Math.min(L * 0.22, D * 0.9), 70, 200);
       put('halflog', L * (warm > 0 ? 0.2 : 0.8), D * 0.3, hide, { yaw: Math.round((r() - 0.5) * 40) });
       if (dens > 0.5) put('corktube', L * (warm > 0 ? 0.82 : 0.18), D * 0.3, hide * 1.1, { yaw: Math.round((r() - 0.5) * 40) });
+      put('stonedish', L * 0.5, D * 0.22, clamp(Math.min(L * 0.12, D * 0.45), 60, 140)); // drinking water in the middle, between the hides
     });
     layer('plant', () => {
       // succulents (lane CP): each kind with the height it reaches in a desert tank; a few dry hairgrass tufts between
@@ -1251,12 +1252,13 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
     });
   } else if (id === 'python') {
     // Ball python: bark floor, a hide at each end (warm side and cool side), a ledge to bask on under a branch, the rest
-    // open. No water dish yet (no such piece in the library).
+    // open, a water dish on the cool side.
     const F = designed ? DESIGNED_FOCI.python! : st.foci, warm = F[0].x < 0.5 ? 1 : -1;
     layer('hard', () => {
       const hide = clamp(Math.min(L * 0.26, D * 1.1), 120, 340);
       put('halflog', L * (warm > 0 ? 0.15 : 0.85), D * 0.32, hide, { yaw: Math.round((r() - 0.5) * 30) });
       put(dens < 0.5 ? 'halflog' : 'corktube', L * (warm > 0 ? 0.85 : 0.15), D * 0.3, hide, { yaw: Math.round((r() - 0.5) * 30) });
+      put('dish', L * (warm > 0 ? 0.6 : 0.4), D * 0.25, clamp(Math.min(L * 0.16, D * 0.6), 100, 260));
       const f = F[0], base = clamp(Math.min(L * 0.28, D * 1.1), 100, 340);
       const ledge = put('ledge', L * (warm > 0 ? 0.3 : 0.7), D * 0.7, base, { yaw: warm > 0 ? 0 : 180 });
       put('climb', ledge.x + (warm > 0 ? 0.05 : -0.05) * L, D * clamp(f.d, 0.55, 0.8), clamp(H * 1.1, 200, 900), { yaw: warm > 0 ? 25 : 155 });
@@ -1276,6 +1278,7 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
       const log = put('halflog', x, d, size, { yaw: Math.round((r() - 0.5) * 40) });
       put('corkflat', x + (r() - 0.5) * 20, d, size * 1.15, { lift: Math.round(itemDims(log)[1] * 0.95), yaw: log.yaw + Math.round((r() - 0.5) * 20), tilt: Math.round((r() - 0.5) * 16) }, true);
       for (let i = 0, n = many(3); i < n; i++) { const a = r() * 6.28; put(pick(['dragon', 'lava', 'slate']), x + Math.cos(a) * size * 0.75, d - Math.abs(Math.sin(a)) * size * 0.5, clamp(H * (0.07 + r() * 0.07), 28, 100)); }
+      put('stonedish', L * (f.x < 0.5 ? 0.78 : 0.22), D * 0.25, clamp(Math.min(L * 0.1, D * 0.4), 50, 100));
       if (dens > 0.7) put('climb', L * (f.x < 0.5 ? 0.75 : 0.25), D * 0.72, clamp(H * 0.8, 150, 600), { yaw: f.x < 0.5 ? 160 : 20 });
     });
     layer('plant', () => {
