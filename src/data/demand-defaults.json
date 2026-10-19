@@ -1,0 +1,427 @@
+{
+ "_note": "Category-level DemandAdd defaults (lane KK, phase 1 starter). Phase 2 adds per-species / per-plant rows (src/data/demand-items.json) that override these. Rule of thumb, asOf 2026-10-19, ranges deliberately wide.",
+ "asOf": "2026-10-19",
+ "animals": {
+  "_note": "price at refMm total length, scaled by (tl/refMm)^1.2; food USD/month each; mins = care minutes per week each (feeding, watching)",
+  "fw-fish": {
+   "refMm": 50,
+   "setup": {
+    "lo": 2,
+    "mode": 5,
+    "hi": 14
+   },
+   "upkeep": {
+    "lo": 0.2,
+    "mode": 0.5,
+    "hi": 1.4
+   },
+   "mins": 0.15
+  },
+  "fw-invert": {
+   "refMm": 30,
+   "setup": {
+    "lo": 1.5,
+    "mode": 4,
+    "hi": 10
+   },
+   "upkeep": {
+    "lo": 0.05,
+    "mode": 0.15,
+    "hi": 0.4
+   },
+   "mins": 0.05
+  },
+  "sw-fish": {
+   "refMm": 60,
+   "setup": {
+    "lo": 15,
+    "mode": 40,
+    "hi": 130
+   },
+   "upkeep": {
+    "lo": 0.6,
+    "mode": 1.4,
+    "hi": 3.5
+   },
+   "mins": 0.3
+  },
+  "sw-invert": {
+   "refMm": 40,
+   "setup": {
+    "lo": 8,
+    "mode": 20,
+    "hi": 65
+   },
+   "upkeep": {
+    "lo": 0.2,
+    "mode": 0.6,
+    "hi": 1.6
+   },
+   "mins": 0.15
+  },
+  "amphibian": {
+   "refMm": 60,
+   "setup": {
+    "lo": 10,
+    "mode": 30,
+    "hi": 90
+   },
+   "upkeep": {
+    "lo": 1,
+    "mode": 2.5,
+    "hi": 6
+   },
+   "mins": 0.5
+  },
+  "reptile": {
+   "refMm": 250,
+   "setup": {
+    "lo": 60,
+    "mode": 160,
+    "hi": 650
+   },
+   "upkeep": {
+    "lo": 6,
+    "mode": 14,
+    "hi": 35
+   },
+   "mins": 2
+  },
+  "land-invert": {
+   "refMm": 40,
+   "setup": {
+    "lo": 5,
+    "mode": 15,
+    "hi": 60
+   },
+   "upkeep": {
+    "lo": 1,
+    "mode": 3,
+    "hi": 8
+   },
+   "mins": 0.5
+  }
+ },
+ "plants": {
+  "_note": "by derived difficulty: 0 easy (floaters, epiphytes, low band no CO2), 1 medium, 2 hard (CO2 required or high band). coral by band.",
+  "easy": {
+   "setup": {
+    "lo": 1,
+    "mode": 3,
+    "hi": 8
+   }
+  },
+  "medium": {
+   "setup": {
+    "lo": 2,
+    "mode": 5,
+    "hi": 12
+   }
+  },
+  "hard": {
+   "setup": {
+    "lo": 3,
+    "mode": 8,
+    "hi": 20
+   }
+  },
+  "land": {
+   "setup": {
+    "lo": 3,
+    "mode": 8,
+    "hi": 25
+   }
+  },
+  "succulent": {
+   "setup": {
+    "lo": 3,
+    "mode": 7,
+    "hi": 20
+   }
+  },
+  "coral-soft": {
+   "setup": {
+    "lo": 15,
+    "mode": 35,
+    "hi": 90
+   }
+  },
+  "coral-lps": {
+   "setup": {
+    "lo": 40,
+    "mode": 90,
+    "hi": 220
+   }
+  },
+  "coral-sps": {
+   "setup": {
+    "lo": 60,
+    "mode": 130,
+    "hi": 380
+   }
+  },
+  "minPerWeekEach": 0.15,
+  "refSizeMm": 150
+ },
+ "hardscape": {
+  "_note": "price per piece at 150 mm, scaled by (size/150)^1.5",
+  "stone": {
+   "setup": {
+    "lo": 1,
+    "mode": 4,
+    "hi": 14
+   }
+  },
+  "wood": {
+   "setup": {
+    "lo": 5,
+    "mode": 15,
+    "hi": 45
+   }
+  },
+  "cave": {
+   "setup": {
+    "lo": 5,
+    "mode": 12,
+    "hi": 32
+   }
+  },
+  "liverock": {
+   "setup": {
+    "lo": 10,
+    "mode": 25,
+    "hi": 55
+   }
+  }
+ },
+ "gear": {
+  "_note": "class only (no exact models): filter and heater are assumed adequate. perGal is added per interior gallon.",
+  "tank": [
+   {
+    "maxGal": 15,
+    "perGal": {
+     "lo": 3,
+     "mode": 6,
+     "hi": 12
+    }
+   },
+   {
+    "maxGal": 40,
+    "perGal": {
+     "lo": 2,
+     "mode": 3,
+     "hi": 6
+    }
+   },
+   {
+    "maxGal": 75,
+    "perGal": {
+     "lo": 2,
+     "mode": 3.5,
+     "hi": 7
+    }
+   },
+   {
+    "maxGal": 9999,
+    "perGal": {
+     "lo": 3.5,
+     "mode": 6,
+     "hi": 12
+    }
+   }
+  ],
+  "stand": {
+   "perGal": {
+    "lo": 2,
+    "mode": 4.5,
+    "hi": 9
+   },
+   "base": {
+    "lo": 20,
+    "mode": 50,
+    "hi": 120
+   }
+  },
+  "filter": {
+   "base": {
+    "lo": 12,
+    "mode": 22,
+    "hi": 45
+   },
+   "perGal": {
+    "lo": 0.3,
+    "mode": 0.8,
+    "hi": 2
+   },
+   "upkeepUsdMo": {
+    "lo": 1,
+    "mode": 3,
+    "hi": 7
+   },
+   "watts": 6
+  },
+  "heater": {
+   "base": {
+    "lo": 12,
+    "mode": 20,
+    "hi": 35
+   },
+   "perGal": {
+    "lo": 0.1,
+    "mode": 0.25,
+    "hi": 0.6
+   },
+   "wattsPerGal": 3,
+   "duty": 0.35
+  },
+  "lightUsdPerW": {
+   "lo": 0.4,
+   "mode": 1.0,
+   "hi": 3
+  },
+  "lightHoursPerDay": 8,
+  "lid": {
+   "glass": {
+    "lo": 10,
+    "mode": 25,
+    "hi": 60
+   },
+   "mesh": {
+    "lo": 15,
+    "mode": 30,
+    "hi": 65
+   },
+   "hood": {
+    "lo": 30,
+    "mode": 70,
+    "hi": 160
+   },
+   "open": 0
+  },
+  "substrateUsdPerL": {
+   "lo": 0.6,
+   "mode": 1.2,
+   "hi": 2.6
+  },
+  "co2": {
+   "setup": {
+    "lo": 60,
+    "mode": 130,
+    "hi": 300
+   },
+   "upkeepUsdMo": {
+    "lo": 6,
+    "mode": 12,
+    "hi": 25
+   },
+   "minPerWeek": 2
+  },
+  "ferts": {
+   "upkeepUsdMo": {
+    "lo": 3,
+    "mode": 6,
+    "hi": 14
+   },
+   "minPerWeek": 3
+  },
+  "skimmer": {
+   "setup": {
+    "lo": 80,
+    "mode": 180,
+    "hi": 450
+   },
+   "upkeepUsdMo": {
+    "lo": 3,
+    "mode": 8,
+    "hi": 20
+   }
+  }
+ },
+ "time": {
+  "_note": "minutes per week, averaged over the year. waterChange = fixed + perGal x gallons changed.",
+  "waterChangeFraction": {
+   "fish": 0.2,
+   "planted": 0.25,
+   "salt": 0.15,
+   "terrarium": 0
+  },
+  "waterChangeFixedMin": {
+   "lo": 8,
+   "mode": 12,
+   "hi": 20
+  },
+  "waterChangePerGalMin": {
+   "lo": 0.3,
+   "mode": 0.5,
+   "hi": 0.9
+  },
+  "testingMin": {
+   "lo": 2,
+   "mode": 5,
+   "hi": 10
+  },
+  "filterCleanMinPerWeek": {
+   "lo": 1,
+   "mode": 2,
+   "hi": 4
+  },
+  "yearlyJobsMinPerWeek": {
+   "lo": 2,
+   "mode": 4,
+   "hi": 8,
+   "note": "deep clean, equipment swaps, rescape, divided by 52"
+  },
+  "terrariumMistMin": {
+   "lo": 5,
+   "mode": 9,
+   "hi": 18
+  },
+  "saltExtraMin": {
+   "lo": 8,
+   "mode": 15,
+   "hi": 30,
+   "note": "mixing salt water, top-off, dosing"
+  }
+ },
+ "risk": {
+  "_note": "raw points before skill scaling and the 0-10 squash",
+  "careLevel": [
+   0,
+   0.4,
+   1.0,
+   2.0
+  ],
+  "plantDifficulty": [
+   0.1,
+   0.3,
+   0.8
+  ],
+  "tankSmall": [
+   {
+    "maxGal": 10,
+    "pts": 2.0
+   },
+   {
+    "maxGal": 20,
+    "pts": 1.0
+   },
+   {
+    "maxGal": 30,
+    "pts": 0.4
+   }
+  ],
+  "salt": 2.0,
+  "struggleMinPts": 0.5,
+  "animalWarnPts": {
+   "expertise": 1.0,
+   "size": 1.5,
+   "compat": 1.5
+  },
+  "squashScale": 10,
+  "cut": {
+   "safe": 3,
+   "demanding": 6,
+   "note": "PROPOSAL, awaiting Nathan (phase 3)"
+  }
+ }
+}

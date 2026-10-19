@@ -53,12 +53,4 @@ export function bareSetup(): TankSetup {
   return s;
 }
 
-export const TANK_PRESETS: [label: string, L: number, H: number, D: number][] = [
-  ['10 gal 20×12×10', 20, 12, 10], ['20 long 30×12×12', 30, 12, 12], ['20 high 24×16×12', 24, 16, 12],
-  ['29 gal 30×18×12', 30, 18, 12], ['40 breeder 36×16×18', 36, 16, 18], ['55 gal 48×21×13', 48, 21, 13],
-  ['75 gal 48×21×18', 48, 21, 18], ['125 gal 72×22×18', 72, 22, 18], ['24×12×12 cube-ish', 24, 12, 12],
-  ['24×12×24 deep', 24, 12, 24],
-  ['Nano terrarium 8×8×8', 8, 8, 8], ['Cube terrarium 12×12×12', 12, 12, 12], ['Cube terrarium 18×18×18', 18, 18, 18],
-  ['Tall arboreal 12×18×12', 12, 18, 12], ['Tall arboreal 18×24×18', 18, 24, 18], ['Tall arboreal 24×48×24', 24, 48, 24],
-  ['Wide terrestrial 36×18×18', 36, 18, 18], ['Wide terrestrial 48×18×24', 48, 18, 24], ['Wide terrestrial 48×24×24', 48, 24, 24],
-];
+// The tank presets moved to the catalog (src/data/tanks.json, lane KA 2026-10-19): see tankChoices() in data/tanks.ts.

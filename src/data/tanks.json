@@ -1,0 +1,839 @@
+{
+ "tanks": [
+  {
+   "id": "g2_5",
+   "name": "2.5 gal",
+   "ratedGal": 2.5,
+   "shape": "rect",
+   "outer": {
+    "L": 304.8,
+    "H": 209.5,
+    "D": 152.4
+   },
+   "glassMm": 4,
+   "band": "nano",
+   "tags": [
+    "desktop"
+   ],
+   "source": "estimate: common US size, no single maker listing checked",
+   "note": "Aquarium-kit nano; makers vary by 0.5 in."
+  },
+  {
+   "id": "g3c",
+   "name": "3 gal cube",
+   "ratedGal": 3,
+   "shape": "rect",
+   "outer": {
+    "L": 228.6,
+    "H": 254,
+    "D": 228.6
+   },
+   "glassMm": 4,
+   "band": "nano",
+   "tags": [
+    "cube",
+    "desktop"
+   ],
+   "source": "estimate: common US size, no single maker listing checked",
+   "note": "Mini cube; makers vary."
+  },
+  {
+   "id": "g5",
+   "name": "5 gal",
+   "ratedGal": 5,
+   "shape": "rect",
+   "outer": {
+    "L": 406.4,
+    "H": 254,
+    "D": 203.2
+   },
+   "glassMm": 4,
+   "band": "nano",
+   "tags": [
+    "desktop"
+   ],
+   "source": "estimate: common US size, no single maker listing checked",
+   "note": "The classic 16x8x10 outer."
+  },
+  {
+   "id": "g5_5",
+   "name": "5.5 gal",
+   "ratedGal": 5.5,
+   "shape": "rect",
+   "outer": {
+    "L": 412.8,
+    "H": 266.7,
+    "D": 213.4
+   },
+   "glassMm": 4,
+   "band": "nano",
+   "tags": [
+    "desktop"
+   ],
+   "source": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/aqueon-standard-glass-rectangle-aquarium-glass-fish-tank-25-gallon---55-gallon-5356186.html",
+   "note": "Aqueon 5.5 gal listing (16.25 x 8.4 x 10.5 in) as quoted by a retailer search; another listing gives 16.5 x 8.75 x 10.75."
+  },
+  {
+   "id": "bow6",
+   "name": "6 gal bowfront",
+   "ratedGal": 6,
+   "shape": "bow",
+   "bowMin": 177.8,
+   "outer": {
+    "L": 355.6,
+    "H": 279.4,
+    "D": 254
+   },
+   "glassMm": 4,
+   "band": "nano",
+   "tags": [
+    "bow",
+    "desktop"
+   ],
+   "source": "estimate: common US size, no single maker listing checked",
+   "note": "Generic desktop bow; no one maker matched."
+  },
+  {
+   "id": "g6c",
+   "name": "6 gal cube",
+   "ratedGal": 6,
+   "shape": "rect",
+   "outer": {
+    "L": 317.5,
+    "H": 254,
+    "D": 317.5
+   },
+   "glassMm": 4,
+   "band": "nano",
+   "tags": [
+    "cube",
+    "desktop"
+   ],
+   "source": "estimate: common US size, no single maker listing checked",
+   "note": "Rimless-style low cube; makers vary."
+  },
+  {
+   "id": "g8c",
+   "name": "8 gal cube",
+   "ratedGal": 8,
+   "shape": "rect",
+   "outer": {
+    "L": 342.9,
+    "H": 279.4,
+    "D": 342.9
+   },
+   "glassMm": 4,
+   "band": "nano",
+   "tags": [
+    "cube",
+    "desktop"
+   ],
+   "source": "estimate: common US size, no single maker listing checked",
+   "note": "Mid nano cube; makers vary."
+  },
+  {
+   "id": "g10",
+   "name": "10 gal",
+   "ratedGal": 10,
+   "shape": "rect",
+   "outer": {
+    "L": 514.4,
+    "H": 320,
+    "D": 266.7
+   },
+   "glassMm": 5,
+   "band": "nano",
+   "source": "https://www.aquariumdepot.ca/aquariums/aquariums-only/standard-aquariums.html",
+   "note": "Aqueon 10 gal 20.25 x 10.5 x 12.6 in (Canadian retailer listing); the usual 20x10x12 interior."
+  },
+  {
+   "id": "g15",
+   "name": "15 gal",
+   "ratedGal": 15,
+   "shape": "rect",
+   "outer": {
+    "L": 622.3,
+    "H": 323.8,
+    "D": 317.5
+   },
+   "glassMm": 5,
+   "band": "small",
+   "source": "https://aquariumdepot.ca/products/aqueon-standard-rectangular-aquarium-black-trim-15-gal",
+   "note": "Aqueon 15 gal 24.5 x 12.5 x 12.75 in (retailer listing)."
+  },
+  {
+   "id": "g20h",
+   "name": "20 gal high",
+   "ratedGal": 20,
+   "shape": "rect",
+   "outer": {
+    "L": 609.6,
+    "H": 419.1,
+    "D": 317.5
+   },
+   "glassMm": 5,
+   "band": "small",
+   "source": "estimate: common US size, no single maker listing checked",
+   "note": "Makers vary: one Aqueon listing gives 25 x 13.25 x 17.25 in (the large end)."
+  },
+  {
+   "id": "g20l",
+   "name": "20 gal long",
+   "ratedGal": 20,
+   "shape": "rect",
+   "outer": {
+    "L": 774.7,
+    "H": 330.2,
+    "D": 333.5
+   },
+   "glassMm": 5,
+   "band": "small",
+   "source": "https://www.tractorsupply.com/tsc/product/aqueon-20-gallon-long-tank-1405672",
+   "note": "Aqueon 20 long 30.5 x 13.13 x 13 in (Tractor Supply listing)."
+  },
+  {
+   "id": "g29",
+   "name": "29 gal",
+   "ratedGal": 29,
+   "shape": "rect",
+   "outer": {
+    "L": 768.3,
+    "H": 476.3,
+    "D": 317.5
+   },
+   "glassMm": 6,
+   "band": "small",
+   "source": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/aqueon-standard-glass-rectangle-aquarium-glass-fish-tank-25-gallon---55-gallon-5356186.html",
+   "note": "Aqueon 29 gal 30.25 x 12.5 x 18.75 in (retailer listing)."
+  },
+  {
+   "id": "g30b",
+   "name": "30 gal breeder",
+   "ratedGal": 30,
+   "shape": "rect",
+   "outer": {
+    "L": 914.4,
+    "H": 304.8,
+    "D": 457.2
+   },
+   "glassMm": 6,
+   "band": "small",
+   "tags": [
+    "breeder"
+   ],
+   "source": "estimate: common US size, no single maker listing checked",
+   "note": "Common 36x18x12 breeder."
+  },
+  {
+   "id": "g37",
+   "name": "37 gal",
+   "ratedGal": 37,
+   "shape": "rect",
+   "outer": {
+    "L": 774.7,
+    "H": 609.6,
+    "D": 330.2
+   },
+   "glassMm": 8,
+   "band": "small",
+   "source": "estimate: common US size, no single maker listing checked",
+   "note": "Tall 30x12x24 interior size."
+  },
+  {
+   "id": "g40b",
+   "name": "40 gal breeder",
+   "ratedGal": 40,
+   "shape": "rect",
+   "outer": {
+    "L": 914.4,
+    "H": 406.4,
+    "D": 457.2
+   },
+   "glassMm": 6,
+   "band": "mid",
+   "tags": [
+    "breeder"
+   ],
+   "source": "https://www.thatpetplace.com/40-Gallon-Breeder-Aquarium-Black",
+   "note": "Retailer lists 36 x 18 x 16 in; a \"40 breeder\" is about 40 gal, so the computed volume runs slightly high."
+  },
+  {
+   "id": "g45c",
+   "name": "45 gal cube",
+   "ratedGal": 45,
+   "shape": "rect",
+   "outer": {
+    "L": 622.3,
+    "H": 469.9,
+    "D": 622.3
+   },
+   "glassMm": 8,
+   "band": "mid",
+   "tags": [
+    "cube"
+   ],
+   "source": "estimate: common US size, no single maker listing checked",
+   "note": "24x24x18 interior cube; a 30 in tall 18x18 version also exists."
+  },
+  {
+   "id": "g50b",
+   "name": "50 gal breeder",
+   "ratedGal": 50,
+   "shape": "rect",
+   "outer": {
+    "L": 914.4,
+    "H": 482.6,
+    "D": 457.2
+   },
+   "glassMm": 6,
+   "band": "mid",
+   "tags": [
+    "breeder"
+   ],
+   "source": "estimate: common US size, no single maker listing checked",
+   "note": "Typical 36x18x19 outer; some makers 36x18x21."
+  },
+  {
+   "id": "g55",
+   "name": "55 gal",
+   "ratedGal": 55,
+   "shape": "rect",
+   "outer": {
+    "L": 1238.3,
+    "H": 539.8,
+    "D": 336.5
+   },
+   "glassMm": 6,
+   "band": "mid",
+   "source": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/aqueon-standard-glass-rectangle-aquarium-glass-fish-tank-25-gallon---55-gallon-5356186.html",
+   "note": "Aqueon 55 gal 48.75 x 13-14 x 21.25 in (retailer listings)."
+  },
+  {
+   "id": "g60b",
+   "name": "60 gal breeder",
+   "ratedGal": 60,
+   "shape": "rect",
+   "outer": {
+    "L": 1231.9,
+    "H": 406.4,
+    "D": 469.9
+   },
+   "glassMm": 6,
+   "band": "mid",
+   "tags": [
+    "breeder"
+   ],
+   "source": "https://www.amazonasmagazine.com/2022/04/22/aqueons-new-aquarium-model-60-gallon-breeder/",
+   "note": "Aqueon 60 breeder 48.5 x 18.5 x 16 in (magazine article)."
+  },
+  {
+   "id": "g65",
+   "name": "65 gal",
+   "ratedGal": 65,
+   "shape": "rect",
+   "outer": {
+    "L": 914.4,
+    "H": 609.6,
+    "D": 457.2
+   },
+   "glassMm": 8,
+   "band": "mid",
+   "source": "https://aquariumdepot.ca/products/marineland-standard-rectangular-aquarium-60-gal",
+   "note": "Marineland sizing guide: 65 gal 36 x 18 x 24 in."
+  },
+  {
+   "id": "g75",
+   "name": "75 gal",
+   "ratedGal": 75,
+   "shape": "rect",
+   "outer": {
+    "L": 1231.9,
+    "H": 539.8,
+    "D": 469.9
+   },
+   "glassMm": 6,
+   "band": "large",
+   "source": "https://www.amazonasmagazine.com/2022/04/22/aqueons-new-aquarium-model-60-gallon-breeder/",
+   "note": "Aqueon 75 gal 48.5 x 18.5 x 21.25 in (article); another listing gives 48 x 18 x 21."
+  },
+  {
+   "id": "g90",
+   "name": "90 gal",
+   "ratedGal": 90,
+   "shape": "rect",
+   "outer": {
+    "L": 1219.2,
+    "H": 609.6,
+    "D": 457.2
+   },
+   "glassMm": 8,
+   "band": "large",
+   "source": "estimate: common US size, no single maker listing checked",
+   "note": "Standard 48x18x24."
+  },
+  {
+   "id": "g120",
+   "name": "120 gal",
+   "ratedGal": 120,
+   "shape": "rect",
+   "outer": {
+    "L": 1219.2,
+    "H": 609.6,
+    "D": 609.6
+   },
+   "glassMm": 8,
+   "band": "large",
+   "source": "estimate: common US size, no single maker listing checked",
+   "note": "Standard 48x24x24."
+  },
+  {
+   "id": "bow36",
+   "name": "36 gal bowfront",
+   "ratedGal": 36,
+   "shape": "bow",
+   "bowMin": 317.5,
+   "outer": {
+    "L": 774.7,
+    "H": 482.6,
+    "D": 406.4
+   },
+   "glassMm": 6,
+   "band": "small",
+   "tags": [
+    "bow"
+   ],
+   "source": "estimate: common US size, no single maker listing checked",
+   "note": "Approximate: bow sizes vary a lot by maker."
+  },
+  {
+   "id": "bow46",
+   "name": "46 gal bowfront",
+   "ratedGal": 46,
+   "shape": "bow",
+   "bowMin": 317.5,
+   "outer": {
+    "L": 927.1,
+    "H": 533.4,
+    "D": 419.1
+   },
+   "glassMm": 6,
+   "band": "mid",
+   "tags": [
+    "bow"
+   ],
+   "source": "estimate: common US size, no single maker listing checked",
+   "note": "36.5 x 16.5 (centre) x 21 in from a forum post about an Oceanic 46 bow; end depth estimated."
+  },
+  {
+   "id": "bow72",
+   "name": "72 gal bowfront",
+   "ratedGal": 72,
+   "shape": "bow",
+   "bowMin": 342.9,
+   "outer": {
+    "L": 1231.9,
+    "H": 508,
+    "D": 520.7
+   },
+   "glassMm": 6,
+   "band": "mid",
+   "tags": [
+    "bow"
+   ],
+   "source": "estimate: common US size, no single maker listing checked",
+   "note": "Approximate: 72 bow makers vary (48 x 18-22 x 20-24 in)."
+  },
+  {
+   "id": "cor24",
+   "name": "24 gal corner",
+   "ratedGal": 24,
+   "shape": "pie",
+   "pieDeg": 90,
+   "outer": {
+    "L": 697.4,
+    "H": 508,
+    "D": 495.3
+   },
+   "glassMm": 6,
+   "band": "small",
+   "tags": [
+    "corner"
+   ],
+   "source": "estimate: common US size, no single maker listing checked",
+   "note": "Modelled as a 90-degree quarter round; real corner tanks are often flat-fronted, so the footprint differs."
+  },
+  {
+   "id": "hex35",
+   "name": "35 gal hex",
+   "ratedGal": 35,
+   "shape": "poly",
+   "sides": 6,
+   "outer": {
+    "L": 647.7,
+    "H": 520.7,
+    "D": 560.9
+   },
+   "glassMm": 6,
+   "band": "small",
+   "tags": [
+    "hex"
+   ],
+   "source": "estimate: common US size, no single maker listing checked",
+   "note": "Regular six-sided tank, flat face to the front."
+  },
+  {
+   "id": "cor50",
+   "name": "50 gal corner",
+   "ratedGal": 50,
+   "shape": "pie",
+   "pieDeg": 90,
+   "outer": {
+    "L": 893.9,
+    "H": 622.3,
+    "D": 635
+   },
+   "glassMm": 8,
+   "band": "mid",
+   "tags": [
+    "corner"
+   ],
+   "source": "estimate: common US size, no single maker listing checked",
+   "note": "Modelled as a 90-degree quarter round; real corner tanks are often flat-fronted."
+  },
+  {
+   "id": "g125",
+   "name": "125 gal",
+   "ratedGal": 125,
+   "shape": "rect",
+   "outer": {
+    "L": 1828.8,
+    "H": 558.8,
+    "D": 457.2
+   },
+   "glassMm": 8,
+   "band": "monster",
+   "source": "https://aquariumdepot.ca/products/marineland-standard-rectangular-aquarium-150-gal",
+   "note": "Listings 72 x 18 x 21-22 in. A \"125\" holds about 117 gal to the brim inside the glass."
+  },
+  {
+   "id": "g135",
+   "name": "135 gal",
+   "ratedGal": 135,
+   "shape": "rect",
+   "outer": {
+    "L": 1828.8,
+    "H": 647.7,
+    "D": 469.9
+   },
+   "glassMm": 10,
+   "band": "monster",
+   "source": "estimate: common US size, no single maker listing checked",
+   "note": "72x18x25 class; makers vary."
+  },
+  {
+   "id": "g150",
+   "name": "150 gal",
+   "ratedGal": 150,
+   "shape": "rect",
+   "outer": {
+    "L": 1828.8,
+    "H": 685.8,
+    "D": 457.2
+   },
+   "glassMm": 10,
+   "band": "monster",
+   "source": "https://aquariumdepot.ca/products/marineland-standard-rectangular-aquarium-150-gal",
+   "note": "Marineland 150 gal 72 x 18 x 27 in (retailer listing)."
+  },
+  {
+   "id": "g180",
+   "name": "180 gal",
+   "ratedGal": 180,
+   "shape": "rect",
+   "outer": {
+    "L": 1828.8,
+    "H": 609.6,
+    "D": 609.6
+   },
+   "glassMm": 10,
+   "band": "monster",
+   "source": "https://aquariumdepot.ca/products/marineland-standard-rectangular-aquarium-60-gal",
+   "note": "Marineland sizing guide: 180 gal 72 x 24 x 24 in."
+  },
+  {
+   "id": "g210",
+   "name": "210 gal",
+   "ratedGal": 210,
+   "shape": "rect",
+   "outer": {
+    "L": 2133.6,
+    "H": 609.6,
+    "D": 609.6
+   },
+   "glassMm": 12,
+   "band": "monster",
+   "source": "estimate: common US size, no single maker listing checked",
+   "note": "84x24x24 class."
+  },
+  {
+   "id": "g240",
+   "name": "240 gal",
+   "ratedGal": 240,
+   "shape": "rect",
+   "outer": {
+    "L": 2438.4,
+    "H": 609.6,
+    "D": 609.6
+   },
+   "glassMm": 12,
+   "band": "monster",
+   "source": "estimate: common US size, no single maker listing checked",
+   "note": "96x24x24 class."
+  },
+  {
+   "id": "g300",
+   "name": "300 gal",
+   "ratedGal": 300,
+   "shape": "rect",
+   "outer": {
+    "L": 3048,
+    "H": 609.6,
+    "D": 609.6
+   },
+   "glassMm": 15,
+   "band": "monster",
+   "source": "estimate: common US size, no single maker listing checked",
+   "note": "120x24x24 nominal; real glass holds about 270."
+  },
+  {
+   "id": "c6",
+   "name": "6 ft custom",
+   "ratedGal": 210,
+   "shape": "rect",
+   "outer": {
+    "L": 1828.8,
+    "H": 762,
+    "D": 609.6
+   },
+   "glassMm": 12,
+   "band": "monster",
+   "tags": [
+    "custom"
+   ],
+   "source": "estimate: common US size, no single maker listing checked",
+   "note": "Typical custom build, 72x24x30 in."
+  },
+  {
+   "id": "c8",
+   "name": "8 ft custom",
+   "ratedGal": 350,
+   "shape": "rect",
+   "outer": {
+    "L": 2438.4,
+    "H": 762,
+    "D": 762
+   },
+   "glassMm": 15,
+   "band": "monster",
+   "tags": [
+    "custom"
+   ],
+   "source": "estimate: common US size, no single maker listing checked",
+   "note": "Typical custom build, 96x30x30 in."
+  },
+  {
+   "id": "c10",
+   "name": "10 ft custom",
+   "ratedGal": 430,
+   "shape": "rect",
+   "outer": {
+    "L": 3048,
+    "H": 762,
+    "D": 762
+   },
+   "glassMm": 19,
+   "band": "monster",
+   "tags": [
+    "custom"
+   ],
+   "source": "estimate: common US size, no single maker listing checked",
+   "note": "Typical custom build, 120x30x30 in."
+  },
+  {
+   "id": "t8x8x8",
+   "name": "Nano terrarium",
+   "ratedGal": 2.2,
+   "shape": "rect",
+   "outer": {
+    "L": 213.2,
+    "H": 208.2,
+    "D": 213.2
+   },
+   "glassMm": 5,
+   "band": "nano",
+   "terrarium": true,
+   "source": "preset: interior size in inches carried over from the old preset list",
+   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside)."
+  },
+  {
+   "id": "t12x12x12",
+   "name": "Cube terrarium",
+   "ratedGal": 7.5,
+   "shape": "rect",
+   "outer": {
+    "L": 314.8,
+    "H": 309.8,
+    "D": 314.8
+   },
+   "glassMm": 5,
+   "band": "nano",
+   "terrarium": true,
+   "source": "preset: interior size in inches carried over from the old preset list",
+   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside)."
+  },
+  {
+   "id": "t18x18x18",
+   "name": "Cube terrarium",
+   "ratedGal": 25.2,
+   "shape": "rect",
+   "outer": {
+    "L": 467.2,
+    "H": 462.2,
+    "D": 467.2
+   },
+   "glassMm": 5,
+   "band": "small",
+   "terrarium": true,
+   "source": "preset: interior size in inches carried over from the old preset list",
+   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside)."
+  },
+  {
+   "id": "t12x18x12",
+   "name": "Tall arboreal",
+   "ratedGal": 11.2,
+   "shape": "rect",
+   "outer": {
+    "L": 314.8,
+    "H": 462.2,
+    "D": 314.8
+   },
+   "glassMm": 5,
+   "band": "nano",
+   "terrarium": true,
+   "source": "preset: interior size in inches carried over from the old preset list",
+   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside)."
+  },
+  {
+   "id": "t18x24x18",
+   "name": "Tall arboreal",
+   "ratedGal": 33.7,
+   "shape": "rect",
+   "outer": {
+    "L": 467.2,
+    "H": 614.6,
+    "D": 467.2
+   },
+   "glassMm": 5,
+   "band": "small",
+   "terrarium": true,
+   "source": "preset: interior size in inches carried over from the old preset list",
+   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside)."
+  },
+  {
+   "id": "t24x48x24",
+   "name": "Tall arboreal",
+   "ratedGal": 119.7,
+   "shape": "rect",
+   "outer": {
+    "L": 619.6,
+    "H": 1224.2,
+    "D": 619.6
+   },
+   "glassMm": 5,
+   "band": "large",
+   "terrarium": true,
+   "source": "preset: interior size in inches carried over from the old preset list",
+   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside)."
+  },
+  {
+   "id": "t36x18x18",
+   "name": "Wide terrestrial",
+   "ratedGal": 50.5,
+   "shape": "rect",
+   "outer": {
+    "L": 924.4,
+    "H": 462.2,
+    "D": 467.2
+   },
+   "glassMm": 5,
+   "band": "mid",
+   "terrarium": true,
+   "source": "preset: interior size in inches carried over from the old preset list",
+   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside)."
+  },
+  {
+   "id": "t48x18x24",
+   "name": "Wide terrestrial",
+   "ratedGal": 89.8,
+   "shape": "rect",
+   "outer": {
+    "L": 1229.2,
+    "H": 462.2,
+    "D": 619.6
+   },
+   "glassMm": 5,
+   "band": "large",
+   "terrarium": true,
+   "source": "preset: interior size in inches carried over from the old preset list",
+   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside)."
+  },
+  {
+   "id": "t48x24x24",
+   "name": "Wide terrestrial",
+   "ratedGal": 119.7,
+   "shape": "rect",
+   "outer": {
+    "L": 1229.2,
+    "H": 614.6,
+    "D": 619.6
+   },
+   "glassMm": 5,
+   "band": "large",
+   "terrarium": true,
+   "source": "preset: interior size in inches carried over from the old preset list",
+   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside)."
+  },
+  {
+   "id": "t24x12x12",
+   "name": "Cube-ish terrarium",
+   "ratedGal": 15,
+   "shape": "rect",
+   "outer": {
+    "L": 619.6,
+    "H": 309.8,
+    "D": 314.8
+   },
+   "glassMm": 5,
+   "band": "nano",
+   "terrarium": true,
+   "source": "preset: interior size in inches carried over from the old preset list",
+   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside)."
+  },
+  {
+   "id": "t24x12x24",
+   "name": "Deep terrarium",
+   "ratedGal": 29.9,
+   "shape": "rect",
+   "outer": {
+    "L": 619.6,
+    "H": 309.8,
+    "D": 619.6
+   },
+   "glassMm": 5,
+   "band": "small",
+   "terrarium": true,
+   "source": "preset: interior size in inches carried over from the old preset list",
+   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside)."
+  }
+ ]
+}
