@@ -194,3 +194,17 @@ describe('deal guesses (lane KD)', () => {
     expect(dealGuesses({ ...base, includes: ['tank'], look: { guessed: ['stand colour'] } } as never)).toEqual(['stand colour']);
   });
 });
+
+describe('stacked deal savings', () => {
+  it('splits the total into sale + bundle and words each case', async () => {
+    const { savingSplit, savingLine, DEALS } = await import('../src/data/deals');
+    const d = { ...DEALS[0], price: { usd: 100, regularUsd: 130 } };
+    expect(savingSplit(d, 95)).toEqual({ total: 95, sale: 30, bundle: 65 });
+    expect(savingLine(d, 95)).toBe('Save about $95: $30 sale + $65 bundle, against buying the parts');
+    expect(savingLine(d, 20)).toMatch(/all from the \$30 sale .*about \$10 over/);
+    expect(savingLine(d, -5)).toMatch(/\$30 off on sale, but still about \$5 over/);
+    const plain = { ...DEALS[0], price: { usd: 100 } };
+    expect(savingLine(plain, 40)).toBe('Save about $40 as a bundle, against buying the parts');
+    expect(savingLine(plain, -12)).toBe('About $12 over buying the parts');
+  });
+});

@@ -64,5 +64,20 @@ export const dealAsKit = (d: Deal) => {
   };
 };
 
+/** A deal's saving split into its two sources, which stack: the sale (list price minus sale price) and the bundle
+ *  (buying the parts separately, the app's estimate, minus the bundle's list price). `total` = parts minus what you pay. */
+export function savingSplit(d: Deal, totalUsd: number): { total: number; sale: number; bundle: number } {
+  const sale = d.price.regularUsd && d.price.regularUsd > d.price.usd ? d.price.regularUsd - d.price.usd : 0;
+  return { total: totalUsd, sale, bundle: totalUsd - sale };
+}
+/** One line for a card or the demand panel, e.g. "Save about $95: $30 sale + $65 bundle, against buying the parts". */
+export function savingLine(d: Deal, totalUsd: number): string {
+  const { total, sale, bundle } = savingSplit(d, totalUsd), $ = (v: number) => '$' + Math.round(Math.abs(v)).toLocaleString('en-US');
+  if (sale > 0 && bundle > 1) return `Save about ${$(total)}: ${$(sale)} sale + ${$(bundle)} bundle, against buying the parts`;
+  if (sale > 0 && total > 1) return `Save about ${$(total)}, all from the ${$(sale)} sale (at full price the bundle is about ${$(bundle)} over buying the parts)`;
+  if (sale > 0) return total >= -1 ? `${$(sale)} off on sale, which brings it to about the same as buying the parts` : `${$(sale)} off on sale, but still about ${$(total)} over buying the parts`;
+  if (bundle > 1) return `Save about ${$(bundle)} as a bundle, against buying the parts`;
+  return Math.abs(bundle) <= 1 ? 'About the same as buying the parts' : `About ${$(bundle)} over buying the parts`;
+}
 /** Whole-percent discount from the list price, or undefined when the listing shows no higher regular price. */
 export const pctOff = (d: Deal): number | undefined => (d.price.regularUsd && d.price.regularUsd > d.price.usd ? Math.round((1 - d.price.usd / d.price.regularUsd) * 100) : undefined);
