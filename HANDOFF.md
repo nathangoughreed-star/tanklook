@@ -55,6 +55,7 @@ A Tech section where the owner picks the tech level, Walstad to high-tech plante
 ## Lane CS: CI workflow split (2026-10-19, branch `cisplit`, port 5803)
 - `.github/workflows/deploy.yml` is two jobs with job-level concurrency (no workflow-level group): `test` (npm ci, npm test; group `test-<ref>`, cancel-in-progress) and `deploy` (needs test; build, upload-pages-artifact, deploy-pages; group `pages`, cancel-in-progress **false**).
 - Why: the old single job with a workflow-level cancel-in-progress cancelled each run in turn during push bursts (live sat at 771 while main was 793). Now a newer push only cancels older *tests*; a running deploy always finishes; a waiting deploy is replaced by the newer waiting one, so the last commit that passes tests is always the last one deployed. The test gate stays (deploy needs test).
+- Burst test 2026-10-19: two pushes in quick succession (c1e8dac, then this line).
 
 ## Lane AQ: AqAdvisor ids + Malawi pool (2026-10-19, branch `aqids`, port 5813)  (lane fills this in)
 
