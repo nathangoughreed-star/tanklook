@@ -1299,6 +1299,134 @@
    "hi": 520,
    "unit": "tank only; one listing $427, lo/hi judged",
    "url": "https://www.thatpetplace.com/75-Gallon-with-1-Corner-Flo-Black-48-in.-x-18-in.-x-21-i"
+  },
+  "gear:air-pump": {
+   "lo": 18,
+   "mode": 30,
+   "hi": 40,
+   "unit": "per kit; Tetra Whisper pump $17-35 (PetSmart $34.62 listed) plus ~$5 airline/stone",
+   "url": "https://www.petsmart.com/fish/filters-and-pumps/air-and-water-pumps/tetra-whisper-aquarium-air-pump-5094985.html"
+  },
+  "gear:ato": {
+   "lo": 40,
+   "mode": 200,
+   "hi": 280,
+   "unit": "ATO kit; Tunze 3155 ~$200 ($150-170 open box), Neptune ATK V2 $280, float kit ~$40 est",
+   "url": "https://www.bulkreefsupply.com/tunze-osmolator-universal-3155-auto-top-off.html"
+  },
+  "gear:chiller": {
+   "lo": 240,
+   "mode": 650,
+   "hi": 766,
+   "unit": "chiller; IceProbe thermoelectric $240, JBJ Arctica 1/10HP $651-766 (open box $487)",
+   "url": "https://www.bulkreefsupply.com/specials/heating-and-cooling-sale.html"
+  },
+  "gear:diy-co2": {
+   "lo": 22,
+   "mode": 28.99,
+   "hi": 45,
+   "unit": "per kit; Aquario Neo DIY kit $28.99 (refill $11.99); lo/hi estimated from other kits",
+   "url": "https://buceplant.com/collections/aquarium-drygoods/collection_co2"
+  },
+  "gear:dosing-pump": {
+   "lo": 70,
+   "mode": 150,
+   "hi": 375,
+   "unit": "4-head doser; Jebao DP-4 ~$70, Kamoer X4 ~$120-150, Neptune DOS 2-head $375; ~5-10W",
+   "url": "https://www.bulkreefsupply.com/brands/neptune-systems/dosing.html"
+  },
+  "gear:drop-checker": {
+   "lo": 11.38,
+   "mode": 19.99,
+   "hi": 40,
+   "unit": "per kit; CO2Art glass+15mL solution $19.99; Castle Dawn $11.38-12.57; ADA ~$40",
+   "url": "https://www.bulkreefsupply.com/co2-drop-checker-kit-co2art.html"
+  },
+  "gear:ei-salts": {
+   "lo": 30,
+   "mode": 38,
+   "hi": 60,
+   "unit": "per kit; aquariumfertilizer.com 1 lb each KNO3 $5, KH2PO4 $10, K2SO4 $5, CSM+B $18 (+ship); 12+ mo on 20 gal",
+   "url": "https://aquariumfertilizer.com",
+   "est": true
+  },
+  "gear:hydrometer": {
+   "lo": 8,
+   "mode": 11,
+   "hi": 15,
+   "unit": "each; Instant Ocean swing-arm $10.99 TPP, $11.99 Chewy/PetSmart, $14.99 FTD",
+   "url": "https://www.thatpetplace.com/instant-ocean-hydrometer"
+  },
+  "gear:liquid-carbon": {
+   "lo": 10.79,
+   "mode": 17.99,
+   "hi": 22,
+   "unit": "per 500 mL bottle; Flourish Excel $10.79 sale/$17.99 reg; 1 mL/10 gal/day, ~8 mo on 20 gal",
+   "url": "https://www.petsmart.com/fish/food-and-care/plant-care/seachem-flourish-excel-for-live-aquarium-plants-70500.html"
+  },
+  "gear:powerhead": {
+   "lo": 20,
+   "mode": 28,
+   "hi": 55,
+   "unit": "unit; Hygger mini $20, Hygger magnetic $28, premium ~$55 est; ~8-15W",
+   "url": "https://www.ebay.com/itm/156923601627",
+   "est": true
+  },
+  "gear:refractometer": {
+   "lo": 15,
+   "mode": 20,
+   "hi": 170,
+   "unit": "each; budget ATC eBay/Amazon $15-20, Milwaukee MA887 digital $169.99",
+   "url": "https://fishtanksdirect.com/milwaukee-ma887-digital-seawater-sg-refractometer-mil00887/"
+  },
+  "gear:return-pump": {
+   "lo": 86,
+   "mode": 170,
+   "hi": 195,
+   "unit": "unit; Jebao DCP-5000 $86 (~40W), Sicce Syncra ADV 5.5 $170 (~1400gph, ~45W), ADV 7.0 $195",
+   "url": "https://www.liveaquaria.com/products/sicce-syncra-adv-5-5-return-pump"
+  },
+  "gear:root-tabs": {
+   "lo": 13.99,
+   "mode": 21.99,
+   "hi": 26,
+   "unit": "per pack; Co-Op Easy Root Tabs 20ct $13.99, 60ct $21.99; 1 tab/4-6in, ~8 mo/60ct on 20 gal",
+   "url": "https://www.aquariumcoop.com/products/easy-root-tabs"
+  },
+  "gear:skimmer-hob": {
+   "lo": 120,
+   "mode": 200,
+   "hi": 400,
+   "unit": "HOB skimmer; Reef Octopus Classic 100-HOB $335 (premium), 9W; mode 200 judgement (Aquamaxx / Bubble Magus class)",
+   "url": "https://topshelfaquatics.com/products/classic-100-hob-protein-skimmer-reef-octopus"
+  },
+  "gear:sump": {
+   "lo": 150,
+   "mode": 300,
+   "hi": 940,
+   "unit": "sump box; BRS 40br/75g drop-in $153-306, Trigger Platinum 39 V2 $940",
+   "url": "https://www.bulkreefsupply.com/filtration/sumps.html"
+  },
+  "gear:two-part": {
+   "lo": 44,
+   "mode": 55,
+   "hi": 75,
+   "unit": "per set; BRS Pharma 1 gal Ca + 1 gal Alk $43.99 (list $54.99); ~6 months on 40 gal LPS/SPS (est dose)",
+   "url": "https://www.bulkreefsupply.com/2-part-calcium-alkalinity-starter-package-bulk-reef-supply.html"
+  },
+  "gear:uv-sterilizer": {
+   "lo": 40,
+   "mode": 65,
+   "hi": 160,
+   "unit": "each; 9W AA Green Killing Machine ~$65 Chewy, Aquatop 13W internal ~$40, 13W adjustable $159.99",
+   "url": "https://fishtanksdirect.com/aquatop-adjustable-flow-submersible-uv-filter-13-watt/"
+  },
+  "gear:wavemaker": {
+   "lo": 62,
+   "mode": 90,
+   "hi": 380,
+   "unit": "unit; Jebao SOW-8 $62-90, mid ~$90, EcoTech MP10 QD $380; ~25W SOW-8, ~10W MP10",
+   "url": "https://www.walmart.com/c/brand/jebao-co"
   }
  }
 }

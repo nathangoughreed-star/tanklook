@@ -65,7 +65,7 @@ export interface GearDef {
   sized?: 'filter' | 'heater';
   price?: { key?: string; fallback?: Num3 };
   /** consumables, USD per month at `ref` gallons; or a price row key */
-  monthly?: Num3 | { key: string };
+  monthly?: Num3 | { key: string; /** the pack lasts this many months at `ref` gallons (absent = the row is per month) */ months?: number };
   /** minutes per week at `ref` gallons, per unit */
   minutes?: Num3;
   watts?: number; hours?: number;
@@ -314,7 +314,8 @@ export function optionCost(S: TankSetup, row: string, opt: string, o: { kwhUsd?:
       const p = rowPrice(f.model.priceKey);
       setup = p && s3(p, g.modelPriceK?.[f.model.id] ?? 1); est = !p;
       minutes = s3(minutes, g.byKind?.[def.kind] ?? 1);
-      if (def.kind === 'sponge') { watts += (GEAR.airpump.watts ?? 2.5); const ap = unitPrice(GEAR.airpump.price); if (setup && ap) setup = a3(setup, ap.r); }
+      // sponges run off one air pump, however many there are (its price is spread over the units, as setup is multiplied by n below)
+      if (def.kind === 'sponge') { watts += (GEAR.airpump.watts ?? 2.5) / f.n; const ap = unitPrice(GEAR.airpump.price); if (setup && ap) setup = a3(setup, s3(ap.r, 1 / f.n)); }
     } else if (g.sized === 'heater') {
       const h = heatLoss(S, t);
       n = h.n; watts = h.heater.watts; setup = rowPrice(h.heater.priceKey); kwhMo = h.kwhMo / Math.max(n, 1);
@@ -324,7 +325,7 @@ export function optionCost(S: TankSetup, row: string, opt: string, o: { kwhUsd?:
     }
     if (!setup) { const u = unitPrice(g.price); if (u) { setup = s3(u.r, sizeK(g, gal, 'price')); est = u.est; } }
     if (g.monthly) {
-      const m = 'key' in g.monthly ? rowPrice(g.monthly.key) : g.monthly;
+      const m = 'key' in g.monthly ? (r => r && s3(r, 1 / (g.monthly as { months?: number }).months! || 1))(rowPrice(g.monthly.key)) : g.monthly;
       if (m) monthly = s3(m, sizeK(g, gal, 'monthly'));
     }
     if (g.refill) { const r = rowPrice(g.refill.key); if (r) monthly = a3(monthly, s3(r, gal / g.refill.galMonthsPerRefill)); }
