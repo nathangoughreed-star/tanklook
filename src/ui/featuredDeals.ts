@@ -1,6 +1,6 @@
 // Featured deals on the start dialog (lane KD): live retailer bundles as one-click starts.
 // A card opens a new scene built from the deal with its bundle price pinned to the demand panel (src/demand/pinned.ts).
-import { DEAL_NOTE } from '../data/deals';
+import { DEAL_NOTE, pctOff } from '../data/deals';
 import { featuredDeals } from '../demand/dealscene';
 import { pinDeal } from '../demand/pinned';
 import type { Deal } from '../data/deals';
@@ -32,7 +32,7 @@ export function renderFeaturedDeals(box: HTMLElement, open: (name: string, scene
     const sc = scene.tanks[0], got = d.includes.map(x => x === 'stand' ? `stand (${sc.stand.finish} ${sc.stand.style})` : x === 'lid' ? `${sc.lid === 'glass' ? 'glass canopy' : sc.lid} lid` : PARTS[x]), no = (['filter', 'heater'] as const).filter(x => !d.includes.includes(x));
     return `<div class="libcard"><button class="libopen" data-deal="${i}" title="Open this setup, then customise it"><b style="white-space:normal">${esc(d.retailer)}: ${esc(d.name)}</b>` +
       `${picUrl(d.id) ? `<img src="${esc(picUrl(d.id))}" alt="" style="height:auto;aspect-ratio:auto">` : pic(d, scene)}<span class="hint">Comes with: ${esc(got.join(', '))}${no.length ? `. Not included: ${no.join(', ')}` : ''}</span>` +
-      `<span><b>${usd(d.price.usd)}</b>${d.price.regularUsd ? ` <s>${usd(d.price.regularUsd)}</s>` : ''}${savingUsd > 1 ? ` &middot; about ${usd(savingUsd)} under buying the parts` : ''}</span>` +
+      `<span><b>${usd(d.price.usd)}</b>${d.price.regularUsd ? ` <s>${usd(d.price.regularUsd)}</s>` : ''}${pctOff(d) ? ` <b>${pctOff(d)}% off</b>` : ''}${savingUsd > 1 ? ` &middot; about ${usd(savingUsd)} under buying the parts` : ''}</span>` +
       `<span class="hint">${d.saleEnds ? 'sale ends ' + esc(d.saleEnds) + '; ' : ''}as of ${esc(d.asOf)}${d.est ? ' (estimate)' : ''}; ${esc(DEAL_NOTE)}</span></button>` +
       `<a class="hint" href="${esc(d.url)}" target="_blank" rel="noopener">listing</a></div>`;
   }).join('');

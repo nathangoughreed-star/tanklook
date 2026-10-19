@@ -147,3 +147,13 @@ describe('featured deals (lane KD)', () => {
     expect(featuredDeals(now, 5, DEALS.filter(x => !x.tank))).toEqual([]);
   });
 });
+
+describe('percent off (lane KD)', () => {
+  it('rounds to a whole percent and needs a higher regular price', async () => {
+    const { pctOff } = await import('../src/data/deals');
+    const d = (usd: number, regularUsd?: number) => ({ price: { usd, regularUsd } }) as never;
+    expect(pctOff(d(499.99, 799.99))).toBe(38);
+    expect(pctOff(d(399.99))).toBeUndefined();
+    expect(pctOff(d(100, 100))).toBeUndefined();
+  });
+});

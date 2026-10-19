@@ -51,3 +51,6 @@ export const dealAsKit = (d: Deal) => {
     heater: d.includes.includes('heater') ? d.heater ?? g?.heater : undefined,
   };
 };
+
+/** Whole-percent discount from the list price, or undefined when the listing shows no higher regular price. */
+export const pctOff = (d: Deal): number | undefined => (d.price.regularUsd && d.price.regularUsd > d.price.usd ? Math.round((1 - d.price.usd / d.price.regularUsd) * 100) : undefined);
