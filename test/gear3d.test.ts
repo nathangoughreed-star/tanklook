@@ -49,7 +49,7 @@ describe('gear3d', () => {
   it('follows the owner placement and rebuilds when the hardscape moves', () => {
     const S = ex('planted'), t = applyPreset(S, 'midplanted');
     const right = gearPicks({ ...S, tech: { ...t, place: { filter: { wall: 'back', at: 0.9 } } } }).find(p => p.id.startsWith('hob'))!;
-    expect(right.side).toBe('right');
+    expect(right.place?.wall).toBe('back'); expect(right.place!.u).toBeCloseTo(0.9 * S.tank.L, 0);
     expect(gearKey(S, ['a'])).not.toBe(gearKey(S, ['b']));
   });
 

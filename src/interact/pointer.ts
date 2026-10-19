@@ -24,6 +24,7 @@ import type { ItemKind, Tank, TankSetup } from '../scene/types';
 import type { Viewer, Viewport } from '../render/viewer';
 import { LIMITS } from '../scene/validate';
 import { groupSize, moveGroup, settleFish, turnGroup, type Group } from '../scene/duplicate';
+import { gearGrab, gearLean, gearMove, type GearDrag } from './gearDrag';
 import { MAX_PATCHES, addArea, placeSingle, erasable, erasePatches, extendPath, newPatch, patchAt } from '../scene/brush';
 
 type DragMode = 'front' | 'top' | 'side' | 'glass';
@@ -127,6 +128,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
   let move: { vp: Viewport; id: number; grab: THREE.Vector3; riders: Rider[]; fishRiders: FishRider[]; skip: Set<number>; float: THREE.Plane | null; wall: THREE.Plane | null; coral: boolean; moved: boolean } | null = null;
   let drag: { vp: Viewport; plane: THREE.Plane; mode: DragMode; off: THREE.Vector3; moved: boolean } | null = null;
   let orbit: { i: number; x: number; y: number; az: number; el: number } | null = null;
+  let gear: GearDrag | null = null; // a piece of tech gear being dragged along what it mounts on (lane TG, interact/gearDrag.ts)
   // custom terrain: dragging a grid dot up/down; the height follows the pointer at the dot's on-screen scale
   let lift: { i: number; k: number; y0: number; h0: number; mmPerPx: number; moved: boolean } | null = null;
   /** A pool handle being dragged (Pools tool): across the level of the handle where it was grabbed. */
@@ -233,6 +235,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       viewer.terrainEdit.hot = hit.dot; viewer.rebuild();
       return;
     }
+    if (editable && hit.dot == null && !hit.pool && (gear = gearGrab(hit))) return;
     if (editable && hit.itemId != null && hit.mesh && (canPick('items', store.scene.tanks[vi].items.find(q => q.id === hit!.itemId)?.kind ?? 'stone') || (store.groupCount > 1 && store.inGroup('item', hit.itemId)))) {
       const inGroup = store.groupCount > 1 && store.inGroup('item', hit.itemId);
       if (inGroup) store.lead('item', hit.itemId); else store.selectItem(hit.itemId);
@@ -327,6 +330,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       }, o.i);
       return;
     }
+    if (gear) { gearMove(viewer, store, gear, e.clientX, e.clientY); return; }
     if (move) {
       const m = move, hit = viewer.hitTest(e.clientX, e.clientY); if (!hit || hit.vp !== m.vp) return;
       // the ray the base travels along: the pointer's ray, shifted back by the grab point
@@ -400,6 +404,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       first = null;
     }
     if (pan) { pan = null; canvas.classList.remove('panning'); return; }
+    if (gear) { if (gear.moved) store.seal(); gear = null; canvas.classList.remove('dragging'); return; }
     if (stroke || pdrag) { stroke = null; pdrag = null; store.seal(); canvas.classList.remove('dragging'); return; }
     if (box) {
       const b = box; box = null; boxEl.hidden = true;
@@ -435,6 +440,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       return;
     }
     const dir = Math.sign(e.deltaY || e.deltaX);
+    if (gearLean(viewer, store, e.clientX, e.clientY, dir)) return; // Shift + wheel over a heater leans it (lane TG)
     if (store.groupCount > 1) { // turn the whole group 15° a notch about its centre
       const g = store.group;
       store.edit(t => turnGroup(t, g, dir * 15), { coalesce: 'wheel-turn' });

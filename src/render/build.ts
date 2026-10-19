@@ -1112,7 +1112,7 @@ export function envKey(S: TankSetup) {
   const { color: _wc, opacity: _o, ...water } = S.water, { color: _c, ...wall } = S.wall;
   const { color: _c1, color2: _c2, share: _s, mix: _m, ...custom } = S.substrate.custom;
   // the condition (lane AL) is uniforms only
-  return JSON.stringify({ ...S, fish: null, items: null, camera: null, grow: null, condition: null, light, render, water, wall, substrate: { ...S.substrate, custom: S.substrate.type === 'custom' && grainLook(S.substrate) ? S.substrate.custom : custom } }); // 3D stones take their colours at build
+  return JSON.stringify({ ...S, fish: null, items: null, camera: null, grow: null, condition: null, tech: S.tech && { ...S.tech, place: null }, light, render, water, wall, substrate: { ...S.substrate, custom: S.substrate.type === 'custom' && grainLook(S.substrate) ? S.substrate.custom : custom } }); // 3D stones take their colours at build
 }
 /** The values `patchLook` sets. */
 export const lookKey = (S: TankSetup) => JSON.stringify([S.water.color, S.water.opacity, S.wall.color, S.substrate.custom]);

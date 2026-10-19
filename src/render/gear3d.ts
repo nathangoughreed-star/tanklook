@@ -17,16 +17,20 @@ import type { Tank, TankSetup } from '../scene/types';
 /** Gear classes beyond gear-models.json's filters and heaters. */
 export const EXTRA_GEAR = ['airstone', 'co2', 'uv', 'powerhead', 'wavemaker', 'skimmer', 'sump', 'ato'] as const;
 export type ExtraGear = (typeof EXTRA_GEAR)[number];
+/** Where the owner put a piece (from TechSetup.place): a wall and mm along it (back: from the left end; side walls: from
+ *  the back corner forward; floor: x), the height share (glass mounts), lean (heaters) and, on the floor, mm from the front. */
+export interface GearSpot { wall: GearWall | 'floor'; u: number; y?: number; lean?: number; d?: number }
 /** One piece of gear: a filter or heater model id (gear-models.json) or an extra class. */
 export interface GearPick {
   id: string; /** CO2 only: the drop checker's colour, when the tech model knows the level. */ co2?: 'low' | 'ok' | 'high';
   /** units (two heaters, two powerheads); absent = 1 */ n?: number;
-  /** the owner's placement (TechSetup.place): the back corner it starts from and how far in from that side glass, mm */ side?: GearSide; u?: number;
+  /** the tech row it comes from (what a drag writes to) */ row?: string;
+  /** the owner's placement; absent = placed by TG (default corner, clear of the hardscape) */ place?: GearSpot;
 }
 /** Which back corner the gear sits in. */
 export type GearSide = 'left' | 'right';
 
-/** Whether a file without `tech` draws the gear the demand engine infers (true) or none (false): Nathan's call, pending. */
+/** Whether a file without `tech` draws the gear the demand engine infers (true) or none (false): Nathan chose A (2026-10-19). */
 export const DRAW_INFERRED = true;
 
 /** The tank's gear as picks: from lane TM's techParts (scene/tech.ts), which also fills a file without `tech` with the
@@ -35,7 +39,7 @@ export function gearPicks(S: TankSetup): GearPick[] {
   if (!S.water.on || (!S.tech && !DRAW_INFERRED)) return [];
   const out: GearPick[] = [], parts = techParts(S), sump = parts.some(p => p.gear === 'sump');
   for (const p of parts) {
-    const where = placeOf(S, p.place), pick = (id: string, o: Partial<GearPick> = {}) => out.push({ id, ...(p.n > 1 ? { n: p.n } : {}), ...where, ...o });
+    const place = spotOf(S, p.place), pick = (id: string) => out.push({ id, row: p.row, ...(p.n > 1 ? { n: p.n } : {}), ...(place ? { place } : {}) });
     switch (p.gear) {
       case 'filter': case 'heater': if (p.model) pick(p.model); break;
       case 'sump': pick('sump'); break;
@@ -52,12 +56,23 @@ export function gearPicks(S: TankSetup): GearPick[] {
   }
   return out;
 }
-/** A row's placement as a corner and a start along the back wall (side walls: that side's corner). */
-function placeOf(S: TankSetup, p?: GearPlace): Pick<GearPick, 'side' | 'u'> {
-  if (!p) return {};
-  if (p.wall !== 'back') return { side: p.wall };
-  const at = p.at ?? 0, side: GearSide = at <= 0.5 ? 'left' : 'right';
-  return { side, u: Math.max(22, (side === 'left' ? at : 1 - at) * S.tank.L) };
+/** TechSetup.place (0..1 shares) as mm on the wall the pieces are built on. */
+export function spotOf(S: TankSetup, p?: GearPlace): GearSpot | undefined {
+  if (!p) return undefined;
+  const q = p as GearPlace & { y?: number; lean?: number }, wall = q.wall as GearWall | 'floor', at = clamp(q.at ?? 0, 0, 1);
+  const T = S.tank, Db = T.D - backdropDepth(S.backdrop, T), extra = { ...(q.y != null ? { y: clamp(q.y, 0, 1) } : {}), ...(q.lean != null ? { lean: clamp(q.lean, -60, 60) } : {}) };
+  if (wall === 'floor') return { wall, u: at * T.L, d: clamp(q.y ?? 0.8, 0, 1) * T.D };
+  if (wall === 'back') return { wall, u: at * T.L, ...extra };
+  return { wall, u: (1 - at) * Db, ...extra }; // side walls: at 0 = front end
+}
+/** How a piece mounts, which gates where the owner may drag it: on any glass (free height), on a rim (slides along it),
+ *  on the floor, or not at all (in the stand). */
+export type GearMount = 'glass' | 'rim' | 'floor' | 'fixed';
+export function mountOf(id: string): GearMount {
+  const fm = isFilter(id);
+  if (fm) return fm.kind === 'sponge' ? 'floor' : fm.kind === 'internal' ? 'glass' : 'rim';
+  if (isHeater(id)) return 'glass';
+  return ({ airstone: 'floor', co2: 'glass', uv: 'glass', powerhead: 'glass', wavemaker: 'glass', skimmer: 'rim', sump: 'rim', ato: 'rim' } as Record<string, GearMount>)[id] ?? 'fixed';
 }
 
 // ---------- show / hide (Viewer "Show equipment") ----------
@@ -196,31 +211,51 @@ export function heaterLength(watts: number) {
 /** Size factor of a filter body against its class's reference flow (cube root: body volume ~ flow). */
 const flowScale = (m: FilterModel, ref: number) => Math.cbrt(m.gph / ref);
 
+/** A wall the gear hangs on: the back glass (u from the `side` corner) or a side glass (u from the back corner forward). */
+export type GearWall = 'back' | 'left' | 'right';
 interface Frame {
-  S: TankSetup; T: Tank; kit: Kit; side: GearSide; ix: number;
-  /** Water line, tank top (inner glass top), glass thickness, stand top, room floor. */
-  wy: number; H: number; t: number; top: number; floor: number;
-  /** World point at u mm in from the gear side's glass, height y, b mm forward of the back glass's inner face (b < 0: behind it). */
+  S: TankSetup; T: Tank; kit: Kit; side: GearSide; wall: GearWall;
+  /** Turn of a box that sits square to this wall (0 on the back glass). */ yaw: number;
+  /** kit.box turned square to this wall. */ box(bk: Bucket, c: THREE.Vector3, w: number, h: number, d: number, color: number, r?: number): void;
+  /** World directions of +u (along the wall) and +b (into the tank, off the glass). */
+  along: THREE.Vector3; inward: THREE.Vector3;
+  /** Water line, tank top (inner glass top), glass thickness, stand top, room floor, the wall's inner length. */
+  wy: number; H: number; t: number; top: number; floor: number; len: number;
+  /** World point at u mm along the wall, height y, b mm off the glass's inner face into the tank (b < 0: outside it). */
   P(u: number, y: number, b: number): THREE.Vector3;
   /** The ground height there. */
   ground(u: number, b: number): number;
-  /** u clear of the hardscape for a part `w` wide spanning heights y0..y1 and b0..b1 off the back glass, searching inward from u0. */
-  slot(u0: number, w: number, y0: number, y1: number, b0: number, b1: number): number;
-  /** Ranges of u taken by gear on the back wall so far. */
+  /** u clear of the hardscape for a part `w` wide spanning heights y0..y1 and b0..b1 off the glass, searching on from u0
+   *  (`fixed`: the owner put it there: kept, only held inside the wall). */
+  slot(u0: number, w: number, y0: number, y1: number, b0: number, b1: number, fixed?: boolean): number;
+  /** Ranges of u taken by gear on this wall so far. */
   taken: [number, number][];
 }
 
-function frame(S: TankSetup, T: Tank, kit: Kit, side: GearSide, solids: THREE.Box3[]): Frame {
-  const ix = side === 'left' ? 1 : -1, bd = backdropDepth(S.backdrop, T), t = glassThickness(T, S.render.glass);
-  const xOf = (u: number) => side === 'left' ? u : T.L - u;
-  const backD = (x: number) => (chord(T, 0, clamp(x, 1, T.L - 1))?.[1] ?? T.D) - bd;
-  const P = (u: number, y: number, b: number) => { const x = xOf(u); return V(x, y, -(backD(x) - b)); };
+function frame(S: TankSetup, T: Tank, kit: Kit, side: GearSide, solids: THREE.Box3[], wall: GearWall = 'back'): Frame {
+  const bd = backdropDepth(S.backdrop, T), t = glassThickness(T, S.render.glass), Db = T.D - bd;
+  let P: Frame['P'], ground: Frame['ground'], along: THREE.Vector3, inward: THREE.Vector3, len: number;
+  if (wall === 'back') {
+    const ix = side === 'left' ? 1 : -1, xOf = (u: number) => side === 'left' ? u : T.L - u;
+    const backD = (x: number) => (chord(T, 0, clamp(x, 1, T.L - 1))?.[1] ?? T.D) - bd;
+    P = (u, y, b) => { const x = xOf(u); return V(x, y, -(backD(x) - b)); };
+    ground = (u, b) => { const x = xOf(u); return groundHeight(S, T, x, backD(x) - b); };
+    along = V(ix, 0, 0); inward = V(0, 0, 1); len = T.L;
+  } else {
+    // a side glass: u runs from the back corner toward the front, b into the tank
+    const k = wall === 'left' ? 1 : -1, xAt = (d: number) => { const c = chord(T, 1, clamp(d, 1, T.D - 1)); return wall === 'left' ? c?.[0] ?? 0 : c?.[1] ?? T.L; };
+    P = (u, y, b) => { const d = Db - u; return V(xAt(d) + k * b, y, -d); };
+    ground = (u, b) => { const d = Db - u; return groundHeight(S, T, xAt(d) + k * b, d); };
+    along = V(0, 0, 1); inward = V(k, 0, 0); len = Db;
+  }
   const f: Frame = {
-    S, T, kit, side, ix, wy: waterY(T, S.water.level), H: T.H, t, top: tankUnderside(T, S.render), floor: floorY(T, S.render, S.stand),
-    P, ground: (u, b) => { const x = xOf(u); return groundHeight(S, T, x, backD(x) - b); },
-    taken: [],
-    slot(u0, w, y0, y1, b0, b1) {
-      const lim = T.L - 30 - w / 2;
+    S, T, kit, side: wall === 'back' ? side : wall, wall, along, inward, len, yaw: wall === 'back' ? 0 : Math.PI / 2,
+    box: (bk, c, w, h, d, color, r = 0) => kit.box(bk, c, w, h, d, color, r, wall === 'back' ? 0 : Math.PI / 2),
+    wy: waterY(T, S.water.level), H: T.H, t, top: tankUnderside(T, S.render), floor: floorY(T, S.render, S.stand),
+    P, ground, taken: [],
+    slot(u0, w, y0, y1, b0, b1, fixed = false) {
+      const lim = len - 30 - w / 2;
+      if (fixed) { const u = clamp(u0, 22 + w / 2, Math.max(22 + w / 2, lim)); f.taken.push([u - w / 2, u + w / 2]); return u; }
       for (let u = u0; u <= lim; u += 10) {
         const a = P(u - w / 2, y0, b0), c = P(u + w / 2, y1, b1);
         const box = new THREE.Box3(a.clone().min(c), a.clone().max(c)).expandByScalar(4);
@@ -243,6 +278,11 @@ export function gearSide(T: Tank, solids: THREE.Box3[]): GearSide {
 
 // ---------- models ----------
 
+/** Where a builder puts its piece: u along the wall (the owner's spot = the piece's centre, kept; else a start to search
+ *  on from), and the owner's height share (0 = lowest it can go .. 1 = highest), lean (degrees) and floor offset b. */
+interface Spot { u: number; fixed?: boolean; y?: number; lean?: number; b?: number }
+const lerp = (a: number, b: number, k: number) => a + (b - a) * clamp(k, 0, 1);
+
 /** Suction cup on the back glass at p (a clear dome, its stem forward to the part it holds at b = reach). */
 function sucker(f: Frame, u: number, y: number, reach: number) {
   const { kit } = f;
@@ -259,14 +299,18 @@ function overRim(f: Frame, u: number, from: THREE.Vector3, bIn: number, yEnd: nu
   return [from, f.P(u, Math.max(from.y + 1, f.wy + 20), bIn), f.P(u, rimY - 6, bIn), f.P(u, rimY + 4, (bIn - f.t) / 2), f.P(u, rimY - 6, bOut), f.P(u, Math.min(yEnd + 40, rimY - 60), bOut), f.P(u, yEnd, bOut)];
 }
 
-function heater(f: Frame, watts: number, u0: number) {
-  const { kit } = f, len = heaterLength(watts), r = watts >= 500 ? 14 : 11, b = r + 9;
+function heater(f: Frame, watts: number, sp: Spot) {
+  const { kit } = f, len = heaterLength(watts), r = watts >= 500 ? 14 : 11, b = r + 9, u0 = sp.u;
   const g0 = Math.max(f.ground(u0, b), 0) + 25, room = f.wy - 15 - g0;
-  // vertical when it fits under the water line, else leaning at 45 degrees (how a long heater goes in a shallow tank)
-  const tilt = len + 44 > room ? Math.max(0.35, Math.acos(clamp(room / (len + 44), 0, 1))) : 0, span = tilt ? len * Math.sin(tilt) : 0;
-  const u = f.slot(u0 + span / 2, 2 * r + 6 + span, g0, f.wy, 0, 2 * r + 12);
-  const topY = f.wy - 15 - 44 * Math.cos(tilt), dir = V(-f.ix * Math.sin(tilt), Math.cos(tilt), 0); // leaning back toward the corner at the top
-  const top = f.P(u - span / 2, topY, b), bot = top.clone().addScaledVector(dir, -len);
+  // vertical when it fits under the water line, else leaning (how a long heater goes in a shallow tank); the owner's
+  // lean wins, but never so upright that it pokes out of the water
+  const need = len + 44 > room ? Math.max(0.35, Math.acos(clamp(room / (len + 44), 0, 1))) : 0;
+  const tilt = sp.lean != null ? Math.max(need, Math.abs(sp.lean) * Math.PI / 180) : need, sgn = (sp.lean ?? 1) < 0 ? -1 : 1, span = len * Math.sin(tilt);
+  const u = f.slot(sp.fixed ? u0 : u0 + span / 2, 2 * r + 6 + span, g0, f.wy, 0, 2 * r + 12, sp.fixed);
+  // the cap's top: at most 15 mm under the water line, at least the heater's height off the ground (the owner's height share between)
+  const ext = (len + 44) * Math.cos(tilt), capY = lerp(Math.min(g0 + ext, f.wy - 15), f.wy - 15, sp.y ?? 1);
+  const topY = capY - 44 * Math.cos(tilt), dir = f.along.clone().multiplyScalar(-sgn * Math.sin(tilt)).add(V(0, Math.cos(tilt), 0)); // leaning back toward the corner at the top
+  const top = f.P(u - sgn * span / 2, topY, b), bot = top.clone().addScaledVector(dir, -len);
   kit.rod('clear', bot, top, r, C.glass, { seg: 20, base: 0.07 });
   // the ceramic core with its element wound round it, inside the glass
   const c0 = bot.clone().addScaledVector(dir, len * 0.12), c1 = top.clone().addScaledVector(dir, -len * 0.1);
@@ -278,46 +322,42 @@ function heater(f: Frame, watts: number, u0: number) {
   kit.rod('wet', top, top.clone().addScaledVector(dir, 36), r + 2, C.black, { seg: 20 });
   kit.rod('wet', top.clone().addScaledVector(dir, 36), top.clone().addScaledVector(dir, 44), r - 1, C.charcoal, { seg: 20 });
   kit.ball('wet', bot.clone().addScaledVector(dir, 2), r * 0.98, C.black, 0, 1);
-  kit.ball('glow', top.clone().addScaledVector(dir, 22).add(V(0, 0, r + 1.5)), 2.2, C.amber);
+  kit.ball('glow', top.clone().addScaledVector(dir, 22).addScaledVector(f.inward, r + 1.5), 2.2, C.amber);
   // the cord up out of the water and over the rim, and two clips with suction cups
   const capTop = top.clone().addScaledVector(dir, 44);
   kit.tube('room', overRim(f, u, capTop, b, f.top + 20), 2.6, C.black, 0, 6);
   for (const k of [0.25, 0.72]) {
     const p = bot.clone().lerp(top, k);
     kit.put('wet', new THREE.TorusGeometry(r + 1.6, 1.6, 6, 20), C.black, along(p, dir, 0).multiply(new THREE.Matrix4().makeRotationX(Math.PI / 2)));
-    const pu = u + (p.x - f.P(u, 0, 0).x) * f.ix;
+    const pu = u + p.clone().sub(f.P(u, 0, 0)).dot(f.along);
     sucker(f, pu, p.y, b - r - 1);
   }
 }
 
-function hob(f: Frame, m: FilterModel, u0: number) {
+function hob(f: Frame, m: FilterModel, sp: Spot) {
   const { kit, t } = f, s = flowScale(m, 100), W = 150 * s, D = 105 * s, Hb = 170 * s, yTop = f.H + 28;
-  const it = 8 * Math.sqrt(s), stY = f.ground(u0, 26) + 45; // intake tube radius; the strainer's foot clears the ground
-  const uI = f.slot(u0 + 12, 30, stY, f.wy, 0, 50), u = uI - 12 + W / 2; // only the intake takes wall room: the body is outside
+  const it = 8 * Math.sqrt(s), stY = f.ground(sp.u, 26) + 45; // intake tube radius; the strainer's foot clears the ground
+  const uI = f.slot(sp.fixed ? sp.u - W / 2 + 12 : sp.u + 12, 30, stY, f.wy, 0, 50, sp.fixed), u = uI - 12 + W / 2; // only the intake takes wall room: the body is outside
   // the body behind the back glass, its lid and the motor housing
   const bc = f.P(u, yTop - Hb / 2, -t - 6 - D / 2);
-  kit.box('room', bc, W, Hb, D, C.charcoal, 10, 0);
-  kit.box('room', f.P(u, yTop + 4, -t - 6 - D / 2), W, 8, D, C.grey, 6);
-  kit.box('room', f.P(u - W * 0.22, yTop - Hb - 18, -t - 4 - D * 0.35), 46 * s, 36, 46 * s, C.black, 8); // motor under the box
+  f.box('room', bc, W, Hb, D, C.charcoal, 10);
+  f.box('room', f.P(u, yTop + 4, -t - 6 - D / 2), W, 8, D, C.grey, 6);
+  f.box('room', f.P(u - W * 0.22, yTop - Hb - 18, -t - 4 - D * 0.35), 46 * s, 36, 46 * s, C.black, 8); // motor under the box
   // hanger over the glass and the spillway lip into the tank, with the sheet of water falling off it
-  kit.box('wet', f.P(u + W * 0.08, f.H + 14, (24 - t) / 2), W * 0.8, 6, 24 + t + 8, C.charcoal, 2);
+  f.box('wet', f.P(u + W * 0.08, f.H + 14, (24 - t) / 2), W * 0.8, 6, 24 + t + 8, C.charcoal, 2);
   const lipB = 30 * s, lipY = f.H + 10, uL = u + W * 0.08;
-  kit.box('wet', f.P(uL, lipY, lipB / 2), W * 0.7, 4, lipB, C.charcoal, 1.5);
-  const sheet: THREE.Vector3[] = [], n = 8, drop = lipY - f.wy;
-  for (let i = 0; i <= n; i++) { const k = i / n; sheet.push(new THREE.Vector3(0, -drop * k, lipB + 10 * Math.sqrt(k) * s)); }
-  const sg = new THREE.BufferGeometry(), pos: number[] = [], w2 = W * 0.33;
-  for (let i = 0; i < n; i++) for (const [a, c] of [[sheet[i], sheet[i + 1]]]) {
-    const p0 = f.P(uL - w2, lipY, 0), p1 = f.P(uL + w2, lipY, 0);
-    const q = (p: THREE.Vector3, v: THREE.Vector3) => [p.x, p.y + v.y, p.z + v.z];
-    pos.push(...q(p0, a), ...q(p1, a), ...q(p1, c), ...q(p0, a), ...q(p1, c), ...q(p0, c));
-  }
+  f.box('wet', f.P(uL, lipY, lipB / 2), W * 0.7, 4, lipB, C.charcoal, 1.5);
+  const n = 8, drop = lipY - f.wy, w2 = W * 0.33, pos: number[] = [], sg = new THREE.BufferGeometry();
+  const at = (k: number, side: number) => f.P(uL + side * w2, lipY - drop * k, lipB + 10 * Math.sqrt(k) * s).toArray();
+  for (let i = 0; i < n; i++) { const a0 = i / n, a1 = (i + 1) / n; pos.push(...at(a0, -1), ...at(a0, 1), ...at(a1, 1), ...at(a0, -1), ...at(a1, 1), ...at(a1, -1)); }
   sg.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); sg.computeVertexNormals();
   kit.put('clear', sg, C.water, undefined, 0.2);
   // the flow's ripples on the surface where the sheet lands
   for (const [k, w] of [[1, 0.9], [1.7, 0.7], [2.5, 0.5]]) {
     const ring = new THREE.RingGeometry(W * 0.36 * k, W * 0.36 * k + 1.6, 40, 1, 0, Math.PI);
-    ring.rotateX(-Math.PI / 2); ring.scale(1, 1, 0.45);
-    kit.put('clear', ring, C.water, new THREE.Matrix4().makeTranslation(f.P(uL, 0, 0).x, f.wy + 0.6, f.P(0, 0, lipB + 10).z), 0.18 * w);
+    ring.rotateX(-Math.PI / 2); ring.scale(1, 1, 0.45); ring.rotateY(f.wall === 'left' ? -Math.PI / 2 : f.wall === 'right' ? Math.PI / 2 : 0);
+    const c = f.P(uL, f.wy + 0.6, lipB + 10);
+    kit.put('clear', ring, C.water, new THREE.Matrix4().makeTranslation(c.x, c.y, c.z), 0.18 * w);
   }
   // intake: a smoky tube from the box over the glass and down, its slotted strainer at the foot
   const ib = 22;
@@ -340,9 +380,9 @@ function strainer(f: Frame, p: THREE.Vector3, h: number, r: number) {
   kit.rod('wet', p.clone().add(V(0, h - 3, 0)), p.clone().add(V(0, h, 0)), r, C.grey, { seg: 18 });
 }
 
-function sponge(f: Frame, m: FilterModel, u0: number) {
-  const { kit } = f, s = flowScale(m, 40), r = 34 * s, h = 110 * s, b = r + 8;
-  const u = f.slot(u0 + r, 2 * r + 8, 0, h + 40, 0, 2 * r + 12), g = f.ground(u, b) - 6;
+function sponge(f: Frame, m: FilterModel, sp: Spot) {
+  const { kit } = f, s = flowScale(m, 40), r = 34 * s, h = 110 * s, b = Math.max(r + 8, sp.b ?? 0);
+  const u = f.slot(sp.fixed ? sp.u : sp.u + r, 2 * r + 8, 0, h + 40, 0, 2 * r + 12, sp.fixed), g = f.ground(u, b) - 6;
   // weighted base, the sponge (a soft, porous column), its cap and the lift tube
   kit.rod('wet', f.P(u, g, b), f.P(u, g + 14, b), r + 5, C.charcoal, { seg: 28 });
   const sg = new THREE.CylinderGeometry(r, r, h, 36, 18);
@@ -358,29 +398,29 @@ function sponge(f: Frame, m: FilterModel, u0: number) {
   airPump(f, u, f.P(u, tt + 6, b), b);
 }
 
-function internal(f: Frame, m: FilterModel, u0: number) {
+function internal(f: Frame, m: FilterModel, sp: Spot) {
   const { kit } = f, s = flowScale(m, 80), w = 62 * s, d = 50 * s, h = 150 * s, b = d / 2 + 9;
-  const yT = f.wy - 22, yB = yT - h, u = f.slot(u0 + w / 2, w + 6, yB, yT, 0, d + 12);
-  kit.box('wet', f.P(u, yB + h / 2, b), w, h, d, C.charcoal, 6);
+  const yT = lerp(Math.min(f.ground(sp.u, b) + h + 10, f.wy - 22), f.wy - 22, sp.y ?? 1), yB = yT - h, u = f.slot(sp.fixed ? sp.u : sp.u + w / 2, w + 6, yB, yT, 0, d + 12, sp.fixed);
+  f.box('wet', f.P(u, yB + h / 2, b), w, h, d, C.charcoal, 6);
   // intake slots round the bottom third, the head with its outlet nozzle, two suction cups
-  for (let i = 0; i < 6; i++) kit.box('wet', f.P(u, yB + 10 + i * 7, b + d / 2 + 0.2), w * 0.72, 2.2, 1, 0x0b0c0d);
-  kit.box('wet', f.P(u, yT - 14, b), w + 3, 28, d + 3, C.black, 6);
+  for (let i = 0; i < 6; i++) f.box('wet', f.P(u, yB + 10 + i * 7, b + d / 2 + 0.2), w * 0.72, 2.2, 1, 0x0b0c0d);
+  f.box('wet', f.P(u, yT - 14, b), w + 3, 28, d + 3, C.black, 6);
   kit.rod('wet', f.P(u, yT - 14, b + d / 2), f.P(u, yT - 14, b + d / 2 + 22), 7, C.black, { r2: 9 });
   for (const k of [-0.25, 0.25]) sucker(f, u + k * w, yB + h * 0.55, 9);
   kit.tube('room', overRim(f, u + w * 0.3, f.P(u + w * 0.3, yT, b), b, f.top + 20), 2.6, C.black, 0, 6);
 }
 
-function canister(f: Frame, m: FilterModel, u0: number) {
+function canister(f: Frame, m: FilterModel, sp: Spot) {
   const { kit, t } = f, s = flowScale(m, 265), pr = 7.5, gap = clamp(f.T.L * 0.18, 110, 320);
-  const stY = f.ground(u0, 22) + 40;
-  const uI = f.slot(u0 + 10, 30, stY, f.wy, 0, 40);
-  const uO = f.slot(uI + gap, 70, f.wy - 90, f.wy, 0, 70);
+  const u0 = sp.fixed ? sp.u - gap / 2 : sp.u + 10, stY = f.ground(u0, 22) + 40;
+  const uI = f.slot(u0, 30, stY, f.wy, 0, 40, sp.fixed);
+  const uO = f.slot(uI + gap, 70, f.wy - 90, f.wy, 0, 70, sp.fixed);
   const ib = 18, outB = -t - 16, hoseY = f.H - 30;
   // intake lily pipe: glass, over the rim, straight down to its slotted basket
   const intake = [f.P(uI, hoseY, outB), f.P(uI, f.H + 10, outB + 2), f.P(uI, f.H + 26, (ib - t) / 2), f.P(uI, f.H + 6, ib), f.P(uI, stY + 80, ib)];
   kit.tube('clear', intake, pr, C.glass, 0.13, 14);
   kit.rod('clear', f.P(uI, stY, ib), f.P(uI, stY + 80, ib), pr + 4, C.glass, { base: 0.14, seg: 18 });
-  for (let i = 0; i < 9; i++) kit.box('wet', f.P(uI, stY + 14 + i * 6, ib + pr + 4), 8, 1.2, 0.6, 0x9fb2b4); // the slits, catching the light
+  for (let i = 0; i < 9; i++) f.box('wet', f.P(uI, stY + 14 + i * 6, ib + pr + 4), 8, 1.2, 0.6, 0x9fb2b4); // the slits, catching the light
   // outlet lily pipe: over the rim, down under the surface, turning forward into the flared lily
   const oy = f.wy - 55;
   const out = [f.P(uO, hoseY, outB), f.P(uO, f.H + 10, outB + 2), f.P(uO, f.H + 26, (ib - t) / 2), f.P(uO, f.H + 6, ib), f.P(uO, oy + 30, ib), f.P(uO, oy + 4, ib + 8), f.P(uO, oy, ib + 30)];
@@ -403,14 +443,14 @@ function canister(f: Frame, m: FilterModel, u0: number) {
   }
 }
 
-function sump(f: Frame, u0: number) {
+function sump(f: Frame, sp: Spot) {
   const { kit, t } = f;
   // overflow box hung on the back glass (inside box with a comb, a U-tube over the rim to the outside box), drain down
-  const w = 130, d = 70, h = 150, yT = f.H - 6, u = f.slot(u0 + w / 2, w + 8, yT - h, yT, 0, d + 8);
-  kit.box('wet', f.P(u, yT - h / 2, d / 2 + 2), w, h, d, C.black, 4);
-  for (let i = 0; i < 12; i++) kit.box('wet', f.P(u - w / 2 + 8 + i * (w - 16) / 11, f.wy - 6, d + 2.4), 3.2, 22, 1, 0x070808);
+  const w = 130, d = 70, h = 150, yT = f.H - 6, u = f.slot(sp.fixed ? sp.u : sp.u + w / 2, w + 8, yT - h, yT, 0, d + 8, sp.fixed);
+  f.box('wet', f.P(u, yT - h / 2, d / 2 + 2), w, h, d, C.black, 4);
+  for (let i = 0; i < 12; i++) f.box('wet', f.P(u - w / 2 + 8 + i * (w - 16) / 11, f.wy - 6, d + 2.4), 3.2, 22, 1, 0x070808);
   kit.tube('clear', [f.P(u, f.wy - 40, d / 2), f.P(u, f.H + 40, d / 2), f.P(u, f.H + 60, -t / 2), f.P(u, f.H + 40, -t - 40), f.P(u, f.H - 40, -t - 40)], 12, C.glass, 0.1, 14);
-  kit.box('room', f.P(u, f.H - 70, -t - 40), w * 0.8, 140, 70, C.black, 4);
+  f.box('room', f.P(u, f.H - 70, -t - 40), w * 0.8, 140, 70, C.black, 4);
   const standY = f.S.stand.show ? f.top : f.floor;
   kit.tube('room', [f.P(u, f.H - 140, -t - 40), f.P(u, standY + 40, -t - 50), f.P(u, standY - 30, -t + 30)], 14, C.charcoal, 0, 10);
   // return: a rigid line up the back and over the rim, loc-line beads curving forward, a flared nozzle
@@ -436,19 +476,19 @@ function sump(f: Frame, u0: number) {
   }
 }
 
-function skimmerHob(f: Frame, u0: number) {
+function skimmerHob(f: Frame, sp: Spot) {
   const { kit, t } = f, W = 120, D = 110, Hb = 300, yTop = f.H + 60;
-  const u = f.slot(u0 + 40, 80, f.wy - 140, f.H, 0, 70);
+  const u = f.slot(sp.fixed ? sp.u : sp.u + 40, 80, f.wy - 140, f.H, 0, 70, sp.fixed);
   // the reaction body behind the glass, its collection cup on top (skimmate in the bottom), the intake box inside
-  kit.box('room', f.P(u, yTop - Hb / 2, -t - 6 - D / 2), W, Hb, D, C.black, 12);
+  f.box('room', f.P(u, yTop - Hb / 2, -t - 6 - D / 2), W, Hb, D, C.black, 12);
   const cc = f.P(u, yTop, -t - 6 - D / 2);
   kit.rod('clear', cc, cc.clone().add(V(0, 110, 0)), 44, C.cup, { base: 0.18, seg: 28 });
   kit.rod('clear', cc.clone().add(V(0, 2, 0)), cc.clone().add(V(0, 12, 0)), 42, C.skimmate, { base: 0.55, seg: 28 }); // a thin layer of skimmate
   kit.rod('room', cc.clone().add(V(0, 110, 0)), cc.clone().add(V(0, 118, 0)), 46, C.black, { seg: 28 });
   kit.rod('clear', cc, cc.clone().add(V(0, 80, 0)), 14, C.cup, { base: 0.25, seg: 16 }); // the neck rising through the cup
-  kit.box('wet', f.P(u, f.H + 10, (30 - t) / 2), 80, 8, 30 + t + 6, C.black, 2);
-  kit.box('wet', f.P(u, f.wy - 60, 22), 70, 140, 40, C.black, 6);
-  for (let i = 0; i < 7; i++) kit.box('wet', f.P(u, f.wy - 110 + i * 9, 42.3), 52, 3, 1, 0x070808);
+  f.box('wet', f.P(u, f.H + 10, (30 - t) / 2), 80, 8, 30 + t + 6, C.black, 2);
+  f.box('wet', f.P(u, f.wy - 60, 22), 70, 140, 40, C.black, 6);
+  for (let i = 0; i < 7; i++) f.box('wet', f.P(u, f.wy - 110 + i * 9, 42.3), 52, 3, 1, 0x070808);
 }
 
 function airPump(f: Frame, u: number, to: THREE.Vector3, bIn: number) {
@@ -467,9 +507,9 @@ function airPump(f: Frame, u: number, to: THREE.Vector3, bIn: number) {
   void pu;
 }
 
-function airstone(f: Frame, u0: number) {
-  const { kit } = f, b = 26, u = f.slot(u0 + 20, 44, 0, 40, 0, 52), g = f.ground(u, b);
-  kit.put('wet', new THREE.CylinderGeometry(12, 12, 38, 18, 4), C.stone, along(f.P(u, g + 10, b), V(f.ix, 0, 0.3).normalize(), 0), 0, 0.3);
+function airstone(f: Frame, sp: Spot) {
+  const { kit } = f, b = Math.max(26, sp.b ?? 0), u = f.slot(sp.fixed ? sp.u : sp.u + 20, 44, 0, 40, 0, 52, sp.fixed), g = f.ground(u, b);
+  kit.put('wet', new THREE.CylinderGeometry(12, 12, 38, 18, 4), C.stone, along(f.P(u, g + 10, b), f.along.clone().add(V(0, 0, 0.3)).normalize(), 0), 0, 0.3);
   bubbles(f, f.P(u, g + 22, b), f.wy, 26, 3);
   airPump(f, u, f.P(u, g + 14, b), b);
 }
@@ -484,10 +524,10 @@ function bubbles(f: Frame, p: THREE.Vector3, top: number, n: number, rmax: numbe
   }
 }
 
-function co2(f: Frame, u0: number, outlet: number, level: GearPick['co2']) {
-  const { kit, t } = f, b = 26, g0 = f.ground(u0, b);
+function co2(f: Frame, sp: Spot, level: GearPick['co2']) {
+  const { kit, t } = f, b = 26, g0 = f.ground(sp.u, b);
   // diffuser low under the filter's outlet: a glass cup round a white ceramic disc, on a glass stem with a suction cup
-  const u = f.slot(outlet, 40, g0 + 40, g0 + 120, 0, 50), y = g0 + 80;
+  const y = lerp(g0 + 40, f.wy - 60, sp.y ?? 0.15), u = f.slot(sp.u, 40, y - 40, y + 40, 0, 50, sp.fixed);
   const c = f.P(u, y, b);
   kit.rod('clear', c.clone().add(V(0, -8, 0)), c.clone().add(V(0, 10, 0)), 15, C.glass, { base: 0.1, seg: 24 });
   kit.rod('wet', c.clone().add(V(0, 6, 0)), c.clone().add(V(0, 8, 0)), 13, C.white, { seg: 24 });
@@ -529,7 +569,8 @@ function co2(f: Frame, u0: number, outlet: number, level: GearPick['co2']) {
   sucker(f, ud, yd + 44, 6);
 }
 
-function uv(f: Frame, u0: number, filter: FilterModel | undefined) {
+function uv(f: Frame, sp: Spot, filter: FilterModel | undefined) {
+  const u0 = sp.u;
   const { kit, t } = f;
   if (filter && filter.kind === 'canister' || !filter) {
     // inline on the outlet hose: in the stand beside the canister (behind the tank there is rarely room before the
@@ -541,19 +582,19 @@ function uv(f: Frame, u0: number, filter: FilterModel | undefined) {
     return;
   }
   // a submersible unit on the back glass beside the filter: the lamp tube and its pump head
-  const w = 46, h = 200, yT = f.wy - 30, u = f.slot(u0 + w / 2, w + 6, yT - h, yT, 0, 60), b = 32;
+  const w = 46, h = 200, yT = lerp(Math.min(f.ground(u0, 32) + h + 10, f.wy - 30), f.wy - 30, sp.y ?? 1), u = f.slot(sp.fixed ? u0 : u0 + w / 2, w + 6, yT - h, yT, 0, 60, sp.fixed), b = 32;
   kit.rod('wet', f.P(u, yT - h, b), f.P(u, yT - 40, b), 22, C.charcoal, { seg: 24 });
   kit.rod('wet', f.P(u, yT - 40, b), f.P(u, yT, b), 24, C.black, { seg: 24 });
-  kit.box('glow', f.P(u, yT - 110, b + 22.2), 6, 40, 1, C.uvBlue);
+  f.box('glow', f.P(u, yT - 110, b + 22.2), 6, 40, 1, C.uvBlue);
   for (const k of [0.25, 0.7]) sucker(f, u, yT - h * k, b - 22);
   kit.tube('room', overRim(f, u, f.P(u, yT, b), b, f.top + 20), 2.6, C.black, 0, 6);
 }
 
-/** A powerhead / wavemaker on a side glass (`far`: the other side), aimed along the tank. */
-function powerhead(f: Frame, far: boolean, big: boolean) {
-  const { kit, T } = f, r = big ? 32 : 26, len = big ? 50 : 42, y = f.wy * (far ? 0.55 : 0.72), dz = T.D * (far ? 0.55 : 0.3);
-  const xs = (far ? f.side === 'right' : f.side === 'left') ? 0 : T.L, dir = V(xs === 0 ? 1 : -1, 0, 0.12).normalize();
-  const c = chord(T, 1, dz), x0 = xs === 0 ? (c?.[0] ?? 0) : (c?.[1] ?? T.L), p0 = V(x0, y, -dz);
+/** A powerhead / wavemaker on the frame's glass at u, aimed into the tank and a little along it. */
+function powerhead(f: Frame, sp: Spot, big: boolean) {
+  const { kit } = f, r = big ? 32 : 26, len = big ? 50 : 42, u = f.slot(sp.u, 2 * r + 6, 0, f.H, 0, len + 10, true);
+  const y = lerp(f.ground(u, 30) + r + 30, f.wy - r - 20, sp.y ?? 0.7), p0 = f.P(u, y, 0);
+  const dir = f.inward.clone().addScaledVector(f.along, f.wall === 'back' ? 0.12 : -0.12).normalize();
   // the magnet mount on the glass, the motor body, the cage with its bars and the propeller hub inside
   kit.put('wet', new THREE.CylinderGeometry(r * 0.85, r * 0.85, 10, 28), C.black, along(p0, dir, 5));
   kit.rod('wet', p0.clone().addScaledVector(dir, 10), p0.clone().addScaledVector(dir, 10 + len * 0.5), r, C.charcoal, { seg: 28 });
@@ -569,15 +610,15 @@ function powerhead(f: Frame, far: boolean, big: boolean) {
     kit.rod('wet', ce.clone().addScaledVector(o, -0.04), ce.clone().add(o), 1.2, C.black, { seg: 4 });
   }
   kit.rod('wet', cg, cg.clone().addScaledVector(dir, len * 0.3), r * 0.3, C.grey, { seg: 16, r2: r * 0.2 });
-  // the cord, up the side glass and over the rim
-  kit.tube('room', [p0.clone().addScaledVector(dir, 12).add(V(0, r * 0.7, 0)), V(p0.x + dir.x * 6, f.H + 12, p0.z), V(p0.x - dir.x * (f.t + 12), f.H + 12, p0.z), V(p0.x - dir.x * (f.t + 12), f.top + 30, p0.z)], 2.4, C.black, 0, 6);
+  // the cord, up the glass and over the rim
+  kit.tube('room', overRim(f, u, p0.clone().addScaledVector(dir, 12).add(V(0, r * 0.7, 0)), 6, f.top + 30), 2.4, C.black, 0, 6);
 }
 
-function ato(f: Frame, u0: number) {
-  const { kit, t } = f, u = f.slot(u0, 30, f.wy - 30, f.H, 0, 30), y = f.wy;
-  kit.box('wet', f.P(u, y + 8, 12), 22, 34, 18, C.black, 4);
+function ato(f: Frame, sp: Spot) {
+  const { kit, t } = f, u = f.slot(sp.u, 30, f.wy - 30, f.H, 0, 30, sp.fixed), y = f.wy;
+  f.box('wet', f.P(u, y + 8, 12), 22, 34, 18, C.black, 4);
   kit.rod('clear', f.P(u, y - 2, 21), f.P(u, y - 14, 21), 4, C.glass, { base: 0.3, seg: 12 });
-  kit.box('wet', f.P(u, f.H + 6, (14 - t) / 2), 24, 6, 14 + t + 8, C.black, 2);
+  f.box('wet', f.P(u, f.H + 6, (14 - t) / 2), 24, 6, 14 + t + 8, C.black, 2);
   kit.tube('room', overRim(f, u, f.P(u, y + 25, 12), 12, f.top + 20), 2, C.black, 0, 6);
 }
 
@@ -586,46 +627,66 @@ function ato(f: Frame, u0: number) {
 const isFilter = (id: string) => FILTER_MODELS.find(m => m.id === id);
 const isHeater = (id: string) => HEATER_MODELS.find(m => m.id === id);
 
-/** Build the gear for `picks` (default: gearPicks(S)) in tank S, clear of the solid pieces `solids` (world boxes). */
+/** A piece the owner can grab: its tech row, id, how it mounts and its box (in the tank, not the parts in the stand). */
+export interface GearPiece { row: string; id: string; mount: GearMount; box: THREE.Box3 }
+
+/** Build the gear for `picks` (default: gearPicks(S)) in tank S, clear of the solid pieces `solids` (world boxes). The
+ *  first mesh carries the grabbable pieces (userData.gearPieces). */
 export function buildGear(S: TankSetup, T: Tank, solids: THREE.Box3[], picks = gearPicks(S), side?: GearSide): THREE.Mesh[] {
   if (!picks.length) return [];
-  const kit = new Kit(), dflt = side ?? gearSide(T, solids);
-  // each corner its own frame: the owner may put the filter in one corner and the heater in the other
-  for (const sd of ['left', 'right'] as GearSide[]) {
-    const mine = picks.filter(p => (p.side ?? dflt) === sd);
-    if (mine.length) buildSet(frame(S, T, kit, sd, solids), mine);
-  }
-  const out = kit.meshes();
-  for (const m of out) m.visible = shown;
-  live = live.filter(o => o.parent).concat(out);
-  return out;
-}
-
-function buildSet(f: Frame, picks: GearPick[]) {
+  const kit = new Kit(), dflt = side ?? gearSide(T, solids), frames = new Map<string, Frame>(), pieces: GearPiece[] = [];
+  const fr = (wall: GearWall) => { const k = wall; let f = frames.get(k); if (!f) frames.set(k, f = frame(S, T, kit, dflt, solids, wall)); return f; };
+  const back = fr('back'), opp: GearWall = dflt === 'left' ? 'right' : 'left';
+  // a placed piece on the back wall or the floor: its spot in the back frame's u (which runs from the default corner)
+  const spot = (p: GearPick, u: number) => {
+    const q = p.place; if (!q) return { f: back, sp: { u } as Spot };
+    if (q.wall === 'floor') { const x = q.u; return { f: back, sp: { u: dflt === 'left' ? x : T.L - x, fixed: true, b: T.D - backdropDepth(S.backdrop, T) - (q.d ?? 0) } }; }
+    if (q.wall === 'back') return { f: back, sp: { u: dflt === 'left' ? q.u : T.L - q.u, fixed: true, y: q.y, lean: q.lean } };
+    return { f: fr(q.wall), sp: { u: q.u, fixed: true, y: q.y, lean: q.lean } };
+  };
+  // each piece's box: what the kit gained while building it, above the stand
+  const track = (p: GearPick, build: () => void) => {
+    const n0 = (Object.keys(kit.parts) as Bucket[]).map(k => kit.parts[k].length); build();
+    const box = new THREE.Box3(), v = new THREE.Vector3();
+    (Object.keys(kit.parts) as Bucket[]).forEach((k, i) => { for (const g of kit.parts[k].slice(n0[i])) { const a = g.attributes.position; for (let j = 0; j < a.count; j += 3) { v.fromBufferAttribute(a, j); if (v.y > -25) box.expandByPoint(v); } } });
+    if (!box.isEmpty() && p.row) pieces.push({ row: p.row, id: p.id, mount: mountOf(p.id), box });
+  };
   const get = (id: string) => picks.find(p => p.id === id), has = (id: string) => !!get(id);
   const fp = picks.find(p => isFilter(p.id)), hp = picks.find(p => isHeater(p.id));
   const fm = fp && isFilter(fp.id), hm = hp && isHeater(hp.id);
-  let cursor = 22, outlet = 120;
-  const after = () => Math.max(cursor, ...f.taken.map(r => r[1])) + 10;
-  const at = (p: GearPick | undefined, u: number) => p?.u ?? u; // the owner's spot, else the next free one
-  if (has('sump')) { sump(f, at(get('sump'), cursor)); cursor = after(); outlet = cursor - 40; }
-  // the heater in the corner, the filter's intake next to it, so the intake draws the warm water through the tank
-  if (hm) for (let i = 0; i < (hp!.n ?? 1); i++) { heater(f, hm.watts, i ? after() : at(hp, cursor)); cursor = after(); }
-  if (fm) {
-    const n0 = f.taken.length, u0 = at(fp, cursor);
-    if (fm.kind === 'hob') hob(f, fm, u0); else if (fm.kind === 'canister') canister(f, fm, u0);
-    else if (fm.kind === 'sponge') sponge(f, fm, u0); else internal(f, fm, u0);
-    const mine = f.taken.slice(n0);
-    outlet = fm.kind === 'canister' ? mine[mine.length - 1][0] + 35 : (mine[0][0] + mine[0][1]) / 2;
+  let cursor = 22, outlet: { f: Frame; u: number } = { f: back, u: 120 };
+  const after = () => Math.max(cursor, ...back.taken.map(r => r[1])) + 10;
+  // the owner's pieces first (they keep their spot), then the rest fill in round them in the default corner
+  for (const pass of [true, false]) {
+    const go = (p: GearPick | undefined) => !!p && !!p.place === pass;
+    if (go(get('sump'))) { const { f, sp } = spot(get('sump')!, cursor); track(get('sump')!, () => sump(f, sp)); if (f === back && !pass) cursor = after(); outlet = { f, u: sp.u + 40 }; }
+    // the heater in the corner, the filter's intake next to it, so the intake draws the warm water through the tank
+    if (hm && go(hp)) for (let i = 0; i < (hp!.n ?? 1); i++) { const { f, sp } = spot(hp!, i ? after() : cursor); if (i && hp!.place) sp.u += 90 * i; /* a second placed heater beside the first */ track(hp!, () => heater(f, hm.watts, sp)); if (!pass) cursor = after(); }
+    if (fm && go(fp)) {
+      const { f, sp } = spot(fp!, cursor), n0 = f.taken.length;
+      track(fp!, () => { if (fm.kind === 'hob') hob(f, fm, sp); else if (fm.kind === 'canister') canister(f, fm, sp); else if (fm.kind === 'sponge') sponge(f, fm, sp); else internal(f, fm, sp); });
+      const mine = f.taken.slice(n0);
+      if (mine.length) outlet = { f, u: fm.kind === 'canister' ? mine[mine.length - 1][0] + 35 : (mine[0][0] + mine[0][1]) / 2 };
+    }
+    if (!pass) cursor = after();
+    const one = (id: string, b: (f: Frame, sp: Spot) => void, u = () => after()) => { const p = get(id); if (!go(p)) return; const { f, sp } = spot(p!, u()); track(p!, () => b(f, sp)); };
+    one('uv', (f, sp) => uv(f, sp, has('sump') ? undefined : fm), () => fm?.kind === 'canister' || has('sump') ? outlet.u + 40 : cursor);
+    if (!has('sump')) one('skimmer', skimmerHob);
+    one('airstone', airstone);
+    if (!has('sump')) one('ato', ato);
+    // CO2 under the filter's outlet, on that wall, unless the owner moved it
+    const cp = get('co2');
+    if (go(cp)) { const s0 = spot(cp!, outlet.u), f = cp!.place ? s0.f : outlet.f; track(cp!, () => co2(f, s0.sp, cp!.co2)); }
+    // powerheads on the side glass (default: the near one on the gear side, a second or the wavemaker on the other)
+    const ph = get('powerhead'), wm = get('wavemaker'), Db = T.D - backdropDepth(S.backdrop, T);
+    if (go(ph)) { const s0 = ph!.place ? spot(ph!, 0) : { f: fr(dflt), sp: { u: Db * 0.7, y: 0.7 } as Spot }; track(ph!, () => powerhead(s0.f, s0.sp, false)); if ((ph!.n ?? 1) > 1) powerhead(fr(opp), { u: Db * 0.45, y: 0.55 }, false); }
+    if (go(wm)) { const s0 = wm!.place ? spot(wm!, 0) : { f: fr(opp), sp: { u: Db * 0.45, y: 0.55 } as Spot }; track(wm!, () => powerhead(s0.f, s0.sp, true)); }
   }
-  cursor = after();
-  if (has('uv')) uv(f, fm?.kind === 'canister' || has('sump') ? outlet + 40 : at(get('uv'), cursor), has('sump') ? undefined : fm);
-  if (has('skimmer') && !has('sump')) skimmerHob(f, at(get('skimmer'), after()));
-  if (has('airstone')) airstone(f, at(get('airstone'), after()));
-  if (has('ato') && !has('sump')) ato(f, at(get('ato'), after()));
-  if (has('co2')) co2(f, cursor, outlet, get('co2')!.co2);
-  if (has('powerhead')) { powerhead(f, false, false); if ((get('powerhead')!.n ?? 1) > 1) powerhead(f, true, false); }
-  if (has('wavemaker')) powerhead(f, true, true);
+  const out = kit.meshes();
+  for (const m of out) m.visible = shown;
+  if (out[0]) out[0].userData.gearPieces = pieces;
+  live = live.filter(o => o.parent).concat(out);
+  return out;
 }
 
 /** World boxes of the tank's solid pieces (hardscape, not plants). */
