@@ -147,7 +147,7 @@ const WOOD: Record<string, [string, string]> = { climb: ['#8d8170', '#7a6e60'], 
 /** Limb radius at t: linear taper, a flared root on thick limbs, and the last 14% rounding off into a worn tip (no flat cut). */
 function tipRad(L: Limb, t: number) {
   const flare = L.r0 > 6 ? 1 + 0.3 * Math.pow(1 - t, 4) : 1, e = Math.max(0, (t - 0.86) / 0.14);
-  return (L.r0 + (L.r1 - L.r0) * t) * flare * (1 - 0.62 * e * e);
+  return (L.r0 + (L.r1 - L.r0) * t) * flare * (1 - 0.3 * e * e);
 }
 function limbGeo(r: R, rs: R, L: Limb, cols: [string, string], variant: string, s0: number) {
   const curve = new THREE.CatmullRomCurve3(L.pts.map(p => V(...p))), len = curve.getLength(), TS = Math.max(8, Math.min(48, Math.round(len / Math.max(4, L.r0)))), RS = L.r0 > 6 ? 10 : 7;
@@ -168,9 +168,25 @@ function limbGeo(r: R, rs: R, L: Limb, cols: [string, string], variant: string, 
     return shade(base, grain);
   });
   const parts = [clean(g, true)];
-  for (const [t, rad] of [[0, tipRad(L, 0)], [1, tipRad(L, 1)]] as const) {
-    const s = new THREE.SphereGeometry(rad * 1.02, RS, 6); s.translate(...curve.getPointAt(t).toArray() as [number, number, number]);
-    parts.push(clean(grit(paint(s, () => shade(base, t ? 1.0 : 1.08)), 10, s0), true));
+  const up0 = V(0, 1, 0);
+  // the two ends: a broken-off, splintered cut in end grain (a smooth sphere read as a bulb)
+  for (const t of [0, 1] as const) {
+    const rad = tipRad(L, t), h = rad * 0.3, c0 = curve.getPointAt(t), tan = curve.getTangentAt(t).multiplyScalar(t ? 1 : -1);
+    const e = new THREE.CylinderGeometry(rad * 0.82, rad * 1.01, h, RS, 1).translate(0, h / 2, 0), ep = e.attributes.position, en = e.attributes.normal, ea = new Float32Array(ep.count * 4);
+    const ph = knot + t * 4;
+    for (let i = 0; i < ep.count; i++) {
+      const x = ep.getX(i), y = ep.getY(i), z = ep.getZ(i), top = y > h * 0.99, a = Math.atan2(z, x);
+      if (top) { // splintered rim: ragged height and radius by angle, the middle of the cut dished slightly
+        const k = 0.5 + 0.5 * Math.sin(a * 3 + ph) * Math.sin(a * 5 + ph * 2), dish = Math.hypot(x, z) < 1e-6 ? -0.25 * h : 0;
+        ep.setXYZ(i, x * (0.9 + 0.2 * Math.sin(a * 4 + ph)), y + h * (0.9 * k) + dish, z * (0.9 + 0.2 * Math.sin(a * 4 + ph)));
+      }
+      ea.set(en.getY(i) > 0.9 ? [x, z, 0, 9] : [s0 + 300 + y, a + Math.PI, rad, 6], i * 4);
+    }
+    e.setAttribute('aGrit', new THREE.BufferAttribute(ea, 4));
+    e.computeVertexNormals();
+    paint(e, q => shade(base, q.y > h * 0.99 ? 0.85 : 1));
+    e.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(up0, tan)).translate(c0.x, c0.y, c0.z);
+    parts.push(clean(e, true));
   }
   // broken-off side branches: short stubs with a dark, ringed end (0-2 on a limb thick enough to show them)
   const n = L.r0 < 2.5 ? 0 : Math.floor(rs() * 2.6), up = V(0, 1, 0);
