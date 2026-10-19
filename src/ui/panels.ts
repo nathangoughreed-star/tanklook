@@ -49,6 +49,7 @@ import { HERP } from '../data/herpstock';
 import { placeNew, randomPose, randomSize, shuffleFish } from '../scene/scatter';
 import { fitFish, keepInWater, setWaterLevel } from '../scene/water';
 import { tankWeight } from '../scene/weight';
+import { stockingDetail, stockingLine, stockingMemo } from '../scene/stocking';
 import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, aqWaitS, fetchAqHealth, fetchStocking, type AqHealth } from '../data/aqadvisor';
 import { BOWL_DEFAULT, BOWL_MAX, BOWL_MIN, PIE_DEFAULT, POLY_SIDES, SHAPES, bowMinLimit, offsetRing, ringArea, shapeOf } from '../scene/shape';
 import { TABLE_MAX, tableOn, tableRange, wallGap } from '../scene/table';
@@ -1669,10 +1670,22 @@ Cancel, then change the name, to keep both.`)) return;
     window.addEventListener('focus', () => void pollAqHealth());
   }
   const aqWaitText = (key: string) => aqQueued.has(key) ? (aqWaitS() ? `queued, ~${aqWaitS()} s` : 'queued') : 'checking…';
+  /** Our own stocking line: percent, why, and the contributors (lane SE). AqAdvisor below it is only a comparison. */
+  function syncStocking() {
+    const s = S(), has = s.water.on && s.fish.length > 0, r = has ? stockingMemo(s) : null;
+    $('stkRow').hidden = !r || !r.contributors.length;
+    $('stkList').hidden = $('stkRow').hidden;
+    if (!r || !r.contributors.length) { $('stkWhy').textContent = ''; return; }
+    $('stkOut').textContent = stockingLine(r);
+    $('stkOut').className = r.percent > 100 ? 'bad' : '';
+    $('stkWhy').textContent = r.reasons.join(' ');
+    $('stkBody').innerHTML = stockingDetail(r).map(t => `<li>${esc(t)}</li>`).join('') + `<li class="dim">Water ${Math.round(r.capacity.litres)} L, filter x${r.capacity.filter.toFixed(2)}${r.capacity.plantCount ? `, plants x${r.capacity.plants.toFixed(2)}` : ''}, ${Math.round(r.capacity.tempC)} °C.</li>`;
+  }
   function syncAq() {
+    syncStocking();
     const q = aqQuery(S());
     $('aqRow').style.display = q ? '' : 'none';
-    if (!q) { $('aqNote').textContent = isSalt(S()) && S().fish.length ? 'No stocking check for saltwater tanks yet.' : ''; return; }
+    if (!q) { $('aqNote').textContent = isSalt(S()) && S().fish.length ? 'AqAdvisor has no saltwater comparison.' : ''; return; }
     const key = aqKey(q), got = aqDone.get(key), busy = aqBusy.has(key);
     $<HTMLAnchorElement>('aqLink').href = aqAdvisorUrl(q);
     $('aqCheck').style.display = AQ_PROXY && got === undefined && aqUp === 'up' ? '' : 'none';
@@ -2089,27 +2102,12 @@ Cancel, then change the name, to keep both.`)) return;
   let tabSig = '';
   /** The stocking level in a view's label, always there (Nathan 2026-10-09): a hint with no fish; the AqAdvisor answer
    *  with ↻ to ask again; the last answer in yellow once the fish or the tank have changed since it was asked. */
-  const aqChip = (s: TankSetup, slot: string, i: number) => {
-    const q = aqQuery(s);
-    if (!q) return `<span class="aq none">${!s.fish.length ? 'Add fish to show stocking level' : !s.water.on ? 'Add water to show stocking level' : isSalt(s) ? 'Stocking: not available for saltwater (AqAdvisor gives none)' : 'No fish AqAdvisor can count'}</span>`;
-    const url = esc(aqAdvisorUrl(q));
-    if (!AQ_PROXY) return `<a class="aq" href="${url}" target="_blank" rel="noopener" title="This tank's stocking on aqadvisor.com">Stocking on AqAdvisor ↗</a>`;
-    const key = aqKey(q), got = aqDone.get(key), last = aqLast.get(slot), busy = aqBusy.has(key);
-    const stale = got === undefined && last !== undefined;
-    // ↻ only when there is something to fetch (Nathan 2026-10-09): never checked, out of date, or the last try failed;
-    // hidden once this tank's current answer is shown
-    const re = got !== undefined || aqUp !== 'up' ? '' : `<button class="aqre${stale ? ' stale' : ''}" data-aq="${i}"${busy ? ' disabled' : ''} title="${stale ? 'The fish or the tank changed since this was checked: click to refresh the stocking level' : 'Ask AqAdvisor for this tank’s stocking level'}" aria-label="Refresh stocking level">↻</button>`;
-    const pct = got ?? last;
-    // a failed refresh says so, next to the old number it could not replace (it used to hide behind it)
-    const err = aqErr.get(key);
-    const down = aqUp === 'down';
-    const text = busy ? `Stocking: ${aqWaitText(key)}` : pct !== undefined ? `Stocking ${pct}% (AqAdvisor)${err ? `, not updated: ${err}` : stale && down ? ', can’t check right now' : ''}`
-      : down ? 'Stocking: open on AqAdvisor ↗' : err ?? 'Stocking: not checked';
-    const cls = `aq${stale ? ' stale' : pct !== undefined && pct > 100 ? ' over' : ''}`;
-    // 'down' = our checker (a Cloudflare server) can't reach aqadvisor.com. The site often still opens in a browser: it
-    // shuts out the checker for about 30 minutes at a time, several times a day (health log, 2026-10-13..15)
-    const tip = down && !stale ? 'The stocking checker can’t reach aqadvisor.com right now (it is often shut out for about 30 minutes). The site itself usually still opens: click for this tank on aqadvisor.com' : stale && err ? `Out of date, and the refresh failed (${err}). This is the level before the last change.` : stale ? 'Out of date: the fish or the tank changed since this was checked. Press ↻ to refresh.' : 'AqAdvisor’s stocking level for this tank (aqadvisor.com); click for the full report';
-    return `<span class="aqwrap"><a class="${cls}" href="${url}" target="_blank" rel="noopener" title="${tip}">${esc(text)}</a>${re}</span>`;
+  const aqChip = (s: TankSetup, _slot: string, _i: number) => {
+    if (!s.fish.length || !s.water.on) return `<span class="aq none">${!s.fish.length ? 'Add fish to show stocking level' : 'Add water to show stocking level'}</span>`;
+    const r = stockingMemo(s);
+    if (!r.contributors.length) return '<span class="aq none">No animals in the water</span>';
+    const tip = [...r.reasons, ...stockingDetail(r)].map(esc).join('&#10;');
+    return `<span class="aq${r.percent > 100 ? ' over' : ''}" title="${tip}">${esc(stockingLine(r))}</span>`;
   };
   viewer.onDrawn(() => {
     const g = G(), active = viewer.active, split = active.length > 1;
@@ -2118,6 +2116,7 @@ Cancel, then change the name, to keep both.`)) return;
     const sig = JSON.stringify([diff, hidden, g.units, g.active, store.targets, g.camLock, active.map(v => [v.x, v.w]), active.map((v, i) => aqChip(v.S, v.key, i))]);
     if (sig !== tabSig) {
       tabSig = sig;
+      syncStocking(); // the tech menu, the water and the plants change the capacity without a fish edit
       for (const [i, id] of [[0, 'labA'], [1, 'labB']] as const) {
         const el = $<HTMLDivElement>(id), vp = active[i];
         // only while comparing (Nathan 2026-10-14): one tank's size, stocking and Split all live in the panel already
