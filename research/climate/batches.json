@@ -1,0 +1,472 @@
+[
+ [
+  {
+   "id": "cherryshrimp",
+   "name": "Cherry shrimp",
+   "sci": "Neocaridina davidi",
+   "cat": "fw-invert"
+  },
+  {
+   "id": "amano",
+   "name": "Amano shrimp",
+   "sci": "Caridina multidentata",
+   "cat": "fw-invert"
+  },
+  {
+   "id": "nerite",
+   "name": "Nerite snail (zebra)",
+   "sci": "Neritina natalensis",
+   "cat": "fw-invert"
+  },
+  {
+   "id": "mystery",
+   "name": "Mystery snail",
+   "sci": "Pomacea diffusa",
+   "cat": "fw-invert"
+  },
+  {
+   "id": "ramshorn",
+   "name": "Ramshorn snail",
+   "sci": "Planorbella duryi",
+   "cat": "fw-invert"
+  },
+  {
+   "id": "trumpet",
+   "name": "Malaysian trumpet snail",
+   "sci": "Melanoides tuberculata",
+   "cat": "fw-invert"
+  },
+  {
+   "id": "ocellaris",
+   "name": "Ocellaris clownfish",
+   "sci": "Amphiprion ocellaris",
+   "cat": "sw-fish"
+  },
+  {
+   "id": "royalgramma",
+   "name": "Royal gramma",
+   "sci": "Gramma loreto",
+   "cat": "sw-fish"
+  }
+ ],
+ [
+  {
+   "id": "yellowtang",
+   "name": "Yellow tang",
+   "sci": "Zebrasoma flavescens",
+   "cat": "sw-fish"
+  },
+  {
+   "id": "bluetang",
+   "name": "Blue tang",
+   "sci": "Paracanthurus hepatus",
+   "cat": "sw-fish"
+  },
+  {
+   "id": "firefish",
+   "name": "Firefish goby",
+   "sci": "Nemateleotris magnifica",
+   "cat": "sw-fish"
+  },
+  {
+   "id": "banggai",
+   "name": "Banggai cardinalfish",
+   "sci": "Pterapogon kauderni",
+   "cat": "sw-fish"
+  },
+  {
+   "id": "sixline",
+   "name": "Six-line wrasse",
+   "sci": "Pseudocheilinus hexataenia",
+   "cat": "sw-fish"
+  },
+  {
+   "id": "chromis",
+   "name": "Blue-green chromis",
+   "sci": "Chromis viridis",
+   "cat": "sw-fish"
+  },
+  {
+   "id": "coralbeauty",
+   "name": "Coral beauty angelfish",
+   "sci": "Centropyge bispinosa",
+   "cat": "sw-fish"
+  },
+  {
+   "id": "watchman",
+   "name": "Yellow watchman goby",
+   "sci": "Cryptocentrus cinctus",
+   "cat": "sw-fish"
+  }
+ ],
+ [
+  {
+   "id": "mandarin",
+   "name": "Mandarin dragonet",
+   "sci": "Synchiropus splendidus",
+   "cat": "sw-fish"
+  },
+  {
+   "id": "cleanershrimp",
+   "name": "Skunk cleaner shrimp",
+   "sci": "Lysmata amboinensis",
+   "cat": "sw-invert"
+  },
+  {
+   "id": "turbo",
+   "name": "Mexican turbo snail",
+   "sci": "Turbo fluctuosus",
+   "cat": "sw-invert"
+  },
+  {
+   "id": "hermit",
+   "name": "Blue-leg hermit crab",
+   "sci": "Clibanarius tricolor",
+   "cat": "sw-invert"
+  },
+  {
+   "id": "dartfrog",
+   "name": "Dyeing dart frog",
+   "sci": "Dendrobates tinctorius",
+   "cat": "amphibian"
+  },
+  {
+   "id": "treefrog",
+   "name": "White's tree frog",
+   "sci": "Ranoidea caerulea",
+   "cat": "amphibian"
+  },
+  {
+   "id": "firetoad",
+   "name": "Fire-bellied toad",
+   "sci": "Bombina orientalis",
+   "cat": "amphibian"
+  },
+  {
+   "id": "firenewt",
+   "name": "Chinese fire-bellied newt",
+   "sci": "Cynops orientalis",
+   "cat": "amphibian"
+  }
+ ],
+ [
+  {
+   "id": "adf",
+   "name": "African dwarf frog",
+   "sci": "Hymenochirus boettgeri",
+   "cat": "amphibian"
+  },
+  {
+   "id": "crestedgecko",
+   "name": "Crested gecko (flame)",
+   "sci": "Correlophus ciliatus",
+   "cat": "reptile"
+  },
+  {
+   "id": "crestedharlequin",
+   "name": "Crested gecko (harlequin)",
+   "sci": "Correlophus ciliatus",
+   "cat": "reptile"
+  },
+  {
+   "id": "regaljumper",
+   "name": "Regal jumping spider",
+   "sci": "Phidippus regius",
+   "cat": "land-invert"
+  },
+  {
+   "id": "chacogoldenknee",
+   "name": "Chaco golden knee tarantula",
+   "sci": "Grammostola pulchripes",
+   "cat": "land-invert"
+  },
+  {
+   "id": "cardinal",
+   "name": "Cardinal tetra",
+   "sci": "Paracheirodon axelrodi",
+   "cat": "?"
+  },
+  {
+   "id": "ember",
+   "name": "Ember tetra",
+   "sci": "Hyphessobrycon amandae",
+   "cat": "?"
+  },
+  {
+   "id": "rummynose",
+   "name": "Rummy-nose tetra",
+   "sci": "Hemigrammus rhodostomus",
+   "cat": "?"
+  }
+ ],
+ [
+  {
+   "id": "harlequin",
+   "name": "Harlequin rasbora",
+   "sci": "Trigonostigma heteromorpha",
+   "cat": "?"
+  },
+  {
+   "id": "chili",
+   "name": "Chili rasbora",
+   "sci": "Boraras brigittae",
+   "cat": "?"
+  },
+  {
+   "id": "danio",
+   "name": "Zebra danio",
+   "sci": "Danio rerio",
+   "cat": "?"
+  },
+  {
+   "id": "whitecloud",
+   "name": "White cloud mountain minnow",
+   "sci": "Tanichthys albonubes",
+   "cat": "?"
+  },
+  {
+   "id": "cpd",
+   "name": "Celestial pearl danio",
+   "sci": "Danio margaritatus",
+   "cat": "?"
+  },
+  {
+   "id": "hatchet",
+   "name": "Marbled hatchetfish",
+   "sci": "Carnegiella strigata",
+   "cat": "?"
+  },
+  {
+   "id": "cherrybarb",
+   "name": "Cherry barb",
+   "sci": "Rohanella (Puntius) titteya",
+   "cat": "?"
+  },
+  {
+   "id": "tigerbarb",
+   "name": "Tiger barb",
+   "sci": "Puntigrus tetrazona",
+   "cat": "?"
+  }
+ ],
+ [
+  {
+   "id": "boesemani",
+   "name": "Boeseman's rainbowfish",
+   "sci": "Melanotaenia boesemani",
+   "cat": "?"
+  },
+  {
+   "id": "guppy",
+   "name": "Guppy",
+   "sci": "Poecilia reticulata",
+   "cat": "?"
+  },
+  {
+   "id": "platy",
+   "name": "Platy",
+   "sci": "Xiphophorus maculatus",
+   "cat": "?"
+  },
+  {
+   "id": "molly",
+   "name": "Black molly",
+   "sci": "Poecilia sphenops",
+   "cat": "?"
+  },
+  {
+   "id": "swordtail",
+   "name": "Swordtail",
+   "sci": "Xiphophorus hellerii",
+   "cat": "?"
+  },
+  {
+   "id": "betta",
+   "name": "Betta",
+   "sci": "Betta splendens",
+   "cat": "?"
+  },
+  {
+   "id": "dwarfgourami",
+   "name": "Dwarf gourami",
+   "sci": "Trichogaster lalius",
+   "cat": "?"
+  },
+  {
+   "id": "honeygourami",
+   "name": "Honey gourami",
+   "sci": "Trichogaster chuna",
+   "cat": "?"
+  }
+ ],
+ [
+  {
+   "id": "gourami",
+   "name": "Pearl gourami",
+   "sci": "Trichopodus leerii",
+   "cat": "?"
+  },
+  {
+   "id": "gbr",
+   "name": "German blue ram",
+   "sci": "Mikrogeophagus ramirezi",
+   "cat": "?"
+  },
+  {
+   "id": "bolivianram",
+   "name": "Bolivian ram",
+   "sci": "Mikrogeophagus altispinosus",
+   "cat": "?"
+  },
+  {
+   "id": "kribensis",
+   "name": "Kribensis",
+   "sci": "Pelvicachromis pulcher",
+   "cat": "?"
+  },
+  {
+   "id": "cockatoo",
+   "name": "Cockatoo dwarf cichlid",
+   "sci": "Apistogramma cacatuoides",
+   "cat": "?"
+  },
+  {
+   "id": "yellowlab",
+   "name": "Yellow lab cichlid",
+   "sci": "Labidochromis caeruleus",
+   "cat": "?"
+  },
+  {
+   "id": "peacock",
+   "name": "Peacock cichlid",
+   "sci": "Aulonocara stuartgranti",
+   "cat": "?"
+  },
+  {
+   "id": "demasoni",
+   "name": "Demasoni cichlid",
+   "sci": "Pseudotropheus demasoni",
+   "cat": "?"
+  }
+ ],
+ [
+  {
+   "id": "kadango",
+   "name": "Kadango (red-fin) cichlid",
+   "sci": "Copadichromis borleyi",
+   "cat": "?"
+  },
+  {
+   "id": "labeo",
+   "name": "Blue-nosed mbuna",
+   "sci": "Labeotropheus trewavasae",
+   "cat": "?"
+  },
+  {
+   "id": "auratus",
+   "name": "Golden mbuna",
+   "sci": "Melanochromis auratus",
+   "cat": "?"
+  },
+  {
+   "id": "livingstonii",
+   "name": "Livingstone's cichlid",
+   "sci": "Nimbochromis livingstonii",
+   "cat": "?"
+  },
+  {
+   "id": "afra",
+   "name": "Dogtooth cichlid",
+   "sci": "Cynotilapia afra",
+   "cat": "?"
+  },
+  {
+   "id": "syno",
+   "name": "Malawi synodontis",
+   "sci": "Synodontis njassae",
+   "cat": "?"
+  },
+  {
+   "id": "angel",
+   "name": "Angelfish",
+   "sci": "Pterophyllum scalare",
+   "cat": "?"
+  },
+  {
+   "id": "oscar",
+   "name": "Oscar",
+   "sci": "Astronotus ocellatus",
+   "cat": "?"
+  }
+ ],
+ [
+  {
+   "id": "goldfish",
+   "name": "Fancy goldfish",
+   "sci": "Carassius auratus",
+   "cat": "?"
+  },
+  {
+   "id": "bronzecory",
+   "name": "Bronze corydoras",
+   "sci": "Corydoras aeneus",
+   "cat": "?"
+  },
+  {
+   "id": "pandacory",
+   "name": "Panda corydoras",
+   "sci": "Corydoras panda",
+   "cat": "?"
+  },
+  {
+   "id": "pygmycory",
+   "name": "Pygmy corydoras",
+   "sci": "Corydoras pygmaeus",
+   "cat": "?"
+  },
+  {
+   "id": "bristlenose",
+   "name": "Bristlenose pleco",
+   "sci": "Ancistrus sp.",
+   "cat": "?"
+  },
+  {
+   "id": "oto",
+   "name": "Otocinclus",
+   "sci": "Otocinclus vittatus",
+   "cat": "?"
+  },
+  {
+   "id": "kuhli",
+   "name": "Kuhli loach",
+   "sci": "Pangio kuhlii",
+   "cat": "?"
+  },
+  {
+   "id": "clownloach",
+   "name": "Clown loach",
+   "sci": "Chromobotia macracanthus",
+   "cat": "?"
+  }
+ ],
+ [
+  {
+   "id": "sae",
+   "name": "Siamese algae eater",
+   "sci": "Crossocheilus oblongus",
+   "cat": "?"
+  },
+  {
+   "id": "hillstream",
+   "name": "Reticulated hillstream loach",
+   "sci": "Sewellia lineolata",
+   "cat": "?"
+  },
+  {
+   "id": "peapuffer",
+   "name": "Pea puffer",
+   "sci": "Carinotetraodon travancoricus",
+   "cat": "?"
+  }
+ ]
+]

@@ -1,0 +1,5 @@
+[
+{"id":"sae","ok":[22,26],"tol":[20,28],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":4,"sourcesSnippet":2,"confidence":"medium","note":"Captive sources 20-28 overall, cluster 24-26; no measured wild temperature; trade-name identity muddled."},
+{"id":"hillstream","ok":[20,25],"tol":[18,27],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":2,"sourcesSnippet":4,"confidence":"medium","note":"Seriously Fish/Gensou say 20-24; breeders keep 23-26 for Sewellia; needs high oxygen, avoid above 27."},
+{"id":"peapuffer","ok":[24,28],"tol":[22,30],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":3,"sourcesSnippet":4,"confidence":"high","note":"Captive 22-28; wild Kerala 25-28 (secondary citation); stable temperature matters."}
+]

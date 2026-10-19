@@ -1,0 +1,138 @@
+[
+ {
+  "id": "boesemani",
+  "ok": [
+   26,
+   29
+  ],
+  "tol": [
+   24,
+   30
+  ],
+  "rh": null,
+  "rhTol": null,
+  "warm": null,
+  "night": null,
+  "confidence": "medium",
+  "note": "from the batch-6 report table (batch-6.md has the sources)"
+ },
+ {
+  "id": "guppy",
+  "ok": [
+   24,
+   27
+  ],
+  "tol": [
+   17,
+   28
+  ],
+  "rh": null,
+  "rhTol": null,
+  "warm": null,
+  "night": null,
+  "confidence": "medium",
+  "note": "from the batch-6 report table (batch-6.md has the sources)"
+ },
+ {
+  "id": "platy",
+  "ok": [
+   21,
+   26
+  ],
+  "tol": [
+   18,
+   28
+  ],
+  "rh": null,
+  "rhTol": null,
+  "warm": null,
+  "night": null,
+  "confidence": "medium",
+  "note": "from the batch-6 report table (batch-6.md has the sources)"
+ },
+ {
+  "id": "molly",
+  "ok": [
+   23,
+   28
+  ],
+  "tol": [
+   20,
+   30
+  ],
+  "rh": null,
+  "rhTol": null,
+  "warm": null,
+  "night": null,
+  "confidence": "medium",
+  "note": "from the batch-6 report table (batch-6.md has the sources)"
+ },
+ {
+  "id": "swordtail",
+  "ok": [
+   22,
+   27
+  ],
+  "tol": [
+   18,
+   28
+  ],
+  "rh": null,
+  "rhTol": null,
+  "warm": null,
+  "night": null,
+  "confidence": "medium",
+  "note": "from the batch-6 report table (batch-6.md has the sources)"
+ },
+ {
+  "id": "betta",
+  "ok": [
+   24,
+   29
+  ],
+  "tol": [
+   22,
+   31
+  ],
+  "rh": null,
+  "rhTol": null,
+  "warm": null,
+  "night": null,
+  "confidence": "high",
+  "note": "from the batch-6 report table (batch-6.md has the sources)"
+ },
+ {
+  "id": "dwarfgourami",
+  "ok": [
+   24,
+   28
+  ],
+  "tol": [
+   22,
+   30
+  ],
+  "rh": null,
+  "rhTol": null,
+  "warm": null,
+  "night": null,
+  "confidence": "medium",
+  "note": "from the batch-6 report table (batch-6.md has the sources)"
+ },
+ {
+  "id": "honeygourami",
+  "ok": [
+   23,
+   27
+  ],
+  "tol": [
+   21,
+   28
+  ],
+  "rh": null,
+  "rhTol": null,
+  "warm": null,
+  "night": null,
+  "confidence": "medium",
+  "note": "from the batch-6 report table (batch-6.md has the sources)"
+ }
+]

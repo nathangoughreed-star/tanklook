@@ -1,0 +1,10 @@
+[
+{"id":"harlequin","ok":[22,26],"tol":[20,28],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":3,"sourcesSnippet":2,"confidence":"medium","note":"Seriously Fish 21-28, FishProfiles 22-25, FishTankAdvisor 23-28; no wild temperature found."},
+{"id":"chili","ok":[23,27],"tol":[20,29],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":3,"sourcesSnippet":2,"confidence":"medium","note":"Seriously Fish, Co-Op, Practical Fishkeeping all 20/22-28; ideal about 23 per one snippet; no wild temperature."},
+{"id":"danio","ok":[20,26],"tol":[15,32],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":4,"sourcesSnippet":1,"confidence":"high","note":"Hobby 18-25 vs lab 26-28.5; wild measured 16.5-34 (outliers 12-39); very eurythermal."},
+{"id":"whitecloud","ok":[16,22],"tol":[10,26],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":4,"sourcesSnippet":1,"confidence":"high","note":"Cool-water fish: SF 14-22, Co-Op 18-25, wild nominal 18-22; survives to 5 C, stress above 24 C long term."},
+{"id":"cpd","ok":[22,25],"tol":[20,27],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":3,"sourcesSnippet":2,"confidence":"high","note":"SF 20-26, Co-Op 22-24 (to 26), Portland 22-26 optimal 23-24; one wild reading 22-24 in January."},
+{"id":"hatchet","ok":[24,27],"tol":[22,28],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":3,"sourcesSnippet":1,"confidence":"medium","note":"SF 20-28, FishProfiles 24-28, Aqualog fasciata 22-25; Co-Op page 404; no wild temperature; range drifts by source."},
+{"id":"cherrybarb","ok":[23,26],"tol":[20,28],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":4,"sourcesSnippet":0,"confidence":"high","note":"SF 20-27, Co-Op 22-27, Fishkeeper 22-27, Tetra 23-26; wild stream is shaded and fairly cool, air 25-27 C only."},
+{"id":"tigerbarb","ok":[23,27],"tol":[20,29],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":3,"sourcesSnippet":1,"confidence":"medium","note":"SF 20-26 vs Co-Op 22-28 and Wikipedia 25-27.8; colour fades below about 21 C; no wild temperature."}
+]

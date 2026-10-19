@@ -6,6 +6,7 @@
 // how much compromise is left, for whom, and whether it is fine long term. A tolerable band that has not been researched yet
 // is estimated from the comfortable one (marked `est`).
 import { CARE } from './care';
+import { AIRDATA } from './climatedata';
 import { getSpecies } from './species';
 import type { LayoutId, TankSetup } from '../scene/types';
 
@@ -72,7 +73,7 @@ export function solve(bands: Band[], lo: number, hi: number, step: number, unit:
   const verdict = (p: Per) => p.status === 'fine' ? 'a small compromise, fine long term'
     : p.status === 'stretch' ? 'tolerable for a while, not recommended long term' : 'outside what it tolerates: do not keep it with the others';
   const summary = !off.length ? `Everyone is inside their comfortable range at ${at}${u}.`
-    : off.slice(0, 3).map(p => `${p.name}: ${dir(p)}, ${verdict(p)}${p.est ? ' (tolerance estimated)' : ''}.`).join(' ') + (off.length > 3 ? ` +${off.length - 3} more.` : '');
+    : off.slice(0, 3).map(p => `${p.name}: ${dir(p)}, ${verdict(p)}${p.est ? ' (tolerance is a rough estimate)' : ''}.`).join(' ') + (off.length > 3 ? ` +${off.length - 3} more.` : '');
   return { at, zone, score, longTerm, per, summary };
 }
 
@@ -94,7 +95,7 @@ export interface Climate {
   fitRh: Fit | null;
 }
 /** Air climate of a land animal: comfortable temp, tolerable temp, humidity, tolerable humidity, warm spot, note. */
-interface Air { c: R; tol?: R; rh: R; rhTol?: R; warm?: R; note?: string }
+interface Air { c: R; tol?: R; rh: R; rhTol?: R; warm?: R; note?: string; est?: boolean }
 const AIR: Record<string, Air> = {
   crestedgecko: { c: [22, 26], rh: [60, 80], note: 'Mist daily; let it dry a little between.' },
   crestedharlequin: { c: [22, 26], rh: [60, 80], note: 'Mist daily; let it dry a little between.' },
@@ -108,6 +109,12 @@ const AIR: Record<string, Air> = {
   regaljumper: { c: [22, 27], rh: [50, 70] },
   chacogoldenknee: { c: [22, 27], rh: [50, 65], note: 'Keep one corner damp, the rest drier.' },
 };
+// researched air bands (research/climate) take over from the first-guess entries above
+for (const [id, d] of Object.entries(AIRDATA)) {
+  const old = AIR[id];
+  AIR[id] = { ...old, c: d.c, tol: d.tol, rh: d.rh ?? old?.rh ?? [60, 80], rhTol: d.rhTol ?? (d.rh ? undefined : old?.rhTol), warm: d.warm ?? old?.warm, est: d.est,
+    note: old?.note ?? (d.night ? `Night low ${d.night[0]}-${d.night[1]} °C.` : undefined) };
+}
 const pad = (r: R, by: number, min = 0, max = Infinity): R => [Math.max(min, r[0] - by), Math.min(max, r[1] + by)];
 /** Air climate by terrarium style. */
 const STYLE_AIR: Partial<Record<LayoutId, string>> = { rainforest: 'crestedgecko', arid: 'leopardgecko', jumper: 'regaljumper', python: 'ballpython', burrow: 'chacogoldenknee', frogs: 'treefrog' };
@@ -121,7 +128,7 @@ export function climateOf(S: TankSetup): Climate[] {
   const land = sp.filter(id => AIR[id]);
   if (S.water.on) {
     const own = sp.filter(id => CARE[id]?.temp);
-    const bands: Band[] = own.map(id => { const c = CARE[id]; return { name: nm(id), ok: c.temp!, tol: c.tol ?? pad(c.temp!, 2), est: !c.tol }; });
+    const bands: Band[] = own.map(id => { const c = CARE[id]; return { name: nm(id), ok: c.temp!, tol: c.tol ?? pad(c.temp!, 2), est: !c.tol || !!c.tolEst }; });
     const fit = solve(bands, 0, 40, 0.5, '°C');
     const fallback: R = S.water.salt ? [24, 27] : [22, 26];
     rows.push({
@@ -136,8 +143,8 @@ export function climateOf(S: TankSetup): Climate[] {
     const ids = land.length ? land : styleSp ? [styleSp] : [];
     const dflt = { c: [22, 26] as R, rh: (swampy ? [70, 90] : [50, 70]) as R };
     if (swampy) dflt.c = [22, 27];
-    const bands: Band[] = ids.map(id => ({ name: land.length ? nm(id) : `${nm(id)} (this style)`, ok: AIR[id].c, tol: AIR[id].tol ?? pad(AIR[id].c, 2), est: !AIR[id].tol }));
-    const rhBands: Band[] = ids.map(id => ({ name: bands[ids.indexOf(id)].name, ok: AIR[id].rh, tol: AIR[id].rhTol ?? pad(AIR[id].rh, 10, 0, 100), est: !AIR[id].rhTol }));
+    const bands: Band[] = ids.map(id => ({ name: land.length ? nm(id) : `${nm(id)} (this style)`, ok: AIR[id].c, tol: AIR[id].tol ?? pad(AIR[id].c, 2), est: !AIR[id].tol || !!AIR[id].est }));
+    const rhBands: Band[] = ids.map(id => ({ name: bands[ids.indexOf(id)].name, ok: AIR[id].rh, tol: AIR[id].rhTol ?? pad(AIR[id].rh, 10, 0, 100), est: !AIR[id].rhTol || !!AIR[id].est }));
     const fit = solve(bands, 0, 40, 0.5, '°C'), fitRh = solve(rhBands, 0, 100, 5, '%');
     const one = ids.length === 1 ? AIR[ids[0]] : undefined;
     rows.push({
@@ -166,7 +173,7 @@ function axis(title: string, unit: string, fit: Fit, bands: Band[], warm: Record
   const row = (b: Band) => {
     const p = fit.per.find(x => x.name === b.name)!;
     const w = warm[b.name], d = p.delta ? ` ${p.delta > 0 ? '+' : ''}${p.delta.toFixed(1).replace(/\.0$/, '')}` : '';
-    return `<div class="clR"><span class="clN" title="${b.name}${b.est ? ' (tolerable band estimated)' : ''}">${b.name}${b.est ? '*' : ''}</span><span class="clB">${seg(b.tol, 't')}${seg(b.ok, 'a')}${w ? seg(w, 'w') : ''}</span>`
+    return `<div class="clR"><span class="clN" title="${b.name}${b.est ? ' (tolerable band is thin: few sources)' : ''}">${b.name}${b.est ? '*' : ''}</span><span class="clB">${seg(b.tol, 't')}${seg(b.ok, 'a')}${w ? seg(w, 'w') : ''}</span>`
       + `<span class="clV s-${p.status}" title="${b.ok[0]}-${b.ok[1]} comfortable, ${b.tol[0]}-${b.tol[1]} tolerable">${STATUS_TXT[p.status]}${d}</span></div>`;
   };
   return `<div class="clAx"><div class="clT">${title} <span class="clScore ${fit.longTerm ? 'good' : 'bad'}">Agreement ${fit.score}/100${fit.longTerm ? '' : ' · not recommended long term'}</span></div>`
@@ -182,6 +189,6 @@ export function climateChart(r: Climate) {
   if (r.warm && r.bands.length === 1) warm[r.bands[0].name] = r.warm;
   let h = axis(`${r.label} temperature, °C`, '', r.fit, r.bands, warm, Math.floor(r.fit.at) - 4, Math.ceil(r.fit.at) + 4);
   if (r.fitRh) h += axis('Relative humidity, %', '%', r.fitRh, r.rhBands, {}, 0, 100);
-  if ([...r.bands, ...r.rhBands].some(b => b.est)) h += '<div class="clSum">* Tolerable band estimated from the comfortable one; not yet researched.</div>';
+  if ([...r.bands, ...r.rhBands].some(b => b.est)) h += '<div class="clSum">* Tolerable band is thin: few sources, partly judgement.</div>';
   return h;
 }
