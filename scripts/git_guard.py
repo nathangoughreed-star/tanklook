@@ -39,14 +39,25 @@ def deny(reason):
     sys.exit(0)
 
 
-def in_shared(cwd, cmd):
-    paths = [cwd] + re.findall(r"""(?:cd|-C|Set-Location)\s+["']?([^"';&|]+?)["']?(?=\s*(?:&&|;|\||$))""", cmd)
-    for p in paths:
-        p = re.sub(r"^/([a-zA-Z])/", r"\1:/", p.strip())          # git-bash /c/Users -> c:/Users
-        n = os.path.normcase(os.path.normpath(p))
-        if n.startswith(SHARED) and os.path.join(".claude", "worktrees") not in n:   # lane worktrees have one owner
-            return True
-    return False
+def shared(p):
+    p = re.sub(r"^/([a-zA-Z])/", r"\1:/", p.strip().strip("\"'"))   # git-bash /c/Users -> c:/Users
+    n = os.path.normcase(os.path.normpath(p))
+    return n.startswith(SHARED) and os.path.join(".claude", "worktrees") not in n   # lane worktrees have one owner
+
+
+PATH = r"""("[^"]*"|'[^']*'|[^\s;&|]+)"""
+
+
+def segments(cwd, cmd):
+    """Each command in a chain with the folder it runs in: cd / Set-Location carry over, -C applies to its own git."""
+    here = cwd
+    for seg in re.split(r"&&|\|\||;|\||\n", cmd):
+        m = re.match(r"\s*(?:cd|Set-Location)\s+" + PATH, seg)
+        if m:
+            here = m.group(1)
+            continue
+        c = re.search(r"\bgit\s+-C\s+" + PATH, seg)
+        yield (c.group(1) if c else here), seg
 
 
 def main():
@@ -55,12 +66,15 @@ def main():
     except Exception:
         sys.exit(0)
     cmd = (data.get("tool_input") or {}).get("command") or ""
-    if "git" not in cmd or not in_shared(data.get("cwd") or "", cmd):
+    if "git" not in cmd:
         sys.exit(0)
     cmd = re.sub(r"""\s-m\s+("(?:[^"\\]|\\.)*"|'[^']*')""", " -m MSG", cmd)   # commit messages may say anything
-    for pat, why in RULES:
-        if re.search(pat, cmd):
-            deny(why)
+    for where, seg in segments(data.get("cwd") or "", cmd):
+        if not shared(where):
+            continue
+        for pat, why in RULES:
+            if re.search(pat, seg):
+                deny(why)
 
 
 if __name__ == "__main__":
