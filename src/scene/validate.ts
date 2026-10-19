@@ -203,7 +203,8 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
     },
     render: {
       edge: pick(r.edge, ['cutout', 'a2c'] as const, d.render.edge), grid: bool(r.grid, d.render.grid), rim: bool(r.rim, d.render.rim), edges: bool(r.edges, d.render.edges), beams: bool(r.beams, false), pop: num(r.pop, 0.15, 0, 1),
-      bg: pick(r.bg, ['black', 'blue', 'gradient', 'grey', 'frosted', 'none'] as const, d.render.bg), glass,
+      bg: pick(r.bg, ['black', 'blue', 'gradient', 'grey', 'frosted', 'custom', 'none'] as const, d.render.bg), glass,
+      ...(typeof r.bgColor === 'string' && /^#[0-9a-f]{6}$/i.test(r.bgColor) ? { bgColor: r.bgColor.toLowerCase() } : {}),
       // added 2026-10-12 (no version bump); older files: the side the background then followed, the room wall's
       bgSides: Array.isArray(r.bgSides)
         ? BG_SIDES.filter(k => (r.bgSides as unknown[]).includes(k))
@@ -292,7 +293,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       })(),
     },
     backdrop: { // added 2026-10-15; older files: none
-      kind: pick(bd.kind, ['none', 'rock', 'river', 'reef', 'cork', 'moss'] as const, d.backdrop.kind),
+      kind: pick(bd.kind, ['none', 'rock', 'river', 'reef', 'cork', 'moss', 'jungle'] as const, d.backdrop.kind),
       depth: Math.round(num(bd.depth, d.backdrop.depth, ...LIMITS.backdrop)), seed: Math.round(num(bd.seed, 1, 1, 1e9)),
     },
     grow: { // added 2026-10-15 (lane GR3); older files: low-tech, Time 0
