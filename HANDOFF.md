@@ -11,7 +11,10 @@ is done the coordinator moves it to the archive.
 **Lane rules:** Rules: touch another lane's file only for a one-line hook, and say so in your section. No scene version bump without
 asking Nathan. Shipping: in the worktree `git fetch` + `git merge origin/main`, tsc + tests + browser check, then
 `git push origin HEAD:main` and `git -C "C:/Users/nreed/Glass Box" merge --ff-only origin/main`. HANDOFF.md
-conflicts on merge: keep both sections. Each lane adds its own dated section under "Lane sections (current)" below.
+conflicts on merge: keep both sections. **In the shared folder itself** (C:/Users/nreed/Glass Box, any chat not in a
+worktree) commit and push ONLY with `scripts/ship.sh -m "msg" <your files>` (bash): it commits just those files and
+pushes from a throwaway worktree without touching other chats' edits. A hook (`scripts/git_guard.py`) denies stash,
+--autostash, reset --hard, checkout --, restore, clean -f, commit -a, add -A / add ., push and pull there (2026-10-19). Each lane adds its own dated section under "Lane sections (current)" below.
 **Deploy health:** live build = footer of https://tanklook.com/ ; one-line check: `curl -s https://tanklook.com/assets/$(curl -s https://tanklook.com/ | grep -o 'main-[^"]*\.js' | head -1) | grep -oE 'n:.[0-9]+.,sha' | head -1; git rev-list --count origin/main` (live n vs main; equal once the last deploy lands, ~5 min after a push); Actions state = `curl -s https://api.github.com/repos/nathangoughreed-star/tanklook/actions/runs?per_page=5` (status/conclusion per head_sha; `/deployments` for what shipped). A red deploy usually means one slow/failing test: reproduce with `npx vitest run` in a clean worktree.
 
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_408aa124-ce91-4651-abaf-a221f0ceac82`
