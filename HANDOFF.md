@@ -29,11 +29,7 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 DONE 2026-10-16 (lane SS2, see archive; its gaps: no water dish, no succulents, Malawi has only yellowlab / cockatoo); multi-select / duplicate (lane MS) + scatter brush (lane SB) DONE 2026-10-16, see archive; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
-| DS one expected-cost number | `../Glass-Box-expectedcost` / `expectedcost` | 5793 | `src/demand/*`, `ui/demandPanel.ts`, demand data | opened 2026-10-19 |
-| CS CI workflow split | `../Glass-Box-cisplit` / `cisplit` | 5803 | `.github/workflows/*` | opened 2026-10-19 |
-| AQ AqAdvisor ids + Malawi pool | `../Glass-Box-aqids` / `aqids` | 5813 | `scripts/aqadvisor-ids.py`, `data/aqadvisor.json`, Malawi pool in `scene/starter.ts` | opened 2026-10-19 |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
-| KW start wizard | `../Glass-Box-wizard` / `wizard` | 5783 | new `ui/wizard.ts`, `#startGuided` slot in `index.html`, wizard CSS | opened 2026-10-19 |
 | TM tech menu | `../Glass-Box-techmenu` / `techmenu` | 5823 | new `data/tech.json`, `scene/tech.ts`, `demand/tech.ts`, `ui/techMenu.ts`, Tech + Lighting section in `index.html`; one-line hooks in panels.ts / engine.ts / types.ts | opened 2026-10-19 |
 | TG tech gear in 3D | `../Glass-Box-techgear` / `techgear` | 5833 | new `render/gear3d.ts`, its build hook, Viewer "Show equipment" toggle | opened 2026-10-19 (wires to `tech` after TM step 1) |
 
@@ -55,18 +51,6 @@ A Tech section where the owner picks the tech level, Walstad to high-tech plante
 - Dev preview: `techmenu` entry added (uncommitted) to the MAIN checkout's .claude/launch.json (preview_start reads that one), `npm --prefix ../Glass-Box-techmenu`, port 5823.
 
 ## Lane TG: tech gear in 3D (2026-10-19, branch `techgear`, port 5833)  (lane fills this in)
-
-## Lane KW: start wizard (2026-10-19, branch `wizard`, port 5783)  (lane fills this in)
-
-## Lane DS: one expected-cost number (2026-10-19, branch `expectedcost`, port 5793)  (lane fills this in)
-
-## Lane CS: CI workflow split (2026-10-19, branch `cisplit`, port 5803)
-- `.github/workflows/deploy.yml` is two jobs with job-level concurrency (no workflow-level group): `test` (npm ci, npm test; group `test-<ref>`, cancel-in-progress **false**) and `deploy` (needs test; build, upload-pages-artifact, deploy-pages; group `pages`, cancel-in-progress **false**).
-- Why: the old single job with a workflow-level cancel-in-progress cancelled each run in turn during push bursts (live sat at 771 while main was 793). Now nothing running is cancelled; in each group a newer waiting job replaces the older waiting one, so intermediate pushes are skipped, runs stay in push order, and the latest commit that passes tests is always the last one deployed. Tests are not cancelled mid-run because pushes arrive every 1-4 min and a CI test takes ~3 min: cancelling would starve deploys (seen in the first burst test). The test gate stays (deploy needs test).
-- Burst test 2026-10-19: pushed c1e8dac then bc57788 ~20 s apart; bc57788's test job cancelled c1e8dac's running test (deploy skipped) and ran itself. Both stayed red only because of the anchorbase failures below.
-- Step 0 (red main since 3ea1e44): `test/anchorbase.test.ts` failed 10 cases after 1d084c0 (shrimp slope-lift cap in render/build.ts). Verified by reverting it (111/111 pass) and diffing the re-record: only cleanershrimp/cherryshrimp moved, straight down (max 42.7 mm), as that commit intends. Baseline re-recorded in e2082bc.
-
-## Lane AQ: AqAdvisor ids + Malawi pool (2026-10-19, branch `aqids`, port 5813)  (lane fills this in)
 
 ## Lane KD: bundle deals (2026-10-19)
 - `src/data/deals.json` (+ `deals.ts`): retailer tank+stand bundles {retailer, gal, tank (catalog id, optional), kit (optional), includes, price{usd, regularUsd}, saleEnds, url, asOf, est}. `src/demand/deals.ts` `dealOffers` = saving vs buying the parts (engine `kit` option generalised with `includes` + `label`, no parallel mechanism).
@@ -294,6 +278,10 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane CS: CI workflow split (2026-10-19, branch `cisplit`, port 5803)
+- Lane KW: start wizard (2026-10-19, branch `wizard`, port 5783)  (lane fills this in)
+- Lane DS: one expected-cost number (2026-10-19, branch `expectedcost`, port 5793)
+- Lane AQ: AqAdvisor ids + Malawi pool (2026-10-19, branch `aqids`, port 5813)
 - Lane CG: compatibility gates (2026-10-19)
 - Lane CI: deploy health, live site stuck on build 738 (2026-10-19, branch `ci`, port 5773)
 - Lane GS: gecko support surfaces (2026-10-19, branch `geckosupport`, port 5743)

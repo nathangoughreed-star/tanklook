@@ -559,58 +559,6 @@
         "--strictPort"
       ],
       "port": 5693
-    },
-    {
-      "name": "wizard",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5783",
-        "--strictPort"
-      ],
-      "port": 5783
-    },
-    {
-      "name": "expectedcost",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5793",
-        "--strictPort"
-      ],
-      "port": 5793
-    },
-    {
-      "name": "cisplit",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5803",
-        "--strictPort"
-      ],
-      "port": 5803
-    },
-    {
-      "name": "aqids",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5813",
-        "--strictPort"
-      ],
-      "port": 5813
     }
   ]
 }
