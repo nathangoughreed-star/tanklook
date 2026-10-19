@@ -7,7 +7,9 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
 /** An example tank with the stub `tech.gear` picks (null = no stub: the inferred gear), saved from the front (or az/el). */
 export async function tank(name, example, picks, { az = 0, el = 6, zoom = 1, crop = null, w = 1200, edit = null } = {}) {
   await ex(example);
-  window.__gb.store.edit(s => { if (picks) s.tech = { gear: picks }; else delete s.tech; edit?.(s); });
+  const T = await import('/src/scene/tech.ts');
+  // picks: a Tech preset id (lane TM), a TechSetup, or null (no tech: the inferred gear)
+  window.__gb.store.edit(s => { if (typeof picks === 'string') s.tech = T.applyPreset(s, picks); else if (picks) s.tech = picks; else delete s.tech; edit?.(s); });
   await wait(400);
   return snap(name, { az, el, zoom, crop, w });
 }
@@ -66,12 +68,8 @@ export async function all(only = null) { for (const [id, o] of MODELS) if (!only
 
 /** The four whole tanks (front and 3/4), and an old file (no tech) with its inferred gear and with none. */
 export const TANKS = [
-  ['walstad', 'planted', [{ id: 'heater-100' }]],
-  ['lowtech', 'planted', [{ id: 'hob-l' }, { id: 'heater-200' }]],
-  ['hightech', 'planted', [{ id: 'canister-m' }, { id: 'heater-200' }, { id: 'co2', co2: 'ok' }, { id: 'uv' }]],
-  ['sps', 'reef', [{ id: 'sump' }, { id: 'heater-200' }, { id: 'powerhead' }, { id: 'wavemaker' }, { id: 'ato' }]],
-  ['old-inferred', 'planted', null],
-  ['old-none', 'planted', []],
+  ['walstad', 'planted', 'walstad'], ['midplanted', 'planted', 'midplanted'], ['hightech', 'planted', 'hightech'], ['sps', 'reef', 'sps'],
+  ['lowtech', 'planted', 'lowtech'], ['old-inferred', 'planted', null],
 ];
 export async function tanks(only = null) {
   for (const [n, e, p] of TANKS) if (!only || only.includes(n)) {

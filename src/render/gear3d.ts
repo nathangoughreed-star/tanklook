@@ -2,14 +2,14 @@
 // procedurally to the real class's size (gear-models.json: gph / watts -> body size) and placed on the back wall at one
 // side, intake low and outlet high, clear of the hardscape. Everything a tank's gear is made of merges into four meshes
 // (lit in-tank parts, lit room parts, clear parts, glowing indicators), so the whole set costs four draw calls.
-// What is drawn: the tank's `tech` once lane TM ships its type (see gearPicks), else the gear the demand engine infers.
+// What is drawn: the tank's `tech` through lane TM's techParts (scene/tech.ts); a file without it, the inferred gear.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { FILTER_MODELS, HEATER_MODELS, defaultFilter, defaultHeater, type FilterModel } from '../demand/gear';
+import { FILTER_MODELS, HEATER_MODELS, type FilterModel } from '../demand/gear';
+import { techParts, type GearPlace } from '../scene/tech';
 import { backdropDepth, glassThickness, tankUnderside, floorY, waterY, clamp } from '../scene/physics';
 import { chord } from '../scene/shape';
 import { groundHeight } from '../scene/terrain';
-import { volume } from '../scene/physics';
 import type { Tank, TankSetup } from '../scene/types';
 
 // ---------- what is drawn ----------
@@ -18,27 +18,46 @@ import type { Tank, TankSetup } from '../scene/types';
 export const EXTRA_GEAR = ['airstone', 'co2', 'uv', 'powerhead', 'wavemaker', 'skimmer', 'sump', 'ato'] as const;
 export type ExtraGear = (typeof EXTRA_GEAR)[number];
 /** One piece of gear: a filter or heater model id (gear-models.json) or an extra class. */
-export interface GearPick { id: string; /** CO2 only: the drop checker's colour, when the tech model knows the level. */ co2?: 'low' | 'ok' | 'high' }
+export interface GearPick {
+  id: string; /** CO2 only: the drop checker's colour, when the tech model knows the level. */ co2?: 'low' | 'ok' | 'high';
+  /** units (two heaters, two powerheads); absent = 1 */ n?: number;
+  /** the owner's placement (TechSetup.place): the back corner it starts from and how far in from that side glass, mm */ side?: GearSide; u?: number;
+}
 /** Which back corner the gear sits in. */
 export type GearSide = 'left' | 'right';
 
-/**
- * Lane TM's `TankSetup.tech` is not on main yet: until it is, a file may carry the stub `tech.gear` (a list of picks),
- * and a file without it draws what the demand engine infers (engine.ts: a HOB up to 60 gal, else a canister; a heater
- * at 3 W/gal; a skimmer on salt; CO2 when the plants are fed CO2).
- */
+/** Whether a file without `tech` draws the gear the demand engine infers (true) or none (false): Nathan's call, pending. */
+export const DRAW_INFERRED = true;
+
+/** The tank's gear as picks: from lane TM's techParts (scene/tech.ts), which also fills a file without `tech` with the
+ *  inferred gear (a HOB up to 60 gal, else a canister; a heater; salt: skimmer; CO2 when the plants are fed CO2). */
 export function gearPicks(S: TankSetup): GearPick[] {
-  if (!S.water.on) return [];
-  const stub = (S as { tech?: { gear?: GearPick[] } }).tech?.gear;
-  if (stub) return stub;
-  return inferredPicks(S);
-}
-export function inferredPicks(S: TankSetup): GearPick[] {
-  if (!S.water.on) return [];
-  const gal = volume(S.tank).gallons, salt = !!S.water.salt, out: GearPick[] = [{ id: defaultFilter(gal).id }, { id: defaultHeater(gal, 3).id }];
-  if (salt) out.push({ id: 'skimmer' });
-  if (S.grow?.feed === 'co2' && S.items.some(i => i.kind === 'plant')) out.push({ id: 'co2' });
+  if (!S.water.on || (!S.tech && !DRAW_INFERRED)) return [];
+  const out: GearPick[] = [], parts = techParts(S), sump = parts.some(p => p.gear === 'sump');
+  for (const p of parts) {
+    const where = placeOf(S, p.place), pick = (id: string, o: Partial<GearPick> = {}) => out.push({ id, ...(p.n > 1 ? { n: p.n } : {}), ...where, ...o });
+    switch (p.gear) {
+      case 'filter': case 'heater': if (p.model) pick(p.model); break;
+      case 'sump': pick('sump'); break;
+      case 'co2kit': case 'diyco2': pick('co2'); break;
+      case 'airpump': pick('airstone'); break;
+      case 'uv': pick('uv'); break;
+      case 'ato': pick('ato'); break;
+      case 'skimmerhob': pick('skimmer'); break;
+      case 'skimmer': if (!sump) pick('skimmer'); break; // a sump skimmer is drawn in the sump
+      case 'powerhead': pick('powerhead'); break;
+      case 'wavemaker': pick('wavemaker'); break;
+      default: break; // dosing, test kits, RO/DI, the chiller: not in the tank
+    }
+  }
   return out;
+}
+/** A row's placement as a corner and a start along the back wall (side walls: that side's corner). */
+function placeOf(S: TankSetup, p?: GearPlace): Pick<GearPick, 'side' | 'u'> {
+  if (!p) return {};
+  if (p.wall !== 'back') return { side: p.wall };
+  const at = p.at ?? 0, side: GearSide = at <= 0.5 ? 'left' : 'right';
+  return { side, u: Math.max(22, (side === 'left' ? at : 1 - at) * S.tank.L) };
 }
 
 // ---------- show / hide (Viewer "Show equipment") ----------
@@ -570,33 +589,43 @@ const isHeater = (id: string) => HEATER_MODELS.find(m => m.id === id);
 /** Build the gear for `picks` (default: gearPicks(S)) in tank S, clear of the solid pieces `solids` (world boxes). */
 export function buildGear(S: TankSetup, T: Tank, solids: THREE.Box3[], picks = gearPicks(S), side?: GearSide): THREE.Mesh[] {
   if (!picks.length) return [];
-  const kit = new Kit(), f = frame(S, T, kit, side ?? gearSide(T, solids), solids);
-  const has = (id: string) => picks.some(p => p.id === id);
-  const fm = picks.map(p => isFilter(p.id)).find(Boolean), hm = picks.map(p => isHeater(p.id)).find(Boolean);
-  let cursor = 22, outlet = 120;
-  const after = () => Math.max(cursor, ...f.taken.map(r => r[1])) + 10;
-  if (has('sump')) { sump(f, cursor); cursor = after(); outlet = cursor - 40; }
-  // the heater in the corner, the filter's intake next to it, so the intake draws the warm water through the tank
-  if (hm) { heater(f, hm.watts, cursor); cursor = after(); }
-  if (fm) {
-    const n0 = f.taken.length;
-    if (fm.kind === 'hob') hob(f, fm, cursor); else if (fm.kind === 'canister') canister(f, fm, cursor);
-    else if (fm.kind === 'sponge') sponge(f, fm, cursor); else internal(f, fm, cursor);
-    const mine = f.taken.slice(n0);
-    outlet = fm.kind === 'canister' ? mine[mine.length - 1][0] + 35 : (mine[0][0] + mine[0][1]) / 2;
+  const kit = new Kit(), dflt = side ?? gearSide(T, solids);
+  // each corner its own frame: the owner may put the filter in one corner and the heater in the other
+  for (const sd of ['left', 'right'] as GearSide[]) {
+    const mine = picks.filter(p => (p.side ?? dflt) === sd);
+    if (mine.length) buildSet(frame(S, T, kit, sd, solids), mine);
   }
-  cursor = after();
-  if (has('uv')) uv(f, fm?.kind === 'canister' || has('sump') ? outlet + 40 : cursor, has('sump') ? undefined : fm);
-  if (has('skimmer') && !has('sump')) skimmerHob(f, after());
-  if (has('airstone')) airstone(f, after());
-  if (has('ato') && !has('sump')) ato(f, after());
-  if (has('co2')) co2(f, cursor, outlet, picks.find(p => p.id === 'co2')!.co2);
-  if (has('powerhead')) powerhead(f, false, false);
-  if (has('wavemaker')) powerhead(f, true, true);
   const out = kit.meshes();
   for (const m of out) m.visible = shown;
   live = live.filter(o => o.parent).concat(out);
   return out;
+}
+
+function buildSet(f: Frame, picks: GearPick[]) {
+  const get = (id: string) => picks.find(p => p.id === id), has = (id: string) => !!get(id);
+  const fp = picks.find(p => isFilter(p.id)), hp = picks.find(p => isHeater(p.id));
+  const fm = fp && isFilter(fp.id), hm = hp && isHeater(hp.id);
+  let cursor = 22, outlet = 120;
+  const after = () => Math.max(cursor, ...f.taken.map(r => r[1])) + 10;
+  const at = (p: GearPick | undefined, u: number) => p?.u ?? u; // the owner's spot, else the next free one
+  if (has('sump')) { sump(f, at(get('sump'), cursor)); cursor = after(); outlet = cursor - 40; }
+  // the heater in the corner, the filter's intake next to it, so the intake draws the warm water through the tank
+  if (hm) for (let i = 0; i < (hp!.n ?? 1); i++) { heater(f, hm.watts, i ? after() : at(hp, cursor)); cursor = after(); }
+  if (fm) {
+    const n0 = f.taken.length, u0 = at(fp, cursor);
+    if (fm.kind === 'hob') hob(f, fm, u0); else if (fm.kind === 'canister') canister(f, fm, u0);
+    else if (fm.kind === 'sponge') sponge(f, fm, u0); else internal(f, fm, u0);
+    const mine = f.taken.slice(n0);
+    outlet = fm.kind === 'canister' ? mine[mine.length - 1][0] + 35 : (mine[0][0] + mine[0][1]) / 2;
+  }
+  cursor = after();
+  if (has('uv')) uv(f, fm?.kind === 'canister' || has('sump') ? outlet + 40 : at(get('uv'), cursor), has('sump') ? undefined : fm);
+  if (has('skimmer') && !has('sump')) skimmerHob(f, at(get('skimmer'), after()));
+  if (has('airstone')) airstone(f, at(get('airstone'), after()));
+  if (has('ato') && !has('sump')) ato(f, at(get('ato'), after()));
+  if (has('co2')) co2(f, cursor, outlet, get('co2')!.co2);
+  if (has('powerhead')) { powerhead(f, false, false); if ((get('powerhead')!.n ?? 1) > 1) powerhead(f, true, false); }
+  if (has('wavemaker')) powerhead(f, true, true);
 }
 
 /** World boxes of the tank's solid pieces (hardscape, not plants). */
