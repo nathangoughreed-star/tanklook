@@ -6,6 +6,10 @@ import {
   setFeed, stockCapacity, techOf, techParts, walstadGaps, withChoice,
 } from '../src/scene/tech';
 import type { TankSetup } from '../src/scene/types';
+import { getSpecies } from '../src/data/species';
+import { whyAnimal } from '../src/scene/animalfit';
+import { whyNot } from '../src/scene/plantfit';
+import { reefFeedOf, unheatedC } from '../src/scene/tech';
 import { demandOf } from '../src/demand/engine';
 import { defaultProfile } from '../src/demand/types';
 
@@ -171,5 +175,37 @@ describe('demand rows from the tech (lane TM step 3)', () => {
     const kit = D(S), withKit = demandOf(S, defaultProfile(), { now: NOW, kit: { id: 'x', priceUsd: 60, asOf: '2026-10-19' } });
     expect(withKit.items.find(c => c.key === 'filter')?.setup).toBeUndefined();
     expect(kit.items.find(c => c.key === 'filter')?.setup).toBeDefined();
+  });
+});
+
+describe('benefits wired (lane TM step 5)', () => {
+  it('salt gear sets the coral care level: the lowest of skimmer, flow and dosing', () => {
+    const reef = tankOf('reef');
+    const by = (id: string) => feedFor({ ...reef, tech: applyPreset(reef, id) });
+    expect([by('fowlr'), by('soft'), by('lps'), by('sps')]).toEqual(['low', 'low', 'ferts', 'co2']);
+    expect(reefFeedOf(inferTech(reef))).toBe(reef.grow.feed); // an old reef keeps its care level
+    for (const f of ['low', 'ferts', 'co2'] as const) for (const p of ['fowlr', 'soft', 'lps', 'sps'])
+      expect(reefFeedOf(setFeed(applyPreset(reef, p), f, true)), `${p} -> ${f}`).toBe(f);
+    // the coral gate reads that care: an Acropora wants SPS gear, a hammer is fine on LPS gear
+    const lps = feedFor({ ...reef, tech: applyPreset(reef, 'lps') }), sps = feedFor({ ...reef, tech: applyPreset(reef, 'sps') });
+    expect(whyNot('acropora', 300, lps)?.kind).toBe('care');
+    expect(whyNot('acropora', 300, sps)).toBeNull();
+    expect(whyNot('hammer', 110, lps)).toBeNull();
+    // SPS dosing without the flow is still LPS care
+    expect(feedFor({ ...reef, tech: withChoice({ ...reef, tech: applyPreset(reef, 'sps') }, 'flow', 'two') })).toBe('ferts');
+  });
+  it('no heater: the Animals gate flags species the room is too cold for', () => {
+    const neon = getSpecies('neon')!;
+    expect(neon).toBeTruthy();
+    expect(whyAnimal(neon, 200, 3, [], { unheatedC: 17 })?.text).toMatch(/no heater/);
+    expect(whyAnimal(neon, 200, 3, [], {})).toBeNull();
+    const S = sized(762, 305, 305, { fish: true });
+    expect(unheatedC({ ...S, tech: { rows: { heater: 'none' }, roomC: 18 } })).toBe(18);
+    expect(unheatedC({ ...S, tech: { rows: { heater: 'one' } } })).toBeUndefined();
+  });
+  it('no heater in a cold room raises the risk of a tropical stocking', () => {
+    const S = sized(762, 305, 305, { fish: true });
+    const risk = (c: number) => demandOf({ ...S, tech: { rows: { heater: 'none' }, roomC: c } }, defaultProfile(), { now: Date.parse('2026-10-19') }).totals.risk;
+    expect(risk(17)).toBeGreaterThan(risk(25));
   });
 });

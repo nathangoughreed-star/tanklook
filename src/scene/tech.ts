@@ -51,6 +51,8 @@ export interface TechOption {
   co2?: number; fert?: number;
   /** heaters: how many units the power is split over; powerheads: how many pumps */
   heaters?: number; count?: number;
+  /** salt: the coral care level this skimmer / flow / dosing option supports (0 soft, 1 LPS, 2 SPS); see reefFeedOf */
+  tier?: number;
   /** smallest tank this option makes sense on */
   minGal?: number;
   /** another row's option this one needs (an in-sump skimmer needs the sump) */
@@ -63,7 +65,7 @@ export interface GearDef {
   sized?: 'filter' | 'heater';
   price?: { key?: string; fallback?: Num3 };
   /** consumables, USD per month at `ref` gallons; or a price row key */
-  monthly?: Num3 | { key: string };
+  monthly?: Num3 | { key: string; /** the pack lasts this many months at `ref` gallons (absent = the row is per month) */ months?: number };
   /** minutes per week at `ref` gallons, per unit */
   minutes?: Num3;
   watts?: number; hours?: number;
@@ -107,7 +109,7 @@ export function inferTech(S: TankSetup): TechSetup {
     filter: gal <= 60 ? 'hob' : 'canister', heater: 'one', chiller: 'none', air: 'none', uv: 'none',
     conditioner: salt ? 'none' : 'yes', rodi: 'none', ato: 'none',
   };
-  if (salt) Object.assign(rows, { skimmer: 'sump', flow: 'none', dosing: 'none', salinity: 'refractometer', saltmix: 'mix' });
+  if (salt) Object.assign(rows, { skimmer: 'sump', flow: feed === 'co2' ? 'wave' : feed === 'ferts' ? 'two' : 'none', dosing: feed === 'co2' ? 'doser' : feed === 'ferts' ? 'twopart' : 'none', salinity: 'refractometer', saltmix: 'mix' });
   else Object.assign(rows, { co2: feed === 'co2' ? 'pressurized' : 'none', ferts: feed === 'low' ? 'none' : 'aio' });
   return { rows };
 }
@@ -129,17 +131,39 @@ export function feedOf(t: TechSetup, fallback: GrowFeed = 'low'): GrowFeed {
   if (gas >= 1 && fert >= 1) return 'co2';
   return gas + fert >= 1 ? 'ferts' : 'low';
 }
-/** The tank's growth feed: derived from its tech when it has one, else the saved grow.feed. */
-export const feedFor = (S: TankSetup): GrowFeed => S.tech && S.water.on && !isSalt(S) ? feedOf(techOf(S), S.grow.feed) : S.grow.feed;
+/** Reef care from the salt gear (lane TM step 5): the lowest tier of the skimmer, water movement and calcium / alkalinity rows
+ *  (0 = soft corals, 1 = LPS, 2 = SPS), as the grow feed plantfit reads for corals (low = light dosing, ferts = regular,
+ *  co2 = daily). So corals gate on the tech without plantfit changing. */
+const TIER_FEED: GrowFeed[] = ['low', 'ferts', 'co2'];
+export function reefFeedOf(t: TechSetup, fallback: GrowFeed = 'low'): GrowFeed {
+  if (t.rows.dosing === undefined && t.rows.flow === undefined && t.rows.skimmer === undefined) return fallback;
+  const tier = (r: string) => optionDef(r, t.rows[r] ?? 'none')?.tier ?? 0;
+  return TIER_FEED[Math.max(0, Math.min(2, tier('dosing'), tier('flow'), tier('skimmer')))];
+}
+/** The tank's growth feed: derived from its tech when it has one (CO2 + ferts fresh, salt gear on a reef), else the saved grow.feed. */
+export const feedFor = (S: TankSetup): GrowFeed => !S.tech || !S.water.on ? S.grow.feed : isSalt(S) ? reefFeedOf(techOf(S), S.grow.feed) : feedOf(techOf(S), S.grow.feed);
 
-/** The Plant care slider as a shortcut: set the CO2 + ferts rows so feedOf gives `feed`, keeping what already fits. */
-export function setFeed(t: TechSetup, feed: GrowFeed): TechSetup {
-  const rows = { ...t.rows }, gas = optionDef('co2', rows.co2 ?? 'none')?.co2 ?? 0, fert = optionDef('ferts', rows.ferts ?? 'none')?.fert ?? 0;
+/** The Plant care slider as a shortcut: set the CO2 + ferts rows (salt: dosing, flow, skimmer) so the derived feed is `feed`,
+ *  keeping what already fits. */
+export function setFeed(t: TechSetup, feed: GrowFeed, salt = false): TechSetup {
+  const rows = { ...t.rows };
+  if (salt) {
+    const want = TIER_FEED.indexOf(feed), tier = (r: string) => optionDef(r, rows[r] ?? 'none')?.tier ?? 0;
+    // raise each row to the cheapest option that reaches the tier; the dosing row also drops back (the cheapest lever)
+    const reach = (r: string, ids: string[]) => { if (tier(r) < want) rows[r] = ids.find(id => (optionDef(r, id)?.tier ?? 0) >= want) ?? rows[r]; };
+    reach('dosing', ['none', 'twopart', 'doser']); reach('flow', ['none', 'one', 'wave']); reach('skimmer', ['none', 'hob']);
+    if (tier('dosing') > want) rows.dosing = ['none', 'twopart', 'doser'][want];
+    return { ...t, rows, preset: 'custom' };
+  }
+  const gas = optionDef('co2', rows.co2 ?? 'none')?.co2 ?? 0, fert = optionDef('ferts', rows.ferts ?? 'none')?.fert ?? 0;
   if (feed === 'low') { rows.co2 = 'none'; if (rows.ferts !== 'roottabs') rows.ferts = 'none'; } // root tabs alone stay low
   else if (feed === 'ferts') { if (gas >= 1) rows.co2 = 'none'; if (fert + (optionDef('co2', rows.co2 ?? 'none')?.co2 ?? 0) < 1) rows.ferts = 'aio'; }
   else { if (gas < 1) rows.co2 = 'pressurized'; if (fert < 1) rows.ferts = 'aio'; }
   return { ...t, rows, preset: 'custom' };
 }
+
+/** No heater: the water temperature the animals live at (the room's), for the Animals gate; undefined with a heater. */
+export const unheatedC = (S: TankSetup): number | undefined => { const t = techOf(S); return S.water.on && S.tech && t.rows.heater === 'none' ? t.roomC ?? ROOM_C : undefined; };
 
 /** One row changed by hand: the tech is now custom. Choosing an option that needs another row's option sets that too. */
 export function withChoice(S: TankSetup, row: string, opt: string): TechSetup {
@@ -290,7 +314,8 @@ export function optionCost(S: TankSetup, row: string, opt: string, o: { kwhUsd?:
       const p = rowPrice(f.model.priceKey);
       setup = p && s3(p, g.modelPriceK?.[f.model.id] ?? 1); est = !p;
       minutes = s3(minutes, g.byKind?.[def.kind] ?? 1);
-      if (def.kind === 'sponge') { watts += (GEAR.airpump.watts ?? 2.5); const ap = unitPrice(GEAR.airpump.price); if (setup && ap) setup = a3(setup, ap.r); }
+      // sponges run off one air pump, however many there are (its price is spread over the units, as setup is multiplied by n below)
+      if (def.kind === 'sponge') { watts += (GEAR.airpump.watts ?? 2.5) / f.n; const ap = unitPrice(GEAR.airpump.price); if (setup && ap) setup = a3(setup, s3(ap.r, 1 / f.n)); }
     } else if (g.sized === 'heater') {
       const h = heatLoss(S, t);
       n = h.n; watts = h.heater.watts; setup = rowPrice(h.heater.priceKey); kwhMo = h.kwhMo / Math.max(n, 1);
@@ -300,7 +325,7 @@ export function optionCost(S: TankSetup, row: string, opt: string, o: { kwhUsd?:
     }
     if (!setup) { const u = unitPrice(g.price); if (u) { setup = s3(u.r, sizeK(g, gal, 'price')); est = u.est; } }
     if (g.monthly) {
-      const m = 'key' in g.monthly ? rowPrice(g.monthly.key) : g.monthly;
+      const m = 'key' in g.monthly ? (r => r && s3(r, 1 / (g.monthly as { months?: number }).months! || 1))(rowPrice(g.monthly.key)) : g.monthly;
       if (m) monthly = s3(m, sizeK(g, gal, 'monthly'));
     }
     if (g.refill) { const r = rowPrice(g.refill.key); if (r) monthly = a3(monthly, s3(r, gal / g.refill.galMonthsPerRefill)); }
