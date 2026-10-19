@@ -1,6 +1,9 @@
 # HANDOFF archive
 Finished lane and feature sections moved out of HANDOFF.md on 2026-10-16, verbatim, newest first.
 
+## Lane KW: start wizard (2026-10-19, branch `wizard`, port 5783)  (lane fills this in)
+
+
 ## Lane DS: one expected-cost number (2026-10-19, branch `expectedcost`, port 5793)
 - Decision (Nathan 2026-10-19): ask only "What do you want your expected set-up cost to be?"; every limit is checked against the expected value. No percentile, range or cap mode.
 - Removed: `Limits.budgetMode`, factors.json `budgetCapPercentile` + `correlation`, the Monte Carlo in `src/demand/cost.ts` (now only `limitState(D, P)` and `drivers(D, P, bar, top)`), `costDistribution` / `CostResult` / `Dist` / `pct`, the "likely a to b" text and hover wording, the "% of the doubt" share, the cap radio in the limits form, `.dmband` / `.dmcap` / `.dmshare` / `.dmask` CSS. `UI state()` no longer returns `cost`. `kwhRate(P)` is exported from the engine (expected $/kWh).
