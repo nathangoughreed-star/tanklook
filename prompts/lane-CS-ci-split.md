@@ -14,6 +14,10 @@ of pushes cancels each run in turn and the site can trail main for a long stretc
    https://api.github.com/repos/nathangoughreed-star/tanklook/actions/runs, readable without login); the test gate must stay.
 3. Add a one-line "live build" check to HANDOFF "Start here" if the existing note does not cover it (the build number shown on
    https://tanklook.com/ vs git rev-list --count origin/main).
+Update 2026-10-19 18:00: deploys are red again before you start (runs a399c3f and 69a214f failed). Lane CG reports 10 failures in
+test/anchorbase.test.ts already on main (not from its lane). Step 0: reproduce in your clean worktree, find which commit broke
+them (git log on the anchor baseline and anchors / items files), fix or re-record only after checking the change is intended,
+and get main green BEFORE the workflow split. Report to the coordinator which lane's commit caused it.
 Confirm with a deploy that succeeds and report the live build number. Files you own: .github/workflows/*, the deploy-health note in
 HANDOFF. Others push to main constantly: keep each push small, merge origin/main first.
 
