@@ -288,10 +288,11 @@ interface Spot { u: number; fixed?: boolean; y?: number; lean?: number; b?: numb
 const lerp = (a: number, b: number, k: number) => a + (b - a) * clamp(k, 0, 1);
 
 /** Suction cup on the back glass at p (a clear dome, its stem forward to the part it holds at b = reach). */
-function sucker(f: Frame, u: number, y: number, reach: number) {
+function sucker(f: Frame, u: number, y: number, reach: number, look: 'clear' | 'frosted' | 'black' = 'clear') {
   const { kit } = f;
-  kit.lathe('clear', [[0, 0], [9, 0], [8.5, 1.5], [5, 4], [2.2, 6], [0, 6.5]], f.P(u, y, 0.2), V(0, 0, 1), C.cup, 0.32, 20);
-  kit.rod('wet', f.P(u, y, 6), f.P(u, y, reach), 1.8, C.cup);
+  if (look === 'black') kit.lathe('wet', [[0, 0], [9, 0], [8.5, 1.5], [5, 4], [2.2, 6], [0, 6.5]], f.P(u, y, 0.2), f.inward, C.black, 0, 20);
+  else kit.lathe('clear', [[0, 0], [9, 0], [8.5, 1.5], [5, 4], [2.2, 6], [0, 6.5]], f.P(u, y, 0.2), f.inward, C.cup, look === 'frosted' ? 0.55 : 0.32, 20);
+  kit.rod('wet', f.P(u, y, 6), f.P(u, y, reach), 1.8, look === 'black' ? C.black : C.cup);
 }
 
 /** Thin clear airline (or CO2 line) along the points. */
@@ -319,35 +320,68 @@ function heater(f: Frame, watts: number, sp: Spot, product?: string) {
   const topY = capY - 44 * Math.cos(tilt) - r * Math.sin(tilt), dir = f.along.clone().multiplyScalar(-sgn * Math.sin(tilt)).add(V(0, Math.cos(tilt), 0)); // the cap toward the corner
   const top = f.P(u - sgn * (span / 2 - 44 * Math.sin(tilt)), topY, b), bot = top.clone().addScaledVector(dir, -len);
   const q = new THREE.Quaternion().setFromUnitVectors(UP, dir);
-  if (hp?.look === 'titanium') kit.rod('wet', bot, top, r, 0x8b9096, { seg: 20 }); // a brushed metal tube, nothing to see inside
-  else {
-    kit.rod('clear', bot, top, hp?.look === 'shroud' ? r - 2.5 : r, C.glass, { seg: 20, base: 0.07 });
-    // the ceramic core with its element wound round it, inside the glass
-    const c0 = bot.clone().addScaledVector(dir, len * 0.12), c1 = top.clone().addScaledVector(dir, -len * 0.1), rc = hp?.look === 'shroud' ? r - 2.5 : r;
-    kit.rod('wet', c0, c1, rc * 0.6, C.ceramic, { seg: 12 });
-    const turns = Math.round((len * 0.7) / 6), cl = c1.distanceTo(c0), coil: THREE.Vector3[] = [];
-    for (let i = 0; i <= turns * 8; i++) { const a = (i / 8) * Math.PI * 2, h = (i / (turns * 8)) * cl; coil.push(V(Math.cos(a) * rc * 0.66, h, Math.sin(a) * rc * 0.66).applyQuaternion(q).add(c0)); }
-    kit.put('wet', new THREE.TubeGeometry(new THREE.CatmullRomCurve3(coil), turns * 8, 0.45, 4, false), C.copper);
-    // a plastic guard over the glass: black bars round it, rings at the ends and the middle
-    if (hp?.look === 'shroud') {
-      for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2, o = V(Math.cos(a) * (r - 1), 0, Math.sin(a) * (r - 1)).applyQuaternion(q); kit.rod('wet', bot.clone().add(o), top.clone().add(o), 1.6, C.charcoal, { seg: 5 }); }
-      for (const k of [0.02, 0.5, 0.98]) kit.rod('wet', bot.clone().lerp(top, k - 0.015), bot.clone().lerp(top, k + 0.015), r, C.charcoal, { seg: 20 });
+  // every part in the product's own colours (catalogue `colors`, from photos); the generic heater: clear glass, a white
+  // core with a copper-brown wire, a black cap
+  const L = hp?.colors, hx = (h: string | undefined, d: number) => (h && /^#[0-9a-f]{6}$/i.test(h) ? parseInt(h.slice(1), 16) : d);
+  const tube = L?.tube.kind ?? (hp?.look === 'titanium' ? 'metal' : 'glass'), guard = L ? L.guard.has : hp?.look === 'shroud';
+  const capC = hx(L?.cap.hex, C.black), guardC = hx(L?.guard.hex, C.charcoal), elemC = hx(L?.element.hex, C.copper), tubeC = hx(L?.tube.hex, tube === 'metal' ? 0x8b9096 : C.glass);
+  const cordC = hx(L?.cord, C.black), ri = guard ? r - 2.5 : r;
+  if (L?.shape === 'flat') {
+    // a flat body (e.g. a heater in a slim rectangular housing): a rounded slab on the glass in the body colour
+    const mid = bot.clone().lerp(top, 0.5), w = r * 2.2, d = r * 1.3;
+    kit.put('wet', roundedBox(w, len, d, Math.min(6, d / 2)), guard ? guardC : capC, along(mid, dir, 0).multiply(new THREE.Matrix4().makeRotationY(f.yaw)));
+  } else if (tube === 'metal') kit.rod('wet', bot, top, r, tubeC, { seg: 20 }); // a metal tube, nothing to see inside
+  else if (tube === 'opaque') {
+    // a solid sleeve with a clear window (the element and any thermometer show through it)
+    const [w0, w1] = L?.tube.window ?? [0, 0], at = (k: number) => bot.clone().lerp(top, k);
+    if (w0 > 0) kit.rod('wet', bot, at(w0), r, tubeC, { seg: 20 });
+    if (w1 < 1) kit.rod('wet', at(w1), top, r, tubeC, { seg: 20 });
+    if (w1 > w0) {
+      kit.rod('clear', at(w0), at(w1), r, C.glass, { seg: 20, base: 0.07 });
+      kit.rod('wet', at(w0), at(w1), r * 0.55, hx(L?.element.hex, C.ceramic), { seg: 12 });
+      if (L?.thermometer) {
+        const sideO = f.inward.clone().multiplyScalar(r * 0.7);
+        f.box('wet', at((w0 + w1) / 2).add(sideO), 5, (w1 - w0) * len * 0.9, 0.8, 0xf2f2ee);
+        f.box('wet', at(w0 + (w1 - w0) * 0.35).add(sideO).addScaledVector(f.inward, 0.6), 1.4, (w1 - w0) * len * 0.5, 0.6, 0xc8322a);
+      }
+    }
+  } else {
+    kit.rod('clear', bot, top, ri, tubeC, { seg: 20, base: tube === 'frosted' ? 0.35 : tube === 'hidden' ? 0.6 : 0.07 });
+    // what shows inside: a core with the wire wound round it, or the wire alone
+    const kind = L?.element.kind ?? 'coil', c0 = bot.clone().addScaledVector(dir, len * 0.12), c1 = top.clone().addScaledVector(dir, -len * 0.1);
+    if (kind === 'coil') kit.rod('wet', c0, c1, ri * 0.6, C.ceramic, { seg: 12 });
+    if (kind !== 'none' && tube !== 'hidden') {
+      const turns = Math.round((len * 0.7) / 6), cl = c1.distanceTo(c0), coil: THREE.Vector3[] = [], rw = kind === 'wire' ? ri * 0.45 : ri * 0.66;
+      for (let i = 0; i <= turns * 8; i++) { const a = (i / 8) * Math.PI * 2, h = (i / (turns * 8)) * cl; coil.push(V(Math.cos(a) * rw, h, Math.sin(a) * rw).applyQuaternion(q).add(c0)); }
+      kit.put('wet', new THREE.TubeGeometry(new THREE.CatmullRomCurve3(coil), turns * 8, kind === 'wire' ? 0.7 : 0.45, 4, false), elemC);
+    }
+    // a guard over the glass: bars round it (slots: 8, mesh: 16) or a solid sleeve, rings at the ends and the middle
+    if (guard) {
+      const pat = L?.guard.pattern ?? 'slots';
+      if (pat === 'solid') kit.rod('wet', bot, top, r, guardC, { seg: 20 });
+      else for (let i = 0, n = pat === 'mesh' ? 16 : 8; i < n; i++) { const a = (i / n) * Math.PI * 2, o = V(Math.cos(a) * (r - 1), 0, Math.sin(a) * (r - 1)).applyQuaternion(q); kit.rod('wet', bot.clone().add(o), top.clone().add(o), pat === 'mesh' ? 1 : 1.6, guardC, { seg: 5 }); }
+      for (const k of pat === 'mesh' ? [0.02, 0.26, 0.5, 0.74, 0.98] : [0.02, 0.5, 0.98]) kit.rod('wet', bot.clone().lerp(top, k - 0.015), bot.clone().lerp(top, k + 0.015), r, guardC, { seg: 20 });
     }
   }
-  // black cap with the dial, the rounded foot, the amber pilot light
-  kit.rod('wet', top, top.clone().addScaledVector(dir, 36), r + 2, C.black, { seg: 20 });
-  kit.rod('wet', top.clone().addScaledVector(dir, 36), top.clone().addScaledVector(dir, 44), r - 1, C.charcoal, { seg: 20 });
-  kit.ball('wet', bot.clone().addScaledVector(dir, 2), r * 0.98, C.black, 0, 1);
-  kit.ball('glow', top.clone().addScaledVector(dir, 22).addScaledVector(f.inward, r + 1.5), 2.2, C.amber);
+  // the cap (with its dial), the rounded foot, the pilot light or display
+  const ribs = (a: THREE.Vector3, l: number, rad: number, c: number) => { for (let i = 0; i < 6; i++) kit.rod('wet', a.clone().addScaledVector(dir, (l * i) / 6), a.clone().addScaledVector(dir, (l * (i + 0.6)) / 6), rad + (i % 2 ? 0 : 1.2), c, { seg: 20 }); };
+  if (L?.cap.ribbed) { kit.rod('wet', top, top.clone().addScaledVector(dir, 36), r + 1, capC, { seg: 20 }); ribs(top, 36, r + 2, capC); }
+  else kit.rod('wet', top, top.clone().addScaledVector(dir, 36), r + 2, capC, { seg: 20 });
+  kit.rod('wet', top.clone().addScaledVector(dir, 36), top.clone().addScaledVector(dir, 44), r - 1, L?.cap.dial === false ? capC : new THREE.Color(capC).multiplyScalar(0.8).getHex(), { seg: 20 });
+  if (L?.foot) { const fc = hx(L.foot.hex, capC), f0 = bot.clone().addScaledVector(dir, -24); kit.rod('wet', f0, bot.clone().addScaledVector(dir, 4), r + 1, fc, { seg: 20 }); if (L.foot.ribbed) ribs(f0, 28, r + 2, fc); }
+  else if (L?.shape !== 'flat') kit.ball('wet', bot.clone().addScaledVector(dir, 2), r * 0.98, guard ? guardC : capC, 0, 1);
+  if (L?.cap.display) kit.put('glow', new THREE.PlaneGeometry(r * 1.1, 14), hx(L.cap.display, 0x66ccff), along(top.clone().addScaledVector(dir, 20).addScaledVector(f.inward, r + 2.1), dir, 0).multiply(new THREE.Matrix4().makeRotationY(f.wall === 'back' ? 0 : Math.PI / 2)));
+  if (!L || L.cap.led) kit.ball('glow', top.clone().addScaledVector(dir, 22).addScaledVector(f.inward, r + 1.5), 2.2, hx(L?.cap.led, C.amber));
   // the cord up out of the water and over the rim, and two clips with suction cups
   const capTop = top.clone().addScaledVector(dir, 44);
   // the cord rises straight up from the cap (not from the heater's middle), so a flat heater's cord does not cross the tank
-  kit.tube('room', overRim(f, u + capTop.clone().sub(f.P(u, 0, b)).dot(f.along), capTop, b, f.top + 20), 2.6, C.black, 0, 6);
+  kit.tube('room', overRim(f, u + capTop.clone().sub(f.P(u, 0, b)).dot(f.along), capTop, b, f.top + 20), 2.6, cordC, 0, 6);
+  const cups = L?.cups ?? 'clear';
   for (const k of [0.25, 0.72]) {
     const p = bot.clone().lerp(top, k);
-    kit.put('wet', new THREE.TorusGeometry(r + 1.6, 1.6, 6, 20), C.black, along(p, dir, 0).multiply(new THREE.Matrix4().makeRotationX(Math.PI / 2)));
+    kit.put('wet', new THREE.TorusGeometry(r + 1.6, 1.6, 6, 20), capC, along(p, dir, 0).multiply(new THREE.Matrix4().makeRotationX(Math.PI / 2)));
     const pu = u + p.clone().sub(f.P(u, 0, 0)).dot(f.along);
-    sucker(f, pu, p.y, b - r - 1);
+    sucker(f, pu, p.y, b - r - 1, cups);
   }
 }
 

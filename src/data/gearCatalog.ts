@@ -10,8 +10,28 @@ export interface HeaterProduct {
   /** what it looks like: 'glass' (a clear tube), 'shroud' (a plastic guard over the glass), 'titanium' (a metal tube) */
   look: 'glass' | 'shroud' | 'titanium';
   galMin?: number; galMax?: number; priceUsd?: number; url: string; asOf: string;
+  /** what it looks like, part by part, from product photos (Nathan 2026-10-19: true colours, simple shapes) */
+  colors?: HeaterLook;
+  /** colour fields not seen in a photo (cups hidden by the box), and what is not drawn (a separate controller) */
+  colorsEst?: string[]; colorsNote?: string;
   /** fields that are estimates, not published */
   est?: string[];
+}
+/** A heater's colours part by part (hex), as researched from photos. */
+export interface HeaterLook {
+  /** the top cap; `ribbed`: a stack of rings (a grip) */
+  cap: { hex: string; dial?: boolean; display?: string; led?: string; ribbed?: boolean; note?: string };
+  /** the bottom end: absent = a rounded end in the cap's (or guard's) colour */
+  foot?: { hex: string; ribbed?: boolean };
+  /** the tube: 'opaque' = a solid sleeve in `hex`, clear only over `window` (shares of the length from the bottom) */
+  tube: { kind: 'glass' | 'frosted' | 'metal' | 'hidden' | 'opaque'; hex: string; window?: [number, number] };
+  /** a thermometer scale seen through the glass (white strip, red line) */
+  thermometer?: boolean;
+  element: { kind: 'coil' | 'wire' | 'none'; hex: string; note?: string };
+  guard: { has: boolean; hex?: string; pattern?: 'slots' | 'mesh' | 'solid' };
+  cord: string; cups: 'clear' | 'frosted' | 'black';
+  /** 'flat': a flat rectangular body instead of a round tube */ shape?: 'tube' | 'flat';
+  photo?: string;
 }
 export const HEATER_PRODUCTS = (data as { heaters: HeaterProduct[] }).heaters;
 export const heaterProduct = (id?: string) => (id ? HEATER_PRODUCTS.find(h => h.id === id) : undefined);

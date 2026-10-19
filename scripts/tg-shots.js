@@ -106,3 +106,16 @@ export async function heaters(ids = [null, 'topfin-50', 'tetra-ht-50', 'hygger-5
   }
   return 'ok';
 }
+
+/** Every catalogue heater upright in a tall bare tank, cropped to it: shots/tg_hc_<id>.png (for the drawn-vs-photo sheet). */
+export async function heaterSheet() {
+  const T = await import('/src/scene/tech.ts'), C = await import('/src/data/gearCatalog.ts');
+  for (const id of [null, ...C.HEATER_PRODUCTS.map(h => h.id)]) {
+    await ex('planted');
+    window.__gb.store.edit(s => { s.tank = { L: 400, D: 300, H: 500 }; s.items = []; s.fish = []; s.render.bg = 'custom'; s.render.bgColor = '#d8dde2'; const t = T.applyPreset(s, 'walstad'); t.rows.heater = 'one'; if (id) t.heaterProduct = id; else t.heaterW = 50; s.tech = t; });
+    await wait(400);
+    window.__gb.store.cam(c => { c.az = 20; c.el = 6; c.zoom = 1; });
+    await snap('tg_hc_' + (id ?? 'generic'), { az: 20, el: 6, zoom: 1, crop: await gearCrop(0.15, -20, 'heater'), w: 300, mult: 2 });
+  }
+  return 'ok';
+}
