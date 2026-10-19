@@ -71,7 +71,12 @@ A Tech section where the owner picks the tech level, Walstad to high-tech plante
 - Burst test 2026-10-19: pushed c1e8dac then bc57788 ~20 s apart; bc57788's test job cancelled c1e8dac's running test (deploy skipped) and ran itself. Both stayed red only because of the anchorbase failures below.
 - Step 0 (red main since 3ea1e44): `test/anchorbase.test.ts` failed 10 cases after 1d084c0 (shrimp slope-lift cap in render/build.ts). Verified by reverting it (111/111 pass) and diffing the re-record: only cleanershrimp/cherryshrimp moved, straight down (max 42.7 mm), as that commit intends. Baseline re-recorded in e2082bc.
 
-## Lane AQ: AqAdvisor ids + Malawi pool (2026-10-19, branch `aqids`, port 5813)  (lane fills this in)
+## Lane AQ: AqAdvisor ids + Malawi pool (2026-10-19, branch `aqids`, port 5813)
+- **AqAdvisor unreachable 2026-10-19** (curl by name and raw IP 162.0.234.17, and the browser pane all time out; GitHub fine). So step 1 (real ids for labeo / auratus / afra / livingstonii / syno, and the AqAdvisor stocking comparison) is NOT done; aqadvisor.json and the script are unchanged. Every water species already has an entry (species.json check: only the 11 land animals are unmapped). Re-run `python scripts/aqadvisor-ids.py` when the site answers, after moving the five from STAND_INS to NAMES with their exact option text.
+- **Malawi pool** (`STYLES.malawi.animals`, it lives in scene/items.ts, not starter.ts): + labeo, auratus, afra. livingstonii left out: CARE prey 80 mm, it would eat demasoni (70 mm) and nerites, and the plain starter does not check compatibility. Note: Malawi species have no `group`, so a starter places one of each (75 gal Packed = 4 cichlids + syno / nerites): sparse for mbuna; asked Nathan.
+- **Tests:** test/aqids.test.ts (ids 12-digit + named, real ids unique per calculator, stand-ins borrow a matching real entry; Malawi starters at 5 tank lengths x 5 seeds x 4 stops, gated and not: pool species only, L >= 5 x tl, no predator with prey). Full suite: 10 anchorbase failures (clownnano / paludarium) also fail on origin/main without this change.
+- Picture: shots/aq_malawi_75g_seed2_front.png (worktree; rendered from the main checkout's server with the same pool patched in the page).
+
 
 ## Lane KD: bundle deals (2026-10-19)
 - `src/data/deals.json` (+ `deals.ts`): retailer tank+stand bundles {retailer, gal, tank (catalog id, optional), kit (optional), includes, price{usd, regularUsd}, saleEnds, url, asOf, est}. `src/demand/deals.ts` `dealOffers` = saving vs buying the parts (engine `kit` option generalised with `includes` + `label`, no parallel mechanism).

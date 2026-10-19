@@ -611,7 +611,7 @@ export const STYLES: Record<Exclude<LayoutId, 'none'>, StyleSpec> = {
   frogs: { hard: [0.4, 2], plant: [0.4, 2.2], animals: ['treefrog', 'dartfrog'] },
   paludarium: { hard: [0.3, 2.5], plant: [0.5, 2.2], animals: ['dartfrog', 'treefrog', 'firetoad', 'firenewt', 'chili', 'ember', 'guppy', 'ramshorn'] },
   blackwater: { hard: [0.5, 2.2], plant: [0.3, 1.8], animals: ['cardinal', 'rummynose', 'harlequin', 'ember', 'angel', 'bolivianram', 'pandacory', 'bristlenose', 'kuhli', 'hatchet'] },
-  malawi: { hard: [0.5, 2], plant: [0.2, 1.4], animals: ['yellowlab', 'peacock', 'demasoni', 'kadango', 'syno', 'nerite'] },
+  malawi: { hard: [0.5, 2], plant: [0.2, 1.4], animals: ['yellowlab', 'peacock', 'demasoni', 'kadango', 'labeo', 'auratus', 'afra', 'syno', 'nerite'] }, // lane AQ: livingstonii left out (eats demasoni / nerite)
   stream: { hard: [0.4, 2], plant: [0.5, 2.2], animals: ['danio', 'whitecloud', 'tigerbarb', 'cherrybarb', 'chili', 'ember', 'kuhli', 'oto', 'amano', 'nerite'] },
   hillstream: { hard: [0.5, 2.2], plant: [0.3, 1.8], animals: ['hillstream', 'danio', 'whitecloud', 'oto', 'nerite', 'cherryshrimp'] },
   softreef: { hard: [0.4, 2], plant: [0.4, 2.2], animals: ['ocellaris', 'royalgramma', 'firefish', 'banggai', 'chromis', 'watchman', 'cleanershrimp', 'turbo', 'hermit'] },
