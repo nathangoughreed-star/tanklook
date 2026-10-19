@@ -53,6 +53,7 @@ import { deleteFromLib, listLib, loadFromLib, saveToLib } from '../scene/library
 import { EXAMPLES, exampleScenes } from '../examples';
 import { LONG_LINK, readShare, shareUrl } from '../scene/share';
 import { getImage, putImage, readPicture, sceneImageIds, sidesTouch, withImages } from '../scene/images';
+import { setParGuideSalt } from './parGuide';
 
 const $ = <T extends HTMLElement = HTMLInputElement>(id: string) => document.getElementById(id) as T;
 /** ?debug in the URL shows calibration readouts (apparent-size maths) in the fish readout. */
@@ -952,8 +953,9 @@ Cancel, then change the name, to keep both.`)) return;
   $<HTMLSelectElement>('lUnit').onchange = e => store.edit(s => { s.light.mapUnit = (e.target as HTMLSelectElement).value as 'par' | 'lux'; });
   /** The Light map legend: labels at doublings along the ramp (7 steps up from MAP_DIV), and the PAR bands. */
   let mapKeyFor = '';
-  const mapKey = (unit: 'rel' | 'par' | 'lux') => {
-    if (mapKeyFor === unit) return; mapKeyFor = unit;
+  const mapKey = (unit: 'rel' | 'par' | 'lux', salt = false) => {
+    setParGuideSalt(salt);
+    if (mapKeyFor === unit + salt) return; mapKeyFor = unit + salt;
     const at = (v: number) => Math.log2(v / MAP_DIV[unit]) / 7 * 100, span = (x: number, t: string, st = '') => {
       const e = document.createElement('span'); e.textContent = t;
       e.style.cssText = `position:absolute;left:${x}%;transform:translateX(${x <= 0 ? 0 : x >= 100 ? -100 : -50}%);${st}`; return e;
@@ -964,14 +966,14 @@ Cancel, then change the name, to keep both.`)) return;
     $('lMapTicks').replaceChildren(...ticks.map(([v, t]) => span(at(v), t)));
     // planted-tank light classes at the substrate, under the PAR ramp
     $('lMapBands').hidden = unit !== 'par';
-    if (unit === 'par') $('lMapBands').replaceChildren(...([[30, 50, 'med'], [50, 80, 'high'], [80, 640, 'very high'], [0, 30, 'low']] as [number, number, string][]).map(([a, b, t]) => {
+    if (unit === 'par') $('lMapBands').replaceChildren(...((salt ? [[25, 50, 'fish'], [50, 75, 'soft'], [75, 150, 'LPS'], [150, 640, 'SPS'], [0, 25, 'dim']] : [[30, 50, 'med'], [50, 80, 'high'], [80, 640, 'very high'], [0, 30, 'low']]) as [number, number, string][]).map(([a, b, t]) => {
       const x0 = a ? Math.max(at(a), 0) : 0, x1 = Math.min(at(b), 100), e = document.createElement('span'); e.textContent = t;
       e.style.cssText = `position:absolute;left:${x0}%;width:${x1 - x0}%;text-align:center;border-left:1px solid currentColor;font-size:0.9em;white-space:nowrap;overflow:hidden`;
       return e;
     }));
     $('lMapText').textContent = unit === 'rel'
       ? 'Light on the substrate, from distance, beam angle and how squarely it lands, summed over the lights; a colour step per doubling. 1 = one standard 52° bulb 300 mm straight above. Set Power for PAR or lux.'
-      : unit === 'par' ? 'PAR at the substrate, µmol/m²/s, from the power and light type: a colour step per doubling. Below: the planted-tank light classes.'
+      : unit === 'par' ? 'PAR at the substrate, µmol/m²/s, from the power and light type: a colour step per doubling. Below: the '+(salt ? 'reef light classes, by what each coral group keeps.' : 'planted-tank light classes.')
       : 'Lux at the substrate, from the power and light type: a colour step per doubling. Water takes red first, so lux and PAR fall off at different rates.';
   };
   // a screw-in lamp change also takes that lamp's usual power (a 50 W halogen is a 10 W LED bulb)
@@ -1919,7 +1921,7 @@ Cancel, then change the name, to keep both.`)) return;
     setVal('lBright', watts ? Math.log2(Math.min(Math.max(l.bright, EXP_MIN), EXP_MAX)) : l.bright);
     if (watts) setOut('oBright', '×' + Math.min(Math.max(l.bright, EXP_MIN), EXP_MAX).toFixed(2));
     const mapOn = s.render.beams && l.type !== 'flat';
-    $('lUnitRow').style.display = mapOn && watts ? '' : 'none'; setVal('lUnit', l.mapUnit ?? 'par'); mapKey(watts ? l.mapUnit ?? 'par' : 'rel');
+    $('lUnitRow').style.display = mapOn && watts ? '' : 'none'; setVal('lUnit', l.mapUnit ?? 'par'); mapKey(watts ? l.mapUnit ?? 'par' : 'rel', s.water.on && !!s.water.salt);
     // the map layer: from the floor up to the water surface (the tank top when dry)
     { const top = Math.round(s.water.on ? waterY(s.tank, s.water.level) : s.tank.H); $('lSliceRow').style.display = mapOn && watts ? '' : 'none';
       ($('lSlice') as HTMLInputElement).max = String(top); $('lShellsRow').style.display = mapOn ? '' : 'none'; $('lShadeRow').style.display = mapOn && watts ? '' : 'none'; ($('lShade') as HTMLInputElement).checked = !!l.mapShade; ($('lShells') as HTMLInputElement).checked = !!l.mapShells;

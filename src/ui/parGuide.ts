@@ -77,14 +77,13 @@ sudden strong light: start it low in the rock or with the light at about half, a
 lights 8–10 hours a day, with a ramp up and down.</p>`;
 
 const STYLE = `
-.parDlg { width: min(720px, calc(100vw - 32px)) }
-.parDlg .libhead { position: sticky; top: -12px; background: var(--panel); z-index: 1 }
 .parTabs { display: flex; gap: 6px; margin: 4px 0 8px }
 .parTabs button[aria-selected="true"] { background: var(--accent); color: #fff; border-color: var(--accent) }
 .parScale { position: relative; height: 34px; margin: 6px 0 14px }
 .parScale .seg { position: absolute; top: 0; height: 16px; border-radius: 3px; display: flex; align-items: center;
   justify-content: center; padding: 0 3px; box-sizing: border-box; font-size: 10.5px; color: #fff; overflow: hidden; white-space: nowrap; text-overflow: ellipsis }
 .parScale .tick { position: absolute; top: 19px; font-size: 10.5px; color: var(--muted); transform: translateX(-50%) }
+.parInline h3 { margin: 8px 0 2px; font-size: 13px }
 .parTier { border: 1px solid var(--line); border-left-width: 5px; border-radius: 6px; padding: 6px 10px; margin: 0 0 8px }
 .parTier h4 { margin: 0 0 4px; font-size: 13px }
 .parTier h4 span { font-weight: normal; color: var(--muted) }
@@ -111,27 +110,32 @@ function tierCards(tiers: Tier[], cols: string[]) {
     t.rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl></div>`).join('');
 }
 
-/** Wires the Lighting menu's "PAR guide" button; `isSalt` picks which tab opens first. */
+let current = false, apply: (salt: boolean) => void = () => {};
+/** The Light map banner follows the tank: planted-freshwater classes, or the reef ones for a saltwater tank. */
+export const setParGuideSalt = (salt: boolean) => { if (salt !== current) { current = salt; apply(salt); } };
+
+/** Wires the Light map banner: click it to open the PAR guide inline, below it. Which half shows follows the tank. */
 export function attachParGuide(isSalt: () => boolean) {
-  const btn = document.getElementById('lParGuide');
-  if (!btn) return;
+  const banner = document.getElementById('lMapBanner'), host = document.getElementById('lParInline');
+  if (!banner || !host) return;
   const css = document.createElement('style'); css.textContent = STYLE; document.head.append(css);
-  const dlg = document.createElement('dialog');
-  dlg.className = 'libdlg parDlg'; dlg.setAttribute('aria-labelledby', 'parTitle');
   // the reef scale skips the overlapping soft/LPS split: soft corals' bar runs 50–75, LPS from 75 (cards give the full ranges)
   const reefBars = REEF.map((t, i) => (i === 1 ? { ...t, hi: 75 } : t));
-  dlg.innerHTML = `<form method="dialog" class="libhead"><h2 id="parTitle">PAR guide</h2><button value="close" aria-label="Close">✕</button></form>
-    ${ABOUT}
-    <div class="parTabs" role="tablist"><button type="button" role="tab" data-t="fresh">Planted freshwater</button><button type="button" role="tab" data-t="reef">Reef (saltwater)</button></div>
-    <div data-p="fresh">${scale(FRESH, FRESH_COL, 150, [0, 15, 30, 50, 80, 150])}${tierCards(FRESH, FRESH_COL)}${FRESH_NOTE}</div>
-    <div data-p="reef">${scale(reefBars, REEF_COL, 400, [0, 25, 50, 75, 150, 250, 400])}${tierCards(REEF, REEF_COL)}${REEF_NOTE}</div>
+  host.className = 'parInline';
+  host.innerHTML = `${ABOUT}
+    <div data-p="fresh"><h3>Planted freshwater</h3>${scale(FRESH, FRESH_COL, 150, [0, 15, 30, 50, 80, 150])}${tierCards(FRESH, FRESH_COL)}${FRESH_NOTE}</div>
+    <div data-p="reef"><h3>Reef (saltwater)</h3>${scale(reefBars, REEF_COL, 400, [0, 25, 50, 75, 150, 250, 400])}${tierCards(REEF, REEF_COL)}${REEF_NOTE}</div>
     <p class="hint">Typical hobby ranges, not hard limits: species, CO2 and flow shift them. To know your own tank's PAR,
     use a PAR meter or your light maker's PAR-at-depth chart.</p>`;
-  document.body.append(dlg);
-  const show = (t: string) => {
-    dlg.querySelectorAll<HTMLButtonElement>('[data-t]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.t === t)));
-    dlg.querySelectorAll<HTMLElement>('[data-p]').forEach(p => { p.hidden = p.dataset.p !== t; });
+  const cue = document.getElementById('lParCue');
+  apply = salt => {
+    host.querySelectorAll<HTMLElement>('[data-p]').forEach(p => { p.hidden = p.dataset.p !== (salt ? 'reef' : 'fresh'); });
+    if (cue) { cue.hidden = false; cue.textContent = (host.hidden ? '▸' : '▾') + ` PAR guide: what ${salt ? 'corals' : 'plants'} need`; }
   };
-  dlg.querySelectorAll<HTMLButtonElement>('[data-t]').forEach(b => { b.onclick = () => show(b.dataset.t!); });
-  btn.onclick = () => { show(isSalt() ? 'reef' : 'fresh'); dlg.showModal(); dlg.scrollTop = 0; };
+  const toggle = () => {
+    host.hidden = !host.hidden; banner.setAttribute('aria-expanded', String(!host.hidden)); apply(current);
+  };
+  banner.onclick = toggle;
+  banner.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } };
+  current = isSalt(); apply(current);
 }

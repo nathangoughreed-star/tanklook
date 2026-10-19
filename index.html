@@ -291,9 +291,11 @@
   <div class="row"><label for="lRoom" title="Light from the room around the tank (ambient): 0 = a dark room, only the tank lights">Room light (ambient)</label><input id="lRoom" type="range" min="0" max="0.8" step="0.01"><output id="oRoom"></output></div>
   <div class="btns"><button id="lTop" title="Look straight down on the tank, to watch the light map while you change the lights">Look from above</button><button id="lFront" title="Back to straight on">Straight on</button></div>
   <label><input type="checkbox" id="lBeams"> Light map: beams, and the light on the substrate (hides plants, hardscape and fish)</label>
-  <div id="lMapKey" class="hint"><div style="height:10px;border-radius:2px;margin:4px 0 2px;background:linear-gradient(90deg,#0d0d40 0%,#1a40d9 14.3%,#00b3e6 28.6%,#26cc40 42.9%,#f2e61a 57.1%,#ff8c0d 71.4%,#e61a1a 85.7%,#ffe6e6 100%)"></div>
+  <div id="lMapKey" class="hint"><div id="lMapBanner" role="button" tabindex="0" aria-expanded="false" aria-controls="lParInline" title="Click for the PAR guide: what plants (or corals) need at each level" style="cursor:pointer"><div style="height:10px;border-radius:2px;margin:4px 0 2px;background:linear-gradient(90deg,#0d0d40 0%,#1a40d9 14.3%,#00b3e6 28.6%,#26cc40 42.9%,#f2e61a 57.1%,#ff8c0d 71.4%,#e61a1a 85.7%,#ffe6e6 100%)"></div>
   <div id="lMapTicks" style="position:relative;height:14px"></div>
   <div id="lMapBands" style="position:relative;height:14px;margin-top:2px" hidden></div>
+  <div id="lParCue" style="font-size:0.9em;text-decoration:underline dotted" hidden>▸ PAR guide</div></div>
+  <div id="lParInline" hidden></div>
   <span id="lMapText"></span></div>
   <div class="row" id="lUnitRow"><label for="lUnit" title="PAR counts the photons plants use; lux weighs the light by the eye's response. Each is calculated, not relabelled: water takes red light first, so they fall off at different rates with depth">Map shows</label><select id="lUnit" class="span2"><option value="par">PAR (µmol/m²/s): what plants use</option><option value="lux">Lux: brightness to the eye</option></select></div>
   <div class="row" id="lSliceRow"><label for="lSlice" title="Show the light on a layer across the tank at this height above the floor, to see it at every depth. Off = on the substrate only">Layer height</label><input id="lSlice" type="range" min="0" max="600" step="5"><output id="oLSlice"></output></div>
@@ -304,7 +306,6 @@
   <div id="lDarkOut" class="hint"></div>
   <div class="row" id="lStepRow"><label for="lStep" title="How far apart the contour lines on the Light map are, like the spacing of lines on an elevation map: 5 PAR (or 250 lux) is the finest">Contour every</label><input id="lStep" type="range" min="5" max="100" step="5"><output id="oLStep"></output></div>
   <div id="lMapBare" class="hint why" hidden>The colours land on the substrate, and this tank has a bare bottom: <button type="button" class="linkbtn" id="lMapSub">pick a substrate</button>.</div>
-  <div class="btns"><button id="lParGuide" title="What PAR is, what levels suit planted tanks and reefs, and what grows at each">PAR guide: what plants and corals need</button></div>
   <div class="hint">A visual approximation: light falls off with distance and beam angle from fixtures above the water. No real optics, shadows or ripples.</div>
   </details>
   <details class="sec" data-sec="viewer"><summary><h2>Viewer</h2></summary>
