@@ -59,6 +59,7 @@ import { EXAMPLES, exampleScenes } from '../examples';
 import { LONG_LINK, readShare, shareUrl } from '../scene/share';
 import { getImage, putImage, readPicture, sceneImageIds, sidesTouch, withImages } from '../scene/images';
 import { setParGuideSalt } from './parGuide';
+import { attachWizard } from './wizard';
 
 const $ = <T extends HTMLElement = HTMLInputElement>(id: string) => document.getElementById(id) as T;
 /** ?debug in the URL shows calibration readouts (apparent-size maths) in the fish readout. */
@@ -245,6 +246,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     $('startFresh').focus();
   }
   const showStart = () => showChooser(undefined, true);
+  attachWizard($('startGuided'), { dialog: startDlg, open: sc => { store.replace(sc); setLibId(null); }, limits: l => demand?.setLimits(l), status }); // lane KW: the guided start
   $('libList').onclick = e => {
     const t = e.target as HTMLElement, del = t.closest<HTMLButtonElement>('[data-libdel]'), op = t.closest<HTMLButtonElement>('[data-lib]');
     if (del) {

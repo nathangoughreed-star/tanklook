@@ -348,6 +348,48 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .starttabs button[aria-selected="true"] { background: var(--panel); border-color: var(--line); border-bottom-color: var(--panel); font-weight: 600; color: var(--accent) }
 .starttabs button[hidden], .startpane[hidden] { display: none }
 .startbtns #startGuided:not([hidden]) { flex: 1 1 200px }
+/* guided start (lane KW): the wizard replaces the tabs while it is open */
+.startbtns #startGuided:not([hidden]) { display: flex; min-width: 0 }
+.startbtns #startGuided button { flex: 1 1 auto; min-width: 0; border-color: var(--accent) }
+.startbtns #startGuided b { color: var(--accent) }
+.wzon .startbtns, .wzon .starttabs, .wzon .startpane { display: none }
+.wz[hidden] { display: none }
+.wz { margin-top: 8px }
+.wzhead { display: flex; align-items: center; gap: 8px; font-size: 12px }
+.wzhead .wzstep { flex: 1; text-align: center; color: var(--muted) }
+.wzhead button { padding: 4px 8px; font-size: 12px }
+.wztitle { margin: 10px 0 8px; font-size: 16px }
+.wzopts { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px }
+.wzopt, .wzcard { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; padding: 10px 12px; text-align: left; min-width: 0 }
+.wzopt span { font-size: 12px; opacity: .85 }
+.wzopt[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent) }
+.wzrow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 12px 0 2px; font-size: 13px }
+.wzrow[hidden] { display: none }
+.wzmoney { font-weight: 600 }
+.wzin { display: inline-flex; align-items: center; gap: 2px; font-weight: 400 }
+.wzin input { width: 7em; font-size: 15px; padding: 4px 6px }
+.wznext { display: flex; justify-content: flex-end; margin-top: 12px }
+.wznext button { padding: 8px 18px }
+.wzseg, .wzbands { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px }
+.wzseg button, .wzbands button { padding: 5px 10px; font-size: 12px }
+.wzseg button[aria-pressed="true"], .wzbands button[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent) }
+.wzlist { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; margin: 6px 0 }
+.wzlist > p { grid-column: 1 / -1; margin: 0 }
+.wzcard .hint { font-size: 12px; margin: 0 }
+.wzusd { font-weight: 600; font-size: 13px }
+.wzsale { color: var(--ok); font-weight: 600; font-size: 12px }
+.wzcard.wz-tight .wzusd { color: var(--warn) }
+.wzcard.wz-over { opacity: .7 }
+.wzcard.wz-over .wzusd { color: var(--bad) }
+.wzwarn { color: var(--warn) }
+.wzmore { font-size: 12px; padding: 4px 10px }
+.wzsum { display: flex; gap: 8px; margin: 8px 0 }
+.wzsum > div { flex: 1; display: flex; flex-direction: column; padding: 8px 10px; background: var(--chip); border-radius: 8px }
+.wzsum b { font-size: 20px }
+.wzsum span { font-size: 12px; color: var(--muted) }
+.wzup { margin: 6px 0; padding-left: 18px; font-size: 13px }
+.wzup li { margin: 3px 0 }
+@media (max-width: 480px) { .wzopts, .wzlist { grid-template-columns: 1fr } }
 @media (max-width: 480px) { .starttabs button { flex: 1 1 40%; text-align: center } .startdlg { padding: 10px } }
 /* opening a tank blocks the page for a few seconds while it builds: the spinner is a transform animation, so the
    compositor keeps it turning while the main thread is busy */

@@ -48,7 +48,13 @@ A Tech section where the owner picks the tech level, Walstad to high-tech plante
 
 ## Lane TG: tech gear in 3D (2026-10-19, branch `techgear`, port 5833)  (lane fills this in)
 
-## Lane KW: start wizard (2026-10-19, branch `wizard`, port 5783)  (lane fills this in)
+## Lane KW: start wizard (2026-10-19, branch `wizard`, port 5783)
+State 2026-10-19: built, pictures sent to Nathan, waiting for his verdict before the push. `src/ui/wizard.ts` + `test/wizard.test.ts` (12 tests); `.wz*` CSS in `style.css`; `#startGuided` filled at run time (index.html untouched); hook in `ui/panels.ts` = 1 import + 1 line after `showStart`.
+- Flow in the start dialog (Help me choose; Start from scratch stays one click; "All options" / Back leaves the wizard): 1 stage (new / have / know: "know" returns to the tabs) -> 2 goal (freshwater fish, planted, terrarium for a named land herp) + ONE expected-cost number + optional upkeep $/month ("have" skips money) -> 3 bare tank / kit toggle, size-band chips, cards priced as the scene will open -> 4 result: expected setup and upkeep, budget line, light capability and upgrade path in plain words -> Open this tank.
+- Pricing: the demand engine's means (`demandOf` totals) on the exact scene the result opens (tank, gear, starter scape for the goal; no animals); about 4 ms per tank, ~0.2 s for the whole list. Budget fit: over / tight (under 10 % left for animals) / fits. Kits are priced through a deal: a live deals.json row for that kit if any, else one made from the kit's own listing (`kitAsDeal`), and pinned (`pinDeal`) so the demand panel prices the bundle. Kits with no listed price are priced as parts (said on the card).
+- Opening sets the demand panel's setup limit to the typed number (`setLimits`); the optional upkeep number maps onto the panel's chip (<= $10 near free, <= $40 low, else flexible) until lane DS gives upkeep a number.
+- Bare tanks are judged with a stand-in LED (watts null -> kitlight tier default, flagged a guess): budget tier for fish, mid tier with planted tech for planted (the plant tier read 'very bright' from 40 gal up). Terrariums: catalog terrarium tanks filtered by HERP floor (min / rec sq ft, outer L x D) and hMin; no stand, mesh top, water off, the animal's starter style (arid / rainforest / python / frogs).
+- Open: salt (kits carry it; not offered yet); the named animal is not placed (the result says to add it from Animals); upgrade steps show no $ until someone sets `setUpgradePriceHook`; aquatic herps (axolotl, ADF, newt) not in the terrarium list.
 
 ## Lane DS: one expected-cost number (2026-10-19, branch `expectedcost`, port 5793)  (lane fills this in)
 
