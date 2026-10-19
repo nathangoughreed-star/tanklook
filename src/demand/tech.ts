@@ -2,7 +2,8 @@
 // skimmer, CO2, ferts, the filter cleaning minutes, an RO unit) from its chosen options, each sized to the tank by
 // scene/tech.ts optionCost; a tank without `tech` keeps the engine's inferred rows untouched (old files do not move).
 // Hooked from engine.ts with one line after the routine work rows, before the kit. Keys 'filter' and 'heater' stay, so a kit's price still covers them.
-import { optionCost, optionDef, rowsFor, techOf } from '../scene/tech';
+import dd from '../data/demand-defaults.json';
+import { coldSpecies, optionCost, optionDef, rowsFor, techOf } from '../scene/tech';
 import type { TankSetup } from '../scene/types';
 import type { Contribution, Domain, Group, Range3 } from './types';
 
@@ -25,7 +26,9 @@ export function techDemand(S: TankSetup, rows: Contribution[], c: TechCtx) {
   const t = techOf(S);
   for (const r of rowsFor(S)) {
     const opt = t.rows[r.id] ?? 'none', def = optionDef(r.id, opt), cost = optionCost(S, r.id, opt, { tech: t });
-    const risk = (def?.risk ?? 0) * c.riskMul;
+    // no heater: each stocked species too cold at room temperature counts as a compatibility warning (lane TM step 5)
+    const cold = r.id === 'heater' ? coldSpecies(S, t).filter(x => x.fit === 'out').length * dd.risk.animalWarnPts.compat : 0;
+    const risk = ((def?.risk ?? 0) + cold) * c.riskMul;
     if (!cost.parts.length && !risk) continue;
     const label = `${r.label}: ${def?.label ?? opt}`;
     const group: Group = CONSUMABLE.has(r.id) && cost.setup.mode === 0 ? 'consumable' : 'gear';

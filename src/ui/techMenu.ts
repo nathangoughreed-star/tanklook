@@ -12,12 +12,13 @@ import { FEED_NAMES, GROW_RATE } from '../scene/growtime';
 import type { Store } from '../scene/store';
 import {
   ROOM_C, applyPreset, coldSpecies, feedFor, feedOf, filterFor, filterSteps, heatLoss, offerChiller, offerTwoHeaters,
-  optionCost, optionDef, presetsFor, rowsFor, setFeed, stockCapacity, techOf, walstadGaps, withChoice, type OptionCost, type TechSetup,
+  optionCost, optionDef, presetsFor, reefFeedOf, rowsFor, setFeed, stockCapacity, techOf, walstadGaps, withChoice, type OptionCost, type TechSetup,
 } from '../scene/tech';
 import type { TankSetup } from '../scene/types';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
 const usd = (v: number) => v >= 100 ? `$${Math.round(v / 5) * 5}` : v >= 10 ? `$${Math.round(v)}` : `$${v.toFixed(v < 1 ? 2 : 1)}`;
+const REEF_NAME: Record<string, string> = { low: 'soft corals and mushrooms', ferts: 'up to LPS', co2: 'up to SPS and clams' };
 const toF = (c: number) => Math.round(c * 9 / 5 + 32);
 const fromF = (f: number) => Math.round((f - 32) * 5 / 9 * 2) / 2;
 
@@ -30,21 +31,21 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
   const fahr = () => store.scene.units === 'in';
   const totals = (S: TankSetup): Totals => { const t = demandOf(S, P(), { kit: pinnedKit() }).totals; return { setup: t.setupUsd, upkeep: t.upkeepUsdMo, minutes: t.minPerWeek, risk: t.risk }; };
   /** The tank priced with its tech made explicit (an older file's inferred gear becomes rows), the base for previews. */
-  const withTech = (S: TankSetup, t: TechSetup): TankSetup => ({ ...S, tech: t, grow: { ...S.grow, feed: S.water.salt ? S.grow.feed : feedOf(t, S.grow.feed) } });
+  const withTech = (S: TankSetup, t: TechSetup): TankSetup => { const x = { ...S, tech: t }; return { ...x, grow: { ...S.grow, feed: feedFor(x) } }; };
   const baseOf = (S: TankSetup) => {
     const k = JSON.stringify([S.tech, S.tank, S.fish.length, S.items.length, S.grow.feed, S.lid, S.water, P()]);
     if (k !== baseKey || !base) { base = totals(withTech(S, techOf(S))); baseKey = k; }
     return base;
   };
 
-  const edit = (fn: (s: TankSetup) => TechSetup) => store.edit(s => { s.tech = fn(s); if (s.water.on && !s.water.salt) s.grow.feed = feedFor(s); });
+  const edit = (fn: (s: TankSetup) => TechSetup) => store.edit(s => { s.tech = fn(s); if (s.water.on) s.grow.feed = feedFor(s); });
 
   // the Plant care slider and the Feeding select write grow.feed: carry it into the CO2 + ferts rows (one source of truth)
   store.subscribe(kind => {
     if (kind === 'view') return;
     const S = store.tank;
-    if (S.tech && S.water.on && !S.water.salt && feedOf(techOf(S), S.grow.feed) !== S.grow.feed)
-      queueMicrotask(() => { const s = store.tank; if (s.tech && feedOf(techOf(s), s.grow.feed) !== s.grow.feed) store.edit(x => { x.tech = setFeed(techOf(x), x.grow.feed); }, { history: false }); });
+    if (S.tech && S.water.on && feedFor(S) !== S.grow.feed)
+      queueMicrotask(() => { const s = store.tank; if (s.tech && s.water.on && feedFor(s) !== s.grow.feed) store.edit(x => { x.tech = setFeed(techOf(x), x.grow.feed, !!x.water.salt); }, { history: false }); });
     render();
   });
   /** One expected value per figure (Nathan 2026-10-19: no ranges or percentiles shown): the mean of each lo / mode / hi. */
@@ -64,6 +65,10 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     if (row === 'co2' || row === 'ferts') {
       const f = feedOf(t);
       chip(f === 'co2' ? 'good' : f === 'ferts' ? '' : 'mute', `Growth: ${FEED_NAMES[f]} (fast growers ×${GROW_RATE[f].fast})`, 'How fast the plants grow with this feeding: stem plants and grass gain most, anubias and ferns hardly notice');
+    }
+    if (row === 'skimmer' || row === 'flow' || row === 'dosing') {
+      const f = reefFeedOf(t);
+      chip(f === 'co2' ? 'good' : f === 'ferts' ? '' : 'mute', `Corals: ${REEF_NAME[f]}`, 'The corals this gear keeps: the lowest of skimmer, water movement and calcium / alkalinity dosing sets it (light still has to match)');
     }
     if (row === 'heater' && opt === 'none') {
       const cold = coldSpecies({ ...S, tech: t }, t);

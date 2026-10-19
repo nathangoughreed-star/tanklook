@@ -3,6 +3,7 @@
 import { attachDemandPanel } from './demandPanel';
 import { fitToLimits, hasLimits } from '../demand/fit';
 import { attachTechMenu } from './techMenu';
+import { unheatedC } from '../scene/tech';
 import { renderFeaturedDeals } from './featuredDeals';
 import { startDeals, visibleTabs, pickTab, type StartTab } from './startEntries';
 import { DEALS_AS_OF, DEAL_NOTE, NOT_SPONSORED } from '../data/deals';
@@ -602,7 +603,7 @@ Cancel, then change the name, to keep both.`)) return;
     hint.hidden = !on; hint.textContent = on ? 'Grayed in the list: does not suit this tank, the care level or the animals already in it. They can still be added.' : '';
     if (!on) return null;
     const litres = volume(s.tank).litres, present = [...new Set(s.fish.map(f => f.species))].map(getSpecies).filter((x): x is Species => !!x);
-    const env = { corals: hasCorals(s.items) };
+    const env = { corals: hasCorals(s.items), unheatedC: unheatedC(s) }; // lane TM: no heater = the room's temperature
     return sp => whyAnimal(sp, litres, ex, present, env);
   }
   $('gateAnimals').onchange = e => store.edit(s => { if ((e.target as HTMLInputElement).checked) s.layout.gateAnimals = true; else delete s.layout.gateAnimals; });
