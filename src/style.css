@@ -170,7 +170,22 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 .sidetog { font: inherit; cursor: pointer; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 6px; padding: 3px 9px }
 /* the hide button sits in the view, just outside the panel, so it stays reachable however far the panel is scrolled */
 /* top-left of the view: panel toggle, then Undo / Redo (out of the scrolling panel, there even when it is hidden) */
-.climate { position: absolute; right: 10px; bottom: 10px; z-index: 3; max-width: 330px; box-sizing: border-box; padding: 6px 10px; border-radius: 6px; background: color-mix(in srgb, var(--panel) 88%, transparent); border: 1px solid var(--line); font-size: 12px; line-height: 1.4; pointer-events: none }
+.climate { position: absolute; right: 10px; bottom: 10px; z-index: 3; max-width: 330px; box-sizing: border-box; padding: 6px 10px; border-radius: 6px; background: color-mix(in srgb, var(--panel) 88%, transparent); border: 1px solid var(--line); font-size: 12px; line-height: 1.4; cursor: pointer }
+.climate.open { width: 330px; max-height: calc(100% - 20px); overflow-y: auto }
+.clCue { color: var(--muted); font-size: 11px; margin-top: 3px }
+.clAx { --cl-n: 92px; --cl-v: 44px; position: relative; margin: 6px 0 2px }
+.clT { font-weight: 600; font-size: 11px; color: var(--muted); margin-bottom: 2px }
+.clR { display: flex; align-items: center; height: 17px; gap: 0 }
+.clN { flex: none; width: var(--cl-n); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px }
+.clV { flex: none; width: var(--cl-v); text-align: right; font-size: 10.5px; color: var(--muted) }
+.clB { position: relative; flex: 1; height: 9px; border-radius: 4px; background: color-mix(in srgb, var(--ink) 8%, transparent) }
+.clB i { position: absolute; top: 0; bottom: 0; border-radius: 4px }
+.clB i.a { background: #4aa3a0 }
+.clB i.w { background: #e0a050 }
+.clScale { background: none; height: 12px }
+.clScale b { position: absolute; top: 0; font-size: 9.5px; font-weight: 400; color: var(--muted); transform: translateX(-50%) }
+.clLine { position: absolute; top: 14px; bottom: 14px; width: 0; border-left: 2px solid #e5484d; pointer-events: none }
+.clLine em { position: absolute; top: -13px; left: 0; transform: translateX(-50%); font: 600 10px/1 system-ui, sans-serif; color: #e5484d; font-style: normal; white-space: nowrap }
 .climate b { font-weight: 600; margin-right: 4px }
 .climate .hint { display: block }
 .viewtools { flex-wrap: wrap; max-width: calc(100% - 20px) }
