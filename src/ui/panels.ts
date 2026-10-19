@@ -39,6 +39,7 @@ import { NEW_POOL, SWAMP_LEVEL, groundHeight, nearestLand, sameGrid, sampleTerra
 
 /** Arrow keys move the selected piece: [axis, direction] (depth grows toward the back). */
 const ARROWS: Record<string, [string, number]> = { ArrowLeft: ['x', -1], ArrowRight: ['x', 1], ArrowUp: ['d', 1], ArrowDown: ['d', -1], PageUp: ['y', 1], PageDown: ['y', -1] };
+import { climateOf, climateText } from '../data/climate';
 import { placeNew, randomPose, randomSize, shuffleFish } from '../scene/scatter';
 import { fitFish, keepInWater, setWaterLevel } from '../scene/water';
 import { tankWeight } from '../scene/weight';
@@ -716,12 +717,14 @@ Cancel, then change the name, to keep both.`)) return;
   const rowName = (sp: Species, sex?: Sex) => sp.name + (sp.female ? (sex ? ' (female)' : ' (male)') : '');
   $('addFish').onclick = () => { const sp = getSpecies(pickId); if (sp) addOne(sp); };
   $('addFish').onpointerdown = e => { const sp = getSpecies(pickId); if (sp && !$<HTMLButtonElement>('addFish').disabled) dragOut(e, sp.name, { drop: at => at && dropSpecies(sp, sp.female ? previewSex : undefined, at) }); };
-  $('shuffle').onclick = () => {
+  const anotherMoment = () => {
     if (!S().fish.length) return;
     const seed = Math.random() * 1e9;
     store.edit(s => shuffleFish(s, rng(seed), undefined, addPct()));
-    status('Shuffled: a new moment in the tank. Ctrl+Z brings the last one back.');
+    status('Another moment in the tank. Ctrl+Z brings the last one back.');
   };
+  $('shuffle').onclick = anotherMoment;
+  $('moment').onclick = anotherMoment;
   let delArm = 0;
   $('delAll').onclick = () => {
     const b = $<HTMLButtonElement>('delAll'); if (!S().fish.length) return;
@@ -1667,6 +1670,10 @@ Cancel, then change the name, to keep both.`)) return;
   function sync(full = true) {
     const s = S(), A = s.tank, u = G().units;
     $<HTMLButtonElement>('undo').disabled = !store.canUndo; $<HTMLButtonElement>('redo').disabled = !store.canRedo;
+    $<HTMLButtonElement>('moment').disabled = !s.fish.length;
+    const cl = $('climate'), rows = climateOf(s);
+    cl.hidden = !rows.length;
+    cl.innerHTML = rows.map(r => `<div><b>${r.label}</b>${climateText(r)}${r.note ? `<span class="hint">${r.note}</span>` : ''}</div>`).join('');
     const it0 = store.selectedItem, keys = [
       JSON.stringify([{ ...s, fish: null, items: null, camera: null }, G().name, u, store.split, store.targets, viewer.terrainEdit.on]),
       s.fish.map(f => `${f.species}~${f.sex}`).join(), s.items.map(i => i.kind).join(), JSON.stringify(s.camera),

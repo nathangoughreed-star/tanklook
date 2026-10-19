@@ -238,7 +238,7 @@
   <div class="btns" id="addRow">
     <button id="addFish" class="primary" title="Add this species to the stocking list (a schooling species starts at 6)">Add</button>
     <span class="grow"></span>
-    <button id="shuffle" title="Move every animal to a new spot, as if a moment later: bottom dwellers stay down, schools stay together">Shuffle</button>
+    <button id="shuffle" title="Another moment: every animal in a new spot, as if a moment later. Bottom dwellers stay down, schools stay together">Another moment</button>
     <button id="delAll">Delete all</button>
   </div>
   <div id="addWhy" class="hint why" hidden></div>
@@ -344,9 +344,11 @@
     <button id="redo" class="sidetog" title="Redo (Ctrl+Shift+Z)">↷ Redo</button>
     <button id="multiBtn" class="sidetog" aria-pressed="false" title="Multi-select: tap animals and pieces to add them to the selection or take them out; drag on empty water to draw a box round some. On a computer: Shift-click and Shift-drag.">☐ Multi</button>
     <button id="brushBtn" class="sidetog" aria-pressed="false" title="Scatter brush: paint leaf litter, pebbles, moss, twigs or a carpet of plants onto the ground or a piece; Erase takes them off again.">🖌 Brush</button>
+    <button id="moment" class="sidetog" title="Another moment: every animal in a new spot, as if the tank were photographed a little later. The plants and scape stay as they are." disabled>◷ Another moment</button>
     <button id="arView" class="sidetog" title="See this tank at real size in your room (phone camera)" hidden>◱ AR</button>
     <button id="recenter" class="sidetog" title="Re-centre the panned view (Home, or double middle-click)" hidden>⌖ Re-centre</button>
   </div>
+  <div id="climate" class="climate" aria-label="Recommended temperature and humidity" hidden></div>
   <div id="brushBar" role="toolbar" aria-label="Scatter brush" hidden>
     <div class="gbRow">
       <select id="brKind" aria-label="Brush"></select>
