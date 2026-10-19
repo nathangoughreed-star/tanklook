@@ -1003,7 +1003,7 @@
    "tech": "led-reef",
    "count": 1,
    "watts": 60,
-   "par": 500,
+   "par": 500, "parAt": "surface",
    "spec": "published"
   },
   "lid": "open",
@@ -1041,7 +1041,7 @@
    "tech": "led-reef",
    "count": 1,
    "watts": 60,
-   "par": 500,
+   "par": 500, "parAt": "surface",
    "spec": "published"
   },
   "lid": "open",
@@ -1077,7 +1077,7 @@
    "tech": "led-reef",
    "count": 1,
    "watts": 60,
-   "par": 500,
+   "par": 500, "parAt": "surface",
    "spec": "published"
   },
   "lid": "open",

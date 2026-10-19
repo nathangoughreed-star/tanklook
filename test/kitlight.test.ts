@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { defaultSetup } from '../src/scene/defaults';
-import { IN } from '../src/scene/physics';
 import { lightOutCached, wattsOf } from '../src/scene/lightout';
 import {
   applyKitLight, applyKitToStore, confidenceText, kitCapability, lightConfidence, overridePar, setUpgradePriceHook, upgradePath, type KitLike,
 } from '../src/scene/kitlight';
 import type { Tank, TankSetup } from '../src/scene/types';
+import { KITS } from '../src/data/kits';
+import { TANK_MODELS, tankFromModel, tankFromOuter } from '../src/data/tanks';
+import { IN, volume } from '../src/scene/physics';
 
 const tank = (L: number, H: number, D: number, extra: Partial<Tank> = {}): Tank => ({ L: L * IN, H: H * IN, D: D * IN, ...extra });
 const setupOn = (t: Tank, salt = false): TankSetup => { const s = defaultSetup(); return { ...s, tank: t, items: [], water: { ...s.water, salt } }; };
@@ -147,5 +149,46 @@ describe('upgrade path', () => {
     setUpgradePriceHook(() => ({ lo: 10, mode: 20, hi: 40 }));
     try { expect(upgradePath(STRIP, G10, 'high').steps.every(s => s.priceUsd?.mode === 20)).toBe(true); }
     finally { setUpgradePriceHook(null); }
+  });
+});
+
+describe('the real kit catalog (lane KB)', () => {
+  // The kit's own outer size through KA's solver; the few kits without one get the catalog's freshwater tank nearest its rated gallons
+  // (kits carry no tank id yet).
+  const pool = TANK_MODELS.filter(m => !m.terrarium && m.shape === 'rect');
+  const tankOf = (k: (typeof KITS)[number]): Tank => k.tankDims ? tankFromOuter({ outer: k.tankDims }).tank
+    : tankFromModel(pool.reduce((a, b) => Math.abs(b.ratedGal - k.tankRatedGal) < Math.abs(a.ratedGal - k.tankRatedGal) ? b : a));
+  it('kit tanks match their rated gallons (a sanity check on the data both lanes feed)', () => {
+    for (const k of KITS) expect(volume(tankOf(k)).gallons / k.tankRatedGal, k.id).toBeGreaterThan(0.7);
+  });
+  it('every kit applies, gets a PAR and a sentence, and a sane upgrade verdict', () => {
+    expect(KITS.length).toBeGreaterThan(20);
+    for (const k of KITS) {
+      const s = applyKitLight(setupOn(tankOf(k), k.water === 'salt'), k), c = kitCapability(s), conf = lightConfidence(k.light);
+      expect(wattsOf(s), k.id).toBeGreaterThan(0);
+      expect(c.par, k.id).toBeGreaterThan(0);
+      expect(c.sentence, k.id).toMatch(/PAR/);
+      expect(conf.plusMinus, k.id).toBeGreaterThan(0);
+      if (k.light.spec === 'guess' || !k.light.watts) expect(conf.level, k.id).toBe(k.light.par ? 'published' : 'rough');
+      for (const g of ['low', 'medium', 'high'] as const) expect(['works as is', 'swap the light', 'effectively a new build'], k.id).toContain(upgradePath(k, tankOf(k), g).verdict);
+    }
+  });
+  it('budget fresh kits are low or medium light, never plant-ready; reef kits give real reef light', () => {
+    for (const k of KITS) {
+      const c = kitCapability(applyKitLight(setupOn(tankOf(k), k.water === 'salt'), k));
+      if (k.tier === 'budget' && k.water === 'fresh') expect(['none', 'low', 'medium'], `${k.id} ${c.par.toFixed(0)}`).toContain(c.level);
+      if (k.tier === 'reef' && k.light.spec !== 'guess') expect(c.par, k.id).toBeGreaterThan(30); // a nano reef LED may sit under soft coral level but still grows mushrooms
+    }
+  });
+});
+
+describe('surface-published PAR', () => {
+  it('a headline PAR at the surface lands lower at the substrate (Red Sea: about 500 surface, about 100 at 50 cm)', () => {
+    const k = KITS.find(x => x.id === 'red-sea-max-nano-g2-cube')!;
+    expect(k.light.parAt).toBe('surface');
+    const s = applyKitLight(setupOn(tankFromOuter({ outer: k.tankDims! }).tank, true), k);
+    const o = lightOutCached(s)!;
+    expect(o.surface).toBeCloseTo(500, 3);
+    expect(o.mean).toBeLessThan(250); expect(o.mean).toBeGreaterThan(60);
   });
 });

@@ -1,6 +1,44 @@
 # HANDOFF archive
 Finished lane and feature sections moved out of HANDOFF.md on 2026-10-16, verbatim, newest first.
 
+## Lane KC: kit light wiring (stub data until KB lands) (2026-10-19, branch `kitlight`, port 5723)
+State 2026-10-19: DONE, real kit catalog wired (KB kits.json: null watts -> `kitWatts` tier default per rated gal, budget 0.4 / mid 0.6 / plant 1.1 / reef 1.8 W per gal, min 4 W, label 'rough'; type 'flat' + LED tech -> LED bar; 3 extra tests loop all kits with stand-in tanks until KA ids land). `src/scene/kitlight.ts` + `test/kitlight.test.ts` (19 tests, stub kits).
+- API: `applyKitLight(setup, kit)` (pure; fitFixture fresh -> kit watts/par -> clamp; a kit without `par` clears an old override), `applyKitToStore(store, kit)`,
+  `lightConfidence(kit.light)` (published +-15 % | estimated = tech `unc` | rough = unc + 30 pts), `confidenceText`, `overridePar(setup, par|null)`,
+  `kitCapability(setup)` (level none/low/medium/high from the mean substrate PAR with the scape stripped; plants by cheapest care tier; plain sentence),
+  `upgradePath(kit, tank, goal, salt?)` (verdict + steps light / lid / ferts / co2 / dosing; `setUpgradePriceHook` is the lane KK price plug).
+- Level cut points: fresh 15 / 30 / 50 PAR (FRESH_TIERS), reef 50 / 92 / 180. Swap vs new build: ratio of goal PAR to current > 3, or needed watts > 2.5 W/gal fresh (6 reef).
+  These two numbers are heuristics, for Nathan to tune. Tube kits take their power from the tank width (lightout tubeOf), not kit.watts.
+- Kit type here is structural (`KitLike`: light, lid, water?), so KB's KitModel fits without an import. Nothing outside the two owned files touched; no scene bump.
+- Browser check (dev server, `__gb.store`): 4 W strip on 30x12x12 -> 13 PAR, carpet and red stem 'dim'; published 70 PAR kit -> anubias 'bright', carpet and stems fine.
+  Gotcha: preview_start runs from the session's folder; a lane chat must be started in its worktree or the server serves the main checkout.
+- (also fixed a one-line break in KB's test/kits.test.ts: tanks.json is {tanks: [...]}, not an array)
+- 2026-10-19 real kits x real tanks (KA tanks.ts, KB kits.json; kits carry no `tank` id yet, so kit.tankDims -> tankFromOuter, else the nearest rect catalog tank by rated gal): all 32 kits apply and the test passes (24 tests).
+  Found: Red Sea Max Nano kits publish PAR 500 "at the surface" (about 100 at 50 cm); `par` is a substrate figure. Added optional `light.parAt: 'surface'` (kits.ts type, kitlight scales it through the model's surface-to-substrate ratio) and set it on the 3 Red Sea kits in kits.json (one-line data hook in KB's file).
+  Swap vs new build limit raised from 3x to 5x after a 4 W 10 gal guess read as "new build" for high light.
+- THRESHOLDS FOR NATHAN (all heuristics, all in kitlight.ts): level cut points fresh 15 / 30 / 50 PAR, reef 50 / 92 / 180; swap vs new build = goal PAR over 5x the kit's, or needed watts over 2.5 W/gal fresh / 6 reef; tier default watts per rated gal when a listing has none: budget 0.4, mid 0.6, plant 1.1, reef 1.8 (min 4 W); confidence bands: published +-15 %, estimated = tech unc (LED 30 %, tubes 50 %), rough = +30 points.
+  Plausibility of the real data: budget hoods read 19-45 PAR (low to medium), Fluval planted kits 53-78 (high), Red Sea about 100-200 after the surface fix; check the Red Sea number by eye.
+
+
+## Lane KA: tank catalog (2026-10-19, branch `tankcat`, port 5703)
+DONE 2026-10-19. 50 entries in `src/data/tanks.json` (39 aquaria nano to 10 ft + 11 terrarium presets), loader `src/data/tanks.ts`
+(`tankFromModel`, `tankFromOuter` for a custom tank typed in outer mm with the glass fixed point, `outerOf`, `tankChoices()` = the seam for
+the wizard / KD), checks in `src/data/tankcheck.ts` driven by `node scripts/check-tanks.mjs [--fix]` and `test/tanks.test.ts`.
+- Outer mm is the source of truth; interior = outer minus glass (shapes with slanted or curved panes solve against `offsetRing`). Picking a
+  tank also sets `render.glass` to the catalog glass (4-19 mm) so the outside matches the label. Pie / hex / round entries store the
+  derived outer extent (`--fix` rewrites it). No scene version bump; old scenes untouched.
+- Bands from rated gallons: nano <15, small 15-39, mid 40-74, large 75-124, monster 125+ (the prompt listed 4 ranges for 5 names).
+- Volume tolerance 8 %; two explicit exceptions in `VOL_EXCEPTIONS` (125 -6.9 %, 300 -8.4 %). Custom 6/8/10 ft are rated at their computed 210 / 350 / 430 gal.
+- SOURCES ARE THIN: web search found maker listings only for 5.5, 10, 15, 20 long, 29, 40 breeder, 55, 60 breeder, 65, 75, 125, 150, 180 (URL in each
+  entry's `source`; retailer listings, not maker spec sheets). Everything else is `source: "estimate"` (2.5, 3, 5, 6, 8, 20 high, 30 breeder, 37, 45 cube,
+  50 breeder, 90, 120, all three bowfronts, both corners, hex, 135, 210, 240, 300, custom). Bow / corner / hex footprints are approximations
+  (real corner tanks are often flat-fronted; modelled as a 90 deg quarter round). Worth a pass against maker sheets if exact fit matters.
+- Picker: `presetA` is now optgroups (band, terrariums last), dropdown unchanged otherwise. `setTank` gained an optional `glass` argument. The old
+  `TANK_PRESETS` export is gone; the 2 odd aquarium-list rows (24x12x12, 24x12x24) moved to the terrarium list.
+- Dev-server gotcha: `preview_start tankcat` serves the MAIN folder, not the worktree; I ran `npx vite --port 5703` in the worktree instead.
+
+
+
 ## Lane KB: kit catalog (2026-10-19, branch `kits`, port 5713)
 
 **Landed 2026-10-19.** `src/data/kits.json` (32 kits: 13 Top Fin/Tetra, 11 Aqueon/Marineland/Fluval fresh, 8 reef: Fluval Sea/Flex Marine,

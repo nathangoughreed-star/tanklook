@@ -13,7 +13,7 @@ export interface KitModel {
   tankDims?: { L: number; H: number; D: number };
   water: 'fresh' | 'salt';
   /** watts null = not published (spec 'guess'); callers fall back to the tier default. */
-  light: { type: 'flat' | 'spot' | 'tube' | 'led'; tech: LightTech; count: number; watts: number | null; par?: number; spec: 'published' | 'listing' | 'guess' };
+  light: { type: 'flat' | 'spot' | 'tube' | 'led'; tech: LightTech; count: number; watts: number | null; par?: number; /** where `par` was measured; absent = at the substrate */ parAt?: 'surface' | 'substrate'; spec: 'published' | 'listing' | 'guess' };
   lid: LidType;
   stand?: boolean;
   filter: { kind: 'hob' | 'canister' | 'sponge' | 'internal'; rating?: number };

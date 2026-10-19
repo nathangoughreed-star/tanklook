@@ -27,8 +27,6 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 **Current lanes** (coordinator "Lanes coordinator 4", `local_408aa124`):
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
-| KA tank catalog | `../Glass-Box-tankcat` / `tankcat` | 5703 | `src/data/tanks.*`, preset picker in `ui/panels.ts`, `scene/defaults.ts` presets | opened 2026-10-19 |
-| KC kit light wiring (stub data until KB lands) | `../Glass-Box-kitlight` / `kitlight` | 5723 | kit light wiring | opened 2026-10-19 |
 | KK demand model (panel hook in `ui/panels.ts` only after KA lands) | `../Glass-Box-demand` / `demand` | 5733 | demand model | opened 2026-10-19 |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
@@ -36,37 +34,6 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
-
-## Lane KA: tank catalog (2026-10-19, branch `tankcat`, port 5703)
-DONE 2026-10-19. 50 entries in `src/data/tanks.json` (39 aquaria nano to 10 ft + 11 terrarium presets), loader `src/data/tanks.ts`
-(`tankFromModel`, `tankFromOuter` for a custom tank typed in outer mm with the glass fixed point, `outerOf`, `tankChoices()` = the seam for
-the wizard / KD), checks in `src/data/tankcheck.ts` driven by `node scripts/check-tanks.mjs [--fix]` and `test/tanks.test.ts`.
-- Outer mm is the source of truth; interior = outer minus glass (shapes with slanted or curved panes solve against `offsetRing`). Picking a
-  tank also sets `render.glass` to the catalog glass (4-19 mm) so the outside matches the label. Pie / hex / round entries store the
-  derived outer extent (`--fix` rewrites it). No scene version bump; old scenes untouched.
-- Bands from rated gallons: nano <15, small 15-39, mid 40-74, large 75-124, monster 125+ (the prompt listed 4 ranges for 5 names).
-- Volume tolerance 8 %; two explicit exceptions in `VOL_EXCEPTIONS` (125 -6.9 %, 300 -8.4 %). Custom 6/8/10 ft are rated at their computed 210 / 350 / 430 gal.
-- SOURCES ARE THIN: web search found maker listings only for 5.5, 10, 15, 20 long, 29, 40 breeder, 55, 60 breeder, 65, 75, 125, 150, 180 (URL in each
-  entry's `source`; retailer listings, not maker spec sheets). Everything else is `source: "estimate"` (2.5, 3, 5, 6, 8, 20 high, 30 breeder, 37, 45 cube,
-  50 breeder, 90, 120, all three bowfronts, both corners, hex, 135, 210, 240, 300, custom). Bow / corner / hex footprints are approximations
-  (real corner tanks are often flat-fronted; modelled as a 90 deg quarter round). Worth a pass against maker sheets if exact fit matters.
-- Picker: `presetA` is now optgroups (band, terrariums last), dropdown unchanged otherwise. `setTank` gained an optional `glass` argument. The old
-  `TANK_PRESETS` export is gone; the 2 odd aquarium-list rows (24x12x12, 24x12x24) moved to the terrarium list.
-- Dev-server gotcha: `preview_start tankcat` serves the MAIN folder, not the worktree; I ran `npx vite --port 5703` in the worktree instead.
-
-
-## Lane KC: kit light wiring (stub data until KB lands) (2026-10-19, branch `kitlight`, port 5723)
-State 2026-10-19: DONE except re-running the tests on KB's real kits (not landed yet). `src/scene/kitlight.ts` + `test/kitlight.test.ts` (19 tests, stub kits).
-- API: `applyKitLight(setup, kit)` (pure; fitFixture fresh -> kit watts/par -> clamp; a kit without `par` clears an old override), `applyKitToStore(store, kit)`,
-  `lightConfidence(kit.light)` (published +-15 % | estimated = tech `unc` | rough = unc + 30 pts), `confidenceText`, `overridePar(setup, par|null)`,
-  `kitCapability(setup)` (level none/low/medium/high from the mean substrate PAR with the scape stripped; plants by cheapest care tier; plain sentence),
-  `upgradePath(kit, tank, goal, salt?)` (verdict + steps light / lid / ferts / co2 / dosing; `setUpgradePriceHook` is the lane KK price plug).
-- Level cut points: fresh 15 / 30 / 50 PAR (FRESH_TIERS), reef 50 / 92 / 180. Swap vs new build: ratio of goal PAR to current > 3, or needed watts > 2.5 W/gal fresh (6 reef).
-  These two numbers are heuristics, for Nathan to tune. Tube kits take their power from the tank width (lightout tubeOf), not kit.watts.
-- Kit type here is structural (`KitLike`: light, lid, water?), so KB's KitModel fits without an import. Nothing outside the two owned files touched; no scene bump.
-- Browser check (dev server, `__gb.store`): 4 W strip on 30x12x12 -> 13 PAR, carpet and red stem 'dim'; published 70 PAR kit -> anubias 'bright', carpet and stems fine.
-  Gotcha: preview_start runs from the session's folder; a lane chat must be started in its worktree or the server serves the main checkout.
-
 
 ## Lane KK: demand model (panel hook in `ui/panels.ts` only after KA lands) (2026-10-19, branch `demand`, port 5733)
 **Phase 1 DONE 2026-10-19 (engine, no UI).** `src/demand/` (types, range, engine, cost, index); starter data `src/data/factors.json` and
@@ -298,6 +265,8 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane KC: kit light wiring (stub data until KB lands) (2026-10-19, branch `kitlight`, port 5723)
+- Lane KA: tank catalog (2026-10-19, branch `tankcat`, port 5703)
 - Lane KB: kit catalog (2026-10-19, branch `kits`, port 5713)
 - Lane EN: enclosure presentation (2026-10-16; branch `enclosure`, port 5673; opened by coordinator 3)
 - Lane CP: content pack (2026-10-16; branch `content-pack`, port 5683; batch 1 pushed, Nathan approved the pictures)
