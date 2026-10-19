@@ -3,7 +3,8 @@
 // scene/tech.ts optionCost; a tank without `tech` keeps the engine's inferred rows untouched (old files do not move).
 // Hooked from engine.ts with one line after the routine work rows, before the kit. Keys 'filter' and 'heater' stay, so a kit's price still covers them.
 import dd from '../data/demand-defaults.json';
-import { coldSpecies, inferTech, optionCost, optionDef, rowsFor, techOf, type TechSetup } from '../scene/tech';
+import { coldSpecies, heatLoss, inferTech, optionCost, optionDef, rowsFor, techOf, type TechSetup } from '../scene/tech';
+import { filterByName, genericHeaterW, heaterForBundle } from '../data/gearCatalog';
 import { matchFilter, matchHeater, type FilterSpec } from './gear';
 import { volume } from '../scene/physics';
 import type { TankSetup } from '../scene/types';
@@ -47,11 +48,21 @@ export function techDemand(S: TankSetup, rows: Contribution[], c: TechCtx) {
 /** The tech of a tank started from a bundle (lane TG, 2026-10-19): the inferred rows, with the filter and heater the
  *  bundle ships with (matched to the nearest generic model), so the drawn gear and the gear rows are the bundle's own.
  *  The bundle's price still covers their setup (engine.ts: kit parts 'filter' / 'heater'). Undefined: nothing to set. */
-export function kitTech(S: TankSetup, gear: { filter?: FilterSpec; heater?: { watts: number } }): TechSetup | undefined {
-  if (!S.water.on || (!gear.filter && !gear.heater)) return undefined;
+export function kitTech(S: TankSetup, gear: { filter?: FilterSpec; heater?: { watts: number }; label?: string; includes?: string[] }): TechSetup | undefined {
+  const heaterIn = !!gear.heater || !!gear.includes?.includes('heater');
+  if (!S.water.on || (!gear.filter && !heaterIn)) return undefined;
   const t: TechSetup = { rows: { ...inferTech(S).rows } };
-  const fm = gear.filter && matchFilter({ ...gear.filter, gal: gear.filter.gal ?? volume(S.tank).gallons })?.model;
-  if (fm) { t.rows.filter = fm.kind; t.filterModel = fm.id; }
-  if (gear.heater?.watts) { t.rows.heater = 'one'; t.heaterW = matchHeater(gear.heater.watts).watts; }
+  // the exact product when the listing names a catalogued one (step 3: "AquaClear 20", "Tetra Whisper PF20"), else the nearest generic model
+  const fp = gear.filter && filterByName(`${gear.filter.name ?? ''} ${gear.filter.rating ?? ''}`, gear.filter.kind, gear.filter.gal ?? volume(S.tank).gallons);
+  const fm = !fp && gear.filter ? matchFilter({ ...gear.filter, gal: gear.filter.gal ?? volume(S.tank).gallons })?.model : undefined;
+  if (fp) { t.rows.filter = fp.kind; t.filterProduct = fp.id; }
+  else if (fm) { t.rows.filter = fm.kind; t.filterModel = fm.id; }
+  if (heaterIn) {
+    // the brand's own heater (a Top Fin kit ships a Top Fin heater) at the listed watts, or at the size this tank needs
+    t.rows.heater = 'one';
+    const w = gear.heater?.watts ?? genericHeaterW(heatLoss(S, t).needW), hp = gear.label ? heaterForBundle(gear.label, w) : undefined;
+    if (hp && (!gear.heater?.watts || hp.watts === gear.heater.watts)) t.heaterProduct = hp.id;
+    else if (gear.heater?.watts) t.heaterW = matchHeater(gear.heater.watts).watts;
+  }
   return t;
 }

@@ -15,10 +15,12 @@ const bundles = DEALS.map(d => ({ d, S: sceneFromDeal(d)?.tanks[0] })).filter(b 
 describe('bundle gear', () => {
   it('sets the tech for bundles that ship a filter or heater', () => { expect(bundles.length).toBeGreaterThan(10); });
 
-  it('draws the bundle filter, matched like the engine matches it', () => {
+  it('draws the bundle filter: the catalogued product the listing names (step 3), else matched like the engine matches it', () => {
     for (const { d, S } of bundles) {
       const k = dealAsKit(d);
       if (!k.filter) continue;
+      const pick = gearPicks(S!).find(p => p.row === 'filter');
+      if (S!.tech!.filterProduct) { expect(pick?.product, d.id).toBe(S!.tech!.filterProduct); continue; }
       const fm = matchFilter({ ...k.filter, gal: k.filter.gal ?? d.gal })!.model;
       expect(gearPicks(S!).map(p => p.id), d.id).toContain(fm.id);
     }

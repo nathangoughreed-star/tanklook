@@ -5,6 +5,7 @@
 // carry over unchanged. A deal whose gear does worse for this build (a plant loses its light, the filter or heater is smaller,
 // the risk goes up) is kept out of the offer, with what it breaks.
 import { dealAsKit, dealGuesses, type Deal } from '../data/deals';
+import { productName } from '../data/gearCatalog';
 import { getTankModel, modelOfVariant, tankFromModel } from '../data/tanks';
 import { applyKitLight } from '../scene/kitlight';
 import { shapeOf } from '../scene/shape';
@@ -82,8 +83,8 @@ function filterNow(S: TankSetup): { name: string; gph: number } {
   const t = techOf(S), kind = t.rows.filter;
   if (kind === 'sump') return { name: 'sump', gph: Infinity };
   if (!FILTER_KINDS.includes(kind as FilterKind)) return { name: 'no filter', gph: 0 };
-  const f = filterFor(S, kind as FilterKind, t.filterModel);
-  return { name: `${filterName(f.model)}${f.n > 1 ? ` ×${f.n}` : ''}`, gph: f.gph };
+  const f = filterFor(S, kind as FilterKind, t.filterModel, t.filterProduct);
+  return { name: `${f.product ? productName(f.product) : filterName(f.model)}${f.n > 1 ? ` ×${f.n}` : ''}`, gph: f.gph };
 }
 
 /** Light, lid, stand, filter and heater changes, and what the deal's gear does worse. */

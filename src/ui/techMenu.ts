@@ -14,7 +14,8 @@ import {
   ROOM_C, applyPreset, coldSpecies, feedFor, feedOf, filterFor, filterSteps, heatLoss, offerChiller, offerTwoHeaters,
   optionCost, optionDef, presetsFor, reefFeedOf, rowsFor, setFeed, stockCapacity, techOf, walstadGaps, withChoice, type OptionCost, type TechSetup,
 } from '../scene/tech';
-import { genericHeaterW, heaterProduct, heatersNear } from '../data/gearCatalog';
+import { filtersNear, genericHeaterW, heaterProduct, heatersNear, productName } from '../data/gearCatalog';
+import { volume } from '../scene/physics';
 import type { TankSetup } from '../scene/types';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
@@ -111,8 +112,8 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
       if (r.id === 'chiller' && !offerChiller(S) && t.rows.chiller !== 'chiller') continue;
       const cur = t.rows[r.id] ?? 'none', def = optionDef(r.id, cur), c = optionCost(S, r.id, cur, { tech: t, kwhUsd: kwhUsd() });
       let name = def?.label ?? cur;
-      if (r.id === 'heater' && cur !== 'none') { const hp = heaterProduct(t.heaterProduct); name += ` · ${hp ? `${hp.brand} ${hp.model}` : `generic ${t.heaterW ?? genericHeaterW(heatLoss(S, t).needW / (cur === 'two' ? 2 : 1))} W`}`; }
-      if (r.id === 'filter' && def?.kind) { const f = filterFor(S, def.kind, t.filterModel); name += ` · ${f.n > 1 ? f.n + ' × ' : ''}${f.model.label.replace(/^.*\((.*)\)$/, '$1')} ${f.model.gph} gph`; }
+      if (r.id === 'heater' && cur !== 'none') { const hp = heaterProduct(t.heaterProduct); name += ` · ${hp ? productName(hp) : `generic ${t.heaterW ?? genericHeaterW(heatLoss(S, t).needW / (cur === 'two' ? 2 : 1))} W`}`; }
+      if (r.id === 'filter' && def?.kind) { const f = filterFor(S, def.kind, t.filterModel, t.filterProduct); name += ` · ${f.n > 1 ? f.n + ' × ' : ''}${f.product ? `${productName(f.product)}${f.product.gph ? ` ${f.product.gph} gph` : ''}` : `${f.model.label.replace(/^.*\((.*)\)$/, '$1')} ${f.model.gph} gph`}`; }
       html += `<div class="trow${open === r.id ? ' open' : ''}" data-row="${r.id}"><button type="button" class="thead" aria-expanded="${open === r.id}"><span class="tlab">${esc(r.label)}</span><span class="tcur">${esc(name)}</span>${range(c)}</button>`;
       if (open === r.id) {
         html += '<div class="topts">';
@@ -122,12 +123,15 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
           html += `<button type="button" class="topt${op.id === cur ? ' on' : ''}" data-opt="${op.id}" aria-pressed="${op.id === cur}"${op.note ? ` title="${esc(op.note)}"` : ''}><span class="tol">${esc(op.label)}</span>${range(oc)}<span class="tchips">${chips(S, r.id, op.id, oc)}</span></button>`;
         }
         if (r.id === 'filter' && def?.kind) {
-          const f = filterFor(S, def.kind, t.filterModel), st = filterSteps(def.kind, f.model.id);
-          html += `<div class="tstep">${st.down ? `<button type="button" data-fm="${st.down.id}">Smaller: ${esc(st.down.label)}</button>` : ''}${st.up ? `<button type="button" data-fm="${st.up.id}">Larger: ${esc(st.up.label)}</button>` : ''}${t.filterModel ? '<button type="button" data-fm="">Sized for the tank</button>' : ''}</div>`;
+          const f = filterFor(S, def.kind, t.filterModel, t.filterProduct), st = filterSteps(def.kind, f.model.id);
+          if (!f.product) html += `<div class="tstep">${st.down ? `<button type="button" data-fm="${st.down.id}">Smaller: ${esc(st.down.label)}</button>` : ''}${st.up ? `<button type="button" data-fm="${st.up.id}">Larger: ${esc(st.up.label)}</button>` : ''}${t.filterModel ? '<button type="button" data-fm="">Sized for the tank</button>' : ''}</div>`;
+          // lane TG: a real filter of this kind rated for about this tank (its flow, price, size and colours replace the generic one's)
+          const near = filtersNear(def.kind, volume(S.tank).gallons);
+          if (near.length || f.product) html += `<div class="tstep"><span class="hint">Or a real one:</span><button type="button" data-fp=""${f.product ? '' : ' class="on"'}>Generic</button>${near.map(p => `<button type="button" data-fp="${p.id}"${f.product?.id === p.id ? ' class="on"' : ''} title="${esc(`${p.gph ? `${p.gph} gph · ` : ''}${p.galMin ?? '?'}-${p.galMax ?? '?'} gal${p.priceUsd ? ` · about $${Math.round(p.priceUsd)}` : ''}`)}">${esc(productName(p))}</button>`).join('')}</div>`;
         }
         if (r.id === 'heater' && cur !== 'none') { // lane TG: the generic heater the tank needs, or a real one of about that size
           const need = heatLoss(S, t).needW / (cur === 'two' ? 2 : 1), g = genericHeaterW(need);
-          html += `<div class="tstep"><span class="hint">Needs about ${Math.round(need)} W${cur === 'two' ? ' each' : ''}:</span><button type="button" data-hp=""${t.heaterProduct ? '' : ' class="on"'}>Generic ${g} W</button>${heatersNear(need).map(h => `<button type="button" data-hp="${h.id}"${t.heaterProduct === h.id ? ' class="on"' : ''} title="${esc(`${h.lengthMm} mm long${h.priceUsd ? ` · about $${Math.round(h.priceUsd)}` : ''}`)}">${esc(`${h.brand} ${h.model}`)}</button>`).join('')}</div>`;
+          html += `<div class="tstep"><span class="hint">Needs about ${Math.round(need)} W${cur === 'two' ? ' each' : ''}:</span><button type="button" data-hp=""${t.heaterProduct ? '' : ' class="on"'}>Generic ${g} W</button>${heatersNear(need).map(h => `<button type="button" data-hp="${h.id}"${t.heaterProduct === h.id ? ' class="on"' : ''} title="${esc(`${h.lengthMm} mm long${h.priceUsd ? ` · about $${Math.round(h.priceUsd)}` : ''}`)}">${esc(productName(h))}</button>`).join('')}</div>`;
         }
         if (def?.note) html += `<div class="hint">${esc(def.note)}</div>`;
         html += '</div>';
@@ -170,8 +174,10 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     if (op && row) { edit(s => withChoice(s, row, op.dataset.opt!)); return; }
     const hpEl = el.closest<HTMLElement>('[data-hp]');
     if (hpEl) { edit(s => { const t = { ...techOf(s), preset: 'custom' }; delete t.heaterW; if (hpEl.dataset.hp) t.heaterProduct = hpEl.dataset.hp; else delete t.heaterProduct; return t; }); return; }
+    const fpEl = el.closest<HTMLElement>('[data-fp]');
+    if (fpEl) { edit(s => { const t = { ...techOf(s), preset: 'custom' }; delete t.filterModel; if (fpEl.dataset.fp) t.filterProduct = fpEl.dataset.fp; else delete t.filterProduct; return t; }); return; }
     const fm = el.closest<HTMLElement>('[data-fm]');
-    if (fm) edit(s => { const t = { ...techOf(s), preset: 'custom' }; if (fm.dataset.fm) t.filterModel = fm.dataset.fm; else delete t.filterModel; return t; });
+    if (fm) edit(s => { const t = { ...techOf(s), preset: 'custom' }; delete t.filterProduct; if (fm.dataset.fm) t.filterModel = fm.dataset.fm; else delete t.filterModel; return t; });
   });
   mount.addEventListener('change', e => {
     const el = e.target as HTMLInputElement;

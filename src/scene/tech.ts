@@ -13,7 +13,7 @@ import { FILTER_MODELS, HEATER_MODELS, matchHeater, type FilterKind, type Filter
 import { price as rowPrice } from '../demand/prices';
 import type { Range3 } from '../demand/types';
 import { volume } from './physics';
-import { heaterProduct } from '../data/gearCatalog';
+import { filterProduct, heaterProduct, listedPrice, type FilterProduct } from '../data/gearCatalog';
 import { footprint } from './shape';
 import type { GrowFeed, TankSetup } from './types';
 
@@ -40,6 +40,9 @@ export interface TechSetup {
   rows: Record<string, string>;
   /** step the filter up or down: a gear-models.json filter id of the chosen kind; absent = the model sized for the tank */
   filterModel?: string;
+  /** a real filter picked from the gear catalogue (lane TG step 3): its flow sets the turnover, its price the cost, its
+   *  size and colours are drawn; it must be of the chosen filter kind */
+  filterProduct?: string;
   /** heater watts each (a gear-models.json heater class); absent = sized from the heat loss */
   heaterW?: number;
   /** a real heater picked from the gear catalogue (data/gear-catalog.json; lane TG): its watts size the heat, its size is drawn */
@@ -184,7 +187,7 @@ export function withChoice(S: TankSetup, row: string, opt: string): TechSetup {
   // an in-sump skimmer without a sump falls back to a hang-on one
   if (row === 'filter' && opt !== 'sump' && rows.skimmer === 'sump') rows.skimmer = 'hob';
   const next: TechSetup = { ...t, rows, preset: 'custom' };
-  if (row === 'filter') delete next.filterModel;
+  if (row === 'filter') { delete next.filterModel; delete next.filterProduct; }
   if (row === 'heater') { delete next.heaterW; delete next.heaterProduct; }
   return next;
 }
@@ -225,11 +228,19 @@ function unitPrice(p: GearDef['price']): { r: Range3; est: boolean } | undefined
   return p.fallback ? { r: estWiden(p.fallback), est: true } : undefined;
 }
 
-export interface FilterPick { model: FilterModel; n: number; gph: number; turnover: number }
+export interface FilterPick { model: FilterModel; n: number; gph: number; turnover: number; /** the real product picked, if any */ product?: FilterProduct }
 /** The filter for this tank and kind: the model whose tank range holds the volume, else the largest of the kind, as many
  *  units as it takes to cover the volume (sponges on a big tank); `filterModel` steps it up or down. */
-export function filterFor(S: TankSetup, kind: FilterKind, override?: string): FilterPick {
+export function filterFor(S: TankSetup, kind: FilterKind, override?: string, productId?: string): FilterPick {
   const gal = galOf(S), pool = FILTER_MODELS.filter(m => m.kind === kind).sort((a, b) => a.gph - b.gph);
+  // a real product of this kind (lane TG step 3): its own flow and rated range; the generic model nearest its flow stands in for the rest
+  const fp = filterProduct(productId);
+  if (fp && fp.kind === kind) {
+    const near = (m: FilterModel) => Math.abs(Math.log(m.gph / (fp.gph ?? m.gph)));
+    const model = [...pool].sort((a, b) => near(a) - near(b))[0];
+    const n = Math.min(4, Math.max(1, Math.ceil(gal / (fp.galMax ?? model.galMax)))), gph = (fp.gph ?? model.gph) * n;
+    return { model, n, gph, turnover: gph / Math.max(gal, 0.1), product: fp };
+  }
   const model = pool.find(m => m.id === override) ?? pool.find(m => gal >= m.galMin && gal <= m.galMax) ?? (gal < pool[0].galMin ? pool[0] : pool[pool.length - 1]);
   const n = Math.min(4, Math.max(1, Math.ceil(gal / model.galMax)));
   const gph = model.gph * n;
@@ -303,6 +314,8 @@ export interface OptionCost {
   /** filtration: flow per hour as a multiple of the tank volume */
   turnover?: number;
 }
+/** A real product's own listed price (one retailer, one day): a narrow band for sales and other stores. */
+const pricePoint = (usd: number): Range3 => ({ lo: usd * 0.9, mode: usd, hi: usd * 1.1 });
 const DOSING = new Set(['aio', 'ei', 'twopart', 'liquidcarbon']);
 const KWH_USD = 0.17;
 /** Weekly water change in gallons (the demand engine's fraction for this kind of tank). */
@@ -321,16 +334,17 @@ export function optionCost(S: TankSetup, row: string, opt: string, o: { kwhUsd?:
     let n = def?.count ?? 1, setup: Range3 | undefined, est = false, watts = (g.watts ?? 0) * sizeK(g, gal, 'watts'), hours = g.hours ?? 24;
     let minutes: Range3 = g.minutes ? s3(g.minutes, sizeK(g, gal, 'minutes')) : Z, monthly: Range3 = Z, kwhMo: number | undefined;
     if (g.sized === 'filter' && def?.kind) {
-      const f = filterFor(S, def.kind, row === 'filter' ? t.filterModel : undefined);
-      n = f.n; watts = f.model.watts; turnover = f.turnover;
-      const p = rowPrice(f.model.priceKey);
+      const f = filterFor(S, def.kind, row === 'filter' ? t.filterModel : undefined, row === 'filter' ? t.filterProduct : undefined);
+      n = f.n; watts = f.product?.watts ?? f.model.watts; turnover = f.turnover;
+      const lp = listedPrice(f.product), p = lp ? pricePoint(lp) : rowPrice(f.model.priceKey);
       setup = p && s3(p, g.modelPriceK?.[f.model.id] ?? 1); est = !p;
       minutes = s3(minutes, g.byKind?.[def.kind] ?? 1);
       // sponges run off one air pump, however many there are (its price is spread over the units, as setup is multiplied by n below)
       if (def.kind === 'sponge') { watts += (GEAR.airpump.watts ?? 2.5) / f.n; const ap = unitPrice(GEAR.airpump.price); if (setup && ap) setup = a3(setup, s3(ap.r, 1 / f.n)); }
     } else if (g.sized === 'heater') {
       const h = heatLoss(S, t);
-      n = h.n; watts = h.heater.watts; setup = rowPrice(h.heater.priceKey); kwhMo = h.kwhMo / Math.max(n, 1);
+      const hp = heaterProduct(t.heaterProduct);
+      n = h.n; watts = h.heater.watts; setup = listedPrice(hp) ? pricePoint(listedPrice(hp)!) : rowPrice(h.heater.priceKey); kwhMo = h.kwhMo / Math.max(n, 1);
     } else if (id === 'chiller') {
       const h = heatLoss(S, t);
       kwhMo = h.chillerKwhMo; watts = h.coolW / HEAT.chillerCop;
@@ -404,6 +418,8 @@ export interface TechPiece {
   row: string; option: string; gear: string;
   /** gear-models.json id (filters and heaters), units, flow, watts each */
   model?: string; n: number; gph?: number; watts?: number;
+  /** filters: the catalogue product picked (data/gear-catalog.json), drawn at its own size and colours */
+  product?: string;
   place?: GearPlace;
 }
 /** The pieces of gear in this tank, for lane TG: one entry per part (units in n). Filters / heaters name their model. */
@@ -415,7 +431,7 @@ export function techParts(S: TankSetup): TechPiece[] {
       const g = GEAR[gear];
       if (!g || g.inWaterChange || g.perWaterChange || (!g.watts && !g.sized && !['dropchecker', 'diyco2', 'sump', 'refractometer', 'hydrometer', 'chiller', 'rodi'].includes(gear))) continue;
       const piece: TechPiece = { row: row.id, option: opt, gear, n: def?.count ?? 1, ...(t.place?.[row.id] ? { place: t.place[row.id] } : {}) };
-      if (g.sized === 'filter' && def?.kind) { const f = filterFor(S, def.kind, t.filterModel); Object.assign(piece, { model: f.model.id, n: f.n, gph: f.model.gph, watts: f.model.watts }); }
+      if (g.sized === 'filter' && def?.kind) { const f = filterFor(S, def.kind, t.filterModel, t.filterProduct); Object.assign(piece, { model: f.model.id, n: f.n, gph: f.product?.gph ?? f.model.gph, watts: f.product?.watts ?? f.model.watts, ...(f.product ? { product: f.product.id } : {}) }); }
       else if (g.sized === 'heater') { const h = heatLoss(S, t); Object.assign(piece, { model: h.heater.id, n: h.n, watts: h.heater.watts }); }
       else if (g.watts) piece.watts = g.watts;
       if (gear === 'returnpump') piece.gph = Math.round(galOf(S) * (g.gphPerGal ?? 6));
@@ -437,6 +453,7 @@ export function parseTech(raw: unknown): TechSetup | undefined {
   if (typeof r.preset === 'string' && (r.preset === 'custom' || PRESETS.some(p => p.id === r.preset))) t.preset = r.preset;
   if (typeof r.filterModel === 'string' && FILTER_MODELS.some(m => m.id === r.filterModel)) t.filterModel = r.filterModel;
   if (typeof r.heaterW === 'number' && HEATER_MODELS.some(m => m.watts === r.heaterW)) t.heaterW = r.heaterW;
+  if (typeof r.filterProduct === 'string' && filterProduct(r.filterProduct)) t.filterProduct = r.filterProduct;
   if (typeof r.heaterProduct === 'string' && heaterProduct(r.heaterProduct)) t.heaterProduct = r.heaterProduct;
   if (typeof r.roomC === 'number' && isFinite(r.roomC)) t.roomC = Math.min(40, Math.max(0, r.roomC));
   if (r.place && typeof r.place === 'object') {

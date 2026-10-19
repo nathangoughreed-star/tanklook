@@ -108,14 +108,37 @@ export async function heaters(ids = [null, 'topfin-50', 'tetra-ht-50', 'hygger-5
 }
 
 /** Every catalogue heater upright in a tall bare tank, cropped to it: shots/tg_hc_<id>.png (for the drawn-vs-photo sheet). */
-export async function heaterSheet() {
+export async function heaterSheet(only = null) {
   const T = await import('/src/scene/tech.ts'), C = await import('/src/data/gearCatalog.ts');
-  for (const id of [null, ...C.HEATER_PRODUCTS.map(h => h.id)]) {
+  for (const id of only ?? [null, ...C.HEATER_PRODUCTS.map(h => h.id)]) {
     await ex('planted');
     window.__gb.store.edit(s => { s.tank = { L: 400, D: 300, H: 500 }; s.items = []; s.fish = []; s.render.bg = 'custom'; s.render.bgColor = '#d8dde2'; const t = T.applyPreset(s, 'walstad'); t.rows.heater = 'one'; if (id) t.heaterProduct = id; else t.heaterW = 50; s.tech = t; });
     await wait(400);
     window.__gb.store.cam(c => { c.az = 20; c.el = 6; c.zoom = 1; });
     await snap('tg_hc_' + (id ?? 'generic'), { az: 20, el: 6, zoom: 1, crop: await gearCrop(0.15, -20, 'heater'), w: 300, mult: 2 });
+  }
+  return 'ok';
+}
+
+/** One filter of each catalogue family (step 3) in a bare tank sized for it, cropped to it, front 3/4 and from behind (HOB
+ *  and canister bodies sit outside the back glass): shots/tg_fc_<id>_{a,b}.png, for the drawn-vs-photo sheet. */
+export async function filterSheet(ids) {
+  const T = await import('/src/scene/tech.ts'), C = await import('/src/data/gearCatalog.ts');
+  for (const id of ids) {
+    const p = C.filterProduct(id), g = p.galMax ?? 20, big = g > 45;
+    await ex('planted');
+    window.__gb.store.edit(s => {
+      s.tank = big ? { L: 1219, D: 457, H: 533 } : g > 20 ? { L: 762, D: 318, H: 508 } : { L: 610, D: 305, H: 356 };
+      s.items = []; s.fish = []; s.layout = { id: 'none', seed: 1 }; s.render.bg = 'custom'; s.render.bgColor = '#d8dde2'; if (p.kind === 'canister') { s.stand.show = true; s.stand.style = 'frame'; }
+      const t = T.applyPreset(s, 'walstad'); t.rows.filter = p.kind; t.rows.heater = 'none'; t.filterProduct = id; s.tech = t;
+    });
+    await wait(400);
+    const views = p.kind === 'hob' ? [['a', 30, 12], ['b', 150, 18]] : p.kind === 'canister' ? [['a', 30, 8], ['b', 150, 10]] : [['a', 25, 6]];
+    for (const [v, az, el] of views) {
+      const zoom = p.kind === 'canister' ? 0.5 : 1; // the canister stands in the stand, below the tank
+      window.__gb.store.cam(c => { c.az = az; c.el = el; c.zoom = zoom; });
+      await snap(`tg_fc_${id}_${v}`, { az, el, zoom, crop: await gearCrop(0.12, p.kind === 'canister' ? -5000 : -20), w: 420, mult: 2 });
+    }
   }
   return 'ok';
 }

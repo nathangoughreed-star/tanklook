@@ -7,7 +7,7 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { FILTER_MODELS, HEATER_MODELS, type FilterModel } from '../demand/gear';
 import { heatLoss, techOf, techParts, type GearPlace } from '../scene/tech';
-import { genericHeaterW, heaterProduct } from '../data/gearCatalog';
+import { filterProduct, genericHeaterW, heaterProduct, type FilterProduct, type PartColour } from '../data/gearCatalog';
 import { backdropDepth, glassThickness, tankUnderside, floorY, waterY, clamp } from '../scene/physics';
 import { chord } from '../scene/shape';
 import { groundHeight } from '../scene/terrain';
@@ -26,7 +26,7 @@ export interface GearPick {
   id: string; /** CO2 only: the drop checker's colour, when the tech model knows the level. */ co2?: 'low' | 'ok' | 'high';
   /** units (two heaters, two powerheads); absent = 1 */ n?: number;
   /** the tech row it comes from (what a drag writes to) */ row?: string;
-  /** heaters: the watts drawn (a generic heater of the size the tank needs) and the real product picked, if any */ watts?: number; product?: string;
+  /** heaters: the watts drawn (a generic heater of the size the tank needs); heaters and filters: the real product picked, if any */ watts?: number; product?: string;
   /** the owner's placement; absent = placed by TG (default corner, clear of the hardscape) */ place?: GearSpot;
 }
 /** Which back corner the gear sits in. */
@@ -43,7 +43,7 @@ export function gearPicks(S: TankSetup): GearPick[] {
   for (const p of parts) {
     const place = spotOf(S, p.place), pick = (id: string) => out.push({ id, row: p.row, ...(p.n > 1 ? { n: p.n } : {}), ...(place ? { place } : {}) });
     switch (p.gear) {
-      case 'filter': if (p.model) pick(p.model); break;
+      case 'filter': if (p.model) out.push({ id: p.model, row: p.row, ...(p.n > 1 ? { n: p.n } : {}), ...(p.product ? { product: p.product } : {}), ...(place ? { place } : {}) }); break;
       case 'heater': if (p.model) { const t = techOf(S), hp = heaterProduct(t.heaterProduct), w = hp?.watts ?? t.heaterW ?? genericHeaterW(heatLoss(S, t).needW / Math.max(1, p.n)); out.push({ id: p.model, row: p.row, ...(p.n > 1 ? { n: p.n } : {}), watts: w, ...(hp ? { product: hp.id } : {}), ...(place ? { place } : {}) }); } break;
       case 'sump': pick('sump'); break;
       case 'co2kit': case 'diyco2': pick('co2'); break;
@@ -147,9 +147,9 @@ class Kit {
     const c = new THREE.CatmullRomCurve3(pts, false, 'centripetal'), n = Math.max(8, Math.round(c.getLength() / 8));
     this.put(bk, new THREE.TubeGeometry(c, n, r, seg, false), color, undefined, base);
   }
-  box(bk: Bucket, c: THREE.Vector3, w: number, h: number, d: number, color: number, r = 0, yaw = 0) {
+  box(bk: Bucket, c: THREE.Vector3, w: number, h: number, d: number, color: number, r = 0, yaw = 0, base = 0.06) {
     const g = r > 0 ? roundedBox(w, h, d, r) : new THREE.BoxGeometry(w, h, d);
-    this.put(bk, g, color, new THREE.Matrix4().compose(c, new THREE.Quaternion().setFromAxisAngle(UP, yaw), new THREE.Vector3(1, 1, 1)));
+    this.put(bk, g, color, new THREE.Matrix4().compose(c, new THREE.Quaternion().setFromAxisAngle(UP, yaw), new THREE.Vector3(1, 1, 1)), base);
   }
   ball(bk: Bucket, c: THREE.Vector3, r: number, color: number, base = 0.06, detail = 1) {
     this.put(bk, new THREE.IcosahedronGeometry(r, detail), color, new THREE.Matrix4().makeTranslation(c.x, c.y, c.z), base);
@@ -214,13 +214,17 @@ export function heaterLength(watts: number) {
 }
 /** Size factor of a filter body against its class's reference flow (cube root: body volume ~ flow). */
 const flowScale = (m: FilterModel, ref: number) => Math.cbrt(m.gph / ref);
+/** A catalogue colour as a number, else the generic default. */
+const hexOr = (h: string | undefined, d: number) => (h && /^#[0-9a-f]{6}$/i.test(h) ? parseInt(h.slice(1), 16) : d);
+/** A product part's colour and how it is drawn: tinted clear plastic goes in the clear bucket, seen into. */
+const partOf = (c: PartColour | undefined, d: number, wet: Bucket = 'wet') => ({ c: hexOr(c?.hex, d), bk: (c?.translucent ? 'clear' : wet) as Bucket, base: c?.translucent ? 0.5 : 0.06 });
 
 /** A wall the gear hangs on: the back glass (u from the `side` corner) or a side glass (u from the back corner forward). */
 export type GearWall = 'back' | 'left' | 'right';
 interface Frame {
   S: TankSetup; T: Tank; kit: Kit; side: GearSide; wall: GearWall;
   /** Turn of a box that sits square to this wall (0 on the back glass). */ yaw: number;
-  /** kit.box turned square to this wall. */ box(bk: Bucket, c: THREE.Vector3, w: number, h: number, d: number, color: number, r?: number): void;
+  /** kit.box turned square to this wall. */ box(bk: Bucket, c: THREE.Vector3, w: number, h: number, d: number, color: number, r?: number, base?: number): void;
   /** World directions of +u (along the wall) and +b (into the tank, off the glass). */
   along: THREE.Vector3; inward: THREE.Vector3;
   /** Water line, tank top (inner glass top), glass thickness, stand top, room floor, the wall's inner length. */
@@ -254,7 +258,7 @@ function frame(S: TankSetup, T: Tank, kit: Kit, side: GearSide, solids: THREE.Bo
   }
   const f: Frame = {
     S, T, kit, side: wall === 'back' ? side : wall, wall, along, inward, len, yaw: wall === 'back' ? 0 : Math.PI / 2,
-    box: (bk, c, w, h, d, color, r = 0) => kit.box(bk, c, w, h, d, color, r, wall === 'back' ? 0 : Math.PI / 2),
+    box: (bk, c, w, h, d, color, r = 0, base) => kit.box(bk, c, w, h, d, color, r, wall === 'back' ? 0 : Math.PI / 2, base),
     wy: waterY(T, S.water.level), H: T.H, t, top: tankUnderside(T, S.render), floor: floorY(T, S.render, S.stand),
     P, ground, taken: [],
     slot(u0, w, y0, y1, b0, b1, fixed = false) {
@@ -385,19 +389,25 @@ function heater(f: Frame, watts: number, sp: Spot, product?: string) {
   }
 }
 
-function hob(f: Frame, m: FilterModel, sp: Spot) {
-  const { kit, t } = f, s = flowScale(m, 100), W = 150 * s, D = 105 * s, Hb = 170 * s, yTop = f.H + 28;
-  const it = 8 * Math.sqrt(s), stY = f.ground(sp.u, 26) + 45; // intake tube radius; the strainer's foot clears the ground
+function hob(f: Frame, m: FilterModel, sp: Spot, pr?: FilterProduct) {
+  const { kit, t } = f, s = pr?.gph ? Math.cbrt(pr.gph / 100) : flowScale(m, 100), W = pr?.bodyMm.w ?? 150 * s, D = pr?.bodyMm.d ?? 105 * s, Hb = pr?.bodyMm.h ?? 170 * s, yTop = f.H + 28;
+  // a real product (lane TG step 3): its own colours part by part; an intake shorter than the tank leaves the strainer up in the water
+  const L = pr?.colors, body = partOf(L?.body, C.charcoal, 'room'), lid = partOf(L?.lid, C.grey, 'room'), motor = hexOr(L?.motor?.hex, C.black);
+  const lip = partOf(L?.outlet ?? (L?.body?.translucent ? undefined : L?.body), C.charcoal), inC = partOf(L?.intake, C.grey), stC = partOf(L?.strainer ?? L?.intake, C.grey);
+  const it = 8 * Math.sqrt(s), stY = Math.max(f.ground(sp.u, 26) + 45, pr?.intakeMm ? f.H + 16 - pr.intakeMm : -Infinity); // intake tube radius; the strainer's foot clears the ground
   const uI = f.slot(sp.fixed ? sp.u - W / 2 + 12 : sp.u + 12, 30, stY, f.wy, 0, 50, sp.fixed), u = uI - 12 + W / 2; // only the intake takes wall room: the body is outside
   // the body behind the back glass, its lid and the motor housing
   const bc = f.P(u, yTop - Hb / 2, -t - 6 - D / 2);
-  f.box('room', bc, W, Hb, D, C.charcoal, 10);
-  f.box('room', f.P(u, yTop + 4, -t - 6 - D / 2), W, 8, D, C.grey, 6);
-  f.box('room', f.P(u - W * 0.22, yTop - Hb - 18, -t - 4 - D * 0.35), 46 * s, 36, 46 * s, C.black, 8); // motor under the box
+  f.box(body.bk, bc, W, Hb, D, body.c, 10, body.base);
+  if (body.bk === 'clear') f.box('room', f.P(u, yTop - Hb * 0.55, -t - 6 - D / 2), W * 0.8, Hb * 0.7, D * 0.7, hexOr(L?.sponge, 0x3a3f44), 4); // the media seen through a tinted body
+  f.box(lid.bk, f.P(u, yTop + 4, -t - 6 - D / 2), W, 8, D, lid.c, 6, lid.base);
+  f.box('room', f.P(u - W * 0.22, yTop - Hb - 18, -t - 4 - D * 0.35), 46 * s, 36, 46 * s, motor, 8); // motor under the box
+  if (L?.accent && !/wheel|window/i.test(L.accent.where)) f.box('room', f.P(u - W * 0.3, yTop + 8.5, -t - 6 - D * 0.25), W * 0.22, 2, D * 0.18, hexOr(L.accent.hex, C.grey), 1); // a coloured latch / tab on top (Seachem blue)
+  if (L?.accent && /wheel/i.test(L.accent.where)) kit.rod('room', f.P(u + W * 0.3, yTop - Hb * 0.35, -t - 6 - D), f.P(u + W * 0.3, yTop - Hb * 0.35, -t - 6 - D - 6), Hb * 0.3, hexOr(L.accent.hex, C.grey), { seg: 28 }); // a Bio-Wheel at the back
   // hanger over the glass and the spillway lip into the tank, with the sheet of water falling off it
-  f.box('wet', f.P(u + W * 0.08, f.H + 14, (24 - t) / 2), W * 0.8, 6, 24 + t + 8, C.charcoal, 2);
+  f.box(lip.bk, f.P(u + W * 0.08, f.H + 14, (24 - t) / 2), W * 0.8, 6, 24 + t + 8, lip.c, 2, lip.base);
   const lipB = 30 * s, lipY = f.H + 10, uL = u + W * 0.08;
-  f.box('wet', f.P(uL, lipY, lipB / 2), W * 0.7, 4, lipB, C.charcoal, 1.5);
+  f.box(lip.bk, f.P(uL, lipY, lipB / 2), W * 0.7, 4, lipB, lip.c, 1.5, lip.base);
   const n = 8, drop = lipY - f.wy, w2 = W * 0.33, pos: number[] = [], sg = new THREE.BufferGeometry();
   const at = (k: number, side: number) => f.P(uL + side * w2, lipY - drop * k, lipB + 10 * Math.sqrt(k) * s).toArray();
   for (let i = 0; i < n; i++) { const a0 = i / n, a1 = (i + 1) / n; pos.push(...at(a0, -1), ...at(a0, 1), ...at(a1, 1), ...at(a0, -1), ...at(a1, 1), ...at(a1, -1)); }
@@ -412,85 +422,94 @@ function hob(f: Frame, m: FilterModel, sp: Spot) {
   }
   // intake: a smoky tube from the box over the glass and down, its slotted strainer at the foot
   const ib = 22;
-  kit.tube('wet', [f.P(uI, yTop - 30, -t - 30), f.P(uI, f.H + 16, -t - 12), f.P(uI, f.H + 16, ib * 0.5), f.P(uI, f.H - 8, ib), f.P(uI, stY + 90, ib)], it, C.grey, 0, 12);
-  kit.rod('wet', f.P(uI, stY + 90, ib), f.P(uI, stY + 70, ib), it, C.grey, { r2: it + 3 });
-  strainer(f, f.P(uI, stY, ib), 70 * Math.sqrt(s), it + 4);
+  kit.tube(inC.bk, [f.P(uI, yTop - 30, -t - 30), f.P(uI, f.H + 16, -t - 12), f.P(uI, f.H + 16, ib * 0.5), f.P(uI, f.H - 8, ib), f.P(uI, stY + 90, ib)], it, inC.c, inC.bk === 'clear' ? inC.base : 0, 12);
+  kit.rod(inC.bk, f.P(uI, stY + 90, ib), f.P(uI, stY + 70, ib), it, inC.c, { r2: it + 3, base: inC.base });
+  strainer(f, f.P(uI, stY, ib), 70 * Math.sqrt(s), it + 4, stC);
   f.kit.rod('wet', f.P(uI, stY - 2, ib), f.P(uI, stY, ib), it + 4, C.black, { seg: 16 });
   void D;
 }
 
 /** A slotted intake strainer standing at p (its foot), height h, radius r: dark bars round a darker core. */
-function strainer(f: Frame, p: THREE.Vector3, h: number, r: number) {
+function strainer(f: Frame, p: THREE.Vector3, h: number, r: number, col: { c: number; bk: Bucket; base: number } = { c: C.grey, bk: 'wet', base: 0.06 }) {
   const { kit } = f;
   kit.rod('wet', p, p.clone().add(V(0, h, 0)), r * 0.72, 0x0e0f10, { seg: 16 });
   const n = 14;
   for (let i = 0; i < n; i++) {
     const a = (i / n) * Math.PI * 2, o = V(Math.cos(a) * r * 0.86, 0, Math.sin(a) * r * 0.86);
-    kit.box('wet', p.clone().add(o).add(V(0, h / 2, 0)), 2.4, h, 3, C.grey, 0, -a);
+    kit.box(col.bk, p.clone().add(o).add(V(0, h / 2, 0)), 2.4, h, 3, col.c, 0, -a, col.base);
   }
-  kit.rod('wet', p.clone().add(V(0, h - 3, 0)), p.clone().add(V(0, h, 0)), r, C.grey, { seg: 18 });
+  kit.rod(col.bk, p.clone().add(V(0, h - 3, 0)), p.clone().add(V(0, h, 0)), r, col.c, { seg: 18, base: col.base });
 }
 
-function sponge(f: Frame, m: FilterModel, sp: Spot) {
-  const { kit } = f, s = flowScale(m, 40), r = 34 * s, h = 110 * s, b = Math.max(r + 8, sp.b ?? 0);
+function sponge(f: Frame, m: FilterModel, sp: Spot, pr?: FilterProduct) {
+  const { kit } = f, s = flowScale(m, 40), r = pr ? pr.bodyMm.w / 2 : 34 * s, h = pr?.bodyMm.h ?? 110 * s, b = Math.max(r + 8, sp.b ?? 0);
+  const L = pr?.colors, baseC = hexOr(L?.accent && /base/i.test(L.accent.where) ? L.accent.hex : L?.body?.hex, C.charcoal), capC = hexOr(L?.lid?.hex ?? L?.body?.hex, C.grey), tubeC = partOf(L?.intake ?? L?.outlet, C.grey);
   const u = f.slot(sp.fixed ? sp.u : sp.u + r, 2 * r + 8, 0, h + 40, 0, 2 * r + 12, sp.fixed), g = f.ground(u, b) - 6;
   // weighted base, the sponge (a soft, porous column), its cap and the lift tube
-  kit.rod('wet', f.P(u, g, b), f.P(u, g + 14, b), r + 5, C.charcoal, { seg: 28 });
+  kit.rod('wet', f.P(u, g, b), f.P(u, g + 14, b), r + 5, baseC, { seg: 28 });
   const sg = new THREE.CylinderGeometry(r, r, h, 36, 18);
   const p = sg.attributes.position;
   for (let i = 0; i < p.count; i++) { const x = p.getX(i), y = p.getY(i), z = p.getZ(i), rr = Math.hypot(x, z); if (rr > r * 0.9) { const k = 1 + 0.05 * (hash(x, y, z) - 0.5) - 0.02 * (Math.abs(y) / (h / 2)) ** 4; p.setX(i, x * k); p.setZ(i, z * k); } }
   sg.computeVertexNormals();
-  kit.put('wet', sg, C.sponge, new THREE.Matrix4().makeTranslation(f.P(u, 0, b).x, g + 14 + h / 2, f.P(u, 0, b).z), 0, 0.22);
-  kit.rod('wet', f.P(u, g + 14 + h, b), f.P(u, g + 22 + h, b), r * 0.92, C.grey, { seg: 28 });
+  kit.put('wet', sg, hexOr(L?.sponge, C.sponge), new THREE.Matrix4().makeTranslation(f.P(u, 0, b).x, g + 14 + h / 2, f.P(u, 0, b).z), 0, 0.22);
+  kit.rod('wet', f.P(u, g + 14 + h, b), f.P(u, g + 22 + h, b), r * 0.92, capC, { seg: 28 });
   const tt = Math.max(g + 22 + h + 30, f.wy - 25);
-  kit.rod('wet', f.P(u, g + 22 + h, b), f.P(u, tt, b), 9 * Math.sqrt(s), C.grey, { seg: 14 });
-  kit.rod('wet', f.P(u, tt, b), f.P(u, tt + 6, b), 11 * Math.sqrt(s), C.charcoal, { seg: 14 });
+  kit.rod(tubeC.bk, f.P(u, g + 22 + h, b), f.P(u, tt, b), 9 * Math.sqrt(s), tubeC.c, { seg: 14, base: tubeC.base });
+  kit.rod('wet', f.P(u, tt, b), f.P(u, tt + 6, b), 11 * Math.sqrt(s), hexOr(L?.outlet?.hex, C.charcoal), { seg: 14 });
   bubbles(f, f.P(u, tt + 4, b), f.wy, 6, 2.2);
   airPump(f, u, f.P(u, tt + 6, b), b);
 }
 
-function internal(f: Frame, m: FilterModel, sp: Spot) {
-  const { kit } = f, s = flowScale(m, 80), w = 62 * s, d = 50 * s, h = 150 * s, b = d / 2 + 9;
+function internal(f: Frame, m: FilterModel, sp: Spot, pr?: FilterProduct) {
+  const { kit } = f, s = flowScale(m, 80), w = pr?.bodyMm.w ?? 62 * s, d = pr?.bodyMm.d ?? 50 * s, h = pr?.bodyMm.h ?? 150 * s, b = d / 2 + 9;
+  const L = pr?.colors, body = partOf(L?.body, C.charcoal), head = partOf(L?.motor ?? L?.lid, C.black), noz = hexOr(L?.outlet?.hex ?? L?.motor?.hex, C.black);
   const yT = lerp(Math.min(f.ground(sp.u, b) + h + 10, f.wy - 22), f.wy - 22, sp.y ?? 1), yB = yT - h, u = f.slot(sp.fixed ? sp.u : sp.u + w / 2, w + 6, yB, yT, 0, d + 12, sp.fixed);
-  f.box('wet', f.P(u, yB + h / 2, b), w, h, d, C.charcoal, 6);
+  f.box(body.bk, f.P(u, yB + h / 2, b), w, h, d, body.c, 6, body.base);
+  if (body.bk === 'clear') f.box('wet', f.P(u, yB + h * 0.45, b), w * 0.8, h * 0.6, d * 0.75, hexOr(L?.sponge, C.sponge), 4); // the sponge seen through
   // intake slots round the bottom third, the head with its outlet nozzle, two suction cups
   for (let i = 0; i < 6; i++) f.box('wet', f.P(u, yB + 10 + i * 7, b + d / 2 + 0.2), w * 0.72, 2.2, 1, 0x0b0c0d);
-  f.box('wet', f.P(u, yT - 14, b), w + 3, 28, d + 3, C.black, 6);
-  kit.rod('wet', f.P(u, yT - 14, b + d / 2), f.P(u, yT - 14, b + d / 2 + 22), 7, C.black, { r2: 9 });
-  for (const k of [-0.25, 0.25]) sucker(f, u + k * w, yB + h * 0.55, 9);
+  f.box(head.bk, f.P(u, yT - 14, b), w + 3, 28, d + 3, head.c, 6, head.base);
+  kit.rod('wet', f.P(u, yT - 14, b + d / 2), f.P(u, yT - 14, b + d / 2 + 22), 7, noz, { r2: 9 });
+  if (L?.accent) f.box('wet', f.P(u, yT + 1.5, b), w * 0.7, 3, d * 0.7, hexOr(L.accent.hex, C.grey), 1); // a coloured cartridge top (Tetra Whisper i: green)
+  for (const k of [-0.25, 0.25]) sucker(f, u + k * w, yB + h * 0.55, 9, L?.cups);
   kit.tube('room', overRim(f, u + w * 0.3, f.P(u + w * 0.3, yT, b), b, f.top + 20), 2.6, C.black, 0, 6);
 }
 
-function canister(f: Frame, m: FilterModel, sp: Spot) {
+function canister(f: Frame, m: FilterModel, sp: Spot, prod?: FilterProduct) {
   const { kit, t } = f, s = flowScale(m, 265), pr = 7.5, gap = clamp(f.T.L * 0.18, 110, 320);
+  // a real product (lane TG step 3): its own pipe, hose and body colours (Fluval / Eheim pipes are opaque plastic, not glass)
+  const L = prod?.colors, pipeL = L?.intake ?? L?.outlet, pipe = pipeL ? partOf(pipeL, C.grey) : { c: C.glass, bk: 'clear' as Bucket, base: 0.13 };
+  const hoseC = hexOr(L?.hose, C.hose), bodyC = hexOr(L?.body?.hex, C.charcoal), headC = hexOr(L?.lid?.hex ?? L?.motor?.hex, C.grey), acc = (re: RegExp) => (L?.accent && re.test(L.accent.where) ? L.accent.hex : undefined);
+  const clipC = hexOr(L?.clips?.hex ?? acc(/clamp|clip|latch/i) ?? L?.motor?.hex, C.black), valveC = hexOr(acc(/tap|valve|connector/i) ?? L?.motor?.hex, C.black);
   const u0 = sp.fixed ? sp.u - gap / 2 : sp.u + 10, stY = f.ground(u0, 22) + 40;
   const uI = f.slot(u0, 30, stY, f.wy, 0, 40, sp.fixed);
   const uO = f.slot(uI + gap, 70, f.wy - 90, f.wy, 0, 70, sp.fixed);
   const ib = 18, outB = -t - 16, hoseY = f.H - 30;
   // intake lily pipe: glass, over the rim, straight down to its slotted basket
   const intake = [f.P(uI, hoseY, outB), f.P(uI, f.H + 10, outB + 2), f.P(uI, f.H + 26, (ib - t) / 2), f.P(uI, f.H + 6, ib), f.P(uI, stY + 80, ib)];
-  kit.tube('clear', intake, pr, C.glass, 0.13, 14);
-  kit.rod('clear', f.P(uI, stY, ib), f.P(uI, stY + 80, ib), pr + 4, C.glass, { base: 0.14, seg: 18 });
+  kit.tube(pipe.bk, intake, pr, pipe.c, pipe.bk === 'clear' ? pipe.base : 0, 14);
+  kit.rod(pipe.bk, f.P(uI, stY, ib), f.P(uI, stY + 80, ib), pr + 4, pipe.c, { base: pipe.base + 0.01, seg: 18 });
   for (let i = 0; i < 9; i++) f.box('wet', f.P(uI, stY + 14 + i * 6, ib + pr + 4), 8, 1.2, 0.6, 0x9fb2b4); // the slits, catching the light
   // outlet lily pipe: over the rim, down under the surface, turning forward into the flared lily
   const oy = f.wy - 55;
   const out = [f.P(uO, hoseY, outB), f.P(uO, f.H + 10, outB + 2), f.P(uO, f.H + 26, (ib - t) / 2), f.P(uO, f.H + 6, ib), f.P(uO, oy + 30, ib), f.P(uO, oy + 4, ib + 8), f.P(uO, oy, ib + 30)];
-  kit.tube('clear', out, pr, C.glass, 0.13, 14);
-  kit.lathe('clear', [[pr, 0], [pr + 1, 6], [pr + 5, 14], [pr + 13, 20], [pr + 15, 21]], f.P(uO, oy, ib + 29), V(0, 0, 1), C.glass, 0.15, 28);
+  kit.tube(pipe.bk, out, pr, pipe.c, pipe.bk === 'clear' ? pipe.base : 0, 14);
+  kit.lathe(pipe.bk, [[pr, 0], [pr + 1, 6], [pr + 5, 14], [pr + 13, 20], [pr + 15, 21]], f.P(uO, oy, ib + 29), V(0, 0, 1), pipe.c, pipe.base + 0.02, 28);
   // hoses down the back, into the stand and the canister in it
   const standY = f.S.stand.show ? f.top : f.floor;
   for (const [uu, p] of [[uI, intake[0]], [uO, out[0]]] as [number, THREE.Vector3][]) {
     kit.rod('room', p, p.clone().add(V(0, -40, 0)), pr + 4, C.charcoal, { seg: 12 }); // the hose clamp / connector
-    kit.tube('room', [p.clone().add(V(0, -40, 0)), f.P(uu, (standY + p.y) / 2, outB - 6), f.P(uu, standY + 30, outB - 10), f.P(uu, standY - 30, outB - 10 + (f.S.stand.show ? 60 : -20))], 10, C.hose, 0, 10);
+    kit.tube('room', [p.clone().add(V(0, -40, 0)), f.P(uu, (standY + p.y) / 2, outB - 6), f.P(uu, standY + 30, outB - 10), f.P(uu, standY - 30, outB - 10 + (f.S.stand.show ? 60 : -20))], 10, hoseC, 0, 10);
   }
   if (f.S.stand.show) {
-    const r = 95 * s, ch = 380 * s, cu = clamp(f.T.L * 0.25, r + 20, f.T.L - r - 20), cb = f.T.D * 0.45;
+    const r = prod ? prod.bodyMm.w / 2 : 95 * s, ch = prod?.bodyMm.h ?? 380 * s, cu = clamp(f.T.L * 0.25, r + 20, f.T.L - r - 20), cb = f.T.D * 0.45;
     const c0 = f.P(cu, f.floor, cb);
-    kit.rod('room', c0, c0.clone().add(V(0, ch * 0.78, 0)), r, C.charcoal, { seg: 32 });
-    kit.rod('room', c0.clone().add(V(0, ch * 0.78, 0)), c0.clone().add(V(0, ch, 0)), r * 0.96, C.grey, { seg: 32, r2: r * 0.8 });
-    for (const k of [-1, 1]) kit.box('room', c0.clone().add(V(k * r * 0.95, ch * 0.8, 0)), 16, 34, 30, C.black, 4); // the clips
-    kit.rod('room', c0.clone().add(V(0, ch, 0)), c0.clone().add(V(0, ch + 45, 0)), 18, C.black, { seg: 16 }); // valve block
-    for (const k of [-1, 1]) kit.tube('room', [c0.clone().add(V(k * 12, ch + 40, 0)), c0.clone().add(V(k * 20, ch + 120, -cb * 0.4)), f.P(k < 0 ? uI : uO, f.top - 40, -40)], 10, C.hose, 0, 10);
+    kit.rod('room', c0, c0.clone().add(V(0, ch * 0.78, 0)), r, bodyC, { seg: 32 });
+    if (L?.foot) kit.rod('room', c0, c0.clone().add(V(0, ch * 0.06, 0)), r * 1.04, hexOr(L.foot.hex, bodyC), { seg: 32 }); // a foot ring in its own colour (Fluval 07)
+    kit.rod('room', c0.clone().add(V(0, ch * 0.78, 0)), c0.clone().add(V(0, ch, 0)), r * 0.96, headC, { seg: 32, r2: r * 0.8 });
+    for (const k of [-1, 1]) kit.box('room', c0.clone().add(V(k * r * 0.95, ch * 0.8, 0)), 16, 34, 30, clipC, 4); // the clips
+    kit.rod('room', c0.clone().add(V(0, ch, 0)), c0.clone().add(V(0, ch + 45, 0)), 18, valveC, { seg: 16 }); // valve block
+    for (const k of [-1, 1]) kit.tube('room', [c0.clone().add(V(k * 12, ch + 40, 0)), c0.clone().add(V(k * 20, ch + 120, -cb * 0.4)), f.P(k < 0 ? uI : uO, f.top - 40, -40)], 10, hoseC, 0, 10);
   }
 }
 
@@ -719,7 +738,8 @@ export function buildGear(S: TankSetup, T: Tank, solids: THREE.Box3[], picks = g
     if (hm && go(hp)) for (let i = 0; i < (hp!.n ?? 1); i++) { const { f, sp } = spot(hp!, i ? after() : cursor); if (i && hp!.place) sp.u += 90 * i; /* a second placed heater beside the first */ track(hp!, () => heater(f, hp!.watts ?? hm.watts, sp, hp!.product)); if (!pass) cursor = after(); }
     if (fm && go(fp)) {
       const { f, sp } = spot(fp!, cursor), n0 = f.taken.length;
-      track(fp!, () => { if (fm.kind === 'hob') hob(f, fm, sp); else if (fm.kind === 'canister') canister(f, fm, sp); else if (fm.kind === 'sponge') sponge(f, fm, sp); else internal(f, fm, sp); });
+      const prod = filterProduct(fp!.product), pk = prod?.kind === fm.kind ? prod : undefined;
+      track(fp!, () => { if (fm.kind === 'hob') hob(f, fm, sp, pk); else if (fm.kind === 'canister') canister(f, fm, sp, pk); else if (fm.kind === 'sponge') sponge(f, fm, sp, pk); else internal(f, fm, sp, pk); });
       const mine = f.taken.slice(n0);
       if (mine.length) outlet = { f, u: fm.kind === 'canister' ? mine[mine.length - 1][0] + 35 : (mine[0][0] + mine[0][1]) / 2 };
     }
