@@ -12,7 +12,9 @@ Work unit:
    "likely range" hover text and any min / max / percentile wording from the demand panel, deal lines and the swaps list. The bar still
    shows how the expected value compares with the limit.
 2. Engine: simplify where it is cheap and safe: if the Range3 spread data is only used for the percentile / likely range,
-   collapse it to the expected value (mean) and remove the Monte Carlo / distribution code (cost.ts) and its data columns. If the
+   drop the Monte Carlo / distribution code (cost.ts) and read the expected value (mean) directly. KEEP the lo / mode / hi columns
+   in demand-items.json and demand-defaults.json for now (lane TM is adding rows in that same format right now; removing them would
+   break its merge): the data stays, only the user-facing range, percentile and cap go. If the
    spread data also drives something else (risk, upkeep expectation, loss replacement), keep that and say so. Do not drop the
    expected-loss replacement in upkeep (KK phase 5 relies on it). Results for the expected value must not change: add a test that
    the old mean for a set of fixed setups equals the new expected value, then delete the superseded tests.
@@ -24,8 +26,7 @@ simplification early and push; keep demandOf / limits signatures stable; if TM's
 the coordinator. Do not edit tech.ts.
 Pictures of the panel and limits form (before and after) before shipping; wait for Nathan's verdict.
 
-Files you own: src/demand/*, src/data/demand-defaults.json, factors.json, demand-items.json (the lo / hi columns if you remove
-them), src/ui/demandPanel.ts, test/demand*.test.ts. Lane KW owns the wizard; lane CS owns .github/ and vite.config.ts.
+Files you own: src/demand/*, src/data/demand-defaults.json, factors.json, demand-items.json (values only, columns stay), src/ui/demandPanel.ts, test/demand*.test.ts. Lane KW owns the wizard; lane CS owns .github/ and vite.config.ts.
 
 Ship per the lane rules: git fetch + merge origin/main, tsc + the tests you touched (the suite has a 120 s test timeout and
 takes about 90 s), commit by path only (never -a), git push origin HEAD:main. Do NOT use git stash (shared across all
