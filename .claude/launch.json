@@ -559,19 +559,6 @@
         "--strictPort"
       ],
       "port": 5693
-    },
-    {
-      "name": "ci",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5773",
-        "--strictPort"
-      ],
-      "port": 5773
     }
   ]
 }

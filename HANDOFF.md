@@ -28,17 +28,12 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 **Current lanes** (coordinator "Lanes coordinator 4", `local_408aa124`):
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
-| CI deploy health | `../Glass-Box-ci` / `ci` | 5773 | `.github/workflows/deploy.yml`, test block of `vite.config.ts`, failing tests and anchor baselines | opened 2026-10-19 |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
-
-## Lane CI: deploy health, live site stuck on build 738 (2026-10-19, branch `ci`, port 5773)
-- Cause: not a systematic failure. In a clean worktree the whole suite runs in 50 s on 22 cores, 830 tests, 3 failures: two 5 s default timeouts under load (`anole` dewlap, `scene` swamp) and one flaky test (`leafperch` underside: `Math.random` could land on a steep leaf edge, which `underProbe` now also returns). No python anchorbase failures exist at ff7b4fe. The runs piled up behind one-at-a-time deploys with cancel-in-progress.
-- Fixes (4d8b55e on main): leafperch picks an underside spot deterministically; vite test block: `testTimeout` 120 s, `hookTimeout` 60 s, discovery limited to `test/**` (excludes `.claude/**`, `aquascape/**`, `dist*/**`); deploy.yml `timeout-minutes` 20 (build) / 10 (deploy). Gate kept: `npm test` still precedes `npm run build`. No tests skipped.
 
 ## Lane KD: bundle deals (2026-10-19)
 - `src/data/deals.json` (+ `deals.ts`): retailer tank+stand bundles {retailer, gal, tank (catalog id, optional), kit (optional), includes, price{usd, regularUsd}, saleEnds, url, asOf, est}. `src/demand/deals.ts` `dealOffers` = saving vs buying the parts (engine `kit` option generalised with `includes` + `label`, no parallel mechanism).
@@ -266,6 +261,7 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane CI: deploy health, live site stuck on build 738 (2026-10-19, branch `ci`, port 5773)
 - Lane GS: gecko support surfaces (2026-10-19, branch `geckosupport`, port 5743)
 - Lane AN: anole models (2026-10-19, branch `anoles`, port 5753)
 - Lane SD: one start chooser (2026-10-19, branch `startchooser`, port 5763; Nathan approved the pictures, shipped)
