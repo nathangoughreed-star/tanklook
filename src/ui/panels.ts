@@ -5,7 +5,7 @@ import { fitToLimits, hasLimits } from '../demand/fit';
 import { attachTechMenu } from './techMenu';
 import { unheatedC } from '../scene/tech';
 import { renderFeaturedDeals } from './featuredDeals';
-import { startDeals, visibleTabs, pickTab, sortDeals, type DealSort, type StartTab } from './startEntries';
+import { startDeals, visibleTabs, pickTab, sortDeals, DEFAULT_SORT, type DealSort, type StartTab } from './startEntries';
 import { DEALS_AS_OF, DEAL_NOTE, NOT_SPONSORED } from '../data/deals';
 import { LEVELS, onPerf, perf, setAuto, setLevel } from '../render/perf';
 import { lifeStages } from '../data/lifestages';
@@ -226,7 +226,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // then tabs On sale now / Bundles / Starter tanks / Open a tank. Shown on first launch when no tank was restored from
   // this browser (Nathan 2026-10-14; Esc keeps the empty tank), and by New and Open…. Empty sale / bundle tabs hide.
   const startDlg = $<HTMLDialogElement>('startDlg');
-  let firstLaunch = false, dealSort: DealSort = '';
+  let firstLaunch = false;
+  const dealSort = { ...DEFAULT_SORT }; // each deal tab keeps its own order
   $('startEx').onclick = e => openExample(e, startDlg);
   $('startFresh').onclick = () => { // at first launch the tank on screen is already a fresh one
     if (firstLaunch) startDlg.close(); else if (newEmptyTank()) startDlg.close();
@@ -242,9 +243,12 @@ export function attachPanels(store: Store, viewer: Viewer) {
     const { sale, bundles } = startDeals(), shown = visibleTabs({ sale: sale.length, bundles: bundles.length });
     for (const b of startDlg.querySelectorAll<HTMLElement>('[data-tab]')) b.hidden = !shown.includes(b.dataset.tab as StartTab);
     for (const n of startDlg.querySelectorAll('.dealasof')) n.textContent = `Prices as of ${DEALS_AS_OF}; ${DEAL_NOTE.replace(/^as of the date shown; /, '')}. ${NOT_SPONSORED}.`;
-    // optional sorts (size / cost / % saved), one choice for both deal tabs
-    const draw = () => { renderFeaturedDeals($('startSale'), sortDeals(sale, dealSort), openDeal); renderFeaturedDeals($('startBundles'), sortDeals(bundles, dealSort), openDeal); };
-    for (const s of startDlg.querySelectorAll<HTMLSelectElement>('.dealsort')) { s.value = dealSort; s.onchange = () => { dealSort = s.value as DealSort; for (const o of startDlg.querySelectorAll<HTMLSelectElement>('.dealsort')) o.value = dealSort; draw(); }; }
+    // each deal tab sorts on its own; the labels name the key and direction ($ saved, % saved, price, size)
+    const draw = () => { renderFeaturedDeals($('startSale'), sortDeals(sale, dealSort.sale), openDeal); renderFeaturedDeals($('startBundles'), sortDeals(bundles, dealSort.bundles), openDeal); };
+    for (const s of startDlg.querySelectorAll<HTMLSelectElement>('.dealsort')) {
+      const tab = s.closest<HTMLElement>('[data-pane]')!.dataset.pane as keyof typeof dealSort;
+      s.value = dealSort[tab]; s.onchange = () => { dealSort[tab] = s.value as DealSort; draw(); };
+    }
     draw();
     renderExamples(); renderLib();
     setTab(pickTab(tab, shown));
