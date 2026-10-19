@@ -204,3 +204,6 @@ When the user sets a $ limit (setup or upkeep), ask once: "Is this what you expe
 - "Expect to spend": checked against the expected value.
 - "Most I can spend" (absolute cap): checked against the 85th percentile (range 80-90; pick one default, tune later).
 The choice is stored with the limit in UserProfile.limits (budgetMode: expected or cap). The bar shows the checked number and the full likely range on hover.
+
+## Decision 2026-10-19 (Nathan): one expected-cost number
+No percentiles, no ranges, no cap mode. The user is asked one question: "What do you want your expected cost to be?" and every limit is checked against the expected value. Supersedes the 80th / 85th percentile and "likely range" text above (lane DS removes it from the engine and panel).
