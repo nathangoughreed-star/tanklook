@@ -79,7 +79,7 @@ export function withPlace(t: TankSetup, row: string, p: GearPlace) {
   return { ...tech, place: { ...tech.place, [row]: p } };
 }
 
-/** Shift + wheel over a heater leans it 10 degrees a notch (-60..60; it never stands so upright it leaves the water).
+/** Shift + wheel over a heater turns it 15 degrees a notch (-90..90, 90 = lying flat; never so upright it leaves the water).
  *  Returns true when it took the wheel. */
 export function gearLean(viewer: Viewer, store: Store, clientX: number, clientY: number, dir: number) {
   const hit = viewer.hitTest(clientX, clientY); if (!hit) return false;
@@ -89,7 +89,8 @@ export function gearLean(viewer: Viewer, store: Store, clientX: number, clientY:
   const piece = hit.vp.scene!.children.flatMap(o => (o.userData.gearPieces ?? []) as GearPiece[]).find(p => p.row === g.row)!;
   const c = piece.box.getCenter(new THREE.Vector3()), from = prev ?? placeFor(S, new THREE.Ray(new THREE.Vector3(c.x, c.y, 5000), new THREE.Vector3(0, 0, -1)), 'glass');
   if (!from) return false;
-  const lean = clamp((from.lean ?? 0) + dir * 10, -60, 60);
+  // from what is drawn: upright, or flat when it did not fit
+  const now = from.lean ?? (piece.box.getSize(new THREE.Vector3()).y < 60 ? 90 : 0), lean = clamp(now + dir * 15, -90, 90);
   store.editTank(g.vi, t => { t.tech = withPlace(t, g.row, { ...from, lean }); }, { coalesce: 'gear-lean' });
   return true;
 }

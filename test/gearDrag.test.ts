@@ -38,8 +38,8 @@ describe('gear drag', () => {
     expect(hob.place?.wall).toBe('back'); expect(hob.place!.u).toBeCloseTo(0.8 * S.tank.L, 0);
   });
   it('a saved spot survives a reload: floor wall, height, lean; junk is dropped or clamped', () => {
-    const t = parseTech({ rows: { filter: 'sponge' }, place: { filter: { wall: 'floor', at: 0.3, y: 0.7 }, heater: { wall: 'left', at: 0.5, y: 2, lean: -90 }, air: { wall: 'roof' }, uv: { wall: 'back', y: 'x', lean: NaN } } })!;
-    expect(t.place).toEqual({ filter: { wall: 'floor', at: 0.3, y: 0.7 }, heater: { wall: 'left', at: 0.5, y: 1, lean: -60 }, uv: { wall: 'back' } });
+    const t = parseTech({ rows: { filter: 'sponge' }, place: { filter: { wall: 'floor', at: 0.3, y: 0.7 }, heater: { wall: 'left', at: 0.5, y: 2, lean: -120 }, air: { wall: 'roof' }, uv: { wall: 'back', y: 'x', lean: NaN } } })!;
+    expect(t.place).toEqual({ filter: { wall: 'floor', at: 0.3, y: 0.7 }, heater: { wall: 'left', at: 0.5, y: 1, lean: -90 }, uv: { wall: 'back' } });
     expect(parseTech({ rows: { filter: 'hob' }, place: { filter: { wall: 'back', at: 0.2 } } })!.place).toEqual({ filter: { wall: 'back', at: 0.2 } }); // an old file's spot, as it was
   });
 });

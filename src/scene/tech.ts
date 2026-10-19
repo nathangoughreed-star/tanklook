@@ -27,7 +27,7 @@ export interface GearPlace {
   at?: number;
   /** glass mounts: height share from the ground (0) to the water line (1); floor: depth share, 0 = front .. 1 = back */
   y?: number;
-  /** heaters: degrees off vertical, -60..60 (the owner's Shift + wheel) */
+  /** heaters: degrees off vertical, -90..90 (90 = lying flat; the owner's Shift + wheel) */
   lean?: number;
 }
 
@@ -441,7 +441,7 @@ export function parseTech(raw: unknown): TechSetup | undefined {
       const p = v as Partial<GearPlace> | null;
       const num = (n: unknown, lo: number, hi: number) => typeof n === 'number' && isFinite(n) ? Math.min(hi, Math.max(lo, n)) : undefined;
       if (p && typeof p.wall === 'string' && WALLS.has(p.wall)) {
-        const at = num(p.at, 0, 1), y = num(p.y, 0, 1), lean = num(p.lean, -60, 60);
+        const at = num(p.at, 0, 1), y = num(p.y, 0, 1), lean = num(p.lean, -90, 90);
         place[k] = { wall: p.wall, ...(at != null ? { at } : {}), ...(y != null ? { y } : {}), ...(lean != null ? { lean } : {}) };
       }
     }

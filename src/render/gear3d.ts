@@ -60,7 +60,7 @@ export function gearPicks(S: TankSetup): GearPick[] {
 export function spotOf(S: TankSetup, p?: GearPlace): GearSpot | undefined {
   if (!p) return undefined;
   const q = p, wall = q.wall, at = clamp(q.at ?? 0, 0, 1);
-  const T = S.tank, Db = T.D - backdropDepth(S.backdrop, T), extra = { ...(q.y != null ? { y: clamp(q.y, 0, 1) } : {}), ...(q.lean != null ? { lean: clamp(q.lean, -60, 60) } : {}) };
+  const T = S.tank, Db = T.D - backdropDepth(S.backdrop, T), extra = { ...(q.y != null ? { y: clamp(q.y, 0, 1) } : {}), ...(q.lean != null ? { lean: clamp(q.lean, -90, 90) } : {}) };
   if (wall === 'floor') return { wall, u: at * T.L, d: clamp(q.y ?? 0.8, 0, 1) * T.D };
   if (wall === 'back') return { wall, u: at * T.L, ...extra };
   return { wall, u: (1 - at) * Db, ...extra }; // side walls: at 0 = front end
@@ -302,15 +302,16 @@ function overRim(f: Frame, u: number, from: THREE.Vector3, bIn: number, yEnd: nu
 function heater(f: Frame, watts: number, sp: Spot) {
   const { kit } = f, len = heaterLength(watts), r = watts >= 500 ? 14 : 11, b = r + 9, u0 = sp.u;
   const g0 = Math.max(f.ground(u0, b), 0) + 25, room = f.wy - 15 - g0;
-  // vertical when it fits under the water line, else leaning (how a long heater goes in a shallow tank); the owner's
-  // lean wins, but never so upright that it pokes out of the water
-  const need = len + 44 > room ? Math.max(0.35, Math.acos(clamp(room / (len + 44), 0, 1))) : 0;
-  const tilt = sp.lean != null ? Math.max(need, Math.abs(sp.lean) * Math.PI / 180) : need, sgn = (sp.lean ?? 1) < 0 ? -1 : 1, span = len * Math.sin(tilt);
+  // vertical when it fits under the water line, else lying flat low along the glass (Nathan 2026-10-19: tilted heaters
+  // are rare); turned only when the owner turns it (Shift + wheel), and then never so upright that it leaves the water
+  const fits = len + 44 <= room, need = fits ? 0 : Math.acos(clamp(room / (len + 44), 0, 1));
+  const tilt = sp.lean != null ? Math.max(need, Math.abs(sp.lean) * Math.PI / 180) : fits ? 0 : Math.PI / 2, sgn = (sp.lean ?? 1) < 0 ? -1 : 1, span = (len + 44) * Math.sin(tilt); // along the glass, cap included
   const u = f.slot(sp.fixed ? u0 : u0 + span / 2, 2 * r + 6 + span, g0, f.wy, 0, 2 * r + 12, sp.fixed);
-  // the cap's top: at most 15 mm under the water line, at least the heater's height off the ground (the owner's height share between)
-  const ext = (len + 44) * Math.cos(tilt), capY = lerp(Math.min(g0 + ext, f.wy - 15), f.wy - 15, sp.y ?? 1);
-  const topY = capY - 44 * Math.cos(tilt), dir = f.along.clone().multiplyScalar(-sgn * Math.sin(tilt)).add(V(0, Math.cos(tilt), 0)); // leaning back toward the corner at the top
-  const top = f.P(u - sgn * span / 2, topY, b), bot = top.clone().addScaledVector(dir, -len);
+  // the cap's top: at most 15 mm under the water line, at least the heater's height off the ground (the owner's height
+  // share between; default: high when upright, low when lying flat)
+  const ext = Math.max((len + 44) * Math.cos(tilt), 2 * r + 4), capY = lerp(Math.min(g0 + ext, f.wy - 15), f.wy - 15, sp.y ?? (tilt > 1.2 ? 0 : 1));
+  const topY = capY - 44 * Math.cos(tilt) - r * Math.sin(tilt), dir = f.along.clone().multiplyScalar(-sgn * Math.sin(tilt)).add(V(0, Math.cos(tilt), 0)); // the cap toward the corner
+  const top = f.P(u - sgn * (span / 2 - 44 * Math.sin(tilt)), topY, b), bot = top.clone().addScaledVector(dir, -len);
   kit.rod('clear', bot, top, r, C.glass, { seg: 20, base: 0.07 });
   // the ceramic core with its element wound round it, inside the glass
   const c0 = bot.clone().addScaledVector(dir, len * 0.12), c1 = top.clone().addScaledVector(dir, -len * 0.1);
@@ -325,7 +326,8 @@ function heater(f: Frame, watts: number, sp: Spot) {
   kit.ball('glow', top.clone().addScaledVector(dir, 22).addScaledVector(f.inward, r + 1.5), 2.2, C.amber);
   // the cord up out of the water and over the rim, and two clips with suction cups
   const capTop = top.clone().addScaledVector(dir, 44);
-  kit.tube('room', overRim(f, u, capTop, b, f.top + 20), 2.6, C.black, 0, 6);
+  // the cord rises straight up from the cap (not from the heater's middle), so a flat heater's cord does not cross the tank
+  kit.tube('room', overRim(f, u + capTop.clone().sub(f.P(u, 0, b)).dot(f.along), capTop, b, f.top + 20), 2.6, C.black, 0, 6);
   for (const k of [0.25, 0.72]) {
     const p = bot.clone().lerp(top, k);
     kit.put('wet', new THREE.TorusGeometry(r + 1.6, 1.6, 6, 20), C.black, along(p, dir, 0).multiply(new THREE.Matrix4().makeRotationX(Math.PI / 2)));
