@@ -28,20 +28,41 @@ function load(): UserProfile {
 }
 
 export function attachDemandPanel(store: Store, mount: HTMLElement) {
-  let P = load(), D: Demand | null = null, C: CostResult | null = null, open: Bar | null = null, timer = 0;
+  let P = load(), D: Demand | null = null, C: CostResult | null = null, B: { D: Demand; C: CostResult } | null = null, open: Bar | null = null, timer = 0;
+  /** What the last edit moved each bar by, shown as a chip for a few seconds so a change is seen as it happens. */
+  let prev: Record<Bar, number> | null = null, chips: Partial<Record<Bar, { d: number; until: number }>> = {}, chipTimer = 0;
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(P)); } catch { /* ignore */ } };
-  mount.innerHTML = `<div class="dm"><div class="dmhead">What this tank asks of you</div><div class="dmbars"></div><div class="dmdeals" style="font-size:11px;opacity:.85"></div><div class="dmdrill" hidden></div>
+  const OPEN_KEY = 'tanklook.demandOpen';
+  let shown = (() => { try { const v = localStorage.getItem(OPEN_KEY); if (v !== null) return v === '1'; } catch { /* ignore */ } return window.innerWidth > 900; })();
+  mount.innerHTML = `<div class="dm"><button type="button" class="dmtog" aria-expanded="true" title="Show or hide what this tank costs and asks of you; it updates as you edit"><span class="dmhead">What this tank asks of you</span><span class="dmsum"></span><span class="dmcaret" aria-hidden="true">▾</span></button>
+    <div class="dmbody"><div class="dmmode"></div><div class="dmbars"></div><div class="dmdeals" style="font-size:11px;opacity:.85"></div><div class="dmdrill" hidden></div>
     <details class="dmset"><summary>Set limits</summary><div class="dmlimits"></div></details>
-    <details class="dmset"><summary>Your situation</summary><div class="dmsit"></div></details></div>`;
+    <details class="dmset"><summary>Your situation</summary><div class="dmsit"></div></details></div></div>`;
   const q = <T extends HTMLElement>(s: string) => mount.querySelector(s) as T;
-  const bars = q('.dmbars'), drill = q('.dmdrill');
+  const bars = q('.dmbars'), drill = q('.dmdrill'), tog = q('.dmtog'), body = q('.dmbody');
+  const setShown = (v: boolean) => {
+    shown = v; body.hidden = !v; tog.setAttribute('aria-expanded', String(v)); mount.classList.toggle('closed', !v);
+    try { localStorage.setItem(OPEN_KEY, v ? '1' : '0'); } catch { /* ignore */ }
+  };
+  tog.onclick = () => setShown(!shown);
+  setShown(shown);
 
   function recompute() {
     const S = store.tank;
-    D = demandOf(S, P, { kit: pinnedKit() }); C = costDistribution(D, P);
+    const kit = pinnedKit();
+    D = demandOf(S, P, { kit }); C = costDistribution(D, P);
+    // the same tank without its animals: what keeping just the plants (or the bare tank) costs, so adding animals reads as a jump from it
+    B = S.fish.length ? (() => { const d0 = demandOf({ ...S, fish: [] }, P, { kit }); return { D: d0, C: costDistribution(d0, P, { draws: 600 }) }; })() : null;
+    const now = { setup: C.setup.mean, upkeep: C.upkeep.mean, minutes: C.minutes.mean, risk: D.totals.risk };
+    if (prev) {
+      const T: Record<Bar, number> = { setup: 1, upkeep: 0.5, minutes: 0.5, risk: 0.05 }, until = Date.now() + 6000;
+      for (const b of Object.keys(now) as Bar[]) { const d = now[b] - prev[b]; if (Math.abs(d) >= T[b]) chips[b] = { d, until }; }
+      clearTimeout(chipTimer); chipTimer = window.setTimeout(render, 6100);
+    }
+    prev = now;
     render();
   }
-  const soon = () => { clearTimeout(timer); timer = window.setTimeout(recompute, 450); };
+  const soon = () => { clearTimeout(timer); timer = window.setTimeout(recompute, 150); };
   store.subscribe(kind => { if (kind === 'load') onSceneLoad(); if (kind === 'scene' || kind === 'load') soon(); });
 
   function render() {
@@ -49,6 +70,10 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
     const L = limitState(D, C, P);
     bars.innerHTML = '';
     for (const b of BARS) bars.append(row(b, L));
+    const S = store.tank, nA = S.fish.length, nP = S.items.filter(i => i.kind === 'plant' || i.kind === 'coral').length;
+    q('.dmmode').textContent = nA ? `With ${nA} animal${nA > 1 ? 's' : ''}${B ? `; without them: ${usd(B.C.setup.mean)} to set up, ${usd(B.C.upkeep.mean)} a month` : ''}`
+      : nP ? 'Plants only: what it costs to keep this planted tank running. Add animals and watch it climb.' : 'Empty tank: the gear and upkeep before anything lives in it.';
+    q('.dmsum').textContent = `${usd(C.setup.mean)} · ${usd(C.upkeep.mean)}/mo · ${Math.round(C.minutes.mean)} min/wk · risk ${D.totals.risk.toFixed(1)}`;
     renderDeals();
     drill.hidden = !open;
     if (open) fillDrill(open);
@@ -80,7 +105,10 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
       track = `<i class="dmz" style="left:0;width:30%"></i><i class="dmz m" style="left:30%;width:30%"></i><i class="dmz d" style="left:60%;width:40%"></i><i class="dmmean" style="left:${x(D!.totals.risk)}"></i>`;
       el.title = `${b.tip}\nRelative to your stated experience (see Your situation).`;
     }
-    el.innerHTML = `<div class="dmtop"><span class="dmname">${b.title}</span><b class="dmval">${esc(value)}</b><span class="dmrange">${esc(range)}</span></div><div class="dmtrack">${track}</div>`;
+    const base = B ? (b.bar === 'risk' ? B.D.totals.risk : B.C[b.bar].mean) : undefined, chip = chips[b.bar];
+    if (base !== undefined) track += `<i class="dmbase" style="left:${x(base)}" title="Without the animals"></i>`;
+    const dtxt = chip && chip.until > Date.now() ? `<span class="dmchg ${chip.d > 0 ? 'up' : 'down'}">${chip.d > 0 ? '+' : '−'}${b.bar === 'risk' ? Math.abs(chip.d).toFixed(1) : b.bar === 'minutes' ? `${Math.round(Math.abs(chip.d))} min` : usd(Math.abs(chip.d))}</span>` : '';
+    el.innerHTML = `<div class="dmtop"><span class="dmname">${b.title}</span><b class="dmval">${esc(value)}</b>${dtxt}<span class="dmrange">${esc(range)}</span></div><div class="dmtrack">${track}</div>`;
     el.onclick = () => { open = open === b.bar ? null : b.bar; render(); };
     return el;
   }
