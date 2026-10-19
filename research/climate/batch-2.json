@@ -1,0 +1,10 @@
+[
+{"id":"yellowtang","ok":[24,26],"tol":[22,28],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":5,"sourcesSnippet":0,"confidence":"high","note":"Care sources 22-28; wild/FishBase band 24-28."},
+{"id":"bluetang","ok":[24,26],"tol":[22,28],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":3,"sourcesSnippet":1,"confidence":"high","note":"Cluster 22-27; one guide says stops eating above 28."},
+{"id":"firefish","ok":[24,26],"tol":[22,28],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":4,"sourcesSnippet":1,"confidence":"high","note":"Retail 22-26, broader sheets 22-28; wild 24-28 secondhand."},
+{"id":"banggai","ok":[24,27],"tol":[22,28],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":5,"sourcesSnippet":1,"confidence":"medium","note":"Care sources split 22-26 vs 24-28; no wild temperature number found."},
+{"id":"sixline","ok":[24,26],"tol":[21,28],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":5,"sourcesSnippet":0,"confidence":"medium","note":"Range 21-28 across sources; 21 floor from one guide."},
+{"id":"chromis","ok":[24,27],"tol":[22,28],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":5,"sourcesSnippet":1,"confidence":"high","note":"Retail 22-26, guides 24-28."},
+{"id":"coralbeauty","ok":[24,26],"tol":[22,28],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":4,"sourcesSnippet":1,"confidence":"high","note":"Sources 22-28 overall; one retailer page gave unitless 75-82."},
+{"id":"watchman","ok":[23,26],"tol":[22,28],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":5,"sourcesSnippet":1,"confidence":"medium","note":"Care sources 22-28; no wild temperature data, tolerable follows source spread."}
+]

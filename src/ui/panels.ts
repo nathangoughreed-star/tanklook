@@ -3,6 +3,8 @@
 import { attachDemandPanel } from './demandPanel';
 import { fitToLimits, hasLimits } from '../demand/fit';
 import { renderFeaturedDeals } from './featuredDeals';
+import { startDeals, visibleTabs, pickTab, type StartTab } from './startEntries';
+import { DEALS_AS_OF, DEAL_NOTE } from '../data/deals';
 import { LEVELS, onPerf, perf, setAuto, setLevel } from '../render/perf';
 import { lifeStages } from '../data/lifestages';
 import { rng } from '../art/paint';
@@ -123,16 +125,18 @@ export function attachPanels(store: Store, viewer: Viewer) {
   const recenter = $('recenter'); recenter.onclick = () => viewer.resetPan();
   viewer.onPan(() => { recenter.hidden = !viewer.panned; });
   $('redo').onclick = () => store.redo();
-  $('newScene').onclick = () => {
-    if (G().tanks.some(t => t.fish.length) && !confirm('Start a new, empty tank? (Undo brings this one back.)')) return;
+  // New and Open… both show the start chooser (below): New on its first tab, Open… on the saved tanks
+  $('newScene').onclick = () => showChooser(undefined, false);
+  $('openScene').onclick = () => showChooser('open', false);
+  /** The old New button: an empty tank, after a warning when the current one has animals (Undo brings it back). */
+  const newEmptyTank = () => {
+    if (G().tanks.some(t => t.fish.length) && !confirm('Start a new, empty tank? (Undo brings this one back.)')) return false;
     const s = emptyScene(); s.name = 'New tank';
     s.tanks[0].camera = { ...S().camera }; s.units = G().units;
     store.replace(s); setLibId(null); status('New tank. Undo brings the previous one back.');
+    return true;
   };
-  // Open… shows the tanks saved in this browser (with pictures) and the way to open a downloaded file
-  const dlg = $<HTMLDialogElement>('libDlg');
-  $('openScene').onclick = () => { renderExamples(); renderLib(); dlg.showModal(); };
-  $('openFile').onclick = () => { dlg.close(); $('fileIn').click(); };
+  $('openFile').onclick = () => { startDlg.close(); $('fileIn').click(); };
   // Opening rebuilds the tank in one blocking frame (several seconds for a full tank): show the spinner, let it paint,
   // then open; it clears on the first draw after, which is the one that built the tank.
   const busy = $('busy');
@@ -185,7 +189,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // Examples (lane F): bundled scenes, opened like a file (a new, unsaved tank; Undo brings the previous one back)
   // The scene files are a lazy chunk (lane EF3): fetched once the list's pictures are in (on a slow line they would
   // otherwise share it with them), so it has arrived before a click; a click before that waits for it
-  function renderExamples(id = 'exList') {
+  function renderExamples(id = 'startEx') {
     const box = $<HTMLDivElement>(id);
     if (!box.childElementCount) box.innerHTML = EXAMPLES.map(x =>
       `<div class="libcard"><button class="libopen" data-ex="${esc(x.id)}" title="${esc(x.hint)}">` +
@@ -193,7 +197,6 @@ export function attachPanels(store: Store, viewer: Viewer) {
     Promise.allSettled([...box.querySelectorAll('img')].map(i => i.decode()))
       .then(exampleScenes).catch(() => { /* offline: a click tries again and says so */ });
   }
-  $('exList').onclick = e => openExample(e, dlg);
   async function openExample(e: MouseEvent, from: HTMLDialogElement) {
     const op = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-ex]'), x = op && EXAMPLES.find(q => q.id === op.dataset.ex);
     if (!x) return;
@@ -213,17 +216,34 @@ export function attachPanels(store: Store, viewer: Viewer) {
       }
     });
   }
-  // Start menu (Nathan 2026-10-14: "upon start, a menu in the middle of the screen: start fresh or from an example"):
-  // shown only when no tank was restored from this browser (Nathan 2026-10-14); Esc keeps the empty tank
+  // The start chooser (lane SD; Nathan 2026-10-19: one place to start or open a tank). One dialog: Start from scratch,
+  // then tabs On sale now / Bundles / Starter tanks / Open a tank. Shown on first launch when no tank was restored from
+  // this browser (Nathan 2026-10-14; Esc keeps the empty tank), and by New and Open…. Empty sale / bundle tabs hide.
   const startDlg = $<HTMLDialogElement>('startDlg');
+  let firstLaunch = false;
   $('startEx').onclick = e => openExample(e, startDlg);
-  $('startFresh').onclick = () => startDlg.close(); // the tank on screen is already a fresh one
-  function showStart() {
-    renderExamples('startEx');
-    renderFeaturedDeals($('startDeals'), (name, scene) => { startDlg.close(); store.replace(scene); setLibId(null); status(`Opened the deal "${name}". Customise it; the demand panel prices the bundle. Undo brings the previous tank back.`); });
-    startDlg.showModal();
+  $('startFresh').onclick = () => { // at first launch the tank on screen is already a fresh one
+    if (firstLaunch) startDlg.close(); else if (newEmptyTank()) startDlg.close();
+  };
+  const openDeal = (name: string, scene: Scene) => { startDlg.close(); store.replace(scene); setLibId(null); status(`Opened the deal "${name}". Customise it; the demand panel prices the bundle. Undo brings the previous tank back.`); };
+  const setTab = (tab: StartTab) => {
+    for (const b of startDlg.querySelectorAll<HTMLElement>('[data-tab]')) { const on = b.dataset.tab === tab; b.setAttribute('aria-selected', String(on)); b.tabIndex = on ? 0 : -1; }
+    for (const p of startDlg.querySelectorAll<HTMLElement>('[data-pane]')) p.hidden = p.dataset.pane !== tab;
+  };
+  $('startTabs').onclick = e => { const b = (e.target as HTMLElement).closest<HTMLElement>('[data-tab]'); if (b) setTab(b.dataset.tab as StartTab); };
+  function showChooser(tab: StartTab | undefined, first: boolean) {
+    firstLaunch = first;
+    const { sale, bundles } = startDeals(), shown = visibleTabs({ sale: sale.length, bundles: bundles.length });
+    for (const b of startDlg.querySelectorAll<HTMLElement>('[data-tab]')) b.hidden = !shown.includes(b.dataset.tab as StartTab);
+    for (const n of startDlg.querySelectorAll('.dealasof')) n.textContent = `Prices as of ${DEALS_AS_OF}; ${DEAL_NOTE.replace(/^as of the date shown; /, '')}.`;
+    renderFeaturedDeals($('startSale'), sale, openDeal);
+    renderFeaturedDeals($('startBundles'), bundles, openDeal);
+    renderExamples(); renderLib();
+    setTab(pickTab(tab, shown));
+    if (!startDlg.open) startDlg.showModal();
     $('startFresh').focus();
   }
+  const showStart = () => showChooser(undefined, true);
   $('libList').onclick = e => {
     const t = e.target as HTMLElement, del = t.closest<HTMLButtonElement>('[data-libdel]'), op = t.closest<HTMLButtonElement>('[data-lib]');
     if (del) {
@@ -234,7 +254,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     }
     if (!op) return;
     const id = op.dataset.lib!;
-    dlg.close();
+    startDlg.close();
     whileOpening(listLib().find(x => x.id === id)?.name ?? 'tank', () => {
       try {
         const { scene, warnings } = loadFromLib(id);

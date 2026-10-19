@@ -1,0 +1,154 @@
+[
+ {
+  "id": "goldfish",
+  "ok": [
+   20,
+   24
+  ],
+  "tol": [
+   12,
+   28
+  ],
+  "sourcesOpened": 4,
+  "sourcesSnippet": 3,
+  "confidence": "medium",
+  "note": "Fancy goldfish 20-24 C; below ~10 dangerous for fancies, above 30 harmful; stability matters most.",
+  "rh": null,
+  "rhTol": null,
+  "warm": null,
+  "night": null
+ },
+ {
+  "id": "bronzecory",
+  "ok": [
+   22,
+   26
+  ],
+  "tol": [
+   20,
+   28
+  ],
+  "sourcesOpened": 3,
+  "sourcesSnippet": 1,
+  "confidence": "high",
+  "note": "Hobby sources 22-26 (SF 21-27); Wikipedia wild 25-28, aquarium 20-28; no field measurement.",
+  "rh": null,
+  "rhTol": null,
+  "warm": null,
+  "night": null
+ },
+ {
+  "id": "pandacory",
+  "ok": [
+   21,
+   25
+  ],
+  "tol": [
+   17,
+   27
+  ],
+  "sourcesOpened": 3,
+  "sourcesSnippet": 2,
+  "confidence": "medium",
+  "note": "Cool-water cory: SF 22-25, wild low about 19; warm water above ~25 shortens life.",
+  "rh": null,
+  "rhTol": null,
+  "warm": null,
+  "night": null
+ },
+ {
+  "id": "pygmycory",
+  "ok": [
+   22,
+   26
+  ],
+  "tol": [
+   20,
+   28
+  ],
+  "sourcesOpened": 2,
+  "sourcesSnippet": 3,
+  "confidence": "medium",
+  "note": "SF and Fishkeeper 22-26; a few sources run to 27-28; no wild data.",
+  "rh": null,
+  "rhTol": null,
+  "warm": null,
+  "night": null
+ },
+ {
+  "id": "bristlenose",
+  "ok": [
+   22,
+   27
+  ],
+  "tol": [
+   17,
+   30
+  ],
+  "sourcesOpened": 2,
+  "sourcesSnippet": 1,
+  "confidence": "medium",
+  "note": "Ancistrus is a species complex; hobby 22-27, survives 16 C stressed, tolerates 28-30.",
+  "rh": null,
+  "rhTol": null,
+  "warm": null,
+  "night": null
+ },
+ {
+  "id": "oto",
+  "ok": [
+   21,
+   26
+  ],
+  "tol": [
+   19,
+   28
+  ],
+  "sourcesOpened": 2,
+  "sourcesSnippet": 2,
+  "confidence": "medium",
+  "note": "Cat-elog 21-26, FishBase 20-25, Baensch 25-28; forum keeper says 20-30 fine; no wild data.",
+  "rh": null,
+  "rhTol": null,
+  "warm": null,
+  "night": null
+ },
+ {
+  "id": "kuhli",
+  "ok": [
+   23,
+   27
+  ],
+  "tol": [
+   20,
+   30
+  ],
+  "sourcesOpened": 3,
+  "sourcesSnippet": 1,
+  "confidence": "medium",
+  "note": "SF 21-26, Co-Op 23-27, Tankarium 23-30.",
+  "rh": null,
+  "rhTol": null,
+  "warm": null,
+  "night": null
+ },
+ {
+  "id": "clownloach",
+  "ok": [
+   25,
+   29
+  ],
+  "tol": [
+   23,
+   31
+  ],
+  "sourcesOpened": 2,
+  "sourcesSnippet": 3,
+  "confidence": "medium",
+  "note": "Co-Op 28-30, Wikipedia wild 25-30, retailers 24-30; no cold survival limit found, low tol is a guess.",
+  "rh": null,
+  "rhTol": null,
+  "warm": null,
+  "night": null
+ }
+]

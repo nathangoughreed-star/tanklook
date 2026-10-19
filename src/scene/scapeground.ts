@@ -37,12 +37,25 @@ const SUBS: Record<StyleId, Sub[]> = {
   paludarium: [{ type: 'soil', litter: { leaf: 'mixed', density: 30 } }, { type: 'layered', litter: { leaf: 'mixed', density: 25 } }],
   blackwater: [blend('sand', '#6a5238', 'mud', '#3a2c20', 30, 0.6), blend('sand', '#7a6446', 'gravel', '#3a2c22', 20, 0.5)].map(b => ({ ...b, litter: { leaf: 'catappa' as const, density: 70 } })),
   malawi: [blend('sand', '#ece3cf'), blend('sand', PALE, 'sand', SAND, 30, 0.3), { type: 'white' }],
-  stream: [blend('sand', '#b6a587', 'pebble', '#8d8173', 25, 0.5), blend('sand', SAND, 'gravel', '#7a6a55', 30, 0.4)],
+  stream: [blend('sand', '#b6a587', 'pebble', '#8d8173', 25, 0.5), blend('sand', SAND, 'gravel', '#7a6a55', 30, 0.4), blend('gravel', '#9a8d78', 'sand', PALE, 35, 0.3), blend('sand', '#a89878', 'mud', '#4a3a2c', 20, 0.6), { type: 'pea' }],
   hillstream: [blend('pebble', '#8d8173', 'gravel', '#b5a58c', 40, 0.6), blend('gravel', '#7e756a', 'sand', SAND, 25, 0.3), { type: 'gravel' }],
   softreef: [{ type: 'aragonite' }, { type: 'coral' }],
   spsreef: [{ type: 'aragonite' }, { type: 'aragonite' }],
   clownnano: [{ type: 'aragonite' }, { type: 'coral' }],
 };
+/** Shift a hex colour's lightness (by up to `l` of full scale) and each channel (by up to `c`). */
+const nudge = (hex: string, rt: () => number, l: number, c: number): string => {
+  const v = parseInt(hex.slice(1), 16), dl = (rt() - 0.5) * 2 * l * 255;
+  return '#' + [16, 8, 0].map(sh => clamp(Math.round(((v >> sh) & 255) + dl + (rt() - 0.5) * 2 * c * 255), 0, 255).toString(16).padStart(2, '0')).join('');
+};
+/** A style's blend, varied inside the style's gate: the grains stay the style's own, but the colours, the second grain's
+ *  share and how far the two mix (patches to grain by grain) are drawn fresh, so a shuffle never repeats a ground. */
+const varyBlend = (b: SubstrateBlend, rt: () => number): SubstrateBlend => ({
+  ...b, color: nudge(b.color, rt, 0.12, 0.05),
+  color2: b.grain2 === 'none' ? b.color2 : nudge(b.color2, rt, 0.16, 0.06),
+  share: b.grain2 === 'none' ? b.share : Math.round(clamp(b.share + (rt() - 0.5) * 40, 8, 65)),
+  mix: b.grain2 === 'none' ? b.mix : +rt().toFixed(2),
+});
 /** Slope and relief per style: back depth as [lo, hi] times the front's, hills under the groups (times the front
  *  depth), and roughness (soft waves over the floor). A swamp's land and pools are drawn by swampTerrain. */
 const SHAPE: Record<StyleId, { back: [number, number]; hill: number; rough: number }> = {
@@ -70,7 +83,7 @@ export function styleGround(s: TankSetup, part: 'both' | 'type' | 'shape' = 'bot
   const salt = !!(s.water.on && s.water.salt);
   if (part !== 'shape') {
     const ts = s.layout.tSeed ?? gs, rt = rng(ts * 7919 + id.length * 104729 + 5 * 1000003), subs = SUBS[salt ? 'reef' : id], sub = subs[Math.floor(rt() * subs.length) % subs.length];
-    s.substrate = { ...s.substrate, show: true, type: sub.type, ...(sub.custom ? { custom: { ...sub.custom } } : {}) };
+    s.substrate = { ...s.substrate, show: true, type: sub.type, ...(sub.custom ? { custom: varyBlend(sub.custom, rt) } : {}) };
     if (SS2_IDS.has(id) && !salt) { if (sub.litter) s.substrate.litter = { ...sub.litter, seed: 1 + Math.floor(rt() * 1e6) }; else delete s.substrate.litter; }
   }
   if (part === 'type') { s.layout.ground = true; return; }

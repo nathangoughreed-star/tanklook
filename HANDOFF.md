@@ -27,7 +27,6 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 **Current lanes** (coordinator "Lanes coordinator 4", `local_408aa124`):
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
-| SD one start chooser | `../Glass-Box-startchooser` / `startchooser` | 5763 | start / library dialogs in `index.html`, start / New / Open handlers in `ui/panels.ts`, `ui/featuredDeals.ts`, dialog CSS | opened 2026-10-19 |
 | GS gecko support surfaces | `../Glass-Box-geckosupport` / `geckosupport` | 5743 | `scene/anchors.ts`, `render/items.ts` surface choice, weight / leaf flag in `species.json` | opened 2026-10-19 |
 | AN anole models | `../Glass-Box-anoles` / `anoles` | 5753 | `render/lizard3d.ts` params, anole entries in `species.json` | opened 2026-10-19 |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
@@ -36,8 +35,6 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
-
-## Lane SD: one start chooser (2026-10-19, branch `startchooser`, port 5763)  (lane fills this in)
 
 ## Lane GS: gecko support surfaces (2026-10-19, branch `geckosupport`, port 5743)  (lane fills this in)
 
@@ -296,6 +293,7 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane SD: one start chooser (2026-10-19, branch `startchooser`, port 5763; Nathan approved the pictures, shipped)
 - Lane KK: demand model (panel hook in `ui/panels.ts` only after KA lands) (2026-10-19, branch `demand`, port 5733)
 - Lane KC: kit light wiring (stub data until KB lands) (2026-10-19, branch `kitlight`, port 5723)
 - Lane KA: tank catalog (2026-10-19, branch `tankcat`, port 5703)

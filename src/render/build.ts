@@ -1001,21 +1001,26 @@ if (vAqWet > 0.01) { vec3 aqH = normalize(normalize(vec3(-0.2, 1.0, 0.35)) + nor
  * separate patches with a sharp edge, 1 = mixed everywhere. Patches shrink as the mix rises (big drifts to small clumps).
  */
 /** The mask shader's uniforms for a two-grain blend; with `u`, its values are updated in place (patchLook). */
-interface BlendUniforms { uMapB: { value: THREE.Texture }; uMapM: { value: THREE.Texture }; uMask: { value: THREE.Texture }; uZone: { value: THREE.Vector4 } }
+interface BlendUniforms { uMapB: { value: THREE.Texture }; uMapM: { value: THREE.Texture }; uMask: { value: THREE.Texture }; uZone: { value: THREE.Vector4 }; uOff: { value: THREE.Vector2 } }
+/** Where the patch mask starts for this blend: a hash of its own values, so every blend lays its patches out differently. */
+function maskOffset(b: TankSetup['substrate']['custom']): THREE.Vector2 {
+  let h = 2166136261; for (const c of `${b.color}${b.color2}${b.share}${b.mix}`) h = Math.imul(h ^ c.charCodeAt(0), 16777619);
+  return new THREE.Vector2(((h >>> 0) % 1000) / 1000, ((h >>> 10) % 1000) / 1000);
+}
 function blendUniforms(b: TankSetup['substrate']['custom'], tile: number, u?: BlendUniforms): BlendUniforms {
   const p2 = b.share / 100, k = 1 - b.mix, period = 900 - 650 * b.mix; // mm per mask repeat
   const zone = new THREE.Vector4(maskQuantile((1 - p2) * k), maskQuantile(1 - p2 * k), tile / period, 0.012);
-  if (u) { u.uMapB.value = blendTexture(b, 'b'); u.uMapM.value = blendTexture(b, 'm'); u.uZone.value.copy(zone); return u; }
-  return { uMapB: { value: blendTexture(b, 'b') }, uMapM: { value: blendTexture(b, 'm') }, uMask: { value: substrateMaskTexture() }, uZone: { value: zone } };
+  if (u) { u.uMapB.value = blendTexture(b, 'b'); u.uMapM.value = blendTexture(b, 'm'); u.uZone.value.copy(zone); u.uOff.value.copy(maskOffset(b)); return u; }
+  return { uMapB: { value: blendTexture(b, 'b') }, uMapM: { value: blendTexture(b, 'm') }, uMask: { value: substrateMaskTexture() }, uZone: { value: zone }, uOff: { value: maskOffset(b) } };
 }
 function blendGrains(m: THREE.MeshBasicMaterial, b: TankSetup['substrate']['custom'], tile: number) {
   if (b.grain2 === 'none') return;
   const uniforms = m.userData.blend = blendUniforms(b, tile); // patchLook updates them in place
   m.userData.post = (sh: THREE.WebGLProgramParametersWithUniforms) => {
     Object.assign(sh.uniforms, uniforms);
-    sh.fragmentShader = sh.fragmentShader.replace('void main() {', `uniform sampler2D uMapB, uMapM, uMask; uniform vec4 uZone;
+    sh.fragmentShader = sh.fragmentShader.replace('void main() {', `uniform sampler2D uMapB, uMapM, uMask; uniform vec4 uZone; uniform vec2 uOff;
 vec4 aqBlend(vec2 uv) {
-  float n = texture2D(uMask, vMapUv * uZone.z).r;
+  float n = texture2D(uMask, vMapUv * uZone.z + uOff).r;
   float a = 1.0 - smoothstep(uZone.x - uZone.w, uZone.x + uZone.w, n), b = smoothstep(uZone.y - uZone.w, uZone.y + uZone.w, n);
   return texture2D(map, uv) * a + texture2D(uMapB, uv) * b + texture2D(uMapM, uv) * max(1.0 - a - b, 0.0);
 }

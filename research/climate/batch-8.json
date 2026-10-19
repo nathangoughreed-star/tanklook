@@ -1,0 +1,10 @@
+[
+{"id":"kadango","ok":[25,27],"tol":[23,29],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":4,"sourcesSnippet":3,"confidence":"medium","note":"Seriously Fish 25-29 vs Fishkeeper/FishProfiles 24-26; no wild measurement, lake surface 24-29."},
+{"id":"labeo","ok":[24,27],"tol":[21,29],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":4,"sourcesSnippet":2,"confidence":"medium","note":"Seriously Fish 24-28 vs FishProfiles/Fishkeeper UK 21-25; hobbyists favour the cooler half."},
+{"id":"auratus","ok":[24,27],"tol":[22,29],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":5,"sourcesSnippet":2,"confidence":"high","note":"Seriously Fish 24-28, Fishkeeper 24-26, TropicalFreshwaterFish 22-27 agree closely."},
+{"id":"livingstonii","ok":[24,28],"tol":[22,29],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":3,"sourcesSnippet":3,"confidence":"medium","note":"Seriously Fish and TFF both 24-28; retailers span 23-29; only 3 pages opened."},
+{"id":"afra","ok":[24,27],"tol":[22,29],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":4,"sourcesSnippet":4,"confidence":"medium","note":"Seriously Fish 25-29 is warm outlier; Aqualog 22-28, others 23-27."},
+{"id":"syno","ok":[23,27],"tol":[21,29],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":4,"sourcesSnippet":1,"confidence":"low","note":"Seriously Fish 23-28 vs FishBase 20-23 (climate band, no field data); few species-specific sources."},
+{"id":"angel","ok":[26,29],"tol":[22,30],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":4,"sourcesSnippet":3,"confidence":"high","note":"Captive 24-30 (SF), best 26-28; wild blackwater figures 26-29 are for P. altum/secondary."},
+{"id":"oscar","ok":[23,27],"tol":[20,30],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":4,"sourcesSnippet":3,"confidence":"medium","note":"SF 20-28, Co-Op 23-27, Aqualog 22-28; lower lethal 12.9 C, no wild temp measurement."}
+]

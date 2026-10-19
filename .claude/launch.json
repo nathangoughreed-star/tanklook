@@ -587,19 +587,6 @@
         "--strictPort"
       ],
       "port": 5753
-    },
-    {
-      "name": "startchooser",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5763",
-        "--strictPort"
-      ],
-      "port": 5763
     }
   ]
 }

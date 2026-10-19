@@ -2,6 +2,7 @@
 // grays what does not suit and says why, nothing is blocked. ESTIMATES from common aquarium / vivarium practice (not a source
 // of record): minL is the smallest tank (litres) for the usual first group or one adult, temp is the comfortable water range.
 import type { Category } from './species';
+import { WATER } from './climatedata';
 
 /** 1 beginner, 2 intermediate, 3 expert. */
 export type Expertise = 1 | 2 | 3;
@@ -16,6 +17,8 @@ export interface AnimalCare {
   temp?: [number, number];
   /** tolerable water temperature (survives, not for the long haul); absent = estimated as the comfortable band +-2 deg */
   tol?: [number, number];
+  /** the tolerable band rests on thin sources or judgement (low confidence) */
+  tolEst?: true;
   /** eats animals up to this length (mm), optionally only of these groups */
   prey?: { mm: number; cats?: Category[] };
   /** one of its kind per tank (a bonded pair is fine); `fam` extends that to look-alike rivals (tangs) */
@@ -57,3 +60,5 @@ export const CARE: Record<string, AnimalCare> = {
   leopardgecko: A(1, 150, 0, undefined, { solo: true, prey: { mm: 60, cats: ['land-invert'] } }), regaljumper: A(2, 5, 0, undefined, { solo: true, prey: { mm: 15 } }),
   ballpython: A(2, 450, 0, undefined, { solo: true, prey: { mm: 600 } }), chacogoldenknee: A(1, 40, 0, undefined, { solo: true, prey: { mm: 60 } }),
 };
+// Researched temperature bands (research/climate, 2026-10-19) replace the first-guess ranges above.
+for (const [id, w] of Object.entries(WATER)) { const c = CARE[id]; if (c) { c.temp = w.ok; c.tol = w.tol; if (w.est) c.tolEst = true; } }

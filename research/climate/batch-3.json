@@ -1,0 +1,10 @@
+[
+{"id":"mandarin","ok":[24,27],"tol":[22,28],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":2,"sourcesSnippet":3,"confidence":"medium","note":"Reef consensus 75-80F; vendor range union 72-82F; no wild or tolerance data."},
+{"id":"cleanershrimp","ok":[24,27],"tol":[20,29],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":3,"sourcesSnippet":3,"confidence":"medium","note":"Vendors 22-28; wild winter ~18; lab CTmax 35 is not a husbandry limit."},
+{"id":"turbo","ok":[22,25],"tol":[20,28],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":3,"sourcesSnippet":4,"confidence":"medium","note":"Sea of Cortez species; sustained >=26 reportedly shortens life (vendor claim); Top Shelf allows 27."},
+{"id":"hermit","ok":[24,27],"tol":[21,29],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":3,"sourcesSnippet":1,"confidence":"medium","note":"Four vendor/profile sources overlap 24-26; tolerable edges widened by judgement, no tolerance study."},
+{"id":"dartfrog","ok":[21,26],"tol":[18,27],"rh":[80,100],"rhTol":[60,100],"warm":null,"night":[18,21],"sourcesOpened":3,"sourcesSnippet":3,"confidence":"high","note":"Air; >27C stressful, >29 dangerous; wild day 22-27, night 20; 50% RH only briefly with water access."},
+{"id":"treefrog","ok":[23,28],"tol":[18,30],"rh":[50,75],"rhTol":[45,85],"warm":[28,32],"night":[18,22],"sourcesOpened":4,"sourcesSnippet":1,"confidence":"high","note":"Air; basking 28-32 (one outlier says 35); RH tolerable band is judgement."},
+{"id":"firetoad","ok":[18,24],"tol":[15,27],"rh":[50,80],"rhTol":[40,90],"warm":null,"night":[16,20],"airOk":[21,26],"airTol":[16,28],"sourcesOpened":4,"sourcesSnippet":2,"confidence":"medium","note":"ok/tol are WATER, inferred (no source gives water temp); air solid: day 21-26, max 27.8, night 16-20."},
+{"id":"firenewt","ok":[16,22],"tol":[10,24],"rh":null,"rhTol":null,"warm":null,"night":null,"airOk":[16,22],"airTol":[10,26],"sourcesOpened":2,"sourcesSnippet":3,"confidence":"medium","note":"ok/tol are WATER; 24 sustained ceiling; air inferred from room temp (28-32 lethal over weeks); lower bound and humidity unsourced."}
+]
