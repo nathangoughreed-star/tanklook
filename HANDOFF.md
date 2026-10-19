@@ -27,7 +27,6 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 **Current lanes** (coordinator "Lanes coordinator 4", `local_408aa124`):
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
-| KK demand model (panel hook in `ui/panels.ts` only after KA lands) | `../Glass-Box-demand` / `demand` | 5733 | demand model | opened 2026-10-19 |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 
@@ -42,19 +41,6 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 - Sweep: `prompts/deals-sweep.md` (Sonnet only, 3 agents, one search at a time). Measured batch 2026-10-19: 3 agents, ~233k Sonnet tokens (~77k each), 3 verified rows (all PetSmart; ~78k per row). Amazon/Walmart/Chewy and Tractor Supply/Home Depot/That Pet Place/Big Al's/Aquarium Co-Op gave nothing (search cannot reach live listings; petco.com 403s fetch, Aquarium Co-Op geo-blocked). Better next sweep: PetSmart + Petco pages through the browser tools, not web search.
 - Second sweep 2026-10-19 (user-approved): PetSmart full list, Petco, Walmart/Amazon via browser pane; 3 Sonnet agents, ~241k tokens (69k+68k+105k). Added the 75 gal Marineland HD ($499.99, was $799.99, featured) and the 45 gal Simple Modern (est, out of stock). Petco: no combos (403 on fetch, search shows only separate items). Walmart/Amazon: only a third-party 40 gal frame combo at $1,954 with contradictory specs, left out. Next time: PetSmart product pages are the only reliable source; check Petco by hand in a browser.
 - Weak spots: 45 gal HD Marineland has no matching catalog tank (prices in the panel, not featured); 36 and 60 gal rows map to the closest catalog size, footprints differ a little. The 36 gal Top Fin shows no saving vs the app's parts estimate, so it is not featured.
-
-
-## Lane KK: demand model (panel hook in `ui/panels.ts` only after KA lands) (2026-10-19, branch `demand`, port 5733)
-**Phase 1 DONE 2026-10-19 (engine, no UI).** `src/demand/` (types, range, engine, cost, index); starter data `src/data/factors.json` and
-`src/data/demand-defaults.json` (category-level rule-of-thumb ranges; phase 2 replaces/extends with per-item rows and sources);
-`test/demand.test.ts`. API: `demandOf(setup, profile, {tankPrice?, now?})` -> items (Range3 per item), means, 0-10 risk;
-`costDistribution(demand, profile)` -> setup / upkeep / minutes as `{mean, p10..p90, q[0..100]}` + each item's variance share
-(Gaussian copula rho 0.3, shared price level, kWh rate, loss rate per domain; 2000 seeded draws, ~100 ms); `limitState` (expected vs
-85th-percentile cap, upkeep chip $10 / $40, minutes, risk ceiling); `drivers(bar)`. Plant difficulty derived from NEEDS. Derived from
-the scene only: volume(), wattsOf(), growRate(), outcomeOf / itemLights, whyAnimal + CARE, water.salt. Risk repeated kinds count
-log-ish (x(1+0.5 ln n)); raw points squashed 10(1-exp(-raw/10)). Cut points 3 / 6 are a PROPOSAL for Nathan (phase 3). Not done: tank
-price lookup (KA / KB; `tankPrice` hook is ready), cycling risk, per-item prices. Starter examples (default novice profile, setup
-p10/mean/p90): betta $200/280/365, planted 45 gal $1049/1421/1823, reef 73 gal $3731/5149/6691.
 
 
 ## Lane CL: animals cling to leaves, undersides and sides of hardscape (2026-10-16..19; main, no branch; Nathan approved the pictures; pushed to main)
@@ -274,6 +260,7 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane KK: demand model (panel hook in `ui/panels.ts` only after KA lands) (2026-10-19, branch `demand`, port 5733)
 - Lane KC: kit light wiring (stub data until KB lands) (2026-10-19, branch `kitlight`, port 5723)
 - Lane KA: tank catalog (2026-10-19, branch `tankcat`, port 5703)
 - Lane KB: kit catalog (2026-10-19, branch `kits`, port 5713)

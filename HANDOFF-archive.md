@@ -1,6 +1,20 @@
 # HANDOFF archive
 Finished lane and feature sections moved out of HANDOFF.md on 2026-10-16, verbatim, newest first.
 
+## Lane KK: demand model (panel hook in `ui/panels.ts` only after KA lands) (2026-10-19, branch `demand`, port 5733)
+**Phase 1 DONE 2026-10-19 (engine, no UI).** `src/demand/` (types, range, engine, cost, index); starter data `src/data/factors.json` and
+`src/data/demand-defaults.json` (category-level rule-of-thumb ranges; phase 2 replaces/extends with per-item rows and sources);
+`test/demand.test.ts`. API: `demandOf(setup, profile, {tankPrice?, now?})` -> items (Range3 per item), means, 0-10 risk;
+`costDistribution(demand, profile)` -> setup / upkeep / minutes as `{mean, p10..p90, q[0..100]}` + each item's variance share
+(Gaussian copula rho 0.3, shared price level, kWh rate, loss rate per domain; 2000 seeded draws, ~100 ms); `limitState` (expected vs
+85th-percentile cap, upkeep chip $10 / $40, minutes, risk ceiling); `drivers(bar)`. Plant difficulty derived from NEEDS. Derived from
+the scene only: volume(), wattsOf(), growRate(), outcomeOf / itemLights, whyAnimal + CARE, water.salt. Risk repeated kinds count
+log-ish (x(1+0.5 ln n)); raw points squashed 10(1-exp(-raw/10)). Cut points 3 / 6 are a PROPOSAL for Nathan (phase 3). Not done: tank
+price lookup (KA / KB; `tankPrice` hook is ready), cycling risk, per-item prices. Starter examples (default novice profile, setup
+p10/mean/p90): betta $200/280/365, planted 45 gal $1049/1421/1823, reef 73 gal $3731/5149/6691.
+
+
+
 ## Lane KC: kit light wiring (stub data until KB lands) (2026-10-19, branch `kitlight`, port 5723)
 State 2026-10-19: DONE, real kit catalog wired (KB kits.json: null watts -> `kitWatts` tier default per rated gal, budget 0.4 / mid 0.6 / plant 1.1 / reef 1.8 W per gal, min 4 W, label 'rough'; type 'flat' + LED tech -> LED bar; 3 extra tests loop all kits with stand-in tanks until KA ids land). `src/scene/kitlight.ts` + `test/kitlight.test.ts` (19 tests, stub kits).
 - API: `applyKitLight(setup, kit)` (pure; fitFixture fresh -> kit watts/par -> clamp; a kit without `par` clears an old override), `applyKitToStore(store, kit)`,
