@@ -1,5 +1,6 @@
 // Demand model types (lane KK, 2026-10-19). Three live readouts for the current tank: money (setup + upkeep), time, risk.
-// Every contributor carries a range; the totals are an expected value with a likely range (see cost.ts).
+// Every contributor carries a lo / mode / hi triangle only so its mean (the expected value) and the price-age widening are exact;
+// the user sees one expected number per bar (decision 2026-10-19, lane DS).
 export type Range3 = { lo: number; mode: number; hi: number };
 /** A plain number means no spread. */
 export type Rangeish = Range3 | number;
@@ -25,8 +26,6 @@ export interface Limits {
   upkeep?: 'free' | 'low' | 'flex';
   minPerWeek?: number;
   risk?: 'safe' | 'moderate' | 'any';
-  /** how a $ limit is read: against the expected value, or as the most the user can spend (the 85th percentile) */
-  budgetMode?: 'expected' | 'cap';
 }
 export interface UserProfile {
   skill: { fundamentals: Skill; fish: Skill; planted: Skill; salt: Skill; terrarium: Skill };
@@ -45,7 +44,7 @@ export interface Contribution {
   label: string;
   group: Group;
   setup?: Range3;
-  /** USD per month, without electricity and without the loss replacement (cost.ts adds those) */
+  /** USD per month, without electricity and without the loss replacement (engine.ts adds those) */
   upkeep?: Range3;
   /** kWh per month; priced at the user's rate */
   kwhMo?: number;
@@ -53,9 +52,9 @@ export interface Contribution {
   /** risk points after skill scaling */
   risk: number;
   domain?: Domain;
-  /** replaced when it dies: cost.ts adds setup x annual loss rate / 12 to the upkeep */
+  /** replaced when it dies: engine.ts adds setup x annual loss rate / 12 to the upkeep */
   livestock?: boolean;
-  /** USD per month expected replacement of what dies (the mean of the loss term cost.ts samples) */
+  /** USD per month expected replacement of what dies (mean replacement, added to the expected upkeep) */
   lossMo?: number;
   /** how many of this kind the row stands for (grouping in the driver list) */
   n?: number;

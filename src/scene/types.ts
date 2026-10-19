@@ -370,6 +370,8 @@ export interface TankSetup {
   items: Item[];
   /** Painted scatter (lane SB, 2026-10-16, no version bump): seeded patches of leaves, pebbles, moss, twigs and carpet. Absent = none. */
   patches?: Patch[];
+  /** The tank's tech level (lane TM, 2026-10-19, no version bump): filter, heater, CO2, ferts, salt gear; scene/tech.ts. Absent = the gear the demand engine infers. */
+  tech?: import('./tech').TechSetup;
 }
 
 /** What a scatter brush drops (lane SB). */

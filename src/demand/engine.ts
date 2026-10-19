@@ -1,5 +1,5 @@
 // The demand engine (lane KK phase 1): what the current tank asks of its keeper, derived from the scene, not from new fields.
-// demandOf(setup, profile) -> per-item contributions + means + the 0-10 risk score. Spread and percentiles: cost.ts.
+// demandOf(setup, profile) -> per-item contributions + means + the 0-10 risk score. One expected value per bar; limits: cost.ts.
 import { isFloat } from '../art/plants';
 import { CARE } from '../data/care';
 import { getSpecies, type Species } from '../data/species';
@@ -19,6 +19,7 @@ import type { TankSetup } from '../scene/types';
 import { add3, mean3, r3, scale3, widen3 } from './range';
 import { interp, price as rowPrice, priceRow } from './prices';
 import { defaultFilter, defaultHeater, filterName, matchFilter, matchHeater, type FilterSpec } from './gear';
+import { techDemand } from './tech';
 import type { Contribution, Demand, Domain, Group, Range3, Rangeish, UserProfile } from './types';
 
 export const FACTORS = factorsJson;
@@ -68,6 +69,9 @@ function fold(items: Contribution[]): Contribution[] {
   return out;
 }
 
+/** Expected electricity rate, USD per kWh: the user's own, else the US mean. */
+export const kwhRate = (P: Pick<UserProfile, 'kwhUsd'>) => P.kwhUsd ?? mean3(FACTORS.kwhUsd);
+
 export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): Demand {
   const wid = ageWiden(DEFAULTS.asOf, opts.now ?? Date.now());
   const wet = S.water.on, salt = !!S.water.salt && wet, vol = volume(S.tank), gal = vol.gallons, litres = vol.litres;
@@ -78,7 +82,7 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   const sMul = salt ? FACTORS.saltMultiplier : { setup: 1, upkeep: 1, minutes: 1 };
   const rows: Contribution[] = [], warnings: string[] = [];
   const add = (key: string, label: string, group: Group, c: Partial<Contribution> = {}) => rows.push({ key, label, group, risk: 0, ...c });
-  const price = (r: Range3) => widen3(r, wid); // price-age widening; the shared price level is a factor in cost.ts
+  const price = (r: Range3) => widen3(r, wid); // price-age widening; the price level's mean is applied in the totals
   const G = DEFAULTS.gear;
 
   // ---- tank, stand, lid, substrate, gear
@@ -182,6 +186,7 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   const tankRisk = (wet && small ? small.pts : 0) + (salt ? DEFAULTS.risk.salt : 0);
   if (tankRisk) add('stability', salt ? 'Saltwater chemistry and volume' : 'Small volume', 'tank', { risk: tankRisk * skillMul(P, domain), domain });
 
+  techDemand(S, rows, { price, riskMul: skillMul(P, domain), domain }); // lane TM: gear rows from the chosen tech (no-op without S.tech)
   if (opts.kit) {
     // the kit's one price (listing +-15 %, widened with age) stands in for the parts it contains
     const parts = new Set(opts.kit.includes ?? ['tank', 'stand', 'lid', 'light', 'filter', 'heater']);
@@ -192,7 +197,7 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   const items = fold(rows), sum = (f: (c: Contribution) => number) => items.reduce((s, c) => s + f(c), 0);
   const pl = mean3(pick(FACTORS.priceLevel));
   for (const c of items) if (c.livestock && c.domain && c.setup) c.lossMo = mean3(c.setup) * pl * mean3(pick((FACTORS.annualLoss as Record<Domain, Range3[]>)[c.domain][P.skill[c.domain]])) / 12;
-  const kwh = P.kwhUsd ?? mean3(pick(FACTORS.kwhUsd)), riskRaw = sum(c => c.risk);
+  const kwh = kwhRate(P), riskRaw = sum(c => c.risk);
   return {
     items, domain, gallons: gal, warnings,
     totals: {

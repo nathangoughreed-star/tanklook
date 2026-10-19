@@ -1,0 +1,123 @@
+{
+ "asOf": "2026-10-19",
+ "note": "Tech menu (lane TM). rows = the choices the owner makes, each option a list of gear parts; gear = how each part is priced, powered, maintained and sized for THIS tank (src/scene/tech.ts). Sizing: a value given at `ref` gallons is scaled by (gal / ref) ^ exp per field, clamped to 0.25..6. price.key = a row in demand-items.json (wins when present); price.fallback = a first guess (est) where no row exists. monthly.key + months = a pack price that lasts `months` at `ref` gallons (researched 2026-10-19, step 2). minutes = per week, per unit. monthly = consumables, USD per month. watts x hours a day = kWh. Filters take their flow, watts and price row from gear-models.json, heaters are sized from the tank's heat loss (tech.ts heatLoss). Salt `tier` (skimmer, flow, dosing: 0 soft, 1 LPS, 2 SPS) sets the reef care level: the lowest of the three (tech.ts reefFeedOf).",
+ "roomC": 21,
+ "heat": {
+  "_note": "W per m2 per K, linearised (evaporation folded into the open surface). Checked against the 3-5 W/gal rule: a 20 gal long at 26 C in a 21 C room loses ~40 W open, ~27 W lidded.",
+  "wall": 6, "bottom": 2, "surface": { "open": 18, "mesh": 15, "glass": 7, "hood": 6 },
+  "nightDropK": 3, "headroom": 1.3, "twoAboveW": 300, "chillerCop": 2.5
+ },
+ "rows": [
+  { "id": "filter", "label": "Filtration", "water": "wet", "options": [
+   { "id": "none", "label": "None (Walstad)", "parts": [], "capacity": 0.5, "risk": 1.5, "note": "Plants and soil do the filtering: needs a soil substrate, heavy planting and light stocking." },
+   { "id": "sponge", "label": "Sponge filter + air pump", "parts": ["filter"], "kind": "sponge", "capacity": 0.85, "risk": 0.2 },
+   { "id": "internal", "label": "Internal filter", "parts": ["filter"], "kind": "internal", "capacity": 0.9, "risk": 0.2 },
+   { "id": "hob", "label": "Hang-on-back filter", "parts": ["filter"], "kind": "hob", "capacity": 1, "risk": 0.1 },
+   { "id": "canister", "label": "Canister filter", "parts": ["filter"], "kind": "canister", "capacity": 1.15, "risk": 0.2, "note": "Hoses under the tank: a leak risk if a fitting slips." },
+   { "id": "sump", "label": "Sump + return pump", "parts": ["sump", "returnpump"], "capacity": 1.3, "risk": 0.3, "minGal": 29, "note": "Hides the heater and skimmer below; needs a drilled tank or an overflow box." }
+  ]},
+  { "id": "heater", "label": "Heating", "water": "wet", "options": [
+   { "id": "none", "label": "No heater", "parts": [], "note": "Water follows the room: only species whose range holds the room temperature." },
+   { "id": "one", "label": "One heater", "parts": ["heater"], "risk": 0.3, "note": "A stuck heater can cook a tank: a controller or two smaller heaters spread the risk." },
+   { "id": "two", "label": "Two heaters (half size)", "parts": ["heater"], "heaters": 2, "risk": 0.15 }
+  ]},
+  { "id": "chiller", "label": "Chiller", "water": "wet", "options": [
+   { "id": "none", "label": "No chiller", "parts": [] },
+   { "id": "chiller", "label": "Chiller", "parts": ["chiller"], "note": "Only when the room runs warmer than the tank should be (reef in summer)." }
+  ]},
+  { "id": "co2", "label": "CO2", "water": "fresh", "options": [
+   { "id": "none", "label": "None", "parts": [], "co2": 0 },
+   { "id": "liquid", "label": "Liquid carbon", "parts": ["liquidcarbon"], "co2": 0.5, "note": "A little carbon boost; overdosing melts vallisneria and some mosses." },
+   { "id": "diy", "label": "DIY yeast CO2", "parts": ["diyco2"], "co2": 1, "note": "Uneven output, weak above ~30 gal; a bottle every two weeks." },
+   { "id": "pressurized", "label": "Pressurized (regulator, solenoid, drop checker)", "parts": ["co2kit", "dropchecker"], "co2": 2, "risk": 0.8, "note": "Too much gas at night can suffocate fish: the solenoid on a timer and a drop checker are a must." }
+  ]},
+  { "id": "ferts", "label": "Fertilizer", "water": "fresh", "options": [
+   { "id": "none", "label": "None", "parts": [], "fert": 0 },
+   { "id": "roottabs", "label": "Root tabs", "parts": ["roottabs"], "fert": 0.5 },
+   { "id": "aio", "label": "All-in-one liquid", "parts": ["aio"], "fert": 1 },
+   { "id": "ei", "label": "Estimative Index (dry salts)", "parts": ["ei"], "fert": 2, "note": "Doses to excess and resets with a big weekly water change." },
+   { "id": "doser", "label": "Dosing pump", "parts": ["doser", "aio"], "fert": 2 }
+  ]},
+  { "id": "air", "label": "Aeration", "water": "wet", "options": [
+   { "id": "none", "label": "None", "parts": [] },
+   { "id": "airstone", "label": "Air pump + airstone", "parts": ["airpump"], "risk": -0.2, "note": "More oxygen, a backup if the filter stops; strips CO2, so not with injected CO2 by day." }
+  ]},
+  { "id": "uv", "label": "UV sterilizer", "water": "wet", "options": [
+   { "id": "none", "label": "None", "parts": [] },
+   { "id": "uv", "label": "UV sterilizer", "parts": ["uv"], "risk": -0.2, "note": "Clears green water and cuts free-floating disease; the bulb is replaced yearly." }
+  ]},
+  { "id": "conditioner", "label": "Water conditioner", "water": "wet", "options": [
+   { "id": "none", "label": "None", "parts": [], "note": "Only safe with RO water or untreated well water." },
+   { "id": "yes", "label": "Dechlorinator", "parts": ["conditioner"] }
+  ]},
+  { "id": "rodi", "label": "RO/DI water", "water": "wet", "options": [
+   { "id": "none", "label": "Tap water", "parts": [] },
+   { "id": "unit", "label": "Own RO/DI unit", "parts": ["rodi"], "note": "Pure water: needed for most reefs and soft-water species." }
+  ]},
+  { "id": "ato", "label": "Auto top-off", "water": "wet", "options": [
+   { "id": "none", "label": "Top off by hand", "parts": [] },
+   { "id": "ato", "label": "Auto top-off", "parts": ["ato"], "risk": -0.2, "note": "Holds salinity steady as water evaporates." }
+  ]},
+  { "id": "skimmer", "label": "Protein skimmer", "water": "salt", "options": [
+   { "id": "none", "label": "None", "parts": [], "risk": 0.8, "tier": 0 },
+   { "id": "hob", "label": "Hang-on skimmer", "parts": ["skimmerhob"], "tier": 2 },
+   { "id": "sump", "label": "In-sump skimmer", "parts": ["skimmer"], "needs": { "filter": "sump" }, "tier": 2 }
+  ]},
+  { "id": "flow", "label": "Water movement", "water": "salt", "options": [
+   { "id": "none", "label": "Filter flow only", "parts": [], "tier": 0 },
+   { "id": "one", "label": "One powerhead", "parts": ["powerhead"], "tier": 1 },
+   { "id": "two", "label": "Two powerheads", "parts": ["powerhead"], "count": 2, "tier": 1 },
+   { "id": "wave", "label": "Wavemaker pumps", "parts": ["wavemaker"], "count": 2, "tier": 2, "note": "Pulsed, changing flow: what SPS corals want." }
+  ]},
+  { "id": "dosing", "label": "Calcium / alkalinity", "water": "salt", "options": [
+   { "id": "none", "label": "Water changes only", "parts": [], "tier": 0 },
+   { "id": "twopart", "label": "Two-part by hand", "parts": ["twopart"], "tier": 1 },
+   { "id": "doser", "label": "Dosing pump + two-part", "parts": ["doser", "twopart"], "risk": -0.2, "tier": 2 }
+  ]},
+  { "id": "salinity", "label": "Salinity", "water": "salt", "options": [
+   { "id": "hydrometer", "label": "Swing-arm hydrometer", "parts": ["hydrometer"], "risk": 0.2 },
+   { "id": "refractometer", "label": "Refractometer", "parts": ["refractometer"] }
+  ]},
+  { "id": "saltmix", "label": "Salt mix", "water": "salt", "options": [
+   { "id": "mix", "label": "Reef salt mix", "parts": ["saltmix"], "note": "Mixed into every water change; priced with the water changes." }
+  ]}
+ ],
+ "gear": {
+  "filter":       { "label": "Filter", "sized": "filter", "minutes": { "lo": 1, "mode": 2, "hi": 4 }, "byKind": { "sponge": 0.5, "internal": 0.8, "hob": 1, "canister": 1.5 }, "monthly": { "lo": 1, "mode": 3, "hi": 7 }, "modelPriceK": { "canister-l": 1.6 }, "exp": { "minutes": 0.3, "monthly": 0.5 }, "ref": 20 },
+  "sump": { "label": "Sump", "price": { "key": "gear:sump" }, "minutes": { "lo": 2, "mode": 4, "hi": 8 }, "ref": 55, "exp": { "price": 0.6, "minutes": 0.3 } },
+  "returnpump": { "label": "Return pump", "price": { "key": "gear:return-pump" }, "watts": 30, "hours": 24, "gphPerGal": 6, "ref": 55, "exp": { "price": 0.5, "watts": 0.8 } },
+  "heater":       { "label": "Heater", "sized": "heater" },
+  "chiller": { "label": "Chiller", "price": { "key": "gear:chiller" }, "ref": 55, "exp": { "price": 0.5 }, "minutes": { "lo": 0.2, "mode": 0.5, "hi": 1 } },
+  "liquidcarbon": { "label": "Liquid carbon", "monthly": { "key": "gear:liquid-carbon", "months": 8 }, "minutes": { "lo": 2, "mode": 4, "hi": 6 }, "ref": 20, "exp": { "monthly": 1 } },
+  "diyco2": { "label": "DIY CO2 bottle + diffuser", "price": { "key": "gear:diy-co2" }, "monthly": { "lo": 2, "mode": 3, "hi": 5 }, "minutes": { "lo": 5, "mode": 8, "hi": 12 }, "ref": 20, "exp": { "monthly": 0.7 } },
+  "co2kit":       { "label": "CO2 regulator + cylinder + solenoid", "price": { "key": "gear:co2-kit" }, "refill": { "key": "gear:co2-refill", "galMonthsPerRefill": 80 }, "minutes": { "lo": 1, "mode": 2, "hi": 3 }, "watts": 2, "hours": 8 },
+  "dropchecker": { "label": "Drop checker", "price": { "key": "gear:drop-checker" }, "monthly": { "lo": 0.2, "mode": 0.4, "hi": 1 }, "minutes": { "lo": 0.3, "mode": 0.5, "hi": 1 } },
+  "roottabs": { "label": "Root tabs", "monthly": { "key": "gear:root-tabs", "months": 8 }, "minutes": { "lo": 0.3, "mode": 0.5, "hi": 1 }, "ref": 20, "exp": { "monthly": 1 } },
+  "aio":          { "label": "All-in-one fertilizer", "monthly": { "key": "gear:ferts" }, "minutes": { "lo": 1, "mode": 3, "hi": 5 }, "ref": 20, "exp": { "monthly": 1 } },
+  "ei": { "label": "EI dry salts", "price": { "key": "gear:ei-salts" }, "monthly": { "key": "gear:ei-salts", "months": 12 }, "minutes": { "lo": 3, "mode": 5, "hi": 8 }, "ref": 20, "exp": { "monthly": 1 } },
+  "doser": { "label": "Dosing pump", "price": { "key": "gear:dosing-pump" }, "watts": 1, "hours": 24, "minutes": { "lo": 0.3, "mode": 0.5, "hi": 1 }, "cutsDosing": true },
+  "airpump": { "label": "Air pump + airstone", "price": { "key": "gear:air-pump" }, "watts": 2.5, "hours": 24, "monthly": { "lo": 0.1, "mode": 0.2, "hi": 0.4 }, "ref": 20, "exp": { "price": 0.4, "watts": 0.5 } },
+  "uv": { "label": "UV sterilizer", "price": { "key": "gear:uv-sterilizer" }, "watts": 9, "hours": 24, "monthly": { "lo": 1, "mode": 2, "hi": 3.5 }, "minutes": { "lo": 0.2, "mode": 0.4, "hi": 1 }, "ref": 40, "exp": { "price": 0.5, "watts": 0.7, "monthly": 0.5 } },
+  "conditioner":  { "label": "Water conditioner", "perWaterChange": { "key": "gear:conditioner", "perGal": 0.1 } },
+  "rodi":         { "label": "RO/DI unit", "price": { "key": "gear:ro-unit" }, "monthly": { "lo": 3, "mode": 5, "hi": 9 }, "minutes": { "lo": 2, "mode": 4, "hi": 6 }, "ref": 40, "exp": { "monthly": 0.7 } },
+  "ato": { "label": "Auto top-off", "price": { "key": "gear:ato" }, "watts": 3, "hours": 1, "minutes": { "lo": -4, "mode": -2, "hi": -1 }, "ref": 40, "exp": { "minutes": 0.3 } },
+  "skimmerhob": { "label": "Hang-on protein skimmer", "price": { "key": "gear:skimmer-hob" }, "watts": 6, "hours": 24, "minutes": { "lo": 2, "mode": 3, "hi": 5 }, "ref": 30, "exp": { "price": 0.5, "watts": 0.6 } },
+  "skimmer":      { "label": "In-sump protein skimmer", "price": { "key": "gear:skimmer" }, "watts": 15, "hours": 24, "minutes": { "lo": 2, "mode": 4, "hi": 6 }, "ref": 75, "exp": { "price": 0.5, "watts": 0.6 } },
+  "powerhead": { "label": "Powerhead", "price": { "key": "gear:powerhead" }, "watts": 6, "hours": 24, "minutes": { "lo": 0.3, "mode": 0.5, "hi": 1 }, "ref": 40, "exp": { "price": 0.4, "watts": 0.7 } },
+  "wavemaker": { "label": "Wavemaker pump", "price": { "key": "gear:wavemaker" }, "watts": 10, "hours": 24, "minutes": { "lo": 0.3, "mode": 0.5, "hi": 1 }, "ref": 40, "exp": { "price": 0.5, "watts": 0.7 } },
+  "twopart": { "label": "Two-part (calcium + alkalinity)", "monthly": { "key": "gear:two-part", "months": 6 }, "minutes": { "lo": 5, "mode": 8, "hi": 12 }, "ref": 40, "exp": { "monthly": 1 } },
+  "hydrometer": { "label": "Swing-arm hydrometer", "price": { "key": "gear:hydrometer" } },
+  "refractometer": { "label": "Refractometer", "price": { "key": "gear:refractometer" }, "minutes": { "lo": 0.5, "mode": 1, "hi": 2 } },
+  "saltmix":      { "label": "Salt mix", "inWaterChange": true }
+ },
+ "presets": [
+  { "id": "walstad", "label": "Walstad", "water": "fresh", "rows": { "filter": "none", "heater": "none", "chiller": "none", "co2": "none", "ferts": "none", "air": "none", "uv": "none", "conditioner": "yes", "rodi": "none", "ato": "none" }, "needs": { "substrate": "soil", "plants": "heavy" } },
+  { "id": "lowtech", "label": "Low-tech", "water": "fresh", "rows": { "filter": "sponge", "heater": "one", "chiller": "none", "co2": "none", "ferts": "roottabs", "air": "none", "uv": "none", "conditioner": "yes", "rodi": "none", "ato": "none" } },
+  { "id": "midplanted", "label": "Planted mid", "water": "fresh", "rows": { "filter": "hob", "heater": "one", "chiller": "none", "co2": "liquid", "ferts": "aio", "air": "none", "uv": "none", "conditioner": "yes", "rodi": "none", "ato": "none" } },
+  { "id": "hightech", "label": "High-tech", "water": "fresh", "rows": { "filter": "canister", "heater": "one", "chiller": "none", "co2": "pressurized", "ferts": "ei", "air": "none", "uv": "none", "conditioner": "yes", "rodi": "none", "ato": "none" } },
+  { "id": "fowlr", "label": "FOWLR", "water": "salt", "rows": { "filter": "hob", "heater": "one", "chiller": "none", "air": "none", "uv": "none", "conditioner": "none", "rodi": "unit", "ato": "none", "skimmer": "hob", "flow": "one", "dosing": "none", "salinity": "refractometer", "saltmix": "mix" } },
+  { "id": "soft", "label": "Soft coral", "water": "salt", "rows": { "filter": "sump", "heater": "one", "chiller": "none", "air": "none", "uv": "none", "conditioner": "none", "rodi": "unit", "ato": "ato", "skimmer": "sump", "flow": "two", "dosing": "none", "salinity": "refractometer", "saltmix": "mix" } },
+  { "id": "lps", "label": "LPS", "water": "salt", "rows": { "filter": "sump", "heater": "two", "chiller": "none", "air": "none", "uv": "none", "conditioner": "none", "rodi": "unit", "ato": "ato", "skimmer": "sump", "flow": "two", "dosing": "twopart", "salinity": "refractometer", "saltmix": "mix" } },
+  { "id": "sps", "label": "SPS", "water": "salt", "rows": { "filter": "sump", "heater": "two", "chiller": "none", "air": "none", "uv": "none", "conditioner": "none", "rodi": "unit", "ato": "ato", "skimmer": "sump", "flow": "wave", "dosing": "doser", "salinity": "refractometer", "saltmix": "mix" } }
+ ]
+}

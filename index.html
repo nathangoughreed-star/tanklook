@@ -283,7 +283,10 @@
   <div class="row" id="condRow"><label for="cond" title="How long since the tank was cleaned: algae on the glass, rocks, wood and substrate. Only changes the look.">Condition</label><input id="cond" type="range" min="0" max="100" step="1"><output id="oCond"></output></div>
   <div class="hint">Condition shows the tank weeks after a clean, or neglected: spot algae and film on the glass, brown diatoms, then green algae on the lit tops of rock and wood. Saltwater grows red cyano and bubble algae instead. Plants stay clean for now.</div>
   </details>
-  <details class="sec" data-sec="lighting"><summary><h2>Lighting</h2></summary>
+  <details class="sec" data-sec="tech"><summary><h2>Tech</h2></summary>
+  <div class="hint">The gear that runs the tank, Walstad to high-tech: each choice with its cost, upkeep, the time it takes and what it buys, for this tank.</div>
+  <div id="techMenu"></div>
+  <details class="tsub" data-sub="lighting"><summary><h3>Lighting</h3></summary>
   <div class="row"><label for="lType">Fixture</label><select id="lType" class="span2">
     <option value="flat">None (room light only)</option><option value="puck">LED pucks / spots</option><option value="bulb">Screw-in bulbs</option>
     <option value="pendant">Metal halide pendants</option><option value="tube">Tubes (fluorescent / LED)</option><option value="led">LED bar (full length)</option></select></div>
@@ -325,6 +328,7 @@
   <div class="row" id="lStepRow"><label for="lStep" title="How far apart the contour lines on the Light map are, like the spacing of lines on an elevation map: 5 PAR (or 250 lux) is the finest">Contour every</label><input id="lStep" type="range" min="5" max="100" step="5"><output id="oLStep"></output></div>
   <div id="lMapBare" class="hint why" hidden>The colours land on the substrate, and this tank has a bare bottom: <button type="button" class="linkbtn" id="lMapSub">pick a substrate</button>.</div>
   <div class="hint">A visual approximation: light falls off with distance and beam angle from fixtures above the water. No real optics, shadows or ripples.</div>
+  </details>
   </details>
   <details class="sec" data-sec="viewer"><summary><h2>Viewer</h2></summary>
   <div class="row"><label for="cDist">Distance</label><input id="cDist" type="range" min="400" max="5000" step="10"><output id="oDist"></output></div>

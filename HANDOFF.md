@@ -12,7 +12,7 @@ is done the coordinator moves it to the archive.
 asking Nathan. Shipping: in the worktree `git fetch` + `git merge origin/main`, tsc + tests + browser check, then
 `git push origin HEAD:main` and `git -C "C:/Users/nreed/Glass Box" merge --ff-only origin/main`. HANDOFF.md
 conflicts on merge: keep both sections. Each lane adds its own dated section under "Lane sections (current)" below.
-**Deploy health:** live build = footer of https://nathangoughreed-star.github.io/tanklook/ ; Actions state = `curl -s https://api.github.com/repos/nathangoughreed-star/tanklook/actions/runs?per_page=5` (status/conclusion per head_sha; `/deployments` for what shipped). A red deploy usually means one slow/failing test: reproduce with `npx vitest run` in a clean worktree.
+**Deploy health:** live build = footer of https://tanklook.com/ ; one-line check: `curl -s https://tanklook.com/assets/$(curl -s https://tanklook.com/ | grep -o 'main-[^"]*\.js' | head -1) | grep -oE 'n:.[0-9]+.,sha' | head -1; git rev-list --count origin/main` (live n vs main; equal once the last deploy lands, ~5 min after a push); Actions state = `curl -s https://api.github.com/repos/nathangoughreed-star/tanklook/actions/runs?per_page=5` (status/conclusion per head_sha; `/deployments` for what shipped). A red deploy usually means one slow/failing test: reproduce with `npx vitest run` in a clean worktree.
 
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_408aa124-ce91-4651-abaf-a221f0ceac82`
 ("Lanes coordinator 4", took over 2026-10-19 from `local_f068e2c9` (coordinator 3)). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
@@ -28,33 +28,28 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 **Current lanes** (coordinator "Lanes coordinator 4", `local_408aa124`):
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
+| SE stocking engine | `../Glass-Box-stocking` / `stocking` | 5843 | new `scene/stocking.ts`, `data/bodymass.json`, stocking line in `ui/panels.ts`, bioload helpers in `scene/starter.ts` | opened 2026-10-19 |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 DONE 2026-10-16 (lane SS2, see archive; its gaps: no water dish, no succulents, Malawi has only yellowlab / cockatoo); multi-select / duplicate (lane MS) + scatter brush (lane SB) DONE 2026-10-16, see archive; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
-| DS one expected-cost number | `../Glass-Box-expectedcost` / `expectedcost` | 5793 | `src/demand/*`, `ui/demandPanel.ts`, demand data | opened 2026-10-19 |
-| CS CI workflow split | `../Glass-Box-cisplit` / `cisplit` | 5803 | `.github/workflows/*` | opened 2026-10-19 |
-| AQ AqAdvisor ids + Malawi pool | `../Glass-Box-aqids` / `aqids` | 5813 | `scripts/aqadvisor-ids.py`, `data/aqadvisor.json`, Malawi pool in `scene/starter.ts` | opened 2026-10-19 |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
-| KW start wizard | `../Glass-Box-wizard` / `wizard` | 5783 | new `ui/wizard.ts`, `#startGuided` slot in `index.html`, wizard CSS | opened 2026-10-19 |
-| TM tech menu | `../Glass-Box-techmenu` / `techmenu` | 5823 | new `data/tech.json`, `scene/tech.ts`, `demand/tech.ts`, `ui/techMenu.ts`, Tech + Lighting section in `index.html`; one-line hooks in panels.ts / engine.ts / types.ts | opened 2026-10-19 |
 | TG tech gear in 3D | `../Glass-Box-techgear` / `techgear` | 5833 | new `render/gear3d.ts`, its build hook, Viewer "Show equipment" toggle | opened 2026-10-19 (wires to `tech` after TM step 1) |
 
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
 
+## Lane SE: our own stocking engine, load vs capacity (2026-10-19, branch `stocking`, port 5843)
+**Step 1 DONE (probe).** Mesh volume from the 3D fish loft works but is only about 2x accurate vs FishBase length-weight (goldfish 4.8x heavy, guppy 0.29x, pleco 2x, swordtail 0.22x). **Nathan's decision 2026-10-19: mass = FishBase length-weight for EVERY species (shrimp, snails, herps: keeper-reference estimates, `src: estimate`); the model volume is only a cross-check that flags outliers.**
+**Steps 2 + 3 DONE (engine, calibration; UI is step 4, not started).**
+- `scripts/lw-sources.json` (FishBase a, b per species; 50 of 60 fish fetched by Haiku agents from fishbase.se species summary pages, all Bayesian body-shape estimates except goldfish, a measured Florida row) -> `node scripts/body-mass.mjs` -> `src/data/bodymass.json` (a, b, src, `model` = 3D mass / table mass, `flag` outside 1/1.6..1.6: 22 species flagged, listed by the script). `src/data/bodyvolume.json` = the loft volumes (cm3 at species length), rebuilt with `GEN_BODYVOLUME=1 npx vitest run test/bodymass.test.ts`; `scripts/body-volume.ts` copies fish3d.ts sections() (not exported): keep in step, the test fails on drift.
+- `src/scene/stocking.ts`: `massG`, `metClass` (messy/active/normal/sedentary/grazer/shrimp/shell/herp; by id, else by category), `tempFactor` (Q10 2, 25 C), `loadOf`, `animalLoad`, `litresPerAnimal`, `capacityOf` (litres x LU_PER_L 0.3 x `stockCapacity` (tech.ts) x live-plant factor up to +25 %), `stockingOf(S)` -> {percent, load, contributors, capacity parts, reasons, fixFilter}. Land animals are not counted; salt fish x1.5. Water temperature = `heatLoss(S).targetC`.
+- `starter.ts`: `litresFor` is now `litresPerAnimal` (load / LU_PER_L); the bottom-of-range keep uses floor (cheap small fish make a Few set 30+ animals). Before/after counts per starter: `research/stocking-calibration.md`. Full stop reads about 55-65 % in our engine (plants, filter, group slack); the 11 starters keep their species, counts differ a little (fewer cory / pleco-type, more small tetras).
+- Known tension for Nathan: mass^0.75 weights bottom feeders (cory 7 g, pleco 27 g by FishBase) more than AqAdvisor does; corydoras are set 'sedentary' to compensate. Swordtail (table 20 g vs model 4.5 g) is the worst outlier: likely the Bayesian a is too fat for a swordtail.
+- Open: step 4 UI (panels.ts ~1650-1710 and ~2089-2110, index.html), demote aqadvisor.ts (aqadvisor.json complete but for syno), wizard / demand panel may read `stockingOf` (expose, do not wire).
+
 ## Tech menu decision (Nathan 2026-10-19, opened lanes TM + TG)
 A Tech section where the owner picks the tech level, Walstad to high-tech planted / SPS reef: filtration (none to canister / sump, sized), heater(s) (optional, sized from heat loss: surface area, tank temp minus room temp, lid; Nathan: not gallons), lighting (the Lighting section moves in), CO2, ferts, aeration, UV, salt gear (skimmer, return pump, powerheads, dosing, ATO, RO/DI). Every option shows setup $, $/month, minutes/week and what it buys (plant growth, AqAdvisor stocking % with that filter, species allowed by temperature, coral tier, risk), with a hover preview of the four demand numbers. Every cost, kWh and minute figure is for this tank (size class, volume, real watts x hours), never flat per option. Presets ladder: Walstad / Low-tech / Planted mid / High-tech; FOWLR / Soft coral / LPS / SPS. `TankSetup.tech` optional, no version bump, absent = today's inferred gear with identical demand numbers. grow.feed becomes derived from the CO2 + ferts rows (Plant care slider = shortcut). Lane TG draws the gear in the tank (not cartoony), with a Show equipment toggle. Prompts: prompts/lane-TM-tech-menu.md, prompts/lane-TG-tech-gear-3d.md.
 
-## Lane TM: tech menu (2026-10-19, branch `techmenu`, port 5823)  (lane fills this in)
-
 ## Lane TG: tech gear in 3D (2026-10-19, branch `techgear`, port 5833)  (lane fills this in)
-
-## Lane KW: start wizard (2026-10-19, branch `wizard`, port 5783)  (lane fills this in)
-
-## Lane DS: one expected-cost number (2026-10-19, branch `expectedcost`, port 5793)  (lane fills this in)
-
-## Lane CS: CI workflow split (2026-10-19, branch `cisplit`, port 5803)  (lane fills this in)
-
-## Lane AQ: AqAdvisor ids + Malawi pool (2026-10-19, branch `aqids`, port 5813)  (lane fills this in)
 
 ## Lane KD: bundle deals (2026-10-19)
 - `src/data/deals.json` (+ `deals.ts`): retailer tank+stand bundles {retailer, gal, tank (catalog id, optional), kit (optional), includes, price{usd, regularUsd}, saleEnds, url, asOf, est}. `src/demand/deals.ts` `dealOffers` = saving vs buying the parts (engine `kit` option generalised with `includes` + `label`, no parallel mechanism).
@@ -282,6 +277,11 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane TM: tech menu (2026-10-19, branch `techmenu`, port 5823)
+- Lane CS: CI workflow split (2026-10-19, branch `cisplit`, port 5803)
+- Lane KW: start wizard (2026-10-19, branch `wizard`, port 5783)  (lane fills this in)
+- Lane DS: one expected-cost number (2026-10-19, branch `expectedcost`, port 5793)
+- Lane AQ: AqAdvisor ids + Malawi pool (2026-10-19, branch `aqids`, port 5813)
 - Lane CG: compatibility gates (2026-10-19)
 - Lane CI: deploy health, live site stuck on build 738 (2026-10-19, branch `ci`, port 5773)
 - Lane GS: gecko support surfaces (2026-10-19, branch `geckosupport`, port 5743)

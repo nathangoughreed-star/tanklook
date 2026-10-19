@@ -10,14 +10,40 @@ permissions:
   pages: write
   id-token: write
 
-concurrency:
-  group: pages
-  cancel-in-progress: true
+# No workflow-level concurrency: each job has its own group, and neither cancels a running job.
+# GitHub keeps at most one running and one waiting job per group; a newer waiting job replaces the
+# older waiting one. So during a burst of pushes:
+# - test: the running test finishes (pushes come every 1-4 min and a test takes ~3, so cancelling
+#   running tests would starve deploys); the newest push waits next, intermediate ones are dropped.
+# - deploy: a running deploy always finishes; the newest tested commit waits next.
+# Runs pass test in push order, so an older commit can never deploy after a newer one, and the
+# latest commit on main always ends up deployed once it passes tests.
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-    timeout-minutes: 20 # a hung test must not hold the one-at-a-time deploy slot
+    timeout-minutes: 20 # a hung test must not hold the run
+    concurrency:
+      group: test-${{ github.ref }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -27,18 +53,9 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm test
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
       - id: deployment
         uses: actions/deploy-pages@v4

@@ -1,0 +1,129 @@
+// Our own stocking engine (lane SE, 2026-10-19): the answer AqAdvisor gave ("stocking level 78%, over or under, why, what to
+// change") from our own data, with its reasoning in the open. No network, nothing depends on AqAdvisor.
+//   LOAD     = sum over animals of  mass^0.75 x metabolism x temperature factor   (standard metabolic scaling: a big fish counts for
+//              more than a small one but for less per gram; load units LU).
+//   CAPACITY = water litres x LU_PER_L x filtration (tech.ts stockCapacity) x live-plant factor.
+//   percent  = load / capacity (over 100 = overstocked). Compatibility (waterchem, animalfit, group minimums) stays separate.
+// Mass is FishBase length-weight at the animal's length (data/bodymass.json; shrimp, snails and herps are keeper-reference
+// estimates, marked 'estimate'). The 3D bodies' volume is only the cross-check that flags outliers (scripts/body-mass.mjs).
+import bm from '../data/bodymass.json';
+import { getSpecies, type Species } from '../data/species';
+import { bioloadLitres } from './starter';
+import { heatLoss, rowsFor, stockCapacity, withChoice } from './tech';
+import type { Fish, TankSetup } from './types';
+
+interface Mass { a: number; b: number; src: string; model?: number; flag?: boolean }
+const MASS = bm.species as unknown as Record<string, Mass>;
+
+/** Grams of one animal of species `id` at total length `tlMm` (the species' adult length when omitted); 0 if unknown. */
+export function massG(id: string, tlMm?: number): number {
+  const m = MASS[id], sp = getSpecies(id);
+  const L = tlMm ?? sp?.tl;
+  return m && L ? m.a * (L / 10) ** m.b : 0;
+}
+
+/**
+ * Relative food eaten and waste made per unit of metabolic mass, as a few classes (not one number per species). Sources:
+ * activity and diet classes after the usual bioload rules of thumb (goldfish and big predatory cichlids are the messy ones;
+ * schooling swimmers, rainbowfish and tangs run hot; sit-and-wait and algae-grazing species and cold-blooded herps run low).
+ */
+export const MET_CLASS = { messy: 1.5, active: 1.2, normal: 1, sedentary: 0.7, grazer: 0.6, shrimp: 0.5, shell: 0.3, herp: 0.4 } as const;
+export type MetClass = keyof typeof MET_CLASS;
+const MET_BY_ID: Record<string, MetClass> = {
+  goldfish: 'messy', comet: 'messy', oscar: 'messy', clownloach: 'active',
+  danio: 'active', cpd: 'active', tigerbarb: 'active', hatchet: 'active', boesemani: 'active', labeo: 'active', auratus: 'active', demasoni: 'active',
+  yellowtang: 'active', bluetang: 'active', chromis: 'active', sae: 'active', swordtail: 'active',
+  bronzecory: 'sedentary', pandacory: 'sedentary', pygmycory: 'sedentary', betta: 'sedentary', bristlenose: 'grazer', oto: 'grazer', hillstream: 'grazer', mandarin: 'sedentary', banggai: 'sedentary', royalgramma: 'sedentary',
+  watchman: 'sedentary', discus: 'sedentary', gbr: 'sedentary', angel: 'sedentary', kuhli: 'sedentary', peapuffer: 'sedentary', firefish: 'sedentary',
+  axolotl: 'herp', firenewt: 'herp', adf: 'herp', firetoad: 'herp',
+  hermit: 'shell',
+};
+/** Class of a species: by id, else by category (shrimp, snails), else normal. */
+export function metClass(sp: Species): MetClass {
+  return MET_BY_ID[sp.id] ?? (sp.kind === 'snail' ? 'shell' : sp.cat.endsWith('invert') ? 'shrimp' : 'normal');
+}
+
+/** Waste doubles about every 10 K (Q10 = 2); 25 C is the reference. */
+const Q10 = 2, T_REF = 25;
+export const tempFactor = (c: number) => Q10 ** ((Math.min(32, Math.max(4, c)) - T_REF) / 10);
+/** Marine fish eat more per gram and are less forgiving of nitrate (the old rule of thumb: half again). */
+const SALT_LOAD = 1.5;
+/** Load units one litre clears at filtration 1 (calibrated in step 3 of lane SE: with it the starters keep about their old animal counts (research/stocking-calibration.md)). */
+export const LU_PER_L = 0.3;
+/** Live plants take up nitrogen: up to +25 % at 15 plants per 100 L (a painted patch counts as 3 plants). A documented guess. */
+const PLANT_MAX = 0.25, PLANTS_PER_100L_FULL = 15, PATCH_PLANTS = 3;
+
+/** Animals that live in the water load it; land animals (geckos, anoles, snakes, spiders, tree frogs) do not. */
+export const countsAgainstWater = (sp: Species) => sp.habitat !== 'land';
+
+export interface Contributor { id: string; name: string; n: number; load: number; share: number; grams: number; cls: MetClass }
+export interface CapacityParts { litres: number; perL: number; filter: number; plants: number; plantCount: number; tempC: number; capacity: number }
+export interface Stocking {
+  /** load / capacity x 100; over 100 = overstocked. 0 with no animals. */
+  percent: number;
+  load: number;
+  contributors: Contributor[];
+  capacity: CapacityParts;
+  /** plain-words reasons: the biggest contributors, what to change */
+  reasons: string[];
+  /** the smallest filtration option that reaches 100 %, when the filter is what is short */
+  fixFilter?: { option: string; percent: number };
+}
+
+/** Load units of one animal at its own length in water at `tempC`. */
+export function loadOf(f: Pick<Fish, 'species' | 'tl'>, tempC = T_REF, salt = false): number {
+  const sp = getSpecies(f.species);
+  return !sp || !countsAgainstWater(sp) ? 0 : animalLoad(sp, f.tl ?? sp.tl, tempC, salt);
+}
+/** The load of an animal of this species at length `tlMm`, wherever it lives (the starters size land animals by it too). */
+export function animalLoad(sp: Species, tlMm: number, tempC = T_REF, salt = false): number {
+  return massG(sp.id, tlMm) ** 0.75 * MET_CLASS[metClass(sp)] * tempFactor(tempC) * (salt && sp.salt ? SALT_LOAD : 1);
+}
+/** Litres of water one adult of this species takes up (its load over what a litre clears): the starters' budget unit. */
+export const litresPerAnimal = (sp: Species) => animalLoad(sp, sp.tl, T_REF, !!sp.salt) / LU_PER_L;
+
+export function capacityOf(S: TankSetup): CapacityParts {
+  const litres = bioloadLitres(S), tempC = S.water.on ? heatLoss(S).targetC : T_REF;
+  const filter = S.water.on ? stockCapacity(S) : 1;
+  const plantCount = S.items.filter(i => i.kind === 'plant').length + (S.patches ?? []).filter(p => p.brush.startsWith('plant:')).length * PATCH_PLANTS;
+  const plants = 1 + PLANT_MAX * Math.min(1, plantCount / Math.max(litres / 100, 0.1) / PLANTS_PER_100L_FULL);
+  return { litres, perL: LU_PER_L, filter, plants, plantCount, tempC, capacity: litres * LU_PER_L * filter * plants };
+}
+
+const plural = (n: number, name: string) => n === 1 ? `1 ${name}` : `${n} ${name}${/(s|ish|ox)$/i.test(name) ? '' : 's'}`;
+
+export function stockingOf(S: TankSetup): Stocking {
+  const cap = capacityOf(S), salt = !!(S.water.on && S.water.salt), by = new Map<string, Contributor>();
+  let load = 0;
+  for (const f of S.fish) {
+    const sp = getSpecies(f.species), l = loadOf(f, cap.tempC, salt);
+    if (!sp || l <= 0) continue;
+    load += l;
+    const c = by.get(sp.id) ?? { id: sp.id, name: sp.name, n: 0, load: 0, share: 0, grams: 0, cls: metClass(sp) };
+    c.n++; c.load += l; c.grams += massG(sp.id, f.tl ?? sp.tl); by.set(sp.id, c);
+  }
+  const contributors = [...by.values()].sort((a, b) => b.load - a.load);
+  for (const c of contributors) c.share = load ? c.load / load : 0;
+  const percent = cap.capacity > 0 ? load / cap.capacity * 100 : load > 0 ? Infinity : 0;
+  const reasons: string[] = [];
+  let fixFilter: Stocking['fixFilter'];
+  if (!contributors.length) reasons.push('No animals in the water.');
+  else if (percent > 100) {
+    const top = contributors[0];
+    reasons.push(`Overstocked${top.share >= 0.4 ? ' mainly because of the ' + plural(top.n, top.name) : ''}: ${contributors.slice(0, 3).map(c => `${plural(c.n, c.name)} ${Math.round(c.share * 100)}%`).join(', ')} of the load.`);
+    const fr = rowsFor(S).find(r => r.id === 'filter');
+    for (const o of [...(fr?.options ?? [])].sort((a, b) => (a.capacity ?? 1) - (b.capacity ?? 1))) {
+      const p = load / capacityWith(S, cap, o.id) * 100;
+      if (p <= 100) { fixFilter = { option: o.id, percent: Math.round(p) }; reasons.push(`A ${o.label.toLowerCase()} would bring it to ${Math.round(p)}%.`); break; }
+    }
+    if (!fixFilter) reasons.push(`Even the best filter leaves it high: it needs about ${Math.ceil(cap.litres * percent / 100)} L of water, or fewer animals.`);
+  } else if (percent >= 85) reasons.push('Near full: room for a few small fish, no more.');
+  else reasons.push(`Room for about ${Math.round(100 - percent)}% more load.`);
+  return { percent, load, contributors, capacity: cap, reasons, ...(fixFilter ? { fixFilter } : {}) };
+}
+
+/** Capacity with the filter row set to option `opt` (the other parts as computed). */
+function capacityWith(S: TankSetup, cap: CapacityParts, opt: string) {
+  const f = S.water.on ? stockCapacity(S, withChoice(S, 'filter', opt)) : 1;
+  return cap.litres * cap.perL * f * cap.plants;
+}

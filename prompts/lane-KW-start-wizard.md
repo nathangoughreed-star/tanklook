@@ -23,6 +23,11 @@ message the coordinator. Freshwater and the existing terrarium first; the data m
 Tests: the wizard's picking / filtering logic (pure functions, like startEntries.ts); no regressions.
 Browser-check desktop and 375 px; pictures of every step before shipping.
 
+Running at the same time: lane DS (src/demand/*, one expected-cost number), lane TM (Tech menu: src/data/tech.json, scene/tech.ts,
+ui/techMenu.ts, the Tech + Lighting section in index.html, one-line hooks in panels.ts) and lane TG (3D equipment). TM's tech level
+(Walstad to high-tech) is the same idea as your goal / budget step: once TM step 1 has landed on main (`TankSetup.tech`), the wizard may
+preselect a tech preset from the goal and budget; before that, do not invent your own tech field. Merge origin/main often; the
+index.html edits are in different sections (yours: #startGuided in #startDlg; TM's: the Lighting / Tech section in the side panel).
 Files you own: new src/ui/wizard.ts (+ test), the #startGuided slot content in index.html, wizard CSS in style.css (.wz* rules),
 a one-line hook in the start handlers in src/ui/panels.ts. Lane DS (expected cost) runs at the same time in src/demand/* and
 src/ui/demandPanel.ts: do not touch those.
