@@ -40,7 +40,18 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane KA: tank catalog (2026-10-19, branch `tankcat`, port 5703)  (lane fills this in)
 
-## Lane KB: kit catalog (stops after one-brand cost check) (2026-10-19, branch `kits`, port 5713)  (lane fills this in)
+## Lane KB: kit catalog (2026-10-19, branch `kits`, port 5713)
+
+**Landed 2026-10-19.** `src/data/kits.json` (32 kits: 13 Top Fin/Tetra, 11 Aqueon/Marineland/Fluval fresh, 8 reef: Fluval Sea/Flex Marine,
+BioCube, Waterbox, Red Sea Max Nano) + typed loader `src/data/kits.ts` + `test/kits.test.ts` + `research/kits/<brand>.md`.
+- Light wattage is NOT published for almost all budget/mid kits: `watts: null`, `spec: 'guess'` (consumer applies the tier default).
+  Reliable watts: Fluval (retailer listings). PAR published only for Red Sea ReefLED G2 60 and BioCube 16/32.
+- `tank` (TankModel id) is absent until KA's tanks.json lands; `tankDims` = outer mm, L/D order ambiguous for a few (see notes); two
+  kits have no dims (Top Fin Captivate hex, Essentials 10). Coordinator reconciles ids.
+- Prices are sale/pickup-store snapshots dated 2026-10-19; Tetra, Aqueon 10, Flex 9/15 have none (blocked fetches), noted per record.
+- Waterbox AIO has no factory light; SLED 17 (32 W) assumed, flagged. Reef kits: none include a heater.
+- Brand list was chosen by the lane (Nathan approved without seeing one): add/replace brands by a refresh in research/kits/.
+
 
 ## Lane KC: kit light wiring (stub data until KB lands) (2026-10-19, branch `kitlight`, port 5723)  (lane fills this in)
 
