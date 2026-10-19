@@ -17,6 +17,7 @@ import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
 import { getImage } from '../scene/images';
 import { LU, addBeams, addFixture, applyLighting, waterVolumeMaterial } from './lighting';
 import { addAlgae } from './algae';
+import { buildGear, gearKey, solidBoxes } from './gear3d';
 import { itemDeps, itemMesh, leafProbe, solidProbe, underProbe } from './items';
 import { rootsKey, rootsMesh } from './roots';
 import { addBackdrop, backdropGeometry } from './backdrop';
@@ -1296,6 +1297,7 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
   if (!bare) { const key = rootsKey(S); b.itemParts.push(take(key) ?? ((m: THREE.Mesh | null) => part(key, m ? [m] : [], []))(rootsMesh(S, T))); }
   b.itemMeshes = b.itemParts.flatMap(p => p.meshes);
   const solids = b.itemMeshes.filter(m => !m.userData.plant); for (const m of solids) m.updateMatrixWorld(true);
+  if (!bare) { const key = gearKey(S, hard); b.itemParts.push(take(key) ?? part(key, buildGear(S, T, solidBoxes(solids)), [])); } // the tech gear (lane TG)
   // the plant meshes, for animals that sit on leaves (anchors `leaf`); an animal on a plant is rebuilt when any plant changes
   const leaves = b.itemMeshes.filter(m => m.userData.plant); for (const m of leaves) m.updateMatrixWorld(true);
   const hardKey = hard.join('|'), leafKey = leaves.map(m => m.uuid + m.geometry.uuid).join('|');

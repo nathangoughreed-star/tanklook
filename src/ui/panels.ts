@@ -13,6 +13,7 @@ import { drawSnailCard } from '../art/snails';
 import { CATEGORIES, SPECIES, fishTL, getSpecies, needsWater, searchSpecies, speciesOf, speciesTag, type Category, type Sex, type Species } from '../data/species';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { BACKDROPS } from '../render/backdrop';
+import { gearShown, setGearShown } from '../render/gear3d';
 import { MAP_DIV, MAP_STEP, emitters, mapStepOf } from '../render/lighting';
 import { darkOf, darkStats } from '../render/lightShells';
 import { hasCorals, whyAnimal, type AnimalWhy } from '../scene/animalfit';
@@ -1081,6 +1082,7 @@ Cancel, then change the name, to keep both.`)) return;
   const hideCb = $('hideLightAbove'), setHide = (on: boolean) => { hideCb.checked = viewer.hideOverhead = on; viewer.invalidate(); };
   try { setHide(localStorage.getItem('tanklook.hidelight') === 'on'); } catch { setHide(false); }
   hideCb.onchange = () => { try { localStorage.setItem('tanklook.hidelight', hideCb.checked ? 'on' : 'off'); } catch { /* ignore */ } setHide(hideCb.checked); };
+  const gearCb = $('gearOn') as HTMLInputElement; gearCb.checked = gearShown(); gearCb.onchange = () => { setGearShown(gearCb.checked); viewer.invalidate(); }; // lane TG: the tech gear, shown or hidden in place
   // "How to use" stays closed: the start menu names the main gestures and points to it (audit #4 / #8, 2026-10-14)
   // panel sections start collapsed on every load (Nathan 2026-10-09); whether the panel is hidden is a per-viewer preference
   const secs = [...document.querySelectorAll<HTMLDetailsElement>('details.sec')];
