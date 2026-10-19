@@ -1,8 +1,9 @@
 // Animal care data for gating (lane AD, 2026-10-16): who can keep what, in which tank, with whom. Advice only: the Animals list
 // grays what does not suit and says why, nothing is blocked. ESTIMATES from common aquarium / vivarium practice (not a source
 // of record): minL is the smallest tank (litres) for the usual first group or one adult, temp is the comfortable water range.
-import type { Category } from './species';
+import { SPECIES, type Category } from './species';
 import { WATER } from './climatedata';
+import { CHEM, GROUP, MARINE_PH } from './waterchem';
 
 /** 1 beginner, 2 intermediate, 3 expert. */
 export type Expertise = 1 | 2 | 3;
@@ -28,6 +29,13 @@ export interface AnimalCare {
   slow?: true;
   /** nips fins */
   nip?: true;
+  /** comfortable pH and general hardness (dGH; absent = no hardness check), aquatic species (lane CG, data/waterchem.ts) */
+  ph?: [number, number];
+  gh?: [number, number];
+  /** smallest group it is kept in (shoalers, schoolers, shrimp colonies) */
+  group?: number;
+  /** marine: 1 may nip corals (add with caution), 2 eats corals (not reef-safe). Invertebrate eaters are `prey` with `cats`. */
+  coral?: 1 | 2;
 }
 const A = (care: Expertise, minL: number, temper: 0 | 1 | 2, temp?: [number, number], x: Partial<AnimalCare> = {}): AnimalCare => ({ care, minL, temper, ...(temp ? { temp } : {}), ...x });
 export const CARE: Record<string, AnimalCare> = {
@@ -50,7 +58,7 @@ export const CARE: Record<string, AnimalCare> = {
   ocellaris: A(1, 75, 0, [24, 27]), royalgramma: A(2, 115, 1, [24, 27], { solo: true }), yellowtang: A(2, 455, 1, [24, 27], { solo: true, fam: 'tang' }),
   bluetang: A(3, 570, 1, [24, 27], { solo: true, fam: 'tang' }), firefish: A(2, 75, 0, [24, 27]), banggai: A(2, 115, 0, [24, 27]),
   sixline: A(2, 115, 2, [24, 27], { solo: true, prey: { mm: 30, cats: ['sw-invert'] } }), chromis: A(1, 115, 0, [24, 27]),
-  coralbeauty: A(2, 265, 1, [24, 27], { solo: true }), watchman: A(1, 75, 0, [24, 27]), mandarin: A(3, 265, 0, [24, 27]),
+  coralbeauty: A(2, 265, 1, [24, 27], { solo: true, coral: 1 }), watchman: A(1, 75, 0, [24, 27]), mandarin: A(3, 265, 0, [24, 27]),
   cleanershrimp: A(2, 75, 0, [24, 27]), turbo: A(1, 75, 0, [24, 27]), hermit: A(1, 40, 1, [24, 27], { prey: { mm: 50, cats: ['sw-invert'] } }),
   dartfrog: A(2, 40, 0), treefrog: A(1, 150, 0, undefined, { prey: { mm: 50, cats: ['amphibian', 'land-invert'] } }), firetoad: A(1, 75, 0), firenewt: A(2, 75, 0),
   adf: A(1, 40, 0, [22, 27]), axolotl: A(2, 150, 0, [16, 20], { prey: { mm: 80 }, tol: [10, 22] }),
@@ -62,3 +70,7 @@ export const CARE: Record<string, AnimalCare> = {
 };
 // Researched temperature bands (research/climate, 2026-10-19) replace the first-guess ranges above.
 for (const [id, w] of Object.entries(WATER)) { const c = CARE[id]; if (c) { c.temp = w.ok; c.tol = w.tol; if (w.est) c.tolEst = true; } }
+// Water chemistry and group sizes (lane CG, 2026-10-19): one marine pH band for every salt species, no hardness check.
+for (const [id, w] of Object.entries(CHEM)) { const c = CARE[id]; if (c) { c.ph = w.ph; if (w.gh) c.gh = w.gh; } }
+for (const [id, n] of Object.entries(GROUP)) { const c = CARE[id]; if (c) c.group = n; }
+for (const sp of SPECIES) if (sp.salt && CARE[sp.id]) CARE[sp.id].ph = MARINE_PH;

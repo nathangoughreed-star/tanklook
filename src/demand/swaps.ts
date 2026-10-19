@@ -3,7 +3,7 @@
 // (no Monte Carlo), so it is cheap enough to try every candidate when a bar is clicked.
 import { CARE } from '../data/care';
 import { SPECIES, getSpecies } from '../data/species';
-import { whyAnimal } from '../scene/animalfit';
+import { hasCorals, whyAnimal } from '../scene/animalfit';
 import { isCarpet, isFloat } from '../art/plants';
 import { LIBRARY } from '../scene/items';
 import { NEEDS, isCoralNeed, isLand } from '../scene/lightneeds';
@@ -35,7 +35,7 @@ export function swapsFor(S: TankSetup, P: UserProfile, key: string, bar: Bar, op
     const present = [...new Set(S.fish.filter(f => f.species !== id).map(f => getSpecies(f.species)!).filter(Boolean))];
     for (const c of SPECIES) {
       if (c.id === id || c.cat !== sp.cat || !CARE[c.id] || (CARE[c.id].care > (CARE[id]?.care ?? 3))) continue;
-      if (whyAnimal(c, litres, 3, present)) continue;
+      if (whyAnimal(c, litres, 3, present, { corals: hasCorals(S.items) })) continue;
       const d = diff(totals({ ...S, fish: S.fish.map(f => (f.species === id ? { ...f, species: c.id, tl: undefined } : f)) }, P, opts), base);
       if (d[bar] < -1e-6) out.push({ key, from: sp.name, to: c.name, toId: c.id, kind: 'animal', delta: d });
     }

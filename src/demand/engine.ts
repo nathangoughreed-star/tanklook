@@ -5,7 +5,7 @@ import { CARE } from '../data/care';
 import { getSpecies, type Species } from '../data/species';
 import factorsJson from '../data/factors.json';
 import dj from '../data/demand-defaults.json';
-import { whyAnimal } from '../scene/animalfit';
+import { groupShort, hasCorals, whyAnimal } from '../scene/animalfit';
 import { itemLights } from '../scene/lightcheck';
 import { NEEDS, isCoralNeed, isLand, parRange, type PlantNeed } from '../scene/lightneeds';
 import { wattsOf } from '../scene/lightout';
@@ -140,14 +140,16 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   // ---- animals
   const present: Species[] = [];
   for (const a of animals) if (!present.includes(a.sp)) present.push(a.sp);
-  const adom = domOf('animal');
+  const adom = domOf('animal'), env = { corals: hasCorals(S.items) }, nOf = (id: string) => animals.filter(a => a.sp.id === id).length;
   for (const { f, sp } of animals) {
     const u = (DEFAULTS.animals as unknown as Record<string, typeof DEFAULTS.animals["fw-fish"]>)[sp.cat];
     if (!u) continue;
     const tl = f.tl ?? sp.tl, c = CARE[sp.id];
     let raw = c ? DEFAULTS.risk.careLevel[c.care] : 0.4;
-    const why = c ? whyAnimal(sp, litres, (P.skill[adom] + 1) as 1 | 2 | 3, present) : null;
+    const why = c ? whyAnimal(sp, litres, (P.skill[adom] + 1) as 1 | 2 | 3, present, env) : null;
     if (why) { raw += DEFAULTS.risk.animalWarnPts[why.kind]; const w = `${sp.name}: ${why.text}`; if (!warnings.includes(w)) warnings.push(w); }
+    const few = groupShort(sp, nOf(sp.id));
+    if (few) { const w = `${sp.name}: ${few}`; if (!warnings.includes(w)) { warnings.push(w); raw += DEFAULTS.risk.animalWarnPts.group; } } // once per species
     add(`animal:${sp.id}`, sp.name, 'animal', {
       setup: price(scale3(rowPrice(`animal:${sp.id}`) ?? pick(u.setup), Math.pow(tl / (rowPrice(`animal:${sp.id}`) ? sp.tl : u.refMm), 1.2))), upkeep: scale3(pick(u.upkeep), Math.pow(tl / u.refMm, 0.8) * sMul.upkeep), minutes: r3(u.mins * sMul.minutes),
       livestock: true, domain: adom, risk: raw * skillMul(P, adom),

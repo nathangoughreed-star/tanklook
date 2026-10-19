@@ -4,8 +4,9 @@
 import { rng } from '../art/paint';
 import { getSpecies, type Species } from '../data/species';
 import { DEFAULT_DENS, EPIPHYTES, STYLES, STYLE_KIND, clampItem, isLandStyle, isSwampy, layerOf, perch, starterItems, type Layer } from './items';
+import { CARE } from '../data/care';
 import { volume } from './physics';
-import { whyAnimal } from './animalfit';
+import { hasCorals, whyAnimal } from './animalfit';
 import { groundEdited } from './scapeground';
 import { placeNew, randomPose, randomSize } from './scatter';
 import type { Fish, Item, LayoutId, TankSetup } from './types';
@@ -40,9 +41,10 @@ export const bioload = (fish: Fish[]) => fish.reduce((a, f) => { const sp = getS
 /** How a species is stocked: the first group, the step it grows by, the most of it. */
 function stocking(sp: Species) {
   if (sp.pair) return { start: 2, step: 0, max: 2 };
-  if (isInvert(sp)) return sp.kind === 'snail' ? { start: 2, step: 1, max: 4 } : sp.group ? { start: 5, step: 1, max: 10 } : { start: 1, step: 1, max: 3 };
+  const g = CARE[sp.id]?.group ?? 0; // the smallest group it is kept in (lane CG hook)
+  if (isInvert(sp)) return sp.kind === 'snail' ? { start: 2, step: 1, max: 4 } : sp.group ? { start: Math.max(5, g), step: 1, max: Math.max(10, g) } : { start: 1, step: 1, max: 3 };
   if (sp.habitat !== 'water') return { start: 2, step: 1, max: 6 }; // frogs, toads, newts
-  return sp.group ? { start: 6, step: 2, max: 30 } : { start: 1, step: 0, max: 1 }; // a school or shoal; else a single fish
+  return sp.group ? { start: Math.max(6, g), step: 2, max: 30 } : { start: 1, step: 0, max: 1 }; // a school or shoal; else a single fish
 }
 
 /** Most of a land species a terrarium starter keeps (lane SS2): geckos in a pair or a trio, a snake, spider or tarantula alone,
@@ -67,7 +69,7 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
   for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
   if (s.layout.gateStock) { // stock by the care gates (Quick Setup): only animals that suit the care level, the tank and each other
     const ex = s.layout.expertise ?? 1, litres = volume(T).litres, kept: Species[] = [];
-    for (const sp of pool) if (!whyAnimal(sp, litres, ex, kept)) kept.push(sp);
+    for (const sp of pool) if (!whyAnimal(sp, litres, ex, kept, { corals: hasCorals(s.items) })) kept.push(sp);
     pool.splice(0, pool.length, ...kept);
   }
   const cap = bioloadLitres(s) * ANIMAL_FILL[4];
