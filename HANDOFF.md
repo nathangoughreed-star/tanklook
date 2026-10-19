@@ -12,6 +12,7 @@ is done the coordinator moves it to the archive.
 asking Nathan. Shipping: in the worktree `git fetch` + `git merge origin/main`, tsc + tests + browser check, then
 `git push origin HEAD:main` and `git -C "C:/Users/nreed/Glass Box" merge --ff-only origin/main`. HANDOFF.md
 conflicts on merge: keep both sections. Each lane adds its own dated section under "Lane sections (current)" below.
+**Deploy health:** live build = footer of https://nathangoughreed-star.github.io/tanklook/ ; Actions state = `curl -s https://api.github.com/repos/nathangoughreed-star/tanklook/actions/runs?per_page=5` (status/conclusion per head_sha; `/deployments` for what shipped). A red deploy usually means one slow/failing test: reproduce with `npx vitest run` in a clean worktree.
 
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_408aa124-ce91-4651-abaf-a221f0ceac82`
 ("Lanes coordinator 4", took over 2026-10-19 from `local_f068e2c9` (coordinator 3)). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
@@ -35,7 +36,9 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
-## Lane CI: deploy health, live site stuck on build 738 (2026-10-19, branch `ci`, port 5773)  (lane fills this in)
+## Lane CI: deploy health, live site stuck on build 738 (2026-10-19, branch `ci`, port 5773)
+- Cause: not a systematic failure. In a clean worktree the whole suite runs in 50 s on 22 cores, 830 tests, 3 failures: two 5 s default timeouts under load (`anole` dewlap, `scene` swamp) and one flaky test (`leafperch` underside: `Math.random` could land on a steep leaf edge, which `underProbe` now also returns). No python anchorbase failures exist at ff7b4fe. The runs piled up behind one-at-a-time deploys with cancel-in-progress.
+- Fixes (4d8b55e on main): leafperch picks an underside spot deterministically; vite test block: `testTimeout` 120 s, `hookTimeout` 60 s, discovery limited to `test/**` (excludes `.claude/**`, `aquascape/**`, `dist*/**`); deploy.yml `timeout-minutes` 20 (build) / 10 (deploy). Gate kept: `npm test` still precedes `npm run build`. No tests skipped.
 
 ## Lane KD: bundle deals (2026-10-19)
 - `src/data/deals.json` (+ `deals.ts`): retailer tank+stand bundles {retailer, gal, tank (catalog id, optional), kit (optional), includes, price{usd, regularUsd}, saleEnds, url, asOf, est}. `src/demand/deals.ts` `dealOffers` = saving vs buying the parts (engine `kit` option generalised with `includes` + `label`, no parallel mechanism).
