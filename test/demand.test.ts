@@ -208,3 +208,17 @@ describe('stacked deal savings', () => {
     expect(savingLine(plain, -12)).toBe('About $12 over buying the parts');
   });
 });
+describe('bare-tank sales (parts estimate)', () => {
+  it('finds the cheapest live sale at the size and shape, and drops stale or ended ones', async () => {
+    const { tankSaleFor } = await import('../src/data/tanks');
+    const v = (o: object) => ({ brand: 'B', L_in: 48, D_in: 13, H_in: 21, price_kind: 'street', checked: '2026-10-19', ...o });
+    const m = (variants: object[], shape = 'rect') => ({ id: 'x', name: 'x', ratedGal: 55, shape, outer: { L: 1, H: 1, D: 1 }, glassMm: 6, band: 'mid', source: 's', variants }) as never;
+    const now = Date.parse('2026-10-20');
+    const models = [m([v({ price_usd: 100, regular_usd: 200, retailer: 'Petco' }), v({ price_usd: 90, regular_usd: 95 }), v({ price_usd: 80 })])];
+    expect(tankSaleFor(55, 'rect', now, 2.5, models)).toMatchObject({ usd: 90, regularUsd: 95 });
+    expect(tankSaleFor(55, 'bow', now, 2.5, models)).toBeUndefined();
+    expect(tankSaleFor(55, 'rect', Date.parse('2026-12-31'), 2.5, models)).toBeUndefined();
+    expect(tankSaleFor(55, 'rect', now, 2.5, [m([v({ price_usd: 50, regular_usd: 99, sale_ends: '2026-10-18' })])])).toBeUndefined();
+    expect(tankSaleFor(55, 'rect', now, 2.5, [m([v({ price_usd: 50, regular_usd: 99, line: 'acrylic' })])])).toBeUndefined();
+  });
+});

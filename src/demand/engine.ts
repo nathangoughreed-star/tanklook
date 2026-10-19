@@ -13,6 +13,7 @@ import { growRate } from '../scene/growtime';
 import { LIBRARY } from '../scene/items';
 import { outcomeOf } from '../scene/plantfit';
 import { volume } from '../scene/physics';
+import { tankSaleFor } from '../data/tanks';
 import { groundVolume, pieceKg } from '../scene/setupsheet';
 import type { TankSetup } from '../scene/types';
 import { add3, mean3, r3, scale3, widen3 } from './range';
@@ -83,7 +84,11 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   // ---- tank, stand, lid, substrate, gear
   const tank = opts.tankPrice?.(S, gal), band = G.tank.find(b => gal <= b.maxGal) ?? G.tank[G.tank.length - 1];
   const catTank = interp('tank:', [5, 10, 20, 29, 40, 55, 75, 125], gal), big = gal > 125 ? gal / 125 : gal < 5 ? Math.max(0.3, gal / 5) : 1;
-  add('tank', `Tank (${Math.round(gal)} gal)`, 'tank', { setup: price(tank !== undefined ? r3(tank)! : catTank ? scale3(catTank, big) : scale3(pick(band.perGal), gal)) });
+  const tankTypical = tank !== undefined ? r3(tank)! : catTank ? scale3(catTank, big) : scale3(pick(band.perGal), gal);
+  // a bare tank of this size on sale right now (read from a retailer page) is what buying the parts would cost
+  const tSale = tank === undefined && wet ? tankSaleFor(gal, S.tank.shape ?? 'rect', opts.now ?? Date.now(), undefined, undefined, S.tank) : undefined;
+  if (tSale && tSale.usd < tankTypical.mode) add('tank', `Tank (${Math.round(gal)} gal; on sale at ${tSale.retailer} $${Math.round(tSale.usd)}, was $${Math.round(tSale.regularUsd)}${tSale.saleEnds ? ', ends ' + tSale.saleEnds : ''})`, 'tank', { setup: price({ lo: tSale.usd * 0.97, mode: tSale.usd, hi: Math.min(tankTypical.mode, tSale.usd * 1.15) }) });
+  else add('tank', `Tank (${Math.round(gal)} gal)`, 'tank', { setup: price(tankTypical) });
   const stand = interp('gear:stand-', [20, 55], gal);
   if (S.stand.show) add('stand', 'Stand', 'gear', { setup: price(stand ? scale3(stand, gal > 55 ? Math.pow(gal / 55, 0.8) : 1) : add3(pick(G.stand.base), scale3(pick(G.stand.perGal), gal))) });
   const lidRow = S.lid === 'open' ? undefined : rowPrice(`gear:lid-${S.lid === 'glass' ? 'glass' : S.lid === 'mesh' ? 'mesh' : 'hood'}`), lidK = Math.min(2.5, Math.max(0.6, Math.sqrt(gal / 25)));

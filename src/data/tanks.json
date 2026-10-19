@@ -37,10 +37,11 @@
      "H_in": 8.25,
      "price_usd": 23.99,
      "price_kind": "street",
-     "price_note": "PetSmart tank only",
+     "price_note": "PetSmart $23.99; page read 2026-10-19.",
      "url": "https://www.petsmart.com/5356062.html",
      "checked": "2026-10-19",
-     "confidence": "high"
+     "confidence": "high",
+     "retailer": "PetSmart"
     },
     {
      "brand": "Fluval",
@@ -157,6 +158,21 @@
      "url": "https://www.thatpetplace.com/marineland-portrait-desktop-kit-5-gal",
      "checked": "2026-10-19",
      "confidence": "low"
+    },
+    {
+     "brand": "GloFish",
+     "line": "LED Aquarium Kit 5 gal",
+     "L_in": 16.5,
+     "D_in": 10.5,
+     "H_in": 11,
+     "price_usd": 71.42,
+     "price_kind": "kit",
+     "retailer": "PetSmart",
+     "regular_usd": 79.39,
+     "price_note": "PetSmart kit sale $71.42, regular $79.39; page read 2026-10-19; hood, LED, internal filter, 50 W heater",
+     "url": "https://www.petsmart.com/fish/starter-kits/glofish-led-aquarium-kit-94257.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
     }
    ]
   },
@@ -186,10 +202,11 @@
      "H_in": 10.75,
      "price_usd": 29.99,
      "price_kind": "street",
-     "price_note": "PetSmart tank only",
+     "price_note": "PetSmart $29.99; page read 2026-10-19.",
      "url": "https://www.petsmart.com/5345486.html",
      "checked": "2026-10-19",
-     "confidence": "high"
+     "confidence": "high",
+     "retailer": "PetSmart"
     },
     {
      "brand": "Aqueon",
@@ -347,10 +364,11 @@
      "H_in": 12.0,
      "price_usd": 35.99,
      "price_kind": "street",
-     "price_note": "PetSmart; weight 11 lb; nominal dims",
+     "price_note": "PetSmart $35.99; page read 2026-10-19.",
      "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-open-glass-aquarium-86933.html",
      "checked": "2026-10-19",
-     "confidence": "high"
+     "confidence": "high",
+     "retailer": "PetSmart"
     },
     {
      "brand": "Tetra",
@@ -372,10 +390,11 @@
      "H_in": 9.89,
      "price_usd": 89.99,
      "price_kind": "street",
-     "price_note": "PetSmart tank only, low and wide",
+     "price_note": "PetSmart $89.99; page read 2026-10-19. In stock.",
      "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/top-fin-angled-aquarium--10-gallon-5342770.html",
      "checked": "2026-10-19",
-     "confidence": "high"
+     "confidence": "high",
+     "retailer": "PetSmart"
     },
     {
      "brand": "Top Fin",
@@ -402,6 +421,49 @@
      "price_kind": "kit",
      "price_note": "one US retailer, out of stock; AIO with return pump and chambers",
      "url": "https://frags2fishes.com/aquariums/cube10starphireultraclear10gallonaquarium-waterboxaquariums/",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Top Fin",
+     "line": "LED Black Glass Aquarium Kit 10 gal",
+     "L_in": 20.1,
+     "D_in": 10.1,
+     "H_in": 12.8,
+     "price_usd": 89.99,
+     "price_kind": "kit",
+     "retailer": "PetSmart",
+     "price_note": "PetSmart kit $89.99; page read 2026-10-19; black glass; LED hood, integrated filter, no heater",
+     "url": "https://www.petsmart.com/fish/starter-kits/top-fin-led-black-glass-aquarium-58620.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Tetra",
+     "line": "Complete LED Aquarium Kit 10 gal",
+     "L_in": 20,
+     "D_in": 10,
+     "H_in": 12,
+     "price_usd": 76.74,
+     "price_kind": "kit",
+     "retailer": "Chewy",
+     "regular_usd": 92.39,
+     "price_note": "Chewy kit sale $76.74, regular $92.39; page read 2026-10-19; LED hood, internal filter, no heater",
+     "url": "https://www.chewy.com/tetra-complete-tropical-fish-aquarium/dp/1452806",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Imagitarium (Petco)",
+     "line": "LED Aquarium Kit 10 gal",
+     "L_in": 20.15,
+     "D_in": 10.5,
+     "H_in": 12.6,
+     "price_usd": 92.99,
+     "price_kind": "kit",
+     "retailer": "Petco",
+     "price_note": "Petco kit $92.99; page read 2026-10-19; LED hood, filter, heater; store pickup; depth not published (Petco gives width x height only); standard depth for this size assumed",
+     "url": "https://www.petco.com/shop/en/petcostore/product/imagitarium-led-aquarium-kit",
      "checked": "2026-10-19",
      "confidence": "medium"
     }
@@ -471,10 +533,12 @@
      "H_in": 16.75,
      "price_usd": 69.99,
      "price_kind": "street",
-     "price_note": "PetSmart tank only (was $79.99)",
+     "price_note": "PetSmart sale $69.99, regular $79.99; page read 2026-10-19. No sale end shown.",
      "url": "https://www.petsmart.com/5345487.html",
      "checked": "2026-10-19",
-     "confidence": "high"
+     "confidence": "high",
+     "retailer": "PetSmart",
+     "regular_usd": 79.99
     },
     {
      "brand": "Tetra",
@@ -484,8 +548,66 @@
      "H_in": 16.0,
      "price_usd": 99.99,
      "price_kind": "street",
-     "price_note": "PetSmart; nominal dims, weight 34.95 lb",
+     "price_note": "PetSmart $99.99; page read 2026-10-19. Out of stock online.",
      "url": "https://www.petsmart.com/5380617.html",
+     "checked": "2026-10-19",
+     "confidence": "high",
+     "retailer": "PetSmart"
+    },
+    {
+     "brand": "Top Fin",
+     "line": "Essentials Aquarium Starter Kit 20 gal",
+     "L_in": 24,
+     "D_in": 12.7,
+     "H_in": 16,
+     "price_usd": 119.99,
+     "price_kind": "kit",
+     "retailer": "PetSmart",
+     "regular_usd": 149.99,
+     "price_note": "PetSmart kit sale $119.99, regular $149.99; page read 2026-10-19; hood, LED, power filter, heater",
+     "url": "https://www.petsmart.com/fish/starter-kits/top-fin-essentials-aquarium-starter-kit-5262265.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Top Fin",
+     "line": "LED Bubble Wall Aquarium Kit 20 gal",
+     "L_in": 24.2,
+     "D_in": 13.1,
+     "H_in": 16.6,
+     "price_usd": 149.99,
+     "price_kind": "kit",
+     "retailer": "PetSmart",
+     "price_note": "PetSmart kit $149.99; page read 2026-10-19; hood, LED, internal filter, bubble wand, no heater",
+     "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/top-fin-led-bubble-wall-aquarium-kit---fish-tank-starter-kit---10-20-gallon-64706.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Tetra",
+     "line": "Complete Tropical Aquarium Kit 20 gal",
+     "L_in": 24,
+     "D_in": 12,
+     "H_in": 16,
+     "price_usd": 119.14,
+     "price_kind": "kit",
+     "retailer": "Walmart",
+     "price_note": "Walmart kit $119.14; page read 2026-10-19; hinged LED hood, Whisper PF20, heater",
+     "url": "https://www.walmart.com/ip/Tetra-Aquarium-20-Gallon-Complete-Tropical-Fish-Tank-Kit-with-LED-Lighting-and-Decor-for-Freshwater-Fish/51494060",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Imagitarium (Petco)",
+     "line": "LED Aquarium Kit 20 gal (taller)",
+     "L_in": 24.17,
+     "D_in": 12.5,
+     "H_in": 17.35,
+     "price_usd": 147.99,
+     "price_kind": "kit",
+     "retailer": "Petco",
+     "price_note": "Petco kit $147.99; page read 2026-10-19; about 0.6 in taller than a standard 20 high; LED hood, filter, heater; store pickup; depth not published (Petco gives width x height only); standard depth for this size assumed",
+     "url": "https://www.petco.com/product/imagitarium-led-aquarium-kit-2417-w-x-1735-h-20-gallon-3946408",
      "checked": "2026-10-19",
      "confidence": "medium"
     }
@@ -525,10 +647,12 @@
      "H_in": 12.75,
      "price_usd": 69.99,
      "price_kind": "street",
-     "price_note": "PetSmart tank only (was $79.99)",
+     "price_note": "PetSmart sale $69.99, regular $79.99; page read 2026-10-19. No sale end shown.",
      "url": "https://www.petsmart.com/5356064.html",
      "checked": "2026-10-19",
-     "confidence": "high"
+     "confidence": "high",
+     "retailer": "PetSmart",
+     "regular_usd": 79.99
     },
     {
      "brand": "Innovative Marine",
@@ -580,10 +704,11 @@
      "H_in": 18.75,
      "price_usd": 99.99,
      "price_kind": "street",
-     "price_note": "PetSmart tank only",
+     "price_note": "PetSmart $99.99; page read 2026-10-19.",
      "url": "https://www.petsmart.com/5371593.html",
      "checked": "2026-10-19",
-     "confidence": "high"
+     "confidence": "high",
+     "retailer": "PetSmart"
     },
     {
      "brand": "Marineland",
@@ -593,6 +718,20 @@
      "H_in": 18.0,
      "price_note": "nominal dims from listing title",
      "url": "https://www.petsupermarket.com/fish/supplies/aquariums-starter-kits/aquariums/marineland-fish-aquarium-tank-black-29-gallon-30-x-12-x-18/PSI00861.html",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Imagitarium (Petco)",
+     "line": "LED Aquarium Kit 29 gal (taller)",
+     "L_in": 30.12,
+     "D_in": 12.5,
+     "H_in": 20.82,
+     "price_usd": 162.99,
+     "price_kind": "kit",
+     "retailer": "Petco",
+     "price_note": "Petco kit $162.99; page read 2026-10-19; about 2 in taller than a standard 29; LED hood, filter, heater; store pickup; depth not published (Petco gives width x height only); standard depth for this size assumed",
+     "url": "https://www.petco.com/shop/en/petcostore/product/imagitarium-led-aquarium-kit",
      "checked": "2026-10-19",
      "confidence": "medium"
     }
@@ -642,7 +781,23 @@
    "glassMm": 8,
    "band": "small",
    "source": "estimate: common US size, no single maker listing checked",
-   "note": "Tall 30x12x24 interior size."
+   "note": "Tall 30x12x24 interior size.",
+   "variants": [
+    {
+     "brand": "Top Fin",
+     "line": "Aquarium & Stand Ensemble 36 gal",
+     "L_in": 30.7,
+     "D_in": 15.7,
+     "H_in": 22.6,
+     "price_usd": 399.99,
+     "price_kind": "kit",
+     "retailer": "PetSmart",
+     "price_note": "PetSmart kit $399.99; page read 2026-10-19; sold with stand, hood and LED; no filter or heater",
+     "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/top-fin-aquarium-and-stand-ensemble---36-gallon-78697.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    }
+   ]
   },
   {
    "id": "g40b",
@@ -692,10 +847,12 @@
      "H_in": 15.9,
      "price_usd": 75.0,
      "price_kind": "street",
-     "price_note": "Petco sale, was 150; in-store only per page; dims from search snippet of Petco spec (Petco page blocks fetch); glass not published (Q&A guess 6-8 mm, not official)",
+     "price_note": "Petco sale $75, regular $150; page read 2026-10-19. Petco 50% off; store pickup (no sale end shown).",
      "url": "https://www.petco.com/product/imagitarium-40-gallon-breeder-open-glass-aquarium-tank",
      "checked": "2026-10-19",
-     "confidence": "medium"
+     "confidence": "high",
+     "retailer": "Petco",
+     "regular_usd": 150.0
     },
     {
      "brand": "Marineland",
@@ -709,6 +866,20 @@
      "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-open-glass-aquarium-5356187.html",
      "checked": "2026-10-19",
      "confidence": "high"
+    },
+    {
+     "brand": "Imagitarium (Petco)",
+     "line": "LED Aquarium Kit 40 gal",
+     "L_in": 36.33,
+     "D_in": 18.34,
+     "H_in": 15.9,
+     "price_usd": 179.99,
+     "price_kind": "kit",
+     "retailer": "Petco",
+     "price_note": "Petco kit $179.99; page read 2026-10-19; same width and height as the Imagitarium 40 breeder, so its depth is used; LED hood, filter, heater; store pickup",
+     "url": "https://www.petco.com/product/imagitarium-led-aquarium-kit-3633-w-x-159-h-40-gallons-3946424",
+     "checked": "2026-10-19",
+     "confidence": "medium"
     }
    ]
   },
@@ -789,10 +960,13 @@
      "H_in": 21,
      "price_usd": 99.99,
      "price_kind": "street",
-     "price_note": "PetSmart sale, was 199.99. Another PetSmart listing gives 48.75 x 14 x 21.25 (78 lb); Aquarium Depot gives 48.3 x 12.8 x 21",
+     "price_note": "PetSmart sale $99.99, regular $199.99, ends 2026-11-01; page read 2026-10-19. 50% off event.",
      "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/aqueon-standard-glass-rectangle-aquarium-glass-fish-tank-25-gallon---55-gallon-5356186.html",
      "checked": "2026-10-19",
-     "confidence": "high"
+     "confidence": "high",
+     "retailer": "PetSmart",
+     "regular_usd": 199.99,
+     "sale_ends": "2026-11-01"
     },
     {
      "brand": "Imagitarium (Petco)",
@@ -800,10 +974,14 @@
      "L_in": 47.75,
      "D_in": 13.07,
      "H_in": 23.89,
-     "price_note": "Taller than a generic 55; dims from Petco spec snippet (page blocks fetch); price not obtained",
+     "price_note": "Petco sale $100, regular $200; page read 2026-10-19. Petco 50% off; store pickup (no sale end shown).",
      "url": "https://www.petco.com/product/imagitarium-55-gallon-open-glass-aquarium-tank",
      "checked": "2026-10-19",
-     "confidence": "medium"
+     "confidence": "high",
+     "price_usd": 100.0,
+     "price_kind": "street",
+     "retailer": "Petco",
+     "regular_usd": 200.0
     },
     {
      "brand": "Marineland",
@@ -877,10 +1055,14 @@
      "L_in": 48.03,
      "D_in": 18.03,
      "H_in": 18.15,
-     "price_note": "Taller (18.15) than Aqueon (16.25); needs two glass tops; price not obtained",
+     "price_note": "Petco sale $110, regular $220; page read 2026-10-19. Petco 50% off; store pickup (no sale end shown).",
      "url": "https://www.petco.com/product/imagitarium-60-gallon-breeder-open-glass-aquarium-tank",
      "checked": "2026-10-19",
-     "confidence": "medium"
+     "confidence": "high",
+     "price_usd": 110.0,
+     "price_kind": "street",
+     "retailer": "Petco",
+     "regular_usd": 220.0
     },
     {
      "brand": "Waterbox",
@@ -997,12 +1179,14 @@
      "L_in": 49,
      "D_in": 19.5,
      "H_in": 21.25,
-     "price_usd": 319.99,
-     "price_kind": "msrp",
-     "price_note": "Petco: 319.99 reg, 160-192 on sale; Petco spec says 49 x 19.5 x 21.25 (may include frame extents); Aquarium Depot and a Co-op forum post give 48.5 x 18.5 x 21.25",
+     "price_usd": 160.0,
+     "price_kind": "street",
+     "price_note": "Petco sale $160, regular $319.99; page read 2026-10-19. Petco 50% off; store pickup (no sale end shown).",
      "url": "https://www.petco.com/shop/en/petcostore/product/aqueon-standard-glass-aquarium-tank-75-gallon",
      "checked": "2026-10-19",
-     "confidence": "medium"
+     "confidence": "high",
+     "retailer": "Petco",
+     "regular_usd": 319.99
     },
     {
      "brand": "Imagitarium (Petco)",
@@ -1012,10 +1196,12 @@
      "H_in": 22.87,
      "price_usd": 150.0,
      "price_kind": "street",
-     "price_note": "Petco 50% off, was 300; in-store only; about 2 in taller than generic 75; dims from Petco spec snippet; Petco confirms 48 x 18 footprint",
+     "price_note": "Petco sale $150, regular $300; page read 2026-10-19. Petco 50% off; store pickup or ship to home (no sale end shown).",
      "url": "https://www.petco.com/shop/en/petcostore/product/imagitarium-75-gallon-open-glass-aquarium-tank",
      "checked": "2026-10-19",
-     "confidence": "medium"
+     "confidence": "high",
+     "retailer": "Petco",
+     "regular_usd": 300.0
     },
     {
      "brand": "Innovative Marine",
@@ -1066,10 +1252,13 @@
      "H_in": 21,
      "price_usd": 159.99,
      "price_kind": "street",
-     "price_note": "PetSmart sale, was 299.99; 89 lb; 50% off event through 11/1",
+     "price_note": "PetSmart sale $159.99, regular $299.99, ends 2026-11-01; page read 2026-10-19. 50% off event.",
      "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-open-glass-aquarium-5356187.html",
      "checked": "2026-10-19",
-     "confidence": "high"
+     "confidence": "high",
+     "retailer": "PetSmart",
+     "regular_usd": 299.99,
+     "sale_ends": "2026-11-01"
     },
     {
      "brand": "SeaClear",
@@ -1489,7 +1678,9 @@
      "price_kind": "street",
      "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/clear-for-life-125-gallon-rectangle-acrylic-aquarium-fish-tank-60x18x24-fresh-and-saltwater-16607.html",
      "checked": "2026-10-19",
-     "confidence": "high"
+     "confidence": "high",
+     "retailer": "PetSmart",
+     "price_note": "PetSmart $2109.99; page read 2026-10-19. Acrylic. In stock."
     },
     {
      "brand": "Clear-For-Life",
@@ -1499,10 +1690,11 @@
      "H_in": 20,
      "price_usd": 1749.99,
      "price_kind": "street",
-     "price_note": "PetSmart (another snapshot 1649.99)",
+     "price_note": "PetSmart $1749.99; page read 2026-10-19. Acrylic. In stock.",
      "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/clear-for-life-125-gallon-rectangle-acrylic-aquarium-fish-tank-72x18x20-fresh-and-saltwater-5188326.html",
      "checked": "2026-10-19",
-     "confidence": "high"
+     "confidence": "high",
+     "retailer": "PetSmart"
     },
     {
      "brand": "Marineland",
@@ -1545,10 +1737,14 @@
      "L_in": 72.375,
      "D_in": 18.375,
      "H_in": 23.125,
-     "price_note": "Petco spec via search snippet; 185 lb; price not obtained",
+     "price_note": "Petco sale $500, regular $1000; page read 2026-10-19. Petco 50% off; store pickup (no sale end shown).",
      "url": "https://www.petco.com/shop/en/petcostore/product/north-american-pet-products-125-gallon-glass-aquarium-with-glass-lids",
      "checked": "2026-10-19",
-     "confidence": "medium"
+     "confidence": "high",
+     "price_usd": 500.0,
+     "price_kind": "street",
+     "retailer": "Petco",
+     "regular_usd": 1000.0
     }
    ]
   },
@@ -1573,12 +1769,13 @@
      "L_in": 72,
      "D_in": 18,
      "H_in": 24,
-     "price_usd": 1819.99,
+     "price_usd": 1749.99,
      "price_kind": "street",
-     "price_note": "PetSmart range 1749.99-1819.99; dims from a That Pet Place comparison, not read on the PetSmart page",
+     "price_note": "PetSmart $1749.99; page read 2026-10-19. Acrylic. In stock.",
      "url": "https://www.petsmart.com/5187098.html",
      "checked": "2026-10-19",
-     "confidence": "medium"
+     "confidence": "high",
+     "retailer": "PetSmart"
     },
     {
      "brand": "Seapora",
@@ -1732,11 +1929,12 @@
      "D_in": 24,
      "H_in": 24,
      "price_usd": 2419.99,
-     "price_kind": "msrp",
-     "price_note": "ACRYLIC, clear item 5187093; black 5187078 listed 2449.99-2699.99. Thickness not listed.",
+     "price_kind": "street",
+     "price_note": "PetSmart $2419.99; page read 2026-10-19. Acrylic. In stock.",
      "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/clear-for-life-180-gallon-rectangle-aquarium-acrylic-fish-tank-5187093.html",
      "checked": "2026-10-19",
-     "confidence": "high"
+     "confidence": "high",
+     "retailer": "PetSmart"
     },
     {
      "brand": "Reef Savvy",
@@ -1829,11 +2027,12 @@
      "D_in": 24,
      "H_in": 24,
      "price_usd": 3299.99,
-     "price_kind": "msrp",
-     "price_note": "ACRYLIC; another snapshot showed 1814.99 (sale from 3629.99). 15 business day processing.",
+     "price_kind": "street",
+     "price_note": "PetSmart $3299.99; page read 2026-10-19. Acrylic. In stock.",
      "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/clear-for-life-240-gallon-rectangle-aquarium-acrylic-fish-tank-5187064.html",
      "checked": "2026-10-19",
-     "confidence": "high"
+     "confidence": "high",
+     "retailer": "PetSmart"
     },
     {
      "brand": "SeaClear / FishTanksDirect",
@@ -1896,11 +2095,12 @@
      "D_in": 24,
      "H_in": 30,
      "price_usd": 4399.99,
-     "price_kind": "msrp",
-     "price_note": "ACRYLIC item 5187061; 3999.99 on some page versions. Page lists 24 L x 96 W x 30 H.",
+     "price_kind": "street",
+     "price_note": "PetSmart $4399.99; page read 2026-10-19. Acrylic. In stock.",
      "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/clear-for-life-300-gallon-rectangle-aquarium-16375.html",
      "checked": "2026-10-19",
-     "confidence": "high"
+     "confidence": "high",
+     "retailer": "PetSmart"
     }
    ]
   },
@@ -2662,10 +2862,11 @@
      "H_in": 12,
      "price_usd": 169.99,
      "price_kind": "street",
-     "price_note": "PetSmart.",
+     "price_note": "PetSmart $169.99; page read 2026-10-19. In stock.",
      "url": "https://www.petsmart.com/reptile/habitats-and-decor/terrariums/reptizoo-glass-terrarium---reptile-habitat-enclosure---20-120-gal-5375655.html",
      "checked": "2026-10-19",
-     "confidence": "high"
+     "confidence": "high",
+     "retailer": "PetSmart"
     },
     {
      "brand": "Zoo Med",
@@ -2673,10 +2874,14 @@
      "L_in": 30,
      "D_in": 12,
      "H_in": 12,
-     "price_note": "Top-opening sliding screen; price not captured.",
+     "price_note": "PetSmart sale $199.99, regular $219.99; page read 2026-10-19. Out of stock online.",
      "url": "https://www.petsmart.com/reptile/habitats-and-decor/terrariums/zoo-med-20-gallon-leopard-gecko-reptihabitat-5351767.html",
      "checked": "2026-10-19",
-     "confidence": "medium"
+     "confidence": "high",
+     "price_usd": 199.99,
+     "price_kind": "street",
+     "retailer": "PetSmart",
+     "regular_usd": 219.99
     }
    ]
   }
