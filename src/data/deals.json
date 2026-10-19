@@ -1,6 +1,6 @@
 {
  "asOf": "2026-10-19",
- "note": "Retailer bundle deals (tank + stand, kits with stands). Hand-edited from the sweep in prompts/deals-sweep.md; prices change often, so the app shows 'as of <date>, check current price'.",
+ "note": "Retailer bundle deals: tank + stand sets and starter kits (tank, hood, light, filter, heater). Hand-edited from the sweep in prompts/deals-sweep.md; prices change often, so the app shows 'as of <date>, check current price'. Walmart, Petco, Chewy and Amazon block page reads, so their prices come from search results and say so.",
  "deals": [
   {
    "id": "petsmart-topfin-ensemble-36",
@@ -38,6 +38,7 @@
    "retailer": "PetSmart",
    "name": "Marineland High Definition LED Aquarium & Stand Ensemble 45 gal",
    "gal": 45,
+   "tank": "n_g45_tall",
    "includes": [
     "tank",
     "stand",
@@ -50,7 +51,7 @@
    },
    "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-high-definition-led-aquarium-and-stand-ensemble---45-gallon-led-fish-tank-kit-94286.html",
    "asOf": "2026-10-19",
-   "note": "Extra-tall tank, glass canopy, LED, black stand; no sale end date shown. No matching catalog tank (not the 45 cube), so it prices in the demand panel but is not a one-click start.",
+   "note": "Extra-tall tank, glass canopy, LED, black stand; no sale end date shown. Catalog tank n_g45_tall is this tank.",
    "look": {
     "style": "cabinet",
     "finish": "black",
@@ -151,6 +152,885 @@
     }
    },
    "note": "Search snippet only (product page did not load); snippet said out of stock. Black stand with smoked glass door. Lid and dimensions unverified."
+  },
+  {
+   "id": "petsmart-top-fin-essentials-20",
+   "retailer": "PetSmart",
+   "name": "Top Fin Essentials Aquarium Starter Kit 20 gal",
+   "gal": 20,
+   "tank": "g20h",
+   "includes": [
+    "tank",
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ],
+   "filter": {
+    "kind": "hob",
+    "name": "power filter with cartridge"
+   },
+   "price": {
+    "usd": 119.99,
+    "regularUsd": 149.99
+   },
+   "url": "https://www.petsmart.com/fish/starter-kits/top-fin-essentials-aquarium-starter-kit-5262265.html",
+   "asOf": "2026-10-19",
+   "note": "Item 5262265, page read live. Tank 24x12.7x16 in; hood with feeding door, white LED, power filter, heater, thermometer, net. Page says 20% off 20+ gal Essentials kits, no end date.",
+   "look": {
+    "lid": "hood",
+    "guessed": [],
+    "light": {
+     "says": "LED in the hood (no watts, Kelvin or PAR published)"
+    }
+   }
+  },
+  {
+   "id": "petsmart-top-fin-captivate-hex-20",
+   "retailer": "PetSmart",
+   "name": "Top Fin Captivate Aquarium Starter Kit 20 gal hexagon",
+   "gal": 20,
+   "includes": [
+    "tank",
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ],
+   "filter": {
+    "kind": "hob",
+    "name": "Top Fin Silenstream PF20"
+   },
+   "heater": {
+    "watts": 100
+   },
+   "price": {
+    "usd": 119.99,
+    "regularUsd": 149.99
+   },
+   "url": "https://www.petsmart.com/fish/starter-kits/top-fin-captivate-aquarium-starter-kit-49928.html",
+   "asOf": "2026-10-19",
+   "note": "Item 5277168, page read live. Hexagon tank (no catalog hex this size, so it prices in the demand panel but is not a one-click start); Silenstream PF20, 100 W heater.",
+   "look": {
+    "lid": "hood",
+    "guessed": [],
+    "light": {
+     "says": "LED in the hood (no watts, Kelvin or PAR published)"
+    }
+   }
+  },
+  {
+   "id": "petsmart-top-fin-bow-front-36",
+   "retailer": "PetSmart",
+   "name": "Top Fin Bow Front Aquarium Starter Kit 36 gal",
+   "gal": 36,
+   "tank": "bow36",
+   "includes": [
+    "tank",
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ],
+   "filter": {
+    "kind": "hob",
+    "name": "Top Fin Silenstream 40"
+   },
+   "heater": {
+    "watts": 200
+   },
+   "price": {
+    "usd": 143.99,
+    "regularUsd": 179.99
+   },
+   "url": "https://www.petsmart.com/fish/starter-kits/top-fin-bow-front-aquarium-starter-kit----36-gallon-51163.html",
+   "asOf": "2026-10-19",
+   "note": "Page read live. Tank 30.7x15.7x22.6 in; hood, white LED, Silenstream 40 filter, 200 W heater, thermometer, net. No stand.",
+   "look": {
+    "lid": "hood",
+    "guessed": [],
+    "light": {
+     "says": "LED in the hood (no watts, Kelvin or PAR published)"
+    }
+   }
+  },
+  {
+   "id": "petsmart-top-fin-cube-10",
+   "retailer": "PetSmart",
+   "name": "Top Fin Cube Essentials Starter Kit 10 gal",
+   "gal": 10,
+   "tank": "g8c",
+   "includes": [
+    "tank",
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ],
+   "filter": {
+    "kind": "hob",
+    "name": "Top Fin Silenstream PF10"
+   },
+   "heater": {
+    "watts": 50
+   },
+   "price": {
+    "usd": 44.99,
+    "regularUsd": 89.99
+   },
+   "url": "https://www.petsmart.com/fish/starter-kits/top-fin-cube-aquarium-essentials-starter-kit---10-gallon-100213.html",
+   "asOf": "2026-10-19",
+   "note": "Page read live, half price. Tank 14.09 in cube; hood, white LED, Silenstream PF10, 50 W heater.",
+   "look": {
+    "lid": "hood",
+    "guessed": [
+     "tank shape: closest catalog size (the 8 gal cube; the real cube is 14.1 in)"
+    ],
+    "light": {
+     "says": "LED in the hood (no watts, Kelvin or PAR published)"
+    }
+   }
+  },
+  {
+   "id": "petsmart-top-fin-bubble-wall-20",
+   "retailer": "PetSmart",
+   "name": "Top Fin LED Bubble Wall Aquarium Kit 20 gal",
+   "gal": 20,
+   "tank": "g20h",
+   "includes": [
+    "tank",
+    "lid",
+    "light",
+    "filter"
+   ],
+   "filter": {
+    "kind": "internal",
+    "name": "Top Fin internal filter"
+   },
+   "price": {
+    "usd": 149.99
+   },
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/top-fin-led-bubble-wall-aquarium-kit---fish-tank-starter-kit---10-20-gallon-64706.html",
+   "asOf": "2026-10-19",
+   "note": "Item 5308097, page read live. Tank 24.2x13.1x16.6 in; internal filter, air pump and LED bubble wand. No heater.",
+   "look": {
+    "lid": "hood",
+    "guessed": [],
+    "light": {
+     "says": "LED in the hood (no watts, Kelvin or PAR published)"
+    }
+   }
+  },
+  {
+   "id": "petsmart-top-fin-led-black-glass-10",
+   "retailer": "PetSmart",
+   "name": "Top Fin LED Black Glass Aquarium Kit 10 gal",
+   "gal": 10,
+   "tank": "g10",
+   "includes": [
+    "tank",
+    "lid",
+    "light",
+    "filter"
+   ],
+   "filter": {
+    "kind": "internal",
+    "name": "integrated filter"
+   },
+   "price": {
+    "usd": 89.99
+   },
+   "url": "https://www.petsmart.com/fish/starter-kits/top-fin-led-black-glass-aquarium-58620.html",
+   "asOf": "2026-10-19",
+   "note": "Item 5300979, page read live. Tank 20.1x10.1x12.8 in, blue and white LED hood, integrated filter. No heater.",
+   "look": {
+    "lid": "hood",
+    "guessed": [],
+    "light": {
+     "says": "LED in the hood (no watts, Kelvin or PAR published)"
+    }
+   }
+  },
+  {
+   "id": "petsmart-glofish-led-kit-5",
+   "retailer": "PetSmart",
+   "name": "GloFish LED Aquarium Kit 5 gal",
+   "gal": 5,
+   "tank": "g5",
+   "includes": [
+    "tank",
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ],
+   "filter": {
+    "kind": "internal",
+    "name": "Tetra internal filter"
+   },
+   "heater": {
+    "watts": 50
+   },
+   "price": {
+    "usd": 71.42,
+    "regularUsd": 79.39
+   },
+   "url": "https://www.petsmart.com/fish/starter-kits/glofish-led-aquarium-kit-94257.html",
+   "asOf": "2026-10-19",
+   "note": "Item 5369363, page read live. Tank 16.5x10.5x11 in; Tetra internal filter, Tetra HT 50 W heater, thermometer, hood with LED.",
+   "look": {
+    "lid": "hood",
+    "guessed": [],
+    "light": {
+     "says": "blue GloFish LED in the hood (no watts published)"
+    }
+   }
+  },
+  {
+   "id": "petsmart-fluval-plant-9",
+   "retailer": "PetSmart",
+   "name": "Fluval Plant Aquarium Starter Kit 9 gal",
+   "gal": 9,
+   "tank": "n_flex_9gal",
+   "includes": [
+    "tank",
+    "lid",
+    "light",
+    "filter"
+   ],
+   "filter": {
+    "kind": "hob",
+    "name": "AquaClear 20",
+    "gph": 100
+   },
+   "price": {
+    "usd": 139.99
+   },
+   "url": "https://www.petsmart.com/fish/starter-kits/fluval-plant-fish-tank-aquarium-starter-kit---9-gallons--34-liters-100587.html",
+   "asOf": "2026-10-19",
+   "note": "Page read live. Tank 14x13x12 in, 7000K plant LED, clear glass cover, AquaClear 20 filter. No heater.",
+   "look": {
+    "lid": "glass",
+    "guessed": [
+     "tank shape: closest catalog size (the Fluval Flex 9 shell; the real tank is a 14x13x12 in rectangle)"
+    ],
+    "light": {
+     "says": "7000K plant LED (no watts published)"
+    }
+   }
+  },
+  {
+   "id": "walmart-aqua-culture-5",
+   "retailer": "Walmart",
+   "name": "Aqua Culture 5 gal Aquarium Starter Kit with LED",
+   "gal": 5,
+   "tank": "g5",
+   "includes": [
+    "tank",
+    "lid",
+    "light",
+    "filter"
+   ],
+   "filter": {
+    "kind": "internal",
+    "name": "Tetra internal filter"
+   },
+   "price": {
+    "usd": 36.56
+   },
+   "url": "https://www.walmart.com/ip/Aqua-Culture-5-Gallon-Aquarium-Starter-Kit-With-LED-Lighting/20693704",
+   "asOf": "2026-10-19",
+   "note": "LED hood, Tetra internal filter, no heater. Price from a search snippet.",
+   "look": {
+    "lid": "hood",
+    "guessed": [
+     "price: from a search result of the listing (the site blocks page checks), so it may be out of date"
+    ],
+    "light": {
+     "says": "LED in the hood (no watts, Kelvin or PAR published)"
+    }
+   }
+  },
+  {
+   "id": "walmart-marineland-portrait-5",
+   "retailer": "Walmart",
+   "name": "Marineland Portrait Glass LED Aquarium Kit 5 gal",
+   "gal": 5,
+   "tank": "g5",
+   "includes": [
+    "tank",
+    "lid",
+    "light",
+    "filter"
+   ],
+   "filter": {
+    "kind": "internal",
+    "name": "Marineland hidden 3-stage filter"
+   },
+   "price": {
+    "usd": 74.49
+   },
+   "url": "https://www.walmart.com/ip/Marineland-Portrait-Glass-LED-Aquarium-Kit-5-Gallons-Hidden-Filtration/40231748",
+   "asOf": "2026-10-19",
+   "note": "Sliding glass canopy, white/blue LED, 3-stage hidden filter, no heater. Price from a search snippet.",
+   "look": {
+    "lid": "glass",
+    "guessed": [
+     "price: from a search result of the listing (the site blocks page checks), so it may be out of date",
+     "tank shape: closest catalog size (5 gal; the real Portrait is a tall shape)"
+    ],
+    "light": {
+     "says": "LED in the hood (no watts, Kelvin or PAR published)"
+    }
+   }
+  },
+  {
+   "id": "walmart-aqua-culture-10",
+   "retailer": "Walmart",
+   "name": "Aqua Culture 10 gal Glass Aquarium Starter Kit with LED",
+   "gal": 10,
+   "tank": "g10",
+   "includes": [
+    "tank",
+    "lid",
+    "light",
+    "filter"
+   ],
+   "filter": {
+    "kind": "internal",
+    "name": "Tetra internal filter"
+   },
+   "price": {
+    "usd": 44.98
+   },
+   "url": "https://www.walmart.com/ip/Aqua-Culture-10G-Glass-Aquarium-Starter-Kit/1400736285",
+   "asOf": "2026-10-19",
+   "note": "LED hood, Tetra internal filter, no heater. Price from a search snippet; a sibling listing showed $32-38 and out of stock.",
+   "look": {
+    "lid": "hood",
+    "guessed": [
+     "price: from a search result of the listing (the site blocks page checks), so it may be out of date"
+    ],
+    "light": {
+     "says": "LED in the hood (no watts, Kelvin or PAR published)"
+    }
+   }
+  },
+  {
+   "id": "walmart-vibrant-life-10",
+   "retailer": "Walmart",
+   "name": "Vibrant Life 10 gal Aquarium Starter Kit with Blue & White LED",
+   "gal": 10,
+   "tank": "g10",
+   "includes": [
+    "tank",
+    "lid",
+    "light",
+    "filter"
+   ],
+   "filter": {
+    "kind": "hob",
+    "name": "Vibrant Life power filter",
+    "gph": 75
+   },
+   "price": {
+    "usd": 52.97
+   },
+   "url": "https://www.walmart.com/ip/Vibrant-Life-10-Gallon-Aquarium-Starter-Kit-with-Blue-and-White-LED-Lights/15316464908",
+   "asOf": "2026-10-19",
+   "note": "Sold by Walmart.com. 75 gph power filter, LED hood, no heater. Price from a search snippet (a category page showed $47.46).",
+   "look": {
+    "lid": "hood",
+    "guessed": [
+     "price: from a search result of the listing (the site blocks page checks), so it may be out of date"
+    ],
+    "light": {
+     "says": "LED in the hood (no watts, Kelvin or PAR published)"
+    }
+   }
+  },
+  {
+   "id": "walmart-tetra-complete-20",
+   "retailer": "Walmart",
+   "name": "Tetra Complete Tropical Aquarium Kit 20 gal with LED",
+   "gal": 20,
+   "tank": "g20h",
+   "includes": [
+    "tank",
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ],
+   "filter": {
+    "kind": "hob",
+    "name": "Tetra Whisper PF20"
+   },
+   "price": {
+    "usd": 119.14
+   },
+   "url": "https://www.walmart.com/ip/Tetra-Aquarium-20-Gallon-Complete-Tropical-Fish-Tank-Kit-with-LED-Lighting-and-Decor-for-Freshwater-Fish/51494060",
+   "asOf": "2026-10-19",
+   "note": "Tank 24x12x16 in; hinged LED hood, Whisper PF20, heater, thermometer. Price from a search snippet (another showed $127.80).",
+   "look": {
+    "lid": "hood",
+    "guessed": [
+     "price: from a search result of the listing (the site blocks page checks), so it may be out of date"
+    ],
+    "light": {
+     "says": "LED in the hood (no watts, Kelvin or PAR published)"
+    }
+   }
+  },
+  {
+   "id": "walmart-aqueon-led-20h",
+   "retailer": "Walmart",
+   "name": "Aqueon LED Aquarium Starter Kit 20 High",
+   "gal": 20,
+   "tank": "g20h",
+   "includes": [
+    "tank",
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ],
+   "filter": {
+    "kind": "hob",
+    "name": "Aqueon QuietFlow 10"
+   },
+   "heater": {
+    "watts": 100
+   },
+   "price": {
+    "usd": 158.42
+   },
+   "url": "https://www.walmart.com/ip/Aqueon-Aquarium-Starter-Kit-with-LED-Lighting-20-High/424027537",
+   "asOf": "2026-10-19",
+   "note": "Low-profile LED hood, QuietFlow 10 filter, 100 W preset heater. Price from a search snippet.",
+   "look": {
+    "lid": "hood",
+    "guessed": [
+     "price: from a search result of the listing (the site blocks page checks), so it may be out of date"
+    ],
+    "light": {
+     "says": "LED in the hood (no watts, Kelvin or PAR published)"
+    }
+   }
+  },
+  {
+   "id": "walmart-aqueon-led-10",
+   "retailer": "Walmart",
+   "name": "Aqueon LED Aquarium Starter Kit 10 gal",
+   "gal": 10,
+   "tank": "g10",
+   "includes": [
+    "tank",
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ],
+   "price": {
+    "usd": 74.98
+   },
+   "url": "https://www.walmart.com/browse/pets/10-gallon-aquariums/5440_202074_7712328_8218041",
+   "asOf": "2026-10-19",
+   "est": true,
+   "note": "No product page found (url is the 10 gal category). Snippets showed $74.98, $93.86 and $131.37.",
+   "look": {
+    "lid": "hood",
+    "guessed": [
+     "price: from a search result of the listing (the site blocks page checks), so it may be out of date"
+    ],
+    "light": {
+     "says": "LED in the hood (no watts, Kelvin or PAR published)"
+    }
+   }
+  },
+  {
+   "id": "walmart-tetra-led-10",
+   "retailer": "Walmart",
+   "name": "Tetra Complete LED Aquarium Kit 10 gal",
+   "gal": 10,
+   "tank": "g10",
+   "includes": [
+    "tank",
+    "lid",
+    "light",
+    "filter"
+   ],
+   "price": {
+    "usd": 77.24
+   },
+   "url": "https://www.walmart.com/ip/Tetra-10-Gallon-Glass-LED-Aquarium-Kit/1070285979",
+   "asOf": "2026-10-19",
+   "est": true,
+   "note": "Whisper PF10, no heater. Snippet prices ran $77 to $153.",
+   "look": {
+    "lid": "hood",
+    "guessed": [
+     "price: from a search result of the listing (the site blocks page checks), so it may be out of date"
+    ],
+    "light": {
+     "says": "LED in the hood (no watts, Kelvin or PAR published)"
+    }
+   }
+  },
+  {
+   "id": "petco-imagitarium-led-10",
+   "retailer": "Petco",
+   "name": "Imagitarium LED Aquarium Kit 10 gal",
+   "gal": 10,
+   "tank": "g10",
+   "includes": [
+    "tank",
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ],
+   "filter": {
+    "kind": "hob",
+    "name": "Imagitarium power filter"
+   },
+   "price": {
+    "usd": 92.99
+   },
+   "url": "https://www.petco.com/shop/en/petcostore/product/imagitarium-led-aquarium-kit",
+   "asOf": "2026-10-19",
+   "note": "LED hood, power filter, heater. Snippet said in-store only.",
+   "look": {
+    "lid": "hood",
+    "guessed": [
+     "price: from a search result of the listing (the site blocks page checks), so it may be out of date"
+    ],
+    "light": {
+     "says": "LED in the hood (no watts, Kelvin or PAR published)"
+    }
+   }
+  },
+  {
+   "id": "petco-imagitarium-led-20",
+   "retailer": "Petco",
+   "name": "Imagitarium LED Aquarium Kit 20 gal",
+   "gal": 20,
+   "tank": "g20h",
+   "includes": [
+    "tank",
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ],
+   "filter": {
+    "kind": "hob",
+    "name": "Imagitarium power filter"
+   },
+   "price": {
+    "usd": 147.99
+   },
+   "url": "https://www.petco.com/product/imagitarium-led-aquarium-kit-2417-w-x-1735-h-20-gallon-3946408",
+   "asOf": "2026-10-19",
+   "note": "24.17 in wide, 17.35 in high; LED hood with feeding door, power filter, heater. No stand.",
+   "look": {
+    "lid": "hood",
+    "guessed": [
+     "price: from a search result of the listing (the site blocks page checks), so it may be out of date"
+    ],
+    "light": {
+     "says": "LED in the hood (no watts, Kelvin or PAR published)"
+    }
+   }
+  },
+  {
+   "id": "petco-imagitarium-led-40",
+   "retailer": "Petco",
+   "name": "Imagitarium LED Aquarium Kit 40 gal",
+   "gal": 40,
+   "tank": "g40b",
+   "includes": [
+    "tank",
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ],
+   "filter": {
+    "kind": "hob",
+    "name": "Imagitarium power filter"
+   },
+   "price": {
+    "usd": 179.99
+   },
+   "url": "https://www.petco.com/product/imagitarium-led-aquarium-kit-3633-w-x-159-h-40-gallons-3946424",
+   "asOf": "2026-10-19",
+   "note": "36.33 in wide, 15.9 in high; LED hood, filter, heater.",
+   "look": {
+    "lid": "hood",
+    "guessed": [
+     "price: from a search result of the listing (the site blocks page checks), so it may be out of date",
+     "tank shape: closest catalog size (the 40 breeder)"
+    ],
+    "light": {
+     "says": "LED in the hood (no watts, Kelvin or PAR published)"
+    }
+   }
+  },
+  {
+   "id": "petco-imagitarium-led-29",
+   "retailer": "Petco",
+   "name": "Imagitarium LED Aquarium Kit 29 gal",
+   "gal": 29,
+   "tank": "g29",
+   "includes": [
+    "tank",
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ],
+   "price": {
+    "usd": 162.99
+   },
+   "url": "https://www.petco.com/shop/en/petcostore/product/imagitarium-led-aquarium-kit",
+   "asOf": "2026-10-19",
+   "est": true,
+   "note": "29 gal variant price from the product data, in-store only; contents assumed like the 10 and 20.",
+   "look": {
+    "lid": "hood",
+    "guessed": [
+     "price: from a search result of the listing (the site blocks page checks), so it may be out of date"
+    ],
+    "light": {
+     "says": "LED in the hood (no watts, Kelvin or PAR published)"
+    }
+   }
+  },
+  {
+   "id": "petco-imagitarium-led-55",
+   "retailer": "Petco",
+   "name": "Imagitarium LED Aquarium Kit 55 gal",
+   "gal": 55,
+   "tank": "g55",
+   "includes": [
+    "tank",
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ],
+   "price": {
+    "usd": 249.99
+   },
+   "url": "https://www.petco.com/product/imagitarium-led-aquarium-kit-3633-w-x-159-h-40-gallons-3946424",
+   "asOf": "2026-10-19",
+   "est": true,
+   "note": "55 gal variant price from the kit family data; no own page found.",
+   "look": {
+    "lid": "hood",
+    "guessed": [
+     "price: from a search result of the listing (the site blocks page checks), so it may be out of date"
+    ],
+    "light": {
+     "says": "LED in the hood (no watts, Kelvin or PAR published)"
+    }
+   }
+  },
+  {
+   "id": "petco-aqueon-led-20h",
+   "retailer": "Petco",
+   "name": "Aqueon LED Aquarium Kit 20 High",
+   "gal": 20,
+   "tank": "g20h",
+   "includes": [
+    "tank",
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ],
+   "filter": {
+    "kind": "hob",
+    "name": "Aqueon QuietFlow 10"
+   },
+   "heater": {
+    "watts": 100
+   },
+   "price": {
+    "usd": 147.99
+   },
+   "url": "https://www.petco.com/shop/en/petcostore/product/aqueon-led-20-gallon-aquarium-kit",
+   "asOf": "2026-10-19",
+   "note": "LED hood, QuietFlow filter, preset heater. No stand.",
+   "look": {
+    "lid": "hood",
+    "guessed": [
+     "price: from a search result of the listing (the site blocks page checks), so it may be out of date"
+    ],
+    "light": {
+     "says": "LED in the hood (no watts, Kelvin or PAR published)"
+    }
+   }
+  },
+  {
+   "id": "chewy-tetra-complete-10",
+   "retailer": "Chewy",
+   "name": "Tetra Complete Aquarium Kit with LED 10 gal",
+   "gal": 10,
+   "tank": "g10",
+   "includes": [
+    "tank",
+    "lid",
+    "light",
+    "filter"
+   ],
+   "filter": {
+    "kind": "hob",
+    "name": "Tetra Whisper PF10"
+   },
+   "price": {
+    "usd": 75.15,
+    "regularUsd": 92.39
+   },
+   "url": "https://www.chewy.com/tetra-complete-tropical-fish-aquarium/dp/1452806",
+   "asOf": "2026-10-19",
+   "note": "Hinged LED hood, Whisper PF10. No heater.",
+   "look": {
+    "lid": "hood",
+    "guessed": [
+     "price: from a search result of the listing (the site blocks page checks), so it may be out of date"
+    ],
+    "light": {
+     "says": "LED in the hood (no watts, Kelvin or PAR published)"
+    }
+   }
+  },
+  {
+   "id": "chewy-aqueon-smartclean-10",
+   "retailer": "Chewy",
+   "name": "Aqueon SmartClean LED Aquarium Starter Kit 10 gal",
+   "gal": 10,
+   "tank": "g10",
+   "includes": [
+    "tank",
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ],
+   "filter": {
+    "kind": "internal",
+    "name": "Aqueon SmartClean"
+   },
+   "price": {
+    "usd": 129.99
+   },
+   "url": "https://www.chewy.com/aqueon-smart-clean-filtration-led/dp/1720486",
+   "asOf": "2026-10-19",
+   "note": "LED hood, SmartClean filter, preset heater. Snippets showed $121-130.",
+   "look": {
+    "lid": "hood",
+    "guessed": [
+     "price: from a search result of the listing (the site blocks page checks), so it may be out of date"
+    ],
+    "light": {
+     "says": "LED in the hood (no watts, Kelvin or PAR published)"
+    }
+   }
+  },
+  {
+   "id": "chewy-aqueon-led-20",
+   "retailer": "Chewy",
+   "name": "Aqueon LED Aquarium Starter Kit 20 gal",
+   "gal": 20,
+   "tank": "g20h",
+   "includes": [
+    "tank",
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ],
+   "price": {
+    "usd": 158.42
+   },
+   "url": "https://www.chewy.com/aqueon-led-aquarium-starter-kit-20/dp/727550",
+   "asOf": "2026-10-19",
+   "est": true,
+   "note": "Price from a very old cached snippet.",
+   "look": {
+    "lid": "hood",
+    "guessed": [
+     "price: from a search result of the listing (the site blocks page checks), so it may be out of date"
+    ],
+    "light": {
+     "says": "LED in the hood (no watts, Kelvin or PAR published)"
+    }
+   }
+  },
+  {
+   "id": "amazon-tetra-goldfish-led-10",
+   "retailer": "Amazon",
+   "name": "Tetra Goldfish LED Aquarium Kit 10 gal",
+   "gal": 10,
+   "tank": "g10",
+   "includes": [
+    "tank",
+    "lid",
+    "light",
+    "filter"
+   ],
+   "filter": {
+    "kind": "hob",
+    "name": "Tetra Whisper"
+   },
+   "price": {
+    "usd": 84.13,
+    "regularUsd": 89.99
+   },
+   "url": "https://www.amazon.com/Tetra-NV81620-Goldfish-LED-Aquarium/dp/B07DTX7NR3",
+   "asOf": "2026-10-19",
+   "note": "Whisper filter, LED hood, no heater (goldfish kit).",
+   "look": {
+    "lid": "hood",
+    "guessed": [
+     "price: from a search result of the listing (the site blocks page checks), so it may be out of date"
+    ],
+    "light": {
+     "says": "LED in the hood (no watts, Kelvin or PAR published)"
+    }
+   }
+  },
+  {
+   "id": "amazon-glofish-10",
+   "retailer": "Amazon",
+   "name": "GloFish 10 gal Aquarium Kit (Amazon exclusive)",
+   "gal": 10,
+   "tank": "g10",
+   "includes": [
+    "tank",
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ],
+   "price": {
+    "usd": 134.69
+   },
+   "url": "https://www.amazon.com/Glofish-Gallon-Aquarium-Lighting-Exclusive/dp/B079NYQTKT",
+   "asOf": "2026-10-19",
+   "est": true,
+   "note": "Snippets $134-140, one showed no offers; heater listed in one snippet only.",
+   "look": {
+    "lid": "hood",
+    "guessed": [
+     "price: from a search result of the listing (the site blocks page checks), so it may be out of date"
+    ],
+    "light": {
+     "says": "LED in the hood (no watts, Kelvin or PAR published)"
+    }
+   }
   }
  ]
 }

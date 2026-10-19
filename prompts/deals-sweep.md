@@ -23,6 +23,12 @@ change weekly, so rerun this before a release or whenever the list is more than 
 > price)}, "saleEnds" (ISO, only if the page says), "url" (the listing), "asOf" (today ISO), "est" (true only if you could not open a live
 > listing), "note"}. 3-6 solid rows max, 12 searches max. Report only the JSON array plus one line on what you could not find.
 
+## Starter kits (added 2026-10-19)
+The same file also holds starter kits without a stand (tank + hood + light + filter, usually a heater), from PetSmart, Petco, Walmart, Chewy
+and Amazon. Walmart, Petco, Chewy and Amazon block page reads (bot check / 403 / captcha, never bypass it), so their prices come from
+search snippets: put `price: from a search result ...` in `look.guessed` (shown on the card) and set `est: true` when snippets disagree or
+there is no product page. Map each kit to the nearest catalog tank (`tank`) so it is a one-click start; say so in `guessed` when the shape differs.
+
 ## Merging
 Append the rows to `deals` in src/data/deals.json (unique ids; replace a row by id on rerun; drop rows whose listing is gone),
 bump top-level `asOf`, run `npx vitest run test/kits.test.ts test/demand.test.ts` and `npx tsc --noEmit`.
