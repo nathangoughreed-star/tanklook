@@ -1,12 +1,12 @@
 // The Tech menu (lane TM step 4, 2026-10-19): the owner picks the tank's tech level, Walstad to high-tech planted / SPS
 // reef. A presets ladder, then one row per choice (filtration, heating, CO2, ferts, ... salt gear); each option shows its
-// setup $ (p10-p90), $/month (consumables + power at the profile's rate), minutes a week and what it buys, all for THIS
+// expected setup $, $/month (consumables + power at the profile's rate), minutes a week and what it buys, all for THIS
 // tank (scene/tech.ts). Hovering or focusing an option previews the change in the four demand numbers. The Lighting
 // section sits inside the Tech section (index.html), unchanged. grow.feed follows the CO2 + ferts rows; the Plant care
 // slider / Feeding select set those rows back (sync below).
 import { FACTORS, demandOf } from '../demand/engine';
 import { pinnedKit } from '../demand/pinned';
-import { triInv } from '../demand/range';
+import { mean3 as mean } from '../demand/range';
 import { defaultProfile, type UserProfile } from '../demand/types';
 import { FEED_NAMES, GROW_RATE } from '../scene/growtime';
 import type { Store } from '../scene/store';
@@ -47,11 +47,10 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
       queueMicrotask(() => { const s = store.tank; if (s.tech && feedOf(techOf(s), s.grow.feed) !== s.grow.feed) store.edit(x => { x.tech = setFeed(techOf(x), x.grow.feed); }, { history: false }); });
     render();
   });
+  /** One expected value per figure (Nathan 2026-10-19: no ranges or percentiles shown): the mean of each lo / mode / hi. */
   const range = (c: OptionCost) => {
-    const lo = triInv(c.setup, 0.1), hi = triInv(c.setup, 0.9);
-    const setup = c.setup.mode <= 0 ? '$0' : Math.abs(hi - lo) < Math.max(3, lo * 0.15) ? usd(c.setup.mode) : `${usd(lo)}-${usd(hi)}`;
-    const mo = c.monthlyUsd.mode, min = c.minutes.mode;
-    return `<span class="tcost"><b>${setup}</b>${c.est ? '<i title="A first guess: no store price researched yet">est</i>' : ''} · ${mo > 0.005 ? usd(mo) + '/mo' : '$0/mo'}${c.kwhMo > 0.05 ? ` <span class="tk">(${c.kwhMo.toFixed(c.kwhMo < 10 ? 1 : 0)} kWh)</span>` : ''} · ${Math.abs(min) < 0.05 ? '0' : (min > 0 ? '' : '−') + Math.abs(min).toFixed(Math.abs(min) < 10 ? 1 : 0)} min/wk</span>`;
+    const setup = mean(c.setup), mo = mean(c.monthlyUsd), min = mean(c.minutes);
+    return `<span class="tcost"><b>${setup <= 0.5 ? '$0' : usd(setup)}</b>${c.est ? '<i title="A first guess: no store price researched yet">est</i>' : ''} · ${mo > 0.005 ? usd(mo) + '/mo' : '$0/mo'}${c.kwhMo > 0.05 ? ` <span class="tk">(${c.kwhMo.toFixed(c.kwhMo < 10 ? 1 : 0)} kWh)</span>` : ''} · ${Math.abs(min) < 0.05 ? '0' : (min > 0 ? '' : '−') + Math.abs(min).toFixed(Math.abs(min) < 10 ? 1 : 0)} min/wk</span>`;
   };
 
   /** "What you get": chips computed from the model for this option on this tank. */
