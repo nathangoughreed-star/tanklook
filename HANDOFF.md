@@ -34,10 +34,19 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 | AQ AqAdvisor ids + Malawi pool | `../Glass-Box-aqids` / `aqids` | 5813 | `scripts/aqadvisor-ids.py`, `data/aqadvisor.json`, Malawi pool in `scene/starter.ts` | opened 2026-10-19 |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 | KW start wizard | `../Glass-Box-wizard` / `wizard` | 5783 | new `ui/wizard.ts`, `#startGuided` slot in `index.html`, wizard CSS | opened 2026-10-19 |
+| TM tech menu | `../Glass-Box-techmenu` / `techmenu` | 5823 | new `data/tech.json`, `scene/tech.ts`, `demand/tech.ts`, `ui/techMenu.ts`, Tech + Lighting section in `index.html`; one-line hooks in panels.ts / engine.ts / types.ts | opened 2026-10-19 |
+| TG tech gear in 3D | `../Glass-Box-techgear` / `techgear` | 5833 | new `render/gear3d.ts`, its build hook, Viewer "Show equipment" toggle | opened 2026-10-19 (wires to `tech` after TM step 1) |
 
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
+
+## Tech menu decision (Nathan 2026-10-19, opened lanes TM + TG)
+A Tech section where the owner picks the tech level, Walstad to high-tech planted / SPS reef: filtration (none to canister / sump, sized), heater(s) (optional, sized from gallons + room temperature), lighting (the Lighting section moves in), CO2, ferts, aeration, UV, salt gear (skimmer, return pump, powerheads, dosing, ATO, RO/DI). Every option shows setup $, $/month, minutes/week and what it buys (plant growth, AqAdvisor stocking % with that filter, species allowed by temperature, coral tier, risk), with a hover preview of the four demand numbers. Presets ladder: Walstad / Low-tech / Planted mid / High-tech; FOWLR / Soft coral / LPS / SPS. `TankSetup.tech` optional, no version bump, absent = today's inferred gear with identical demand numbers. grow.feed becomes derived from the CO2 + ferts rows (Plant care slider = shortcut). Lane TG draws the gear in the tank (not cartoony), with a Show equipment toggle. Prompts: prompts/lane-TM-tech-menu.md, prompts/lane-TG-tech-gear-3d.md.
+
+## Lane TM: tech menu (2026-10-19, branch `techmenu`, port 5823)  (lane fills this in)
+
+## Lane TG: tech gear in 3D (2026-10-19, branch `techgear`, port 5833)  (lane fills this in)
 
 ## Lane KW: start wizard (2026-10-19, branch `wizard`, port 5783)  (lane fills this in)
 
