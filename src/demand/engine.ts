@@ -19,6 +19,7 @@ import type { TankSetup } from '../scene/types';
 import { add3, mean3, r3, scale3, widen3 } from './range';
 import { interp, price as rowPrice, priceRow } from './prices';
 import { defaultFilter, defaultHeater, filterName, matchFilter, matchHeater, type FilterSpec } from './gear';
+import { techDemand } from './tech';
 import type { Contribution, Demand, Domain, Group, Range3, Rangeish, UserProfile } from './types';
 
 export const FACTORS = factorsJson;
@@ -185,6 +186,7 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   const tankRisk = (wet && small ? small.pts : 0) + (salt ? DEFAULTS.risk.salt : 0);
   if (tankRisk) add('stability', salt ? 'Saltwater chemistry and volume' : 'Small volume', 'tank', { risk: tankRisk * skillMul(P, domain), domain });
 
+  techDemand(S, rows, { price, riskMul: skillMul(P, domain), domain }); // lane TM: gear rows from the chosen tech (no-op without S.tech)
   if (opts.kit) {
     // the kit's one price (listing +-15 %, widened with age) stands in for the parts it contains
     const parts = new Set(opts.kit.includes ?? ['tank', 'stand', 'lid', 'light', 'filter', 'heater']);
