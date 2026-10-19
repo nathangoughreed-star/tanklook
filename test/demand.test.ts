@@ -157,3 +157,14 @@ describe('percent off (lane KD)', () => {
     expect(pctOff(d(100, 100))).toBeUndefined();
   });
 });
+
+describe('deal scene light (lane KD)', () => {
+  it('a bundle with a light gets an LED bar in the scene; its watts feed the power use', async () => {
+    const { sceneFromDeal } = await import('../src/demand/dealscene');
+    const { DEALS } = await import('../src/data/deals');
+    const d = DEALS.find(x => x.tank && x.includes.includes('light'))!;
+    const L = sceneFromDeal(d)!.tanks[0].light;
+    expect(L.type).toBe('led');
+    expect(L.tech).toBe('led-white');
+  });
+});

@@ -20,7 +20,7 @@ export interface Deal {
   filter?: FilterSpec;
   heater?: { watts: number };
   /** the stand as pictured on the listing (default black cabinet) and the lid type (default: hood when a lid is included) */
-  look?: { style?: 'cabinet' | 'frame'; finish?: 'black' | 'white' | 'oak'; lid?: 'glass' | 'hood' | 'mesh' };
+  look?: { style?: 'cabinet' | 'frame'; finish?: 'black' | 'white' | 'oak'; lid?: 'glass' | 'hood' | 'mesh'; /** light wattage when the listing gives it (else the budget-tier default for the tank size) */ lightW?: number };
   price: { usd: number; /** list price before the sale */ regularUsd?: number };
   /** ISO date the sale ends, when the listing says */
   saleEnds?: string;
