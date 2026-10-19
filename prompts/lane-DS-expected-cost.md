@@ -19,6 +19,9 @@ Work unit:
 3. Update research/plan-guided-start-kits.md's cost section with the decision (dated), and the HANDOFF section.
 Lane KW (start wizard) runs at the same time and calls your API: keep demandOf / profile limits signatures stable (rename nothing
 public without messaging the coordinator; the budget input is the existing setupUsd / upkeep limits).
+Update 2026-10-19: lane TM (tech menu) adds a new src/demand/tech.ts with ONE-LINE hooks into the engine (its step 3). Land your
+simplification early and push; keep demandOf / limits signatures stable; if TM's hook conflicts on merge, keep both sides and tell
+the coordinator. Do not edit tech.ts.
 Pictures of the panel and limits form (before and after) before shipping; wait for Nathan's verdict.
 
 Files you own: src/demand/*, src/data/demand-defaults.json, factors.json, demand-items.json (the lo / hi columns if you remove
