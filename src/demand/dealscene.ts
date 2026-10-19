@@ -19,7 +19,8 @@ export function sceneFromDeal(d: Deal): Scene | undefined {
   const k = d.kit ? kitById(d.kit) : undefined;
   if (k) { S = applyKitLight(S, k as never); S.lid = k.lid; }
   else if (d.includes.includes('light')) { // a bundled LED (listings rarely give watts: the budget-tier default for this tank size stands in, flagged 'guess')
-    S = applyKitLight(S, { light: { type: 'led', tech: 'led-white', count: 1, watts: d.look?.lightW ?? null, spec: d.look?.lightW ? 'listing' : 'guess' }, lid: S.lid, tier: 'budget', tankRatedGal: d.gal });
+    S = applyKitLight(S, { light: { type: 'led', tech: 'led-white', count: 1, watts: d.look?.light?.watts ?? null, par: d.look?.light?.par, spec: d.look?.light?.par ? 'published' : d.look?.light?.watts ? 'listing' : 'guess' }, lid: S.lid, tier: 'budget', tankRatedGal: d.gal });
+    if (d.look?.light?.kelvin) S.light = { ...S.light, kelvin: d.look.light.kelvin };
   }
   sc.tanks[0] = S; sc.name = `${d.retailer} ${d.name}`;
   return sc;

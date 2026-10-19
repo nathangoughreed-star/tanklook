@@ -168,3 +168,13 @@ describe('deal scene light (lane KD)', () => {
     expect(L.tech).toBe('led-white');
   });
 });
+
+describe('deal guesses (lane KD)', () => {
+  it('a light without published watts is listed as a guess; a stated one is not', async () => {
+    const { dealGuesses } = await import('../src/data/deals');
+    const base = { id: 'x', retailer: 'R', name: 'n', gal: 20, includes: ['tank', 'light'], price: { usd: 1 }, url: 'https://x', asOf: '2026-10-19' };
+    expect(dealGuesses({ ...base } as never).some(g => g.includes('light power'))).toBe(true);
+    expect(dealGuesses({ ...base, look: { light: { watts: 20, par: 40 } } } as never)).toEqual([]);
+    expect(dealGuesses({ ...base, includes: ['tank'], look: { guessed: ['stand colour'] } } as never)).toEqual(['stand colour']);
+  });
+});

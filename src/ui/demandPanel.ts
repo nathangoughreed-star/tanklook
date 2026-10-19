@@ -7,7 +7,7 @@ import type { Demand } from '../demand';
 import type { Store } from '../scene/store';
 import { dealOffers } from '../demand/deals';
 import { onSceneLoad, pinnedDeal, pinnedKit, unpinDeal } from '../demand/pinned';
-import { DEAL_NOTE } from '../data/deals';
+import { DEAL_NOTE, dealGuesses } from '../data/deals';
 
 const KEY = 'tanklook.demand';
 const DOMAIN_LABEL: [keyof UserProfile['skill'], string][] = [['fundamentals', 'Keeping a tank at all'], ['fish', 'Freshwater fish'], ['planted', 'Planted tanks'], ['salt', 'Saltwater'], ['terrarium', 'Terrariums']];
@@ -57,7 +57,7 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
   /** Retailer tank+stand bundles that fit this build, with what each saves against buying the parts (data: src/data/deals.json). */
   function renderDeals() {
     const el = q('.dmdeals'), pin = pinnedDeal(), offers = dealOffers(store.tank, P).filter(o => o.savingUsd > 1).slice(0, 2);
-    el.innerHTML = (pin ? `<div>Priced as the ${esc(pin.retailer + ' ' + pin.name)} bundle (${usd(pin.price.usd)}, ${esc(pin.asOf)}). <a href="#" class="dmunpin">Price the parts instead</a></div>` : '') + offers.filter(o => o.deal.id !== pin?.id).map(o => `<div>Deal: <a href="${esc(o.deal.url)}" target="_blank" rel="noopener">${esc(o.deal.retailer + ' ' + o.deal.name)}</a> ${usd(o.deal.price.usd)}${o.deal.price.regularUsd ? ` (was ${usd(o.deal.price.regularUsd)})` : ''}, about ${usd(o.savingUsd)} under buying the parts${o.deal.est ? ' (estimate)' : ''}${o.deal.saleEnds ? `, sale ends ${esc(o.deal.saleEnds)}` : ''}; ${esc(o.deal.asOf)}</div>`).join('') + (offers.length || pin ? `<div style="opacity:.7">Prices ${esc(DEAL_NOTE)}.</div>` : '');
+    el.innerHTML = (pin ? `<div>Priced as the ${esc(pin.retailer + ' ' + pin.name)} bundle (${usd(pin.price.usd)}, ${esc(pin.asOf)}). <a href="#" class="dmunpin">Price the parts instead</a>${dealGuesses(pin).length ? `<br><i>Guessed: ${esc(dealGuesses(pin).join('; '))}</i>` : ''}</div>` : '') + offers.filter(o => o.deal.id !== pin?.id).map(o => `<div>Deal: <a href="${esc(o.deal.url)}" target="_blank" rel="noopener">${esc(o.deal.retailer + ' ' + o.deal.name)}</a> ${usd(o.deal.price.usd)}${o.deal.price.regularUsd ? ` (was ${usd(o.deal.price.regularUsd)})` : ''}, about ${usd(o.savingUsd)} under buying the parts${o.deal.est ? ' (estimate)' : ''}${o.deal.saleEnds ? `, sale ends ${esc(o.deal.saleEnds)}` : ''}; ${esc(o.deal.asOf)}</div>`).join('') + (offers.length || pin ? `<div style="opacity:.7">Prices ${esc(DEAL_NOTE)}.</div>` : '');
     el.querySelector<HTMLAnchorElement>('.dmunpin')?.addEventListener('click', e => { e.preventDefault(); unpinDeal(); recompute(); });
   }
 
