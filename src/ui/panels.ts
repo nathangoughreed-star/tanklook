@@ -1,5 +1,6 @@
 // Sidebar wiring. Inputs write through store.update(); one sync() pulls every control back from the scene,
 // so undo/redo, file open and pointer drags all refresh the panels the same way.
+import { LEVELS, onPerf, perf, setAuto, setLevel } from '../render/perf';
 import { lifeStages } from '../data/lifestages';
 import { rng } from '../art/paint';
 import { GRAIN_LOOK, SUBSTRATES, drawFishCard } from '../art/placeholder';
@@ -983,6 +984,11 @@ Cancel, then change the name, to keep both.`)) return;
   $<HTMLSelectElement>('edge').onchange = e => store.update(s => { for (const t of s.tanks) t.render.edge = (e.target as HTMLSelectElement).value as TankSetup['render']['edge']; });
   $('pop').oninput = e => store.update(s => { for (const t of s.tanks) t.render.pop = +(e.target as HTMLInputElement).value / 100; });
   $('gridOn').onchange = e => store.edit(s => { s.render.grid = (e.target as HTMLInputElement).checked; });
+  // Performance: a per-viewer preference too (render/perf.ts); the readout is the frame rate while the camera moves
+  { const sl = $('perf'), au = $('perfAuto');
+    const show = () => { (sl as HTMLInputElement).value = String(perf.level); au.checked = perf.auto; $('oPerf').textContent = LEVELS[perf.level].name;
+      $('perfFps').textContent = perf.fps == null ? '' : `${Math.round(perf.fps)} fps while moving`; };
+    sl.oninput = () => setLevel(+(sl as HTMLInputElement).value); au.onchange = () => setAuto(au.checked); onPerf(show); show(); }
   // viewpoint map: a per-viewer display preference (browser storage), not scene data
   // the map's own × and "⌖ Map" button do the same as the checkbox; the viewer places and shows one map per view
   const mapCb = $('mapOn'), applyMap = () => { $('mapShow').classList.toggle('off', mapCb.checked); viewer.invalidate(); };

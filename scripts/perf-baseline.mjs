@@ -425,6 +425,29 @@ if (worst.length) {
         v.adaptive = true; v.govBudget = 26; v.govScale = 1; await sleep(400); out.G_reset = { ratio: v.renderer.getPixelRatio() };
         return out; })()`);
     }
+    // --perfcheck: the Performance levels (lane P1): the other film variant is linked while idle (program count grows, then a level switch
+    // adds none and its first frame is cheap), resting ratio per level, auto steps down on forced misses, the slider locks, the saved setting.
+    if (flag('perfcheck')) {
+      b.perfcheck = await br.ev(`(async () => {
+        const v = __gb.viewer, st = __gb.store, P = await import('/src/render/perf.ts'), raf = () => new Promise(r => requestAnimationFrame(r)), sleep = ms => new Promise(r => setTimeout(r, ms));
+        const orbit = async n => { for (let i = 0; i < n; i++) { st.cam(c => { c.az += 1.5; }); await raf(); } };
+        const films = () => { const l = []; for (const vp of v.active) for (const f of vp.frost ?? []) l.push(f.mesh.material); return l; };
+        const progs = () => v.renderer.info.programs.length, out = { dpr: devicePixelRatio, films: films().length };
+        out.progsAtLoad = progs(); await sleep(2500); out.progsAfterIdle = progs();
+        out.level0 = { transmission: films()[0]?.transmission ?? null, transparent: films()[0]?.transparent ?? null, ratio: v.renderer.getPixelRatio() };
+        // switch across the film rung: no new program, and how long its first frame takes
+        const p0 = progs(); P.setLevel(1); const t0 = performance.now(); await raf(); await raf(); const sw = +(performance.now() - t0).toFixed(1);
+        out.level1 = { transmission: films()[0]?.transmission ?? null, transparent: films()[0]?.transparent ?? null, newPrograms: progs() - p0, switchMs: sw, ratio: v.renderer.getPixelRatio(), auto: P.perf.auto };
+        v.draw(); out.png1 = v.renderer.domElement.toDataURL('image/png');
+        await sleep(300); const p1 = progs(); P.setLevel(0); await raf(); await raf(); out.backToFull = { transmission: films()[0]?.transmission ?? null, newPrograms: progs() - p1 };
+        out.ratios = []; for (const n of [2, 3, 4]) { P.setLevel(n); await raf(); await sleep(300); out.ratios.push({ level: n, ratio: +v.renderer.getPixelRatio().toFixed(3) }); }
+        // auto: reset, force misses, it must climb; then the slider locks it
+        P.setAuto(true); P.setLevel(0); P.setAuto(true); v.govBudget = 1; await orbit(400); out.autoClimb = { level: P.perf.level, auto: P.perf.auto, govScale: +v.govScale.toFixed(2), saved: localStorage.getItem('tanklook.perf') };
+        P.setLevel(2); await orbit(200); out.locked = { level: P.perf.level, auto: P.perf.auto };
+        v.govBudget = 26; P.setAuto(true); P.setLevel(0); P.setAuto(true); await sleep(300);
+        return out; })()`);
+      writeFileSync(`research/efficiency/P1-level1-${view}.png`, Buffer.from(b.perfcheck.png1.split(',')[1], 'base64')); delete b.perfcheck.png1;
+    }
     // --ab-shots dir: per --ab entry, the canvas PNG with side a (as shipped) and with side b (the rung), for scoring how different it looks (lane P1)
     if (opt('ab-shots')) {
       const dir = opt('ab-shots'); mkdirSync(dir, { recursive: true });

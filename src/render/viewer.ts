@@ -11,6 +11,8 @@ import { HOOD_H, PART, buildTank, disposeScene, envKey, lookKey, patchLook, patc
 import { drawViewMap } from './viewmap';
 import { applyFraming, fovFor, frameBox, frameStraightOn, placeCamera, windowCentre } from './camera';
 import { glowColor, placeSlice, roomLevel, setLightUniforms, setWaterUniforms } from './lighting';
+import { FROST } from './build';
+import { autoStep, levelOf, onPerf, perf, setFps } from './perf';
 import { wattsOf } from '../scene/lightout';
 import { placeShells } from './lightShells';
 import { onPictureLoad, setMaxAnisotropy } from './textures';
@@ -183,7 +185,12 @@ export class Viewer {
   private govSlow = 0;
   private govFast = 0;
   private govSkip = 0;
-  private baseRatio() { return Math.min(devicePixelRatio, 2); }
+  /** The ratio a full-quality picture is drawn at (an export always uses this), and what the Performance level draws at while still. */
+  private fullRatio() { return Math.min(devicePixelRatio, 2); }
+  private baseRatio() { return this.fullRatio() * levelOf().ratio; }
+  private frostPlain = false;
+  private variantDue = false;
+  private fpsShown = 0;
   private applyRatio(scale: number) { this.govApplied = scale; this.renderer.setPixelRatio(this.baseRatio() * scale); }
   /** The loop's draw: the motion-time ratio before it, the frame-gap bookkeeping after it. */
   private drawGoverned(built: boolean) {
@@ -195,9 +202,38 @@ export class Viewer {
     // only continuous motion counts: not the first frame of a burst, not a frame that built the scene or ran the reveal
     if (!this.adaptive || !motion || built || this.reveal || this.govSkip-- > 0) { this.govSlow = this.govFast = 0; return; }
     this.govGap = this.govGap ? 0.8 * this.govGap + 0.2 * gap : gap;
-    if (this.govGap > this.govBudget) { this.govFast = 0; if (++this.govSlow >= 8 && this.govScale > GOV_MIN) this.govStep(Math.max(GOV_MIN, this.govScale * 0.8)); }
+    if (t1 - this.fpsShown > 300) { this.fpsShown = t1; setFps(Math.min(60, 1000 / this.govGap)); }
+    if (this.govGap > this.govBudget) { this.govFast = 0; if (++this.govSlow >= 8) { if (this.govScale > GOV_MIN) this.govStep(Math.max(GOV_MIN, this.govScale * 0.8)); else if (autoStep(this.vps.some(vp => vp.frost?.length))) this.govStep(1); } }
     else if (this.govGap < this.govBudget * 0.7 && this.govScale < 1) { this.govSlow = 0; if (++this.govFast >= GOV_PROBE) this.govStep(Math.min(1, this.govScale * 1.15)); }
     else this.govSlow = this.govFast = 0;
+  }
+  /** The Performance level's frosted film: three's transmission look, or a plain translucent sheet (no second draw of the scene). */
+  private setFrostPlain(on: boolean) {
+    this.frostPlain = on;
+    for (const vp of this.vps) for (const f of vp.frost ?? []) {
+      const m = f.mesh.material as THREE.MeshPhysicalMaterial;
+      if (!!m.userData.frostPlain === on) continue;
+      m.userData.frostPlain = on;
+      if (on) { m.transmission = 0; m.transparent = true; m.opacity = 0.75; } else { m.transmission = FROST.transmission; m.transparent = false; m.opacity = 1; }
+      m.needsUpdate = true;
+    }
+    this.dirty = true;
+  }
+  /** A level was chosen (slider, auto step, or a load): its film and its resting ratio now. */
+  private applyLevel() {
+    this.setFrostPlain(levelOf().frostPlain);
+    this.govScale = 1; this.govGap = 0; this.govSlow = this.govFast = 0;
+    this.applyRatio(1); this.variantDue = true; this.dirty = true;
+  }
+  /**
+   * Link the other film's programs while the page is idle (flip, link everything that variant needs, flip back), so that moving
+   * the slider across the film rung switches live instead of waiting for a compile (D3D links take seconds).
+   */
+  private precompileVariant() {
+    this.variantDue = false;
+    if (!this.vps.some(vp => vp.frost?.length)) return;
+    const was = this.frostPlain;
+    this.setFrostPlain(!was); this.startLinks(); this.setFrostPlain(was);
   }
   private govStep(scale: number) { this.govScale = scale; this.govSlow = this.govFast = 0; this.govGap = 0; this.govSkip = 6; this.dirty = true; }
   /** Nothing drawn for GOV_REST ms: the camera has stopped, so give the full picture back. */
@@ -271,7 +307,7 @@ export class Viewer {
     // a stencil buffer: hardscape cut open by the glass is capped (render/items.ts capPasses), the beam overlay drawn once
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: false, stencil: true });
     capping.on = !!this.renderer.getContext().getContextAttributes()?.stencil;
-    this.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    this.renderer.setPixelRatio(this.baseRatio());
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.localClippingEnabled = true; // hardscape is cut off at the glass (render/items.ts solidMaterial)
     // a mesh frostCull leaves out of the transmission pass draws nothing there, but three would still pick (and on a
@@ -290,6 +326,8 @@ export class Viewer {
       || (this.rank.get(a.material) ?? 0) - (this.rank.get(b.material) ?? 0) || a.z - b.z || a.id - b.id);
     const S = store.scene;
     this.vps = (['A', 'B'] as const).map((key, i) => ({ i, key, cam: new THREE.PerspectiveCamera(40, 1, 10, 40000), S: S.tanks[0], T: S.tanks[0].tank, x: 0, y: 0, w: 1, h: 1 }));
+    let shownLevel = perf.level;
+    onPerf(() => { if (perf.level !== shownLevel) { shownLevel = perf.level; this.applyLevel(); } });
     store.subscribe(kind => { if (kind !== 'view') this.needsBuild = true; if (kind === 'load') this.revealNext = true; this.dirty = true; });
     new ResizeObserver(() => { this.dirty = true; }).observe(host);
     matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { this.dirty = true; });
@@ -302,7 +340,7 @@ export class Viewer {
         if (builtNow) this.buildAndLink();
         if (this.reveal) this.revealTick(performance.now());
         if (this.dirty && !this.reveal?.wait) { this.dirty = false; this.drawGoverned(builtNow); }
-        else this.govRest();
+        else { this.govRest(); if (this.variantDue && !this.reveal && !this.needsBuild && performance.now() - this.lastDrawAt > 400) this.precompileVariant(); }
       }
     });
   }
@@ -433,7 +471,7 @@ export class Viewer {
       compile(objs, vp);
       // a frosted film draws the opaque meshes a second time into its transmission picture, which takes linear colour:
       // another program each, for the meshes the frost cull leaves in (see the renderBufferDirect hook)
-      if (vp.frost?.length) {
+      if (vp.frost?.length && !this.frostPlain) {
         const culled = new Set(this.frostCull(vp));
         for (const o of culled) { o.onBeforeRender = THREE.Object3D.prototype.onBeforeRender; o.onAfterRender = THREE.Object3D.prototype.onAfterRender; }
         const prev = r.getRenderTarget();
@@ -525,10 +563,11 @@ export class Viewer {
           if (o.userData.overhead != null) vp.overhead!.push(o);
           if (((o as THREE.Mesh).material as THREE.Material | undefined)?.userData?.frost) vp.frost!.push({ mesh: o as THREE.Mesh, planes: outwardPlanes(o as THREE.Mesh, S.tank) });
         });
-        this.lastBuild[vp.i] = 'full';
+        this.lastBuild[vp.i] = 'full'; this.variantDue = true;
       }
       this.built[vp.i] = { env, look };
     }
+    this.setFrostPlain(levelOf().frostPlain); // a rebuilt film takes the level's look before its programs are linked
     this.needsBuild = false;
   }
 
@@ -676,7 +715,7 @@ export class Viewer {
    * Returns the meshes whose hooks to reset after the render.
    */
   private frostCull(vp: Viewport): THREE.Object3D[] {
-    if (!vp.frost?.length || !vp.scene) return [];
+    if (!vp.frost?.length || !vp.scene || this.frostPlain) return [];
     const eye = vp.cam.position;
     if (vp.frost.some(f => f.planes.some(p => p.distanceToPoint(eye) > 0))) return [];
     vp.scene.updateMatrixWorld(); // meshes built or patched since the last frame are placed first
@@ -826,14 +865,14 @@ export class Viewer {
 
   // ---------- Export: render bigger, crop to the tanks, label split views, then save ----------
   exportPNG(mult: number): Promise<Blob> {
-    const dpr = this.baseRatio(), k = dpr * mult;
+    const dpr = this.fullRatio(), k = dpr * mult;
     this.govApplied = 1; this.renderer.setPixelRatio(k);
     this.draw();
     const out = exportCrop(this.content, this.canvas.width / k, this.canvas.height / k);
     const t = document.createElement('canvas'); t.width = Math.round(out.w * k); t.height = Math.round(out.h * k);
     const g = t.getContext('2d')!;
     g.drawImage(this.canvas, out.x * k, out.y * k, t.width, t.height, 0, 0, t.width, t.height);
-    this.renderer.setPixelRatio(dpr); this.dirty = true; this.lastDrawAt = 0; // the next frame is a sharp one, not a motion frame
+    this.renderer.setPixelRatio(this.baseRatio()); this.dirty = true; this.lastDrawAt = 0; // the next frame is a sharp one, not a motion frame
     if (this.content.length > 1) { // split: an A / B badge at the top-left of each view, as in the Compare chips
       const fs = Math.round(Math.max(18, 0.035 * out.h) * k);
       g.font = `700 ${fs}px system-ui, "Segoe UI", sans-serif`; g.textBaseline = 'top';
