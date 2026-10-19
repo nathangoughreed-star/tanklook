@@ -1,0 +1,1964 @@
+{
+ "commit": "b5d8631c125cb0c20452b94a84d3a0bca37807c0",
+ "build": 695,
+ "dirty": true,
+ "when": "2026-10-19T11:55:58.529Z",
+ "browser": "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
+ "load": {
+  "before": {
+   "at": "2026-10-19T11:55:56.906Z",
+   "cpuBusyPct": 11,
+   "node": 3,
+   "msedge": 7,
+   "chrome": 26,
+   "claude": 22,
+   "devPorts": [],
+   "underLoad": false
+  },
+  "after": {
+   "at": "2026-10-19T11:59:07.451Z",
+   "cpuBusyPct": 12,
+   "node": 3,
+   "msedge": 7,
+   "chrome": 25,
+   "claude": 22,
+   "devPorts": [],
+   "underLoad": false
+  }
+ },
+ "sizes": {
+  "desktop2x": {
+   "planted": {
+    "firstDrawMs": 859,
+    "firstFrameMs": 1127,
+    "shaderMs": 293,
+    "programs": 36,
+    "domContentLoadedMs": 172,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      1400,
+      1700
+     ],
+     "pixelRatio": 2
+    },
+    "memory": {
+     "geometries": 301,
+     "textures": 42,
+     "programs": 37
+    },
+    "heapMB": 19.9,
+    "steady": {
+     "gpu": 12.87,
+     "gpuMin": 12.48,
+     "cpu": 3.7,
+     "calls": 472,
+     "triangles": 1759082,
+     "samples": 5
+    },
+    "rebuild": {
+     "cpu": 106.7,
+     "wall": 108.8,
+     "gpu": 77.61,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 42,
+      "triangles": 845954
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 18,
+      "triangles": 86
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 10,
+      "triangles": 0
+     },
+     "ShaderMaterial (transparent)": {
+      "meshes": 2,
+      "triangles": 10
+     },
+     "sub": {
+      "meshes": 2,
+      "triangles": 704
+     },
+     "room": {
+      "meshes": 13,
+      "triangles": 106
+     },
+     "LineBasicMaterial": {
+      "meshes": 8,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 42,
+      "triangles": 75304
+     },
+     "solid": {
+      "meshes": 2,
+      "triangles": 1000
+     },
+     "plantClip+card+post": {
+      "meshes": 54,
+      "triangles": 543216
+     },
+     "fishCard+card": {
+      "meshes": 106,
+      "triangles": 1488
+     },
+     "fish+plain": {
+      "meshes": 34,
+      "triangles": 75208
+     },
+     "fish": {
+      "meshes": 76,
+      "triangles": 90832
+     },
+     "fish (transparent)": {
+      "meshes": 39,
+      "triangles": 117172
+     },
+     "card": {
+      "meshes": 2,
+      "triangles": 4
+     },
+     "glow": {
+      "meshes": 1,
+      "triangles": 6080
+     }
+    }
+   },
+   "iwagumi": {
+    "firstDrawMs": 1041,
+    "firstFrameMs": 1043,
+    "shaderMs": 22,
+    "programs": 41,
+    "domContentLoadedMs": 234,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      1400,
+      1700
+     ],
+     "pixelRatio": 2
+    },
+    "memory": {
+     "geometries": 69,
+     "textures": 4,
+     "programs": 41
+    },
+    "heapMB": 21.1,
+    "steady": {
+     "gpu": 11.8,
+     "gpuMin": 11.13,
+     "cpu": 5.5,
+     "calls": 168,
+     "triangles": 8718,
+     "samples": 5
+    },
+    "rebuild": {
+     "cpu": 174.3,
+     "wall": 177.5,
+     "gpu": 100.33,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 37,
+      "triangles": 6076
+     },
+     "frost": {
+      "meshes": 1,
+      "triangles": 2
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 16,
+      "triangles": 82
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 10,
+      "triangles": 0
+     },
+     "ShaderMaterial (transparent)": {
+      "meshes": 3,
+      "triangles": 22
+     },
+     "sub": {
+      "meshes": 2,
+      "triangles": 688
+     },
+     "room": {
+      "meshes": 13,
+      "triangles": 106
+     },
+     "LineBasicMaterial": {
+      "meshes": 8,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 41,
+      "triangles": 145212
+     },
+     "solid": {
+      "meshes": 24,
+      "triangles": 7680
+     },
+     "solid+post": {
+      "meshes": 5,
+      "triangles": 1600
+     },
+     "plantClip+card+post": {
+      "meshes": 150,
+      "triangles": 401120
+     },
+     "fishCard+card": {
+      "meshes": 79,
+      "triangles": 1240
+     },
+     "fish+plain": {
+      "meshes": 23,
+      "triangles": 50876
+     },
+     "fish": {
+      "meshes": 133,
+      "triangles": 229920
+     },
+     "fish (transparent)": {
+      "meshes": 13,
+      "triangles": 9012
+     },
+     "glow": {
+      "meshes": 1,
+      "triangles": 4000
+     }
+    }
+   },
+   "reef": {
+    "firstDrawMs": 1143,
+    "firstFrameMs": 1157,
+    "shaderMs": 46,
+    "programs": 32,
+    "domContentLoadedMs": 150,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      1400,
+      1700
+     ],
+     "pixelRatio": 2
+    },
+    "memory": {
+     "geometries": 112,
+     "textures": 2,
+     "programs": 32
+    },
+    "heapMB": 17.3,
+    "steady": {
+     "gpu": 7.79,
+     "gpuMin": 7.45,
+     "cpu": 1.9,
+     "calls": 203,
+     "triangles": 14364,
+     "samples": 5
+    },
+    "rebuild": {
+     "cpu": 88.4,
+     "wall": 90.9,
+     "gpu": 57.13,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 64,
+      "triangles": 11067
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 13,
+      "triangles": 479
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 10,
+      "triangles": 0
+     },
+     "ShaderMaterial (transparent)": {
+      "meshes": 4,
+      "triangles": 303
+     },
+     "sub": {
+      "meshes": 2,
+      "triangles": 766
+     },
+     "room": {
+      "meshes": 13,
+      "triangles": 486
+     },
+     "LineBasicMaterial": {
+      "meshes": 8,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 14,
+      "triangles": 20960
+     },
+     "solid": {
+      "meshes": 35,
+      "triangles": 159028
+     },
+     "fishCard+card": {
+      "meshes": 16,
+      "triangles": 232
+     },
+     "fish+plain": {
+      "meshes": 5,
+      "triangles": 11060
+     },
+     "fish": {
+      "meshes": 74,
+      "triangles": 126848
+     },
+     "fish (transparent)": {
+      "meshes": 1,
+      "triangles": 480
+     },
+     "card": {
+      "meshes": 5,
+      "triangles": 130
+     },
+     "glow": {
+      "meshes": 6,
+      "triangles": 768
+     }
+    }
+   }
+  }
+ },
+ "breakdown": {
+  "planted": {
+   "buckets": null,
+   "programs": [
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "0,1,onBeforeCompile() {}"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 6,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,3,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "4,5,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,6,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "7,8,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 23,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 16,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "9,10,highp,srgb,false,,false,false,false,false,false,false,f"
+    },
+    {
+     "name": "",
+     "usedTimes": 6,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 12,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb-linear,false,,false,false,false,false,false"
+    }
+   ],
+   "extra": {
+    "pixel ratio 2 -> 1.5; B - A < 0 saves": {
+     "gpuA": 13.58,
+     "gpuB": 11.26,
+     "delta": -2.59,
+     "cpuA": 2.8,
+     "cpuB": 2.8,
+     "cpuDelta": 0
+    },
+    "pixel ratio 2 -> 1.25; B - A < 0 saves": {
+     "gpuA": 14.29,
+     "gpuB": 9.96,
+     "delta": -4.5,
+     "cpuA": 2.6,
+     "cpuB": 2.5,
+     "cpuDelta": -0.1
+    },
+    "pixel ratio 2 -> 1; B - A < 0 saves": {
+     "gpuA": 14.75,
+     "gpuB": 8.63,
+     "delta": -5.9,
+     "cpuA": 2.7,
+     "cpuB": 2.4,
+     "cpuDelta": -0.3
+    },
+    "pixel ratio 2 -> 0.75; B - A < 0 saves": {
+     "gpuA": 15.59,
+     "gpuB": 7.27,
+     "delta": -8.35,
+     "cpuA": 2.6,
+     "cpuB": 2.4,
+     "cpuDelta": -0.2
+    },
+    "frosted film -> plain translucent sheet; B - A < 0 saves": {
+     "gpuA": 10.6,
+     "gpuB": 10.56,
+     "delta": 0,
+     "cpuA": 2.4,
+     "cpuB": 2.4,
+     "cpuDelta": 0
+    },
+    "UPPER BOUND: plants hidden; B - A < 0 saves": {
+     "gpuA": 10.71,
+     "gpuB": 7.08,
+     "delta": -3.71,
+     "cpuA": 2.4,
+     "cpuB": 2.2,
+     "cpuDelta": -0.2
+    },
+    "UPPER BOUND: fish fin cards hidden; B - A < 0 saves": {
+     "gpuA": 10.47,
+     "gpuB": 9.54,
+     "delta": -0.97,
+     "cpuA": 2.5,
+     "cpuB": 1.4,
+     "cpuDelta": -1.1
+    },
+    "UPPER BOUND: hardscape hidden; B - A < 0 saves": {
+     "gpuA": 10.61,
+     "gpuB": 10.46,
+     "delta": -0.17,
+     "cpuA": 2.45,
+     "cpuB": 2.5,
+     "cpuDelta": 0.05
+    }
+   },
+   "editProfiles": {
+    "water colour": {
+     "draws": 1,
+     "self": [
+      {
+       "f": "readPixels",
+       "msPerDraw": 25.003
+      },
+      {
+       "f": "addSrc src/scene/lightout.ts:850",
+       "msPerDraw": 21.268
+      },
+      {
+       "f": "bandsAt src/scene/lightout.ts:879",
+       "msPerDraw": 7.846
+      },
+      {
+       "f": "sync src/ui/panels.ts:2901",
+       "msPerDraw": 2.705
+      },
+      {
+       "f": "footprint src/scene/shape.ts:229",
+       "msPerDraw": 1.773
+      },
+      {
+       "f": "bufferData",
+       "msPerDraw": 1.178
+      },
+      {
+       "f": "WebGLRenderer.renderBufferDirect deps/three.js:15996",
+       "msPerDraw": 1.159
+      },
+      {
+       "f": "smooth src/scene/lightout.ts:797",
+       "msPerDraw": 1.149
+      },
+      {
+       "f": "uploadPlant src/render/plant3d.ts:1967",
+       "msPerDraw": 0.615
+      },
+      {
+       "f": "uniform1f",
+       "msPerDraw": 0.59
+      },
+      {
+       "f": "get deps/three.js:11883",
+       "msPerDraw": 0.582
+      },
+      {
+       "f": "(anon) src/ui/panels.ts:3611",
+       "msPerDraw": 0.579
+      },
+      {
+       "f": "(anon) src/render/viewer.ts:895",
+       "msPerDraw": 0.576
+      },
+      {
+       "f": "bindVertexArray",
+       "msPerDraw": 0.576
+      },
+      {
+       "f": "draw src/render/viewer.ts:724",
+       "msPerDraw": 0.574
+      },
+      {
+       "f": "needsUpdate deps/three.js:8671",
+       "msPerDraw": 0.574
+      },
+      {
+       "f": "lookKey src/render/build.ts:1791",
+       "msPerDraw": 0.569
+      },
+      {
+       "f": "(anon) src/render/viewer.ts:875",
+       "msPerDraw": 0.568
+      },
+      {
+       "f": "h src/scene/lightout.ts:1002",
+       "msPerDraw": 0.567
+      },
+      {
+       "f": "renderObject deps/three.js:16356",
+       "msPerDraw": 0.561
+      },
+      {
+       "f": "setVal src/ui/panels.ts:2684",
+       "msPerDraw": 0.559
+      },
+      {
+       "f": "(anon)",
+       "msPerDraw": 0.553
+      },
+      {
+       "f": "labelOf src/scene/lightcheck.ts:110",
+       "msPerDraw": 0.548
+      },
+      {
+       "f": "(anon) src/render/build.ts:2306",
+       "msPerDraw": 0.538
+      },
+      {
+       "f": "upload deps/three.js:10814",
+       "msPerDraw": 0.522
+      },
+      {
+       "f": "setProgram deps/three.js:16459",
+       "msPerDraw": 0.472
+      },
+      {
+       "f": "gpuParts src/render/plant3d.ts:1433",
+       "msPerDraw": 0.335
+      },
+      {
+       "f": "multiplyMatrices deps/three.js:3741",
+       "msPerDraw": 0.099
+      }
+     ],
+     "inclusive": [
+      {
+       "f": "(anon)",
+       "msPerDraw": 66.487
+      },
+      {
+       "f": "update src/scene/store.ts:197",
+       "msPerDraw": 36.415
+      },
+      {
+       "f": "editTank src/scene/store.ts:111",
+       "msPerDraw": 36.415
+      },
+      {
+       "f": "ed src/render/incrementalCheck.ts:8",
+       "msPerDraw": 36.415
+      },
+      {
+       "f": "(anon) src/render/incrementalCheck.ts:62",
+       "msPerDraw": 36.415
+      },
+      {
+       "f": "sync src/ui/panels.ts:2901",
+       "msPerDraw": 35.835
+      },
+      {
+       "f": "(anon) src/ui/panels.ts:3730",
+       "msPerDraw": 35.835
+      },
+      {
+       "f": "emit src/scene/store.ts:62",
+       "msPerDraw": 35.835
+      },
+      {
+       "f": "bandsAt src/scene/lightout.ts:879",
+       "msPerDraw": 30.263
+      },
+      {
+       "f": "cached src/scene/lightout.ts:1098",
+       "msPerDraw": 30.242
+      },
+      {
+       "f": "lightOut src/scene/lightout.ts:1023",
+       "msPerDraw": 28.452
+      },
+      {
+       "f": "(anon) src/scene/lightout.ts:1110",
+       "msPerDraw": 28.452
+      },
+      {
+       "f": "lightOutCached src/scene/lightout.ts:1107",
+       "msPerDraw": 28.452
+      },
+      {
+       "f": "renderPlantGate src/ui/panels.ts:2145",
+       "msPerDraw": 28.452
+      },
+      {
+       "f": "readPixels",
+       "msPerDraw": 25.003
+      },
+      {
+       "f": "addSrc src/scene/lightout.ts:850",
+       "msPerDraw": 21.268
+      },
+      {
+       "f": "draw src/render/viewer.ts:724",
+       "msPerDraw": 8.539
+      },
+      {
+       "f": "WebGLRenderer.render deps/three.js:16153",
+       "msPerDraw": 6.313
+      },
+      {
+       "f": "renderObject deps/three.js:16356",
+       "msPerDraw": 5.135
+      },
+      {
+       "f": "renderObjects deps/three.js:16345",
+       "msPerDraw": 5.135
+      },
+      {
+       "f": "renderScene deps/three.js:16271",
+       "msPerDraw": 5.135
+      },
+      {
+       "f": "bounce src/scene/lightout.ts:969",
+       "msPerDraw": 4.903
+      },
+      {
+       "f": "lightEnv src/scene/lightout.ts:935",
+       "msPerDraw": 4.903
+      },
+      {
+       "f": "WebGLRenderer.renderBufferDirect deps/three.js:15996",
+       "msPerDraw": 4.475
+      },
+      {
+       "f": "(anon) src/render/viewer.ts:342",
+       "msPerDraw": 4.023
+      },
+      {
+       "f": "onAnimationFrame deps/three.js:16134",
+       "msPerDraw": 4.023
+      },
+      {
+       "f": "onAnimationFrame deps/three.js:7707",
+       "msPerDraw": 4.023
+      },
+      {
+       "f": "tankSummary src/scene/lightcheck.ts:64",
+       "msPerDraw": 2.926
+      },
+      {
+       "f": "itemLights src/scene/lightcheck.ts:16",
+       "msPerDraw": 2.378
+      },
+      {
+       "f": "setProgram deps/three.js:16459",
+       "msPerDraw": 2.166
+      },
+      {
+       "f": "uploadPlant src/render/plant3d.ts:1967",
+       "msPerDraw": 2.128
+      },
+      {
+       "f": "uploadNext src/render/items.ts:1235",
+       "msPerDraw": 2.128
+      },
+      {
+       "f": "(anon) src/scene/lightout.ts:1129",
+       "msPerDraw": 1.79
+      },
+      {
+       "f": "lightEnvCached src/scene/lightout.ts:1126",
+       "msPerDraw": 1.79
+      },
+      {
+       "f": "footprint src/scene/shape.ts:229",
+       "msPerDraw": 1.773
+      },
+      {
+       "f": "insideBy src/scene/shape.ts:268",
+       "msPerDraw": 1.193
+      },
+      {
+       "f": "inside src/scene/shape.ts:274",
+       "msPerDraw": 1.193
+      },
+      {
+       "f": "tankWeight src/scene/weight.ts:16",
+       "msPerDraw": 1.193
+      },
+      {
+       "f": "bufferData",
+       "msPerDraw": 1.178
+      },
+      {
+       "f": "createBuffer deps/three.js:7732",
+       "msPerDraw": 1.178
+      }
+     ],
+     "gcMsPerDraw": 5.97
+    }
+   },
+   "extraApplied": null
+  },
+  "iwagumi": {
+   "buckets": null,
+   "programs": [
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "0,1,onBeforeCompile() {}"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "physical,STANDARD,,PHYSICAL,,highp,srgb,false,,false,false,f"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 6,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,3,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "4,5,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,6,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "7,8,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 23,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 7,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "9,10,highp,srgb,false,,false,false,false,false,false,false,f"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "11,10,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 10,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb-linear,false,,false,false,false,false,false"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb-linear,false,,false,false,false,false,false"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "7,8,highp,srgb-linear,false,,false,false,false,false,false,f"
+    },
+    {
+     "name": "",
+     "usedTimes": 23,
+     "key": "basic,highp,srgb-linear,false,,false,false,false,false,false"
+    },
+    {
+     "name": "",
+     "usedTimes": 6,
+     "key": "basic,highp,srgb-linear,false,,false,false,false,false,false"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "physical,STANDARD,,PHYSICAL,,highp,srgb-linear,false,,false,"
+    }
+   ],
+   "extra": {
+    "pixel ratio 2 -> 1.5; B - A < 0 saves": {
+     "gpuA": 19.11,
+     "gpuB": 12.27,
+     "delta": -6.37,
+     "cpuA": 4.6,
+     "cpuB": 4.3,
+     "cpuDelta": -0.3
+    },
+    "pixel ratio 2 -> 1.25; B - A < 0 saves": {
+     "gpuA": 17.64,
+     "gpuB": 8.52,
+     "delta": -9.01,
+     "cpuA": 4.4,
+     "cpuB": 4.3,
+     "cpuDelta": -0.1
+    },
+    "pixel ratio 2 -> 1; B - A < 0 saves": {
+     "gpuA": 22.47,
+     "gpuB": 7.89,
+     "delta": -13.86,
+     "cpuA": 4.45,
+     "cpuB": 4.2,
+     "cpuDelta": -0.25
+    },
+    "pixel ratio 2 -> 0.75; B - A < 0 saves": {
+     "gpuA": 20.52,
+     "gpuB": 5.87,
+     "delta": -14.48,
+     "cpuA": 4.35,
+     "cpuB": 4.1,
+     "cpuDelta": -0.25
+    },
+    "frosted film -> plain translucent sheet; B - A < 0 saves": {
+     "gpuA": 14.76,
+     "gpuB": 8.02,
+     "delta": -6.91,
+     "cpuA": 4.2,
+     "cpuB": 3.5,
+     "cpuDelta": -0.7
+    },
+    "UPPER BOUND: plants hidden; B - A < 0 saves": {
+     "gpuA": 13.98,
+     "gpuB": 11.12,
+     "delta": -2.91,
+     "cpuA": 4.4,
+     "cpuB": 4,
+     "cpuDelta": -0.4
+    },
+    "UPPER BOUND: fish fin cards hidden; B - A < 0 saves": {
+     "gpuA": 14.49,
+     "gpuB": 13.33,
+     "delta": -1.15,
+     "cpuA": 4.6,
+     "cpuB": 3.6,
+     "cpuDelta": -1
+    },
+    "UPPER BOUND: hardscape hidden; B - A < 0 saves": {
+     "gpuA": 14.55,
+     "gpuB": 13.6,
+     "delta": -0.91,
+     "cpuA": 4.5,
+     "cpuB": 4.3,
+     "cpuDelta": -0.2
+    }
+   },
+   "editProfiles": {
+    "water colour": {
+     "draws": 1,
+     "self": [
+      {
+       "f": "readPixels",
+       "msPerDraw": 17.045
+      },
+      {
+       "f": "addSrc src/scene/lightout.ts:850",
+       "msPerDraw": 15.49
+      },
+      {
+       "f": "bandsAt src/scene/lightout.ts:879",
+       "msPerDraw": 5.757
+      },
+      {
+       "f": "tankWeight src/scene/weight.ts:16",
+       "msPerDraw": 1.798
+      },
+      {
+       "f": "smooth src/scene/lightout.ts:797",
+       "msPerDraw": 1.709
+      },
+      {
+       "f": "traverse deps/three.js:4540",
+       "msPerDraw": 1.313
+      },
+      {
+       "f": "multiplyMatrices deps/three.js:3741",
+       "msPerDraw": 1.175
+      },
+      {
+       "f": "bindVertexArray",
+       "msPerDraw": 1.155
+      },
+      {
+       "f": "setVal src/ui/panels.ts:2684",
+       "msPerDraw": 1.149
+      },
+      {
+       "f": "sync src/ui/panels.ts:2901",
+       "msPerDraw": 0.746
+      },
+      {
+       "f": "itemDims src/scene/items.ts:1322",
+       "msPerDraw": 0.694
+      },
+      {
+       "f": "(anon) src/scene/shape.ts:405",
+       "msPerDraw": 0.685
+      },
+      {
+       "f": "bounce src/scene/lightout.ts:969",
+       "msPerDraw": 0.684
+      },
+      {
+       "f": "draw src/render/viewer.ts:724",
+       "msPerDraw": 0.683
+      },
+      {
+       "f": "bufferData",
+       "msPerDraw": 0.649
+      },
+      {
+       "f": "C.<computed>",
+       "msPerDraw": 0.587
+      },
+      {
+       "f": "applyMatrix4 deps/three.js:3127",
+       "msPerDraw": 0.587
+      },
+      {
+       "f": "getExtension deps/three.js:9866",
+       "msPerDraw": 0.584
+      },
+      {
+       "f": "unitKey src/scene/lightout.ts:1065",
+       "msPerDraw": 0.579
+      },
+      {
+       "f": "setProgram deps/three.js:16459",
+       "msPerDraw": 0.577
+      },
+      {
+       "f": "setIndex deps/three.js:9996",
+       "msPerDraw": 0.575
+      },
+      {
+       "f": "WebGLRenderer.renderBufferDirect deps/three.js:15996",
+       "msPerDraw": 0.572
+      },
+      {
+       "f": "lightOut src/scene/lightout.ts:1023",
+       "msPerDraw": 0.569
+      },
+      {
+       "f": "uniformMatrix4fv",
+       "msPerDraw": 0.565
+      },
+      {
+       "f": "setValue deps/three.js:10806",
+       "msPerDraw": 0.563
+      },
+      {
+       "f": "getObjectByProperty deps/three.js:4507",
+       "msPerDraw": 0.562
+      },
+      {
+       "f": "setup deps/three.js:8606",
+       "msPerDraw": 0.559
+      },
+      {
+       "f": "disable deps/three.js:12961",
+       "msPerDraw": 0.558
+      },
+      {
+       "f": "refreshTransformUniform deps/three.js:15191",
+       "msPerDraw": 0.514
+      },
+      {
+       "f": "worker.onmessage src/render/items.ts:1217",
+       "msPerDraw": 0.43
+      }
+     ],
+     "inclusive": [
+      {
+       "f": "(anon)",
+       "msPerDraw": 53.809
+      },
+      {
+       "f": "update src/scene/store.ts:197",
+       "msPerDraw": 28.596
+      },
+      {
+       "f": "editTank src/scene/store.ts:111",
+       "msPerDraw": 28.596
+      },
+      {
+       "f": "ed src/render/incrementalCheck.ts:8",
+       "msPerDraw": 28.596
+      },
+      {
+       "f": "(anon) src/render/incrementalCheck.ts:62",
+       "msPerDraw": 28.596
+      },
+      {
+       "f": "sync src/ui/panels.ts:2901",
+       "msPerDraw": 27.902
+      },
+      {
+       "f": "(anon) src/ui/panels.ts:3730",
+       "msPerDraw": 27.902
+      },
+      {
+       "f": "emit src/scene/store.ts:62",
+       "msPerDraw": 27.902
+      },
+      {
+       "f": "bandsAt src/scene/lightout.ts:879",
+       "msPerDraw": 22.956
+      },
+      {
+       "f": "cached src/scene/lightout.ts:1098",
+       "msPerDraw": 22.175
+      },
+      {
+       "f": "lightOutCached src/scene/lightout.ts:1107",
+       "msPerDraw": 21.637
+      },
+      {
+       "f": "lightOut src/scene/lightout.ts:1023",
+       "msPerDraw": 21.058
+      },
+      {
+       "f": "(anon) src/scene/lightout.ts:1110",
+       "msPerDraw": 21.058
+      },
+      {
+       "f": "renderPlantGate src/ui/panels.ts:2145",
+       "msPerDraw": 21.058
+      },
+      {
+       "f": "readPixels",
+       "msPerDraw": 17.045
+      },
+      {
+       "f": "addSrc src/scene/lightout.ts:850",
+       "msPerDraw": 15.49
+      },
+      {
+       "f": "draw src/render/viewer.ts:724",
+       "msPerDraw": 12.393
+      },
+      {
+       "f": "WebGLRenderer.render deps/three.js:16153",
+       "msPerDraw": 8.633
+      },
+      {
+       "f": "renderObject deps/three.js:16356",
+       "msPerDraw": 6.85
+      },
+      {
+       "f": "renderObjects deps/three.js:16345",
+       "msPerDraw": 6.85
+      },
+      {
+       "f": "WebGLRenderer.renderBufferDirect deps/three.js:15996",
+       "msPerDraw": 6.251
+      },
+      {
+       "f": "renderScene deps/three.js:16271",
+       "msPerDraw": 5.141
+      },
+      {
+       "f": "(anon) src/render/viewer.ts:342",
+       "msPerDraw": 4.59
+      },
+      {
+       "f": "onAnimationFrame deps/three.js:7707",
+       "msPerDraw": 4.59
+      },
+      {
+       "f": "bounce src/scene/lightout.ts:969",
+       "msPerDraw": 3.585
+      },
+      {
+       "f": "lightEnv src/scene/lightout.ts:935",
+       "msPerDraw": 3.585
+      },
+      {
+       "f": "itemLights src/scene/lightcheck.ts:16",
+       "msPerDraw": 3.151
+      },
+      {
+       "f": "tankSummary src/scene/lightcheck.ts:64",
+       "msPerDraw": 3.151
+      },
+      {
+       "f": "renderTransmissionPass deps/three.js:16286",
+       "msPerDraw": 2.267
+      },
+      {
+       "f": "setProgram deps/three.js:16459",
+       "msPerDraw": 2.24
+      },
+      {
+       "f": "lightOfItem src/scene/lightcheck.ts:28",
+       "msPerDraw": 2.034
+      },
+      {
+       "f": "traverse deps/three.js:4540",
+       "msPerDraw": 1.9
+      },
+      {
+       "f": "tankWeight src/scene/weight.ts:16",
+       "msPerDraw": 1.798
+      },
+      {
+       "f": "setup deps/three.js:8606",
+       "msPerDraw": 1.714
+      },
+      {
+       "f": "smooth src/scene/lightout.ts:797",
+       "msPerDraw": 1.709
+      },
+      {
+       "f": "build src/render/viewer.ts:644",
+       "msPerDraw": 1.313
+      },
+      {
+       "f": "multiplyMatrices deps/three.js:3741",
+       "msPerDraw": 1.175
+      },
+      {
+       "f": "bindVertexArray",
+       "msPerDraw": 1.155
+      },
+      {
+       "f": "setVal src/ui/panels.ts:2684",
+       "msPerDraw": 1.149
+      },
+      {
+       "f": "(anon) src/scene/lightout.ts:1129",
+       "msPerDraw": 1.117
+      }
+     ],
+     "gcMsPerDraw": 1.49
+    }
+   },
+   "extraApplied": null
+  },
+  "reef": {
+   "buckets": null,
+   "programs": [
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "0,1,onBeforeCompile() {}"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 6,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "2,3,USE_NORMALS,,highp,srgb,false,,false,false,false,false,f"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "4,5,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "6,7,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "4,8,highp,srgb,false,,false,false,false,false,false,false,fa"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 5,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 3,
+     "key": "9,10,highp,srgb,false,,false,false,false,false,false,false,f"
+    },
+    {
+     "name": "",
+     "usedTimes": 23,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 13,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 4,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "11,12,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 6,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 4,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 7,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "13,12,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 4,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 2,
+     "key": "basic,highp,srgb,false,,uv,false,false,false,false,false,fal"
+    },
+    {
+     "name": "",
+     "usedTimes": 16,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    },
+    {
+     "name": "",
+     "usedTimes": 1,
+     "key": "basic,highp,srgb,false,,false,false,false,false,false,false,"
+    }
+   ],
+   "extra": {
+    "pixel ratio 2 -> 1.5; B - A < 0 saves": {
+     "gpuA": 14.11,
+     "gpuB": 11.72,
+     "delta": -2.93,
+     "cpuA": 2.6,
+     "cpuB": 2.5,
+     "cpuDelta": -0.1
+    },
+    "pixel ratio 2 -> 1.25; B - A < 0 saves": {
+     "gpuA": 16.29,
+     "gpuB": 11.22,
+     "delta": -4.59,
+     "cpuA": 2.5,
+     "cpuB": 2.4,
+     "cpuDelta": -0.1
+    },
+    "pixel ratio 2 -> 1; B - A < 0 saves": {
+     "gpuA": 15.94,
+     "gpuB": 8.75,
+     "delta": -5.93,
+     "cpuA": 2.5,
+     "cpuB": 2.4,
+     "cpuDelta": -0.1
+    },
+    "pixel ratio 2 -> 0.75; B - A < 0 saves": {
+     "gpuA": 16.74,
+     "gpuB": 7.32,
+     "delta": -9.33,
+     "cpuA": 2.5,
+     "cpuB": 2.3,
+     "cpuDelta": -0.2
+    },
+    "frosted film -> plain translucent sheet; B - A < 0 saves": {
+     "gpuA": 9.66,
+     "gpuB": 9.82,
+     "delta": 0.04,
+     "cpuA": 2.3,
+     "cpuB": 2.3,
+     "cpuDelta": 0
+    },
+    "UPPER BOUND: plants hidden; B - A < 0 saves": {
+     "gpuA": 10.55,
+     "gpuB": 10.53,
+     "delta": 0.01,
+     "cpuA": 2.2,
+     "cpuB": 2.2,
+     "cpuDelta": 0
+    },
+    "UPPER BOUND: fish fin cards hidden; B - A < 0 saves": {
+     "gpuA": 9.93,
+     "gpuB": 9.34,
+     "delta": -0.52,
+     "cpuA": 2.4,
+     "cpuB": 1.8,
+     "cpuDelta": -0.6
+    },
+    "UPPER BOUND: hardscape hidden; B - A < 0 saves": {
+     "gpuA": 9.35,
+     "gpuB": 4.09,
+     "delta": -5.14,
+     "cpuA": 2.4,
+     "cpuB": 2.2,
+     "cpuDelta": -0.2
+    }
+   },
+   "editProfiles": {
+    "water colour": {
+     "draws": 1,
+     "self": [
+      {
+       "f": "readPixels",
+       "msPerDraw": 17.516
+      },
+      {
+       "f": "sync src/ui/panels.ts:2901",
+       "msPerDraw": 2.261
+      },
+      {
+       "f": "toArray deps/three.js:2866",
+       "msPerDraw": 1.853
+      },
+      {
+       "f": "insideBy src/scene/shape.ts:268",
+       "msPerDraw": 1.733
+      },
+      {
+       "f": "inside src/scene/shape.ts:274",
+       "msPerDraw": 1.709
+      },
+      {
+       "f": "addSrc src/scene/lightout.ts:850",
+       "msPerDraw": 1.211
+      },
+      {
+       "f": "copy deps/three.js:3205",
+       "msPerDraw": 1.195
+      },
+      {
+       "f": "frameBox src/render/camera.ts:22",
+       "msPerDraw": 1.134
+      },
+      {
+       "f": "seqWithValue deps/three.js:10820",
+       "msPerDraw": 0.716
+      },
+      {
+       "f": "flatten deps/three.js:10290",
+       "msPerDraw": 0.698
+      },
+      {
+       "f": "(anon)",
+       "msPerDraw": 0.68
+      },
+      {
+       "f": "renderPlantGate src/ui/panels.ts:2145",
+       "msPerDraw": 0.583
+      },
+      {
+       "f": "getBindingState deps/three.js:8631",
+       "msPerDraw": 0.57
+      },
+      {
+       "f": "setValueM4 deps/three.js:10411",
+       "msPerDraw": 0.56
+      },
+      {
+       "f": "drawViewMap src/render/viewmap.ts:7",
+       "msPerDraw": 0.557
+      },
+      {
+       "f": "update src/scene/store.ts:197",
+       "msPerDraw": 0.545
+      },
+      {
+       "f": "$ src/ui/panels.ts:52",
+       "msPerDraw": 0.543
+      },
+      {
+       "f": "onAnimationFrame deps/three.js:7707",
+       "msPerDraw": 0.543
+      },
+      {
+       "f": "rootsKey src/render/roots.ts:294",
+       "msPerDraw": 0.54
+      },
+      {
+       "f": "bandsAt src/scene/lightout.ts:879",
+       "msPerDraw": 0.538
+      },
+      {
+       "f": "setVal src/ui/panels.ts:2684",
+       "msPerDraw": 0.535
+      },
+      {
+       "f": "beamExp src/scene/lightout.ts:807",
+       "msPerDraw": 0.43
+      },
+      {
+       "f": "bindVertexArray",
+       "msPerDraw": 0.373
+      },
+      {
+       "f": "setValueV4f deps/three.js:10367",
+       "msPerDraw": 0.236
+      },
+      {
+       "f": "needsUpdate deps/three.js:8671",
+       "msPerDraw": 0.167
+      },
+      {
+       "f": "setValueV3f deps/three.js:10345",
+       "msPerDraw": 0.061
+      }
+     ],
+     "inclusive": [
+      {
+       "f": "(anon)",
+       "msPerDraw": 33.094
+      },
+      {
+       "f": "readPixels",
+       "msPerDraw": 17.516
+      },
+      {
+       "f": "update src/scene/store.ts:197",
+       "msPerDraw": 10.088
+      },
+      {
+       "f": "editTank src/scene/store.ts:111",
+       "msPerDraw": 10.088
+      },
+      {
+       "f": "ed src/render/incrementalCheck.ts:8",
+       "msPerDraw": 10.088
+      },
+      {
+       "f": "(anon) src/render/incrementalCheck.ts:62",
+       "msPerDraw": 10.088
+      },
+      {
+       "f": "sync src/ui/panels.ts:2901",
+       "msPerDraw": 9.543
+      },
+      {
+       "f": "(anon) src/ui/panels.ts:3730",
+       "msPerDraw": 9.543
+      },
+      {
+       "f": "emit src/scene/store.ts:62",
+       "msPerDraw": 9.543
+      },
+      {
+       "f": "draw src/render/viewer.ts:724",
+       "msPerDraw": 8.66
+      },
+      {
+       "f": "WebGLRenderer.render deps/three.js:16153",
+       "msPerDraw": 6.429
+      },
+      {
+       "f": "WebGLRenderer.renderBufferDirect deps/three.js:15996",
+       "msPerDraw": 5.234
+      },
+      {
+       "f": "renderObject deps/three.js:16356",
+       "msPerDraw": 5.234
+      },
+      {
+       "f": "renderObjects deps/three.js:16345",
+       "msPerDraw": 5.234
+      },
+      {
+       "f": "renderScene deps/three.js:16271",
+       "msPerDraw": 5.234
+      },
+      {
+       "f": "onAnimationFrame deps/three.js:7707",
+       "msPerDraw": 4.393
+      },
+      {
+       "f": "setProgram deps/three.js:16459",
+       "msPerDraw": 4.124
+      },
+      {
+       "f": "(anon) src/render/viewer.ts:342",
+       "msPerDraw": 3.85
+      },
+      {
+       "f": "inside src/scene/shape.ts:274",
+       "msPerDraw": 3.442
+      },
+      {
+       "f": "tankWeight src/scene/weight.ts:16",
+       "msPerDraw": 3.442
+      },
+      {
+       "f": "upload deps/three.js:10814",
+       "msPerDraw": 2.848
+      },
+      {
+       "f": "renderPlantGate src/ui/panels.ts:2145",
+       "msPerDraw": 2.762
+      },
+      {
+       "f": "flatten deps/three.js:10290",
+       "msPerDraw": 2.551
+      },
+      {
+       "f": "lightOut src/scene/lightout.ts:1023",
+       "msPerDraw": 2.179
+      },
+      {
+       "f": "(anon) src/scene/lightout.ts:1110",
+       "msPerDraw": 2.179
+      },
+      {
+       "f": "cached src/scene/lightout.ts:1098",
+       "msPerDraw": 2.179
+      },
+      {
+       "f": "lightOutCached src/scene/lightout.ts:1107",
+       "msPerDraw": 2.179
+      },
+      {
+       "f": "toArray deps/three.js:2866",
+       "msPerDraw": 1.853
+      },
+      {
+       "f": "setValueV3fArray deps/three.js:10614",
+       "msPerDraw": 1.853
+      },
+      {
+       "f": "bandsAt src/scene/lightout.ts:879",
+       "msPerDraw": 1.749
+      },
+      {
+       "f": "insideBy src/scene/shape.ts:268",
+       "msPerDraw": 1.733
+      },
+      {
+       "f": "addSrc src/scene/lightout.ts:850",
+       "msPerDraw": 1.211
+      },
+      {
+       "f": "copy deps/three.js:3205",
+       "msPerDraw": 1.195
+      },
+      {
+       "f": "intersectsObject deps/three.js:7658",
+       "msPerDraw": 1.195
+      },
+      {
+       "f": "projectObject deps/three.js:16227",
+       "msPerDraw": 1.195
+      },
+      {
+       "f": "frameBox src/render/camera.ts:22",
+       "msPerDraw": 1.134
+      },
+      {
+       "f": "frameStraightOn src/render/camera.ts:62",
+       "msPerDraw": 1.134
+      },
+      {
+       "f": "(anon) src/render/viewer.ts:766",
+       "msPerDraw": 1.134
+      },
+      {
+       "f": "setup deps/three.js:8606",
+       "msPerDraw": 1.11
+      },
+      {
+       "f": "seqWithValue deps/three.js:10820",
+       "msPerDraw": 0.716
+      }
+     ],
+     "gcMsPerDraw": 0
+    }
+   },
+   "extraApplied": null
+  }
+ },
+ "prod": null,
+ "gpu": {
+  "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "timerQuery": true,
+  "buffer": [
+   1400,
+   1700
+  ],
+  "pixelRatio": 2
+ },
+ "seconds": 192
+}

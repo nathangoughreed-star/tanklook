@@ -375,3 +375,25 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Phase 2 build decisions (2026-10-08)
 - Phase 2 plan (approved 2026-10-08, built as above)
 
+
+## Lane P1: performance ladder (2026-10-19; research only, no src/ change yet)
+Goal (Nathan): a Performance slider so a laggy machine can orbit / pan at 30 fps. Steady orbit frame time is the target; load / rebuild
+cost is a separate, lower-priority track (E1 report). Design agreed in chat: (1) a motion layer: drop the pixel ratio while the camera
+moves and draw one full-quality frame ~150 ms after it stops (nothing changes on fast machines, it only acts when frames miss budget);
+(2) the slider holds heavier rungs and auto-steps down until 30 fps is held (smoothed, with a visible readout and manual lock).
+- Measured (research/efficiency/P1-*.json, 100 paired frames, RTX 500 Ada): pixel ratio 2 -> 1 saves 6-14 ms GPU; frosted film ->
+  plain sheet saves 6.9 ms on iwagumi (0 where there is no film; Nathan rated it unnoticeable on a still, 2026-10-19; recheck with
+  a picture behind the film); fin cards hidden removes every fish (not a rung). Plants / hardscape hidden are upper bounds only.
+- Real orbit at a stress pixel ratio of 5 (about 30 fps baseline): 28-33 fps at full ratio, 47-60 fps at 75 % of it. The sharp frame
+  after stopping costs 9-13 ms. So the motion-time drop alone fixes the stand-in case.
+- Frost swap changes the shader program (a long first link on D3D11): slider only, unless both variants are precompiled at load.
+- Tools: `scripts/perf-baseline.mjs --ab research/efficiency/P1-ab-rungs.mjs --ab-shots dir` (rung A/B + pictures), `--orbit R0`
+  (real orbit sweep); `research/efficiency/P1-score.py` (SSIM / colour diff), `P1-sheet.py` (rating sheets).
+- BUILT 2026-10-19 (render/viewer.ts `drawGoverned` / `govRest`): the motion-time ratio. While the camera moves and the frame gap
+  (EMA) is over `govBudget` (26 ms) for 8 frames, the pixel ratio steps down x0.8, never below half; the scale is kept for the next
+  orbit (the first frame of a burst is sharp); 150 ms with nothing drawn draws the full ratio; 600 fast frames probe one step up.
+  Skipped on build / reveal frames; `viewer.adaptive = false` turns it off; export always at full ratio. Checked with
+  `perf-baseline.mjs --governor` (no change at the default budget on this GPU; forced misses step to 0.5 and restore at rest).
+  The slider and the heavier rungs (frost swap, AA) are NOT built yet.
+- Open: antialiasing off (needs a renderer rebuild, manual option only); cheaper plant / stone shaders (the plant bucket is the
+  biggest GPU cost, 3-7 ms); a picture-behind-the-film rating row; then build the governor + slider in render/viewer.ts and ui.

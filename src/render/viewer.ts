@@ -163,11 +163,48 @@ function restoreRange(this: THREE.Object3D, _r: THREE.WebGLRenderer, _s: THREE.S
   g.drawRange.count = this.userData.range; delete this.userData.range;
 }
 
+const GOV_MIN = 0.5, GOV_MOTION_MS = 100, GOV_REST = 150, GOV_PROBE = 600; // lowest scale, a gap that still counts as motion, rest before the sharp frame, fast frames before a step up
 export class Viewer {
   readonly renderer: THREE.WebGLRenderer;
   readonly vps: Viewport[];
   private dirty = true;
   private needsBuild = true;
+  /**
+   * Motion-time resolution (lane P1, Nathan 2026-10-19): while the camera moves and frames run over `govBudget` ms, the pixel
+   * ratio steps down (never below half); `govScale` is what the machine needed and is kept, so the next orbit starts there.
+   * Once nothing has been drawn for GOV_REST ms the full ratio is drawn once. A machine that holds the budget never changes.
+   */
+  govBudget = 26;
+  adaptive = true;
+  private govScale = 1;
+  private govApplied = 1;
+  private lastDrawAt = 0;
+  private govGap = 0;
+  private govSlow = 0;
+  private govFast = 0;
+  private govSkip = 0;
+  private baseRatio() { return Math.min(devicePixelRatio, 2); }
+  private applyRatio(scale: number) { this.govApplied = scale; this.renderer.setPixelRatio(this.baseRatio() * scale); }
+  /** The loop's draw: the motion-time ratio before it, the frame-gap bookkeeping after it. */
+  private drawGoverned(built: boolean) {
+    const t0 = performance.now(), motion = t0 - this.lastDrawAt < GOV_MOTION_MS;
+    if (!this.adaptive) { if (this.govApplied !== 1) this.applyRatio(1); }
+    else if (motion && this.govApplied !== this.govScale) this.applyRatio(this.govScale);
+    this.draw();
+    const t1 = performance.now(), gap = t1 - this.lastDrawAt; this.lastDrawAt = t1;
+    // only continuous motion counts: not the first frame of a burst, not a frame that built the scene or ran the reveal
+    if (!this.adaptive || !motion || built || this.reveal || this.govSkip-- > 0) { this.govSlow = this.govFast = 0; return; }
+    this.govGap = this.govGap ? 0.8 * this.govGap + 0.2 * gap : gap;
+    if (this.govGap > this.govBudget) { this.govFast = 0; if (++this.govSlow >= 8 && this.govScale > GOV_MIN) this.govStep(Math.max(GOV_MIN, this.govScale * 0.8)); }
+    else if (this.govGap < this.govBudget * 0.7 && this.govScale < 1) { this.govSlow = 0; if (++this.govFast >= GOV_PROBE) this.govStep(Math.min(1, this.govScale * 1.15)); }
+    else this.govSlow = this.govFast = 0;
+  }
+  private govStep(scale: number) { this.govScale = scale; this.govSlow = this.govFast = 0; this.govGap = 0; this.govSkip = 6; this.dirty = true; }
+  /** Nothing drawn for GOV_REST ms: the camera has stopped, so give the full picture back. */
+  private govRest() {
+    if (this.govApplied === 1 || performance.now() - this.lastDrawAt < GOV_REST) return;
+    this.applyRatio(1); this.dirty = true;
+  }
   /** Custom terrain editing: show grid dots in the edited tanks; `hot` = the dot being dragged. UI state, not scene data. */
   terrainEdit: TerrainEdit = { on: false, hot: null, pool: 0 };
   private drawnListeners = new Set<() => void>();
@@ -261,9 +298,11 @@ export class Viewer {
     this.renderer.setAnimationLoop((t, f) => {
       if (this.xrFrame && f) this.xrFrame(t, f);
       else {
-        if (this.dirty && this.needsBuild) this.buildAndLink();
+        const builtNow = this.dirty && this.needsBuild;
+        if (builtNow) this.buildAndLink();
         if (this.reveal) this.revealTick(performance.now());
-        if (this.dirty && !this.reveal?.wait) { this.dirty = false; this.draw(); }
+        if (this.dirty && !this.reveal?.wait) { this.dirty = false; this.drawGoverned(builtNow); }
+        else this.govRest();
       }
     });
   }
@@ -787,14 +826,14 @@ export class Viewer {
 
   // ---------- Export: render bigger, crop to the tanks, label split views, then save ----------
   exportPNG(mult: number): Promise<Blob> {
-    const dpr = this.renderer.getPixelRatio(), k = dpr * mult;
-    this.renderer.setPixelRatio(k);
+    const dpr = this.baseRatio(), k = dpr * mult;
+    this.govApplied = 1; this.renderer.setPixelRatio(k);
     this.draw();
     const out = exportCrop(this.content, this.canvas.width / k, this.canvas.height / k);
     const t = document.createElement('canvas'); t.width = Math.round(out.w * k); t.height = Math.round(out.h * k);
     const g = t.getContext('2d')!;
     g.drawImage(this.canvas, out.x * k, out.y * k, t.width, t.height, 0, 0, t.width, t.height);
-    this.renderer.setPixelRatio(dpr); this.dirty = true;
+    this.renderer.setPixelRatio(dpr); this.dirty = true; this.lastDrawAt = 0; // the next frame is a sharp one, not a motion frame
     if (this.content.length > 1) { // split: an A / B badge at the top-left of each view, as in the Compare chips
       const fs = Math.round(Math.max(18, 0.035 * out.h) * k);
       g.font = `700 ${fs}px system-ui, "Segoe UI", sans-serif`; g.textBaseline = 'top';

@@ -387,6 +387,56 @@ if (worst.length) {
     }
     for (const x of extraAB) b.extra[x.name] = await br.ev(`__pb.ab(() => { ${x.a} }, () => { ${x.b} }, ${PAIRS})`);
     if (extraAB.length) b.extraApplied = await br.ev('window.__abApplied ?? null');
+    // --orbit R0: real orbiting through the app's own loop (the camera moves each frame, the loop draws what changed) at pixel ratio R0
+    // (3 = a stress stand-in for a weak GPU at the 1050x850 desktop size) and at fractions of it; frame gaps -> fps, plus the
+    // sharp frame drawn at R0 once the camera stops (lane P1: the motion-time resolution drop). `--orbit-frost` also sweeps the film swap.
+    if (opt('orbit')) {
+      const R0 = +opt('orbit');
+      b.orbit = await br.ev(`(async () => {
+        const v = __gb.viewer, st = __gb.store, raf = () => new Promise(r => requestAnimationFrame(r)), R0 = ${R0}, out = [];
+        const q = (a, p) => { const s = [...a].sort((x, y) => x - y); return +s[Math.min(s.length - 1, Math.floor(p * s.length))].toFixed(1); };
+        for (const f of [1, 0.75, 0.5, 0.375, 0.25]) {
+          v.renderer.setPixelRatio(R0 * f); v.invalidate(); for (let i = 0; i < 8; i++) await raf();
+          const dt = []; let last = performance.now();
+          for (let i = 0; i < 90; i++) { st.cam(c => { c.az += 1.5; }); await raf(); const n = performance.now(); dt.push(n - last); last = n; }
+          const m = q(dt, 0.5);
+          out.push({ ratio: +(R0 * f).toFixed(2), frameMs: m, p95Ms: q(dt, 0.95), fps: +(1000 / m).toFixed(1) });
+        }
+        // the sharp frame at rest: back to R0 and draw, wall time until the next frame has been shown
+        v.renderer.setPixelRatio(R0); const t0 = performance.now(); v.draw(); await raf(); await raf(); const sharp = +(performance.now() - t0).toFixed(1);
+        v.renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); v.invalidate(); await raf();
+        return { R0, sweep: out, sharpFrameMs: sharp };
+      })()`);
+    }
+    // --governor: checks the viewer's motion-time resolution (lane P1) on real orbiting: no change at the default budget, a step
+    // down (never below half) when the budget cannot be held, the full ratio back after rest, a sharp first frame, export at full ratio.
+    if (flag('governor')) {
+      b.governor = await br.ev(`(async () => {
+        const v = __gb.viewer, st = __gb.store, raf = () => new Promise(r => requestAnimationFrame(r)), sleep = ms => new Promise(r => setTimeout(r, ms));
+        const orbit = async n => { for (let i = 0; i < n; i++) { st.cam(c => { c.az += 1.5; }); await raf(); } };
+        const out = { dpr: devicePixelRatio, base: v.renderer.getPixelRatio() };
+        await orbit(90); out.A_default = { ratio: v.renderer.getPixelRatio(), scale: v.govScale, gapEma: +v.govGap.toFixed(1) };
+        v.govBudget = 1; await orbit(200); out.B_forcedMisses = { ratio: v.renderer.getPixelRatio(), scale: +v.govScale.toFixed(3) };
+        await sleep(400); out.C_afterRest = { ratio: v.renderer.getPixelRatio(), applied: v.govApplied, scaleKept: +v.govScale.toFixed(3) };
+        st.cam(c => { c.az += 1.5; }); await raf(); const first = v.renderer.getPixelRatio(); await orbit(5);
+        out.D_nextOrbit = { firstFrameRatio: first, laterRatio: v.renderer.getPixelRatio() };
+        const im = await createImageBitmap(await v.exportPNG(1)); out.E_export = { exportW: im.width, canvasW: v.renderer.domElement.width, ratioAfter: v.renderer.getPixelRatio() };
+        v.adaptive = false; await orbit(5); out.F_adaptiveOff = { ratio: v.renderer.getPixelRatio() };
+        v.adaptive = true; v.govBudget = 26; v.govScale = 1; await sleep(400); out.G_reset = { ratio: v.renderer.getPixelRatio() };
+        return out; })()`);
+    }
+    // --ab-shots dir: per --ab entry, the canvas PNG with side a (as shipped) and with side b (the rung), for scoring how different it looks (lane P1)
+    if (opt('ab-shots')) {
+      const dir = opt('ab-shots'); mkdirSync(dir, { recursive: true });
+      const grab = async js => (await br.ev(`(async () => { ${js} for (let i = 0; i < 3; i++) { __gb.viewer.draw(); await new Promise(r => requestAnimationFrame(r)); }
+        __gb.viewer.draw(); return __gb.viewer.renderer.domElement.toDataURL('image/png'); })()`)).split(',')[1];
+      const vname = view.replace(/[\/:]/g, '_');
+      for (const [i, x] of extraAB.entries()) {
+        writeFileSync(join(dir, `${vname}__${i}__A.png`), Buffer.from(await grab(x.a), 'base64'));
+        writeFileSync(join(dir, `${vname}__${i}__B.png`), Buffer.from(await grab(x.b), 'base64'));
+        await br.ev(x.a);
+      }
+    }
   }
 }
 
