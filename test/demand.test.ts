@@ -55,6 +55,16 @@ describe('demandOf on the starter examples', () => {
     expect(ro).toBeGreaterThan(tap);
   });
 });
+describe('kit pricing', () => {
+  it('a kit price replaces the parts it contains', () => {
+    const S = parseScene(SCENES['betta']).scene.tanks[0], P = defaultProfile();
+    const parts = demandOf(S, P, { now: NOW }), kit = demandOf(S, P, { now: NOW, kit: { id: 'x', priceUsd: 60, asOf: '2026-10-19' } });
+    expect(kit.items.some(i => i.key === 'kit')).toBe(true);
+    expect(kit.items.find(i => i.key === 'tank')?.setup).toBeUndefined();
+    expect(kit.totals.setupUsd).toBeLessThan(parts.totals.setupUsd);
+    expect(kit.totals.upkeepUsdMo).toBeCloseTo(parts.totals.upkeepUsdMo, 5); // electricity still counted
+  });
+});
 describe('costDistribution', () => {
   it('is seeded and stable, percentiles ordered, the likely range brackets the mean', () => {
     const a = run('planted').C, b = run('planted').C;
