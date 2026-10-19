@@ -23,6 +23,7 @@ import { addBackdrop, backdropGeometry } from './backdrop';
 import { drapedCard, fish3d, fishBody, hullMaterial } from './fish3d';
 import { herpBody, herpFloatTop, isHerp3D } from './herp3d';
 import { isLizard } from './lizard3d';
+import { isShrimp3D } from './shrimp3d';
 import { isSpider } from './spider3d';
 import { isSnake, settleSnake, snakeBody, snakeContacts, type LimbPath } from './snake3d';
 import { isTarantula } from './tarantula3d';
@@ -1341,7 +1342,9 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
     }
     // a lizard is not lifted over what only stands beside it: a branch or a cork slab within its footprint would raise it up to its own length, off the ground
     // it stands on (lane GS 2026-10-19); only bumps and short slopes lift it
-    m.position.y += Math.min(lift, isLizard(speciesOf(f)?.art ?? '') ? w * LIZARD_LIFT : w);
+    // a shrimp on a branch likewise: the wood beside a limb would lift it a whole body length into the water (2026-10-19)
+    const art = speciesOf(f)?.art ?? '';
+    m.position.y += Math.min(lift, isLizard(art) || isShrimp3D(art) ? w * LIZARD_LIFT : w);
   };
   // perched on a branch or a shelf (anchor kinds PERCHES, lane T3 2026-10-16): on top of it, gripping, instead of tipped
   // to the slope round it (off a thin limb or a shelf's edge that slope reaches the ground). Along a branch: the body
