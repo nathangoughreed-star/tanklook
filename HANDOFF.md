@@ -12,7 +12,7 @@ is done the coordinator moves it to the archive.
 asking Nathan. Shipping: in the worktree `git fetch` + `git merge origin/main`, tsc + tests + browser check, then
 `git push origin HEAD:main` and `git -C "C:/Users/nreed/Glass Box" merge --ff-only origin/main`. HANDOFF.md
 conflicts on merge: keep both sections. Each lane adds its own dated section under "Lane sections (current)" below.
-**Deploy health:** live build = footer of https://nathangoughreed-star.github.io/tanklook/ ; Actions state = `curl -s https://api.github.com/repos/nathangoughreed-star/tanklook/actions/runs?per_page=5` (status/conclusion per head_sha; `/deployments` for what shipped). A red deploy usually means one slow/failing test: reproduce with `npx vitest run` in a clean worktree.
+**Deploy health:** live build = footer of https://tanklook.com/ ; one-line check: `curl -s https://tanklook.com/assets/$(curl -s https://tanklook.com/ | grep -o 'main-[^"]*\.js' | head -1) | grep -oE 'n:.[0-9]+.,sha' | head -1; git rev-list --count origin/main` (live n vs main; equal once the last deploy lands, ~5 min after a push); Actions state = `curl -s https://api.github.com/repos/nathangoughreed-star/tanklook/actions/runs?per_page=5` (status/conclusion per head_sha; `/deployments` for what shipped). A red deploy usually means one slow/failing test: reproduce with `npx vitest run` in a clean worktree.
 
 **Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_408aa124-ce91-4651-abaf-a221f0ceac82`
 ("Lanes coordinator 4", took over 2026-10-19 from `local_f068e2c9` (coordinator 3)). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
@@ -52,7 +52,9 @@ A Tech section where the owner picks the tech level, Walstad to high-tech plante
 
 ## Lane DS: one expected-cost number (2026-10-19, branch `expectedcost`, port 5793)  (lane fills this in)
 
-## Lane CS: CI workflow split (2026-10-19, branch `cisplit`, port 5803)  (lane fills this in)
+## Lane CS: CI workflow split (2026-10-19, branch `cisplit`, port 5803)
+- `.github/workflows/deploy.yml` is two jobs with job-level concurrency (no workflow-level group): `test` (npm ci, npm test; group `test-<ref>`, cancel-in-progress) and `deploy` (needs test; build, upload-pages-artifact, deploy-pages; group `pages`, cancel-in-progress **false**).
+- Why: the old single job with a workflow-level cancel-in-progress cancelled each run in turn during push bursts (live sat at 771 while main was 793). Now a newer push only cancels older *tests*; a running deploy always finishes; a waiting deploy is replaced by the newer waiting one, so the last commit that passes tests is always the last one deployed. The test gate stays (deploy needs test).
 
 ## Lane AQ: AqAdvisor ids + Malawi pool (2026-10-19, branch `aqids`, port 5813)  (lane fills this in)
 

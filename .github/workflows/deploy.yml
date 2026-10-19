@@ -10,14 +10,37 @@ permissions:
   pages: write
   id-token: write
 
-concurrency:
-  group: pages
-  cancel-in-progress: true
+# No workflow-level concurrency: each job has its own group.
+# - test: a newer push cancels an older run's tests (its result would be superseded anyway).
+# - deploy: never cancelled once running; a newer deploy waiting in the queue replaces an older
+#   waiting one, so the latest commit that passed tests is always the last one deployed.
+# A run whose deploy job has started is past its test job, so a newer push cannot cancel it.
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-    timeout-minutes: 20 # a hung test must not hold the one-at-a-time deploy slot
+    timeout-minutes: 20 # a hung test must not hold the run
+    concurrency:
+      group: test-${{ github.ref }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -27,18 +50,9 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm test
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
       - id: deployment
         uses: actions/deploy-pages@v4
