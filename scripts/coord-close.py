@@ -1,7 +1,7 @@
 # Coordinator helper: close a lane. Usage: python scripts/coord-close.py "## Lane XX" "| XX " <launch-config-name>
 # Moves the lane section from HANDOFF.md to HANDOFF-archive.md (adds it to the archive index), drops its Current-lanes row and its .claude/launch.json entry. Run from anywhere; it chdirs to the main checkout.
 import json, os, re, sys
-os.chdir(r"C:\Users\nreed\Glass Box")
+os.chdir(os.environ.get("COORD_DIR", r"C:\Users\nreed\Glass Box"))  # COORD_DIR: run it in the coord worktree, never the shared checkout
 key = sys.argv[1]          # heading prefix, e.g. "## Lane G1"
 rowkey = sys.argv[2]       # row prefix, e.g. "| G1 "
 launch = sys.argv[3]       # launch config name

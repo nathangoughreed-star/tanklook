@@ -1,6 +1,36 @@
 # HANDOFF archive
 Finished lane and feature sections moved out of HANDOFF.md on 2026-10-16, verbatim, newest first.
 
+## Lane AN: anole models (2026-10-19, branch `anoles`, port 5753)
+- **State (2026-10-19): built, tests pass, pictures sent to Nathan, NOT yet pushed (waiting for his verdict).**
+- **What:** `art/lizards.ts` (anole shape helper `anoleCurves`, `ANOLE_SHAPE`, five looks: `greenanole`, `greenanole_f`,
+  `greenanolebrown`, `brownanole`, `brownanole_f`), `render/lizard3d.ts` (parameters only for the geckos: new spec fields
+  `eye.round` round pupil, `tail.trail` tail lies along a branch instead of winding, `dewlap` throat fan with
+  `dewlapGeometry`; a displayed dewlap also lifts the head 16 degrees), species / care / climate entries (`greenanole`
+  with female, `greenanolebrown`, `brownanole` with female; cat reptile, land, cling any; 75 L, UVB + 32-35 C basking in
+  the notes; not in aqadvisor.json). Hooks: `herp3d.ts` passes `alert` on to `lizardBody` (display flag); `build.ts`
+  displays the dewlap on 1 in 4 male anoles by fish id (`f.id % 4 === 0`, stable through save / load / Shuffle).
+- **Sizes / sources:** green anole 180 mm (female 150), brown anole 180 (female 130): typical adult TL from common
+  husbandry sheets (SVL ~6-7 cm, tail ~1.5 x SVL); proportions, colours (pink dewlap; brown male orange-red dewlap with a
+  yellow edge, female pale vertebral stripe) from standard field descriptions. Reference photos were NOT fetched in this
+  chat (no web pass): Nathan's eye is the check.
+- **Leaves / weight flag:** lane GS's weight / leaf flag was not on main yet; anoles use whatever the current code gives
+  clingers (cling `any`). Set the flag on the five entries once GS lands it.
+- **Tests:** `test/anole.test.ts` (6: species data, dewlap folded vs displayed, tail trails on a branch, Shuffle on glass /
+  branch / floor identical through save / load, nothing through the pane, never in the water); `test/lizard.test.ts`
+  runs every lizard x pose (the R 30 mm grip check skips anoles: slender toes do not reach round a 6 cm branch).
+  Full-suite failures seen that are NOT from this lane (unverified on a clean checkout): anchorbase python /
+  rainforest / terrarium moves, scene swamp, snake Shuffle, growth.
+- **Open:** knight anole (optional, not started); anoles are not in any starter / example (rainforest starter lists only
+  crested geckos in `scene/items.ts`); Shuffle height: anoles take glass / hardscape / floor by area like crested geckos
+  (no extra "higher in the tank" bias; that is `scene/scatter.ts`); the models still need Record on /review.html
+  after approval; the model-sheets JPEGs are written by that button.
+- **Pictures:** shots/an/AN1..AN6 (worktree only). Scratch harness `anole-shots.html/.ts` (not committed).
+- **Dev server note:** the `anoles` entry of the MAIN checkout's `.claude/launch.json` was changed to `--prefix` this
+  worktree (preview_start reads launch.json from the folder the chat was opened in).
+
+
+
 ## Lane SD: one start chooser (2026-10-19, branch `startchooser`, port 5763; Nathan approved the pictures, shipped)
 - One dialog `#startDlg` replaces `#libDlg` + the old start dialog: **Start from scratch** button, then tabs **On sale now / Bundles / Starter tanks / Open a tank** (saved + "Open a downloaded file…"). Shown at first launch (no restored tank), by **New** (first tab) and **Open…** (Open tab). Handlers: `showChooser` in `ui/panels.ts`; pure logic in `ui/startEntries.ts` (`startDeals`, `onSale`, `visibleTabs`, `pickTab`; `test/startEntries.test.ts`).
 - Split: sale = listing with a higher regular price and a live sale (best saving vs parts first); bundles = every other fresh (<=30 d) catalog-tank deal, cheapest first, `est` rows excluded; each deal appears once. Empty sale / bundles tabs hide. Deals "as of" note shown on both deal tabs. Old 3-card cap removed.

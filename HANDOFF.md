@@ -28,7 +28,6 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
 | GS gecko support surfaces | `../Glass-Box-geckosupport` / `geckosupport` | 5743 | `scene/anchors.ts`, `render/items.ts` surface choice, weight / leaf flag in `species.json` | opened 2026-10-19 |
-| AN anole models | `../Glass-Box-anoles` / `anoles` | 5753 | `render/lizard3d.ts` params, anole entries in `species.json` | opened 2026-10-19 |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 
@@ -37,35 +36,6 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 ## Lane sections (current)
 
 ## Lane GS: gecko support surfaces (2026-10-19, branch `geckosupport`, port 5743)  (lane fills this in)
-
-## Lane AN: anole models (2026-10-19, branch `anoles`, port 5753)
-- **State (2026-10-19): built, tests pass, pictures sent to Nathan, NOT yet pushed (waiting for his verdict).**
-- **What:** `art/lizards.ts` (anole shape helper `anoleCurves`, `ANOLE_SHAPE`, five looks: `greenanole`, `greenanole_f`,
-  `greenanolebrown`, `brownanole`, `brownanole_f`), `render/lizard3d.ts` (parameters only for the geckos: new spec fields
-  `eye.round` round pupil, `tail.trail` tail lies along a branch instead of winding, `dewlap` throat fan with
-  `dewlapGeometry`; a displayed dewlap also lifts the head 16 degrees), species / care / climate entries (`greenanole`
-  with female, `greenanolebrown`, `brownanole` with female; cat reptile, land, cling any; 75 L, UVB + 32-35 C basking in
-  the notes; not in aqadvisor.json). Hooks: `herp3d.ts` passes `alert` on to `lizardBody` (display flag); `build.ts`
-  displays the dewlap on 1 in 4 male anoles by fish id (`f.id % 4 === 0`, stable through save / load / Shuffle).
-- **Sizes / sources:** green anole 180 mm (female 150), brown anole 180 (female 130): typical adult TL from common
-  husbandry sheets (SVL ~6-7 cm, tail ~1.5 x SVL); proportions, colours (pink dewlap; brown male orange-red dewlap with a
-  yellow edge, female pale vertebral stripe) from standard field descriptions. Reference photos were NOT fetched in this
-  chat (no web pass): Nathan's eye is the check.
-- **Leaves / weight flag:** lane GS's weight / leaf flag was not on main yet; anoles use whatever the current code gives
-  clingers (cling `any`). Set the flag on the five entries once GS lands it.
-- **Tests:** `test/anole.test.ts` (6: species data, dewlap folded vs displayed, tail trails on a branch, Shuffle on glass /
-  branch / floor identical through save / load, nothing through the pane, never in the water); `test/lizard.test.ts`
-  runs every lizard x pose (the R 30 mm grip check skips anoles: slender toes do not reach round a 6 cm branch).
-  Full-suite failures seen that are NOT from this lane (unverified on a clean checkout): anchorbase python /
-  rainforest / terrarium moves, scene swamp, snake Shuffle, growth.
-- **Open:** knight anole (optional, not started); anoles are not in any starter / example (rainforest starter lists only
-  crested geckos in `scene/items.ts`); Shuffle height: anoles take glass / hardscape / floor by area like crested geckos
-  (no extra "higher in the tank" bias; that is `scene/scatter.ts`); the models still need Record on /review.html
-  after approval; the model-sheets JPEGs are written by that button.
-- **Pictures:** shots/an/AN1..AN6 (worktree only). Scratch harness `anole-shots.html/.ts` (not committed).
-- **Dev server note:** the `anoles` entry of the MAIN checkout's `.claude/launch.json` was changed to `--prefix` this
-  worktree (preview_start reads launch.json from the folder the chat was opened in).
-
 
 ## Lane KD: bundle deals (2026-10-19)
 - `src/data/deals.json` (+ `deals.ts`): retailer tank+stand bundles {retailer, gal, tank (catalog id, optional), kit (optional), includes, price{usd, regularUsd}, saleEnds, url, asOf, est}. `src/demand/deals.ts` `dealOffers` = saving vs buying the parts (engine `kit` option generalised with `includes` + `label`, no parallel mechanism).
@@ -293,6 +263,7 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane AN: anole models (2026-10-19, branch `anoles`, port 5753)
 - Lane SD: one start chooser (2026-10-19, branch `startchooser`, port 5763; Nathan approved the pictures, shipped)
 - Lane KK: demand model (panel hook in `ui/panels.ts` only after KA lands) (2026-10-19, branch `demand`, port 5733)
 - Lane KC: kit light wiring (stub data until KB lands) (2026-10-19, branch `kitlight`, port 5723)
