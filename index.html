@@ -132,7 +132,6 @@
   <div class="hint">Cabinet and frame stands match the tank's footprint; a custom-size cabinet or a table can be bigger, with the tank anywhere on it, and the wall and person keep clear of its edge. <i>Peninsula</i> puts the tank's end against the wall; the background moves to that end and the long back glass is clear.</div>
   </details>
   <details class="sec" data-sec="quick"><summary><h2>Quick Setup</h2></summary>
-  <div id="demandPanel"></div>
   <div class="field"><label class="flabel" for="layout">Style</label><select id="layout"></select></div>
   <div class="field"><button id="layoutShuffle" class="primary" title="Draws a new tank: only the ticked parts below change, the rest stay as they are. Ctrl+Z brings the old one back">Shuffle</button></div>
   <div class="field shuffleKeep" title="Shuffle redraws only the ticked parts; untick a part to lock it as it is while you keep shuffling the rest"><span class="flabel">Shuffle</span><label><input type="checkbox" id="shufType" checked> Substrate type</label> <label><input type="checkbox" id="shufShape" checked> Substrate shape</label> <label><input type="checkbox" id="shufHard" checked> Hardscape</label> <label><input type="checkbox" id="shufPlant" checked> Plants</label> <label><input type="checkbox" id="shufAnimal" checked> Animals</label></div>
@@ -348,7 +347,11 @@
     <button id="arView" class="sidetog" title="See this tank at real size in your room (phone camera)" hidden>◱ AR</button>
     <button id="recenter" class="sidetog" title="Re-centre the panned view (Home, or double middle-click)" hidden>⌖ Re-centre</button>
   </div>
-  <div id="climate" class="climate" aria-label="Recommended temperature and humidity" hidden></div>
+  <div id="demandPanel" class="dmfloat"></div>
+  <div class="encl">
+    <div id="stocking" class="stocking" aria-label="Stocking check for reptiles and amphibians" hidden></div>
+    <div id="climate" class="climate" aria-label="Recommended temperature and humidity" hidden></div>
+  </div>
   <div id="brushBar" role="toolbar" aria-label="Scatter brush" hidden>
     <div class="gbRow">
       <select id="brKind" aria-label="Brush"></select>
