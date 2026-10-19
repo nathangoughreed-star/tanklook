@@ -1,6 +1,14 @@
 # HANDOFF archive
 Finished lane and feature sections moved out of HANDOFF.md on 2026-10-16, verbatim, newest first.
 
+## Lane AQ: AqAdvisor ids + Malawi pool (2026-10-19, branch `aqids`, port 5813)
+- **AqAdvisor unreachable 2026-10-19** (curl by name and raw IP 162.0.234.17, and the browser pane all time out; GitHub fine). So step 1 (real ids for labeo / auratus / afra / livingstonii / syno, and the AqAdvisor stocking comparison) is NOT done; aqadvisor.json and the script are unchanged. Every water species already has an entry (species.json check: only the 11 land animals are unmapped). Re-run `python scripts/aqadvisor-ids.py` when the site answers, after moving the five from STAND_INS to NAMES with their exact option text.
+- **Malawi pool** (`STYLES.malawi.animals`, it lives in scene/items.ts, not starter.ts): + labeo, auratus, afra. livingstonii left out: CARE prey 80 mm, it would eat demasoni (70 mm) and nerites, and the plain starter does not check compatibility. Note: Malawi species have no `group`, so a starter places one of each (75 gal Packed = 4 cichlids + syno / nerites): sparse for mbuna; asked Nathan.
+- **Tests:** test/aqids.test.ts (ids 12-digit + named, real ids unique per calculator, stand-ins borrow a matching real entry; Malawi starters at 5 tank lengths x 5 seeds x 4 stops, gated and not: pool species only, L >= 5 x tl, no predator with prey). Full suite: 10 anchorbase failures (clownnano / paludarium) also fail on origin/main without this change.
+- Picture: shots/aq_malawi_75g_seed2_front.png (worktree; rendered from the main checkout's server with the same pool patched in the page).
+
+
+
 ## Lane CG: compatibility gates (2026-10-19)
 - `src/data/waterchem.ts`: `CHEM` pH + GH (dGH, only where sources agree) per freshwater aquatic species, `MARINE_PH` [8.0, 8.4] for every salt species (no hardness), `GROUP` smallest group. Merged into `CARE` (`ph`, `gh`, `group`) by a loop at the end of care.ts, like WATER. Checked against FishBase 2026-10-19 (one Sonnet agent, ~80k tokens): most agree; corrected cardinal, harlequin, syno GH, kuhli GH, cockatoo GH. Kept wider than FishBase on purpose: neon GH, cardinal and ram upper pH, Bolivian ram from 6.0 (farmed stock lives in harder water). Many FishBase rows are a generic 6.0-8.0 / 5-19 template, so agreement there is weak evidence. No FishBase data: ember, rummynose, cpd, Malawi mbuna, hillstream, all inverts (hobby consensus).
 - `whyAnimal` (scene/animalfit.ts): pairwise pH (shared band < 0.2) and GH (< 2 dGH) after temperature; coral gate `CARE.coral` 1 caution / 2 eats corals, only with corals in the tank (`env.corals` = `hasCorals(items)`: macroalgae and the anemone do not count). Only the coral beauty is flagged (caution). Invertebrate eaters stay on `prey.cats` (sixline, hermit, clown loach, pea puffer), no second flag, so no double report. New optional 5th arg `env` passed by panels.ts, engine.ts, swaps.ts, starter.ts (one-line hooks).
