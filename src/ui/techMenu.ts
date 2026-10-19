@@ -29,7 +29,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
   const P = () => o.profile() ?? defaultProfile();
   const kwhUsd = () => P().kwhUsd ?? (FACTORS.kwhUsd.lo + FACTORS.kwhUsd.mode + FACTORS.kwhUsd.hi) / 3;
   const fahr = () => store.scene.units === 'in';
-  const totals = (S: TankSetup): Totals => { const t = demandOf(S, P(), { kit: pinnedKit(S) }).totals; return { setup: t.setupUsd, upkeep: t.upkeepUsdMo, minutes: t.minPerWeek, risk: t.risk }; };
+  const totals = (S: TankSetup): Totals => { const t = demandOf(S, P(), { kit: pinnedKit(S, store.scene.active) }).totals; return { setup: t.setupUsd, upkeep: t.upkeepUsdMo, minutes: t.minPerWeek, risk: t.risk }; };
   /** The tank priced with its tech made explicit (an older file's inferred gear becomes rows), the base for previews. */
   const withTech = (S: TankSetup, t: TechSetup): TankSetup => { const x = { ...S, tech: t }; return { ...x, grow: { ...S.grow, feed: feedFor(x) } }; };
   const baseOf = (S: TankSetup) => {

@@ -27,8 +27,8 @@ export function renderDealMatch(el: HTMLElement, store: Store, P: UserProfile, c
     // a split where one tank is priced as a bundle: both costs, and the button that keeps the bundle tank
     const i = sc.tanks.findIndex(own);
     if (i < 0) return;
-    const d = pinnedDeal(sc.tanks[i])!, cost = (t: TankSetup) => demandOf(t, P, { kit: pinnedKit(t) }).totals.setupUsd;
-    const ca = cost(sc.tanks[1 - i]), cb = cost(sc.tanks[i]), s = ca - cb, AB = 'AB';
+    const d = pinnedDeal(sc.tanks[i])!, cost = (k: number) => demandOf(sc.tanks[k], P, { kit: pinnedKit(sc.tanks[k], k) }).totals.setupUsd;
+    const ca = cost(1 - i), cb = cost(i), s = ca - cb, AB = 'AB';
     box.innerHTML = `<b>Tank ${AB[1 - i]}</b> ${usd(ca)} to set up · <b>Tank ${AB[i]}</b> as the ${esc(d.retailer + ' ' + d.name)} bundle ${usd(cb)}${Math.abs(s) >= 1 ? `: ${s > 0 ? 'saves' : 'costs'} about ${usd(Math.abs(s))}` : ''}. <button type="button" class="dmkeep">Make Tank ${AB[i]} my tank</button>`;
     box.querySelector<HTMLButtonElement>('.dmkeep')!.onclick = () => { store.closeTank(1 - i); changed(); };
   } else {

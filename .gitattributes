@@ -1,0 +1,2 @@
+# shell scripts must keep LF line endings, or bash fails on the CR after a Windows checkout (scripts/ship.sh)
+*.sh text eol=lf

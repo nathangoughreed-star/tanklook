@@ -26,7 +26,8 @@ import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixt
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene } from '../scene/defaults';
-import { BANDS, TANK_MODELS, dimsInches, modelOfVariant, tankFromModel, type TankModel, type TankVariant } from '../data/tanks';
+import { BANDS, TANK_MODELS, dimsInches, modelOfVariant, tankFromModel, tankSaleFor, type TankModel, type TankVariant } from '../data/tanks';
+import { pinPreset } from '../demand/pinned';
 import { COMPS, DEFAULT_DENS, STYLE_GROUPS, STYLE_KIND, isLandStyle, EPIPHYTES, KINDS, perch, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
 import { handEdits, randomStyle, regenerate, shuffleHard } from '../scene/starter';
 import { styleGround } from '../scene/scapeground';
@@ -367,7 +368,13 @@ Cancel, then change the name, to keep both.`)) return;
       if (v && /stand|ensemble/i.test(v.line ?? '')) { s.stand.show = true; s.stand.need = undefined; }
       else if (s.stand.need !== 'added') { s.stand.show = false; s.stand.need = 'ask'; }
     };
-    const apply = (m: TankModel, v?: TankVariant) => { const mm = v ? modelOfVariant(m, v) : m; setTank(() => tankFromModel(mm), undefined, mm.glassMm, standFor(v)); dlg.close(); };
+    // a size picked on sale is remembered, so resizing it later says the sale price no longer applies (demandPanel)
+    const saleOf = (m: TankModel, v?: TankVariant) => {
+      if (v) return onSale(v) ? { product: `${v.brand}${v.line ? ' ' + v.line : ''}`, retailer: v.retailer ?? 'a retailer', usd: v.price_usd! } : undefined;
+      const t = tankSaleFor(m.ratedGal, m.shape, Date.now(), undefined, undefined, tankFromModel(m));
+      return t && { product: t.product, retailer: t.retailer, usd: t.usd };
+    };
+    const apply = (m: TankModel, v?: TankVariant) => { const mm = v ? modelOfVariant(m, v) : m; setTank(() => tankFromModel(mm), undefined, mm.glassMm, standFor(v)); pinPreset(store.scene.active, store.tank, saleOf(m, v)); dlg.close(); };
     const draw = () => {
       const needle = q.value.trim().toLowerCase();
       const hit = (m: TankModel) => !needle || [m.name, m.shape, ...(m.tags ?? []), ...(m.variants ?? []).flatMap(v => [v.brand, v.line ?? ''])].join(' ').toLowerCase().includes(needle);

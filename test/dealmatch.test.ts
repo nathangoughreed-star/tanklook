@@ -97,3 +97,15 @@ describe('per-tank pins', () => {
     expect(pinnedDeal(parseScene(JSON.stringify(sc)).scene.tanks[0])).toBeNull();
   });
 });
+
+describe('per-tank pins and deal drift', () => {
+  it('a part the bundle covers changed on the tank: the bundle price lapses; put back, it holds again', () => {
+    const B = community20(), d = deal('walmart-tetra-complete-20');
+    pinTank(B, d);
+    expect(pinnedKit(B, 1)?.id).toBe(d.id);
+    const was = B.lid; B.lid = was === 'glass' ? 'open' : 'glass';
+    expect(pinnedKit(B, 1)).toBeUndefined();
+    B.lid = was;
+    expect(pinnedKit(B, 1)?.id).toBe(d.id);
+  });
+});
