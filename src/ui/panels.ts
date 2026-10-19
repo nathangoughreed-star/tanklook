@@ -23,7 +23,7 @@ import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixt
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene } from '../scene/defaults';
-import { tankChoices, tankFromModel } from '../data/tanks';
+import { BANDS, TANK_MODELS, dimsInches, modelOfVariant, tankFromModel, type TankModel, type TankVariant } from '../data/tanks';
 import { COMPS, DEFAULT_DENS, STYLE_GROUPS, STYLE_KIND, isLandStyle, EPIPHYTES, KINDS, perch, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
 import { handEdits, randomStyle, regenerate, shuffleHard } from '../scene/starter';
 import { styleGround } from '../scene/scapeground';
@@ -340,18 +340,44 @@ Cancel, then change the name, to keep both.`)) return;
   };
 
   // ---------- Tank ----------
-  // the tank catalog as a grouped dropdown (lane KA); tankChoices() is also what the guided-start wizard calls
-  const tankPicks = tankChoices();
-  const presetOptions = '<option value="">Presets…</option>' + [...new Set(tankPicks.map(c => c.group))].map(g =>
-    `<optgroup label="${esc(g)}">${tankPicks.filter(c => c.group === g).map(c => `<option value="${esc(c.value)}">${esc(c.label)}</option>`).join('')}</optgroup>`).join('');
+  // the tank catalog as a full-window picker (lane KA); each size lists the real products that come in it, with maker and price.
+  // tankChoices() is still what the guided-start wizard calls.
   {
-    const s = $<HTMLSelectElement>('presetA'); s.innerHTML = presetOptions;
-    s.onchange = () => {
-      const pick = tankPicks.find(c => c.value === s.value); s.value = '';
-      if (!pick) return;
-      const m = pick.model, t = tankFromModel(m); // interior from the outer size on the label; the glass matches so the outside does too
-      setTank(() => t, undefined, m.glassMm);
+    const dlg = $<HTMLDialogElement>('tankDlg'), list = $('tankList'), q = $<HTMLInputElement>('tankQ'), terra = $<HTMLInputElement>('tankTerra');
+    const usd = (v: TankVariant) => v.price_usd == null ? 'price n/a' : `~$${Math.round(v.price_usd).toLocaleString('en-US')}${v.price_kind === 'kit' ? ' (kit)' : ''}`;
+    // interior from the outer size on the label; the glass matches so the outside does too
+    const apply = (m: TankModel, v?: TankVariant) => { const mm = v ? modelOfVariant(m, v) : m; setTank(() => tankFromModel(mm), undefined, mm.glassMm); dlg.close(); };
+    const draw = () => {
+      const needle = q.value.trim().toLowerCase();
+      const hit = (m: TankModel) => !needle || [m.name, m.shape, ...(m.tags ?? []), ...(m.variants ?? []).flatMap(v => [v.brand, v.line ?? ''])].join(' ').toLowerCase().includes(needle);
+      list.textContent = '';
+      const groups: [string, TankModel[]][] = BANDS.map(([b, t]) => [t, TANK_MODELS.filter(m => !m.terrarium && m.band === b && hit(m))]);
+      if (terra.checked) groups.push(['Terrariums', TANK_MODELS.filter(m => m.terrarium && hit(m))]);
+      for (const [title, ms] of groups) {
+        if (!ms.length) continue;
+        const h = document.createElement('h3'); h.textContent = title; list.append(h);
+        for (const m of ms) {
+          const row = document.createElement('div'); row.className = 'tankrow';
+          const vs = m.variants ?? [];
+          const head = document.createElement('button'); head.className = 'tankgen';
+          head.innerHTML = `<b>${esc(m.name)}</b><span>${dimsInches(m.outer)} in generic${vs.length ? ` · ${vs.length} product${vs.length > 1 ? 's' : ''}` : ' · estimated size'}</span>`;
+          head.onclick = () => apply(m);
+          const col = document.createElement('div'); col.className = 'tankvars';
+          row.append(head, col);
+          for (const v of vs) {
+            const b = document.createElement('button'); b.className = 'tankvar' + (v.discontinued ? ' disc' : '');
+            b.innerHTML = `<span class="vb">${esc(v.brand)}${v.line ? ` <i>${esc(v.line)}</i>` : ''}${v.rimless ? ' · rimless' : ''}${v.discontinued ? ' · discontinued' : ''}</span><span class="vd">${dimsInches({ L: v.L_in * IN, D: v.D_in * IN, H: v.H_in * IN })} in</span><span class="vp">${usd(v)}</span>`;
+            b.title = [v.price_note, v.confidence ? `confidence: ${v.confidence}` : '', v.checked ? `checked ${v.checked}` : ''].filter(Boolean).join(' · ');
+            b.onclick = () => apply(m, v);
+            col.append(b);
+          }
+          list.append(row);
+        }
+      }
+      if (!list.firstChild) list.innerHTML = '<p class="hint">No tank matches that search.</p>';
     };
+    q.oninput = draw; terra.onchange = draw;
+    $('presetA').onclick = () => { draw(); dlg.showModal(); q.focus(); };
   }
   /** Resize / reshape each edited tank from its own current size (so ticking both changes only what was set). */
   function setTank(next: (T: Tank) => Tank, coalesce?: string, glass?: number) {

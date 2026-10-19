@@ -12,6 +12,24 @@ export const BANDS: [TankBand, string][] = [['nano', 'Nano (under 15 gal)'], ['s
 export const bandOf = (gal: number): TankBand => (gal < 15 ? 'nano' : gal < 40 ? 'small' : gal < 75 ? 'mid' : gal < 125 ? 'large' : 'monster');
 
 export interface Outer { L: number; H: number; D: number }
+/** One real product at a catalog size: a maker's own outer size (often a little off the generic one) and typical new US price. */
+export interface TankVariant {
+  brand: string;
+  line?: string;
+  /** Outer inches as sold (glass included). */
+  L_in: number; D_in: number; H_in: number;
+  glass_mm?: number | null;
+  rimless?: boolean;
+  price_usd?: number | null;
+  /** 'msrp' | 'street' | 'kit' (kit includes stand / light / filter). */
+  price_kind?: string;
+  price_note?: string;
+  discontinued?: boolean;
+  url?: string;
+  checked?: string;
+  confidence?: 'high' | 'medium' | 'low';
+}
+
 export interface TankModel {
   id: string;
   name: string;
@@ -33,6 +51,8 @@ export interface TankModel {
   /** Where the size came from, or 'estimate' when no maker listing was checked. */
   source: string;
   note?: string;
+  /** Real products at this size (research/tanks merged in); absent = only the generic size is known. */
+  variants?: TankVariant[];
 }
 
 export const TANK_MODELS = (data as { tanks: TankModel[] }).tanks;
@@ -76,6 +96,12 @@ export function tankFromOuter(m: OuterSpec, glass: number | 'auto' = 'auto'): { 
   }
   return { tank: T, glass: g };
 }
+
+/** The catalog entry re-sized to one maker's variant (outer dims and glass from that product), for tankFromModel. */
+export function modelOfVariant(m: TankModel, v: TankVariant): TankModel {
+  return { ...m, outer: { L: v.L_in * IN, D: v.D_in * IN, H: v.H_in * IN }, glassMm: v.glass_mm ?? m.glassMm };
+}
+export const dimsInches = (o: Outer) => `${+(o.L / IN).toFixed(1)}×${+(o.D / IN).toFixed(1)}×${+(o.H / IN).toFixed(1)}`;
 
 /** One choice for the tank picker: a group heading plus its entries, in display order. */
 export interface TankChoice { value: string; label: string; group: string; model: TankModel }

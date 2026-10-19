@@ -13,9 +13,9 @@ describe('tank catalog (lane KA)', () => {
     expect(VOL_TOL).toBe(0.08);
     expect(Object.keys(VOL_EXCEPTIONS).sort()).toEqual(['g125', 'g300']);
   });
-  it('covers the size ladder and keeps the 11 terrarium presets', () => {
+  it('covers the size ladder and keeps the 11 original terrarium presets plus the researched maker sizes', () => {
     for (const id of ['g2_5', 'g5', 'g10', 'g29', 'g40b', 'g55', 'g75', 'g120', 'bow36', 'bow46', 'bow72', 'cor24', 'hex35', 'cor50', 'g125', 'g300', 'c6', 'c8', 'c10']) expect(getTankModel(id), id).toBeDefined();
-    expect(TANK_MODELS.filter(m => m.terrarium).length).toBe(11);
+    expect(TANK_MODELS.filter(m => m.terrarium).length).toBe(14);
   });
   it('a 55 gallon derives the interior from outer minus glass', () => {
     const m = getTankModel('g55')!, T = tankFromModel(m);
@@ -33,6 +33,6 @@ describe('tank catalog (lane KA)', () => {
     expect(c.length).toBe(TANK_MODELS.length);
     expect(c[c.length - 1].group).toBe('Terrariums');
     expect(c[0].group).toMatch(/^Nano/);
-    expect(tankChoices({ terrariums: false }).length).toBe(TANK_MODELS.length - 11);
+    expect(tankChoices({ terrariums: false }).length).toBe(TANK_MODELS.length - 14);
   });
 });

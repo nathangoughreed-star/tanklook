@@ -35,6 +35,12 @@
     <p class="hint">Ctrl+Z (Undo) brings it back straight after.</p>
     <div class="btns"><span class="grow"></span><button id="scapeKeep" autofocus>Keep my scape</button><button id="scapeReplace" class="danger">Replace it</button></div>
   </dialog>
+  <dialog id="tankDlg" class="libdlg tankdlg" aria-labelledby="tankDlgTitle">
+    <form method="dialog" class="libhead"><h2 id="tankDlgTitle">Tank sizes</h2><button value="close" aria-label="Close">✕</button></form>
+    <div class="tankbar"><input id="tankQ" type="search" placeholder="Search size, brand or shape (e.g. 75, Petco, bowfront)" aria-label="Search tanks"><label class="chk"><input id="tankTerra" type="checkbox"> Terrariums</label></div>
+    <p class="hint">Sizes are outer dimensions as sold. Makers often shave or add an inch to the generic size, so pick the brand you will buy. Prices are typical new US prices and move often.</p>
+    <div id="tankList"></div>
+  </dialog>
   <dialog id="startDlg" class="libdlg startdlg" aria-labelledby="startTitle">
     <form method="dialog" class="libhead"><h2 id="startTitle">TankLook</h2><button value="close" aria-label="Close">✕</button></form>
     <p class="hint">Plan an aquarium, paludarium or terrarium: tank, ground, plants, animals and light, all to scale. New and Open… both land here.</p>
@@ -87,7 +93,7 @@
 
   <details class="sec" data-sec="tank"><summary><h2>Tank</h2></summary>
   <div class="btns">
-    <select id="presetA" aria-label="Tank size preset"></select>
+    <button id="presetA" aria-haspopup="dialog">Presets…</button>
     <span class="grow"></span>
     <span class="seg"><button id="uIn">in</button><button id="uCm">cm</button></span>
   </div>

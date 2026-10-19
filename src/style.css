@@ -488,3 +488,19 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .dmset input[type=number] { width: 80px }
 .dmask { margin: 4px 0 4px 10px; padding: 4px 6px; border-left: 2px solid var(--accent); font-size: 12px }
 .dmask[hidden] { display: none }
+
+/* tank size picker: full-window dialog */
+.tankdlg { width: calc(100vw - 32px); max-width: 1100px; height: calc(100vh - 32px); max-height: none; overflow-y: auto; margin: 16px auto }
+.tankbar { display: flex; gap: 12px; align-items: center; margin: 6px 0 }
+.tankbar input[type=search] { flex: 1; padding: 6px 8px }
+.tankdlg h3 { margin: 14px 0 4px; font-size: 14px; position: sticky; top: 0; background: var(--panel); padding: 4px 0; border-bottom: 1px solid var(--line) }
+.tankrow { display: grid; grid-template-columns: minmax(150px, 220px) 1fr; gap: 4px 12px; padding: 6px 0; border-bottom: 1px solid var(--line) }
+.tankrow button { text-align: left }
+.tankvars { display: flex; flex-direction: column; gap: 3px }
+.tankgen { display: flex; flex-direction: column; gap: 2px; align-self: start }
+.tankgen span { font-size: 12px; opacity: .75 }
+.tankvar { display: grid; grid-template-columns: 1fr 120px 110px; gap: 8px; align-items: center }
+.tankvar .vp { text-align: right; font-variant-numeric: tabular-nums }
+.tankvar .vb i { opacity: .7 }
+.tankvar.disc { opacity: .6 }
+@media (max-width: 640px) { .tankrow { grid-template-columns: 1fr } .tankvar { grid-template-columns: 1fr auto } .tankvar .vd { display: none } }

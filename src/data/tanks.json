@@ -16,7 +16,46 @@
     "desktop"
    ],
    "source": "estimate: common US size, no single maker listing checked",
-   "note": "Aquarium-kit nano; makers vary by 0.5 in."
+   "note": "Aquarium-kit nano; makers vary by 0.5 in.",
+   "variants": [
+    {
+     "brand": "Aqueon",
+     "line": "MiniBow LED kit",
+     "L_in": 11.5,
+     "D_in": 7.63,
+     "H_in": 12.5,
+     "price_note": "price not found; dims from a secondary retailer snippet; bow front kit with hood/filter",
+     "url": "https://www.aqueon.com/products/aquarium-starter-kits/minibow-led-kits",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    },
+    {
+     "brand": "Aqueon",
+     "line": "Standard Glass Rectangle",
+     "L_in": 12.25,
+     "D_in": 6.25,
+     "H_in": 8.25,
+     "price_usd": 23.99,
+     "price_kind": "street",
+     "price_note": "PetSmart tank only",
+     "url": "https://www.petsmart.com/5356062.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Fluval",
+     "line": "Spec (2.6 gal / 10 L)",
+     "L_in": 11.8,
+     "D_in": 10.8,
+     "H_in": 8.7,
+     "price_usd": 89.99,
+     "price_kind": "kit",
+     "price_note": "BRS; kit with LED and filter. Retailers disagree which of 11.8/10.8 is L vs D",
+     "url": "https://bulkreefsupply.com/fluval-spec-2-6-gallon-aquarium-kit-fluval.html",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    }
+   ]
   },
   {
    "id": "g3c",
@@ -35,7 +74,33 @@
     "desktop"
    ],
    "source": "estimate: common US size, no single maker listing checked",
-   "note": "Mini cube; makers vary."
+   "note": "Mini cube; makers vary.",
+   "variants": [
+    {
+     "brand": "Marineland",
+     "line": "Contour Aquarium Kit",
+     "L_in": 9.63,
+     "D_in": 9.63,
+     "H_in": 14,
+     "price_kind": "kit",
+     "price_note": "price not captured; kit with LED/filter. Other listings give 10x9.5x10 and 11.8x11.6x12.05 (likely packaging)",
+     "url": "https://www.petsmart.com/5362412.html",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Tetra",
+     "line": "3 gal Cube kit",
+     "L_in": 10.0,
+     "D_in": 10.0,
+     "H_in": 10.51,
+     "price_kind": "kit",
+     "price_note": "one marketplace listing; another gives 10.31x11.06x17.5 (likely with hood/filter)",
+     "url": "https://www.desertcart.sn/products/1627265",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    }
+   ]
   },
   {
    "id": "g5",
@@ -53,7 +118,47 @@
     "desktop"
    ],
    "source": "estimate: common US size, no single maker listing checked",
-   "note": "The classic 16x8x10 outer."
+   "note": "The classic 16x8x10 outer.",
+   "variants": [
+    {
+     "brand": "Aqueon",
+     "line": "MiniBow LED SmartClean kit",
+     "L_in": 14.5,
+     "D_in": 10.0,
+     "H_in": 13.5,
+     "price_kind": "kit",
+     "price_note": "bow front desktop kit; another store gives H 14.5 in",
+     "url": "https://www.thatpetplace.com/aqueon-5g-mini-bow-led-smartclean-aquarium-kit",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Fluval",
+     "line": "Spec V 5 gal (19 L)",
+     "L_in": 20.5,
+     "D_in": 7.5,
+     "H_in": 11.6,
+     "price_usd": 153.99,
+     "price_kind": "kit",
+     "price_note": "BRS kit: LED, pump, filter media. Listing inconsistent on depth vs height; metric 52 x 19 x 29.5 cm implies D 7.5, H 11.6",
+     "url": "https://www.bulkreefsupply.com/fluval-spec-5-gallon-aquarium-kit-fluval.html",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Marineland",
+     "line": "Portrait Glass LED kit",
+     "L_in": 9.5,
+     "D_in": 9.5,
+     "H_in": 14,
+     "price_usd": 96.99,
+     "price_kind": "kit",
+     "price_note": "That Pet Place kit w/ LED and hidden filter; another listing gives 11.81x11.62x17.05 (probably incl. lid/packaging)",
+     "url": "https://www.thatpetplace.com/marineland-portrait-desktop-kit-5-gal",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    }
+   ]
   },
   {
    "id": "g5_5",
@@ -71,7 +176,33 @@
     "desktop"
    ],
    "source": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/aqueon-standard-glass-rectangle-aquarium-glass-fish-tank-25-gallon---55-gallon-5356186.html",
-   "note": "Aqueon 5.5 gal listing (16.25 x 8.4 x 10.5 in) as quoted by a retailer search; another listing gives 16.5 x 8.75 x 10.75."
+   "note": "Aqueon 5.5 gal listing (16.25 x 8.4 x 10.5 in) as quoted by a retailer search; another listing gives 16.5 x 8.75 x 10.75.",
+   "variants": [
+    {
+     "brand": "Aqueon",
+     "line": "Standard Glass Rectangle",
+     "L_in": 16.5,
+     "D_in": 8.75,
+     "H_in": 10.75,
+     "price_usd": 29.99,
+     "price_kind": "street",
+     "price_note": "PetSmart tank only",
+     "url": "https://www.petsmart.com/5345486.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Aqueon",
+     "line": "Standard Rectangular Black Trim (Aquarium Depot CA listing)",
+     "L_in": 16.25,
+     "D_in": 8.375,
+     "H_in": 10.5,
+     "price_note": "CAD $39.99 only; Reef Supplies gives 16.25x8.4x10.5",
+     "url": "https://aquariumdepot.ca/products/aqueon-standard-rectangular-aquarium-black-trim-5-5-gal",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    }
+   ]
   },
   {
    "id": "bow6",
@@ -110,7 +241,34 @@
     "desktop"
    ],
    "source": "estimate: common US size, no single maker listing checked",
-   "note": "Rimless-style low cube; makers vary."
+   "note": "Rimless-style low cube; makers vary.",
+   "variants": [
+    {
+     "brand": "AquaTop",
+     "line": "High Clarity Low Iron cube (7.1 gal)",
+     "L_in": 12.0,
+     "D_in": 12.0,
+     "H_in": 12.0,
+     "rimless": true,
+     "price_note": "price not captured",
+     "url": "https://yourlocalfishstore.com/collections/rimless-aquariums",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    },
+    {
+     "brand": "Ultum Nature Systems",
+     "line": "30C rimless cube (7 gal)",
+     "L_in": 11.81,
+     "D_in": 11.81,
+     "H_in": 11.81,
+     "glass_mm": 5,
+     "rimless": true,
+     "price_note": "price not captured",
+     "url": "https://www.bulkreefsupply.com/30c-rimless-aquarium-7-gallon-ultum-nature-systems.html",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    }
+   ]
   },
   {
    "id": "g8c",
@@ -129,7 +287,20 @@
     "desktop"
    ],
    "source": "estimate: common US size, no single maker listing checked",
-   "note": "Mid nano cube; makers vary."
+   "note": "Mid nano cube; makers vary.",
+   "variants": [
+    {
+     "brand": "biOrb",
+     "line": "CUBE 30 (8 gal), acrylic",
+     "L_in": 12.6,
+     "D_in": 12.6,
+     "H_in": 13.6,
+     "price_note": "from search snippet 32x32x34.5 cm; acrylic not glass; URL is a category page, not a product page",
+     "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    }
+   ]
   },
   {
    "id": "g10",
@@ -144,7 +315,97 @@
    "glassMm": 5,
    "band": "nano",
    "source": "https://www.aquariumdepot.ca/aquariums/aquariums-only/standard-aquariums.html",
-   "note": "Aqueon 10 gal 20.25 x 10.5 x 12.6 in (Canadian retailer listing); the usual 20x10x12 interior."
+   "note": "Aqueon 10 gal 20.25 x 10.5 x 12.6 in (Canadian retailer listing); the usual 20x10x12 interior.",
+   "variants": [
+    {
+     "brand": "Aqueon",
+     "line": "Standard Glass Rectangle",
+     "L_in": 20.25,
+     "D_in": 10.5,
+     "H_in": 12.6,
+     "price_note": "CAD listing; US sale posts show $12-25 at Petco; no current US price confirmed",
+     "url": "https://aquariumdepot.ca/products/aqueon-standard-rectangular-aquarium-black-trim-10-gal",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Innovative Marine",
+     "line": "Nuvo Fusion Nano 10",
+     "L_in": 11.8,
+     "D_in": 15.0,
+     "H_in": 13.0,
+     "price_note": "price not captured; AIO; sources swap L/W",
+     "url": "https://www.bulkreefsupply.com/10-nuvo-fusion-pro-aio-aquarium-bundle-innovative-marine.html",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    },
+    {
+     "brand": "Marineland",
+     "line": "Open Glass Aquarium",
+     "L_in": 20.0,
+     "D_in": 10.0,
+     "H_in": 12.0,
+     "price_usd": 35.99,
+     "price_kind": "street",
+     "price_note": "PetSmart; weight 11 lb; nominal dims",
+     "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-open-glass-aquarium-86933.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Tetra",
+     "line": "10 Gallon STEM Aquarium Kit",
+     "L_in": 22.07,
+     "D_in": 11.07,
+     "H_in": 14.19,
+     "price_kind": "kit",
+     "price_note": "kit dims incl. hood/filter, not tank-only",
+     "url": "https://www.petsmart.com/5342454.html",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    },
+    {
+     "brand": "Top Fin",
+     "line": "Angled Aquarium",
+     "L_in": 23.24,
+     "D_in": 12.8,
+     "H_in": 9.89,
+     "price_usd": 89.99,
+     "price_kind": "street",
+     "price_note": "PetSmart tank only, low and wide",
+     "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/top-fin-angled-aquarium--10-gallon-5342770.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Top Fin",
+     "line": "Cube Aquarium Essentials Starter Kit",
+     "L_in": 14.09,
+     "D_in": 14.09,
+     "H_in": 14.09,
+     "price_usd": 44.99,
+     "price_kind": "kit",
+     "price_note": "hood w/ feeding door, LED, 50 W heater, PF10 filter, net, thermometer",
+     "url": "https://www.petsmart.com/fish/starter-kits/top-fin-cube-aquarium-essentials-starter-kit---fish-tank-starter-kit---10-gallon-100213.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Waterbox",
+     "line": "Cube 10 AIO",
+     "L_in": 13.8,
+     "D_in": 14.2,
+     "H_in": 13.8,
+     "glass_mm": 5,
+     "rimless": true,
+     "price_usd": 209.99,
+     "price_kind": "kit",
+     "price_note": "one US retailer, out of stock; AIO with return pump and chambers",
+     "url": "https://frags2fishes.com/aquariums/cube10starphireultraclear10gallonaquarium-waterboxaquariums/",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    }
+   ]
   },
   {
    "id": "g15",
@@ -159,7 +420,33 @@
    "glassMm": 5,
    "band": "small",
    "source": "https://aquariumdepot.ca/products/aqueon-standard-rectangular-aquarium-black-trim-15-gal",
-   "note": "Aqueon 15 gal 24.5 x 12.5 x 12.75 in (retailer listing)."
+   "note": "Aqueon 15 gal 24.5 x 12.5 x 12.75 in (retailer listing).",
+   "variants": [
+    {
+     "brand": "Aqueon",
+     "line": "Standard Glass Rectangle",
+     "L_in": 24.5,
+     "D_in": 12.5,
+     "H_in": 12.75,
+     "price_note": "CAD $95.99 only; Planted Aquaria CA gives 24.3x12.5x12.8",
+     "url": "https://aquariumdepot.ca/products/aqueon-standard-rectangular-aquarium-black-trim-15-gal",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Fluval",
+     "line": "Flex 15 (curved front)",
+     "L_in": 16.0,
+     "D_in": 15.0,
+     "H_in": 15.0,
+     "price_usd": 159.99,
+     "price_kind": "kit",
+     "price_note": "kit w/ LED, filter; range $159.99-$195.99; Flex 2.0 listed about 16.3x15.75x15",
+     "url": "https://fishtanksdirect.com/flex-15-gallon-aquarium-kit-16-l-x-15-w-x-15-h-black",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    }
+   ]
   },
   {
    "id": "g20h",
@@ -174,7 +461,35 @@
    "glassMm": 5,
    "band": "small",
    "source": "estimate: common US size, no single maker listing checked",
-   "note": "Makers vary: one Aqueon listing gives 25 x 13.25 x 17.25 in (the large end)."
+   "note": "Makers vary: one Aqueon listing gives 25 x 13.25 x 17.25 in (the large end).",
+   "variants": [
+    {
+     "brand": "Aqueon",
+     "line": "Standard Glass Rectangle (20 high)",
+     "L_in": 24.25,
+     "D_in": 12.5,
+     "H_in": 16.75,
+     "price_usd": 69.99,
+     "price_kind": "street",
+     "price_note": "PetSmart tank only (was $79.99)",
+     "url": "https://www.petsmart.com/5345487.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Tetra",
+     "line": "Open Glass Aquarium 20",
+     "L_in": 24.0,
+     "D_in": 12.0,
+     "H_in": 16.0,
+     "price_usd": 99.99,
+     "price_kind": "street",
+     "price_note": "PetSmart; nominal dims, weight 34.95 lb",
+     "url": "https://www.petsmart.com/5380617.html",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    }
+   ]
   },
   {
    "id": "g20l",
@@ -189,7 +504,58 @@
    "glassMm": 5,
    "band": "small",
    "source": "https://www.tractorsupply.com/tsc/product/aqueon-20-gallon-long-tank-1405672",
-   "note": "Aqueon 20 long 30.5 x 13.13 x 13 in (Tractor Supply listing)."
+   "note": "Aqueon 20 long 30.5 x 13.13 x 13 in (Tractor Supply listing).",
+   "variants": [
+    {
+     "brand": "Aqueon",
+     "line": "20 Gallon Long (Tractor Supply listing)",
+     "L_in": 30.5,
+     "D_in": 13.13,
+     "H_in": 13.0,
+     "price_note": "price not captured; differs from PetSmart by 0.6 in on depth",
+     "url": "https://www.tractorsupply.com/tsc/product/aqueon-20-gallon-long-tank-1405672",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Aqueon",
+     "line": "Standard Glass Rectangle (20 long)",
+     "L_in": 30.25,
+     "D_in": 12.5,
+     "H_in": 12.75,
+     "price_usd": 69.99,
+     "price_kind": "street",
+     "price_note": "PetSmart tank only (was $79.99)",
+     "url": "https://www.petsmart.com/5356064.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Innovative Marine",
+     "line": "Nuvo Fusion 20 AIO",
+     "L_in": 23.6,
+     "D_in": 15.0,
+     "H_in": 13.0,
+     "glass_mm": 6,
+     "price_usd": 135.99,
+     "price_kind": "street",
+     "price_note": "BRS; $29 oversize fee; stock unclear",
+     "url": "https://www.bulkreefsupply.com/20-nuvo-fusion-aio-long-aquarium-innovative-marine.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Marineland",
+     "line": "Standard Rectangular 20 long",
+     "L_in": 30.0,
+     "D_in": 12.0,
+     "H_in": 12.0,
+     "price_note": "nominal dims per Marineland sizing chart",
+     "url": "https://www.petsupermarket.com/fish/supplies/aquariums-starter-kits/aquariums/marineland-standard-rectangular-high-sided-glass-fish-aquarium-20-gallon/474911202.html",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    }
+   ]
   },
   {
    "id": "g29",
@@ -204,7 +570,33 @@
    "glassMm": 6,
    "band": "small",
    "source": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/aqueon-standard-glass-rectangle-aquarium-glass-fish-tank-25-gallon---55-gallon-5356186.html",
-   "note": "Aqueon 29 gal 30.25 x 12.5 x 18.75 in (retailer listing)."
+   "note": "Aqueon 29 gal 30.25 x 12.5 x 18.75 in (retailer listing).",
+   "variants": [
+    {
+     "brand": "Aqueon",
+     "line": "Standard Glass Rectangle",
+     "L_in": 30.25,
+     "D_in": 12.5,
+     "H_in": 18.75,
+     "price_usd": 99.99,
+     "price_kind": "street",
+     "price_note": "PetSmart tank only",
+     "url": "https://www.petsmart.com/5371593.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Marineland",
+     "line": "Standard Rectangular 29",
+     "L_in": 30.0,
+     "D_in": 12.0,
+     "H_in": 18.0,
+     "price_note": "nominal dims from listing title",
+     "url": "https://www.petsupermarket.com/fish/supplies/aquariums-starter-kits/aquariums/marineland-fish-aquarium-tank-black-29-gallon-30-x-12-x-18/PSI00861.html",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    }
+   ]
   },
   {
    "id": "g30b",
@@ -222,7 +614,20 @@
     "breeder"
    ],
    "source": "estimate: common US size, no single maker listing checked",
-   "note": "Common 36x18x12 breeder."
+   "note": "Common 36x18x12 breeder.",
+   "variants": [
+    {
+     "brand": "Marineland",
+     "line": "30 gal (36 x 13 x 16)",
+     "L_in": 36.0,
+     "D_in": 13.0,
+     "H_in": 16.0,
+     "price_note": "Marineland sizing guide via search snippet; not a breeder footprint",
+     "url": "https://piscespets.com/products/marineland-aquarium-black",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    }
+   ]
   },
   {
    "id": "g37",
@@ -255,7 +660,57 @@
     "breeder"
    ],
    "source": "https://www.thatpetplace.com/40-Gallon-Breeder-Aquarium-Black",
-   "note": "Retailer lists 36 x 18 x 16 in; a \"40 breeder\" is about 40 gal, so the computed volume runs slightly high."
+   "note": "Retailer lists 36 x 18 x 16 in; a \"40 breeder\" is about 40 gal, so the computed volume runs slightly high.",
+   "variants": [
+    {
+     "brand": "Aqueon",
+     "line": "Standard Glass 40 Breeder",
+     "L_in": 36.25,
+     "D_in": 18.25,
+     "H_in": 17,
+     "price_note": "Price shown only in CAD on a Canadian retailer; no US price found",
+     "url": "https://aquariumdepot.ca/products/aqueon-standard-rectangular-aquarium-black-trim-40-gal-breeder",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Generic (That Pet Place listing)",
+     "line": "40 Gallon Breeder Black",
+     "L_in": 36,
+     "D_in": 18,
+     "H_in": 16,
+     "price_note": "Price not extracted; brand not confirmed",
+     "url": "https://www.thatpetplace.com/40-Gallon-Breeder-Aquarium-Black",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Imagitarium (Petco)",
+     "line": "Breeder Open-Glass 40 gal",
+     "L_in": 36.33,
+     "D_in": 18.34,
+     "H_in": 15.9,
+     "price_usd": 75.0,
+     "price_kind": "street",
+     "price_note": "Petco sale, was 150; in-store only per page; dims from search snippet of Petco spec (Petco page blocks fetch); glass not published (Q&A guess 6-8 mm, not official)",
+     "url": "https://www.petco.com/product/imagitarium-40-gallon-breeder-open-glass-aquarium-tank",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Marineland",
+     "line": "Open Glass 40 gal (breeder footprint)",
+     "L_in": 36,
+     "D_in": 18,
+     "H_in": 16,
+     "price_usd": 74.99,
+     "price_kind": "street",
+     "price_note": "PetSmart sale price, was 149.99; 50% off event; page also lists 10 and 75 gal",
+     "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-open-glass-aquarium-5356187.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    }
+   ]
   },
   {
    "id": "g45c",
@@ -273,7 +728,20 @@
     "cube"
    ],
    "source": "estimate: common US size, no single maker listing checked",
-   "note": "24x24x18 interior cube; a 30 in tall 18x18 version also exists."
+   "note": "24x24x18 interior cube; a 30 in tall 18x18 version also exists.",
+   "variants": [
+    {
+     "brand": "Marineland",
+     "line": "45 Gallon Cube (24x24x18, optional slim center overflow)",
+     "L_in": 24,
+     "D_in": 24,
+     "H_in": 18,
+     "price_note": "Only a used-sale forum post found; no current new listing",
+     "url": "https://reefs.com/forum/sale-trade/179838-fs-45-cube-tek-light-more.html",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    }
+   ]
   },
   {
    "id": "g50b",
@@ -291,7 +759,43 @@
     "breeder"
    ],
    "source": "estimate: common US size, no single maker listing checked",
-   "note": "Typical 36x18x19 outer; some makers 36x18x21."
+   "note": "Typical 36x18x19 outer; some makers 36x18x21.",
+   "variants": [
+    {
+     "brand": "All-Glass Aquarium (Aqueon parent)",
+     "line": "50 gallon 36x18x19",
+     "L_in": 36,
+     "D_in": 18,
+     "H_in": 19,
+     "price_note": "Only a 3D-model catalogue entry and a forum mention of an Aqueon 50 with center brace; no retailer page found, so availability unknown",
+     "url": "https://modelnet.cs.princeton.edu/data/fish_tank/fish_tank_000000338/fish_tank_000000338_detail.html",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    },
+    {
+     "brand": "Custom Aquariums (glass)",
+     "line": "50 Gallon 30H x 36L x 12D tank only",
+     "L_in": 36,
+     "D_in": 12,
+     "H_in": 30,
+     "price_note": "Approx outside glass; add about 0.75 in to L, D and H for the aluminum frame; price not extracted",
+     "url": "https://www.customaquariums.com/product/50-gallon-30h-x-36l-x-12d-glass-aquarium-tank-only/",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "SeaClear",
+     "line": "50 gal rectangle acrylic (not a breeder footprint)",
+     "L_in": 36,
+     "D_in": 15,
+     "H_in": 20,
+     "glass_mm": 6.35,
+     "price_note": "1/4 in acrylic body and top, built to order 3-4 weeks; price not found",
+     "url": "https://fishtanksdirect.com/seaclear-50-gallon-36lx15wx20h-rectangular-acrylic-fish-tank-10-100-1250/",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    }
+   ]
   },
   {
    "id": "g55",
@@ -306,7 +810,68 @@
    "glassMm": 6,
    "band": "mid",
    "source": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/aqueon-standard-glass-rectangle-aquarium-glass-fish-tank-25-gallon---55-gallon-5356186.html",
-   "note": "Aqueon 55 gal 48.75 x 13-14 x 21.25 in (retailer listings)."
+   "note": "Aqueon 55 gal 48.75 x 13-14 x 21.25 in (retailer listings).",
+   "variants": [
+    {
+     "brand": "Aqueon",
+     "line": "Standard Glass Rectangle 55 gal",
+     "L_in": 48.25,
+     "D_in": 12.75,
+     "H_in": 21,
+     "price_usd": 99.99,
+     "price_kind": "street",
+     "price_note": "PetSmart sale, was 199.99. Another PetSmart listing gives 48.75 x 14 x 21.25 (78 lb); Aquarium Depot gives 48.3 x 12.8 x 21",
+     "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/aqueon-standard-glass-rectangle-aquarium-glass-fish-tank-25-gallon---55-gallon-5356186.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Imagitarium (Petco)",
+     "line": "Open-Glass 55 gal",
+     "L_in": 47.75,
+     "D_in": 13.07,
+     "H_in": 23.89,
+     "price_note": "Taller than a generic 55; dims from Petco spec snippet (page blocks fetch); price not obtained",
+     "url": "https://www.petco.com/product/imagitarium-55-gallon-open-glass-aquarium-tank",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Marineland",
+     "line": "55 Gallon black",
+     "L_in": 48,
+     "D_in": 13,
+     "H_in": 20,
+     "price_note": "Price shown only in CAD on a Canadian retailer; no US price found (sizing guide, 189.99 CAD)",
+     "url": "https://piscespets.com/products/marineland-aquarium-black",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Tetra",
+     "line": "Glass 55 gal",
+     "L_in": 48,
+     "D_in": 13,
+     "H_in": 20,
+     "price_note": "Approx only, from secondary search results; the PetSmart Tetra page I opened showed only a 20 gal",
+     "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/tetra-open-glass-aquarium-glass-fish-tank-5380173.html",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    },
+    {
+     "brand": "Waterbox",
+     "line": "Frag 85.3 (53.9 gal display, rated 54)",
+     "L_in": 35.4,
+     "D_in": 23.6,
+     "H_in": 16.1,
+     "glass_mm": 10,
+     "rimless": true,
+     "price_note": "Display tank dims per BRS; low-iron Starphire; price not shown on page; complete system with cabinet and sump",
+     "url": "https://www.bulkreefsupply.com/frag-85-3-aquarium-system-54-gallons-waterbox.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    }
+   ]
   },
   {
    "id": "g60b",
@@ -324,7 +889,46 @@
     "breeder"
    ],
    "source": "https://www.amazonasmagazine.com/2022/04/22/aqueons-new-aquarium-model-60-gallon-breeder/",
-   "note": "Aqueon 60 breeder 48.5 x 18.5 x 16 in (magazine article)."
+   "note": "Aqueon 60 breeder 48.5 x 18.5 x 16 in (magazine article).",
+   "variants": [
+    {
+     "brand": "Aqueon",
+     "line": "Rectangle 60 Breeder",
+     "L_in": 48.5,
+     "D_in": 18.5,
+     "H_in": 16.25,
+     "price_note": "Petco product title gives 48.5 x 18.5 x 16.25; other sources 16 in. Historical street price: 99 on a 2023 Petco sale, about 189-199 regular; no current price confirmed",
+     "url": "https://www.petco.com/product/aqueon-standard-glass-aquarium-tank-25-gallon",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Imagitarium (Petco)",
+     "line": "Breeder Open-Glass 60 gal",
+     "L_in": 48.03,
+     "D_in": 18.03,
+     "H_in": 18.15,
+     "price_note": "Taller (18.15) than Aqueon (16.25); needs two glass tops; price not obtained",
+     "url": "https://www.petco.com/product/imagitarium-60-gallon-breeder-open-glass-aquarium-tank",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Waterbox",
+     "line": "Marine X 90.3 (59.3 gal display, rated 59)",
+     "L_in": 35.4,
+     "D_in": 19.7,
+     "H_in": 21.7,
+     "glass_mm": 12,
+     "rimless": true,
+     "price_usd": 2299.0,
+     "price_kind": "kit",
+     "price_note": "BRS price; complete system: tank, cabinet, sump, plumbing, filter socks; not a breeder footprint",
+     "url": "https://bulkreefsupply.com/marine-x-90-3-aquarium-system-59-gallons-waterbox-aquariums.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    }
+   ]
   },
   {
    "id": "g65",
@@ -339,7 +943,69 @@
    "glassMm": 8,
    "band": "mid",
    "source": "https://aquariumdepot.ca/products/marineland-standard-rectangular-aquarium-60-gal",
-   "note": "Marineland sizing guide: 65 gal 36 x 18 x 24 in."
+   "note": "Marineland sizing guide: 65 gal 36 x 18 x 24 in.",
+   "variants": [
+    {
+     "brand": "Aqueon",
+     "line": "Standard Rectangular 65 gal",
+     "L_in": 36.4,
+     "D_in": 18.4,
+     "H_in": 25,
+     "price_note": "Price shown only in CAD on a Canadian retailer; no US price found",
+     "url": "https://aquariumdepot.ca/aqueon-standard-rectangular-aquarium-black-trim-65-gal.html",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Marineland",
+     "line": "65 Gallon black",
+     "L_in": 36,
+     "D_in": 18,
+     "H_in": 24,
+     "price_note": "Price shown only in CAD on a Canadian retailer; no US price found (239.99 CAD)",
+     "url": "https://piscespets.com/products/marineland-aquarium-black",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Marineland",
+     "line": "Corner-Flo reef-ready 65 gal (1 overflow)",
+     "L_in": 36.31,
+     "D_in": 18.28,
+     "H_in": 24.75,
+     "glass_mm": 8,
+     "price_note": "Spec-sheet fractions as quoted in a search summary (36-5/16 x 18-9/32 x 24-3/4); 8 mm per same summary, panel mapping unclear",
+     "url": "https://aquariumdepot.ca/products/marineland-corner-flo-reef-ready-aquarium-65-gal",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "SeaClear",
+     "line": "System II 65 gal acrylic",
+     "L_in": 48,
+     "D_in": 15,
+     "H_in": 20,
+     "price_note": "Acrylic; price not extracted",
+     "url": "https://fishtanksdirect.com/seaclear-system-ii-65-gallon-48lx15wx20h-rectangular-acrylic-aquarium/",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Waterbox",
+     "line": "AIO 65.4 (65.8 gal display)",
+     "L_in": 47.2,
+     "D_in": 19.7,
+     "H_in": 17.7,
+     "glass_mm": 10,
+     "rimless": true,
+     "price_usd": 2049.0,
+     "price_kind": "kit",
+     "price_note": "BRS price; kit with cabinet stand and built-in filtration; 53.1 in overall height; Ultra-Clear glass, not explicitly low-iron; no return pump",
+     "url": "https://www.bulkreefsupply.com/aio-65-4-aquarium-system-65-gallons-waterbox-aquariums.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    }
+   ]
   },
   {
    "id": "g75",
@@ -354,7 +1020,113 @@
    "glassMm": 6,
    "band": "large",
    "source": "https://www.amazonasmagazine.com/2022/04/22/aqueons-new-aquarium-model-60-gallon-breeder/",
-   "note": "Aqueon 75 gal 48.5 x 18.5 x 21.25 in (article); another listing gives 48 x 18 x 21."
+   "note": "Aqueon 75 gal 48.5 x 18.5 x 21.25 in (article); another listing gives 48 x 18 x 21.",
+   "variants": [
+    {
+     "brand": "Aqueon",
+     "line": "Standard Glass 75 gal",
+     "L_in": 49,
+     "D_in": 19.5,
+     "H_in": 21.25,
+     "price_usd": 319.99,
+     "price_kind": "msrp",
+     "price_note": "Petco: 319.99 reg, 160-192 on sale; Petco spec says 49 x 19.5 x 21.25 (may include frame extents); Aquarium Depot and a Co-op forum post give 48.5 x 18.5 x 21.25",
+     "url": "https://www.petco.com/shop/en/petcostore/product/aqueon-standard-glass-aquarium-tank-75-gallon",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Imagitarium (Petco)",
+     "line": "Open-Glass 75 gal",
+     "L_in": 48.03,
+     "D_in": 18.03,
+     "H_in": 22.87,
+     "price_usd": 150.0,
+     "price_kind": "street",
+     "price_note": "Petco 50% off, was 300; in-store only; about 2 in taller than generic 75; dims from Petco spec snippet; Petco confirms 48 x 18 footprint",
+     "url": "https://www.petco.com/shop/en/petcostore/product/imagitarium-75-gallon-open-glass-aquarium-tank",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Innovative Marine",
+     "line": "NUVO INT 75 (internal overflow) system",
+     "L_in": 35.4,
+     "D_in": 23.6,
+     "H_in": 19.7,
+     "glass_mm": 12,
+     "rimless": true,
+     "price_usd": 2624.0,
+     "price_kind": "kit",
+     "price_note": "BRS, was 3280; kit with APS stand, sump, return pump, plumbing; low-iron",
+     "url": "https://www.bulkreefsupply.com/int-75-gallon-aquarium-complete-reef-system-innovative-marine.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Marineland",
+     "line": "Corner-Flo reef-ready 75 gal (1 overflow)",
+     "L_in": 48.38,
+     "D_in": 18.38,
+     "H_in": 20.94,
+     "price_usd": 426.99,
+     "price_kind": "street",
+     "price_note": "Spec-sheet fractions via search summary (48-3/8 x 18-3/8 x 20-15/16); price from a That Pet Place search snippet for the 48x18x21 model, page 404 on recheck",
+     "url": "https://aquariumdepot.ca/products/marineland-corner-flo-reef-ready-aquarium-75-gal",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Marineland",
+     "line": "High Definition LED Ensemble 75 gal",
+     "L_in": 48.38,
+     "D_in": 18.38,
+     "H_in": 21,
+     "price_usd": 499.99,
+     "price_kind": "kit",
+     "price_note": "PetSmart sale, was 799.99; includes glass tank, glass canopy, farmhouse stand (50x20x28), hidden LED",
+     "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-high-definition-led-ensemble---75-gallon-62017.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Marineland",
+     "line": "Open Glass 75 gal",
+     "L_in": 48,
+     "D_in": 18,
+     "H_in": 21,
+     "price_usd": 159.99,
+     "price_kind": "street",
+     "price_note": "PetSmart sale, was 299.99; 89 lb; 50% off event through 11/1",
+     "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-open-glass-aquarium-5356187.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "SeaClear",
+     "line": "System II 75 gal acrylic",
+     "L_in": 48,
+     "D_in": 18,
+     "H_in": 20,
+     "price_note": "Acrylic; a 48x15x24 version also exists; price not extracted",
+     "url": "https://fishtanksdirect.com/seaclear-system-ii-75-gallon-48lx18wx20h-rectangular-acrylic-aquarium/",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Waterbox",
+     "line": "Frag 105.4 (72.3 gal display, rated 72)",
+     "L_in": 47.2,
+     "D_in": 23.6,
+     "H_in": 16.1,
+     "glass_mm": 10,
+     "rimless": true,
+     "price_note": "Starphire low-iron; price not shown on page; complete system with cabinet and sump",
+     "url": "https://www.bulkreefsupply.com/frag-105-4-aquarium-system-72-gallons-waterbox.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    }
+   ]
   },
   {
    "id": "g90",
@@ -369,7 +1141,57 @@
    "glassMm": 8,
    "band": "large",
    "source": "estimate: common US size, no single maker listing checked",
-   "note": "Standard 48x18x24."
+   "note": "Standard 48x18x24.",
+   "variants": [
+    {
+     "brand": "Aqueon",
+     "line": "Standard Rectangular 90 gal",
+     "L_in": 48.5,
+     "D_in": 18.5,
+     "H_in": 25.375,
+     "price_note": "Price shown only in CAD on a Canadian retailer; no US price found; 25.375 in height unusually tall, single source",
+     "url": "https://aquariumdepot.ca/products/aqueon-standard-rectangular-aquarium-black-trim-90-gal",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Clear-For-Life",
+     "line": "90R Rectangle Uniquarium acrylic",
+     "L_in": 48,
+     "D_in": 18,
+     "H_in": 24,
+     "glass_mm": 9.5,
+     "price_usd": 1899.99,
+     "price_kind": "street",
+     "price_note": "3/8 in acrylic; built to order 3-4 weeks; PetSmart sells the same size at 1259.99-1349.99",
+     "url": "https://fishtanksdirect.com/clear-for-life-90R-48lx18wx24h-rectangle-uniquarium/",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Marineland",
+     "line": "90 Gallon black standard",
+     "L_in": 48,
+     "D_in": 18,
+     "H_in": 24,
+     "price_note": "Price shown only in CAD on a Canadian retailer; no US price found (314.99 CAD); Aquarium Depot lists it sold out at 852.84 CAD",
+     "url": "https://piscespets.com/products/marineland-aquarium-black",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Marineland",
+     "line": "Corner-Flo reef-ready 90 gal (1 overflow)",
+     "L_in": 48.38,
+     "D_in": 18.38,
+     "H_in": 24.88,
+     "glass_mm": 10,
+     "price_note": "Spec-sheet fractions via search summary; 10 mm per same summary",
+     "url": "https://aquariumdepot.ca/products/marineland-corner-flo-reef-ready-aquarium-90-gal",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    }
+   ]
   },
   {
    "id": "g120",
@@ -384,7 +1206,60 @@
    "glassMm": 8,
    "band": "large",
    "source": "estimate: common US size, no single maker listing checked",
-   "note": "Standard 48x24x24."
+   "note": "Standard 48x24x24.",
+   "variants": [
+    {
+     "brand": "Custom Aquariums (glass, AGA-style)",
+     "line": "120 Gallon 24H x 48L x 24D Basic Package",
+     "L_in": 48,
+     "D_in": 24,
+     "H_in": 24,
+     "glass_mm": 9.5,
+     "price_usd": 1734.39,
+     "price_kind": "kit",
+     "price_note": "Basic Package; 3/8 in non-tempered, ultra-clear front and sides; dims approx outside glass, add about 0.75 in for aluminum frame; shipping 400-600 extra; no low-iron mention",
+     "url": "https://www.customaquariums.com/?p=23627",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Marineland",
+     "line": "120 Gallon black standard",
+     "L_in": 60,
+     "D_in": 18,
+     "H_in": 26,
+     "price_note": "Price shown only in CAD on a Canadian retailer; no US price found (639.99 CAD); different footprint (60 x 18 x 26) from the 48x24x24 class",
+     "url": "https://piscespets.com/products/marineland-aquarium-black",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Marineland",
+     "line": "Corner-Flo reef-ready 120 gal (1 overflow)",
+     "L_in": 48,
+     "D_in": 24,
+     "H_in": 24,
+     "price_usd": 495.95,
+     "price_kind": "street",
+     "price_note": "Single USD figure shown for the whole Corner-Flo size selector, not size-specific; unreliable for 120",
+     "url": "https://natureaquariums.com/products/marineland-corner-flo-rectangular-aquarium-black-clear-1ea90-gal-48x18x24-in",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "SeaClear",
+     "line": "120 gal rectangle acrylic",
+     "L_in": 48,
+     "D_in": 24,
+     "H_in": 24,
+     "price_usd": 1299.99,
+     "price_kind": "street",
+     "price_note": "Seen in a related-products block on a fishtanksdirect page; stock unconfirmed",
+     "url": "https://fishtanksdirect.com/clear-for-life-100-gallon-48lx24wx24h-half-cylinder-acrylic-fish-tank-100g-mezzo/",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    }
+   ]
   },
   {
    "id": "bow36",
@@ -403,7 +1278,22 @@
     "bow"
    ],
    "source": "estimate: common US size, no single maker listing checked",
-   "note": "Approximate: bow sizes vary a lot by maker."
+   "note": "Approximate: bow sizes vary a lot by maker.",
+   "variants": [
+    {
+     "brand": "Top Fin",
+     "line": "Bowfront Aquarium (36 gal)",
+     "L_in": 30.7,
+     "D_in": 15.7,
+     "H_in": 22.2,
+     "price_usd": 399.99,
+     "price_kind": "kit",
+     "price_note": "ensemble with stand; starter kit (tank, hood, light, filter) $143.99 PetSmart; dims from search snippet of PetSmart page",
+     "url": "https://www.petsmart.com/5292480.html",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    }
+   ]
   },
   {
    "id": "bow46",
@@ -422,7 +1312,34 @@
     "bow"
    ],
    "source": "estimate: common US size, no single maker listing checked",
-   "note": "36.5 x 16.5 (centre) x 21 in from a forum post about an Oceanic 46 bow; end depth estimated."
+   "note": "36.5 x 16.5 (centre) x 21 in from a forum post about an Oceanic 46 bow; end depth estimated.",
+   "variants": [
+    {
+     "brand": "Oceanic",
+     "line": "46 gal bowfront",
+     "L_in": 36.5,
+     "D_in": 16.5,
+     "H_in": 21,
+     "price_note": "Forum re-measure; 16.5 is depth at bow centre; no current price; used listings 120-275",
+     "discontinued": true,
+     "url": "https://forums.reefcentral.com/threads/46gal-bowfront.938237",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    },
+    {
+     "brand": "SeaClear",
+     "line": "46 gal bow front acrylic",
+     "L_in": 36,
+     "D_in": 16.25,
+     "H_in": 20,
+     "glass_mm": 4.8,
+     "price_note": "Body 3/16 in, top 3/8 in; built on demand; page says the hood was discontinued; price blank",
+     "discontinued": true,
+     "url": "https://fishtanksdirect.com/seaclear-46-gallon-36lx16.25wx20h-bow-front-acrylic-fish-tank-10-100-1246",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    }
+   ]
   },
   {
    "id": "bow72",
@@ -441,7 +1358,54 @@
     "bow"
    ],
    "source": "estimate: common US size, no single maker listing checked",
-   "note": "Approximate: 72 bow makers vary (48 x 18-22 x 20-24 in)."
+   "note": "Approximate: 72 bow makers vary (48 x 18-22 x 20-24 in).",
+   "variants": [
+    {
+     "brand": "Clear-For-Life",
+     "line": "80 gal bow front acrylic (rated 80)",
+     "L_in": 48,
+     "D_in": 18,
+     "H_in": 24,
+     "price_note": "Price not extracted",
+     "url": "https://fishtanksdirect.com/80-gallon-48-l-x-18-w-x-24-h-bow-front-aquarium",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Oceanic",
+     "line": "72 gal bowfront",
+     "L_in": 48,
+     "D_in": 18,
+     "H_in": 22,
+     "price_note": "Used-listing forum report; no current price",
+     "discontinued": true,
+     "url": "https://www.houstonfishbox.com/forum/the-fish-market/buy-sell-or-trade-equipment/52825-",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    },
+    {
+     "brand": "SeaClear",
+     "line": "72 gal bow front acrylic",
+     "L_in": 48,
+     "D_in": 18,
+     "H_in": 20,
+     "price_note": "Model 12-100-00720; out of stock, shipping paused; 18 in is depth at bow centre; price not extracted",
+     "url": "https://fishtanksdirect.com/sea-clear-72-gallon-48lx18wx20h-bow-front-acrylic-fish-tank/",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Tsunami",
+     "line": "72 gal bow front acrylic",
+     "L_in": 48,
+     "D_in": 18,
+     "H_in": 20,
+     "price_note": "Price not extracted",
+     "url": "https://fishtanksdirect.com/tsunami-72-gallon-48lx18wx20h-bow-front-acrylic-aquarium",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    }
+   ]
   },
   {
    "id": "cor24",
@@ -479,7 +1443,20 @@
     "hex"
    ],
    "source": "estimate: common US size, no single maker listing checked",
-   "note": "Regular six-sided tank, flat face to the front."
+   "note": "Regular six-sided tank, flat face to the front.",
+   "variants": [
+    {
+     "brand": "Clear-For-Life",
+     "line": "35 Gallon Hexagon (acrylic)",
+     "L_in": 25.0,
+     "D_in": 21.0,
+     "H_in": 24.0,
+     "price_note": "PetSmart gives 25x21x24; Fish Tanks Direct gives 21x21x24; price not captured; acrylic",
+     "url": "https://www.petsmart.com/5187060.html",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    }
+   ]
   },
   {
    "id": "cor50",
@@ -498,7 +1475,31 @@
     "corner"
    ],
    "source": "estimate: common US size, no single maker listing checked",
-   "note": "Modelled as a 90-degree quarter round; real corner tanks are often flat-fronted."
+   "note": "Modelled as a 90-degree quarter round; real corner tanks are often flat-fronted.",
+   "variants": [
+    {
+     "brand": "Clear-For-Life",
+     "line": "Quadra 60 gal quarter-cylinder acrylic (rated 60)",
+     "L_in": 24,
+     "D_in": 24,
+     "H_in": 30,
+     "price_note": "Quarter cylinder; a 50 gal Quadra is also offered but its dims were not read; price not extracted",
+     "url": "https://fishtanksdirect.com/clear-for-life-quadra-60-gallon-24lx24wx30h-quarter-cylinder-acrylic-fish-tank-60g-quadra/",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "SeaClear",
+     "line": "50 gal pentagon acrylic",
+     "L_in": 24,
+     "D_in": 24,
+     "H_in": 24,
+     "price_note": "Temporarily unavailable (shipping pause) per page; price not extracted; pentagon, not a quarter round",
+     "url": "https://fishtanksdirect.com/seaclear-50-gallon-24lx24lwx24h-pentagon-acrylic-fish-tank",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    }
+   ]
   },
   {
    "id": "g125",
@@ -513,7 +1514,93 @@
    "glassMm": 8,
    "band": "monster",
    "source": "https://aquariumdepot.ca/products/marineland-standard-rectangular-aquarium-150-gal",
-   "note": "Listings 72 x 18 x 21-22 in. A \"125\" holds about 117 gal to the brim inside the glass."
+   "note": "Listings 72 x 18 x 21-22 in. A \"125\" holds about 117 gal to the brim inside the glass.",
+   "variants": [
+    {
+     "brand": "Aqueon",
+     "line": "LED Aquarium & Stand Ensemble 125 gal",
+     "L_in": 72.5,
+     "D_in": 18.5,
+     "H_in": 23.4,
+     "price_usd": 999.99,
+     "price_kind": "kit",
+     "price_note": "PetSmart list 999.99 (a snapshot also showed 699.99 sale); includes glass tank, canopy, LED, stand 74x21x30.6; bare tank 72.5 x 18.5 x 23.4 at Aquarium Depot (CAD only)",
+     "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/aqueon-led-aquarium-and-stand-ensemble---125-gallon-5262172.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Clear-For-Life",
+     "line": "125 gal rectangle acrylic 60x18x24",
+     "L_in": 60,
+     "D_in": 18,
+     "H_in": 24,
+     "price_usd": 2109.99,
+     "price_kind": "street",
+     "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/clear-for-life-125-gallon-rectangle-acrylic-aquarium-fish-tank-60x18x24-fresh-and-saltwater-16607.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Clear-For-Life",
+     "line": "125 gal rectangle acrylic 72x18x20",
+     "L_in": 72,
+     "D_in": 18,
+     "H_in": 20,
+     "price_usd": 1749.99,
+     "price_kind": "street",
+     "price_note": "PetSmart (another snapshot 1649.99)",
+     "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/clear-for-life-125-gallon-rectangle-acrylic-aquarium-fish-tank-72x18x20-fresh-and-saltwater-5188326.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Marineland",
+     "line": "Corner-Flo reef-ready 125 gal (2 overflows)",
+     "L_in": 72.56,
+     "D_in": 18.72,
+     "H_in": 22.13,
+     "price_note": "Spec-sheet fractions (72-9/16 x 18-23/32 x 22-1/8) via search summary; one retailer typo lists 78 in long; no price",
+     "url": "https://aquariumdepot.ca/products/marineland-standard-rectangular-aquarium-125-gal",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Marineland",
+     "line": "High-Definition LED Aquarium & Stand Ensemble 125 gal",
+     "L_in": 72.5,
+     "D_in": 18.69,
+     "H_in": 22.13,
+     "price_usd": 999.99,
+     "price_kind": "kit",
+     "price_note": "PetSmart; sold as set: tank, 3-piece hinged glass canopy, hidden LED, Majesty stand 74x20.25x28",
+     "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-high-definition-led-aquarium-and-stand-ensemble---125-gallon-led-fish-tank-kit-86934.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Marineland",
+     "line": "Standard rectangular 125 gal",
+     "L_in": 72,
+     "D_in": 18,
+     "H_in": 22,
+     "price_note": "Price shown only in CAD on a Canadian retailer; no US price found (1207.37 CAD)",
+     "url": "https://aquariumdepot.ca/products/marineland-standard-rectangular-aquarium-125-gal",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "North American Pet Products",
+     "line": "125 gal glass aquarium with glass lids",
+     "L_in": 72.375,
+     "D_in": 18.375,
+     "H_in": 23.125,
+     "price_note": "Petco spec via search snippet; 185 lb; price not obtained",
+     "url": "https://www.petco.com/shop/en/petcostore/product/north-american-pet-products-125-gallon-glass-aquarium-with-glass-lids",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    }
+   ]
   },
   {
    "id": "g135",
@@ -528,7 +1615,35 @@
    "glassMm": 10,
    "band": "monster",
    "source": "estimate: common US size, no single maker listing checked",
-   "note": "72x18x25 class; makers vary."
+   "note": "72x18x25 class; makers vary.",
+   "variants": [
+    {
+     "brand": "Clear-For-Life",
+     "line": "135 gal rectangle acrylic",
+     "L_in": 72,
+     "D_in": 18,
+     "H_in": 24,
+     "price_usd": 1819.99,
+     "price_kind": "street",
+     "price_note": "PetSmart range 1749.99-1819.99; dims from a That Pet Place comparison, not read on the PetSmart page",
+     "url": "https://www.petsmart.com/5187098.html",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Seapora",
+     "line": "Reef Ready 135 gal glass",
+     "L_in": 72,
+     "D_in": 18,
+     "H_in": 24,
+     "price_usd": 1239.99,
+     "price_kind": "street",
+     "price_note": "That Pet Place; store pickup only; molded top and bottom frame, center brace",
+     "url": "https://www.thatpetplace.com/seapora-reef-ready-135-gal-72x18x24",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    }
+   ]
   },
   {
    "id": "g150",
@@ -543,7 +1658,42 @@
    "glassMm": 10,
    "band": "monster",
    "source": "https://aquariumdepot.ca/products/marineland-standard-rectangular-aquarium-150-gal",
-   "note": "Marineland 150 gal 72 x 18 x 27 in (retailer listing)."
+   "note": "Marineland 150 gal 72 x 18 x 27 in (retailer listing).",
+   "variants": [
+    {
+     "brand": "Aqueon",
+     "line": "Standard rectangular 150 gal",
+     "L_in": 72.5,
+     "D_in": 18.5,
+     "H_in": 29.5,
+     "price_note": "Price shown only in CAD on a Canadian retailer; no US price found",
+     "url": "https://aquariumdepot.ca/products/aqueon-standard-rectangular-aquarium-black-trim-150-gal",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Marineland",
+     "line": "Corner-Flo reef-ready 150 gal (2 overflows)",
+     "L_in": 72,
+     "D_in": 18,
+     "H_in": 27,
+     "price_note": "Size option on a retailer selector; price not size-specific",
+     "url": "https://natureaquariums.com/products/marineland-corner-flo-rectangular-aquarium-black-clear-1ea90-gal-48x18x24-in",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Marineland",
+     "line": "Standard rectangular 150 gal",
+     "L_in": 72,
+     "D_in": 18,
+     "H_in": 27,
+     "price_note": "Price shown only in CAD on a Canadian retailer; no US price found (1978.28 CAD)",
+     "url": "https://aquariumdepot.ca/products/marineland-standard-rectangular-aquarium-150-gal",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    }
+   ]
   },
   {
    "id": "g180",
@@ -558,7 +1708,100 @@
    "glassMm": 10,
    "band": "monster",
    "source": "https://aquariumdepot.ca/products/marineland-standard-rectangular-aquarium-60-gal",
-   "note": "Marineland sizing guide: 180 gal 72 x 24 x 24 in."
+   "note": "Marineland sizing guide: 180 gal 72 x 24 x 24 in.",
+   "variants": [
+    {
+     "brand": "Custom Aquariums",
+     "line": "180 Gallon Glass Saltwater Aquarium",
+     "L_in": 72,
+     "D_in": 24,
+     "H_in": 24,
+     "price_usd": 2182.6,
+     "price_kind": "msrp",
+     "price_note": "Low end of 2182.60-4079.15 range (options unexplained); actual 167 gal.",
+     "url": "https://www.customaquariums.com/product/180-gallon-glass-saltwater-aquarium/",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Custom Aquariums",
+     "line": "180 Gallon Tall",
+     "L_in": 72,
+     "D_in": 18,
+     "H_in": 30,
+     "glass_mm": 15.9,
+     "price_usd": 7605.3,
+     "price_kind": "msrp",
+     "price_note": "Actual 155 gal; front glass 5/8 in.",
+     "url": "https://www.customaquariums.com/?p=23658",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Custom Aquariums",
+     "line": "180 Gallon Wide Glass Aquarium Basic Tank Package",
+     "L_in": 72,
+     "D_in": 24,
+     "H_in": 24,
+     "glass_mm": 12.7,
+     "price_usd": 3365.6,
+     "price_kind": "msrp",
+     "price_note": "Tank only, no stand; flat 375 shipping; actual 167 gal. Front glass 1/2 in ultra clear; add ~3/4 in for aluminum frame. Dims are outside glass.",
+     "url": "https://www.customaquariums.com/?p=23643",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Glasscages",
+     "line": "72 in Rimless Low-Iron 180 gal w/ black stand",
+     "L_in": 72,
+     "D_in": 24,
+     "H_in": 24,
+     "glass_mm": 19.05,
+     "rimless": true,
+     "price_note": "Price not on page (custom order, 8-10 wk). Stated 3/4 in glass. A search snippet showed ~6866 (unverified).",
+     "url": "https://www.bulkreefsupply.com/72-rimless-low-iron-glass-aquarium-w-black-stand-157-gallons-glasscages.html",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Marineland",
+     "line": "Standard Rectangular 180 Gal",
+     "L_in": 72,
+     "D_in": 24,
+     "H_in": 24,
+     "price_note": "Only CAD price found (2379.77 CAD, Aquarium Depot Canada); no US price. Plastic top and bottom frames.",
+     "url": "https://aquariumdepot.ca/products/marineland-standard-rectangular-aquarium-180-gal",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "PetSmart / Clear-For-Life",
+     "line": "180 Gallon Rectangle (acrylic)",
+     "L_in": 72,
+     "D_in": 24,
+     "H_in": 24,
+     "price_usd": 2419.99,
+     "price_kind": "msrp",
+     "price_note": "ACRYLIC, clear item 5187093; black 5187078 listed 2449.99-2699.99. Thickness not listed.",
+     "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/clear-for-life-180-gallon-rectangle-aquarium-acrylic-fish-tank-5187093.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Reef Savvy",
+     "line": "180 gal rimless (BRS combo)",
+     "L_in": 64,
+     "D_in": 29,
+     "H_in": 22,
+     "glass_mm": 19.05,
+     "rimless": true,
+     "price_note": "Different footprint from standard 72x24x24; 3/4 in Diamant low-iron; price not on page, tank and stand sold separately.",
+     "url": "https://www.bulkreefsupply.com/180-gallon-reef-savvy-aquarium-with-maple-cabinet-stand-bulk-reef-supply.html",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    }
+   ]
   },
   {
    "id": "g210",
@@ -573,7 +1816,20 @@
    "glassMm": 12,
    "band": "monster",
    "source": "estimate: common US size, no single maker listing checked",
-   "note": "84x24x24 class."
+   "note": "84x24x24 class.",
+   "variants": [
+    {
+     "brand": "Aqueon",
+     "line": "Standard Rectangular Black Trim 210 Gal",
+     "L_in": 72.5,
+     "D_in": 24.5,
+     "H_in": 29.25,
+     "price_note": "US price not found. Dims from a 3D Warehouse model of the tank (trim included); a classified ad says 72x24x29. Aquarium Depot CA lists 2499.99 CAD with no dims.",
+     "url": "https://modelnet.cs.princeton.edu/data/fish_tank/fish_tank_000000030/fish_tank_000000030_detail.html",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    }
+   ]
   },
   {
    "id": "g240",
@@ -588,7 +1844,59 @@
    "glassMm": 12,
    "band": "monster",
    "source": "estimate: common US size, no single maker listing checked",
-   "note": "96x24x24 class."
+   "note": "96x24x24 class.",
+   "variants": [
+    {
+     "brand": "Custom Aquariums",
+     "line": "240 Gallon Glass Aquarium",
+     "L_in": 72,
+     "D_in": 24,
+     "H_in": 30,
+     "price_usd": 2983.6,
+     "price_kind": "msrp",
+     "price_note": "Low end of 2983.60-5172.34 range; actual 209 gal. Dims are outside glass.",
+     "url": "https://www.customaquariums.com/product/240-gallon-aquarium/",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Custom Aquariums",
+     "line": "280 Gallon Glass Aquarium (96x24x24)",
+     "L_in": 96,
+     "D_in": 24,
+     "H_in": 24,
+     "price_usd": 3217.8,
+     "price_kind": "msrp",
+     "price_note": "Glass 96x24x24 is rated 280 model gal / 223 actual here, not 240. Range 3217.80-5972.45.",
+     "url": "https://www.customaquariums.com/product/280-gallon-aquarium/",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "PetSmart / Clear-For-Life",
+     "line": "240 Gallon Rectangle (acrylic)",
+     "L_in": 96,
+     "D_in": 24,
+     "H_in": 24,
+     "price_usd": 3299.99,
+     "price_kind": "msrp",
+     "price_note": "ACRYLIC; another snapshot showed 1814.99 (sale from 3629.99). 15 business day processing.",
+     "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/clear-for-life-240-gallon-rectangle-aquarium-acrylic-fish-tank-5187064.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "SeaClear / FishTanksDirect",
+     "line": "240 Gallon Trapezoid Overflow",
+     "L_in": 96,
+     "D_in": 24,
+     "H_in": 24,
+     "price_note": "Page returned 404 on fetch; found in search result only; specs unverified.",
+     "url": "https://fishtanksdirect.com/seaclear-240-gallon-96lx24wx24h-trapezoid-overflow-aquarium",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    }
+   ]
   },
   {
    "id": "g300",
@@ -603,7 +1911,48 @@
    "glassMm": 15,
    "band": "monster",
    "source": "estimate: common US size, no single maker listing checked",
-   "note": "120x24x24 nominal; real glass holds about 270."
+   "note": "120x24x24 nominal; real glass holds about 270.",
+   "variants": [
+    {
+     "brand": "Custom Aquariums",
+     "line": "300 Gallon Basic Tank Package",
+     "L_in": 96,
+     "D_in": 24,
+     "H_in": 30,
+     "glass_mm": 15.9,
+     "price_usd": 5403.56,
+     "price_kind": "msrp",
+     "price_note": "Tank only, no stand; actual 280 gal. Front 5/8 in, sides 1/2 in, back and bottom 5/8 in. Aluminum frame.",
+     "url": "https://www.customaquariums.com/?p=23658",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Marineland",
+     "line": "300 Deep Dimension (older)",
+     "L_in": 72,
+     "D_in": 36,
+     "H_in": 27,
+     "price_note": "Forum-only dims; no current retail listing found; likely discontinued.",
+     "discontinued": true,
+     "url": "https://www.monsterfishkeepers.com/forums/goto/post?id=7645226",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    },
+    {
+     "brand": "PetSmart / Clear-For-Life",
+     "line": "300 Gallon Rectangle (acrylic)",
+     "L_in": 96,
+     "D_in": 24,
+     "H_in": 30,
+     "price_usd": 4399.99,
+     "price_kind": "msrp",
+     "price_note": "ACRYLIC item 5187061; 3999.99 on some page versions. Page lists 24 L x 96 W x 30 H.",
+     "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/clear-for-life-300-gallon-rectangle-aquarium-16375.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    }
+   ]
   },
   {
    "id": "c6",
@@ -621,7 +1970,46 @@
     "custom"
    ],
    "source": "estimate: common US size, no single maker listing checked",
-   "note": "Typical custom build, 72x24x30 in."
+   "note": "Typical custom build, 72x24x30 in.",
+   "variants": [
+    {
+     "brand": "Aqueon",
+     "line": "Standard Rectangular 210 Gal",
+     "L_in": 72.5,
+     "D_in": 24.5,
+     "H_in": 29.25,
+     "price_note": "See g210; 72x24x29 class.",
+     "url": "https://modelnet.cs.princeton.edu/data/fish_tank/fish_tank_000000030/fish_tank_000000030_detail.html",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    },
+    {
+     "brand": "Custom Aquariums",
+     "line": "240 Gallon Glass Aquarium (72x24x30)",
+     "L_in": 72,
+     "D_in": 24,
+     "H_in": 30,
+     "price_usd": 2983.6,
+     "price_kind": "msrp",
+     "price_note": "The 6 ft x 30 in tall footprint, rated 240 / 209 actual. Low end of 2983.60-5172.34 range.",
+     "url": "https://www.customaquariums.com/product/240-gallon-aquarium/",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Glasscages",
+     "line": "72 in Rimless (180 gal)",
+     "L_in": 72,
+     "D_in": 24,
+     "H_in": 24,
+     "glass_mm": 19.05,
+     "rimless": true,
+     "price_note": "72x24x24 only; no 72x24x30 rimless found. See g180.",
+     "url": "https://www.bulkreefsupply.com/72-rimless-low-iron-glass-aquarium-w-black-stand-157-gallons-glasscages.html",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    }
+   ]
   },
   {
    "id": "c8",
@@ -639,7 +2027,23 @@
     "custom"
    ],
    "source": "estimate: common US size, no single maker listing checked",
-   "note": "Typical custom build, 96x30x30 in."
+   "note": "Typical custom build, 96x30x30 in.",
+   "variants": [
+    {
+     "brand": "Custom Aquariums",
+     "line": "300 Gallon Glass (96x24x30)",
+     "L_in": 96,
+     "D_in": 24,
+     "H_in": 30,
+     "glass_mm": 15.9,
+     "price_usd": 5403.56,
+     "price_kind": "msrp",
+     "price_note": "Only 96 in. glass found is 24 in deep; no 96x30x30 listing located.",
+     "url": "https://www.customaquariums.com/?p=23658",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    }
+   ]
   },
   {
    "id": "c10",
@@ -673,7 +2077,35 @@
    "band": "nano",
    "terrarium": true,
    "source": "preset: interior size in inches carried over from the old preset list",
-   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside)."
+   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside).",
+   "variants": [
+    {
+     "brand": "Exo Terra",
+     "line": "Glass Terrarium Nano 8x8x12",
+     "L_in": 8,
+     "D_in": 8,
+     "H_in": 12,
+     "price_usd": 64.99,
+     "price_kind": "street",
+     "price_note": "Josh's Frogs, was 99.99; 8x8x12 only. No 8x8x8 found.",
+     "url": "https://joshsfrogs.com/c/habitat/enclosures",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Reptizoo",
+     "line": "Mini Nano Glass 8x8x12",
+     "L_in": 8,
+     "D_in": 8,
+     "H_in": 12,
+     "price_usd": 44.99,
+     "price_kind": "street",
+     "price_note": "Aggregator listing, stale.",
+     "url": "https://frontdeskreview.com/product/reptile-terrariums/reptizoo-mini-8x8x12/",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    }
+   ]
   },
   {
    "id": "t12x12x12",
@@ -689,7 +2121,33 @@
    "band": "nano",
    "terrarium": true,
    "source": "preset: interior size in inches carried over from the old preset list",
-   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside)."
+   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside).",
+   "variants": [
+    {
+     "brand": "Exo Terra",
+     "line": "Nano Terrarium 12x12x12",
+     "L_in": 12,
+     "D_in": 12,
+     "H_in": 12,
+     "price_usd": 54.99,
+     "price_kind": "street",
+     "price_note": "Aggregator price, stale; model number unverified.",
+     "url": "https://frontdeskreview.com/product/reptile-terrariums/exo-terra-nano-12x12x12/",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    },
+    {
+     "brand": "Zoo Med",
+     "line": "Naturalistic Terrarium 12x12x12",
+     "L_in": 12,
+     "D_in": 12,
+     "H_in": 12,
+     "price_note": "Price not captured.",
+     "url": "https://aquariumdepot.ca/products/zoo-med-naturalistic-terrarium-12-x-12-x-12",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    }
+   ]
   },
   {
    "id": "t18x18x18",
@@ -705,7 +2163,48 @@
    "band": "small",
    "terrarium": true,
    "source": "preset: interior size in inches carried over from the old preset list",
-   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside)."
+   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside).",
+   "variants": [
+    {
+     "brand": "Exo Terra",
+     "line": "Pro Terrarium 18x18x18 (PT4404)",
+     "L_in": 18,
+     "D_in": 18,
+     "H_in": 18,
+     "price_usd": 149.99,
+     "price_kind": "street",
+     "price_note": "Josh's Frogs, was 164.99; a Walmart snippet showed 249.99.",
+     "url": "https://joshsfrogs.com/c/habitat/enclosures",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Reptizoo",
+     "line": "RK0105S Glass Terrarium",
+     "L_in": 18,
+     "D_in": 18,
+     "H_in": 18,
+     "price_usd": 179.99,
+     "price_kind": "street",
+     "price_note": "Reptile Deli, was 199.99; sold out; door described inconsistently.",
+     "url": "https://reptiledeli.com/products/reptizoo-rk0105s-18-x-18-x-18-reptile-glass-terrarium-single-hinge-door",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Zoo Med",
+     "line": "Naturalistic Terrarium 18x18x18",
+     "L_in": 18,
+     "D_in": 18,
+     "H_in": 18,
+     "price_usd": 201.61,
+     "price_kind": "street",
+     "price_note": "From search snippet of reptifiles/Josh's Frogs.",
+     "url": "https://shop.reptifiles.com/products/zoo-med-naturalistic-terrarium-18x18x18",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    }
+   ]
   },
   {
    "id": "t12x18x12",
@@ -721,7 +2220,35 @@
    "band": "nano",
    "terrarium": true,
    "source": "preset: interior size in inches carried over from the old preset list",
-   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside)."
+   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside).",
+   "variants": [
+    {
+     "brand": "Exo Terra",
+     "line": "Pro Terrarium 12x12x18 (PT4401)",
+     "L_in": 12,
+     "D_in": 12,
+     "H_in": 18,
+     "price_usd": 89.99,
+     "price_kind": "street",
+     "price_note": "Josh's Frogs.",
+     "url": "https://joshsfrogs.com/c/habitat/enclosures",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Zoo Med",
+     "line": "Naturalistic Terrarium 12x12x18",
+     "L_in": 12,
+     "D_in": 12,
+     "H_in": 18,
+     "price_usd": 115.42,
+     "price_kind": "street",
+     "price_note": "Josh's Frogs via reptifiles; sold out.",
+     "url": "https://shop.reptifiles.com/products/zoo-med-naturalistic-terrarium-12x12x18",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    }
+   ]
   },
   {
    "id": "t18x24x18",
@@ -737,7 +2264,72 @@
    "band": "small",
    "terrarium": true,
    "source": "preset: interior size in inches carried over from the old preset list",
-   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside)."
+   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside).",
+   "variants": [
+    {
+     "brand": "Dubia.com",
+     "line": "18x18x24A PVC enclosure",
+     "L_in": 18,
+     "D_in": 18,
+     "H_in": 24,
+     "price_note": "Only seen in Dubia 'Shop by Size' menu; PVC not glass; no price.",
+     "url": "https://dubiaroaches.com/products/24x24x48-pvc-panel-reptile-enclosure-hinged-doors",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    },
+    {
+     "brand": "Exo Terra",
+     "line": "Glass Terrarium 18x18x24 (Pangea listing)",
+     "L_in": 18,
+     "D_in": 18,
+     "H_in": 24,
+     "price_usd": 134.99,
+     "price_kind": "street",
+     "price_note": "Sold out, warehouse pickup only.",
+     "url": "https://www.pangeareptile.com/products/exo-terra-18x18x24-glass-terrarium-available-for-pick-up-at-our-warehouse-only",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Exo Terra",
+     "line": "Pro Terrarium 18x18x24 (PT4405)",
+     "L_in": 18,
+     "D_in": 18,
+     "H_in": 24,
+     "price_usd": 169.99,
+     "price_kind": "street",
+     "price_note": "Josh's Frogs page; Walmart snippet showed 299.99.",
+     "url": "https://joshsfrogs.com/sp/exo-terra-pro-terrarium--18x18x124-pt4405",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Reptizoo",
+     "line": "RK0110NS knock-down Glass Terrarium",
+     "L_in": 18,
+     "D_in": 18,
+     "H_in": 24,
+     "price_usd": 199.99,
+     "price_kind": "street",
+     "price_note": "Reptile Deli, was 249.99.",
+     "url": "https://www.reptiledeli.com/products/reptizoo-rk0110ns-18x18x24-knock-down-reptile-glass-terrarium-single-hinge-door",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Zoo Med",
+     "line": "Naturalistic Terrarium 18x18x24 (ZMNT4)",
+     "L_in": 18,
+     "D_in": 18,
+     "H_in": 24,
+     "price_usd": 151.43,
+     "price_kind": "street",
+     "price_note": "Was 159.99; reptifiles listed 226.92.",
+     "url": "https://joshsfrogs.com/sp/zoo-med-naturalistic-terrarium-18x18x24-zmnt4",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    }
+   ]
   },
   {
    "id": "t24x48x24",
@@ -753,7 +2345,33 @@
    "band": "large",
    "terrarium": true,
    "source": "preset: interior size in inches carried over from the old preset list",
-   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside)."
+   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside).",
+   "variants": [
+    {
+     "brand": "Carolina Custom Cages",
+     "line": "Bio Deep Hybrid 24x24x48",
+     "L_in": 24,
+     "D_in": 24,
+     "H_in": 48,
+     "price_note": "Price not found; tempered glass base per a roundup.",
+     "url": "https://vintagevinylnews.com/?p=111972",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    },
+    {
+     "brand": "Dubia.com",
+     "line": "24x24x48 Arboreal PVC V3",
+     "L_in": 24,
+     "D_in": 24,
+     "H_in": 48,
+     "price_usd": 299.0,
+     "price_kind": "street",
+     "price_note": "Sale from 349; PVC panels, acrylic front, glass door, aluminum frame; not a glass tank.",
+     "url": "https://dubiaroaches.com/products/24x24x48-pvc-panel-reptile-enclosure-hinged-doors",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    }
+   ]
   },
   {
    "id": "t36x18x18",
@@ -769,7 +2387,46 @@
    "band": "mid",
    "terrarium": true,
    "source": "preset: interior size in inches carried over from the old preset list",
-   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside)."
+   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside).",
+   "variants": [
+    {
+     "brand": "Exo Terra",
+     "line": "Wide Terrarium Large 36x18x18 (PT2613)",
+     "L_in": 36,
+     "D_in": 18,
+     "H_in": 18,
+     "price_note": "No US price found.",
+     "url": "https://hugglepets.co.uk/?p=458842",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    },
+    {
+     "brand": "OIIBO",
+     "line": "Front-Opening Glass Terrarium 36x18x18",
+     "L_in": 36,
+     "D_in": 18,
+     "H_in": 18,
+     "price_usd": 139.99,
+     "price_kind": "street",
+     "price_note": "Aggregator price, stale.",
+     "url": "https://frontdeskreview.com/product/reptile-terrariums/oiibo-front-opening-36x18x18/",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    },
+    {
+     "brand": "Reptizoo",
+     "line": "Glass Terrarium 36x18x18",
+     "L_in": 36,
+     "D_in": 18,
+     "H_in": 18,
+     "price_usd": 195.99,
+     "price_kind": "street",
+     "price_note": "Walmart; another listing 224.39 (double hinge door).",
+     "url": "https://www.walmart.com/ip/238681420",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    }
+   ]
   },
   {
    "id": "t48x18x24",
@@ -785,7 +2442,22 @@
    "band": "large",
    "terrarium": true,
    "source": "preset: interior size in inches carried over from the old preset list",
-   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside)."
+   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside).",
+   "variants": [
+    {
+     "brand": "Zen Habitats",
+     "line": "Zen Habitat 3.0 low-profile 4x2x16 in",
+     "L_in": 48,
+     "D_in": 24,
+     "H_in": 16,
+     "price_usd": 349.0,
+     "price_kind": "msrp",
+     "price_note": "Sale 296.65 at fetch; PVC/wood panels, not glass; exact inch dims not published (nominal).",
+     "url": "https://www.zenhabitats.com/products/48x24x16-reptile-enclosure-the-zen-habitat-3-0",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    }
+   ]
   },
   {
    "id": "t48x24x24",
@@ -801,7 +2473,46 @@
    "band": "large",
    "terrarium": true,
    "source": "preset: interior size in inches carried over from the old preset list",
-   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside)."
+   "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside).",
+   "variants": [
+    {
+     "brand": "Carolina Custom Cages",
+     "line": "4x2x2 PVC",
+     "L_in": 48,
+     "D_in": 24,
+     "H_in": 24,
+     "price_note": "No price found.",
+     "url": "https://frontdeskreview.com/product/reptile-terrariums/carolina-custom-cages-4x2x2-pvc/",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    },
+    {
+     "brand": "Dubia.com",
+     "line": "4x2x2 PVC",
+     "L_in": 48,
+     "D_in": 24,
+     "H_in": 24,
+     "price_usd": 299.0,
+     "price_kind": "street",
+     "price_note": "Aggregator.",
+     "url": "https://frontdeskreview.com/product/reptile-terrariums/dubia-com-4x2x2-pvc/",
+     "checked": "2026-10-19",
+     "confidence": "low"
+    },
+    {
+     "brand": "Zen Habitats",
+     "line": "Zen Habitat 3.0 4x2x2 (wood)",
+     "L_in": 48,
+     "D_in": 24,
+     "H_in": 24,
+     "price_usd": 324.0,
+     "price_kind": "msrp",
+     "price_note": "Sale 275.40; PVC version 379; nominal dims.",
+     "url": "https://www.zenhabitats.com/products/4x2x2-reptile-enclosure-the-zen-habitat-3-0",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    }
+   ]
   },
   {
    "id": "t24x12x12",
@@ -834,6 +2545,208 @@
    "terrarium": true,
    "source": "preset: interior size in inches carried over from the old preset list",
    "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside)."
+  },
+  {
+   "id": "n_flex_9gal",
+   "name": "Fluval Flex 9 (curved front)",
+   "ratedGal": 9,
+   "shape": "rect",
+   "outer": {
+    "L": 355.6,
+    "H": 330.2,
+    "D": 340.4
+   },
+   "glassMm": 6,
+   "band": "nano",
+   "source": "maker listing (research/tanks, checked 2026-10-19)",
+   "variants": [
+    {
+     "brand": "Fluval",
+     "line": "Flex 9 (curved front)",
+     "L_in": 14.0,
+     "D_in": 13.4,
+     "H_in": 13.0,
+     "price_usd": 174.99,
+     "price_kind": "kit",
+     "price_note": "BRS kit: LED w/ remote, filter, pump, cover",
+     "url": "https://www.bulkreefsupply.com/9-gallon-fluval-flex-2-0-aquarium-fluval.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    }
+   ]
+  },
+  {
+   "id": "n_waterbox_cube_20",
+   "name": "Waterbox Cube 20 AIO",
+   "ratedGal": 20,
+   "shape": "rect",
+   "outer": {
+    "L": 449.6,
+    "H": 398.8,
+    "D": 449.6
+   },
+   "glassMm": 6,
+   "band": "small",
+   "source": "maker listing (research/tanks, checked 2026-10-19)",
+   "variants": [
+    {
+     "brand": "Waterbox",
+     "line": "Cube 20 AIO",
+     "L_in": 17.7,
+     "D_in": 17.7,
+     "H_in": 15.7,
+     "glass_mm": 6,
+     "rimless": true,
+     "price_usd": 229.49,
+     "price_kind": "kit",
+     "price_note": "US retailer price, flagged discontinued there; includes return pump, bio balls, sock",
+     "discontinued": true,
+     "url": "https://bulkreefsupply.com/cube-20-nano-aio-aquarium-waterbox.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    }
+   ]
+  },
+  {
+   "id": "n_g45_tall",
+   "name": "Marineland High Definition LED Aquarium & Stand Ensemble 45 gal",
+   "ratedGal": 45,
+   "shape": "rect",
+   "outer": {
+    "L": 920.8,
+    "H": 629.9,
+    "D": 320.0
+   },
+   "glassMm": 6,
+   "band": "mid",
+   "source": "maker listing (research/tanks, checked 2026-10-19)",
+   "variants": [
+    {
+     "brand": "Marineland",
+     "line": "High Definition LED Aquarium & Stand Ensemble 45 gal",
+     "L_in": 36.25,
+     "D_in": 12.6,
+     "H_in": 24.8,
+     "price_usd": 349.99,
+     "price_kind": "kit",
+     "price_note": "PetSmart; includes stand and LED canopy; dims from a search summary, page not opened",
+     "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-high-definition-led-aquarium-and-stand-ensemble---45-gallon-94286.html",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    }
+   ]
+  },
+  {
+   "id": "n_exo_terra_24x18x24",
+   "name": "Exo Terra Glass Terrarium Medium/Tall 24x18x24 (PT2612)",
+   "ratedGal": 40,
+   "shape": "rect",
+   "outer": {
+    "L": 609.6,
+    "H": 609.6,
+    "D": 457.2
+   },
+   "glassMm": 5,
+   "band": "mid",
+   "source": "maker listing (research/tanks, checked 2026-10-19)",
+   "terrarium": true,
+   "variants": [
+    {
+     "brand": "Exo Terra",
+     "line": "Glass Terrarium Medium/Tall 24x18x24 (PT2612)",
+     "L_in": 24,
+     "D_in": 18,
+     "H_in": 24,
+     "price_note": "No US price found.",
+     "url": "https://hugglepets.co.uk/?p=458842",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    },
+    {
+     "brand": "Reptizoo",
+     "line": "Double Hinge Glass Terrarium 24x18x24",
+     "L_in": 24,
+     "D_in": 18,
+     "H_in": 24,
+     "price_usd": 199.99,
+     "price_kind": "street",
+     "price_note": "Walmart.",
+     "url": "https://www.walmart.com/ip/238681420",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    }
+   ]
+  },
+  {
+   "id": "n_36x18x24",
+   "name": "Reptizoo 67 Gallon Front-Opening Glass (RHK11)",
+   "ratedGal": 67,
+   "shape": "rect",
+   "outer": {
+    "L": 914.4,
+    "H": 609.6,
+    "D": 457.2
+   },
+   "glassMm": 5,
+   "band": "mid",
+   "source": "maker listing (research/tanks, checked 2026-10-19)",
+   "terrarium": true,
+   "variants": [
+    {
+     "brand": "Reptizoo",
+     "line": "67 Gallon Front-Opening Glass (RHK11)",
+     "L_in": 36,
+     "D_in": 18,
+     "H_in": 24,
+     "price_usd": 349.99,
+     "price_kind": "street",
+     "price_note": "Reptile Deli, sold out; aggregator says 249.99.",
+     "url": "https://www.reptiledeli.com/products/reptizoo-reptile-glass-terrarium-double-hinge-door-36-x-18-x-24-rhk11",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    }
+   ]
+  },
+  {
+   "id": "n_20gal_long_terrarium",
+   "name": "Reptizoo Glass Terrarium 20 gal",
+   "ratedGal": 18,
+   "shape": "rect",
+   "outer": {
+    "L": 762.0,
+    "H": 304.8,
+    "D": 304.8
+   },
+   "glassMm": 5,
+   "band": "small",
+   "source": "maker listing (research/tanks, checked 2026-10-19)",
+   "terrarium": true,
+   "variants": [
+    {
+     "brand": "Reptizoo",
+     "line": "Glass Terrarium 20 gal",
+     "L_in": 30,
+     "D_in": 12,
+     "H_in": 12,
+     "price_usd": 169.99,
+     "price_kind": "street",
+     "price_note": "PetSmart.",
+     "url": "https://www.petsmart.com/reptile/habitats-and-decor/terrariums/reptizoo-glass-terrarium---reptile-habitat-enclosure---20-120-gal-5375655.html",
+     "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Zoo Med",
+     "line": "ReptiHabitat 20 gal",
+     "L_in": 30,
+     "D_in": 12,
+     "H_in": 12,
+     "price_note": "Top-opening sliding screen; price not captured.",
+     "url": "https://www.petsmart.com/reptile/habitats-and-decor/terrariums/zoo-med-20-gallon-leopard-gecko-reptihabitat-5351767.html",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    }
+   ]
   }
  ]
 }
