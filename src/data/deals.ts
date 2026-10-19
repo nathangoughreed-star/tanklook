@@ -20,7 +20,7 @@ export interface Deal {
   filter?: FilterSpec;
   heater?: { watts: number };
   /** the stand as pictured on the listing (default black cabinet) and the lid type (default: hood when a lid is included) */
-  look?: { style?: 'cabinet' | 'frame'; finish?: 'black' | 'white' | 'oak'; lid?: 'glass' | 'hood' | 'mesh' };
+  look?: { style?: 'cabinet' | 'frame'; finish?: 'black' | 'white' | 'oak'; lid?: 'glass' | 'hood' | 'mesh'; /** what the listing says about the light; anything absent is a guess and is shown as one */ light?: { brand?: string; model?: string; watts?: number; kelvin?: number; par?: number; /** the listing's own words */ says?: string }; /** things on this row that are guesses, in plain words (shown on the card and in the panel) */ guessed?: string[] };
   price: { usd: number; /** list price before the sale */ regularUsd?: number };
   /** ISO date the sale ends, when the listing says */
   saleEnds?: string;
@@ -28,6 +28,16 @@ export interface Deal {
   asOf: string;
   est?: boolean;
   note?: string;
+}
+/** Every guess behind a deal, in plain words: the row's own list plus a light whose power the listing does not give. */
+export function dealGuesses(d: Deal): string[] {
+  const g = [...(d.look?.guessed ?? [])];
+  if (d.includes.includes('light')) {
+    const L = d.look?.light;
+    if (!L?.watts) g.push('light power and brightness: the listing gives no watts, so a typical budget LED for this tank size is assumed');
+    else if (!L.par) g.push('light PAR: estimated from the watts');
+  }
+  return g;
 }
 export const DEALS = (data as unknown as { deals: Deal[] }).deals;
 export const DEALS_AS_OF = (data as { asOf: string }).asOf;
@@ -51,3 +61,6 @@ export const dealAsKit = (d: Deal) => {
     heater: d.includes.includes('heater') ? d.heater ?? g?.heater : undefined,
   };
 };
+
+/** Whole-percent discount from the list price, or undefined when the listing shows no higher regular price. */
+export const pctOff = (d: Deal): number | undefined => (d.price.regularUsd && d.price.regularUsd > d.price.usd ? Math.round((1 - d.price.usd / d.price.regularUsd) * 100) : undefined);

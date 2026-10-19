@@ -163,3 +163,34 @@ describe('featured deals (lane KD)', () => {
     expect(featuredDeals(now, 5, DEALS.filter(x => !x.tank))).toEqual([]);
   });
 });
+
+describe('percent off (lane KD)', () => {
+  it('rounds to a whole percent and needs a higher regular price', async () => {
+    const { pctOff } = await import('../src/data/deals');
+    const d = (usd: number, regularUsd?: number) => ({ price: { usd, regularUsd } }) as never;
+    expect(pctOff(d(499.99, 799.99))).toBe(38);
+    expect(pctOff(d(399.99))).toBeUndefined();
+    expect(pctOff(d(100, 100))).toBeUndefined();
+  });
+});
+
+describe('deal scene light (lane KD)', () => {
+  it('a bundle with a light gets an LED bar in the scene; its watts feed the power use', async () => {
+    const { sceneFromDeal } = await import('../src/demand/dealscene');
+    const { DEALS } = await import('../src/data/deals');
+    const d = DEALS.find(x => x.tank && x.includes.includes('light'))!;
+    const L = sceneFromDeal(d)!.tanks[0].light;
+    expect(L.type).toBe('led');
+    expect(L.tech).toBe('led-white');
+  });
+});
+
+describe('deal guesses (lane KD)', () => {
+  it('a light without published watts is listed as a guess; a stated one is not', async () => {
+    const { dealGuesses } = await import('../src/data/deals');
+    const base = { id: 'x', retailer: 'R', name: 'n', gal: 20, includes: ['tank', 'light'], price: { usd: 1 }, url: 'https://x', asOf: '2026-10-19' };
+    expect(dealGuesses({ ...base } as never).some(g => g.includes('light power'))).toBe(true);
+    expect(dealGuesses({ ...base, look: { light: { watts: 20, par: 40 } } } as never)).toEqual([]);
+    expect(dealGuesses({ ...base, includes: ['tank'], look: { guessed: ['stand colour'] } } as never)).toEqual(['stand colour']);
+  });
+});

@@ -23,7 +23,14 @@
    "look": {
     "style": "cabinet",
     "finish": "black",
-    "lid": "hood"
+    "lid": "hood",
+    "guessed": [
+     "tank shape: closest catalog size (the listing gives 30.7x15.7x22.6 in)",
+     "stand style and colour: a black cabinet is assumed (the listing says only \"two interior shelves\")"
+    ],
+    "light": {
+     "says": "hidden LED, natural daylight and moonlight effects (no watts, Kelvin or PAR published)"
+    }
    }
   },
   {
@@ -47,7 +54,11 @@
    "look": {
     "style": "cabinet",
     "finish": "black",
-    "lid": "glass"
+    "lid": "glass",
+    "guessed": [],
+    "light": {
+     "says": "hidden LED, natural daylight and moonlight effects (no watts, Kelvin or PAR published)"
+    }
    }
   },
   {
@@ -72,7 +83,14 @@
    "look": {
     "style": "cabinet",
     "finish": "black",
-    "lid": "glass"
+    "lid": "glass",
+    "guessed": [
+     "tank shape: closest catalog size (the 60 breeder)",
+     "stand style and colour: black cabinet assumed"
+    ],
+    "light": {
+     "says": "hidden LED, natural daylight and moonlight effects (no watts, Kelvin or PAR published)"
+    }
    }
   },
   {
@@ -96,7 +114,13 @@
    "look": {
     "style": "cabinet",
     "finish": "black",
-    "lid": "glass"
+    "lid": "glass",
+    "guessed": [
+     "stand colour: the page says gray, black shown"
+    ],
+    "light": {
+     "says": "hidden LED, natural daylight and moonlight effects (no watts, Kelvin or PAR published)"
+    }
    },
    "note": "Item 5306082. Tank 48.4x18.4x21 in; farmhouse-style stand 50x20x28 in (page says gray, colour options Clear/Black, so finish is a guess). Glass canopy, hidden LED. No filter or heater. No sale end date shown."
   },
@@ -118,7 +142,13 @@
    "est": true,
    "look": {
     "style": "cabinet",
-    "finish": "black"
+    "finish": "black",
+    "guessed": [
+     "everything here comes from a search snippet that said out of stock"
+    ],
+    "light": {
+     "says": "hidden LED, natural daylight and moonlight effects (no watts, Kelvin or PAR published)"
+    }
    },
    "note": "Search snippet only (product page did not load); snippet said out of stock. Black stand with smoked glass door. Lid and dimensions unverified."
   }
