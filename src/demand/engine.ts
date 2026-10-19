@@ -69,8 +69,8 @@ function fold(items: Contribution[]): Contribution[] {
   return out;
 }
 
-/** Expected electricity rate, USD per kWh: the user's own, else the US mean times the mean of the rate spread. */
-export const kwhRate = (P: Pick<UserProfile, 'kwhUsd'>) => P.kwhUsd ?? mean3(FACTORS.kwhUsd) * mean3({ lo: FACTORS.kwhSpread.lo, mode: 1, hi: FACTORS.kwhSpread.hi });
+/** Expected electricity rate, USD per kWh: the user's own, else the US mean. */
+export const kwhRate = (P: Pick<UserProfile, 'kwhUsd'>) => P.kwhUsd ?? mean3(FACTORS.kwhUsd);
 
 export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): Demand {
   const wid = ageWiden(DEFAULTS.asOf, opts.now ?? Date.now());

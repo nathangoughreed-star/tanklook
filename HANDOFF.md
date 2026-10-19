@@ -62,7 +62,7 @@ A Tech section where the owner picks the tech level, Walstad to high-tech plante
 - Removed: `Limits.budgetMode`, factors.json `budgetCapPercentile` + `correlation`, the Monte Carlo in `src/demand/cost.ts` (now only `limitState(D, P)` and `drivers(D, P, bar, top)`), `costDistribution` / `CostResult` / `Dist` / `pct`, the "likely a to b" text and hover wording, the "% of the doubt" share, the cap radio in the limits form, `.dmband` / `.dmcap` / `.dmshare` / `.dmask` CSS. `UI state()` no longer returns `cost`. `kwhRate(P)` is exported from the engine (expected $/kWh).
 - Public signatures for lane KW: `demandOf(S, P, opts)` and `profile.limits` (`setupUsd`, `upkeep`, `minPerWeek`, `risk`) are unchanged; `limitState` lost its middle argument (`limitState(D, P)`), `drivers` gained `P` (`drivers(D, P, bar, top)`).
 - Kept: lo / mode / hi on contributors and in the data tables (they define the mean and the price-age widening), `lossMo` expected loss replacement, skill-scaled risk.
-- Equivalence: `test/demand.test.ts` "expected cost" pins `Demand.totals` to the old 20000-draw means for 18 fixed setups (< 1 %). The engine's default electricity rate now includes the mean of the rate spread (x1.033), as the old sample mean did.
+- Equivalence: `test/demand.test.ts` "expected cost" pins `Demand.totals` to the old 20000-draw means for 18 fixed setups (< 1 %). Engine totals are unchanged (test/tech.test.ts locks them); the old sample mean sat up to ~2 % higher on upkeep because it carried the mean of the kWh-rate spread (x1.033 on electricity), so the pin allows 3 % on upkeep.
 - Pictures before / after: research/efficiency/ds/. Waiting for Nathan's verdict before pushing.
 
 ## Lane CS: CI workflow split (2026-10-19, branch `cisplit`, port 5803)

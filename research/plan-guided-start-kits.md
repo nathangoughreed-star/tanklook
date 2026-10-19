@@ -214,5 +214,5 @@ the driver list. One number per limit, read against `Demand.totals` (the expecte
 Kept on purpose: the lo / mode / hi triangle on every contributor and in `demand-items.json` / `demand-defaults.json`. It is not only spread: the mean
 of a triangle is not its mode, and the price-age widening moves lo and hi, so collapsing the columns would change the expected value. Also kept:
 the expected loss replacement in upkeep (`lossMo`, KK phase 5) and the skill-scaled risk. The expected value is unchanged: a test pins it to the old
-20000-draw sample mean for 18 fixed setups (within 1 %); the one correction is that the engine's electricity rate now carries the mean of the
-rate spread (x1.033 on the default US rate), which is what the old sample mean already did.
+20000-draw sample mean for 18 fixed setups (within 1 % on setup and minutes, 3 % on upkeep); engine totals are untouched (TM's lock test holds). The old sample mean sat up to about 2 % higher on upkeep because it carried the mean of the
+kWh-rate spread (x1.033 on the default US rate); the displayed upkeep is that much lower now.
