@@ -38,6 +38,17 @@ export const HERP: Record<string, HerpRule> = {
     group: 'Never two males. Females only, similar size, moved in together, with several food dishes and hides; a lone gecko is the safe default.',
     mates: [], mateNote: 'It is a climber that eats small frogs and needs moist air, so a dry-ground species is wrong too.',
   },
+  'Anolis carolinensis': {
+    name: 'Green anole', min: 1.5, rec: 2.25, each: 0.75, hMin: 24, max: 4,
+    group: 'One male only (males fight and display at each other); a male with up to three females works. Keep them similar in size.',
+    mates: [], mateNote: 'It is a small climber that wants humid air and a warm basking spot; a bigger lizard or a frog is the wrong company.',
+  },
+  // no brown anole figure was found (research/research-herp-stocking.md, gap): borrowed from the green anole, which keeps the same way
+  'Anolis sagrei': {
+    name: 'Brown anole', min: 1.5, rec: 2.25, each: 0.75, hMin: 18, max: 4,
+    group: 'One male only; a male with up to three females is the usual group. No brown-anole-specific figure was found, so this follows the green anole.',
+    mates: [], mateNote: 'It is a small, fast lizard that wants a basking spot and moderate humidity; it outcompetes and eats smaller lizards.',
+  },
   'Python regius': {
     name: 'Ball python', min: 4.5, rec: 8, each: 0, hMin: 18, max: 1,
     group: 'Every source says one per enclosure: fights, stress and shared disease.',
