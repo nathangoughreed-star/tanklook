@@ -35,6 +35,14 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
+## Lane KD: bundle deals (2026-10-19)
+- `src/data/deals.json` (+ `deals.ts`): retailer tank+stand bundles {retailer, gal, tank (catalog id, optional), kit (optional), includes, price{usd, regularUsd}, saleEnds, url, asOf, est}. `src/demand/deals.ts` `dealOffers` = saving vs buying the parts (engine `kit` option generalised with `includes` + `label`, no parallel mechanism).
+- Demand panel (Quick Setup) lists up to 2 fitting deals with "as of <date>, check current price"; `src/demand/pinned.ts` pins the bundle when a scene is started from a deal (`Price the parts instead` unpins).
+- Start dialog "Deals running now" strip (`src/ui/featuredDeals.ts`, slot `#startDeals`): best saving first, hides expired `saleEnds` and rows with asOf older than 30 days, needs a catalog `tank` id. One-click start = `sceneFromDeal` (catalog tank, stand, kit light/lid).
+- Sweep: `prompts/deals-sweep.md` (Sonnet only, 3 agents, one search at a time). Measured batch 2026-10-19: 3 agents, ~233k Sonnet tokens (~77k each), 3 verified rows (all PetSmart; ~78k per row). Amazon/Walmart/Chewy and Tractor Supply/Home Depot/That Pet Place/Big Al's/Aquarium Co-Op gave nothing (search cannot reach live listings; petco.com 403s fetch, Aquarium Co-Op geo-blocked). Better next sweep: PetSmart + Petco pages through the browser tools, not web search.
+- Weak spots: 45 gal HD Marineland has no matching catalog tank (prices in the panel, not featured); 36 and 60 gal rows map to the closest catalog size, footprints differ a little. The 36 gal Top Fin shows no saving vs the app's parts estimate, so it is not featured.
+
+
 ## Lane KK: demand model (panel hook in `ui/panels.ts` only after KA lands) (2026-10-19, branch `demand`, port 5733)
 **Phase 1 DONE 2026-10-19 (engine, no UI).** `src/demand/` (types, range, engine, cost, index); starter data `src/data/factors.json` and
 `src/data/demand-defaults.json` (category-level rule-of-thumb ranges; phase 2 replaces/extends with per-item rows and sources);

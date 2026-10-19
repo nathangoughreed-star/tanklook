@@ -5,6 +5,9 @@ import { costDistribution, defaultProfile, demandOf, drivers, limitState, pct, t
 import { swapsFor, type Bar } from '../demand/swaps';
 import type { Demand } from '../demand';
 import type { Store } from '../scene/store';
+import { dealOffers } from '../demand/deals';
+import { onSceneLoad, pinnedDeal, pinnedKit, unpinDeal } from '../demand/pinned';
+import { DEAL_NOTE } from '../data/deals';
 
 const KEY = 'tanklook.demand';
 const DOMAIN_LABEL: [keyof UserProfile['skill'], string][] = [['fundamentals', 'Keeping a tank at all'], ['fish', 'Freshwater fish'], ['planted', 'Planted tanks'], ['salt', 'Saltwater'], ['terrarium', 'Terrariums']];
@@ -27,7 +30,7 @@ function load(): UserProfile {
 export function attachDemandPanel(store: Store, mount: HTMLElement) {
   let P = load(), D: Demand | null = null, C: CostResult | null = null, open: Bar | null = null, timer = 0;
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(P)); } catch { /* ignore */ } };
-  mount.innerHTML = `<div class="dm"><div class="dmhead">What this tank asks of you</div><div class="dmbars"></div><div class="dmdrill" hidden></div>
+  mount.innerHTML = `<div class="dm"><div class="dmhead">What this tank asks of you</div><div class="dmbars"></div><div class="dmdeals" style="font-size:11px;opacity:.85"></div><div class="dmdrill" hidden></div>
     <details class="dmset"><summary>Set limits</summary><div class="dmlimits"></div></details>
     <details class="dmset"><summary>Your situation</summary><div class="dmsit"></div></details></div>`;
   const q = <T extends HTMLElement>(s: string) => mount.querySelector(s) as T;
@@ -35,19 +38,27 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
 
   function recompute() {
     const S = store.tank;
-    D = demandOf(S, P); C = costDistribution(D, P);
+    D = demandOf(S, P, { kit: pinnedKit() }); C = costDistribution(D, P);
     render();
   }
   const soon = () => { clearTimeout(timer); timer = window.setTimeout(recompute, 450); };
-  store.subscribe(kind => { if (kind === 'scene' || kind === 'load') soon(); });
+  store.subscribe(kind => { if (kind === 'load') onSceneLoad(); if (kind === 'scene' || kind === 'load') soon(); });
 
   function render() {
     if (!D || !C) return;
     const L = limitState(D, C, P);
     bars.innerHTML = '';
     for (const b of BARS) bars.append(row(b, L));
+    renderDeals();
     drill.hidden = !open;
     if (open) fillDrill(open);
+  }
+
+  /** Retailer tank+stand bundles that fit this build, with what each saves against buying the parts (data: src/data/deals.json). */
+  function renderDeals() {
+    const el = q('.dmdeals'), pin = pinnedDeal(), offers = dealOffers(store.tank, P).filter(o => o.savingUsd > 1).slice(0, 2);
+    el.innerHTML = (pin ? `<div>Priced as the ${esc(pin.retailer + ' ' + pin.name)} bundle (${usd(pin.price.usd)}, ${esc(pin.asOf)}). <a href="#" class="dmunpin">Price the parts instead</a></div>` : '') + offers.filter(o => o.deal.id !== pin?.id).map(o => `<div>Deal: <a href="${esc(o.deal.url)}" target="_blank" rel="noopener">${esc(o.deal.retailer + ' ' + o.deal.name)}</a> ${usd(o.deal.price.usd)}${o.deal.price.regularUsd ? ` (was ${usd(o.deal.price.regularUsd)})` : ''}, about ${usd(o.savingUsd)} under buying the parts${o.deal.est ? ' (estimate)' : ''}${o.deal.saleEnds ? `, sale ends ${esc(o.deal.saleEnds)}` : ''}; ${esc(o.deal.asOf)}</div>`).join('') + (offers.length || pin ? `<div style="opacity:.7">Prices ${esc(DEAL_NOTE)}.</div>` : '');
+    el.querySelector<HTMLAnchorElement>('.dmunpin')?.addEventListener('click', e => { e.preventDefault(); unpinDeal(); recompute(); });
   }
 
   function row(b: typeof BARS[number], L: LimitState) {

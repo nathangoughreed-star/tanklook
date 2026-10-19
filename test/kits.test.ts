@@ -43,3 +43,18 @@ describe('kit catalog', () => {
     });
   }
 });
+
+import { DEALS } from '../src/data/deals';
+describe('deals catalog (lane KD)', () => {
+  it('has unique ids and well formed rows', () => {
+    expect(new Set(DEALS.map((d) => d.id)).size).toBe(DEALS.length);
+    for (const d of DEALS) {
+      expect(d.gal, d.id).toBeGreaterThan(0);
+      expect(d.includes, d.id).toContain('tank');
+      expect(d.price.usd, d.id).toBeGreaterThan(0);
+      if (d.price.regularUsd) expect(d.price.regularUsd, d.id).toBeGreaterThan(d.price.usd);
+      expect(d.url, d.id).toMatch(/^https?:\/\//);
+      expect(d.asOf, d.id).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    }
+  });
+});

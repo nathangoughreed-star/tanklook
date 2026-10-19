@@ -1,0 +1,64 @@
+{
+ "asOf": "2026-10-19",
+ "note": "Retailer bundle deals (tank + stand, kits with stands). Hand-edited from the sweep in prompts/deals-sweep.md; prices change often, so the app shows 'as of <date>, check current price'.",
+ "deals": [
+  {
+   "id": "petsmart-topfin-ensemble-36",
+   "retailer": "PetSmart",
+   "name": "Top Fin Aquarium & Stand Ensemble 36 gal",
+   "gal": 36,
+   "tank": "g37",
+   "includes": [
+    "tank",
+    "stand",
+    "lid",
+    "light"
+   ],
+   "price": {
+    "usd": 399.99
+   },
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/top-fin-aquarium-and-stand-ensemble---36-gallon-78697.html",
+   "asOf": "2026-10-19",
+   "note": "Tank, hood, light and stand as a set (page checked 2026-10-19: $399.99, no list price, no sale end, no filter or heater). Tank 30.7x15.7x22.6 in, stand 30.7x15.7x30.7 in. Catalog tank is the closest size."
+  },
+  {
+   "id": "petsmart-marineland-hd-45",
+   "retailer": "PetSmart",
+   "name": "Marineland High Definition LED Aquarium & Stand Ensemble 45 gal",
+   "gal": 45,
+   "includes": [
+    "tank",
+    "stand",
+    "lid",
+    "light"
+   ],
+   "price": {
+    "usd": 349.99,
+    "regularUsd": 549.99
+   },
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-high-definition-led-aquarium-and-stand-ensemble---45-gallon-led-fish-tank-kit-94286.html",
+   "asOf": "2026-10-19",
+   "note": "Extra-tall tank, glass canopy, LED, black stand; no sale end date shown. No matching catalog tank (not the 45 cube), so it prices in the demand panel but is not a one-click start."
+  },
+  {
+   "id": "petsmart-marineland-modern-60",
+   "retailer": "PetSmart",
+   "name": "Marineland Modern LED Aquarium & Stand Ensemble 60 gal",
+   "gal": 60,
+   "tank": "g60b",
+   "includes": [
+    "tank",
+    "stand",
+    "lid",
+    "light"
+   ],
+   "price": {
+    "usd": 399.99,
+    "regularUsd": 649.99
+   },
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-modern-led-aquarium-and-stand-ensemble---60-gallon-led-fish-tank-kit-34998.html",
+   "asOf": "2026-10-19",
+   "note": "Glass canopy, hidden LED, modern stand; no sale end date shown. Catalog tank is the 60 breeder as the closest size; the real footprint may differ."
+  }
+ ]
+}

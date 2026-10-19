@@ -27,7 +27,7 @@ export interface DemandOpts {
   tankPrice?: (S: TankSetup, gallons: number) => Rangeish | undefined;
   /** A kit the user starts from: its listed price replaces the separate tank, stand, lid, light, filter and heater prices
    *  (their power use stays). Prices come from src/data/kits.ts (lane KB); a kit without a price falls back to the parts. */
-  kit?: { id: string; priceUsd: number; asOf: string };
+  kit?: { id: string; priceUsd: number; asOf: string; /** which parts the price covers; default all six (a tank+stand deal says ['tank','stand']) */ includes?: string[]; /** row label, default `Kit (id)` */ label?: string };
   /** For the price-age widening; default now. */
   now?: number;
 }
@@ -175,10 +175,10 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
 
   if (opts.kit) {
     // the kit's one price (listing +-15 %, widened with age) stands in for the parts it contains
-    const parts = new Set(['tank', 'stand', 'lid', 'light', 'filter', 'heater']);
+    const parts = new Set(opts.kit.includes ?? ['tank', 'stand', 'lid', 'light', 'filter', 'heater']);
     for (const c of rows) if (parts.has(c.key)) delete c.setup;
     const k = opts.kit.priceUsd, w = Math.min(FACTORS.priceAgeMax, 1 + FACTORS.priceAgePerMonth * Math.max(0, ((opts.now ?? Date.now()) - Date.parse(opts.kit.asOf)) / (30.44 * 864e5)));
-    add('kit', `Kit (${opts.kit.id})`, 'tank', { setup: widen3({ lo: k * 0.85, mode: k, hi: k * 1.15 }, w) });
+    add('kit', opts.kit.label ?? `Kit (${opts.kit.id})`, 'tank', { setup: widen3({ lo: k * 0.85, mode: k, hi: k * 1.15 }, w) });
   }
   const items = fold(rows), sum = (f: (c: Contribution) => number) => items.reduce((s, c) => s + f(c), 0);
   const kwh = P.kwhUsd ?? mean3(pick(FACTORS.kwhUsd)), riskRaw = sum(c => c.risk);

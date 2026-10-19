@@ -1,6 +1,7 @@
 // Sidebar wiring. Inputs write through store.update(); one sync() pulls every control back from the scene,
 // so undo/redo, file open and pointer drags all refresh the panels the same way.
 import { attachDemandPanel } from './demandPanel';
+import { renderFeaturedDeals } from './featuredDeals';
 import { LEVELS, onPerf, perf, setAuto, setLevel } from '../render/perf';
 import { lifeStages } from '../data/lifestages';
 import { rng } from '../art/paint';
@@ -214,6 +215,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('startFresh').onclick = () => startDlg.close(); // the tank on screen is already a fresh one
   function showStart() {
     renderExamples('startEx');
+    renderFeaturedDeals($('startDeals'), (name, scene) => { startDlg.close(); store.replace(scene); setLibId(null); status(`Opened the deal "${name}". Customise it; the demand panel prices the bundle. Undo brings the previous tank back.`); });
     startDlg.showModal();
     $('startFresh').focus();
   }

@@ -113,3 +113,37 @@ describe('costDistribution', () => {
   });
   it('2000 draws are quick', () => { const t = performance.now(); run('paludarium'); expect(performance.now() - t).toBeLessThan(1500); });
 });
+
+describe('bundle deals (lane KD)', () => {
+  it('a tank+stand deal replaces only those parts, drops expired sales, and reports the saving', async () => {
+    const { dealOffers } = await import('../src/demand/deals');
+    const { dealsFor } = await import('../src/data/deals');
+    const S = parseScene(SCENES['planted']).scene.tanks[0], P = defaultProfile(), gal = Math.round(demandOf(S, P, { now: NOW }).gallons);
+    S.stand.show = true;
+    const deal = { id: 't', retailer: 'X', name: 'combo', gal, includes: ['tank', 'stand' as const], price: { usd: 50, regularUsd: 90 }, url: 'https://x', asOf: '2026-10-19' } as never;
+    const expired = { ...(deal as object), id: 'e', saleEnds: '2026-10-01' } as never;
+    expect(dealsFor(gal, true, NOW, 2.5, [deal, expired]).map(d => d.id)).toEqual(['t']);
+    expect(dealsFor(gal, false, NOW, 2.5, [deal])).toEqual([]);
+    const o = dealOffers(S, P, { now: NOW }, [deal])[0];
+    expect(o.savingUsd).toBeGreaterThan(0);
+    expect(o.saleOffUsd).toBe(40);
+    const D = demandOf(S, P, { now: NOW, kit: { id: 't', priceUsd: 50, asOf: '2026-10-19', includes: ['tank', 'stand'] } });
+    expect(D.items.find(i => i.key === 'stand')?.setup).toBeUndefined();
+    expect(D.items.find(i => i.key === 'filter')?.setup).toBeDefined();
+  });
+});
+
+describe('featured deals (lane KD)', () => {
+  it('builds a scene from a catalog deal, features it, and hides stale or expired ones', async () => {
+    const { featuredDeals, sceneFromDeal } = await import('../src/demand/dealscene');
+    const { DEALS } = await import('../src/data/deals');
+    const d = DEALS.find(x => x.tank && x.price.regularUsd)!;
+    const sc = sceneFromDeal(d)!;
+    expect(sc.tanks[0].stand.show).toBe(true);
+    const now = Date.parse(d.asOf) + 864e5;
+    expect(featuredDeals(now, 5, [d]).length).toBe(1);
+    expect(featuredDeals(Date.parse(d.asOf) + 40 * 864e5, 5, [d])).toEqual([]);
+    expect(featuredDeals(now, 5, [{ ...d, saleEnds: '2000-01-01' }])).toEqual([]);
+    expect(featuredDeals(now, 5, DEALS.filter(x => !x.tank))).toEqual([]);
+  });
+});
