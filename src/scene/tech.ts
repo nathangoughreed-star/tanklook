@@ -135,7 +135,7 @@ export const feedFor = (S: TankSetup): GrowFeed => S.tech && S.water.on && !isSa
 /** The Plant care slider as a shortcut: set the CO2 + ferts rows so feedOf gives `feed`, keeping what already fits. */
 export function setFeed(t: TechSetup, feed: GrowFeed): TechSetup {
   const rows = { ...t.rows }, gas = optionDef('co2', rows.co2 ?? 'none')?.co2 ?? 0, fert = optionDef('ferts', rows.ferts ?? 'none')?.fert ?? 0;
-  if (feed === 'low') { rows.co2 = 'none'; rows.ferts = 'none'; }
+  if (feed === 'low') { rows.co2 = 'none'; if (rows.ferts !== 'roottabs') rows.ferts = 'none'; } // root tabs alone stay low
   else if (feed === 'ferts') { if (gas >= 1) rows.co2 = 'none'; if (fert + (optionDef('co2', rows.co2 ?? 'none')?.co2 ?? 0) < 1) rows.ferts = 'aio'; }
   else { if (gas < 1) rows.co2 = 'pressurized'; if (fert < 1) rows.ferts = 'aio'; }
   return { ...t, rows, preset: 'custom' };

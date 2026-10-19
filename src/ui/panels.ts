@@ -2,6 +2,7 @@
 // so undo/redo, file open and pointer drags all refresh the panels the same way.
 import { attachDemandPanel } from './demandPanel';
 import { fitToLimits, hasLimits } from '../demand/fit';
+import { attachTechMenu } from './techMenu';
 import { renderFeaturedDeals } from './featuredDeals';
 import { startDeals, visibleTabs, pickTab, type StartTab } from './startEntries';
 import { DEALS_AS_OF, DEAL_NOTE, NOT_SPONSORED } from '../data/deals';
@@ -2213,6 +2214,7 @@ Cancel, then change the name, to keep both.`)) return;
   addEventListener('pagehide', () => { if (saveTimer) { clearTimeout(saveTimer); store.saveLocal(); } });
 
   demand = attachDemandPanel(store, $('demandPanel')); // lane KK: the three demand readouts at the top of Quick Setup
+  attachTechMenu(store, $('techMenu'), { profile: () => demand?.profile() }); // lane TM: the Tech section (Lighting inside it)
   renderResults();
   sync();
   return { status, showStart, openShared };
