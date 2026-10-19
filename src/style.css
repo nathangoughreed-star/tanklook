@@ -182,7 +182,7 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 .stocking b { font-weight: 600; margin-right: 4px }
 .clCue { color: var(--muted); font-size: 11px; margin-top: 3px }
 .clAx { --cl-n: 92px; --cl-v: 74px; position: relative; margin: 6px 0 2px }
-.clT { font-weight: 600; font-size: 11px; color: var(--muted); margin-bottom: 2px }
+.clT { font-weight: 600; font-size: 11px; line-height: 13px; color: var(--muted); margin-bottom: 13px }
 .clR { display: flex; align-items: center; height: 17px; gap: 0 }
 .clN { flex: none; width: var(--cl-n); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px }
 .clV { flex: none; width: var(--cl-v); text-align: right; font-size: 10.5px; color: var(--muted) }
@@ -200,7 +200,7 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 .clSum { font-size: 11px; color: var(--muted); margin-top: 3px }
 .clScale { background: none; height: 12px }
 .clScale b { position: absolute; top: 0; font-size: 9.5px; font-weight: 400; color: var(--muted); transform: translateX(-50%) }
-.clLine { position: absolute; top: 14px; bottom: 14px; width: 0; border-left: 2px solid #e5484d; pointer-events: none }
+.clLine { position: absolute; top: 26px; bottom: 14px; width: 0; border-left: 2px solid #e5484d; pointer-events: none }
 .clLine em { position: absolute; top: -13px; left: 0; transform: translateX(-50%); font: 600 10px/1 system-ui, sans-serif; color: #e5484d; font-style: normal; white-space: nowrap }
 .climate b { font-weight: 600; margin-right: 4px }
 .climate .hint { display: block }
