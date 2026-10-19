@@ -50,7 +50,7 @@ describe('lizard body plan', () => {
       expect(sp.rest).toBeCloseTo(lizardGround(LIZARDS[sp.art]), 9);
     }
     expect(getSpecies('crestedgecko')!.surfaces).toEqual(['floor', 'glass', 'hardscape']);
-    expect(getSpecies('leopardgecko')!.surfaces).toBeUndefined();
+    expect(getSpecies('leopardgecko')!.surfaces).toEqual(['floor', 'hardscape']); // no toe pads: no glass (lane GS 2026-10-19: hardscape tops added)
   });
   for (const art of Object.keys(LIZARDS)) for (const [surface, R] of [['floor', 0], ['glass', 0], ['perch', 9], ['perch', 30]] as const) {
     it(`${art} ${surface}${R ? ' r ' + R : ''}: about its length, finite, standing on its surface`, () => {
@@ -84,12 +84,12 @@ describe('geckos in the tank: on their anchors, out of the glass and the bark', 
     return S;
   };
   const meshes = (S: TankSetup) => buildTank({ ...S, units: 'cm' }, S.tank, null).fishMeshes;
-  it('Shuffle puts crested geckos on the glass, the branch, the ledge and the floor; leopard geckos on the floor; all stay through save and load', () => {
+  it('Shuffle puts crested geckos on the glass, the branch, the ledge and the floor; leopard geckos on the floor or the hardscape; all stay through save and load', () => {
     const seen = new Set<string>();
     for (const seed of [1, 2, 3, 4, 5, 6, 7, 8]) {
       const S = scene(); shuffleFish(S, rng(seed));
       for (const f of S.fish) {
-        if (f.species === 'leopardgecko') expect(f.surface).toBe('floor');
+        if (f.species === 'leopardgecko') expect(['floor', 'hardscape']).toContain(f.surface);
         seen.add(f.surface === 'hardscape' ? 'hard' : f.surface ?? 'floor');
       }
       const before = meshes(S);

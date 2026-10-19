@@ -1334,7 +1334,9 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
       const q = new THREE.Vector3(u * w, -k, v * w).applyQuaternion(m.quaternion).add(m.position);
       lift = Math.max(lift, g(q.x, -q.z) - q.y);
     }
-    m.position.y += Math.min(lift, w);
+    // a lizard is not lifted over what only stands beside it: a branch or a cork slab within its footprint would raise it up to its own length, off the ground
+    // it stands on (lane GS 2026-10-19); only bumps and short slopes lift it
+    m.position.y += Math.min(lift, isLizard(speciesOf(f)?.art ?? '') ? w * LIZARD_LIFT : w);
   };
   // perched on a branch or a shelf (anchor kinds PERCHES, lane T3 2026-10-16): on top of it, gripping, instead of tipped
   // to the slope round it (off a thin limb or a shelf's edge that slope reaches the ground). Along a branch: the body
@@ -1381,10 +1383,13 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
       return;
     }
     if (!S.water.on && needsWater(sp)) return; // dry tank: fish stay in the scene data, hidden until the water is back
-    const w = fishTL(f, sp), h = w * sp.aspect, p = f;
+    const w = fishTL(f, sp), h = w * sp.aspect;
     const herp = isHerp3D(sp.art);
     const hang = f.surface === 'under' ? A.under(f.x, f.depth, f.y, sitsOnLeaves(f)) : null; // hanging under a leaf (null: no leaf there, it rests on the ground)
-    const on = f.surface === 'hardscape' ? A.rest(f.x, f.depth, true, sitsOnLeaves(f)) : null, perch = on && PERCHES.has(on.kind) ? on : null;
+    // a lizard's Shuffle spot on a limb is an estimate a few cm off the rendered limb: it takes the solid top nearest the height it was given (lane GS)
+    const on = f.surface === 'hardscape' ? (isLizard(sp.art) ? A.restNear(f.x, f.depth, f.y, LIZARD_SNAP, LIZARD_SNAP_TOL, true, sitsOnLeaves(f)) : A.rest(f.x, f.depth, true, sitsOnLeaves(f))) : null, perch = on && PERCHES.has(on.kind) ? on : null;
+    const snapped = on && isLizard(sp.art) && (on.p[0] !== f.x || on.p[2] !== f.depth);
+    const p: Fish = snapped ? { ...f, x: on.p[0], depth: on.p[2] } : f; // where it stands: the spot, or the limb found beside it
     const m = new THREE.Mesh(drapedCard(sp.art, w, h, f.bend) || cardGeometry(w, h, isArachnid(sp.art) ? 0 : f.bend), herp ? HIDDEN : cardMaterial(`fish:${sp.look}:${fish3d.fade}`, fishTexture(sp, S.render.edge, true, fish3d.fade), S.render.edge));
     if (!herp) (m.material as THREE.Material).userData.fishCard = true; // fish stand out (render.pop) lifts the card too
     const snakeLimb = herp && isSnake(sp.art) && !!perch?.limb; // a snake on a limb follows its curve: built once the card is placed on it (below)
@@ -1406,13 +1411,13 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
     }
     // bottom dwellers and animals on land rest on the ground (or the hardscape) wherever they are (their stored height is ignored)
     const rests = restsOnGround(S, T, sp, p.x, p.depth, h);
-    const y = rests ? base(f) + sp.rest * w - (isArachnid(sp.art) ? 0 : 1) : Math.min(p.y, Math.max(0, waterY(T, S.water.level) - h / 2));
+    const y = rests ? base(p) + sp.rest * w - (isArachnid(sp.art) ? 0 : 1) : Math.min(p.y, Math.max(0, waterY(T, S.water.level) - h / 2));
     m.position.set(p.x, y, -p.depth); m.rotation.set(f.roll * D2R, f.yaw * D2R, f.pitch * D2R, 'YXZ');
     // on a slope: lying along the ground, not level with it (Nathan 2026-10-13: a treefrog on a bank sat half in the substrate)
     if (rests && isSnake(sp.art)) { // a rigid coil or ball: the tilt and height that leave the least air under it, none of it in the ground (lane BP2)
       const hard = f.surface === 'hardscape', st = settleSnake(snakeContacts(sp.art, w, f.bend), m.quaternion, { x: p.x, z: -p.depth }, (x, z) => top(x, -z, hard, 0), Math.min(MAX_TILT, 30 * D2R), hard ? undefined : (x, z) => top(x, -z, true, 0) > top(x, -z, false, 0) + 3);
       m.quaternion.premultiply(st.rot); m.position.set(st.x, st.y, st.z);
-    } else if (rests) restOn(f, m, w, sp.rest * w - (isArachnid(sp.art) ? 0 : 1));
+    } else if (rests) restOn(p, m, w, sp.rest * w - (isArachnid(sp.art) ? 0 : 1));
     register(m, w, h);
     if (f.surface === 'hardscape' || f.surface === 'under') return;
     add(contactShadow(S, T, p.x, p.depth, y - h / 2, w, h, f.yaw));
@@ -1448,6 +1453,9 @@ HIDDEN.userData.cached = true; HIDDEN.userData.keep = true;
 const UP = new THREE.Vector3(0, 1, 0), MAX_TILT = 45 * D2R;
 /** How far a snail or pleco on the glass sits off the inside of the pane (mm). */
 const PANE_GAP = 0.8;
+/** How far (mm) round its Shuffle spot a lizard looks for the limb or top it was placed on, how far off the spot's height that may be, and
+ *  the most a lizard is lifted over rising hardscape (a share of its length). */
+const LIZARD_SNAP = 40, LIZARD_SNAP_TOL = 45, LIZARD_LIFT = 0.12;
 
 /** An animal hanging under a surface (anchor `a`, normal `n` pointing away from it, down for a leaf): its back along the normal,
  *  belly on the surface, head along its yaw turned into the plane (shared by the cards and the snails). */

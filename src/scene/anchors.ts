@@ -118,6 +118,23 @@ export function anchors(S: TankSetup, T: Tank = S.tank, probe: AnchorProbe = {})
     return a;
   };
   /**
+   * `rest` for a spot that was only estimated at height y (Shuffle puts it on a limb's centre line, a few mm to a few cm off
+   * the rendered limb): where the probe finds only the ground, or a surface far from y, look in rings out to `reach` mm for the
+   * solid top nearest height y (within `tol` of it) and take that instead. A spot with nothing near it keeps `rest`'s answer.
+   */
+  const restNear = (x: number, depth: number, y: number, reach = 40, tol = 45, hard = true, leaves = 0): Anchor => {
+    const here = rest(x, depth, hard, leaves);
+    if (!hard || !probe.down || Math.abs(here.p[1] - y) <= tol) return here;
+    let best: Anchor | null = null, bs = Infinity;
+    for (let r = 4; r <= reach; r += 4) for (let k = 0; k < 16; k++) {
+      const a = k / 16 * 2 * Math.PI, c = rest(x + Math.cos(a) * r, depth + Math.sin(a) * r, true, leaves);
+      if (c.kind === 'floor' || c.kind === 'leaf') continue;
+      const dy = Math.abs(c.p[1] - y);
+      if (dy <= tol && dy + r * 0.5 < bs) { best = c; bs = dy + r * 0.5; }
+    }
+    return best ?? here;
+  };
+  /**
    * On the glass nearest (x, depth) at height y, or on the 3D wall where it covers that pane: `yaw` = the heading in the
    * pane (0 = level along it, 90 = straight up), `w` = the body length the wall is fitted under.
    */
@@ -144,6 +161,6 @@ export function anchors(S: TankSetup, T: Tank = S.tank, probe: AnchorProbe = {})
     const it = u.item === undefined ? undefined : items.get(u.item);
     return { kind: u.item === undefined ? 'leaf' : it ? anchorKind(it) : 'rock', p: u.at ?? [x, u.y, depth], n: u.n, ...(u.item === undefined ? {} : { item: u.item }) };
   };
-  return { floor, rest, glass, nearest, under };
+  return { floor, rest, restNear, glass, nearest, under };
 }
 export type Anchors = ReturnType<typeof anchors>;
