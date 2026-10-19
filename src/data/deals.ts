@@ -1,4 +1,6 @@
 import data from './deals.json';
+import { kitById, kitGear } from './kits';
+import type { FilterSpec } from '../demand/gear';
 
 /** Retailer bundle deals (lane KD, 2026-10): a tank sold with its stand (and sometimes lid, light, filter, heater) for one price.
  *  Rows are researched by the sweep in prompts/deals-sweep.md; `est` marks a row with no live listing found. */
@@ -14,6 +16,9 @@ export interface Deal {
   /** kit id (src/data/kits.json) giving the light and lid spec when the bundle is a known kit */
   kit?: string;
   includes: DealPart[];
+  /** the real filter / heater in the bundle when it lists one (product name, class, rating); matched to a generic model. Absent = the linked kit's, else the tank-size default */
+  filter?: FilterSpec;
+  heater?: { watts: number };
   /** the stand as pictured on the listing (default black cabinet) and the lid type (default: hood when a lid is included) */
   look?: { style?: 'cabinet' | 'frame'; finish?: 'black' | 'white' | 'oak'; lid?: 'glass' | 'hood' | 'mesh' };
   price: { usd: number; /** list price before the sale */ regularUsd?: number };
@@ -38,4 +43,11 @@ export function dealsFor(gal: number, stand: boolean, now = Date.now(), tol = 2.
 }
 
 /** The engine's `kit` option for a deal (its price replaces the parts it includes). */
-export const dealAsKit = (d: Deal) => ({ id: d.id, priceUsd: d.price.usd, asOf: d.asOf, includes: d.includes as string[], label: `${d.retailer} ${d.name}` });
+export const dealAsKit = (d: Deal) => {
+  const k = d.kit ? kitById(d.kit) : undefined, g = k ? kitGear(k) : undefined;
+  return {
+    id: d.id, priceUsd: d.price.usd, asOf: d.asOf, includes: d.includes as string[], label: `${d.retailer} ${d.name}`,
+    filter: d.includes.includes('filter') ? d.filter ?? g?.filter : undefined,
+    heater: d.includes.includes('heater') ? d.heater ?? g?.heater : undefined,
+  };
+};

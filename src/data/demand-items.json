@@ -620,6 +620,14 @@
    "unit": "unit; AquaClear 20 ~40 list, judgement",
    "url": "https://slickdeals.net/f/17954517-fluval-aquaclear-20-30-50-70-aquarium-power-filter-50-off-petco-and-amazon-20-35"
   },
+  "gear:filter-internal": {
+   "lo": 12,
+   "mode": 22,
+   "hi": 40,
+   "unit": "unit; Fluval U2/U3 and Whisper i-series class, judgement",
+   "url": "https://www.chewy.com/b/internal-filters-3365",
+   "est": true
+  },
   "gear:filter-sponge": {
    "lo": 5,
    "mode": 10,

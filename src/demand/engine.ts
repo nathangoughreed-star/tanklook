@@ -17,6 +17,7 @@ import { groundVolume, pieceKg } from '../scene/setupsheet';
 import type { TankSetup } from '../scene/types';
 import { add3, mean3, r3, scale3, widen3 } from './range';
 import { interp, price as rowPrice, priceRow } from './prices';
+import { defaultFilter, defaultHeater, filterName, matchFilter, matchHeater, type FilterSpec } from './gear';
 import type { Contribution, Demand, Domain, Group, Range3, Rangeish, UserProfile } from './types';
 
 export const FACTORS = factorsJson;
@@ -27,7 +28,7 @@ export interface DemandOpts {
   tankPrice?: (S: TankSetup, gallons: number) => Rangeish | undefined;
   /** A kit the user starts from: its listed price replaces the separate tank, stand, lid, light, filter and heater prices
    *  (their power use stays). Prices come from src/data/kits.ts (lane KB); a kit without a price falls back to the parts. */
-  kit?: { id: string; priceUsd: number; asOf: string; /** which parts the price covers; default all six (a tank+stand deal says ['tank','stand']) */ includes?: string[]; /** row label, default `Kit (id)` */ label?: string };
+  kit?: { id: string; priceUsd: number; asOf: string; /** which parts the price covers; default all six (a tank+stand deal says ['tank','stand']) */ includes?: string[]; /** row label, default `Kit (id)` */ label?: string; /** the real filter and heater the kit or deal ships with; matched to the nearest generic model (gear.ts) for power and row name */ filter?: FilterSpec; heater?: { watts: number } };
   /** For the price-age widening; default now. */
   now?: number;
 }
@@ -98,9 +99,10 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
     add('light', `Light (${Math.round(watts)} W)`, 'gear', { setup: price(lp), kwhMo: watts * G.lightHoursPerDay * 30 / 1000 });
   }
   if (wet) {
-    add('filter', 'Filter', 'gear', { setup: price(scale3(rowPrice(gal <= 20 ? 'gear:filter-hob-small' : gal <= 60 ? 'gear:filter-hob-large' : 'gear:filter-canister') ?? add3(pick(G.filter.base), scale3(pick(G.filter.perGal), gal)), sMul.setup)), upkeep: scale3(pick(G.filter.upkeepUsdMo), sMul.upkeep), kwhMo: G.filter.watts * 24 * 30 / 1000 });
-    const hw = Math.min(300, Math.max(25, G.heater.wattsPerGal * gal));
-    add('heater', 'Heater', 'gear', { setup: price(scale3(rowPrice(gal <= 30 ? 'gear:heater-small' : 'gear:heater-large') ?? add3(pick(G.heater.base), scale3(pick(G.heater.perGal), gal)), sMul.setup)), kwhMo: hw * 24 * 30 * G.heater.duty / 1000 });
+    const fm = (opts.kit?.filter && matchFilter({ ...opts.kit.filter, gal })?.model) || defaultFilter(gal);
+    add('filter', opts.kit?.filter ? `Filter (${filterName(fm)})` : 'Filter', 'gear', { setup: price(scale3(rowPrice(fm.priceKey) ?? add3(pick(G.filter.base), scale3(pick(G.filter.perGal), gal)), sMul.setup)), upkeep: scale3(pick(G.filter.upkeepUsdMo), sMul.upkeep), kwhMo: fm.watts * 24 * 30 / 1000 });
+    const hm = opts.kit?.heater ? matchHeater(opts.kit.heater.watts) : defaultHeater(gal, G.heater.wattsPerGal);
+    add('heater', opts.kit?.heater ? `Heater (${hm.label})` : 'Heater', 'gear', { setup: price(scale3(rowPrice(hm.priceKey) ?? add3(pick(G.heater.base), scale3(pick(G.heater.perGal), gal)), sMul.setup)), kwhMo: (opts.kit?.heater?.watts ?? hm.watts) * 24 * 30 * G.heater.duty / 1000 });
     if (salt) add('skimmer', 'Protein skimmer', 'gear', { setup: price(rowPrice('gear:skimmer') ?? pick(G.skimmer.setup)), upkeep: pick(G.skimmer.upkeepUsdMo) });
     if (plants.some(p => NEEDS[p.variant] && !isLand(NEEDS[p.variant]))) {
       if (S.grow.feed === 'co2') add('co2', 'CO2 injection', 'gear', { setup: price(rowPrice('gear:co2-kit') ?? pick(G.co2.setup)), upkeep: rowPrice('gear:co2-refill') ? scale3(rowPrice('gear:co2-refill')!, 1 / 3) : pick(G.co2.upkeepUsdMo), minutes: r3(G.co2.minPerWeek) });

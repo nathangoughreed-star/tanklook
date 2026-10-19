@@ -1,0 +1,20 @@
+{
+ "asOf": "2026-10-19",
+ "note": "Generic filter and heater models (Nathan's idea 2026-10-19). A real product is matched to the nearest one (src/demand/gear.ts); price rows are keys in demand-items.json, watts are the motor's or element's rating. `aliases` are lowercase product-name fragments that name a model outright.",
+ "filters": [
+  { "id": "sponge-s", "kind": "sponge", "label": "Sponge filter (small)", "gph": 40, "galMin": 1, "galMax": 20, "watts": 3, "priceKey": "gear:filter-sponge", "aliases": ["sponge", "bacto-surge", "hydro-sponge", "air-driven"] },
+  { "id": "internal-s", "kind": "internal", "label": "Internal filter (small)", "gph": 80, "galMin": 5, "galMax": 30, "watts": 5, "priceKey": "gear:filter-internal", "aliases": ["internal", "whisper i", "fluval u", "u2", "u3"] },
+  { "id": "hob-s", "kind": "hob", "label": "HOB filter (small)", "gph": 100, "galMin": 5, "galMax": 30, "watts": 5, "priceKey": "gear:filter-hob-small", "aliases": ["silentstream", "quietflow 10", "quietflow 20", "aquaclear 20", "aquaclear 30", "penguin 150", "whisper 10", "whisper 20", "whisper 30", "hang-on", "power filter"] },
+  { "id": "hob-l", "kind": "hob", "label": "HOB filter (large)", "gph": 250, "galMin": 30, "galMax": 75, "watts": 8, "priceKey": "gear:filter-hob-large", "aliases": ["aquaclear 50", "aquaclear 70", "aquaclear 110", "penguin 250", "penguin 350", "penguin 200", "whisper 40", "whisper 60", "quietflow 30", "quietflow 55", "quietflow 75"] },
+  { "id": "canister-m", "kind": "canister", "label": "Canister filter (medium)", "gph": 265, "galMin": 20, "galMax": 65, "watts": 12, "priceKey": "gear:filter-canister", "aliases": ["canister", "fluval 107", "fluval 207", "fluval 307", "eheim", "cascade", "sunsun"] },
+  { "id": "canister-l", "kind": "canister", "label": "Canister filter (large)", "gph": 500, "galMin": 55, "galMax": 200, "watts": 25, "priceKey": "gear:filter-canister", "aliases": ["fluval 407", "fluval 507", "fx4", "fx6"] }
+ ],
+ "heaters": [
+  { "id": "heater-25", "label": "Heater 25 W", "watts": 25, "galMin": 1, "galMax": 5, "priceKey": "gear:heater-small" },
+  { "id": "heater-50", "label": "Heater 50 W", "watts": 50, "galMin": 5, "galMax": 15, "priceKey": "gear:heater-small" },
+  { "id": "heater-100", "label": "Heater 100 W", "watts": 100, "galMin": 15, "galMax": 30, "priceKey": "gear:heater-small" },
+  { "id": "heater-200", "label": "Heater 200 W", "watts": 200, "galMin": 30, "galMax": 60, "priceKey": "gear:heater-large" },
+  { "id": "heater-300", "label": "Heater 300 W", "watts": 300, "galMin": 60, "galMax": 100, "priceKey": "gear:heater-large" },
+  { "id": "heater-500", "label": "Heater 500 W", "watts": 500, "galMin": 100, "galMax": 300, "priceKey": "gear:heater-large" }
+ ]
+}

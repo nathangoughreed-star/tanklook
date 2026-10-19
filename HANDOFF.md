@@ -440,3 +440,10 @@ bar for drivers (+ each item's share of the doubt) and swaps; limits form asks "
 Gotcha: preview_start serves the primary folder; to preview this worktree I pointed the `demand` entry of the primary's `.claude/launch.json` at it
 with `npm --prefix` (local edit, not committed). Phase 5 (Shuffle and Quick Setup respect the limits; care-tier slider sets all limits) is next.
 
+
+## 2026-10-19 Generic filter / heater models (Nathan's idea)
+- `src/data/gear-models.json`: 6 generic filters (sponge, internal, HOB small/large, canister medium/large: gph, tank range, watts, price row key, name aliases) and 6 heater classes (25-500 W). New est price row `gear:filter-internal` in demand-items.json (no listing found, widened).
+- `src/demand/gear.ts`: pure `matchFilter({kind, rating, name, gph, gal})` (name alias > flow in log distance, within the class > tank size > class), `matchHeater(watts)` (round up), `defaultFilter/defaultHeater(gal)`, `parseGph` (gph and L/h). Tests: `test/gear.test.ts`.
+- Engine: filter/heater rows take price row and kWh from the matched model; `kit.filter` / `kit.heater` (new optional fields) name the generic in the row label and set power from the real heater watts. `kitGear(kit)` in kits.ts; `Deal` gets optional `filter` / `heater`, and `dealAsKit` passes them (or the linked kit's) only for parts the deal includes.
+- Behaviour change without a kit: heater power now uses the heater class watts (rounded up) instead of the raw 3 W/gal figure; filter power uses the model's watts (3-25 W, was flat 6 W).
+- Not done: no deal in deals.json lists a filter/heater yet; UI does not show the matched generic beyond the demand row label. Full-suite failures in scene/reef/leafperch/growth tests were already there (uncommitted plant3d.ts from another chat).
