@@ -1,0 +1,38 @@
+{"checked":"2026-10-19","orientation_note":"Catalog ids are L x H x D (outer.H is the middle number); sizes below are given L x D x H in inches. Interior-labelled presets compared to nominal outer retail sizes.","sizes":[
+{"sizeId":"t8x8x8","verdict":"exists_new","searches":3,"products":[
+{"brand":"Reptizoo","line":"RHK18S single hinge door","L_in":8,"D_in":8,"H_in":8,"price_usd":49.99,"material":"glass, metal screen top","url":"https://www.reptiledeli.com/products/reptizoo-rhk18s-8-x-8-x-8-reptile-glass-terrarium-single-hinge-door","confidence":"medium","note":"Stock not shown on page; only retailer found."}],
+"closest":{"brand":"Exo Terra","line":"Glass Nano 8x8x12","L_in":8,"D_in":8,"H_in":12,"price_usd":64.99,"url":"Josh's Frogs (per catalog variant)"},"notes":"Only Reptile Deli carries the exact cube."},
+{"sizeId":"t12x12x12","verdict":"exists_new","searches":4,"products":[
+{"brand":"Reptizoo","line":"RK0101S single hinge door","L_in":12,"D_in":12,"H_in":12,"price_usd":99.99,"material":"glass","url":"https://www.reptiledeli.com/products/reptizoo-reptile-glass-terrarium-single-hinge-door-12-x-12-x-12-rk0101s","confidence":"medium"},
+{"brand":"Exo Terra","line":"Nano/Glass Terrarium 12x12x12 PT2601","L_in":12,"D_in":12,"H_in":12,"price_usd":54.99,"material":"glass","url":"https://frontdeskreview.com/product/reptile-terrariums/exo-terra-nano-12x12x12/","confidence":"low","note":"Price from comparison site; Pangea listing sold out; Walmart lists Exo Terra Pro 12x12x12 at 109.99."}],
+"closest":null,"notes":""},
+{"sizeId":"t12x18x12","verdict":"exists_new","searches":3,"products":[
+{"brand":"Reptizoo","line":"RK0102NS single hinge door (12x12x18 = L12 D12 H18)","L_in":12,"D_in":12,"H_in":18,"price_usd":129.99,"material":"glass","url":"https://www.reptiledeli.com/products/reptizoo-rk0102ns-12-x12-x18-reptile-glass-terrarium-single-hinge-door","confidence":"medium"},
+{"brand":"Exo Terra","line":"Mini Tall Glass Terrarium PT2602 (30x30x45 cm)","L_in":12,"D_in":12,"H_in":18,"price_usd":null,"material":"glass","url":"https://joshsfrogs.com/sp/exo-terra-replacement-terrarium-glass-door-latch-pt2539","confidence":"medium","note":"Exists per Josh's Frogs compatibility list; price here not confirmed. Catalog already holds Exo Terra Pro 12x12x18 PT4401 at 89.99. Rainforest kit 12x12x18 sold out."}],
+"closest":null,"notes":"Catalog id t12x18x12 is L12 H18 D12."},
+{"sizeId":"t24x12x12","verdict":"close_only","searches":4,"products":[],
+"closest":{"brand":"Reptizoo","line":"Glass Terrarium 20 gal (PetSmart)","L_in":30,"D_in":12,"H_in":12,"price_usd":169.99,"material":"tempered glass","url":"https://www.petsmart.com/reptile/habitats-and-decor/terrariums/reptizoo-glass-terrarium---reptile-habitat-enclosure---20-to-120-gallons-5375655.html","confidence":"medium","delta":"L +6 in"},
+"notes":"No 24x12x12 reptile terrarium found. Other nearby: Reptizoo RK0117 24x18x12 $189.99 (D +6). A standard 20 gal long aquarium is 30x12x12; 15 gal tank is 24x12x16 (general knowledge, not verified by a listing)."},
+{"sizeId":"t24x12x24","verdict":"close_only","searches":4,"products":[],
+"closest":{"brand":"Reptizoo","line":"RK0117 knock down double hinge door","L_in":24,"D_in":18,"H_in":12,"price_usd":189.99,"material":"glass","url":"https://www.reptiledeli.com/products/reptizoo-rk0117-24-x-18-x-12-knock-down-reptile-glass-terrarium-double-hinge-door","confidence":"medium","delta":"D -6 in"},
+"notes":"Catalog id t24x12x24 is L24 H12 D24 (24x24x12). No 24x24x12 glass or PVC found (checked Reptizoo, Exo Terra, Zoo Med, MorphMarket/Dubia PVC, Habistat). Dubia/MorphMarket PVC 24x18x12 and 24x24x24 exist."},
+{"sizeId":"t36x18x18","verdict":"exists_new","searches":2,"products":[
+{"brand":"Reptizoo","line":"RHK10 double hinge door","L_in":36,"D_in":18,"H_in":18,"price_usd":249.99,"material":"glass","url":"https://reptiledeli.com/products/reptizoo-reptile-glass-terrarium-double-hinge-door-36-x-18-x-18-rhk10","confidence":"high"},
+{"brand":"Reptizoo","line":"RK0119 single hinge door","L_in":36,"D_in":18,"H_in":18,"price_usd":299.99,"material":"glass","url":"https://reptiledeli.com/products/reptizoo-reptile-glass-terrarium-single-hinge-door-36-x-18-x-18-rk0119","confidence":"high"},
+{"brand":"Reptizoo (PetSmart)","line":"Glass Terrarium 40 gal sliding doors","L_in":36,"D_in":18,"H_in":18,"price_usd":209.99,"material":"tempered glass","url":"https://www.petsmart.com/reptile/habitats-and-decor/terrariums/reptizoo-glass-terrarium---reptile-habitat-enclosure---20-to-120-gallons-5375656.html","confidence":"medium"},
+{"brand":"Exo Terra","line":"Wide Terrarium Large PT2613","L_in":36,"D_in":18,"H_in":18,"price_usd":null,"material":"glass","url":"https://petzone.com/kuwait/en/shop/exo-terra-wide-terrarium-large-36-l-x-18-w-x-18-h.html","confidence":"low","note":"No US price found."}],
+"closest":null,"notes":""},
+{"sizeId":"t48x18x24","verdict":"exists_new","searches":3,"products":[
+{"brand":"Reptizoo","line":"RK0226 knock down sliding door (48x24x18)","L_in":48,"D_in":24,"H_in":18,"price_usd":599.99,"material":"glass","url":"https://www.reptiledeli.com/products/reptizoo-rk0226-48-x-24-x-18-knock-down-reptile-glass-terrarium-sliding-door","confidence":"medium","note":"Stock unverified."},
+{"brand":"BlackBox Cages","line":"XT4 low profile 48x24x18","L_in":48,"D_in":23.5,"H_in":17.5,"price_usd":null,"material":"PVC (1/2 in), PVC-type enclosure","url":"https://blackbox-cages-rack-systems.odoo.com/shop/xt4-terrestrial-reptile-enclosure-48lx24dx18h-27","confidence":"low","note":"Page copy inconsistent; price not captured."}],
+"closest":null,"notes":"Catalog id t48x18x24 is L48 H18 D24. Zen Habitats 3.0 low-profile 48x24x16 PVC/wood is also in catalog (16 in H, differs 2 in)."},
+{"sizeId":"t48x24x24","verdict":"exists_new","searches":3,"products":[
+{"brand":"OiiBO","line":"120 gal glass front opening sliding door, knock-down","L_in":48,"D_in":24,"H_in":24,"price_usd":399.99,"material":"glass","url":"https://www.walmart.com/ip/425403260","confidence":"medium","note":"Walmart URL from search result; price shown 399.99-439.99 across listings."},
+{"brand":"Reptizoo","line":"RK0227 knock down sliding doors","L_in":48,"D_in":24,"H_in":24,"price_usd":619.99,"material":"glass","url":"https://reptiledeli.com/products/reptizoo-rk0227-48-x-24-x-24-knock-down-reptile-glass-terrarium-sliding-doors","confidence":"high","note":"Marked sold out at fetch."},
+{"brand":"Bio Dude","line":"Premium PVC enclosure 48x24x24","L_in":48,"D_in":24,"H_in":24,"price_usd":null,"material":"PVC","url":"https://thebiodude.com/products/48-x-24-x-24-bio-dude-premium-pvc-enclosure","confidence":"medium"}],
+"closest":null,"notes":"Also Carolina Custom Cages 4x2x2 PVC already in catalog."},
+{"sizeId":"t24x48x24","verdict":"exists_new","searches":4,"products":[
+{"brand":"MorphMarket Shop (maker not named)","line":"24x24x48 Arboreal Reptile Enclosure V3 (120 gal)","L_in":24,"D_in":24,"H_in":48,"price_usd":299.0,"material":"aluminum frame, PVC panels, acrylic front, glass door, screen top (NOT all glass)","url":"https://shop.morphmarket.com/products/24x24x48-pvc-panel-reptile-enclosure-hinged-doors","confidence":"medium","note":"Sale from 349; tariff fees noted."},
+{"brand":"Zoo Med","line":"ReptiBreeze X-Large screen cage","L_in":24,"D_in":24,"H_in":48,"price_usd":null,"material":"aluminum screen, not a glass/humid terrarium","url":"https://zoomed.com/?p=1644","confidence":"low"}],
+"closest":null,"notes":"Catalog id t24x48x24 is L24 H48 D24. No all-glass 24x24x48 found; Reptizoo 48x24x48 and 24x18x36 are different. Carolina Custom Cages Bio Deep Hybrid 24x24x48 already in catalog."}
+]}

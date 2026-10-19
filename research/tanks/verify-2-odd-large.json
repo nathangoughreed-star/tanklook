@@ -1,0 +1,85 @@
+{
+  "checked": "2026-10-19",
+  "sizes": [
+    {
+      "sizeId": "bow46",
+      "verdict": "close_only",
+      "searches": 4,
+      "products": [],
+      "closest": {
+        "brand": "SeaClear", "line": "System II 46-gallon bow front acrylic", "L_in": 36, "D_in": 16.25, "H_in": 20,
+        "price_usd": null,
+        "url": "https://fishtanksdirect.com/seaclear-system-ii-46-gallon-36lx16wx20h-bow-front-acrylic-aquarium-10-100-15461-63/",
+        "confidence": "medium"
+      },
+      "notes": "Height 5 in short of 25 in; listing shows shipping paused, built on demand 3-4 wks; price not captured. Aquarium Co-Op forum thread says Aqueon stopped making bowfronts (hobbyist claim, no maker notice found). Top Fin 36 gal bowfront at PetSmart is 30.7x15.7x22.6 in (not a match). No new Oceanic/All Glass/Marineland 46 listing found."
+    },
+    {
+      "sizeId": "cor24",
+      "verdict": "not_found",
+      "searches": 3,
+      "products": [],
+      "closest": {
+        "brand": "Custom Aquariums", "line": "made-to-order pentagon/corner glass (configurator, no fixed 24 gal size)", "L_in": null, "D_in": null, "H_in": null,
+        "price_usd": null,
+        "url": "https://www.customaquariums.com/glass-aquariums/pentagon-aquariums/",
+        "confidence": "low"
+      },
+      "notes": "No 24 gal glass corner tank from Aqueon, Marineland, SeaClear, Top Fin found. Marineland Corner-Flo line is rectangular, 65 gal and up. Other corner shapes found are far larger (Clear-For-Life Quadra 60 gal 24x24x30, about $3,100)."
+    },
+    {
+      "sizeId": "hex35",
+      "verdict": "close_only",
+      "searches": 3,
+      "products": [],
+      "closest": {
+        "brand": "Clear-For-Life", "line": "35 gal hexagon acrylic (35G Hex U)", "L_in": 25, "D_in": 21, "H_in": 24,
+        "price_usd": 564.99,
+        "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/clear-for-life-35-gallon-hexagon-aquarium-5187060.html",
+        "confidence": "medium"
+      },
+      "notes": "Acrylic, height 3.5 in over target 20.5. PetSmart prices range 564.99 to 610.59 across pages; Fish Tanks Direct lists 799.99 (21x21x24 variant, built on demand 2-4 wks, https://fishtanksdirect.com/clear-for-life-35-gallon-21lx21wx24h-hexagon-acrylic-uniquarium-35g-hex-u/). No new glass 35 gal hex found; only used eBay."
+    },
+    {
+      "sizeId": "g210",
+      "verdict": "exists_new",
+      "searches": 4,
+      "products": [
+        {
+          "brand": "Glasscages", "line": "220 gal euro-brace aquarium package (tank+stand+sump) via Bulk Reef Supply, SKU 257357",
+          "L_in": 84, "D_in": 24, "H_in": 25, "price_usd": 6923,
+          "url": "https://www.bulkreefsupply.com/220-euro-brace-tank-stand-sump-glasscages.html",
+          "confidence": "medium"
+        }
+      ],
+      "closest": null,
+      "notes": "Borderline match: H +1 in, 220 vs 210 gal (+4.8%). Price is the package incl. stand and sump (lid version 7810, SKU 257358); tank-only price not found. Direct page fetch returned 404 so figures come from search snippets. Aqueon 210 is 72x24x29 ($1399.99 at thatpetplace.com) and Custom Aquariums tops out at 72 in for 240 gal and 96 in for 280/300 gal, so no 84 in there."
+    },
+    {
+      "sizeId": "c8",
+      "verdict": "close_only",
+      "searches": 6,
+      "products": [],
+      "closest": {
+        "brand": "Custom Aquariums", "line": "300 gal glass aquarium basic tank package", "L_in": 96, "D_in": 24, "H_in": 30,
+        "price_usd": 5403.56,
+        "url": "https://www.customaquariums.com/product/300-gallon-aquarium/",
+        "confidence": "high"
+      },
+      "notes": "No maker publishes a 96x30x30 price. Published 96 in ladder: Custom Aquariums 280 gal 24H x 96L x 24D ($3,217.80-$5,972.45), 300 gal 30H x 96L x 24D ($4,443.80-$7,150.64, basic package $5,403.56; actual 280 gal), both built to order; their configurator allows custom sizes but 30 in deep is unpriced. Waterbox Reef LX 380.8: 96.4x29.5x25.6 in, 286 gal, $9,999 (https://www.saltwateraquarium.com/reef-lx-380-8-black-waterbox/). Glasscages and Reef Savvy: no 96 in model with published price found (Glasscages largest found 84 in; Reef Savvy standard 180 gal is 64 in). Elite/Aqueon/AGA: nothing at 96 in found."
+    },
+    {
+      "sizeId": "c10",
+      "verdict": "not_found",
+      "searches": 4,
+      "products": [],
+      "closest": {
+        "brand": "Custom Aquariums", "line": "10 foot custom aquarium (quote only; rimless, 3/8 to 3/4 in glass options)", "L_in": 120, "D_in": null, "H_in": null,
+        "price_usd": null,
+        "url": "https://www.customaquariums.com/?p=64",
+        "confidence": "medium"
+      },
+      "notes": "10 ft tanks are offered only as call-for-quote / configurator with no published dimensions ladder or price. Largest published stock ladder found tops out at 96 in (300 gal 30x96x24). Glasscages/Waterbox/Reef Savvy/Aqueon: no 120 in listing found."
+    }
+  ]
+}

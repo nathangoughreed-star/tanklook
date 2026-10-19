@@ -1,0 +1,26 @@
+{"checked":"2026-10-19","sizes":[
+{"sizeId":"g3c","verdict":"exists_new","searches":6,"products":[
+{"brand":"Aqueon","line":"Frameless Cube 3 gal (tank only)","L_in":9.25,"D_in":9.25,"H_in":9.25,"price_usd":null,"url":"https://www.thatpetplace.com/aqueon-frameless-cube-3-gallon","confidence":"medium"},
+{"brand":"Tetra","line":"3 gal Cube kit","L_in":10.0,"D_in":10.0,"H_in":10.51,"price_usd":null,"url":"https://www.desertcart.sn/products/1627265","confidence":"low"},
+{"brand":"Cobalt Aquatics","line":"MicroVue 3 (2.6 gal)","L_in":9,"D_in":9,"H_in":9,"price_usd":null,"url":"https://reefbuilders.com/2017/05/24/cobalt-aquatics-microvue3","confidence":"low"}],
+"closest":null,"notes":"Aqueon price/stock not captured (thatpetplace page returned 404 on fetch; dims from search snippet; one PetSupermarket listing gives 9.33x9.5x9.57). Lifegard 3 gal kit is 8.8 cube, $75.99-99.99 at Bulk Reef Supply."},
+{"sizeId":"g6c","verdict":"close_only","searches":5,"products":[],
+"closest":{"brand":"Ultum Nature Systems","line":"30C rimless cube 7 gal","L_in":11.81,"D_in":11.81,"H_in":11.81,"price_usd":87.99,"url":"https://www.bulkreefsupply.com/30c-rimless-aquarium-7-gallon-ultum-nature-systems.html","confidence":"high","also":"Aquatop HCC-12 cube 7.13 gal 11.81 cube $82.99 Walmart; Aquatop Pisces Nano Cube 5 gal 12x9x10.6 $129.99 (fishtanksdirect.com)"},
+"notes":"H differs by 1.8 in and rated gal by 17%. No new 6 gal ~12.5x12.5x10 found."},
+{"sizeId":"g8c","verdict":"close_only","searches":4,"products":[],
+"closest":{"brand":"IceCap","line":"11.3 gal trimless cube","L_in":13.8,"D_in":13.8,"H_in":13.8,"price_usd":null,"url":"https://www.reefsupplies.ca/products/icecap-11-3-gallon-trimless-cube-aquarium","confidence":"low","also":"Fluval Vista 8.5 gal 20x10x12 (not cube); biOrb CUBE 30 acrylic 12.6x12.6x13.6"},
+"notes":"No 8 gal cube ~13.5x13.5x11 from Aqueon, Fluval, Waterbox (cubes start 10.9 gal), Peter's Aquaverse (7.5 gal 12x12x12; 12 gal 14x14x14). Reefsupplies.ca is Canadian."},
+{"sizeId":"bow6","verdict":"close_only","searches":4,"products":[],
+"closest":{"brand":"Aquatop","line":"EuroStyle ES-16 bowfront 6.1 gal","L_in":15.75,"D_in":9.45,"H_in":9.45,"price_usd":null,"url":"https://www.walmart.com/ip/EuroStyle-Bowfront-Aquarium-9-45x15-75x9-45-6-1-gal/1271816190","confidence":"medium","also":"Aqueon LED MiniBow 5 gal 14.5x10x13.5 (walmart.com/ip/40226401, out of stock); Aquatop 8.6 gal bow kit BFK-08 $164.99; Aquatop 4.4 gal bow 9.75x10x11.5"},
+"notes":"Length differs ~1.75 in, height ~1.5 in. Aqueon 5 gal MiniBow height 2.5 in over."},
+{"sizeId":"g30b","verdict":"exists_new","searches":4,"products":[
+{"brand":"Seapora","line":"Standard 30 gal Breeder","L_in":36,"D_in":18,"H_in":12,"price_usd":167.99,"url":"https://catalog.elmersaquarium.com/products/30-gal-wide-seapora-tank-36x18x12-3057.html","confidence":"high"},
+{"brand":"Seapora","line":"30 gal Breeder","L_in":36,"D_in":18,"H_in":12,"price_usd":149.99,"url":"https://bluefishaquarium.com/products/seapora-30-gallon-breeder-aquarium-36x18x12","confidence":"medium"}],
+"closest":null,"notes":"Local fish stores only; no Aqueon/Marineland 30 breeder found (they make 40 breeder 36x18x16). Milwaukee Aquatics lists $165 but one page says unavailable."},
+{"sizeId":"g37","verdict":"close_only","searches":7,"products":[],
+"closest":{"brand":"Top Fin (PetSmart)","line":"Essentials Starter Kit 37 gal","L_in":30.4,"D_in":15.47,"H_in":22.24,"price_usd":143.99,"url":"https://www.petsmart.com/fish/starter-kits/top-fin-essentials-aquarium-starter-kit-5262266.html","confidence":"medium","also":"Seapora 44 gal X-High 36x12x24 (thatpetplace.com/seapora-standard-aquarium-xhigh-44-gal); Marineland sizing guide lists 37 gal 30x12x22 (piscespets.com/products/marineland-aquarium-black) but no new listing found"},
+"notes":"Top Fin dims may include hood/shipping; depth 2.5 in over, height 1.8 in under target. No bare 37 gal tank found at Aqueon, Marineland, Seapora, Petco, Tractor Supply, Walmart."},
+{"sizeId":"g45c","verdict":"not_found","searches":4,"products":[],
+"closest":{"brand":"Innovative Marine","line":"Fusion Pro 2 40 AIO","L_in":23.6,"D_in":19.7,"H_in":18.9,"price_usd":null,"url":"https://www.saltwateraquarium.com/fusion-pro-2-40-gallon-aio-lagoon-aquarium-w-black-aps-stand-innovative-marine/","confidence":"medium","also":"Seapora 60 gal cube 24x24x24 $299.99 (thatpetplace.com/seapora-standard-aquarium-cube-60-gal); Marineland frameless cube 25 gal backordered $249.99 (aquariumdepot.ca)"},
+"notes":"Only used-market Marineland 45 cube 24x24x18 found; no current new listing. Searches were ~4 distinct; Seapora/Aqueon/Waterbox/IM checked."}
+]}

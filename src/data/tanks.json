@@ -713,37 +713,6 @@
    ]
   },
   {
-   "id": "g45c",
-   "name": "45 gal cube",
-   "ratedGal": 45,
-   "shape": "rect",
-   "outer": {
-    "L": 622.3,
-    "H": 469.9,
-    "D": 622.3
-   },
-   "glassMm": 8,
-   "band": "mid",
-   "tags": [
-    "cube"
-   ],
-   "source": "estimate: common US size, no single maker listing checked",
-   "note": "24x24x18 interior cube; a 30 in tall 18x18 version also exists.",
-   "variants": [
-    {
-     "brand": "Marineland",
-     "line": "45 Gallon Cube (24x24x18, optional slim center overflow)",
-     "L_in": 24,
-     "D_in": 24,
-     "H_in": 18,
-     "price_note": "Only a used-sale forum post found; no current new listing",
-     "url": "https://reefs.com/forum/sale-trade/179838-fs-45-cube-tek-light-more.html",
-     "checked": "2026-10-19",
-     "confidence": "low"
-    }
-   ]
-  },
-  {
    "id": "g50b",
    "name": "50 gal breeder",
    "ratedGal": 50,
@@ -1408,25 +1377,6 @@
    ]
   },
   {
-   "id": "cor24",
-   "name": "24 gal corner",
-   "ratedGal": 24,
-   "shape": "pie",
-   "pieDeg": 90,
-   "outer": {
-    "L": 697.4,
-    "H": 508,
-    "D": 495.3
-   },
-   "glassMm": 6,
-   "band": "small",
-   "tags": [
-    "corner"
-   ],
-   "source": "estimate: common US size, no single maker listing checked",
-   "note": "Modelled as a 90-degree quarter round; real corner tanks are often flat-fronted, so the footprint differs."
-  },
-  {
    "id": "hex35",
    "name": "35 gal hex",
    "ratedGal": 35,
@@ -2044,24 +1994,6 @@
      "confidence": "high"
     }
    ]
-  },
-  {
-   "id": "c10",
-   "name": "10 ft custom",
-   "ratedGal": 430,
-   "shape": "rect",
-   "outer": {
-    "L": 3048,
-    "H": 762,
-    "D": 762
-   },
-   "glassMm": 19,
-   "band": "monster",
-   "tags": [
-    "custom"
-   ],
-   "source": "estimate: common US size, no single maker listing checked",
-   "note": "Typical custom build, 120x30x30 in."
   },
   {
    "id": "t8x8x8",
