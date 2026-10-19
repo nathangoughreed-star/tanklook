@@ -423,3 +423,12 @@ rows up; `engine.ts` prefers a row, falls back to demand-defaults.json. Substrat
 (the sand row is per branded 5 lb bag, too dear per litre). Weak rows: goldfish, clownloach, discus, bronzecory, ember, tank:75, tank:125,
 ball python, harlequin crested gecko, hard:ledge / lava / river (proxies from bagged landscape rock). Starter examples (setup p10/mean/p90):
 betta $310/379/454 (light row clamps at 24 in; being tuned), planted 45 gal $1187/1410/1640, reef 73 gal $2829/3416/4029.
+**Phase 3 DONE / Phase 4 DONE 2026-10-19 (panel UI).** Nathan chose Quick Setup as host and kept the risk cut points (safe < 3, moderate < 6,
+demanding above). `src/ui/demandPanel.ts` (the panel) + `src/demand/swaps.ts` (best swap per driver, effect on all four numbers) are hooked in with
+two one-liners: `<div id="demandPanel">` at the top of the Quick Setup section in `index.html` and `attachDemandPanel(store, $('demandPanel'))` at the
+end of `attachPanels` in `ui/panels.ts`; CSS appended to `style.css` (`.dm*`). Recomputes 450 ms after the scene settles (kinds scene / load).
+Profile (skill by domain, water source, kWh rate, limits, budget mode) is in localStorage `tanklook.demand`. Bars: red when over a limit; click a
+bar for drivers (+ each item's share of the doubt) and swaps; limits form asks "expect to spend" vs "most I can spend" the first time a $ limit is set.
+Gotcha: preview_start serves the primary folder; to preview this worktree I pointed the `demand` entry of the primary's `.claude/launch.json` at it
+with `npm --prefix` (local edit, not committed). Phase 5 (Shuffle and Quick Setup respect the limits; care-tier slider sets all limits) is next.
+

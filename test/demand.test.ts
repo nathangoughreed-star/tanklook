@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { SCENES } from '../src/examples/scenes';
 import { costDistribution, defaultProfile, demandOf, drivers, limitState, pct, plantDifficulty, riskLabel } from '../src/demand';
+import { swapsFor } from '../src/demand/swaps';
 import { mean3, triInv, var3 } from '../src/demand/range';
 import { parseScene } from '../src/scene/validate';
 
@@ -71,6 +72,16 @@ describe('researched prices (phase 2)', () => {
     const rows = Object.entries(d.rows as Record<string, { lo: number; mode: number; hi: number; url: string; est?: boolean }>);
     expect(rows.length).toBeGreaterThan(170);
     for (const [k, r] of rows) { expect(r.lo, k).toBeLessThanOrEqual(r.mode); expect(r.mode, k).toBeLessThanOrEqual(r.hi); expect(r.est || r.url, k).toBeTruthy(); }
+  });
+});
+describe('swaps', () => {
+  it('suggest cheaper or easier replacements that lower the chosen bar', () => {
+    const { S, P } = run('planted');
+    const sw = swapsFor(S, P, 'plant:stemred', 'setup', { now: NOW });
+    expect(sw.length).toBeGreaterThan(0);
+    for (const s of sw) expect(s.delta.setup).toBeLessThan(0);
+    const an = swapsFor(S, P, 'animal:oto', 'risk', { now: NOW });
+    for (const s of an) expect(s.delta.risk).toBeLessThan(0);
   });
 });
 describe('costDistribution', () => {

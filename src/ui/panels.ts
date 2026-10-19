@@ -1,5 +1,6 @@
 // Sidebar wiring. Inputs write through store.update(); one sync() pulls every control back from the scene,
 // so undo/redo, file open and pointer drags all refresh the panels the same way.
+import { attachDemandPanel } from './demandPanel';
 import { LEVELS, onPerf, perf, setAuto, setLevel } from '../render/perf';
 import { lifeStages } from '../data/lifestages';
 import { rng } from '../art/paint';
@@ -2114,6 +2115,7 @@ Cancel, then change the name, to keep both.`)) return;
   // flush a pending autosave when the tab closes or reloads
   addEventListener('pagehide', () => { if (saveTimer) { clearTimeout(saveTimer); store.saveLocal(); } });
 
+  attachDemandPanel(store, $('demandPanel')); // lane KK: the three demand readouts at the top of Quick Setup
   renderResults();
   sync();
   return { status, showStart, openShared };
