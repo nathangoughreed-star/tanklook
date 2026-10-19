@@ -28,12 +28,24 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 **Current lanes** (coordinator "Lanes coordinator 4", `local_408aa124`):
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
-| Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
+| Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 DONE 2026-10-16 (lane SS2, see archive; its gaps: no water dish, no succulents, Malawi has only yellowlab / cockatoo); multi-select / duplicate (lane MS) + scatter brush (lane SB) DONE 2026-10-16, see archive; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
+| DS one expected-cost number | `../Glass-Box-expectedcost` / `expectedcost` | 5793 | `src/demand/*`, `ui/demandPanel.ts`, demand data | opened 2026-10-19 |
+| CS CI workflow split | `../Glass-Box-cisplit` / `cisplit` | 5803 | `.github/workflows/*` | opened 2026-10-19 |
+| AQ AqAdvisor ids + Malawi pool | `../Glass-Box-aqids` / `aqids` | 5813 | `scripts/aqadvisor-ids.py`, `data/aqadvisor.json`, Malawi pool in `scene/starter.ts` | opened 2026-10-19 |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
+| KW start wizard | `../Glass-Box-wizard` / `wizard` | 5783 | new `ui/wizard.ts`, `#startGuided` slot in `index.html`, wizard CSS | opened 2026-10-19 |
 
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
+
+## Lane KW: start wizard (2026-10-19, branch `wizard`, port 5783)  (lane fills this in)
+
+## Lane DS: one expected-cost number (2026-10-19, branch `expectedcost`, port 5793)  (lane fills this in)
+
+## Lane CS: CI workflow split (2026-10-19, branch `cisplit`, port 5803)  (lane fills this in)
+
+## Lane AQ: AqAdvisor ids + Malawi pool (2026-10-19, branch `aqids`, port 5813)  (lane fills this in)
 
 ## Lane KD: bundle deals (2026-10-19)
 - `src/data/deals.json` (+ `deals.ts`): retailer tank+stand bundles {retailer, gal, tank (catalog id, optional), kit (optional), includes, price{usd, regularUsd}, saleEnds, url, asOf, est}. `src/demand/deals.ts` `dealOffers` = saving vs buying the parts (engine `kit` option generalised with `includes` + `label`, no parallel mechanism).
