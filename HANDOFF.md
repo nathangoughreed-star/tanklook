@@ -28,7 +28,6 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
 | GS gecko support surfaces | `../Glass-Box-geckosupport` / `geckosupport` | 5743 | `scene/anchors.ts`, `render/items.ts` surface choice, weight / leaf flag in `species.json` | opened 2026-10-19 |
-| AN anole models | `../Glass-Box-anoles` / `anoles` | 5753 | `render/lizard3d.ts` params, anole entries in `species.json` | opened 2026-10-19 |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 (biotopes, marine sub-styles, terrestrial starters); multi-select / duplicate + scatter brush; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 
@@ -43,8 +42,6 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 - Frogs / spiders / snakes are NOT given the snap or the lift cap (their behaviour unchanged); the same limb-spot miss likely floats tree frogs too: candidate follow-up.
 - Tests: test/geckosupport.test.ts (new), lizard.test.ts leopard expectation; test/fixtures/anchor-baseline.json re-recorded (main was already off it for python / tree frog from other lanes).
 - Never use `git stash` in a worktree: the stash list is shared by all worktrees (another lane's stash was popped into this one 2026-10-19).
-
-## Lane AN: anole models (2026-10-19, branch `anoles`, port 5753)  (lane fills this in)
 
 ## Lane KD: bundle deals (2026-10-19)
 - `src/data/deals.json` (+ `deals.ts`): retailer tank+stand bundles {retailer, gal, tank (catalog id, optional), kit (optional), includes, price{usd, regularUsd}, saleEnds, url, asOf, est}. `src/demand/deals.ts` `dealOffers` = saving vs buying the parts (engine `kit` option generalised with `includes` + `label`, no parallel mechanism).
@@ -272,6 +269,8 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane AN: anole models (2026-10-19, branch `anoles`, port 5753)
+- Lane SD: one start chooser (2026-10-19, branch `startchooser`, port 5763; Nathan approved the pictures, shipped)
 - Lane KK: demand model (panel hook in `ui/panels.ts` only after KA lands) (2026-10-19, branch `demand`, port 5733)
 - Lane KC: kit light wiring (stub data until KB lands) (2026-10-19, branch `kitlight`, port 5723)
 - Lane KA: tank catalog (2026-10-19, branch `tankcat`, port 5703)

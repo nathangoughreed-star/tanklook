@@ -170,7 +170,38 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 .sidetog { font: inherit; cursor: pointer; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 6px; padding: 3px 9px }
 /* the hide button sits in the view, just outside the panel, so it stays reachable however far the panel is scrolled */
 /* top-left of the view: panel toggle, then Undo / Redo (out of the scrolling panel, there even when it is hidden) */
-.climate { position: absolute; right: 10px; bottom: 10px; z-index: 3; max-width: 330px; box-sizing: border-box; padding: 6px 10px; border-radius: 6px; background: color-mix(in srgb, var(--panel) 88%, transparent); border: 1px solid var(--line); font-size: 12px; line-height: 1.4; pointer-events: none }
+.encl { position: absolute; right: 10px; bottom: 10px; z-index: 3; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; max-width: 330px; max-height: calc(100% - 20px); pointer-events: none }
+.encl > * { pointer-events: auto }
+.climate { max-width: 330px; box-sizing: border-box; padding: 6px 10px; border-radius: 6px; background: color-mix(in srgb, var(--panel) 88%, transparent); border: 1px solid var(--line); font-size: 12px; line-height: 1.4; cursor: pointer }
+.climate.open { width: 330px; max-height: calc(100% - 20px); overflow-y: auto }
+.stocking { box-sizing: border-box; padding: 6px 10px; border-radius: 6px; background: color-mix(in srgb, var(--panel) 88%, transparent); border: 1px solid var(--line); font-size: 12px; line-height: 1.4; max-width: 330px; max-height: 40vh; overflow-y: auto }
+.stocking div { margin: 2px 0 }
+.stocking .w b { color: #c0392b }
+.stocking .n b { color: #b9770e }
+.stocking .i b { color: #2e86c1 }
+.stocking b { font-weight: 600; margin-right: 4px }
+.clCue { color: var(--muted); font-size: 11px; margin-top: 3px }
+.clAx { --cl-n: 92px; --cl-v: 74px; position: relative; margin: 6px 0 2px }
+.clT { font-weight: 600; font-size: 11px; color: var(--muted); margin-bottom: 2px }
+.clR { display: flex; align-items: center; height: 17px; gap: 0 }
+.clN { flex: none; width: var(--cl-n); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px }
+.clV { flex: none; width: var(--cl-v); text-align: right; font-size: 10.5px; color: var(--muted) }
+.clB { position: relative; flex: 1; height: 9px; border-radius: 4px; background: color-mix(in srgb, var(--ink) 8%, transparent) }
+.clB i { position: absolute; top: 0; bottom: 0; border-radius: 4px }
+.clB i.t { background: color-mix(in srgb, #4aa3a0 30%, transparent) }
+.clB i.a { background: #4aa3a0 }
+.clB i.w { background: #e0a050 }
+.clV.s-ideal { color: #3a9a8f }
+.clV.s-fine { color: #d9a441 }
+.clV.s-stretch, .clV.s-unsafe { color: #e5484d; font-weight: 600 }
+.clScore { font-weight: 600; margin-left: 4px }
+.clScore.good { color: #3a9a8f }
+.clScore.bad { color: #e5484d }
+.clSum { font-size: 11px; color: var(--muted); margin-top: 3px }
+.clScale { background: none; height: 12px }
+.clScale b { position: absolute; top: 0; font-size: 9.5px; font-weight: 400; color: var(--muted); transform: translateX(-50%) }
+.clLine { position: absolute; top: 14px; bottom: 14px; width: 0; border-left: 2px solid #e5484d; pointer-events: none }
+.clLine em { position: absolute; top: -13px; left: 0; transform: translateX(-50%); font: 600 10px/1 system-ui, sans-serif; color: #e5484d; font-style: normal; white-space: nowrap }
 .climate b { font-weight: 600; margin-right: 4px }
 .climate .hint { display: block }
 .viewtools { flex-wrap: wrap; max-width: calc(100% - 20px) }
@@ -309,7 +340,15 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .startbtns button { flex: 1 1 200px; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 10px 12px; text-align: left }
 .startbtns button[hidden] { display: none }
 .startbtns span { font-size: 12px; opacity: .85; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100% }
-#startEx { max-height: none; overflow: visible }
+.startdlg .libgrid { max-height: none; overflow: visible }
+.startdlg { overflow-y: auto; margin: 24px auto auto } /* top-anchored: the tab strip stays put while the panes change height */
+.startdlg .libgrid > p { grid-column: 1 / -1; margin: 0 }
+.starttabs { display: flex; flex-wrap: wrap; gap: 4px; margin: 10px 0 2px; border-bottom: 1px solid var(--line) }
+.starttabs button { padding: 6px 10px; border-bottom-color: transparent; border-radius: 6px 6px 0 0; margin-bottom: -1px }
+.starttabs button[aria-selected="true"] { background: var(--panel); border-color: var(--line); border-bottom-color: var(--panel); font-weight: 600; color: var(--accent) }
+.starttabs button[hidden], .startpane[hidden] { display: none }
+.startbtns #startGuided:not([hidden]) { flex: 1 1 200px }
+@media (max-width: 480px) { .starttabs button { flex: 1 1 40%; text-align: center } .startdlg { padding: 10px } }
 /* opening a tank blocks the page for a few seconds while it builds: the spinner is a transform animation, so the
    compositor keeps it turning while the main thread is busy */
 .busy { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: rgb(0 0 0 / .35); cursor: progress }
@@ -403,7 +442,21 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .shuffleKeep label { white-space: nowrap; }
 
 /* demand panel (lane KK): three live readouts at the top of Quick Setup */
-.dm { margin: 6px 0 10px; padding: 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--chip) }
+.dmfloat { position: absolute; top: 10px; right: 10px; z-index: 4; width: 310px; max-width: calc(100% - 20px); max-height: calc(100% - 20px); overflow-y: auto; border-radius: 6px }
+.dmfloat.closed { width: auto }
+.dm { padding: 8px; border: 1px solid var(--line); border-radius: 6px; background: color-mix(in srgb, var(--panel) 92%, transparent); box-shadow: 0 2px 10px rgba(0,0,0,.18) }
+.dmtog { display: flex; align-items: baseline; gap: 8px; width: 100%; padding: 0; border: 0; background: none; color: var(--ink); font: inherit; text-align: left; cursor: pointer }
+.dmtog[aria-expanded=true] .dmsum { display: none }
+.dmfloat.closed .dmhead { display: none }
+.dmsum { font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap }
+.dmcaret { margin-left: auto; color: var(--muted); transition: transform .15s }
+.dmtog[aria-expanded=false] .dmcaret { transform: rotate(90deg) }
+.dmbody { margin-top: 4px }
+.dmmode { font-size: 11.5px; color: var(--muted); margin-bottom: 4px }
+.dmbase { width: 2px; background: var(--muted); opacity: .8 }
+.dmchg { font-size: 11.5px; font-weight: 600; animation: dmin .25s ease-out }
+.dmchg.up { color: var(--warn) } .dmchg.down { color: var(--ok) }
+@keyframes dmin { from { opacity: 0; transform: translateY(-3px) } to { opacity: 1; transform: none } }
 .dmhead { font-size: 12px; font-weight: 600; margin-bottom: 4px }
 .dmrow { padding: 4px 4px 6px; border-radius: 4px; cursor: pointer }
 .dmrow:hover, .dmrow.sel { background: color-mix(in srgb, var(--accent) 10%, transparent) }

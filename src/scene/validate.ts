@@ -190,6 +190,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       ...(getSpecies(f.species)!.surfaces ? { surface: pick(f.surface, getSpecies(f.species)!.surfaces!, 'floor') } : {}),
       ...(tl !== adult ? { tl } : {}),
       ...(sex ? { sex } : {}),
+      ...(f.gender === 'm' || f.gender === 'f' ? { gender: f.gender } : {}),
     });
   }
   if (unknown) warn(`${unknown} fish of unknown species were skipped.`);

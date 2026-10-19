@@ -1,0 +1,10 @@
+[
+{"id":"cherryshrimp","ok":[18,25],"tol":[14,28],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":6,"sourcesSnippet":5,"confidence":"medium","note":"Hobby 18-26; lab survival fine 20-28; short-term survival far wider; no wild field temp."},
+{"id":"amano","ok":[20,26],"tol":[16,28],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":3,"sourcesSnippet":5,"confidence":"medium","note":"Co-Op and Wikipedia say 18-28, other guides cap 25-27; wild figures unverified."},
+{"id":"nerite","ok":[22,27],"tol":[18,29],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":4,"sourcesSnippet":2,"confidence":"medium","note":"Four hobby pages agree 22-28; no wild temperature found."},
+{"id":"mystery","ok":[22,27],"tol":[18,30],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":4,"sourcesSnippet":2,"confidence":"medium","note":"Guides 20-28/29; no cold-limit data, floor is extrapolated; warm shortens life."},
+{"id":"ramshorn","ok":[20,27],"tol":[10,30],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":3,"sourcesSnippet":3,"confidence":"low","note":"Only retailer figures (18-28; one claims 4-30); no wild or study data; cold floor of 10 is cautious."},
+{"id":"trumpet","ok":[21,28],"tol":[16,32],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":3,"sourcesSnippet":4,"confidence":"high","note":"Hobby 21-27 plus field/lab papers: lethal <18 (48 h) to >32; lab optimum much warmer, cold tolerance population-dependent."},
+{"id":"ocellaris","ok":[24,27],"tol":[22,30],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":4,"sourcesSnippet":4,"confidence":"medium","note":"Hobby 22-26 is cool vs wild 24-32 and lab preferred ~30; only one opened page with numbers."},
+{"id":"royalgramma","ok":[22,26],"tol":[20,28],"rh":null,"rhTol":null,"warm":null,"night":null,"sourcesOpened":5,"sourcesSnippet":1,"confidence":"medium","note":"Strong agreement 22-27 incl. FishBase; no source states tolerable limits (tol is a +/-2 margin)."}
+]
