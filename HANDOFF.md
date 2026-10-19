@@ -35,6 +35,32 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
+## Lane CL: animals cling to leaves, undersides and sides of hardscape (2026-10-16..19; main, no branch; Nathan approved the pictures; pushed to main)
+Nathan's rules: things that cling or suck (snails, shrimp, sucker fish: oto, pleco) go on the undersides and sides of
+things; things that perch (African dwarf frog) go only on TOP of things (hardscape, leaves, cave tops), never glass.
+Shrimp do NOT cling to glass (Nathan, 2026-10-16). Animals can spawn anywhere their species allows, in proportion to area.
+- Surfaces (scene/anchors.ts, render/items.ts, test/leafperch.test.ts): anchor kind `leaf`; `rest(x, depth, hard, leaves)`
+  takes the leaf-top minimum normal (`leafUp(sp)`: 0.6 perchers, 0.3 clingers; 0 = not on leaves); `leafProbe` ray down on
+  the plant meshes' revealed geometry (clear of the ground by 8 mm). New Surface `'under'` (types.ts): the cling surface for
+  everything that is not a top: `underProbe(leaves, solids, ground)` looks straight up (leaf undersides: either face; solids:
+  true downward faces only: ledges, cave roofs, cork) and sideways in 16 rays within SIDE_REACH 150 mm for steep faces
+  (|normal.y| <= 0.5); the nearer wins. Pose: `hang3` in build.ts (steep face: yaw runs in the face, 0 level, 90 up).
+- Species (data/species.json + species.ts): `cling: 'any'` = floor, glass, hardscape, under; `'hangs'` = shrimp (no glass);
+  `'top'` = ADF (floor, hardscape, top; perches on tops and leaves, never glass or under). Land climbers (frogs, geckos,
+  spiders) never take `under` or leaves. `onLeaves(sp)`, `leafUp(sp)`.
+- Shuffle (scene/scatter.ts, scene/items.ts `hardscape(..., leaves)` and `underside(S)`): spots are only estimates (the
+  renderer finds the face; none there = the animal rests on the ground). Broad-leaved plants weighted by type (LEAFY: crypt 1,
+  anubias .6 ... swords/ferns low: their leaves stand nearly upright). Clingers take under/side faces with probability
+  = face area / (faces + floor + tops). ADFs not floating: 40 % perch on hardscape or leaf tops.
+- Dragging (interact/pointer.ts): top view drops onto a leaf or rock top; side/front views snap to a face within ~30 mm.
+- African dwarf frog model flattened dorso-ventrally (art/herps.ts ADF_FLAT 0.55 height, width x1.12). Model-versions
+  record for `adf` NOT bumped: press Record on the review sheet.
+- test/fixtures/anchor-baseline.json re-recorded (shrimp, otos, snails move now).
+- Not done: leaf SWAY is ignored (an animal on a leaf stays put as the leaf moves); thin stem plants offer no faces; no
+  perch/cling check when a plant grows past or away from an animal (the renderer re-finds the face each build, so it follows
+  the revealed geometry, falling to the ground if the leaf is gone). Floating plants (frogbit, lettuce) not leaf surfaces.
+
+
 ## Lane PR: plant propagation, step 1 (2026-10-16; branch `plant-propagation`, port 5693; design + Nathan's decisions in research/plant-propagation.md)
 - **Built:** `BREED` table in `art/plants.ts` (mode runner / offset / rhizome / bulb / cuttings / float / mat, rate = daughters per Time per mature
   plant in a low-tech tank, hop mm, cap, from = parent growth to start). Sagittaria / vallisneria (`grass`) / hairgrass / sword / ozelot runners; crypt,
