@@ -23,6 +23,12 @@ export interface TankVariant {
   price_usd?: number | null;
   /** 'msrp' | 'street' | 'kit' (kit includes stand / light / filter). */
   price_kind?: string;
+  /** On sale: `price_usd` is the sale price and this is the list price the page shows struck through. */
+  regular_usd?: number;
+  /** ISO date the sale ends, when the page says. */
+  sale_ends?: string;
+  /** The retailer the price was read at (for "on sale at PetSmart"). */
+  retailer?: string;
   price_note?: string;
   discontinued?: boolean;
   url?: string;
@@ -57,6 +63,30 @@ export interface TankModel {
 
 export const TANK_MODELS = (data as { tanks: TankModel[] }).tanks;
 export const getTankModel = (id: string) => TANK_MODELS.find(m => m.id === id);
+
+export interface TankSale { usd: number; regularUsd: number; retailer: string; product: string; saleEnds?: string; checked: string }
+/** The cheapest bare glass tank on sale now at about this size and shape (rated gallons within `tol`), read from a retailer
+ *  page in the last 30 days and not past its sale end. Undefined when none is known. Kits, acrylic and terrariums are left out. */
+export function tankSaleFor(gal: number, shape: TankShape = 'rect', now = Date.now(), tol = 2.5, models: TankModel[] = TANK_MODELS, dims?: { L: number; D: number; H: number }): TankSale | undefined {
+  let best: TankSale | undefined;
+  // with the build's interior size, match by footprint (a 75 measures 79 gal inside, a 40 breeder is not a 37)
+  const near = (m: TankModel) => {
+    if (!dims) return Math.abs(m.ratedGal - gal) <= tol;
+    const t = tankFromModel(m), r = (a: number, b: number) => Math.abs(a / b - 1);
+    return r(t.L, dims.L) <= 0.1 && r(t.D, dims.D) <= 0.15 && r(t.H, dims.H) <= 0.2;
+  };
+  for (const m of models) {
+    if (m.terrarium || m.shape !== shape || !near(m)) continue;
+    for (const v of m.variants ?? []) {
+      if (v.price_usd == null || !v.regular_usd || v.regular_usd <= v.price_usd || v.price_kind === 'kit' || v.discontinued || !v.checked) continue;
+      if (/acrylic/i.test(`${v.line ?? ''} ${v.price_note ?? ''}`)) continue;
+      const age = now - Date.parse(v.checked);
+      if (age < 0 || age > 30 * 864e5 || (v.sale_ends && Date.parse(v.sale_ends + 'T23:59:59') < now)) continue;
+      if (!best || v.price_usd < best.usd) best = { usd: v.price_usd, regularUsd: v.regular_usd, retailer: v.retailer ?? 'a retailer', product: `${v.brand}${v.line ? ' ' + v.line : ''}`, saleEnds: v.sale_ends, checked: v.checked };
+    }
+  }
+  return best;
+}
 
 /** Outer extents (mm) of an interior tank with glass `g` on every side: the offset outline's box and interior height plus the bottom pane. */
 export function outerOf(T: Tank, g: number): Outer {

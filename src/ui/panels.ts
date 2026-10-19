@@ -344,7 +344,12 @@ Cancel, then change the name, to keep both.`)) return;
   // tankChoices() is still what the guided-start wizard calls.
   {
     const dlg = $<HTMLDialogElement>('tankDlg'), list = $('tankList'), q = $<HTMLInputElement>('tankQ'), terra = $<HTMLInputElement>('tankTerra');
-    const usd = (v: TankVariant) => v.price_usd == null ? 'price n/a' : `~$${Math.round(v.price_usd).toLocaleString('en-US')}${v.price_kind === 'kit' ? ' (kit)' : ''}`;
+    const $r = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
+    // a sale shows as the sale price, the struck list price and the retailer, until its end date
+    const onSale = (v: TankVariant) => v.price_usd != null && !!v.regular_usd && v.regular_usd > v.price_usd && !(v.sale_ends && Date.parse(v.sale_ends + 'T23:59:59') < Date.now());
+    const usd = (v: TankVariant) => v.price_usd == null ? 'price n/a' : onSale(v)
+      ? `<b>${$r(v.price_usd)}</b> <s>${$r(v.regular_usd!)}</s> ${Math.round((1 - v.price_usd / v.regular_usd!) * 100)}% off${v.retailer ? ` at ${esc(v.retailer)}` : ''}${v.sale_ends ? `, ends ${esc(v.sale_ends)}` : ''}`
+      : `~${$r(v.price_usd)}${v.price_kind === 'kit' ? ' (kit)' : ''}`;
     // interior from the outer size on the label; the glass matches so the outside does too
     const apply = (m: TankModel, v?: TankVariant) => { const mm = v ? modelOfVariant(m, v) : m; setTank(() => tankFromModel(mm), undefined, mm.glassMm); dlg.close(); };
     const draw = () => {

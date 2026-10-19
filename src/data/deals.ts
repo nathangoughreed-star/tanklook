@@ -50,7 +50,9 @@ const day = (d: string) => Date.parse(d + 'T23:59:59');
  *  `stand` = the user's build shows a stand: a deal that includes one only helps then. */
 export function dealsFor(gal: number, stand: boolean, now = Date.now(), tol = 2.5, list: Deal[] = DEALS): Deal[] {
   return list
-    .filter((d) => Math.abs(d.gal - gal) <= tol && (stand || !d.includes.includes('stand')) && (!d.saleEnds || day(d.saleEnds) >= now))
+    // rated vs measured: a tank measures a little over its label (a 75 is about 79 gal inside), so the slack is one-sided
+    .filter((d) => d.gal - gal <= tol && gal - d.gal <= Math.max(tol, gal * 0.07) &&
+ (stand || !d.includes.includes('stand')) && (!d.saleEnds || day(d.saleEnds) >= now))
     .sort((a, b) => a.price.usd - b.price.usd);
 }
 
