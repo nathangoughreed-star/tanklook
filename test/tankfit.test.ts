@@ -33,10 +33,10 @@ describe('tank fit engine (lane P2)', () => {
   it('steps are monotonic: each is bigger than the last, the space bar falls, every tank is from the catalogue, the cost rises overall', () => {
     for (const k of Object.keys(CASES)) {
       const t = fit(k), s = stepUps(CASES[k], t.tank, 3);
-      expect(s.length, k).toBe(3);
+      expect(s.length, k).toBe(k === 'oscar' ? 2 : 3); // the catalogue runs out above the oscar's filtration-driven tank
       let prev = t.litres, prevSpace = t.spacePct;
       for (const x of s) { expect(getTankModel(x.tank.id), k).toBeTruthy(); expect(x.litres, k).toBeGreaterThan(prev); expect(x.spacePct, k).toBeLessThan(prevSpace); prev = x.litres; prevSpace = x.spacePct; }
-      expect(s[2].costDeltaUsd, k).toBeGreaterThan(0);
+      expect(s[s.length - 1].costDeltaUsd, k).toBeGreaterThan(0);
       expect(s.every(x => x.filtrationPct > 0)).toBe(true);
     }
     expect(stepUps(CASES.neons, 'g10', 2)).toHaveLength(2);
@@ -75,6 +75,19 @@ describe('tank fit engine (lane P2)', () => {
     expect(buildSpan(CASES.oscar, 'g120')!.setupUsd.balanced).toBeGreaterThan(buildSpan(CASES.oscar, 'g75')!.setupUsd.balanced);
     expect(buildSpan(CASES.reef, 'g20h')!.setupUsd.balanced).toBeGreaterThan(buildSpan(CASES.neons, 'g20h')!.setupUsd.balanced); // salt costs more
     expect(buildSpan(CASES.neons, 'nosuchtank')).toBeUndefined();
+  });
+  it('filtration is judged too: an oscar never lands on a tank no catalogue filter can carry, and a stocking nothing can carry fails hard', () => {
+    const t = fit('oscar');
+    expect(t.filtrationPct).toBeLessThanOrEqual(100); expect(t.fails).not.toContain('filtration');
+    for (const s of stepUps(CASES.oscar, t.tank, 3)) expect(s.filtrationPct, s.tank.id).toBeLessThanOrEqual(100);
+    const crowd = tankFor([{ species: 'oscar', n: 400 }])!;
+    expect(crowd.fails).toContain('filtration'); expect(crowd.filtrationPct).toBeGreaterThan(100);
+  });
+  it('the span counts a light (both builds) and a heater only where the animals need one', () => {
+    const g10 = getTankModel('g10')!;
+    const warm = buildSpan([{ species: 'neon', n: 2 }], g10)!, room = buildSpan([{ species: 'danio', n: 2 }], g10)!; // neon band misses 21 C, danio holds it
+    expect(room.setupUsd.cheapest).toBeGreaterThan(200); // tank + filter + light + kit, not the old animal-only $60-odd
+    expect(warm.setupUsd.cheapest - room.setupUsd.cheapest).toBeGreaterThan(15); // the heater
   });
   it('no animals in the water means no tank, no steps; the label reads like the viewer wants', () => {
     expect(tankFor([])).toBeUndefined(); expect(tankFor([{ species: 'treefrog', n: 2 }])).toBeUndefined(); expect(stepUps([], 'g10')).toEqual([]);
