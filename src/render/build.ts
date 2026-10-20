@@ -843,6 +843,7 @@ function flare(T: Tank, x: number, d: number, y: number, rb: number): [number, n
   return [cx + (x - cx) * k, y, -(cd + (d - cd) * k)];
 }
 
+const SKIRT_DARK = 0.4; // how much darker the ground's skirt gets at the floor than at its top rim
 function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   const swamp = S.terrain.on; // shaped ground (custom terrain, a swamp's pools): finer mesh
   if (!S.substrate.show && !swamp) return;
@@ -884,6 +885,7 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
     const c00 = vcol[i * (N + 1) + j], c10 = vcol[(i + 1) * (N + 1) + j], c01 = vcol[i * (N + 1) + j + 1], c11 = vcol[(i + 1) * (N + 1) + j + 1];
     return [0, 1, 2, 3, 4, 5, 6].map(c => (c00[c] * (1 - u) + c10[c] * u) * (1 - w) + (c01[c] * (1 - u) + c11[c] * u) * w);
   };
+  const slopeK = (c: number[]) => clamp(0.55 + 0.6 * new THREE.Vector3(c[3], c[4], c[5]).normalize().dot(light), 0, 1.15) / 1.15; // the vertex shade's slope term
   // coarse grounds in 3D (render/grains.ts): the painted top and skirt step back from the glass by `gsh`, behind the row
   // of grains pressed against it (both cut it: a seam where the surface sliced the stones, a bare strip where it did not)
   const gl = sub.show ? grainLook(sub) : null, gsh = gl && !bowl ? (gl.size[0] + gl.size[1]) / 2 * 0.55 : 0;
@@ -943,7 +945,12 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
           if (a1 - a0 < 1e-3 && b1 - b0 < 1e-3) continue;
           const [arr, col, tl] = y1 <= dh ? [leca, lecaCol, lecaTile] : y1 <= dh + 2.5 ? [mesh, meshCol, tile] : [side, sideCol, tile];
           const pts: V3[] = [[p[0], a0, -p[1]], [q[0], b0, -q[1]], [q[0], b1, -q[1]], [p[0], a1, -p[1]]], ss = [s0, s1, s1, s0];
-          for (const i of [0, 1, 2, 0, 2, 3]) { arr.push(pts[i], [ss[i] / tl, pts[i][1] / tl]); const w = wetAt(pts[i][1]); col.push(...WET.map(c => 1 - w * (1 - c))); }
+          for (const i of [0, 1, 2, 0, 2, 3]) {
+            arr.push(pts[i], [ss[i] / tl, pts[i][1] / tl]); const w = wetAt(pts[i][1]);
+            // the soil band carries the top surface's slope shade at the rim, so no line shows where they meet
+            const kk = arr === side ? slopeK(colAt(i === 0 || i === 3 ? p : q)) : 1;
+            col.push(...WET.map(c => (1 - w * (1 - c)) * kk));
+          }
         }
         continue;
       }
@@ -955,8 +962,14 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
       };
       for (let j = 0; j < bands; j++) {
         const pts: V3[] = [on(p, gp[1], j), on(q, gq[1], j), on(q, gq[1], j + 1), on(p, gp[1], j + 1)];
-        const uv = [[s0, pts[0][1]], [s1, pts[1][1]], [s1, pts[2][1]], [s0, pts[3][1]]];
-        for (const i of [0, 1, 2, 0, 2, 3]) side.push(pts[i], [uv[i][0] / tile, uv[i][1] / tile]);
+        const uv = [[s0, pts[0][1]], [s1, pts[1][1]], [s1, pts[2][1]], [s0, pts[3][1]]], ends = [p, q, q, p], tops = [gp[1], gq[1], gq[1], gp[1]];
+        for (const i of [0, 1, 2, 0, 2, 3]) {
+          side.push(pts[i], [uv[i][0] / tile, uv[i][1] / tile]);
+          // the skirt starts at the top surface's own colour at the rim (a flat darker shade left a visible line where they
+          // meet) and darkens toward the floor
+          const c = colAt(ends[i]), f = 1 - SKIRT_DARK * (1 - clamp(pts[i][1] / (tops[i] || 1), 0, 1));
+          sideCol.push(c[0] * f, c[1] * f, c[2] * f);
+        }
       }
     }
   }
@@ -972,7 +985,7 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
     sc.add(new THREE.Mesh(g, m));
   };
   // coarse grounds in 3D (render/grains.ts): the painted surface darkened to the shadowed gaps between the grains
-  mk(top, gl ? 0x6e6e6e : 0xffffff, topCol, topNrm, topWet); mk(side, gl ? 0x5a5a5a : 0xb4b4b4, sideCol); // the skirt a touch darker so the layer reads through the glass
+  mk(top, gl ? 0x6e6e6e : 0xffffff, topCol, topNrm, topWet); mk(side, gl ? 0x6e6e6e : 0xffffff, sideCol); // the skirt a touch darker so the layer reads through the glass
   mk(leca, 0xb4b4b4, lecaCol, undefined, undefined, lecaTexture()); mk(mesh, 0x3a3d38, meshCol, undefined, undefined, meshTexture());
   // the bottom of the ground, seen through the bottom pane from under a tank with no stand (Nathan 2026-10-20: a plain
   // sand-coloured sheet showed there); a layered ground's bottom is its clay balls
