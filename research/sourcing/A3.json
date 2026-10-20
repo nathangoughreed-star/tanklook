@@ -424,8 +424,8 @@
      "note": "60 is -21% of 76 L; SF says 60 x 30 cm base for a pair, no litres"
     },
     "temper": {
-     "ours": 1,
-     "verdict": "disagrees",
+     "ours": 0,
+     "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted",
      "suggest": 0,
      "sources": [
       {
@@ -511,8 +511,8 @@
      "note": "Sources differ: Moderate vs Beginner"
     },
     "minL": {
-     "ours": 60,
-     "verdict": "disagrees",
+     "ours": 110,
+     "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted",
      "suggest": 110,
      "sources": [
       {

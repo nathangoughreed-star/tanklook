@@ -47,8 +47,8 @@
      "note": "Seriously Fish rates Easy (5 of 8 measures). Guidarium states no care level."
     },
     "minL": {
-     "ours": 200,
-     "verdict": "disagrees",
+     "ours": 150,
+     "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted",
      "suggest": 150,
      "sources": [
       {
@@ -67,8 +67,8 @@
      "note": "Both sources 150-154 L; ours is +30%."
     },
     "temper": {
-     "ours": 2,
-     "verdict": "disagrees",
+     "ours": 1,
+     "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted",
      "suggest": 1,
      "sources": [
       {
@@ -619,8 +619,8 @@
    "sci": "Nimbochromis livingstonii",
    "fields": {
     "tl": {
-     "ours": 200,
-     "verdict": "disagrees",
+     "ours": 250,
+     "verdict": "agrees", "use": [0], "decision": "Nathan 2026-10-20: adopted",
      "suggest": 250,
      "sources": [
       {
@@ -820,8 +820,8 @@
    "sci": "Synodontis njassae",
    "fields": {
     "tl": {
-     "ours": 150,
-     "verdict": "disagrees",
+     "ours": 190,
+     "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted",
      "suggest": 190,
      "sources": [
       {
@@ -860,8 +860,8 @@
      "note": "Seriously Fish gives only a 120 x 30 cm base, no litres on the opened page; no second page opened."
     },
     "temper": {
-     "ours": 0,
-     "verdict": "disagrees",
+     "ours": 1,
+     "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted",
      "suggest": 1,
      "sources": [
       {
@@ -874,11 +874,8 @@
      "note": "Single source; vigorous toward shy tankmates, so 1 on our scale. Page temperament row reads unknown."
     },
     "ph": {
-     "ours": [
-      7.5,
-      9
-     ],
-     "verdict": "disagrees",
+     "ours": [7.5, 8.5],
+     "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted",
      "suggest": [
       7.5,
       8.5

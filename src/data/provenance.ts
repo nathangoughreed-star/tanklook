@@ -56,7 +56,6 @@ export const RULES: Record<string, Rule[]> = {
   CARE: [
     // care, minL, temper, prey, solo / slow / nip, coral and group have no rule: care.ts calls them estimates from common practice.
     // Kept against the pages (Nathan 2026-10-20: trust the research where independent sources agree; here they split): see research/sourcing/decisions.md.
-    { path: 'adf.care', status: 'assumption', why: 'pages split: LiveAquaria says Moderate, Josh\'s Frogs fairly easy; we keep beginner (1)' },
     { path: 'yellowtang.care', status: 'assumption', why: 'one retailer page (LiveAquaria) says Easy; tangs are disease-prone in practice, so we keep intermediate (2)' },
     { path: 'betta.care', status: 'assumption', why: 'pages split: Seriously Fish says Moderate, Fishkeeping World calls it fine for first-time owners; we keep beginner (1)' },
     { path: 'ballpython.minL', status: 'assumption', why: 'pages split: PetSmart and BeWild accept a 40 gal (about 151 L) tank, Zen Habitats and Reptile Direct call 4x2x2 ft (about 120 gal, 450 L) the adult minimum and the 40 gal rule outdated; we keep the larger modern figure' },
@@ -75,23 +74,25 @@ export const RULES: Record<string, Rule[]> = {
     : { path: `${id}.**`, status: 'claimed', src: PLANT_SRC, why: 'band, CO2 and ferts per plant after the planted-tank ratings; no per-plant page recorded' }),
   FRESH_TIERS: [{ path: '*.{lo,hi}', status: 'claimed', src: PLANT_SRC, why: "Nathan's PAR tiers, following the planted-tank convention" }],
   REEF_TIERS: [
-    { path: '*.{lo,hi}', status: 'claimed', src: REEF_SRC, why: 'soft 50-150, SPS 150-400: the BRS PAR article states soft 75-150 and SPS 200-350 (research/sourcing/other/E1.json); wider band kept, decision pending (research/sourcing/decisions.md)' },
-    { path: '2.{lo,hi}', status: 'cited', src: ['brs-par'], why: 'LPS 75-150 PAR as the BRS article states it (quote checked, research/sourcing/other/E1.json)' },
+    { path: '*.{lo,hi}', status: 'cited', src: ['brs-par'], why: 'soft / LPS 75-150 and SPS 200-350 PAR as the BRS article states them (quote checked, research/sourcing/other/E1.json; soft and SPS adopted by Nathan 2026-10-20)' },
     { path: '0.{lo,hi}', status: 'claimed', src: ['par-chart-nathan'], why: 'fish-only tier from the PAR chart' },
   ],
   FACTORS: [
     { path: 'priceLevel.*', status: 'assumption', why: 'one multiplier for store, sales and inflation since the prices were read' },
     { path: 'kwhUsd.*', status: 'claimed', why: 'the lo / hi band is the cheapest and dearest US states, read by eye; not checked per state' },
-    { path: 'kwhUsd.mode', status: 'cited', src: ['eia.gov'], why: 'EIA Electric Power Monthly table 5.6.A: US residential 18.31 c/kWh in July 2026 (17.45 a year before); 0.17 is 7 % under the summer month (research/sourcing/other/E1.json)' },
+    { path: 'kwhUsd.mode', status: 'cited', src: ['eia.gov'], why: 'EIA Electric Power Monthly table 5.6.A: US residential 18.31 c/kWh in July 2026 (17.45 a year before); 0.17 is 7 % under the summer month (research/sourcing/other/E1.json); kept at 0.17 by Nathan 2026-10-20, July is the summer high' },
   ],
   // lane D (research/sourcing/other/D-cost-defaults.md, scripts/fit-cost-defaults.mjs): every band refit to the cited listings
   // (demand-items, gear-catalog, tanks). Where the listings cover a band with 5+ rows and the mode lands within 25 %, the mode is
   // derived; the rest stay our rule of thumb, and the bands the fit disagrees with wait in research/sourcing/decisions.md.
   DEMAND_DEFAULTS: [
-    { path: '**', status: 'assumption', why: 'rule-of-thumb band (our judgement); refit to the cited listings in research/sourcing/other/D-cost-defaults.md: either too few listings, a different unit, or the fit disagrees (decision pending)' },
+    { path: '**', status: 'assumption', why: 'rule-of-thumb band (our judgement); refit to the cited listings in research/sourcing/other/D-cost-defaults.md: too few listings or a different unit, so kept by Nathan 2026-10-20' },
     { path: '{time,risk}.**', status: 'assumption', why: 'minutes a week and risk points are our model; no listing or page states them' },
     { path: 'gear.{heater,filter}.perGal.mode', status: 'derived', src: ['product-pages'], why: 'least-squares price per gallon over the catalogued heaters (13) / filters (19) agrees within 25 % (scripts/fit-cost-defaults.mjs)' },
     { path: 'animals.{fw-invert,sw-fish,amphibian}.setup.mode', status: 'derived', src: ['kk-prices'], why: 'median of the cited per-species prices scaled to the reference size agrees within 25 % (scripts/fit-cost-defaults.mjs)' },
+    { path: 'gear.{heater,filter}.base.*', status: 'derived', src: ['product-pages'], why: 'refit to the catalogued heaters (13) / filters (19): least-squares base, bootstrap p10 / p90 (adopted by Nathan 2026-10-20, scripts/fit-cost-defaults.mjs)' },
+    { path: 'gear.tank.{0,1,2}.perGal.*', status: 'derived', src: ['product-pages'], why: 'street tank-only price / rated gallons over the catalogued tanks, median p10 p90 per class, n 10-20 (adopted by Nathan 2026-10-20); the >75 gal class stays our band (premium rimless skews the listings)' },
+    { path: '{animals.fw-fish,plants.easy,plants.medium,plants.land,plants.succulent,hardscape.wood}.setup.*', status: 'derived', src: ['kk-prices'], why: 'median p10 p90 of the cited per-item prices (adopted by Nathan 2026-10-20, scripts/fit-cost-defaults.mjs)' },
     { path: '{plants.coral-soft,hardscape.cave}.setup.mode', status: 'derived', src: ['kk-prices'], why: 'median of the cited per-item prices agrees within 25 % (scripts/fit-cost-defaults.mjs)' },
   ],
   DEMAND_ITEMS: [
@@ -109,6 +110,10 @@ export const RULES: Record<string, Rule[]> = {
     { path: 'gear.*.minutes.{lo,mode,hi}', status: 'assumption', why: 'minutes a week of upkeep: our estimate per task; no opened page states a time (manuals give only how often, research/sourcing/other/C.json)' },
     { path: 'gear.*.hours', status: 'assumption', why: 'hours a day: pumps, skimmers, UV run around the clock (24), CO2 and dosing follow the photoperiod (8); spec pages do not state it' },
     { path: 'gear.{co2kit,airpump,uv}.watts', status: 'cited', src: ['dennerle.com', 'thatpetplace.com', 'fishtanksdirect.com'], why: 'a typical unit at the ref size, its spec page states this draw (quote checked, research/sourcing/other/C.json)' },
+    { path: 'gear.{returnpump,ato,skimmerhob,powerhead}.watts', status: 'cited', src: ['bulkreefsupply.com'], why: 'a typical unit at the ref size, its BRS page states this draw (quote checked, research/sourcing/other/C.json; adopted by Nathan 2026-10-20)' },
+    { path: 'gear.skimmerhob.ref', status: 'cited', src: ['bulkreefsupply.com'], why: 'the AquaReady HOB-1.5 is rated for 40-75 gal; its 11 W is for about a 55 gal tank (research/sourcing/other/C.json)' },
+    { path: 'gear.doser.watts', status: 'assumption', why: 'kept 1 W (Nathan 2026-10-20): the 8.5 W on the Jebao DP-4 page is the adapter rating; the pumps idle most of the day (research/sourcing/other/C.json)' },
+    { path: 'gear.roottabs.monthly.months', status: 'derived', src: ['seachem.com'], why: 'Seachem: 6 tabs per 10 gal every 3-4 months, so 12 a round at 20 gal; a 40-pack lasts about 12 months (research/sourcing/other/C.json)' },
     { path: 'gear.liquidcarbon.monthly.months', status: 'derived', src: ['seachem.com'], why: 'Seachem dose 5 mL per 50 gal a day on 20 gal = 2 mL a day: a 500 mL bottle lasts about 8 months' },
   ],
   GEAR_CATALOG: [{ path: '*.*.{gph,galMin,galMax,watts,priceUsd}', status: 'cited', src: ['product-pages'], why: 'the product page at the row url', rowUrl: true }],
@@ -123,7 +128,9 @@ export const RULES: Record<string, Rule[]> = {
 // least one quote was found on its page. Disagreements are not cited: they wait for a decision (research/sourcing/decisions.md).
 // The source id is the page's host (registered in sources.json); the url and quote stay in the batch file.
 interface Src { url: string; quote: string }
-interface Field { ours: unknown; verdict: 'agrees' | 'disagrees' | 'not-stated' | 'behaviour-only'; sources: Src[] }
+// Nathan's decisions (research/sourcing/decisions.md): an adopted value is 'agrees' and cites only its `use` sources (indices) when
+// given; 'derived' = worked out from the stated values (decision says how); 'kept' = our number stays, an assumption (decision says why).
+interface Field { ours: unknown; verdict: 'agrees' | 'disagrees' | 'not-stated' | 'behaviour-only' | 'derived' | 'kept'; sources: Src[]; use?: number[]; decision?: string }
 interface Batch { batch: string; species: Record<string, { fields: Record<string, Field> }> }
 interface Check { id: string; field: string; url: string; result: 'exact' | 'compact' | 'label' | 'near' | 'miss' | 'nofetch' }
 const SOURCING = import.meta.glob('../../research/sourcing/*.json', { eager: true, import: 'default' }) as Record<string, unknown>;
@@ -143,12 +150,17 @@ for (const [file, b] of Object.entries(SOURCING)) {
     if (JSON.stringify(now) !== JSON.stringify(v.ours)) continue;   // the value changed since the batch checked it
     const target = isSpecies ? 'SPECIES' : isAir ? 'AIR' : 'CARE';
     const path = `${id}.${isAir ? `${f.slice(4)}.*` : f === 'prey' ? 'prey.mm' : f === 'ph' ? 'ph.*' : f}`;
-    const found = v.sources.filter(s => checks.some(c => c.id === id && c.field === f && c.url === s.url && (c.result === 'exact' || c.result === 'compact')));
-    const src = [...new Set(v.sources.map(s => host(s.url)))];
+    const used = v.use ? v.use.map(i => v.sources[i]) : v.sources;
+    const found = used.filter(s => checks.some(c => c.id === id && c.field === f && c.url === s.url && (c.result === 'exact' || c.result === 'compact')));
+    const src = [...new Set(used.map(s => host(s.url)))];
     if (v.verdict === 'agrees' && found.length)
       RULES[target].push({ path, status: 'cited', src: [...new Set(found.map(s => host(s.url)))], why: `stated on ${found.length} opened page(s), quote checked (research/sourcing/${name})` });
     else if (v.verdict === 'agrees')
       RULES[target].push({ path, status: 'researched', src, why: `agrees with the pages in research/sourcing/${name}, but no quote was found on the live page` });
+    else if (v.verdict === 'derived')
+      RULES[target].push({ path, status: 'derived', src, why: `${v.decision?.replace(/^Nathan [\d-]+: derived, /, '') ?? 'worked out from the stated values'} (research/sourcing/${name})` });
+    else if (v.verdict === 'kept')
+      RULES[target].push({ path, status: 'assumption', src, why: `${v.decision?.replace(/^Nathan ([\d-]+): kept, /, 'kept (Nathan $1): ') ?? 'kept'}; pages in research/sourcing/${name}` });
     else if (v.verdict === 'behaviour-only')
       RULES[target].push({ path, status: 'assumption', src, why: `the predation is stated (research/sourcing/${name}); the prey length is our estimate` });
   }

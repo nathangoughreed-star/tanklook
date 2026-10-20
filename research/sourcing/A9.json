@@ -146,8 +146,8 @@
      "note": "Sources span 40-216 L; ours 75 is inside. They disagree with each other."
     },
     "temper": {
-     "ours": 0,
-     "verdict": "disagrees",
+     "ours": 1,
+     "verdict": "agrees", "use": [0], "decision": "Nathan 2026-10-20: adopted",
      "suggest": 1,
      "sources": [
       {
@@ -228,11 +228,8 @@
      ]
     },
     "air.warm": {
-     "ours": [
-      32,
-      35
-     ],
-     "verdict": "disagrees",
+     "ours": [29, 32],
+     "verdict": "agrees", "use": [1], "decision": "Nathan 2026-10-20: adopted",
      "suggest": [
       29,
       32
@@ -311,8 +308,8 @@
      "note": "Same species as greenanole; sources span 40-216 L."
     },
     "temper": {
-     "ours": 0,
-     "verdict": "disagrees",
+     "ours": 1,
+     "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted",
      "suggest": 1,
      "sources": [
       {
@@ -380,11 +377,8 @@
      ]
     },
     "air.warm": {
-     "ours": [
-      32,
-      35
-     ],
-     "verdict": "disagrees",
+     "ours": [29, 32],
+     "verdict": "derived", "decision": "Nathan 2026-10-20: derived, the green anole range (PetSmart 85-90 F, one page for both colour forms); ReptiFiles 90 F basking",
      "suggest": [
       29,
       32
@@ -450,8 +444,8 @@
      ]
     },
     "minL": {
-     "ours": 75,
-     "verdict": "disagrees",
+     "ours": 40,
+     "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted",
      "suggest": 40,
      "sources": [
       {
@@ -470,8 +464,8 @@
      "note": "Both give 10 gal (~38-40 L); ours is about double."
     },
     "temper": {
-     "ours": 0,
-     "verdict": "disagrees",
+     "ours": 1,
+     "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted",
      "suggest": 1,
      "sources": [
       {
@@ -539,11 +533,8 @@
      "note": "Sources differ at the low end (40 vs 60)."
     },
     "air.warm": {
-     "ours": [
-      32,
-      35
-     ],
-     "verdict": "disagrees",
+     "ours": [29, 32],
+     "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted",
      "suggest": [
       29,
       32
@@ -802,8 +793,8 @@
      ]
     },
     "minL": {
-     "ours": 5,
-     "verdict": "disagrees",
+     "ours": 2,
+     "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted",
      "suggest": 2,
      "sources": [
       {
@@ -902,7 +893,7 @@
     },
     "minL": {
      "ours": 450,
-     "verdict": "disagrees",
+     "verdict": "kept", "decision": "Nathan 2026-10-20 (chat SQ): kept, PetSmart and BeWild accept 40 gal, Zen Habitats and Reptile Direct call 4x2x2 ft (450 L) the adult minimum and 40 gal outdated",
      "suggest": 150,
      "sources": [
       {
@@ -977,11 +968,8 @@
      "note": "PetSmart night 70-80 F (21-27 C); no tolerable limit stated."
     },
     "air.rh": {
-     "ours": [
-      50,
-      65
-     ],
-     "verdict": "disagrees",
+     "ours": [60, 80],
+     "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted",
      "suggest": [
       60,
       80
@@ -1041,7 +1029,7 @@
    "fields": {
     "tl": {
      "ours": 45,
-     "verdict": "disagrees",
+     "verdict": "kept", "decision": "Nathan 2026-10-20: kept, tl is body length here (the note says so); the pages give leg span, 18-20 cm",
      "suggest": 180,
      "sources": [
       {
@@ -1073,8 +1061,8 @@
      ]
     },
     "minL": {
-     "ours": 40,
-     "verdict": "disagrees",
+     "ours": 57,
+     "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted",
      "suggest": 57,
      "sources": [
       {

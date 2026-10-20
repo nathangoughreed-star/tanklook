@@ -26,11 +26,8 @@
      "note": "SL figures; x1.2 for TL gives ~36 mm (FishBase) and ~42 mm (SF). Ours 45 is within 20% of SF's TL equivalent, 25% over FishBase's."
     },
     "ph": {
-     "ours": [
-      4,
-      6.8
-     ],
-     "verdict": "disagrees",
+     "ours": [3.5, 7.5],
+     "verdict": "agrees", "use": [1], "decision": "Nathan 2026-10-20: adopted",
      "suggest": [
       4,
       6.0
@@ -125,11 +122,8 @@
      "note": "SL figures (TL ~24 mm); ours 20 within 20% of TL equivalent."
     },
     "ph": {
-     "ours": [
-      5.5,
-      7
-     ],
-     "verdict": "disagrees",
+     "ours": [5, 7],
+     "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted",
      "suggest": [
       5.0,
       7.0
@@ -535,8 +529,8 @@
      "note": "Page gives tank base dimensions in cm, not a volume or minimum litres; no litre figure stated. SF: 'An active species so even a small group needs an aquarium with minimum base dimensions of 90 ∗ 30 cm36 ∗ 12 in.'"
     },
     "temper": {
-     "ours": 1,
-     "verdict": "disagrees",
+     "ours": 0,
+     "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted",
      "suggest": 0,
      "sources": [
       {
@@ -643,7 +637,7 @@
     },
     "group": {
      "ours": 6,
-     "verdict": "disagrees",
+     "verdict": "kept", "decision": "Nathan 2026-10-20: kept, smallest group kept at 6; Seriously Fish \"ideally 10+\" is the ideal, kept for the count bands",
      "suggest": 10,
      "sources": [
       {
@@ -727,7 +721,7 @@
     },
     "group": {
      "ours": 6,
-     "verdict": "disagrees",
+     "verdict": "kept", "decision": "Nathan 2026-10-20: kept, smallest group kept at 6; Seriously Fish \"ideally 20 or more\" is the ideal, kept for the count bands",
      "suggest": 20,
      "sources": [
       {
@@ -765,11 +759,8 @@
      "note": "SL figures (~42 mm TL); ours within 20%."
     },
     "ph": {
-     "ours": [
-      5.5,
-      7
-     ],
-     "verdict": "disagrees",
+     "ours": [5, 7],
+     "verdict": "derived", "decision": "Nathan 2026-10-20: derived, the overlap of FishBase 5.0-8.0 and Seriously Fish 4.0-7.0",
      "suggest": [
       5.0,
       7.0
@@ -826,7 +817,7 @@
     },
     "group": {
      "ours": 6,
-     "verdict": "disagrees",
+     "verdict": "kept", "decision": "Nathan 2026-10-20: kept, smallest group kept at 6; Seriously Fish \"ideally 10 or more\" is the ideal, kept for the count bands",
      "suggest": 10,
      "sources": [
       {

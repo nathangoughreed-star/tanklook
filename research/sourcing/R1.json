@@ -1,0 +1,450 @@
+{
+ "batch": "R1",
+ "agent_notes": "reptifiles anole/ball python/brown anole URLs 404; ReptiFiles leopard gecko sub-pages and crested gecko cohab page used. No page found stating pH for Bombina orientalis, female length for anoles, or a prey size in mm for any animal (only relative-to-head/eye-width).",
+ "species": {
+  "dartfrog": {
+   "sci": "Dendrobates tinctorius",
+   "fields": {
+    "temper": {
+     "ours": 0,
+     "verdict": "disagrees",
+     "suggest": 1,
+     "sources": [
+      {
+       "url": "https://exo-terra.com/explore/care-guides/frogs-toads/dendrobates-tinctorius/",
+       "site": "Exo Terra",
+       "states": "females aggressive toward other females; territorial behaviour can kill",
+       "quote": "females might express dominant and aggressive behaviour towards other females"
+      },
+      {
+       "url": "https://exo-terra.com/explore/care-guides/frogs-toads/dendrobates-tinctorius/",
+       "site": "Exo Terra",
+       "states": "territorial behaviour long-term stress/death",
+       "quote": "Territorial behaviour can lead to stress, and on the long term even to the death of one of the frogs."
+      }
+     ],
+     "note": "Both quotes are the same page; no second independent source opened."
+    }
+   }
+  },
+  "firetoad": {
+   "sci": "Bombina orientalis",
+   "fields": {
+    "ph": {
+     "ours": [
+      6.5,
+      7.5
+     ],
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "Opened Gensou x2, Amphibian Care, bombina.org: none states a pH."
+    }
+   }
+  },
+  "firenewt": {
+   "sci": "Cynops orientalis",
+   "fields": {
+    "temper": {
+     "ours": 0,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.furrycritter.com/pages/descriptions/fish/fire_belly_newt.htm",
+       "site": "Furry Critter Network",
+       "states": "docile, non-aggressive",
+       "quote": "Fire Belly Newts are exceptionally docile and non-aggressive"
+      }
+     ],
+     "note": "Single source."
+    },
+    "ph": {
+     "ours": [
+      6.5,
+      7.5
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://gensou.sg/?p=32832",
+       "site": "Gensou",
+       "states": "pH 6.5-7.5",
+       "quote": "Target pH 6.5-7.5, low nitrate, and absolute zero ammonia."
+      },
+      {
+       "url": "https://www.furrycritter.com/pages/descriptions/fish/fire_belly_newt.htm",
+       "site": "Furry Critter Network",
+       "states": "pH 6.5 to 7.5",
+       "quote": "The pH should be maintained in the range of 6.5 to 7.5"
+      }
+     ]
+    }
+   }
+  },
+  "axolotl": {
+   "sci": "Ambystoma mexicanum",
+   "fields": {
+    "care": {
+     "ours": 2,
+     "verdict": "disagrees",
+     "suggest": 1,
+     "sources": [
+      {
+       "url": "https://simstropicalfish.co.uk/?p=2899",
+       "site": "Sims Tropical Fish",
+       "states": "Care Level: Easy",
+       "quote": "Care Level: Easy"
+      }
+     ],
+     "note": "The Vet Desk table also lists Care Level Low (cell split, not quotable)."
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "No page gives a temperament word. Vet Desk: cannibalistic toward each other, keep alone; Sims: juveniles bite off limbs. This supports solo, not temper."
+    }
+   }
+  },
+  "crestedharlequin": {
+   "sci": "Correlophus ciliatus",
+   "fields": {
+    "temper": {
+     "ours": 0,
+     "verdict": "disagrees",
+     "suggest": 1,
+     "sources": [
+      {
+       "url": "https://www.petmd.com/reptile/crested-gecko-care-sheet",
+       "site": "PetMD",
+       "states": "males territorial and fight",
+       "quote": "Do not house more than one male crested gecko in the same habitat, as they are territorial and will fight."
+      }
+     ],
+     "note": "Same page calls them calm and friendly with people; scale rule (males fight = 1) applied."
+    },
+    "solo": {
+     "ours": true,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.petmd.com/reptile/crested-gecko-care-sheet",
+       "site": "PetMD",
+       "states": "males fight",
+       "quote": "Do not house more than one male crested gecko in the same habitat, as they are territorial and will fight."
+      },
+      {
+       "url": "https://reptifiles.com/crested-gecko-care/crested-gecko-terrarium-size-cohabitation/",
+       "site": "ReptiFiles",
+       "states": "does not endorse cohabitation; males fight",
+       "quote": "In almost every species, males housed together will fight and injure/kill one another, and crested geckos are no different."
+      }
+     ],
+     "note": "Pages restrict the rule to males / do not endorse cohabitation; neither says strictly one per tank."
+    }
+   }
+  },
+  "greenanole": {
+   "sci": "Anolis carolinensis",
+   "fields": {
+    "female.tl": {
+     "ours": 150,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "Fluker's: males larger than females, no figure; PetSmart gives only a general 8 in."
+    },
+    "prey": {
+     "ours": 25,
+     "verdict": "behaviour-only",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/anole-care-guide",
+       "site": "PetSmart",
+       "states": "prey no larger than width between anole's eyes (no mm)",
+       "quote": "Never offer prey larger than the width between your anole’s eyes"
+      }
+     ]
+    },
+    "air.tol": {
+     "ours": [
+      21,
+      31
+     ],
+     "verdict": "disagrees",
+     "suggest": [
+      18,
+      31
+     ],
+     "sources": [
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/anole-care-guide",
+       "site": "PetSmart",
+       "states": "night 65-75 F (18-24 C)",
+       "quote": "Night | 65–75°F (18–24°C)"
+      }
+     ],
+     "note": "Only lo (18) is sourced; hi not stated."
+    }
+   }
+  },
+  "greenanolebrown": {
+   "sci": "Anolis carolinensis",
+   "fields": {
+    "prey": {
+     "ours": 25,
+     "verdict": "behaviour-only",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/anole-care-guide",
+       "site": "PetSmart",
+       "states": "prey no larger than width between anole's eyes (no mm)",
+       "quote": "Never offer prey larger than the width between your anole’s eyes"
+      }
+     ]
+    },
+    "air.tol": {
+     "ours": [
+      21,
+      31
+     ],
+     "verdict": "disagrees",
+     "suggest": [
+      18,
+      31
+     ],
+     "sources": [
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/anole-care-guide",
+       "site": "PetSmart",
+       "states": "night 65-75 F (18-24 C)",
+       "quote": "Night | 65–75°F (18–24°C)"
+      }
+     ],
+     "note": "Only lo sourced."
+    }
+   }
+  },
+  "brownanole": {
+   "sci": "Anolis sagrei",
+   "fields": {
+    "female.tl": {
+     "ours": 130,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "Cayman Wildlife gives only 'Males are much larger than females'; Vet Desk gives a generic 6 to 8 inches."
+    },
+    "prey": {
+     "ours": 25,
+     "verdict": "behaviour-only",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/anole-care-guide",
+       "site": "PetSmart",
+       "states": "prey no larger than width between anole's eyes (generic anole guide, no mm)",
+       "quote": "Never offer prey larger than the width between your anole’s eyes"
+      }
+     ]
+    },
+    "air.c": {
+     "ours": [
+      24,
+      30
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/anole-care-guide",
+       "site": "PetSmart",
+       "states": "cool zone 75-85 F (24-29 C), warm zone 85-90 F (29-32 C); generic anole guide",
+       "quote": "Cool zone | 75–85°F (24–29°C)"
+      }
+     ],
+     "note": "Generic anole guide, not A. sagrei specific."
+    },
+    "air.tol": {
+     "ours": [
+      21,
+      32
+     ],
+     "verdict": "disagrees",
+     "suggest": [
+      18,
+      32
+     ],
+     "sources": [
+      {
+       "url": "https://thevetdesk.com/pet-breeds/reptiles/brown-anole/",
+       "site": "The Vet Desk",
+       "states": "night not below 65 F (18 C)",
+       "quote": "During the night, the tank's temperature should not drop below 65 degrees Fahrenheit."
+      }
+     ],
+     "note": "Only lo sourced."
+    }
+   }
+  },
+  "leopardgecko": {
+   "sci": "Eublepharis macularius",
+   "fields": {
+    "temper": {
+     "ours": 0,
+     "verdict": "disagrees",
+     "suggest": 1,
+     "sources": [
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/leopard-gecko-care-guide",
+       "site": "PetSmart",
+       "states": "solitary and territorial, especially males",
+       "quote": "Leopard geckos are solitary and territorial, especially males."
+      },
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/leopard-gecko-care-guide",
+       "site": "PetSmart",
+       "states": "can become aggressive with each other",
+       "quote": "Leopard geckos do best housed alone as they can become aggressive with each other."
+      }
+     ],
+     "note": "Males-fight rule gives temper 1; PetMD also calls them sociable with handlers."
+    },
+    "prey": {
+     "ours": 60,
+     "verdict": "behaviour-only",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.petmd.com/reptile/leopard-gecko-care-sheet",
+       "site": "PetMD",
+       "states": "insects no bigger than space between eyes (no mm)",
+       "quote": "Any insects fed should be no bigger than the space between the gecko's eyes."
+      },
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/leopard-gecko-care-guide",
+       "site": "PetSmart",
+       "states": "no longer than width of gecko head (no mm)",
+       "quote": "Only offer insects that are no longer than the width of your gecko’s head"
+      }
+     ]
+    },
+    "air.tol": {
+     "ours": [
+      20,
+      28
+     ],
+     "verdict": "disagrees",
+     "suggest": [
+      16,
+      28
+     ],
+     "sources": [
+      {
+       "url": "https://reptifiles.com/leopard-gecko/care-guide/leopard-gecko-lighting-heating-humidity",
+       "site": "ReptiFiles",
+       "states": "night tolerance down to 60 F (16 C)",
+       "quote": "At night, leopard geckos can tolerate a drop in temperature down to 60°F (16°C)."
+      }
+     ],
+     "note": "Only lo sourced."
+    },
+    "air.rhTol": {
+     "ours": [
+      20,
+      50
+     ],
+     "verdict": "disagrees",
+     "suggest": [
+      20,
+      80
+     ],
+     "sources": [
+      {
+       "url": "https://reptifiles.com/leopard-gecko/care-guide/leopard-gecko-lighting-heating-humidity",
+       "site": "ReptiFiles",
+       "states": "humid hide 70-80%",
+       "quote": "The humid hide should provide humidity levels between 70-80%."
+      },
+      {
+       "url": "https://www.petmd.com/reptile/leopard-gecko-care-sheet",
+       "site": "PetMD",
+       "states": "ideal under 50%",
+       "quote": "The ideal humidity range for a leopard gecko's habitat is under 50%."
+      }
+     ],
+     "note": "Hi 80 is a humid-hide peak, not whole-enclosure; lo not stated."
+    }
+   }
+  },
+  "ballpython": {
+   "sci": "Python regius",
+   "fields": {
+    "temper": {
+     "ours": 0,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.petmd.com/reptile/ball-python-care-sheet",
+       "site": "PetMD",
+       "states": "docile",
+       "quote": "Most ball pythons are docile and tolerant of handling once they're socialized."
+      },
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide",
+       "site": "PetSmart",
+       "states": "generally docile and curious",
+       "quote": "They are very shy animals and can be easy to frighten, but they are generally docile and curious snakes."
+      }
+     ]
+    },
+    "air.tol": {
+     "ours": [
+      22,
+      28
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide",
+       "site": "PetSmart",
+       "states": "night 70-80 F (21-27 C)",
+       "quote": "Night 70–80°F (21–27°C)"
+      }
+     ],
+     "note": "Night range, within 1.5 C of ours."
+    },
+    "air.rhTol": {
+     "ours": [
+      45,
+      80
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide",
+       "site": "PetSmart",
+       "states": "humidity 60-80%",
+       "quote": "Humidity 60–80%"
+      },
+      {
+       "url": "https://www.petmd.com/reptile/ball-python-care-sheet",
+       "site": "PetMD",
+       "states": "ideal 40-60%, about 70% during shed",
+       "quote": "increase the enclosure's humidity to around 70%"
+      }
+     ]
+    }
+   }
+  }
+ }
+}

@@ -99,7 +99,10 @@ describe('the plan', () => {
   });
   it('a heater a cold animal needs is tied to it; none is listed when nothing asks for one', () => {
     const cold = buildOf([{ species: 'bolivianram', n: 2 }]);
-    expect(planOf(cold.setup, cold, NOW).rows.find(r => r.item.startsWith('Heating'))?.kind).toBe('need');
+    // the heater is its own row, or inside the kit the build picked (then the kit row names the need; S168 2026-10-20)
+    const cp = planOf(cold.setup, cold, NOW);
+    expect(cp.rows.find(r => r.item.startsWith('Heating') || /Temperature:/.test(r.serves))?.kind).toBe('need');
+    expect(cp.missing.join()).not.toMatch(/Heater/);
     const room = buildOf([{ species: 'whitecloud', n: 8 }]);
     expect(planOf(room.setup, room, NOW).rows.some(r => r.item.startsWith('Heating'))).toBe(false);
   });

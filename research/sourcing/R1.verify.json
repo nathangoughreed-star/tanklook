@@ -1,0 +1,255 @@
+[
+ {
+  "id": "dartfrog",
+  "field": "temper",
+  "verdict": "disagrees",
+  "url": "https://exo-terra.com/explore/care-guides/frogs-toads/dendrobates-tinctorius/",
+  "result": "exact",
+  "score": 1,
+  "quote": "females might express dominant and aggressive behaviour towards other females"
+ },
+ {
+  "id": "dartfrog",
+  "field": "temper",
+  "verdict": "disagrees",
+  "url": "https://exo-terra.com/explore/care-guides/frogs-toads/dendrobates-tinctorius/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Territorial behaviour can lead to stress, and on the long term even to the death of one of the frogs."
+ },
+ {
+  "id": "firenewt",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.furrycritter.com/pages/descriptions/fish/fire_belly_newt.htm",
+  "result": "exact",
+  "score": 1,
+  "quote": "Fire Belly Newts are exceptionally docile and non-aggressive"
+ },
+ {
+  "id": "firenewt",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://gensou.sg/?p=32832",
+  "result": "nofetch",
+  "score": 0,
+  "err": "HTTP 403",
+  "quote": "Target pH 6.5-7.5, low nitrate, and absolute zero ammonia."
+ },
+ {
+  "id": "firenewt",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://www.furrycritter.com/pages/descriptions/fish/fire_belly_newt.htm",
+  "result": "exact",
+  "score": 1,
+  "quote": "The pH should be maintained in the range of 6.5 to 7.5"
+ },
+ {
+  "id": "axolotl",
+  "field": "care",
+  "verdict": "disagrees",
+  "url": "https://simstropicalfish.co.uk/?p=2899",
+  "result": "exact",
+  "score": 1,
+  "quote": "Care Level: Easy"
+ },
+ {
+  "id": "crestedharlequin",
+  "field": "temper",
+  "verdict": "disagrees",
+  "url": "https://www.petmd.com/reptile/crested-gecko-care-sheet",
+  "result": "exact",
+  "score": 1,
+  "quote": "Do not house more than one male crested gecko in the same habitat, as they are territorial and will fight."
+ },
+ {
+  "id": "crestedharlequin",
+  "field": "solo",
+  "verdict": "agrees",
+  "url": "https://www.petmd.com/reptile/crested-gecko-care-sheet",
+  "result": "exact",
+  "score": 1,
+  "quote": "Do not house more than one male crested gecko in the same habitat, as they are territorial and will fight."
+ },
+ {
+  "id": "crestedharlequin",
+  "field": "solo",
+  "verdict": "agrees",
+  "url": "https://reptifiles.com/crested-gecko-care/crested-gecko-terrarium-size-cohabitation/",
+  "result": "compact",
+  "score": 1,
+  "quote": "In almost every species, males housed together will fight and injure/kill one another, and crested geckos are no different."
+ },
+ {
+  "id": "greenanole",
+  "field": "prey",
+  "verdict": "behaviour-only",
+  "url": "https://www.petsmart.com/learning-center/reptile-care/anole-care-guide",
+  "result": "exact",
+  "score": 1,
+  "quote": "Never offer prey larger than the width between your anole’s eyes"
+ },
+ {
+  "id": "greenanole",
+  "field": "air.tol",
+  "verdict": "disagrees",
+  "url": "https://www.petsmart.com/learning-center/reptile-care/anole-care-guide",
+  "result": "compact",
+  "score": 1,
+  "quote": "Night | 65–75°F (18–24°C)"
+ },
+ {
+  "id": "greenanolebrown",
+  "field": "prey",
+  "verdict": "behaviour-only",
+  "url": "https://www.petsmart.com/learning-center/reptile-care/anole-care-guide",
+  "result": "exact",
+  "score": 1,
+  "quote": "Never offer prey larger than the width between your anole’s eyes"
+ },
+ {
+  "id": "greenanolebrown",
+  "field": "air.tol",
+  "verdict": "disagrees",
+  "url": "https://www.petsmart.com/learning-center/reptile-care/anole-care-guide",
+  "result": "compact",
+  "score": 1,
+  "quote": "Night | 65–75°F (18–24°C)"
+ },
+ {
+  "id": "brownanole",
+  "field": "prey",
+  "verdict": "behaviour-only",
+  "url": "https://www.petsmart.com/learning-center/reptile-care/anole-care-guide",
+  "result": "exact",
+  "score": 1,
+  "quote": "Never offer prey larger than the width between your anole’s eyes"
+ },
+ {
+  "id": "brownanole",
+  "field": "air.c",
+  "verdict": "agrees",
+  "url": "https://www.petsmart.com/learning-center/reptile-care/anole-care-guide",
+  "result": "compact",
+  "score": 1,
+  "quote": "Cool zone | 75–85°F (24–29°C)"
+ },
+ {
+  "id": "brownanole",
+  "field": "air.tol",
+  "verdict": "disagrees",
+  "url": "https://thevetdesk.com/pet-breeds/reptiles/brown-anole/",
+  "result": "exact",
+  "score": 1,
+  "quote": "During the night, the tank's temperature should not drop below 65 degrees Fahrenheit."
+ },
+ {
+  "id": "leopardgecko",
+  "field": "temper",
+  "verdict": "disagrees",
+  "url": "https://www.petsmart.com/learning-center/reptile-care/leopard-gecko-care-guide",
+  "result": "exact",
+  "score": 1,
+  "quote": "Leopard geckos are solitary and territorial, especially males."
+ },
+ {
+  "id": "leopardgecko",
+  "field": "temper",
+  "verdict": "disagrees",
+  "url": "https://www.petsmart.com/learning-center/reptile-care/leopard-gecko-care-guide",
+  "result": "exact",
+  "score": 1,
+  "quote": "Leopard geckos do best housed alone as they can become aggressive with each other."
+ },
+ {
+  "id": "leopardgecko",
+  "field": "prey",
+  "verdict": "behaviour-only",
+  "url": "https://www.petmd.com/reptile/leopard-gecko-care-sheet",
+  "result": "exact",
+  "score": 1,
+  "quote": "Any insects fed should be no bigger than the space between the gecko's eyes."
+ },
+ {
+  "id": "leopardgecko",
+  "field": "prey",
+  "verdict": "behaviour-only",
+  "url": "https://www.petsmart.com/learning-center/reptile-care/leopard-gecko-care-guide",
+  "result": "exact",
+  "score": 1,
+  "quote": "Only offer insects that are no longer than the width of your gecko’s head"
+ },
+ {
+  "id": "leopardgecko",
+  "field": "air.tol",
+  "verdict": "disagrees",
+  "url": "https://reptifiles.com/leopard-gecko/care-guide/leopard-gecko-lighting-heating-humidity",
+  "result": "exact",
+  "score": 1,
+  "quote": "At night, leopard geckos can tolerate a drop in temperature down to 60°F (16°C)."
+ },
+ {
+  "id": "leopardgecko",
+  "field": "air.rhTol",
+  "verdict": "disagrees",
+  "url": "https://reptifiles.com/leopard-gecko/care-guide/leopard-gecko-lighting-heating-humidity",
+  "result": "exact",
+  "score": 1,
+  "quote": "The humid hide should provide humidity levels between 70-80%."
+ },
+ {
+  "id": "leopardgecko",
+  "field": "air.rhTol",
+  "verdict": "disagrees",
+  "url": "https://www.petmd.com/reptile/leopard-gecko-care-sheet",
+  "result": "near",
+  "score": 1,
+  "quote": "The ideal humidity range for a leopard gecko's habitat is under 50%."
+ },
+ {
+  "id": "ballpython",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.petmd.com/reptile/ball-python-care-sheet",
+  "result": "exact",
+  "score": 1,
+  "quote": "Most ball pythons are docile and tolerant of handling once they're socialized."
+ },
+ {
+  "id": "ballpython",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide",
+  "result": "exact",
+  "score": 1,
+  "quote": "They are very shy animals and can be easy to frighten, but they are generally docile and curious snakes."
+ },
+ {
+  "id": "ballpython",
+  "field": "air.tol",
+  "verdict": "agrees",
+  "url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide",
+  "result": "exact",
+  "score": 1,
+  "quote": "Night 70–80°F (21–27°C)"
+ },
+ {
+  "id": "ballpython",
+  "field": "air.rhTol",
+  "verdict": "agrees",
+  "url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide",
+  "result": "exact",
+  "score": 1,
+  "quote": "Humidity 60–80%"
+ },
+ {
+  "id": "ballpython",
+  "field": "air.rhTol",
+  "verdict": "agrees",
+  "url": "https://www.petmd.com/reptile/ball-python-care-sheet",
+  "result": "exact",
+  "score": 1,
+  "quote": "increase the enclosure's humidity to around 70%"
+ }
+]

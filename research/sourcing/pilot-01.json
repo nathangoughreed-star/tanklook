@@ -133,7 +133,7 @@
     },
     "female.tl": {
      "ours": 55,
-     "verdict": "not-stated",
+     "verdict": "kept", "decision": "Nathan 2026-10-20: kept, no opened page gives a female length; our estimate",
      "suggest": null,
      "sources": [],
      "note": "No opened page gives a female-specific length."
@@ -283,7 +283,7 @@
     },
     "temper": {
      "ours": 1,
-     "verdict": "disagrees",
+     "verdict": "kept", "decision": "Nathan 2026-10-20: kept, pages split (Seriously Fish peaceful, Fishkeeping World semi-aggressive for most forms); kept semi-aggressive",
      "suggest": null,
      "sources": [
       {
@@ -464,8 +464,8 @@
      ]
     },
     "minL": {
-     "ours": 110,
-     "verdict": "disagrees",
+     "ours": 80,
+     "verdict": "agrees", "use": [1], "decision": "Nathan 2026-10-20: adopted",
      "suggest": 76,
      "sources": [
       {
@@ -585,7 +585,7 @@
     },
     "temper": {
      "ours": 1,
-     "verdict": "disagrees",
+     "verdict": "kept", "decision": "Nathan 2026-10-20: kept, Seriously Fish: very territorial when breeding; Aquarium Source peaceful; kept semi-aggressive",
      "suggest": null,
      "sources": [
       {
@@ -709,8 +709,8 @@
    "sci": "Amphiprion ocellaris",
    "fields": {
     "tl": {
-     "ours": 80,
-     "verdict": "disagrees",
+     "ours": 100,
+     "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted",
      "suggest": 100,
      "sources": [
       {
@@ -775,8 +775,8 @@
      "note": "Sources 57-114 L; ours inside span. BRS quote is field label only; verify"
     },
     "temper": {
-     "ours": 0,
-     "verdict": "disagrees",
+     "ours": 1,
+     "verdict": "agrees", "use": [0], "decision": "Nathan 2026-10-20: adopted",
      "suggest": 1,
      "sources": [
       {

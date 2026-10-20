@@ -11,21 +11,21 @@ when it carries the url of the listing it was read from and does not mark the fi
 
 | | values | cited | fitted | derived | researched | claimed | assumption | unsourced | strong |
 |---|---|---|---|---|---|---|---|---|---|
-| **all data** | 5169 | 2359 (46 %) | 59 (1 %) | 11 (0 %) | 681 (13 %) | 679 (13 %) | 732 (14 %) | 648 (13 %) | 47 % |
-| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) | 1277 | 331 |  |  | 387 | 428 | 20 | 111 | 26 % |
-| Adult length per species (species.json tl) | 108 | 82 |  |  |  |  |  | 26 | 76 % |
+| **all data** | 5169 | 2427 (47 %) | 59 (1 %) | 33 (1 %) | 682 (13 %) | 656 (13 %) | 737 (14 %) | 575 (11 %) | 49 % |
+| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) | 1277 | 368 |  | 4 | 388 | 410 | 37 | 70 | 29 % |
+| Adult length per species (species.json tl) | 108 | 92 |  |  |  |  | 2 | 14 | 85 % |
 | Marine pH band (data/waterchem.ts) | 2 | 2 |  |  |  |  |  |  | 100 % |
 | Reptile / amphibian floor area, height, groups, growth (data/herpstock.ts) | 228 |  |  |  | 228 |  |  |  | 0 % |
-| Terrarium air temperature and humidity (data/climate.ts AIR) | 112 | 20 |  |  | 66 |  |  | 26 | 18 % |
+| Terrarium air temperature and humidity (data/climate.ts AIR) | 112 | 32 |  | 2 | 66 |  |  | 12 | 30 % |
 | Plant and coral light, CO2, fertiliser, dosing (scene/lightneeds.ts) | 182 |  |  |  |  | 182 |  |  | 0 % |
 | Freshwater PAR tiers | 10 |  |  |  |  | 10 |  |  | 0 % |
-| Reef PAR tiers | 8 | 2 |  |  |  | 6 |  |  | 25 % |
+| Reef PAR tiers | 8 | 6 |  |  |  | 2 |  |  | 75 % |
 | Body mass (length-weight a, b) for the stocking engine | 168 | 120 |  |  |  | 48 |  |  | 71 % |
 | Per-species space factors | 54 |  | 54 |  |  |  |  |  | 100 % |
 | Space factor classes | 5 |  | 5 |  |  |  |  |  | 100 % |
 | Biological media litres per filter (data/filtermedia.ts) | 18 | 13 |  | 5 |  |  |  |  | 100 % |
-| Gear sizing, minutes, watts, heat loss (tech.json) | 213 | 3 |  | 1 |  | 3 | 80 | 126 | 2 % |
-| Category cost / time defaults (demand-defaults.json) | 215 |  |  | 5 |  |  | 210 |  | 2 % |
+| Gear sizing, minutes, watts, heat loss (tech.json) | 213 | 8 |  | 2 |  | 2 | 81 | 120 | 5 % |
+| Category cost / time defaults (demand-defaults.json) | 215 |  |  | 20 |  |  | 195 |  | 9 % |
 | Shared cost factors: kWh, water, salt, losses (factors.json) | 70 | 1 |  |  |  | 2 | 3 | 64 | 1 % |
 | Per-item retail prices (demand-items.json) | 627 | 203 |  |  |  |  | 419 | 5 | 32 % |
 | Filter and heater specs (gear-catalog.json) | 538 | 397 |  |  |  |  |  | 141 | 74 % |
@@ -34,49 +34,44 @@ when it carries the url of the listing it was read from and does not mark the fi
 | Deals (deals.json) | 164 | 160 |  |  |  |  |  | 4 | 98 % |
 | Gear deals (gear-deals.json) | 96 | 96 |  |  |  |  |  |  | 100 % |
 
-Engine constants (top-level numbers in 29 engine files): 83 documented in FORMULAS, 0 unsourced.
-Numbers written inline in those files' functions (not counted above, a by-hand review list): 313.
+Engine constants (top-level numbers in 29 engine files): 87 documented in FORMULAS, 0 unsourced.
+Numbers written inline in those files' functions (not counted above, a by-hand review list): 325.
 
 ## Work list 1: unsourced values (most user-facing first)
 
 | field | values |
 |---|---|
-| `CARE *.minL` | 27 |
-| `CARE *.temper` | 22 |
+| `CARE *.minL` | 10 |
 | `CARE *.temp.*` | 8 |
 | `CARE *.tol.*` | 8 |
+| `CARE *.temper` | 6 |
 | `CARE *.bands.ok` | 5 |
 | `CARE *.bands.good` | 5 |
 | `CARE *.bands.great` | 5 |
 | `CARE *.max` | 5 |
 | `CARE *.minLengthMm` | 5 |
 | `CARE *.slow` | 4 |
-| `CARE *.prey.mm` | 4 |
 | `CARE *.nip` | 3 |
-| `CARE *.group` | 3 |
 | `CARE *.care` | 2 |
 | `CARE *.fam` | 2 |
-| `CARE *.solo` | 2 |
+| `CARE *.solo` | 1 |
 | `CARE *.coral` | 1 |
-| `SPECIES *.female.tl` | 16 |
-| `SPECIES *.tl` | 10 |
-| `AIR *.tol.*` | 10 |
-| `AIR *.warm.*` | 6 |
-| `AIR *.rhTol.*` | 4 |
-| `AIR *.rh.*` | 4 |
-| `AIR *.c.*` | 2 |
+| `SPECIES *.female.tl` | 14 |
+| `AIR *.tol.*` | 8 |
+| `AIR *.rhTol.*` | 2 |
+| `AIR *.rh.*` | 2 |
 | `TECH gear.*.monthly.{lo,mode,hi}` | 18 |
-| `TECH gear.*.ref` | 18 |
+| `TECH gear.*.ref` | 17 |
 | `TECH rows.*.options.*.risk` | 15 |
 | `TECH rows.*.options.*.tier` | 10 |
 | `TECH gear.*.exp.monthly` | 9 |
 | `TECH gear.*.exp.price` | 9 |
-| `TECH gear.*.watts` | 7 |
 | `TECH gear.*.exp.watts` | 7 |
 | `TECH rows.*.options.*.capacity` | 6 |
 | `TECH rows.*.options.*.fert` | 5 |
 | `TECH rows.*.options.*.co2` | 4 |
 | `TECH gear.*.exp.minutes` | 3 |
+| `TECH gear.*.watts` | 2 |
 | `TECH rows.*.options.*.count` | 2 |
 | `TECH gear.*.byKind.sponge` | 1 |
 | `TECH gear.*.byKind.internal` | 1 |
@@ -126,8 +121,8 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | file | constants | inline numbers |
 |---|---|---|
 | src/scene/stocking.ts | - | 9 |
-| src/scene/nitrogen.ts | - | 18 |
-| src/scene/lightout.ts | - | 72 |
+| src/scene/nitrogen.ts | - | 20 |
+| src/scene/lightout.ts | - | 80 |
 | src/scene/kitlight.ts | - | 4 |
 | src/scene/lightcheck.ts | - | 3 |
 | src/scene/lightneeds.ts | - | 1 |
@@ -141,7 +136,7 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | src/data/climate.ts | - | 28 |
 | src/data/tankcheck.ts | - | 1 |
 | src/data/aqadvisor.ts | - | 2 |
-| src/demand/engine.ts | - | 62 |
+| src/demand/engine.ts | - | 64 |
 | src/demand/dealmatch.ts | - | 4 |
 | src/demand/dealscene.ts | - | 3 |
 | src/demand/gear.ts | - | 3 |
@@ -160,7 +155,7 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | `CARE *.minLengthMm` | 59 | group bands, max, sex ratio, depth and tank length: judgement from hobby practice; page named https://petfishonline.com/neon-tetra-tank-size/ |
 | `CARE *.max` | 53 | group bands, max, sex ratio, depth and tank length: judgement from hobby practice; page named https://petfishonline.com/neon-tetra-tank-size/ |
 | `CARE *.sexed.ratio.*` | 40 | group bands, max, sex ratio, depth and tank length: judgement from hobby practice; page named https://guidarium.com/fishes/celestial-pearl-danio-galaxy-rasbora |
-| `CARE *.ph.*` | 36 | FishBase pH / dH range where it lists one, otherwise practice; which rows are which was not recorded |
+| `CARE *.ph.*` | 18 | FishBase pH / dH range where it lists one, otherwise practice; which rows are which was not recorded |
 | `CARE *.maxDepthMm` | 3 | group bands, max, sex ratio, depth and tank length: judgement from hobby practice; page named https://training.joshsfrogs.com/care-sheet/fire-bellied-toad-care-sheet |
 | `NEEDS *.par.*` | 62 | band, CO2 and ferts per plant after the planted-tank ratings; no per-plant page recorded |
 | `NEEDS *.band` | 44 | band, CO2 and ferts per plant after the planted-tank ratings; no per-plant page recorded |
@@ -168,10 +163,10 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | `NEEDS *.ferts` | 32 | band, CO2 and ferts per plant after the planted-tank ratings; no per-plant page recorded |
 | `NEEDS *.dosing` | 12 | band and dosing per coral after reef PAR charts; no per-coral page recorded |
 | `FRESH_TIERS *.{lo,mode,hi}` | 10 | Nathan's PAR tiers, following the planted-tank convention |
-| `REEF_TIERS *.{lo,mode,hi}` | 6 | fish-only tier from the PAR chart |
+| `REEF_TIERS *.{lo,mode,hi}` | 2 | fish-only tier from the PAR chart |
 | `BODYMASS *.a` | 24 | FishBase has no length-weight row (shrimp, snails, herps): a "keeper-reference" typical adult mass turned into a, b; the reference was not recorded |
 | `BODYMASS *.b` | 24 | FishBase has no length-weight row (shrimp, snails, herps): a "keeper-reference" typical adult mass turned into a, b; the reference was not recorded |
-| `TECH gear.*.monthly.months` | 3 | how long a pack lasts at the ref size, "researched 2026-10-19, step 2"; pages not recorded |
+| `TECH gear.*.monthly.months` | 2 | how long a pack lasts at the ref size, "researched 2026-10-19, step 2"; pages not recorded |
 | `FACTORS *.{lo,mode,hi}` | 2 | the lo / hi band is the cheapest and dearest US states, read by eye; not checked per state |
 
 ## Work list 3: researched values (tie each to the page it came from)
@@ -188,6 +183,7 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | `CARE *.sexed.ratio.*` | 10 |
 | `CARE *.care` | 2 |
 | `CARE *.temper` | 2 |
+| `CARE *.minL` | 1 |
 | `HERP *.grow.*.*` | 96 |
 | `HERP *.stages.*.to` | 26 |
 | `HERP *.stages.*.k` | 26 |
@@ -226,6 +222,8 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | src/scene/nitrogen.ts | NITRATE_TARGET_N | cited | 9 mg N/L = about 40 ppm as NO3 (x 4.43), the bottom of the 40-80 ppm range aquariumscience.org states (research/sourcing/other/E2.json) |
 | src/scene/nitrogen.ts | plantUptake | researched | slow / medium / fast 0.001 / 0.003 / 0.006 g N per 100 g a day, extrapolated from one measured Egeria study (research-plant-nitrogen) |
 | src/scene/nitrogen.ts | RATE_100G, FLOAT_M2, DIE_OFF_RETURN | researched | plant N uptake per 100 g, floaters 0.3 g N/m2/day, 30 % die-off return; classes EXTRAPOLATED from one measured Egeria study (research-plant-nitrogen, research-plant-validation) |
+| src/scene/nitrogen.ts | ROOT_FEEDERS, ROOT_WATER, PLANT_SHARE_MAX | assumption | root feeders draw about half their N from the substrate; plants take at most 60 % of the daily TAN as ammonium (bacteria compete, little uptake at night), the filter always sees the rest: guesses (Nathan 2026-10-20) |
+| src/scene/nitrogen.ts | FERT_N | claimed | nitrate a water-column fert adds: all-in-one about 5 ppm NO3 a week, dosing pump about 10, EI 3 x 20 ppm; typical label doses, no source recorded |
 | src/scene/nitrogen.ts | PLANTS, DEFAULT_PLANT, PATCH_FW, PATCH_PLANTS | assumption | growth class and fresh weight per plant item: guesses at the item's default size |
 | src/data/filtermedia.ts | MEDIA_L_PER_GPH, SPONGE_L_PER_GAL | derived | media litres per gph from the FILTER_MEDIA_L rows (AquaClear, Fluval), sponge from Hydro-Sponge / Co-Op (research-filter-media-volumes, research-hob-media-derived) |
 | src/scene/lightout.ts | NWATER | cited | refractive index of water 1.333 at 20 C (Engineering Toolbox table, research/sourcing/other/E2.json) |
@@ -236,6 +234,7 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | src/scene/lightout.ts | TUBES, TUBE_ENDS, MH_BULBS | claimed | standard lamp lengths, watts and bulb sizes; maker tables not recorded |
 | src/scene/lightout.ts | TUBE_DIA | derived | a T-number is the tube diameter in eighths of an inch (T5 16 mm, T8 26 mm, T12 38 mm) |
 | src/scene/lightout.ts | FIX_SPEC, BULB_W | assumption | what each fixture style is usually like (hanging height, beam, power): defaults and slider ranges (Nathan 2026-10-15) |
+| src/scene/lightout.ts | SUB_DROP | assumption | a submersible stick hangs 18 mm under the surface (read off the product photos; no spec) |
 | src/scene/lightout.ts | SUB_ALBEDO | assumption | diffuse PAR reflectance per substrate: our estimates; only tan sand is bounded by a page (desert sand 0.40 broadband, Wikipedia albedo; research/sourcing/other/E2.json) |
 | src/scene/lightneeds.ts | FRESH_RANGE, REEF_RANGE | derived | built from the PAR tiers; LPS reaches 50 over its tier because "some LPS take up to 200 (guide)" |
 | src/scene/lightneeds.ts | MIN_PAR | claimed | per-plant minimum PAR for hardy species; the ones marked check are for Nathan to review |
@@ -247,6 +246,7 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | src/scene/tankfit.ts | FLOOR_K | claimed | "a documented rule of thumb, not a source of record": a bottom dweller holds about two body lengths square |
 | src/scene/tankfit.ts | FILTRATION_TARGET | assumption | preset filtration targets: cheapest 100 %, balanced 70 % |
 | src/scene/starter.ts | ANIMAL_FILL, KINDS_PER_STOP, LAND_MOST | assumption | how full each starter stop is and how many kinds; land counts kept inside the herp research maxima |
+| src/scene/lightproduct.ts | BAR_CHECK | derived | median of model / published PAR over 9 LED bars (5-65 W) in air at 12-14 in (reference/par-calibration-data.md D3, Portland Aquarium round-up, no method stated): 27 % below for white-LED, 18 % for planted-RGB lamps; pinned by test/lightfollowups.test.ts |
 | src/scene/kitlight.ts | PUBLISHED_PM | assumption | a maker measures PAR at one spot; +-15 % elsewhere in the tank |
 | src/scene/kitlight.ts | SWAP_MAX_RATIO | assumption | over 5x the kit light is a new build, not a swap (UI choice) |
 | src/scene/plantfit.ts | TOO_BRIGHT | assumption | a plant must be 1.4x over its range before it counts as struggling |

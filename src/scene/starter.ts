@@ -26,14 +26,23 @@ const kindsAt = (v: number) => Math.round(v <= 4 ? lerpStops(KINDS_PER_STOP, Mat
 const isInvert = (sp: Species) => sp.kind === 'snail' || sp.cat.endsWith('invert');
 /** Water one animal needs, litres: its load from the stocking engine (FishBase mass^0.75 x metabolism, scene/stocking.ts; lane SE
  *  2026-10-19; the rule of thumb it replaced was 3 L x (tl/35)^1.6 per animal, half again for marine, a third for shrimp and snails). */
+const female = (sp: Species): Species => sp.female?.tl ? { ...sp, tl: sp.female.tl } : sp;
 export const litresFor = litresPerAnimal;
+/** Litres for the `from`-th to (`from` + n - 1)-th animal of a species: a sexed species goes in as males and females in turn
+ *  (`sex: 'f'` on every second one), each at its own size. At the male size alone the larger guppy females took the Full stop
+ *  over 100 %, and a mean size undercounts a lone male where the females are smaller (kribensis, peacocks; S168 2026-10-20). */
+const groupLitres = (sp: Species, from: number, n: number) => {
+  if (!sp.female?.tl) return n * litresPerAnimal(sp);
+  const fem = Math.floor((from + n) / 2) - Math.floor(from / 2);   // indices i in [from, from + n) with i odd
+  return (n - fem) * litresPerAnimal(sp) + fem * litresPerAnimal(female(sp));
+};
 /** The water the bioload cap is counted on, litres: the tank to its water line (a swamp's shallow pools still count a
  *  third of the tank, for the animals on land). */
 export function bioloadLitres(s: TankSetup) {
   return volume(s.tank).litres * Math.max(s.water.on ? s.water.level : 0, 0.3);
 }
-/** Litres the animals in the tank take up now (`litresFor` each). */
-export const bioload = (fish: Fish[]) => fish.reduce((a, f) => { const sp = getSpecies(f.species); return a + (sp ? litresFor(sp) : 0); }, 0);
+/** Litres the animals in the tank take up now (each at its own size: a female at the female length). */
+export const bioload = (fish: Fish[]) => fish.reduce((a, f) => { const sp = getSpecies(f.species); return a + (sp ? litresPerAnimal(f.sex === 'f' ? female(sp) : sp) : 0); }, 0);
 
 /** How a species is stocked: the first group, the step it grows by, the most of it. */
 function stocking(sp: Species) {
@@ -70,20 +79,21 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
     pool.splice(0, pool.length, ...kept);
   }
   const cap = bioloadLitres(s) * ANIMAL_FILL[4];
-  const lead = pool.findIndex(sp => sp.group && sp.zone !== 'bottom' && !isInvert(sp) && sp.habitat === 'water' && stocking(sp).start * litresFor(sp) <= cap);
+  const lead = pool.findIndex(sp => sp.group && sp.zone !== 'bottom' && !isInvert(sp) && sp.habitat === 'water' && groupLitres(sp, 0, stocking(sp).start) <= cap);
   if (lead > 0) pool.unshift(...pool.splice(lead, 1));
   const chosen = pool.slice(0, kindsAt(stop)), budget = bioloadLitres(s) * fillAt(stop), big = Math.max(1, fillAt(stop) / ANIMAL_FILL[4]);
   const count = new Map<Species, number>();
   const dry = (sp: Species) => (land || id === 'paludarium') && sp.habitat !== 'water'; // land animals in a terrarium style
   let used = 0;
   const add = (sp: Species, n: number, most = budget) => {
-    if (n <= 0 || used + n * litresFor(sp) > most) return false;
-    count.set(sp, (count.get(sp) ?? 0) + n); used += n * litresFor(sp); return true;
+    const have = count.get(sp) ?? 0, l = groupLitres(sp, have, n);
+    if (n <= 0 || used + l > most) return false;
+    count.set(sp, have + n); used += l; return true;
   };
   // the lead group goes in at any stop above None if it fits under the cap at all (a small tank's Few is then just
   // that one school); the rest join while the stop's share lasts
   for (const sp of chosen) if (dry(sp)) count.set(sp, landCount(sp, stop));
-  for (const [sp, n] of count) used += n * litresFor(sp); // semi-aquatic animals in a swamp / paludarium count against the water too (SE2 2026-10-20: Full stays at or under 100 %)
+  for (const [sp, n] of count) used += groupLitres(sp, 0, n); // semi-aquatic animals in a swamp / paludarium count against the water too (SE2 2026-10-20: Full stays at or under 100 %)
   chosen.forEach((sp, i) => !dry(sp) && add(sp, stocking(sp).start, i === 0 && lead >= 0 ? Math.max(cap, budget) : budget));
   for (let grew = true; grew;) { // grow each group in turn while the budget lasts
     grew = false;

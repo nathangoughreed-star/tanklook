@@ -73,7 +73,7 @@
         "care": {"ours": 2, "verdict": "agrees", "suggest": 2, "sources": [
           {"url": "https://www.seriouslyfish.com/species/melanotaenia-boesemani/", "site": "Seriously Fish", "states": "Moderate", "quote": "Moderate"}
         ], "note": "One source only; quote is the rating word."},
-        "minL": {"ours": 200, "verdict": "disagrees", "suggest": 110, "sources": [
+        "minL": {"ours": 110, "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted", "suggest": 110, "sources": [
           {"url": "https://www.seriouslyfish.com/species/melanotaenia-boesemani/", "site": "Seriously Fish", "states": "at least 120 x 30 x 30 cm, about 108 L (29 US gal)", "quote": "requiring an aquarium measuring at least 120 ∗ 30 ∗ 30 cm"}
         ], "note": "Only one source found; ours is about 85 % above it."},
         "temper": {"ours": 0, "verdict": "agrees", "suggest": null, "sources": [
@@ -91,7 +91,7 @@
     "guppy": {
       "sci": "Poecilia reticulata",
       "fields": {
-        "tl": {"ours": 35, "verdict": "disagrees", "suggest": 30, "sources": [
+        "tl": {"ours": 30, "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted", "suggest": 30, "sources": [
           {"url": "https://www.fishbase.se/summary/Poecilia-reticulata.html", "site": "FishBase", "states": "common 2.8 cm TL; max 5.0 cm SL male/unsexed", "quote": "common length : 2.8 cm TL male/unsexed"},
           {"url": "https://www.fishkeepingworld.com/guppies/", "site": "Fishkeeping World", "states": "males about 1 1/8 in (29 mm)", "quote": "Males grow to about 1 ⅛ inches long, and females grow up to 2 ⅛ inches in length."}
         ], "note": "Typical male 28-29 mm; ours is 21-25 % above. FishBase max 5.0 cm SL and Seriously Fish 60 mm SL are maxima for either sex, which would agree."},
@@ -148,7 +148,7 @@
     "molly": {
       "sci": "Poecilia sphenops",
       "fields": {
-        "tl": {"ours": 60, "verdict": "disagrees", "suggest": 85, "sources": [
+        "tl": {"ours": 85, "verdict": "agrees", "use": [1], "decision": "Nathan 2026-10-20: adopted", "suggest": 85, "sources": [
           {"url": "https://www.fishbase.se/summary/Poecilia-sphenops.html", "site": "FishBase", "states": "max 7.5 cm SL; common 4.0 cm TL", "quote": "Max length : 7.5 cm SL male/unsexed"},
           {"url": "https://www.fishkeepingworld.com/molly-fish/", "site": "Fishkeeping World", "states": "males about 3.5 in (89 mm)", "quote": "Female molly fish grow bigger than male mollies — males grow to around 3.5 inches in length."}
         ], "note": "FishBase common 4.0 cm TL would be 33 % below ours; max/typical figures are 75-90 mm. Seriously Fish: 80 mm SL both sexes."},
@@ -160,7 +160,7 @@
           {"url": "https://www.seriouslyfish.com/species/poecilia-sphenops/", "site": "Seriously Fish", "states": "Easy", "quote": "Easy"},
           {"url": "https://www.fishkeepingworld.com/molly-fish/", "site": "Fishkeeping World", "states": "Easy", "quote": "Care level: Easy"}
         ]},
-        "minL": {"ours": 110, "verdict": "disagrees", "suggest": 80, "sources": [
+        "minL": {"ours": 80, "verdict": "agrees", "use": [0], "decision": "Nathan 2026-10-20: adopted", "suggest": 80, "sources": [
           {"url": "https://www.seriouslyfish.com/species/poecilia-sphenops/", "site": "Seriously Fish", "states": "base 90 x 30 cm, about 81 L (21 US gal)", "quote": "90 × 30cm36 × 12in"},
           {"url": "https://www.fishkeepingworld.com/molly-fish/", "site": "Fishkeeping World", "states": "10 gal (38 L)", "quote": "Minimum tank size: 10 gallons"}
         ], "note": "Ours is 36 % above the larger figure."},
@@ -181,7 +181,7 @@
           {"url": "https://www.fishbase.se/summary/Xiphophorus-hellerii.html", "site": "FishBase", "states": "14.0 cm TL max male/unsexed", "quote": "Max length : 14.0 cm TL male/unsexed"},
           {"url": "https://www.fishkeepingworld.com/swordtail/", "site": "Fishkeeping World", "states": "males up to 5.5 in (140 mm)", "quote": "Adult female swordtail fish can reach 6.3 inches in length, while males can grow up to 5.5 inches."}
         ], "note": "Both 140 mm (ours 14 % below, within 20 %)."},
-        "female.tl": {"ours": 115, "verdict": "disagrees", "suggest": 160, "sources": [
+        "female.tl": {"ours": 160, "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted", "suggest": 160, "sources": [
           {"url": "https://www.fishbase.se/summary/Xiphophorus-hellerii.html", "site": "FishBase", "states": "16.0 cm TL female", "quote": "16.0 cm TL (female)"},
           {"url": "https://www.fishkeepingworld.com/swordtail/", "site": "Fishkeeping World", "states": "females up to 6.3 in (160 mm)", "quote": "Adult female swordtail fish can reach 6.3 inches in length, while males can grow up to 5.5 inches."}
         ], "note": "Ours is 28 % below both. Seriously Fish says 140 mm SL both sexes (would agree). Figures may include the sword."},
@@ -193,7 +193,7 @@
           {"url": "https://www.seriouslyfish.com/species/xiphophorus-hellerii/", "site": "Seriously Fish", "states": "120 x 30 cm base, about 108 L", "quote": "An aquarium with surface dimensions of 120 ∗ 30 cm48 ∗ 12 in or equivalent should be the smallest considered."},
           {"url": "https://www.fishkeepingworld.com/swordtail/", "site": "Fishkeeping World", "states": "15 gal (57 L) for a single fish, +5 gal each", "quote": "At least 15 gallons for a single swordtail fish."}
         ]},
-        "temper": {"ours": 1, "verdict": "disagrees", "suggest": 0, "sources": [
+        "temper": {"ours": 1, "verdict": "kept", "decision": "Nathan 2026-10-20: kept, pages split (Fishkeeping World peaceful; Seriously Fish: males form hierarchies); kept semi-aggressive", "suggest": 0, "sources": [
           {"url": "https://www.fishkeepingworld.com/swordtail/", "site": "Fishkeeping World", "states": "peaceful; males can become territorial if too few females", "quote": "Swordtails are peaceful and social fish that enjoy the company of their own kind."},
           {"url": "https://www.seriouslyfish.com/species/xiphophorus-hellerii/", "site": "Seriously Fish", "states": "temperament field 'unknown'; male groups form hierarchies", "quote": "groups of males tend to form dominance hierarchies"}
         ], "note": "Mixed: FKW peaceful (0); SF gives no temperament but notes male dominance behaviour (supports 1). Treat as ambiguous."},
@@ -229,14 +229,14 @@
     "comet": {
       "sci": "Carassius auratus (comet)",
       "fields": {
-        "tl": {"ours": 200, "verdict": "disagrees", "suggest": 250, "sources": [
+        "tl": {"ours": 250, "verdict": "agrees", "use": [1], "decision": "Nathan 2026-10-20: adopted", "suggest": 250, "sources": [
           {"url": "https://www.fishkeepingworld.com/comet-goldfish/", "site": "Fishkeeping World", "states": "up to 12 in (305 mm)", "quote": "Up to 12 inches"},
           {"url": "https://www.fishkeepingworld.com/goldfish/", "site": "Fishkeeping World", "states": "up to 10 in (254 mm)", "quote": "Common goldfish, or comet goldfish, grow up to 10 inches and require a 30-gallon, 4-foot-long tank to thrive."}
         ], "note": "Ours is 21-34 % below these maxima. FishBase species max 48.0 cm TL (common length 10.0 cm TL), not comet-specific."},
         "care": {"ours": 1, "verdict": "agrees", "suggest": null, "sources": [
           {"url": "https://www.fishkeepingworld.com/comet-goldfish/", "site": "Fishkeeping World", "states": "Easy/medium", "quote": "Easy/medium"}
         ], "note": "Table value."},
-        "minL": {"ours": 300, "verdict": "disagrees", "suggest": 190, "sources": [
+        "minL": {"ours": 300, "verdict": "kept", "decision": "Nathan 2026-10-20: kept, the page recommends 75 gal (284 L); its 30-50 gal minimums are too small for a fish of 25-30 cm", "suggest": 190, "sources": [
           {"url": "https://www.fishkeepingworld.com/comet-goldfish/", "site": "Fishkeeping World", "states": "50 gal (189 L) min, recommends 75 gal (284 L)", "quote": "They need at least a 50-gallon tank; we would recommend a 75-gallon tank."},
           {"url": "https://www.fishkeepingworld.com/goldfish/", "site": "Fishkeeping World", "states": "30 gal (114 L)", "quote": "Common goldfish and comet goldfish are larger, each requiring a 30-gallon tank measuring 3 feet long by 1.5 feet high."}
         ], "note": "Span 114-284 L; ours 300 is within 25 % of the 75 gal recommendation (284), so arguably agrees if the recommended figure is the basis. Marked disagrees against the stated minimums."},

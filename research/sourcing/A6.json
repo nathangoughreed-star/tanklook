@@ -47,7 +47,7 @@
         "temper": {"ours": 0, "verdict": "agrees", "suggest": null, "sources": [
           {"url": "https://www.aquariumsource.com/nerite-snail/", "site": "Aquarium Source", "states": "peaceful", "quote": "Nerite snails are very mellow and peaceful creatures."}
         ]},
-        "ph": {"ours": [6.5, 8.5], "verdict": "disagrees", "suggest": [7, 8.5], "sources": [
+        "ph": {"ours": [7, 8.5], "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted", "suggest": [7, 8.5], "sources": [
           {"url": "https://www.aquariumsource.com/nerite-snail/", "site": "Aquarium Source", "states": "7-8.5", "quote": "You should be fine anywhere in the 7-8.5 range."},
           {"url": "https://www.aquariumcoop.com/blogs/aquarium/nerite-snails", "site": "Aquarium Co-Op", "states": "above 7.0", "quote": "they prefer freshwater setups with higher pH above 7.0 and lots of minerals."}
         ], "note": "Lower end: both pages say 7.0, ours 6.5 (0.5 off)."}
@@ -63,14 +63,14 @@
         "care": {"ours": 1, "verdict": "agrees", "suggest": null, "sources": [
           {"url": "https://ca.aquariumsource.com/mystery-snail/", "site": "Aquarium Source", "states": "Care: Easy (Quick Facts)", "quote": "Care:"}
         ], "note": "Quick Facts label and value 'Easy' sit in separate cells; only the label is quotable contiguously. Aquatic Arts does not state care level."},
-        "minL": {"ours": 40, "verdict": "disagrees", "suggest": 20, "sources": [
+        "minL": {"ours": 40, "verdict": "kept", "decision": "Nathan 2026-10-20: kept, one page says 5 gal; 10 gal (40 L) is the usual advice for a heavy-bioload snail", "suggest": 20, "sources": [
           {"url": "https://ca.aquariumsource.com/mystery-snail/", "site": "Aquarium Source", "states": "5 gallons for one snail (18.9 L)", "quote": "The minimum tank size for mystery snails is five gallons for one snail."}
         ], "note": "Only one opened page states a minimum; ours (40 L) is about twice that. Search snippets (not opened) mentioned 10 gal elsewhere. Aquatic Arts not stated."},
         "temper": {"ours": 0, "verdict": "agrees", "suggest": null, "sources": [
           {"url": "https://aquaticarts.com/pages/mystery-snail-care-guide", "site": "Aquatic Arts", "states": "completely peaceful", "quote": "Mystery snails are completely peaceful, and therefore safe to keep with any fish, shrimp, or plants."},
           {"url": "https://ca.aquariumsource.com/mystery-snail/", "site": "Aquarium Source", "states": "peaceful", "quote": "These little creatures are about as peaceful as it gets."}
         ]},
-        "ph": {"ours": [6.5, 8], "verdict": "disagrees", "suggest": [7.6, 8.4], "sources": [
+        "ph": {"ours": [6.5, 8], "verdict": "kept", "decision": "Nathan 2026-10-20: kept, the pages give an ideal 7.6-8.4; snails live from 7.0, and the narrow band would flag most community tanks", "suggest": [7.6, 8.4], "sources": [
           {"url": "https://aquaticarts.com/pages/mystery-snail-care-guide", "site": "Aquatic Arts", "states": "7.6-8.4", "quote": "pH level range: 7.6 to 8.4"},
           {"url": "https://ca.aquariumsource.com/mystery-snail/", "site": "Aquarium Source", "states": "7.6-8.4 (Quick Facts)", "quote": "7.6-8.4 pH"}
         ], "note": "Both pages agree on 7.6-8.4; ours low end 6.5 is 1.1 below."}
@@ -119,7 +119,7 @@
           {"url": "https://www.aquariumsource.com/malaysian-trumpet-snail/", "site": "Aquarium Source", "states": "shy and docile", "quote": "Malaysian trumpet snails are very shy and docile."},
           {"url": "https://aquariadise.com/caresheet-malaysian-trumpet-snails/", "site": "Aquariadise", "states": "Temperament: Peaceful", "quote": "Temperament"}
         ], "note": "Aquariadise label and value 'Peaceful' are in separate cells."},
-        "ph": {"ours": [6.5, 8.5], "verdict": "disagrees", "suggest": [6.5, 8], "sources": [
+        "ph": {"ours": [6.5, 8], "verdict": "agrees", "use": [0], "decision": "Nathan 2026-10-20: adopted", "suggest": [6.5, 8], "sources": [
           {"url": "https://www.aquariumsource.com/malaysian-trumpet-snail/", "site": "Aquarium Source", "states": "6.5 to 8.0", "quote": "pH levels: 6.5 to 8.0 (aim for neutral water)"},
           {"url": "https://aquariadise.com/caresheet-malaysian-trumpet-snails/", "site": "Aquariadise", "states": "7.0 to 8.0", "quote": "Malaysian Trumpet snails prefer slightly alkaline aquarium water with a pH range of 7.0 to 8.0,"}
         ], "note": "Upper end: both pages say 8.0, ours 8.5 (0.5 off). Search snippet 6.5-8.5 was from a page I did not open."}
@@ -155,7 +155,7 @@
         "care": {"ours": 1, "verdict": "agrees", "suggest": null, "sources": [
           {"url": "https://aquariumbreeder.com/?p=5920", "site": "Aquarium Breeder", "states": "Easy - Medium", "quote": "Keeping Mexican Turbo snails can be easy and difficult at the same time."}
         ], "note": "Page rates Easy-Medium (borderline between 1 and 2). Top Shelf does not state a care level."},
-        "minL": {"ours": 75, "verdict": "disagrees", "suggest": 40, "sources": [
+        "minL": {"ours": 40, "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted", "suggest": 40, "sources": [
           {"url": "https://aquariumbreeder.com/?p=5920", "site": "Aquarium Breeder", "states": "10 gallons (~40 L)", "quote": "The minimum recommended tank size for these snails is a 10-gallon (40-liter) tank."}
         ], "note": "Top Shelf gives only a stocking guideline (2-3 snails per 20-30 gal), not a minimum. Search snippets from unopened pages mentioned 50 L and 30+ gal."},
         "temper": {"ours": 0, "verdict": "agrees", "suggest": null, "sources": [
@@ -179,7 +179,7 @@
           {"url": "https://topshelfaquatics.com/products/blue-leg-hermit-crab", "site": "Top Shelf Aquatics", "states": "10+ gallons (37.9 L+)", "quote": "Minimum Tank Size: 10+ gallons"},
           {"url": "https://reefexclusive.com/products/blue-leg-hermit-crab", "site": "Reef Exclusive", "states": "10 gallons for 2-3 crabs", "quote": "They require a minimum tank size of 10 gallons for a small group of 2 – 3 crabs."}
         ], "note": "LiveAquaria does not state a minimum."},
-        "temper": {"ours": 1, "verdict": "disagrees", "suggest": 0, "sources": [
+        "temper": {"ours": 0, "verdict": "agrees", "use": [0,1], "decision": "Nathan 2026-10-20: adopted", "suggest": 0, "sources": [
           {"url": "https://www.liveaquaria.com/products/dwarf-blue-leg-hermit-crab-tiny", "site": "LiveAquaria", "states": "Peaceful", "quote": "Temperament: Peaceful"},
           {"url": "https://reefexclusive.com/products/blue-leg-hermit-crab", "site": "Reef Exclusive", "states": "Peaceful", "quote": "Temperament : Peaceful"},
           {"url": "https://topshelfaquatics.com/products/blue-leg-hermit-crab", "site": "Top Shelf Aquatics", "states": "Peaceful to Semi-Aggressive, territorial over shells", "quote": "Temperament: Peaceful to Semi-Aggressive – Can be territorial over shells"}
