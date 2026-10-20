@@ -145,6 +145,9 @@ export interface LightSettings {
   /** Bar fixtures (tubes, LED bar; added 2026-10-15, Nathan): where the fixture sits front to back, mm from the middle,
    * + toward the back; held over the tank (lightout barZ). Absent = centred. */
   pos?: number;
+  /** LED in a hood (added 2026-10-20, Nathan): a few stick-on strips joined by a wire, or one full-length bar. Absent =
+   * 'strips'. Only the look (render/lighting addHoodLamps). */
+  hoodLed?: 'strips' | 'bar';
   /** Light output (added 2026-10-14, all optional, no version bump; model in scene/lightout.ts). Power draw (W); 0 or
    * absent = off, Brightness stays the manual knob. Set: the render brightness follows the computed lux, `bright` is an exposure. */
   watts?: number;

@@ -1032,6 +1032,7 @@ Cancel, then change the name, to keep both.`)) return;
   const capCount = (l: TankSetup['light']) => { l.count = Math.min(l.count, countMax(l)); };
   $('lPosOpt').onclick = () => store.edit(s => { const b = bestPos(s.tank, s.light); if (b != null) s.light.pos = b; });
   $<HTMLSelectElement>('lMount').onchange = e => store.edit(s => { s.light.mount = (e.target as HTMLSelectElement).value as 'legs' | 'hang'; });
+  $<HTMLSelectElement>('lHoodLed').onchange = e => store.edit(s => { if ((e.target as HTMLSelectElement).value === 'bar') s.light.hoodLed = 'bar'; else delete s.light.hoodLed; });
   $<HTMLSelectElement>('lPat').onchange = e => store.edit(s => { s.light.pattern = (e.target as HTMLSelectElement).value as TankSetup['light']['pattern']; capCount(s.light); });
   // Fixture (Nathan 2026-10-15): the style sets the geometry and which lamps fit; a lamp it does not come in becomes its
   // first, and a colour outside the new lamp's usual range its usual one
@@ -2019,6 +2020,9 @@ Cancel, then change the name, to keep both.`)) return;
     setOut('oLH', s.lid === 'hood' ? 'In hood' : fmt(l.height) + ' above');
     $('lHRow').style.display = l.type === 'flat' ? 'none' : ''; ($('lH') as HTMLInputElement).disabled = s.lid === 'hood';
     $('lMountRow').style.display = l.type === 'flat' || s.lid === 'hood' ? 'none' : ''; setVal('lMount', mountOf(l));
+    $('lHoodLedRow').style.display = s.lid === 'hood' && l.type === 'led' ? '' : 'none'; setVal('lHoodLed', l.hoodLed ?? 'strips');
+    // in a hood the LED fixture is strips or a bar (the row above), so the menu does not promise a full-length bar
+    ($('lType') as HTMLSelectElement).querySelector<HTMLOptionElement>('option[value=led]')!.textContent = s.lid === 'hood' ? 'LED (strips or bar)' : FIXTURES.led.label;
     // bars (tubes, LED bar): front to back, as far as the housing stays over the tank (lightout barZ)
     const barDep = tl ? tl.depth : l.type === 'led' ? ledBarDepth(s.tank) : 0, pm = Math.floor(posMax(s.tank, barDep) / 5) * 5, pv = clamp(l.pos ?? 0, -pm, pm);
     $('lPosRow').style.display = $('lPosOptRow').style.display = barDep && s.lid !== 'hood' ? '' : 'none';
