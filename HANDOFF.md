@@ -47,12 +47,6 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 ## Lane sections (current)
 
 ## Lane P4: artificial plants, path 1 (2026-10-20, branch `p4artplants`, port 5893)  (lane fills this in)
-## Lane P5: stocking screen + fork card, path 1 (2026-10-20, branch `p5stocking`, port 5903)
-- **New menu**: five cards "What do you have so far?" (`index.html` #startDlg; An animal I want opens the stocking screen, Sandbox = the old Start from scratch, the other three are disabled "Coming soon"). Deals tabs and the Open menu are untouched.
-- **Stocking screen** `src/ui/stockPlan.ts` (draws, writes the scene) + `src/ui/stockPlanLogic.ts` (pure, `test/stockplan.test.ts`): search by common name; a species goes in at its recommended minimum (sexed ones at a whole multiple of the male : female ratio); +/- with the P1 band messages; male / female steppers for `CARE.sexed`; habitat notes (depth, flow, zone, minimum length); compatibility warning per pick (`conflictOf`, salt vs fresh too); "Other animals in with them?" = `rankTankmates` (compatible first by temperature / pH overlap, a zone the others leave empty, shared appeal; unsuitable ones last with the first reason); the tank block = `planFor` (tankFor, a bigger step the user chose holds, stepUps with cost and space bar, buildSpan for set-up $ and min / week; a `fails` of 'filtration' reads "No filter can carry this many animals"). The viewer gets a bare tank (water on, no substrate, camera zoom 0.55 / elevation 20 so bottom dwellers show) with the animals placed by `shuffleFish` / `placeNew`; the side panel steps aside while the screen is up (class only, not the saved preference).
-- **Fork card** (registered with `onSpaceFork`): Make room (the tank past the space + the next two sizes, set-up $ and delta; widens `layout.space` to the footprint) / Keep my space (the biggest catalogue tank inside it; if the animals fit it, one button; else swaps that share `appeal`, fit that tank and are compatible with the rest). `forkOptions` is pure.
-- **Hook in panels.ts**: one line, a dynamic `import('./stockPlan')` after `showStart` (a static import pulls tankfit into the start-up graph and trips the starter.ts / stocking.ts cycle: `litresPerAnimal` before initialization). Title text of the New menu changed there too.
-- Gaps for the coordinator: the tank steps use the plain rectangular catalogue only (tankfit's rule); the bare tank still draws the default filter / heater; no gear deals on the screen yet (P6); data `appeal` tags are coarse (swap quality follows them); species search is name-only (no 3D preview thumbnail: the animal appears in the tank view when added).
 ## Source traceability (2026-10-20, side chat in the `stocking` worktree; Nathan: the defence against "AI slop")
 Goal: every advice number traces to a source, a fit, a stated derivation or a labelled assumption; never "made up".
 - `src/data/sources.json` = source registry (id, title, by, url, accessed, kind: primary / reference / consensus / tool / retailer / internal). Never register a page nobody opened.
@@ -381,6 +375,7 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane P5: stocking screen + fork card, path 1 (2026-10-20, branch `p5stocking`, port 5903)
 - Lane P1: group data, path 1 (2026-10-20, branch `p1groups`, port 5863)
 - Lane P3: fullness tile, path 1 (2026-10-20, branch `p3fullness`, port 5883)
 - Lane P2: tank fit engine, path 1 (2026-10-20, branch `p2tankfit`, port 5873)
