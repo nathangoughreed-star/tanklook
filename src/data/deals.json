@@ -532,7 +532,7 @@
    },
    "url": "https://www.walmart.com/ip/Marineland-Portrait-Glass-LED-Aquarium-Kit-5-Gallons-Hidden-Filtration/40231748",
    "asOf": "2026-10-19",
-   "note": "Out of stock with no price when the page was read 2026-10-19.",
+   "note": "Out of stock with no price when the page was read 2026-10-19. Walmart showed it not available online on 2026-10-20; specs not readable.",
    "look": {
     "lid": "glass",
     "guessed": [
@@ -676,12 +676,9 @@
    },
    "url": "https://www.walmart.com/ip/Tetra-10-Gallon-Glass-LED-Aquarium-Kit/1070285979",
    "asOf": "2026-10-19",
-   "note": "Page read 2026-10-19 in a browser. In stock. Whisper PF10, LED hood, no heater.",
+   "note": "Page read 2026-10-19 in a browser. In stock. Whisper PF10, LED hood, no heater. Tank 20 x 10 x 12 in: the Walmart listing says \"approximate dimensions\" (read 2026-10-20).",
    "look": {
     "lid": "hood",
-    "guessed": [
-     "tank size: Tetra's rounded nominal size (20x10x12 in), not read on the listing"
-    ],
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
@@ -1028,7 +1025,7 @@
    "dims": {
     "L_in": 24,
     "D_in": 12,
-    "H_in": 16
+    "H_in": 16.5
    },
    "includes": [
     "tank",
@@ -1047,12 +1044,9 @@
    },
    "url": "https://www.chewy.com/tetra-aquarium-led-lighting-decor/dp/696158",
    "asOf": "2026-10-19",
-   "note": "Page read 2026-10-19 in a browser. LED hood, Whisper filter, Tetra mini heater (preset 78F), plants.",
+   "note": "Page read 2026-10-19 in a browser. LED hood, Whisper filter, Tetra mini heater (preset 78F), plants. Tank 24 x 12 x 16.5 in from the Chewy listing specs (read 2026-10-20).",
    "look": {
     "lid": "hood",
-    "guessed": [
-     "tank size: Tetra's rounded nominal size (24x12x16 in), not read on the listing"
-    ],
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
@@ -1128,7 +1122,7 @@
    "look": {
     "lid": "hood",
     "guessed": [
-     "tank size: the listing gives none; the Aqueon 20 high is assumed"
+     "tank size: the listing gives 27.5 x 16 x 20.25 in, too big for 20 gal (box or overall size); the Aqueon 20 high is assumed"
     ],
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
