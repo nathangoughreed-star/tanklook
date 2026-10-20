@@ -44,6 +44,16 @@ models on /review.html (and its drawImage error), TG leftovers (heater product p
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
+## User flow: paths, budget, deals (Nathan 2026-10-20, design chat; not built yet except the New / Open split)
+- **New / Open are separate menus** (DONE, `caf2f0a`): New = Start from scratch + On sale / Bundles; Open = Starter tanks / Saved tanks; a link swaps them. First launch opens New.
+- **New asks "What do you have so far?"**, worded as the user's situation, never "which type are you". Five paths:
+  An animal I want (animal-first) / A look I want (look-first) / A tank I already own (model it, then what-if) /
+  Just want to try the hobby (no idea yet: space, time, appeal first) / Sandbox (empty tank, no questions, gates as badges only).
+  The answer pins part of the plan; the wizard then asks only what is still missing. Pins, not a mode; a chip shows what is pinned and reopens the wizard. Clicks count as answers (deal opened, saved tank edited, starter opened); a shared link skips the menu.
+- **Budget is a layer in every path, not a path:** guided paths ask the expected set-up cost (the demand panel's one number) and gates quote unlock costs against it; owner what-if prices the change, not the tank; Sandbox: optional in the demand panel.
+- **Deals go wherever a purchase decision is made, filtered to fit:** choosing a tank (New menu, the wizard's tank step, the Tank sizes dialog) shows tank / kit / bundle deals; tank picked but a heater / light / filter / skimmer / CO2 still needed shows gear deals that fit THIS plan (size, and the need behind it: heater for the animals' temperature, light for the plants' PAR, skimmer for salt). Building blocks exist: deal match (Tank B), `gearFits` / `gearOffers` in `demand/gearDeals.ts` (demand panel today). Missing: gear deals beside the pickers in the Tech menu, tank deals in the Tank sizes dialog, fit by need not only by size.
+- **Gates (proposal, Nathan agreed to the six user types; gate kinds still to settle):** hard truths (eaten, temperature, outgrows) always shown, override by "I understand"; fit (skill, light, effort, budget) gray in guided paths, badges in Sandbox; taste = suggestions. Every gate says why and what unlocks it, with its cost. Shopping list traces each item to the need it serves (gear no need asks for = overspend, a need with no gear = underspend).
+
 ## Lane TG: menu focus + Show boxes (2026-10-20, branch `techgear`, port 5833)
 Nathan 2026-10-20: drag only what the open menu covers; a Show box per kind of thing; keep the fade as the hint of what is draggable.
 - Drag gate: gear moves (drag, Shift+wheel lean) only while Tech is open, like pieces (Hardscape / Plants) and animals (Animals): `canPick('gear')` in interact/pointer.ts, `pickSec` in new `render/menuFocus.ts`, used by main.ts.
