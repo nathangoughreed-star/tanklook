@@ -845,7 +845,7 @@ function flare(T: Tank, x: number, d: number, y: number, rb: number): [number, n
 
 const SKIRT_DARK = 0.4; // how much darker the ground's skirt gets at the floor than at its top rim
 function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
-  const swamp = S.terrain.on; // shaped ground (custom terrain, a swamp's pools): finer mesh
+  const pools = S.terrain.on && !!S.terrain.pools?.length, swamp = S.terrain.on; // shaped ground (custom terrain, a swamp's pools): finer mesh
   if (!S.substrate.show && !swamp) return;
   // Light map on: the ground is plain flat-looking sand (3D stones and a busy texture hid the contour lines and labels)
   const sub = S.render.beams && S.light.type !== 'flat' ? { ...S.substrate, type: 'white' as const, litter: undefined } : S.substrate, { L, D } = T, tile = sub.type === 'custom' ? blendTile(sub.custom) : SUBSTRATES[sub.type].tile * 2, h = (x: number, d: number) => groundHeight(S, T, x, d);
@@ -910,8 +910,8 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
     const n = new THREE.Vector3().crossVectors(a, b).normalize(); if (n.y < 0) n.negate();
     const v = cell.map(G); // a whole cell is the quad as before; a cut one is a fan
     // grain from above on gentle ground; on a steep bank (swamp pool walls) from the side it faces, so it does not
-    // smear into streaks (audit #15)
-    const uv = n.y > 0.6 ? (p: V3) => [p[0] / tile, -p[2] / tile] : Math.abs(n.x) > Math.abs(n.z) ? (p: V3) => [-p[2] / tile, p[1] / tile] : (p: V3) => [p[0] / tile, p[1] / tile];
+    // smear into streaks (audit #15); only where there are pools: switching projection cell by cell on plain hills left a seam in the texture
+    const uv = n.y > 0.6 || !pools ? (p: V3) => [p[0] / tile, -p[2] / tile] : Math.abs(n.x) > Math.abs(n.z) ? (p: V3) => [-p[2] / tile, p[1] / tile] : (p: V3) => [p[0] / tile, p[1] / tile];
     const cc = cell.map(colAt);
     for (let m = 1; m < v.length - 1; m++) for (const t of [0, m, m + 1]) {
       top.push(v[t], uv(v[t])); topCol.push(...cc[t].slice(0, 3)); topWet.push(cc[t][6]);
@@ -980,7 +980,11 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
     g.setAttribute('position', new THREE.Float32BufferAttribute(arr.filter((_, i) => i % 2 === 0).flat(), 3));
     g.setAttribute('uv', new THREE.Float32BufferAttribute(arr.filter((_, i) => i % 2 === 1).flat(), 2));
     const m = new THREE.MeshBasicMaterial({ map: map ?? (sub.type === 'custom' ? blendTexture(sub.custom, 'a') : substrateTexture(sub.type)), color: shade, vertexColors: !!cols?.length, side: THREE.DoubleSide });
-    m.userData.sub = true; if (sub.type === 'custom') blendGrains(m, sub.custom, tile);
+    m.userData.sub = true;
+    if (sub.type === 'custom' && sub.custom.grain2 !== 'none') {
+      g.setAttribute('aMk', new THREE.Float32BufferAttribute(arr.filter((_, i) => i % 2 === 0).flatMap(v => [v[0] / tile, -v[2] / tile]), 2));
+      blendGrains(m, sub.custom, tile);
+    }
     if (wet && terra) wetSheen(m, g, wet);
     sc.add(new THREE.Mesh(g, m));
   };
@@ -1040,9 +1044,13 @@ function blendGrains(m: THREE.MeshBasicMaterial, b: TankSetup['substrate']['cust
   const uniforms = m.userData.blend = blendUniforms(b, tile); // patchLook updates them in place
   m.userData.post = (sh: THREE.WebGLProgramParametersWithUniforms) => {
     Object.assign(sh.uniforms, uniforms);
-    sh.fragmentShader = sh.fragmentShader.replace('void main() {', `uniform sampler2D uMapB, uMapM, uMask; uniform vec4 uZone; uniform vec2 uOff;
+    // the patch mask is read at the ground's position (aMk: x, depth over the tile), not the surface's own uv: the top,
+    // its steeper cells and the skirt each project their uv differently, and patches broke into a line where they met
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nattribute vec2 aMk; varying vec2 vAqMk;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvAqMk = aMk;');
+    sh.fragmentShader = sh.fragmentShader.replace('void main() {', `uniform sampler2D uMapB, uMapM, uMask; uniform vec4 uZone; uniform vec2 uOff; varying vec2 vAqMk;
 vec4 aqBlend(vec2 uv) {
-  float n = texture2D(uMask, vMapUv * uZone.z + uOff).r;
+  float n = texture2D(uMask, vAqMk * uZone.z + uOff).r;
   float a = 1.0 - smoothstep(uZone.x - uZone.w, uZone.x + uZone.w, n), b = smoothstep(uZone.y - uZone.w, uZone.y + uZone.w, n);
   return texture2D(map, uv) * a + texture2D(uMapB, uv) * b + texture2D(uMapM, uv) * max(1.0 - a - b, 0.0);
 }
