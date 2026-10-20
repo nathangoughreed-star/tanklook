@@ -49,4 +49,10 @@ describe('nitrogen budget', () => {
     expect(stockingOf(h).nitrogen.tan).toBeGreaterThan(stockingOf(s).nitrogen.tan);
   });
 });
+it('several filters add up their bacteria, the surface counts once', () => {
+  const s = bare(['danio']), one = withTech(s, 'canister'), t = one.tech!;
+  const two = { ...one, tech: { ...t, filters: [{ kind: 'canister' }, { kind: 'canister' }] } } as unknown as TankSetup;
+  const a = filterCapacity(one, 150, 25), b = filterCapacity(two, 150, 25);
+  expect(b.gDay).toBeGreaterThan(a.gDay); expect(b.gDay).toBeLessThan(2 * a.gDay); expect(b.mediaL).toBeGreaterThan(a.mediaL);
+});
 function withTech(s: TankSetup, filter: string): TankSetup { return { ...s, tech: withChoice(s, 'filter', filter) }; }

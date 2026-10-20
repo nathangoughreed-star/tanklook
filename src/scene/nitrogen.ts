@@ -12,7 +12,7 @@ import { FILTER_MEDIA_L, MEDIA_L_PER_GPH, SPONGE_L_PER_GAL } from '../data/filte
 import type { Species } from '../data/species';
 import { LIBRARY } from './items';
 import type { Patch, TankSetup } from './types';
-import { feedOf, filterFor, optionDef, techOf } from './tech';
+import { feedOf, filterFor, optionDef, singleFilter, techOf } from './tech';
 import { MET_CLASS, metClass, tempFactor } from './stocking';
 
 export type Feeding = 'light' | 'normal' | 'heavy';
@@ -39,7 +39,14 @@ const warm = (c: number) => Math.min(1.5, 1.07 ** (c - 25));
 export interface FilterCap { kind: string; mediaL: number; src: string; gDay: number; flowGate: number; label: string }
 /** What the bacteria in this tank's filter (option `opt`, else the chosen one) can nitrify, g TAN a day, at `tempC`. */
 export function filterCapacity(S: TankSetup, litres: number, tempC: number, opt?: string): FilterCap {
-  const t = techOf(S), choice = opt ?? t.rows.filter ?? 'none', def = optionDef('filter', choice);
+  const t = techOf(S);
+  // several filters (Nathan 2026-10-20): each one's bacteria added up, the surface counted once
+  if (!opt && t.filters?.length) {
+    const surface = litres * SURFACE_RATE * warm(tempC), each = t.filters.map(u => filterCapacity({ ...S, tech: singleFilter(t, u) }, litres, tempC));
+    const top = each.reduce((a, c) => c.gDay > a.gDay ? c : a);
+    return { kind: top.kind, mediaL: each.reduce((a, c) => a + c.mediaL, 0), src: top.src, gDay: surface + each.reduce((a, c) => a + c.gDay - surface, 0), flowGate: top.flowGate, label: each.map(c => c.label).join(' + ') };
+  }
+  const choice = opt ?? t.rows.filter ?? 'none', def = optionDef('filter', choice);
   const surface = litres * SURFACE_RATE * warm(tempC);
   if (choice === 'none' || !def) return { kind: 'none', mediaL: 0, src: 'none', gDay: surface, flowGate: 1, label: 'no filter' };
   const sump = choice === 'sump', kind = (sump ? 'sump' : def.kind ?? 'hob') as keyof typeof MEDIA_RATE;
