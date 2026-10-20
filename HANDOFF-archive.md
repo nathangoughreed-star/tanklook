@@ -1,6 +1,34 @@
 # HANDOFF archive
 Finished lane and feature sections moved out of HANDOFF.md on 2026-10-16, verbatim, newest first.
 
+## Lane P4: artificial plants, path 1 (2026-10-20, branch `p4artplants`, port 5893)
+- **Shipped (Nathan approved the pictures 2026-10-20):** a new `ItemKind` `'artificial'` with 6 LIBRARY variants:
+  `silkstem`, `plasticstem`, `silksword` (rosette), `plasticsword`, `silkmoss`, `plasticmoss` (mats: size = width). `Variant.fake = { mat, form }`
+  is the silk / plastic flag. A kind of its own, so growth, Time, propagation, leaf algae, light advice, CO2 / ferts and nitrate uptake all skip them
+  (they key on `kind === 'plant'`) with no edit to live-plant code.
+- **Art:** `artificialGeometry(mat, form, seed, size)` at the end of `render/plant3d.ts` (plain position / normal / colour, no growth tags; height =
+  size). Artificial cues: a dark weighted base disc, identical leaves evenly set, even colour. Silk = thin drooping fabric leaves, die-cut zigzag
+  edge, pale back, a faint broad sheen; plastic = stiff moulded leaves with a V midrib, whorls of three, a tight glossy highlight
+  (`fakeMaterial` in `render/items.ts`, a `post` patch of the lit shader). Seeded palettes: mostly green, some red.
+- **Hooks in other files (one or two lines each):** `itemMesh` branch + `fakeMaterial` + `seatCorals` filter (render/items.ts); `progKey` gets a
+  `fake` flag (render/lighting.ts; without it silk and plastic share one compiled program); `scapeSec` and the item size label (ui/panels.ts);
+  `plantBrushes` includes the upright artificial ones, brushmesh takes the kind from LIBRARY, the Growth row is hidden for them (scene/brush.ts,
+  render/brushmesh.ts, ui/brush.ts); setup sheet gets an "Artificial plants" section (scene/setupsheet.ts); hardscape / underside skip them
+  (not perches), `layerOf` puts them in the plant layer (a plant redraw replaces them).
+- **Demand:** priced by the existing hardscape loop from new `hard:<variant>` rows in `data/demand-items.json` (lo / mode / hi + one URL each;
+  `hard:silkmoss` is `est`: no silk moss mat listing found). Defaults sized to the listings (8 in plants, a 7 in mat), so the row is the price at
+  the default size and the loop's size^1.5 scales the rest. No upkeep, no minutes, no light / CO2 / ferts.
+- **Stocking:** artificial items already stay out of `capacityOf` (kind filter). Painted artificial patches (`plant:silkstem` ...) are left out too since
+  lane SE2's `isLivePlantPatch` (scene/nitrogen.ts, 1ceb3fa); tested in `test/artificialplants.test.ts`.
+- **Review sheet:** rows `fake-<variant>` under "Artificial plants" in review.html (src/review/main.ts). All six recorded v1 at build 967. Record ONLY these: `review.html?only=fake-`
+  (or `?only=fake-&record`), after merging main and restarting the dev server.
+- **Pictures:** a headless capture recipe that needs no visible pane: build the scene in the page, POST its share hash to `/__shot`, open
+  `localhost:<port>/#tank=...` in headless Chrome via CDP, wait for "Building the tank" to clear, `Page.captureScreenshot`.
+- More one-line hooks at the ship merge: `settleOn` leaves artificial plants upright (render/items.ts); `hard:silkmoss.mode` is an
+  `assumption` rule in data/provenance.ts (the source ratchet).
+- Open: no water-dish style fake rock bases; no artificial floaters or vines; no fin-tear warning (plastic vs long-finned fish) in the gates yet;
+  P6 wires the "Live plants? artificial / mixed" choice to these variants.
+
 ## Lane SE: our own stocking engine, load vs capacity (2026-10-19, branch `stocking`, port 5843)
 **Step 1 DONE (probe).** Mesh volume from the 3D fish loft works but is only about 2x accurate vs FishBase length-weight (goldfish 4.8x heavy, guppy 0.29x, pleco 2x, swordtail 0.22x). **Nathan's decision 2026-10-19: mass = FishBase length-weight for EVERY species (shrimp, snails, herps: keeper-reference estimates, `src: estimate`); the model volume is only a cross-check that flags outliers.**
 **Steps 2 + 3 DONE (engine, calibration; UI is step 4, not started).**
