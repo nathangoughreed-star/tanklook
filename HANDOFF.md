@@ -55,7 +55,7 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 - SE2: waste constant good to about 2x, plant classes extrapolated, filtration research built in part by S164 (branch nitrogen-ferts, awaiting Nathan's push yes).
 - LC light catalogue: PAR for a 12 W bar looks high; light price not in cost totals; submersible lit from the surface and can overlap a centred filter intake. => chat LF: Lights Follow-ups (prompts/chat-lights-followups.md).
 - SB / ST: about 90 source disagreements wait for Nathan (research/sourcing/decisions.md); 305 inline engine numbers need a by-hand look. => chat SQ: Source Decisions (prompts/chat-source-decisions.md).
-- TV tank sizes: Walmart Marineland Portrait 5 unavailable (remove the deal? Nathan); Amazon Aqueon SmartClean 20 size still a guess. SF sponge filter: Nathan to decide whether the fullness tile starts open on desktop (wait for S164 to land: both edit fullnessTile.ts).
+- TV tank sizes: Walmart Marineland Portrait 5 deal removed 2026-10-20 (listing not available online); Amazon Aqueon SmartClean 20 size still a guess (listing gives a box size). SF sponge filter: Nathan to decide whether the fullness tile starts open on desktop (wait for S164 to land: both edit fullnessTile.ts).
 
 ## Source traceability (2026-10-20, side chat in the `stocking` worktree; Nathan: the defence against "AI slop")
 Goal: every advice number traces to a source, a fit, a stated derivation or a labelled assumption; never "made up".

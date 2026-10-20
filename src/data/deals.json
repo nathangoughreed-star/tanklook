@@ -195,7 +195,8 @@
    ],
    "filter": {
     "kind": "hob",
-    "name": "Top Fin Silenstream PF20 power filter with cartridge replacement reminder", "_nameSrc": "PetSmart kit contents graphic (item 9), seen by Nathan 2026-10-20"
+    "name": "Top Fin Silenstream PF20 power filter with cartridge replacement reminder",
+    "_nameSrc": "PetSmart kit contents graphic (item 9), seen by Nathan 2026-10-20"
    },
    "price": {
     "usd": 119.99,
@@ -381,7 +382,8 @@
    ],
    "filter": {
     "kind": "hob",
-    "name": "Top Fin Silenstream PF10 Power Filter with Cartridge Replacement Reminder", "_nameSrc": "PetSmart gallery image 5300979_alt2 (Included Inside: item 4, PF-S cartridge), read 2026-10-20; the listing text says only Integrated Filter System"
+    "name": "Top Fin Silenstream PF10 Power Filter with Cartridge Replacement Reminder",
+    "_nameSrc": "PetSmart gallery image 5300979_alt2 (Included Inside: item 4, PF-S cartridge), read 2026-10-20; the listing text says only Integrated Filter System"
    },
    "price": {
     "usd": 89.99
@@ -505,46 +507,6 @@
    },
    "est": true,
    "img": "https://i5.walmartimages.com/seo/Aqua-Culture-5-Gallon-Glass-Aquarium-Starter-Kit_0a95ac0b-ac07-423c-9e38-fc938b20e6f6.26a01d248c439263165ed589e78b638e.jpeg"
-  },
-  {
-   "id": "walmart-marineland-portrait-5",
-   "retailer": "Walmart",
-   "name": "Marineland Portrait Glass LED Aquarium Kit 5 gal",
-   "gal": 5,
-   "tank": "g5",
-   "dims": {
-    "L_in": 9.99,
-    "D_in": 9.67,
-    "H_in": 17.2
-   },
-   "includes": [
-    "tank",
-    "lid",
-    "light",
-    "filter"
-   ],
-   "filter": {
-    "kind": "internal",
-    "name": "Marineland hidden 3-stage filter"
-   },
-   "price": {
-    "usd": 74.49
-   },
-   "url": "https://www.walmart.com/ip/Marineland-Portrait-Glass-LED-Aquarium-Kit-5-Gallons-Hidden-Filtration/40231748",
-   "asOf": "2026-10-19",
-   "note": "Out of stock with no price when the page was read 2026-10-19. Walmart showed it not available online on 2026-10-20; specs not readable.",
-   "look": {
-    "lid": "glass",
-    "guessed": [
-     "price: from a search result of the listing (the site blocks page checks), so it may be out of date",
-     "tank height: the listing gives 17.2 in, which likely includes the LED hood; the glass alone is not published"
-    ],
-    "light": {
-     "says": "LED in the hood (no watts, Kelvin or PAR published)"
-    }
-   },
-   "est": true,
-   "img": "https://i5.walmartimages.com/seo/Marineland-Portrait-Glass-LED-aquarium-Kit-5-Gallons-Hidden-Filtration_03b2cae0-9a46-474c-acf1-ce523a027605.e59a95c5b644c64960d11d387583bde5.png"
   },
   {
    "id": "walmart-vibrant-life-10",
