@@ -232,11 +232,11 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
       const up = Math.acos(Math.min(1, nrm.y)) + (r() - 0.5) * 1.6, yaw = a + (r() - 0.5) * 2.4;
       leaf(out, f, P.stalk, base, yaw, h * between(r, f.len), Math.max(0, up), twist(), pick(), bright() * (0.75 + 0.25 * d), r, bend(0.2));
     }
-    const core = new THREE.SphereGeometry(1, 14, 7, 0, Math.PI * 2, 0, Math.PI / 2);
+    const core = new THREE.SphereGeometry(1, 14, 12); // re-recorded 2026-10-20: moss ball is a whole ball (Nathan OK)
     const cp = core.attributes.position;
     for (let i = 0; i < cp.count; i++) {
-      const x = cp.getX(i), z = cp.getZ(i), d = Math.hypot(x, z), a = Math.atan2(z, x), e = rim(a) * 0.92;
-      cp.setXYZ(i, x * e, domeY(Math.min(1, d), a) * 0.85, z * e);
+      const x = cp.getX(i), y = cp.getY(i), z = cp.getZ(i), d = Math.hypot(x, z), a = Math.atan2(z, x), e = rim(a) * 0.92;
+      cp.setXYZ(i, x * e, y >= 0 ? domeY(Math.min(1, d), a) * 0.85 : -Math.sqrt(Math.max(0, 1 - d * d)) * h * 0.5, z * e);
     }
     core.deleteAttribute('uv'); core.computeVertexNormals();
     const kc = new THREE.Color(P.stalk), ca = new Float32Array(cp.count * 3);
