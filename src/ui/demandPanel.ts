@@ -77,7 +77,7 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
   const checkStartPrice = (quiet = false) => {
     const S = store.tank, i = store.scene.active, pin = pinnedDeal(S), drift = dealDrift(S, i), key = drift.join();
     if (pin && key && !lost && !quiet) showPriceNotice(keepsBundle(S, i, pin, drift)
-      ? `You changed the ${esc(partList(drift))}. Buying the ${esc(pin.retailer + ' ' + pin.name)} bundle (${usd(pin.price.usd)}) anyway and your ${esc(partList(drift))} on top still costs less than buying every part separately, so it is priced that way (the bundle's own ${drift.length > 1 ? 'ones are' : 'one is'} left over).`
+      ? `You already have a ${esc(partList(drift))} from the bundle, buying ${drift.length > 1 ? 'these' : 'this one'} will cost extra.`
       : `You changed the ${esc(partList(drift))}, so this is no longer the ${esc(pin.retailer + ' ' + pin.name)} bundle: ${drift.includes('tank') ? 'the bundle is that tank, so' : 'buying the bundle and your new part on top would cost more, so'} the bundle discount (${usd(pin.price.usd)}) no longer applies and each part is priced on its own.`, () => store.undo());
     lost = key;
     const ps = pinnedPreset(), pd = presetDrift(S, i);
