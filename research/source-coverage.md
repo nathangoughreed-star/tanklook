@@ -11,9 +11,9 @@ when it carries the url of the listing it was read from and does not mark the fi
 
 | | values | cited | fitted | derived | researched | claimed | assumption | unsourced | strong |
 |---|---|---|---|---|---|---|---|---|---|
-| **all data** | 4994 | 1767 (35 %) | 59 (1 %) | 5 (0 %) | 677 (14 %) | 765 (15 %) | 419 (8 %) | 1302 (26 %) | 37 % |
-| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) | 1277 |  |  |  | 383 | 510 |  | 384 | 0 % |
-| Adult length per species (species.json tl) | 108 |  |  |  |  |  |  | 108 | 0 % |
+| **all data** | 4994 | 1803 (36 %) | 59 (1 %) | 5 (0 %) | 677 (14 %) | 765 (15 %) | 421 (8 %) | 1264 (25 %) | 37 % |
+| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) | 1277 | 26 |  |  | 383 | 510 | 2 | 356 | 2 % |
+| Adult length per species (species.json tl) | 108 | 10 |  |  |  |  |  | 98 | 9 % |
 | Marine pH band (data/waterchem.ts) | 2 |  |  |  |  |  |  | 2 | 0 % |
 | Reptile / amphibian floor area, height, groups, growth (data/herpstock.ts) | 228 |  |  |  | 228 |  |  |  | 0 % |
 | Terrarium air temperature and humidity (data/climate.ts AIR) | 112 |  |  |  | 66 |  |  | 46 | 0 % |
@@ -41,13 +41,13 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 
 | field | values |
 |---|---|
-| `CARE *.care` | 84 |
-| `CARE *.minL` | 84 |
-| `CARE *.temper` | 84 |
+| `CARE *.care` | 78 |
+| `CARE *.temper` | 77 |
+| `CARE *.minL` | 76 |
 | `CARE *.ph.*` | 28 |
-| `CARE *.group` | 22 |
-| `CARE *.prey.mm` | 18 |
-| `CARE *.solo` | 13 |
+| `CARE *.group` | 19 |
+| `CARE *.prey.mm` | 16 |
+| `CARE *.solo` | 11 |
 | `CARE *.temp.*` | 8 |
 | `CARE *.tol.*` | 8 |
 | `CARE *.bands.ok` | 5 |
@@ -59,8 +59,8 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | `CARE *.nip` | 3 |
 | `CARE *.fam` | 2 |
 | `CARE *.coral` | 1 |
-| `SPECIES *.tl` | 84 |
-| `SPECIES *.female.tl` | 24 |
+| `SPECIES *.tl` | 75 |
+| `SPECIES *.female.tl` | 23 |
 | `MARINE_PH *` | 2 |
 | `AIR *.rh.*` | 12 |
 | `AIR *.c.*` | 10 |

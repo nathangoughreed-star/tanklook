@@ -1,0 +1,857 @@
+[
+ {
+  "id": "neon",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Paracheirodon-innesi.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Max length : 2.5 cm SL male/unsexed;"
+ },
+ {
+  "id": "neon",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/paracheirodon-innesi/",
+  "result": "compact",
+  "score": 1,
+  "quote": "30mm SL1.2in SL"
+ },
+ {
+  "id": "neon",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.fishkeepingworld.com/neon-tetra/",
+  "result": "exact",
+  "score": 1,
+  "quote": "adult neon tetras only grow to 1.5 inches long."
+ },
+ {
+  "id": "neon",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/paracheirodon-innesi/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Easy"
+ },
+ {
+  "id": "neon",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.fishkeepingworld.com/neon-tetra/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Caring for neon tetras is easy."
+ },
+ {
+  "id": "neon",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/paracheirodon-innesi/",
+  "result": "compact",
+  "score": 1,
+  "quote": "~54litres~14US gal"
+ },
+ {
+  "id": "neon",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.fishkeepingworld.com/neon-tetra/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum 10 gallons, and one extra gallon of water for every additional fish"
+ },
+ {
+  "id": "neon",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/paracheirodon-innesi/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Generally peaceful making it an ideal resident of the well-researched community aquarium."
+ },
+ {
+  "id": "neon",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.fishkeepingworld.com/neon-tetra/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Neon tetras are calm, peaceful fish and are rarely aggressive in a peaceful community tank setup."
+ },
+ {
+  "id": "neon",
+  "field": "group",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/paracheirodon-innesi/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Try to buy a mixed-sex group of at least 8-10 specimens"
+ },
+ {
+  "id": "neon",
+  "field": "group",
+  "verdict": "agrees",
+  "url": "https://www.fishkeepingworld.com/neon-tetra/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Neon tetras should be kept in groups of at least six"
+ },
+ {
+  "id": "betta",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Betta-splendens.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Max length : 6.5 cm TL male/unsexed"
+ },
+ {
+  "id": "betta",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/betta-splendens/",
+  "result": "compact",
+  "score": 1,
+  "quote": "70mm SL2.8in SL"
+ },
+ {
+  "id": "betta",
+  "field": "care",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/betta-splendens/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Moderate"
+ },
+ {
+  "id": "betta",
+  "field": "care",
+  "verdict": "disagrees",
+  "url": "https://www.fishkeepingworld.com/betta-fish-care/",
+  "result": "exact",
+  "score": 1,
+  "quote": "With a little preparation and care, first-time fish owners can raise healthy, happy bettas."
+ },
+ {
+  "id": "betta",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/betta-splendens/",
+  "result": "compact",
+  "score": 1,
+  "quote": "An aquarium with base measurements of 45 ∗ 30 cm18 ∗ 12 in or equivalent is large enough for a single male or pair."
+ },
+ {
+  "id": "betta",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.fishkeepingworld.com/betta-fish-care/",
+  "result": "exact",
+  "score": 1,
+  "quote": "At least 5 gallons in size."
+ },
+ {
+  "id": "betta",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/betta-splendens/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Ornamental strains seem to be more aggressive than any other Betta species"
+ },
+ {
+  "id": "betta",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.fishkeepingworld.com/betta-fish-care/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Male and female bettas have feisty, vibrant personalities."
+ },
+ {
+  "id": "betta",
+  "field": "solo",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/betta-splendens/",
+  "result": "exact",
+  "score": 1,
+  "quote": "only a single individual can be kept per tank in most cases"
+ },
+ {
+  "id": "betta",
+  "field": "solo",
+  "verdict": "agrees",
+  "url": "https://www.fishkeepingworld.com/betta-fish-care/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Male bettas are territorial and mustn't be kept with other males."
+ },
+ {
+  "id": "angel",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Pterophyllum-scalare.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Maximum length 15 cm TL"
+ },
+ {
+  "id": "angel",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/pterophyllum-scalare/",
+  "result": "compact",
+  "score": 1,
+  "quote": "150mm SL6in SL"
+ },
+ {
+  "id": "angel",
+  "field": "care",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/pterophyllum-scalare/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Easy"
+ },
+ {
+  "id": "angel",
+  "field": "care",
+  "verdict": "disagrees",
+  "url": "https://www.fishkeepingworld.com/angelfish/",
+  "result": "miss",
+  "score": 0.71,
+  "quote": "| Silver | Easy | Semi-aggressive | 6 inches | 30 gallons |"
+ },
+ {
+  "id": "angel",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/pterophyllum-scalare/",
+  "result": "compact",
+  "score": 1,
+  "quote": "~200litres~53US gal"
+ },
+ {
+  "id": "angel",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.fishkeepingworld.com/angelfish/",
+  "result": "miss",
+  "score": 0.71,
+  "quote": "| Silver | Easy | Semi-aggressive | 6 inches | 30 gallons |"
+ },
+ {
+  "id": "angel",
+  "field": "temper",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/pterophyllum-scalare/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Generally a peaceful cichild but may squabble with it's own kind, so best kept in small groups."
+ },
+ {
+  "id": "angel",
+  "field": "temper",
+  "verdict": "disagrees",
+  "url": "https://www.fishkeepingworld.com/angelfish/",
+  "result": "miss",
+  "score": 0.71,
+  "quote": "| Silver | Easy | Semi-aggressive | 6 inches | 30 gallons |"
+ },
+ {
+  "id": "angel",
+  "field": "prey",
+  "verdict": "behaviour-only",
+  "url": "https://www.seriouslyfish.com/species/pterophyllum-scalare/",
+  "result": "compact",
+  "score": 1,
+  "quote": "Good community fish but may eat small fish such as tetras."
+ },
+ {
+  "id": "angel",
+  "field": "prey",
+  "verdict": "behaviour-only",
+  "url": "https://www.fishkeepingworld.com/angelfish/",
+  "result": "exact",
+  "score": 1,
+  "quote": "zebra angelfish eat any small fish that fit in their mouths."
+ },
+ {
+  "id": "bronzecory",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Corydoras-aeneus.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Max length : 7.5 cm SL male/unsexed;"
+ },
+ {
+  "id": "bronzecory",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.aquariadise.com/caresheet-bronze-corydoras/",
+  "result": "exact",
+  "score": 1,
+  "quote": "have an adult size of only around 2.5 inches (6,5 cm)"
+ },
+ {
+  "id": "bronzecory",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/corydoras-aeneus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Easy"
+ },
+ {
+  "id": "bronzecory",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.aquariadise.com/caresheet-bronze-corydoras/",
+  "result": "exact",
+  "score": 1,
+  "quote": "relatively easy care makes bronze Corydoras suitable for beginner aquarists"
+ },
+ {
+  "id": "bronzecory",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/corydoras-aeneus/",
+  "result": "compact",
+  "score": 1,
+  "quote": "~72litres~19US gal"
+ },
+ {
+  "id": "bronzecory",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.aquariadise.com/caresheet-bronze-corydoras/",
+  "result": "exact",
+  "score": 1,
+  "quote": "20 gal (80 L, long)"
+ },
+ {
+  "id": "bronzecory",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/corydoras-aeneus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Peaceful and gregarious."
+ },
+ {
+  "id": "bronzecory",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.aquariadise.com/caresheet-bronze-corydoras/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Peaceful"
+ },
+ {
+  "id": "bronzecory",
+  "field": "group",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/corydoras-aeneus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Should be maintained in a group of at least 4-6 individuals."
+ },
+ {
+  "id": "bronzecory",
+  "field": "group",
+  "verdict": "agrees",
+  "url": "https://www.aquariadise.com/caresheet-bronze-corydoras/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Keeping groups of at least six, preferably more, is recommended!"
+ },
+ {
+  "id": "bristlenose",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/ancistrus-cf-cirrhosus",
+  "result": "compact",
+  "score": 1,
+  "quote": "125mm SL5in SL"
+ },
+ {
+  "id": "bristlenose",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.chewy.com/education/fish/general/bristlenose-pleco-care-guide",
+  "result": "compact",
+  "score": 1,
+  "quote": "Most reach about 4 to 5 inches, though adult size varies by species and variety."
+ },
+ {
+  "id": "bristlenose",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/ancistrus-cf-cirrhosus",
+  "result": "exact",
+  "score": 1,
+  "quote": "Easy"
+ },
+ {
+  "id": "bristlenose",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.chewy.com/education/fish/general/bristlenose-pleco-care-guide",
+  "result": "exact",
+  "score": 1,
+  "quote": "generally beginner-friendly because they are peaceful, hardy, and compatible with many community fish"
+ },
+ {
+  "id": "bristlenose",
+  "field": "minL",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/ancistrus-cf-cirrhosus",
+  "result": "compact",
+  "score": 1,
+  "quote": "~54litres~14US gal"
+ },
+ {
+  "id": "bristlenose",
+  "field": "minL",
+  "verdict": "disagrees",
+  "url": "https://www.chewy.com/education/fish/general/bristlenose-pleco-care-guide",
+  "result": "exact",
+  "score": 1,
+  "quote": "A 20-gallon aquarium is a common minimum for one adult bristlenose pleco."
+ },
+ {
+  "id": "bristlenose",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/ancistrus-cf-cirrhosus",
+  "result": "exact",
+  "score": 1,
+  "quote": "Relatively peaceful but territorial with conspecifics and similarly-shaped species."
+ },
+ {
+  "id": "bristlenose",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.chewy.com/education/fish/general/bristlenose-pleco-care-guide",
+  "result": "compact",
+  "score": 1,
+  "quote": "Bristlenose plecos are generally peaceful."
+ },
+ {
+  "id": "kribensis",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Pelvicachromis-pulcher.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Max length : 11.0 cm TL male/unsexed"
+ },
+ {
+  "id": "kribensis",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/pelvicachromis-pulcher/",
+  "result": "compact",
+  "score": 1,
+  "quote": "100mm SL3.9in SL"
+ },
+ {
+  "id": "kribensis",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.aquariumsource.com/kribensis-cichlid/",
+  "result": "exact",
+  "score": 1,
+  "quote": "The average Kribensis Cichlid size is around 4 inches in length for males and 3 inches in length for females."
+ },
+ {
+  "id": "kribensis",
+  "field": "female.tl",
+  "verdict": "agrees",
+  "url": "https://www.aquariumsource.com/kribensis-cichlid/",
+  "result": "exact",
+  "score": 1,
+  "quote": "The average Kribensis Cichlid size is around 4 inches in length for males and 3 inches in length for females."
+ },
+ {
+  "id": "kribensis",
+  "field": "care",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/pelvicachromis-pulcher/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Easy"
+ },
+ {
+  "id": "kribensis",
+  "field": "care",
+  "verdict": "disagrees",
+  "url": "https://www.aquariumsource.com/kribensis-cichlid/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Kribensis Cichlid care is quite manageable."
+ },
+ {
+  "id": "kribensis",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/pelvicachromis-pulcher/",
+  "result": "exact",
+  "score": 1,
+  "quote": "24\" x 15\" x 12\" (60x37.5x30cm) - 71 litres is suitable for a single pair."
+ },
+ {
+  "id": "kribensis",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.aquariumsource.com/kribensis-cichlid/",
+  "result": "exact",
+  "score": 1,
+  "quote": "We recommend an aquarium that can hold 20 to 30 gallons."
+ },
+ {
+  "id": "kribensis",
+  "field": "temper",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/pelvicachromis-pulcher/",
+  "result": "exact",
+  "score": 1,
+  "quote": "become very territorial when breeding"
+ },
+ {
+  "id": "kribensis",
+  "field": "temper",
+  "verdict": "disagrees",
+  "url": "https://www.aquariumsource.com/kribensis-cichlid/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Kribensis Cichlids are peaceful and non-aggressive."
+ },
+ {
+  "id": "cherryshrimp",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://modestfish.com/cherry-shrimp",
+  "result": "compact",
+  "score": 1,
+  "quote": "Size: 1 inch (2.5 centimeters)."
+ },
+ {
+  "id": "cherryshrimp",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://shrimpybusiness.com/blogs/shrimpy-business-blog/cherry-shrimp-care-guide",
+  "result": "compact",
+  "score": 1,
+  "quote": "While cherry shrimp only grow to about an inch in length."
+ },
+ {
+  "id": "cherryshrimp",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://modestfish.com/cherry-shrimp",
+  "result": "compact",
+  "score": 1,
+  "quote": "Care Level: easy."
+ },
+ {
+  "id": "cherryshrimp",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://shrimpybusiness.com/blogs/shrimpy-business-blog/cherry-shrimp-care-guide",
+  "result": "exact",
+  "score": 1,
+  "quote": "relatively easy to care for, but they're also delicate and may not be a good fit for all aquariums"
+ },
+ {
+  "id": "cherryshrimp",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://modestfish.com/cherry-shrimp",
+  "result": "compact",
+  "score": 1,
+  "quote": "Min. Tank Size: 5 gallons (19 liters)."
+ },
+ {
+  "id": "cherryshrimp",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://shrimpybusiness.com/blogs/shrimpy-business-blog/cherry-shrimp-care-guide",
+  "result": "exact",
+  "score": 1,
+  "quote": "a tank no smaller than 5 gallons"
+ },
+ {
+  "id": "cherryshrimp",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://modestfish.com/cherry-shrimp",
+  "result": "compact",
+  "score": 1,
+  "quote": "Temperament: ultra peaceful."
+ },
+ {
+  "id": "cherryshrimp",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://shrimpybusiness.com/blogs/shrimpy-business-blog/cherry-shrimp-care-guide",
+  "result": "exact",
+  "score": 1,
+  "quote": "very mild-mannered but tend to be fairly shy and nervous"
+ },
+ {
+  "id": "cherryshrimp",
+  "field": "group",
+  "verdict": "agrees",
+  "url": "https://shrimpybusiness.com/blogs/shrimpy-business-blog/cherry-shrimp-care-guide",
+  "result": "exact",
+  "score": 1,
+  "quote": "need to be kept in large groups of 10 or more"
+ },
+ {
+  "id": "cherryshrimp",
+  "field": "group",
+  "verdict": "agrees",
+  "url": "https://modestfish.com/cherry-shrimp",
+  "result": "compact",
+  "score": 1,
+  "quote": "How many can be kept together: the more, the better."
+ },
+ {
+  "id": "ocellaris",
+  "field": "tl",
+  "verdict": "disagrees",
+  "url": "https://www.fishbase.se/summary/Amphiprion-ocellaris.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Max length : 11.0 cm TL male/unsexed"
+ },
+ {
+  "id": "ocellaris",
+  "field": "tl",
+  "verdict": "disagrees",
+  "url": "https://topshelfaquatics.com/products/orange-ocellaris-clownfish",
+  "result": "exact",
+  "score": 1,
+  "quote": "Grows to about 4.3 inches in an aquarium."
+ },
+ {
+  "id": "ocellaris",
+  "field": "tl",
+  "verdict": "disagrees",
+  "url": "https://www.bulkreefsupply.com/ora-flurry-ocellaris-clownfish-ora.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Approx. Max Size"
+ },
+ {
+  "id": "ocellaris",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://topshelfaquatics.com/products/orange-ocellaris-clownfish",
+  "result": "exact",
+  "score": 1,
+  "quote": "Care Level: Easy"
+ },
+ {
+  "id": "ocellaris",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.bulkreefsupply.com/ora-flurry-ocellaris-clownfish-ora.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Care Level"
+ },
+ {
+  "id": "ocellaris",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.bulkreefsupply.com/ora-flurry-ocellaris-clownfish-ora.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum Tank Size"
+ },
+ {
+  "id": "ocellaris",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://topshelfaquatics.com/products/orange-ocellaris-clownfish",
+  "result": "exact",
+  "score": 1,
+  "quote": "Needs at least 30 gallons as an adult."
+ },
+ {
+  "id": "ocellaris",
+  "field": "temper",
+  "verdict": "disagrees",
+  "url": "https://topshelfaquatics.com/products/orange-ocellaris-clownfish",
+  "result": "exact",
+  "score": 1,
+  "quote": "Temperament: Semi-Aggressive"
+ },
+ {
+  "id": "ocellaris",
+  "field": "temper",
+  "verdict": "disagrees",
+  "url": "https://www.bulkreefsupply.com/ora-flurry-ocellaris-clownfish-ora.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Temperament"
+ },
+ {
+  "id": "yellowtang",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Zebrasoma-flavescens.html",
+  "result": "compact",
+  "score": 1,
+  "quote": "Max length : 20.0 cm TL male/unsexed; (Ref. 9710)"
+ },
+ {
+  "id": "yellowtang",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.liveaquaria.com/products/yellow-tang-hawaii",
+  "result": "exact",
+  "score": 1,
+  "quote": "Maximum Size: 8\""
+ },
+ {
+  "id": "yellowtang",
+  "field": "care",
+  "verdict": "disagrees",
+  "url": "https://www.liveaquaria.com/products/yellow-tang-hawaii",
+  "result": "exact",
+  "score": 1,
+  "quote": "Care Level: Easy"
+ },
+ {
+  "id": "yellowtang",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.liveaquaria.com/products/yellow-tang-hawaii",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum Tank Size: 100 Gallons"
+ },
+ {
+  "id": "yellowtang",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.liveaquaria.com/products/yellow-tang-hawaii",
+  "result": "exact",
+  "score": 1,
+  "quote": "Temperament: Semi-Aggressive"
+ },
+ {
+  "id": "yellowtang",
+  "field": "solo",
+  "verdict": "agrees",
+  "url": "https://www.liveaquaria.com/products/yellow-tang-hawaii",
+  "result": "exact",
+  "score": 1,
+  "quote": "best to keep just one Yellow Hawaiian Tang per aquarium"
+ },
+ {
+  "id": "oscar",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Astronotus-ocellatus.html",
+  "result": "compact",
+  "score": 1,
+  "quote": "common length : 24.0 cm TL male/unsexed; (Ref. 12193)"
+ },
+ {
+  "id": "oscar",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/astronotus-ocellatus/",
+  "result": "compact",
+  "score": 1,
+  "quote": "Max size 350mm SL14in SL"
+ },
+ {
+  "id": "oscar",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.fishkeepingworld.com/oscar-fish/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Full-grown oscar fish reach up to 12 inches in length."
+ },
+ {
+  "id": "oscar",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/astronotus-ocellatus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Moderate"
+ },
+ {
+  "id": "oscar",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.fishkeepingworld.com/oscar-fish/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Oscar fish have moderate care needs."
+ },
+ {
+  "id": "oscar",
+  "field": "minL",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/astronotus-ocellatus/",
+  "result": "compact",
+  "score": 1,
+  "quote": "Volume ~540litres~143US gal"
+ },
+ {
+  "id": "oscar",
+  "field": "minL",
+  "verdict": "disagrees",
+  "url": "https://www.fishkeepingworld.com/oscar-fish/",
+  "result": "exact",
+  "score": 1,
+  "quote": "About 143 gallons (60 x 24 inch base) for one adult"
+ },
+ {
+  "id": "oscar",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.fishkeepingworld.com/oscar-fish/",
+  "result": "exact",
+  "score": 1,
+  "quote": "However, oscar fish are territorial and have aggressive tendencies."
+ },
+ {
+  "id": "oscar",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/astronotus-ocellatus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Although not especially aggressive for a cichlid of this size"
+ },
+ {
+  "id": "oscar",
+  "field": "prey",
+  "verdict": "behaviour-only",
+  "url": "https://www.fishkeepingworld.com/oscar-fish/",
+  "result": "exact",
+  "score": 1,
+  "quote": "because oscar fish eat any fish that are smaller than their own size."
+ },
+ {
+  "id": "oscar",
+  "field": "prey",
+  "verdict": "behaviour-only",
+  "url": "https://www.seriouslyfish.com/species/astronotus-ocellatus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "it should not be combined with much smaller fishes."
+ }
+]

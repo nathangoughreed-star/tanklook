@@ -17,6 +17,8 @@ import bm from './bodymass.json';
 import { FILTER_MEDIA_L } from './filtermedia';
 import { NEEDS, isCoralNeed, isLand } from '../scene/lightneeds';
 import groupsMd from '../../research/groups-sources.md?raw';
+import { CARE } from './care';
+import speciesJson from './species.json';
 
 export type Status = 'cited' | 'fitted' | 'derived' | 'researched' | 'claimed' | 'assumption';
 export const STATUSES: Status[] = ['cited', 'fitted', 'derived', 'researched', 'claimed', 'assumption'];
@@ -92,6 +94,40 @@ export const RULES: Record<string, Rule[]> = {
   DEALS: [{ path: '**', status: 'cited', src: ['product-pages'], why: 'the listing at the row url', rowUrl: true }],
   GEAR_DEALS: [{ path: '**', status: 'cited', src: ['product-pages'], why: 'the listing at the row url', rowUrl: true }],
 };
+// Per-value web sourcing (research/sourcing/<batch>.json, brief research/sourcing/brief-care-tl.md): research agents record, per
+// species field, the pages they opened with a verbatim quote; scripts/verify-quotes.mjs checks each quote on the live page
+// (<batch>.verify.json). A field is cited only when the batch says it agrees, its value is still the one the batch checked, and at
+// least one quote was found on its page. Disagreements are not cited: they wait for a decision (research/sourcing/decisions.md).
+// The source id is the page's host (registered in sources.json); the url and quote stay in the batch file.
+interface Src { url: string; quote: string }
+interface Field { ours: unknown; verdict: 'agrees' | 'disagrees' | 'not-stated' | 'behaviour-only'; sources: Src[] }
+interface Batch { batch: string; species: Record<string, { fields: Record<string, Field> }> }
+interface Check { id: string; field: string; url: string; result: 'exact' | 'compact' | 'near' | 'miss' | 'nofetch' }
+const SOURCING = import.meta.glob('../../research/sourcing/*.json', { eager: true, import: 'default' }) as Record<string, unknown>;
+const host = (url: string) => new URL(url).hostname.replace(/^www\./, '');
+const speciesValue = (id: string, f: string) => {
+  const sp = (speciesJson as unknown as { species: { id: string; tl: number; female?: { tl?: number } }[] }).species.find(s => s.id === id);
+  return f === 'tl' ? sp?.tl : f === 'female.tl' ? sp?.female?.tl : undefined;
+};
+for (const [file, b] of Object.entries(SOURCING)) {
+  if (file.endsWith('.verify.json')) continue;
+  const batch = b as Batch, name = file.replace(/^.*\//, '');
+  const checks = (SOURCING[file.replace(/\.json$/, '.verify.json')] ?? []) as Check[];
+  for (const [id, sp] of Object.entries(batch.species)) for (const [f, v] of Object.entries(sp.fields)) {
+    const isSpecies = f === 'tl' || f === 'female.tl';
+    const now = isSpecies ? speciesValue(id, f) : f === 'prey' ? CARE[id]?.prey?.mm : (CARE[id] as unknown as Record<string, unknown>)?.[f];
+    if (JSON.stringify(now) !== JSON.stringify(v.ours)) continue;   // the value changed since the batch checked it
+    const target = isSpecies ? 'SPECIES' : 'CARE', path = `${id}.${f === 'prey' ? 'prey.mm' : f === 'ph' ? 'ph.*' : f}`;
+    const found = v.sources.filter(s => checks.some(c => c.id === id && c.field === f && c.url === s.url && (c.result === 'exact' || c.result === 'compact')));
+    const src = [...new Set(v.sources.map(s => host(s.url)))];
+    if (v.verdict === 'agrees' && found.length)
+      RULES[target].push({ path, status: 'cited', src: [...new Set(found.map(s => host(s.url)))], why: `stated on ${found.length} opened page(s), quote checked (research/sourcing/${name})` });
+    else if (v.verdict === 'agrees')
+      RULES[target].push({ path, status: 'researched', src, why: `agrees with the pages in research/sourcing/${name}, but no quote was found on the live page` });
+    else if (v.verdict === 'behaviour-only')
+      RULES[target].push({ path, status: 'assumption', src, why: `the predation is stated (research/sourcing/${name}); the prey length is our estimate` });
+  }
+}
 // FILTER_MEDIA 'derived' rows are worked out from cartridge weights (about +-50 %), not read off a page.
 for (const [id, r] of Object.entries(FILTER_MEDIA_L)) if (r[1] === 'derived')
   RULES.FILTER_MEDIA.push({ path: `${id}.0`, status: 'derived', src: ['product-pages'], why: `${r[2]} (about +-50 %)` });
