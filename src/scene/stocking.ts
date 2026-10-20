@@ -12,6 +12,7 @@
 // estimates, marked 'estimate'). The 3D bodies' volume is only the cross-check that flags outliers (scripts/body-mass.mjs).
 import bm from '../data/bodymass.json';
 import { getSpecies, type Species } from '../data/species';
+import { SPACE_FACTOR, SPACE_FACTOR_CLASS } from '../data/spacefactor';
 import { bioloadLitres } from './starter';
 import { heatLoss, rowsFor, stockCapacity, withChoice } from './tech';
 import type { Fish, TankSetup } from './types';
@@ -56,15 +57,23 @@ const SALT_LOAD = 1.5;
 export const LU_PER_L = 0.3;
 /** Space: how a body counts against the tank's water, mass^SPACE_EXP, and the g^SPACE_EXP one litre holds at 100 % (fit 2026-10-20 to
  *  24 AqAdvisor combinations, scripts/aq-compare.mjs; with it the median of ours / AqAdvisor is 1.0). */
-export const SPACE_EXP = 0.45, SPACE_PER_L = 1 / 4.242; // 4.921 is the geometric-mean fit; x1.16 centres the median of ours / AqAdvisor on 1
-export const spaceOf = (sp: Species, tlMm: number) => massG(sp.id, tlMm) ** SPACE_EXP;
+export const SPACE_EXP = 0.45, SPACE_PER_L = 1 / 3.96; // 4.242 before the per-species factors (data/spacefactor.ts); /1.07 re-centres the 24 mixed combinations (median ours / AqAdvisor 1.00)
+/** Fitted-to-AqAdvisor multiplier on a species' space load (data/spacefactor.ts): its own row, else its class (tiny / mid / big fish, invert, amphibian). */
+export function spaceFactor(sp: Species): number {
+  const own = SPACE_FACTOR[sp.id];
+  if (own) return own[0];
+  if (sp.salt) return 1;
+  const g = massG(sp.id, sp.tl), k = sp.cat === 'fw-invert' ? 'invert' : sp.cat === 'amphibian' ? 'amphibian' : sp.cat === 'fw-fish' ? (g < 2 ? 'tiny' : g < 30 ? 'mid' : 'big') : '';
+  return SPACE_FACTOR_CLASS[k]?.[0] ?? 1;
+}
+export const spaceOf = (sp: Species, tlMm: number) => massG(sp.id, tlMm) ** SPACE_EXP * spaceFactor(sp);
 /** Live plants take up nitrogen: up to +25 % at 15 plants per 100 L (a painted patch counts as 3 plants). A documented guess. */
 const PLANT_MAX = 0.25, PLANTS_PER_100L_FULL = 15, PATCH_PLANTS = 3;
 
 /** Animals that live in the water load it; land animals (geckos, anoles, snakes, spiders, tree frogs) do not. */
 export const countsAgainstWater = (sp: Species) => sp.habitat !== 'land';
 
-export interface Contributor { id: string; name: string; n: number; load: number; space: number; share: number; grams: number; cls: MetClass }
+export interface Contributor { id: string; name: string; n: number; load: number; space: number; share: number; grams: number; cls: MetClass; /** fitted space multiplier, counted as e.g. "1.4x" in the breakdown */ spaceFactor: number }
 export interface CapacityParts { /** load units the tank's water holds, filter aside */ space: number; litres: number; perL: number; filter: number; plants: number; plantCount: number; tempC: number; capacity: number }
 export interface Stocking {
   /** the larger of space and filtration, percent; over 100 = overstocked. 0 with no animals. */
@@ -111,7 +120,7 @@ export function stockingOf(S: TankSetup): Stocking {
     const sp = getSpecies(f.species), l = loadOf(f, cap.tempC, salt);
     if (!sp || l <= 0) continue;
     load += l;
-    const c = by.get(sp.id) ?? { id: sp.id, name: sp.name, n: 0, load: 0, space: 0, share: 0, grams: 0, cls: metClass(sp) };
+    const c = by.get(sp.id) ?? { id: sp.id, name: sp.name, n: 0, load: 0, space: 0, share: 0, grams: 0, cls: metClass(sp), spaceFactor: spaceFactor(sp) };
     c.n++; c.load += l; c.space += spaceOf(sp, f.tl ?? sp.tl); spaceLoad += spaceOf(sp, f.tl ?? sp.tl); c.grams += massG(sp.id, f.tl ?? sp.tl); by.set(sp.id, c);
   }
   const pc = (l: number, cp: number) => cp > 0 ? l / cp * 100 : l > 0 ? Infinity : 0;
@@ -160,4 +169,4 @@ export function stockingMemo(S: TankSetup): Stocking {
 /** One line for the panel and the view label: "Stocking 78%", "Stocking 240%, overstocked". */
 export const stockingLine = (r: Stocking) => `Stocking ${r.percent === Infinity ? 'over 999' : Math.round(r.percent)}%${r.percent > 100 ? ', overstocked' : ''}`;
 /** The breakdown for a tooltip or list: every contributor with its count, mass and share of the load. */
-export const stockingDetail = (r: Stocking) => [`Space ${Math.round(r.spacePercent)}% of the tank's water, filtration ${Math.round(r.filtrationPercent)}% of what the filter clears`].concat(r.contributors.map(c => `${c.n} ${c.name}: ${Math.round(c.share * 100)}% of the load (${c.grams >= 10 ? Math.round(c.grams / c.n) : (c.grams / c.n).toFixed(1)} g each)`));
+export const stockingDetail = (r: Stocking) => [`Space ${Math.round(r.spacePercent)}% of the tank's water, filtration ${Math.round(r.filtrationPercent)}% of what the filter clears`].concat(r.contributors.map(c => `${c.n} ${c.name}: ${Math.round(c.share * 100)}% of the load (${c.grams >= 10 ? Math.round(c.grams / c.n) : (c.grams / c.n).toFixed(1)} g each${Math.abs(c.spaceFactor - 1) >= 0.15 ? `, counted ${c.spaceFactor.toFixed(1)}x for space` : ''})`));

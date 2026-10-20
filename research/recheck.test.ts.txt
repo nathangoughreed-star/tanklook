@@ -1,0 +1,18 @@
+import { it } from 'vitest';
+import { stockingOf } from '../src/scene/stocking';
+import { COMBOS, comboTank } from './aqcompare.test';
+import { aqKey, aqQuery } from '../src/data/aqadvisor';
+import AQ from '../research/aq-compare.json';
+it('recheck', async () => {
+  const out: string[] = [], B: number[] = [], A: number[] = [];
+  for (const c of COMBOS) {
+    const s = comboTank(c), r = stockingOf(s), a = (AQ as any)[aqKey(aqQuery(s)!)]?.pct; if (!a) continue;
+    const before = r.contributors.reduce((x, k) => x + k.space / k.spaceFactor, 0) / r.capacity.space * 100;
+    B.push(before / a); A.push(r.spacePercent / a);
+    out.push(`${c.name}\t${a}\t${before.toFixed(0)}\t${r.spacePercent.toFixed(0)}\t${(r.spacePercent / a).toFixed(2)}`);
+  }
+  const med = (x: number[]) => [...x].sort((p, q) => p - q)[x.length >> 1], sd = (x: number[]) => { const l = x.map(Math.log), m = l.reduce((p, q) => p + q) / l.length; return Math.sqrt(l.reduce((p, q) => p + (q - m) ** 2, 0) / l.length); };
+  out.push(`n ${A.length} median before ${med(B).toFixed(2)} after ${med(A).toFixed(2)}; sdlog before ${sd(B).toFixed(2)} after ${sd(A).toFixed(2)}`);
+  // @ts-expect-error node only
+  (await import('node:fs')).writeFileSync('research/recheck.tsv', out.join(String.fromCharCode(10)));
+});
