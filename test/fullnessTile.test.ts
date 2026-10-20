@@ -8,7 +8,7 @@ import { buildTank, envKey } from '../src/render/build';
 import { OUTLINE_FIT, OUTLINE_OVER, outlineEdges, spaceOutline } from '../src/render/spaceOutline';
 import { defaultSpace, parseSpace, spaceFit, tankExtent } from '../src/scene/space';
 import { stockingOf } from '../src/scene/stocking';
-import { NEAR_FULL, bar, forkDue, fromUnits, overLine, tileState, toUnits, topBy } from '../src/ui/fullnessTile';
+import { NEAR_FULL, bar, mg, nitrogenRows, forkDue, fromUnits, overLine, tileState, toUnits, topBy } from '../src/ui/fullnessTile';
 import type { TankSetup } from '../src/scene/types';
 
 // the build paints textures on canvases: a do-nothing 2D context is enough here (as in menuFocus.test.ts)
@@ -47,6 +47,12 @@ describe('fullness bars', () => {
     expect(tileState(empty, re).show).toBe(false);
     expect(tileState({ ...empty, layout: { ...S.layout, space: { w: 900, d: 400 } } }, re).show).toBe(true);
     expect(tileState({ ...S, water: { ...S.water, on: false } }, r).show).toBe(false);
+  });
+  it('breaks the ammonia down into plants, bacteria and what is left', () => {
+    const r = stockingOf(withFish()), rows = nitrogenRows(r.nitrogen), labels = rows.map(x => x.label);
+    expect(labels.slice(0, 3)).toEqual(['Animals make', 'Plants take', 'Filter bacteria']);
+    expect(labels.includes('Left in the water')).toBe(r.nitrogen.unprocessed > 0);
+    expect(mg(0.0042)).toBe('4.2 mg'); expect(mg(0.0421)).toBe('42 mg');
   });
   it('opens the fork card only on the edit that takes the tank past the space', () => {
     expect(forkDue(true, false)).toBe(true);

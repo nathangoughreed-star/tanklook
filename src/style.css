@@ -593,6 +593,12 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .ftTop b { font-variant-numeric: tabular-nums } .ftTopHd { color: var(--muted) }
 .ftRow:hover .ftTop, .ftRow:focus-visible .ftTop, .ftRow.open .ftTop { display: block }
 .ftWhy { color: var(--muted); margin: 2px 0 6px }
+.ftN { border-top: 1px solid var(--line); padding: 5px 0 6px } .ftN[hidden] { display: none }
+.ftN summary { cursor: pointer; color: var(--muted) } .ftN[open] summary { margin-bottom: 4px }
+.ftNSplit { display: flex; height: 8px; margin-bottom: 4px; border-radius: 4px; overflow: hidden; background: color-mix(in srgb, var(--ink) 12%, transparent) }
+.ftNSplit i { display: block; height: 100% } .ftNSplit .p { background: #2e9e6a } .ftNSplit .b { background: #2a9bb0 } .ftNSplit .u { background: #d8432f }
+.ftNRow { display: flex; justify-content: space-between; margin-top: 3px } .ftNRow b { font-variant-numeric: tabular-nums }
+.ftNNote { color: var(--muted); font-size: 0.92em } .ftNCaveat { margin-top: 5px; font-style: italic }
 .ftSpace { border-top: 1px solid var(--line); padding-top: 6px }
 .ftSet, .ftFork, .ftBtns button { font: inherit; font-size: 12px; padding: 3px 9px; border-radius: 4px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer }
 .ftSet { border-style: dashed; border-color: #2a9bb0; color: #2a9bb0 } .ftSet:hover, .ftFork:hover, .ftBtns button:hover { background: color-mix(in srgb, var(--ink) 8%, var(--panel)) }
