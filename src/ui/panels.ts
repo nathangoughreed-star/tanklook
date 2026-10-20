@@ -1729,11 +1729,25 @@ Cancel, then change the name, to keep both.`)) return;
     const s = S(), has = s.water.on && s.fish.length > 0, r = has ? stockingMemo(s) : null;
     $('stkRow').hidden = !r || !r.contributors.length;
     $('stkList').hidden = $('stkRow').hidden;
+    $('stkNit').hidden = $('stkRow').hidden;
     if (!r || !r.contributors.length) { $('stkWhy').textContent = ''; return; }
     $('stkOut').textContent = stockingLine(r);
     $('stkOut').className = r.percent > 100 ? 'bad' : '';
     $('stkWhy').textContent = r.reasons.join(' ');
+    syncNitrogen(r);
     $('stkBody').innerHTML = stockingDetail(r).map(t => `<li>${esc(t)}</li>`).join('') + `<li class="dim">Water ${store.scene.units === 'in' ? `${Math.round(r.capacity.litres / 3.785)} gal` : `${Math.round(r.capacity.litres)} L`}, filter x${r.capacity.filter.toFixed(2)}${r.capacity.plantCount ? `, plants x${r.capacity.plants.toFixed(2)}` : ''}, ${store.scene.units === 'in' ? `${Math.round(r.capacity.tempC * 9 / 5 + 32)} °F` : `${Math.round(r.capacity.tempC)} °C`}.</li>`;
+  }
+  /** Waste, filter and plants (lane SE2): the split of the day's nitrogen and the two verdicts. */
+  function syncNitrogen(r: ReturnType<typeof stockingMemo>) {
+    const n = r.nitrogen, sel = $('stkFeed') as HTMLSelectElement;
+    if (document.activeElement !== sel) sel.value = n.feeding;
+    const seg = [['Plants', n.split.plants, '#3a9a5c'], ['Water changes', n.split.waterChanges, '#c9a227'], ['Ammonia the filter cannot clear', n.split.unprocessed, '#c0443c']] as const;
+    $('stkBar').innerHTML = seg.map(([l, v, c]) => `<span title="${l} ${Math.round(v * 100)}%" style="width:${(v * 100).toFixed(1)}%;background:${c}"></span>`).join('');
+    $('stkLegend').innerHTML = seg.map(([l, v, c]) => `<span><i style="background:${c}"></i>${l} ${Math.round(v * 100)}%</span>`).join('');
+    const f = n.filter, mg = n.nitrateMgNPerWeek;
+    $('stkVerdict').innerHTML = esc(`Ammonia safety ${n.ammoniaPercent === Infinity ? 'over 999' : Math.round(n.ammoniaPercent)}% of what the filter can safely clear (${f.label}${f.mediaL ? `, about ${f.mediaL.toFixed(1)} L of media, ${f.src}` : ''}).`)
+      + ' ' + esc(n.waterChangePct < 5 ? 'Plants and the filter leave almost no nitrate to remove.' : `Nitrate rises about ${mg.toFixed(1)} mg N/L a week: a water change of about ${Math.round(n.waterChangePct)}% a week holds it near 40 ppm.`)
+      + ` <span class="dim">${esc(`Waste ${n.tan.toFixed(2)} g ammonia (TAN) a day, plants take up to ${n.plants.gN.toFixed(2)} g N a day. Estimates: waste good to about 2x, plant uptake extrapolated, hang-on-back media derived.`)}</span>`;
   }
   function syncAq() {
     syncStocking();
@@ -1779,6 +1793,7 @@ Cancel, then change the name, to keep both.`)) return;
     }
     aqQueued.delete(key); aqBusy.delete(key); syncAq(); viewer.invalidate();
   };
+  ($('stkFeed') as HTMLSelectElement).onchange = e => { const v = (e.target as HTMLSelectElement).value as 'light' | 'normal' | 'heavy'; store.edit(s => { s.feeding = v === 'normal' ? undefined : v; }); };
   $('aqCheck').onclick = () => aqCheck(S());
 
   let waterKind = '', syncKeys: string[] = [];

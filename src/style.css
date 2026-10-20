@@ -606,3 +606,7 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .ftBtns { display: flex; gap: 6px; margin-top: 6px }
 .ftBtns .primary { background: var(--accent); border-color: var(--accent); color: #fff }
 @media (max-width: 700px) { .ft { width: 215px; max-height: calc(100% - 170px); font-size: 11.5px } .ftBody { padding-bottom: 6px } .ftRow { margin-bottom: 4px } .ftWhy { display: none } }
+
+#stkNit { margin: 2px 0 6px; font-size: 11.5px; color: var(--muted) } #stkNit summary { cursor: pointer } #stkVerdict .dim { opacity: .75 }
+.nbar { display: flex; height: 16px; border-radius: 4px; overflow: hidden; background: rgba(128,128,128,.25); margin: 6px 0 2px } .nbar span { display: block; height: 100% }
+.nleg { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 11px } .nleg i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 4px; vertical-align: -1px }

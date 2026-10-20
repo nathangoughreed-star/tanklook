@@ -384,6 +384,8 @@ export interface TankSetup {
   patches?: Patch[];
   /** The tank's tech level (lane TM, 2026-10-19, no version bump): filter, heater, CO2, ferts, salt gear; scene/tech.ts. Absent = the gear the demand engine infers. */
   tech?: import('./tech').TechSetup;
+  /** How heavily the animals are fed (lane SE2, 2026-10-20, no version bump): sets the waste in the nitrogen budget (scene/nitrogen.ts). Absent = 'normal' (1 % of body weight a day). */
+  feeding?: 'light' | 'normal' | 'heavy';
 }
 
 /** What a scatter brush drops (lane SB). */
