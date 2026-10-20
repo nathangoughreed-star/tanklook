@@ -1,0 +1,899 @@
+{
+ "batch": "A4",
+ "agent_notes": "Planet Catfish 403, tropicalfreshwaterfish syno 404; syno rests on FishBase + Seriously Fish only. Seriously Fish table values are quoted as the cell text appeared in WebFetch output (no pipes); checker may need loose matching. Guidarium has no care level so care has one source each.",
+ "species": {
+  "yellowlab": {
+   "sci": "Labidochromis caeruleus",
+   "fields": {
+    "tl": {
+     "ours": 100,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Labidochromis-caeruleus.html",
+       "site": "FishBase",
+       "states": "8.1 cm SL male/unsexed max",
+       "quote": "Max length : 8.1 cm SL male/unsexed"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/labidochromis-caeruleus/",
+       "site": "Seriously Fish",
+       "states": "100mm SL max",
+       "quote": "100mm SL"
+      }
+     ],
+     "note": "SL figures; about 97 mm TL for FishBase."
+    },
+    "female.tl": {
+     "ours": 90,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "No opened page gives a female length."
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "disagrees",
+     "suggest": 1,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/labidochromis-caeruleus/",
+       "site": "Seriously Fish",
+       "states": "Easy",
+       "quote": "Easy"
+      }
+     ],
+     "note": "Seriously Fish rates Easy (5 of 8 measures). Guidarium states no care level."
+    },
+    "minL": {
+     "ours": 200,
+     "verdict": "disagrees",
+     "suggest": 150,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/labidochromis-caeruleus/",
+       "site": "Seriously Fish",
+       "states": "~154 litres / ~41 US gal",
+       "quote": "~154litres"
+      },
+      {
+       "url": "https://guidarium.com/fishes/yellow-lab-mbuna",
+       "site": "Guidarium",
+       "states": "150 L min",
+       "quote": "A minimum aquarium volume of 150 litres and a tank length of at least 90 cm are recommended for Yellow Lab (Mbuna)."
+      }
+     ],
+     "note": "Both sources 150-154 L; ours is +30%."
+    },
+    "temper": {
+     "ours": 2,
+     "verdict": "disagrees",
+     "suggest": 1,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/labidochromis-caeruleus/",
+       "site": "Seriously Fish",
+       "states": "peaceful; territorial when spawning",
+       "quote": "A relatively peaceful species ideal for many hard water communities."
+      },
+      {
+       "url": "https://guidarium.com/fishes/yellow-lab-mbuna",
+       "site": "Guidarium",
+       "states": "semi-aggressive 6/10",
+       "quote": "Yellow Lab (Mbuna) is classified as semi-aggressive with an aggression score of 6 out of 10."
+      }
+     ],
+     "note": "Sources say peaceful to semi-aggressive; never aggressive."
+    },
+    "ph": {
+     "ours": [
+      7.6,
+      8.6
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/labidochromis-caeruleus/",
+       "site": "Seriously Fish",
+       "states": "7.7-8.6",
+       "quote": "7.7–8.6"
+      },
+      {
+       "url": "https://guidarium.com/fishes/yellow-lab-mbuna",
+       "site": "Guidarium",
+       "states": "7.5-8.8",
+       "quote": "a pH between 7.5 and 8.8"
+      }
+     ]
+    }
+   }
+  },
+  "peacock": {
+   "sci": "Aulonocara stuartgranti",
+   "fields": {
+    "tl": {
+     "ours": 130,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Aulonocara-stuartgranti.html",
+       "site": "FishBase",
+       "states": "11.8 cm TL max",
+       "quote": "Max length : 11.8 cm TL male/unsexed;"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/aulonocara-stuartgranti/",
+       "site": "Seriously Fish",
+       "states": "130mm SL max",
+       "quote": "130mm SL"
+      }
+     ],
+     "note": "Guidarium also 13 cm."
+    },
+    "female.tl": {
+     "ours": 100,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "No opened page gives a female length."
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/aulonocara-stuartgranti/",
+       "site": "Seriously Fish",
+       "states": "Moderate",
+       "quote": "Rated moderate because it needs a well-established tank and stable water."
+      }
+     ]
+    },
+    "minL": {
+     "ours": 200,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://guidarium.com/fishes/grants-peacock-cichlid",
+       "site": "Guidarium",
+       "states": "208 L",
+       "quote": "208 L"
+      }
+     ],
+     "note": "Seriously Fish gives only base dimensions 120 x 45 cm, no litres."
+    },
+    "temper": {
+     "ours": 1,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/aulonocara-stuartgranti/",
+       "site": "Seriously Fish",
+       "states": "relatively peaceful; males aggressive to similar colour patterns",
+       "quote": "A relatively peaceful species, although males tend to act aggressively towards any fish with a similar colour pattern"
+      },
+      {
+       "url": "https://guidarium.com/fishes/grants-peacock-cichlid",
+       "site": "Guidarium",
+       "states": "semi-aggressive 6/10",
+       "quote": "Semi-Aggressive"
+      }
+     ],
+     "note": "Peaceful to semi-aggressive."
+    },
+    "ph": {
+     "ours": [
+      7.6,
+      8.6
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/aulonocara-stuartgranti/",
+       "site": "Seriously Fish",
+       "states": "7.5-9.0",
+       "quote": "7.5–9.0"
+      },
+      {
+       "url": "https://guidarium.com/fishes/grants-peacock-cichlid",
+       "site": "Guidarium",
+       "states": "7.8-8.6",
+       "quote": "7.8–8.6"
+      }
+     ]
+    }
+   }
+  },
+  "demasoni": {
+   "sci": "Pseudotropheus demasoni",
+   "fields": {
+    "tl": {
+     "ours": 70,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Pseudotropheus-demasoni.html",
+       "site": "FishBase",
+       "states": "6.3 cm SL max",
+       "quote": "Max length : 6.3 cm SL male/unsexed"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/pseudotropheus-demasoni/",
+       "site": "Seriously Fish",
+       "states": "75mm SL max",
+       "quote": "75mm SL"
+      }
+     ],
+     "note": "Guidarium 8 cm."
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/pseudotropheus-demasoni/",
+       "site": "Seriously Fish",
+       "states": "Moderate, not for beginners",
+       "quote": "It is not recommended for the beginner"
+      }
+     ]
+    },
+    "minL": {
+     "ours": 200,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/pseudotropheus-demasoni/",
+       "site": "Seriously Fish",
+       "states": "~205 L absolute minimum",
+       "quote": "~205 litres"
+      },
+      {
+       "url": "https://guidarium.com/fishes/demasoni-cichlid-mbuna",
+       "site": "Guidarium",
+       "states": "200 L",
+       "quote": "200 L"
+      }
+     ]
+    },
+    "temper": {
+     "ours": 2,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/pseudotropheus-demasoni/",
+       "site": "Seriously Fish",
+       "states": "most aggressive mbuna",
+       "quote": "One of the most aggressive and territorial mbuna."
+      },
+      {
+       "url": "https://guidarium.com/fishes/demasoni-cichlid-mbuna",
+       "site": "Guidarium",
+       "states": "Highly Aggressive 9/10",
+       "quote": "Highly Aggressive"
+      }
+     ]
+    },
+    "ph": {
+     "ours": [
+      7.6,
+      8.6
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/pseudotropheus-demasoni/",
+       "site": "Seriously Fish",
+       "states": "7.6-8.8",
+       "quote": "7.6–8.8"
+      },
+      {
+       "url": "https://guidarium.com/fishes/demasoni-cichlid-mbuna",
+       "site": "Guidarium",
+       "states": "7.6-8.6",
+       "quote": "7.6–8.6"
+      }
+     ]
+    }
+   }
+  },
+  "kadango": {
+   "sci": "Copadichromis borleyi",
+   "fields": {
+    "tl": {
+     "ours": 150,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Copadichromis-borleyi.html",
+       "site": "FishBase",
+       "states": "14.0 cm TL max",
+       "quote": "Max length : 14.0 cm TL male/unsexed; (Ref. 4979)"
+      },
+      {
+       "url": "https://guidarium.com/fishes/red-fin-borleyi",
+       "site": "Guidarium",
+       "states": "approx 16 cm",
+       "quote": "maximum adult size of approximately 16 cm"
+      }
+     ],
+     "note": "Seriously Fish gives 200mm SL (about 240 mm TL), larger than ours."
+    },
+    "female.tl": {
+     "ours": 120,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "No opened page gives a female length."
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/copadichromis-borleyi/",
+       "site": "Seriously Fish",
+       "states": "Moderate",
+       "quote": "Moderate"
+      }
+     ]
+    },
+    "minL": {
+     "ours": 250,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://guidarium.com/fishes/red-fin-borleyi",
+       "site": "Guidarium",
+       "states": "280 L",
+       "quote": "A minimum aquarium volume of 280 litres"
+      }
+     ],
+     "note": "Seriously Fish: tank not under 150 x 45 x 45 cm (no litres stated)."
+    },
+    "temper": {
+     "ours": 1,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/copadichromis-borleyi/",
+       "site": "Seriously Fish",
+       "states": "generally peaceful",
+       "quote": "A generally peaceful species."
+      },
+      {
+       "url": "https://guidarium.com/fishes/red-fin-borleyi",
+       "site": "Guidarium",
+       "states": "semi-aggressive 6/10",
+       "quote": "classified as semi-aggressive with an aggression score of 6 out of 10"
+      }
+     ]
+    },
+    "ph": {
+     "ours": [
+      7.6,
+      8.6
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/copadichromis-borleyi/",
+       "site": "Seriously Fish",
+       "states": "7.5-8.5",
+       "quote": "7.5–8.5"
+      },
+      {
+       "url": "https://guidarium.com/fishes/red-fin-borleyi",
+       "site": "Guidarium",
+       "states": "7.5-8.5",
+       "quote": "a pH between 7.5 and 8.5"
+      }
+     ]
+    }
+   }
+  },
+  "labeo": {
+   "sci": "Labeotropheus trewavasae",
+   "fields": {
+    "tl": {
+     "ours": 120,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Labeotropheus-trewavasae.html",
+       "site": "FishBase",
+       "states": "11.7 cm TL max",
+       "quote": "Max length : 11.7 cm TL male/unsexed; (Ref. 5652)"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/labeotropheus-trewavasae/",
+       "site": "Seriously Fish",
+       "states": "113mm SL max",
+       "quote": "113mm SL"
+      }
+     ],
+     "note": "Guidarium 13 cm."
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/labeotropheus-trewavasae/",
+       "site": "Seriously Fish",
+       "states": "Moderate",
+       "quote": "Moderate"
+      }
+     ]
+    },
+    "minL": {
+     "ours": 250,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://guidarium.com/fishes/trewavas-cichlid",
+       "site": "Guidarium",
+       "states": "200 L",
+       "quote": "200 L"
+      }
+     ],
+     "note": "Ours is +25% over 200 L, at the limit. Seriously Fish: 90 x 45 cm, no litres."
+    },
+    "temper": {
+     "ours": 2,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/labeotropheus-trewavasae/",
+       "site": "Seriously Fish",
+       "states": "aggressive, territorial",
+       "quote": "Aggressive and territorial."
+      },
+      {
+       "url": "https://guidarium.com/fishes/trewavas-cichlid",
+       "site": "Guidarium",
+       "states": "Aggressive 8/10",
+       "quote": "Aggressive"
+      }
+     ]
+    },
+    "ph": {
+     "ours": [
+      7.6,
+      8.6
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/labeotropheus-trewavasae/",
+       "site": "Seriously Fish",
+       "states": "7.6-8.8",
+       "quote": "pH: 7.6 to 8.8 (8.0 is ideal)."
+      },
+      {
+       "url": "https://guidarium.com/fishes/trewavas-cichlid",
+       "site": "Guidarium",
+       "states": "7.8-8.6",
+       "quote": "7.8–8.6"
+      }
+     ]
+    }
+   }
+  },
+  "auratus": {
+   "sci": "Melanochromis auratus",
+   "fields": {
+    "tl": {
+     "ours": 110,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Melanochromis-auratus.html",
+       "site": "FishBase",
+       "states": "11.0 cm TL max",
+       "quote": "Max length : 11.0 cm TL male/unsexed"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/melanochromis-auratus/",
+       "site": "Seriously Fish",
+       "states": "110mm SL max",
+       "quote": "110mm SL"
+      }
+     ],
+     "note": "Guidarium 11 cm."
+    },
+    "female.tl": {
+     "ours": 90,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://tropicalfreshwaterfish.com/species/Melanochromis_auratus.html",
+       "site": "Tropical Freshwater Fish",
+       "states": "females to 4 in (10 cm)",
+       "quote": "Females to 4"
+      }
+     ],
+     "note": "Quote cut before the inch mark; the page row reads Males to 5 in (12 cm), Females to 4 in (10 cm). Single source."
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/melanochromis-auratus/",
+       "site": "Seriously Fish",
+       "states": "Moderate",
+       "quote": "Moderate"
+      }
+     ]
+    },
+    "minL": {
+     "ours": 250,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/melanochromis-auratus/",
+       "site": "Seriously Fish",
+       "states": "~205 L absolute minimum",
+       "quote": "~205 litres"
+      },
+      {
+       "url": "https://guidarium.com/fishes/auratus-cichlid-mbuna",
+       "site": "Guidarium",
+       "states": "200 L",
+       "quote": "200 L"
+      }
+     ],
+     "note": "TFF says 30 gal (114 L) suffices for fish to 10 cm, a lower figure."
+    },
+    "temper": {
+     "ours": 2,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/melanochromis-auratus/",
+       "site": "Seriously Fish",
+       "states": "most aggressive mbuna",
+       "quote": "One of the most aggressive and territorial mbuna."
+      },
+      {
+       "url": "https://guidarium.com/fishes/auratus-cichlid-mbuna",
+       "site": "Guidarium",
+       "states": "Highly Aggressive 9/10",
+       "quote": "Highly Aggressive"
+      }
+     ]
+    },
+    "ph": {
+     "ours": [
+      7.6,
+      8.6
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/melanochromis-auratus/",
+       "site": "Seriously Fish",
+       "states": "7.6-8.8",
+       "quote": "7.6–8.8"
+      },
+      {
+       "url": "https://guidarium.com/fishes/auratus-cichlid-mbuna",
+       "site": "Guidarium",
+       "states": "7.6-8.6",
+       "quote": "pH range of 7.6–8.6"
+      }
+     ]
+    }
+   }
+  },
+  "livingstonii": {
+   "sci": "Nimbochromis livingstonii",
+   "fields": {
+    "tl": {
+     "ours": 200,
+     "verdict": "disagrees",
+     "suggest": 250,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Nimbochromis-livingstonii.html",
+       "site": "FishBase",
+       "states": "25.0 cm TL male, 20.0 cm TL female",
+       "quote": "Max length : 25.0 cm TL male/unsexed; (Ref. 5595); 20.0 cm TL (female)"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/nimbochromis-livingstonii/",
+       "site": "Seriously Fish",
+       "states": "250mm SL max",
+       "quote": "250mm SL"
+      }
+     ],
+     "note": "Male 250 TL (FishBase), 250 SL (about 300 TL, Seriously Fish); Guidarium 25 cm. Female 200 TL matches ours."
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/nimbochromis-livingstonii/",
+       "site": "Seriously Fish",
+       "states": "Moderate",
+       "quote": "Moderate"
+      }
+     ]
+    },
+    "minL": {
+     "ours": 400,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://guidarium.com/fishes/livingstons-cichlid",
+       "site": "Guidarium",
+       "states": "470 L",
+       "quote": "470 L"
+      }
+     ],
+     "note": "Guidarium 470 L (150 cm tank); ours is -15%. Seriously Fish gives 120 x 45 cm, no litres."
+    },
+    "temper": {
+     "ours": 2,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://guidarium.com/fishes/livingstons-cichlid",
+       "site": "Guidarium",
+       "states": "Aggressive 8/10",
+       "quote": "Aggressive"
+      }
+     ],
+     "note": "Seriously Fish: predatory but generally peaceful with species too big to be food."
+    },
+    "prey": {
+     "ours": 80,
+     "verdict": "behaviour-only",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/nimbochromis-livingstonii/",
+       "site": "Seriously Fish",
+       "states": "eats smaller mbuna and young fish",
+       "quote": "Predatory but is generally peaceful with species too big to be considered food (it will eat smaller mbuna and young fish)."
+      },
+      {
+       "url": "https://guidarium.com/fishes/livingstons-cichlid",
+       "site": "Guidarium",
+       "states": "eats anything that fits its mouth",
+       "quote": "Anything that fits in its mouth will be eaten."
+      }
+     ],
+     "note": "No mm figure on either page."
+    },
+    "ph": {
+     "ours": [
+      7.6,
+      8.6
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/nimbochromis-livingstonii/",
+       "site": "Seriously Fish",
+       "states": "7.6-8.8",
+       "quote": "7.6–8.8"
+      },
+      {
+       "url": "https://guidarium.com/fishes/livingstons-cichlid",
+       "site": "Guidarium",
+       "states": "7.6-8.6",
+       "quote": "7.6–8.6"
+      }
+     ]
+    }
+   }
+  },
+  "afra": {
+   "sci": "Cynotilapia afra",
+   "fields": {
+    "tl": {
+     "ours": 100,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Cynotilapia-afra.html",
+       "site": "FishBase",
+       "states": "10.1 cm SL max",
+       "quote": "Max length : 10.1 cm SL male/unsexed"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/cynotilapia-afra/",
+       "site": "Seriously Fish",
+       "states": "100mm SL max",
+       "quote": "100mm SL"
+      }
+     ],
+     "note": "Guidarium 10 cm."
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/cynotilapia-afra/",
+       "site": "Seriously Fish",
+       "states": "Moderate",
+       "quote": "Moderate"
+      }
+     ]
+    },
+    "minL": {
+     "ours": 250,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://guidarium.com/fishes/afra-cichlid",
+       "site": "Guidarium",
+       "states": "200 L",
+       "quote": "200 L"
+      }
+     ],
+     "note": "Ours +25% of 200 L, at the limit. Seriously Fish: 100 x 30 cm, ~90 L (lower)."
+    },
+    "temper": {
+     "ours": 2,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/cynotilapia-afra/",
+       "site": "Seriously Fish",
+       "states": "belligerent, territorial",
+       "quote": "Belligerent and territorial."
+      },
+      {
+       "url": "https://guidarium.com/fishes/afra-cichlid",
+       "site": "Guidarium",
+       "states": "Aggressive 8/10",
+       "quote": "Aggressive"
+      }
+     ]
+    },
+    "ph": {
+     "ours": [
+      7.6,
+      8.6
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/cynotilapia-afra/",
+       "site": "Seriously Fish",
+       "states": "7.5-8.5",
+       "quote": "7.5–8.5"
+      },
+      {
+       "url": "https://guidarium.com/fishes/afra-cichlid",
+       "site": "Guidarium",
+       "states": "7.6-8.6",
+       "quote": "7.6–8.6"
+      }
+     ]
+    }
+   }
+  },
+  "syno": {
+   "sci": "Synodontis njassae",
+   "fields": {
+    "tl": {
+     "ours": 150,
+     "verdict": "disagrees",
+     "suggest": 190,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Synodontis-njassae.html",
+       "site": "FishBase",
+       "states": "19.2 cm TL max",
+       "quote": "Max length : 19.2 cm TL male/unsexed;"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/synodontis-njassae/",
+       "site": "Seriously Fish",
+       "states": "190mm SL max",
+       "quote": "190mm SL"
+      }
+     ],
+     "note": "Both about 190 mm; ours -22%."
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/synodontis-njassae/",
+       "site": "Seriously Fish",
+       "states": "Moderate, 3 of 8",
+       "quote": "Moderate"
+      }
+     ]
+    },
+    "minL": {
+     "ours": 200,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "Seriously Fish gives only a 120 x 30 cm base, no litres on the opened page; no second page opened."
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "disagrees",
+     "suggest": 1,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/synodontis-njassae/",
+       "site": "Seriously Fish",
+       "states": "fairly vigorous, not with shy species",
+       "quote": "It is a fairly vigorous species and should not be combined with shy species."
+      }
+     ],
+     "note": "Single source; vigorous toward shy tankmates, so 1 on our scale. Page temperament row reads unknown."
+    },
+    "ph": {
+     "ours": [
+      7.5,
+      9
+     ],
+     "verdict": "disagrees",
+     "suggest": [
+      7.5,
+      8.5
+     ],
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/synodontis-njassae/",
+       "site": "Seriously Fish",
+       "states": "7.5-8.5",
+       "quote": "7.5–8.5"
+      }
+     ],
+     "note": "Single source; our top end 9 is 0.5 over."
+    }
+   }
+  }
+ }
+}

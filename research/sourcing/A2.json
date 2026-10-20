@@ -1,0 +1,253 @@
+{
+  "batch": "A2",
+  "agent_notes": "Quotes are as returned by WebFetch's summariser (it may have trimmed citation refs from FishBase rows); recheck by script. thesprucepets.com is blocked for WebFetch; fishkeepingworld boesemani page 404; seriouslyfish goldfish page is only an index (no data). Fishkeeping World fancy-goldfish and goldfish pages were used for both goldfish entries. Interpretation used for pH: agrees when our range lies within a stated range +-0.3.",
+  "species": {
+    "cherrybarb": {
+      "sci": "Rohanella (Puntius) titteya",
+      "fields": {
+        "tl": {"ours": 50, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.fishbase.se/summary/Puntius-titteya.html", "site": "FishBase", "states": "5.0 cm TL max, male/unsexed; common 2.5 cm TL", "quote": "Max length : 5.0 cm TL male/unsexed"},
+          {"url": "https://www.seriouslyfish.com/species/puntius-titteya/", "site": "Seriously Fish", "states": "50 mm SL max (about 60 mm TL)", "quote": "50mm SL2.0in SL"}
+        ], "note": "Fishkeeping World says 'grow up to 2 inches long' (51 mm)."},
+        "female.tl": {"ours": 50, "verdict": "not-stated", "suggest": null, "sources": [], "note": "No page gives a separate female figure; FishBase max is for male/unsexed (5.0 cm TL, consistent with 50)."},
+        "care": {"ours": 1, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.seriouslyfish.com/species/puntius-titteya/", "site": "Seriously Fish", "states": "Easy", "quote": "an unreserved choice for beginners"},
+          {"url": "https://www.fishkeepingworld.com/cherry-barb/", "site": "Fishkeeping World", "states": "Easy", "quote": "Easy"}
+        ], "note": "FKW quote is the profile-table value 'Easy' (short; check by script)."},
+        "minL": {"ours": 60, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.seriouslyfish.com/species/puntius-titteya/", "site": "Seriously Fish", "states": "base 60 x 30 cm, about 54 L", "quote": "Base dimensions of at least 60 ∗ 30 cm24 ∗ 12 in or equivalent are required."},
+          {"url": "https://www.fishkeepingworld.com/cherry-barb/", "site": "Fishkeeping World", "states": "25 gal or larger (95 L)", "quote": "a tank that's 25 gallons or larger"}
+        ], "note": "Sources span 54-95 L; 60 is within span."},
+        "temper": {"ours": 0, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.seriouslyfish.com/species/puntius-titteya/", "site": "Seriously Fish", "states": "peaceful", "quote": "Generally very peaceful making it an ideal resident of the well-researched community aquarium."}
+        ]},
+        "group": {"ours": 6, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.seriouslyfish.com/species/puntius-titteya/", "site": "Seriously Fish", "states": "6-10 minimum", "quote": "at least 6-10 specimens should be purchased"},
+          {"url": "https://www.fishkeepingworld.com/cherry-barb/", "site": "Fishkeeping World", "states": "six or more", "quote": "thrives in groups of six or more"}
+        ]},
+        "ph": {"ours": [6, 7.5], "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.fishbase.se/summary/Puntius-titteya.html", "site": "FishBase", "states": "pH 6.0-8.0", "quote": "pH range: 6.0 - 8.0"},
+          {"url": "https://www.seriouslyfish.com/species/puntius-titteya/", "site": "Seriously Fish", "states": "6.0-8.0", "quote": "should be happy within the range 6.0 – 8.0."}
+        ], "note": "Fishkeeping World says 6 to 7, narrower."}
+      }
+    },
+    "tigerbarb": {
+      "sci": "Puntigrus tetrazona",
+      "fields": {
+        "tl": {"ours": 70, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.fishbase.se/summary/Puntigrus-tetrazona.html", "site": "FishBase", "states": "7.0 cm TL max, male/unsexed", "quote": "Max length : 7.0 cm TL male/unsexed"},
+          {"url": "https://www.seriouslyfish.com/species/puntigrus-tetrazona/", "site": "Seriously Fish", "states": "60 mm SL max (about 72 mm TL)", "quote": "60mm SL2.4in SL"}
+        ], "note": "Fishkeeping World: about 2.5 inches (64 mm)."},
+        "care": {"ours": 1, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.seriouslyfish.com/species/puntigrus-tetrazona/", "site": "Seriously Fish", "states": "Easy", "quote": "Easy"},
+          {"url": "https://www.fishkeepingworld.com/tiger-barb/", "site": "Fishkeeping World", "states": "Easy to moderate", "quote": "Easy to moderate"}
+        ], "note": "Short quotes are table values."},
+        "minL": {"ours": 80, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.seriouslyfish.com/species/puntigrus-tetrazona/", "site": "Seriously Fish", "states": "base 80 x 30 cm, about 72 L", "quote": "Base dimensions of 80 ∗ 30 cm31 ∗ 12 in or equivalent should be the smallest considered."},
+          {"url": "https://www.fishkeepingworld.com/tiger-barb/", "site": "Fishkeeping World", "states": "20 gal (76 L) for up to 5", "quote": "Tiger Barbs need at least a 20-gallon tank – this would be suitable for up to 5 of them."}
+        ]},
+        "temper": {"ours": 1, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.seriouslyfish.com/species/puntigrus-tetrazona/", "site": "Seriously Fish", "states": "notoriously aggressive, fin-biter; listed territorial", "quote": "This species is notoriously aggressive with a reputation for biting the fins of other fishes."},
+          {"url": "https://www.fishkeepingworld.com/tiger-barb/", "site": "Fishkeeping World", "states": "reputation for aggression", "quote": "The Tiger Barb has a bit of a reputation for being aggressive and dominant."}
+        ], "note": "Fin-nipper maps to our 1; both pages use the word aggressive."},
+        "group": {"ours": 6, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.seriouslyfish.com/species/puntigrus-tetrazona/", "site": "Seriously Fish", "states": "min 8-10", "quote": "A group of at least 8-10 specimens should be considered the minimum purchase."},
+          {"url": "https://www.fishkeepingworld.com/tiger-barb/", "site": "Fishkeeping World", "states": "at least 5, prefer 8-12", "quote": "They must be kept in a school of at least 5 individuals, though they prefer no less than 8 and no more than 12."}
+        ], "note": "Within +-2 of 8 and of 5."},
+        "ph": {"ours": [6, 7.5], "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.fishbase.se/summary/Puntigrus-tetrazona.html", "site": "FishBase", "states": "6.0-8.0", "quote": "pH range: 6.0 - 8.0"},
+          {"url": "https://www.fishkeepingworld.com/tiger-barb/", "site": "Fishkeeping World", "states": "6.0-8.0", "quote": "with a pH between 6.0-8.0."}
+        ]}
+      }
+    },
+    "boesemani": {
+      "sci": "Melanotaenia boesemani",
+      "fields": {
+        "tl": {"ours": 100, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.fishbase.se/summary/Melanotaenia-boesemani.html", "site": "FishBase", "states": "9.0 cm SL max male/unsexed (about 108 mm TL)", "quote": "Max length : 9.0 cm SL male/unsexed"},
+          {"url": "https://www.seriouslyfish.com/species/melanotaenia-boesemani/", "site": "Seriously Fish", "states": "110 mm SL max", "quote": "110mm SL"}
+        ], "note": "SL figures; TL would be larger (about 108-130)."},
+        "female.tl": {"ours": 80, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.fishbase.se/summary/Melanotaenia-boesemani.html", "site": "FishBase", "states": "7.0 cm SL female (about 84 mm TL)", "quote": "7.0 cm SL (female)"}
+        ]},
+        "care": {"ours": 1, "verdict": "disagrees", "suggest": 2, "sources": [
+          {"url": "https://www.seriouslyfish.com/species/melanotaenia-boesemani/", "site": "Seriously Fish", "states": "Moderate", "quote": "Moderate"}
+        ], "note": "One source only; quote is the rating word."},
+        "minL": {"ours": 200, "verdict": "disagrees", "suggest": 110, "sources": [
+          {"url": "https://www.seriouslyfish.com/species/melanotaenia-boesemani/", "site": "Seriously Fish", "states": "at least 120 x 30 x 30 cm, about 108 L (29 US gal)", "quote": "requiring an aquarium measuring at least 120 ∗ 30 ∗ 30 cm"}
+        ], "note": "Only one source found; ours is about 85 % above it."},
+        "temper": {"ours": 0, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.seriouslyfish.com/species/melanotaenia-boesemani/", "site": "Seriously Fish", "states": "very peaceful, can disturb small or slow fish", "quote": "Very peaceful, but can disturb smaller or slow-moving fish with its rapid movements and relatively large size."}
+        ]},
+        "group": {"ours": 6, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.seriouslyfish.com/species/melanotaenia-boesemani/", "site": "Seriously Fish", "states": "at least 6-8", "quote": "do far better when kept in a shoal of at least 6-8, preferably more."}
+        ]},
+        "ph": {"ours": [7, 8], "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.fishbase.se/summary/Melanotaenia-boesemani.html", "site": "FishBase", "states": "7.0-8.0", "quote": "pH range: 7.0 - 8.0"},
+          {"url": "https://www.seriouslyfish.com/species/melanotaenia-boesemani/", "site": "Seriously Fish", "states": "7.0-8.0", "quote": "pH: 7.0-8.0."}
+        ]}
+      }
+    },
+    "guppy": {
+      "sci": "Poecilia reticulata",
+      "fields": {
+        "tl": {"ours": 35, "verdict": "disagrees", "suggest": 30, "sources": [
+          {"url": "https://www.fishbase.se/summary/Poecilia-reticulata.html", "site": "FishBase", "states": "common 2.8 cm TL; max 5.0 cm SL male/unsexed", "quote": "common length : 2.8 cm TL male/unsexed"},
+          {"url": "https://www.fishkeepingworld.com/guppies/", "site": "Fishkeeping World", "states": "males about 1 1/8 in (29 mm)", "quote": "Males grow to about 1 ⅛ inches long, and females grow up to 2 ⅛ inches in length."}
+        ], "note": "Typical male 28-29 mm; ours is 21-25 % above. FishBase max 5.0 cm SL and Seriously Fish 60 mm SL are maxima for either sex, which would agree."},
+        "female.tl": {"ours": 50, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.fishkeepingworld.com/guppies/", "site": "Fishkeeping World", "states": "females up to 2 1/8 in (54 mm)", "quote": "Males grow to about 1 ⅛ inches long, and females grow up to 2 ⅛ inches in length."},
+          {"url": "https://www.fishbase.se/summary/Poecilia-reticulata.html", "site": "FishBase", "states": "6.0 cm SL female", "quote": "6.0 cm SL (female)"}
+        ], "note": "FishBase 6.0 SL is about 72 mm TL; its own Biology text says female 5 cm SL."},
+        "care": {"ours": 1, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.seriouslyfish.com/species/poecilia-reticulata/", "site": "Seriously Fish", "states": "Easy", "quote": "Easy"},
+          {"url": "https://www.fishkeepingworld.com/guppies/", "site": "Fishkeeping World", "states": "Easy", "quote": "Easy"}
+        ], "note": "Table values."},
+        "minL": {"ours": 40, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.seriouslyfish.com/species/poecilia-reticulata/", "site": "Seriously Fish", "states": "base 45 x 30 cm, about 41 L (11 US gal)", "quote": "45 × 30cm18 × 12in"},
+          {"url": "https://www.fishkeepingworld.com/guppies/", "site": "Fishkeeping World", "states": "5 gal (19 L) plus 1 gal per additional adult", "quote": "Minimum 5 gallons, plus 1 gallon of water for every additional adult guppy"}
+        ]},
+        "temper": {"ours": 0, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.seriouslyfish.com/species/poecilia-reticulata/", "site": "Seriously Fish", "states": "very peaceful", "quote": "A very peaceful fish."},
+          {"url": "https://www.fishkeepingworld.com/guppies/", "site": "Fishkeeping World", "states": "calm", "quote": "Guppies are calm, laid-back fish with no aggressive or territorial tendencies."}
+        ]},
+        "ph": {"ours": [7, 8], "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.fishbase.se/summary/Poecilia-reticulata.html", "site": "FishBase", "states": "7.0-8.0", "quote": "pH range: 7.0 - 8.0"},
+          {"url": "https://www.seriouslyfish.com/species/poecilia-reticulata/", "site": "Seriously Fish", "states": "7.0-8.5", "quote": "7.0–8.5"}
+        ], "note": "Fishkeeping World says 6.8-7.6."}
+      }
+    },
+    "platy": {
+      "sci": "Xiphophorus maculatus",
+      "fields": {
+        "tl": {"ours": 40, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.fishbase.se/summary/Xiphophorus-maculatus.html", "site": "FishBase", "states": "max 4.0 cm TL male; common 2.4 cm", "quote": "Max length : 4.0 cm TL male/unsexed"},
+          {"url": "https://www.fishkeepingworld.com/platy-fish/", "site": "Fishkeeping World", "states": "males average 2 in (51 mm)", "quote": "Male platy fish have an average size of two inches, while female platy fish reach up to three inches in length."}
+        ], "note": "FKW male figure is 27 % above ours; FishBase agrees exactly."},
+        "female.tl": {"ours": 55, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.fishbase.se/summary/Xiphophorus-maculatus.html", "site": "FishBase", "states": "6.0 cm TL female", "quote": "6.0 cm TL (female)"}
+        ], "note": "FKW says up to 3 in (76 mm); Seriously Fish 50 mm SL both sexes."},
+        "care": {"ours": 1, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.seriouslyfish.com/species/xiphophorus-maculatus/", "site": "Seriously Fish", "states": "Beginner", "quote": "suits the beginner as long as the water is moderately hard or harder."},
+          {"url": "https://www.fishkeepingworld.com/platy-fish/", "site": "Fishkeeping World", "states": "easy", "quote": "Platy fish are easy to care for because these fish are hardy and can tolerate most tank conditions."}
+        ]},
+        "minL": {"ours": 60, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.seriouslyfish.com/species/xiphophorus-maculatus/", "site": "Seriously Fish", "states": "base 60 x 30 cm, about 54 L (14 US gal)", "quote": "60 × 30cm24 × 12in"},
+          {"url": "https://www.fishkeepingworld.com/platy-fish/", "site": "Fishkeeping World", "states": "10 gal (38 L) for 5-6", "quote": "Minimum 10 gallons for a group of five to six platy fish."}
+        ]},
+        "temper": {"ours": 0, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.seriouslyfish.com/species/xiphophorus-maculatus/", "site": "Seriously Fish", "states": "very peaceful", "quote": "Very peaceful and can be kept with most community species."},
+          {"url": "https://www.fishkeepingworld.com/platy-fish/", "site": "Fishkeeping World", "states": "peaceful", "quote": "Platy fish are peaceful, social, and get along well with other fish."}
+        ]},
+        "ph": {"ours": [7, 8.2], "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.fishbase.se/summary/Xiphophorus-maculatus.html", "site": "FishBase", "states": "7.0-8.0", "quote": "pH range: 7.0 - 8.0"},
+          {"url": "https://www.fishkeepingworld.com/platy-fish/", "site": "Fishkeeping World", "states": "6.8-8.0", "quote": "Stick to a pH level between 6.8 and 8.0."}
+        ], "note": "Seriously Fish: 7.0-8.2."}
+      }
+    },
+    "molly": {
+      "sci": "Poecilia sphenops",
+      "fields": {
+        "tl": {"ours": 60, "verdict": "disagrees", "suggest": 85, "sources": [
+          {"url": "https://www.fishbase.se/summary/Poecilia-sphenops.html", "site": "FishBase", "states": "max 7.5 cm SL; common 4.0 cm TL", "quote": "Max length : 7.5 cm SL male/unsexed"},
+          {"url": "https://www.fishkeepingworld.com/molly-fish/", "site": "Fishkeeping World", "states": "males about 3.5 in (89 mm)", "quote": "Female molly fish grow bigger than male mollies — males grow to around 3.5 inches in length."}
+        ], "note": "FishBase common 4.0 cm TL would be 33 % below ours; max/typical figures are 75-90 mm. Seriously Fish: 80 mm SL both sexes."},
+        "female.tl": {"ours": 80, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.seriouslyfish.com/species/poecilia-sphenops/", "site": "Seriously Fish", "states": "80 mm SL (about 96 mm TL)", "quote": "80mm SL3.1in SL"},
+          {"url": "https://www.fishkeepingworld.com/molly-fish/", "site": "Fishkeeping World", "states": "adults up to 4.5 in (114 mm)", "quote": "Adult mollies reach up to 4.5 inches in length."}
+        ], "note": "FKW 114 mm is 43 % above ours; SF/FishBase agree."},
+        "care": {"ours": 2, "verdict": "disagrees", "suggest": 1, "sources": [
+          {"url": "https://www.seriouslyfish.com/species/poecilia-sphenops/", "site": "Seriously Fish", "states": "Easy", "quote": "Easy"},
+          {"url": "https://www.fishkeepingworld.com/molly-fish/", "site": "Fishkeeping World", "states": "Easy", "quote": "Care level: Easy"}
+        ]},
+        "minL": {"ours": 110, "verdict": "disagrees", "suggest": 80, "sources": [
+          {"url": "https://www.seriouslyfish.com/species/poecilia-sphenops/", "site": "Seriously Fish", "states": "base 90 x 30 cm, about 81 L (21 US gal)", "quote": "90 × 30cm36 × 12in"},
+          {"url": "https://www.fishkeepingworld.com/molly-fish/", "site": "Fishkeeping World", "states": "10 gal (38 L)", "quote": "Minimum tank size: 10 gallons"}
+        ], "note": "Ours is 36 % above the larger figure."},
+        "temper": {"ours": 0, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.seriouslyfish.com/species/poecilia-sphenops/", "site": "Seriously Fish", "states": "peaceful", "quote": "Peaceful but should only be kept with fish that can tolerate the same water conditions."},
+          {"url": "https://www.fishkeepingworld.com/molly-fish/", "site": "Fishkeeping World", "states": "peaceful", "quote": "Temperament: Peaceful"}
+        ]},
+        "ph": {"ours": [7.5, 8.5], "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.fishbase.se/summary/Poecilia-sphenops.html", "site": "FishBase", "states": "7.5-8.2", "quote": "pH range: 7.5 - 8.2"},
+          {"url": "https://www.seriouslyfish.com/species/poecilia-sphenops/", "site": "Seriously Fish", "states": "7.0-8.5", "quote": "7.0–8.5"}
+        ], "note": "Fishkeeping World table: 7.5-8.5."}
+      }
+    },
+    "swordtail": {
+      "sci": "Xiphophorus hellerii",
+      "fields": {
+        "tl": {"ours": 120, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.fishbase.se/summary/Xiphophorus-hellerii.html", "site": "FishBase", "states": "14.0 cm TL max male/unsexed", "quote": "Max length : 14.0 cm TL male/unsexed"},
+          {"url": "https://www.fishkeepingworld.com/swordtail/", "site": "Fishkeeping World", "states": "males up to 5.5 in (140 mm)", "quote": "Adult female swordtail fish can reach 6.3 inches in length, while males can grow up to 5.5 inches."}
+        ], "note": "Both 140 mm (ours 14 % below, within 20 %)."},
+        "female.tl": {"ours": 115, "verdict": "disagrees", "suggest": 160, "sources": [
+          {"url": "https://www.fishbase.se/summary/Xiphophorus-hellerii.html", "site": "FishBase", "states": "16.0 cm TL female", "quote": "16.0 cm TL (female)"},
+          {"url": "https://www.fishkeepingworld.com/swordtail/", "site": "Fishkeeping World", "states": "females up to 6.3 in (160 mm)", "quote": "Adult female swordtail fish can reach 6.3 inches in length, while males can grow up to 5.5 inches."}
+        ], "note": "Ours is 28 % below both. Seriously Fish says 140 mm SL both sexes (would agree). Figures may include the sword."},
+        "care": {"ours": 1, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.fishkeepingworld.com/swordtail/", "site": "Fishkeeping World", "states": "easy", "quote": "Swordtail fish are easy to care for because of their hardy and docile nature."},
+          {"url": "https://www.seriouslyfish.com/species/xiphophorus-hellerii/", "site": "Seriously Fish", "states": "Moderate", "quote": "Moderate"}
+        ], "note": "Sources disagree: FKW easy, Seriously Fish Moderate (our 2)."},
+        "minL": {"ours": 110, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.seriouslyfish.com/species/xiphophorus-hellerii/", "site": "Seriously Fish", "states": "120 x 30 cm base, about 108 L", "quote": "An aquarium with surface dimensions of 120 ∗ 30 cm48 ∗ 12 in or equivalent should be the smallest considered."},
+          {"url": "https://www.fishkeepingworld.com/swordtail/", "site": "Fishkeeping World", "states": "15 gal (57 L) for a single fish, +5 gal each", "quote": "At least 15 gallons for a single swordtail fish."}
+        ]},
+        "temper": {"ours": 1, "verdict": "disagrees", "suggest": 0, "sources": [
+          {"url": "https://www.fishkeepingworld.com/swordtail/", "site": "Fishkeeping World", "states": "peaceful; males can become territorial if too few females", "quote": "Swordtails are peaceful and social fish that enjoy the company of their own kind."},
+          {"url": "https://www.seriouslyfish.com/species/xiphophorus-hellerii/", "site": "Seriously Fish", "states": "temperament field 'unknown'; male groups form hierarchies", "quote": "groups of males tend to form dominance hierarchies"}
+        ], "note": "Mixed: FKW peaceful (0); SF gives no temperament but notes male dominance behaviour (supports 1). Treat as ambiguous."},
+        "ph": {"ours": [7, 8.3], "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.fishbase.se/summary/Xiphophorus-hellerii.html", "site": "FishBase", "states": "7.0-8.0", "quote": "pH range: 7.0 - 8.0"},
+          {"url": "https://www.fishkeepingworld.com/swordtail/", "site": "Fishkeeping World", "states": "7.0-8.4", "quote": "Keep the pH level between 7.0 and 8.4."}
+        ]}
+      }
+    },
+    "goldfish": {
+      "sci": "Carassius auratus (fancy varieties)",
+      "fields": {
+        "tl": {"ours": 160, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.fishkeepingworld.com/fancy-goldfish/", "site": "Fishkeeping World", "states": "5-6 in most common (127-152 mm)", "quote": "The type will also determine color, shape, and sizes; though 5-6 inches is most common."},
+          {"url": "https://www.fishkeepingworld.com/goldfish/", "site": "Fishkeeping World", "states": "up to 8 in (203 mm)", "quote": "Some fancy goldfish varieties grow up to 8 inches long and require at least a 20-gallon, 3-foot-long tank."}
+        ], "note": "Both pages are the same site; no second independent site found. Total length not stated explicitly."},
+        "care": {"ours": 1, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.fishkeepingworld.com/fancy-goldfish/", "site": "Fishkeeping World", "states": "easy; table 'Easy to medium'", "quote": "Fancy goldfish are easy to look after, providing the tank is kept clean."}
+        ]},
+        "minL": {"ours": 150, "verdict": "disagrees", "suggest": 75, "sources": [
+          {"url": "https://www.fishkeepingworld.com/fancy-goldfish/", "site": "Fishkeeping World", "states": "20 gal (76 L) for one fancy goldfish", "quote": "The minimum tank size you can house one fancy goldfish in is 20 gallons."},
+          {"url": "https://www.fishkeepingworld.com/goldfish/", "site": "Fishkeeping World", "states": "20 gal (76 L)", "quote": "Fancy goldfish are the smaller of the three and require a tank of only 20 gallons."}
+        ], "note": "Ours is about double. Our value may be for a group; sources state one fish."},
+        "temper": {"ours": 0, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.fishkeepingworld.com/fancy-goldfish/", "site": "Fishkeeping World", "states": "peaceful", "quote": "Fancies are generally peaceful and calm animals."}
+        ]},
+        "ph": {"ours": [6.5, 8], "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.fishbase.se/summary/Carassius-auratus.html", "site": "FishBase", "states": "pH 6.0-8.0 (species, not fancy-specific)", "quote": "pH range: 6.0 - 8.0"},
+          {"url": "https://www.fishkeepingworld.com/fancy-goldfish/", "site": "Fishkeeping World", "states": "6.5-7.5", "quote": "The pH of the water should be kept between 6.5 and 7.5."}
+        ], "note": "FKW narrower at the top end."}
+      }
+    },
+    "comet": {
+      "sci": "Carassius auratus (comet)",
+      "fields": {
+        "tl": {"ours": 200, "verdict": "disagrees", "suggest": 250, "sources": [
+          {"url": "https://www.fishkeepingworld.com/comet-goldfish/", "site": "Fishkeeping World", "states": "up to 12 in (305 mm)", "quote": "Up to 12 inches"},
+          {"url": "https://www.fishkeepingworld.com/goldfish/", "site": "Fishkeeping World", "states": "up to 10 in (254 mm)", "quote": "Common goldfish, or comet goldfish, grow up to 10 inches and require a 30-gallon, 4-foot-long tank to thrive."}
+        ], "note": "Ours is 21-34 % below these maxima. FishBase species max 48.0 cm TL (common length 10.0 cm TL), not comet-specific."},
+        "care": {"ours": 1, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.fishkeepingworld.com/comet-goldfish/", "site": "Fishkeeping World", "states": "Easy/medium", "quote": "Easy/medium"}
+        ], "note": "Table value."},
+        "minL": {"ours": 300, "verdict": "disagrees", "suggest": 190, "sources": [
+          {"url": "https://www.fishkeepingworld.com/comet-goldfish/", "site": "Fishkeeping World", "states": "50 gal (189 L) min, recommends 75 gal (284 L)", "quote": "They need at least a 50-gallon tank; we would recommend a 75-gallon tank."},
+          {"url": "https://www.fishkeepingworld.com/goldfish/", "site": "Fishkeeping World", "states": "30 gal (114 L)", "quote": "Common goldfish and comet goldfish are larger, each requiring a 30-gallon tank measuring 3 feet long by 1.5 feet high."}
+        ], "note": "Span 114-284 L; ours 300 is within 25 % of the 75 gal recommendation (284), so arguably agrees if the recommended figure is the basis. Marked disagrees against the stated minimums."},
+        "temper": {"ours": 0, "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.fishkeepingworld.com/comet-goldfish/", "site": "Fishkeeping World", "states": "Peaceful and playful", "quote": "Peaceful and playful"}
+        ]},
+        "ph": {"ours": [6.5, 8], "verdict": "agrees", "suggest": null, "sources": [
+          {"url": "https://www.fishbase.se/summary/Carassius-auratus.html", "site": "FishBase", "states": "pH 6.0-8.0", "quote": "pH range: 6.0 - 8.0"},
+          {"url": "https://www.fishkeepingworld.com/comet-goldfish/", "site": "Fishkeeping World", "states": "6.5-7.5", "quote": "You should aim to keep the pH level between 6.5 and 7.5."}
+        ]}
+      }
+    }
+  }
+}

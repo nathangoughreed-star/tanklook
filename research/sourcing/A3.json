@@ -1,0 +1,791 @@
+{
+ "batch": "A3",
+ "agent_notes": "WebFetch returns model-extracted text, so quotes are as the tool returned them and not guaranteed verbatim; the checker may flag some (esp. table-cell quotes). Guessed Aquarium Co-Op URLs for pearl, bolivian, cockatoo, discus 404'd; no LiveAquaria tried.",
+ "species": {
+  "dwarfgourami": {
+   "sci": "Trichogaster lalius",
+   "fields": {
+    "tl": {
+     "ours": 80,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Trichogaster-lalius.html",
+       "site": "FishBase",
+       "states": "9.5 cm TL male/unsexed",
+       "quote": "Max length : 9.5 cm TL male/unsexed;"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/trichogaster-lalius/",
+       "site": "Seriously Fish",
+       "states": "88 mm SL max",
+       "quote": "Max size 88mm SL3.5in SL"
+      }
+     ],
+     "note": "80 vs 95 TL is -16%; 88 SL is about 105 TL"
+    },
+    "female.tl": {
+     "ours": 65,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": []
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "disagrees",
+     "suggest": 1,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/trichogaster-lalius/",
+       "site": "Seriously Fish",
+       "states": "Easy",
+       "quote": "Easy"
+      },
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/dwarf-gourami",
+       "site": "Aquarium Co-Op",
+       "states": "beginner-friendly",
+       "quote": "Despite the beginner-friendly reputation"
+      }
+     ]
+    },
+    "minL": {
+     "ours": 60,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/trichogaster-lalius/",
+       "site": "Seriously Fish",
+       "states": "56 L pair",
+       "quote": "A 24\" x 12\" x 12\" (60cm x 30cm x 30cm) - 56 litre tank is just about big enough for a pair"
+      },
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/dwarf-gourami",
+       "site": "Aquarium Co-Op",
+       "states": "10 gal (38 L)",
+       "quote": "a 10-gallon or larger aquarium with slow flow and live aquarium plants"
+      }
+     ]
+    },
+    "temper": {
+     "ours": 1,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/trichogaster-lalius/",
+       "site": "Seriously Fish",
+       "states": "territorial",
+       "quote": "It's both shy and territorial, so in a small tank should be considered the primary inhabitant."
+      },
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/dwarf-gourami",
+       "site": "Aquarium Co-Op",
+       "states": "territorial bullies",
+       "quote": "they can be territorial bullies"
+      }
+     ]
+    },
+    "solo": {
+     "ours": true,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/trichogaster-lalius/",
+       "site": "Seriously Fish",
+       "states": "two males disastrous; pair best",
+       "quote": "buying two males is a recipe for disaster unless you have a very large tank"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/trichogaster-lalius/",
+       "site": "Seriously Fish",
+       "states": "no group",
+       "quote": "It's generally not a good idea to keep a group of dwarf gouramis together."
+      }
+     ],
+     "note": "Pair is fine per page"
+    },
+    "ph": {
+     "ours": [
+      6,
+      7.5
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/trichogaster-lalius/",
+       "site": "Seriously Fish",
+       "states": "6.0-7.5",
+       "quote": "pH 6.0–7.5"
+      },
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/dwarf-gourami",
+       "site": "Aquarium Co-Op",
+       "states": "6-8",
+       "quote": "can live in pH levels of 6–8"
+      }
+     ]
+    }
+   }
+  },
+  "honeygourami": {
+   "sci": "Trichogaster chuna",
+   "fields": {
+    "tl": {
+     "ours": 45,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/trichogaster-chuna/",
+       "site": "Seriously Fish",
+       "states": "55 mm SL max",
+       "quote": "Max size: 55mm SL2.2in SL"
+      },
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/honey-gourami",
+       "site": "Aquarium Co-Op",
+       "states": "about 5 cm",
+       "quote": "stays around 2 inches (5 cm)"
+      }
+     ],
+     "note": "FishBase page oddly says 13.7 cm TL (Ref. 125929); treated as outlier, not cited"
+    },
+    "female.tl": {
+     "ours": 50,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": []
+    },
+    "care": {
+     "ours": 1,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/trichogaster-chuna/",
+       "site": "Seriously Fish",
+       "states": "Beginner",
+       "quote": "a good subject for those new to the hobby"
+      },
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/honey-gourami",
+       "site": "Aquarium Co-Op",
+       "states": "great for beginners",
+       "quote": "a hardy pet that is great for beginners"
+      }
+     ]
+    },
+    "minL": {
+     "ours": 40,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/honey-gourami",
+       "site": "Aquarium Co-Op",
+       "states": "single fish 5 or 10 gal (19-38 L)",
+       "quote": "A single honey gourami can live in a 5- or 10-gallon tank."
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/trichogaster-chuna/",
+       "site": "Seriously Fish",
+       "states": "60 x 30 cm base, pair or small group",
+       "quote": "An aquarium with base dimensions of 60 ∗ 30 cm24 ∗ 12 in or equivalent is suffient to house a pair or small group."
+      }
+     ],
+     "note": "SF gives base only, no litres"
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/honey-gourami",
+       "site": "Aquarium Co-Op",
+       "states": "peaceful",
+       "quote": "they are considered to be peaceful community fish that get along with everyone"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/trichogaster-chuna/",
+       "site": "Seriously Fish",
+       "states": "slow-moving",
+       "quote": "Tankmates must be chosen with care since this species is slow-moving."
+      }
+     ]
+    },
+    "ph": {
+     "ours": [
+      6,
+      7.5
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/trichogaster-chuna/",
+       "site": "Seriously Fish",
+       "states": "6.0-7.5",
+       "quote": "pH 6.0–7.5"
+      },
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/honey-gourami",
+       "site": "Aquarium Co-Op",
+       "states": "6.0-8.0",
+       "quote": "such as pH of 6.0–8.0"
+      }
+     ]
+    }
+   }
+  },
+  "gourami": {
+   "sci": "Trichopodus leerii",
+   "fields": {
+    "tl": {
+     "ours": 120,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Trichopodus-leerii.html",
+       "site": "FishBase",
+       "states": "12.0 cm TL",
+       "quote": "Max length : 12.0 cm TL male/unsexed; (Ref. [7050])"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/trichopodus-leerii/",
+       "site": "Seriously Fish",
+       "states": "120 mm SL",
+       "quote": "120mm SL"
+      }
+     ],
+     "note": "SF SL is about 144 TL; 120 within -17%"
+    },
+    "female.tl": {
+     "ours": 110,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": []
+    },
+    "care": {
+     "ours": 1,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/trichopodus-leerii/",
+       "site": "Seriously Fish",
+       "states": "Beginner",
+       "quote": "Beginner"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/pearl-gourami/",
+       "site": "Fishkeeping World",
+       "states": "Medium",
+       "quote": "Medium"
+      }
+     ],
+     "note": "Sources differ: Beginner vs Medium"
+    },
+    "minL": {
+     "ours": 110,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/trichopodus-leerii/",
+       "site": "Seriously Fish",
+       "states": "~81 L (~21 US gal)",
+       "quote": "~81litres"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/pearl-gourami/",
+       "site": "Fishkeeping World",
+       "states": "30 gal (114 L)",
+       "quote": "need at least a 30 gallon tank"
+      }
+     ]
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/trichopodus-leerii/",
+       "site": "Seriously Fish",
+       "states": "peaceful",
+       "quote": "One of the most peaceful gouramis and an excellent community fish."
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/pearl-gourami/",
+       "site": "Fishkeeping World",
+       "states": "Peaceful",
+       "quote": "Peaceful"
+      }
+     ]
+    },
+    "ph": {
+     "ours": [
+      6,
+      8
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/pearl-gourami/",
+       "site": "Fishkeeping World",
+       "states": "6-8 captive-bred",
+       "quote": "can tolerate a much wider pH range (6-8)"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/trichopodus-leerii/",
+       "site": "Seriously Fish",
+       "states": "5.5-8.0",
+       "quote": "5.5–8.0"
+      }
+     ]
+    }
+   }
+  },
+  "gbr": {
+   "sci": "Mikrogeophagus ramirezi",
+   "fields": {
+    "tl": {
+     "ours": 60,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Mikrogeophagus-ramirezi.html",
+       "site": "FishBase",
+       "states": "4.2 cm SL",
+       "quote": "Max length : 4.2 cm SL male/unsexed; (Ref. 137577)"
+      },
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/german-blue-ram",
+       "site": "Aquarium Co-Op",
+       "states": "5-6 cm",
+       "quote": "Regular-sized blue rams tend to stay between 2-2.5 inches (5-6 cm) long."
+      }
+     ],
+     "note": "4.2 SL is about 50 TL; Co-Op 5-6 cm matches 60"
+    },
+    "female.tl": {
+     "ours": 50,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": []
+    },
+    "care": {
+     "ours": 3,
+     "verdict": "disagrees",
+     "suggest": 2,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/mikrogeophagus-ramirezi/",
+       "site": "Seriously Fish",
+       "states": "Moderate",
+       "quote": "Moderate"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/german-blue-ram/",
+       "site": "Fishkeeping World",
+       "states": "Intermediate",
+       "quote": "Intermediate"
+      }
+     ],
+     "note": "Both say moderate / intermediate; ours is 3 (expert)"
+    },
+    "minL": {
+     "ours": 60,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/german-blue-ram",
+       "site": "Aquarium Co-Op",
+       "states": "20 gal pair (76 L)",
+       "quote": "A pair of rams can live in a 20-gallon community tank or in a 10-gallon breeding tank with no other fish."
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/german-blue-ram/",
+       "site": "Fishkeeping World",
+       "states": "20 gal (76 L)",
+       "quote": "require a 20-gallon tank or larger"
+      }
+     ],
+     "note": "60 is -21% of 76 L; SF says 60 x 30 cm base for a pair, no litres"
+    },
+    "temper": {
+     "ours": 1,
+     "verdict": "disagrees",
+     "suggest": 0,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/german-blue-ram/",
+       "site": "Fishkeeping World",
+       "states": "Peaceful",
+       "quote": "Peaceful"
+      },
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/german-blue-ram",
+       "site": "Aquarium Co-Op",
+       "states": "relatively peaceful",
+       "quote": "they are relatively peaceful and are often kept in a community aquarium"
+      }
+     ],
+     "note": "Sources say peaceful; may be feisty in small tanks or guarding eggs. SF calls it a poor competitor, not aggressive"
+    },
+    "ph": {
+     "ours": [
+      5,
+      7
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/german-blue-ram/",
+       "site": "Fishkeeping World",
+       "states": "5.0-7.0",
+       "quote": "5.0–7.0"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/mikrogeophagus-ramirezi/",
+       "site": "Seriously Fish",
+       "states": "4.0-7.0",
+       "quote": "4.0–7.0"
+      }
+     ]
+    }
+   }
+  },
+  "bolivianram": {
+   "sci": "Mikrogeophagus altispinosus",
+   "fields": {
+    "tl": {
+     "ours": 80,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/mikrogeophagus-altispinosus/",
+       "site": "Seriously Fish",
+       "states": "80 mm SL",
+       "quote": "Max size 80mm SL3.1in SL"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/bolivian-ram/",
+       "site": "Fishkeeping World",
+       "states": "3.5 in (89 mm)",
+       "quote": "3.5 inches"
+      }
+     ],
+     "note": "FishBase says 5.6 cm SL"
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/mikrogeophagus-altispinosus/",
+       "site": "Seriously Fish",
+       "states": "Moderate",
+       "quote": "Difficulty 5 of 8 measures Moderate"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/bolivian-ram/",
+       "site": "Fishkeeping World",
+       "states": "Beginner",
+       "quote": "Beginner"
+      }
+     ],
+     "note": "Sources differ: Moderate vs Beginner"
+    },
+    "minL": {
+     "ours": 60,
+     "verdict": "disagrees",
+     "suggest": 110,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/bolivian-ram/",
+       "site": "Fishkeeping World",
+       "states": "30 gal (114 L) for one fish",
+       "quote": "a 30-gallon tank suits one fish"
+      }
+     ],
+     "note": "SF: base at least 90 x 45 cm (no litres, roughly 100 L)"
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/bolivian-ram/",
+       "site": "Fishkeeping World",
+       "states": "Peaceful",
+       "quote": "the Bolivian ram is a peaceful fish"
+      },
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/german-blue-ram",
+       "site": "Aquarium Co-Op (list article)",
+       "states": "easy-going",
+       "quote": "This easy-going cichlid goes well with other similar-sized community fish"
+      }
+     ],
+     "note": "Co-Op page is a multi-species list"
+    },
+    "ph": {
+     "ours": [
+      6,
+      7.5
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/mikrogeophagus-altispinosus/",
+       "site": "Seriously Fish",
+       "states": "6.0-7.5",
+       "quote": "pH 6.0–7.5"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/bolivian-ram/",
+       "site": "Fishkeeping World",
+       "states": "6.0-7.4",
+       "quote": "slightly acidic (pH 6.0-7.4)"
+      }
+     ]
+    }
+   }
+  },
+  "cockatoo": {
+   "sci": "Apistogramma cacatuoides",
+   "fields": {
+    "tl": {
+     "ours": 85,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/apistogramma-cacatuoides/",
+       "site": "Seriously Fish",
+       "states": "male 75 mm SL",
+       "quote": "♂ 75 · ♀ 50mm SL"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/cockatoo-cichlid/",
+       "site": "Fishkeeping World",
+       "states": "male 5-9 cm",
+       "quote": "Male Cockatoo Cichlids are 2 to 3.5 inches (5 to 9 cm) in length."
+      }
+     ],
+     "note": "FishBase 5.0 cm SL"
+    },
+    "female.tl": {
+     "ours": 50,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/apistogramma-cacatuoides/",
+       "site": "Seriously Fish",
+       "states": "female 50 mm SL",
+       "quote": "♂ 75 · ♀ 50mm SL"
+      }
+     ],
+     "note": "SL figure; TL would be about 60"
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/apistogramma-cacatuoides/",
+       "site": "Seriously Fish",
+       "states": "Moderate",
+       "quote": "Moderate"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/cockatoo-cichlid/",
+       "site": "Fishkeeping World",
+       "states": "Moderate",
+       "quote": "Moderate"
+      }
+     ]
+    },
+    "minL": {
+     "ours": 60,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/apistogramma-cacatuoides/",
+       "site": "Seriously Fish",
+       "states": "60 x 30 cm base for a pair",
+       "quote": "Base dimensions of 60 ∗ 30 cm24 ∗ 12 in or more are acceptable for a single pair with a group requiring larger quarters."
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/cockatoo-cichlid/",
+       "site": "Fishkeeping World",
+       "states": "30 gal (114 L)",
+       "quote": "You will need at least a 30-gallon tank for Cockatoo Cichlids."
+      }
+     ],
+     "note": "Sources disagree: SF base-only pair (about 54 L), FKW 114 L. Agrees with SF"
+    },
+    "temper": {
+     "ours": 1,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/cockatoo-cichlid/",
+       "site": "Fishkeeping World",
+       "states": "semi-aggressive when breeding",
+       "quote": "Semi-aggressive (when breeding)"
+      }
+     ]
+    },
+    "ph": {
+     "ours": [
+      5.5,
+      7
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/apistogramma-cacatuoides/",
+       "site": "Seriously Fish",
+       "states": "5.0-6.0",
+       "quote": "pH 5.0–6.0"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/cockatoo-cichlid/",
+       "site": "Fishkeeping World",
+       "states": "6.0-7.0",
+       "quote": "pH : 6.0 – 7.0"
+      }
+     ],
+     "note": "Union of the two ranges is 5.0-7.0"
+    }
+   }
+  },
+  "discus": {
+   "sci": "Symphysodon aequifasciatus",
+   "fields": {
+    "tl": {
+     "ours": 150,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/symphysodon-aequifasciatus/",
+       "site": "Seriously Fish",
+       "states": "140 mm SL",
+       "quote": "140mm SL6in SL"
+      },
+      {
+       "url": "https://www.fishbase.se/summary/Symphysodon-aequifasciatus.html",
+       "site": "FishBase",
+       "states": "13.7 cm SL",
+       "quote": "Max length : 13.7 cm SL male/unsexed; (Ref. 36377)"
+      }
+     ],
+     "note": "FKW says up to 9 in (230 mm); SL 140 is about 170 TL; 150 within -12%"
+    },
+    "care": {
+     "ours": 3,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/discus-fish/",
+       "site": "Fishkeeping World",
+       "states": "Challenging",
+       "quote": "Challenging, requires a higher temperature than many other species"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/symphysodon-aequifasciatus/",
+       "site": "Seriously Fish",
+       "states": "Moderate (7 of 8)",
+       "quote": "Moderate"
+      }
+     ],
+     "note": "Sources differ: SF Moderate vs FKW Challenging"
+    },
+    "minL": {
+     "ours": 250,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/symphysodon-aequifasciatus/",
+       "site": "Seriously Fish",
+       "states": "255 L recommended",
+       "quote": "a tank around 48\" x 18\" x 18\" (120cm x 45cm x 45cm) - 255 litres is recommended"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/discus-fish/",
+       "site": "Fishkeeping World",
+       "states": "min 60 gal (227 L)",
+       "quote": "Minimum 60 gallons (10 gallons per discus fish)"
+      }
+     ]
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/symphysodon-aequifasciatus/",
+       "site": "Seriously Fish",
+       "states": "peaceful",
+       "quote": "peaceful"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/symphysodon-aequifasciatus/",
+       "site": "Seriously Fish",
+       "states": "shy",
+       "quote": "Discus are very shy, skittish fish and require as much cover as possible to feel comfortable."
+      }
+     ]
+    },
+    "ph": {
+     "ours": [
+      5,
+      7
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/symphysodon-aequifasciatus/",
+       "site": "Seriously Fish",
+       "states": "5.0-7.0",
+       "quote": "pH 5.0–7.0"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/discus-fish/",
+       "site": "Fishkeeping World",
+       "states": "6.0-7.0",
+       "quote": "6.0–7.0"
+      }
+     ]
+    }
+   }
+  }
+ }
+}

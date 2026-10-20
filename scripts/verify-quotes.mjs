@@ -37,6 +37,24 @@ function near(page, quote) {
   return best;
 }
 
+// The quote must carry the value, not only the field's label ('Maximum Size' with the number in another cell proves nothing).
+// Sizes, counts, pH, climate: a number from `states` (number words count: 'six', 'half a dozen', 'an inch'). Care level and
+// temperament: a rating word. Other fields (solo, prey): any value word from `states`.
+const NUMW = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12, fifteen: 15, twenty: 20, thirty: 30, forty: 40, fifty: 50 };
+const digits = q => q.replace(/half a dozen/g, '6').replace(/\ba dozen\b/g, '12').replace(/\ban? (inch|gallon|foot)/g, '1 $1')
+  .replace(/\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|fifteen|twenty|thirty|forty|fifty)\b/g, w => String(NUMW[w]));
+const RATING = { care: /easy|easi|medium|challeng|manageable|hard to keep|sensitive|low-maintenance|beginner|novice|first-time|new to the hobby|hardy|moderate|intermediate|difficult|expert|advanced|demanding/,
+  temper: /peace|aggress|territor|docile|calm|feisty|nipp|bull|tolerant|community|timid|shy|boisterous|quarrel/ };
+const LABEL = new Set(['care', 'level', 'temperament', 'size', 'maximum', 'minimum', 'max', 'min', 'tank', 'length', 'adult', 'group', 'difficulty', 'aquarium', 'volume', 'not', 'said', 'type', 'the', 'and', 'for', 'per', 'approx', 'about', 'quick', 'facts']);
+function carries(field, quote, states = '') {
+  const q = norm(quote);
+  if (RATING[field]) return RATING[field].test(q);
+  const nums = digits(norm(states)).match(/\d+(?:\.\d+)?/g) || [], dq = digits(q);
+  if (nums.length || /^(tl|female\.tl|minL|group|ph|air\.)/.test(field))
+    return nums.some(n => new RegExp(`(^|[^\d.])${n.replace('.', '\.')}(?!\d)`).test(dq));
+  const w = words(norm(states)).filter(x => x.length >= 3 && !LABEL.has(x));
+  return !w.length || w.some(x => q.includes(x.slice(0, 5)));
+}
 const pages = new Map();
 async function page(url) {
   if (!pages.has(url)) pages.set(url, (async () => {
@@ -50,19 +68,21 @@ async function page(url) {
 }
 
 const rows = [];
-for (const [id, sp] of Object.entries(batch.species)) for (const [field, f] of Object.entries(sp.fields)) for (const s of f.sources || []) {
+for (const [id, sp] of Object.entries(batch.species ?? batch.items)) for (const [field, f] of Object.entries(sp.fields)) for (const s of f.sources || []) {
   const p = await page(s.url);
   let result, score = 0;
   if (p.err) result = 'nofetch';
   else if (p.body.includes(norm(s.quote))) { result = 'exact'; score = 1; }
   else if (compact(p.body).includes(compact(norm(s.quote)))) { result = 'compact'; score = 1; }
   else { score = near(p.body, norm(s.quote)); result = score >= 0.85 ? 'near' : 'miss'; }
+  // the quote must carry the value, not just its label ('Maximum Size' with the number in another cell proves nothing)
+  if ((result === 'exact' || result === 'compact') && !carries(field, s.quote, s.states)) result = 'label';
   rows.push({ id, field, verdict: f.verdict, url: s.url, result, score: +score.toFixed(2), err: p.err, quote: s.quote });
 }
 writeFileSync(file.replace(/\.json$/, '.verify.json'), JSON.stringify(rows, null, 1));
 const count = k => rows.filter(r => r.result === k).length;
-const fields = Object.values(batch.species).flatMap(sp => Object.values(sp.fields));
+const fields = Object.values(batch.species ?? batch.items).flatMap(sp => Object.values(sp.fields));
 const v = k => fields.filter(f => f.verdict === k).length;
-console.log(`${file}: ${Object.keys(batch.species).length} species, ${fields.length} fields (agrees ${v('agrees')}, disagrees ${v('disagrees')}, not-stated ${v('not-stated')}, behaviour-only ${v('behaviour-only')})`);
-console.log(`sources ${rows.length} on ${pages.size} pages: exact ${count('exact')}, compact ${count('compact')}, near ${count('near')}, miss ${count('miss')}, nofetch ${count('nofetch')}`);
-for (const r of rows.filter(r => r.result === 'miss' || r.result === 'nofetch')) console.log(`  ${r.result} ${r.id}.${r.field} ${r.score} ${r.err || ''} ${r.url}`);
+console.log(`${file}: ${Object.keys(batch.species ?? batch.items).length} species, ${fields.length} fields (agrees ${v('agrees')}, disagrees ${v('disagrees')}, not-stated ${v('not-stated')}, behaviour-only ${v('behaviour-only')})`);
+console.log(`sources ${rows.length} on ${pages.size} pages: exact ${count('exact')}, compact ${count('compact')}, label-only ${count('label')}, near ${count('near')}, miss ${count('miss')}, nofetch ${count('nofetch')}`);
+for (const r of rows.filter(r => r.result === 'miss' || r.result === 'nofetch' || r.result === 'label')) console.log(`  ${r.result} ${r.id}.${r.field} ${r.score} ${r.err || ''} ${r.url}`);

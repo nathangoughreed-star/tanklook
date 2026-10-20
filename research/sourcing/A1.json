@@ -1,0 +1,844 @@
+{
+ "batch": "A1",
+ "agent_notes": "WebFetch answers are model-extracted, so quotes may differ slightly from page text (SF table cells concatenated, e.g. 'Max size 35mm SL1.4in SL'); verify with script. minL: SF gives tank base dimensions only, so minL is not-stated for all (no volume given); FishBase has no tank sizes. Only one care-sheet source (SF) for care/temper/group; no third sites fetched.",
+ "species": {
+  "cardinal": {
+   "sci": "Paracheirodon axelrodi",
+   "fields": {
+    "tl": {
+     "ours": 45,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Paracheirodon-axelrodi.html",
+       "site": "FishBase",
+       "states": "3.0 cm SL max",
+       "quote": "Max length : 3.0 cm SL male/unsexed;"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/paracheirodon-axelrodi/",
+       "site": "Seriously Fish",
+       "states": "35 mm SL max",
+       "quote": "Max size 35mm SL1.4in SL"
+      }
+     ],
+     "note": "SL figures; x1.2 for TL gives ~36 mm (FishBase) and ~42 mm (SF). Ours 45 is within 20% of SF's TL equivalent, 25% over FishBase's."
+    },
+    "ph": {
+     "ours": [
+      4,
+      6.8
+     ],
+     "verdict": "disagrees",
+     "suggest": [
+      4,
+      6.0
+     ],
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Paracheirodon-axelrodi.html",
+       "site": "FishBase",
+       "states": "pH 4.0-6.0",
+       "quote": "Freshwater; pelagic; pH range: 4.0 - 6.0; dH range: 5 - 12; non-migratory."
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/paracheirodon-axelrodi/",
+       "site": "Seriously Fish",
+       "states": "pH 3.5-7.5",
+       "quote": "3.5 – 7.5 although wild specimens do best in more acidic conditions."
+      }
+     ],
+     "note": "FishBase upper end 6.0 is 0.8 below ours; SF range 3.5-7.5 is wider (lo 0.5 off). Sources differ."
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "disagrees",
+     "suggest": 1,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/paracheirodon-axelrodi/",
+       "site": "Seriously Fish",
+       "states": "Easy",
+       "quote": "Easy"
+      }
+     ],
+     "note": "SF rates Easy (6 of 8 measures)."
+    },
+    "minL": {
+     "ours": 60,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "Page gives tank base dimensions in cm, not a volume or minimum litres; no litre figure stated. SF: 'An aquarium with base dimensions of 60 ∗ 30 cm24 ∗ 12 in or larger is recommended.'"
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/paracheirodon-axelrodi/",
+       "site": "Seriously Fish",
+       "states": "peaceful",
+       "quote": "Generally peaceful making it an ideal resident of the well-researched community aquarium."
+      }
+     ]
+    },
+    "group": {
+     "ours": 6,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/paracheirodon-axelrodi/",
+       "site": "Seriously Fish",
+       "states": "at least 8-10",
+       "quote": "Try to buy a mixed-sex group of at least 8-10 specimens"
+      }
+     ],
+     "note": "6 is within 2 of 8."
+    }
+   }
+  },
+  "ember": {
+   "sci": "Hyphessobrycon amandae",
+   "fields": {
+    "tl": {
+     "ours": 20,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Hyphessobrycon-amandae.html",
+       "site": "FishBase",
+       "states": "2.0 cm SL max",
+       "quote": "Max length : 2.0 cm SL male/unsexed; (Ref. 94770)"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/hyphessobrycon-amandae/",
+       "site": "Seriously Fish",
+       "states": "20 mm SL max",
+       "quote": "it grows to around 20 mm SL."
+      }
+     ],
+     "note": "SL figures (TL ~24 mm); ours 20 within 20% of TL equivalent."
+    },
+    "ph": {
+     "ours": [
+      5.5,
+      7
+     ],
+     "verdict": "disagrees",
+     "suggest": [
+      5.0,
+      7.0
+     ],
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/hyphessobrycon-amandae/",
+       "site": "Seriously Fish",
+       "states": "pH 5.0-7.0",
+       "quote": "pH 5.0–7.0"
+      }
+     ],
+     "note": "Lo end 0.5 below ours. FishBase page states no pH."
+    },
+    "care": {
+     "ours": 1,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/hyphessobrycon-amandae/",
+       "site": "Seriously Fish",
+       "states": "Easy",
+       "quote": "Easy"
+      }
+     ]
+    },
+    "minL": {
+     "ours": 30,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "Page gives tank base dimensions in cm, not a volume or minimum litres; no litre figure stated. SF: 'Aquarium base dimensions of at least 45 ∗ 30 cm18 ∗ 12 in or equivalent are suggested.'"
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/hyphessobrycon-amandae/",
+       "site": "Seriously Fish",
+       "states": "very peaceful",
+       "quote": "Very peaceful and will not compete well with very boisterous or much larger tankmates."
+      }
+     ]
+    },
+    "group": {
+     "ours": 8,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/hyphessobrycon-amandae/",
+       "site": "Seriously Fish",
+       "states": "minimum 8-10",
+       "quote": "a minimum of 8-10 specimens is the recommended purchase"
+      }
+     ]
+    }
+   }
+  },
+  "rummynose": {
+   "sci": "Hemigrammus rhodostomus",
+   "fields": {
+    "tl": {
+     "ours": 50,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Hemigrammus-rhodostomus.html",
+       "site": "FishBase",
+       "states": "5.0 cm TL max",
+       "quote": "Max length : 5.0 cm TL male/unsexed; (Ref. 38376)"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/hemigrammus-rhodostomus/",
+       "site": "Seriously Fish",
+       "states": "50 mm SL max",
+       "quote": "50mm SL2.0in SL"
+      }
+     ],
+     "note": "FishBase TL 50 exact; SF SL 50 (~60 TL) also within 20%."
+    },
+    "ph": {
+     "ours": [
+      5.5,
+      7
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/hemigrammus-rhodostomus/",
+       "site": "Seriously Fish",
+       "states": "pH 5.5-7.0",
+       "quote": "5.5-7.0. Its colours will become faded if kept in alkaline conditions."
+      }
+     ],
+     "note": "FishBase page states no pH."
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "disagrees",
+     "suggest": 1,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/hemigrammus-rhodostomus/",
+       "site": "Seriously Fish",
+       "states": "Easy",
+       "quote": "Easy"
+      }
+     ],
+     "note": "SF rates Easy (5 of 8 measures)."
+    },
+    "minL": {
+     "ours": 60,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "SF: 'its active swimming nature requires a tank length of 36 inches/90 cm minimum.' Tank length only, no volume."
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/hemigrammus-rhodostomus/",
+       "site": "Seriously Fish",
+       "states": "very peaceful",
+       "quote": "It's a very peaceful species that won't compete well with very boisterous or much larger tankmates."
+      }
+     ]
+    },
+    "group": {
+     "ours": 8,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/hemigrammus-rhodostomus/",
+       "site": "Seriously Fish",
+       "states": "at least 10",
+       "quote": "Always buy a group of at least 10 of these, preferably more."
+      }
+     ],
+     "note": "8 within 2 of 10."
+    }
+   }
+  },
+  "harlequin": {
+   "sci": "Trigonostigma heteromorpha",
+   "fields": {
+    "tl": {
+     "ours": 45,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Trigonostigma-heteromorpha.html",
+       "site": "FishBase",
+       "states": "5.0 cm TL max",
+       "quote": "Max length : 5.0 cm TL male/unsexed"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/trigonostigma-heteromorpha/",
+       "site": "Seriously Fish",
+       "states": "45 mm SL max",
+       "quote": "Max size 45mm SL1.8in SL"
+      }
+     ],
+     "note": "FishBase TL 50 (ours -10%); SF SL 45 (~54 TL, ours -17%)."
+    },
+    "ph": {
+     "ours": [
+      5,
+      7
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Trigonostigma-heteromorpha.html",
+       "site": "FishBase",
+       "states": "pH 5.0-7.0",
+       "quote": "Freshwater; benthopelagic; pH range: 5.0 - 7.0; dH range: 5 - 12."
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/trigonostigma-heteromorpha/",
+       "site": "Seriously Fish",
+       "states": "pH 5.0-7.5",
+       "quote": "pH 5.0–7.5"
+      }
+     ]
+    },
+    "care": {
+     "ours": 1,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/trigonostigma-heteromorpha/",
+       "site": "Seriously Fish",
+       "states": "Easy",
+       "quote": "Easy"
+      }
+     ]
+    },
+    "minL": {
+     "ours": 40,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "Page gives tank base dimensions in cm, not a volume or minimum litres; no litre figure stated. SF: 'Aquarium base dimensions of 60 ∗ 30 cm24 ∗ 12 in or equivalent should be the smallest considered'"
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/trigonostigma-heteromorpha/",
+       "site": "Seriously Fish",
+       "states": "very peaceful",
+       "quote": "This species is very peaceful indeed making it an ideal resident of the well-maintained community tank"
+      }
+     ]
+    },
+    "group": {
+     "ours": 8,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/trigonostigma-heteromorpha/",
+       "site": "Seriously Fish",
+       "states": "at least 8-10",
+       "quote": "It's a schooling species by nature and really should be kept in a group of at least 8-10 specimens."
+      }
+     ]
+    }
+   }
+  },
+  "chili": {
+   "sci": "Boraras brigittae",
+   "fields": {
+    "tl": {
+     "ours": 18,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Boraras-brigittae.html",
+       "site": "FishBase",
+       "states": "3.5 cm TL max; common 1.8 cm SL",
+       "quote": "Max length : 3.5 cm TL male/unsexed; (Ref. 13371); common length : 1.8 cm SL male/unsexed; (Ref. 7050)"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/boraras-brigittae/",
+       "site": "Seriously Fish",
+       "states": "20 mm SL max",
+       "quote": "Max size 20mm SL0.8in SL"
+      }
+     ],
+     "note": "Ours 18 matches FishBase common length (1.8 cm SL) and is within 10% of SF SL 20; FishBase max TL 3.5 cm is much larger (sources differ)."
+    },
+    "ph": {
+     "ours": [
+      5,
+      7
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/boraras-brigittae/",
+       "site": "Seriously Fish",
+       "states": "pH 4.0-7.0",
+       "quote": "pH 4.0–7.0"
+      },
+      {
+       "url": "https://www.fishbase.se/summary/Boraras-brigittae.html",
+       "site": "FishBase",
+       "states": "pH 6.5-7.0",
+       "quote": "Freshwater; benthopelagic; pH range: 6.5 - 7.0; dH range: ? - 10. Tropical; 25°C - 28°C (Ref. 2059)"
+      }
+     ],
+     "note": "SF range 4-7 contains ours; FishBase 6.5-7.0 is narrower (lo 1.5 off). Sources differ."
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/boraras-brigittae/",
+       "site": "Seriously Fish",
+       "states": "Moderate",
+       "quote": "Rated moderate because it needs a well-established tank and stable water."
+      }
+     ]
+    },
+    "minL": {
+     "ours": 20,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "Page gives tank base dimensions in cm, not a volume or minimum litres; no litre figure stated. SF: 'a group is best kept in an aquarium with base dimensions of at least 45 ∗ 30 cm18 ∗ 12 in.'"
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/boraras-brigittae/",
+       "site": "Seriously Fish",
+       "states": "peaceful",
+       "quote": "This species is very peaceful but does not make an ideal community fish due to its small size and rather timid nature."
+      }
+     ]
+    },
+    "group": {
+     "ours": 8,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/boraras-brigittae/",
+       "site": "Seriously Fish",
+       "states": "at least 8-10",
+       "quote": "It's a schooling species by nature and really should be kept in a group of at least 8-10 specimens."
+      }
+     ]
+    }
+   }
+  },
+  "danio": {
+   "sci": "Danio rerio",
+   "fields": {
+    "tl": {
+     "ours": 50,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Danio-rerio.html",
+       "site": "FishBase",
+       "states": "3.8 cm SL max",
+       "quote": "Max length : 3.8 cm SL male/unsexed;"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/danio-rerio/",
+       "site": "Seriously Fish",
+       "states": "50 mm SL max",
+       "quote": "Max size 50mm SL2.0in SL"
+      }
+     ],
+     "note": "FishBase SL 38 (~46 TL); SF SL 50 (~60 TL); ours within 20% of both."
+    },
+    "ph": {
+     "ours": [
+      6,
+      8
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Danio-rerio.html",
+       "site": "FishBase",
+       "states": "pH 6.0-8.0",
+       "quote": "Freshwater; benthopelagic; pH range: 6.0 - 8.0; dH range: 5 - 19."
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/danio-rerio/",
+       "site": "Seriously Fish",
+       "states": "pH 6.0-8.0",
+       "quote": "pH 6.0–8.0"
+      }
+     ]
+    },
+    "care": {
+     "ours": 1,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/danio-rerio/",
+       "site": "Seriously Fish",
+       "states": "Easy",
+       "quote": "Easy"
+      }
+     ]
+    },
+    "minL": {
+     "ours": 40,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "Page gives tank base dimensions in cm, not a volume or minimum litres; no litre figure stated. SF: 'An active species so even a small group needs an aquarium with minimum base dimensions of 90 ∗ 30 cm36 ∗ 12 in.'"
+    },
+    "temper": {
+     "ours": 1,
+     "verdict": "disagrees",
+     "suggest": 0,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/danio-rerio/",
+       "site": "Seriously Fish",
+       "states": "peaceful",
+       "quote": "Temperament peaceful"
+      }
+     ],
+     "note": "SF also: 'This species is very peaceful indeed and can be combined with many of the most popular fish in the hobby'. No fetched source calls it a fin-nipper; other care sheets might."
+    },
+    "group": {
+     "ours": 6,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/danio-rerio/",
+       "site": "Seriously Fish",
+       "states": "at least 8-10",
+       "quote": "It is a schooling species by nature and should be maintained in a group of at least 8-10 specimens."
+      }
+     ]
+    }
+   }
+  },
+  "whitecloud": {
+   "sci": "Tanichthys albonubes",
+   "fields": {
+    "tl": {
+     "ours": 40,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Tanichthys-albonubes.html",
+       "site": "FishBase",
+       "states": "4.0 cm TL max; common 2.1 cm SL",
+       "quote": "Max length : 4.0 cm TL male/unsexed"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/tanichthys-albonubes/",
+       "site": "Seriously Fish",
+       "states": "40 mm SL max",
+       "quote": "40mm SL1.6in SL"
+      }
+     ],
+     "note": "FishBase TL 40 exact; SF SL 40 (~48 TL)."
+    },
+    "ph": {
+     "ours": [
+      6,
+      8
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Tanichthys-albonubes.html",
+       "site": "FishBase",
+       "states": "pH 6.0-8.0",
+       "quote": "Freshwater; demersal; pH range: 6.0 - 8.0; dH range: 5 - 19."
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/tanichthys-albonubes/",
+       "site": "Seriously Fish",
+       "states": "pH 6.0-8.5",
+       "quote": "6.0–8.5"
+      }
+     ]
+    },
+    "care": {
+     "ours": 1,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/tanichthys-albonubes/",
+       "site": "Seriously Fish",
+       "states": "Easy",
+       "quote": "Easy"
+      }
+     ]
+    },
+    "minL": {
+     "ours": 40,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "Page gives tank base dimensions in cm, not a volume or minimum litres; no litre figure stated. SF: 'Minimum base dimensions of 60 ∗ 30 cm24 ∗ 12 in or equivalent are required.'"
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/tanichthys-albonubes/",
+       "site": "Seriously Fish",
+       "states": "very peaceful",
+       "quote": "Very peaceful indeed and an ideal resident of a well-maintained community set-up"
+      }
+     ]
+    },
+    "group": {
+     "ours": 6,
+     "verdict": "disagrees",
+     "suggest": 10,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/tanichthys-albonubes/",
+       "site": "Seriously Fish",
+       "states": "10+",
+       "quote": "It's a schooling fish by nature and ideally a group comprising 10+ specimens should be purchased."
+      }
+     ],
+     "note": "SF says 'ideally' 10+; ours 6 is 4 below."
+    }
+   }
+  },
+  "cpd": {
+   "sci": "Danio margaritatus",
+   "fields": {
+    "tl": {
+     "ours": 25,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Danio-margaritatus.html",
+       "site": "FishBase",
+       "states": "2.1 cm SL max (male/unsexed)",
+       "quote": "Max length : 2.1 cm SL male/unsexed; (Ref. [57973]); 2.1 cm SL (female)"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/danio-margaritatus/",
+       "site": "Seriously Fish",
+       "states": "21 mm SL max",
+       "quote": "Max size 21mm SL0.8in SL"
+      }
+     ],
+     "note": "SL 21 -> ~25 TL. For female.tl 25: SF says females 'tend to grow a little larger than males'; FishBase gives females the same 2.1 cm SL. Both fine."
+    },
+    "ph": {
+     "ours": [
+      6.5,
+      7.5
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/danio-margaritatus/",
+       "site": "Seriously Fish",
+       "states": "pH 6.5-7.5",
+       "quote": "pH: 6.5 – 7.5; a value of 7.3 was recorded at the type locality."
+      }
+     ],
+     "note": "FishBase page states no pH."
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "disagrees",
+     "suggest": 1,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/danio-margaritatus/",
+       "site": "Seriously Fish",
+       "states": "Easy",
+       "quote": "Easy"
+      }
+     ],
+     "note": "SF rates Easy (5 of 8 measures)."
+    },
+    "minL": {
+     "ours": 40,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "Page gives tank base dimensions in cm, not a volume or minimum litres; no litre figure stated. SF: 'Aquarium base 45 × 30cm18 × 12in'"
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "SF Temperament row says 'unknown'; text mentions males sparring but gives no peaceful/territorial label."
+    },
+    "group": {
+     "ours": 6,
+     "verdict": "disagrees",
+     "suggest": 20,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/danio-margaritatus/",
+       "site": "Seriously Fish",
+       "states": "ideally 20 or more",
+       "quote": "Buy as many as possible, ideally 20 or more"
+      }
+     ],
+     "note": "SF gives no firm minimum, only 'ideally 20 or more'; ours 6 is far below."
+    }
+   }
+  },
+  "hatchet": {
+   "sci": "Carnegiella strigata",
+   "fields": {
+    "tl": {
+     "ours": 35,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Carnegiella-strigata.html",
+       "site": "FishBase",
+       "states": "3.5 cm SL max",
+       "quote": "Max length : 3.5 cm SL male/unsexed;"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/carnegiella-strigata/",
+       "site": "Seriously Fish",
+       "states": "35 mm SL max",
+       "quote": "35mm SL1.4in SL"
+      }
+     ],
+     "note": "SL figures (~42 mm TL); ours within 20%."
+    },
+    "ph": {
+     "ours": [
+      5.5,
+      7
+     ],
+     "verdict": "disagrees",
+     "suggest": [
+      5.0,
+      7.0
+     ],
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Carnegiella-strigata.html",
+       "site": "FishBase",
+       "states": "pH 5.0-8.0",
+       "quote": "Freshwater; pelagic; pH range: 5.0 - 8.0; dH range: 5 - 19."
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/carnegiella-strigata/",
+       "site": "Seriously Fish",
+       "states": "pH 4.0-7.0",
+       "quote": "4.0–7.0"
+      }
+     ],
+     "note": "Sources differ: FishBase 5-8, SF 4-7; ours is more than 0.3 off at one end of each. Suggest the overlap 5-7."
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "disagrees",
+     "suggest": 1,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/carnegiella-strigata/",
+       "site": "Seriously Fish",
+       "states": "Easy",
+       "quote": "Easy"
+      }
+     ],
+     "note": "SF rates Easy (6 of 8 measures)."
+    },
+    "minL": {
+     "ours": 60,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "Page gives tank base dimensions in cm, not a volume or minimum litres; no litre figure stated. SF: 'Surface dimensions of 75 ∗ 30 cm30 ∗ 12 in or more are recommended'"
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/carnegiella-strigata/",
+       "site": "Seriously Fish",
+       "states": "peaceful",
+       "quote": "Very peaceful but does not make an ideal community fish due to its small size and rather timid nature."
+      }
+     ]
+    },
+    "group": {
+     "ours": 6,
+     "verdict": "disagrees",
+     "suggest": 10,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/carnegiella-strigata/",
+       "site": "Seriously Fish",
+       "states": "ideally 10 or more",
+       "quote": "buy as many as possible, ideally 10 or more"
+      }
+     ],
+     "note": "Ours 6 is 4 below 10."
+    }
+   }
+  }
+ }
+}

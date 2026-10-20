@@ -18,6 +18,7 @@ import { FILTER_MEDIA_L } from './filtermedia';
 import { NEEDS, isCoralNeed, isLand } from '../scene/lightneeds';
 import groupsMd from '../../research/groups-sources.md?raw';
 import { CARE } from './care';
+import { AIR } from './climate';
 import speciesJson from './species.json';
 
 export type Status = 'cited' | 'fitted' | 'derived' | 'researched' | 'claimed' | 'assumption';
@@ -103,9 +104,9 @@ export const RULES: Record<string, Rule[]> = {
 interface Src { url: string; quote: string }
 interface Field { ours: unknown; verdict: 'agrees' | 'disagrees' | 'not-stated' | 'behaviour-only'; sources: Src[] }
 interface Batch { batch: string; species: Record<string, { fields: Record<string, Field> }> }
-interface Check { id: string; field: string; url: string; result: 'exact' | 'compact' | 'near' | 'miss' | 'nofetch' }
+interface Check { id: string; field: string; url: string; result: 'exact' | 'compact' | 'label' | 'near' | 'miss' | 'nofetch' }
 const SOURCING = import.meta.glob('../../research/sourcing/*.json', { eager: true, import: 'default' }) as Record<string, unknown>;
-const host = (url: string) => new URL(url).hostname.replace(/^www\./, '');
+const host = (url: string) => new URL(url).hostname.split('.').slice(-2).join('.');   // ca.aquariumsource.com = aquariumsource.com
 const speciesValue = (id: string, f: string) => {
   const sp = (speciesJson as unknown as { species: { id: string; tl: number; female?: { tl?: number } }[] }).species.find(s => s.id === id);
   return f === 'tl' ? sp?.tl : f === 'female.tl' ? sp?.female?.tl : undefined;
@@ -115,10 +116,12 @@ for (const [file, b] of Object.entries(SOURCING)) {
   const batch = b as Batch, name = file.replace(/^.*\//, '');
   const checks = (SOURCING[file.replace(/\.json$/, '.verify.json')] ?? []) as Check[];
   for (const [id, sp] of Object.entries(batch.species)) for (const [f, v] of Object.entries(sp.fields)) {
-    const isSpecies = f === 'tl' || f === 'female.tl';
-    const now = isSpecies ? speciesValue(id, f) : f === 'prey' ? CARE[id]?.prey?.mm : (CARE[id] as unknown as Record<string, unknown>)?.[f];
+    const isSpecies = f === 'tl' || f === 'female.tl', isAir = f.startsWith('air.');
+    const now = isSpecies ? speciesValue(id, f) : isAir ? (AIR[id] as unknown as Record<string, unknown>)?.[f.slice(4)]
+      : f === 'prey' ? CARE[id]?.prey?.mm : (CARE[id] as unknown as Record<string, unknown>)?.[f];
     if (JSON.stringify(now) !== JSON.stringify(v.ours)) continue;   // the value changed since the batch checked it
-    const target = isSpecies ? 'SPECIES' : 'CARE', path = `${id}.${f === 'prey' ? 'prey.mm' : f === 'ph' ? 'ph.*' : f}`;
+    const target = isSpecies ? 'SPECIES' : isAir ? 'AIR' : 'CARE';
+    const path = `${id}.${isAir ? `${f.slice(4)}.*` : f === 'prey' ? 'prey.mm' : f === 'ph' ? 'ph.*' : f}`;
     const found = v.sources.filter(s => checks.some(c => c.id === id && c.field === f && c.url === s.url && (c.result === 'exact' || c.result === 'compact')));
     const src = [...new Set(v.sources.map(s => host(s.url)))];
     if (v.verdict === 'agrees' && found.length)
