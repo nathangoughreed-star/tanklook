@@ -561,18 +561,17 @@
       "port": 5693
     },
     {
-      "name": "p6bscape",
+      "name": "lights",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "run",
         "dev",
         "--",
         "--port",
-        "5923",
+        "5933",
         "--strictPort"
       ],
-      "port": 5923
-    },
-    { "name": "lights", "runtimeExecutable": "npm", "runtimeArgs": ["run", "dev", "--", "--port", "5933", "--strictPort"], "port": 5933 }
+      "port": 5933
+    }
   ]
 }
