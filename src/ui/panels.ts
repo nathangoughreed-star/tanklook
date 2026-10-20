@@ -1046,7 +1046,7 @@ Cancel, then change the name, to keep both.`)) return;
   // first, and a colour outside the new lamp's usual range its usual one
   $<HTMLSelectElement>('lType').onchange = e => store.edit(s => {
     const f = (e.target as HTMLSelectElement).value as Fixture, l = s.light;
-    l.type = FIXTURES[f].type;
+    l.type = FIXTURES[f].type; delete l.product; // a fixture picked by hand: the generic one (the catalogued light is the Tech menu's)
     if (f !== 'flat' && !(l.tech && TECHS[l.tech].on.includes(f))) l.tech = techsFor(f)[0];
     if (f !== 'flat') fitK(l);
     capCount(l); fitFixture(l, s.tank, true); // the style's usual height, beam and power
@@ -1088,7 +1088,7 @@ Cancel, then change the name, to keep both.`)) return;
   };
   // a screw-in lamp change also takes that lamp's usual power (a 50 W halogen is a 10 W LED bulb)
   $<HTMLSelectElement>('lTech').onchange = e => store.edit(s => {
-    const l = s.light; l.tech = (e.target as HTMLSelectElement).value as LightTech; fitK(l);
+    const l = s.light; l.tech = (e.target as HTMLSelectElement).value as LightTech; fitK(l); delete l.product;
     if (fixtureOf(l) === 'bulb') delete l.watts;
   });
   let techFor = ''; // the fixture the Lamp list was built for
@@ -2047,7 +2047,7 @@ Cancel, then change the name, to keep both.`)) return;
     // in a hood the LED fixture is strips or a bar (the row above), so the menu does not promise a full-length bar
     ($('lType') as HTMLSelectElement).querySelector<HTMLOptionElement>('option[value=led]')!.textContent = s.lid === 'hood' ? 'LED (strips or bar)' : FIXTURES.led.label;
     // bars (tubes, LED bar): front to back, as far as the housing stays over the tank (lightout barZ)
-    const barDep = tl ? tl.depth : l.type === 'led' ? ledBarDepth(s.tank) : 0, pm = Math.floor(posMax(s.tank, barDep) / 5) * 5, pv = clamp(l.pos ?? 0, -pm, pm);
+    const barDep = tl ? tl.depth : l.type === 'led' ? ledBarDepth(s.tank, l) : 0, pm = Math.floor(posMax(s.tank, barDep) / 5) * 5, pv = clamp(l.pos ?? 0, -pm, pm);
     $('lPosRow').style.display = $('lPosOptRow').style.display = barDep && s.lid !== 'hood' ? '' : 'none';
     Object.assign($('lPos') as HTMLInputElement, { min: String(-pm), max: String(pm) }); setVal('lPos', pv);
     // said as the light's centre (the middle of its rows) from the back glass; "· even" when it is where Optimize puts it

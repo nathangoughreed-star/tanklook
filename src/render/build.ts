@@ -1256,7 +1256,7 @@ export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: Sel, 
   const b: BuiltTank = { scene: sc, fishMeshes: [], meshById: new Map(), dotMeshes: [], itemMeshes: [], fishParts: [], itemParts: [], contentAt: sc.children.length };
   addContents(b, S, T, selId, selItem);
   addLid(sc, S, T); addFrontDoors(sc, S, T);
-  if (S.lid !== 'hood') addFixture(sc, T, S.light, floorY(T, S.render, S.stand) + ceilingH(S.wall)); // ceiling: the wall's room height // with a hood the fixture is inside it; its light still applies
+  if (S.lid !== 'hood') addFixture(sc, T, S.light, floorY(T, S.render, S.stand) + ceilingH(S.wall), waterY(T, S.water.level)); // ceiling: the wall's room height // with a hood the fixture is inside it; its light still applies
   if (S.render.beams) addBeams(sc, T, S.light, S.lid);
   b.dotMeshes = edit && S.terrain.on ? addTerrainDots(sc, S, T, edit) : [];
   applyLighting(sc);

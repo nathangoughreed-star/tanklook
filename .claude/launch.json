@@ -598,6 +598,7 @@
         "--strictPort"
       ],
       "port": 5913
-    }
+    },
+    { "name": "lights", "runtimeExecutable": "npm", "runtimeArgs": ["run", "dev", "--", "--port", "5923", "--strictPort"], "port": 5923 }
   ]
 }

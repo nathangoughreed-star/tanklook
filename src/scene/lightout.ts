@@ -9,6 +9,7 @@ import { footprint, insideBy, shapeOf, type P } from './shape';
 import { groundHeight, groundInsideBy, type Ground } from './terrain';
 import { shadeAt, shadesOf, type Shade } from './shade';
 import type { Item, LidType, LightSettings, LightTech, LightType, Tank, WaterSettings } from './types';
+import { lightProduct } from '../data/gearCatalog';
 
 // ---------- fixture geometry (was render/lighting.ts) ----------
 
@@ -37,9 +38,11 @@ export function emitters(T: Tank, l: LightSettings, height = l.height ?? LAMP_Y)
   }
   if (l.type === 'tube') { const h = tubeOf(l, T).lamp / 2; for (const z of tubeLayout(T, l).zs) E.push([L / 2, y, z, h]); }
   if (l.type === 'led') {
-    const cols = clamp(Math.round(L * 0.9 / 45), 2, 24);
-    const zc = barZ(T, l, ledBarDepth(T));
-    for (const r of [-0.12, 0.12]) for (let c = 0; c < cols; c++) E.push([L * (0.05 + 0.9 * (c + 0.5) / cols), y, zc - D * r, 0]);
+    // a catalogued bar: its rows along its own body (centred), a quarter of its width either side of its middle
+    const pb = productBar(T, l), span = pb ? pb.len * 0.9 : L * 0.9, x0 = (L - span) / 2;
+    const cols = clamp(Math.round(span / 45), 2, 24);
+    const zc = barZ(T, l, ledBarDepth(T, l)), rz = pb ? [-pb.wid / 4, pb.wid / 4] : [-0.12 * D, 0.12 * D];
+    for (const r of rz) for (let c = 0; c < cols; c++) E.push([x0 + span * (c + 0.5) / cols, y, zc - r, 0]);
   }
   return E.slice(0, AQ_MAX);
 }
@@ -218,8 +221,13 @@ export function tubeLayout(T: Pick<Tank, 'D'>, l: Pick<LightSettings, 'type' | '
  */
 export const posMax = (T: Pick<Tank, 'D'>, depth: number) => Math.max(0, (T.D - depth) / 2);
 export const barZ = (T: Pick<Tank, 'D'>, l: Pick<LightSettings, 'pos'>, depth: number) => { const m = posMax(T, depth); return -T.D / 2 - clamp(l.pos ?? 0, -m, m); };
-/** The LED bar's depth front to back (mm). */
-export const ledBarDepth = (T: Pick<Tank, 'D'>) => T.D * 0.45;
+/** The LED bar's depth front to back (mm): a catalogued light's own width, else 45 % of the tank's depth. */
+export const ledBarDepth = (T: Pick<Tank, 'D'>, l?: Pick<LightSettings, 'product' | 'type'>) => productBar(T, l)?.wid ?? T.D * 0.45;
+/** A catalogued bar's body (mm): its length (never past the tank by more than its brackets allow) and width. */
+export function productBar(T: Pick<Tank, 'D'>, l?: Pick<LightSettings, 'product' | 'type'>) {
+  const p = l?.type === 'led' ? lightProduct(l.product) : undefined;
+  return p ? { len: p.lengthMm, wid: Math.min(p.widthMm, T.D * 0.9), p } : null;
+}
 const posCache = new Map<string, number>();
 /**
  * The front-to-back place that lights the floor most evenly (Nathan 2026-10-15: like the bulbs' "fit" pattern, for a
@@ -230,9 +238,9 @@ const posCache = new Map<string, number>();
  * slider's step). Null for fixtures that are not bars.
  */
 export function bestPos(T: Tank, l: LightSettings): number | null {
-  const tl = l.type === 'tube' ? tubeLayout(T, { ...l, pos: 0 }) : null, dep = tl ? tl.depth : l.type === 'led' ? ledBarDepth(T) : 0;
+  const tl = l.type === 'tube' ? tubeLayout(T, { ...l, pos: 0 }) : null, dep = tl ? tl.depth : l.type === 'led' ? ledBarDepth(T, l) : 0;
   if (!dep) return null;
-  const offs = tl ? tl.zs.map(z => -z - T.D / 2) : [-0.12 * T.D, 0.12 * T.D]; // rows' depth from the bar's centre
+  const pb = productBar(T, l), offs = tl ? tl.zs.map(z => -z - T.D / 2) : pb ? [-pb.wid / 4, pb.wid / 4] : [-0.12 * T.D, 0.12 * T.D]; // rows' depth from the bar's centre
   const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.pieDeg}|${dep}|${offs.join(',')}`;
   const hit = posCache.get(key);
   if (hit != null) return hit;

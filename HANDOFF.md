@@ -109,7 +109,35 @@ Nathan 2026-10-20: drag only what the open menu covers; a Show box per kind of t
   `colors.controller` = an inline thermostat box on the cord, hung outside the back glass, digits to the room.
 - Sponge filters: optional `spongeParts` (base disc, neck, fluted sponge, collar, lift tube at its real length, bubbles out
   its top under water). Aquaneat small (Amazon B08F79B7MS, Nathan's 9 gal bowl pick) measured off its listing image.
-- Lights: research only so far; there is no light product catalogue yet (next step: catalogue + fixture drawings).
+- Lights: catalogued and drawn 2026-10-20, see "Light product catalogue" below.
+
+## Light product catalogue: the 18 Amazon best-selling lights, drawn and pickable (2026-10-20, side session; Nathan's request)
+- Data: `lights` in src/data/gear-catalog.json (converted from research/gear-popular/lights.json), typed `LightProduct` in
+  data/gearCatalog.ts: mount `bar` (14: slim bar on extendable wire brackets) / `rim-legs` (2: slab on two clip legs) /
+  `gooseneck` (DaToo 70 mm disc) / `submersible` (hygger stick); fitMinMm..fitMaxMm, body L x W x H, watts, tech
+  (led-planted for white+RGB, led-reef for the NICREW marine, led-white otherwise), `colors.leds` (rows of white dots, one
+  accent in `every`, NICREW C10 = ring clusters, Fluval = an RGB middle row), est, names, popularity. `lightsFor(L)` = the
+  ones that fit, most popular first.
+- ESTIMATES added here (in each entry's `est`): watts of the six 48 in bars and the SEAOURA clip (the brand's W per inch x
+  body; none published); fit range of the DaToo (200-410 mm, a 1-5 gal nano) and the submersible (350-1220 mm). No PAR is
+  published for any of the 18: the light model estimates it from the watts and the card says so. Mount heights
+  (scene/lightproduct.ts MOUNT_H: bar 25 mm, rim-legs 60, gooseneck 80) are read off photos, estimates.
+- Light: `LightSettings.product` (optional, no version bump; dropped on load when unknown or under a hood).
+  scene/lightproduct.ts `applyLightProduct` sets type (led; gooseneck = one LED puck), tech, count 1, watts, kelvin, PAR if
+  published. lightout emitters run along the product's own body and width (`productBar`, `ledBarDepth(T, l)`), so a
+  457 mm bar on a 610 mm tank lights like one. The submersible is lit as a bar at the surface (the model takes lights from
+  above): drawn in the water, lit from the top.
+- Drawing: render/light3d.ts `addProductLight` (called first in lighting.ts addFixture; it reuses lighting's barLegs and
+  clipOns for the wire brackets and the gooseneck clamp). Pictures: research/gear-popular/lights-drawn-{front,three}.jpg;
+  redo with `scripts/light-shots.js` (tall pane, e.g. 900 x 1300; it grabs the whole canvas because exportPNG crops a
+  fixture above the rim off).
+- UI: Tech > Lighting starts with a Product select (index.html `#lProduct`, rendered by techMenu.ts): Generic + the lights
+  that fit the tank length; the card gives size, mount, fit, watts published or estimated, the PAR note and the estimated
+  substrate PAR, popularity and the listing. Hooks in other files (one line each): panels.ts lType / lTech change drops the
+  product, its front-to-back range uses the product width; build.ts passes the water level to addFixture.
+- Open: the product's price is not yet in the cost (lights have no tech row; same leftover as heaters had); the
+  submersible sits centred on the back glass and can overlap a centred HOB intake; the model's estimate for the 12 W
+  AQUANEAT on a 12 in deep 20 gal reads about 70 PAR, which looks high for a budget bar (no meter data to check it).
 
 ## Heaters and filters as lists (2026-10-20, side work in the `stocking` worktree; Nathan's request from the Tech menu)
 - `TechSetup.heaters[]` / `filters[]` (scene/tech.ts): one entry per unit, generic (heater `w` editable; filter `model` steps) or a

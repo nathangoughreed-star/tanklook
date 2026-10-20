@@ -134,3 +134,35 @@ export function heaterForBundle(label: string, watts: number): HeaterProduct | u
 export const listedPrice = (p?: { priceUsd?: number; est?: string[] }) => (p?.priceUsd && !p.est?.includes('priceUsd') ? p.priceUsd : undefined);
 /** A product's display name: the model, with the brand in front unless the model already starts with it. */
 export const productName = (p: { brand: string; model: string }) => (p.model.toLowerCase().startsWith(p.brand.toLowerCase()) ? p.model : `${p.brand} ${p.model}`);
+
+// ---- lights (2026-10-20): the Amazon best-selling aquarium lights (research/gear-popular/lights.*), colours read from photos
+
+/** How it is held: 'bar' = a slim bar on extendable wire-loop brackets resting on the rim; 'rim-legs' = a flat slab raised
+ *  on two clip legs; 'gooseneck' = a nano disc on a bendable neck from a screw clamp; 'submersible' = a stick on suction cups
+ *  under the water. */
+export type LightMount = 'bar' | 'rim-legs' | 'gooseneck' | 'submersible';
+/** The LEDs as seen from below: `rows` of white dots (front to back), one accent dot in `every` (0 = none; a row index in
+ *  `accentRow` = that whole row in the accents), 'rings' = one row of ring clusters (NICREW C10), 'disc' = a round head. */
+export interface LightLeds { kind: 'dots' | 'rings' | 'disc'; rows: number; white: string; accents: string[]; every: number; accentRow?: number }
+export interface LightLook { body: string; endcaps: string; legs: string; lens: string; leds: LightLeds; ledLook?: string; photo?: string }
+export interface LightProduct {
+  id: string; brand: string; model: string; mount: LightMount;
+  /** the tank lengths it fits, mm (a bar's brackets slide out from its body to this) */
+  fitMinMm: number; fitMaxMm: number;
+  /** body length x width (front to back) x thickness, mm (gooseneck: the disc's diameter, the disc's thickness) */
+  lengthMm: number; widthMm: number; heightMm: number;
+  watts: number; tech: 'led-white' | 'led-planted' | 'led-reef';
+  /** published PAR at the substrate; absent on all 18 (2026-10-20): the light model estimates it from the watts */
+  par?: number; kelvin?: number;
+  spectrum?: string; controller?: string; water?: 'fresh' | 'salt';
+  priceUsd?: number; url: string; priceUrl?: string; asOf: string;
+  est?: string[]; colors: LightLook; colorsEst?: string[]; names?: string[];
+  popularity?: Popularity; note?: string;
+}
+export const LIGHT_PRODUCTS = ((data as unknown as { lights?: LightProduct[] }).lights ?? []);
+export const lightProduct = (id?: string) => (id ? LIGHT_PRODUCTS.find(p => p.id === id) : undefined);
+/** The lights that fit a tank `lengthMm` long (fitMinMm..fitMaxMm), most popular (lowest Amazon rank) first. */
+export function lightsFor(lengthMm: number): LightProduct[] {
+  const rank = (p: LightProduct) => Number(/#(\d+)/.exec(p.popularity?.evidence ?? '')?.[1] ?? 999);
+  return LIGHT_PRODUCTS.filter(p => lengthMm >= p.fitMinMm && lengthMm <= p.fitMaxMm).sort((a, b) => rank(a) - rank(b));
+}

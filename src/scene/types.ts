@@ -148,6 +148,9 @@ export interface LightSettings {
   /** LED in a hood (added 2026-10-20, Nathan): a few stick-on strips joined by a wire, or one full-length bar. Absent =
    * 'strips'. Only the look (render/lighting addHoodLamps). */
   hoodLed?: 'strips' | 'bar';
+  /** A catalogued light (added 2026-10-20, data/gear-catalog.json `lights`): drawn as that product at its own size and
+   * colours, its emitters along its own body (scene/lightproduct.ts sets type, tech, watts). Absent = the generic fixture. */
+  product?: string;
   /** Light output (added 2026-10-14, all optional, no version bump; model in scene/lightout.ts). Power draw (W); 0 or
    * absent = off, Brightness stays the manual knob. Set: the render brightness follows the computed lux, `bright` is an exposure. */
   watts?: number;

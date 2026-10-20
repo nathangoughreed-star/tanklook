@@ -5,6 +5,7 @@ import { parsePatches } from './brush';
 import { ANIMAL_RANGE, DENS_RANGE, LIBRARY, MAX_ITEMS, clampItem, legacyDens, starterItems } from './items';
 import { CEILING_H, CEILING_MAX, CEILING_MIN, WALL_GAP, WALL_GAP_MAX, clamp, mapToTank } from './physics';
 import { MH_BULBS, TECH_IDS, fitFixture } from './lightout';
+import { lightProduct } from '../data/gearCatalog';
 import { normTank } from './shape';
 import { TABLE_MAX, fitTable } from './table';
 import { GROW_RATE_MAX } from './growtime';
@@ -231,6 +232,8 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       ...(l.bulbW != null ? { bulbW: (MH_BULBS as readonly number[]).includes(Number(l.bulbW)) ? Number(l.bulbW) : 150 } : {}),
       ...(l.par != null ? { par: Math.round(num(l.par, 0, ...LIMITS.par)) } : {}),
       ...(l.mount === 'legs' || l.mount === 'hang' ? { mount: l.mount } : {}),
+      // a catalogued light (added 2026-10-20, no version bump): kept only when it is still in the catalogue and not in a hood
+      ...(typeof l.product === 'string' && lightProduct(l.product) && raw.lid !== 'hood' ? { product: l.product } : {}),
       ...(l.pos != null && Number(l.pos) !== 0 ? { pos: Math.round(num(l.pos, 0, -1500, 1500)) } : {}),
       ...(l.mapUnit === 'par' || l.mapUnit === 'lux' ? { mapUnit: l.mapUnit } : {}),
       ...(l.mapStep != null ? { mapStep: Math.round(num(l.mapStep, 10, 5, 100) / 5) * 5 } : {}),

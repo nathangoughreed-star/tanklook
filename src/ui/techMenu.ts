@@ -18,7 +18,9 @@ import {
   optionCost, optionDef, presetsFor, reefFeedOf, rowsFor, setFeed, singleFilter, stockCapacity, techOf, unitCosts, walstadGaps, withChoice,
   withUnits, withoutUnit, type FilterUnit, type HeaterUnit, type OptionCost, type TechSetup,
 } from '../scene/tech';
-import { FILTER_PRODUCTS, HEATER_PRODUCTS, filtersNear, genericHeaterW, heatersNear, productName, type FilterProduct, type HeaterProduct } from '../data/gearCatalog';
+import { FILTER_PRODUCTS, HEATER_PRODUCTS, filtersNear, genericHeaterW, heatersNear, lightProduct, lightsFor, productName, type FilterProduct, type HeaterProduct, type LightProduct } from '../data/gearCatalog';
+import { applyLightProduct, lightProductNote, productOn } from '../scene/lightproduct';
+import { lightOutCached } from '../scene/lightout';
 import type { FilterKind } from '../demand/gear';
 import { volume } from '../scene/physics';
 import type { TankSetup } from '../scene/types';
@@ -58,7 +60,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     const S = store.tank;
     if (S.tech && S.water.on && feedFor(S) !== S.grow.feed)
       queueMicrotask(() => { const s = store.tank; if (s.tech && s.water.on && feedFor(s) !== s.grow.feed) store.edit(x => { x.tech = setFeed(techOf(x), x.grow.feed, !!x.water.salt); }, { history: false }); });
-    render();
+    render(); renderLight();
   });
   /** One expected value per figure (Nathan 2026-10-19: no ranges or percentiles shown): the mean of each lo / mode / hi. */
   const range = (c: OptionCost, covered = 0) => {
@@ -299,6 +301,42 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     const c = Math.min(40, Math.max(0, fahr() ? fromF(+el.value) : +el.value));
     edit(s => ({ ...techOf(s), roomC: c }));
   });
-  render();
+  // ---- Lighting (2026-10-20, Nathan: the best-selling lights modelled as the real products): a catalogued light that fits
+  // the tank's length (its brackets' range), or the generic fixture set by the controls below. A product sets the fixture,
+  // its lamp and its watts; with no PAR published the light model's estimate from those watts stands, and the card says so.
+  const lightMount = document.getElementById('lProduct');
+  const MOUNT_NAME: Record<LightProduct['mount'], string> = {
+    bar: 'slim bar on extendable brackets resting on the rim', 'rim-legs': 'slab on two clip legs on the rim',
+    gooseneck: 'disc on a gooseneck clamp', submersible: 'submersible stick on suction cups',
+  };
+  let lightKey = '';
+  function renderLight() {
+    if (!lightMount) return;
+    const S = store.tank, l = S.light, cur = productOn(l), inch = (mm: number) => Math.round(mm / 25.4), o = cur ? lightOutCached(S) : null;
+    const key = JSON.stringify([S.lid, S.tank.L, cur?.id, o && Math.round(o.mean), store.scene.units]);
+    if (key === lightKey) return;
+    lightKey = key;
+    if (S.lid === 'hood') { lightMount.innerHTML = '<div class="hint">The hood holds its own lamps: take the hood off (Lid) to fit one of the catalogued lights.</div>'; return; }
+    const fits = lightsFor(S.tank.L), list = cur && !fits.includes(cur) ? [cur, ...fits] : fits;
+    const label = (p: LightProduct) => `${productName(p)} · ${p.watts} W${p.est?.includes('watts') ? ' (est.)' : ''}${p.priceUsd ? ` · ${usd(p.priceUsd)}` : ''}`;
+    let html = `<div class="row"><label for="lProd" title="A real light from the catalogue (the Amazon best sellers), drawn at its own size and colours: the ones whose brackets fit this tank's length. Generic: the fixture set below">Product</label><select id="lProd" class="span2"><option value="">Generic (set below)</option>${list.map(p => `<option value="${p.id}"${p === cur ? ' selected' : ''}>${esc(label(p))}</option>`).join('')}</select></div>`;
+    if (!fits.length) html += `<div class="hint">No catalogued light fits a ${Math.round(S.tank.L)} mm (${inch(S.tank.L)} in) long tank: the generic fixture below.</div>`;
+    if (cur) {
+      const sz = ['lengthMm', 'widthMm', 'heightMm'].some(f => cur.est?.includes(f)) ? ' (size estimated)' : '';
+      const fit = cur.mount === 'bar' || cur.mount === 'rim-legs' ? `, fits ${inch(cur.fitMinMm)}-${inch(cur.fitMaxMm)} in tanks` : '';
+      const par = o ? ` About ${Math.round(o.mean)} PAR on the substrate here (${cur.par ? 'scaled to the published figure' : 'estimated'}).` : '';
+      html += `<div class="tunit"><div class="tuh"><span class="tun">${esc(productName(cur))}</span></div>`
+        + `<div class="hint">${cur.lengthMm} × ${cur.widthMm} × ${cur.heightMm} mm ${esc(MOUNT_NAME[cur.mount])}${fit}${sz}. ${esc(lightProductNote(cur))}${par}</div>`
+        + `${cur.popularity ? `<div class="hint">${esc(cur.popularity.evidence)} (seen ${esc(cur.popularity.seen)})</div>` : ''}`
+        + `<div class="hint"><a href="${esc(cur.url)}" target="_blank" rel="noopener">Listing</a>${cur.controller ? ` · controller: ${esc(cur.controller)}` : ''}</div></div>`;
+    }
+    lightMount.innerHTML = html;
+  }
+  lightMount?.addEventListener('change', e => {
+    const el = e.target as HTMLSelectElement;
+    if (el.id !== 'lProd') return;
+    store.edit(s => applyLightProduct(s.light, s.tank, lightProduct(el.value)));
+  });
+  render(); renderLight();
   return { render };
 }

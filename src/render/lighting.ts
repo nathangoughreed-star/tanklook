@@ -13,6 +13,8 @@ import { waterK, waterY } from '../scene/physics';
 import { bowlDims, bowlRadius, clampIn, footprint, insideBy, shapeOf } from '../scene/shape';
 
 import { SHADE_MAX } from '../scene/shade';
+import { lightProduct } from '../data/gearCatalog';
+import { addProductLight } from './light3d';
 import { AQ_MAX, LAMP_Y, LUXW, barZ, beamExp, emitters, ledBarDepth, lampHeight, mountOf, lightEnvCached, lightOutCached, renderBright, fixtureOf, techOf, tubeLayout, tubeOf, type Emitter, type LightEnv, type LightScene } from '../scene/lightout';
 // the fixture geometry lives with the light-output model now (lane K); re-exported so importers stay as they were
 export { AQ_MAX, LAMP_Y, emitters, fitSpots, lampHeight, type Emitter } from '../scene/lightout';
@@ -461,7 +463,7 @@ export function applyLighting(sc: THREE.Scene) {
 /** The lit face of a fixture at colour temperature `kelvin`. */
 export const glowColor = (kelvin: number) => new THREE.Color(...kelvinRGB(kelvin)).multiplyScalar(0.7).addScalar(0.35);
 
-export function addFixture(sc: THREE.Scene, T: Tank, l: LightSettings, ceiling?: number) {
+export function addFixture(sc: THREE.Scene, T: Tank, l: LightSettings, ceiling?: number, waterTop?: number) {
   if (l.type === 'flat') return;
   const { L, H } = T, y = H + (l.height ?? LAMP_Y);
   const glow = new THREE.MeshBasicMaterial({ color: glowColor(l.kelvin) }); glow.userData.glow = true; // recoloured in place (viewer)
@@ -470,6 +472,9 @@ export function addFixture(sc: THREE.Scene, T: Tank, l: LightSettings, ceiling?:
     // `overhead`: hidden while the eye is above the fixture (viewer), where it would only cover the tank (audit #20)
     const m = new THREE.Mesh(geo, mat); m.position.set(x, yy, z); m.userData.nolight = true; m.userData.overhead = y; sc.add(m); return m;
   };
+  // a catalogued light (2026-10-20): the real product's own shape, size and colours (light3d.ts)
+  const pr = lightProduct(l.product);
+  if (pr) { addProductLight(sc, T, l, pr, y, add, glow, { barLegs, clipOns }, waterTop ?? H - 20); return; }
   const puck = fixtureOf(l) === 'puck', E = emitters(T, l), tl = l.type === 'tube' ? tubeLayout(T, l) : null, tubeTop = tl ? y + tl.dia / 2 + 16 : 0;
   // a bar (tubes, LED bar): its half length, centre front to back and depth; tubes are as long as their tube (tubeOf)
   const bar = tl ? { hx: tubeOf(l, T).housing / 2, zc: tl.zc, dep: tl.depth } : l.type === 'led' ? { hx: L * 0.48, zc: barZ(T, l, ledBarDepth(T)), dep: ledBarDepth(T) } : null;
