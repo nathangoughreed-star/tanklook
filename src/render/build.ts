@@ -20,6 +20,7 @@ import { addAlgae } from './algae';
 import { buildGear, gearKey, solidBoxes } from './gear3d';
 import { itemDeps, itemMesh, leafProbe, solidProbe, underProbe } from './items';
 import { rootsKey, rootsMesh } from './roots';
+import { outlineKey, spaceOutline } from './spaceOutline';
 import { addBackdrop, backdropGeometry } from './backdrop';
 import { drapedCard, fish3d, fishBody, hullMaterial } from './fish3d';
 import { herpBody, herpFloatTop, isHerp3D } from './herp3d';
@@ -1112,7 +1113,7 @@ export function envKey(S: TankSetup) {
   const { color: _wc, opacity: _o, ...water } = S.water, { color: _c, ...wall } = S.wall;
   const { color: _c1, color2: _c2, share: _s, mix: _m, ...custom } = S.substrate.custom;
   // the condition (lane AL) is uniforms only
-  return JSON.stringify({ ...S, fish: null, items: null, camera: null, grow: null, condition: null, tech: S.tech && { ...S.tech, place: null }, light, render, water, wall, substrate: { ...S.substrate, custom: S.substrate.type === 'custom' && grainLook(S.substrate) ? S.substrate.custom : custom } }); // 3D stones take their colours at build
+  return JSON.stringify({ ...S, layout: { ...S.layout, space: null }, fish: null, items: null, camera: null, grow: null, condition: null, tech: S.tech && { ...S.tech, place: null }, light, render, water, wall, substrate: { ...S.substrate, custom: S.substrate.type === 'custom' && grainLook(S.substrate) ? S.substrate.custom : custom } }); // 3D stones take their colours at build
 }
 /** The values `patchLook` sets. */
 export const lookKey = (S: TankSetup) => JSON.stringify([S.water.color, S.water.opacity, S.wall.color, S.substrate.custom]);
@@ -1298,6 +1299,7 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
   b.itemMeshes = b.itemParts.flatMap(p => p.meshes);
   const solids = b.itemMeshes.filter(m => !m.userData.plant); for (const m of solids) m.updateMatrixWorld(true);
   if (!bare) { const key = gearKey(S, hard); b.itemParts.push(take(key) ?? part(key, buildGear(S, T, solidBoxes(solids)), [])); } // the tech gear (lane TG)
+  { const key = outlineKey(S, T); b.itemParts.push(take(key) ?? part(key, spaceOutline(S, T), [])); } // the owner's space, dashed (lane P3)
   // the plant meshes, for animals that sit on leaves (anchors `leaf`); an animal on a plant is rebuilt when any plant changes
   const leaves = b.itemMeshes.filter(m => m.userData.plant); for (const m of leaves) m.updateMatrixWorld(true);
   const hardKey = hard.join('|'), leafKey = leaves.map(m => m.uuid + m.geometry.uuid).join('|');

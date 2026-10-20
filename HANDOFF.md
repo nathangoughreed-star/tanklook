@@ -32,7 +32,6 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
 | P1 group data (path 1) | `../Glass-Box-p1groups` / `p1groups` | 5863 | `src/data/groups.ts`, merge loop in `data/care.ts` | opened 2026-10-20 |
-| P3 fullness tile (path 1) | `../Glass-Box-p3fullness` / `p3fullness` | 5883 | `ui/fullnessTile.ts`, viewer outline, `layout.space` | opened 2026-10-20 |
 | P4 artificial plants (path 1) | `../Glass-Box-p4artplants` / `p4artplants` | 5893 | artificial plant kind: items, plant3d branch, demand rows | opened 2026-10-20 |
 | SE stocking engine | `../Glass-Box-stocking` / `stocking` | 5843 | new `scene/stocking.ts`, `data/bodymass.json`, stocking line in `ui/panels.ts`, bioload helpers in `scene/starter.ts` | opened 2026-10-19 |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 DONE 2026-10-16 (lane SS2, see archive; its gaps: no water dish, no succulents, Malawi has only yellowlab / cockatoo); multi-select / duplicate (lane MS) + scatter brush (lane SB) DONE 2026-10-16, see archive; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
@@ -60,8 +59,6 @@ DONE 2026-10-20 (pushed to main). `src/data/groups.ts` (GroupCare, `GROUPS` for 
   depth 450 mm, low flow. `maxDepthMm` means a water-depth CAP only (angel / discus / axolotl agent values were tank heights: dropped).
   Danio zone middle, neon minLengthMm 450 (P2's tankfit tests pin both). Overrides and notes are in the sources file.
 - Free now: `src/data/groups.ts`, `test/groups.test.ts`, `research/groups-sources.md`.
-
-## Lane P3: fullness tile, path 1 (2026-10-20, branch `p3fullness`, port 5883)  (lane fills this in)
 
 ## Lane P4: artificial plants, path 1 (2026-10-20, branch `p4artplants`, port 5893)  (lane fills this in)
 ## User flow: paths, budget, deals (Nathan 2026-10-20, design chat; not built yet except the New / Open split)
@@ -358,6 +355,7 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane P3: fullness tile, path 1 (2026-10-20, branch `p3fullness`, port 5883)
 - Lane P2: tank fit engine, path 1 (2026-10-20, branch `p2tankfit`, port 5873)
 - Lane TG: tech gear in 3D (2026-10-19, branch `techgear`, port 5833)
 - Lane DM: deal match, "a bundle close to your build" as Tank B (2026-10-19; Nathan approved the pictures; pushed to main)
