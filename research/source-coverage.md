@@ -11,8 +11,8 @@ when it carries the url of the listing it was read from and does not mark the fi
 
 | | values | cited | fitted | derived | researched | claimed | assumption | unsourced | strong |
 |---|---|---|---|---|---|---|---|---|---|
-| **all data** | 5174 | 2329 (45 %) | 59 (1 %) | 11 (0 %) | 681 (13 %) | 679 (13 %) | 728 (14 %) | 687 (13 %) | 46 % |
-| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) | 1277 | 301 |  |  | 387 | 428 | 16 | 145 | 24 % |
+| **all data** | 5174 | 2334 (45 %) | 59 (1 %) | 11 (0 %) | 681 (13 %) | 679 (13 %) | 729 (14 %) | 681 (13 %) | 46 % |
+| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) | 1277 | 306 |  |  | 387 | 428 | 17 | 139 | 24 % |
 | Adult length per species (species.json tl) | 108 | 82 |  |  |  |  |  | 26 | 76 % |
 | Marine pH band (data/waterchem.ts) | 2 | 2 |  |  |  |  |  |  | 100 % |
 | Reptile / amphibian floor area, height, groups, growth (data/herpstock.ts) | 228 |  |  |  | 228 |  |  |  | 0 % |
@@ -41,8 +41,8 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 
 | field | values |
 |---|---|
-| `CARE *.minL` | 33 |
 | `CARE *.care` | 30 |
+| `CARE *.minL` | 27 |
 | `CARE *.temper` | 22 |
 | `CARE *.temp.*` | 8 |
 | `CARE *.tol.*` | 8 |

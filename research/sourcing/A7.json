@@ -92,7 +92,7 @@
         "care": { "ours": 2, "verdict": "disagrees", "suggest": 1, "sources": [
           { "url": "https://www.liveaquaria.com/products/six-line-wrasse", "site": "LiveAquaria", "states": "Easy", "quote": "Care Level: Easy" },
           { "url": "https://reefexclusive.com/products/six-line-wrasse", "site": "Reef Exclusive", "states": "Easy", "quote": "Care Level : Easy" } ] },
-        "minL": { "ours": 115, "verdict": "disagrees", "suggest": 208, "sources": [
+        "minL": { "ours": 208, "verdict": "agrees", "suggest": 208, "sources": [
           { "url": "https://www.liveaquaria.com/products/six-line-wrasse", "site": "LiveAquaria", "states": "60 gal (227 L)", "quote": "Minimum Tank Size: 60 Gallons" },
           { "url": "https://reefexclusive.com/products/six-line-wrasse", "site": "Reef Exclusive", "states": "55 gal (208 L)", "quote": "The Six Line Wrasse requires a minimum tank size of 55-gallons, for maximum health." } ],
           "note": "Both opened pages say 55-60 gal; ours (30 gal) is 45% under the lower." },

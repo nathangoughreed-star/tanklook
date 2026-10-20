@@ -258,7 +258,7 @@
           "note": "ReptiFiles PDF opened but has no care level."
         },
         "minL": {
-          "ours": 75, "verdict": "disagrees", "suggest": 125,
+          "ours": 127, "verdict": "agrees", "suggest": 125,
           "sources": [
             {"url": "https://reptifiles.com/wp-content/uploads/2020/10/Crested-Gecko-Care-Sheet-PDF.pdf", "site": "ReptiFiles PDF", "states": "18x18x24 in (about 127 L, converted from dimensions)", "quote": "Enclosure18\"×18\"×24\""},
             {"url": "https://reptilesmagazine.com/crested-gecko-care-sheet/", "site": "Reptiles Magazine", "states": "18x18x36 in minimum for an adult (about 191 L, converted)", "quote": "An adult crested gecko should be housed in a minimum  18″L x 18″W x 36″ H terrarium with a screen top."}

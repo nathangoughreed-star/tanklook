@@ -213,7 +213,7 @@
         "care": {"ours": 1, "verdict": "agrees", "suggest": null, "sources": [
           {"url": "https://www.fishkeepingworld.com/fancy-goldfish/", "site": "Fishkeeping World", "states": "easy; table 'Easy to medium'", "quote": "Fancy goldfish are easy to look after, providing the tank is kept clean."}
         ]},
-        "minL": {"ours": 150, "verdict": "disagrees", "suggest": 75, "sources": [
+        "minL": {"ours": 75, "verdict": "agrees", "suggest": 75, "sources": [
           {"url": "https://www.fishkeepingworld.com/fancy-goldfish/", "site": "Fishkeeping World", "states": "20 gal (76 L) for one fancy goldfish", "quote": "The minimum tank size you can house one fancy goldfish in is 20 gallons."},
           {"url": "https://www.fishkeepingworld.com/goldfish/", "site": "Fishkeeping World", "states": "20 gal (76 L)", "quote": "Fancy goldfish are the smaller of the three and require a tank of only 20 gallons."}
         ], "note": "Ours is about double. Our value may be for a group; sources state one fish."},

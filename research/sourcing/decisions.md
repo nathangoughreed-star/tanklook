@@ -3,11 +3,17 @@
 Fields where the opened pages disagree with our number. They stay unsourced until decided: change the number (then it is
 cited), or keep ours and record why (then it is an assumption). Source detail and quotes: the batch file named per row.
 
+## Decided (Nathan, chat SQ)
+
+Rule from Nathan 2026-10-20: he cannot judge the biology; trust the research, especially where independent sources agree. Where sources split or only one retailer speaks, the proposal below stands unless noted.
+
+- 2026-10-20 batch 1, minimum tanks: oscar 540, crested gecko 127, crested harlequin gecko 127, sixline wrasse 208, goldfish 75 (adopted, cited). Ball python kept at 450 L as an assumption: PetSmart and BeWild say 40 gal, Zen Habitats and Reptile Direct say 4x2x2 ft (120 gal) and call 40 gal outdated; the ReptiFiles PDF gives no enclosure size.
+
 ## pilot-01 (2026-10-20)
 
 | field | ours | pages say | proposal |
 |---|---|---|---|
-| oscar.minL | 400 L | Seriously Fish ~540 L (143 gal); Fishkeeping World 143 gal for one adult | **540** (both agree) |
+| oscar.minL | 400 L | Seriously Fish ~540 L (143 gal); Fishkeeping World 143 gal for one adult | DONE 2026-10-20: 540 |
 | ocellaris.tl | 80 mm | FishBase 11 cm TL max; Top Shelf 4.3 in; BRS approx 4 in | **100** (all three 100-110; aquarium fish often stay 80, so maybe keep 80 as "typical" and say so) |
 | bristlenose.minL | 110 L | Seriously Fish ~54 L; Chewy 20 gal (76 L) for one adult | **80** (top of the stated span) |
 | angel.care | 2 | Seriously Fish Easy; Fishkeeping World Easy (common forms), Moderate (altum, koi, albino) | **1** |
@@ -47,7 +53,7 @@ cited), or keep ours and record why (then it is an assumption). Source detail an
 | hatchet.care | 2 | Seriously Fish: Easy | **1** | SF rates Easy (6 of 8 measures). |
 | hatchet.group | 6 | Seriously Fish: ideally 10 or more | **10** | Ours 6 is 4 below 10. |
 
-## A2 (11)
+## A2 (10)
 
 | field | ours | pages say | suggest | note |
 |---|---|---|---|---|
@@ -59,7 +65,6 @@ cited), or keep ours and record why (then it is an assumption). Source detail an
 | molly.minL | 110 | Seriously Fish: base 90 x 30 cm, about 81 L (21 US gal); Fishkeeping World: 10 gal (38 L) | **80** | Ours is 36 % above the larger figure. |
 | swordtail.female.tl | 115 | FishBase: 16.0 cm TL female; Fishkeeping World: females up to 6.3 in (160 mm) | **160** | Ours is 28 % below both. Seriously Fish says 140 mm SL both sexes (would agree). Figures may include the sword. |
 | swordtail.temper | 1 | Fishkeeping World: peaceful; males can become territorial if too few females; Seriously Fish: temperament field 'unknown'; male groups form hierarchies | **0** | Mixed: FKW peaceful (0); SF gives no temperament but notes male dominance behaviour (supports 1). Treat as ambiguous. |
-| goldfish.minL | 150 | Fishkeeping World: 20 gal (76 L) for one fancy goldfish; Fishkeeping World: 20 gal (76 L) | **75** | Ours is about double. Our value may be for a group; sources state one fish. |
 | comet.tl | 200 | Fishkeeping World: up to 12 in (305 mm); Fishkeeping World: up to 10 in (254 mm) | **250** | Ours is 21-34 % below these maxima. FishBase species max 48.0 cm TL (common length 10.0 cm TL), not comet-specific. |
 | comet.minL | 300 | Fishkeeping World: 50 gal (189 L) min, recommends 75 gal (284 L); Fishkeeping World: 30 gal (114 L) | **190** | Span 114-284 L; ours 300 is within 25 % of the 75 gal recommendation (284), so arguably agrees if the recommended figure is the basis. Marked disagrees against the stated minimums. |
 
@@ -108,7 +113,7 @@ cited), or keep ours and record why (then it is an assumption). Source detail an
 | turbo.minL | 75 | Aquarium Breeder: 10 gallons (~40 L) | **40** | Top Shelf gives only a stocking guideline (2-3 snails per 20-30 gal), not a minimum. Search snippets from unopened pages mentioned 50 L and 30+ gal. |
 | hermit.temper | 1 | LiveAquaria: Peaceful; Reef Exclusive: Peaceful; Top Shelf Aquatics: Peaceful to Semi-Aggressive, territorial over shells | **0** | Sources differ: two pages say Peaceful (0), one says Peaceful to Semi-Aggressive (between 0 and 1). Shell-stealing behaviour is under prey. |
 
-## A7 (11)
+## A7 (10)
 
 | field | ours | pages say | suggest | note |
 |---|---|---|---|---|
@@ -118,13 +123,12 @@ cited), or keep ours and record why (then it is an assumption). Source detail an
 | firefish.care | 2 | LiveAquaria: Easy; Reef Exclusive: Easy | **1** |  |
 | banggai.care | 2 | Reef Exclusive: Easy; Saltwater Aquarium Blog: easy | **1** |  |
 | sixline.care | 2 | LiveAquaria: Easy; Reef Exclusive: Easy | **1** |  |
-| sixline.minL | 115 | LiveAquaria: 60 gal (227 L); Reef Exclusive: 55 gal (208 L) | **208** | Both opened pages say 55-60 gal; ours (30 gal) is 45% under the lower. |
 | sixline.temper | 2 | LiveAquaria: Semi-Aggressive; Reef Exclusive: Semi-aggressive | **1** |  |
 | chromis.tl | 75 | FishBase: 10.0 cm TL max; LiveAquaria: 4 in max (102 mm) | **100** | Ours is 25% under both. |
 | coralbeauty.care | 2 | LiveAquaria: Easy; Reef Exclusive: Easy | **1** | LiveAquaria quote is the value cell only; label 'Care Level' sat on separate line. |
 | mandarin.minL | 265 | Reef Exclusive: 30 gal (113.5 L); Bulk Reef Supply: 30 gal (113.5 L) | **114** | Both opened pages say 30 gal; other (unopened) pages suggest larger, mature tanks. |
 
-## A8 (9)
+## A8 (8)
 
 | field | ours | pages say | suggest | note |
 |---|---|---|---|---|
@@ -136,13 +140,11 @@ cited), or keep ours and record why (then it is an assumption). Source detail an
 | adf.care | 1 | LiveAquaria: Care Level: Moderate; Josh's Frogs: fairly easy under the correct conditions | **2** | Sources split: LiveAquaria moderate (=2), Josh's fairly easy (=1). |
 | axolotl.minL | 150 | Modest Fish: 29 gal / 110 L smallest recommended, one axolotl; Reptile Centre: one adult minimum 54-75 L (15-20 gal) | **110** | Page's own litres used; spread 54-110 L, ours 150 is above. |
 | axolotl.ph | [7,8] | Modest Fish: pH 7-7.4; Reptile Centre: pH 7.4-7.6 | **[7,7.6]** | Our upper end 8 is 0.4-0.6 above both; lower end agrees. |
-| crestedgecko.minL | 75 | ReptiFiles PDF: 18x18x24 in (about 127 L, converted from dimensions); Reptiles Magazine: 18x18x36 in minimum for an adult (about 191 L, converted) | **125** | Converted from dimensions: 18x18x24 in = 7776 in3 = 127 L; 18x18x36 in = 191 L. Ours is well below both. |
 
-## A9 (14)
+## A9 (13)
 
 | field | ours | pages say | suggest | note |
 |---|---|---|---|---|
-| crestedharlequin.minL | 75 | ReptiFiles PDF: 18x18x24 in = ~127 L; Reptiles Magazine: min 18x18x36 in = ~191 L | **127** | Both pages give a tall terrarium of 127-191 L (converted from inches: 1 in3 = 0.01639 L); ours 75 is below both. |
 | greenanole.temper | 0 | PetSmart: males territorial; ReptiFiles: do not house multiple together | **1** | Male-male aggression; peaceful toward other species is not addressed. |
 | greenanole.air.warm | [32,35] | ReptiFiles: basking 90 F (32 C); PetSmart: top of tank 85-90 F (29-32 C) | **[29,32]** | Our hi of 35 is 3 C above both. |
 | greenanolebrown.temper | 0 | PetSmart: males territorial | **1** | Male-male. |

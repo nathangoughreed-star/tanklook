@@ -55,6 +55,8 @@ export const RULES: Record<string, Rule[]> = {
   SPACE_FACTOR_CLASS: [{ path: '**', status: 'fitted', src: ['aqadvisor', 'aq-compare'], why: 'median of the fitted species factors in each class' }],
   CARE: [
     // care, minL, temper, prey, solo / slow / nip, coral and group have no rule: care.ts calls them estimates from common practice.
+    // Kept against the pages (Nathan 2026-10-20: trust the research where independent sources agree; here they split): see research/sourcing/decisions.md.
+    { path: 'ballpython.minL', status: 'assumption', why: 'pages split: PetSmart and BeWild accept a 40 gal (about 151 L) tank, Zen Habitats and Reptile Direct call 4x2x2 ft (about 120 gal, 450 L) the adult minimum and the 40 gal rule outdated; we keep the larger modern figure' },
     ...Object.keys(WATER).flatMap((id): Rule[] => ['temp', 'tol'].map(k => ({ path: `${id}.${k}.*`, status: 'researched', src: ['climate-research'], why: 'researched band (data/climatedata.ts) replaces the first guess' }))),
     ...GROUP_ROWS.map(({ id, url, est }): Rule => est
       ? { path: `${id}.${GROUP_FIELDS}`, status: 'claimed', src: ['groups-research'], why: `group bands, max, sex ratio, depth and tank length: judgement from hobby practice; page named ${url}` }
