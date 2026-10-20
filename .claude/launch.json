@@ -587,19 +587,6 @@
       "port": 5863
     },
     {
-      "name": "p2tankfit",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5873",
-        "--strictPort"
-      ],
-      "port": 5873
-    },
-    {
       "name": "p3fullness",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
