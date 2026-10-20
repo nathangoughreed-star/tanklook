@@ -9,6 +9,7 @@ import { dealAsKit } from '../data/deals';
 import { defaultProfile, demandOf } from '../demand';
 import { plantDifficulty } from '../demand/engine';
 import { gearParts } from '../demand/gearDeals';
+import { isFloat } from '../art/plants';
 import { rng } from '../art/paint';
 import type { Build } from './builds';
 import { DEFAULT_DENS, FAKE_ASPECT, LAYOUTS, LIBRARY, STYLES, STYLE_KIND, isLandStyle, isSwampy, makeItem } from './items';
@@ -109,13 +110,14 @@ const swapped = (it: Item, mode: PlantMode): boolean => {
   if (it.kind !== 'plant' || mode === 'live') return false;
   const n = needOf(it.variant);
   if (!n || isLand(n) || isCoralNeed(n)) return false;
+  if (mode === 'mixed' && isFloat(it.variant)) return false; // floaters have no artificial form: a mix keeps them live
   return mode === 'artificial' || plantDifficulty(it.variant) > 1;
 };
 
 /** Artificial pieces a tank holds, per cm2 of floor: a starter style draws dozens of small live cards (carpets, moss) that one artificial mat or stem set stands in for. */
 const FAKE_PER_CM2 = 1 / 120;
 
-/** Replace the tank's live plants by artificial ones as `mode` asks (floaters have no artificial form and are dropped; a clump of six or more stems becomes up to three pieces; the pieces are thinned evenly to what the floor holds). */
+/** Replace the tank's live plants by artificial ones as `mode` asks (floaters have no artificial form: dropped when all-artificial, kept live in a mix; a clump of six or more stems becomes up to three pieces; the pieces are thinned evenly to what the floor holds). */
 export function withPlantMode(S: TankSetup, mode: PlantMode, silk: boolean): TankSetup {
   if (mode === 'live') return S;
   const fakes: Item[] = [], keep: Item[] = [];
