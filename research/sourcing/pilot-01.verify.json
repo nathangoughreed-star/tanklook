@@ -616,7 +616,7 @@
   "field": "group",
   "verdict": "agrees",
   "url": "https://modestfish.com/cherry-shrimp",
-  "result": "compact",
+  "result": "label",
   "score": 1,
   "quote": "How many can be kept together: the more, the better."
  },
@@ -643,7 +643,7 @@
   "field": "tl",
   "verdict": "disagrees",
   "url": "https://www.bulkreefsupply.com/ora-flurry-ocellaris-clownfish-ora.html",
-  "result": "exact",
+  "result": "label",
   "score": 1,
   "quote": "Approx. Max Size"
  },
@@ -661,7 +661,7 @@
   "field": "care",
   "verdict": "agrees",
   "url": "https://www.bulkreefsupply.com/ora-flurry-ocellaris-clownfish-ora.html",
-  "result": "exact",
+  "result": "label",
   "score": 1,
   "quote": "Care Level"
  },
@@ -670,7 +670,7 @@
   "field": "minL",
   "verdict": "agrees",
   "url": "https://www.bulkreefsupply.com/ora-flurry-ocellaris-clownfish-ora.html",
-  "result": "exact",
+  "result": "label",
   "score": 1,
   "quote": "Minimum Tank Size"
  },
@@ -697,7 +697,7 @@
   "field": "temper",
   "verdict": "disagrees",
   "url": "https://www.bulkreefsupply.com/ora-flurry-ocellaris-clownfish-ora.html",
-  "result": "exact",
+  "result": "label",
   "score": 1,
   "quote": "Temperament"
  },

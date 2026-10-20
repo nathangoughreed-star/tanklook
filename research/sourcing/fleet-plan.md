@@ -1,4 +1,6 @@
-# Sourcing fleet plan (2026-10-20, waits on Nathan's yes)
+# Sourcing fleet (2026-10-20; Nathan said yes, RUN the same day)
+
+**Result:** 14 agents, 1.28 M Sonnet tokens (wave 1 A1-A7 634 k, wave 2 A8 A9 C D E1-E3 647 k). Unsourced on main 1280 -> 715. Decisions waiting: decisions.md.
 
 ## Pilot measured (pilot-01: 10 species, adult length + care fields)
 - 1 Sonnet agent, 100.7 k tokens, 54 tool calls (~37 page fetches), 3.7 min.

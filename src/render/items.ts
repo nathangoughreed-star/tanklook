@@ -6,7 +6,7 @@ import * as THREE from 'three';
 import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng } from '../art/paint';
 import { BREED, PLANT3D, growthOf, isCarpet, isFloat, isVine, type PlantType } from '../art/plants';
-import { CARPET_W, SHELLS, itemDims, itemSink, seatHook, stoneDims, woodLimbs, type Limb } from '../scene/items';
+import { CARPET_W, LIBRARY, SHELLS, itemDims, itemSink, seatHook, stoneDims, woodLimbs, type Limb } from '../scene/items';
 import { turnOut, type AnchorProbe, type V3 } from '../scene/anchors';
 import { lampHeight } from '../scene/lightout';
 import { struggleOf } from '../scene/lightcheck';
@@ -14,7 +14,7 @@ import { D2R, clamp, waterY } from '../scene/physics';
 import { bowlDims, footprint, shapeOf } from '../scene/shape';
 import { clampGround, groundHeight, groundInsideBy } from '../scene/terrain';
 import type { Item, Tank, TankSetup } from '../scene/types';
-import { bendPlant, carpetOnGround, clumpOnGround, dropPlant, growShader, grownView, plant3d, plantGeometry, plantRaycast, revealPlant, unpackGeometry, uploadPlant, type JobOut, type PlantJob } from './plant3d';
+import { artificialGeometry, bendPlant, carpetOnGround, clumpOnGround, dropPlant, growShader, grownView, plant3d, plantGeometry, plantRaycast, revealPlant, unpackGeometry, uploadPlant, type JobOut, type PlantJob } from './plant3d';
 import { reefShape } from './coral3d';
 import { CELL_N, NOISE_N, gritUniforms } from './gritTex';
 
@@ -654,6 +654,27 @@ function plantMaterial(T: Tank) {
   Object.assign(m.userData, { cached: true, keep: true, plantClip: true, pre: patch, post });
   return remember(plantMats, k, m, 16, x => x.dispose());
 }
+/** Artificial plants (lane P4): the glass clip, no growth; plastic gets a highlight (it is glossy), silk a faint sheen. */
+function fakeMaterial(T: Tank, mat: 'silk' | 'plastic') {
+  const key = `${glassKey(T)}|${mat}`;
+  let m = fakeMats.get(key);
+  if (m) return m;
+  // a highlight toward the eye from above, as bright as the light there: tight and strong on plastic, broad and faint on silk
+  const { planes, patch } = glassClip(T), [k, pw] = mat === 'plastic' ? [0.5, 26] : [0.04, 3];
+  m = new THREE.MeshBasicMaterial({ vertexColors: true, clippingPlanes: planes });
+  const post = (sh: THREE.WebGLProgramParametersWithUniforms) => {
+    sh.fragmentShader = sh.fragmentShader.replace('vec3 aqLt = aqLight(); outgoingLight *= aqLt;', `$&
+  { vec3 fkN = normalize(vAqN), fkV = normalize(cameraPosition - vAqP);
+    float fkS = pow(max(dot(fkN, normalize(fkV + vec3(0.0, 1.2, 0.0))), 0.0), ${pw.toFixed(1)});
+    outgoingLight += vec3(${k.toFixed(2)} * fkS * min(dot(aqLt, vec3(0.333)), 1.5)) + uLCol * (uBright * uNorm * aqSpec * ${k.toFixed(2)}); }`);
+  };
+  m.onBeforeCompile = patch;
+  m.customProgramCacheKey = () => `fake-${mat}`;
+  Object.assign(m.userData, { keep: true, fake: mat, pre: patch, post });
+  return remember(fakeMats, key, m, 16, x => x.dispose());
+}
+const fakeMats = new Map<string, THREE.MeshBasicMaterial>(), fakes = new Map<string, THREE.BufferGeometry>();
+const keepGeo = (g: THREE.BufferGeometry) => { g.userData.keep = true; return g; };
 const shapes = new Map<string, THREE.BufferGeometry>(), baked = new Map<string, THREE.BufferGeometry>(), plants = new Map<string, THREE.BufferGeometry>();
 /** 3D plants lying over at the surface (per water level), and shown at a growth on the CPU (picking, the USDZ export). */
 const PLANTS_MAX = 600, BENT_MAX = 360, bent = new Map<string, THREE.BufferGeometry>(), unbent = new Set<string>(), shown = new Map<string, THREE.BufferGeometry>(), shownCpu = new Map<string, THREE.BufferGeometry>();
@@ -727,7 +748,7 @@ const SETTLE_MAX = 35, SETTLE_LEAN = 30;
  */
 export function settleOn(S: TankSetup, T: Tank, it: Item): { pitch: number; tilt: number; dy: number } {
   const none = { pitch: it.pitch, tilt: it.tilt, dy: 0 };
-  if (it.kind === 'plant' || it.kind === 'coral' || it.lift > 0 || Math.abs(it.pitch) > SETTLE_LEAN || Math.abs(it.tilt) > SETTLE_LEAN) return none;
+  if (it.kind === 'plant' || it.kind === 'coral' || it.kind === 'artificial' || it.lift > 0 || Math.abs(it.pitch) > SETTLE_LEAN || Math.abs(it.tilt) > SETTLE_LEAN) return none;
   const [w, h, d] = itemDims(it);
   if (h >= Math.max(w, d)) return none;
   const c = Math.cos(it.yaw * D2R), s = Math.sin(it.yaw * D2R), a = 0.4 * w, b = 0.4 * d;
@@ -1043,6 +1064,9 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
     const mat = BREED[it.variant as PlantType];
     const g0 = growthOf(it.variant as PlantType, it.size);
     if (mat?.mode === 'mat' && it.growth != null && gr > g0) { const k = 1 + (mat.rate - 1) * (gr - g0) / (1 - g0 || 1); m.scale.set(k * m.scale.x, m.scale.y, k * m.scale.z); }
+  } else if (it.kind === 'artificial') { // lane P4: a fixed look (no growth, no bending at the surface, no algae)
+    const f = LIBRARY[it.variant]?.fake ?? { mat: 'silk' as const, form: 'stem' as const }, k = `${it.variant}|${it.seed}|${Math.round(it.size)}`;
+    m = new THREE.Mesh(fakes.get(k) ?? remember(fakes, k, keepGeo(artificialGeometry(f.mat, f.form, it.seed, it.size)), 300, dispose), fakeMaterial(T, f.mat));
   } else m = new THREE.Mesh(bakedShape(at), solidMaterial(T));
   m.position.set(it.x, it.kind === 'plant' && isFloat(it.variant) ? waterY(T, S.water.level) : y + (st ? st.dy + riseOf(it) : m.geometry.userData.rise ?? 0), -it.depth);
   m.rotation.copy(itemEuler(at));
@@ -1187,7 +1211,7 @@ export function coralSeat(S: TankSetup, it: Item, solids: THREE.Object3D[], y: n
  * rock stacked higher up): the layouts only guess a rock's top from its box.
  */
 export function seatCorals(S: TankSetup) {
-  const T = S.tank, rocks = S.items.filter(it => it.kind !== 'plant' && it.kind !== 'coral').map(it => itemMesh(S, T, it)).filter((m): m is THREE.Mesh => !!m);
+  const T = S.tank, rocks = S.items.filter(it => it.kind !== 'plant' && it.kind !== 'coral' && it.kind !== 'artificial').map(it => itemMesh(S, T, it)).filter((m): m is THREE.Mesh => !!m);
   for (const m of rocks) m.updateMatrixWorld(true);
   for (const it of S.items) {
     if (it.kind !== 'coral' || it.lift <= 0) continue;

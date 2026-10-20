@@ -3,6 +3,7 @@
 // the patches themselves in scene/brush.ts.
 import { BRUSHES, brushDef, isPlantBrush, plantBrushes } from '../scene/brush';
 import { patchSel } from '../render/brushmesh';
+import { LIBRARY } from '../scene/items';
 import type { Store } from '../scene/store';
 import type { BrushId, LeafKind } from '../scene/types';
 
@@ -20,7 +21,7 @@ export function attachBrushBar(store: Store) {
     if (P) {
       const plant = isPlantBrush(P.brush), d = brushDef(P.brush);
       for (const id of ['gpDens', 'gpWidth']) $(id).parentElement!.hidden = !!P.single; $('gpAdd').hidden = !!P.single;
-      $('gpName').textContent = d.label; $('gpGrowL').hidden = !plant;
+      $('gpName').textContent = d.label; $('gpGrowL').hidden = !plant || LIBRARY[P.brush.slice(6)]?.kind === 'artificial'; // (artificial plants never grow)
       const dn = $<HTMLInputElement>('gpDens'), gr = $<HTMLInputElement>('gpGrow'), wd = $<HTMLInputElement>('gpWidth');
       dn.value = String(P.density); gr.value = String(Math.round((P.growth ?? 0.5) * 100)); wd.min = String(d.radius[0]); wd.max = String(d.radius[1]); wd.value = String(P.size);
       $('oGpDens').textContent = `${P.density}%`; $('oGpGrow').textContent = P.growth == null ? 'auto' : `${Math.round(P.growth * 100)}%`; $('oGpWidth').textContent = `${P.size} mm`;

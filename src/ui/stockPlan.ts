@@ -12,6 +12,7 @@ import type { Store } from '../scene/store';
 import { stockingMemo } from '../scene/stocking';
 import type { Fish } from '../scene/types';
 import type { Viewer } from '../render/viewer';
+import { attachBuildPick } from './buildPick';
 import { onSpaceFork, type SpaceFork } from './fullnessTile';
 import { animalsInTank, animalsOf, bump, forkOptions, isSexed, maxOf, notesOf, planFor, conflictOf, rankTankmates, startPick, tankLabel, totalOf, type Pk, type RoomOption } from './stockPlanLogic';
 
@@ -26,6 +27,7 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
   const el = document.createElement('aside');
   el.className = 'sp'; el.hidden = true; el.setAttribute('aria-label', 'Stocking: the animal I want');
   view.append(el);
+  const builds = attachBuildPick(store, viewer, status); // lane P6a: the three-builds screen that "Continue" opens
   const fork = document.createElement('dialog');
   fork.className = 'libdlg forkdlg'; fork.setAttribute('aria-label', 'Make room or swap');
   document.body.append(fork);
@@ -123,7 +125,7 @@ ${picks.length ? `<ul class="spPicks">${picks.map(pickRow).join('')}</ul>
 <div class="spHd">Other animals in with them?</div>
 ${mates ? `${mateRows()}<button type="button" class="spLink" data-act="nomates">No, just these</button>` : `<div class="spYN"><button type="button" data-act="mates">Yes, show what suits them</button></div>`}` : '<p class="spNote">Start with the animal you have in mind. It goes in at the smallest group it is kept in, and the tank it needs shows in the view.</p>'}
 <div class="spHd">The tank</div>${tankBlock()}
-<div class="spFoot"><button type="button" class="primary" data-act="done"${picks.length ? '' : ' disabled'}>Open in the editor</button><span class="spNote">Everything stays editable there.</span></div>`;
+<div class="spFoot"><button type="button" class="primary" data-act="builds"${picks.length && planFor(picks, chosen).tank && !planFor(picks, chosen).problem ? '' : ' disabled'}>Continue: three ways to build it</button><button type="button" class="spLink" data-act="done"${picks.length ? '' : ' disabled'}>Open in the editor as it is</button><span class="spNote">Everything stays editable in the editor.</span></div>`;
     const q2 = el.querySelector<HTMLInputElement>('.spQ')!;
     if (hadFocus || focusSearch) { q2.focus(); q2.setSelectionRange(pos, pos); focusSearch = false; }
     el.scrollTop = scroll;
@@ -138,6 +140,7 @@ ${mates ? `${mateRows()}<button type="button" class="spLink" data-act="nomates">
     switch (b.dataset.act) {
       case 'close': close(); break;
       case 'done': close(); store.seal(); status('Opened in the editor. The animals and tank are yours to change; Undo steps back.'); break;
+      case 'builds': { const plan = planFor(picks, chosen); if (plan.tank && !plan.problem) { el.hidden = true; builds.open(animalsOf(picks), plan.tank, () => { el.hidden = false; side(true); shown = ''; change(true); }); } break; }
       case 'add': if (i < 0) { picks.push(startPick(id)); q = ''; change(); } break;
       case 'mate': if (i < 0) { picks.push(startPick(id)); change(); } break;
       case 'del': if (i >= 0) { picks.splice(i, 1); if (!picks.length) mates = false; change(); } break;

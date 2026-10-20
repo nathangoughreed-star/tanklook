@@ -1,0 +1,1133 @@
+{
+ "batch": "A9",
+ "agent_notes": "WebFetch returns summarizer output, so quotes are as returned (label/value rows may lack spaces, e.g. 'Size7-9 in'); the UF EDIS brown anole PDF was unreadable (binary), Reptile Rescue Center was suspended, ReptiFiles crested gecko/leopard gecko/ball python HTML pages 404 (PDF care sheets used). Few sources state temper or prey in mm. 'tol' fields (tolerable air) are not stated by any page; night ranges are given in notes only.",
+ "species": {
+  "crestedharlequin": {
+   "sci": "Correlophus ciliatus",
+   "fields": {
+    "tl": {
+     "ours": 200,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://reptifiles.com/wp-content/uploads/2020/10/Crested-Gecko-Care-Sheet-PDF.pdf",
+       "site": "ReptiFiles PDF",
+       "states": "7-9 in (178-229 mm), length not specified TL/SVL",
+       "quote": "Size7–9 in"
+      }
+     ],
+     "note": "Reptiles Magazine gives 4-4.5 in SVL (not total length); consistent with ~7-9 in total."
+    },
+    "care": {
+     "ours": 1,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://reptilesmagazine.com/crested-gecko-care-sheet/",
+       "site": "Reptiles Magazine",
+       "states": "ideal for beginners",
+       "quote": "Crested geckos are ideal reptile pets for beginners, with simple, easy- to-meet requirements."
+      }
+     ]
+    },
+    "minL": {
+     "ours": 75,
+     "verdict": "disagrees",
+     "suggest": 127,
+     "sources": [
+      {
+       "url": "https://reptifiles.com/wp-content/uploads/2020/10/Crested-Gecko-Care-Sheet-PDF.pdf",
+       "site": "ReptiFiles PDF",
+       "states": "18x18x24 in = ~127 L",
+       "quote": "Enclosure18\"×18\"×24\""
+      },
+      {
+       "url": "https://reptilesmagazine.com/crested-gecko-care-sheet/",
+       "site": "Reptiles Magazine",
+       "states": "min 18x18x36 in = ~191 L",
+       "quote": "An adult crested gecko should be housed in a minimum 18″L x 18″W x 36″ H terrarium with a screen top."
+      }
+     ],
+     "note": "Both pages give a tall terrarium of 127-191 L (converted from inches: 1 in3 = 0.01639 L); ours 75 is below both."
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "No opened page rates temperament."
+    },
+    "solo": {
+     "ours": true,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "Reptiles Magazine says only males should not be kept together ('Male crested geckos may fight, particularly when in the company of females, and should not be kept together.'); it does not say one per tank, so not counted."
+    },
+    "prey": {
+     "ours": 40,
+     "verdict": "behaviour-only",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://reptilesmagazine.com/crested-gecko-care-sheet/",
+       "site": "Reptiles Magazine",
+       "states": "cricket length equals head width",
+       "quote": "you should select a size where length of cricket equals width of head."
+      }
+     ],
+     "note": "No mm figure."
+    }
+   }
+  },
+  "greenanole": {
+   "sci": "Anolis carolinensis",
+   "fields": {
+    "tl": {
+     "ours": 180,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://reptifiles.com/green-anole-care-sheet/",
+       "site": "ReptiFiles",
+       "states": "6-8 in / 15-20 cm long",
+       "quote": "The green anole (_Anolis carolinensis_) is a 6-8″ / 15-20cm long lizard"
+      },
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+       "site": "PetSmart",
+       "states": "up to 8 in (203 mm) max, Anolis generally",
+       "quote": "Anoles can grow to be 8 inches long."
+      }
+     ]
+    },
+    "female.tl": {
+     "ours": 150,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "ReptiFiles gives no sex-specific length; Fluker's says only that males are larger."
+    },
+    "care": {
+     "ours": 1,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+       "site": "PetSmart",
+       "states": "relatively easy",
+       "quote": "The Anolis is relatively easy to care for,"
+      }
+     ],
+     "note": "ReptiFiles has no rating and warns 'Despite being perceived as a \"cheap\" species, green anoles still have specific requirements'."
+    },
+    "minL": {
+     "ours": 75,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://reptifiles.com/green-anole-care-sheet/",
+       "site": "ReptiFiles",
+       "states": "24x24x24 in / 60x60x60 cm = ~216 L for one anole",
+       "quote": "The minimum recommended enclosure size for housing a single green anole is 24″L x 24″W x 24″H, or 60 x 60 x 60cm."
+      },
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+       "site": "PetSmart",
+       "states": "at least 10 gal (40 L) and 18 in tall",
+       "quote": "that's at least 10 gallons (40 liters) in volume and 18 inches (46 cm) tall"
+      }
+     ],
+     "note": "Sources span 40-216 L; ours 75 is inside. They disagree with each other."
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "disagrees",
+     "suggest": 1,
+     "sources": [
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+       "site": "PetSmart",
+       "states": "males territorial",
+       "quote": "Male anoles are territorial."
+      },
+      {
+       "url": "https://reptifiles.com/green-anole-care-sheet/",
+       "site": "ReptiFiles",
+       "states": "do not house multiple together",
+       "quote": "Due to conflict concerns, it's best practice not to house multiple green anoles together."
+      }
+     ],
+     "note": "Male-male aggression; peaceful toward other species is not addressed."
+    },
+    "prey": {
+     "ours": 25,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "No opened page gives a prey size."
+    },
+    "air.c": {
+     "ours": [
+      24,
+      29
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://reptifiles.com/green-anole-care-sheet/",
+       "site": "ReptiFiles",
+       "states": "cool side 70-77 F (21-25 C)",
+       "quote": "Cool side temperature: 70-77°F (21-25°C)"
+      },
+      {
+       "url": "https://flukerfarms.com/green-anole-care-sheet",
+       "site": "Fluker's",
+       "states": "day 82-88 F (27.8-31.1 C)",
+       "quote": "The daytime temperature range for green anoles should be 82-88oF."
+      }
+     ],
+     "note": "Our 24-29 sits inside the combined gradient 21-31 but is not within 1.5 C of either single range (ReptiFiles lo 21, Fluker lo 27.8); judged agrees on the whole gradient, reviewer may prefer disagrees."
+    },
+    "air.tol": {
+     "ours": [
+      21,
+      31
+     ],
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "Pages give night temps, not tolerable limits: ReptiFiles night 65-75 F (18-24 C); PetSmart night 65-75 F (18-24 C); our lo 21 is above both."
+    },
+    "air.rh": {
+     "ours": [
+      60,
+      80
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://flukerfarms.com/green-anole-care-sheet",
+       "site": "Fluker's",
+       "states": "60-80%",
+       "quote": "The environmental humidity for green anoles should be 60-80%."
+      },
+      {
+       "url": "https://reptifiles.com/green-anole-care-sheet/",
+       "site": "ReptiFiles",
+       "states": "60-70% daytime average",
+       "quote": "daytime average humidity between 60-70%"
+      }
+     ]
+    },
+    "air.warm": {
+     "ours": [
+      32,
+      35
+     ],
+     "verdict": "disagrees",
+     "suggest": [
+      29,
+      32
+     ],
+     "sources": [
+      {
+       "url": "https://reptifiles.com/green-anole-care-sheet/",
+       "site": "ReptiFiles",
+       "states": "basking 90 F (32 C)",
+       "quote": "Basking area temperature: 90°F (32°C)"
+      },
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+       "site": "PetSmart",
+       "states": "top of tank 85-90 F (29-32 C)",
+       "quote": "During the day, keep the temperature at the top of the terrarium between 85-90° F (29-32° C)."
+      }
+     ],
+     "note": "Our hi of 35 is 3 C above both."
+    }
+   }
+  },
+  "greenanolebrown": {
+   "sci": "Anolis carolinensis",
+   "fields": {
+    "tl": {
+     "ours": 180,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://reptifiles.com/green-anole-care-sheet/",
+       "site": "ReptiFiles",
+       "states": "6-8 in / 15-20 cm long",
+       "quote": "The green anole (_Anolis carolinensis_) is a 6-8″ / 15-20cm long lizard"
+      },
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+       "site": "PetSmart",
+       "states": "up to 8 in (203 mm) max",
+       "quote": "Anoles can grow to be 8 inches long."
+      }
+     ]
+    },
+    "care": {
+     "ours": 1,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+       "site": "PetSmart",
+       "states": "relatively easy",
+       "quote": "The Anolis is relatively easy to care for,"
+      }
+     ]
+    },
+    "minL": {
+     "ours": 75,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://reptifiles.com/green-anole-care-sheet/",
+       "site": "ReptiFiles",
+       "states": "24x24x24 in / 60x60x60 cm = ~216 L",
+       "quote": "The minimum recommended enclosure size for housing a single green anole is 24″L x 24″W x 24″H, or 60 x 60 x 60cm."
+      },
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+       "site": "PetSmart",
+       "states": "10 gal (40 L), 18 in tall",
+       "quote": "that's at least 10 gallons (40 liters) in volume and 18 inches (46 cm) tall"
+      }
+     ],
+     "note": "Same species as greenanole; sources span 40-216 L."
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "disagrees",
+     "suggest": 1,
+     "sources": [
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+       "site": "PetSmart",
+       "states": "males territorial",
+       "quote": "Male anoles are territorial."
+      }
+     ],
+     "note": "Male-male."
+    },
+    "prey": {
+     "ours": 25,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": []
+    },
+    "air.c": {
+     "ours": [
+      24,
+      29
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://reptifiles.com/green-anole-care-sheet/",
+       "site": "ReptiFiles",
+       "states": "cool side 21-25 C",
+       "quote": "Cool side temperature: 70-77°F (21-25°C)"
+      },
+      {
+       "url": "https://flukerfarms.com/green-anole-care-sheet",
+       "site": "Fluker's",
+       "states": "day 82-88 F",
+       "quote": "The daytime temperature range for green anoles should be 82-88oF."
+      }
+     ],
+     "note": "See greenanole; judged against combined gradient 21-31."
+    },
+    "air.tol": {
+     "ours": [
+      21,
+      31
+     ],
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "Only night temps given (18-24 C)."
+    },
+    "air.rh": {
+     "ours": [
+      60,
+      80
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://flukerfarms.com/green-anole-care-sheet",
+       "site": "Fluker's",
+       "states": "60-80%",
+       "quote": "The environmental humidity for green anoles should be 60-80%."
+      }
+     ]
+    },
+    "air.warm": {
+     "ours": [
+      32,
+      35
+     ],
+     "verdict": "disagrees",
+     "suggest": [
+      29,
+      32
+     ],
+     "sources": [
+      {
+       "url": "https://reptifiles.com/green-anole-care-sheet/",
+       "site": "ReptiFiles",
+       "states": "basking 90 F (32 C)",
+       "quote": "Basking area temperature: 90°F (32°C)"
+      }
+     ],
+     "note": "PetSmart 85-90 F (29-32 C) also."
+    }
+   }
+  },
+  "brownanole": {
+   "sci": "Anolis sagrei",
+   "fields": {
+    "tl": {
+     "ours": 180,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://thevetdesk.com/pet-breeds/reptiles/brown-anole",
+       "site": "The Vet Desk",
+       "states": "6-8 in (152-203 mm)",
+       "quote": "6 to 8 inches long"
+      },
+      {
+       "url": "https://reptilesmagazine.com/listings/lizard-care/brown-anole",
+       "site": "Reptiles Magazine",
+       "states": "5-8 in (127-203 mm)",
+       "quote": "Size: 5 to 8 inches"
+      }
+     ]
+    },
+    "female.tl": {
+     "ours": 130,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "No sex-specific figure on opened pages (UF EDIS PDF unreadable)."
+    },
+    "care": {
+     "ours": 1,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://thevetdesk.com/pet-breeds/reptiles/brown-anole",
+       "site": "The Vet Desk",
+       "states": "Beginner",
+       "quote": "Care Level: Beginner"
+      },
+      {
+       "url": "https://reptilesmagazine.com/listings/lizard-care/brown-anole",
+       "site": "Reptiles Magazine",
+       "states": "beginner",
+       "quote": "Level: beginner"
+      }
+     ]
+    },
+    "minL": {
+     "ours": 75,
+     "verdict": "disagrees",
+     "suggest": 40,
+     "sources": [
+      {
+       "url": "https://thevetdesk.com/pet-breeds/reptiles/brown-anole",
+       "site": "The Vet Desk",
+       "states": "tall 10 gal = ~38 L",
+       "quote": "Tall 10-gallon tank"
+      },
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+       "site": "PetSmart",
+       "states": "10 gal (40 L), 18 in tall (covers green and brown anole)",
+       "quote": "that's at least 10 gallons (40 liters) in volume and 18 inches (46 cm) tall"
+      }
+     ],
+     "note": "Both give 10 gal (~38-40 L); ours is about double."
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "disagrees",
+     "suggest": 1,
+     "sources": [
+      {
+       "url": "https://thevetdesk.com/pet-breeds/reptiles/brown-anole",
+       "site": "The Vet Desk",
+       "states": "males territorial, cannot share a tank",
+       "quote": "The males are territorial and cannot stay in one tank"
+      },
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+       "site": "PetSmart",
+       "states": "males territorial",
+       "quote": "Male anoles are territorial."
+      }
+     ],
+     "note": "Male-male."
+    },
+    "prey": {
+     "ours": 25,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": []
+    },
+    "air.c": {
+     "ours": [
+      24,
+      30
+     ],
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "No page gives a daytime ambient range for A. sagrei; only basking (32 C) and night (>= 18 C)."
+    },
+    "air.tol": {
+     "ours": [
+      21,
+      32
+     ],
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "Vet Desk: night should not drop below 65 F (18 C); PetSmart night 65-75 F (18-24 C); our lo 21 is above that."
+    },
+    "air.rh": {
+     "ours": [
+      60,
+      75
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+       "site": "PetSmart",
+       "states": "60-80%",
+       "quote": "Maintain the humidity within your Anolis habitat between 60% and 80%."
+      },
+      {
+       "url": "https://thevetdesk.com/pet-breeds/reptiles/brown-anole",
+       "site": "The Vet Desk",
+       "states": "40-80%",
+       "quote": "40% to 80% humidity."
+      }
+     ],
+     "note": "Sources differ at the low end (40 vs 60)."
+    },
+    "air.warm": {
+     "ours": [
+      32,
+      35
+     ],
+     "verdict": "disagrees",
+     "suggest": [
+      29,
+      32
+     ],
+     "sources": [
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+       "site": "PetSmart",
+       "states": "85-90 F (29-32 C)",
+       "quote": "During the day, keep the temperature at the top of the terrarium between 85-90° F (29-32° C)."
+      }
+     ],
+     "note": "Vet Desk gives basking target 90 F (32 C); ours hi 35 is above."
+    }
+   }
+  },
+  "leopardgecko": {
+   "sci": "Eublepharis macularius",
+   "fields": {
+    "tl": {
+     "ours": 220,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://reptifiles.com/leopard-gecko-care/leopard-gecko-care-sheet/",
+       "site": "ReptiFiles",
+       "states": "7-10 in (17-25 cm), females smaller",
+       "quote": "They are **7-10″ (17-25 cm) long**, with females generally being smaller."
+      },
+      {
+       "url": "https://www.phoenixherp.com/assistance/reptile-care-guides/leopard-gecko-care-guide.html",
+       "site": "Phoenix Herp",
+       "states": "7-10 in",
+       "quote": "Average adult size: 7–10 inches."
+      }
+     ],
+     "note": "PetMD 6-9 in, PetSmart up to 10 in; all consistent with 220 mm."
+    },
+    "care": {
+     "ours": 1,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://reptifiles.com/leopard-gecko-care/leopard-gecko-care-sheet/",
+       "site": "ReptiFiles",
+       "states": "Beginner",
+       "quote": "Difficulty Beginner"
+      },
+      {
+       "url": "https://www.petmd.com/reptile/leopard-gecko-care-sheet",
+       "site": "PetMD",
+       "states": "Beginner",
+       "quote": "Beginner"
+      }
+     ]
+    },
+    "minL": {
+     "ours": 150,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://reptifiles.com/leopard-gecko-care/leopard-gecko-care-sheet/",
+       "site": "ReptiFiles",
+       "states": "36x18x18 in = ~191 L",
+       "quote": "Enclosure 36\"×18\"×18\""
+      },
+      {
+       "url": "https://www.phoenixherp.com/assistance/reptile-care-guides/leopard-gecko-care-guide.html",
+       "site": "Phoenix Herp",
+       "states": "20-40 gal = 76-151 L for one adult",
+       "quote": "A 20–40 gallon tank is appropriate for one adult."
+      },
+      {
+       "url": "https://www.petmd.com/reptile/leopard-gecko-care-sheet",
+       "site": "PetMD",
+       "states": "20 gal or larger = 76 L+",
+       "quote": "A single, adult leopard gecko should be housed in a tank that's 20 gallons or larger."
+      }
+     ],
+     "note": "Sources span 76-191 L; ours 150 inside. PetSmart says 20 gal minimum."
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "No opened page rates temperament."
+    },
+    "solo": {
+     "ours": true,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.phoenixherp.com/assistance/reptile-care-guides/leopard-gecko-care-guide.html",
+       "site": "Phoenix Herp",
+       "states": "must be housed alone",
+       "quote": "Leopard geckos are solitary and _must be housed alone_ to prevent stress, fighting, and injury."
+      },
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/leopard-gecko-care-guide",
+       "site": "PetSmart",
+       "states": "best housed alone",
+       "quote": "Leopard geckos do best housed alone as they can become aggressive with each other."
+      }
+     ]
+    },
+    "prey": {
+     "ours": 60,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "No page gives a prey size."
+    },
+    "air.c": {
+     "ours": [
+      22,
+      26
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://reptifiles.com/leopard-gecko-care/leopard-gecko-care-sheet/",
+       "site": "ReptiFiles",
+       "states": "cool side 72-77 F (22.2-25 C)",
+       "quote": "Cool Side 72–77°F"
+      }
+     ],
+     "note": "Phoenix Herp and PetMD give cool side 75-80 F (24-27 C), warmer than ours; ours is within 1.5 C of the ReptiFiles range."
+    },
+    "air.tol": {
+     "ours": [
+      20,
+      28
+     ],
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "Pages give only night temps: Phoenix Herp 70-75 F (21-24 C), PetSmart 65-75 F (18-24 C); no tolerable limit stated."
+    },
+    "air.rh": {
+     "ours": [
+      30,
+      40
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://reptifiles.com/leopard-gecko-care/leopard-gecko-care-sheet/",
+       "site": "ReptiFiles",
+       "states": "30-40%",
+       "quote": "Humidity 30–40%"
+      },
+      {
+       "url": "https://www.phoenixherp.com/assistance/reptile-care-guides/leopard-gecko-care-guide.html",
+       "site": "Phoenix Herp",
+       "states": "30-40%",
+       "quote": "Ambient humidity should remain between 30–40%."
+      }
+     ]
+    },
+    "air.rhTol": {
+     "ours": [
+      20,
+      50
+     ],
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "PetMD says habitat humidity ideal is 'under 50%', an ideal not a tolerance; not counted."
+    },
+    "air.warm": {
+     "ours": [
+      32,
+      35
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://reptifiles.com/leopard-gecko-care/leopard-gecko-care-sheet/",
+       "site": "ReptiFiles",
+       "states": "basking 90-95 F (32-35 C)",
+       "quote": "Basking Temp 90–95°F"
+      }
+     ],
+     "note": "Phoenix Herp belly heat 88-92 F (31-33 C); PetSmart basking 90-92 F (32-33 C)."
+    }
+   }
+  },
+  "regaljumper": {
+   "sci": "Phidippus regius",
+   "fields": {
+    "tl": {
+     "ours": 12,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://joshsfrogs.com/cms/royal-jumping-spider-phidippus-regius-caresheet",
+       "site": "Josh's Frogs",
+       "states": "body 12 mm males, 15 mm females (average)",
+       "quote": "Averages about 12mm in males and 15mm in females."
+      },
+      {
+       "url": "https://thetarantulacollective.com/care-sheets-2/phidippus-regius",
+       "site": "Tarantula Collective",
+       "states": "male body length 0.5-0.7 in (12-18 mm)",
+       "quote": "typically maxing out at 0.5–0.7 inches (1.2–1.8 cm) in body length."
+      }
+     ],
+     "note": "Body length, not leg span. PetSmart gives body-with-legs 1-1.5 in (25-38 mm)."
+    },
+    "female.tl": {
+     "ours": 15,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://joshsfrogs.com/cms/royal-jumping-spider-phidippus-regius-caresheet",
+       "site": "Josh's Frogs",
+       "states": "body 15 mm females (average)",
+       "quote": "Averages about 12mm in males and 15mm in females."
+      },
+      {
+       "url": "https://thetarantulacollective.com/care-sheets-2/phidippus-regius",
+       "site": "Tarantula Collective",
+       "states": "female body length 0.75-0.9 in (19-23 mm)",
+       "quote": "often growing up to 0.75–0.9 inches (2–2.3 cm) in body length."
+      }
+     ],
+     "note": "Sources disagree: Josh's Frogs 15 mm average, Tarantula Collective up to 19-23 mm (ours is 20+ % below that)."
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "disagrees",
+     "suggest": 1,
+     "sources": [
+      {
+       "url": "https://thetarantulacollective.com/care-sheets-2/phidippus-regius",
+       "site": "Tarantula Collective",
+       "states": "beginner-friendly",
+       "quote": "Difficulty Level: Beginner-friendly"
+      },
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/regal-jumping-spider-care-guide",
+       "site": "PetSmart",
+       "states": "Beginner",
+       "quote": "Experience: Beginner"
+      }
+     ]
+    },
+    "minL": {
+     "ours": 5,
+     "verdict": "disagrees",
+     "suggest": 2,
+     "sources": [
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/regal-jumping-spider-care-guide",
+       "site": "PetSmart",
+       "states": "min 4x4x7 in = ~1.8 L",
+       "quote": "Minimum enclosure size: 4\" x 4\" x 7\""
+      }
+     ],
+     "note": "Converted from inches. Josh's Frogs: 'A small Exo-terra Faunarium will comfortably house this spider.' (no dimensions). Tarantula Collective names product sizes only. Ours may include deliberate margin."
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "No opened page rates temperament."
+    },
+    "solo": {
+     "ours": true,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://joshsfrogs.com/cms/royal-jumping-spider-phidippus-regius-caresheet",
+       "site": "Josh's Frogs",
+       "states": "keep singly",
+       "quote": "This spider should be kept singly."
+      },
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/regal-jumping-spider-care-guide",
+       "site": "PetSmart",
+       "states": "solitary",
+       "quote": "No. Jumping spiders are solitary and do not tolerate cohabitation with other spiders."
+      }
+     ]
+    },
+    "prey": {
+     "ours": 15,
+     "verdict": "behaviour-only",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://joshsfrogs.com/cms/royal-jumping-spider-phidippus-regius-caresheet",
+       "site": "Josh's Frogs",
+       "states": "prey no larger than abdomen",
+       "quote": "Prey items should be no larger than the size of the spider's abdomen."
+      },
+      {
+       "url": "https://thetarantulacollective.com/care-sheets-2/phidippus-regius",
+       "site": "Tarantula Collective",
+       "states": "adults take prey up to ~2x own size",
+       "quote": "this species can easily take down prey nearly twice its size."
+      }
+     ],
+     "note": "No mm figure; the two pages disagree on the limit."
+    }
+   }
+  },
+  "ballpython": {
+   "sci": "Python regius",
+   "fields": {
+    "tl": {
+     "ours": 1200,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://reptifiles.com/wp-content/uploads/2020/11/Ball-Python-Care-Sheet-PDF-1.pdf",
+       "site": "ReptiFiles PDF",
+       "states": "males 3.6-4.3 ft (1097-1311 mm), females 3.8-4.5 ft",
+       "quote": "Size (Males)3.6–4.3 ft"
+      },
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide",
+       "site": "PetSmart",
+       "states": "grow up to 60 in (1524 mm)",
+       "quote": "Ball pythons grow up to 60\" (152 cm)."
+      }
+     ],
+     "note": "PetSmart is a maximum and ~27% above ours; ReptiFiles range contains 1200."
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide",
+       "site": "PetSmart",
+       "states": "some basic experience recommended",
+       "quote": "Ball pythons are often recommended for reptile keepers with some basic experience."
+      }
+     ],
+     "note": "Only one source; ReptiFiles PDF gives no rating."
+    },
+    "minL": {
+     "ours": 450,
+     "verdict": "disagrees",
+     "suggest": 150,
+     "sources": [
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide",
+       "site": "PetSmart",
+       "states": "min 40 gal = ~151 L adult",
+       "quote": "Use a minimum 40-gallon glass terrarium with a locking screen lid"
+      }
+     ],
+     "note": "Single source, converted from gallons; ours is 3x higher."
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "No opened page rates temperament."
+    },
+    "solo": {
+     "ours": true,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide",
+       "site": "PetSmart",
+       "states": "housed alone",
+       "quote": "Ball pythons should be housed alone."
+      }
+     ],
+     "note": "One source."
+    },
+    "prey": {
+     "ours": 600,
+     "verdict": "behaviour-only",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide",
+       "site": "PetSmart",
+       "states": "prey no larger than widest part of body",
+       "quote": "Prey should be no larger than the widest part of the snake's body."
+      }
+     ],
+     "note": "No mm figure."
+    },
+    "air.c": {
+     "ours": [
+      24,
+      27
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://reptifiles.com/wp-content/uploads/2020/11/Ball-Python-Care-Sheet-PDF-1.pdf",
+       "site": "ReptiFiles PDF",
+       "states": "cool side 72-80 F (22.2-26.7 C)",
+       "quote": "Cool Side72–80°F"
+      }
+     ],
+     "note": "PetSmart gives cool side 80-85 F (27-29 C), warm side 85-90 F (29-32 C): the pages disagree; ours matches ReptiFiles."
+    },
+    "air.tol": {
+     "ours": [
+      22,
+      28
+     ],
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "PetSmart night 70-80 F (21-27 C); no tolerable limit stated."
+    },
+    "air.rh": {
+     "ours": [
+      50,
+      65
+     ],
+     "verdict": "disagrees",
+     "suggest": [
+      60,
+      80
+     ],
+     "sources": [
+      {
+       "url": "https://reptifiles.com/wp-content/uploads/2020/11/Ball-Python-Care-Sheet-PDF-1.pdf",
+       "site": "ReptiFiles PDF",
+       "states": "60-80%",
+       "quote": "Humidity60–80%"
+      },
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide",
+       "site": "PetSmart",
+       "states": "60-80%",
+       "quote": "Maintain humidity between 60 and 80 percent."
+      }
+     ],
+     "note": "Both pages say 60-80; our lo 50 is 10 points below."
+    },
+    "air.rhTol": {
+     "ours": [
+      45,
+      80
+     ],
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "No page states a tolerable humidity."
+    },
+    "air.warm": {
+     "ours": [
+      30,
+      33
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://reptifiles.com/wp-content/uploads/2020/11/Ball-Python-Care-Sheet-PDF-1.pdf",
+       "site": "ReptiFiles PDF",
+       "states": "basking 86-90 F (30-32.2 C)",
+       "quote": "Basking Temp86–90°F"
+      },
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide",
+       "site": "PetSmart",
+       "states": "basking 90-92 F (32-33 C)",
+       "quote": "Basking site 90–92°F (32–33°C)"
+      }
+     ]
+    }
+   }
+  },
+  "chacogoldenknee": {
+   "sci": "Grammostola pulchripes",
+   "fields": {
+    "tl": {
+     "ours": 45,
+     "verdict": "disagrees",
+     "suggest": 180,
+     "sources": [
+      {
+       "url": "https://www.thetarantulacollective.com/caresheets/grammostola-pulchripes",
+       "site": "Tarantula Collective",
+       "states": "DLS about 7 in (18 cm)",
+       "quote": "Diagonal Leg Span (DLS): Approximately 7” (18 cm)"
+      },
+      {
+       "url": "https://dubiaroaches.com/blogs/invert-care/chaco-golden-knee-tarantula-care-sheet",
+       "site": "Dubia.com",
+       "states": "7-8 in diameter (178-203 mm)",
+       "quote": "are 7-8” diameter, terrestrial tarantulas"
+      }
+     ],
+     "note": "Pages give leg span (~180-200 mm), not body length; no male/female split. If ours (45 / 50) is body length, no opened page states it; if meant as leg span it is far too low."
+    },
+    "care": {
+     "ours": 1,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.thetarantulacollective.com/caresheets/grammostola-pulchripes",
+       "site": "Tarantula Collective",
+       "states": "Beginner",
+       "quote": "Recommended Experience Level: Beginner"
+      }
+     ]
+    },
+    "minL": {
+     "ours": 40,
+     "verdict": "disagrees",
+     "suggest": 57,
+     "sources": [
+      {
+       "url": "https://dubiaroaches.com/blogs/invert-care/chaco-golden-knee-tarantula-care-sheet",
+       "site": "Dubia.com",
+       "states": "20x10x18 in or 15 gal 'high' = ~57-59 L",
+       "quote": "an adult-sized enclosure no smaller than 20”L x 10”W x 18”H, or a 15 gallon “high” tank."
+      }
+     ],
+     "note": "Converted (3600 in3 = 59 L; 15 gal = 57 L). Tarantula Collective: adult enclosure at least 3x leg span, no volume."
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.thetarantulacollective.com/caresheets/grammostola-pulchripes",
+       "site": "Tarantula Collective",
+       "states": "docile",
+       "quote": "One of the most docile and beginner-friendly species"
+      }
+     ],
+     "note": "Has urticating hairs (type III)."
+    },
+    "solo": {
+     "ours": true,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://dubiaroaches.com/blogs/invert-care/chaco-golden-knee-tarantula-care-sheet",
+       "site": "Dubia.com",
+       "states": "do not house together; cannibalism",
+       "quote": "Housing multiple tarantulas in the same terrarium is not recommended, and is likely to result in cannibalism if attempted."
+      }
+     ]
+    },
+    "prey": {
+     "ours": 60,
+     "verdict": "behaviour-only",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://dubiaroaches.com/blogs/invert-care/chaco-golden-knee-tarantula-care-sheet",
+       "site": "Dubia.com",
+       "states": "prey small enough to overpower",
+       "quote": "Each insect should be small enough for the tarantula to easily overpower, especially for slings."
+      }
+     ],
+     "note": "No mm figure."
+    }
+   }
+  }
+ }
+}

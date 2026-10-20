@@ -561,44 +561,18 @@
       "port": 5693
     },
     {
-      "name": "stocking",
+      "name": "p6bscape",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "run",
         "dev",
         "--",
         "--port",
-        "5843",
+        "5923",
         "--strictPort"
       ],
-      "port": 5843
+      "port": 5923
     },
-    {
-      "name": "p4artplants",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5893",
-        "--strictPort"
-      ],
-      "port": 5893
-    },
-    {
-      "name": "p6abuilds",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5913",
-        "--strictPort"
-      ],
-      "port": 5913
-    },
-    { "name": "lights", "runtimeExecutable": "npm", "runtimeArgs": ["run", "dev", "--", "--port", "5923", "--strictPort"], "port": 5923 }
+    { "name": "lights", "runtimeExecutable": "npm", "runtimeArgs": ["run", "dev", "--", "--port", "5933", "--strictPort"], "port": 5933 }
   ]
 }

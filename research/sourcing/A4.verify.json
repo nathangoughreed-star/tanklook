@@ -1,0 +1,668 @@
+[
+ {
+  "id": "yellowlab",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Labidochromis-caeruleus.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Max length : 8.1 cm SL male/unsexed"
+ },
+ {
+  "id": "yellowlab",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/labidochromis-caeruleus/",
+  "result": "compact",
+  "score": 1,
+  "quote": "100mm SL"
+ },
+ {
+  "id": "yellowlab",
+  "field": "care",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/labidochromis-caeruleus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Easy"
+ },
+ {
+  "id": "yellowlab",
+  "field": "minL",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/labidochromis-caeruleus/",
+  "result": "compact",
+  "score": 1,
+  "quote": "~154litres"
+ },
+ {
+  "id": "yellowlab",
+  "field": "minL",
+  "verdict": "disagrees",
+  "url": "https://guidarium.com/fishes/yellow-lab-mbuna",
+  "result": "exact",
+  "score": 1,
+  "quote": "A minimum aquarium volume of 150 litres and a tank length of at least 90 cm are recommended for Yellow Lab (Mbuna)."
+ },
+ {
+  "id": "yellowlab",
+  "field": "temper",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/labidochromis-caeruleus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "A relatively peaceful species ideal for many hard water communities."
+ },
+ {
+  "id": "yellowlab",
+  "field": "temper",
+  "verdict": "disagrees",
+  "url": "https://guidarium.com/fishes/yellow-lab-mbuna",
+  "result": "exact",
+  "score": 1,
+  "quote": "Yellow Lab (Mbuna) is classified as semi-aggressive with an aggression score of 6 out of 10."
+ },
+ {
+  "id": "yellowlab",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/labidochromis-caeruleus/",
+  "result": "compact",
+  "score": 1,
+  "quote": "7.7�8.6"
+ },
+ {
+  "id": "yellowlab",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://guidarium.com/fishes/yellow-lab-mbuna",
+  "result": "exact",
+  "score": 1,
+  "quote": "a pH between 7.5 and 8.8"
+ },
+ {
+  "id": "peacock",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Aulonocara-stuartgranti.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Max length : 11.8 cm TL male/unsexed;"
+ },
+ {
+  "id": "peacock",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/aulonocara-stuartgranti/",
+  "result": "compact",
+  "score": 1,
+  "quote": "130mm SL"
+ },
+ {
+  "id": "peacock",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/aulonocara-stuartgranti/",
+  "result": "compact",
+  "score": 1,
+  "quote": "Rated moderate because it needs a well-established tank and stable water."
+ },
+ {
+  "id": "peacock",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://guidarium.com/fishes/grants-peacock-cichlid",
+  "result": "exact",
+  "score": 1,
+  "quote": "208 L"
+ },
+ {
+  "id": "peacock",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/aulonocara-stuartgranti/",
+  "result": "exact",
+  "score": 1,
+  "quote": "A relatively peaceful species, although males tend to act aggressively towards any fish with a similar colour pattern"
+ },
+ {
+  "id": "peacock",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://guidarium.com/fishes/grants-peacock-cichlid",
+  "result": "exact",
+  "score": 1,
+  "quote": "Semi-Aggressive"
+ },
+ {
+  "id": "peacock",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/aulonocara-stuartgranti/",
+  "result": "compact",
+  "score": 1,
+  "quote": "7.5�9.0"
+ },
+ {
+  "id": "peacock",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://guidarium.com/fishes/grants-peacock-cichlid",
+  "result": "compact",
+  "score": 1,
+  "quote": "7.8�8.6"
+ },
+ {
+  "id": "demasoni",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Pseudotropheus-demasoni.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Max length : 6.3 cm SL male/unsexed"
+ },
+ {
+  "id": "demasoni",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/pseudotropheus-demasoni/",
+  "result": "compact",
+  "score": 1,
+  "quote": "75mm SL"
+ },
+ {
+  "id": "demasoni",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/pseudotropheus-demasoni/",
+  "result": "exact",
+  "score": 1,
+  "quote": "It is not recommended for the beginner"
+ },
+ {
+  "id": "demasoni",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/pseudotropheus-demasoni/",
+  "result": "exact",
+  "score": 1,
+  "quote": "~205 litres"
+ },
+ {
+  "id": "demasoni",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://guidarium.com/fishes/demasoni-cichlid-mbuna",
+  "result": "exact",
+  "score": 1,
+  "quote": "200 L"
+ },
+ {
+  "id": "demasoni",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/pseudotropheus-demasoni/",
+  "result": "exact",
+  "score": 1,
+  "quote": "One of the most aggressive and territorial mbuna."
+ },
+ {
+  "id": "demasoni",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://guidarium.com/fishes/demasoni-cichlid-mbuna",
+  "result": "exact",
+  "score": 1,
+  "quote": "Highly Aggressive"
+ },
+ {
+  "id": "demasoni",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/pseudotropheus-demasoni/",
+  "result": "compact",
+  "score": 1,
+  "quote": "7.6�8.8"
+ },
+ {
+  "id": "demasoni",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://guidarium.com/fishes/demasoni-cichlid-mbuna",
+  "result": "compact",
+  "score": 1,
+  "quote": "7.6�8.6"
+ },
+ {
+  "id": "kadango",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Copadichromis-borleyi.html",
+  "result": "compact",
+  "score": 1,
+  "quote": "Max length : 14.0 cm TL male/unsexed; (Ref. 4979)"
+ },
+ {
+  "id": "kadango",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://guidarium.com/fishes/red-fin-borleyi",
+  "result": "exact",
+  "score": 1,
+  "quote": "maximum adult size of approximately 16 cm"
+ },
+ {
+  "id": "kadango",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/copadichromis-borleyi/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Moderate"
+ },
+ {
+  "id": "kadango",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://guidarium.com/fishes/red-fin-borleyi",
+  "result": "exact",
+  "score": 1,
+  "quote": "A minimum aquarium volume of 280 litres"
+ },
+ {
+  "id": "kadango",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/copadichromis-borleyi/",
+  "result": "exact",
+  "score": 1,
+  "quote": "A generally peaceful species."
+ },
+ {
+  "id": "kadango",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://guidarium.com/fishes/red-fin-borleyi",
+  "result": "exact",
+  "score": 1,
+  "quote": "classified as semi-aggressive with an aggression score of 6 out of 10"
+ },
+ {
+  "id": "kadango",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/copadichromis-borleyi/",
+  "result": "compact",
+  "score": 1,
+  "quote": "7.5�8.5"
+ },
+ {
+  "id": "kadango",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://guidarium.com/fishes/red-fin-borleyi",
+  "result": "exact",
+  "score": 1,
+  "quote": "a pH between 7.5 and 8.5"
+ },
+ {
+  "id": "labeo",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Labeotropheus-trewavasae.html",
+  "result": "compact",
+  "score": 1,
+  "quote": "Max length : 11.7 cm TL male/unsexed; (Ref. 5652)"
+ },
+ {
+  "id": "labeo",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/labeotropheus-trewavasae/",
+  "result": "compact",
+  "score": 1,
+  "quote": "113mm SL"
+ },
+ {
+  "id": "labeo",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/labeotropheus-trewavasae/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Moderate"
+ },
+ {
+  "id": "labeo",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://guidarium.com/fishes/trewavas-cichlid",
+  "result": "exact",
+  "score": 1,
+  "quote": "200 L"
+ },
+ {
+  "id": "labeo",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/labeotropheus-trewavasae/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Aggressive and territorial."
+ },
+ {
+  "id": "labeo",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://guidarium.com/fishes/trewavas-cichlid",
+  "result": "exact",
+  "score": 1,
+  "quote": "Aggressive"
+ },
+ {
+  "id": "labeo",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/labeotropheus-trewavasae/",
+  "result": "compact",
+  "score": 1,
+  "quote": "pH: 7.6 to 8.8 (8.0 is ideal)."
+ },
+ {
+  "id": "labeo",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://guidarium.com/fishes/trewavas-cichlid",
+  "result": "compact",
+  "score": 1,
+  "quote": "7.8�8.6"
+ },
+ {
+  "id": "auratus",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Melanochromis-auratus.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Max length : 11.0 cm TL male/unsexed"
+ },
+ {
+  "id": "auratus",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/melanochromis-auratus/",
+  "result": "compact",
+  "score": 1,
+  "quote": "110mm SL"
+ },
+ {
+  "id": "auratus",
+  "field": "female.tl",
+  "verdict": "agrees",
+  "url": "https://tropicalfreshwaterfish.com/species/Melanochromis_auratus.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Females to 4"
+ },
+ {
+  "id": "auratus",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/melanochromis-auratus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Moderate"
+ },
+ {
+  "id": "auratus",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/melanochromis-auratus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "~205 litres"
+ },
+ {
+  "id": "auratus",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://guidarium.com/fishes/auratus-cichlid-mbuna",
+  "result": "exact",
+  "score": 1,
+  "quote": "200 L"
+ },
+ {
+  "id": "auratus",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/melanochromis-auratus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "One of the most aggressive and territorial mbuna."
+ },
+ {
+  "id": "auratus",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://guidarium.com/fishes/auratus-cichlid-mbuna",
+  "result": "exact",
+  "score": 1,
+  "quote": "Highly Aggressive"
+ },
+ {
+  "id": "auratus",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/melanochromis-auratus/",
+  "result": "compact",
+  "score": 1,
+  "quote": "7.6�8.8"
+ },
+ {
+  "id": "auratus",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://guidarium.com/fishes/auratus-cichlid-mbuna",
+  "result": "compact",
+  "score": 1,
+  "quote": "pH range of 7.6�8.6"
+ },
+ {
+  "id": "livingstonii",
+  "field": "tl",
+  "verdict": "disagrees",
+  "url": "https://www.fishbase.se/summary/Nimbochromis-livingstonii.html",
+  "result": "compact",
+  "score": 1,
+  "quote": "Max length : 25.0 cm TL male/unsexed; (Ref. 5595); 20.0 cm TL (female)"
+ },
+ {
+  "id": "livingstonii",
+  "field": "tl",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/nimbochromis-livingstonii/",
+  "result": "compact",
+  "score": 1,
+  "quote": "250mm SL"
+ },
+ {
+  "id": "livingstonii",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/nimbochromis-livingstonii/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Moderate"
+ },
+ {
+  "id": "livingstonii",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://guidarium.com/fishes/livingstons-cichlid",
+  "result": "exact",
+  "score": 1,
+  "quote": "470 L"
+ },
+ {
+  "id": "livingstonii",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://guidarium.com/fishes/livingstons-cichlid",
+  "result": "exact",
+  "score": 1,
+  "quote": "Aggressive"
+ },
+ {
+  "id": "livingstonii",
+  "field": "prey",
+  "verdict": "behaviour-only",
+  "url": "https://www.seriouslyfish.com/species/nimbochromis-livingstonii/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Predatory but is generally peaceful with species too big to be considered food (it will eat smaller mbuna and young fish)."
+ },
+ {
+  "id": "livingstonii",
+  "field": "prey",
+  "verdict": "behaviour-only",
+  "url": "https://guidarium.com/fishes/livingstons-cichlid",
+  "result": "exact",
+  "score": 1,
+  "quote": "Anything that fits in its mouth will be eaten."
+ },
+ {
+  "id": "livingstonii",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/nimbochromis-livingstonii/",
+  "result": "compact",
+  "score": 1,
+  "quote": "7.6�8.8"
+ },
+ {
+  "id": "livingstonii",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://guidarium.com/fishes/livingstons-cichlid",
+  "result": "compact",
+  "score": 1,
+  "quote": "7.6�8.6"
+ },
+ {
+  "id": "afra",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Cynotilapia-afra.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Max length : 10.1 cm SL male/unsexed"
+ },
+ {
+  "id": "afra",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/cynotilapia-afra/",
+  "result": "compact",
+  "score": 1,
+  "quote": "100mm SL"
+ },
+ {
+  "id": "afra",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/cynotilapia-afra/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Moderate"
+ },
+ {
+  "id": "afra",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://guidarium.com/fishes/afra-cichlid",
+  "result": "exact",
+  "score": 1,
+  "quote": "200 L"
+ },
+ {
+  "id": "afra",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/cynotilapia-afra/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Belligerent and territorial."
+ },
+ {
+  "id": "afra",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://guidarium.com/fishes/afra-cichlid",
+  "result": "exact",
+  "score": 1,
+  "quote": "Aggressive"
+ },
+ {
+  "id": "afra",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/cynotilapia-afra/",
+  "result": "compact",
+  "score": 1,
+  "quote": "7.5�8.5"
+ },
+ {
+  "id": "afra",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://guidarium.com/fishes/afra-cichlid",
+  "result": "compact",
+  "score": 1,
+  "quote": "7.6�8.6"
+ },
+ {
+  "id": "syno",
+  "field": "tl",
+  "verdict": "disagrees",
+  "url": "https://www.fishbase.se/summary/Synodontis-njassae.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Max length : 19.2 cm TL male/unsexed;"
+ },
+ {
+  "id": "syno",
+  "field": "tl",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/synodontis-njassae/",
+  "result": "compact",
+  "score": 1,
+  "quote": "190mm SL"
+ },
+ {
+  "id": "syno",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/synodontis-njassae/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Moderate"
+ },
+ {
+  "id": "syno",
+  "field": "temper",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/synodontis-njassae/",
+  "result": "exact",
+  "score": 1,
+  "quote": "It is a fairly vigorous species and should not be combined with shy species."
+ },
+ {
+  "id": "syno",
+  "field": "ph",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/synodontis-njassae/",
+  "result": "compact",
+  "score": 1,
+  "quote": "7.5�8.5"
+ }
+]

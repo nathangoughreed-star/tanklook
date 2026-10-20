@@ -443,7 +443,7 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
   }
 }
 // one cache key per material kind keeps one compiled program per kind
-const progKey = function (this: THREE.Material) { return 'aq' + (this.userData.card ? 'c' : '') + (this.userData.sub ? 's' : '') + (this.userData.room ? 'r' : '') + (this.userData.fish ? 'f' : '') + (this.userData.plain ? 'p' : '') + (this.userData.frost ? 'F' : '') + (this.userData.solid ? 'h' : '') + (this.userData.post ? 'b' : '') + (this.userData.fishCard ? 'k' : '') + (this.userData.plantClip ? 'g' : '') + (this.userData.pane ? 'w' : ''); };
+const progKey = function (this: THREE.Material) { return 'aq' + (this.userData.card ? 'c' : '') + (this.userData.sub ? 's' : '') + (this.userData.room ? 'r' : '') + (this.userData.fish ? 'f' : '') + (this.userData.plain ? 'p' : '') + (this.userData.frost ? 'F' : '') + (this.userData.solid ? 'h' : '') + (this.userData.post ? 'b' : '') + (this.userData.fishCard ? 'k' : '') + (this.userData.plantClip ? 'g' : '') + (this.userData.pane ? 'w' : '') + (this.userData.fake ? 'z' + this.userData.fake : ''); };
 
 /** Light every opaque surface inside the tank (substrate, background, fish, plant); glass, rim, lines and the fixture stay unlit. */
 export function applyLighting(sc: THREE.Scene) {

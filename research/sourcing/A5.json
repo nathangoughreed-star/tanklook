@@ -1,0 +1,881 @@
+{
+ "batch": "A5",
+ "agent_notes": "Quotes copied from WebFetch answers (a small model summarises pages, so a few table cells may need the checker's whitespace tolerance). Not stated: care for panda cory. Several guessed care-sheet URLs 404 (not cited). SF Otocinclus vittatus page 404; SF Crossocheilus page was a genus page without oblongus values, so not cited.",
+ "species": {
+  "pandacory": {
+   "sci": "Corydoras panda",
+   "fields": {
+    "tl": {
+     "ours": 50,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Corydoras-panda.html",
+       "site": "FishBase",
+       "states": "3.8 cm SL max (about 46 mm TL)",
+       "quote": "Max length : 3.8 cm SL male/unsexed;"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/corydoras-panda/",
+       "site": "Seriously Fish",
+       "states": "50 mm SL max",
+       "quote": "50mm SL2.0in SL"
+      }
+     ],
+     "note": "38 mm SL x1.2 = 46 mm TL; 50 mm SL per SF."
+    },
+    "ph": {
+     "ours": [
+      6,
+      7.5
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/corydoras-panda/",
+       "site": "Seriously Fish",
+       "states": "6.0-7.4",
+       "quote": "pH: 6.0 to 7.4"
+      },
+      {
+       "url": "https://www.fishbase.se/summary/Corydoras-panda.html",
+       "site": "FishBase",
+       "states": "6.0-8.0",
+       "quote": "Freshwater; demersal; pH range: 6.0 - 8.0; dH range: 2 - 25."
+      }
+     ]
+    },
+    "care": {
+     "ours": 1,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "No opened page gave a care level for this species."
+    },
+    "minL": {
+     "ours": 60,
+     "verdict": "disagrees",
+     "suggest": 41,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/corydoras-panda/",
+       "site": "Seriously Fish",
+       "states": "~41 L / ~11 US gal for a small group",
+       "quote": "A tank measuring 45 ∗ 30 ∗ 30 cm18 ∗ 12 ∗ 12 in - ~41 litres~11 US gal is adequate for a small group of these."
+      }
+     ],
+     "note": "Only one source; ours is 46% above it."
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/corydoras-panda/",
+       "site": "Seriously Fish",
+       "states": "peaceful",
+       "quote": "Very peaceful and suitable for many community tanks."
+      }
+     ]
+    },
+    "group": {
+     "ours": 6,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/corydoras-panda/",
+       "site": "Seriously Fish",
+       "states": "at least six",
+       "quote": "A group of at least six is best."
+      }
+     ]
+    }
+   }
+  },
+  "pygmycory": {
+   "sci": "Corydoras pygmaeus",
+   "fields": {
+    "tl": {
+     "ours": 25,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Corydoras-pygmaeus.html",
+       "site": "FishBase",
+       "states": "2.1 cm SL max (about 25 mm TL)",
+       "quote": "Max length : 2.1 cm SL male/unsexed; (Ref. 37395)"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/corydoras-pygmaeus/",
+       "site": "Seriously Fish",
+       "states": "30 mm SL max",
+       "quote": "30mm SL1.2in SL"
+      }
+     ],
+     "note": "21 mm SL x1.2 = 25 mm TL; SF 30 mm SL."
+    },
+    "ph": {
+     "ours": [
+      6,
+      7.5
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/corydoras-pygmaeus/",
+       "site": "Seriously Fish",
+       "states": "6.4-7.4",
+       "quote": "pH: 6.4 to 7.4"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/pygmy-cory/",
+       "site": "Fishkeeping World",
+       "states": "6-8",
+       "quote": "make sure the pH stays within 6-8"
+      }
+     ],
+     "note": "SF low end is 0.4 above ours; FKW says 6-8, which contains ours."
+    },
+    "care": {
+     "ours": 1,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/pygmy-cory/",
+       "site": "Fishkeeping World",
+       "states": "Beginner",
+       "quote": "Beginner"
+      }
+     ],
+     "note": "Overview-table cell; single source."
+    },
+    "minL": {
+     "ours": 30,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/pygmy-cory/",
+       "site": "Fishkeeping World",
+       "states": "10 US gal (37.9 L) for 4-8 fish",
+       "quote": "10 gallons is the minimum size"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/corydoras-pygmaeus/",
+       "site": "Seriously Fish",
+       "states": "45 x 30 cm base, no litres given",
+       "quote": "45 × 30cm18 × 12in"
+      }
+     ]
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/corydoras-pygmaeus/",
+       "site": "Seriously Fish",
+       "states": "very peaceful",
+       "quote": "It's very peaceful, but doesn't make an ideal community fish due to its small adult size."
+      }
+     ]
+    },
+    "group": {
+     "ours": 8,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/corydoras-pygmaeus/",
+       "site": "Seriously Fish",
+       "states": "at least 6, preferably 10+",
+       "quote": "it's best to buy at least 6, preferably 10 or more."
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/pygmy-cory/",
+       "site": "Fishkeeping World",
+       "states": "at least 4, 8 recommended",
+       "quote": "Keep them in groups of at least four or more, but eight is recommended."
+      }
+     ]
+    }
+   }
+  },
+  "oto": {
+   "sci": "Otocinclus vittatus",
+   "fields": {
+    "tl": {
+     "ours": 40,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Otocinclus-vittatus.html",
+       "site": "FishBase",
+       "states": "3.3 cm TL max",
+       "quote": "Max length : 3.3 cm TL male/unsexed; (Ref. 36885); max. published weight: 0.73 g (Ref. 122736)"
+      },
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/otocinclus-catfish",
+       "site": "Aquarium Co-Op",
+       "states": "4-5 cm (genus)",
+       "quote": "Otocinclus typically range from 1.5–2 inches (4–5 cm)."
+      }
+     ],
+     "note": "FishBase 33 mm is 17% under ours; Co-Op range is for the genus."
+    },
+    "ph": {
+     "ours": [
+      6,
+      7.5
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/otocinclus-catfish",
+       "site": "Aquarium Co-Op",
+       "states": "6.0-7.5 (genus)",
+       "quote": "pH of 6.0–7.5"
+      },
+      {
+       "url": "https://www.fishbase.se/summary/Otocinclus-vittatus.html",
+       "site": "FishBase",
+       "states": "6.0-7.5",
+       "quote": "Freshwater; demersal; pH range: 6.0 - 7.5; dH range: 2 - 18."
+      }
+     ]
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "disagrees",
+     "suggest": 1,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/otocinclus/",
+       "site": "Fishkeeping World",
+       "states": "Easy",
+       "quote": "Easy"
+      },
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/otocinclus-catfish",
+       "site": "Aquarium Co-Op",
+       "states": "no rating; sensitive reputation",
+       "quote": "Otocinclus have a reputation for being sensitive fish that are hard to keep alive."
+      }
+     ],
+     "note": "FKW says Easy (genus page); Co-Op gives no rating, says sensitive reputation but also relatively hardy. Low confidence."
+    },
+    "minL": {
+     "ours": 40,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/otocinclus/",
+       "site": "Fishkeeping World",
+       "states": "10 US gal (37.9 L)",
+       "quote": "10 gallons"
+      }
+     ],
+     "note": "Single source (genus page)."
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/otocinclus-catfish",
+       "site": "Aquarium Co-Op",
+       "states": "peaceful",
+       "quote": "Otocinclus don't have a mean bone in their bodies and are well-suited for peaceful community setups."
+      }
+     ]
+    },
+    "group": {
+     "ours": 6,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/otocinclus/",
+       "site": "Fishkeeping World",
+       "states": "at least six",
+       "quote": "these social fish should be grouped in at least six of their kind"
+      }
+     ],
+     "note": "Co-Op prefers a few plump otos over six in small tanks."
+    }
+   }
+  },
+  "kuhli": {
+   "sci": "Pangio kuhlii",
+   "fields": {
+    "tl": {
+     "ours": 100,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/pangio-kuhlii/",
+       "site": "Seriously Fish",
+       "states": "100 mm SL max",
+       "quote": "100mm SL3.9in SL"
+      },
+      {
+       "url": "https://www.fishbase.se/summary/Pangio-kuhlii.html",
+       "site": "FishBase",
+       "states": "12.0 cm TL max",
+       "quote": "Max length : 12.0 cm TL male/unsexed;"
+      }
+     ]
+    },
+    "ph": {
+     "ours": [
+      5.5,
+      7
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/kuhli-loach/",
+       "site": "Fishkeeping World",
+       "states": "5.5-6.5",
+       "quote": "5.5–6.5 pH"
+      },
+      {
+       "url": "https://www.fishbase.se/summary/Pangio-kuhlii.html",
+       "site": "FishBase",
+       "states": "5.5-6.5",
+       "quote": "Freshwater; demersal; pH range: 5.5 - 6.5; dH range: ? - 5. Tropical; 24°C - 30°C"
+      }
+     ],
+     "note": "Our high end 7.0 is 0.5 above these; Seriously Fish table lists 3.5-7.0."
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "disagrees",
+     "suggest": 1,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/kuhli-loach/",
+       "site": "Fishkeeping World",
+       "states": "Easy",
+       "quote": "Easy"
+      }
+     ],
+     "note": "Same page also says caring is more challenging than for other common fish; one source."
+    },
+    "minL": {
+     "ours": 80,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/kuhli-loach/",
+       "site": "Fishkeeping World",
+       "states": "20 US gal (75.7 L)",
+       "quote": "Minimum 20 gallons, and an extra 4 gallons of water for every additional kuhli loach."
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/pangio-kuhlii/",
+       "site": "Seriously Fish",
+       "states": "base at least 60 x 30 cm, no litres",
+       "quote": "An aquarium with base measurements of at least 60 ∗ 30 cm24 ∗ 12 in or equivalent is recommended."
+      }
+     ]
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/pangio-kuhlii/",
+       "site": "Seriously Fish",
+       "states": "peaceful",
+       "quote": "spp. are peaceful both with one another and other fishes."
+      }
+     ],
+     "note": "Quote starts after the italic genus word Pangio."
+    },
+    "group": {
+     "ours": 6,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/pangio-kuhlii/",
+       "site": "Seriously Fish",
+       "states": "at least 5-6",
+       "quote": "a group of at least 5-6 specimens should be the minimum purchased."
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/kuhli-loach/",
+       "site": "Fishkeeping World",
+       "states": "at least three",
+       "quote": "Kuhli loaches thrive in groups of at least three."
+      }
+     ]
+    }
+   }
+  },
+  "clownloach": {
+   "sci": "Chromobotia macracanthus",
+   "fields": {
+    "tl": {
+     "ours": 200,
+     "verdict": "disagrees",
+     "suggest": 300,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Chromobotia-macracanthus.html",
+       "site": "FishBase",
+       "states": "30.5 cm TL max",
+       "quote": "Max length : 30.5 cm TL male/unsexed; (Ref. 92922); max. published weight: 469.00 g (Ref. 92922)"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/chromobotia-macracanthus/",
+       "site": "Seriously Fish",
+       "states": "400 mm SL max",
+       "quote": "Max size 400mm SL16in SL"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/clown-loach/",
+       "site": "Fishkeeping World",
+       "states": "12 in (305 mm)",
+       "quote": "12 inches"
+      }
+     ],
+     "note": "Sources give 305 mm TL (FishBase, FKW); SF says 400 mm SL. Ours (200) is a typical aquarium adult, well under the stated maximum."
+    },
+    "ph": {
+     "ours": [
+      6,
+      7.5
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Chromobotia-macracanthus.html",
+       "site": "FishBase",
+       "states": "5.0-8.0",
+       "quote": "Freshwater; demersal; pH range: 5.0 - 8.0; dH range: 5 - 12."
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/chromobotia-macracanthus/",
+       "site": "Seriously Fish",
+       "states": "5.0-7.0",
+       "quote": "pH 5.0–7.0"
+      }
+     ],
+     "note": "Sources disagree: FKW says 7.4-7.8 optimal."
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/clown-loach/",
+       "site": "Fishkeeping World",
+       "states": "Intermediate",
+       "quote": "Intermediate"
+      }
+     ]
+    },
+    "minL": {
+     "ours": 400,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/clown-loach/",
+       "site": "Fishkeeping World",
+       "states": "over 75 US gal (284 L); 150 gal (568 L) for five adults",
+       "quote": "Over 75 gallons"
+      },
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/clown-loach",
+       "site": "Aquarium Co-Op",
+       "states": "55 US gal (208 L) for juveniles",
+       "quote": "For juveniles, the minimum size we recommend is a 55-gallon aquarium."
+      }
+     ],
+     "note": "400 L sits inside the 208-568 L span."
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/chromobotia-macracanthus/",
+       "site": "Seriously Fish",
+       "states": "peaceful",
+       "quote": "Temperament peaceful"
+      }
+     ]
+    },
+    "group": {
+     "ours": 5,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/clown-loach/",
+       "site": "Fishkeeping World",
+       "states": "at least 5",
+       "quote": "at least 5 individuals"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/chromobotia-macracanthus/",
+       "site": "Seriously Fish",
+       "states": "at least 5 or 6, preferably 10+",
+       "quote": "should be maintained in groups of at least 5 or 6 specimens, preferably 10 or more."
+      }
+     ]
+    },
+    "prey": {
+     "ours": 30,
+     "verdict": "behaviour-only",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/chromobotia-macracanthus/",
+       "site": "Seriously Fish",
+       "states": "preys on aquatic snails",
+       "quote": "while it will also prey on aquatic snails"
+      },
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/clown-loach",
+       "site": "Aquarium Co-Op",
+       "states": "eats snails",
+       "quote": "more than happy to help with your snail infestation problem"
+      }
+     ],
+     "note": "No mm figure on either page."
+    }
+   }
+  },
+  "sae": {
+   "sci": "Crossocheilus oblongus",
+   "fields": {
+    "tl": {
+     "ours": 150,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Crossocheilus-oblongus.html",
+       "site": "FishBase",
+       "states": "16.0 cm SL max",
+       "quote": "Max length : 16.0 cm SL male/unsexed;"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/siamese-algae-eater/",
+       "site": "Fishkeeping World",
+       "states": "6 in (152 mm)",
+       "quote": "reaches up to six inches"
+      }
+     ]
+    },
+    "ph": {
+     "ours": [
+      6.5,
+      7.5
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Crossocheilus-oblongus.html",
+       "site": "FishBase",
+       "states": "6.5-8.0",
+       "quote": "Freshwater; benthopelagic; pH range: 6.5 - 8.0; dH range: 5 - 20."
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/siamese-algae-eater/",
+       "site": "Fishkeeping World",
+       "states": "ideal 6.5-7.0, tolerates 6.0-8.0",
+       "quote": "between 6.5 and 7.0"
+      }
+     ]
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "disagrees",
+     "suggest": 1,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/siamese-algae-eater/",
+       "site": "Fishkeeping World",
+       "states": "Easy",
+       "quote": "Easy"
+      }
+     ],
+     "note": "Co-Op says quite hardy, no rating. Seriously Fish genus page had no oblongus values and is not cited."
+    },
+    "minL": {
+     "ours": 110,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/siamese-algae-eater/",
+       "site": "Fishkeeping World",
+       "states": "20 US gal (76 L)",
+       "quote": "They will need at least a 20-gallon tank."
+      },
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/siamese-algae-eater",
+       "site": "Aquarium Co-Op",
+       "states": "50-55 US gal (189-208 L) for a single SAE",
+       "quote": "A single SAE can live in a 50- to 55-gallon freshwater aquarium with a tight-fitting lid to prevent it from jumping out."
+      }
+     ],
+     "note": "Sources span 76-208 L; 110 L inside."
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/siamese-algae-eater/",
+       "site": "Fishkeeping World",
+       "states": "peaceful",
+       "quote": "Temperament: Peaceful"
+      }
+     ],
+     "note": "Co-Op says adults can turn aggressive toward their own kind."
+    }
+   }
+  },
+  "hillstream": {
+   "sci": "Sewellia lineolata",
+   "fields": {
+    "tl": {
+     "ours": 60,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Sewellia-lineolata.html",
+       "site": "FishBase",
+       "states": "5.7 cm SL max",
+       "quote": "Max length : 5.7 cm SL male/unsexed; (Ref. 40433)"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/sewellia-lineolata/",
+       "site": "Seriously Fish",
+       "states": "65 mm SL max",
+       "quote": "Max size 65mm SL2.6in SL"
+      }
+     ],
+     "note": "57-65 mm SL (about 68-78 mm TL by the 1.2x rule); ours is within +-20% of the SL figures only."
+    },
+    "ph": {
+     "ours": [
+      6.5,
+      7.5
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/sewellia-lineolata/",
+       "site": "Seriously Fish",
+       "states": "6.0-7.5",
+       "quote": "pH: 6.0 – 7.5"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/hillstream-loach/",
+       "site": "Fishkeeping World",
+       "states": "6.5-7.5",
+       "quote": "6.5–7.5 pH"
+      }
+     ]
+    },
+    "care": {
+     "ours": 3,
+     "verdict": "disagrees",
+     "suggest": 1,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/hillstream-loach/",
+       "site": "Fishkeeping World",
+       "states": "Easy",
+       "quote": "Easy"
+      }
+     ],
+     "note": "Single source; FKW page may be for hillstream loaches generally."
+    },
+    "minL": {
+     "ours": 60,
+     "verdict": "disagrees",
+     "suggest": 208,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/hillstream-loach/",
+       "site": "Fishkeeping World",
+       "states": "55 US gal (208 L)",
+       "quote": "55 gallons"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/sewellia-lineolata/",
+       "site": "Seriously Fish",
+       "states": "base 75 x 30 cm, no litres",
+       "quote": "Minimum base dimensions of 75 ∗ 30 cm30 ∗ 12 in are recommended for general care."
+      }
+     ],
+     "note": "A 75x30 cm base has no stated volume. Low confidence in the 208 L figure."
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/hillstream-loach/",
+       "site": "Fishkeeping World",
+       "states": "calm, docile",
+       "quote": "one of the most peaceful species of fish"
+      }
+     ],
+     "note": "Seriously Fish says territorial to an extent and perhaps the most dominant of the sucker belly group; mostly toward its own kind."
+    }
+   }
+  },
+  "peapuffer": {
+   "sci": "Carinotetraodon travancoricus",
+   "fields": {
+    "tl": {
+     "ours": 30,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Carinotetraodon-travancoricus.html",
+       "site": "FishBase",
+       "states": "3.5 cm TL max",
+       "quote": "Max length : 3.5 cm TL male/unsexed; (Ref. 4833)"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/carinotetraodon-travancoricus/",
+       "site": "Seriously Fish",
+       "states": "25 mm SL max",
+       "quote": "Max size 25mm SL1.0in SL"
+      }
+     ],
+     "note": "female.tl not separately stated on opened pages."
+    },
+    "ph": {
+     "ours": [
+      7,
+      8
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/carinotetraodon-travancoricus/",
+       "site": "Seriously Fish",
+       "states": "6.8-8.0",
+       "quote": "C. travancoricus prefers neutral to medium-hard water, within the range 6.8 - 8.0."
+      },
+      {
+       "url": "https://www.fishbase.se/summary/Carinotetraodon-travancoricus.html",
+       "site": "FishBase",
+       "states": "7.5-8.3",
+       "quote": "Freshwater; demersal; pH range: 7.5 - 8.3; potamodromous (Ref. 51243)."
+      }
+     ],
+     "note": "Co-Op ideal 7.2-7.5; FKW 6.5-7.0."
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/pea-puffer",
+       "site": "Aquarium Co-Op",
+       "states": "intermediate",
+       "quote": "more of an intermediate level fish"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/pea-puffer/",
+       "site": "Fishkeeping World",
+       "states": "Intermediate",
+       "quote": "Intermediate"
+      }
+     ]
+    },
+    "minL": {
+     "ours": 20,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/pea-puffer",
+       "site": "Aquarium Co-Op",
+       "states": "5 US gal (18.9 L) for the first puffer",
+       "quote": "five gallons of water for the first puffer"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/carinotetraodon-travancoricus/",
+       "site": "Seriously Fish",
+       "states": "12.6 L for a single fish",
+       "quote": "12.6 litres."
+      }
+     ]
+    },
+    "temper": {
+     "ours": 2,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/pea-puffer/",
+       "site": "Fishkeeping World",
+       "states": "territorial and aggressive",
+       "quote": "Territorial and aggressive"
+      },
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/pea-puffer",
+       "site": "Aquarium Co-Op",
+       "states": "pretty aggressive, territorial",
+       "quote": "most are pretty aggressive and territorial."
+      }
+     ]
+    },
+    "prey": {
+     "ours": 45,
+     "verdict": "behaviour-only",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/pea-puffer/",
+       "site": "Fishkeeping World",
+       "states": "hunts and eats small shrimp",
+       "quote": "they hunt and eat small shrimp"
+      }
+     ],
+     "note": "No mm figure. Co-Op lists pest snails as food; SF says feed small snails shell-on."
+    }
+   }
+  }
+ }
+}
