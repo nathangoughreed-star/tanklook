@@ -79,6 +79,7 @@ export const RULES: Record<string, Rule[]> = {
   DEMAND_DEFAULTS: [],
   DEMAND_ITEMS: [
     { path: '*.{lo,hi}', status: 'assumption', why: 'band around the one listing: sales and other stores, partly judgement (demand-items _note)' },
+    { path: 'hard:silkmoss.mode', status: 'assumption', why: 'no silk moss mat listing found: judged from the plastic mats and silk plants (lane P4)' },
     { path: '*.mode', status: 'cited', src: ['kk-prices'], why: 'the listing at the row url', rowUrl: true },
   ],
   FILTER_MEDIA: [

@@ -65,10 +65,12 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
   the default size and the loop's size^1.5 scales the rest. No upkeep, no minutes, no light / CO2 / ferts.
 - **Stocking:** artificial items already stay out of `capacityOf` (kind filter). Painted artificial patches (`plant:silkstem` ...) are left out too since
   lane SE2's `isLivePlantPatch` (scene/nitrogen.ts, 1ceb3fa); tested in `test/artificialplants.test.ts`.
-- **Review sheet:** rows `fake-<variant>` under "Artificial plants" in review.html (src/review/main.ts). Record ONLY these: `review.html?only=fake-`
+- **Review sheet:** rows `fake-<variant>` under "Artificial plants" in review.html (src/review/main.ts). All six recorded v1 at build 967. Record ONLY these: `review.html?only=fake-`
   (or `?only=fake-&record`), after merging main and restarting the dev server.
 - **Pictures:** a headless capture recipe that needs no visible pane: build the scene in the page, POST its share hash to `/__shot`, open
   `localhost:<port>/#tank=...` in headless Chrome via CDP, wait for "Building the tank" to clear, `Page.captureScreenshot`.
+- More one-line hooks at the ship merge: `settleOn` leaves artificial plants upright (render/items.ts); `hard:silkmoss.mode` is an
+  `assumption` rule in data/provenance.ts (the source ratchet).
 - Open: no water-dish style fake rock bases; no artificial floaters or vines; no fin-tear warning (plastic vs long-finned fish) in the gates yet;
   P6 wires the "Live plants? artificial / mixed" choice to these variants.
 ## Source traceability (2026-10-20, side chat in the `stocking` worktree; Nathan: the defence against "AI slop")
