@@ -1,0 +1,110 @@
+[
+ {
+  "id": "returnpump",
+  "field": "watts",
+  "verdict": "disagrees",
+  "url": "https://fresh.bulkreefsupply.com/sicce-syncra-silent-1-5-pump-357-gph.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Power Consumption: 23W"
+ },
+ {
+  "id": "co2kit",
+  "field": "watts",
+  "verdict": "agrees",
+  "url": "https://dennerle.com/en/products/co2/co2-accessories/co2-magnetventil",
+  "result": "exact",
+  "score": 1,
+  "quote": "power consumption 2 watts"
+ },
+ {
+  "id": "doser",
+  "field": "watts",
+  "verdict": "disagrees",
+  "url": "https://greenaqua.hu/en/jebao-dp-4-4-dosing-pump.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Power: 8.5 W"
+ },
+ {
+  "id": "airpump",
+  "field": "watts",
+  "verdict": "agrees",
+  "url": "https://www.thatpetplace.com/whisper-40-aquarium-air-pump-40-gal",
+  "result": "compact",
+  "score": 1,
+  "quote": "Max Wattage: 2.9"
+ },
+ {
+  "id": "uv",
+  "field": "watts",
+  "verdict": "agrees",
+  "url": "https://fishtanksdirect.com/coralife-turbo-twist-uv-sterilizer-9-watt",
+  "result": "exact",
+  "score": 1,
+  "quote": "Turbo-Twist 3x: 9 watt, treats up to 125 gallons"
+ },
+ {
+  "id": "ato",
+  "field": "watts",
+  "verdict": "disagrees",
+  "url": "https://fresh.bulkreefsupply.com/tunze-osmolator-universal-3155-auto-top-off.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "the draw at the outlet is generally around 8W at 115V with the pump running"
+ },
+ {
+  "id": "skimmerhob",
+  "field": "watts",
+  "verdict": "disagrees",
+  "url": "https://www.bulkreefsupply.com/hob-1-5-hang-on-back-protein-skimmer-aquaready.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Power Consumption: 11 Watts"
+ },
+ {
+  "id": "powerhead",
+  "field": "watts",
+  "verdict": "disagrees",
+  "url": "https://www.bulkreefsupply.com/koralia-nano-240.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "3.5 Watts"
+ },
+ {
+  "id": "liquidcarbon",
+  "field": "monthly.months",
+  "verdict": "agrees",
+  "url": "https://www.seachem.com/flourish-excel.php",
+  "result": "exact",
+  "score": 1,
+  "quote": "Thereafter use 1 capful for every 200 L (50 US gallons) daily or every other day."
+ },
+ {
+  "id": "liquidcarbon",
+  "field": "monthly.months",
+  "verdict": "agrees",
+  "url": "https://www.seachem.com/flourish-excel.php",
+  "result": "exact",
+  "score": 1,
+  "quote": "Sizes: 50 mL, 100 mL, 250 mL, 500 mL, 2 L, 4 L"
+ },
+ {
+  "id": "roottabs",
+  "field": "monthly.months",
+  "verdict": "disagrees",
+  "url": "https://www.seachem.com/flourish-tabs.php",
+  "result": "exact",
+  "score": 1,
+  "quote": "Add new tablets once every three to four months for optimal plant growth."
+ },
+ {
+  "id": "roottabs",
+  "field": "monthly.months",
+  "verdict": "disagrees",
+  "url": "https://fishtanksdirect.com/seachem-flourish-tabs-40-pack-sc05070/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Seachem Flourish Tabs (40-Pack)"
+ }
+]

@@ -1,0 +1,56 @@
+[
+ {
+  "id": "reef-par",
+  "field": "soft",
+  "verdict": "disagrees",
+  "url": "https://www.bulkreefsupply.com/content/post/keep-coral-happy-and-dial-in-your-reef-lighting-with-a-par-meter",
+  "result": "exact",
+  "score": 1,
+  "quote": "Soft Corals and LPS: 75 - 150 PAR"
+ },
+ {
+  "id": "reef-par",
+  "field": "lps",
+  "verdict": "agrees",
+  "url": "https://www.bulkreefsupply.com/content/post/keep-coral-happy-and-dial-in-your-reef-lighting-with-a-par-meter",
+  "result": "exact",
+  "score": 1,
+  "quote": "Soft Corals and LPS: 75 - 150 PAR"
+ },
+ {
+  "id": "reef-par",
+  "field": "sps",
+  "verdict": "disagrees",
+  "url": "https://www.bulkreefsupply.com/content/post/keep-coral-happy-and-dial-in-your-reef-lighting-with-a-par-meter",
+  "result": "exact",
+  "score": 1,
+  "quote": "SPS corals 200 - 350 PAR"
+ },
+ {
+  "id": "kwh-usd",
+  "field": "residential",
+  "verdict": "agrees",
+  "url": "https://www.eia.gov/electricity/monthly/epm_table_grapher.php?t=epmt_5_6_a",
+  "result": "exact",
+  "score": 1,
+  "quote": "U.S. Total 18.31 17.45 14.53 14.05 9.77 9.33 14.97 14.27 14.99 14.36"
+ },
+ {
+  "id": "marine-ph",
+  "field": "band",
+  "verdict": "agrees",
+  "url": "https://forums.reefcentral.com/threads/ph.137671",
+  "result": "exact",
+  "score": 1,
+  "quote": "In my opinion, the pH range from 7.8 to 8.5 is an acceptable range for reef aquaria, with several caveats."
+ },
+ {
+  "id": "marine-ph",
+  "field": "band",
+  "verdict": "agrees",
+  "url": "https://forums.reefcentral.com/threads/ph.137671",
+  "result": "near",
+  "score": 1,
+  "quote": "As a goal, I'd suggest that the pH of natural seawater, about 8.2, is appropriate"
+ }
+]

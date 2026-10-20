@@ -1,0 +1,127 @@
+{
+  "batch": "E2",
+  "agent_notes": "Physical constants sourced from Engineering Toolbox / Sera / Wikipedia; lamp PPE only partly stated (Nelson & Bugbee fluorescent 0.95). MET_CLASS, SALT_LOAD and most lamp numbers are our own choices with no stating page.",
+  "items": {
+    "DENSITY": {
+      "fields": {
+        "water": {
+          "ours": 1.0, "verdict": "agrees", "suggest": null,
+          "sources": [{"url": "https://www.engineeringtoolbox.com/water-density-specific-weight-d_595.html", "site": "Engineering Toolbox", "states": "998.21 kg/m3 at 20 C", "quote": "Water density at temperature 20 oC is 998.21 kg/m3"}],
+          "note": "kg/m3 to kg/L: 0.998, within 0.2 %"
+        },
+        "glass": {
+          "ours": 2.5, "verdict": "agrees", "suggest": null,
+          "sources": [{"url": "https://www.engineeringtoolbox.com/density-solids-d_1265.html", "site": "Engineering Toolbox", "states": "Glass, common: 2.4 - 2.8 (10^3 kg/m3)", "quote": "Glass, common: 2.4 - 2.8"}],
+          "note": "inside the stated range; page says 'common' glass, does not say soda-lime"
+        },
+        "substrate": {
+          "ours": 1.6, "verdict": "agrees", "suggest": null,
+          "sources": [
+            {"url": "https://www.sera.de/en/service/faq/faq-detail/sand-and-gravel-in-combination-how-much-sand-is-required", "site": "sera (aquarium maker)", "states": "1.6 - 1.7 kg/l", "quote": "The bulk density of quartz sand/gravel is about 1.6 - 1.7 kg/l"},
+            {"url": "https://www.engineeringtoolbox.com/dirt-mud-densities-d_1727.html", "site": "Engineering Toolbox", "states": "gravel dry 1680 kg/m3; sand dry 1555 kg/m3", "quote": "Gravel, dry 105 1680"}
+          ],
+          "note": "dry bulk density; inside sera range"
+        },
+        "pore": {
+          "ours": 0.35, "verdict": "agrees", "suggest": null,
+          "sources": [{"url": "https://en.wikipedia.org/wiki/Porosity", "site": "Wikipedia (Porosity)", "states": "porosity 0.36 to 0.43 for sandy soil; 0.20 for unsorted gravel", "quote": "Typical bulk density of sandy soil is between 1.5 and 1.7 g/cm3. This calculates to a porosity between 0.43 and 0.36."}],
+          "note": "ours is water held in gaps (kg/L) i.e. porosity x 1.0; 0.35 is within 20 % of the 0.36 low end. Aquarium gravel is sorted so 0.20 (unsorted, at depth) is not the right case"
+        }
+      }
+    },
+    "NWATER": {
+      "fields": {
+        "value": {
+          "ours": 1.33, "verdict": "agrees", "suggest": null,
+          "sources": [{"url": "https://www.engineeringtoolbox.com/refractive-index-d_1264.html", "site": "Engineering Toolbox", "states": "water 20 C: 1.33283 (0 C 1.33346, 100 C 1.31766)", "quote": "1.33283"}],
+          "note": "table row 'Water 20 oC' in Common Liquids; quote is the value cell only"
+        }
+      }
+    },
+    "SUB_ALBEDO": {
+      "fields": {
+        "tsand": {
+          "ours": 0.35, "verdict": "agrees", "suggest": null,
+          "sources": [{"url": "https://en.wikipedia.org/wiki/Albedo", "site": "Wikipedia (Albedo)", "states": "desert sand 0.40", "quote": "Desert sand 0.40"}],
+          "note": "terrestrial sand vs desert sand, broadband solar albedo not PAR; within 20 % (0.35 vs 0.40)"
+        },
+        "soil": {
+          "ours": 0.07, "verdict": "not-stated", "suggest": null,
+          "sources": [],
+          "note": "Wikipedia Albedo gives bare soil 0.17 (opened) but that is generic bare soil, not dark planted-tank soil; no page stating aquarium-substrate PAR reflectance was found"
+        },
+        "white": {
+          "ours": 0.55, "verdict": "not-stated", "suggest": null,
+          "sources": [],
+          "note": "no opened page states white aquarium sand or aragonite reflectance (desert sand 0.40 only); search snippets only, not opened"
+        },
+        "gravel": {
+          "ours": 0.2, "verdict": "not-stated", "suggest": null,
+          "sources": [],
+          "note": "no opened page states natural gravel albedo; the other substrate colours (pea, clown, blue, onyx, black, coral, aragonite, clay, bark) are also our own estimates with no stating page"
+        }
+      }
+    },
+    "TECHS": {
+      "fields": {
+        "t8.ppe": {
+          "ours": 0.85, "verdict": "agrees", "suggest": null,
+          "sources": [{"url": "https://digitalcommons.usu.edu/psc_facpub/730", "site": "Nelson & Bugbee 2014 (USU abstract)", "states": "best fluorescent fixture 0.95 umol/J", "quote": "The best ceramic metal halide and fluorescent fixtures had efficiencies of 1.46 and 0.95 micromoles per joule, respectively."}],
+          "note": "fixture-level (not bare lamp) best-in-test; 0.85 is within 20 % of 0.95; page does not say T8 specifically"
+        },
+        "cfl.ppe": {
+          "ours": 0.8, "verdict": "agrees", "suggest": null,
+          "sources": [{"url": "https://digitalcommons.usu.edu/psc_facpub/730", "site": "Nelson & Bugbee 2014 (USU abstract)", "states": "best fluorescent fixture 0.95 umol/J", "quote": "The best ceramic metal halide and fluorescent fixtures had efficiencies of 1.46 and 0.95 micromoles per joule, respectively."}],
+          "note": "0.8 is within 20 % of 0.95 (0.76 lower bound); page covers fluorescent fixtures generally, not CFL specifically; the full paper's T8 0.84 was not opened"
+        },
+        "t12.ppe": {
+          "ours": 0.7, "verdict": "not-stated", "suggest": null,
+          "sources": [],
+          "note": "no page gives umol/J for T12. Hong Kong EMSD (opened, emsd.gov.hk .../lighting/tubes.html) gives T12 70 lm/W vs T8 80 lm/W, ratio 0.875; ours 0.7/0.85 = 0.82, a similar step down"
+        },
+        "led-bulb.ppe": {
+          "ours": 1.3, "verdict": "not-stated", "suggest": null,
+          "sources": [],
+          "note": "no page gives umol/J for LED screw-in bulbs. EIA (opened, eia.gov/todayinenergy/detail.php?id=15471) gives LED bulbs 'around 83 lumens per Watt' (2014), CFL 67, halogen 20, incandescent 16 lm/W; our 1.3 rests on ~90 lm/W over a lux factor, so it is lm/W-consistent but not a stated umol/J"
+        },
+        "halogen.ppe": {
+          "ours": 0.3, "verdict": "not-stated", "suggest": null,
+          "sources": [],
+          "note": "no opened page gives halogen umol/J. EIA states halogen 'closer to 20 lumens per Watt' (lm/W only). A search snippet claimed a 20 W MR11 at 0.2 umol/s/W but that page was not opened"
+        },
+        "led-white.ppe": {
+          "ours": 1.6, "verdict": "not-stated", "suggest": null,
+          "sources": [],
+          "note": "covered by reference/par-calibration-data.md (calibrated); Nelson & Bugbee best LED fixtures 1.66-1.70 umol/J appeared only in a search snippet, abstract opened states only fluorescent and ceramic MH figures in the quoted sentence"
+        }
+      }
+    },
+    "MET_CLASS": {
+      "fields": {
+        "value": {
+          "ours": "messy 1.5, active 1.2, normal 1, sedentary 0.7, grazer 0.6, shrimp 0.5, shell 0.3, herp 0.4", "verdict": "not-stated", "suggest": null,
+          "sources": [],
+          "note": "Our own class multipliers after bioload rules of thumb (code comment). No page states per-class ratios; searches for published bioload ratios by activity class found nothing citable. Q10 = 2 in tempFactor is a separate constant, not sourced here"
+        }
+      }
+    },
+    "SALT_LOAD": {
+      "fields": {
+        "value": {
+          "ours": 1.5, "verdict": "not-stated", "suggest": null,
+          "sources": [],
+          "note": "'half again' marine multiplier is a rule of thumb with no stating page; hobby sources found (search results only) say marine stocking is stricter (e.g. 1 inch per 5 gallons) but attribute it to filtration/reef complexity, not a 1.5x waste ratio"
+        }
+      }
+    },
+    "NITRATE_TARGET_N": {
+      "fields": {
+        "value": {
+          "ours": 9, "verdict": "agrees", "suggest": null,
+          "sources": [{"url": "https://aquariumscience.org/index.php/5-4-safe-nitrate-levels", "site": "aquariumscience.org", "states": "40 to 80 ppm nitrate (as NO3); 1 mg/L NO3-N = 4.4 ppm NO3", "quote": "Most hobbyists are comfortable with anything from 40 to 80 ppm of nitrate"}],
+          "note": "Code means mg/L as N (nitrate-N): 9 mg N/L x 4.4 = about 40 ppm NO3, the bottom of the stated 40-80 ppm range (NO3). The page also says hobbyist test kits read NO3, scientific studies NO3-N. Other hobby pages quote lower (20 ppm or less) for shrimp and sensitive fish"
+        }
+      }
+    }
+  }
+}
