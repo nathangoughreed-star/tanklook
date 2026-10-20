@@ -10,7 +10,13 @@ import { clampGround, groundHeight, radialTerrain, type Ground } from './terrain
 import type { CompId, Item, ItemKind, LayerDens, LayoutId, Tank, TankSetup } from './types';
 
 /** `salt`: offered in a saltwater tank only (live rock, corals). */
-export interface Variant { kind: ItemKind; label: string; hint: string; size: number; min: number; max: number; salt?: true }
+export interface Variant { kind: ItemKind; label: string; hint: string; size: number; min: number; max: number; salt?: true; fake?: Fake }
+/** Artificial plants (lane P4, 2026-10-20): the material (silk: soft fabric leaves that drape; plastic: stiff, glossy,
+ *  moulded) and the form. They never grow, need no light, CO2 or fertiliser and take up no nitrate: a decoration bought once. */
+export interface Fake { mat: 'silk' | 'plastic'; form: 'stem' | 'rosette' | 'mat' }
+/** An artificial plant's width per height (a mat: its height per width). */
+export const FAKE_ASPECT: Record<Fake['form'], number> = { stem: 0.5, rosette: 0.95, mat: 0.2 };
+export const isFake = (it: Pick<Item, 'kind'>) => it.kind === 'artificial';
 export const LIBRARY: Record<string, Variant> = {
   river: { kind: 'stone', label: 'River stone', hint: 'Smooth, rounded, brown-grey.', size: 110, min: 15, max: 600 },
   seiryu: { kind: 'stone', label: 'Seiryu', hint: 'Upright blue-grey crag with pale veins.', size: 130, min: 20, max: 600 },
@@ -72,6 +78,13 @@ export const LIBRARY: Record<string, Variant> = {
   columnar: { kind: 'plant', label: 'Columnar cactus', hint: 'Terrarium: a tall ribbed blue-green column with pale spines. Very slow; full sun, almost no water. Size = height.', size: 220, min: 60, max: 520 },
   hornwort: { kind: 'plant', label: 'Hornwort', hint: 'Bushy stems of whorled needle leaves; fast, trails along the surface.', size: 300, min: 60, max: 900 },
   anacharis: { kind: 'plant', label: 'Anacharis', hint: 'Long stems densely set with whorls of small bright leaves; fast.', size: 300, min: 60, max: 900 },
+  // artificial plants (lane P4, 2026-10-20): size = height (a moss mat: width)
+  silkstem: { kind: 'artificial', label: 'Silk stem plant', hint: 'Artificial: soft fabric leaves in pairs up wired stems, on a weighted base. Drapes and moves; safe for long-finned fish (betta). Never grows, needs no light.', size: 200, min: 80, max: 600, fake: { mat: 'silk', form: 'stem' } },
+  plasticstem: { kind: 'artificial', label: 'Plastic stem plant', hint: 'Artificial: stiff moulded stems in whorls of glossy leaves, on a weighted base. Never grows, needs no light; hard edges can tear long fins.', size: 200, min: 80, max: 600, fake: { mat: 'plastic', form: 'stem' } },
+  silksword: { kind: 'artificial', label: 'Silk sword plant', hint: 'Artificial: a rosette of long fabric sword leaves that arch over, on a weighted base. Never grows, needs no light.', size: 200, min: 80, max: 600, fake: { mat: 'silk', form: 'rosette' } },
+  plasticsword: { kind: 'artificial', label: 'Plastic sword plant', hint: 'Artificial: a stiff rosette of glossy moulded sword leaves, on a weighted base. Never grows, needs no light.', size: 200, min: 80, max: 600, fake: { mat: 'plastic', form: 'rosette' } },
+  silkmoss: { kind: 'artificial', label: 'Silk moss mat', hint: 'Artificial: a flat mat tufted with soft fabric moss. Lay it on the ground or raise it onto wood or rock. Size = width.', size: 180, min: 40, max: 300, fake: { mat: 'silk', form: 'mat' } },
+  plasticmoss: { kind: 'artificial', label: 'Plastic moss mat', hint: 'Artificial: a flat mat bristling with short stiff plastic blades. Lay it on the ground or raise it onto wood or rock. Size = width.', size: 180, min: 40, max: 300, fake: { mat: 'plastic', form: 'mat' } },
   // corals (2026-10-14): size = width
   acropora: { kind: 'coral', label: 'Branching coral', hint: 'An Acropora-style colony of branches with pale tips. Size = width.', size: 160, min: 40, max: 500, salt: true },
   montipora: { kind: 'coral', label: 'Plate coral', hint: 'A whorl of thin cupped plates. Size = width.', size: 180, min: 40, max: 500, salt: true },
@@ -87,7 +100,7 @@ export const LIBRARY: Record<string, Variant> = {
   seafan: { kind: 'coral', label: 'Sea fan', hint: 'A gorgonian: a fine fan of branches in one upright plane. Size = width.', size: 180, min: 50, max: 500, salt: true },
   macroalgae: { kind: 'coral', label: 'Macroalgae', hint: 'Marine algae for a planted reef: feather or grape caulerpa, or red ogo (by seed). Size = width.', size: 160, min: 40, max: 450, salt: true },
 };
-export const KINDS: Record<ItemKind, string> = { stone: 'Stones', wood: 'Wood', cave: 'Caves', plant: 'Plants', coral: 'Corals' };
+export const KINDS: Record<ItemKind, string> = { stone: 'Stones', wood: 'Wood', cave: 'Caves', plant: 'Plants', coral: 'Corals', artificial: 'Artificial plants' };
 export const MAX_ITEMS = 600;
 /** A floater's density range (times the species' own rosettes per area). */
 export const DENS = [0.1, 3] as const;
@@ -299,6 +312,7 @@ export function itemDims(it: Pick<Item, 'kind' | 'variant' | 'seed' | 'size' | '
   // lie over at the surface), so its width follows its length only up to 1.4x the saved size
   const sw = Math.min(s, it.size * 1.4);
   if (it.kind === 'plant') return isCarpet(it.variant) ? [s, CARPET_H, s] : isFloat(it.variant) ? ((w: number) => [w, s * PLANT_ASPECT[it.variant as PlantType], w])(it.spread ? floatWidth(it) : s) : ((w: number) => [w, s, w])(it.spread ? Math.max(it.spread, sw / PLANT_ASPECT[it.variant as PlantType]) : sw / PLANT_ASPECT[it.variant as PlantType]) as [number, number, number];
+  if (it.kind === 'artificial') { const f = LIBRARY[it.variant]?.fake?.form ?? 'stem', k = FAKE_ASPECT[f]; return f === 'mat' ? [s, s * k, s * 0.85] : [s * k, s, s * k]; }
   if (it.kind === 'coral') return [s, s * ({ acropora: 0.6, montipora: 0.45, mushroom: 0.4, leather: 0.6, acrofine: 0.55, zoanthid: 0.3, hammer: 0.4, torch: 0.55, anemone: 0.4, montiplate: 0.35, seafan: 0.8, macroalgae: 0.55 } as Record<string, number>)[it.variant], s];
   if (it.kind === 'cave' && it.variant in SHELLS) return shellDims(it.variant, s);
   if (it.kind === 'cave' && (it.variant === 'dish' || it.variant === 'stonedish')) return [s, 0.2 * s, s];
@@ -318,6 +332,7 @@ export function plantBaseR(it: Pick<Item, 'kind' | 'variant' | 'seed' | 'size' |
 /** How far into the ground a piece is set, mm (stones nest in, plants are planted). */
 export function itemSink(it: Item): number {
   if (it.kind === 'plant') return 4;
+  if (it.kind === 'artificial') return 2; // the weighted base pressed into the substrate
   const h = itemDims(it)[1];
   return it.kind === 'stone' ? 0.08 * h : it.kind === 'cave' ? 0.03 * h : 0;
 }
@@ -335,6 +350,7 @@ export function clampItem(it: Item, T: Tank, g?: Ground) {
   if (v) {
     let max = v.max;
     if (it.kind === 'plant' && !isPatch(it.variant)) max = Math.min(max, (Math.min(T.L, T.D) - 6) * PLANT_ASPECT[it.variant as PlantType], T.H * 1.5);
+    else if (it.kind === 'artificial' && v.fake?.form !== 'mat') max = Math.min(max, T.H * 1.2, (Math.min(T.L, T.D) - 6) / FAKE_ASPECT[v.fake?.form ?? 'stem']);
     else max = Math.min(max, Math.max(T.L, T.D) * 1.1);
     it.size = Math.round(clamp(it.size, Math.min(v.min, max), max));
   }
@@ -391,7 +407,7 @@ export function hardscape(S: TankSetup, pieces = S.items, perchK = 1, leaves = f
     // broad leaves (anubias, swords, ferns...) as somewhere to sit, when asked: a spot on the crown's spread at about half
     // its height; the renderer finds the leaf there (none: the animal lands on the ground under it)
     if (leaves && it.kind === 'plant' && it.variant in LEAFY) { parts.push(leafPart(S, it)); continue; }
-    if (it.kind === 'plant' || it.kind === 'coral') continue; // no grazing on live coral (Nathan 2026-10-14)
+    if (it.kind === 'plant' || it.kind === 'coral' || it.kind === 'artificial') continue; // no grazing on live coral (Nathan 2026-10-14)
     if (it.kind === 'wood' && isLimbWood(it.variant)) {
       for (const l of woodLimbs(it.variant, it.seed, it.size)) {
         const len = l.pts.slice(1).reduce((a, p, i) => a + Math.hypot(p[0] - l.pts[i][0], p[1] - l.pts[i][1], p[2] - l.pts[i][2]), 0);
@@ -437,7 +453,7 @@ export function underside(S: TankSetup, pieces = S.items) {
   const parts: SpotPart[] = [];
   for (const it of pieces) {
     if (it.kind === 'plant') { if (it.variant in LEAFY) parts.push(leafPart(S, it)); continue; }
-    if (it.kind === 'coral') continue;
+    if (it.kind === 'coral' || it.kind === 'artificial') continue;
     const [l, h, w] = itemDims(it);
     if (OVERHANGS.has(it.variant)) parts.push({ area: l * w * 0.5, spot: r => itemToTank(S, it, [(r() - 0.5) * l * 0.5, it.variant === 'ledge' || it.variant === 'corkflat' ? 0 : h * 0.4, (r() - 0.5) * w * 0.5]) });
     // the sides: a point just outside the piece at about its half height (the renderer looks sideways from there for the face)
@@ -581,7 +597,7 @@ export const DEFAULT_DENS: LayerDens = { hard: 2, plant: 2, animal: 0 };
 /** The layers a starter set is drawn in, each from its own random stream: hardscape first, plants and corals placed
  *  round it, then animals (scene/starter.ts). */
 export type Layer = 'hard' | 'plant' | 'animal';
-export const layerOf = (it: Pick<Item, 'kind'>): Layer => it.kind === 'plant' || it.kind === 'coral' ? 'plant' : 'hard';
+export const layerOf = (it: Pick<Item, 'kind'>): Layer => it.kind === 'plant' || it.kind === 'coral' || it.kind === 'artificial' ? 'plant' : 'hard';
 
 /**
  * What each starter style allows (lane SD). `hard` / `plant`: the density at Sparse and at Packed; Medium is 1, the set
