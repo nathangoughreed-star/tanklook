@@ -1,18 +1,18 @@
-stones	2	18	65	space 65	filt 45
-stones	4	22	75	space 75	filt 63
-driftwood	2	17	43	space 41	filt 43
-driftwood	4	32	77	space 77	filt 61
-planted	2	29	54	space 54	filt 40
-planted	4	50	109	space 109	filt 57
-iwagumi	2	72	146	space 146	filt 39
-iwagumi	4	110	196	space 196	filt 55
-swamp	2	40	134	space 134	filt 43
-swamp	4	46	134	space 134	filt 43
-nature	2	70	105	space 105	filt 33
-nature	4	74	103	space 103	filt 55
-dutch	2	31	59	space 59	filt 41
-dutch	4	43	87	space 87	filt 61
-jungle	2	26	59	space 59	filt 40
-jungle	4	30	77	space 77	filt 59
-forest	2	46	69	space 69	filt 39
-forest	4	84	124	space 124	filt 59
+stones	2	12	43	space 43	filt 37	6 tigerbarb, 6 platy
+stones	4	13	60	space 41	filt 60	6 tigerbarb, 6 bronzecory, 1 kribensis
+driftwood	2	17	43	space 41	filt 43	8 cardinal, 1 gbr, 8 kuhli
+driftwood	4	28	68	space 68	filt 56	8 cardinal, 1 gbr, 8 kuhli, 1 bristlenose, 10 pandacory
+planted	2	27	51	space 51	filt 38	16 cherrybarb, 10 amano, 1 dwarfgourami
+planted	4	36	81	space 81	filt 47	14 cherrybarb, 8 amano, 1 dwarfgourami, 12 oto, 1 bolivianram
+iwagumi	2	30	59	space 59	filt 16	10 cpd, 8 oto, 12 rummynose
+iwagumi	4	58	91	space 91	filt 28	12 cpd, 12 oto, 14 rummynose, 10 amano, 10 cherryshrimp
+swamp	2	23	69	space 69	filt 23	14 guppy, 5 firenewt, 4 ramshorn
+swamp	4	30	71	space 71	filt 25	14 guppy, 6 firenewt, 4 ramshorn, 6 dartfrog
+nature	2	40	56	space 56	filt 18	16 rummynose, 10 amano, 14 cpd
+nature	4	56	76	space 76	filt 40	14 rummynose, 8 amano, 12 cpd, 12 harlequin, 10 cherryshrimp
+dutch	2	21	42	space 42	filt 39	12 rummynose, 8 amano, 1 sae
+dutch	4	33	65	space 65	filt 48	12 rummynose, 9 amano, 1 sae, 1 dwarfgourami, 10 cardinal
+jungle	2	18	41	space 41	filt 33	10 rummynose, 8 kuhli
+jungle	4	24	62	space 62	filt 48	14 rummynose, 8 kuhli, 1 bolivianram, 1 bristlenose
+forest	2	33	47	space 47	filt 25	12 chili, 9 amano, 12 harlequin
+forest	4	58	79	space 79	filt 37	14 chili, 10 amano, 12 harlequin, 10 cherryshrimp, 12 neon

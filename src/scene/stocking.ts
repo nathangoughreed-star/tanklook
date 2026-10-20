@@ -101,7 +101,9 @@ export function animalLoad(sp: Species, tlMm: number, tempC = T_REF, salt = fals
   return massG(sp.id, tlMm) ** 0.75 * MET_CLASS[metClass(sp)] * tempFactor(tempC) * (salt && sp.salt ? SALT_LOAD : 1);
 }
 /** Litres of water one adult of this species takes up (its load over what a litre clears): the starters' budget unit. */
-export const litresPerAnimal = (sp: Species) => animalLoad(sp, sp.tl, T_REF, !!sp.salt) / LU_PER_L;
+export const litresPerAnimal = (sp: Species) => Math.max(animalLoad(sp, sp.tl, T_REF, !!sp.salt) / LU_PER_L,
+  // SE2 (2026-10-20): the starters also respect the space limit, so Full reads about 90 % by the space number (animals in the water only)
+  countsAgainstWater(sp) ? spaceOf(sp, sp.tl * 0.92) / SPACE_PER_L : 0); // starters draw animals at about 92 % of adult length
 
 export function capacityOf(S: TankSetup): CapacityParts {
   const litres = bioloadLitres(S), tempC = S.water.on ? heatLoss(S).targetC : T_REF;
