@@ -6,7 +6,7 @@ import { fitToLimits, hasLimits } from '../demand/fit';
 import { attachTechMenu } from './techMenu';
 import { unheatedC } from '../scene/tech';
 import { renderFeaturedDeals } from './featuredDeals';
-import { startDeals, visibleTabs, pickTab, sortDeals, DEFAULT_SORT, type DealSort, type StartTab } from './startEntries';
+import { startDeals, visibleTabs, pickTab, sortDeals, DEFAULT_SORT, type DealSort, type StartTab, type StartMenu } from './startEntries';
 import { DEALS_AS_OF, DEAL_NOTE, NOT_SPONSORED } from '../data/deals';
 import { LEVELS, onPerf, perf, setAuto, setLevel } from '../render/perf';
 import { lifeStages } from '../data/lifestages';
@@ -133,9 +133,9 @@ export function attachPanels(store: Store, viewer: Viewer) {
   const recenter = $('recenter'); recenter.onclick = () => viewer.resetPan();
   viewer.onPan(() => { recenter.hidden = !viewer.panned; });
   $('redo').onclick = () => store.redo();
-  // New and Open… both show the start chooser (below): New on its first tab, Open… on the saved tanks
-  $('newScene').onclick = () => showChooser(undefined, false);
-  $('openScene').onclick = () => showChooser('open', false);
+  // New and Open… are two separate menus of the start chooser (below): New = scratch + deals, Open… = starter + saved tanks
+  $('newScene').onclick = () => showChooser('new', undefined, false);
+  $('openScene').onclick = () => showChooser('open', 'open', false);
   /** The old New button: an empty tank, after a warning when the current one has animals (Undo brings it back). */
   const newEmptyTank = () => {
     if (G().tanks.some(t => t.fish.length) && !confirm('Start a new, empty tank? (Undo brings this one back.)')) return false;
@@ -224,9 +224,10 @@ export function attachPanels(store: Store, viewer: Viewer) {
       }
     });
   }
-  // The start chooser (lane SD; Nathan 2026-10-19: one place to start or open a tank). One dialog: Start from scratch,
-  // then tabs On sale now / Bundles / Starter tanks / Open a tank. Shown on first launch when no tank was restored from
-  // this browser (Nathan 2026-10-14; Esc keeps the empty tank), and by New and Open…. Empty sale / bundle tabs hide.
+  // The start chooser (lane SD), as two separate menus (Nathan 2026-10-20: deals only where you choose how to start a
+  // new tank, apart from opening a pre-built or saved one). New: Start from scratch, then tabs On sale now / Bundles
+  // (empty ones hide). Open: tabs Starter tanks / Saved tanks. A link at the bottom swaps menus. Shown on first launch
+  // (New) when no tank was restored from this browser (Nathan 2026-10-14; Esc keeps the empty tank), and by New / Open….
   const startDlg = $<HTMLDialogElement>('startDlg');
   let firstLaunch = false;
   const dealSort = { ...DEFAULT_SORT }; // each deal tab keeps its own order
@@ -240,9 +241,18 @@ export function attachPanels(store: Store, viewer: Viewer) {
     for (const p of startDlg.querySelectorAll<HTMLElement>('[data-pane]')) p.hidden = p.dataset.pane !== tab;
   };
   $('startTabs').onclick = e => { const b = (e.target as HTMLElement).closest<HTMLElement>('[data-tab]'); if (b) setTab(b.dataset.tab as StartTab); };
-  function showChooser(tab: StartTab | undefined, first: boolean) {
+  function showChooser(menu: StartMenu, tab: StartTab | undefined, first: boolean) {
     firstLaunch = first;
-    const { sale, bundles } = startDeals(), shown = visibleTabs({ sale: sale.length, bundles: bundles.length });
+    const { sale, bundles } = startDeals(), shown = visibleTabs(menu, { sale: sale.length, bundles: bundles.length }), isNew = menu === 'new';
+    $('startTitle').textContent = isNew ? 'New tank' : 'Open a tank';
+    $('startIntro').textContent = isNew
+      ? 'Plan an aquarium, paludarium or terrarium: tank, ground, plants, animals and light, all to scale. Start empty, or from a kit or set you can buy now.'
+      : 'A ready-made starter tank to look at or build on, or one you saved.';
+    $('startBtns').hidden = !isNew;
+    $('startTabs').hidden = !shown.length;
+    const swap = $<HTMLButtonElement>('startSwap');
+    swap.textContent = isNew ? 'Open a starter or saved tank instead…' : 'Start a new tank instead…';
+    swap.onclick = () => showChooser(isNew ? 'open' : 'new', undefined, firstLaunch);
     for (const b of startDlg.querySelectorAll<HTMLElement>('[data-tab]')) b.hidden = !shown.includes(b.dataset.tab as StartTab);
     for (const n of startDlg.querySelectorAll('.dealasof')) n.textContent = `Prices as of ${DEALS_AS_OF}; ${DEAL_NOTE.replace(/^as of the date shown; /, '')}. ${NOT_SPONSORED}.`;
     // each deal tab sorts on its own; the labels name the key and direction ($ saved, % saved, price, size)
@@ -253,11 +263,12 @@ export function attachPanels(store: Store, viewer: Viewer) {
     }
     draw();
     renderExamples(); renderLib();
-    setTab(pickTab(tab, shown));
+    const land = pickTab(tab, shown);
+    if (land) setTab(land); else for (const p of startDlg.querySelectorAll<HTMLElement>('[data-pane]')) p.hidden = true;
     if (!startDlg.open) startDlg.showModal();
-    $('startFresh').focus();
+    (isNew ? $('startFresh') : startDlg.querySelector<HTMLElement>('[data-tab][aria-selected="true"]') ?? swap).focus();
   }
-  const showStart = () => showChooser(undefined, true);
+  const showStart = () => showChooser('new', undefined, true);
   $('libList').onclick = e => {
     const t = e.target as HTMLElement, del = t.closest<HTMLButtonElement>('[data-libdel]'), op = t.closest<HTMLButtonElement>('[data-lib]');
     if (del) {

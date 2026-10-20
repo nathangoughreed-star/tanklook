@@ -1,5 +1,5 @@
 // What the start chooser offers (lane SD): the pure part, so the sale / bundle split and the tab choice are testable.
-// Entries: scratch (a button, always), bundle, sale, starter tank (the examples), open (saved / file).
+// New menu: scratch (a button, always), sale, bundle. Open menu: starter tank (the examples), saved / file.
 import { DEALS, pctOff, type Deal } from '../data/deals';
 import { defaultProfile } from '../demand/types';
 import { dealOffers } from '../demand/deals';
@@ -7,6 +7,9 @@ import { sceneFromDeal } from '../demand/dealscene';
 import type { Scene } from '../scene/types';
 
 export type StartTab = 'sale' | 'bundles' | 'starters' | 'open';
+/** Two separate menus (Nathan 2026-10-20): New = start from scratch or from a deal (on sale, bundles); Open = a starter
+ *  (pre-built) tank or a saved one. */
+export type StartMenu = 'new' | 'open';
 export interface DealEntry { deal: Deal; scene: Scene; savingUsd: number }
 
 const DAY = 864e5, FRESH_DAYS = 30;
@@ -43,11 +46,13 @@ export function sortDeals(list: DealEntry[], by: DealSort): DealEntry[] {
   const key = (e: DealEntry) => by === 'size' ? e.deal.gal : by === 'cost' ? e.deal.price.usd : by === 'usd' ? -e.savingUsd : -pctSaved(e);
   return [...list].sort((a, b) => key(a) - key(b) || a.deal.price.usd - b.deal.price.usd);
 }
-/** Tabs to show, in order: sale and bundles only when they have something; starters and open always. */
-export function visibleTabs(n: { sale: number; bundles: number }): StartTab[] {
-  return [...(n.sale ? ['sale' as const] : []), ...(n.bundles ? ['bundles' as const] : []), 'starters', 'open'];
+/** Tabs a menu shows, in order. New: sale and bundles, each only when it has something (none = no tab strip, just
+ *  Start from scratch). Open: starters and saved, always. */
+export function visibleTabs(menu: StartMenu, n: { sale: number; bundles: number }): StartTab[] {
+  if (menu === 'open') return ['starters', 'open'];
+  return [...(n.sale ? ['sale' as const] : []), ...(n.bundles ? ['bundles' as const] : [])];
 }
-/** The tab to land on: the one asked for when it is shown, else the first (sale, then bundles, then starters). */
-export function pickTab(want: StartTab | undefined, shown: StartTab[]): StartTab {
+/** The tab to land on: the one asked for when it is shown, else the first shown (undefined when the menu has none). */
+export function pickTab(want: StartTab | undefined, shown: StartTab[]): StartTab | undefined {
   return want && shown.includes(want) ? want : shown[0];
 }

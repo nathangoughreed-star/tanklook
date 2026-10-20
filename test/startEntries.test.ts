@@ -28,9 +28,12 @@ describe('start chooser entries', () => {
     const cheap = { ...base, id: 'cheap', price: { usd: 10 } }, dear = { ...base, id: 'dear', price: { usd: 900 } };
     expect(startDeals(day(base), [dear, cheap]).bundles.map(e => e.deal.id)).toEqual(['cheap', 'dear']);
   });
-  it('hides empty sale / bundle tabs and lands on the first shown tab', () => {
-    expect(visibleTabs({ sale: 0, bundles: 0 })).toEqual(['starters', 'open']);
-    expect(visibleTabs({ sale: 2, bundles: 1 })).toEqual(['sale', 'bundles', 'starters', 'open']);
+  it('keeps deals in the New menu, starters and saved in Open, hides empty deal tabs, lands on the first shown', () => {
+    expect(visibleTabs('new', { sale: 0, bundles: 0 })).toEqual([]);
+    expect(visibleTabs('new', { sale: 2, bundles: 1 })).toEqual(['sale', 'bundles']);
+    expect(visibleTabs('new', { sale: 0, bundles: 1 })).toEqual(['bundles']);
+    expect(visibleTabs('open', { sale: 2, bundles: 1 })).toEqual(['starters', 'open']);
+    expect(pickTab(undefined, [])).toBeUndefined();
     expect(pickTab(undefined, ['bundles', 'starters', 'open'])).toBe('bundles');
     expect(pickTab('open', ['starters', 'open'])).toBe('open');
     expect(pickTab('sale', ['starters', 'open'])).toBe('starters');

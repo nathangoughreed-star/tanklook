@@ -1,0 +1,468 @@
+{
+ "asOf": "2026-10-20",
+ "note": "Gear on sale at five specialist stores, read by scripts/gear-deals.py (lane GD). price.usd = sale price, regularUsd = the store's own was-price. Rerun before a release.",
+ "rows": [
+  {
+   "id": "buceplant-chihiros-rgb-vivid2-led-light-black-10th-anniversary-edition-42997256716488",
+   "store": "Buce Plant",
+   "slot": "light",
+   "salt": false,
+   "title": "Chihiros RGB Vivid2 LED Light - Black 10th Anniversary Edition",
+   "price": {
+    "usd": 469.99,
+    "regularUsd": 516.99
+   },
+   "url": "https://buceplant.com/products/chihiros-rgb-vivid2-led-light-black-10th-anniversary-edition?variant=42997256716488",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "aquaforestaquarium-twinstar-led-light-s-line-vr-iv-with-fixed-leg-design-33198086520941",
+   "store": "Aqua Forest Aquarium",
+   "slot": "light",
+   "salt": false,
+   "title": "Twinstar LED Light (S-LINE Ver. 4.2) SM Design with Metal Fixed Leg (300SM Ver. 4.2 (for 30cm tank/Glass Thickness: 5mm))",
+   "fitMm": [
+    285,
+    360
+   ],
+   "price": {
+    "usd": 139.99,
+    "regularUsd": 149.99
+   },
+   "url": "https://aquaforestaquarium.com/products/twinstar-led-light-s-line-vr-iv-with-fixed-leg-design?variant=33198086520941",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "aquaforestaquarium-twinstar-led-light-s-line-vr-iv-with-fixed-leg-design-33198017577069",
+   "store": "Aqua Forest Aquarium",
+   "slot": "light",
+   "salt": false,
+   "title": "Twinstar LED Light (S-LINE Ver. 4.2) SM Design with Metal Fixed Leg (450SM Ver. 4.2 (for 45cm tank/Glass Thickness: 5mm))",
+   "fitMm": [
+    428,
+    540
+   ],
+   "price": {
+    "usd": 159.99,
+    "regularUsd": 169.99
+   },
+   "url": "https://aquaforestaquarium.com/products/twinstar-led-light-s-line-vr-iv-with-fixed-leg-design?variant=33198017577069",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "aquaforestaquarium-twinstar-led-light-s-line-vr-iv-with-fixed-leg-design-33198017609837",
+   "store": "Aqua Forest Aquarium",
+   "slot": "light",
+   "salt": false,
+   "title": "Twinstar LED Light (S-LINE Ver. 4.2) SM Design with Metal Fixed Leg (600SM Ver. 4.2 (for 60cm tank/Glass Thickness: 6mm))",
+   "fitMm": [
+    570,
+    720
+   ],
+   "price": {
+    "usd": 239.99,
+    "regularUsd": 259.99
+   },
+   "url": "https://aquaforestaquarium.com/products/twinstar-led-light-s-line-vr-iv-with-fixed-leg-design?variant=33198017609837",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "aquaforestaquarium-twinstar-light-ver-iii-sa-series-led-adjustable-type-40946620399725",
+   "store": "Aqua Forest Aquarium",
+   "slot": "light",
+   "salt": false,
+   "title": "Twinstar LED Light (S-LINE Ver. IV) SA design with adjustable leg/pendant option (450SA (for 45cm to 55cm tank) *With Manual Controller)",
+   "fitMm": [
+    428,
+    540
+   ],
+   "price": {
+    "usd": 114.99,
+    "regularUsd": 128.99
+   },
+   "url": "https://aquaforestaquarium.com/products/twinstar-light-ver-iii-sa-series-led-adjustable-type?variant=40946620399725",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "aquaforestaquarium-twinstar-light-ver-iii-sa-series-led-adjustable-type-45701913018477",
+   "store": "Aqua Forest Aquarium",
+   "slot": "light",
+   "salt": false,
+   "title": "Twinstar LED Light (S-LINE Ver. IV) SA design with adjustable leg/pendant option (450SA (for 45cm to 55cm tank) *With Bluetooth Controller)",
+   "fitMm": [
+    428,
+    540
+   ],
+   "price": {
+    "usd": 125.99,
+    "regularUsd": 139.99
+   },
+   "url": "https://aquaforestaquarium.com/products/twinstar-light-ver-iii-sa-series-led-adjustable-type?variant=45701913018477",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "aquaforestaquarium-twinstar-light-b-line-ver-ii-led-adjustable-type-43823458353261",
+   "store": "Aqua Forest Aquarium",
+   "slot": "light",
+   "salt": false,
+   "title": "Twinstar Light Ver. II B Line LED adjustable type (120B (for 1200~1300cm tank) *With Manual Controller)",
+   "fitMm": [
+    1200,
+    1300
+   ],
+   "price": {
+    "usd": 105.0,
+    "regularUsd": 119.0
+   },
+   "url": "https://aquaforestaquarium.com/products/twinstar-light-b-line-ver-ii-led-adjustable-type?variant=43823458353261",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "aquaforestaquarium-twinstar-light-ver-iii-c-series-led-adjustable-leg-w-built-in-dimmer-39999274647661",
+   "store": "Aqua Forest Aquarium",
+   "slot": "light",
+   "salt": false,
+   "title": "Twinstar Light Ver. III C Series LED (adjustable leg w/ built-in dimmer) (200C (for 20-30cm tank))",
+   "fitMm": [
+    200,
+    300
+   ],
+   "price": {
+    "usd": 59.99,
+    "regularUsd": 79.99
+   },
+   "url": "https://aquaforestaquarium.com/products/twinstar-light-ver-iii-c-series-led-adjustable-leg-w-built-in-dimmer?variant=39999274647661",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "aquaforestaquarium-copy-of-5-lb-aluminum-co2-cyliner-brand-new-unfilled-empty-32496077144173",
+   "store": "Aqua Forest Aquarium",
+   "slot": "co2",
+   "salt": false,
+   "title": "CO2 system kit with Archaea CO2 regulator (PRO) single gauge",
+   "price": {
+    "usd": 215.99,
+    "regularUsd": 268.94
+   },
+   "url": "https://aquaforestaquarium.com/products/copy-of-5-lb-aluminum-co2-cyliner-brand-new-unfilled-empty?variant=32496077144173",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "aquaforestaquarium-archaea-co2-regulator-pro-single-gauge-fits-cga-320-7828526337",
+   "store": "Aqua Forest Aquarium",
+   "slot": "co2",
+   "salt": false,
+   "title": "ARCHAEA CO2 REGULATOR (PRO) SINGLE GAUGE (Fits CGA 320)",
+   "price": {
+    "usd": 79.99,
+    "regularUsd": 99.99
+   },
+   "url": "https://aquaforestaquarium.com/products/archaea-co2-regulator-pro-single-gauge-fits-cga-320?variant=7828526337",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "aquaforestaquarium-archaea-co2-regulator-pro-single-gauge-fits-paintball-tank-7822489345",
+   "store": "Aqua Forest Aquarium",
+   "slot": "co2",
+   "salt": false,
+   "title": "ARCHAEA CO2 REGULATOR (PRO) SINGLE GAUGE (FITS PAINT-BALL TANK)",
+   "price": {
+    "usd": 79.99,
+    "regularUsd": 99.99
+   },
+   "url": "https://aquaforestaquarium.com/products/archaea-co2-regulator-pro-single-gauge-fits-paintball-tank?variant=7822489345",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "brs-100w-titanium-aquarium-heater-system-wifi-bulk-reef-supply",
+   "store": "Bulk Reef Supply",
+   "slot": "heater",
+   "salt": true,
+   "title": "100W Titanium Aquarium Heater System - WiFi",
+   "watts": 100,
+   "price": {
+    "usd": 95.19,
+    "regularUsd": 118.99
+   },
+   "url": "https://www.bulkreefsupply.com/100w-titanium-aquarium-heater-system-wifi-bulk-reef-supply.html",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "brs-200w-titanium-aquarium-heater-system-wifi-bulk-reef-supply",
+   "store": "Bulk Reef Supply",
+   "slot": "heater",
+   "salt": true,
+   "title": "200W Titanium Aquarium Heater System - WiFi",
+   "watts": 200,
+   "price": {
+    "usd": 99.99,
+    "regularUsd": 124.99
+   },
+   "url": "https://www.bulkreefsupply.com/200w-titanium-aquarium-heater-system-wifi-bulk-reef-supply.html",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "brs-300w-titanium-aquarium-heater-system-wifi-bulk-reef-supply",
+   "store": "Bulk Reef Supply",
+   "slot": "heater",
+   "salt": true,
+   "title": "300W Titanium Aquarium Heater System - WiFi",
+   "watts": 300,
+   "price": {
+    "usd": 103.99,
+    "regularUsd": 129.99
+   },
+   "url": "https://www.bulkreefsupply.com/300w-titanium-aquarium-heater-system-wifi-bulk-reef-supply.html",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "brs-600w-titanium-aquarium-heater-system-wifi-bulk-reef-supply",
+   "store": "Bulk Reef Supply",
+   "slot": "heater",
+   "salt": true,
+   "title": "600W Titanium Aquarium Heater System - WiFi",
+   "watts": 600,
+   "price": {
+    "usd": 115.99,
+    "regularUsd": 144.99
+   },
+   "url": "https://www.bulkreefsupply.com/600w-titanium-aquarium-heater-system-wifi-bulk-reef-supply.html",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "brs-jump-sk400-protein-skimmer-maxspect",
+   "store": "Bulk Reef Supply",
+   "slot": "skimmer",
+   "salt": true,
+   "title": "Jump SK400 Protein Skimmer",
+   "galMax": 265,
+   "price": {
+    "usd": 333.74,
+    "regularUsd": 444.99
+   },
+   "url": "https://www.bulkreefsupply.com/jump-sk400-protein-skimmer-maxspect.html",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "brs-jump-sk800-protein-skimmer-maxspect",
+   "store": "Bulk Reef Supply",
+   "slot": "skimmer",
+   "salt": true,
+   "title": "Jump SK800 Protein Skimmer",
+   "galMax": 713,
+   "price": {
+    "usd": 524.99,
+    "regularUsd": 699.99
+   },
+   "url": "https://www.bulkreefsupply.com/jump-sk800-protein-skimmer-maxspect.html",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "brs-25-watt-pre-set-quartz-glass-heater-lifegard-aquatics",
+   "store": "Bulk Reef Supply",
+   "slot": "heater",
+   "salt": true,
+   "title": "25 Watt Pre-Set Quartz Glass Heater Aquatics",
+   "watts": 25,
+   "price": {
+    "usd": 13.59,
+    "regularUsd": 19.99
+   },
+   "url": "https://www.bulkreefsupply.com/25-watt-pre-set-quartz-glass-heater-lifegard-aquatics.html",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "brs-50-watt-pre-set-quartz-glass-heater-lifegard-aquatics",
+   "store": "Bulk Reef Supply",
+   "slot": "heater",
+   "salt": true,
+   "title": "50 Watt Pre-Set Quartz Glass Heater Aquatics",
+   "watts": 50,
+   "price": {
+    "usd": 17.84,
+    "regularUsd": 20.99
+   },
+   "url": "https://www.bulkreefsupply.com/50-watt-pre-set-quartz-glass-heater-lifegard-aquatics.html",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "brs-jump-sk200-protein-skimmer-maxspect",
+   "store": "Bulk Reef Supply",
+   "slot": "skimmer",
+   "salt": true,
+   "title": "Jump SK200 Protein Skimmer",
+   "price": {
+    "usd": 209.99,
+    "regularUsd": 279.99
+   },
+   "url": "https://www.bulkreefsupply.com/jump-sk200-protein-skimmer-maxspect.html",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "brs-ws-1-in-sump-protein-skimmer-aquaready-ob-a",
+   "store": "Bulk Reef Supply",
+   "slot": "skimmer",
+   "salt": true,
+   "title": "WS-1 In-Sump Protein Skimmer (OPEN BOX)",
+   "galMax": 65,
+   "price": {
+    "usd": 113.99,
+    "regularUsd": 189.99
+   },
+   "url": "https://www.bulkreefsupply.com/ws-1-in-sump-protein-skimmer-aquaready-ob-a.html",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "brs-minox-tropic-led-aquarium-light-fixture-black-giesemann-aquaristic",
+   "store": "Bulk Reef Supply",
+   "slot": "light",
+   "salt": true,
+   "title": "MINOX tropic LED Aquarium Light Fixture (Black) Aquaristic",
+   "price": {
+    "usd": 169.15,
+    "regularUsd": 199.0
+   },
+   "url": "https://www.bulkreefsupply.com/minox-tropic-led-aquarium-light-fixture-black-giesemann-aquaristic.html",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "brs-30w-aquaready-preset-aquarium-heater-aquaready-ob-a",
+   "store": "Bulk Reef Supply",
+   "slot": "heater",
+   "salt": true,
+   "title": "30W AquaReady Preset Aquarium Heater (OPEN BOX)",
+   "watts": 30,
+   "price": {
+    "usd": 19.79,
+    "regularUsd": 32.99
+   },
+   "url": "https://www.bulkreefsupply.com/30w-aquaready-preset-aquarium-heater-aquaready-ob-a.html",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "brs-50w-aquaready-preset-aquarium-heater-aquaready-ob-a",
+   "store": "Bulk Reef Supply",
+   "slot": "heater",
+   "salt": true,
+   "title": "50W AquaReady Preset Aquarium Heater (OPEN BOX)",
+   "watts": 50,
+   "price": {
+    "usd": 20.99,
+    "regularUsd": 34.99
+   },
+   "url": "https://www.bulkreefsupply.com/50w-aquaready-preset-aquarium-heater-aquaready-ob-a.html",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "brs-100w-aquaready-preset-aquarium-heater-aquaready-ob-a",
+   "store": "Bulk Reef Supply",
+   "slot": "heater",
+   "salt": true,
+   "title": "100W AquaReady Preset Aquarium Heater (OPEN BOX)",
+   "watts": 100,
+   "price": {
+    "usd": 15.39,
+    "regularUsd": 35.99
+   },
+   "url": "https://www.bulkreefsupply.com/100w-aquaready-preset-aquarium-heater-aquaready-ob-a.html",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "brs-150w-aquaready-preset-aquarium-heater-aquaready-ob-a",
+   "store": "Bulk Reef Supply",
+   "slot": "heater",
+   "salt": true,
+   "title": "150W AquaReady Preset Aquarium Heater (OPEN BOX)",
+   "watts": 150,
+   "price": {
+    "usd": 16.49,
+    "regularUsd": 37.99
+   },
+   "url": "https://www.bulkreefsupply.com/150w-aquaready-preset-aquarium-heater-aquaready-ob-a.html",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "brs-200w-aquaready-preset-aquarium-heater-aquaready-ob-a",
+   "store": "Bulk Reef Supply",
+   "slot": "heater",
+   "salt": true,
+   "title": "200W AquaReady Preset Aquarium Heater (OPEN BOX)",
+   "watts": 200,
+   "price": {
+    "usd": 16.49,
+    "regularUsd": 38.99
+   },
+   "url": "https://www.bulkreefsupply.com/200w-aquaready-preset-aquarium-heater-aquaready-ob-a.html",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "brs-250w-aquaready-preset-aquarium-heater-aquaready-ob-a",
+   "store": "Bulk Reef Supply",
+   "slot": "heater",
+   "salt": true,
+   "title": "250W AquaReady Preset Aquarium Heater (OPEN BOX)",
+   "watts": 250,
+   "price": {
+    "usd": 17.59,
+    "regularUsd": 39.99
+   },
+   "url": "https://www.bulkreefsupply.com/250w-aquaready-preset-aquarium-heater-aquaready-ob-a.html",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "brs-300w-aquaready-preset-aquarium-heater-aquaready-ob-a",
+   "store": "Bulk Reef Supply",
+   "slot": "heater",
+   "salt": true,
+   "title": "300W AquaReady Preset Aquarium Heater (OPEN BOX)",
+   "watts": 300,
+   "price": {
+    "usd": 17.59,
+    "regularUsd": 40.99
+   },
+   "url": "https://www.bulkreefsupply.com/300w-aquaready-preset-aquarium-heater-aquaready-ob-a.html",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "brs-6w-jolly-preset-heater-bundle-sicce",
+   "store": "Bulk Reef Supply",
+   "slot": "heater",
+   "salt": true,
+   "title": "6W Jolly Preset Heater Bundle",
+   "price": {
+    "usd": 30.0,
+    "regularUsd": 59.99
+   },
+   "url": "https://www.bulkreefsupply.com/6w-jolly-preset-heater-bundle-sicce.html",
+   "asOf": "2026-10-20",
+   "watts": 6
+  },
+  {
+   "id": "brs-22w-aquaready-preset-aquarium-heater-aquaready-ob-a",
+   "store": "Bulk Reef Supply",
+   "slot": "heater",
+   "salt": true,
+   "title": "22W AquaReady Preset Aquarium Heater (OPEN BOX)",
+   "watts": 22,
+   "price": {
+    "usd": 12.1,
+    "regularUsd": 29.99
+   },
+   "url": "https://www.bulkreefsupply.com/22w-aquaready-preset-aquarium-heater-aquaready-ob-a.html",
+   "asOf": "2026-10-20"
+  },
+  {
+   "id": "brs-eheim-classic-1500xl-special-edition-canister-filter-eheim-ob-a",
+   "store": "Bulk Reef Supply",
+   "slot": "filter",
+   "salt": true,
+   "title": "EHEIM classic 1500XL Special Edition Canister Filter (OPEN BOX)",
+   "price": {
+    "usd": 560.95,
+    "regularUsd": 659.95
+   },
+   "url": "https://www.bulkreefsupply.com/eheim-classic-1500xl-special-edition-canister-filter-eheim-ob-a.html",
+   "asOf": "2026-10-20"
+  }
+ ]
+}
