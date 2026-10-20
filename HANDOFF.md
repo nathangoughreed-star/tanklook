@@ -48,7 +48,18 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
-## Lane P1: group data, path 1 (2026-10-20, branch `p1groups`, port 5863)  (lane fills this in)
+## Lane P1: group data, path 1 (2026-10-20, branch `p1groups`, port 5863)
+DONE 2026-10-20 (pushed to main). `src/data/groups.ts` (GroupCare, `GROUPS` for all 84 species, plus helpers `recommendedMin`, `bandOf`,
+`bandMessage` that P5 can use), merged into CARE by one loop at the end of `care.ts` (`AnimalCare extends GroupCare`),
+`test/groups.test.ts`, `research/groups-sources.md` (one line per species).
+- Research: 12 Sonnet agents, about 0.8 M tokens. Search was rate-limited, so **63 of 84 rows are `est`** (hobby-guide judgement,
+  one search each; Seriously Fish / FishBase rarely came back) and **5 are UNVERIFIED** (coralbeauty, watchman, cleanershrimp,
+  mandarin, firefish: no confirmed source page). Treat the numbers as advice; a second research pass with page fetches would firm them up.
+- Decisions: bands.ok equals the older CARE.group wherever both exist (test enforces it; cherry shrimp raised 5 -> 10). CARE.solo wins:
+  solo species have max <= 2 (crested geckos, dwarf gourami researched higher; overridden). Dwarf frog = Nathan's bands 2 / 5 / 7,
+  depth 450 mm, low flow. `maxDepthMm` means a water-depth CAP only (angel / discus / axolotl agent values were tank heights: dropped).
+  Danio zone middle, neon minLengthMm 450 (P2's tankfit tests pin both). Overrides and notes are in the sources file.
+- Free now: `src/data/groups.ts`, `test/groups.test.ts`, `research/groups-sources.md`.
 
 ## Lane P3: fullness tile, path 1 (2026-10-20, branch `p3fullness`, port 5883)  (lane fills this in)
 

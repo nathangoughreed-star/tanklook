@@ -4,11 +4,12 @@
 import { SPECIES, type Category } from './species';
 import { WATER } from './climatedata';
 import { CHEM, GROUP, MARINE_PH } from './waterchem';
+import { GROUPS, type GroupCare } from './groups';
 
 /** 1 beginner, 2 intermediate, 3 expert. */
 export type Expertise = 1 | 2 | 3;
 export const EXPERTISE_NAME: Record<Expertise, string> = { 1: 'Beginner', 2: 'Intermediate', 3: 'Expert' };
-export interface AnimalCare {
+export interface AnimalCare extends GroupCare {
   care: Expertise;
   /** smallest tank or enclosure volume, litres */
   minL: number;
@@ -74,3 +75,5 @@ for (const [id, w] of Object.entries(WATER)) { const c = CARE[id]; if (c) { c.te
 for (const [id, w] of Object.entries(CHEM)) { const c = CARE[id]; if (c) { c.ph = w.ph; if (w.gh) c.gh = w.gh; } }
 for (const [id, n] of Object.entries(GROUP)) { const c = CARE[id]; if (c) c.group = n; }
 for (const sp of SPECIES) if (sp.salt && CARE[sp.id]) CARE[sp.id].ph = MARINE_PH;
+// Group bands, caps, sex ratios and habitat limits (lane P1, 2026-10-20; data/groups.ts, sources in research/groups-sources.md).
+for (const [id, g] of Object.entries(GROUPS)) { const c = CARE[id]; if (c) Object.assign(c, g); }
