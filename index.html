@@ -45,8 +45,12 @@
   <dialog id="startDlg" class="libdlg startdlg" aria-labelledby="startTitle">
     <form method="dialog" class="libhead"><h2 id="startTitle">TankLook</h2><button value="close" aria-label="Close">✕</button></form>
     <p class="hint" id="startIntro"></p>
-    <div class="startbtns" id="startBtns">
-      <button id="startFresh"><b>Start from scratch</b><span>An empty tank to fill yourself</span></button>
+    <div class="startbtns startpaths" id="startBtns">
+      <button id="startAnimal" class="startpath"><b>An animal I want</b><span>Pick the animal; the tank it needs, and what it costs, follow</span></button>
+      <button class="startpath soon" disabled aria-disabled="true"><b>A look I want</b><span>Coming soon</span></button>
+      <button class="startpath soon" disabled aria-disabled="true"><b>A tank I already own</b><span>Coming soon</span></button>
+      <button class="startpath soon" disabled aria-disabled="true"><b>I just want to try the hobby</b><span>Coming soon</span></button>
+      <button id="startFresh" class="startpath"><b>Sandbox</b><span>An empty tank to fill yourself, no questions</span></button>
       <!-- guided start / wizard hook: a future lane fills #startGuided with its entry button and unhides it (see showChooser in ui/panels.ts) -->
       <div id="startGuided" hidden></div>
     </div>

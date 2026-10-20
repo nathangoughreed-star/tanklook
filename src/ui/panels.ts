@@ -244,7 +244,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   function showChooser(menu: StartMenu, tab: StartTab | undefined, first: boolean) {
     firstLaunch = first;
     const { sale, bundles } = startDeals(), shown = visibleTabs(menu, { sale: sale.length, bundles: bundles.length }), isNew = menu === 'new';
-    $('startTitle').textContent = isNew ? 'New tank' : 'Open a tank';
+    $('startTitle').textContent = isNew ? 'What do you have so far?' : 'Open a tank';
     $('startIntro').textContent = isNew
       ? 'Plan an aquarium, paludarium or terrarium: tank, ground, plants, animals and light, all to scale. Start empty, or from a kit or set you can buy now.'
       : 'A ready-made starter tank to look at or build on, or one you saved.';
@@ -269,6 +269,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     (isNew ? $('startFresh') : startDlg.querySelector<HTMLElement>('[data-tab][aria-selected="true"]') ?? swap).focus();
   }
   const showStart = () => showChooser('new', undefined, true);
+  void import('./stockPlan').then(m => m.attachStockPlan(store, viewer, status, $('startAnimal'))); // lane P5: the stocking screen (path 1) and the fork card; loaded after start-up (it pulls in the tank-fit engine, whose imports must not run before starter.ts's)
   $('libList').onclick = e => {
     const t = e.target as HTMLElement, del = t.closest<HTMLButtonElement>('[data-libdel]'), op = t.closest<HTMLButtonElement>('[data-lib]');
     if (del) {
