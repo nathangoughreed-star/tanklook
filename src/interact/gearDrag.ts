@@ -83,7 +83,7 @@ export function withPlace(t: TankSetup, row: string, p: GearPlace) {
  *  Returns true when it took the wheel. */
 export function gearLean(viewer: Viewer, store: Store, clientX: number, clientY: number, dir: number) {
   const hit = viewer.hitTest(clientX, clientY); if (!hit) return false;
-  const g = gearGrab(hit); if (!g || g.row !== 'heater') return false;
+  const g = gearGrab(hit); if (!g || g.row.split('.')[0] !== 'heater') return false;
   const S = store.scene.tanks[g.vi], prev = S.tech?.place?.[g.row];
   // not placed yet: where it is drawn now (its box's middle), then leaned
   const piece = hit.vp.scene!.children.flatMap(o => (o.userData.gearPieces ?? []) as GearPiece[]).find(p => p.row === g.row)!;

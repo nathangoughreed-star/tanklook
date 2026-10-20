@@ -4,6 +4,9 @@
 // tank (scene/tech.ts). Hovering or focusing an option previews the change in the four demand numbers. The Lighting
 // section sits inside the Tech section (index.html), unchanged. grow.feed follows the CO2 + ferts rows; the Plant care
 // slider / Feeding select set those rows back (sync below).
+// Heating and Filtration (Nathan 2026-10-20) list the units the tank has, one card each (its name first; a bundle's own
+// with its price crossed out), and an Add button: a heater (generic, its watts editable, or any catalogued one), a filter
+// (its type, then generic or a catalogued one of that type). Removing the last shows "No heater" / "None (Walstad)".
 import { FACTORS, demandOf } from '../demand/engine';
 import { pinnedKit } from '../demand/pinned';
 import { mean3 as mean } from '../demand/range';
@@ -11,10 +14,12 @@ import { defaultProfile, type UserProfile } from '../demand/types';
 import { FEED_NAMES, GROW_RATE } from '../scene/growtime';
 import type { Store } from '../scene/store';
 import {
-  ROOM_C, applyPreset, coldSpecies, feedFor, feedOf, filterFor, filterSteps, heatLoss, offerChiller, offerTwoHeaters,
-  optionCost, optionDef, presetsFor, reefFeedOf, rowsFor, setFeed, stockCapacity, techOf, walstadGaps, withChoice, type OptionCost, type TechSetup,
+  ROOM_C, applyPreset, coldSpecies, feedFor, feedOf, filterFor, filterSteps, filterUnits, heatLoss, offerChiller,
+  optionCost, optionDef, presetsFor, reefFeedOf, rowsFor, setFeed, singleFilter, stockCapacity, techOf, unitCosts, walstadGaps, withChoice,
+  withUnits, withoutUnit, type FilterUnit, type HeaterUnit, type OptionCost, type TechSetup,
 } from '../scene/tech';
-import { filtersNear, genericHeaterW, heaterProduct, heatersNear, productName } from '../data/gearCatalog';
+import { FILTER_PRODUCTS, HEATER_PRODUCTS, filtersNear, genericHeaterW, heatersNear, productName, type FilterProduct, type HeaterProduct } from '../data/gearCatalog';
+import type { FilterKind } from '../demand/gear';
 import { volume } from '../scene/physics';
 import type { TankSetup } from '../scene/types';
 
@@ -23,11 +28,16 @@ const usd = (v: number) => v >= 100 ? `$${Math.round(v / 5) * 5}` : v >= 10 ? `$
 const REEF_NAME: Record<string, string> = { low: 'soft corals and mushrooms', ferts: 'up to LPS', co2: 'up to SPS and clams' };
 const toF = (c: number) => Math.round(c * 9 / 5 + 32);
 const fromF = (f: number) => Math.round((f - 32) * 5 / 9 * 2) / 2;
+const KIND_NAME: Record<string, string> = { sponge: 'sponge filter', internal: 'internal filter', hob: 'hang-on-back filter', canister: 'canister filter', sump: 'sump' };
+const BUNDLE_PARTS = ['tank', 'stand', 'lid', 'light', 'filter', 'heater'];
+type UnitRow = 'heater' | 'filter';
 
 interface Totals { setup: number; upkeep: number; minutes: number; risk: number }
 
 export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: () => UserProfile | undefined }) {
   let open: string | null = null, base: Totals | null = null, baseKey = '';
+  /** the Add picker open under Heating / Filtration (for filters: the type picked, then generic or a product) */
+  let adding: { row: UnitRow; kind?: string } | null = null;
   const P = () => o.profile() ?? defaultProfile();
   const kwhUsd = () => P().kwhUsd ?? (FACTORS.kwhUsd.lo + FACTORS.kwhUsd.mode + FACTORS.kwhUsd.hi) / 3;
   const fahr = () => store.scene.units === 'in';
@@ -51,9 +61,10 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     render();
   });
   /** One expected value per figure (Nathan 2026-10-19: no ranges or percentiles shown): the mean of each lo / mode / hi. */
-  const range = (c: OptionCost) => {
+  const range = (c: OptionCost, covered = 0) => {
     const setup = mean(c.setup), mo = mean(c.monthlyUsd), min = mean(c.minutes);
-    return `<span class="tcost"><b>${setup <= 0.5 ? '$0' : usd(setup)}</b>${c.est ? '<i title="A first guess: no store price researched yet">est</i>' : ''} · ${mo > 0.005 ? usd(mo) + '/mo' : '$0/mo'}${c.kwhMo > 0.05 ? ` <span class="tk">(${c.kwhMo.toFixed(c.kwhMo < 10 ? 1 : 0)} kWh)</span>` : ''} · ${Math.abs(min) < 0.05 ? '0' : (min > 0 ? '' : '−') + Math.abs(min).toFixed(Math.abs(min) < 10 ? 1 : 0)} min/wk</span>`;
+    const set = covered > 0.5 ? `<s title="In the bundle's price">${usd(covered)}</s>${setup - covered > 0.5 ? ` + <b>${usd(setup - covered)}</b>` : ''}` : `<b>${setup <= 0.5 ? '$0' : usd(setup)}</b>`;
+    return `<span class="tcost">${set}${c.est ? '<i title="A first guess: no store price researched yet">est</i>' : ''} · ${mo > 0.005 ? usd(mo) + '/mo' : '$0/mo'}${c.kwhMo > 0.05 ? ` <span class="tk">(${c.kwhMo.toFixed(c.kwhMo < 10 ? 1 : 0)} kWh)</span>` : ''} · ${Math.abs(min) < 0.05 ? '0' : (min > 0 ? '' : '−') + Math.abs(min).toFixed(Math.abs(min) < 10 ? 1 : 0)} min/wk</span>`;
   };
 
   /** "What you get": chips computed from the model for this option on this tank. */
@@ -85,6 +96,106 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
   const tempTxt = (c: number) => fahr() ? `${toF(c)} °F` : `${c} °C`;
   const room = (t: TechSetup) => tempTxt(t.roomC ?? ROOM_C);
 
+  // ---- heaters and filters as units
+  /** Each unit of `row`: is its price in the pinned bundle's? (the bundle's own unit; all of them when none is flagged) */
+  const inBundle = (S: TankSetup, t: TechSetup, row: UnitRow): boolean[] => {
+    const us: { kit?: boolean }[] = row === 'heater' ? heatLoss(S, t).units : filterUnits(t), k = pinnedKit(S, store.scene.active, P());
+    if (!k || !(k.includes ?? BUNDLE_PARTS).includes(row)) return us.map(() => false);
+    const flagged = us.some(u => u.kit);
+    return us.map(u => flagged ? !!u.kit : true);
+  };
+  /** The setup $ of `row` the bundle's price covers. */
+  const coveredOf = (S: TankSetup, t: TechSetup, row: string): number => {
+    if (row !== 'heater' && row !== 'filter') return 0;
+    const k = inBundle(S, t, row);
+    if (!k.some(Boolean)) return 0;
+    return unitCosts(S, row, { tech: t, kwhUsd: kwhUsd() }).reduce((a, c, i) => a + (k[i] ? mean(c.setup) : 0), 0);
+  };
+  /** The heaters as saved units, each at the size it has now (a heater sized to the need keeps that size once another is added). */
+  const heatersNow = (S: TankSetup, t: TechSetup): HeaterUnit[] => heatLoss(S, t).units.map(u => ({ ...(u.product ? { product: u.product.id } : { w: u.watts }), ...(u.kit ? { kit: true } : {}) }));
+  const filterLabel = (S: TankSetup, u: FilterUnit) => {
+    const kind = optionDef('filter', u.kind)?.kind;
+    if (!kind) return optionDef('filter', u.kind)?.label ?? u.kind;
+    const f = filterFor(S, kind, u.model, u.product), n = f.n > 1 ? ` × ${f.n}` : '';
+    return f.product ? `${productName(f.product)}${f.product.gph ? ` · ${f.product.gph} gph` : ''}${n}` : `Generic ${KIND_NAME[u.kind]} · ${f.model.label.replace(/^.*\((.*)\)$/, '$1')} ${f.model.gph} gph${n}`;
+  };
+  /** The generic heater to add: the size still missing for a cold night, else a full-size backup. */
+  const nextHeaterW = (S: TankSetup, t: TechSetup) => { const h = heatLoss(S, t), more = h.needW - h.totalW; return genericHeaterW(Math.max(more > 0.5 ? more : h.needW, 1)); };
+  /** What a tech-changing button does to the tank's tech ('|'-separated: verb, row or kind, index or product). */
+  const candidate = (act: string, S: TankSetup): TechSetup | undefined => {
+    const [a, b, c] = act.split('|'), t = techOf(S);
+    if (a === 'del') return b === 'heater' ? withoutUnit({ ...t, heaters: heatersNow(S, t) }, 'heater', +c) : withoutUnit(t, 'filter', +c);
+    if (a === 'addh') return withUnits(t, 'heater', [...heatersNow(S, t), b ? { product: b } : { w: nextHeaterW(S, t) }]);
+    if (a === 'addf') return withUnits(t, 'filter', [...filterUnits(t), { kind: b, ...(c ? { product: c } : {}) }]);
+    if (a === 'fm') return withUnits(t, 'filter', filterUnits(t).map((u, i) => i === +b ? { ...u, model: c } : u));
+    return undefined;
+  };
+  const card = (name: string, c: OptionCost | undefined, kit: boolean, del: string, body = '') =>
+    `<div class="tunit${kit ? ' kit' : ''}"><div class="tuh"><span class="tun">${name}</span>${del ? `<button type="button" class="tux" data-act="${del}" title="Remove it" aria-label="Remove">×</button>` : ''}</div>`
+    + (c ? `<div class="tuc">${range(c, kit ? mean(c.setup) : 0)}${kit ? '<span class="tkit" title="Came with the bundle the tank was started from: its price is in the bundle\'s">in the bundle</span>' : ''}</div>` : '') + body + '</div>';
+  const prodBtn = (act: string, label: string, priceUsd?: number, tip = '') => `<button type="button" data-act="${esc(act)}"${tip ? ` title="${esc(tip)}"` : ''}>${esc(label)}${priceUsd ? `<span class="tpp">$${Math.round(priceUsd)}</span>` : ''}</button>`;
+  const heaterBtn = (h: HeaterProduct) => prodBtn(`addh|${h.id}`, productName(h), h.priceUsd, `${h.watts} W · ${h.lengthMm} mm long`);
+  const filterBtn = (p: FilterProduct) => prodBtn(`addf|${p.kind}|${p.id}`, `${productName(p)}${p.gph ? ` · ${p.gph} gph` : ''}`, p.priceUsd, `${p.galMin ?? '?'}-${p.galMax ?? '?'} gal`);
+
+  /** Heating, opened: a card per heater, or "No heater", and the Add picker. */
+  const heaterBody = (S: TankSetup, t: TechSetup, cur: string, c: OptionCost): string => {
+    const h = heatLoss(S, t), costs = unitCosts(S, 'heater', { tech: t, kwhUsd: kwhUsd() }), kit = inBundle(S, t, 'heater');
+    let html = '<div class="tunits">';
+    if (!h.n) html += card('No heater', undefined, false, '', `<span class="tchips">${chips(S, 'heater', 'none', c)}</span>`);
+    h.units.forEach((u, i) => {
+      const name = u.product ? esc(productName(u.product)) : 'Generic heater';
+      html += card(name, costs[i], kit[i], `del|heater|${i}`, u.product ? '' : `<label class="tuw">Watts <input type="number" data-hw="${i}" min="5" max="2000" step="5" value="${u.watts}"></label>`);
+    });
+    html += '</div>';
+    if (h.n) {
+      const out: string[] = [];
+      out.push(`<span class="tchip${h.totalW < h.needW ? ' warn' : ''}" title="${esc(`The tank loses about ${Math.round(h.lossW)} W at ${tempTxt(h.targetC)} in a ${tempTxt(h.roomC)} room; a cold night (3 °C colder) needs about ${Math.round(h.needW)} W`)}">${h.totalW} W${h.n > 1 ? ' in all' : ''}, on ${Math.round(h.duty * 100)} % of the time</span>`);
+      if (h.totalW < h.needW) out.push(`<span class="tchip warn">Short of the ${Math.round(h.needW)} W a cold night needs</span>`);
+      const def = optionDef('heater', cur);
+      if ((def?.risk ?? 0) >= 0.25) out.push(`<span class="tchip warn" title="${esc(def?.note ?? '')}">Risk +</span>`);
+      html += `<span class="tchips">${out.join('')}</span>`;
+    }
+    if (adding?.row !== 'heater') return html + `<button type="button" class="tadd" data-act="adding|heater">+ Add ${h.n ? 'another' : 'a'} heater</button>`;
+    const more = Math.max(h.needW - h.totalW, 0), g = nextHeaterW(S, t), near = heatersNear(g);
+    const rest = HEATER_PRODUCTS.filter(x => !near.includes(x)).sort((a, b) => a.watts - b.watts || productName(a).localeCompare(productName(b)));
+    html += `<div class="tpick"><div class="hint">${!h.n ? `The tank needs about ${Math.round(h.needW)} W.` : more > 0.5 ? `About ${Math.round(more)} W more for a cold night.` : 'These cover a cold night: another one is a backup.'}</div>`;
+    html += `<div class="tstep">${prodBtn('addh|', `Generic ${g} W`, undefined, 'A generic heater: set its watts once added')}${near.map(heaterBtn).join('')}</div>`;
+    if (rest.length) html += `<details><summary>All ${rest.length} other heaters</summary><div class="tstep">${rest.map(heaterBtn).join('')}</div></details>`;
+    return html + '<button type="button" class="tcancel" data-act="adding">Cancel</button></div>';
+  };
+
+  /** Filtration, opened: a card per filter, or "None (Walstad)", and the Add picker (type, then generic or a product). */
+  const filterBody = (S: TankSetup, t: TechSetup, cur: string, c: OptionCost, rowDef: { options: { id: string; label: string }[] }): string => {
+    const us = filterUnits(t), costs = unitCosts(S, 'filter', { tech: t, kwhUsd: kwhUsd() }), kit = inBundle(S, t, 'filter');
+    let html = '<div class="tunits">';
+    if (!us.length) html += card('None (Walstad)', undefined, false, '', `<span class="tchips">${chips(S, 'filter', 'none', c)}</span>`);
+    us.forEach((u, i) => {
+      const kind = optionDef('filter', u.kind)?.kind, f = kind ? filterFor(S, kind, u.model, u.product) : undefined, st = kind && f && !f.product ? filterSteps(kind, f.model.id) : undefined;
+      const turn = costs[i].turnover, steps = st ? `${st.down ? `<button type="button" data-act="fm|${i}|${st.down.id}">Smaller</button>` : ''}${st.up ? `<button type="button" data-act="fm|${i}|${st.up.id}">Larger</button>` : ''}` : '';
+      const body = `<span class="tchips"><span class="tchip mute">${esc(optionDef('filter', u.kind)?.label ?? u.kind)}</span>${turn !== undefined && us.length > 1 ? `<span class="tchip">${turn.toFixed(1)}× / hour</span>` : ''}</span>${steps ? `<div class="tstep">${steps}</div>` : ''}`;
+      html += card(esc(filterLabel(S, u)), costs[i], kit[i], `del|filter|${i}`, body);
+    });
+    html += '</div>';
+    if (us.length) html += `<span class="tchips">${chips(S, 'filter', cur, c)}</span>`;
+    if (adding?.row !== 'filter') return html + `<button type="button" class="tadd" data-act="adding|filter">+ Add ${us.length ? 'more ' : ''}filtration</button>`;
+    html += '<div class="tpick">';
+    if (!adding.kind) {
+      html += '<div class="hint">What kind?</div>';
+      for (const op of rowDef.options) {
+        if (op.id === 'none') continue;
+        const oc = optionCost(S, 'filter', op.id, { tech: singleFilter(t, { kind: op.id }), kwhUsd: kwhUsd() });
+        html += `<button type="button" class="topt" data-act="${op.id === 'sump' ? 'addf|sump' : `adding|filter|${op.id}`}"><span class="tol">${esc(op.label)}</span>${range(oc)}</button>`;
+      }
+      return html + '<button type="button" class="tcancel" data-act="adding">Cancel</button></div>';
+    }
+    const k = adding.kind, gal = volume(S.tank).gallons, near = filtersNear(k, gal), rest = FILTER_PRODUCTS.filter(p => p.kind === k && !near.includes(p)).sort((a, b) => (a.gph ?? 0) - (b.gph ?? 0));
+    const gen = filterFor(S, optionDef('filter', k)!.kind as FilterKind);
+    html += `<div class="hint">${esc(optionDef('filter', k)?.label ?? k)}: generic, or one we have modelled</div>`;
+    html += `<div class="tstep">${prodBtn(`addf|${k}|`, `Generic · ${gen.model.gph} gph${gen.n > 1 ? ` × ${gen.n}` : ''}`, undefined, 'Sized for this tank; step it smaller or larger once added')}${near.map(filterBtn).join('')}</div>`;
+    if (rest.length) html += `<details><summary>All ${rest.length} other ${KIND_NAME[k]}s</summary><div class="tstep">${rest.map(filterBtn).join('')}</div></details>`;
+    return html + '<button type="button" class="tcancel" data-act="adding|filter">Back</button></div>';
+  };
+
   const delta = (d: Totals, b: Totals) => {
     const part = (v: number, f: (x: number) => string, cut: number) => Math.abs(v) < cut ? '<span class="tz">±0</span>' : `<span class="${v > 0 ? 'tup' : 'tdn'}">${v > 0 ? '+' : '−'}${f(Math.abs(v))}</span>`;
     return `Setup ${part(d.setup - b.setup, usd, 1)} · Monthly ${part(d.upkeep - b.upkeep, v => usd(v), 0.05)} · Time ${part(d.minutes - b.minutes, v => `${v.toFixed(v < 10 ? 1 : 0)} min/wk`, 0.05)} · Risk ${part(d.risk - b.risk, v => v.toFixed(1), 0.05)}`;
@@ -106,32 +217,25 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     if (t.rows.co2 === 'pressurized' && t.rows.air === 'airstone') warn.push('An airstone running by day blows off the injected CO2: put it on a timer for the night.');
     if (warn.length) html += `<div class="hint why">${warn.map(esc).join('<br>')}</div>`;
     const all = rows.map(r => optionCost(S, r.id, t.rows[r.id] ?? 'none', { tech: t, kwhUsd: kwhUsd() })), sum = (f: (c: OptionCost) => { lo: number; mode: number; hi: number }) => all.reduce((a, c) => ({ lo: a.lo + f(c).lo, mode: a.mode + f(c).mode, hi: a.hi + f(c).hi }), { lo: 0, mode: 0, hi: 0 });
-    html += `<div class="ttot"><span>All this gear</span>${range({ ...all[0], setup: sum(c => c.setup), monthlyUsd: sum(c => c.monthlyUsd), minutes: sum(c => c.minutes), kwhMo: all.reduce((a, c) => a + c.kwhMo, 0), est: all.some(c => c.est) })}</div>`;
+    html += `<div class="ttot"><span>All this gear</span>${range({ ...all[0], setup: sum(c => c.setup), monthlyUsd: sum(c => c.monthlyUsd), minutes: sum(c => c.minutes), kwhMo: all.reduce((a, c) => a + c.kwhMo, 0), est: all.some(c => c.est) }, coveredOf(S, t, 'heater') + coveredOf(S, t, 'filter'))}</div>`;
     html += `<div class="tprev" aria-live="polite"></div>`;
     for (const r of rows) {
       if (r.id === 'chiller' && !offerChiller(S) && t.rows.chiller !== 'chiller') continue;
       const cur = t.rows[r.id] ?? 'none', def = optionDef(r.id, cur), c = optionCost(S, r.id, cur, { tech: t, kwhUsd: kwhUsd() });
       let name = def?.label ?? cur;
-      if (r.id === 'heater' && cur !== 'none') { const hp = heaterProduct(t.heaterProduct); name += ` · ${hp ? productName(hp) : `generic ${t.heaterW ?? genericHeaterW(heatLoss(S, t).needW / (cur === 'two' ? 2 : 1))} W`}`; }
-      if (r.id === 'filter' && def?.kind) { const f = filterFor(S, def.kind, t.filterModel, t.filterProduct); name += ` · ${f.n > 1 ? f.n + ' × ' : ''}${f.product ? `${productName(f.product)}${f.product.gph ? ` ${f.product.gph} gph` : ''}` : `${f.model.label.replace(/^.*\((.*)\)$/, '$1')} ${f.model.gph} gph`}`; }
-      html += `<div class="trow${open === r.id ? ' open' : ''}" data-row="${r.id}"><button type="button" class="thead" aria-expanded="${open === r.id}"><span class="tlab">${esc(r.label)}</span><span class="tcur">${esc(name)}</span>${range(c)}</button>`;
+      // heaters and filters: the units by name (Nathan 2026-10-20: "Top Fin Submersible Heater 50 W" readily seen)
+      if (r.id === 'heater' && cur !== 'none') name = heatLoss(S, t).units.map(u => u.product ? productName(u.product) : `Generic heater ${u.watts} W`).join(' + ');
+      if (r.id === 'filter' && cur !== 'none') name = filterUnits(t).map(u => filterLabel(S, u)).join(' + ');
+      html += `<div class="trow${open === r.id ? ' open' : ''}" data-row="${r.id}"><button type="button" class="thead" aria-expanded="${open === r.id}"><span class="tlab">${esc(r.label)}</span><span class="tcur">${esc(name)}</span>${range(c, coveredOf(S, t, r.id))}</button>`;
+      if (open === r.id && (r.id === 'heater' || r.id === 'filter')) {
+        html += `<div class="topts">${r.id === 'heater' ? heaterBody(S, t, cur, c) : filterBody(S, t, cur, c, r)}${def?.note ? `<div class="hint">${esc(def.note)}</div>` : ''}</div></div>`;
+        continue;
+      }
       if (open === r.id) {
         html += '<div class="topts">';
         for (const op of r.options) {
-          if (op.id === 'two' && r.id === 'heater' && !offerTwoHeaters(S) && cur !== 'two') continue;
           const oc = optionCost(S, r.id, op.id, { tech: t, kwhUsd: kwhUsd() });
           html += `<button type="button" class="topt${op.id === cur ? ' on' : ''}" data-opt="${op.id}" aria-pressed="${op.id === cur}"${op.note ? ` title="${esc(op.note)}"` : ''}><span class="tol">${esc(op.label)}</span>${range(oc)}<span class="tchips">${chips(S, r.id, op.id, oc)}</span></button>`;
-        }
-        if (r.id === 'filter' && def?.kind) {
-          const f = filterFor(S, def.kind, t.filterModel, t.filterProduct), st = filterSteps(def.kind, f.model.id);
-          if (!f.product) html += `<div class="tstep">${st.down ? `<button type="button" data-fm="${st.down.id}">Smaller: ${esc(st.down.label)}</button>` : ''}${st.up ? `<button type="button" data-fm="${st.up.id}">Larger: ${esc(st.up.label)}</button>` : ''}${t.filterModel ? '<button type="button" data-fm="">Sized for the tank</button>' : ''}</div>`;
-          // lane TG: a real filter of this kind rated for about this tank (its flow, price, size and colours replace the generic one's)
-          const near = filtersNear(def.kind, volume(S.tank).gallons);
-          if (near.length || f.product) html += `<div class="tstep"><span class="hint">Or a real one:</span><button type="button" data-fp=""${f.product ? '' : ' class="on"'}>Generic</button>${near.map(p => `<button type="button" data-fp="${p.id}"${f.product?.id === p.id ? ' class="on"' : ''} title="${esc(`${p.gph ? `${p.gph} gph · ` : ''}${p.galMin ?? '?'}-${p.galMax ?? '?'} gal${p.priceUsd ? ` · about $${Math.round(p.priceUsd)}` : ''}`)}">${esc(productName(p))}</button>`).join('')}</div>`;
-        }
-        if (r.id === 'heater' && cur !== 'none') { // lane TG: the generic heater the tank needs, or a real one of about that size
-          const need = heatLoss(S, t).needW / (cur === 'two' ? 2 : 1), g = genericHeaterW(need);
-          html += `<div class="tstep"><span class="hint">Needs about ${Math.round(need)} W${cur === 'two' ? ' each' : ''}:</span><button type="button" data-hp=""${t.heaterProduct ? '' : ' class="on"'}>Generic ${g} W</button>${heatersNear(need).map(h => `<button type="button" data-hp="${h.id}"${t.heaterProduct === h.id ? ' class="on"' : ''} title="${esc(`${h.lengthMm} mm long${h.priceUsd ? ` · about $${Math.round(h.priceUsd)}` : ''}`)}">${esc(productName(h))}</button>`).join('')}</div>`;
         }
         if (def?.note) html += `<div class="hint">${esc(def.note)}</div>`;
         html += '</div>';
@@ -149,6 +253,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     const b = baseOf(S), d = totals(withTech(S, withChoice(S, row, opt)));
     el.innerHTML = `<b>If picked:</b> ${delta(d, b)}`;
   };
+  const techPreview = (tech: TechSetup) => { const el = prev(); if (el) el.innerHTML = `<b>If picked:</b> ${delta(totals(withTech(store.tank, tech)), baseOf(store.tank))}`; };
   const presetPreview = (id: string | undefined) => {
     const el = prev(); if (!el) return;
     const S = store.tank;
@@ -157,30 +262,39 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
   };
   const optOf = (e: Event) => (e.target as HTMLElement).closest<HTMLElement>('[data-opt]');
   const preOf = (e: Event) => (e.target as HTMLElement).closest<HTMLElement>('[data-pre]');
+  const actOf = (e: Event) => (e.target as HTMLElement).closest<HTMLElement>('[data-act]');
   const over = (e: Event) => {
-    const op = optOf(e), pre = preOf(e);
-    if (op) preview(op.closest<HTMLElement>('[data-row]')?.dataset.row, op.dataset.opt);
+    const op = optOf(e), pre = preOf(e), act = actOf(e), cand = act && candidate(act.dataset.act!, store.tank);
+    if (cand) techPreview(cand);
+    else if (op) preview(op.closest<HTMLElement>('[data-row]')?.dataset.row, op.dataset.opt);
     else if (pre) presetPreview(pre.dataset.pre);
   };
-  const out = (e: Event) => { if (optOf(e) || preOf(e)) preview(undefined, undefined); };
+  const out = (e: Event) => { if (optOf(e) || preOf(e) || actOf(e)) preview(undefined, undefined); };
   mount.addEventListener('mouseover', over); mount.addEventListener('focusin', over);
   mount.addEventListener('mouseout', out); mount.addEventListener('focusout', out);
   mount.addEventListener('click', e => {
     const el = e.target as HTMLElement, rowEl = el.closest<HTMLElement>('[data-row]'), row = rowEl?.dataset.row;
     const pre = el.closest<HTMLElement>('[data-pre]');
     if (pre) { edit(s => applyPreset(s, pre.dataset.pre!)); return; }
-    if (el.closest('.thead') && row) { open = open === row ? null : row; render(); return; }
+    if (el.closest('.thead') && row) { open = open === row ? null : row; adding = null; render(); return; }
+    const act = el.closest<HTMLElement>('[data-act]')?.dataset.act;
+    if (act) {
+      const [a, b, c] = act.split('|');
+      if (a === 'adding') { adding = b ? { row: b as UnitRow, ...(c ? { kind: c } : {}) } : null; render(); return; }
+      if (a === 'addh' || a === 'addf') adding = null;
+      if (candidate(act, store.tank)) edit(s => candidate(act, s)!);
+      return;
+    }
     const op = el.closest<HTMLElement>('[data-opt]');
     if (op && row) { edit(s => withChoice(s, row, op.dataset.opt!)); return; }
-    const hpEl = el.closest<HTMLElement>('[data-hp]');
-    if (hpEl) { edit(s => { const t = { ...techOf(s), preset: 'custom' }; delete t.heaterW; if (hpEl.dataset.hp) t.heaterProduct = hpEl.dataset.hp; else delete t.heaterProduct; return t; }); return; }
-    const fpEl = el.closest<HTMLElement>('[data-fp]');
-    if (fpEl) { edit(s => { const t = { ...techOf(s), preset: 'custom' }; delete t.filterModel; if (fpEl.dataset.fp) t.filterProduct = fpEl.dataset.fp; else delete t.filterProduct; return t; }); return; }
-    const fm = el.closest<HTMLElement>('[data-fm]');
-    if (fm) edit(s => { const t = { ...techOf(s), preset: 'custom' }; delete t.filterProduct; if (fm.dataset.fm) t.filterModel = fm.dataset.fm; else delete t.filterModel; return t; });
   });
   mount.addEventListener('change', e => {
     const el = e.target as HTMLInputElement;
+    if (el.dataset.hw !== undefined) { // a generic heater's watts
+      const i = +el.dataset.hw, w = Math.round(+el.value);
+      if (el.value !== '' && isFinite(w)) edit(s => { const t = techOf(s); return withUnits(t, 'heater', heatersNow(s, t).map((u, k) => k === i ? { ...u, w: Math.min(2000, Math.max(5, w)) } : u)); });
+      return;
+    }
     if (el.id !== 'tRoom' || !isFinite(+el.value) || el.value === '') return;
     const c = Math.min(40, Math.max(0, fahr() ? fromF(+el.value) : +el.value));
     edit(s => ({ ...techOf(s), roomC: c }));

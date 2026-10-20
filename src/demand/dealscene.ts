@@ -30,8 +30,8 @@ export function sceneFromDeal(d: Deal): Scene | undefined {
   { // lane TG: the bundle's own filter and heater (drawn, and its gear rows); one it does not ship starts as 'none' for the user to add
     const t = kitTech(S, dealAsKit(d)) ?? (S.water.on ? { rows: { ...inferTech(S).rows } } : undefined);
     if (t) {
-      if (!d.includes.includes('filter')) { t.rows.filter = 'none'; delete t.filterProduct; delete t.filterModel; }
-      if (!d.includes.includes('heater')) { t.rows.heater = 'none'; delete t.heaterProduct; delete t.heaterW; }
+      if (!d.includes.includes('filter')) { t.rows.filter = 'none'; delete t.filterProduct; delete t.filterModel; delete t.filters; }
+      if (!d.includes.includes('heater')) { t.rows.heater = 'none'; delete t.heaterProduct; delete t.heaterW; delete t.heaters; }
       S.tech = t;
     }
   }

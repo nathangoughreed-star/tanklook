@@ -1,6 +1,6 @@
 // Has the user changed a part a starting price covers? (2026-10-19) A bundle's price holds only while the tank, stand, lid,
 // light, filter and heater it includes are the ones it came with; a preset tank's sale price only while the tank is that size.
-import { choiceOf } from '../scene/tech';
+import { kitUnitSig, techOf } from '../scene/tech';
 import type { TankSetup } from '../scene/types';
 
 export type PricedPart = 'tank' | 'stand' | 'lid' | 'light' | 'filter' | 'heater';
@@ -15,8 +15,9 @@ const SIG: Record<PricedPart, (S: TankSetup, base: boolean) => unknown[]> = {
   stand: S => [S.stand.show, S.stand.style, S.stand.finish],
   lid: S => [S.lid],
   light: S => [S.light.type, S.light.tech ?? null, S.light.count, mm(S.light.watts), mm(S.light.bulbW)],
-  filter: (S, base) => [base ? choiceOf(S, 'filter') : S.tech?.rows.filter ?? ANY, S.tech?.filterModel ?? null],
-  heater: (S, base) => [base ? choiceOf(S, 'heater') : S.tech?.rows.heater ?? ANY, S.tech?.heaterW ?? null],
+  // the bundle's own unit (heaters / filters added on top keep the bundle price: they are priced as extras)
+  filter: (S, base) => base || S.tech ? kitUnitSig(techOf(S), 'filter') : [ANY],
+  heater: (S, base) => base || S.tech ? kitUnitSig(techOf(S), 'heater') : [ANY],
 };
 
 /** The baseline fingerprint of each part in `parts` (unknown part names, e.g. 'substrate', are skipped). */

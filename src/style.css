@@ -544,6 +544,23 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .tchip.mute { opacity: .7 }
 .tstep { display: flex; flex-wrap: wrap; gap: 4px; margin: 4px 0 }
 .tstep button { font: inherit; font-size: 11px; padding: 3px 6px; border: 1px solid var(--line); border-radius: 4px; background: none; color: var(--ink); cursor: pointer }
+/* heaters and filters as units (src/ui/techMenu.ts, 2026-10-20) */
+.tunit { margin: 4px 0; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; font-size: 12px }
+.tuh { display: flex; align-items: flex-start; gap: 6px }
+.tun { flex: 1; font-weight: 600; font-size: 12.5px }
+.tux { flex: none; border: 0; background: none; color: var(--muted); font-size: 16px; line-height: 1; padding: 0 2px; cursor: pointer }
+.tux:hover, .tux:focus-visible { color: var(--ink) }
+.tun { min-width: 0; overflow-wrap: anywhere }
+.tuc { margin-top: 2px } .tuc .tcost { white-space: normal }
+.tcost s { color: var(--muted) }
+.tkit { font-size: 10px; margin-left: 6px; padding: 1px 6px; border-radius: 8px; background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--ink) }
+.tuw { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; font-size: 11px; color: var(--muted) } .tuw input { width: 64px; font: inherit }
+.tadd { display: block; width: 100%; margin: 6px 0 4px; padding: 5px; font: inherit; font-size: 12px; border: 1px dashed var(--line); border-radius: 6px; background: none; color: var(--accent); cursor: pointer }
+.tadd:hover, .tadd:focus-visible { border-color: var(--accent) }
+.tpick { margin: 6px 0 4px; padding: 6px 8px; border: 1px solid var(--accent); border-radius: 6px }
+.tpick details summary { margin: 4px 0; font-size: 11px; color: var(--muted); cursor: pointer }
+.tpp { margin-left: 5px; color: var(--muted) }
+.tcancel { margin-top: 4px; font: inherit; font-size: 11px; padding: 2px 8px; border: 1px solid var(--line); border-radius: 4px; background: none; color: var(--muted); cursor: pointer }
 .ttot { display: flex; justify-content: space-between; gap: 6px; font-size: 12px; font-weight: 600; margin: 6px 0 2px }
 
 #stkList { margin: 2px 0 6px; font-size: 11.5px; color: var(--muted) } #stkList summary { cursor: pointer } #stkList ul { margin: 4px 0 0 16px; padding: 0 } #stkList li.dim { opacity: .7 } #stkOut { font-weight: 600 }

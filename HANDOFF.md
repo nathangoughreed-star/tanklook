@@ -102,6 +102,18 @@ Nathan 2026-10-20: drag only what the open menu covers; a Show box per kind of t
 - Tests: test/menuFocus.test.ts. Shared files touched: viewer.ts, panels.ts (show boxes block + toggle line), pointer.ts (2 lines), main.ts (1 line), index.html, style.css (3 lines).
 
 
+## Heaters and filters as lists (2026-10-20, side work in the `stocking` worktree; Nathan's request from the Tech menu)
+- `TechSetup.heaters[]` / `filters[]` (scene/tech.ts): one entry per unit, generic (heater `w` editable; filter `model` steps) or a
+  catalogue `product`; `kit: true` = the bundle's own. rows.heater / rows.filter follow the list (withUnits); the old single
+  fields still load (heaterUnits / filterUnits read them). Several filters: flows and nitrifying capacity add, the best one sets
+  stocking + risk. Units added on top of a bundle are their own demand row (`heater+` / `filter+`), so the bundle price holds;
+  removing the bundle's own unit drifts it (dealdrift kitUnitSig). Place keys per unit: 'heater', 'heater.1', ...
+- Tech menu: Heating / Filtration show a card per unit (name first, bundle price struck "in the bundle", ×), "+ Add" opens a
+  picker (heater: generic + near sizes + all others; filter: type, then generic or any modelled product of it).
+- Top Fin Essentials 20: deal filter name set to the Silenstream PF20 (catalogued already; PetSmart contents graphic).
+- OPEN (needs research, Nathan to approve): Imagitarium heaters for petco-imagitarium-led-10/20/29/40/55 (not catalogued,
+  watts not listed); Top Fin LED Black Glass 10 "integrated filter"; Marineland Portrait 5 hidden 3-stage filter.
+
 ## Lane SE: our own stocking engine, load vs capacity (2026-10-19, branch `stocking`, port 5843)
 **Step 1 DONE (probe).** Mesh volume from the 3D fish loft works but is only about 2x accurate vs FishBase length-weight (goldfish 4.8x heavy, guppy 0.29x, pleco 2x, swordtail 0.22x). **Nathan's decision 2026-10-19: mass = FishBase length-weight for EVERY species (shrimp, snails, herps: keeper-reference estimates, `src: estimate`); the model volume is only a cross-check that flags outliers.**
 **Steps 2 + 3 DONE (engine, calibration; UI is step 4, not started).**

@@ -44,7 +44,7 @@ export function gearPicks(S: TankSetup): GearPick[] {
     const place = spotOf(S, p.place), pick = (id: string) => out.push({ id, row: p.row, ...(p.n > 1 ? { n: p.n } : {}), ...(place ? { place } : {}) });
     switch (p.gear) {
       case 'filter': if (p.model) out.push({ id: p.model, row: p.row, ...(p.n > 1 ? { n: p.n } : {}), ...(p.product ? { product: p.product } : {}), ...(place ? { place } : {}) }); break;
-      case 'heater': if (p.model) { const t = techOf(S), hp = heaterProduct(t.heaterProduct), w = hp?.watts ?? t.heaterW ?? genericHeaterW(heatLoss(S, t).needW / Math.max(1, p.n)); out.push({ id: p.model, row: p.row, ...(p.n > 1 ? { n: p.n } : {}), watts: w, ...(hp ? { product: hp.id } : {}), ...(place ? { place } : {}) }); } break;
+      case 'heater': if (p.model) out.push({ id: p.model, row: p.row, watts: p.watts ?? genericHeaterW(heatLoss(S, techOf(S)).needW), ...(p.product ? { product: p.product } : {}), ...(place ? { place } : {}) }); break; // one pick per heater (scene/tech techParts)
       case 'sump': pick('sump'); break;
       case 'co2kit': case 'diyco2': pick('co2'); break;
       case 'airpump': pick('airstone'); break;
@@ -726,8 +726,8 @@ export function buildGear(S: TankSetup, T: Tank, solids: THREE.Box3[], picks = g
     if (!box.isEmpty() && p.row) pieces.push({ row: p.row, id: p.id, mount: mountOf(p.id), box });
   };
   const get = (id: string) => picks.find(p => p.id === id), has = (id: string) => !!get(id);
-  const fp = picks.find(p => isFilter(p.id)), hp = picks.find(p => isHeater(p.id));
-  const fm = fp && isFilter(fp.id), hm = hp && isHeater(hp.id);
+  // every heater and every filter (Nathan 2026-10-20: as many as the owner adds); the first filter feeds the UV and CO2
+  const fps = picks.filter(p => isFilter(p.id)), hps = picks.filter(p => isHeater(p.id)), fm = fps[0] && isFilter(fps[0].id);
   let cursor = 22, outlet: { f: Frame; u: number } = { f: back, u: 120 };
   const after = () => Math.max(cursor, ...back.taken.map(r => r[1])) + 10;
   // the owner's pieces first (they keep their spot), then the rest fill in round them in the default corner
@@ -735,14 +735,15 @@ export function buildGear(S: TankSetup, T: Tank, solids: THREE.Box3[], picks = g
     const go = (p: GearPick | undefined) => !!p && !!p.place === pass;
     if (go(get('sump'))) { const { f, sp } = spot(get('sump')!, cursor); track(get('sump')!, () => sump(f, sp)); if (f === back && !pass) cursor = after(); outlet = { f, u: sp.u + 40 }; }
     // the heater in the corner, the filter's intake next to it, so the intake draws the warm water through the tank
-    if (hm && go(hp)) for (let i = 0; i < (hp!.n ?? 1); i++) { const { f, sp } = spot(hp!, i ? after() : cursor); if (i && hp!.place) sp.u += 90 * i; /* a second placed heater beside the first */ track(hp!, () => heater(f, hp!.watts ?? hm.watts, sp, hp!.product)); if (!pass) cursor = after(); }
-    if (fm && go(fp)) {
-      const { f, sp } = spot(fp!, cursor), n0 = f.taken.length;
-      const prod = filterProduct(fp!.product), pk = prod?.kind === fm.kind ? prod : undefined;
-      track(fp!, () => { if (fm.kind === 'hob') hob(f, fm, sp, pk); else if (fm.kind === 'canister') canister(f, fm, sp, pk); else if (fm.kind === 'sponge') sponge(f, fm, sp, pk); else internal(f, fm, sp, pk); });
+    for (const hp of hps) { const hm = isHeater(hp.id); if (!hm || !go(hp)) continue; for (let i = 0; i < (hp.n ?? 1); i++) { const { f, sp } = spot(hp, i ? after() : cursor); if (i && hp.place) sp.u += 90 * i; /* a second placed heater beside the first */ track(hp, () => heater(f, hp.watts ?? hm.watts, sp, hp.product)); if (!pass) cursor = after(); } }
+    fps.forEach((fp, k) => {
+      const fk = isFilter(fp.id); if (!fk || !go(fp)) return;
+      const { f, sp } = spot(fp, k && !fp.place ? after() : cursor), n0 = f.taken.length;
+      const prod = filterProduct(fp.product), pk = prod?.kind === fk.kind ? prod : undefined;
+      track(fp, () => { if (fk.kind === 'hob') hob(f, fk, sp, pk); else if (fk.kind === 'canister') canister(f, fk, sp, pk); else if (fk.kind === 'sponge') sponge(f, fk, sp, pk); else internal(f, fk, sp, pk); });
       const mine = f.taken.slice(n0);
-      if (mine.length) outlet = { f, u: fm.kind === 'canister' ? mine[mine.length - 1][0] + 35 : (mine[0][0] + mine[0][1]) / 2 };
-    }
+      if (mine.length && !k) outlet = { f, u: fk.kind === 'canister' ? mine[mine.length - 1][0] + 35 : (mine[0][0] + mine[0][1]) / 2 };
+    });
     if (!pass) cursor = after();
     const one = (id: string, b: (f: Frame, sp: Spot) => void, u = () => after()) => { const p = get(id); if (!go(p)) return; const { f, sp } = spot(p!, u()); track(p!, () => b(f, sp)); };
     one('uv', (f, sp) => uv(f, sp, has('sump') ? undefined : fm), () => fm?.kind === 'canister' || has('sump') ? outlet.u + 40 : cursor);
