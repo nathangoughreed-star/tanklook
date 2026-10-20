@@ -559,19 +559,6 @@
         "--strictPort"
       ],
       "port": 5693
-    },
-    {
-      "name": "p6abuilds",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5913",
-        "--strictPort"
-      ],
-      "port": 5913
     }
   ]
 }

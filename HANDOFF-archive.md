@@ -1,6 +1,17 @@
 # HANDOFF archive
 Finished lane and feature sections moved out of HANDOFF.md on 2026-10-16, verbatim, newest first.
 
+## Lane P6a: three builds, path 1 (2026-10-20, branch `p6abuilds`, port 5913)  (lane fills this in)
+
+Prompt: prompts/lane-P6a-builds.md. P6b (scape choice, artificial plants via P4, plan sheet) waits for P6a's `onBuildPicked` and data shapes; its prompt is written by the coordinator after P6a lands.
+
+**DONE 2026-10-20 (pushed to main).**
+- `src/scene/builds.ts`: `buildsFor(animals, tank, now?)` returns three `Build`s [cheapest, leastWork, balanced]: `tank`, `setup` (TankSetup, animals unplaced), `gear` lines, `setupUsd` (deals in), `listUsd`, `upkeepUsdMo`, `minPerWeek` (demand-model means, whole numbers), `filtrationPct` / `spacePct`, `gearDeals` (gearOffers, pinned via pinGear), `tankDeal` (the engine's own tank-sale pricing, so the number equals the editor's), `bundle` (dealMatches best, no breaks, same tank only; kitTech draws its gear), `savingUsd`. Filter chosen from the Tech menu's list (no sump): cheapest = lowest price at filtration <= 100 %, balanced = lowest price at <= 70 % and HOB or better (a bundle must also have one), least work = fewest minutes (salt: also auto top-off). Guarantees (tested): cheapest <= balanced $, least work <= both in minutes, a build that saves no minutes is the cheapest / balanced one (shown as "same gear as ...").
+- `src/ui/buildPick.ts`: the screen after "Continue" on the stocking screen (stockPlan footer now has "Continue: three ways to build it", the old Open button became a link): three cards side by side, each a 3D picture of its own tank taken with the main viewer (`viewer.thumbnail`) while the panel is hidden. Pick -> `pinDeal(bundle)`, `store.replace(sceneForBuild(...))`, then every `onBuildPicked(fn)` listener runs with `{ build, animals }` (the build is already loaded in the editor). P6b: subscribe with `onBuildPicked` from `ui/buildPick.ts`; the scene is animals + gear only, no plants.
+- Hooks in others' files: `stockPlan.ts` (import, `attachBuildPick`, footer buttons, `builds` case). Provenance: builds.ts added to ENGINE_FILES with FORMULAS / EXCLUDED entries.
+- Gaps (not fixed, not mine): the demand model has almost no minute lever for fresh water (water changes follow the stocking, filter clean is a fixed number), so least work often equals cheapest; stockPlan's live "set-up from X to Y" uses tankfit's catalogue median tank price while builds use the editor's pricing, so the two can differ by a few dollars; a bundle build prices ~$4 under the editor's panel after the pick (kit age widening); build filter choice does not see a pinned gear-deal product's real flow.
+
+
 ## Lane P4: artificial plants, path 1 (2026-10-20, branch `p4artplants`, port 5893)
 - **Shipped (Nathan approved the pictures 2026-10-20):** a new `ItemKind` `'artificial'` with 6 LIBRARY variants:
   `silkstem`, `plasticstem`, `silksword` (rosette), `plasticsword`, `silkmoss`, `plasticmoss` (mats: size = width). `Variant.fake = { mat, form }`
