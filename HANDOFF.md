@@ -47,6 +47,17 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 ## Lane sections (current)
 
 ## Lane P4: artificial plants, path 1 (2026-10-20, branch `p4artplants`, port 5893)  (lane fills this in)
+## Source traceability (2026-10-20, side chat in the `stocking` worktree; Nathan: the defence against "AI slop")
+Goal: every advice number traces to a source, a fit, a stated derivation or a labelled assumption; never "made up".
+- `src/data/sources.json` = source registry (id, title, by, url, accessed, kind: primary / reference / consensus / tool / retailer / internal). Never register a page nobody opened.
+- `src/data/provenance.ts` (audit only, not in the bundle) = RULES per data target and path (status cited / fitted / derived / researched / claimed / assumption, src ids, why; `rowUrl` = cited by the row's own listing url unless `est`), FORMULAS for engine constants by file + symbol, EXCLUDED (render / UI constants), TABLES (engine tables audited as data).
+- `scripts/source-audit.ts` walks the RUNTIME values (CARE after its merges, AIR after AIRDATA, ...); `test/sources.test.ts` checks every src id / symbol exists and RATCHETS: unsourced values and unsourced engine constants may not rise above `research/source-baseline.json`. **A new advice number or top-level engine constant needs a rule or the test fails.** Lower the baseline after sourcing: `GEN_SOURCES=1 npx vitest run test/sources.test.ts` (also rewrites `research/source-coverage.md`, the ranked work lists).
+- One-line hook in another lane's file: `src/data/climate.ts` `AIR` is now exported (the audit reads it).
+- First count (2026-10-20): 4525 data values: cited 1707 (38 %, nearly all product / price rows with their listing url), fitted 59, derived 5, researched 570, claimed 433, assumption 419, **unsourced 1332 (29 %)**. Engine: 81 top-level constants documented, 0 unsourced; 305 numbers written inline in engine functions still need a by-hand look.
+- Biggest unsourced, user-facing: CARE care level / minL / temperament (84 each), group, predation, marine pH; adult length `tl` (108); 5 land animals' air climate (anoles, leopard gecko, ball python: first guesses, no research row); neon / 3 others' water temperature; tech.json minutes / watts / risk; demand-defaults and factors (rule-of-thumb costs).
+- Found while auditing: the nitrogen engine's research notes ("side-session-notes research-*.md": TAN rates, media rates, the Egeria uptake study) are NOT in the repo; LU_PER_L is calibrated to keep the starters' old counts, which came from a rule of thumb (circular); the BRS coral PAR page and the 0.17 USD/kWh statistic were never recorded. The light engine is the best sourced (reference/par-calibration-data.md, graded datasets).
+- Next: research backfill in lanes by area (care / min tank / temperament; adult lengths from FishBase; plants and corals per item; costs), measured on one batch first; then a "Sources & methods" page and a "why?" link per recommendation.
+
 ## User flow: paths, budget, deals (Nathan 2026-10-20, design chat; not built yet except the New / Open split)
 - **New / Open are separate menus** (DONE, `caf2f0a`): New = Start from scratch + On sale / Bundles; Open = Starter tanks / Saved tanks; a link swaps them. First launch opens New.
 - **New asks "What do you have so far?"**, worded as the user's situation, never "which type are you". Five paths:
