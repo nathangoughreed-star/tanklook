@@ -9,7 +9,7 @@ import { OUTLINE_FIT, OUTLINE_OVER, outlineEdges, spaceOutline } from '../src/re
 import { defaultSpace, parseSpace, spaceFit, tankExtent } from '../src/scene/space';
 import { stockingOf } from '../src/scene/stocking';
 import { NEAR_FULL, bar, mg, nitrogenRows, forkDue, fromUnits, overLine, tileState, toUnits, topBy } from '../src/ui/fullnessTile';
-import { tankMinimum } from '../src/scene/tankMin';
+import { floorOf, tankMinimum } from '../src/scene/tankMin';
 import type { TankSetup } from '../src/scene/types';
 
 // the build paints textures on canvases: a do-nothing 2D context is enough here (as in menuFocus.test.ts)
@@ -32,6 +32,19 @@ describe('tank minimum bar', () => {
   it('reads over 100 when the tank is shorter or smaller than the species asks', () => {
     const S = withFish(), sp = tankMinimum(S).rows[0], tight = { ...S, tank: { ...S.tank, L: Math.max(1, sp.minLengthMm / 2) } };
     if (sp.minLengthMm > 0) expect(tankMinimum(tight).percent).toBeGreaterThan(100);
+  });
+});
+
+describe('tank minimum: run and area', () => {
+  it('measures the longest floor side and the floor area whichever way the tank lies', () => {
+    const S = withFish(), f = floorOf(S.tank), g = floorOf({ ...S.tank, L: S.tank.D, D: S.tank.L });
+    expect(f.runMm).toBeCloseTo(Math.max(S.tank.L, S.tank.D), 0); expect(g.runMm).toBe(f.runMm);
+    if ((S.tank.shape ?? 'rect') === 'rect') expect(f.areaCm2).toBeCloseTo(S.tank.L * S.tank.D / 100, 0);
+  });
+  it('holds swimmers to the run and bottom dwellers to the floor area', () => {
+    const S = withFish(), fish = (species: string) => ({ ...S, fish: [{ ...S.fish[0], species }] });
+    expect(tankMinimum(fish('danio')).rows[0].kind).toBe('run');
+    expect(tankMinimum(fish('adf')).rows[0].kind).toBe('area');
   });
 });
 

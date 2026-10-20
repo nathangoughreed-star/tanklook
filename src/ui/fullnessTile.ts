@@ -7,7 +7,7 @@
 import type { Viewer } from '../render/viewer';
 import { defaultSpace, spaceFit, tankExtent, SPACE_MAX, SPACE_MIN, type SpaceFit } from '../scene/space';
 import { stockingMemo, type Stocking } from '../scene/stocking';
-import { tankMinimum, type TankMinimum } from '../scene/tankMin';
+import { tankMinimum, type MinRow, type TankMinimum } from '../scene/tankMin';
 import { PLANT_SHARE_MAX, type Nitrogen } from '../scene/nitrogen';
 import type { Store } from '../scene/store';
 import type { SpaceLimit, TankSetup, Units } from '../scene/types';
@@ -41,9 +41,10 @@ export function topBy(r: Stocking, by: 'space' | 'load', k = 3): TopRow[] {
 
 /** The species that want the biggest tank, each with the litres and length it asks for (the percent is the bar's own). */
 export function topMin(m: TankMinimum, units: Units, k = 3): TopRow[] {
-  const len = (mm: number) => `${toUnits(mm, units)}${units === 'in' ? '"' : ' cm'} long`, one = (l: number, mm: number) => [l > 0 && `${l} L`, mm > 0 && len(mm)].filter(Boolean).join(', ');
+  const sq = (cm2: number) => units === 'in' ? `${Math.round(cm2 / 6.4516)} sq in` : `${Math.round(cm2)} cm²`, len = (mm: number) => `${toUnits(mm, units)}${units === 'in' ? '"' : ' cm'} long`;
+  const one = (x: MinRow, l: number, mm: number, cm2: number) => [l > 0 && `${l} L`, x.kind === 'area' ? cm2 > 0 && `${sq(cm2)} of floor` : mm > 0 && len(mm)].filter(Boolean).join(', ');
   return [...m.rows].sort((a, b) => b.comfortPct - a.comfortPct).filter(x => x.comfortL > 0 || x.comfortLengthMm > 0).slice(0, k).map(x => ({ name: x.name, n: x.n, share: 0,
-    note: x.floorL < x.comfortL || x.floorLengthMm < x.comfortLengthMm ? `at least ${one(x.floorL, x.floorLengthMm)}; happier at ${one(x.comfortL, x.comfortLengthMm)}` : one(x.comfortL, x.comfortLengthMm) }));
+    note: x.floorL < x.comfortL || x.floorLengthMm < x.comfortLengthMm ? `at least ${one(x, x.floorL, x.floorLengthMm, x.floorCm2)}; happier at ${one(x, x.comfortL, x.comfortLengthMm, x.comfortCm2)}` : one(x, x.comfortL, x.comfortLengthMm, x.comfortCm2) }));
 }
 
 /** Red below the absolute floor, amber while under the comfortable size, green past it; the fill is the floor's percent. */
