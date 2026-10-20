@@ -112,7 +112,7 @@ function boxPickIn(viewer: Viewer, store: Store, vp: Viewport, x0: number, y0: n
 
 /** `canPick`: whether aquascape pieces (of this kind) / animals can be picked and dragged now (only while their menu,
  *  Hardscape / Plants / Animals, is open); otherwise a press on one orbits like empty space. */
-export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'items' | 'fish', kind?: ItemKind) => boolean = () => true) {
+export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'items' | 'fish' | 'gear', kind?: ItemKind) => boolean = () => true) {
   const canvas = viewer.canvas;
   const boxPick = (vp: Viewport, x0: number, y0: number, x1: number, y1: number) => boxPickIn(viewer, store, vp, x0, y0, x1, y1);
   // dragging an aquascape item: `grab` = the grabbed point relative to the piece's base, kept under the pointer while
@@ -235,7 +235,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       viewer.terrainEdit.hot = hit.dot; viewer.rebuild();
       return;
     }
-    if (editable && hit.dot == null && !hit.pool && (gear = gearGrab(hit))) return;
+    if (editable && hit.dot == null && !hit.pool && canPick('gear') && (gear = gearGrab(hit))) return; // gear moves only while Tech is open (Nathan 2026-10-20)
     if (editable && hit.itemId != null && hit.mesh && (canPick('items', store.scene.tanks[vi].items.find(q => q.id === hit!.itemId)?.kind ?? 'stone') || (store.groupCount > 1 && store.inGroup('item', hit.itemId)))) {
       const inGroup = store.groupCount > 1 && store.inGroup('item', hit.itemId);
       if (inGroup) store.lead('item', hit.itemId); else store.selectItem(hit.itemId);
@@ -440,7 +440,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       return;
     }
     const dir = Math.sign(e.deltaY || e.deltaX);
-    if (gearLean(viewer, store, e.clientX, e.clientY, dir)) return; // Shift + wheel over a heater leans it (lane TG)
+    if (canPick('gear') && gearLean(viewer, store, e.clientX, e.clientY, dir)) return; // Shift + wheel over a heater leans it (lane TG)
     if (store.groupCount > 1) { // turn the whole group 15° a notch about its centre
       const g = store.group;
       store.edit(t => turnGroup(t, g, dir * 15), { coalesce: 'wheel-turn' });

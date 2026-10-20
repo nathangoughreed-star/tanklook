@@ -10,7 +10,7 @@ import { gearPicks } from '../src/render/gear3d';
 import { parseScene } from '../src/scene/validate';
 
 const NOW = Date.parse('2026-10-19'), P = defaultProfile();
-const bundles = DEALS.map(d => ({ d, S: sceneFromDeal(d)?.tanks[0] })).filter(b => b.S?.tech);
+const bundles = DEALS.map(d => ({ d, S: sceneFromDeal(d)?.tanks[0] })).filter(b => b.S && b.d.includes.some(p => p === 'filter' || p === 'heater'));
 
 describe('bundle gear', () => {
   it('sets the tech for bundles that ship a filter or heater', () => { expect(bundles.length).toBeGreaterThan(10); });
@@ -27,10 +27,22 @@ describe('bundle gear', () => {
   });
 
   it('counts no part twice: the setup total is the same with the bundle tech as without it', () => {
-    for (const { d, S } of bundles) {
+    for (const { d, S } of bundles.filter(b => b.d.includes.includes('filter') && b.d.includes.includes('heater'))) {
       const kit = dealAsKit(d), a = demandOf({ ...S!, tech: undefined }, P, { kit, now: NOW }), b = demandOf(S!, P, { kit, now: NOW });
       expect(b.totals.setupUsd, d.id).toBeCloseTo(a.totals.setupUsd, 6);
       for (const key of ['filter', 'heater'] as const) if (d.includes.includes(key)) expect(b.items.find(i => i.key === key)?.setup, `${d.id} ${key}`).toBeUndefined();
+    }
+  });
+
+  it('a bundle starts without the filter or heater it does not ship (the user adds them)', () => {
+    const d = DEALS.find(x => x.id === 'petsmart-marineland-hd-45')!, t = sceneFromDeal(d)!.tanks[0].tech!;
+    expect(t.rows.filter).toBe('none');
+    expect(t.rows.heater).toBe('none');
+    for (const x of DEALS) {
+      const r = sceneFromDeal(x)?.tanks[0].tech?.rows;
+      if (!r) continue;
+      if (!x.includes.includes('filter')) expect(r.filter, x.id).toBe('none');
+      if (!x.includes.includes('heater')) expect(r.heater, x.id).toBe('none');
     }
   });
 

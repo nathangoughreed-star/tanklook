@@ -1,6 +1,7 @@
 import './style.css';
 import { attachPointer } from './interact/pointer';
 import { Viewer } from './render/viewer';
+import { pickSec } from './render/menuFocus';
 import { Store } from './scene/store';
 import { attachPanels, scapeSec } from './ui/panels';
 import { attachGroupBar } from './ui/group';
@@ -32,8 +33,9 @@ if (!webglAvailable()) {
   const store = new Store(restored ?? undefined);
   const viewer = new Viewer(document.getElementById('c') as HTMLCanvasElement, view, store);
   // pieces move only while their menu (Hardscape, or Plants for plants and corals) is open, animals only while Animals is,
+  // gear only while Tech is (lane TG, 2026-10-20),
   // and the panel showing
-  attachPointer(viewer, store, (what, kind) => !!document.querySelector<HTMLDetailsElement>(`details.sec[data-sec="${what === 'fish' ? 'fish' : scapeSec(kind!)}"]`)?.open
+  attachPointer(viewer, store, (what, kind) => !!document.querySelector<HTMLDetailsElement>(`details.sec[data-sec="${pickSec(what, kind && scapeSec(kind))}"]`)?.open
     && !document.getElementById('app')!.classList.contains('collapsed'));
   const ui = attachPanels(store, viewer);
   attachGroupBar(store, viewer, ui.status);
