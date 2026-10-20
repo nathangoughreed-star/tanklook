@@ -97,7 +97,7 @@ export interface Climate {
 }
 /** Air climate of a land animal: comfortable temp, tolerable temp, humidity, tolerable humidity, warm spot, note. */
 interface Air { c: R; tol?: R; rh: R; rhTol?: R; warm?: R; note?: string; est?: boolean }
-const AIR: Record<string, Air> = {
+export const AIR: Record<string, Air> = {
   crestedgecko: { c: [22, 26], rh: [60, 80], note: 'Mist daily; let it dry a little between.' },
   crestedharlequin: { c: [22, 26], rh: [60, 80], note: 'Mist daily; let it dry a little between.' },
   greenanole: { c: [24, 29], tol: [21, 31], rh: [60, 80], warm: [32, 35], note: 'Basking spot 32-35 with UVB; mist the leaves twice a day (it drinks drops).' },
