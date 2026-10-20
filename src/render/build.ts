@@ -1413,9 +1413,28 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
     if (!best) return undefined;
     return { pts: best.pts.map(p => W(p).sub(m.position).applyQuaternion(inv)), r0: best.r0, r1: best.r1 };
   };
+  // a herp's body (limbs, tail) reaches past its centre point, which is all clampFish keeps inside the glass: slide it in until its
+  // whole 3D body is inside the panes (Nathan 2026-10-20: a hand poked out through the side glass)
+  const pullIn = (m: THREE.Mesh) => {
+    if (shapeOf(T) === 'bowl') return;
+    const edges = footprint(T).edges, x0 = m.position.x, z0 = m.position.z;
+    for (let k = 0; k < 4; k++) {
+      if (Math.hypot(m.position.x - x0, m.position.z - z0) > PULL_IN_MAX) break; // a body wider than the tank, or a bad box: not shoved across it
+      m.updateMatrixWorld(true);
+      const bb = new THREE.Box3().setFromObject(m, true); if (bb.isEmpty()) return;
+      let moved = false;
+      for (const e of edges) {
+        let out = 0; // how far the body's furthest vertex lies past this pane
+        for (const x of [bb.min.x, bb.max.x]) for (const z of [bb.min.z, bb.max.z]) out = Math.max(out, (x - e.a[0]) * e.n[0] + (-z - e.a[1]) * e.n[1]);
+        if (out > 0) { m.position.x -= e.n[0] * out; m.position.z += e.n[1] * out; moved = true; }
+      }
+      if (!moved) return;
+    }
+  };
   // one animal's meshes (`register`: picked, outlined when selected) and its contact shadow (`add`)
-  const animal = (f: Fish, register: (m: THREE.Mesh, w: number, h: number) => void, add: (o: THREE.Object3D | null) => void) => {
+  const animal = (f: Fish, register0: (m: THREE.Mesh, w: number, h: number) => void, add: (o: THREE.Object3D | null) => void) => {
     const sp = speciesOf(f); if (!sp) return;
+    const register = (m: THREE.Mesh, w: number, h: number) => { if (isHerp3D(sp.art) && !isSnake(sp.art) && (f.surface ?? 'floor') === 'floor') pullIn(m); register0(m, w, h); };
     if (sp.kind === 'snail') {
       for (const [m, w, h] of snailMeshes(S, T, f, sp, base(f), A)) register(m, w, h);
       if ((f.surface ?? 'floor') === 'floor') { const w = fishTL(f, sp); add(contactShadow(S, T, f.x, f.depth, groundHeight(S, T, f.x, f.depth), w, w * 0.45, f.yaw)); }
@@ -1492,6 +1511,8 @@ HIDDEN.userData.cached = true; HIDDEN.userData.keep = true;
 const UP = new THREE.Vector3(0, 1, 0), MAX_TILT = 45 * D2R;
 /** How far a snail or pleco on the glass sits off the inside of the pane (mm). */
 const PANE_GAP = 0.8;
+/** The most (mm) a herp on the floor is slid in to keep its limbs and tail inside the glass. */
+const PULL_IN_MAX = 25;
 /** How far (mm) round its Shuffle spot a lizard looks for the limb or top it was placed on, how far off the spot's height that may be, and
  *  the most a lizard is lifted over rising hardscape (a share of its length). */
 const LIZARD_SNAP = 40, LIZARD_SNAP_TOL = 45, LIZARD_LIFT = 0.12;
