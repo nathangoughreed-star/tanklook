@@ -10,7 +10,7 @@ import { CARPET_W, SHELLS, itemDims, itemSink, seatHook, stoneDims, woodLimbs, t
 import { turnOut, type AnchorProbe, type V3 } from '../scene/anchors';
 import { lampHeight } from '../scene/lightout';
 import { struggleOf } from '../scene/lightcheck';
-import { D2R, waterY } from '../scene/physics';
+import { D2R, clamp, waterY } from '../scene/physics';
 import { bowlDims, footprint, shapeOf } from '../scene/shape';
 import { clampGround, groundHeight, groundInsideBy } from '../scene/terrain';
 import type { Item, Tank, TankSetup } from '../scene/types';
@@ -699,12 +699,43 @@ function bakedShape(it: Item) {
   g.setAttribute('color', new THREE.BufferAttribute(out, 3));
   g.setAttribute('aBake', new THREE.BufferAttribute(bake, 1)); // the baked light's factor per vertex (the glass cap relights: capPasses)
   g.computeBoundingBox(); g.computeBoundingSphere();
-  const pos = src.attributes.position, qt = q.clone().invert(), pv = new THREE.Vector3();
-  let low0 = Infinity, low = Infinity;
-  for (let i = 0; i < pos.count; i++) { pv.fromBufferAttribute(pos, i); low0 = Math.min(low0, pv.y); low = Math.min(low, pv.applyQuaternion(qt).y); }
-  g.userData.rise = pos.count ? low0 - low : 0;
+  g.userData.rise = riseOf(it);
   g.userData.keep = true;
   return remember(baked, k, g, 400, dispose);
+}
+/** bakedShape's rise for `it`'s own turn (kept apart: a piece settled on a slope is turned further but not raised). */
+const rises = new Map<string, number>();
+function riseOf(it: Item) {
+  const k = `${it.variant}|${it.seed}|${it.size}|${it.yaw}|${it.pitch}|${it.tilt}`, had = rises.get(k);
+  if (had != null) return had;
+  const pos = solidShape(it).attributes.position, qt = new THREE.Quaternion().setFromEuler(itemEuler(it)), pv = new THREE.Vector3();
+  let low0 = Infinity, low = Infinity;
+  for (let i = 0; i < pos.count; i++) { pv.fromBufferAttribute(pos, i); low0 = Math.min(low0, pv.y); low = Math.min(low, pv.applyQuaternion(qt).y); }
+  if (rises.size > 2000) rises.clear();
+  rises.set(k, pos.count ? low0 - low : 0);
+  return rises.get(k)!;
+}
+
+/** The most a piece is turned to lie along the ground (deg), and the most of its own lean it may have to be (deg). */
+const SETTLE_MAX = 35, SETTLE_LEAN = 30;
+/**
+ * A lying piece of hardscape on the substrate (wood, a flat stone, a cave; not stacked, not stood up) lies along the
+ * ground's contour instead of level: the ground at its two ends and two sides (0.4 of its length and width out, along
+ * its yaw) tips it by the slope under it, on top of its own pitch and roll, and its middle sits halfway between the
+ * ground under its centre and the mean of those four (a log over a mound bridges it, one in a dip sinks a little at the
+ * ends). Upright pieces (a tree, a standing stone) stay plumb. dy = how far its base moves from the ground at its centre.
+ */
+export function settleOn(S: TankSetup, T: Tank, it: Item): { pitch: number; tilt: number; dy: number } {
+  const none = { pitch: it.pitch, tilt: it.tilt, dy: 0 };
+  if (it.kind === 'plant' || it.kind === 'coral' || it.lift > 0 || Math.abs(it.pitch) > SETTLE_LEAN || Math.abs(it.tilt) > SETTLE_LEAN) return none;
+  const [w, h, d] = itemDims(it);
+  if (h >= Math.max(w, d)) return none;
+  const c = Math.cos(it.yaw * D2R), s = Math.sin(it.yaw * D2R), a = 0.4 * w, b = 0.4 * d;
+  const g = (u: number, v: number) => groundHeight(S, T, it.x + u * c + v * s, it.depth + u * s - v * c);
+  const x1 = g(a, 0), x0 = g(-a, 0), z1 = g(0, b), z0 = g(0, -b), gc = g(0, 0);
+  const deg = (rise: number, run: number) => clamp(Math.round(Math.atan2(rise, run) / D2R), -SETTLE_MAX, SETTLE_MAX);
+  // roll (about the piece's own z) raises its +x end; pitch (about its x) lowers its +z end
+  return { pitch: it.pitch - deg(z1 - z0, 2 * b), tilt: it.tilt + deg(x1 - x0, 2 * a), dy: Math.round(((x1 + x0 + z1 + z0) / 4 - gc) / 2) };
 }
 
 /** What the ground's shape depends on (terrain.ts groundHeight): custom terrain (with pools, cut down to the substrate's
@@ -727,8 +758,8 @@ function vineLimbs(S: TankSetup, T: Tank, it: Item, y: number, c: number, s: num
     if (w.kind !== 'wood' && !(w.variant in SHELLS)) continue;
     const ls = woodLimbs(w.variant, w.seed, w.size);
     if (!ls.length) continue;
-    const wy = groundHeight(S, T, w.x, w.depth) + w.lift - itemSink(w) + (bakedShape(w).userData.rise ?? 0);
-    const tank = ls.map(l => l.pts.map(p => { const t = turnOut(w, p); return [w.x + t[0], wy + t[1], w.depth + t[2]] as const; }));
+    const st = settleOn(S, T, w), wy = groundHeight(S, T, w.x, w.depth) + w.lift - itemSink(w) + st.dy + riseOf(w), turn = { yaw: w.yaw, pitch: st.pitch, tilt: st.tilt };
+    const tank = ls.map(l => l.pts.map(p => { const t = turnOut(turn, p); return [w.x + t[0], wy + t[1], w.depth + t[2]] as const; }));
     if (!tank.some(l => l.some(p => Math.hypot(p[0] - it.x, p[2] - it.depth) < VINE_REACH))) continue;
     ls.forEach((l, i) => {
       out.push(l.pts.length, Math.round(l.r0 * 10) / 10, Math.round(l.r1 * 10) / 10);
@@ -975,6 +1006,8 @@ const noBend = (ks: string) => { if (unbent.size > 4000) unbent.clear(); unbent.
 /** One placed item as a mesh in tank space (userData.item = its id, userData.plant for plants). Null = no room for it. */
 export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
   const ground = groundHeight(S, T, it.x, it.depth), y = ground + it.lift - itemSink(it);
+  // hardscape lies along the ground's contour (settleOn): turned by the slope under it, raised only by its own turn's rise
+  const st = it.kind === 'plant' ? null : settleOn(S, T, it), at = st && (st.pitch !== it.pitch || st.tilt !== it.tilt) ? { ...it, pitch: st.pitch, tilt: st.tilt } : it;
   let m: THREE.Mesh;
   if (it.kind === 'plant') {
     const P = plantPlan(S, T, it);
@@ -1010,9 +1043,9 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
     const mat = BREED[it.variant as PlantType];
     const g0 = growthOf(it.variant as PlantType, it.size);
     if (mat?.mode === 'mat' && it.growth != null && gr > g0) { const k = 1 + (mat.rate - 1) * (gr - g0) / (1 - g0 || 1); m.scale.set(k * m.scale.x, m.scale.y, k * m.scale.z); }
-  } else m = new THREE.Mesh(bakedShape(it), solidMaterial(T));
-  m.position.set(it.x, it.kind === 'plant' && isFloat(it.variant) ? waterY(T, S.water.level) : y + (m.geometry.userData.rise ?? 0), -it.depth);
-  m.rotation.copy(itemEuler(it));
+  } else m = new THREE.Mesh(bakedShape(at), solidMaterial(T));
+  m.position.set(it.x, it.kind === 'plant' && isFloat(it.variant) ? waterY(T, S.water.level) : y + (st ? st.dy + riseOf(it) : m.geometry.userData.rise ?? 0), -it.depth);
+  m.rotation.copy(itemEuler(at));
   // stencil capping counts surfaces along a sightline, so it needs a watertight mesh: only stone is (wood limbs have a
   // seam crack and open joints, caves and bark shells are open shells), and a leaking one paints black blobs through it
   if (it.kind === 'stone') capPasses(m, T, it.id);
