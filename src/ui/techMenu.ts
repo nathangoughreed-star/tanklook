@@ -253,14 +253,14 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     const S = store.tank;
     if (!row || !opt) { el.innerHTML = ''; return; }
     const b = baseOf(S), d = totals(withTech(S, withChoice(S, row, opt)));
-    el.innerHTML = `<b>If picked:</b> ${delta(d, b)}`;
+    el.innerHTML = `<div><b>If picked:</b> ${delta(d, b)}</div>`;
   };
-  const techPreview = (tech: TechSetup) => { const el = prev(); if (el) el.innerHTML = `<b>If picked:</b> ${delta(totals(withTech(store.tank, tech)), baseOf(store.tank))}`; };
+  const techPreview = (tech: TechSetup) => { const el = prev(); if (el) el.innerHTML = `<div><b>If picked:</b> ${delta(totals(withTech(store.tank, tech)), baseOf(store.tank))}</div>`; };
   const presetPreview = (id: string | undefined) => {
     const el = prev(); if (!el) return;
     const S = store.tank;
     if (!id) { el.innerHTML = ''; return; }
-    el.innerHTML = `<b>${esc(presetsFor(S).find(p => p.id === id)?.label ?? id)}:</b> ${delta(totals(withTech(S, applyPreset(S, id))), baseOf(S))}`;
+    el.innerHTML = `<div><b>${esc(presetsFor(S).find(p => p.id === id)?.label ?? id)}:</b> ${delta(totals(withTech(S, applyPreset(S, id))), baseOf(S))}</div>`;
   };
   const optOf = (e: Event) => (e.target as HTMLElement).closest<HTMLElement>('[data-opt]');
   const preOf = (e: Event) => (e.target as HTMLElement).closest<HTMLElement>('[data-pre]');
