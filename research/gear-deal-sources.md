@@ -54,6 +54,10 @@ does not cost yet. Chain-store heater/filter sales still come only from the pet-
 Cost to build: the script is one sitting; the BRS watch list needs one pass to pick URLs (by hand or one Sonnet agent ~70k tokens);
 the panel line and "use this one" are a small src change. No ongoing token cost.
 
-## Question for Nathan
+## Decision (2026-10-20)
+Nathan: "build all five". Built as proposed, except the BRS watch list: the script picks gear pages from the sitemap by slug each
+run (deterministic, no hand list). See HANDOFF.md, lane KD section, "Gear sales".
+
+## Question for Nathan (answered)
 Which to build? Suggested: Buce Plant + Aqua Forest + Aquarium Co-Op + CO2Art (planted / fresh, same script) and BRS (reef,
 watch list). Skip Keepa (paid), camelcamelcamel, Amazon PA-API (affiliate) and Slickdeals (robots disallow).

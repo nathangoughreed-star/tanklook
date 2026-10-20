@@ -31,6 +31,9 @@ export interface DemandOpts {
   /** A kit the user starts from: its listed price replaces the separate tank, stand, lid, light, filter and heater prices
    *  (their power use stays). Prices come from src/data/kits.ts (lane KB); a kit without a price falls back to the parts. */
   kit?: { id: string; priceUsd: number; asOf: string; /** which parts the price covers; default all six (a tank+stand deal says ['tank','stand']) */ includes?: string[]; /** row label, default `Kit (id)` */ label?: string; /** the real filter and heater the kit or deal ships with; matched to the nearest generic model (gear.ts) for power and row name */ filter?: FilterSpec; heater?: { watts: number } };
+  /** A product on sale the user picked for a gear row (lane GD, demand/gearDeals.ts): row key -> its price, which replaces the
+   *  row's typical price (power use stays). A kit covering the same part still wins. */
+  parts?: Record<string, { usd: number; asOf: string; label: string }>;
   /** For the price-age widening; default now. */
   now?: number;
 }
@@ -188,6 +191,10 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   if (tankRisk) add('stability', salt ? 'Saltwater chemistry and volume' : 'Small volume', 'tank', { risk: tankRisk * skillMul(P, domain), domain });
 
   techDemand(S, rows, { price, riskMul: skillMul(P, domain), domain }); // lane TM: gear rows from the chosen tech (no-op without S.tech)
+  for (const c of rows) {
+    const p = opts.parts?.[c.key];
+    if (p && c.setup) { c.setup = widen3({ lo: p.usd * 0.97, mode: p.usd, hi: p.usd * 1.1 }, ageWiden(p.asOf, opts.now ?? Date.now())); c.label += ` (${p.label})`; }
+  }
   if (opts.kit) {
     // the kit's one price (listing +-15 %, widened with age) stands in for the parts it contains
     const parts = new Set(opts.kit.includes ?? ['tank', 'stand', 'lid', 'light', 'filter', 'heater']);
