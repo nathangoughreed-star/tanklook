@@ -34,7 +34,7 @@ export function herpCheck(S: TankSetup): StockIssue[] {
     const grown = st === last, [min1, rec1] = floorFor(r, n), need = min1 * cur.k, want = rec1 * cur.k, hNeed = cur.h ?? (grown ? r.hMin : undefined);
     const kid = grown ? '' : ' at this size';
     if (n > r.max) out.push({ level: 'warn', who, text: `${plural(n, 'animal')}: sources support at most ${r.max} together. ${r.group}` });
-    else if (n >= 2 && r.max > 1) out.push({ level: 'note', who, text: `${plural(n, 'animal')} together. ${r.group}` });
+    else if (n >= 2 && r.max > 1 && !(r.social && n >= r.social)) out.push({ level: 'note', who, text: `${plural(n, 'animal')} together. ${r.group}` });
     if (r.social && n < r.social) out.push({ level: 'note', who, text: `${n === 1 ? 'A single frog' : 'A pair'} is lonely: keep ${r.social} or more.` });
     const m = group.filter(a => a.g === 'm').length, fe = group.filter(a => a.g === 'f').length, u = n - m - fe;
     if (n >= 2) {
