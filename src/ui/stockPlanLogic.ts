@@ -72,16 +72,18 @@ export function conflictOf(picks: Pk[], id: string): string | undefined {
 export interface Mate { sp: Species; ok: boolean; why: string; score: number; n: number }
 const overlap = (a?: [number, number], b?: [number, number]) => a && b ? Math.max(0, Math.min(a[1], b[1]) - Math.max(a[0], b[0])) : 0;
 
-/** Species that could share the water with the picks, best first; those that cannot (with the first reason) follow, at most `bad` of them. */
-export function rankTankmates(picks: Pk[], limit = 10, bad = 3): Mate[] {
+/** Every animal that is not already picked: the ones that suit ALL the picks first, best first, then the ones that do not (each with the first
+ *  reason, naming the occupant it clashes with), by name. Salt against fresh counts as a clash. */
+export function rankTankmates(picks: Pk[]): Mate[] {
   const have = picks.filter(p => totalOf(p) > 0).map(p => getSpecies(p.id)).filter((s): s is Species => !!s);
   if (!have.length) return [];
-  const salt = have.some(s => s.salt), taken = new Set(have.map(s => s.id)), zones = new Set(have.map(zoneOf));
+  const taken = new Set(have.map(s => s.id)), zones = new Set(have.map(zoneOf));
   const out: Mate[] = [];
   for (const sp of SPECIES) {
-    if (taken.has(sp.id) || !!sp.salt !== salt || !countsAgainstWater(sp)) continue;
+    if (taken.has(sp.id) || !countsAgainstWater(sp)) continue;
     const c = CARE[sp.id]; if (!c) continue;
-    const why = whyAnimal(sp, Infinity, 3, have)?.text ?? '';
+    const salty = have.find(o => !!o.salt !== !!sp.salt);
+    const why = salty ? `${sp.salt ? 'Salt' : 'Fresh'} water: it cannot share a tank with ${salty.name}` : whyAnimal(sp, Infinity, 3, have)?.text.replace(/^compatibility: /, '') ?? '';
     let score = why ? 0 : 100;
     if (!why) {
       // fills a part of the tank the others leave empty, shares their water, easy to keep, and likes the same things
@@ -93,7 +95,7 @@ export function rankTankmates(picks: Pk[], limit = 10, bad = 3): Mate[] {
   }
   const ok = out.filter(m => m.ok).sort((a, b) => b.score - a.score || a.sp.name.localeCompare(b.sp.name));
   const no = out.filter(m => !m.ok).sort((a, b) => a.sp.name.localeCompare(b.sp.name));
-  return [...ok.slice(0, limit), ...no.slice(0, bad)];
+  return [...ok, ...no];
 }
 
 // ---------- the tank ----------

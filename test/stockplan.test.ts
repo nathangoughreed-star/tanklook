@@ -32,12 +32,14 @@ describe('stocking screen logic (lane P5, 2026-10-20)', () => {
     expect(notesOf({ id: 'guppy', n: 1, f: 0 }).ratio).toMatch(/female/);
   });
   it('tankmates: compatible first, never an animal that eats or is eaten, salt stays with salt', () => {
-    const list = rankTankmates([{ id: 'adf', n: 2 }], 30, 30);
+    const list = rankTankmates([{ id: 'adf', n: 2 }]);
     const ok = list.filter(m => m.ok), bad = list.filter(m => !m.ok);
     expect(ok.length).toBeGreaterThan(3);
     expect(list.findIndex(m => !m.ok)).toBe(ok.length); // all the suitable ones come before the first unsuitable one
     expect(bad.find(m => m.sp.id === 'axolotl')?.why).toMatch(/eat/);
-    expect(list.every(m => !m.sp.salt)).toBe(true);
+    expect(bad.find(m => m.sp.salt)?.why).toMatch(/Salt water/); // salt animals are listed too, greyed out
+    const two = rankTankmates([{ id: 'adf', n: 2 }, { id: 'oscar', n: 1 }]); // every occupant gates, not just the first
+    expect(two.find(m => m.sp.id === 'neon')?.ok).toBe(false);
     expect(rankTankmates([])).toEqual([]);
     for (let i = 1; i < ok.length; i++) expect(ok[i - 1].score).toBeGreaterThanOrEqual(ok[i].score);
     expect(conflictOf([{ id: 'adf', n: 2 }, { id: 'banggai', n: 2 }], 'banggai')).toMatch(/Salt water/);

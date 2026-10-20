@@ -86,7 +86,7 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
   const mateRows = () => {
     const list = rankTankmates(picks);
     if (!list.length) return '<p class="spNote">Nothing else suits this water.</p>';
-    return `<ul class="spMates">${list.map(m => `<li class="${m.ok ? '' : 'no'}"><div><b>${esc(m.sp.name)}</b>${m.ok ? '' : `<span class="spWhy">${esc(m.why)}</span>`}</div>${m.ok ? `<button type="button" data-act="mate" data-id="${m.sp.id}">Add ${m.n}</button>` : ''}</li>`).join('')}</ul>`;
+    return `<ul class="spMates">${list.map(m => `<li class="${m.ok ? '' : 'no'}"><div><b>${esc(m.sp.name)}</b>${m.ok ? '' : `<span class="spWhy">Not with these: ${esc(m.why)}</span>`}</div><button type="button" data-act="mate" data-id="${m.sp.id}"${m.ok ? '' : ' disabled'}>Add ${m.n}</button></li>`).join('')}</ul>`;
   };
 
   const tankBlock = () => {

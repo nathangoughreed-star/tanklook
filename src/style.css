@@ -636,7 +636,7 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .spMsg { font-weight: 600; font-size: 12px } .spb-avoid { color: #d8432f } .spb-ok { color: #b07a10 } .spb-good { color: #2f8f4e } .spb-great { color: #1f7a8c }
 .spNote { font-size: 11.5px; opacity: .75; margin: 2px 0 } .spWarn { color: #d8432f; font-weight: 600; margin: 4px 0 }
 .spHd { font-weight: 700; margin: 12px 0 4px; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; opacity: .8 }
-.spMates li, .spFork li { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--line) } .spMates li.no { opacity: .55 } .spWhy { display: block; font-size: 11px }
+.spMates li, .spFork li { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--line) } .spMates { max-height: 340px; overflow-y: auto } .spMates li.no { opacity: .5 } .spWhy { display: block; font-size: 11px }
 .spFork li > div { display: flex; flex-direction: column }
 .spTank { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px } .spTank > b { flex: 1 1 100% }
 .spBar { display: inline-block; width: 80px; height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--ink) 15%, transparent); overflow: hidden } .spBar i { display: block; height: 100%; background: #2f8f4e } .spBar.near i { background: #d6a21b } .spBar.over i { background: #d8432f }
