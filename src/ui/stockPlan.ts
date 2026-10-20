@@ -28,6 +28,7 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
   el.className = 'sp'; el.hidden = true; el.setAttribute('aria-label', 'Stocking: the animal I want');
   view.append(el);
   const builds = attachBuildPick(store, viewer, status); // lane P6a: the three-builds screen that "Continue" opens
+  void import('./scapePick').then(m => m.attachScapePick(store, viewer, status)); // lane P6b: the scape choice and plan sheet after a build is picked
   const fork = document.createElement('dialog');
   fork.className = 'libdlg forkdlg'; fork.setAttribute('aria-label', 'Make room or swap');
   document.body.append(fork);
