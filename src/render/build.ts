@@ -15,7 +15,7 @@ import { TABLE_TOP, cornerWalls, wallGap, tableCentre, tableOn, tableRing, wallP
 import { groundHeight, pieSegs, poolHandles, poolWet, terrainDisc, terrainPoints, type PoolPart } from '../scene/terrain';
 import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
 import { getImage } from '../scene/images';
-import { LU, addBeams, addFixture, applyLighting, waterVolumeMaterial } from './lighting';
+import { LU, addBeams, addFixture, addHoodLamps, applyLighting, waterVolumeMaterial } from './lighting';
 import { addAlgae } from './algae';
 import { buildGear, gearKey, solidBoxes } from './gear3d';
 import { itemDeps, itemMesh, leafProbe, solidProbe, underProbe } from './items';
@@ -235,8 +235,8 @@ function addBowl(sc: THREE.Scene, S: TankSetup, T: Tank, add: (geo: THREE.Buffer
 
 function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
   const { H } = T, R = S.render, fp = footprint(T), bowl = shapeOf(T) === 'bowl';
-  // backing under the substrate; a bare-bottom tank has none, so the stand top or the room shows through the bottom pane
-  if (S.substrate.show || S.terrain.on) sc.add(new THREE.Mesh(flatGeometry(fp.ring, 0), basic(0xcdb98f, { side: THREE.DoubleSide })));
+  // a bare-bottom tank has nothing on the floor, so the stand top or the room shows through the bottom pane; with a
+  // ground, its bottom shows there (addSubstrate)
   const bg = R.bg === 'custom' ? { ...BACKGROUNDS.custom, color: parseInt((R.bgColor ?? '#2f4a36').slice(1), 16) } : BACKGROUNDS[R.bg], t = glassThickness(T, R.glass);
   // uploaded pictures take their sides whatever the background is; the plain background keeps its other sides
   const pics = R.bgImages.flatMap(b => { const data = b.sides.length ? getImage(b.img) : undefined; return data ? [{ ...b, data }] : []; });
@@ -606,6 +606,7 @@ function addHood(sc: THREE.Scene, S: TankSetup, T: Tank) {
   for (let i = 0; i < seg; i++) { const xa = hx0 + (hx1 - hx0) * i / seg, xb = hx0 + (hx1 - hx0) * (i + 1) / seg; hp.push(...W(xa, ya, ua), ...W(xb, ya, ua), ...W(xa, yb, ubh), ...W(xb, yb, ubh)); }
   hp.push(...W(hx0, ya, ua), ...W(hx0, yb, ubh), ...W(hx1, ya, ua), ...W(hx1, yb, ubh));
   sc.add(lines(hp, 0x45484e, 0.95));
+  addHoodLamps(sc, T, S.light, base - bev);                 // the lamps on the hood's underside (its bevel's lowest face)
 }
 
 /** Fine screen: a dark translucent weave (lane EN); `w` x `d` mm sets how many cells the texture repeats (one cell per 5 mm). */
@@ -973,6 +974,11 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   // coarse grounds in 3D (render/grains.ts): the painted surface darkened to the shadowed gaps between the grains
   mk(top, gl ? 0x6e6e6e : 0xffffff, topCol, topNrm, topWet); mk(side, gl ? 0x5a5a5a : 0xb4b4b4, sideCol); // the skirt a touch darker so the layer reads through the glass
   mk(leca, 0xb4b4b4, lecaCol, undefined, undefined, lecaTexture()); mk(mesh, 0x3a3d38, meshCol, undefined, undefined, meshTexture());
+  // the bottom of the ground, seen through the bottom pane from under a tank with no stand (Nathan 2026-10-20: a plain
+  // sand-coloured sheet showed there); a layered ground's bottom is its clay balls
+  const fr = footprint(T).ring, under: number[][] = [], lay = sub.type === 'layered' && banded, ut = lay ? lecaTile : tile;
+  for (let i = 1; i < fr.length - 1; i++) for (const p of [fr[0], fr[i], fr[i + 1]]) under.push([p[0], 0.3, -p[1]], [p[0] / ut, p[1] / ut]);
+  mk(under, lay ? 0x8c8c8c : 0x9a9a9a, undefined, undefined, undefined, lay ? lecaTexture() : undefined);
   if (gl) for (const o of [...grainMeshes(S, T, (x, d) => G([x, d])), ...(bowl ? [] : glassGrains(S, T, (x, d) => G([x, d])[1]))]) sc.add(o);
   const gt = grainTop(gl); // litter lies on the grains
   if (sub.litter?.density) for (const o of litterMeshes(S, T, (x, d) => { const p = G([x, d]); p[1] += gt; return p; })) sc.add(o);
