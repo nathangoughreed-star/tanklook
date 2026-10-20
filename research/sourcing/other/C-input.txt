@@ -1,0 +1,27 @@
+filter (Filter): {"minutes":{"lo":1,"mode":2,"hi":4},"monthly":{"lo":1,"mode":3,"hi":7},"ref":20,"exp":{"minutes":0.3,"monthly":0.5},"byKind":{"sponge":0.5,"internal":0.8,"hob":1,"canister":1.5}}
+sump (Sump): {"minutes":{"lo":2,"mode":4,"hi":8},"ref":55,"exp":{"price":0.6,"minutes":0.3}}
+returnpump (Return pump): {"watts":30,"hours":24,"ref":55,"exp":{"price":0.5,"watts":0.8},"gphPerGal":6}
+heater (Heater): {}
+chiller (Chiller): {"minutes":{"lo":0.2,"mode":0.5,"hi":1},"ref":55,"exp":{"price":0.5}}
+liquidcarbon (Liquid carbon): {"minutes":{"lo":2,"mode":4,"hi":6},"monthly":{"key":"gear:liquid-carbon","months":8},"ref":20,"exp":{"monthly":1}}
+diyco2 (DIY CO2 bottle + diffuser): {"minutes":{"lo":5,"mode":8,"hi":12},"monthly":{"lo":2,"mode":3,"hi":5},"ref":20,"exp":{"monthly":0.7}}
+co2kit (CO2 regulator + cylinder + solenoid): {"minutes":{"lo":1,"mode":2,"hi":3},"watts":2,"hours":8,"refill":{"key":"gear:co2-refill","galMonthsPerRefill":80}}
+dropchecker (Drop checker): {"minutes":{"lo":0.3,"mode":0.5,"hi":1},"monthly":{"lo":0.2,"mode":0.4,"hi":1}}
+roottabs (Root tabs): {"minutes":{"lo":0.3,"mode":0.5,"hi":1},"monthly":{"key":"gear:root-tabs","months":8},"ref":20,"exp":{"monthly":1}}
+aio (All-in-one fertilizer): {"minutes":{"lo":1,"mode":3,"hi":5},"monthly":{"key":"gear:ferts"},"ref":20,"exp":{"monthly":1}}
+ei (EI dry salts): {"minutes":{"lo":3,"mode":5,"hi":8},"monthly":{"key":"gear:ei-salts","months":12},"ref":20,"exp":{"monthly":1}}
+doser (Dosing pump): {"minutes":{"lo":0.3,"mode":0.5,"hi":1},"watts":1,"hours":24}
+airpump (Air pump + airstone): {"watts":2.5,"hours":24,"monthly":{"lo":0.1,"mode":0.2,"hi":0.4},"ref":20,"exp":{"price":0.4,"watts":0.5}}
+uv (UV sterilizer): {"minutes":{"lo":0.2,"mode":0.4,"hi":1},"watts":9,"hours":24,"monthly":{"lo":1,"mode":2,"hi":3.5},"ref":40,"exp":{"price":0.5,"watts":0.7,"monthly":0.5}}
+conditioner (Water conditioner): {"perWaterChange":{"key":"gear:conditioner","perGal":0.1}}
+rodi (RO/DI unit): {"minutes":{"lo":2,"mode":4,"hi":6},"monthly":{"lo":3,"mode":5,"hi":9},"ref":40,"exp":{"monthly":0.7}}
+ato (Auto top-off): {"minutes":{"lo":-4,"mode":-2,"hi":-1},"watts":3,"hours":1,"ref":40,"exp":{"minutes":0.3}}
+skimmerhob (Hang-on protein skimmer): {"minutes":{"lo":2,"mode":3,"hi":5},"watts":6,"hours":24,"ref":30,"exp":{"price":0.5,"watts":0.6}}
+skimmer (In-sump protein skimmer): {"minutes":{"lo":2,"mode":4,"hi":6},"watts":15,"hours":24,"ref":75,"exp":{"price":0.5,"watts":0.6}}
+powerhead (Powerhead): {"minutes":{"lo":0.3,"mode":0.5,"hi":1},"watts":6,"hours":24,"ref":40,"exp":{"price":0.4,"watts":0.7}}
+wavemaker (Wavemaker pump): {"minutes":{"lo":0.3,"mode":0.5,"hi":1},"watts":10,"hours":24,"ref":40,"exp":{"price":0.5,"watts":0.7}}
+twopart (Two-part (calcium + alkalinity)): {"minutes":{"lo":5,"mode":8,"hi":12},"monthly":{"key":"gear:two-part","months":6},"ref":40,"exp":{"monthly":1}}
+hydrometer (Swing-arm hydrometer): {}
+refractometer (Refractometer): {"minutes":{"lo":0.5,"mode":1,"hi":2}}
+saltmix (Salt mix): {}
+roomC 21

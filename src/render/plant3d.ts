@@ -1369,3 +1369,199 @@ export function uploadPlant(r: THREE.WebGLRenderer, src: THREE.BufferGeometry, s
   upScene.remove(m); v.dispose(); all.dispose();
   return ks.length < has.length ? step + 1 : -1;
 }
+
+// ---- artificial plants (lane P4, 2026-10-20) -------------------------------------------------------------------------
+// A fixed look: no growth tags, no emersed twins, no bending at the surface, no leaf algae (plain position / normal /
+// colour). What makes them read as artificial in the tank: a weighted base disc, leaves all cut from the same pattern
+// (identical shapes, evenly spaced), even colour. Silk: thin fabric leaves that droop and arch over, a die-cut zigzag
+// edge, a printed paler midrib and a paler back; plastic: stiff leaves moulded with a raised midrib (a V fold), thicker,
+// in tidy whorls, glossy (the renderer's artificial material adds a highlight). Base at y = 0; height = size (a mat:
+// width = size).
+
+/** One artificial plant's palette: leaf, its midrib, its tip, and the stem. */
+interface FakeTone { leaf: number; rib: number; tip: number; stem: number }
+const FAKE_TONES: Record<'silk' | 'plastic', FakeTone[]> = {
+  silk: [
+    { leaf: 0x3f7a35, rib: 0x86ad62, tip: 0x5c9440, stem: 0x3a5a2c },
+    { leaf: 0x2f6a3a, rib: 0x7ea86e, tip: 0x4c8a4a, stem: 0x34502c },
+    { leaf: 0x8a2c2a, rib: 0xc0705a, tip: 0xa8443a, stem: 0x4a3326 },
+  ],
+  plastic: [
+    { leaf: 0x2f9a35, rib: 0x5cc24a, tip: 0x56b83c, stem: 0x2e7a30 },
+    { leaf: 0x4aa82e, rib: 0x8ad04a, tip: 0x7cc43a, stem: 0x3a8a2a },
+    { leaf: 0xb02a2a, rib: 0xd8584a, tip: 0xc8403a, stem: 0x7a2420 },
+  ],
+};
+const MOSS_TONES: Record<'silk' | 'plastic', FakeTone> = {
+  silk: { leaf: 0x3d6a2c, rib: 0x5f8a3e, tip: 0x6a9a44, stem: 0x2a3a20 },
+  plastic: { leaf: 0x3a9a2e, rib: 0x5ab83c, tip: 0x78cc4a, stem: 0x2a4a22 },
+};
+
+/** Sheets of one artificial plant: positions, colours, triangles (normals are computed once at the end). */
+class FakeSheets {
+  pos: number[] = []; col: number[] = []; idx: number[] = [];
+  /** A rows x cols grid (row-major) and its back: the same grid moved by `back.off`, facing the other way. */
+  grid(p: THREE.Vector3[], c: THREE.Color[], rows: number, cols: number, back: { off: THREE.Vector3[]; c: THREE.Color[] }) {
+    for (const side of [0, 1]) {
+      const o = this.pos.length / 3;
+      p.forEach((v, i) => {
+        const q = side ? v.clone().add(back.off[i]) : v, k = side ? back.c[i] : c[i];
+        this.pos.push(q.x, q.y, q.z); this.col.push(k.r, k.g, k.b);
+      });
+      for (let r = 0; r < rows - 1; r++) for (let k = 0; k < cols - 1; k++) {
+        const a = o + r * cols + k, b = a + 1, d = a + cols, e = d + 1;
+        if (side) this.idx.push(a, b, d, b, e, d); else this.idx.push(a, d, b, b, d, e);
+      }
+    }
+  }
+}
+
+interface FakeLeaf {
+  base: THREE.Vector3; dir: THREE.Vector3; len: number; width: number;
+  /** 0 = straight; more = the centreline turns toward straight down along the leaf (fabric) */
+  droop: number;
+  /** the V of a moulded midrib, as a share of the half-width (plastic) */
+  fold: number;
+  /** edge ripple of fabric, as a share of the half-width (silk) */
+  wave: number;
+  /** die-cut zigzag teeth along the edge (silk), 0 = smooth */
+  teeth: number;
+  /** outline: lance (pointed oval), sword (long, narrow, pointed), blade (a short strap: plastic moss) */
+  shape: 'lance' | 'sword' | 'blade';
+  thick: number; rows: number; cols: number;
+  tone: FakeTone; back: number; dark: number;
+}
+const UP = new THREE.Vector3(0, 1, 0), DOWN = new THREE.Vector3(0, -1, 0);
+function fakeLeaf(b: FakeSheets, o: FakeLeaf) {
+  const { rows, cols } = o, pts: THREE.Vector3[] = [], cs: THREE.Color[] = [], off: THREE.Vector3[] = [], cb: THREE.Color[] = [];
+  // across: horizontal, square to the leaf's direction (a leaf pointing straight up gets an arbitrary one)
+  const across = new THREE.Vector3().crossVectors(o.dir, UP);
+  if (across.lengthSq() < 1e-6) across.set(1, 0, 0);
+  across.normalize();
+  const leaf = new THREE.Color(o.tone.leaf), rib = new THREE.Color(o.tone.rib), tip = new THREE.Color(o.tone.tip), pale = new THREE.Color(0xdde4d0);
+  let c = o.base.clone();
+  const d = o.dir.clone(), step = o.len / (rows - 1);
+  for (let r = 0; r < rows; r++) {
+    const t = r / (rows - 1);
+    // the leaf's own normal: square to its direction and the across line
+    const n = new THREE.Vector3().crossVectors(across, d).normalize();
+    const prof = o.shape === 'sword' ? Math.pow(Math.sin(Math.PI * Math.min(1, 0.08 + t * 0.95)), 0.55) * (1 - 0.6 * t * t)
+      : o.shape === 'blade' ? 1 - 0.75 * Math.pow(t, 3)
+      : Math.pow(Math.sin(Math.PI * Math.min(1, 0.05 + t)), 0.8);
+    for (let k = 0; k < cols; k++) {
+      const u = (k / (cols - 1)) * 2 - 1, au = Math.abs(u);
+      let hw = o.width / 2 * prof;
+      if (o.teeth && au > 0.99) hw *= 1 + o.teeth * (r % 2 ? 1 : -1); // the zigzag of a die-cut fabric edge
+      const lift = (o.fold * au + o.wave * au * Math.sin(t * 9 + u * 1.3 + o.len)) * hw;
+      pts.push(c.clone().addScaledVector(across, u * hw).addScaledVector(n, lift));
+      off.push(n.clone().multiplyScalar(-o.thick));
+      // colour: the midrib paler along the middle, the tip tint toward the tip, darker at the base (the form shading)
+      const ribK = Math.max(0, 1 - au * (cols - 1) / 1.2) * 0.8;
+      const k1 = leaf.clone().lerp(rib, ribK).lerp(tip, t * t * 0.6).multiplyScalar(o.dark + (1 - o.dark) * Math.min(1, 0.4 + t));
+      cs.push(k1); cb.push(k1.clone().lerp(pale, o.back).multiplyScalar(0.85));
+    }
+    // along: turn toward straight down by the droop, a little more toward the tip
+    if (o.droop > 0) d.lerp(DOWN, Math.min(0.5, o.droop * 2.2 / rows * (0.4 + t))).normalize();
+    c = c.clone().addScaledVector(d, step);
+  }
+  b.grid(pts, cs, rows, cols, { off, c: cb });
+}
+
+/** Per-vertex colour for a solid part, optionally shaded by height. */
+function colored(g: THREE.BufferGeometry, color: number, shade?: (y: number) => number) {
+  const c = new THREE.Color(color), p = g.attributes.position, a = new Float32Array(p.count * 3);
+  for (let i = 0; i < p.count; i++) { const k = shade ? shade(p.getY(i)) : 1; a[i * 3] = c.r * k; a[i * 3 + 1] = c.g * k; a[i * 3 + 2] = c.b * k; }
+  g.setAttribute('color', new THREE.BufferAttribute(a, 3));
+  return g;
+}
+/** A stem (a plastic-sleeved wire) along `pts`, radius r. */
+function fakeTube(pts: THREE.Vector3[], r: number, color: number) {
+  const g = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), Math.max(4, pts.length * 3), r, 6, false);
+  g.deleteAttribute('uv');
+  return colored(g, color);
+}
+/** The weighted base every artificial plant stands on: a low dark disc, its rim bevelled. */
+function fakeBase(r: number, h: number) {
+  const g = new THREE.CylinderGeometry(r * 0.9, r, h, 20, 1);
+  g.translate(0, h / 2, 0); g.deleteAttribute('uv');
+  return colored(g, 0x2a2b2c, y => 0.75 + 0.35 * y / h);
+}
+
+/**
+ * An artificial plant (lane P4): `mat` silk or plastic, `form` stem (upright stems of leaf pairs or whorls), rosette
+ * (sword leaves from one crown) or mat (a moss mat). Height = size; a mat: width = size. Built from the seed only.
+ */
+export function artificialGeometry(mat: 'silk' | 'plastic', form: 'stem' | 'rosette' | 'mat', seed: number, size: number) {
+  const r = rng(seed * 7919 + 13), b = new FakeSheets(), parts: THREE.BufferGeometry[] = [];
+  const silk = mat === 'silk', pick = r();
+  const tone = form === 'mat' ? MOSS_TONES[mat] : FAKE_TONES[mat][pick < 0.6 ? 0 : pick < 0.8 ? 1 : 2];
+  const H = 100; // built about 100 tall (a mat: 100 wide), scaled to size at the end
+  const leafBase = { thick: silk ? 0.25 : 0.9, tone, back: silk ? 0.2 : 0.05, dark: 0.55 };
+  if (form === 'stem') {
+    parts.push(fakeBase(9, 3.5));
+    const n = silk ? 3 + Math.floor(r() * 2) : 3 + Math.floor(r() * 3);
+    for (let s = 0; s < n; s++) {
+      const a0 = (s / n) * Math.PI * 2 + r() * 0.5, lean = (silk ? 0.08 : 0.05) + r() * 0.1, h = H * (0.62 + 0.38 * (s === 0 ? 1 : r()));
+      const out = new THREE.Vector3(Math.cos(a0), 0, Math.sin(a0)), sp: THREE.Vector3[] = [];
+      for (let k = 0; k <= 6; k++) {
+        const t = k / 6, bow = silk ? Math.sin(t * Math.PI) * 2.5 : 0;
+        sp.push(new THREE.Vector3(out.x * (2 + h * lean * t + bow), 2 + h * t, out.z * (2 + h * lean * t + bow)));
+      }
+      parts.push(fakeTube(sp, silk ? 0.55 : 0.8, tone.stem));
+      // nodes up the stem: silk = opposite pairs turned a quarter each node; plastic = whorls of three turned a sixth
+      const per = silk ? 2 : 3, gap = silk ? 6.5 : 7, nodes = Math.max(3, Math.floor((h - 10) / gap));
+      for (let k = 0; k < nodes; k++) {
+        const t = (k + 1.2) / (nodes + 0.6), y = 2 + h * t, rad = 2 + h * lean * t;
+        const at = new THREE.Vector3(out.x * rad, y, out.z * rad), sz = 1 - 0.45 * t;
+        for (let j = 0; j < per; j++) {
+          const az = a0 + (j / per) * Math.PI * 2 + k * (silk ? Math.PI / 2 : Math.PI / 3);
+          const rise = silk ? 0.35 : 0.65, dir = new THREE.Vector3(Math.cos(az) * Math.cos(rise), Math.sin(rise), Math.sin(az) * Math.cos(rise));
+          fakeLeaf(b, { ...leafBase, base: at, dir, len: (silk ? 19 : 12) * sz, width: (silk ? 8 : 3.6) * sz, droop: silk ? 0.8 : 0.06, fold: silk ? 0.05 : 0.35, wave: silk ? 0.18 : 0, teeth: silk ? 0.12 : 0, shape: 'lance', rows: silk ? 8 : 5, cols: 5 });
+        }
+      }
+      // the tip: a small tuft of upright leaves
+      const top = sp[sp.length - 1];
+      for (let j = 0; j < 3; j++) {
+        const az = a0 + j * 2.1, dir = new THREE.Vector3(Math.cos(az) * 0.4, 0.92, Math.sin(az) * 0.4).normalize();
+        fakeLeaf(b, { ...leafBase, base: top, dir, len: silk ? 7 : 6, width: silk ? 3 : 2.2, droop: silk ? 0.4 : 0, fold: silk ? 0.05 : 0.35, wave: 0, teeth: 0, shape: 'lance', rows: 4, cols: 3 });
+      }
+    }
+  } else if (form === 'rosette') {
+    parts.push(fakeBase(11, 4));
+    const n = silk ? 11 + Math.floor(r() * 4) : 9 + Math.floor(r() * 3);
+    for (let k = 0; k < n; k++) {
+      const az = k * 2.39996 + r() * 0.15, inner = (k % 3) / 2; // three rings, the inner ones more upright
+      const rise = silk ? 1.05 + inner * 0.35 + r() * 0.08 : 1.12 + inner * 0.3 + r() * 0.05;
+      const dir = new THREE.Vector3(Math.cos(az) * Math.cos(rise), Math.sin(rise), Math.sin(az) * Math.cos(rise));
+      fakeLeaf(b, { ...leafBase, base: new THREE.Vector3(Math.cos(az) * 1.5, 3.5, Math.sin(az) * 1.5), dir,
+        len: (silk ? 100 : 92) * (0.78 + 0.22 * inner), width: silk ? 14 : 11, droop: silk ? 0.75 : 0.12, fold: silk ? 0.08 : 0.3,
+        wave: silk ? 0.12 : 0, teeth: silk ? 0.06 : 0, shape: 'sword', rows: silk ? 16 : 10, cols: 5 });
+    }
+  } else {
+    // a mat 100 wide, 85 deep: a backing sheet tufted all over
+    const W = 100, D = 85, base = new THREE.BoxGeometry(W, 2.2, D, 1, 1, 1);
+    base.translate(0, 1.1, 0); base.deleteAttribute('uv');
+    parts.push(colored(base, tone.stem, y => 0.7 + 0.3 * y / 2.2));
+    const n = silk ? 650 : 1500;
+    for (let k = 0; k < n; k++) {
+      const x = (r() - 0.5) * (W - 3), z = (r() - 0.5) * (D - 3), az = r() * Math.PI * 2;
+      // shorter tufts toward the edge of the mat
+      const edge = Math.min(W / 2 - Math.abs(x), D / 2 - Math.abs(z)), kk = Math.min(1, edge / 6 + 0.35);
+      const rise = silk ? 0.85 + r() * 0.55 : 1.25 + r() * 0.25, dir = new THREE.Vector3(Math.cos(az) * Math.cos(rise), Math.sin(rise), Math.sin(az) * Math.cos(rise));
+      fakeLeaf(b, { ...leafBase, base: new THREE.Vector3(x, 2.1, z), dir, len: (silk ? 13 + r() * 6 : 6 + r() * 4) * kk, width: silk ? 3.4 : 1.3,
+        droop: silk ? 0.45 : 0.03, fold: silk ? 0.06 : 0.2, wave: silk ? 0.15 : 0, teeth: silk ? 0.15 : 0, shape: silk ? 'lance' : 'blade', rows: silk ? 4 : 3, cols: silk ? 3 : 2, dark: 0.5 });
+    }
+  }
+  const sheets = new THREE.BufferGeometry();
+  sheets.setAttribute('position', new THREE.Float32BufferAttribute(b.pos, 3));
+  sheets.setAttribute('color', new THREE.Float32BufferAttribute(b.col, 3));
+  sheets.setIndex(b.idx); sheets.computeVertexNormals();
+  const g = mergeGeometries([sheets, ...parts])!;
+  sheets.dispose(); for (const p of parts) p.dispose();
+  // to size: height = size (the leaves' real reach, not the nominal 100); a mat: width = size
+  g.computeBoundingBox();
+  const bb = g.boundingBox!, k = form === 'mat' ? size / (bb.max.x - bb.min.x) : size / bb.max.y;
+  g.scale(k, k, k); g.computeBoundingBox(); g.computeBoundingSphere();
+  g.userData.fake = mat;
+  return g;
+}

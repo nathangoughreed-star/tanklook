@@ -132,6 +132,8 @@ export function buildSheet(scene: Scene, index = scene.active, opts: SheetOpts =
   sections.push({ title: 'Plants', rows: pr.length ? [...pr, { item: 'Total', qty: String(S.items.filter(i => i.kind === 'plant').length), detail: '' }] : [{ item: 'None', qty: '', detail: '' }] });
   const cr = group(['coral']);
   if (cr.length) sections.push({ title: KINDS.coral, rows: cr });
+  const fr = group(['artificial']); // lane P4
+  if (fr.length) sections.push({ title: KINDS.artificial, rows: fr });
 
   // ---- animals
   const an = new Map<string, number>();

@@ -43,6 +43,11 @@ Avoid: forums, AI-written content farms with no author, Pinterest, Reddit, YouTu
 - `prey`: we say it eats animals up to N mm. Pages rarely give mm. A statement like "will eat any fish small enough to fit
   in its mouth" or "eats shrimp" is a source for the BEHAVIOUR, not the number: record it with `verdict: behaviour-only`.
 
+- Land animals only, air climate (field names start `air.`, all [lo, hi]): `air.c` comfortable ambient air °C (the
+  cool-to-warm-side daytime gradient), `air.warm` basking / warm-spot °C, `air.tol` tolerable air °C (night drop and short
+  excursions it survives), `air.rh` comfortable relative humidity %, `air.rhTol` tolerable humidity %. Agrees when each
+  end is within 1.5 °C or 7 % RH of a stated range. Pages give °F: convert (°C = (°F - 32) / 1.8) and keep the °F in `states`.
+
 ## Output
 Write ONE JSON file at the path your task gives you, shaped exactly so:
 

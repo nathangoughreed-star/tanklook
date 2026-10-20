@@ -1,0 +1,633 @@
+[
+ {
+  "id": "amano",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.aquariumsource.com/amano-shrimp/",
+  "result": "exact",
+  "score": 1,
+  "quote": "can grow up to 2 inches in length"
+ },
+ {
+  "id": "amano",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/amano-shrimp",
+  "result": "exact",
+  "score": 1,
+  "quote": "grows to about 1.5–2 inches (4–5 cm)"
+ },
+ {
+  "id": "amano",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.aquariumsource.com/amano-shrimp/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Care: Easy"
+ },
+ {
+  "id": "amano",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/amano-shrimp",
+  "result": "exact",
+  "score": 1,
+  "quote": "super hardy"
+ },
+ {
+  "id": "amano",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.aquariumsource.com/amano-shrimp/",
+  "result": "exact",
+  "score": 1,
+  "quote": "The minimum tank size for your Amano shrimp should be ten gallons"
+ },
+ {
+  "id": "amano",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://aquaticarts.com/pages/amano-shrimp-care-guide",
+  "result": "exact",
+  "score": 1,
+  "quote": "Amano Shrimp are totally peaceful"
+ },
+ {
+  "id": "amano",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.aquariumsource.com/amano-shrimp/",
+  "result": "exact",
+  "score": 1,
+  "quote": "these shrimp are normally quite peaceful"
+ },
+ {
+  "id": "amano",
+  "field": "group",
+  "verdict": "agrees",
+  "url": "https://www.aquariumsource.com/amano-shrimp/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Try to keep your shrimp in groups of half a dozen or more."
+ },
+ {
+  "id": "amano",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/amano-shrimp",
+  "result": "exact",
+  "score": 1,
+  "quote": "pH of 6–8"
+ },
+ {
+  "id": "amano",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://aquaticarts.com/pages/amano-shrimp-care-guide",
+  "result": "exact",
+  "score": 1,
+  "quote": "pH level range: 6.0 - 7.6"
+ },
+ {
+  "id": "nerite",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.aquariumsource.com/nerite-snail/",
+  "result": "exact",
+  "score": 1,
+  "quote": "The typical size of a nerite snail is about one inch in diameter."
+ },
+ {
+  "id": "nerite",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/nerite-snails",
+  "result": "exact",
+  "score": 1,
+  "quote": "The species sold in the aquarium industry range from 0.5-1.5 inches (1.3-3.8 cm) and live about 1-2 years."
+ },
+ {
+  "id": "nerite",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/nerite-snails",
+  "result": "exact",
+  "score": 1,
+  "quote": "it is one of the hardiest and easiest types to keep."
+ },
+ {
+  "id": "nerite",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.aquariumsource.com/nerite-snail/",
+  "result": "exact",
+  "score": 1,
+  "quote": "These little critters are about as low-maintenance as it can possibly get!"
+ },
+ {
+  "id": "nerite",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.aquariumsource.com/nerite-snail/",
+  "result": "exact",
+  "score": 1,
+  "quote": "The minimum tank size for a nerite snail is a 10 gallon tank."
+ },
+ {
+  "id": "nerite",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/nerite-snails",
+  "result": "exact",
+  "score": 1,
+  "quote": "a nerite snail can live in a nano tank as small as 2-3 gallons"
+ },
+ {
+  "id": "nerite",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.aquariumsource.com/nerite-snail/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Nerite snails are very mellow and peaceful creatures."
+ },
+ {
+  "id": "nerite",
+  "field": "ph",
+  "verdict": "disagrees",
+  "url": "https://www.aquariumsource.com/nerite-snail/",
+  "result": "exact",
+  "score": 1,
+  "quote": "You should be fine anywhere in the 7-8.5 range."
+ },
+ {
+  "id": "nerite",
+  "field": "ph",
+  "verdict": "disagrees",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/nerite-snails",
+  "result": "exact",
+  "score": 1,
+  "quote": "they prefer freshwater setups with higher pH above 7.0 and lots of minerals."
+ },
+ {
+  "id": "mystery",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://aquaticarts.com/pages/mystery-snail-care-guide",
+  "result": "exact",
+  "score": 1,
+  "quote": "growing to a maximum diameter of 2 inches or more."
+ },
+ {
+  "id": "mystery",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://ca.aquariumsource.com/mystery-snail/",
+  "result": "exact",
+  "score": 1,
+  "quote": "The average mystery snail size is roughly 2 inches in diameter when fully grown."
+ },
+ {
+  "id": "mystery",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://ca.aquariumsource.com/mystery-snail/",
+  "result": "label",
+  "score": 1,
+  "quote": "Care:"
+ },
+ {
+  "id": "mystery",
+  "field": "minL",
+  "verdict": "disagrees",
+  "url": "https://ca.aquariumsource.com/mystery-snail/",
+  "result": "exact",
+  "score": 1,
+  "quote": "The minimum tank size for mystery snails is five gallons for one snail."
+ },
+ {
+  "id": "mystery",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://aquaticarts.com/pages/mystery-snail-care-guide",
+  "result": "exact",
+  "score": 1,
+  "quote": "Mystery snails are completely peaceful, and therefore safe to keep with any fish, shrimp, or plants."
+ },
+ {
+  "id": "mystery",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://ca.aquariumsource.com/mystery-snail/",
+  "result": "exact",
+  "score": 1,
+  "quote": "These little creatures are about as peaceful as it gets."
+ },
+ {
+  "id": "mystery",
+  "field": "ph",
+  "verdict": "disagrees",
+  "url": "https://aquaticarts.com/pages/mystery-snail-care-guide",
+  "result": "exact",
+  "score": 1,
+  "quote": "pH level range: 7.6 to 8.4"
+ },
+ {
+  "id": "mystery",
+  "field": "ph",
+  "verdict": "disagrees",
+  "url": "https://ca.aquariumsource.com/mystery-snail/",
+  "result": "exact",
+  "score": 1,
+  "quote": "7.6-8.4 pH"
+ },
+ {
+  "id": "ramshorn",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.garnelio.de/en/brown-ramshorn-snail-planorbella-duryi-duryi",
+  "result": "exact",
+  "score": 1,
+  "quote": "at about 2.5 cm"
+ },
+ {
+  "id": "ramshorn",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.garnelio.de/en/brown-ramshorn-snail-planorbella-duryi-duryi",
+  "result": "exact",
+  "score": 1,
+  "quote": "suitable for beginners"
+ },
+ {
+  "id": "ramshorn",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.aqualibs.com/aquarium-snails/planorbella-duryi-duryi-brown-ramshorn-snail",
+  "result": "exact",
+  "score": 1,
+  "quote": "These snails are incredibly hardy and adaptable, making them perfect for beginners."
+ },
+ {
+  "id": "ramshorn",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.aqualibs.com/aquarium-snails/planorbella-duryi-duryi-brown-ramshorn-snail",
+  "result": "exact",
+  "score": 1,
+  "quote": "A minimum tank size of 5 gallons is recommended."
+ },
+ {
+  "id": "ramshorn",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.garnelio.de/en/brown-ramshorn-snail-planorbella-duryi-duryi",
+  "result": "exact",
+  "score": 1,
+  "quote": "5 l or more, we recommend a size of 10 l or more"
+ },
+ {
+  "id": "ramshorn",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.garnelio.de/en/brown-ramshorn-snail-planorbella-duryi-duryi",
+  "result": "exact",
+  "score": 1,
+  "quote": "very peaceful"
+ },
+ {
+  "id": "ramshorn",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.aqualibs.com/aquarium-snails/planorbella-duryi-duryi-brown-ramshorn-snail",
+  "result": "exact",
+  "score": 1,
+  "quote": "an excellent addition to almost any peaceful community aquarium"
+ },
+ {
+  "id": "ramshorn",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://www.garnelio.de/en/brown-ramshorn-snail-planorbella-duryi-duryi",
+  "result": "exact",
+  "score": 1,
+  "quote": "pH above 6.5, KH above 3"
+ },
+ {
+  "id": "ramshorn",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://www.aqualibs.com/aquarium-snails/planorbella-duryi-duryi-brown-ramshorn-snail",
+  "result": "exact",
+  "score": 1,
+  "quote": "A slightly alkaline pH of 7.0 to 8.0 is crucial."
+ },
+ {
+  "id": "trumpet",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://aquariadise.com/caresheet-malaysian-trumpet-snails/",
+  "result": "exact",
+  "score": 1,
+  "quote": "typically measuring from about 1/2 inch to 1 inch in length,"
+ },
+ {
+  "id": "trumpet",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.aquariumsource.com/malaysian-trumpet-snail/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Most of the Malaysian trumpet snails you'll see will measure around a quarter of an inch to half an inch in length."
+ },
+ {
+  "id": "trumpet",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://aquariadise.com/caresheet-malaysian-trumpet-snails/",
+  "result": "label",
+  "score": 1,
+  "quote": "Care Level"
+ },
+ {
+  "id": "trumpet",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.aquariumsource.com/malaysian-trumpet-snail/",
+  "result": "exact",
+  "score": 1,
+  "quote": "They're one of the easiest aquatic creatures to own."
+ },
+ {
+  "id": "trumpet",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://aquariadise.com/caresheet-malaysian-trumpet-snails/",
+  "result": "label",
+  "score": 1,
+  "quote": "Minimum Tank Size"
+ },
+ {
+  "id": "trumpet",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.aquariumsource.com/malaysian-trumpet-snail/",
+  "result": "exact",
+  "score": 1,
+  "quote": "A small group can live in a 5 to 10 gallon tank just fine!"
+ },
+ {
+  "id": "trumpet",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.aquariumsource.com/malaysian-trumpet-snail/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Malaysian trumpet snails are very shy and docile."
+ },
+ {
+  "id": "trumpet",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://aquariadise.com/caresheet-malaysian-trumpet-snails/",
+  "result": "label",
+  "score": 1,
+  "quote": "Temperament"
+ },
+ {
+  "id": "trumpet",
+  "field": "ph",
+  "verdict": "disagrees",
+  "url": "https://www.aquariumsource.com/malaysian-trumpet-snail/",
+  "result": "exact",
+  "score": 1,
+  "quote": "pH levels: 6.5 to 8.0 (aim for neutral water)"
+ },
+ {
+  "id": "trumpet",
+  "field": "ph",
+  "verdict": "disagrees",
+  "url": "https://aquariadise.com/caresheet-malaysian-trumpet-snails/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Malaysian Trumpet snails prefer slightly alkaline aquarium water with a pH range of 7.0 to 8.0,"
+ },
+ {
+  "id": "cleanershrimp",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://aquariadise.com/cleaner-shrimp/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Skunk cleaner shrimp can grow up to 2.5 inches long from nose to tail"
+ },
+ {
+  "id": "cleanershrimp",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.thatpetplace.com/Lysmata-amboinensis-skunk-cleaner-shrimp-206934",
+  "result": "label",
+  "score": 1,
+  "quote": "Max Size (in inches)"
+ },
+ {
+  "id": "cleanershrimp",
+  "field": "care",
+  "verdict": "disagrees",
+  "url": "https://aquariadise.com/cleaner-shrimp/",
+  "result": "exact",
+  "score": 1,
+  "quote": "While skunk cleaner shrimp are relatively easy to keep for marine species"
+ },
+ {
+  "id": "cleanershrimp",
+  "field": "care",
+  "verdict": "disagrees",
+  "url": "https://www.thatpetplace.com/Lysmata-amboinensis-skunk-cleaner-shrimp-206934",
+  "result": "exact",
+  "score": 1,
+  "quote": "Difficulty"
+ },
+ {
+  "id": "cleanershrimp",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://aquariadise.com/cleaner-shrimp/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Therefore a 20-gallon tank is the smallest recommended size for a pair of cleaner shrimp"
+ },
+ {
+  "id": "cleanershrimp",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://gensou.sg/?p=30650",
+  "result": "nofetch",
+  "score": 0,
+  "err": "HTTP 403",
+  "quote": "A single cleaner shrimp suits tanks as small as 60 litres,"
+ },
+ {
+  "id": "cleanershrimp",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://aquariadise.com/cleaner-shrimp/",
+  "result": "exact",
+  "score": 1,
+  "quote": "This species is a peaceful shrimp towards fish but can be territorial towards one another and other shrimp species."
+ },
+ {
+  "id": "turbo",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://aquariumbreeder.com/?p=5920",
+  "result": "exact",
+  "score": 1,
+  "quote": "typically grow up to 5 cm (2 inches), however, old snails can get larger than 7+ cm (~3 inches) in size."
+ },
+ {
+  "id": "turbo",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://topshelfaquatics.com/blogs/news/comprehensive-guide-to-turbo-snails-for-your-aquarium",
+  "result": "exact",
+  "score": 1,
+  "quote": "Typically growing up to 2 inches, large turbo snails are robust and steady grazers"
+ },
+ {
+  "id": "turbo",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://aquariumbreeder.com/?p=5920",
+  "result": "exact",
+  "score": 1,
+  "quote": "Keeping Mexican Turbo snails can be easy and difficult at the same time."
+ },
+ {
+  "id": "turbo",
+  "field": "minL",
+  "verdict": "disagrees",
+  "url": "https://aquariumbreeder.com/?p=5920",
+  "result": "exact",
+  "score": 1,
+  "quote": "The minimum recommended tank size for these snails is a 10-gallon (40-liter) tank."
+ },
+ {
+  "id": "turbo",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://aquariumbreeder.com/?p=5920",
+  "result": "exact",
+  "score": 1,
+  "quote": "These peaceful snails get along with anybody that will not eat them."
+ },
+ {
+  "id": "turbo",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://topshelfaquatics.com/blogs/news/comprehensive-guide-to-turbo-snails-for-your-aquarium",
+  "result": "exact",
+  "score": 1,
+  "quote": "Their calm nature and efficient algae-eating habits make them a staple in reef and fish-only systems alike."
+ },
+ {
+  "id": "hermit",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://topshelfaquatics.com/products/blue-leg-hermit-crab",
+  "result": "exact",
+  "score": 1,
+  "quote": "Growth Rate: Slow – Typically reaches up to 1 inch"
+ },
+ {
+  "id": "hermit",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.liveaquaria.com/products/dwarf-blue-leg-hermit-crab-tiny",
+  "result": "label",
+  "score": 1,
+  "quote": "Maximum Size"
+ },
+ {
+  "id": "hermit",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.liveaquaria.com/products/dwarf-blue-leg-hermit-crab-tiny",
+  "result": "exact",
+  "score": 1,
+  "quote": "Care Level: Easy"
+ },
+ {
+  "id": "hermit",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://topshelfaquatics.com/products/blue-leg-hermit-crab",
+  "result": "exact",
+  "score": 1,
+  "quote": "Care Level: Easy"
+ },
+ {
+  "id": "hermit",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://topshelfaquatics.com/products/blue-leg-hermit-crab",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum Tank Size: 10+ gallons"
+ },
+ {
+  "id": "hermit",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://reefexclusive.com/products/blue-leg-hermit-crab",
+  "result": "exact",
+  "score": 1,
+  "quote": "They require a minimum tank size of 10 gallons for a small group of 2 – 3 crabs."
+ },
+ {
+  "id": "hermit",
+  "field": "temper",
+  "verdict": "disagrees",
+  "url": "https://www.liveaquaria.com/products/dwarf-blue-leg-hermit-crab-tiny",
+  "result": "exact",
+  "score": 1,
+  "quote": "Temperament: Peaceful"
+ },
+ {
+  "id": "hermit",
+  "field": "temper",
+  "verdict": "disagrees",
+  "url": "https://reefexclusive.com/products/blue-leg-hermit-crab",
+  "result": "exact",
+  "score": 1,
+  "quote": "Temperament : Peaceful"
+ },
+ {
+  "id": "hermit",
+  "field": "temper",
+  "verdict": "disagrees",
+  "url": "https://topshelfaquatics.com/products/blue-leg-hermit-crab",
+  "result": "exact",
+  "score": 1,
+  "quote": "Temperament: Peaceful to Semi-Aggressive – Can be territorial over shells"
+ },
+ {
+  "id": "hermit",
+  "field": "prey",
+  "verdict": "behaviour-only",
+  "url": "https://reefexclusive.com/products/blue-leg-hermit-crab",
+  "result": "exact",
+  "score": 1,
+  "quote": "this minute scavenger may attack snails to obtain the shell for its home or eat the snails for food."
+ },
+ {
+  "id": "hermit",
+  "field": "prey",
+  "verdict": "behaviour-only",
+  "url": "https://topshelfaquatics.com/products/blue-leg-hermit-crab",
+  "result": "exact",
+  "score": 1,
+  "quote": "Shell Stealing: May attack snails or other hermits if not provided with empty shells."
+ }
+]

@@ -10,6 +10,8 @@ import { LU, applyLighting, setLightUniforms, setWaterUniforms } from '../render
 import { defaultSetup } from '../scene/defaults';
 import manifest from '../data/model-versions.json';
 import { GEAR_LOOKS, gearModel } from '../render/gear3d';
+import { itemMesh } from '../render/items';
+import { LIBRARY, makeItem } from '../scene/items';
 
 interface Rec { v: number; hash: string; build: number; date: string }
 const RECORDED = (manifest as { models: Record<string, Rec> }).models;
@@ -23,6 +25,17 @@ const LOOKS: Species[] = SPECIES.flatMap(s => s.female ? [s, s.female] : [s]);
 // the tech gear (lane TG): rows like the species', look 'gear-<id>', true size (tl 1: the model is in mm)
 const GEAR = new Map(GEAR_LOOKS.map(g => ['gear-' + g.id, g]));
 LOOKS.push(...GEAR_LOOKS.map(g => ({ id: 'gear-' + g.id, look: 'gear-' + g.id, name: g.label, sci: 'tech gear', tl: 1, aspect: 1, art: 'gear', cat: 'gear' }) as unknown as Species));
+// the artificial plants (lane P4): look 'fake-<variant>', true size (mm), drawn as placed in a tank
+const FAKES = new Map(Object.entries(LIBRARY).filter(([, v]) => v.kind === 'artificial').map(([id, v]) => ['fake-' + id, { id, label: v.label }]));
+LOOKS.push(...[...FAKES].map(([look, f]) => ({ id: look, look, name: f.label, sci: 'artificial plant', tl: 1, aspect: 1, art: 'fake', cat: 'fake' }) as unknown as Species));
+function fakeModel(S: typeof setup, variant: string) {
+  const it = makeItem(S.tank, variant, 1, 7, S.tank.L / 2, S.tank.D / 2), m = itemMesh(S, S.tank, it)!, g = new THREE.Group();
+  m.position.set(0, 0, 0); g.add(m);
+  const c = new THREE.Box3().setFromObject(g).getCenter(new THREE.Vector3());
+  m.position.sub(c);
+  return g;
+}
+const modelOf = (sp: Species) => { const gear = GEAR.get(sp.look), fake = FAKES.get(sp.look); return gear ? gearModel(setup, gear) : fake ? fakeModel(setup, fake.id) : speciesModel(sp); };
 const title = (sp: Species) => sp.name + (sp.sex === 'f' ? ' ♀' : sp.female ? ' ♂' : '');
 
 // ---- fingerprint ----
@@ -90,10 +103,10 @@ function shoot(scene: THREE.Scene, model: THREE.Object3D, yaw: number, pitch: nu
 
 /** The look's views in both lights, and its fingerprint. */
 function renderLook(sp: Species) {
-  const gear = GEAR.get(sp.look), scene = new THREE.Scene(), model = gear ? gearModel(setup, gear) : speciesModel(sp);
+  const scene = new THREE.Scene(), model = modelOf(sp);
   // fingerprinted part by part as before lane FM merged a fish's same-material parts (one mesh per material draws the
   // same model; its baked vertices would bump every fish)
-  const merge = fish3d.merge; fish3d.merge = false; const parts = gear ? gearModel(setup, gear) : speciesModel(sp); fish3d.merge = merge;
+  const merge = fish3d.merge; fish3d.merge = false; const parts = modelOf(sp); fish3d.merge = merge;
   const hash = fingerprint(sp, parts);
   parts.traverse(o => { const g = (o as THREE.Mesh).geometry; if (g && !g.userData.keep) g.dispose(); });
   scene.add(model); applyLighting(scene);
@@ -162,7 +175,7 @@ function fill(sp: Species, out: Record<string, HTMLCanvasElement[]>) {
 }
 
 const list = $('list');
-for (const [cat, label] of [...CATEGORIES, ['gear', 'Tech gear']] as [string, string][]) {
+for (const [cat, label] of [...CATEGORIES, ['gear', 'Tech gear'], ['fake', 'Artificial plants']] as [string, string][]) {
   const looks = LOOKS.filter(s => s.cat === cat);
   if (!looks.length) continue;
   const h = document.createElement('h2'); h.textContent = label; h.dataset.cat = cat;
@@ -224,7 +237,7 @@ function sheet(sp: Species, r: Rec) {
 }
 function gallery(models: Record<string, Rec>) {
   const sw = LAB + VIEWS.length * W, sh = HEAD + COL + LIGHTS.length * H, views = VIEWS.map(v => v[0]).join(', ');
-  const parts = ([...CATEGORIES, ['gear', 'Tech gear']] as [string, string][]).map(([cat, label]) => {
+  const parts = ([...CATEGORIES, ['gear', 'Tech gear'], ['fake', 'Artificial plants']] as [string, string][]).map(([cat, label]) => {
     const looks = LOOKS.filter(s => s.cat === cat);
     if (!looks.length) return '';
     return `<h2>${esc(label)}</h2>\n` + looks.map(s => {

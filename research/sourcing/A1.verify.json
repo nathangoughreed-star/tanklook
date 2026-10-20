@@ -1,0 +1,533 @@
+[
+ {
+  "id": "cardinal",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Paracheirodon-axelrodi.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Max length : 3.0 cm SL male/unsexed;"
+ },
+ {
+  "id": "cardinal",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/paracheirodon-axelrodi/",
+  "result": "compact",
+  "score": 1,
+  "quote": "Max size 35mm SL1.4in SL"
+ },
+ {
+  "id": "cardinal",
+  "field": "ph",
+  "verdict": "disagrees",
+  "url": "https://www.fishbase.se/summary/Paracheirodon-axelrodi.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Freshwater; pelagic; pH range: 4.0 - 6.0; dH range: 5 - 12; non-migratory."
+ },
+ {
+  "id": "cardinal",
+  "field": "ph",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/paracheirodon-axelrodi/",
+  "result": "exact",
+  "score": 1,
+  "quote": "3.5 – 7.5 although wild specimens do best in more acidic conditions."
+ },
+ {
+  "id": "cardinal",
+  "field": "care",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/paracheirodon-axelrodi/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Easy"
+ },
+ {
+  "id": "cardinal",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/paracheirodon-axelrodi/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Generally peaceful making it an ideal resident of the well-researched community aquarium."
+ },
+ {
+  "id": "cardinal",
+  "field": "group",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/paracheirodon-axelrodi/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Try to buy a mixed-sex group of at least 8-10 specimens"
+ },
+ {
+  "id": "ember",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Hyphessobrycon-amandae.html",
+  "result": "compact",
+  "score": 1,
+  "quote": "Max length : 2.0 cm SL male/unsexed; (Ref. 94770)"
+ },
+ {
+  "id": "ember",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/hyphessobrycon-amandae/",
+  "result": "exact",
+  "score": 1,
+  "quote": "it grows to around 20 mm SL."
+ },
+ {
+  "id": "ember",
+  "field": "ph",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/hyphessobrycon-amandae/",
+  "result": "exact",
+  "score": 1,
+  "quote": "pH 5.0–7.0"
+ },
+ {
+  "id": "ember",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/hyphessobrycon-amandae/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Easy"
+ },
+ {
+  "id": "ember",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/hyphessobrycon-amandae/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Very peaceful and will not compete well with very boisterous or much larger tankmates."
+ },
+ {
+  "id": "ember",
+  "field": "group",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/hyphessobrycon-amandae/",
+  "result": "exact",
+  "score": 1,
+  "quote": "a minimum of 8-10 specimens is the recommended purchase"
+ },
+ {
+  "id": "rummynose",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Hemigrammus-rhodostomus.html",
+  "result": "compact",
+  "score": 1,
+  "quote": "Max length : 5.0 cm TL male/unsexed; (Ref. 38376)"
+ },
+ {
+  "id": "rummynose",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/hemigrammus-rhodostomus/",
+  "result": "compact",
+  "score": 1,
+  "quote": "50mm SL2.0in SL"
+ },
+ {
+  "id": "rummynose",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/hemigrammus-rhodostomus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "5.5-7.0. Its colours will become faded if kept in alkaline conditions."
+ },
+ {
+  "id": "rummynose",
+  "field": "care",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/hemigrammus-rhodostomus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Easy"
+ },
+ {
+  "id": "rummynose",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/hemigrammus-rhodostomus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "It's a very peaceful species that won't compete well with very boisterous or much larger tankmates."
+ },
+ {
+  "id": "rummynose",
+  "field": "group",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/hemigrammus-rhodostomus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Always buy a group of at least 10 of these, preferably more."
+ },
+ {
+  "id": "harlequin",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Trigonostigma-heteromorpha.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Max length : 5.0 cm TL male/unsexed"
+ },
+ {
+  "id": "harlequin",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/trigonostigma-heteromorpha/",
+  "result": "compact",
+  "score": 1,
+  "quote": "Max size 45mm SL1.8in SL"
+ },
+ {
+  "id": "harlequin",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Trigonostigma-heteromorpha.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Freshwater; benthopelagic; pH range: 5.0 - 7.0; dH range: 5 - 12."
+ },
+ {
+  "id": "harlequin",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/trigonostigma-heteromorpha/",
+  "result": "exact",
+  "score": 1,
+  "quote": "pH 5.0–7.5"
+ },
+ {
+  "id": "harlequin",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/trigonostigma-heteromorpha/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Easy"
+ },
+ {
+  "id": "harlequin",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/trigonostigma-heteromorpha/",
+  "result": "exact",
+  "score": 1,
+  "quote": "This species is very peaceful indeed making it an ideal resident of the well-maintained community tank"
+ },
+ {
+  "id": "harlequin",
+  "field": "group",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/trigonostigma-heteromorpha/",
+  "result": "exact",
+  "score": 1,
+  "quote": "It's a schooling species by nature and really should be kept in a group of at least 8-10 specimens."
+ },
+ {
+  "id": "chili",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Boraras-brigittae.html",
+  "result": "compact",
+  "score": 1,
+  "quote": "Max length : 3.5 cm TL male/unsexed; (Ref. 13371); common length : 1.8 cm SL male/unsexed; (Ref. 7050)"
+ },
+ {
+  "id": "chili",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/boraras-brigittae/",
+  "result": "compact",
+  "score": 1,
+  "quote": "Max size 20mm SL0.8in SL"
+ },
+ {
+  "id": "chili",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/boraras-brigittae/",
+  "result": "exact",
+  "score": 1,
+  "quote": "pH 4.0–7.0"
+ },
+ {
+  "id": "chili",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Boraras-brigittae.html",
+  "result": "compact",
+  "score": 1,
+  "quote": "Freshwater; benthopelagic; pH range: 6.5 - 7.0; dH range: ? - 10. Tropical; 25°C - 28°C (Ref. 2059)"
+ },
+ {
+  "id": "chili",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/boraras-brigittae/",
+  "result": "compact",
+  "score": 1,
+  "quote": "Rated moderate because it needs a well-established tank and stable water."
+ },
+ {
+  "id": "chili",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/boraras-brigittae/",
+  "result": "exact",
+  "score": 1,
+  "quote": "This species is very peaceful but does not make an ideal community fish due to its small size and rather timid nature."
+ },
+ {
+  "id": "chili",
+  "field": "group",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/boraras-brigittae/",
+  "result": "exact",
+  "score": 1,
+  "quote": "It's a schooling species by nature and really should be kept in a group of at least 8-10 specimens."
+ },
+ {
+  "id": "danio",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Danio-rerio.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Max length : 3.8 cm SL male/unsexed;"
+ },
+ {
+  "id": "danio",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/danio-rerio/",
+  "result": "compact",
+  "score": 1,
+  "quote": "Max size 50mm SL2.0in SL"
+ },
+ {
+  "id": "danio",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Danio-rerio.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Freshwater; benthopelagic; pH range: 6.0 - 8.0; dH range: 5 - 19."
+ },
+ {
+  "id": "danio",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/danio-rerio/",
+  "result": "exact",
+  "score": 1,
+  "quote": "pH 6.0–8.0"
+ },
+ {
+  "id": "danio",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/danio-rerio/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Easy"
+ },
+ {
+  "id": "danio",
+  "field": "temper",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/danio-rerio/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Temperament peaceful"
+ },
+ {
+  "id": "danio",
+  "field": "group",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/danio-rerio/",
+  "result": "exact",
+  "score": 1,
+  "quote": "It is a schooling species by nature and should be maintained in a group of at least 8-10 specimens."
+ },
+ {
+  "id": "whitecloud",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Tanichthys-albonubes.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Max length : 4.0 cm TL male/unsexed"
+ },
+ {
+  "id": "whitecloud",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/tanichthys-albonubes/",
+  "result": "compact",
+  "score": 1,
+  "quote": "40mm SL1.6in SL"
+ },
+ {
+  "id": "whitecloud",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Tanichthys-albonubes.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Freshwater; demersal; pH range: 6.0 - 8.0; dH range: 5 - 19."
+ },
+ {
+  "id": "whitecloud",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/tanichthys-albonubes/",
+  "result": "exact",
+  "score": 1,
+  "quote": "6.0–8.5"
+ },
+ {
+  "id": "whitecloud",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/tanichthys-albonubes/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Easy"
+ },
+ {
+  "id": "whitecloud",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/tanichthys-albonubes/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Very peaceful indeed and an ideal resident of a well-maintained community set-up"
+ },
+ {
+  "id": "whitecloud",
+  "field": "group",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/tanichthys-albonubes/",
+  "result": "exact",
+  "score": 1,
+  "quote": "It's a schooling fish by nature and ideally a group comprising 10+ specimens should be purchased."
+ },
+ {
+  "id": "cpd",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Danio-margaritatus.html",
+  "result": "compact",
+  "score": 1,
+  "quote": "Max length : 2.1 cm SL male/unsexed; (Ref. [57973]); 2.1 cm SL (female)"
+ },
+ {
+  "id": "cpd",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/danio-margaritatus/",
+  "result": "compact",
+  "score": 1,
+  "quote": "Max size 21mm SL0.8in SL"
+ },
+ {
+  "id": "cpd",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/danio-margaritatus/",
+  "result": "compact",
+  "score": 1,
+  "quote": "pH: 6.5 – 7.5; a value of 7.3 was recorded at the type locality."
+ },
+ {
+  "id": "cpd",
+  "field": "care",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/danio-margaritatus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Easy"
+ },
+ {
+  "id": "cpd",
+  "field": "group",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/danio-margaritatus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Buy as many as possible, ideally 20 or more"
+ },
+ {
+  "id": "hatchet",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Carnegiella-strigata.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Max length : 3.5 cm SL male/unsexed;"
+ },
+ {
+  "id": "hatchet",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/carnegiella-strigata/",
+  "result": "compact",
+  "score": 1,
+  "quote": "35mm SL1.4in SL"
+ },
+ {
+  "id": "hatchet",
+  "field": "ph",
+  "verdict": "disagrees",
+  "url": "https://www.fishbase.se/summary/Carnegiella-strigata.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Freshwater; pelagic; pH range: 5.0 - 8.0; dH range: 5 - 19."
+ },
+ {
+  "id": "hatchet",
+  "field": "ph",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/carnegiella-strigata/",
+  "result": "exact",
+  "score": 1,
+  "quote": "4.0–7.0"
+ },
+ {
+  "id": "hatchet",
+  "field": "care",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/carnegiella-strigata/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Easy"
+ },
+ {
+  "id": "hatchet",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/carnegiella-strigata/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Very peaceful but does not make an ideal community fish due to its small size and rather timid nature."
+ },
+ {
+  "id": "hatchet",
+  "field": "group",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/carnegiella-strigata/",
+  "result": "exact",
+  "score": 1,
+  "quote": "buy as many as possible, ideally 10 or more"
+ }
+]

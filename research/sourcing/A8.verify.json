@@ -1,0 +1,470 @@
+[
+ {
+  "id": "dartfrog",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://joshsfrogs.com/sp/dendrobates-tinctorius-green-sip-dart034",
+  "result": "exact",
+  "score": 1,
+  "quote": "Male Green Sipaliwini are a bit smaller, averaging about 1.75 inches at maturity."
+ },
+ {
+  "id": "dartfrog",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.reptilecentre.com/pages/info-dyeing-poison-arrow-frog-care-sheet",
+  "result": "exact",
+  "score": 1,
+  "quote": "Potential adult size: 5 cm"
+ },
+ {
+  "id": "dartfrog",
+  "field": "care",
+  "verdict": "disagrees",
+  "url": "https://joshsfrogs.com/sp/dendrobates-tinctorius-green-sip-dart034",
+  "result": "exact",
+  "score": 1,
+  "quote": "Great beginner frog"
+ },
+ {
+  "id": "dartfrog",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://joshsfrogs.com/sp/dendrobates-tinctorius-green-sip-dart034",
+  "result": "exact",
+  "score": 1,
+  "quote": "A 10 gallon aquarium is suitable for a single Dendrobates tinctorius 'Green Sipaliwini',"
+ },
+ {
+  "id": "treefrog",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://reptilesmagazine.com/whites-treefrog-care-sheet/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Adults can reach up to 5 inches, but most females top out at 4-4.5 inches in snout-to-vent length."
+ },
+ {
+  "id": "treefrog",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://reptiledirect.com/whites-tree-frog/",
+  "result": "exact",
+  "score": 1,
+  "quote": "The average size of an adult White’s tree frog is three to five inches."
+ },
+ {
+  "id": "treefrog",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://reptiledirect.com/whites-tree-frog/",
+  "result": "exact",
+  "score": 1,
+  "quote": "White’s tree frogs are very beginner-friendly."
+ },
+ {
+  "id": "treefrog",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://reptilesmagazine.com/whites-treefrog-care-sheet/",
+  "result": "exact",
+  "score": 1,
+  "quote": "These hardy frogs are very forgiving when it comes to their terrarium conditions."
+ },
+ {
+  "id": "treefrog",
+  "field": "minL",
+  "verdict": "disagrees",
+  "url": "https://reptiledirect.com/whites-tree-frog/",
+  "result": "exact",
+  "score": 1,
+  "quote": "The smallest enclosure you can use is a 15- or 20-gallon glass terrarium."
+ },
+ {
+  "id": "treefrog",
+  "field": "minL",
+  "verdict": "disagrees",
+  "url": "https://reptilesmagazine.com/whites-treefrog-care-sheet/",
+  "result": "exact",
+  "score": 1,
+  "quote": "A 20 gallon horizontal terrarium should be considered a minimum size for 4 young frogs."
+ },
+ {
+  "id": "treefrog",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://reptiledirect.com/whites-tree-frog/",
+  "result": "exact",
+  "score": 1,
+  "quote": "White’s tree frogs are docile and peaceful."
+ },
+ {
+  "id": "treefrog",
+  "field": "prey",
+  "verdict": "behaviour-only",
+  "url": "https://reptilesmagazine.com/whites-treefrog-care-sheet/",
+  "result": "exact",
+  "score": 1,
+  "quote": "avoid keeping very young (small) frogs with older individuals – they are not above cannibalism."
+ },
+ {
+  "id": "firetoad",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://thevetdesk.com/pet-breeds/amphibians/oriental-fire-bellied-toad",
+  "result": "exact",
+  "score": 1,
+  "quote": "Oriental fire-bellied toads are small-sized, reaching a length of about 2 inches."
+ },
+ {
+  "id": "firetoad",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://joshsfrogs.com/cms/fire-bellied-toad-care-sheet",
+  "result": "exact",
+  "score": 1,
+  "quote": "Adult size is 1-2 inches with little to no difference in size between male and female."
+ },
+ {
+  "id": "firetoad",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://joshsfrogs.com/cms/fire-bellied-toad-care-sheet",
+  "result": "exact",
+  "score": 1,
+  "quote": "Difficulty level- easy (beginners)"
+ },
+ {
+  "id": "firetoad",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://thevetdesk.com/pet-breeds/amphibians/oriental-fire-bellied-toad",
+  "result": "exact",
+  "score": 1,
+  "quote": "Beginner/easy"
+ },
+ {
+  "id": "firetoad",
+  "field": "minL",
+  "verdict": "disagrees",
+  "url": "https://joshsfrogs.com/cms/fire-bellied-toad-care-sheet",
+  "result": "exact",
+  "score": 1,
+  "quote": "2 or 3 toads will do well in a 10 to 15 gallon tank or a 18x18x18 Exo-terra terrarium."
+ },
+ {
+  "id": "firetoad",
+  "field": "minL",
+  "verdict": "disagrees",
+  "url": "https://thevetdesk.com/pet-breeds/amphibians/oriental-fire-bellied-toad",
+  "result": "exact",
+  "score": 1,
+  "quote": "A 10-gallon tank is a bare minimum for the enclosure of a single oriental fire-bellied toad."
+ },
+ {
+  "id": "firetoad",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://thevetdesk.com/pet-breeds/amphibians/oriental-fire-bellied-toad",
+  "result": "label",
+  "score": 1,
+  "quote": "Gregarious, hardy, diurnal"
+ },
+ {
+  "id": "firetoad",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://joshsfrogs.com/cms/fire-bellied-toad-care-sheet",
+  "result": "label",
+  "score": 1,
+  "quote": "Fire Belly Toads do well in groups when given the proper set-up."
+ },
+ {
+  "id": "firenewt",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://petmd.com/exotic/fire-bellied-newt-care-sheet",
+  "result": "exact",
+  "score": 1,
+  "quote": "Females average 4 to 5” in length, and males average 3 to 4” in length."
+ },
+ {
+  "id": "firenewt",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://reptilesmagazine.com/?p=104985",
+  "result": "exact",
+  "score": 1,
+  "quote": "Adults range from 2 to 4 inches in length."
+ },
+ {
+  "id": "firenewt",
+  "field": "care",
+  "verdict": "disagrees",
+  "url": "https://petmd.com/exotic/fire-bellied-newt-care-sheet",
+  "result": "exact",
+  "score": 1,
+  "quote": "Beginner"
+ },
+ {
+  "id": "firenewt",
+  "field": "care",
+  "verdict": "disagrees",
+  "url": "https://reptilesmagazine.com/?p=104985",
+  "result": "compact",
+  "score": 1,
+  "quote": "Level:** beginner"
+ },
+ {
+  "id": "firenewt",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://petmd.com/exotic/fire-bellied-newt-care-sheet",
+  "result": "exact",
+  "score": 1,
+  "quote": "A newt needs at least a 15-gallon glass tank."
+ },
+ {
+  "id": "firenewt",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://reptilesmagazine.com/?p=104985",
+  "result": "exact",
+  "score": 1,
+  "quote": "A 20 gallon aquarium will be enough room for up to four newts."
+ },
+ {
+  "id": "adf",
+  "field": "tl",
+  "verdict": "disagrees",
+  "url": "https://www.liveaquaria.com/products/dwarf-african-frog",
+  "result": "compact",
+  "score": 1,
+  "quote": "Maximum Size:** 2,5\""
+ },
+ {
+  "id": "adf",
+  "field": "tl",
+  "verdict": "disagrees",
+  "url": "https://www.petsmart.com/learning-center/fish-care/African-dwarf-frog-care-guide",
+  "result": "compact",
+  "score": 1,
+  "quote": "Size:** Up to 2”"
+ },
+ {
+  "id": "adf",
+  "field": "tl",
+  "verdict": "disagrees",
+  "url": "https://joshsfrogs.com/cms/african-dwarf-frogs-how-to-care-for-the-hymenochiris-genus",
+  "result": "exact",
+  "score": 1,
+  "quote": "The ADF can grow to a maximum size of 3 inches, though many will remain smaller."
+ },
+ {
+  "id": "adf",
+  "field": "care",
+  "verdict": "disagrees",
+  "url": "https://www.liveaquaria.com/products/dwarf-african-frog",
+  "result": "compact",
+  "score": 1,
+  "quote": "Care Level:** Moderate"
+ },
+ {
+  "id": "adf",
+  "field": "care",
+  "verdict": "disagrees",
+  "url": "https://joshsfrogs.com/cms/african-dwarf-frogs-how-to-care-for-the-hymenochiris-genus",
+  "result": "exact",
+  "score": 1,
+  "quote": "thier care is fairly easy under the correct conditions."
+ },
+ {
+  "id": "adf",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.liveaquaria.com/products/dwarf-african-frog",
+  "result": "compact",
+  "score": 1,
+  "quote": "Minimum Tank Size:** 10 Gallons"
+ },
+ {
+  "id": "adf",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.petsmart.com/learning-center/fish-care/African-dwarf-frog-care-guide",
+  "result": "compact",
+  "score": 1,
+  "quote": "Tank Size:** 5+ gallons"
+ },
+ {
+  "id": "adf",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.liveaquaria.com/products/dwarf-african-frog",
+  "result": "compact",
+  "score": 1,
+  "quote": "Temperament:** Peaceful"
+ },
+ {
+  "id": "adf",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.petsmart.com/learning-center/fish-care/African-dwarf-frog-care-guide",
+  "result": "compact",
+  "score": 1,
+  "quote": "Behavior:** Peaceful"
+ },
+ {
+  "id": "adf",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://www.liveaquaria.com/products/dwarf-african-frog",
+  "result": "compact",
+  "score": 1,
+  "quote": "pH:** 6.8 - 7.8"
+ },
+ {
+  "id": "adf",
+  "field": "ph",
+  "verdict": "agrees",
+  "url": "https://joshsfrogs.com/cms/african-dwarf-frogs-how-to-care-for-the-hymenochiris-genus",
+  "result": "exact",
+  "score": 1,
+  "quote": "pH - 6.5 to 7.5"
+ },
+ {
+  "id": "axolotl",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://modestfish.com/axolotl-care/",
+  "result": "exact",
+  "score": 1,
+  "quote": "A fully grown axolotl will be anywhere from 8-16 inches in length (15-45cm)"
+ },
+ {
+  "id": "axolotl",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.reptilecentre.com/blogs/reptile-blog/axolotl-tank-size",
+  "result": "compact",
+  "score": 1,
+  "quote": "Axolotls grow up to 30 cm and can live 10 - 15 years."
+ },
+ {
+  "id": "axolotl",
+  "field": "minL",
+  "verdict": "disagrees",
+  "url": "https://modestfish.com/axolotl-care/",
+  "result": "exact",
+  "score": 1,
+  "quote": "29 gallons is the smallest tank I can recommend you buy for your axolotl (110 liters)."
+ },
+ {
+  "id": "axolotl",
+  "field": "minL",
+  "verdict": "disagrees",
+  "url": "https://www.reptilecentre.com/blogs/reptile-blog/axolotl-tank-size",
+  "result": "exact",
+  "score": 1,
+  "quote": "One adult: minimum 54 - 75 litres (15–20 gallons), ideally more"
+ },
+ {
+  "id": "axolotl",
+  "field": "prey",
+  "verdict": "behaviour-only",
+  "url": "https://modestfish.com/axolotl-care/",
+  "result": "exact",
+  "score": 1,
+  "quote": "They’re voracious carneous that’ll eat anything they can fit in their mouths."
+ },
+ {
+  "id": "axolotl",
+  "field": "ph",
+  "verdict": "disagrees",
+  "url": "https://modestfish.com/axolotl-care/",
+  "result": "exact",
+  "score": 1,
+  "quote": "pH: 7-7.4"
+ },
+ {
+  "id": "axolotl",
+  "field": "ph",
+  "verdict": "disagrees",
+  "url": "https://www.reptilecentre.com/blogs/reptile-blog/axolotl-tank-size",
+  "result": "compact",
+  "score": 1,
+  "quote": "Aim to keep the pH between 7.4 and 7.6."
+ },
+ {
+  "id": "crestedgecko",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://reptilesmagazine.com/crested-gecko-care-sheet/",
+  "result": "exact",
+  "score": 1,
+  "quote": "and 8 inches in total length."
+ },
+ {
+  "id": "crestedgecko",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://reptifiles.com/wp-content/uploads/2020/10/Crested-Gecko-Care-Sheet-PDF.pdf",
+  "result": "compact",
+  "score": 1,
+  "quote": "Size7–9 in"
+ },
+ {
+  "id": "crestedgecko",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://reptilesmagazine.com/crested-gecko-care-sheet/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Crested geckos are ideal reptile pets for beginners, with simple, easy- to-meet requirements."
+ },
+ {
+  "id": "crestedgecko",
+  "field": "minL",
+  "verdict": "disagrees",
+  "url": "https://reptifiles.com/wp-content/uploads/2020/10/Crested-Gecko-Care-Sheet-PDF.pdf",
+  "result": "compact",
+  "score": 1,
+  "quote": "Enclosure18\"×18\"×24\""
+ },
+ {
+  "id": "crestedgecko",
+  "field": "minL",
+  "verdict": "disagrees",
+  "url": "https://reptilesmagazine.com/crested-gecko-care-sheet/",
+  "result": "near",
+  "score": 1,
+  "quote": "An adult crested gecko should be housed in a minimum  18″L x 18″W x 36″ H terrarium with a screen top."
+ },
+ {
+  "id": "crestedgecko",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://reptilesmagazine.com/crested-gecko-care-sheet/",
+  "result": "label",
+  "score": 1,
+  "quote": "Crested geckos seldom bite and when they do it is of little consequence."
+ },
+ {
+  "id": "crestedgecko",
+  "field": "solo",
+  "verdict": "agrees",
+  "url": "https://reptilesmagazine.com/crested-gecko-care-sheet/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Male crested geckos may fight, particularly when in the company of females, and should not be kept together."
+ },
+ {
+  "id": "crestedgecko",
+  "field": "prey",
+  "verdict": "behaviour-only",
+  "url": "https://reptilesmagazine.com/crested-gecko-care-sheet/",
+  "result": "exact",
+  "score": 1,
+  "quote": "In addition to fruit, crested geckos relish insects and some hobbyists choose to offer these as either a primary diet or as supplementary diet."
+ }
+]

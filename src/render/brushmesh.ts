@@ -118,7 +118,7 @@ function plantKinds(S: TankSetup, T: Tank, variant: string, growth?: number): Sc
   let ks = plantCache.get(key); if (ks) return ks;
   ks = [];
   for (let k = 0; k < 3; k++) {
-    const it = { id: 9000 + k, kind: 'plant', variant, seed: 11 + k * 17, x: T.L / 2, depth: T.D / 2, lift: 0, yaw: 0, pitch: 0, tilt: 0, size: libSize(variant), spread: 45, ...(growth != null ? { growth } : {}) } as Item;
+    const it = { id: 9000 + k, kind: LIBRARY[variant]?.kind ?? 'plant', variant, seed: 11 + k * 17, x: T.L / 2, depth: T.D / 2, lift: 0, yaw: 0, pitch: 0, tilt: 0, size: libSize(variant), spread: 45, ...(growth != null ? { growth } : {}) } as Item;
     const m = itemMesh(S, T, it); if (!m) continue;
     const geo = m.geometry.clone(); geo.userData.keep = true; geo.computeBoundingBox();
     const bb = geo.boundingBox!, reach = Math.max(bb.max.x, -bb.min.x, bb.max.z, -bb.min.z) * 0.55;

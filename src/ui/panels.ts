@@ -74,7 +74,7 @@ const esc = (s: string) => s.replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 
 /** The menu a kind of piece lives in: stones, wood and caves under Hardscape, plants and corals under Plants. */
 export type ScapeSec = 'hardscape' | 'plants';
-export const scapeSec = (k: ItemKind): ScapeSec => k === 'plant' || k === 'coral' ? 'plants' : 'hardscape';
+export const scapeSec = (k: ItemKind): ScapeSec => k === 'plant' || k === 'coral' || k === 'artificial' ? 'plants' : 'hardscape';
 
 /** A plant's growth in words (the Growth slider's readout). */
 export const growthWord = (g: number) => `${Math.round(g * 100)} % ${g < 0.1 ? 'just planted' : g < 0.35 ? 'growing in' : g < 0.65 ? 'established' : g < 0.9 ? 'grown' : 'overgrown'}`;
@@ -2142,7 +2142,7 @@ Cancel, then change the name, to keep both.`)) return;
       { const b = $('iLight'), lt = it.kind === 'plant' || it.kind === 'coral' ? itemLights(s)?.get(it.id) : undefined;
         b.hidden = !lt; if (lt) { const o = lt.outcome; b.textContent = `Light here: ${Math.round(lt.par)} PAR${o.state === 'thrive' ? ', fine' : `. ${o.text}`}`; b.dataset.verdict = o.state === 'struggle' ? (lt.verdict === 'bright' ? 'bright' : 'dim') : 'fine'; } }
       $('itemName').innerHTML = `${esc(v.label)} <i>${fmt(l)} × ${fmt(h)} high × ${fmt(w)}</i>`;
-      $('iSizeLab').textContent = it.kind === 'plant' ? (isPatch(it.variant) ? 'Width' : 'Height') : it.variant === 'manzanita' ? 'Height' : it.kind === 'coral' ? 'Width' : 'Length';
+      $('iSizeLab').textContent = it.kind === 'plant' ? (isPatch(it.variant) ? 'Width' : 'Height') : it.kind === 'artificial' ? (v.fake?.form === 'mat' ? 'Width' : 'Height') : it.variant === 'manzanita' ? 'Height' : it.kind === 'coral' ? 'Width' : 'Length';
       const probe = { ...it, size: 1e6 }; clampItem(probe, A);
       $('iSize').min = String(Math.min(v.min, probe.size)); $('iSize').max = String(probe.size);
       setVal('iSize', it.size); setOut('oISize', fmt(it.size));

@@ -1427,6 +1427,49 @@
    "hi": 380,
    "unit": "unit; Jebao SOW-8 $62-90, mid ~$90, EcoTech MP10 QD $380; ~25W SOW-8, ~10W MP10",
    "url": "https://www.walmart.com/c/brand/jebao-co"
+  },
+  "hard:silkstem": {
+   "lo": 6,
+   "mode": 10,
+   "hi": 14,
+   "unit": "one 8 in silk stem plant on a weighted base (lane P4, 2026-10-20); Marina Naturals silk $12.99, Top Fin silk $5.99-$6.79, lo/hi judged",
+   "url": "https://www.liveaquaria.com/products/marina-naturals-green-indigo-waffle-leaf-silk-plant"
+  },
+  "hard:plasticstem": {
+   "lo": 5,
+   "mode": 9,
+   "hi": 12,
+   "unit": "one 8 in plastic plant on a weighted base (lane P4, 2026-10-20); Top Fin Multi Landscape 8 in $9.99 (was $10.99), lo/hi judged",
+   "url": "https://www.petsmart.com/fish/decor-gravel-and-substrate/artificial-plants/top-fin-artificial-multi-landscape-aquarium-plant---8-5255351.html"
+  },
+  "hard:silksword": {
+   "lo": 6,
+   "mode": 10,
+   "hi": 14,
+   "unit": "one medium silk sword-leaf plant (lane P4, 2026-10-20); Marina Naturals sword leaf $9.99, $13.99 at Walmart, lo/hi judged",
+   "url": "https://www.liveaquaria.com/products/marina-naturals-medium-red-green-sword-leaf-silk-plant"
+  },
+  "hard:plasticsword": {
+   "lo": 4,
+   "mode": 7,
+   "hi": 10,
+   "unit": "one 8 in plastic rosette on a heavy base (lane P4, 2026-10-20); Penn-Plax Aqua-Plant 8 in $7.15, 10 in $8.49, lo/hi judged",
+   "url": "https://www.walmart.com/ip/43447241"
+  },
+  "hard:plasticmoss": {
+   "lo": 5,
+   "mode": 7,
+   "hi": 13,
+   "unit": "one 7 x 7 in plastic grass / moss mat (lane P4, 2026-10-20); Top Fin artificial grass mat C$6.79 (was C$7.99), aquarium-labelled mats $7-$14, lo/hi judged",
+   "url": "https://www.petsmart.ca/sale/may/top-fin-artificial-grass-aquarium-mat-38235.html"
+  },
+  "hard:silkmoss": {
+   "lo": 5,
+   "mode": 9,
+   "hi": 15,
+   "unit": "one 7 x 7 in silk moss mat (lane P4, 2026-10-20); no aquarium silk moss mat listing found: judged from the plastic mats ($7-$14) and silk plants ($6-$14)",
+   "url": "",
+   "est": true
   }
  }
 }

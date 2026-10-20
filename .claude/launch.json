@@ -561,32 +561,6 @@
       "port": 5693
     },
     {
-      "name": "stocking",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5843",
-        "--strictPort"
-      ],
-      "port": 5843
-    },
-    {
-      "name": "p4artplants",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5893",
-        "--strictPort"
-      ],
-      "port": 5893
-    },
-    {
       "name": "p6abuilds",
       "runtimeExecutable": "npm",
       "runtimeArgs": [

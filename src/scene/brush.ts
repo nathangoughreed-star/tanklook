@@ -32,7 +32,8 @@ export const isPlantBrush = (id: string): id is `plant:${string}` => id.startsWi
 /** Plants with a painted look of their own above (tufts, cushions), left out of the plant list. */
 const LITE_PLANTS = new Set(['hairgrass', 'sphagnum', 'moss']);
 /** The plants a brush can paint: every upright plant of the library (not floaters, vines or the carpet patch). */
-export const plantBrushes = (): BrushDef[] => Object.entries(LIBRARY).filter(([v, d]) => d.kind === 'plant' && !isFloat(v) && !isVine(v) && !isCarpet(v) && !LITE_PLANTS.has(v))
+/** (artificial upright plants too, lane P4: a moss mat is a piece of its own, not painted) */
+export const plantBrushes = (): BrushDef[] => Object.entries(LIBRARY).filter(([v, d]) => (d.kind === 'plant' && !isFloat(v) && !isVine(v) && !isCarpet(v) && !LITE_PLANTS.has(v)) || (d.kind === 'artificial' && d.fake?.form !== 'mat'))
   .map(([v, d]) => ({ id: `plant:${v}` as BrushId, label: d.label, area: Math.max(500, (d.size * 0.45) ** 2), radius: [25, 250] as [number, number] }));
 export function brushDef(id: BrushId): BrushDef {
   if (isPlantBrush(id)) return plantBrushes().find(b => b.id === id) ?? BRUSHES[0];

@@ -1,0 +1,92 @@
+[
+ {
+  "id": "DENSITY",
+  "field": "water",
+  "verdict": "agrees",
+  "url": "https://www.engineeringtoolbox.com/water-density-specific-weight-d_595.html",
+  "result": "compact",
+  "score": 1,
+  "quote": "Water density at temperature 20 oC is 998.21 kg/m3"
+ },
+ {
+  "id": "DENSITY",
+  "field": "glass",
+  "verdict": "agrees",
+  "url": "https://www.engineeringtoolbox.com/density-solids-d_1265.html",
+  "result": "compact",
+  "score": 1,
+  "quote": "Glass, common: 2.4 - 2.8"
+ },
+ {
+  "id": "DENSITY",
+  "field": "substrate",
+  "verdict": "agrees",
+  "url": "https://www.sera.de/en/service/faq/faq-detail/sand-and-gravel-in-combination-how-much-sand-is-required",
+  "result": "exact",
+  "score": 1,
+  "quote": "The bulk density of quartz sand/gravel is about 1.6 - 1.7 kg/l"
+ },
+ {
+  "id": "DENSITY",
+  "field": "substrate",
+  "verdict": "agrees",
+  "url": "https://www.engineeringtoolbox.com/dirt-mud-densities-d_1727.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Gravel, dry 105 1680"
+ },
+ {
+  "id": "DENSITY",
+  "field": "pore",
+  "verdict": "agrees",
+  "url": "https://en.wikipedia.org/wiki/Porosity",
+  "result": "compact",
+  "score": 1,
+  "quote": "Typical bulk density of sandy soil is between 1.5 and 1.7 g/cm3. This calculates to a porosity between 0.43 and 0.36."
+ },
+ {
+  "id": "NWATER",
+  "field": "value",
+  "verdict": "agrees",
+  "url": "https://www.engineeringtoolbox.com/refractive-index-d_1264.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "1.33283"
+ },
+ {
+  "id": "SUB_ALBEDO",
+  "field": "tsand",
+  "verdict": "agrees",
+  "url": "https://en.wikipedia.org/wiki/Albedo",
+  "result": "exact",
+  "score": 1,
+  "quote": "Desert sand 0.40"
+ },
+ {
+  "id": "TECHS",
+  "field": "t8.ppe",
+  "verdict": "agrees",
+  "url": "https://digitalcommons.usu.edu/psc_facpub/730",
+  "result": "exact",
+  "score": 1,
+  "quote": "The best ceramic metal halide and fluorescent fixtures had efficiencies of 1.46 and 0.95 micromoles per joule, respectively."
+ },
+ {
+  "id": "TECHS",
+  "field": "cfl.ppe",
+  "verdict": "agrees",
+  "url": "https://digitalcommons.usu.edu/psc_facpub/730",
+  "result": "exact",
+  "score": 1,
+  "quote": "The best ceramic metal halide and fluorescent fixtures had efficiencies of 1.46 and 0.95 micromoles per joule, respectively."
+ },
+ {
+  "id": "NITRATE_TARGET_N",
+  "field": "value",
+  "verdict": "agrees",
+  "url": "https://aquariumscience.org/index.php/5-4-safe-nitrate-levels",
+  "result": "exact",
+  "score": 1,
+  "quote": "Most hobbyists are comfortable with anything from 40 to 80 ppm of nitrate"
+ }
+]

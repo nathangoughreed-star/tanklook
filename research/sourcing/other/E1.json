@@ -1,0 +1,64 @@
+{
+  "batch": "E1",
+  "agent_notes": "BRS states soft/LPS 75-150 and SPS 200-350 PAR (one article). EIA table 5.6.A fetched gave only July 2026 and July 2025, no 12-month average. Natural-seawater pH taken from the same Holmes-Farley article (NOAA fetch redirected to 404, skipped).",
+  "items": {
+    "reef-par": {
+      "fields": {
+        "soft": {
+          "ours": [50, 150],
+          "verdict": "disagrees",
+          "suggest": [75, 150],
+          "sources": [
+            {"url": "https://www.bulkreefsupply.com/content/post/keep-coral-happy-and-dial-in-your-reef-lighting-with-a-par-meter", "site": "Bulk Reef Supply", "states": "75 - 150 PAR", "quote": "Soft Corals and LPS: 75 - 150 PAR"}
+          ],
+          "note": "BRS lumps soft and LPS together at 75-150; our upper bound matches, our lower bound 50 is below BRS 75."
+        },
+        "lps": {
+          "ours": [75, 150],
+          "verdict": "agrees",
+          "suggest": null,
+          "sources": [
+            {"url": "https://www.bulkreefsupply.com/content/post/keep-coral-happy-and-dial-in-your-reef-lighting-with-a-par-meter", "site": "Bulk Reef Supply", "states": "75 - 150 PAR", "quote": "Soft Corals and LPS: 75 - 150 PAR"}
+          ],
+          "note": "Exact match."
+        },
+        "sps": {
+          "ours": [150, 400],
+          "verdict": "disagrees",
+          "suggest": [200, 350],
+          "sources": [
+            {"url": "https://www.bulkreefsupply.com/content/post/keep-coral-happy-and-dial-in-your-reef-lighting-with-a-par-meter", "site": "Bulk Reef Supply", "states": "200 - 350 PAR", "quote": "SPS corals 200 - 350 PAR"}
+          ],
+          "note": "BRS range 200-350 lies inside our 150-400 (ours is wider); lower bound 150 is 25 % below BRS 200 and upper 400 is 14 % above 350."
+        }
+      }
+    },
+    "kwh-usd": {
+      "fields": {
+        "residential": {
+          "ours": 0.17,
+          "verdict": "agrees",
+          "suggest": null,
+          "sources": [
+            {"url": "https://www.eia.gov/electricity/monthly/epm_table_grapher.php?t=epmt_5_6_a", "site": "US EIA Electric Power Monthly table 5.6.A", "states": "18.31 cents/kWh (July 2026, U.S. Total residential)", "quote": "U.S. Total 18.31 17.45 14.53 14.05 9.77 9.33 14.97 14.27 14.99 14.36"}
+          ],
+          "note": "Latest month July 2026 residential 18.31 c/kWh (July 2025: 17.45). Ours 0.17 USD is 7 % below 0.1831, within 20 %. Page gives no 12-month average. Quote is the U.S. Total row; residential is the first pair (July 2026, July 2025)."
+        }
+      }
+    },
+    "marine-ph": {
+      "fields": {
+        "band": {
+          "ours": [8.0, 8.4],
+          "verdict": "agrees",
+          "suggest": null,
+          "sources": [
+            {"url": "https://forums.reefcentral.com/threads/ph.137671", "site": "Reef Central (Randy Holmes-Farley article copy)", "states": "7.8 to 8.5 acceptable for reef aquaria", "quote": "In my opinion, the pH range from 7.8 to 8.5 is an acceptable range for reef aquaria, with several caveats."},
+            {"url": "https://forums.reefcentral.com/threads/ph.137671", "site": "Reef Central (Randy Holmes-Farley article copy)", "states": "natural seawater pH about 8.2", "quote": "As a goal, I'd suggest that the pH of natural seawater, about 8.2, is appropriate"}
+          ],
+          "note": "Our 8.0-8.4 sits inside his acceptable 7.8-8.5; natural seawater about 8.2 is inside our band. Both quotes from the same page; no NOAA page opened."
+        }
+      }
+    }
+  }
+}
