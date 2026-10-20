@@ -44,12 +44,12 @@ STATE (2026-10-20, build ~903):
   starter.ts), or leave them? Close SE and SE2 together once answered.
 - NEW, being started: path 1 "An animal I want" (design chat local_eda2d645, plan research/plan-path1-animal-first.md, HANDOFF section "User
   flow: paths, budget, deals"). Lanes P1 group data (port 5863), P2 tank fit (5873), P3 fullness tile (5883), P4 artificial plants (5893) have
-  prompts in prompts/, worktrees ../Glass-Box-p1groups / p2tankfit / p3fullness / p4artplants, launch entries and HANDOFF rows. P5 stocking screen
-  (starts after P2's API is on main) and P6 builds / scape / plan (after P5; may split into P6a / P6b) need prompts written by you from the plan
+  prompts in prompts/, worktrees ../Glass-Box-p1groups / p2tankfit / p3fullness / p4artplants, launch entries and HANDOFF rows. P2 tank fit is DONE (d807ba9: tankFor, stepUps, buildSpan, needsOf, zoneOf, tankLabel in src/scene/tankfit.ts; caveats: span is animal-only, space only), so P5 stocking screen
+  (can start now; also wants P1's schema and P3's tile) and P6 builds / scape / plan (after P5; may split into P6a / P6b) need prompts written by you from the plan
   file when their inputs land. P1 will quote a research cost to Nathan first. CORRECTION (coordinator 4's mistake, found 2026-10-20): lane KW's wizard is NOT on main. KW reported it pushed (8d2f5dc), but 8d2f5dc was only a merge of main
   INTO the branch; the real work (dbc7aa6 "Guided start wizard (lane KW)", src/ui/wizard.ts 358 lines, test/wizard.test.ts) never reached origin/main. I closed the
   lane after misreading its 6 commits ahead as merge-only. The only copy was the LOCAL branch `wizard` (4b99321) in the shared repo; it is now also backed
-  up on origin as branch `wizard` (no deploy). Nathan decides in the design chat whether to ship it first or fold it into P5 / P6a (the five-card New menu
+  up on origin as branch `wizard` (no deploy). DECIDED (Nathan 2026-10-20, via the design chat): the guided-start wizard is OBSOLETE and will NOT be shipped; keep the `wizard` branch (dbc7aa6 is the only copy, also on origin) for P6a to reuse its tank / kit picking (the five-card New menu
   replaces its stage question; P6a reuses its tank / kit picking). Do NOT delete the branch. LESSON: before closing a lane run
   git merge-base --is-ancestor <last real commit> origin/main, not just `log origin/main..HEAD`.
 - Nathan's decisions on file: expected cost = ONE number, no percentiles / ranges (plan file dated 2026-10-19); starter bundle tanks hold only the

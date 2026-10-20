@@ -1,6 +1,27 @@
 # HANDOFF archive
 Finished lane and feature sections moved out of HANDOFF.md on 2026-10-16, verbatim, newest first.
 
+## Lane P2: tank fit engine, path 1 (2026-10-20, branch `p2tankfit`, port 5873)
+Files: `src/scene/tankfit.ts`, `test/tankfit.test.ts` (pure, no UI; reads stockingOf, tanks catalogue, tech, demand; edits none of them).
+Input everywhere is `AnimalCount[]` = `{ species, n, tl? }[]`; a tank is a catalogue `TankModel` (or its id).
+- `tankFor(animals): TankFit | undefined` = smallest generic rectangular catalogue size (names like "20 gal long"; maker products, bow / pie / poly
+  and terrariums are not offered) with `fails` empty: space <= 100 % (stockingOf, balanced build), the species' care minimum (CARE.minL, 10 % slack),
+  GroupCare `minLengthMm` / `maxDepthMm` (water is 90 % of the interior height), floor area by zone. When nothing fits it returns the largest tank with
+  `fails` saying why. Returns `{ tank, litres, gallons, spacePct, filtrationPct, fails, needs }`; `needs` = `{ floorCm2 by zone, minLengthMm, maxDepthMm,
+  minLitres, salt }`. Undefined with no animals in the water (land animals are ignored).
+- `stepUps(animals, current, n = 3): StepUp[]` = next sizes at least 1.25x the water of the previous pick, skipping any that fail length / depth / floor:
+  `{ tank, litres, costDeltaUsd (balanced build, vs current), spacePct, filtrationPct }`.
+- `buildSpan(animals, tank): BuildSpan | undefined` = `{ setupUsd: { cheapest, balanced }, minPerWeek: { cheapest, balanced } }`, whole numbers, demand-model means.
+- Also exported: `needsOf`, `zoneOf`, `floorNeedCm2`, `recommendedMin` (bands.ok, else CARE.group, else 1), `tankLabel(model)` = "About a 20 gal long (77 x 33 cm)".
+Decisions: (1) floor area is a documented rule of thumb (bottom 4 x tl^2 per animal, swimmers 1.5, all 2.5); it is a floor under the per-litre space number
+and rarely binds. (2) The two builds are animal-only: bare preset (lowtech fresh / fowlr salt) with the filter row varied: cheapest = lowest-priced filter keeping
+filtration <= 100 %, balanced = lowest-priced hang-on-back-or-better keeping it <= 70 %. Plants, light and CO2 belong to P6's scape step, so the span is narrow
+($10-$20 apart on small tanks); P6 widens it. (3) Tank prices come from the catalogue's real products (median listed price), else the demand model's $/gal rule.
+(4) GroupCare fields are read off CARE with no import: they take effect when P1's merge loop lands (tests set them on CARE to prove it).
+Open: tankFor judges SPACE only, as the plan says: an oscar in the 120 gal it needs by the care minimum reads filtration 165 % even with the strongest filter
+(stockingOf's own number), shown in `filtrationPct` for P5 to word. Lane P5 consumes the API above.
+
+
 ## Lane TG: tech gear in 3D (2026-10-19, branch `techgear`, port 5833)
 Step 1 SHIPPED 2026-10-19 (Nathan: "Gear models pass ... draw the inferred gear (A). Ship it.").
 - `src/render/gear3d.ts`: procedural, sized from gear-models.json (filter body ~ cbrt(gph), heater glass length by watts): sponge (+ air pump on the floor beside the tank), internal, HOB (body behind the back glass, spillway sheet + surface ripples, slotted intake), canister (glass lily pipes, hoses into the stand, body in the stand), heater (glass, ceramic core + element, cap, pilot light, suction cups; leans when longer than the water column), airstone + bubbles, CO2 (diffuser + mist, bubble counter, cylinder + regulator, drop checker green / blue / yellow via `co2` level), UV inline (in the stand beside the canister) or internal, powerhead / wavemaker on the side glass, HOB skimmer, sump (overflow box, loc-line return, glass sump with skimmer + pump in the stand), ATO sensor. One tank's gear = 4 merged meshes (lit in-tank, lit room, clear fresnel glass, glow); GPU A/B on the high-tech planted tank: +0.44 ms of 22.4 ms.
