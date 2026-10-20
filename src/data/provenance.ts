@@ -56,6 +56,9 @@ export const RULES: Record<string, Rule[]> = {
   CARE: [
     // care, minL, temper, prey, solo / slow / nip, coral and group have no rule: care.ts calls them estimates from common practice.
     // Kept against the pages (Nathan 2026-10-20: trust the research where independent sources agree; here they split): see research/sourcing/decisions.md.
+    { path: 'adf.care', status: 'assumption', why: 'pages split: LiveAquaria says Moderate, Josh\'s Frogs fairly easy; we keep beginner (1)' },
+    { path: 'yellowtang.care', status: 'assumption', why: 'one retailer page (LiveAquaria) says Easy; tangs are disease-prone in practice, so we keep intermediate (2)' },
+    { path: 'betta.care', status: 'assumption', why: 'pages split: Seriously Fish says Moderate, Fishkeeping World calls it fine for first-time owners; we keep beginner (1)' },
     { path: 'ballpython.minL', status: 'assumption', why: 'pages split: PetSmart and BeWild accept a 40 gal (about 151 L) tank, Zen Habitats and Reptile Direct call 4x2x2 ft (about 120 gal, 450 L) the adult minimum and the 40 gal rule outdated; we keep the larger modern figure' },
     ...Object.keys(WATER).flatMap((id): Rule[] => ['temp', 'tol'].map(k => ({ path: `${id}.${k}.*`, status: 'researched', src: ['climate-research'], why: 'researched band (data/climatedata.ts) replaces the first guess' }))),
     ...GROUP_ROWS.map(({ id, url, est }): Rule => est

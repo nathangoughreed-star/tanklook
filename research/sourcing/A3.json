@@ -32,8 +32,8 @@
      "sources": []
     },
     "care": {
-     "ours": 2,
-     "verdict": "disagrees",
+     "ours": 1,
+     "verdict": "agrees",
      "suggest": 1,
      "sources": [
       {
@@ -384,8 +384,8 @@
      "sources": []
     },
     "care": {
-     "ours": 3,
-     "verdict": "disagrees",
+     "ours": 2,
+     "verdict": "agrees",
      "suggest": 2,
      "sources": [
       {

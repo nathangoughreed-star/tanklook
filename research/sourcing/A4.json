@@ -33,8 +33,8 @@
      "note": "No opened page gives a female length."
     },
     "care": {
-     "ours": 2,
-     "verdict": "disagrees",
+     "ours": 1,
+     "verdict": "agrees",
      "suggest": 1,
      "sources": [
       {
@@ -98,7 +98,7 @@
        "url": "https://www.seriouslyfish.com/species/labidochromis-caeruleus/",
        "site": "Seriously Fish",
        "states": "7.7-8.6",
-       "quote": "7.7–8.6"
+       "quote": "7.7ï¿½8.6"
       },
       {
        "url": "https://guidarium.com/fishes/yellow-lab-mbuna",
@@ -199,13 +199,13 @@
        "url": "https://www.seriouslyfish.com/species/aulonocara-stuartgranti/",
        "site": "Seriously Fish",
        "states": "7.5-9.0",
-       "quote": "7.5–9.0"
+       "quote": "7.5ï¿½9.0"
       },
       {
        "url": "https://guidarium.com/fishes/grants-peacock-cichlid",
        "site": "Guidarium",
        "states": "7.8-8.6",
-       "quote": "7.8–8.6"
+       "quote": "7.8ï¿½8.6"
       }
      ]
     }
@@ -297,13 +297,13 @@
        "url": "https://www.seriouslyfish.com/species/pseudotropheus-demasoni/",
        "site": "Seriously Fish",
        "states": "7.6-8.8",
-       "quote": "7.6–8.8"
+       "quote": "7.6ï¿½8.8"
       },
       {
        "url": "https://guidarium.com/fishes/demasoni-cichlid-mbuna",
        "site": "Guidarium",
        "states": "7.6-8.6",
-       "quote": "7.6–8.6"
+       "quote": "7.6ï¿½8.6"
       }
      ]
     }
@@ -397,7 +397,7 @@
        "url": "https://www.seriouslyfish.com/species/copadichromis-borleyi/",
        "site": "Seriously Fish",
        "states": "7.5-8.5",
-       "quote": "7.5–8.5"
+       "quote": "7.5ï¿½8.5"
       },
       {
        "url": "https://guidarium.com/fishes/red-fin-borleyi",
@@ -496,7 +496,7 @@
        "url": "https://guidarium.com/fishes/trewavas-cichlid",
        "site": "Guidarium",
        "states": "7.8-8.6",
-       "quote": "7.8–8.6"
+       "quote": "7.8ï¿½8.6"
       }
      ]
     }
@@ -603,13 +603,13 @@
        "url": "https://www.seriouslyfish.com/species/melanochromis-auratus/",
        "site": "Seriously Fish",
        "states": "7.6-8.8",
-       "quote": "7.6–8.8"
+       "quote": "7.6ï¿½8.8"
       },
       {
        "url": "https://guidarium.com/fishes/auratus-cichlid-mbuna",
        "site": "Guidarium",
        "states": "7.6-8.6",
-       "quote": "pH range of 7.6–8.6"
+       "quote": "pH range of 7.6ï¿½8.6"
       }
      ]
     }
@@ -711,13 +711,13 @@
        "url": "https://www.seriouslyfish.com/species/nimbochromis-livingstonii/",
        "site": "Seriously Fish",
        "states": "7.6-8.8",
-       "quote": "7.6–8.8"
+       "quote": "7.6ï¿½8.8"
       },
       {
        "url": "https://guidarium.com/fishes/livingstons-cichlid",
        "site": "Guidarium",
        "states": "7.6-8.6",
-       "quote": "7.6–8.6"
+       "quote": "7.6ï¿½8.6"
       }
      ]
     }
@@ -804,13 +804,13 @@
        "url": "https://www.seriouslyfish.com/species/cynotilapia-afra/",
        "site": "Seriously Fish",
        "states": "7.5-8.5",
-       "quote": "7.5–8.5"
+       "quote": "7.5ï¿½8.5"
       },
       {
        "url": "https://guidarium.com/fishes/afra-cichlid",
        "site": "Guidarium",
        "states": "7.6-8.6",
-       "quote": "7.6–8.6"
+       "quote": "7.6ï¿½8.6"
       }
      ]
     }
@@ -888,7 +888,7 @@
        "url": "https://www.seriouslyfish.com/species/synodontis-njassae/",
        "site": "Seriously Fish",
        "states": "7.5-8.5",
-       "quote": "7.5–8.5"
+       "quote": "7.5ï¿½8.5"
       }
      ],
      "note": "Single source; our top end 9 is 0.5 over."

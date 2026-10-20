@@ -70,7 +70,7 @@
         "female.tl": {"ours": 80, "verdict": "agrees", "suggest": null, "sources": [
           {"url": "https://www.fishbase.se/summary/Melanotaenia-boesemani.html", "site": "FishBase", "states": "7.0 cm SL female (about 84 mm TL)", "quote": "7.0 cm SL (female)"}
         ]},
-        "care": {"ours": 1, "verdict": "disagrees", "suggest": 2, "sources": [
+        "care": {"ours": 2, "verdict": "agrees", "suggest": 2, "sources": [
           {"url": "https://www.seriouslyfish.com/species/melanotaenia-boesemani/", "site": "Seriously Fish", "states": "Moderate", "quote": "Moderate"}
         ], "note": "One source only; quote is the rating word."},
         "minL": {"ours": 200, "verdict": "disagrees", "suggest": 110, "sources": [
@@ -156,7 +156,7 @@
           {"url": "https://www.seriouslyfish.com/species/poecilia-sphenops/", "site": "Seriously Fish", "states": "80 mm SL (about 96 mm TL)", "quote": "80mm SL3.1in SL"},
           {"url": "https://www.fishkeepingworld.com/molly-fish/", "site": "Fishkeeping World", "states": "adults up to 4.5 in (114 mm)", "quote": "Adult mollies reach up to 4.5 inches in length."}
         ], "note": "FKW 114 mm is 43 % above ours; SF/FishBase agree."},
-        "care": {"ours": 2, "verdict": "disagrees", "suggest": 1, "sources": [
+        "care": {"ours": 1, "verdict": "agrees", "suggest": 1, "sources": [
           {"url": "https://www.seriouslyfish.com/species/poecilia-sphenops/", "site": "Seriously Fish", "states": "Easy", "quote": "Easy"},
           {"url": "https://www.fishkeepingworld.com/molly-fish/", "site": "Fishkeeping World", "states": "Easy", "quote": "Care level: Easy"}
         ]},

@@ -8,7 +8,7 @@
         "tl": { "ours": 75, "verdict": "agrees", "suggest": null, "sources": [
           { "url": "https://www.fishbase.se/summary/Gramma-loreto.html", "site": "FishBase", "states": "8.0 cm TL max", "quote": "Max length : 8.0 cm TL male/unsexed; (Ref. [7251])" },
           { "url": "https://www.liveaquaria.com/product/53/?pcatid=53", "site": "LiveAquaria", "states": "3 in max", "quote": "Maximum Size: 3\"" } ] },
-        "care": { "ours": 2, "verdict": "disagrees", "suggest": 1, "sources": [
+        "care": { "ours": 1, "verdict": "agrees", "suggest": 1, "sources": [
           { "url": "https://www.liveaquaria.com/product/53/?pcatid=53", "site": "LiveAquaria", "states": "Easy", "quote": "Care Level: Easy" },
           { "url": "https://www.aquariumsource.com/royal-gramma-basslet/", "site": "Aquarium Source", "states": "extremely easy", "quote": "The royal gramma is also extremely easy to care for due to their hardy and peaceful nature." } ] },
         "minL": { "ours": 115, "verdict": "agrees", "suggest": null, "sources": [
@@ -29,7 +29,7 @@
           { "url": "https://www.fishbase.se/summary/Paracanthurus-hepatus.html", "site": "FishBase", "states": "31.0 cm TL max", "quote": "Max length : 31.0 cm TL male/unsexed; (Ref. [2334])" },
           { "url": "https://www.liveaquaria.com/product/330/", "site": "LiveAquaria", "states": "12 in max (305 mm)", "quote": "Maximum Size: 12\"" } ],
           "note": "Ours is 19% under FishBase max; within 20%." },
-        "care": { "ours": 3, "verdict": "disagrees", "suggest": 2, "sources": [
+        "care": { "ours": 2, "verdict": "agrees", "suggest": 2, "sources": [
           { "url": "https://www.liveaquaria.com/product/330/", "site": "LiveAquaria", "states": "Moderate", "quote": "Care Level: Moderate" },
           { "url": "https://reefexclusive.com/products/paracanthurus-hepatus", "site": "Reef Exclusive", "states": "Moderate", "quote": "Care Level : Moderate" } ] },
         "minL": { "ours": 570, "verdict": "agrees", "suggest": null, "sources": [
@@ -51,7 +51,7 @@
           { "url": "https://www.fishbase.se/summary/Nemateleotris-magnifica.html", "site": "FishBase", "states": "9.0 cm TL max", "quote": "Max length : 9.0 cm TL male/unsexed" },
           { "url": "https://www.liveaquaria.com/product/168/?pcatid=168", "site": "LiveAquaria", "states": "3 in max", "quote": "Maximum Size: 3 Inches" } ],
           "note": "Ours is 17% under FishBase max." },
-        "care": { "ours": 2, "verdict": "disagrees", "suggest": 1, "sources": [
+        "care": { "ours": 1, "verdict": "agrees", "suggest": 1, "sources": [
           { "url": "https://www.liveaquaria.com/product/168/?pcatid=168", "site": "LiveAquaria", "states": "Easy", "quote": "Care Level: Easy" },
           { "url": "https://reefexclusive.com/products/nemateleotris-magnifica", "site": "Reef Exclusive", "states": "Easy", "quote": "Care Level : Easy" } ] },
         "minL": { "ours": 75, "verdict": "agrees", "suggest": null, "sources": [
@@ -69,7 +69,7 @@
           { "url": "https://www.fishbase.se/summary/Pterapogon-kauderni.html", "site": "FishBase", "states": "8.6 cm TL max (female)", "quote": "Max length : 8.6 cm TL (female); max. published weight: 0.00 g" },
           { "url": "https://reefexclusive.com/products/banggai-cardinalfish", "site": "Reef Exclusive", "states": "8 cm (3 in) TL", "quote": "This species grows up to 8 centimetres (3 in) total length." } ],
           "note": "Ours is 19% under FishBase max; within 20%." },
-        "care": { "ours": 2, "verdict": "disagrees", "suggest": 1, "sources": [
+        "care": { "ours": 1, "verdict": "agrees", "suggest": 1, "sources": [
           { "url": "https://reefexclusive.com/products/banggai-cardinalfish", "site": "Reef Exclusive", "states": "Easy", "quote": "Care Level : Easy" },
           { "url": "https://www.saltwateraquariumblog.com/banggai-cardinalfish-care-guide/", "site": "Saltwater Aquarium Blog", "states": "easy", "quote": "They are also an easy-to-care-for aquarium fish" } ] },
         "minL": { "ours": 115, "verdict": "agrees", "suggest": null, "sources": [
@@ -89,7 +89,7 @@
           { "url": "https://www.fishbase.se/summary/Pseudocheilinus-hexataenia.html", "site": "FishBase", "states": "10.0 cm TL max", "quote": "Max length : 10.0 cm TL male/unsexed" },
           { "url": "https://reefexclusive.com/products/six-line-wrasse", "site": "Reef Exclusive", "states": "about 3 in total length", "quote": "Adults will grow to about 3-inches in total length, but they require open space for swimming." } ],
           "note": "Ours matches 3 in (76 mm); FishBase max is 25% higher." },
-        "care": { "ours": 2, "verdict": "disagrees", "suggest": 1, "sources": [
+        "care": { "ours": 1, "verdict": "agrees", "suggest": 1, "sources": [
           { "url": "https://www.liveaquaria.com/products/six-line-wrasse", "site": "LiveAquaria", "states": "Easy", "quote": "Care Level: Easy" },
           { "url": "https://reefexclusive.com/products/six-line-wrasse", "site": "Reef Exclusive", "states": "Easy", "quote": "Care Level : Easy" } ] },
         "minL": { "ours": 208, "verdict": "agrees", "suggest": 208, "sources": [
@@ -133,7 +133,7 @@
           { "url": "https://www.fishbase.se/summary/Centropyge-bispinosa.html", "site": "FishBase", "states": "11.5 cm TL max", "quote": "Max length : 11.5 cm TL male/unsexed;" },
           { "url": "https://reefexclusive.com/products/coral-beauty-angelfish", "site": "Reef Exclusive", "states": "4 in (102 mm) max", "quote": "Max. Size : 4\"" } ],
           "note": "Ours is 12% under 4 in; 22% under FishBase max." },
-        "care": { "ours": 2, "verdict": "disagrees", "suggest": 1, "sources": [
+        "care": { "ours": 1, "verdict": "agrees", "suggest": 1, "sources": [
           { "url": "https://www.liveaquaria.com/product/438/?pcatid=438", "site": "LiveAquaria", "states": "Easy", "quote": "Easy" },
           { "url": "https://reefexclusive.com/products/coral-beauty-angelfish", "site": "Reef Exclusive", "states": "Easy", "quote": "Care Level : Easy" } ],
           "note": "LiveAquaria quote is the value cell only; label 'Care Level' sat on separate line." },

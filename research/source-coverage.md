@@ -11,8 +11,8 @@ when it carries the url of the listing it was read from and does not mark the fi
 
 | | values | cited | fitted | derived | researched | claimed | assumption | unsourced | strong |
 |---|---|---|---|---|---|---|---|---|---|
-| **all data** | 5174 | 2334 (45 %) | 59 (1 %) | 11 (0 %) | 681 (13 %) | 679 (13 %) | 729 (14 %) | 681 (13 %) | 46 % |
-| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) | 1277 | 306 |  |  | 387 | 428 | 17 | 139 | 24 % |
+| **all data** | 5169 | 2359 (46 %) | 59 (1 %) | 11 (0 %) | 681 (13 %) | 679 (13 %) | 732 (14 %) | 648 (13 %) | 47 % |
+| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) | 1277 | 331 |  |  | 387 | 428 | 20 | 111 | 26 % |
 | Adult length per species (species.json tl) | 108 | 82 |  |  |  |  |  | 26 | 76 % |
 | Marine pH band (data/waterchem.ts) | 2 | 2 |  |  |  |  |  |  | 100 % |
 | Reptile / amphibian floor area, height, groups, growth (data/herpstock.ts) | 228 |  |  |  | 228 |  |  |  | 0 % |
@@ -31,7 +31,7 @@ when it carries the url of the listing it was read from and does not mark the fi
 | Filter and heater specs (gear-catalog.json) | 538 | 397 |  |  |  |  |  | 141 | 74 % |
 | Tank sizes and prices (tanks.json) | 867 | 722 |  |  |  |  |  | 145 | 83 % |
 | Kit specs and prices (kits.json) | 207 | 207 |  |  |  |  |  |  | 100 % |
-| Deals (deals.json) | 169 | 160 |  |  |  |  |  | 9 | 95 % |
+| Deals (deals.json) | 164 | 160 |  |  |  |  |  | 4 | 98 % |
 | Gear deals (gear-deals.json) | 96 | 96 |  |  |  |  |  |  | 100 % |
 
 Engine constants (top-level numbers in 29 engine files): 83 documented in FORMULAS, 0 unsourced.
@@ -41,7 +41,6 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 
 | field | values |
 |---|---|
-| `CARE *.care` | 30 |
 | `CARE *.minL` | 27 |
 | `CARE *.temper` | 22 |
 | `CARE *.temp.*` | 8 |
@@ -55,6 +54,7 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | `CARE *.prey.mm` | 4 |
 | `CARE *.nip` | 3 |
 | `CARE *.group` | 3 |
+| `CARE *.care` | 2 |
 | `CARE *.fam` | 2 |
 | `CARE *.solo` | 2 |
 | `CARE *.coral` | 1 |
@@ -118,11 +118,8 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | `TANKS *.outer.H` | 29 |
 | `TANKS *.outer.D` | 29 |
 | `TANKS *.glassMm` | 29 |
-| `DEALS *.gal` | 3 |
-| `DEALS *.price.usd` | 3 |
-| `DEALS *.dims.L_in` | 1 |
-| `DEALS *.dims.D_in` | 1 |
-| `DEALS *.dims.H_in` | 1 |
+| `DEALS *.gal` | 2 |
+| `DEALS *.price.usd` | 2 |
 
 ### Unsourced engine constants
 

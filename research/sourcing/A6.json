@@ -132,7 +132,7 @@
           {"url": "https://aquariadise.com/cleaner-shrimp/", "site": "Aquariadise", "states": "2-2.4 in (5-6 cm) without whiskers; up to 2.5 in nose to tail", "quote": "Skunk cleaner shrimp can grow up to 2.5 inches long from nose to tail"},
           {"url": "https://www.thatpetplace.com/Lysmata-amboinensis-skunk-cleaner-shrimp-206934", "site": "That Pet Place", "states": "Max size 3 in", "quote": "Max Size (in inches)"}
         ], "note": "Sources differ: 50-64 mm (Aquariadise) vs 3 in = 76 mm max (That Pet Place, label and value '3' in separate cells). 55 agrees with the first, 28% under the second."},
-        "care": {"ours": 2, "verdict": "disagrees", "suggest": 1, "sources": [
+        "care": {"ours": 1, "verdict": "agrees", "suggest": 1, "sources": [
           {"url": "https://aquariadise.com/cleaner-shrimp/", "site": "Aquariadise", "states": "relatively easy to keep for marine species", "quote": "While skunk cleaner shrimp are relatively easy to keep for marine species"},
           {"url": "https://www.thatpetplace.com/Lysmata-amboinensis-skunk-cleaner-shrimp-206934", "site": "That Pet Place", "states": "Difficulty: Easy", "quote": "Difficulty"}
         ], "note": "Both pages say Easy (relative to marine in general); ours is 2 (intermediate). That Pet Place label and value are separate cells."},

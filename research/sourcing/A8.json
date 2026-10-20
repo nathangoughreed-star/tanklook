@@ -14,7 +14,7 @@
           "note": "Length type (SVL/total) not said."
         },
         "care": {
-          "ours": 2, "verdict": "disagrees", "suggest": 1,
+          "ours": 1, "verdict": "agrees", "suggest": 1,
           "sources": [
             {"url": "https://joshsfrogs.com/sp/dendrobates-tinctorius-green-sip-dart034", "site": "Josh's Frogs", "states": "great beginner frog", "quote": "Great beginner frog"}
           ],
@@ -124,7 +124,7 @@
           "note": "The Vet Desk gives 3 to 6 inches; sources span 51-152 mm, ours sits inside."
         },
         "care": {
-          "ours": 2, "verdict": "disagrees", "suggest": 1,
+          "ours": 1, "verdict": "agrees", "suggest": 1,
           "sources": [
             {"url": "https://petmd.com/exotic/fire-bellied-newt-care-sheet", "site": "PetMD", "states": "Beginner", "quote": "Beginner"},
             {"url": "https://reptilesmagazine.com/?p=104985", "site": "Reptiles Magazine", "states": "beginner", "quote": "Level:** beginner"}

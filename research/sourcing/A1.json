@@ -52,8 +52,8 @@
      "note": "FishBase upper end 6.0 is 0.8 below ours; SF range 3.5-7.5 is wider (lo 0.5 off). Sources differ."
     },
     "care": {
-     "ours": 2,
-     "verdict": "disagrees",
+     "ours": 1,
+     "verdict": "agrees",
      "suggest": 1,
      "sources": [
       {
@@ -233,8 +233,8 @@
      "note": "FishBase page states no pH."
     },
     "care": {
-     "ours": 2,
-     "verdict": "disagrees",
+     "ours": 1,
+     "verdict": "agrees",
      "suggest": 1,
      "sources": [
       {
@@ -698,8 +698,8 @@
      "note": "FishBase page states no pH."
     },
     "care": {
-     "ours": 2,
-     "verdict": "disagrees",
+     "ours": 1,
+     "verdict": "agrees",
      "suggest": 1,
      "sources": [
       {
@@ -791,8 +791,8 @@
      "note": "Sources differ: FishBase 5-8, SF 4-7; ours is more than 0.3 off at one end of each. Suggest the overlap 5-7."
     },
     "care": {
-     "ours": 2,
-     "verdict": "disagrees",
+     "ours": 1,
+     "verdict": "agrees",
      "suggest": 1,
      "sources": [
       {

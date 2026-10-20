@@ -783,8 +783,8 @@
      "note": "Sources disagree: Josh's Frogs 15 mm average, Tarantula Collective up to 19-23 mm (ours is 20+ % below that)."
     },
     "care": {
-     "ours": 2,
-     "verdict": "disagrees",
+     "ours": 1,
+     "verdict": "agrees",
      "suggest": 1,
      "sources": [
       {

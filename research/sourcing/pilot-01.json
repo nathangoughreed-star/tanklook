@@ -242,8 +242,8 @@
      "note": "FishBase summary line says 10.5 cm TL; Biology section 15 cm TL"
     },
     "care": {
-     "ours": 2,
-     "verdict": "disagrees",
+     "ours": 1,
+     "verdict": "agrees",
      "suggest": 1,
      "sources": [
       {
@@ -546,8 +546,8 @@
      ]
     },
     "care": {
-     "ours": 2,
-     "verdict": "disagrees",
+     "ours": 1,
+     "verdict": "agrees",
      "suggest": 1,
      "sources": [
       {
