@@ -400,7 +400,7 @@ Cancel, then change the name, to keep both.`)) return;
           const row = document.createElement('div'); row.className = 'tankrow';
           const vs = m.variants ?? [];
           const head = document.createElement('button'); head.className = 'tankgen';
-          head.innerHTML = `<b>${esc(m.name)}</b><span>${dimsInches(m.outer)} in generic${vs.length ? ` · ${vs.length} product${vs.length > 1 ? 's' : ''}` : ' · estimated size'}</span>`;
+          head.innerHTML = `<b>${esc(m.name)}</b><span>${dimsInches(m.outer)} in generic${/^estimate/.test(m.source) ? ' (estimated size)' : ''}${vs.length ? ` · ${vs.length} product${vs.length > 1 ? 's' : ''}` : ''}</span>`;
           head.onclick = () => apply(m);
           const col = document.createElement('div'); col.className = 'tankvars';
           row.append(head, col);
@@ -555,6 +555,13 @@ Cancel, then change the name, to keep both.`)) return;
     });
   };
   $<HTMLSelectElement>('glassSel').innerHTML = '<option value="auto">Auto (by height)</option>' + GLASS_CHOICES.map(g => `<option value="${g}">${g} mm</option>`).join('');
+  // a tank preset may set its maker's own thickness (9.5 mm, 15.9 mm): list it so the select shows it
+  const addGlassOpt = (g: number | 'auto') => {
+    const sel = $<HTMLSelectElement>('glassSel');
+    if (g === 'auto' || [...sel.options].some(o => o.value === String(g))) return;
+    const o = new Option(`${g} mm`, String(g)), after = [...sel.options].find(x => x.value !== 'auto' && +x.value > g);
+    sel.insertBefore(o, after ?? null);
+  };
   $<HTMLSelectElement>('glassSel').onchange = e => store.edit(s => { const v = (e.target as HTMLSelectElement).value; s.render.glass = v === 'auto' ? 'auto' : +v; });
   $<HTMLSelectElement>('glassType').onchange = e => store.edit(s => { s.render.glassType = (e.target as HTMLSelectElement).value as TankSetup['render']['glassType']; });
 
@@ -1032,6 +1039,7 @@ Cancel, then change the name, to keep both.`)) return;
   const capCount = (l: TankSetup['light']) => { l.count = Math.min(l.count, countMax(l)); };
   $('lPosOpt').onclick = () => store.edit(s => { const b = bestPos(s.tank, s.light); if (b != null) s.light.pos = b; });
   $<HTMLSelectElement>('lMount').onchange = e => store.edit(s => { s.light.mount = (e.target as HTMLSelectElement).value as 'legs' | 'hang'; });
+  $<HTMLSelectElement>('lHoodLed').onchange = e => store.edit(s => { if ((e.target as HTMLSelectElement).value === 'bar') s.light.hoodLed = 'bar'; else delete s.light.hoodLed; });
   $<HTMLSelectElement>('lPat').onchange = e => store.edit(s => { s.light.pattern = (e.target as HTMLSelectElement).value as TankSetup['light']['pattern']; capCount(s.light); });
   // Fixture (Nathan 2026-10-15): the style sets the geometry and which lamps fit; a lamp it does not come in becomes its
   // first, and a colour outside the new lamp's usual range its usual one
@@ -1721,11 +1729,25 @@ Cancel, then change the name, to keep both.`)) return;
     const s = S(), has = s.water.on && s.fish.length > 0, r = has ? stockingMemo(s) : null;
     $('stkRow').hidden = !r || !r.contributors.length;
     $('stkList').hidden = $('stkRow').hidden;
+    $('stkNit').hidden = $('stkRow').hidden;
     if (!r || !r.contributors.length) { $('stkWhy').textContent = ''; return; }
     $('stkOut').textContent = stockingLine(r);
     $('stkOut').className = r.percent > 100 ? 'bad' : '';
     $('stkWhy').textContent = r.reasons.join(' ');
+    syncNitrogen(r);
     $('stkBody').innerHTML = stockingDetail(r).map(t => `<li>${esc(t)}</li>`).join('') + `<li class="dim">Water ${store.scene.units === 'in' ? `${Math.round(r.capacity.litres / 3.785)} gal` : `${Math.round(r.capacity.litres)} L`}, filter x${r.capacity.filter.toFixed(2)}${r.capacity.plantCount ? `, plants x${r.capacity.plants.toFixed(2)}` : ''}, ${store.scene.units === 'in' ? `${Math.round(r.capacity.tempC * 9 / 5 + 32)} °F` : `${Math.round(r.capacity.tempC)} °C`}.</li>`;
+  }
+  /** Waste, filter and plants (lane SE2): the split of the day's nitrogen and the two verdicts. */
+  function syncNitrogen(r: ReturnType<typeof stockingMemo>) {
+    const n = r.nitrogen, sel = $('stkFeed') as HTMLSelectElement;
+    if (document.activeElement !== sel) sel.value = n.feeding;
+    const seg = [['Plants', n.split.plants, '#3a9a5c'], ['Water changes', n.split.waterChanges, '#c9a227'], ['Ammonia the filter cannot clear', n.split.unprocessed, '#c0443c']] as const;
+    $('stkBar').innerHTML = seg.map(([l, v, c]) => `<span title="${l} ${Math.round(v * 100)}%" style="width:${(v * 100).toFixed(1)}%;background:${c}"></span>`).join('');
+    $('stkLegend').innerHTML = seg.map(([l, v, c]) => `<span><i style="background:${c}"></i>${l} ${Math.round(v * 100)}%</span>`).join('');
+    const f = n.filter, mg = n.nitrateMgNPerWeek;
+    $('stkVerdict').innerHTML = esc(`Ammonia safety ${n.ammoniaPercent === Infinity ? 'over 999' : Math.round(n.ammoniaPercent)}% of what the filter can safely clear (${f.label}${f.mediaL ? `, about ${f.mediaL.toFixed(1)} L of media, ${f.src}` : ''}).`)
+      + ' ' + esc(n.waterChangePct < 5 ? 'Plants and the filter leave almost no nitrate to remove.' : `Nitrate rises about ${mg.toFixed(1)} mg N/L a week: a water change of about ${Math.round(n.waterChangePct)}% a week holds it near 40 ppm.`)
+      + ` <span class="dim">${esc(`Waste ${n.tan.toFixed(2)} g ammonia (TAN) a day, plants take up to ${n.plants.gN.toFixed(2)} g N a day. Estimates: waste good to about 2x, plant uptake extrapolated, hang-on-back media derived.`)}</span>`;
   }
   function syncAq() {
     syncStocking();
@@ -1771,6 +1793,7 @@ Cancel, then change the name, to keep both.`)) return;
     }
     aqQueued.delete(key); aqBusy.delete(key); syncAq(); viewer.invalidate();
   };
+  ($('stkFeed') as HTMLSelectElement).onchange = e => { const v = (e.target as HTMLSelectElement).value as 'light' | 'normal' | 'heavy'; store.edit(s => { s.feeding = v === 'normal' ? undefined : v; }); };
   $('aqCheck').onclick = () => aqCheck(S());
 
   let waterKind = '', syncKeys: string[] = [];
@@ -1862,7 +1885,7 @@ Cancel, then change the name, to keep both.`)) return;
     setVal('bdSel', s.backdrop.kind); setVal('bdDepth', s.backdrop.depth); setOut('oBdDepth', fmtLen(s.backdrop.depth, u, 1));
     $('bdRow').style.display = sh === 'bowl' ? 'none' : ''; $('bdDepthRow').style.display = sh !== 'bowl' && s.backdrop.kind !== 'none' ? '' : 'none';
     ($('bdShuffle') as HTMLButtonElement).disabled = s.backdrop.kind === 'none';
-    setVal('bgArc', s.render.bgArc); setOut('oBgArc', s.render.bgArc >= 360 ? '360° (all round)' : `${s.render.bgArc}°`); setVal('glassSel', String(s.render.glass)); setVal('glassType', s.render.glassType);
+    setVal('bgArc', s.render.bgArc); setOut('oBgArc', s.render.bgArc >= 360 ? '360° (all round)' : `${s.render.bgArc}°`); addGlassOpt(s.render.glass); setVal('glassSel', String(s.render.glass)); setVal('glassType', s.render.glassType);
     const t = glassThickness(A, s.render.glass);
     $('glassHint').textContent = (s.render.glass === 'auto' ? 'Auto: ' : 'Glass: ') + t + ' mm (' + fmtLen(t, u, 2) + ')';
 
@@ -2019,6 +2042,9 @@ Cancel, then change the name, to keep both.`)) return;
     setOut('oLH', s.lid === 'hood' ? 'In hood' : fmt(l.height) + ' above');
     $('lHRow').style.display = l.type === 'flat' ? 'none' : ''; ($('lH') as HTMLInputElement).disabled = s.lid === 'hood';
     $('lMountRow').style.display = l.type === 'flat' || s.lid === 'hood' ? 'none' : ''; setVal('lMount', mountOf(l));
+    $('lHoodLedRow').style.display = s.lid === 'hood' && l.type === 'led' ? '' : 'none'; setVal('lHoodLed', l.hoodLed ?? 'strips');
+    // in a hood the LED fixture is strips or a bar (the row above), so the menu does not promise a full-length bar
+    ($('lType') as HTMLSelectElement).querySelector<HTMLOptionElement>('option[value=led]')!.textContent = s.lid === 'hood' ? 'LED (strips or bar)' : FIXTURES.led.label;
     // bars (tubes, LED bar): front to back, as far as the housing stays over the tank (lightout barZ)
     const barDep = tl ? tl.depth : l.type === 'led' ? ledBarDepth(s.tank) : 0, pm = Math.floor(posMax(s.tank, barDep) / 5) * 5, pv = clamp(l.pos ?? 0, -pm, pm);
     $('lPosRow').style.display = $('lPosOptRow').style.display = barDep && s.lid !== 'hood' ? '' : 'none';

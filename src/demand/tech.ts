@@ -3,7 +3,7 @@
 // scene/tech.ts optionCost; a tank without `tech` keeps the engine's inferred rows untouched (old files do not move).
 // Hooked from engine.ts with one line after the routine work rows, before the kit. Keys 'filter' and 'heater' stay, so a kit's price still covers them.
 import dd from '../data/demand-defaults.json';
-import { coldSpecies, heatLoss, inferTech, optionCost, optionDef, rowsFor, techOf, type TechSetup } from '../scene/tech';
+import { coldSpecies, extraUnits, heatLoss, inferTech, optionCost, optionDef, rowsFor, techOf, unitCosts, type TechSetup } from '../scene/tech';
 import { filterByName, genericHeaterW, heaterForBundle } from '../data/gearCatalog';
 import { matchFilter, matchHeater, type FilterSpec } from './gear';
 import { volume } from '../scene/physics';
@@ -11,7 +11,7 @@ import type { TankSetup } from '../scene/types';
 import type { Contribution, Domain, Group, Range3 } from './types';
 
 /** Engine rows the tech replaces. */
-const REPLACED = new Set(['filter', 'heater', 'skimmer', 'co2', 'ferts', 'filterclean', 'rounit']);
+const REPLACED = new Set(['filter', 'heater', 'skimmer', 'co2', 'ferts', 'filterclean', 'rounit', 'filter+', 'heater+']);
 const CONSUMABLE = new Set(['ferts', 'co2', 'conditioner', 'dosing']);
 const pos = (r: Range3) => r.hi > 0 || r.lo < 0;
 
@@ -35,9 +35,19 @@ export function techDemand(S: TankSetup, rows: Contribution[], c: TechCtx) {
     if (!cost.parts.length && !risk) continue;
     const label = `${r.label}: ${def?.label ?? opt}`;
     const group: Group = CONSUMABLE.has(r.id) && cost.setup.mode === 0 ? 'consumable' : 'gear';
+    // heaters / filters added on top of a bundle's own: their setup is a row of its own ('heater+'), which a bundle's price does not cover
+    let setup = cost.setup;
+    if (r.id === 'heater' || r.id === 'filter') {
+      const extra = extraUnits(t, r.id), each = extra.length ? unitCosts(S, r.id, { tech: t }) : [];
+      const add = extra.reduce((a, i) => ({ lo: a.lo + each[i].setup.lo, mode: a.mode + each[i].setup.mode, hi: a.hi + each[i].setup.hi }), { lo: 0, mode: 0, hi: 0 });
+      if (add.mode > 0) {
+        setup = { lo: Math.max(0, setup.lo - add.lo), mode: Math.max(0, setup.mode - add.mode), hi: Math.max(0, setup.hi - add.hi) };
+        rows.push({ key: `${r.id}+`, label: `${r.label}: added to the bundle's`, group: 'gear', risk: 0, domain: c.domain, setup: c.price(add) });
+      }
+    }
     rows.push({
       key: r.id, label, group, risk, domain: c.domain,
-      ...(cost.setup.mode > 0 ? { setup: c.price(cost.setup) } : {}),
+      ...(setup.mode > 0 ? { setup: c.price(setup) } : {}),
       ...(pos(cost.monthly) ? { upkeep: cost.monthly } : {}),
       ...(cost.kwhMo > 0 ? { kwhMo: cost.kwhMo } : {}),
       ...(pos(cost.minutes) ? { minutes: cost.minutes } : {}),
@@ -55,14 +65,15 @@ export function kitTech(S: TankSetup, gear: { filter?: FilterSpec; heater?: { wa
   // the exact product when the listing names a catalogued one (step 3: "AquaClear 20", "Tetra Whisper PF20"), else the nearest generic model
   const fp = gear.filter && filterByName(`${gear.filter.name ?? ''} ${gear.filter.rating ?? ''}`, gear.filter.kind, gear.filter.gal ?? volume(S.tank).gallons);
   const fm = !fp && gear.filter ? matchFilter({ ...gear.filter, gal: gear.filter.gal ?? volume(S.tank).gallons })?.model : undefined;
-  if (fp) { t.rows.filter = fp.kind; t.filterProduct = fp.id; }
-  else if (fm) { t.rows.filter = fm.kind; t.filterModel = fm.id; }
+  // each one a unit flagged as the bundle's (Nathan 2026-10-20: its price is crossed out in the Tech menu; more can be added on top)
+  if (fp) { t.rows.filter = fp.kind; t.filters = [{ kind: fp.kind, product: fp.id, kit: true }]; }
+  else if (fm) { t.rows.filter = fm.kind; t.filters = [{ kind: fm.kind, model: fm.id, kit: true }]; }
   if (heaterIn) {
     // the brand's own heater (a Top Fin kit ships a Top Fin heater) at the listed watts, or at the size this tank needs
     t.rows.heater = 'one';
     const w = gear.heater?.watts ?? genericHeaterW(heatLoss(S, t).needW), hp = gear.label ? heaterForBundle(gear.label, w) : undefined;
-    if (hp && (!gear.heater?.watts || hp.watts === gear.heater.watts)) t.heaterProduct = hp.id;
-    else if (gear.heater?.watts) t.heaterW = matchHeater(gear.heater.watts).watts;
+    if (hp && (!gear.heater?.watts || hp.watts === gear.heater.watts)) t.heaters = [{ product: hp.id, kit: true }];
+    else t.heaters = [{ w: gear.heater?.watts ? matchHeater(gear.heater.watts).watts : w, kit: true }];
   }
   return t;
 }

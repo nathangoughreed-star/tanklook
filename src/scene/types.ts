@@ -145,6 +145,9 @@ export interface LightSettings {
   /** Bar fixtures (tubes, LED bar; added 2026-10-15, Nathan): where the fixture sits front to back, mm from the middle,
    * + toward the back; held over the tank (lightout barZ). Absent = centred. */
   pos?: number;
+  /** LED in a hood (added 2026-10-20, Nathan): a few stick-on strips joined by a wire, or one full-length bar. Absent =
+   * 'strips'. Only the look (render/lighting addHoodLamps). */
+  hoodLed?: 'strips' | 'bar';
   /** Light output (added 2026-10-14, all optional, no version bump; model in scene/lightout.ts). Power draw (W); 0 or
    * absent = off, Brightness stays the manual knob. Set: the render brightness follows the computed lux, `bright` is an exposure. */
   watts?: number;
@@ -239,7 +242,11 @@ export interface LayoutSettings { id: LayoutId; seed: number; plantSeed?: number
   /** "Show only tank-appropriate" toggles in the Plants and Animals lists: unfit ones sink to the bottom, grayed, each with its reason. Advice only. */
   gatePlants?: true; gateAnimals?: true; gateStock?: true;
   /** The keeper's expertise (1 beginner .. 3 expert), chosen in Animals; gating waits for it. */
-  expertise?: 1 | 2 | 3 }
+  expertise?: 1 | 2 | 3;
+  /** The owner's space for the tank (lane P3, 2026-10-20, no version bump): "Set my space" on the fullness tile, drawn as a dashed outline. Absent = not set. */
+  space?: SpaceLimit }
+/** The area the owner has for the tank, mm: w along the tank's length, d front to back, h (optional) the height it may reach (scene/space.ts). */
+export interface SpaceLimit { w: number; d: number; h?: number }
 
 /** Library item kinds; the variant names the generator (scene/items.ts LIBRARY). */
 export type ItemKind = 'stone' | 'wood' | 'cave' | 'plant' | 'coral' | 'artificial';
@@ -377,6 +384,8 @@ export interface TankSetup {
   patches?: Patch[];
   /** The tank's tech level (lane TM, 2026-10-19, no version bump): filter, heater, CO2, ferts, salt gear; scene/tech.ts. Absent = the gear the demand engine infers. */
   tech?: import('./tech').TechSetup;
+  /** How heavily the animals are fed (lane SE2, 2026-10-20, no version bump): sets the waste in the nitrogen budget (scene/nitrogen.ts). Absent = 'normal' (1 % of body weight a day). */
+  feeding?: 'light' | 'normal' | 'heavy';
 }
 
 /** What a scatter brush drops (lane SB). */

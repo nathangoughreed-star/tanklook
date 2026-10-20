@@ -1,6 +1,49 @@
 # HANDOFF archive
 Finished lane and feature sections moved out of HANDOFF.md on 2026-10-16, verbatim, newest first.
 
+## Lane P1: group data, path 1 (2026-10-20, branch `p1groups`, port 5863)
+DONE 2026-10-20 (pushed to main). `src/data/groups.ts` (GroupCare, `GROUPS` for all 84 species, plus helpers `recommendedMin`, `bandOf`,
+`bandMessage` that P5 can use), merged into CARE by one loop at the end of `care.ts` (`AnimalCare extends GroupCare`),
+`test/groups.test.ts`, `research/groups-sources.md` (one line per species).
+- Research: 12 Sonnet agents, about 0.8 M tokens. Search was rate-limited, so **63 of 84 rows are `est`** (hobby-guide judgement,
+  one search each; Seriously Fish / FishBase rarely came back) and **5 are UNVERIFIED** (coralbeauty, watchman, cleanershrimp,
+  mandarin, firefish: no confirmed source page). Treat the numbers as advice; a second research pass with page fetches would firm them up.
+- Decisions: bands.ok equals the older CARE.group wherever both exist (test enforces it; cherry shrimp raised 5 -> 10). CARE.solo wins:
+  solo species have max <= 2 (crested geckos, dwarf gourami researched higher; overridden). Dwarf frog = Nathan's bands 2 / 5 / 7,
+  depth 450 mm, low flow. `maxDepthMm` means a water-depth CAP only (angel / discus / axolotl agent values were tank heights: dropped).
+  Danio zone middle, neon minLengthMm 450 (P2's tankfit tests pin both). Overrides and notes are in the sources file.
+- Free now: `src/data/groups.ts`, `test/groups.test.ts`, `research/groups-sources.md`.
+
+
+## Lane P3: fullness tile, path 1 (2026-10-20, branch `p3fullness`, port 5883)
+- **Built (Nathan approved the pictures 2026-10-20, research/p3-shots/; shipped to main):** `src/ui/fullnessTile.ts`, a minimizable tile on the view's top left (under the button row; the demand panel holds the top right): Space and Filtration bars from `stockingMemo` (green, amber from 85 %, red over 100), the top 3 contributors of each bar on hover / tap, the engine's first reason line. Minimized = a "Fullness 96%" pill; starts minimized on a phone (under 700 px) until opened once; per viewer, localStorage `tanklook.ftMin`. Shown only for a wet tank with animals in the water or a space set. Hidden while the Animals Show box is off, faded (45 %) while another menu is in focus (follows `viewer.hidden` / `viewer.menuFocus` from the draw callback).
+- **Set my space:** Width / Depth / Height (optional) fields in the scene units, live; starts a little bigger than the tank (5 cm, or 2 in for US units). Stored as `layout.space` = `{ w, d, h? }` mm (types.ts `SpaceLimit`, optional, **no version bump**; validate.ts one line: `parseSpace` drops a broken value, old files have none). Fit maths in new `src/scene/space.ts` (`tankExtent` = footprint box + glass height, `spaceFit`, `defaultSpace`).
+- **Outline:** new `src/render/spaceOutline.ts`, dashed bars (not 1 px GL lines) on the stand top, a dashed box when a height is set; back edge on the tank's back, centred on its length; teal while the tank fits, red past it, a faint copy drawn through the glass and gravel. build.ts: one line in addContents (a keyed part, so a space edit patches instead of rebuilding) and `envKey` ignores `layout.space`. It shows in PNG exports and thumbnails (not filtered out).
+- **Fork card hook for lane P5:** `onSpaceFork(fn)` in fullnessTile.ts (returns the unregister); `fn({ setup, limit, fit, stocking })` runs once on the edit that takes the tank from inside the space to past it (`forkDue`), on Done when the space typed is smaller than the tank, and from a "Make room or swap…" button that shows only while a handler is registered. Not on opening a file that is already past it.
+- Tests: test/fullnessTile.test.ts (15: bars, contributors, show rule, fork rule, units, fit, parse, layout.space round trip, old files, outline geometry / colour / in the build). Shared files touched (one-line hooks): main.ts (attach), build.ts (2 lines + import), validate.ts (1 line + import), types.ts (optional field), style.css (appended `.ft*`). Shared folder's .claude/launch.json: the p3fullness entry now runs with `--prefix` the worktree.
+
+
+## Lane P2: tank fit engine, path 1 (2026-10-20, branch `p2tankfit`, port 5873)
+Files: `src/scene/tankfit.ts`, `test/tankfit.test.ts` (pure, no UI; reads stockingOf, tanks catalogue, tech, demand; edits none of them).
+Input everywhere is `AnimalCount[]` = `{ species, n, tl? }[]`; a tank is a catalogue `TankModel` (or its id).
+- `tankFor(animals): TankFit | undefined` = smallest generic rectangular catalogue size (names like "20 gal long"; maker products, bow / pie / poly
+  and terrariums are not offered) with `fails` empty: space <= 100 % (stockingOf, balanced build), the species' care minimum (CARE.minL, 10 % slack),
+  GroupCare `minLengthMm` / `maxDepthMm` (water is 90 % of the interior height), floor area by zone. When nothing fits it returns the largest tank with
+  `fails` saying why. Returns `{ tank, litres, gallons, spacePct, filtrationPct, fails, needs }`; `needs` = `{ floorCm2 by zone, minLengthMm, maxDepthMm,
+  minLitres, salt }`. Undefined with no animals in the water (land animals are ignored).
+- `stepUps(animals, current, n = 3): StepUp[]` = next sizes at least 1.25x the water of the previous pick, skipping any that fail length / depth / floor:
+  `{ tank, litres, costDeltaUsd (balanced build, vs current), spacePct, filtrationPct }`.
+- `buildSpan(animals, tank): BuildSpan | undefined` = `{ setupUsd: { cheapest, balanced }, minPerWeek: { cheapest, balanced } }`, whole numbers, demand-model means.
+- Also exported: `needsOf`, `zoneOf`, `floorNeedCm2`, `recommendedMin` (bands.ok, else CARE.group, else 1), `tankLabel(model)` = "About a 20 gal long (77 x 33 cm)".
+Decisions: (1) floor area is a documented rule of thumb (bottom 4 x tl^2 per animal, swimmers 1.5, all 2.5); it is a floor under the per-litre space number
+and rarely binds. (2) The two builds are animal-only: bare preset (lowtech fresh / fowlr salt) with the filter row varied: cheapest = lowest-priced filter keeping
+filtration <= 100 %, balanced = lowest-priced hang-on-back-or-better keeping it <= 70 %. Plants, light and CO2 belong to P6's scape step, so the span is narrow
+($10-$20 apart on small tanks); P6 widens it. (3) Tank prices come from the catalogue's real products (median listed price), else the demand model's $/gal rule.
+(4) GroupCare fields are read off CARE with no import: they take effect when P1's merge loop lands (tests set them on CARE to prove it).
+Open: tankFor judges SPACE only, as the plan says: an oscar in the 120 gal it needs by the care minimum reads filtration 165 % even with the strongest filter
+(stockingOf's own number), shown in `filtrationPct` for P5 to word. Lane P5 consumes the API above.
+
+
 ## Lane TG: tech gear in 3D (2026-10-19, branch `techgear`, port 5833)
 Step 1 SHIPPED 2026-10-19 (Nathan: "Gear models pass ... draw the inferred gear (A). Ship it.").
 - `src/render/gear3d.ts`: procedural, sized from gear-models.json (filter body ~ cbrt(gph), heater glass length by watts): sponge (+ air pump on the floor beside the tank), internal, HOB (body behind the back glass, spillway sheet + surface ripples, slotted intake), canister (glass lily pipes, hoses into the stand, body in the stand), heater (glass, ceramic core + element, cap, pilot light, suction cups; leans when longer than the water column), airstone + bubbles, CO2 (diffuser + mist, bubble counter, cylinder + regulator, drop checker green / blue / yellow via `co2` level), UV inline (in the stand beside the canister) or internal, powerhead / wavemaker on the side glass, HOB skimmer, sump (overflow box, loc-line return, glass sump with skimmer + pump in the stand), ATO sensor. One tank's gear = 4 merged meshes (lit in-tank, lit room, clear fresnel glass, glow); GPU A/B on the high-tech planted tank: +0.44 ms of 22.4 ms.

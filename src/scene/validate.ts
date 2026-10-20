@@ -13,6 +13,7 @@ import { pieSize, radialSize, sameGrid, sampleTerrain, swampTerrain, type Ground
 import { SCENE_VERSION, type BgImage, type BgSide, type Fish, type Item, type LightTech, type Scene, type Tank, type TankSetup } from './types';
 import { adoptImages, sidesTouch } from './images';
 import { parseTech } from './tech';
+import { parseSpace } from './space'; // lane P3: layout.space
 
 const GRAINS = ['mud', 'sand', 'gravel', 'pebble'] as const;
 
@@ -168,7 +169,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
   const tankA = tank(raw.tank, d.tank);
   const c = sub('camera'), r = sub('render'), l = sub('light'), s = sub('substrate'), lay = sub('layout');
   const te = sub('terrain'), wa = sub('water'), st = sub('stand'), w = sub('wall'), pe = sub('person'), bd = sub('backdrop'), gw = sub('grow'), cd = sub('condition');
-  const glass = r.glass === 'auto' ? 'auto' : typeof r.glass === 'number' && GLASS_CHOICES.includes(r.glass) ? r.glass : 'auto';
+  const glass = r.glass === 'auto' ? 'auto' : typeof r.glass === 'number' && r.glass >= 3 && r.glass <= 25 ? +r.glass.toFixed(2) : 'auto'; // a maker's own thickness (9.5, 15.9 mm) is kept too
   const subMax = tankA.H * 0.5;
 
   const fish: Fish[] = [], seen = new Set<number>();
@@ -262,7 +263,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       const stop = (v: unknown, k: keyof typeof old) => Math.round(num(v, old[k], k === 'animal' ? ANIMAL_RANGE[0] : DENS_RANGE[0], k === 'animal' ? ANIMAL_RANGE[1] : DENS_RANGE[1]) * 100) / 100; // continuous since 2026-10-15
       const own = (v: unknown) => typeof v === 'number' && Number.isFinite(v) ? { v: Math.round(num(v, seed, 1, 1e9)) } : null;
       const ps = own(lay.plantSeed), as = own(lay.animalSeed), comp = pick(lay.comp, COMP_IDS, 'any');
-      return { id: pick(lay.id, LAYOUT_IDS, d.layout.id), seed, ...(ps ? { plantSeed: ps.v } : {}), ...(as ? { animalSeed: as.v } : {}), ...(own(lay.gSeed) ? { gSeed: own(lay.gSeed)!.v } : {}), ...(own(lay.gFoc) ? { gFoc: own(lay.gFoc)!.v } : {}), ...(own(lay.tSeed) ? { tSeed: own(lay.tSeed)!.v } : {}), dens: ld ? { hard: stop(ld.hard, 'hard'), plant: stop(ld.plant, 'plant'), animal: stop(ld.animal, 'animal') } : old, ...(comp !== 'any' ? { comp } : {}), ...(lay.ground === true ? { ground: true } : {}), ...(lay.fit === 'low' || lay.fit === 'medium' || lay.fit === 'high' ? { fit: lay.fit } : {}), ...(lay.careSet === true ? { careSet: true as const } : {}), ...(lay.gatePlants === true ? { gatePlants: true as const } : {}), ...(lay.expertise === 1 || lay.expertise === 2 || lay.expertise === 3 ? { expertise: lay.expertise } : {}), ...(lay.gateAnimals === true ? { gateAnimals: true as const } : {}), ...(lay.gateStock === true ? { gateStock: true as const } : {}) };
+      return { id: pick(lay.id, LAYOUT_IDS, d.layout.id), seed, ...(ps ? { plantSeed: ps.v } : {}), ...(as ? { animalSeed: as.v } : {}), ...(own(lay.gSeed) ? { gSeed: own(lay.gSeed)!.v } : {}), ...(own(lay.gFoc) ? { gFoc: own(lay.gFoc)!.v } : {}), ...(own(lay.tSeed) ? { tSeed: own(lay.tSeed)!.v } : {}), dens: ld ? { hard: stop(ld.hard, 'hard'), plant: stop(ld.plant, 'plant'), animal: stop(ld.animal, 'animal') } : old, ...(comp !== 'any' ? { comp } : {}), ...(lay.ground === true ? { ground: true } : {}), ...(lay.fit === 'low' || lay.fit === 'medium' || lay.fit === 'high' ? { fit: lay.fit } : {}), ...(lay.careSet === true ? { careSet: true as const } : {}), ...(lay.gatePlants === true ? { gatePlants: true as const } : {}), ...(lay.expertise === 1 || lay.expertise === 2 || lay.expertise === 3 ? { expertise: lay.expertise } : {}), ...(lay.gateAnimals === true ? { gateAnimals: true as const } : {}), ...(lay.gateStock === true ? { gateStock: true as const } : {}), ...(parseSpace(lay.space) ? { space: parseSpace(lay.space)! } : {}) };
     })(),
     water: {
       on: bool(wa.on, true), level: num(wa.level, d.water.level, ...LIMITS.level), opacity: num(wa.opacity, d.water.opacity, ...LIMITS.opacity),

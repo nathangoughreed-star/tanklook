@@ -31,9 +31,6 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 **Current lanes** (coordinator "Lanes coordinator 4", `local_408aa124`):
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
-| P1 group data (path 1) | `../Glass-Box-p1groups` / `p1groups` | 5863 | `src/data/groups.ts`, merge loop in `data/care.ts` | opened 2026-10-20 |
-| P2 tank fit engine (path 1) | `../Glass-Box-p2tankfit` / `p2tankfit` | 5873 | `src/scene/tankfit.ts` | opened 2026-10-20 |
-| P3 fullness tile (path 1) | `../Glass-Box-p3fullness` / `p3fullness` | 5883 | `ui/fullnessTile.ts`, viewer outline, `layout.space` | opened 2026-10-20 |
 | P4 artificial plants (path 1) | `../Glass-Box-p4artplants` / `p4artplants` | 5893 | artificial plant kind: items, plant3d branch, demand rows | opened 2026-10-20 |
 | SE stocking engine | `../Glass-Box-stocking` / `stocking` | 5843 | new `scene/stocking.ts`, `data/bodymass.json`, stocking line in `ui/panels.ts`, bioload helpers in `scene/starter.ts` | opened 2026-10-19 |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 DONE 2026-10-16 (lane SS2, see archive; its gaps: no water dish, no succulents, Malawi has only yellowlab / cockatoo); multi-select / duplicate (lane MS) + scatter brush (lane SB) DONE 2026-10-16, see archive; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
@@ -48,12 +45,6 @@ models on /review.html (and its drawImage error), TG leftovers (heater product p
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
-
-## Lane P1: group data, path 1 (2026-10-20, branch `p1groups`, port 5863)  (lane fills this in)
-
-## Lane P2: tank fit engine, path 1 (2026-10-20, branch `p2tankfit`, port 5873)  (lane fills this in)
-
-## Lane P3: fullness tile, path 1 (2026-10-20, branch `p3fullness`, port 5883)  (lane fills this in)
 
 ## Lane P4: artificial plants, path 1 (2026-10-20, branch `p4artplants`, port 5893)
 - **Built (waiting for Nathan's verdict on the pictures, not pushed yet):** a new `ItemKind` `'artificial'` with 6 LIBRARY variants:
@@ -72,9 +63,8 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 - **Demand:** priced by the existing hardscape loop from new `hard:<variant>` rows in `data/demand-items.json` (lo / mode / hi + one URL each;
   `hard:silkmoss` is `est`: no silk moss mat listing found). Defaults sized to the listings (8 in plants, a 7 in mat), so the row is the price at
   the default size and the loop's size^1.5 scales the rest. No upkeep, no minutes, no light / CO2 / ferts.
-- **Stocking:** artificial items already stay out of `capacityOf` (kind filter). Painted artificial patches (`plant:silkstem` ...) are still counted
-  as live plants until lane SE2 lands the one-line filter (sent 2026-10-20 with the exact lines); the matching test is `it.skip` in
-  `test/artificialplants.test.ts`: un-skip it then.
+- **Stocking:** artificial items already stay out of `capacityOf` (kind filter). Painted artificial patches (`plant:silkstem` ...) are left out too since
+  lane SE2's `isLivePlantPatch` (scene/nitrogen.ts, 1ceb3fa); tested in `test/artificialplants.test.ts`.
 - **Review sheet:** rows `fake-<variant>` under "Artificial plants" in review.html (src/review/main.ts). Record ONLY these: `review.html?only=fake-`
   (or `?only=fake-&record`), after merging main and restarting the dev server.
 - **Pictures:** a headless capture recipe that needs no visible pane: build the scene in the page, POST its share hash to `/__shot`, open
@@ -100,6 +90,7 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 - **Growing preview tank (Nathan 2026-10-20):** stocking comes first, so the animals appear in the viewer as they are added, in a bare tank (glass, sand) that steps up through the common sizes in the tank catalogue as the stocking needs more floor area (smallest size meeting floor area, length and any depth cap), labelled "About a 20 gal long (76 x 30 cm)". Proposed with it: the next step shown ("room for 1 more here" / "1 more frog = 29 gal"); the user's space (from step 3, or asked first) drawn as a dashed outline, so outgrowing it is visible and opens the fork card; live cost and effort (setup $ from cheapest to balanced gear for that size, minutes a week from the demand model) so they shape the stocking. Cost span "from $X to $Y" (cheapest to balanced build) is fine here (Nathan 2026-10-20; not the uncertainty range DS removed).
 - **Refinements (Nathan 2026-10-20):** no space question up front: once the first species is in, the tool picks a tank, then steps it up as more animals are added (if they add more). When a step-up happens (or the tank outgrows a space they set), offer the next few good sizes, each with the cost increase of that decision. **Fullness bars:** a minimizable tile on the viewer with bars filling for the stocking engine's two limits (space, filtration), live as animals are added. Space limit is optional ("Set my space" on the tile, dashed outline once set; Nathan agreed). The first tank is picked for the species' recommended minimum count, with its band message. Each step-up option shows the space it gives, as the engine counts it (e.g. space bar 92 % now, 61 % in the 29 gal), beside its cost increase.
 - **Scape choice after the three builds (Nathan 2026-10-20):** the user chooses: suggested styles that suit the animals, each shown rendered in THEIR tank with THEIR stocking (style tiles + the starter styles), or start the scape from scratch. Path 1 is fully mapped; next: path 2 (A look I want).
+- **KW guided-start wizard is obsolete (Nathan 2026-10-20):** not shipped; the five-path New menu replaces it. Its code lives only on the local branch `wizard` (dbc7aa6); keep it, P6a reuses its tank / kit picking. Build plan: research/plan-path1-animal-first.md.
 - **Every species added defaults to its recommended minimum group**, then + / - with the band warnings (Nathan 2026-10-20).
 - **Scape step asks "Live plants?" (Nathan 2026-10-20):** live / artificial / mixed. Every style tile is honest like the stocking picker: setup $ span, minutes a week, light / CO2 needs. Proposed: artificial plants are a NEW item kind (none exist today): no growth, no light need, no nitrate uptake (so the filtration bar loses the plant help and water changes go up), one-time cost; silk not plastic for long-finned fish (betta). Choosing changes the fullness bars and minutes live.
 - **Plants vs stocking (Nathan 2026-10-20: "space is space"):** plants never add room. They take up nitrogen (fewer / smaller water changes, which the stocking engine already models as its FILTRATION limit only, never SPACE) and give cover (less stress for shy fish; rock and wood break lines of sight for territorial ones). Proposal: show the plant effect as water changes and minutes a week, and cover as lower stress risk, not as "stocking headroom".
@@ -112,6 +103,22 @@ Nathan 2026-10-20: drag only what the open menu covers; a Show box per kind of t
 - Show boxes (Viewer menu): Animals, Plants, Hardscape, Equipment (= the old Show equipment). Unticked ones are left out of the view and exports, and cannot be picked (`viewer.hidden`, `isHidden` in hitTest). Per viewer, localStorage `tanklook.hide`.
 - Tests: test/menuFocus.test.ts. Shared files touched: viewer.ts, panels.ts (show boxes block + toggle line), pointer.ts (2 lines), main.ts (1 line), index.html, style.css (3 lines).
 
+
+## Heaters and filters as lists (2026-10-20, side work in the `stocking` worktree; Nathan's request from the Tech menu)
+- `TechSetup.heaters[]` / `filters[]` (scene/tech.ts): one entry per unit, generic (heater `w` editable; filter `model` steps) or a
+  catalogue `product`; `kit: true` = the bundle's own. rows.heater / rows.filter follow the list (withUnits); the old single
+  fields still load (heaterUnits / filterUnits read them). Several filters: flows and nitrifying capacity add, the best one sets
+  stocking + risk. Units added on top of a bundle are their own demand row (`heater+` / `filter+`), so the bundle price holds;
+  removing the bundle's own unit drifts it (dealdrift kitUnitSig). Place keys per unit: 'heater', 'heater.1', ...
+- Tech menu: Heating / Filtration show a card per unit (name first, bundle price struck "in the bundle", ×), "+ Add" opens a
+  picker (heater: generic + near sizes + all others; filter: type, then generic or any modelled product of it).
+- Top Fin Essentials 20: deal filter name set to the Silenstream PF20 (catalogued already; PetSmart contents graphic).
+- Kit gear research (2026-10-20, approved): Top Fin LED Black Glass 10 ships a Silenstream PF10 HOB (PetSmart gallery
+  image 5300979_alt2 "Included Inside"; the text says "Integrated Filter System") -> deal fixed. STILL GENERIC, nothing
+  published: Imagitarium kit heater wattage (Petco text, Q&A, box photos 3946395/408/416/424/432-center-1/2/5 checked; box
+  side lists "aquarium heater with adjustable temperature settings" only; Petco CS says the 5.5 gal one is preset 78 F);
+  Marineland Portrait 5 (ML90609) pump gph (Walmart text + 7 images, web). Its filter is a full-height chamber behind the
+  back glass. Only a person with the box / heater label can settle these.
 
 ## Lane SE: our own stocking engine, load vs capacity (2026-10-19, branch `stocking`, port 5843)
 **Step 1 DONE (probe).** Mesh volume from the 3D fish loft works but is only about 2x accurate vs FishBase length-weight (goldfish 4.8x heavy, guppy 0.29x, pleco 2x, swordtail 0.22x). **Nathan's decision 2026-10-19: mass = FishBase length-weight for EVERY species (shrimp, snails, herps: keeper-reference estimates, `src: estimate`); the model volume is only a cross-check that flags outliers.**
@@ -128,6 +135,9 @@ Nathan 2026-10-20: drag only what the open menu covers; a Show box per kind of t
 - **SE2 step 2 DONE 2026-10-20 (filtration probe; no change to LU_PER_L).** Through Claude in Chrome (fetch inside aqadvisor.com's own page, 30 s apart): AqAdvisor prints "aquarium filtration capacity ... N %" when a filter is picked (higher = more headroom; it scales with the filter's flow: neon x20 in 55 gal with AquaClear 30 / 70 / 110 read 132 / 309 / 486 %, goldfish x8 15 / 36 / 57 %). Implied load (10000 / capacity) at an AquaClear 70 vs our filtrationPercent with a hang-on-back: neon20 32 vs 15 (0.47), goldfish8 278 vs 238 (0.86), 12 rummynose 6 cory 1 gourami 55 vs 40 (0.73), oscar2 182 vs 650 (3.6), cpd20 20 vs 5 (0.25). It is a spread (0.25 to 3.6), not a bias: a constant LU_PER_L change cannot fix it, so none made. AqAdvisor's filtration tracks ITS space level (ratio filtration load / its stocking % = 0.86, 1.54, 1.04, 1.41, 0.74) far better than our mass^0.75 x metabolism waste does. Suggestion for Nathan: derive filtrationPercent from the fitted space load times a modest mess class, instead of mass^0.75; not done. Also ours caps the filter at 4 volumes an hour, AqAdvisor does not.
 - **SE2 step 3 (starters re-check, 2026-10-20): Full stop is NOT 85-95 %.** After the space factors, starters at Full stop (36x18x18, seed 1) read 75 (stones), 77 (driftwood), 109 (planted), 196 (iwagumi), 134 (swamp), 103 (nature), 87 (dutch), 77 (jungle), 124 (forest); stop 2 reads 43-146. All by space (filtration 43-63 %). Tiny schooling fish and guppies are the overstocked ones. starter.ts untouched, waiting for Nathan (table research/starters-after-se2.tsv, picture research/starters-full-stop.svg).
 - **SE2 step 3 FIX 2026-10-20 (Nathan: yes, size starters by space).** `litresPerAnimal` (= `litresFor`) is now the larger of the waste litres and the space litres (spaceOf at 92 % of adult length / SPACE_PER_L; animals in the water only). Starters at Full (36x18x18, seed 1) now read stones 60, driftwood 68, planted 81, iwagumi 91, swamp 71, nature 76, dutch 65, jungle 62, forest 79 % (was 75 to 196); stop 2 reads 34-61 (research/starters-after-se2.tsv has the animals). Not 85-95 everywhere because the species' own group maximums (starter.ts `stocking().max`) end the filling before the budget does (stones is filtration-limited). Raising those caps or the Full fill (ANIMAL_FILL) would get there; not done.
+- **SE2 CAP 2026-10-20 (Nathan via coordinator 5: "cap them", Full at or under 100 %).** starter.ts: semi-aquatic animals in a swamp / paludarium (placed outside the budget) now count in `used`; stocking.ts sizes the space litres at 97 % of adult length. test/starterfull.test.ts sweeps every water style x 4 tanks x 5 seeds: worst Full stop 99 % (was 149 in paludarium, 103 swamp). Typical Full now 55-90 %.
+- **SE2 filtration research (NOT built, awaiting Nathan):** notes in the shared notes folder (research-fish-nitrogen, research-nitrification, research-plant-nitrogen, research-filter-media-volumes, research-hob-media-derived, research-real-tank-validation, research-plant-validation). Findings: waste must be feed-based (about 0.04-0.06 g N per g feed, goldfish lightly fed far under the weight formula); media 0.06 g TAN/L/day ceramic supported, foam 0.4 untested; canister media litres sourced (Fluval, Eheim, Tidal), hang-on-back derived only (+-50 %); plants: fast stems 0.006 g N/day per 100 g FW, floating 0.3 g N/m2/day, plants take ammonia before nitrate; two verdicts (ammonia safety, nitrate burden) with a filter / plants / water-change split. Species excretion note still running.
+- **SE2 NITROGEN MODEL PUSHED 2026-10-20 (Nathan: yes).** `src/scene/nitrogen.ts` (+ `src/data/filtermedia.ts`) replaces the old waste / LU_PER_L filtration side: `filtrationPercent` = ammonia safety = (TAN the plants do not take) / 70 % of what the filter bacteria can clear. Waste per animal = 0.00035 x W^0.75 (fasted) + 0.02 x feed (feeding level `TankSetup.feeding` light 0.5 / normal 1 / heavy 2 % of body weight a day, no version bump), temperature x1.07 a degree. Filter = media litres (manual for Fluval, Eheim, Tidal; derived for AquaClear; by kind for the rest) x rate per kind x temperature, flow only gates it. Plants take ammonium first, nitrate once gone (slow 0.001 / medium 0.003 / fast 0.006 g N/day per 100 g FW, floaters 0.3 g N/m2/day, 30 % die-off back); patches of silk / plastic plants (`isLivePlantPatch`, lane P4) do not count. Second verdict: nitrate, as the weekly water change that holds about 40 ppm. Panel: `Waste, filter and plants` under the stocking line (feeding select, split bar plants / water changes / unprocessed ammonia, verdict text, estimate caveat). `Stocking.nitrogen` carries the budget. LU_PER_L now only sizes the starters. Research notes: research/filtration/ (seven notes; which sources were opened and which only snippets are marked in each). Absolute numbers are good to about 2x (waste constant, hang-on-back media litres, plant classes are extrapolated); say so in any UI. tankfit test: oscar now 3 step-ups.
 - Open: Nathan's verdict on the calibration (Full stop reads 55-65 %), outliers (22 flagged), whether to wire the wizard / demand panel.
 
 ## Tech menu decision (Nathan 2026-10-19, opened lanes TM + TG)
@@ -372,6 +382,9 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane P1: group data, path 1 (2026-10-20, branch `p1groups`, port 5863)
+- Lane P3: fullness tile, path 1 (2026-10-20, branch `p3fullness`, port 5883)
+- Lane P2: tank fit engine, path 1 (2026-10-20, branch `p2tankfit`, port 5873)
 - Lane TG: tech gear in 3D (2026-10-19, branch `techgear`, port 5833)
 - Lane DM: deal match, "a bundle close to your build" as Tank B (2026-10-19; Nathan approved the pictures; pushed to main)
 - Lane TM: tech menu (2026-10-19, branch `techmenu`, port 5823)

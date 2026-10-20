@@ -58,5 +58,4 @@ Recommended minimum = `bands.ok`, else today's `CARE.group`, else 1.
 ## Conflict to settle first: the unshipped wizard branch (checked 2026-10-20: commit dbc7aa6 with `src/ui/wizard.ts` is NOT an ancestor of origin/main; it lives only on the LOCAL branch `wizard` in the shared folder, no remote copy: do not delete that branch)
 Branch `wizard` (lane KW, 6 commits, `src/ui/wizard.ts` 358 lines, not on main) builds a different flow: stage question,
 goal + one budget number, bare tank vs kit, open with the kit applied. The five-path New menu replaces its stage question.
-Recommendation: do not ship KW as is; P6a reuses its tank / kit picking (`tankChoices`, kit filtering) for the builds.
-Nathan to confirm.
+**Decided (Nathan 2026-10-20): the KW wizard is obsolete, not shipped.** Keep the local branch: P6a reuses its tank / kit picking (`tankChoices`, kit filtering) for the builds.

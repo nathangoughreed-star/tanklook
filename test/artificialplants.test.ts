@@ -106,8 +106,8 @@ describe('artificial plants: demand and stocking', () => {
     expect(capacityOf(tank()).plants).toBe(capacityOf(tank([])).plants);
     expect(capacityOf(tank()).plantCount).toBe(0);
   });
-  // waits for lane SE2's one-line hook in scene/stocking.ts (painted artificial patches are not live plants)
-  it.skip('a painted patch of artificial plants takes up no nitrate either', () => {
+  // lane SE2's hook (isLivePlantPatch, 1ceb3fa): painted artificial patches are not live plants
+  it('a painted patch of artificial plants takes up no nitrate either', () => {
     const S = tank([]), n0 = capacityOf(S).plantCount;
     S.patches = parsePatches([{ id: 1, brush: 'plant:silksword', seed: 3, size: 80, density: 40, path: [100, 100, 200, 120] }]);
     expect(capacityOf(S).plantCount).toBe(n0);
