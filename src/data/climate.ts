@@ -100,12 +100,12 @@ interface Air { c: R; tol?: R; rh: R; rhTol?: R; warm?: R; note?: string; est?: 
 export const AIR: Record<string, Air> = {
   crestedgecko: { c: [22, 26], rh: [60, 80], note: 'Mist daily; let it dry a little between.' },
   crestedharlequin: { c: [22, 26], rh: [60, 80], note: 'Mist daily; let it dry a little between.' },
-  greenanole: { c: [24, 29], tol: [21, 31], rh: [60, 80], warm: [32, 35], note: 'Basking spot 32-35 with UVB; mist the leaves twice a day (it drinks drops).' },
-  greenanolebrown: { c: [24, 29], tol: [21, 31], rh: [60, 80], warm: [32, 35], note: 'Basking spot 32-35 with UVB; mist the leaves twice a day (it drinks drops).' },
-  brownanole: { c: [24, 30], tol: [21, 32], rh: [60, 75], warm: [32, 35], note: 'Basking spot 32-35 with UVB; mist daily and let it dry between.' },
+  greenanole: { c: [24, 29], tol: [21, 31], rh: [60, 80], warm: [29, 32], note: 'Basking spot 29-32 with UVB; mist the leaves twice a day (it drinks drops).' },
+  greenanolebrown: { c: [24, 29], tol: [21, 31], rh: [60, 80], warm: [29, 32], note: 'Basking spot 29-32 with UVB; mist the leaves twice a day (it drinks drops).' },
+  brownanole: { c: [24, 30], tol: [21, 32], rh: [60, 75], warm: [29, 32], note: 'Basking spot 29-32 with UVB; mist daily and let it dry between.' },
   // researched 2026-10-19 (research/climate/pilot.md)
   leopardgecko: { c: [22, 26], tol: [20, 28], rh: [30, 40], rhTol: [20, 50], warm: [32, 35], note: 'Warm basking spot 32-35; night 18-22; a humid hide (60-80 %) helps a shed.' },
-  ballpython: { c: [24, 27], tol: [22, 28], rh: [50, 65], rhTol: [45, 80], warm: [30, 33], note: 'Warm hide 30-33, cool hide 24-27, night 22-26; 65-80 % while shedding.' },
+  ballpython: { c: [24, 27], tol: [22, 28], rh: [60, 80], rhTol: [45, 80], warm: [30, 33], note: 'Warm hide 30-33, cool hide 24-27, night 22-26; 65-80 % while shedding.' },
   dartfrog: { c: [22, 26], rh: [70, 90] },
   treefrog: { c: [22, 28], rh: [60, 80] },
   firetoad: { c: [18, 24], rh: [60, 80], note: 'Cool: stays well below 26.' },

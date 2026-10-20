@@ -52,7 +52,7 @@
           ]
         },
         "minL": {
-          "ours": 150, "verdict": "disagrees", "suggest": 76,
+          "ours": 76, "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted", "suggest": 76,
           "sources": [
             {"url": "https://reptiledirect.com/whites-tree-frog/", "site": "Reptile Direct", "states": "smallest 15 or 20 gal glass terrarium (57-76 L)", "quote": "The smallest enclosure you can use is a 15- or 20-gallon glass terrarium."},
             {"url": "https://reptilesmagazine.com/whites-treefrog-care-sheet/", "site": "Reptiles Magazine", "states": "20 gal horizontal minimum for 4 young frogs (76 L)", "quote": "A 20 gallon horizontal terrarium should be considered a minimum size for 4 young frogs."}
@@ -91,7 +91,7 @@
           ]
         },
         "minL": {
-          "ours": 75, "verdict": "disagrees", "suggest": 57,
+          "ours": 57, "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted", "suggest": 57,
           "sources": [
             {"url": "https://joshsfrogs.com/cms/fire-bellied-toad-care-sheet", "site": "Josh's Frogs", "states": "10-15 gal for 2-3 toads (38-57 L)", "quote": "2 or 3 toads will do well in a 10 to 15 gallon tank or a 18x18x18 Exo-terra terrarium."},
             {"url": "https://thevetdesk.com/pet-breeds/amphibians/oriental-fire-bellied-toad", "site": "The Vet Desk (PangoVet)", "states": "10 gal bare minimum for one toad (38 L); 15 gal for 3-5 (57 L)", "quote": "A 10-gallon tank is a bare minimum for the enclosure of a single oriental fire-bellied toad."}
@@ -155,7 +155,7 @@
       "sci": "Hymenochirus boettgeri",
       "fields": {
         "tl": {
-          "ours": 35, "verdict": "disagrees", "suggest": 55,
+          "ours": 55, "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted", "suggest": 55,
           "sources": [
             {"url": "https://www.liveaquaria.com/products/dwarf-african-frog", "site": "LiveAquaria", "states": "maximum size 2.5 in (64 mm)", "quote": "Maximum Size:** 2,5\""},
             {"url": "https://www.petsmart.com/learning-center/fish-care/African-dwarf-frog-care-guide", "site": "PetSmart", "states": "up to 2 in (51 mm)", "quote": "Size:** Up to 2”"},
@@ -164,7 +164,7 @@
           "note": "All three give max 2-3 in (51-76 mm); ours 35 mm is below. Quote formats copied as returned by fetch (markdown bold residue)."
         },
         "care": {
-          "ours": 1, "verdict": "disagrees", "suggest": 2,
+          "ours": 2, "verdict": "agrees", "use": [0], "decision": "Nathan 2026-10-20: adopted", "suggest": 2,
           "sources": [
             {"url": "https://www.liveaquaria.com/products/dwarf-african-frog", "site": "LiveAquaria", "states": "Care Level: Moderate", "quote": "Care Level:** Moderate"},
             {"url": "https://joshsfrogs.com/cms/african-dwarf-frogs-how-to-care-for-the-hymenochiris-genus", "site": "Josh's Frogs", "states": "fairly easy under the correct conditions", "quote": "thier care is fairly easy under the correct conditions."}
@@ -212,7 +212,7 @@
           "note": "No opened page gives a care level; Modest Fish says only \"They don’t take any special care and attention, but they are susceptible to stress\"."
         },
         "minL": {
-          "ours": 150, "verdict": "disagrees", "suggest": 110,
+          "ours": 110, "verdict": "agrees", "use": [0], "decision": "Nathan 2026-10-20: adopted", "suggest": 110,
           "sources": [
             {"url": "https://modestfish.com/axolotl-care/", "site": "Modest Fish", "states": "29 gal / 110 L smallest recommended, one axolotl", "quote": "29 gallons is the smallest tank I can recommend you buy for your axolotl (110 liters)."},
             {"url": "https://www.reptilecentre.com/blogs/reptile-blog/axolotl-tank-size", "site": "Reptile Centre", "states": "one adult minimum 54-75 L (15-20 gal)", "quote": "One adult: minimum 54 - 75 litres (15–20 gallons), ideally more"}
@@ -231,7 +231,7 @@
           ]
         },
         "ph": {
-          "ours": [7, 8], "verdict": "disagrees", "suggest": [7, 7.6],
+          "ours": [7, 7.6], "verdict": "derived", "decision": "Nathan 2026-10-20: derived, the span of Modest Fish 7-7.4 and Reptile Centre 7.4-7.6", "suggest": [7, 7.6],
           "sources": [
             {"url": "https://modestfish.com/axolotl-care/", "site": "Modest Fish", "states": "pH 7-7.4", "quote": "pH: 7-7.4"},
             {"url": "https://www.reptilecentre.com/blogs/reptile-blog/axolotl-tank-size", "site": "Reptile Centre", "states": "pH 7.4-7.6", "quote": "Aim to keep the pH between 7.4 and 7.6."}

@@ -14,7 +14,7 @@
         "minL": { "ours": 115, "verdict": "agrees", "suggest": null, "sources": [
           { "url": "https://www.liveaquaria.com/product/53/?pcatid=53", "site": "LiveAquaria", "states": "30 gal (113.5 L)", "quote": "Minimum Tank Size: 30 Gallons" },
           { "url": "https://www.aquariumsource.com/royal-gramma-basslet/", "site": "Aquarium Source", "states": "30 gal (113.5 L) for one fish", "quote": "The minimum royal gramma tank size is 30 gallons for one fish." } ] },
-        "temper": { "ours": 1, "verdict": "disagrees", "suggest": 0, "sources": [
+        "temper": { "ours": 0, "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted", "suggest": 0, "sources": [
           { "url": "https://www.liveaquaria.com/product/53/?pcatid=53", "site": "LiveAquaria", "states": "Peaceful", "quote": "Temperament: Peaceful" },
           { "url": "https://www.aquariumsource.com/royal-gramma-basslet/", "site": "Aquarium Source", "states": "peaceful", "quote": "Royal grammas are very mellow and peaceful fish." } ],
           "note": "Peaceful toward other species; the own-kind aggression is covered by solo." },
@@ -96,7 +96,7 @@
           { "url": "https://www.liveaquaria.com/products/six-line-wrasse", "site": "LiveAquaria", "states": "60 gal (227 L)", "quote": "Minimum Tank Size: 60 Gallons" },
           { "url": "https://reefexclusive.com/products/six-line-wrasse", "site": "Reef Exclusive", "states": "55 gal (208 L)", "quote": "The Six Line Wrasse requires a minimum tank size of 55-gallons, for maximum health." } ],
           "note": "Both opened pages say 55-60 gal; ours (30 gal) is 45% under the lower." },
-        "temper": { "ours": 2, "verdict": "disagrees", "suggest": 1, "sources": [
+        "temper": { "ours": 1, "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted", "suggest": 1, "sources": [
           { "url": "https://www.liveaquaria.com/products/six-line-wrasse", "site": "LiveAquaria", "states": "Semi-Aggressive", "quote": "Temperament: Semi-Aggressive" },
           { "url": "https://reefexclusive.com/products/six-line-wrasse", "site": "Reef Exclusive", "states": "Semi-aggressive", "quote": "Temperament : Semi-aggressive" } ] },
         "solo": { "ours": true, "verdict": "not-stated", "suggest": null, "sources": [], "note": "No opened page says to keep it singly." },
@@ -108,7 +108,7 @@
     "chromis": {
       "sci": "Chromis viridis",
       "fields": {
-        "tl": { "ours": 75, "verdict": "disagrees", "suggest": 100, "sources": [
+        "tl": { "ours": 100, "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted", "suggest": 100, "sources": [
           { "url": "https://www.fishbase.se/summary/Chromis-viridis.html", "site": "FishBase", "states": "10.0 cm TL max", "quote": "Max length : 10.0 cm TL male/unsexed" },
           { "url": "https://www.liveaquaria.com/product/115/", "site": "LiveAquaria", "states": "4 in max (102 mm)", "quote": "Maximum Size: 4\"" } ],
           "note": "Ours is 25% under both." },
@@ -179,7 +179,7 @@
           { "url": "https://reefexclusive.com/products/pterosynchiropus-splendidus", "site": "Reef Exclusive", "states": "Difficult", "quote": "Care Level : Difficult" },
           { "url": "https://www.liveaquaria.com/product/1723/red-mandarin", "site": "LiveAquaria (red mandarin page)", "states": "Easy", "quote": "Care Level: Easy" } ],
           "note": "Sources disagree: Reef Exclusive Difficult, LiveAquaria red mandarin Easy; Bulk Reef Supply says 'relatively easy' thanks to captive breeding." },
-        "minL": { "ours": 265, "verdict": "disagrees", "suggest": 114, "sources": [
+        "minL": { "ours": 265, "verdict": "kept", "decision": "Nathan 2026-10-20: kept, needs a mature tank with a large copepod population; the pages' 30 gal is a bare minimum", "suggest": 114, "sources": [
           { "url": "https://reefexclusive.com/products/pterosynchiropus-splendidus", "site": "Reef Exclusive", "states": "30 gal (113.5 L)", "quote": "Minimum Tank Size : 30 gallons" },
           { "url": "https://www.bulkreefsupply.com/content/post/how-to-care-for-mandarin-dragonets", "site": "Bulk Reef Supply", "states": "30 gal (113.5 L)", "quote": "A minimum of 30 gallons." } ],
           "note": "Both opened pages say 30 gal; other (unopened) pages suggest larger, mature tanks." },

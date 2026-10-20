@@ -90,7 +90,7 @@
    "a": 0.01288,
    "b": 3.14,
    "src": "fishbase-bayes",
-   "model": 0.29,
+   "model": 0.3,
    "flag": true
   },
   "platy": {
@@ -104,7 +104,7 @@
    "a": 0.01514,
    "b": 3.12,
    "src": "fishbase-bayes",
-   "model": 0.88
+   "model": 0.85
   },
   "swordtail": {
    "a": 0.01,
@@ -217,7 +217,7 @@
    "a": 0.01445,
    "b": 2.91,
    "src": "fishbase-bayes",
-   "model": 2.26,
+   "model": 2.3,
    "flag": true
   },
   "angel": {
@@ -251,7 +251,7 @@
    "a": 0.01148,
    "b": 3.04,
    "src": "fishbase-bayes",
-   "model": 1.01
+   "model": 1
   },
   "bronzecory": {
    "a": 0.02291,
@@ -296,7 +296,7 @@
    "a": 0.01047,
    "b": 2.97,
    "src": "fishbase-bayes",
-   "model": 1.94,
+   "model": 1.96,
    "flag": true
   },
   "sae": {
@@ -401,7 +401,7 @@
    "a": 0.02042,
    "b": 2.9,
    "src": "fishbase-bayes",
-   "model": 0.82
+   "model": 0.84
   },
   "coralbeauty": {
    "a": 0.04169,
