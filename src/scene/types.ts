@@ -242,7 +242,11 @@ export interface LayoutSettings { id: LayoutId; seed: number; plantSeed?: number
   /** "Show only tank-appropriate" toggles in the Plants and Animals lists: unfit ones sink to the bottom, grayed, each with its reason. Advice only. */
   gatePlants?: true; gateAnimals?: true; gateStock?: true;
   /** The keeper's expertise (1 beginner .. 3 expert), chosen in Animals; gating waits for it. */
-  expertise?: 1 | 2 | 3 }
+  expertise?: 1 | 2 | 3;
+  /** The owner's space for the tank (lane P3, 2026-10-20, no version bump): "Set my space" on the fullness tile, drawn as a dashed outline. Absent = not set. */
+  space?: SpaceLimit }
+/** The area the owner has for the tank, mm: w along the tank's length, d front to back, h (optional) the height it may reach (scene/space.ts). */
+export interface SpaceLimit { w: number; d: number; h?: number }
 
 /** Library item kinds; the variant names the generator (scene/items.ts LIBRARY). */
 export type ItemKind = 'stone' | 'wood' | 'cave' | 'plant' | 'coral';

@@ -569,7 +569,75 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .pricenote[hidden] { display: none }
 .pricenote span { flex: 1 }
 .pricenote button { flex: none }
+/* fullness tile (lane P3, ui/fullnessTile.ts): space and filtration bars on the view, minimizable; Set my space */
+.ft { position: absolute; left: 10px; top: 44px; z-index: 3; width: 250px; max-height: calc(100% - 230px); overflow-y: auto; box-sizing: border-box; border-radius: 6px; background: color-mix(in srgb, var(--panel) 92%, transparent); border: 1px solid var(--line); font-size: 12px; line-height: 1.35; color: var(--ink); box-shadow: 0 1px 4px rgba(0, 0, 0, .18); transition: opacity .2s }
+.ft[hidden] { display: none }
+.ft.ftFade { opacity: .45 } .ft.ftFade:hover, .ft.ftFade:focus-within { opacity: 1 }
+.ftHead { display: flex; align-items: center; gap: 8px; width: 100%; padding: 6px 10px; border: 0; background: none; font: inherit; color: inherit; cursor: pointer; text-align: left }
+.ftTitle { font-weight: 600 } .ftChev { margin-left: auto; color: var(--muted); transition: transform .15s }
+.ftPill { padding: 0 7px; border-radius: 9px; font-weight: 600; background: #2e9e6a; color: #fff }
+.ftPill.ft-near { background: #e0a530; color: #1d2330 }
+.ftPill.ft-over { background: #d8432f; color: #fff }
+.ft:not(.min) .ftPill { display: none }
+.ft.min { width: auto } .ft.min .ftBody { display: none } .ft.min .ftChev { transform: rotate(-90deg) }
+.ftBody { padding: 0 10px 8px }
+.ftRow { position: relative; margin: 2px 0 6px; outline: none; cursor: default }
+.ftLab { display: flex; justify-content: space-between } .ftLab b { font-variant-numeric: tabular-nums }
+.ftTrack { height: 8px; margin-top: 2px; border-radius: 4px; background: color-mix(in srgb, var(--ink) 12%, transparent); overflow: hidden }
+.ftTrack i { display: block; height: 100%; border-radius: 4px; background: #2e9e6a; transition: width .25s }
+.ft-near .ftTrack i { background: #d99a1e } .ft-over .ftTrack i { background: #d8432f } .ft-over .ftLab b { color: #d8432f }
+.ftTop { display: none; margin-top: 4px; padding: 4px 6px; border-radius: 4px; background: color-mix(in srgb, var(--ink) 7%, transparent) }
+.ftTop b { font-variant-numeric: tabular-nums } .ftTopHd { color: var(--muted) }
+.ftRow:hover .ftTop, .ftRow:focus-visible .ftTop, .ftRow.open .ftTop { display: block }
+.ftWhy { color: var(--muted); margin: 2px 0 6px }
+.ftSpace { border-top: 1px solid var(--line); padding-top: 6px }
+.ftSet, .ftFork, .ftBtns button { font: inherit; font-size: 12px; padding: 3px 9px; border-radius: 4px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer }
+.ftSet { border-style: dashed; border-color: #2a9bb0; color: #2a9bb0 } .ftSet:hover, .ftFork:hover, .ftBtns button:hover { background: color-mix(in srgb, var(--ink) 8%, var(--panel)) }
+.ftMine { display: flex; gap: 6px; align-items: flex-start; justify-content: space-between } .ftMine.ok span { color: #2e9e6a } .ftMine.bad span { color: #d8432f }
+.ftEdit { flex: none; padding: 1px 7px }
+.ftOver { margin-top: 5px; color: #d8432f; font-weight: 600 }
+.ftFork { margin-top: 4px; display: block; border-color: #d8432f; color: #d8432f; font-weight: 600 }
+.ftHint { color: var(--muted) }
+.ftForm { margin-top: 6px } .ftForm[hidden] { display: none }
+.ftFields { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center }
+.ftFields label { display: flex; flex-direction: column; gap: 1px; color: var(--muted) }
+.ftFields input { width: 56px; font: inherit; padding: 2px 4px; border: 1px solid var(--line); border-radius: 3px; background: var(--panel); color: var(--ink) }
+.ftU { color: var(--muted); align-self: flex-end; padding-bottom: 3px }
+.ftBtns { display: flex; gap: 6px; margin-top: 6px }
+.ftBtns .primary { background: var(--accent); border-color: var(--accent); color: #fff }
+@media (max-width: 700px) { .ft { width: 215px; max-height: calc(100% - 170px); font-size: 11.5px } .ftBody { padding-bottom: 6px } .ftRow { margin-bottom: 4px } .ftWhy { display: none } }
 
+/* The New menu's five paths and the stocking screen (lane P5, 2026-10-20) */
+.startpaths button.soon { opacity: .5; cursor: default }
+.startpaths .startpath b { font-size: 14px }
+.sp { position: absolute; right: 10px; top: 10px; bottom: 10px; z-index: 5; width: 340px; max-width: calc(100% - 20px); box-sizing: border-box; overflow-y: auto; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 96%, transparent); color: var(--ink); font-size: 13px; line-height: 1.35; box-shadow: 0 2px 10px rgba(0, 0, 0, .25) }
+.sp[hidden] { display: none }
+.sp button { font: inherit; font-size: 12px; padding: 3px 9px; border-radius: 4px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer }
+.sp button:hover:not(:disabled) { background: color-mix(in srgb, var(--ink) 8%, var(--panel)) }
+.sp button:disabled { opacity: .4; cursor: default }
+.sp button.primary { background: #2a9bb0; border-color: #2a9bb0; color: #fff; font-weight: 600; padding: 6px 12px }
+.spHead { display: flex; align-items: center; justify-content: space-between } .spHead h2 { margin: 0; font-size: 16px }
+.spQ { width: 100%; box-sizing: border-box; margin: 8px 0 4px; padding: 6px 8px; font: inherit }
+.spRes, .spPicks, .spMates, .spSteps2, .spFork { list-style: none; margin: 0; padding: 0 }
+.spRes button { display: flex; width: 100%; gap: 6px; align-items: baseline; text-align: left; border-radius: 0; border-width: 0 0 1px }
+.spRes i, .spName i { opacity: .65; font-size: 11px } .spRes span { margin-left: auto; opacity: .7; font-size: 11px }
+.spPick { padding: 8px 0; border-bottom: 1px solid var(--line) }
+.spName { display: flex; gap: 6px; align-items: baseline } .spX { margin-left: auto; border: 0 !important; background: none !important }
+.spSteps { display: flex; gap: 14px; margin: 4px 0 } .spStep { display: inline-flex; align-items: center; gap: 6px } .spStep b { min-width: 22px; text-align: center; font-size: 15px } .spLab { opacity: .75; font-size: 12px }
+.spMsg { font-weight: 600; font-size: 12px } .spb-avoid { color: #d8432f } .spb-ok { color: #b07a10 } .spb-good { color: #2f8f4e } .spb-great { color: #1f7a8c }
+.spNote { font-size: 11.5px; opacity: .75; margin: 2px 0 } .spWarn { color: #d8432f; font-weight: 600; margin: 4px 0 }
+.spHd { font-weight: 700; margin: 12px 0 4px; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; opacity: .8 }
+.spMates li, .spFork li { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--line) } .spMates li.no { opacity: .55 } .spWhy { display: block; font-size: 11px }
+.spFork li > div { display: flex; flex-direction: column }
+.spTank { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px } .spTank > b { flex: 1 1 100% }
+.spBar { display: inline-block; width: 80px; height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--ink) 15%, transparent); overflow: hidden } .spBar i { display: block; height: 100%; background: #2f8f4e } .spBar.near i { background: #d6a21b } .spBar.over i { background: #d8432f }
+.spPct { font-size: 11px; opacity: .75 }
+.spLive { display: flex; justify-content: space-between; gap: 8px; margin-top: 8px; padding: 6px 8px; border-radius: 6px; background: color-mix(in srgb, #2a9bb0 14%, transparent) }
+.spSteps2 button { display: flex; width: 100%; align-items: center; gap: 8px; text-align: left; margin-bottom: 4px; padding: 5px 8px } .spSteps2 button > span:first-child { flex: 1 }
+.spLink { border: 0 !important; background: none !important; color: #2a9bb0; text-decoration: underline; padding: 4px 0 !important }
+.spFoot { margin-top: 14px; display: flex; flex-direction: column; gap: 4px }
+.forkdlg { width: min(460px, calc(100vw - 32px)) } .forkdlg h2 { font-size: 16px; margin: 0 }
+@media (max-width: 700px) { .sp { left: 6px; right: 6px; width: auto; top: auto; max-height: 62%; bottom: 6px } }
 #stkNit { margin: 2px 0 6px; font-size: 11.5px; color: var(--muted) } #stkNit summary { cursor: pointer } #stkVerdict .dim { opacity: .75 }
 .nbar { display: flex; height: 16px; border-radius: 4px; overflow: hidden; background: rgba(128,128,128,.25); margin: 6px 0 2px } .nbar span { display: block; height: 100% }
 .nleg { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 11px } .nleg i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 4px; vertical-align: -1px }

@@ -11,9 +11,9 @@ when it carries the url of the listing it was read from and does not mark the fi
 
 | | values | cited | fitted | derived | researched | claimed | assumption | unsourced | strong |
 |---|---|---|---|---|---|---|---|---|---|
-| **all data** | 4525 | 1707 (38 %) | 59 (1 %) | 5 (0 %) | 570 (13 %) | 433 (10 %) | 419 (9 %) | 1332 (29 %) | 39 % |
-| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) | 813 |  |  |  | 276 | 178 |  | 359 | 0 % |
-| Adult length per species (species.json tl) | 108 |  |  |  |  |  |  | 108 | 0 % |
+| **all data** | 5156 | 1949 (38 %) | 59 (1 %) | 5 (0 %) | 677 (13 %) | 765 (15 %) | 421 (8 %) | 1280 (25 %) | 39 % |
+| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) | 1277 | 26 |  |  | 383 | 510 | 2 | 356 | 2 % |
+| Adult length per species (species.json tl) | 108 | 10 |  |  |  |  |  | 98 | 9 % |
 | Marine pH band (data/waterchem.ts) | 2 |  |  |  |  |  |  | 2 | 0 % |
 | Reptile / amphibian floor area, height, groups, growth (data/herpstock.ts) | 228 |  |  |  | 228 |  |  |  | 0 % |
 | Terrarium air temperature and humidity (data/climate.ts AIR) | 112 |  |  |  | 66 |  |  | 46 | 0 % |
@@ -28,34 +28,39 @@ when it carries the url of the listing it was read from and does not mark the fi
 | Category cost / time defaults (demand-defaults.json) | 215 |  |  |  |  |  |  | 215 | 0 % |
 | Shared cost factors: kWh, water, salt, losses (factors.json) | 70 |  |  |  |  | 3 | 3 | 64 | 0 % |
 | Per-item retail prices (demand-items.json) | 609 | 198 |  |  |  |  | 406 | 5 | 33 % |
-| Filter and heater specs (gear-catalog.json) | 376 | 251 |  |  |  |  |  | 125 | 67 % |
-| Tank sizes and prices (tanks.json) | 862 | 662 |  |  |  |  |  | 200 | 77 % |
+| Filter and heater specs (gear-catalog.json) | 538 | 397 |  |  |  |  |  | 141 | 74 % |
+| Tank sizes and prices (tanks.json) | 867 | 722 |  |  |  |  |  | 145 | 83 % |
 | Kit specs and prices (kits.json) | 207 | 207 |  |  |  |  |  |  | 100 % |
 | Deals (deals.json) | 169 | 160 |  |  |  |  |  | 9 | 95 % |
 | Gear deals (gear-deals.json) | 96 | 96 |  |  |  |  |  |  | 100 % |
 
 Engine constants (top-level numbers in 28 engine files): 81 documented in FORMULAS, 0 unsourced.
-Numbers written inline in those files' functions (not counted above, a by-hand review list): 305.
+Numbers written inline in those files' functions (not counted above, a by-hand review list): 309.
 
 ## Work list 1: unsourced values (most user-facing first)
 
 | field | values |
 |---|---|
-| `CARE *.care` | 84 |
-| `CARE *.minL` | 84 |
-| `CARE *.temper` | 84 |
+| `CARE *.care` | 78 |
+| `CARE *.temper` | 77 |
+| `CARE *.minL` | 76 |
 | `CARE *.ph.*` | 28 |
-| `CARE *.group` | 22 |
-| `CARE *.prey.mm` | 18 |
-| `CARE *.solo` | 13 |
+| `CARE *.group` | 19 |
+| `CARE *.prey.mm` | 16 |
+| `CARE *.solo` | 11 |
 | `CARE *.temp.*` | 8 |
 | `CARE *.tol.*` | 8 |
+| `CARE *.bands.ok` | 5 |
+| `CARE *.bands.good` | 5 |
+| `CARE *.bands.great` | 5 |
+| `CARE *.max` | 5 |
+| `CARE *.minLengthMm` | 5 |
 | `CARE *.slow` | 4 |
 | `CARE *.nip` | 3 |
 | `CARE *.fam` | 2 |
 | `CARE *.coral` | 1 |
-| `SPECIES *.tl` | 84 |
-| `SPECIES *.female.tl` | 24 |
+| `SPECIES *.tl` | 75 |
+| `SPECIES *.female.tl` | 23 |
 | `MARINE_PH *` | 2 |
 | `AIR *.rh.*` | 12 |
 | `AIR *.c.*` | 10 |
@@ -163,20 +168,24 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | `FACTORS *.upkeepNearFreeUsdMo` | 1 |
 | `FACTORS *.upkeepLowUsdMo` | 1 |
 | `DEMAND_ITEMS *.{lo,mode,hi}` | 5 |
-| `GEAR_CATALOG filters.*.*` | 109 |
-| `GEAR_CATALOG heaters.*.*` | 16 |
-| `TANKS *.ratedGal` | 40 |
-| `TANKS *.outer.L` | 40 |
-| `TANKS *.outer.H` | 40 |
-| `TANKS *.outer.D` | 40 |
-| `TANKS *.glassMm` | 40 |
-| `DEALS *.*` | 2 |
-| `DEALS *.*.usd` | 2 |
-| `DEALS *.gal` | 1 |
-| `DEALS *.price.usd` | 1 |
-| `DEALS *.*.L_in` | 1 |
-| `DEALS *.*.D_in` | 1 |
-| `DEALS *.*.H_in` | 1 |
+| `GEAR_CATALOG filters.*.watts` | 45 |
+| `GEAR_CATALOG filters.*.priceUsd` | 37 |
+| `GEAR_CATALOG filters.*.gph` | 23 |
+| `GEAR_CATALOG heaters.*.galMin` | 13 |
+| `GEAR_CATALOG filters.*.galMin` | 8 |
+| `GEAR_CATALOG filters.*.galMax` | 7 |
+| `GEAR_CATALOG heaters.*.galMax` | 4 |
+| `GEAR_CATALOG heaters.*.priceUsd` | 4 |
+| `TANKS *.ratedGal` | 29 |
+| `TANKS *.outer.L` | 29 |
+| `TANKS *.outer.H` | 29 |
+| `TANKS *.outer.D` | 29 |
+| `TANKS *.glassMm` | 29 |
+| `DEALS *.gal` | 3 |
+| `DEALS *.price.usd` | 3 |
+| `DEALS *.dims.L_in` | 1 |
+| `DEALS *.dims.D_in` | 1 |
+| `DEALS *.dims.H_in` | 1 |
 
 ### Unsourced engine constants
 
@@ -188,7 +197,7 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | src/scene/kitlight.ts | - | 4 |
 | src/scene/lightcheck.ts | - | 3 |
 | src/scene/lightneeds.ts | - | 1 |
-| src/scene/tech.ts | - | 30 |
+| src/scene/tech.ts | - | 34 |
 | src/scene/tankfit.ts | - | 2 |
 | src/scene/plantfit.ts | - | 4 |
 | src/scene/animalfit.ts | - | 1 |
@@ -212,6 +221,13 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 |---|---|---|
 | `CARE *.ph.*` | 118 | FishBase pH / dH range where it lists one, otherwise practice; which rows are which was not recorded |
 | `CARE *.gh.*` | 60 | FishBase pH / dH range where it lists one, otherwise practice; which rows are which was not recorded |
+| `CARE *.bands.ok` | 59 | group bands, max, sex ratio, depth and tank length: judgement from hobby practice; page named https://petfishonline.com/neon-tetra-tank-size/ |
+| `CARE *.bands.good` | 59 | group bands, max, sex ratio, depth and tank length: judgement from hobby practice; page named https://petfishonline.com/neon-tetra-tank-size/ |
+| `CARE *.bands.great` | 59 | group bands, max, sex ratio, depth and tank length: judgement from hobby practice; page named https://petfishonline.com/neon-tetra-tank-size/ |
+| `CARE *.minLengthMm` | 59 | group bands, max, sex ratio, depth and tank length: judgement from hobby practice; page named https://petfishonline.com/neon-tetra-tank-size/ |
+| `CARE *.max` | 53 | group bands, max, sex ratio, depth and tank length: judgement from hobby practice; page named https://petfishonline.com/neon-tetra-tank-size/ |
+| `CARE *.sexed.ratio.*` | 40 | group bands, max, sex ratio, depth and tank length: judgement from hobby practice; page named https://guidarium.com/fishes/celestial-pearl-danio-galaxy-rasbora |
+| `CARE *.maxDepthMm` | 3 | group bands, max, sex ratio, depth and tank length: judgement from hobby practice; page named https://training.joshsfrogs.com/care-sheet/fire-bellied-toad-care-sheet |
 | `NEEDS *.par.*` | 62 | band, CO2 and ferts per plant after the planted-tank ratings; no per-plant page recorded |
 | `NEEDS *.band` | 44 | band, CO2 and ferts per plant after the planted-tank ratings; no per-plant page recorded |
 | `NEEDS *.co2` | 32 | band, CO2 and ferts per plant after the planted-tank ratings; no per-plant page recorded |
@@ -230,23 +246,27 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 |---|---|
 | `CARE *.temp.*` | 138 |
 | `CARE *.tol.*` | 138 |
-| `HERP *.*.*.*` | 58 |
-| `HERP *.*` | 44 |
-| `HERP *.grow.*.*` | 38 |
-| `HERP *.*.*.to` | 15 |
-| `HERP *.*.*.k` | 15 |
-| `HERP *.stages.*.to` | 11 |
-| `HERP *.stages.*.k` | 11 |
-| `HERP *.*.from` | 7 |
-| `HERP *.*.*.h` | 4 |
-| `HERP *.min` | 4 |
-| `HERP *.rec` | 4 |
-| `HERP *.each` | 4 |
-| `HERP *.max` | 4 |
-| `HERP *.sexing.from` | 4 |
-| `HERP *.hMin` | 2 |
-| `HERP *.water` | 2 |
-| `HERP *.stages.*.h` | 1 |
+| `CARE *.bands.ok` | 20 |
+| `CARE *.bands.good` | 20 |
+| `CARE *.bands.great` | 20 |
+| `CARE *.minLengthMm` | 20 |
+| `CARE *.max` | 17 |
+| `CARE *.sexed.ratio.*` | 10 |
+| `HERP *.grow.*.*` | 96 |
+| `HERP *.stages.*.to` | 26 |
+| `HERP *.stages.*.k` | 26 |
+| `HERP *.min` | 11 |
+| `HERP *.rec` | 11 |
+| `HERP *.each` | 11 |
+| `HERP *.max` | 11 |
+| `HERP *.sexing.from` | 11 |
+| `HERP *.hMin` | 8 |
+| `HERP *.stages.*.h` | 5 |
+| `HERP *.males2` | 4 |
+| `HERP *.water` | 4 |
+| `HERP *.mixed` | 2 |
+| `HERP *.females2` | 1 |
+| `HERP *.social` | 1 |
 | `AIR *.c.*` | 16 |
 | `AIR *.tol.*` | 16 |
 | `AIR *.rh.*` | 14 |

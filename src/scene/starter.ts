@@ -60,7 +60,7 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
   const r = rng((s.layout.animalSeed ?? s.layout.seed) * 7919 + id.length * 104729 + 3 * 1000003), salt = s.water.on && !!s.water.salt;
   const swamp = isSwampy(id), land = isLandStyle(id), T = s.tank;
   const pool = STYLES[id].animals.map(getSpecies).filter((sp): sp is Species => !!sp && !!sp.salt === salt
-    && T.L >= (sp.body === 'snake' ? 60 : sp.tl) * (sp.salt ? 6 : land || (swamp && id !== 'swamp') ? (sp.habitat === 'water' ? 5 : 2.5) : 5) && (sp.habitat === 'water' ? s.water.on : swamp || land));
+    && T.L >= (sp.body === 'snake' ? 60 : sp.tl) * (sp.salt ? 6 : land || (swamp && id !== 'swamp') ? (sp.habitat === 'water' ? 5 : 2.5) : 5) && (sp.habitat === 'water' || (sp.habitat === 'both' && isInvert(sp) && !swamp && !land) ? s.water.on : swamp || land));
   // shuffled, with a schooling or shoaling swimmer up front (one whose group fits the tank) so there is a group to
   // watch; the same order at every stop, so a fuller stop adds to the tank rather than swapping its species
   for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }

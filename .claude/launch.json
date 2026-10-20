@@ -574,32 +574,6 @@
       "port": 5843
     },
     {
-      "name": "p1groups",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5863",
-        "--strictPort"
-      ],
-      "port": 5863
-    },
-    {
-      "name": "p3fullness",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5883",
-        "--strictPort"
-      ],
-      "port": 5883
-    },
-    {
       "name": "p4artplants",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
@@ -611,6 +585,19 @@
         "--strictPort"
       ],
       "port": 5893
+    },
+    {
+      "name": "p6abuilds",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5913",
+        "--strictPort"
+      ],
+      "port": 5913
     }
   ]
 }

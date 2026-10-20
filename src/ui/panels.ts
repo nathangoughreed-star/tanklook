@@ -244,7 +244,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   function showChooser(menu: StartMenu, tab: StartTab | undefined, first: boolean) {
     firstLaunch = first;
     const { sale, bundles } = startDeals(), shown = visibleTabs(menu, { sale: sale.length, bundles: bundles.length }), isNew = menu === 'new';
-    $('startTitle').textContent = isNew ? 'New tank' : 'Open a tank';
+    $('startTitle').textContent = isNew ? 'What do you have so far?' : 'Open a tank';
     $('startIntro').textContent = isNew
       ? 'Plan an aquarium, paludarium or terrarium: tank, ground, plants, animals and light, all to scale. Start empty, or from a kit or set you can buy now.'
       : 'A ready-made starter tank to look at or build on, or one you saved.';
@@ -269,6 +269,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     (isNew ? $('startFresh') : startDlg.querySelector<HTMLElement>('[data-tab][aria-selected="true"]') ?? swap).focus();
   }
   const showStart = () => showChooser('new', undefined, true);
+  void import('./stockPlan').then(m => m.attachStockPlan(store, viewer, status, $('startAnimal'))); // lane P5: the stocking screen (path 1) and the fork card; loaded after start-up (it pulls in the tank-fit engine, whose imports must not run before starter.ts's)
   $('libList').onclick = e => {
     const t = e.target as HTMLElement, del = t.closest<HTMLButtonElement>('[data-libdel]'), op = t.closest<HTMLButtonElement>('[data-lib]');
     if (del) {
@@ -400,7 +401,7 @@ Cancel, then change the name, to keep both.`)) return;
           const row = document.createElement('div'); row.className = 'tankrow';
           const vs = m.variants ?? [];
           const head = document.createElement('button'); head.className = 'tankgen';
-          head.innerHTML = `<b>${esc(m.name)}</b><span>${dimsInches(m.outer)} in generic${vs.length ? ` · ${vs.length} product${vs.length > 1 ? 's' : ''}` : ' · estimated size'}</span>`;
+          head.innerHTML = `<b>${esc(m.name)}</b><span>${dimsInches(m.outer)} in generic${/^estimate/.test(m.source) ? ' (estimated size)' : ''}${vs.length ? ` · ${vs.length} product${vs.length > 1 ? 's' : ''}` : ''}</span>`;
           head.onclick = () => apply(m);
           const col = document.createElement('div'); col.className = 'tankvars';
           row.append(head, col);
@@ -555,6 +556,13 @@ Cancel, then change the name, to keep both.`)) return;
     });
   };
   $<HTMLSelectElement>('glassSel').innerHTML = '<option value="auto">Auto (by height)</option>' + GLASS_CHOICES.map(g => `<option value="${g}">${g} mm</option>`).join('');
+  // a tank preset may set its maker's own thickness (9.5 mm, 15.9 mm): list it so the select shows it
+  const addGlassOpt = (g: number | 'auto') => {
+    const sel = $<HTMLSelectElement>('glassSel');
+    if (g === 'auto' || [...sel.options].some(o => o.value === String(g))) return;
+    const o = new Option(`${g} mm`, String(g)), after = [...sel.options].find(x => x.value !== 'auto' && +x.value > g);
+    sel.insertBefore(o, after ?? null);
+  };
   $<HTMLSelectElement>('glassSel').onchange = e => store.edit(s => { const v = (e.target as HTMLSelectElement).value; s.render.glass = v === 'auto' ? 'auto' : +v; });
   $<HTMLSelectElement>('glassType').onchange = e => store.edit(s => { s.render.glassType = (e.target as HTMLSelectElement).value as TankSetup['render']['glassType']; });
 
@@ -1878,7 +1886,7 @@ Cancel, then change the name, to keep both.`)) return;
     setVal('bdSel', s.backdrop.kind); setVal('bdDepth', s.backdrop.depth); setOut('oBdDepth', fmtLen(s.backdrop.depth, u, 1));
     $('bdRow').style.display = sh === 'bowl' ? 'none' : ''; $('bdDepthRow').style.display = sh !== 'bowl' && s.backdrop.kind !== 'none' ? '' : 'none';
     ($('bdShuffle') as HTMLButtonElement).disabled = s.backdrop.kind === 'none';
-    setVal('bgArc', s.render.bgArc); setOut('oBgArc', s.render.bgArc >= 360 ? '360° (all round)' : `${s.render.bgArc}°`); setVal('glassSel', String(s.render.glass)); setVal('glassType', s.render.glassType);
+    setVal('bgArc', s.render.bgArc); setOut('oBgArc', s.render.bgArc >= 360 ? '360° (all round)' : `${s.render.bgArc}°`); addGlassOpt(s.render.glass); setVal('glassSel', String(s.render.glass)); setVal('glassType', s.render.glassType);
     const t = glassThickness(A, s.render.glass);
     $('glassHint').textContent = (s.render.glass === 'auto' ? 'Auto: ' : 'Glass: ') + t + ' mm (' + fmtLen(t, u, 2) + ')';
 

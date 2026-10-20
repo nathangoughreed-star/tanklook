@@ -1,6 +1,35 @@
 # HANDOFF archive
 Finished lane and feature sections moved out of HANDOFF.md on 2026-10-16, verbatim, newest first.
 
+## Lane P5: stocking screen + fork card, path 1 (2026-10-20, branch `p5stocking`, port 5903)
+- **New menu**: five cards "What do you have so far?" (`index.html` #startDlg; An animal I want opens the stocking screen, Sandbox = the old Start from scratch, the other three are disabled "Coming soon"). Deals tabs and the Open menu are untouched.
+- **Stocking screen** `src/ui/stockPlan.ts` (draws, writes the scene) + `src/ui/stockPlanLogic.ts` (pure, `test/stockplan.test.ts`): search by common name; a species goes in at its recommended minimum (sexed ones at a whole multiple of the male : female ratio); +/- with the P1 band messages; male / female steppers for `CARE.sexed`; habitat notes (depth, flow, zone, minimum length); compatibility warning per pick (`conflictOf`, salt vs fresh too); "Other animals in with them?" = `rankTankmates` (compatible first by temperature / pH overlap, a zone the others leave empty, shared appeal; unsuitable ones last with the first reason); the tank block = `planFor` (tankFor, a bigger step the user chose holds, stepUps with cost and space bar, buildSpan for set-up $ and min / week; a `fails` of 'filtration' reads "No filter can carry this many animals"). The viewer gets a bare tank (water on, no substrate, camera zoom 0.55 / elevation 20 so bottom dwellers show) with the animals placed by `shuffleFish` / `placeNew`; the side panel steps aside while the screen is up (class only, not the saved preference).
+- **Fork card** (registered with `onSpaceFork`): Make room (the tank past the space + the next two sizes, set-up $ and delta; widens `layout.space` to the footprint) / Keep my space (the biggest catalogue tank inside it; if the animals fit it, one button; else swaps that share `appeal`, fit that tank and are compatible with the rest). `forkOptions` is pure.
+- **Hook in panels.ts**: one line, a dynamic `import('./stockPlan')` after `showStart` (a static import pulls tankfit into the start-up graph and trips the starter.ts / stocking.ts cycle: `litresPerAnimal` before initialization). Title text of the New menu changed there too.
+- Gaps for the coordinator: the tank steps use the plain rectangular catalogue only (tankfit's rule); the bare tank still draws the default filter / heater; no gear deals on the screen yet (P6); data `appeal` tags are coarse (swap quality follows them); species search is name-only (no 3D preview thumbnail: the animal appears in the tank view when added).
+
+## Lane P1: group data, path 1 (2026-10-20, branch `p1groups`, port 5863)
+DONE 2026-10-20 (pushed to main). `src/data/groups.ts` (GroupCare, `GROUPS` for all 84 species, plus helpers `recommendedMin`, `bandOf`,
+`bandMessage` that P5 can use), merged into CARE by one loop at the end of `care.ts` (`AnimalCare extends GroupCare`),
+`test/groups.test.ts`, `research/groups-sources.md` (one line per species).
+- Research: 12 Sonnet agents, about 0.8 M tokens. Search was rate-limited, so **63 of 84 rows are `est`** (hobby-guide judgement,
+  one search each; Seriously Fish / FishBase rarely came back) and **5 are UNVERIFIED** (coralbeauty, watchman, cleanershrimp,
+  mandarin, firefish: no confirmed source page). Treat the numbers as advice; a second research pass with page fetches would firm them up.
+- Decisions: bands.ok equals the older CARE.group wherever both exist (test enforces it; cherry shrimp raised 5 -> 10). CARE.solo wins:
+  solo species have max <= 2 (crested geckos, dwarf gourami researched higher; overridden). Dwarf frog = Nathan's bands 2 / 5 / 7,
+  depth 450 mm, low flow. `maxDepthMm` means a water-depth CAP only (angel / discus / axolotl agent values were tank heights: dropped).
+  Danio zone middle, neon minLengthMm 450 (P2's tankfit tests pin both). Overrides and notes are in the sources file.
+- Free now: `src/data/groups.ts`, `test/groups.test.ts`, `research/groups-sources.md`.
+
+
+## Lane P3: fullness tile, path 1 (2026-10-20, branch `p3fullness`, port 5883)
+- **Built (Nathan approved the pictures 2026-10-20, research/p3-shots/; shipped to main):** `src/ui/fullnessTile.ts`, a minimizable tile on the view's top left (under the button row; the demand panel holds the top right): Space and Filtration bars from `stockingMemo` (green, amber from 85 %, red over 100), the top 3 contributors of each bar on hover / tap, the engine's first reason line. Minimized = a "Fullness 96%" pill; starts minimized on a phone (under 700 px) until opened once; per viewer, localStorage `tanklook.ftMin`. Shown only for a wet tank with animals in the water or a space set. Hidden while the Animals Show box is off, faded (45 %) while another menu is in focus (follows `viewer.hidden` / `viewer.menuFocus` from the draw callback).
+- **Set my space:** Width / Depth / Height (optional) fields in the scene units, live; starts a little bigger than the tank (5 cm, or 2 in for US units). Stored as `layout.space` = `{ w, d, h? }` mm (types.ts `SpaceLimit`, optional, **no version bump**; validate.ts one line: `parseSpace` drops a broken value, old files have none). Fit maths in new `src/scene/space.ts` (`tankExtent` = footprint box + glass height, `spaceFit`, `defaultSpace`).
+- **Outline:** new `src/render/spaceOutline.ts`, dashed bars (not 1 px GL lines) on the stand top, a dashed box when a height is set; back edge on the tank's back, centred on its length; teal while the tank fits, red past it, a faint copy drawn through the glass and gravel. build.ts: one line in addContents (a keyed part, so a space edit patches instead of rebuilding) and `envKey` ignores `layout.space`. It shows in PNG exports and thumbnails (not filtered out).
+- **Fork card hook for lane P5:** `onSpaceFork(fn)` in fullnessTile.ts (returns the unregister); `fn({ setup, limit, fit, stocking })` runs once on the edit that takes the tank from inside the space to past it (`forkDue`), on Done when the space typed is smaller than the tank, and from a "Make room or swap…" button that shows only while a handler is registered. Not on opening a file that is already past it.
+- Tests: test/fullnessTile.test.ts (15: bars, contributors, show rule, fork rule, units, fit, parse, layout.space round trip, old files, outline geometry / colour / in the build). Shared files touched (one-line hooks): main.ts (attach), build.ts (2 lines + import), validate.ts (1 line + import), types.ts (optional field), style.css (appended `.ft*`). Shared folder's .claude/launch.json: the p3fullness entry now runs with `--prefix` the worktree.
+
+
 ## Lane P2: tank fit engine, path 1 (2026-10-20, branch `p2tankfit`, port 5873)
 Files: `src/scene/tankfit.ts`, `test/tankfit.test.ts` (pure, no UI; reads stockingOf, tanks catalogue, tech, demand; edits none of them).
 Input everywhere is `AnimalCount[]` = `{ species, n, tl? }[]`; a tank is a catalogue `TankModel` (or its id).

@@ -14,7 +14,7 @@ import { defaultProfile, demandOf, type DemandOpts } from '../demand';
 import { bareSetup } from './defaults';
 import { volume } from './physics';
 import { countsAgainstWater, stockingOf } from './stocking';
-import { applyPreset, optionCost, PRESETS, rowsFor, stockCapacity, withChoice } from './tech';
+import { applyPreset, optionCost, PRESETS, ROOM_C, rowsFor, stockCapacity, tempFit, withChoice } from './tech';
 import type { Fish, TankSetup } from './types';
 
 /** What the user has picked: n animals of a species, each at `tl` mm (the adult length when omitted). */
@@ -76,12 +76,16 @@ const CANDIDATES = TANK_MODELS.filter(m => !m.terrarium && (m.shape ?? 'rect') =
 type Candidate = (typeof CANDIDATES)[number];
 
 /**
- * The two builds, for these animals in this tank (the animal-only part of a build: plants, lights and CO2 belong to the scape step, lane P6).
- * Both start from the bare-minimum gear preset (lowtech fresh, fowlr salt: filter, heater, water conditioner, test kit); they differ in the
+ * The two builds, for these animals in this tank (the animals' part of a build: plants and CO2 belong to the scape step, lane P6).
+ * Both start from the bare-minimum gear preset (lowtech fresh, fowlr salt: filter, heater, water conditioner, test kit), plus a basic LED
+ * light (the demand model prices one only when the scene has one) and no heater when every animal is comfortable at room temperature
+ * (the preset always carries one); they differ in the
  * filter: cheapest is the lowest-priced filter that keeps filtration at or under 100 %, balanced the lowest-priced that leaves it at or
  * under 70 % and is a hang-on-back or better (headroom for a missed water change). Falls back to the strongest filter when none is enough.
  */
 const BASE_PRESET = { fresh: 'lowtech', salt: 'fowlr' } as const;
+/** True when the water must be heated: salt water, or any animal whose comfortable band (or unknown band) does not hold room temperature. */
+const needsHeater = (animals: AnimalCount[], salt: boolean) => salt || wet(animals).some(({ sp }) => tempFit(sp.id, ROOM_C) !== 'ok');
 const FILTRATION_TARGET = { cheapest: 100, balanced: 70 } as const;
 export type BuildKind = keyof typeof FILTRATION_TARGET;
 
@@ -94,6 +98,8 @@ function setupFor(c: Candidate, animals: AnimalCount[], build: BuildKind): TankS
   S.fish = animals.flatMap(a => Array.from({ length: Math.max(0, a.n) }, (): Fish => ({ id: id++, species: a.species, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0, ...(a.tl ? { tl: a.tl } : {}) })));
   const preset = BASE_PRESET[salt ? 'salt' : 'fresh'];
   if (PRESETS.some(p => p.id === preset)) S.tech = applyPreset(S, preset);
+  S.light = { ...S.light, type: 'led', tech: 'led-white', count: 1, watts: undefined };
+  if (!needsHeater(animals, salt)) S.tech = withChoice(S, 'heater', 'none');
   const options = rowsFor(S).find(r => r.id === 'filter')?.options ?? [];
   let best: { opt: string; usd: number } | undefined, strongest: { opt: string; cap: number } | undefined;
   for (const o of options) {
@@ -119,12 +125,14 @@ export interface Fit {
   /** filtration limit under the balanced build, percent */
   filtrationPct: number;
   /** why a tank is out, empty when it fits */
-  fails: ('space' | 'minimum' | 'length' | 'depth' | 'floor')[];
+  fails: ('space' | 'minimum' | 'length' | 'depth' | 'floor' | 'filtration')[];
 }
 
 function fitOf(c: Candidate, animals: AnimalCount[], needs: Needs): Fit {
   const r = stockingOf(setupFor(c, animals, 'balanced')), fails: Fit['fails'] = [];
   if (r.spacePercent > 100) fails.push('space');
+  // the balanced build already takes the strongest catalogue filter when none keeps it at 70 %: still over 100 % means no filter can carry this stocking here
+  if (r.filtrationPercent > 100) fails.push('filtration');
   if (c.litres < needs.minLitres * 0.9) fails.push('minimum'); // 10 % slack: a 10 gal (38 L) takes a 40 L species
   if (c.T.L < needs.minLengthMm) fails.push('length');
   if (c.T.H * WATER_LEVEL > needs.maxDepthMm) fails.push('depth');
@@ -143,7 +151,7 @@ export interface TankFit extends Fit {
 }
 const fitOfTank = (c: Candidate, animals: AnimalCount[], needs: Needs): TankFit => ({ ...fitOf(c, animals, needs), tank: c.m, litres: c.litres, gallons: c.litres / 3.785, needs });
 
-/** The smallest catalogue tank that holds these animals; the largest one (still failing, `fails` says why) when none does. Undefined with no animals in the water. */
+/** The smallest catalogue tank that holds these animals (space, filtration with the strongest catalogue filter, species limits); the largest one (still failing, `fails` says why) when none does. Undefined with no animals in the water. */
 export function tankFor(animals: AnimalCount[]): TankFit | undefined {
   if (!wet(animals).length) return undefined;
   const needs = needsOf(animals);
@@ -174,7 +182,7 @@ export function stepUps(animals: AnimalCount[], current: TankModel | string, n =
     if (out.length >= n) break;
     if (c.litres < from * STEP_RATIO) continue;
     const f = fitOf(c, animals, needs);
-    if (f.fails.some(x => x !== 'space' && x !== 'minimum')) continue;
+    if (f.fails.some(x => x !== 'space' && x !== 'minimum')) continue; // 'filtration' too: a step that no filter can carry is not a step
     out.push({ tank: c.m, litres: c.litres, costDeltaUsd: Math.round(setupUsd(c, animals, 'balanced') - base), spacePct: f.spacePct, filtrationPct: f.filtrationPct });
     from = c.litres;
   }
