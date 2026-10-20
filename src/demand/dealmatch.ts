@@ -10,7 +10,7 @@ import { getTankModel, modelOfVariant, tankFromModel } from '../data/tanks';
 import { applyKitLight } from '../scene/kitlight';
 import { shapeOf } from '../scene/shape';
 import { volume } from '../scene/physics';
-import { heatLoss, filterFor, techOf } from '../scene/tech';
+import { heatLoss, filterFor, filterUnits, techOf } from '../scene/tech';
 import type { Tank, TankSetup, Units } from '../scene/types';
 import { tankDiff } from '../ui/diff';
 import { dealOffers } from './deals';
@@ -80,11 +80,11 @@ export function withDealGear(S: TankSetup, d: Deal): TankSetup {
 function filterNow(S: TankSetup): { name: string; gph: number } {
   const gal = volume(S.tank).gallons;
   if (!S.tech) { const m = defaultFilter(gal); return { name: filterName(m), gph: m.gph }; }
-  const t = techOf(S), kind = t.rows.filter;
-  if (kind === 'sump') return { name: 'sump', gph: Infinity };
-  if (!FILTER_KINDS.includes(kind as FilterKind)) return { name: 'no filter', gph: 0 };
-  const f = filterFor(S, kind as FilterKind, t.filterModel, t.filterProduct);
-  return { name: `${f.product ? productName(f.product) : filterName(f.model)}${f.n > 1 ? ` ×${f.n}` : ''}`, gph: f.gph };
+  const us = filterUnits(techOf(S)).filter(u => u.kind === 'sump' || FILTER_KINDS.includes(u.kind as FilterKind));
+  if (us.some(u => u.kind === 'sump')) return { name: 'sump', gph: Infinity };
+  if (!us.length) return { name: 'no filter', gph: 0 };
+  const fs = us.map(u => filterFor(S, u.kind as FilterKind, u.model, u.product));
+  return { name: fs.map(f => `${f.product ? productName(f.product) : filterName(f.model)}${f.n > 1 ? ` ×${f.n}` : ''}`).join(' + '), gph: fs.reduce((a, f) => a + f.gph, 0) };
 }
 
 /** Light, lid, stand, filter and heater changes, and what the deal's gear does worse. */
