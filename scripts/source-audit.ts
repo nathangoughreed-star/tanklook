@@ -92,7 +92,7 @@ export function walk(): Value[] {
     const rec = (v: unknown, path: string[], group: string[], chain: Obj[]) => {
       if (v && typeof v === 'object') {
         const entries = Object.entries(v as Obj);
-        const many = Array.isArray(v) || entries.length > 12 || (entries.length >= 4 && entries.every(([k, x]) => k.startsWith('_') || (x && typeof x === 'object' && !Array.isArray(x))));
+        const many = Array.isArray(v) || (!path.length && entries.length > 12) || (entries.length >= 4 && entries.every(([k, x]) => k.startsWith('_') || (x && typeof x === 'object' && !Array.isArray(x))));
         for (const [k, x] of entries) rec(x, [...path, k], [...group, many ? '*' : k], [...chain, v as Obj]);
         return;
       }

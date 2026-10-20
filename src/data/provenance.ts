@@ -16,6 +16,7 @@ import { CHEM } from './waterchem';
 import bm from './bodymass.json';
 import { FILTER_MEDIA_L } from './filtermedia';
 import { NEEDS, isCoralNeed, isLand } from '../scene/lightneeds';
+import groupsMd from '../../research/groups-sources.md?raw';
 
 export type Status = 'cited' | 'fitted' | 'derived' | 'researched' | 'claimed' | 'assumption';
 export const STATUSES: Status[] = ['cited', 'fitted', 'derived', 'researched', 'claimed', 'assumption'];
@@ -37,6 +38,9 @@ export interface Excluded { file: string; symbols: string[]; why: string }
 const PLANT_SRC = ['par-chart-nathan', 'tropica', 'walstad', 'barr-report', 'aquarium-coop'];
 const REEF_SRC = ['par-chart-nathan', 'reef-par-charts', 'brs-par'];
 const MASS = bm.species as Record<string, { src: string }>;
+/** research/groups-sources.md: one url per species for the group data (lane P1); `(est)` = judgement, not quoted from the page. */
+const GROUP_ROWS = [...groupsMd.matchAll(/^- \*\*(\w+)\*\*[^:]*: (https?:\S+?)(?: \((est)\))?\.?(?=\s|$)/gm)].map(m => ({ id: m[1], url: m[2], est: !!m[3] }));
+const GROUP_FIELDS = '{bands,max,sexed,maxDepthMm,minLengthMm}.**';
 
 export const RULES: Record<string, Rule[]> = {
   SPECIES: [],
@@ -49,6 +53,9 @@ export const RULES: Record<string, Rule[]> = {
   CARE: [
     // care, minL, temper, prey, solo / slow / nip, coral and group have no rule: care.ts calls them estimates from common practice.
     ...Object.keys(WATER).flatMap((id): Rule[] => ['temp', 'tol'].map(k => ({ path: `${id}.${k}.*`, status: 'researched', src: ['climate-research'], why: 'researched band (data/climatedata.ts) replaces the first guess' }))),
+    ...GROUP_ROWS.map(({ id, url, est }): Rule => est
+      ? { path: `${id}.${GROUP_FIELDS}`, status: 'claimed', src: ['groups-research'], why: `group bands, max, sex ratio, depth and tank length: judgement from hobby practice; page named ${url}` }
+      : { path: `${id}.${GROUP_FIELDS}`, status: 'researched', src: ['groups-research'], why: `group bands, max, sex ratio, depth and tank length rest on ${url} (one page per species, not checked per field)` }),
     ...Object.keys(CHEM).map((id): Rule => ({ path: `${id}.{ph,gh}.*`, status: 'claimed', src: ['fishbase-chem'], why: 'FishBase pH / dH range where it lists one, otherwise practice; which rows are which was not recorded' })),
   ],
   // runtime air table (data/climate.ts AIR): the researched rows (climatedata AIRDATA) replace the first guesses; note and est are not values
