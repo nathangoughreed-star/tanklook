@@ -77,4 +77,10 @@ describe('stocking screen logic (lane P5, 2026-10-20)', () => {
     const roomy = forkOptions(animalsOf([{ id: 'neon', n: 6 }]), { w: 2000, d: 800 });
     expect(roomy.fitsAsIs).toBe(true); expect(roomy.swaps).toEqual([]);
   });
+  it('the tank only jumps once the stocking would pass 100 %; the options above it all bring it back under', () => {
+    const one = planFor([{ id: 'oscar', n: 1 }]), three = planFor([{ id: 'oscar', n: 3 }]), five = planFor([{ id: 'oscar', n: 5 }]);
+    expect(three.tank!.id).toBe(one.tank!.id); // 1 to 3 oscars stay in the same tank
+    expect(five.litres).toBeGreaterThan(one.litres); // 5 do not fit it, so it goes up
+    for (const p of [one, three, five]) { expect(p.steps.length).toBeLessThanOrEqual(3); for (const s of p.steps) { expect(s.spacePct).toBeLessThan(100); expect(s.litres).toBeGreaterThan(p.litres); } }
+  });
 });
