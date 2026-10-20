@@ -264,14 +264,14 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | src/scene/stocking.ts | LU_PER_L | fitted | calibrated so the starters keep their old animal counts, which came from a rule of thumb (3 L x (tl/35)^1.6): CIRCULAR until checked against an outside source |
 | src/scene/stocking.ts | SPACE_EXP, SPACE_PER_L | fitted | fit to 24 AqAdvisor combinations (scripts/aq-compare.mjs) |
 | src/scene/stocking.ts | PLANT_MAX, PLANTS_PER_100L_FULL, PATCH_PLANTS | assumption | plants take up nitrogen, so they add some filtration; the size (+25 % at 15 plants per 100 L) is "a documented guess" |
-| src/scene/nitrogen.ts | BASE, TAN_PER_FEED, FEED_PCT, tanOf | claimed | fasted TAN 350 x W^-0.25 mg/kg/day and 0.02 g TAN per g feed, "+-40 %"; from side-session research notes that are NOT in the repo: recover them |
-| src/scene/nitrogen.ts | MEDIA_RATE, THROUGH, SURFACE_RATE, warm | claimed | nitrification rates, low confidence (ceramic 0.06 g TAN/L/day measured in a fish farm); notes not in the repo |
+| src/scene/nitrogen.ts | BASE, TAN_PER_FEED, FEED_PCT, tanOf | researched | fasted TAN 350 x W^-0.25 mg/kg/day and 0.02 g TAN per g feed, +-40 % (research-fish-nitrogen, research-ornamental-excretion) |
+| src/scene/nitrogen.ts | MEDIA_RATE, THROUGH, SURFACE_RATE, warm | researched | nitrification per litre of media, low confidence: ceramic 0.06 g TAN/L/day measured in a fish farm, foam rate extrapolated (research-nitrification) |
 | src/scene/nitrogen.ts | HEADROOM | assumption | run the filter at 70 % of its capacity: a 30 % safety margin |
 | src/scene/nitrogen.ts | NITRATE_TARGET_N | claimed | nitrate held at about 40 ppm (9 mg N/L), a hobby target; no source recorded |
-| src/scene/nitrogen.ts | plantUptake | claimed | slow / medium / fast 0.001 / 0.003 / 0.006 g N per 100 g a day, "extrapolated from one measured Egeria study" (not recorded) |
-| src/scene/nitrogen.ts | RATE_100G, FLOAT_M2, DIE_OFF_RETURN | claimed | plant N uptake per 100 g, floaters 0.3 g N/m2/day, 30 % returned by die-off; the Egeria study and notes are not in the repo |
+| src/scene/nitrogen.ts | plantUptake | researched | slow / medium / fast 0.001 / 0.003 / 0.006 g N per 100 g a day, extrapolated from one measured Egeria study (research-plant-nitrogen) |
+| src/scene/nitrogen.ts | RATE_100G, FLOAT_M2, DIE_OFF_RETURN | researched | plant N uptake per 100 g, floaters 0.3 g N/m2/day, 30 % die-off return; classes EXTRAPOLATED from one measured Egeria study (research-plant-nitrogen, research-plant-validation) |
 | src/scene/nitrogen.ts | PLANTS, DEFAULT_PLANT, PATCH_FW, PATCH_PLANTS | assumption | growth class and fresh weight per plant item: guesses at the item's default size |
-| src/data/filtermedia.ts | MEDIA_L_PER_GPH, SPONGE_L_PER_GAL | derived | media litres per gph from the FILTER_MEDIA_L rows (AquaClear, Fluval), sponge from Hydro-Sponge / Co-Op |
+| src/data/filtermedia.ts | MEDIA_L_PER_GPH, SPONGE_L_PER_GAL | derived | media litres per gph from the FILTER_MEDIA_L rows (AquaClear, Fluval), sponge from Hydro-Sponge / Co-Op (research-filter-media-volumes, research-hob-media-derived) |
 | src/scene/lightout.ts | NWATER | claimed | refractive index of water, a physical constant |
 | src/scene/lightout.ts | KEEP_SURFACE, KEEP_GLASS | derived | diffuse light totally reflected back in, about 1 - 1/n^2 |
 | src/scene/lightout.ts | KWATER, TINT_SHARE, FRESNEL, GLASS_LID, MESH_LID, WALL_W | claimed | water attenuation, lid and wall transmission: typical optics values, none recorded |
