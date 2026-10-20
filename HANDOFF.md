@@ -28,9 +28,10 @@ New since 2026-10-16: lane prompts are one line ("You are lane X. Read prompts/l
 whose chat gets long hands off to a fresh chat at a work-unit boundary (write its state into its HANDOFF section
 first); dev servers are swept when a lane reports done and on "check" (no hourly sweep).
 
-**Current lanes** (coordinator "Lanes coordinator 4", `local_408aa124`):
+**Current lanes** (coordinator "Lanes coordinator 5", `local_798b4aae`):
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
+| P6a three builds (path 1) | `../Glass-Box-p6abuilds` / `p6abuilds` | 5913 | `scene/builds.ts`, `ui/buildPick.ts`, CSS, tests; hook `onBuildPicked` for P6b | opened 2026-10-20 |
 | P4 artificial plants (path 1) | `../Glass-Box-p4artplants` / `p4artplants` | 5893 | artificial plant kind: items, plant3d branch, demand rows | opened 2026-10-20 |
 | SE stocking engine | `../Glass-Box-stocking` / `stocking` | 5843 | new `scene/stocking.ts`, `data/bodymass.json`, stocking line in `ui/panels.ts`, bioload helpers in `scene/starter.ts` | opened 2026-10-19 |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 DONE 2026-10-16 (lane SS2, see archive; its gaps: no water dish, no succulents, Malawi has only yellowlab / cockatoo); multi-select / duplicate (lane MS) + scatter brush (lane SB) DONE 2026-10-16, see archive; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
@@ -45,6 +46,10 @@ models on /review.html (and its drawImage error), TG leftovers (heater product p
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
+
+## Lane P6a: three builds, path 1 (2026-10-20, branch `p6abuilds`, port 5913)  (lane fills this in)
+
+Prompt: prompts/lane-P6a-builds.md. P6b (scape choice, artificial plants via P4, plan sheet) waits for P6a's `onBuildPicked` and data shapes; its prompt is written by the coordinator after P6a lands.
 
 ## Lane P4: artificial plants, path 1 (2026-10-20, branch `p4artplants`, port 5893)  (lane fills this in)
 ## Source traceability (2026-10-20, side chat in the `stocking` worktree; Nathan: the defence against "AI slop")
