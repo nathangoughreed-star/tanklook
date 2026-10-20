@@ -14,7 +14,7 @@ import type { TankSetup } from '../src/scene/types';
 import AQ from '../research/aq-compare.json';
 
 type Combo = { name: string; tank: [number, number, number]; stock: [string, number][] };
-const COMBOS: Combo[] = [
+export const COMBOS: Combo[] = [
   { name: '10 gal, 6 neon', tank: [20, 10, 12], stock: [['neon', 6]] },
   { name: '10 gal, 10 neon', tank: [20, 10, 12], stock: [['neon', 10]] },
   { name: '10 gal, 1 betta', tank: [20, 10, 12], stock: [['betta', 1]] },
@@ -41,7 +41,7 @@ const COMBOS: Combo[] = [
   { name: '125 gal, 20 rummynose 20 harlequin 6 angelfish', tank: [72, 18, 22], stock: [['rummynose', 20], ['harlequin', 20], ['angel', 6]] },
 ];
 
-function comboTank(c: Combo): TankSetup {
+export function comboTank(c: Combo): TankSetup {
   const s = defaultSetup();
   s.tank = { ...s.tank, L: c.tank[0] * IN, D: c.tank[1] * IN, H: c.tank[2] * IN };
   s.water.on = true; s.water.level = 1; s.water.salt = false;
@@ -66,7 +66,7 @@ describe('stocking vs AqAdvisor', () => {
       }
       if (ratios.length) {
         const sorted = [...ratios].sort((x, y) => x - y), med = sorted[sorted.length >> 1];
-        md += `\n${ratios.length} combinations. Median ratio ${med.toFixed(2)} (ours / AqAdvisor); ours higher by over 10% in ${ratios.filter(x => x > 1.1).length}, lower by over 10% in ${ratios.filter(x => x < 0.9).length}. Scale LU_PER_L x SPACE_ROOM by ${med.toFixed(2)} to match the median.\n`;
+        md += `\n${ratios.length} combinations. Median ratio ${med.toFixed(2)} (ours / AqAdvisor); ours higher by over 10% in ${ratios.filter(x => x > 1.1).length}, lower by over 10% in ${ratios.filter(x => x < 0.9).length}. Divide SPACE_PER_L by ${med.toFixed(2)} to match the median.\n`;
       } else md += '\nNo AqAdvisor answers yet: run `node scripts/aq-compare.mjs` when aqadvisor.com is up.\n';
       fs.writeFileSync(new URL('../research/aq-compare.md', import.meta.url), md);
     });

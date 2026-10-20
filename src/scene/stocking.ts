@@ -3,8 +3,10 @@
 //   LOAD     = sum over animals of  mass^0.75 x metabolism x temperature factor   (standard metabolic scaling: a big fish counts for
 //              more than a small one but for less per gram; load units LU).
 //   Two limits, as AqAdvisor separates them (Nathan 2026-10-19):
-//   SPACE        = load / (litres x LU_PER_L x SPACE_ROOM): how full the tank itself is; no filter fixes it, only more water or fewer animals.
-//   FILTRATION   = load / (litres x LU_PER_L x filter (tech.ts stockCapacity) x live-plant factor): how hard the filter works.
+//   SPACE        = sum of mass^0.45 / (litres x SPACE_PER_L): how full the tank itself is; no filter fixes it, only more water or fewer animals.
+//                  Fitted to 24 AqAdvisor answers (research/aq-compare.md): its stocking level grows like mass^0.45 (about length^1.4), much
+//                  slower than waste does, and metabolism does not show in it (typical scatter about +-40 %, species-specific in AqAdvisor).
+//   FILTRATION   = waste load / (litres x LU_PER_L x filter (tech.ts stockCapacity) x live-plant factor): how hard the filter works.
 //   percent      = the larger of the two (over 100 = overstocked). Compatibility (waterchem, animalfit, group minimums) stays separate.
 // Mass is FishBase length-weight at the animal's length (data/bodymass.json; shrimp, snails and herps are keeper-reference
 // estimates, marked 'estimate'). The 3D bodies' volume is only the cross-check that flags outliers (scripts/body-mass.mjs).
@@ -52,16 +54,17 @@ export const tempFactor = (c: number) => Q10 ** ((Math.min(32, Math.max(4, c)) -
 const SALT_LOAD = 1.5;
 /** Load units one litre clears at filtration 1 (calibrated in step 3 of lane SE: with it the starters keep about their old animal counts (research/stocking-calibration.md)). */
 export const LU_PER_L = 0.3;
-/** The tank holds this much more load than a standard filter (capacity 1) clears: past it only more water helps (documented guess,
- *  to be fitted to AqAdvisor's space numbers: scripts/aq-compare.mjs). */
-export const SPACE_ROOM = 1.5;
+/** Space: how a body counts against the tank's water, mass^SPACE_EXP, and the g^SPACE_EXP one litre holds at 100 % (fit 2026-10-20 to
+ *  24 AqAdvisor combinations, scripts/aq-compare.mjs; with it the median of ours / AqAdvisor is 1.0). */
+export const SPACE_EXP = 0.45, SPACE_PER_L = 1 / 4.242; // 4.921 is the geometric-mean fit; x1.16 centres the median of ours / AqAdvisor on 1
+export const spaceOf = (sp: Species, tlMm: number) => massG(sp.id, tlMm) ** SPACE_EXP;
 /** Live plants take up nitrogen: up to +25 % at 15 plants per 100 L (a painted patch counts as 3 plants). A documented guess. */
 const PLANT_MAX = 0.25, PLANTS_PER_100L_FULL = 15, PATCH_PLANTS = 3;
 
 /** Animals that live in the water load it; land animals (geckos, anoles, snakes, spiders, tree frogs) do not. */
 export const countsAgainstWater = (sp: Species) => sp.habitat !== 'land';
 
-export interface Contributor { id: string; name: string; n: number; load: number; share: number; grams: number; cls: MetClass }
+export interface Contributor { id: string; name: string; n: number; load: number; space: number; share: number; grams: number; cls: MetClass }
 export interface CapacityParts { /** load units the tank's water holds, filter aside */ space: number; litres: number; perL: number; filter: number; plants: number; plantCount: number; tempC: number; capacity: number }
 export interface Stocking {
   /** the larger of space and filtration, percent; over 100 = overstocked. 0 with no animals. */
@@ -96,25 +99,27 @@ export function capacityOf(S: TankSetup): CapacityParts {
   const filter = S.water.on ? stockCapacity(S) : 1;
   const plantCount = S.items.filter(i => i.kind === 'plant').length + (S.patches ?? []).filter(p => p.brush.startsWith('plant:')).length * PATCH_PLANTS;
   const plants = 1 + PLANT_MAX * Math.min(1, plantCount / Math.max(litres / 100, 0.1) / PLANTS_PER_100L_FULL);
-  return { litres, perL: LU_PER_L, filter, plants, plantCount, tempC, capacity: litres * LU_PER_L * filter * plants, space: litres * LU_PER_L * SPACE_ROOM };
+  return { litres, perL: LU_PER_L, filter, plants, plantCount, tempC, capacity: litres * LU_PER_L * filter * plants, space: litres * SPACE_PER_L };
 }
 
 const plural = (n: number, name: string) => n === 1 ? `1 ${name}` : `${n} ${name}${/(s|ish|ox)$/i.test(name) ? '' : 's'}`;
 
 export function stockingOf(S: TankSetup): Stocking {
   const cap = capacityOf(S), salt = !!(S.water.on && S.water.salt), by = new Map<string, Contributor>();
-  let load = 0;
+  let load = 0, spaceLoad = 0;
   for (const f of S.fish) {
     const sp = getSpecies(f.species), l = loadOf(f, cap.tempC, salt);
     if (!sp || l <= 0) continue;
     load += l;
-    const c = by.get(sp.id) ?? { id: sp.id, name: sp.name, n: 0, load: 0, share: 0, grams: 0, cls: metClass(sp) };
-    c.n++; c.load += l; c.grams += massG(sp.id, f.tl ?? sp.tl); by.set(sp.id, c);
+    const c = by.get(sp.id) ?? { id: sp.id, name: sp.name, n: 0, load: 0, space: 0, share: 0, grams: 0, cls: metClass(sp) };
+    c.n++; c.load += l; c.space += spaceOf(sp, f.tl ?? sp.tl); spaceLoad += spaceOf(sp, f.tl ?? sp.tl); c.grams += massG(sp.id, f.tl ?? sp.tl); by.set(sp.id, c);
   }
-  const contributors = [...by.values()].sort((a, b) => b.load - a.load);
-  for (const c of contributors) c.share = load ? c.load / load : 0;
-  const pc = (cp: number) => cp > 0 ? load / cp * 100 : load > 0 ? Infinity : 0;
-  const spacePercent = pc(cap.space), filtrationPercent = pc(cap.capacity), percent = Math.max(spacePercent, filtrationPercent);
+  const pc = (l: number, cp: number) => cp > 0 ? l / cp * 100 : l > 0 ? Infinity : 0;
+  const spacePercent = pc(spaceLoad, cap.space), filtrationPercent = pc(load, cap.capacity), percent = Math.max(spacePercent, filtrationPercent);
+  // shares are of the limit that binds
+  const bySpace = spacePercent >= filtrationPercent;
+  const contributors = [...by.values()].sort((a, b) => bySpace ? b.space - a.space : b.load - a.load);
+  for (const c of contributors) c.share = bySpace ? (spaceLoad ? c.space / spaceLoad : 0) : (load ? c.load / load : 0);
   const reasons: string[] = [];
   let fixFilter: Stocking['fixFilter'];
   if (!contributors.length) reasons.push('No animals in the water.');

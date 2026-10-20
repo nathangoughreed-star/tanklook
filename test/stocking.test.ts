@@ -34,7 +34,7 @@ describe('stocking engine (lane SE)', () => {
   });
   it('a lightly stocked 20 gal community reads well under 100 %', () => {
     const p = pct(tank(30, 12, 16, [['neon', 8], ['bronzecory', 4]]));
-    expect(p).toBeGreaterThan(10); expect(p).toBeLessThan(80);
+    expect(p).toBeGreaterThan(10); expect(p).toBeLessThan(95); // AqAdvisor: about 70-90 %
   });
   it('a 20 gal with neons, corydoras and a pleco is close to full, not far over (AqAdvisor puts such a tank near 90-100 %)', () => {
     const p = pct(tank(30, 12, 16, [['neon', 8], ['bronzecory', 4], ['bristlenose', 1]]));
@@ -71,7 +71,7 @@ describe('stocking engine (lane SE)', () => {
     expect(pct(tank(48, 18, 18, [['danio', 10]]))).toBeLessThan(pct(tank(36, 18, 18, [['danio', 10]])));
     const fil = ['none', 'sponge', 'hob', 'canister'].map(f => stockingOf(tank(36, 18, 18, [['danio', 20]], { filter: f })));
     for (let i = 1; i < fil.length; i++) { expect(fil[i].filtrationPercent).toBeLessThan(fil[i - 1].filtrationPercent); expect(fil[i].percent).toBeLessThanOrEqual(fil[i - 1].percent); }
-    expect(pct(tank(36, 18, 18, [['danio', 20]], { plants: 20 }))).toBeLessThan(pct(tank(36, 18, 18, [['danio', 20]])));
+    expect(stockingOf(tank(36, 18, 18, [['danio', 20]], { plants: 20 })).filtrationPercent).toBeLessThan(stockingOf(tank(36, 18, 18, [['danio', 20]])).filtrationPercent);
   });
   it('warmer water raises the load (Q10), and a juvenile loads less than the adult', () => {
     const t = tank(36, 18, 18, [['danio', 10]]);
