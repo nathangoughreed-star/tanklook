@@ -184,6 +184,8 @@ export const FORMULAS: Formula[] = [
   { file: 'src/demand/gear.ts', symbols: ['L_PER_GAL'], status: 'cited', src: ['si-units'], why: '1 US gal = 3.785 L' },
   // climate, tanks, weight
   { file: 'src/data/climate.ts', symbols: ['FINE'], status: 'assumption', why: 'a compromise a third of the way into the tolerable margin is still fine long term' },
+  { file: 'src/scene/builds.ts', symbols: ['FILTRATION_LIMIT'], status: 'assumption', why: 'cheapest and least-work builds keep filtration at or under 100 % (the stocking engine limit itself); balanced keeps 70 % or less, headroom for a missed water change (same as tankfit FILTRATION_TARGET)' },
+  { file: 'src/scene/builds.ts', symbols: ['WATER_LEVEL', 'BASE_PRESET'], status: 'assumption', why: 'tank filled to 90 %; the starting gear is the bare-minimum preset (low-tech fresh, fish-only salt), as in tankfit' },
   { file: 'src/scene/tankfit.ts', symbols: ['WATER_LEVEL', 'STEP_RATIO'], status: 'assumption', why: 'tank filled to 90 %; a next size must hold 25 % more water' },
   { file: 'src/data/tankcheck.ts', symbols: ['VOL_TOL'], status: 'assumption', why: 'catalogue check: interior volume within 8 % of the label' },
   { file: 'src/scene/weight.ts', symbols: ['DENSITY'], status: 'claimed', why: 'water 1.0, soda-lime glass 2.5, gravel 1.6 kg/L: textbook values, none recorded' },
@@ -192,6 +194,7 @@ export const FORMULAS: Formula[] = [
 ];
 
 export const EXCLUDED: Excluded[] = [
+  { file: 'src/scene/builds.ts', symbols: ['BUILD_BLURB'], why: 'card wording (mentions the 70 % headroom, which FILTRATION_LIMIT documents)' },
   { file: 'src/scene/lightout.ts', symbols: ['AQ_MAX', 'LAMP_Y', 'TUBE_SP_MAX', 'LREF', 'EXPOSE', 'EXP_MIN', 'EXP_MAX'], why: 'render exposure and slider ranges' },
   { file: 'src/scene/propagate.ts', symbols: ['MAX_PLANTS', 'FLOAT_COVER', 'POOL', 'POOL_SEED'], why: 'scatter limits and seeds' },
   { file: 'src/demand/dealscene.ts', symbols: ['DAY', 'FRESH_DAYS'], why: 'how old a deal may be before it is re-checked' },
@@ -216,7 +219,7 @@ export const TABLES: Excluded[] = [
 /** The engine files whose top-level constants must each have a FORMULAS or EXCLUDED entry. */
 export const ENGINE_FILES = [
   'src/scene/stocking.ts', 'src/scene/nitrogen.ts', 'src/scene/lightout.ts', 'src/scene/kitlight.ts', 'src/scene/lightcheck.ts',
-  'src/scene/lightneeds.ts', 'src/scene/tech.ts', 'src/scene/tankfit.ts', 'src/scene/plantfit.ts', 'src/scene/animalfit.ts',
+  'src/scene/lightneeds.ts', 'src/scene/tech.ts', 'src/scene/tankfit.ts', 'src/scene/builds.ts', 'src/scene/plantfit.ts', 'src/scene/animalfit.ts',
   'src/scene/growtime.ts', 'src/scene/propagate.ts', 'src/scene/weight.ts', 'src/scene/starter.ts', 'src/data/climate.ts',
   'src/data/filtermedia.ts', 'src/data/herpstock.ts', 'src/data/tankcheck.ts', 'src/data/aqadvisor.ts',
   'src/demand/engine.ts', 'src/demand/dealmatch.ts', 'src/demand/dealscene.ts', 'src/demand/gear.ts', 'src/demand/prices.ts',

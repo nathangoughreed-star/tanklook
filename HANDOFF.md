@@ -31,7 +31,7 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 **Current lanes** (coordinator "Lanes coordinator 5", `local_798b4aae`):
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
-| P6a three builds (path 1) | `../Glass-Box-p6abuilds` / `p6abuilds` | 5913 | `scene/builds.ts`, `ui/buildPick.ts`, CSS, tests; hook `onBuildPicked` for P6b | opened 2026-10-20 |
+| P6a three builds (path 1) | `../Glass-Box-p6abuilds` / `p6abuilds` | 5913 | `scene/builds.ts`, `ui/buildPick.ts`, CSS, tests; hook `onBuildPicked` for P6b | DONE 2026-10-20, on main |
 | P4 artificial plants (path 1) | `../Glass-Box-p4artplants` / `p4artplants` | 5893 | artificial plant kind: items, plant3d branch, demand rows | opened 2026-10-20 |
 | SE stocking engine | `../Glass-Box-stocking` / `stocking` | 5843 | new `scene/stocking.ts`, `data/bodymass.json`, stocking line in `ui/panels.ts`, bioload helpers in `scene/starter.ts` | opened 2026-10-19 |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 DONE 2026-10-16 (lane SS2, see archive; its gaps: no water dish, no succulents, Malawi has only yellowlab / cockatoo); multi-select / duplicate (lane MS) + scatter brush (lane SB) DONE 2026-10-16, see archive; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
@@ -50,6 +50,12 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 ## Lane P6a: three builds, path 1 (2026-10-20, branch `p6abuilds`, port 5913)  (lane fills this in)
 
 Prompt: prompts/lane-P6a-builds.md. P6b (scape choice, artificial plants via P4, plan sheet) waits for P6a's `onBuildPicked` and data shapes; its prompt is written by the coordinator after P6a lands.
+
+**DONE 2026-10-20 (pushed to main).**
+- `src/scene/builds.ts`: `buildsFor(animals, tank, now?)` returns three `Build`s [cheapest, leastWork, balanced]: `tank`, `setup` (TankSetup, animals unplaced), `gear` lines, `setupUsd` (deals in), `listUsd`, `upkeepUsdMo`, `minPerWeek` (demand-model means, whole numbers), `filtrationPct` / `spacePct`, `gearDeals` (gearOffers, pinned via pinGear), `tankDeal` (the engine's own tank-sale pricing, so the number equals the editor's), `bundle` (dealMatches best, no breaks, same tank only; kitTech draws its gear), `savingUsd`. Filter chosen from the Tech menu's list (no sump): cheapest = lowest price at filtration <= 100 %, balanced = lowest price at <= 70 % and HOB or better (a bundle must also have one), least work = fewest minutes (salt: also auto top-off). Guarantees (tested): cheapest <= balanced $, least work <= both in minutes, a build that saves no minutes is the cheapest / balanced one (shown as "same gear as ...").
+- `src/ui/buildPick.ts`: the screen after "Continue" on the stocking screen (stockPlan footer now has "Continue: three ways to build it", the old Open button became a link): three cards side by side, each a 3D picture of its own tank taken with the main viewer (`viewer.thumbnail`) while the panel is hidden. Pick -> `pinDeal(bundle)`, `store.replace(sceneForBuild(...))`, then every `onBuildPicked(fn)` listener runs with `{ build, animals }` (the build is already loaded in the editor). P6b: subscribe with `onBuildPicked` from `ui/buildPick.ts`; the scene is animals + gear only, no plants.
+- Hooks in others' files: `stockPlan.ts` (import, `attachBuildPick`, footer buttons, `builds` case). Provenance: builds.ts added to ENGINE_FILES with FORMULAS / EXCLUDED entries.
+- Gaps (not fixed, not mine): the demand model has almost no minute lever for fresh water (water changes follow the stocking, filter clean is a fixed number), so least work often equals cheapest; stockPlan's live "set-up from X to Y" uses tankfit's catalogue median tank price while builds use the editor's pricing, so the two can differ by a few dollars; a bundle build prices ~$4 under the editor's panel after the pick (kit age widening); build filter choice does not see a pinned gear-deal product's real flow.
 
 ## Lane P4: artificial plants, path 1 (2026-10-20, branch `p4artplants`, port 5893)  (lane fills this in)
 ## Source traceability (2026-10-20, side chat in the `stocking` worktree; Nathan: the defence against "AI slop")

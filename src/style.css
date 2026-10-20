@@ -370,10 +370,10 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .libcard { position: relative }
 .libopen { display: flex; flex-direction: column; gap: 2px; width: 100%; padding: 4px; text-align: left; background: var(--chip) }
 .libopen:hover { border-color: var(--accent) }
-.libopen img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 3px; background: var(--bg) }
+.libopen img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 3px; background: var(--bg) }
 .libopen img.dealphoto { object-fit: contain; background: #fff } /* retailer product shots are on white; show the whole product */
 .dealsortl { display: inline-flex; gap: 6px; align-items: center; margin: 0 0 6px }
-.libopen .nothumb { display: grid; place-items: center; aspect-ratio: 16 / 10; border-radius: 3px; background: var(--bg); color: var(--muted); font-size: 11.5px }
+.libopen .nothumb { display: grid; place-items: center; aspect-ratio: 3 / 2; border-radius: 3px; background: var(--bg); color: var(--muted); font-size: 11.5px }
 .libopen b { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
 .libdel { position: absolute; top: 8px; right: 8px; padding: 0 6px; line-height: 20px; background: rgb(0 0 0 / .55); color: #fff; border-color: transparent }
 .libdel:hover { background: var(--bad) }
@@ -641,3 +641,17 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 #stkNit { margin: 2px 0 6px; font-size: 11.5px; color: var(--muted) } #stkNit summary { cursor: pointer } #stkVerdict .dim { opacity: .75 }
 .nbar { display: flex; height: 16px; border-radius: 4px; overflow: hidden; background: rgba(128,128,128,.25); margin: 6px 0 2px } .nbar span { display: block; height: 100% }
 .nleg { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 11px } .nleg i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 4px; vertical-align: -1px }
+/* lane P6a: the three-builds screen (ui/buildPick.ts) */
+.bp { left: 10px; width: auto; display: flex; flex-direction: column }
+.bp[hidden] { display: none }
+.bpCards { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: row; gap: 12px; align-items: stretch }
+.bpCard { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 4px; padding: 8px; border: 1px solid var(--line); border-radius: 8px }
+.bpCard.on { border-color: #2a9bb0; box-shadow: 0 0 0 1px #2a9bb0 }
+.bpPic { display: block; width: 100%; aspect-ratio: 3 / 2; padding: 0; overflow: hidden; border-radius: 6px; background: color-mix(in srgb, var(--ink) 8%, var(--panel)) }
+.bpPic img { display: block; width: 100%; height: 100%; object-fit: cover }
+.bpHead { display: flex; align-items: baseline; gap: 8px } .bpHead b { font-size: 15px }
+.bpNums { display: flex; gap: 14px; margin: 4px 0 } .bpNums span { display: flex; flex-direction: column; font-size: 11px; opacity: .9 } .bpNums b { font-size: 16px } .bpNums i { font-size: 10.5px; opacity: .7; font-style: normal }
+.bpGear, .bpDeals { list-style: none; margin: 0; padding: 0; font-size: 12px } .bpGear li { padding: 1px 0 }
+.bpDeal { color: #2f8f4e; padding: 1px 0 }
+@media (max-width: 900px) { .bpCards { flex-direction: column; flex: none } .bpCard { flex: none } }
+.bpCard .primary { margin-top: auto }
