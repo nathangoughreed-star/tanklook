@@ -1,6 +1,20 @@
 # HANDOFF archive
 Finished lane and feature sections moved out of HANDOFF.md on 2026-10-16, verbatim, newest first.
 
+## Lane P1: group data, path 1 (2026-10-20, branch `p1groups`, port 5863)
+DONE 2026-10-20 (pushed to main). `src/data/groups.ts` (GroupCare, `GROUPS` for all 84 species, plus helpers `recommendedMin`, `bandOf`,
+`bandMessage` that P5 can use), merged into CARE by one loop at the end of `care.ts` (`AnimalCare extends GroupCare`),
+`test/groups.test.ts`, `research/groups-sources.md` (one line per species).
+- Research: 12 Sonnet agents, about 0.8 M tokens. Search was rate-limited, so **63 of 84 rows are `est`** (hobby-guide judgement,
+  one search each; Seriously Fish / FishBase rarely came back) and **5 are UNVERIFIED** (coralbeauty, watchman, cleanershrimp,
+  mandarin, firefish: no confirmed source page). Treat the numbers as advice; a second research pass with page fetches would firm them up.
+- Decisions: bands.ok equals the older CARE.group wherever both exist (test enforces it; cherry shrimp raised 5 -> 10). CARE.solo wins:
+  solo species have max <= 2 (crested geckos, dwarf gourami researched higher; overridden). Dwarf frog = Nathan's bands 2 / 5 / 7,
+  depth 450 mm, low flow. `maxDepthMm` means a water-depth CAP only (angel / discus / axolotl agent values were tank heights: dropped).
+  Danio zone middle, neon minLengthMm 450 (P2's tankfit tests pin both). Overrides and notes are in the sources file.
+- Free now: `src/data/groups.ts`, `test/groups.test.ts`, `research/groups-sources.md`.
+
+
 ## Lane P3: fullness tile, path 1 (2026-10-20, branch `p3fullness`, port 5883)
 - **Built (Nathan approved the pictures 2026-10-20, research/p3-shots/; shipped to main):** `src/ui/fullnessTile.ts`, a minimizable tile on the view's top left (under the button row; the demand panel holds the top right): Space and Filtration bars from `stockingMemo` (green, amber from 85 %, red over 100), the top 3 contributors of each bar on hover / tap, the engine's first reason line. Minimized = a "Fullness 96%" pill; starts minimized on a phone (under 700 px) until opened once; per viewer, localStorage `tanklook.ftMin`. Shown only for a wet tank with animals in the water or a space set. Hidden while the Animals Show box is off, faded (45 %) while another menu is in focus (follows `viewer.hidden` / `viewer.menuFocus` from the draw callback).
 - **Set my space:** Width / Depth / Height (optional) fields in the scene units, live; starts a little bigger than the tank (5 cm, or 2 in for US units). Stored as `layout.space` = `{ w, d, h? }` mm (types.ts `SpaceLimit`, optional, **no version bump**; validate.ts one line: `parseSpace` drops a broken value, old files have none). Fit maths in new `src/scene/space.ts` (`tankExtent` = footprint box + glass height, `spaceFit`, `defaultSpace`).
