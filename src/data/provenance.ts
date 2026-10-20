@@ -199,6 +199,7 @@ export const FORMULAS: Formula[] = [
   { file: 'src/scene/kitlight.ts', symbols: ['MAX_W_PER_GAL'], status: 'assumption', why: 'most LED watts per gallon a swap can ask before the tank is the problem (fresh 2.5, reef 6)' },
   { file: 'src/scene/plantfit.ts', symbols: ['FIT_PAR'], status: 'assumption', why: 'one representative PAR inside each light level' },
   { file: 'src/scene/growtime.ts', symbols: ['GROW_RATE'], status: 'assumption', why: 'growth multipliers by feeding and plant speed (CO2 helps stems most); not measured' },
+  { file: 'src/scene/tankMin.ts', symbols: ['TIERS'], status: 'claimed', why: 'absolute floor and comfortable tank size per species (adf, danio, whitecloud, tigerbarb, cherrybarb, firenewt, firetoad): keeper-practice judgement from the examples given, no page recorded' },
   { file: 'src/scene/tankfit.ts', symbols: ['FLOOR_K'], status: 'claimed', why: '"a documented rule of thumb, not a source of record": a bottom dweller holds about two body lengths square' },
   { file: 'src/scene/tankfit.ts', symbols: ['FILTRATION_TARGET'], status: 'assumption', why: 'preset filtration targets: cheapest 100 %, balanced 70 %' },
   { file: 'src/scene/starter.ts', symbols: ['ANIMAL_FILL', 'KINDS_PER_STOP', 'LAND_MOST'], status: 'assumption', why: 'how full each starter stop is and how many kinds; land counts kept inside the herp research maxima' },
@@ -251,7 +252,7 @@ export const TABLES: Excluded[] = [
 /** The engine files whose top-level constants must each have a FORMULAS or EXCLUDED entry. */
 export const ENGINE_FILES = [
   'src/scene/stocking.ts', 'src/scene/nitrogen.ts', 'src/scene/lightout.ts', 'src/scene/kitlight.ts', 'src/scene/lightcheck.ts',
-  'src/scene/lightneeds.ts', 'src/scene/tech.ts', 'src/scene/tankfit.ts', 'src/scene/builds.ts', 'src/scene/plantfit.ts', 'src/scene/animalfit.ts',
+  'src/scene/lightneeds.ts', 'src/scene/tech.ts', 'src/scene/tankfit.ts', 'src/scene/tankMin.ts', 'src/scene/builds.ts', 'src/scene/plantfit.ts', 'src/scene/animalfit.ts',
   'src/scene/growtime.ts', 'src/scene/propagate.ts', 'src/scene/weight.ts', 'src/scene/starter.ts', 'src/data/climate.ts',
   'src/data/filtermedia.ts', 'src/data/herpstock.ts', 'src/data/tankcheck.ts', 'src/data/aqadvisor.ts',
   'src/demand/engine.ts', 'src/demand/dealmatch.ts', 'src/demand/dealscene.ts', 'src/demand/gear.ts', 'src/demand/prices.ts',

@@ -42,8 +42,8 @@ export function topBy(r: Stocking, by: 'space' | 'load', k = 3): TopRow[] {
 /** The species that want the biggest tank, each with the litres and length it asks for (the percent is the bar's own). */
 export function topMin(m: TankMinimum, units: Units, k = 3): TopRow[] {
   const len = (mm: number) => `${toUnits(mm, units)}${units === 'in' ? '"' : ' cm'} long`, one = (l: number, mm: number) => [l > 0 && `${l} L`, mm > 0 && len(mm)].filter(Boolean).join(', ');
-  return [...m.rows].sort((a, b) => b.comfortPct - a.comfortPct).filter(x => x.minL > 0 || x.minLengthMm > 0).slice(0, k).map(x => ({ name: x.name, n: x.n, share: 0,
-    note: x.floorL < x.minL || x.floorLengthMm < x.minLengthMm ? `at least ${one(x.floorL, x.floorLengthMm)}; happier at ${one(x.minL, x.minLengthMm)}` : one(x.minL, x.minLengthMm) }));
+  return [...m.rows].sort((a, b) => b.comfortPct - a.comfortPct).filter(x => x.comfortL > 0 || x.comfortLengthMm > 0).slice(0, k).map(x => ({ name: x.name, n: x.n, share: 0,
+    note: x.floorL < x.comfortL || x.floorLengthMm < x.comfortLengthMm ? `at least ${one(x.floorL, x.floorLengthMm)}; happier at ${one(x.comfortL, x.comfortLengthMm)}` : one(x.comfortL, x.comfortLengthMm) }));
 }
 
 /** Red below the absolute floor, amber while under the comfortable size, green past it; the fill is the floor's percent. */

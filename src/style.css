@@ -212,6 +212,8 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 .viewtools { flex-wrap: wrap; max-width: calc(100% - 20px) }
 .viewtools { position: absolute; top: 10px; left: 10px; z-index: 3; display: flex; gap: 5px }
 .viewtools .sidetog { box-shadow: 0 1px 4px rgba(0, 0, 0, .25) }
+.buildtag { align-self: center; padding: 3px 9px; border-radius: 6px; background: var(--panel); border: 1px solid var(--line); color: var(--muted); font-size: 12px; box-shadow: 0 1px 4px rgba(0, 0, 0, .25) }
+.buildtag:empty { display: none }
 /* group select (lane MS): the box being dragged, the Multi button and the group bar over the view */
 .selbox { position: absolute; z-index: 4; border: 1px dashed var(--accent); background: rgb(31 111 235 / .14); pointer-events: none }
 .sidetog.on { background: var(--accent); border-color: var(--accent); color: #fff }

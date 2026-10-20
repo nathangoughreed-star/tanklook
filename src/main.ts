@@ -21,7 +21,7 @@ function webglAvailable() {
 
 // the version on screen: build number (rises with every push), with its date and commit on hover
 const build = document.getElementById('build');
-if (build) { build.textContent = `· build ${__BUILD__.n}`; build.title = `Build ${__BUILD__.n}, ${__BUILD__.date} (${__BUILD__.sha})`; }
+if (build) { build.textContent = `build ${__BUILD__.n}`; build.title = `Build ${__BUILD__.n}, ${__BUILD__.date} (${__BUILD__.sha})`; }
 
 // installable app + offline after one visit (lane W, public/sw.js); not on the dev server, where it would cache HMR files
 if (import.meta.env.PROD && 'serviceWorker' in navigator) addEventListener('load', () => { void navigator.serviceWorker.register('./sw.js').catch(() => {}); });
