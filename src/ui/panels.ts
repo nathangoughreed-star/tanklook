@@ -400,7 +400,7 @@ Cancel, then change the name, to keep both.`)) return;
           const row = document.createElement('div'); row.className = 'tankrow';
           const vs = m.variants ?? [];
           const head = document.createElement('button'); head.className = 'tankgen';
-          head.innerHTML = `<b>${esc(m.name)}</b><span>${dimsInches(m.outer)} in generic${vs.length ? ` · ${vs.length} product${vs.length > 1 ? 's' : ''}` : ' · estimated size'}</span>`;
+          head.innerHTML = `<b>${esc(m.name)}</b><span>${dimsInches(m.outer)} in generic${/^estimate/.test(m.source) ? ' (estimated size)' : ''}${vs.length ? ` · ${vs.length} product${vs.length > 1 ? 's' : ''}` : ''}</span>`;
           head.onclick = () => apply(m);
           const col = document.createElement('div'); col.className = 'tankvars';
           row.append(head, col);
@@ -555,6 +555,13 @@ Cancel, then change the name, to keep both.`)) return;
     });
   };
   $<HTMLSelectElement>('glassSel').innerHTML = '<option value="auto">Auto (by height)</option>' + GLASS_CHOICES.map(g => `<option value="${g}">${g} mm</option>`).join('');
+  // a tank preset may set its maker's own thickness (9.5 mm, 15.9 mm): list it so the select shows it
+  const addGlassOpt = (g: number | 'auto') => {
+    const sel = $<HTMLSelectElement>('glassSel');
+    if (g === 'auto' || [...sel.options].some(o => o.value === String(g))) return;
+    const o = new Option(`${g} mm`, String(g)), after = [...sel.options].find(x => x.value !== 'auto' && +x.value > g);
+    sel.insertBefore(o, after ?? null);
+  };
   $<HTMLSelectElement>('glassSel').onchange = e => store.edit(s => { const v = (e.target as HTMLSelectElement).value; s.render.glass = v === 'auto' ? 'auto' : +v; });
   $<HTMLSelectElement>('glassType').onchange = e => store.edit(s => { s.render.glassType = (e.target as HTMLSelectElement).value as TankSetup['render']['glassType']; });
 
@@ -1863,7 +1870,7 @@ Cancel, then change the name, to keep both.`)) return;
     setVal('bdSel', s.backdrop.kind); setVal('bdDepth', s.backdrop.depth); setOut('oBdDepth', fmtLen(s.backdrop.depth, u, 1));
     $('bdRow').style.display = sh === 'bowl' ? 'none' : ''; $('bdDepthRow').style.display = sh !== 'bowl' && s.backdrop.kind !== 'none' ? '' : 'none';
     ($('bdShuffle') as HTMLButtonElement).disabled = s.backdrop.kind === 'none';
-    setVal('bgArc', s.render.bgArc); setOut('oBgArc', s.render.bgArc >= 360 ? '360° (all round)' : `${s.render.bgArc}°`); setVal('glassSel', String(s.render.glass)); setVal('glassType', s.render.glassType);
+    setVal('bgArc', s.render.bgArc); setOut('oBgArc', s.render.bgArc >= 360 ? '360° (all round)' : `${s.render.bgArc}°`); addGlassOpt(s.render.glass); setVal('glassSel', String(s.render.glass)); setVal('glassType', s.render.glassType);
     const t = glassThickness(A, s.render.glass);
     $('glassHint').textContent = (s.render.glass === 'auto' ? 'Auto: ' : 'Glass: ') + t + ' mm (' + fmtLen(t, u, 2) + ')';
 

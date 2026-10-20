@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { checkAll, VOL_EXCEPTIONS, VOL_TOL } from '../src/data/tankcheck';
 import { TANK_MODELS, getTankModel, outerOf, tankChoices, tankFromModel, tankFromOuter } from '../src/data/tanks';
 import { glassThickness, IN, volume } from '../src/scene/physics';
+import { emptyScene } from '../src/scene/defaults';
+import { parseScene } from '../src/scene/validate';
 
 describe('tank catalog (lane KA)', () => {
   it('every entry passes: volume vs rating, outer round trip, band, unique ids', () => {
@@ -34,5 +36,12 @@ describe('tank catalog (lane KA)', () => {
     expect(c[c.length - 1].group).toBe('Terrariums');
     expect(c[0].group).toMatch(/^Nano/);
     expect(tankChoices({ terrariums: false }).length).toBe(TANK_MODELS.length - 14);
+  });
+  it("a maker's own glass thickness (9.5 / 15.9 mm) survives a save and reload, so the outside keeps the label size", () => {
+    for (const g of [9.5, 15.9]) {
+      const sc = emptyScene();
+      sc.tanks[0].render.glass = g;
+      expect(parseScene(JSON.parse(JSON.stringify(sc))).scene.tanks[0].render.glass).toBe(g);
+    }
   });
 });
