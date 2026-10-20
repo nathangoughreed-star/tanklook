@@ -153,9 +153,26 @@ Nathan 2026-10-20: drag only what the open menu covers; a Show box per kind of t
   that fit the tank length; the card gives size, mount, fit, watts published or estimated, the PAR note and the estimated
   substrate PAR, popularity and the listing. Hooks in other files (one line each): panels.ts lType / lTech change drops the
   product, its front-to-back range uses the product width; build.ts passes the water level to addFixture.
-- Open: the product's price is not yet in the cost (lights have no tech row; same leftover as heaters had); the
-  submersible sits centred on the back glass and can overlap a centred HOB intake; the model's estimate for the 12 W
-  AQUANEAT on a 12 in deep 20 gal reads about 70 PAR, which looks high for a budget bar (no meter data to check it).
+- Follow-ups (lane LF, 2026-10-20, all four closed; test/lightfollowups.test.ts):
+  1. 70 PAR for the 12 W AQUANEAT on a 24 in 20 gal: CHECKED, NOT CHANGED. Against 9 published LED bars (reference/par-calibration-data.md
+     D3: 5-65 W, in air under the bar at 12-14 in, grade C, no method stated) the model reads 27 % (white LED) / 18 % (planted RGB) BELOW the
+     median, and a short 12 W bar concentrates its light (the published 5 and 20 W clips give 4-7 PAR/W, the model 4.3). In air at 12 in under
+     the bar the model gives 52; in the tank the mean is 70 because of glass images and substrate bounce (+~20 %; WALL_W 0.7 was fitted to the
+     JBL koi tank with ASSUMED dimensions, so that part is the soft one). So no derate: the picker note now says "Assumption, not a
+     measurement: the model reads 18-27 % below 9 published bar readings (mid-priced brands, in air); a budget bar's driver may fall short" (bars and
+     rim-leg slabs without a published PAR). `BAR_CHECK` (lightproduct.ts) holds the numbers, the test recomputes them; provenance rule added.
+     Still open: no meter reading of any budget bar (AQUANEAT / Pawfly) exists; one would settle it.
+  2. Price: demand/engine.ts's 'light' row uses the product's listed price (+-10 %, then the engine's price-age widening) and is labelled
+     "Light: brand model"; generic lights keep the old per-W / led-row price; kWh unchanged. Under a kit the kit price still covers the light.
+     (Lights have no tech row, so this is in the engine row, not techDemand.)
+  3. Submersible lit from under the water: lightout.ts `lightEnv` drops a stick's emitters to `waterY - SUB_DROP (18) - height/2`;
+     `addSrc` treats an emitter below the surface as in the water: straight-line Beer-Lambert, no surface Fresnel loss, no lid loss, the wall
+     images count in full. The beam is still cos^m about straight down (the real stick is tipped ~20 degrees toward the front): ESTIMATE.
+     24 in tank: mean 34 PAR (was 29 lit as a rim bar), brightest 125 beside the stick, 5 at the far end (the stick is 12 in long).
+  4. Offset: `subStick` (lightout.ts) puts the stick flush to the right end of the back glass (10 mm off the side glass), the model's emitters
+     and the drawing (light3d.ts) both use it. On a 24 in tank no place clears the exact middle (the 12 in stick spans 11.5-23.5 in), but a
+     HOB strainer at the middle is clear of it; from 28 in the middle half is free. Pictures: shots/lf_centred_filter_{front,three}.png.
+  Files touched outside the lane's own: demand/engine.ts (the light row, one block); src/data/provenance.ts (two rules).
 
 ## Heaters and filters as lists (2026-10-20, side work in the `stocking` worktree; Nathan's request from the Tech menu)
 - `TechSetup.heaters[]` / `filters[]` (scene/tech.ts): one entry per unit, generic (heater `w` editable; filter `model` steps) or a

@@ -9,6 +9,7 @@ import { groupShort, hasCorals, whyAnimal } from '../scene/animalfit';
 import { itemLights } from '../scene/lightcheck';
 import { NEEDS, isCoralNeed, isLand, parRange, type PlantNeed } from '../scene/lightneeds';
 import { wattsOf } from '../scene/lightout';
+import { lightProduct, listedPrice } from '../data/gearCatalog';
 import { growRate } from '../scene/growtime';
 import { LIBRARY } from '../scene/items';
 import { outcomeOf } from '../scene/plantfit';
@@ -108,8 +109,10 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   const watts = wattsOf(S);
   if (watts > 0) {
     const inch = S.tank.L / 25.4, rowL = salt ? rowPrice('gear:led-reef-24') && scale3(rowPrice('gear:led-reef-24')!, Math.max(0.6, inch / 24)) : interp('gear:led-planted-', [24, 48], inch);
-    const lp = rowL ? scale3(rowL, !salt && inch > 48 ? inch / 48 : !salt && inch < 24 ? Math.max(0.3, inch / 24) : 1) : scale3(pick(G.lightUsdPerW), watts * sMul.setup);
-    add('light', `Light (${Math.round(watts)} W)`, 'gear', { setup: price(lp), kwhMo: watts * G.lightHoursPerDay * 30 / 1000 });
+    // a catalogued product (Tech > Lighting) costs its own listed price (one retailer, one day: +-10 %), as heaters and filters do
+    const lprod = lightProduct(S.light.product), listed = listedPrice(lprod);
+    const lp = listed ? { lo: listed * 0.9, mode: listed, hi: listed * 1.1 } : rowL ? scale3(rowL, !salt && inch > 48 ? inch / 48 : !salt && inch < 24 ? Math.max(0.3, inch / 24) : 1) : scale3(pick(G.lightUsdPerW), watts * sMul.setup);
+    add('light', listed && lprod ? `Light: ${lprod.brand} ${lprod.model}` : `Light (${Math.round(watts)} W)`, 'gear', { setup: price(lp), kwhMo: watts * G.lightHoursPerDay * 30 / 1000 });
   }
   if (wet) {
     const fm = (opts.kit?.filter && matchFilter({ ...opts.kit.filter, gal })?.model) || defaultFilter(gal);

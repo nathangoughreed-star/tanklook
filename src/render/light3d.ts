@@ -7,7 +7,7 @@
 import * as THREE from 'three';
 import type { LightProduct } from '../data/gearCatalog';
 import { insideBy } from '../scene/shape';
-import { barZ, emitters, ledBarDepth, type Emitter } from '../scene/lightout';
+import { SUB_DROP, barZ, emitters, ledBarDepth, subStick, type Emitter } from '../scene/lightout';
 import type { LightSettings, Tank } from '../scene/types';
 
 type Add = (g: THREE.BufferGeometry, m: THREE.Material, x: number, y: number, z: number) => THREE.Mesh;
@@ -54,7 +54,7 @@ function ledDots(sc: THREE.Scene, p: LightProduct, glow: THREE.Material, len: nu
  * `waterTop` = the water surface's y (the submersible hangs just under it).
  */
 export function addProductLight(sc: THREE.Scene, T: Tank, l: LightSettings, p: LightProduct, y: number, add: Add, glow: THREE.Material, kit: LegKit, waterTop: number) {
-  const { L, H, D } = T, c = p.colors, body = basic(c.body), cap = basic(c.endcaps), edge = basic(edgeOf(c.body).getHex()), board = basic(BOARD);
+  const { L, H } = T, c = p.colors, body = basic(c.body), cap = basic(c.endcaps), edge = basic(edgeOf(c.body).getHex()), board = basic(BOARD);
   const mx = new THREE.Matrix4();
   if (p.mount === 'bar' || p.mount === 'rim-legs') {
     const bl = p.lengthMm, bw = ledBarDepth(T, l), th = p.heightMm, zc = barZ(T, l, bw), yc = y + th / 2;
@@ -99,22 +99,22 @@ export function addProductLight(sc: THREE.Scene, T: Tank, l: LightSettings, p: L
   // down into the tank, two clear suction cups behind it holding it to the glass, the cord up and over the back rim
   // under the water it never covers the tank from above: not hidden with the overhead fixtures
   const addIn: Add = (g, m, x, yy, z) => { const o = add(g, m, x, yy, z); delete o.userData.overhead; return o; };
-  const len = Math.min(p.lengthMm, L - 40), hh = p.heightMm, dd = p.widthMm, yc = waterTop - 18 - hh / 2, zb = -D + 4, zc = zb + 8 + dd / 2;
-  addIn(new THREE.BoxGeometry(len - 10, hh, dd), body, L / 2, yc, zc);
-  for (const s of [1, -1]) addIn(new THREE.BoxGeometry(6, hh + 1, dd + 1), cap, L / 2 + s * (len / 2 - 3), yc, zc);
+  const { len, hh, dd, cx: sx, zb, zc } = subStick(T, p), yc = waterTop - SUB_DROP - hh / 2; // pushed off the middle: a centred filter intake clears it
+  addIn(new THREE.BoxGeometry(len - 10, hh, dd), body, sx, yc, zc);
+  for (const s of [1, -1]) addIn(new THREE.BoxGeometry(6, hh + 1, dd + 1), cap, sx + s * (len / 2 - 3), yc, zc);
   // the front face: a clear lens over the board, tipped 20° down (the stick is angled to light the tank, not the viewer)
-  const face = new THREE.Group(); face.position.set(L / 2, yc, zc + dd / 2 + 0.4); face.rotation.x = 0.35;
+  const face = new THREE.Group(); face.position.set(sx, yc, zc + dd / 2 + 0.4); face.rotation.x = 0.35;
   const boardM = new THREE.Mesh(new THREE.BoxGeometry(len - 16, hh - 6, 0.6), board); boardM.userData.nolight = true; face.add(boardM);
   sc.add(face); face.updateMatrixWorld(true);
   const tilt = new THREE.Matrix4().makeRotationX(Math.PI / 2);
   ledDots(sc, p, glow, len - 26, hh - 10, (u, v) => face.matrixWorld.clone().multiply(new THREE.Matrix4().makeTranslation(u, v, 0.6)).multiply(tilt));
   const cupM = new THREE.MeshBasicMaterial({ color: 0xdfe6ea, transparent: true, opacity: 0.45, depthWrite: false });
   for (const s of [1, -1]) {
-    addIn(new THREE.CylinderGeometry(9, 9, 2, 20).rotateX(Math.PI / 2), cupM, L / 2 + s * len * 0.33, yc, zb + 1);
-    addIn(new THREE.CylinderGeometry(3, 4, 8, 10).rotateX(Math.PI / 2), cupM, L / 2 + s * len * 0.33, yc, zb + 5);
+    addIn(new THREE.CylinderGeometry(9, 9, 2, 20).rotateX(Math.PI / 2), cupM, sx + s * len * 0.33, yc, zb + 1);
+    addIn(new THREE.CylinderGeometry(3, 4, 8, 10).rotateX(Math.PI / 2), cupM, sx + s * len * 0.33, yc, zb + 5);
   }
   // the cord: from the right end cap up the back glass and over the rim
-  const cord = basic(0x111111), cx = L / 2 + len / 2 - 3, up = H + 6 - yc;
+  const cord = basic(0x111111), cx = sx + len / 2 - 3, up = H + 6 - yc;
   addIn(new THREE.CylinderGeometry(1.8, 1.8, up, 8), cord, cx, yc + up / 2, zb + 3);
   addIn(new THREE.CylinderGeometry(1.8, 1.8, 16, 8).rotateX(Math.PI / 2), cord, cx, H + 6, zb - 5);
   addIn(new THREE.CylinderGeometry(1.8, 1.8, 40, 8), cord, cx, H - 14, zb - 13);
