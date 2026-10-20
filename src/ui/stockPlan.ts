@@ -12,7 +12,9 @@ import type { Store } from '../scene/store';
 import { stockingMemo } from '../scene/stocking';
 import type { Fish } from '../scene/types';
 import type { Viewer } from '../render/viewer';
+import { gearView } from '../render/gear3d';
 import { attachBuildPick } from './buildPick';
+import { attachStockGallery } from './stockGallery';
 import { onSpaceFork, type SpaceFork } from './fullnessTile';
 import { animalsInTank, animalsOf, bump, forkOptions, isSexed, notesOf, overWarn, planFor, conflictOf, rankTankmates, startPick, tankLabel, totalOf, type Pk, type RoomOption } from './stockPlanLogic';
 
@@ -39,8 +41,12 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
     if (hide && app && !app.classList.contains('collapsed')) { app.classList.add('collapsed'); stepped = true; viewer.invalidate(); }
     else if (!hide && stepped && app) { app.classList.remove('collapsed'); stepped = false; viewer.invalidate(); }
   };
-  const close = () => { el.hidden = true; side(false); };
   let picks: Pk[] = [], chosen: string | undefined, mates = false, q = '', shown = '';
+  // the tank is shown bare here: no filter, heater or stand until the build is chosen (the scene keeps its gear; only the view leaves it out)
+  const bare = (on: boolean) => { if (gearView.on === on) { gearView.on = !on; viewer.rebuild(); } };
+  // before the first pick there is no tank on show, only the animals to choose from
+  const gallery = attachStockGallery(view, id => { if (!picks.some(p => p.id === id)) { picks.push(startPick(id)); q = ''; change(); } });
+  const close = () => { el.hidden = true; gallery.show(false); side(false); bare(false); };
 
   // ---------- the scene follows the picks ----------
   const sync = (rebuild = false) => {
@@ -91,7 +97,7 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
 
   const tankBlock = () => {
     const animals = animalsOf(picks);
-    if (!animals.length) return '<p class="spNote">Pk an animal and the tank it needs appears in the view.</p>';
+    if (!animals.length) return '';
     const plan = planFor(picks, chosen);
     if (!plan.tank) return '<p class="spNote">This animal lives on land: choose a terrarium in the editor.</p>';
     const space = plan.tank.id === plan.need?.tank.id ? plan.need.spacePct : stockingMemo(store.tank).spacePercent;
@@ -111,7 +117,7 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
   };
 
   const results = () => {
-    if (!q.trim()) return '';
+    if (!q.trim() || !picks.length) return ''; // with nothing picked the gallery behind the panel is the list
     const have = new Set(picks.map(p => p.id)), list = searchSpecies(q).filter(s => !have.has(s.id)).slice(0, 8);
     return list.length ? `<ul class="spRes">${list.map(s => `<li><button type="button" data-act="add" data-id="${s.id}"><b>${esc(s.name)}</b><i>${esc(s.sci)}</i><span>${CARE[s.id]?.group ? `group of ${CARE[s.id].bands?.ok ?? CARE[s.id].group}+` : ''}</span></button></li>`).join('')}</ul>` : '<p class="spNote">No animal by that name.</p>';
   };
@@ -119,29 +125,31 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
   let focusSearch = false;
   const draw = () => {
     const keep = el.querySelector<HTMLInputElement>('.spQ'), hadFocus = document.activeElement === keep, pos = keep?.selectionStart ?? q.length, scroll = el.scrollTop;
+    el.classList.toggle('spEmpty', !picks.length);
     el.innerHTML = `<div class="spHead"><h2>An animal I want</h2><button type="button" data-act="close" aria-label="Close">✕</button></div>
 <input class="spQ" type="search" placeholder="Search an animal by name (e.g. betta, neon tetra, clownfish)" aria-label="Search animals" value="${esc(q)}" autocomplete="off">
 <div class="spResWrap">${results()}</div>
 ${picks.length ? `<ul class="spPicks">${picks.map(pickRow).join('')}</ul>
 <div class="spHd">Other animals in with them?</div>
-${mates ? `${mateRows()}<button type="button" class="spLink" data-act="nomates">No, just these</button>` : `<div class="spYN"><button type="button" data-act="mates">Yes, show what suits them</button></div>`}` : '<p class="spNote">Start with the animal you have in mind. It goes in at the smallest group it is kept in, and the tank it needs shows in the view.</p>'}
-<div class="spHd">The tank</div>${tankBlock()}
+${mates ? `${mateRows()}<button type="button" class="spLink" data-act="nomates">No, just these</button>` : `<div class="spYN"><button type="button" data-act="mates">Yes, show what suits them</button></div>`}` : '<p class="spNote">Search for the animal you have in mind, or pick one from the pictures. It goes in at the smallest group it is kept in, and the tank it needs shows in the view.</p>'}
+${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}` : ''}
 <div class="spFoot"><button type="button" class="primary" data-act="builds"${picks.length && planFor(picks, chosen).tank && !planFor(picks, chosen).problem ? '' : ' disabled'}>Continue: three ways to build it</button><button type="button" class="spLink" data-act="done"${picks.length ? '' : ' disabled'}>Open in the editor as it is</button><span class="spNote">Everything stays editable in the editor.</span></div>`;
     const q2 = el.querySelector<HTMLInputElement>('.spQ')!;
+    gallery.search(q); gallery.show(!el.hidden && !picks.length);
     if (hadFocus || focusSearch) { q2.focus(); q2.setSelectionRange(pos, pos); focusSearch = false; }
     el.scrollTop = scroll;
   };
 
   const change = (rebuild = false) => { sync(rebuild); draw(); };
 
-  el.oninput = e => { const t = e.target as HTMLInputElement; if (t.classList.contains('spQ')) { q = t.value; const w = el.querySelector('.spResWrap'); if (w) w.innerHTML = results(); } };
+  el.oninput = e => { const t = e.target as HTMLInputElement; if (t.classList.contains('spQ')) { q = t.value; gallery.search(q); const w = el.querySelector('.spResWrap'); if (w) w.innerHTML = results(); } };
   el.onclick = e => {
     const b = (e.target as HTMLElement).closest<HTMLElement>('[data-act]'); if (!b) return;
     const id = b.dataset.id!, i = picks.findIndex(p => p.id === id);
     switch (b.dataset.act) {
       case 'close': close(); break;
       case 'done': close(); store.seal(); status('Opened in the editor. The animals and tank are yours to change; Undo steps back.'); break;
-      case 'builds': { const plan = planFor(picks, chosen); if (plan.tank && !plan.problem) { el.hidden = true; builds.open(animalsOf(picks), plan.tank, () => { el.hidden = false; side(true); shown = ''; change(true); }); } break; }
+      case 'builds': { const plan = planFor(picks, chosen); if (plan.tank && !plan.problem) { el.hidden = true; bare(false); builds.open(animalsOf(picks), plan.tank, () => { el.hidden = false; side(true); bare(true); shown = ''; change(true); }); } break; }
       case 'add': if (i < 0) { picks.push(startPick(id)); q = ''; change(); } break;
       case 'mate': if (i < 0) { picks.push(startPick(id)); change(); } break;
       case 'del': if (i >= 0) { picks.splice(i, 1); if (!picks.length) mates = false; change(); } break;
@@ -157,9 +165,10 @@ ${mates ? `${mateRows()}<button type="button" class="spLink" data-act="nomates">
   const open = () => {
     const units = store.scene.units, s = emptyScene();
     s.name = 'My animal tank'; s.units = units; s.tanks[0].camera = { ...store.tank.camera };
+    s.tanks[0].stand.show = false; s.tanks[0].stand.need = 'ask'; // no stand yet: the budget still counts a typical one
     store.replace(s);
     picks = []; chosen = undefined; mates = false; q = ''; shown = '';
-    el.hidden = false; side(true); focusSearch = true; draw();
+    el.hidden = false; side(true); bare(true); focusSearch = true; draw();
   };
   openBtn.onclick = () => { (document.getElementById('startDlg') as HTMLDialogElement | null)?.close(); open(); };
   // a different tank loaded (open, undo past the start): the screen has nothing more to say
