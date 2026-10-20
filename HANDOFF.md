@@ -32,7 +32,6 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
 | P1 group data (path 1) | `../Glass-Box-p1groups` / `p1groups` | 5863 | `src/data/groups.ts`, merge loop in `data/care.ts` | opened 2026-10-20 |
-| P3 fullness tile (path 1) | `../Glass-Box-p3fullness` / `p3fullness` | 5883 | `ui/fullnessTile.ts`, viewer outline, `layout.space` | opened 2026-10-20 |
 | P4 artificial plants (path 1) | `../Glass-Box-p4artplants` / `p4artplants` | 5893 | artificial plant kind: items, plant3d branch, demand rows | opened 2026-10-20 |
 | SE stocking engine | `../Glass-Box-stocking` / `stocking` | 5843 | new `scene/stocking.ts`, `data/bodymass.json`, stocking line in `ui/panels.ts`, bioload helpers in `scene/starter.ts` | opened 2026-10-19 |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 DONE 2026-10-16 (lane SS2, see archive; its gaps: no water dish, no succulents, Malawi has only yellowlab / cockatoo); multi-select / duplicate (lane MS) + scatter brush (lane SB) DONE 2026-10-16, see archive; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
@@ -49,13 +48,6 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 ## Lane sections (current)
 
 ## Lane P1: group data, path 1 (2026-10-20, branch `p1groups`, port 5863)  (lane fills this in)
-
-## Lane P3: fullness tile, path 1 (2026-10-20, branch `p3fullness`, port 5883)
-- **Built (Nathan approved the pictures 2026-10-20, research/p3-shots/; shipped to main):** `src/ui/fullnessTile.ts`, a minimizable tile on the view's top left (under the button row; the demand panel holds the top right): Space and Filtration bars from `stockingMemo` (green, amber from 85 %, red over 100), the top 3 contributors of each bar on hover / tap, the engine's first reason line. Minimized = a "Fullness 96%" pill; starts minimized on a phone (under 700 px) until opened once; per viewer, localStorage `tanklook.ftMin`. Shown only for a wet tank with animals in the water or a space set. Hidden while the Animals Show box is off, faded (45 %) while another menu is in focus (follows `viewer.hidden` / `viewer.menuFocus` from the draw callback).
-- **Set my space:** Width / Depth / Height (optional) fields in the scene units, live; starts a little bigger than the tank (5 cm, or 2 in for US units). Stored as `layout.space` = `{ w, d, h? }` mm (types.ts `SpaceLimit`, optional, **no version bump**; validate.ts one line: `parseSpace` drops a broken value, old files have none). Fit maths in new `src/scene/space.ts` (`tankExtent` = footprint box + glass height, `spaceFit`, `defaultSpace`).
-- **Outline:** new `src/render/spaceOutline.ts`, dashed bars (not 1 px GL lines) on the stand top, a dashed box when a height is set; back edge on the tank's back, centred on its length; teal while the tank fits, red past it, a faint copy drawn through the glass and gravel. build.ts: one line in addContents (a keyed part, so a space edit patches instead of rebuilding) and `envKey` ignores `layout.space`. It shows in PNG exports and thumbnails (not filtered out).
-- **Fork card hook for lane P5:** `onSpaceFork(fn)` in fullnessTile.ts (returns the unregister); `fn({ setup, limit, fit, stocking })` runs once on the edit that takes the tank from inside the space to past it (`forkDue`), on Done when the space typed is smaller than the tank, and from a "Make room or swap…" button that shows only while a handler is registered. Not on opening a file that is already past it.
-- Tests: test/fullnessTile.test.ts (15: bars, contributors, show rule, fork rule, units, fit, parse, layout.space round trip, old files, outline geometry / colour / in the build). Shared files touched (one-line hooks): main.ts (attach), build.ts (2 lines + import), validate.ts (1 line + import), types.ts (optional field), style.css (appended `.ft*`). Shared folder's .claude/launch.json: the p3fullness entry now runs with `--prefix` the worktree.
 
 ## Lane P4: artificial plants, path 1 (2026-10-20, branch `p4artplants`, port 5893)  (lane fills this in)
 ## User flow: paths, budget, deals (Nathan 2026-10-20, design chat; not built yet except the New / Open split)
@@ -352,6 +344,7 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane P3: fullness tile, path 1 (2026-10-20, branch `p3fullness`, port 5883)
 - Lane P2: tank fit engine, path 1 (2026-10-20, branch `p2tankfit`, port 5873)
 - Lane TG: tech gear in 3D (2026-10-19, branch `techgear`, port 5833)
 - Lane DM: deal match, "a bundle close to your build" as Tank B (2026-10-19; Nathan approved the pictures; pushed to main)

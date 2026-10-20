@@ -587,19 +587,6 @@
       "port": 5863
     },
     {
-      "name": "p3fullness",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5883",
-        "--strictPort"
-      ],
-      "port": 5883
-    },
-    {
       "name": "p4artplants",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
