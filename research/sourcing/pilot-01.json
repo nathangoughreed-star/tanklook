@@ -1,0 +1,986 @@
+{
+ "batch": "pilot-01",
+ "agent_notes": "WebFetch returns a small-model digest, so some quotes (Seriously Fish quick-facts rows with units run together, BRS field labels) may not match the live page verbatim; checker may flag. Seriously Fish has no ocellaris or shrimp pages; LiveAquaria fetched only for yellow tang (single source there). FishBase has no page for the bristlenose taxon, omitted.",
+ "species": {
+  "neon": {
+   "sci": "Paracheirodon innesi",
+   "fields": {
+    "tl": {
+     "ours": 35,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Paracheirodon-innesi.html",
+       "site": "FishBase",
+       "states": "2.5 cm SL max",
+       "quote": "Max length : 2.5 cm SL male/unsexed;"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/paracheirodon-innesi/",
+       "site": "Seriously Fish",
+       "states": "30 mm SL max",
+       "quote": "30mm SL1.2in SL"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/neon-tetra/",
+       "site": "Fishkeeping World",
+       "states": "1.5 in (38 mm), length type not said",
+       "quote": "adult neon tetras only grow to 1.5 inches long."
+      }
+     ],
+     "note": "SL values 25-30 mm; Fishkeeping World 38 mm; ours 35 is within 20% of 38"
+    },
+    "care": {
+     "ours": 1,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/paracheirodon-innesi/",
+       "site": "Seriously Fish",
+       "states": "Easy",
+       "quote": "Easy"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/neon-tetra/",
+       "site": "Fishkeeping World",
+       "states": "easy",
+       "quote": "Caring for neon tetras is easy."
+      }
+     ]
+    },
+    "minL": {
+     "ours": 40,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/paracheirodon-innesi/",
+       "site": "Seriously Fish",
+       "states": "54 L / 14 US gal",
+       "quote": "~54litres~14US gal"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/neon-tetra/",
+       "site": "Fishkeeping World",
+       "states": "10 US gal = 38 L",
+       "quote": "Minimum 10 gallons, and one extra gallon of water for every additional fish"
+      }
+     ]
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/paracheirodon-innesi/",
+       "site": "Seriously Fish",
+       "states": "peaceful",
+       "quote": "Generally peaceful making it an ideal resident of the well-researched community aquarium."
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/neon-tetra/",
+       "site": "Fishkeeping World",
+       "states": "calm, peaceful",
+       "quote": "Neon tetras are calm, peaceful fish and are rarely aggressive in a peaceful community tank setup."
+      }
+     ]
+    },
+    "group": {
+     "ours": 6,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/paracheirodon-innesi/",
+       "site": "Seriously Fish",
+       "states": "at least 8-10",
+       "quote": "Try to buy a mixed-sex group of at least 8-10 specimens"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/neon-tetra/",
+       "site": "Fishkeeping World",
+       "states": "at least 6",
+       "quote": "Neon tetras should be kept in groups of at least six"
+      }
+     ]
+    }
+   }
+  },
+  "betta": {
+   "sci": "Betta splendens",
+   "fields": {
+    "tl": {
+     "ours": 65,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Betta-splendens.html",
+       "site": "FishBase",
+       "states": "6.5 cm TL max",
+       "quote": "Max length : 6.5 cm TL male/unsexed"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/betta-splendens/",
+       "site": "Seriously Fish",
+       "states": "70 mm SL max, no sex split",
+       "quote": "70mm SL2.8in SL"
+      }
+     ]
+    },
+    "female.tl": {
+     "ours": 55,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "No opened page gives a female-specific length."
+    },
+    "care": {
+     "ours": 1,
+     "verdict": "disagrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/betta-splendens/",
+       "site": "Seriously Fish",
+       "states": "Moderate",
+       "quote": "Moderate"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/betta-fish-care/",
+       "site": "Fishkeeping World",
+       "states": "no label; says first-time owners can keep bettas",
+       "quote": "With a little preparation and care, first-time fish owners can raise healthy, happy bettas."
+      }
+     ],
+     "note": "Seriously Fish rates Moderate (=2); Fishkeeping World has no rating. Sources split, so suggest left null."
+    },
+    "minL": {
+     "ours": 20,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/betta-splendens/",
+       "site": "Seriously Fish",
+       "states": "45x30 cm base for single male or pair, ~41 L / 11 US gal",
+       "quote": "An aquarium with base measurements of 45 ∗ 30 cm18 ∗ 12 in or equivalent is large enough for a single male or pair."
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/betta-fish-care/",
+       "site": "Fishkeeping World",
+       "states": "5 US gal = 19 L",
+       "quote": "At least 5 gallons in size."
+      }
+     ]
+    },
+    "temper": {
+     "ours": 1,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/betta-splendens/",
+       "site": "Seriously Fish",
+       "states": "ornamental strains more aggressive than other Bettas",
+       "quote": "Ornamental strains seem to be more aggressive than any other Betta species"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/betta-fish-care/",
+       "site": "Fishkeeping World",
+       "states": "can be aggressive toward some fish",
+       "quote": "Male and female bettas have feisty, vibrant personalities."
+      }
+     ],
+     "note": "Words span territorial to aggressive; 1 defensible, 2 arguable for males."
+    },
+    "solo": {
+     "ours": true,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/betta-splendens/",
+       "site": "Seriously Fish",
+       "states": "single individual per tank",
+       "quote": "only a single individual can be kept per tank in most cases"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/betta-fish-care/",
+       "site": "Fishkeeping World",
+       "states": "no males together",
+       "quote": "Male bettas are territorial and mustn't be kept with other males."
+      }
+     ]
+    }
+   }
+  },
+  "angel": {
+   "sci": "Pterophyllum scalare",
+   "fields": {
+    "tl": {
+     "ours": 150,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Pterophyllum-scalare.html",
+       "site": "FishBase",
+       "states": "15 cm TL max (Biology section; summary line says 10.5 cm TL)",
+       "quote": "Maximum length 15 cm TL"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/pterophyllum-scalare/",
+       "site": "Seriously Fish",
+       "states": "150 mm SL max",
+       "quote": "150mm SL6in SL"
+      }
+     ],
+     "note": "FishBase summary line says 10.5 cm TL; Biology section 15 cm TL"
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "disagrees",
+     "suggest": 1,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/pterophyllum-scalare/",
+       "site": "Seriously Fish",
+       "states": "Easy",
+       "quote": "Easy"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/angelfish/",
+       "site": "Fishkeeping World",
+       "states": "Easy for silver/zebra/platinum/marble, Moderate for altum/koi/albino",
+       "quote": "| Silver | Easy | Semi-aggressive | 6 inches | 30 gallons |"
+      }
+     ],
+     "note": "Common forms rated Easy by both; Moderate only for altum, koi, albino"
+    },
+    "minL": {
+     "ours": 200,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/pterophyllum-scalare/",
+       "site": "Seriously Fish",
+       "states": "~200 L / 53 US gal",
+       "quote": "~200litres~53US gal"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/angelfish/",
+       "site": "Fishkeeping World",
+       "states": "30 gal = 114 L listed as tank size (not labelled minimum)",
+       "quote": "| Silver | Easy | Semi-aggressive | 6 inches | 30 gallons |"
+      }
+     ],
+     "note": "Fishkeeping World 114 L would disagree but is not labelled a minimum; Seriously Fish matches ours"
+    },
+    "temper": {
+     "ours": 1,
+     "verdict": "disagrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/pterophyllum-scalare/",
+       "site": "Seriously Fish",
+       "states": "peaceful",
+       "quote": "Generally a peaceful cichild but may squabble with it's own kind, so best kept in small groups."
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/angelfish/",
+       "site": "Fishkeeping World",
+       "states": "Semi-aggressive for silver/platinum/marble/panda; Peaceful for zebra",
+       "quote": "| Silver | Easy | Semi-aggressive | 6 inches | 30 gallons |"
+      }
+     ],
+     "note": "Sources split peaceful vs semi-aggressive; no change suggested"
+    },
+    "prey": {
+     "ours": 30,
+     "verdict": "behaviour-only",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/pterophyllum-scalare/",
+       "site": "Seriously Fish",
+       "states": "may eat small fish such as tetras",
+       "quote": "Good community fish but may eat small fish such as tetras."
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/angelfish/",
+       "site": "Fishkeeping World",
+       "states": "eats small fish that fit in mouth (zebra)",
+       "quote": "zebra angelfish eat any small fish that fit in their mouths."
+      }
+     ]
+    }
+   }
+  },
+  "bronzecory": {
+   "sci": "Corydoras aeneus",
+   "fields": {
+    "tl": {
+     "ours": 65,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Corydoras-aeneus.html",
+       "site": "FishBase",
+       "states": "7.5 cm SL max",
+       "quote": "Max length : 7.5 cm SL male/unsexed;"
+      },
+      {
+       "url": "https://www.aquariadise.com/caresheet-bronze-corydoras/",
+       "site": "Aquariadise",
+       "states": "2.5 in (6.5 cm), type not said",
+       "quote": "have an adult size of only around 2.5 inches (6,5 cm)"
+      }
+     ]
+    },
+    "care": {
+     "ours": 1,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/corydoras-aeneus/",
+       "site": "Seriously Fish",
+       "states": "Easy",
+       "quote": "Easy"
+      },
+      {
+       "url": "https://www.aquariadise.com/caresheet-bronze-corydoras/",
+       "site": "Aquariadise",
+       "states": "relatively easy, beginner suitable",
+       "quote": "relatively easy care makes bronze Corydoras suitable for beginner aquarists"
+      }
+     ]
+    },
+    "minL": {
+     "ours": 80,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/corydoras-aeneus/",
+       "site": "Seriously Fish",
+       "states": "~72 L / 19 US gal",
+       "quote": "~72litres~19US gal"
+      },
+      {
+       "url": "https://www.aquariadise.com/caresheet-bronze-corydoras/",
+       "site": "Aquariadise",
+       "states": "20 US gal long = 80 L",
+       "quote": "20 gal (80 L, long)"
+      }
+     ]
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/corydoras-aeneus/",
+       "site": "Seriously Fish",
+       "states": "peaceful",
+       "quote": "Peaceful and gregarious."
+      },
+      {
+       "url": "https://www.aquariadise.com/caresheet-bronze-corydoras/",
+       "site": "Aquariadise",
+       "states": "Peaceful",
+       "quote": "Peaceful"
+      }
+     ]
+    },
+    "group": {
+     "ours": 6,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/corydoras-aeneus/",
+       "site": "Seriously Fish",
+       "states": "at least 4-6",
+       "quote": "Should be maintained in a group of at least 4-6 individuals."
+      },
+      {
+       "url": "https://www.aquariadise.com/caresheet-bronze-corydoras/",
+       "site": "Aquariadise",
+       "states": "at least six",
+       "quote": "Keeping groups of at least six, preferably more, is recommended!"
+      }
+     ]
+    }
+   }
+  },
+  "bristlenose": {
+   "sci": "Ancistrus sp. 3 (Ancistrus cf. cirrhosus)",
+   "fields": {
+    "tl": {
+     "ours": 125,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/ancistrus-cf-cirrhosus",
+       "site": "Seriously Fish",
+       "states": "125 mm SL max",
+       "quote": "125mm SL5in SL"
+      },
+      {
+       "url": "https://www.chewy.com/education/fish/general/bristlenose-pleco-care-guide",
+       "site": "Chewy",
+       "states": "4 to 5 in typical (100-127 mm), type not said",
+       "quote": "Most reach about 4 to 5 inches, though adult size varies by species and variety."
+      }
+     ]
+    },
+    "care": {
+     "ours": 1,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/ancistrus-cf-cirrhosus",
+       "site": "Seriously Fish",
+       "states": "Easy",
+       "quote": "Easy"
+      },
+      {
+       "url": "https://www.chewy.com/education/fish/general/bristlenose-pleco-care-guide",
+       "site": "Chewy",
+       "states": "beginner-friendly, no formal rating",
+       "quote": "generally beginner-friendly because they are peaceful, hardy, and compatible with many community fish"
+      }
+     ]
+    },
+    "minL": {
+     "ours": 110,
+     "verdict": "disagrees",
+     "suggest": 76,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/ancistrus-cf-cirrhosus",
+       "site": "Seriously Fish",
+       "states": "~54 L / 14 US gal",
+       "quote": "~54litres~14US gal"
+      },
+      {
+       "url": "https://www.chewy.com/education/fish/general/bristlenose-pleco-care-guide",
+       "site": "Chewy",
+       "states": "20 US gal = 76 L for one adult",
+       "quote": "A 20-gallon aquarium is a common minimum for one adult bristlenose pleco."
+      }
+     ],
+     "note": "Span 54-76 L; ours 110 is more than 25% above 76"
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/ancistrus-cf-cirrhosus",
+       "site": "Seriously Fish",
+       "states": "relatively peaceful, territorial with conspecifics",
+       "quote": "Relatively peaceful but territorial with conspecifics and similarly-shaped species."
+      },
+      {
+       "url": "https://www.chewy.com/education/fish/general/bristlenose-pleco-care-guide",
+       "site": "Chewy",
+       "states": "generally peaceful",
+       "quote": "Bristlenose plecos are generally peaceful."
+      }
+     ]
+    }
+   }
+  },
+  "kribensis": {
+   "sci": "Pelvicachromis pulcher",
+   "fields": {
+    "tl": {
+     "ours": 90,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Pelvicachromis-pulcher.html",
+       "site": "FishBase",
+       "states": "11 cm TL max",
+       "quote": "Max length : 11.0 cm TL male/unsexed"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/pelvicachromis-pulcher/",
+       "site": "Seriously Fish",
+       "states": "100 mm SL max; males larger than females",
+       "quote": "100mm SL3.9in SL"
+      },
+      {
+       "url": "https://www.aquariumsource.com/kribensis-cichlid/",
+       "site": "Aquarium Source",
+       "states": "males ~4 in (102 mm)",
+       "quote": "The average Kribensis Cichlid size is around 4 inches in length for males and 3 inches in length for females."
+      }
+     ]
+    },
+    "female.tl": {
+     "ours": 75,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.aquariumsource.com/kribensis-cichlid/",
+       "site": "Aquarium Source",
+       "states": "females ~3 in (76 mm)",
+       "quote": "The average Kribensis Cichlid size is around 4 inches in length for males and 3 inches in length for females."
+      }
+     ]
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "disagrees",
+     "suggest": 1,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/pelvicachromis-pulcher/",
+       "site": "Seriously Fish",
+       "states": "Easy",
+       "quote": "Easy"
+      },
+      {
+       "url": "https://www.aquariumsource.com/kribensis-cichlid/",
+       "site": "Aquarium Source",
+       "states": "manageable, no formal rating",
+       "quote": "Kribensis Cichlid care is quite manageable."
+      }
+     ]
+    },
+    "minL": {
+     "ours": 80,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/pelvicachromis-pulcher/",
+       "site": "Seriously Fish",
+       "states": "71 L suitable for a single pair",
+       "quote": "24\" x 15\" x 12\" (60x37.5x30cm) - 71 litres is suitable for a single pair."
+      },
+      {
+       "url": "https://www.aquariumsource.com/kribensis-cichlid/",
+       "site": "Aquarium Source",
+       "states": "20-30 US gal = 76-114 L",
+       "quote": "We recommend an aquarium that can hold 20 to 30 gallons."
+      }
+     ]
+    },
+    "temper": {
+     "ours": 1,
+     "verdict": "disagrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/pelvicachromis-pulcher/",
+       "site": "Seriously Fish",
+       "states": "very territorial when breeding",
+       "quote": "become very territorial when breeding"
+      },
+      {
+       "url": "https://www.aquariumsource.com/kribensis-cichlid/",
+       "site": "Aquarium Source",
+       "states": "peaceful, non-aggressive",
+       "quote": "Kribensis Cichlids are peaceful and non-aggressive."
+      }
+     ],
+     "note": "Peaceful except when breeding (territorial); sources split, no change suggested"
+    }
+   }
+  },
+  "cherryshrimp": {
+   "sci": "Neocaridina davidi",
+   "fields": {
+    "tl": {
+     "ours": 30,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://modestfish.com/cherry-shrimp",
+       "site": "Modest Fish",
+       "states": "1 in (25 mm); males ~2 cm",
+       "quote": "Size: 1 inch (2.5 centimeters)."
+      },
+      {
+       "url": "https://shrimpybusiness.com/blogs/shrimpy-business-blog/cherry-shrimp-care-guide",
+       "site": "Shrimpy Business",
+       "states": "about 1 in (page also lists 1.5 in)",
+       "quote": "While cherry shrimp only grow to about an inch in length."
+      }
+     ]
+    },
+    "care": {
+     "ours": 1,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://modestfish.com/cherry-shrimp",
+       "site": "Modest Fish",
+       "states": "easy",
+       "quote": "Care Level: easy."
+      },
+      {
+       "url": "https://shrimpybusiness.com/blogs/shrimpy-business-blog/cherry-shrimp-care-guide",
+       "site": "Shrimpy Business",
+       "states": "relatively easy but delicate",
+       "quote": "relatively easy to care for, but they're also delicate and may not be a good fit for all aquariums"
+      }
+     ]
+    },
+    "minL": {
+     "ours": 20,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://modestfish.com/cherry-shrimp",
+       "site": "Modest Fish",
+       "states": "5 US gal = 19 L",
+       "quote": "Min. Tank Size: 5 gallons (19 liters)."
+      },
+      {
+       "url": "https://shrimpybusiness.com/blogs/shrimpy-business-blog/cherry-shrimp-care-guide",
+       "site": "Shrimpy Business",
+       "states": "5 US gal = 19 L",
+       "quote": "a tank no smaller than 5 gallons"
+      }
+     ]
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://modestfish.com/cherry-shrimp",
+       "site": "Modest Fish",
+       "states": "ultra peaceful",
+       "quote": "Temperament: ultra peaceful."
+      },
+      {
+       "url": "https://shrimpybusiness.com/blogs/shrimpy-business-blog/cherry-shrimp-care-guide",
+       "site": "Shrimpy Business",
+       "states": "mild-mannered, shy",
+       "quote": "very mild-mannered but tend to be fairly shy and nervous"
+      }
+     ]
+    },
+    "group": {
+     "ours": 10,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://shrimpybusiness.com/blogs/shrimpy-business-blog/cherry-shrimp-care-guide",
+       "site": "Shrimpy Business",
+       "states": "10 or more",
+       "quote": "need to be kept in large groups of 10 or more"
+      },
+      {
+       "url": "https://modestfish.com/cherry-shrimp",
+       "site": "Modest Fish",
+       "states": "the more the better",
+       "quote": "How many can be kept together: the more, the better."
+      }
+     ]
+    }
+   }
+  },
+  "ocellaris": {
+   "sci": "Amphiprion ocellaris",
+   "fields": {
+    "tl": {
+     "ours": 80,
+     "verdict": "disagrees",
+     "suggest": 100,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Amphiprion-ocellaris.html",
+       "site": "FishBase",
+       "states": "11 cm TL max",
+       "quote": "Max length : 11.0 cm TL male/unsexed"
+      },
+      {
+       "url": "https://topshelfaquatics.com/products/orange-ocellaris-clownfish",
+       "site": "Top Shelf Aquatics",
+       "states": "4.3 in (109 mm)",
+       "quote": "Grows to about 4.3 inches in an aquarium."
+      },
+      {
+       "url": "https://www.bulkreefsupply.com/ora-flurry-ocellaris-clownfish-ora.html",
+       "site": "Bulk Reef Supply",
+       "states": "approx 4 in (102 mm)",
+       "quote": "Approx. Max Size"
+      }
+     ],
+     "note": "All sources 100-110 mm; ours 80 is below -20%. BRS quote is the field label as returned by fetch; verify."
+    },
+    "care": {
+     "ours": 1,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://topshelfaquatics.com/products/orange-ocellaris-clownfish",
+       "site": "Top Shelf Aquatics",
+       "states": "Easy",
+       "quote": "Care Level: Easy"
+      },
+      {
+       "url": "https://www.bulkreefsupply.com/ora-flurry-ocellaris-clownfish-ora.html",
+       "site": "Bulk Reef Supply",
+       "states": "Easy",
+       "quote": "Care Level"
+      }
+     ],
+     "note": "BRS quote is only the field label; value Easy per fetch; verify"
+    },
+    "minL": {
+     "ours": 75,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.bulkreefsupply.com/ora-flurry-ocellaris-clownfish-ora.html",
+       "site": "Bulk Reef Supply",
+       "states": "15 US gal = 57 L",
+       "quote": "Minimum Tank Size"
+      },
+      {
+       "url": "https://topshelfaquatics.com/products/orange-ocellaris-clownfish",
+       "site": "Top Shelf Aquatics",
+       "states": "30 US gal = 114 L",
+       "quote": "Needs at least 30 gallons as an adult."
+      }
+     ],
+     "note": "Sources 57-114 L; ours inside span. BRS quote is field label only; verify"
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "disagrees",
+     "suggest": 1,
+     "sources": [
+      {
+       "url": "https://topshelfaquatics.com/products/orange-ocellaris-clownfish",
+       "site": "Top Shelf Aquatics",
+       "states": "Semi-Aggressive",
+       "quote": "Temperament: Semi-Aggressive"
+      },
+      {
+       "url": "https://www.bulkreefsupply.com/ora-flurry-ocellaris-clownfish-ora.html",
+       "site": "Bulk Reef Supply",
+       "states": "Peaceful, Semi-Aggressive",
+       "quote": "Temperament"
+      }
+     ],
+     "note": "Both sites list semi-aggressive (aggression mainly to other clownfish). BRS quote is field label only; verify"
+    }
+   }
+  },
+  "yellowtang": {
+   "sci": "Zebrasoma flavescens",
+   "fields": {
+    "tl": {
+     "ours": 180,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Zebrasoma-flavescens.html",
+       "site": "FishBase",
+       "states": "20 cm TL max",
+       "quote": "Max length : 20.0 cm TL male/unsexed; (Ref. 9710)"
+      },
+      {
+       "url": "https://www.liveaquaria.com/products/yellow-tang-hawaii",
+       "site": "LiveAquaria",
+       "states": "8 in (203 mm)",
+       "quote": "Maximum Size: 8\""
+      }
+     ]
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "disagrees",
+     "suggest": 1,
+     "sources": [
+      {
+       "url": "https://www.liveaquaria.com/products/yellow-tang-hawaii",
+       "site": "LiveAquaria",
+       "states": "Easy",
+       "quote": "Care Level: Easy"
+      }
+     ],
+     "note": "Only one opened source"
+    },
+    "minL": {
+     "ours": 455,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.liveaquaria.com/products/yellow-tang-hawaii",
+       "site": "LiveAquaria",
+       "states": "100 US gal = 379 L",
+       "quote": "Minimum Tank Size: 100 Gallons"
+      }
+     ],
+     "note": "Ours is +20% over 379 L; single source"
+    },
+    "temper": {
+     "ours": 1,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.liveaquaria.com/products/yellow-tang-hawaii",
+       "site": "LiveAquaria",
+       "states": "Semi-Aggressive",
+       "quote": "Temperament: Semi-Aggressive"
+      }
+     ]
+    },
+    "solo": {
+     "ours": true,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.liveaquaria.com/products/yellow-tang-hawaii",
+       "site": "LiveAquaria",
+       "states": "best one per aquarium",
+       "quote": "best to keep just one Yellow Hawaiian Tang per aquarium"
+      }
+     ]
+    }
+   }
+  },
+  "oscar": {
+   "sci": "Astronotus ocellatus",
+   "fields": {
+    "tl": {
+     "ours": 300,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Astronotus-ocellatus.html",
+       "site": "FishBase",
+       "states": "24 cm TL common, 45.7 cm TL max",
+       "quote": "common length : 24.0 cm TL male/unsexed; (Ref. 12193)"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/astronotus-ocellatus/",
+       "site": "Seriously Fish",
+       "states": "350 mm SL max",
+       "quote": "Max size 350mm SL14in SL"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/oscar-fish/",
+       "site": "Fishkeeping World",
+       "states": "up to 12 in (305 mm)",
+       "quote": "Full-grown oscar fish reach up to 12 inches in length."
+      }
+     ]
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/astronotus-ocellatus/",
+       "site": "Seriously Fish",
+       "states": "Moderate",
+       "quote": "Moderate"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/oscar-fish/",
+       "site": "Fishkeeping World",
+       "states": "moderate",
+       "quote": "Oscar fish have moderate care needs."
+      }
+     ]
+    },
+    "minL": {
+     "ours": 400,
+     "verdict": "disagrees",
+     "suggest": 540,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/astronotus-ocellatus/",
+       "site": "Seriously Fish",
+       "states": "~540 L / 143 US gal",
+       "quote": "Volume ~540litres~143US gal"
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/oscar-fish/",
+       "site": "Fishkeeping World",
+       "states": "143 US gal = 541 L for one adult",
+       "quote": "About 143 gallons (60 x 24 inch base) for one adult"
+      }
+     ],
+     "note": "Both sources 540 L; ours is 26% below"
+    },
+    "temper": {
+     "ours": 2,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/oscar-fish/",
+       "site": "Fishkeeping World",
+       "states": "territorial, aggressive tendencies",
+       "quote": "However, oscar fish are territorial and have aggressive tendencies."
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/astronotus-ocellatus/",
+       "site": "Seriously Fish",
+       "states": "not especially aggressive for its size",
+       "quote": "Although not especially aggressive for a cichlid of this size"
+      }
+     ],
+     "note": "Seriously Fish milder; sources split"
+    },
+    "prey": {
+     "ours": 100,
+     "verdict": "behaviour-only",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/oscar-fish/",
+       "site": "Fishkeeping World",
+       "states": "eats any fish smaller than itself",
+       "quote": "because oscar fish eat any fish that are smaller than their own size."
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/astronotus-ocellatus/",
+       "site": "Seriously Fish",
+       "states": "should not be combined with much smaller fishes",
+       "quote": "it should not be combined with much smaller fishes."
+      }
+     ]
+    }
+   }
+  }
+ }
+}
