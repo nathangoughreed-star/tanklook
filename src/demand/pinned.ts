@@ -6,7 +6,9 @@
 // (the deal id and its parts' fingerprint), so undo, split and close carry it with the tank; a saved file drops it (parseSetup
 // keeps known keys only). A tank's own pin comes before the scene's.
 import { DEALS, dealAsKit, type Deal } from '../data/deals';
-import { changedParts, partSig, type PartSig, type PricedPart } from './dealdrift';
+import { changedParts, partList, partSig, type PartSig, type PricedPart } from './dealdrift';
+import { demandOf } from './engine';
+import type { UserProfile } from './types';
 import type { TankSetup } from '../scene/types';
 let pending: Deal | null = null, active: Deal | null = null, base: { i: number; sig: PartSig } | null = null;
 type Own = { id: string; sig: PartSig };
@@ -31,13 +33,31 @@ export const dealDrift = (S: TankSetup, i = 0): PricedPart[] => {
   if (o && ownDeal(S)) return changedParts(o.sig, S);
   return active && base && base.i === i ? changedParts(base.sig, S) : [];
 };
-/** The pinned bundle as a kit price, for tank `S` (index `i`): undefined once any part it covers was changed, or on another tank. */
-export const pinnedKit = (S?: TankSetup, i = 0) => {
+/** The bundle the tank was pinned to, with the parts changed since (undefined on another tank, or when nothing is pinned). */
+const pinState = (S?: TankSetup, i = 0): { d: Deal; drift: PricedPart[] } | undefined => {
   const d = ownDeal(S);
-  if (d) return changedParts(own(S)!.sig, S!).length ? undefined : dealAsKit(d);
+  if (d) return { d, drift: changedParts(own(S)!.sig, S!) };
   if (!active) return undefined;
-  if (S && (!base || base.i !== i || changedParts(base.sig, S).length)) return undefined;
-  return dealAsKit(active);
+  if (!S) return { d: active, drift: [] };
+  return base && base.i === i ? { d: active, drift: changedParts(base.sig, S) } : undefined;
+};
+/** The bundle still bought, its changed parts bought on top (its own ones left over): its price now stands in only for the
+ *  parts still its own. None once the tank changed: the bundle is that tank. */
+export const keptKit = (d: Deal, drift: PricedPart[]) => {
+  if (drift.includes('tank')) return undefined;
+  const k = dealAsKit(d), gone = new Set<string>(drift);
+  return { ...k, includes: k.includes.filter(p => !gone.has(p)), label: `${k.label} (bundle kept; your own ${partList(drift)} bought on top)`,
+    filter: gone.has('filter') ? undefined : k.filter, heater: gone.has('heater') ? undefined : k.heater };
+};
+/** The pinned bundle as a kit price, for tank `S` (index `i`): the whole bundle while its parts are unchanged. Once a part
+ *  changed (2026-10-20), with the user's profile `P`: the bundle kept with the new part bought on top when that costs less
+ *  to set up than buying every part separately, else undefined (the parts). Without `P`, undefined once a part changed. */
+export const pinnedKit = (S?: TankSetup, i = 0, P?: UserProfile) => {
+  const st = pinState(S, i);
+  if (!st) return undefined;
+  if (!st.drift.length) return dealAsKit(st.d);
+  const k = P && S ? keptKit(st.d, st.drift) : undefined;
+  return k && demandOf(S!, P!, { kit: k }).totals.setupUsd < demandOf(S!, P!).totals.setupUsd ? k : undefined;
 };
 /** Price this tank as `d` from now on (it stays with the tank through undo, split and close, until a part it covers changes). */
 export const pinTank = (t: TankSetup, d: Deal) => { (t as TankSetup & { dealPin?: Own }).dealPin = { id: d.id, sig: partSig(t, d.includes) }; };

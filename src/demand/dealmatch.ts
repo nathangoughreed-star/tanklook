@@ -118,7 +118,7 @@ function compare(S: TankSetup, B: TankSetup, d: Deal, units: Units, now: ReturnT
  */
 export function dealMatches(S: TankSetup, P: UserProfile, opts: DemandOpts & { units?: Units } = {}, deals?: Deal[]): DealMatch[] {
   if (!S.water.on) return [];
-  const units = opts.units ?? 'in', cur = pinnedKit(S), pin = pinnedDeal(S), now = demandOf(S, P, { ...opts, kit: cur });
+  const units = opts.units ?? 'in', cur = pinnedKit(S, 0, P), pin = pinnedDeal(S), now = demandOf(S, P, { ...opts, kit: cur });
   const out: DealMatch[] = [];
   for (const { deal } of dealOffers(S, P, opts, deals)) {
     if (pin?.id === deal.id || !sameTank(S.tank, deal)) continue; // this tank's own deal (priced, or just left by changing a part), or another tank of about the same gallons

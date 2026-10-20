@@ -3,7 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { DEALS } from '../src/data/deals';
 import { sceneFromDeal } from '../src/demand/dealscene';
 import { changedParts, partList, partSig } from '../src/demand/dealdrift';
-import { dealDrift, onSceneLoad, pinDeal, pinnedKit, pinPreset, presetDrift, unpinDeal } from '../src/demand/pinned';
+import { dealDrift, keptKit, onSceneLoad, pinDeal, pinnedKit, pinPreset, presetDrift, unpinDeal } from '../src/demand/pinned';
+import { defaultProfile, demandOf } from '../src/demand';
 
 const deal = DEALS.find(d => sceneFromDeal(d) && d.includes.includes('light') && d.includes.includes('stand'))!;
 const fresh = () => structuredClone(sceneFromDeal(deal)!.tanks[0]);
@@ -40,6 +41,18 @@ describe('deal drift', () => {
     expect(dealDrift(T, 0)).toEqual(['tank']);
     expect(pinnedKit(S, 0)).toBeDefined();
     expect(pinnedKit(S, 1)).toBeUndefined(); // another tank in a split scene
+    unpinDeal();
+  });
+  it('a swapped part keeps the bundle when bundle + the part on top costs less than the parts, never after a resize', () => {
+    const S = fresh(), P = defaultProfile();
+    pinDeal(deal); onSceneLoad(0, S);
+    const L = structuredClone(S); L.light = { ...L.light, count: L.light.count + 1 };
+    const k = keptKit(deal, ['light'])!, kept = demandOf(L, P, { kit: k }).totals.setupUsd, parts = demandOf(L, P).totals.setupUsd;
+    expect(k.includes).not.toContain('light');
+    expect(pinnedKit(L, 0, P)).toEqual(kept < parts ? k : undefined);
+    expect(pinnedKit(L, 0)).toBeUndefined(); // no profile: the old rule
+    const T = structuredClone(S); T.tank = { ...T.tank, H: T.tank.H + 40 };
+    expect(pinnedKit(T, 0, P)).toBeUndefined();
     unpinDeal();
   });
   it('a preset on sale drifts only when the tank changes', () => {
