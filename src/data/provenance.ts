@@ -73,7 +73,7 @@ export const RULES: Record<string, Rule[]> = {
     { path: '*.mode', status: 'cited', src: ['kk-prices'], why: 'the listing at the row url', rowUrl: true },
   ],
   FILTER_MEDIA: [
-    { path: '*.0', status: 'cited', src: ['product-pages'], why: "manufacturer manual or spec page ('manual') or retailer figure ('retail'); the row names the part, not the url" },
+    { path: '*.0', status: 'cited', src: ['product-pages', 'nitrogen-research'], why: "manufacturer manual or spec page ('manual') or retailer figure ('retail'); urls in research/filtration/research-filter-media-volumes.md" },
   ],
   TECH: [
     { path: 'heat.**', status: 'assumption', why: 'linearised heat-loss coefficients (W per m2 per K), checked against the 3-5 W/gal heater rule (tech.json heat._note)' },
@@ -99,15 +99,15 @@ export const FORMULAS: Formula[] = [
   { file: 'src/scene/stocking.ts', symbols: ['SPACE_EXP', 'SPACE_PER_L'], status: 'fitted', src: ['aqadvisor', 'aq-compare'], why: 'fit to 24 AqAdvisor combinations (scripts/aq-compare.mjs)' },
   { file: 'src/scene/stocking.ts', symbols: ['PLANT_MAX', 'PLANTS_PER_100L_FULL', 'PATCH_PLANTS'], status: 'assumption', why: 'plants take up nitrogen, so they add some filtration; the size (+25 % at 15 plants per 100 L) is "a documented guess"' },
   // nitrogen engine
-  { file: 'src/scene/nitrogen.ts', symbols: ['BASE', 'TAN_PER_FEED', 'FEED_PCT', 'tanOf'], status: 'claimed', why: 'fasted TAN 350 x W^-0.25 mg/kg/day and 0.02 g TAN per g feed, "+-40 %"; from side-session research notes that are NOT in the repo: recover them' },
-  { file: 'src/scene/nitrogen.ts', symbols: ['MEDIA_RATE', 'THROUGH', 'SURFACE_RATE', 'warm'], status: 'claimed', why: 'nitrification rates, low confidence (ceramic 0.06 g TAN/L/day measured in a fish farm); notes not in the repo' },
+  { file: 'src/scene/nitrogen.ts', symbols: ['BASE', 'TAN_PER_FEED', 'FEED_PCT', 'tanOf'], status: 'researched', src: ['nitrogen-research'], why: 'fasted TAN 350 x W^-0.25 mg/kg/day and 0.02 g TAN per g feed, +-40 % (research-fish-nitrogen, research-ornamental-excretion)' },
+  { file: 'src/scene/nitrogen.ts', symbols: ['MEDIA_RATE', 'THROUGH', 'SURFACE_RATE', 'warm'], status: 'researched', src: ['nitrogen-research'], why: 'nitrification per litre of media, low confidence: ceramic 0.06 g TAN/L/day measured in a fish farm, foam rate extrapolated (research-nitrification)' },
   { file: 'src/scene/nitrogen.ts', symbols: ['HEADROOM'], status: 'assumption', why: 'run the filter at 70 % of its capacity: a 30 % safety margin' },
   { file: 'src/scene/nitrogen.ts', symbols: ['NITRATE_TARGET_N'], status: 'claimed', why: 'nitrate held at about 40 ppm (9 mg N/L), a hobby target; no source recorded' },
-  { file: 'src/scene/nitrogen.ts', symbols: ['plantUptake'], status: 'claimed', why: 'slow / medium / fast 0.001 / 0.003 / 0.006 g N per 100 g a day, "extrapolated from one measured Egeria study" (not recorded)' },
-  { file: 'src/scene/nitrogen.ts', symbols: ['RATE_100G', 'FLOAT_M2', 'DIE_OFF_RETURN'], status: 'claimed', why: 'plant N uptake per 100 g, floaters 0.3 g N/m2/day, 30 % returned by die-off; the Egeria study and notes are not in the repo' },
+  { file: 'src/scene/nitrogen.ts', symbols: ['plantUptake'], status: 'researched', src: ['nitrogen-research'], why: 'slow / medium / fast 0.001 / 0.003 / 0.006 g N per 100 g a day, extrapolated from one measured Egeria study (research-plant-nitrogen)' },
+  { file: 'src/scene/nitrogen.ts', symbols: ['RATE_100G', 'FLOAT_M2', 'DIE_OFF_RETURN'], status: 'researched', src: ['nitrogen-research'], why: 'plant N uptake per 100 g, floaters 0.3 g N/m2/day, 30 % die-off return; classes EXTRAPOLATED from one measured Egeria study (research-plant-nitrogen, research-plant-validation)' },
   { file: 'src/scene/nitrogen.ts', symbols: ['PLANTS', 'DEFAULT_PLANT', 'PATCH_FW', 'PATCH_PLANTS'], status: 'assumption', why: "growth class and fresh weight per plant item: guesses at the item's default size" },
   // filter media
-  { file: 'src/data/filtermedia.ts', symbols: ['MEDIA_L_PER_GPH', 'SPONGE_L_PER_GAL'], status: 'derived', src: ['product-pages'], why: 'media litres per gph from the FILTER_MEDIA_L rows (AquaClear, Fluval), sponge from Hydro-Sponge / Co-Op' },
+  { file: 'src/data/filtermedia.ts', symbols: ['MEDIA_L_PER_GPH', 'SPONGE_L_PER_GAL'], status: 'derived', src: ['product-pages', 'nitrogen-research'], why: 'media litres per gph from the FILTER_MEDIA_L rows (AquaClear, Fluval), sponge from Hydro-Sponge / Co-Op (research-filter-media-volumes, research-hob-media-derived)' },
   // light
   { file: 'src/scene/lightout.ts', symbols: ['NWATER'], status: 'claimed', why: 'refractive index of water, a physical constant' },
   { file: 'src/scene/lightout.ts', symbols: ['KEEP_SURFACE', 'KEEP_GLASS'], status: 'derived', why: 'diffuse light totally reflected back in, about 1 - 1/n^2' },
