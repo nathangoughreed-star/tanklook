@@ -7,6 +7,7 @@
 import type { Viewer } from '../render/viewer';
 import { defaultSpace, spaceFit, tankExtent, SPACE_MAX, SPACE_MIN, type SpaceFit } from '../scene/space';
 import { stockingMemo, type Stocking } from '../scene/stocking';
+import { tankMinimum, type TankMinimum } from '../scene/tankMin';
 import { PLANT_SHARE_MAX, type Nitrogen } from '../scene/nitrogen';
 import type { Store } from '../scene/store';
 import type { SpaceLimit, TankSetup, Units } from '../scene/types';
@@ -15,12 +16,12 @@ import type { SpaceLimit, TankSetup, Units } from '../scene/types';
 export const NEAR_FULL = 85;
 export type Level = 'ok' | 'near' | 'over';
 export interface Bar { pct: number; /** fill width, 0..100 */ fill: number; level: Level; text: string }
-export interface TopRow { name: string; n: number; /** share of this bar's load, 0..1 */ share: number }
+export interface TopRow { name: string; n: number; /** share of this bar's load, 0..1 */ share: number; /** printed in place of the share (the minimum bar: what the species wants) */ note?: string }
 export interface TileState {
   /** anything to show: water on, and animals in it or a space set */
   show: boolean;
-  space: Bar; filt: Bar;
-  topSpace: TopRow[]; topFilt: TopRow[];
+  space: Bar; filt: Bar; /** tank size against the most demanding species' minimum (scene/tankMin.ts) */ min: Bar;
+  topSpace: TopRow[]; topFilt: TopRow[]; topMin: TopRow[];
   /** the larger of the two, for the minimized pill */
   head: Bar;
   reason: string;
@@ -38,12 +39,18 @@ export function topBy(r: Stocking, by: 'space' | 'load', k = 3): TopRow[] {
   return [...r.contributors].sort((a, b) => b[by] - a[by]).slice(0, k).map(c => ({ name: c.name, n: c.n, share: tot ? c[by] / tot : 0 }));
 }
 
-export function tileState(S: TankSetup, r: Stocking): TileState {
-  const limit = S.layout.space, fit = limit ? spaceFit(S.tank, limit) : undefined;
+/** The species that want the biggest tank, each with the litres and length it asks for (the percent is the bar's own). */
+export function topMin(m: TankMinimum, units: Units, k = 3): TopRow[] {
+  return m.rows.filter(x => x.minL > 0 || x.minLengthMm > 0).slice(0, k).map(x => ({ name: x.name, n: x.n, share: 0,
+    note: [x.minL > 0 && `${x.minL} L`, x.minLengthMm > 0 && `${toUnits(x.minLengthMm, units)}${units === 'in' ? '"' : ' cm'} long`].filter(Boolean).join(', ') }));
+}
+
+export function tileState(S: TankSetup, r: Stocking, units: Units = 'cm'): TileState {
+  const m = tankMinimum(S), limit = S.layout.space, fit = limit ? spaceFit(S.tank, limit) : undefined;
   return {
     show: S.water.on && (r.contributors.length > 0 || !!limit),
-    space: bar(r.spacePercent), filt: bar(r.filtrationPercent), head: bar(r.percent),
-    topSpace: topBy(r, 'space'), topFilt: topBy(r, 'load'), reason: r.reasons[0] ?? '',
+    space: bar(r.spacePercent), filt: bar(r.filtrationPercent), min: bar(m.percent), head: bar(Math.max(r.percent, m.percent)),
+    topSpace: topBy(r, 'space'), topFilt: topBy(r, 'load'), topMin: topMin(m, units), reason: m.percent > 100 ? `Too small for the ${m.rows[0].name.toLowerCase()}: it wants at least ${topMin(m, units, 1)[0].note}, however few you keep.` : r.reasons[0] ?? '',
     ...(limit ? { limit, fit } : {}),
   };
 }
@@ -131,16 +138,16 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
   setMin(min, false);
   head.onclick = () => setMin(!min);
 
-  const row = (key: string, label: string, b: Bar, top: TopRow[], what: string) =>
+  const row = (key: string, label: string, b: Bar, top: TopRow[], what: string, hd = `Most of the ${what}:`) =>
     `<div class="ftRow ft-${b.level}" tabindex="0" data-row="${key}"><div class="ftLab"><span>${label}</span><b>${b.text}</b></div>`
     + `<div class="ftTrack" role="meter" aria-label="${label}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(Math.min(b.pct, 999))}"><i style="width:${b.fill}%"></i></div>`
-    + `<div class="ftTop">${top.length ? `<div class="ftTopHd">Most of the ${what}:</div>` + top.map(t => `<div>${esc(plural(t.n, t.name))} <b>${Math.round(t.share * 100)}%</b></div>`).join('') : '<div>No animals in the water yet.</div>'}</div></div>`;
+    + `<div class="ftTop">${top.length ? `<div class="ftTopHd">${hd}</div>` + top.map(t => `<div>${esc(plural(t.n, t.name))} <b>${t.note ? esc(t.note) : `${Math.round(t.share * 100)}%`}</b></div>`).join('') : '<div>No animals in the water yet.</div>'}</div></div>`;
 
   let lastSig = '', editing = false;
   const fitWas = new Map<number, boolean>(); // per tank: did it fit the space after the last edit
 
   const render = () => {
-    const S = store.tank, r = stockingMemo(S), st = tileState(S, r), u = store.scene.units;
+    const S = store.tank, r = stockingMemo(S), u = store.scene.units, st = tileState(S, r, u);
     const animalsHidden = viewer.hidden.has('fish');
     el.hidden = !st.show || animalsHidden;
     const sig = JSON.stringify([st, u, editing, !!forkFn, tankExtent(S.tank)]);
@@ -150,6 +157,7 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
     pill.textContent = st.fit?.fits === false ? `${st.head.text} · too big` : st.head.text;
     pill.className = `ftPill ft-${st.fit?.fits === false ? 'over' : st.head.level}`;
     bars.innerHTML = row('space', 'Space', st.space, st.topSpace, 'space') + row('filt', 'Filtration', st.filt, st.topFilt, 'waste')
+      + row('min', 'Tank minimum', st.min, st.topMin, 'minimum', 'Smallest tank they want, whatever the count:')
       + (st.reason ? `<div class="ftWhy">${esc(st.reason)}</div>` : '');
     const n = r.nitrogen;
     nEl.hidden = !r.contributors.length || n.tan <= 0;
