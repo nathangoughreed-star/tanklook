@@ -7,6 +7,7 @@ import { dealOffers } from './deals';
 import { defaultProfile } from './types';
 import { emptyScene } from '../scene/defaults';
 import { applyKitLight } from '../scene/kitlight';
+import { inferTech } from '../scene/tech';
 import type { Scene } from '../scene/types';
 
 export function sceneFromDeal(d: Deal): Scene | undefined {
@@ -26,7 +27,14 @@ export function sceneFromDeal(d: Deal): Scene | undefined {
     S = applyKitLight(S, { light: { type: 'led', tech: 'led-white', count: 1, watts: d.look?.light?.watts ?? null, par: d.look?.light?.par, spec: d.look?.light?.par ? 'published' : d.look?.light?.watts ? 'listing' : 'guess' }, lid: S.lid, tier: 'budget', tankRatedGal: d.gal });
     if (d.look?.light?.kelvin) S.light = { ...S.light, kelvin: d.look.light.kelvin };
   }
-  { const t = kitTech(S, dealAsKit(d)); if (t) S.tech = t; } // lane TG: the bundle's own filter and heater (drawn, and its gear rows)
+  { // lane TG: the bundle's own filter and heater (drawn, and its gear rows); one it does not ship starts as 'none' for the user to add
+    const t = kitTech(S, dealAsKit(d)) ?? (S.water.on ? { rows: { ...inferTech(S).rows } } : undefined);
+    if (t) {
+      if (!d.includes.includes('filter')) { t.rows.filter = 'none'; delete t.filterProduct; delete t.filterModel; }
+      if (!d.includes.includes('heater')) { t.rows.heater = 'none'; delete t.heaterProduct; delete t.heaterW; }
+      S.tech = t;
+    }
+  }
   sc.tanks[0] = S; sc.name = `${d.retailer} ${d.name}`;
   return sc;
 }
