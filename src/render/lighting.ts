@@ -581,6 +581,105 @@ export function addFixture(sc: THREE.Scene, T: Tank, l: LightSettings, ceiling?:
   }
 }
 
+/** The LED strips in a hood (Nathan 2026-10-20): how many stick-on strips and each one's length (mm). */
+export function hoodStrips(L: number) {
+  const n = L <= 450 ? 2 : clamp(Math.round(L / 300), 2, 4);
+  return { n, len: Math.min(300, L * 0.85 / n - 30) };
+}
+
+/**
+ * The lamps inside a hood (Nathan 2026-10-20: "show the lighting in the hood accurate to what type it is"), on the
+ * hood's underside at `ceil` (its bottom face). LED: a few stick-on strips in a row joined by a wire, the last one's
+ * cord running to the back (`l.hoodLed` 'bar': one full-length bar instead); tubes: the lamps half up in the hood
+ * between their sockets; screw-in bulbs: a socket and the bulb; pucks: flush round LEDs. Only the look: the light
+ * model's emitters are unchanged.
+ */
+export function addHoodLamps(sc: THREE.Scene, T: Tank, l: LightSettings, ceil: number) {
+  if (l.type === 'flat') return;
+  const { L } = T;
+  const glow = new THREE.MeshBasicMaterial({ color: glowColor(l.kelvin) }); glow.userData.glow = true;
+  const mat = (c: number) => new THREE.MeshBasicMaterial({ color: c });
+  const add = (geo: THREE.BufferGeometry, m: THREE.Material, x: number, y: number, z: number) => {
+    const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.userData.nolight = true; sc.add(o); return o;
+  };
+  const along = (geo: THREE.BufferGeometry, m: THREE.Material, x: number, y: number, z: number) => { const o = add(geo, m, x, y, z); o.rotation.z = Math.PI / 2; return o; };
+  const dots = (x0: number, x1: number, z: number, y: number, pitch: number, r: number) => {
+    const n = Math.max(1, Math.round((x1 - x0) / pitch)), im = new THREE.InstancedMesh(new THREE.CylinderGeometry(r, r, 0.6, 8), glow, n), mx = new THREE.Matrix4();
+    for (let i = 0; i < n; i++) im.setMatrixAt(i, mx.makeTranslation(x0 + (x1 - x0) * (i + 0.5) / n, y, z));
+    im.userData.nolight = true; sc.add(im);
+  };
+  const wire = (pts: THREE.Vector3[]) => add(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 24, 1.3, 6), mat(0x111214), 0, 0, 0);
+  if (l.type === 'led') {
+    const zc = barZ(T, l, ledBarDepth(T));
+    if (l.hoodLed === 'bar') {
+      // one slim aluminium bar the hood's length, two rows of LEDs behind a clear strip
+      const bl = L * 0.9, bw = 22;
+      add(new THREE.BoxGeometry(bl, 7, bw), mat(0x8d9399), L / 2, ceil - 3.5, zc);
+      for (const s of [1, -1]) add(new THREE.BoxGeometry(6, 8, bw + 1), mat(0x24272b), L / 2 + s * (bl / 2 + 3), ceil - 4, zc);
+      add(new THREE.BoxGeometry(bl - 6, 0.6, bw - 6), mat(0x2b2f34), L / 2, ceil - 7.2, zc);
+      for (const dz of [-4.5, 4.5]) dots(L / 2 - bl / 2 + 8, L / 2 + bl / 2 - 8, zc + dz, ceil - 7.6, 16, 1.8);
+      wire([new THREE.Vector3(L / 2 + bl / 2 + 6, ceil - 4, zc), new THREE.Vector3(L / 2 + bl / 2 + 16, ceil - 3, zc - 12), new THREE.Vector3(L / 2 + bl / 2 + 18, ceil - 2, -T.D + 6)]);
+      return;
+    }
+    // stick-on strips: a white plastic body, end caps, a row of small SMD LEDs; a black wire from each to the next,
+    // sagging a little between its adhesive points, and the last one's cord out to the back
+    const { n, len } = hoodStrips(L), step = L * 0.9 / n, bw = 12, end = mat(0xb9bdc1);
+    const xs = Array.from({ length: n }, (_, i) => L * 0.05 + step * (i + 0.5));
+    for (const x of xs) {
+      add(new THREE.BoxGeometry(len, 4, bw), mat(0xe4e6e8), x, ceil - 2, zc);
+      for (const s of [1, -1]) add(new THREE.BoxGeometry(5, 5, bw + 1), end, x + s * (len / 2 + 2.5), ceil - 2.5, zc);
+      add(new THREE.BoxGeometry(len - 2, 0.6, bw - 4), mat(0x3a3e44), x, ceil - 4.2, zc);     // the LEDs' circuit board, seen through the clear face
+      dots(x - len / 2 + 4, x + len / 2 - 4, zc, ceil - 4.7, 10, 1.6);
+    }
+    for (let i = 0; i + 1 < n; i++) {
+      const a = xs[i] + len / 2 + 5, b = xs[i + 1] - len / 2 - 5, m = (a + b) / 2;
+      wire([new THREE.Vector3(a, ceil - 3, zc + 2), new THREE.Vector3(m, ceil - 9, zc + 4), new THREE.Vector3(b, ceil - 3, zc + 2)]);
+    }
+    const xe = xs[n - 1] + len / 2 + 5;
+    wire([new THREE.Vector3(xe, ceil - 3, zc + 2), new THREE.Vector3(xe + 12, ceil - 6, zc - 15), new THREE.Vector3(Math.min(xe + 20, L - 8), ceil - 2, -T.D + 6)]);
+    return;
+  }
+  if (l.type === 'tube') {
+    // the lamps half up in the hood, held at each end in a socket; no housing of their own (the hood is it)
+    const tl = tubeLayout(T, l), tech = techOf(l), r = tl.dia / 2, lamp = tubeOf(l, T).lamp, y = ceil - r * 0.4;
+    const halo = new THREE.MeshBasicMaterial({ color: glowColor(l.kelvin), transparent: true, opacity: 0.16, depthWrite: false, blending: THREE.AdditiveBlending });
+    halo.userData.glow = true;
+    for (const zt of tl.zs) {
+      const legs = tl.twin ? [zt - r - 1.5, zt + r + 1.5] : [zt];
+      for (const z of legs) {
+        if (tech === 'led-tube') {
+          along(new THREE.CylinderGeometry(r, r, lamp, 20, 1, false, Math.PI, Math.PI), glow, L / 2, y, z);
+          along(new THREE.CylinderGeometry(r, r, lamp, 20, 1, false, 0, Math.PI), mat(0xaab0b6), L / 2, y, z);
+        } else along(new THREE.CylinderGeometry(r, r, lamp, 20), glow, L / 2, y, z);
+        along(new THREE.CylinderGeometry(r * 1.9, r * 1.9, lamp - r, 20, 1, true), halo, L / 2, y, z);
+      }
+      for (const sx of [1, -1]) {
+        const xe = L / 2 + sx * lamp / 2;
+        if (!tl.twin || sx > 0) for (const z of legs) along(new THREE.CylinderGeometry(r + 0.6, r + 0.6, 14, 16), mat(0xc4c8cc), xe + sx * 7, y, z);
+        const h = ceil - (y - r - 4);
+        add(new THREE.BoxGeometry(12, h, tl.wide + 10), mat(0x16181b), xe + sx * 20, ceil - h / 2, zt);
+      }
+      if (tl.twin) along(new THREE.CylinderGeometry(r * 0.8, r * 0.8, tl.wide - 2, 12), glow, L / 2 - lamp / 2 - 1, y, zt).rotation.set(Math.PI / 2, 0, 0);
+    }
+    return;
+  }
+  // spots: a screw-in bulb lies along the hood in its socket (as hood sockets hold them, clear of the water); LED
+  // pucks sit flush, a dark ring round the lens
+  const bulb = fixtureOf(l) === 'bulb';
+  for (const e of emitters(T, l)) {
+    if (bulb) {
+      const y = ceil - 13;
+      add(new THREE.BoxGeometry(22, 13, 24), mat(0x1c1e21), e[0] - 22, ceil - 6.5, e[2]);          // the socket's bracket
+      along(new THREE.CylinderGeometry(10, 11, 16, 16), mat(0x1c1e21), e[0] - 18, y, e[2]);
+      along(new THREE.CylinderGeometry(8, 8, 9, 16), mat(0xb7bbbf), e[0] - 6, y, e[2]);         // the screw base
+      add(new THREE.SphereGeometry(13, 20, 14), glow, e[0] + 9, y, e[2]);
+    } else {
+      add(new THREE.CylinderGeometry(26, 28, 6, 28), mat(0x1a1d21), e[0], ceil - 3, e[2]);
+      add(new THREE.CylinderGeometry(20, 20, 1, 28), glow, e[0], ceil - 6.2, e[2]);
+    }
+  }
+}
+
 /**
  * A bar's legs (Nathan 2026-10-15): at each end, a front and a back arm out of the end plate, out to the rim at that
  * leg's depth (wherever the glass is there: a shorter bar, a bar moved front to back or a curved rim give legs of
