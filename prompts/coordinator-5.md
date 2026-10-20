@@ -49,7 +49,7 @@ STATE (2026-10-20, build ~903):
   file when their inputs land. P1 will quote a research cost to Nathan first. CORRECTION (coordinator 4's mistake, found 2026-10-20): lane KW's wizard is NOT on main. KW reported it pushed (8d2f5dc), but 8d2f5dc was only a merge of main
   INTO the branch; the real work (dbc7aa6 "Guided start wizard (lane KW)", src/ui/wizard.ts 358 lines, test/wizard.test.ts) never reached origin/main. I closed the
   lane after misreading its 6 commits ahead as merge-only. The only copy was the LOCAL branch `wizard` (4b99321) in the shared repo; it is now also backed
-  up on origin as branch `wizard` (no deploy). Nathan decides in the design chat whether to ship it first or fold it into P5 / P6a (the five-card New menu
+  up on origin as branch `wizard` (no deploy). DECIDED (Nathan 2026-10-20, via the design chat): the guided-start wizard is OBSOLETE and will NOT be shipped; keep the `wizard` branch (dbc7aa6 is the only copy, also on origin) for P6a to reuse its tank / kit picking (the five-card New menu
   replaces its stage question; P6a reuses its tank / kit picking). Do NOT delete the branch. LESSON: before closing a lane run
   git merge-base --is-ancestor <last real commit> origin/main, not just `log origin/main..HEAD`.
 - Nathan's decisions on file: expected cost = ONE number, no percentiles / ranges (plan file dated 2026-10-19); starter bundle tanks hold only the
