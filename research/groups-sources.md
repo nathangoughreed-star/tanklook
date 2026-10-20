@@ -1,0 +1,90 @@
+# Group data sources (lane P1, 2026-10-20)
+
+One line per species in `src/data/groups.ts`: the URL the main numbers rest on. `(est)` = the numbers are judgement from hobby
+practice rather than quoted from the source. Researched by Sonnet agents with web search; advice only, not a source of record.
+`bands.ok` equals the older `CARE.group` minimum (lane CG) wherever both exist.
+
+- **neon** (Neon tetra): https://petfishonline.com/neon-tetra-tank-size/ (est). Note: Length 450 mm (Seriously Fish 45x30x30 cm); one retailer said 60 cm.
+- **cardinal** (Cardinal tetra): https://articles.hepper.com/cardinal-tetra/ (est). Note: Sources give tank size (20 gal) but no firm group number; bands are judgement. ok=6 matches app.
+- **ember** (Ember tetra): https://gensou.sg/ember-tetra-complete-care-guide/ (est). Note: Sources say 6-8 min, one says 10; ok=8 kept per app.
+- **rummynose** (Rummy-nose tetra): https://seriouslyfish.com/species/hemigrammus-rhodostomus. Note: Seriously Fish says buy at least 10; app minimum is 8, so ok=8 kept but good=10 reflects the source.
+- **harlequin** (Harlequin rasbora): https://gensou.sg/rasboras/harlequin-rasbora/ (est). Note: Sources range 4-6 min to 8+; ok=8 kept per app (stricter than most guides).
+- **chili** (Chili rasbora): https://www.practicalfishkeeping.co.uk/features/chilli-rasbora-care-guide-boraras-brigittae/ (est). Note: Sources say 6+ (one says 10, 20+ ideal); ok=8 kept per app.
+- **danio** (Zebra danio): https://plantedaquaria.ca/shop/livestock/danios/zebra-danio/. Note: Zone middle (swims top to middle); group minimum 6 kept.
+- **whitecloud** (White cloud mountain minnow): https://seriouslyfish.com/species/tanichthys-albonubes (est). Note: SF base 60x30 cm, cool water 14-22C; group number from retailer sources (6+).
+- **cpd** (Celestial pearl danio): https://guidarium.com/fishes/celestial-pearl-danio-galaxy-rasbora (est).
+- **hatchet** (Marbled hatchetfish): https://guidarium.com/fishes/marbled-hatchetfish (est).
+- **cherrybarb** (Cherry barb): https://gensou.sg/?p=37061 (est). Note: Wikipedia says 5+ ok; kept 6 to match existing data
+- **tigerbarb** (Tiger barb): https://gensou.sg/?p=37062. Note: Sources split: 6 minimum vs 8-10+ for good behaviour; ok kept at 6 per existing data, good set at 8
+- **boesemani** (Boeseman's rainbowfish): https://tropicalfreshwaterfish.com/species/Melanotaenia_boesemani.html (est).
+- **guppy** (Guppy): https://www.aquariadise.com/how-many-guppies-in-a-10-gallon-tank/ (est). Note: No existing app data for guppy; band numbers are judgement from stocking guides
+- **platy** (Platy): https://petfishonline.com/how-many-platies/ (est). Note: No existing app data for platy; judgement from guides (disagree: 3-6 vs 6+/12+)
+- **molly** (Black molly): https://aquariadise.com/caresheet-molly-fish/ (est). Note: Sources vary (min 3 harem to 6+ group); Seriously Fish page not found
+- **swordtail** (Swordtail): https://guidarium.com/fishes/swordtail (est).
+- **betta** (Betta): https://guidarium.com/fishes/betta-siamese-fighting-fish. Note: Sorority groups of females (5+) exist but are advanced; modelled as solo
+- **dwarfgourami** (Dwarf gourami): https://guidarium.com/fishes/dwarf-gourami (est). Note: CARE.solo wins: one per tank; researched group numbers dropped.
+- **honeygourami** (Honey gourami): https://guidarium.com/fishes/honey-gourami (est).
+- **gourami** (Pearl gourami): https://www.seriouslyfish.com/species/trichopodus-leerii (est). Note: Seriously Fish gives 90x30 cm base but lists social behaviour as unknown; bands are judgement
+- **gbr** (German blue ram): https://modestfish.com/german-blue-ram/ (est). Note: Needs warm (26-30C), stable, mature water; pair in 75 L+
+- **bolivianram** (Bolivian ram): https://guidarium.com/fishes/bolivian-ram (est). Note: Sources vary: single, pair, or group of 6-8; bands are judgement. Needs soft sand.
+- **kribensis** (Kribensis): https://www.thetropicaltank.co.uk/Fishindx/kribensi.htm. Note: 60 cm minimum for a pair; 90 cm+ for community (sera says 80-100 cm).
+- **cockatoo** (Cockatoo dwarf cichlid): https://apistogramma.com/forum/threads/how-many-dwarfs-in-a-29-gallon.3067/post-18088 (est). Note: Forum opinion, roughly 1 fish per 30 cm of tank length.
+- **yellowlab** (Yellow lab cichlid): https://seriouslyfish.com/species/labidochromis-caeruleus (est). Note: SF recommends 90x45x37.5 cm; group counts are judgement.
+- **peacock** (Peacock cichlid): https://guidarium.com/fishes/peacock-cichlid-aulonocara (est). Note: One guide says 2 females per male, hobby practice 3-4; 120 cm minimum length.
+- **demasoni** (Demasoni cichlid): https://seriouslyfish.com/species/pseudotropheus-demasoni (est). Note: SF suggests starting with 6-8 and 200 L minimum; retailers say 12+, so good/great are higher than SF.
+- **kadango** (Kadango (red-fin) cichlid): https://seriouslyfish.com/species/copadichromis-borleyi. Note: SF: not under 150x45x45 cm; 48 in fine for a breeding harem. Open-water swimmer.
+- **labeo** (Blue-nosed mbuna): https://seriouslyfish.com/species/labidochromis-caeruleus (est). Note: Blue-nosed mbuna: Seriously Fish page not read; numbers extrapolated from Labidochromis/mbuna hobby guides (group of 6+, 80-100+ cm tank)
+- **auratus** (Golden mbuna): https://seriouslyfish.com/species/melanochromis-auratus.
+- **livingstonii** (Livingstone's cichlid): https://seriouslyfish.com/species/nimbochromis-livingstonii (est). Note: Seriously Fish minimum 120 cm (200 L); other sources 150-200 cm, so 1500 mm used
+- **afra** (Dogtooth cichlid): https://seriouslyfish.com/species/cynotilapia-afra (est). Note: Seriously Fish lists 100 cm (90 L) but forum keepers advise 55 gal+ (120 cm)
+- **syno** (Malawi synodontis): https://seriouslyfish.com/species/synodontis-njassae (est). Note: Planet Catfish: shy alone or in pairs, not aggressive to conspecifics; will fight other Synodontis species; exact size/group counts are judgement
+- **angel** (Angelfish): https://seriouslyfish.com/species/pterophyllum-scalare (est). Note: Seriously Fish minimum tank 100x40x50 cm (tall); group counts are hobby convention, not stated by that page. maxDepthMm is minimum water height wanted, not a limit
+- **discus** (Discus): https://seriouslyfish.com/species/symphysodon-aequifasciatus (est). Note: Seriously Fish: 120x45x45 cm for juveniles/pair; most guides say group of 5+ (ThinkFish 4)
+- **oscar** (Oscar): https://www.monsterfishkeepers.com/forums/goto/post?id=8243649.
+- **goldfish** (Fancy goldfish): https://www.fishkeeping.co.uk/articles_74/goldfish-size-life-expectancy.htm (est). Note: Tank rule from source: 140 L for first fish +45 L each extra, min 3 ft (~900 mm) long. Group counts are judgement; sources say only that groups are preferred. Heavy bioload so cap is volume-driven.
+- **comet** (Comet goldfish): https://www.fishkeeping.co.uk/articles_74/goldfish-size-life-expectancy.htm (est). Note: Search rate-limited; figures are judgement (single-tailed goldfish reach ~30 cm, need pond or 1500 mm+ tank). Not verified against Seriously Fish.
+- **bronzecory** (Bronze corydoras): https://www.seriouslyfish.com/species/corydoras-aeneus/ (est). Note: Search rate-limited; ok=6 matches existing app data. Seriously Fish URL not fetched. Fine sand substrate.
+- **pandacory** (Panda corydoras): https://www.seriouslyfish.com/species/corydoras-panda/ (est). Note: Search not completed (rate-limited); ok=6 matches app data. Prefers cooler, soft water; fine sand.
+- **pygmycory** (Pygmy corydoras): https://www.seriouslyfish.com/species/corydoras-pygmaeus/ (est). Note: Search returned only unverified general knowledge (6+); kept ok=8 per existing app data, not contradicted by sources. Often swim mid-water.
+- **bristlenose** (Bristlenose pleco): https://gensou.sg/bristlenose-pleco-complete-care-guide/. Note: Guides: 75 L single, 100 L pair; one male per territory; at least one cave per fish.
+- **oto** (Otocinclus): https://guidarium.com/fishes/otocinclus. Note: Sources agree on 6 minimum (matches app data), 8+ ideal; min length 45 cm, 38-40 L. Needs mature algae-rich tank.
+- **kuhli** (Kuhli loach): https://www.seriouslyfish.com/species/pangio-kuhlii/ (est). Note: Search rate-limited; numbers from general knowledge, not fetched
+- **clownloach** (Clown loach): https://www.seriouslyfish.com/species/chromobotia-macracanthus/ (est). Note: Search rate-limited; ok=5 kept per existing app data
+- **sae** (Siamese algae eater): https://www.seriouslyfish.com/species/crossocheilus-oblongus/ (est). Note: Search rate-limited; numbers are judgement
+- **hillstream** (Reticulated hillstream loach): https://www.tankarium.com/hillstream-loach/. Note: Sources agree on 3+ group, high flow; tank 20-50 gal varies, 750 mm is a middle figure
+- **peapuffer** (Pea puffer): https://seriouslyfish.com/species/carinotetraodon-travancoricus. Note: SeriouslyFish: 2-3 gal per puffer, single fish in 30x20x20 cm; other guides use 3-5 gal. Group 450+ mm est.
+- **cherryshrimp** (Cherry shrimp): https://www.aquariumsource.com/cherry-shrimp (est). Note: bands.ok raised from the researched 5 to the existing CG minimum of 10.
+- **amano** (Amano shrimp): https://buildyouraquarium.com/amano-shrimp. Note: Sources give 4-10; ok=5 kept per existing app data
+- **nerite** (Nerite snail (zebra)): https://yourlocalfishstore.com/products/zebra-nerite-snail (est). Note: Not social; ~2 gal per snail from one retailer, 5 gal min tank. No max cap set; scale by volume. Escapes via lid gaps.
+- **mystery** (Mystery snail): https://petfishonline.com/how-many-mystery-snails/ (est).
+- **ramshorn** (Ramshorn snail): https://www.aquariumsource.com/ramshorn-snail/ (est). Note: Sources give 5 gal min, no group count; bands are judgement
+- **trumpet** (Malaysian trumpet snail): https://www.aquariumsource.com/malaysian-trumpet-snail/ (est). Note: Sources give 3-10 gal and 10-20 starter colony; bands are judgement
+- **ocellaris** (Ocellaris clownfish): https://www.bulkreefsupply.com/ora-gladiator-ocellaris-clownfish-pair-ora.html. Note: Sources: 15-20 gal for a pair, forum views up to 40 gal; a single fish is also commonly kept
+- **royalgramma** (Royal gramma): https://liveaquaria.com/article/273/?aid=273. Note: 30 gal for one; groups possible only in 55 gal+ (one male + smaller fish), so max 1 is a conservative cap
+- **yellowtang** (Yellow tang): https://ultimatereef.net/showcase/yellow-tang.410/. Note: Sources: 75-125 gal min (100 typical, 4 ft+); 3+ together only in very large systems
+- **bluetang** (Blue tang): https://gensou.sg/hippo-tang-paracanthurus-care-guide/. Note: Sources: 100-240 gal min; 450 L with 150 cm length per Gensou; groups only juveniles added together in 180 gal+
+- **firefish** (Firefish goby): UNVERIFIED: general reef-keeping knowledge, no source page confirmed (agent's URL was a placeholder) (est). Note: Sources disagree: most say one or a pair; one retailer says groups of 4+. Tank 10-20 gal, lid essential (jumps)
+- **banggai** (Banggai cardinalfish): https://topshelfaquatics.com/blogs/news/cardinalfish-care-guide-pairs-vs-groups-feeding-and-behavior (est). Note: Sources: pair preferred (30 gal), groups 55-100+ gal; band numbers are judgement
+- **sixline** (Six-line wrasse): https://www.aquariadise.com/six-line-wrasse/.
+- **chromis** (Blue-green chromis): https://en.microcosmaquariumexplorer.com/wiki/Bluegreen_Chromis. Note: Matches existing 5; Microcosm says shoal of 5+, Animal-World 6+; 30 gal minimum
+- **coralbeauty** (Coral beauty angelfish): UNVERIFIED: general reef-keeping knowledge, no source page confirmed (agent's URL was a placeholder) (est). Note: Search rate-limited; from general hobby knowledge (about 30 gal minimum)
+- **watchman** (Yellow watchman goby): UNVERIFIED: general reef-keeping knowledge, no source page confirmed (agent's URL was a placeholder) (est). Note: Search rate-limited; judgement. Needs deep sand; often partnered with a pistol shrimp
+- **mandarin** (Mandarin dragonet): UNVERIFIED: general reef-keeping knowledge, no source page confirmed (agent's URL was a placeholder) (est). Note: Search rate-limited; judgement. A male+female pair is possible in 75 gal+ but treated as solo here; src is a guess, verify
+- **cleanershrimp** (Skunk cleaner shrimp): UNVERIFIED: general reef-keeping knowledge, no source page confirmed (agent's URL was a placeholder) (est). Note: Search rate-limited; judgement. Hermaphroditic pairs are peaceful; src is placeholder, verify
+- **turbo** (Mexican turbo snail): https://topshelfaquatics.com/blogs/news/comprehensive-guide-to-turbo-snails-for-your-aquarium (est). Note: Sources give 1 per 5-10 gal; limited by algae supply, not sociality. Max is judgement for a typical 100-200 L tank.
+- **hermit** (Blue-leg hermit crab): https://reefbuilders.com/2015/11/30/4-crabby-caveats-to-keeping-clibanarius-tricolor (est). Note: Sources range 1 per gal to 1 per 10 gal; hobby consensus is start small, supply spare shells. Not a social species.
+- **dartfrog** (Dyeing dart frog): https://training.joshsfrogs.com/sp/dendrobates-tinctorius-oyapok-dart081 (est). Note: Land animal; 18x18x18 in (457 mm) for a pair, 24x18x24 in (610 mm) for 4-5.
+- **treefrog** (White's tree frog): https://www.petsmart.com/learning-center/reptile-care/whites-tree-frog (est). Note: Tolerant of company but not social; 30-40 gal tall for 2-3 (18x18x24 in minimum for a pair).
+- **firetoad** (Fire-bellied toad): https://training.joshsfrogs.com/care-sheet/fire-bellied-toad-care-sheet (est). Note: Care sheets: 2-4 typical, 10-15 gal for 2-3, ~36x18x18 in for 5-6. Water 2-4 in.
+- **firenewt** (Chinese fire-bellied newt): https://reptilesmagazine.com/Frog-Amphibian-Species/Chinese-Fire-bellied-Newt/ (est). Note: 20 gal enough for up to 4 (Reptiles Magazine); 10 gal for a pair if all water. Needs land area and tight lid.
+- **adf** (African dwarf frog): https://modestfish.com/african-dwarf-frog-care/ (est). Note: Bands are Nathan's worked example (2026-10-20: 1 avoid, 2-4 doable, 5-6 good, 7+ great); depth 30-45 cm, they surface for every breath.
+- **axolotl** (Axolotl): https://caudata.org/threads/appropriate-tank-size-for-axolotls.59780 (est). Note: Solitary; fine alone. Rule of thumb 10 gal each +10 (30 gal for two); 80x35 cm for 1-2, 100x40 cm for 4. Keep within 5 cm in size. Needs cool water, no strong flow.
+- **crestedgecko** (Crested gecko (flame)): https://www.reptifiles.com/crested-gecko-care/crested-gecko-terrarium/ (est). Note: CARE.solo wins: one per tank; researched group numbers dropped.
+- **crestedharlequin** (Crested gecko (harlequin)): https://www.reptifiles.com/crested-gecko-care/crested-gecko-terrarium/ (est). Note: CARE.solo wins: one per tank; researched group numbers dropped.
+- **greenanole** (Green anole): https://www.anapsid.org/anole.html (est).
+- **greenanolebrown** (Green anole (brown phase)): https://www.anapsid.org/anole.html (est).
+- **brownanole** (Brown anole): https://www.anapsid.org/anole.html (est).
+- **leopardgecko** (Leopard gecko): https://reptifiles.com/leopard-gecko-care/leopard-gecko-terrarium-size.
+- **regaljumper** (Regal jumping spider): https://www.poramorart.ca/spider-enclosure-size-guide (est).
+- **ballpython** (Ball python): https://www.scribd.com/document/713034456/Ball-Python-Care-Sheet-PDF-1 (est).
+- **chacogoldenknee** (Chaco golden knee tarantula): https://www.thetarantulacollective.com/tarantula-thoughts/how-big-should-a-tarantula-enclosure-be (est).
