@@ -44,8 +44,8 @@
   </dialog>
   <dialog id="startDlg" class="libdlg startdlg" aria-labelledby="startTitle">
     <form method="dialog" class="libhead"><h2 id="startTitle">TankLook</h2><button value="close" aria-label="Close">✕</button></form>
-    <p class="hint">Plan an aquarium, paludarium or terrarium: tank, ground, plants, animals and light, all to scale. New and Open… both land here.</p>
-    <div class="startbtns">
+    <p class="hint" id="startIntro"></p>
+    <div class="startbtns" id="startBtns">
       <button id="startFresh"><b>Start from scratch</b><span>An empty tank to fill yourself</span></button>
       <!-- guided start / wizard hook: a future lane fills #startGuided with its entry button and unhides it (see showChooser in ui/panels.ts) -->
       <div id="startGuided" hidden></div>
@@ -54,7 +54,7 @@
       <button role="tab" id="tab-sale" data-tab="sale">On sale now</button>
       <button role="tab" id="tab-bundles" data-tab="bundles">Bundles</button>
       <button role="tab" id="tab-starters" data-tab="starters">Starter tanks</button>
-      <button role="tab" id="tab-open" data-tab="open">Open a tank</button>
+      <button role="tab" id="tab-open" data-tab="open">Saved tanks</button>
     </div>
     <section class="startpane" role="tabpanel" data-pane="sale" aria-labelledby="tab-sale">
       <p class="hint">Starter kits and tank-and-stand sets on sale: pick one, then make it yours. <span class="dealasof"></span></p>
@@ -75,6 +75,7 @@
       <div id="libList" class="libgrid"></div>
       <div class="btns"><button id="openFile">Open a downloaded file…</button></div>
     </section>
+    <p class="hint startswap"><button type="button" id="startSwap" class="linkbtn"></button></p>
     <p class="hint">Drag (one finger on a phone) to look around, wheel or pinch to zoom; <i>How to use</i> at the top of the panel has the rest.</p>
   </dialog>
   <div id="busy" class="busy" role="status" aria-live="polite" hidden><div class="busybox"><span class="spin" aria-hidden="true"></span><span id="busyText">Opening…</span></div></div>
