@@ -14,7 +14,7 @@ import type { Fish } from '../scene/types';
 import type { Viewer } from '../render/viewer';
 import { attachBuildPick } from './buildPick';
 import { onSpaceFork, type SpaceFork } from './fullnessTile';
-import { animalsInTank, animalsOf, bump, forkOptions, isSexed, maxOf, notesOf, planFor, conflictOf, rankTankmates, startPick, tankLabel, totalOf, type Pk, type RoomOption } from './stockPlanLogic';
+import { animalsInTank, animalsOf, bump, forkOptions, isSexed, notesOf, overWarn, planFor, conflictOf, rankTankmates, startPick, tankLabel, totalOf, type Pk, type RoomOption } from './stockPlanLogic';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
@@ -74,12 +74,12 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
   // ---------- drawing ----------
   const bandClass = (b: string) => `spb-${b}`;
   const pickRow = (p: Pk) => {
-    const sp = getSpecies(p.id)!, nt = notesOf(p), sexed = isSexed(p.id), cap = totalOf(p) >= maxOf(p.id);
+    const sp = getSpecies(p.id)!, nt = notesOf(p), sexed = isSexed(p.id);
     const step = (which: 'n' | 'f', label: string, v: number) =>
-      `<span class="spStep"><span class="spLab">${label}</span><button type="button" data-act="dec" data-id="${p.id}" data-w="${which}" aria-label="One fewer ${esc(label || sp.name)}"${v <= 0 ? ' disabled' : ''}>−</button><b>${v}</b><button type="button" data-act="inc" data-id="${p.id}" data-w="${which}" aria-label="One more ${esc(label || sp.name)}"${cap ? ' disabled' : ''}>+</button></span>`;
+      `<span class="spStep"><span class="spLab">${label}</span><button type="button" data-act="dec" data-id="${p.id}" data-w="${which}" aria-label="One fewer ${esc(label || sp.name)}"${v <= 0 ? ' disabled' : ''}>−</button><b>${v}</b><button type="button" data-act="inc" data-id="${p.id}" data-w="${which}" aria-label="One more ${esc(label || sp.name)}">+</button></span>`;
     return `<li class="spPick"><div class="spName"><b>${esc(sp.name)}</b><i>${esc(sp.sci)}</i><button type="button" class="spX" data-act="del" data-id="${p.id}" aria-label="Take ${esc(sp.name)} out">✕</button></div>
 <div class="spSteps">${sexed ? step('n', 'Males', p.n) + step('f', 'Females', p.f ?? 0) : step('n', '', p.n)}</div>
-${conflictOf(picks, p.id) ? `<div class="spWarn">${esc(conflictOf(picks, p.id)!)}</div>` : ''}<div class="spMsg ${bandClass(nt.band)}">${esc(nt.line)}</div>${nt.ratio ? `<div class="spNote">${esc(nt.ratio)}</div>` : ''}
+${overWarn(p) ? `<div class="spWarn">${esc(overWarn(p)!)}</div>` : ''}${conflictOf(picks, p.id) ? `<div class="spWarn">${esc(conflictOf(picks, p.id)!)}</div>` : ''}<div class="spMsg ${bandClass(nt.band)}">${esc(nt.line)}</div>${nt.ratio ? `<div class="spNote">${esc(nt.ratio)}</div>` : ''}
 ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</div>` : ''}</li>`;
   };
 

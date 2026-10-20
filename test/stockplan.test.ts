@@ -3,7 +3,7 @@ import { CARE } from '../src/data/care';
 import { SPECIES } from '../src/data/species';
 import { spaceFit } from '../src/scene/space';
 import { tankFromModel } from '../src/data/tanks';
-import { animalsOf, bump, conflictOf, forkOptions, maxOf, minOf, notesOf, planFor, rankTankmates, startPick, totalOf } from '../src/ui/stockPlanLogic';
+import { animalsOf, bump, conflictOf, forkOptions, maxOf, minOf, notesOf, overWarn, planFor, rankTankmates, startPick, totalOf } from '../src/ui/stockPlanLogic';
 
 describe('stocking screen logic (lane P5, 2026-10-20)', () => {
   it('a species starts at its recommended minimum; a sexed one at a whole multiple of its ratio', () => {
@@ -16,12 +16,13 @@ describe('stocking screen logic (lane P5, 2026-10-20)', () => {
     expect(startPick('adf').n).toBe(2); // African dwarf frog: 2 is the minimum the data calls doable
   });
   it('+ and - respect zero and the most a tank takes, per sex', () => {
-    expect(bump({ id: 'betta', n: 1 }, 'n', 1).n).toBe(1); // solo: capped
+    expect(bump({ id: 'betta', n: 1 }, 'n', 1).n).toBe(2); // never blocked, only warned
+    expect(overWarn({ id: 'betta', n: 2 })).toMatch(/one to a tank/); expect(overWarn({ id: 'oscar', n: 2 })).toMatch(/one to a tank/); expect(overWarn({ id: 'tigerbarb', n: 20 })).toMatch(/not advised/); expect(overWarn({ id: 'oscar', n: 1 })).toBeUndefined();
     expect(bump({ id: 'neon', n: 6 }, 'n', -1).n).toBe(5);
     expect(bump({ id: 'neon', n: 0 }, 'n', -1).n).toBe(0);
     const g = startPick('guppy');
     expect(bump(g, 'f', 1).f).toBe((g.f ?? 0) + 1);
-    expect(totalOf(bump({ id: 'guppy', n: 1, f: maxOf('guppy') - 1 }, 'n', 1))).toBe(maxOf('guppy'));
+    expect(totalOf(bump({ id: 'guppy', n: 1, f: maxOf('guppy') - 1 }, 'n', 1))).toBe(maxOf('guppy') + 1);
   });
   it('band lines follow the count, habitat notes carry depth and flow', () => {
     expect(notesOf({ id: 'adf', n: 1 }).band).toBe('avoid');

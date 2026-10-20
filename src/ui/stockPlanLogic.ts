@@ -15,6 +15,7 @@ import type { Fish, SpaceLimit, Tank } from '../scene/types';
 export interface Pk { id: string; n: number; f?: number }
 export const isSexed = (id: string) => !!CARE[id]?.sexed;
 export const totalOf = (p: Pk) => p.n + (p.f ?? 0);
+/** The most one tank is advised to take (a warning past it, never a block). */
 export const maxOf = (id: string) => CARE[id]?.max ?? 99;
 export const minOf = (id: string) => CARE[id]?.bands?.ok ?? CARE[id]?.group ?? 1;
 
@@ -29,18 +30,26 @@ export function startPick(id: string): Pk {
   return { id, n: r[0] * k, f: r[1] * k };
 }
 
-/** Add `d` (+1 / -1) to one count of a pick, kept between 0 and the species' max in total; males 'n', females 'f'. */
+/** Add `d` (+1 / -1) to one count of a pick, never below 0; males 'n', females 'f'. Past the species' advised most it only warns (overWarn). */
 export function bump(p: Pk, which: 'n' | 'f', d: number): Pk {
-  const cur = which === 'n' ? p.n : p.f ?? 0, room = maxOf(p.id) - totalOf(p) + cur;
-  const v = Math.max(0, Math.min(room, cur + d));
+  const cur = which === 'n' ? p.n : p.f ?? 0;
+  const v = Math.max(0, cur + d);
   return which === 'n' ? { ...p, n: v } : { ...p, f: v };
+}
+
+/** The warning for keeping more of a species than advised (more than the advised most, or more than one of a keep-one animal), else undefined. */
+export function overWarn(p: Pk): string | undefined {
+  const c = CARE[p.id], n = totalOf(p), mx = c?.max ?? (c?.solo ? 1 : undefined);
+  if (!mx || n <= mx) return undefined;
+  const name = getSpecies(p.id)?.name ?? p.id;
+  return mx === 1 ? `${name} is best kept one to a tank: expect fighting. The tank shown is sized for all of them` : `More than ${mx} ${name} in one tank is not advised: expect fighting or crowding`;
 }
 
 /** The band message for the total count, plus the sex-ratio line for sexed species. */
 export interface PickNotes { band: GroupBand; line: string; ratio?: string; habitat: string[] }
 export function notesOf(p: Pk): PickNotes {
   const c = CARE[p.id], n = totalOf(p);
-  const band = bandOf(c, n), line = n === 0 ? '' : c?.max && c.max > 1 && n >= c.max ? `${bandMessage(c, n)} (at the most one tank takes: ${c.max})` : bandMessage(c, n);
+  const band = bandOf(c, n), line = n === 0 ? '' : c?.max && c.max > 1 && n === c.max ? `${bandMessage(c, n)} (at the most one tank takes: ${c.max})` : bandMessage(c, n);
   let ratio: string | undefined;
   const r = c?.sexed;
   if (r) {
