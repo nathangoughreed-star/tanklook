@@ -552,3 +552,7 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .pricenote[hidden] { display: none }
 .pricenote span { flex: 1 }
 .pricenote button { flex: none }
+
+#stkNit { margin: 2px 0 6px; font-size: 11.5px; color: var(--muted) } #stkNit summary { cursor: pointer } #stkVerdict .dim { opacity: .75 }
+.nbar { display: flex; height: 16px; border-radius: 4px; overflow: hidden; background: rgba(128,128,128,.25); margin: 6px 0 2px } .nbar span { display: block; height: 100% }
+.nleg { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 11px } .nleg i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 4px; vertical-align: -1px }

@@ -14,7 +14,8 @@ import bm from '../data/bodymass.json';
 import { getSpecies, type Species } from '../data/species';
 import { SPACE_FACTOR, SPACE_FACTOR_CLASS } from '../data/spacefactor';
 import { bioloadLitres } from './starter';
-import { heatLoss, rowsFor, stockCapacity, withChoice } from './tech';
+import { feedingOf, nitrogenBudget, tanOf, type Nitrogen } from './nitrogen';
+import { heatLoss, rowsFor, stockCapacity } from './tech';
 import type { Fish, TankSetup } from './types';
 
 interface Mass { a: number; b: number; src: string; model?: number; flag?: boolean }
@@ -76,6 +77,8 @@ export const countsAgainstWater = (sp: Species) => sp.habitat !== 'land';
 export interface Contributor { id: string; name: string; n: number; load: number; space: number; share: number; grams: number; cls: MetClass; /** fitted space multiplier, counted as e.g. "1.4x" in the breakdown */ spaceFactor: number }
 export interface CapacityParts { /** load units the tank's water holds, filter aside */ space: number; litres: number; perL: number; filter: number; plants: number; plantCount: number; tempC: number; capacity: number }
 export interface Stocking {
+  /** the nitrogen budget behind filtrationPercent (lane SE2): waste, filter bacteria, plants, nitrate */
+  nitrogen: Nitrogen;
   /** the larger of space and filtration, percent; over 100 = overstocked. 0 with no animals. */
   percent: number;
   /** load / what the tank's water holds, percent (the filter does not change it) */
@@ -116,17 +119,17 @@ export function capacityOf(S: TankSetup): CapacityParts {
 const plural = (n: number, name: string) => n === 1 ? `1 ${name}` : `${n} ${name}${/(s|ish|ox)$/i.test(name) ? '' : 's'}`;
 
 export function stockingOf(S: TankSetup): Stocking {
-  const cap = capacityOf(S), salt = !!(S.water.on && S.water.salt), by = new Map<string, Contributor>();
+  const cap = capacityOf(S), salt = !!(S.water.on && S.water.salt), by = new Map<string, Contributor>(), feeding = feedingOf(S);
   let load = 0, spaceLoad = 0;
   for (const f of S.fish) {
-    const sp = getSpecies(f.species), l = loadOf(f, cap.tempC, salt);
+    const sp = getSpecies(f.species), l = !sp || !countsAgainstWater(sp) ? 0 : tanOf(sp, massG(sp.id, f.tl ?? sp.tl), feeding, cap.tempC, salt);
     if (!sp || l <= 0) continue;
     load += l;
     const c = by.get(sp.id) ?? { id: sp.id, name: sp.name, n: 0, load: 0, space: 0, share: 0, grams: 0, cls: metClass(sp), spaceFactor: spaceFactor(sp) };
     c.n++; c.load += l; c.space += spaceOf(sp, f.tl ?? sp.tl); spaceLoad += spaceOf(sp, f.tl ?? sp.tl); c.grams += massG(sp.id, f.tl ?? sp.tl); by.set(sp.id, c);
   }
   const pc = (l: number, cp: number) => cp > 0 ? l / cp * 100 : l > 0 ? Infinity : 0;
-  const spacePercent = pc(spaceLoad, cap.space), filtrationPercent = pc(load, cap.capacity), percent = Math.max(spacePercent, filtrationPercent);
+  const nitrogen = nitrogenBudget(S, cap.litres, cap.tempC, load), spacePercent = pc(spaceLoad, cap.space), filtrationPercent = nitrogen.ammoniaPercent, percent = Math.max(spacePercent, filtrationPercent);
   // shares are of the limit that binds
   const bySpace = spacePercent >= filtrationPercent;
   const contributors = [...by.values()].sort((a, b) => bySpace ? b.space - a.space : b.load - a.load);
@@ -142,27 +145,21 @@ export function stockingOf(S: TankSetup): Stocking {
     else {
       const fr = rowsFor(S).find(r => r.id === 'filter');
       for (const o of [...(fr?.options ?? [])].sort((a, b) => (a.capacity ?? 1) - (b.capacity ?? 1))) {
-        const p = Math.max(load / capacityWith(S, cap, o.id) * 100, spacePercent);
+        const p = Math.max(nitrogenBudget(S, cap.litres, cap.tempC, load, o.id).ammoniaPercent, spacePercent);
         if (p <= 100) { fixFilter = { option: o.id, percent: Math.round(p) }; reasons.push(`A ${o.label.toLowerCase()} would bring it to ${Math.round(p)}%.`); break; }
       }
-      if (!fixFilter) reasons.push(`Even the best filter leaves it high: it needs about ${Math.ceil(cap.litres * filtrationPercent / 100)} L of water, or fewer animals.`);
+      if (!fixFilter) reasons.push(`Even the best filter leaves ammonia high: it needs fewer animals, more plants, lighter feeding or a bigger tank.`);
     }
   } else if (percent >= 85) reasons.push('Near full: room for a few small fish, no more.');
   else reasons.push(`Room for about ${Math.round(100 - percent)}% more load.`);
-  return { percent, spacePercent, filtrationPercent, load, contributors, capacity: cap, reasons, ...(fixFilter ? { fixFilter } : {}) };
-}
-
-/** Capacity with the filter row set to option `opt` (the other parts as computed). */
-function capacityWith(S: TankSetup, cap: CapacityParts, opt: string) {
-  const f = S.water.on ? stockCapacity(S, withChoice(S, 'filter', opt)) : 1;
-  return cap.litres * cap.perL * f * cap.plants;
+  return { nitrogen, percent, spacePercent, filtrationPercent, load, contributors, capacity: cap, reasons, ...(fixFilter ? { fixFilter } : {}) };
 }
 
 /** `stockingOf` remembered by what it reads (the UI asks every frame): animals and lengths, tank, water, tech, plants. */
 const memo = new Map<string, Stocking>();
 export function stockingMemo(S: TankSetup): Stocking {
   const key = JSON.stringify([S.fish.map(f => [f.species, f.tl]), S.tank, S.water.on, S.water.level, S.water.salt, S.tech, S.lid,
-    S.items.filter(i => i.kind === 'plant').length, (S.patches ?? []).filter(p => p.brush.startsWith('plant:')).length]);
+    S.feeding, S.items.filter(i => i.kind === 'plant').map(i => i.variant).join(), (S.patches ?? []).filter(p => p.brush.startsWith('plant:')).length]);
   let r = memo.get(key);
   if (!r) { r = stockingOf(S); if (memo.size > 16) memo.delete(memo.keys().next().value!); memo.set(key, r); }
   return r;
