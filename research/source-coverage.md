@@ -11,8 +11,8 @@ when it carries the url of the listing it was read from and does not mark the fi
 
 | | values | cited | fitted | derived | researched | claimed | assumption | unsourced | strong |
 |---|---|---|---|---|---|---|---|---|---|
-| **all data** | 5174 | 2301 (44 %) | 59 (1 %) | 11 (0 %) | 681 (13 %) | 679 (13 %) | 728 (14 %) | 715 (14 %) | 46 % |
-| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) | 1277 | 273 |  |  | 387 | 428 | 16 | 173 | 21 % |
+| **all data** | 5174 | 2329 (45 %) | 59 (1 %) | 11 (0 %) | 681 (13 %) | 679 (13 %) | 728 (14 %) | 687 (13 %) | 46 % |
+| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) | 1277 | 301 |  |  | 387 | 428 | 16 | 145 | 24 % |
 | Adult length per species (species.json tl) | 108 | 82 |  |  |  |  |  | 26 | 76 % |
 | Marine pH band (data/waterchem.ts) | 2 | 2 |  |  |  |  |  |  | 100 % |
 | Reptile / amphibian floor area, height, groups, growth (data/herpstock.ts) | 228 |  |  |  | 228 |  |  |  | 0 % |
@@ -34,8 +34,8 @@ when it carries the url of the listing it was read from and does not mark the fi
 | Deals (deals.json) | 169 | 160 |  |  |  |  |  | 9 | 95 % |
 | Gear deals (gear-deals.json) | 96 | 96 |  |  |  |  |  |  | 100 % |
 
-Engine constants (top-level numbers in 28 engine files): 81 documented in FORMULAS, 0 unsourced.
-Numbers written inline in those files' functions (not counted above, a by-hand review list): 309.
+Engine constants (top-level numbers in 29 engine files): 83 documented in FORMULAS, 0 unsourced.
+Numbers written inline in those files' functions (not counted above, a by-hand review list): 313.
 
 ## Work list 1: unsourced values (most user-facing first)
 
@@ -43,7 +43,6 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 |---|---|
 | `CARE *.minL` | 33 |
 | `CARE *.care` | 30 |
-| `CARE *.ph.*` | 28 |
 | `CARE *.temper` | 22 |
 | `CARE *.temp.*` | 8 |
 | `CARE *.tol.*` | 8 |
@@ -131,7 +130,7 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 |---|---|---|
 | src/scene/stocking.ts | - | 9 |
 | src/scene/nitrogen.ts | - | 18 |
-| src/scene/lightout.ts | - | 68 |
+| src/scene/lightout.ts | - | 72 |
 | src/scene/kitlight.ts | - | 4 |
 | src/scene/lightcheck.ts | - | 3 |
 | src/scene/lightneeds.ts | - | 1 |
@@ -262,6 +261,8 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | src/demand/dealmatch.ts | MIN_SAVING_USD, MIN_SAVING_FRAC, FLOW_OK, HEAT_OK, SIDE_TOL, SIDE_MIN_MM | assumption | when a deal counts as a saving and a fit (product choices) |
 | src/demand/gear.ts | L_PER_GAL | cited | 1 US gal = 3.785 L |
 | src/data/climate.ts | FINE | assumption | a compromise a third of the way into the tolerable margin is still fine long term |
+| src/scene/builds.ts | FILTRATION_LIMIT | assumption | cheapest and least-work builds keep filtration at or under 100 % (the stocking engine limit itself); balanced keeps 70 % or less, headroom for a missed water change (same as tankfit FILTRATION_TARGET) |
+| src/scene/builds.ts | WATER_LEVEL, BASE_PRESET | assumption | tank filled to 90 %; the starting gear is the bare-minimum preset (low-tech fresh, fish-only salt), as in tankfit |
 | src/scene/tankfit.ts | WATER_LEVEL, STEP_RATIO | assumption | tank filled to 90 %; a next size must hold 25 % more water |
 | src/data/tankcheck.ts | VOL_TOL | assumption | catalogue check: interior volume within 8 % of the label |
 | src/scene/weight.ts | DENSITY | cited | water 0.998 kg/L at 20 C, glass 2.4-2.8, gravel / sand 1.56-1.68 dry, porosity 0.36-0.43 (research/sourcing/other/E2.json) |

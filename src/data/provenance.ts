@@ -148,6 +148,9 @@ for (const [file, b] of Object.entries(SOURCING)) {
       RULES[target].push({ path, status: 'assumption', src, why: `the predation is stated (research/sourcing/${name}); the prey length is our estimate` });
   }
 }
+// every salt species carries the one marine band (care.ts copies MARINE_PH into CARE), so it is cited the same way
+for (const sp of (speciesJson as unknown as { species: { id: string; salt?: boolean }[] }).species) if (sp.salt)
+  RULES.CARE.push({ path: `${sp.id}.ph.*`, status: 'cited', src: ['holmes-farley-ph'], why: 'the shared marine band (MARINE_PH): 8.0-8.4 inside the 7.8-8.5 reef range (research/sourcing/other/E1.json)' });
 // FILTER_MEDIA 'derived' rows are worked out from cartridge weights (about +-50 %), not read off a page.
 for (const [id, r] of Object.entries(FILTER_MEDIA_L)) if (r[1] === 'derived')
   RULES.FILTER_MEDIA.push({ path: `${id}.0`, status: 'derived', src: ['product-pages'], why: `${r[2]} (about +-50 %)` });
