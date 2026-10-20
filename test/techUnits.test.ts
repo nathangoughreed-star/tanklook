@@ -62,6 +62,10 @@ describe('a bundle and units added on top', () => {
     const S = sceneFromDeal(DEALS.find(d => d.id === 'petsmart-top-fin-essentials-20')!)!.tanks[0];
     expect(S.tech!.filters).toEqual([{ kind: 'hob', product: 'topfin-silenstream-pf20', kit: true }]);
   });
+  it('the Top Fin LED Black Glass 10 ships a Silenstream PF10 (its gallery contents graphic), not an internal filter', () => {
+    const S = sceneFromDeal(DEALS.find(d => d.id === 'petsmart-top-fin-led-black-glass-10')!)!.tanks[0];
+    expect(S.tech!.filters).toEqual([{ kind: 'hob', product: 'topfin-silenstream-pf10', kit: true }]);
+  });
   it('adding a heater keeps the bundle price and charges only the new one', () => {
     const S = sceneFromDeal(deal)!.tanks[0], kit = dealAsKit(deal), sig = partSig(S, deal.includes);
     const more = { ...S, tech: withUnits(S.tech!, 'heater', [...S.tech!.heaters!, { product: 'topfin-50' }]) };

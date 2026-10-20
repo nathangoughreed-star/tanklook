@@ -112,8 +112,12 @@ Nathan 2026-10-20: drag only what the open menu covers; a Show box per kind of t
 - Tech menu: Heating / Filtration show a card per unit (name first, bundle price struck "in the bundle", ×), "+ Add" opens a
   picker (heater: generic + near sizes + all others; filter: type, then generic or any modelled product of it).
 - Top Fin Essentials 20: deal filter name set to the Silenstream PF20 (catalogued already; PetSmart contents graphic).
-- OPEN (needs research, Nathan to approve): Imagitarium heaters for petco-imagitarium-led-10/20/29/40/55 (not catalogued,
-  watts not listed); Top Fin LED Black Glass 10 "integrated filter"; Marineland Portrait 5 hidden 3-stage filter.
+- Kit gear research (2026-10-20, approved): Top Fin LED Black Glass 10 ships a Silenstream PF10 HOB (PetSmart gallery
+  image 5300979_alt2 "Included Inside"; the text says "Integrated Filter System") -> deal fixed. STILL GENERIC, nothing
+  published: Imagitarium kit heater wattage (Petco text, Q&A, box photos 3946395/408/416/424/432-center-1/2/5 checked; box
+  side lists "aquarium heater with adjustable temperature settings" only; Petco CS says the 5.5 gal one is preset 78 F);
+  Marineland Portrait 5 (ML90609) pump gph (Walmart text + 7 images, web). Its filter is a full-height chamber behind the
+  back glass. Only a person with the box / heater label can settle these.
 
 ## Lane SE: our own stocking engine, load vs capacity (2026-10-19, branch `stocking`, port 5843)
 **Step 1 DONE (probe).** Mesh volume from the 3D fish loft works but is only about 2x accurate vs FishBase length-weight (goldfish 4.8x heavy, guppy 0.29x, pleco 2x, swordtail 0.22x). **Nathan's decision 2026-10-19: mass = FishBase length-weight for EVERY species (shrimp, snails, herps: keeper-reference estimates, `src: estimate`); the model volume is only a cross-check that flags outliers.**
