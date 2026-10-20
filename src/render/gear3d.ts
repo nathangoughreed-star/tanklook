@@ -309,20 +309,22 @@ function overRim(f: Frame, u: number, from: THREE.Vector3, bIn: number, yEnd: nu
 }
 
 function heater(f: Frame, watts: number, sp: Spot, product?: string) {
-  // a real product at its own size (overall length = tube + the 44 mm cap drawn), else the generic tube for the rating
-  const hp = heaterProduct(product), { kit } = f, len = hp ? Math.max(60, hp.lengthMm - 44) : heaterLength(watts), r = hp ? hp.diaMm / 2 : watts >= 500 ? 14 : 11, b = r + 9, u0 = sp.u;
+  // a real product at its own size (overall length = cap + tube + foot), else the generic tube for the rating; the cap is
+  // 44 mm (36 grip + 8 dial) and the foot 24 mm past the tube, both shrunk on a short heater (a 105 mm mini is not mostly cap)
+  const hp = heaterProduct(product), cl = hp ? Math.min(44, Math.round(hp.lengthMm * 0.22)) : 44, fl = cl * 24 / 44, fe = hp?.colors?.foot ? fl : 0;
+  const { kit } = f, len = hp ? Math.max(40, hp.lengthMm - cl - fe) : heaterLength(watts), r = hp ? hp.diaMm / 2 : watts >= 500 ? 14 : 11, b = r + 9, u0 = sp.u;
   // a heater stands about 10 mm off the gravel with its cap just under the surface (fully submersible)
   const g0 = Math.max(f.ground(u0, b), 0) + 10, room = f.wy - 5 - g0;
   // vertical when it fits under the water line, else lying flat low along the glass (Nathan 2026-10-19: tilted heaters
   // are rare); turned only when the owner turns it (Shift + wheel), and then never so upright that it leaves the water
-  const fits = len + 44 <= room, need = fits ? 0 : Math.acos(clamp(room / (len + 44), 0, 1));
-  const tilt = sp.lean != null ? Math.max(need, Math.abs(sp.lean) * Math.PI / 180) : fits ? 0 : Math.PI / 2, sgn = (sp.lean ?? 1) < 0 ? -1 : 1, span = (len + 44) * Math.sin(tilt); // along the glass, cap included
+  const fits = len + cl <= room, need = fits ? 0 : Math.acos(clamp(room / (len + cl), 0, 1));
+  const tilt = sp.lean != null ? Math.max(need, Math.abs(sp.lean) * Math.PI / 180) : fits ? 0 : Math.PI / 2, sgn = (sp.lean ?? 1) < 0 ? -1 : 1, span = (len + cl) * Math.sin(tilt); // along the glass, cap included
   const u = f.slot(sp.fixed ? u0 : u0 + span / 2, 2 * r + 6 + span, g0, f.wy, 0, 2 * r + 12, sp.fixed);
   // the cap's top: at most 15 mm under the water line, at least the heater's height off the ground (the owner's height
   // share between; default: high when upright, low when lying flat)
-  const ext = Math.max((len + 44) * Math.cos(tilt), 2 * r + 4), capY = lerp(Math.min(g0 + ext, f.wy - 5), f.wy - 5, sp.y ?? (tilt > 1.2 ? 0 : 1));
-  const topY = capY - 44 * Math.cos(tilt) - r * Math.sin(tilt), dir = f.along.clone().multiplyScalar(-sgn * Math.sin(tilt)).add(V(0, Math.cos(tilt), 0)); // the cap toward the corner
-  const top = f.P(u - sgn * (span / 2 - 44 * Math.sin(tilt)), topY, b), bot = top.clone().addScaledVector(dir, -len);
+  const ext = Math.max((len + cl) * Math.cos(tilt), 2 * r + 4), capY = lerp(Math.min(g0 + ext, f.wy - 5), f.wy - 5, sp.y ?? (tilt > 1.2 ? 0 : 1));
+  const topY = capY - cl * Math.cos(tilt) - r * Math.sin(tilt), dir = f.along.clone().multiplyScalar(-sgn * Math.sin(tilt)).add(V(0, Math.cos(tilt), 0)); // the cap toward the corner
+  const top = f.P(u - sgn * (span / 2 - cl * Math.sin(tilt)), topY, b), bot = top.clone().addScaledVector(dir, -len);
   const q = new THREE.Quaternion().setFromUnitVectors(UP, dir);
   // every part in the product's own colours (catalogue `colors`, from photos); the generic heater: clear glass, a white
   // core with a copper-brown wire, a black cap
@@ -354,7 +356,8 @@ function heater(f: Frame, watts: number, sp: Spot, product?: string) {
     // what shows inside: a core with the wire wound round it, or the wire alone
     const kind = L?.element.kind ?? 'coil', c0 = bot.clone().addScaledVector(dir, len * 0.12), c1 = top.clone().addScaledVector(dir, -len * 0.1);
     if (kind === 'coil') kit.rod('wet', c0, c1, ri * 0.6, C.ceramic, { seg: 12 });
-    if (kind !== 'none' && tube !== 'hidden') {
+    if (kind === 'core') kit.rod('wet', c0, c1, ri * 0.72, elemC, { seg: 12 }); // a solid core (a PTC block), no wire
+    else if (kind !== 'none' && tube !== 'hidden') {
       const turns = Math.round((len * 0.7) / 6), cl = c1.distanceTo(c0), coil: THREE.Vector3[] = [], rw = kind === 'wire' ? ri * 0.45 : ri * 0.66;
       for (let i = 0; i <= turns * 8; i++) { const a = (i / 8) * Math.PI * 2, h = (i / (turns * 8)) * cl; coil.push(V(Math.cos(a) * rw, h, Math.sin(a) * rw).applyQuaternion(q).add(c0)); }
       kit.put('wet', new THREE.TubeGeometry(new THREE.CatmullRomCurve3(coil), turns * 8, kind === 'wire' ? 0.7 : 0.45, 4, false), elemC);
@@ -368,18 +371,27 @@ function heater(f: Frame, watts: number, sp: Spot, product?: string) {
     }
   }
   // the cap (with its dial), the rounded foot, the pilot light or display
-  const ribs = (a: THREE.Vector3, l: number, rad: number, c: number) => { for (let i = 0; i < 6; i++) kit.rod('wet', a.clone().addScaledVector(dir, (l * i) / 6), a.clone().addScaledVector(dir, (l * (i + 0.6)) / 6), rad + (i % 2 ? 0 : 1.2), c, { seg: 20 }); };
-  if (L?.cap.ribbed) { kit.rod('wet', top, top.clone().addScaledVector(dir, 36), r + 1, capC, { seg: 20 }); ribs(top, 36, r + 2, capC); }
-  else kit.rod('wet', top, top.clone().addScaledVector(dir, 36), r + 2, capC, { seg: 20 });
-  kit.rod('wet', top.clone().addScaledVector(dir, 36), top.clone().addScaledVector(dir, 44), r - 1, L?.cap.dial === false ? capC : new THREE.Color(capC).multiplyScalar(0.8).getHex(), { seg: 20 });
-  if (L?.foot) { const fc = hx(L.foot.hex, capC), f0 = bot.clone().addScaledVector(dir, -24); kit.rod('wet', f0, bot.clone().addScaledVector(dir, 4), r + 1, fc, { seg: 20 }); if (L.foot.ribbed) ribs(f0, 28, r + 2, fc); }
+  const cg = cl * 36 / 44, ribs = (a: THREE.Vector3, l: number, rad: number, c: number) => { for (let i = 0; i < 6; i++) kit.rod('wet', a.clone().addScaledVector(dir, (l * i) / 6), a.clone().addScaledVector(dir, (l * (i + 0.6)) / 6), rad + (i % 2 ? 0 : 1.2), c, { seg: 20 }); };
+  if (L?.cap.ribbed) { kit.rod('wet', top, top.clone().addScaledVector(dir, cg), r + 1, capC, { seg: 20 }); ribs(top, cg, r + 2, capC); }
+  else kit.rod('wet', top, top.clone().addScaledVector(dir, cg), r + 2, capC, { seg: 20 });
+  kit.rod('wet', top.clone().addScaledVector(dir, cg), top.clone().addScaledVector(dir, cl), r - 1, L?.cap.dial === false ? capC : new THREE.Color(capC).multiplyScalar(0.8).getHex(), { seg: 20 });
+  if (L?.foot) { const fc = hx(L.foot.hex, capC), f0 = bot.clone().addScaledVector(dir, -fl); kit.rod('wet', f0, bot.clone().addScaledVector(dir, 4), r + 1, fc, { seg: 20 }); if (L.foot.ribbed) ribs(f0, fl + 4, r + 2, fc); }
   else if (L?.shape !== 'flat') kit.ball('wet', bot.clone().addScaledVector(dir, 2), r * 0.98, guard ? guardC : capC, 0, 1);
-  if (L?.cap.display) kit.put('glow', new THREE.PlaneGeometry(r * 1.1, 14), hx(L.cap.display, 0x66ccff), along(top.clone().addScaledVector(dir, 20).addScaledVector(f.inward, r + 2.1), dir, 0).multiply(new THREE.Matrix4().makeRotationY(f.wall === 'back' ? 0 : Math.PI / 2)));
-  if (!L || L.cap.led) kit.ball('glow', top.clone().addScaledVector(dir, 22).addScaledVector(f.inward, r + 1.5), 2.2, hx(L?.cap.led, C.amber));
+  if (L?.cap.display) kit.put('glow', new THREE.PlaneGeometry(r * 1.1, 14), hx(L.cap.display, 0x66ccff), along(top.clone().addScaledVector(dir, cl * 20 / 44).addScaledVector(f.inward, r + 2.1), dir, 0).multiply(new THREE.Matrix4().makeRotationY(f.wall === 'back' ? 0 : Math.PI / 2)));
+  if (!L || L.cap.led) kit.ball('glow', top.clone().addScaledVector(dir, cl / 2).addScaledVector(f.inward, r + 1.5), 2.2, hx(L?.cap.led, C.amber));
   // the cord up out of the water and over the rim, and two clips with suction cups
-  const capTop = top.clone().addScaledVector(dir, 44);
+  const capTop = top.clone().addScaledVector(dir, cl);
   // the cord rises straight up from the cap (not from the heater's middle), so a flat heater's cord does not cross the tank
-  kit.tube('room', overRim(f, u + capTop.clone().sub(f.P(u, 0, b)).dot(f.along), capTop, b, f.top + 20), 2.6, cordC, 0, 6);
+  const cu = u + capTop.clone().sub(f.P(u, 0, b)).dot(f.along);
+  kit.tube('room', overRim(f, cu, capTop, b, f.top + 20), 2.6, cordC, 0, 6);
+  // an inline thermostat on the cord (a mini heater's controller): a box hanging on the cord outside the back glass, its
+  // digits facing the room side away from the tank
+  const ct = L?.controller;
+  if (ct) {
+    const cy = Math.max(f.top + 30 + ct.hMm / 2, (f.H + f.top) / 2), cb = -f.t - 12 - ct.dMm / 2, cc = f.P(cu, cy, cb);
+    f.box('room', cc, ct.wMm, ct.hMm, ct.dMm, hx(ct.hex, C.black), Math.min(4, ct.dMm / 3), f.yaw);
+    if (ct.display) kit.put('glow', new THREE.PlaneGeometry(ct.wMm * 0.6, ct.hMm * 0.25), hx(ct.display, 0xff3030), along(cc.clone().addScaledVector(f.inward, -ct.dMm / 2 - 0.3).setY(cy + ct.hMm * 0.18), UP, 0).multiply(new THREE.Matrix4().makeRotationY(Math.atan2(-f.inward.x, -f.inward.z))));
+  }
   const cups = L?.cups ?? 'clear';
   for (const k of [0.25, 0.72]) {
     const p = bot.clone().lerp(top, k);
@@ -445,6 +457,34 @@ function sponge(f: Frame, m: FilterModel, sp: Spot, pr?: FilterProduct) {
   const { kit } = f, s = flowScale(m, 40), r = pr ? pr.bodyMm.w / 2 : 34 * s, h = pr?.bodyMm.h ?? 110 * s, b = Math.max(r + 8, sp.b ?? 0);
   const L = pr?.colors, baseC = hexOr(L?.accent && /base/i.test(L.accent.where) ? L.accent.hex : L?.body?.hex, C.charcoal), capC = hexOr(L?.lid?.hex ?? L?.body?.hex, C.grey), tubeC = partOf(L?.intake ?? L?.outlet, C.grey);
   const u = f.slot(sp.fixed ? sp.u : sp.u + r, 2 * r + 8, 0, h + 40, 0, 2 * r + 12, sp.fixed), g = f.ground(u, b) - 6;
+  const sP = pr?.spongeParts;
+  if (sP) {
+    // a measured product, part by part from the bottom up (base disc, neck, fluted sponge, collar, a lift tube at its own
+    // length whose top lets the bubbles out under water)
+    let y = g + 6;
+    const seg = (mm: number, dia: number, c: number) => { kit.rod('wet', f.P(u, y, b), f.P(u, y + mm, b), dia / 2, c, { seg: 28 }); y += mm; };
+    seg(sP.baseMm, sP.baseDiaMm, baseC);
+    if (sP.neckMm) seg(sP.neckMm, sP.neckDiaMm ?? sP.baseDiaMm * 0.75, baseC);
+    const sh = sP.spongeMm, fl = sP.flutes ?? 0, sg = new THREE.CylinderGeometry(r, r, sh, 48, 12), q = sg.attributes.position;
+    for (let i = 0; i < q.count; i++) {
+      const x = q.getX(i), yy = q.getY(i), z = q.getZ(i), rr = Math.hypot(x, z);
+      if (rr < r * 0.9) continue;
+      // narrow grooves cut into the foam (cos^8 peaks), a little foam roughness, edges softened
+      const groove = fl ? 0.16 * Math.max(0, Math.cos(Math.atan2(z, x) * fl)) ** 8 : 0;
+      const k = 1 - groove + 0.04 * (hash(x, yy, z) - 0.5) - 0.03 * (Math.abs(yy) / (sh / 2)) ** 4;
+      q.setX(i, x * k); q.setZ(i, z * k);
+    }
+    sg.computeVertexNormals();
+    kit.put('wet', sg, hexOr(L?.sponge, C.sponge), new THREE.Matrix4().makeTranslation(f.P(u, 0, b).x, y + sh / 2, f.P(u, 0, b).z), 0, 0.22);
+    y += sh;
+    seg(sP.collarMm, sP.collarDiaMm, capC);
+    // the acrylic tube reads silvery in the water, so it is drawn more solid than other clear parts
+    kit.rod(tubeC.bk, f.P(u, y, b), f.P(u, y + sP.tubeMm, b), sP.tubeDiaMm / 2, tubeC.c, { seg: 14, base: Math.max(tubeC.base, 0.75) });
+    const top = f.P(u, Math.min(y + sP.tubeMm, f.wy - 2), b);
+    bubbles(f, top, f.wy, 6, 2.2);
+    airPump(f, u, top, b);
+    return;
+  }
   // weighted base, the sponge (a soft, porous column), its cap and the lift tube
   kit.rod('wet', f.P(u, g, b), f.P(u, g + 14, b), r + 5, baseC, { seg: 28 });
   const sg = new THREE.CylinderGeometry(r, r, h, 36, 18);

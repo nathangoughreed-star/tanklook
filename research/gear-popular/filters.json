@@ -1,0 +1,950 @@
+{
+ "asOf": "2026-10-20",
+ "note": "New filters only, picked by Amazon US popularity (Aquarium Filters Best Sellers pages read 2026-10-20: ranks 1-30 and 51-80; ranks 31-50 did not load). Dimensions from Amazon item-dimension rows (inches converted; w/d/h axis mapping guessed where noted). Colours read from the Amazon main photos (downloaded to scratchpad filters-img). est/colorsEst list unconfirmed fields. Sponge filters are filed under Aquarium Filter Accessories on Amazon, so they carry no Aquarium Filters rank.",
+ "filters": [
+  {
+   "id": "tetra-whisper-iq-20",
+   "brand": "Tetra",
+   "model": "Tetra Whisper IQ 20 Power Filter (130 GPH)",
+   "kind": "hob",
+   "gph": 130,
+   "galMin": 0,
+   "galMax": 20,
+   "bodyMm": {
+    "w": 175,
+    "d": 152,
+    "h": 175
+   },
+   "priceUsd": 23.17,
+   "url": "https://www.amazon.com/dp/B01NC2P7BM",
+   "asOf": "2026-10-20",
+   "names": [
+    "tetra whisper iq 20",
+    "whisper iq 20",
+    "tetra iq 20",
+    "tetra whisper iq 130 gph"
+   ],
+   "est": [
+    "watts",
+    "intakeMm",
+    "bodyMm axes"
+   ],
+   "colors": {
+    "body": {
+     "hex": "#1d1d1f"
+    },
+    "lid": {
+     "hex": "#202022"
+    },
+    "motor": {
+     "hex": "#151515"
+    },
+    "intake": {
+     "hex": "#151515"
+    },
+    "strainer": {
+     "hex": "#1a1a1a"
+    },
+    "outlet": {
+     "hex": "#1d1d1f"
+    },
+    "accent": {
+     "hex": "#2236b8",
+     "where": "blue cartridge frame and rails inside the spillway tray"
+    },
+    "cups": "black",
+    "photo": "https://m.media-amazon.com/images/I/61R5vWSzEfL._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "outlet",
+    "cups"
+   ],
+   "colorsNote": "Amazon main photo (cutaway render): fully opaque black body and lid, black intake tube with ribbed strainer, blue cartridge frame and rails inside the tray, orange impeller in the motor window. Photo is the 20; 30 and 45 share the look. Dims are the Amazon L x W x H (6.88 x 6 x 6.88 in), axes mapped to w/d/h by guess.",
+   "popularity": {
+    "evidence": "Amazon US Aquarium Filters Best Sellers #1; 14,212 ratings; 2K+ bought in past month; overall BSR #1,277 in Pet Supplies",
+    "url": "https://www.amazon.com/dp/B01NC2P7BM",
+    "seen": "2026-10-20"
+   },
+   "intakeMm": 230
+  },
+  {
+   "id": "tetra-whisper-iq-45",
+   "brand": "Tetra",
+   "model": "Tetra Whisper IQ 45 Power Filter (215 GPH)",
+   "kind": "hob",
+   "gph": 215,
+   "galMin": 30,
+   "galMax": 45,
+   "bodyMm": {
+    "w": 178,
+    "d": 159,
+    "h": 222
+   },
+   "priceUsd": 37.27,
+   "url": "https://www.amazon.com/dp/B01MZI5N6R",
+   "asOf": "2026-10-20",
+   "names": [
+    "tetra whisper iq 45",
+    "whisper iq 45",
+    "tetra iq 45",
+    "tetra whisper iq 215 gph"
+   ],
+   "est": [
+    "galMin",
+    "watts",
+    "intakeMm",
+    "bodyMm axes"
+   ],
+   "colors": {
+    "body": {
+     "hex": "#1a1a1c"
+    },
+    "lid": {
+     "hex": "#1c1c1e"
+    },
+    "motor": {
+     "hex": "#151515"
+    },
+    "intake": {
+     "hex": "#141414"
+    },
+    "strainer": {
+     "hex": "#141414"
+    },
+    "outlet": {
+     "hex": "#1a1a1c"
+    },
+    "cups": "black",
+    "photo": "https://m.media-amazon.com/images/I/812nRMBqNvL._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "motor",
+    "intake",
+    "strainer",
+    "cups"
+   ],
+   "colorsNote": "Amazon lifestyle photo of the IQ: opaque matte black lid and body, spillway with dark media, black intake; motor and intake only partly visible (assumed black). Same housing family as the IQ 20.",
+   "popularity": {
+    "evidence": "Amazon US Aquarium Filters Best Sellers #1; 14,212 (shared with the IQ 20 variation listing) ratings; 1K+ bought in past month; overall BSR #1,277 in Pet Supplies; same Amazon listing as the IQ 20, so both sizes sit at #1 together",
+    "url": "https://www.amazon.com/dp/B01MZI5N6R",
+    "seen": "2026-10-20"
+   },
+   "intakeMm": 280,
+   "priceUrl": "https://www.asinsight.com/report/US/canister-filter (Amazon price $37.27 for the 45)"
+  },
+  {
+   "id": "tetra-whisper-ex-70",
+   "brand": "Tetra",
+   "model": "Tetra Whisper EX 70 Power Filter",
+   "kind": "hob",
+   "gph": 300,
+   "galMin": 45,
+   "galMax": 70,
+   "bodyMm": {
+    "w": 330,
+    "d": 166,
+    "h": 246
+   },
+   "priceUsd": 42.74,
+   "url": "https://www.amazon.com/dp/B001CHVKPY",
+   "asOf": "2026-10-20",
+   "names": [
+    "tetra whisper ex 70",
+    "whisper ex70",
+    "ex 70",
+    "tetra ex70"
+   ],
+   "est": [
+    "gph",
+    "watts",
+    "intakeMm",
+    "bodyMm axes"
+   ],
+   "colors": {
+    "body": {
+     "hex": "#1c1c1e"
+    },
+    "lid": {
+     "hex": "#212123"
+    },
+    "motor": {
+     "hex": "#151515"
+    },
+    "intake": {
+     "hex": "#151515"
+    },
+    "strainer": {
+     "hex": "#151515"
+    },
+    "outlet": {
+     "hex": "#1c1c1e"
+    },
+    "cups": "black",
+    "photo": "https://m.media-amazon.com/images/I/91a0GD8s5WL._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "motor",
+    "outlet",
+    "cups"
+   ],
+   "colorsNote": "Amazon main photo is the retail box with the unit rendered on it: opaque black two-bay body and lid, black intake pipe. Inner colours not shown.",
+   "popularity": {
+    "evidence": "Amazon US Aquarium Filters Best Sellers #10; 12,829 ratings; overall BSR #5,949 in Pet Supplies",
+    "url": "https://www.amazon.com/dp/B001CHVKPY",
+    "seen": "2026-10-20"
+   },
+   "intakeMm": 330
+  },
+  {
+   "id": "nicrew-slim-hob-5",
+   "brand": "NICREW",
+   "model": "NICREW Slim HOB Filter (42 GPH, up to 5 gal)",
+   "kind": "hob",
+   "gph": 42,
+   "galMin": 1,
+   "galMax": 5,
+   "watts": 3,
+   "bodyMm": {
+    "w": 89,
+    "d": 74,
+    "h": 185
+   },
+   "priceUsd": 12.99,
+   "url": "https://www.amazon.com/dp/B0CGN1TV1G",
+   "asOf": "2026-10-20",
+   "names": [
+    "nicrew slim",
+    "nicrew slim hob",
+    "nicrew hob filter",
+    "nicrew 42 gph"
+   ],
+   "est": [
+    "intakeMm",
+    "bodyMm"
+   ],
+   "colors": {
+    "body": {
+     "hex": "#4a4b4d",
+     "translucent": true
+    },
+    "lid": {
+     "hex": "#1c1c1e"
+    },
+    "motor": {
+     "hex": "#151515"
+    },
+    "intake": {
+     "hex": "#bfc4c8",
+     "translucent": true
+    },
+    "strainer": {
+     "hex": "#222222"
+    },
+    "outlet": {
+     "hex": "#bfc4c8",
+     "translucent": true
+    },
+    "cups": "clear",
+    "photo": "https://m.media-amazon.com/images/I/61A1ENvv+bL._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "cups"
+   ],
+   "colorsNote": "Amazon main photo: black lid and base, smoky translucent grey body, clear tube with a knob, black reticulated sponge pre-filter on the intake. Listing carries two size sets (3.5 x 2.9 x 7.3 in vs 5.67 x 5.12 x 2.6 in); the first is used.",
+   "popularity": {
+    "evidence": "Amazon US Aquarium Filters Best Sellers #5; 3,036 ratings; 3K+ bought in past month; overall BSR #3,212 in Pet Supplies",
+    "url": "https://www.amazon.com/dp/B0CGN1TV1G",
+    "seen": "2026-10-20"
+   },
+   "intakeMm": 150
+  },
+  {
+   "id": "ix120-turtle-filter",
+   "brand": "IX-120",
+   "model": "IX-120 Turtle Tank Waterfall Filter (290 GPH, 30-55 gal)",
+   "kind": "internal",
+   "gph": 290,
+   "galMin": 30,
+   "galMax": 55,
+   "bodyMm": {
+    "w": 209,
+    "d": 111,
+    "h": 286
+   },
+   "priceUsd": 39.99,
+   "url": "https://www.amazon.com/dp/B0CDMQSQV8",
+   "asOf": "2026-10-20",
+   "names": [
+    "ix-120 turtle filter",
+    "ix120 turtle tank filter",
+    "turtle tank filter 290gph"
+   ],
+   "est": [
+    "watts",
+    "bodyMm axes"
+   ],
+   "colors": {
+    "body": {
+     "hex": "#222426"
+    },
+    "lid": {
+     "hex": "#1d1f21"
+    },
+    "motor": {
+     "hex": "#1d1f21"
+    },
+    "intake": {
+     "hex": "#1d1f21"
+    },
+    "strainer": {
+     "hex": "#1d1f21"
+    },
+    "outlet": {
+     "hex": "#222426"
+    },
+    "cups": "black",
+    "photo": "https://m.media-amazon.com/images/I/717VwVf+SUL._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "cups",
+    "motor",
+    "strainer"
+   ],
+   "colorsNote": "Amazon main photo: opaque charcoal-black box with a slotted base and waterfall lip, black top knob. Same style sold as a 290 GPH 20-85 gal variant (B0DPKX1NXQ, BSR #17). Dims 11.26 x 8.23 x 4.37 in mapped to h 286 / w 209 / d 111 (photo is taller than wide).",
+   "popularity": {
+    "evidence": "Amazon US Aquarium Filters Best Sellers #6; 1,869 ratings; 900+ bought in past month; overall BSR #3,951 in Pet Supplies",
+    "url": "https://www.amazon.com/dp/B0CDMQSQV8",
+    "seen": "2026-10-20"
+   }
+  },
+  {
+   "id": "aquamiracle-3stage-10-40",
+   "brand": "AquaMiracle",
+   "model": "AquaMiracle 3-Stage In-Tank Filter (130 GPH, 10-40 gal)",
+   "kind": "internal",
+   "gph": 130,
+   "galMin": 10,
+   "galMax": 40,
+   "watts": 3.5,
+   "bodyMm": {
+    "w": 114,
+    "d": 82,
+    "h": 230
+   },
+   "priceUsd": 19.99,
+   "url": "https://www.amazon.com/dp/B0B3DCSG7Q",
+   "asOf": "2026-10-20",
+   "names": [
+    "aquamiracle 3 stage filter",
+    "aquamiracle internal filter",
+    "aquamiracle 130gph"
+   ],
+   "est": [
+    "bodyMm axes"
+   ],
+   "colors": {
+    "body": {
+     "hex": "#d6dde0",
+     "translucent": true
+    },
+    "motor": {
+     "hex": "#161616"
+    },
+    "intake": {
+     "hex": "#d6dde0",
+     "translucent": true
+    },
+    "strainer": {
+     "hex": "#d6dde0",
+     "translucent": true
+    },
+    "outlet": {
+     "hex": "#161616"
+    },
+    "sponge": "#e8c21a",
+    "accent": {
+     "hex": "#2aa7d9",
+     "where": "light-blue motor cap and blue bottom sponge; middle sponge black, top yellow"
+    },
+    "cups": "clear",
+    "photo": "https://m.media-amazon.com/images/I/71TRynvUKaL._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "cups"
+   ],
+   "colorsNote": "Amazon main photo: clear transparent chamber showing three stacked sponges (yellow, black, blue), black motor head with a light-blue lid, black outlet arms and a thin clear air tube. Dims 9.06 x 4.49 x 3.23 in mapped to h 230 / w 114 / d 82.",
+   "popularity": {
+    "evidence": "Amazon US Aquarium Filters Best Sellers #8; 1,862 ratings; 800+ bought in past month; overall BSR #5,324 in Pet Supplies",
+    "url": "https://www.amazon.com/dp/B0B3DCSG7Q",
+    "seen": "2026-10-20"
+   }
+  },
+  {
+   "id": "coospider-repta-uv-200",
+   "brand": "coospider-repta",
+   "model": "coospider-repta 200 GPH UV Internal Filter (20-75 gal)",
+   "kind": "internal",
+   "gph": 200,
+   "galMin": 20,
+   "galMax": 75,
+   "watts": 10,
+   "bodyMm": {
+    "w": 140,
+    "d": 88,
+    "h": 290
+   },
+   "priceUsd": 39.99,
+   "url": "https://www.amazon.com/dp/B0CSSVQL32",
+   "asOf": "2026-10-20",
+   "names": [
+    "coospider-repta 200gph",
+    "coospider repta uv filter",
+    "coospider uv filter"
+   ],
+   "est": [
+    "bodyMm axes"
+   ],
+   "colors": {
+    "body": {
+     "hex": "#27363a"
+    },
+    "motor": {
+     "hex": "#1f2c30"
+    },
+    "intake": {
+     "hex": "#27363a"
+    },
+    "strainer": {
+     "hex": "#27363a"
+    },
+    "outlet": {
+     "hex": "#1c1c1c"
+    },
+    "sponge": "#1a1a1a",
+    "accent": {
+     "hex": "#3b7bff",
+     "where": "blue UV lamp glow in the body window and blue ring on the motor head"
+    },
+    "cups": "black",
+    "photo": "https://m.media-amazon.com/images/I/81XokcqFAdL._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "strainer"
+   ],
+   "colorsNote": "Amazon main photo (composite with splashes): opaque dark slate-teal body with slotted intake side, darker motor head with a blue ring, black outlet fan nozzle, clear air tube with black knob, black foam inserts. Dims 11.42 x 5.51 x 3.46 in.",
+   "popularity": {
+    "evidence": "Amazon US Aquarium Filters Best Sellers #9; 1,863 ratings; 500+ bought in past month; overall BSR #5,668 in Pet Supplies",
+    "url": "https://www.amazon.com/dp/B0CSSVQL32",
+    "seen": "2026-10-20"
+   }
+  },
+  {
+   "id": "pondforse-canister-265",
+   "brand": "PONDFORSE",
+   "model": "PONDFORSE Canister Filter (external)",
+   "kind": "canister",
+   "gph": 264,
+   "galMin": 0,
+   "galMax": 100,
+   "watts": 25,
+   "bodyMm": {
+    "w": 292,
+    "d": 197,
+    "h": 400
+   },
+   "priceUsd": 79.99,
+   "url": "https://www.amazon.com/dp/B0FRSBKP5S",
+   "asOf": "2026-10-20",
+   "names": [
+    "pondforse canister filter",
+    "pondforse 265gph",
+    "pondforse external filter"
+   ],
+   "est": [
+    "gph",
+    "galMax",
+    "watts",
+    "intakeMm"
+   ],
+   "colors": {
+    "body": {
+     "hex": "#1c1c1d"
+    },
+    "lid": {
+     "hex": "#1c1c1d"
+    },
+    "motor": {
+     "hex": "#1c1c1d"
+    },
+    "intake": {
+     "hex": "#1c1c1d"
+    },
+    "strainer": {
+     "hex": "#1c1c1d"
+    },
+    "outlet": {
+     "hex": "#1c1c1d"
+    },
+    "hose": "#222222",
+    "accent": {
+     "hex": "#c8141c",
+     "where": "red hose connectors, priming cap and band round the lid"
+    },
+    "clips": {
+     "hex": "#1c1c1d"
+    },
+    "foot": {
+     "hex": "#1c1c1d"
+    },
+    "cups": "black",
+    "photo": "https://m.media-amazon.com/images/I/61oMNBeHYnL._AC_SL1200_.jpg"
+   },
+   "colorsEst": [
+    "hose",
+    "intake",
+    "strainer",
+    "outlet"
+   ],
+   "colorsNote": "Amazon main photo: opaque black canister with a red band under the lid, red connector elbows and red priming cap, black latches and feet. Listing does not state flow rate; the maker sells 172/225/265 GPH units, 264 assumed for this 15.75 in tall body. Pond-and-aquarium filter.",
+   "popularity": {
+    "evidence": "Amazon US Aquarium Filters Best Sellers #13; 1,767 ratings; 500+ bought in past month; overall BSR #6,859 in Pet Supplies",
+    "url": "https://www.amazon.com/dp/B0FRSBKP5S",
+    "seen": "2026-10-20"
+   },
+   "intakeMm": 330
+  },
+  {
+   "id": "aqqa-sponge-5-20",
+   "brand": "AQQA",
+   "model": "AQQA Square Sponge Filter (5-20 gal)",
+   "kind": "sponge",
+   "galMin": 5,
+   "galMax": 20,
+   "watts": 2.5,
+   "bodyMm": {
+    "w": 67,
+    "d": 66,
+    "h": 118
+   },
+   "priceUsd": 14.99,
+   "url": "https://www.amazon.com/dp/B0BLH38Q43",
+   "asOf": "2026-10-20",
+   "names": [
+    "aqqa sponge filter",
+    "aqqa aquarium sponge filter"
+   ],
+   "est": [
+    "watts",
+    "bodyMm"
+   ],
+   "colors": {
+    "body": {
+     "hex": "#17171a"
+    },
+    "sponge": "#3a3b3c",
+    "intake": {
+     "hex": "#17171a"
+    },
+    "outlet": {
+     "hex": "#17171a"
+    },
+    "cups": "black",
+    "photo": "https://m.media-amazon.com/images/I/811ZW70-hUL._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "cups"
+   ],
+   "colorsNote": "Amazon lifestyle photo: square grooved sponge in medium charcoal grey (lit), black plastic base with the AQQA logo, black air cap on top and a black elbow. Air-driven (watts = suggested air pump). Dims 4.65 x 2.64 x 2.6 in as the Amazon item size.",
+   "popularity": {
+    "evidence": "Amazon US Aquarium Filters Best Sellers #15; 796 ratings; 800+ bought in past month; overall BSR #6,784 in Pet Supplies",
+    "url": "https://www.amazon.com/dp/B0BLH38Q43",
+    "seen": "2026-10-20"
+   }
+  },
+  {
+   "id": "nicrew-internal-40",
+   "brand": "NICREW",
+   "model": "NICREW Internal Filter (40 GPH, up to 5 gal)",
+   "kind": "internal",
+   "gph": 40,
+   "galMin": 1,
+   "galMax": 5,
+   "watts": 3,
+   "bodyMm": {
+    "w": 103,
+    "d": 47,
+    "h": 161
+   },
+   "priceUsd": 14.99,
+   "url": "https://www.amazon.com/dp/B09DPHDF8Z",
+   "asOf": "2026-10-20",
+   "names": [
+    "nicrew internal filter",
+    "nicrew 40 gph"
+   ],
+   "est": [
+    "watts",
+    "bodyMm axes",
+    "priceUsd"
+   ],
+   "colors": {
+    "body": {
+     "hex": "#141415"
+    },
+    "motor": {
+     "hex": "#141415"
+    },
+    "intake": {
+     "hex": "#141415"
+    },
+    "strainer": {
+     "hex": "#141415"
+    },
+    "outlet": {
+     "hex": "#d5d9dc",
+     "translucent": true
+    },
+    "cups": "black",
+    "photo": "https://m.media-amazon.com/images/I/71Wq56pRoFL._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "cups",
+    "outlet"
+   ],
+   "colorsNote": "Amazon main photo: opaque glossy black rectangular body with slotted side and intake, black elbow and a clear spray bar with black end cap. Dims 6.34 x 4.06 x 1.85 in.",
+   "popularity": {
+    "evidence": "Amazon US Aquarium Filters Best Sellers #19; 1,796 ratings; 800+ bought in past month; overall BSR #7,502 in Pet Supplies",
+    "url": "https://www.amazon.com/dp/B09DPHDF8Z",
+    "seen": "2026-10-20"
+   }
+  },
+  {
+   "id": "datoo-dtf-01",
+   "brand": "DaToo",
+   "model": "DaToo DTF-01 In-Tank Filter (1-10 gal)",
+   "kind": "internal",
+   "gph": 53,
+   "galMin": 1,
+   "galMax": 10,
+   "watts": 3,
+   "bodyMm": {
+    "w": 50,
+    "d": 40,
+    "h": 185
+   },
+   "priceUsd": 7.99,
+   "url": "https://www.amazon.com/dp/B07DW577GB",
+   "asOf": "2026-10-20",
+   "names": [
+    "datoo filter",
+    "datoo dtf-01",
+    "datoo in-tank filter"
+   ],
+   "est": [
+    "bodyMm"
+   ],
+   "colors": {
+    "body": {
+     "hex": "#f2f2f0"
+    },
+    "lid": {
+     "hex": "#f5f5f3"
+    },
+    "motor": {
+     "hex": "#f2f2f0"
+    },
+    "intake": {
+     "hex": "#f2f2f0"
+    },
+    "strainer": {
+     "hex": "#f2f2f0"
+    },
+    "outlet": {
+     "hex": "#f2f2f0"
+    },
+    "accent": {
+     "hex": "#1b1b1b",
+     "where": "two black suction cups and black power cord"
+    },
+    "cups": "black",
+    "photo": "https://m.media-amazon.com/images/I/41s0g7jvY+L._AC_SL1000_.jpg"
+   },
+   "colorsEst": [
+    "motor",
+    "outlet"
+   ],
+   "colorsNote": "Amazon main photo: glossy WHITE slim rectangular body with a white waterfall-lip hood over a dark foam block, two black suction cups, black cord. Flow listed as 200 L/h (about 53 gph).",
+   "popularity": {
+    "evidence": "Amazon US Aquarium Filters Best Sellers #23; 3,325 ratings; 1K+ bought in past month; overall BSR #7,872 in Pet Supplies",
+    "url": "https://www.amazon.com/dp/B07DW577GB",
+    "seen": "2026-10-20"
+   }
+  },
+  {
+   "id": "pawfly-mini-sponge-3",
+   "brand": "Pawfly",
+   "model": "Pawfly Mini Sponge Filter Kit (up to 3 gal)",
+   "kind": "sponge",
+   "galMin": 1,
+   "galMax": 3,
+   "watts": 1.5,
+   "bodyMm": {
+    "w": 51,
+    "d": 51,
+    "h": 105
+   },
+   "priceUsd": 5.98,
+   "url": "https://www.amazon.com/dp/B09BND5YQ6",
+   "asOf": "2026-10-20",
+   "names": [
+    "pawfly mini sponge filter",
+    "pawfly sponge filter"
+   ],
+   "est": [
+    "bodyMm",
+    "watts"
+   ],
+   "colors": {
+    "body": {
+     "hex": "#17171a"
+    },
+    "sponge": "#222224",
+    "intake": {
+     "hex": "#a6aec8",
+     "translucent": true
+    },
+    "outlet": {
+     "hex": "#a6aec8",
+     "translucent": true
+    },
+    "cups": "black",
+    "photo": "https://m.media-amazon.com/images/I/61WB4KuBxIS._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "cups"
+   ],
+   "colorsNote": "Amazon main photo: black scalloped sponge on a black round base with a tall clear lift tube (faint blue tint); airline and valve are accessories. Air-driven (watts = small suggested pump).",
+   "popularity": {
+    "evidence": "Amazon US Aquarium Filters Best Sellers #26; 2,041 ratings; 700+ bought in past month; overall BSR #8,089 in Pet Supplies",
+    "url": "https://www.amazon.com/dp/B09BND5YQ6",
+    "seen": "2026-10-20"
+   }
+  },
+  {
+   "id": "hygger-hob-105",
+   "brand": "hygger",
+   "model": "hygger HOB Filter 105 GPH (10-20 gal)",
+   "kind": "hob",
+   "gph": 105,
+   "galMin": 10,
+   "galMax": 20,
+   "bodyMm": {
+    "w": 198,
+    "d": 124,
+    "h": 189
+   },
+   "priceUsd": 28.49,
+   "url": "https://www.amazon.com/dp/B0DCS2G2HR",
+   "asOf": "2026-10-20",
+   "names": [
+    "hygger hob filter",
+    "hygger power filter 105"
+   ],
+   "est": [
+    "watts",
+    "intakeMm"
+   ],
+   "colors": {
+    "body": {
+     "hex": "#2b2e30",
+     "translucent": true
+    },
+    "lid": {
+     "hex": "#232628",
+     "translucent": true
+    },
+    "motor": {
+     "hex": "#151515"
+    },
+    "intake": {
+     "hex": "#26292b"
+    },
+    "strainer": {
+     "hex": "#1a1a1a"
+    },
+    "outlet": {
+     "hex": "#3a3d3f",
+     "translucent": true
+    },
+    "cups": "clear",
+    "photo": "https://m.media-amazon.com/images/I/61FRtl2iqwL._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "motor",
+    "cups"
+   ],
+   "colorsNote": "Amazon main photo: smoky translucent dark-grey body and tray, black extendable intake tube with a black reticulated sponge, black clip. Dims 7.8 x 7.44 x 4.88 in. Rank #56 only; included because hygger is already a catalogue brand.",
+   "popularity": {
+    "evidence": "Amazon US Aquarium Filters Best Sellers #56; 308 ratings; 100+ bought in past month; overall BSR #17,013 in Pet Supplies",
+    "url": "https://www.amazon.com/dp/B0DCS2G2HR",
+    "seen": "2026-10-20"
+   },
+   "intakeMm": 200
+  },
+  {
+   "id": "jp024f-internal-300",
+   "brand": "Generic (JP-024F)",
+   "model": "Crystal 300 GPH Internal Filter JP-024F (55-150 gal)",
+   "kind": "internal",
+   "gph": 300,
+   "galMin": 55,
+   "galMax": 150,
+   "bodyMm": {
+    "w": 64,
+    "d": 51,
+    "h": 330
+   },
+   "priceUsd": 29.99,
+   "url": "https://www.amazon.com/dp/B0933FMG7B",
+   "asOf": "2026-10-20",
+   "names": [
+    "crystal 300gph internal filter",
+    "jp-024f filter"
+   ],
+   "est": [
+    "watts",
+    "bodyMm axes"
+   ],
+   "colors": {
+    "body": {
+     "hex": "#1d1d1f"
+    },
+    "motor": {
+     "hex": "#161617"
+    },
+    "intake": {
+     "hex": "#1d1d1f"
+    },
+    "strainer": {
+     "hex": "#1d1d1f"
+    },
+    "outlet": {
+     "hex": "#161617"
+    },
+    "cups": "black",
+    "photo": "https://m.media-amazon.com/images/I/71rlEJHIiCL._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "cups"
+   ],
+   "colorsNote": "Amazon main photo: tall opaque matte-black square column with wavy louvres, black motor head with side outlet and a thin clear air tube. Brand not stated on the page; size options 160/300/420/700 GPH exist.",
+   "popularity": {
+    "evidence": "Amazon US Aquarium Filters Best Sellers #20; 2,212 ratings; 500+ bought in past month; overall BSR #7,629 in Pet Supplies",
+    "url": "https://www.amazon.com/dp/B0933FMG7B",
+    "seen": "2026-10-20"
+   }
+  },
+  {
+   "id": "aquaneat-bio-large",
+   "brand": "Aquaneat",
+   "model": "AQUANEAT Bio Sponge Filter (Large, up to 60 gal)",
+   "kind": "sponge",
+   "galMin": 40,
+   "galMax": 60,
+   "watts": 5,
+   "bodyMm": {
+    "w": 124,
+    "d": 124,
+    "h": 152
+   },
+   "priceUsd": 19.99,
+   "url": "https://www.amazon.com/dp/B071HVZVMP",
+   "asOf": "2026-10-20",
+   "names": [
+    "aquaneat large sponge filter",
+    "aquaneat sponge filter large"
+   ],
+   "est": [
+    "watts",
+    "priceUsd",
+    "bodyMm"
+   ],
+   "colors": {
+    "body": {
+     "hex": "#17171a"
+    },
+    "sponge": "#1b1b1d",
+    "intake": {
+     "hex": "#bcc3cc",
+     "translucent": true
+    },
+    "outlet": {
+     "hex": "#bcc3cc",
+     "translucent": true
+    },
+    "cups": "black",
+    "photo": "https://m.media-amazon.com/images/I/71gH8e7oVyL._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "cups"
+   ],
+   "colorsNote": "Amazon main photo: very dark charcoal-black coarse sponge with deep vertical channels, black collar and base, tall clear lift tube.",
+   "popularity": {
+    "evidence": "Amazon US listing (no Aquarium Filters rank); 9,250 ratings; 400+ bought in past month; overall BSR #5,768 in Pet Supplies (#23 in Aquarium Filter Accessories); Amazon files sponge filters under Aquarium Filter Accessories (no Aquarium Filters rank); amazonseo.ai: 6.1% click share on the 'sponge filter' search",
+    "url": "https://www.amazon.com/dp/B071HVZVMP",
+    "seen": "2026-10-20"
+   }
+  },
+  {
+   "id": "pawfly-sponge-3pack",
+   "brand": "Pawfly",
+   "model": "Pawfly Sponge Filter 3-Pack (5-10 gal)",
+   "kind": "sponge",
+   "galMin": 5,
+   "galMax": 10,
+   "watts": 2,
+   "bodyMm": {
+    "w": 80,
+    "d": 80,
+    "h": 125
+   },
+   "priceUsd": 17.99,
+   "url": "https://www.amazon.com/dp/B098SGW6QS",
+   "asOf": "2026-10-20",
+   "names": [
+    "pawfly sponge filter 3 pack",
+    "pawfly aquarium sponge filter"
+   ],
+   "est": [
+    "bodyMm",
+    "watts",
+    "priceUsd"
+   ],
+   "colors": {
+    "body": {
+     "hex": "#18181a"
+    },
+    "sponge": "#232326",
+    "intake": {
+     "hex": "#a9b0c6",
+     "translucent": true
+    },
+    "outlet": {
+     "hex": "#a9b0c6",
+     "translucent": true
+    },
+    "cups": "black",
+    "photo": "https://m.media-amazon.com/images/I/71usigAJyxL._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "cups"
+   ],
+   "colorsNote": "Amazon main photo: three black scalloped-sponge units, black round bases, clear lift tubes with a slight blue tint. bodyMm is per unit (estimated); price is for the 3-pack.",
+   "popularity": {
+    "evidence": "Amazon US listing (no Aquarium Filters rank); 2,307 ratings; 900+ bought in past month; overall BSR #6,899 in Pet Supplies (#34 in Aquarium Filter Accessories); amazonseo.ai: 8.7% click share on the 'sponge filter' search (#2)",
+    "url": "https://www.amazon.com/dp/B098SGW6QS",
+    "seen": "2026-10-20"
+   }
+  }
+ ]
+}

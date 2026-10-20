@@ -20,7 +20,10 @@ export interface HeaterProduct {
   names?: string[];
   /** the heater the brand's retail kits ship (an Aqueon kit has the Aqueon Preset, not the Pro) */
   kit?: boolean;
+  /** why it counts as popular: Amazon rank / ratings / bought per month, where and when seen */
+  popularity?: Popularity;
 }
+export interface Popularity { evidence: string; url: string; seen: string }
 /** A heater's colours part by part (hex), as researched from photos. */
 export interface HeaterLook {
   /** the top cap; `ribbed`: a stack of rings (a grip) */
@@ -31,10 +34,13 @@ export interface HeaterLook {
   tube: { kind: 'glass' | 'frosted' | 'metal' | 'hidden' | 'opaque'; hex: string; window?: [number, number] };
   /** a thermometer scale seen through the glass (white strip, red line) */
   thermometer?: boolean;
-  element: { kind: 'coil' | 'wire' | 'none'; hex: string; note?: string };
+  /** 'core': a solid core seen through the glass (a mini PTC heater's grey block), no wire */
+  element: { kind: 'coil' | 'wire' | 'none' | 'core'; hex: string; note?: string };
   guard: { has: boolean; hex?: string; pattern?: 'slots' | 'mesh' | 'solid' };
   cord: string; cups: 'clear' | 'frosted' | 'black';
   /** 'flat': a flat rectangular body instead of a round tube */ shape?: 'tube' | 'flat';
+  /** a thermostat box on the cord outside the tank (mm), `display` = the digits' colour */
+  controller?: { hex: string; display?: string; wMm: number; hMm: number; dMm: number };
   photo?: string;
 }
 export const HEATER_PRODUCTS = (data as unknown as { heaters: HeaterProduct[] }).heaters;
@@ -85,8 +91,13 @@ export interface FilterProduct {
   priceUsd?: number; url: string; asOf: string;
   /** where the price was read, when not the product page in `url` */
   priceUrl?: string;
+  /** a sponge filter's parts from the bottom up, mm (overall = base + sponge + collar + tube = bodyMm.h): a base neck and
+   *  disc, the sponge (bodyMm.w across, `flutes` vertical grooves round it), a collar on top, and the lift tube at its real
+   *  length (the bubbles leave its top, under water); absent = the old drawing (sponge bodyMm.h tall, tube to the surface) */
+  spongeParts?: { baseMm: number; baseDiaMm: number; neckMm?: number; neckDiaMm?: number; spongeMm: number; flutes?: number; collarMm: number; collarDiaMm: number; tubeMm: number; tubeDiaMm: number };
   names?: string[]; est?: string[];
   colors: FilterLook; colorsEst?: string[]; colorsNote?: string;
+  popularity?: Popularity;
 }
 export const FILTER_PRODUCTS = ((data as unknown as { filters?: FilterProduct[] }).filters ?? []);
 export const filterProduct = (id?: string) => (id ? FILTER_PRODUCTS.find(f => f.id === id) : undefined);

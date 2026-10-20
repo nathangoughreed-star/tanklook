@@ -47,7 +47,7 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 ## Lane sections (current)
 
 ## Lane P4: artificial plants, path 1 (2026-10-20, branch `p4artplants`, port 5893)
-- **Built (waiting for Nathan's verdict on the pictures, not pushed yet):** a new `ItemKind` `'artificial'` with 6 LIBRARY variants:
+- **Shipped (Nathan approved the pictures 2026-10-20):** a new `ItemKind` `'artificial'` with 6 LIBRARY variants:
   `silkstem`, `plasticstem`, `silksword` (rosette), `plasticsword`, `silkmoss`, `plasticmoss` (mats: size = width). `Variant.fake = { mat, form }`
   is the silk / plastic flag. A kind of its own, so growth, Time, propagation, leaf algae, light advice, CO2 / ferts and nitrate uptake all skip them
   (they key on `kind === 'plant'`) with no edit to live-plant code.
@@ -71,6 +71,24 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
   `localhost:<port>/#tank=...` in headless Chrome via CDP, wait for "Building the tank" to clear, `Page.captureScreenshot`.
 - Open: no water-dish style fake rock bases; no artificial floaters or vines; no fin-tear warning (plastic vs long-finned fish) in the gates yet;
   P6 wires the "Live plants? artificial / mixed" choice to these variants.
+## Source traceability (2026-10-20, side chat in the `stocking` worktree; Nathan: the defence against "AI slop")
+Goal: every advice number traces to a source, a fit, a stated derivation or a labelled assumption; never "made up".
+- `src/data/sources.json` = source registry (id, title, by, url, accessed, kind: primary / reference / consensus / tool / retailer / internal). Never register a page nobody opened.
+- `src/data/provenance.ts` (audit only, not in the bundle) = RULES per data target and path (status cited / fitted / derived / researched / claimed / assumption, src ids, why; `rowUrl` = cited by the row's own listing url unless `est`), FORMULAS for engine constants by file + symbol, EXCLUDED (render / UI constants), TABLES (engine tables audited as data).
+- `scripts/source-audit.ts` walks the RUNTIME values (CARE after its merges, AIR after AIRDATA, ...); `test/sources.test.ts` checks every src id / symbol exists and RATCHETS: unsourced values and unsourced engine constants may not rise above `research/source-baseline.json`. **A new advice number or top-level engine constant needs a rule or the test fails.** Lower the baseline after sourcing: `GEN_SOURCES=1 npx vitest run test/sources.test.ts` (also rewrites `research/source-coverage.md`, the ranked work lists).
+- One-line hook in another lane's file: `src/data/climate.ts` `AIR` is now exported (the audit reads it).
+- 2026-10-20 on main: P1 group data (research/groups-sources.md, one url per species) wired in: 20 species researched, 59 `(est)` judgement rows claimed, 5 reef rows UNVERIFIED (P1 agent used placeholder urls: firefish, coralbeauty, watchman, mandarin, cleanershrimp) stay unsourced. Main count: 4994 values, 1302 unsourced.
+- First count (2026-10-20): 4525 data values: cited 1707 (38 %, nearly all product / price rows with their listing url), fitted 59, derived 5, researched 570, claimed 433, assumption 419, **unsourced 1332 (29 %)**. Engine: 81 top-level constants documented, 0 unsourced; 305 numbers written inline in engine functions still need a by-hand look.
+- Biggest unsourced, user-facing: CARE care level / minL / temperament (84 each), group, predation, marine pH; adult length `tl` (108); 5 land animals' air climate (anoles, leopard gecko, ball python: first guesses, no research row); neon / 3 others' water temperature; tech.json minutes / watts / risk; demand-defaults and factors (rule-of-thumb costs).
+- Found while auditing: the nitrogen engine's research notes were not in the repo (SE2 committed them as research/filtration/, efb6e18; its constants are now "researched", plant classes and foam rate still extrapolated); LU_PER_L is calibrated to keep the starters' old counts, which came from a rule of thumb (circular); the BRS coral PAR page and the 0.17 USD/kWh statistic were never recorded. The light engine is the best sourced (reference/par-calibration-data.md, graded datasets).
+- **Open fixes (do these alongside the backfill):**
+  1. `LU_PER_L` (scene/stocking.ts) is circular: it was calibrated to keep the starters' old counts, which came from a rule of thumb. Check it against an outside reference: the nitrogen budget (scene/nitrogen.ts, research/filtration/, now sourced) and AqAdvisor's filtration figure. Then re-fit it, or record the outside check in its FORMULAS entry and change the status from circular "fitted" to fitted against that reference.
+  2. BRS coral PAR page: find the Bulk Reef Supply page that states soft 50-150 / LPS 75-150 / SPS 150-400, put its url in sources.json `brs-par`, and move REEF_TIERS 1-3 from claimed to cited. If no page states those numbers, say so and keep them claimed.
+  3. 0.17 USD/kWh (factors.json kwhUsd, tech.ts KWH_USD): find the statistic (likely US EIA average residential price), record the url, value and month in sources.json, update the number if it has moved, and mark it cited.
+  4. Other unrecorded "standard" values: DENSITY (weight.ts), NWATER and optics (lightout.ts), lamp tables, SUB_ALBEDO, MET_CLASS, SALT_LOAD, NITRATE_TARGET_N. Each needs one opened page or a stated reason.
+- **Pilot DONE 2026-10-20 (pilot-01, 10 species):** per-value sourcing in research/sourcing/ (brief-care-tl.md = agent brief; <batch>.json = url + verbatim quote per value; `node scripts/verify-quotes.mjs <batch>.json` re-fetches every page and checks the quote, writes <batch>.verify.json). provenance.ts turns agreeing, quote-checked fields into cited rules (source id = page host, registered in sources.json). 100.7 k Sonnet tokens for 10 species; 92 / 95 quotes found on the live pages, 0 invented. Unsourced on main 1302 -> 1264. Disagreements wait in research/sourcing/decisions.md; **fleet plan (14 agents, ~1.6 M Sonnet tokens) in research/sourcing/fleet-plan.md, waiting on Nathan's yes.**
+- Next: research backfill in lanes by area (care / min tank / temperament; adult lengths from FishBase; plants and corals per item; costs), measured on one batch first; then a "Sources & methods" page and a "why?" link per recommendation.
+
 ## User flow: paths, budget, deals (Nathan 2026-10-20, design chat; not built yet except the New / Open split)
 - **New / Open are separate menus** (DONE, `caf2f0a`): New = Start from scratch + On sale / Bundles; Open = Starter tanks / Saved tanks; a link swaps them. First launch opens New.
 - **New asks "What do you have so far?"**, worded as the user's situation, never "which type are you". Five paths:
@@ -103,6 +121,19 @@ Nathan 2026-10-20: drag only what the open menu covers; a Show box per kind of t
 - Show boxes (Viewer menu): Animals, Plants, Hardscape, Equipment (= the old Show equipment). Unticked ones are left out of the view and exports, and cannot be picked (`viewer.hidden`, `isHidden` in hitTest). Per viewer, localStorage `tanklook.hide`.
 - Tests: test/menuFocus.test.ts. Shared files touched: viewer.ts, panels.ts (show boxes block + toggle line), pointer.ts (2 lines), main.ts (1 line), index.html, style.css (3 lines).
 
+
+## Popular gear from Amazon, mini heaters, measured sponge (2026-10-20, `stocking` worktree; Nathan's request)
+- research/gear-popular/{heaters,filters,lights}.{json,md}: Amazon best sellers with the popularity evidence per product
+  (rank / ratings / bought per month, seen 2026-10-20), sizes from listings, colours read from product photos.
+- Catalogue: +23 heaters (hygger HG-031 mini 10/25/50/100 W = the heater in Nathan's picture; VCRAZE SC-170xx ceramic
+  bars 10/15/25/50 W, 51-112 mm; DaToo, PULACO, Orlushy, Aquaneat, Hitop, Fluval M200/E300 ...) and +16 filters (Tetra
+  Whisper IQ 20/45, EX 70, NICREW slim HOB, AquaMiracle, Pawfly, AQQA ...). `popularity` field on both.
+- Drawing: a heater's cap and foot shrink with its length (a 105 mm mini is not mostly cap) and the overall length now
+  includes the foot (footed heaters were drawn 24 mm too long); element kind 'core' (a PTC block, no wire);
+  `colors.controller` = an inline thermostat box on the cord, hung outside the back glass, digits to the room.
+- Sponge filters: optional `spongeParts` (base disc, neck, fluted sponge, collar, lift tube at its real length, bubbles out
+  its top under water). Aquaneat small (Amazon B08F79B7MS, Nathan's 9 gal bowl pick) measured off its listing image.
+- Lights: research only so far; there is no light product catalogue yet (next step: catalogue + fixture drawings).
 
 ## Heaters and filters as lists (2026-10-20, side work in the `stocking` worktree; Nathan's request from the Tech menu)
 - `TechSetup.heaters[]` / `filters[]` (scene/tech.ts): one entry per unit, generic (heater `w` editable; filter `model` steps) or a
@@ -382,6 +413,7 @@ rejected bought / AI models, repo is public), so the provenance question is moot
 - Examples (Open…) are plain scene files: re-save them when art changes (see Lane F).
 - Many "uncommitted" / "not pushed" notes in the dated sections below 2026-10-12 are stale: all that work is on main.
 ## Archive index (sections in HANDOFF-archive.md, newest first)
+- Lane P5: stocking screen + fork card, path 1 (2026-10-20, branch `p5stocking`, port 5903)
 - Lane P1: group data, path 1 (2026-10-20, branch `p1groups`, port 5863)
 - Lane P3: fullness tile, path 1 (2026-10-20, branch `p3fullness`, port 5883)
 - Lane P2: tank fit engine, path 1 (2026-10-20, branch `p2tankfit`, port 5873)

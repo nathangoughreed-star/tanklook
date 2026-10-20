@@ -9,7 +9,7 @@ import { gearPicks } from '../src/render/gear3d';
 
 describe('gear catalogue', () => {
   it('every heater has a size, a rating and a source', () => {
-    for (const h of HEATER_PRODUCTS) { expect(h.lengthMm, h.id).toBeGreaterThan(100); expect(h.diaMm).toBeGreaterThan(10); expect(h.watts).toBeGreaterThan(0); expect(h.url).toMatch(/^https:\/\//); }
+    for (const h of HEATER_PRODUCTS) { expect(h.lengthMm, h.id).toBeGreaterThan(40); /* mini heaters: the VCRAZE 10 W is 51 mm */ expect(h.diaMm).toBeGreaterThan(10); expect(h.watts).toBeGreaterThan(0); expect(h.url).toMatch(/^https:\/\//); }
     expect(heaterProduct('topfin-50')?.brand).toBe('Top Fin');
   });
   it('the generic heater is the smallest common size holding the need; nearby products list that size first', () => {

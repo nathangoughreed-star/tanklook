@@ -587,17 +587,17 @@
       "port": 5893
     },
     {
-      "name": "p5stocking",
+      "name": "p6abuilds",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "run",
         "dev",
         "--",
         "--port",
-        "5903",
+        "5913",
         "--strictPort"
       ],
-      "port": 5903
+      "port": 5913
     }
   ]
 }
