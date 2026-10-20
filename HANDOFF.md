@@ -44,6 +44,13 @@ models on /review.html (and its drawImage error), TG leftovers (heater product p
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
+## Lane TG: menu focus + Show boxes (2026-10-20, branch `techgear`, port 5833)
+Nathan 2026-10-20: drag only what the open menu covers; a Show box per kind of thing; keep the fade as the hint of what is draggable.
+- Drag gate: gear moves (drag, Shift+wheel lean) only while Tech is open, like pieces (Hardscape / Plants) and animals (Animals): `canPick('gear')` in interact/pointer.ts, `pickSec` in new `render/menuFocus.ts`, used by main.ts.
+- Menu focus: while Tech / Animals / Hardscape / Plants is open, its things are drawn as they are and the rest fades 55 % toward the room (viewer.ts drawFocus, the painted-patch fade, no rebuild). Tech = gear + light fixture; Animals = fish, herps, corals; glass, water, ground, room never focus. Not in PNG exports or thumbnails (`exporting`). Off while the panel is hidden. Hook: one line in panels.ts's section toggle sets `viewer.menuFocus`.
+- Show boxes (Viewer menu): Animals, Plants, Hardscape, Equipment (= the old Show equipment). Unticked ones are left out of the view and exports, and cannot be picked (`viewer.hidden`, `isHidden` in hitTest). Per viewer, localStorage `tanklook.hide`.
+- Tests: test/menuFocus.test.ts. Shared files touched: viewer.ts, panels.ts (show boxes block + toggle line), pointer.ts (2 lines), main.ts (1 line), index.html, style.css (3 lines).
+
 
 ## Lane SE: our own stocking engine, load vs capacity (2026-10-19, branch `stocking`, port 5843)
 **Step 1 DONE (probe).** Mesh volume from the 3D fish loft works but is only about 2x accurate vs FishBase length-weight (goldfish 4.8x heavy, guppy 0.29x, pleco 2x, swordtail 0.22x). **Nathan's decision 2026-10-19: mass = FishBase length-weight for EVERY species (shrimp, snails, herps: keeper-reference estimates, `src: estimate`); the model volume is only a cross-check that flags outliers.**

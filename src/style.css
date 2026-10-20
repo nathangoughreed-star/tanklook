@@ -71,6 +71,9 @@ button.on, button.primary { background: var(--accent); color: #fff; border-color
 .grow { flex: 1 }
 .field { display: flex; gap: 6px; align-items: center; margin: 5px 0; flex-wrap: wrap }
 .flabel { color: var(--muted); width: 86px; flex: none }
+.showBoxes { display: grid; grid-template-columns: 86px auto auto; gap: 4px 10px }
+.showBoxes .flabel { grid-row: span 2 }
+.showBoxes label { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap }
 .toolbar { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; margin: 4px 0 6px }
 .namerow { display: flex; gap: 8px; align-items: center }
 .namerow input { flex: 1 }

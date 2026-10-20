@@ -342,7 +342,11 @@
   <div class="row"><label for="cZoom">Zoom</label><input id="cZoom" type="range" min="0.1" max="12" step="0.05"><output id="oZoom"></output></div>
   <div class="hint" id="camHint"></div>
   <div class="btns"><button id="camReset">Straight on</button></div>
-  <label title="The filter, heater, CO2 and other gear the Tech menu picks, drawn in the tank. Off for a clean picture of the scape (PNG exports follow it)"><input type="checkbox" id="gearOn" checked> Show equipment</label>
+  <div class="field showBoxes" title="What the view shows (PNG exports follow it). Something hidden cannot be picked or moved"><span class="flabel">Show</span>
+    <label><input type="checkbox" id="showFish" checked> Animals</label>
+    <label><input type="checkbox" id="showPlants" checked> Plants</label>
+    <label><input type="checkbox" id="showHard" checked> Hardscape</label>
+    <label title="The filter, heater, CO2 and other gear the Tech menu picks, drawn in the tank. Off for a clean picture of the scape (PNG exports follow it)"><input type="checkbox" id="gearOn" checked> Equipment</label></div>
   </details>
   <details class="sec" data-sec="compare"><summary><h2>Compare</h2></summary>
   <div class="btns"><button id="split">Split tank</button></div>

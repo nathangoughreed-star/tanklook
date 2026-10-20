@@ -1,5 +1,6 @@
 // Sidebar wiring. Inputs write through store.update(); one sync() pulls every control back from the scene,
 // so undo/redo, file open and pointer drags all refresh the panels the same way.
+import { FOCUS_SECS, type FocusSec } from '../render/menuFocus';
 import { attachDemandPanel } from './demandPanel';
 import { fitToLimits, hasLimits } from '../demand/fit';
 import { attachTechMenu } from './techMenu';
@@ -1108,6 +1109,14 @@ Cancel, then change the name, to keep both.`)) return;
   const hideCb = $('hideLightAbove'), setHide = (on: boolean) => { hideCb.checked = viewer.hideOverhead = on; viewer.invalidate(); };
   try { setHide(localStorage.getItem('tanklook.hidelight') === 'on'); } catch { setHide(false); }
   hideCb.onchange = () => { try { localStorage.setItem('tanklook.hidelight', hideCb.checked ? 'on' : 'off'); } catch { /* ignore */ } setHide(hideCb.checked); };
+  // the other Show boxes (Nathan 2026-10-20: "visual filters as check boxes for what you want to see"): per-viewer, kept
+  const showBoxes = { showFish: 'fish', showPlants: 'plants', showHard: 'hardscape' } as const;
+  const saveShow = () => { try { localStorage.setItem('tanklook.hide', JSON.stringify([...viewer.hidden])); } catch { /* ignore */ } };
+  try { for (const k of JSON.parse(localStorage.getItem('tanklook.hide') ?? '[]') as string[]) if (Object.values(showBoxes).includes(k as never)) viewer.hidden.add(k as never); } catch { /* storage blocked: all shown */ }
+  for (const [id, sec] of Object.entries(showBoxes)) {
+    const cb = $(id) as HTMLInputElement; cb.checked = !viewer.hidden.has(sec);
+    cb.onchange = () => { if (cb.checked) viewer.hidden.delete(sec); else viewer.hidden.add(sec); saveShow(); viewer.invalidate(); };
+  }
   const gearCb = $('gearOn') as HTMLInputElement; gearCb.checked = gearShown(); gearCb.onchange = () => { setGearShown(gearCb.checked); viewer.invalidate(); }; // lane TG: the tech gear, shown or hidden in place
   // "How to use" stays closed: the start menu names the main gestures and points to it (audit #4 / #8, 2026-10-14)
   // panel sections start collapsed on every load (Nathan 2026-10-09); whether the panel is hidden is a per-viewer preference
@@ -1144,6 +1153,7 @@ Cancel, then change the name, to keep both.`)) return;
     if (d.open) { for (const o of secs) if (o !== d && o.open) o.open = false; if (scape) d.append($('itemEdit')); }
     else if (scape && store.selectedItem && scapeSec(store.selectedItem.kind) === d.dataset.sec) store.selectItem(null);
     else if (d.dataset.sec === 'fish' && store.selId != null) store.select(null);
+    const f = secs.find(x => x.open)?.dataset.sec as FocusSec | undefined; viewer.menuFocus = f && FOCUS_SECS.includes(f) ? f : null; viewer.invalidate(); // menu focus (lane TG)
   });
   // the picker (lane SS2): Bare tank, then Freshwater / biotopes / Marine / Terrarium groups; the marine styles show in a
   // saltwater tank only and the freshwater biotopes in a freshwater one (refreshed with the water type, below)

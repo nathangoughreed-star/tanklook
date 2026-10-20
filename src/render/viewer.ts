@@ -19,6 +19,9 @@ import { onPictureLoad, setMaxAnisotropy } from './textures';
 import { OUTLINE } from './fish3d';
 import { capping } from './items';
 import { PERSON_BODY, PERSON_HEAD } from '../art/placeholder';
+import { inFocus, type FocusSec } from './menuFocus';
+/** How far the rest of the view fades toward the room while a menu focuses it (the painted-patch fade is 0.68). */
+const MENU_FADE = 0.55;
 
 type Pt2 = [number, number];
 const cross = (o: Pt2, a: Pt2, b: Pt2) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
@@ -573,10 +576,10 @@ export class Viewer {
 
   /** Lay out viewports, frame cameras, render. Synchronous, so readouts are never a frame behind. */
   /** Fade what the first pass drew toward the room colour, then draw only `focus` over it (depth kept, so the rest still hides it). */
-  private drawFocus(vp: Viewport, focus: THREE.Object3D[], room: THREE.Color) {
+  private drawFocus(vp: Viewport, focus: THREE.Object3D[], room: THREE.Color, fade: number) {
     const r = this.renderer;
     this.dim ??= (() => { const sc = new THREE.Scene(), m = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.68, depthTest: false, depthWrite: false })); m.frustumCulled = false; sc.add(m); return { sc, m, cam: new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1) }; })();
-    (this.dim.m.material as THREE.MeshBasicMaterial).color.copy(room);
+    const dm = this.dim.m.material as THREE.MeshBasicMaterial; dm.color.copy(room); dm.opacity = fade;
     const auto = r.autoClear; r.autoClear = false;
     r.render(this.dim.sc, this.dim.cam);
     const others = vp.scene!.children.filter(o => o.visible && !focus.includes(o)); for (const o of others) o.visible = false;
@@ -584,6 +587,19 @@ export class Viewer {
     for (const o of others) o.visible = true;
     r.autoClear = auto;
   }
+  /** What the Show boxes (Viewer menu) leave out of the view; a hidden thing cannot be picked either (hitTest). */
+  hidden = new Set<Exclude<FocusSec, 'tech'>>();
+  /** Is this object (or the scene child it is part of) left out by a Show box? */
+  isHidden(o: THREE.Object3D) {
+    if (!this.hidden.size) return false;
+    while (o.parent && !(o.parent as THREE.Scene).isScene) o = o.parent;
+    for (const s of this.hidden) if (inFocus(o, s)) return true;
+    return false;
+  }
+  /** The open panel section the view is focused on (panels.ts sets it on toggle), or null. */
+  menuFocus: FocusSec | null = null;
+  /** Drawing a PNG or a thumbnail: no menu focus in it. */
+  private exporting = false;
   private dim?: { sc: THREE.Scene; m: THREE.Mesh; cam: THREE.OrthographicCamera };
   draw() {
     if (this.needsBuild) this.build();
@@ -677,12 +693,17 @@ export class Viewer {
       // a reveal running: only the parts shown so far (the rest are still linking; see revealTick)
       const upTo = this.reveal ? this.reveal.shown[vp.i] : PART.animals, held: THREE.Object3D[] = [];
       if (upTo < PART.animals) for (const o of vp.scene!.children) if (o.visible && (o.userData.part ?? 0) > upTo) { o.visible = false; held.push(o); }
+      // the Show boxes (Animals / Plants / Hardscape; Equipment is gear3d's own setGearShown): unticked ones are left out, exports too
+      if (this.hidden.size) for (const o of vp.scene!.children) if (o.visible && this.isHidden(o)) { o.visible = false; held.push(o); }
       // a painted patch being edited (render/brushmesh.ts): the rest of the tank is drawn, faded toward the room, then the patch over it
-      const focus = vp.scene!.children.filter(o => o.userData.focus && o.visible);
+      let focus = vp.scene!.children.filter(o => o.userData.focus && o.visible), fade = 0.68;
+      // menu focus (render/menuFocus.ts): the open Tech / Animals / Hardscape / Plants menu's parts, the rest faded; never in an export
+      const mf = document.getElementById('app')?.classList.contains('collapsed') ? null : this.menuFocus; // the panel hidden: no menu to point at
+      if (!focus.length && mf && !this.exporting) { focus = vp.scene!.children.filter(o => o.visible && inFocus(o, mf)); fade = MENU_FADE; }
       for (const o of focus) o.visible = false;
       r.render(vp.scene!, vp.cam);
       for (const o of focus) o.visible = true;
-      if (focus.length) this.drawFocus(vp, focus, r.getClearColor(new THREE.Color()));
+      if (focus.length) this.drawFocus(vp, focus, r.getClearColor(new THREE.Color()), fade);
       for (const o of held) o.visible = true;
       for (const o of culled) { o.onBeforeRender = THREE.Object3D.prototype.onBeforeRender; o.onAfterRender = THREE.Object3D.prototype.onAfterRender; }
       cb.setLocked(false); cb.setMask(true); gl.colorMask(true, true, true, true);
@@ -824,8 +845,8 @@ export class Viewer {
     // the nearest fish, rock, wood or cave; a plant only when nothing else is under the pointer (its cards are mostly
     // see-through, so it would otherwise hide the fish behind it). A hit only counts in the middle of the piece's
     // on-screen box, so a drag that starts on a fin tip or a leaf's edge turns the view instead of moving the piece
-    const items = vp.itemMeshes ?? [], core = (h: THREE.Intersection) => this.inCore(h.object as THREE.Mesh, ndc, vp);
-    const hit = this.ray.intersectObjects([...(vp.fishMeshes ?? []), ...items.filter(m => !m.userData.plant)], false).find(core)
+    const items = (vp.itemMeshes ?? []).filter(m => !this.isHidden(m)), core = (h: THREE.Intersection) => this.inCore(h.object as THREE.Mesh, ndc, vp);
+    const hit = this.ray.intersectObjects([...(vp.fishMeshes ?? []).filter(m => !this.isHidden(m)), ...items.filter(m => !m.userData.plant)], false).find(core)
       ?? this.ray.intersectObjects(items.filter(m => m.userData.plant), false).find(core);
     const o = hit?.object;
     return { vp, ray: this.ray.ray.clone(), ...none, fishId: o && o.userData.item == null ? (o.userData.id as number) : null, itemId: o?.userData.item ?? null, mesh: o as THREE.Mesh | undefined };
@@ -850,7 +871,7 @@ export class Viewer {
   /** Small JPEG of the current view for the saved-tanks list (drawn and read in one go: no preserved buffer needed).
    *  '' when there is nothing to picture (view collapsed or hidden): the save goes ahead without one. */
   thumbnail(w = 320): string {
-    this.draw();
+    this.exporting = true; this.draw(); this.exporting = false;
     const c = this.canvas, t = document.createElement('canvas');
     if (!c.width || !c.height) return '';
     t.width = w; t.height = Math.max(1, Math.round(w * c.height / c.width));
@@ -867,7 +888,7 @@ export class Viewer {
   exportPNG(mult: number): Promise<Blob> {
     const dpr = this.fullRatio(), k = dpr * mult;
     this.govApplied = 1; this.renderer.setPixelRatio(k);
-    this.draw();
+    this.exporting = true; this.draw(); this.exporting = false;
     const out = exportCrop(this.content, this.canvas.width / k, this.canvas.height / k);
     const t = document.createElement('canvas'); t.width = Math.round(out.w * k); t.height = Math.round(out.h * k);
     const g = t.getContext('2d')!;
