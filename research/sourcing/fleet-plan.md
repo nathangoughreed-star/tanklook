@@ -8,7 +8,7 @@
   The 3 others are one Fishkeeping World table row the agent rebuilt from cells that are apart on the page; the values
   (Easy, Semi-aggressive, 30 gallons) are on the page. No invented page or number. The brief now forbids rebuilt rows.
 - Integrated: provenance.ts reads research/sourcing/*.json + *.verify.json; 36 values cited, 2 prey lengths labelled
-  assumptions (behaviour cited). Unsourced 1332 -> 1294. The 10 disagreements wait in decisions.md.
+  assumptions (behaviour cited). Unsourced on main 1302 -> 1264. The 10 disagreements wait in decisions.md.
 - **Per-item cost: ~10 k Sonnet tokens per species (~2 k per field, ~1 k per checked source).** The checker costs no model tokens.
 
 ## Fleet (14 Sonnet agents, ~1.6 M Sonnet tokens; two waves of 7, ~5 min each)

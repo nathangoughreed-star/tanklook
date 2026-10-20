@@ -16,9 +16,9 @@ import { CHEM } from './waterchem';
 import bm from './bodymass.json';
 import { FILTER_MEDIA_L } from './filtermedia';
 import { NEEDS, isCoralNeed, isLand } from '../scene/lightneeds';
+import groupsMd from '../../research/groups-sources.md?raw';
 import { CARE } from './care';
 import speciesJson from './species.json';
-import groupsMd from '../../research/groups-sources.md?raw';
 
 export type Status = 'cited' | 'fitted' | 'derived' | 'researched' | 'claimed' | 'assumption';
 export const STATUSES: Status[] = ['cited', 'fitted', 'derived', 'researched', 'claimed', 'assumption'];
