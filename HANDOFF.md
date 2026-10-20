@@ -46,6 +46,17 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
+## Gaps ledger (2026-10-20, coordinator 5: gaps the chats reported; start continuation chats from here)
+- P1 group data: 63 of 84 species rows are estimates, 5 reef rows unverified (firefish, coralbeauty, watchman, mandarin, cleanershrimp): partly covered by the source fleet (SB).
+- P2b: the cost span is only about $10 wide (only the filter differs between builds); widening needs an invented light tier (Nathan to decide).
+- P3: the dashed space outline shows in PNG exports / thumbnails. P4: no artificial floaters or vines.
+- P5: bare tank still draws the default filter / heater; appeal tags coarse; search has no 3D thumbnail. P6b: floaters dropped in artificial / mixed; artificial thinning constant (1 per 120 cm2) is a judgement. => chat PX: Path 1 Polish (prompts/chat-path1-polish.md).
+- P2b / P6a / P6b: fresh water has almost no minutes-a-week lever; the stocking span uses a median tank price while builds use the editor's (a few $); bundle build about $4 under the editor panel. => chat MW: Minutes a Week (prompts/chat-minutes-a-week.md; proposal first).
+- SE2: waste constant good to about 2x, plant classes extrapolated, filtration research built in part by S164 (branch nitrogen-ferts, awaiting Nathan's push yes).
+- LC light catalogue: PAR for a 12 W bar looks high; light price not in cost totals; submersible lit from the surface and can overlap a centred filter intake. => chat LF: Lights Follow-ups (prompts/chat-lights-followups.md).
+- SB / ST: about 90 source disagreements wait for Nathan (research/sourcing/decisions.md); 305 inline engine numbers need a by-hand look. => chat SQ: Source Decisions (prompts/chat-source-decisions.md).
+- TV tank sizes: Walmart Marineland Portrait 5 unavailable (remove the deal? Nathan); Amazon Aqueon SmartClean 20 size still a guess. SF sponge filter: Nathan to decide whether the fullness tile starts open on desktop (wait for S164 to land: both edit fullnessTile.ts).
+
 ## Source traceability (2026-10-20, side chat in the `stocking` worktree; Nathan: the defence against "AI slop")
 Goal: every advice number traces to a source, a fit, a stated derivation or a labelled assumption; never "made up".
 - `src/data/sources.json` = source registry (id, title, by, url, accessed, kind: primary / reference / consensus / tool / retailer / internal). Never register a page nobody opened.

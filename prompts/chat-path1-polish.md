@@ -1,0 +1,9 @@
+You are PX: Path 1 Polish. Run on Sonnet. Do NOT rename this chat; the coordinator set its title.
+Read first: HANDOFF.md "Start here" (lane rules, chat IDs, Source traceability rule: new advice numbers need a rule in src/data/provenance.ts), the HANDOFF section "Gaps ledger (2026-10-20)" and the archived sections for lanes P3, P4, P5, P6a, P6b.
+Work unit: path 1 ("An animal I want") is built; close the gaps its lanes reported, in this order, one small commit each, all in your own worktree (create it: from C:\Users\nreed\Glass Box run git fetch; git worktree add ../Glass-Box-px -b px origin/main; npm ci; never work in the shared folder or another lane's folder):
+1. P5: the bare tank on the stocking screen still draws the default filter and heater; draw it bare (glass, sand, animals only) until the build is picked.
+2. P5: search on the stocking screen has no 3D preview thumbnail; add a small orbitable preview of the species (reuse the species card's 3D preview).
+3. P5: appeal tags are coarse, so swap suggestions are only as good as the tags; review the `appeal` lists in src/data/groups.ts for the commonly kept 30 species and sharpen them (every change cites nothing new: tags are judgement, label them so).
+4. P6b: floaters are dropped in artificial and mixed scapes; keep live floaters when the plant mode is mixed.
+5. P3: the dashed "Set my space" outline shows in PNG exports and thumbnails; hide it there unless Nathan wants it (ask him).
+Pictures of items 1, 2 and 4 to Nathan (SendUserFile, marked, titled) BEFORE you declare done. Full suite and tsc green; push to main (git fetch; git rebase origin/main; git push origin HEAD:main; verify with git merge-base --is-ancestor); record in HANDOFF; message the coordinator (local_798b4aae-5251-4503-ba6a-cfe4097df2bf) when work lands.
