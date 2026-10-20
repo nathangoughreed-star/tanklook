@@ -14,7 +14,7 @@ import bm from '../data/bodymass.json';
 import { getSpecies, type Species } from '../data/species';
 import { SPACE_FACTOR, SPACE_FACTOR_CLASS } from '../data/spacefactor';
 import { bioloadLitres } from './starter';
-import { feedingOf, nitrogenBudget, tanOf, type Nitrogen } from './nitrogen';
+import { feedingOf, isLivePlantPatch, nitrogenBudget, tanOf, type Nitrogen } from './nitrogen';
 import { heatLoss, rowsFor, stockCapacity } from './tech';
 import type { Fish, TankSetup } from './types';
 
@@ -111,7 +111,7 @@ export const litresPerAnimal = (sp: Species) => Math.max(animalLoad(sp, sp.tl, T
 export function capacityOf(S: TankSetup): CapacityParts {
   const litres = bioloadLitres(S), tempC = S.water.on ? heatLoss(S).targetC : T_REF;
   const filter = S.water.on ? stockCapacity(S) : 1;
-  const plantCount = S.items.filter(i => i.kind === 'plant').length + (S.patches ?? []).filter(p => p.brush.startsWith('plant:')).length * PATCH_PLANTS;
+  const plantCount = S.items.filter(i => i.kind === 'plant').length + (S.patches ?? []).filter(isLivePlantPatch).length * PATCH_PLANTS;
   const plants = 1 + PLANT_MAX * Math.min(1, plantCount / Math.max(litres / 100, 0.1) / PLANTS_PER_100L_FULL);
   return { litres, perL: LU_PER_L, filter, plants, plantCount, tempC, capacity: litres * LU_PER_L * filter * plants, space: litres * SPACE_PER_L };
 }
@@ -159,7 +159,7 @@ export function stockingOf(S: TankSetup): Stocking {
 const memo = new Map<string, Stocking>();
 export function stockingMemo(S: TankSetup): Stocking {
   const key = JSON.stringify([S.fish.map(f => [f.species, f.tl]), S.tank, S.water.on, S.water.level, S.water.salt, S.tech, S.lid,
-    S.feeding, S.items.filter(i => i.kind === 'plant').map(i => i.variant).join(), (S.patches ?? []).filter(p => p.brush.startsWith('plant:')).length]);
+    S.feeding, S.items.filter(i => i.kind === 'plant').map(i => i.variant).join(), (S.patches ?? []).filter(isLivePlantPatch).length]);
   let r = memo.get(key);
   if (!r) { r = stockingOf(S); if (memo.size > 16) memo.delete(memo.keys().next().value!); memo.set(key, r); }
   return r;

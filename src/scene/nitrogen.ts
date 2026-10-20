@@ -10,7 +10,8 @@
 // plant takes, as the water change per week that holds nitrate at about 40 ppm.
 import { FILTER_MEDIA_L, MEDIA_L_PER_GPH, SPONGE_L_PER_GAL } from '../data/filtermedia';
 import type { Species } from '../data/species';
-import type { TankSetup } from './types';
+import { LIBRARY } from './items';
+import type { Patch, TankSetup } from './types';
 import { feedOf, filterFor, optionDef, techOf } from './tech';
 import { MET_CLASS, metClass, tempFactor } from './stocking';
 
@@ -69,6 +70,9 @@ const DRY_PLANTS = new Set(['echeveria', 'haworthia', 'jade', 'aloe', 'burrotail
 const DEFAULT_PLANT: [PlantClass, number] = ['medium', 30];
 const RATE_100G = { slow: 0.001, medium: 0.003, fast: 0.006 } as const, FLOAT_M2 = 0.3, DIE_OFF_RETURN = 0.3, PATCH_FW = 30, PATCH_PLANTS = 3;
 
+/** A painted patch of live plants: brush `plant:<variant>` whose variant is not an artificial (silk / plastic) kind (lane P4 2026-10-20). */
+export const isLivePlantPatch = (p: Patch) => p.brush.startsWith('plant:') && (LIBRARY[p.brush.slice(6)]?.kind ?? 'plant') === 'plant';
+
 export interface PlantParts { gN: number; count: number; light: number; co2: number }
 /** g N a day the plants can take (ammonium first), from the items and painted plant patches. */
 export function plantUptake(S: TankSetup): PlantParts {
@@ -81,7 +85,7 @@ export function plantUptake(S: TankSetup): PlantParts {
     count++;
     gN += p[0] === 'float' ? p[1] * FLOAT_M2 * light : (p[1] / 100) * RATE_100G[p[0]] * light * co2;
   }
-  for (const p of S.patches ?? []) if (p.brush.startsWith('plant:')) { count += PATCH_PLANTS; gN += PATCH_PLANTS * (PATCH_FW / 100) * RATE_100G.medium * light * co2; }
+  for (const p of S.patches ?? []) if (isLivePlantPatch(p)) { count += PATCH_PLANTS; gN += PATCH_PLANTS * (PATCH_FW / 100) * RATE_100G.medium * light * co2; }
   return { gN: gN * (1 - DIE_OFF_RETURN), count, light, co2 };
 }
 
