@@ -101,7 +101,8 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
     const plan = planFor(picks, chosen);
     if (!plan.tank) return '<p class="spNote">This animal lives on land: choose a terrarium in the editor.</p>';
     const space = plan.tank.id === plan.need?.tank.id ? plan.need.spacePct : stockingMemo(store.tank).spacePercent;
-    const bar = (pct: number) => `<span class="spBar ${pct > 100 ? 'over' : pct >= 85 ? 'near' : ''}" title="Space used: ${Math.round(pct)} %"><i style="width:${Math.max(2, Math.min(100, pct))}%"></i></span>`;
+    const SP_NEAR = 75; // green up to here, amber to 100, red over
+    const bar = (pct: number) => `<span class="spBar ${pct > 100 ? 'over' : pct >= SP_NEAR ? 'near' : ''}" title="Space used: ${Math.round(pct)} %"><i style="width:${Math.max(2, Math.min(100, pct))}%"></i></span>`;
     let h = `<div class="spTank"><b>${esc(tankLabel(plan.tank))}</b>${bar(space)}<span class="spPct">${Math.round(space)} % of the space</span></div>`;
     if (plan.problem) h += `<div class="spWarn">${esc(plan.problem)}</div>`;
     else if (plan.need && plan.tank.id !== plan.need.tank.id) h += `<div class="spNote">The smallest that holds them is ${esc(tankLabel(plan.need.tank))}.</div>`;
