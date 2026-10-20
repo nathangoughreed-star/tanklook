@@ -169,7 +169,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
   const tankA = tank(raw.tank, d.tank);
   const c = sub('camera'), r = sub('render'), l = sub('light'), s = sub('substrate'), lay = sub('layout');
   const te = sub('terrain'), wa = sub('water'), st = sub('stand'), w = sub('wall'), pe = sub('person'), bd = sub('backdrop'), gw = sub('grow'), cd = sub('condition');
-  const glass = r.glass === 'auto' ? 'auto' : typeof r.glass === 'number' && GLASS_CHOICES.includes(r.glass) ? r.glass : 'auto';
+  const glass = r.glass === 'auto' ? 'auto' : typeof r.glass === 'number' && r.glass >= 3 && r.glass <= 25 ? +r.glass.toFixed(2) : 'auto'; // a maker's own thickness (9.5, 15.9 mm) is kept too
   const subMax = tankA.H * 0.5;
 
   const fish: Fish[] = [], seen = new Set<number>();

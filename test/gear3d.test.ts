@@ -18,7 +18,7 @@ describe('gear3d', () => {
     const hi = gearPicks({ ...S, tech: applyPreset(S, 'hightech') }).map(p => p.id);
     expect(hi).toEqual(expect.arrayContaining(['co2'])); expect(hi.some(id => id.startsWith('canister'))).toBe(true);
     const R = ex('reef'), sps = gearPicks({ ...R, tech: applyPreset(R, 'sps') });
-    expect(sps.map(p => p.id)).toEqual(expect.arrayContaining(['sump', 'wavemaker'])); expect(sps.find(p => p.id.startsWith('heater'))?.n).toBe(2);
+    expect(sps.map(p => p.id)).toEqual(expect.arrayContaining(['sump', 'wavemaker'])); expect(sps.filter(p => p.id.startsWith('heater')).length).toBe(2); // one pick per heater
     expect(gearPicks({ ...S, water: { ...S.water, on: false } })).toEqual([]);
   });
 

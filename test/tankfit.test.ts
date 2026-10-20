@@ -33,7 +33,7 @@ describe('tank fit engine (lane P2)', () => {
   it('steps are monotonic: each is bigger than the last, the space bar falls, every tank is from the catalogue, the cost rises overall', () => {
     for (const k of Object.keys(CASES)) {
       const t = fit(k), s = stepUps(CASES[k], t.tank, 3);
-      expect(s.length, k).toBe(k === 'oscar' ? 2 : 3); // the catalogue runs out above the oscar's filtration-driven tank
+      expect(s.length, k).toBe(3); // (before the nitrogen model the catalogue ran out above the oscar's filtration-driven tank: 2 steps)
       let prev = t.litres, prevSpace = t.spacePct;
       for (const x of s) { expect(getTankModel(x.tank.id), k).toBeTruthy(); expect(x.litres, k).toBeGreaterThan(prev); expect(x.spacePct, k).toBeLessThan(prevSpace); prev = x.litres; prevSpace = x.spacePct; }
       expect(s[s.length - 1].costDeltaUsd, k).toBeGreaterThan(0);

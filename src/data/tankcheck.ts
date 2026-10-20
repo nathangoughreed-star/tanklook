@@ -22,6 +22,9 @@ export function checkModel(m: TankModel): TankReport {
   if (!m.terrarium && m.band !== bandOf(m.ratedGal)) problems.push(`band ${m.band} but ${m.ratedGal} gal is ${bandOf(m.ratedGal)}`);
   if (m.shape === 'bow' && m.bowMin == null) problems.push('bow without bowMin');
   if (m.shape === 'poly' && !m.sides) problems.push('poly without sides');
+  // a guessed size is a last resort: once a checked bare glass tank is listed at this size, the preset takes its size (Nathan 2026-10-20)
+  const listed = (m.variants ?? []).find(v => v.confidence === 'high' && v.price_kind !== 'kit' && !v.discontinued && !/acrylic/i.test(`${v.line ?? ''} ${v.price_note ?? ''}`));
+  if (/^estimate/.test(m.source) && listed) problems.push(`estimated size, but ${listed.brand} ${listed.line ?? ''} is listed at ${listed.L_in} x ${listed.D_in} x ${listed.H_in} in`);
   if (m.shape === 'pie' && !m.pieDeg) problems.push('pie without pieDeg');
   return { id: m.id, rated: m.ratedGal, gal, ratio, interior: { L: T.L, H: T.H, D: T.D }, problems };
 }

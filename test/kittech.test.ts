@@ -19,8 +19,8 @@ describe('bundle gear', () => {
     for (const { d, S } of bundles) {
       const k = dealAsKit(d);
       if (!k.filter) continue;
-      const pick = gearPicks(S!).find(p => p.row === 'filter');
-      if (S!.tech!.filterProduct) { expect(pick?.product, d.id).toBe(S!.tech!.filterProduct); continue; }
+      const pick = gearPicks(S!).find(p => p.row === 'filter'), fp = S!.tech!.filters?.[0]?.product;
+      if (fp) { expect(pick?.product, d.id).toBe(fp); continue; }
       const fm = matchFilter({ ...k.filter, gal: k.filter.gal ?? d.gal })!.model;
       expect(gearPicks(S!).map(p => p.id), d.id).toContain(fm.id);
     }

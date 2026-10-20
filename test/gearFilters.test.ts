@@ -87,8 +87,9 @@ describe('bundles draw their exact gear', () => {
     for (const d of DEALS) {
       const S = sceneFromDeal(d)?.tanks[0]; if (!S?.tech) continue;
       const k = dealAsKit(d), fp = k.filter && filterByName(`${k.filter.name ?? ''} ${k.filter.rating ?? ''}`, k.filter.kind);
-      if (fp) { expect(S.tech.filterProduct, d.id).toBeDefined(); expect(filterProduct(S.tech.filterProduct)?.brand, d.id).toBe(fp.brand); filters++; }
-      if (S.tech.heaterProduct) heaters++;
+      const own = S.tech.filters?.[0]?.product; // the bundle's own units (2026-10-20: heaters / filters are lists)
+      if (fp) { expect(own, d.id).toBeDefined(); expect(filterProduct(own)?.brand, d.id).toBe(fp.brand); filters++; }
+      if (S.tech.heaters?.[0]?.product) heaters++;
     }
     expect(filters).toBeGreaterThanOrEqual(20); expect(heaters).toBeGreaterThanOrEqual(12);
   });

@@ -13,7 +13,7 @@ import { FILTER_MODELS, HEATER_MODELS, matchHeater, type FilterKind, type Filter
 import { price as rowPrice } from '../demand/prices';
 import type { Range3 } from '../demand/types';
 import { volume } from './physics';
-import { filterProduct, heaterProduct, listedPrice, type FilterProduct } from '../data/gearCatalog';
+import { filterProduct, genericHeaterW, heaterProduct, listedPrice, type FilterProduct, type HeaterProduct } from '../data/gearCatalog';
 import { footprint } from './shape';
 import type { GrowFeed, TankSetup } from './types';
 
@@ -49,9 +49,21 @@ export interface TechSetup {
   heaterProduct?: string;
   /** room temperature, deg C, where the tank stands; absent = tech.json roomC (21) */
   roomC?: number;
-  /** where lane TG draws each row's gear (row id -> place); absent = TG's default side */
+  /** where lane TG draws each row's gear (row id -> place; a second unit of a row is 'heater.1', 'filter.1', ...); absent = TG's default side */
   place?: Record<string, GearPlace>;
+  /** the heaters, one entry each (Nathan 2026-10-20: add as many as you like, each generic or a catalogue product);
+   *  absent = the older fields (rows.heater, heaterW, heaterProduct). rows.heater follows the count (withUnits). */
+  heaters?: HeaterUnit[];
+  /** the filtration, one entry per unit, each of a filter kind (tech.json filter option id), generic or a product;
+   *  absent = the older fields (rows.filter, filterModel, filterProduct). rows.filter follows the main unit (withUnits). */
+  filters?: FilterUnit[];
 }
+/** One heater: a catalogue product, or a generic one of `w` watts (absent = sized to the tank's need). `kit`: the one the
+ *  bundle the tank was started from ships (its price is in the bundle's while the bundle is pinned). */
+export interface HeaterUnit { product?: string; w?: number; kit?: boolean }
+/** One filter: `kind` a filter option id (sponge, internal, hob, canister, sump); a catalogue product of that kind, or a
+ *  generic gear-models.json `model` (absent = sized for the tank). `kit` as for heaters. */
+export interface FilterUnit { kind: string; product?: string; model?: string; kit?: boolean }
 
 export type Water = 'wet' | 'fresh' | 'salt';
 export interface TechOption {
@@ -187,9 +199,84 @@ export function withChoice(S: TankSetup, row: string, opt: string): TechSetup {
   // an in-sump skimmer without a sump falls back to a hang-on one
   if (row === 'filter' && opt !== 'sump' && rows.skimmer === 'sump') rows.skimmer = 'hob';
   const next: TechSetup = { ...t, rows, preset: 'custom' };
-  if (row === 'filter') { delete next.filterModel; delete next.filterProduct; }
-  if (row === 'heater') { delete next.heaterW; delete next.heaterProduct; }
+  if (row === 'filter') { delete next.filterModel; delete next.filterProduct; delete next.filters; }
+  if (row === 'heater') { delete next.heaterW; delete next.heaterProduct; delete next.heaters; }
   return next;
+}
+
+// ---- the heaters and filters as lists of units (Nathan 2026-10-20)
+
+/** The heaters: the saved list, else the older fields read as one (or two identical) units. */
+export function heaterUnits(t: TechSetup): HeaterUnit[] {
+  if (t.heaters) return t.heaters;
+  const r = t.rows.heater ?? 'none';
+  if (r === 'none') return [];
+  const u: HeaterUnit = { ...(t.heaterProduct ? { product: t.heaterProduct } : {}), ...(t.heaterW ? { w: t.heaterW } : {}) };
+  return r === 'two' ? [u, { ...u }] : [u];
+}
+/** The filters: the saved list, else the older fields read as one unit. */
+export function filterUnits(t: TechSetup): FilterUnit[] {
+  if (t.filters) return t.filters;
+  const r = t.rows.filter ?? 'none';
+  if (r === 'none') return [];
+  return [{ kind: r, ...(t.filterProduct ? { product: t.filterProduct } : {}), ...(t.filterModel ? { model: t.filterModel } : {}) }];
+}
+const heaterRow = (n: number) => n === 0 ? 'none' : n === 1 ? 'one' : 'two';
+/** The filter option a list stands for: its unit of the highest capacity (it sets the stocking and the risk), 'none' when empty. */
+const filterRow = (us: FilterUnit[]) => us.reduce<string>((best, u) => (optionDef('filter', u.kind)?.capacity ?? 0) > (optionDef('filter', best)?.capacity ?? 0) ? u.kind : best, 'none');
+/** The tech with `row`'s units replaced by `units` (custom; the row's option follows; the older fields dropped). */
+export function withUnits(t: TechSetup, row: 'heater', units: HeaterUnit[]): TechSetup;
+export function withUnits(t: TechSetup, row: 'filter', units: FilterUnit[]): TechSetup;
+export function withUnits(t: TechSetup, row: 'heater' | 'filter', units: HeaterUnit[] | FilterUnit[]): TechSetup {
+  const next: TechSetup = { ...t, rows: { ...t.rows }, preset: 'custom' };
+  if (row === 'heater') { delete next.heaterW; delete next.heaterProduct; next.heaters = units as HeaterUnit[]; next.rows.heater = heaterRow(units.length); }
+  else {
+    delete next.filterModel; delete next.filterProduct; next.filters = units as FilterUnit[]; next.rows.filter = filterRow(next.filters);
+    for (const [r, o] of Object.entries(optionDef('filter', next.rows.filter)?.needs ?? {})) next.rows[r] = o;
+    if (!next.filters.some(u => u.kind === 'sump') && next.rows.skimmer === 'sump') next.rows.skimmer = 'hob';
+  }
+  return next;
+}
+/** Remove unit `i` of `row`: the units after it move down one place key ('heater.2' -> 'heater.1'). */
+export function withoutUnit(t: TechSetup, row: 'heater' | 'filter', i: number): TechSetup {
+  const key = (k: number) => k ? `${row}.${k}` : row;
+  const n = (row === 'heater' ? heaterUnits(t) : filterUnits(t)).length;
+  const next = row === 'heater' ? withUnits(t, row, heaterUnits(t).filter((_, k) => k !== i)) : withUnits(t, row, filterUnits(t).filter((_, k) => k !== i));
+  if (t.place) {
+    const place = { ...t.place };
+    for (let k = i; k < n; k++) { const v = t.place[key(k + 1)]; if (v) place[key(k)] = v; else delete place[key(k)]; }
+    next.place = place;
+  }
+  return next;
+}
+/** The tech as priced for option `opt` of `row`: a list that no longer stands for that option (a preview or a preset
+ *  picks another) is dropped, so the option's own default unit is priced. */
+function unitsFor(t: TechSetup, row: 'heater' | 'filter', opt: string): TechSetup {
+  if (row === 'heater' && t.heaters && heaterRow(t.heaters.length) !== opt) { const x = { ...t }; delete x.heaters; delete x.heaterW; delete x.heaterProduct; return x; }
+  if (row === 'filter' && t.filters && filterRow(t.filters) !== opt) { const x = { ...t }; delete x.filters; delete x.filterModel; delete x.filterProduct; return x; }
+  return t;
+}
+/** A tech holding just this one filter unit (the older single-filter fields), to price or size it alone. */
+export const singleFilter = (t: TechSetup, u: FilterUnit): TechSetup => {
+  const x: TechSetup = { ...t, rows: { ...t.rows, filter: u.kind } };
+  delete x.filters; delete x.filterModel; delete x.filterProduct;
+  if (u.model) x.filterModel = u.model;
+  if (u.product) x.filterProduct = u.product;
+  return x;
+};
+/** The units of `row` not in the bundle, when any unit is the bundle's (else none: the whole row is the bundle's or none of it). */
+export function extraUnits(t: TechSetup, row: 'heater' | 'filter'): number[] {
+  const us: { kit?: boolean }[] = row === 'heater' ? heaterUnits(t) : filterUnits(t);
+  return us.some(u => u.kit) ? us.flatMap((u, i) => u.kit ? [] : [i]) : [];
+}
+/** The bundle's own unit of `row` as a fingerprint (dealdrift.ts): what it is, or 'none' once removed. An older tech
+ *  without lists: its row option and sizing, as before. */
+export function kitUnitSig(t: TechSetup, row: 'heater' | 'filter'): unknown[] {
+  if (row === 'heater' && !t.heaters) return [t.rows.heater ?? 'none', t.heaterW ?? null];
+  if (row === 'filter' && !t.filters) return [t.rows.filter ?? 'none', t.filterModel ?? null];
+  const us: (HeaterUnit | FilterUnit)[] = row === 'heater' ? t.heaters! : t.filters!;
+  const u = us.find(x => x.kit) ?? (us.length && !us.some(x => x.kit) ? us[0] : undefined);
+  return u ? [JSON.stringify({ ...u, kit: undefined })] : ['none'];
 }
 
 /** A preset's rows for this tank (the tank's room temperature and gear places kept). */
@@ -262,8 +349,12 @@ export interface HeatLoss {
   lossW: number;
   /** heater power needed for a cold night, W */
   needW: number;
-  /** the heater class each unit, how many, and its duty cycle */
+  /** the heater class (the first unit's), how many, and their duty cycle */
   heater: HeaterModel; n: number; duty: number;
+  /** each heater: its watts, the class it is priced as, the catalogue product */
+  units: { watts: number; model: HeaterModel; product?: HeaterProduct; kit?: boolean }[];
+  /** all the heaters together, W */
+  totalW: number;
   /** kWh per month the heaters use (what the tank loses) */
   kwhMo: number;
   /** the room is warmer than the tank should be: the W a chiller must pull out, and its kWh per month */
@@ -278,13 +369,18 @@ export function heatLoss(S: TankSetup, t: TechSetup = techOf(S)): HeatLoss {
   const wPerK = HEAT.wall * wallM2 + HEAT.bottom * floorM2 + surf * surfaceM2;
   const targetC = climateOf(S).find(c => c.label === 'Water')?.at ?? (isSalt(S) ? 25.5 : 24), roomC = t.roomC ?? ROOM_C;
   const dT = targetC - roomC, lossW = Math.max(0, wPerK * dT), needW = Math.max(0, wPerK * (dT + HEAT.nightDropK) * HEAT.headroom);
-  const n = t.rows.heater === 'none' ? 0 : t.rows.heater === 'two' ? 2 : 1;
-  const pw = heaterProduct(t.heaterProduct)?.watts, heater = t.heaterW ? matchHeater(t.heaterW) : pw ? matchHeater(pw) : matchHeater(Math.max(needW / Math.max(n, 1), 1));
-  const duty = n ? Math.min(1, lossW / (heater.watts * n)) : 0;
+  const us = heaterUnits(t), n = us.length;
+  const units = us.map(u => {
+    // a generic one not sized by hand: the smallest common size holding its share of the need (what is drawn and named)
+    const product = heaterProduct(u.product), watts = product?.watts ?? u.w ?? genericHeaterW(needW / Math.max(n, 1)), model = matchHeater(watts);
+    return { watts, model, ...(product ? { product } : {}), ...(u.kit ? { kit: true } : {}) };
+  });
+  const heater = units[0]?.model ?? matchHeater(Math.max(needW, 1)), totalW = units.reduce((a, u) => a + u.watts, 0);
+  const duty = totalW ? Math.min(1, lossW / totalW) : 0;
   const coolW = Math.max(0, -wPerK * dT);
   return {
-    wallM2, floorM2, surfaceM2, wPerK, targetC, roomC, lossW, needW, heater, n, duty,
-    kwhMo: n ? Math.min(lossW, heater.watts * n) * 24 * 30 / 1000 : 0,
+    wallM2, floorM2, surfaceM2, wPerK, targetC, roomC, lossW, needW, heater, n, duty, units, totalW,
+    kwhMo: n ? Math.min(lossW, totalW) * 24 * 30 / 1000 : 0,
     coolW, chillerKwhMo: coolW * 24 * 30 / 1000 / HEAT.chillerCop,
   };
 }
@@ -323,8 +419,10 @@ const wcGalWk = (S: TankSetup) => galOf(S) * (dd.time.waterChangeFraction as Rec
 
 /** Setup, consumables, power and minutes of one row's option on this tank (every figure sized to it). */
 export function optionCost(S: TankSetup, row: string, opt: string, o: { kwhUsd?: number; tech?: TechSetup } = {}): OptionCost {
-  const t = { ...(o.tech ?? techOf(S)) }, def = optionDef(row, opt), gal = galOf(S), kwhUsd = o.kwhUsd ?? KWH_USD;
+  const t0 = o.tech ?? techOf(S), t = { ...(row === 'heater' || row === 'filter' ? unitsFor(t0, row, opt) : t0) }, def = optionDef(row, opt), gal = galOf(S), kwhUsd = o.kwhUsd ?? KWH_USD;
   t.rows = { ...t.rows, [row]: opt };
+  // a list of filters: each priced alone (as the older single-filter fields), then added up (their flows add)
+  if (row === 'filter' && t.filters?.length) return mergeCosts(row, opt, t.filters.map(u => optionCost(S, row, u.kind, { ...o, tech: singleFilter(t, u) })));
   const parts: PartCost[] = [];
   let turnover: number | undefined;
   const doser = (def?.parts ?? []).includes('doser');
@@ -342,9 +440,10 @@ export function optionCost(S: TankSetup, row: string, opt: string, o: { kwhUsd?:
       // sponges run off one air pump, however many there are (its price is spread over the units, as setup is multiplied by n below)
       if (def.kind === 'sponge') { watts += (GEAR.airpump.watts ?? 2.5) / f.n; const ap = unitPrice(GEAR.airpump.price); if (setup && ap) setup = a3(setup, s3(ap.r, 1 / f.n)); }
     } else if (g.sized === 'heater') {
-      const h = heatLoss(S, t);
-      const hp = heaterProduct(t.heaterProduct);
-      n = h.n; watts = h.heater.watts; setup = listedPrice(hp) ? pricePoint(listedPrice(hp)!) : rowPrice(h.heater.priceKey); kwhMo = h.kwhMo / Math.max(n, 1);
+      // each heater its own price (a product's listing, else its class's row), spread over the units as setup is multiplied by n below
+      const h = heatLoss(S, t), each = h.units.map(heaterPrice);
+      n = h.n; watts = h.totalW / Math.max(n, 1); kwhMo = h.kwhMo / Math.max(n, 1);
+      if (n && each.every(Boolean)) setup = s3(each.reduce<Range3>((a, r) => a3(a, r!), Z), 1 / n);
     } else if (id === 'chiller') {
       const h = heatLoss(S, t);
       kwhMo = h.chillerKwhMo; watts = h.coolW / HEAT.chillerCop;
@@ -367,6 +466,27 @@ export function optionCost(S: TankSetup, row: string, opt: string, o: { kwhUsd?:
   return { row, option: opt, parts, setup, monthly, kwhMo, minutes, monthlyUsd: { lo: monthly.lo + power, mode: monthly.mode + power, hi: monthly.hi + power }, est: parts.some(p => p.est), turnover };
 }
 
+const heaterPrice = (u: HeatLoss['units'][number]): Range3 | undefined => { const lp = listedPrice(u.product); return lp ? pricePoint(lp) : rowPrice(u.model.priceKey); };
+/** Several units' costs as one row's (setup, consumables, power, minutes and flow added). */
+function mergeCosts(row: string, option: string, cs: OptionCost[]): OptionCost {
+  const sum = (f: (c: OptionCost) => Range3) => cs.reduce((a, c) => a3(a, f(c)), Z), turns = cs.filter(c => c.turnover !== undefined);
+  return {
+    row, option, parts: cs.flatMap(c => c.parts), setup: sum(c => c.setup), monthly: sum(c => c.monthly), kwhMo: cs.reduce((a, c) => a + c.kwhMo, 0),
+    minutes: sum(c => c.minutes), monthlyUsd: sum(c => c.monthlyUsd), est: cs.some(c => c.est),
+    ...(turns.length ? { turnover: turns.reduce((a, c) => a + c.turnover!, 0) } : {}),
+  };
+}
+/** Each unit of the heater or filter row on its own (setup, power, minutes; a heater's power its share of the heating). */
+export function unitCosts(S: TankSetup, row: 'heater' | 'filter', o: { kwhUsd?: number; tech?: TechSetup } = {}): OptionCost[] {
+  const t = o.tech ?? techOf(S);
+  if (row === 'filter') return filterUnits(t).map(u => optionCost(S, 'filter', u.kind, { ...o, tech: singleFilter(t, u) }));
+  const all = optionCost(S, 'heater', t.rows.heater ?? 'none', { ...o, tech: t }), h = heatLoss(S, t);
+  return h.units.map(u => {
+    const k = h.totalW ? u.watts / h.totalW : 0, p = heaterPrice(u), kwhMo = all.kwhMo * k, power = kwhMo * (o.kwhUsd ?? KWH_USD);
+    return { row, option: all.option, parts: [], setup: p ?? Z, monthly: s3(all.monthly, k), kwhMo, minutes: s3(all.minutes, k), monthlyUsd: { lo: all.monthly.lo * k + power, mode: all.monthly.mode * k + power, hi: all.monthly.hi * k + power }, est: !p };
+  });
+}
+
 /** Every chosen row's cost on this tank. */
 export function techCosts(S: TankSetup, o: { kwhUsd?: number } = {}): OptionCost[] {
   const t = techOf(S);
@@ -378,7 +498,7 @@ export function techCosts(S: TankSetup, o: { kwhUsd?: number } = {}): OptionCost
 /** Fraction of AqAdvisor's stocking capacity the chosen filtration supports: the option's capacity, cut in proportion
  *  when the turnover falls under 4x the volume an hour. A stocking % divides by it. */
 export function stockCapacity(S: TankSetup, t: TechSetup = techOf(S)): number {
-  const opt = t.rows.filter ?? 'none', def = optionDef('filter', opt);
+  const opt = t.rows.filter ?? 'none', def = optionDef('filter', opt); // with several filters: the best one's (rows.filter follows it)
   const cap = def?.capacity ?? 1;
   const turn = optionCost(S, 'filter', opt, { tech: t }).turnover;
   return turn === undefined ? cap : cap * Math.min(1, turn / 4);
@@ -427,6 +547,18 @@ export function techParts(S: TankSetup): TechPiece[] {
   const t = techOf(S), out: TechPiece[] = [];
   for (const row of rowsFor(S)) {
     const opt = t.rows[row.id] ?? 'none', def = optionDef(row.id, opt);
+    // heaters and filters: one piece per unit, each with its own place key ('heater', 'heater.1', ...)
+    if (row.id === 'heater') {
+      heatLoss(S, t).units.forEach((u, i) => { const key = i ? `heater.${i}` : 'heater'; out.push({ row: key, option: opt, gear: 'heater', model: u.model.id, n: 1, watts: u.watts, ...(u.product ? { product: u.product.id } : {}), ...(t.place?.[key] ? { place: t.place[key] } : {}) }); });
+      continue;
+    }
+    if (row.id === 'filter' && t.filters) {
+      t.filters.forEach((u, i) => {
+        const key = i ? `filter.${i}` : 'filter', one: TechSetup = { ...singleFilter(t, u), place: t.place?.[key] ? { filter: t.place[key] } : {} };
+        for (const p of techParts({ ...S, tech: one })) if (p.row === 'filter') out.push({ ...p, row: key });
+      });
+      continue;
+    }
     for (const gear of def?.parts ?? []) {
       const g = GEAR[gear];
       if (!g || g.inWaterChange || g.perWaterChange || (!g.watts && !g.sized && !['dropchecker', 'diyco2', 'sump', 'refractometer', 'hydrometer', 'chiller', 'rodi'].includes(gear))) continue;
@@ -455,6 +587,16 @@ export function parseTech(raw: unknown): TechSetup | undefined {
   if (typeof r.heaterW === 'number' && HEATER_MODELS.some(m => m.watts === r.heaterW)) t.heaterW = r.heaterW;
   if (typeof r.filterProduct === 'string' && filterProduct(r.filterProduct)) t.filterProduct = r.filterProduct;
   if (typeof r.heaterProduct === 'string' && heaterProduct(r.heaterProduct)) t.heaterProduct = r.heaterProduct;
+  if (Array.isArray(r.heaters)) t.heaters = (r.heaters as unknown[]).slice(0, 8).flatMap(v => {
+    const u = v as Partial<HeaterUnit> | null; if (!u || typeof u !== 'object') return [];
+    return [{ ...(typeof u.product === 'string' && heaterProduct(u.product) ? { product: u.product } : {}), ...(typeof u.w === 'number' && isFinite(u.w) ? { w: Math.min(2000, Math.max(5, Math.round(u.w))) } : {}), ...(u.kit === true ? { kit: true } : {}) }];
+  });
+  if (Array.isArray(r.filters)) t.filters = (r.filters as unknown[]).slice(0, 8).flatMap(v => {
+    const u = v as Partial<FilterUnit> | null; if (!u || typeof u !== 'object' || typeof u.kind !== 'string' || u.kind === 'none' || !optionDef('filter', u.kind)) return [];
+    return [{ kind: u.kind, ...(typeof u.product === 'string' && filterProduct(u.product)?.kind === u.kind ? { product: u.product } : {}), ...(typeof u.model === 'string' && FILTER_MODELS.some(m => m.id === u.model && m.kind === u.kind) ? { model: u.model } : {}), ...(u.kit === true ? { kit: true } : {}) }];
+  });
+  if (t.heaters) rows.heater = heaterRow(t.heaters.length);
+  if (t.filters) rows.filter = filterRow(t.filters);
   if (typeof r.roomC === 'number' && isFinite(r.roomC)) t.roomC = Math.min(40, Math.max(0, r.roomC));
   if (r.place && typeof r.place === 'object') {
     const place: Record<string, GearPlace> = {};
@@ -468,5 +610,5 @@ export function parseTech(raw: unknown): TechSetup | undefined {
     }
     if (Object.keys(place).length) t.place = place;
   }
-  return Object.keys(rows).length || t.preset ? t : undefined;
+  return Object.keys(rows).length || t.preset || t.heaters || t.filters ? t : undefined;
 }

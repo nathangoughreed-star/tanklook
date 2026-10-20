@@ -271,6 +271,12 @@
   <div class="field" id="stkRow" hidden><span class="flabel">Stocking</span><span id="stkOut"></span></div>
   <div class="hint" id="stkWhy"></div>
   <details id="stkList" hidden><summary>What counts</summary><ul id="stkBody"></ul></details>
+  <details id="stkNit" hidden open><summary>Waste, filter and plants</summary>
+    <div class="row"><label for="stkFeed">Feeding</label><select id="stkFeed" title="How heavily the animals are fed: sets the waste they make"><option value="light">Light (0.5 % of body weight a day)</option><option value="normal">Normal (1 %)</option><option value="heavy">Heavy (2 %)</option></select></div>
+    <div id="stkBar" class="nbar" role="img" aria-label="Where the day's nitrogen goes"></div>
+    <div id="stkLegend" class="nleg"></div>
+    <div class="hint" id="stkVerdict"></div>
+  </details>
   <div class="field" id="aqRow"><span class="flabel">AqAdvisor</span><button id="aqCheck" title="Compare: ask AqAdvisor for this tank's stocking level (one request; only when the site is up)">Check</button><span id="aqOut"></span><a id="aqLink" target="_blank" rel="noopener" title="Open this tank and stocking in AqAdvisor's calculator for the full report">AqAdvisor ↗</a></div>
   <div class="hint" id="aqNote"></div>
   <div id="selBox">
