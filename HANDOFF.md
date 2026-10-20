@@ -103,6 +103,19 @@ Nathan 2026-10-20: drag only what the open menu covers; a Show box per kind of t
 - Tests: test/menuFocus.test.ts. Shared files touched: viewer.ts, panels.ts (show boxes block + toggle line), pointer.ts (2 lines), main.ts (1 line), index.html, style.css (3 lines).
 
 
+## Popular gear from Amazon, mini heaters, measured sponge (2026-10-20, `stocking` worktree; Nathan's request)
+- research/gear-popular/{heaters,filters,lights}.{json,md}: Amazon best sellers with the popularity evidence per product
+  (rank / ratings / bought per month, seen 2026-10-20), sizes from listings, colours read from product photos.
+- Catalogue: +23 heaters (hygger HG-031 mini 10/25/50/100 W = the heater in Nathan's picture; VCRAZE SC-170xx ceramic
+  bars 10/15/25/50 W, 51-112 mm; DaToo, PULACO, Orlushy, Aquaneat, Hitop, Fluval M200/E300 ...) and +16 filters (Tetra
+  Whisper IQ 20/45, EX 70, NICREW slim HOB, AquaMiracle, Pawfly, AQQA ...). `popularity` field on both.
+- Drawing: a heater's cap and foot shrink with its length (a 105 mm mini is not mostly cap) and the overall length now
+  includes the foot (footed heaters were drawn 24 mm too long); element kind 'core' (a PTC block, no wire);
+  `colors.controller` = an inline thermostat box on the cord, hung outside the back glass, digits to the room.
+- Sponge filters: optional `spongeParts` (base disc, neck, fluted sponge, collar, lift tube at its real length, bubbles out
+  its top under water). Aquaneat small (Amazon B08F79B7MS, Nathan's 9 gal bowl pick) measured off its listing image.
+- Lights: research only so far; there is no light product catalogue yet (next step: catalogue + fixture drawings).
+
 ## Heaters and filters as lists (2026-10-20, side work in the `stocking` worktree; Nathan's request from the Tech menu)
 - `TechSetup.heaters[]` / `filters[]` (scene/tech.ts): one entry per unit, generic (heater `w` editable; filter `model` steps) or a
   catalogue `product`; `kit: true` = the bundle's own. rows.heater / rows.filter follow the list (withUnits); the old single
