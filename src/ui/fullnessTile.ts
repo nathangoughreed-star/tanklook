@@ -41,16 +41,21 @@ export function topBy(r: Stocking, by: 'space' | 'load', k = 3): TopRow[] {
 
 /** The species that want the biggest tank, each with the litres and length it asks for (the percent is the bar's own). */
 export function topMin(m: TankMinimum, units: Units, k = 3): TopRow[] {
-  return m.rows.filter(x => x.minL > 0 || x.minLengthMm > 0).slice(0, k).map(x => ({ name: x.name, n: x.n, share: 0,
-    note: [x.minL > 0 && `${x.minL} L`, x.minLengthMm > 0 && `${toUnits(x.minLengthMm, units)}${units === 'in' ? '"' : ' cm'} long`].filter(Boolean).join(', ') }));
+  const len = (mm: number) => `${toUnits(mm, units)}${units === 'in' ? '"' : ' cm'} long`, one = (l: number, mm: number) => [l > 0 && `${l} L`, mm > 0 && len(mm)].filter(Boolean).join(', ');
+  return [...m.rows].sort((a, b) => b.comfortPct - a.comfortPct).filter(x => x.minL > 0 || x.minLengthMm > 0).slice(0, k).map(x => ({ name: x.name, n: x.n, share: 0,
+    note: x.floorL < x.minL || x.floorLengthMm < x.minLengthMm ? `at least ${one(x.floorL, x.floorLengthMm)}; happier at ${one(x.minL, x.minLengthMm)}` : one(x.minL, x.minLengthMm) }));
 }
+
+/** Red below the absolute floor, amber while under the comfortable size, green past it; the fill is the floor's percent. */
+const minBar = (m: TankMinimum): Bar => { const b = bar(m.percent); return b.level !== 'over' && m.comfortPercent > 100 ? { ...b, level: 'near' } : b; };
 
 export function tileState(S: TankSetup, r: Stocking, units: Units = 'cm'): TileState {
   const m = tankMinimum(S), limit = S.layout.space, fit = limit ? spaceFit(S.tank, limit) : undefined;
   return {
     show: S.water.on && (r.contributors.length > 0 || !!limit),
-    space: bar(r.spacePercent), filt: bar(r.filtrationPercent), min: bar(m.percent), head: bar(Math.max(r.percent, m.percent)),
-    topSpace: topBy(r, 'space'), topFilt: topBy(r, 'load'), topMin: topMin(m, units), reason: m.percent > 100 ? `Too small for the ${m.rows[0].name.toLowerCase()}: it wants at least ${topMin(m, units, 1)[0].note}, however few you keep.` : r.reasons[0] ?? '',
+    space: bar(r.spacePercent), filt: bar(r.filtrationPercent), min: minBar(m), head: bar(Math.max(r.percent, m.percent)),
+    topSpace: topBy(r, 'space'), topFilt: topBy(r, 'load'), topMin: topMin(m, units), reason: m.percent > 100 ? `Too small for the ${m.rows[0].name.toLowerCase()}, however few you keep: it needs ${topMin(m, units, 1)[0].note}.`
+      : m.comfortPercent > 100 ? `Workable, but cramped for the ${[...m.rows].sort((a, b) => b.comfortPct - a.comfortPct)[0].name.toLowerCase()}: ${topMin(m, units, 1)[0].note}.` : r.reasons[0] ?? '',
     ...(limit ? { limit, fit } : {}),
   };
 }
