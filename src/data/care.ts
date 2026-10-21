@@ -54,7 +54,7 @@ export const CARE: Record<string, AnimalCare> = {
   bronzecory: A(1, 80, 0, [22, 26]), pandacory: A(1, 41, 0, [20, 24]), pygmycory: A(1, 30, 0, [22, 26]), bristlenose: A(1, 80, 0, [22, 27]),
   oto: A(2, 40, 0, [22, 26]), kuhli: A(1, 80, 0, [24, 28]), clownloach: A(2, 400, 0, [24, 28], { prey: { mm: 30, cats: ['fw-invert'] } }),
   sae: A(1, 110, 0, [22, 26]), hillstream: A(2, 60, 0, [18, 24]), peapuffer: A(2, 20, 2, [24, 28], { prey: { mm: 45, cats: ['fw-invert'] }, nip: true }),
-  cherryshrimp: A(1, 20, 0, [18, 26]), amano: A(1, 40, 0, [18, 26]), nerite: A(1, 20, 0, [22, 28]), mystery: A(1, 40, 0, [20, 26]),
+  cherryshrimp: A(1, 20, 0, [18, 26]), amano: A(1, 40, 0, [18, 26]), nerite: A(1, 20, 0, [22, 28]), mystery: A(1, 19, 0, [20, 26]),
   ramshorn: A(1, 20, 0, [18, 28]), trumpet: A(1, 20, 0, [18, 28]),
   ocellaris: A(1, 75, 1, [24, 27]), royalgramma: A(1, 115, 0, [24, 27], { solo: true }), yellowtang: A(2, 455, 1, [24, 27], { solo: true, fam: 'tang' }),
   bluetang: A(2, 570, 1, [24, 27], { solo: true, fam: 'tang' }), firefish: A(1, 75, 0, [24, 27]), banggai: A(1, 115, 0, [24, 27]),

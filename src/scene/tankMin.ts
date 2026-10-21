@@ -45,6 +45,10 @@ export const MIN_WEIGHTS: Record<Zone, { vol: number; area: number; run: number 
   all: { vol: 0.5, area: 0.4, run: 1 },
 };
 
+/** Species held to water volume alone (waste dilution, chemistry): no floor-area or length share. A mystery snail grazes glass, plants and decor, not just the floor (Aquarium Co-Op: 5 gal for one, 10 gal more forgiving). */
+export const VOLUME_ONLY = new Set(['mystery']);
+const VOLUME_ONLY_WEIGHTS: { vol: number; area: number; run: number } = { vol: 1, area: 0, run: 0 };
+
 /** A bottom dweller's footprint need, from its litres: a tank holding them at this water depth (cm). Swimmers are held to the run (the longest floor side) instead. */
 export const REF_DEPTH_CM = 30;
 export const areaFor = (litres: number) => litres * 1000 / REF_DEPTH_CM;
@@ -112,7 +116,7 @@ const careFor = (id: string) => CARE[id] as (typeof CARE)[string] & { minLengthM
 export function speciesMinimum(sp: Species, g: Geometry): MinRow {
   const c = careFor(sp.id), minL = c?.minL ?? 0, minLengthMm = c?.minLengthMm ?? 0, minWidthMm = c?.minWidthMm ?? 0, minAreaCm2 = c?.minAreaCm2 ?? 0;
   const t = TIERS[sp.id], fl = t?.floor?.litres ?? minL, fm = t?.floor?.lengthMm ?? minLengthMm, cl = t?.comfort?.litres ?? minL, cm = t?.comfort?.lengthMm ?? minLengthMm;
-  const zone = zoneOf(sp), floor = measureMinimum(zone, fl, fm, minWidthMm, g, minAreaCm2), comfort = measureMinimum(zone, cl, cm, minWidthMm, g, minAreaCm2);
+  const vo = VOLUME_ONLY.has(sp.id), zone = zoneOf(sp), floor = measureMinimum(zone, fl, fm, minWidthMm, g, minAreaCm2, vo), comfort = measureMinimum(zone, cl, cm, minWidthMm, g, minAreaCm2, vo);
   return { id: sp.id, name: sp.name, n: 1, kind: zone === 'bottom' ? 'area' : 'run', floorCm2: minAreaCm2 || areaFor(fl), comfortCm2: minAreaCm2 || areaFor(cl), minL, minLengthMm, minWidthMm, floorL: fl, floorLengthMm: fm, comfortL: cl, comfortLengthMm: cm, pct: floor.pct, comfortPct: comfort.pct, limiting: floor.limiting, reason: reasonOf(floor), measure: floor };
 }
 

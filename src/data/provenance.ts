@@ -58,6 +58,7 @@ export const RULES: Record<string, Rule[]> = {
     // Kept against the pages (Nathan 2026-10-20: trust the research where independent sources agree; here they split): see research/sourcing/decisions.md.
     { path: 'yellowtang.care', status: 'assumption', why: 'one retailer page (LiveAquaria) says Easy; tangs are disease-prone in practice, so we keep intermediate (2)' },
     { path: 'betta.care', status: 'assumption', why: 'pages split: Seriously Fish says Moderate, Fishkeeping World calls it fine for first-time owners; we keep beginner (1)' },
+    { path: 'mystery.minL', status: 'assumption', why: 'Aquarium Co-Op: 5 US gal (19 L) for one mystery snail, 10 gal more forgiving; held to water volume only (VOLUME_ONLY in scene/tankMin.ts)' },
     { path: 'ballpython.minL', status: 'assumption', why: 'pages split: PetSmart and BeWild accept a 40 gal (about 151 L) tank, Zen Habitats and Reptile Direct call 4x2x2 ft (about 120 gal, 450 L) the adult minimum and the 40 gal rule outdated; we keep the larger modern figure' },
     ...Object.keys(WATER).flatMap((id): Rule[] => ['temp', 'tol'].map(k => ({ path: `${id}.${k}.*`, status: 'researched', src: ['climate-research'], why: 'researched band (data/climatedata.ts) replaces the first guess' }))),
     ...GROUP_ROWS.map(({ id, url, est }): Rule => est
@@ -216,6 +217,7 @@ export const FORMULAS: Formula[] = [
   { file: 'src/scene/tankMin.ts', symbols: ['REF_DEPTH_CM'], status: 'assumption', why: 'the floor-area need of a bottom dweller is its litres spread over 30 cm of water, a typical small tank depth; swimmers are held to the longest floor side instead' },
   { file: 'src/scene/animalfit.ts', symbols: ['MIN_SLACK_PCT'], status: 'assumption', why: "a species' smallest tank allows 10 % slack: a 5 gal (19 L) takes a 20 L species" },
   { file: 'src/scene/tankMin.ts', symbols: ['MIN_WEIGHTS'], status: 'assumption', why: "how much water and floor area count toward a species minimum by where it lives (a care sheet gallon figure stands in for floor space): a bottom dweller is held to floor area, swimmers mostly to length; the fallback where no footprint is stated; keeper-practice judgement" },
+  { file: 'src/scene/tankMin.ts', symbols: ['VOLUME_ONLY', 'VOLUME_ONLY_WEIGHTS'], status: 'assumption', why: 'species held to water volume alone, no floor-area or length share (mystery snail: grazes glass, plants and decor; Aquarium Co-Op gives 5 gal for one); judgement from one care page' },
   { file: 'src/scene/tankMin.ts', symbols: ['TIERS'], status: 'claimed', why: 'absolute floor and comfortable tank size per species (adf, danio, whitecloud, tigerbarb, cherrybarb, firenewt, firetoad): keeper-practice judgement from the examples given, no page recorded' },
   { file: 'src/scene/tankfit.ts', symbols: ['FLOOR_K'], status: 'claimed', why: '"a documented rule of thumb, not a source of record": a bottom dweller holds about two body lengths square' },
   { file: 'src/scene/tankfit.ts', symbols: ['FILTRATION_TARGET'], status: 'assumption', why: 'preset filtration targets: cheapest 100 %, balanced 70 %' },
