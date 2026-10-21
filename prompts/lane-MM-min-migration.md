@@ -35,5 +35,5 @@ Keep every consumer on the one evaluation (Fullness tile, tankfit.ts, whyAnimal,
 update test fixtures and locked examples deliberately, listing each moved number in your HANDOFF section.
 Questions for Nathan about how a screen reads go in this chat WITH screenshots. No subagent fan-out.
 Done = `npm run build` and the full suite pass, pushed (git fetch; git rebase origin/main; git push origin HEAD:main), a "## Lane MM"
-HANDOFF section with gaps, then send_message the coordinator (local_cd7298f9-aef8-4622-b47e-d9f3fcc54479) a short report with the
+HANDOFF section with gaps, then send_message the coordinator (local_c5a46899-38c9-4c95-9310-9f70ff941a97) a short report with the
 build number.
