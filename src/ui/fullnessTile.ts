@@ -7,7 +7,8 @@
 import type { Viewer } from '../render/viewer';
 import { defaultSpace, spaceFit, tankExtent, SPACE_MAX, SPACE_MIN, type SpaceFit } from '../scene/space';
 import { stockingMemo, type Stocking } from '../scene/stocking';
-import { tankMinimum, type MinRow, type TankMinimum } from '../scene/tankMin';
+import { MIN_SLACK_PCT } from '../scene/animalfit';
+import { reasonOf, tankMinimum, type MinRow, type TankMinimum } from '../scene/tankMin';
 import { PLANT_SHARE_MAX, type Nitrogen } from '../scene/nitrogen';
 import type { Store } from '../scene/store';
 import type { SpaceLimit, TankSetup, Units } from '../scene/types';
@@ -16,12 +17,15 @@ import type { SpaceLimit, TankSetup, Units } from '../scene/types';
 export const NEAR_FULL = 85;
 export type Level = 'ok' | 'near' | 'over';
 export interface Bar { pct: number; /** fill width, 0..100 */ fill: number; level: Level; text: string }
+export interface MinWarn { level: 'over' | 'near'; text: string }
 export interface TopRow { name: string; n: number; /** share of this bar's load, 0..1 */ share: number; /** printed in place of the share (the minimum bar: what the species wants) */ note?: string }
 export interface TileState {
   /** anything to show: water on, and animals in it or a space set */
   show: boolean;
-  space: Bar; filt: Bar; /** tank size against the most demanding species' minimum (scene/tankMin.ts) */ min: Bar;
-  topSpace: TopRow[]; topFilt: TopRow[]; topMin: TopRow[];
+  space: Bar; filt: Bar;
+  /** species the tank is too small for (red) or workable but cramped for (amber), by name and unmet measure (scene/tankMin.ts); empty when every species has its minimum */
+  mins: MinWarn[];
+  topSpace: TopRow[]; topFilt: TopRow[];
   /** the larger of the two, for the minimized pill */
   head: Bar;
   reason: string;
@@ -39,24 +43,34 @@ export function topBy(r: Stocking, by: 'space' | 'load', k = 3): TopRow[] {
   return [...r.contributors].sort((a, b) => b[by] - a[by]).slice(0, k).map(c => ({ name: c.name, n: c.n, share: tot ? c[by] / tot : 0 }));
 }
 
-/** The species that want the biggest tank, each with the litres and length it asks for (the percent is the bar's own). */
-export function topMin(m: TankMinimum, units: Units, k = 3): TopRow[] {
-  const sq = (cm2: number) => units === 'in' ? `${Math.round(cm2 / 6.4516)} sq in` : `${Math.round(cm2)} cm²`, len = (mm: number) => `${toUnits(mm, units)}${units === 'in' ? '"' : ' cm'} long`;
-  const one = (x: MinRow, l: number, mm: number, cm2: number) => [l > 0 && `${l} L`, x.kind === 'area' ? cm2 > 0 && `${sq(cm2)} of floor` : mm > 0 && len(mm)].filter(Boolean).join(', ');
-  return [...m.rows].sort((a, b) => b.comfortPct - a.comfortPct).filter(x => x.comfortL > 0 || x.comfortLengthMm > 0).slice(0, k).map(x => ({ name: x.name, n: x.n, share: 0,
-    note: x.floorL < x.comfortL || x.floorLengthMm < x.comfortLengthMm ? `at least ${one(x, x.floorL, x.floorLengthMm, x.floorCm2)}; happier at ${one(x, x.comfortL, x.comfortLengthMm, x.comfortCm2)}` : one(x, x.comfortL, x.comfortLengthMm, x.comfortCm2) }));
+const fmtOf = (units: Units) => ({ len: (mm: number) => `${toUnits(mm, units)}${units === 'in' ? '"' : ' cm'}`, area: (cm2: number) => units === 'in' ? `${Math.round(cm2 / 6.4516)} sq in` : `${Math.round(cm2)} cm²` });
+
+/** What a species would like instead: "at least 18 L; happier at 40 L, 45 cm long" (floor and comfortable sizes). */
+function comfortNote(x: MinRow, units: Units): string {
+  const f = fmtOf(units), one = (l: number, mm: number, cm2: number) => [l > 0 && `${l} L`, x.kind === 'area' ? cm2 > 0 && `${f.area(cm2)} of floor` : mm > 0 && `${f.len(mm)} long`].filter(Boolean).join(', ');
+  return x.floorL < x.comfortL || x.floorLengthMm < x.comfortLengthMm ? `at least ${one(x.floorL, x.floorLengthMm, x.floorCm2)}; happier at ${one(x.comfortL, x.comfortLengthMm, x.comfortCm2)}` : one(x.comfortL, x.comfortLengthMm, x.comfortCm2);
 }
 
-/** Red below the absolute floor, amber while under the comfortable size, green past it; the fill is the floor's percent. */
-const minBar = (m: TankMinimum): Bar => { const b = bar(m.percent); return b.level !== 'over' && m.comfortPercent > 100 ? { ...b, level: 'near' } : b; };
+/**
+ * The tank-minimum warnings, the AqAdvisor way (Nathan 2026-10-21): nothing while every species has its minimum; a red line per species
+ * whose smallest tank this one falls short of, naming the unmet measure; an amber line for those it holds but would be happier larger.
+ * The percentages behind it stay internal: the weights are estimates, so the tile only says over or under. Same 10 % slack as the
+ * animal gate and the tank-fit engine (MIN_SLACK_PCT).
+ */
+export function minWarnings(m: TankMinimum, units: Units): MinWarn[] {
+  const f = fmtOf(units), name = (x: MinRow) => plural(x.n, x.name), out: MinWarn[] = [];
+  for (const x of [...m.rows].sort((a, b) => b.pct - a.pct)) if (x.pct > MIN_SLACK_PCT) out.push({ level: 'over', text: `${name(x)}: ${reasonOf(x.measure, f)}` });
+  for (const x of [...m.rows].sort((a, b) => b.comfortPct - a.comfortPct)) if (x.pct <= MIN_SLACK_PCT && x.comfortPct > 100) out.push({ level: 'near', text: `${name(x)}: workable, but cramped; ${comfortNote(x, units)}` });
+  return out;
+}
 
 export function tileState(S: TankSetup, r: Stocking, units: Units = 'cm'): TileState {
-  const m = tankMinimum(S), limit = S.layout.space, fit = limit ? spaceFit(S.tank, limit) : undefined;
+  const m = tankMinimum(S), mins = minWarnings(m, units), tooSmall = mins.some(w => w.level === 'over'), limit = S.layout.space, fit = limit ? spaceFit(S.tank, limit) : undefined;
+  const head = bar(r.percent);
   return {
     show: S.water.on && (r.contributors.length > 0 || !!limit),
-    space: bar(r.spacePercent), filt: bar(r.filtrationPercent), min: minBar(m), head: bar(Math.max(r.percent, m.percent)),
-    topSpace: topBy(r, 'space'), topFilt: topBy(r, 'load'), topMin: topMin(m, units), reason: m.percent > 100 ? `Too small for the ${m.rows[0].name.toLowerCase()}, however few you keep: it needs ${topMin(m, units, 1)[0].note}.`
-      : m.comfortPercent > 100 ? `Workable, but cramped for the ${[...m.rows].sort((a, b) => b.comfortPct - a.comfortPct)[0].name.toLowerCase()}: ${topMin(m, units, 1)[0].note}.` : r.reasons[0] ?? '',
+    space: bar(r.spacePercent), filt: bar(r.filtrationPercent), mins, head: tooSmall && head.level !== 'over' ? { ...head, level: 'over', text: 'Too small' } : head,
+    topSpace: topBy(r, 'space'), topFilt: topBy(r, 'load'), reason: r.reasons[0] ?? '',
     ...(limit ? { limit, fit } : {}),
   };
 }
@@ -163,7 +177,7 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
     pill.textContent = st.fit?.fits === false ? `${st.head.text} · too big` : st.head.text;
     pill.className = `ftPill ft-${st.fit?.fits === false ? 'over' : st.head.level}`;
     bars.innerHTML = row('space', 'Space', st.space, st.topSpace, 'space') + row('filt', 'Filtration', st.filt, st.topFilt, 'waste')
-      + row('min', 'Tank minimum', st.min, st.topMin, 'minimum', 'Smallest tank they want, whatever the count:')
+      + st.mins.map(w => `<div class="ftWarn ft-${w.level}">${esc(w.text)}</div>`).join('')
       + (st.reason ? `<div class="ftWhy">${esc(st.reason)}</div>` : '');
     const n = r.nitrogen;
     nEl.hidden = !r.contributors.length || n.tan <= 0;

@@ -83,18 +83,19 @@ export function measureMinimum(zone: Zone, litres: number, lengthMm: number, wid
   for (const t of terms) { const pct = t.k * 100 * (t.have > 0 ? t.need / t.have : 0); if (pct > best.pct) best = { pct, limiting: t.limiting, need: t.need, have: t.have }; }
   return best;
 }
-/** "wants a tank at least 120 cm long; this one is 91 cm": the unmet measure in words (cm and litres). */
-export function reasonOf(m: Measured): string {
-  const cm = (mm: number) => `${Math.round(mm / 10)} cm`;
+/** How a length and a floor area print (cm by default; the tile passes its own units). */
+export interface Fmt { len: (mm: number) => string; area: (cm2: number) => string }
+/** "wants a tank at least 120 cm long, this one is 91 cm": the unmet measure in words. */
+export function reasonOf(m: Measured, f: Fmt = { len: mm => `${Math.round(mm / 10)} cm`, area: cm2 => `${Math.round(cm2)} cm2` }): string {
   switch (m.limiting) {
-    case 'length': return `wants a tank at least ${cm(m.need)} long, this one is ${cm(m.have)}`;
-    case 'width': return `wants a tank at least ${cm(m.need)} front to back, this one is ${cm(m.have)}`;
-    case 'floor area': return `wants about ${Math.round(m.need)} cm2 of floor, this tank has ${Math.round(m.have)} cm2`;
+    case 'length': return `wants a tank at least ${f.len(m.need)} long, this one is ${f.len(m.have)}`;
+    case 'width': return `wants a tank at least ${f.len(m.need)} front to back, this one is ${f.len(m.have)}`;
+    case 'floor area': return `wants about ${f.area(m.need)} of floor, this tank has ${f.area(m.have)}`;
     default: return `wants about ${Math.round(m.need)} L of water, this tank holds ${Math.round(m.have)} L`;
   }
 }
 
-export interface MinRow { id: string; name: string; n: number; /** what the species is held to besides litres: 'run' (longest floor side, swimmers) or 'area' (floor area, bottom dwellers) */ kind: 'run' | 'area'; floorCm2: number; comfortCm2: number; /** its absolute floor over the tank */ pct: number; /** its comfortable size over the tank */ comfortPct: number; floorL: number; floorLengthMm: number; comfortL: number; comfortLengthMm: number; minL: number; minLengthMm: number; /** front-to-back need, mm (0 = none stated) */ minWidthMm: number; /** the measure that holds it to this size, and the sentence for it (absolute floor) */ limiting: Limit; reason: string }
+export interface MinRow { id: string; name: string; n: number; /** what the species is held to besides litres: 'run' (longest floor side, swimmers) or 'area' (floor area, bottom dwellers) */ kind: 'run' | 'area'; floorCm2: number; comfortCm2: number; /** its absolute floor over the tank */ pct: number; /** its comfortable size over the tank */ comfortPct: number; floorL: number; floorLengthMm: number; comfortL: number; comfortLengthMm: number; minL: number; minLengthMm: number; /** front-to-back need, mm (0 = none stated) */ minWidthMm: number; /** the measure that holds it to this size, and the sentence for it (absolute floor) */ limiting: Limit; reason: string; /** the absolute-floor measurement behind `reason`, to print in other units */ measure: Measured }
 export interface TankMinimum {
   /** the highest species percent; 0 with no animals in the water */
   percent: number;
@@ -112,7 +113,7 @@ export function speciesMinimum(sp: Species, g: Geometry): MinRow {
   const c = careFor(sp.id), minL = c?.minL ?? 0, minLengthMm = c?.minLengthMm ?? 0, minWidthMm = c?.minWidthMm ?? 0, minAreaCm2 = c?.minAreaCm2 ?? 0;
   const t = TIERS[sp.id], fl = t?.floor?.litres ?? minL, fm = t?.floor?.lengthMm ?? minLengthMm, cl = t?.comfort?.litres ?? minL, cm = t?.comfort?.lengthMm ?? minLengthMm;
   const zone = zoneOf(sp), floor = measureMinimum(zone, fl, fm, minWidthMm, g, minAreaCm2), comfort = measureMinimum(zone, cl, cm, minWidthMm, g, minAreaCm2);
-  return { id: sp.id, name: sp.name, n: 1, kind: zone === 'bottom' ? 'area' : 'run', floorCm2: minAreaCm2 || areaFor(fl), comfortCm2: minAreaCm2 || areaFor(cl), minL, minLengthMm, minWidthMm, floorL: fl, floorLengthMm: fm, comfortL: cl, comfortLengthMm: cm, pct: floor.pct, comfortPct: comfort.pct, limiting: floor.limiting, reason: reasonOf(floor) };
+  return { id: sp.id, name: sp.name, n: 1, kind: zone === 'bottom' ? 'area' : 'run', floorCm2: minAreaCm2 || areaFor(fl), comfortCm2: minAreaCm2 || areaFor(cl), minL, minLengthMm, minWidthMm, floorL: fl, floorLengthMm: fm, comfortL: cl, comfortLengthMm: cm, pct: floor.pct, comfortPct: comfort.pct, limiting: floor.limiting, reason: reasonOf(floor), measure: floor };
 }
 
 export function tankMinimum(S: TankSetup): TankMinimum {

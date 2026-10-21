@@ -10,6 +10,7 @@ import { defaultSpace, parseSpace, spaceFit, tankExtent } from '../src/scene/spa
 import { stockingOf } from '../src/scene/stocking';
 import { NEAR_FULL, bar, mg, nitrogenRows, forkDue, fromUnits, overLine, tileState, toUnits, topBy } from '../src/ui/fullnessTile';
 import { floorOf, tankMinimum } from '../src/scene/tankMin';
+import { minWarnings } from '../src/ui/fullnessTile';
 import type { TankSetup } from '../src/scene/types';
 
 // the build paints textures on canvases: a do-nothing 2D context is enough here (as in menuFocus.test.ts)
@@ -70,7 +71,7 @@ describe('fullness bars', () => {
     const st = tileState(S, r);
     expect(st.show).toBe(true);
     expect(st.space.pct).toBeCloseTo(r.spacePercent); expect(st.filt.pct).toBeCloseTo(r.filtrationPercent);
-    expect(st.head.pct).toBeCloseTo(Math.max(r.spacePercent, r.filtrationPercent, st.min.pct));
+    expect(st.head.pct).toBeCloseTo(Math.max(r.spacePercent, r.filtrationPercent)); // the minimum no longer feeds the percentage (it warns by name)
     const empty = { ...S, fish: [] }, re = stockingOf(empty);
     expect(tileState(empty, re).show).toBe(false);
     expect(tileState({ ...empty, layout: { ...S.layout, space: { w: 900, d: 400 } } }, re).show).toBe(true);
@@ -166,5 +167,32 @@ describe('the dashed outline', () => {
     const kids = buildTank(set, S.tank, null).scene.children.filter(o => o.userData.spaceOutline);
     expect(kids.length).toBe(2);
     expect(buildTank({ ...S, units: 'cm' }, S.tank, null).scene.children.some(o => o.userData.spaceOutline)).toBe(false);
+  });
+});
+
+describe('tank minimum warnings (binary, AqAdvisor style)', () => {
+  const one = (species: string, L: number, D: number, H = 400) => { const S = withFish(); return { ...S, tank: { ...S.tank, shape: 'rect' as const, L, D, H }, fish: [{ ...S.fish[0], species }] }; };
+  it('says nothing while every species has its minimum, and the pill is not forced red', () => {
+    const S = one('danio', 1500, 500, 500), st = tileState(S, stockingOf(S));
+    expect(st.mins).toEqual([]);
+  });
+  it('names the species and the unmet measure in red when the tank is under its minimum', () => {
+    const S = one('swordtail', 700, 520), w = tileState(S, stockingOf(S)).mins;
+    expect(w).toHaveLength(1); expect(w[0].level).toBe('over'); expect(w[0].text).toMatch(/^1 Swordtail: wants a tank at least 80 cm long, this one is 70 cm/);
+    expect(tileState(S, stockingOf(S)).head.level).toBe('over');
+  });
+  it('prints lengths in inches when the scene is in inches', () => {
+    const S = one('swordtail', 700, 520), w = tileState(S, stockingOf(S), 'in').mins;
+    expect(w[0].text).toMatch(/at least 31\.5" long, this one is 27\.6"/);
+  });
+  it('gives an amber note when a species is held but would be happier larger (a danio school: 40 L floor, 75 L comfort)', () => {
+    const S = one('danio', 650, 300, 330), w = minWarnings(tankMinimum(S), 'cm');
+    expect(w.every(x => x.level === 'near')).toBe(true); expect(w[0].text).toMatch(/cramped/);
+  });
+  it('red and amber never name the same species twice', () => {
+    for (const sp of ['swordtail', 'danio', 'adf', 'oscar']) for (const L of [300, 450, 650, 900, 1500]) {
+      const S = one(sp, L, 300), names = minWarnings(tankMinimum(S), 'cm').map(x => x.text.split(':')[0]);
+      expect(new Set(names).size, `${sp} ${L}`).toBe(names.length);
+    }
   });
 });
