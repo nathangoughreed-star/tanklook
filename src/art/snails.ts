@@ -12,7 +12,8 @@ export interface SnailSpec { kind: Kind; shell: [string, string, string]; foot: 
 export const SNAILS: Record<string, SnailSpec> = {
   nerite: { kind: 'nerite', shell: ['#4a4a22', '#8a8a3a', '#a8a050'], foot: ['#8a8070', '#c8bfae'], mark: '#1e1c14' },
   mystery: { kind: 'mystery', shell: ['#8a6420', '#c89a3a', '#e0bc68'], foot: ['#5a5650', '#9a948a'], mark: '#6a4818' },
-  ramshorn: { kind: 'ramshorn', shell: ['#6a2a20', '#9a4a32', '#b86a4a'], foot: ['#9a3a32', '#c86a5a'], mark: '#4a1a14' },
+  // red ramshorn: a translucent red-brown shell over a brighter red body
+  ramshorn: { kind: 'ramshorn', shell: ['#4a1a14', '#7a2e22', '#985040'], foot: ['#b02e2a', '#e0605a'], mark: '#3a120e' },
   trumpet: { kind: 'trumpet', shell: ['#5a4a38', '#8a7a62', '#b0a080'], foot: ['#6a6258', '#a09888'], mark: '#4a2a1a' },
   // Mexican turbo (marine): a turban shell, olive-brown mottled with paler spiral ridges
   turbo: { kind: 'turbo', shell: ['#4a4a32', '#76704c', '#9a9068'], foot: ['#5a5048', '#8a8070'], mark: '#c8c0a0' },
@@ -47,7 +48,9 @@ export interface Shell3D { turns: number; grow: number; drop: number; ap: [numbe
 export const SHELL3D: Record<Kind, Shell3D> = {
   nerite: { turns: 1.8, grow: 10, drop: 0.2, ap: [0.95, 0.95], incl: 15, open: [0.05, -1, 0], lip: 0.03, axis: [-0.3, 0.35, 0.9], size: 0.8, tall: 0.42, at: 0.46, foot: 0.2, footEnd: 0.95, footW: 0.76, footH: 0.13, head: 0.085, ph: 48, seam: false, fillCut: true, tent: 0.085, mark: 'axial' },
   mystery: { turns: 4, grow: 3, drop: 1.5, ap: [0.7, 1.05], incl: 30, axis: [-0.55, 0.8, 0.25], size: 0.66, tall: 0.78, at: 0.42, foot: 0.02, footW: 0.3, footH: 0.15, tent: 0.1, mark: 'spiral' },
-  ramshorn: { turns: 3.5, grow: 2.3, drop: 0, ap: [0.55, 0.58], incl: 0, open: [1, -0.25, 0], axis: [0, 0, -1], size: 0.7, tall: 0.7, at: 0.44, foot: 0.02, footW: 0.2, footH: 0.14, tent: 0.06, mark: 'growth' },
+  // a planorbid: a flat disc of slowly widening round whorls carried upright over the back of a short, plump foot (the
+  // shell overhangs behind it), aperture down and forward onto the foot, long thin tentacles
+  ramshorn: { turns: 4, grow: 1.9, drop: 0, ap: [0.52, 0.52], incl: 0, open: [0.55, -0.85, 0], lip: 0.04, axis: [0, 0, -1], size: 0.64, tall: 0.7, at: 0.36, foot: 0.24, footEnd: 0.9, footW: 0.36, footH: 0.2, tent: 0.09, mark: 'growth' },
   trumpet: { turns: 9, grow: 1.32, drop: 7, ap: [0.45, 1.5], incl: 65, open: [0.75, -0.65, 0], axis: [-0.95, 0.2, 0], size: 0.72, tall: 0.3, at: 0.5, foot: 0.45, footEnd: 0.93, footW: 0.2, footH: 0.1, tent: 0.07, mark: 'spots' },
   turbo: { turns: 5, grow: 2.2, drop: 2.2, ap: [0.66, 1.1], incl: 25, axis: [-0.25, 0.95, 0.15], size: 0.64, tall: 0.8, at: 0.42, foot: 0.02, footW: 0.3, footH: 0.15, tent: 0.08, mark: 'spiral' },
 };
