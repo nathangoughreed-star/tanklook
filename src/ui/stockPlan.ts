@@ -9,7 +9,6 @@ import { tankFromModel } from '../data/tanks';
 import { emptyScene } from '../scene/defaults';
 import { placeNew, shuffleFish } from '../scene/scatter';
 import type { Store } from '../scene/store';
-import { stockingMemo } from '../scene/stocking';
 import type { Fish } from '../scene/types';
 import type { Viewer } from '../render/viewer';
 import { gearView } from '../render/gear3d';
@@ -50,11 +49,11 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
 
   // ---------- the scene follows the picks ----------
   const sync = (rebuild = false) => {
-    const plan = planFor(picks, chosen);
+    const plan = planFor(picks, chosen), show = plan.tank ?? (shown ? undefined : plan.need?.tank); // before a choice the first size shown stays; it never follows the picks
     store.update(s => {
       const T = s.tanks[s.active];
-      if (plan.tank && plan.tank.id !== shown) {
-        T.tank = tankFromModel(plan.tank); T.water.on = true; T.water.level = WATER_LEVEL; shown = plan.tank.id; rebuild = true;
+      if (show && show.id !== shown) {
+        T.tank = tankFromModel(show); T.water.on = true; T.water.level = WATER_LEVEL; shown = show.id; rebuild = true;
         T.camera = { ...T.camera, zoom: 0.55, el: 20 }; // looking down a little so the bottom dwellers show on the bare floor // the whole tank in view, beside the panel
       }
       T.water.salt = picks.some(p => getSpecies(p.id)?.salt);
@@ -89,25 +88,28 @@ ${overWarn(p) ? `<div class="spWarn">${esc(overWarn(p)!)}</div>` : ''}${conflict
 ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</div>` : ''}</li>`;
   };
 
+  const SP_NEAR = 75; // green up to here, amber to 100, red over
+  const bar = (pct: number, what: string) => `<span class="spBar ${pct > 100 ? 'over' : pct >= SP_NEAR ? 'near' : ''}" title="${what}: ${Math.round(pct)} %"><i style="width:${Math.max(2, Math.min(100, pct))}%"></i></span>`;
+  const WHY: Record<string, string> = { space: 'too full', filtration: 'no filter carries it', minimum: 'too small for them', length: 'too short', depth: 'too deep', floor: 'not enough floor' };
+  let sizesTop = 0;
   const tankBlock = () => {
     const animals = animalsOf(picks);
     if (!animals.length) return '';
     const plan = planFor(picks, chosen);
-    if (!plan.tank) return '<p class="spNote">This animal lives on land: choose a terrarium in the editor.</p>';
-    const space = plan.tank.id === plan.need?.tank.id ? plan.need.spacePct : stockingMemo(store.tank).spacePercent;
-    const SP_NEAR = 75; // green up to here, amber to 100, red over
-    const bar = (pct: number) => `<span class="spBar ${pct > 100 ? 'over' : pct >= SP_NEAR ? 'near' : ''}" title="Space used: ${Math.round(pct)} %"><i style="width:${Math.max(2, Math.min(100, pct))}%"></i></span>`;
-    let h = `<div class="spTank"><b>${esc(tankLabel(plan.tank))}</b>${bar(space)}<span class="spPct">${Math.round(space)} % of the space</span></div>`;
-    if (plan.problem) h += `<div class="spWarn">${esc(plan.problem)}</div>`;
-    else if (plan.need && plan.tank.id !== plan.need.tank.id) h += `<div class="spNote">The smallest that holds them is ${esc(tankLabel(plan.need.tank))}.</div>`;
-    if (plan.span) {
-      const { setupUsd: s, minPerWeek: m } = plan.span;
-      h += `<div class="spLive"><span>Set-up about <b>${range(s.cheapest, s.balanced, usd)}</b></span><span>About <b>${range(m.cheapest, m.balanced, n => `${n}`)} min</b> a week</span></div><div class="spNote">Cheapest build to balanced build: tank, filter, light, heater and water care for these animals.</div>`;
-    }
-    if (plan.steps.length) {
-      h += `<div class="spHd">More room</div><ul class="spSteps2">${plan.steps.map(s => `<li><button type="button" data-act="size" data-tank="${s.tank.id}"><span>${esc(tankLabel(s.tank))}</span><b>${signed(s.costDeltaUsd)}</b>${bar(s.spacePct)}<span class="spPct">${Math.round(s.spacePct)} %</span></button></li>`).join('')}</ul>`;
-      if (chosen && plan.need && plan.tank.id !== plan.need.tank.id) h += `<button type="button" class="spLink" data-act="smallest">Back to the smallest</button>`;
-    }
+    if (!plan.options.length) return '<p class="spNote">This animal lives on land: choose a terrarium in the editor.</p>';
+    let h = '';
+    if (plan.tank) {
+      h += `<div class="spTank"><b>${esc(tankLabel(plan.tank))}</b><span class="spPct">Your tank. It stays this size as you add animals.</span></div>`;
+      if (plan.problem) h += `<div class="spWarn">${esc(plan.problem)}</div>`;
+      if (plan.span) {
+        const { setupUsd: s, minPerWeek: m } = plan.span;
+        h += `<div class="spLive"><span>Set-up about <b>${range(s.cheapest, s.balanced, usd)}</b></span><span>About <b>${range(m.cheapest, m.balanced, n => `${n}`)} min</b> a week</span></div><div class="spNote">Cheapest build to balanced build: tank, filter, light, heater and water care for these animals.</div>`;
+      }
+    } else h += plan.need ? '<div class="spNote">Pick a tank. Greyed sizes are too small for the animals you have so far; the bars show how full each would be.</div>' : `<div class="spWarn">${esc(plan.problem ?? '')}</div>`;
+    h += `<div class="spHd">Tank sizes</div><div class="spSizeKey spNote"><span>Fullness</span><span>Tank size</span></div><ul class="spSizes">${plan.options.map(o => {
+      const bad = o.fails.length > 0, on = plan.tank?.id === o.tank.id, full = Math.max(o.spacePct, o.filtrationPct);
+      return `<li><button type="button" data-act="size" data-tank="${o.tank.id}" class="${bad ? 'small' : ''}${on ? ' on' : ''}"${bad && !on ? ' disabled' : ''}><span class="spLbl">${esc(tankLabel(o.tank))}${bad ? `<em>${WHY[o.fails[0]]}</em>` : o.cramped ? '<em class="cr">workable, a bit cramped</em>' : ''}</span>${bar(full, 'Fullness')}<span class="spPct">${Math.round(full)} %</span>${bar(o.minPct, 'Tank size against what the animals need')}<span class="spPct">${Math.round(o.minPct)} %</span></button></li>`;
+    }).join('')}</ul>`;
     return h;
   };
 
@@ -119,6 +121,7 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
 
   let focusSearch = false;
   const draw = () => {
+    const sz = el.querySelector<HTMLElement>('.spSizes'); if (sz) sizesTop = sz.scrollTop;
     const keep = el.querySelector<HTMLInputElement>('.spQ'), hadFocus = document.activeElement === keep, pos = keep?.selectionStart ?? q.length, scroll = el.scrollTop;
     el.classList.toggle('spEmpty', !picks.length);
     el.innerHTML = `<div class="spHead"><h2>An animal I want</h2><button type="button" data-act="close" aria-label="Close">✕</button></div>
@@ -130,10 +133,15 @@ ${mates ? `<p class="spNote">Pick from the pictures on the left; each goes in at
 ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}` : ''}
 <div class="spFoot"><button type="button" class="primary" data-act="builds"${picks.length && planFor(picks, chosen).tank && !planFor(picks, chosen).problem ? '' : ' disabled'}>Continue: three ways to build it</button><button type="button" class="spLink" data-act="done"${picks.length ? '' : ' disabled'}>Open in the editor as it is</button><span class="spNote">Everything stays editable in the editor.</span></div>`;
     const q2 = el.querySelector<HTMLInputElement>('.spQ')!;
-    gallery.mates(mates && picks.length ? rankTankmates(picks) : null);
+    { const t = planFor(picks, chosen).tank; gallery.mates(mates && picks.length ? rankTankmates(picks, t).map(m => ({ ...m, bigger: m.bigger ? tankLabel(m.bigger) : undefined })) : null, !!t); }
     gallery.search(q); gallery.show(!el.hidden && (!picks.length || mates));
     if (hadFocus || focusSearch) { q2.focus(); q2.setSelectionRange(pos, pos); focusSearch = false; }
     el.scrollTop = scroll;
+    const list = el.querySelector<HTMLElement>('.spSizes');
+    if (list) { // nothing chosen: show the smallest size that holds the picks; chosen: leave the list where it was
+      const first = list.querySelector<HTMLElement>('button:not(.small)');
+      list.scrollTop = !chosen && first ? Math.max(0, first.offsetTop - list.offsetTop - 28) : sizesTop;
+    }
   };
 
   const change = (rebuild = false) => { sync(rebuild); draw(); };
@@ -153,7 +161,6 @@ ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}` : ''}
       case 'mates': mates = true; draw(); break;
       case 'nomates': mates = false; draw(); break;
       case 'size': chosen = b.dataset.tank; change(); break;
-      case 'smallest': chosen = undefined; change(); break;
     }
   };
 

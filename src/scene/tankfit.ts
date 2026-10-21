@@ -14,6 +14,7 @@ import { defaultProfile, demandOf, type DemandOpts } from '../demand';
 import { bareSetup } from './defaults';
 import { volume } from './physics';
 import { countsAgainstWater, stockingOf } from './stocking';
+import { tankMinimum } from './tankMin';
 import { applyPreset, optionCost, PRESETS, ROOM_C, rowsFor, stockCapacity, tempFit, withChoice } from './tech';
 import type { Fish, TankSetup } from './types';
 
@@ -124,23 +125,28 @@ export interface Fit {
   spacePct: number;
   /** filtration limit under the balanced build, percent */
   filtrationPct: number;
+  /** the tank's size against the most demanding species' minimum (the Fullness tile's third bar), percent; over 100 / 0.9 = too small */
+  minPct: number;
+  /** workable but cramped for some species (comfortable size over the tank) */
+  cramped: boolean;
   /** why a tank is out, empty when it fits */
   fails: ('space' | 'minimum' | 'length' | 'depth' | 'floor' | 'filtration')[];
 }
 
 function fitOf(c: Candidate, animals: AnimalCount[], needs: Needs): Fit {
-  const r = stockingOf(setupFor(c, animals, 'balanced')), fails: Fit['fails'] = [];
+  const S = setupFor(c, animals, 'balanced'), r = stockingOf(S), fails: Fit['fails'] = [];
   if (r.spacePercent > 100) fails.push('space');
   // the balanced build already takes the strongest catalogue filter when none keeps it at 70 %: still over 100 % means no filter can carry this stocking here
   if (r.filtrationPercent > 100) fails.push('filtration');
-  if (c.litres < needs.minLitres * 0.9) fails.push('minimum'); // 10 % slack: a 10 gal (38 L) takes a 40 L species
+  const tm = tankMinimum(S);
+  if (tm.percent > 100 / 0.9) fails.push('minimum'); // the Fullness bar's own measure (floor area, length, water by kind of animal); 10 % slack: a 10 gal (38 L) takes a 40 L species
   if (c.T.L < needs.minLengthMm) fails.push('length');
   if (c.T.H * WATER_LEVEL > needs.maxDepthMm) fails.push('depth');
   const floor = c.T.L * c.T.D / 100; // mm2 -> cm2
   const zones = needs.floorCm2;
   // bottom dwellers need their patch of floor; swimmers share the whole floor with them
   if (zones.bottom > floor || zones.bottom + zones.middle + zones.top + zones.all > floor * 2) fails.push('floor');
-  return { spacePct: r.spacePercent, filtrationPct: r.filtrationPercent, fails };
+  return { spacePct: r.spacePercent, filtrationPct: r.filtrationPercent, minPct: tm.percent, cramped: tm.comfortPercent > 100, fails };
 }
 
 export interface TankFit extends Fit {
@@ -160,6 +166,13 @@ export function tankFor(animals: AnimalCount[]): TankFit | undefined {
   return last;
 }
 
+/** Every catalogue size, smallest first, each judged for these animals (`fails` empty = it holds them). For the stocking screen's tank list. */
+export function tankOptions(animals: AnimalCount[]): TankFit[] {
+  if (!wet(animals).length) return [];
+  const needs = needsOf(animals);
+  return CANDIDATES.map(c => fitOfTank(c, animals, needs));
+}
+
 export interface StepUp {
   tank: TankModel;
   litres: number;
@@ -172,7 +185,7 @@ export interface StepUp {
 const STEP_RATIO = 1.25;
 
 /** The next `n` good sizes above `current`: bigger water each time, none that fails the length or depth the animals need. */
-export function stepUps(animals: AnimalCount[], current: TankModel | string, n = 3): StepUp[] {
+export function stepUps(animals: AnimalCount[], current: TankModel | string, n = 3, ratio = STEP_RATIO): StepUp[] {
   const cur = typeof current === 'string' ? getTankModel(current) : current;
   if (!cur || !wet(animals).length) return [];
   const c0 = CANDIDATES.find(c => c.m.id === cur.id) ?? { m: cur, T: tankFromModel(cur), litres: volume(tankFromModel(cur)).litres };
@@ -180,7 +193,7 @@ export function stepUps(animals: AnimalCount[], current: TankModel | string, n =
   let from = c0.litres;
   for (const c of CANDIDATES) {
     if (out.length >= n) break;
-    if (c.litres < from * STEP_RATIO) continue;
+    if (c.litres < from * ratio) continue;
     const f = fitOf(c, animals, needs);
     if (f.fails.some(x => x !== 'space' && x !== 'minimum')) continue; // 'filtration' too: a step that no filter can carry is not a step
     out.push({ tank: c.m, litres: c.litres, costDeltaUsd: Math.round(setupUsd(c, animals, 'balanced') - base), spacePct: f.spacePct, filtrationPct: f.filtrationPct });

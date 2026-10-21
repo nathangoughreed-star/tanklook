@@ -212,6 +212,7 @@ export const FORMULAS: Formula[] = [
   { file: 'src/scene/plantfit.ts', symbols: ['FIT_PAR'], status: 'assumption', why: 'one representative PAR inside each light level' },
   { file: 'src/scene/growtime.ts', symbols: ['GROW_RATE'], status: 'assumption', why: 'growth multipliers by feeding and plant speed (CO2 helps stems most); not measured' },
   { file: 'src/scene/tankMin.ts', symbols: ['REF_DEPTH_CM'], status: 'assumption', why: 'the floor-area need of a bottom dweller is its litres spread over 30 cm of water, a typical small tank depth; swimmers are held to the longest floor side instead' },
+  { file: 'src/scene/tankMin.ts', symbols: ['MIN_WEIGHTS'], status: 'assumption', why: 'how much water, floor area and tank length count toward a species minimum by where it lives: a care sheet gallon figure stands in for floor space, so a bottom dweller is held to floor area, swimmers mostly to length, volume less; keeper-practice judgement' },
   { file: 'src/scene/tankMin.ts', symbols: ['TIERS'], status: 'claimed', why: 'absolute floor and comfortable tank size per species (adf, danio, whitecloud, tigerbarb, cherrybarb, firenewt, firetoad): keeper-practice judgement from the examples given, no page recorded' },
   { file: 'src/scene/tankfit.ts', symbols: ['FLOOR_K'], status: 'claimed', why: '"a documented rule of thumb, not a source of record": a bottom dweller holds about two body lengths square' },
   { file: 'src/scene/tankfit.ts', symbols: ['FILTRATION_TARGET'], status: 'assumption', why: 'preset filtration targets: cheapest 100 %, balanced 70 %' },

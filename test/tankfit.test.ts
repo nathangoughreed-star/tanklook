@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { CARE } from '../src/data/care';
 import { getTankModel, tankFromModel } from '../src/data/tanks';
 import { buildSpan, needsOf, recommendedMin, stepUps, tankFor, tankLabel, type AnimalCount } from '../src/scene/tankfit';
+import { areaFor } from '../src/scene/tankMin';
 
 const CASES: Record<string, AnimalCount[]> = {
   frogs: [{ species: 'adf', n: 2 }],
@@ -28,7 +29,10 @@ describe('tank fit engine (lane P2)', () => {
   });
   it('it is the SMALLEST tank: the step below it is not offered because it fails (space or the species minimum)', () => {
     const t = fit('danios'), smaller = stepUps(CASES.danios, 'g5', 40).filter(s => s.litres < t.litres);
-    expect(smaller.every(s => s.spacePct > 100 || s.litres < 0.9 * needsOf(CASES.danios).minLitres)).toBe(true);
+    expect(smaller.length).toBeGreaterThan(0);
+    // 'minimum' is the Fullness bar's own measure (floor area, length, water by kind of animal), not litres alone: the 20 high holds as much water as a 20 long but its floor is too small for the pleco
+    const need = needsOf(CASES.danios);
+    expect(smaller.every(s => s.spacePct > 100 || s.tank.outer.L < need.minLengthMm || s.litres < 0.9 * need.minLitres || s.tank.outer.L * s.tank.outer.D / 100 < 0.9 * areaFor(need.minLitres))).toBe(true);
   });
   it('steps are monotonic: each is bigger than the last, the space bar falls, every tank is from the catalogue, the cost rises overall', () => {
     for (const k of Object.keys(CASES)) {
