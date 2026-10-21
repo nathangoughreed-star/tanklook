@@ -31,7 +31,8 @@ describe('tech menu model (lane TM step 1)', () => {
       const S = tankOf(id);
       expect(S.tech, id).toBeUndefined();
       const t = techOf(S);
-      if (!S.water.on) { expect(rowsFor(S), id).toEqual([]); continue; }
+      // a dry tank: only its own rows (lamps, misting), a basking lamp and UVB inferred when an animal wants a warm spot
+      if (!S.water.on) { expect(rowsFor(S).map(r => r.water), id).toEqual(rowsFor(S).map(() => 'dry')); expect(rowsFor(S).length, id).toBe(3); continue; }
       expect(feedFor(S), id).toBe(S.grow.feed);
       if (!S.water.salt) expect(feedOf(t), id).toBe(S.grow.feed);
       else expect(t.rows.skimmer, id).toBe('hob'); // lane SF: no sump in the inferred filter, so a hang-on skimmer
@@ -141,7 +142,7 @@ describe('tech menu model (lane TM step 1)', () => {
     const scene = parseScene(SCENES.planted).scene;
     scene.tanks[0].tech = t;
     expect(parseScene(JSON.parse(JSON.stringify(scene))).scene.tanks[0].tech).toEqual(t);
-    expect(inferTech({ ...S, water: { ...S.water, on: false } }).rows).toEqual({});
+    expect(inferTech({ ...S, water: { ...S.water, on: false } }).rows).toEqual({ heatlamp: 'none', uvb: 'none', mist: 'none' }); // planted's fish want no basking spot
   });
 });
 

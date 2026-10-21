@@ -236,9 +236,8 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     return `Setup ${part(d.setup - b.setup, usd, 1)} · Monthly ${part(d.upkeep - b.upkeep, v => usd(v), 0.05)} · Time ${part(d.minutes - b.minutes, v => `${v.toFixed(v < 10 ? 1 : 0)} min/wk`, 0.05)} · Difficulty ${part(d.risk - b.risk, v => v.toFixed(1), 0.05)}`;
   };
 
-  function render() {
-    const S = store.tank, t = techOf(S), rows = rowsFor(S);
-    if (!S.water.on) { mount.innerHTML = '<div class="hint">A dry tank: no filter, heater or water gear. Heat lamps, misting and UVB come later.</div>'; return; }
+  /** The wet tank's head: presets, room temperature, heat loss and the warnings. */
+  const wetHead = (S: TankSetup, t: TechSetup) => {
     const presets = presetsFor(S), h = heatLoss(S, t);
     const shownPreset = S.tech ? (t.preset ?? 'custom') : '';
     let html = `<div class="tpre" role="group" aria-label="Tech presets">${presets.map(p => `<button type="button" data-pre="${p.id}" class="${shownPreset === p.id ? 'on' : ''}">${esc(p.label)}</button>`).join('')}<span class="tcustom">${shownPreset === 'custom' ? 'Custom' : !S.tech ? 'Not set: the usual gear for this tank' : ''}</span></div>`;
@@ -255,9 +254,19 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     if (offerChiller(S) && t.rows.chiller !== 'chiller') warn.push(`The room (${room(t)}) is warmer than the tank should be (${tempTxt(h.targetC)}): a chiller, or a cooler room.`);
     if (t.rows.co2 === 'pressurized' && t.rows.air === 'airstone') warn.push('An airstone running by day blows off the injected CO2: put it on a timer for the night.');
     if (warn.length) html += `<div class="hint why">${warn.map(esc).join('<br>')}</div>`;
+    return html;
+  };
+
+  function render() {
+    const S = store.tank, t = techOf(S), rows = rowsFor(S);
+    const dry = !S.water.on;
+    let html = '';
+    // a dry tank (2026-10-21): its lamps and misting, drawn on the top and dragged anywhere on it; priced here, not yet in the tank's totals
+    if (dry) html += '<div class="hint">A dry tank: basking heat, UVB and misting. Drag a lamp anywhere on the top while this menu is open. Their costs show here; the tank totals do not count them yet.</div>';
+    else html += wetHead(S, t);
     const all = rows.map(r => optionCost(S, r.id, t.rows[r.id] ?? 'none', { tech: t, kwhUsd: kwhUsd() })), sum = (f: (c: OptionCost) => { lo: number; mode: number; hi: number }) => all.reduce((a, c) => ({ lo: a.lo + f(c).lo, mode: a.mode + f(c).mode, hi: a.hi + f(c).hi }), { lo: 0, mode: 0, hi: 0 });
-    html += `<div class="ttot"><span>All this gear</span>${range({ ...all[0], setup: sum(c => c.setup), monthlyUsd: sum(c => c.monthlyUsd), minutes: sum(c => c.minutes), kwhMo: all.reduce((a, c) => a + c.kwhMo, 0), est: all.some(c => c.est) }, coveredOf(S, t, 'heater') + coveredOf(S, t, 'filter'))}</div>`;
-    html += `<div class="tprev" aria-live="polite"></div>`;
+    html += `<div class="ttot"><span>All this gear</span>${range({ ...all[0], setup: sum(c => c.setup), monthlyUsd: sum(c => c.monthlyUsd), minutes: sum(c => c.minutes), kwhMo: all.reduce((a, c) => a + c.kwhMo, 0), est: all.some(c => c.est) }, dry ? 0 : coveredOf(S, t, 'heater') + coveredOf(S, t, 'filter'))}</div>`;
+    if (!dry) html += `<div class="tprev" aria-live="polite"></div>`;
     for (const r of rows) {
       if (r.id === 'chiller' && !offerChiller(S) && t.rows.chiller !== 'chiller') continue;
       if (r.qol && !rows.some(x => x.qol && x.id !== r.id && rows.indexOf(x) < rows.indexOf(r))) html += '<div class="hint" style="margin-top:.6em"><b>Quality of life</b>: gear that takes chores off your hands, for a price.</div>';

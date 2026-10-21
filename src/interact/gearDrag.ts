@@ -2,7 +2,8 @@
 // a piece moves along what it mounts on. Glass gear (heaters, internal filters, CO2 diffusers, UV, powerheads) goes
 // anywhere on the back or a side glass at any height; rim gear (HOB filters and skimmers, the canister's pipes, the
 // overflow box, the ATO sensor) slides along the rim of a wall; floor gear (sponge filter, airstone) goes anywhere on
-// the floor. The spot is saved in TechSetup.place[row] as shares of the wall (scene/tech.ts), so a resize keeps it.
+// the floor; a dry tank's lamps and misting go anywhere on the top (2026-10-21, Nathan: "slide anywhere theres surface").
+// The spot is saved in TechSetup.place[row] as shares of the wall (scene/tech.ts), so a resize keeps it.
 import * as THREE from 'three';
 import { backdropDepth, clamp, waterY } from '../scene/physics';
 import { groundHeight } from '../scene/terrain';
@@ -10,10 +11,11 @@ import { inferTech, type GearPlace } from '../scene/tech';
 import type { Store } from '../scene/store';
 import type { TankSetup } from '../scene/types';
 import type { Viewer, Viewport } from '../render/viewer';
-import { gearShown, type GearMount, type GearPiece } from '../render/gear3d';
+import { gearShown, lidTop, onTop, type GearMount, type GearPiece } from '../render/gear3d';
 
-/** A piece being dragged: its tank, tech row and mount, and whether it has moved. */
-export interface GearDrag { vi: number; row: string; mount: GearMount; moved: boolean }
+/** A piece being dragged: its tank, tech row and mount, whether it has moved, and its half size along x and depth (mm;
+ *  what keeps a piece on the top inside the tank's footprint). */
+export interface GearDrag { vi: number; row: string; mount: GearMount; moved: boolean; half?: [number, number] }
 type Hit = { vp: Viewport; ray: THREE.Ray; mesh?: THREE.Mesh };
 
 /** The gear piece under the pointer, nearer than the fish or piece the hit test found; null when there is none. */
@@ -35,13 +37,23 @@ export function gearGrab(hit: Hit): GearDrag | null {
   // mostly see-through, and the viewer's own hit test ranks plants below everything else too
   const other = hit.mesh && !hit.mesh.userData.plant ? new THREE.Raycaster(hit.ray.origin, hit.ray.direction).intersectObject(hit.mesh, false)[0] : undefined;
   if (other && other.distance < best.d - 5) return null;
-  return { vi: hit.vp.i, row: best.p.row, mount: best.p.mount, moved: false };
+  const size = best.p.box.getSize(new THREE.Vector3());
+  return { vi: hit.vp.i, row: best.p.row, mount: best.p.mount, moved: false, half: [size.x / 2, size.z / 2] };
 }
 
 /** Where the pointer's ray puts a piece with this mount in tank S (shares as TechSetup.place keeps them), or null. */
-export function placeFor(S: TankSetup, ray: THREE.Ray, mount: GearMount, prev?: GearPlace): GearPlace | null {
+export function placeFor(S: TankSetup, ray: THREE.Ray, mount: GearMount, prev?: GearPlace, half: [number, number] = [0, 0]): GearPlace | null {
   const T = S.tank, Db = T.D - backdropDepth(S.backdrop, T), lean = prev?.lean;
   if (mount === 'fixed') return null;
+  if (mount === 'lid') {
+    // the top's plane (a hood's curve: once more at the depth the first guess lands on), then held inside the footprint;
+    // with no lid the spot is kept as pointed and the piece drawn on the rim nearest it (gear3d onTop)
+    const top = lidTop(S, T), at = (y: number) => ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), -y), new THREE.Vector3());
+    let p = at(top.y(T.D / 2)); if (!p) return null;
+    if (S.lid === 'hood') p = at(top.y(clamp(-p.z, 0, T.D))) ?? p;
+    const [x, d] = top.open ? [clamp(p.x, 0, T.L), clamp(-p.z, 0, T.D)] : onTop(S, T, p.x, -p.z, half[0], half[1]);
+    return { wall: 'lid', at: clamp(x / T.L, 0, 1), y: clamp(d / T.D, 0, 1) };
+  }
   if (mount === 'floor') {
     const y0 = groundHeight(S, T, T.L / 2, T.D / 2), p = ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), -y0), new THREE.Vector3());
     if (!p) return null;
@@ -67,7 +79,7 @@ export function placeFor(S: TankSetup, ray: THREE.Ray, mount: GearMount, prev?: 
 /** Follow the pointer: write the piece's new spot (coalesced into one undo step per drag). */
 export function gearMove(viewer: Viewer, store: Store, g: GearDrag, clientX: number, clientY: number) {
   const hit = viewer.hitTest(clientX, clientY); if (!hit || hit.vp.i !== g.vi) return;
-  const S = store.scene.tanks[g.vi], p = placeFor(S, hit.ray, g.mount, S.tech?.place?.[g.row]); if (!p) return;
+  const S = store.scene.tanks[g.vi], p = placeFor(S, hit.ray, g.mount, S.tech?.place?.[g.row], g.half); if (!p) return;
   if (JSON.stringify(p) === JSON.stringify(S.tech?.place?.[g.row])) return;
   store.editTank(g.vi, t => { t.tech = withPlace(t, g.row, p); }, { coalesce: 'gear-drag' });
   g.moved = true;

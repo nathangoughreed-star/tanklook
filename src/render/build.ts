@@ -10,7 +10,7 @@ import { snailAspect } from '../art/snails';
 import { fishTL, leafUp, needsWater, speciesOf, type Species } from '../data/species';
 import { PERCHES, anchors, limbPaths, type Anchor, type Anchors, type V3 } from '../scene/anchors';
 import { glassBand, restsOnGround } from '../scene/water';
-import { backdropDepth, D2R, IN, ceilingH, clamp, floorY, glassThickness, RIM_DROP, RIM_H, tankUnderside, waterY } from '../scene/physics';
+import { backdropDepth, D2R, IN, ceilingH, clamp, floorY, glassThickness, HOOD_H, RIM_DROP, RIM_H, tankUnderside, waterY } from '../scene/physics';
 import { alongRun, archBulge, backgroundRuns, bowlDims, bowlRadius, chord, circleRing, clipToFootprint, facingRuns, footprint, frontAt, frontSlope, halfWidth, inside, levelRing, nearestGlass, offsetRing, offsetWalls, runLength, shapeOf, subRun, type P } from '../scene/shape';
 import { TABLE_TOP, cornerWalls, wallGap, tableCentre, tableOn, tableRing, wallPlane } from '../scene/table';
 import { groundHeight, pieSegs, poolHandles, poolWet, terrainDisc, terrainPoints, type PoolPart } from '../scene/terrain';
@@ -614,7 +614,7 @@ function addBowlFrame(sc: THREE.Scene, T: Tank, t: number, top: number, h: numbe
 }
 
 /** Hood height at the back (mm), above the rim top. */
-export const HOOD_H = 38;
+export { HOOD_H };
 
 /**
  * Classic low-profile moulded hood (lights inside): sits just inside the rim, tallest at the back, curving down to a
