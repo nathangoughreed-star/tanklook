@@ -66,7 +66,7 @@ export const LU_PER_L = 0.3;
  *  24 AqAdvisor combinations, scripts/aq-compare.mjs; with it the median of ours / AqAdvisor is 1.0). */
 /** Animals that live in the water load it; land animals (geckos, anoles, snakes, spiders, tree frogs) do not. */
 export function countsAgainstWater(sp: Species) { return sp.habitat !== 'land'; }
-export const SPACE_EXP = 0.45, SPACE_PER_L = 1 / 3.96; // 4.242 before the per-species factors (data/spacefactor.ts); /1.07 re-centres the 24 mixed combinations (median ours / AqAdvisor 1.00)
+export const SPACE_EXP = 0.45, SPACE_PER_L = 1.564 / 3.96; // per effective litre (floor area x credited height, lane HC); 1/3.96 was per raw litre (4.242 before the per-species factors, /1.07 re-centred the 24 AqAdvisor combinations); x1.564 holds the 37 published lists at their median 74 % at the published max
 /** Fitted-to-AqAdvisor multiplier on a species' space load (data/spacefactor.ts): its own row, else its class (tiny / mid / big fish, invert, amphibian). */
 /** Published stockings (research/expert-stockings.md, 2026-10-21; Nathan: trust the experts over AqAdvisor) read nano schools 100-145 %:
  *  animals under 2 g count TINY_EXPERT of their AqAdvisor-fitted space. */
@@ -103,6 +103,34 @@ export const schoolScale = (n: number) => n > SCHOOL_REF ? (n / SCHOOL_REF) ** (
  * count 0 (no source counts them, MX6).
  */
 export const FLOOR_SQIN_PER_IN = 15;
+/**
+ * Height (lane HC, Nathan's decision 2026-10-21): the water limit counts floor area linearly and height with diminishing returns. A
+ * swimmer's room is floor area x credited height, Hs x (1 - exp(-H / Hs)) for water height H (with Hs 12 in: 6/12/18/24/30 in credit
+ * 4.7/7.6/9.3/10.4/11.0 in). Hs is per species (Nathan: "an oscar going from 12 to 18 inches is a lot more helpful than a school of
+ * danios"): HS_K x body depth (card height, fins included), never under HS_MIN_CM (12 in), times a class multiplier: low (HS_LOW) for
+ * fast horizontal schoolers and surface fish, high (HS_HIGH) for tall-bodied fish, gouramis and big cichlids. Middle, top and bottom
+ * fish use the curve in full (bottom dwellers: height does not help them either; their floor limit is separate); "all"-zone fish use
+ * half curve, half raw height (ALL_CURVE). Constants chosen on the 37 published lists (research/height-curve.md): the experts do not
+ * separate the classes (sdlog of percent at the published max 0.474 vs 0.463 for raw litres), so the classes are Nathan's call, not a fit.
+ * In a mixed tank each species is divided by its own effective room. SPACE_PER_L carries the re-fit.
+ */
+export const HS_MIN_CM = 30.5, HS_K = 8, HS_LOW = 0.7, HS_HIGH = 1.5, ALL_CURVE = 0.5;
+/** Class by id (lane HC, Nathan 2026-10-21: "an oscar going from 12 to 18 inches is a lot more helpful than a school of danios"):
+ *  fast horizontal schoolers and surface fish use little of the height (low); tall-bodied fish, hoverers and big cichlids use more (high). */
+const HS_LOW_IDS = new Set(['danio', 'whitecloud', 'cpd', 'harlequin', 'chili', 'tigerbarb', 'cherrybarb', 'sae']);
+const HS_HIGH_IDS = new Set(['gourami', 'dwarfgourami', 'honeygourami', 'oscar', 'livingstonii', 'kadango']);
+export function heightClass(sp: Species): 'low' | 'mid' | 'high' {
+  return HS_HIGH_IDS.has(sp.id) || sp.aspect >= 0.9 ? 'high' : HS_LOW_IDS.has(sp.id) || zoneOf(sp) === 'top' ? 'low' : 'mid';
+}
+/** The height scale Hs of one species, cm: its body depth (card height, fins included) x HS_K, never under HS_MIN_CM, x its class. */
+export const hsCm = (sp: Species) => { const c = heightClass(sp); return Math.max(HS_MIN_CM, HS_K * sp.tl * sp.aspect / 10) * (c === 'low' ? HS_LOW : c === 'high' ? HS_HIGH : 1); };
+/** What one litre of this animal's water counts for in the water limit: raw height over credited height (1 at no height, grows with a tall tank). */
+export function heightMul(sp: Species, meanDepthCm: number): number {
+  if (!(meanDepthCm > 0)) return 1;
+  const hs = hsCm(sp), r = hs * (1 - Math.exp(-meanDepthCm / hs)) / meanDepthCm;
+  const w = zoneOf(sp) === 'all' ? ALL_CURVE : 1;
+  return 1 / (w * r + (1 - w));
+}
 export const FLOOR_SHARE: Record<Zone, number> = { bottom: 1, all: 0.5, middle: 0, top: 0 };
 const FLOOR_REF = { id: 'bronzecory', tlMm: 65 }, SQIN_CM2 = 6.4516, IN_MM = 25.4;
 const isInvert = (sp: Species) => sp.kind === 'snail' || sp.cat.endsWith('invert');
@@ -153,9 +181,9 @@ export function animalLoad(sp: Species, tlMm: number, tempC = T_REF, salt = fals
   return massG(sp.id, tlMm) ** 0.75 * MET_CLASS[metClass(sp)] * tempFactor(tempC) * (salt && sp.salt ? SALT_LOAD : 1);
 }
 /** Litres of water one adult of this species takes up (its load over what a litre clears): the starters' budget unit. */
-export const litresPerAnimal = (sp: Species) => Math.max(animalLoad(sp, sp.tl, T_REF, !!sp.salt) / LU_PER_L,
+export const litresPerAnimal = (sp: Species, depthCm = 0) => Math.max(animalLoad(sp, sp.tl, T_REF, !!sp.salt) / LU_PER_L,
   // SE2 (2026-10-20): the starters also respect the space limit, so Full reads about 90 % by the space number (animals in the water only)
-  countsAgainstWater(sp) ? spaceOf(sp, sp.tl) / SPACE_PER_L : 0); // starters draw animals at adult length (a few % either way): budgeted at adult so what is drawn matches (2026-10-21)
+  countsAgainstWater(sp) ? spaceOf(sp, sp.tl) * heightMul(sp, depthCm) / SPACE_PER_L : 0); // depthCm: the tank's mean water depth (lane HC), 0 = no height effect // starters draw animals at adult length (a few % either way): budgeted at adult so what is drawn matches (2026-10-21)
 /** Floor area one adult takes, cm2, sized like litresPerAnimal (at adult length): the starters' floor budget unit (lane HB). */
 export const floorPerAnimal = (sp: Species) => floorUseCm2(sp, sp.tl);
 
@@ -173,13 +201,14 @@ export const plural = (n: number, name: string) => n === 1 ? `1 ${name}` : `${n}
 export function stockingOf(S: TankSetup): Stocking {
   const cap = capacityOf(S), salt = !!(S.water.on && S.water.salt), by = new Map<string, Contributor>(), feeding = feedingOf(S);
   let load = 0, spaceLoad = 0, floorUse = 0;
+  const meanDepthCm = cap.litres * 1000 / Math.max(1e-9, floorOf(S.tank).areaCm2);
   for (const f of S.fish) {
     const sp = getSpecies(f.species), l = !sp || !countsAgainstWater(sp) ? 0 : tanOf(sp, massG(sp.id, f.tl ?? sp.tl), feeding, cap.tempC, salt);
     if (!sp || l <= 0) continue;
     load += l;
     const c = by.get(sp.id) ?? { id: sp.id, name: sp.name, n: 0, load: 0, space: 0, share: 0, grams: 0, cls: metClass(sp), floor: 0, spaceFactor: spaceFactor(sp) };
     const fl = floorUseCm2(sp, f.tl ?? sp.tl);
-    c.n++; c.load += l; c.space += spaceOf(sp, f.tl ?? sp.tl); c.floor += fl; floorUse += fl; c.grams += massG(sp.id, f.tl ?? sp.tl); by.set(sp.id, c);
+    c.n++; c.load += l; c.space += spaceOf(sp, f.tl ?? sp.tl) * heightMul(sp, meanDepthCm); c.floor += fl; floorUse += fl; c.grams += massG(sp.id, f.tl ?? sp.tl); by.set(sp.id, c);
   }
   for (const c of by.values()) { c.space *= schoolScale(c.n); spaceLoad += c.space; }
   const pc = (l: number, cp: number) => cp > 0 ? l / cp * 100 : l > 0 ? Infinity : 0;

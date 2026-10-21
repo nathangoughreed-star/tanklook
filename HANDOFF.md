@@ -177,6 +177,12 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 - Tests re-blessed (see the research file); `starter.ts` `litresFor` is a function (one-line hook, import cycle with stocking.ts).
 - Not done: filter-clean bioload scaling; a per-row minutes line for the hose / feeder in the Tech menu (the saving shows in "If picked" and in the water-change / feeding rows).
 
+## Lane HC: swimmer height curve in the water limit (2026-10-21, branch `heightcurve`; DONE)
+- **Model (Nathan 2026-10-21, per species):** the water limit counts floor area linearly and height with diminishing returns. Each animal's water load x H / (Hs (1 - exp(-H / Hs))), H = mean water depth (litres / floor area, so bowls, swamp pools and other shapes work); Hs = 8 x body depth (card height), min 12 in, x 0.7 low class (danio, white cloud, rasbora, barbs, SAE, top-zone fish) or x 1.5 high class (aspect >= 0.9, gouramis, oscar, big cichlids); "all" zone half curve half raw; bottom dwellers use the curve too (floor limit unchanged). `SPACE_PER_L` x1.564 (median of the 37 lists still 74.2 %). Starters budget with the same depth (`litresPerAnimal(sp, depthCm)`).
+- **Results:** 37 lists over 100 %: 11 -> 12, sdlog 0.463 -> 0.474 (classes are Nathan's call, experts do not separate them); Nathan's tank water 158 / 133 / 122 / 117 % at 12 / 18 / 24 / 30 in; oscar 48x18 water 48 / 33 / 25 %. Details and tuning table: `research/height-curve.md`. Provenance: assumption row in provenance.ts.
+- **Tests re-blessed:** spaceaudit C / D / shape-blind (height now counts with diminishing returns), stocking mbuna 10 gal (> 150, was > 200), stockplan oscar (5 oscars fit the same catalogue size as 1, at a higher Space), density (starter load read at the tank's depth; paludarium excluded from the monotone check).
+- **Follow-ups:** paludarium seed 1 starter swaps 26-ember lead school for none at stop 3; 5 oscars at 73 % of 170 gal reads loose, review the oscar class if Nathan agrees.
+
 ## Lane HB: Habitat Model (2026-10-21, branch `hb`, worktree `.claude/worktrees/hb`, port 5897; DONE)
 - **Research (step A):** `research/habitat-model.md` (reading notes with every url in `research/habitat/*.md`; 3 Sonnet agents, ~0.25 M tokens).
   No regulator states a floor area per bottom dweller; hobby / species sources scale with LENGTH: 12-24 sq in of floor per inch of fish

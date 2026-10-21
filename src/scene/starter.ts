@@ -43,7 +43,7 @@ export function bioloadLitres(s: TankSetup) {
   return volume(s.tank).litres * Math.max(s.water.on ? s.water.level : 0, 0.3);
 }
 /** Litres the animals in the tank take up now (each at its own size: a female at the female length). */
-export const bioload = (fish: Fish[]) => fish.reduce((a, f) => { const sp = getSpecies(f.species); return a + (sp ? litresPerAnimal(f.sex === 'f' ? female(sp) : sp) : 0); }, 0);
+export const bioload = (fish: Fish[], depthCm = 0) => fish.reduce((a, f) => { const sp = getSpecies(f.species); return a + (sp ? litresPerAnimal(f.sex === 'f' ? female(sp) : sp, depthCm) : 0); }, 0); // depthCm: the tank's mean water depth (lane HC), 0 = raw litres
 
 /** How a species is stocked: the first group, the step it grows by, the most of it. */
 function stocking(sp: Species) {
@@ -79,8 +79,10 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
     for (const sp of pool) if (!whyAnimal(sp, litres, ex, kept, { corals: hasCorals(s.items), fit: minFit(s) })) kept.push(sp);
     pool.splice(0, pool.length, ...kept);
   }
+  const depthCm = bioloadLitres(s) * 1000 / Math.max(1e-9, floorOf(T).areaCm2), per = (sp: Species) => litresPerAnimal(sp, depthCm); // lane HC: a tall tank's water counts for less
+  const gl = (sp: Species, from: number, n: number) => groupLitres(sp, from, n, per);
   const cap = bioloadLitres(s) * ANIMAL_FILL[4];
-  const lead = pool.findIndex(sp => sp.group && sp.zone !== 'bottom' && !isInvert(sp) && sp.habitat === 'water' && groupLitres(sp, 0, stocking(sp).start) <= cap);
+  const lead = pool.findIndex(sp => sp.group && sp.zone !== 'bottom' && !isInvert(sp) && sp.habitat === 'water' && gl(sp, 0, stocking(sp).start) <= cap);
   if (lead > 0) pool.unshift(...pool.splice(lead, 1));
   const chosen = pool.slice(0, kindsAt(stop)), budget = bioloadLitres(s) * fillAt(stop), big = Math.max(1, fillAt(stop) / ANIMAL_FILL[4]);
   const count = new Map<Species, number>();
@@ -90,7 +92,7 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
   // stocking engine's floor limit), so a starter's Full stays at or under 100 % on both
   const floorPerLitre = floorOf(T).areaCm2 / Math.max(1e-9, bioloadLitres(s));
   const add = (sp: Species, n: number, most = budget) => {
-    const have = count.get(sp) ?? 0, l = groupLitres(sp, have, n), fl = groupLitres(sp, have, n, floorPerAnimal);
+    const have = count.get(sp) ?? 0, l = gl(sp, have, n), fl = groupLitres(sp, have, n, floorPerAnimal);
     if (n <= 0 || used + l > most || usedFloor + fl > most * floorPerLitre) return false;
     count.set(sp, have + n); used += l; usedFloor += fl; return true;
   };
@@ -101,7 +103,7 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
     while (n > 1 && usedFloor + groupLitres(sp, 0, n, floorPerAnimal) > cap * floorPerLitre) n--;
     count.set(sp, n); usedFloor += groupLitres(sp, 0, n, floorPerAnimal);
   }
-  for (const [sp, n] of count) used += groupLitres(sp, 0, n); // semi-aquatic animals in a swamp / paludarium count against the water too (SE2 2026-10-20: Full stays at or under 100 %)
+  for (const [sp, n] of count) used += gl(sp, 0, n); // semi-aquatic animals in a swamp / paludarium count against the water too (SE2 2026-10-20: Full stays at or under 100 %)
   chosen.forEach((sp, i) => !dry(sp) && add(sp, stocking(sp).start, i === 0 && lead >= 0 ? Math.max(cap, budget) : budget));
   for (let grew = true; grew;) { // grow each group in turn while the budget lasts
     grew = false;

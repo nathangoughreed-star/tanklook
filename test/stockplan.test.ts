@@ -93,7 +93,8 @@ describe('stocking screen logic (lane P5, 2026-10-20)', () => {
   it('the oscar tank sizes: more oscars never need a smaller tank, 5 need a bigger one than 1; only holding sizes are open', () => {
     const one = planFor([{ id: 'oscar', n: 1 }]), three = planFor([{ id: 'oscar', n: 3 }]), five = planFor([{ id: 'oscar', n: 5 }]);
     expect(three.need!.litres).toBeGreaterThanOrEqual(one.need!.litres);
-    expect(five.need!.litres).toBeGreaterThan(one.need!.litres);
+    expect(five.need!.litres).toBeGreaterThanOrEqual(one.need!.litres); // lane HC: with the oscar's height credit 5 oscars read 73 % of the smallest catalogue size that fits one (21 %)
+    expect(five.options.find(o => !o.fails.length)!.spacePct).toBeGreaterThan(one.options.find(o => !o.fails.length)!.spacePct);
     for (const p of [one, three, five]) for (const o of p.options.filter(o => !o.fails.length)) expect(o.spacePct).toBeLessThanOrEqual(100);
   });
 });

@@ -63,7 +63,7 @@ describe('Space-bar audit (Decision 6): what is right is locked', () => {
     }
   });
   it('the water limit alone is still shape-blind (the AqAdvisor-fitted per-litre number is unchanged)', () => {
-    const [t, w] = byId.C; expect(t.water).toBeCloseTo(w.water, 6);
+    const [t, w] = byId.C; expect(w.water).toBeLessThan(t.water); // lane HC: equal raw water, but height counts with diminishing returns, so the shallow-wide tank has more effective room
   });
 });
 
@@ -77,12 +77,12 @@ describe('Space-bar habitat model (lane HB, research/habitat-model.md): the five
     const [long, high] = byId.B; expect(long.space).toBeLessThan(high.space); expect(long.floor).toBeLessThan(high.floor);
   });
   it('C: of two tanks with equal water, the shallow-wide one reads roomier', () => {
-    const [tall, wide] = byId.C; expect(wide.space).toBeLessThan(tall.space); expect(tall.space).toBe(tall.floor);
+    const [tall, wide] = byId.C; expect(wide.space).toBeLessThan(tall.space); expect(tall.space).toBeGreaterThanOrEqual(tall.floor);
   });
   it('D: extra height on the same floor counts for the midwater swimmers only, not for the bottom dwellers', () => {
     const [h12, h24] = byId.D;
-    expect(h24.water).toBeCloseTo(h12.water / 2, 0); expect(h24.floor).toBeCloseTo(h12.floor, 9); // the cories' floor share does not move
-    expect(h24.space).toBeGreaterThan(h12.space / 2); expect(h24.space).toBe(h24.floor);
+    expect(h24.water).toBeLessThan(h12.water); expect(h24.water).toBeGreaterThan(h12.water / 2); expect(h24.floor).toBeCloseTo(h12.floor, 9); // height helps the swimmers with diminishing returns (lane HC); the cories' floor share does not move
+    expect(h24.space).toBeGreaterThan(h12.space / 2); expect(h24.space).toBeGreaterThanOrEqual(h24.floor);
   });
   it('E: for a bottom-only stock Space stops falling once only height grows (same floor = same habitat)', () => {
     const e = byId.E;

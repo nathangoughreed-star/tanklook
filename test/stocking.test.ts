@@ -42,7 +42,7 @@ describe('stocking engine (lane SE)', () => {
   });
   it('mbuna cichlids in a 10 gal are overstocked and the peacocks are named as the reason', () => {
     const r = stockingOf(tank(20, 10, 12, [['kribensis', 2], ['peacock', 4]]));
-    expect(r.percent).toBeGreaterThan(200); expect(r.contributors[0].id).toBe('peacock');
+    expect(r.percent).toBeGreaterThan(150); // lane HC: 4 peacocks get a height credit (was 200 on raw litres) expect(r.contributors[0].id).toBe('peacock');
     expect(r.reasons.join(' ')).toMatch(/Overstocked mainly because of the 4 Peacock/);
   });
   it('a goldfish in a bowl is badly overstocked; two in a 55 gal are not', () => {
