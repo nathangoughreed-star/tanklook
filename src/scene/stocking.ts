@@ -147,7 +147,7 @@ export function stockingOf(S: TankSetup): Stocking {
       }
       if (!fixFilter) reasons.push(`Even the best filter leaves it high: it needs about ${Math.ceil(cap.litres * filtrationPercent / 100)} L of water, or fewer animals.`);
     }
-  } else if (percent >= 85) reasons.push('Near full: room for a few small fish, no more.');
+  } else if (percent >= 85) reasons.push('Cramped but doable: keep up with water changes.');
   else reasons.push(`Room for about ${Math.round(100 - percent)}% more load.`);
   return { percent, spacePercent, filtrationPercent, load, contributors, capacity: cap, reasons, ...(fixFilter ? { fixFilter } : {}) };
 }
