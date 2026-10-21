@@ -1,14 +1,14 @@
 // Starter sets, layer by layer (lane SD, 2026-10-15): the hardscape and plants come from scene/items.ts
 // `starterItems`; this adds the animal layer and the regenerate the density sliders and Shuffle call. Each layer draws
 // from its own random stream (seed x layer), so redrawing one leaves the layers it does not feed exactly as they were.
-import { litresPerAnimal } from './stocking';
+import { floorPerAnimal, litresPerAnimal } from './stocking';
 import { rng } from '../art/paint';
 import { getSpecies, type Species } from '../data/species';
 import { DEFAULT_DENS, EPIPHYTES, STYLES, STYLE_KIND, clampItem, isLandStyle, isSwampy, layerOf, perch, starterItems, type Layer } from './items';
 import { CARE } from '../data/care';
 import { volume } from './physics';
 import { hasCorals, whyAnimal } from './animalfit';
-import { minFit } from './tankMin';
+import { floorOf, minFit } from './tankMin';
 import { groundEdited } from './scapeground';
 import { placeNew, randomPose, randomSize } from './scatter';
 import type { Fish, Item, LayoutId, TankSetup } from './types';
@@ -32,10 +32,10 @@ export const litresFor = (sp: Species) => litresPerAnimal(sp); // a function, no
 /** Litres for the `from`-th to (`from` + n - 1)-th animal of a species: a sexed species goes in as males and females in turn
  *  (`sex: 'f'` on every second one), each at its own size. At the male size alone the larger guppy females took the Full stop
  *  over 100 %, and a mean size undercounts a lone male where the females are smaller (kribensis, peacocks; S168 2026-10-20). */
-const groupLitres = (sp: Species, from: number, n: number) => {
-  if (!sp.female?.tl) return n * litresPerAnimal(sp);
+const groupLitres = (sp: Species, from: number, n: number, per: (sp: Species) => number = litresPerAnimal) => {
+  if (!sp.female?.tl) return n * per(sp);
   const fem = Math.floor((from + n) / 2) - Math.floor(from / 2);   // indices i in [from, from + n) with i odd
-  return (n - fem) * litresPerAnimal(sp) + fem * litresPerAnimal(female(sp));
+  return (n - fem) * per(sp) + fem * per(female(sp));
 };
 /** The water the bioload cap is counted on, litres: the tank to its water line (a swamp's shallow pools still count a
  *  third of the tank, for the animals on land). */
@@ -85,11 +85,14 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
   const chosen = pool.slice(0, kindsAt(stop)), budget = bioloadLitres(s) * fillAt(stop), big = Math.max(1, fillAt(stop) / ANIMAL_FILL[4]);
   const count = new Map<Species, number>();
   const dry = (sp: Species) => (land || id === 'paludarium') && sp.habitat !== 'water'; // land animals in a terrarium style
-  let used = 0;
+  let used = 0, usedFloor = 0;
+  // lane HB: the floor the bottom dwellers use is held to the same share of the tank's floor as the water budget is of its water (the
+  // stocking engine's floor limit), so a starter's Full stays at or under 100 % on both
+  const floorPerLitre = floorOf(T).areaCm2 / Math.max(1e-9, bioloadLitres(s));
   const add = (sp: Species, n: number, most = budget) => {
-    const have = count.get(sp) ?? 0, l = groupLitres(sp, have, n);
-    if (n <= 0 || used + l > most) return false;
-    count.set(sp, have + n); used += l; return true;
+    const have = count.get(sp) ?? 0, l = groupLitres(sp, have, n), fl = groupLitres(sp, have, n, floorPerAnimal);
+    if (n <= 0 || used + l > most || usedFloor + fl > most * floorPerLitre) return false;
+    count.set(sp, have + n); used += l; usedFloor += fl; return true;
   };
   // the lead group goes in at any stop above None if it fits under the cap at all (a small tank's Few is then just
   // that one school); the rest join while the stop's share lasts

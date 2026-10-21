@@ -198,11 +198,13 @@ describe('13 kuhlis in a 20 long (S188 acceptance)', () => {
     expect(w).toEqual([]); expect(minBar(m).level).toBe('near'); // 77 cm < the 80 cm Recommended mark
     expect(topMin(m, 'in')[0].note).toMatch(/^at least 23.6" x 11.8"; Recommended 31.5" long$/);
   });
-  it('the per-head floor rule (4 x TL^2 each, 13 fish) no longer fails it: Continue is enabled and the 20 long is the tank offered', () => {
-    expect(needsOf([{ species: 'kuhli', n: 13 }]).floorCm2.bottom).toBeGreaterThan(floorOf(S.tank).areaCm2); // the old rule would have failed it
-    const p = planFor([{ id: 'kuhli', n: 13 }], 'g20l');
-    expect(p.problem).toBeUndefined(); expect(p.fit!.fails).toEqual([]);
-    expect(tankOptions([{ species: 'kuhli', n: 13 }]).find(o => o.tank.id === 'g20l')!.fails).toEqual([]);
+  it('the tank minimum never fails it; since lane HB (Nathan 2026-10-21) the floor limit of the Space bar does: 13 kuhlis use more floor than a 20 long has', () => {
+    // 15 sq in of floor per inch of mass-equivalent length (research/habitat-model.md): 13 kuhlis want ~440 sq in, the 20 long has 360
+    expect(needsOf([{ species: 'kuhli', n: 13 }]).floorCm2.bottom).toBeGreaterThan(floorOf(S.tank).areaCm2);
+    const at20 = tankOptions([{ species: 'kuhli', n: 13 }]).find(o => o.tank.id === 'g20l')!;
+    expect(at20.fails).toEqual(['space']); expect(at20.minPct).toBeLessThanOrEqual(100);
+    expect(planFor([{ id: 'kuhli', n: 13 }], 'g20l').fit!.fails).toEqual(['space']); // the stocking screen reads the same result
+    expect(tankOptions([{ species: 'kuhli', n: 8 }]).find(o => o.tank.id === 'g20l')!.fails).toEqual([]); // 8 fit its floor
   });
 });
 

@@ -1,83 +1,83 @@
-# Space-bar audit (lane MA, 2026-10-21)
+# Space-bar audit (lane MA, 2026-10-21; habitat model lane HB, same day)
 
-Decision 6 (research/tank-minimum-first-principles.md): the Space bar (`stockingOf` in src/scene/stocking.ts, spacePercent) stays a
-per-litre heuristic for now, labelled "Estimated stocking level", and is audited here. Space = sum over animals of mass^0.45 x fitted
-species factor / (litres x SPACE_PER_L): it sees the water volume (at the working fill) and the animals' mass, nothing about floor,
-run or height. Filtration (the nitrogen budget) and the tank-minimum gate (`tankMinimum`, src/scene/tankMin.ts) are shown beside it
+Decision 6 (research/tank-minimum-first-principles.md) audited the Space bar (`stockingOf` in src/scene/stocking.ts, spacePercent).
+Since lane HB (research/habitat-model.md) Space is the larger of two limits: WATER = sum of mass^0.45 x fitted species factor /
+(litres x SPACE_PER_L), the AqAdvisor-fitted per-litre number; FLOOR = the floor the bottom dwellers use (15 sq in per inch of
+mass-equivalent length, "all"-zone fish half) over the tank floor. Filtration and the tank-minimum gate (`tankMinimum`) are shown beside it
 for contrast. Numbers from test/spaceaudit.test.ts (`GEN_SPACE_AUDIT=1 npx vitest run test/spaceaudit.test.ts`); default filter,
 water at 90 % of the tank height, no plants. US units: gal of water, sq in of floor.
 
-| Case | Verdict | Heuristic right? |
+| Case | Verdict | Space right? |
 |---|---|---|
-| A | 15 cory + 5 danio vs 5 cory + 15 danio, 40 gal breeder | partly |
-| B | 20 long vs 20 high, same stock | no |
-| C | Tall-narrow vs shallow-wide, equal volume (24 x 12 x 24 in vs 48 x 24 x 6 in) | no |
-| D | Same floor (30 x 12 in), 12 in vs 24 in high, mixed stock | partly |
-| E | More height, same floor (30 x 12 in), bottom dwellers only (10 bronze cory) | no |
+| A | 15 cory + 5 danio vs 5 cory + 15 danio, 40 gal breeder | yes |
+| B | 20 long vs 20 high, same stock | yes |
+| C | Tall-narrow vs shallow-wide, equal volume (24 x 12 x 24 in vs 48 x 24 x 6 in) | yes |
+| D | Same floor (30 x 12 in), 12 in vs 24 in high, mixed stock | yes |
+| E | More height, same floor (30 x 12 in), bottom dwellers only (10 bronze cory) | yes |
 | F | More fish past the viable group (bronze cory 6, 12, 24, 48 in a 20 long) | yes |
 
 ## A. 15 cory + 5 danio vs 5 cory + 15 danio, 40 gal breeder
 
-| Tank | Stock | Water gal | Floor sq in | Space % | Filtration % | Tank minimum % |
-|---|---|---|---|---|---|---|
-| 40 breeder | 15 bronzecory + 5 danio | 38.2 | 623 | 80 | 28 | 67 |
-| 40 breeder | 5 bronzecory + 15 danio | 38.2 | 623 | 71 | 15 | 67 |
+| Tank | Stock | Water gal | Floor sq in | Space % | water limit % | floor limit % | Filtration % | Tank minimum % |
+|---|---|---|---|---|---|---|---|---|
+| 40 breeder | 15 bronzecory + 5 danio | 38.2 | 623 | 92 | 80 | 92 | 28 | 62 |
+| 40 breeder | 5 bronzecory + 15 danio | 38.2 | 623 | 71 | 71 | 31 | 15 | 62 |
 
-**Verdict (partly right, the right half locked).** The cory-heavy mix reads fuller, but only because a bronze cory weighs more than a danio. Space never asks whether 15 bottom dwellers fit on the 36 x 18 in floor: the same two mixes in a 40 gal tank of any shape give the same numbers. Right direction, wrong reason.
+**Verdict (right, locked).** The cory-heavy mix is judged against the 36 x 18 in floor: its 15 cories use most of it, and the floor limit binds above the water limit. The danio-heavy mix stays a water question. (Lane MA: right direction for the wrong reason, mass only.)
 
 ## B. 20 long vs 20 high, same stock
 
-| Tank | Stock | Water gal | Floor sq in | Space % | Filtration % | Tank minimum % |
-|---|---|---|---|---|---|---|
-| 20 gal long | 6 bronzecory + 8 danio | 19.1 | 383 | 104 | 32 | 108 |
-| 20 gal high | 6 bronzecory + 8 danio | 18.6 | 289 | 107 | 32 | 143 |
+| Tank | Stock | Water gal | Floor sq in | Space % | water limit % | floor limit % | Filtration % | Tank minimum % |
+|---|---|---|---|---|---|---|---|---|
+| 20 gal long | 6 bronzecory + 8 danio | 19.1 | 383 | 104 | 104 | 60 | 32 | 100 |
+| 20 gal high | 6 bronzecory + 8 danio | 18.6 | 289 | 107 | 107 | 80 | 32 | 133 |
 
-**Verdict (wrong, documented as it.todo).** The 20 long has about 33 % more floor and 6 in more swimming run, yet Space reads it within a few points of the 20 high (only the water volume differs). For cories (floor) and danios (run) the 20 long is clearly the roomier tank; the heuristic cannot see it. The tank-minimum gate does (108 % vs 143 %): the two bars disagree about which tank is roomier.
+**Verdict (right, locked).** The 20 long reads roomier, and the cories use a smaller share of its 30 x 12 in floor than of the 24 x 12 in floor of the 20 high. With this stock the water limit binds in both, so the gap is small. The run itself is held by the tank minimum (sourced red-line length), which reads the pair 100 % vs 133 %; no sourced run coefficient exists for Space (research/habitat-model.md).
 
 ## C. Tall-narrow vs shallow-wide, equal volume (24 x 12 x 24 in vs 48 x 24 x 6 in)
 
-| Tank | Stock | Water gal | Floor sq in | Space % | Filtration % | Tank minimum % |
-|---|---|---|---|---|---|---|
-| 24 x 12 x 24 in | 6 bronzecory + 8 danio | 26.9 | 288 | 74 | 29 | 144 |
-| 48 x 24 x 6 in | 6 bronzecory + 8 danio | 26.9 | 1152 | 74 | 29 | 49 |
+| Tank | Stock | Water gal | Floor sq in | Space % | water limit % | floor limit % | Filtration % | Tank minimum % |
+|---|---|---|---|---|---|---|---|---|
+| 24 x 12 x 24 in | 6 bronzecory + 8 danio | 26.9 | 288 | 80 | 74 | 80 | 29 | 133 |
+| 48 x 24 x 6 in | 6 bronzecory + 8 danio | 26.9 | 1152 | 74 | 74 | 20 | 29 | 41 |
 
-**Verdict (wrong, documented as it.todo).** Identical Space for 4x the floor and twice the run. The shallow-wide tank gives the cories four times the bottom habitat and the danios a 48 in run; the tall tank gives height neither uses much. Volume stands in for habitat here and gets it wrong; the tank-minimum gate reads the same pair 144 % vs 49 %.
+**Verdict (right, locked).** With equal water the tall-narrow tank now reads fuller: its 288 sq in of floor binds for the six cories, the 1152 sq in tray leaves them a fifth of it. (Lane MA: identical Space for 4x the floor.) The tank-minimum gate reads the pair 133 % vs 41 %.
 
 ## D. Same floor (30 x 12 in), 12 in vs 24 in high, mixed stock
 
-| Tank | Stock | Water gal | Floor sq in | Space % | Filtration % | Tank minimum % |
-|---|---|---|---|---|---|---|
-| 30 x 12 x 12 in | 6 bronzecory + 8 danio | 16.8 | 360 | 118 | 33 | 115 |
-| 30 x 12 x 24 in | 6 bronzecory + 8 danio | 33.7 | 360 | 59 | 14 | 115 |
+| Tank | Stock | Water gal | Floor sq in | Space % | water limit % | floor limit % | Filtration % | Tank minimum % |
+|---|---|---|---|---|---|---|---|---|
+| 30 x 12 x 12 in | 6 bronzecory + 8 danio | 16.8 | 360 | 118 | 118 | 64 | 33 | 107 |
+| 30 x 12 x 24 in | 6 bronzecory + 8 danio | 33.7 | 360 | 64 | 59 | 64 | 14 | 107 |
 
-**Verdict (partly right, the right half locked).** Doubling the height halves Space. For the danios (midwater shoalers) some extra column is real room; for the cories it is none: they get the same 360 sq in of floor. Half the stock is credited with habitat it does not use. The extra water does help stability (dilution), which the Filtration bar and a volume advisory should carry, not Space.
+**Verdict (right, locked).** Doubling the height halves the water limit (real room for the midwater danios) but not the cories' share of the same 360 sq in of floor: on the 24 in tank the floor limit binds and Space stops there. The extra water still helps stability, which the Filtration bar carries.
 
 ## E. More height, same floor (30 x 12 in), bottom dwellers only (10 bronze cory)
 
-| Tank | Stock | Water gal | Floor sq in | Space % | Filtration % | Tank minimum % |
-|---|---|---|---|---|---|---|
-| 30 x 12 x 12 in | 10 bronzecory | 16.8 | 360 | 95 | 42 | 115 |
-| 30 x 12 x 18 in | 10 bronzecory | 25.2 | 360 | 63 | 37 | 115 |
-| 30 x 12 x 24 in | 10 bronzecory | 33.7 | 360 | 48 | 18 | 115 |
-| 30 x 12 x 36 in | 10 bronzecory | 50.5 | 360 | 32 | 16 | 115 |
+| Tank | Stock | Water gal | Floor sq in | Space % | water limit % | floor limit % | Filtration % | Tank minimum % |
+|---|---|---|---|---|---|---|---|---|
+| 30 x 12 x 12 in | 10 bronzecory | 16.8 | 360 | 107 | 95 | 107 | 42 | 107 |
+| 30 x 12 x 18 in | 10 bronzecory | 25.2 | 360 | 107 | 63 | 107 | 37 | 107 |
+| 30 x 12 x 24 in | 10 bronzecory | 33.7 | 360 | 107 | 48 | 107 | 18 | 107 |
+| 30 x 12 x 36 in | 10 bronzecory | 50.5 | 360 | 107 | 32 | 107 | 16 | 107 |
 
-**Verdict (wrong, documented as it.todo).** Space falls as 1 / height without limit (10 cories read about a third as full at 36 in as at 12 in) although their floor never changes. The tank-minimum gate plateaus as it should (its floor-area share binds); Space does not. This is the clearest case of the heuristic rewarding volume that gives no usable habitat.
+**Verdict (right, locked).** Space is the same at every height: the 10 cories use the same floor and the floor limit binds (about 107 %; Scotcat's six to eight inches of fish per square foot gives 5-7 cories on 2.5 sq ft). Lane MA: Space fell as 1 / height without limit. The tank-minimum gate plateaus too.
 
 ## F. More fish past the viable group (bronze cory 6, 12, 24, 48 in a 20 long)
 
-| Tank | Stock | Water gal | Floor sq in | Space % | Filtration % | Tank minimum % |
-|---|---|---|---|---|---|---|
-| 20 gal long | 6 bronzecory | 19.1 | 383 | 50 | 24 | 108 |
-| 20 gal long | 12 bronzecory | 19.1 | 383 | 100 | 49 | 108 |
-| 20 gal long | 24 bronzecory | 19.1 | 383 | 201 | 98 | 108 |
-| 20 gal long | 48 bronzecory | 19.1 | 383 | 401 | 195 | 108 |
+| Tank | Stock | Water gal | Floor sq in | Space % | water limit % | floor limit % | Filtration % | Tank minimum % |
+|---|---|---|---|---|---|---|---|---|
+| 20 gal long | 6 bronzecory | 19.1 | 383 | 60 | 50 | 60 | 24 | 100 |
+| 20 gal long | 12 bronzecory | 19.1 | 383 | 120 | 100 | 120 | 49 | 100 |
+| 20 gal long | 24 bronzecory | 19.1 | 383 | 240 | 201 | 240 | 98 | 100 |
+| 20 gal long | 48 bronzecory | 19.1 | 383 | 481 | 401 | 481 | 195 | 100 |
 
 **Verdict (right, locked).** Space rises in proportion to the count while the tank minimum stays put. That is the split Decision 1 asks for: animals past the viable group raise crowding, not the enclosure minimum. Locked.
 
-## What this means for the long-term Space model
+## What changed (lane HB)
 
-- Space is blind to shape: equal water gives equal Space (C), so it cannot tell a 20 long from a 20 high (B) or a tray from a column.
-- Height is credited to every animal: bottom dwellers read roomier in a taller tank on the same floor (D, E). The gate already holds them to floor area; Space should too.
-- Count is handled right (F): more animals past the viable group raise Space, not the minimum.
-- Mass is the only species input (A): bottom vs midwater habitat never enters. A habitat-based Space (bottom habitat for bottom dwellers, horizontal run for swimmers, height only where it helps) needs per-zone habitat coefficients, and Decision 6 forbids inventing per-animal footprint coefficients without evidence. Until then these limits stay documented here, not hidden.
+- Space sees the floor: bottom dwellers are held to floor area (A, C), so a taller tank on the same floor gives them no more room (D, E), and the floor share tells a 20 long from a 20 high (B).
+- The water limit is the AqAdvisor-fitted number, unchanged (median ours / AqAdvisor 1.03 on the 24 mixes, before and after).
+- Count is still handled right (F): more animals raise Space, not the minimum.
+- Not modelled (nothing sourced, research/habitat-model.md): a run-length term in Space (the tank minimum holds the sourced length), an activity multiplier, height limits for swimmers.
 - Extra water still matters for stability (dilution, temperature swings): that belongs to the Filtration bar and the volume advisory (Decision 2), not to Space.

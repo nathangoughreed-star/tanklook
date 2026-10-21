@@ -9,7 +9,7 @@
 import TM from '../data/tankmin.json';
 import { getSpecies, type Species } from '../data/species';
 import { bioloadLitres } from './starter';
-import { zoneOf } from './tankfit';
+import { careOf, zoneOf } from './zone';
 import { tankExtent } from './space';
 import { footprint } from './shape';
 import { countsAgainstWater } from './stocking';
@@ -144,6 +144,8 @@ export interface MinRow {
   assessed: boolean;
   /** usable water depth (mm), adult length (mm), the advisory maximum depth it is over (0 = none) */
   depthMm: number; tl: number; tooDeepMm: number;
+  /** the deepest water it tolerates, mm (GroupCare maxDepthMm; a sourced maximum that is advisory, ADF, does not count); Infinity = no limit */
+  maxDepthMm: number;
 }
 export interface TankMinimum {
   /** the highest species percent; 0 with no animals in the water; Infinity when a species cannot be assessed */
@@ -153,6 +155,10 @@ export interface TankMinimum {
   litres: number; lengthMm: number;
   /** species by percent, most demanding first */
   rows: MinRow[];
+  /** Pass / fail limits the tank-fit engine reads (lane HB, 2026-10-21; they used to live in tankfit.ts): the tank is shorter than some
+   *  species' red-line length (no slack: a step-up may be over its minimum on space, never short), and its water is deeper than some species
+   *  tolerates. `depthMm` is the usable water depth, `maxDepthMm` the shallowest limit (Infinity = none). */
+  lengthShort: boolean; tooDeep: boolean; depthMm: number; maxDepthMm: number;
 }
 
 /** One species against a tank (the same answer the Fullness tile, the tank-fit engine, the animal gate and the hard truths all use). */
@@ -160,7 +166,8 @@ export function speciesMinimum(sp: Species, g: Geometry): MinRow {
   const w = whoOf(sp), d = minDataOf(sp.id), r = measureLines(w, d, g);
   const row: MinRow = { id: sp.id, name: sp.name, n: 1, kind: w.floor ? 'area' : 'run', pct: r.assessed ? r.red.pct : Infinity, comfortPct: r.green.pct, minLengthMm: d?.red?.L ?? 0,
     limiting: r.red.limiting, reason: '', comfortReason: recommendedOf(r.green), measure: r.red, comfort: r.green,
-    derived: r.red.mark === 'derived (est)', assessed: r.assessed, depthMm: r.depthMm, tl: w.tl, tooDeepMm: r.tooDeepMm };
+    derived: r.red.mark === 'derived (est)', assessed: r.assessed, depthMm: r.depthMm, tl: w.tl, tooDeepMm: r.tooDeepMm,
+    maxDepthMm: d?.depth?.maxWaterDepthMm ? Infinity : careOf(sp.id)?.maxDepthMm ?? Infinity };
   row.reason = reasonIn(row);
   return row;
 }
@@ -175,7 +182,9 @@ export function tankMinimum(S: TankSetup): TankMinimum {
     by.set(sp.id, speciesMinimum(sp, g));
   }
   const rows = [...by.values()].sort((a, b) => b.pct - a.pct);
-  return { percent: rows[0]?.pct ?? 0, comfortPercent: Math.max(0, ...rows.map(r => r.comfortPct)), litres: g.litres, lengthMm: g.lengthMm, rows };
+  const depthMm = depthOf(g), maxDepthMm = Math.min(Infinity, ...rows.map(r => r.maxDepthMm));
+  return { percent: rows[0]?.pct ?? 0, comfortPercent: Math.max(0, ...rows.map(r => r.comfortPct)), litres: g.litres, lengthMm: g.lengthMm, rows,
+    lengthShort: rows.some(r => r.minLengthMm > g.lengthMm), tooDeep: depthMm > maxDepthMm, depthMm, maxDepthMm };
 }
 
 /** The animal gate's view of a tank: each species against this tank's geometry (pass as AnimalEnv.fit). */

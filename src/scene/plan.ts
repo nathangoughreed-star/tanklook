@@ -12,9 +12,9 @@ import type { Build } from './builds';
 import { finSensitiveNames, plantNeeds, priceScape } from './scapes';
 import { countsAgainstWater, stockingOf } from './stocking';
 import { ROOM_C, tempFit } from './tech';
-import { needsOf, tankLabel, type AnimalCount } from './tankfit';
+import { tankLabel, type AnimalCount } from './tankfit';
 import { volume } from './physics';
-import { minFit } from './tankMin';
+import { minFit, tankMinimum } from './tankMin';
 import { tankWeight } from './weight';
 import type { TankSetup } from './types';
 
@@ -60,12 +60,13 @@ export function animalsOfSetup(S: TankSetup): AnimalCount[] {
 export function hardTruths(S: TankSetup, animals: AnimalCount[], heater: boolean): { text: string; level: Level }[] {
   const out: { text: string; level: Level }[] = [];
   const sp = animals.flatMap(a => { const s = getSpecies(a.species); return s && a.n > 0 ? [s] : []; });
-  const litres = volume(S.tank).litres, n = needsOf(animals), salt = S.water.on && !!S.water.salt;
+  const litres = volume(S.tank).litres, salt = S.water.on && !!S.water.salt;
   for (const s of sp) {
     const why = whyAnimal(s, litres, 3, sp.filter(o => o !== s), { corals: S.items.some(it => it.kind === 'coral' && it.variant !== 'macroalgae' && it.variant !== 'anemone'), fit: minFit(S) });
     if (why) out.push({ text: `${s.name}: ${why.text}`, level: 'bad' }); // size is judged by tankMin (floor area, length, water), with its 10 % slack
   }
-  if (Number.isFinite(n.maxDepthMm) && S.tank.H * S.water.level > n.maxDepthMm) out.push({ text: `Some of your animals need shallow water (${Math.round(n.maxDepthMm / 10)} cm at most); this tank's water is ${Math.round(S.tank.H * S.water.level / 10)} cm deep`, level: 'bad' });
+  const tm = tankMinimum({ ...S, fish: sp.map((s, i) => ({ id: i + 1, species: s.id, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0 })) }); // lane HB: the same depth limit the tank fit reads
+  if (tm.tooDeep) out.push({ text: `Some of your animals need shallow water (${Math.round(tm.maxDepthMm / 10)} cm at most); this tank's water is ${Math.round(tm.depthMm / 10)} cm deep`, level: 'bad' });
   if (!heater && !salt) for (const s of sp.filter(x => countsAgainstWater(x))) if (tempFit(s.id, ROOM_C) === 'out') out.push({ text: `${s.name} is too cold at room temperature (${ROOM_C} C) and the tank has no heater`, level: 'bad' });
   const longFinned = finSensitiveNames(animals);
   if (longFinned.length && S.items.some(it => it.variant.startsWith('plastic'))) out.push({ text: `Hard plastic leaves can tear the long fins of ${longFinned.join(', ')}: use silk plants`, level: 'warn' });

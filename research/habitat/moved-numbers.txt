@@ -1,0 +1,23 @@
+starter stones g300 s3: 28 bronzecory, 1 kribensis, 30 kuhli, 4 nerite, 30 platy -> 26 bronzecory, 1 kribensis, 26 kuhli, 4 nerite, 30 platy
+starter stones c6 s3: 20 bronzecory, 1 kribensis, 22 kuhli, 4 nerite, 24 platy -> 18 bronzecory, 1 kribensis, 20 kuhli, 4 nerite, 28 platy
+starter driftwood g65 s1: 10 cardinal, 10 kuhli, 4 nerite, 12 pandacory -> 14 cardinal, 8 kuhli, 4 nerite, 12 pandacory
+starter driftwood g90 s1: 18 cardinal, 14 kuhli, 4 nerite, 16 pandacory -> 22 cardinal, 12 kuhli, 4 nerite, 16 pandacory
+starter driftwood g120 s1: 20 cardinal, 18 kuhli, 4 nerite, 20 pandacory -> 24 cardinal, 16 kuhli, 4 nerite, 20 pandacory
+starter driftwood cor50 s1: 8 cardinal, 8 kuhli, 3 nerite, 8 pandacory -> 10 cardinal, 6 kuhli, 3 nerite, 10 pandacory
+starter driftwood g135 s1: 24 cardinal, 20 kuhli, 4 nerite, 22 pandacory -> 28 cardinal, 18 kuhli, 4 nerite, 22 pandacory
+starter driftwood g150 s1: 24 cardinal, 24 kuhli, 4 nerite, 24 pandacory -> 30 cardinal, 18 kuhli, 4 nerite, 22 pandacory
+starter blackwater c6 s2: 1 bristlenose, 28 cardinal, 26 kuhli, 28 pandacory, 30 rummynose -> 1 bristlenose, 30 cardinal, 24 kuhli, 26 pandacory, 30 rummynose
+tankFor 8 rummynose: g30b -> g20l
+tankFor 6 hatchet: g30b -> g20l
+tankFor 12 hatchet: g30b -> g20l
+tankFor 6 tigerbarb: g30b -> g20l
+tankFor 8 discus: g125 -> g75
+tankFor 6 bronzecory: g30b -> g20l
+tankFor 12 kuhli: g20h -> g30b
+tankFor 3 sae: g30b -> g20l
+tankFor 1 firefish: g30b -> g20l
+tankFor 2 firefish: g30b -> g20l
+tankFor 1 coralbeauty: g125 -> g60b
+tankFor 2 coralbeauty: g125 -> g60b
+tankFor 1 watchman: g30b -> g20l
+tankFor 2 watchman: g30b -> g20l

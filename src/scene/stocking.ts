@@ -8,6 +8,9 @@ import dd from '../data/demand-defaults.json';
 //                  Fitted to 24 AqAdvisor answers (research/aq-compare.md): its stocking level grows like mass^0.45 (about length^1.4), much
 //                  slower than waste does, and metabolism does not show in it (typical scatter about +-40 %, species-specific in AqAdvisor).
 //   FILTRATION   = waste load / (litres x LU_PER_L x filter (tech.ts stockCapacity) x live-plant factor): how hard the filter works.
+//                  Lane HB (2026-10-21, research/habitat-model.md): Space is the larger of that WATER limit and a FLOOR limit, the floor
+//                  area the bottom dwellers use (FLOOR_SQIN_PER_IN of floor per inch of mass-equivalent length) over the tank's floor, so a
+//                  taller tank on the same floor gives bottom dwellers no more room. The water limit keeps its AqAdvisor fit.
 //   percent      = the larger of the two (over 100 = overstocked). Compatibility (waterchem, animalfit, group minimums) stays separate.
 // Mass is FishBase length-weight at the animal's length (data/bodymass.json; shrimp, snails and herps are keeper-reference
 // estimates, marked 'estimate'). The 3D bodies' volume is only the cross-check that flags outliers (scripts/body-mass.mjs).
@@ -17,6 +20,8 @@ import { SPACE_FACTOR, SPACE_FACTOR_CLASS } from '../data/spacefactor';
 import { bioloadLitres } from './starter';
 import { feedingOf, isLivePlantPatch, nitrogenBudget, tanOf, type Nitrogen } from './nitrogen';
 import { heatLoss, rowsFor, setWaterChangeFraction, stockCapacity } from './tech';
+import { floorOf } from './tankMin';
+import { zoneOf, type Zone } from './zone';
 import type { Fish, TankSetup } from './types';
 
 interface Mass { a: number; b: number; src: string; model?: number; flag?: boolean }
@@ -59,6 +64,8 @@ const SALT_LOAD = 1.5;
 export const LU_PER_L = 0.3;
 /** Space: how a body counts against the tank's water, mass^SPACE_EXP, and the g^SPACE_EXP one litre holds at 100 % (fit 2026-10-20 to
  *  24 AqAdvisor combinations, scripts/aq-compare.mjs; with it the median of ours / AqAdvisor is 1.0). */
+/** Animals that live in the water load it; land animals (geckos, anoles, snakes, spiders, tree frogs) do not. */
+export function countsAgainstWater(sp: Species) { return sp.habitat !== 'land'; }
 export const SPACE_EXP = 0.45, SPACE_PER_L = 1 / 3.96; // 4.242 before the per-species factors (data/spacefactor.ts); /1.07 re-centres the 24 mixed combinations (median ours / AqAdvisor 1.00)
 /** Fitted-to-AqAdvisor multiplier on a species' space load (data/spacefactor.ts): its own row, else its class (tiny / mid / big fish, invert, amphibian). */
 export function spaceFactor(sp: Species): number {
@@ -71,21 +78,45 @@ export function spaceFactor(sp: Species): number {
 // Snails crawl on the glass and substrate and take no swimming room (2026-10-21: the AqAdvisor fit read 10 trumpet snails as 109 % of a
 // 5 gal); their waste still counts in filtration, which is what limits the big ones (mystery snails).
 export const spaceOf = (sp: Species, tlMm: number) => sp.kind === 'snail' ? 0 : massG(sp.id, tlMm) ** SPACE_EXP * spaceFactor(sp);
+/**
+ * Floor (lane HB, research/habitat-model.md, Nathan's yes 2026-10-21): a bottom dweller uses FLOOR_SQIN_PER_IN sq in of floor per inch
+ * of its length. Sources give 12-24 sq in per inch (Scotcat "six to eight inches of fish to every square foot of base area"; Seriously
+ * Fish's footprints for a group of bronze cory ~20, kuhli ~12, clown loach 10-17); 15 is the smallest value that reads a shallow-wide tank
+ * roomier than a tall one of equal water, and leaves the AqAdvisor median at 1.03. The length is mass-equivalent: the length of a
+ * bronze cory of the same mass (an eel-shaped kuhli is long but light; by its total length 6 kuhlis would overfill Seriously Fish's own
+ * minimum tank for them). "All"-zone fish use the floor half the time (est); midwater and top fish none. Invertebrates and land animals
+ * count 0 (no source counts them, MX6).
+ */
+export const FLOOR_SQIN_PER_IN = 15;
+export const FLOOR_SHARE: Record<Zone, number> = { bottom: 1, all: 0.5, middle: 0, top: 0 };
+const FLOOR_REF = { id: 'bronzecory', tlMm: 65 }, SQIN_CM2 = 6.4516, IN_MM = 25.4;
+const isInvert = (sp: Species) => sp.kind === 'snail' || sp.cat.endsWith('invert');
+/** The length of a bronze cory with this animal's mass, mm (the floor model's body length). */
+export const habitatLengthMm = (sp: Species, tlMm: number) => FLOOR_REF.tlMm * (massG(sp.id, tlMm) / massG(FLOOR_REF.id, FLOOR_REF.tlMm)) ** (1 / 3);
+/** Floor area one animal uses, cm2 (0 for swimmers, invertebrates and land animals). */
+export const floorUseCm2 = (sp: Species, tlMm: number) => !countsAgainstWater(sp) || isInvert(sp) ? 0
+  : FLOOR_SHARE[zoneOf(sp)] * FLOOR_SQIN_PER_IN * SQIN_CM2 * habitatLengthMm(sp, tlMm) / IN_MM;
 /** Live plants take up nitrogen: up to +25 % at 15 plants per 100 L (a painted patch counts as 3 plants). A documented guess. */
 const PLANT_MAX = 0.25, PLANTS_PER_100L_FULL = 15, PATCH_PLANTS = 3;
 
-/** Animals that live in the water load it; land animals (geckos, anoles, snakes, spiders, tree frogs) do not. */
-export const countsAgainstWater = (sp: Species) => sp.habitat !== 'land';
 
-export interface Contributor { id: string; name: string; n: number; load: number; space: number; share: number; grams: number; cls: MetClass; /** fitted space multiplier, counted as e.g. "1.4x" in the breakdown */ spaceFactor: number }
+export interface Contributor { id: string; name: string; n: number; load: number; space: number; /** floor area used, cm2 (lane HB) */ floor: number; share: number; grams: number; cls: MetClass; /** fitted space multiplier, counted as e.g. "1.4x" in the breakdown */ spaceFactor: number }
 export interface CapacityParts { /** load units the tank's water holds, filter aside */ space: number; litres: number; perL: number; filter: number; plants: number; plantCount: number; tempC: number; capacity: number }
 export interface Stocking {
   /** the nitrogen budget behind filtrationPercent (lane SE2): waste, filter bacteria, plants, nitrate */
   nitrogen: Nitrogen;
   /** the larger of space and filtration, percent; over 100 = overstocked. 0 with no animals. */
   percent: number;
-  /** load / what the tank's water holds, percent (the filter does not change it) */
+  /** the larger of waterPercent and floorPercent: how full the tank itself is (the filter does not change it) */
   spacePercent: number;
+  /** space load / what the tank's water holds, percent (the AqAdvisor-fitted per-litre number) */
+  waterPercent: number;
+  /** floor the bottom dwellers use / the tank's floor area, percent (lane HB) */
+  floorPercent: number;
+  /** which of the two binds Space */
+  spaceBy: 'water' | 'floor';
+  /** the tank's floor area and what the animals use of it, cm2 */
+  floor: { areaCm2: number; usedCm2: number };
   /** load / what the chosen filtration (and plants) clear, percent */
   filtrationPercent: number;
   load: number;
@@ -110,6 +141,8 @@ export function animalLoad(sp: Species, tlMm: number, tempC = T_REF, salt = fals
 export const litresPerAnimal = (sp: Species) => Math.max(animalLoad(sp, sp.tl, T_REF, !!sp.salt) / LU_PER_L,
   // SE2 (2026-10-20): the starters also respect the space limit, so Full reads about 90 % by the space number (animals in the water only)
   countsAgainstWater(sp) ? spaceOf(sp, sp.tl) / SPACE_PER_L : 0); // starters draw animals at adult length (a few % either way): budgeted at adult so what is drawn matches (2026-10-21)
+/** Floor area one adult takes, cm2, sized like litresPerAnimal (at adult length): the starters' floor budget unit (lane HB). */
+export const floorPerAnimal = (sp: Species) => floorUseCm2(sp, sp.tl);
 
 export function capacityOf(S: TankSetup): CapacityParts {
   const litres = bioloadLitres(S), tempC = S.water.on ? heatLoss(S).targetC : T_REF;
@@ -124,20 +157,25 @@ export const plural = (n: number, name: string) => n === 1 ? `1 ${name}` : `${n}
 
 export function stockingOf(S: TankSetup): Stocking {
   const cap = capacityOf(S), salt = !!(S.water.on && S.water.salt), by = new Map<string, Contributor>(), feeding = feedingOf(S);
-  let load = 0, spaceLoad = 0;
+  let load = 0, spaceLoad = 0, floorUse = 0;
   for (const f of S.fish) {
     const sp = getSpecies(f.species), l = !sp || !countsAgainstWater(sp) ? 0 : tanOf(sp, massG(sp.id, f.tl ?? sp.tl), feeding, cap.tempC, salt);
     if (!sp || l <= 0) continue;
     load += l;
-    const c = by.get(sp.id) ?? { id: sp.id, name: sp.name, n: 0, load: 0, space: 0, share: 0, grams: 0, cls: metClass(sp), spaceFactor: spaceFactor(sp) };
-    c.n++; c.load += l; c.space += spaceOf(sp, f.tl ?? sp.tl); spaceLoad += spaceOf(sp, f.tl ?? sp.tl); c.grams += massG(sp.id, f.tl ?? sp.tl); by.set(sp.id, c);
+    const c = by.get(sp.id) ?? { id: sp.id, name: sp.name, n: 0, load: 0, space: 0, share: 0, grams: 0, cls: metClass(sp), floor: 0, spaceFactor: spaceFactor(sp) };
+    const fl = floorUseCm2(sp, f.tl ?? sp.tl);
+    c.n++; c.load += l; c.space += spaceOf(sp, f.tl ?? sp.tl); spaceLoad += spaceOf(sp, f.tl ?? sp.tl); c.floor += fl; floorUse += fl; c.grams += massG(sp.id, f.tl ?? sp.tl); by.set(sp.id, c);
   }
   const pc = (l: number, cp: number) => cp > 0 ? l / cp * 100 : l > 0 ? Infinity : 0;
-  const nitrogen = nitrogenBudget(S, cap.litres, cap.tempC, load), spacePercent = pc(spaceLoad, cap.space), filtrationPercent = nitrogen.ammoniaPercent, percent = Math.max(spacePercent, filtrationPercent);
+  const areaCm2 = floorOf(S.tank).areaCm2, waterPercent = pc(spaceLoad, cap.space), floorPercent = pc(floorUse, areaCm2);
+  const spaceBy = floorPercent > waterPercent ? 'floor' as const : 'water' as const, spacePercent = Math.max(waterPercent, floorPercent);
+  const nitrogen = nitrogenBudget(S, cap.litres, cap.tempC, load), filtrationPercent = nitrogen.ammoniaPercent, percent = Math.max(spacePercent, filtrationPercent);
   // shares are of the limit that binds
   const bySpace = spacePercent >= filtrationPercent;
   const contributors = [...by.values()].sort((a, b) => bySpace ? b.space - a.space : b.load - a.load);
-  for (const c of contributors) c.share = bySpace ? (spaceLoad ? c.space / spaceLoad : 0) : (load ? c.load / load : 0);
+  const spaceUse = (c: Contributor) => spaceBy === 'floor' ? c.floor : c.space, spaceSum = spaceBy === 'floor' ? floorUse : spaceLoad;
+  if (bySpace) contributors.sort((a, b) => spaceUse(b) - spaceUse(a));
+  for (const c of contributors) c.share = bySpace ? (spaceSum ? spaceUse(c) / spaceSum : 0) : (load ? c.load / load : 0);
   const reasons: string[] = [];
   let fixFilter: Stocking['fixFilter'];
   if (!contributors.length) reasons.push('No animals in the water.');
@@ -145,7 +183,8 @@ export function stockingOf(S: TankSetup): Stocking {
     const top = contributors[0];
     reasons.push(top.share >= 0.4 ? `Overstocked mainly because of the ${plural(top.n, top.name)} (${Math.round(top.share * 100)}% of the load).`
       : `Overstocked: ${contributors.slice(0, 3).map(c => `${plural(c.n, c.name)} ${Math.round(c.share * 100)}%`).join(', ')} of the load.`);
-    if (spacePercent > 100) reasons.push(`The tank itself is too small for them (${Math.round(spacePercent)}% of its space): no filter fixes that, it needs about ${Math.ceil(cap.litres * spacePercent / 100)} L of water or fewer animals.`);
+    if (spacePercent > 100 && spaceBy === 'floor') reasons.push(`The floor is too small for the bottom dwellers (${Math.round(floorPercent)}% of it): no filter or extra height fixes that, it needs about ${Math.ceil(floorUse / SQIN_CM2)} sq in of floor (the tank has ${Math.round(areaCm2 / SQIN_CM2)}) or fewer bottom dwellers.`);
+    else if (spacePercent > 100) reasons.push(`The tank itself is too small for them (${Math.round(spacePercent)}% of its space): no filter fixes that, it needs about ${Math.ceil(cap.litres * waterPercent / 100)} L of water or fewer animals.`);
     else {
       const fr = rowsFor(S).find(r => r.id === 'filter');
       for (const o of [...(fr?.options ?? [])].sort((a, b) => (a.capacity ?? 1) - (b.capacity ?? 1))) {
@@ -156,7 +195,7 @@ export function stockingOf(S: TankSetup): Stocking {
     }
   } else if (percent >= 85) reasons.push('Cramped but doable: keep up with water changes.');
   else reasons.push(`Room for about ${Math.round(100 - percent)}% more load.`);
-  return { nitrogen, percent, spacePercent, filtrationPercent, load, contributors, capacity: cap, reasons, ...(fixFilter ? { fixFilter } : {}) };
+  return { nitrogen, percent, spacePercent, waterPercent, floorPercent, spaceBy, floor: { areaCm2, usedCm2: floorUse }, filtrationPercent, load, contributors, capacity: cap, reasons, ...(fixFilter ? { fixFilter } : {}) };
 }
 
 /** `stockingOf` remembered by what it reads (the UI asks every frame): animals and lengths, tank, water, tech, plants. */

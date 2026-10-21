@@ -203,6 +203,9 @@ export const FORMULAS: Formula[] = [
   { file: 'src/scene/stocking.ts', symbols: ['SALT_LOAD'], status: 'assumption', why: 'the hobby rule of thumb "half again" for marine fish; no page states it (looked for, research/sourcing/other/E2.json)' },
   { file: 'src/scene/stocking.ts', symbols: ['LU_PER_L'], status: 'fitted', src: ['stocking-calibration'], why: 'calibrated so the starters keep their old animal counts, which came from a rule of thumb (3 L x (tl/35)^1.6). Outside checks bracket it widely: the AqAdvisor filtration probes imply 0.22, our nitrogen budget about 1.7 (research/sourcing/other/E3-lu-per-l.md); kept, since it now only sizes the starters (the filtration % comes from scene/nitrogen.ts)' },
   { file: 'src/scene/stocking.ts', symbols: ['SPACE_EXP', 'SPACE_PER_L'], status: 'fitted', src: ['aqadvisor', 'aq-compare'], why: 'fit to 24 AqAdvisor combinations (scripts/aq-compare.mjs)' },
+  { file: 'src/scene/stocking.ts', symbols: ['FLOOR_SQIN_PER_IN'], status: 'fitted', src: ['habitat-model', 'scotcat-floor', 'seriouslyfish.com', 'aq-compare'], why: 'sources give 12-24 sq in of floor per inch of bottom dweller (Scotcat 18-24; Seriously Fish group footprints: bronze cory ~20, kuhli ~12, clown loach 10-17); 15 is the smallest that reads a shallow-wide tank roomier than a tall one of equal water (test/spaceaudit.test.ts C) and leaves the AqAdvisor median at 1.03' },
+  { file: 'src/scene/stocking.ts', symbols: ['FLOOR_REF'], status: 'derived', src: ['habitat-model'], why: 'mass-equivalent length: the length of a bronze cory (65 mm, the fish the floor sources measure) of the same mass; keeps 6 kuhlis inside the Seriously Fish minimum tank for them' },
+  { file: 'src/scene/stocking.ts', symbols: ['FLOOR_SHARE'], status: 'assumption', src: ['habitat-model'], why: 'bottom dwellers 1 and midwater / top fish 0 by class (Decision 3); "all"-zone fish 0.5 is our estimate (no source splits their time)' },
   { file: 'src/scene/stocking.ts', symbols: ['PLANT_MAX', 'PLANTS_PER_100L_FULL', 'PATCH_PLANTS'], status: 'assumption', why: 'plants take up nitrogen, so they add some filtration; the size (+25 % at 15 plants per 100 L) is "a documented guess"' },
   // nitrogen engine
   { file: 'src/scene/nitrogen.ts', symbols: ['BASE', 'TAN_PER_FEED', 'FEED_PCT', 'tanOf'], status: 'researched', src: ['nitrogen-research'], why: 'fasted TAN 350 x W^-0.25 mg/kg/day and 0.02 g TAN per g feed, +-40 % (research-fish-nitrogen, research-ornamental-excretion)' },
@@ -237,7 +240,6 @@ export const FORMULAS: Formula[] = [
   { file: 'src/scene/growtime.ts', symbols: ['GROW_RATE'], status: 'assumption', why: 'growth multipliers by feeding and plant speed (CO2 helps stems most); not measured' },
   { file: 'src/scene/animalfit.ts', symbols: ['MIN_SLACK_PCT'], status: 'assumption', why: "a species' smallest tank allows 10 % slack: a 5 gal (19 L) takes a 20 L species" },
   { file: 'src/scene/tankMin.ts', symbols: ['LARGE_BODY_MM'], status: 'assumption', why: 'Decision 3 holds large-bodied swimmers to length + width; which fish count as large-bodied (adult 15 cm / 6 in and over) is our cut, no page states one' },
-  { file: 'src/scene/tankfit.ts', symbols: ['FLOOR_K'], status: 'claimed', why: '"a documented rule of thumb, not a source of record": a bottom dweller holds about two body lengths square' },
   { file: 'src/scene/tankfit.ts', symbols: ['FILTRATION_TARGET'], status: 'assumption', why: 'preset filtration targets: cheapest 100 %, balanced 70 %' },
   { file: 'src/scene/starter.ts', symbols: ['ANIMAL_FILL', 'KINDS_PER_STOP', 'LAND_MOST'], status: 'assumption', why: 'how full each starter stop is and how many kinds; land counts kept inside the herp research maxima' },
   { file: 'src/scene/lightproduct.ts', symbols: ['BAR_CHECK'], status: 'derived', why: 'median of model / published PAR over 9 LED bars (5-65 W) in air at 12-14 in (reference/par-calibration-data.md D3, Portland Aquarium round-up, no method stated): 27 % below for white-LED, 18 % for planted-RGB lamps; pinned by test/lightfollowups.test.ts' },
@@ -264,6 +266,7 @@ export const FORMULAS: Formula[] = [
 ];
 
 export const EXCLUDED: Excluded[] = [
+  { file: 'src/scene/stocking.ts', symbols: ['SQIN_CM2', 'IN_MM'], why: 'unit conversions (sq in in cm2, inch in mm)' },
   { file: 'src/scene/tankMin.ts', symbols: ['CM', 'GAL_L'], why: 'the default print format (cm) and the US gallon in litres (3.785), a unit conversion' },
   { file: 'src/scene/builds.ts', symbols: ['BUILD_BLURB'], why: 'card wording (mentions the 70 % headroom, which FILTRATION_LIMIT documents)' },
   { file: 'src/scene/lightout.ts', symbols: ['AQ_MAX', 'LAMP_Y', 'TUBE_SP_MAX', 'LREF', 'EXPOSE', 'EXP_MIN', 'EXP_MAX'], why: 'render exposure and slider ranges' },

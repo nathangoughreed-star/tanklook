@@ -7,13 +7,13 @@
 //   buildSpan(animals, tank)     setup dollars and minutes a week, cheapest build to balanced build
 // GroupCare (lane P1, src/data/groups.ts, plan-path1-animal-first.md) is read through CARE when it lands; until then the defaults hold:
 // recommended minimum = CARE.group else 1, no depth limit, no length limit, zone from the species' own `zone` / `level`.
-import { CARE } from '../data/care';
-import { getSpecies, type Species } from '../data/species';
+import { careOf, zoneOf, type Zone } from './zone';
+import { getSpecies } from '../data/species';
 import { getTankModel, TANK_MODELS, tankFromModel, type TankModel } from '../data/tanks';
 import { defaultProfile, demandOf, type DemandOpts } from '../demand';
 import { bareSetup } from './defaults';
 import { volume } from './physics';
-import { countsAgainstWater, stockingOf } from './stocking';
+import { countsAgainstWater, floorUseCm2, stockingOf } from './stocking';
 import { MIN_SLACK_PCT } from './animalfit';
 import { minDataOf, tankMinimum } from './tankMin';
 import { applyPreset, optionCost, PRESETS, ROOM_C, rowsFor, stockCapacity, tempFit, withChoice } from './tech';
@@ -21,27 +21,11 @@ import type { Fish, TankSetup } from './types';
 
 /** What the user has picked: n animals of a species, each at `tl` mm (the adult length when omitted). */
 export interface AnimalCount { species: string; n: number; tl?: number }
-export type Zone = 'bottom' | 'middle' | 'top' | 'all';
+export { careOf, recommendedMin, zoneOf, type Zone } from './zone';
 
-/** The GroupCare fields tankfit reads (plan-path1-animal-first.md); all optional until lane P1's data lands. */
-interface GroupFields { bands?: { ok: number }; zone?: Zone; maxDepthMm?: number; minLengthMm?: number }
-const careOf = (id: string) => CARE[id] as (typeof CARE)[string] & GroupFields | undefined;
-
-/** Recommended minimum group: bands.ok, else the older CARE.group, else 1. */
-export const recommendedMin = (id: string) => careOf(id)?.bands?.ok ?? careOf(id)?.group ?? 1;
-/** Where in the tank a species lives: GroupCare zone, else bottom / top by the species' own data, else the middle. */
-export const zoneOf = (sp: Species): Zone => careOf(sp.id)?.zone ?? (sp.zone === 'bottom' || sp.kind === 'snail' ? 'bottom' : sp.level === 'top' ? 'top' : 'middle');
-
-/**
- * Floor area an animal wants, cm2, as a multiple of its length squared (a documented rule of thumb, not a source of record): a bottom
- * dweller holds a patch about two body lengths square (4 x tl^2), swimmers want swimming room over the floor (1.5 x tl^2 each). It is
- * a floor under the space number, which is per litre: it only bites for big bodies in a small footprint.
- */
-const FLOOR_K: Record<Zone, number> = { bottom: 4, middle: 1.5, top: 1.5, all: 2.5 };
-export const floorNeedCm2 = (sp: Species, tlMm: number) => FLOOR_K[zoneOf(sp)] * (tlMm / 10) ** 2;
 
 export interface Needs {
-  /** floor area wanted by zone, cm2 (animals that live in the water only) */
+  /** floor area used by zone, cm2 (the stocking engine's floor model, floorUseCm2; animals that live in the water only) */
   floorCm2: Record<Zone, number>;
   /** the longest red-line length any of them has, mm (scene/tankMin.ts lines); 0 = no demand */
   minLengthMm: number;
@@ -61,7 +45,7 @@ export function needsOf(animals: AnimalCount[]): Needs {
   const floorCm2: Record<Zone, number> = { bottom: 0, middle: 0, top: 0, all: 0 };
   let minLengthMm = 0, maxDepthMm = Infinity, minLitres = 0, salt = false;
   for (const { sp, n, tl } of wet(animals)) {
-    floorCm2[zoneOf(sp)] += n * floorNeedCm2(sp, tl);
+    floorCm2[zoneOf(sp)] += n * floorUseCm2(sp, tl);
     minLengthMm = Math.max(minLengthMm, minDataOf(sp.id)?.red?.L ?? 0);
     if (!minDataOf(sp.id)?.depth?.maxWaterDepthMm) maxDepthMm = Math.min(maxDepthMm, careOf(sp.id)?.maxDepthMm ?? Infinity); // lane MM: ADF's 24 in is an advisory with the count picker
     minLitres = Math.max(minLitres, careOf(sp.id)?.minL ?? 0);
@@ -134,18 +118,16 @@ export interface Fit {
   fails: ('space' | 'minimum' | 'length' | 'depth' | 'floor' | 'filtration')[];
 }
 
-function fitOf(c: Candidate, animals: AnimalCount[], needs: Needs): Fit {
+function fitOf(c: Candidate, animals: AnimalCount[]): Fit {
   const S = setupFor(c, animals, 'balanced'), r = stockingOf(S), fails: Fit['fails'] = [];
   if (r.spacePercent > 100) fails.push('space');
   // the balanced build already takes the strongest catalogue filter when none keeps it at 70 %: still over 100 % means no filter can carry this stocking here
   if (r.filtrationPercent > 100) fails.push('filtration');
   const tm = tankMinimum(S);
   if (tm.percent > MIN_SLACK_PCT) fails.push('minimum'); // the Fullness tile's own red lines (length, width, floor area, height; tankMin.ts), 10 % slack
-  if (c.T.L < needs.minLengthMm) fails.push('length'); // the red-line length without slack: step-ups may show a tank over its minimum on space, never a short one
-  if (c.T.H * WATER_LEVEL > needs.maxDepthMm) fails.push('depth');
-  // lane MM (Decisions 1 and 6, research/tank-minimum-first-principles.md): the per-head floor rule (FLOOR_K, a rule of thumb, no source)
-  // no longer fails a tank. Animals past the viable group raise crowding (the Space bar), not the enclosure minimum; 13 kuhlis in a 20 long
-  // were greyed out up to a 60 gal breeder by it (S188). needs.floorCm2 is still computed for the floor-share readouts.
+  // lane HB: every limit is the engines' own (stockingOf: water and floor; tankMinimum: red lines, strict length, depth); no math here
+  if (tm.lengthShort) fails.push('length');
+  if (tm.tooDeep) fails.push('depth');
   return { spacePct: r.spacePercent, filtrationPct: r.filtrationPercent, minPct: tm.percent, cramped: tm.comfortPercent > 100, fails };
 }
 
@@ -155,7 +137,7 @@ export interface TankFit extends Fit {
   gallons: number;
   needs: Needs;
 }
-const fitOfTank = (c: Candidate, animals: AnimalCount[], needs: Needs): TankFit => ({ ...fitOf(c, animals, needs), tank: c.m, litres: c.litres, gallons: c.litres / 3.785, needs });
+const fitOfTank = (c: Candidate, animals: AnimalCount[], needs: Needs): TankFit => ({ ...fitOf(c, animals), tank: c.m, litres: c.litres, gallons: c.litres / 3.785, needs });
 
 /** The smallest catalogue tank that holds these animals (space, filtration with the strongest catalogue filter, species limits); the largest one (still failing, `fails` says why) when none does. Undefined with no animals in the water. */
 export function tankFor(animals: AnimalCount[]): TankFit | undefined {
@@ -184,18 +166,20 @@ export interface StepUp {
 /** A good next size is at least this much more water than the one before (the catalogue's sizes are finer than a person weighs). */
 const STEP_RATIO = 1.25;
 
-/** The next `n` good sizes above `current`: bigger water each time, none that fails the length or depth the animals need. */
+/** The next `n` good sizes above `current`: bigger water each time with a lower Space bar (floor-bound animals need more floor), none that fails the length or depth the animals need. */
 export function stepUps(animals: AnimalCount[], current: TankModel | string, n = 3, ratio = STEP_RATIO): StepUp[] {
   const cur = typeof current === 'string' ? getTankModel(current) : current;
   if (!cur || !wet(animals).length) return [];
   const c0 = CANDIDATES.find(c => c.m.id === cur.id) ?? { m: cur, T: tankFromModel(cur), litres: volume(tankFromModel(cur)).litres };
-  const needs = needsOf(animals), base = setupUsd(c0, animals, 'balanced'), out: StepUp[] = [];
-  let from = c0.litres;
+  const base = setupUsd(c0, animals, 'balanced'), out: StepUp[] = [];
+  let from = c0.litres, room = fitOf(c0, animals).spacePct;
   for (const c of CANDIDATES) {
     if (out.length >= n) break;
     if (c.litres < from * ratio) continue;
-    const f = fitOf(c, animals, needs);
+    const f = fitOf(c, animals);
     if (f.fails.some(x => x !== 'space' && x !== 'minimum')) continue; // 'filtration' too: a step that no filter can carry is not a step
+    if (f.spacePct >= room) continue; // lane HB: more water on the same floor gives floor-bound animals no more room: not a step
+    room = f.spacePct;
     out.push({ tank: c.m, litres: c.litres, costDeltaUsd: Math.round(setupUsd(c, animals, 'balanced') - base), spacePct: f.spacePct, filtrationPct: f.filtrationPct });
     from = c.litres;
   }

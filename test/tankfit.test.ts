@@ -68,9 +68,9 @@ describe('tank fit engine (lane P2)', () => {
       for (const s of [t, ...stepUps(CASES.frogs, t.tank, 4)]) expect(tankFromModel(s.tank).H * 0.9, s.tank.id).toBeLessThanOrEqual(300);
     } finally { delete base.maxDepthMm; d.depth = depth; }
   });
-  it('the floor need is by zone: a pleco wants bottom floor, danios the middle, nothing from land animals', () => {
+  it('the floor use is by zone (the stocking engine floor model, lane HB): a pleco uses floor, midwater danios none, land animals none', () => {
     const n = needsOf(CASES.danios);
-    expect(n.floorCm2.bottom).toBeGreaterThan(0); expect(n.floorCm2.middle).toBeGreaterThan(0); expect(n.floorCm2.top).toBe(0);
+    expect(n.floorCm2.bottom).toBeGreaterThan(0); expect(n.floorCm2.middle).toBe(0); expect(n.floorCm2.top).toBe(0);
     expect(needsOf([{ species: 'treefrog', n: 2 }]).floorCm2).toEqual({ bottom: 0, middle: 0, top: 0, all: 0 });
     expect(needsOf(CASES.reef).salt).toBe(true); expect(needsOf(CASES.neons).salt).toBe(false);
   });
