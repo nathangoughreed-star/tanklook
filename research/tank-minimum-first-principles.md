@@ -50,8 +50,12 @@ a failure. Each measure is held on its own (no surplus covers a shortfall); filt
    (a stricter source or a stated judgement); never invented to fill the display, never called "comfortable". The amber "cramped" note
    becomes "below the recommended size". Animals past the viable group raise crowding, not the enclosure minimum.
 2. **Volume:** advisory only for the enclosure check (a "small volume, swings fast" note + difficulty). It can never fail a species on
-   its own. Unsafe conditions are failed by the environmental model (Filtration bar = ammonia the filter cannot process). Open gap: say
-   "unmaintainable" when the weekly water change hits its 50 % cap. Species volume figures stay visible as husbandry guidance
+   its own. Unsafe conditions are failed by the environmental model (Filtration bar = ammonia the filter cannot process). Over the 50 %
+   weekly cap is NOT "unmaintainable": three states, (a) within the default schedule, (b) high maintenance (over 50 % in one change:
+   show the uncapped figure, suggest two smaller changes a week, e.g. 2 x 30 % = 60 % once under a steady-state model, or less stock),
+   (c) environmental failure (modelled conditions unsafe, or the need cannot be met under the stated constraints). The Filtration bar
+   claims only what it models (ammonia processing), not nitrate, oxygen, pH or temperature. Validate the nitrogen mass balance before
+   trusting its water-change figures (an earlier "2 % a week" result was flagged for audit). Species volume figures stay visible as husbandry guidance
    (mystery snail 5 gal = its Recommended mark).
 3. **Measures by class:** classes only choose which measures to look for; species' sourced values populate them.
    Swimmers / shoalers: length req. Bottom dwellers: floor area req + length / width where a source states them (30 x 12 vs 60 x 6 in).
