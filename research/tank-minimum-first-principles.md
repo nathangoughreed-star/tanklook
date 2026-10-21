@@ -79,10 +79,9 @@ a failure. Each measure is held on its own (no surplus covers a shortfall); filt
    horizontal run for swimmers, height only where it helps), distinct from filtration and stability. No new per-animal footprint
    coefficients without evidence; document the limits rather than hide them.
 
-## Suggested approach
-- Write the principles first (a page: what each measure means, which species class uses which), get Nathan's yes.
-- Then a research pass for footprints by species, in batches. Measure one batch's cost and quote it before fanning out (Sonnet
-  subagents only, per CLAUDE.md); keep sources and the est / sourced flag.
-- Then migrate: drop volume from bottom dwellers' minimum, add a depth minimum, convert each litre figure to the footprint of the
-  standard tank it came from where no source exists, keep volume as a stability / difficulty input only.
-- Keep the invariant tests (`test/minimum.test.ts`) and add depth cases.
+## Status and next units (Coordinator 6, 2026-10-21)
+- Principles: DONE (the Decisions above, Nathan's yes via S183).
+- Lane MA (audit, tests only) and lane MX (sourcing: footprints, depth, conditions; one measured batch, then a quote) run in parallel.
+- Lane MM (migration) after both: volume to advisory only, the optional Recommended mark, the depth field, derived vs sourced
+  failure wording, drop volume from bottom dwellers' minimum. Keep the invariant tests (`test/minimum.test.ts`) and add depth cases.
+- Lane NB (nitrogen balance, Decision 2 water-change states) runs alongside.

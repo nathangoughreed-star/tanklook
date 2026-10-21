@@ -49,14 +49,17 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 ## S165: Tank minimum policy (2026-10-21, branch `s165`)
 - Six policy questions SETTLED; the rules are in research/tank-minimum-first-principles.md "Decisions". No policy code yet.
 - Shipped bb778da (build 1053): build fix, the mystery snail's volume-only flag is now applied in `measureMinimum`.
-- Next work units, in order: (1) Space-bar audit + noncompensation test + clearance diagnostic sweep (code reading and tests, no
-  migration); (2) sourcing pass for footprints / depth / source conditions (measure one batch's cost first, Sonnet only);
-  (3) migration (volume advisory, Recommended label, depth field, derived vs sourced reasons).
+- Policy settled and pushed ade4ca0 (build 1056). Next work units, as lanes (Coordinator 6, 2026-10-21):
+  MA Tank Minimum Audit (prompts/lane-MA-min-audit.md: Space-bar audit, noncompensation test, clearance sweep; tests only) and
+  MX Tank Minimum Sourcing (prompts/lane-MX-min-sourcing.md: research only, one measured batch then a quote) can run in parallel;
+  MM Tank Minimum Migration (volume advisory, Recommended label, depth field, derived vs sourced reasons) waits for both, prompt
+  written when they report. NB Nitrogen Balance (prompts/lane-NB-nitrogen-balance.md: S185's findings + Decision 2 water-change
+  states) runs alongside; it owns nitrogen.ts and the water-change lines, MA only reads them.
 - Nitrogen check (2026-10-21, ChatGPT review in Nathan's Downloads, TankLook_Nitrogen_Filtration_Review_for_Claude): the "2 % a week"
   for 13 tiger barbs in a planted 20 long is NOT a bug: plants' spare capacity (22 - 15 mg N/day) takes ~7 mg of the nitrate, ~2-3 mg
   N/day is left, about 0.2 mg N/L a week against the 9 mg N/L (40 ppm NO3) target. Units g N throughout, shared plant budget, no
   double count. Weak point is the input: plant uptake (one Egeria study, extrapolated) moves the figure 3 % / 15 % / 28 % at 22 / 11 /
-  0 mg uptake. Work unit (4), nitrogen honesty, no model overhaul: label the figure "nitrate-only" beside the 10 % routine floor (a
+  0 mg uptake. For lane NB (no model overhaul): label the figure "nitrate-only" beside the 10 % routine floor (a
   cited policy, not the calculation); show the plant-uptake uncertainty; show a plant-free filter load (25 / 73 = 34 % vs 14 %) as a
   resilience case; relabel the "Water changes 10 %" flow slice (share of nitrogen exported, not a % of the water); regression tests
   (conservation, shared plant cap, NO3 conversion, zero plants, less uptake raises the change, reproduce the 13-barb tank); check the
