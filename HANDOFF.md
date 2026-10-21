@@ -65,6 +65,32 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
   (conservation, shared plant cap, NO3 conversion, zero plants, less uptake raises the change, reproduce the 13-barb tank); check the
   litres passed in are net of substrate at the working waterline; say plainly that cycling and tap-water nitrate are not assessed.
 
+## Lane MA: Tank Minimum Audit (2026-10-21, branch `ma`, worktree `.claude/worktrees/ma`; tests and research only, no engine change)
+- Space-bar audit (Decision 6): `test/spaceaudit.test.ts`, table and verdicts in `research/space-audit.md` (`GEN_SPACE_AUDIT=1` rewrites
+  it). Space sees only water and mass: equal water = equal Space whatever the shape (24 x 12 x 24 vs 48 x 24 x 6 in: 74 % both; 20 long
+  104 % vs 20 high 107 %, while the gate reads them 108 % vs 143 %), and height is credited to bottom dwellers (10 cories on a 30 x 12 in
+  floor: 95 % at 12 in high, 32 % at 36 in). Count is right (linear past the viable group, minimum unchanged): locked. 5 `it.todo`.
+- Noncompensation (overall rule): `test/minimum.test.ts`. Locked: length, stated width and stated area fail on their own; 100x water,
+  10x height and the filter choice never rescue a short floor. 4 `it.fails` + 1 `it.todo` (below).
+- Clearance sweep (Decision 3): `research/clearance-sweep.md` (`GEN_CLEARANCE=1 npx vitest run test/minimum.test.ts`). No species fails
+  clearance in its smallest passing tank (worst: clown loach / oscar at ~1.5x adult length front to back), and in the four extreme shapes
+  nothing passes the gate yet fails clearance: as a gate it adds nothing today. Likely false positives as predicted: ball python, kuhli,
+  long-tailed geckos and anoles. The bounding box overstates bowfronts (centre depth) and bowls (full diameter).
+- Item 4 (nitrogen "2 % a week" pin): NOT done here; lane NB's prompt owns test/nitrogen.test.ts and pins the 13-barb case.
+- **For lane MM (what must change; each `it.fails` turns into a plain `it` when fixed):**
+  1. Decision 2: water must never fail a species on its own. Today the water share (bottom 0.25, swimmers 0.5) fails a danio in 12 L (3 gal) on a
+     47 x 20 in floor (167 %, limiting water).
+  2. Decision 2: the mystery snail's VOLUME_ONLY weight 1 makes 5 gal a hard failure (190 % in 10 L); it should be its Recommended mark.
+  3. Overall rule: a floor area DERIVED from litres fails swimmers (tiger barb, 48 x 3 in floor, 18 in of water: 115 %, limiting floor area);
+     an estimate may not silently fail.
+  4. Decision 3: bottom dwellers ignore a stated length (run weight 0); hold it where a source states it (and mark which `minLengthMm`
+     are sourced: most are (est) in research/groups-sources.md).
+  5. Decision 3/4 (`it.todo`): kuhli in a 36 x 20 in tray at 2 in passes today (85 %); it must read "not assessed" (needs the depth field).
+  6. Side finding: the ball python passes NO catalogue terrarium, not even 48 x 24 x 24 in: its 450 L is spread over 19.7 in of "water"
+     by `refDepthCm` (asks 1395 sq in, the 4 x 2 ft has 1152). Land animals' gallon figures are enclosure sizes; derive geometry from the
+     reference enclosure per Decision 5.
+  7. Space bar (later, not MM unless asked): the five Space todos need habitat-based Space, which needs evidence-backed per-zone coefficients.
+
 ## Lane MW: Minutes a Week (2026-10-21, branch `mw`, worktree `.claude/worktrees/mw`; Nathan approved the proposal in chat)
 - Full write-up with the numbers and sources: `research/minutes-a-week.md` (Result section); agent batches `research/sourcing/minutes/` (not in the globbed folder: they use `items`, not `species`).
 - Water changes now follow the nitrogen budget (floor 10 % cited, cap 50 %); new rows for feeding trips, glass wiping, painted live patches; plant trimming in bunches; testing every ~2 weeks; hose and automatic feeder as "Quality of life" tech rows that the least-work build adds. Builds now differ: least work is 4-22 min below cheapest, for $100-370 more. Every minutes-per-job figure is a labelled assumption; intervals and prices are cited.
