@@ -99,3 +99,16 @@ on these first as a diagnostic baseline: research/benchmark-baseline.md (regener
 | Dwarf frog x1 / x3 / x5 / x9 in 10 gal (combined) | x1 warn; x3 inform; x5 social need met but the tank limits; x9 tank limits (space) |
 | Dwarf frog x5 in 2.5 / 20 long / 29 / 75 gal (density only) | Group verdict identical in all four; only the tank verdict changes |
 | Neon x3 / x8 / x15 in 40 gal breeder (group only) | Tank verdict identical; only the group verdict changes |
+
+## 6. Baseline findings (2026-10-21, baseline at dd2e7d1 / build 1109) and what each establishes
+| Finding | What it establishes | Action |
+|---|---|---|
+| Mandarin's feeding note is unreachable (it sits in the "avoid" group band) | A care requirement is attached to a group-size band | **Architectural, first:** essential conditions (feeding, tank maturity, environment) are evaluated on their own, regardless of count or a favourable group result. Moving that one sentence is not the fix. |
+| "Great" beside severe crowding (9 frogs in 10 gal at 202 %) | Conflicting signals | Label it as the GROUP-SIZE assessment; the overall verdict takes clear precedence |
+| Frog `great` 7 above `max` 6 | The data contradicts itself, or the fields mean different things | Define each GroupCare field, then reconcile |
+| Frog depth number (450 mm) vs note (24 in) | The rule is ambiguous | Decide whether each means recommended depth, maximum water depth or enclosure height, then correct |
+| Cheapest and balanced identical | The alternatives may give no choice | Merge equivalent CONFIGURATIONS (same gear), not equal prices |
+| Minimum lengths (ram 35 in, oscar 59 in) and group defaults look questionable | The biological rules need review | Check their evidence; the baseline cannot validate its own thresholds |
+Restraint: the oscar case proves the dimension check runs independently of fullness, not that 59 in is right. Five frogs failing a
+10 gal proves the starter recommendation and the engine conflict, not which of starter tank, group default or capacity is
+wrong: no value is changed just to make an example pass. The missing owner comparison is unbuilt work, not a path 1 defect.
