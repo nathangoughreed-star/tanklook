@@ -1,12 +1,12 @@
 // The tank's minimum-size gate (Nathan 2026-10-20): separate from stocking density. Density (stocking.ts space / filtration) asks "is
 // the water crowded for THIS many animals"; this asks "is the tank big enough for the species at all, however few": the litres and the
-// tank length the most demanding species in it wants (CARE.minL, groups.ts minLengthMm). Zebra danios want about a 20 gal long to swim in;
+// tank length the most demanding species in it wants (weighed per kind of animal: floor area, length and water, MIN_WEIGHTS) (CARE.minL, groups.ts minLengthMm). Zebra danios want about a 20 gal long to swim in;
 // once they have it, a bigger school is fine and the density bars decide how many. Percent = what the tank would have to be / what it is,
 // so 100 = exactly the minimum and over 100 = too small, like the other bars.
 import { CARE } from '../data/care';
 import { getSpecies } from '../data/species';
 import { bioloadLitres } from './starter';
-import { zoneOf } from './tankfit';
+import { zoneOf, type Zone } from './tankfit';
 import { tankExtent } from './space';
 import { footprint } from './shape';
 import { countsAgainstWater } from './stocking';
@@ -28,6 +28,21 @@ export const TIERS: Record<string, { floor?: Size; comfort?: Size }> = {
   cherrybarb: { comfort: { litres: 110, lengthMm: 750 } },
   firenewt: { floor: { litres: 33, lengthMm: 450 } }, // a 10 gal for a pair; comfort is CARE 75 L, 60 cm
   firetoad: { floor: { litres: 33, lengthMm: 450 } },
+};
+
+/**
+ * How much each of the three things a litres figure on a care sheet stands in for counts, by where the animal lives (Nathan 2026-10-20: "3
+ * gallons" is shorthand for floor space, which few keepers can state). `vol` weighs the water itself (tank litres against the species'
+ * litres): a tall tank on the same floor must not read as roomier for a fish that never uses the height. `area` weighs floor area (cm2, the
+ * species' litres taken at REF_DEPTH_CM), `run` the longest floor side against its stated length. A bottom dweller lives on the floor and
+ * barely uses the column; surface fish need the length and the surface (floor) under it; midwater swimmers use the whole column, so volume
+ * counts for most there, still less than the run. The percent is the largest of the three weighted shares.
+ */
+export const MIN_WEIGHTS: Record<Zone, { vol: number; area: number; run: number }> = {
+  bottom: { vol: 0.25, area: 1, run: 0 },
+  top: { vol: 0.4, area: 0.6, run: 1 },
+  middle: { vol: 0.5, area: 0.4, run: 1 },
+  all: { vol: 0.5, area: 0.4, run: 1 },
 };
 
 /** A bottom dweller's footprint need, from its litres: a tank holding them at this water depth (cm). Swimmers are held to the run (the longest floor side) instead. */
@@ -61,8 +76,8 @@ export function tankMinimum(S: TankSetup): TankMinimum {
     if (have) { have.n++; continue; }
     const c = CARE[sp.id] as (typeof CARE)[string] & { minLengthMm?: number } | undefined, minL = c?.minL ?? 0, minLengthMm = c?.minLengthMm ?? 0;
     const t = TIERS[sp.id], fl = t?.floor?.litres ?? minL, fm = t?.floor?.lengthMm ?? minLengthMm, cl = t?.comfort?.litres ?? minL, cm = t?.comfort?.lengthMm ?? minLengthMm;
-    const kind = zoneOf(sp) === 'bottom' ? 'area' as const : 'run' as const;
-    const pc = (l: number, m: number) => Math.max(litres > 0 ? l / litres : 0, kind === 'area' ? (areaCm2 > 0 ? areaFor(l) / areaCm2 : 0) : lengthMm > 0 ? m / lengthMm : 0) * 100;
+    const zone = zoneOf(sp), w = MIN_WEIGHTS[zone], kind = zone === 'bottom' ? 'area' as const : 'run' as const;
+    const pc = (l: number, m: number) => Math.max(w.vol * (litres > 0 ? l / litres : 0), w.area * (areaCm2 > 0 ? areaFor(l) / areaCm2 : 0), w.run * (lengthMm > 0 ? m / lengthMm : 0)) * 100;
     by.set(sp.id, { id: sp.id, name: sp.name, n: 1, kind, floorCm2: areaFor(fl), comfortCm2: areaFor(cl), minL, minLengthMm, floorL: fl, floorLengthMm: fm, pct: pc(fl, fm), comfortPct: pc(cl, cm), comfortL: cl, comfortLengthMm: cm });
   }
   const rows = [...by.values()].sort((a, b) => b.pct - a.pct);

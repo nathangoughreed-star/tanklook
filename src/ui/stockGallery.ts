@@ -59,13 +59,13 @@ function hardscape(r: () => number, land: boolean): string {
 }
 
 /** One animal suggested to go in with the ones already picked (ui/stockPlan's rankTankmates): `n` is the group it would join as. */
-export interface Mate { sp: Species; ok: boolean; why?: string; n: number }
+export interface Mate { sp: Species; ok: boolean; why?: string; n: number; fits: boolean; bigger?: string }
 
 export function attachStockGallery(view: HTMLElement, pick: (id: string) => void) {
   const el = document.createElement('section');
   el.className = 'sg'; el.hidden = true; el.setAttribute('aria-label', 'Animals to choose from');
   view.append(el);
-  let cat: Category | '' = '', q = '', built = false, mateList: Mate[] | null = null, tool: SpeciesPreview | null | undefined;
+  let cat: Category | '' = '', q = '', built = false, mateList: Mate[] | null = null, haveTank = false, tool: SpeciesPreview | null | undefined;
   const queue: (() => void)[] = []; let pumping = false;
 
   /** Make one still (or reuse it), then set it on every <img> waiting for it. Stills are made a few per frame so the page never stalls. */
@@ -103,12 +103,20 @@ export function attachStockGallery(view: HTMLElement, pick: (id: string) => void
   const tile = (sp: Species, mate?: Mate) => {
     const c = CARE[sp.id], min = c?.bands?.ok ?? c?.group, tag = speciesTag(sp);
     const bits = [sp.tl ? `adult ${inchText(sp.tl)}` : '', min && min > 1 ? `group of ${min}+` : c?.solo ? 'kept alone' : '', tag].filter(Boolean).join(' · ');
-    const extra = mate ? (mate.ok ? `<span class="sgAdd">Add ${mate.n}</span>` : `<span class="sgWhy">Not with these: ${esc(mate.why ?? '')}</span>`) : '';
+    const extra = mate ? (mate.ok ? `<span class="sgAdd">Add ${mate.n}</span>${mate.fits ? '' : `<span class="sgWhy">Needs a bigger tank: ${esc(mate.bigger ?? '')}</span>`}` : `<span class="sgWhy">Not with these: ${esc(mate.why ?? '')}</span>`) : '';
     return `<li><button type="button" class="sgTile${mate && !mate.ok ? ' no' : ''}"${mate && !mate.ok ? ' disabled' : ''} data-id="${sp.id}"><span class="sgImg"><img alt="" data-look="${sp.id}"></span><b>${esc(sp.name)}</b><i>${esc(sp.sci)}</i>${bits ? `<span class="sgBits">${esc(bits)}</span>` : ''}${extra}</button></li>`;
   };
 
   const list = () => {
-    if (mateList) return mateList.length ? `<ul class="sgGrid">${mateList.map(m => tile(m.sp, m)).join('')}</ul>` : '<p class="sgNone">Nothing else suits this water.</p>';
+    if (mateList) {
+      if (!mateList.length) return '<p class="sgNone">Nothing else suits this water.</p>';
+      const runs: [string, string, Mate[]][] = [
+        [haveTank ? 'Fit your tank' : 'Suit your picks', haveTank ? "Get along with your picks, and at their smallest group stay inside the tank's stocking limit." : 'Choose a tank first and these split by what it can hold.', mateList.filter(m => m.fits)],
+        ['Compatible, but need a bigger tank', 'These suit your picks but would overfill the tank you chose. You can still add one, then choose a bigger tank.', mateList.filter(m => m.ok && !m.fits)],
+        ['Not with these', '', mateList.filter(m => !m.ok)],
+      ];
+      return runs.filter(([, , r]) => r.length).map(([h, note, r]) => `<h3>${h}</h3>${note ? `<p class="sgRunNote">${note}</p>` : ''}<ul class="sgGrid">${r.map(m => tile(m.sp, m)).join('')}</ul>`).join('');
+    }
     const found = q.trim() ? searchSpecies(q) : SPECIES;
     const rows = found.filter(s => !s.id.includes('~') && (!cat || s.cat === cat));
     if (!rows.length) return '<p class="sgNone">No animal by that name.</p>';
@@ -148,7 +156,7 @@ export function attachStockGallery(view: HTMLElement, pick: (id: string) => void
     /** Show or hide the gallery; the first show builds it. */
     show(on: boolean) { el.hidden = !on; if (on && !built) build(); },
     /** Tankmate mode: the tiles become the animals that suit the current picks (null = back to every animal). Redrawn on each call. */
-    mates(list: Mate[] | null) { const was = !!mateList; mateList = list; el.classList.toggle('sgMates', !!list); if (built) { drawList(); if (!!list !== was) el.scrollTop = 0; } },
+    mates(list: Mate[] | null, tankChosen = false) { const was = !!mateList; mateList = list; haveTank = tankChosen; el.classList.toggle('sgMates', !!list); if (built) { drawList(); if (!!list !== was) el.scrollTop = 0; } },
     /** The panel's search box filters the tiles too. */
     search(text: string) { if (text === q) return; q = text; if (built) drawList(); },
   };

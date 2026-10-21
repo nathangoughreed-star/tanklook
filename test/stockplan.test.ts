@@ -33,7 +33,7 @@ describe('stocking screen logic (lane P5, 2026-10-20)', () => {
     expect(notesOf({ id: 'guppy', n: 1, f: 0 }).ratio).toMatch(/female/);
   });
   it('tankmates: compatible first, never an animal that eats or is eaten, salt stays with salt', () => {
-    const list = rankTankmates([{ id: 'adf', n: 2 }]);
+    const list = rankTankmates([{ id: 'adf', n: 2 }], planFor([{ id: 'adf', n: 2 }]).need!.tank);
     const ok = list.filter(m => m.ok), bad = list.filter(m => !m.ok);
     expect(ok.length).toBeGreaterThan(3);
     expect(list.findIndex(m => !m.ok)).toBe(ok.length); // all the suitable ones come before the first unsuitable one
@@ -42,22 +42,35 @@ describe('stocking screen logic (lane P5, 2026-10-20)', () => {
     const two = rankTankmates([{ id: 'adf', n: 2 }, { id: 'oscar', n: 1 }]); // every occupant gates, not just the first
     expect(two.find(m => m.sp.id === 'neon')?.ok).toBe(false);
     expect(rankTankmates([])).toEqual([]);
-    for (let i = 1; i < ok.length; i++) expect(ok[i - 1].score).toBeGreaterThanOrEqual(ok[i].score);
+    const fit = list.filter(m => m.fits), big = list.filter(m => m.ok && !m.fits);
+    expect(list.slice(0, fit.length).every(m => m.fits)).toBe(true); // runs: fits the tank, then compatible-but-bigger, then unsuitable
+    expect(big.every(m => !!m.bigger)).toBe(true);
+    for (let i = 1; i < fit.length; i++) expect(fit[i - 1].score).toBeGreaterThanOrEqual(fit[i].score);
+    for (let i = 1; i < big.length; i++) expect(big[i - 1].score).toBeGreaterThanOrEqual(big[i].score);
+    // on the smallest tank that holds the picks, some compatible animals must need more room
+    expect(big.length).toBeGreaterThan(0);
     expect(conflictOf([{ id: 'adf', n: 2 }, { id: 'banggai', n: 2 }], 'banggai')).toMatch(/Salt water/);
     expect(conflictOf([{ id: 'adf', n: 2 }], 'adf')).toBeUndefined();
   });
   it('the plan steps up with the count and names the tank', () => {
     const small = planFor([{ id: 'neon', n: 6 }]), big = planFor([{ id: 'neon', n: 40 }]);
-    expect(small.tank && big.tank).toBeTruthy();
-    expect(big.litres).toBeGreaterThan(small.litres);
-    expect(small.steps.length).toBeGreaterThan(0);
-    for (const s of small.steps) { expect(s.tank.id).not.toBe(small.tank!.id); expect(s.costDeltaUsd).toBeGreaterThan(0); }
-    expect(small.span!.setupUsd.balanced).toBeGreaterThanOrEqual(small.span!.setupUsd.cheapest);
-    // a bigger tank the user chose holds while it is bigger than the need, and falls back to the need when too small
-    const pick = small.steps[0].tank.id;
+    expect(small.tank).toBeUndefined(); // no tank until the user picks one
+    expect(small.need && big.need).toBeTruthy();
+    expect(big.need!.litres).toBeGreaterThan(small.need!.litres);
+    // every size is listed smallest first; the ones below the need are out, and the need and bigger (to a point) are in
+    const lit = small.options.map(o => o.litres); expect([...lit].sort((a, b) => a - b)).toEqual(lit);
+    const firstOk = small.options.findIndex(o => !o.fails.length);
+    expect(firstOk).toBeGreaterThan(0); expect(small.options[firstOk].tank.id).toBe(small.need!.tank.id);
+    expect(small.options.slice(0, firstOk).every(o => o.fails.length > 0)).toBe(true);
+    expect(small.options.slice(firstOk).filter(o => !o.fails.length).length).toBeGreaterThan(3);
+    // the chosen tank holds as animals are added: it is never swapped, only flagged when it gets too small
+    const pick = small.need!.tank.id;
     expect(planFor([{ id: 'neon', n: 6 }], pick).tank!.id).toBe(pick);
-    expect(planFor([{ id: 'neon', n: 40 }], pick).tank!.id).toBe(big.need!.tank.id);
-    expect(planFor([]).tank).toBeUndefined();
+    expect(planFor([{ id: 'neon', n: 6 }], pick).problem).toBeUndefined();
+    const crowded = planFor([{ id: 'neon', n: 40 }], pick);
+    expect(crowded.tank!.id).toBe(pick); expect(crowded.problem).toMatch(/pick a bigger|take fewer/);
+    expect(small.options[0].minPct).toBeGreaterThan(0);
+    expect(planFor([]).tank).toBeUndefined(); expect(planFor([]).options).toEqual([]);
   });
   it('a stocking no filter can carry is worded as such', () => {
     const p = planFor([{ id: 'goldfish', n: 99 }]);
@@ -77,10 +90,10 @@ describe('stocking screen logic (lane P5, 2026-10-20)', () => {
     const roomy = forkOptions(animalsOf([{ id: 'neon', n: 6 }]), { w: 2000, d: 800 });
     expect(roomy.fitsAsIs).toBe(true); expect(roomy.swaps).toEqual([]);
   });
-  it('the tank only jumps once the stocking would pass 100 %; the options above it all bring it back under', () => {
+  it('the oscar tank sizes: 1 to 3 fit the same smallest tank, 5 need a bigger one; only holding sizes are open', () => {
     const one = planFor([{ id: 'oscar', n: 1 }]), three = planFor([{ id: 'oscar', n: 3 }]), five = planFor([{ id: 'oscar', n: 5 }]);
-    expect(three.tank!.id).toBe(one.tank!.id); // 1 to 3 oscars stay in the same tank
-    expect(five.litres).toBeGreaterThan(one.litres); // 5 do not fit it, so it goes up
-    for (const p of [one, three, five]) { expect(p.steps.length).toBeLessThanOrEqual(3); for (const s of p.steps) { expect(s.spacePct).toBeLessThan(100); expect(s.litres).toBeGreaterThan(p.litres); } }
+    expect(three.need!.tank.id).toBe(one.need!.tank.id);
+    expect(five.need!.litres).toBeGreaterThan(one.need!.litres);
+    for (const p of [one, three, five]) for (const o of p.options.filter(o => !o.fails.length)) expect(o.spacePct).toBeLessThanOrEqual(100);
   });
 });
