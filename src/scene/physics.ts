@@ -1,5 +1,5 @@
 // Pure physical rules shared by the renderer, the UI and the tests. No three.js here.
-import { BG_DIRS, bowlRadius, clampIn, footprint, glassAt, inside, nearestGlass, normTank, shapeOf, volumeBetween, wallSpan } from './shape';
+import { BG_DIRS, archBulge, bowlRadius, clampIn, frontAt, footprint, glassAt, inside, nearestGlass, normTank, shapeOf, volumeBetween, wallSpan } from './shape';
 import type { Hardscape } from './items';
 import type { BackdropSettings, BgSide, Fish, RenderSettings, StandSettings, SubstrateSettings, Surface, Tank, TankSetup, Units } from './types';
 
@@ -92,7 +92,7 @@ export function spawnSnail(h: (x: number, depth: number) => number, T: Tank, siz
   let g = glassAt(T, r() * f.perimeter);
   if (!f.walls[g.wall].curved) { const [s0, s1] = wallSpan(T, g.wall); if (s1 - s0 > 2 * m) g = glassAt(T, clamp(g.s, s0 + m, s1 - m)); }
   const lo = Math.max(h(g.x, g.depth), on.above ?? -Infinity) + m, hi = Math.max(lo, top - m), y = lo + r() * (hi - lo);
-  if (bowl) g = nearestGlass(T, g.x, g.depth, y); // out onto the sphere at that height
+  if (bowl || shapeOf(T) === 'arch') g = nearestGlass(T, g.x, g.depth, y); // out onto the sphere (or the arch's front arc) at that height
   return { surface: 'glass' as Surface, x: g.x, depth: g.depth, y, yaw };
 }
 
@@ -141,6 +141,11 @@ export function clampFish(f: Fish, A: Tank, back = 0, sides?: readonly BgSide[])
     if (q > r) { f.x = R + dx * r / q; f.depth = R + dd * r / q; }
     return;
   }
+  if (shapeOf(A) === 'arch' && archBulge(A) > 0) { // the front glass bulges out at mid-height: swim out to it, not just to the frame line
+    const fy = frontAt(A, f.y), q = clampIn({ L: A.L, H: A.H, D: A.D }, clamp(f.x, 0, A.L), clamp(f.depth, fy, A.D));
+    ({ x: f.x, depth: f.depth } = clearOfWall({ L: A.L, H: A.H, D: A.D }, q.x, q.depth, back && back + 10, sides));
+    return;
+  }
   const p = clampIn(A, clamp(f.x, 0, A.L), clamp(f.depth, 0, A.D));
   ({ x: f.x, depth: f.depth } = clearOfWall(A, p.x, p.depth, back && back + 10, sides)); // `back`: the 3D wall's depth, kept clear by 10 mm
 }
@@ -154,7 +159,7 @@ export function fmtDims(T: Tank, u: Units) {
   const k = unitMM(u), suf = u === 'in' ? '″' : ' cm';
   const dims = `${+(T.L / k).toFixed(1)} × ${+(T.H / k).toFixed(1)} × ${+(T.D / k).toFixed(1)}${suf} (L×H×D)`;
   const sh = T.shape ?? 'rect';
-  return sh === 'rect' ? dims : `${sh === 'bow' ? 'bowfront' : sh === 'round' ? 'round' : sh === 'bowl' ? 'bowl' : sh === 'pie' ? `${T.pieDeg}° pie slice` : `${T.sides}-sided`} ${dims}`;
+  return sh === 'rect' ? dims : `${sh === 'bow' ? 'bowfront' : sh === 'round' ? 'round' : sh === 'bowl' ? 'bowl' : sh === 'arch' ? 'curved-front' : sh === 'pie' ? `${T.pieDeg}° pie slice` : `${T.sides}-sided`} ${dims}`;
 }
 export const toUnit = (mm: number, u: Units) => +(mm / unitMM(u)).toFixed(2);
 export const fromUnit = (v: number, u: Units) => v * unitMM(u);
@@ -166,7 +171,7 @@ export function fmtSize(T: Tank, u: Units) {
     : `${dims}, ${Math.round(v.litres)} L, ${Math.round(a / 100).toLocaleString()} cm² floor`;
 }
 
-/** Interior volume in US gallons and litres (footprint area x height; a bowl: its slice of the sphere). */
+/** Interior volume in US gallons and litres (footprint area x height; a bowl: its slice of the sphere; an arch: the front bulge's segment added). */
 export function volume(T: Tank) {
   const litres = volumeBetween(T, 0, T.H) / 1e6;
   return { litres, gallons: litres / 3.785411784 };

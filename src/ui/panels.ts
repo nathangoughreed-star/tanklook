@@ -29,6 +29,8 @@ import type { Viewer } from '../render/viewer';
 import { emptyScene } from '../scene/defaults';
 import { BANDS, TANK_MODELS, dimsInches, modelOfVariant, tankFromModel, tankSaleFor, type TankModel, type TankVariant } from '../data/tanks';
 import { pinPreset } from '../demand/pinned';
+import { kitById } from '../data/kits';
+import { locksOf, lockNote } from '../scene/integrated';
 import { COMPS, DEFAULT_DENS, STYLE_GROUPS, STYLE_KIND, isLandStyle, EPIPHYTES, KINDS, perch, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
 import { handEdits, randomStyle, regenerate, shuffleHard } from '../scene/starter';
 import { styleGround } from '../scene/scapeground';
@@ -378,6 +380,8 @@ Cancel, then change the name, to keep both.`)) return;
     // interior from the outer size on the label; the glass matches so the outside does too
     // a tank sold with a stand (an ensemble) shows it; any other does not add one: the stand section asks, unless the user added one
     const standFor = (v?: TankVariant) => (s: TankSetup) => {
+      // an all-in-one (Fluval Flex and the like) is applied with its own light, lid and filter, which then stay (scene/integrated.ts); any other pick is an ordinary tank
+      if (v?.kit && kitById(v.kit)) s.integrated = { kit: v.kit }; else delete s.integrated;
       if (v && /stand|ensemble/i.test(v.line ?? '')) { s.stand.show = true; s.stand.need = undefined; }
       else if (s.stand.need !== 'added') { s.stand.show = false; s.stand.need = 'ask'; }
     };
@@ -392,7 +396,7 @@ Cancel, then change the name, to keep both.`)) return;
       const needle = q.value.trim().toLowerCase();
       const hit = (m: TankModel) => !needle || [m.name, m.shape, ...(m.tags ?? []), ...(m.variants ?? []).flatMap(v => [v.brand, v.line ?? ''])].join(' ').toLowerCase().includes(needle);
       list.textContent = '';
-      const groups: [string, TankModel[]][] = BANDS.map(([b, t]) => [t, TANK_MODELS.filter(m => !m.terrarium && m.band === b && hit(m))]);
+      const groups: [string, TankModel[]][] = BANDS.map(([b, t]) => [t, TANK_MODELS.filter(m => !m.terrarium && m.band === b && hit(m)).sort((a, c) => a.ratedGal - c.ratedGal)]); // by size (stable: file order within a size)
       if (terra.checked) groups.push(['Terrariums', TANK_MODELS.filter(m => m.terrarium && hit(m))]);
       for (const [title, ms] of groups) {
         if (!ms.length) continue;
@@ -407,8 +411,8 @@ Cancel, then change the name, to keep both.`)) return;
           row.append(head, col);
           for (const v of vs) {
             const b = document.createElement('button'); b.className = 'tankvar' + (v.discontinued ? ' disc' : '');
-            b.innerHTML = `<span class="vb">${esc(v.brand)}${v.line ? ` <i>${esc(v.line)}</i>` : ''}${v.rimless ? ' · rimless' : ''}${v.discontinued ? ' · discontinued' : ''}</span><span class="vd">${dimsInches({ L: v.L_in * IN, D: v.D_in * IN, H: v.H_in * IN })} in</span><span class="vp">${usd(v)}</span>`;
-            b.title = [v.price_note, v.confidence ? `confidence: ${v.confidence}` : '', v.checked ? `checked ${v.checked}` : ''].filter(Boolean).join(' · ');
+            b.innerHTML = `<span class="vb">${esc(v.brand)}${v.line ? ` <i>${esc(v.line)}</i>` : ''}${v.rimless ? ' · rimless' : ''}${v.kit ? ' · all-in-one' : ''}${v.discontinued ? ' · discontinued' : ''}</span><span class="vd">${dimsInches({ L: v.L_in * IN, D: v.D_in * IN, H: v.H_in * IN })} in</span><span class="vp">${usd(v)}</span>`;
+            b.title = [v.kit ? 'An all-in-one: its light, lid and filter come with it and stay as sold' : '', v.price_note, v.confidence ? `confidence: ${v.confidence}` : '', v.checked ? `checked ${v.checked}` : ''].filter(Boolean).join(' · ');
             b.onclick = () => apply(m, v);
             col.append(b);
           }
@@ -436,7 +440,7 @@ Cancel, then change the name, to keep both.`)) return;
       if (!flatEnds(s.tank)) { if (s.lid === 'hood') s.lid = 'glass'; if (s.wall.side === 'left' || s.wall.side === 'right') s.wall.side = 'back'; }
     }, { coalesce });
   }
-  const flatEnds = (T: Tank) => ['rect', 'bow'].includes(shapeOf(T));
+  const flatEnds = (T: Tank) => ['rect', 'bow', 'arch'].includes(shapeOf(T));
   $<HTMLSelectElement>('shapeSel').innerHTML = Object.entries(SHAPES).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join('');
   // each shape keeps its own length / depth for this visit: a round or pie tank derives one from the other, so going
   // back to a rectangle brings its own size back (audit #5); a bowl derives its height too
@@ -1856,9 +1860,14 @@ Cancel, then change the name, to keep both.`)) return;
     $('shapeHint').textContent = sh === 'rect' ? '' : sh === 'bow' ? 'Bowfront: the front glass is a curve from the end depth out to the full depth at the centre.'
       : (sh === 'round' ? 'Round: one curved glass wall.' : sh === 'pie' ? `Pie slice: a curved front and two flat panes meeting at the back${(A.pieDeg ?? PIE_DEFAULT) === 90 ? ' (a corner tank)' : (A.pieDeg ?? PIE_DEFAULT) === 180 ? ' (a half round)' : ''}; ${fmt(A.L)} wide.`
         : sh === 'bowl' ? 'Bowl: a glass sphere cut flat at the floor and the opening; its height follows from the three diameters.'
-        : `${A.sides} flat panes, one facing you.`) + ' No hood or peninsula ends for this shape.';
+        : sh === 'arch' ? `Curved front: the front glass is an arc in side view, flush with the frame at the floor and the opening and bulging out ${fmt(A.frontBulge ?? 0)} at mid-height (the depth above is the full depth at the bulge); the sides and back are flat.`
+        : `${A.sides} flat panes, one facing you.`) + (sh === 'arch' ? '' : ' No hood or peninsula ends for this shape.');
     $('shapeHint').style.display = sh === 'rect' ? 'none' : '';
-    ($('lidHood') as HTMLButtonElement).disabled = !flatEnds(A);
+    { // an integrated kit keeps its own lid (scene/integrated.ts)
+      const lk = locksOf(store.tank);
+      for (const [id, d] of LIDS) ($(id) as HTMLButtonElement).disabled = !!lk?.lid || (d === 'hood' && !flatEnds(A));
+      $('lidLock').hidden = !lk?.lid; $('lidLock').textContent = lk?.lid ? lockNote(store.tank, 'lid') : '';
+    }
     for (const id of ['wallLeft', 'wallRight']) ($(id) as HTMLButtonElement).disabled = !flatEnds(A);
     // which tank the panel edits (split view)
     const tg = store.targets;
@@ -2102,6 +2111,13 @@ Cancel, then change the name, to keep both.`)) return;
     { const u = l.mapUnit ?? 'par', r = MAP_STEP[u], v = mapStepOf(l, u); $('lStepRow').style.display = mapOn && watts ? '' : 'none';
       Object.assign($('lStep') as HTMLInputElement, { min: String(r.min), max: String(r.max), step: String(r.by) }); setVal('lStep', v);
       setOut('oLStep', u === 'lux' ? `${v.toLocaleString('en-US')} lux` : `${v} PAR`); }
+    { // an integrated kit's own light: the equipment rows are inert (the viewing controls, exposure and the map stay), with the reason under the picker
+      const lk = locksOf(s)?.light;
+      for (const id of ['lType', 'lTech', 'lCount', 'lRows', 'lPat', 'lSp', 'lCone', 'lH', 'lMount', 'lHoodLed', 'lPos', 'lPosOpt', 'lBulb', 'lW', 'lK', 'lPar']) {
+        const r = $(id).closest('.row, .btns'); if (!r) continue;
+        r.toggleAttribute('inert', !!lk); r.classList.toggle('locked', !!lk);
+      }
+    }
     $('lBeams').checked = s.render.beams && l.type !== 'flat'; $('lBeams').parentElement!.title = l.type === 'flat' ? 'No fixture: pick one under Fixture to see the light map' : ''; /* audit #44 */ $('lMapKey').style.display = s.render.beams && l.type !== 'flat' ? '' : 'none';
     $('lMapBare').hidden = !(s.render.beams && l.type !== 'flat' && !s.substrate.show); /* the map needs a floor to draw on (audit #17) */ ($('lBeams') as HTMLInputElement).disabled = l.type === 'flat';
     }

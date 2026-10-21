@@ -136,6 +136,7 @@
     {
      "brand": "Fluval",
      "line": "Spec V 5 gal (19 L)",
+     "kit": "fluval-spec-v-5",
      "L_in": 20.5,
      "D_in": 7.5,
      "H_in": 11.6,
@@ -507,19 +508,6 @@
      "H_in": 12.75,
      "price_note": "CAD $95.99 only; Planted Aquaria CA gives 24.3x12.5x12.8",
      "url": "https://aquariumdepot.ca/products/aqueon-standard-rectangular-aquarium-black-trim-15-gal",
-     "checked": "2026-10-19",
-     "confidence": "medium"
-    },
-    {
-     "brand": "Fluval",
-     "line": "Flex 15 (curved front)",
-     "L_in": 16,
-     "D_in": 15,
-     "H_in": 15,
-     "price_usd": 159.99,
-     "price_kind": "kit",
-     "price_note": "kit w/ LED, filter; range $159.99-$195.99; Flex 2.0 listed about 16.3x15.75x15",
-     "url": "https://fishtanksdirect.com/flex-15-gallon-aquarium-kit-16-l-x-15-w-x-15-h-black",
      "checked": "2026-10-19",
      "confidence": "medium"
     }
@@ -2778,10 +2766,44 @@
    "note": "Dry vivarium preset (interior L x H x D as listed in the old picker; 5 mm glass added outside)."
   },
   {
+   "id": "n_flex_15gal",
+   "name": "Fluval Flex 15 (curved front)",
+   "ratedGal": 15,
+   "shape": "arch",
+   "frontBulge": 32,
+   "outer": {
+    "L": 406.4,
+    "H": 381,
+    "D": 381
+   },
+   "glassMm": 6,
+   "band": "small",
+   "source": "https://fishtanksdirect.com/flex-15-gallon-aquarium-kit-16-l-x-15-w-x-15-h-black",
+   "est": ["frontBulge", "glassMm"],
+   "note": "Listing 16 x 15 x 15 in, checked 2026-10-19 (research/tanks). Front pane curved about a HORIZONTAL axis, as the Flex 9. Outer D is the full depth at the bulge; the bulge (frontBulge 32 mm) is an ESTIMATE scaled from the Flex 9 box photo (the maker does not publish it); glass 6 mm is assumed like the Flex 9. A Flex 2.0 listing gives about 16.3 x 15.75 x 15 in.",
+   "variants": [
+    {
+     "brand": "Fluval",
+     "line": "Flex 15 (curved front)",
+     "kit": "fluval-flex-15",
+     "L_in": 16,
+     "D_in": 15,
+     "H_in": 15,
+     "price_usd": 159.99,
+     "price_kind": "kit",
+     "price_note": "kit w/ LED, filter; range $159.99-$195.99; Flex 2.0 listed about 16.3x15.75x15",
+     "url": "https://fishtanksdirect.com/flex-15-gallon-aquarium-kit-16-l-x-15-w-x-15-h-black",
+     "checked": "2026-10-19",
+     "confidence": "medium"
+    }
+   ]
+  },
+  {
    "id": "n_flex_9gal",
    "name": "Fluval Flex 9 (curved front)",
    "ratedGal": 9,
-   "shape": "rect",
+   "shape": "arch",
+   "frontBulge": 28,
    "outer": {
     "L": 355.6,
     "H": 330.2,
@@ -2789,11 +2811,14 @@
    },
    "glassMm": 6,
    "band": "nano",
-   "source": "maker listing (research/tanks, checked 2026-10-19)",
+   "source": "https://www.bulkreefsupply.com/9-gallon-fluval-flex-2-0-aquarium-fluval.html",
+   "est": ["frontBulge", "glassMm"],
+   "note": "Listing checked 2026-10-19 (research/tanks); glass 6 mm assumed. Front pane curved about a HORIZONTAL axis (an arc in side view, flush with the frame at the floor and the opening, bulging out at mid-height). The outer depth D = 340.4 mm is the full depth at the bulge; the bulge itself (frontBulge 28 mm) is an ESTIMATE from the box photo (roughly 25-30 mm): the maker does not publish it.",
    "variants": [
     {
      "brand": "Fluval",
      "line": "Flex 9 (curved front)",
+     "kit": "fluval-flex-9",
      "L_in": 14,
      "D_in": 13.4,
      "H_in": 13,
@@ -2823,6 +2848,7 @@
     {
      "brand": "Waterbox",
      "line": "Cube 20 AIO",
+     "kit": "waterbox-aio-20-cube",
      "L_in": 17.7,
      "D_in": 17.7,
      "H_in": 15.7,

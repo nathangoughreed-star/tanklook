@@ -5,6 +5,9 @@
 // The bowl is the one shape whose walls are not upright: a sphere cut flat at the floor and at the opening. Its footprint
 // is the flat floor disc (substrate, hardscape and stand live there); what changes with height (fish room, glass, water
 // surface, volume) asks `bowlRadius`. L x D is still its bounding box (the equator), front-most point at depth 0.
+// The arch (Fluval Flex) is the other: its front pane is an arc in SIDE view (a horizontal axis), flush with the frame at the floor and
+// the opening and bulging out by `frontBulge` at mid-height. Its footprint is the flat rectangle behind the frame line (depth
+// frontBulge..D); only the front's depth varies with height (`frontAt`), D stays the box including the bulge.
 // Points are [x, depth]: x along the length 0..L, depth mm behind the front 0..D. No three.js here.
 import type { Tank, TankShape } from './types';
 
@@ -21,7 +24,7 @@ export interface Footprint { walls: Wall[]; ring: P[]; edges: Edge[]; area: numb
 /** Segments in a full circle and in the bowfront arc. */
 const ROUND_SEG = 64, BOW_SEG = 32;
 
-export const SHAPES: Record<TankShape, string> = { rect: 'Rectangle', bow: 'Bowfront', round: 'Round (cylinder)', poly: 'Polygon', bowl: 'Bowl (sphere)', pie: 'Pie slice (corner / half round)' };
+export const SHAPES: Record<TankShape, string> = { rect: 'Rectangle', bow: 'Bowfront', round: 'Round (cylinder)', poly: 'Polygon', bowl: 'Bowl (sphere)', pie: 'Pie slice (corner / half round)', arch: 'Curved front (top to bottom)' };
 export const POLY_SIDES = [3, 5, 6] as const;
 export const shapeOf = (T: Tank): TankShape => T.shape ?? 'rect';
 
@@ -59,17 +62,55 @@ export function bowlRadius(T: Tank, y: number) {
   return Math.sqrt(Math.max(0, R * R - z * z));
 }
 
+/** Default and largest front bulge of an arch tank, as fractions of its depth D. */
+export const ARCH_DEFAULT = 0.08, ARCH_MAX = 0.3;
+/** An arch tank's front bulge (mm), 0 for every other shape. */
+export const archBulge = (T: Tank) => (shapeOf(T) === 'arch' ? clamp(T.frontBulge ?? T.D * ARCH_DEFAULT, 0, T.D * ARCH_MAX) : 0);
+
+/** Radius of the arch's side-view arc: chord H (floor to opening), sagitta b. Infinity when b is 0. */
+const archRadius = (H: number, b: number) => (b > 1e-6 ? (H * H / 4 + b * b) / (2 * b) : Infinity);
+
+/** Depth (mm behind the box front) of an arch tank's inside front glass at height y: the frame line b at floor and opening, 0 at mid-height. */
+export function frontAt(T: Tank, y: number) {
+  const b = archBulge(T);
+  if (b <= 1e-6) return 0;
+  const R = archRadius(T.H, b), z = clamp(y, 0, T.H) - T.H / 2;
+  return b - (Math.sqrt(Math.max(0, R * R - z * z)) - (R - b));
+}
+
+/** Slope d(depth)/d(y) of that front glass (positive above mid-height, where the pane leans back). */
+export function frontSlope(T: Tank, y: number) {
+  const b = archBulge(T);
+  if (b <= 1e-6) return 0;
+  const R = archRadius(T.H, b), z = clamp(y, 0, T.H) - T.H / 2;
+  return z / Math.sqrt(Math.max(1e-9, R * R - z * z));
+}
+
+/** The footprint ring at height y: an arch's front sits at the glass there (a fish or the water surface reaches the bulge); else the floor outline. */
+export function levelRing(T: Tank, y: number): P[] {
+  const f = footprint(T);
+  if (shapeOf(T) !== 'arch') return f.ring;
+  const d = frontAt(T, y);
+  return f.ring.map(p => (p[1] < archBulge(T) + 1e-6 && p[1] < T.D / 2 ? [p[0], d] as P : p));
+}
+
 /** A circle of radius r round the centre of the L x D box, as a ring in the footprint's order (no repeated point). */
 export function circleRing(T: Tank, r: number, n = ROUND_SEG): P[] {
   return Array.from({ length: n }, (_, i) => { const a = -Math.PI + 2 * Math.PI * i / n; return [T.L / 2 + r * Math.sin(a), T.D / 2 - r * Math.cos(a)] as P; });
 }
 
-/** How far the widest outline sticks out past the footprint (mm): a bowl's equator past its floor; else 0. */
-export const bulge = (T: Tank) => (shapeOf(T) === 'bowl' ? T.L / 2 - bowlDims(T).rb : 0);
+/** How far the widest outline sticks out past the footprint (mm): a bowl's equator past its floor, an arch's front past its frame line; else 0. */
+export const bulge = (T: Tank) => (shapeOf(T) === 'bowl' ? T.L / 2 - bowlDims(T).rb : archBulge(T));
 
 /** Interior volume (mm³) between heights y0 and y1: footprint area x height, or a slice of the bowl's sphere. */
 export function volumeBetween(T: Tank, y0: number, y1: number, area = footprint(T).area) {
   if (y1 <= y0) return 0;
+  if (shapeOf(T) === 'arch') { // the flat box behind the frame line, plus the segment of the side-view arc in front of it
+    const b = archBulge(T), H = T.H, R = archRadius(H, b);
+    if (b <= 1e-6) return area * (y1 - y0);
+    const F = (y: number) => { const z = clamp(y, 0, H) - H / 2; return (z * Math.sqrt(Math.max(0, R * R - z * z)) + R * R * Math.asin(clamp(z / R, -1, 1))) / 2 - (R - b) * z; };
+    return area * (y1 - y0) + T.L * (F(y1) - F(y0));
+  }
   if (shapeOf(T) !== 'bowl') return area * (y1 - y0);
   const { R, c } = bowlDims(T), F = (y: number) => { const z = clamp(y, 0, T.H) - c; return R * R * z - z * z * z / 3; };
   return Math.PI * (F(y1) - F(y0));
@@ -91,7 +132,8 @@ export function normTank(T: Tank): Tank {
     return { ...B, H: +bowlDims(B).H.toFixed(1) };
   }
   if (s === 'pie') { const deg = Math.round(clamp(T.pieDeg ?? PIE_DEFAULT, PIE_MIN, PIE_MAX)); return { L: +pieWidth(T.D, deg).toFixed(1), H: T.H, D: T.D, shape: 'pie', pieDeg: deg }; }
-  T = { ...T, bowlFloor: undefined, bowlTop: undefined, pieDeg: undefined };
+  if (s === 'arch') return { L: T.L, H: T.H, D: T.D, shape: 'arch', frontBulge: +archBulge(T).toFixed(1) };
+  T = { ...T, bowlFloor: undefined, bowlTop: undefined, pieDeg: undefined, frontBulge: undefined };
   if (s === 'round') return { ...T, D: T.L, sides: undefined, bowMin: undefined };
   if (s === 'poly') { const n = (POLY_SIDES as readonly number[]).includes(T.sides ?? 0) ? T.sides! : 6; return { ...T, sides: n, D: +(T.L * polyRatio(n)).toFixed(1), bowMin: undefined }; }
   const lo = bowMinLimit(T), b = T.bowMin ?? T.D * 0.75;
@@ -119,6 +161,10 @@ function makeWalls(T: Tank): Wall[] {
     const k = L / (x1 - x0), v = u.map(q => [(q[0] - x0) * k, (q[1] - d0) * k] as P);
     return v.map((p, i) => ({ pts: [p, v[(i + 1) % v.length]], curved: false }));
   }
+  if (s === 'arch') { // the flat rectangle behind the frame line; the front pane's curve is in height (frontAt)
+    const e = archBulge(T);
+    return [{ pts: [[0, e], [L, e]], curved: false }, { pts: [[L, e], [L, D]], curved: false }, { pts: [[L, D], [0, D]], curved: false }, { pts: [[0, D], [0, e]], curved: false }];
+  }
   // rect, or bowfront: a circular arc through (0, e), (L/2, 0), (L, e) across the front, e = D - bowMin
   const e = s === 'bow' ? clamp(D - (T.bowMin ?? D), 0, L / 2) : 0;
   let front: Wall = { pts: [[0, 0], [L, 0]], curved: false };
@@ -134,7 +180,7 @@ function makeWalls(T: Tank): Wall[] {
 const cache = new Map<string, Footprint>();
 /** The footprint of tank T (cached by its shape parameters). */
 export function footprint(T: Tank): Footprint {
-  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.pieDeg}`;
+  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.pieDeg}|${T.frontBulge}`;
   let f = cache.get(key);
   if (f) return f;
   const walls = makeWalls(T), ring: P[] = [], edges: Edge[] = [];
@@ -198,6 +244,10 @@ export function nearestGlass(T: Tank, x: number, d: number, y?: number): OnGlass
     const R = T.L / 2, r = bowlRadius(T, y), a = Math.atan2(x - R, -(d - R)) || 0, n: P = [Math.sin(a), -Math.cos(a)];
     return { x: R + r * n[0], depth: R + r * n[1], n, s: ((a + Math.PI) / (2 * Math.PI)) * f.perimeter, wall: 0 };
   }
+  if (y !== undefined && shapeOf(T) === 'arch') { // the front pane is the arc at that height
+    const g = nearestGlass(T, x, d);
+    return g.n[1] < -0.5 ? { ...g, depth: frontAt(T, y) } : g;
+  }
   let best: OnGlass = { x, depth: d, n: [0, -1], s: 0, wall: 0 }, bd = Infinity;
   f.edges.forEach((e, i) => {
     const dx = e.b[0] - e.a[0], dd = e.b[1] - e.a[1], t = clamp(((x - e.a[0]) * dx + (d - e.a[1]) * dd) / (e.len * e.len), 0, 1);
@@ -213,6 +263,7 @@ export function nearestGlass(T: Tank, x: number, d: number, y?: number): OnGlass
  */
 export function glassFrame(T: Tank, x: number, d: number, y: number): { x: number; depth: number; n: [number, number, number] } {
   const g = nearestGlass(T, x, d, y);
+  if (shapeOf(T) === 'arch' && g.n[1] < -0.5) { const k = frontSlope(T, y), l = Math.hypot(1, k); return { x: g.x, depth: g.depth, n: [0, k / l, -1 / l] }; } // leans up above mid-height
   if (shapeOf(T) !== 'bowl') return { x: g.x, depth: g.depth, n: [g.n[0], 0, g.n[1]] };
   const { R, c } = bowlDims(T), ny = clamp((y - c) / R, -1, 1), h = Math.sqrt(1 - ny * ny);
   return { x: g.x, depth: g.depth, n: [g.n[0] * h, ny, g.n[1] * h] };

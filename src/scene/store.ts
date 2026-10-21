@@ -6,6 +6,7 @@ import { fitTable } from './table';
 import { sameGrid, sampleTerrain } from './terrain';
 import { keepInWater } from './water';
 import { clampItem } from './items';
+import { holdIntegrated } from './integrated';
 import { groupSize, type Group } from './duplicate';
 import type { BrushState } from './brush';
 import type { CameraSettings, Fish, Item, Scene, TankSetup } from './types';
@@ -189,7 +190,7 @@ export class Store {
     fn(this.scene);
     // a terrain grid of another kind than its tank's (copied from the other tank, or a new shape) is resampled onto it
     const regrid = (t: TankSetup) => { const te = t.terrain; if (te.h.length && !sameGrid(te, t.tank)) t.terrain = { ...sampleTerrain(t, t.tank, te.cols), on: te.on }; };
-    if (kind === 'scene') { for (const t of this.scene.tanks) { regrid(t); swampGround(t); keepInWater(t); fitTable(t); for (const it of t.items) clampItem(it, t.tank, t); } clearCams(this.scene.tanks, this.scene.camLock); }
+    if (kind === 'scene') { for (const t of this.scene.tanks) { holdIntegrated(t); regrid(t); swampGround(t); keepInWater(t); fitTable(t); for (const it of t.items) clampItem(it, t.tank, t); } clearCams(this.scene.tanks, this.scene.camLock); }
     if (this.selId != null && !this.tank.fish.some(f => f.id === this.selId)) this.selId = null;
     if (this.selItem != null && !this.tank.items.some(it => it.id === this.selItem)) this.selItem = null;
     this.pruneExtras();
