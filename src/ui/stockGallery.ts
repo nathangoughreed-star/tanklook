@@ -3,6 +3,7 @@
 // search. Each picture is a still of the same 3D model the tank draws, made once on a small renderer and kept. Picking a tile hands
 // the id to the stocking screen, which then shows the bare tank sized for it.
 import { CARE } from '../data/care';
+import type { Units } from '../scene/types';
 import { CATEGORIES, SPECIES, searchSpecies, speciesTag, type Category, type Species } from '../data/species';
 import { drawFishCard } from '../art/placeholder';
 import { SpeciesPreview } from '../render/preview3d';
@@ -15,8 +16,8 @@ const HERO = ['betta', 'regaljumper', 'ocellaris', 'axolotl', 'crestedgecko', 'd
 const TILE = [320, 200] as const, BIG = [480, 300] as const;
 const stills = new Map<string, string>(); // `${look}@${width}` -> data URL; the same still is reused for the life of the page
 const stillDims = new Map<string, [number, number]>(); // the same keys -> the still's pixel size, for the scale bar
-/** Reference lengths a tile's scale bar can show (mm, label). */
-const RULERS: [number, string][] = [[6.35, '¼ in'], [12.7, '½ in'], [25.4, '1 in'], [76.2, '3 in'], [152.4, '6 in'], [304.8, '1 ft'], [914.4, '3 ft'], [1828.8, '6 ft']];
+/** A tile's scale bar is always one unit long (Nathan 2026-10-21): 1 in, or 1 cm in metric, scaled to the animal. */
+const RULER: Record<Units, [number, string]> = { in: [25.4, '1 in'], cm: [10, '1 cm'] };
 /** "1.6 in" / "14 in" / "3.5 ft" for a length in mm. */
 const inchText = (mm: number) => { const i = mm / 25.4; return i < 24 ? `${i < 10 ? Math.round(i * 10) / 10 : Math.round(i)} in` : `${Math.round(i / 12 * 10) / 10} ft`; };
 
@@ -61,7 +62,7 @@ function hardscape(r: () => number, land: boolean): string {
 /** One animal suggested to go in with the ones already picked (ui/stockPlan's rankTankmates): `n` is the group it would join as. */
 export interface Mate { sp: Species; ok: boolean; why?: string; n: number; fits: boolean; bigger?: string }
 
-export function attachStockGallery(view: HTMLElement, pick: (id: string) => void) {
+export function attachStockGallery(view: HTMLElement, pick: (id: string) => void, units: () => Units) {
   const el = document.createElement('section');
   el.className = 'sg'; el.hidden = true; el.setAttribute('aria-label', 'Animals to choose from');
   view.append(el);
@@ -70,13 +71,13 @@ export function attachStockGallery(view: HTMLElement, pick: (id: string) => void
 
   /** Make one still (or reuse it), then set it on every <img> waiting for it. Stills are made a few per frame so the page never stalls. */
   /** A to-scale ruler in the tile's picture. The still is fitted into the 8:5 box ("contain") and its longest side is the animal's
-   *  adult length, so one box width is known in mm; the ruler is the largest round length that stays under 40 % of the box. */
+   *  adult length, so one box width is known in mm; the ruler is 1 in (1 cm in metric) at that scale. */
   const ruler = (img: HTMLImageElement, sp: Species, dims: [number, number]) => {
     const box = img.closest<HTMLElement>('.sgImg'); if (!box || !sp.tl || sp.body === 'snake') return; // a coiled snake's picture is far shorter than its length
     const [w, h] = dims, long = Math.min(1, 0.625 * Math.max(w, h) / Math.min(w, h)); // the longest side, as a fraction of the box width
-    let pick: [number, string] | undefined; for (const r of RULERS) if (r[0] / sp.tl * long <= 0.4) pick = r;
-    if (!pick) return;
-    box.style.setProperty('--ruler', `${(pick[0] / sp.tl * long * 100).toFixed(1)}%`); box.dataset.ruler = pick[1];
+    const pick = RULER[units()], pct = pick[0] / sp.tl * long * 100;
+    if (pct > 92) { box.style.removeProperty('--ruler'); delete box.dataset.ruler; return; } // an animal under ~1 unit: the bar would not fit the tile
+    box.style.setProperty('--ruler', `${pct.toFixed(2)}%`); box.dataset.ruler = pick[1];
   };
   const want = (img: HTMLImageElement, sp: Species, size: readonly [number, number]) => {
     const key = `${sp.look}@${size[0]}`, have = stills.get(key);

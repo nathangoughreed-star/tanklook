@@ -46,7 +46,7 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
   // the tank is shown bare here: no filter, heater or stand until the build is chosen (the scene keeps its gear; only the view leaves it out)
   const bare = (on: boolean) => { if (gearView.on === on) { gearView.on = !on; viewer.rebuild(); } };
   // before the first pick there is no tank on show, only the animals to choose from
-  const gallery = attachStockGallery(view, id => { if (!picks.some(p => p.id === id)) { picks.push(startPick(id)); q = ''; change(); } });
+  const gallery = attachStockGallery(view, id => { if (!picks.some(p => p.id === id)) { picks.push(startPick(id)); q = ''; change(); } }, () => store.scene.units);
   // no tank chosen yet: the animals sit in an invisible box a little smaller than the smallest tank that holds them (Nathan 2026-10-21:
   // the tool does not pick the tank; the user does, and can come back for a bigger one as the stocking grows)
   const ghost = (on: boolean) => { if (tankView.ghost !== on) { tankView.ghost = on; viewer.rebuild(); } };
