@@ -4,28 +4,6 @@
  "species": {
   "cardinal": {
    "fields": {
-    "ph": {
-     "ours": [
-      3.8,
-      6.8
-     ],
-     "verdict": "combined",
-     "sources": [
-      {
-       "url": "https://www.fishbase.se/summary/Paracheirodon-axelrodi.html",
-       "site": "FishBase",
-       "states": "pH 4.0-6.0",
-       "weight": 1
-      },
-      {
-       "url": "https://www.seriouslyfish.com/species/paracheirodon-axelrodi/",
-       "site": "Seriously Fish",
-       "states": "pH 3.5-7.5",
-       "weight": 1
-      }
-     ],
-     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was [3.5,7.5]"
-    },
     "group": {
      "ours": 8,
      "verdict": "combined",
@@ -140,19 +118,6 @@
       }
      ],
      "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 18"
-    },
-    "minL": {
-     "ours": 23,
-     "verdict": "combined",
-     "sources": [
-      {
-       "url": "https://www.fishkeepingworld.com/chili-rasbora/",
-       "site": "Fishkeeping World",
-       "states": "6-8 gallons (22.7-30.3 L) for a school of 8-10",
-       "weight": 0.7
-      }
-     ],
-     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 20"
     }
    }
   },
@@ -215,51 +180,6 @@
       }
      ],
      "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 40"
-    }
-   }
-  },
-  "hatchet": {
-   "fields": {
-    "ph": {
-     "ours": [
-      4.5,
-      7.5
-     ],
-     "verdict": "combined",
-     "sources": [
-      {
-       "url": "https://www.fishbase.se/summary/Carnegiella-strigata.html",
-       "site": "FishBase",
-       "states": "pH 5.0-8.0",
-       "weight": 1
-      },
-      {
-       "url": "https://www.seriouslyfish.com/species/carnegiella-strigata/",
-       "site": "Seriously Fish",
-       "states": "pH 4.0-7.0",
-       "weight": 1
-      }
-     ],
-     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was [5,7]"
-    },
-    "minL": {
-     "ours": 68,
-     "verdict": "combined",
-     "sources": [
-      {
-       "url": "https://www.seriouslyfish.com/species/carnegiella-strigata/",
-       "site": "Seriously Fish",
-       "states": "base 75 x 30 cm, ~68 litres (~18 US gal)",
-       "weight": 1
-      },
-      {
-       "url": "https://www.liveaquaria.com/products/marble-hatchet",
-       "site": "LiveAquaria",
-       "states": "20 gallons (75.7 L)",
-       "weight": 0.5
-      }
-     ],
-     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 60"
     }
    }
   },
@@ -547,19 +467,6 @@
       }
      ],
      "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 80"
-    },
-    "minL": {
-     "ours": 38,
-     "verdict": "combined",
-     "sources": [
-      {
-       "url": "https://www.fishkeepingworld.com/molly-fish/",
-       "site": "Fishkeeping World",
-       "states": "10 gal (38 L)",
-       "weight": 0.7
-      }
-     ],
-     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 80"
     }
    }
   },
@@ -1007,29 +914,6 @@
       }
      ],
      "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was [26,31]"
-    }
-   }
-  },
-  "yellowlab": {
-   "fields": {
-    "temper": {
-     "ours": 0,
-     "verdict": "combined",
-     "sources": [
-      {
-       "url": "https://www.seriouslyfish.com/species/labidochromis-caeruleus/",
-       "site": "Seriously Fish",
-       "states": "peaceful; territorial when spawning",
-       "weight": 1
-      },
-      {
-       "url": "https://guidarium.com/fishes/yellow-lab-mbuna",
-       "site": "Guidarium",
-       "states": "semi-aggressive 6/10",
-       "weight": 0.7
-      }
-     ],
-     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 1"
     }
    }
   },
@@ -1850,19 +1734,6 @@
       }
      ],
      "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 75"
-    },
-    "minL": {
-     "ours": 114,
-     "verdict": "combined",
-     "sources": [
-      {
-       "url": "https://www.aquariadise.com/six-line-wrasse/",
-       "site": "Aquariadise",
-       "states": "30 gallons",
-       "weight": 0.7
-      }
-     ],
-     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 208"
     }
    }
   },
@@ -1985,25 +1856,6 @@
       }
      ],
      "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 100"
-    },
-    "minL": {
-     "ours": 66,
-     "verdict": "combined",
-     "sources": [
-      {
-       "url": "https://reptiledirect.com/whites-tree-frog/",
-       "site": "Reptile Direct",
-       "states": "smallest 15 or 20 gal glass terrarium (57-76 L)",
-       "weight": 0.7
-      },
-      {
-       "url": "https://reptilesmagazine.com/whites-treefrog-care-sheet/",
-       "site": "Reptiles Magazine",
-       "states": "20 gal horizontal minimum for 4 young frogs (76 L)",
-       "weight": 0.7
-      }
-     ],
-     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 76"
     }
    }
   },
@@ -2027,25 +1879,6 @@
       }
      ],
      "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 45"
-    },
-    "minL": {
-     "ours": 38,
-     "verdict": "combined",
-     "sources": [
-      {
-       "url": "https://joshsfrogs.com/cms/fire-bellied-toad-care-sheet",
-       "site": "Josh's Frogs",
-       "states": "10-15 gal for 2-3 toads (38-57 L)",
-       "weight": 0.5
-      },
-      {
-       "url": "https://thevetdesk.com/pet-breeds/amphibians/oriental-fire-bellied-toad",
-       "site": "The Vet Desk (PangoVet)",
-       "states": "10 gal bare minimum for one toad (38 L); 15 gal for 3-5 (57 L)",
-       "weight": 0.7
-      }
-     ],
-     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 57"
     }
    }
   },
@@ -2091,55 +1924,6 @@
     }
    }
   },
-  "adf": {
-   "fields": {
-    "tl": {
-     "ours": 64,
-     "verdict": "combined",
-     "sources": [
-      {
-       "url": "https://www.liveaquaria.com/products/dwarf-african-frog",
-       "site": "LiveAquaria",
-       "states": "maximum size 2.5 in (64 mm)",
-       "weight": 0.5
-      },
-      {
-       "url": "https://www.petsmart.com/learning-center/fish-care/African-dwarf-frog-care-guide",
-       "site": "PetSmart",
-       "states": "up to 2 in (51 mm)",
-       "weight": 0.5
-      },
-      {
-       "url": "https://joshsfrogs.com/cms/african-dwarf-frogs-how-to-care-for-the-hymenochiris-genus",
-       "site": "Josh's Frogs",
-       "states": "maximum 3 in (76 mm)",
-       "weight": 0.25,
-       "generic": true
-      }
-     ],
-     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 3 sites; was 55"
-    },
-    "minL": {
-     "ours": 19,
-     "verdict": "combined",
-     "sources": [
-      {
-       "url": "https://www.petsmart.com/learning-center/fish-care/African-dwarf-frog-care-guide",
-       "site": "PetSmart",
-       "states": "5+ gal (19 L)",
-       "weight": 0.5
-      },
-      {
-       "url": "https://modestfish.com/african-dwarf-frog-care/",
-       "site": "Modest Fish",
-       "states": "5 gallon",
-       "weight": 0.7
-      }
-     ],
-     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 40"
-    }
-   }
-  },
   "axolotl": {
    "fields": {
     "tl": {
@@ -2170,25 +1954,6 @@
       }
      ],
      "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was [16,20]"
-    },
-    "minL": {
-     "ours": 38,
-     "verdict": "combined",
-     "sources": [
-      {
-       "url": "https://www.axolotl.org/housing.htm",
-       "site": "Axolotl.org",
-       "states": "10 gallons",
-       "weight": 0.7
-      },
-      {
-       "url": "https://www.reptilecentre.com/blogs/reptile-blog/axolotl-tank-size",
-       "site": "Reptile Centre",
-       "states": "one adult minimum 54-75 L (15-20 gal)",
-       "weight": 0.5
-      }
-     ],
-     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 110"
     }
    }
   },
@@ -2702,42 +2467,6 @@
     }
    }
   },
-  "ocellaris": {
-   "fields": {
-    "tl": {
-     "ours": 110,
-     "verdict": "combined",
-     "sources": [
-      {
-       "url": "https://www.fishbase.se/summary/Amphiprion-ocellaris.html",
-       "site": "FishBase",
-       "states": "11 cm TL max",
-       "weight": 1
-      },
-      {
-       "url": "https://topshelfaquatics.com/products/orange-ocellaris-clownfish",
-       "site": "Top Shelf Aquatics",
-       "states": "4.3 in (109 mm)",
-       "weight": 0.5
-      }
-     ],
-     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 100"
-    },
-    "minL": {
-     "ours": 57,
-     "verdict": "combined",
-     "sources": [
-      {
-       "url": "https://www.bulkreefsupply.com/ora-flurry-ocellaris-clownfish-ora.html",
-       "site": "Bulk Reef Supply",
-       "states": "15 gallons",
-       "weight": 0.5
-      }
-     ],
-     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 75"
-    }
-   }
-  },
   "yellowtang": {
    "fields": {
     "tl": {
@@ -2858,6 +2587,29 @@
     }
    }
   },
+  "hatchet": {
+   "fields": {
+    "minL": {
+     "ours": 68,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/carnegiella-strigata/",
+       "site": "Seriously Fish",
+       "states": "base 75 x 30 cm, ~68 litres (~18 US gal)",
+       "weight": 1
+      },
+      {
+       "url": "https://www.liveaquaria.com/products/marble-hatchet",
+       "site": "LiveAquaria",
+       "states": "20 gallons (75.7 L)",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 60"
+    }
+   }
+  },
   "labeo": {
    "fields": {
     "minL": {
@@ -2926,26 +2678,43 @@
     }
    }
   },
-  "bristlenose": {
+  "adf": {
    "fields": {
     "minL": {
-     "ours": 54,
+     "ours": 19,
      "verdict": "combined",
      "sources": [
       {
-       "url": "https://www.seriouslyfish.com/species/ancistrus-cf-cirrhosus",
-       "site": "Seriously Fish",
-       "states": "~54 L / 14 US gal",
-       "weight": 1
+       "url": "https://www.petsmart.com/learning-center/fish-care/African-dwarf-frog-care-guide",
+       "site": "PetSmart",
+       "states": "5+ gal (19 L)",
+       "weight": 0.5
       },
       {
-       "url": "https://www.chewy.com/education/fish/general/bristlenose-pleco-care-guide",
-       "site": "Chewy",
-       "states": "20 US gal = 76 L for one adult",
+       "url": "https://modestfish.com/african-dwarf-frog-care/",
+       "site": "Modest Fish",
+       "states": "5 gallon",
        "weight": 0.7
       }
      ],
-     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 80"
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 40"
+    }
+   }
+  },
+  "ocellaris": {
+   "fields": {
+    "minL": {
+     "ours": 57,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.bulkreefsupply.com/ora-flurry-ocellaris-clownfish-ora.html",
+       "site": "Bulk Reef Supply",
+       "states": "15 gallons",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 75"
     }
    }
   }

@@ -11,10 +11,10 @@ when it carries the url of the listing it was read from and does not mark the fi
 
 | | values | cited | fitted | derived | researched | claimed | assumption | unsourced | strong |
 |---|---|---|---|---|---|---|---|---|---|
-| **all data** | 5548 | 2467 (44 %) | 59 (1 %) | 250 (5 %) | 859 (15 %) | 648 (12 %) | 786 (14 %) | 479 (9 %) | 50 % |
-| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) | 1277 | 308 |  | 78 | 439 | 402 | 49 | 1 | 30 % |
-| Tank minimum red / green lines, heights, depth notes, advisory gallons (tankmin.json, lane MM) | 346 | 146 |  | 95 | 105 |  |  |  | 70 % |
-| Adult length per species (species.json tl) | 108 | 40 |  | 32 | 21 |  | 15 |  | 67 % |
+| **all data** | 5477 | 2486 (45 %) | 59 (1 %) | 220 (4 %) | 799 (15 %) | 648 (12 %) | 786 (14 %) | 479 (9 %) | 50 % |
+| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) | 1277 | 318 |  | 71 | 436 | 402 | 49 | 1 | 30 % |
+| Tank minimum red / green lines, heights, depth notes, advisory gallons (tankmin.json, lane MM) | 275 | 153 |  | 74 | 48 |  |  |  | 83 % |
+| Adult length per species (species.json tl) | 108 | 42 |  | 30 | 21 |  | 15 |  | 67 % |
 | Marine pH band (data/waterchem.ts) | 2 | 2 |  |  |  |  |  |  | 100 % |
 | Reptile / amphibian floor area, height, groups, growth (data/herpstock.ts) | 228 |  |  |  | 228 |  |  |  | 0 % |
 | Terrarium air temperature and humidity (data/climate.ts AIR) | 112 | 28 |  | 18 | 66 |  |  |  | 41 % |
@@ -161,19 +161,18 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 |---|---|
 | `CARE *.temp.*` | 146 |
 | `CARE *.tol.*` | 144 |
-| `CARE *.minL` | 21 |
 | `CARE *.bands.ok` | 21 |
 | `CARE *.bands.good` | 21 |
 | `CARE *.bands.great` | 21 |
 | `CARE *.minLengthMm` | 21 |
 | `CARE *.max` | 19 |
+| `CARE *.minL` | 18 |
 | `CARE *.sexed.ratio.*` | 12 |
 | `CARE *.group` | 5 |
 | `CARE *.care` | 4 |
 | `CARE *.temper` | 3 |
 | `CARE *.minAreaCm2` | 1 |
-| `TANKMIN *.vol.combined.*.gal` | 62 |
-| `TANKMIN *.vol.gal` | 12 |
+| `TANKMIN *.vol.gal` | 17 |
 | `TANKMIN *.green.L` | 9 |
 | `TANKMIN *.green.W` | 6 |
 | `TANKMIN *.red.L` | 5 |

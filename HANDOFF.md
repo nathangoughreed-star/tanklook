@@ -222,9 +222,9 @@ Goal: every advice number traces to a source, a fit, a stated derivation or a la
   `node scripts/source-combine-apply.mjs` applies the FROZEN approved proposal (combine/approved-2026-10-21.json / .md) into care.ts,
   waterchem.ts, groups.ts, climate.ts, species.json and combine/tankmin-overlay.json (read by scripts/tank-min-data.mjs), and writes
   research/sourcing/combined.json, a batch with verdict `combined` (provenance.ts: 2+ sites derived, one site researched) or `kept`.
-  194 values moved (list and kept rows: decisions.md "Combined sources"); all 7 open R3 / R4 disagreements settled. Unsourced 490 -> 479,
-  derived 43 -> 250. 7 opened tank-minimum sites registered in sources.json (they had no kind). Re-blessed: anchor baseline, body volumes,
-  example demand locks (gearFilters, tech, demand GOLD: reef upkeep +$19.50 a month, bigger fish), scale anchors (neon 38, chili 35 mm),
+  139 values moved (list, kept rows and the two corrections: decisions.md "Combined sources": 12 earlier ADOPTED values restored, tank sizes keep the MX rule); all 7 open R3 / R4 disagreements settled. Unsourced 490 -> 479,
+  derived 43 -> 220. 7 opened tank-minimum sites registered in sources.json (they had no kind). Re-blessed: anchor baseline, body volumes,
+  example demand locks (gearFilters, tech, demand GOLD: reef upkeep +$16 a month, bigger fish), scale anchors (neon 38, chili 35 mm),
   ball python 1311 mm, regal jumper 18 / 23 mm, neon group 8 (compatgates), 4 goldfish for the nitrate-only wording, tankfit's heater case
   uses a betta (neon now holds 21 C). One-line hook in lane BP's src/art/snakes.ts: snakeStageFor returns the species' own adult when the
   tank is that long (the stage table stops at 1200). scripts/sourcing-decisions.mjs skips fields combined.json settled.

@@ -28,8 +28,19 @@ const NATHAN_KEEP = {
   'kuhli|tl': 'kept (Nathan 2026-10-21): FishBase states a 12 cm maximum, one site; at 10 cm 13 kuhlis fit a 20 gal long (S188 acceptance), at 12 cm only 10',
   'oscar|tl': 'kept (Nathan 2026-10-21): FishBase 45.7 cm is a record size and outvoted Fishkeeping World 12 in (30 cm), the size kept oscars reach; two sites split',
 };
-const rows = P.rows.filter(r => r.change && !r.fromGallons && !r.tie && r.combined != null && !kept.has(`${r.id}|${r.field}`) && !NATHAN_KEEP[`${r.id}|${r.field}`]);
-const keptLater = P.rows.filter(r => NATHAN_KEEP[`${r.id}|${r.field}`]);
+// (their batch's own adopted rule cites them again; no new entry)
+const ADOPTED = 'adopted';
+// values Nathan had ADOPTED earlier (decisions.md S168 / SQ batch 1) that the table did not flag: his decision stands (Nathan 2026-10-21)
+for (const k of ['cardinal|ph', 'hatchet|ph', 'yellowlab|temper', 'adf|tl', 'ocellaris|tl', 'chili|minL (floor, L)', 'molly|minL (floor, L)', 'treefrog|minL (floor, L)',
+  'firetoad|minL (floor, L)', 'axolotl|minL (floor, L)', 'bristlenose|minL (floor, L)', 'sixline|minL (floor, L)'])
+  NATHAN_KEEP[k] = ADOPTED + ' (Nathan 2026-10-21): his earlier adopted decision (research/sourcing/decisions.md) stands over the combination';
+// tank sizes keep the MX rule (Nathan 2026-10-21: red = the lowest well-supported figure, never averaged; the advisory volume = the lowest
+// well-supported gallon figure): the combination does not move tankmin red lines or vol. A new green line (MX: the strictest credible) stays.
+const MX = r => r.target === 'tankmin.vol' || r.target?.startsWith('tankmin.red.');
+const rows = P.rows.filter(r => r.change && !r.fromGallons && !r.tie && r.combined != null && !kept.has(`${r.id}|${r.field}`) && !NATHAN_KEEP[`${r.id}|${r.field}`] && !MX(r));
+const keptLater = P.rows.filter(r => r.change && NATHAN_KEEP[`${r.id}|${r.field}`]);
+// a kept value that the first apply had already moved is written back (its row edits the data to `ours`)
+const revert = keptLater.filter(r => r.ours != null).map(r => ({ ...r, combined: r.ours, revert: true }));
 // one page's figure picked over the weighted median (Nathan 2026-10-21): the median landed on a record size
 const NATHAN_PICK = {
   'axolotl|tl': { host: 'reptilecentre.com', v: 300, why: "Nathan 2026-10-21: Reptile Centre's 'up to 30 cm', not Modest Fish's 8-16 in upper end (a record size, like the oscar)" },
@@ -51,7 +62,7 @@ function edit(file, block, re, val, what) {
 const arr = v => `[${v.join(', ')}]`;
 const has = (file, block, id) => { const s = read(file), a = s.indexOf(`export const ${block}`); return new RegExp(`\\b${id}: `).test(s.slice(a, s.indexOf('\n};', a))); };
 const overlay = {}, batch = {};
-for (const r of rows) {
+for (const r of [...rows, ...revert]) {
   const { id, field } = r, v = r.combined, what = `${id}.${field}`;
   const key = field.split(' (')[0];
   if (key === 'care') edit('src/data/care.ts', 'CARE', new RegExp(`(\\b${id}: A\\()\\d`), v, what);
@@ -78,10 +89,10 @@ for (const r of rows) {
   } else { misses.push(`${what}: no target`); continue; }
   // the provenance batch: every page that voted (url, its statement, the checked quote)
   const fk = key === 'minL' ? 'minL' : key;
-  if (!r.target?.startsWith('tankmin.')) (batch[id] ??= { fields: {} }).fields[fk] = { ours: v, verdict: 'combined', sources: r.sites.map(s => ({ url: s.url, site: s.site, states: s.states, weight: s.w, ...(s.generic ? { generic: true } : {}) })),
+  if (!r.revert && !r.target?.startsWith('tankmin.')) (batch[id] ??= { fields: {} }).fields[fk] = { ours: v, verdict: 'combined', sources: r.sites.map(s => ({ url: s.url, site: s.site, states: s.states, weight: s.w, ...(s.generic ? { generic: true } : {}) })),
     decision: `lane CB 2026-10-21 (Nathan: apply the combined table): ${r.pick ?? (r.n >= 2 ? `weighted median of ${r.n} sites` : 'one site')}${r.ours != null ? `; was ${JSON.stringify(r.ours)}` : ''}` };
 }
-for (const r of keptLater) (batch[r.id] ??= { fields: {} }).fields[r.field] = { ours: r.ours, verdict: 'kept', sources: r.sites.map(s => ({ url: s.url, site: s.site, states: s.states, weight: s.w })),
+for (const r of keptLater.filter(r => !NATHAN_KEEP[`${r.id}|${r.field}`].startsWith(ADOPTED))) (batch[r.id] ??= { fields: {} }).fields[r.field] = { ours: r.ours, verdict: 'kept', sources: r.sites.map(s => ({ url: s.url, site: s.site, states: s.states, weight: s.w })),
   decision: NATHAN_KEEP[`${r.id}|${r.field}`] + `; the combination said ${r.combined}` };
 for (const [f, s] of Object.entries(files)) writeFileSync(f, s);
 writeFileSync(`${DIR}/combine/tankmin-overlay.json`, JSON.stringify({ generated: 'scripts/source-combine-apply.mjs', species: overlay }, null, 1) + '\n');

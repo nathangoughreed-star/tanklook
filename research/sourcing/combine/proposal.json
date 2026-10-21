@@ -14,8 +14,8 @@
    "id": "cardinal",
    "field": "ph",
    "ours": [
-    3.8,
-    6.8
+    3.5,
+    7.5
    ],
    "combined": [
     3.8,
@@ -45,7 +45,7 @@
      "batch": "A1"
     }
    ],
-   "change": false
+   "change": true
   },
   {
    "id": "cardinal",
@@ -841,8 +841,8 @@
    "id": "hatchet",
    "field": "ph",
    "ours": [
-    4.5,
-    7.5
+    5,
+    7
    ],
    "combined": [
     4.5,
@@ -872,7 +872,7 @@
      "batch": "A1"
     }
    ],
-   "change": false
+   "change": true
   },
   {
    "id": "hatchet",
@@ -3000,7 +3000,7 @@
   {
    "id": "yellowlab",
    "field": "temper",
-   "ours": 0,
+   "ours": 1,
    "combined": 0,
    "tie": false,
    "n": 2,
@@ -3027,7 +3027,7 @@
      "batch": "A4"
     }
    ],
-   "change": false
+   "change": true
   },
   {
    "id": "yellowlab",
@@ -6863,7 +6863,7 @@
   {
    "id": "adf",
    "field": "tl",
-   "ours": 64,
+   "ours": 55,
    "combined": 64,
    "n": 3,
    "spread": "51-76",
@@ -6899,7 +6899,7 @@
      "batch": "A8"
     }
    ],
-   "change": false
+   "change": true
   },
   {
    "id": "adf",
@@ -8618,7 +8618,7 @@
   {
    "id": "ocellaris",
    "field": "tl",
-   "ours": 110,
+   "ours": 100,
    "combined": 110,
    "n": 2,
    "spread": "109-110",
@@ -8644,7 +8644,7 @@
      "batch": "pilot-01"
     }
    ],
-   "change": false
+   "change": true
   },
   {
    "id": "ocellaris",
@@ -9462,7 +9462,7 @@
   {
    "id": "cardinal",
    "field": "vol (one tier, gal)",
-   "ours": 14.3,
+   "ours": 20,
    "combined": 14.3,
    "n": 2,
    "sites": [
@@ -9490,7 +9490,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -9598,7 +9598,7 @@
   {
    "id": "ember",
    "field": "vol (one tier, gal)",
-   "ours": 10.8,
+   "ours": 10,
    "combined": 10.8,
    "n": 2,
    "sites": [
@@ -9626,7 +9626,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -9839,7 +9839,6 @@
   {
    "id": "harlequin",
    "field": "vol (one tier, gal)",
-   "ours": 14.3,
    "combined": 14.3,
    "n": 2,
    "sites": [
@@ -9867,7 +9866,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -9952,7 +9951,7 @@
   {
    "id": "chili",
    "field": "minL (floor, L)",
-   "ours": 23,
+   "ours": 20,
    "combined": 23,
    "n": 1,
    "sites": [
@@ -9969,13 +9968,13 @@
     }
    ],
    "spread": "6-10.8 gal",
-   "change": false,
+   "change": true,
    "target": "CARE.minL"
   },
   {
    "id": "chili",
    "field": "vol (comfort, gal)",
-   "ours": 10.8,
+   "ours": 8,
    "combined": 10.8,
    "n": 1,
    "sites": [
@@ -9992,7 +9991,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -10093,7 +10092,7 @@
   {
    "id": "danio",
    "field": "vol (comfort, gal)",
-   "ours": 21.4,
+   "ours": 10,
    "combined": 21.4,
    "n": 1,
    "sites": [
@@ -10110,7 +10109,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -10222,7 +10221,7 @@
   {
    "id": "whitecloud",
    "field": "vol (one tier, gal)",
-   "ours": 14.3,
+   "ours": 10,
    "combined": 14.3,
    "n": 2,
    "sites": [
@@ -10250,7 +10249,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -10364,7 +10363,7 @@
   {
    "id": "cpd",
    "field": "vol (one tier, gal)",
-   "ours": 10.8,
+   "ours": 10,
    "combined": 10.8,
    "n": 2,
    "sites": [
@@ -10392,7 +10391,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -10500,7 +10499,7 @@
   {
    "id": "hatchet",
    "field": "vol (one tier, gal)",
-   "ours": 18,
+   "ours": 20,
    "combined": 18,
    "n": 2,
    "sites": [
@@ -10528,7 +10527,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -10636,7 +10635,7 @@
   {
    "id": "cherrybarb",
    "field": "vol (comfort, gal)",
-   "ours": 25.1,
+   "ours": 10,
    "combined": 25.1,
    "n": 1,
    "sites": [
@@ -10653,7 +10652,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -10767,7 +10766,7 @@
   {
    "id": "tigerbarb",
    "field": "vol (comfort, gal)",
-   "ours": 29.1,
+   "ours": 20,
    "combined": 29.1,
    "n": 1,
    "sites": [
@@ -10784,7 +10783,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -10883,7 +10882,7 @@
   {
    "id": "boesemani",
    "field": "vol (comfort, gal)",
-   "ours": 49.9,
+   "ours": 28.5,
    "combined": 49.9,
    "n": 1,
    "sites": [
@@ -10900,7 +10899,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -11030,7 +11029,7 @@
   {
    "id": "guppy",
    "field": "vol (comfort, gal)",
-   "ours": 10.8,
+   "ours": 5,
    "combined": 10.8,
    "n": 1,
    "sites": [
@@ -11047,7 +11046,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -11289,7 +11288,7 @@
   {
    "id": "molly",
    "field": "minL (floor, L)",
-   "ours": 38,
+   "ours": 80,
    "combined": 38,
    "n": 1,
    "sites": [
@@ -11306,13 +11305,13 @@
     }
    ],
    "spread": "10-21.4 gal",
-   "change": false,
+   "change": true,
    "target": "CARE.minL"
   },
   {
    "id": "molly",
    "field": "vol (comfort, gal)",
-   "ours": 21.4,
+   "ours": 10,
    "combined": 21.4,
    "n": 2,
    "sites": [
@@ -11340,7 +11339,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -11441,7 +11440,7 @@
   {
    "id": "swordtail",
    "field": "vol (comfort, gal)",
-   "ours": 28.5,
+   "ours": 15,
    "combined": 28.5,
    "n": 1,
    "sites": [
@@ -11458,7 +11457,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -11645,7 +11644,7 @@
   {
    "id": "comet",
    "field": "vol (comfort, gal)",
-   "ours": 75,
+   "ours": 30,
    "combined": 75,
    "n": 1,
    "sites": [
@@ -11662,7 +11661,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -11791,7 +11790,7 @@
   {
    "id": "dwarfgourami",
    "field": "vol (one tier, gal)",
-   "ours": 14.8,
+   "ours": 10,
    "combined": 14.8,
    "n": 2,
    "sites": [
@@ -11819,7 +11818,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -12023,7 +12022,7 @@
   {
    "id": "gourami",
    "field": "vol (one tier, gal)",
-   "ours": 21.4,
+   "ours": 30,
    "combined": 21.4,
    "n": 2,
    "sites": [
@@ -12051,7 +12050,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -12434,7 +12433,7 @@
   {
    "id": "cockatoo",
    "field": "vol (comfort, gal)",
-   "ours": 30.1,
+   "ours": 14.3,
    "combined": 30.1,
    "n": 1,
    "sites": [
@@ -12451,7 +12450,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -12559,7 +12558,7 @@
   {
    "id": "discus",
    "field": "vol (one tier, gal)",
-   "ours": 67.4,
+   "ours": 60,
    "combined": 67.4,
    "n": 2,
    "sites": [
@@ -12587,7 +12586,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -12888,7 +12887,7 @@
   {
    "id": "peacock",
    "field": "vol (one tier, gal)",
-   "ours": 64.2,
+   "ours": 55,
    "combined": 64.2,
    "n": 2,
    "sites": [
@@ -12916,7 +12915,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -13194,7 +13193,7 @@
   {
    "id": "kadango",
    "field": "red.L (floor, mm)",
-   "ours": 1500,
+   "ours": 1200,
    "oursMark": "sourced",
    "combined": 1500,
    "pages": 1500,
@@ -13224,7 +13223,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.red.L"
   },
   {
@@ -13241,7 +13240,6 @@
   {
    "id": "kadango",
    "field": "red.W (floor, mm)",
-   "ours": 450,
    "oursMark": "sourced",
    "combined": 450,
    "pages": 450,
@@ -13260,7 +13258,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.red.W"
   },
   {
@@ -14609,7 +14607,7 @@
   {
    "id": "sae",
    "field": "vol (comfort, gal)",
-   "ours": 49.9,
+   "ours": 20,
    "combined": 49.9,
    "n": 1,
    "sites": [
@@ -14626,7 +14624,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -14725,7 +14723,7 @@
   {
    "id": "hillstream",
    "field": "vol (comfort, gal)",
-   "ours": 55,
+   "ours": 18,
    "combined": 55,
    "n": 1,
    "sites": [
@@ -14742,7 +14740,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -14874,7 +14872,7 @@
   {
    "id": "peapuffer",
    "field": "vol (one tier, gal)",
-   "ours": 5,
+   "ours": 3.3,
    "combined": 5,
    "n": 3,
    "sites": [
@@ -14913,7 +14911,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -15576,7 +15574,7 @@
   {
    "id": "banggai",
    "field": "vol (comfort, gal)",
-   "ours": 30.1,
+   "ours": 10,
    "combined": 30.1,
    "n": 1,
    "sites": [
@@ -15593,7 +15591,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -15643,7 +15641,7 @@
   {
    "id": "sixline",
    "field": "minL (floor, L)",
-   "ours": 114,
+   "ours": 208,
    "combined": 114,
    "n": 1,
    "sites": [
@@ -15660,13 +15658,13 @@
     }
    ],
    "spread": "30-60 gal",
-   "change": false,
+   "change": true,
    "target": "CARE.minL"
   },
   {
    "id": "sixline",
    "field": "vol (comfort, gal)",
-   "ours": 57.6,
+   "ours": 30,
    "combined": 57.6,
    "n": 2,
    "sites": [
@@ -15694,7 +15692,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -15991,7 +15989,7 @@
   {
    "id": "watchman",
    "field": "vol (comfort, gal)",
-   "ours": 30.1,
+   "ours": 20,
    "combined": 30.1,
    "n": 1,
    "sites": [
@@ -16008,7 +16006,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -16334,7 +16332,7 @@
   {
    "id": "treefrog",
    "field": "minL (floor, L)",
-   "ours": 66,
+   "ours": 76,
    "combined": 66,
    "n": 2,
    "sites": [
@@ -16362,13 +16360,13 @@
     }
    ],
    "spread": "15-20 gal",
-   "change": false,
+   "change": true,
    "target": "CARE.minL"
   },
   {
    "id": "treefrog",
    "field": "vol (one tier, gal)",
-   "ours": 17.4,
+   "ours": 15,
    "combined": 17.4,
    "n": 2,
    "sites": [
@@ -16396,7 +16394,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -16540,7 +16538,7 @@
   {
    "id": "firetoad",
    "field": "minL (floor, L)",
-   "ours": 38,
+   "ours": 57,
    "combined": 38,
    "n": 2,
    "sites": [
@@ -16568,7 +16566,7 @@
     }
    ],
    "spread": "10-10 gal",
-   "change": false,
+   "change": true,
    "target": "CARE.minL"
   },
   {
@@ -16774,7 +16772,7 @@
   {
    "id": "firenewt",
    "field": "vol (one tier, gal)",
-   "ours": 17.4,
+   "ours": 15,
    "combined": 17.4,
    "n": 2,
    "sites": [
@@ -16802,7 +16800,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -16886,7 +16884,7 @@
   {
    "id": "adf",
    "field": "vol (comfort, gal)",
-   "ours": 10,
+   "ours": 5,
    "combined": 10,
    "n": 1,
    "sites": [
@@ -16903,7 +16901,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -16953,7 +16951,7 @@
   {
    "id": "axolotl",
    "field": "minL (floor, L)",
-   "ours": 38,
+   "ours": 110,
    "combined": 38,
    "n": 2,
    "sites": [
@@ -16981,13 +16979,13 @@
     }
    ],
    "spread": "10-29 gal",
-   "change": false,
+   "change": true,
    "target": "CARE.minL"
   },
   {
    "id": "axolotl",
    "field": "vol (comfort, gal)",
-   "ours": 29.1,
+   "ours": 10,
    "combined": 29.1,
    "n": 1,
    "sites": [
@@ -17004,7 +17002,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -17159,7 +17157,6 @@
   {
    "id": "crestedgecko",
    "field": "vol (one tier, gal)",
-   "ours": 33.6,
    "combined": 33.6,
    "n": 1,
    "sites": [
@@ -17176,7 +17173,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -17306,7 +17303,6 @@
   {
    "id": "crestedharlequin",
    "field": "vol (one tier, gal)",
-   "ours": 33.6,
    "combined": 33.6,
    "n": 1,
    "sites": [
@@ -17323,7 +17319,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -17453,7 +17449,6 @@
   {
    "id": "greenanole",
    "field": "vol (one tier, gal)",
-   "ours": 10,
    "combined": 10,
    "n": 1,
    "sites": [
@@ -17470,7 +17465,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -17601,7 +17596,6 @@
   {
    "id": "greenanolebrown",
    "field": "vol (one tier, gal)",
-   "ours": 10,
    "combined": 10,
    "n": 1,
    "sites": [
@@ -17618,7 +17612,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -17872,7 +17866,6 @@
   {
    "id": "leopardgecko",
    "field": "vol (one tier, gal)",
-   "ours": 20.1,
    "combined": 20.1,
    "n": 2,
    "sites": [
@@ -17900,7 +17893,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -18418,7 +18411,7 @@
   {
    "id": "neon",
    "field": "vol (one tier, gal)",
-   "ours": 14.3,
+   "ours": 10,
    "combined": 14.3,
    "n": 2,
    "sites": [
@@ -18446,7 +18439,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -18547,7 +18540,7 @@
   {
    "id": "betta",
    "field": "vol (comfort, gal)",
-   "ours": 10.8,
+   "ours": 5,
    "combined": 10.8,
    "n": 1,
    "sites": [
@@ -18564,7 +18557,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -18665,7 +18658,6 @@
   {
    "id": "angel",
    "field": "vol (one tier, gal)",
-   "ours": 52.8,
    "combined": 52.8,
    "n": 1,
    "sites": [
@@ -18682,7 +18674,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -18924,7 +18916,7 @@
   {
    "id": "bristlenose",
    "field": "minL (floor, L)",
-   "ours": 54,
+   "ours": 80,
    "combined": 54,
    "n": 2,
    "sites": [
@@ -18952,7 +18944,7 @@
     }
    ],
    "spread": "14.3-20 gal",
-   "change": false,
+   "change": true,
    "target": "CARE.minL"
   },
   {
@@ -19253,7 +19245,7 @@
   {
    "id": "ocellaris",
    "field": "vol (comfort, gal)",
-   "ours": 30.1,
+   "ours": 15,
    "combined": 30.1,
    "n": 1,
    "sites": [
@@ -19270,7 +19262,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -19365,7 +19357,7 @@
   {
    "id": "yellowtang",
    "field": "vol (one tier, gal)",
-   "ours": 100.1,
+   "ours": 90,
    "combined": 100.1,
    "n": 3,
    "sites": [
@@ -19404,7 +19396,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {
@@ -19502,7 +19494,6 @@
   {
    "id": "oscar",
    "field": "vol (one tier, gal)",
-   "ours": 142.7,
    "combined": 142.7,
    "n": 2,
    "sites": [
@@ -19530,7 +19521,7 @@
     }
    ],
    "spread": "",
-   "change": false,
+   "change": true,
    "target": "tankmin.vol"
   },
   {

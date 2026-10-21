@@ -150,7 +150,8 @@ const SKIP = {
 };
 
 // ---- claims ---------------------------------------------------------------------------------------------------------------------
-const claims = {}, fails = [], unknownSites = new Set(), DECIDED = {};
+// decisions recorded only in decisions.md, not in a batch's `decision` field (SQ batch 1)
+const claims = {}, fails = [], unknownSites = new Set(), DECIDED = { 'sixline|minL (floor, L)': 'adopted: SQ batch 1 (decisions.md), 208 L; kept (Nathan 2026-10-21)' };
 const add = (id, f, c) => (claims[`${id}|${f}`] ??= []).push(c);
 const weigh = (url, generic) => { const h = host(url), k = sources[h]?.kind; if (!k) unknownSites.add(h); const w = (WEIGHTS[k] ?? 0) * (generic ? GENERIC : 1); return { host: h, kind: k ?? 'unregistered', w }; };
 const genericOf = (s, v) => {
@@ -365,7 +366,7 @@ const md = [
   '', `Against an earlier decision (column "earlier decision"): ${sorted.filter(r => DECIDED[`${r.id}|${r.field}`]?.startsWith('kept')).map(r => `${r.id} ${r.field.split(' (')[0]}`).join(', ')}.`, '',
   '## Changes', '', '`*` = one of the 7 open disagreements in decisions.md (R3 / R4).', '',
   '| species | field | ours | combined | move | sites | status | pages (value, weight) | earlier decision |', '|---|---|---|---|---|---|---|---|---|',
-  ...sorted.map(r => `| ${r.id}${order(r) === 0 ? ' *' : ''} | ${r.field} | ${cell(us(r, r.ours))}${r.oursMark ? ` (${r.oursMark})` : ''} | **${cell(r.tie ? 'tie, no change' : us(r, r.combined))}** | ${move(r)} | ${r.n} | ${r.n ? status(r.n) : ''} | ${srcCell(r)} | ${cell(DECIDED[`${r.id}|${r.field}`] ?? '')} |`),
+  ...sorted.map(r => `| ${r.id}${order(r) === 0 ? ' *' : ''} | ${r.field} | ${cell(us(r, r.ours))}${r.oursMark ? ` (${r.oursMark})` : ''} | **${cell(r.tie ? 'tie, no change' : us(r, r.combined))}** | ${move(r)} | ${r.n} | ${r.n ? status(r.n) : ''} | ${srcCell(r)} | ${cell(DECIDED[`${r.id}|${r.field}`] ?? (/^tankmin\.(vol|red\.)/.test(r.target ?? '') ? 'kept: tank sizes follow the MX rule, lowest well-supported (Nathan 2026-10-21)' : ''))} |`),
   '', `## Red lines kept from a gallon figure (${fromGal.filter(r => r.field.startsWith('red.L')).length} species)`, '',
   'Design point 1: a gallon figure never sets a length. MM (MX1 / MX2, decided) made the red line the LOWER of a stated geometry and the catalogue tank a gallon figure implies (derived, est), and Decision 2 keeps volume from gating the Fullness tile. Dropping these lines would leave a species with no red line where its pages give gallons only, or raise the red line to one page’s footprint (danio 20 -> 35.5 in, the jump Nathan questioned in MX2). **Proposed: keep these derived (est) red lines as they are (the table above already assumes so). Question for Nathan: keep, or drop them?**', '',
   '| species | red line now (derived, est) | the pages’ floor geometry | from |', '|---|---|---|---|',

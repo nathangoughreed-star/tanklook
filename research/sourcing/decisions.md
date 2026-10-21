@@ -42,11 +42,16 @@ Rule from Nathan 2026-10-20: he cannot judge the biology; trust the research, es
 (ranges end by end), words by weighted vote, tank sizes in two tiers (floor / comfort) when the pages are more than 1.5x apart,
 placed by each site's litres. Table: research/sourcing/combine/approved-2026-10-21.md; research/sourcing/combined.md is the table
 as it stands now (only the kept rows below differ). Applied by `node scripts/source-combine-apply.mjs` (research/sourcing/combined.json).
-- **Applied (Nathan: "apply all except the 11"):** 194 values: 47 adult lengths (the axolotl as picked below), 6 female lengths, 47 minimum volumes (CARE.minL),
-  41 advisory volumes (tankmin vol), 19 pH ranges, 10 group minimums (count bands' `ok` moved with them), 4 care levels, 5
-  temperaments, 4 temperature / 3 tolerance bands, mandarin max 2 (a pair), 2 humidity and 1 basking band, kadango's red line
-  59 x 17.5 in, swordtail's green line 47 x 12 in. The 7 open R3 / R4 disagreements are settled by it: harlequin 54 L, syno 108 L,
-  mandarin pair, discus 26-30 C, comet 18-22 C (tolerance 15.6-26.7), axolotl 15-18 C.
+- **Applied (Nathan: "apply all except the 11", then the two corrections below):** 139 values: 45 adult lengths (the axolotl as
+  picked below), 6 female lengths, 40 minimum volumes (CARE.minL), 17 pH ranges, 10 group minimums (count bands' `ok` moved with
+  them), 4 care levels, 4 temperaments, 4 temperature / 3 tolerance bands, mandarin max 2 (a pair), 2 humidity and 1 basking band,
+  swordtail's green line 47 x 12 in (MX: the strictest credible). The 7 open R3 / R4 disagreements are settled by it: harlequin 54 L,
+  syno 108 L, mandarin pair, discus 26-30 C, comet 18-22 C (tolerance 15.6-26.7), axolotl 15-18 C.
+- **Corrections (Nathan 2026-10-21, after Coordinator 7's check):** (1) the table flagged only KEPT decisions; 12 ADOPTED ones it
+  overwrote are back (cardinal and hatchet pH, yellow lab temperament, ADF and ocellaris length, minimum tanks of chili, molly, tree
+  frog, fire-bellied toad, axolotl, bristlenose, sixline), cited by their batches as before. (2) Tank sizes keep the MX rule (red =
+  lowest well-supported, never averaged; the advisory volume = the lowest well-supported gallon figure): kadango's red line and the 41
+  advisory volumes the combination moved are back. Two unequal sites: the heavier one wins outright (oscar, axolotl were caught).
 - **Kept (an earlier decision, labelled as before):** ball python, comet, mandarin and hillstream minimum tanks; oto, hillstream and
   axolotl care 2; angel and swordtail temperament 1; whitecloud group 6; mystery snail pH.
 - **Kept or picked when the tests showed the moves (Nathan 2026-10-21):** kuhli 100 mm (FishBase's 120 would fit only 10 in the S188

@@ -5,9 +5,9 @@
 type R = [number, number];
 /** Comfortable pH, and general hardness in dGH where sources agree (absent = no hardness check). Freshwater only. */
 export const CHEM: Record<string, { ph: R; gh?: R }> = {
-  neon: { ph: [5.0, 7.0], gh: [1, 10] }, cardinal: { ph: [3.8, 6.8], gh: [1, 8] }, ember: { ph: [5.0, 7.0], gh: [1, 10] },
+  neon: { ph: [5.0, 7.0], gh: [1, 10] }, cardinal: { ph: [3.5, 7.5], gh: [1, 8] }, ember: { ph: [5.0, 7.0], gh: [1, 10] },
   rummynose: { ph: [5.5, 7.0], gh: [1, 10] }, harlequin: { ph: [5.0, 7.0], gh: [1, 12] }, chili: { ph: [5.0, 7.0], gh: [1, 8] },
-  danio: { ph: [6.0, 8.0] }, whitecloud: { ph: [6, 8.3] }, cpd: { ph: [6.5, 7.5] }, hatchet: { ph: [4.5, 7.5], gh: [1, 10] },
+  danio: { ph: [6.0, 8.0] }, whitecloud: { ph: [6, 8.3] }, cpd: { ph: [6.5, 7.5] }, hatchet: { ph: [5, 7], gh: [1, 10] },
   cherrybarb: { ph: [6, 8] }, tigerbarb: { ph: [6, 8] }, boesemani: { ph: [7.0, 8.0], gh: [9, 19] },
   guppy: { ph: [7, 8.3], gh: [8, 25] }, platy: { ph: [7.0, 8.2], gh: [9, 25] }, molly: { ph: [7.5, 8.5], gh: [10, 25] },
   swordtail: { ph: [7, 8], gh: [9, 25] }, betta: { ph: [6.0, 7.5] }, dwarfgourami: { ph: [6.0, 7.5] }, honeygourami: { ph: [6.0, 7.5] },
