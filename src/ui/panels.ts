@@ -48,6 +48,8 @@ import type { Store } from '../scene/store';
 import { NEW_POOL, SWAMP_LEVEL, groundHeight, nearestLand, sameGrid, sampleTerrain } from '../scene/terrain';
 
 /** Arrow keys move the selected piece: [axis, direction] (depth grows toward the back). */
+/** A tank side's arrow step in inches: half inches under 18", whole inches from there (going down from 18: half). */
+const inchStep = (v: number, dir: number) => (dir > 0 ? v < 18 : v <= 18) ? 0.5 : 1;
 const ARROWS: Record<string, [string, number]> = { ArrowLeft: ['x', -1], ArrowRight: ['x', 1], ArrowUp: ['d', 1], ArrowDown: ['d', -1], PageUp: ['y', 1], PageDown: ['y', -1] };
 import { climateChart, climateOf, climateText } from '../data/climate';
 import { herpCheck } from '../scene/herpcheck';
@@ -465,6 +467,12 @@ Cancel, then change the name, to keep both.`)) return;
       // a value out of range is not taken silently (audit #28)
       if (ok !== mm) status(`Each side is ${fmt(LIMITS.tankMin)} to ${fmt(LIMITS.tankMax)}: set to ${fmt(ok)}.`, true);
     };
+    // the arrows step half inches under 18" and whole inches from there (Nathan 2026-10-21); the step is set just before
+    // the browser applies it, from the direction, so 18 goes down to 17.5 and up to 19
+    const aim = (dir: number) => { if (G().units === 'in') el.step = String(inchStep(+el.value, dir)); };
+    el.addEventListener('keydown', e => { if (e.key === 'ArrowUp' || e.key === 'ArrowDown') aim(e.key === 'ArrowUp' ? 1 : -1); });
+    el.addEventListener('mousedown', e => aim(e.offsetY < el.clientHeight / 2 ? 1 : -1));
+    el.addEventListener('wheel', e => aim(e.deltaY < 0 ? 1 : -1), { passive: true });
   }
   const setUnits = (u: Scene['units']) => store.update(s => { s.units = u; });
   $('uIn').onclick = () => setUnits('in'); $('uCm').onclick = () => setUnits('cm');
@@ -1847,9 +1855,10 @@ Cancel, then change the name, to keep both.`)) return;
     setVal('sceneName', G().name);
     $('uIn').classList.toggle('on', u === 'in'); $('uCm').classList.toggle('on', u === 'cm');
     for (const k of ['L', 'H', 'D'] as const) setVal('a' + k, u === 'cm' ? +(A[k] / 10).toFixed(1) : toUnit(A[k], u)); // cm to 0.1 (audit #30)
-    for (const k of ['L', 'H', 'D']) { const el = $('a' + k); el.min = String(toUnit(LIMITS.tankMin, u)); el.max = String(toUnit(LIMITS.tankMax, u)); }
+    // min on the half-inch grid: the browser steps from min, and 1.97" put every step on .47 / .97
+    for (const k of ['L', 'H', 'D']) { const el = $('a' + k); el.min = String(u === 'in' ? Math.ceil(toUnit(LIMITS.tankMin, u) * 2) / 2 : toUnit(LIMITS.tankMin, u)); el.max = String(toUnit(LIMITS.tankMax, u)); }
     document.title = `${G().name} · TankLook`; // the browser tab follows the tank (audit #31)
-    for (const id of ['aL', 'aH', 'aD']) $(id).step = u === 'in' ? '0.5' : '1';
+    for (const id of ['aL', 'aH', 'aD']) $(id).step = u === 'in' ? String(inchStep(+$(id).value, 1)) : '1';
     const sh = shapeOf(A);
     setVal('shapeSel', sh); $('sidesRow').style.display = sh === 'poly' ? '' : 'none'; $('bowRow').style.display = sh === 'bow' ? '' : 'none';
     $('pieRow').style.display = sh === 'pie' ? '' : 'none';
