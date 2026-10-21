@@ -90,9 +90,9 @@ describe('stocking screen logic (lane P5, 2026-10-20)', () => {
     const roomy = forkOptions(animalsOf([{ id: 'neon', n: 6 }]), { w: 2000, d: 800 });
     expect(roomy.fitsAsIs).toBe(true); expect(roomy.swaps).toEqual([]);
   });
-  it('the oscar tank sizes: 1 to 3 fit the same smallest tank, 5 need a bigger one; only holding sizes are open', () => {
+  it('the oscar tank sizes: more oscars never need a smaller tank, 5 need a bigger one than 1; only holding sizes are open', () => {
     const one = planFor([{ id: 'oscar', n: 1 }]), three = planFor([{ id: 'oscar', n: 3 }]), five = planFor([{ id: 'oscar', n: 5 }]);
-    expect(three.need!.tank.id).toBe(one.need!.tank.id);
+    expect(three.need!.litres).toBeGreaterThanOrEqual(one.need!.litres);
     expect(five.need!.litres).toBeGreaterThan(one.need!.litres);
     for (const p of [one, three, five]) for (const o of p.options.filter(o => !o.fails.length)) expect(o.spacePct).toBeLessThanOrEqual(100);
   });

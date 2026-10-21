@@ -51,7 +51,10 @@ const VOLUME_ONLY_WEIGHTS: { vol: number; area: number; run: number } = { vol: 1
 
 /** A bottom dweller's footprint need, from its litres: a tank holding them at this water depth (cm). Swimmers are held to the run (the longest floor side) instead. */
 export const REF_DEPTH_CM = 30;
-export const areaFor = (litres: number) => litres * 1000 / REF_DEPTH_CM;
+/** Real tanks get deeper as they get bigger (catalogue: about 28 cm of water at 40-70 L, 45 at 200 L, 50-54 at 400 L and up), so a big species' litres are NOT spread over 30 cm of floor: that would ask a 70 gal for more floor than any 75 gal has. Depth ramps from REF_DEPTH_CM at RAMP_FROM_L to DEEP_DEPTH_CM at RAMP_TO_L. */
+export const DEEP_DEPTH_CM = 50, RAMP_FROM_L = 80, RAMP_TO_L = 400;
+export const refDepthCm = (litres: number) => REF_DEPTH_CM + (DEEP_DEPTH_CM - REF_DEPTH_CM) * Math.min(1, Math.max(0, (litres - RAMP_FROM_L) / (RAMP_TO_L - RAMP_FROM_L)));
+export const areaFor = (litres: number) => litres * 1000 / refDepthCm(litres);
 /** The tank's floor area, cm2, any shape (outer footprint); its longest floor side and its shortest (front to back for a rectangle), mm. */
 export function floorOf(T: TankSetup['tank']): { areaCm2: number; runMm: number; widthMm: number } {
   const ring = footprint(T).ring, e = tankExtent(T);
