@@ -644,6 +644,7 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .spBar { display: inline-block; width: 80px; height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--ink) 15%, transparent); overflow: hidden } .spBar i { display: block; height: 100%; background: #2f8f4e } .spBar.near i { background: #d6a21b } .spBar.over i { background: #d8432f }
 .spPct { font-size: 11px; opacity: .75 }
 .spLive { display: flex; justify-content: space-between; gap: 8px; margin-top: 8px; padding: 6px 8px; border-radius: 6px; background: color-mix(in srgb, #2a9bb0 14%, transparent) }
+.spSteps2 { max-height: 230px; overflow-y: auto; padding-right: 4px }
 .spSteps2 button { display: flex; width: 100%; align-items: center; gap: 8px; text-align: left; margin-bottom: 4px; padding: 5px 8px } .spSteps2 button > span:first-child { flex: 1 }
 .spLink { border: 0 !important; background: none !important; color: #2a9bb0; text-decoration: underline; padding: 4px 0 !important }
 .spFoot { margin-top: 14px; display: flex; flex-direction: column; gap: 4px }
@@ -667,8 +668,12 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .sgGrid { list-style: none; margin: 0; padding: 0 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 12px }
 .sgTile { width: 100%; height: 100%; display: flex; flex-direction: column; gap: 2px; text-align: left; padding: 8px; font: inherit; border-radius: 10px; border: 1px solid #36505f; background: #1d3140; color: inherit; cursor: pointer }
 .sgTile:hover { border-color: #2a9bb0; background: #23394a }
-.sgImg { display: block; aspect-ratio: 8 / 5; border-radius: 6px; background: linear-gradient(#cfe3ee, #a9c9da); overflow: hidden; margin-bottom: 4px }
+.sgImg { position: relative; display: block; aspect-ratio: 8 / 5; border-radius: 6px; background: linear-gradient(#cfe3ee, #a9c9da); overflow: hidden; margin-bottom: 4px }
 .sgImg img { width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: opacity .3s } .sgImg img.ready { opacity: 1 }
+.sgImg[data-ruler]::before { content: ''; position: absolute; left: 8px; bottom: 8px; width: var(--ruler); height: 5px; border: 1.5px solid #17303d; border-top: 0; opacity: .75; pointer-events: none }
+.sgImg[data-ruler]::after { content: attr(data-ruler); position: absolute; left: 8px; bottom: 15px; font-size: 10px; font-weight: 600; color: #17303d; opacity: .8; pointer-events: none }
+.sg .sgMateHd { display: none } .sg.sgMates .sgMateHd { display: block; padding: 20px 24px 6px } .sg.sgMates .sgHero, .sg.sgMates .sgIntro, .sg.sgMates .sgChips { display: none }
+.sgTile.no { opacity: .5; cursor: default } .sgAdd { font-size: 12px; font-weight: 600; color: #0e2a33; background: #7fd0de; border-radius: 5px; padding: 2px 8px; align-self: flex-start; margin-top: 3px } .sgWhy { font-size: 11px; color: #e0a45a }
 .sgTile b { font-size: 14px } .sgTile i { font-size: 11px; opacity: .65 } .sgBits { font-size: 11.5px; color: #7fd0de }
 .sgNone { padding: 24px }
 @media (max-width: 700px) { .sg { padding: 0 0 40px } .sgHero { padding-top: 70px; height: 340px; grid-template-columns: repeat(3, 1fr) } .sgGrid { grid-template-columns: repeat(2, 1fr) } }
@@ -704,3 +709,5 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 #sheetView .planCycle { margin-top: 18px; padding: 8px 10px; border-left: 4px solid #2a9bb0; background: #eef6f8 }
 @media print { .planChip { display: none } }
 .scp.ask { left: auto; width: 340px }
+/* an integrated kit supplies this (scene/integrated.ts): greyed and inert */
+.row.locked, .btns.locked { opacity: .5; }

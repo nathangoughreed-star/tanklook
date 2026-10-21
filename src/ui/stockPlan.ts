@@ -89,12 +89,6 @@ ${overWarn(p) ? `<div class="spWarn">${esc(overWarn(p)!)}</div>` : ''}${conflict
 ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</div>` : ''}</li>`;
   };
 
-  const mateRows = () => {
-    const list = rankTankmates(picks);
-    if (!list.length) return '<p class="spNote">Nothing else suits this water.</p>';
-    return `<ul class="spMates">${list.map(m => `<li class="${m.ok ? '' : 'no'}"><div><b>${esc(m.sp.name)}</b>${m.ok ? '' : `<span class="spWhy">Not with these: ${esc(m.why)}</span>`}</div><button type="button" data-act="mate" data-id="${m.sp.id}"${m.ok ? '' : ' disabled'}>Add ${m.n}</button></li>`).join('')}</ul>`;
-  };
-
   const tankBlock = () => {
     const animals = animalsOf(picks);
     if (!animals.length) return '';
@@ -132,11 +126,12 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
 <div class="spResWrap">${results()}</div>
 ${picks.length ? `<ul class="spPicks">${picks.map(pickRow).join('')}</ul>
 <div class="spHd">Other animals in with them?</div>
-${mates ? `${mateRows()}<button type="button" class="spLink" data-act="nomates">No, just these</button>` : `<div class="spYN"><button type="button" data-act="mates">Yes, show what suits them</button></div>`}` : '<p class="spNote">Search for the animal you have in mind, or pick one from the pictures. It goes in at the smallest group it is kept in, and the tank it needs shows in the view.</p>'}
+${mates ? `<p class="spNote">Pick from the pictures on the left; each goes in at the smallest group it is kept in.</p><button type="button" class="primary" data-act="nomates">Done adding</button>` : `<div class="spYN"><button type="button" data-act="mates">Yes, show me what suits them</button></div>`}` : '<p class="spNote">Search for the animal you have in mind, or pick one from the pictures. It goes in at the smallest group it is kept in, and the tank it needs shows in the view.</p>'}
 ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}` : ''}
 <div class="spFoot"><button type="button" class="primary" data-act="builds"${picks.length && planFor(picks, chosen).tank && !planFor(picks, chosen).problem ? '' : ' disabled'}>Continue: three ways to build it</button><button type="button" class="spLink" data-act="done"${picks.length ? '' : ' disabled'}>Open in the editor as it is</button><span class="spNote">Everything stays editable in the editor.</span></div>`;
     const q2 = el.querySelector<HTMLInputElement>('.spQ')!;
-    gallery.search(q); gallery.show(!el.hidden && !picks.length);
+    gallery.mates(mates && picks.length ? rankTankmates(picks) : null);
+    gallery.search(q); gallery.show(!el.hidden && (!picks.length || mates));
     if (hadFocus || focusSearch) { q2.focus(); q2.setSelectionRange(pos, pos); focusSearch = false; }
     el.scrollTop = scroll;
   };
