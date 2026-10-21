@@ -140,6 +140,8 @@ export interface Plan {
   problem?: string;
 }
 const litresOf = (m: TankModel) => volume(tankFromModel(m)).litres;
+/** The litres of the tank the plan shows: the chosen one, else the smallest that fits (0 when none). */
+export const shownLitres = (plan: Plan) => plan.tank ? plan.litres : plan.need ? litresOf(plan.need.tank) : 0;
 
 const FAIL_TEXT: Record<string, string> = {
   filtration: 'No filter can carry this many animals; take fewer',

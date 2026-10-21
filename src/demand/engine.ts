@@ -6,6 +6,7 @@ import { getSpecies, type Species } from '../data/species';
 import factorsJson from '../data/factors.json';
 import dj from '../data/demand-defaults.json';
 import { groupShort, hasCorals, whyAnimal } from '../scene/animalfit';
+import { grazerShort } from '../data/grazers';
 import { itemLights } from '../scene/lightcheck';
 import { NEEDS, isCoralNeed, isLand, parRange, type PlantNeed } from '../scene/lightneeds';
 import { wattsOf } from '../scene/lightout';
@@ -172,6 +173,8 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
     if (why) { raw += DEFAULTS.risk.animalWarnPts[why.kind]; const w = `${sp.name}: ${why.text}`; if (!warnings.includes(w)) warnings.push(w); }
     const few = groupShort(sp, nOf(sp.id));
     if (few) { const w = `${sp.name}: ${few}`; if (!warnings.includes(w)) { warnings.push(w); raw += DEFAULTS.risk.animalWarnPts.group; } } // once per species
+    const hungry = wet ? grazerShort(sp.id, nOf(sp.id), litres) : null; // more grazers than the algae feeds (data/grazers.ts)
+    if (hungry) { const w = `${sp.name}: ${hungry}`; if (!warnings.includes(w)) { warnings.push(w); raw += DEFAULTS.risk.animalWarnPts.group; } }
     add(`animal:${sp.id}`, sp.name, 'animal', {
       setup: price(scale3(rowPrice(`animal:${sp.id}`) ?? pick(u.setup), Math.pow(tl / (rowPrice(`animal:${sp.id}`) ? sp.tl : u.refMm), 1.2))), upkeep: scale3(pick(u.upkeep), Math.pow(tl / u.refMm, 0.8) * sMul.upkeep), minutes: r3(u.mins * sMul.minutes),
       livestock: true, domain: adom, risk: raw * skillMul(P, adom),

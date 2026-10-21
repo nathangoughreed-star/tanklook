@@ -174,6 +174,7 @@ for (const [id, r] of Object.entries(FILTER_MEDIA_L)) if (r[1] === 'derived')
   RULES.FILTER_MEDIA.push({ path: `${id}.0`, status: 'derived', src: ['product-pages'], why: `${r[2]} (about +-50 %)` });
 
 export const FORMULAS: Formula[] = [
+  { file: 'src/data/grazers.ts', symbols: ['GRAZE'], status: 'cited', src: ['topshelfaquatics.com', 'aquariuminfo.org', 'furrycritter.com', 'fishkeepingworld.com'], why: 'grazers per tank: the most generous stocking guideline an opened page states (turbo 3 per 20 gal, nerite 1 per 5 gal, oto 6 in a 20 gal, amano 1 per 2 gal) and the feeding it names; quotes checked (research/sourcing/R5-grazers.json)' },
   // stocking engine
   { file: 'src/scene/stocking.ts', symbols: ['Q10', 'T_REF'], status: 'claimed', src: ['metabolic-scaling'], why: 'waste doubles about every 10 K, 25 C reference; no fish paper recorded' },
   { file: 'src/scene/stocking.ts', symbols: ['massG'], status: 'derived', src: ['fishbase-lw-bayes'], why: 'FishBase length-weight: mass g = a (tl cm)^b' },
