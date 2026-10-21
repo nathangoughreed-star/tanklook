@@ -8,6 +8,7 @@ import { DEFAULT_DENS, EPIPHYTES, STYLES, STYLE_KIND, clampItem, isLandStyle, is
 import { CARE } from '../data/care';
 import { volume } from './physics';
 import { hasCorals, whyAnimal } from './animalfit';
+import { minFit } from './tankMin';
 import { groundEdited } from './scapeground';
 import { placeNew, randomPose, randomSize } from './scatter';
 import type { Fish, Item, LayoutId, TankSetup } from './types';
@@ -75,7 +76,7 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
   for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
   if (s.layout.gateStock) { // stock by the care gates (Quick Setup): only animals that suit the care level, the tank and each other
     const ex = s.layout.expertise ?? 1, litres = volume(T).litres, kept: Species[] = [];
-    for (const sp of pool) if (!whyAnimal(sp, litres, ex, kept, { corals: hasCorals(s.items) })) kept.push(sp);
+    for (const sp of pool) if (!whyAnimal(sp, litres, ex, kept, { corals: hasCorals(s.items), fit: minFit(s) })) kept.push(sp);
     pool.splice(0, pool.length, ...kept);
   }
   const cap = bioloadLitres(s) * ANIMAL_FILL[4];

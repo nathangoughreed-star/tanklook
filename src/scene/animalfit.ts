@@ -3,6 +3,9 @@
 import { CARE, EXPERTISE_NAME, type Expertise } from '../data/care';
 import type { Species } from '../data/species';
 
+/** A species' smallest tank is allowed 10 % slack (a 5 gal, 19 L, takes a 20 L species); shared by the animal gate, the tank-fit engine and the hard truths. */
+export const MIN_SLACK_PCT = 100 / 0.9;
+
 export interface AnimalWhy { kind: 'expertise' | 'size' | 'compat'; text: string }
 /** Do two species share space? A land animal and a water-only one never meet: they cannot be kept together, so whyAnimal gates the pair. */
 const meet = (a: Species, b: Species) => !((a.habitat === 'land' && b.habitat === 'water') || (a.habitat === 'water' && b.habitat === 'land'));
@@ -10,14 +13,15 @@ const meet = (a: Species, b: Species) => !((a.habitat === 'land' && b.habitat ==
 const shared = (a: [number, number], b: [number, number]) => Math.min(a[1], b[1]) - Math.max(a[0], b[0]);
 const band = (r: [number, number], d = 0) => `${r[0].toFixed(d)}-${r[1].toFixed(d)}`;
 /** The tank around the animal: `corals`: any coral in it (not macroalgae or the anemone). */
-export interface AnimalEnv { corals?: boolean; /** no heater (lane TM): the water stays at this room temperature, deg C */ unheatedC?: number }
+export interface AnimalEnv { /** the tank's own answer (tankMin.ts minFit): size is judged by floor area, length and water, not litres alone; absent = litres only */ fit?: (sp: Species) => { pct: number; reason: string }; corals?: boolean; /** no heater (lane TM): the water stays at this room temperature, deg C */ unheatedC?: number }
 
 /** `litres`: the tank's volume; `present`: the species already stocked (one entry per species). */
 export function whyAnimal(sp: Species, litres: number, expertise: Expertise, present: Species[], env: AnimalEnv = {}): AnimalWhy | null {
   const c = CARE[sp.id];
   if (!c) return null;
   if (c.care > expertise) return { kind: 'expertise', text: `expertise: ${EXPERTISE_NAME[c.care].toLowerCase()} animal, you chose ${EXPERTISE_NAME[expertise].toLowerCase()}` };
-  if (litres < c.minL) return { kind: 'size', text: `tank size: wants at least ${c.minL} L, this tank is ${Math.round(litres)} L` };
+  if (env.fit) { const m = env.fit(sp); if (m.pct > MIN_SLACK_PCT) return { kind: 'size', text: `tank size: ${m.reason}` }; }
+  else if (litres < c.minL) return { kind: 'size', text: `tank size: wants at least ${c.minL} L, this tank is ${Math.round(litres)} L` };
   if (env.unheatedC !== undefined && c.temp && (env.unheatedC < c.temp[0] || env.unheatedC > c.temp[1])) return { kind: 'compat', text: `water temperature: wants ${c.temp[0]}-${c.temp[1]} C, no heater in a ${env.unheatedC} C room` }; // lane TM
   if (c.coral && env.corals) return { kind: 'compat', text: c.coral === 2 ? 'compatibility: eats corals, not for a reef tank' : 'compatibility: may nip the corals, add with caution' };
   for (const o of present) {

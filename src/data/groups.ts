@@ -17,6 +17,10 @@ export interface GroupCare {
   zone?: 'bottom' | 'middle' | 'top' | 'all';
   /** shortest tank length for this species, mm */
   minLengthMm?: number;
+  /** shortest front-to-back for this species, mm (large or fast bodies need turning room; a long, shallow tank is not the same as a wide one) */
+  minWidthMm?: number;
+  /** smallest floor area, cm2, where the source gives a footprint that allows an equivalent shape (120 x 30 cm = 3600): replaces the area estimated from litres */
+  minAreaCm2?: number;
   /** What keepers like about it, to rank swaps. JUDGEMENT tags, not sourced facts (PX 2026-10-20: the 29 commonly kept species were
    *  sharpened; the rest are still the coarse P1 tags). Meanings: shoal = a tight school is the display; colour; showpiece = centrepiece;
    *  personality = bold, interactive; active; peaceful = safe in a community; easy = forgiving for beginners; hands-on = needs a skilled
@@ -60,7 +64,7 @@ export const GROUPS: Record<string, GroupCare> = {
   guppy: { bands: { ok: 3, good: 5, great: 8 }, msg: { avoid: 'A lone guppy is stressed; males also harass lone females', ok: 'Keep more females than males' }, max: 12, sexed: { ratio: [1, 2], note: '1 male to 2-3 females; males chase females nonstop. Mixed groups breed fast' }, flow: 'low', zone: 'top', minLengthMm: 450, appeal: ['livebearer', 'colour', 'finnage', 'easy'] },
   platy: { bands: { ok: 3, good: 4, great: 6 }, msg: { avoid: 'Singles do poorly; keep a small group', ok: 'Keep more females than males', great: 'Groups of 7+ may fight; keep sexes balanced' }, max: 10, sexed: { ratio: [1, 3], note: '3 females per male; males harass females when outnumbered' }, flow: 'low', zone: 'middle', minLengthMm: 600, appeal: ['livebearer', 'colour', 'easy'] },
   molly: { bands: { ok: 3, good: 4, great: 6 }, msg: { avoid: 'A lone molly or a male with one female gets harassed; keep 1 male : 2-3 females' }, max: 12, sexed: { ratio: [1, 3], note: 'Keep more females than males so one female is not hounded' }, flow: 'medium', zone: 'middle', minLengthMm: 750, appeal: ['livebearer', 'colour', 'easy'] },
-  swordtail: { bands: { ok: 3, good: 4, great: 6 }, msg: { avoid: 'Males chase females hard; keep 1 male : 3 females' }, max: 10, sexed: { ratio: [1, 3], note: 'One male to several females disperses harassment; avoid several males' }, flow: 'medium', zone: 'top', minLengthMm: 800, appeal: ['colour', 'easy', 'personality', 'shoal'] },
+  swordtail: { bands: { ok: 3, good: 4, great: 6 }, msg: { avoid: 'Males chase females hard; keep 1 male : 3 females' }, max: 10, sexed: { ratio: [1, 3], note: 'One male to several females disperses harassment; avoid several males' }, flow: 'medium', zone: 'top', minLengthMm: 800, minAreaCm2: 3600, appeal: ['colour', 'easy', 'personality', 'shoal'] },
   betta: { bands: { ok: 1, good: 1, great: 1 }, msg: { ok: 'Keep one male per tank; males fight to the death' }, max: 1, flow: 'low', zone: 'top', minLengthMm: 300, appeal: ['finnage', 'showpiece', 'colour', 'personality', 'hands-on'] },
   dwarfgourami: { bands: { ok: 1, good: 1, great: 1 }, msg: { ok: 'One male alone is safest; a pair needs plants to break sight lines' }, max: 1, flow: 'low', zone: 'top', minLengthMm: 600, appeal: ['showpiece', 'colour', 'peaceful'] },
   honeygourami: { bands: { ok: 1, good: 2, great: 4 }, msg: { ok: 'Peaceful; fine alone but happier as a pair or small group' }, max: 6, flow: 'low', zone: 'top', minLengthMm: 450, appeal: ['easy', 'colour', 'personality'] },

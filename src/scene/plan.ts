@@ -2,7 +2,6 @@
 // from the stocking engine, hard truths from the care gates), what to buy with each item tied to the need it serves (an item no need asks for
 // is flagged, a need with nothing on the list is flagged), the totals (the demand model's one number each) and the sales that fit.
 // Pure; src/ui/planSheet.ts draws it and writes the text. It READS stocking, tankfit, tech, the care gates and the demand model.
-import { CARE } from '../data/care';
 import { getSpecies } from '../data/species';
 import type { Contribution, Demand } from '../demand/types';
 import { mean3 } from '../demand/range';
@@ -15,6 +14,7 @@ import { countsAgainstWater, stockingOf } from './stocking';
 import { ROOM_C, tempFit } from './tech';
 import { needsOf, tankLabel, type AnimalCount } from './tankfit';
 import { volume } from './physics';
+import { minFit } from './tankMin';
 import { tankWeight } from './weight';
 import type { TankSetup } from './types';
 
@@ -62,11 +62,9 @@ export function hardTruths(S: TankSetup, animals: AnimalCount[], heater: boolean
   const sp = animals.flatMap(a => { const s = getSpecies(a.species); return s && a.n > 0 ? [s] : []; });
   const litres = volume(S.tank).litres, n = needsOf(animals), salt = S.water.on && !!S.water.salt;
   for (const s of sp) {
-    const why = whyAnimal(s, litres, 3, sp.filter(o => o !== s), { corals: S.items.some(it => it.kind === 'coral' && it.variant !== 'macroalgae' && it.variant !== 'anemone') });
-    // the tank-fit engine allows 10 % slack on a species' smallest tank (a 5 gal, 19 L, takes a 20 L species), so the sheet does too
-    if (why && !(why.kind === 'size' && litres >= (CARE[s.id]?.minL ?? 0) * 0.9)) out.push({ text: `${s.name}: ${why.text}`, level: 'bad' });
+    const why = whyAnimal(s, litres, 3, sp.filter(o => o !== s), { corals: S.items.some(it => it.kind === 'coral' && it.variant !== 'macroalgae' && it.variant !== 'anemone'), fit: minFit(S) });
+    if (why) out.push({ text: `${s.name}: ${why.text}`, level: 'bad' }); // size is judged by tankMin (floor area, length, water), with its 10 % slack
   }
-  if (n.minLengthMm && S.tank.L < n.minLengthMm) out.push({ text: `Some of your animals want a tank at least ${Math.round(n.minLengthMm / 10)} cm long; this one is ${Math.round(S.tank.L / 10)} cm`, level: 'bad' });
   if (Number.isFinite(n.maxDepthMm) && S.tank.H * S.water.level > n.maxDepthMm) out.push({ text: `Some of your animals need shallow water (${Math.round(n.maxDepthMm / 10)} cm at most); this tank's water is ${Math.round(S.tank.H * S.water.level / 10)} cm deep`, level: 'bad' });
   if (!heater && !salt) for (const s of sp.filter(x => countsAgainstWater(x))) if (tempFit(s.id, ROOM_C) === 'out') out.push({ text: `${s.name} is too cold at room temperature (${ROOM_C} C) and the tank has no heater`, level: 'bad' });
   const longFinned = finSensitiveNames(animals);

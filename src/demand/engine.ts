@@ -14,6 +14,7 @@ import { growRate } from '../scene/growtime';
 import { LIBRARY } from '../scene/items';
 import { outcomeOf } from '../scene/plantfit';
 import { volume } from '../scene/physics';
+import { minFit } from '../scene/tankMin';
 import { tankSaleFor } from '../data/tanks';
 import { groundVolume, pieceKg } from '../scene/setupsheet';
 import { standAsked, type TankSetup } from '../scene/types';
@@ -156,7 +157,7 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   // ---- animals
   const present: Species[] = [];
   for (const a of animals) if (!present.includes(a.sp)) present.push(a.sp);
-  const adom = domOf('animal'), env = { corals: hasCorals(S.items) }, nOf = (id: string) => animals.filter(a => a.sp.id === id).length;
+  const adom = domOf('animal'), env = { corals: hasCorals(S.items), fit: minFit(S) }, nOf = (id: string) => animals.filter(a => a.sp.id === id).length;
   for (const { f, sp } of animals) {
     const u = (DEFAULTS.animals as unknown as Record<string, typeof DEFAULTS.animals["fw-fish"]>)[sp.cat];
     if (!u) continue;

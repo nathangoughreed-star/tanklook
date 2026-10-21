@@ -20,7 +20,7 @@ practice rather than quoted from the source. Researched by Sonnet agents with we
 - **guppy** (Guppy): https://www.aquariadise.com/how-many-guppies-in-a-10-gallon-tank/ (est). Note: No existing app data for guppy; band numbers are judgement from stocking guides
 - **platy** (Platy): https://petfishonline.com/how-many-platies/ (est). Note: No existing app data for platy; judgement from guides (disagree: 3-6 vs 6+/12+)
 - **molly** (Black molly): https://aquariadise.com/caresheet-molly-fish/ (est). Note: Sources vary (min 3 harem to 6+ group); Seriously Fish page not found
-- **swordtail** (Swordtail): https://guidarium.com/fishes/swordtail (est).
+- **swordtail** (Swordtail): https://www.seriouslyfish.com/species/xiphophorus-hellerii/. (floor area 3600 cm2: "120 x 30 cm or equivalent" is the smallest considered; length 80 cm is FishBase's minimum)
 - **betta** (Betta): https://guidarium.com/fishes/betta-siamese-fighting-fish. Note: Sorority groups of females (5+) exist but are advanced; modelled as solo
 - **dwarfgourami** (Dwarf gourami): https://guidarium.com/fishes/dwarf-gourami (est). Note: CARE.solo wins: one per tank; researched group numbers dropped.
 - **honeygourami** (Honey gourami): https://guidarium.com/fishes/honey-gourami (est).

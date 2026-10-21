@@ -20,6 +20,7 @@ import { gearShown, setGearShown } from '../render/gear3d';
 import { MAP_DIV, MAP_STEP, emitters, mapStepOf } from '../render/lighting';
 import { darkOf, darkStats } from '../render/lightShells';
 import { hasCorals, whyAnimal, type AnimalWhy } from '../scene/animalfit';
+import { minFit } from '../scene/tankMin';
 import { EXPERTISE_NAME } from '../data/care';
 import { CARE_NAME, FIT_PAR, fitCaption, whyNot, type FitLight } from '../scene/plantfit';
 import { itemLights, tankSummary } from '../scene/lightcheck';
@@ -652,7 +653,7 @@ Cancel, then change the name, to keep both.`)) return;
     hint.hidden = !on; hint.textContent = on ? 'Grayed in the list: does not suit this tank, the care level or the animals already in it. They can still be added.' : '';
     if (!on) return null;
     const litres = volume(s.tank).litres, present = [...new Set(s.fish.map(f => f.species))].map(getSpecies).filter((x): x is Species => !!x);
-    const env = { corals: hasCorals(s.items), unheatedC: unheatedC(s) }; // lane TM: no heater = the room's temperature
+    const env = { corals: hasCorals(s.items), unheatedC: unheatedC(s), fit: minFit(s) }; // lane TM: no heater = the room's temperature
     return sp => whyAnimal(sp, litres, ex, present, env);
   }
   $('gateAnimals').onchange = e => store.edit(s => { if ((e.target as HTMLInputElement).checked) s.layout.gateAnimals = true; else delete s.layout.gateAnimals; });

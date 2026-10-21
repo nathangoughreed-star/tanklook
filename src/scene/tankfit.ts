@@ -14,6 +14,7 @@ import { defaultProfile, demandOf, type DemandOpts } from '../demand';
 import { bareSetup } from './defaults';
 import { volume } from './physics';
 import { countsAgainstWater, stockingOf } from './stocking';
+import { MIN_SLACK_PCT } from './animalfit';
 import { tankMinimum } from './tankMin';
 import { applyPreset, optionCost, PRESETS, ROOM_C, rowsFor, stockCapacity, tempFit, withChoice } from './tech';
 import type { Fish, TankSetup } from './types';
@@ -139,7 +140,7 @@ function fitOf(c: Candidate, animals: AnimalCount[], needs: Needs): Fit {
   // the balanced build already takes the strongest catalogue filter when none keeps it at 70 %: still over 100 % means no filter can carry this stocking here
   if (r.filtrationPercent > 100) fails.push('filtration');
   const tm = tankMinimum(S);
-  if (tm.percent > 100 / 0.9) fails.push('minimum'); // the Fullness bar's own measure (floor area, length, water by kind of animal); 10 % slack: a 10 gal (38 L) takes a 40 L species
+  if (tm.percent > MIN_SLACK_PCT) fails.push('minimum'); // the Fullness bar's own measure (floor area, length, water by kind of animal); 10 % slack: a 10 gal (38 L) takes a 40 L species
   if (c.T.L < needs.minLengthMm) fails.push('length');
   if (c.T.H * WATER_LEVEL > needs.maxDepthMm) fails.push('depth');
   const floor = c.T.L * c.T.D / 100; // mm2 -> cm2
