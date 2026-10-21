@@ -45,6 +45,11 @@ models on /review.html (and its drawImage error), TG leftovers (heater product p
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
+## Product review (2026-10-21, external review doc + follow-up, relayed by Nathan; design chat local_eda2d645)
+- Accepted: severity separate from confidence; every consequential rule carries evidence (what the source says) apart from TankLook's interpretation / derived number / conservative default; "unknown" when inputs are missing; one assessment per setup in every path; user locks never relaxed silently; benchmark cases with reviewed expected verdicts, some held out of calibration (AqAdvisor fit = agreement, not correctness).
+- Path 1 changes pending (not started): sex = male / female / unsexed and pairing = established / unconfirmed / unknown as separate inputs; group thresholds reviewed WITH their wording (5+ = "social need met; the tank now limits"); builds converge when not genuinely different (today always three); first-year cost beside setup cost, no winner inside the uncertainty; optional spending-ceiling lock + "I don't know yet" (one expected number stays); workload as daily / weekly / occasional; owner path judges the change AND the result; "plants never add room" = aquatic water volume and floor only.
+- Build order (agreed): dogfood path 1 -> rules spec (draft: research/rules-spec.md) and benchmark run -> owner what-if -> look first -> newcomer. Kept: "AI-proof" as the internal test, "a better tank decision" as the promise.
+
 
 ## Animal-first: no tank until the user picks one (2026-10-21, branch `nt`; Nathan's request)
 - **Decision (Nathan 2026-10-21), replaces the 2026-10-20 "the tool picks a tank" refinement:** at the start the tool selects no tank. The
