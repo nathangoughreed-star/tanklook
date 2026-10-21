@@ -1,10 +1,11 @@
-You are lane <ID: the coordinator assigns it and sets the title "<ID>: Source Combining"; never rename the chat>. Work in your own
-worktree: from "C:\Users\nreed\Glass Box" run git fetch origin; git worktree add ".claude/worktrees/<id>" -b <id> origin/main; then work
+You are lane CB: Source Combining (Coordinator 7, local_c5a46899-38c9-4c95-9310-9f70ff941a97, assigned this ID; never rename the chat). Work in your own
+worktree: from "C:\Users\nreed\Glass Box" run git fetch origin; git worktree add ".claude/worktrees/cb" -b cb origin/main; then work
 only in that worktree. If this file is missing there, git show origin/main:prompts/lane-source-combine.md. Reply in US units (gal, in,
 deg F) with metric in brackets where the data is metric.
 
 Read first: HANDOFF.md "Start here" (lane rules; run `npm run build` before EVERY push) and the "Source traceability" section (chat
 S168's entries are the latest); research/sourcing/decisions.md; src/data/provenance.ts (the per-value batch loader: verdicts agrees /
+COLLISION RULE (Coordinator 7): lane MM (local_a6c62452-7e37-4135-91e5-e598ab736ba2) owns src/scene/tankMin.ts and the tank-minimum data until it reports done. Build the script and combined.md now, but apply nothing to tankMin.ts or the tank-minimum fields until the coordinator tells you MM has landed; then rebase on origin/main first.
 derived / kept, `use`, `decision`); src/scene/tankMin.ts (TIERS floor / comfort, MIN_WEIGHTS vol / area / run); src/data/sources.json
 (each site's `kind`).
 
