@@ -171,7 +171,7 @@ export function scapeSetup(build: Build, style: Exclude<LayoutId, 'none'>, mode:
   styleGround(S);
   regenerate(S, 'all', 0);
   const silk = finSensitive(build.animals), T = withPlantMode(S, mode, silk);
-  shuffleFish(T, rng(11 + style.length * 17 + T.fish.length), undefined, 92);
+  shuffleFish(T, rng(11 + style.length * 17 + T.fish.length), undefined, 100);
   return T;
 }
 
