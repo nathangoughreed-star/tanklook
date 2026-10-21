@@ -7,13 +7,17 @@ Read first: HANDOFF.md "Start here" (lane rules; run `npm run build` before EVER
 "Lane MA", "Lane MX"; research/tank-minimum-first-principles.md (the "Decisions" are binding); research/space-audit.md,
 research/clearance-sweep.md, research/tank-minimum-sources.md; research/sourcing/decisions.md (proposals MX1-MX9 and Nathan's answers).
 
-Precondition: Nathan answers MX1-MX9 in chat MX (local_8f720fdf). Check decisions.md first. Anything still unanswered: do not load
-those numbers if they flip a pass / fail; list them and ask Nathan in this chat.
+Nathan DECIDED MX1-MX9 (2026-10-21, MX pushed 00853f0). His rule: RED = minimum (below it the bar is red and the species fails);
+GREEN = Recommended (at or above it the bar is green); between = YELLOW, allowed. Red = the lowest well-supported figure (when fewer
+than two pages state geometry, gallon figures also compete, turned into the smallest catalogue tank holding them, derived (est)).
+Green = the strictest credible geometry. Never averaged. Data: research/sourcing/tank-minimum/summary.json species.<id>.lines (red,
+green, heightRed, heightGreen, depth, why); field list in research/tank-minimum-sources.md "For lane MM".
 
 Scope (work unit 3 of 3: make the code follow the Decisions; src/scene/tankMin.ts is yours):
-1. Load research/sourcing/tank-minimum/summary.json into the species data (via scripts/tank-min-sources.mjs or a generated data file):
-   kind `min` + mark sourced = required; `rec` / `recommended` = the optional Recommended mark; `derived (est)` = derived; `advisory`
-   never fails. Each value carries its provenance (src/data/provenance.ts; test/sources.test.ts ratchet must stay green).
+1. Load summary.json species.<id>.lines into the species data (via scripts/tank-min-sources.mjs or a generated data file): `red`
+   per measure is the minimum (fails below), `green` the Recommended mark, `heightRed` / `heightGreen` / `depth` per the field list,
+   `why` the reason text; keep sourced vs derived (est) vs advisory on each value. Each value carries its provenance
+   (src/data/provenance.ts; test/sources.test.ts ratchet must stay green). The bar colours follow Nathan's red / yellow / green rule.
 2. Turn MA's `it.fails` into plain passing tests (test/minimum.test.ts), per HANDOFF "Lane MA" items 1-5:
    water never fails a species on its own (volume = advisory note + difficulty); the mystery snail's 5 gal becomes its Recommended mark;
    a floor area DERIVED from litres never silently fails a swimmer; bottom dwellers are held to a stated (sourced) length; the kuhli
@@ -23,7 +27,7 @@ Scope (work unit 3 of 3: make the code follow the Decisions; src/scene/tankMin.t
    as a labelled fallback. ADF max depth 24 in = advisory with the count picker.
 4. Ball python (MA item 6): it passes no catalogue terrarium today because floor area is estimated from 450 L over 19.7 in of "water".
    Land animals must use their sourced footprint, never a litres-derived one.
-5. Wording: "Recommended" mark (never "comfortable"); the amber note becomes "below the recommended size"; a derived failure reads
+5. Wording: "Recommended" mark (never "comfortable"); the yellow band reads "below the recommended size" (allowed); a derived failure reads
    differently from a sourced one ("estimated from a gallon figure"). AqAdvisor shape stays: say nothing when every species has its minimum.
 Out of scope: the Space bar's habitat model (MA item 7: needs evidence-backed coefficients; note it as a gap); nitrogen / water-change
 code (lane NB owns nitrogen.ts and the water-change lines of stocking.ts; chat S187 is changing snails' Space in stocking.ts).
