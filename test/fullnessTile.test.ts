@@ -196,3 +196,30 @@ describe('tank minimum warnings (binary, AqAdvisor style)', () => {
     }
   });
 });
+
+// Filter gate (lane NB for Nathan 2026-10-21): no Filtration bar until the owner has a filter, or ticks "no filter" (Walstad).
+import { filterCapacity } from '../src/scene/nitrogen';
+import { filterState, setFilterless, withChoice as choose } from '../src/scene/tech';
+describe('filter gate', () => {
+  const tank = () => { const s = withFish(); delete s.tech; return s; };
+  it('inferred gear is unset: the pill and the reason come from space alone', () => {
+    const s = tank(), r = stockingOf(s), st = tileState(s, r);
+    expect(filterState(s)).toBe('unset'); expect(st.filter).toBe('unset');
+    expect(st.head.pct).toBeCloseTo(r.spacePercent, 9); expect(st.reason).not.toMatch(/filter/i);
+  });
+  it('set to none by a kit or the Tech menu, without the box: still unset', () => {
+    const s = tank(); s.tech = choose(s, 'filter', 'none');
+    expect(filterState(s)).toBe('unset');
+  });
+  it('a chosen filter is chosen, as today', () => {
+    const s = tank(); s.tech = choose(s, 'filter', 'hob');
+    expect(filterState(s)).toBe('chosen'); expect(tileState(s, stockingOf(s)).head.pct).toBeCloseTo(stockingOf(s).percent, 9);
+  });
+  it('ticked: filterless, the other rows stay inferred, the budget is the surface bacteria alone; unticked: back to unset', () => {
+    const s = tank(); setFilterless(s, true);
+    expect(filterState(s)).toBe('filterless'); expect(Object.keys(s.tech!.rows)).toEqual(['filter']); expect(s.tech!.filters).toEqual([]);
+    const r = stockingOf(s), litres = r.capacity.litres, bare = filterCapacity({ ...s, tech: { rows: { filter: 'none' } } }, litres, r.capacity.tempC);
+    expect(r.nitrogen.filter.kind).toBe('none'); expect(r.nitrogen.filterG).toBeCloseTo(bare.gDay, 12); expect(r.nitrogen.filter.mediaL).toBe(0);
+    setFilterless(s, false); expect(filterState(s)).toBe('unset');
+  });
+});

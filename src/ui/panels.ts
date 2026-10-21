@@ -4,7 +4,7 @@ import { FOCUS_SECS, type FocusSec } from '../render/menuFocus';
 import { attachDemandPanel } from './demandPanel';
 import { fitToLimits, hasLimits } from '../demand/fit';
 import { attachTechMenu } from './techMenu';
-import { unheatedC } from '../scene/tech';
+import { filterState, unheatedC } from '../scene/tech';
 import { renderFeaturedDeals } from './featuredDeals';
 import { startDeals, visibleTabs, pickTab, sortDeals, DEFAULT_SORT, type DealSort, type StartTab, type StartMenu } from './startEntries';
 import { DEALS_AS_OF, DEAL_NOTE, NOT_SPONSORED } from '../data/deals';
@@ -56,6 +56,7 @@ import { placeNew, randomPose, randomSize, shuffleFish } from '../scene/scatter'
 import { fitFish, keepInWater, setWaterLevel } from '../scene/water';
 import { tankWeight } from '../scene/weight';
 import { stockingDetail, stockingLine, stockingMemo } from '../scene/stocking';
+import { waterChangeText } from './fullnessTile';
 import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, aqWaitS, fetchAqHealth, fetchStocking, type AqHealth } from '../data/aqadvisor';
 import { BOWL_DEFAULT, BOWL_MAX, BOWL_MIN, PIE_DEFAULT, POLY_SIDES, SHAPES, bowMinLimit, offsetRing, ringArea, shapeOf } from '../scene/shape';
 import { TABLE_MAX, tableOn, tableRange, wallGap } from '../scene/table';
@@ -1750,10 +1751,16 @@ Cancel, then change the name, to keep both.`)) return;
     const seg = [['Plants', n.split.plants, '#3a9a5c'], ['Water changes', n.split.waterChanges, '#c9a227'], ['Ammonia the filter cannot clear', n.split.unprocessed, '#c0443c']] as const;
     $('stkBar').innerHTML = seg.map(([l, v, c]) => `<span title="${l} ${Math.round(v * 100)}%" style="width:${(v * 100).toFixed(1)}%;background:${c}"></span>`).join('');
     $('stkLegend').innerHTML = seg.map(([l, v, c]) => `<span><i style="background:${c}"></i>${l} ${Math.round(v * 100)}%</span>`).join('');
-    const f = n.filter, mg = n.nitrateMgNPerWeek;
-    $('stkVerdict').innerHTML = esc(`Ammonia safety ${n.ammoniaPercent === Infinity ? 'over 999' : Math.round(n.ammoniaPercent)}% of what the filter can safely clear (${f.label}${f.mediaL ? `, about ${f.mediaL.toFixed(1)} L of media, ${f.src}` : ''}).`)
-      + ' ' + esc(n.waterChangePct < 5 ? 'Plants and the filter leave almost no nitrate to remove.' : `Nitrate rises about ${mg.toFixed(1)} mg N/L a week: a water change of about ${Math.round(n.waterChangePct)}% a week holds it near 40 ppm.`)
-      + ` <span class="dim">${esc(`Waste ${n.tan.toFixed(2)} g ammonia (TAN) a day, plants take up to ${n.plants.gN.toFixed(2)} g N a day. Estimates: waste good to about 2x, plant uptake extrapolated, hang-on-back media derived.`)}</span>`;
+    const f = n.filter, mg = n.nitrateMgNPerWeek, wc = waterChangeText(n), tap = $('stkTap') as HTMLInputElement;
+    if (document.activeElement !== tap) tap.value = S().water.tapNitrate ? String(S().water.tapNitrate) : '';
+    const unset = filterState(S()) === 'unset';
+    $('stkBar').hidden = unset; $('stkLegend').hidden = unset;
+    if (unset) { $('stkVerdict').textContent = 'This tank needs a filter: add one in Tech › Filtration, or tick "No filter" in the Fullness tile for a filterless (Walstad style) tank.'; return; }
+    const pct = (p: number) => p === Infinity ? 'over 999' : String(Math.round(p));
+    $('stkVerdict').innerHTML = esc(`Ammonia safety ${pct(n.ammoniaPercent)}% of what the filter can safely clear (${f.label}${f.mediaL ? `, about ${f.mediaL.toFixed(1)} L of media, ${f.src}` : ''})`
+      + (n.plants.count && n.byPlants > 0 ? `; ${pct(n.plantFreeAmmoniaPercent)}% without the plants.` : '.'))
+      + ' ' + esc(`Nitrate rises about ${mg.toFixed(1)} mg N/L a week. Nitrate-only water change: ${wc.value}; ${wc.note}.`)
+      + ` <span class="dim">${esc(`Waste ${(n.tan * 1000).toFixed(0)} mg N a day as ammonia (TAN), plants take up to ${(n.plants.gN * 1000).toFixed(0)} mg N a day. Cycle a new filter first (about 4-6 weeks). Estimates: waste good to about 2x, plant uptake extrapolated, hang-on-back media derived.`)}</span>`;
   }
   function syncAq() {
     syncStocking();
@@ -1799,6 +1806,7 @@ Cancel, then change the name, to keep both.`)) return;
     }
     aqQueued.delete(key); aqBusy.delete(key); syncAq(); viewer.invalidate();
   };
+  ($('stkTap') as HTMLInputElement).onchange = e => { const v = parseFloat((e.target as HTMLInputElement).value); store.edit(s => { s.water.tapNitrate = v > 0 ? v : undefined; }); };
   ($('stkFeed') as HTMLSelectElement).onchange = e => { const v = (e.target as HTMLSelectElement).value as 'light' | 'normal' | 'heavy'; store.edit(s => { s.feeding = v === 'normal' ? undefined : v; }); };
   $('aqCheck').onclick = () => aqCheck(S());
 

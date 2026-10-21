@@ -16,7 +16,13 @@
 //             out. Root tabs feed the substrate, not the water. When the animals already cover what the plants take, a fert
 //             without nitrogen (potassium, iron, trace) does the job.
 // Two verdicts: AMMONIA SAFETY = (TAN the plants do not take) / 70 % of the filter's capacity (30 % headroom); NITRATE BURDEN = what no
-// plant takes, as the water change per week that holds nitrate at about 40 ppm.
+// plant takes, as the water change per week that holds nitrate at about 40 ppm. Units: g (or mg) of NITROGEN throughout, TAN and nitrate
+// alike (9 mg N/L = 40 ppm as NO3; 1 ppm NO3 = 0.226 mg N/L).
+// WATER CHANGE (lane NB 2026-10-21, research/tank-minimum-first-principles.md Decision 2): steady state of weekly dilution, nitrate
+// held at target T with tap water at C: changed share = rise per week / (T - C). Nitrate only: hardness, organics and phosphate are why the
+// routine floor (10 %, scene/stocking.ts) applies on top. Three states: (a) routine, one change of at most 50 %; (b) high maintenance,
+// over 50 %: the uncapped figure shown, split into two changes a week (linear, the steady-state model; e.g. 2 x 30 % = 60 %) or less stock;
+// (c) environmental failure: tap nitrate at or above the target (no change can lower it), or more than two 50 % changes a week.
 import { FILTER_MEDIA_L, MEDIA_L_PER_GPH, SPONGE_L_PER_GAL } from '../data/filtermedia';
 import type { Species } from '../data/species';
 import { LIBRARY } from './items';
@@ -126,8 +132,14 @@ export interface Nitrogen {
   byPlants: number; byBacteria: number; unprocessed: number;
   /** ammonia safety, percent of the safe load (100 = at the headroom line) */
   ammoniaPercent: number;
-  /** nitrate: mg N per litre per week left after plants, and the weekly water change that holds about 40 ppm nitrate (9 mg N/L) */
+  /** nitrate: mg N per litre per week left after plants, and the weekly water change that holds about 40 ppm nitrate (9 mg N/L);
+   *  waterChangePct is the nitrate-only figure (with the tap water's nitrate), held to 100 for the schedule; waterChange has the state */
   nitrateMgNPerWeek: number; waterChangePct: number;
+  waterChange: WaterChange;
+  /** of the TAN the bacteria convert, g N a day the plants then take as nitrate */
+  nitrateByPlants: number;
+  /** ammonia safety with no plants: all the animals' TAN on the filter (a new tank before the plants grow in) */
+  plantFreeAmmoniaPercent: number;
   /** water-column fertilizer: its option, g N a day it adds, what plants take of it, what ends as nitrate */
   fert: { option: string; gN: number; toPlants: number; toNitrate: number };
   /** g N a day the plants could still take after the animals' nitrogen and the fert (an N fert or more animals would feed it) */
@@ -138,7 +150,32 @@ export interface Nitrogen {
   split: { plants: number; waterChanges: number; unprocessed: number };
 }
 
-const NITRATE_TARGET_N = 9;
+export const NITRATE_TARGET_N = 9;
+/** ppm as NO3 -> mg N per litre */
+export const NO3_TO_N = 14.007 / 62.004;
+/** One water change past this share is high maintenance (Decision 2 state b); two of them a week is the most the schedule plans. */
+export const ONE_CHANGE_MAX = 50, CHANGES_MAX = 2;
+export type WaterChangeState = 'routine' | 'high' | 'failure';
+export interface WaterChange {
+  state: WaterChangeState;
+  /** nitrate-only weekly share, uncapped (Infinity when tap nitrate is at or above the target) */
+  uncappedPct: number;
+  /** how the week's share is split: one change, or two smaller ones */
+  changes: number; perChangePct: number;
+  /** tap (source) nitrate, mg N/L, and why a failure is one */
+  tapMgN: number; why?: 'tap' | 'too-much';
+}
+/** Decision 2's three states from the weekly nitrate rise (mg N/L) and the tap water's nitrate (mg N/L). */
+export function waterChangeState(risePerWeek: number, tapMgN = 0): WaterChange {
+  const head = NITRATE_TARGET_N - tapMgN;
+  if (head <= 0) return { state: 'failure', uncappedPct: Infinity, changes: 0, perChangePct: 0, tapMgN, why: 'tap' };
+  const pct = risePerWeek / head * 100;
+  if (pct <= ONE_CHANGE_MAX) return { state: 'routine', uncappedPct: pct, changes: 1, perChangePct: pct, tapMgN };
+  if (pct <= ONE_CHANGE_MAX * CHANGES_MAX) return { state: 'high', uncappedPct: pct, changes: CHANGES_MAX, perChangePct: pct / CHANGES_MAX, tapMgN };
+  return { state: 'failure', uncappedPct: pct, changes: CHANGES_MAX, perChangePct: ONE_CHANGE_MAX, tapMgN, why: 'too-much' };
+}
+/** The tank's tap (source) water nitrate, mg N/L: the setting is ppm as NO3, default 0 (no reading entered). */
+export const tapNitrateMgN = (S: TankSetup) => Math.max(0, S.water.tapNitrate ?? 0) * NO3_TO_N;
 export function nitrogenBudget(S: TankSetup, litres: number, tempC: number, tan: number, opt?: string): Nitrogen {
   const filter = filterCapacity(S, litres, tempC, opt), plants = plantUptake(S), feeding = feedingOf(S);
   const byPlants = Math.min(tan * PLANT_SHARE_MAX, plants.gN), after = tan - byPlants, spare = plants.gN - byPlants;
@@ -150,8 +187,11 @@ export function nitrogenBudget(S: TankSetup, litres: number, tempC: number, tan:
   // EI doses to excess on purpose and resets with its own big weekly change: its leftover is not counted toward the change asked of the animals
   const fishNitrate = byBacteria - fromNitrate, nitrateG = fishNitrate + (fOpt === 'ei' ? 0 : fertG - fertToPlants);
   const nitrateMgNPerWeek = litres > 0 ? nitrateG * 7 * 1000 / litres : 0;
-  const waterChangePct = Math.min(100, nitrateMgNPerWeek / NITRATE_TARGET_N * 100), total = tan || 1;
+  const waterChange = waterChangeState(nitrateMgNPerWeek, tapNitrateMgN(S));
+  const waterChangePct = Math.min(100, waterChange.uncappedPct), total = tan || 1;
+  const plantFreeAmmoniaPercent = safeG > 0 ? tan / safeG * 100 : tan > 0 ? Infinity : 0;
   return { feeding, tan, filter, filterG: filter.gDay, safeG, plants, byPlants, byBacteria, unprocessed, ammoniaPercent, nitrateMgNPerWeek, waterChangePct,
+    waterChange, nitrateByPlants: fromNitrate, plantFreeAmmoniaPercent,
     fert: { option: fOpt, gN: fertG, toPlants: fertToPlants, toNitrate: fertG - fertToPlants }, plantRoom: room - fertToPlants,
     fishCoverPlants: plants.gN > 0 && byPlants + fromNitrate >= plants.gN - 1e-12,
     split: { plants: (byPlants + fromNitrate) / total, waterChanges: fishNitrate / total, unprocessed: unprocessed / total } };

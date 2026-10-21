@@ -309,7 +309,7 @@ export interface Item {
  * keeps the same fill. Colour tints what is seen through the water; opacity = how much of that colour
  * shows after 300 mm of water (physical: a deeper tank looks more tinted). Opacity 0 = clear water.
  */
-export interface WaterSettings { on: boolean; level: number; color: string; opacity: number; salt?: boolean }
+export interface WaterSettings { on: boolean; level: number; color: string; opacity: number; salt?: boolean; /** tap (source) water nitrate, ppm as NO3 (lane NB) */ tapNitrate?: number }
 // on = false: a dry tank (terrarium for reptiles, amphibians, insects). Fish are kept in the data but not shown.
 // salt = true: a marine tank (added 2026-10-13, no version bump; absent = freshwater).
 

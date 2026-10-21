@@ -42,6 +42,9 @@ export interface TechSetup {
   /** a real filter picked from the gear catalogue (lane TG step 3): its flow sets the turnover, its price the cost, its
    *  size and colours are drawn; it must be of the chosen filter kind */
   filterProduct?: string;
+  /** the owner keeps this tank without a filter on purpose (Walstad style; Nathan 2026-10-21): the Filtration bar then shows the
+   *  surface bacteria alone. Absent with no filter chosen = the tank still needs a filter (filterState 'unset'). */
+  filterless?: boolean;
   /** heater watts each (a gear-models.json heater class); absent = sized from the heat loss */
   heaterW?: number;
   /** a real heater picked from the gear catalogue (data/gear-catalog.json; lane TG): its watts size the heat, its size is drawn */
@@ -142,6 +145,19 @@ export function inferTech(S: TankSetup): TechSetup {
   return { rows };
 }
 
+/** Whose filter the budget counts (Nathan 2026-10-21): 'chosen' = the owner's own tech has a filter; 'filterless' = the owner ticked
+ *  "no filter" and none is in; 'unset' = no filter of the owner's (inferred gear, or set to none by a kit or the Tech menu). */
+export type FilterState = 'chosen' | 'filterless' | 'unset';
+export function filterState(S: TankSetup): FilterState {
+  const t = S.tech;
+  if (t && (t.filters?.length || (t.rows.filter && t.rows.filter !== 'none'))) return 'chosen';
+  return t?.filterless ? 'filterless' : 'unset';
+}
+/** Tick or untick "no filter" (one edit): ticking writes filter none, no filters, filterless, and leaves the other rows inferred. */
+export function setFilterless(S: TankSetup, on: boolean) {
+  if (on) { const t = S.tech ?? { rows: {} }; S.tech = { ...t, rows: { ...t.rows, filter: 'none' }, filters: [], filterless: true }; }
+  else if (S.tech) delete S.tech.filterless;
+}
 /** The tank's tech: its own `tech` with any missing row filled from the inferred defaults. */
 export function techOf(S: TankSetup): TechSetup {
   const inf = inferTech(S);

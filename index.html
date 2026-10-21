@@ -276,6 +276,7 @@
   <details id="stkList" hidden><summary>What counts</summary><ul id="stkBody"></ul></details>
   <details id="stkNit" hidden open><summary>Waste, filter and plants</summary>
     <div class="row"><label for="stkFeed">Feeding</label><select id="stkFeed" title="How heavily the animals are fed: sets the waste they make"><option value="light">Light (0.5 % of body weight a day)</option><option value="normal">Normal (1 %)</option><option value="heavy">Heavy (2 %)</option></select></div>
+    <div class="row"><label for="stkTap">Tap nitrate</label><input id="stkTap" type="number" min="0" max="200" step="1" placeholder="0" title="Nitrate in your tap (source) water, ppm as NO3, from a test kit or your water report; blank = 0" style="width:5em"> ppm</div>
     <div id="stkBar" class="nbar" role="img" aria-label="Where the day's nitrogen goes"></div>
     <div id="stkLegend" class="nleg"></div>
     <div class="hint" id="stkVerdict"></div>

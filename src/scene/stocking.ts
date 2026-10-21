@@ -159,7 +159,7 @@ export function stockingOf(S: TankSetup): Stocking {
 /** `stockingOf` remembered by what it reads (the UI asks every frame): animals and lengths, tank, water, tech, plants. */
 const memo = new Map<string, Stocking>();
 export function stockingMemo(S: TankSetup): Stocking {
-  const key = JSON.stringify([S.fish.map(f => [f.species, f.tl]), S.tank, S.water.on, S.water.level, S.water.salt, S.tech, S.lid,
+  const key = JSON.stringify([S.fish.map(f => [f.species, f.tl]), S.tank, S.water.on, S.water.level, S.water.salt, S.water.tapNitrate, S.tech, S.lid,
     S.feeding, S.items.filter(i => i.kind === 'plant').map(i => i.variant).join(), (S.patches ?? []).filter(isLivePlantPatch).length]);
   let r = memo.get(key);
   if (!r) { r = stockingOf(S); if (memo.size > 16) memo.delete(memo.keys().next().value!); memo.set(key, r); }

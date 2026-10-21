@@ -9,7 +9,10 @@ import { defaultSpace, spaceFit, tankExtent, SPACE_MAX, SPACE_MIN, type SpaceFit
 import { stockingMemo, type Stocking } from '../scene/stocking';
 import { MIN_SLACK_PCT } from '../scene/animalfit';
 import { reasonOf, tankMinimum, type MinRow, type TankMinimum } from '../scene/tankMin';
-import { PLANT_SHARE_MAX, type Nitrogen } from '../scene/nitrogen';
+import { NO3_TO_N, PLANT_SHARE_MAX, type Nitrogen } from '../scene/nitrogen';
+import { filterState, setFilterless, type FilterState } from '../scene/tech';
+import dd from '../data/demand-defaults.json';
+const ROUTINE_FLOOR = dd.time.waterChangeFraction.floor;
 import type { Store } from '../scene/store';
 import type { SpaceLimit, TankSetup, Units } from '../scene/types';
 
@@ -29,6 +32,8 @@ export interface TileState {
   /** the larger of the two, for the minimized pill */
   head: Bar;
   reason: string;
+  /** whose filter counts (scene/tech.ts filterState): 'unset' hides the Filtration bar and the ammonia fold behind "This tank needs a filter" */
+  filter: FilterState;
   limit?: SpaceLimit; fit?: SpaceFit;
 }
 
@@ -64,13 +69,21 @@ export function minWarnings(m: TankMinimum, units: Units): MinWarn[] {
   return out;
 }
 
+/** The reason line from space alone, for a tank whose filter is not chosen yet. */
+export function spaceReason(r: Stocking): string {
+  if (!r.contributors.length) return '';
+  const p = r.spacePercent, top = topBy(r, 'space', 1)[0];
+  if (p > 100) return `The tank is too small for them (${Math.round(p)}% of its space), mainly the ${plural(top.n, top.name)}: it needs about ${Math.ceil(r.capacity.litres * p / 100)} L of water or fewer animals.`;
+  return p >= NEAR_FULL ? 'Near full by space: room for a few small animals, no more.' : `Room for about ${Math.round(100 - p)}% more by space.`;
+}
 export function tileState(S: TankSetup, r: Stocking, units: Units = 'cm'): TileState {
   const m = tankMinimum(S), mins = minWarnings(m, units), tooSmall = mins.some(w => w.level === 'over'), limit = S.layout.space, fit = limit ? spaceFit(S.tank, limit) : undefined;
-  const head = bar(r.percent);
+  // no filter of the owner's yet (Nathan 2026-10-21): the pill and the reason come from space alone, not from an assumed filter
+  const filter = filterState(S), unset = filter === 'unset', head = bar(unset ? r.spacePercent : r.percent);
   return {
     show: S.water.on && (r.contributors.length > 0 || !!limit),
     space: bar(r.spacePercent), filt: bar(r.filtrationPercent), mins, head: tooSmall && head.level !== 'over' ? { ...head, level: 'over', text: 'Too small' } : head,
-    topSpace: topBy(r, 'space'), topFilt: topBy(r, 'load'), reason: r.reasons[0] ?? '',
+    topSpace: topBy(r, 'space'), topFilt: topBy(r, 'load'), reason: unset ? spaceReason(r) : r.reasons[0] ?? '', filter,
     ...(limit ? { limit, fit } : {}),
   };
 }
@@ -80,23 +93,34 @@ export const mg = (g: number) => { const m = g * 1000; return `${m < 10 ? m.toFi
 export interface NRow { label: string; value: string; note?: string }
 /** Where the day's ammonia goes (the nitrogen budget behind the filtration bar), for the expanded tile. */
 export function nitrogenRows(n: Nitrogen): NRow[] {
+  const mgN = (g: number) => `${mg(g)} N`;
   const rows: NRow[] = [
-    { label: 'Animals make', value: mg(n.tan), note: `on ${n.feeding} feeding` },
-    { label: 'Plants take', value: mg(n.byPlants), note: !n.plants.count ? 'no live plants'
-      : `of about ${mg(n.plants.gN)} they can`
+    { label: 'Animals make', value: mgN(n.tan), note: `as ammonia (TAN), on ${n.feeding} feeding` },
+    { label: 'Plants take', value: mgN(n.byPlants), note: !n.plants.count ? 'no live plants'
+      : `of about ${mgN(n.plants.gN)} they can`
         + (n.byPlants >= n.tan * PLANT_SHARE_MAX - 1e-9 ? `; held to ${Math.round(PLANT_SHARE_MAX * 100)}% of the animals' ammonia, the filter keeps the rest for nights and feeding peaks` : '')
         + (n.plants.rootCount ? `. ${n.plants.rootCount} root feeder${n.plants.rootCount > 1 ? 's' : ''} counted at half: they feed from the substrate` : '') },
-    { label: 'Filter bacteria', value: mg(n.byBacteria), note: `of about ${mg(n.filterG)} they can; the bar is full at ${mg(n.safeG)} (${n.filter.label})` },
+    { label: n.filter.kind === 'none' ? 'Surface bacteria' : 'Filter bacteria', value: mgN(n.byBacteria), note: `of about ${mgN(n.filterG)} they can; the bar is full at ${mgN(n.safeG)} (${n.filter.label})` },
   ];
-  if (n.unprocessed > 0) rows.push({ label: 'Left in the water', value: mg(n.unprocessed), note: 'ammonia builds up' });
-  if (n.fert.gN > 0) rows.push({ label: 'Fertilizer adds', value: `${mg(n.fert.gN)} N`, note: `as nitrate; plants use ${mg(n.fert.toPlants)}`
-    + (n.fert.toNitrate > 1e-6 ? `, ${mg(n.fert.toNitrate)} is left to change out${n.fert.option === 'ei' ? ' (the big weekly EI change does that)' : ''}` : '') });
+  if (n.plants.count && n.byPlants > 0) rows.push({ label: 'Filter load without plants', value: `${pctText(n.plantFreeAmmoniaPercent)}%`, note: `with the plants ${pctText(n.ammoniaPercent)}%; new plants take weeks to grow in, so the filter carries this at first` });
+  if (n.unprocessed > 0) rows.push({ label: 'Left in the water', value: mgN(n.unprocessed), note: 'ammonia builds up' });
+  if (n.fert.gN > 0) rows.push({ label: 'Fertilizer adds', value: mgN(n.fert.gN), note: `as nitrate; plants use ${mgN(n.fert.toPlants)}`
+    + (n.fert.toNitrate > 1e-6 ? `, ${mgN(n.fert.toNitrate)} is left to change out${n.fert.option === 'ei' ? ' (the big weekly EI change does that)' : ''}` : '') });
   if (n.plants.gN > 0) rows.push(n.fishCoverPlants
-    ? { label: 'Plant nitrogen', value: 'from the animals', note: 'their waste covers what the plants take: a fertilizer without nitrogen (potassium, iron, trace) is enough' }
-    : n.plantRoom > 1e-6 ? { label: 'Plants could use', value: `${mg(n.plantRoom)} more`, note: 'nitrogen a day beyond what the animals and fertilizer give: more animals or a fertilizer with nitrogen' }
+    ? { label: 'Plant nitrogen', value: 'likely from the animals', note: 'their waste probably covers what the plants take, so a fertilizer without nitrogen (potassium, iron, trace) may be enough; pale older leaves mean the plants want nitrogen too' }
+    : n.plantRoom > 1e-6 ? { label: 'Plants could use', value: `${mgN(n.plantRoom)} more`, note: 'nitrogen a day beyond what the animals and fertilizer give: more animals or a fertilizer with nitrogen' }
     : { label: 'Plant nitrogen', value: 'animals + fertilizer', note: 'the fertilizer makes up what the animals do not give' });
-  rows.push({ label: 'Nitrate', value: n.waterChangePct >= 1 ? `${Math.round(n.waterChangePct)}% a week` : 'plants take it', note: n.waterChangePct >= 1 ? 'water change to hold about 40 ppm' : undefined });
+  rows.push({ label: 'Nitrate-only water change', ...waterChangeText(n) });
   return rows;
+}
+const pctText = (p: number) => p === Infinity ? 'over 999' : String(Math.round(p));
+/** The nitrate-only weekly water change in Decision 2's three states (research/tank-minimum-first-principles.md), beside the 10 % routine floor. */
+export function waterChangeText(n: Nitrogen): { value: string; note: string } {
+  const w = n.waterChange, tap = w.tapMgN > 0 ? ` with tap water at ${Math.round(w.tapMgN / NO3_TO_N)} ppm` : '';
+  if (w.state === 'failure' && w.why === 'tap') return { value: 'cannot be met', note: `the tap water's nitrate (${Math.round(w.tapMgN / NO3_TO_N)} ppm) is at or above the 40 ppm target, so water changes cannot bring it down: use RO/DI or a nitrate-removing resin, or test the tap again` };
+  if (w.state === 'failure') return { value: `${pctText(w.uncappedPct)}% a week`, note: `more than two 50 % changes a week${tap}: the stock makes more nitrate than water changes can hold near 40 ppm. Less stock or more plants` };
+  if (w.state === 'high') return { value: `${pctText(w.uncappedPct)}% a week`, note: `high maintenance: over 50 % in one change. Two changes of about ${Math.round(w.perChangePct)}% a week hold about 40 ppm${tap}, or less stock` };
+  return { value: w.uncappedPct >= 1 ? `${Math.round(w.uncappedPct)}% a week` : 'under 1% a week', note: `nitrate alone, to hold about 40 ppm${tap}; the routine ${Math.round(ROUTINE_FLOOR * 100)} % a week still applies (hardness, organics, phosphate)` };
 }
 
 /** The fork card is due when an edit takes the tank from inside the space to past it (not every frame it stays past). */
@@ -158,8 +182,8 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
   setMin(min, false);
   head.onclick = () => setMin(!min);
 
-  const row = (key: string, label: string, b: Bar, top: TopRow[], what: string, hd = `Most of the ${what}:`) =>
-    `<div class="ftRow ft-${b.level}" tabindex="0" data-row="${key}"><div class="ftLab"><span>${label}</span><b>${b.text}</b></div>`
+  const row = (key: string, label: string, b: Bar, top: TopRow[], what: string, hd = `Most of the ${what}:`, tip = '') =>
+    `<div class="ftRow ft-${b.level}" tabindex="0" data-row="${key}"${tip ? ` title="${esc(tip)}"` : ''}><div class="ftLab"><span>${label}</span><b>${b.text}</b></div>`
     + `<div class="ftTrack" role="meter" aria-label="${label}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(Math.min(b.pct, 999))}"><i style="width:${b.fill}%"></i></div>`
     + `<div class="ftTop">${top.length ? `<div class="ftTopHd">${hd}</div>` + top.map(t => `<div>${esc(plural(t.n, t.name))} <b>${t.note ? esc(t.note) : `${Math.round(t.share * 100)}%`}</b></div>`).join('') : '<div>No animals in the water yet.</div>'}</div></div>`;
 
@@ -176,15 +200,20 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
     el.classList.toggle('over', st.head.level === 'over' || st.fit?.fits === false);
     pill.textContent = st.fit?.fits === false ? `${st.head.text} · too big` : st.head.text;
     pill.className = `ftPill ft-${st.fit?.fits === false ? 'over' : st.head.level}`;
-    bars.innerHTML = row('space', 'Space', st.space, st.topSpace, 'space') + row('filt', 'Filtration', st.filt, st.topFilt, 'waste')
+    const box = (on: boolean) => `<label class="ftNoFilt"><input type="checkbox" class="ftNoFilter"${on ? ' checked' : ''}> No filter: I am keeping this tank filterless (Walstad style)</label>`;
+    bars.innerHTML = row('space', 'Space', st.space, st.topSpace, 'space')
+      + (st.filter === 'unset' ? `<div class="ftWarn ft-near ftNeedFilter"><b>This tank needs a filter.</b> Add one in Tech › Filtration to see its filtration.${box(false)}</div>`
+        : row('filt', 'Filtration', st.filt, st.topFilt, 'waste', undefined, 'Ammonia the filter bacteria can process, after the plants take their share. It does not measure nitrate, oxygen, pH or temperature.')
+          + (st.filter === 'filterless' ? `<div class="ftWhy">${box(true)}: bacteria on glass, substrate and decor only.</div>` : ''))
       + st.mins.map(w => `<div class="ftWarn ft-${w.level}">${esc(w.text)}</div>`).join('')
       + (st.reason ? `<div class="ftWhy">${esc(st.reason)}</div>` : '');
     const n = r.nitrogen;
-    nEl.hidden = !r.contributors.length || n.tan <= 0;
+    nEl.hidden = !r.contributors.length || n.tan <= 0 || st.filter === 'unset';
     if (!nEl.hidden) {
       const seg = (cls: string, g: number) => g > 0 ? `<i class="${cls}" style="width:${g / n.tan * 100}%"></i>` : '';
       nBody.innerHTML = `<div class="ftNSplit" aria-hidden="true">${seg('p', n.byPlants)}${seg('b', n.byBacteria)}${seg('u', n.unprocessed)}</div>`
         + nitrogenRows(n).map(x => `<div class="ftNRow"><span>${esc(x.label)}</span><b>${esc(x.value)}</b></div>${x.note ? `<div class="ftNNote">${esc(x.note)}</div>` : ''}`).join('')
+        + `<div class="ftNNote">${st.filter === 'filterless' ? 'With no filter the bacteria build up on the surfaces slowly: let the plants grow in and add the animals a few at a time.' : 'A new filter has no bacteria yet: cycle it (about 4-6 weeks, ammonia and nitrite at 0) before the full stock goes in.'}</div>`
         + `<div class="ftNNote ftNCaveat">Rough figures: animals ±40 %, plant and bacteria rates from few studies.</div>`;
     }
     const e = tankExtent(S.tank);
@@ -220,6 +249,11 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
   $<HTMLButtonElement>('.ftClear').onclick = () => {
     const i = store.scene.active; store.seal();
     store.update(s => { delete s.tanks[i].layout.space; }); closeForm();
+  };
+  bars.onchange = ev => {
+    const t = ev.target as HTMLInputElement;
+    if (!t.classList.contains('ftNoFilter')) return;
+    store.seal(); store.edit(s => setFilterless(s, t.checked)); store.seal();
   };
   spaceEl.onclick = ev => {
     const t = ev.target as HTMLElement;

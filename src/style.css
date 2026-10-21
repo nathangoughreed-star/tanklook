@@ -596,6 +596,7 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .ftRow:hover .ftTop, .ftRow:focus-visible .ftTop, .ftRow.open .ftTop { display: block }
 .ftWhy { color: var(--muted); margin: 2px 0 6px }
 .ftWarn { margin: 2px 0 6px; padding: 4px 6px; border-radius: 4px; border-left: 3px solid #d99a1e; background: color-mix(in srgb, #d99a1e 14%, transparent) } .ftWarn.ft-over { border-left-color: #d8432f; background: color-mix(in srgb, #d8432f 14%, transparent) }
+.ftNoFilt { display: block; margin-top: 4px; cursor: pointer } .ftNoFilt input { vertical-align: -2px; margin: 0 4px 0 0 } .ftWhy .ftNoFilt { display: inline; margin: 0 }
 .ftN { border-top: 1px solid var(--line); padding: 5px 0 6px } .ftN[hidden] { display: none }
 .ftN summary { cursor: pointer; color: var(--muted) } .ftN[open] summary { margin-bottom: 4px }
 .ftNSplit { display: flex; height: 8px; margin-bottom: 4px; border-radius: 4px; overflow: hidden; background: color-mix(in srgb, var(--ink) 12%, transparent) }
