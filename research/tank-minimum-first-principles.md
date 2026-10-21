@@ -10,6 +10,8 @@ fundamentals, what works and what does not. Not a patch of the current weights.
   should not raise or lower whether the animal has enough room.
 - Wants the AqAdvisor shape: say nothing when every species has its minimum; otherwise name the species and the unmet measure; plus an
   amber "cramped" note. (Built, build 1047.)
+- Depth: a few species should get HARDCODED minimum water depths (tall-bodied fish such as angelfish and discus, vertical midwater
+  species, anything the shallow-tray case would wrongly pass). A short override list, not a field researched for all 84 species.
 - Wants US units in every chat reply (gallons, inches, sq in, deg F).
 
 ## What exists now (build 1047)
