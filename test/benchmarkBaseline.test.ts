@@ -36,7 +36,12 @@ function judge(name: string, picks: Pk[], want: string, gal: number): string[] {
 
 describe('benchmark baseline', () => {
   run('records what the engine says today', async () => {
+    // @ts-expect-error node only (no node types in this project)
+    const { execSync } = await import('node:child_process');
+    const sh = (c: string) => String(execSync(c)).trim();
+    const commit = sh('git rev-parse --short HEAD'), build = sh('git rev-list --count HEAD'), dirty = sh('git status --porcelain --untracked-files=no');
     const out: string[] = ['# Benchmark baseline: what path 1 says TODAY (generated, do not edit)', '',
+      `Tested commit ${commit} (build ${build})${dirty ? ', WITH UNCOMMITTED CHANGES: ' + dirty.split(/\r?\n/).join('; ') : ', clean checkout'}.`, '',
       `Generated ${new Date().toISOString().slice(0, 10)} by test/benchmarkBaseline.test.ts. Expected verdicts live in research/rules-spec.md section 5; this is the engine's current answer only.`, ''];
     const sec = (h: string, cases: [string, Pk[], string, number][]) => { out.push(`## ${h}`, ''); for (const c of cases) out.push(...judge(...c), ''); };
     sec('Dwarf frogs: group size AND density together (combined)', [1, 3, 5, 9].map(n => [`adf x${n}`, [pk('adf', n)], '10 gal', 10] as [string, Pk[], string, number]));
