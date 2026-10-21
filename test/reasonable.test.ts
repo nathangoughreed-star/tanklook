@@ -2,12 +2,14 @@
 // stated litres and adult size make plausible. Catches rules that only look sane in isolation (a snail "too big" for a 10 gal; a 70 gal
 // species asked for more floor than any 75 gal has). GEN_REASON=1 writes research/reasonableness.md (worst first) for review.
 import { describe, expect, it } from 'vitest';
-import { writeFileSync } from 'node:fs';
 import { TANK_MODELS, tankFromModel } from '../src/data/tanks';
 import { SPECIES } from '../src/data/species';
 import { CARE } from '../src/data/care';
 import { bareSetup } from '../src/scene/defaults';
 import { geometryOf, speciesMinimum } from '../src/scene/tankMin';
+
+// @ts-expect-error node only (no node types in this project)
+const { writeFileSync } = await import('node:fs');
 
 const tanks = TANK_MODELS.map(m => { const S = bareSetup(); S.tank = tankFromModel(m); S.water.on = true; S.water.level = 0.9; return { id: m.id, g: geometryOf(S) }; }).sort((a, b) => a.g.litres - b.g.litres);
 const water = SPECIES.filter(sp => sp.habitat !== 'land');

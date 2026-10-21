@@ -78,8 +78,8 @@ export interface Measured { pct: number; limiting: Limit; /** what the species w
  * a footprint recommendation that allows an equivalent shape, e.g. 120 x 30 cm) is held to that area in full instead of the area derived
  * from its litres; `widthMm` is a strict front-to-back need (turning room), `lengthMm` a strict length. Over 100 = at least one measure falls short.
  */
-export function measureMinimum(zone: Zone, litres: number, lengthMm: number, widthMm: number, g: Geometry, areaCm2 = 0): Measured {
-  const w = MIN_WEIGHTS[zone];
+export function measureMinimum(zone: Zone, litres: number, lengthMm: number, widthMm: number, g: Geometry, areaCm2 = 0, volumeOnly = false): Measured {
+  const w = volumeOnly ? VOLUME_ONLY_WEIGHTS : MIN_WEIGHTS[zone];
   const terms: { limiting: Limit; k: number; need: number; have: number }[] = [
     { limiting: 'water', k: w.vol, need: litres, have: g.litres },
     { limiting: 'floor area', k: areaCm2 > 0 ? 1 : w.area, need: areaCm2 > 0 ? areaCm2 : areaFor(litres), have: g.areaCm2 },
