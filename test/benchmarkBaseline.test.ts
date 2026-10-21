@@ -2,14 +2,14 @@
 // test: it records behaviour so the expected verdicts can be reviewed independently and compared before / after the rules
 // work. Run: GEN_BENCH=1 npx vitest run test/benchmarkBaseline.test.ts  -> research/benchmark-baseline.md
 import { describe, it } from 'vitest';
-import { writeFileSync } from 'fs';
 import { planFor, notesOf, startPick, type Pk } from '../src/ui/stockPlanLogic';
 import { tankOptions, tankLabel, type TankFit } from '../src/scene/tankfit';
 import { buildsFor } from '../src/scene/builds';
 import { getSpecies } from '../src/data/species';
 import { whyAnimal } from '../src/scene/animalfit';
 
-const run = process.env.GEN_BENCH ? it : it.skip;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const run = (globalThis as any).process?.env.GEN_BENCH ? it : it.skip;
 const pk = (id: string, n: number, f?: number): Pk => ({ ...startPick(id), n, ...(f !== undefined ? { f } : {}) });
 const animalsOf = (picks: Pk[]) => picks.map(p => ({ species: p.id, n: p.n + (p.f ?? 0) }));
 /** the catalogue option whose label (US) contains `want`, else the nearest by gallons */
@@ -35,7 +35,7 @@ function judge(name: string, picks: Pk[], want: string, gal: number): string[] {
 }
 
 describe('benchmark baseline', () => {
-  run('records what the engine says today', () => {
+  run('records what the engine says today', async () => {
     const out: string[] = ['# Benchmark baseline: what path 1 says TODAY (generated, do not edit)', '',
       `Generated ${new Date().toISOString().slice(0, 10)} by test/benchmarkBaseline.test.ts. Expected verdicts live in research/rules-spec.md section 5; this is the engine's current answer only.`, ''];
     const sec = (h: string, cases: [string, Pk[], string, number][]) => { out.push(`## ${h}`, ''); for (const c of cases) out.push(...judge(...c), ''); };
@@ -46,6 +46,8 @@ describe('benchmark baseline', () => {
     sec('Mandarin with space (feeding is the issue)', [['mandarin x1', [pk('mandarin', 1)], '75 gal', 75]]);
     sec('Two unpaired social animals', [['bolivianram x2 (sex unknown)', [pk('bolivianram', 2)], '29 gal', 29]]);
     sec('Fewer animals in an unsuitable tank (before / after)', [['neon x20 + bronzecory x8 + bolivianram x4', [pk('neon', 20), pk('bronzecory', 8), pk('bolivianram', 4)], '10 gal', 10], ['neon x10 + bronzecory x6 (fewer)', [pk('neon', 10), pk('bronzecory', 6)], '10 gal', 10]]);
+    // @ts-expect-error node only (no node types in this project)
+    const { writeFileSync } = await import('node:fs');
     writeFileSync('research/benchmark-baseline.md', out.join('\n') + '\n');
   });
 });
