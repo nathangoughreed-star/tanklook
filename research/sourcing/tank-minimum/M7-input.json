@@ -1,0 +1,147 @@
+[
+ {
+  "id": "ocellaris",
+  "name": "Ocellaris clownfish",
+  "sci": "Amphiprion ocellaris",
+  "cat": "sw-fish",
+  "tl_mm": 100,
+  "minL": 75,
+  "prior": [
+   "https://www.bulkreefsupply.com/ora-flurry-ocellaris-clownfish-ora.html | 15 US gal = 57 L",
+   "https://topshelfaquatics.com/products/orange-ocellaris-clownfish | 30 US gal = 114 L"
+  ]
+ },
+ {
+  "id": "yellowtang",
+  "name": "Yellow tang",
+  "sci": "Zebrasoma flavescens",
+  "cat": "sw-fish",
+  "tl_mm": 180,
+  "minL": 455,
+  "prior": [
+   "https://www.liveaquaria.com/products/yellow-tang-hawaii | 100 US gal = 379 L"
+  ]
+ },
+ {
+  "id": "bluetang",
+  "name": "Blue tang",
+  "sci": "Paracanthurus hepatus",
+  "cat": "sw-fish",
+  "tl_mm": 250,
+  "minL": 570,
+  "prior": [
+   "https://www.liveaquaria.com/product/330/ | 180 gal (681 L)",
+   "https://reefexclusive.com/products/paracanthurus-hepatus | 180 gal (681 L)"
+  ]
+ },
+ {
+  "id": "firefish",
+  "name": "Firefish goby",
+  "sci": "Nemateleotris magnifica",
+  "cat": "sw-fish",
+  "tl_mm": 75,
+  "minL": 75,
+  "prior": [
+   "https://www.liveaquaria.com/product/168/?pcatid=168 | 20 gal (75.7 L)",
+   "https://reefexclusive.com/products/nemateleotris-magnifica | 20 gal (75.7 L)"
+  ]
+ },
+ {
+  "id": "banggai",
+  "name": "Banggai cardinalfish",
+  "sci": "Pterapogon kauderni",
+  "cat": "sw-fish",
+  "tl_mm": 70,
+  "minL": 115,
+  "prior": [
+   "https://reefexclusive.com/products/banggai-cardinalfish | 30 gal (113.5 L)",
+   "https://www.saltwateraquariumblog.com/banggai-cardinalfish-care-guide/ | 10 gal (37.9 L) for one or a pair"
+  ]
+ },
+ {
+  "id": "sixline",
+  "name": "Six-line wrasse",
+  "sci": "Pseudocheilinus hexataenia",
+  "cat": "sw-fish",
+  "tl_mm": 75,
+  "minL": 208,
+  "prior": [
+   "https://www.liveaquaria.com/products/six-line-wrasse | 60 gal (227 L)",
+   "https://reefexclusive.com/products/six-line-wrasse | 55 gal (208 L)"
+  ]
+ },
+ {
+  "id": "chromis",
+  "name": "Blue-green chromis",
+  "sci": "Chromis viridis",
+  "cat": "sw-fish",
+  "tl_mm": 100,
+  "minL": 115,
+  "prior": [
+   "https://www.liveaquaria.com/product/115/ | 30 gal (113.5 L)",
+   "https://reefexclusive.com/products/green-reef-chromis | 30 gal, 60 gal for a shoal"
+  ]
+ },
+ {
+  "id": "coralbeauty",
+  "name": "Coral beauty angelfish",
+  "sci": "Centropyge bispinosa",
+  "cat": "sw-fish",
+  "tl_mm": 90,
+  "minL": 265,
+  "prior": [
+   "https://www.liveaquaria.com/product/438/?pcatid=438 | 70 gal (265 L)",
+   "https://reefexclusive.com/products/coral-beauty-angelfish | 70 gal (265 L)"
+  ]
+ },
+ {
+  "id": "watchman",
+  "name": "Yellow watchman goby",
+  "sci": "Cryptocentrus cinctus",
+  "cat": "sw-fish",
+  "zone": "bottom",
+  "tl_mm": 90,
+  "minL": 75,
+  "prior": [
+   "https://www.bulkreefsupply.com/content/post/how-to-care-for-watchman-gobies | 20 gal (75.7 L)",
+   "https://reefexclusive.com/products/yellow-watchman-goby | 30 gal (113.5 L)"
+  ]
+ },
+ {
+  "id": "mandarin",
+  "name": "Mandarin dragonet",
+  "sci": "Synchiropus splendidus",
+  "cat": "sw-fish",
+  "zone": "bottom",
+  "tl_mm": 60,
+  "minL": 265,
+  "prior": [
+   "https://reefexclusive.com/products/pterosynchiropus-splendidus | 30 gal (113.5 L)",
+   "https://www.bulkreefsupply.com/content/post/how-to-care-for-mandarin-dragonets | 30 gal (113.5 L)"
+  ]
+ },
+ {
+  "id": "turbo",
+  "name": "Mexican turbo snail",
+  "sci": "Turbo fluctuosus",
+  "cat": "sw-invert",
+  "tl_mm": 50,
+  "minL": 40,
+  "prior": [
+   "https://aquariumbreeder.com/?p=5920 | 10 gallons (~40 L)"
+  ]
+ },
+ {
+  "id": "hermit",
+  "name": "Blue-leg hermit crab",
+  "sci": "Clibanarius tricolor",
+  "cat": "sw-invert",
+  "zone": "bottom",
+  "tl_mm": 30,
+  "minL": 40,
+  "prior": [
+   "https://topshelfaquatics.com/products/blue-leg-hermit-crab | 10+ gallons (37.9 L+)",
+   "https://reefexclusive.com/products/blue-leg-hermit-crab | 10 gallons for 2-3 crabs"
+  ]
+ }
+]

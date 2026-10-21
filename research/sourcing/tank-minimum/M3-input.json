@@ -1,0 +1,100 @@
+[
+ {
+  "id": "cherrybarb",
+  "name": "Cherry barb",
+  "sci": "Rohanella (Puntius) titteya",
+  "tl_mm": 50,
+  "minL": 60,
+  "prior": [
+   "https://www.seriouslyfish.com/species/puntius-titteya/ | base 60 x 30 cm, about 54 L",
+   "https://www.fishkeepingworld.com/cherry-barb/ | 25 gal or larger (95 L)"
+  ]
+ },
+ {
+  "id": "tigerbarb",
+  "name": "Tiger barb",
+  "sci": "Puntigrus tetrazona",
+  "tl_mm": 70,
+  "minL": 80,
+  "prior": [
+   "https://www.seriouslyfish.com/species/puntigrus-tetrazona/ | base 80 x 30 cm, about 72 L",
+   "https://www.fishkeepingworld.com/tiger-barb/ | 20 gal (76 L) for up to 5"
+  ]
+ },
+ {
+  "id": "boesemani",
+  "name": "Boeseman's rainbowfish",
+  "sci": "Melanotaenia boesemani",
+  "tl_mm": 100,
+  "minL": 110,
+  "prior": [
+   "https://www.seriouslyfish.com/species/melanotaenia-boesemani/ | at least 120 x 30 x 30 cm, about 108 L (29 US gal)"
+  ]
+ },
+ {
+  "id": "guppy",
+  "name": "Guppy",
+  "sci": "Poecilia reticulata",
+  "tl_mm": 30,
+  "minL": 40,
+  "prior": [
+   "https://www.seriouslyfish.com/species/poecilia-reticulata/ | base 45 x 30 cm, about 41 L (11 US gal)",
+   "https://www.fishkeepingworld.com/guppies/ | 5 gal (19 L) plus 1 gal per additional adult"
+  ]
+ },
+ {
+  "id": "platy",
+  "name": "Platy",
+  "sci": "Xiphophorus maculatus",
+  "tl_mm": 40,
+  "minL": 60,
+  "prior": [
+   "https://www.seriouslyfish.com/species/xiphophorus-maculatus/ | base 60 x 30 cm, about 54 L (14 US gal)",
+   "https://www.fishkeepingworld.com/platy-fish/ | 10 gal (38 L) for 5-6"
+  ]
+ },
+ {
+  "id": "molly",
+  "name": "Black molly",
+  "sci": "Poecilia sphenops",
+  "tl_mm": 85,
+  "minL": 80,
+  "prior": [
+   "https://www.seriouslyfish.com/species/poecilia-sphenops/ | base 90 x 30 cm, about 81 L (21 US gal)",
+   "https://www.fishkeepingworld.com/molly-fish/ | 10 gal (38 L)"
+  ]
+ },
+ {
+  "id": "dwarfgourami",
+  "name": "Dwarf gourami",
+  "sci": "Trichogaster lalius",
+  "tl_mm": 80,
+  "minL": 60,
+  "prior": [
+   "https://www.seriouslyfish.com/species/trichogaster-lalius/ | 56 L pair",
+   "https://www.aquariumcoop.com/blogs/aquarium/dwarf-gourami | 10 gal (38 L)"
+  ]
+ },
+ {
+  "id": "honeygourami",
+  "name": "Honey gourami",
+  "sci": "Trichogaster chuna",
+  "tl_mm": 45,
+  "minL": 40,
+  "prior": [
+   "https://www.aquariumcoop.com/blogs/aquarium/honey-gourami | single fish 5 or 10 gal (19-38 L)",
+   "https://www.seriouslyfish.com/species/trichogaster-chuna/ | 60 x 30 cm base, pair or small group"
+  ]
+ },
+ {
+  "id": "gourami",
+  "name": "Pearl gourami",
+  "sci": "Trichopodus leerii",
+  "tl_mm": 120,
+  "minL": 110,
+  "prior": [
+   "https://www.seriouslyfish.com/species/trichopodus-leerii/ | ~81 L (~21 US gal)",
+   "https://www.fishkeepingworld.com/pearl-gourami/ | 30 gal (114 L)"
+  ]
+ }
+]

@@ -1,0 +1,100 @@
+[
+ {
+  "id": "cardinal",
+  "name": "Cardinal tetra",
+  "sci": "Paracheirodon axelrodi",
+  "tl_mm": 45,
+  "minL": 60,
+  "prior": [
+   "https://www.seriouslyfish.com/species/paracheirodon-axelrodi/ | base 60 x 30 cm, ~54 litres (~14 US gal)",
+   "https://www.fishkeepingworld.com/cardinal-tetra/ | 20 gallons (75.7 L) for a small school of six"
+  ]
+ },
+ {
+  "id": "ember",
+  "name": "Ember tetra",
+  "sci": "Hyphessobrycon amandae",
+  "tl_mm": 20,
+  "minL": 30,
+  "prior": [
+   "https://www.seriouslyfish.com/species/hyphessobrycon-amandae/ | base at least 45 x 30 cm, ~41 litres (~11 US gal)",
+   "https://www.fishkeepingworld.com/ember-tetra/ | 10 gallons (37.9 L)"
+  ]
+ },
+ {
+  "id": "rummynose",
+  "name": "Rummy-nose tetra",
+  "sci": "Hemigrammus rhodostomus",
+  "tl_mm": 50,
+  "minL": 60,
+  "prior": [
+   "https://www.fishkeepingworld.com/rummy-nose-tetra/ | 20 gallons (75.7 L)"
+  ]
+ },
+ {
+  "id": "harlequin",
+  "name": "Harlequin rasbora",
+  "sci": "Trigonostigma heteromorpha",
+  "tl_mm": 45,
+  "minL": 40,
+  "prior": [
+   "https://www.seriouslyfish.com/species/trigonostigma-heteromorpha/ | base 60 x 30 cm, ~54 litres (~14 US gal)",
+   "https://www.fishkeepingworld.com/harlequin-rasbora/ | 15 gallons (56.8 L) for a school of 8-10; 20 gallons better"
+  ]
+ },
+ {
+  "id": "chili",
+  "name": "Chili rasbora",
+  "sci": "Boraras brigittae",
+  "tl_mm": 18,
+  "minL": 20,
+  "prior": [
+   "https://www.seriouslyfish.com/species/boraras-brigittae/ | base 45 x 30 cm, ~41 litres (~11 US gal)",
+   "https://www.fishkeepingworld.com/chili-rasbora/ | 6-8 gallons (22.7-30.3 L) for a school of 8-10"
+  ]
+ },
+ {
+  "id": "danio",
+  "name": "Zebra danio",
+  "sci": "Danio rerio",
+  "tl_mm": 50,
+  "minL": 40,
+  "prior": [
+   "https://www.seriouslyfish.com/species/danio-rerio/ | min base 90 x 30 cm, ~81 litres (~21 US gal)",
+   "https://www.fishkeepingworld.com/zebra-danio/ | 10 gallons (37.9 L) plus 2 gal per extra fish"
+  ]
+ },
+ {
+  "id": "whitecloud",
+  "name": "White cloud mountain minnow",
+  "sci": "Tanichthys albonubes",
+  "tl_mm": 40,
+  "minL": 40,
+  "prior": [
+   "https://www.seriouslyfish.com/species/tanichthys-albonubes/ | min base 60 x 30 cm, ~54 litres (~14 US gal)",
+   "https://www.fishkeepingworld.com/white-cloud-mountain-minnow/ | 10-12 gallons (37.9-45.4 L)"
+  ]
+ },
+ {
+  "id": "cpd",
+  "name": "Celestial pearl danio",
+  "sci": "Danio margaritatus",
+  "tl_mm": 25,
+  "minL": 40,
+  "prior": [
+   "https://www.seriouslyfish.com/species/danio-margaritatus/ | base 45 x 30 cm, ~41 litres (~11 US gal)",
+   "https://www.fishkeepingworld.com/celestial-pearl-danio/ | 10 gallons (37.9 L), 15-20 better"
+  ]
+ },
+ {
+  "id": "hatchet",
+  "name": "Marbled hatchetfish",
+  "sci": "Carnegiella strigata",
+  "tl_mm": 35,
+  "minL": 60,
+  "prior": [
+   "https://www.seriouslyfish.com/species/carnegiella-strigata/ | base 75 x 30 cm, ~68 litres (~18 US gal)",
+   "https://www.liveaquaria.com/products/marble-hatchet | 20 gallons (75.7 L)"
+  ]
+ }
+]

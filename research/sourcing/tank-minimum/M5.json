@@ -1,0 +1,147 @@
+{
+"batch":"M5",
+"species":{
+"labeo":{"sci":"Labeotropheus trewavasae","fields":{
+ "footprint":{"verdict":"sourced","sources":[
+  {"url":"https://www.seriouslyfish.com/species/labeotropheus-trewavasae/","site":"Seriously Fish","states":"90 × 45cm","quote":"Aquarium base 90 × 45cm36 × 18in","value":[90,45],"unit":"cm","group":"1 male + 3 females (breeding harem)","stage":"adult","kind":"rec","est":false,"credibility":"high","conditions":"harem of one male and at least 3 females; no explicit minimum wording"}],
+  "note":"Only SF gives a footprint; Guidarium table lists 122 x 46 (75 gal) as an example meeting its minimum, not stated as footprint minimum."},
+ "length":{"verdict":"sourced","sources":[
+  {"url":"https://guidarium.com/fishes/trewavas-cichlid","site":"Guidarium","states":"120 cm","quote":"a tank length of at least 120 cm","value":120,"unit":"cm","group":"at least 4","stage":null,"kind":"min","est":true,"credibility":"medium","conditions":"group of at least 4; life stage unstated"}],
+  "note":"Guidarium 120 cm vs SF base 90 cm (33% apart)."},
+ "water_depth":{"verdict":"not-stated","sources":[],"note":"Neither SF nor Guidarium states water depth; SF third figure 38 cm unlabeled."},
+ "volume":{"verdict":"sourced","sources":[
+  {"url":"https://guidarium.com/fishes/trewavas-cichlid","site":"Guidarium","states":"200 litres","quote":"minimum volume of 200 litres","value":200,"unit":"L","group":"at least 4","stage":null,"kind":"min","est":true,"credibility":"medium","conditions":"group of 4+"},
+  {"url":"https://www.seriouslyfish.com/species/labeotropheus-trewavasae/","site":"Seriously Fish","states":"~154litres","quote":"Volume ~154litres~41US gal","value":154,"unit":"L","group":"1 male + 3 females","stage":"adult","kind":"rec","est":false,"credibility":"high","conditions":"from 90x45x38 cm"},
+  {"url":"https://gensou.sg/labeotropheus-trewavasae-care-guide/","site":"Gensou","states":"250 litres","quote":"A minimum of 250 litres is sensible","value":250,"unit":"L","group":"1 male + 3-4 females","stage":null,"kind":"min","est":false,"credibility":"low","conditions":"single-species colony; 400 L+ for mixed mbuna community"}],
+  "note":"154 / 200 / 250 L spread (62%)."}},
+ "pick":{"footprint":{"source":0,"why":"only stated footprint"},"length":{"source":0,"why":"explicit minimum length"},"volume":{"source":0,"why":"explicit minimum with group"}},
+ "conflict":"volume 154 L (SF) vs 200 L (Guidarium) vs 250 L (Gensou); length 90 cm (SF base) vs 120 cm (Guidarium) = 33%",
+ "checked":["https://guidarium.com/fishes/trewavas-cichlid","https://www.seriouslyfish.com/species/labeotropheus-trewavasae/","https://gensou.sg/labeotropheus-trewavasae-care-guide/","https://www.fishkeeper.co.uk/fish/freshwater/cichlids/trewavasae"]},
+
+"auratus":{"sci":"Melanochromis auratus","fields":{
+ "footprint":{"verdict":"sourced","sources":[
+  {"url":"https://www.seriouslyfish.com/species/melanochromis-auratus/","site":"Seriously Fish","states":"120 × 45cm","quote":"120 × 45cm48 × 18in","value":[120,45],"unit":"cm","group":"1 male + several females","stage":"adult","kind":"min","est":false,"credibility":"high","conditions":"page calls ~205 L an absolute minimum due to aggression; dims 120x45x38"}],
+  "note":"Single source for footprint."},
+ "length":{"verdict":"sourced","sources":[
+  {"url":"https://guidarium.com/fishes/auratus-cichlid-mbuna","site":"Guidarium","states":"120 cm","quote":"a tank length of at least 120 cm","value":120,"unit":"cm","group":"at least 4","stage":null,"kind":"min","est":true,"credibility":"medium","conditions":"group of 4+"}],
+  "note":"Agrees with SF 120 cm base."},
+ "water_depth":{"verdict":"not-stated","sources":[],"note":"Not stated; SF 38 cm third dimension unlabeled."},
+ "volume":{"verdict":"sourced","sources":[
+  {"url":"https://www.seriouslyfish.com/species/melanochromis-auratus/","site":"Seriously Fish","states":"~205litres","quote":"~205litres~54US gal absolute minimum","value":205,"unit":"L","group":"1 male + several females","stage":"adult","kind":"min","est":false,"credibility":"high","conditions":"absolute minimum due to aggression"},
+  {"url":"https://guidarium.com/fishes/auratus-cichlid-mbuna","site":"Guidarium","states":"200 litres","quote":"minimum volume of 200 litres","value":200,"unit":"L","group":"at least 4","stage":null,"kind":"min","est":true,"credibility":"medium","conditions":"group 4+"}],
+  "note":"Agree within 3%."}},
+ "pick":{"footprint":{"source":0,"why":"SF explicit"},"length":{"source":0,"why":"only length statement; agrees with SF"},"volume":{"source":0,"why":"SF"}},
+ "conflict":null,
+ "checked":["https://www.seriouslyfish.com/species/melanochromis-auratus/","https://guidarium.com/fishes/auratus-cichlid-mbuna"]},
+
+"livingstonii":{"sci":"Nimbochromis livingstonii","fields":{
+ "footprint":{"verdict":"sourced","sources":[
+  {"url":"https://www.seriouslyfish.com/species/nimbochromis-livingstonii/","site":"Seriously Fish","states":"120 × 45cm","quote":"120 × 45cm48 × 18in","value":[120,45],"unit":"cm","group":"single male / breeding group 1M+3-6F","stage":"adult","kind":"rec","est":false,"credibility":"high","conditions":"dims 120x45x38; species is a loner in the wild"}],
+  "note":"SF 120x45 vs Guidarium length 150 cm implies a much larger tank."},
+ "length":{"verdict":"sourced","sources":[
+  {"url":"https://guidarium.com/fishes/livingstons-cichlid","site":"Guidarium","states":"150 cm","quote":"a tank length of at least 150 cm","value":150,"unit":"cm","group":null,"stage":"adult","kind":"min","est":true,"credibility":"medium","conditions":"single male or male with females"},
+  {"url":"https://www.seriouslyfish.com/species/nimbochromis-livingstonii/","site":"Seriously Fish","states":"48\"","quote":"The breeding aquarium should be at least 48\" in length","value":48,"unit":"in","group":"breeding group","stage":"adult","kind":"min","est":false,"credibility":"high","conditions":"breeding aquarium"}],
+  "note":"150 cm vs 48 in (122 cm): 23% apart."},
+ "water_depth":{"verdict":"not-stated","sources":[],"note":"Not stated."},
+ "volume":{"verdict":"sourced","sources":[
+  {"url":"https://guidarium.com/fishes/livingstons-cichlid","site":"Guidarium","states":"470 litres","quote":"A minimum aquarium volume of 470 litres","value":470,"unit":"L","group":null,"stage":"adult","kind":"min","est":true,"credibility":"medium","conditions":"single or group"},
+  {"url":"https://www.seriouslyfish.com/species/nimbochromis-livingstonii/","site":"Seriously Fish","states":"~205 litres","quote":"~205 litres~54 US gal","value":205,"unit":"L","group":"single male","stage":"adult","kind":"rec","est":false,"credibility":"high","conditions":"from 120x45x38"}],
+  "note":"470 vs 205 L: 130% apart."}},
+ "pick":{"footprint":{"source":0,"why":"only footprint"},"length":{"source":0,"why":"explicit minimum"},"volume":{"source":1,"why":"SF higher credibility, though much lower"}},
+ "conflict":"volume 205 L (SF) vs 470 L (Guidarium); length 122 cm vs 150 cm (23%)",
+ "checked":["https://guidarium.com/fishes/livingstons-cichlid","https://www.seriouslyfish.com/species/nimbochromis-livingstonii/","https://liveaquaria.com/divers-den/product/626484/livingston-cichlid&s=nlh&r= (404)","https://Animal-World.com/livingston (redirect, not read)"]},
+
+"afra":{"sci":"Cynotilapia afra","fields":{
+ "footprint":{"verdict":"sourced","sources":[
+  {"url":"https://www.seriouslyfish.com/species/cynotilapia-afra/","site":"Seriously Fish","states":"100 × 30cm","quote":"100 × 30cm39 × 12in","value":[100,30],"unit":"cm","group":"1 male + 3-6 females","stage":"adult","kind":"rec","est":false,"credibility":"high","conditions":"quick facts aquarium size / base"}],
+  "note":"Single source."},
+ "length":{"verdict":"sourced","sources":[
+  {"url":"https://guidarium.com/fishes/afra-cichlid","site":"Guidarium","states":"120 cm","quote":"a tank length of at least 120 cm","value":120,"unit":"cm","group":"at least 4","stage":null,"kind":"min","est":true,"credibility":"medium","conditions":"group 4+"},
+  {"url":"https://www.fishkeeper.co.uk/fish/freshwater/cichlids/red-top-afra","site":"Fishkeeper UK","states":"4ft","quote":"The aquarium should be at least 4ft long","value":4,"unit":"ft","group":null,"stage":null,"kind":"min","est":true,"credibility":"medium","conditions":"one male with several females"}],
+  "note":"120 cm and 4 ft (122 cm) agree; SF base 100 cm is 20% lower."},
+ "water_depth":{"verdict":"not-stated","sources":[],"note":"Not stated."},
+ "volume":{"verdict":"sourced","sources":[
+  {"url":"https://guidarium.com/fishes/afra-cichlid","site":"Guidarium","states":"200 litres","quote":"A minimum aquarium volume of 200 litres","value":200,"unit":"L","group":"at least 4","stage":null,"kind":"min","est":true,"credibility":"medium","conditions":"group 4+"},
+  {"url":"https://www.seriouslyfish.com/species/cynotilapia-afra/","site":"Seriously Fish","states":"~90litres","quote":"~90litres~24US gal","value":90,"unit":"L","group":"1 male + 3-6 females","stage":"adult","kind":"rec","est":false,"credibility":"high","conditions":"from 100x30x30"}],
+  "note":"90 vs 200 L: 120% apart."}},
+ "pick":{"footprint":{"source":0,"why":"only one"},"length":{"source":0,"why":"agrees with Fishkeeper UK"},"volume":{"source":0,"why":"explicit minimum"}},
+ "conflict":"volume 90 L (SF) vs 200 L (Guidarium); length 100 cm (SF) vs 120 cm (20%, under threshold)",
+ "checked":["https://www.seriouslyfish.com/species/cynotilapia-afra/","https://guidarium.com/fishes/afra-cichlid","https://www.fishkeeper.co.uk/fish/freshwater/cichlids/red-top-afra"]},
+
+"goldfish":{"sci":"Carassius auratus","fields":{
+ "footprint":{"verdict":"not-stated","sources":[],"note":"No fancy goldfish page gave length x width; FKW says no dimensions; Aquarium Co-Op says squatter tank with more surface area preferred."},
+ "length":{"verdict":"not-stated","sources":[],"note":"No stated length for fancy; FKW goldfish page gives 2.5 ft for a 'long 20' as an example."},
+ "water_depth":{"verdict":"not-stated","sources":[],"note":"None of 3 pages state water depth."},
+ "volume":{"verdict":"sourced","sources":[
+  {"url":"https://www.fishkeepingworld.com/fancy-goldfish/","site":"Fishkeeping World","states":"20 gallons","quote":"The minimum tank size you can house one fancy goldfish in is 20 gallons.","value":20,"unit":"gal","group":"1","stage":"adult","kind":"min","est":false,"credibility":"high","conditions":"single fancy; 'You'll need 20 gallons of water per fish'; per-fish figure is 20 gal each (pond advice: fancies not suited, ponds better for comets)"},
+  {"url":"https://www.aquariumcoop.com/blogs/aquarium/fancy-goldfish","site":"Aquarium Co-Op","states":"20 gallons","quote":"we recommend 20 gallons of water volume per goldfish","value":20,"unit":"gal","group":"first fish","stage":"adult","kind":"rec","est":false,"credibility":"high","conditions":"first fish 20 gal, at least 10 gal added for each other goldfish; mild-climate ponds mentioned"},
+  {"url":"https://www.fishkeepingworld.com/goldfish/","site":"Fishkeeping World","states":"10 gallons","quote":"each additional goldfish requires 10 gallons more","value":10,"unit":"gal","group":"each additional","stage":"adult","kind":"rec","est":false,"credibility":"high","conditions":"first fish 20 gal then +10 per extra (fancy); no pond advice on that page"}],
+  "note":"Two reputable sources agree: 20 gal first fish, +10 each additional (Aquarium Co-Op, FKW goldfish page); FKW fancy page says 20 gal per fish. Pond not required for fancy."}},
+ "pick":{"volume":{"source":1,"why":"states first fish 20 + 10 per extra"}},
+ "conflict":null,
+ "checked":["https://www.fishkeepingworld.com/fancy-goldfish/","https://www.fishkeepingworld.com/goldfish/","https://www.aquariumcoop.com/blogs/aquarium/fancy-goldfish","https://www.seriouslyfish.com/species/carassius-auratus/ (no content)"]},
+
+"comet":{"sci":"Carassius auratus","fields":{
+ "footprint":{"verdict":"not-stated","sources":[],"note":"No page gives length x width; FKW advises a long rectangular tank."},
+ "length":{"verdict":"sourced","sources":[
+  {"url":"https://www.fishkeepingworld.com/goldfish/","site":"Fishkeeping World","states":"3 feet long","quote":"each requiring a 30-gallon tank measuring 3 feet long by 1.5 feet high","value":3,"unit":"ft","group":"1","stage":"adult","kind":"min","est":false,"credibility":"medium","conditions":"common/comet goldfish 30 gal tank 3 ft x 1.5 ft high (tank height 1.5 ft)"}],
+  "note":"Single source; length tied to 30 gal figure that the FKW comet page contradicts."},
+ "water_depth":{"verdict":"not-stated","sources":[],"note":"Not stated by any page."},
+ "tank_height":{"verdict":"sourced","sources":[
+  {"url":"https://www.fishkeepingworld.com/goldfish/","site":"Fishkeeping World","states":"1.5 feet high","quote":"30-gallon tank measuring 3 feet long by 1.5 feet high","value":1.5,"unit":"ft","group":"1","stage":"adult","kind":"rec","est":false,"credibility":"medium","conditions":"example tank for 30 gal"}],
+  "note":"Example only."},
+ "volume":{"verdict":"sourced","sources":[
+  {"url":"https://www.fishkeepingworld.com/comet-goldfish/","site":"Fishkeeping World","states":"50 gallons","quote":"As a minimum you should aim for at least 50 gallons per Comet Goldfish.","value":50,"unit":"gal","group":"per fish","stage":"adult","kind":"min","est":false,"credibility":"high","conditions":"per fish (each Comet needs 50); recommends 75 gal; more than 4 together needs a pond"},
+  {"url":"https://www.aquariumsource.com/comet-goldfish/","site":"Aquarium Source","states":"75-gallon","quote":"We recommend aiming for a 75-gallon tank if possible.","value":75,"unit":"gal","group":"first fish","stage":"adult","kind":"rec","est":false,"credibility":"medium","conditions":"first fish 40-50 gal minimum, 75 rec; +about 50 gal each additional fish; large pond is 'probably' best"},
+  {"url":"https://www.fishkeepingworld.com/goldfish/","site":"Fishkeeping World","states":"30-gallon","quote":"each requiring a 30-gallon tank measuring 3 feet long by 1.5 feet high","value":30,"unit":"gal","group":"1 (first fish, +10 each additional)","stage":"adult","kind":"min","est":false,"credibility":"medium","conditions":"general goldfish page; contradicts comet page"}],
+  "note":"Comet-specific pages: 50 min / 75 rec, +50 per additional fish; general goldfish page 30 gal (67% lower)."}},
+ "pick":{"volume":{"source":0,"why":"species-specific page, min 50 gal for first fish, +50 per extra"},"length":{"source":0,"why":"only length stated"}},
+ "conflict":"volume 30 gal (FKW goldfish page) vs 50 gal (FKW comet) vs 40-50/75 (Aquarium Source): 30 vs 50 is 67%. Pond advised: yes for groups over 4 (FKW) and as ideal (Aquarium Source).",
+ "checked":["https://www.fishkeepingworld.com/comet-goldfish/","https://www.fishkeepingworld.com/goldfish/","https://www.aquariumsource.com/comet-goldfish/","https://www.aquariumcoop.com/blogs/aquarium/comet-goldfish (404)"]},
+
+"pandacory":{"sci":"Corydoras panda","fields":{
+ "footprint":{"verdict":"sourced","sources":[
+  {"url":"https://www.seriouslyfish.com/species/corydoras-panda/","site":"Seriously Fish","states":"45 × 30cm","quote":"45 × 30cm18 × 12in","value":[45,30],"unit":"cm","group":"small group (6+ best)","stage":"adult","kind":"rec","est":false,"credibility":"high","conditions":"aquarium base; page: tank 45x30x30 is adequate for a small group"}],
+  "note":"Single source. Chewy/Tankarium give no dimensions; Chewy stresses horizontal floor space."},
+ "length":{"verdict":"not-stated","sources":[],"note":"No separate length."},
+ "water_depth":{"verdict":"not-stated","sources":[],"note":"Not stated; SF third dimension 30 cm unlabeled."},
+ "volume":{"verdict":"sourced","sources":[
+  {"url":"https://www.seriouslyfish.com/species/corydoras-panda/","site":"Seriously Fish","states":"~41 litres","quote":"~41 litres~11 US gal","value":41,"unit":"L","group":"small group, at least six best","stage":"adult","kind":"rec","est":false,"credibility":"high","conditions":"'adequate for a small group'"},
+  {"url":"https://www.tankarium.com/panda-cory-catfish/","site":"Tankarium","states":"10 gallons","quote":"small enough to be happy in a 10-gallon tank","value":10,"unit":"gal","group":"4-6","stage":"adult","kind":"min","est":false,"credibility":"low","conditions":"also calls 20 gal perfect for a larger shoal"},
+  {"url":"https://www.chewy.com/education/fish/general/corydoras-catfish-care-guide","site":"Chewy","states":"20 gallons","quote":"20 gallons (but tank needs vary among cory cats)","value":20,"unit":"gal","group":"6","stage":"adult","kind":"min","est":false,"credibility":"low","conditions":"genus-level guide, group of at least six, plenty of horizontal floor space"}],
+  "note":"41 L (11 gal) vs 20 gal (76 L): 85% apart; Tankarium 10 gal agrees with SF."}},
+ "pick":{"footprint":{"source":0,"why":"only one"},"volume":{"source":0,"why":"species-specific, highest credibility"}},
+ "conflict":"volume 41 L (SF) / 10 gal (Tankarium) vs 20 gal (Chewy, genus-level) = 85%",
+ "checked":["https://www.seriouslyfish.com/species/corydoras-panda/","https://www.tankarium.com/panda-cory-catfish/","https://www.chewy.com/education/fish/general/corydoras-catfish-care-guide","https://www.aquariumcoop.com/blogs/aquarium/panda-corydoras (404)"]},
+
+"pygmycory":{"sci":"Corydoras pygmaeus","fields":{
+ "footprint":{"verdict":"sourced","sources":[
+  {"url":"https://www.seriouslyfish.com/species/corydoras-pygmaeus/","site":"Seriously Fish","states":"45 × 30cm","quote":"45 × 30cm18 × 12in","value":[45,30],"unit":"cm","group":"6-10+ (page: at least 6, preferably 10 or more)","stage":"adult","kind":"rec","est":false,"credibility":"high","conditions":"aquarium base; 'quite a large group' fits in 45x30x30"}],
+  "note":"FKW and Aquarium Co-Op state no dimensions."},
+ "length":{"verdict":"not-stated","sources":[],"note":"None."},
+ "water_depth":{"verdict":"not-stated","sources":[],"note":"Not stated; SF third dimension 30 cm unlabeled."},
+ "volume":{"verdict":"sourced","sources":[
+  {"url":"https://www.fishkeepingworld.com/pygmy-cory/","site":"Fishkeeping World","states":"10 gallons","quote":"10 gallons is the minimum size for a group of 4-8 individuals","value":10,"unit":"gal","group":"4-8","stage":"adult","kind":"min","est":false,"credibility":"high","conditions":"each additional fish about 2 gallons"},
+  {"url":"https://www.aquariumcoop.com/blogs/aquarium/pygmy-corydoras","site":"Aquarium Co-Op","states":"10-gallon","quote":"get a 10-gallon or larger aquarium","value":10,"unit":"gal","group":"8-12","stage":"adult","kind":"rec","est":false,"credibility":"high","conditions":"school of at least 8-12; 5 gal nano holds small group but timid"}],
+  "note":"Agree at 10 gal."}},
+ "pick":{"footprint":{"source":0,"why":"only one"},"volume":{"source":0,"why":"min with group"}},
+ "conflict":null,
+ "checked":["https://www.seriouslyfish.com/species/corydoras-pygmaeus/","https://www.fishkeepingworld.com/pygmy-cory/","https://www.aquariumcoop.com/blogs/aquarium/pygmy-corydoras"]},
+
+"bristlenose":{"sci":"Ancistrus sp.","fields":{
+ "footprint":{"verdict":"sourced","sources":[
+  {"url":"https://www.seriouslyfish.com/species/ancistrus-cf-cirrhosus","site":"Seriously Fish","states":"60 ∗ 30 cm","quote":"A tank with a base measuring 60 ∗ 30 cm24 ∗ 12 in or equivalent","value":[60,30],"unit":"cm","group":"1 or breeding pair","stage":"adult","kind":"min","est":false,"credibility":"high","conditions":"sufficient for a single specimen or breeding pair; larger for a group"}],
+  "note":"Chewy and Tankarium give no dimensions."},
+ "length":{"verdict":"not-stated","sources":[],"note":"None."},
+ "water_depth":{"verdict":"not-stated","sources":[],"note":"Not stated."},
+ "volume":{"verdict":"sourced","sources":[
+  {"url":"https://www.seriouslyfish.com/species/ancistrus-cf-cirrhosus","site":"Seriously Fish","states":"~54litres","quote":"~54litres~14US gal","value":54,"unit":"L","group":"1 or pair","stage":"adult","kind":"min","est":false,"credibility":"high","conditions":"from 60x30 base"},
+  {"url":"https://www.chewy.com/education/fish/general/bristlenose-pleco-care-guide","site":"Chewy","states":"20-gallon","quote":"A 20-gallon aquarium is a common minimum for one adult bristlenose pleco.","value":20,"unit":"gal","group":"1","stage":"adult","kind":"min","est":false,"credibility":"low","conditions":"one adult; provide plenty of bottom space"},
+  {"url":"https://www.tankarium.com/bristlenose-pleco/","site":"Tankarium","states":"40-gallon","quote":"a 40-gallon tank is the minimum size that should be used","value":40,"unit":"gal","group":"1","stage":"adult","kind":"min","est":false,"credibility":"low","conditions":"includes bioload / community reasoning"}],
+  "note":"54 L (14 gal) vs 20 gal (76 L) vs 40 gal (151 L)."}},
+ "pick":{"footprint":{"source":0,"why":"only one"},"volume":{"source":0,"why":"species-level, highest credibility"}},
+ "conflict":"volume 54 L (SF) vs 76 L (Chewy) vs 151 L (Tankarium): 40% and 180% apart",
+ "checked":["https://www.seriouslyfish.com/species/ancistrus-cf-cirrhosus","https://www.chewy.com/education/fish/general/bristlenose-pleco-care-guide","https://www.tankarium.com/bristlenose-pleco/","https://www.aquariumcoop.com/blogs/aquarium/bristlenose-pleco (404)"]}
+},
+"agent_notes":"Quotes copied from WebFetch summaries; Seriously Fish glued unit text (e.g. '90 × 45cm36 × 18in') may not match the raw page whitespace. Aquarium Co-Op fancy-goldfish and pygmy quotes came from a fetch summary and may be paraphrase-adjacent: verify. Livingstonii/afra SF volume disagreement is large (205 vs 470 L; 90 vs 200 L). Goldfish SF page was a catalogue stub."
+}

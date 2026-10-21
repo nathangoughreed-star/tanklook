@@ -1,0 +1,98 @@
+[
+ {
+  "id": "gbr",
+  "name": "German blue ram",
+  "sci": "Mikrogeophagus ramirezi",
+  "tl_mm": 60,
+  "minL": 60,
+  "prior": [
+   "https://www.aquariumcoop.com/blogs/aquarium/german-blue-ram | 20 gal pair (76 L)",
+   "https://www.fishkeepingworld.com/german-blue-ram/ | 20 gal (76 L)"
+  ]
+ },
+ {
+  "id": "bolivianram",
+  "name": "Bolivian ram",
+  "sci": "Mikrogeophagus altispinosus",
+  "tl_mm": 80,
+  "minL": 110,
+  "prior": [
+   "https://www.fishkeepingworld.com/bolivian-ram/ | 30 gal (114 L) for one fish"
+  ]
+ },
+ {
+  "id": "kribensis",
+  "name": "Kribensis",
+  "sci": "Pelvicachromis pulcher",
+  "tl_mm": 90,
+  "minL": 80,
+  "prior": [
+   "https://www.seriouslyfish.com/species/pelvicachromis-pulcher/ | 71 L suitable for a single pair",
+   "https://www.aquariumsource.com/kribensis-cichlid/ | 20-30 US gal = 76-114 L"
+  ]
+ },
+ {
+  "id": "cockatoo",
+  "name": "Cockatoo dwarf cichlid",
+  "sci": "Apistogramma cacatuoides",
+  "tl_mm": 85,
+  "minL": 60,
+  "prior": [
+   "https://www.seriouslyfish.com/species/apistogramma-cacatuoides/ | 60 x 30 cm base for a pair",
+   "https://www.fishkeepingworld.com/cockatoo-cichlid/ | 30 gal (114 L)"
+  ]
+ },
+ {
+  "id": "yellowlab",
+  "name": "Yellow lab cichlid",
+  "sci": "Labidochromis caeruleus",
+  "tl_mm": 100,
+  "minL": 150,
+  "prior": [
+   "https://www.seriouslyfish.com/species/labidochromis-caeruleus/ | ~154 litres / ~41 US gal",
+   "https://guidarium.com/fishes/yellow-lab-mbuna | 150 L min"
+  ]
+ },
+ {
+  "id": "peacock",
+  "name": "Peacock cichlid",
+  "sci": "Aulonocara stuartgranti",
+  "tl_mm": 130,
+  "minL": 200,
+  "prior": [
+   "https://guidarium.com/fishes/grants-peacock-cichlid | 208 L"
+  ]
+ },
+ {
+  "id": "demasoni",
+  "name": "Demasoni cichlid",
+  "sci": "Pseudotropheus demasoni",
+  "tl_mm": 70,
+  "minL": 200,
+  "prior": [
+   "https://www.seriouslyfish.com/species/pseudotropheus-demasoni/ | ~205 L absolute minimum",
+   "https://guidarium.com/fishes/demasoni-cichlid-mbuna | 200 L"
+  ]
+ },
+ {
+  "id": "kadango",
+  "name": "Kadango (red-fin) cichlid",
+  "sci": "Copadichromis borleyi",
+  "tl_mm": 150,
+  "minL": 250,
+  "prior": [
+   "https://guidarium.com/fishes/red-fin-borleyi | 280 L"
+  ]
+ },
+ {
+  "id": "syno",
+  "name": "Malawi synodontis",
+  "sci": "Synodontis njassae",
+  "zone": "bottom",
+  "tl_mm": 190,
+  "minL": 200,
+  "prior": [
+   "https://www.seriouslyfish.com/species/synodontis-njassae/ | 120 x 30 x 30 cm, ~108 litres (~29 US gal)"
+  ]
+ }
+]

@@ -1,0 +1,299 @@
+[
+ {
+  "id": "gbr",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://seriouslyfish.com/species/mikrogeophagus-ramirezi",
+  "result": "compact",
+  "score": 1,
+  "quote": "A base measuring 60 ∗ 30 cm24 ∗ 12 in or equivalent is sufficient for a single pair."
+ },
+ {
+  "id": "gbr",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/german-blue-ram",
+  "result": "exact",
+  "score": 1,
+  "quote": "A pair of rams can live in a 20-gallon community tank"
+ },
+ {
+  "id": "gbr",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/german-blue-ram/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum 20 gallons for one German blue ram, increase tank size by 5 gallons per additional fish"
+ },
+ {
+  "id": "gbr",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.tfhmagazine.com/articles/freshwater/the-german-ram-mikrogeophagus-ramirezi",
+  "result": "exact",
+  "score": 1,
+  "quote": "29 gallons is the minimum"
+ },
+ {
+  "id": "bolivianram",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://seriouslyfish.com/species/mikrogeophagus-altispinosus",
+  "result": "compact",
+  "score": 1,
+  "quote": "an aquarium with a base measuring at least 90 ∗ 45 cm36 ∗ 18 in or equivalent is recommended"
+ },
+ {
+  "id": "bolivianram",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://seriouslyfish.com/species/mikrogeophagus-altispinosus",
+  "result": "compact",
+  "score": 1,
+  "quote": "(120 cm47 in length or larger)"
+ },
+ {
+  "id": "bolivianram",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/bolivian-ram/",
+  "result": "exact",
+  "score": 1,
+  "quote": "a 30-gallon tank is fine for a single specimen"
+ },
+ {
+  "id": "kribensis",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/pelvicachromis-pulcher/",
+  "result": "exact",
+  "score": 1,
+  "quote": "24\" x 15\" x 12\" (60x37.5x30cm) - 71 litres is suitable for a single pair."
+ },
+ {
+  "id": "kribensis",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/pelvicachromis-pulcher/",
+  "result": "exact",
+  "score": 1,
+  "quote": "71 litres is suitable for a single pair."
+ },
+ {
+  "id": "kribensis",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.aquariumsource.com/kribensis-cichlid/",
+  "result": "exact",
+  "score": 1,
+  "quote": "We recommend an aquarium that can hold 20 to 30 gallons."
+ },
+ {
+  "id": "cockatoo",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/apistogramma-cacatuoides/",
+  "result": "compact",
+  "score": 1,
+  "quote": "Base dimensions of 60 ∗ 30 cm24 ∗ 12 in or more are acceptable for a single pair"
+ },
+ {
+  "id": "cockatoo",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/cockatoo-cichlid/",
+  "result": "exact",
+  "score": 1,
+  "quote": "The length of the tank is more important than the depth for Cockatoo Cichlids"
+ },
+ {
+  "id": "cockatoo",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/cockatoo-cichlid/",
+  "result": "exact",
+  "score": 1,
+  "quote": "You will need at least a 30-gallon tank for Cockatoo Cichlids"
+ },
+ {
+  "id": "cockatoo",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/apistogramma-cacatuoides/",
+  "result": "compact",
+  "score": 1,
+  "quote": "~54litres~14US gal"
+ },
+ {
+  "id": "yellowlab",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/labidochromis-caeruleus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "90 ∗ 45 ∗ 38 cm"
+ },
+ {
+  "id": "yellowlab",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://guidarium.com/fishes/yellow-lab-mbuna",
+  "result": "near",
+  "score": 1,
+  "quote": "40 Gallon Breeder | 40 gal / 151 L | 91 x 46 x 41"
+ },
+ {
+  "id": "yellowlab",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://guidarium.com/fishes/yellow-lab-mbuna",
+  "result": "exact",
+  "score": 1,
+  "quote": "a tank length of at least 90 cm"
+ },
+ {
+  "id": "yellowlab",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/labidochromis-caeruleus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "A 48\" aquarium is a good size"
+ },
+ {
+  "id": "yellowlab",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/labidochromis-caeruleus/",
+  "result": "miss",
+  "score": 0.63,
+  "quote": "about 154 litres"
+ },
+ {
+  "id": "yellowlab",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://guidarium.com/fishes/yellow-lab-mbuna",
+  "result": "exact",
+  "score": 1,
+  "quote": "a minimum volume of 150 litres"
+ },
+ {
+  "id": "peacock",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://seriouslyfish.com/species/aulonocara-stuartgranti",
+  "result": "compact",
+  "score": 1,
+  "quote": "Minimum base dimensions of 120 ∗ 45 cm48 ∗ 18 in or equivalent are recommended"
+ },
+ {
+  "id": "peacock",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://guidarium.com/fishes/grants-peacock-cichlid",
+  "result": "compact",
+  "score": 1,
+  "quote": "Minimum Length120 cm"
+ },
+ {
+  "id": "peacock",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://guidarium.com/fishes/grants-peacock-cichlid",
+  "result": "compact",
+  "score": 1,
+  "quote": "Minimum Volume208 L"
+ },
+ {
+  "id": "peacock",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://seriouslyfish.com/species/aulonocara-stuartgranti",
+  "result": "compact",
+  "score": 1,
+  "quote": "Volume ~243litres~64US gal"
+ },
+ {
+  "id": "demasoni",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/pseudotropheus-demasoni/",
+  "result": "compact",
+  "score": 1,
+  "quote": "120 × 45cm48 × 18in"
+ },
+ {
+  "id": "demasoni",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://guidarium.com/fishes/demasoni-cichlid-mbuna",
+  "result": "exact",
+  "score": 1,
+  "quote": "a tank length of at least 120 cm are recommended"
+ },
+ {
+  "id": "demasoni",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://guidarium.com/fishes/demasoni-cichlid-mbuna",
+  "result": "exact",
+  "score": 1,
+  "quote": "A minimum aquarium volume of 200 litres"
+ },
+ {
+  "id": "kadango",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://seriouslyfish.com/species/copadichromis-borleyi",
+  "result": "exact",
+  "score": 1,
+  "quote": "shouldn't be kept in tanks measuring less than 150 ∗ 45 ∗ 45 cm"
+ },
+ {
+  "id": "kadango",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://guidarium.com/fishes/red-fin-borleyi",
+  "result": "exact",
+  "score": 1,
+  "quote": "a tank length of at least 120 cm are recommended"
+ },
+ {
+  "id": "kadango",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://guidarium.com/fishes/red-fin-borleyi",
+  "result": "exact",
+  "score": 1,
+  "quote": "A minimum aquarium volume of 280 litres"
+ },
+ {
+  "id": "kadango",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://seriouslyfish.com/species/copadichromis-borleyi",
+  "result": "label",
+  "score": 1,
+  "quote": "150 ∗ 45 ∗ 45 cm"
+ },
+ {
+  "id": "syno",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/synodontis-njassae/",
+  "result": "compact",
+  "score": 1,
+  "quote": "120 × 30cm48 × 12in"
+ },
+ {
+  "id": "syno",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/synodontis-njassae/",
+  "result": "compact",
+  "score": 1,
+  "quote": "~108 litres~29 US gal"
+ }
+]

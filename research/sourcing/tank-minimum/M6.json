@@ -1,0 +1,183 @@
+{
+  "batch": "M6",
+  "species": {
+    "oto": {
+      "sci": "Otocinclus vittatus",
+      "fields": {
+        "footprint": {"verdict": "not-stated", "sources": [], "note": "Checked fishkeepingworld, guidarium; no L x W stated (guidarium lists tank-model tables only). SF has no page for this species (404)."},
+        "length": {"verdict": "sourced", "sources": [
+          {"url": "https://guidarium.com/fishes/otocinclus", "site": "Guidarium", "states": "45 cm", "quote": "a tank length of at least 45 cm", "value": 45, "unit": "cm", "group": "6", "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "group of at least 6"}
+        ], "note": "Single source."},
+        "water_depth": {"verdict": "not-stated", "sources": [], "note": "Not stated on fishkeepingworld or guidarium."},
+        "volume": {"verdict": "sourced", "sources": [
+          {"url": "https://www.fishkeepingworld.com/otocinclus/", "site": "Fishkeeping World", "states": "10 gallons", "quote": "Minimum 10 gallons, or 20 gallons for groups of more than 10 fish", "value": 10, "unit": "gal", "group": "6", "stage": "adult", "kind": "min", "est": false, "credibility": "high", "conditions": "at least 6; 20 gal for more than 10"},
+          {"url": "https://guidarium.com/fishes/otocinclus", "site": "Guidarium", "states": "38 litres", "quote": "A minimum aquarium volume of 38 litres", "value": 38, "unit": "L", "group": "6", "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "groups of at least 6"}
+        ], "note": "Agree (10 gal = 38 L)."}
+      },
+      "pick": {"length": {"source": 0, "why": "only length stated"}, "volume": {"source": 0, "why": "agrees with guidarium"}},
+      "conflict": null,
+      "checked": ["https://www.fishkeepingworld.com/otocinclus/", "https://www.seriouslyfish.com/species/otocinclus-vittatus/ (404)", "https://guidarium.com/fishes/otocinclus"]
+    },
+    "clownloach": {
+      "sci": "Chromobotia macracanthus",
+      "fields": {
+        "footprint": {"verdict": "sourced", "sources": [
+          {"url": "https://www.seriouslyfish.com/species/chromobotia-macracanthus/", "site": "Seriously Fish", "states": "180 × 60cm", "quote": "base measurements of 180 ∗ 60 cm72 ∗ 24 in or equivalent", "value": [180, 60], "unit": "cm", "group": "5-6 (preferably 10+)", "stage": "adult", "kind": "min", "est": false, "credibility": "high", "conditions": "absolute minimum for a group of adults (6 ft x 2 ft)"}
+        ], "note": "Single source with stated footprint. Guidarium gives only length 150 cm (-17 % vs 180)."},
+        "length": {"verdict": "sourced", "sources": [
+          {"url": "https://guidarium.com/fishes/clown-loach", "site": "Guidarium", "states": "150 cm", "quote": "Minimum Length: 150 cm", "value": 150, "unit": "cm", "group": "5", "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "adult standard variety, group of 5+; juvenile grow-out 120 cm"}
+        ], "note": "Quote as extracted by WebFetch; page layout runs label and value together. SF footprint implies 180 cm."},
+        "water_depth": {"verdict": "not-stated", "sources": [], "note": "Not stated on any opened page."},
+        "tank_height": {"verdict": "sourced", "sources": [
+          {"url": "https://aquariadise.com/caresheet-clown-loach-chromobotia-macracanthus/", "site": "Aquariadise", "states": "longer than tall", "quote": "Longer tanks are better than tall ones since clown loaches are bottom dwellers.", "value": null, "unit": "none", "group": null, "stage": "adult", "kind": "rec", "est": true, "credibility": "medium", "conditions": "qualitative only, no height number"}
+        ], "note": "Qualitative only."},
+        "volume": {"verdict": "sourced", "sources": [
+          {"url": "https://www.fishkeepingworld.com/clown-loach/", "site": "Fishkeeping World", "states": "150-gallon", "quote": "5 adults will need at least a 150-gallon tank", "value": 150, "unit": "gal", "group": "5", "stage": "adult", "kind": "min", "est": false, "credibility": "high", "conditions": "5 adults; page also says 75 gal minimum for a juvenile group"},
+          {"url": "https://www.aquariumcoop.com/blogs/aquarium/clown-loach", "site": "Aquarium Co-Op", "states": "55-gallon", "quote": "For juveniles, the minimum size we recommend is a 55-gallon aquarium.", "value": 55, "unit": "gal", "group": null, "stage": "juvenile", "kind": "min", "est": false, "credibility": "high", "conditions": "juveniles only, lasts to about 6 in"},
+          {"url": "https://aquariadise.com/caresheet-clown-loach-chromobotia-macracanthus/", "site": "Aquariadise", "states": "140 gallons", "quote": "Minimum 140 gallons (530L) for a group of 6.", "value": 140, "unit": "gal", "group": "6", "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "group of 6, adults"},
+          {"url": "https://guidarium.com/fishes/clown-loach", "site": "Guidarium", "states": "500 L", "quote": "Minimum Volume: 500 L", "value": 500, "unit": "L", "group": "5", "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "adult standard; grow-out 200 L"},
+          {"url": "https://www.seriouslyfish.com/species/chromobotia-macracanthus/", "site": "Seriously Fish", "states": "~648litres", "quote": "~648litres~171US gal", "value": 648, "unit": "L", "group": "5-6", "stage": "adult", "kind": "min", "est": false, "credibility": "high", "conditions": "derived volume of the 180x60 base"}
+        ], "note": "Adult group: 140-171 gal (530-648 L) agree within ~20 %; juvenile figures lower (55 gal)."}
+      },
+      "pick": {"footprint": {"source": 0, "why": "only stated footprint, high credibility"}, "length": {"source": 0, "why": "stated length alone"}, "volume": {"source": 2, "why": "adult group of 6, matches SF"}},
+      "conflict": "Adult group volume: 150 (FKW, 5 adults) / 140 (Aquariadise) / 171 gal (SF) / 500 L = 132 gal (Guidarium) agree; Co-Op 55 gal and FKW 75 gal are juvenile-only. Length: Guidarium 150 cm vs SF 180 cm (17 %).",
+      "checked": ["https://www.fishkeepingworld.com/clown-loach/", "https://www.aquariumcoop.com/blogs/aquarium/clown-loach", "https://www.seriouslyfish.com/species/chromobotia-macracanthus/", "https://guidarium.com/fishes/clown-loach", "https://aquariadise.com/caresheet-clown-loach-chromobotia-macracanthus/"]
+    },
+    "sae": {
+      "sci": "Crossocheilus oblongus",
+      "fields": {
+        "footprint": {"verdict": "not-stated", "sources": [], "note": "No L x W stated on fishkeepingworld, Co-Op, guidarium. SF Crossocheilus genus page lists other species only. Guidarium tank-model tables are not stated minimums."},
+        "length": {"verdict": "sourced", "sources": [
+          {"url": "https://guidarium.com/fishes/siamese-algae-eater", "site": "Guidarium", "states": "90 cm", "quote": "Minimum Length: 90 cm", "value": 90, "unit": "cm", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "page says solo is fine; quote as extracted"}
+        ], "note": "Single source."},
+        "water_depth": {"verdict": "not-stated", "sources": [], "note": "Not stated on any opened page."},
+        "volume": {"verdict": "sourced", "sources": [
+          {"url": "https://www.fishkeepingworld.com/siamese-algae-eater/", "site": "Fishkeeping World", "states": "20 gallons", "quote": "Minimum Tank Size: 20 gallons", "value": 20, "unit": "gal", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "high", "conditions": "first fish; plus 10 gal per extra fish"},
+          {"url": "https://www.aquariumcoop.com/blogs/aquarium/siamese-algae-eater", "site": "Aquarium Co-Op", "states": "50- to 55-gallon", "quote": "A single SAE can live in a 50- to 55-gallon freshwater aquarium", "value": 50, "unit": "gal", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "high", "conditions": "single SAE; 50-55 gal"},
+          {"url": "https://guidarium.com/fishes/siamese-algae-eater", "site": "Guidarium", "states": "110 L", "quote": "Minimum Volume: 110 L", "value": 110, "unit": "L", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "quote as extracted"}
+        ], "note": "20 gal vs 50 gal vs 110 L (29 gal) disagree."}
+      },
+      "pick": {"length": {"source": 0, "why": "only length stated"}, "volume": {"source": 2, "why": "mid value, between FKW and Co-Op"}},
+      "conflict": "Volume: FKW 20 gal vs Co-Op 50 gal (60 % lower) vs Guidarium 110 L = 29 gal.",
+      "checked": ["https://www.fishkeepingworld.com/siamese-algae-eater/", "https://www.aquariumcoop.com/blogs/aquarium/siamese-algae-eater", "https://www.seriouslyfish.com/species/crossocheilus-oblongus/ (genus page, no C. oblongus row)", "https://guidarium.com/fishes/siamese-algae-eater", "https://www.fishbase.se/summary/Crossocheilus-oblongus.html (connection refused)"]
+    },
+    "hillstream": {
+      "sci": "Sewellia lineolata",
+      "fields": {
+        "footprint": {"verdict": "sourced", "sources": [
+          {"url": "https://www.seriouslyfish.com/species/sewellia-lineolata/", "site": "Seriously Fish", "states": "75 ∗ 30 cm30 ∗ 12 in", "quote": "Minimum base dimensions of 75 ∗ 30 cm30 ∗ 12 in", "value": [75, 30], "unit": "cm", "group": "6 or more", "stage": "adult", "kind": "min", "est": false, "credibility": "high", "conditions": "general care; smaller tanks usable for breeding; ~68 L"}
+        ], "note": "Single stated footprint."},
+        "length": {"verdict": "sourced", "sources": [
+          {"url": "https://guidarium.com/fishes/reticulated-hillstream-loach", "site": "Guidarium", "states": "90 cm", "quote": "a tank length of at least 90 cm", "value": 90, "unit": "cm", "group": "3", "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "groups of at least 3; page species identity not verified as Sewellia lineolata"}
+        ], "note": "Guidarium 90 cm vs SF 75 cm (20 %)."},
+        "water_depth": {"verdict": "not-stated", "sources": [], "note": "Not stated on SF, Co-Op, Guidarium."},
+        "volume": {"verdict": "sourced", "sources": [
+          {"url": "https://www.seriouslyfish.com/species/sewellia-lineolata/", "site": "Seriously Fish", "states": "~68litres", "quote": "~68litres~18US gal", "value": 68, "unit": "L", "group": "6", "stage": "adult", "kind": "min", "est": false, "credibility": "high", "conditions": "volume of the 75x30 base"},
+          {"url": "https://guidarium.com/fishes/reticulated-hillstream-loach", "site": "Guidarium", "states": "80 litres", "quote": "A minimum aquarium volume of 80 litres", "value": 80, "unit": "L", "group": "3", "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "groups of at least 3"}
+        ], "note": "Close agreement (68 vs 80 L); FKW 55 gal is much higher (prior)."}
+      },
+      "pick": {"footprint": {"source": 0, "why": "only footprint stated"}, "length": {"source": 0, "why": "only length stated"}, "volume": {"source": 0, "why": "SF high credibility"}},
+      "conflict": null,
+      "checked": ["https://www.seriouslyfish.com/species/sewellia-lineolata/", "https://www.aquariumcoop.com/blogs/aquarium/hillstream-loach (no size stated)", "https://guidarium.com/fishes/reticulated-hillstream-loach"]
+    },
+    "peapuffer": {
+      "sci": "Carinotetraodon travancoricus",
+      "fields": {
+        "footprint": {"verdict": "sourced", "sources": [
+          {"url": "https://www.seriouslyfish.com/species/carinotetraodon-travancoricus/", "site": "Seriously Fish", "states": "12\" x 8\" x 8\"", "quote": "as small as 12\" x 8\" x 8\"", "value": [12, 8], "unit": "in", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "high", "conditions": "single fish; page does not label axes (L x W x H assumed); group needs more space"}
+        ], "note": "SF Aquarium base field itself is 'not recorded'."},
+        "water_depth": {"verdict": "not-stated", "sources": [], "note": "Not stated on SF, Co-Op, Fishkeeping World."},
+        "volume": {"verdict": "sourced", "sources": [
+          {"url": "https://www.seriouslyfish.com/species/carinotetraodon-travancoricus/", "site": "Seriously Fish", "states": "12.6 litres", "quote": "30cm x 20cm x 20cm - 12.6 litres", "value": 12.6, "unit": "L", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "high", "conditions": "single fish; 2-3 gal per puffer for groups"},
+          {"url": "https://www.aquariumcoop.com/blogs/aquarium/pea-puffer", "site": "Aquarium Co-Op", "states": "five gallons", "quote": "provide five gallons of water for the first puffer", "value": 5, "unit": "gal", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "high", "conditions": "+3 gal per extra puffer; planted"},
+          {"url": "https://www.fishkeepingworld.com/pea-puffer/", "site": "Fishkeeping World", "states": "5-gallon", "quote": "The minimum size of aquarium recommended for a Dwarf Puffer is a 5-gallon tank.", "value": 5, "unit": "gal", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "high", "conditions": "1 puffer per 5 gal"}
+        ], "note": "5 gal (18.9 L) vs SF 12.6 L (3.3 gal): 33 % lower."}
+      },
+      "pick": {"footprint": {"source": 0, "why": "only footprint"}, "volume": {"source": 1, "why": "two agree on 5 gal"}},
+      "conflict": "Volume: SF 12.6 L (3.3 gal) vs Co-Op and FKW 5 gal (18.9 L), 33 % lower.",
+      "checked": ["https://www.seriouslyfish.com/species/carinotetraodon-travancoricus/", "https://www.aquariumcoop.com/blogs/aquarium/pea-puffer", "https://www.fishkeepingworld.com/pea-puffer/", "https://guidarium.com/fishes/pea-puffer (404)"]
+    },
+    "cherryshrimp": {
+      "sci": "Neocaridina davidi",
+      "fields": {
+        "footprint": {"verdict": "not-stated", "sources": [], "note": "Neither page gives dimensions."},
+        "water_depth": {"verdict": "not-stated", "sources": [], "note": "Not stated."},
+        "volume": {"verdict": "sourced", "sources": [
+          {"url": "https://modestfish.com/cherry-shrimp", "site": "Modest Fish", "states": "5 gallons (19 liters)", "quote": "5 gallons (19 liters)", "value": 5, "unit": "gal", "group": "small colony", "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "small colony; the more shrimp the better"},
+          {"url": "https://shrimpybusiness.com/blogs/shrimpy-business-blog/cherry-shrimp-care-guide", "site": "Shrimpy Business", "states": "5 gallons", "quote": "we recommend housing them in a tank no smaller than 5 gallons.", "value": 5, "unit": "gal", "group": "10+", "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "colony of 10 or more"}
+        ], "note": "Agree at 5 gal."}
+      },
+      "pick": {"volume": {"source": 1, "why": "states colony size"}},
+      "conflict": null,
+      "checked": ["https://modestfish.com/cherry-shrimp", "https://shrimpybusiness.com/blogs/shrimpy-business-blog/cherry-shrimp-care-guide"]
+    },
+    "amano": {
+      "sci": "Caridina multidentata",
+      "fields": {
+        "footprint": {"verdict": "not-stated", "sources": [], "note": "Page gives no dimensions."},
+        "water_depth": {"verdict": "not-stated", "sources": [], "note": "Not stated."},
+        "volume": {"verdict": "sourced", "sources": [
+          {"url": "https://www.aquariumsource.com/amano-shrimp/", "site": "Aquarium Source", "states": "ten gallons", "quote": "The minimum tank size for your Amano shrimp should be ten gallons.", "value": 10, "unit": "gal", "group": "6", "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "groups of half a dozen or more; add 2 gal per extra shrimp (not firm)"}
+        ], "note": "Single source; one fetch only."}
+      },
+      "pick": {"volume": {"source": 0, "why": "only source"}},
+      "conflict": null,
+      "checked": ["https://www.aquariumsource.com/amano-shrimp/"]
+    },
+    "nerite": {
+      "sci": "Neritina natalensis",
+      "fields": {
+        "footprint": {"verdict": "not-stated", "sources": [], "note": "No dimensions on either page."},
+        "water_depth": {"verdict": "not-stated", "sources": [], "note": "Not stated."},
+        "volume": {"verdict": "sourced", "sources": [
+          {"url": "https://www.aquariumsource.com/nerite-snail/", "site": "Aquarium Source", "states": "10 gallon", "quote": "The minimum tank size for a nerite snail is a 10 gallon tank.", "value": 10, "unit": "gal", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "per one snail; +5 gal each extra"},
+          {"url": "https://www.aquariumcoop.com/blogs/aquarium/nerite-snails", "site": "Aquarium Co-Op", "states": "2-3 gallons", "quote": "a nano tank as small as 2-3 gallons", "value": 2, "unit": "gal", "group": null, "stage": "adult", "kind": "min", "est": true, "credibility": "high", "conditions": "stated as tolerated lower bound (2-3 gal); per-snail not stated"}
+        ], "note": "10 gal vs 2-3 gal: large conflict."}
+      },
+      "pick": {"volume": {"source": 1, "why": "Co-Op higher credibility, lower bound; 10 gal is conservative"}},
+      "conflict": "Volume: Aquarium Source 10 gal vs Co-Op 2-3 gal (70-80 % lower).",
+      "checked": ["https://www.aquariumsource.com/nerite-snail/", "https://www.aquariumcoop.com/blogs/aquarium/nerite-snails"]
+    },
+    "mystery": {
+      "sci": "Pomacea diffusa",
+      "fields": {
+        "footprint": {"verdict": "not-stated", "sources": [], "note": "No dimensions on page."},
+        "water_depth": {"verdict": "not-stated", "sources": [], "note": "Not stated."},
+        "volume": {"verdict": "sourced", "sources": [
+          {"url": "https://ca.aquariumsource.com/mystery-snail/", "site": "Aquarium Source", "states": "five gallons", "quote": "The minimum tank size for mystery snails is five gallons for one snail.", "value": 5, "unit": "gal", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "per snail; +5 gal each additional"}
+        ], "note": "Single source."}
+      },
+      "pick": {"volume": {"source": 0, "why": "only source"}},
+      "conflict": null,
+      "checked": ["https://ca.aquariumsource.com/mystery-snail/"]
+    },
+    "ramshorn": {
+      "sci": "Planorbella duryi",
+      "fields": {
+        "footprint": {"verdict": "not-stated", "sources": [], "note": "No dimensions on aqualibs; garnelio connection refused."},
+        "water_depth": {"verdict": "not-stated", "sources": [], "note": "Not stated."},
+        "volume": {"verdict": "sourced", "sources": [
+          {"url": "https://www.aqualibs.com/aquarium-snails/planorbella-duryi-duryi-brown-ramshorn-snail", "site": "AquaLibs", "states": "5 gallons", "quote": "A minimum tank size of 5 gallons is recommended.", "value": 5, "unit": "gal", "group": null, "stage": "adult", "kind": "min", "est": true, "credibility": "low", "conditions": "retailer; breeding rate/bioload reasoning, no per-snail figure"}
+        ], "note": "Retailer page only; garnelio (5-10 L per prior) could not be opened."}
+      },
+      "pick": {"volume": {"source": 0, "why": "only source"}},
+      "conflict": null,
+      "checked": ["https://www.aqualibs.com/aquarium-snails/planorbella-duryi-duryi-brown-ramshorn-snail", "https://www.garnelio.de/en/brown-ramshorn-snail-planorbella-duryi-duryi (connection refused)"]
+    },
+    "trumpet": {
+      "sci": "Melanoides tuberculata",
+      "fields": {
+        "footprint": {"verdict": "not-stated", "sources": [], "note": "No dimensions on either page."},
+        "water_depth": {"verdict": "not-stated", "sources": [], "note": "Not stated."},
+        "volume": {"verdict": "sourced", "sources": [
+          {"url": "https://aquariadise.com/caresheet-malaysian-trumpet-snails/", "site": "Aquariadise", "states": "10-gallon", "quote": "can comfortably live in a 10-gallon aquarium.", "value": 10, "unit": "gal", "group": null, "stage": "adult", "kind": "min", "est": true, "credibility": "medium", "conditions": "rule of thumb one snail per gallon"},
+          {"url": "https://www.aquariumsource.com/malaysian-trumpet-snail/", "site": "Aquarium Source", "states": "5 to 10 gallon", "quote": "A small group can live in a 5 to 10 gallon tank just fine!", "value": 5, "unit": "gal", "group": "small group", "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "small group; range 5-10 gal"}
+        ], "note": "5-10 gal range; overlaps."}
+      },
+      "pick": {"volume": {"source": 1, "why": "states group, range includes other source"}},
+      "conflict": "Volume: 5 vs 10 gal (50 %), within the 5-10 range on one page.",
+      "checked": ["https://aquariadise.com/caresheet-malaysian-trumpet-snails/", "https://www.aquariumsource.com/malaysian-trumpet-snail/"]
+    }
+  },
+  "agent_notes": "WebFetch output is a model summary, so quotes follow the extracted text; SF and Guidarium quotes may carry run-together unit cells (e.g. '75 x 30cm30 x 12in') or label+value forms ('Minimum Length: 90 cm'), so re-verify those with the script. Guidarium hillstream page identity (Sewellia lineolata) unverified. Pea puffer SF 12x8x8 in axes unlabeled. SF Crossocheilus page is a genus table with no C. oblongus row, not cited. Invertebrates: no geometry stated anywhere."
+}

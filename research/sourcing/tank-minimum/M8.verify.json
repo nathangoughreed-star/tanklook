@@ -1,0 +1,299 @@
+[
+ {
+  "id": "dartfrog",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://joshsfrogs.com/sp/dendrobates-tinctorius-green-sip-dart034",
+  "result": "exact",
+  "score": 1,
+  "quote": "recommends a 20H or 18x18x18 glass terrarium for 1-3 frogs."
+ },
+ {
+  "id": "dartfrog",
+  "field": "tank_height",
+  "verdict": "sourced",
+  "url": "https://joshsfrogs.com/sp/dendrobates-tinctorius-green-sip-dart034",
+  "result": "exact",
+  "score": 1,
+  "quote": "recommends a 20H or 18x18x18 glass terrarium for 1-3 frogs."
+ },
+ {
+  "id": "dartfrog",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://joshsfrogs.com/sp/dendrobates-tinctorius-green-sip-dart034",
+  "result": "exact",
+  "score": 1,
+  "quote": "A 10 gallon aquarium is suitable for a single Dendrobates tinctorius"
+ },
+ {
+  "id": "treefrog",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.thebiodude.com/blogs/frog-caresheets/white-s-tree-frog-caresheet-and-bioactive-maintenance",
+  "result": "exact",
+  "score": 1,
+  "quote": "housing a single White’s tree frog is 18”L x 18”W x 24”H"
+ },
+ {
+  "id": "treefrog",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://reptiledirect.com/whites-tree-frog/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Ideally, it should measure 18 inches wide, 18 inches deep, and 24 inches tall."
+ },
+ {
+  "id": "treefrog",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://joshsfrogs.com/lp/white-s-tree-frogs---litoria-caerulea--individually-pictured--ipa-wtf",
+  "result": "exact",
+  "score": 1,
+  "quote": "an 18x18x24 glass terrarium is a good size for 2-4 juveniles or adults."
+ },
+ {
+  "id": "treefrog",
+  "field": "tank_height",
+  "verdict": "sourced",
+  "url": "https://www.thebiodude.com/blogs/frog-caresheets/white-s-tree-frog-caresheet-and-bioactive-maintenance",
+  "result": "exact",
+  "score": 1,
+  "quote": "housing a single White’s tree frog is 18”L x 18”W x 24”H"
+ },
+ {
+  "id": "treefrog",
+  "field": "tank_height",
+  "verdict": "sourced",
+  "url": "https://reptiledirect.com/whites-tree-frog/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Ideally, it should measure 18 inches wide, 18 inches deep, and 24 inches tall."
+ },
+ {
+  "id": "treefrog",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://reptilesmagazine.com/whites-treefrog-care-sheet/",
+  "result": "exact",
+  "score": 1,
+  "quote": "A 20 gallon horizontal terrarium should be considered a minimum size for 4 young frogs."
+ },
+ {
+  "id": "treefrog",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://reptiledirect.com/whites-tree-frog/",
+  "result": "exact",
+  "score": 1,
+  "quote": "The smallest enclosure you can use is a 15- or 20-gallon glass terrarium."
+ },
+ {
+  "id": "firetoad",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://thevetdesk.com/pet-breeds/amphibians/oriental-fire-bellied-toad",
+  "result": "exact",
+  "score": 1,
+  "quote": "15 gallons (24” L x 12” W x 12” H)"
+ },
+ {
+  "id": "firetoad",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://joshsfrogs.com/cms/fire-bellied-toad-care-sheet",
+  "result": "exact",
+  "score": 1,
+  "quote": "10 to 15 gallon tank or a 18x18x18 Exo-terra terrarium"
+ },
+ {
+  "id": "firetoad",
+  "field": "tank_height",
+  "verdict": "sourced",
+  "url": "https://thevetdesk.com/pet-breeds/amphibians/oriental-fire-bellied-toad",
+  "result": "exact",
+  "score": 1,
+  "quote": "15 gallons (24” L x 12” W x 12” H)"
+ },
+ {
+  "id": "firetoad",
+  "field": "tank_height",
+  "verdict": "sourced",
+  "url": "https://joshsfrogs.com/cms/fire-bellied-toad-care-sheet",
+  "result": "exact",
+  "score": 1,
+  "quote": "10 to 15 gallon tank or a 18x18x18 Exo-terra terrarium"
+ },
+ {
+  "id": "firetoad",
+  "field": "water_depth",
+  "verdict": "sourced",
+  "url": "https://thevetdesk.com/pet-breeds/amphibians/oriental-fire-bellied-toad",
+  "result": "exact",
+  "score": 1,
+  "quote": "ideally half water (about 2 to 3 inches deep) and half land."
+ },
+ {
+  "id": "firetoad",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://thevetdesk.com/pet-breeds/amphibians/oriental-fire-bellied-toad",
+  "result": "exact",
+  "score": 1,
+  "quote": "A 10-gallon tank is a bare minimum"
+ },
+ {
+  "id": "firetoad",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://joshsfrogs.com/cms/fire-bellied-toad-care-sheet",
+  "result": "exact",
+  "score": 1,
+  "quote": "10 to 15 gallon tank or a 18x18x18 Exo-terra terrarium"
+ },
+ {
+  "id": "firenewt",
+  "field": "water_depth",
+  "verdict": "sourced",
+  "url": "https://petmd.com/exotic/fire-bellied-newt-care-sheet",
+  "result": "exact",
+  "score": 1,
+  "quote": "at least 1.5 times as deep as the body length of the longest newt"
+ },
+ {
+  "id": "firenewt",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://petmd.com/exotic/fire-bellied-newt-care-sheet",
+  "result": "exact",
+  "score": 1,
+  "quote": "A newt needs at least a 15-gallon glass tank."
+ },
+ {
+  "id": "firenewt",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://reptilesmagazine.com/?p=104985",
+  "result": "exact",
+  "score": 1,
+  "quote": "A 20 gallon aquarium will be enough room for up to four newts."
+ },
+ {
+  "id": "adf",
+  "field": "water_depth",
+  "verdict": "sourced",
+  "url": "https://modestfish.com/african-dwarf-frog-care/",
+  "result": "exact",
+  "score": 1,
+  "quote": "be no more than 2 feet (61 centimeters) deep"
+ },
+ {
+  "id": "adf",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.liveaquaria.com/products/dwarf-african-frog",
+  "result": "exact",
+  "score": 1,
+  "quote": "established aquarium no smaller than 10 gallons in size."
+ },
+ {
+  "id": "adf",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://modestfish.com/african-dwarf-frog-care/",
+  "result": "exact",
+  "score": 1,
+  "quote": "at least a 5 gallon (19 liter) tank if you plan to keep a single frog"
+ },
+ {
+  "id": "adf",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.petsmart.com/learning-center/fish-care/African-dwarf-frog-care-guide",
+  "result": "exact",
+  "score": 1,
+  "quote": "At least 5 gallons for frogs"
+ },
+ {
+  "id": "axolotl",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.axolotl.org/housing.htm",
+  "result": "exact",
+  "score": 1,
+  "quote": "aquarium of dimensions 50 cm long x 25 cm wide x 25 cm tall"
+ },
+ {
+  "id": "axolotl",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.reptilecentre.com/blogs/reptile-blog/axolotl-tank-size",
+  "result": "exact",
+  "score": 1,
+  "quote": "The ideal axolotl tank size is at least 70 litres, 90x45cm."
+ },
+ {
+  "id": "axolotl",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://www.axolotl.org/housing.htm",
+  "result": "exact",
+  "score": 1,
+  "quote": "minimum size would be a 45 cm long aquarium (US 10 gallons) for one adult"
+ },
+ {
+  "id": "axolotl",
+  "field": "tank_height",
+  "verdict": "sourced",
+  "url": "https://www.axolotl.org/housing.htm",
+  "result": "exact",
+  "score": 1,
+  "quote": "aquarium of dimensions 50 cm long x 25 cm wide x 25 cm tall"
+ },
+ {
+  "id": "axolotl",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.axolotl.org/housing.htm",
+  "result": "exact",
+  "score": 1,
+  "quote": "45 cm long aquarium (US 10 gallons) for one adult"
+ },
+ {
+  "id": "axolotl",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://modestfish.com/axolotl-care/",
+  "result": "miss",
+  "score": 0,
+  "quote": "29 gallons is the smallest tank I can recommend you buy for your axolotl"
+ },
+ {
+  "id": "axolotl",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.reptilecentre.com/blogs/reptile-blog/axolotl-tank-size",
+  "result": "exact",
+  "score": 1,
+  "quote": "The ideal axolotl tank size is at least 70 litres, 90x45cm."
+ },
+ {
+  "id": "crestedharlequin",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://reptilesmagazine.com/crested-gecko-care-sheet/",
+  "result": "near",
+  "score": 1,
+  "quote": "18″L x 18″W x 36″ H terrarium with a screen top."
+ },
+ {
+  "id": "crestedharlequin",
+  "field": "tank_height",
+  "verdict": "sourced",
+  "url": "https://reptilesmagazine.com/crested-gecko-care-sheet/",
+  "result": "near",
+  "score": 1,
+  "quote": "18″L x 18″W x 36″ H terrarium with a screen top."
+ }
+]

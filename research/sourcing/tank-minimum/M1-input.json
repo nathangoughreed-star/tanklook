@@ -1,0 +1,117 @@
+[
+ {
+  "id": "neon",
+  "name": "Neon tetra",
+  "sci": "Paracheirodon innesi",
+  "tl_mm": 35,
+  "minL": 40,
+  "prior": [
+   "https://www.seriouslyfish.com/species/paracheirodon-innesi/ | 54 L / 14 US gal",
+   "https://www.fishkeepingworld.com/neon-tetra/ | 10 US gal = 38 L"
+  ]
+ },
+ {
+  "id": "swordtail",
+  "name": "Swordtail",
+  "sci": "Xiphophorus hellerii",
+  "tl_mm": 120,
+  "minL": 110,
+  "prior": [
+   "https://www.seriouslyfish.com/species/xiphophorus-hellerii/ | 120 x 30 cm base, about 108 L",
+   "https://www.fishkeepingworld.com/swordtail/ | 15 gal (57 L) for a single fish, +5 gal each"
+  ]
+ },
+ {
+  "id": "betta",
+  "name": "Betta",
+  "sci": "Betta splendens",
+  "tl_mm": 65,
+  "minL": 20,
+  "prior": [
+   "https://www.seriouslyfish.com/species/betta-splendens/ | 45x30 cm base for single male or pair, ~41 L / 11 US gal",
+   "https://www.fishkeepingworld.com/betta-fish-care/ | 5 US gal = 19 L"
+  ]
+ },
+ {
+  "id": "angel",
+  "name": "Angelfish",
+  "sci": "Pterophyllum scalare",
+  "tl_mm": 150,
+  "minL": 200,
+  "prior": [
+   "https://www.seriouslyfish.com/species/pterophyllum-scalare/ | ~200 L / 53 US gal",
+   "https://www.fishkeepingworld.com/angelfish/ | 30 gal = 114 L listed as tank size (not labelled minimum)"
+  ]
+ },
+ {
+  "id": "discus",
+  "name": "Discus",
+  "sci": "Symphysodon aequifasciatus",
+  "tl_mm": 150,
+  "minL": 250,
+  "prior": [
+   "https://www.seriouslyfish.com/species/symphysodon-aequifasciatus/ | 255 L recommended",
+   "https://www.fishkeepingworld.com/discus-fish/ | min 60 gal (227 L)"
+  ]
+ },
+ {
+  "id": "oscar",
+  "name": "Oscar",
+  "sci": "Astronotus ocellatus",
+  "tl_mm": 300,
+  "minL": 540,
+  "prior": [
+   "https://www.seriouslyfish.com/species/astronotus-ocellatus/ | ~540 L / 143 US gal",
+   "https://www.fishkeepingworld.com/oscar-fish/ | 143 US gal = 541 L for one adult"
+  ]
+ },
+ {
+  "id": "bronzecory",
+  "name": "Bronze corydoras",
+  "sci": "Corydoras aeneus",
+  "zone": "bottom",
+  "tl_mm": 65,
+  "minL": 80,
+  "prior": [
+   "https://www.seriouslyfish.com/species/corydoras-aeneus/ | ~72 L / 19 US gal",
+   "https://www.aquariadise.com/caresheet-bronze-corydoras/ | 20 US gal long = 80 L"
+  ]
+ },
+ {
+  "id": "kuhli",
+  "name": "Kuhli loach",
+  "sci": "Pangio kuhlii",
+  "zone": "bottom",
+  "tl_mm": 100,
+  "minL": 80,
+  "prior": [
+   "https://www.fishkeepingworld.com/kuhli-loach/ | 20 US gal (75.7 L)",
+   "https://www.seriouslyfish.com/species/pangio-kuhlii/ | base at least 60 x 30 cm, no litres"
+  ]
+ },
+ {
+  "id": "royalgramma",
+  "name": "Royal gramma",
+  "sci": "Gramma loreto",
+  "cat": "sw-fish",
+  "tl_mm": 75,
+  "minL": 115,
+  "prior": [
+   "https://www.liveaquaria.com/product/53/?pcatid=53 | 30 gal (113.5 L)",
+   "https://www.aquariumsource.com/royal-gramma-basslet/ | 30 gal (113.5 L) for one fish"
+  ]
+ },
+ {
+  "id": "cleanershrimp",
+  "name": "Skunk cleaner shrimp",
+  "sci": "Lysmata amboinensis",
+  "cat": "sw-invert",
+  "zone": "bottom",
+  "tl_mm": 55,
+  "minL": 75,
+  "prior": [
+   "https://aquariadise.com/cleaner-shrimp/ | 20 gallons (~90 L)",
+   "https://gensou.sg/?p=30650 | 60 L single, 150 L pair"
+  ]
+ }
+]

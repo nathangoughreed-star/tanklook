@@ -1,0 +1,180 @@
+{
+ "batch": "M1",
+ "species": {
+  "neon": {
+   "sci": "Paracheirodon innesi",
+   "fields": {
+    "footprint": {"verdict": "sourced", "sources": [
+     {"url": "https://www.seriouslyfish.com/species/paracheirodon-innesi/", "site": "Seriously Fish", "states": "60 ∗ 30 cm", "quote": "base dimensions of 60 ∗ 30 cm", "value": [60, 30], "unit": "cm", "group": null, "stage": "adult", "kind": "rec", "est": true, "credibility": "high", "conditions": "'or larger is recommended'; group not stated on this sentence"}],
+     "note": "One source; Fishkeeping World states gallons only."},
+    "volume": {"verdict": "sourced", "sources": [
+     {"url": "https://www.fishkeepingworld.com/neon-tetra/", "site": "Fishkeeping World", "states": "10 gallons", "quote": "Minimum tank size: 10 gallons", "value": 10, "unit": "gal", "group": null, "stage": null, "kind": "min", "est": true, "credibility": "medium", "conditions": "plus 1 gal per additional fish; author reply says 5 gal is the smallest recommended"}],
+     "note": "Seriously Fish lists about 54 L / 14 US gal (no quote captured)."},
+    "water_depth": {"verdict": "not-stated", "sources": [], "note": "Neither page states depth or height."}
+   },
+   "pick": {"footprint": {"source": 0, "why": "only footprint source"}},
+   "conflict": null,
+   "checked": ["https://www.seriouslyfish.com/species/paracheirodon-innesi/", "https://www.fishkeepingworld.com/neon-tetra/"]
+  },
+  "swordtail": {
+   "sci": "Xiphophorus hellerii",
+   "fields": {
+    "footprint": {"verdict": "sourced", "sources": [
+     {"url": "https://www.seriouslyfish.com/species/xiphophorus-hellerii/", "site": "Seriously Fish", "states": "120 ∗ 30 cm", "quote": "surface dimensions of 120 ∗ 30 cm", "value": [120, 30], "unit": "cm", "group": null, "stage": "adult", "kind": "min", "est": true, "credibility": "high", "conditions": "full sentence: 'An aquarium with surface dimensions of 120 ∗ 30 cm48 ∗ 12 in or equivalent should be the smallest considered.' Group not stated."}],
+     "note": "'or equivalent' wording; FishBase gives only a single length (see length)."},
+    "length": {"verdict": "sourced", "sources": [
+     {"url": "https://www.fishbase.net.br/summary/3231", "site": "FishBase (mirror fishbase.net.br)", "states": "80 cm", "quote": "minimum aquarium size 80 cm", "value": 80, "unit": "cm", "group": null, "stage": null, "kind": "min", "est": true, "credibility": "medium", "conditions": "Full text: 'Aquarium keeping: the males aggressive towards each other; minimum aquarium size 80 cm (Ref. 51539).' Dimension (length vs volume-less size) not labelled; presumably length. No group or sex-ratio stated."}],
+     "note": "Disagrees with Seriously Fish 120 cm length by 33 % (80 vs 120). Original fishbase.org and fishbase.mnhn.fr returned 403/blocked; the mirror fishbase.net.br was opened and states it."},
+    "volume": {"verdict": "sourced", "sources": [
+     {"url": "https://www.fishkeepingworld.com/swordtail/", "site": "Fishkeeping World", "states": "15 gallons", "quote": "At least 15 gallons for a single swordtail fish.", "value": 15, "unit": "gal", "group": 1, "stage": null, "kind": "min", "est": false, "credibility": "medium", "conditions": "single fish; +5 gal per additional fish; 'elongated tank shape' advised, no dimensions"}],
+     "note": "No dimensions on this page."},
+    "water_depth": {"verdict": "not-stated", "sources": [], "note": "Seriously Fish gives only wild habitat depth (<1.5 m)."}
+   },
+   "pick": {"footprint": {"source": 0, "why": "stated footprint, species-level page"}, "length": {"source": 0, "why": "only length; lower than Seriously Fish 120 cm"}},
+   "conflict": "length: FishBase 80 cm vs Seriously Fish 120 cm (120 x 30 'or equivalent'), 33 % apart.",
+   "checked": ["https://www.seriouslyfish.com/species/xiphophorus-hellerii/", "https://www.fishkeepingworld.com/swordtail/", "https://fishbase.mnhn.fr/summary/Xiphophorus-hellerii.html (403)", "https://www.fishbase.org/summary/3231 (403)", "https://fishbase.se/summary/SpeciesSummary.php?id=3231 (connection refused)", "https://fishbase.net.br/summary/3231"]
+  },
+  "betta": {
+   "sci": "Betta splendens",
+   "fields": {
+    "footprint": {"verdict": "sourced", "sources": [
+     {"url": "https://www.seriouslyfish.com/species/betta-splendens/", "site": "Seriously Fish", "states": "45 ∗ 30 cm", "quote": "base measurements of 45 ∗ 30 cm", "value": [45, 30], "unit": "cm", "group": "1 male or pair", "stage": "adult", "kind": "min", "est": false, "credibility": "high", "conditions": "'or equivalent is large enough for a single male or pair'"}],
+     "note": "One source."},
+    "volume": {"verdict": "sourced", "sources": [
+     {"url": "https://www.fishkeepingworld.com/betta-fish-care/", "site": "Fishkeeping World", "states": "5 gallons", "quote": "At least 5 gallons in size.", "value": 5, "unit": "gal", "group": 1, "stage": null, "kind": "min", "est": false, "credibility": "medium", "conditions": "single betta; 10 gal if community"}],
+     "note": "Seriously Fish gives ~41 L / 11 US gal for male or pair."},
+    "water_depth": {"verdict": "not-stated", "sources": [], "note": "Neither page states water depth or max depth."}
+   },
+   "pick": {"footprint": {"source": 0, "why": "only footprint source"}},
+   "conflict": "volume: 5 gal (19 L) Fishkeeping World vs ~11 gal (41 L) Seriously Fish footprint-derived.",
+   "checked": ["https://www.seriouslyfish.com/species/betta-splendens/", "https://www.fishkeepingworld.com/betta-fish-care/"]
+  },
+  "angel": {
+   "sci": "Pterophyllum scalare",
+   "fields": {
+    "footprint": {"verdict": "sourced", "sources": [
+     {"url": "https://www.seriouslyfish.com/species/pterophyllum-scalare/", "site": "Seriously Fish", "states": "100 ∗ 40 ∗ 50 cm", "quote": "An aquarium measuring 100 ∗ 40 ∗ 50 cm", "value": [100, 40], "unit": "cm", "group": null, "stage": "adult", "kind": "min", "est": true, "credibility": "high", "conditions": "'should be the smallest considered'; L x W x H = 100 x 40 x 50 cm; group not stated"}],
+     "note": "One source for footprint."},
+    "tank_height": {"verdict": "sourced", "sources": [
+     {"url": "https://www.seriouslyfish.com/species/pterophyllum-scalare/", "site": "Seriously Fish", "states": "50 cm", "quote": "A tall tank of at least 50 cm", "value": 50, "unit": "cm", "group": null, "stage": "adult", "kind": "rec", "est": false, "credibility": "high", "conditions": "'recommended for adult fish'"},
+     {"url": "https://fishtanksetups.com/angelfish-care/", "site": "Fishtanksetups", "states": "18+ inches", "quote": "TALL tank, 18+ inches high", "value": 18, "unit": "in", "group": 1, "stage": "adult", "kind": "min", "est": false, "credibility": "low", "conditions": "'30 gallons minimum for one'; hobby blog, medium-low credibility"}],
+     "note": "50 cm (19.7 in) and 18 in (45.7 cm) agree within ~9 %."},
+    "body_height": {"verdict": "sourced", "sources": [
+     {"url": "https://www.seriouslyfish.com/species/pterophyllum-scalare/", "site": "Seriously Fish", "states": "20 cm or more", "quote": "20 cm or more in height", "value": 20, "unit": "cm", "group": null, "stage": "adult", "kind": "rec", "est": false, "credibility": "high", "conditions": "Full text: 'Adults reach 15 cm in body length and 20 cm or more in height'"},
+     {"url": "https://www.aquariumcoop.com/blogs/aquarium/angelfish", "site": "Aquarium Co-Op", "states": "8 inches", "quote": "a height (including their fins) of 8 inches", "value": 8, "unit": "in", "group": null, "stage": "adult", "kind": "rec", "est": false, "credibility": "high", "conditions": "common P. scalare, fin tip to fin tip; Altum 10-13 in"}],
+     "note": "20 cm and 8 in (20.3 cm) agree."},
+    "volume": {"verdict": "sourced", "sources": [
+     {"url": "https://www.fishkeepingworld.com/angelfish/", "site": "Fishkeeping World", "states": "30 gal", "quote": "Altum angelfish thrive in a large, deep tank", "value": 30, "unit": "gal", "group": null, "stage": null, "kind": "rec", "est": true, "credibility": "medium", "conditions": "30 gal listed per scalare variety in table, not labelled minimum; quote is only the 'deep tank' remark (Altum 55 gal)"}],
+     "note": "Weak; do not use that quote as a number source (it only supports 'deep tank'). Fishtanksetups 30 gal for one."},
+    "water_depth": {"verdict": "not-stated", "sources": [], "note": "No page stated water depth separately; tank height stated instead."}
+   },
+   "pick": {"footprint": {"source": 0, "why": "high-credibility"}, "tank_height": {"source": 0, "why": "Seriously Fish, adult, species-level"}, "body_height": {"source": 0, "why": "high credibility, agrees with Aquarium Co-Op"}},
+   "conflict": null,
+   "checked": ["https://www.seriouslyfish.com/species/pterophyllum-scalare/", "https://www.fishkeepingworld.com/angelfish/", "https://fishtanksetups.com/angelfish-care/", "https://www.aquariumcoop.com/blogs/aquarium/angelfish"]
+  },
+  "discus": {
+   "sci": "Symphysodon aequifasciatus",
+   "fields": {
+    "footprint": {"verdict": "sourced", "sources": [
+     {"url": "https://www.seriouslyfish.com/species/symphysodon-aequifasciatus/", "site": "Seriously Fish", "states": "120cm x 45cm x 45cm", "quote": "(120cm x 45cm x 45cm)", "value": [120, 45], "unit": "cm", "group": "pair or few juveniles", "stage": "adult", "kind": "rec", "est": false, "credibility": "high", "conditions": "'a tank around 48\" x 18\" x 18\" (120cm x 45cm x 45cm) - 255 litres' for a few juveniles or a breeding pair; page does not label which dimension is height"},
+     {"url": "https://www.fishkeepingworld.com/discus-fish/", "site": "Fishkeeping World", "states": "36 x 18 x 18 inches", "quote": "at least 36 x 18 x 18 inches", "value": [36, 18], "unit": "in", "group": null, "stage": null, "kind": "min", "est": true, "credibility": "medium", "conditions": "breeding tank dimensions only"}],
+     "note": "Different purposes; 48x18 in vs 36x18 in (breeding tank)."},
+    "tank_height": {"verdict": "sourced", "sources": [
+     {"url": "https://fishtanksetups.com/?p=3904", "site": "Fishtanksetups", "states": "18–20 inches", "quote": "Aim for at least 18–20 inches of water height.", "value": 18, "unit": "in", "group": "5-6", "stage": "adult", "kind": "min", "est": false, "credibility": "low", "conditions": "hobby blog; states water height, 18 to 20 in"},
+     {"url": "https://www.seriouslyfish.com/species/symphysodon-aequifasciatus/", "site": "Seriously Fish", "states": "45 cm", "quote": "(120cm x 45cm x 45cm)", "value": 45, "unit": "cm", "group": "pair", "stage": "adult", "kind": "rec", "est": true, "credibility": "high", "conditions": "third dimension of the 3-number size; page does not label it height"}],
+     "note": "Seriously Fish 45 cm (17.7 in) is consistent with 18 in."},
+    "volume": {"verdict": "sourced", "sources": [
+     {"url": "https://www.fishkeepingworld.com/discus-fish/", "site": "Fishkeeping World", "states": "60 gallons", "quote": "Minimum 60 gallons (10 gallons per discus fish)", "value": 60, "unit": "gal", "group": 6, "stage": null, "kind": "min", "est": false, "credibility": "medium", "conditions": "10 gal per fish"},
+     {"url": "https://fishtankadvisor.com/?p=8111", "site": "Fish Tank Advisor", "states": "75 gallons (284 l)", "quote": "75 gallons (284 l)", "value": 75, "unit": "gal", "group": null, "stage": null, "kind": "min", "est": true, "credibility": "low", "conditions": "'recommend 100+'"}],
+     "note": "Seriously Fish 255 L / 67 gal for pair."},
+    "water_depth": {"verdict": "not-stated", "sources": [], "note": "Only 'water height' of 18-20 in from a low-credibility hobby page; no credible page states water depth."},
+    "body_height": {"verdict": "not-stated", "sources": [], "note": "Seriously Fish: 'they can grow to be as tall as they are long' (SL 140 mm); no numeric height."}
+   },
+   "pick": {"footprint": {"source": 0, "why": "high credibility"}, "tank_height": {"source": 1, "why": "high-cred but unlabelled; fishtanksetups corroborates"}},
+   "conflict": null,
+   "checked": ["https://www.seriouslyfish.com/species/symphysodon-aequifasciatus/", "https://www.fishkeepingworld.com/discus-fish/", "https://fishtankadvisor.com/?p=8111", "https://fishtanksetups.com/?p=3904"]
+  },
+  "oscar": {
+   "sci": "Astronotus ocellatus",
+   "fields": {
+    "footprint": {"verdict": "sourced", "sources": [
+     {"url": "https://www.seriouslyfish.com/species/astronotus-ocellatus/", "site": "Seriously Fish", "states": "150 ∗ 60 cm", "quote": "base dimensions of 150 ∗ 60 cm", "value": [150, 60], "unit": "cm", "group": 1, "stage": "adult", "kind": "min", "est": false, "credibility": "high", "conditions": "'just about large enough to house a single adult'; pair/group needs more"},
+     {"url": "https://www.fishkeepingworld.com/oscar-fish/", "site": "Fishkeeping World", "states": "60 x 24 inch", "quote": "About 143 gallons (60 x 24 inch base) for one adult", "value": [60, 24], "unit": "in", "group": 1, "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "one adult"}],
+     "note": "Agree (150x60 cm = 59x24 in)."},
+    "water_depth": {"verdict": "not-stated", "sources": [], "note": "No height or depth on either page."}
+   },
+   "pick": {"footprint": {"source": 0, "why": "high credibility"}},
+   "conflict": null,
+   "checked": ["https://www.seriouslyfish.com/species/astronotus-ocellatus/", "https://www.fishkeepingworld.com/oscar-fish/"]
+  },
+  "bronzecory": {
+   "sci": "Corydoras aeneus",
+   "fields": {
+    "footprint": {"verdict": "sourced", "sources": [
+     {"url": "https://www.seriouslyfish.com/species/corydoras-aeneus/", "site": "Seriously Fish", "states": "80 ∗ 30 cm", "quote": "Base dimensions of 80 ∗ 30 cm", "value": [80, 30], "unit": "cm", "group": "4-6", "stage": "adult", "kind": "rec", "est": false, "credibility": "high", "conditions": "'or equivalent are recommended for long-term care'; group at least 4-6"}],
+     "note": "Aquariadise gives 20 gal long (80 L) only."},
+    "volume": {"verdict": "sourced", "sources": [
+     {"url": "https://www.aquariadise.com/caresheet-bronze-corydoras/", "site": "Aquariadise", "states": "20 gal (80 L, long)", "quote": "20 gal (80 L, long)", "value": 20, "unit": "gal", "group": 6, "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "group of at least six; long tank; shallow tank preferred"}],
+     "note": ""},
+    "water_depth": {"verdict": "sourced", "sources": [
+     {"url": "https://www.aquariadise.com/caresheet-bronze-corydoras/", "site": "Aquariadise", "states": "shallow", "quote": "A shallow tank is preferred", "value": null, "unit": "none", "group": null, "stage": null, "kind": "rec", "est": true, "credibility": "medium", "conditions": "qualitative, no number"}],
+     "note": "Qualitative only."}
+   },
+   "pick": {"footprint": {"source": 0, "why": "high credibility"}},
+   "conflict": null,
+   "checked": ["https://www.seriouslyfish.com/species/corydoras-aeneus/", "https://www.aquariadise.com/caresheet-bronze-corydoras/"]
+  },
+  "kuhli": {
+   "sci": "Pangio kuhlii",
+   "fields": {
+    "footprint": {"verdict": "sourced", "sources": [
+     {"url": "https://www.seriouslyfish.com/species/pangio-kuhlii/", "site": "Seriously Fish", "states": "60 ∗ 30 cm", "quote": "base measurements of at least 60 ∗ 30 cm", "value": [60, 30], "unit": "cm", "group": "5-6", "stage": "adult", "kind": "min", "est": false, "credibility": "high", "conditions": "volume about 54 L / 14 US gal; group of at least 5-6"}],
+     "note": "Page lists ~54 L (14 US gal)."},
+    "length": {"verdict": "sourced", "sources": [
+     {"url": "https://guidarium.com/fishes/kuhli-loach", "site": "Guidarium", "states": "60 cm", "quote": "a tank length of at least 60 cm", "value": 60, "unit": "cm", "group": "6", "stage": null, "kind": "min", "est": false, "credibility": "medium", "conditions": "min volume 60 L; groups of at least 6"},
+     {"url": "https://www.aquariadise.com/caresheet-kuhli-loach/", "site": "Aquariadise", "states": "31.5 inches / 80 cm", "quote": "31.5 inches / 80 cm", "value": 80, "unit": "cm", "group": "5", "stage": null, "kind": "rec", "est": true, "credibility": "medium", "conditions": "length of a 20-gal long tank 'suitable for a small group'; not stated as a minimum length"}],
+     "note": "60 cm (SF, Guidarium) vs 80 cm (20 gal long length from Aquariadise): 33 % difference; the 80 cm is the tank the page recommends, not a stated length minimum."},
+    "volume": {"verdict": "sourced", "sources": [
+     {"url": "https://www.fishkeepingworld.com/kuhli-loach/", "site": "Fishkeeping World", "states": "20 gallons", "quote": "Minimum 20 gallons", "value": 20, "unit": "gal", "group": 3, "stage": null, "kind": "min", "est": false, "credibility": "medium", "conditions": "+4 gal per additional loach"},
+     {"url": "https://fishtankadvisor.com/?p=3844", "site": "Fish Tank Advisor", "states": "20 gallons", "quote": "An individual loach needs a minimum of 20 gallons.", "value": 20, "unit": "gal", "group": 5, "stage": null, "kind": "min", "est": false, "credibility": "low", "conditions": "group of at least 5; +10 gal each extra"},
+     {"url": "https://www.aquariadise.com/caresheet-kuhli-loach/", "site": "Aquariadise", "states": "20 gal (75 L) long", "quote": "20 gal (75 L) long minimum", "value": 20, "unit": "gal", "group": 5, "stage": null, "kind": "min", "est": false, "credibility": "medium", "conditions": "long tank"}],
+     "note": "Volume sources agree at 20 gal (75-80 L). Seriously Fish gives ~54 L; Guidarium 60 L."},
+    "water_depth": {"verdict": "not-stated", "sources": [], "note": "No page states depth; FKW says 'keep the water level low' for breeding tank only."}
+   },
+   "pick": {"footprint": {"source": 0, "why": "high credibility; length 60 cm corroborated by Guidarium"}, "length": {"source": 0, "why": "stated outright as a minimum length"}},
+   "conflict": "length: 60 cm (Seriously Fish/Guidarium) vs 80 cm (Aquariadise 20 gal long, a recommendation).",
+   "checked": ["https://www.seriouslyfish.com/species/pangio-kuhlii/", "https://www.fishkeepingworld.com/kuhli-loach/", "https://www.aquariadise.com/?p=3652 (404)", "https://guidarium.com/fishes/kuhli-loach", "https://www.aquariadise.com/caresheet-kuhli-loach/", "https://fishtankadvisor.com/?p=3844"]
+  },
+  "royalgramma": {
+   "sci": "Gramma loreto",
+   "fields": {
+    "footprint": {"verdict": "not-stated", "sources": [], "note": "Looked at LiveAquaria (2 pages), Aquarium Source, Aquariadise, Gensou, Reefs.com (403): no length or footprint stated by any opened page."},
+    "volume": {"verdict": "sourced", "sources": [
+     {"url": "https://www.liveaquaria.com/product/53/?pcatid=53", "site": "LiveAquaria", "states": "30 gallons", "quote": "reef systems of at least 30 gallons", "value": 30, "unit": "gal", "group": 1, "stage": "adult", "kind": "min", "est": false, "credibility": "high", "conditions": "single fish"},
+     {"url": "https://www.aquariumsource.com/royal-gramma-basslet/", "site": "Aquarium Source", "states": "30 gallons", "quote": "The minimum royal gramma tank size is 30 gallons for one fish.", "value": 30, "unit": "gal", "group": 1, "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "single fish; 50-60 gal for two"},
+     {"url": "https://aquariadise.com/royal-gramma/", "site": "Aquariadise", "states": "30 gallons", "quote": "a single fish will need to be kept in an aquarium of at least 30 gallons", "value": 30, "unit": "gal", "group": 1, "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "pair 50 gal"}],
+     "note": "Agree at 30 gal. Gensou says a single does well in 75 L (20 gal)."},
+    "water_depth": {"verdict": "not-stated", "sources": [], "note": "Not stated."}
+   },
+   "pick": {"volume": {"source": 0, "why": "LiveAquaria"}},
+   "conflict": null,
+   "checked": ["https://www.liveaquaria.com/product/53/?pcatid=53", "https://www.aquariumsource.com/royal-gramma-basslet/", "https://www.liveaquaria.com/product/8050/royal-gramma-basslet (404)", "https://reefs.com/fish/royal-gramma/ (403)", "https://aquariadise.com/royal-gramma/", "https://gensou.sg/?p=29438"]
+  },
+  "cleanershrimp": {
+   "sci": "Lysmata amboinensis",
+   "fields": {
+    "footprint": {"verdict": "not-stated", "sources": [], "note": "Aquariadise, Gensou, Quality Marine, Top Shelf opened: volume only. Quality Marine mentions a '72 inch footprint' only for housing a second pair, not a minimum."},
+    "volume": {"verdict": "sourced", "sources": [
+     {"url": "https://aquariadise.com/cleaner-shrimp/", "site": "Aquariadise", "states": "20 gallons", "quote": "20 gallons (~90 liters)", "value": 20, "unit": "gal", "group": 2, "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "article says 20 gal smallest for a pair of cleaner shrimp (general, not species-specific)"},
+     {"url": "https://www.qualitymarine.com/news/the-kind-of-skunk-you-want/", "site": "Quality Marine", "states": "40 gallons", "quote": "minimum tank size of 40 gallons, with larger always being better", "value": 40, "unit": "gal", "group": 1, "stage": "adult", "kind": "min", "est": false, "credibility": "high", "conditions": "wholesaler article specific to skunk cleaner; second pair needs 72 in footprint"},
+     {"url": "https://gensou.sg/?p=30650", "site": "Gensou", "states": "60 litres", "quote": "A single cleaner shrimp suits tanks as small as 60 litres.", "value": 60, "unit": "L", "group": 1, "stage": "adult", "kind": "min", "est": false, "credibility": "low", "conditions": "pairs or groups 150 L+"}],
+     "note": "Range 20 to 40 gal (60 L to 151 L)."},
+    "water_depth": {"verdict": "not-stated", "sources": [], "note": "Not stated."}
+   },
+   "pick": {"volume": {"source": 1, "why": "species-specific wholesaler"}},
+   "conflict": "volume: 60 L (16 gal) Gensou vs 20 gal Aquariadise vs 40 gal (151 L) Quality Marine.",
+   "checked": ["https://aquariadise.com/cleaner-shrimp/", "https://gensou.sg/?p=30650", "https://www.qualitymarine.com/news/the-kind-of-skunk-you-want/", "https://topshelfaquatics.com/pages/saltwater-invertebrates/skunk-cleaner-shrimp"]
+  }
+ },
+ "agent_notes": "38 WebFetch calls. Quotes were taken from the WebFetch summaries (a small model), which can paraphrase; Seriously Fish quotes keep the page's '∗' sign. Seriously Fish text runs numbers together (e.g. '60 ∗ 30 cm24 ∗ 12 in'), so quotes stop after the cm figure. FishBase 80 cm wording reached only via fishbase.net.br mirror (others 403/refused); its unit is not labelled as length. Angelfish Fishkeeping World volume entry has a weak quote and should be dropped; fishtankadvisor, fishtanksetups, aquariadise, guidarium are lower-credibility hobby sites. Discus Seriously Fish 3-number size does not label height. Aquariadise kuhli '31.5 inches / 80 cm' quote may fail the script check."
+}

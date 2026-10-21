@@ -1,0 +1,326 @@
+[
+ {
+  "id": "cherrybarb",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/puntius-titteya/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Base dimensions of at least 60 ∗ 30 cm"
+ },
+ {
+  "id": "cherrybarb",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/puntius-titteya/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Base dimensions of at least 60 ∗ 30 cm"
+ },
+ {
+  "id": "cherrybarb",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/cherry-barb/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Cherry barbs should be housed in a tank that's 25 gallons or larger."
+ },
+ {
+  "id": "cherrybarb",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/cherry-barb",
+  "result": "exact",
+  "score": 1,
+  "quote": "A group of six can be kept in a 10-gallon or larger aquarium."
+ },
+ {
+  "id": "tigerbarb",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/puntigrus-tetrazona/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Base dimensions of 80 ∗ 30 cm"
+ },
+ {
+  "id": "tigerbarb",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/puntigrus-tetrazona/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Base dimensions of 80 ∗ 30 cm"
+ },
+ {
+  "id": "tigerbarb",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/tiger-barb/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Tiger Barbs need at least a 20-gallon tank"
+ },
+ {
+  "id": "tigerbarb",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/tiger-barb",
+  "result": "exact",
+  "score": 1,
+  "quote": "This super active fish would do well in a 29-gallon aquarium or larger"
+ },
+ {
+  "id": "boesemani",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/melanotaenia-boesemani/",
+  "result": "exact",
+  "score": 1,
+  "quote": "requiring an aquarium measuring at least 120 ∗ 30 ∗ 30 cm"
+ },
+ {
+  "id": "boesemani",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://aquariumcoop.com/blogs/aquarium/boesemani-rainbowfish",
+  "result": "exact",
+  "score": 1,
+  "quote": "a fish tank at least 4 feet (1.2 m) in length"
+ },
+ {
+  "id": "boesemani",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://www.aquariumsource.com/boesemani-rainbowfish/",
+  "result": "exact",
+  "score": 1,
+  "quote": "at least 4 feet or ~50 gallons"
+ },
+ {
+  "id": "boesemani",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/melanotaenia-boesemani/",
+  "result": "exact",
+  "score": 1,
+  "quote": "requiring an aquarium measuring at least 120 ∗ 30 ∗ 30 cm"
+ },
+ {
+  "id": "boesemani",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.aquariumsource.com/boesemani-rainbowfish/",
+  "result": "exact",
+  "score": 1,
+  "quote": "50-75 gallons"
+ },
+ {
+  "id": "guppy",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/poecilia-reticulata/",
+  "result": "compact",
+  "score": 1,
+  "quote": "45 × 30cm18 × 12in"
+ },
+ {
+  "id": "guppy",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/poecilia-reticulata/",
+  "result": "compact",
+  "score": 1,
+  "quote": "45 × 30cm18 × 12in"
+ },
+ {
+  "id": "guppy",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/guppies/",
+  "result": "compact",
+  "score": 1,
+  "quote": "Minimum 5 gallons, plus 1 gallon of water for every additional adult guppy."
+ },
+ {
+  "id": "guppy",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/guppy",
+  "result": "exact",
+  "score": 1,
+  "quote": "the smallest tank size we recommend is a 5-gallon aquarium"
+ },
+ {
+  "id": "platy",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/xiphophorus-maculatus/",
+  "result": "compact",
+  "score": 1,
+  "quote": "60 × 30cm24 × 12in"
+ },
+ {
+  "id": "platy",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/xiphophorus-maculatus/",
+  "result": "compact",
+  "score": 1,
+  "quote": "60 × 30cm24 × 12in"
+ },
+ {
+  "id": "platy",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/platy-fish/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum 10 gallons for a group of five to six platy fish."
+ },
+ {
+  "id": "platy",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/platy",
+  "result": "exact",
+  "score": 1,
+  "quote": "Platies can live in a 10- to 20-gallon aquarium or larger."
+ },
+ {
+  "id": "molly",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/poecilia-sphenops/",
+  "result": "compact",
+  "score": 1,
+  "quote": "90 × 30cm36 × 12in"
+ },
+ {
+  "id": "molly",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/poecilia-sphenops/",
+  "result": "compact",
+  "score": 1,
+  "quote": "90 × 30cm36 × 12in"
+ },
+ {
+  "id": "molly",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/molly-fish/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum 10 gallons for up to four mollies"
+ },
+ {
+  "id": "molly",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/molly-fish-care",
+  "result": "exact",
+  "score": 1,
+  "quote": "at least 20 gallons of water"
+ },
+ {
+  "id": "dwarfgourami",
+  "field": "water_depth",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/trichogaster-lalius/",
+  "result": "exact",
+  "score": 1,
+  "quote": "drop the water level to around 6-8\""
+ },
+ {
+  "id": "dwarfgourami",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/trichogaster-lalius/",
+  "result": "exact",
+  "score": 1,
+  "quote": "56 litre tank is just about big enough for a pair"
+ },
+ {
+  "id": "dwarfgourami",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/dwarf-gourami",
+  "result": "exact",
+  "score": 1,
+  "quote": "appreciate a 10-gallon or larger aquarium"
+ },
+ {
+  "id": "honeygourami",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/trichogaster-chuna/",
+  "result": "exact",
+  "score": 1,
+  "quote": "base dimensions of 60 ∗ 30 cm"
+ },
+ {
+  "id": "honeygourami",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/trichogaster-chuna/",
+  "result": "exact",
+  "score": 1,
+  "quote": "base dimensions of 60 ∗ 30 cm"
+ },
+ {
+  "id": "honeygourami",
+  "field": "water_depth",
+  "verdict": "sourced",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/honey-gourami",
+  "result": "exact",
+  "score": 1,
+  "quote": "a 10-gallon aquarium with approximately 6–8 inches (15–20 cm) of water"
+ },
+ {
+  "id": "honeygourami",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/honey-gourami",
+  "result": "exact",
+  "score": 1,
+  "quote": "A single honey gourami can live in a 5- or 10-gallon tank"
+ },
+ {
+  "id": "gourami",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/trichopodus-leerii/",
+  "result": "compact",
+  "score": 1,
+  "quote": "90 × 30cm36 × 12in"
+ },
+ {
+  "id": "gourami",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/trichopodus-leerii/",
+  "result": "compact",
+  "score": 1,
+  "quote": "90 × 30cm36 × 12in"
+ },
+ {
+  "id": "gourami",
+  "field": "water_depth",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/trichopodus-leerii/",
+  "result": "exact",
+  "score": 1,
+  "quote": "no more than 6-8\" in depth"
+ },
+ {
+  "id": "gourami",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/pearl-gourami/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Pearl gourami need at least a 30 gallon tank"
+ }
+]

@@ -91,6 +91,19 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
      reference enclosure per Decision 5.
   7. Space bar (later, not MM unless asked): the five Space todos need habitat-based Space, which needs evidence-backed per-zone coefficients.
 
+## Lane MX: Tank Minimum Sourcing (2026-10-21, branch `mx`, worktree `.claude/worktrees/mx`; DONE, research only)
+- Write-up: `research/tank-minimum-sources.md` (method, coverage, US-unit table for all 84 species). Data:
+  `research/sourcing/tank-minimum/` (M1-M9.json + verify, input.json, summary.json, table.md); brief
+  `research/sourcing/brief-tank-minimum.md`; merge `node scripts/tank-min-sources.mjs`. Nathan's yes for 9 Sonnet agents; 0.78 M
+  tokens (quote 0.70 M for M2-M9, actual 0.69 M).
+- Found: 55 sourced footprints, 7 length-only, 22 derived (est) from gallons (incl. all invertebrates, which Decision 3 exempts);
+  no page states a required water depth for any species; angelfish tank height 50 cm = Recommended; ADF max depth 24 in advisory.
+- **Waiting on Nathan:** proposals MX1-MX9 in research/sourcing/decisions.md (SF "recommended" footprints, 10 longer and 4 shorter
+  lengths than ours, swordtail, shrimp / gramma, land-animal heights).
+- **For MM:** load summary.json: kind `min` + mark sourced = required; `rec` / `recommended` = Recommended mark; `derived (est)` =
+  derived wording; `advisory` never fails. Do not load MX1-MX8 numbers that flip pass / fail before Nathan answers. No src/ files
+  touched by MX.
+
 ## Lane MW: Minutes a Week (2026-10-21, branch `mw`, worktree `.claude/worktrees/mw`; Nathan approved the proposal in chat)
 - Full write-up with the numbers and sources: `research/minutes-a-week.md` (Result section); agent batches `research/sourcing/minutes/` (not in the globbed folder: they use `items`, not `species`).
 - Water changes now follow the nitrogen budget (floor 10 % cited, cap 50 %); new rows for feeding trips, glass wiping, painted live patches; plant trimming in bunches; testing every ~2 weeks; hose and automatic feeder as "Quality of life" tech rows that the least-work build adds. Builds now differ: least work is 4-22 min below cheapest, for $100-370 more. Every minutes-per-job figure is a labelled assumption; intervals and prices are cited.

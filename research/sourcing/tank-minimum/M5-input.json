@@ -1,0 +1,100 @@
+[
+ {
+  "id": "labeo",
+  "name": "Blue-nosed mbuna",
+  "sci": "Labeotropheus trewavasae",
+  "tl_mm": 120,
+  "minL": 250,
+  "prior": [
+   "https://guidarium.com/fishes/trewavas-cichlid | 200 L"
+  ]
+ },
+ {
+  "id": "auratus",
+  "name": "Golden mbuna",
+  "sci": "Melanochromis auratus",
+  "tl_mm": 110,
+  "minL": 250,
+  "prior": [
+   "https://www.seriouslyfish.com/species/melanochromis-auratus/ | ~205 L absolute minimum",
+   "https://guidarium.com/fishes/auratus-cichlid-mbuna | 200 L"
+  ]
+ },
+ {
+  "id": "livingstonii",
+  "name": "Livingstone's cichlid",
+  "sci": "Nimbochromis livingstonii",
+  "tl_mm": 250,
+  "minL": 400,
+  "prior": [
+   "https://guidarium.com/fishes/livingstons-cichlid | 470 L"
+  ]
+ },
+ {
+  "id": "afra",
+  "name": "Dogtooth cichlid",
+  "sci": "Cynotilapia afra",
+  "tl_mm": 100,
+  "minL": 250,
+  "prior": [
+   "https://guidarium.com/fishes/afra-cichlid | 200 L"
+  ]
+ },
+ {
+  "id": "goldfish",
+  "name": "Fancy goldfish",
+  "sci": "Carassius auratus",
+  "tl_mm": 160,
+  "minL": 75,
+  "prior": [
+   "https://www.fishkeepingworld.com/fancy-goldfish/ | 20 gal (76 L) for one fancy goldfish",
+   "https://www.fishkeepingworld.com/goldfish/ | 20 gal (76 L)"
+  ]
+ },
+ {
+  "id": "comet",
+  "name": "Comet goldfish",
+  "sci": "Carassius auratus",
+  "tl_mm": 250,
+  "minL": 300,
+  "prior": [
+   "https://www.fishkeepingworld.com/comet-goldfish/ | 50 gal (189 L) min, recommends 75 gal (284 L)",
+   "https://www.fishkeepingworld.com/goldfish/ | 30 gal (114 L)"
+  ]
+ },
+ {
+  "id": "pandacory",
+  "name": "Panda corydoras",
+  "sci": "Corydoras panda",
+  "zone": "bottom",
+  "tl_mm": 50,
+  "minL": 41,
+  "prior": [
+   "https://www.seriouslyfish.com/species/corydoras-panda/ | ~41 L / ~11 US gal for a small group"
+  ]
+ },
+ {
+  "id": "pygmycory",
+  "name": "Pygmy corydoras",
+  "sci": "Corydoras pygmaeus",
+  "zone": "bottom",
+  "tl_mm": 25,
+  "minL": 30,
+  "prior": [
+   "https://www.fishkeepingworld.com/pygmy-cory/ | 10 US gal (37.9 L) for 4-8 fish",
+   "https://www.seriouslyfish.com/species/corydoras-pygmaeus/ | 45 x 30 cm base, no litres given"
+  ]
+ },
+ {
+  "id": "bristlenose",
+  "name": "Bristlenose pleco",
+  "sci": "Ancistrus sp.",
+  "zone": "bottom",
+  "tl_mm": 125,
+  "minL": 80,
+  "prior": [
+   "https://www.seriouslyfish.com/species/ancistrus-cf-cirrhosus | ~54 L / 14 US gal",
+   "https://www.chewy.com/education/fish/general/bristlenose-pleco-care-guide | 20 US gal = 76 L for one adult"
+  ]
+ }
+]

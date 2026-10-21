@@ -1,0 +1,928 @@
+{
+ "batch": "M3",
+ "species": {
+  "cherrybarb": {
+   "sci": "Rohanella (Puntius) titteya",
+   "fields": {
+    "footprint": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/puntius-titteya/",
+       "site": "Seriously Fish",
+       "states": "60 ∗ 30 cm",
+       "quote": "Base dimensions of at least 60 ∗ 30 cm",
+       "value": [
+        60,
+        30
+       ],
+       "unit": "cm",
+       "group": "6-10",
+       "stage": "adult",
+       "kind": "min",
+       "est": false,
+       "credibility": "high",
+       "conditions": "schooling, 6-10 kept"
+      }
+     ],
+     "note": "Only SF states footprint; matches our minL 60"
+    },
+    "length": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/puntius-titteya/",
+       "site": "Seriously Fish",
+       "states": "60 ∗ 30 cm",
+       "quote": "Base dimensions of at least 60 ∗ 30 cm",
+       "value": 60,
+       "unit": "cm",
+       "group": "6-10",
+       "stage": "adult",
+       "kind": "min",
+       "est": false,
+       "credibility": "high",
+       "conditions": "length from base dimensions"
+      }
+     ],
+     "note": "derived from footprint"
+    },
+    "water_depth": {
+     "verdict": "not-stated",
+     "sources": [],
+     "note": "not stated on SF or FKW"
+    },
+    "volume": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/cherry-barb/",
+       "site": "Fishkeeping World",
+       "states": "25 gallons",
+       "quote": "Cherry barbs should be housed in a tank that's 25 gallons or larger.",
+       "value": 25,
+       "unit": "gal",
+       "group": "6",
+       "stage": "adult",
+       "kind": "min",
+       "est": false,
+       "credibility": "medium",
+       "conditions": "small school of six; +5 gal per extra fish"
+      },
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/cherry-barb",
+       "site": "Aquarium Co-Op",
+       "states": "10-gallon",
+       "quote": "A group of six can be kept in a 10-gallon or larger aquarium.",
+       "value": 10,
+       "unit": "gal",
+       "group": "6",
+       "stage": "adult",
+       "kind": "min",
+       "est": false,
+       "credibility": "high",
+       "conditions": ""
+      }
+     ],
+     "note": "25 gal vs 10 gal (60 % apart); SF 60x30 base ~54 L (14 gal) between"
+    }
+   },
+   "pick": {
+    "footprint": {
+     "source": 0,
+     "why": "only footprint source"
+    },
+    "volume": {
+     "source": 1,
+     "why": "Co-Op species guide, group of six stated"
+    }
+   },
+   "conflict": "volume: FKW 25 gal vs Co-Op 10 gal (60 %)",
+   "checked": [
+    "https://www.seriouslyfish.com/species/puntius-titteya/",
+    "https://www.fishkeepingworld.com/cherry-barb/",
+    "https://www.aquariumcoop.com/blogs/aquarium/cherry-barb"
+   ]
+  },
+  "tigerbarb": {
+   "sci": "Puntigrus tetrazona",
+   "fields": {
+    "footprint": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/puntigrus-tetrazona/",
+       "site": "Seriously Fish",
+       "states": "80 ∗ 30 cm",
+       "quote": "Base dimensions of 80 ∗ 30 cm",
+       "value": [
+        80,
+        30
+       ],
+       "unit": "cm",
+       "group": "8-10",
+       "stage": "adult",
+       "kind": "min",
+       "est": false,
+       "credibility": "high",
+       "conditions": "smallest considered; group of 8-10 minimum purchase"
+      }
+     ],
+     "note": "only SF; matches minL 80"
+    },
+    "length": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/puntigrus-tetrazona/",
+       "site": "Seriously Fish",
+       "states": "80 ∗ 30 cm",
+       "quote": "Base dimensions of 80 ∗ 30 cm",
+       "value": 80,
+       "unit": "cm",
+       "group": "8-10",
+       "stage": "adult",
+       "kind": "min",
+       "est": false,
+       "credibility": "high",
+       "conditions": "from base dimensions"
+      }
+     ],
+     "note": "derived"
+    },
+    "water_depth": {
+     "verdict": "not-stated",
+     "sources": [],
+     "note": "not stated"
+    },
+    "volume": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/tiger-barb/",
+       "site": "Fishkeeping World",
+       "states": "20-gallon",
+       "quote": "Tiger Barbs need at least a 20-gallon tank",
+       "value": 20,
+       "unit": "gal",
+       "group": "5",
+       "stage": "adult",
+       "kind": "min",
+       "est": false,
+       "credibility": "medium",
+       "conditions": "school of at least 5; +3 gal per extra fish; 29 gal for 8"
+      },
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/tiger-barb",
+       "site": "Aquarium Co-Op",
+       "states": "29-gallon",
+       "quote": "This super active fish would do well in a 29-gallon aquarium or larger",
+       "value": 29,
+       "unit": "gal",
+       "group": null,
+       "stage": "adult",
+       "kind": "rec",
+       "est": true,
+       "credibility": "high",
+       "conditions": "group of 7+ recommended"
+      }
+     ],
+     "note": "20 vs 29 gal (45 % apart); SF 80x30 ~72 L (19 gal)"
+    }
+   },
+   "pick": {
+    "footprint": {
+     "source": 0,
+     "why": "only footprint"
+    },
+    "volume": {
+     "source": 1,
+     "why": "active species, larger group"
+    }
+   },
+   "conflict": "volume: FKW 20 gal vs Co-Op 29 gal (45 %)",
+   "checked": [
+    "https://www.seriouslyfish.com/species/puntigrus-tetrazona/",
+    "https://www.fishkeepingworld.com/tiger-barb/",
+    "https://www.aquariumcoop.com/blogs/aquarium/tiger-barb"
+   ]
+  },
+  "boesemani": {
+   "sci": "Melanotaenia boesemani",
+   "fields": {
+    "footprint": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/melanotaenia-boesemani/",
+       "site": "Seriously Fish",
+       "states": "120 ∗ 30",
+       "quote": "requiring an aquarium measuring at least 120 ∗ 30 ∗ 30 cm",
+       "value": [
+        120,
+        30
+       ],
+       "unit": "cm",
+       "group": "6-8",
+       "stage": "adult",
+       "kind": "min",
+       "est": false,
+       "credibility": "high",
+       "conditions": "L x W of stated 120x30x30; shoal of 6-8"
+      }
+     ],
+     "note": "SF third figure (30 cm) unlabeled so not recorded as height"
+    },
+    "length": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://aquariumcoop.com/blogs/aquarium/boesemani-rainbowfish",
+       "site": "Aquarium Co-Op",
+       "states": "4 feet (1.2 m)",
+       "quote": "a fish tank at least 4 feet (1.2 m) in length",
+       "value": 4,
+       "unit": "ft",
+       "group": "6+",
+       "stage": "adult",
+       "kind": "min",
+       "est": false,
+       "credibility": "high",
+       "conditions": "fully grown fish"
+      },
+      {
+       "url": "https://www.aquariumsource.com/boesemani-rainbowfish/",
+       "site": "Aquarium Source",
+       "states": "4 feet",
+       "quote": "at least 4 feet or ~50 gallons",
+       "value": 4,
+       "unit": "ft",
+       "group": "6-8",
+       "stage": "adult",
+       "kind": "min",
+       "est": false,
+       "credibility": "medium",
+       "conditions": ""
+      }
+     ],
+     "note": "122 cm vs 120 cm: agree"
+    },
+    "water_depth": {
+     "verdict": "not-stated",
+     "sources": [],
+     "note": "not stated by SF, Co-Op or Aquarium Source"
+    },
+    "tank_height": {
+     "verdict": "not-stated",
+     "sources": [],
+     "note": "no labeled height; only SF unlabeled third dimension 30 cm"
+    },
+    "volume": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/melanotaenia-boesemani/",
+       "site": "Seriously Fish",
+       "states": "120 ∗ 30 ∗ 30 cm",
+       "quote": "requiring an aquarium measuring at least 120 ∗ 30 ∗ 30 cm",
+       "value": 108,
+       "unit": "L",
+       "group": "6-8",
+       "stage": "adult",
+       "kind": "min",
+       "est": false,
+       "credibility": "high",
+       "conditions": "page adds about 108 L; quote is the dimensions"
+      },
+      {
+       "url": "https://www.aquariumsource.com/boesemani-rainbowfish/",
+       "site": "Aquarium Source",
+       "states": "50-75 gallons",
+       "quote": "50-75 gallons",
+       "value": 50,
+       "unit": "gal",
+       "group": "6-8",
+       "stage": "adult",
+       "kind": "rec",
+       "est": false,
+       "credibility": "medium",
+       "conditions": "range 50-75"
+      }
+     ],
+     "note": "108 L (29 gal) vs 50 gal: 70 % apart"
+    }
+   },
+   "pick": {
+    "footprint": {
+     "source": 0,
+     "why": "SF explicit"
+    },
+    "length": {
+     "source": 0,
+     "why": "Co-Op species guide"
+    }
+   },
+   "conflict": "volume: SF 29 US gal vs Aquarium Source 50-75 gal",
+   "checked": [
+    "https://www.seriouslyfish.com/species/melanotaenia-boesemani/",
+    "https://aquariumcoop.com/blogs/aquarium/boesemani-rainbowfish",
+    "https://www.aquariumsource.com/boesemani-rainbowfish/"
+   ]
+  },
+  "guppy": {
+   "sci": "Poecilia reticulata",
+   "fields": {
+    "footprint": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/poecilia-reticulata/",
+       "site": "Seriously Fish",
+       "states": "45 × 30cm",
+       "quote": "45 × 30cm18 × 12in",
+       "value": [
+        45,
+        30
+       ],
+       "unit": "cm",
+       "group": null,
+       "stage": "adult",
+       "kind": "min",
+       "est": true,
+       "credibility": "high",
+       "conditions": "aquarium base field; group unstated"
+      }
+     ],
+     "note": "only SF; matches minL 40"
+    },
+    "length": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/poecilia-reticulata/",
+       "site": "Seriously Fish",
+       "states": "45 × 30cm",
+       "quote": "45 × 30cm18 × 12in",
+       "value": 45,
+       "unit": "cm",
+       "group": null,
+       "stage": "adult",
+       "kind": "min",
+       "est": true,
+       "credibility": "high",
+       "conditions": "from base"
+      }
+     ],
+     "note": "derived"
+    },
+    "water_depth": {
+     "verdict": "not-stated",
+     "sources": [],
+     "note": "not stated"
+    },
+    "volume": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/guppies/",
+       "site": "Fishkeeping World",
+       "states": "5 gallons",
+       "quote": "Minimum 5 gallons, plus 1 gallon of water for every additional adult guppy.",
+       "value": 5,
+       "unit": "gal",
+       "group": "3",
+       "stage": "adult",
+       "kind": "min",
+       "est": false,
+       "credibility": "medium",
+       "conditions": "+1 gal per extra adult"
+      },
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/guppy",
+       "site": "Aquarium Co-Op",
+       "states": "5-gallon",
+       "quote": "the smallest tank size we recommend is a 5-gallon aquarium",
+       "value": 5,
+       "unit": "gal",
+       "group": "trio",
+       "stage": null,
+       "kind": "min",
+       "est": false,
+       "credibility": "high",
+       "conditions": "10-20 gal better long term"
+      }
+     ],
+     "note": "two agree on 5 gal; SF base 41 L (11 gal) is 2x larger"
+    }
+   },
+   "pick": {
+    "footprint": {
+     "source": 0,
+     "why": "only footprint"
+    },
+    "volume": {
+     "source": 0,
+     "why": "agrees with Co-Op"
+    }
+   },
+   "conflict": "volume: 5 gal (19 L) vs SF base ~41 L (116 %)",
+   "checked": [
+    "https://www.seriouslyfish.com/species/poecilia-reticulata/",
+    "https://www.fishkeepingworld.com/guppies/",
+    "https://www.aquariumcoop.com/blogs/aquarium/guppy"
+   ]
+  },
+  "platy": {
+   "sci": "Xiphophorus maculatus",
+   "fields": {
+    "footprint": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/xiphophorus-maculatus/",
+       "site": "Seriously Fish",
+       "states": "60 × 30cm",
+       "quote": "60 × 30cm24 × 12in",
+       "value": [
+        60,
+        30
+       ],
+       "unit": "cm",
+       "group": null,
+       "stage": "adult",
+       "kind": "min",
+       "est": true,
+       "credibility": "high",
+       "conditions": "aquarium base field"
+      }
+     ],
+     "note": "only SF; matches minL 60"
+    },
+    "length": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/xiphophorus-maculatus/",
+       "site": "Seriously Fish",
+       "states": "60 × 30cm",
+       "quote": "60 × 30cm24 × 12in",
+       "value": 60,
+       "unit": "cm",
+       "group": null,
+       "stage": "adult",
+       "kind": "min",
+       "est": true,
+       "credibility": "high",
+       "conditions": "from base"
+      }
+     ],
+     "note": "derived"
+    },
+    "water_depth": {
+     "verdict": "not-stated",
+     "sources": [],
+     "note": "not stated"
+    },
+    "volume": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/platy-fish/",
+       "site": "Fishkeeping World",
+       "states": "10 gallons",
+       "quote": "Minimum 10 gallons for a group of five to six platy fish.",
+       "value": 10,
+       "unit": "gal",
+       "group": "5-6",
+       "stage": "adult",
+       "kind": "min",
+       "est": false,
+       "credibility": "medium",
+       "conditions": "+2 gal per extra fish"
+      },
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/platy",
+       "site": "Aquarium Co-Op",
+       "states": "10- to 20-gallon",
+       "quote": "Platies can live in a 10- to 20-gallon aquarium or larger.",
+       "value": 10,
+       "unit": "gal",
+       "group": "3-6",
+       "stage": null,
+       "kind": "min",
+       "est": false,
+       "credibility": "high",
+       "conditions": ""
+      }
+     ],
+     "note": "10 gal agrees; SF base ~54 L (14 gal) 40 % higher"
+    }
+   },
+   "pick": {
+    "footprint": {
+     "source": 0,
+     "why": "only footprint"
+    },
+    "volume": {
+     "source": 0,
+     "why": "group stated"
+    }
+   },
+   "conflict": "volume: 10 gal (38 L) vs SF base ~54 L (42 %)",
+   "checked": [
+    "https://www.seriouslyfish.com/species/xiphophorus-maculatus/",
+    "https://www.fishkeepingworld.com/platy-fish/",
+    "https://www.aquariumcoop.com/blogs/aquarium/platy"
+   ]
+  },
+  "molly": {
+   "sci": "Poecilia sphenops",
+   "fields": {
+    "footprint": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/poecilia-sphenops/",
+       "site": "Seriously Fish",
+       "states": "90 × 30cm",
+       "quote": "90 × 30cm36 × 12in",
+       "value": [
+        90,
+        30
+       ],
+       "unit": "cm",
+       "group": null,
+       "stage": "adult",
+       "kind": "min",
+       "est": true,
+       "credibility": "high",
+       "conditions": "aquarium base field"
+      }
+     ],
+     "note": "only SF; our minL 80 is below this"
+    },
+    "length": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/poecilia-sphenops/",
+       "site": "Seriously Fish",
+       "states": "90 × 30cm",
+       "quote": "90 × 30cm36 × 12in",
+       "value": 90,
+       "unit": "cm",
+       "group": null,
+       "stage": "adult",
+       "kind": "min",
+       "est": true,
+       "credibility": "high",
+       "conditions": "from base"
+      }
+     ],
+     "note": "derived"
+    },
+    "water_depth": {
+     "verdict": "not-stated",
+     "sources": [],
+     "note": "not stated"
+    },
+    "tank_height": {
+     "verdict": "not-stated",
+     "sources": [],
+     "note": "no height stated by SF, FKW or Co-Op"
+    },
+    "volume": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/molly-fish/",
+       "site": "Fishkeeping World",
+       "states": "10 gallons",
+       "quote": "Minimum 10 gallons for up to four mollies",
+       "value": 10,
+       "unit": "gal",
+       "group": "4",
+       "stage": "adult",
+       "kind": "min",
+       "est": false,
+       "credibility": "medium",
+       "conditions": "+3 gal per extra molly"
+      },
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/molly-fish-care",
+       "site": "Aquarium Co-Op",
+       "states": "20 gallons",
+       "quote": "at least 20 gallons of water",
+       "value": 20,
+       "unit": "gal",
+       "group": null,
+       "stage": "adult",
+       "kind": "min",
+       "est": true,
+       "credibility": "high",
+       "conditions": "29-55 gal for larger species"
+      }
+     ],
+     "note": "10 vs 20 gal (100 % apart); SF 90x30 ~81 L (21 gal) near Co-Op"
+    }
+   },
+   "pick": {
+    "footprint": {
+     "source": 0,
+     "why": "only footprint"
+    },
+    "volume": {
+     "source": 1,
+     "why": "Co-Op agrees with SF volume"
+    }
+   },
+   "conflict": "volume: FKW 10 gal vs Co-Op 20 gal (100 %)",
+   "checked": [
+    "https://www.seriouslyfish.com/species/poecilia-sphenops/",
+    "https://www.fishkeepingworld.com/molly-fish/",
+    "https://www.aquariumcoop.com/blogs/aquarium/molly",
+    "https://www.aquariumcoop.com/blogs/aquarium/molly-fish-care"
+   ]
+  },
+  "dwarfgourami": {
+   "sci": "Trichogaster lalius",
+   "fields": {
+    "footprint": {
+     "verdict": "not-stated",
+     "sources": [],
+     "note": "SF base field 'not recorded'; only an unlabeled 24x12x12 in in text; no footprint recorded"
+    },
+    "length": {
+     "verdict": "not-stated",
+     "sources": [],
+     "note": "not stated"
+    },
+    "water_depth": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/trichogaster-lalius/",
+       "site": "Seriously Fish",
+       "states": "6-8\"",
+       "quote": "drop the water level to around 6-8\"",
+       "value": 6,
+       "unit": "in",
+       "group": null,
+       "stage": "breeding",
+       "kind": "rec",
+       "est": true,
+       "credibility": "medium",
+       "conditions": "spawning tank only"
+      }
+     ],
+     "note": "breeding tank only, not a general max"
+    },
+    "volume": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/trichogaster-lalius/",
+       "site": "Seriously Fish",
+       "states": "56 litre",
+       "quote": "56 litre tank is just about big enough for a pair",
+       "value": 56,
+       "unit": "L",
+       "group": "pair",
+       "stage": "adult",
+       "kind": "min",
+       "est": false,
+       "credibility": "high",
+       "conditions": "pair"
+      },
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/dwarf-gourami",
+       "site": "Aquarium Co-Op",
+       "states": "10-gallon",
+       "quote": "appreciate a 10-gallon or larger aquarium",
+       "value": 10,
+       "unit": "gal",
+       "group": "1",
+       "stage": "adult",
+       "kind": "min",
+       "est": false,
+       "credibility": "medium",
+       "conditions": "single centerpiece fish"
+      }
+     ],
+     "note": "56 L vs 38 L (32 %)"
+    }
+   },
+   "pick": {
+    "volume": {
+     "source": 0,
+     "why": "pair stated"
+    }
+   },
+   "conflict": "volume: SF 56 L vs Co-Op 10 gal/38 L (32 %)",
+   "checked": [
+    "https://www.seriouslyfish.com/species/trichogaster-lalius/",
+    "https://www.aquariumcoop.com/blogs/aquarium/dwarf-gourami"
+   ]
+  },
+  "honeygourami": {
+   "sci": "Trichogaster chuna",
+   "fields": {
+    "footprint": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/trichogaster-chuna/",
+       "site": "Seriously Fish",
+       "states": "60 ∗ 30 cm",
+       "quote": "base dimensions of 60 ∗ 30 cm",
+       "value": [
+        60,
+        30
+       ],
+       "unit": "cm",
+       "group": "pair/small group",
+       "stage": "adult",
+       "kind": "min",
+       "est": false,
+       "credibility": "high",
+       "conditions": "pair or small group"
+      }
+     ],
+     "note": "SF 60x30 is above our minL 40"
+    },
+    "length": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/trichogaster-chuna/",
+       "site": "Seriously Fish",
+       "states": "60 ∗ 30 cm",
+       "quote": "base dimensions of 60 ∗ 30 cm",
+       "value": 60,
+       "unit": "cm",
+       "group": "pair/small group",
+       "stage": "adult",
+       "kind": "min",
+       "est": false,
+       "credibility": "high",
+       "conditions": "from base"
+      }
+     ],
+     "note": "derived"
+    },
+    "water_depth": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/honey-gourami",
+       "site": "Aquarium Co-Op",
+       "states": "6–8 inches",
+       "quote": "a 10-gallon aquarium with approximately 6–8 inches (15–20 cm) of water",
+       "value": 6,
+       "unit": "in",
+       "group": null,
+       "stage": "adult",
+       "kind": "rec",
+       "est": true,
+       "credibility": "medium",
+       "conditions": "described for a 10 gal; not framed as a max"
+      }
+     ],
+     "note": "no explicit max; SF: keep tank well-covered, do not fill to top (no number)"
+    },
+    "volume": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/honey-gourami",
+       "site": "Aquarium Co-Op",
+       "states": "5- or 10-gallon",
+       "quote": "A single honey gourami can live in a 5- or 10-gallon tank",
+       "value": 5,
+       "unit": "gal",
+       "group": "1",
+       "stage": "adult",
+       "kind": "min",
+       "est": false,
+       "credibility": "high",
+       "conditions": "single fish; trio 20 gal"
+      }
+     ],
+     "note": "5-10 gal single vs SF 54 L pair"
+    }
+   },
+   "pick": {
+    "footprint": {
+     "source": 0,
+     "why": "only footprint"
+    }
+   },
+   "conflict": null,
+   "checked": [
+    "https://www.seriouslyfish.com/species/trichogaster-chuna/",
+    "https://www.aquariumcoop.com/blogs/aquarium/honey-gourami"
+   ]
+  },
+  "gourami": {
+   "sci": "Trichopodus leerii",
+   "fields": {
+    "footprint": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/trichopodus-leerii/",
+       "site": "Seriously Fish",
+       "states": "90 × 30cm",
+       "quote": "90 × 30cm36 × 12in",
+       "value": [
+        90,
+        30
+       ],
+       "unit": "cm",
+       "group": null,
+       "stage": "adult",
+       "kind": "min",
+       "est": true,
+       "credibility": "high",
+       "conditions": "aquarium base field; cell text as in sister SF pages, unverified verbatim"
+      }
+     ],
+     "note": "only SF; ours minL 110 is above this"
+    },
+    "length": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/trichopodus-leerii/",
+       "site": "Seriously Fish",
+       "states": "90 × 30cm",
+       "quote": "90 × 30cm36 × 12in",
+       "value": 90,
+       "unit": "cm",
+       "group": null,
+       "stage": "adult",
+       "kind": "min",
+       "est": true,
+       "credibility": "high",
+       "conditions": "from base"
+      }
+     ],
+     "note": "derived"
+    },
+    "water_depth": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/trichopodus-leerii/",
+       "site": "Seriously Fish",
+       "states": "6-8\"",
+       "quote": "no more than 6-8\" in depth",
+       "value": 6,
+       "unit": "in",
+       "group": null,
+       "stage": "breeding",
+       "kind": "max",
+       "est": true,
+       "credibility": "medium",
+       "conditions": "breeding tank only"
+      }
+     ],
+     "note": "breeding only; FKW notes air gap below lid, no number"
+    },
+    "volume": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/pearl-gourami/",
+       "site": "Fishkeeping World",
+       "states": "30 gallon",
+       "quote": "Pearl gourami need at least a 30 gallon tank",
+       "value": 30,
+       "unit": "gal",
+       "group": "4+",
+       "stage": "adult",
+       "kind": "min",
+       "est": false,
+       "credibility": "medium",
+       "conditions": "~6 gal per fish"
+      }
+     ],
+     "note": "30 gal (114 L) vs SF 81 L: 41 % apart"
+    }
+   },
+   "pick": {
+    "footprint": {
+     "source": 0,
+     "why": "only footprint"
+    }
+   },
+   "conflict": "volume: FKW 30 gal (114 L) vs SF ~81 L (41 %)",
+   "checked": [
+    "https://www.seriouslyfish.com/species/trichopodus-leerii/",
+    "https://www.fishkeepingworld.com/pearl-gourami/",
+    "https://www.aquariumcoop.com/blogs/aquarium/pearl-gourami"
+   ]
+  }
+ },
+ "agent_notes": "Footprints only from Seriously Fish data fields (quotes are the concatenated cell text). No general water depth/max found for any gourami; only breeding-tank depths (est). Dwarf gourami: no footprint. Pearl gourami SF footprint quote not shown verbatim by fetch, may fail check. Gourami lid notes: SF honey 'Keep the tank well-covered and do not fill it to the top'. Aquarium Co-Op pearl-gourami and molly (short slug) URLs 404; hepper 403."
+}

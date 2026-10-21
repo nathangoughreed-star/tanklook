@@ -35,6 +35,55 @@ Rule from Nathan 2026-10-20: he cannot judge the biology; trust the research, es
   "grazers per tank size" figures (Top Shelf: 2-3 turbos per 20-30 gal) and how much supplementary feeding (nori, wafers)
   lifts them, for turbo, nerite, trumpet, oto, bristlenose, SAE and amano; only with stated numbers.
 
+## Proposed: tank-minimum geometry (lane MX, 2026-10-21; WAITING for Nathan)
+
+Data: research/sourcing/tank-minimum/M1-M9.json (quotes re-fetched: <batch>.verify.json), merged by
+`node scripts/tank-min-sources.mjs` into summary.json and table.md; write-up research/tank-minimum-sources.md. Picks already
+follow Decision 1 (lowest well-supported minimum = 100 %, a stricter credible figure = Recommended candidate) and drop breeding /
+juvenile figures. "Ours" = today's `minLengthMm` / `minL`. Each item below either conflicts by more than 25 % or flips pass / fail.
+
+- **MX1 Seriously Fish "recommended" footprints (12 species).** SF writes most footprints as "should be the smallest considered"
+  (min), but for neon, discus, bronze cory, hatchet, labeo, livingstonii, afra, panda cory, pygmy cory it writes "is
+  recommended"; likewise dart frog, fire-bellied toad, ball python on their pages. Taken literally (Decision 1 / 4) these are
+  Recommended marks and cannot fail; the required minimum then falls back to a DERIVED (est) footprint from the gallon figure.
+  Proposal: follow the wording (Recommended), because SF uses both phrasings deliberately. Alternative: count SF's aquarium-size
+  line as its minimum whatever the verb.
+- **MX2 Sourced length is LONGER than ours (new failures).** Neon 17.5 -> 23.5 in (SF 60 x 30 cm, "recommended", see MX1); betta
+  12 -> 17.5 in (SF 45 x 30); bronze cory 23.5 -> 31.5 in (SF 80 x 30, "recommended"); zebra danio 23.5 -> 35.5 in (SF 90 x 30, for
+  a group of 8-10); boesemani 35.5 -> 47 in (SF 120 cm, two more pages say 4 ft); honey gourami 17.5 -> 23.5 in (SF 60 x 30);
+  bolivian ram 23.5 -> 35.5 in (SF 90 x 45); clown loach 47 -> 71 in (SF 180 x 60 for an adult group; Guidarium 150 cm = 59 in);
+  yellow tang 47 -> 72 in (6 ft, est; another page 120 cm = 47 in, 35 % apart: propose 47 in required, 72 in Recommended); coral
+  beauty 35.5 -> 47 in (1.2 m, est). Proposal: adopt each as sourced, single source where marked.
+- **MX3 Sourced length is SHORTER than ours (new passes).** Cockatoo 35.5 -> 23.5 in (SF 60 x 30 for a PAIR; a harem needs more,
+  FKW 30 gal); comet 59 -> 36 in (one page; ponds advised for groups over 4); axolotl 31.5 -> 19.5 in (axolotl.org 50 x 25 cm
+  minimum; Reptile Centre 90 x 45 cm "ideal" = Recommended); regal jumper 10 -> 4 in (a 4 x 4 in floor, est). Proposal: adopt;
+  cockatoo's figure is for a pair, so the count picker's harem needs a stated harem figure (none found).
+- **MX4 Swordtail (known doubt).** SF: "surface dimensions of 120 x 30 cm ... or equivalent" (47 x 12 in, area 558 sq in).
+  FishBase (mirror only, the main site timed out): "minimum aquarium size 80 cm", no conditions (est). 33 % apart. Proposal: keep
+  today's pair: length 31.5 in (FishBase, est) AND floor area 558 sq in (SF "or equivalent"), each held on its own.
+- **MX5 Kuhli loach (known doubt, settled).** SF 60 x 30 cm footprint and Guidarium "a tank length of at least 60 cm" agree
+  (23.5 x 12 in, two sources); Aquariadise's 20 gal long / 80 cm (31.5 in) = Recommended. Matches today's 23.5 in, now sourced.
+  No page states a water depth: the 2 in tray stays "not assessed".
+- **MX6 Royal gramma and cleaner shrimp (known doubts).** No opened page states a footprint or length for either. Derived (est):
+  gramma 30 gal (three pages) -> 30 gal breeder, 35.5 x 17.5 in inner, same length as ours. Shrimp 20 gal (Aquariadise) -> 20 long,
+  30 x 13 in, vs ours 23.5 in (flips a 20 high); Quality Marine 40 gal = Recommended; Gensou 60 L could not be re-fetched (403).
+  Proposal: shrimp is an invertebrate, so per Decision 3 it gets clearance only, no derived footprint; gramma uses the derived one.
+- **MX7 Depth (Decision 4).** No page among 84 species states a required minimum WATER depth. Angelfish: SF "A tall tank of at
+  least 50 cm" (19.5 in) recommended for adults = Recommended mark (tank height), body height 20 cm (8 in) on record. Discus: only a
+  low-credibility page states height (18-20 in of water) = estimated advisory, as Decision 4 already says. African dwarf frog:
+  maximum water depth 24 in (one page) = species advisory. Fire-bellied toad 2 in water (paludarium) on record. Gourami depths found
+  were breeding-tank figures and are excluded.
+- **MX8 Land animals: height and footprint conflicts.** Crested gecko (and crested harlequin): Reptiles Magazine 36 in tall adult
+  minimum vs ReptiFiles 24 in tall "recommended", footprint 18 x 18 in agreed by three pages; propose 18 x 18 x 24 required (two
+  pages), 36 in Recommended. Green anole: ReptiFiles 24 x 24 x 24 in (high) vs PetSmart 18 in tall / 10 gal (low credibility):
+  propose ReptiFiles as the minimum. Fire-bellied toad: 12 in tall (vet page) vs 18 x 18 x 18 (Josh's Frogs): 12 in required, 18
+  Recommended. Chaco tarantula: Dubia Roaches 20 x 10 in vs Josh's Frogs "four times the spider's diagonal leg span" (a rule, about
+  28 in for an adult): propose the rule as DERIVED (est) from our adult size, 20 x 10 as the floor. Ball python: ReptiFiles 48 x 24 x
+  24 in adult (the S168 decision already kept 4 x 2 x 2 ft over 40 gal): no change.
+- **MX9 Gallon figures (advisory only from Decision 2, so no pass / fail).** 31 species' sourced gallons differ from ours by more
+  than 25 % (summary.json `flags`). They become the advisory "small volume" note and the Recommended text, not a gate. Proposal:
+  MM takes the lowest well-supported figure as the advisory and does not re-decide them one by one.
+
 <!-- GENERATED by scripts/sourcing-decisions.mjs: do not edit below -->
 
 ## A1 (0)

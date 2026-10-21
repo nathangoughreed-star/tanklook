@@ -1,0 +1,142 @@
+{
+  "batch": "M8",
+  "species": {
+    "dartfrog": {
+      "sci": "Dendrobates tinctorius",
+      "fields": {
+        "footprint": {"verdict": "sourced", "sources": [
+          {"url": "https://joshsfrogs.com/sp/dendrobates-tinctorius-green-sip-dart034", "site": "Josh's Frogs", "states": "18x18x18", "quote": "recommends a 20H or 18x18x18 glass terrarium for 1-3 frogs.", "value": [18, 18], "unit": "in", "group": "1-3", "stage": null, "kind": "rec", "est": false, "credibility": "high", "conditions": "1-3 frogs; 20H is the alternative"}
+        ], "note": "One source; units not printed on page (inches assumed, standard for US terrarium sizes). BioDude snippet (search only, not opened) lists 24x18x18 for a pair."},
+        "tank_height": {"verdict": "sourced", "sources": [
+          {"url": "https://joshsfrogs.com/sp/dendrobates-tinctorius-green-sip-dart034", "site": "Josh's Frogs", "states": "18x18x18", "quote": "recommends a 20H or 18x18x18 glass terrarium for 1-3 frogs.", "value": 18, "unit": "in", "group": "1-3", "stage": null, "kind": "rec", "est": true, "credibility": "high", "conditions": "height is third figure of 18x18x18; page does not label axes"}
+        ], "note": "Ground-dwelling species; height not important."},
+        "water_depth": {"verdict": "not-stated", "sources": [], "note": "Terrestrial; not looked for beyond care pages opened."},
+        "volume": {"verdict": "sourced", "sources": [
+          {"url": "https://joshsfrogs.com/sp/dendrobates-tinctorius-green-sip-dart034", "site": "Josh's Frogs", "states": "10 gallon", "quote": "A 10 gallon aquarium is suitable for a single Dendrobates tinctorius", "value": 10, "unit": "gal", "group": "1", "stage": null, "kind": "min", "est": false, "credibility": "high", "conditions": "single frog; page also says approx. 10 gallons per frog"}
+        ], "note": "Single source."}
+      },
+      "pick": {"footprint": {"source": 0, "why": "only stated"}, "volume": {"source": 0, "why": "only stated"}},
+      "conflict": null,
+      "checked": ["https://joshsfrogs.com/sp/dendrobates-tinctorius-green-sip-dart034", "https://frogdaddy.net/blogs/dendroknow/dendrobates-tinctorius-care-sheet (no size stated)"]
+    },
+    "treefrog": {
+      "sci": "Ranoidea caerulea",
+      "fields": {
+        "footprint": {"verdict": "sourced", "sources": [
+          {"url": "https://www.thebiodude.com/blogs/frog-caresheets/white-s-tree-frog-caresheet-and-bioactive-maintenance", "site": "The Bio Dude", "states": "18”L x 18”W", "quote": "housing a single White’s tree frog is 18”L x 18”W x 24”H", "value": [18, 18], "unit": "in", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "single frog; trio needs 36x18x36"},
+          {"url": "https://reptiledirect.com/whites-tree-frog/", "site": "Reptile Direct", "states": "18 inches wide, 18 inches deep", "quote": "Ideally, it should measure 18 inches wide, 18 inches deep, and 24 inches tall.", "value": [18, 18], "unit": "in", "group": "2", "stage": "adult", "kind": "rec", "est": false, "credibility": "medium", "conditions": "page says this size houses two adults or up to four juveniles"},
+          {"url": "https://joshsfrogs.com/lp/white-s-tree-frogs---litoria-caerulea--individually-pictured--ipa-wtf", "site": "Josh's Frogs", "states": "18x18x24", "quote": "an 18x18x24 glass terrarium is a good size for 2-4 juveniles or adults.", "value": [18, 18], "unit": "in", "group": "2-4", "stage": null, "kind": "rec", "est": false, "credibility": "high", "conditions": "2-4 juveniles or adults"}
+        ], "note": "Three sources agree on 18x18 floor; Bio Dude says it is for one frog, others say 2-4. Bio Dude trio: 36 x 18."},
+        "tank_height": {"verdict": "sourced", "sources": [
+          {"url": "https://www.thebiodude.com/blogs/frog-caresheets/white-s-tree-frog-caresheet-and-bioactive-maintenance", "site": "The Bio Dude", "states": "24”H", "quote": "housing a single White’s tree frog is 18”L x 18”W x 24”H", "value": 24, "unit": "in", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "single frog"},
+          {"url": "https://reptiledirect.com/whites-tree-frog/", "site": "Reptile Direct", "states": "24 inches tall", "quote": "Ideally, it should measure 18 inches wide, 18 inches deep, and 24 inches tall.", "value": 24, "unit": "in", "group": "2", "stage": "adult", "kind": "rec", "est": false, "credibility": "medium", "conditions": "two adults"}
+        ], "note": "Two sources agree on 24 in. Reptiles Magazine says only 'a taller terrarium ... is a good idea'."},
+        "water_depth": {"verdict": "not-stated", "sources": [], "note": "Arboreal; not stated on opened pages."},
+        "volume": {"verdict": "sourced", "sources": [
+          {"url": "https://reptilesmagazine.com/whites-treefrog-care-sheet/", "site": "Reptiles Magazine", "states": "20 gallon", "quote": "A 20 gallon horizontal terrarium should be considered a minimum size for 4 young frogs.", "value": 20, "unit": "gal", "group": "4", "stage": "juvenile", "kind": "min", "est": false, "credibility": "medium", "conditions": "4 young frogs, horizontal"},
+          {"url": "https://reptiledirect.com/whites-tree-frog/", "site": "Reptile Direct", "states": "15- or 20-gallon", "quote": "The smallest enclosure you can use is a 15- or 20-gallon glass terrarium.", "value": 15, "unit": "gal", "group": null, "stage": null, "kind": "min", "est": true, "credibility": "medium", "conditions": "group unstated"}
+        ], "note": "15-20 gal; notably 20 gal for 4 young is lenient vs height-based recommendations."}
+      },
+      "pick": {"footprint": {"source": 2, "why": "Josh's Frogs, high credibility, 18x18 with stated group"}, "tank_height": {"source": 0, "why": "stated minimum for a single frog"}, "volume": {"source": 1, "why": "smallest stated"}},
+      "conflict": null,
+      "checked": ["https://reptilesmagazine.com/whites-treefrog-care-sheet/", "https://www.thebiodude.com/blogs/frog-caresheets/white-s-tree-frog-caresheet-and-bioactive-maintenance", "https://reptiledirect.com/whites-tree-frog/", "https://joshsfrogs.com/lp/white-s-tree-frogs---litoria-caerulea--individually-pictured--ipa-wtf", "https://www.rvc.ac.uk/ (403)", "https://www.amphibiancare.com/frogs/guides/whitestreefrog/ (404)"]
+    },
+    "firetoad": {
+      "sci": "Bombina orientalis",
+      "fields": {
+        "footprint": {"verdict": "sourced", "sources": [
+          {"url": "https://thevetdesk.com/pet-breeds/amphibians/oriental-fire-bellied-toad", "site": "The Vet Desk", "states": "24” L x 12” W", "quote": "15 gallons (24” L x 12” W x 12” H)", "value": [24, 12], "unit": "in", "group": "3-5", "stage": null, "kind": "rec", "est": false, "credibility": "medium", "conditions": "3 to 5 frogs"},
+          {"url": "https://joshsfrogs.com/cms/fire-bellied-toad-care-sheet", "site": "Josh's Frogs", "states": "18x18x18", "quote": "10 to 15 gallon tank or a 18x18x18 Exo-terra terrarium", "value": [18, 18], "unit": "in", "group": "2-3", "stage": null, "kind": "rec", "est": false, "credibility": "high", "conditions": "2 or 3 toads"}
+        ], "note": "24x12 (3-5 toads) vs 18x18 (2-3 toads); floor area 288 vs 324 sq in, agree."},
+        "tank_height": {"verdict": "sourced", "sources": [
+          {"url": "https://thevetdesk.com/pet-breeds/amphibians/oriental-fire-bellied-toad", "site": "The Vet Desk", "states": "12” H", "quote": "15 gallons (24” L x 12” W x 12” H)", "value": 12, "unit": "in", "group": "3-5", "stage": null, "kind": "rec", "est": false, "credibility": "medium", "conditions": "3 to 5 frogs"},
+          {"url": "https://joshsfrogs.com/cms/fire-bellied-toad-care-sheet", "site": "Josh's Frogs", "states": "18x18x18", "quote": "10 to 15 gallon tank or a 18x18x18 Exo-terra terrarium", "value": 18, "unit": "in", "group": "2-3", "stage": null, "kind": "rec", "est": true, "credibility": "high", "conditions": "third figure assumed height"}
+        ], "note": "12 vs 18 in differ by 50 %, but both are for tank types, not stated minimum heights."},
+        "water_depth": {"verdict": "sourced", "sources": [
+          {"url": "https://thevetdesk.com/pet-breeds/amphibians/oriental-fire-bellied-toad", "site": "The Vet Desk", "states": "2 to 3 inches", "quote": "ideally half water (about 2 to 3 inches deep) and half land.", "value": 2, "unit": "in", "group": null, "stage": null, "kind": "rec", "est": false, "credibility": "medium", "conditions": "recommended water depth 2-3 in (low value recorded); also a 50/50 water:land split"}
+        ], "note": "Land share 50 % stated by Vet Desk and by Josh's Frogs ('half water/half land'); Josh's gives no depth."},
+        "volume": {"verdict": "sourced", "sources": [
+          {"url": "https://thevetdesk.com/pet-breeds/amphibians/oriental-fire-bellied-toad", "site": "The Vet Desk", "states": "10-gallon", "quote": "A 10-gallon tank is a bare minimum", "value": 10, "unit": "gal", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "single toad; 15-20 gal for 3-5"},
+          {"url": "https://joshsfrogs.com/cms/fire-bellied-toad-care-sheet", "site": "Josh's Frogs", "states": "10 to 15 gallon", "quote": "10 to 15 gallon tank or a 18x18x18 Exo-terra terrarium", "value": 10, "unit": "gal", "group": "2-3", "stage": null, "kind": "rec", "est": false, "credibility": "high", "conditions": "2 or 3 toads"}
+        ], "note": "Agree."}
+      },
+      "pick": {"footprint": {"source": 0, "why": "stated with group 3-5"}, "water_depth": {"source": 0, "why": "only stated"}, "volume": {"source": 0, "why": "stated minimum"}},
+      "conflict": null,
+      "checked": ["https://joshsfrogs.com/cms/fire-bellied-toad-care-sheet", "https://thevetdesk.com/pet-breeds/amphibians/oriental-fire-bellied-toad", "https://www.amphibiancare.com/frogs/guides/firebellied/ (404)"]
+    },
+    "firenewt": {
+      "sci": "Cynops orientalis",
+      "fields": {
+        "footprint": {"verdict": "not-stated", "sources": [], "note": "PetMD and Reptiles Magazine give no dimensions; Caudata culture sheet gives none."},
+        "water_depth": {"verdict": "sourced", "sources": [
+          {"url": "https://petmd.com/exotic/fire-bellied-newt-care-sheet", "site": "PetMD", "states": "1.5 times", "quote": "at least 1.5 times as deep as the body length of the longest newt", "value": 1.5, "unit": "x body length", "group": null, "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "relative depth (about 13.5 cm for a 9 cm newt); Caudata culture sheet: 'Water depth is generally the choice of the owner'"}
+        ], "note": "Relative depth only. Caudata sheet (https://caudata.org/cc/species/Cynops/C_orientalis.shtml) states no minimum and no tank size; says small land areas needed."},
+        "volume": {"verdict": "sourced", "sources": [
+          {"url": "https://petmd.com/exotic/fire-bellied-newt-care-sheet", "site": "PetMD", "states": "15-gallon", "quote": "A newt needs at least a 15-gallon glass tank.", "value": 15, "unit": "gal", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "single newt; 20 gal for two"},
+          {"url": "https://reptilesmagazine.com/?p=104985", "site": "Reptiles Magazine", "states": "20 gallon", "quote": "A 20 gallon aquarium will be enough room for up to four newts.", "value": 20, "unit": "gal", "group": "4", "stage": null, "kind": "min", "est": false, "credibility": "medium", "conditions": "up to four newts"}
+        ], "note": "15 gal (1) vs 20 gal (4): sources differ in scaling; PetMD 20 gal for two. Land share: Reptiles Magazine says terrestrial area needed, no ratio."}
+      },
+      "pick": {"volume": {"source": 0, "why": "single-animal minimum"}},
+      "conflict": "PetMD 15 gal/1 and 20 gal/2 vs Reptiles Magazine 20 gal/4 (group scaling differs by 2x)",
+      "checked": ["https://petmd.com/exotic/fire-bellied-newt-care-sheet", "https://reptilesmagazine.com/?p=104985", "https://caudata.org/cc/species/Cynops/C_orientalis.shtml (no tank size)"]
+    },
+    "adf": {
+      "sci": "Hymenochirus boettgeri",
+      "fields": {
+        "footprint": {"verdict": "not-stated", "sources": [], "note": "No page opened gave length x width."},
+        "water_depth": {"verdict": "sourced", "sources": [
+          {"url": "https://modestfish.com/african-dwarf-frog-care/", "site": "Modest Fish", "states": "2 feet (61 centimeters)", "quote": "be no more than 2 feet (61 centimeters) deep", "value": 2, "unit": "ft", "group": null, "stage": "adult", "kind": "max", "est": false, "credibility": "medium", "conditions": "maximum tank depth; frogs must reach surface"}
+        ], "note": "PetSmart (opened) says only 'prefer shallow water' with no number."},
+        "volume": {"verdict": "sourced", "sources": [
+          {"url": "https://www.liveaquaria.com/products/dwarf-african-frog", "site": "LiveAquaria", "states": "10 gallons", "quote": "established aquarium no smaller than 10 gallons in size.", "value": 10, "unit": "gal", "group": "3", "stage": "adult", "kind": "min", "est": false, "credibility": "high", "conditions": "page suggests small group of at least three"},
+          {"url": "https://modestfish.com/african-dwarf-frog-care/", "site": "Modest Fish", "states": "5 gallon", "quote": "at least a 5 gallon (19 liter) tank if you plan to keep a single frog", "value": 5, "unit": "gal", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "single frog; 10 gal for 2, 15 gal for 3"},
+          {"url": "https://www.petsmart.com/learning-center/fish-care/African-dwarf-frog-care-guide", "site": "PetSmart", "states": "5 gallons", "quote": "At least 5 gallons for frogs", "value": 5, "unit": "gal", "group": null, "stage": null, "kind": "min", "est": true, "credibility": "low", "conditions": "group unstated; 'best kept in groups of at least 2'"}
+        ], "note": "5 gal single / 10 gal for 2 (Modest Fish) vs 10 gal for 3+ (LiveAquaria)."}
+      },
+      "pick": {"volume": {"source": 0, "why": "high credibility, stated group of 3"}},
+      "conflict": null,
+      "checked": ["https://www.liveaquaria.com/products/dwarf-african-frog", "https://modestfish.com/african-dwarf-frog-care/", "https://www.petsmart.com/learning-center/fish-care/African-dwarf-frog-care-guide", "https://www.amphibiancare.com/frogs/guides/africandwarffrog/ (404)"]
+    },
+    "axolotl": {
+      "sci": "Ambystoma mexicanum",
+      "fields": {
+        "footprint": {"verdict": "sourced", "sources": [
+          {"url": "https://www.axolotl.org/housing.htm", "site": "Axolotl.org", "states": "50 cm long x 25 cm wide", "quote": "aquarium of dimensions 50 cm long x 25 cm wide x 25 cm tall", "value": [50, 25], "unit": "cm", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "high", "conditions": "single adult, standard 10 gal"},
+          {"url": "https://www.reptilecentre.com/blogs/reptile-blog/axolotl-tank-size", "site": "Reptile Centre", "states": "90x45cm", "quote": "The ideal axolotl tank size is at least 70 litres, 90x45cm.", "value": [90, 45], "unit": "cm", "group": "1", "stage": "adult", "kind": "rec", "est": true, "credibility": "medium", "conditions": "ideal for fully grown axolotl; 90-120 cm length for two adults"}
+        ], "note": "50x25 (axolotl.org minimum) vs 90x45 (Reptile Centre ideal): large conflict, but different kind (min vs rec)."},
+        "length": {"verdict": "sourced", "sources": [
+          {"url": "https://www.axolotl.org/housing.htm", "site": "Axolotl.org", "states": "45 cm", "quote": "minimum size would be a 45 cm long aquarium (US 10 gallons) for one adult", "value": 45, "unit": "cm", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "high", "conditions": "one adult"}
+        ], "note": "Same page also gives 150 cm for multiple axolotls."},
+        "tank_height": {"verdict": "sourced", "sources": [
+          {"url": "https://www.axolotl.org/housing.htm", "site": "Axolotl.org", "states": "25 cm tall", "quote": "aquarium of dimensions 50 cm long x 25 cm wide x 25 cm tall", "value": 25, "unit": "cm", "group": "1", "stage": "adult", "kind": "rec", "est": false, "credibility": "high", "conditions": "example tank, not a stated minimum height"}
+        ], "note": "Tank height only; no minimum water depth stated. Reptile Centre: extra depth gives little benefit."},
+        "water_depth": {"verdict": "not-stated", "sources": [], "note": "axolotl.org, Modest Fish, Reptile Centre state no water depth figure (Modest Fish: prioritise length and width over height)."},
+        "volume": {"verdict": "sourced", "sources": [
+          {"url": "https://www.axolotl.org/housing.htm", "site": "Axolotl.org", "states": "10 gallons", "quote": "45 cm long aquarium (US 10 gallons) for one adult", "value": 10, "unit": "gal", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "high", "conditions": "one adult, 'enthusiast' minimum"},
+          {"url": "https://modestfish.com/axolotl-care/", "site": "Modest Fish", "states": "29 gallons", "quote": "29 gallons is the smallest tank I can recommend you buy for your axolotl", "value": 29, "unit": "gal", "group": "1", "stage": "adult", "kind": "rec", "est": false, "credibility": "medium", "conditions": "one axolotl"},
+          {"url": "https://www.reptilecentre.com/blogs/reptile-blog/axolotl-tank-size", "site": "Reptile Centre", "states": "70 litres", "quote": "The ideal axolotl tank size is at least 70 litres, 90x45cm.", "value": 70, "unit": "L", "group": "1", "stage": "adult", "kind": "rec", "est": true, "credibility": "medium", "conditions": "ideal, one adult"}
+        ], "note": "10 gal vs 29 gal vs 70 L (18.5 gal)."}
+      },
+      "pick": {"footprint": {"source": 0, "why": "stated minimum from specialist site"}, "volume": {"source": 0, "why": "stated minimum, single adult"}},
+      "conflict": "footprint 50x25 cm (axolotl.org min) vs 90x45 cm (Reptile Centre ideal); volume 10 gal vs 29 gal (Modest Fish) vs 70 L",
+      "checked": ["https://www.axolotl.org/housing.htm", "https://modestfish.com/axolotl-care/", "https://www.reptilecentre.com/blogs/reptile-blog/axolotl-tank-size"]
+    },
+    "crestedharlequin": {
+      "sci": "Correlophus ciliatus",
+      "fields": {
+        "footprint": {"verdict": "sourced", "sources": [
+          {"url": "https://reptilesmagazine.com/crested-gecko-care-sheet/", "site": "Reptiles Magazine", "states": "18″L x 18″W", "quote": "18″L x 18″W x 36″ H terrarium with a screen top.", "value": [18, 18], "unit": "in", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "adult minimum; juveniles 18x18x24"}
+        ], "note": "ReptiFiles pages opened list 18x18x24 in Base Facts / PDF but do not label it a minimum or label the axes, so not used as a source."},
+        "tank_height": {"verdict": "sourced", "sources": [
+          {"url": "https://reptilesmagazine.com/crested-gecko-care-sheet/", "site": "Reptiles Magazine", "states": "36″ H", "quote": "18″L x 18″W x 36″ H terrarium with a screen top.", "value": 36, "unit": "in", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "adult; juveniles 24 in"}
+        ], "note": "ReptiFiles quick facts 18x18x24 (height assumed 24, unlabeled) vs 36 in here: 33 % difference."},
+        "water_depth": {"verdict": "not-stated", "sources": [], "note": "Terrestrial/arboreal."},
+        "volume": {"verdict": "not-stated", "sources": [], "note": "No gallon figure quoted from opened pages."}
+      },
+      "pick": {"footprint": {"source": 0, "why": "only labeled source"}, "tank_height": {"source": 0, "why": "only labeled source"}},
+      "conflict": "height 24 in (ReptiFiles unlabeled enclosure listing, not cited) vs 36 in (Reptiles Magazine adult minimum)",
+      "checked": ["https://reptilesmagazine.com/crested-gecko-care-sheet/", "https://reptifiles.com/crested-gecko-care/ (only unlabeled 18x18x24)", "https://reptifiles.com/wp-content/uploads/2020/10/Crested-Gecko-Care-Sheet-PDF.pdf (only unlabeled 18x18x24)", "https://reptifiles.com/crested-gecko-care/crested-gecko-enclosure/ (404)"]
+    }
+  },
+  "agent_notes": "Several amphibiancare.com guesses returned 404; no Amphibian Care or Caudata article gave tank sizes. Dart frog and firetoad dimensions have no unit printed on some pages (inches assumed). ReptiFiles 18x18x24 not cited since unlabeled."
+}

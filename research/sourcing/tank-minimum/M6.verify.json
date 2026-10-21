@@ -1,0 +1,290 @@
+[
+ {
+  "id": "oto",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://guidarium.com/fishes/otocinclus",
+  "result": "exact",
+  "score": 1,
+  "quote": "a tank length of at least 45 cm"
+ },
+ {
+  "id": "oto",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/otocinclus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum 10 gallons, or 20 gallons for groups of more than 10 fish"
+ },
+ {
+  "id": "oto",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://guidarium.com/fishes/otocinclus",
+  "result": "exact",
+  "score": 1,
+  "quote": "A minimum aquarium volume of 38 litres"
+ },
+ {
+  "id": "clownloach",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/chromobotia-macracanthus/",
+  "result": "compact",
+  "score": 1,
+  "quote": "base measurements of 180 ∗ 60 cm72 ∗ 24 in or equivalent"
+ },
+ {
+  "id": "clownloach",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://guidarium.com/fishes/clown-loach",
+  "result": "compact",
+  "score": 1,
+  "quote": "Minimum Length: 150 cm"
+ },
+ {
+  "id": "clownloach",
+  "field": "tank_height",
+  "verdict": "sourced",
+  "url": "https://aquariadise.com/caresheet-clown-loach-chromobotia-macracanthus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Longer tanks are better than tall ones since clown loaches are bottom dwellers."
+ },
+ {
+  "id": "clownloach",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/clown-loach/",
+  "result": "exact",
+  "score": 1,
+  "quote": "5 adults will need at least a 150-gallon tank"
+ },
+ {
+  "id": "clownloach",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/clown-loach",
+  "result": "exact",
+  "score": 1,
+  "quote": "For juveniles, the minimum size we recommend is a 55-gallon aquarium."
+ },
+ {
+  "id": "clownloach",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://aquariadise.com/caresheet-clown-loach-chromobotia-macracanthus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum 140 gallons (530L) for a group of 6."
+ },
+ {
+  "id": "clownloach",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://guidarium.com/fishes/clown-loach",
+  "result": "compact",
+  "score": 1,
+  "quote": "Minimum Volume: 500 L"
+ },
+ {
+  "id": "clownloach",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/chromobotia-macracanthus/",
+  "result": "compact",
+  "score": 1,
+  "quote": "~648litres~171US gal"
+ },
+ {
+  "id": "sae",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://guidarium.com/fishes/siamese-algae-eater",
+  "result": "compact",
+  "score": 1,
+  "quote": "Minimum Length: 90 cm"
+ },
+ {
+  "id": "sae",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/siamese-algae-eater/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum Tank Size: 20 gallons"
+ },
+ {
+  "id": "sae",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/siamese-algae-eater",
+  "result": "exact",
+  "score": 1,
+  "quote": "A single SAE can live in a 50- to 55-gallon freshwater aquarium"
+ },
+ {
+  "id": "sae",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://guidarium.com/fishes/siamese-algae-eater",
+  "result": "compact",
+  "score": 1,
+  "quote": "Minimum Volume: 110 L"
+ },
+ {
+  "id": "hillstream",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/sewellia-lineolata/",
+  "result": "compact",
+  "score": 1,
+  "quote": "Minimum base dimensions of 75 ∗ 30 cm30 ∗ 12 in"
+ },
+ {
+  "id": "hillstream",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://guidarium.com/fishes/reticulated-hillstream-loach",
+  "result": "exact",
+  "score": 1,
+  "quote": "a tank length of at least 90 cm"
+ },
+ {
+  "id": "hillstream",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/sewellia-lineolata/",
+  "result": "compact",
+  "score": 1,
+  "quote": "~68litres~18US gal"
+ },
+ {
+  "id": "hillstream",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://guidarium.com/fishes/reticulated-hillstream-loach",
+  "result": "exact",
+  "score": 1,
+  "quote": "A minimum aquarium volume of 80 litres"
+ },
+ {
+  "id": "peapuffer",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/carinotetraodon-travancoricus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "as small as 12\" x 8\" x 8\""
+ },
+ {
+  "id": "peapuffer",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/carinotetraodon-travancoricus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "30cm x 20cm x 20cm - 12.6 litres"
+ },
+ {
+  "id": "peapuffer",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/pea-puffer",
+  "result": "exact",
+  "score": 1,
+  "quote": "provide five gallons of water for the first puffer"
+ },
+ {
+  "id": "peapuffer",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/pea-puffer/",
+  "result": "exact",
+  "score": 1,
+  "quote": "The minimum size of aquarium recommended for a Dwarf Puffer is a 5-gallon tank."
+ },
+ {
+  "id": "cherryshrimp",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://modestfish.com/cherry-shrimp",
+  "result": "exact",
+  "score": 1,
+  "quote": "5 gallons (19 liters)"
+ },
+ {
+  "id": "cherryshrimp",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://shrimpybusiness.com/blogs/shrimpy-business-blog/cherry-shrimp-care-guide",
+  "result": "exact",
+  "score": 1,
+  "quote": "we recommend housing them in a tank no smaller than 5 gallons."
+ },
+ {
+  "id": "amano",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.aquariumsource.com/amano-shrimp/",
+  "result": "compact",
+  "score": 1,
+  "quote": "The minimum tank size for your Amano shrimp should be ten gallons."
+ },
+ {
+  "id": "nerite",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.aquariumsource.com/nerite-snail/",
+  "result": "exact",
+  "score": 1,
+  "quote": "The minimum tank size for a nerite snail is a 10 gallon tank."
+ },
+ {
+  "id": "nerite",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/nerite-snails",
+  "result": "exact",
+  "score": 1,
+  "quote": "a nano tank as small as 2-3 gallons"
+ },
+ {
+  "id": "mystery",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://ca.aquariumsource.com/mystery-snail/",
+  "result": "exact",
+  "score": 1,
+  "quote": "The minimum tank size for mystery snails is five gallons for one snail."
+ },
+ {
+  "id": "ramshorn",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.aqualibs.com/aquarium-snails/planorbella-duryi-duryi-brown-ramshorn-snail",
+  "result": "exact",
+  "score": 1,
+  "quote": "A minimum tank size of 5 gallons is recommended."
+ },
+ {
+  "id": "trumpet",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://aquariadise.com/caresheet-malaysian-trumpet-snails/",
+  "result": "exact",
+  "score": 1,
+  "quote": "can comfortably live in a 10-gallon aquarium."
+ },
+ {
+  "id": "trumpet",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.aquariumsource.com/malaysian-trumpet-snail/",
+  "result": "exact",
+  "score": 1,
+  "quote": "A small group can live in a 5 to 10 gallon tank just fine!"
+ }
+]

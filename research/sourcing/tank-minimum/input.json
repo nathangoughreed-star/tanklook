@@ -1,0 +1,1142 @@
+[
+ {
+  "id": "neon",
+  "name": "Neon tetra",
+  "sci": "Paracheirodon innesi",
+  "tl_mm": 35,
+  "minL": 40,
+  "minLengthMm": 450,
+  "groupOk": 6,
+  "prior": [
+   "https://www.seriouslyfish.com/species/paracheirodon-innesi/ | 54 L / 14 US gal",
+   "https://www.fishkeepingworld.com/neon-tetra/ | 10 US gal = 38 L"
+  ]
+ },
+ {
+  "id": "cardinal",
+  "name": "Cardinal tetra",
+  "sci": "Paracheirodon axelrodi",
+  "tl_mm": 45,
+  "minL": 60,
+  "minLengthMm": 600,
+  "groupOk": 6,
+  "prior": [
+   "https://www.seriouslyfish.com/species/paracheirodon-axelrodi/ | base 60 x 30 cm, ~54 litres (~14 US gal)",
+   "https://www.fishkeepingworld.com/cardinal-tetra/ | 20 gallons (75.7 L) for a small school of six"
+  ]
+ },
+ {
+  "id": "ember",
+  "name": "Ember tetra",
+  "sci": "Hyphessobrycon amandae",
+  "tl_mm": 20,
+  "minL": 30,
+  "minLengthMm": 450,
+  "groupOk": 8,
+  "prior": [
+   "https://www.seriouslyfish.com/species/hyphessobrycon-amandae/ | base at least 45 x 30 cm, ~41 litres (~11 US gal)",
+   "https://www.fishkeepingworld.com/ember-tetra/ | 10 gallons (37.9 L)"
+  ]
+ },
+ {
+  "id": "rummynose",
+  "name": "Rummy-nose tetra",
+  "sci": "Hemigrammus rhodostomus",
+  "tl_mm": 50,
+  "minL": 60,
+  "minLengthMm": 750,
+  "groupOk": 8,
+  "prior": [
+   "https://www.fishkeepingworld.com/rummy-nose-tetra/ | 20 gallons (75.7 L)"
+  ]
+ },
+ {
+  "id": "harlequin",
+  "name": "Harlequin rasbora",
+  "sci": "Trigonostigma heteromorpha",
+  "tl_mm": 45,
+  "minL": 40,
+  "minLengthMm": 600,
+  "groupOk": 8,
+  "prior": [
+   "https://www.seriouslyfish.com/species/trigonostigma-heteromorpha/ | base 60 x 30 cm, ~54 litres (~14 US gal)",
+   "https://www.fishkeepingworld.com/harlequin-rasbora/ | 15 gallons (56.8 L) for a school of 8-10; 20 gallons better"
+  ]
+ },
+ {
+  "id": "chili",
+  "name": "Chili rasbora",
+  "sci": "Boraras brigittae",
+  "tl_mm": 18,
+  "minL": 20,
+  "minLengthMm": 400,
+  "groupOk": 8,
+  "prior": [
+   "https://www.seriouslyfish.com/species/boraras-brigittae/ | base 45 x 30 cm, ~41 litres (~11 US gal)",
+   "https://www.fishkeepingworld.com/chili-rasbora/ | 6-8 gallons (22.7-30.3 L) for a school of 8-10"
+  ]
+ },
+ {
+  "id": "danio",
+  "name": "Zebra danio",
+  "sci": "Danio rerio",
+  "tl_mm": 50,
+  "minL": 40,
+  "minLengthMm": 600,
+  "groupOk": 6,
+  "prior": [
+   "https://www.seriouslyfish.com/species/danio-rerio/ | min base 90 x 30 cm, ~81 litres (~21 US gal)",
+   "https://www.fishkeepingworld.com/zebra-danio/ | 10 gallons (37.9 L) plus 2 gal per extra fish"
+  ]
+ },
+ {
+  "id": "whitecloud",
+  "name": "White cloud mountain minnow",
+  "sci": "Tanichthys albonubes",
+  "tl_mm": 40,
+  "minL": 40,
+  "minLengthMm": 600,
+  "groupOk": 6,
+  "prior": [
+   "https://www.seriouslyfish.com/species/tanichthys-albonubes/ | min base 60 x 30 cm, ~54 litres (~14 US gal)",
+   "https://www.fishkeepingworld.com/white-cloud-mountain-minnow/ | 10-12 gallons (37.9-45.4 L)"
+  ]
+ },
+ {
+  "id": "cpd",
+  "name": "Celestial pearl danio",
+  "sci": "Danio margaritatus",
+  "tl_mm": 25,
+  "minL": 40,
+  "minLengthMm": 450,
+  "groupOk": 6,
+  "prior": [
+   "https://www.seriouslyfish.com/species/danio-margaritatus/ | base 45 x 30 cm, ~41 litres (~11 US gal)",
+   "https://www.fishkeepingworld.com/celestial-pearl-danio/ | 10 gallons (37.9 L), 15-20 better"
+  ]
+ },
+ {
+  "id": "hatchet",
+  "name": "Marbled hatchetfish",
+  "sci": "Carnegiella strigata",
+  "tl_mm": 35,
+  "minL": 60,
+  "minLengthMm": 600,
+  "groupOk": 6,
+  "prior": [
+   "https://www.seriouslyfish.com/species/carnegiella-strigata/ | base 75 x 30 cm, ~68 litres (~18 US gal)",
+   "https://www.liveaquaria.com/products/marble-hatchet | 20 gallons (75.7 L)"
+  ]
+ },
+ {
+  "id": "cherrybarb",
+  "name": "Cherry barb",
+  "sci": "Rohanella (Puntius) titteya",
+  "tl_mm": 50,
+  "minL": 60,
+  "minLengthMm": 600,
+  "groupOk": 6,
+  "prior": [
+   "https://www.seriouslyfish.com/species/puntius-titteya/ | base 60 x 30 cm, about 54 L",
+   "https://www.fishkeepingworld.com/cherry-barb/ | 25 gal or larger (95 L)"
+  ]
+ },
+ {
+  "id": "tigerbarb",
+  "name": "Tiger barb",
+  "sci": "Puntigrus tetrazona",
+  "tl_mm": 70,
+  "minL": 80,
+  "minLengthMm": 750,
+  "groupOk": 6,
+  "prior": [
+   "https://www.seriouslyfish.com/species/puntigrus-tetrazona/ | base 80 x 30 cm, about 72 L",
+   "https://www.fishkeepingworld.com/tiger-barb/ | 20 gal (76 L) for up to 5"
+  ]
+ },
+ {
+  "id": "boesemani",
+  "name": "Boeseman's rainbowfish",
+  "sci": "Melanotaenia boesemani",
+  "tl_mm": 100,
+  "minL": 110,
+  "minLengthMm": 900,
+  "groupOk": 6,
+  "prior": [
+   "https://www.seriouslyfish.com/species/melanotaenia-boesemani/ | at least 120 x 30 x 30 cm, about 108 L (29 US gal)"
+  ]
+ },
+ {
+  "id": "guppy",
+  "name": "Guppy",
+  "sci": "Poecilia reticulata",
+  "tl_mm": 30,
+  "minL": 40,
+  "minLengthMm": 450,
+  "groupOk": 3,
+  "prior": [
+   "https://www.seriouslyfish.com/species/poecilia-reticulata/ | base 45 x 30 cm, about 41 L (11 US gal)",
+   "https://www.fishkeepingworld.com/guppies/ | 5 gal (19 L) plus 1 gal per additional adult"
+  ]
+ },
+ {
+  "id": "platy",
+  "name": "Platy",
+  "sci": "Xiphophorus maculatus",
+  "tl_mm": 40,
+  "minL": 60,
+  "minLengthMm": 600,
+  "groupOk": 3,
+  "prior": [
+   "https://www.seriouslyfish.com/species/xiphophorus-maculatus/ | base 60 x 30 cm, about 54 L (14 US gal)",
+   "https://www.fishkeepingworld.com/platy-fish/ | 10 gal (38 L) for 5-6"
+  ]
+ },
+ {
+  "id": "molly",
+  "name": "Black molly",
+  "sci": "Poecilia sphenops",
+  "tl_mm": 85,
+  "minL": 80,
+  "minLengthMm": 750,
+  "groupOk": 3,
+  "prior": [
+   "https://www.seriouslyfish.com/species/poecilia-sphenops/ | base 90 x 30 cm, about 81 L (21 US gal)",
+   "https://www.fishkeepingworld.com/molly-fish/ | 10 gal (38 L)"
+  ]
+ },
+ {
+  "id": "swordtail",
+  "name": "Swordtail",
+  "sci": "Xiphophorus hellerii",
+  "tl_mm": 120,
+  "minL": 110,
+  "minLengthMm": 800,
+  "minAreaCm2": 3600,
+  "groupOk": 3,
+  "prior": [
+   "https://www.seriouslyfish.com/species/xiphophorus-hellerii/ | 120 x 30 cm base, about 108 L",
+   "https://www.fishkeepingworld.com/swordtail/ | 15 gal (57 L) for a single fish, +5 gal each"
+  ]
+ },
+ {
+  "id": "betta",
+  "name": "Betta",
+  "sci": "Betta splendens",
+  "tl_mm": 65,
+  "minL": 20,
+  "minLengthMm": 300,
+  "groupOk": 1,
+  "prior": [
+   "https://www.seriouslyfish.com/species/betta-splendens/ | 45x30 cm base for single male or pair, ~41 L / 11 US gal",
+   "https://www.fishkeepingworld.com/betta-fish-care/ | 5 US gal = 19 L"
+  ]
+ },
+ {
+  "id": "dwarfgourami",
+  "name": "Dwarf gourami",
+  "sci": "Trichogaster lalius",
+  "tl_mm": 80,
+  "minL": 60,
+  "minLengthMm": 600,
+  "groupOk": 1,
+  "prior": [
+   "https://www.seriouslyfish.com/species/trichogaster-lalius/ | 56 L pair",
+   "https://www.aquariumcoop.com/blogs/aquarium/dwarf-gourami | 10 gal (38 L)"
+  ]
+ },
+ {
+  "id": "honeygourami",
+  "name": "Honey gourami",
+  "sci": "Trichogaster chuna",
+  "tl_mm": 45,
+  "minL": 40,
+  "minLengthMm": 450,
+  "groupOk": 1,
+  "prior": [
+   "https://www.aquariumcoop.com/blogs/aquarium/honey-gourami | single fish 5 or 10 gal (19-38 L)",
+   "https://www.seriouslyfish.com/species/trichogaster-chuna/ | 60 x 30 cm base, pair or small group"
+  ]
+ },
+ {
+  "id": "gourami",
+  "name": "Pearl gourami",
+  "sci": "Trichopodus leerii",
+  "tl_mm": 120,
+  "minL": 110,
+  "minLengthMm": 900,
+  "groupOk": 1,
+  "prior": [
+   "https://www.seriouslyfish.com/species/trichopodus-leerii/ | ~81 L (~21 US gal)",
+   "https://www.fishkeepingworld.com/pearl-gourami/ | 30 gal (114 L)"
+  ]
+ },
+ {
+  "id": "gbr",
+  "name": "German blue ram",
+  "sci": "Mikrogeophagus ramirezi",
+  "tl_mm": 60,
+  "minL": 60,
+  "minLengthMm": 600,
+  "groupOk": 2,
+  "prior": [
+   "https://www.aquariumcoop.com/blogs/aquarium/german-blue-ram | 20 gal pair (76 L)",
+   "https://www.fishkeepingworld.com/german-blue-ram/ | 20 gal (76 L)"
+  ]
+ },
+ {
+  "id": "bolivianram",
+  "name": "Bolivian ram",
+  "sci": "Mikrogeophagus altispinosus",
+  "tl_mm": 80,
+  "minL": 110,
+  "minLengthMm": 600,
+  "groupOk": 2,
+  "prior": [
+   "https://www.fishkeepingworld.com/bolivian-ram/ | 30 gal (114 L) for one fish"
+  ]
+ },
+ {
+  "id": "kribensis",
+  "name": "Kribensis",
+  "sci": "Pelvicachromis pulcher",
+  "tl_mm": 90,
+  "minL": 80,
+  "minLengthMm": 600,
+  "groupOk": 2,
+  "prior": [
+   "https://www.seriouslyfish.com/species/pelvicachromis-pulcher/ | 71 L suitable for a single pair",
+   "https://www.aquariumsource.com/kribensis-cichlid/ | 20-30 US gal = 76-114 L"
+  ]
+ },
+ {
+  "id": "cockatoo",
+  "name": "Cockatoo dwarf cichlid",
+  "sci": "Apistogramma cacatuoides",
+  "tl_mm": 85,
+  "minL": 60,
+  "minLengthMm": 900,
+  "groupOk": 2,
+  "prior": [
+   "https://www.seriouslyfish.com/species/apistogramma-cacatuoides/ | 60 x 30 cm base for a pair",
+   "https://www.fishkeepingworld.com/cockatoo-cichlid/ | 30 gal (114 L)"
+  ]
+ },
+ {
+  "id": "yellowlab",
+  "name": "Yellow lab cichlid",
+  "sci": "Labidochromis caeruleus",
+  "tl_mm": 100,
+  "minL": 150,
+  "minLengthMm": 900,
+  "groupOk": 4,
+  "prior": [
+   "https://www.seriouslyfish.com/species/labidochromis-caeruleus/ | ~154 litres / ~41 US gal",
+   "https://guidarium.com/fishes/yellow-lab-mbuna | 150 L min"
+  ]
+ },
+ {
+  "id": "peacock",
+  "name": "Peacock cichlid",
+  "sci": "Aulonocara stuartgranti",
+  "tl_mm": 130,
+  "minL": 200,
+  "minLengthMm": 1200,
+  "groupOk": 3,
+  "prior": [
+   "https://guidarium.com/fishes/grants-peacock-cichlid | 208 L"
+  ]
+ },
+ {
+  "id": "demasoni",
+  "name": "Demasoni cichlid",
+  "sci": "Pseudotropheus demasoni",
+  "tl_mm": 70,
+  "minL": 200,
+  "minLengthMm": 1200,
+  "groupOk": 6,
+  "prior": [
+   "https://www.seriouslyfish.com/species/pseudotropheus-demasoni/ | ~205 L absolute minimum",
+   "https://guidarium.com/fishes/demasoni-cichlid-mbuna | 200 L"
+  ]
+ },
+ {
+  "id": "kadango",
+  "name": "Kadango (red-fin) cichlid",
+  "sci": "Copadichromis borleyi",
+  "tl_mm": 150,
+  "minL": 250,
+  "minLengthMm": 1500,
+  "groupOk": 4,
+  "prior": [
+   "https://guidarium.com/fishes/red-fin-borleyi | 280 L"
+  ]
+ },
+ {
+  "id": "syno",
+  "name": "Malawi synodontis",
+  "sci": "Synodontis njassae",
+  "zone": "bottom",
+  "tl_mm": 190,
+  "minL": 200,
+  "minLengthMm": 1200,
+  "groupOk": 3,
+  "prior": [
+   "https://www.seriouslyfish.com/species/synodontis-njassae/ | 120 x 30 x 30 cm, ~108 litres (~29 US gal)"
+  ]
+ },
+ {
+  "id": "labeo",
+  "name": "Blue-nosed mbuna",
+  "sci": "Labeotropheus trewavasae",
+  "tl_mm": 120,
+  "minL": 250,
+  "minLengthMm": 1200,
+  "groupOk": 5,
+  "prior": [
+   "https://guidarium.com/fishes/trewavas-cichlid | 200 L"
+  ]
+ },
+ {
+  "id": "auratus",
+  "name": "Golden mbuna",
+  "sci": "Melanochromis auratus",
+  "tl_mm": 110,
+  "minL": 250,
+  "minLengthMm": 1220,
+  "groupOk": 6,
+  "prior": [
+   "https://www.seriouslyfish.com/species/melanochromis-auratus/ | ~205 L absolute minimum",
+   "https://guidarium.com/fishes/auratus-cichlid-mbuna | 200 L"
+  ]
+ },
+ {
+  "id": "livingstonii",
+  "name": "Livingstone's cichlid",
+  "sci": "Nimbochromis livingstonii",
+  "tl_mm": 250,
+  "minL": 400,
+  "minLengthMm": 1500,
+  "groupOk": 1,
+  "prior": [
+   "https://guidarium.com/fishes/livingstons-cichlid | 470 L"
+  ]
+ },
+ {
+  "id": "afra",
+  "name": "Dogtooth cichlid",
+  "sci": "Cynotilapia afra",
+  "tl_mm": 100,
+  "minL": 250,
+  "minLengthMm": 1200,
+  "groupOk": 6,
+  "prior": [
+   "https://guidarium.com/fishes/afra-cichlid | 200 L"
+  ]
+ },
+ {
+  "id": "angel",
+  "name": "Angelfish",
+  "sci": "Pterophyllum scalare",
+  "tl_mm": 150,
+  "minL": 200,
+  "minLengthMm": 1000,
+  "groupOk": 1,
+  "prior": [
+   "https://www.seriouslyfish.com/species/pterophyllum-scalare/ | ~200 L / 53 US gal",
+   "https://www.fishkeepingworld.com/angelfish/ | 30 gal = 114 L listed as tank size (not labelled minimum)"
+  ]
+ },
+ {
+  "id": "discus",
+  "name": "Discus",
+  "sci": "Symphysodon aequifasciatus",
+  "tl_mm": 150,
+  "minL": 250,
+  "minLengthMm": 1200,
+  "groupOk": 4,
+  "prior": [
+   "https://www.seriouslyfish.com/species/symphysodon-aequifasciatus/ | 255 L recommended",
+   "https://www.fishkeepingworld.com/discus-fish/ | min 60 gal (227 L)"
+  ]
+ },
+ {
+  "id": "oscar",
+  "name": "Oscar",
+  "sci": "Astronotus ocellatus",
+  "tl_mm": 300,
+  "minL": 540,
+  "minLengthMm": 1200,
+  "groupOk": 1,
+  "prior": [
+   "https://www.seriouslyfish.com/species/astronotus-ocellatus/ | ~540 L / 143 US gal",
+   "https://www.fishkeepingworld.com/oscar-fish/ | 143 US gal = 541 L for one adult"
+  ]
+ },
+ {
+  "id": "goldfish",
+  "name": "Fancy goldfish",
+  "sci": "Carassius auratus",
+  "tl_mm": 160,
+  "minL": 75,
+  "minLengthMm": 900,
+  "groupOk": 2,
+  "prior": [
+   "https://www.fishkeepingworld.com/fancy-goldfish/ | 20 gal (76 L) for one fancy goldfish",
+   "https://www.fishkeepingworld.com/goldfish/ | 20 gal (76 L)"
+  ]
+ },
+ {
+  "id": "comet",
+  "name": "Comet goldfish",
+  "sci": "Carassius auratus",
+  "tl_mm": 250,
+  "minL": 300,
+  "minLengthMm": 1500,
+  "groupOk": 2,
+  "prior": [
+   "https://www.fishkeepingworld.com/comet-goldfish/ | 50 gal (189 L) min, recommends 75 gal (284 L)",
+   "https://www.fishkeepingworld.com/goldfish/ | 30 gal (114 L)"
+  ]
+ },
+ {
+  "id": "bronzecory",
+  "name": "Bronze corydoras",
+  "sci": "Corydoras aeneus",
+  "zone": "bottom",
+  "tl_mm": 65,
+  "minL": 80,
+  "minLengthMm": 600,
+  "groupOk": 6,
+  "prior": [
+   "https://www.seriouslyfish.com/species/corydoras-aeneus/ | ~72 L / 19 US gal",
+   "https://www.aquariadise.com/caresheet-bronze-corydoras/ | 20 US gal long = 80 L"
+  ]
+ },
+ {
+  "id": "pandacory",
+  "name": "Panda corydoras",
+  "sci": "Corydoras panda",
+  "zone": "bottom",
+  "tl_mm": 50,
+  "minL": 41,
+  "minLengthMm": 600,
+  "groupOk": 6,
+  "prior": [
+   "https://www.seriouslyfish.com/species/corydoras-panda/ | ~41 L / ~11 US gal for a small group"
+  ]
+ },
+ {
+  "id": "pygmycory",
+  "name": "Pygmy corydoras",
+  "sci": "Corydoras pygmaeus",
+  "zone": "bottom",
+  "tl_mm": 25,
+  "minL": 30,
+  "minLengthMm": 450,
+  "groupOk": 8,
+  "prior": [
+   "https://www.fishkeepingworld.com/pygmy-cory/ | 10 US gal (37.9 L) for 4-8 fish",
+   "https://www.seriouslyfish.com/species/corydoras-pygmaeus/ | 45 x 30 cm base, no litres given"
+  ]
+ },
+ {
+  "id": "bristlenose",
+  "name": "Bristlenose pleco",
+  "sci": "Ancistrus sp.",
+  "zone": "bottom",
+  "tl_mm": 125,
+  "minL": 80,
+  "minLengthMm": 600,
+  "groupOk": 1,
+  "prior": [
+   "https://www.seriouslyfish.com/species/ancistrus-cf-cirrhosus | ~54 L / 14 US gal",
+   "https://www.chewy.com/education/fish/general/bristlenose-pleco-care-guide | 20 US gal = 76 L for one adult"
+  ]
+ },
+ {
+  "id": "oto",
+  "name": "Otocinclus",
+  "sci": "Otocinclus vittatus",
+  "zone": "bottom",
+  "tl_mm": 40,
+  "minL": 40,
+  "minLengthMm": 450,
+  "groupOk": 6,
+  "prior": [
+   "https://www.fishkeepingworld.com/otocinclus/ | 10 US gal (37.9 L)"
+  ]
+ },
+ {
+  "id": "kuhli",
+  "name": "Kuhli loach",
+  "sci": "Pangio kuhlii",
+  "zone": "bottom",
+  "tl_mm": 100,
+  "minL": 80,
+  "minLengthMm": 600,
+  "groupOk": 6,
+  "prior": [
+   "https://www.fishkeepingworld.com/kuhli-loach/ | 20 US gal (75.7 L)",
+   "https://www.seriouslyfish.com/species/pangio-kuhlii/ | base at least 60 x 30 cm, no litres"
+  ]
+ },
+ {
+  "id": "clownloach",
+  "name": "Clown loach",
+  "sci": "Chromobotia macracanthus",
+  "zone": "bottom",
+  "tl_mm": 300,
+  "minL": 400,
+  "minLengthMm": 1200,
+  "groupOk": 5,
+  "prior": [
+   "https://www.fishkeepingworld.com/clown-loach/ | over 75 US gal (284 L); 150 gal (568 L) for five adults",
+   "https://www.aquariumcoop.com/blogs/aquarium/clown-loach | 55 US gal (208 L) for juveniles"
+  ]
+ },
+ {
+  "id": "sae",
+  "name": "Siamese algae eater",
+  "sci": "Crossocheilus oblongus",
+  "zone": "bottom",
+  "tl_mm": 150,
+  "minL": 110,
+  "minLengthMm": 900,
+  "groupOk": 3,
+  "prior": [
+   "https://www.fishkeepingworld.com/siamese-algae-eater/ | 20 US gal (76 L)",
+   "https://www.aquariumcoop.com/blogs/aquarium/siamese-algae-eater | 50-55 US gal (189-208 L) for a single SAE"
+  ]
+ },
+ {
+  "id": "hillstream",
+  "name": "Reticulated hillstream loach",
+  "sci": "Sewellia lineolata",
+  "zone": "bottom",
+  "tl_mm": 60,
+  "minL": 60,
+  "minLengthMm": 750,
+  "groupOk": 3,
+  "prior": [
+   "https://www.fishkeepingworld.com/hillstream-loach/ | 55 US gal (208 L)",
+   "https://www.seriouslyfish.com/species/sewellia-lineolata/ | base 75 x 30 cm, no litres"
+  ]
+ },
+ {
+  "id": "peapuffer",
+  "name": "Pea puffer",
+  "sci": "Carinotetraodon travancoricus",
+  "tl_mm": 30,
+  "minL": 20,
+  "minLengthMm": 300,
+  "groupOk": 1,
+  "prior": [
+   "https://www.aquariumcoop.com/blogs/aquarium/pea-puffer | 5 US gal (18.9 L) for the first puffer",
+   "https://www.seriouslyfish.com/species/carinotetraodon-travancoricus/ | 12.6 L for a single fish"
+  ]
+ },
+ {
+  "id": "cherryshrimp",
+  "name": "Cherry shrimp",
+  "sci": "Neocaridina davidi",
+  "cat": "fw-invert",
+  "zone": "bottom",
+  "tl_mm": 30,
+  "minL": 20,
+  "minLengthMm": 400,
+  "groupOk": 10,
+  "prior": [
+   "https://modestfish.com/cherry-shrimp | 5 US gal = 19 L",
+   "https://shrimpybusiness.com/blogs/shrimpy-business-blog/cherry-shrimp-care-guide | 5 US gal = 19 L"
+  ]
+ },
+ {
+  "id": "amano",
+  "name": "Amano shrimp",
+  "sci": "Caridina multidentata",
+  "cat": "fw-invert",
+  "zone": "bottom",
+  "tl_mm": 45,
+  "minL": 40,
+  "minLengthMm": 450,
+  "groupOk": 5,
+  "prior": [
+   "https://www.aquariumsource.com/amano-shrimp/ | 10 gallons (37.9 L)"
+  ]
+ },
+ {
+  "id": "nerite",
+  "name": "Nerite snail (zebra)",
+  "sci": "Neritina natalensis",
+  "cat": "fw-invert",
+  "tl_mm": 25,
+  "minL": 20,
+  "minLengthMm": 300,
+  "groupOk": 1,
+  "prior": [
+   "https://www.aquariumsource.com/nerite-snail/ | 10 gallons (37.9 L)",
+   "https://www.aquariumcoop.com/blogs/aquarium/nerite-snails | 2-3 gallons (7.6-11.4 L)"
+  ]
+ },
+ {
+  "id": "mystery",
+  "name": "Mystery snail",
+  "sci": "Pomacea diffusa",
+  "cat": "fw-invert",
+  "tl_mm": 55,
+  "minL": 19,
+  "groupOk": 1,
+  "prior": [
+   "https://ca.aquariumsource.com/mystery-snail/ | 5 gallons for one snail (18.9 L)"
+  ]
+ },
+ {
+  "id": "ramshorn",
+  "name": "Ramshorn snail",
+  "sci": "Planorbella duryi",
+  "cat": "fw-invert",
+  "tl_mm": 20,
+  "minL": 20,
+  "minLengthMm": 400,
+  "groupOk": 1,
+  "prior": [
+   "https://www.aqualibs.com/aquarium-snails/planorbella-duryi-duryi-brown-ramshorn-snail | 5 gallons (18.9 L)",
+   "https://www.garnelio.de/en/brown-ramshorn-snail-planorbella-duryi-duryi | 5 L or more, 10 L recommended"
+  ]
+ },
+ {
+  "id": "trumpet",
+  "name": "Malaysian trumpet snail",
+  "sci": "Melanoides tuberculata",
+  "cat": "fw-invert",
+  "tl_mm": 25,
+  "minL": 20,
+  "minLengthMm": 300,
+  "groupOk": 1,
+  "prior": [
+   "https://aquariadise.com/caresheet-malaysian-trumpet-snails/ | 10 gallon (37.9 L)",
+   "https://www.aquariumsource.com/malaysian-trumpet-snail/ | 5 to 10 gallon (18.9-37.9 L)"
+  ]
+ },
+ {
+  "id": "ocellaris",
+  "name": "Ocellaris clownfish",
+  "sci": "Amphiprion ocellaris",
+  "cat": "sw-fish",
+  "tl_mm": 100,
+  "minL": 75,
+  "minLengthMm": 600,
+  "groupOk": 2,
+  "prior": [
+   "https://www.bulkreefsupply.com/ora-flurry-ocellaris-clownfish-ora.html | 15 US gal = 57 L",
+   "https://topshelfaquatics.com/products/orange-ocellaris-clownfish | 30 US gal = 114 L"
+  ]
+ },
+ {
+  "id": "royalgramma",
+  "name": "Royal gramma",
+  "sci": "Gramma loreto",
+  "cat": "sw-fish",
+  "tl_mm": 75,
+  "minL": 115,
+  "minLengthMm": 900,
+  "groupOk": 1,
+  "prior": [
+   "https://www.liveaquaria.com/product/53/?pcatid=53 | 30 gal (113.5 L)",
+   "https://www.aquariumsource.com/royal-gramma-basslet/ | 30 gal (113.5 L) for one fish"
+  ]
+ },
+ {
+  "id": "yellowtang",
+  "name": "Yellow tang",
+  "sci": "Zebrasoma flavescens",
+  "cat": "sw-fish",
+  "tl_mm": 180,
+  "minL": 455,
+  "minLengthMm": 1200,
+  "groupOk": 1,
+  "prior": [
+   "https://www.liveaquaria.com/products/yellow-tang-hawaii | 100 US gal = 379 L"
+  ]
+ },
+ {
+  "id": "bluetang",
+  "name": "Blue tang",
+  "sci": "Paracanthurus hepatus",
+  "cat": "sw-fish",
+  "tl_mm": 250,
+  "minL": 570,
+  "minLengthMm": 1500,
+  "groupOk": 1,
+  "prior": [
+   "https://www.liveaquaria.com/product/330/ | 180 gal (681 L)",
+   "https://reefexclusive.com/products/paracanthurus-hepatus | 180 gal (681 L)"
+  ]
+ },
+ {
+  "id": "firefish",
+  "name": "Firefish goby",
+  "sci": "Nemateleotris magnifica",
+  "cat": "sw-fish",
+  "tl_mm": 75,
+  "minL": 75,
+  "minLengthMm": 600,
+  "groupOk": 1,
+  "prior": [
+   "https://www.liveaquaria.com/product/168/?pcatid=168 | 20 gal (75.7 L)",
+   "https://reefexclusive.com/products/nemateleotris-magnifica | 20 gal (75.7 L)"
+  ]
+ },
+ {
+  "id": "banggai",
+  "name": "Banggai cardinalfish",
+  "sci": "Pterapogon kauderni",
+  "cat": "sw-fish",
+  "tl_mm": 70,
+  "minL": 115,
+  "minLengthMm": 600,
+  "groupOk": 2,
+  "prior": [
+   "https://reefexclusive.com/products/banggai-cardinalfish | 30 gal (113.5 L)",
+   "https://www.saltwateraquariumblog.com/banggai-cardinalfish-care-guide/ | 10 gal (37.9 L) for one or a pair"
+  ]
+ },
+ {
+  "id": "sixline",
+  "name": "Six-line wrasse",
+  "sci": "Pseudocheilinus hexataenia",
+  "cat": "sw-fish",
+  "tl_mm": 75,
+  "minL": 208,
+  "minLengthMm": 900,
+  "groupOk": 1,
+  "prior": [
+   "https://www.liveaquaria.com/products/six-line-wrasse | 60 gal (227 L)",
+   "https://reefexclusive.com/products/six-line-wrasse | 55 gal (208 L)"
+  ]
+ },
+ {
+  "id": "chromis",
+  "name": "Blue-green chromis",
+  "sci": "Chromis viridis",
+  "cat": "sw-fish",
+  "tl_mm": 100,
+  "minL": 115,
+  "minLengthMm": 900,
+  "groupOk": 5,
+  "prior": [
+   "https://www.liveaquaria.com/product/115/ | 30 gal (113.5 L)",
+   "https://reefexclusive.com/products/green-reef-chromis | 30 gal, 60 gal for a shoal"
+  ]
+ },
+ {
+  "id": "coralbeauty",
+  "name": "Coral beauty angelfish",
+  "sci": "Centropyge bispinosa",
+  "cat": "sw-fish",
+  "tl_mm": 90,
+  "minL": 265,
+  "minLengthMm": 900,
+  "groupOk": 1,
+  "prior": [
+   "https://www.liveaquaria.com/product/438/?pcatid=438 | 70 gal (265 L)",
+   "https://reefexclusive.com/products/coral-beauty-angelfish | 70 gal (265 L)"
+  ]
+ },
+ {
+  "id": "watchman",
+  "name": "Yellow watchman goby",
+  "sci": "Cryptocentrus cinctus",
+  "cat": "sw-fish",
+  "zone": "bottom",
+  "tl_mm": 90,
+  "minL": 75,
+  "minLengthMm": 900,
+  "groupOk": 1,
+  "prior": [
+   "https://www.bulkreefsupply.com/content/post/how-to-care-for-watchman-gobies | 20 gal (75.7 L)",
+   "https://reefexclusive.com/products/yellow-watchman-goby | 30 gal (113.5 L)"
+  ]
+ },
+ {
+  "id": "mandarin",
+  "name": "Mandarin dragonet",
+  "sci": "Synchiropus splendidus",
+  "cat": "sw-fish",
+  "zone": "bottom",
+  "tl_mm": 60,
+  "minL": 265,
+  "minLengthMm": 1000,
+  "groupOk": 1,
+  "prior": [
+   "https://reefexclusive.com/products/pterosynchiropus-splendidus | 30 gal (113.5 L)",
+   "https://www.bulkreefsupply.com/content/post/how-to-care-for-mandarin-dragonets | 30 gal (113.5 L)"
+  ]
+ },
+ {
+  "id": "cleanershrimp",
+  "name": "Skunk cleaner shrimp",
+  "sci": "Lysmata amboinensis",
+  "cat": "sw-invert",
+  "zone": "bottom",
+  "tl_mm": 55,
+  "minL": 75,
+  "minLengthMm": 600,
+  "groupOk": 1,
+  "prior": [
+   "https://aquariadise.com/cleaner-shrimp/ | 20 gallons (~90 L)",
+   "https://gensou.sg/?p=30650 | 60 L single, 150 L pair"
+  ]
+ },
+ {
+  "id": "turbo",
+  "name": "Mexican turbo snail",
+  "sci": "Turbo fluctuosus",
+  "cat": "sw-invert",
+  "tl_mm": 50,
+  "minL": 40,
+  "minLengthMm": 600,
+  "groupOk": 1,
+  "prior": [
+   "https://aquariumbreeder.com/?p=5920 | 10 gallons (~40 L)"
+  ]
+ },
+ {
+  "id": "hermit",
+  "name": "Blue-leg hermit crab",
+  "sci": "Clibanarius tricolor",
+  "cat": "sw-invert",
+  "zone": "bottom",
+  "tl_mm": 30,
+  "minL": 40,
+  "minLengthMm": 600,
+  "groupOk": 1,
+  "prior": [
+   "https://topshelfaquatics.com/products/blue-leg-hermit-crab | 10+ gallons (37.9 L+)",
+   "https://reefexclusive.com/products/blue-leg-hermit-crab | 10 gallons for 2-3 crabs"
+  ]
+ },
+ {
+  "id": "dartfrog",
+  "name": "Dyeing dart frog",
+  "sci": "Dendrobates tinctorius",
+  "cat": "amphibian",
+  "habitat": "land",
+  "tl_mm": 45,
+  "minL": 40,
+  "minLengthMm": 457,
+  "groupOk": 2,
+  "prior": [
+   "https://joshsfrogs.com/sp/dendrobates-tinctorius-green-sip-dart034 | 10 gal for a single frog (37.9 L); 20H or 18x18x18 terrarium for 1-3 frogs (~76 L for 20H)"
+  ]
+ },
+ {
+  "id": "treefrog",
+  "name": "White's tree frog",
+  "sci": "Ranoidea caerulea",
+  "cat": "amphibian",
+  "habitat": "land",
+  "tl_mm": 100,
+  "minL": 76,
+  "minLengthMm": 457,
+  "groupOk": 1,
+  "prior": [
+   "https://reptiledirect.com/whites-tree-frog/ | smallest 15 or 20 gal glass terrarium (57-76 L)",
+   "https://reptilesmagazine.com/whites-treefrog-care-sheet/ | 20 gal horizontal minimum for 4 young frogs (76 L)"
+  ]
+ },
+ {
+  "id": "firetoad",
+  "name": "Fire-bellied toad",
+  "sci": "Bombina orientalis",
+  "cat": "amphibian",
+  "habitat": "both",
+  "tl_mm": 45,
+  "minL": 57,
+  "minLengthMm": 600,
+  "groupOk": 2,
+  "prior": [
+   "https://joshsfrogs.com/cms/fire-bellied-toad-care-sheet | 10-15 gal for 2-3 toads (38-57 L)",
+   "https://thevetdesk.com/pet-breeds/amphibians/oriental-fire-bellied-toad | 10 gal bare minimum for one toad (38 L); 15 gal for 3-5 (57 L)"
+  ]
+ },
+ {
+  "id": "firenewt",
+  "name": "Chinese fire-bellied newt",
+  "sci": "Cynops orientalis",
+  "cat": "amphibian",
+  "habitat": "both",
+  "tl_mm": 90,
+  "minL": 75,
+  "minLengthMm": 600,
+  "groupOk": 2,
+  "prior": [
+   "https://petmd.com/exotic/fire-bellied-newt-care-sheet | 15 gal for one adult (57 L)",
+   "https://reptilesmagazine.com/?p=104985 | 20 gal for up to four newts (76 L)"
+  ]
+ },
+ {
+  "id": "adf",
+  "name": "African dwarf frog",
+  "sci": "Hymenochirus boettgeri",
+  "cat": "amphibian",
+  "zone": "bottom",
+  "tl_mm": 55,
+  "minL": 40,
+  "minLengthMm": 450,
+  "groupOk": 2,
+  "prior": [
+   "https://www.liveaquaria.com/products/dwarf-african-frog | 10 gal (37.9 L)",
+   "https://www.petsmart.com/learning-center/fish-care/African-dwarf-frog-care-guide | 5+ gal (19 L)"
+  ]
+ },
+ {
+  "id": "axolotl",
+  "name": "Axolotl",
+  "sci": "Ambystoma mexicanum",
+  "cat": "amphibian",
+  "zone": "bottom",
+  "tl_mm": 230,
+  "minL": 110,
+  "minLengthMm": 800,
+  "groupOk": 1,
+  "prior": [
+   "https://modestfish.com/axolotl-care/ | 29 gal / 110 L smallest recommended, one axolotl",
+   "https://www.reptilecentre.com/blogs/reptile-blog/axolotl-tank-size | one adult minimum 54-75 L (15-20 gal)"
+  ]
+ },
+ {
+  "id": "crestedgecko",
+  "name": "Crested gecko (flame)",
+  "sci": "Correlophus ciliatus",
+  "cat": "reptile",
+  "habitat": "land",
+  "tl_mm": 200,
+  "minL": 127,
+  "minLengthMm": 457,
+  "groupOk": 1,
+  "prior": [
+   "https://reptifiles.com/wp-content/uploads/2020/10/Crested-Gecko-Care-Sheet-PDF.pdf | 18x18x24 in (about 127 L, converted from dimensions)",
+   "https://reptilesmagazine.com/crested-gecko-care-sheet/ | 18x18x36 in minimum for an adult (about 191 L, converted)"
+  ]
+ },
+ {
+  "id": "crestedharlequin",
+  "name": "Crested gecko (harlequin)",
+  "sci": "Correlophus ciliatus",
+  "cat": "reptile",
+  "habitat": "land",
+  "tl_mm": 200,
+  "minL": 127,
+  "minLengthMm": 457,
+  "groupOk": 1,
+  "prior": [
+   "https://reptifiles.com/wp-content/uploads/2020/10/Crested-Gecko-Care-Sheet-PDF.pdf | 18x18x24 in = ~127 L",
+   "https://reptilesmagazine.com/crested-gecko-care-sheet/ | min 18x18x36 in = ~191 L"
+  ]
+ },
+ {
+  "id": "greenanole",
+  "name": "Green anole",
+  "sci": "Anolis carolinensis",
+  "cat": "reptile",
+  "habitat": "land",
+  "tl_mm": 180,
+  "minL": 75,
+  "minLengthMm": 600,
+  "groupOk": 1,
+  "prior": [
+   "https://reptifiles.com/green-anole-care-sheet/ | 24x24x24 in / 60x60x60 cm = ~216 L for one anole",
+   "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html | at least 10 gal (40 L) and 18 in tall"
+  ]
+ },
+ {
+  "id": "greenanolebrown",
+  "name": "Green anole (brown phase)",
+  "sci": "Anolis carolinensis",
+  "cat": "reptile",
+  "habitat": "land",
+  "tl_mm": 180,
+  "minL": 75,
+  "minLengthMm": 600,
+  "groupOk": 1,
+  "prior": [
+   "https://reptifiles.com/green-anole-care-sheet/ | 24x24x24 in / 60x60x60 cm = ~216 L",
+   "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html | 10 gal (40 L), 18 in tall"
+  ]
+ },
+ {
+  "id": "brownanole",
+  "name": "Brown anole",
+  "sci": "Anolis sagrei",
+  "cat": "reptile",
+  "habitat": "land",
+  "tl_mm": 180,
+  "minL": 40,
+  "minLengthMm": 600,
+  "groupOk": 1,
+  "prior": [
+   "https://thevetdesk.com/pet-breeds/reptiles/brown-anole | tall 10 gal = ~38 L",
+   "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html | 10 gal (40 L), 18 in tall (covers green and brown anole)"
+  ]
+ },
+ {
+  "id": "leopardgecko",
+  "name": "Leopard gecko",
+  "sci": "Eublepharis macularius",
+  "cat": "reptile",
+  "habitat": "land",
+  "tl_mm": 220,
+  "minL": 150,
+  "minLengthMm": 914,
+  "groupOk": 1,
+  "prior": [
+   "https://reptifiles.com/leopard-gecko-care/leopard-gecko-care-sheet/ | 36x18x18 in = ~191 L",
+   "https://www.phoenixherp.com/assistance/reptile-care-guides/leopard-gecko-care-guide.html | 20-40 gal = 76-151 L for one adult",
+   "https://www.petmd.com/reptile/leopard-gecko-care-sheet | 20 gal or larger = 76 L+"
+  ]
+ },
+ {
+  "id": "regaljumper",
+  "name": "Regal jumping spider",
+  "sci": "Phidippus regius",
+  "cat": "land-invert",
+  "habitat": "land",
+  "tl_mm": 12,
+  "minL": 2,
+  "minLengthMm": 250,
+  "groupOk": 1,
+  "prior": [
+   "https://www.petsmart.com/learning-center/reptile-care/regal-jumping-spider-care-guide | min 4x4x7 in = ~1.8 L"
+  ]
+ },
+ {
+  "id": "ballpython",
+  "name": "Ball python",
+  "sci": "Python regius",
+  "cat": "reptile",
+  "habitat": "land",
+  "tl_mm": 1200,
+  "minL": 450,
+  "minLengthMm": 1220,
+  "groupOk": 1,
+  "prior": [
+   "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide | min 40 gal = ~151 L adult"
+  ]
+ },
+ {
+  "id": "chacogoldenknee",
+  "name": "Chaco golden knee tarantula",
+  "sci": "Grammostola pulchripes",
+  "cat": "land-invert",
+  "habitat": "land",
+  "tl_mm": 45,
+  "minL": 57,
+  "minLengthMm": 450,
+  "groupOk": 1,
+  "prior": [
+   "https://dubiaroaches.com/blogs/invert-care/chaco-golden-knee-tarantula-care-sheet | 20x10x18 in or 15 gal 'high' = ~57-59 L"
+  ]
+ }
+]

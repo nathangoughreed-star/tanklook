@@ -1,0 +1,135 @@
+{
+ "batch": "M7",
+ "species": {
+  "ocellaris": {"sci": "Amphiprion ocellaris", "fields": {
+   "footprint": {"verdict": "not-stated", "sources": [], "note": "no opened page states footprint"},
+   "water_depth": {"verdict": "not-stated", "sources": [], "note": "none stated"},
+   "volume": {"verdict": "sourced", "sources": [
+    {"url": "https://www.bulkreefsupply.com/ora-flurry-ocellaris-clownfish-ora.html", "site": "Bulk Reef Supply", "states": "15 gallons", "quote": "a minimum tank size of 15 gallons is recommended", "value": 15, "unit": "gal", "group": "1-2", "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "single or pair"},
+    {"url": "https://www.aquariumsource.com/ocellaris-clownfish/", "site": "Aquarium Source", "states": "20 to 30 gallons", "quote": "minimum recommended tank size for the Ocellaris Clownfish is 20 to 30 gallons", "value": 20, "unit": "gal", "group": null, "stage": null, "kind": "min", "est": true, "credibility": "low", "conditions": "range 20-30; 50-60 with anemone"},
+    {"url": "https://topshelfaquatics.com/products/orange-ocellaris-clownfish", "site": "Top Shelf Aquatics", "states": "30 gallons", "quote": "Plan on a minimum of 30 gallons for adult housing", "value": 30, "unit": "gal", "group": null, "stage": "adult", "kind": "min", "est": true, "credibility": "medium", "conditions": "adult housing"}],
+    "note": "15 vs 30 gal: 100% spread"}},
+   "pick": {"volume": {"source": 0, "why": "stated conditions single/pair"}},
+   "conflict": "volume: 15 gal vs 20-30 vs 30 gal (up to 100%)",
+   "checked": ["https://www.bulkreefsupply.com/ora-flurry-ocellaris-clownfish-ora.html", "https://www.aquariumsource.com/ocellaris-clownfish/", "https://topshelfaquatics.com/products/orange-ocellaris-clownfish"]},
+  "yellowtang": {"sci": "Zebrasoma flavescens", "fields": {
+   "footprint": {"verdict": "not-stated", "sources": [], "note": "only a length of 120 cm+ (gensou) stated, no width"},
+   "length": {"verdict": "sourced", "sources": [
+    {"url": "https://www.saltwateraquariumblog.com/yellow-tang-care-guide/", "site": "Saltwater Aquarium Blog", "states": "6-foot (1.8 m)", "quote": "A 6-foot (1.8 m) long tank is often recommended", "value": 6, "unit": "ft", "group": null, "stage": "adult", "kind": "rec", "est": true, "credibility": "medium", "conditions": "author kept one in 5 ft tank"},
+    {"url": "https://gensou.sg/yellow-tang-care-guide-marine/", "site": "Gensou", "states": "120 cm", "quote": "A long tank footprint (120 cm or greater) matters more than raw volume.", "value": 120, "unit": "cm", "group": null, "stage": null, "kind": "min", "est": true, "credibility": "low", "conditions": "retailer guide, length of footprint"}],
+    "note": "6 ft = 183 cm vs 120 cm: 35% spread"},
+   "water_depth": {"verdict": "not-stated", "sources": [], "note": "none stated"},
+   "volume": {"verdict": "sourced", "sources": [
+    {"url": "https://www.liveaquaria.com/products/yellow-tang-hawaii", "site": "LiveAquaria", "states": "100 Gallons", "quote": "Minimum Tank Size: 100 Gallons", "value": 100, "unit": "gal", "group": null, "stage": "adult", "kind": "min", "est": true, "credibility": "high", "conditions": "single"},
+    {"url": "https://fishtankadvisor.com/yellow-tang/", "site": "Fish Tank Advisor", "states": "100 gallons", "quote": "Minimum Tank Size: 100 gallons", "value": 100, "unit": "gal", "group": null, "stage": "adult", "kind": "min", "est": true, "credibility": "medium", "conditions": "juveniles 50-80 gal ok"},
+    {"url": "https://www.saltwateraquariumblog.com/yellow-tang-care-guide/", "site": "Saltwater Aquarium Blog", "states": "90 gallons", "quote": "Minimum Tank Size: 90 gallons + (341L)", "value": 90, "unit": "gal", "group": null, "stage": "adult", "kind": "min", "est": true, "credibility": "medium", "conditions": ""},
+    {"url": "https://gensou.sg/yellow-tang-care-guide-marine/", "site": "Gensou", "states": "300 litres", "quote": "A minimum of 300 litres is recommended", "value": 300, "unit": "L", "group": null, "stage": null, "kind": "min", "est": true, "credibility": "low", "conditions": "400 L+ for natural behaviour"}],
+    "note": "90-100 gal agree; gensou 300 L = 79 gal (21% below)"}},
+   "pick": {"length": {"source": 0, "why": "most credible, with reasoning"}, "volume": {"source": 0, "why": "LiveAquaria"}},
+   "conflict": "length: 6 ft (183 cm) vs 120 cm (35%)",
+   "checked": ["https://www.liveaquaria.com/products/yellow-tang-hawaii", "https://www.saltwateraquariumblog.com/yellow-tang-care-guide/", "https://fishtankadvisor.com/yellow-tang/", "https://gensou.sg/yellow-tang-care-guide-marine/"]},
+  "bluetang": {"sci": "Paracanthurus hepatus", "fields": {
+   "footprint": {"verdict": "not-stated", "sources": [], "note": "none stated"},
+   "length": {"verdict": "sourced", "sources": [
+    {"url": "https://www.liveaquaria.com/product/330/", "site": "LiveAquaria", "states": "6 feet", "quote": "best cared for in aquariums at least 6 feet in length", "value": 6, "unit": "ft", "group": null, "stage": "adult", "kind": "min", "est": true, "credibility": "high", "conditions": "experienced aquarists"},
+    {"url": "https://www.furrycritter.com/pages/descriptions/fish/blue_tang.htm", "site": "Furry Critter Network", "states": "Six-foot", "quote": "Six-foot aquarium length should be considered minimum for adult specimens.", "value": 6, "unit": "ft", "group": null, "stage": "adult", "kind": "min", "est": false, "credibility": "low", "conditions": "adult"},
+    {"url": "https://gensou.sg/hippo-tang-paracanthurus-care-guide/", "site": "Gensou", "states": "150 cm", "quote": "with a tank length of at least 150 cm", "value": 150, "unit": "cm", "group": null, "stage": "adult", "kind": "min", "est": false, "credibility": "low", "conditions": "adults"}],
+    "note": "6 ft (183 cm) vs 150 cm: 18%, within tolerance"},
+   "water_depth": {"verdict": "not-stated", "sources": [], "note": "none stated"},
+   "volume": {"verdict": "sourced", "sources": [
+    {"url": "https://www.liveaquaria.com/product/330/", "site": "LiveAquaria", "states": "180 Gallons", "quote": "Minimum Tank Size: 180 Gallons", "value": 180, "unit": "gal", "group": null, "stage": "adult", "kind": "min", "est": true, "credibility": "high", "conditions": ""},
+    {"url": "https://reefexclusive.com/products/paracanthurus-hepatus", "site": "Reef Exclusive", "states": "180 gallons", "quote": "Blue Tangs should be kept in an aquarium of at least 180 gallons.", "value": 180, "unit": "gal", "group": null, "stage": "adult", "kind": "min", "est": true, "credibility": "medium", "conditions": ""},
+    {"url": "https://gensou.sg/hippo-tang-paracanthurus-care-guide/", "site": "Gensou", "states": "450 litres", "quote": "Adult hippo tangs need minimum 450 litres", "value": 450, "unit": "L", "group": null, "stage": "adult", "kind": "min", "est": false, "credibility": "low", "conditions": "600 L ideal"}],
+    "note": "180 gal = 681 L vs 450 L (34% lower); juveniles 125 gal (Furry Critter)"}},
+   "pick": {"length": {"source": 0, "why": "LiveAquaria, matches Furry Critter"}, "volume": {"source": 0, "why": "LiveAquaria + Reef Exclusive agree"}},
+   "conflict": "volume: 180 gal (681 L) vs 450 L (34%)",
+   "checked": ["https://www.liveaquaria.com/product/330/", "https://reefexclusive.com/products/paracanthurus-hepatus", "https://gensou.sg/hippo-tang-paracanthurus-care-guide/", "https://www.furrycritter.com/pages/descriptions/fish/blue_tank.htm (corrected: furrycritter blue_tang.htm)"]},
+  "firefish": {"sci": "Nemateleotris magnifica", "fields": {
+   "footprint": {"verdict": "not-stated", "sources": [], "note": "none stated"},
+   "water_depth": {"verdict": "not-stated", "sources": [], "note": "none stated"},
+   "volume": {"verdict": "sourced", "sources": [
+    {"url": "https://www.liveaquaria.com/product/168/?pcatid=168", "site": "LiveAquaria", "states": "20 Gallons", "quote": "Minimum Tank Size: 20 Gallons", "value": 20, "unit": "gal", "group": null, "stage": "adult", "kind": "min", "est": true, "credibility": "high", "conditions": ""},
+    {"url": "https://reefexclusive.com/products/nemateleotris-magnifica", "site": "Reef Exclusive", "states": "20 gallons", "quote": "the Firefish Goby requires a 20-gallon or larger system", "value": 20, "unit": "gal", "group": null, "stage": null, "kind": "min", "est": true, "credibility": "medium", "conditions": ""}],
+    "note": "two sources agree at 20 gal; no dimensions"}},
+   "pick": {"volume": {"source": 0, "why": "LiveAquaria"}}, "conflict": null,
+   "checked": ["https://www.liveaquaria.com/product/168/?pcatid=168", "https://reefexclusive.com/products/nemateleotris-magnifica"]},
+  "banggai": {"sci": "Pterapogon kauderni", "fields": {
+   "footprint": {"verdict": "not-stated", "sources": [], "note": "none stated"},
+   "water_depth": {"verdict": "not-stated", "sources": [], "note": "none stated"},
+   "volume": {"verdict": "sourced", "sources": [
+    {"url": "https://www.saltwateraquariumblog.com/banggai-cardinalfish-care-guide/", "site": "Saltwater Aquarium Blog", "states": "10-gallons", "quote": "The minimum tank size for a single Banggai Cardinalfish or a pair is 10-gallons.", "value": 10, "unit": "gal", "group": "1-2", "stage": null, "kind": "min", "est": false, "credibility": "medium", "conditions": "single or pair"},
+    {"url": "https://reefexclusive.com/products/banggai-cardinalfish", "site": "Reef Exclusive", "states": "30 gallon", "quote": "House the Banggai Cardinalfish in a well-filtered 30 gallon or larger aquarium", "value": 30, "unit": "gal", "group": null, "stage": null, "kind": "min", "est": true, "credibility": "medium", "conditions": ""}],
+    "note": "10 vs 30 gal: 200% spread"}},
+   "pick": {"volume": {"source": 0, "why": "stated conditions"}},
+   "conflict": "volume: 10 gal (single/pair) vs 30 gal (200%)",
+   "checked": ["https://www.saltwateraquariumblog.com/banggai-cardinalfish-care-guide/", "https://reefexclusive.com/products/banggai-cardinalfish"]},
+  "sixline": {"sci": "Pseudocheilinus hexataenia", "fields": {
+   "footprint": {"verdict": "not-stated", "sources": [], "note": "none stated"},
+   "water_depth": {"verdict": "not-stated", "sources": [], "note": "none stated"},
+   "volume": {"verdict": "sourced", "sources": [
+    {"url": "https://www.liveaquaria.com/products/six-line-wrasse", "site": "LiveAquaria", "states": "60 Gallons", "quote": "Minimum Tank Size: 60 Gallons", "value": 60, "unit": "gal", "group": null, "stage": "adult", "kind": "min", "est": true, "credibility": "high", "conditions": "same page's overview says 30 gallon or larger"},
+    {"url": "https://reefexclusive.com/products/six-line-wrasse", "site": "Reef Exclusive", "states": "55 gallons", "quote": "Minimum Tank Size : 55 gallons", "value": 55, "unit": "gal", "group": null, "stage": null, "kind": "min", "est": true, "credibility": "medium", "conditions": ""},
+    {"url": "https://www.aquariadise.com/six-line-wrasse/", "site": "Aquariadise", "states": "30 gallons", "quote": "A minimum tank size of 30 gallons (approximately 113 liters) is recommended", "value": 30, "unit": "gal", "group": "1", "stage": null, "kind": "min", "est": false, "credibility": "medium", "conditions": "single"}],
+    "note": "30 vs 55-60 gal: 83-100% spread; LiveAquaria itself says 60 and 30"}},
+   "pick": {"volume": {"source": 0, "why": "highest-credibility spec; flag conflict"}},
+   "conflict": "volume: 30 gal (single) vs 55 vs 60 gal (up to 100%)",
+   "checked": ["https://www.liveaquaria.com/products/six-line-wrasse", "https://reefexclusive.com/products/six-line-wrasse", "https://www.aquariadise.com/six-line-wrasse/"]},
+  "chromis": {"sci": "Chromis viridis", "fields": {
+   "footprint": {"verdict": "not-stated", "sources": [], "note": "none stated"},
+   "water_depth": {"verdict": "not-stated", "sources": [], "note": "none stated"},
+   "volume": {"verdict": "sourced", "sources": [
+    {"url": "https://www.liveaquaria.com/product/115/", "site": "LiveAquaria", "states": "30 Gallons", "quote": "Minimum Tank Size: 30 Gallons", "value": 30, "unit": "gal", "group": null, "stage": "adult", "kind": "min", "est": true, "credibility": "high", "conditions": ""},
+    {"url": "https://reefexclusive.com/products/green-reef-chromis", "site": "Reef Exclusive", "states": "60 gallons", "quote": "if you are going to keep a shoal; then a minimum of 60 gallons is needed.", "value": 60, "unit": "gal", "group": "shoal", "stage": null, "kind": "min", "est": false, "credibility": "medium", "conditions": "shoal; 30 gal for fewer"}],
+    "note": "30 gal base, 60 gal shoal; consistent given conditions"}},
+   "pick": {"volume": {"source": 0, "why": "base figure"}}, "conflict": null,
+   "checked": ["https://www.liveaquaria.com/product/115/", "https://reefexclusive.com/products/green-reef-chromis"]},
+  "coralbeauty": {"sci": "Centropyge bispinosa", "fields": {
+   "footprint": {"verdict": "not-stated", "sources": [], "note": "none stated"},
+   "length": {"verdict": "sourced", "sources": [
+    {"url": "https://gensou.sg/?p=32424", "site": "Gensou", "states": "1.2m length", "quote": "Minimum tank: 200 litres (55 gallons), 1.2m length", "value": 1.2, "unit": "m", "group": null, "stage": "adult", "kind": "min", "est": true, "credibility": "low", "conditions": "4 ft"}],
+    "note": "single retailer source"},
+   "water_depth": {"verdict": "not-stated", "sources": [], "note": "none stated"},
+   "volume": {"verdict": "sourced", "sources": [
+    {"url": "https://www.liveaquaria.com/product/438/?pcatid=438", "site": "LiveAquaria", "states": "70 Gallons", "quote": "Minimum Tank Size: 70 Gallons", "value": 70, "unit": "gal", "group": null, "stage": "adult", "kind": "min", "est": true, "credibility": "high", "conditions": ""},
+    {"url": "https://reefexclusive.com/products/coral-beauty-angelfish", "site": "Reef Exclusive", "states": "70-gallons", "quote": "The minimum tank size for the Coral Beauty Angelfish is 70-gallons.", "value": 70, "unit": "gal", "group": null, "stage": null, "kind": "min", "est": true, "credibility": "medium", "conditions": ""},
+    {"url": "https://gensou.sg/?p=32424", "site": "Gensou", "states": "200 litres (55 gallons)", "quote": "Minimum tank: 200 litres (55 gallons), 1.2m length", "value": 200, "unit": "L", "group": null, "stage": "adult", "kind": "min", "est": true, "credibility": "low", "conditions": ""}],
+    "note": "70 gal vs 55 gal: 27% spread"}},
+   "pick": {"volume": {"source": 0, "why": "two agree at 70"}, "length": {"source": 0, "why": "only source"}},
+   "conflict": "volume: 70 gal vs 55 gal (27%)",
+   "checked": ["https://www.liveaquaria.com/product/438/?pcatid=438", "https://reefexclusive.com/products/coral-beauty-angelfish", "https://gensou.sg/?p=32424", "https://animal-world.com/coral-beauty (redirect, nothing)"]},
+  "watchman": {"sci": "Cryptocentrus cinctus", "fields": {
+   "footprint": {"verdict": "not-stated", "sources": [], "note": "none stated"},
+   "water_depth": {"verdict": "not-stated", "sources": [], "note": "none stated"},
+   "volume": {"verdict": "sourced", "sources": [
+    {"url": "https://www.bulkreefsupply.com/content/post/how-to-care-for-watchman-gobies", "site": "Bulk Reef Supply", "states": "20 gallons", "quote": "Tank Size: A minimum of 20 gallons for a Watchman Goby.", "value": 20, "unit": "gal", "group": null, "stage": "adult", "kind": "min", "est": true, "credibility": "medium", "conditions": "single"},
+    {"url": "https://reefexclusive.com/products/yellow-watchman-goby", "site": "Reef Exclusive", "states": "30 gallon", "quote": "It requires a 30 gallon or larger aquarium", "value": 30, "unit": "gal", "group": null, "stage": null, "kind": "min", "est": true, "credibility": "medium", "conditions": ""}],
+    "note": "20 vs 30 gal: 50% spread"}},
+   "pick": {"volume": {"source": 0, "why": "care-guide"}},
+   "conflict": "volume: 20 vs 30 gal (50%)",
+   "checked": ["https://www.bulkreefsupply.com/content/post/how-to-care-for-watchman-gobies", "https://reefexclusive.com/products/yellow-watchman-goby"]},
+  "mandarin": {"sci": "Synchiropus splendidus", "fields": {
+   "footprint": {"verdict": "not-stated", "sources": [], "note": "none stated"},
+   "water_depth": {"verdict": "not-stated", "sources": [], "note": "none stated"},
+   "volume": {"verdict": "sourced", "sources": [
+    {"url": "https://www.bulkreefsupply.com/content/post/how-to-care-for-mandarin-dragonets", "site": "Bulk Reef Supply", "states": "30 gallons", "quote": "Tank Size: A minimum of 30 gallons.", "value": 30, "unit": "gal", "group": "1", "stage": "adult", "kind": "min", "est": true, "credibility": "medium", "conditions": "thriving pod population required"},
+    {"url": "https://reefexclusive.com/products/pterosynchiropus-splendidus", "site": "Reef Exclusive", "states": "30 gallons", "quote": "Minimum Tank Size : 30 gallons", "value": 30, "unit": "gal", "group": null, "stage": null, "kind": "min", "est": true, "credibility": "medium", "conditions": "75 lb live rock; not for new setup"},
+    {"url": "https://topshelfaquatics.com/blogs/news/mandarin-and-dragonet-care-guide-pods-feeding-and-mature-tank-requirements", "site": "Top Shelf Aquatics", "states": "30 to 50 gallons", "quote": "30 to 50 gallons: Absolute minimum for a single mandarin", "value": 30, "unit": "gal", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "heavy supplementation and excellent refugium; 50-75 gal more realistic; 75+ for pairs; mature tank 6-12 months, established pods"}],
+    "note": "30 gal minimum agreed; conditions (mature tank, pod population, refugium) are not geometry"}},
+   "pick": {"volume": {"source": 0, "why": "agreed 30"}}, "conflict": null,
+   "checked": ["https://www.bulkreefsupply.com/content/post/how-to-care-for-mandarin-dragonets", "https://reefexclusive.com/products/pterosynchiropus-splendidus", "https://topshelfaquatics.com/blogs/news/mandarin-and-dragonet-care-guide-pods-feeding-and-mature-tank-requirements"]},
+  "turbo": {"sci": "Turbo fluctuosus", "fields": {
+   "volume": {"verdict": "sourced", "sources": [
+    {"url": "https://aquariumbreeder.com/?p=5920", "site": "Aquarium Breeder", "states": "10-gallon", "quote": "The minimum recommended tank size for these snails is a 10-gallon", "value": 10, "unit": "gal", "group": null, "stage": null, "kind": "min", "est": true, "credibility": "low", "conditions": ""}],
+    "note": "single source"}},
+   "pick": {"volume": {"source": 0, "why": "only source"}}, "conflict": null,
+   "checked": ["https://aquariumbreeder.com/?p=5920"]},
+  "hermit": {"sci": "Clibanarius tricolor", "fields": {
+   "volume": {"verdict": "sourced", "sources": [
+    {"url": "https://topshelfaquatics.com/products/blue-leg-hermit-crab", "site": "Top Shelf Aquatics", "states": "10+ gallons", "quote": "Minimum Tank Size: 10+ gallons", "value": 10, "unit": "gal", "group": null, "stage": null, "kind": "min", "est": true, "credibility": "medium", "conditions": ""},
+    {"url": "https://reefexclusive.com/products/blue-leg-hermit-crab", "site": "Reef Exclusive", "states": "10 gallons", "quote": "minimum tank size of 10 gallons for a small group of 2 – 3 crabs", "value": 10, "unit": "gal", "group": "2-3", "stage": null, "kind": "min", "est": false, "credibility": "medium", "conditions": "2-3 crabs"}],
+    "note": "agree at 10 gal"}},
+   "pick": {"volume": {"source": 1, "why": "states group"}}, "conflict": null,
+   "checked": ["https://topshelfaquatics.com/products/blue-leg-hermit-crab", "https://reefexclusive.com/products/blue-leg-hermit-crab"]}
+ },
+ "agent_notes": "WebFetch returns a small-model summary, so quotes are those the summary put in quotation marks; the script should verify. Blue-tang checked entry for furrycritter: url is https://www.furrycritter.com/pages/descriptions/fish/blue_tang.htm. Quotes for ocellaris topshelf, six-line aquariadise and reefexclusive pages may be paraphrase-adjacent; re-check. No Seriously Fish/FishBase/Reef Builders pages found for these species in this pass."
+}

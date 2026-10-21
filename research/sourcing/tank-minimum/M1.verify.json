@@ -1,0 +1,328 @@
+[
+ {
+  "id": "neon",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/paracheirodon-innesi/",
+  "result": "exact",
+  "score": 1,
+  "quote": "base dimensions of 60 ∗ 30 cm"
+ },
+ {
+  "id": "neon",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/neon-tetra/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum tank size: 10 gallons"
+ },
+ {
+  "id": "swordtail",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/xiphophorus-hellerii/",
+  "result": "exact",
+  "score": 1,
+  "quote": "surface dimensions of 120 ∗ 30 cm"
+ },
+ {
+  "id": "swordtail",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://www.fishbase.net.br/summary/3231",
+  "result": "nofetch",
+  "score": 0,
+  "err": "The operation was aborted due to timeout",
+  "quote": "minimum aquarium size 80 cm"
+ },
+ {
+  "id": "swordtail",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/swordtail/",
+  "result": "exact",
+  "score": 1,
+  "quote": "At least 15 gallons for a single swordtail fish."
+ },
+ {
+  "id": "betta",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/betta-splendens/",
+  "result": "exact",
+  "score": 1,
+  "quote": "base measurements of 45 ∗ 30 cm"
+ },
+ {
+  "id": "betta",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/betta-fish-care/",
+  "result": "exact",
+  "score": 1,
+  "quote": "At least 5 gallons in size."
+ },
+ {
+  "id": "angel",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/pterophyllum-scalare/",
+  "result": "exact",
+  "score": 1,
+  "quote": "An aquarium measuring 100 ∗ 40 ∗ 50 cm"
+ },
+ {
+  "id": "angel",
+  "field": "tank_height",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/pterophyllum-scalare/",
+  "result": "exact",
+  "score": 1,
+  "quote": "A tall tank of at least 50 cm"
+ },
+ {
+  "id": "angel",
+  "field": "tank_height",
+  "verdict": "sourced",
+  "url": "https://fishtanksetups.com/angelfish-care/",
+  "result": "exact",
+  "score": 1,
+  "quote": "TALL tank, 18+ inches high"
+ },
+ {
+  "id": "angel",
+  "field": "body_height",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/pterophyllum-scalare/",
+  "result": "exact",
+  "score": 1,
+  "quote": "20 cm or more in height"
+ },
+ {
+  "id": "angel",
+  "field": "body_height",
+  "verdict": "sourced",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/angelfish",
+  "result": "exact",
+  "score": 1,
+  "quote": "a height (including their fins) of 8 inches"
+ },
+ {
+  "id": "angel",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/angelfish/",
+  "result": "label",
+  "score": 1,
+  "quote": "Altum angelfish thrive in a large, deep tank"
+ },
+ {
+  "id": "discus",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/symphysodon-aequifasciatus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "(120cm x 45cm x 45cm)"
+ },
+ {
+  "id": "discus",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/discus-fish/",
+  "result": "exact",
+  "score": 1,
+  "quote": "at least 36 x 18 x 18 inches"
+ },
+ {
+  "id": "discus",
+  "field": "tank_height",
+  "verdict": "sourced",
+  "url": "https://fishtanksetups.com/?p=3904",
+  "result": "exact",
+  "score": 1,
+  "quote": "Aim for at least 18–20 inches of water height."
+ },
+ {
+  "id": "discus",
+  "field": "tank_height",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/symphysodon-aequifasciatus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "(120cm x 45cm x 45cm)"
+ },
+ {
+  "id": "discus",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/discus-fish/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum 60 gallons (10 gallons per discus fish)"
+ },
+ {
+  "id": "discus",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://fishtankadvisor.com/?p=8111",
+  "result": "exact",
+  "score": 1,
+  "quote": "75 gallons (284 l)"
+ },
+ {
+  "id": "oscar",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/astronotus-ocellatus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "base dimensions of 150 ∗ 60 cm"
+ },
+ {
+  "id": "oscar",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/oscar-fish/",
+  "result": "exact",
+  "score": 1,
+  "quote": "About 143 gallons (60 x 24 inch base) for one adult"
+ },
+ {
+  "id": "bronzecory",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/corydoras-aeneus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Base dimensions of 80 ∗ 30 cm"
+ },
+ {
+  "id": "bronzecory",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.aquariadise.com/caresheet-bronze-corydoras/",
+  "result": "exact",
+  "score": 1,
+  "quote": "20 gal (80 L, long)"
+ },
+ {
+  "id": "bronzecory",
+  "field": "water_depth",
+  "verdict": "sourced",
+  "url": "https://www.aquariadise.com/caresheet-bronze-corydoras/",
+  "result": "exact",
+  "score": 1,
+  "quote": "A shallow tank is preferred"
+ },
+ {
+  "id": "kuhli",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/pangio-kuhlii/",
+  "result": "exact",
+  "score": 1,
+  "quote": "base measurements of at least 60 ∗ 30 cm"
+ },
+ {
+  "id": "kuhli",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://guidarium.com/fishes/kuhli-loach",
+  "result": "exact",
+  "score": 1,
+  "quote": "a tank length of at least 60 cm"
+ },
+ {
+  "id": "kuhli",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://www.aquariadise.com/caresheet-kuhli-loach/",
+  "result": "exact",
+  "score": 1,
+  "quote": "31.5 inches / 80 cm"
+ },
+ {
+  "id": "kuhli",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/kuhli-loach/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum 20 gallons"
+ },
+ {
+  "id": "kuhli",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://fishtankadvisor.com/?p=3844",
+  "result": "compact",
+  "score": 1,
+  "quote": "An individual loach needs a minimum of 20 gallons."
+ },
+ {
+  "id": "kuhli",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.aquariadise.com/caresheet-kuhli-loach/",
+  "result": "exact",
+  "score": 1,
+  "quote": "20 gal (75 L) long minimum"
+ },
+ {
+  "id": "royalgramma",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.liveaquaria.com/product/53/?pcatid=53",
+  "result": "exact",
+  "score": 1,
+  "quote": "reef systems of at least 30 gallons"
+ },
+ {
+  "id": "royalgramma",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.aquariumsource.com/royal-gramma-basslet/",
+  "result": "exact",
+  "score": 1,
+  "quote": "The minimum royal gramma tank size is 30 gallons for one fish."
+ },
+ {
+  "id": "royalgramma",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://aquariadise.com/royal-gramma/",
+  "result": "exact",
+  "score": 1,
+  "quote": "a single fish will need to be kept in an aquarium of at least 30 gallons"
+ },
+ {
+  "id": "cleanershrimp",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://aquariadise.com/cleaner-shrimp/",
+  "result": "exact",
+  "score": 1,
+  "quote": "20 gallons (~90 liters)"
+ },
+ {
+  "id": "cleanershrimp",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.qualitymarine.com/news/the-kind-of-skunk-you-want/",
+  "result": "exact",
+  "score": 1,
+  "quote": "minimum tank size of 40 gallons, with larger always being better"
+ },
+ {
+  "id": "cleanershrimp",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://gensou.sg/?p=30650",
+  "result": "nofetch",
+  "score": 0,
+  "err": "HTTP 403",
+  "quote": "A single cleaner shrimp suits tanks as small as 60 litres."
+ }
+]

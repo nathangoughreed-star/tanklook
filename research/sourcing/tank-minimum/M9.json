@@ -1,0 +1,155 @@
+{
+ "batch": "M9",
+ "species": {
+  "crestedgecko": {
+   "sci": "Correlophus ciliatus",
+   "fields": {
+    "footprint": {"verdict": "sourced", "sources": [
+     {"url": "https://reptilesmagazine.com/crested-gecko-care-sheet/", "site": "Reptiles Magazine", "states": "18″L x 18″W", "quote": "minimum 18″L x 18″W x 36″ H terrarium", "value": [18, 18], "unit": "in", "group": null, "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "adult minimum; juveniles 18x18x24"},
+     {"url": "https://www.zenhabitats.com/blogs/reptile-care-sheets-resources/crested-gecko-essential-care-information", "site": "Zen Habitats", "states": "18\" x 18\"", "quote": "Minimum adult enclosure size: 18\" x 18\" x 24\"", "value": [18, 18], "unit": "in", "group": null, "stage": "adult", "kind": "min", "est": false, "credibility": "low", "conditions": "retailer care sheet; adult minimum"},
+     {"url": "https://reptifiles.com/wp-content/uploads/2020/10/Crested-Gecko-Care-Sheet-PDF.pdf", "site": "ReptiFiles", "states": "18\"×18\"", "quote": "Enclosure18\"×18\"×24\"", "value": [18, 18], "unit": "in", "group": null, "stage": null, "kind": "rec", "est": true, "credibility": "high", "conditions": "Base Facts line, stage and min/rec not stated"}
+    ], "note": "All three agree on 18x18 floor."},
+    "tank_height": {"verdict": "sourced", "sources": [
+     {"url": "https://reptilesmagazine.com/crested-gecko-care-sheet/", "site": "Reptiles Magazine", "states": "36″", "quote": "minimum 18″L x 18″W x 36″ H terrarium", "value": 36, "unit": "in", "group": null, "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "adult minimum"},
+     {"url": "https://www.zenhabitats.com/blogs/reptile-care-sheets-resources/crested-gecko-essential-care-information", "site": "Zen Habitats", "states": "24\"", "quote": "Minimum adult enclosure size: 18\" x 18\" x 24\"", "value": 24, "unit": "in", "group": null, "stage": "adult", "kind": "min", "est": false, "credibility": "low", "conditions": "retailer; adult minimum"},
+     {"url": "https://reptifiles.com/wp-content/uploads/2020/10/Crested-Gecko-Care-Sheet-PDF.pdf", "site": "ReptiFiles", "states": "24\"", "quote": "Enclosure18\"×18\"×24\"", "value": 24, "unit": "in", "group": null, "stage": null, "kind": "rec", "est": true, "credibility": "high", "conditions": "stage not stated"}
+    ], "note": "Height 24 vs 36 in: 33% conflict (36 is 50% above 24). Arboreal: height matters more than floor."},
+    "water_depth": {"verdict": "not-stated", "sources": [], "note": "land animal"},
+    "volume": {"verdict": "not-stated", "sources": [], "note": "dimensions only on opened pages"}
+   },
+   "pick": {"footprint": {"source": 0, "why": "all agree 18x18"}, "tank_height": {"source": 0, "why": "adult stated explicitly; 24 is juvenile/short-end figure"}},
+   "conflict": "tank_height: 24 in (ReptiFiles PDF, Zen Habitats) vs 36 in (Reptiles Magazine adult minimum), 50% apart",
+   "checked": ["https://reptifiles.com/crested-gecko-care/crested-gecko-care-sheet/ (404)", "https://reptilesmagazine.com/crested-gecko-care-sheet/", "https://www.zenhabitats.com/blogs/reptile-care-sheets-resources/crested-gecko-essential-care-information", "https://reptifiles.com/wp-content/uploads/2020/10/Crested-Gecko-Care-Sheet-PDF.pdf"]
+  },
+  "greenanole": {
+   "sci": "Anolis carolinensis",
+   "fields": {
+    "footprint": {"verdict": "sourced", "sources": [
+     {"url": "https://reptifiles.com/green-anole-care-sheet/", "site": "ReptiFiles", "states": "24″L x 24″W", "quote": "minimum recommended enclosure size for housing a single green anole is 24″L x 24″W x 24″H", "value": [24, 24], "unit": "in", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "high", "conditions": "single anole"}
+    ], "note": "One source gives L x W; PetSmart gives only gallons and height."},
+    "tank_height": {"verdict": "sourced", "sources": [
+     {"url": "https://reptifiles.com/green-anole-care-sheet/", "site": "ReptiFiles", "states": "24″H", "quote": "minimum recommended enclosure size for housing a single green anole is 24″L x 24″W x 24″H", "value": 24, "unit": "in", "group": "1", "stage": null, "kind": "min", "est": false, "credibility": "high", "conditions": "single anole; semi-arboreal, requires tall enclosure"},
+     {"url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html", "site": "PetSmart", "states": "18 inches", "quote": "and 18 inches (46 cm) tall, with a screened lid.", "value": 18, "unit": "in", "group": null, "stage": null, "kind": "min", "est": true, "credibility": "low", "conditions": "retailer; 'at least'; increase for multiple lizards"}
+    ], "note": "24 vs 18 in: 33% apart (retailer is low credibility)."},
+    "volume": {"verdict": "sourced", "sources": [
+     {"url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html", "site": "PetSmart", "states": "10 gallons", "quote": "at least 10 gallons (40 liters) in volume", "value": 10, "unit": "gal", "group": null, "stage": null, "kind": "min", "est": true, "credibility": "low", "conditions": "retailer; covers anoles generally"}
+    ], "note": "ReptiFiles 24x24x24 in is about 60 gal, far above 10 gal."},
+    "water_depth": {"verdict": "not-stated", "sources": [], "note": "land animal"}
+   },
+   "pick": {"footprint": {"source": 0, "why": "only L x W source, high credibility"}, "tank_height": {"source": 0, "why": "credibility"}},
+   "conflict": "volume: 10 gal (PetSmart) vs ~60 gal implied by ReptiFiles 24x24x24; tank_height 18 vs 24 in",
+   "checked": ["https://reptifiles.com/green-anole-care-sheet/", "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html"]
+  },
+  "greenanolebrown": {
+   "sci": "Anolis carolinensis",
+   "fields": {
+    "footprint": {"verdict": "sourced", "sources": [
+     {"url": "https://reptifiles.com/green-anole-care-sheet/", "site": "ReptiFiles", "states": "24″L x 24″W", "quote": "minimum recommended enclosure size for housing a single green anole is 24″L x 24″W x 24″H", "value": [24, 24], "unit": "in", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "high", "conditions": "single anole; same species as greenanole (colour phase)"}
+    ], "note": "Same species as greenanole."},
+    "tank_height": {"verdict": "sourced", "sources": [
+     {"url": "https://reptifiles.com/green-anole-care-sheet/", "site": "ReptiFiles", "states": "24″H", "quote": "minimum recommended enclosure size for housing a single green anole is 24″L x 24″W x 24″H", "value": 24, "unit": "in", "group": "1", "stage": null, "kind": "min", "est": false, "credibility": "high", "conditions": "single anole"},
+     {"url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html", "site": "PetSmart", "states": "18 inches", "quote": "and 18 inches (46 cm) tall, with a screened lid.", "value": 18, "unit": "in", "group": null, "stage": null, "kind": "min", "est": true, "credibility": "low", "conditions": "retailer"}
+    ], "note": "see greenanole"},
+    "water_depth": {"verdict": "not-stated", "sources": [], "note": "land animal"}
+   },
+   "pick": {"footprint": {"source": 0, "why": "same as greenanole"}, "tank_height": {"source": 0, "why": "credibility"}},
+   "conflict": "tank_height 18 vs 24 in (see greenanole)",
+   "checked": ["https://reptifiles.com/green-anole-care-sheet/", "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html"]
+  },
+  "brownanole": {
+   "sci": "Anolis sagrei",
+   "fields": {
+    "footprint": {"verdict": "not-stated", "sources": [], "note": "No opened page gives L x W for brown anole (TheVetDesk gallons only; Reptiles Magazine page gives no enclosure size)."},
+    "tank_height": {"verdict": "sourced", "sources": [
+     {"url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html", "site": "PetSmart", "states": "18 inches", "quote": "and 18 inches (46 cm) tall, with a screened lid.", "value": 18, "unit": "in", "group": null, "stage": null, "kind": "min", "est": true, "credibility": "low", "conditions": "page covers Anolis generally"}
+    ], "note": "TheVetDesk says only 'tall' / 'high' without a number."},
+    "volume": {"verdict": "sourced", "sources": [
+     {"url": "https://thevetdesk.com/pet-breeds/reptiles/brown-anole", "site": "TheVetDesk", "states": "10-gallon", "quote": "If you want to house a single lizard, a 10-gallon, well-ventilated aquarium will do.", "value": 10, "unit": "gal", "group": "1", "stage": null, "kind": "min", "est": false, "credibility": "medium", "conditions": "single lizard; pair or trio 20-30 gal; 'tall 10-gallon' in quick facts"},
+     {"url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html", "site": "PetSmart", "states": "10 gallons", "quote": "at least 10 gallons (40 liters) in volume", "value": 10, "unit": "gal", "group": null, "stage": null, "kind": "min", "est": true, "credibility": "low", "conditions": "Anolis generally"}
+    ], "note": "Agree at 10 gal."},
+    "water_depth": {"verdict": "not-stated", "sources": [], "note": "land animal"}
+   },
+   "pick": {"volume": {"source": 0, "why": "single lizard stated"}, "tank_height": {"source": 0, "why": "only number"}},
+   "conflict": null,
+   "checked": ["https://thevetdesk.com/pet-breeds/reptiles/brown-anole", "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html", "https://reptilesmagazine.com/listings/lizard-care/brown-anole"]
+  },
+  "leopardgecko": {
+   "sci": "Eublepharis macularius",
+   "fields": {
+    "footprint": {"verdict": "sourced", "sources": [
+     {"url": "https://reptifiles.com/leopard-gecko-care/leopard-gecko-terrarium-size", "site": "ReptiFiles", "states": "36″ x 18″", "quote": "no smaller than a 36″ x 18″ x 18″ enclosure", "value": [36, 18], "unit": "in", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "high", "conditions": "adult; page also states at least 4.5 sq ft floor space"},
+     {"url": "https://reptifiles.com/leopard-gecko-care/leopard-gecko-care-sheet/", "site": "ReptiFiles", "states": "36\"×18\"", "quote": "Enclosure 36\"×18\"×18\"", "value": [36, 18], "unit": "in", "group": null, "stage": null, "kind": "rec", "est": true, "credibility": "high", "conditions": "Quick Facts line"}
+    ], "note": "Same site twice; agree."},
+    "tank_height": {"verdict": "sourced", "sources": [
+     {"url": "https://reptifiles.com/leopard-gecko-care/leopard-gecko-terrarium-size", "site": "ReptiFiles", "states": "18″", "quote": "no smaller than a 36″ x 18″ x 18″ enclosure", "value": 18, "unit": "in", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "high", "conditions": "adult; ground-dwelling"}
+    ], "note": "single credible source"},
+    "volume": {"verdict": "not-stated", "sources": [], "note": "gallons from prior pages (Phoenix Herp, PetMD) not re-opened this pass"},
+    "water_depth": {"verdict": "not-stated", "sources": [], "note": "land animal"}
+   },
+   "pick": {"footprint": {"source": 0, "why": "stated as minimum for adult"}, "tank_height": {"source": 0, "why": "only source"}},
+   "conflict": null,
+   "checked": ["https://reptifiles.com/leopard-gecko-care/leopard-gecko-care-sheet/", "https://reptifiles.com/leopard-gecko-care/leopard-gecko-terrarium-size", "https://www.rvc.ac.uk/Media/Default/Beaumont%20Sainsbury%20Animal%20Hospital/EXOTICS/Animal%20Care%20Factsheets/Leopard%20gecko%20care%202024%20jh.pdf (403)"]
+  },
+  "regaljumper": {
+   "sci": "Phidippus regius",
+   "fields": {
+    "footprint": {"verdict": "sourced", "sources": [
+     {"url": "https://www.petsmart.com/learning-center/reptile-care/regal-jumping-spider-care-guide", "site": "PetSmart", "states": "4\" x 4\"", "quote": "**Minimum enclosure size**: 4\" x 4\" x 7\"", "value": [4, 4], "unit": "in", "group": "1", "stage": null, "kind": "min", "est": true, "credibility": "low", "conditions": "retailer guide; 'larger if you have room'"}
+    ], "note": "Only one dimensioned source; TheTarantulaCollective and Josh's Frogs give no footprint."},
+    "tank_height": {"verdict": "sourced", "sources": [
+     {"url": "https://www.petsmart.com/learning-center/reptile-care/regal-jumping-spider-care-guide", "site": "PetSmart", "states": "7\"", "quote": "**Minimum enclosure size**: 4\" x 4\" x 7\"", "value": 7, "unit": "in", "group": "1", "stage": null, "kind": "min", "est": true, "credibility": "low", "conditions": "retailer; 'build upward, not wide'"},
+     {"url": "https://thetarantulacollective.com/care-sheets-2/phidippus-regius", "site": "The Tarantula Collective", "states": "8-inch", "quote": "an adult jumping spider does just fine in an 8-inch tall enclosure", "value": 8, "unit": "in", "group": "1", "stage": "adult", "kind": "rec", "est": false, "credibility": "medium", "conditions": "adult; author preference, also says wouldn't go smaller than a Medium Treehouse"}
+    ], "note": "7 vs 8 in agree within 15%."},
+    "water_depth": {"verdict": "not-stated", "sources": [], "note": "land animal"}
+   },
+   "pick": {"footprint": {"source": 0, "why": "only dimensioned source"}, "tank_height": {"source": 1, "why": "adult stated"}},
+   "conflict": null,
+   "checked": ["https://www.petsmart.com/learning-center/reptile-care/regal-jumping-spider-care-guide", "https://thetarantulacollective.com/care-sheets-2/phidippus-regius", "https://joshsfrogs.com/cms/royal-jumping-spider-phidippus-regius-caresheet (no dimensions)"]
+  },
+  "ballpython": {
+   "sci": "Python regius",
+   "fields": {
+    "footprint": {"verdict": "sourced", "sources": [
+     {"url": "https://reptifiles.com/ball-python-care-guide/ball-python-terrarium-size-lighting/", "site": "ReptiFiles", "states": "48″ x 24″", "quote": "adults over 3′ long do best in a 48″ x 24″ x 24″", "value": [48, 24], "unit": "in", "group": "1", "stage": "adult", "kind": "rec", "est": false, "credibility": "high", "conditions": "subadults/adults over 3 ft, 'or larger'; alt dims need about 8 sq ft floor; juveniles under 3 ft 36x18x18"},
+     {"url": "https://reptifiles.com/ball-python-care-guide/ball-python-terrarium-size-lighting/", "site": "ReptiFiles", "states": "36” x 18”", "quote": "Juveniles under 3′ long can be housed in a 36” x 18” x 18”", "value": [36, 18], "unit": "in", "group": "1", "stage": "juvenile", "kind": "min", "est": false, "credibility": "high", "conditions": "juvenile under 3 ft"}
+    ], "note": "PetSmart 40 gal (32-36 in long) is smaller than ReptiFiles adult 48 in; about 25-33% shorter."},
+    "length": {"verdict": "sourced", "sources": [
+     {"url": "https://reptifiles.com/ball-python-care-guide/ball-python-terrarium-size-lighting/", "site": "ReptiFiles", "states": "at least as long as they are", "quote": "should be housed in an enclosure which is at least as long as they are", "value": 1, "unit": "x body length", "group": null, "stage": null, "kind": "min", "est": false, "credibility": "high", "conditions": "rule: enclosure length >= snake length"},
+     {"url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide", "site": "PetSmart", "states": "at least as long as the snake's body", "quote": "The enclosure must be at least as long as the snake's body", "value": 1, "unit": "x body length", "group": null, "stage": null, "kind": "min", "est": true, "credibility": "low", "conditions": "same rule"}
+    ], "note": "Both state the length-of-snake rule; typical adult 3-5 ft."},
+    "tank_height": {"verdict": "sourced", "sources": [
+     {"url": "https://reptifiles.com/ball-python-care-guide/ball-python-terrarium-size-lighting/", "site": "ReptiFiles", "states": "2′", "quote": "at least 2′ of vertical space for climbing", "value": 2, "unit": "ft", "group": null, "stage": "adult", "kind": "min", "est": false, "credibility": "high", "conditions": "stated with the alternative-dimensions rule; adult"}
+    ], "note": "single source"},
+    "volume": {"verdict": "sourced", "sources": [
+     {"url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide", "site": "PetSmart", "states": "40-gallon", "quote": "Use a minimum 40-gallon glass terrarium with a locking screen lid", "value": 40, "unit": "gal", "group": null, "stage": null, "kind": "min", "est": true, "credibility": "low", "conditions": "stage not split"},
+     {"url": "https://www.petmd.com/reptile/ball-python-care-sheet", "site": "PetMD", "states": "40 gallons", "quote": "An adult ball python should be housed in a breeder tank 40 gallons or larger.", "value": 40, "unit": "gal", "group": null, "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "adult"}
+    ], "note": "Agree at 40 gal; ReptiFiles 48x24x24 is about 120 gal, 3x larger."},
+    "water_depth": {"verdict": "not-stated", "sources": [], "note": "land animal"}
+   },
+   "pick": {"footprint": {"source": 0, "why": "high credibility, adult"}, "length": {"source": 0, "why": "credibility"}, "tank_height": {"source": 0, "why": "only source"}, "volume": {"source": 1, "why": "adult stated"}},
+   "conflict": "volume: 40 gal (PetSmart, PetMD) vs ReptiFiles 48x24x24 in (about 120 gal), well over 25 %",
+   "checked": ["https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide", "https://reptifiles.com/ball-python-care-guide/ball-python-terrarium-size-lighting/", "https://www.petmd.com/reptile/ball-python-care-sheet"]
+  },
+  "chacogoldenknee": {
+   "sci": "Grammostola pulchripes",
+   "fields": {
+    "footprint": {"verdict": "sourced", "sources": [
+     {"url": "https://dubiaroaches.com/blogs/invert-care/chaco-golden-knee-tarantula-care-sheet", "site": "Dubia Roaches", "states": "20”L x 10”W", "quote": "no smaller than 20”L x 10”W x 18”H, or a 15 gallon “high” tank", "value": [20, 10], "unit": "in", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "adult-sized enclosure; slings no smaller than four legspans by three"},
+     {"url": "https://www.joshsfrogs.com/chaco-golden-knee-tarantula-grammostola-pulchripes-captive-bred.html", "site": "Josh's Frogs", "states": "four times the spider's diagonal leg span", "quote": "no less than four times the spider's diagonal leg span in both directions", "value": 4, "unit": "x leg span", "group": "1", "stage": null, "kind": "min", "est": false, "credibility": "high", "conditions": "adult leg span 7-8 in per same page, so about 28-32 in square; rule, not fixed dimension"}
+    ], "note": "20x10 in vs Josh's Frogs rule implies about 28-32 in each way; conflict over 25 %."},
+    "tank_height": {"verdict": "sourced", "sources": [
+     {"url": "https://dubiaroaches.com/blogs/invert-care/chaco-golden-knee-tarantula-care-sheet", "site": "Dubia Roaches", "states": "18”H", "quote": "no smaller than 20”L x 10”W x 18”H, or a 15 gallon “high” tank", "value": 18, "unit": "in", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "adult"},
+     {"url": "https://www.joshsfrogs.com/chaco-golden-knee-tarantula-grammostola-pulchripes-captive-bred.html", "site": "Josh's Frogs", "states": "two times their diagonal leg span", "quote": "more than two times their diagonal leg span high above their substrate", "value": 2, "unit": "x leg span (MAX above substrate)", "group": "1", "stage": null, "kind": "max", "est": false, "credibility": "high", "conditions": "maximum height above substrate, about 14-16 in for 7-8 in leg span; substrate 4+ in for adults"}
+    ], "note": "Ground-dwelling species: Josh's Frogs gives a MAX, Dubia Roaches 18 in as min."},
+    "volume": {"verdict": "sourced", "sources": [
+     {"url": "https://dubiaroaches.com/blogs/invert-care/chaco-golden-knee-tarantula-care-sheet", "site": "Dubia Roaches", "states": "15 gallon", "quote": "or a 15 gallon “high” tank", "value": 15, "unit": "gal", "group": "1", "stage": "adult", "kind": "min", "est": false, "credibility": "medium", "conditions": "adult"}
+    ], "note": "single source"},
+    "water_depth": {"verdict": "not-stated", "sources": [], "note": "land animal"}
+   },
+   "pick": {"footprint": {"source": 1, "why": "credible, leg-span rule scales to the animal; fixed dims 20x10 in conflict"}, "tank_height": {"source": 0, "why": "stated minimum"}, "volume": {"source": 0, "why": "only source"}},
+   "conflict": "footprint: 20 x 10 in (Dubia Roaches) vs Josh's Frogs rule of 4x leg span (about 28-32 in each way for 7-8 in adult)",
+   "checked": ["https://dubiaroaches.com/blogs/invert-care/chaco-golden-knee-tarantula-care-sheet", "https://www.joshsfrogs.com/chaco-golden-knee-tarantula-grammostola-pulchripes-captive-bred.html"]
+  }
+ },
+ "agent_notes": "Quotes are copied from WebFetch summaries (small model), not raw page text; a few could differ in punctuation/quote glyphs, so re-verify any that fail. PetSmart quote for spider/anole contains markdown asterisks in one case (regal jumper): if the script fails, retry without the ** marks. Tom's Big Spiders and Tarantula Collective tarantula pages were not found by search. RVC leopard gecko PDF returned 403."
+}

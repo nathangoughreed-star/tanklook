@@ -1,0 +1,345 @@
+[
+ {
+  "id": "labeo",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/labeotropheus-trewavasae/",
+  "result": "compact",
+  "score": 1,
+  "quote": "Aquarium base 90 × 45cm36 × 18in"
+ },
+ {
+  "id": "labeo",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://guidarium.com/fishes/trewavas-cichlid",
+  "result": "exact",
+  "score": 1,
+  "quote": "a tank length of at least 120 cm"
+ },
+ {
+  "id": "labeo",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://guidarium.com/fishes/trewavas-cichlid",
+  "result": "exact",
+  "score": 1,
+  "quote": "minimum volume of 200 litres"
+ },
+ {
+  "id": "labeo",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/labeotropheus-trewavasae/",
+  "result": "compact",
+  "score": 1,
+  "quote": "Volume ~154litres~41US gal"
+ },
+ {
+  "id": "labeo",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://gensou.sg/labeotropheus-trewavasae-care-guide/",
+  "result": "nofetch",
+  "score": 0,
+  "err": "HTTP 403",
+  "quote": "A minimum of 250 litres is sensible"
+ },
+ {
+  "id": "auratus",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/melanochromis-auratus/",
+  "result": "compact",
+  "score": 1,
+  "quote": "120 × 45cm48 × 18in"
+ },
+ {
+  "id": "auratus",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://guidarium.com/fishes/auratus-cichlid-mbuna",
+  "result": "exact",
+  "score": 1,
+  "quote": "a tank length of at least 120 cm"
+ },
+ {
+  "id": "auratus",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/melanochromis-auratus/",
+  "result": "compact",
+  "score": 1,
+  "quote": "~205litres~54US gal absolute minimum"
+ },
+ {
+  "id": "auratus",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://guidarium.com/fishes/auratus-cichlid-mbuna",
+  "result": "exact",
+  "score": 1,
+  "quote": "minimum volume of 200 litres"
+ },
+ {
+  "id": "livingstonii",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/nimbochromis-livingstonii/",
+  "result": "compact",
+  "score": 1,
+  "quote": "120 × 45cm48 × 18in"
+ },
+ {
+  "id": "livingstonii",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://guidarium.com/fishes/livingstons-cichlid",
+  "result": "exact",
+  "score": 1,
+  "quote": "a tank length of at least 150 cm"
+ },
+ {
+  "id": "livingstonii",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/nimbochromis-livingstonii/",
+  "result": "exact",
+  "score": 1,
+  "quote": "The breeding aquarium should be at least 48\" in length"
+ },
+ {
+  "id": "livingstonii",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://guidarium.com/fishes/livingstons-cichlid",
+  "result": "exact",
+  "score": 1,
+  "quote": "A minimum aquarium volume of 470 litres"
+ },
+ {
+  "id": "livingstonii",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/nimbochromis-livingstonii/",
+  "result": "compact",
+  "score": 1,
+  "quote": "~205 litres~54 US gal"
+ },
+ {
+  "id": "afra",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/cynotilapia-afra/",
+  "result": "compact",
+  "score": 1,
+  "quote": "100 × 30cm39 × 12in"
+ },
+ {
+  "id": "afra",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://guidarium.com/fishes/afra-cichlid",
+  "result": "exact",
+  "score": 1,
+  "quote": "a tank length of at least 120 cm"
+ },
+ {
+  "id": "afra",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://www.fishkeeper.co.uk/fish/freshwater/cichlids/red-top-afra",
+  "result": "exact",
+  "score": 1,
+  "quote": "The aquarium should be at least 4ft long"
+ },
+ {
+  "id": "afra",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://guidarium.com/fishes/afra-cichlid",
+  "result": "exact",
+  "score": 1,
+  "quote": "A minimum aquarium volume of 200 litres"
+ },
+ {
+  "id": "afra",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/cynotilapia-afra/",
+  "result": "compact",
+  "score": 1,
+  "quote": "~90litres~24US gal"
+ },
+ {
+  "id": "goldfish",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/fancy-goldfish/",
+  "result": "exact",
+  "score": 1,
+  "quote": "The minimum tank size you can house one fancy goldfish in is 20 gallons."
+ },
+ {
+  "id": "goldfish",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/fancy-goldfish",
+  "result": "exact",
+  "score": 1,
+  "quote": "we recommend 20 gallons of water volume per goldfish"
+ },
+ {
+  "id": "goldfish",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/goldfish/",
+  "result": "exact",
+  "score": 1,
+  "quote": "each additional goldfish requires 10 gallons more"
+ },
+ {
+  "id": "comet",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/goldfish/",
+  "result": "exact",
+  "score": 1,
+  "quote": "each requiring a 30-gallon tank measuring 3 feet long by 1.5 feet high"
+ },
+ {
+  "id": "comet",
+  "field": "tank_height",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/goldfish/",
+  "result": "exact",
+  "score": 1,
+  "quote": "30-gallon tank measuring 3 feet long by 1.5 feet high"
+ },
+ {
+  "id": "comet",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/comet-goldfish/",
+  "result": "exact",
+  "score": 1,
+  "quote": "As a minimum you should aim for at least 50 gallons per Comet Goldfish."
+ },
+ {
+  "id": "comet",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.aquariumsource.com/comet-goldfish/",
+  "result": "exact",
+  "score": 1,
+  "quote": "We recommend aiming for a 75-gallon tank if possible."
+ },
+ {
+  "id": "comet",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/goldfish/",
+  "result": "exact",
+  "score": 1,
+  "quote": "each requiring a 30-gallon tank measuring 3 feet long by 1.5 feet high"
+ },
+ {
+  "id": "pandacory",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/corydoras-panda/",
+  "result": "compact",
+  "score": 1,
+  "quote": "45 × 30cm18 × 12in"
+ },
+ {
+  "id": "pandacory",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/corydoras-panda/",
+  "result": "compact",
+  "score": 1,
+  "quote": "~41 litres~11 US gal"
+ },
+ {
+  "id": "pandacory",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.tankarium.com/panda-cory-catfish/",
+  "result": "exact",
+  "score": 1,
+  "quote": "small enough to be happy in a 10-gallon tank"
+ },
+ {
+  "id": "pandacory",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.chewy.com/education/fish/general/corydoras-catfish-care-guide",
+  "result": "exact",
+  "score": 1,
+  "quote": "20 gallons (but tank needs vary among cory cats)"
+ },
+ {
+  "id": "pygmycory",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/corydoras-pygmaeus/",
+  "result": "compact",
+  "score": 1,
+  "quote": "45 × 30cm18 × 12in"
+ },
+ {
+  "id": "pygmycory",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/pygmy-cory/",
+  "result": "exact",
+  "score": 1,
+  "quote": "10 gallons is the minimum size for a group of 4-8 individuals"
+ },
+ {
+  "id": "pygmycory",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/pygmy-corydoras",
+  "result": "exact",
+  "score": 1,
+  "quote": "get a 10-gallon or larger aquarium"
+ },
+ {
+  "id": "bristlenose",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/ancistrus-cf-cirrhosus",
+  "result": "compact",
+  "score": 1,
+  "quote": "A tank with a base measuring 60 ∗ 30 cm24 ∗ 12 in or equivalent"
+ },
+ {
+  "id": "bristlenose",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/ancistrus-cf-cirrhosus",
+  "result": "compact",
+  "score": 1,
+  "quote": "~54litres~14US gal"
+ },
+ {
+  "id": "bristlenose",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.chewy.com/education/fish/general/bristlenose-pleco-care-guide",
+  "result": "exact",
+  "score": 1,
+  "quote": "A 20-gallon aquarium is a common minimum for one adult bristlenose pleco."
+ },
+ {
+  "id": "bristlenose",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.tankarium.com/bristlenose-pleco/",
+  "result": "exact",
+  "score": 1,
+  "quote": "a 40-gallon tank is the minimum size that should be used"
+ }
+]

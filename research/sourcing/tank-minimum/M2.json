@@ -1,0 +1,71 @@
+{
+"batch":"M2",
+"species":{
+"cardinal":{"sci":"Paracheirodon axelrodi","fields":{
+ "footprint":{"verdict":"sourced","sources":[{"url":"https://www.seriouslyfish.com/species/paracheirodon-axelrodi/","site":"Seriously Fish","states":"60 ∗ 30 cm","quote":"base dimensions of 60 ∗ 30 cm","value":[60,30],"unit":"cm","group":"8-10","stage":"adult","kind":"min","est":false,"credibility":"high","conditions":"group of at least 8-10"}],"note":"Only SF states footprint; FKW gives no dimensions."},
+ "volume":{"verdict":"sourced","sources":[{"url":"https://www.fishkeepingworld.com/cardinal-tetra/","site":"Fishkeeping World","states":"20 gallons","quote":"20 gallons for a small school of six cardinal tetras","value":20,"unit":"gal","group":"6","stage":"adult","kind":"min","est":false,"credibility":"medium","conditions":"school of six"}],"note":"SF lists ~14 US gal (54 L) for 60x30 base; FKW 20 gal."},
+ "water_depth":{"verdict":"not-stated","sources":[],"note":"Neither page states aquarium depth."}},
+ "pick":{"footprint":{"source":0,"why":"only footprint, high credibility"},"volume":{"source":0,"why":"only quoted gallon figure"}},
+ "conflict":"volume: FKW 20 gal vs SF ~14 gal (43%)",
+ "checked":["https://www.seriouslyfish.com/species/paracheirodon-axelrodi/","https://www.fishkeepingworld.com/cardinal-tetra/"]},
+"ember":{"sci":"Hyphessobrycon amandae","fields":{
+ "footprint":{"verdict":"sourced","sources":[{"url":"https://www.seriouslyfish.com/species/hyphessobrycon-amandae/","site":"Seriously Fish","states":"45 ∗ 30 cm","quote":"Aquarium base dimensions of at least 45 ∗ 30 cm","value":[45,30],"unit":"cm","group":"8-10","stage":"adult","kind":"min","est":false,"credibility":"high","conditions":"group of 8-10 minimum"}],"note":"FKW gives no dimensions."},
+ "volume":{"verdict":"sourced","sources":[{"url":"https://www.fishkeepingworld.com/ember-tetra/","site":"Fishkeeping World","states":"10-gallon","quote":"Ember Tetras will need at least a 10-gallon tank","value":10,"unit":"gal","group":"7-8","stage":"adult","kind":"min","est":false,"credibility":"medium","conditions":"at least seven or eight fish"}],"note":"SF ~11 US gal (41 L) agrees within 10%."},
+ "water_depth":{"verdict":"not-stated","sources":[],"note":"Not stated."}},
+ "pick":{"footprint":{"source":0,"why":"only footprint"},"volume":{"source":0,"why":"only quoted"}},
+ "conflict":null,
+ "checked":["https://www.seriouslyfish.com/species/hyphessobrycon-amandae/","https://www.fishkeepingworld.com/ember-tetra/"]},
+"rummynose":{"sci":"Hemigrammus rhodostomus","fields":{
+ "footprint":{"verdict":"not-stated","sources":[],"note":"SF profile lists aquarium size as not recorded; FKW gives none."},
+ "length":{"verdict":"sourced","sources":[{"url":"https://www.seriouslyfish.com/species/hemigrammus-rhodostomus/","site":"Seriously Fish","states":"36 inches/90 cm","quote":"a tank length of 36 inches/90 cm minimum","value":90,"unit":"cm","group":"10+","stage":"adult","kind":"min","est":false,"credibility":"high","conditions":"group of at least 10, active swimmer"}],"note":"Single source; FKW gives no length. Our minL 60 is below this."},
+ "volume":{"verdict":"sourced","sources":[{"url":"https://www.fishkeepingworld.com/rummy-nose-tetra/","site":"Fishkeeping World","states":"20 gallon","quote":"Rummy nose tetras need at least a 20 gallon tank","value":20,"unit":"gal","group":"6","stage":"adult","kind":"min","est":false,"credibility":"medium","conditions":"min six fish; 10 tetras in 20 gal"}],"note":""},
+ "water_depth":{"verdict":"not-stated","sources":[],"note":"Not stated."}},
+ "pick":{"length":{"source":0,"why":"only length source"},"volume":{"source":0,"why":"only"}},
+ "conflict":"length: SF 90 cm vs our minL 60 (50%)",
+ "checked":["https://www.seriouslyfish.com/species/hemigrammus-rhodostomus/","https://www.fishkeepingworld.com/rummy-nose-tetra/"]},
+"harlequin":{"sci":"Trigonostigma heteromorpha","fields":{
+ "footprint":{"verdict":"sourced","sources":[{"url":"https://www.seriouslyfish.com/species/trigonostigma-heteromorpha/","site":"Seriously Fish","states":"60 ∗ 30 cm","quote":"base dimensions of 60 ∗ 30 cm","value":[60,30],"unit":"cm","group":"8-10","stage":"adult","kind":"min","est":false,"credibility":"high","conditions":"group of at least 8-10"}],"note":"FKW gives length only."},
+ "length":{"verdict":"sourced","sources":[{"url":"https://www.fishkeepingworld.com/harlequin-rasbora/","site":"Fishkeeping World","states":"24 inches","quote":"a long tank of at least 24 inches","value":24,"unit":"in","group":"8-10","stage":"adult","kind":"min","est":false,"credibility":"medium","conditions":"36 in described as better"}],"note":"24 in = 61 cm, agrees with SF 60 cm."},
+ "water_depth":{"verdict":"not-stated","sources":[],"note":"FKW only gives breeding-tank depth 6-8 in; no general depth."}},
+ "pick":{"footprint":{"source":0,"why":"stated footprint"},"length":{"source":0,"why":"agrees with SF"}},
+ "conflict":null,
+ "checked":["https://www.seriouslyfish.com/species/trigonostigma-heteromorpha/","https://www.fishkeepingworld.com/harlequin-rasbora/"]},
+"chili":{"sci":"Boraras brigittae","fields":{
+ "footprint":{"verdict":"sourced","sources":[{"url":"https://www.seriouslyfish.com/species/boraras-brigittae/","site":"Seriously Fish","states":"45 ∗ 30 cm","quote":"base dimensions of at least 45 ∗ 30 cm","value":[45,30],"unit":"cm","group":"8-10","stage":"adult","kind":"min","est":false,"credibility":"high","conditions":"group of at least 8-10"}],"note":"FKW gives none."},
+ "volume":{"verdict":"sourced","sources":[{"url":"https://www.fishkeepingworld.com/chili-rasbora/","site":"Fishkeeping World","states":"6-8 gallons","quote":"6-8 gallons for a school of 8-10","value":8,"unit":"gal","group":"8-10","stage":"adult","kind":"min","est":false,"credibility":"medium","conditions":"fact box 6-8 gal; care text suggests 10 gal for six"}],"note":"SF ~11 gal."},
+ "water_depth":{"verdict":"not-stated","sources":[],"note":"Not stated."}},
+ "pick":{"footprint":{"source":0,"why":"only footprint"},"volume":{"source":0,"why":"only quoted"}},
+ "conflict":"volume: FKW 6-8 gal vs SF ~11 gal (27-45%)",
+ "checked":["https://www.seriouslyfish.com/species/boraras-brigittae/","https://www.fishkeepingworld.com/chili-rasbora/"]},
+"danio":{"sci":"Danio rerio","fields":{
+ "footprint":{"verdict":"sourced","sources":[{"url":"https://www.seriouslyfish.com/species/danio-rerio/","site":"Seriously Fish","states":"90 ∗ 30 cm","quote":"minimum base dimensions of 90 ∗ 30 cm","value":[90,30],"unit":"cm","group":"8-10","stage":"adult","kind":"min","est":false,"credibility":"high","conditions":"group of at least 8-10"}],"note":"FKW gives no length; says tank wider than high only."},
+ "volume":{"verdict":"sourced","sources":[{"url":"https://www.fishkeepingworld.com/zebra-danio/","site":"Fishkeeping World","states":"10 gallons","quote":"Minimum 10 gallons, plus 2 gallons per extra fish","value":10,"unit":"gal","group":"5","stage":"adult","kind":"min","est":false,"credibility":"medium","conditions":"group of at least five"}],"note":"SF ~21 gal."},
+ "water_depth":{"verdict":"not-stated","sources":[],"note":"Not stated."}},
+ "pick":{"footprint":{"source":0,"why":"only footprint"},"volume":{"source":0,"why":"only quoted"}},
+ "conflict":"volume: FKW 10 gal (5 fish) vs SF ~21 gal (8-10 fish) (52%); length 90 cm vs our minL 40",
+ "checked":["https://www.seriouslyfish.com/species/danio-rerio/","https://www.fishkeepingworld.com/zebra-danio/"]},
+"whitecloud":{"sci":"Tanichthys albonubes","fields":{
+ "footprint":{"verdict":"sourced","sources":[{"url":"https://www.seriouslyfish.com/species/tanichthys-albonubes/","site":"Seriously Fish","states":"60 ∗ 30 cm","quote":"Minimum base dimensions of 60 ∗ 30 cm","value":[60,30],"unit":"cm","group":"10+","stage":"adult","kind":"min","est":false,"credibility":"high","conditions":"group of 10+, or equivalent"}],"note":"FKW gives none."},
+ "volume":{"verdict":"sourced","sources":[{"url":"https://www.fishkeepingworld.com/white-cloud-mountain-minnow/","site":"Fishkeeping World","states":"10-gallon","quote":"kept in at least a 10-gallon aquarium","value":10,"unit":"gal","group":"6","stage":"adult","kind":"min","est":false,"credibility":"medium","conditions":"10 gal suits up to five fish; schools of at least 6"}],"note":"SF ~14 gal."},
+ "water_depth":{"verdict":"not-stated","sources":[],"note":"Only wild habitat depth (23.6 in), not aquarium."}},
+ "pick":{"footprint":{"source":0,"why":"only footprint"},"volume":{"source":0,"why":"only quoted"}},
+ "conflict":"volume: FKW 10 gal vs SF ~14 gal (29%)",
+ "checked":["https://www.seriouslyfish.com/species/tanichthys-albonubes/","https://www.fishkeepingworld.com/white-cloud-mountain-minnow/"]},
+"cpd":{"sci":"Danio margaritatus","fields":{
+ "footprint":{"verdict":"sourced","sources":[{"url":"https://www.seriouslyfish.com/species/danio-margaritatus/","site":"Seriously Fish","states":"45 × 30cm","quote":"45 × 30cm18 × 12in","value":[45,30],"unit":"cm","group":"20+","stage":"adult","kind":"min","est":false,"credibility":"high","conditions":"quick-facts aquarium size; buy ideally 20 or more"}],"note":"FKW gives no dimensions."},
+ "volume":{"verdict":"sourced","sources":[{"url":"https://www.fishkeepingworld.com/celestial-pearl-danio/","site":"Fishkeeping World","states":"10-gallon","quote":"A 10-gallon tank is the minimum for a small group","value":10,"unit":"gal","group":"8-10","stage":"adult","kind":"min","est":false,"credibility":"medium","conditions":"15-20 gal better"}],"note":"SF ~11 gal agrees."},
+ "water_depth":{"verdict":"not-stated","sources":[],"note":"Only wild habitat depth (~30 cm)."}},
+ "pick":{"footprint":{"source":0,"why":"only footprint"},"volume":{"source":0,"why":"only quoted"}},
+ "conflict":null,
+ "checked":["https://www.seriouslyfish.com/species/danio-margaritatus/","https://www.fishkeepingworld.com/celestial-pearl-danio/"]},
+"hatchet":{"sci":"Carnegiella strigata","fields":{
+ "footprint":{"verdict":"sourced","sources":[{"url":"https://www.seriouslyfish.com/species/carnegiella-strigata/","site":"Seriously Fish","states":"75 ∗ 30 cm","quote":"Surface dimensions of 75 ∗ 30 cm","value":[75,30],"unit":"cm","group":"10+","stage":"adult","kind":"rec","est":false,"credibility":"high","conditions":"10 or more; page's inch conversion looks garbled (30 x 12 in)"}],"note":"LiveAquaria gives no dimensions."},
+ "volume":{"verdict":"sourced","sources":[{"url":"https://www.liveaquaria.com/products/marble-hatchet","site":"LiveAquaria","states":"20 Gallons","quote":"Minimum Tank Size: 20 Gallons","value":20,"unit":"gal","group":"6","stage":"adult","kind":"min","est":false,"credibility":"medium","conditions":"groups of six or more"}],"note":"SF ~18 gal agrees."},
+ "water_depth":{"verdict":"not-stated","sources":[],"note":"No depth/water level stated by either page."}},
+ "pick":{"footprint":{"source":0,"why":"only footprint"},"volume":{"source":0,"why":"only quoted"}},
+ "conflict":null,
+ "checked":["https://www.seriouslyfish.com/species/carnegiella-strigata/","https://www.liveaquaria.com/products/marble-hatchet"],
+ "surface_note":"SF: tightly-fitting cover needed (jumps when startled); fish spend almost all time at or toward the surface, suits floating plants. LiveAquaria: aquarium hood necessary; needs a few floating plants. No water level stated."}
+},
+"agent_notes":"18 WebFetch calls. Quotes taken from fetch output; SF unit strings run together (e.g. 'cm24'). Only SF and one second source per species; no third source opened. Rummynose SF length 90 cm exceeds current minL 60; danio SF 90x30 exceeds minL 40. Hatchet surface/lid note under species 'surface_note'."
+}

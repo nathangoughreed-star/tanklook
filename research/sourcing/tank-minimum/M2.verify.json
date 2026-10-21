@@ -1,0 +1,164 @@
+[
+ {
+  "id": "cardinal",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/paracheirodon-axelrodi/",
+  "result": "exact",
+  "score": 1,
+  "quote": "base dimensions of 60 ∗ 30 cm"
+ },
+ {
+  "id": "cardinal",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/cardinal-tetra/",
+  "result": "exact",
+  "score": 1,
+  "quote": "20 gallons for a small school of six cardinal tetras"
+ },
+ {
+  "id": "ember",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/hyphessobrycon-amandae/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Aquarium base dimensions of at least 45 ∗ 30 cm"
+ },
+ {
+  "id": "ember",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/ember-tetra/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Ember Tetras will need at least a 10-gallon tank"
+ },
+ {
+  "id": "rummynose",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/hemigrammus-rhodostomus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "a tank length of 36 inches/90 cm minimum"
+ },
+ {
+  "id": "rummynose",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/rummy-nose-tetra/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Rummy nose tetras need at least a 20 gallon tank"
+ },
+ {
+  "id": "harlequin",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/trigonostigma-heteromorpha/",
+  "result": "exact",
+  "score": 1,
+  "quote": "base dimensions of 60 ∗ 30 cm"
+ },
+ {
+  "id": "harlequin",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/harlequin-rasbora/",
+  "result": "exact",
+  "score": 1,
+  "quote": "a long tank of at least 24 inches"
+ },
+ {
+  "id": "chili",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/boraras-brigittae/",
+  "result": "exact",
+  "score": 1,
+  "quote": "base dimensions of at least 45 ∗ 30 cm"
+ },
+ {
+  "id": "chili",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/chili-rasbora/",
+  "result": "exact",
+  "score": 1,
+  "quote": "6-8 gallons for a school of 8-10"
+ },
+ {
+  "id": "danio",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/danio-rerio/",
+  "result": "exact",
+  "score": 1,
+  "quote": "minimum base dimensions of 90 ∗ 30 cm"
+ },
+ {
+  "id": "danio",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/zebra-danio/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum 10 gallons, plus 2 gallons per extra fish"
+ },
+ {
+  "id": "whitecloud",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/tanichthys-albonubes/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum base dimensions of 60 ∗ 30 cm"
+ },
+ {
+  "id": "whitecloud",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/white-cloud-mountain-minnow/",
+  "result": "exact",
+  "score": 1,
+  "quote": "kept in at least a 10-gallon aquarium"
+ },
+ {
+  "id": "cpd",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/danio-margaritatus/",
+  "result": "compact",
+  "score": 1,
+  "quote": "45 × 30cm18 × 12in"
+ },
+ {
+  "id": "cpd",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.fishkeepingworld.com/celestial-pearl-danio/",
+  "result": "exact",
+  "score": 1,
+  "quote": "A 10-gallon tank is the minimum for a small group"
+ },
+ {
+  "id": "hatchet",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/carnegiella-strigata/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Surface dimensions of 75 ∗ 30 cm"
+ },
+ {
+  "id": "hatchet",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.liveaquaria.com/products/marble-hatchet",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum Tank Size: 20 Gallons"
+ }
+]

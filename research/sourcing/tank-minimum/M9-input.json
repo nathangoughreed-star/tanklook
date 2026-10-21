@@ -1,0 +1,104 @@
+[
+ {
+  "id": "crestedgecko",
+  "name": "Crested gecko (flame)",
+  "sci": "Correlophus ciliatus",
+  "cat": "reptile",
+  "habitat": "land",
+  "tl_mm": 200,
+  "minL": 127,
+  "prior": [
+   "https://reptifiles.com/wp-content/uploads/2020/10/Crested-Gecko-Care-Sheet-PDF.pdf | 18x18x24 in (about 127 L, converted from dimensions)",
+   "https://reptilesmagazine.com/crested-gecko-care-sheet/ | 18x18x36 in minimum for an adult (about 191 L, converted)"
+  ]
+ },
+ {
+  "id": "greenanole",
+  "name": "Green anole",
+  "sci": "Anolis carolinensis",
+  "cat": "reptile",
+  "habitat": "land",
+  "tl_mm": 180,
+  "minL": 75,
+  "prior": [
+   "https://reptifiles.com/green-anole-care-sheet/ | 24x24x24 in / 60x60x60 cm = ~216 L for one anole",
+   "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html | at least 10 gal (40 L) and 18 in tall"
+  ]
+ },
+ {
+  "id": "greenanolebrown",
+  "name": "Green anole (brown phase)",
+  "sci": "Anolis carolinensis",
+  "cat": "reptile",
+  "habitat": "land",
+  "tl_mm": 180,
+  "minL": 75,
+  "prior": [
+   "https://reptifiles.com/green-anole-care-sheet/ | 24x24x24 in / 60x60x60 cm = ~216 L",
+   "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html | 10 gal (40 L), 18 in tall"
+  ]
+ },
+ {
+  "id": "brownanole",
+  "name": "Brown anole",
+  "sci": "Anolis sagrei",
+  "cat": "reptile",
+  "habitat": "land",
+  "tl_mm": 180,
+  "minL": 40,
+  "prior": [
+   "https://thevetdesk.com/pet-breeds/reptiles/brown-anole | tall 10 gal = ~38 L",
+   "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html | 10 gal (40 L), 18 in tall (covers green and brown anole)"
+  ]
+ },
+ {
+  "id": "leopardgecko",
+  "name": "Leopard gecko",
+  "sci": "Eublepharis macularius",
+  "cat": "reptile",
+  "habitat": "land",
+  "tl_mm": 220,
+  "minL": 150,
+  "prior": [
+   "https://reptifiles.com/leopard-gecko-care/leopard-gecko-care-sheet/ | 36x18x18 in = ~191 L",
+   "https://www.phoenixherp.com/assistance/reptile-care-guides/leopard-gecko-care-guide.html | 20-40 gal = 76-151 L for one adult",
+   "https://www.petmd.com/reptile/leopard-gecko-care-sheet | 20 gal or larger = 76 L+"
+  ]
+ },
+ {
+  "id": "regaljumper",
+  "name": "Regal jumping spider",
+  "sci": "Phidippus regius",
+  "cat": "land-invert",
+  "habitat": "land",
+  "tl_mm": 12,
+  "minL": 2,
+  "prior": [
+   "https://www.petsmart.com/learning-center/reptile-care/regal-jumping-spider-care-guide | min 4x4x7 in = ~1.8 L"
+  ]
+ },
+ {
+  "id": "ballpython",
+  "name": "Ball python",
+  "sci": "Python regius",
+  "cat": "reptile",
+  "habitat": "land",
+  "tl_mm": 1200,
+  "minL": 450,
+  "prior": [
+   "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide | min 40 gal = ~151 L adult"
+  ]
+ },
+ {
+  "id": "chacogoldenknee",
+  "name": "Chaco golden knee tarantula",
+  "sci": "Grammostola pulchripes",
+  "cat": "land-invert",
+  "habitat": "land",
+  "tl_mm": 45,
+  "minL": 57,
+  "prior": [
+   "https://dubiaroaches.com/blogs/invert-care/chaco-golden-knee-tarantula-care-sheet | 20x10x18 in or 15 gal 'high' = ~57-59 L"
+  ]
+ }
+]

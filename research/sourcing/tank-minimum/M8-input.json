@@ -1,0 +1,92 @@
+[
+ {
+  "id": "dartfrog",
+  "name": "Dyeing dart frog",
+  "sci": "Dendrobates tinctorius",
+  "cat": "amphibian",
+  "habitat": "land",
+  "tl_mm": 45,
+  "minL": 40,
+  "prior": [
+   "https://joshsfrogs.com/sp/dendrobates-tinctorius-green-sip-dart034 | 10 gal for a single frog (37.9 L); 20H or 18x18x18 terrarium for 1-3 frogs (~76 L for 20H)"
+  ]
+ },
+ {
+  "id": "treefrog",
+  "name": "White's tree frog",
+  "sci": "Ranoidea caerulea",
+  "cat": "amphibian",
+  "habitat": "land",
+  "tl_mm": 100,
+  "minL": 76,
+  "prior": [
+   "https://reptiledirect.com/whites-tree-frog/ | smallest 15 or 20 gal glass terrarium (57-76 L)",
+   "https://reptilesmagazine.com/whites-treefrog-care-sheet/ | 20 gal horizontal minimum for 4 young frogs (76 L)"
+  ]
+ },
+ {
+  "id": "firetoad",
+  "name": "Fire-bellied toad",
+  "sci": "Bombina orientalis",
+  "cat": "amphibian",
+  "habitat": "both",
+  "tl_mm": 45,
+  "minL": 57,
+  "prior": [
+   "https://joshsfrogs.com/cms/fire-bellied-toad-care-sheet | 10-15 gal for 2-3 toads (38-57 L)",
+   "https://thevetdesk.com/pet-breeds/amphibians/oriental-fire-bellied-toad | 10 gal bare minimum for one toad (38 L); 15 gal for 3-5 (57 L)"
+  ]
+ },
+ {
+  "id": "firenewt",
+  "name": "Chinese fire-bellied newt",
+  "sci": "Cynops orientalis",
+  "cat": "amphibian",
+  "habitat": "both",
+  "tl_mm": 90,
+  "minL": 75,
+  "prior": [
+   "https://petmd.com/exotic/fire-bellied-newt-care-sheet | 15 gal for one adult (57 L)",
+   "https://reptilesmagazine.com/?p=104985 | 20 gal for up to four newts (76 L)"
+  ]
+ },
+ {
+  "id": "adf",
+  "name": "African dwarf frog",
+  "sci": "Hymenochirus boettgeri",
+  "cat": "amphibian",
+  "zone": "bottom",
+  "tl_mm": 55,
+  "minL": 40,
+  "prior": [
+   "https://www.liveaquaria.com/products/dwarf-african-frog | 10 gal (37.9 L)",
+   "https://www.petsmart.com/learning-center/fish-care/African-dwarf-frog-care-guide | 5+ gal (19 L)"
+  ]
+ },
+ {
+  "id": "axolotl",
+  "name": "Axolotl",
+  "sci": "Ambystoma mexicanum",
+  "cat": "amphibian",
+  "zone": "bottom",
+  "tl_mm": 230,
+  "minL": 110,
+  "prior": [
+   "https://modestfish.com/axolotl-care/ | 29 gal / 110 L smallest recommended, one axolotl",
+   "https://www.reptilecentre.com/blogs/reptile-blog/axolotl-tank-size | one adult minimum 54-75 L (15-20 gal)"
+  ]
+ },
+ {
+  "id": "crestedharlequin",
+  "name": "Crested gecko (harlequin)",
+  "sci": "Correlophus ciliatus",
+  "cat": "reptile",
+  "habitat": "land",
+  "tl_mm": 200,
+  "minL": 127,
+  "prior": [
+   "https://reptifiles.com/wp-content/uploads/2020/10/Crested-Gecko-Care-Sheet-PDF.pdf | 18x18x24 in = ~127 L",
+   "https://reptilesmagazine.com/crested-gecko-care-sheet/ | min 18x18x36 in = ~191 L"
+  ]
+ }
+]

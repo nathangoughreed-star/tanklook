@@ -1,0 +1,332 @@
+[
+ {
+  "id": "ocellaris",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.bulkreefsupply.com/ora-flurry-ocellaris-clownfish-ora.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "a minimum tank size of 15 gallons is recommended"
+ },
+ {
+  "id": "ocellaris",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.aquariumsource.com/ocellaris-clownfish/",
+  "result": "exact",
+  "score": 1,
+  "quote": "minimum recommended tank size for the Ocellaris Clownfish is 20 to 30 gallons"
+ },
+ {
+  "id": "ocellaris",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://topshelfaquatics.com/products/orange-ocellaris-clownfish",
+  "result": "exact",
+  "score": 1,
+  "quote": "Plan on a minimum of 30 gallons for adult housing"
+ },
+ {
+  "id": "yellowtang",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://www.saltwateraquariumblog.com/yellow-tang-care-guide/",
+  "result": "exact",
+  "score": 1,
+  "quote": "A 6-foot (1.8 m) long tank is often recommended"
+ },
+ {
+  "id": "yellowtang",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://gensou.sg/yellow-tang-care-guide-marine/",
+  "result": "nofetch",
+  "score": 0,
+  "err": "HTTP 403",
+  "quote": "A long tank footprint (120 cm or greater) matters more than raw volume."
+ },
+ {
+  "id": "yellowtang",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.liveaquaria.com/products/yellow-tang-hawaii",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum Tank Size: 100 Gallons"
+ },
+ {
+  "id": "yellowtang",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://fishtankadvisor.com/yellow-tang/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum Tank Size: 100 gallons"
+ },
+ {
+  "id": "yellowtang",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.saltwateraquariumblog.com/yellow-tang-care-guide/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum Tank Size: 90 gallons + (341L)"
+ },
+ {
+  "id": "yellowtang",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://gensou.sg/yellow-tang-care-guide-marine/",
+  "result": "nofetch",
+  "score": 0,
+  "err": "HTTP 403",
+  "quote": "A minimum of 300 litres is recommended"
+ },
+ {
+  "id": "bluetang",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://www.liveaquaria.com/product/330/",
+  "result": "exact",
+  "score": 1,
+  "quote": "best cared for in aquariums at least 6 feet in length"
+ },
+ {
+  "id": "bluetang",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://www.furrycritter.com/pages/descriptions/fish/blue_tang.htm",
+  "result": "compact",
+  "score": 1,
+  "quote": "Six-foot aquarium length should be considered minimum for adult specimens."
+ },
+ {
+  "id": "bluetang",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://gensou.sg/hippo-tang-paracanthurus-care-guide/",
+  "result": "nofetch",
+  "score": 0,
+  "err": "HTTP 403",
+  "quote": "with a tank length of at least 150 cm"
+ },
+ {
+  "id": "bluetang",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.liveaquaria.com/product/330/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum Tank Size: 180 Gallons"
+ },
+ {
+  "id": "bluetang",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://reefexclusive.com/products/paracanthurus-hepatus",
+  "result": "exact",
+  "score": 1,
+  "quote": "Blue Tangs should be kept in an aquarium of at least 180 gallons."
+ },
+ {
+  "id": "bluetang",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://gensou.sg/hippo-tang-paracanthurus-care-guide/",
+  "result": "nofetch",
+  "score": 0,
+  "err": "HTTP 403",
+  "quote": "Adult hippo tangs need minimum 450 litres"
+ },
+ {
+  "id": "firefish",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.liveaquaria.com/product/168/?pcatid=168",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum Tank Size: 20 Gallons"
+ },
+ {
+  "id": "firefish",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://reefexclusive.com/products/nemateleotris-magnifica",
+  "result": "exact",
+  "score": 1,
+  "quote": "the Firefish Goby requires a 20-gallon or larger system"
+ },
+ {
+  "id": "banggai",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.saltwateraquariumblog.com/banggai-cardinalfish-care-guide/",
+  "result": "compact",
+  "score": 1,
+  "quote": "The minimum tank size for a single Banggai Cardinalfish or a pair is 10-gallons."
+ },
+ {
+  "id": "banggai",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://reefexclusive.com/products/banggai-cardinalfish",
+  "result": "exact",
+  "score": 1,
+  "quote": "House the Banggai Cardinalfish in a well-filtered 30 gallon or larger aquarium"
+ },
+ {
+  "id": "sixline",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.liveaquaria.com/products/six-line-wrasse",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum Tank Size: 60 Gallons"
+ },
+ {
+  "id": "sixline",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://reefexclusive.com/products/six-line-wrasse",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum Tank Size : 55 gallons"
+ },
+ {
+  "id": "sixline",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.aquariadise.com/six-line-wrasse/",
+  "result": "exact",
+  "score": 1,
+  "quote": "A minimum tank size of 30 gallons (approximately 113 liters) is recommended"
+ },
+ {
+  "id": "chromis",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.liveaquaria.com/product/115/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum Tank Size: 30 Gallons"
+ },
+ {
+  "id": "chromis",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://reefexclusive.com/products/green-reef-chromis",
+  "result": "exact",
+  "score": 1,
+  "quote": "if you are going to keep a shoal; then a minimum of 60 gallons is needed."
+ },
+ {
+  "id": "coralbeauty",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://gensou.sg/?p=32424",
+  "result": "nofetch",
+  "score": 0,
+  "err": "HTTP 403",
+  "quote": "Minimum tank: 200 litres (55 gallons), 1.2m length"
+ },
+ {
+  "id": "coralbeauty",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.liveaquaria.com/product/438/?pcatid=438",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum Tank Size: 70 Gallons"
+ },
+ {
+  "id": "coralbeauty",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://reefexclusive.com/products/coral-beauty-angelfish",
+  "result": "exact",
+  "score": 1,
+  "quote": "The minimum tank size for the Coral Beauty Angelfish is 70-gallons."
+ },
+ {
+  "id": "coralbeauty",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://gensou.sg/?p=32424",
+  "result": "nofetch",
+  "score": 0,
+  "err": "HTTP 403",
+  "quote": "Minimum tank: 200 litres (55 gallons), 1.2m length"
+ },
+ {
+  "id": "watchman",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.bulkreefsupply.com/content/post/how-to-care-for-watchman-gobies",
+  "result": "exact",
+  "score": 1,
+  "quote": "Tank Size: A minimum of 20 gallons for a Watchman Goby."
+ },
+ {
+  "id": "watchman",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://reefexclusive.com/products/yellow-watchman-goby",
+  "result": "exact",
+  "score": 1,
+  "quote": "It requires a 30 gallon or larger aquarium"
+ },
+ {
+  "id": "mandarin",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.bulkreefsupply.com/content/post/how-to-care-for-mandarin-dragonets",
+  "result": "exact",
+  "score": 1,
+  "quote": "Tank Size: A minimum of 30 gallons."
+ },
+ {
+  "id": "mandarin",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://reefexclusive.com/products/pterosynchiropus-splendidus",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum Tank Size : 30 gallons"
+ },
+ {
+  "id": "mandarin",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://topshelfaquatics.com/blogs/news/mandarin-and-dragonet-care-guide-pods-feeding-and-mature-tank-requirements",
+  "result": "compact",
+  "score": 1,
+  "quote": "30 to 50 gallons: Absolute minimum for a single mandarin"
+ },
+ {
+  "id": "turbo",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://aquariumbreeder.com/?p=5920",
+  "result": "exact",
+  "score": 1,
+  "quote": "The minimum recommended tank size for these snails is a 10-gallon"
+ },
+ {
+  "id": "hermit",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://topshelfaquatics.com/products/blue-leg-hermit-crab",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum Tank Size: 10+ gallons"
+ },
+ {
+  "id": "hermit",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://reefexclusive.com/products/blue-leg-hermit-crab",
+  "result": "exact",
+  "score": 1,
+  "quote": "minimum tank size of 10 gallons for a small group of 2 – 3 crabs"
+ }
+]

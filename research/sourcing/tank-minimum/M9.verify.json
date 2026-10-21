@@ -1,0 +1,308 @@
+[
+ {
+  "id": "crestedgecko",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://reptilesmagazine.com/crested-gecko-care-sheet/",
+  "result": "near",
+  "score": 1,
+  "quote": "minimum 18″L x 18″W x 36″ H terrarium"
+ },
+ {
+  "id": "crestedgecko",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.zenhabitats.com/blogs/reptile-care-sheets-resources/crested-gecko-essential-care-information",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum adult enclosure size: 18\" x 18\" x 24\""
+ },
+ {
+  "id": "crestedgecko",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://reptifiles.com/wp-content/uploads/2020/10/Crested-Gecko-Care-Sheet-PDF.pdf",
+  "result": "compact",
+  "score": 1,
+  "quote": "Enclosure18\"×18\"×24\""
+ },
+ {
+  "id": "crestedgecko",
+  "field": "tank_height",
+  "verdict": "sourced",
+  "url": "https://reptilesmagazine.com/crested-gecko-care-sheet/",
+  "result": "near",
+  "score": 1,
+  "quote": "minimum 18″L x 18″W x 36″ H terrarium"
+ },
+ {
+  "id": "crestedgecko",
+  "field": "tank_height",
+  "verdict": "sourced",
+  "url": "https://www.zenhabitats.com/blogs/reptile-care-sheets-resources/crested-gecko-essential-care-information",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum adult enclosure size: 18\" x 18\" x 24\""
+ },
+ {
+  "id": "crestedgecko",
+  "field": "tank_height",
+  "verdict": "sourced",
+  "url": "https://reptifiles.com/wp-content/uploads/2020/10/Crested-Gecko-Care-Sheet-PDF.pdf",
+  "result": "compact",
+  "score": 1,
+  "quote": "Enclosure18\"×18\"×24\""
+ },
+ {
+  "id": "greenanole",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://reptifiles.com/green-anole-care-sheet/",
+  "result": "exact",
+  "score": 1,
+  "quote": "minimum recommended enclosure size for housing a single green anole is 24″L x 24″W x 24″H"
+ },
+ {
+  "id": "greenanole",
+  "field": "tank_height",
+  "verdict": "sourced",
+  "url": "https://reptifiles.com/green-anole-care-sheet/",
+  "result": "exact",
+  "score": 1,
+  "quote": "minimum recommended enclosure size for housing a single green anole is 24″L x 24″W x 24″H"
+ },
+ {
+  "id": "greenanole",
+  "field": "tank_height",
+  "verdict": "sourced",
+  "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "and 18 inches (46 cm) tall, with a screened lid."
+ },
+ {
+  "id": "greenanole",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "at least 10 gallons (40 liters) in volume"
+ },
+ {
+  "id": "greenanolebrown",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://reptifiles.com/green-anole-care-sheet/",
+  "result": "exact",
+  "score": 1,
+  "quote": "minimum recommended enclosure size for housing a single green anole is 24″L x 24″W x 24″H"
+ },
+ {
+  "id": "greenanolebrown",
+  "field": "tank_height",
+  "verdict": "sourced",
+  "url": "https://reptifiles.com/green-anole-care-sheet/",
+  "result": "exact",
+  "score": 1,
+  "quote": "minimum recommended enclosure size for housing a single green anole is 24″L x 24″W x 24″H"
+ },
+ {
+  "id": "greenanolebrown",
+  "field": "tank_height",
+  "verdict": "sourced",
+  "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "and 18 inches (46 cm) tall, with a screened lid."
+ },
+ {
+  "id": "brownanole",
+  "field": "tank_height",
+  "verdict": "sourced",
+  "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "and 18 inches (46 cm) tall, with a screened lid."
+ },
+ {
+  "id": "brownanole",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://thevetdesk.com/pet-breeds/reptiles/brown-anole",
+  "result": "exact",
+  "score": 1,
+  "quote": "If you want to house a single lizard, a 10-gallon, well-ventilated aquarium will do."
+ },
+ {
+  "id": "brownanole",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "at least 10 gallons (40 liters) in volume"
+ },
+ {
+  "id": "leopardgecko",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://reptifiles.com/leopard-gecko-care/leopard-gecko-terrarium-size",
+  "result": "exact",
+  "score": 1,
+  "quote": "no smaller than a 36″ x 18″ x 18″ enclosure"
+ },
+ {
+  "id": "leopardgecko",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://reptifiles.com/leopard-gecko-care/leopard-gecko-care-sheet/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Enclosure 36\"×18\"×18\""
+ },
+ {
+  "id": "leopardgecko",
+  "field": "tank_height",
+  "verdict": "sourced",
+  "url": "https://reptifiles.com/leopard-gecko-care/leopard-gecko-terrarium-size",
+  "result": "exact",
+  "score": 1,
+  "quote": "no smaller than a 36″ x 18″ x 18″ enclosure"
+ },
+ {
+  "id": "regaljumper",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.petsmart.com/learning-center/reptile-care/regal-jumping-spider-care-guide",
+  "result": "compact",
+  "score": 1,
+  "quote": "**Minimum enclosure size**: 4\" x 4\" x 7\""
+ },
+ {
+  "id": "regaljumper",
+  "field": "tank_height",
+  "verdict": "sourced",
+  "url": "https://www.petsmart.com/learning-center/reptile-care/regal-jumping-spider-care-guide",
+  "result": "compact",
+  "score": 1,
+  "quote": "**Minimum enclosure size**: 4\" x 4\" x 7\""
+ },
+ {
+  "id": "regaljumper",
+  "field": "tank_height",
+  "verdict": "sourced",
+  "url": "https://thetarantulacollective.com/care-sheets-2/phidippus-regius",
+  "result": "exact",
+  "score": 1,
+  "quote": "an adult jumping spider does just fine in an 8-inch tall enclosure"
+ },
+ {
+  "id": "ballpython",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://reptifiles.com/ball-python-care-guide/ball-python-terrarium-size-lighting/",
+  "result": "exact",
+  "score": 1,
+  "quote": "adults over 3′ long do best in a 48″ x 24″ x 24″"
+ },
+ {
+  "id": "ballpython",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://reptifiles.com/ball-python-care-guide/ball-python-terrarium-size-lighting/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Juveniles under 3′ long can be housed in a 36” x 18” x 18”"
+ },
+ {
+  "id": "ballpython",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://reptifiles.com/ball-python-care-guide/ball-python-terrarium-size-lighting/",
+  "result": "exact",
+  "score": 1,
+  "quote": "should be housed in an enclosure which is at least as long as they are"
+ },
+ {
+  "id": "ballpython",
+  "field": "length",
+  "verdict": "sourced",
+  "url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide",
+  "result": "exact",
+  "score": 1,
+  "quote": "The enclosure must be at least as long as the snake's body"
+ },
+ {
+  "id": "ballpython",
+  "field": "tank_height",
+  "verdict": "sourced",
+  "url": "https://reptifiles.com/ball-python-care-guide/ball-python-terrarium-size-lighting/",
+  "result": "exact",
+  "score": 1,
+  "quote": "at least 2′ of vertical space for climbing"
+ },
+ {
+  "id": "ballpython",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide",
+  "result": "exact",
+  "score": 1,
+  "quote": "Use a minimum 40-gallon glass terrarium with a locking screen lid"
+ },
+ {
+  "id": "ballpython",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://www.petmd.com/reptile/ball-python-care-sheet",
+  "result": "exact",
+  "score": 1,
+  "quote": "An adult ball python should be housed in a breeder tank 40 gallons or larger."
+ },
+ {
+  "id": "chacogoldenknee",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://dubiaroaches.com/blogs/invert-care/chaco-golden-knee-tarantula-care-sheet",
+  "result": "exact",
+  "score": 1,
+  "quote": "no smaller than 20”L x 10”W x 18”H, or a 15 gallon “high” tank"
+ },
+ {
+  "id": "chacogoldenknee",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.joshsfrogs.com/chaco-golden-knee-tarantula-grammostola-pulchripes-captive-bred.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "no less than four times the spider's diagonal leg span in both directions"
+ },
+ {
+  "id": "chacogoldenknee",
+  "field": "tank_height",
+  "verdict": "sourced",
+  "url": "https://dubiaroaches.com/blogs/invert-care/chaco-golden-knee-tarantula-care-sheet",
+  "result": "exact",
+  "score": 1,
+  "quote": "no smaller than 20”L x 10”W x 18”H, or a 15 gallon “high” tank"
+ },
+ {
+  "id": "chacogoldenknee",
+  "field": "tank_height",
+  "verdict": "sourced",
+  "url": "https://www.joshsfrogs.com/chaco-golden-knee-tarantula-grammostola-pulchripes-captive-bred.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "more than two times their diagonal leg span high above their substrate"
+ },
+ {
+  "id": "chacogoldenknee",
+  "field": "volume",
+  "verdict": "sourced",
+  "url": "https://dubiaroaches.com/blogs/invert-care/chaco-golden-knee-tarantula-care-sheet",
+  "result": "exact",
+  "score": 1,
+  "quote": "or a 15 gallon “high” tank"
+ }
+]
