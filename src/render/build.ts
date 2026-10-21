@@ -1,6 +1,7 @@
 // Builds a three.js scene for one tank from scene data. Rebuilt on every content change (cheap at this scale);
 // textures and card materials are cached across rebuilds.
 import * as THREE from 'three';
+import { tankView } from './tankView';
 import { LECA, SUBSTRATES, blendTile, maskQuantile } from '../art/placeholder';
 import { litterMeshes } from './scatter';
 import { patchHighlight, patchMeshes, patchSel } from './brushmesh';
@@ -1326,17 +1327,18 @@ const solidIn = (o: THREE.Object3D) => { let s = false; o.traverse(c => { s ||= 
 
 export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: Sel, edit?: TerrainEdit, selItem: Sel = null): BuiltTank {
   const sc = new THREE.Scene();
-  addTank(sc, S, T); addWater(sc, S, T); if (S.water.on) addAlgae(sc, T, waterY(T, S.water.level), LU); tagFrom(sc, 0, () => PART.glass);
-  let n0 = sc.children.length; addSubstrate(sc, S, T); tagFrom(sc, n0, () => PART.ground);
-  n0 = sc.children.length; addBackdrop(sc, S.backdrop, T, S.render.rim, S.render.bgSides); tagFrom(sc, n0, o => solidIn(o) ? PART.hardscape : PART.glass);
+  const ghost = tankView.ghost; // path 1 before a tank is chosen: the animals only, in an invisible box
+  if (!ghost) { addTank(sc, S, T); addWater(sc, S, T); if (S.water.on) addAlgae(sc, T, waterY(T, S.water.level), LU); tagFrom(sc, 0, () => PART.glass); }
+  let n0 = sc.children.length; if (!ghost) addSubstrate(sc, S, T); tagFrom(sc, n0, () => PART.ground);
+  n0 = sc.children.length; if (!ghost) addBackdrop(sc, S.backdrop, T, S.render.rim, S.render.bgSides); tagFrom(sc, n0, o => solidIn(o) ? PART.hardscape : PART.glass);
   n0 = sc.children.length; addStand(sc, S, T);
   for (const o of sc.children.slice(n0)) o.userData.stand = true; // AR's stand toggle hides these
   addWall(sc, S, T); addPerson(sc, S, T); addFloor(sc, S, T);
   const b: BuiltTank = { scene: sc, fishMeshes: [], meshById: new Map(), dotMeshes: [], itemMeshes: [], fishParts: [], itemParts: [], contentAt: sc.children.length };
   addContents(b, S, T, selId, selItem);
-  addLid(sc, S, T); addFrontDoors(sc, S, T);
-  if (S.lid !== 'hood') addFixture(sc, T, S.light, floorY(T, S.render, S.stand) + ceilingH(S.wall), waterY(T, S.water.level)); // ceiling: the wall's room height // with a hood the fixture is inside it; its light still applies
-  if (S.render.beams) addBeams(sc, T, S.light, S.lid);
+  if (!ghost) { addLid(sc, S, T); addFrontDoors(sc, S, T); }
+  if (!ghost && S.lid !== 'hood') addFixture(sc, T, S.light, floorY(T, S.render, S.stand) + ceilingH(S.wall), waterY(T, S.water.level)); // ceiling: the wall's room height // with a hood the fixture is inside it; its light still applies
+  if (!ghost && S.render.beams) addBeams(sc, T, S.light, S.lid);
   b.dotMeshes = edit && S.terrain.on ? addTerrainDots(sc, S, T, edit) : [];
   applyLighting(sc);
   sc.updateMatrixWorld(true);

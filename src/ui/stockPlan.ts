@@ -12,6 +12,7 @@ import type { Store } from '../scene/store';
 import type { Fish } from '../scene/types';
 import type { Viewer } from '../render/viewer';
 import { gearView } from '../render/gear3d';
+import { tankView } from '../render/tankView';
 import { attachBuildPick } from './buildPick';
 import { attachStockGallery } from './stockGallery';
 import { onSpaceFork, type SpaceFork } from './fullnessTile';
@@ -46,15 +47,30 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
   const bare = (on: boolean) => { if (gearView.on === on) { gearView.on = !on; viewer.rebuild(); } };
   // before the first pick there is no tank on show, only the animals to choose from
   const gallery = attachStockGallery(view, id => { if (!picks.some(p => p.id === id)) { picks.push(startPick(id)); q = ''; change(); } });
-  const close = () => { el.hidden = true; gallery.show(false); side(false); bare(false); };
+  // no tank chosen yet: the animals sit in an invisible box a little smaller than the smallest tank that holds them (Nathan 2026-10-21:
+  // the tool does not pick the tank; the user does, and can come back for a bigger one as the stocking grows)
+  const ghost = (on: boolean) => { if (tankView.ghost !== on) { tankView.ghost = on; viewer.rebuild(); } };
+  const GHOST_SCALE = 0.7;
+  // leaving the screen without a choice: the smallest tank that holds them becomes the real tank, so the editor never gets the box
+  const settle = () => {
+    if (!tankView.ghost) return;
+    const plan = planFor(picks, chosen), m = plan.need?.tank ?? plan.options.at(-1)?.tank;
+    shown = ''; ghost(false);
+    if (m) store.update(s => { const T = s.tanks[s.active]; T.tank = tankFromModel(m); shuffleFish(T, rng(1 + Math.floor(Math.random() * 1e6)), undefined, 92); });
+  };
+  const close = () => { settle(); el.hidden = true; gallery.show(false); side(false); bare(false); };
 
   // ---------- the scene follows the picks ----------
   const sync = (rebuild = false) => {
-    const plan = planFor(picks, chosen), show = plan.tank ?? (shown ? undefined : plan.need?.tank); // before a choice the first size shown stays; it never follows the picks
+    // the chosen tank, else the invisible box around the smallest size that holds them (it follows the picks: it is not a choice)
+    const plan = planFor(picks, chosen), box = plan.tank ? undefined : plan.need?.tank ?? plan.options.at(-1)?.tank, show = plan.tank ?? box;
+    const key = show ? `${box ? 'box:' : ''}${show.id}` : '';
+    ghost(!plan.tank); // nothing chosen (or nothing picked yet): no tank drawn; set before the update so the fullness tile reads it
     store.update(s => {
       const T = s.tanks[s.active];
-      if (show && show.id !== shown) {
-        T.tank = tankFromModel(show); T.water.on = true; T.water.level = WATER_LEVEL; shown = show.id; rebuild = true;
+      if (show && key !== shown) {
+        T.tank = tankFromModel(show); T.water.on = true; T.water.level = WATER_LEVEL; shown = key; rebuild = true;
+        if (box) T.tank = { ...T.tank, L: Math.round(T.tank.L * GHOST_SCALE), D: Math.round(T.tank.D * GHOST_SCALE) };
         T.camera = { ...T.camera, zoom: 0.55, el: 20 }; // looking down a little so the bottom dwellers show on the bare floor // the whole tank in view, beside the panel
       }
       T.water.salt = picks.some(p => getSpecies(p.id)?.salt);
@@ -107,7 +123,7 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
         const { setupUsd: s, minPerWeek: m } = plan.span;
         h += `<div class="spLive"><span>Set-up about <b>${range(s.cheapest, s.balanced, usd)}</b></span><span>About <b>${range(m.cheapest, m.balanced, n => `${n}`)} min</b> a week</span></div><div class="spNote">Cheapest build to balanced build: tank, filter, light, heater and water care for these animals.</div>`;
       }
-    } else h += plan.need ? '<div class="spNote">Pick a tank. Greyed sizes are too small for the animals you have so far; the bars show how full each would be.</div>' : `<div class="spWarn">${esc(plan.problem ?? '')}</div>`;
+    } else h += plan.need ? '<div class="spNote">No tank yet: pick one. You can add more animals after, and come back for a bigger tank. Greyed sizes are too small for the animals you have so far; the bars show how full each would be.</div>' : `<div class="spWarn">${esc(plan.problem ?? '')}</div>`;
     h += `<div class="spHd">Tank sizes</div><div class="spSizeKey spNote"><span>Fullness</span><span>Tank size</span></div><ul class="spSizes">${plan.options.map(o => {
       const bad = o.fails.length > 0, on = plan.tank?.id === o.tank.id, full = Math.max(o.spacePct, o.filtrationPct);
       return `<li><button type="button" data-act="size" data-tank="${o.tank.id}" class="${bad ? 'small' : ''}${on ? ' on' : ''}"${bad && !on ? ' disabled' : ''}><span class="spLbl">${esc(tankLabel(o.tank))}${bad ? `<em>${WHY[o.fails[0]]}</em>` : o.cramped ? '<em class="cr">workable, a bit cramped</em>' : ''}</span>${bar(full, 'Fullness')}<span class="spPct">${Math.round(full)} %</span>${bar(o.minPct, 'Tank size against what the animals need')}<span class="spPct">${Math.round(o.minPct)} %</span></button></li>`;
@@ -131,7 +147,7 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
 <div class="spResWrap">${results()}</div>
 ${picks.length ? `<ul class="spPicks">${picks.map(p => pickRow(p, shownLitres(planFor(picks, chosen)))).join('')}</ul>
 <div class="spHd">Other animals in with them?</div>
-${mates ? `<p class="spNote">Pick from the pictures on the left; each goes in at the smallest group it is kept in.</p><button type="button" class="primary" data-act="nomates">Done adding</button>` : `<div class="spYN"><button type="button" data-act="mates">Yes, show me what suits them</button></div>`}` : '<p class="spNote">Search for the animal you have in mind, or pick one from the pictures. It goes in at the smallest group it is kept in, and the tank it needs shows in the view.</p>'}
+${mates ? `<p class="spNote">Pick from the pictures on the left; each goes in at the smallest group it is kept in.</p><button type="button" class="primary" data-act="nomates">Done adding</button>` : `<div class="spYN"><button type="button" data-act="mates">Yes, show me what suits them</button></div>`}` : '<p class="spNote">Search for the animal you have in mind, or pick one from the pictures. It goes in at the smallest group it is kept in and shows in the view; then pick a tank for them.</p>'}
 ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}` : ''}
 <div class="spFoot"><button type="button" class="primary" data-act="builds"${picks.length && planFor(picks, chosen).tank && !planFor(picks, chosen).problem ? '' : ' disabled'}>Continue: three ways to build it</button><button type="button" class="spLink" data-act="done"${picks.length ? '' : ' disabled'}>Open in the editor as it is</button><span class="spNote">Everything stays editable in the editor.</span></div>`;
     const q2 = el.querySelector<HTMLInputElement>('.spQ')!;
@@ -155,7 +171,7 @@ ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}` : ''}
     switch (b.dataset.act) {
       case 'close': close(); break;
       case 'done': close(); store.seal(); status('Opened in the editor. The animals and tank are yours to change; Undo steps back.'); break;
-      case 'builds': { const plan = planFor(picks, chosen); if (plan.tank && !plan.problem) { el.hidden = true; bare(false); builds.open(animalsOf(picks), plan.tank, () => { el.hidden = false; side(true); bare(true); shown = ''; change(true); }); } break; }
+      case 'builds': { const plan = planFor(picks, chosen); if (plan.tank && !plan.problem) { el.hidden = true; bare(false); settle(); builds.open(animalsOf(picks), plan.tank, () => { el.hidden = false; side(true); bare(true); shown = ''; change(true); }); } break; }
       case 'add': if (i < 0) { picks.push(startPick(id)); q = ''; change(); } break;
       case 'mate': if (i < 0) { picks.push(startPick(id)); change(); } break;
       case 'del': if (i >= 0) { picks.splice(i, 1); if (!picks.length) mates = false; change(); } break;
@@ -174,7 +190,7 @@ ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}` : ''}
     s.tanks[0].stockFirst = true; // no filter drawn until the owner adds one (Nathan 2026-10-21; the tile says "This tank needs a filter")
     store.replace(s);
     picks = []; chosen = undefined; mates = false; q = ''; shown = '';
-    el.hidden = false; side(true); bare(true); focusSearch = true; draw();
+    el.hidden = false; side(true); bare(true); ghost(true); focusSearch = true; draw();
   };
   openBtn.onclick = () => { (document.getElementById('startDlg') as HTMLDialogElement | null)?.close(); open(); };
   // a different tank loaded (open, undo past the start): the screen has nothing more to say

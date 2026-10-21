@@ -46,6 +46,18 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
+## Animal-first: no tank until the user picks one (2026-10-21, branch `nt`; Nathan's request)
+- **Decision (Nathan 2026-10-21), replaces the 2026-10-20 "the tool picks a tank" refinement:** at the start the tool selects no tank. The
+  animals show on a blank view, grouped in an invisible box (0.7 x the length and depth of the smallest size that holds them; it follows
+  the picks and is not a choice). The user picks a tank from Tank sizes; it is iterative: add animals, pick a bigger tank, add more.
+- Code: `render/tankView.ts` (`tankView.ghost`, view-only, never saved); `buildTank` skips glass, water, algae, substrate, backdrop, lid,
+  doors, light and beams while it is on; the fullness tile hides (nothing to be full). `stockPlan.ts`: ghost until a size is chosen;
+  leaving the screen without a choice (Open in the editor, close) sets the smallest holding size as the real tank.
+- Open: Continue stays off while the chosen tank fails (e.g. under the minimum); ask Nathan whether a red minimum should warn instead of
+  block. 13 kuhlis grey out every size below a 60 gal breeder on main today (per-head floor rule, 4 x tl^2): sent to lane MM as an
+  acceptance case (13 kuhlis in a 20 long: no red minimum, Continue on). The minimap still draws a tank outline in the ghost view.
+
+
 ## S165: Tank minimum policy (2026-10-21, branch `s165`)
 - Six policy questions SETTLED; the rules are in research/tank-minimum-first-principles.md "Decisions". No policy code yet.
 - Shipped bb778da (build 1053): build fix, the mystery snail's volume-only flag is now applied in `measureMinimum`.

@@ -15,6 +15,7 @@ import dd from '../data/demand-defaults.json';
 const ROUTINE_FLOOR = dd.time.waterChangeFraction.floor;
 import type { Store } from '../scene/store';
 import type { SpaceLimit, TankSetup, Units } from '../scene/types';
+import { tankView } from '../render/tankView';
 
 /** A bar at or over this reads "near full" (amber); over 100 is over (red). */
 export const NEAR_FULL = 85;
@@ -193,7 +194,7 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
   const render = () => {
     const S = store.tank, r = stockingMemo(S), u = store.scene.units, st = tileState(S, r, u);
     const animalsHidden = viewer.hidden.has('fish');
-    el.hidden = !st.show || animalsHidden;
+    el.hidden = !st.show || animalsHidden || tankView.ghost; // no tank chosen yet on the stocking screen: nothing to be full
     const sig = JSON.stringify([st, u, editing, !!forkFn, tankExtent(S.tank)]);
     if (sig === lastSig) return;
     lastSig = sig;
