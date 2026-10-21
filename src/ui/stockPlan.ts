@@ -15,7 +15,8 @@ import { gearView } from '../render/gear3d';
 import { attachBuildPick } from './buildPick';
 import { attachStockGallery } from './stockGallery';
 import { onSpaceFork, type SpaceFork } from './fullnessTile';
-import { animalsInTank, animalsOf, bump, forkOptions, isSexed, notesOf, overWarn, planFor, conflictOf, rankTankmates, startPick, tankLabel, totalOf, type Pk, type RoomOption } from './stockPlanLogic';
+import { grazerShort } from '../data/grazers';
+import { animalsInTank, animalsOf, bump, forkOptions, isSexed, notesOf, overWarn, planFor, shownLitres, conflictOf, rankTankmates, startPick, tankLabel, totalOf, type Pk, type RoomOption } from './stockPlanLogic';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
@@ -78,13 +79,14 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
 
   // ---------- drawing ----------
   const bandClass = (b: string) => `spb-${b}`;
-  const pickRow = (p: Pk) => {
+  const pickRow = (p: Pk, litres: number) => {
+    const hungry = litres ? grazerShort(p.id, totalOf(p), litres) : null;
     const sp = getSpecies(p.id)!, nt = notesOf(p), sexed = isSexed(p.id);
     const step = (which: 'n' | 'f', label: string, v: number) =>
       `<span class="spStep"><span class="spLab">${label}</span><button type="button" data-act="dec" data-id="${p.id}" data-w="${which}" aria-label="One fewer ${esc(label || sp.name)}"${v <= 0 ? ' disabled' : ''}>−</button><b>${v}</b><button type="button" data-act="inc" data-id="${p.id}" data-w="${which}" aria-label="One more ${esc(label || sp.name)}">+</button></span>`;
     return `<li class="spPick"><div class="spName"><b>${esc(sp.name)}</b><i>${esc(sp.sci)}</i><button type="button" class="spX" data-act="del" data-id="${p.id}" aria-label="Take ${esc(sp.name)} out">✕</button></div>
 <div class="spSteps">${sexed ? step('n', 'Males', p.n) + step('f', 'Females', p.f ?? 0) : step('n', '', p.n)}</div>
-${overWarn(p) ? `<div class="spWarn">${esc(overWarn(p)!)}</div>` : ''}${conflictOf(picks, p.id) ? `<div class="spWarn">${esc(conflictOf(picks, p.id)!)}</div>` : ''}<div class="spMsg ${bandClass(nt.band)}">${esc(nt.line)}</div>${nt.ratio ? `<div class="spNote">${esc(nt.ratio)}</div>` : ''}
+${overWarn(p) ? `<div class="spWarn">${esc(overWarn(p)!)}</div>` : ''}${hungry ? `<div class="spWarn">${esc(hungry.replace(/^algae: /, 'Algae: '))}</div>` : ''}${conflictOf(picks, p.id) ? `<div class="spWarn">${esc(conflictOf(picks, p.id)!)}</div>` : ''}<div class="spMsg ${bandClass(nt.band)}">${esc(nt.line)}</div>${nt.ratio ? `<div class="spNote">${esc(nt.ratio)}</div>` : ''}
 ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</div>` : ''}</li>`;
   };
 
@@ -127,7 +129,7 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
     el.innerHTML = `<div class="spHead"><h2>An animal I want</h2><button type="button" data-act="close" aria-label="Close">✕</button></div>
 <input class="spQ" type="search" placeholder="Search an animal by name (e.g. betta, neon tetra, clownfish)" aria-label="Search animals" value="${esc(q)}" autocomplete="off">
 <div class="spResWrap">${results()}</div>
-${picks.length ? `<ul class="spPicks">${picks.map(pickRow).join('')}</ul>
+${picks.length ? `<ul class="spPicks">${picks.map(p => pickRow(p, shownLitres(planFor(picks, chosen)))).join('')}</ul>
 <div class="spHd">Other animals in with them?</div>
 ${mates ? `<p class="spNote">Pick from the pictures on the left; each goes in at the smallest group it is kept in.</p><button type="button" class="primary" data-act="nomates">Done adding</button>` : `<div class="spYN"><button type="button" data-act="mates">Yes, show me what suits them</button></div>`}` : '<p class="spNote">Search for the animal you have in mind, or pick one from the pictures. It goes in at the smallest group it is kept in, and the tank it needs shows in the view.</p>'}
 ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}` : ''}

@@ -43,7 +43,7 @@ function dry(items: Item[]): TankSetup {
 }
 const spider = (id: number, species: string, e: Partial<Fish> = {}): Fish => ({ id, species, x: 300, y: 100, depth: 200, yaw: 0, pitch: 0, roll: 0, bend: 0, surface: 'floor', ...e });
 
-describe('spider body plan', { timeout: 60000 }, () => {
+describe('spider body plan', () => {
   it('the species resolve as a land invertebrate, clinging anywhere, the female with her own look', () => {
     const sp = getSpecies('regaljumper')!;
     expect(sp.cat).toBe('land-invert'); expect(sp.habitat).toBe('land');
@@ -89,7 +89,7 @@ describe('spider body plan', { timeout: 60000 }, () => {
   });
 });
 
-describe('spiders in the tank: on their anchors, out of the glass and the bark', { timeout: 60000 }, () => {
+describe('spiders in the tank: on their anchors, out of the glass and the bark', () => {
   const scene = () => {
     const S = dry([piece(1, 'climb', 300, 230, { size: 440, yaw: 15 }), piece(2, 'ledge', 300, 410, { size: 220, lift: 220 }), piece(3, 'corkflat', 150, 120)]);
     S.fish = Array.from({ length: 8 }, (_, i) => spider(i + 1, 'regaljumper', i % 2 ? { sex: 'f' } : {}));

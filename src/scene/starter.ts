@@ -28,7 +28,7 @@ const isInvert = (sp: Species) => sp.kind === 'snail' || sp.cat.endsWith('invert
 /** Water one animal needs, litres: its load from the stocking engine (FishBase mass^0.75 x metabolism, scene/stocking.ts; lane SE
  *  2026-10-19; the rule of thumb it replaced was 3 L x (tl/35)^1.6 per animal, half again for marine, a third for shrimp and snails). */
 const female = (sp: Species): Species => sp.female?.tl ? { ...sp, tl: sp.female.tl } : sp;
-export const litresFor = litresPerAnimal;
+export const litresFor = (sp: Species) => litresPerAnimal(sp); // a function, not an alias: stocking.ts and this file import each other (lane MW 2026-10-21: the demand engine now loads stocking first)
 /** Litres for the `from`-th to (`from` + n - 1)-th animal of a species: a sexed species goes in as males and females in turn
  *  (`sex: 'f'` on every second one), each at its own size. At the male size alone the larger guppy females took the Full stop
  *  over 100 %, and a mean size undercounts a lone male where the females are smaller (kribensis, peacocks; S168 2026-10-20). */

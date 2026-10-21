@@ -6,6 +6,7 @@ import { getSpecies, type Species } from '../data/species';
 import factorsJson from '../data/factors.json';
 import dj from '../data/demand-defaults.json';
 import { groupShort, hasCorals, whyAnimal } from '../scene/animalfit';
+import { grazerShort } from '../data/grazers';
 import { itemLights } from '../scene/lightcheck';
 import { NEEDS, isCoralNeed, isLand, parRange, type PlantNeed } from '../scene/lightneeds';
 import { wattsOf } from '../scene/lightout';
@@ -22,6 +23,9 @@ import { add3, mean3, r3, scale3, widen3 } from './range';
 import { interp, price as rowPrice, priceRow } from './prices';
 import { defaultFilter, defaultHeater, filterName, matchFilter, matchHeater, type FilterSpec } from './gear';
 import { techDemand } from './tech';
+import { isLivePlantPatch, PATCH_PLANTS } from '../scene/nitrogen';
+import { waterChangeFraction } from '../scene/stocking';
+import { techOf } from '../scene/tech';
 import type { Contribution, Demand, Domain, Group, Range3, Rangeish, UserProfile } from './types';
 
 export const FACTORS = factorsJson;
@@ -150,9 +154,12 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
     const raw = (n && !isLand(n) ? DEFAULTS.risk.plantDifficulty[diff] : 0) + struggle;
     add(`plant:${it.variant}`, label, 'plant', {
       setup: rowPrice(`plant:${it.variant}`) ? price(rowPrice(`plant:${it.variant}`)!) : unit ? price(pick(unit.setup)) : undefined, livestock: true, domain: pdom,
-      minutes: r3(DEFAULTS.plants.minPerWeekEach * growRate(it.variant, S.grow.feed) * (it.size / DEFAULTS.plants.refSizeMm)), risk: raw * skillMul(P, pdom),
+      minutes: r3(DEFAULTS.plants.minPerWeekEach * Math.pow(plants.filter(q => q.variant === it.variant).length, -DEFAULTS.plants.bunchExp) * (isFloat(it.variant) ? DEFAULTS.plants.floaterMinK : 1) * growRate(it.variant, S.grow.feed) * (it.size / DEFAULTS.plants.refSizeMm)), risk: raw * skillMul(P, pdom),
     });
   }
+
+  // painted patches of live plants (carpets, moss mats) are trimmed too
+  for (const pt of S.patches ?? []) if (isLivePlantPatch(pt)) add('patch', 'Live plant patches (carpet, moss)', 'plant', { minutes: r3(DEFAULTS.time.plantPatchMin.mode * growRate(pt.brush.slice(6), S.grow.feed)) });
 
   // ---- animals
   const present: Species[] = [];
@@ -167,6 +174,8 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
     if (why) { raw += DEFAULTS.risk.animalWarnPts[why.kind]; const w = `${sp.name}: ${why.text}`; if (!warnings.includes(w)) warnings.push(w); }
     const few = groupShort(sp, nOf(sp.id));
     if (few) { const w = `${sp.name}: ${few}`; if (!warnings.includes(w)) { warnings.push(w); raw += DEFAULTS.risk.animalWarnPts.group; } } // once per species
+    const hungry = wet ? grazerShort(sp.id, nOf(sp.id), litres) : null; // more grazers than the algae feeds (data/grazers.ts)
+    if (hungry) { const w = `${sp.name}: ${hungry}`; if (!warnings.includes(w)) { warnings.push(w); raw += DEFAULTS.risk.animalWarnPts.group; } }
     add(`animal:${sp.id}`, sp.name, 'animal', {
       setup: price(scale3(rowPrice(`animal:${sp.id}`) ?? pick(u.setup), Math.pow(tl / (rowPrice(`animal:${sp.id}`) ? sp.tl : u.refMm), 1.2))), upkeep: scale3(pick(u.upkeep), Math.pow(tl / u.refMm, 0.8) * sMul.upkeep), minutes: r3(u.mins * sMul.minutes),
       livestock: true, domain: adom, risk: raw * skillMul(P, adom),
@@ -177,12 +186,19 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   const T = DEFAULTS.time;
   if (!wet) add('mist', 'Misting and upkeep', 'work', { minutes: pick(T.terrariumMistMin) });
   else {
-    const inches = animals.reduce((s, a) => s + (a.f.tl ?? a.sp.tl) / 25.4, 0), stock = Math.min(1.4, Math.max(0.6, 0.5 + inches / Math.max(gal, 1)));
-    const frac = T.waterChangeFraction[domain] * stock, galWk = gal * frac;
+    // the share of the tank to change comes from the nitrogen budget (plants and the filter take part of it away), floored and capped
+    const frac = waterChangeFraction(S), galWk = gal * frac;
+    const hose = techOf(S).rows.wcmethod === 'hose';
     const water = (P.waterSource === 'bought-ro' ? rowPrice('gear:ro-bought') : undefined) ?? pick((FACTORS.waterUsdPerGal as Record<string, Range3>)[P.waterSource]), per = salt ? add3(water, rowPrice('gear:salt-mix') ?? pick(FACTORS.saltMixUsdPerGal)) : water;
     if (P.waterSource === 'own-ro' && rowPrice('gear:ro-unit')) add('rounit', 'RO unit', 'gear', { setup: price(rowPrice('gear:ro-unit')!) });
     if (rowPrice('gear:test-kit')) add('testkit', 'Water test kit', 'gear', { setup: price(rowPrice('gear:test-kit')!) });
-    add('waterchange', `Water changes (${Math.round(frac * 100)} % a week)`, 'work', { upkeep: scale3(per, galWk * 4.33), minutes: add3(scale3(pick(T.waterChangePerGalMin), galWk * sMul.minutes), scale3(pick(T.waterChangeFixedMin), sMul.minutes)) });
+    add('waterchange', `Water changes (${Math.round(frac * 100)} % a week${hose ? ', by hose' : ''})`, 'work', { upkeep: scale3(per, galWk * 4.33), minutes: add3(scale3(pick(hose ? T.waterChangeHosePerGalMin : T.waterChangePerGalMin), galWk * sMul.minutes), scale3(pick(hose ? T.waterChangeHoseFixedMin : T.waterChangeFixedMin), sMul.minutes)) });
+    // feeding trips (an automatic feeder leaves only the refill) and wiping the glass (algae follows the light; live plants take nutrients, artificial ones need a wipe)
+    add('feeding', techOf(S).rows.feeder === 'auto' ? 'Feeding (automatic feeder: refills)' : 'Feeding trips', 'work', { minutes: pick(techOf(S).rows.feeder === 'auto' ? T.feederRefillMinPerWeek : T.feedingTripMinPerWeek) });
+    const g = T.glass, wpg = Math.min(g.wpgCap, wattsOf(S) / Math.max(gal, 1)), live = S.items.filter(i => i.kind === 'plant').length + (S.patches ?? []).filter(isLivePlantPatch).length * PATCH_PLANTS;
+    const fake = S.items.filter(i => i.kind === 'artificial').length, cover = Math.min(1, live / Math.max(gal / 10, 1));
+    const glassMid = (g.baseMin + g.minPerHalfWpg * wpg / 0.5) * (1 - g.liveCut * cover) + Math.min(g.artificialCapMin, g.artificialEachMin * fake);
+    add('glass', 'Wiping the glass and algae', 'work', { minutes: { lo: glassMid * 0.6, mode: glassMid, hi: glassMid * 1.6 } });
     add('testing', 'Testing the water', 'work', { minutes: scale3(pick(T.testingMin), sMul.minutes) });
     add('filterclean', 'Cleaning the filter', 'work', { minutes: pick(T.filterCleanMinPerWeek) });
     if (salt) add('saltwork', 'Mixing salt water, top-off, dosing', 'work', { minutes: pick(T.saltExtraMin) });

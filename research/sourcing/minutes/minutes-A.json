@@ -1,0 +1,95 @@
+{
+ "batch": "minutes-A",
+ "agent_notes": "No page states per-gallon or set-up minutes separately; only whole-change totals (retailer review site). Intervals from two hobby/retail pages; no source for heavily planted low-tech percent that I could quote verbatim.",
+ "items": {
+  "waterchange-method": {
+   "fields": {
+    "bucket_min_per_gal": {
+     "ours": 0.5,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "No opened page states bucket-method minutes."
+    },
+    "hose_min_per_gal": {
+     "ours": 0.2,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "Whole-change total only. Our model gives 12 + 0.2*13.75 = 14.75 min, 26% below 20 (inside +-30%), so the total is consistent, but the per-gallon rate is not stated. Affiliate-style review page. [Total quote, not attached as source: \"My weekly 25-percent water change on a 55-gallon tank takes 20 minutes from start to cleanup.\" at https://www.narcosis-the-game.com/?p=21455]"
+    },
+    "fixed_min": {
+     "ours": 12,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "Set-up/cleanup not stated separately; the 15-30 min total brackets our 12 + variable. [Total quote, not attached as source: \"No buckets, no lifting, and most changes take 15 to 30 minutes.\" at https://www.narcosis-the-game.com/?p=21455]"
+    },
+    "gravel_vac_fixed_min": {
+     "ours": 12,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "No opened page states gravel-vacuum minutes separately."
+    }
+   }
+  },
+  "waterchange-interval": {
+   "fields": {
+    "freshwater_pct_per_week": {
+     "ours": 22.5,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.americanaquariumproducts.com/aquarium-cleaning.html",
+       "site": "American Aquarium Products",
+       "states": "10-20% once per week (best), or 25%+ once per month",
+       "quote": "changing 10-20% of your aquarium water once per week (best)"
+      }
+     ],
+     "note": "Ours is 20-25 %; stated range 10-20 % touches our low end only (agrees at 20). Same page says 10-20% every 2 weeks is also suggested, i.e. lower. Midpoint of ours used as 22.5."
+    },
+    "planted_pct_per_week": {
+     "ours": 25,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "gcshop-sg.com table gives lightly stocked planted tank 20-30% every 1-2 weeks (supports 25% per 1-2 wk, weekly-equivalent 10-30%), but the table cells are not one contiguous quote so not attached. American Aquarium page says well-planted tanks often can go longer than weekly."
+    },
+    "saltwater_pct_per_week": {
+     "ours": 15,
+     "verdict": "disagrees",
+     "suggest": 10,
+     "sources": [
+      {
+       "url": "https://bulkreefsupply.com/video/view/5-minute-saltwater-aquarium-guide-ep22-water-change",
+       "site": "Bulk Reef Supply",
+       "states": "10% weekly, or 20% every other week (5-10% per week equivalent)",
+       "quote": "A 10% weekly water change is the best schedule, for a 40 gallon tank that means removing 5 gallons of water"
+      }
+     ],
+     "note": "10% weekly or 20% every other week = 10 %/week equivalent; ours 15 is 50 % higher. Hobby range 10-20% every 1-2 wk; consider 10."
+    }
+   }
+  },
+  "hose-listing": {
+   "fields": {
+    "price_usd": {
+     "ours": null,
+     "verdict": "not-stated",
+     "suggest": 64.99,
+     "sources": [
+      {
+       "url": "https://fishtanksdirect.com/python-no-spill-clean-and--fill-kit-25-foot/",
+       "site": "Fish Tanks Direct",
+       "states": "$64.99",
+       "quote": "Your Price is : MSRP: Was: Now: $64.99"
+      }
+     ],
+     "note": "Python No Spill Clean & Fill Kit 25 Foot, $64.99. PetSmart page https://www.petsmart.com/5329219.html shows $59.99 (struck $64.99) for Python No Spill Clean & Fill System, but no quotable sentence, so not attached. Walmart and Amazon not opened."
+    }
+   }
+  }
+ }
+}

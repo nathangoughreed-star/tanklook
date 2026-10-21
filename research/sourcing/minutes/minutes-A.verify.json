@@ -1,0 +1,29 @@
+[
+ {
+  "id": "waterchange-interval",
+  "field": "freshwater_pct_per_week",
+  "verdict": "agrees",
+  "url": "https://www.americanaquariumproducts.com/aquarium-cleaning.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "changing 10-20% of your aquarium water once per week (best)"
+ },
+ {
+  "id": "waterchange-interval",
+  "field": "saltwater_pct_per_week",
+  "verdict": "disagrees",
+  "url": "https://bulkreefsupply.com/video/view/5-minute-saltwater-aquarium-guide-ep22-water-change",
+  "result": "exact",
+  "score": 1,
+  "quote": "A 10% weekly water change is the best schedule, for a 40 gallon tank that means removing 5 gallons of water"
+ },
+ {
+  "id": "hose-listing",
+  "field": "price_usd",
+  "verdict": "not-stated",
+  "url": "https://fishtanksdirect.com/python-no-spill-clean-and--fill-kit-25-foot/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Your Price is : MSRP: Was: Now: $64.99"
+ }
+]

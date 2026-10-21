@@ -11,7 +11,7 @@ when it carries the url of the listing it was read from and does not mark the fi
 
 | | values | cited | fitted | derived | researched | claimed | assumption | unsourced | strong |
 |---|---|---|---|---|---|---|---|---|---|
-| **all data** | 5169 | 2475 (48 %) | 59 (1 %) | 43 (1 %) | 682 (13 %) | 656 (13 %) | 763 (15 %) | 491 (9 %) | 50 % |
+| **all data** | 5202 | 2485 (48 %) | 59 (1 %) | 43 (1 %) | 682 (13 %) | 656 (13 %) | 787 (15 %) | 490 (9 %) | 50 % |
 | Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) | 1277 | 412 |  | 4 | 388 | 410 | 51 | 12 | 33 % |
 | Adult length per species (species.json tl) | 108 | 94 |  |  |  |  | 14 |  | 87 % |
 | Marine pH band (data/waterchem.ts) | 2 | 2 |  |  |  |  |  |  | 100 % |
@@ -25,17 +25,17 @@ when it carries the url of the listing it was read from and does not mark the fi
 | Space factor classes | 5 |  | 5 |  |  |  |  |  | 100 % |
 | Biological media litres per filter (data/filtermedia.ts) | 18 | 13 |  | 5 |  |  |  |  | 100 % |
 | Gear sizing, minutes, watts, heat loss (tech.json) | 213 | 8 |  | 2 |  | 2 | 81 | 120 | 5 % |
-| Category cost / time defaults (demand-defaults.json) | 215 |  |  | 20 |  |  | 195 |  | 9 % |
+| Category cost / time defaults (demand-defaults.json) | 235 |  |  | 20 |  |  | 215 |  | 9 % |
 | Shared cost factors: kWh, water, salt, losses (factors.json) | 70 | 1 |  |  |  | 2 | 3 | 64 | 1 % |
-| Per-item retail prices (demand-items.json) | 627 | 203 |  |  |  |  | 419 | 5 | 32 % |
+| Per-item retail prices (demand-items.json) | 633 | 205 |  |  |  |  | 423 | 5 | 32 % |
 | Filter and heater specs (gear-catalog.json) | 538 | 397 |  |  |  |  |  | 141 | 74 % |
-| Tank sizes and prices (tanks.json) | 867 | 722 |  |  |  |  |  | 145 | 83 % |
+| Tank sizes and prices (tanks.json) | 874 | 730 |  |  |  |  |  | 144 | 84 % |
 | Kit specs and prices (kits.json) | 207 | 207 |  |  |  |  |  |  | 100 % |
 | Deals (deals.json) | 164 | 160 |  |  |  |  |  | 4 | 98 % |
 | Gear deals (gear-deals.json) | 96 | 96 |  |  |  |  |  |  | 100 % |
 
-Engine constants (top-level numbers in 30 engine files): 89 documented in FORMULAS, 0 unsourced.
-Numbers written inline in those files' functions (not counted above, a by-hand review list): 325.
+Engine constants (top-level numbers in 30 engine files): 90 documented in FORMULAS, 0 unsourced.
+Numbers written inline in those files' functions (not counted above, a by-hand review list): 327.
 
 ## Work list 1: unsourced values (most user-facing first)
 
@@ -94,11 +94,12 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | `GEAR_CATALOG filters.*.galMax` | 7 |
 | `GEAR_CATALOG heaters.*.galMax` | 4 |
 | `GEAR_CATALOG heaters.*.priceUsd` | 4 |
-| `TANKS *.ratedGal` | 29 |
-| `TANKS *.outer.L` | 29 |
-| `TANKS *.outer.H` | 29 |
-| `TANKS *.outer.D` | 29 |
-| `TANKS *.glassMm` | 29 |
+| `TANKS *.glassMm` | 30 |
+| `TANKS *.ratedGal` | 28 |
+| `TANKS *.outer.L` | 28 |
+| `TANKS *.outer.H` | 28 |
+| `TANKS *.outer.D` | 28 |
+| `TANKS *.frontBulge` | 2 |
 | `DEALS *.gal` | 2 |
 | `DEALS *.price.usd` | 2 |
 
@@ -112,8 +113,9 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | src/scene/kitlight.ts | - | 4 |
 | src/scene/lightcheck.ts | - | 3 |
 | src/scene/lightneeds.ts | - | 1 |
-| src/scene/tech.ts | - | 34 |
+| src/scene/tech.ts | - | 35 |
 | src/scene/tankfit.ts | - | 2 |
+| src/scene/builds.ts | - | 1 |
 | src/scene/plantfit.ts | - | 4 |
 | src/scene/animalfit.ts | - | 1 |
 | src/scene/propagate.ts | - | 23 |
@@ -230,6 +232,7 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | src/scene/plantfit.ts | FIT_PAR | assumption | one representative PAR inside each light level |
 | src/scene/growtime.ts | GROW_RATE | assumption | growth multipliers by feeding and plant speed (CO2 helps stems most); not measured |
 | src/scene/tankMin.ts | REF_DEPTH_CM | assumption | the floor-area need of a bottom dweller is its litres spread over 30 cm of water, a typical small tank depth; swimmers are held to the longest floor side instead |
+| src/scene/tankMin.ts | MIN_WEIGHTS | assumption | how much water, floor area and tank length count toward a species minimum by where it lives: a care sheet gallon figure stands in for floor space, so a bottom dweller is held to floor area, swimmers mostly to length, volume less; keeper-practice judgement |
 | src/scene/tankMin.ts | TIERS | claimed | absolute floor and comfortable tank size per species (adf, danio, whitecloud, tigerbarb, cherrybarb, firenewt, firetoad): keeper-practice judgement from the examples given, no page recorded |
 | src/scene/tankfit.ts | FLOOR_K | claimed | "a documented rule of thumb, not a source of record": a bottom dweller holds about two body lengths square |
 | src/scene/tankfit.ts | FILTRATION_TARGET | assumption | preset filtration targets: cheapest 100 %, balanced 70 % |

@@ -58,6 +58,14 @@
    { "id": "none", "label": "Top off by hand", "parts": [] },
    { "id": "ato", "label": "Auto top-off", "parts": ["ato"], "risk": -0.2, "note": "Holds salinity steady as water evaporates." }
   ]},
+  { "id": "wcmethod", "label": "Water-change method (quality of life)", "water": "wet", "options": [
+   { "id": "none", "label": "Buckets and a hand siphon", "parts": [] },
+   { "id": "hose", "label": "Hose that drains and fills from the tap", "parts": ["wchose"], "note": "No buckets to carry: the most time saved on tanks of 40 gal and up." }
+  ]},
+  { "id": "feeder", "label": "Feeding (quality of life)", "water": "wet", "options": [
+   { "id": "none", "label": "Feed by hand", "parts": [] },
+   { "id": "auto", "label": "Automatic feeder", "parts": ["autofeeder"], "note": "Drops the daily feeding trips; you refill it every few weeks. Fish go fine for a weekend, so this matters most for busy weeks." }
+  ]},
   { "id": "skimmer", "label": "Protein skimmer", "water": "salt", "options": [
    { "id": "none", "label": "None", "parts": [], "risk": 0.8, "tier": 0 },
    { "id": "hob", "label": "Hang-on skimmer", "parts": ["skimmerhob"], "tier": 2 },
@@ -83,7 +91,7 @@
   ]}
  ],
  "gear": {
-  "filter":       { "label": "Filter", "sized": "filter", "minutes": { "lo": 1, "mode": 2, "hi": 4 }, "byKind": { "sponge": 0.5, "internal": 0.8, "hob": 1, "canister": 1.5 }, "monthly": { "lo": 1, "mode": 3, "hi": 7 }, "modelPriceK": { "canister-l": 1.6 }, "exp": { "minutes": 0.3, "monthly": 0.5 }, "ref": 20 },
+  "filter":       { "label": "Filter", "sized": "filter", "minutes": { "lo": 1, "mode": 2, "hi": 4 }, "byKind": { "sponge": 1, "internal": 1, "hob": 1.2, "canister": 2 }, "monthly": { "lo": 1, "mode": 3, "hi": 7 }, "modelPriceK": { "canister-l": 1.6 }, "exp": { "minutes": 0.3, "monthly": 0.5 }, "ref": 20 },
   "sump": { "label": "Sump", "price": { "key": "gear:sump" }, "minutes": { "lo": 2, "mode": 4, "hi": 8 }, "ref": 55, "exp": { "price": 0.6, "minutes": 0.3 } },
   "returnpump": { "label": "Return pump", "price": { "key": "gear:return-pump" }, "watts": 23, "hours": 24, "gphPerGal": 6, "ref": 55, "exp": { "price": 0.5, "watts": 0.8 } },
   "heater":       { "label": "Heater", "sized": "heater" },
@@ -100,6 +108,8 @@
   "uv": { "label": "UV sterilizer", "price": { "key": "gear:uv-sterilizer" }, "watts": 9, "hours": 24, "monthly": { "lo": 1, "mode": 2, "hi": 3.5 }, "minutes": { "lo": 0.2, "mode": 0.4, "hi": 1 }, "ref": 40, "exp": { "price": 0.5, "watts": 0.7, "monthly": 0.5 } },
   "conditioner":  { "label": "Water conditioner", "perWaterChange": { "key": "gear:conditioner", "perGal": 0.1 } },
   "rodi":         { "label": "RO/DI unit", "price": { "key": "gear:ro-unit" }, "monthly": { "lo": 3, "mode": 5, "hi": 9 }, "minutes": { "lo": 2, "mode": 4, "hi": 6 }, "ref": 40, "exp": { "monthly": 0.7 } },
+  "wchose": { "label": "Water-change hose", "price": { "key": "gear:wc-hose" } },
+  "autofeeder": { "label": "Automatic feeder", "price": { "key": "gear:auto-feeder" } },
   "ato": { "label": "Auto top-off", "price": { "key": "gear:ato" }, "watts": 8, "hours": 1, "minutes": { "lo": -4, "mode": -2, "hi": -1 }, "ref": 40, "exp": { "minutes": 0.3 } },
   "skimmerhob": { "label": "Hang-on protein skimmer", "price": { "key": "gear:skimmer-hob" }, "watts": 11, "hours": 24, "minutes": { "lo": 2, "mode": 3, "hi": 5 }, "ref": 55, "exp": { "price": 0.5, "watts": 0.6 } },
   "skimmer":      { "label": "In-sump protein skimmer", "price": { "key": "gear:skimmer" }, "watts": 15, "hours": 24, "minutes": { "lo": 2, "mode": 4, "hi": 6 }, "ref": 75, "exp": { "price": 0.5, "watts": 0.6 } },

@@ -1,0 +1,110 @@
+[
+ {
+  "id": "filter-cleaning",
+  "field": "sponge_interval_weeks",
+  "verdict": "not-stated",
+  "url": "https://practicalfishkeeping.co.uk/features/how-often-should-i-clean-my-aquarium-filter/",
+  "result": "compact",
+  "score": 1,
+  "quote": "As a rule of thumb, it’s wise to clean and sponge filters every two weeks."
+ },
+ {
+  "id": "filter-cleaning",
+  "field": "sponge_interval_weeks",
+  "verdict": "not-stated",
+  "url": "https://fishyhub.com/sg/blogs/blog-detail/aquarium-maintenance-schedule-beginners",
+  "result": "label",
+  "score": 1,
+  "quote": "rinse in old tank water taken from the water change bucket"
+ },
+ {
+  "id": "filter-cleaning",
+  "field": "canister_job",
+  "verdict": "not-stated",
+  "url": "https://practicalfishkeeping.co.uk/features/how-often-should-i-clean-my-aquarium-filter/",
+  "result": "compact",
+  "score": 1,
+  "quote": "Aim to clean around half of your biological media in aquarium water every four weeks."
+ },
+ {
+  "id": "glass-algae",
+  "field": "glass_wipe_interval",
+  "verdict": "agrees",
+  "url": "https://charterhouse-aquatics.com/blogs/help-guides/the-essential-maintenance-checklist-for-freshwater-aquariums",
+  "result": "label",
+  "score": 1,
+  "quote": "Use an algae scraper or magnetic cleaner to remove algae from the glass."
+ },
+ {
+  "id": "glass-algae",
+  "field": "glass_wipe_interval",
+  "verdict": "agrees",
+  "url": "https://fishyhub.com/sg/blogs/blog-detail/aquascape-maintenance",
+  "result": "label",
+  "score": 1,
+  "quote": "Biweekly Maintenance"
+ },
+ {
+  "id": "glass-algae",
+  "field": "glass_wipe_min",
+  "verdict": "not-stated",
+  "url": "https://fishyhub.com/sg/blogs/blog-detail/aquarium-maintenance-schedule-beginners",
+  "result": "exact",
+  "score": 1,
+  "quote": "Most of the work concentrates in a 15–30 minute weekly session."
+ },
+ {
+  "id": "plant-trimming",
+  "field": "stem_trim_interval",
+  "verdict": "agrees",
+  "url": "https://fishyhub.com/sg/blogs/blog-detail/aquascape-maintenance",
+  "result": "compact",
+  "score": 1,
+  "quote": "Stem plants (Rotala, Hygrophila, Ludwigia) need weekly trimming in high-tech tanks."
+ },
+ {
+  "id": "plant-trimming",
+  "field": "carpet_trim_interval",
+  "verdict": "not-stated",
+  "url": "https://fishyhub.com/sg/blogs/blog-detail/aquascape-maintenance",
+  "result": "compact",
+  "score": 1,
+  "quote": "Carpet plants (HC Cuba, Monte Carlo, dwarf hairgrass) need horizontal trimming every 2–3 weeks."
+ },
+ {
+  "id": "plant-trimming",
+  "field": "floater_skim_interval",
+  "verdict": "not-stated",
+  "url": "https://fishyhub.com/sg/blogs/blog-detail/aquascape-maintenance",
+  "result": "exact",
+  "score": 1,
+  "quote": "Remove excess by hand during water changes"
+ },
+ {
+  "id": "plant-trimming",
+  "field": "artificial_plant_clean_interval",
+  "verdict": "not-stated",
+  "url": "https://charterhouse-aquatics.com/blogs/help-guides/the-essential-maintenance-checklist-for-freshwater-aquariums",
+  "result": "exact",
+  "score": 1,
+  "quote": "If algae becomes excessive, gently clean decorations using aquarium-safe methods."
+ },
+ {
+  "id": "testing",
+  "field": "established_tank_test_interval",
+  "verdict": "disagrees",
+  "url": "https://fishyhub.com/sg/blogs/blog-detail/aquarium-maintenance-schedule-beginners",
+  "result": "exact",
+  "score": 1,
+  "quote": "For an established tank (3+ months), testing every 2–4 weeks is sufficient unless problems are suspected."
+ },
+ {
+  "id": "testing",
+  "field": "established_tank_test_interval",
+  "verdict": "disagrees",
+  "url": "https://charterhouse-aquatics.com/blogs/help-guides/the-essential-maintenance-checklist-for-freshwater-aquariums",
+  "result": "label",
+  "score": 1,
+  "quote": "Regular testing helps identify issues before they affect fish."
+ }
+]

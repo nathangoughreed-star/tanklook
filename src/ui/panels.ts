@@ -1294,7 +1294,7 @@ Cancel, then change the name, to keep both.`)) return;
   const fitLimits = (): string => {
     const P = demand?.profile();
     if (!P || !hasLimits(P) || store.targets.length !== 1) return '';
-    const r = fitToLimits(S(), P), nm: Record<string, string> = { setup: 'set-up money', upkeep: 'upkeep', minutes: 'time', risk: 'risk' };
+    const r = fitToLimits(S(), P), nm: Record<string, string> = { setup: 'set-up money', upkeep: 'upkeep', minutes: 'time', risk: 'difficulty' };
     if (r.swaps.length) store.edit(s => { s.fish = r.scene.fish; s.items = r.scene.items; }, { history: false });
     const sw = r.swaps.slice(0, 3).map(x => `${x.from} for ${x.to}`).join(', ') + (r.swaps.length > 3 ? ` and ${r.swaps.length - 3} more` : '');
     const why = (b: string) => b === 'setup' ? `the tank, stand, light and filter alone cost about $${Math.round(r.floor.setup).toLocaleString()}` : b === 'minutes' ? `water changes and upkeep alone take about ${Math.round(r.floor.minutes)} min` : b === 'upkeep' ? `power, water and filter parts alone come to about $${Math.round(r.floor.upkeep)} a month` : 'nothing easier suits this style';

@@ -1,0 +1,68 @@
+{
+  "batch": "minutes-C",
+  "agent_notes": "Tetra Q&A page failed TLS in WebFetch (not cited). No page states a minutes-per-feeding or frozen-food prep time. Amazon page opened but price not within the first 100k chars; used Jeffers listing.",
+  "items": {
+    "feeding": {
+      "fields": {
+        "feedings_per_day": {
+          "ours": 1,
+          "verdict": "agrees",
+          "suggest": null,
+          "sources": [
+            {"url": "https://www.petmd.com/fish/tetra-fish-care-sheet", "site": "PetMD", "states": "once or twice daily", "quote": "Feed once or twice daily, only what they can eat within one to two minutes."}
+          ],
+          "note": "Ours (1 adult, 2 young) is inside the stated once-or-twice range. Tetra's own search snippet says 2-3x daily but that page was not opened, so not cited."
+        },
+        "feeding_trip_min": {
+          "ours": 0.5,
+          "verdict": "not-stated",
+          "suggest": null,
+          "sources": [],
+          "note": "PetMD gives only the portion rule (eat within 1-2 minutes), which is how long the fish eat, not keeper time per feeding. No duration of the chore stated."
+        },
+        "frozen_live_food_note": {
+          "ours": 0.1,
+          "verdict": "not-stated",
+          "suggest": null,
+          "sources": [],
+          "note": "PetMD page gives only a safety instruction on thawing (no microwave); no prep time stated."
+        }
+      }
+    },
+    "auto-feeder-listing": {
+      "fields": {
+        "price_usd": {
+          "ours": null,
+          "verdict": "not-stated",
+          "suggest": 21.99,
+          "sources": [
+            {"url": "https://jefferspet.com/products/eheim-everyday-fish-feeder", "site": "Jeffers Pet", "states": "$21.99", "quote": "$21.99"}
+          ],
+          "note": "Product: Eheim Everyday Automatic Fish Feeder; page showed it out of stock. Bulk Reef Supply listed the open-box unit at $28.13 (https://www.bulkreefsupply.com/everyday-fish-feeder-eheim.html). Amazon page (dp/B001F2117I) opened but price not reached. Quote is the price string only as returned by the fetch summarizer; re-fetch check may need page text near it."
+        },
+        "refill_interval": {
+          "ours": "2 weeks",
+          "verdict": "disagrees",
+          "suggest": "up to 6 weeks (maker-style listing; depends on portions)",
+          "sources": [
+            {"url": "https://jefferspet.com/products/eheim-everyday-fish-feeder", "site": "Jeffers Pet", "states": "up to 6 weeks of feedings", "quote": "Feeding drum volume: 100 ml/3.3fl. oz for up to 6 weeks of feedings"}
+          ],
+          "note": "Retailer spec text relaying the Eheim drum volume, not the maker's own page. 6 weeks is a maximum; at several feedings/day it is shorter, so 2 weeks is conservative, not wrong."
+        }
+      }
+    },
+    "vacation_feeding": {
+      "fields": {
+        "days_fish_can_go_without_food": {
+          "ours": null,
+          "verdict": "not-stated",
+          "suggest": null,
+          "sources": [
+            {"url": "https://www.buildyouraquarium.com/how-long-can-fish-go-without-food/", "site": "Build Your Aquarium", "states": "three days to a week", "quote": "Most healthy aquarium fish can go three days to a week without eating."}
+          ],
+          "note": "Context only (ours not used). Same page says going more than a day or two unfed is generally not recommended unless necessary."
+        }
+      }
+    }
+  }
+}

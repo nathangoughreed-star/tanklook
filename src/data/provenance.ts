@@ -43,7 +43,7 @@ const REEF_SRC = ['par-chart-nathan', 'reef-par-charts', 'brs-par'];
 const MASS = bm.species as Record<string, { src: string }>;
 /** research/groups-sources.md: one url per species for the group data (lane P1); `(est)` = judgement, not quoted from the page. */
 const GROUP_ROWS = [...groupsMd.matchAll(/^- \*\*(\w+)\*\*[^:]*: (https?:\S+?)(?: \((est)\))?\.?(?=\s|$)/gm)].map(m => ({ id: m[1], url: m[2], est: !!m[3] }));
-const GROUP_FIELDS = '{bands,max,sexed,maxDepthMm,minLengthMm}.**';
+const GROUP_FIELDS = '{bands,max,sexed,maxDepthMm,minLengthMm,minWidthMm,minAreaCm2}.**';
 
 export const RULES: Record<string, Rule[]> = {
   SPECIES: [],
@@ -87,6 +87,7 @@ export const RULES: Record<string, Rule[]> = {
   // derived; the rest stay our rule of thumb, and the bands the fit disagrees with wait in research/sourcing/decisions.md.
   DEMAND_DEFAULTS: [
     { path: '**', status: 'assumption', why: 'rule-of-thumb band (our judgement); refit to the cited listings in research/sourcing/other/D-cost-defaults.md: too few listings or a different unit, so kept by Nathan 2026-10-20' },
+    { path: 'time.waterChangeFraction.floor', status: 'cited', src: ['americanaquariumproducts.com', 'bulkreefsupply-video'], why: 'a weekly water change of 10-20 % (fresh) or 10 % (salt) is the stated best practice; the model changes at least 10 % (research/sourcing/minutes/minutes-A.json)' },
     { path: '{time,risk}.**', status: 'assumption', why: 'minutes a week and risk points are our model; no listing or page states them' },
     { path: 'gear.{heater,filter}.perGal.mode', status: 'derived', src: ['product-pages'], why: 'least-squares price per gallon over the catalogued heaters (13) / filters (19) agrees within 25 % (scripts/fit-cost-defaults.mjs)' },
     { path: 'animals.{fw-invert,sw-fish,amphibian}.setup.mode', status: 'derived', src: ['kk-prices'], why: 'median of the cited per-species prices scaled to the reference size agrees within 25 % (scripts/fit-cost-defaults.mjs)' },
@@ -173,6 +174,7 @@ for (const [id, r] of Object.entries(FILTER_MEDIA_L)) if (r[1] === 'derived')
   RULES.FILTER_MEDIA.push({ path: `${id}.0`, status: 'derived', src: ['product-pages'], why: `${r[2]} (about +-50 %)` });
 
 export const FORMULAS: Formula[] = [
+  { file: 'src/data/grazers.ts', symbols: ['GRAZE'], status: 'cited', src: ['topshelfaquatics.com', 'aquariuminfo.org', 'furrycritter.com', 'fishkeepingworld.com'], why: 'grazers per tank: the most generous stocking guideline an opened page states (turbo 3 per 20 gal, nerite 1 per 5 gal, oto 6 in a 20 gal, amano 1 per 2 gal) and the feeding it names; quotes checked (research/sourcing/R5-grazers.json)' },
   // stocking engine
   { file: 'src/scene/stocking.ts', symbols: ['Q10', 'T_REF'], status: 'claimed', src: ['metabolic-scaling'], why: 'waste doubles about every 10 K, 25 C reference; no fish paper recorded' },
   { file: 'src/scene/stocking.ts', symbols: ['massG'], status: 'derived', src: ['fishbase-lw-bayes'], why: 'FishBase length-weight: mass g = a (tl cm)^b' },

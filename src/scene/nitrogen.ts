@@ -91,7 +91,8 @@ const PLANTS: Record<string, [PlantClass, number]> = {
 /** Land plants (succulents, bromeliads, ferns, moss on the bank) do not stand in the water. Anything else not listed counts as a medium plant. */
 const DRY_PLANTS = new Set(['echeveria', 'haworthia', 'jade', 'aloe', 'burrotail', 'barrel', 'sansevieria', 'agave', 'columnar', 'bromeliad', 'tropfern', 'fittonia', 'sphagnum']);
 const DEFAULT_PLANT: [PlantClass, number] = ['medium', 30];
-const RATE_100G = { slow: 0.001, medium: 0.003, fast: 0.006 } as const, FLOAT_M2 = 0.3, DIE_OFF_RETURN = 0.3, PATCH_FW = 30, PATCH_PLANTS = 3;
+const RATE_100G = { slow: 0.001, medium: 0.003, fast: 0.006 } as const, FLOAT_M2 = 0.3, DIE_OFF_RETURN = 0.3, PATCH_FW = 30;
+export const PATCH_PLANTS = 3;
 
 /** A painted patch of live plants: brush `plant:<variant>` whose variant is not an artificial (silk / plastic) kind (lane P4 2026-10-20). */
 export const isLivePlantPatch = (p: Patch) => p.brush.startsWith('plant:') && (LIBRARY[p.brush.slice(6)]?.kind ?? 'plant') === 'plant';

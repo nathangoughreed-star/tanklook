@@ -23,6 +23,7 @@ export default defineConfig(({ mode }) => {
     },
     // Discovery: only this checkout's test/ (local runs also saw .claude/worktrees/* and aquascape/*, which CI never has).
     // Timeouts: the scene-building tests take seconds on a quiet machine and 5 s default timed out under load (2-core CI runner).
+    // Per-test/describe timeouts are NOT set in the files: a lower one (60 s / 30 s) silently overrode this and flaked under full-suite load (growth, reef, snake, spider).
     test: { environment: 'node', include: ['test/**/*.test.ts'], exclude: ['**/node_modules/**', '.claude/**', 'aquascape/**', 'dist*/**'], testTimeout: 120000, hookTimeout: 60000 },
   };
 });

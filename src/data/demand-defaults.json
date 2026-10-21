@@ -160,8 +160,11 @@
     "hi": 380
    }
   },
-  "minPerWeekEach": 0.15,
-  "refSizeMm": 150
+  "minPerWeekEach": 0.4,
+  "refSizeMm": 150,
+  "floaterMinK": 0.5,
+  "bunchExp": 0.35,
+  "bunchNote": "plants of one kind are trimmed in bunches, not one by one: each plant's minutes x (how many of that kind)^-0.35 (assumption: 15 stems take about 40 % of 15 single trims, 144 blades about 18 %)"
  },
  "hardscape": {
   "_note": "price per piece at 150 mm, scaled by (size/150)^1.5",
@@ -338,12 +341,12 @@
   }
  },
  "time": {
-  "_note": "minutes per week, averaged over the year. waterChange = fixed + perGal x gallons changed.",
+  "_note": "minutes per week, averaged over the year. waterChange = fixed + perGal x gallons changed; the fraction changed comes from the nitrogen budget (scene/nitrogen.ts waterChangePct), floored and capped here. Lane MW 2026-10-21: intervals cited in research/sourcing/minutes-*.json, every minutes figure is our assumption.",
   "waterChangeFraction": {
-   "fish": 0.2,
-   "planted": 0.25,
-   "salt": 0.15,
-   "terrarium": 0
+   "floor": 0.1,
+   "cap": 0.5,
+   "terrarium": 0,
+   "_note": "floor 10 % a week: American Aquarium Products states 10-20 % weekly, Bulk Reef Supply 10 % weekly (salt); the cap keeps an overstocked tank from asking for more than half the tank a week"
   },
   "waterChangeFixedMin": {
    "lo": 8,
@@ -356,9 +359,10 @@
    "hi": 0.9
   },
   "testingMin": {
-   "lo": 2,
-   "mode": 5,
-   "hi": 10
+   "lo": 1.5,
+   "mode": 3,
+   "hi": 6,
+   "note": "every 2-4 weeks once established (FishyHub), about 6 minutes a run: averaged to a week"
   },
   "filterCleanMinPerWeek": {
    "lo": 1,
@@ -381,6 +385,41 @@
    "mode": 15,
    "hi": 30,
    "note": "mixing salt water, top-off, dosing"
+  },
+  "waterChangeHoseFixedMin": {
+   "lo": 5,
+   "mode": 8,
+   "hi": 12
+  },
+  "waterChangeHosePerGalMin": {
+   "lo": 0.1,
+   "mode": 0.2,
+   "hi": 0.4
+  },
+  "feedingTripMinPerWeek": {
+   "lo": 2,
+   "mode": 3.5,
+   "hi": 5,
+   "note": "one feeding a day (PetMD: once or twice a day), 30 seconds a trip"
+  },
+  "feederRefillMinPerWeek": {
+   "lo": 0.15,
+   "mode": 0.3,
+   "hi": 0.6,
+   "note": "Eheim drum lasts up to 6 weeks (Jeffers listing); we refill every ~2 weeks, half a minute"
+  },
+  "glass": {
+   "baseMin": 1,
+   "minPerHalfWpg": 2,
+   "wpgCap": 1.5,
+   "liveCut": 0.3,
+   "artificialEachMin": 0.2,
+   "artificialCapMin": 4,
+   "note": "wipe the glass weekly (Charterhouse); algae grows with light, live plants compete for the nutrients, artificial ones need their own wipe"
+  },
+  "plantPatchMin": {
+   "mode": 0.5,
+   "note": "a painted patch of live plants (carpet, moss, 3 plants): trimmed every 2-3 weeks (FishyHub); x the growth rate"
   }
  },
  "risk": {

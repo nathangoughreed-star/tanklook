@@ -1,3 +1,4 @@
+import dd from '../data/demand-defaults.json';
 // Our own stocking engine (lane SE, 2026-10-19): the answer AqAdvisor gave ("stocking level 78%, over or under, why, what to
 // change") from our own data, with its reasoning in the open. No network, nothing depends on AqAdvisor.
 //   LOAD     = sum over animals of  mass^0.75 x metabolism x temperature factor   (standard metabolic scaling: a big fish counts for
@@ -15,7 +16,7 @@ import { getSpecies, type Species } from '../data/species';
 import { SPACE_FACTOR, SPACE_FACTOR_CLASS } from '../data/spacefactor';
 import { bioloadLitres } from './starter';
 import { feedingOf, isLivePlantPatch, nitrogenBudget, tanOf, type Nitrogen } from './nitrogen';
-import { heatLoss, rowsFor, stockCapacity } from './tech';
+import { heatLoss, rowsFor, setWaterChangeFraction, stockCapacity } from './tech';
 import type { Fish, TankSetup } from './types';
 
 interface Mass { a: number; b: number; src: string; model?: number; flag?: boolean }
@@ -164,6 +165,16 @@ export function stockingMemo(S: TankSetup): Stocking {
   if (!r) { r = stockingOf(S); if (memo.size > 16) memo.delete(memo.keys().next().value!); memo.set(key, r); }
   return r;
 }
+
+/** Share of the tank changed each week (lane MW 2026-10-21): the nitrogen budget's water change (what plants and the filter leave as nitrate),
+ *  floored at the 10 % the hobby sources give and capped; with no animals, the floor. A dry tank changes none. */
+export function waterChangeFraction(S: TankSetup): number {
+  const w = dd.time.waterChangeFraction;
+  if (!S.water.on) return w.terrarium;
+  return S.fish.length ? Math.min(w.cap, Math.max(w.floor, stockingMemo(S).nitrogen.waterChangePct / 100)) : w.floor;
+}
+
+setWaterChangeFraction(waterChangeFraction);
 
 /** One line for the panel and the view label: "Stocking 78%", "Stocking 240%, overstocked". */
 export const stockingLine = (r: Stocking) => `Stocking ${r.percent === Infinity ? 'over 999' : Math.round(r.percent)}%${r.percent > 100 ? ', overstocked' : ''}`;

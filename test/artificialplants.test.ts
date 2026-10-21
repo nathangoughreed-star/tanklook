@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { mean3 } from '../src/demand/range';
 import { defaultProfile, demandOf } from '../src/demand';
 import { artificialGeometry } from '../src/render/plant3d';
 import { parsePatches, plantBrushes } from '../src/scene/brush';
@@ -100,7 +101,10 @@ describe('artificial plants: demand and stocking', () => {
     expect(D.items.some(c => c.key.startsWith('plant:'))).toBe(false);
     expect(D.items.some(c => c.key === 'co2' || c.key === 'ferts')).toBe(false);
     expect(D.totals.upkeepUsdMo).toBeCloseTo(base.totals.upkeepUsdMo, 5);
-    expect(D.totals.minPerWeek).toBeCloseTo(base.totals.minPerWeek, 5);
+    // no trimming minutes of their own; they only add a wipe to the glass row (lane MW)
+    const noGlass = (x: typeof D) => x.totals.minPerWeek - x.items.filter(c => c.key === 'glass').reduce((a, c) => a + mean3(c.minutes!), 0);
+    expect(noGlass(D)).toBeCloseTo(noGlass(base), 5);
+    expect(D.totals.minPerWeek).toBeGreaterThan(base.totals.minPerWeek);
   });
   it('take up no nitrate: the stocking capacity does not change', () => {
     expect(capacityOf(tank()).plants).toBe(capacityOf(tank([])).plants);
