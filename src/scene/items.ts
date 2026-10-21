@@ -674,12 +674,57 @@ export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
     if (k === 'hard' && keepHard) return;
     const stop = DS[k], n0 = out.length; const sd = k === 'plant' ? S.layout.plantSeed ?? S.layout.seed : S.layout.seed; r = stream(k === 'hard' ? 1 : 2, sd); q = stream(k === 'hard' ? 11 : 12, sd);
     dens = stopDens(stop, spec[k]); classic = designed && stop === 2; draw();
+    if (k === 'hard' && dens > 1 && !classic && id !== 'iwagumi' && id !== 'dutch' && shapeOf(T) === 'rect') fillFloor(n0);
     if (stop < 0) { // below Sparse: keep the first pieces the layer placed (the main ones come first), one at the least
       const mine = out.slice(n0).filter(it => layerOf(it) === k), keep = new Set(mine.slice(0, Math.max(1, Math.round(mine.length * keepShare(stop)))));
       out.splice(n0, out.length - n0, ...out.slice(n0).filter(it => layerOf(it) !== k || keep.has(it)));
     }
   };
   const seed = () => 1 + Math.floor(r() * 1e9);
+  /**
+   * Past Medium the hardscape fills the floor (Nathan 2026-10-20: on a small tank the pieces, sized for a big one, piled
+   * up in the middle and the slider did nothing). Pieces from index `n0` on are eased apart (clipping through each other
+   * is fine, through the glass is not), the oversized ones are cut down to the tank, and the holes left are filled with
+   * pieces of the same kinds resized to the hole, until the share of floor covered reaches the density's target.
+   */
+  const fillFloor = (n0: number) => {
+    const rad0 = (it: Item) => { const [l, , w] = itemDims(it); return 0.5 * Math.max(l, w) * 0.7; }, memo = new Map<Item, number>();
+    const rad = (it: Item) => { let v = memo.get(it); if (v == null) memo.set(it, v = rad0(it)); return v; };
+    const mine = () => out.slice(n0).filter(it => layerOf(it) === 'hard' && !it.lift && it.variant !== 'climb' && it.kind !== 'cave');
+    let ps = mine();
+    if (!ps.length) return;
+    const cap = Math.min(L, D) * (0.4 - 0.04 * Math.min(dens - 1, 3));
+    for (const it of ps) { const k = cap / rad(it); if (k < 1) { it.size = Math.max(LIBRARY[it.variant]?.min ?? 10, Math.round(it.size * k)); memo.delete(it); } }
+    const inside = (it: Item) => { const m = Math.min(rad(it) * 0.6, Math.min(L, D) * 0.45); it.x = clamp(it.x, m, L - m); it.depth = clamp(it.depth, m, D - m); };
+    for (let pass = 0; pass < 14; pass++) {
+      for (let i = 0; i < ps.length; i++) for (let j = i + 1; j < ps.length; j++) {
+        const a = ps[i], b = ps[j], want = (rad(a) + rad(b)) * 0.55;
+        let dx = b.x - a.x, dd = b.depth - a.depth, d = Math.hypot(dx, dd);
+        if (d >= want) continue;
+        if (d < 1) { dx = 1; dd = 0; d = 1; }
+        const push = (want - d) / 2, ux = dx / d, ud = dd / d;
+        a.x -= ux * push; a.depth -= ud * push; b.x += ux * push; b.depth += ud * push;
+      }
+      ps.forEach(inside);
+    }
+    // holes: the open floor point farthest from every piece's edge and from the glass, then a piece sized to it
+    const target = clamp(0.3 + 0.22 * (dens - 1), 0.3, 0.92), step = Math.max(12, Math.sqrt(L * D / 1200)), kinds = [...new Set(ps.map(it => it.variant))];
+    for (let added = 0; added < 30; added++) {
+      let best = { x: 0, d: 0, free: 0 }, hit = 0, cells = 0;
+      const n = ps.length, px = ps.map(it => it.x), pd = ps.map(it => it.depth), pr = ps.map(it => rad(it) * 0.8);
+      for (let x = step / 2; x < L; x += step) for (let d = step / 2; d < D; d += step) {
+        cells++;
+        let free = Math.min(x, L - x, d, D - d) * 1.6;
+        for (let i = 0; i < n; i++) free = Math.min(free, Math.sqrt((x - px[i]) ** 2 + (d - pd[i]) ** 2) - pr[i]);
+        if (free <= 0) hit++;
+        if (free > best.free) best = { x, d, free };
+      }
+      if (hit / cells >= target || best.free < 18) break;
+      const v = kinds[Math.floor(r() * kinds.length)], probe = makeItem(T, v, 0, 1, 0, 0, { size: 100 }, S), k = 100 / rad0(probe);
+      const it = put(v, best.x, best.d, clamp(best.free * 1.15 * k, LIBRARY[v]?.min ?? 10, LIBRARY[v]?.max ?? 400), tip(v, 0.5), true);
+      inside(it); ps = [...ps, it];
+    }
+  };
   const many = (n: number, k = 1) => Math.max(0, Math.round(n * dens * k + (classic ? 0 : r() - 0.5)));
   // The layouts are drawn on the L x D box. A round tank or bowl squeezes the box onto its disc of ground (elliptical
   // grid mapping) instead of clamping each piece in, which piled a whole layout onto one ring round the middle
