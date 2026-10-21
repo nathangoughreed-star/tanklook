@@ -68,7 +68,9 @@ export function spaceFactor(sp: Species): number {
   const g = massG(sp.id, sp.tl), k = sp.cat === 'fw-invert' ? 'invert' : sp.cat === 'amphibian' ? 'amphibian' : sp.cat === 'fw-fish' ? (g < 2 ? 'tiny' : g < 30 ? 'mid' : 'big') : '';
   return SPACE_FACTOR_CLASS[k]?.[0] ?? 1;
 }
-export const spaceOf = (sp: Species, tlMm: number) => massG(sp.id, tlMm) ** SPACE_EXP * spaceFactor(sp);
+// Snails crawl on the glass and substrate and take no swimming room (2026-10-21: the AqAdvisor fit read 10 trumpet snails as 109 % of a
+// 5 gal); their waste still counts in filtration, which is what limits the big ones (mystery snails).
+export const spaceOf = (sp: Species, tlMm: number) => sp.kind === 'snail' ? 0 : massG(sp.id, tlMm) ** SPACE_EXP * spaceFactor(sp);
 /** Live plants take up nitrogen: up to +25 % at 15 plants per 100 L (a painted patch counts as 3 plants). A documented guess. */
 const PLANT_MAX = 0.25, PLANTS_PER_100L_FULL = 15, PATCH_PLANTS = 3;
 
