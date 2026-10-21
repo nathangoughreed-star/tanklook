@@ -143,10 +143,9 @@ function fitOf(c: Candidate, animals: AnimalCount[], needs: Needs): Fit {
   if (tm.percent > MIN_SLACK_PCT) fails.push('minimum'); // the Fullness tile's own red lines (length, width, floor area, height; tankMin.ts), 10 % slack
   if (c.T.L < needs.minLengthMm) fails.push('length'); // the red-line length without slack: step-ups may show a tank over its minimum on space, never a short one
   if (c.T.H * WATER_LEVEL > needs.maxDepthMm) fails.push('depth');
-  const floor = c.T.L * c.T.D / 100; // mm2 -> cm2
-  const zones = needs.floorCm2;
-  // bottom dwellers need their patch of floor; swimmers share the whole floor with them
-  if (zones.bottom > floor || zones.bottom + zones.middle + zones.top + zones.all > floor * 2) fails.push('floor');
+  // lane MM (Decisions 1 and 6, research/tank-minimum-first-principles.md): the per-head floor rule (FLOOR_K, a rule of thumb, no source)
+  // no longer fails a tank. Animals past the viable group raise crowding (the Space bar), not the enclosure minimum; 13 kuhlis in a 20 long
+  // were greyed out up to a 60 gal breeder by it (S188). needs.floorCm2 is still computed for the floor-share readouts.
   return { spacePct: r.spacePercent, filtrationPct: r.filtrationPercent, minPct: tm.percent, cramped: tm.comfortPercent > 100, fails };
 }
 

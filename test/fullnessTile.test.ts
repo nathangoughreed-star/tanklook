@@ -185,9 +185,10 @@ describe('tank minimum warnings (binary, AqAdvisor style)', () => {
     const S = one('swordtail', 700, 520), w = tileState(S, stockingOf(S), 'in').mins;
     expect(w[0].text).toMatch(/at least 31\.5" long \(FishBase \+ Seriously Fish\), this one is 27\.6"/);
   });
-  it('gives a yellow note when a species is above its minimum but below the recommended size (lane MM: danio red 20 in derived, green 35.5 in Seriously Fish)', () => {
-    const S = one('danio', 650, 300, 330), w = minWarnings(tankMinimum(S), 'cm');
-    expect(w.every(x => x.level === 'near')).toBe(true); expect(w[0].text).toMatch(/below the recommended size: Seriously Fish recommends 90 cm long/);
+  it('gives a yellow bar when a species is above its minimum but below the recommended size (lane MM: danio red 20 in derived, green 35.5 in Seriously Fish)', () => {
+    const S = one('danio', 650, 300, 330), st = tileState(S, stockingOf(S));
+    expect(st.mins).toEqual([]); expect(st.min.level).toBe('near'); // Nathan 2026-10-21 "Bar back, keep lines": the yellow bar says it, no line
+    expect(st.topMin[0].note).toBe('at least 50 cm x 26 cm (est. from gallons); Recommended 90 cm x 30 cm');
   });
   it('red and amber never name the same species twice', () => {
     for (const sp of ['swordtail', 'danio', 'adf', 'oscar']) for (const L of [300, 450, 650, 900, 1500]) {

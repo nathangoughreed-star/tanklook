@@ -154,6 +154,14 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
   nobody needs ("Nothing here needs it", builds.ts). (7) groups.ts minLengthMm / minWidthMm / minAreaCm2 are no longer read by the gate
   (still on the review page); CARE.minL only in whyAnimal's no-fit fallback: retire later. (8) research/clearance-sweep.md not
   regenerated (its "Reading" text is hand-written about the old gate).
+- **Follow-ups (2026-10-21, same lane):** (a) S188 acceptance: 13 kuhlis in a 20 long had only one failure, tankfit's per-head floor
+  rule (`FLOOR_K` 4 x TL^2 each, a rule of thumb). It no longer fails a tank (Decisions 1 and 6: crowding is the Space bar's job), so
+  "Continue" is enabled and the 20 long is offered; Tank minimum 94 %, yellow (77 cm < the 80 cm Recommended). Test in minimum.test.ts.
+  `needsOf().floorCm2` is still computed. (b) Nathan "Bar back, keep lines" (relayed by local_971a3f4f): the Tank minimum bar is back under
+  Space / Filtration (`minBar`: red below a red line with the 10 % slack, yellow below a Recommended mark, green past all; "Not assessed"
+  when depth fails), with its list "Smallest tank they want, whatever the count:" (`topMin`, top 3: "at least X; Recommended Y",
+  derived lines say "(est. from gallons)"). The red per-species lines stay; the yellow per-species line is gone (the bar says it); ADF's
+  depth advisory stays a yellow line. Gap: `plural()` writes "Kuhli loachs".
 
 ## Lane MW: Minutes a Week (2026-10-21, branch `mw`, worktree `.claude/worktrees/mw`; Nathan approved the proposal in chat)
 - Full write-up with the numbers and sources: `research/minutes-a-week.md` (Result section); agent batches `research/sourcing/minutes/` (not in the globbed folder: they use `items`, not `species`).

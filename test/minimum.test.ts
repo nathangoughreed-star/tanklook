@@ -7,11 +7,12 @@ import { MIN_SLACK_PCT, whyAnimal } from '../src/scene/animalfit';
 import { bareSetup } from '../src/scene/defaults';
 import { hardTruths } from '../src/scene/plan';
 import { volume } from '../src/scene/physics';
-import { tankFor } from '../src/scene/tankfit';
+import { needsOf, tankFor, tankOptions } from '../src/scene/tankfit';
+import { planFor } from '../src/ui/stockPlanLogic';
 import { bowlDims } from '../src/scene/shape';
-import { geometryOf, measureLines, minDataOf, minFit, notesIn, speciesMinimum, tankMinimum, type Geometry, type MinData, type Who } from '../src/scene/tankMin';
+import { floorOf, geometryOf, measureLines, minDataOf, minFit, notesIn, speciesMinimum, tankMinimum, type Geometry, type MinData, type Who } from '../src/scene/tankMin';
 import { withChoice } from '../src/scene/tech';
-import { minWarnings } from '../src/ui/fullnessTile';
+import { minBar, minWarnings, topMin } from '../src/ui/fullnessTile';
 import type { Fish, TankSetup } from '../src/scene/types';
 // @ts-expect-error node only (no node types in this project)
 const { writeFileSync } = await import('node:fs');
@@ -186,6 +187,25 @@ describe('sourced footprints for land animals (MA item 6)', () => {
   });
 });
 
+// Acceptance case (S188, Nathan at build 1039, "An animal I want"): 13 kuhli loaches default to a 20 gal long (30 x 12 in, 77 x 33 cm
+// outer). Their red line is 60 x 30 cm (Seriously Fish / Guidarium), 80 cm the Recommended mark, the gallons advisory only: no red
+// minimum, a yellow "below the recommended size" at most, and Continue ("three ways to build it", planFor(...).problem) stays enabled.
+describe('13 kuhlis in a 20 long (S188 acceptance)', () => {
+  const S = { ...setupOf(tankFromModel(TANK_MODELS.find(m => m.id === 'g20l')!), true), fish: fishOf(Array(13).fill('kuhli')) };
+  it('no red minimum, at most the yellow Recommended note', () => {
+    const m = tankMinimum(S), w = minWarnings(m, 'in');
+    expect(m.rows[0].pct).toBeLessThanOrEqual(100); expect(m.rows[0].assessed).toBe(true);
+    expect(w).toEqual([]); expect(minBar(m).level).toBe('near'); // 77 cm < the 80 cm Recommended mark
+    expect(topMin(m, 'in')[0].note).toMatch(/^at least 23.6" x 11.8"; Recommended 31.5" long$/);
+  });
+  it('the per-head floor rule (4 x TL^2 each, 13 fish) no longer fails it: Continue is enabled and the 20 long is the tank offered', () => {
+    expect(needsOf([{ species: 'kuhli', n: 13 }]).floorCm2.bottom).toBeGreaterThan(floorOf(S.tank).areaCm2); // the old rule would have failed it
+    const p = planFor([{ id: 'kuhli', n: 13 }], 'g20l');
+    expect(p.problem).toBeUndefined(); expect(p.fit!.fails).toEqual([]);
+    expect(tankOptions([{ species: 'kuhli', n: 13 }]).find(o => o.tank.id === 'g20l')!.fails).toEqual([]);
+  });
+});
+
 describe('wording (lane MM)', () => {
   const one = (id: string, L: number, D: number, H = 12) => ({ ...setupOf(rectIn(L, D, H), true), fish: fishOf([id]) });
   it('a derived failure says it is estimated from a gallon figure; a sourced one names its page', () => {
@@ -194,11 +214,14 @@ describe('wording (lane MM)', () => {
     expect(minDataOf('kuhli')!.red!.mark).toBe('sourced');
     expect(tankMinimum(one('kuhli', 12, 8)).rows[0].reason).toMatch(/^wants (a tank )?at least .* \(Seriously Fish\)/);
   });
-  it('between the lines reads "below the recommended size" (never "comfortable" or "cramped"); green says nothing (AqAdvisor shape)', () => {
-    const w = minWarnings(tankMinimum(one('danio', 24, 12)), 'in');
-    expect(w.length).toBe(1); expect(w[0].level).toBe('near'); expect(w[0].text).toMatch(/^1 Zebra danio: below the recommended size: Seriously Fish recommends 35.4" long/);
-    expect(w.some(x => /comfortable|cramped/.test(x.text))).toBe(false);
-    expect(minWarnings(tankMinimum(one('danio', 48, 13)), 'in')).toEqual([]);
+  it('between the lines the bar is yellow and lists "at least X; Recommended Y" (never "comfortable" or "cramped"); no red line (Nathan: "Bar back, keep lines")', () => {
+    const m = tankMinimum(one('danio', 24, 12)), top = topMin(m, 'in');
+    expect(minWarnings(m, 'in')).toEqual([]); expect(minBar(m).level).toBe('near');
+    expect(top[0].note).toBe('at least 19.8" x 10.1" (est. from gallons); Recommended 35.4" x 11.8"');
+    expect(m.rows[0].comfortReason).toMatch(/^below the recommended size: Seriously Fish recommends 35.4" long|^below the recommended size: Seriously Fish recommends 90 cm long/);
+    expect(top.some(x => /comfortable|cramped|happier/.test(x.note ?? ''))).toBe(false);
+    expect(minBar(tankMinimum(one('danio', 48, 13))).level).toBe('ok');
+    expect(minBar(tankMinimum(one('danio', 12, 8))).level).toBe('over');
   });
 });
 

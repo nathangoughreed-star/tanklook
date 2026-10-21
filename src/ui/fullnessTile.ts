@@ -8,7 +8,7 @@ import type { Viewer } from '../render/viewer';
 import { defaultSpace, spaceFit, tankExtent, SPACE_MAX, SPACE_MIN, type SpaceFit } from '../scene/space';
 import { stockingMemo, type Stocking } from '../scene/stocking';
 import { MIN_SLACK_PCT } from '../scene/animalfit';
-import { notesIn, reasonIn, recommendedOf, tankMinimum, type MinRow, type TankMinimum } from '../scene/tankMin';
+import { minDataOf, notesIn, reasonIn, tankMinimum, type MinLine, type MinRow, type TankMinimum } from '../scene/tankMin';
 import { NO3_TO_N, PLANT_SHARE_MAX, type Nitrogen } from '../scene/nitrogen';
 import { filterState, setFilterless, type FilterState } from '../scene/tech';
 import dd from '../data/demand-defaults.json';
@@ -27,9 +27,11 @@ export interface TileState {
   /** anything to show: water on, and animals in it or a space set */
   show: boolean;
   space: Bar; filt: Bar;
-  /** species the tank is too small for (red) or below the recommended size for (yellow, allowed), by name and unmet measure (scene/tankMin.ts); empty when every species has its Recommended size */
+  /** the tank against the most demanding species' red line (scene/tankMin.ts): red below a minimum, yellow below a Recommended mark, green at or past every one (Nathan 2026-10-21, "Bar back, keep lines") */
+  min: Bar;
+  /** species the tank is too small for (red), by name and unmet measure (scene/tankMin.ts), and advisories (yellow: deeper water than advised); empty when every species has its minimum */
   mins: MinWarn[];
-  topSpace: TopRow[]; topFilt: TopRow[];
+  topSpace: TopRow[]; topFilt: TopRow[]; topMin: TopRow[];
   /** the larger of the two, for the minimized pill */
   head: Bar;
   reason: string;
@@ -53,21 +55,34 @@ const fmtOf = (units: Units) => ({ len: (mm: number) => `${toUnits(mm, units)}${
   vol: (l: number) => units === 'in' ? `${Math.round(l / 3.785 * 10) / 10} gal` : `${Math.round(l)} L` });
 
 /**
- * The tank-minimum warnings, the AqAdvisor way (Nathan 2026-10-21): nothing while every species has its Recommended size; a red line per
- * species below its minimum (or that cannot be assessed), naming the unmet measure, sourced or "estimated from a gallon figure"; a yellow
- * line for those above the minimum but below the recommended size (allowed), and for advisories (deeper water than advised). Lane MM:
- * the red / green lines are Nathan's decided ones (scene/tankMin.ts). Same 10 % slack as the animal gate and the tank-fit engine
- * (MIN_SLACK_PCT) on the red line.
+ * The tank-minimum lines under the bar (Nathan 2026-10-21): a red line per species below its minimum (or that cannot be assessed),
+ * naming the unmet measure, sourced or "estimated from a gallon figure"; a yellow line for advisories (deeper water than advised).
+ * Below the recommended size is said by the yellow bar and its list, not by a line. Same 10 % slack as the animal gate and the
+ * tank-fit engine (MIN_SLACK_PCT) on the red line.
  */
 export function minWarnings(m: TankMinimum, units: Units): MinWarn[] {
   const f = fmtOf(units), name = (x: MinRow) => plural(x.n, x.name), out: MinWarn[] = [];
   for (const x of [...m.rows].sort((a, b) => b.pct - a.pct)) if (x.pct > MIN_SLACK_PCT) out.push({ level: 'over', text: `${name(x)}: ${reasonIn(x, f)}` });
-  for (const x of [...m.rows].sort((a, b) => b.comfortPct - a.comfortPct)) {
-    if (x.pct > MIN_SLACK_PCT) continue;
-    if (x.comfortPct > 100) out.push({ level: 'near', text: `${name(x)}: ${recommendedOf(x.comfort, f)}` });
-    for (const n of notesIn(x, f)) out.push({ level: 'near', text: `${name(x)}: ${n}` });
-  }
+  for (const x of m.rows) if (x.pct <= MIN_SLACK_PCT) for (const n of notesIn(x, f)) out.push({ level: 'near', text: `${name(x)}: ${n}` });
   return out;
+}
+
+/** The tank-minimum bar: the fill is the tank against the most demanding red line; red below a minimum, yellow below a Recommended mark, green past every one. */
+export function minBar(m: TankMinimum): Bar {
+  if (m.percent === Infinity) return { pct: Infinity, fill: 100, level: 'over', text: 'Not assessed' };
+  const b = bar(m.percent);
+  return { ...b, level: m.percent > MIN_SLACK_PCT ? 'over' : m.comfortPercent > 100 ? 'near' : 'ok' };
+}
+
+/** "at least 23.5" x 12"; Recommended 31.5" long": each species' red and green lines, most demanding first (the bar's list). */
+export function topMin(m: TankMinimum, units: Units, k = 3): TopRow[] {
+  const f = fmtOf(units), dims = (l: MinLine) => `${f.len(l.L)}${l.W ? ` x ${f.len(l.W)}` : ' long'}${l.areaCm2 ? `, ${f.area(l.areaCm2)} of floor` : ''}${l.mark === 'derived (est)' ? ' (est. from gallons)' : ''}`;
+  return [...m.rows].sort((a, b) => b.pct - a.pct || b.comfortPct - a.comfortPct).slice(0, k).map(x => {
+    const d = minDataOf(x.id), red = d?.red ? dims(d.red) : '', h = d?.hRed ? `${f.len(d.hRed.H)} tall` : '';
+    const rec = d?.green ? dims(d.green) : d?.hGreen ? `${f.len(d.hGreen.H)} tall` : d?.vol ? `${units === 'in' ? `${d.vol.gal} gal` : `${Math.round(d.vol.gal * 3.785)} L`} of water` : '';
+    const least = [red, h].filter(Boolean).join(', ');
+    return { name: x.name, n: x.n, share: 0, note: [least ? `at least ${least}` : 'no minimum stated', rec && `Recommended ${rec}`].filter(Boolean).join('; ') };
+  });
 }
 
 /** The reason line from space alone, for a tank whose filter is not chosen yet. */
@@ -83,8 +98,8 @@ export function tileState(S: TankSetup, r: Stocking, units: Units = 'cm'): TileS
   const filter = filterState(S), unset = filter === 'unset', head = bar(unset ? r.spacePercent : r.percent);
   return {
     show: S.water.on && (r.contributors.length > 0 || !!limit),
-    space: bar(r.spacePercent), filt: bar(r.filtrationPercent), mins, head: tooSmall && head.level !== 'over' ? { ...head, level: 'over', text: 'Too small' } : head,
-    topSpace: topBy(r, 'space'), topFilt: topBy(r, 'load'), reason: unset ? spaceReason(r) : r.reasons[0] ?? '', filter,
+    space: bar(r.spacePercent), filt: bar(r.filtrationPercent), min: minBar(m), mins, head: tooSmall && head.level !== 'over' ? { ...head, level: 'over', text: 'Too small' } : head,
+    topSpace: topBy(r, 'space'), topFilt: topBy(r, 'load'), topMin: topMin(m, units), reason: unset ? spaceReason(r) : r.reasons[0] ?? '', filter,
     ...(limit ? { limit, fit } : {}),
   };
 }
@@ -206,6 +221,7 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
       + (st.filter === 'unset' ? `<div class="ftWarn ft-near ftNeedFilter"><b>This tank needs a filter.</b> Add one in Tech › Filtration to see its filtration.${box(false)}</div>`
         : row('filt', 'Filtration', st.filt, st.topFilt, 'waste', undefined, 'Ammonia the filter bacteria can process, after the plants take their share. It does not measure nitrate, oxygen, pH or temperature.')
           + (st.filter === 'filterless' ? `<div class="ftWhy">${box(true)}: bacteria on glass, substrate and decor only.</div>` : ''))
+      + (st.topMin.length ? row('min', 'Tank minimum', st.min, st.topMin, 'minimum', 'Smallest tank they want, whatever the count:') : '')
       + st.mins.map(w => `<div class="ftWarn ft-${w.level}">${esc(w.text)}</div>`).join('')
       + (st.reason ? `<div class="ftWhy">${esc(st.reason)}</div>` : '');
     const n = r.nitrogen;
