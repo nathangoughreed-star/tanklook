@@ -46,6 +46,13 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
+## S165: Tank minimum policy (2026-10-21, branch `s165`)
+- Six policy questions SETTLED; the rules are in research/tank-minimum-first-principles.md "Decisions". No policy code yet.
+- Shipped bb778da (build 1053): build fix, the mystery snail's volume-only flag is now applied in `measureMinimum`.
+- Next work units, in order: (1) Space-bar audit + noncompensation test + clearance diagnostic sweep (code reading and tests, no
+  migration); (2) sourcing pass for footprints / depth / source conditions (measure one batch's cost first, Sonnet only);
+  (3) migration (volume advisory, Recommended label, depth field, derived vs sourced reasons).
+
 ## Lane MW: Minutes a Week (2026-10-21, branch `mw`, worktree `.claude/worktrees/mw`; Nathan approved the proposal in chat)
 - Full write-up with the numbers and sources: `research/minutes-a-week.md` (Result section); agent batches `research/sourcing/minutes/` (not in the globbed folder: they use `items`, not `species`).
 - Water changes now follow the nitrogen budget (floor 10 % cited, cap 50 %); new rows for feeding trips, glass wiping, painted live patches; plant trimming in bunches; testing every ~2 weeks; hose and automatic feeder as "Quality of life" tech rows that the least-work build adds. Builds now differ: least work is 4-22 min below cheapest, for $100-370 more. Every minutes-per-job figure is a labelled assumption; intervals and prices are cited.
