@@ -9,8 +9,10 @@ RUNNING
   tank-minimum chain: loads MX's summary.json lines (Nathan's rule: RED = minimum, fails below; GREEN = Recommended; YELLOW between,
   allowed), turns MA's 4 `it.fails` into passing tests, depth field, ball python (fits NO terrarium today: litres spread over 19.7 in),
   wording. Owns src/scene/tankMin.ts. When it reports: verify the commit is an ancestor of origin/main, watch the deploy, list its gaps.
-- S188: Animal-First Screen Without a Tank (local_82ace766), Nathan's hand-started chat, running. Likely touches the stocking screen
-  (stockPlan / stockGallery / tankfit): check for overlap with MM's consumers (tankfit, whyAnimal) and warn both if they collide.
+- S188: Animal-First Screen Without a Tank (local_82ace766): DONE, 197235f (build 1069). The animal-first screen no longer picks a
+  tank (animals in an invisible box until a size is chosen; leaving sets the smallest holding size). OPEN for Nathan in S188's chat:
+  should a red minimum block Continue or only warn? It sent MM an acceptance case: 13 kuhlis in a 20 long (main greys out up to a
+  60 gal breeder, per-head floor 4 x TL^2): check MM's result covers it.
 - S189: Minimum Tank Size Behavior (local_971a3f4f), hand-started, idle. I did NOT read its last report (list_events showed only
   "done"; page back with before_uuid). Check whether it edited anything (its cwd is the stale Glass-Box-stocking folder: nothing there
   ships) and whether it overlaps MM.
