@@ -336,6 +336,8 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
   { const pt = parsePatches(raw.patches); if (pt) setup.patches = pt; } // lane SB 2026-10-16: painted scatter, absent = none
   { const ig = parseIntegrated(raw.integrated); if (ig) setup.integrated = ig; } // 2026-10-20: an integrated kit (an all-in-one run on its own gear)
   { const tc = parseTech(raw.tech); if (tc) setup.tech = tc; } // lane TM 2026-10-19: tech level, absent = inferred gear
+  if (raw.feeding === 'light' || raw.feeding === 'heavy') setup.feeding = raw.feeding; // lane SE2 2026-10-20, absent = normal
+  if (raw.stockFirst === true) setup.stockFirst = true; // 2026-10-21: path 1 tank, no filter drawn until one is added
   keepInWater(setup); fitTable(setup);
   fitFixture(setup.light, setup.tank, false); // 2026-10-15: older lights clamped into their fixture's usual ranges
   return setup;

@@ -171,6 +171,7 @@ ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}` : ''}
     const units = store.scene.units, s = emptyScene();
     s.name = 'My animal tank'; s.units = units; s.tanks[0].camera = { ...store.tank.camera };
     s.tanks[0].stand.show = false; s.tanks[0].stand.need = 'ask'; // no stand yet: the budget still counts a typical one
+    s.tanks[0].stockFirst = true; // no filter drawn until the owner adds one (Nathan 2026-10-21; the tile says "This tank needs a filter")
     store.replace(s);
     picks = []; chosen = undefined; mates = false; q = ''; shown = '';
     el.hidden = false; side(true); bare(true); focusSearch = true; draw();

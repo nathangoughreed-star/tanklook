@@ -395,6 +395,9 @@ export interface TankSetup {
   tech?: import('./tech').TechSetup;
   /** How heavily the animals are fed (lane SE2, 2026-10-20, no version bump): sets the waste in the nitrogen budget (scene/nitrogen.ts). Absent = 'normal' (1 % of body weight a day). */
   feeding?: 'light' | 'normal' | 'heavy';
+  /** Started from path 1, "An animal I want" (Nathan 2026-10-21, no version bump): the view draws no filter until the owner adds one
+   *  (render/gear3d.ts; the inferred one is not drawn). Absent = an ordinary tank, inferred gear drawn (DRAW_INFERRED). */
+  stockFirst?: boolean;
   /** An integrated kit (2026-10-20, Nathan: an all-in-one such as a Fluval Flex runs only on its own light, filter and lid; no version bump).
    *  Picked from the tank picker: the kit's gear is applied once and then held (scene/integrated.ts). Absent = a bare or ordinary tank. */
   integrated?: IntegratedKit;

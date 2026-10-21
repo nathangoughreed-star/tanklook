@@ -223,3 +223,27 @@ describe('filter gate', () => {
     setFilterless(s, false); expect(filterState(s)).toBe('unset');
   });
 });
+
+import { gearPicks } from '../src/render/gear3d';
+import { withUnits, techOf } from '../src/scene/tech';
+describe('filter gate follow-ups (Nathan 2026-10-21)', () => {
+  const tank = () => { const s = withFish(); delete s.tech; return s; };
+  const roundTrip = (S: TankSetup) => { const sc = parseScene(JSON.parse(SCENES[Object.keys(SCENES)[0]])).scene; sc.tanks[sc.active] = S; const b = parseScene(JSON.parse(JSON.stringify(sc))).scene; return b.tanks[b.active]; };
+  it('adding a filter clears the Walstad tick: removing it again asks for a filter', () => {
+    const s = tank(); setFilterless(s, true);
+    s.tech = withUnits(techOf(s), 'filter', [{ kind: 'hob' }]); expect(s.tech.filterless).toBeUndefined(); expect(filterState(s)).toBe('chosen');
+    s.tech = withUnits(s.tech, 'filter', []); expect(filterState(s)).toBe('unset');
+  });
+  it('the tick, the feeding and the path-1 flag survive a save and reload', () => {
+    const s = tank(); setFilterless(s, true); s.feeding = 'heavy'; s.stockFirst = true;
+    const b = roundTrip(s);
+    expect(filterState(b)).toBe('filterless'); expect(b.feeding).toBe('heavy'); expect(b.stockFirst).toBe(true);
+  });
+  it('a path-1 tank draws no filter until one is added; an ordinary tank still draws the inferred one', () => {
+    const filters = (S: TankSetup) => gearPicks(S).filter(p => p.row?.startsWith('filter')).length;
+    const plain = tank(); expect(filters(plain)).toBeGreaterThan(0);
+    const p1 = { ...tank(), stockFirst: true }; expect(filters(p1)).toBe(0);
+    expect(gearPicks(p1).length).toBeGreaterThan(0); // the heater is still drawn
+    p1.tech = choose(p1, 'filter', 'hob'); expect(filters(p1)).toBeGreaterThan(0);
+  });
+});

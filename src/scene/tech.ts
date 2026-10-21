@@ -249,6 +249,7 @@ export function withUnits(t: TechSetup, row: 'heater' | 'filter', units: HeaterU
   if (row === 'heater') { delete next.heaterW; delete next.heaterProduct; next.heaters = units as HeaterUnit[]; next.rows.heater = heaterRow(units.length); }
   else {
     delete next.filterModel; delete next.filterProduct; next.filters = units as FilterUnit[]; next.rows.filter = filterRow(next.filters);
+    if (units.length) delete next.filterless; // a filter added: removing it later asks again ("This tank needs a filter"), not filterless
     for (const [r, o] of Object.entries(optionDef('filter', next.rows.filter)?.needs ?? {})) next.rows[r] = o;
     if (!next.filters.some(u => u.kind === 'sump') && next.rows.skimmer === 'sump') next.rows.skimmer = 'hob';
   }
@@ -617,6 +618,7 @@ export function parseTech(raw: unknown): TechSetup | undefined {
   });
   if (t.heaters) rows.heater = heaterRow(t.heaters.length);
   if (t.filters) rows.filter = filterRow(t.filters);
+  if (r.filterless === true && !t.filters?.length) t.filterless = true;
   if (typeof r.roomC === 'number' && isFinite(r.roomC)) t.roomC = Math.min(40, Math.max(0, r.roomC));
   if (r.place && typeof r.place === 'object') {
     const place: Record<string, GearPlace> = {};
@@ -630,5 +632,5 @@ export function parseTech(raw: unknown): TechSetup | undefined {
     }
     if (Object.keys(place).length) t.place = place;
   }
-  return Object.keys(rows).length || t.preset || t.heaters || t.filters ? t : undefined;
+  return Object.keys(rows).length || t.preset || t.heaters || t.filters || t.filterless ? t : undefined;
 }

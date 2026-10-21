@@ -6,7 +6,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { FILTER_MODELS, HEATER_MODELS, type FilterModel } from '../demand/gear';
-import { heatLoss, techOf, techParts, type GearPlace } from '../scene/tech';
+import { filterState, heatLoss, techOf, techParts, type GearPlace } from '../scene/tech';
 import { filterProduct, genericHeaterW, heaterProduct, type FilterProduct, type PartColour } from '../data/gearCatalog';
 import { backdropDepth, glassThickness, tankUnderside, floorY, waterY, clamp } from '../scene/physics';
 import { chord } from '../scene/shape';
@@ -46,7 +46,7 @@ export function gearPicks(S: TankSetup): GearPick[] {
   for (const p of parts) {
     const place = spotOf(S, p.place), pick = (id: string) => out.push({ id, row: p.row, ...(p.n > 1 ? { n: p.n } : {}), ...(place ? { place } : {}) });
     switch (p.gear) {
-      case 'filter': if (p.model) out.push({ id: p.model, row: p.row, ...(p.n > 1 ? { n: p.n } : {}), ...(p.product ? { product: p.product } : {}), ...(place ? { place } : {}) }); break;
+      case 'filter': if (p.model && !(S.stockFirst && filterState(S) !== 'chosen')) out.push({ id: p.model, row: p.row, ...(p.n > 1 ? { n: p.n } : {}), ...(p.product ? { product: p.product } : {}), ...(place ? { place } : {}) }); break;
       case 'heater': if (p.model) out.push({ id: p.model, row: p.row, watts: p.watts ?? genericHeaterW(heatLoss(S, techOf(S)).needW), ...(p.product ? { product: p.product } : {}), ...(place ? { place } : {}) }); break; // one pick per heater (scene/tech techParts)
       case 'sump': pick('sump'); break;
       case 'co2kit': case 'diyco2': pick('co2'); break;
