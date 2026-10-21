@@ -119,7 +119,8 @@ export function capacityOf(S: TankSetup): CapacityParts {
   return { litres, perL: LU_PER_L, filter, plants, plantCount, tempC, capacity: litres * LU_PER_L * filter * plants, space: litres * SPACE_PER_L };
 }
 
-const plural = (n: number, name: string) => n === 1 ? `1 ${name}` : `${n} ${name}${/(s|ish|ox)$/i.test(name) ? '' : 's'}`;
+/** "8 Kuhli loaches": a name ending in fish or s is its own plural (goldfish, Discus, corydoras); ch / sh / x / z take "es"; the rest "s". */
+export const plural = (n: number, name: string) => n === 1 ? `1 ${name}` : `${n} ${name}${/(fish|s)$/i.test(name) ? '' : /(ch|sh|x|z)$/i.test(name) ? 'es' : 's'}`;
 
 export function stockingOf(S: TankSetup): Stocking {
   const cap = capacityOf(S), salt = !!(S.water.on && S.water.salt), by = new Map<string, Contributor>(), feeding = feedingOf(S);

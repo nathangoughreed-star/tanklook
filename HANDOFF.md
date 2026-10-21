@@ -150,8 +150,10 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
   (Decision 2) not wired, only the yellow note. (3) `LARGE_BODY_MM` and the "not assessed below adult length" depth rule are our
   assumptions; territorial / sedentary footprint class not modelled. (4) Land animals: herpcheck's HERP floor table still gives its own
   floor verdict beside the gate; the tile shows water species only. (5) For Nathan: should a land animal's sourced L x W footprint be held
-  as AREA (today: the tree-frog corner terrarium fails) or only as length + width (it would pass)? (6) The 10 gal build lists a heater
-  nobody needs ("Nothing here needs it", builds.ts). (7) groups.ts minLengthMm / minWidthMm / minAreaCm2 are no longer read by the gate
+  as AREA (today: the tree-frog corner terrarium fails) or only as length + width (it would pass)? (6) DONE S193 2026-10-21: the 10 gal build
+  listed a heater nobody needs: a heater-less starter kit (kitTech starts from inferTech, heater one) overwrote the build's heater none;
+  bundleFor now keeps the build's heater choice when the kit has none (test in scapes.test.ts, 10 and 15 gal, every build). Also S193:
+  `plural` (stocking.ts, now shared with fullnessTile) gives "Kuhli loaches" (ch / sh / x / z + es; fish and names in s unchanged). (7) groups.ts minLengthMm / minWidthMm / minAreaCm2 are no longer read by the gate
   (still on the review page); CARE.minL only in whyAnimal's no-fit fallback: retire later. (8) research/clearance-sweep.md not
   regenerated (its "Reading" text is hand-written about the old gate).
 - **Follow-ups (2026-10-21, same lane):** (a) S188 acceptance: 13 kuhlis in a 20 long had only one failure, tankfit's per-head floor

@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import { defaultSetup } from '../src/scene/defaults';
 import { IN } from '../src/scene/physics';
-import { loadOf, massG, stockingOf } from '../src/scene/stocking';
+import { loadOf, massG, plural, stockingOf } from '../src/scene/stocking';
 import { withChoice } from '../src/scene/tech';
 import type { Fish, Item, TankSetup } from '../src/scene/types';
 
@@ -103,5 +103,18 @@ describe('stocking engine (lane SE)', () => {
   it('snails take no swimming room: 10 trumpet snails in a 5 gal read Space 0 %, their waste still counts in filtration', () => {
     const r = stockingOf(tank(16, 8, 10, [['trumpet', 10]]));
     expect(r.spacePercent).toBe(0); expect(r.filtrationPercent).toBeGreaterThan(0); expect(r.percent).toBeLessThan(100);
+  });
+});
+
+describe('plural (S193)', () => {
+  it('ch / sh / x / z take "es"; fish and Latin names in s are their own plural; the rest take "s"', () => {
+    expect(plural(8, 'Kuhli loach')).toBe('8 Kuhli loaches');
+    expect(plural(3, 'Red marsh')).toBe('3 Red marshes');
+    expect(plural(2, 'Box')).toBe('2 Boxes');
+    expect(plural(6, 'Fancy goldfish')).toBe('6 Fancy goldfish');
+    expect(plural(5, 'Discus')).toBe('5 Discus');
+    expect(plural(6, 'Panda corydoras')).toBe('6 Panda corydoras');
+    expect(plural(10, 'Neon tetra')).toBe('10 Neon tetras');
+    expect(plural(1, 'Kuhli loach')).toBe('1 Kuhli loach');
   });
 });

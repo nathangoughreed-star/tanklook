@@ -110,10 +110,11 @@ describe('the plan', () => {
     const cp = planOf(cold.setup, cold, NOW);
     expect(cp.rows.find(r => r.item.startsWith('Heating') || /Temperature:/.test(r.serves))?.kind).toBe('need');
     expect(cp.missing.join()).not.toMatch(/Heater/);
-    // lane MM: white clouds now fit a 10 gal (red line derived from Fishkeeping World's 10 gal); the 10 gal build lists a heater nobody
-    // needs ("Nothing here needs it", a builds.ts gap, HANDOFF "Lane MM"), so this case keeps the 15 gal it was written for
-    const wc = [{ species: 'whitecloud', n: 8 }], room = buildsFor(wc, getTankModel('g15')!, NOW)[0];
-    expect(planOf(room.setup, room, NOW).rows.some(r => r.item.startsWith('Heating'))).toBe(false);
+    // white clouds fit a 10 gal (lane MM); its heater-less starter kit used to bring back the inferred heater (S193): no build lists one
+    const wc = [{ species: 'whitecloud', n: 8 }];
+    for (const g of ['g10', 'g15']) for (const room of buildsFor(wc, getTankModel(g)!, NOW)) {
+      expect(planOf(room.setup, room, NOW).rows.some(r => r.item.startsWith('Heating') || /Nothing here needs it: your animals/.test(r.serves)), `${g} ${room.id}`).toBe(false);
+    }
   });
   it('an overstocked tank does not fit', () => {
     const bad = structuredClone(b.setup); bad.fish = Array.from({ length: 80 }, (_, i) => ({ ...bad.fish[0], id: 900 + i }));

@@ -165,7 +165,9 @@ function bundleFor(id: BuildId, S: TankSetup, now: number): { S: TankSetup; deal
   const P = defaultProfile();
   for (const m of dealMatches(S, P, { now })) {
     if (m.breaks.length || m.savingUsd <= MIN_SAVING_USD || m.savingUsd <= MIN_SAVING_FRAC * m.partsUsd) continue;
-    const T = structuredClone(m.setup), t = kitTech(T, dealAsKit(m.deal));
+    const T = structuredClone(m.setup), kit = dealAsKit(m.deal), t = kitTech(T, kit);
+    // kitTech starts from the inferred gear (a heater): a kit without one keeps the build's own heater choice ('none' when nothing needs it)
+    if (t && !kit.heater && !kit.includes?.includes('heater')) t.rows.heater = techOf(T).rows.heater;
     if (t) T.tech = t;
     // the balanced build wants a hang-on-back filter or better: a bundle with a sponge or an internal filter is the cheapest build's
     if (id === 'balanced' && !['hob', 'canister', 'sump'].includes(techOf(T).rows.filter)) continue;

@@ -6,7 +6,7 @@
 // The tile follows the view: hidden while the Animals Show box is off, faded with the rest while another menu is in focus.
 import type { Viewer } from '../render/viewer';
 import { defaultSpace, spaceFit, tankExtent, SPACE_MAX, SPACE_MIN, type SpaceFit } from '../scene/space';
-import { stockingMemo, type Stocking } from '../scene/stocking';
+import { plural, stockingMemo, type Stocking } from '../scene/stocking';
 import { MIN_SLACK_PCT } from '../scene/animalfit';
 import { minDataOf, notesIn, reasonIn, tankMinimum, type MinLine, type MinRow, type TankMinimum } from '../scene/tankMin';
 import { NO3_TO_N, PLANT_SHARE_MAX, type Nitrogen } from '../scene/nitrogen';
@@ -162,7 +162,6 @@ let forkFn: ForkFn | null = null;
 export function onSpaceFork(fn: ForkFn) { forkFn = fn; return () => { if (forkFn === fn) forkFn = null; }; }
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
-const plural = (n: number, name: string) => n === 1 ? `1 ${name}` : `${n} ${name}${/(s|ish|ox)$/i.test(name) ? '' : 's'}`;
 const MIN_KEY = 'tanklook.ftMin', N_KEY = 'tanklook.ftN';
 
 export function attachFullnessTile(viewer: Viewer, store: Store) {
