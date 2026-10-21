@@ -49,9 +49,12 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 ## S165: Tank minimum policy (2026-10-21, branch `s165`)
 - Six policy questions SETTLED; the rules are in research/tank-minimum-first-principles.md "Decisions". No policy code yet.
 - Shipped bb778da (build 1053): build fix, the mystery snail's volume-only flag is now applied in `measureMinimum`.
-- Next work units, in order: (1) Space-bar audit + noncompensation test + clearance diagnostic sweep (code reading and tests, no
-  migration); (2) sourcing pass for footprints / depth / source conditions (measure one batch's cost first, Sonnet only);
-  (3) migration (volume advisory, Recommended label, depth field, derived vs sourced reasons).
+- Policy settled and pushed ade4ca0 (build 1056). Next work units, as lanes (Coordinator 6, 2026-10-21):
+  MA Tank Minimum Audit (prompts/lane-MA-min-audit.md: Space-bar audit, noncompensation test, clearance sweep; tests only) and
+  MX Tank Minimum Sourcing (prompts/lane-MX-min-sourcing.md: research only, one measured batch then a quote) can run in parallel;
+  MM Tank Minimum Migration (volume advisory, Recommended label, depth field, derived vs sourced reasons) waits for both, prompt
+  written when they report. NB Nitrogen Balance (prompts/lane-NB-nitrogen-balance.md: S185's findings + Decision 2 water-change
+  states) runs alongside; it owns nitrogen.ts and the water-change lines, MA only reads them.
 
 ## Lane MW: Minutes a Week (2026-10-21, branch `mw`, worktree `.claude/worktrees/mw`; Nathan approved the proposal in chat)
 - Full write-up with the numbers and sources: `research/minutes-a-week.md` (Result section); agent batches `research/sourcing/minutes/` (not in the globbed folder: they use `items`, not `species`).
