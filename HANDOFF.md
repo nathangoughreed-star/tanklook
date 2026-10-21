@@ -46,6 +46,12 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
+## Chat PX: Path 1 Polish (2026-10-21, branch `px2` from origin/main, pushed to main)
+- **Item 3 DONE:** appeal tags sharpened for 29 commonly kept species in `src/data/groups.ts` (JUDGEMENT tags, labelled so in the interface comment; new tags peaceful, active, finnage, livebearer, predator; personality / easy / colour dropped where not distinctive). The other 55 species keep the coarse P1 tags.
+- **Item 4 DONE (small):** mixed scapes already kept live floaters (all four floaters have difficulty <= 1, so `swapped` never took them); only all-artificial drops them (no artificial form). Added an explicit mixed-mode guard in `scene/scapes.ts` and a test. If Nathan wants floaters kept in artificial scapes too, that is a separate change.
+- **Item 5 DONE (Nathan 2026-10-21: "png export should not carry dashed line"):** `render/viewer.ts` hides `userData.spaceOutline` objects while `exporting` (PNG export and thumbnail); the on-screen outline stays.
+- **Items 1-2 DROPPED as superseded:** origin/main (gallery + `bare()` gear view in `ui/stockPlan.ts`, `ui/stockGallery.ts`) already draws the bare tank without filter / heater and gives species tiles a 3D preview, and conflicted with my version. Their pictures (side-session-notes/PX-1, PX-2) show the dropped version; re-check upstream's bare tank and gallery by eye. My old branch `px` (commit b6d3da6) still holds the dropped search-result preview if wanted.
+
 ## Gaps ledger (2026-10-20, coordinator 5: gaps the chats reported; start continuation chats from here)
 - P1 group data: 63 of 84 species rows are estimates, 5 reef rows unverified (firefish, coralbeauty, watchman, mandarin, cleanershrimp): partly covered by the source fleet (SB).
 - P2b: the cost span is only about $10 wide (only the filter differs between builds); widening needs an invented light tier (Nathan to decide).
