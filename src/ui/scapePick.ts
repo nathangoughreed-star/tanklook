@@ -67,7 +67,7 @@ ${o.lightNote ? `<div class="spWarn">${esc(o.lightNote)}</div>` : ''}
   const draw = () => {
     const b = picked!.build, m = PLANT_MODES.find(x => x.id === mode)!;
     el.innerHTML = `<div class="spHead"><h2>Choose a scape</h2><button type="button" data-act="close" aria-label="Close">✕</button></div>
-<p class="spNote">${esc(tankLabel(b.tank))}, ${esc(b.label.toLowerCase())} build. Each style is drawn in your tank with your animals and gear.${asks() ? ` Plants: <b>${esc(m.label.toLowerCase())}</b> <button type="button" class="spLink" data-act="plants">change</button>` : ''}</p>
+<p class="spNote">${esc(tankLabel(b.tank, store.scene.units))}, ${esc(b.label.toLowerCase())} build. Each style is drawn in your tank with your animals and gear.${asks() ? ` Plants: <b>${esc(m.label.toLowerCase())}</b> <button type="button" class="spLink" data-act="plants">change</button>` : ''}</p>
 <ul class="bpCards">${opts.map(card).join('')}</ul>
 <div class="spFoot"><button type="button" class="spLink" data-act="scratch">Scape it from scratch</button><span class="spNote">Pick one and it opens in the editor with everything still yours to change.</span></div>`;
   };

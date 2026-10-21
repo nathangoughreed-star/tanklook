@@ -34,7 +34,7 @@ export function attachPlanSheet(store: Store) {
   let host: HTMLElement | null = null, build: Build | undefined;
   const close = () => { host?.remove(); host = null; document.body.classList.remove('sheet-open'); document.removeEventListener('keydown', onKey); };
   const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); };
-  const current = () => planOf(store.scene.tanks[store.scene.active] ?? store.scene.tanks[0], build);
+  const current = () => planOf(store.scene.tanks[store.scene.active] ?? store.scene.tanks[0], build, undefined, store.scene.units);
   const save = (text: string) => {
     const url = URL.createObjectURL(new Blob([text], { type: 'text/plain' })), a = document.createElement('a');
     a.href = url; a.download = `${slug(store.scene.name)}-plan.txt`; document.body.append(a); a.click(); a.remove();

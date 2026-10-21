@@ -73,7 +73,7 @@ export function attachBuildPick(store: Store, viewer: Viewer, status: (m: string
       ...b.gearDeals.map(d => `<li class="bpDeal">${esc(d.title)} on sale at ${esc(d.store)}: ${usd(d.price.usd)} (was ${usd(d.price.regularUsd)})</li>`),
     ].join('');
     return `<li class="bpCard" data-i="${i}">
-<div class="bpPic">${pics[i] ? `<img src="${pics[i]}" alt="The ${esc(b.label)} build: ${esc(tankLabel(b.tank))} with the animals">` : ''}</div>
+<div class="bpPic">${pics[i] ? `<img src="${pics[i]}" alt="The ${esc(b.label)} build: ${esc(tankLabel(b.tank, store.scene.units))} with the animals">` : ''}</div>
 <div class="bpHead"><b>${esc(b.label)}</b>${twin ? `<span class="spNote">same gear as ${esc(twin.label)}</span>` : ''}</div>
 <div class="spNote">${esc(b.blurb)}</div>
 <div class="bpNums"><span><b>${usd(b.setupUsd)}</b>set-up${b.savingUsd ? `<i>${usd(b.listUsd)} before deals</i>` : ''}</span><span><b>${usd(b.upkeepUsdMo)}</b>a month</span><span><b>${b.minPerWeek}</b>min a week</span></div>
@@ -86,7 +86,7 @@ ${meetsNeeds(b) ? '' : '<div class="spWarn">No filter on the list carries these 
   const draw = () => {
     const scroll = el.scrollTop, a = animals.map(x => `${x.n} ${esc(getSpecies(x.species)?.name ?? x.species)}`).join(', ');
     el.innerHTML = `<div class="spHead"><h2>Three ways to build it</h2><button type="button" data-act="close" aria-label="Close">✕</button></div>
-<p class="spNote">${esc(tankLabel(builds[0].tank))} for ${a}. Each is a whole tank: tank, filter, heater and light. Prices are expected costs with the live deals that fit.</p>
+<p class="spNote">${esc(tankLabel(builds[0].tank, store.scene.units))} for ${a}. Each is a whole tank: tank, filter, heater and light. Prices are expected costs with the live deals that fit.</p>
 <ul class="bpCards">${builds.map(card).join('')}</ul>
 <div class="spFoot">${back ? '<button type="button" class="spLink" data-act="back">Back to the animals</button>' : ''}<span class="spNote">Pick one and it opens in the editor with everything still yours to change.</span></div>`;
     el.scrollTop = scroll;
@@ -97,7 +97,7 @@ ${meetsNeeds(b) ? '' : '<div class="spWarn">No filter on the list carries these 
     if (b.bundle) pinDeal(b.bundle); // before the load that follows promotes it: the demand panel prices the bundle in place of its parts
     store.replace(sceneForBuild(b, store.scene.units));
     close(); store.seal();
-    status(`${b.label} build opened in the editor: ${tankLabel(b.tank)}, ${usd(b.setupUsd)} set-up. The look is yours to change; Undo steps back.`);
+    status(`${b.label} build opened in the editor: ${tankLabel(b.tank, store.scene.units)}, ${usd(b.setupUsd)} set-up. The look is yours to change; Undo steps back.`);
     for (const fn of [...listeners]) fn({ build: b, animals });
   };
 

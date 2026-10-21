@@ -18,6 +18,7 @@ import { attachStockGallery } from './stockGallery';
 import { onSpaceFork, type SpaceFork } from './fullnessTile';
 import { grazerShort } from '../data/grazers';
 import { animalsInTank, animalsOf, bump, forkOptions, isSexed, notesOf, overWarn, planFor, shownLitres, conflictOf, rankTankmates, startPick, tankLabel, totalOf, type Pk, type RoomOption } from './stockPlanLogic';
+import { sizeTxt } from '../scene/tankfit';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
@@ -97,7 +98,7 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
   const bandClass = (b: string) => `spb-${b}`;
   const pickRow = (p: Pk, litres: number) => {
     const hungry = litres ? grazerShort(p.id, totalOf(p), litres) : null;
-    const sp = getSpecies(p.id)!, nt = notesOf(p), sexed = isSexed(p.id);
+    const sp = getSpecies(p.id)!, nt = notesOf(p, store.scene.units), sexed = isSexed(p.id);
     const step = (which: 'n' | 'f', label: string, v: number) =>
       `<span class="spStep"><span class="spLab">${label}</span><button type="button" data-act="dec" data-id="${p.id}" data-w="${which}" aria-label="One fewer ${esc(label || sp.name)}"${v <= 0 ? ' disabled' : ''}>−</button><b>${v}</b><button type="button" data-act="inc" data-id="${p.id}" data-w="${which}" aria-label="One more ${esc(label || sp.name)}">+</button></span>`;
     return `<li class="spPick"><div class="spName"><b>${esc(sp.name)}</b><i>${esc(sp.sci)}</i><button type="button" class="spX" data-act="del" data-id="${p.id}" aria-label="Take ${esc(sp.name)} out">✕</button></div>
@@ -117,7 +118,7 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
     if (!plan.options.length) return '<p class="spNote">This animal lives on land: choose a terrarium in the editor.</p>';
     let h = '';
     if (plan.tank) {
-      h += `<div class="spTank"><b>${esc(tankLabel(plan.tank))}</b><span class="spPct">Your tank. It stays this size as you add animals.</span></div>`;
+      h += `<div class="spTank"><b>${esc(tankLabel(plan.tank, store.scene.units))}</b><span class="spPct">Your tank. It stays this size as you add animals.</span></div>`;
       if (plan.problem) h += `<div class="spWarn">${esc(plan.problem)}</div>`;
       if (plan.span) {
         const { setupUsd: s, minPerWeek: m } = plan.span;
@@ -126,7 +127,7 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
     } else h += plan.need ? '<div class="spNote">No tank yet: pick one. You can add more animals after, and come back for a bigger tank. Greyed sizes are too small for the animals you have so far; the bars show how full each would be.</div>' : `<div class="spWarn">${esc(plan.problem ?? '')}</div>`;
     h += `<div class="spHd">Tank sizes</div><div class="spSizeKey spNote"><span>Space</span><span>Tank size</span></div><ul class="spSizes">${plan.options.map(o => {
       const bad = o.fails.length > 0, on = plan.tank?.id === o.tank.id, full = o.spacePct, filt = o.filtrationPct > 70 ? `<em class="${o.filtrationPct > 100 ? 'cr' : ''}">filter load ${Math.round(o.filtrationPct)} % on a basic filter; plants and a stronger one lower it</em>` : '';
-      return `<li><button type="button" data-act="size" data-tank="${o.tank.id}" class="${bad ? 'small' : ''}${on ? ' on' : ''}"${bad && !on ? ' disabled' : ''}><span class="spLbl">${esc(tankLabel(o.tank))}${bad ? `<em>${WHY[o.fails[0]]}</em>` : o.cramped ? '<em class="cr">workable, a bit cramped</em>' : ''}${filt}</span>${bar(full, 'Space: how full the tank is by room, whatever the filter')}<span class="spPct">${Math.round(full)} %</span>${bar(o.minPct, 'Tank size against what the animals need')}<span class="spPct">${Math.round(o.minPct)} %</span></button></li>`;
+      return `<li><button type="button" data-act="size" data-tank="${o.tank.id}" class="${bad ? 'small' : ''}${on ? ' on' : ''}"${bad ? ' title="Too small for these animals; you can still pick it"' : ''}><span class="spLbl">${esc(tankLabel(o.tank, store.scene.units))}${bad ? `<em>${WHY[o.fails[0]]}</em>` : o.cramped ? '<em class="cr">workable, a bit cramped</em>' : ''}${filt}</span>${bar(full, 'Space: how full the tank is by room, whatever the filter')}<span class="spPct">${Math.round(full)} %</span>${bar(o.minPct, 'Tank size against what the animals need')}<span class="spPct">${Math.round(o.minPct)} %</span></button></li>`;
     }).join('')}</ul>`;
     return h;
   };
@@ -151,7 +152,7 @@ ${mates ? `<p class="spNote">Pick from the pictures on the left; each goes in at
 ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}` : ''}
 <div class="spFoot"><button type="button" class="primary" data-act="builds"${picks.length && planFor(picks, chosen).tank && !planFor(picks, chosen).problem ? '' : ' disabled'}>Continue: three ways to build it</button><button type="button" class="spLink" data-act="done"${picks.length ? '' : ' disabled'}>Open in the editor as it is</button><span class="spNote">Everything stays editable in the editor.</span></div>`;
     const q2 = el.querySelector<HTMLInputElement>('.spQ')!;
-    { const t = planFor(picks, chosen).tank; gallery.mates(mates && picks.length ? rankTankmates(picks, t).map(m => ({ ...m, bigger: m.bigger ? tankLabel(m.bigger) : undefined })) : null, !!t); }
+    { const t = planFor(picks, chosen).tank; gallery.mates(mates && picks.length ? rankTankmates(picks, t).map(m => ({ ...m, bigger: m.bigger ? tankLabel(m.bigger, store.scene.units) : undefined })) : null, !!t); }
     gallery.search(q); gallery.show(!el.hidden && (!picks.length || mates));
     if (hadFocus || focusSearch) { q2.focus(); q2.setSelectionRange(pos, pos); focusSearch = false; }
     el.scrollTop = scroll;
@@ -198,9 +199,9 @@ ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}` : ''}
 
   // ---------- the fork card ----------
   const roomRow = (o: RoomOption, i: number, label: string) =>
-    `<li><div><b>${esc(o.label)}</b><span class="spNote">${(o.w / 10).toFixed(0)} x ${(o.d / 10).toFixed(0)} cm${o.costUsd != null ? ` · set-up about ${usd(o.costUsd)}${o.costDeltaUsd ? ` (${signed(o.costDeltaUsd)})` : ''}` : ''}</span></div><button type="button" data-fk="${label}" data-i="${i}">${label === 'room' ? 'Make room' : 'Use this'}</button></li>`;
+    `<li><div><b>${esc(o.label)}</b><span class="spNote">${sizeTxt(o.w, o.d, store.scene.units)}${o.costUsd != null ? ` · set-up about ${usd(o.costUsd)}${o.costDeltaUsd ? ` (${signed(o.costDeltaUsd)})` : ''}` : ''}</span></div><button type="button" data-fk="${label}" data-i="${i}">${label === 'room' ? 'Make room' : 'Use this'}</button></li>`;
   const showFork = (f: SpaceFork) => {
-    const animals = animalsInTank(f.setup.fish), o = forkOptions(animals, f.limit, f.setup.tank);
+    const animals = animalsInTank(f.setup.fish), o = forkOptions(animals, f.limit, f.setup.tank, store.scene.units);
     const units = store.scene.units, dim = (mm: number) => units === 'in' ? `${Math.round(mm / 25.4)} in` : `${Math.round(mm / 10)} cm`;
     const swaps = o.swaps.map((s, i) => `<li><div><b>${esc(s.to.name)}</b> instead of ${esc(s.from)}<span class="spNote">${s.n} of them · both are ${esc(s.shared.join(', '))}</span></div><button type="button" data-fk="swap" data-i="${i}">Swap</button></li>`).join('');
     fork.innerHTML = `<form method="dialog" class="libhead"><h2>This does not fit your space</h2><button value="close" aria-label="Close">✕</button></form>

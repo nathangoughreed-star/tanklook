@@ -12,11 +12,11 @@ import type { Build } from './builds';
 import { finSensitiveNames, plantNeeds, priceScape } from './scapes';
 import { countsAgainstWater, stockingOf } from './stocking';
 import { ROOM_C, tempFit } from './tech';
-import { tankLabel, type AnimalCount } from './tankfit';
+import { lenTxt, sizeTxt, tankLabel, type AnimalCount } from './tankfit';
 import { volume } from './physics';
 import { minFit, tankMinimum } from './tankMin';
 import { tankWeight } from './weight';
-import type { TankSetup } from './types';
+import type { TankSetup, Units } from './types';
 
 export type Level = 'ok' | 'warn' | 'bad';
 export interface PlanRow {
@@ -59,7 +59,7 @@ export function animalsOfSetup(S: TankSetup): AnimalCount[] {
 }
 
 /** Hard truths: what is wrong with this stocking in this tank, whatever the user's taste (from the care gates, the tank-fit limits, temperature and plants). */
-export function hardTruths(S: TankSetup, animals: AnimalCount[], heater: boolean): { text: string; level: Level }[] {
+export function hardTruths(S: TankSetup, animals: AnimalCount[], heater: boolean, u: Units = 'cm'): { text: string; level: Level }[] {
   const out: { text: string; level: Level }[] = [];
   const sp = animals.flatMap(a => { const s = getSpecies(a.species); return s && a.n > 0 ? [s] : []; });
   const litres = volume(S.tank).litres, salt = S.water.on && !!S.water.salt;
@@ -68,7 +68,7 @@ export function hardTruths(S: TankSetup, animals: AnimalCount[], heater: boolean
     if (why) out.push({ text: `${s.name}: ${why.text}`, level: 'bad' }); // size is judged by tankMin (floor area, length, water), with its 10 % slack
   }
   const tm = tankMinimum({ ...S, fish: sp.map((s, i) => ({ id: i + 1, species: s.id, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0 })) }); // lane HB: the same depth limit the tank fit reads
-  if (tm.tooDeep) out.push({ text: `Some of your animals need shallow water (${Math.round(tm.maxDepthMm / 10)} cm at most); this tank's water is ${Math.round(tm.depthMm / 10)} cm deep`, level: 'bad' });
+  if (tm.tooDeep) out.push({ text: `Some of your animals need shallow water (${lenTxt(tm.maxDepthMm, u)} at most); this tank's water is ${lenTxt(tm.depthMm, u)} deep`, level: 'bad' });
   if (!heater && !salt) for (const s of sp.filter(x => countsAgainstWater(x))) if (tempFit(s.id, ROOM_C) === 'out') out.push({ text: `${s.name} is too cold at room temperature (${ROOM_C} C) and the tank has no heater`, level: 'bad' });
   const longFinned = finSensitiveNames(animals);
   if (longFinned.length && S.items.some(it => it.variant.startsWith('plastic'))) out.push({ text: `Hard plastic leaves can tear the long fins of ${longFinned.join(', ')}: use silk plants`, level: 'warn' });
@@ -113,7 +113,7 @@ function serve(r: Contribution, S: TankSetup, animals: AnimalCount[], needs: Ret
  * The plan for the tank in `S` (the editor's current tank). `build`: the build the user picked, for its bundle and gear sales (it prices
  * the set-up the way the builds screen did). Without one, list prices.
  */
-export function planOf(S: TankSetup, build?: Build, now = Date.now()): Plan {
+export function planOf(S: TankSetup, build?: Build, now = Date.now(), u: Units = 'cm'): Plan {
   const animals = animalsOfSetup(S), st = stockingOf(S);
   const D: Demand = priceScape(S, build ?? ({ animals, gearDeals: [] } as unknown as Build), now);
   const needs = plantNeeds(S);
@@ -138,7 +138,7 @@ export function planOf(S: TankSetup, build?: Build, now = Date.now()): Plan {
   if (wantsHeat && !D.items.some(r => r.key === 'heater' && (r.setup || inKit(r)))) missing.push('Heater: your animals want warmer water than a room and the list has none');
   if (st.filtrationPercent > 100) missing.push('Filter: none on the list clears what these animals produce (choose a stronger one or a bigger tank)');
   const heater = D.items.some(r => r.key === 'heater');
-  const truths = hardTruths(S, animals, heater);
+  const truths = hardTruths(S, animals, heater, u);
   const verdict: Plan['verdict'] = [
     { text: `Space: water column ${Math.round(st.waterPercent)}%, floor ${Math.round(st.floorPercent)}%${st.spacePercent > 100 ? st.spaceBy === 'floor' ? ' (too many bottom dwellers for its floor)' : ' (too many animals for it)' : ''}`, level: st.spacePercent > 100 ? 'bad' : st.spacePercent > 85 ? 'warn' : 'ok' },
     { text: `Filtration: ${Math.round(st.filtrationPercent)}% of what the filter and plants clear${st.filtrationPercent > 100 ? ' (the filter cannot keep up)' : ''}`, level: st.filtrationPercent > 100 ? 'bad' : st.filtrationPercent > 85 ? 'warn' : 'ok' },
@@ -153,7 +153,7 @@ export function planOf(S: TankSetup, build?: Build, now = Date.now()): Plan {
   for (const d of build?.gearDeals ?? []) dealLine(`${d.title} on sale at ${d.store}: ${usd(d.price.usd)} (was ${usd(d.price.regularUsd)})`);
   if (!build?.bundle) for (const d of gearOffers(S, D, now)) dealLine(`${GEAR_SLOT_NAME[d.slot][0].toUpperCase()}${GEAR_SLOT_NAME[d.slot].slice(1)}: ${d.title} on sale at ${d.store}, ${usd(d.price.usd)} (was ${usd(d.price.regularUsd)})`);
   return {
-    title: 'Your animal tank: the plan', tank: build ? tankLabel(build.tank) : `${Math.round(volume(S.tank).gallons)} gal (${Math.round(S.tank.L / 10)} x ${Math.round(S.tank.D / 10)} cm)`, animals: names,
+    title: 'Your animal tank: the plan', tank: build ? tankLabel(build.tank, u) : `${Math.round(volume(S.tank).gallons)} gal (${sizeTxt(S.tank.L, S.tank.D, u)})`, animals: names,
     spacePct: Math.round(st.spacePercent), waterPct: Math.round(st.waterPercent), floorPct: Math.round(st.floorPercent), filtrationPct: Math.round(st.filtrationPercent), fits, verdict, rows, missing,
     setupUsd: Math.round(D.totals.setupUsd), upkeepUsdMo: Math.round(D.totals.upkeepUsdMo), minPerWeek: Math.round(D.totals.minPerWeek),
     deals, cycleNote: CYCLE_NOTE,

@@ -7,10 +7,10 @@ import { TANK_MODELS, tankFromModel, type TankModel } from '../data/tanks';
 import { whyAnimal } from '../scene/animalfit';
 import { volume } from '../scene/physics';
 import { spaceFit, tankExtent } from '../scene/space';
-import { buildSpan, stepUps, tankFor, tankLabel, tankOptions, zoneOf, type AnimalCount, type BuildSpan, type TankFit } from '../scene/tankfit';
+import { buildSpan, lenTxt, stepUps, tankFor, tankLabel, tankOptions, zoneOf, type AnimalCount, type BuildSpan, type TankFit } from '../scene/tankfit';
 import { countsAgainstWater } from '../scene/stocking';
 import { minDataOf } from '../scene/tankMin';
-import type { Fish, SpaceLimit, Tank } from '../scene/types';
+import type { Fish, SpaceLimit, Tank, Units } from '../scene/types';
 
 /** One species on the list. Usually sexed species (CARE.sexed) carry males in `n` and females in `f`; the rest just `n`. */
 export interface Pk { id: string; n: number; f?: number }
@@ -48,7 +48,7 @@ export function overWarn(p: Pk): string | undefined {
 
 /** The band message for the total count, plus the sex-ratio line for sexed species. */
 export interface PickNotes { band: GroupBand; line: string; ratio?: string; habitat: string[] }
-export function notesOf(p: Pk): PickNotes {
+export function notesOf(p: Pk, u: Units = 'cm'): PickNotes {
   const c = CARE[p.id], n = totalOf(p);
   const band = bandOf(c, n), line = n === 0 ? '' : c?.max && c.max > 1 && n === c.max ? `${bandMessage(c, n)} (at the most one tank takes: ${c.max})` : bandMessage(c, n);
   let ratio: string | undefined;
@@ -61,13 +61,13 @@ export function notesOf(p: Pk): PickNotes {
   }
   const habitat: string[] = [];
   const md = minDataOf(p.id), adv = md?.depth?.maxWaterDepthMm; // lane MM: a sourced maximum depth is an advisory here, with the count picker (ADF, Decision 3)
-  if (adv) habitat.push(`Water no deeper than ${Math.round(adv / 10)} cm (advice, ${md!.depth!.note})`);
-  else if (c?.maxDepthMm) habitat.push(`Shallow water, ${Math.round(c.maxDepthMm / 10)} cm deep at most`);
+  if (adv) habitat.push(`Water no deeper than ${lenTxt(adv, u)} (advice, ${md!.depth!.note})`);
+  else if (c?.maxDepthMm) habitat.push(`Shallow water, ${lenTxt(c.maxDepthMm, u)} deep at most`);
   if (c?.flow) habitat.push(`${c.flow === 'low' ? 'Gentle' : c.flow === 'high' ? 'Strong' : 'Moderate'} flow`);
   const sp = getSpecies(p.id);
   if (sp) { const z = zoneOf(sp); if (z !== 'all') habitat.push(`Lives in the ${z === 'bottom' ? 'bottom' : z === 'top' ? 'top' : 'middle'} of the tank`); }
-  if (md?.red) habitat.push(`Tank at least ${Math.round(md.red.L / 10)} cm long${md.red.mark === 'derived (est)' ? ' (estimated from a gallon figure)' : ''}`);
-  if (md?.green) habitat.push(`Recommended: ${Math.round(md.green.L / 10)} cm long (${md.green.site})`);
+  if (md?.red) habitat.push(`Tank at least ${lenTxt(md.red.L, u)} long${md.red.mark === 'derived (est)' ? ' (estimated from a gallon figure)' : ''}`);
+  if (md?.green) habitat.push(`Recommended: ${lenTxt(md.green.L, u)} long (${md.green.site})`);
   return { band, line, ...(ratio ? { ratio } : {}), habitat };
 }
 
@@ -191,24 +191,24 @@ export function animalsInTank(fish: Pick<Fish, 'species'>[]): AnimalCount[] {
 }
 
 const RECT = TANK_MODELS.filter(m => !m.terrarium && (m.shape ?? 'rect') === 'rect' && /^[\d.]+ (gal|ft)/.test(m.name)).sort((a, b) => litresOf(a) - litresOf(b));
-const optionOf = (m: TankModel, animals: AnimalCount[], base?: number): RoomOption => {
+const optionOf = (m: TankModel, animals: AnimalCount[], base?: number, u: Units = 'cm'): RoomOption => {
   const e = tankExtent(tankFromModel(m)), span = animals.length ? buildSpan(animals, m) : undefined;
-  return { tank: m, label: tankLabel(m), w: e.w, d: e.d, ...(span ? { costUsd: span.setupUsd.balanced, ...(base != null ? { costDeltaUsd: span.setupUsd.balanced - base } : {}) } : {}) };
+  return { tank: m, label: tankLabel(m, u), w: e.w, d: e.d, ...(span ? { costUsd: span.setupUsd.balanced, ...(base != null ? { costDeltaUsd: span.setupUsd.balanced - base } : {}) } : {}) };
 };
 
 /** What the fork card offers when the animals' tank is past the owner's space: make room (the sizes they need, with cost) or keep the space (the biggest tank in it, and animals that fit there). */
-export function forkOptions(animals: AnimalCount[], limit: SpaceLimit, current?: Tank): Fork {
+export function forkOptions(animals: AnimalCount[], limit: SpaceLimit, current?: Tank, u: Units = 'cm'): Fork {
   const need = tankFor(animals), wet = animals.filter(a => { const s = getSpecies(a.species); return s && countsAgainstWater(s); });
   const room: RoomOption[] = [];
   // the tank that is past the space (matched back to the catalogue by its inside size), else the smallest the animals need
   const cur = current && RECT.find(m => { const t = tankFromModel(m); return Math.abs(t.L - current.L) < 1 && Math.abs(t.H - current.H) < 1 && Math.abs(t.D - current.D) < 1; });
   const base = cur ?? need?.tank;
   if (base) {
-    const first = optionOf(base, animals);
-    room.push(first, ...stepUps(animals, base, 2).map(s => optionOf(s.tank, animals, first.costUsd)));
+    const first = optionOf(base, animals, undefined, u);
+    room.push(first, ...stepUps(animals, base, 2).map(s => optionOf(s.tank, animals, first.costUsd, u)));
   }
   const inTank = [...RECT].reverse().find(m => spaceFit(tankFromModel(m), limit).fits);
-  const inSpace = inTank ? optionOf(inTank, animals) : undefined;
+  const inSpace = inTank ? optionOf(inTank, animals, undefined, u) : undefined;
   const fitsAsIs = !need || (!!inTank && need.fails.length === 0 && litresOf(need.tank) <= litresOf(inTank) * 1.001);
   const swaps: SwapOption[] = [];
   if (!fitsAsIs && inTank) {

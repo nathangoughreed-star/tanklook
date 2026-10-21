@@ -17,7 +17,7 @@ import { countsAgainstWater, floorUseCm2, stockingOf } from './stocking';
 import { MIN_SLACK_PCT } from './animalfit';
 import { minDataOf, tankMinimum } from './tankMin';
 import { applyPreset, optionCost, PRESETS, ROOM_C, rowsFor, stockCapacity, tempFit, withChoice } from './tech';
-import type { Fish, TankSetup } from './types';
+import type { Fish, TankSetup, Units } from './types';
 
 /** What the user has picked: n animals of a species, each at `tl` mm (the adult length when omitted). */
 export interface AnimalCount { species: string; n: number; tl?: number }
@@ -206,9 +206,14 @@ export function buildSpan(animals: AnimalCount[], tank: TankModel | string): Bui
   return { setupUsd: { cheapest: Math.round(a.setupUsd), balanced: Math.round(b.setupUsd) }, minPerWeek: { cheapest: Math.round(a.minPerWeek), balanced: Math.round(b.minPerWeek) } };
 }
 
-/** "About a 20 gal long (76 x 30 cm)" style label for the viewer: nearest whole gallons, the maker-free outer size in cm. */
-export function tankLabel(m: TankModel): string {
+/** A length in the viewer's units, whole inches or whole cm. */
+export const lenTxt = (mm: number, u: Units = 'cm') => u === 'in' ? `${Math.round(mm / 25.4)} in` : `${Math.round(mm / 10)} cm`;
+/** "30 x 12 in" / "76 x 30 cm": a footprint in the viewer's units. */
+export const sizeTxt = (L: number, D: number, u: Units = 'cm') => u === 'in' ? `${Math.round(L / 25.4)} x ${Math.round(D / 25.4)} in` : `${Math.round(L / 10)} x ${Math.round(D / 10)} cm`;
+
+/** "About a 20 gal long (76 x 30 cm)" style label for the viewer: nearest whole gallons, the maker-free outer size in the viewer's units. */
+export function tankLabel(m: TankModel, u: Units = 'cm'): string {
   const { L, D } = m.outer, suffix = /^[\d.]+ gal(?: (.+))?$/.exec(m.name);
-  if (!suffix) return `About ${m.name} (${Math.round(L / 10)} x ${Math.round(D / 10)} cm)`;
-  return `About a ${m.ratedGal} gal ${suffix[1] ?? 'tank'} (${Math.round(L / 10)} x ${Math.round(D / 10)} cm)`;
+  if (!suffix) return `About ${m.name} (${sizeTxt(L, D, u)})`;
+  return `About a ${m.ratedGal} gal ${suffix[1] ?? 'tank'} (${sizeTxt(L, D, u)})`;
 }
