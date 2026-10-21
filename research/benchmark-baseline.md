@@ -1,5 +1,7 @@
 # Benchmark baseline: what path 1 says TODAY (generated, do not edit)
 
+Tested commit dd2e7d1 (build 1109), clean checkout.
+
 Generated 2026-10-21 by test/benchmarkBaseline.test.ts. Expected verdicts live in research/rules-spec.md section 5; this is the engine's current answer only.
 
 ## Dwarf frogs: group size AND density together (combined)
