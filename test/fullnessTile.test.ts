@@ -8,7 +8,8 @@ import { buildTank, envKey } from '../src/render/build';
 import { OUTLINE_FIT, OUTLINE_OVER, outlineEdges, spaceOutline } from '../src/render/spaceOutline';
 import { defaultSpace, parseSpace, spaceFit, tankExtent } from '../src/scene/space';
 import { stockingOf } from '../src/scene/stocking';
-import { NEAR_FULL, bar, forkDue, fromUnits, overLine, tileState, toUnits, topBy } from '../src/ui/fullnessTile';
+import { NEAR_FULL, bar, mg, nitrogenRows, forkDue, fromUnits, overLine, tileState, toUnits, topBy } from '../src/ui/fullnessTile';
+import { floorOf, tankMinimum } from '../src/scene/tankMin';
 import type { TankSetup } from '../src/scene/types';
 
 // the build paints textures on canvases: a do-nothing 2D context is enough here (as in menuFocus.test.ts)
@@ -19,6 +20,33 @@ const canvas = () => ({ width: 1, height: 1, style: {}, getContext: () => noop, 
 
 const ex = (name: string): TankSetup => { const sc = parseScene(JSON.parse(SCENES[name])).scene; return sc.tanks[sc.active]; };
 const withFish = () => Object.keys(SCENES).map(ex).find(S => S.water.on && stockingOf(S).contributors.length >= 2)!;
+
+describe('tank minimum bar', () => {
+  it('is set by the most demanding species and ignores the count', () => {
+    const S = withFish(), one = { ...S, fish: S.fish.slice(0, 1) }, m1 = tankMinimum(one);
+    const many = { ...S, fish: Array.from({ length: 12 }, () => ({ ...S.fish[0] })) };
+    expect(tankMinimum(many).percent).toBeCloseTo(m1.percent, 6);
+    expect(tankMinimum({ ...S, fish: [] }).percent).toBe(0);
+    expect(tankMinimum(S).rows[0].pct).toBe(tankMinimum(S).percent);
+  });
+  it('reads over 100 when the tank is shorter or smaller than the species asks', () => {
+    const S = withFish(), sp = tankMinimum(S).rows[0], tight = { ...S, tank: { ...S.tank, L: Math.max(1, sp.minLengthMm / 2) } };
+    if (sp.minLengthMm > 0) expect(tankMinimum(tight).percent).toBeGreaterThan(100);
+  });
+});
+
+describe('tank minimum: run and area', () => {
+  it('measures the longest floor side and the floor area whichever way the tank lies', () => {
+    const S = withFish(), f = floorOf(S.tank), g = floorOf({ ...S.tank, L: S.tank.D, D: S.tank.L });
+    expect(f.runMm).toBeCloseTo(Math.max(S.tank.L, S.tank.D), 0); expect(g.runMm).toBe(f.runMm);
+    if ((S.tank.shape ?? 'rect') === 'rect') expect(f.areaCm2).toBeCloseTo(S.tank.L * S.tank.D / 100, 0);
+  });
+  it('holds swimmers to the run and bottom dwellers to the floor area', () => {
+    const S = withFish(), fish = (species: string) => ({ ...S, fish: [{ ...S.fish[0], species }] });
+    expect(tankMinimum(fish('danio')).rows[0].kind).toBe('run');
+    expect(tankMinimum(fish('adf')).rows[0].kind).toBe('area');
+  });
+});
 
 describe('fullness bars', () => {
   it('grades a bar ok / near / over and caps the fill at 100', () => {
@@ -42,11 +70,17 @@ describe('fullness bars', () => {
     const st = tileState(S, r);
     expect(st.show).toBe(true);
     expect(st.space.pct).toBeCloseTo(r.spacePercent); expect(st.filt.pct).toBeCloseTo(r.filtrationPercent);
-    expect(st.head.pct).toBeCloseTo(Math.max(r.spacePercent, r.filtrationPercent));
+    expect(st.head.pct).toBeCloseTo(Math.max(r.spacePercent, r.filtrationPercent, st.min.pct));
     const empty = { ...S, fish: [] }, re = stockingOf(empty);
     expect(tileState(empty, re).show).toBe(false);
     expect(tileState({ ...empty, layout: { ...S.layout, space: { w: 900, d: 400 } } }, re).show).toBe(true);
     expect(tileState({ ...S, water: { ...S.water, on: false } }, r).show).toBe(false);
+  });
+  it('breaks the ammonia down into plants, bacteria and what is left', () => {
+    const r = stockingOf(withFish()), rows = nitrogenRows(r.nitrogen), labels = rows.map(x => x.label);
+    expect(labels.slice(0, 3)).toEqual(['Animals make', 'Plants take', 'Filter bacteria']);
+    expect(labels.includes('Left in the water')).toBe(r.nitrogen.unprocessed > 0);
+    expect(mg(0.0042)).toBe('4.2 mg'); expect(mg(0.0421)).toBe('42 mg');
   });
   it('opens the fork card only on the edit that takes the tank past the space', () => {
     expect(forkDue(true, false)).toBe(true);

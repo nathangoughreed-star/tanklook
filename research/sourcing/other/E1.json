@@ -5,8 +5,8 @@
     "reef-par": {
       "fields": {
         "soft": {
-          "ours": [50, 150],
-          "verdict": "disagrees",
+          "ours": [75, 150],
+          "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted",
           "suggest": [75, 150],
           "sources": [
             {"url": "https://www.bulkreefsupply.com/content/post/keep-coral-happy-and-dial-in-your-reef-lighting-with-a-par-meter", "site": "Bulk Reef Supply", "states": "75 - 150 PAR", "quote": "Soft Corals and LPS: 75 - 150 PAR"}
@@ -23,8 +23,8 @@
           "note": "Exact match."
         },
         "sps": {
-          "ours": [150, 400],
-          "verdict": "disagrees",
+          "ours": [200, 350],
+          "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted",
           "suggest": [200, 350],
           "sources": [
             {"url": "https://www.bulkreefsupply.com/content/post/keep-coral-happy-and-dial-in-your-reef-lighting-with-a-par-meter", "site": "Bulk Reef Supply", "states": "200 - 350 PAR", "quote": "SPS corals 200 - 350 PAR"}

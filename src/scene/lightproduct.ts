@@ -7,9 +7,15 @@ import { TECHS, fitFixture } from './lightout';
 import type { LightSettings, Tank } from './types';
 
 /** How high each mount holds the LEDs above the rim (mm), read off the product photos: a bracket bar sits just above the
- *  rim, the rim-leg slab on its legs about 60 mm up, the nano disc on its neck; the submersible stick is under the
- *  water, so the model, which takes its lights from above, lights it at the surface (0). ESTIMATES. */
+ *  rim, the rim-leg slab on its legs about 60 mm up, the nano disc on its neck. The submersible stick hangs in the water
+ *  (SUB_DROP under the surface, lightout.ts lightEnv puts its emitters there), so its height is the rim's (0). ESTIMATES. */
 export const MOUNT_H: Record<LightMount, number> = { bar: 25, 'rim-legs': 60, gooseneck: 80, submersible: 0 };
+
+/** The model against published LED-bar readings (reference/par-calibration-data.md D3: 9 bars, 5-65 W, in air, under the bar at
+ *  12-14 in, Portland Aquarium round-up, grade C): the median of model / published, as percent BELOW (white-LED / planted-RGB lamps).
+ *  Pinned by test/lightfollowups.test.ts. So a 12 W bar's ~70 PAR is not high against these; they are mid-priced brands, and a
+ *  budget bar's driver may sit under them, which no reading we found settles. */
+export const BAR_CHECK = { n: 9, lowPct: 18, highPct: 27 };
 
 /** Put `p` on the light (undefined: back to the generic fixture, everything else kept). */
 export function applyLightProduct(l: LightSettings, T: Tank, p: LightProduct | undefined) {
@@ -31,5 +37,6 @@ export const productOn = (l: Pick<LightSettings, 'product'>) => lightProduct(l.p
 export function lightProductNote(p: LightProduct): string {
   const w = p.est?.includes('watts') ? `${p.watts} W (estimated: not published)` : `${p.watts} W`;
   const par = p.par ? `PAR ${p.par} (published)` : `PAR not published: estimated from the ${p.watts} W by the light model (LED, about ±${Math.round(TECHS[p.tech].unc * 100)} %)`;
-  return `${w}. ${par}.`;
+  // the one outside check there is (test/lightfollowups.test.ts): the model against published bar readings
+  return `${w}. ${par}.${p.par || (p.mount !== 'bar' && p.mount !== 'rim-legs') ? '' : ` Assumption, not a measurement: the model reads ${BAR_CHECK.lowPct}-${BAR_CHECK.highPct} % below ${BAR_CHECK.n} published bar readings (mid-priced brands, in air); a budget bar's driver may fall short of those.`}`;
 }

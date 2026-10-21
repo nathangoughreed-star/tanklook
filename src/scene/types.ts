@@ -40,7 +40,7 @@ export type Grain = 'mud' | 'sand' | 'gravel' | 'pebble';
 export interface SubstrateBlend { grain: Grain; color: string; grain2: Grain | 'none'; color2: string; share: number; mix: number }
 
 /** Tank floor outline (scene v8). L x D is always the bounding box; see scene/shape.ts. */
-export type TankShape = 'rect' | 'bow' | 'round' | 'poly' | 'bowl' | 'pie';
+export type TankShape = 'rect' | 'bow' | 'round' | 'poly' | 'bowl' | 'pie' | 'arch';
 export interface Tank {
   L: number; H: number; D: number;
   /**
@@ -57,6 +57,12 @@ export interface Tank {
   bowlTop?: number;
   /** pie only: angle (45-180°) between the two flat panes at the back; D is the radius and L the chord it spans. */
   pieDeg?: number;
+  /**
+   * arch only (Fluval Flex): the front pane is curved about a HORIZONTAL axis, an arc in side view, flush with the frame at the floor and
+   * the opening and bulging out by this many mm at mid-height. The flat sides and back make a rectangle of depth D - frontBulge; D is the
+   * full depth at the bulge (the front-most point, depth 0).
+   */
+  frontBulge?: number;
 }
 
 export interface Fish {
@@ -389,6 +395,18 @@ export interface TankSetup {
   tech?: import('./tech').TechSetup;
   /** How heavily the animals are fed (lane SE2, 2026-10-20, no version bump): sets the waste in the nitrogen budget (scene/nitrogen.ts). Absent = 'normal' (1 % of body weight a day). */
   feeding?: 'light' | 'normal' | 'heavy';
+  /** An integrated kit (2026-10-20, Nathan: an all-in-one such as a Fluval Flex runs only on its own light, filter and lid; no version bump).
+   *  Picked from the tank picker: the kit's gear is applied once and then held (scene/integrated.ts). Absent = a bare or ordinary tank. */
+  integrated?: IntegratedKit;
+}
+
+/** `kit` is an id in data/kits.json; the rest is what holding it needs: `sig` the tank it was applied to (any other size or shape
+ *  releases it), and the kit's own settings as applied. All filled in by scene/integrated.ts. */
+export interface IntegratedKit {
+  kit: string; sig?: string; lid?: LidType;
+  light?: Partial<LightSettings>;
+  filter?: { row?: string; units?: import('./tech').FilterUnit[] };
+  heater?: { row?: string; units?: import('./tech').HeaterUnit[] };
 }
 
 /** What a scatter brush drops (lane SB). */

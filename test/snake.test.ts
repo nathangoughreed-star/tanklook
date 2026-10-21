@@ -43,7 +43,7 @@ function dry(items: Item[]): TankSetup {
 const snake = (id: number, e: Partial<Fish> = {}): Fish => ({ id, species: 'ballpython', x: 300, y: 100, depth: 200, yaw: 0, pitch: 0, roll: 0, bend: 0, surface: 'floor', ...e });
 const BENDS = [-1, -0.85, -0.5, -0.3, 0, 0.2, 0.5, 0.65, 1];
 
-describe('ball python body plan', { timeout: 120000 }, () => {
+describe('ball python body plan', () => {
   it('resolves as a land reptile that rests on the floor and the hardscape, not the glass', () => {
     const sp = getSpecies('ballpython')!;
     expect(sp.cat).toBe('reptile'); expect(sp.habitat).toBe('land'); expect(sp.body).toBe('snake');
@@ -118,7 +118,7 @@ describe('ball python body plan', { timeout: 120000 }, () => {
   });
 });
 
-describe('snakes in the tank', { timeout: 120000 }, () => {
+describe('snakes in the tank', () => {
   const scene = () => {
     const S = dry([piece(1, 'climb', 300, 230, { size: 440, yaw: 15 }), piece(2, 'ledge', 300, 410, { size: 220, lift: 220 }), piece(3, 'corkflat', 150, 120)]);
     S.fish = Array.from({ length: 6 }, (_, i) => snake(i + 1));

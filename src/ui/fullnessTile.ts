@@ -7,6 +7,8 @@
 import type { Viewer } from '../render/viewer';
 import { defaultSpace, spaceFit, tankExtent, SPACE_MAX, SPACE_MIN, type SpaceFit } from '../scene/space';
 import { stockingMemo, type Stocking } from '../scene/stocking';
+import { tankMinimum, type MinRow, type TankMinimum } from '../scene/tankMin';
+import { PLANT_SHARE_MAX, type Nitrogen } from '../scene/nitrogen';
 import type { Store } from '../scene/store';
 import type { SpaceLimit, TankSetup, Units } from '../scene/types';
 
@@ -14,12 +16,12 @@ import type { SpaceLimit, TankSetup, Units } from '../scene/types';
 export const NEAR_FULL = 85;
 export type Level = 'ok' | 'near' | 'over';
 export interface Bar { pct: number; /** fill width, 0..100 */ fill: number; level: Level; text: string }
-export interface TopRow { name: string; n: number; /** share of this bar's load, 0..1 */ share: number }
+export interface TopRow { name: string; n: number; /** share of this bar's load, 0..1 */ share: number; /** printed in place of the share (the minimum bar: what the species wants) */ note?: string }
 export interface TileState {
   /** anything to show: water on, and animals in it or a space set */
   show: boolean;
-  space: Bar; filt: Bar;
-  topSpace: TopRow[]; topFilt: TopRow[];
+  space: Bar; filt: Bar; /** tank size against the most demanding species' minimum (scene/tankMin.ts) */ min: Bar;
+  topSpace: TopRow[]; topFilt: TopRow[]; topMin: TopRow[];
   /** the larger of the two, for the minimized pill */
   head: Bar;
   reason: string;
@@ -37,14 +39,50 @@ export function topBy(r: Stocking, by: 'space' | 'load', k = 3): TopRow[] {
   return [...r.contributors].sort((a, b) => b[by] - a[by]).slice(0, k).map(c => ({ name: c.name, n: c.n, share: tot ? c[by] / tot : 0 }));
 }
 
-export function tileState(S: TankSetup, r: Stocking): TileState {
-  const limit = S.layout.space, fit = limit ? spaceFit(S.tank, limit) : undefined;
+/** The species that want the biggest tank, each with the litres and length it asks for (the percent is the bar's own). */
+export function topMin(m: TankMinimum, units: Units, k = 3): TopRow[] {
+  const sq = (cm2: number) => units === 'in' ? `${Math.round(cm2 / 6.4516)} sq in` : `${Math.round(cm2)} cm²`, len = (mm: number) => `${toUnits(mm, units)}${units === 'in' ? '"' : ' cm'} long`;
+  const one = (x: MinRow, l: number, mm: number, cm2: number) => [l > 0 && `${l} L`, x.kind === 'area' ? cm2 > 0 && `${sq(cm2)} of floor` : mm > 0 && len(mm)].filter(Boolean).join(', ');
+  return [...m.rows].sort((a, b) => b.comfortPct - a.comfortPct).filter(x => x.comfortL > 0 || x.comfortLengthMm > 0).slice(0, k).map(x => ({ name: x.name, n: x.n, share: 0,
+    note: x.floorL < x.comfortL || x.floorLengthMm < x.comfortLengthMm ? `at least ${one(x, x.floorL, x.floorLengthMm, x.floorCm2)}; happier at ${one(x, x.comfortL, x.comfortLengthMm, x.comfortCm2)}` : one(x, x.comfortL, x.comfortLengthMm, x.comfortCm2) }));
+}
+
+/** Red below the absolute floor, amber while under the comfortable size, green past it; the fill is the floor's percent. */
+const minBar = (m: TankMinimum): Bar => { const b = bar(m.percent); return b.level !== 'over' && m.comfortPercent > 100 ? { ...b, level: 'near' } : b; };
+
+export function tileState(S: TankSetup, r: Stocking, units: Units = 'cm'): TileState {
+  const m = tankMinimum(S), limit = S.layout.space, fit = limit ? spaceFit(S.tank, limit) : undefined;
   return {
     show: S.water.on && (r.contributors.length > 0 || !!limit),
-    space: bar(r.spacePercent), filt: bar(r.filtrationPercent), head: bar(r.percent),
-    topSpace: topBy(r, 'space'), topFilt: topBy(r, 'load'), reason: r.reasons[0] ?? '',
+    space: bar(r.spacePercent), filt: bar(r.filtrationPercent), min: minBar(m), head: bar(Math.max(r.percent, m.percent)),
+    topSpace: topBy(r, 'space'), topFilt: topBy(r, 'load'), topMin: topMin(m, units), reason: m.percent > 100 ? `Too small for the ${m.rows[0].name.toLowerCase()}, however few you keep: it needs ${topMin(m, units, 1)[0].note}.`
+      : m.comfortPercent > 100 ? `Workable, but cramped for the ${[...m.rows].sort((a, b) => b.comfortPct - a.comfortPct)[0].name.toLowerCase()}: ${topMin(m, units, 1)[0].note}.` : r.reasons[0] ?? '',
     ...(limit ? { limit, fit } : {}),
   };
+}
+
+/** mg a day, as the breakdown prints it: one decimal under 10. */
+export const mg = (g: number) => { const m = g * 1000; return `${m < 10 ? m.toFixed(1) : Math.round(m)} mg`; };
+export interface NRow { label: string; value: string; note?: string }
+/** Where the day's ammonia goes (the nitrogen budget behind the filtration bar), for the expanded tile. */
+export function nitrogenRows(n: Nitrogen): NRow[] {
+  const rows: NRow[] = [
+    { label: 'Animals make', value: mg(n.tan), note: `on ${n.feeding} feeding` },
+    { label: 'Plants take', value: mg(n.byPlants), note: !n.plants.count ? 'no live plants'
+      : `of about ${mg(n.plants.gN)} they can`
+        + (n.byPlants >= n.tan * PLANT_SHARE_MAX - 1e-9 ? `; held to ${Math.round(PLANT_SHARE_MAX * 100)}% of the animals' ammonia, the filter keeps the rest for nights and feeding peaks` : '')
+        + (n.plants.rootCount ? `. ${n.plants.rootCount} root feeder${n.plants.rootCount > 1 ? 's' : ''} counted at half: they feed from the substrate` : '') },
+    { label: 'Filter bacteria', value: mg(n.byBacteria), note: `of about ${mg(n.filterG)} they can; the bar is full at ${mg(n.safeG)} (${n.filter.label})` },
+  ];
+  if (n.unprocessed > 0) rows.push({ label: 'Left in the water', value: mg(n.unprocessed), note: 'ammonia builds up' });
+  if (n.fert.gN > 0) rows.push({ label: 'Fertilizer adds', value: `${mg(n.fert.gN)} N`, note: `as nitrate; plants use ${mg(n.fert.toPlants)}`
+    + (n.fert.toNitrate > 1e-6 ? `, ${mg(n.fert.toNitrate)} is left to change out${n.fert.option === 'ei' ? ' (the big weekly EI change does that)' : ''}` : '') });
+  if (n.plants.gN > 0) rows.push(n.fishCoverPlants
+    ? { label: 'Plant nitrogen', value: 'from the animals', note: 'their waste covers what the plants take: a fertilizer without nitrogen (potassium, iron, trace) is enough' }
+    : n.plantRoom > 1e-6 ? { label: 'Plants could use', value: `${mg(n.plantRoom)} more`, note: 'nitrogen a day beyond what the animals and fertilizer give: more animals or a fertilizer with nitrogen' }
+    : { label: 'Plant nitrogen', value: 'animals + fertilizer', note: 'the fertilizer makes up what the animals do not give' });
+  rows.push({ label: 'Nitrate', value: n.waterChangePct >= 1 ? `${Math.round(n.waterChangePct)}% a week` : 'plants take it', note: n.waterChangePct >= 1 ? 'water change to hold about 40 ppm' : undefined });
+  return rows;
 }
 
 /** The fork card is due when an edit takes the tank from inside the space to past it (not every frame it stays past). */
@@ -71,14 +109,14 @@ export function onSpaceFork(fn: ForkFn) { forkFn = fn; return () => { if (forkFn
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const plural = (n: number, name: string) => n === 1 ? `1 ${name}` : `${n} ${name}${/(s|ish|ox)$/i.test(name) ? '' : 's'}`;
-const MIN_KEY = 'tanklook.ftMin';
+const MIN_KEY = 'tanklook.ftMin', N_KEY = 'tanklook.ftN';
 
 export function attachFullnessTile(viewer: Viewer, store: Store) {
   const host = document.getElementById('view')!, tools = host.querySelector('.viewtools'); // top-left, under the view's buttons (the demand panel holds the top right)
   const el = document.createElement('section');
   el.className = 'ft'; el.hidden = true; el.setAttribute('aria-label', 'How full the tank is');
   el.innerHTML = `<button class="ftHead" type="button" aria-expanded="true" title="Minimize the fullness tile"><span class="ftTitle">Fullness</span><span class="ftPill"></span><span class="ftChev" aria-hidden="true">▾</span></button>
-<div class="ftBody"><div class="ftBars"></div><div class="ftSpace"></div>
+<div class="ftBody"><div class="ftBars"></div><details class="ftN"><summary>Where the ammonia goes, per day</summary><div class="ftNBody"></div></details><div class="ftSpace"></div>
 <form class="ftForm" hidden><div class="ftFields">
 <label>Width <input name="w" type="number" inputmode="decimal" min="1" step="any" required></label>
 <label>Depth <input name="d" type="number" inputmode="decimal" min="1" step="any" required></label>
@@ -92,6 +130,9 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
   place();
   const $ = <T extends Element>(s: string) => el.querySelector(s) as T;
   const head = $<HTMLButtonElement>('.ftHead'), pill = $<HTMLElement>('.ftPill'), bars = $<HTMLElement>('.ftBars'), spaceEl = $<HTMLElement>('.ftSpace');
+  const nEl = $<HTMLDetailsElement>('.ftN'), nBody = $<HTMLElement>('.ftNBody');
+  try { nEl.open = localStorage.getItem(N_KEY) === '1'; } catch { /* storage blocked */ }
+  nEl.ontoggle = () => { try { localStorage.setItem(N_KEY, nEl.open ? '1' : '0'); } catch { /* ignore */ } };
   const form = $<HTMLFormElement>('.ftForm'), inp = (n: string) => form.elements.namedItem(n) as HTMLInputElement;
 
   let min = matchMedia('(max-width: 700px)').matches; // a phone's view is short: minimized until opened once
@@ -103,16 +144,16 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
   setMin(min, false);
   head.onclick = () => setMin(!min);
 
-  const row = (key: string, label: string, b: Bar, top: TopRow[], what: string) =>
+  const row = (key: string, label: string, b: Bar, top: TopRow[], what: string, hd = `Most of the ${what}:`) =>
     `<div class="ftRow ft-${b.level}" tabindex="0" data-row="${key}"><div class="ftLab"><span>${label}</span><b>${b.text}</b></div>`
     + `<div class="ftTrack" role="meter" aria-label="${label}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(Math.min(b.pct, 999))}"><i style="width:${b.fill}%"></i></div>`
-    + `<div class="ftTop">${top.length ? `<div class="ftTopHd">Most of the ${what}:</div>` + top.map(t => `<div>${esc(plural(t.n, t.name))} <b>${Math.round(t.share * 100)}%</b></div>`).join('') : '<div>No animals in the water yet.</div>'}</div></div>`;
+    + `<div class="ftTop">${top.length ? `<div class="ftTopHd">${hd}</div>` + top.map(t => `<div>${esc(plural(t.n, t.name))} <b>${t.note ? esc(t.note) : `${Math.round(t.share * 100)}%`}</b></div>`).join('') : '<div>No animals in the water yet.</div>'}</div></div>`;
 
   let lastSig = '', editing = false;
   const fitWas = new Map<number, boolean>(); // per tank: did it fit the space after the last edit
 
   const render = () => {
-    const S = store.tank, r = stockingMemo(S), st = tileState(S, r), u = store.scene.units;
+    const S = store.tank, r = stockingMemo(S), u = store.scene.units, st = tileState(S, r, u);
     const animalsHidden = viewer.hidden.has('fish');
     el.hidden = !st.show || animalsHidden;
     const sig = JSON.stringify([st, u, editing, !!forkFn, tankExtent(S.tank)]);
@@ -122,7 +163,16 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
     pill.textContent = st.fit?.fits === false ? `${st.head.text} · too big` : st.head.text;
     pill.className = `ftPill ft-${st.fit?.fits === false ? 'over' : st.head.level}`;
     bars.innerHTML = row('space', 'Space', st.space, st.topSpace, 'space') + row('filt', 'Filtration', st.filt, st.topFilt, 'waste')
+      + row('min', 'Tank minimum', st.min, st.topMin, 'minimum', 'Smallest tank they want, whatever the count:')
       + (st.reason ? `<div class="ftWhy">${esc(st.reason)}</div>` : '');
+    const n = r.nitrogen;
+    nEl.hidden = !r.contributors.length || n.tan <= 0;
+    if (!nEl.hidden) {
+      const seg = (cls: string, g: number) => g > 0 ? `<i class="${cls}" style="width:${g / n.tan * 100}%"></i>` : '';
+      nBody.innerHTML = `<div class="ftNSplit" aria-hidden="true">${seg('p', n.byPlants)}${seg('b', n.byBacteria)}${seg('u', n.unprocessed)}</div>`
+        + nitrogenRows(n).map(x => `<div class="ftNRow"><span>${esc(x.label)}</span><b>${esc(x.value)}</b></div>${x.note ? `<div class="ftNNote">${esc(x.note)}</div>` : ''}`).join('')
+        + `<div class="ftNNote ftNCaveat">Rough figures: animals ±40 %, plant and bacteria rates from few studies.</div>`;
+    }
     const e = tankExtent(S.tank);
     spaceEl.innerHTML = editing ? `<div class="ftHint">The dashed outline in the view is your space; the tank's back sits on its back edge.</div>`
       : !st.limit ? `<button type="button" class="ftSet" title="Enter the area you have for the tank; it is drawn as a dashed outline">Set my space</button>`

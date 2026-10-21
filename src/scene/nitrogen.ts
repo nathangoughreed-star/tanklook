@@ -6,6 +6,15 @@
 //             fish farm, foam untested). Flow only gates it (oxygen: at least 2 m3 a day through the media per g TAN a day).
 //   PLANTS    take ammonium first, nitrate once it is gone: fresh weight x rate per 100 g (slow 0.001, medium 0.003, fast 0.006 g N/day,
 //             extrapolated from one measured Egeria study), times light and CO2, less 30 % returned by die-off; floaters 0.3 g N/m2/day.
+//             Root feeders (swords, crypts, vals, lotus, carpets) draw about half their nitrogen from the substrate (root tabs, mulm), so
+//             only half their uptake counts against the water column (Nathan 2026-10-20).
+//   SHARING   plants and bacteria take ammonium side by side, and plants take little at night: plants get at most 60 % of the
+//             day's TAN, the filter always sees the rest (a buffer for feeding peaks and a dead fish). Nitrate the bacteria make
+//             still goes to plants with room left. A guess, documented: no study pins the split.
+//   FERTS     a water-column fertilizer adds nitrate (KNO3, urea): all-in-one about 5 ppm NO3 a week, a dosing pump about 10,
+//             EI about 60 (3 x 20). Plants take the animals' nitrogen first; fert nitrogen they cannot use is nitrate to change
+//             out. Root tabs feed the substrate, not the water. When the animals already cover what the plants take, a fert
+//             without nitrogen (potassium, iron, trace) does the job.
 // Two verdicts: AMMONIA SAFETY = (TAN the plants do not take) / 70 % of the filter's capacity (30 % headroom); NITRATE BURDEN = what no
 // plant takes, as the water change per week that holds nitrate at about 40 ppm.
 import { FILTER_MEDIA_L, MEDIA_L_PER_GPH, SPONGE_L_PER_GAL } from '../data/filtermedia';
@@ -65,6 +74,13 @@ export function filterCapacity(S: TankSetup, litres: number, tempC: number, opt?
 }
 
 type PlantClass = 'slow' | 'medium' | 'fast' | 'float';
+/** Root feeders: about half their nitrogen comes from the substrate, not the water. */
+const ROOT_FEEDERS = new Set(['sword', 'ozelot', 'crypt', 'balansae', 'lotus', 'sagittaria', 'grass', 'hairgrass', 'carpet']);
+const ROOT_WATER = 0.5;
+/** Most of the day's TAN plants can take as ammonium; the filter always sees the rest. */
+export const PLANT_SHARE_MAX = 0.6;
+/** mg N per litre per week a water-column fertilizer adds (as nitrate), by ferts option. Root tabs feed the substrate. */
+export const FERT_N: Record<string, number> = { none: 0, roottabs: 0, aio: 1.1, doser: 2.3, ei: 13.5 };
 /** Plant variant -> growth class and fresh weight g (floaters: cover in m2); guesses at the item's default size. */
 const PLANTS: Record<string, [PlantClass, number]> = {
   fern: ['slow', 40], anubias: ['slow', 25], crypt: ['slow', 25], buce: ['slow', 8], balansae: ['slow', 40], moss: ['slow', 15], lotus: ['slow', 40], sagittaria: ['slow', 20],
@@ -81,20 +97,21 @@ export const PATCH_PLANTS = 3;
 /** A painted patch of live plants: brush `plant:<variant>` whose variant is not an artificial (silk / plastic) kind (lane P4 2026-10-20). */
 export const isLivePlantPatch = (p: Patch) => p.brush.startsWith('plant:') && (LIBRARY[p.brush.slice(6)]?.kind ?? 'plant') === 'plant';
 
-export interface PlantParts { gN: number; count: number; light: number; co2: number }
+export interface PlantParts { /** g N a day the plants take from the water */ gN: number; /** of it, from root feeders (half their uptake) */ rootGN: number; count: number; rootCount: number; light: number; co2: number }
 /** g N a day the plants can take (ammonium first), from the items and painted plant patches. */
 export function plantUptake(S: TankSetup): PlantParts {
-  let gN = 0, count = 0;
+  let gN = 0, count = 0, rootGN = 0, rootCount = 0;
   const light = S.light && (S.light as { on?: boolean }).on === false ? 0.3 : 0.7;
   const feed = feedOf(techOf(S)), co2 = feed === 'co2' ? 1.3 : feed === 'ferts' ? 1.1 : 1;
   for (const it of S.items) {
     if (it.kind !== 'plant' || DRY_PLANTS.has(it.variant)) continue;
     const p = PLANTS[it.variant] ?? DEFAULT_PLANT;
     count++;
-    gN += p[0] === 'float' ? p[1] * FLOAT_M2 * light : (p[1] / 100) * RATE_100G[p[0]] * light * co2;
+    const g = p[0] === 'float' ? p[1] * FLOAT_M2 * light : (p[1] / 100) * RATE_100G[p[0]] * light * co2;
+    if (ROOT_FEEDERS.has(it.variant)) { rootCount++; rootGN += g * ROOT_WATER; gN += g * ROOT_WATER; } else gN += g;
   }
   for (const p of S.patches ?? []) if (isLivePlantPatch(p)) { count += PATCH_PLANTS; gN += PATCH_PLANTS * (PATCH_FW / 100) * RATE_100G.medium * light * co2; }
-  return { gN: gN * (1 - DIE_OFF_RETURN), count, light, co2 };
+  return { gN: gN * (1 - DIE_OFF_RETURN), rootGN: rootGN * (1 - DIE_OFF_RETURN), count, rootCount, light, co2 };
 }
 
 export interface Nitrogen {
@@ -111,6 +128,12 @@ export interface Nitrogen {
   ammoniaPercent: number;
   /** nitrate: mg N per litre per week left after plants, and the weekly water change that holds about 40 ppm nitrate (9 mg N/L) */
   nitrateMgNPerWeek: number; waterChangePct: number;
+  /** water-column fertilizer: its option, g N a day it adds, what plants take of it, what ends as nitrate */
+  fert: { option: string; gN: number; toPlants: number; toNitrate: number };
+  /** g N a day the plants could still take after the animals' nitrogen and the fert (an N fert or more animals would feed it) */
+  plantRoom: number;
+  /** the animals alone supply what the plants take: a fert without nitrogen is enough */
+  fishCoverPlants: boolean;
   /** share of the day's nitrogen that ends in plants (ammonium and nitrate), in water changes, unprocessed */
   split: { plants: number; waterChanges: number; unprocessed: number };
 }
@@ -118,13 +141,18 @@ export interface Nitrogen {
 const NITRATE_TARGET_N = 9;
 export function nitrogenBudget(S: TankSetup, litres: number, tempC: number, tan: number, opt?: string): Nitrogen {
   const filter = filterCapacity(S, litres, tempC, opt), plants = plantUptake(S), feeding = feedingOf(S);
-  const byPlants = Math.min(tan, plants.gN), after = tan - byPlants, spare = plants.gN - byPlants;
+  const byPlants = Math.min(tan * PLANT_SHARE_MAX, plants.gN), after = tan - byPlants, spare = plants.gN - byPlants;
   const safeG = filter.gDay * HEADROOM, byBacteria = Math.min(after, filter.gDay), unprocessed = Math.max(0, after - filter.gDay);
   const ammoniaPercent = safeG > 0 ? after / safeG * 100 : after > 0 ? Infinity : 0;
   // what the bacteria convert ends as nitrate; plants with capacity left take it before it counts
-  const fromNitrate = Math.min(spare, byBacteria), nitrateG = byBacteria - fromNitrate;
+  const fromNitrate = Math.min(spare, byBacteria), room = spare - fromNitrate;
+  const fOpt = S.water.salt ? 'none' : techOf(S).rows.ferts ?? 'none', fertG = (FERT_N[fOpt] ?? 0) * litres / 7 / 1000, fertToPlants = Math.min(room, fertG);
+  // EI doses to excess on purpose and resets with its own big weekly change: its leftover is not counted toward the change asked of the animals
+  const fishNitrate = byBacteria - fromNitrate, nitrateG = fishNitrate + (fOpt === 'ei' ? 0 : fertG - fertToPlants);
   const nitrateMgNPerWeek = litres > 0 ? nitrateG * 7 * 1000 / litres : 0;
   const waterChangePct = Math.min(100, nitrateMgNPerWeek / NITRATE_TARGET_N * 100), total = tan || 1;
   return { feeding, tan, filter, filterG: filter.gDay, safeG, plants, byPlants, byBacteria, unprocessed, ammoniaPercent, nitrateMgNPerWeek, waterChangePct,
-    split: { plants: (byPlants + fromNitrate) / total, waterChanges: nitrateG / total, unprocessed: unprocessed / total } };
+    fert: { option: fOpt, gN: fertG, toPlants: fertToPlants, toNitrate: fertG - fertToPlants }, plantRoom: room - fertToPlants,
+    fishCoverPlants: plants.gN > 0 && byPlants + fromNitrate >= plants.gN - 1e-12,
+    split: { plants: (byPlants + fromNitrate) / total, waterChanges: fishNitrate / total, unprocessed: unprocessed / total } };
 }

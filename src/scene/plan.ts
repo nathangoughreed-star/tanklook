@@ -74,6 +74,14 @@ export function hardTruths(S: TankSetup, animals: AnimalCount[], heater: boolean
   return out;
 }
 
+/** The parts an all-in-one kit can contain (demand engine: `kit.includes`). */
+const KIT_PARTS = ['tank', 'stand', 'lid', 'light', 'filter', 'heater'];
+/** A kit row serves what its parts serve: needed when any part is, listing the needs ("Includes ..."). */
+function kitServes(parts: ({ serves: string; kind: PlanRow['kind'] } | undefined)[]): { serves: string; kind: PlanRow['kind'] } {
+  const need = parts.filter((p): p is { serves: string; kind: PlanRow['kind'] } => p?.kind === 'need');
+  return need.length ? { serves: `Includes what these need: ${need.map(p => p.serves).join('; ')}`, kind: 'need' } : { serves: 'Part of the set-up', kind: 'look' };
+}
+
 /** What each priced row serves; undefined = skip the row (no set-up price). */
 function serve(r: Contribution, S: TankSetup, animals: AnimalCount[], needs: ReturnType<typeof plantNeeds>, st: ReturnType<typeof stockingOf>, wantsHeat: boolean): { serves: string; kind: PlanRow['kind'] } | undefined {
   const k = r.key, wet = animals.map(a => getSpecies(a.species)?.name).filter(Boolean);
@@ -111,9 +119,11 @@ export function planOf(S: TankSetup, build?: Build, now = Date.now()): Plan {
   const wantsHeat = (S.water.on && !!S.water.salt) || animals.some(a => { const sp = getSpecies(a.species); return sp && countsAgainstWater(sp) && tempFit(sp.id, ROOM_C) !== 'ok'; });
   const rows: PlanRow[] = [];
   const grouped = new Map<string, PlanRow>();
+  // a kit's one price stands in for the parts it contains (their rows lose their price): the kit row serves their needs
+  const kit = D.items.some(r => r.key === 'kit' && r.setup), inKit = (r: Contribution) => kit && !r.setup && KIT_PARTS.includes(r.key);
   for (const r of D.items) {
     if (!r.setup || mean3(r.setup) <= 0) continue;
-    const s = serve(r, S, animals, needs, st, wantsHeat); if (!s) continue;
+    const s = r.key === 'kit' ? kitServes(D.items.filter(inKit).map(p => serve(p, S, animals, needs, st, wantsHeat))) : serve(r, S, animals, needs, st, wantsHeat); if (!s) continue;
     const row: PlanRow = { item: r.label, usd: Math.round(mean3(r.setup)), ...s };
     // one line for the hardscape, one for the plants, one for the animals: the shopping list is a list, not the parts catalogue
     const g = r.key.startsWith('hard:') ? (LIBRARY[r.key.slice(5)]?.kind === 'artificial' ? 'fake' : 'hard') : r.key.startsWith('plant:') ? 'plant' : r.key.startsWith('animal:') ? 'animal' : '';
@@ -124,7 +134,7 @@ export function planOf(S: TankSetup, build?: Build, now = Date.now()): Plan {
   }
   for (const g of ['animal', 'hard', 'plant', 'fake'] as const) { const r = grouped.get(g); if (r) rows.push(r); }
   const missing: string[] = [];
-  if (wantsHeat && !D.items.some(r => r.key === 'heater' && r.setup)) missing.push('Heater: your animals want warmer water than a room and the list has none');
+  if (wantsHeat && !D.items.some(r => r.key === 'heater' && (r.setup || inKit(r)))) missing.push('Heater: your animals want warmer water than a room and the list has none');
   if (st.filtrationPercent > 100) missing.push('Filter: none on the list clears what these animals produce (choose a stronger one or a bigger tank)');
   const heater = D.items.some(r => r.key === 'heater');
   const truths = hardTruths(S, animals, heater);

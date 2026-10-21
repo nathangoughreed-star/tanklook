@@ -37,9 +37,9 @@ export class SpeciesPreview {
   private queued = false;
 
   /** Throws if WebGL is unavailable (the caller keeps the 2D card then). */
-  constructor() {
+  constructor(pixelRatio = Math.min(devicePixelRatio, 2)) {
     this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true, alpha: true });
-    this.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    this.renderer.setPixelRatio(pixelRatio);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.setClearColor(0x000000, 0);
     this.canvas.className = 'orbit';
@@ -59,7 +59,16 @@ export class SpeciesPreview {
   }
 
   /** Show a species, from the starting 3/4 view. */
-  show(sp: Species) {
+  show(sp: Species) { this.load(sp); this.draw(); }
+
+  /** A still of a species from the starting view, as a transparent PNG data URL (the stocking gallery's tiles). */
+  snapshot(sp: Species, w: number, h: number): string {
+    this.load(sp);
+    this.render(w, h);
+    return this.canvas.toDataURL('image/png');
+  }
+
+  private load(sp: Species) {
     if (this.model) {
       this.scene.remove(this.model);
       this.model.traverse(o => { const g = (o as THREE.Mesh).geometry; if (g && !g.userData.keep) g.dispose(); });
@@ -73,7 +82,6 @@ export class SpeciesPreview {
     // tile's top and bottom when its length is turned upright
     this.dist = sphere.radius / Math.sin((FOV / 2) * THREE.MathUtils.DEG2RAD) * 0.85;
     this.yaw = YAW0; this.pitch = PITCH0;
-    this.draw();
   }
 
   /** Render on the next frame (coalesces drag events). */
@@ -83,8 +91,7 @@ export class SpeciesPreview {
     requestAnimationFrame(() => { this.queued = false; this.render(); });
   }
 
-  private render() {
-    const w = this.canvas.clientWidth, h = this.canvas.clientHeight;
+  private render(w = this.canvas.clientWidth, h = this.canvas.clientHeight) {
     if (!this.model || !w || !h) return;
     this.renderer.setSize(w, h, false);
     // the wider of the two fits: a tall canvas keeps the fish's length inside the width

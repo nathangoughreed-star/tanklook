@@ -1,0 +1,534 @@
+{
+ "batch": "R5",
+ "agent_notes": "Several first-choice URLs 404/403 (Seriously Fish oto/ancistrus, Aquarium Co-Op turbo/bristlenose, Tankflare, Hepper); used other pages. Quotes taken from WebFetch extraction output. No page states an amount of supplement per grazer except frequencies; no page states that feeding lets you keep more grazers (lifts mostly not-stated).",
+ "species": {
+  "turbo": {
+   "sci": "Turbo fluctuosa",
+   "fields": {
+    "density": {
+     "ours": null,
+     "verdict": "stated",
+     "suggest": {
+      "perL": [
+       0.018,
+       0.04
+      ],
+      "note": "2-3 per 20-30 US gal"
+     },
+     "sources": [
+      {
+       "url": "https://topshelfaquatics.com/blogs/news/comprehensive-guide-to-turbo-snails-for-your-aquarium",
+       "site": "Top Shelf Aquatics",
+       "states": "2-3 turbo snails per 20-30 gallons",
+       "quote": "2-3 turbo snails are recommended per 20–30 gallons"
+      }
+     ],
+     "note": "Worldwide Corals (1 per 10 gal) appeared only in a search snippet; not citable."
+    },
+    "starves": {
+     "ours": null,
+     "verdict": "stated",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://topshelfaquatics.com/blogs/news/comprehensive-guide-to-turbo-snails-for-your-aquarium",
+       "site": "Top Shelf Aquatics",
+       "states": "overstocking leads to lack of algae and starvation",
+       "quote": "Overstocking turbo snails can lead to a lack of algae, which causes starvation."
+      },
+      {
+       "url": "https://topshelfaquatics.com/pages/saltwater-invertebrates/mexican-turbo-snail",
+       "site": "Top Shelf Aquatics (care page)",
+       "states": "too many grazers exhaust natural algae",
+       "quote": "don't overstock a small system—too many grazers quickly exhaust natural algae."
+      }
+     ],
+     "note": ""
+    },
+    "supplement": {
+     "ours": null,
+     "verdict": "behaviour-only",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.liveaquaria.com/product/571/",
+       "site": "LiveAquaria",
+       "states": "supplement with dried seaweed when algae is insufficient; no amount",
+       "quote": "If algae levels are insufficient, supplement the diet of the Turbo Snail with dried seaweed."
+      },
+      {
+       "url": "https://topshelfaquatics.com/pages/saltwater-invertebrates/mexican-turbo-snail",
+       "site": "Top Shelf Aquatics (care page)",
+       "states": "nori sheets or algae wafers if roaming without food; no frequency",
+       "quote": "if they keep roaming without finding food, supplement with nori sheets or algae wafers to prevent starvation."
+      }
+     ],
+     "note": "No amount or frequency on opened pages."
+    },
+    "lifts": {
+     "ours": null,
+     "verdict": "behaviour-only",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://topshelfaquatics.com/pages/saltwater-invertebrates/mexican-turbo-snail",
+       "site": "Top Shelf Aquatics (care page)",
+       "states": "multiple grazers need enough algae; supplement if keeping multiple",
+       "quote": "Yes, but only if the tank has enough algae to support multiple heavy grazers."
+      }
+     ],
+     "note": "Ties count to algae supply; no number of extra snails."
+    }
+   }
+  },
+  "nerite": {
+   "sci": "Neritina natalensis",
+   "fields": {
+    "density": {
+     "ours": null,
+     "verdict": "stated",
+     "suggest": {
+      "perL": [
+       0.026,
+       0.053
+      ],
+      "note": "1 per 10 gal to 1 per 5 gal"
+     },
+     "sources": [
+      {
+       "url": "https://www.aquariuminfo.org/zebraneritesnail.html",
+       "site": "Aquarium Info",
+       "states": "1 snail per 5 gallons",
+       "quote": "For this reason it is wise to stock no more than one snail for every 5 gallons of aquarium water."
+      },
+      {
+       "url": "https://www.furrycritter.com/pages/articles/fish/nerite_snail.htm",
+       "site": "Furry Critter",
+       "states": "1 per 10 gallons",
+       "quote": "One nerite per 10 gallons is a reasonable stocking guideline"
+      },
+      {
+       "url": "https://furrycritter.com/pages/articles/fish/best_algae_eaters.htm",
+       "site": "Furry Critter (algae eaters)",
+       "states": "1-2 per 10 gallons",
+       "quote": "One or two nerites per ten gallons provides effective glass and hardscape cleaning"
+      }
+     ],
+     "note": "Sources range 0.1-0.2 per gal."
+    },
+    "starves": {
+     "ours": null,
+     "verdict": "stated",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://aquariumcoop.com/blogs/aquarium/nerite-snails",
+       "site": "Aquarium Co-Op",
+       "states": "can starve if not enough algae",
+       "quote": "nerite snails can starve to death if there is not enough algae in the tank"
+      },
+      {
+       "url": "https://www.furrycritter.com/pages/articles/fish/nerite_snail.htm",
+       "site": "Furry Critter",
+       "states": "new clean tank gives little to eat",
+       "quote": "A brand-new, spotlessly clean tank won't give them much to eat"
+      }
+     ],
+     "note": ""
+    },
+    "supplement": {
+     "ours": null,
+     "verdict": "stated",
+     "suggest": {
+      "food": "blanched vegetables or algae wafers",
+      "freq": "a few times per week",
+      "removeAfter": "a few hours"
+     },
+     "sources": [
+      {
+       "url": "https://www.furrycritter.com/pages/articles/fish/nerite_snail.htm",
+       "site": "Furry Critter",
+       "states": "supplement a few times per week when algae scarce",
+       "quote": "you should supplement with blanched vegetables or algae wafers a few times per week"
+      },
+      {
+       "url": "https://aquariumcoop.com/blogs/aquarium/nerite-snails",
+       "site": "Aquarium Co-Op",
+       "states": "algae wafers, blanched zucchini, canned green beans; no amount",
+       "quote": "offer them algae wafers, blanched zucchini slices, and canned green beans to graze on"
+      }
+     ],
+     "note": "Frequency only; no quantity per feeding."
+    },
+    "lifts": {
+     "ours": null,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "No opened page states a higher count with feeding."
+    }
+   }
+  },
+  "trumpet": {
+   "sci": "Melanoides tuberculata",
+   "fields": {
+    "density": {
+     "ours": null,
+     "verdict": "stated",
+     "suggest": {
+      "perL": 0.264,
+      "note": "1 per US gal as general rule"
+     },
+     "sources": [
+      {
+       "url": "https://aquariadise.com/caresheet-malaysian-trumpet-snails/",
+       "site": "Aquariadise",
+       "states": "1 per gallon",
+       "quote": "As a general rule of thumb, you can keep one Malaysian Trumpet Snail per gallon of water."
+      }
+     ],
+     "note": "Species breeds without a male and tracks food, so a fixed density is weak."
+    },
+    "starves": {
+     "ours": null,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "No opened page says trumpet snails starve."
+    },
+    "supplement": {
+     "ours": null,
+     "verdict": "stated",
+     "suggest": {
+      "food": "commercial food or vegetables",
+      "freq": "2-3 times per week"
+     },
+     "sources": [
+      {
+       "url": "https://aquariadise.com/caresheet-malaysian-trumpet-snails/",
+       "site": "Aquariadise",
+       "states": "commercial food or vegetables 2-3 times a week",
+       "quote": "If you choose to feed your snails commercial food or vegetables, two to three times a week should suffice."
+      },
+      {
+       "url": "https://www.aquariumsource.com/malaysian-trumpet-snail/",
+       "site": "Aquarium Source",
+       "states": "algae wafers and pellets; no amount",
+       "quote": "You can supplement their natural diet with things like algae wafers and pellets."
+      }
+     ],
+     "note": ""
+    },
+    "lifts": {
+     "ours": null,
+     "verdict": "behaviour-only",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.aquariumsource.com/malaysian-trumpet-snail/",
+       "site": "Aquarium Source",
+       "states": "overpopulation when too much food available",
+       "quote": "Oftentimes, overpopulation will occur if there are too many food sources available."
+      }
+     ],
+     "note": "Population rises with food supply; no number."
+    }
+   }
+  },
+  "oto": {
+   "sci": "Otocinclus",
+   "fields": {
+    "density": {
+     "ours": null,
+     "verdict": "stated",
+     "suggest": {
+      "perL": [
+       0.04,
+       0.079
+      ],
+      "note": "3-6 in 20 US gal; 4-6 per 10 gal on another page"
+     },
+     "sources": [
+      {
+       "url": "https://www.furrycritter.com/pages/articles/fish/otocinclus.htm",
+       "site": "Furry Critter",
+       "states": "3-6 in 20 gallons",
+       "quote": "Three to six otocinclus in a 20-gallon tank represents a comfortable stocking."
+      },
+      {
+       "url": "https://furrycritter.com/pages/articles/fish/best_algae_eaters.htm",
+       "site": "Furry Critter (algae eaters)",
+       "states": "min 10 gal for 4-6",
+       "quote": "Otocinclus need a minimum of 10 gallons for a group of four to six"
+      }
+     ],
+     "note": "0.04-0.16 per L."
+    },
+    "starves": {
+     "ours": null,
+     "verdict": "stated",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://aquariumcoop.com/blogs/aquarium/otocinclus-catfish",
+       "site": "Aquarium Co-Op",
+       "states": "best in mature tank with algae and biofilm",
+       "quote": "they do best in a mature aquarium with lots of algae and biofilm"
+      },
+      {
+       "url": "https://aquariumbreeder.com/otocinclus-guide-care-diet-and-breeding/",
+       "site": "Aquarium Breeder",
+       "states": "clean tank starves",
+       "quote": "If your tank is clean and sterile, they will starve."
+      },
+      {
+       "url": "https://aquariumbreeder.com/otocinclus-guide-care-diet-and-breeding/",
+       "site": "Aquarium Breeder",
+       "states": "stable-tank algae not enough for 6+",
+       "quote": "algae build up in a stable aquarium usually won't be enough to completely sustain 6 or more Otocinclus"
+      }
+     ],
+     "note": "Aquarium Breeder is lower quality."
+    },
+    "supplement": {
+     "ours": null,
+     "verdict": "stated",
+     "suggest": {
+      "food": "algae wafers and blanched vegetables",
+      "freq": "daily (Aquarium Breeder); blanched veg 3x weekly (Furry Critter)"
+     },
+     "sources": [
+      {
+       "url": "https://aquariumbreeder.com/otocinclus-guide-care-diet-and-breeding/",
+       "site": "Aquarium Breeder",
+       "states": "daily algae wafers and blanched veg",
+       "quote": "Feed them daily with algae wafers and blanched vegetables."
+      },
+      {
+       "url": "https://www.furrycritter.com/pages/articles/fish/otocinclus.htm",
+       "site": "Furry Critter",
+       "states": "blanched veg three times weekly",
+       "quote": "If you're supplementing with vegetables, three times weekly is adequate."
+      }
+     ],
+     "note": "Frequencies differ; no portion size."
+    },
+    "lifts": {
+     "ours": null,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "No page says feeding permits more fish."
+    }
+   }
+  },
+  "bristlenose": {
+   "sci": "Ancistrus",
+   "fields": {
+    "density": {
+     "ours": null,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.chewy.com/education/fish/general/bristlenose-pleco-care-guide",
+       "site": "Chewy",
+       "states": "20 gal minimum for one adult; no per-volume ratio",
+       "quote": "A 20-gallon aquarium is a common minimum for one adult bristlenose pleco."
+      }
+     ],
+     "note": "Tank minimum only, not a density."
+    },
+    "starves": {
+     "ours": null,
+     "verdict": "stated",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.chewy.com/education/fish/general/bristlenose-pleco-care-guide",
+       "site": "Chewy",
+       "states": "aquarium algae does not give a complete diet",
+       "quote": "They graze on algae, biofilm, and plant matter, but aquarium algae usually doesn't provide a complete diet."
+      }
+     ],
+     "note": "Incomplete diet, not literal starvation."
+    },
+    "supplement": {
+     "ours": null,
+     "verdict": "stated",
+     "suggest": {
+      "food": "algae wafers, blanched vegetables",
+      "freq": "wafers every other day; refresh vegetables every 8-24 h"
+     },
+     "sources": [
+      {
+       "url": "https://modestfish.com/bristlenose-pleco-care/",
+       "site": "Modest Fish",
+       "states": "algae wafers every other day",
+       "quote": "Algae wafers can be fed to your fish every other day."
+      },
+      {
+       "url": "https://modestfish.com/bristlenose-pleco-care/",
+       "site": "Modest Fish",
+       "states": "replace vegetables every 8-24 hours",
+       "quote": "Replenishing your fish's vegetables every 8-24 hours will keep them from rotting and making your fish unwell."
+      },
+      {
+       "url": "https://www.chewy.com/education/fish/general/bristlenose-pleco-care-guide",
+       "site": "Chewy",
+       "states": "offer wafers, vegetable pellets, blanched veg if food runs low",
+       "quote": "If their food sources in the tank seem to be running low, you can offer them some of the following:"
+      }
+     ],
+     "note": "No portion size."
+    },
+    "lifts": {
+     "ours": null,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": ""
+    }
+   }
+  },
+  "sae": {
+   "sci": "Crossocheilus oblongus",
+   "fields": {
+    "density": {
+     "ours": null,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://furrycritter.com/pages/articles/fish/best_algae_eaters.htm",
+       "site": "Furry Critter (algae eaters)",
+       "states": "min 30 gal, 55+ long term; no per-gallon ratio",
+       "quote": "need a minimum of 30 gallons, with 55 or more appropriate for long-term housing."
+      }
+     ],
+     "note": "Tank minimum only."
+    },
+    "starves": {
+     "ours": null,
+     "verdict": "stated",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://aquaticarts.com/products/siamese-algae-eater",
+       "site": "Aquatic Arts",
+       "states": "should not rely exclusively on aquarium algae",
+       "quote": "Algae wafers are highly recommended because Siamese Algae Eaters should not rely exclusively on aquarium algae."
+      }
+     ],
+     "note": "Not literal starvation."
+    },
+    "supplement": {
+     "ours": null,
+     "verdict": "stated",
+     "suggest": {
+      "food": "algae wafers, blanched vegetables, sinking pellets",
+      "freq": "daily"
+     },
+     "sources": [
+      {
+       "url": "https://aquaticarts.com/products/siamese-algae-eater",
+       "site": "Aquatic Arts",
+       "states": "supplemental foods daily even when algae available",
+       "quote": "Siamese Algae Eaters should receive supplemental foods daily even when algae is available."
+      },
+      {
+       "url": "https://www.fishkeeper.co.uk/fish/freshwater/cyprinids/siamese-flying-fox-siamese-algae-eater-",
+       "site": "Fishkeeper",
+       "states": "diet must be supplemented with veg",
+       "quote": "As detailed below, the diet must be supplemented with other foods including a good vegetable component."
+      }
+     ],
+     "note": "No portion size."
+    },
+    "lifts": {
+     "ours": null,
+     "verdict": "not-stated",
+     "suggest": null,
+     "sources": [],
+     "note": "Furry Critter says well-fed adults reduce algae consumption, the opposite of a lift."
+    }
+   }
+  },
+  "amano": {
+   "sci": "Caridina multidentata",
+   "fields": {
+    "density": {
+     "ours": null,
+     "verdict": "stated",
+     "suggest": {
+      "perL": 0.159,
+      "note": "1 per 2 US gal (Fishkeeping World)"
+     },
+     "sources": [
+      {
+       "url": "https://fishkeepingworld.com/amano-shrimp/",
+       "site": "Fishkeeping World",
+       "states": "1 Amano per 2 gallons",
+       "quote": "As a good rule of thumb, you can add 1 Amano Shrimp per 2 Gallons."
+      },
+      {
+       "url": "https://www.aquariumsource.com/amano-shrimp/",
+       "site": "Aquarium Source",
+       "states": "10 gal minimum then 2 gal per extra shrimp",
+       "quote": "After that, you’ll want to add two gallons for every additional shrimp in the tank."
+      }
+     ],
+     "note": ""
+    },
+    "starves": {
+     "ours": null,
+     "verdict": "stated",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.aquariumsource.com/amano-shrimp/",
+       "site": "Aquarium Source",
+       "states": "less likely to survive in pristine tank without algae",
+       "quote": "Your shrimp are less likely to survive if you put them in a pristine tank without any algae."
+      }
+     ],
+     "note": "Fishkeeping World also says shrimp always need supplementing (quote only matched as a label, dropped)."
+    },
+    "supplement": {
+     "ours": null,
+     "verdict": "behaviour-only",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://fishkeepingworld.com/amano-shrimp/",
+       "site": "Fishkeeping World",
+       "states": "core diet pellet or algae wafer",
+       "quote": "The core of their diet should consist of a high-quality pellet or algae wafer."
+      },
+      {
+       "url": "https://www.aquariumsource.com/amano-shrimp/",
+       "site": "Aquarium Source",
+       "states": "blanch vegetables, remove after 1 hour",
+       "quote": "Remove the veggies from your tank after one hour to avoid contaminating the water."
+      }
+     ],
+     "note": "No quantity or schedule stated."
+    },
+    "lifts": {
+     "ours": null,
+     "verdict": "behaviour-only",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://fishkeepingworld.com/amano-shrimp/",
+       "site": "Fishkeeping World",
+       "states": "more algae/debris means less supplementing needed",
+       "quote": "Obviously the more amounts of algae and debris in the tank for them to graze on, the less supplementing they will need."
+      }
+     ],
+     "note": "Inverse relation; no extra-shrimp number."
+    }
+   }
+  }
+ }
+}

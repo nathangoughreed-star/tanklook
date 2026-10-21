@@ -5,6 +5,7 @@
 import { HERP, ageAtLength, floorFor, SQFT_MM2, type HerpRule } from '../data/herpstock';
 import { fishTL, getSpecies } from '../data/species';
 import { footprint } from './shape';
+import { TIERS } from './tankMin';
 import type { TankSetup } from './types';
 
 export interface StockIssue { level: 'warn' | 'note' | 'info'; who: string; text: string }
@@ -33,8 +34,10 @@ export function herpCheck(S: TankSetup): StockIssue[] {
     const st = r.stages.findIndex(x => big <= x.to), cur = r.stages[st], last = r.stages.length - 1;
     const grown = st === last, [min1, rec1] = floorFor(r, n), need = min1 * cur.k, want = rec1 * cur.k, hNeed = cur.h ?? (grown ? r.hMin : undefined);
     const kid = grown ? '' : ' at this size';
+    // a species with its own floor tier in the tank-minimum bar is judged there (Nathan 2026-10-20: ADF 5.5 gal floor); a second floor-area verdict here would contradict it
+    const tiered = !!TIERS[S.fish.map(f => getSpecies(f.species)).find(sp => sp?.sci === sci)?.id ?? '']?.floor;
     if (n > r.max) out.push({ level: 'warn', who, text: `${plural(n, 'animal')}: sources support at most ${r.max} together. ${r.group}` });
-    else if (n >= 2 && r.max > 1) out.push({ level: 'note', who, text: `${plural(n, 'animal')} together. ${r.group}` });
+    else if (n >= 2 && r.max > 1 && !(r.social && n >= r.social)) out.push({ level: 'note', who, text: `${plural(n, 'animal')} together. ${r.group}` });
     if (r.social && n < r.social) out.push({ level: 'note', who, text: `${n === 1 ? 'A single frog' : 'A pair'} is lonely: keep ${r.social} or more.` });
     const m = group.filter(a => a.g === 'm').length, fe = group.filter(a => a.g === 'f').length, u = n - m - fe;
     if (n >= 2) {
@@ -43,7 +46,8 @@ export function herpCheck(S: TankSetup): StockIssue[] {
       if (r.mixed && m && fe) out.push({ level: 'note', who, text: 'A male and a female together will breed, again and again, which wears the female out.' });
       if ((r.males2 || r.females2 || r.mixed) && u) out.push({ level: 'note', who, text: `${plural(u, 'animal')} not sexed yet: ${r.sexing.how}` });
     }
-    if (area < need) out.push({ level: 'warn', who, text: `floor ${sq(raw)}; ${plural(n, 'animal')}${kid} need at least ${sq(need)}` });
+    if (tiered) { /* tank-minimum bar decides */ }
+    else if (area < need) out.push({ level: 'warn', who, text: `floor ${sq(raw)}; ${plural(n, 'animal')}${kid} need at least ${sq(need)}` });
     else if (area < want) out.push({ level: 'note', who, text: `floor ${sq(raw)}; ${sq(want)} is the usual recommendation for ${plural(n, 'animal')}${kid}` });
     if (hNeed && height < hNeed) out.push({ level: 'warn', who, text: `enclosure ${(height - 1).toFixed(0)} in tall; it needs at least ${hNeed} in${kid}` });
     if (r.water && !S.water.on) out.push({ level: 'warn', who, text: 'needs water in the enclosure' });
@@ -51,7 +55,7 @@ export function herpCheck(S: TankSetup): StockIssue[] {
     if (bad.size) out.push({ level: 'warn', who, text: `not with ${[...bad].join(', ')}. ${r.mateNote}` });
     else if (r.mates.length && others(sci).length) out.push({ level: 'note', who, text: r.mateNote });
     // how long it lasts: the first later stage that asks for more than this enclosure has
-    if (!grown && area >= need && !(hNeed && height < hNeed)) {
+    if (!grown && (tiered || area >= need) && !(hNeed && height < hNeed)) {
       const now = ageAtLength(r, big);
       for (let j = st + 1; j <= last; j++) {
         const nj = min1 * r.stages[j].k, hj = r.stages[j].h ?? (j === last ? r.hMin : undefined);

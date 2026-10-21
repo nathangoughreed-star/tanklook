@@ -34,11 +34,14 @@ export type GearSide = 'left' | 'right';
 
 /** Whether a file without `tech` draws the gear the demand engine infers (true) or none (false): Nathan chose A (2026-10-19). */
 export const DRAW_INFERRED = true;
+/** The stocking screen of path 1 shows the animals' bare tank first: no filter, heater or other gear until the build is chosen. A view
+ *  state, not the tank's (the scene keeps whatever gear it has); the caller rebuilds the viewer after flipping it. */
+export const gearView = { on: true };
 
 /** The tank's gear as picks: from lane TM's techParts (scene/tech.ts), which also fills a file without `tech` with the
  *  inferred gear (a HOB up to 60 gal, else a canister; a heater; salt: skimmer; CO2 when the plants are fed CO2). */
 export function gearPicks(S: TankSetup): GearPick[] {
-  if (!S.water.on || (!S.tech && !DRAW_INFERRED)) return [];
+  if (!gearView.on || !S.water.on || (!S.tech && !DRAW_INFERRED)) return [];
   const out: GearPick[] = [], parts = techParts(S), sump = parts.some(p => p.gear === 'sump');
   for (const p of parts) {
     const place = spotOf(S, p.place), pick = (id: string) => out.push({ id, row: p.row, ...(p.n > 1 ? { n: p.n } : {}), ...(place ? { place } : {}) });

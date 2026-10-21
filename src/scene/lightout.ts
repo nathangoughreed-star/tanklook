@@ -9,7 +9,7 @@ import { footprint, insideBy, shapeOf, type P } from './shape';
 import { groundHeight, groundInsideBy, type Ground } from './terrain';
 import { shadeAt, shadesOf, type Shade } from './shade';
 import type { Item, LidType, LightSettings, LightTech, LightType, Tank, WaterSettings } from './types';
-import { lightProduct } from '../data/gearCatalog';
+import { lightProduct, type LightProduct } from '../data/gearCatalog';
 
 // ---------- fixture geometry (was render/lighting.ts) ----------
 
@@ -37,7 +37,12 @@ export function emitters(T: Tank, l: LightSettings, height = l.height ?? LAMP_Y)
     }
   }
   if (l.type === 'tube') { const h = tubeOf(l, T).lamp / 2; for (const z of tubeLayout(T, l).zs) E.push([L / 2, y, z, h]); }
-  if (l.type === 'led') {
+  const sp = l.type === 'led' ? lightProduct(l.product) : undefined;
+  if (sp?.mount === 'submersible') {
+    // a submersible stick: one row along its body on the back glass (the height is the rim's here; lightEnv drops it under the water)
+    const st = subStick(T, sp), cols = clamp(Math.round(st.len * 0.9 / 45), 2, 24);
+    for (let c = 0; c < cols; c++) E.push([st.cx - st.len * 0.45 + st.len * 0.9 * (c + 0.5) / cols, y, st.zc, 0]);
+  } else if (l.type === 'led') {
     // a catalogued bar: its rows along its own body (centred), a quarter of its width either side of its middle
     const pb = productBar(T, l), span = pb ? pb.len * 0.9 : L * 0.9, x0 = (L - span) / 2;
     const cols = clamp(Math.round(span / 45), 2, 24);
@@ -56,7 +61,7 @@ const fitCache = new Map<string, P[]>();
  * deterministic starts (farthest-point seeding), keeping the best; cached per outline and count.
  */
 export function fitSpots(T: Tank, n: number): P[] {
-  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.pieDeg}|${n}`;
+  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.pieDeg}|${T.frontBulge}|${n}`;
   const hit = fitCache.get(key);
   if (hit) return hit;
   const g = 48, S: P[] = [];
@@ -228,6 +233,19 @@ export function productBar(T: Pick<Tank, 'D'>, l?: Pick<LightSettings, 'product'
   const p = l?.type === 'led' ? lightProduct(l.product) : undefined;
   return p ? { len: p.lengthMm, wid: Math.min(p.widthMm, T.D * 0.9), p } : null;
 }
+/** How far under the water surface a submersible stick's top sits (mm). */
+export const SUB_DROP = 18;
+/**
+ * Where a submersible stick (hygger) is: on the inside of the back glass, pushed to the right end (10 mm off the side glass)
+ * so the middle of the back glass stays free for a filter intake, which a HOB strainer centred there would otherwise
+ * collide with. On a tank under about twice the stick's length no place clears the exact middle; it still stands clear
+ * of a strainer's width of it from 24 in up. cx = its middle along the tank, zc = its middle front to back; len / hh / dd = its body.
+ */
+export function subStick(T: Pick<Tank, 'L' | 'D'>, p: Pick<LightProduct, 'lengthMm' | 'heightMm' | 'widthMm'>) {
+  const len = Math.min(p.lengthMm, T.L - 20), hh = p.heightMm, dd = p.widthMm, zb = -T.D + 4;
+  const cx = T.L - 10 - len / 2;
+  return { len, hh, dd, cx, zb, zc: zb + 8 + dd / 2 };
+}
 const posCache = new Map<string, number>();
 /**
  * The front-to-back place that lights the floor most evenly (Nathan 2026-10-15: like the bulbs' "fit" pattern, for a
@@ -241,7 +259,7 @@ export function bestPos(T: Tank, l: LightSettings): number | null {
   const tl = l.type === 'tube' ? tubeLayout(T, { ...l, pos: 0 }) : null, dep = tl ? tl.depth : l.type === 'led' ? ledBarDepth(T, l) : 0;
   if (!dep) return null;
   const pb = productBar(T, l), offs = tl ? tl.zs.map(z => -z - T.D / 2) : pb ? [-pb.wid / 4, pb.wid / 4] : [-0.12 * T.D, 0.12 * T.D]; // rows' depth from the bar's centre
-  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.pieDeg}|${dep}|${offs.join(',')}`;
+  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.pieDeg}|${T.frontBulge}|${dep}|${offs.join(',')}`;
   const hit = posCache.get(key);
   if (hit != null) return hit;
   const g = 64, ds: number[] = [];
@@ -373,23 +391,25 @@ export interface LightEnv {
 /** Add one emitter's light at p (normal n) into out, by band; weight w (a wall image: WALL_W x the gate). */
 function addSrc(env: LightEnv, px: number, py: number, pz: number, nx: number, ny: number, nz: number, ex: number, ey: number, ez: number, h: number, w: number, out: Band) {
   // refraction (paraxial): below the surface, a depth of w counts as w / 1.33 of distance, as if seen from above
-  const wd = py < env.ys ? env.ys - py : 0, dy = wd > 0 ? ey - env.ys + wd / NWATER : ey - py;
+  const wd = py < env.ys ? env.ys - py : 0, sub = wd > 0 && ey < env.ys, dy = sub ? ey - py : wd > 0 ? ey - env.ys + wd / NWATER : ey - py;
   if (dy <= 0) return;
-  let e0: number, sinA: number;
+  let e0: number, sinA: number, dist = 0;
   if (h > 0) { // line along x: 2D beam round the axis x the finite-length factor (exact for a uniform line, 1 when long)
     const dz = ez - pz, r = Math.max(Math.hypot(dy, dz), 1), xr = px - ex;
     const f = 0.5 * ((h - xr) / Math.hypot(r, h - xr) + (h + xr) / Math.hypot(r, h + xr));
     const inc = Math.max((ny * dy + nz * dz) / r, 0);
     e0 = (env.phi / (2 * h)) * 1e6 * (dy / r) ** env.m * inc * f / (env.norm * r);
-    sinA = Math.abs(dz) / r;
+    sinA = Math.abs(dz) / r; dist = r;
   } else {
     const dx = ex - px, dz = ez - pz, d = Math.max(Math.hypot(dx, dy, dz), 1);
     const inc = Math.max((nx * dx + ny * dy + nz * dz) / d, 0);
     e0 = env.phi * 1e6 * (dy / d) ** env.m * inc / (env.norm * d * d);
-    sinA = Math.hypot(dx, dz) / d;
+    sinA = Math.hypot(dx, dz) / d; dist = d;
   }
-  e0 *= w * env.trans;
-  if (wd > 0) { // through the surface, then Beer-Lambert along the refracted path
+  e0 *= w * (sub ? 1 : env.trans); // a lid does not stand between a stick in the water and the tank
+  if (sub) { // the emitter is in the water: no surface to cross, Beer-Lambert along the straight path
+    for (let i = 0; i < 3; i++) out[i] += e0 * env.split[i] * Math.exp(-env.k[i] * dist);
+  } else if (wd > 0) { // through the surface, then Beer-Lambert along the refracted path
     const s = sinA / NWATER, path = wd / Math.sqrt(1 - s * s);
     for (let i = 0; i < 3; i++) out[i] += e0 * FRESNEL * env.split[i] * Math.exp(-env.k[i] * path);
   } else for (let i = 0; i < 3; i++) out[i] += e0 * env.split[i];
@@ -411,7 +431,7 @@ export function bandsAt(env: LightEnv, p: readonly number[], n: readonly number[
     for (const [ax, c, ix, iz] of [[0, 0, -ex, ez], [0, W.L, 2 * W.L - ex, ez], [2, 0, ex, -ez], [2, -W.D, ex, -2 * W.D - ez]]) {
       const pa = ax === 0 ? px : pz, qa = ax === 0 ? (h > 0 ? clamp(px, ix - h, ix + h) : ix) : iz;
       if (Math.abs(pa - qa) < 1e-6) continue;
-      const t = (pa - c) / (pa - qa), yv = pv + t * (ey - pv), g = smooth(0, 20, (env.ys - yv) * NWATER);
+      const t = (pa - c) / (pa - qa), yv = pv + t * (ey - pv), g = ey < env.ys ? 1 : smooth(0, 20, (env.ys - yv) * NWATER); // an emitter in the water: its image is in the water too
       if (g > 0) addSrc(env, px, py, pz, nx, ny, nz, ix, ey, iz, h, W.w * g, out);
     }
   }
@@ -430,6 +450,9 @@ export function lightEnv(S: LightScene): LightEnv | null {
   if (l.type === 'flat' || !(l.watts && l.watts > 0)) return null;
   const tech = TECHS[techOf(l)], E = emitters(T, l, lampHeight(l, S.lid)), m = beamExp(l), line = l.type === 'tube';
   const tint = w.on ? TINT_SHARE * waterK(w.opacity) : 0;
+  // a submersible stick lights from under the water surface (its top SUB_DROP down), not from the rim
+  const sub = w.on && l.type === 'led' ? lightProduct(l.product) : undefined;
+  if (sub?.mount === 'submersible') { const y = waterY(T, w.level) - SUB_DROP - sub.heightMm / 2; for (const e of E) e[1] = y; }
   const env: LightEnv = {
     E, phi: (l.watts * tech.ppe * tech.eta) / Math.max(E.length, 1), m, norm: line ? lineNorm(m) : pointNorm(m), ind: [0, 0, 0],
     split: tech.split, k: KWATER.map(k => k / 1000 + tint) as Band,

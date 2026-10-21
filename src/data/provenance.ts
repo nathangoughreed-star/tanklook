@@ -55,6 +55,10 @@ export const RULES: Record<string, Rule[]> = {
   SPACE_FACTOR_CLASS: [{ path: '**', status: 'fitted', src: ['aqadvisor', 'aq-compare'], why: 'median of the fitted species factors in each class' }],
   CARE: [
     // care, minL, temper, prey, solo / slow / nip, coral and group have no rule: care.ts calls them estimates from common practice.
+    // Kept against the pages (Nathan 2026-10-20: trust the research where independent sources agree; here they split): see research/sourcing/decisions.md.
+    { path: 'yellowtang.care', status: 'assumption', why: 'one retailer page (LiveAquaria) says Easy; tangs are disease-prone in practice, so we keep intermediate (2)' },
+    { path: 'betta.care', status: 'assumption', why: 'pages split: Seriously Fish says Moderate, Fishkeeping World calls it fine for first-time owners; we keep beginner (1)' },
+    { path: 'ballpython.minL', status: 'assumption', why: 'pages split: PetSmart and BeWild accept a 40 gal (about 151 L) tank, Zen Habitats and Reptile Direct call 4x2x2 ft (about 120 gal, 450 L) the adult minimum and the 40 gal rule outdated; we keep the larger modern figure' },
     ...Object.keys(WATER).flatMap((id): Rule[] => ['temp', 'tol'].map(k => ({ path: `${id}.${k}.*`, status: 'researched', src: ['climate-research'], why: 'researched band (data/climatedata.ts) replaces the first guess' }))),
     ...GROUP_ROWS.map(({ id, url, est }): Rule => est
       ? { path: `${id}.${GROUP_FIELDS}`, status: 'claimed', src: ['groups-research'], why: `group bands, max, sex ratio, depth and tank length: judgement from hobby practice; page named ${url}` }
@@ -70,24 +74,26 @@ export const RULES: Record<string, Rule[]> = {
     : { path: `${id}.**`, status: 'claimed', src: PLANT_SRC, why: 'band, CO2 and ferts per plant after the planted-tank ratings; no per-plant page recorded' }),
   FRESH_TIERS: [{ path: '*.{lo,hi}', status: 'claimed', src: PLANT_SRC, why: "Nathan's PAR tiers, following the planted-tank convention" }],
   REEF_TIERS: [
-    { path: '*.{lo,hi}', status: 'claimed', src: REEF_SRC, why: 'soft 50-150, SPS 150-400: the BRS PAR article states soft 75-150 and SPS 200-350 (research/sourcing/other/E1.json); wider band kept, decision pending (research/sourcing/decisions.md)' },
-    { path: '2.{lo,hi}', status: 'cited', src: ['brs-par'], why: 'LPS 75-150 PAR as the BRS article states it (quote checked, research/sourcing/other/E1.json)' },
+    { path: '*.{lo,hi}', status: 'cited', src: ['brs-par'], why: 'soft / LPS 75-150 and SPS 200-350 PAR as the BRS article states them (quote checked, research/sourcing/other/E1.json; soft and SPS adopted by Nathan 2026-10-20)' },
     { path: '0.{lo,hi}', status: 'claimed', src: ['par-chart-nathan'], why: 'fish-only tier from the PAR chart' },
   ],
   FACTORS: [
     { path: 'priceLevel.*', status: 'assumption', why: 'one multiplier for store, sales and inflation since the prices were read' },
     { path: 'kwhUsd.*', status: 'claimed', why: 'the lo / hi band is the cheapest and dearest US states, read by eye; not checked per state' },
-    { path: 'kwhUsd.mode', status: 'cited', src: ['eia.gov'], why: 'EIA Electric Power Monthly table 5.6.A: US residential 18.31 c/kWh in July 2026 (17.45 a year before); 0.17 is 7 % under the summer month (research/sourcing/other/E1.json)' },
+    { path: 'kwhUsd.mode', status: 'cited', src: ['eia.gov'], why: 'EIA Electric Power Monthly table 5.6.A: US residential 18.31 c/kWh in July 2026 (17.45 a year before); 0.17 is 7 % under the summer month (research/sourcing/other/E1.json); kept at 0.17 by Nathan 2026-10-20, July is the summer high' },
   ],
   // lane D (research/sourcing/other/D-cost-defaults.md, scripts/fit-cost-defaults.mjs): every band refit to the cited listings
   // (demand-items, gear-catalog, tanks). Where the listings cover a band with 5+ rows and the mode lands within 25 %, the mode is
   // derived; the rest stay our rule of thumb, and the bands the fit disagrees with wait in research/sourcing/decisions.md.
   DEMAND_DEFAULTS: [
-    { path: '**', status: 'assumption', why: 'rule-of-thumb band (our judgement); refit to the cited listings in research/sourcing/other/D-cost-defaults.md: either too few listings, a different unit, or the fit disagrees (decision pending)' },
+    { path: '**', status: 'assumption', why: 'rule-of-thumb band (our judgement); refit to the cited listings in research/sourcing/other/D-cost-defaults.md: too few listings or a different unit, so kept by Nathan 2026-10-20' },
     { path: 'time.waterChangeFraction.floor', status: 'cited', src: ['americanaquariumproducts.com', 'bulkreefsupply-video'], why: 'a weekly water change of 10-20 % (fresh) or 10 % (salt) is the stated best practice; the model changes at least 10 % (research/sourcing/minutes/minutes-A.json)' },
     { path: '{time,risk}.**', status: 'assumption', why: 'minutes a week and risk points are our model; no listing or page states them' },
     { path: 'gear.{heater,filter}.perGal.mode', status: 'derived', src: ['product-pages'], why: 'least-squares price per gallon over the catalogued heaters (13) / filters (19) agrees within 25 % (scripts/fit-cost-defaults.mjs)' },
     { path: 'animals.{fw-invert,sw-fish,amphibian}.setup.mode', status: 'derived', src: ['kk-prices'], why: 'median of the cited per-species prices scaled to the reference size agrees within 25 % (scripts/fit-cost-defaults.mjs)' },
+    { path: 'gear.{heater,filter}.base.*', status: 'derived', src: ['product-pages'], why: 'refit to the catalogued heaters (13) / filters (19): least-squares base, bootstrap p10 / p90 (adopted by Nathan 2026-10-20, scripts/fit-cost-defaults.mjs)' },
+    { path: 'gear.tank.{0,1,2}.perGal.*', status: 'derived', src: ['product-pages'], why: 'street tank-only price / rated gallons over the catalogued tanks, median p10 p90 per class, n 10-20 (adopted by Nathan 2026-10-20); the >75 gal class stays our band (premium rimless skews the listings)' },
+    { path: '{animals.fw-fish,plants.easy,plants.medium,plants.land,plants.succulent,hardscape.wood}.setup.*', status: 'derived', src: ['kk-prices'], why: 'median p10 p90 of the cited per-item prices (adopted by Nathan 2026-10-20, scripts/fit-cost-defaults.mjs)' },
     { path: '{plants.coral-soft,hardscape.cave}.setup.mode', status: 'derived', src: ['kk-prices'], why: 'median of the cited per-item prices agrees within 25 % (scripts/fit-cost-defaults.mjs)' },
   ],
   DEMAND_ITEMS: [
@@ -105,6 +111,10 @@ export const RULES: Record<string, Rule[]> = {
     { path: 'gear.*.minutes.{lo,mode,hi}', status: 'assumption', why: 'minutes a week of upkeep: our estimate per task; no opened page states a time (manuals give only how often, research/sourcing/other/C.json)' },
     { path: 'gear.*.hours', status: 'assumption', why: 'hours a day: pumps, skimmers, UV run around the clock (24), CO2 and dosing follow the photoperiod (8); spec pages do not state it' },
     { path: 'gear.{co2kit,airpump,uv}.watts', status: 'cited', src: ['dennerle.com', 'thatpetplace.com', 'fishtanksdirect.com'], why: 'a typical unit at the ref size, its spec page states this draw (quote checked, research/sourcing/other/C.json)' },
+    { path: 'gear.{returnpump,ato,skimmerhob,powerhead}.watts', status: 'cited', src: ['bulkreefsupply.com'], why: 'a typical unit at the ref size, its BRS page states this draw (quote checked, research/sourcing/other/C.json; adopted by Nathan 2026-10-20)' },
+    { path: 'gear.skimmerhob.ref', status: 'cited', src: ['bulkreefsupply.com'], why: 'the AquaReady HOB-1.5 is rated for 40-75 gal; its 11 W is for about a 55 gal tank (research/sourcing/other/C.json)' },
+    { path: 'gear.doser.watts', status: 'assumption', why: 'kept 1 W (Nathan 2026-10-20): the 8.5 W on the Jebao DP-4 page is the adapter rating; the pumps idle most of the day (research/sourcing/other/C.json)' },
+    { path: 'gear.roottabs.monthly.months', status: 'derived', src: ['seachem.com'], why: 'Seachem: 6 tabs per 10 gal every 3-4 months, so 12 a round at 20 gal; a 40-pack lasts about 12 months (research/sourcing/other/C.json)' },
     { path: 'gear.liquidcarbon.monthly.months', status: 'derived', src: ['seachem.com'], why: 'Seachem dose 5 mL per 50 gal a day on 20 gal = 2 mL a day: a 500 mL bottle lasts about 8 months' },
   ],
   GEAR_CATALOG: [{ path: '*.*.{gph,galMin,galMax,watts,priceUsd}', status: 'cited', src: ['product-pages'], why: 'the product page at the row url', rowUrl: true }],
@@ -119,11 +129,13 @@ export const RULES: Record<string, Rule[]> = {
 // least one quote was found on its page. Disagreements are not cited: they wait for a decision (research/sourcing/decisions.md).
 // The source id is the page's host (registered in sources.json); the url and quote stay in the batch file.
 interface Src { url: string; quote: string }
-interface Field { ours: unknown; verdict: 'agrees' | 'disagrees' | 'not-stated' | 'behaviour-only'; sources: Src[] }
+// Nathan's decisions (research/sourcing/decisions.md): an adopted value is 'agrees' and cites only its `use` sources (indices) when
+// given; 'derived' = worked out from the stated values (decision says how); 'kept' = our number stays, an assumption (decision says why).
+interface Field { ours: unknown; verdict: 'agrees' | 'disagrees' | 'not-stated' | 'behaviour-only' | 'derived' | 'kept'; sources: Src[]; use?: number[]; decision?: string }
 interface Batch { batch: string; species: Record<string, { fields: Record<string, Field> }> }
 interface Check { id: string; field: string; url: string; result: 'exact' | 'compact' | 'label' | 'near' | 'miss' | 'nofetch' }
 const SOURCING = import.meta.glob('../../research/sourcing/*.json', { eager: true, import: 'default' }) as Record<string, unknown>;
-const host = (url: string) => new URL(url).hostname.split('.').slice(-2).join('.');   // ca.aquariumsource.com = aquariumsource.com
+const host = (url: string) => { const h = new URL(url).hostname.split('.'); return h.slice(/^(co|com|org|net|ac)$/.test(h[h.length - 2]) && h.length > 2 ? -3 : -2).join('.'); };   // ca.aquariumsource.com = aquariumsource.com; x.co.uk keeps 3
 const speciesValue = (id: string, f: string) => {
   const sp = (speciesJson as unknown as { species: { id: string; tl: number; female?: { tl?: number } }[] }).species.find(s => s.id === id);
   return f === 'tl' ? sp?.tl : f === 'female.tl' ? sp?.female?.tl : undefined;
@@ -138,13 +150,18 @@ for (const [file, b] of Object.entries(SOURCING)) {
       : f === 'prey' ? CARE[id]?.prey?.mm : (CARE[id] as unknown as Record<string, unknown>)?.[f];
     if (JSON.stringify(now) !== JSON.stringify(v.ours)) continue;   // the value changed since the batch checked it
     const target = isSpecies ? 'SPECIES' : isAir ? 'AIR' : 'CARE';
-    const path = `${id}.${isAir ? `${f.slice(4)}.*` : f === 'prey' ? 'prey.mm' : f === 'ph' ? 'ph.*' : f}`;
-    const found = v.sources.filter(s => checks.some(c => c.id === id && c.field === f && c.url === s.url && (c.result === 'exact' || c.result === 'compact')));
-    const src = [...new Set(v.sources.map(s => host(s.url)))];
+    const path = `${id}.${isAir ? `${f.slice(4)}.*` : f === 'prey' ? 'prey.mm' : now && typeof now === 'object' ? `${f}.*` : f}`;   // a range (ph, temp, tol) or a group (bands) covers its parts
+    const used = v.use ? v.use.map(i => v.sources[i]) : v.sources;
+    const found = used.filter(s => checks.some(c => c.id === id && c.field === f && c.url === s.url && (c.result === 'exact' || c.result === 'compact')));
+    const src = [...new Set(used.map(s => host(s.url)))];
     if (v.verdict === 'agrees' && found.length)
       RULES[target].push({ path, status: 'cited', src: [...new Set(found.map(s => host(s.url)))], why: `stated on ${found.length} opened page(s), quote checked (research/sourcing/${name})` });
     else if (v.verdict === 'agrees')
       RULES[target].push({ path, status: 'researched', src, why: `agrees with the pages in research/sourcing/${name}, but no quote was found on the live page` });
+    else if (v.verdict === 'derived')
+      RULES[target].push({ path, status: 'derived', src, why: `${v.decision?.replace(/^Nathan [\d-]+: derived, /, '') ?? 'worked out from the stated values'} (research/sourcing/${name})` });
+    else if (v.verdict === 'kept')
+      RULES[target].push({ path, status: 'assumption', src, why: `${v.decision?.replace(/^Nathan ([\d-]+): kept, /, 'kept (Nathan $1): ') ?? 'kept'}; pages in research/sourcing/${name}` });
     else if (v.verdict === 'behaviour-only')
       RULES[target].push({ path, status: 'assumption', src, why: `the predation is stated (research/sourcing/${name}); the prey length is our estimate` });
   }
@@ -172,6 +189,8 @@ export const FORMULAS: Formula[] = [
   { file: 'src/scene/nitrogen.ts', symbols: ['NITRATE_TARGET_N'], status: 'cited', src: ['aquariumscience.org'], why: '9 mg N/L = about 40 ppm as NO3 (x 4.43), the bottom of the 40-80 ppm range aquariumscience.org states (research/sourcing/other/E2.json)' },
   { file: 'src/scene/nitrogen.ts', symbols: ['plantUptake'], status: 'researched', src: ['nitrogen-research'], why: 'slow / medium / fast 0.001 / 0.003 / 0.006 g N per 100 g a day, extrapolated from one measured Egeria study (research-plant-nitrogen)' },
   { file: 'src/scene/nitrogen.ts', symbols: ['RATE_100G', 'FLOAT_M2', 'DIE_OFF_RETURN'], status: 'researched', src: ['nitrogen-research'], why: 'plant N uptake per 100 g, floaters 0.3 g N/m2/day, 30 % die-off return; classes EXTRAPOLATED from one measured Egeria study (research-plant-nitrogen, research-plant-validation)' },
+  { file: 'src/scene/nitrogen.ts', symbols: ['ROOT_FEEDERS', 'ROOT_WATER', 'PLANT_SHARE_MAX'], status: 'assumption', why: 'root feeders draw about half their N from the substrate; plants take at most 60 % of the daily TAN as ammonium (bacteria compete, little uptake at night), the filter always sees the rest: guesses (Nathan 2026-10-20)' },
+  { file: 'src/scene/nitrogen.ts', symbols: ['FERT_N'], status: 'claimed', why: 'nitrate a water-column fert adds: all-in-one about 5 ppm NO3 a week, dosing pump about 10, EI 3 x 20 ppm; typical label doses, no source recorded' },
   { file: 'src/scene/nitrogen.ts', symbols: ['PLANTS', 'DEFAULT_PLANT', 'PATCH_FW', 'PATCH_PLANTS'], status: 'assumption', why: "growth class and fresh weight per plant item: guesses at the item's default size" },
   // filter media
   { file: 'src/data/filtermedia.ts', symbols: ['MEDIA_L_PER_GPH', 'SPONGE_L_PER_GAL'], status: 'derived', src: ['product-pages', 'nitrogen-research'], why: 'media litres per gph from the FILTER_MEDIA_L rows (AquaClear, Fluval), sponge from Hydro-Sponge / Co-Op (research-filter-media-volumes, research-hob-media-derived)' },
@@ -184,6 +203,7 @@ export const FORMULAS: Formula[] = [
   { file: 'src/scene/lightout.ts', symbols: ['TUBES', 'TUBE_ENDS', 'MH_BULBS'], status: 'claimed', why: 'standard lamp lengths, watts and bulb sizes; maker tables not recorded' },
   { file: 'src/scene/lightout.ts', symbols: ['TUBE_DIA'], status: 'derived', why: 'a T-number is the tube diameter in eighths of an inch (T5 16 mm, T8 26 mm, T12 38 mm)' },
   { file: 'src/scene/lightout.ts', symbols: ['FIX_SPEC', 'BULB_W'], status: 'assumption', why: 'what each fixture style is usually like (hanging height, beam, power): defaults and slider ranges (Nathan 2026-10-15)' },
+  { file: 'src/scene/lightout.ts', symbols: ['SUB_DROP'], status: 'assumption', why: 'a submersible stick hangs 18 mm under the surface (read off the product photos; no spec)' },
   { file: 'src/scene/lightout.ts', symbols: ['SUB_ALBEDO'], status: 'assumption', why: 'diffuse PAR reflectance per substrate: our estimates; only tan sand is bounded by a page (desert sand 0.40 broadband, Wikipedia albedo; research/sourcing/other/E2.json)' },
   { file: 'src/scene/lightneeds.ts', symbols: ['FRESH_RANGE', 'REEF_RANGE'], status: 'derived', why: 'built from the PAR tiers; LPS reaches 50 over its tier because "some LPS take up to 200 (guide)"' },
   { file: 'src/scene/lightneeds.ts', symbols: ['MIN_PAR'], status: 'claimed', src: PLANT_SRC, why: 'per-plant minimum PAR for hardy species; the ones marked check are for Nathan to review' },
@@ -192,9 +212,13 @@ export const FORMULAS: Formula[] = [
   { file: 'src/scene/kitlight.ts', symbols: ['MAX_W_PER_GAL'], status: 'assumption', why: 'most LED watts per gallon a swap can ask before the tank is the problem (fresh 2.5, reef 6)' },
   { file: 'src/scene/plantfit.ts', symbols: ['FIT_PAR'], status: 'assumption', why: 'one representative PAR inside each light level' },
   { file: 'src/scene/growtime.ts', symbols: ['GROW_RATE'], status: 'assumption', why: 'growth multipliers by feeding and plant speed (CO2 helps stems most); not measured' },
+  { file: 'src/scene/tankMin.ts', symbols: ['REF_DEPTH_CM'], status: 'assumption', why: 'the floor-area need of a bottom dweller is its litres spread over 30 cm of water, a typical small tank depth; swimmers are held to the longest floor side instead' },
+  { file: 'src/scene/tankMin.ts', symbols: ['MIN_WEIGHTS'], status: 'assumption', why: 'how much water, floor area and tank length count toward a species minimum by where it lives: a care sheet gallon figure stands in for floor space, so a bottom dweller is held to floor area, swimmers mostly to length, volume less; keeper-practice judgement' },
+  { file: 'src/scene/tankMin.ts', symbols: ['TIERS'], status: 'claimed', why: 'absolute floor and comfortable tank size per species (adf, danio, whitecloud, tigerbarb, cherrybarb, firenewt, firetoad): keeper-practice judgement from the examples given, no page recorded' },
   { file: 'src/scene/tankfit.ts', symbols: ['FLOOR_K'], status: 'claimed', why: '"a documented rule of thumb, not a source of record": a bottom dweller holds about two body lengths square' },
   { file: 'src/scene/tankfit.ts', symbols: ['FILTRATION_TARGET'], status: 'assumption', why: 'preset filtration targets: cheapest 100 %, balanced 70 %' },
   { file: 'src/scene/starter.ts', symbols: ['ANIMAL_FILL', 'KINDS_PER_STOP', 'LAND_MOST'], status: 'assumption', why: 'how full each starter stop is and how many kinds; land counts kept inside the herp research maxima' },
+  { file: 'src/scene/lightproduct.ts', symbols: ['BAR_CHECK'], status: 'derived', why: 'median of model / published PAR over 9 LED bars (5-65 W) in air at 12-14 in (reference/par-calibration-data.md D3, Portland Aquarium round-up, no method stated): 27 % below for white-LED, 18 % for planted-RGB lamps; pinned by test/lightfollowups.test.ts' },
   { file: 'src/scene/kitlight.ts', symbols: ['PUBLISHED_PM'], status: 'assumption', why: 'a maker measures PAR at one spot; +-15 % elsewhere in the tank' },
   { file: 'src/scene/kitlight.ts', symbols: ['SWAP_MAX_RATIO'], status: 'assumption', why: 'over 5x the kit light is a new build, not a swap (UI choice)' },
   { file: 'src/scene/plantfit.ts', symbols: ['TOO_BRIGHT'], status: 'assumption', why: 'a plant must be 1.4x over its range before it counts as struggling' },
@@ -243,7 +267,7 @@ export const TABLES: Excluded[] = [
 /** The engine files whose top-level constants must each have a FORMULAS or EXCLUDED entry. */
 export const ENGINE_FILES = [
   'src/scene/stocking.ts', 'src/scene/nitrogen.ts', 'src/scene/lightout.ts', 'src/scene/kitlight.ts', 'src/scene/lightcheck.ts',
-  'src/scene/lightneeds.ts', 'src/scene/tech.ts', 'src/scene/tankfit.ts', 'src/scene/builds.ts', 'src/scene/plantfit.ts', 'src/scene/animalfit.ts',
+  'src/scene/lightneeds.ts', 'src/scene/tech.ts', 'src/scene/tankfit.ts', 'src/scene/tankMin.ts', 'src/scene/builds.ts', 'src/scene/plantfit.ts', 'src/scene/animalfit.ts',
   'src/scene/growtime.ts', 'src/scene/propagate.ts', 'src/scene/weight.ts', 'src/scene/starter.ts', 'src/data/climate.ts',
   'src/data/filtermedia.ts', 'src/data/herpstock.ts', 'src/data/tankcheck.ts', 'src/data/aqadvisor.ts',
   'src/demand/engine.ts', 'src/demand/dealmatch.ts', 'src/demand/dealscene.ts', 'src/demand/gear.ts', 'src/demand/prices.ts',

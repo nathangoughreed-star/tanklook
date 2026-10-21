@@ -26,9 +26,9 @@ export const FRESH_TIERS: Tier[] = [
 /** Reef PAR at the coral. Soft (50-150) and LPS (75-150) overlap on purpose, as in the guide. */
 export const REEF_TIERS: Tier[] = [
   { par: '25–50', lo: 25, hi: 50, name: 'Fish only' },
-  { par: '50–150', lo: 50, hi: 150, name: 'Soft corals' },
+  { par: '75–150', lo: 75, hi: 150, name: 'Soft corals' },
   { par: '75–150', lo: 75, hi: 150, name: 'LPS' },
-  { par: '150–400', lo: 150, hi: 400, name: 'SPS and clams' },
+  { par: '200–350', lo: 200, hi: 350, name: 'SPS and clams' },
 ];
 
 /** The PAR range a band is happy in, built from the tiers: a plant is "fine" inside it, "too dim" below, "too bright"

@@ -8,13 +8,13 @@
         "tl": { "ours": 75, "verdict": "agrees", "suggest": null, "sources": [
           { "url": "https://www.fishbase.se/summary/Gramma-loreto.html", "site": "FishBase", "states": "8.0 cm TL max", "quote": "Max length : 8.0 cm TL male/unsexed; (Ref. [7251])" },
           { "url": "https://www.liveaquaria.com/product/53/?pcatid=53", "site": "LiveAquaria", "states": "3 in max", "quote": "Maximum Size: 3\"" } ] },
-        "care": { "ours": 2, "verdict": "disagrees", "suggest": 1, "sources": [
+        "care": { "ours": 1, "verdict": "agrees", "suggest": 1, "sources": [
           { "url": "https://www.liveaquaria.com/product/53/?pcatid=53", "site": "LiveAquaria", "states": "Easy", "quote": "Care Level: Easy" },
           { "url": "https://www.aquariumsource.com/royal-gramma-basslet/", "site": "Aquarium Source", "states": "extremely easy", "quote": "The royal gramma is also extremely easy to care for due to their hardy and peaceful nature." } ] },
         "minL": { "ours": 115, "verdict": "agrees", "suggest": null, "sources": [
           { "url": "https://www.liveaquaria.com/product/53/?pcatid=53", "site": "LiveAquaria", "states": "30 gal (113.5 L)", "quote": "Minimum Tank Size: 30 Gallons" },
           { "url": "https://www.aquariumsource.com/royal-gramma-basslet/", "site": "Aquarium Source", "states": "30 gal (113.5 L) for one fish", "quote": "The minimum royal gramma tank size is 30 gallons for one fish." } ] },
-        "temper": { "ours": 1, "verdict": "disagrees", "suggest": 0, "sources": [
+        "temper": { "ours": 0, "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted", "suggest": 0, "sources": [
           { "url": "https://www.liveaquaria.com/product/53/?pcatid=53", "site": "LiveAquaria", "states": "Peaceful", "quote": "Temperament: Peaceful" },
           { "url": "https://www.aquariumsource.com/royal-gramma-basslet/", "site": "Aquarium Source", "states": "peaceful", "quote": "Royal grammas are very mellow and peaceful fish." } ],
           "note": "Peaceful toward other species; the own-kind aggression is covered by solo." },
@@ -29,7 +29,7 @@
           { "url": "https://www.fishbase.se/summary/Paracanthurus-hepatus.html", "site": "FishBase", "states": "31.0 cm TL max", "quote": "Max length : 31.0 cm TL male/unsexed; (Ref. [2334])" },
           { "url": "https://www.liveaquaria.com/product/330/", "site": "LiveAquaria", "states": "12 in max (305 mm)", "quote": "Maximum Size: 12\"" } ],
           "note": "Ours is 19% under FishBase max; within 20%." },
-        "care": { "ours": 3, "verdict": "disagrees", "suggest": 2, "sources": [
+        "care": { "ours": 2, "verdict": "agrees", "suggest": 2, "sources": [
           { "url": "https://www.liveaquaria.com/product/330/", "site": "LiveAquaria", "states": "Moderate", "quote": "Care Level: Moderate" },
           { "url": "https://reefexclusive.com/products/paracanthurus-hepatus", "site": "Reef Exclusive", "states": "Moderate", "quote": "Care Level : Moderate" } ] },
         "minL": { "ours": 570, "verdict": "agrees", "suggest": null, "sources": [
@@ -51,7 +51,7 @@
           { "url": "https://www.fishbase.se/summary/Nemateleotris-magnifica.html", "site": "FishBase", "states": "9.0 cm TL max", "quote": "Max length : 9.0 cm TL male/unsexed" },
           { "url": "https://www.liveaquaria.com/product/168/?pcatid=168", "site": "LiveAquaria", "states": "3 in max", "quote": "Maximum Size: 3 Inches" } ],
           "note": "Ours is 17% under FishBase max." },
-        "care": { "ours": 2, "verdict": "disagrees", "suggest": 1, "sources": [
+        "care": { "ours": 1, "verdict": "agrees", "suggest": 1, "sources": [
           { "url": "https://www.liveaquaria.com/product/168/?pcatid=168", "site": "LiveAquaria", "states": "Easy", "quote": "Care Level: Easy" },
           { "url": "https://reefexclusive.com/products/nemateleotris-magnifica", "site": "Reef Exclusive", "states": "Easy", "quote": "Care Level : Easy" } ] },
         "minL": { "ours": 75, "verdict": "agrees", "suggest": null, "sources": [
@@ -69,7 +69,7 @@
           { "url": "https://www.fishbase.se/summary/Pterapogon-kauderni.html", "site": "FishBase", "states": "8.6 cm TL max (female)", "quote": "Max length : 8.6 cm TL (female); max. published weight: 0.00 g" },
           { "url": "https://reefexclusive.com/products/banggai-cardinalfish", "site": "Reef Exclusive", "states": "8 cm (3 in) TL", "quote": "This species grows up to 8 centimetres (3 in) total length." } ],
           "note": "Ours is 19% under FishBase max; within 20%." },
-        "care": { "ours": 2, "verdict": "disagrees", "suggest": 1, "sources": [
+        "care": { "ours": 1, "verdict": "agrees", "suggest": 1, "sources": [
           { "url": "https://reefexclusive.com/products/banggai-cardinalfish", "site": "Reef Exclusive", "states": "Easy", "quote": "Care Level : Easy" },
           { "url": "https://www.saltwateraquariumblog.com/banggai-cardinalfish-care-guide/", "site": "Saltwater Aquarium Blog", "states": "easy", "quote": "They are also an easy-to-care-for aquarium fish" } ] },
         "minL": { "ours": 115, "verdict": "agrees", "suggest": null, "sources": [
@@ -89,14 +89,14 @@
           { "url": "https://www.fishbase.se/summary/Pseudocheilinus-hexataenia.html", "site": "FishBase", "states": "10.0 cm TL max", "quote": "Max length : 10.0 cm TL male/unsexed" },
           { "url": "https://reefexclusive.com/products/six-line-wrasse", "site": "Reef Exclusive", "states": "about 3 in total length", "quote": "Adults will grow to about 3-inches in total length, but they require open space for swimming." } ],
           "note": "Ours matches 3 in (76 mm); FishBase max is 25% higher." },
-        "care": { "ours": 2, "verdict": "disagrees", "suggest": 1, "sources": [
+        "care": { "ours": 1, "verdict": "agrees", "suggest": 1, "sources": [
           { "url": "https://www.liveaquaria.com/products/six-line-wrasse", "site": "LiveAquaria", "states": "Easy", "quote": "Care Level: Easy" },
           { "url": "https://reefexclusive.com/products/six-line-wrasse", "site": "Reef Exclusive", "states": "Easy", "quote": "Care Level : Easy" } ] },
-        "minL": { "ours": 115, "verdict": "disagrees", "suggest": 208, "sources": [
+        "minL": { "ours": 208, "verdict": "agrees", "suggest": 208, "sources": [
           { "url": "https://www.liveaquaria.com/products/six-line-wrasse", "site": "LiveAquaria", "states": "60 gal (227 L)", "quote": "Minimum Tank Size: 60 Gallons" },
           { "url": "https://reefexclusive.com/products/six-line-wrasse", "site": "Reef Exclusive", "states": "55 gal (208 L)", "quote": "The Six Line Wrasse requires a minimum tank size of 55-gallons, for maximum health." } ],
           "note": "Both opened pages say 55-60 gal; ours (30 gal) is 45% under the lower." },
-        "temper": { "ours": 2, "verdict": "disagrees", "suggest": 1, "sources": [
+        "temper": { "ours": 1, "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted", "suggest": 1, "sources": [
           { "url": "https://www.liveaquaria.com/products/six-line-wrasse", "site": "LiveAquaria", "states": "Semi-Aggressive", "quote": "Temperament: Semi-Aggressive" },
           { "url": "https://reefexclusive.com/products/six-line-wrasse", "site": "Reef Exclusive", "states": "Semi-aggressive", "quote": "Temperament : Semi-aggressive" } ] },
         "solo": { "ours": true, "verdict": "not-stated", "suggest": null, "sources": [], "note": "No opened page says to keep it singly." },
@@ -108,7 +108,7 @@
     "chromis": {
       "sci": "Chromis viridis",
       "fields": {
-        "tl": { "ours": 75, "verdict": "disagrees", "suggest": 100, "sources": [
+        "tl": { "ours": 100, "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted", "suggest": 100, "sources": [
           { "url": "https://www.fishbase.se/summary/Chromis-viridis.html", "site": "FishBase", "states": "10.0 cm TL max", "quote": "Max length : 10.0 cm TL male/unsexed" },
           { "url": "https://www.liveaquaria.com/product/115/", "site": "LiveAquaria", "states": "4 in max (102 mm)", "quote": "Maximum Size: 4\"" } ],
           "note": "Ours is 25% under both." },
@@ -133,7 +133,7 @@
           { "url": "https://www.fishbase.se/summary/Centropyge-bispinosa.html", "site": "FishBase", "states": "11.5 cm TL max", "quote": "Max length : 11.5 cm TL male/unsexed;" },
           { "url": "https://reefexclusive.com/products/coral-beauty-angelfish", "site": "Reef Exclusive", "states": "4 in (102 mm) max", "quote": "Max. Size : 4\"" } ],
           "note": "Ours is 12% under 4 in; 22% under FishBase max." },
-        "care": { "ours": 2, "verdict": "disagrees", "suggest": 1, "sources": [
+        "care": { "ours": 1, "verdict": "agrees", "suggest": 1, "sources": [
           { "url": "https://www.liveaquaria.com/product/438/?pcatid=438", "site": "LiveAquaria", "states": "Easy", "quote": "Easy" },
           { "url": "https://reefexclusive.com/products/coral-beauty-angelfish", "site": "Reef Exclusive", "states": "Easy", "quote": "Care Level : Easy" } ],
           "note": "LiveAquaria quote is the value cell only; label 'Care Level' sat on separate line." },
@@ -179,7 +179,7 @@
           { "url": "https://reefexclusive.com/products/pterosynchiropus-splendidus", "site": "Reef Exclusive", "states": "Difficult", "quote": "Care Level : Difficult" },
           { "url": "https://www.liveaquaria.com/product/1723/red-mandarin", "site": "LiveAquaria (red mandarin page)", "states": "Easy", "quote": "Care Level: Easy" } ],
           "note": "Sources disagree: Reef Exclusive Difficult, LiveAquaria red mandarin Easy; Bulk Reef Supply says 'relatively easy' thanks to captive breeding." },
-        "minL": { "ours": 265, "verdict": "disagrees", "suggest": 114, "sources": [
+        "minL": { "ours": 265, "verdict": "kept", "decision": "Nathan 2026-10-20: kept, needs a mature tank with a large copepod population; the pages' 30 gal is a bare minimum", "suggest": 114, "sources": [
           { "url": "https://reefexclusive.com/products/pterosynchiropus-splendidus", "site": "Reef Exclusive", "states": "30 gal (113.5 L)", "quote": "Minimum Tank Size : 30 gallons" },
           { "url": "https://www.bulkreefsupply.com/content/post/how-to-care-for-mandarin-dragonets", "site": "Bulk Reef Supply", "states": "30 gal (113.5 L)", "quote": "A minimum of 30 gallons." } ],
           "note": "Both opened pages say 30 gal; other (unopened) pages suggest larger, mature tanks." },

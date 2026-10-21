@@ -1,0 +1,20 @@
+[
+ {
+  "id": "greenanole",
+  "field": "female.tl",
+  "verdict": "agrees",
+  "url": "https://en.wikipedia.org/wiki/Brown_anole",
+  "result": "compact",
+  "score": 1,
+  "quote": "Females are also about the size of female Carolina anoles, which range from 7.6–15 cm (3.0–5.9 in)."
+ },
+ {
+  "id": "brownanole",
+  "field": "female.tl",
+  "verdict": "agrees",
+  "url": "https://en.wikipedia.org/wiki/Brown_anole",
+  "result": "compact",
+  "score": 1,
+  "quote": "Females are also about the size of female Carolina anoles, which range from 7.6–15 cm (3.0–5.9 in)."
+ }
+]

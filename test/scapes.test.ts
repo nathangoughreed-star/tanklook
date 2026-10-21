@@ -3,7 +3,7 @@ import { buildsFor } from '../src/scene/builds';
 import { allowedStyles, fakeFor, finSensitive, plantNeeds, rankStyles, scapeOptions, scapeSetup, withPlantMode } from '../src/scene/scapes';
 import { animalsOfSetup, hardTruths, planOf, planText } from '../src/scene/plan';
 import { tankFor, type AnimalCount } from '../src/scene/tankfit';
-import { LIBRARY } from '../src/scene/items';
+import { LIBRARY, makeItem } from '../src/scene/items';
 import { stockingOf } from '../src/scene/stocking';
 
 const BETTA: AnimalCount[] = [{ species: 'betta', n: 1 }];
@@ -60,6 +60,12 @@ describe('plant mode', () => {
     expect(plantNeeds(art).light).toMatch(/Any light/);
     expect(stockingOf(art).filtrationPercent).toBeGreaterThanOrEqual(stockingOf(live).filtrationPercent);
   });
+  it('a mixed scape keeps live floaters; all-artificial still drops them', () => {
+    const S = { ...b.setup, items: ['salvinia', 'frogbit', 'redroot', 'lettuce'].map((v, i) => makeItem(b.setup.tank, v, i + 1, i + 1, 0, 0.5, {}, b.setup)) };
+    const floats = (T: typeof S) => T.items.filter(i => i.kind === 'plant' && ['salvinia', 'frogbit', 'redroot', 'lettuce'].includes(i.variant)).length;
+    expect(floats(withPlantMode(S, 'mixed', false))).toBe(4);
+    expect(floats(withPlantMode(S, 'artificial', false))).toBe(0);
+  });
   it('live mode is the identity', () => { expect(withPlantMode(b.setup, 'live', false)).toBe(b.setup); });
 });
 
@@ -99,7 +105,10 @@ describe('the plan', () => {
   });
   it('a heater a cold animal needs is tied to it; none is listed when nothing asks for one', () => {
     const cold = buildOf([{ species: 'bolivianram', n: 2 }]);
-    expect(planOf(cold.setup, cold, NOW).rows.find(r => r.item.startsWith('Heating'))?.kind).toBe('need');
+    // the heater is its own row, or inside the kit the build picked (then the kit row names the need; S168 2026-10-20)
+    const cp = planOf(cold.setup, cold, NOW);
+    expect(cp.rows.find(r => r.item.startsWith('Heating') || /Temperature:/.test(r.serves))?.kind).toBe('need');
+    expect(cp.missing.join()).not.toMatch(/Heater/);
     const room = buildOf([{ species: 'whitecloud', n: 8 }]);
     expect(planOf(room.setup, room, NOW).rows.some(r => r.item.startsWith('Heating'))).toBe(false);
   });

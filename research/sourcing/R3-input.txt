@@ -1,0 +1,148 @@
+{
+ "cardinal": {
+  "name": "Cardinal tetra",
+  "sci": "Paracheirodon axelrodi",
+  "tl": 45,
+  "fields": {
+   "minL": {
+    "ours": 60
+   }
+  }
+ },
+ "ember": {
+  "name": "Ember tetra",
+  "sci": "Hyphessobrycon amandae",
+  "tl": 20,
+  "fields": {
+   "minL": {
+    "ours": 30
+   }
+  }
+ },
+ "rummynose": {
+  "name": "Rummy-nose tetra",
+  "sci": "Hemigrammus rhodostomus",
+  "tl": 50,
+  "fields": {
+   "minL": {
+    "ours": 60
+   }
+  }
+ },
+ "harlequin": {
+  "name": "Harlequin rasbora",
+  "sci": "Trigonostigma heteromorpha",
+  "tl": 45,
+  "fields": {
+   "minL": {
+    "ours": 40
+   }
+  }
+ },
+ "chili": {
+  "name": "Chili rasbora",
+  "sci": "Boraras brigittae",
+  "tl": 18,
+  "fields": {
+   "minL": {
+    "ours": 20
+   }
+  }
+ },
+ "danio": {
+  "name": "Zebra danio",
+  "sci": "Danio rerio",
+  "tl": 50,
+  "fields": {
+   "minL": {
+    "ours": 40
+   }
+  }
+ },
+ "whitecloud": {
+  "name": "White cloud mountain minnow",
+  "sci": "Tanichthys albonubes",
+  "tl": 40,
+  "fields": {
+   "minL": {
+    "ours": 40
+   }
+  }
+ },
+ "cpd": {
+  "name": "Celestial pearl danio",
+  "sci": "Danio margaritatus",
+  "tl": 25,
+  "fields": {
+   "minL": {
+    "ours": 40
+   },
+   "temper": {
+    "ours": 0
+   }
+  }
+ },
+ "hatchet": {
+  "name": "Marbled hatchetfish",
+  "sci": "Carnegiella strigata",
+  "tl": 35,
+  "fields": {
+   "minL": {
+    "ours": 60
+   }
+  }
+ },
+ "syno": {
+  "name": "Malawi synodontis",
+  "sci": "Synodontis njassae",
+  "tl": 190,
+  "fields": {
+   "minL": {
+    "ours": 200
+   }
+  }
+ },
+ "pandacory": {
+  "name": "Panda corydoras",
+  "sci": "Corydoras panda",
+  "tl": 50,
+  "fields": {
+   "care": {
+    "ours": 1
+   }
+  }
+ },
+ "regaljumper": {
+  "name": "Regal jumping spider",
+  "sci": "Phidippus regius",
+  "tl": 12,
+  "fields": {
+   "temper": {
+    "ours": 0
+   }
+  }
+ },
+ "sixline": {
+  "name": "Six-line wrasse",
+  "sci": "Pseudocheilinus hexataenia",
+  "tl": 75,
+  "fields": {
+   "solo": {
+    "ours": true
+   }
+  }
+ },
+ "firenewt": {
+  "name": "Chinese fire-bellied newt",
+  "sci": "Cynops orientalis",
+  "tl": 90,
+  "fields": {
+   "air.rh": {
+    "ours": [
+     60,
+     80
+    ]
+   }
+  }
+ }
+}

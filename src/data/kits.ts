@@ -20,6 +20,8 @@ export interface KitModel {
   filter: { kind: 'hob' | 'canister' | 'sponge' | 'internal'; rating?: number };
   heater?: { watts: number };
   tier: 'budget' | 'mid' | 'plant' | 'reef';
+  /** false = the listing says the light is sold separately: an integrated kit then holds its filter and lid but not the light. */
+  lightIncluded?: false;
   /** Approximate retail on `asOf`; absent when no price was found (see note). */
   price?: { usd: number; asOf: string; url: string };
   source: string[];

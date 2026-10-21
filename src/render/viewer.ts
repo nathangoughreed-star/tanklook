@@ -695,6 +695,8 @@ export class Viewer {
       if (upTo < PART.animals) for (const o of vp.scene!.children) if (o.visible && (o.userData.part ?? 0) > upTo) { o.visible = false; held.push(o); }
       // the Show boxes (Animals / Plants / Hardscape; Equipment is gear3d's own setGearShown): unticked ones are left out, exports too
       if (this.hidden.size) for (const o of vp.scene!.children) if (o.visible && this.isHidden(o)) { o.visible = false; held.push(o); }
+      // the owner's dashed space outline is a planning aid: never in a PNG export or a thumbnail (Nathan 2026-10-21)
+      if (this.exporting) vp.scene!.traverse(o => { if (o.visible && o.userData.spaceOutline) { o.visible = false; held.push(o); } });
       // a painted patch being edited (render/brushmesh.ts): the rest of the tank is drawn, faded toward the room, then the patch over it
       let focus = vp.scene!.children.filter(o => o.userData.focus && o.visible), fade = 0.68;
       // menu focus (render/menuFocus.ts): the open Tech / Animals / Hardscape / Plants menu's parts, the rest faded; never in an export

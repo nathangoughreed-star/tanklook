@@ -10,7 +10,7 @@ import { fishTL, leafUp, needsWater, speciesOf, type Species } from '../data/spe
 import { PERCHES, anchors, limbPaths, type Anchor, type Anchors, type V3 } from '../scene/anchors';
 import { glassBand, restsOnGround } from '../scene/water';
 import { backdropDepth, D2R, IN, ceilingH, clamp, floorY, glassThickness, RIM_DROP, RIM_H, tankUnderside, waterY } from '../scene/physics';
-import { alongRun, backgroundRuns, bowlDims, bowlRadius, chord, circleRing, clipToFootprint, facingRuns, footprint, halfWidth, inside, nearestGlass, offsetRing, offsetWalls, runLength, shapeOf, subRun, type P } from '../scene/shape';
+import { alongRun, archBulge, backgroundRuns, bowlDims, bowlRadius, chord, circleRing, clipToFootprint, facingRuns, footprint, frontAt, frontSlope, halfWidth, inside, levelRing, nearestGlass, offsetRing, offsetWalls, runLength, shapeOf, subRun, type P } from '../scene/shape';
 import { TABLE_TOP, cornerWalls, wallGap, tableCentre, tableOn, tableRing, wallPlane } from '../scene/table';
 import { groundHeight, pieSegs, poolHandles, poolWet, terrainDisc, terrainPoints, type PoolPart } from '../scene/terrain';
 import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
@@ -233,8 +233,56 @@ function addBowl(sc: THREE.Scene, S: TankSetup, T: Tank, add: (geo: THREE.Buffer
   if (S.render.edges) sc.add(new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(ringLines(circleRing(T, rIn(0), BOWL_SEG), 0), 3)), glassLine()));
 }
 
+/** Height bands up an arch tank's curved front pane. */
+const ARCH_BANDS = 24;
+/** A flat quad a,b,c,d turned (by swapping its winding) so it faces `hint` (world axes), as every face of a solid must (front faces only are drawn). */
+function faceOut(t: Tris, q: number[][], hint: number[], g = 0) {
+  const u = [q[1][0] - q[0][0], q[1][1] - q[0][1], q[1][2] - q[0][2]], v = [q[2][0] - q[0][0], q[2][1] - q[0][1], q[2][2] - q[0][2]];
+  const n = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
+  if (n[0] * hint[0] + n[1] * hint[1] + n[2] * hint[2] >= 0) t.quad(q[0], q[1], q[2], q[3], g); else t.quad(q[3], q[2], q[1], q[0], g);
+}
+/** Heights of an arch's bands, and its outer front pane's depth at y: the inside glass pushed out by a thickness t measured square to the curve. */
+const archYs = (T: Tank) => Array.from({ length: ARCH_BANDS + 1 }, (_, j) => T.H * j / ARCH_BANDS);
+const archOuter = (T: Tank, y: number, t: number) => frontAt(T, y) - t * Math.hypot(1, frontSlope(T, y));
+
+/**
+ * An arch tank's glass: the front pane curved in side view (group ro 6) and the two side panes with the same curved front edge (ro 5),
+ * each a closed solid of thickness t with the corners mitred as on a flat tank. The back pane and the bottom are the usual ones.
+ */
+function archGlass(T: Tank, t: number): { front: THREE.BufferGeometry; sides: THREE.BufferGeometry } {
+  const { L, H, D } = T, ys = archYs(T), fi = (y: number) => frontAt(T, y), fo = (y: number) => archOuter(T, y, t);
+  const F = new Tris(), S = new Tris();
+  for (let j = 0; j < ARCH_BANDS; j++) {
+    const y0 = ys[j], y1 = ys[j + 1];
+    faceOut(F, [[0, y0, -fi(y0)], [L, y0, -fi(y0)], [L, y1, -fi(y1)], [0, y1, -fi(y1)]], [0, 0, -1]); // inner face, toward the water
+    faceOut(F, [[-t, y0, -fo(y0)], [L + t, y0, -fo(y0)], [L + t, y1, -fo(y1)], [-t, y1, -fo(y1)]], [0, 0, 1]); // outer face, toward the room
+    for (const [xi, xo, s] of [[0, -t, -1], [L, L + t, 1]] as const) { // left, right pane: the inner face leans toward the water (-s)
+      faceOut(S, [[xi, y0, -fi(y0)], [xi, y0, -D], [xi, y1, -D], [xi, y1, -fi(y1)]], [-s, 0, 0]);
+      faceOut(S, [[xo, y0, -fo(y0)], [xo, y0, -(D + t)], [xo, y1, -(D + t)], [xo, y1, -fo(y1)]], [s, 0, 0]);
+    }
+  }
+  // the top edge of each: the glass edge faces (group 1) at the opening
+  faceOut(F, [[0, H, -fi(H)], [L, H, -fi(H)], [L + t, H, -fo(H)], [-t, H, -fo(H)]], [0, 1, 0], 1);
+  for (const [xi, xo] of [[0, -t], [L, L + t]]) faceOut(S, [[xi, H, -fi(H)], [xi, H, -D], [xo, H, -(D + t)], [xo, H, -fo(H)]], [0, 1, 0], 1);
+  return { front: F.geometry(), sides: S.geometry() };
+}
+
+/** The water's body in an arch tank, up to height y: a convex solid with the curved front. */
+function archSolid(T: Tank, y: number) {
+  const { L, D } = T, g = new Tris(), n = Math.max(2, Math.ceil(ARCH_BANDS * y / T.H)), ys = Array.from({ length: n + 1 }, (_, j) => y * j / n), f = (v: number) => frontAt(T, v);
+  for (let j = 0; j < n; j++) {
+    const y0 = ys[j], y1 = ys[j + 1];
+    faceOut(g, [[0, y0, -f(y0)], [L, y0, -f(y0)], [L, y1, -f(y1)], [0, y1, -f(y1)]], [0, 0, 1]);
+    for (const [x, s] of [[0, -1], [L, 1]] as const) faceOut(g, [[x, y0, -f(y0)], [x, y0, -D], [x, y1, -D], [x, y1, -f(y1)]], [s, 0, 0]);
+  }
+  faceOut(g, [[0, 0, -f(0)], [L, 0, -f(0)], [L, 0, -D], [0, 0, -D]], [0, -1, 0]);
+  faceOut(g, [[0, y, -f(y)], [L, y, -f(y)], [L, y, -D], [0, y, -D]], [0, 1, 0]);
+  faceOut(g, [[0, 0, -D], [L, 0, -D], [L, y, -D], [0, y, -D]], [0, 0, -1]);
+  return g.geometry();
+}
+
 function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
-  const { H } = T, R = S.render, fp = footprint(T), bowl = shapeOf(T) === 'bowl';
+  const { H } = T, R = S.render, fp = footprint(T), bowl = shapeOf(T) === 'bowl', arch = archBulge(T) > 0;
   // a bare-bottom tank has nothing on the floor, so the stand top or the room shows through the bottom pane; with a
   // ground, its bottom shows there (addSubstrate)
   const bg = R.bg === 'custom' ? { ...BACKGROUNDS.custom, color: parseInt((R.bgColor ?? '#2f4a36').slice(1), 16) } : BACKGROUNDS[R.bg], t = glassThickness(T, R.glass);
@@ -284,7 +332,12 @@ function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
     // bottom pane under everything; one wall per pane (a curved shell is one wall), mitred at the corners
     const outer = offsetWalls(T, t);
     add(prismGeometry(offsetRing(T, t), -t, 0), 5);
+    if (arch) { // the front and side panes follow the curved front (the back pane and bottom are the usual ones)
+      const a = archGlass(T, t);
+      add(a.sides, 5); add(a.front, 6);
+    }
     fp.walls.forEach((w, i) => {
+      if (arch && i !== 2) return; // an arch's back pane is wall 2
       const front = fp.edges.some(e => e.wall === i && e.n[1] < -0.5);
       add(wallGeometry(w.pts, outer[i], 0, H, fp.walls.length === 1), front ? 6 : 5);
       // a curved shell has no edge where it turns away from the view, so its silhouette is drawn there (as on a bowl):
@@ -307,7 +360,8 @@ function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
     });
     // interior outline: top and bottom loops, and the vertical corners where panes meet
     const box: number[] = [...ringLines(fp.ring, 0), ...ringLines(fp.ring, H)];
-    if (fp.walls.length > 1) for (const w of fp.walls) box.push(...at(w.pts[0], 0), ...at(w.pts[0], H));
+    if (fp.walls.length > 1) fp.walls.forEach((w, i) => { if (!arch || i > 1) box.push(...at(w.pts[0], 0), ...at(w.pts[0], H)); });
+    if (arch) for (const x of [0, T.L]) for (let j = 0; j < ARCH_BANDS; j++) { const y0 = T.H * j / ARCH_BANDS, y1 = T.H * (j + 1) / ARCH_BANDS; box.push(x, y0, -frontAt(T, y0), x, y1, -frontAt(T, y1)); } // the curved front corners
     if (R.edges) sc.add(new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(box, 3)), glassLine()));
     if (R.rim) {
       const rm = basic(0x1a1d21), r = t + 8, h = RIM_H, inner = fp.ring, rr = offsetRing(T, r);
@@ -339,10 +393,11 @@ function addWater(sc: THREE.Scene, S: TankSetup, T: Tank) {
   if (!S.water.on) return;
   const y = waterY(T, S.water.level), look = surfaceLook(S.water);
   const bowl = shapeOf(T) === 'bowl', r = bowlRadius(T, y); // a bowl's surface is the sphere's circle at the water line
-  const surf = new THREE.Mesh(flatGeometry(bowl ? circleRing(T, r) : footprint(T).ring, y), basic(look.color, { transparent: true, opacity: look.opacity, depthWrite: false, side: THREE.DoubleSide }));
+  const arch = archBulge(T) > 0, ring = levelRing(T, y); // an arch's surface reaches out to its front glass at that height
+  const surf = new THREE.Mesh(flatGeometry(bowl ? circleRing(T, r) : ring, y), basic(look.color, { transparent: true, opacity: look.opacity, depthWrite: false, side: THREE.DoubleSide }));
   (surf.material as THREE.Material).userData.waterSurf = true; // recoloured in place (patchLook)
   surf.renderOrder = 4; surf.userData.nolight = true; sc.add(surf);
-  const line = lines(ringLines(bowl ? circleRing(T, r - 0.6) : offsetRing(T, -0.6), y), 0xe8f6fa, 0.45);
+  const line = lines(ringLines(bowl ? circleRing(T, r - 0.6) : arch ? ring.map(p => [p[0] + (p[0] < T.L / 2 ? 0.6 : -0.6), p[1] + (p[1] < T.D / 2 ? 0.6 : -0.6)] as P) : offsetRing(T, -0.6), y), 0xe8f6fa, 0.45);
   line.renderOrder = 4; sc.add(line);
   // the water's own colour where only the empty page is behind it (audit #18; objects are tinted in their shader);
   // built even at opacity 0 and hidden there, so stepping the opacity off 0 is an in-place patch (patchLook), not a rebuild
@@ -350,7 +405,7 @@ function addWater(sc: THREE.Scene, S: TankSetup, T: Tank) {
   if (bowl) {
     const n = 24, prof = Array.from({ length: n + 1 }, (_, i) => new THREE.Vector2(Math.max(0.5, bowlRadius(T, y * i / n)), y * i / n));
     vol = new THREE.LatheGeometry([new THREE.Vector2(0, 0), ...prof, new THREE.Vector2(0, y)], 48).translate(T.L / 2, 0, -T.D / 2);
-  } else vol = prismGeometry(footprint(T).ring, 0, y);
+  } else vol = arch ? archSolid(T, y) : prismGeometry(footprint(T).ring, 0, y);
   const m = new THREE.Mesh(vol, waterVolumeMaterial()); m.userData.nolight = true; m.renderOrder = 3; sc.add(m);
   // at opacity 0 it still draws in the tank's first frame (uWater.w = 0, so alpha is exactly 0: no pixel changes), so
   // its program links with the rest of the build, not on the first opacity step; then it hides (patchLook shows it)
@@ -843,8 +898,9 @@ function flare(T: Tank, x: number, d: number, y: number, rb: number): [number, n
   return [cx + (x - cx) * k, y, -(cd + (d - cd) * k)];
 }
 
+const SKIRT_DARK = 0.4; // how much darker the ground's skirt gets at the floor than at its top rim
 function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
-  const swamp = S.terrain.on; // shaped ground (custom terrain, a swamp's pools): finer mesh
+  const pools = S.terrain.on && !!S.terrain.pools?.length, swamp = S.terrain.on; // shaped ground (custom terrain, a swamp's pools): finer mesh
   if (!S.substrate.show && !swamp) return;
   // Light map on: the ground is plain flat-looking sand (3D stones and a busy texture hid the contour lines and labels)
   const sub = S.render.beams && S.light.type !== 'flat' ? { ...S.substrate, type: 'white' as const, litter: undefined } : S.substrate, { L, D } = T, tile = sub.type === 'custom' ? blendTile(sub.custom) : SUBSTRATES[sub.type].tile * 2, h = (x: number, d: number) => groundHeight(S, T, x, d);
@@ -855,7 +911,9 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   // a bowl flares above its floor: the ground spreads out from the centre to meet the glass at its own height
   const bowl = shapeOf(T) === 'bowl', rb = bowl ? bowlDims(T).rb : 0;
   // never flush with the bottom glass (a terrain point dragged to 0 z-fought with it into stripes, audit #14)
-  const G = (p: P): V3 => flare(T, p[0], p[1], Math.max(0.6, h(p[0], p[1])), rb);
+  const archB = archBulge(T), onFront = (p: P) => archB > 0 && p[1] < archB + 1e-6;
+  // an arch's front glass leans out above the floor: the ground's front edge reaches it at its own height
+  const G = (p: P): V3 => { const y = Math.max(0.6, h(p[0], p[1])); return onFront(p) ? [p[0], y, -(frontAt(T, y) + 0.4)] : flare(T, p[0], p[1], y, rb); };
   const P3 = (i: number, j: number): V3 => G([L * i / N, D * j / N]);
   // cheap slope shading: brightness from the ground's tilt toward a light above, front and left, per grid vertex and
   // blended across each cell (one flat shade per cell showed the 16x16 grid as sharp-edged squares on gentle slopes);
@@ -884,6 +942,7 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
     const c00 = vcol[i * (N + 1) + j], c10 = vcol[(i + 1) * (N + 1) + j], c01 = vcol[i * (N + 1) + j + 1], c11 = vcol[(i + 1) * (N + 1) + j + 1];
     return [0, 1, 2, 3, 4, 5, 6].map(c => (c00[c] * (1 - u) + c10[c] * u) * (1 - w) + (c01[c] * (1 - u) + c11[c] * u) * w);
   };
+  const slopeK = (c: number[]) => clamp(0.55 + 0.6 * new THREE.Vector3(c[3], c[4], c[5]).normalize().dot(light), 0, 1.15) / 1.15; // the vertex shade's slope term
   // coarse grounds in 3D (render/grains.ts): the painted top and skirt step back from the glass by `gsh`, behind the row
   // of grains pressed against it (both cut it: a seam where the surface sliced the stones, a bare strip where it did not)
   const gl = sub.show ? grainLook(sub) : null, gsh = gl && !bowl ? (gl.size[0] + gl.size[1]) / 2 * 0.55 : 0;
@@ -908,8 +967,8 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
     const n = new THREE.Vector3().crossVectors(a, b).normalize(); if (n.y < 0) n.negate();
     const v = cell.map(G); // a whole cell is the quad as before; a cut one is a fan
     // grain from above on gentle ground; on a steep bank (swamp pool walls) from the side it faces, so it does not
-    // smear into streaks (audit #15)
-    const uv = n.y > 0.6 ? (p: V3) => [p[0] / tile, -p[2] / tile] : Math.abs(n.x) > Math.abs(n.z) ? (p: V3) => [-p[2] / tile, p[1] / tile] : (p: V3) => [p[0] / tile, p[1] / tile];
+    // smear into streaks (audit #15); only where there are pools: switching projection cell by cell on plain hills left a seam in the texture
+    const uv = n.y > 0.6 || !pools ? (p: V3) => [p[0] / tile, -p[2] / tile] : Math.abs(n.x) > Math.abs(n.z) ? (p: V3) => [-p[2] / tile, p[1] / tile] : (p: V3) => [p[0] / tile, p[1] / tile];
     const cc = cell.map(colAt);
     for (let m = 1; m < v.length - 1; m++) for (const t of [0, m, m + 1]) {
       top.push(v[t], uv(v[t])); topCol.push(...cc[t].slice(0, 3)); topWet.push(cc[t][6]);
@@ -943,20 +1002,32 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
           if (a1 - a0 < 1e-3 && b1 - b0 < 1e-3) continue;
           const [arr, col, tl] = y1 <= dh ? [leca, lecaCol, lecaTile] : y1 <= dh + 2.5 ? [mesh, meshCol, tile] : [side, sideCol, tile];
           const pts: V3[] = [[p[0], a0, -p[1]], [q[0], b0, -q[1]], [q[0], b1, -q[1]], [p[0], a1, -p[1]]], ss = [s0, s1, s1, s0];
-          for (const i of [0, 1, 2, 0, 2, 3]) { arr.push(pts[i], [ss[i] / tl, pts[i][1] / tl]); const w = wetAt(pts[i][1]); col.push(...WET.map(c => 1 - w * (1 - c))); }
+          for (const i of [0, 1, 2, 0, 2, 3]) {
+            arr.push(pts[i], [ss[i] / tl, pts[i][1] / tl]); const w = wetAt(pts[i][1]);
+            // the soil band carries the top surface's slope shade at the rim, so no line shows where they meet
+            const kk = arr === side ? slopeK(colAt(i === 0 || i === 3 ? p : q)) : 1;
+            col.push(...WET.map(c => (1 - w * (1 - c)) * kk));
+          }
         }
         continue;
       }
       // a bowl: in bands up the curve of the glass (one straight strip would cut inside the sphere, a cone)
-      const bands = bowl ? 8 : 1, cx = L / 2, cd = D / 2;
+      const archFront = archB > 0 && e.n[1] < -0.5, bands = bowl || archFront ? 8 : 1, cx = L / 2, cd = D / 2;
       const on = (c: P, top: number, j: number): V3 => {
-        const y = top * j / bands; if (!bowl || j === bands) return j === bands ? (c === p ? gp : gq) : [c[0], 0, -c[1]];
+        const y = top * j / bands; if (archFront && j < bands) return [c[0], y, -(frontAt(T, y) + (j ? 0.4 : 0))];
+        if (!bowl || j === bands) return j === bands ? (c === p ? gp : gq) : [c[0], 0, -c[1]];
         const f = (bowlRadius(T, y) - 0.5) / rb; return [cx + (c[0] - cx) * f, y, -(cd + (c[1] - cd) * f)];
       };
       for (let j = 0; j < bands; j++) {
         const pts: V3[] = [on(p, gp[1], j), on(q, gq[1], j), on(q, gq[1], j + 1), on(p, gp[1], j + 1)];
-        const uv = [[s0, pts[0][1]], [s1, pts[1][1]], [s1, pts[2][1]], [s0, pts[3][1]]];
-        for (const i of [0, 1, 2, 0, 2, 3]) side.push(pts[i], [uv[i][0] / tile, uv[i][1] / tile]);
+        const uv = [[s0, pts[0][1]], [s1, pts[1][1]], [s1, pts[2][1]], [s0, pts[3][1]]], ends = [p, q, q, p], tops = [gp[1], gq[1], gq[1], gp[1]];
+        for (const i of [0, 1, 2, 0, 2, 3]) {
+          side.push(pts[i], [uv[i][0] / tile, uv[i][1] / tile]);
+          // the skirt starts at the top surface's own colour at the rim (a flat darker shade left a visible line where they
+          // meet) and darkens toward the floor
+          const c = colAt(ends[i]), f = 1 - SKIRT_DARK * (1 - clamp(pts[i][1] / (tops[i] || 1), 0, 1));
+          sideCol.push(c[0] * f, c[1] * f, c[2] * f);
+        }
       }
     }
   }
@@ -967,12 +1038,16 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
     g.setAttribute('position', new THREE.Float32BufferAttribute(arr.filter((_, i) => i % 2 === 0).flat(), 3));
     g.setAttribute('uv', new THREE.Float32BufferAttribute(arr.filter((_, i) => i % 2 === 1).flat(), 2));
     const m = new THREE.MeshBasicMaterial({ map: map ?? (sub.type === 'custom' ? blendTexture(sub.custom, 'a') : substrateTexture(sub.type)), color: shade, vertexColors: !!cols?.length, side: THREE.DoubleSide });
-    m.userData.sub = true; if (sub.type === 'custom') blendGrains(m, sub.custom, tile);
+    m.userData.sub = true;
+    if (sub.type === 'custom' && sub.custom.grain2 !== 'none') {
+      g.setAttribute('aMk', new THREE.Float32BufferAttribute(arr.filter((_, i) => i % 2 === 0).flatMap(v => [v[0] / tile, -v[2] / tile]), 2));
+      blendGrains(m, sub.custom, tile);
+    }
     if (wet && terra) wetSheen(m, g, wet);
     sc.add(new THREE.Mesh(g, m));
   };
   // coarse grounds in 3D (render/grains.ts): the painted surface darkened to the shadowed gaps between the grains
-  mk(top, gl ? 0x6e6e6e : 0xffffff, topCol, topNrm, topWet); mk(side, gl ? 0x5a5a5a : 0xb4b4b4, sideCol); // the skirt a touch darker so the layer reads through the glass
+  mk(top, gl ? 0x6e6e6e : 0xffffff, topCol, topNrm, topWet); mk(side, gl ? 0x6e6e6e : 0xffffff, sideCol); // the skirt a touch darker so the layer reads through the glass
   mk(leca, 0xb4b4b4, lecaCol, undefined, undefined, lecaTexture()); mk(mesh, 0x3a3d38, meshCol, undefined, undefined, meshTexture());
   // the bottom of the ground, seen through the bottom pane from under a tank with no stand (Nathan 2026-10-20: a plain
   // sand-coloured sheet showed there); a layered ground's bottom is its clay balls
@@ -1027,9 +1102,13 @@ function blendGrains(m: THREE.MeshBasicMaterial, b: TankSetup['substrate']['cust
   const uniforms = m.userData.blend = blendUniforms(b, tile); // patchLook updates them in place
   m.userData.post = (sh: THREE.WebGLProgramParametersWithUniforms) => {
     Object.assign(sh.uniforms, uniforms);
-    sh.fragmentShader = sh.fragmentShader.replace('void main() {', `uniform sampler2D uMapB, uMapM, uMask; uniform vec4 uZone; uniform vec2 uOff;
+    // the patch mask is read at the ground's position (aMk: x, depth over the tile), not the surface's own uv: the top,
+    // its steeper cells and the skirt each project their uv differently, and patches broke into a line where they met
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nattribute vec2 aMk; varying vec2 vAqMk;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvAqMk = aMk;');
+    sh.fragmentShader = sh.fragmentShader.replace('void main() {', `uniform sampler2D uMapB, uMapM, uMask; uniform vec4 uZone; uniform vec2 uOff; varying vec2 vAqMk;
 vec4 aqBlend(vec2 uv) {
-  float n = texture2D(uMask, vMapUv * uZone.z + uOff).r;
+  float n = texture2D(uMask, vAqMk * uZone.z + uOff).r;
   float a = 1.0 - smoothstep(uZone.x - uZone.w, uZone.x + uZone.w, n), b = smoothstep(uZone.y - uZone.w, uZone.y + uZone.w, n);
   return texture2D(map, uv) * a + texture2D(uMapB, uv) * b + texture2D(uMapM, uv) * max(1.0 - a - b, 0.0);
 }
@@ -1392,9 +1471,28 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
     if (!best) return undefined;
     return { pts: best.pts.map(p => W(p).sub(m.position).applyQuaternion(inv)), r0: best.r0, r1: best.r1 };
   };
+  // a herp's body (limbs, tail) reaches past its centre point, which is all clampFish keeps inside the glass: slide it in until its
+  // whole 3D body is inside the panes (Nathan 2026-10-20: a hand poked out through the side glass)
+  const pullIn = (m: THREE.Mesh) => {
+    if (shapeOf(T) === 'bowl') return;
+    const edges = footprint(T).edges, x0 = m.position.x, z0 = m.position.z;
+    for (let k = 0; k < 4; k++) {
+      if (Math.hypot(m.position.x - x0, m.position.z - z0) > PULL_IN_MAX) break; // a body wider than the tank, or a bad box: not shoved across it
+      m.updateMatrixWorld(true);
+      const bb = new THREE.Box3().setFromObject(m, true); if (bb.isEmpty()) return;
+      let moved = false;
+      for (const e of edges) {
+        let out = 0; // how far the body's furthest vertex lies past this pane
+        for (const x of [bb.min.x, bb.max.x]) for (const z of [bb.min.z, bb.max.z]) out = Math.max(out, (x - e.a[0]) * e.n[0] + (-z - e.a[1]) * e.n[1]);
+        if (out > 0) { m.position.x -= e.n[0] * out; m.position.z += e.n[1] * out; moved = true; }
+      }
+      if (!moved) return;
+    }
+  };
   // one animal's meshes (`register`: picked, outlined when selected) and its contact shadow (`add`)
-  const animal = (f: Fish, register: (m: THREE.Mesh, w: number, h: number) => void, add: (o: THREE.Object3D | null) => void) => {
+  const animal = (f: Fish, register0: (m: THREE.Mesh, w: number, h: number) => void, add: (o: THREE.Object3D | null) => void) => {
     const sp = speciesOf(f); if (!sp) return;
+    const register = (m: THREE.Mesh, w: number, h: number) => { if (isHerp3D(sp.art) && !isSnake(sp.art) && (f.surface ?? 'floor') === 'floor') pullIn(m); register0(m, w, h); };
     if (sp.kind === 'snail') {
       for (const [m, w, h] of snailMeshes(S, T, f, sp, base(f), A)) register(m, w, h);
       if ((f.surface ?? 'floor') === 'floor') { const w = fishTL(f, sp); add(contactShadow(S, T, f.x, f.depth, groundHeight(S, T, f.x, f.depth), w, w * 0.45, f.yaw)); }
@@ -1471,6 +1569,8 @@ HIDDEN.userData.cached = true; HIDDEN.userData.keep = true;
 const UP = new THREE.Vector3(0, 1, 0), MAX_TILT = 45 * D2R;
 /** How far a snail or pleco on the glass sits off the inside of the pane (mm). */
 const PANE_GAP = 0.8;
+/** The most (mm) a herp on the floor is slid in to keep its limbs and tail inside the glass. */
+const PULL_IN_MAX = 25;
 /** How far (mm) round its Shuffle spot a lizard looks for the limb or top it was placed on, how far off the spot's height that may be, and
  *  the most a lizard is lifted over rising hardscape (a share of its length). */
 const LIZARD_SNAP = 40, LIZARD_SNAP_TOL = 45, LIZARD_LIFT = 0.12;

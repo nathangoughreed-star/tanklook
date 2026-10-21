@@ -29,7 +29,7 @@ describe('plant growth', () => {
       const now = revealPlant(plantGeometry(type, seed, h, clump), growthOf(type, h));
       expect(tris(now), `${type} seed ${seed}`).toEqual(tris(plantBefore(type, seed, h, clump)));
     }
-  }, 60000);
+  });
 
   it('growth is back-solved from the saved size, and the grown size follows the species curve', () => {
     expect(growthOf('grass', 120)).toBe(0);

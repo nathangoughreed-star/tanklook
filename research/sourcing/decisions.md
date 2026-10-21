@@ -1,179 +1,136 @@
-# Sourcing decisions waiting on Nathan
+# Sourcing decisions
 
-Fields where the opened pages disagree with our number. They stay unsourced until decided: change the number (then it is
-cited), or keep ours and record why (then it is an assumption). Source detail and quotes: the batch file named per row.
+Fields where the opened pages disagree with our number. Each waits here until decided: adopt the page's number (then it is
+cited), work it out from the stated numbers (derived), or keep ours and say why (assumption). From chat S168 on, the decision
+is recorded in the batch file itself (`verdict` agrees / derived / kept, `use` = the source indices an adopted value cites,
+`decision` = why); src/data/provenance.ts turns those into rules. Source detail and quotes: the batch file named per row.
 
-## pilot-01 (2026-10-20)
+## Decided (Nathan, chat SQ)
 
-| field | ours | pages say | proposal |
-|---|---|---|---|
-| oscar.minL | 400 L | Seriously Fish ~540 L (143 gal); Fishkeeping World 143 gal for one adult | **540** (both agree) |
-| ocellaris.tl | 80 mm | FishBase 11 cm TL max; Top Shelf 4.3 in; BRS approx 4 in | **100** (all three 100-110; aquarium fish often stay 80, so maybe keep 80 as "typical" and say so) |
-| bristlenose.minL | 110 L | Seriously Fish ~54 L; Chewy 20 gal (76 L) for one adult | **80** (top of the stated span) |
-| angel.care | 2 | Seriously Fish Easy; Fishkeeping World Easy (common forms), Moderate (altum, koi, albino) | **1** |
-| kribensis.care | 2 | Seriously Fish Easy | **1** |
-| yellowtang.care | 2 | LiveAquaria Easy (one source) | keep 2 (single retailer source; tang disease-prone), record why |
-| betta.care | 1 | Seriously Fish Moderate; Fishkeeping World fine for first-time owners | keep 1, record the split |
-| ocellaris.temper | 0 | Top Shelf Semi-Aggressive; BRS Peaceful, Semi-Aggressive (towards other clownfish) | **1** |
-| angel.temper | 1 | Seriously Fish peaceful; Fishkeeping World semi-aggressive (most forms) | keep 1, record the split |
-| kribensis.temper | 1 | Seriously Fish very territorial when breeding; Aquarium Source peaceful | keep 1 (territorial when breeding) |
-| betta.female.tl | 55 mm | no opened page gives a female length | keep, label assumption |
+Rule from Nathan 2026-10-20: he cannot judge the biology; trust the research, especially where independent sources agree. Where sources split or only one retailer speaks, the proposal below stands unless noted.
 
-## Cost bands (lane D) and LU_PER_L (lane E3)
+- 2026-10-20 batch 1, minimum tanks: oscar 540, crested gecko 127, crested harlequin gecko 127, sixline wrasse 208, goldfish 75 (adopted, cited). Ball python kept at 450 L as an assumption: PetSmart and BeWild say 40 gal, Zen Habitats and Reptile Direct say 4x2x2 ft (120 gal) and call 40 gal outdated; the ReptiFiles PDF gives no enclosure size.
+- 2026-10-20 batch 2, care levels (all as proposed): easier (2 -> 1) cardinal, rummynose, cpd, hatchet, molly, dwarfgourami, yellowlab, oto, kuhli, sae, hillstream, cleanershrimp, royalgramma, firefish, banggai, sixline, coralbeauty, dartfrog, firenewt, regaljumper, angel, kribensis; bluetang 3 -> 2, gbr 3 -> 2; boesemani 1 -> 2 (harder). Kept with a recorded reason: adf 1, yellowtang 2, betta 1. oto / kuhli / sae / hillstream rest on one page each (low confidence).
 
-- Cost bands: research/sourcing/other/D-cost-defaults.md lists every demand-defaults band beside the same band refit to the
-  cited listings. Clear misses (n >= 10): tank $/gal per class (ours 6 / 3 / 3.5 / 6, listings 8.5 / 4.8 / 2.1 / 13),
-  filter base (22 vs 10), heater base (20 vs 26), fw-fish setup (+30 %), easy / medium plants (listings 2-3x ours). Adopt the
-  fitted bands? Each adopted band becomes derived.
-- LU_PER_L 0.3: outside checks bracket it at 0.22 (AqAdvisor) and about 1.7 (our nitrogen budget); it only sizes the starters
-  now. Proposal: keep, recorded as checked (done in provenance.ts).
-- kWh: EIA says 18.31 c in July 2026 (summer high); 0.17 kept and cited. Raise to 0.18?
+## Decided (Nathan, chat S168, 2026-10-20; groups G1-G11, on top of SQ's batches 1-2)
+
+- **Adopted** (cited where a quote checked): minimum tanks bristlenose 80, boesemani 110, molly 80, yellow lab 150, panda cory
+  41, tree frog 76, fire-bellied toad 57, axolotl 110, brown anole 40, regal jumper 2, turbo snail 40, bolivian ram 110, chaco
+  57; temperament ocellaris 1, GBR 0, yellow lab 1, synodontis 1, hermit 0, royal gramma 0, sixline 1, danio 0 (fin-nipping
+  belongs to the `nip` flag), the three anoles 1; adult length = the stated maximum (ocellaris and chromis 100, clown loach
+  300, swordtail female 160, molly 85, comet and livingstonii 250, synodontis 190, ADF 55, guppy 30); pH cardinal 3.5-7.5,
+  ember 5-7, synodontis 7.5-8.5, nerite 7-8.5 (the planted example's nerite became a Malaysian trumpet), trumpet 6.5-8;
+  anole basking 29-32, ball python RH 60-80; reef soft 75-150 and SPS 200-350 PAR (BRS); return pump 23 W, powerhead 3.5 W,
+  ATO 8 W, HOB skimmer 11 W at a 55 gal ref; cost bands heater and filter base, tank $/gal for the three classes up to 75 gal,
+  fw-fish, easy / medium / land / succulent plants, wood.
+- **Derived:** hatchet pH 5-7 (overlap of FishBase and Seriously Fish), axolotl pH 7-7.6 (span), brown-green anole basking
+  29-32 (the green anole page), root tabs 12 months (Seachem dose x a 40-pack at 20 gal).
+- **Kept, labelled assumption:** hillstream minimum 60; angel, kribensis and swordtail temperament 1; whitecloud / CPD /
+  hatchet group 6 (the pages' "ideally" counts go to the count bands); comet 300, mandarin 265, mystery snail 40; mystery
+  snail pH; betta female length; chaco tl (body length, the pages give leg span); doser 1 W; tank $/gal over 75 gal and the
+  weak bands (lane D); kWh 0.17 (EIA July 18.31 c is the summer high).
+- **Overrides SQ batch 2 (settled by Coordinator 5, SQ agreed):** otocinclus care 2 and hillstream care 2 (kept: SQ's 1 rested on
+  one genus / group page each), ADF care 2 (adopted: LiveAquaria Moderate); comet stays 300 and mystery snail 40.
+- **Follow-up (Nathan 2026-10-20):** a grazer budget instead of a bare minimum tank for algae eaters: research the hobby's
+  "grazers per tank size" figures (Top Shelf: 2-3 turbos per 20-30 gal) and how much supplementary feeding (nori, wafers)
+  lifts them, for turbo, nerite, trumpet, oto, bristlenose, SAE and amano; only with stated numbers.
 
 <!-- GENERATED by scripts/sourcing-decisions.mjs: do not edit below -->
 
-## A1 (11)
+## A1 (0)
 
 | field | ours | pages say | suggest | note |
 |---|---|---|---|---|
-| cardinal.ph | [4,6.8] | FishBase: pH 4.0-6.0; Seriously Fish: pH 3.5-7.5 | **[4,6]** | FishBase upper end 6.0 is 0.8 below ours; SF range 3.5-7.5 is wider (lo 0.5 off). Sources differ. |
-| cardinal.care | 2 | Seriously Fish: Easy | **1** | SF rates Easy (6 of 8 measures). |
-| ember.ph | [5.5,7] | Seriously Fish: pH 5.0-7.0 | **[5,7]** | Lo end 0.5 below ours. FishBase page states no pH. |
-| rummynose.care | 2 | Seriously Fish: Easy | **1** | SF rates Easy (5 of 8 measures). |
-| danio.temper | 1 | Seriously Fish: peaceful | **0** | SF also: 'This species is very peaceful indeed and can be combined with many of the most popular fish in the hobby'. No fetched source calls it a fin-nipper; other care sheets might. |
-| whitecloud.group | 6 | Seriously Fish: 10+ | **10** | SF says 'ideally' 10+; ours 6 is 4 below. |
-| cpd.care | 2 | Seriously Fish: Easy | **1** | SF rates Easy (5 of 8 measures). |
-| cpd.group | 6 | Seriously Fish: ideally 20 or more | **20** | SF gives no firm minimum, only 'ideally 20 or more'; ours 6 is far below. |
-| hatchet.ph | [5.5,7] | FishBase: pH 5.0-8.0; Seriously Fish: pH 4.0-7.0 | **[5,7]** | Sources differ: FishBase 5-8, SF 4-7; ours is more than 0.3 off at one end of each. Suggest the overlap 5-7. |
-| hatchet.care | 2 | Seriously Fish: Easy | **1** | SF rates Easy (6 of 8 measures). |
-| hatchet.group | 6 | Seriously Fish: ideally 10 or more | **10** | Ours 6 is 4 below 10. |
 
-## A2 (11)
+
+## A2 (0)
 
 | field | ours | pages say | suggest | note |
 |---|---|---|---|---|
-| boesemani.care | 1 | Seriously Fish: Moderate | **2** | One source only; quote is the rating word. |
-| boesemani.minL | 200 | Seriously Fish: at least 120 x 30 x 30 cm, about 108 L (29 US gal) | **110** | Only one source found; ours is about 85 % above it. |
-| guppy.tl | 35 | FishBase: common 2.8 cm TL; max 5.0 cm SL male/unsexed; Fishkeeping World: males about 1 1/8 in (29 mm) | **30** | Typical male 28-29 mm; ours is 21-25 % above. FishBase max 5.0 cm SL and Seriously Fish 60 mm SL are maxima for either sex, which would agree. |
-| molly.tl | 60 | FishBase: max 7.5 cm SL; common 4.0 cm TL; Fishkeeping World: males about 3.5 in (89 mm) | **85** | FishBase common 4.0 cm TL would be 33 % below ours; max/typical figures are 75-90 mm. Seriously Fish: 80 mm SL both sexes. |
-| molly.care | 2 | Seriously Fish: Easy; Fishkeeping World: Easy | **1** |  |
-| molly.minL | 110 | Seriously Fish: base 90 x 30 cm, about 81 L (21 US gal); Fishkeeping World: 10 gal (38 L) | **80** | Ours is 36 % above the larger figure. |
-| swordtail.female.tl | 115 | FishBase: 16.0 cm TL female; Fishkeeping World: females up to 6.3 in (160 mm) | **160** | Ours is 28 % below both. Seriously Fish says 140 mm SL both sexes (would agree). Figures may include the sword. |
-| swordtail.temper | 1 | Fishkeeping World: peaceful; males can become territorial if too few females; Seriously Fish: temperament field 'unknown'; male groups form hierarchies | **0** | Mixed: FKW peaceful (0); SF gives no temperament but notes male dominance behaviour (supports 1). Treat as ambiguous. |
-| goldfish.minL | 150 | Fishkeeping World: 20 gal (76 L) for one fancy goldfish; Fishkeeping World: 20 gal (76 L) | **75** | Ours is about double. Our value may be for a group; sources state one fish. |
-| comet.tl | 200 | Fishkeeping World: up to 12 in (305 mm); Fishkeeping World: up to 10 in (254 mm) | **250** | Ours is 21-34 % below these maxima. FishBase species max 48.0 cm TL (common length 10.0 cm TL), not comet-specific. |
-| comet.minL | 300 | Fishkeeping World: 50 gal (189 L) min, recommends 75 gal (284 L); Fishkeeping World: 30 gal (114 L) | **190** | Span 114-284 L; ours 300 is within 25 % of the 75 gal recommendation (284), so arguably agrees if the recommended figure is the basis. Marked disagrees against the stated minimums. |
 
-## A3 (4)
+
+## A3 (0)
 
 | field | ours | pages say | suggest | note |
 |---|---|---|---|---|
-| dwarfgourami.care | 2 | Seriously Fish: Easy; Aquarium Co-Op: beginner-friendly | **1** |  |
-| gbr.care | 3 | Seriously Fish: Moderate; Fishkeeping World: Intermediate | **2** | Both say moderate / intermediate; ours is 3 (expert) |
-| gbr.temper | 1 | Fishkeeping World: Peaceful; Aquarium Co-Op: relatively peaceful | **0** | Sources say peaceful; may be feisty in small tanks or guarding eggs. SF calls it a poor competitor, not aggressive |
-| bolivianram.minL | 60 | Fishkeeping World: 30 gal (114 L) for one fish | **110** | SF: base at least 90 x 45 cm (no litres, roughly 100 L) |
 
-## A4 (7)
+
+## A4 (0)
 
 | field | ours | pages say | suggest | note |
 |---|---|---|---|---|
-| yellowlab.care | 2 | Seriously Fish: Easy | **1** | Seriously Fish rates Easy (5 of 8 measures). Guidarium states no care level. |
-| yellowlab.minL | 200 | Seriously Fish: ~154 litres / ~41 US gal; Guidarium: 150 L min | **150** | Both sources 150-154 L; ours is +30%. |
-| yellowlab.temper | 2 | Seriously Fish: peaceful; territorial when spawning; Guidarium: semi-aggressive 6/10 | **1** | Sources say peaceful to semi-aggressive; never aggressive. |
-| livingstonii.tl | 200 | FishBase: 25.0 cm TL male, 20.0 cm TL female; Seriously Fish: 250mm SL max | **250** | Male 250 TL (FishBase), 250 SL (about 300 TL, Seriously Fish); Guidarium 25 cm. Female 200 TL matches ours. |
-| syno.tl | 150 | FishBase: 19.2 cm TL max; Seriously Fish: 190mm SL max | **190** | Both about 190 mm; ours -22%. |
-| syno.temper | 0 | Seriously Fish: fairly vigorous, not with shy species | **1** | Single source; vigorous toward shy tankmates, so 1 on our scale. Page temperament row reads unknown. |
-| syno.ph | [7.5,9] | Seriously Fish: 7.5-8.5 | **[7.5,8.5]** | Single source; our top end 9 is 0.5 over. |
 
-## A5 (7)
+
+## A5 (0)
 
 | field | ours | pages say | suggest | note |
 |---|---|---|---|---|
-| pandacory.minL | 60 | Seriously Fish: ~41 L / ~11 US gal for a small group | **41** | Only one source; ours is 46% above it. |
-| oto.care | 2 | Fishkeeping World: Easy; Aquarium Co-Op: no rating; sensitive reputation | **1** | FKW says Easy (genus page); Co-Op gives no rating, says sensitive reputation but also relatively hardy. Low confidence. |
-| kuhli.care | 2 | Fishkeeping World: Easy | **1** | Same page also says caring is more challenging than for other common fish; one source. |
-| clownloach.tl | 200 | FishBase: 30.5 cm TL max; Seriously Fish: 400 mm SL max; Fishkeeping World: 12 in (305 mm) | **300** | Sources give 305 mm TL (FishBase, FKW); SF says 400 mm SL. Ours (200) is a typical aquarium adult, well under the stated maximum. |
-| sae.care | 2 | Fishkeeping World: Easy | **1** | Co-Op says quite hardy, no rating. Seriously Fish genus page had no oblongus values and is not cited. |
-| hillstream.care | 3 | Fishkeeping World: Easy | **1** | Single source; FKW page may be for hillstream loaches generally. |
-| hillstream.minL | 60 | Fishkeeping World: 55 US gal (208 L); Seriously Fish: base 75 x 30 cm, no litres | **208** | A 75x30 cm base has no stated volume. Low confidence in the 208 L figure. |
 
-## A6 (7)
+
+## A6 (0)
 
 | field | ours | pages say | suggest | note |
 |---|---|---|---|---|
-| nerite.ph | [6.5,8.5] | Aquarium Source: 7-8.5; Aquarium Co-Op: above 7.0 | **[7,8.5]** | Lower end: both pages say 7.0, ours 6.5 (0.5 off). |
-| mystery.minL | 40 | Aquarium Source: 5 gallons for one snail (18.9 L) | **20** | Only one opened page states a minimum; ours (40 L) is about twice that. Search snippets (not opened) mentioned 10 gal elsewhere. Aquatic Arts not stated. |
-| mystery.ph | [6.5,8] | Aquatic Arts: 7.6-8.4; Aquarium Source: 7.6-8.4 (Quick Facts) | **[7.6,8.4]** | Both pages agree on 7.6-8.4; ours low end 6.5 is 1.1 below. |
-| trumpet.ph | [6.5,8.5] | Aquarium Source: 6.5 to 8.0; Aquariadise: 7.0 to 8.0 | **[6.5,8]** | Upper end: both pages say 8.0, ours 8.5 (0.5 off). Search snippet 6.5-8.5 was from a page I did not open. |
-| cleanershrimp.care | 2 | Aquariadise: relatively easy to keep for marine species; That Pet Place: Difficulty: Easy | **1** | Both pages say Easy (relative to marine in general); ours is 2 (intermediate). That Pet Place label and value are separate cells. |
-| turbo.minL | 75 | Aquarium Breeder: 10 gallons (~40 L) | **40** | Top Shelf gives only a stocking guideline (2-3 snails per 20-30 gal), not a minimum. Search snippets from unopened pages mentioned 50 L and 30+ gal. |
-| hermit.temper | 1 | LiveAquaria: Peaceful; Reef Exclusive: Peaceful; Top Shelf Aquatics: Peaceful to Semi-Aggressive, territorial over shells | **0** | Sources differ: two pages say Peaceful (0), one says Peaceful to Semi-Aggressive (between 0 and 1). Shell-stealing behaviour is under prey. |
 
-## A7 (11)
+
+## A7 (0)
 
 | field | ours | pages say | suggest | note |
 |---|---|---|---|---|
-| royalgramma.care | 2 | LiveAquaria: Easy; Aquarium Source: extremely easy | **1** |  |
-| royalgramma.temper | 1 | LiveAquaria: Peaceful; Aquarium Source: peaceful | **0** | Peaceful toward other species; the own-kind aggression is covered by solo. |
-| bluetang.care | 3 | LiveAquaria: Moderate; Reef Exclusive: Moderate | **2** |  |
-| firefish.care | 2 | LiveAquaria: Easy; Reef Exclusive: Easy | **1** |  |
-| banggai.care | 2 | Reef Exclusive: Easy; Saltwater Aquarium Blog: easy | **1** |  |
-| sixline.care | 2 | LiveAquaria: Easy; Reef Exclusive: Easy | **1** |  |
-| sixline.minL | 115 | LiveAquaria: 60 gal (227 L); Reef Exclusive: 55 gal (208 L) | **208** | Both opened pages say 55-60 gal; ours (30 gal) is 45% under the lower. |
-| sixline.temper | 2 | LiveAquaria: Semi-Aggressive; Reef Exclusive: Semi-aggressive | **1** |  |
-| chromis.tl | 75 | FishBase: 10.0 cm TL max; LiveAquaria: 4 in max (102 mm) | **100** | Ours is 25% under both. |
-| coralbeauty.care | 2 | LiveAquaria: Easy; Reef Exclusive: Easy | **1** | LiveAquaria quote is the value cell only; label 'Care Level' sat on separate line. |
-| mandarin.minL | 265 | Reef Exclusive: 30 gal (113.5 L); Bulk Reef Supply: 30 gal (113.5 L) | **114** | Both opened pages say 30 gal; other (unopened) pages suggest larger, mature tanks. |
 
-## A8 (9)
+
+## A8 (0)
 
 | field | ours | pages say | suggest | note |
 |---|---|---|---|---|
-| dartfrog.care | 2 | Josh's Frogs: great beginner frog | **1** | One source only; it says beginner. |
-| treefrog.minL | 150 | Reptile Direct: smallest 15 or 20 gal glass terrarium (57-76 L); Reptiles Magazine: 20 gal horizontal minimum for 4 young frogs (76 L) | **76** | Converted 1 US gal = 3.785 L. Ours (150 L) is about twice the stated minimum. |
-| firetoad.minL | 75 | Josh's Frogs: 10-15 gal for 2-3 toads (38-57 L); The Vet Desk (PangoVet): 10 gal bare minimum for one toad (38 L); 15 gal for 3-5 (57 L) | **57** | Converted 1 US gal = 3.785 L. Ours is slightly over +25 % of the largest stated figure (57 L); marginal. |
-| firenewt.care | 2 | PetMD: Beginner; Reptiles Magazine: beginner | **1** | Both sources say beginner; second quote is as returned by the fetch and may carry markdown artefacts. |
-| adf.tl | 35 | LiveAquaria: maximum size 2.5 in (64 mm); PetSmart: up to 2 in (51 mm); Josh's Frogs: maximum 3 in (76 mm) | **55** | All three give max 2-3 in (51-76 mm); ours 35 mm is below. Quote formats copied as returned by fetch (markdown bold residue). |
-| adf.care | 1 | LiveAquaria: Care Level: Moderate; Josh's Frogs: fairly easy under the correct conditions | **2** | Sources split: LiveAquaria moderate (=2), Josh's fairly easy (=1). |
-| axolotl.minL | 150 | Modest Fish: 29 gal / 110 L smallest recommended, one axolotl; Reptile Centre: one adult minimum 54-75 L (15-20 gal) | **110** | Page's own litres used; spread 54-110 L, ours 150 is above. |
-| axolotl.ph | [7,8] | Modest Fish: pH 7-7.4; Reptile Centre: pH 7.4-7.6 | **[7,7.6]** | Our upper end 8 is 0.4-0.6 above both; lower end agrees. |
-| crestedgecko.minL | 75 | ReptiFiles PDF: 18x18x24 in (about 127 L, converted from dimensions); Reptiles Magazine: 18x18x36 in minimum for an adult (about 191 L, converted) | **125** | Converted from dimensions: 18x18x24 in = 7776 in3 = 127 L; 18x18x36 in = 191 L. Ours is well below both. |
 
-## A9 (14)
+
+## A9 (0)
 
 | field | ours | pages say | suggest | note |
 |---|---|---|---|---|
-| crestedharlequin.minL | 75 | ReptiFiles PDF: 18x18x24 in = ~127 L; Reptiles Magazine: min 18x18x36 in = ~191 L | **127** | Both pages give a tall terrarium of 127-191 L (converted from inches: 1 in3 = 0.01639 L); ours 75 is below both. |
-| greenanole.temper | 0 | PetSmart: males territorial; ReptiFiles: do not house multiple together | **1** | Male-male aggression; peaceful toward other species is not addressed. |
-| greenanole.air.warm | [32,35] | ReptiFiles: basking 90 F (32 C); PetSmart: top of tank 85-90 F (29-32 C) | **[29,32]** | Our hi of 35 is 3 C above both. |
-| greenanolebrown.temper | 0 | PetSmart: males territorial | **1** | Male-male. |
-| greenanolebrown.air.warm | [32,35] | ReptiFiles: basking 90 F (32 C) | **[29,32]** | PetSmart 85-90 F (29-32 C) also. |
-| brownanole.minL | 75 | The Vet Desk: tall 10 gal = ~38 L; PetSmart: 10 gal (40 L), 18 in tall (covers green and brown anole) | **40** | Both give 10 gal (~38-40 L); ours is about double. |
-| brownanole.temper | 0 | The Vet Desk: males territorial, cannot share a tank; PetSmart: males territorial | **1** | Male-male. |
-| brownanole.air.warm | [32,35] | PetSmart: 85-90 F (29-32 C) | **[29,32]** | Vet Desk gives basking target 90 F (32 C); ours hi 35 is above. |
-| regaljumper.care | 2 | Tarantula Collective: beginner-friendly; PetSmart: Beginner | **1** |  |
-| regaljumper.minL | 5 | PetSmart: min 4x4x7 in = ~1.8 L | **2** | Converted from inches. Josh's Frogs: 'A small Exo-terra Faunarium will comfortably house this spider.' (no dimensions). Tarantula Collective names product sizes only. Ours may include deliberate margin. |
-| ballpython.minL | 450 | PetSmart: min 40 gal = ~151 L adult | **150** | Single source, converted from gallons; ours is 3x higher. |
-| ballpython.air.rh | [50,65] | ReptiFiles PDF: 60-80%; PetSmart: 60-80% | **[60,80]** | Both pages say 60-80; our lo 50 is 10 points below. |
-| chacogoldenknee.tl | 45 | Tarantula Collective: DLS about 7 in (18 cm); Dubia.com: 7-8 in diameter (178-203 mm) | **180** | Pages give leg span (~180-200 mm), not body length; no male/female split. If ours (45 / 50) is body length, no opened page states it; if meant as leg span it is far too low. |
-| chacogoldenknee.minL | 40 | Dubia.com: 20x10x18 in or 15 gal 'high' = ~57-59 L | **57** | Converted (3600 in3 = 59 L; 15 gal = 57 L). Tarantula Collective: adult enclosure at least 3x leg span, no volume. |
 
-## other/C (6)
+
+## R1 (0)
 
 | field | ours | pages say | suggest | note |
 |---|---|---|---|---|
-| returnpump.watts | 30 | Bulk Reef Supply (Sicce Syncra Silent 1.5): 23W, 357 GPH | **23** | 357 GPH ~ 6.5 gal/gal/h at 55 gal (zero head); 23 W is 23% below our 30 W, just outside the 20% band. Other pumps (Jebao DCP-3000 ~28-30 W) only seen in search snippets. |
-| doser.watts | 1 | Green Aqua (Jebao DP-4): 8.5 W, DC 12V | **8.5** | 8.5 W looks like the 4-channel unit's adapter rating, not the continuous draw; real average draw with pumps mostly idle is likely lower. Single-channel units may differ. |
-| ato.watts | 3 | Bulk Reef Supply (Tunze Osmolator 3155, Q&A answer): around 8W at 115V with the pump running | **8** | Measured by the seller at the outlet while the pump runs; idle draw is lower. Our 1 h/day run time gives roughly 8 W for 1 h. |
-| skimmerhob.watts | 6 | Bulk Reef Supply (AquaReady HOB-1.5): 11 Watts, 40 to 75 gallons | **11** | Rated for 40-75 gal, so larger than our 30 gal reference; smaller HOB skimmers may draw less (BH1000 9 W only in a search snippet). |
-| powerhead.watts | 6 | Bulk Reef Supply (Hydor Koralia Nano 240): 3.5 W (the Nano 425 and 565 also 3.5 W) | **3.5** | Nano 240 suits 10-15 gal marine; the page lists the larger Nano 425 and 565 at the same 3.5 W, so a 40 gal tank still sees ~3.5 W per unit. |
-| roottabs.monthly.months | 8 | Seachem Flourish Tabs (directions): 10 gal needs 6 tabs; replace every 3-4 months; Fish Tanks Direct (pack size): 40-pack | **12** | 10 gal = 6 tabs (page: 'A standard 10 gallon aquarium requires 6 tabs'), so 20 gal = 12 tabs per round; 40 tabs / 12 = 3.3 rounds x 3.5 months = ~11.7 months. A 10-pack would last ~3 months. Pack size depends on which pack is bought. |
 
-## other/E1 (2)
+
+## R2 (0)
 
 | field | ours | pages say | suggest | note |
 |---|---|---|---|---|
-| reef-par.soft | [50,150] | Bulk Reef Supply: 75 - 150 PAR | **[75,150]** | BRS lumps soft and LPS together at 75-150; our upper bound matches, our lower bound 50 is below BRS 75. |
-| reef-par.sps | [150,400] | Bulk Reef Supply: 200 - 350 PAR | **[200,350]** | BRS range 200-350 lies inside our 150-400 (ours is wider); lower bound 150 is 25 % below BRS 200 and upper 400 is 14 % above 350. |
+
+
+## R3 (2)
+
+| field | ours | pages say | suggest | note |
+|---|---|---|---|---|
+| harlequin.minL | 40 | Seriously Fish: base 60 x 30 cm, ~54 litres (~14 US gal); Fishkeeping World: 15 gallons (56.8 L) for a school of 8-10; 20 gallons better | **54** | Both sources ~54-57 L; ours 40 is below 75% of the lowest (54 L stated by page, 15 gal = 56.8 L). |
+| syno.minL | 200 | Seriously Fish: 120 x 30 x 30 cm, ~108 litres (~29 US gal) | **108** | Only one care source found (Fishkeeping World 404, Planet Catfish forum 403). Page minimum 108 L; ours 200 is almost double. A forum thread (not fetched) suggests larger tanks for breeding groups. |
+
+## R4 (5)
+
+| field | ours | pages say | suggest | note |
+|---|---|---|---|---|
+| mandarin.max | 1 | Fishkeeping World: pair allowed (75 gal) | **2** | Source allows a male/female pair; ours is 1. |
+| discus.temp | [28,30] | Seriously Fish: 26-30 C | **[26,30]** | Lo end 26 vs ours 28. |
+| comet.temp | [16,22] | Berry Patch Farms: 18-22 C ideal | **[18,22]** | Lo end 18 vs ours 16. |
+| comet.tol | [10,26] | Berry Patch Farms: 60-80 F for limited periods (15.6-26.7 C) | **[16,27]** | Lo 15.6 vs ours 10; FishBase gives 0-41 C for goldfish generally but was not quoted. |
+| axolotl.temp | [16,20] | Swell UK: 15-18 C | **[15,18]** | Hi 18 vs ours 20. |
+
+## other/C (0)
+
+| field | ours | pages say | suggest | note |
+|---|---|---|---|---|
+
+
+## other/E1 (0)
+
+| field | ours | pages say | suggest | note |
+|---|---|---|---|---|
+
 
 ## other/E2 (0)
 

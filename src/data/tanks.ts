@@ -3,7 +3,7 @@
 // so `tankFromModel` derives the interior once. Data in tanks.json; the check is scripts/check-tanks.mjs + test/tanks.test.ts.
 import type { Tank, TankShape } from '../scene/types';
 import { glassThickness, IN, volume } from '../scene/physics';
-import { normTank, offsetRing } from '../scene/shape';
+import { archBulge, normTank, offsetRing } from '../scene/shape';
 import data from './tanks.json';
 
 export type TankBand = 'nano' | 'small' | 'mid' | 'large' | 'monster';
@@ -30,6 +30,8 @@ export interface TankVariant {
   /** The retailer the price was read at (for "on sale at PetSmart"). */
   retailer?: string;
   price_note?: string;
+  /** An all-in-one that only runs on its own gear (data/kits.json record `kit`): picking it applies that kit and locks what it supplies (scene/integrated.ts). */
+  kit?: string;
   discontinued?: boolean;
   url?: string;
   checked?: string;
@@ -46,6 +48,8 @@ export interface TankModel {
   /** bow: depth at the ends, OUTER mm. */
   bowMin?: number;
   pieDeg?: number;
+  /** arch (front pane curved top to bottom): how far the front bulges out of the frame line at mid-height, mm. */
+  frontBulge?: number;
   /** Outer size in mm as sold (glass included). Pie: L is the width across the chord and D the radius, both outside. */
   outer: Outer;
   glassMm: number;
@@ -91,16 +95,16 @@ export function tankSaleFor(gal: number, shape: TankShape = 'rect', now = Date.n
 /** Outer extents (mm) of an interior tank with glass `g` on every side: the offset outline's box and interior height plus the bottom pane. */
 export function outerOf(T: Tank, g: number): Outer {
   const r = offsetRing(T, g), ext = (k: 0 | 1) => Math.max(...r.map(p => p[k])) - Math.min(...r.map(p => p[k]));
-  return { L: ext(0), H: T.H + g, D: ext(1) };
+  return { L: ext(0), H: T.H + g, D: ext(1) + archBulge(T) }; // an arch's front bulges past its frame line
 }
 
-interface OuterSpec { shape?: TankShape; sides?: number; bowMin?: number; pieDeg?: number; outer: Outer }
+interface OuterSpec { shape?: TankShape; sides?: number; bowMin?: number; pieDeg?: number; frontBulge?: number; outer: Outer }
 
 /** Interior Tank from outer dimensions and a known glass thickness (mm). Exact for rectangles; shapes with slanted or curved panes
  * converge in a few steps of correcting the interior by the outer error. */
 function solveInterior(m: OuterSpec, g: number): Tank {
   const o = m.outer, shape = m.shape ?? 'rect';
-  let T: Tank = normTank({ L: o.L - 2 * g, H: o.H - g, D: o.D - 2 * g, shape, sides: m.sides, pieDeg: m.pieDeg, bowMin: m.bowMin == null ? undefined : m.bowMin - 2 * g });
+  let T: Tank = normTank({ L: o.L - 2 * g, H: o.H - g, D: o.D - 2 * g, shape, sides: m.sides, pieDeg: m.pieDeg, frontBulge: m.frontBulge, bowMin: m.bowMin == null ? undefined : m.bowMin - 2 * g });
   if (shape === 'rect') return T;
   for (let i = 0; i < 8; i++) {
     const e = outerOf(T, g), dL = o.L - e.L, dD = o.D - e.D;

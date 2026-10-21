@@ -676,6 +676,7 @@
   "id": "fluval-flex-9",
   "brand": "Fluval",
   "name": "Flex Aquarium Kit 9 gal (34 L)",
+  "tank": "n_flex_9gal",
   "tankRatedGal": 9,
   "tankDims": {
    "L": 350,
@@ -693,14 +694,14 @@
   "lid": "hood",
   "filter": {
    "kind": "internal",
-   "rating": "3-stage rear, ~230 L/h"
+   "rating": "3-stage rear, 61 gph (230 L/h)"
   },
   "tier": "plant",
   "source": [
    "https://www.aquasabi.com/Fluval-Flex-20-34-l-Black",
    "https://charterhouse-aquatics.com/products/fluval-flex-2-0-aquarium-kit-34l-9-us-gal"
   ],
-  "note": "7 W, 7500K white + RGB, 36 white + 3 RGB LEDs. PAR not published. Dims from EU retailers (mm). Original vs 2.0 differ slightly. No US price captured; no heater."
+  "note": "7 W, 7500K white + RGB, 36 white + 3 RGB LEDs. PAR not published. Dims from EU retailers (mm). Original vs 2.0 differ slightly. Retailer page seen 2026-10-20 (store not recorded): $155.99, 1900 lm, pump 61 gph, 14 x 13 x 13 in. No heater."
  },
  {
   "id": "fluval-flex-15",
@@ -953,6 +954,7 @@
  },
  {
   "id": "waterbox-aio-20-cube",
+  "lightIncluded": false,
   "brand": "Waterbox",
   "name": "AIO 20 Cube + SLED 17 (light sold separately)",
   "tankRatedGal": 20,

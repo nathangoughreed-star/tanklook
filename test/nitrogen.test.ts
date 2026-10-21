@@ -56,3 +56,25 @@ it('several filters add up their bacteria, the surface counts once', () => {
   expect(b.gDay).toBeGreaterThan(a.gDay); expect(b.gDay).toBeLessThan(2 * a.gDay); expect(b.mediaL).toBeGreaterThan(a.mediaL);
 });
 function withTech(s: TankSetup, filter: string): TankSetup { return { ...s, tech: withChoice(s, 'filter', filter) }; }
+describe('plant share, root feeders, fertilizer nitrogen', () => {
+  const planted = (variant: string, n = 40, stock = ['danio']) => { const s = bare(stock); s.items = Array.from({ length: n }, (_, i) => plant(variant, i)); return s; };
+  it('plants never take more than their share of the TAN: the filter always sees the rest', () => {
+    const n = stockingOf(planted('stem')).nitrogen;
+    expect(n.byPlants).toBeLessThanOrEqual(n.tan * 0.6 + 1e-12); expect(n.ammoniaPercent).toBeGreaterThan(0);
+  });
+  it('a root feeder counts half against the water column', () => {
+    expect(plantUptake(planted('sword', 10)).gN).toBeCloseTo(plantUptake(planted('stemred', 10)).gN * 0.5, 9); // sword 80 g medium = stemred 40 g fast, before the root half;
+    expect(plantUptake(planted('sword', 10)).rootCount).toBe(10);
+  });
+  it('a water-column fert adds nitrate the plants use first; root tabs add none; few animals leave room an N fert fills', () => {
+    const s = planted('stem'), aio = { ...s, tech: withChoice(s, 'ferts', 'aio') }, tabs = { ...s, tech: withChoice(s, 'ferts', 'roottabs') };
+    const a = stockingOf(aio).nitrogen, t = stockingOf(tabs).nitrogen;
+    expect(a.fert.gN).toBeGreaterThan(0); expect(t.fert.gN).toBe(0);
+    expect(a.fert.toPlants + a.fert.toNitrate).toBeCloseTo(a.fert.gN, 12);
+    expect(t.fishCoverPlants).toBe(false); expect(t.plantRoom).toBeGreaterThan(a.plantRoom - 1e-12);
+  });
+  it('enough animals cover the plants: fert nitrogen is then all left over', () => {
+    const s = planted('stem', 2, Array(10).fill('goldfish')), n = stockingOf({ ...s, tech: withChoice(s, 'ferts', 'aio') }).nitrogen;
+    expect(n.fishCoverPlants).toBe(true); expect(n.fert.toPlants).toBe(0); expect(n.fert.toNitrate).toBeCloseTo(n.fert.gN, 12);
+  });
+});

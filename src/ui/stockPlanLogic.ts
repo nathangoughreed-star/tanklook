@@ -3,11 +3,11 @@
 import { CARE } from '../data/care';
 import { bandMessage, bandOf, type GroupBand } from '../data/groups';
 import { getSpecies, SPECIES, type Species } from '../data/species';
-import { getTankModel, TANK_MODELS, tankFromModel, type TankModel } from '../data/tanks';
+import { TANK_MODELS, tankFromModel, type TankModel } from '../data/tanks';
 import { whyAnimal } from '../scene/animalfit';
 import { volume } from '../scene/physics';
 import { spaceFit, tankExtent } from '../scene/space';
-import { buildSpan, stepUps, tankFor, tankLabel, zoneOf, type AnimalCount, type BuildSpan, type StepUp, type TankFit } from '../scene/tankfit';
+import { buildSpan, stepUps, tankFor, tankLabel, tankOptions, zoneOf, type AnimalCount, type BuildSpan, type TankFit } from '../scene/tankfit';
 import { countsAgainstWater } from '../scene/stocking';
 import type { Fish, SpaceLimit, Tank } from '../scene/types';
 
@@ -15,6 +15,7 @@ import type { Fish, SpaceLimit, Tank } from '../scene/types';
 export interface Pk { id: string; n: number; f?: number }
 export const isSexed = (id: string) => !!CARE[id]?.sexed;
 export const totalOf = (p: Pk) => p.n + (p.f ?? 0);
+/** The most one tank is advised to take (a warning past it, never a block). */
 export const maxOf = (id: string) => CARE[id]?.max ?? 99;
 export const minOf = (id: string) => CARE[id]?.bands?.ok ?? CARE[id]?.group ?? 1;
 
@@ -29,18 +30,26 @@ export function startPick(id: string): Pk {
   return { id, n: r[0] * k, f: r[1] * k };
 }
 
-/** Add `d` (+1 / -1) to one count of a pick, kept between 0 and the species' max in total; males 'n', females 'f'. */
+/** Add `d` (+1 / -1) to one count of a pick, never below 0; males 'n', females 'f'. Past the species' advised most it only warns (overWarn). */
 export function bump(p: Pk, which: 'n' | 'f', d: number): Pk {
-  const cur = which === 'n' ? p.n : p.f ?? 0, room = maxOf(p.id) - totalOf(p) + cur;
-  const v = Math.max(0, Math.min(room, cur + d));
+  const cur = which === 'n' ? p.n : p.f ?? 0;
+  const v = Math.max(0, cur + d);
   return which === 'n' ? { ...p, n: v } : { ...p, f: v };
+}
+
+/** The warning for keeping more of a species than advised (more than the advised most, or more than one of a keep-one animal), else undefined. */
+export function overWarn(p: Pk): string | undefined {
+  const c = CARE[p.id], n = totalOf(p), mx = c?.max ?? (c?.solo ? 1 : undefined);
+  if (!mx || n <= mx) return undefined;
+  const name = getSpecies(p.id)?.name ?? p.id;
+  return mx === 1 ? `${name} is best kept one to a tank: expect fighting. The tank shown is sized for all of them` : `More than ${mx} ${name} in one tank is not advised: expect fighting or crowding`;
 }
 
 /** The band message for the total count, plus the sex-ratio line for sexed species. */
 export interface PickNotes { band: GroupBand; line: string; ratio?: string; habitat: string[] }
 export function notesOf(p: Pk): PickNotes {
   const c = CARE[p.id], n = totalOf(p);
-  const band = bandOf(c, n), line = n === 0 ? '' : c?.max && c.max > 1 && n >= c.max ? `${bandMessage(c, n)} (at the most one tank takes: ${c.max})` : bandMessage(c, n);
+  const band = bandOf(c, n), line = n === 0 ? '' : c?.max && c.max > 1 && n === c.max ? `${bandMessage(c, n)} (at the most one tank takes: ${c.max})` : bandMessage(c, n);
   let ratio: string | undefined;
   const r = c?.sexed;
   if (r) {
@@ -69,19 +78,29 @@ export function conflictOf(picks: Pk[], id: string): string | undefined {
 }
 
 // ---------- tankmates ----------
-export interface Mate { sp: Species; ok: boolean; why: string; score: number; n: number }
+export interface Mate {
+  sp: Species; ok: boolean; why: string; score: number; n: number;
+  /** compatible AND, added at its smallest group, still inside the stocking limit of the current tank */
+  fits: boolean;
+  /** compatible but the current tank is too small for it: the smallest tank that holds picks + it */
+  bigger?: TankModel;
+}
 const overlap = (a?: [number, number], b?: [number, number]) => a && b ? Math.max(0, Math.min(a[1], b[1]) - Math.max(a[0], b[0])) : 0;
 
-/** Species that could share the water with the picks, best first; those that cannot (with the first reason) follow, at most `bad` of them. */
-export function rankTankmates(picks: Pk[], limit = 10, bad = 3): Mate[] {
+/** Every animal that is not already picked, in three runs: the ones that suit ALL the picks and fit `tank` (none chosen yet: any tank) at their
+ *  smallest group, best first; the ones that suit them but need a bigger tank (`bigger`), best first; then the ones that do not
+ *  suit (each with the first reason, naming the occupant it clashes with), by name. Salt against fresh counts as a clash. */
+export function rankTankmates(picks: Pk[], tank?: TankModel): Mate[] {
   const have = picks.filter(p => totalOf(p) > 0).map(p => getSpecies(p.id)).filter((s): s is Species => !!s);
   if (!have.length) return [];
-  const salt = have.some(s => s.salt), taken = new Set(have.map(s => s.id)), zones = new Set(have.map(zoneOf));
+  const animals = animalsOf(picks), curL = tank ? litresOf(tank) : Infinity;
+  const taken = new Set(have.map(s => s.id)), zones = new Set(have.map(zoneOf));
   const out: Mate[] = [];
   for (const sp of SPECIES) {
-    if (taken.has(sp.id) || !!sp.salt !== salt || !countsAgainstWater(sp)) continue;
+    if (taken.has(sp.id) || !countsAgainstWater(sp)) continue;
     const c = CARE[sp.id]; if (!c) continue;
-    const why = whyAnimal(sp, Infinity, 3, have)?.text ?? '';
+    const salty = have.find(o => !!o.salt !== !!sp.salt);
+    const why = salty ? `${sp.salt ? 'Salt' : 'Fresh'} water: it cannot share a tank with ${salty.name}` : whyAnimal(sp, Infinity, 3, have)?.text.replace(/^compatibility: /, '') ?? '';
     let score = why ? 0 : 100;
     if (!why) {
       // fills a part of the tank the others leave empty, shares their water, easy to keep, and likes the same things
@@ -89,44 +108,56 @@ export function rankTankmates(picks: Pk[], limit = 10, bad = 3): Mate[] {
       for (const o of have) { const oc = CARE[o.id]; score += Math.min(6, overlap(c.temp, oc?.temp)) * 2 + Math.min(1, overlap(c.ph, oc?.ph)) * 3 + (c.appeal?.filter(a => oc?.appeal?.includes(a)).length ?? 0) * 2; }
       score -= (c.care - 1) * 4 + c.temper * 6;
     }
-    out.push({ sp, ok: !why, why, score, n: minOf(sp.id) });
+    const n = minOf(sp.id);
+    let fits = false, bigger: TankModel | undefined;
+    if (!why) {
+      const t = tankFor([...animals, { species: sp.id, n }]);
+      fits = !!t && !t.fails.length && litresOf(t.tank) <= curL * 1.001;
+      if (!fits && t) bigger = t.tank;
+    }
+    out.push({ sp, ok: !why, why, score, n, fits, ...(bigger ? { bigger } : {}) });
   }
-  const ok = out.filter(m => m.ok).sort((a, b) => b.score - a.score || a.sp.name.localeCompare(b.sp.name));
+  const byScore = (a: Mate, b: Mate) => b.score - a.score || a.sp.name.localeCompare(b.sp.name);
+  const fit = out.filter(m => m.fits).sort(byScore);
+  const big = out.filter(m => m.ok && !m.fits).sort(byScore);
   const no = out.filter(m => !m.ok).sort((a, b) => a.sp.name.localeCompare(b.sp.name));
-  return [...ok.slice(0, limit), ...no.slice(0, bad)];
+  return [...fit, ...big, ...no];
 }
 
 // ---------- the tank ----------
 export interface Plan {
   /** the smallest catalogue tank that holds the picks (undefined with no animals in the water) */
   need?: TankFit;
-  /** the tank shown: the needed one, or a bigger one the user chose */
+  /** every catalogue size, smallest first, each judged for the picks (`fails` empty = it holds them) */
+  options: TankFit[];
+  /** the tank the user chose: it never changes as animals come and go (undefined until one is chosen) */
   tank?: TankModel;
+  /** the chosen tank judged for the current picks */
+  fit?: TankFit;
   litres: number;
-  steps: StepUp[];
   span?: BuildSpan;
-  /** one plain line when no tank is enough */
+  /** one plain line when the chosen tank is too small for the picks, or when no tank is enough */
   problem?: string;
 }
 const litresOf = (m: TankModel) => volume(tankFromModel(m)).litres;
 
 const FAIL_TEXT: Record<string, string> = {
   filtration: 'No filter can carry this many animals; take fewer',
-  space: 'Too many animals for the biggest tank on the list; take fewer',
-  minimum: 'Needs more water than the biggest tank on the list',
-  length: 'Needs a longer tank than the list has',
-  depth: 'Needs shallower water than any tank here gives',
-  floor: 'Not enough floor for the bottom dwellers and swimmers together',
+  space: 'Too many animals for this tank; take fewer or pick a bigger tank',
+  minimum: 'Too small for these animals; pick a bigger tank',
+  length: 'Too short for these animals; pick a longer tank',
+  depth: 'Too deep for these animals; pick a shallower tank',
+  floor: 'Not enough floor for the bottom dwellers and swimmers together; pick a bigger tank',
 };
 
-/** The plan for these picks: tank (the user's bigger choice `chosen` holds while it is at least what is needed), step-ups, cost span. */
+/** The plan for these picks: the sizes with their verdicts, and the user's chosen tank (never swapped for them) with its cost span. */
 export function planFor(picks: Pk[], chosen?: string): Plan {
-  const animals = animalsOf(picks), need = tankFor(animals);
-  if (!need) return { litres: 0, steps: [] };
-  const ch = chosen ? getTankModel(chosen) : undefined;
-  const tank = ch && litresOf(ch) > need.litres ? ch : need.tank;
-  const bad = need.fails.length ? FAIL_TEXT[need.fails.includes('filtration') ? 'filtration' : need.fails[0]] : undefined;
-  return { need, tank, litres: litresOf(tank), steps: stepUps(animals, tank, 3), span: buildSpan(animals, tank), ...(bad ? { problem: bad } : {}) };
+  const animals = animalsOf(picks), options = tankOptions(animals);
+  if (!options.length) return { litres: 0, options: [] };
+  const need = options.find(o => !o.fails.length);
+  const fit = chosen ? options.find(o => o.tank.id === chosen) : undefined, tank = fit?.tank;
+  const bad = fit?.fails.length ? FAIL_TEXT[fit.fails.includes('filtration') ? 'filtration' : fit.fails[0]] : !need && !chosen ? 'No tank on the list holds these; take fewer animals' : undefined;
+  return { ...(need ? { need } : {}), options, ...(tank ? { tank, fit, litres: litresOf(tank), span: buildSpan(animals, tank) } : { litres: 0 }), ...(bad ? { problem: bad } : {}) };
 }
 
 export { tankLabel };

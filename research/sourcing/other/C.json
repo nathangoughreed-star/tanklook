@@ -5,7 +5,7 @@
     "returnpump": {
       "fields": {
         "watts": {
-          "ours": 30, "verdict": "disagrees", "suggest": 23,
+          "ours": 23, "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted", "suggest": 23,
           "sources": [{"url": "https://fresh.bulkreefsupply.com/sicce-syncra-silent-1-5-pump-357-gph.html", "site": "Bulk Reef Supply (Sicce Syncra Silent 1.5)", "states": "23W, 357 GPH", "quote": "Power Consumption: 23W"}],
           "note": "357 GPH ~ 6.5 gal/gal/h at 55 gal (zero head); 23 W is 23% below our 30 W, just outside the 20% band. Other pumps (Jebao DCP-3000 ~28-30 W) only seen in search snippets."
         },
@@ -27,7 +27,7 @@
     "doser": {
       "fields": {
         "watts": {
-          "ours": 1, "verdict": "disagrees", "suggest": 8.5,
+          "ours": 1, "verdict": "kept", "decision": "Nathan 2026-10-20: kept, the 8.5 W on the page is the 4-channel adapter rating, not the draw; the pumps idle most of the day", "suggest": 8.5,
           "sources": [{"url": "https://greenaqua.hu/en/jebao-dp-4-4-dosing-pump.html", "site": "Green Aqua (Jebao DP-4)", "states": "8.5 W, DC 12V", "quote": "Power: 8.5 W"}],
           "note": "8.5 W looks like the 4-channel unit's adapter rating, not the continuous draw; real average draw with pumps mostly idle is likely lower. Single-channel units may differ."
         },
@@ -57,7 +57,7 @@
     "ato": {
       "fields": {
         "watts": {
-          "ours": 3, "verdict": "disagrees", "suggest": 8,
+          "ours": 8, "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted", "suggest": 8,
           "sources": [{"url": "https://fresh.bulkreefsupply.com/tunze-osmolator-universal-3155-auto-top-off.html", "site": "Bulk Reef Supply (Tunze Osmolator 3155, Q&A answer)", "states": "around 8W at 115V with the pump running", "quote": "the draw at the outlet is generally around 8W at 115V with the pump running"}],
           "note": "Measured by the seller at the outlet while the pump runs; idle draw is lower. Our 1 h/day run time gives roughly 8 W for 1 h."
         },
@@ -67,7 +67,7 @@
     "skimmerhob": {
       "fields": {
         "watts": {
-          "ours": 6, "verdict": "disagrees", "suggest": 11,
+          "ours": 11, "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted", "suggest": 11,
           "sources": [{"url": "https://www.bulkreefsupply.com/hob-1-5-hang-on-back-protein-skimmer-aquaready.html", "site": "Bulk Reef Supply (AquaReady HOB-1.5)", "states": "11 Watts, 40 to 75 gallons", "quote": "Power Consumption: 11 Watts"}],
           "note": "Rated for 40-75 gal, so larger than our 30 gal reference; smaller HOB skimmers may draw less (BH1000 9 W only in a search snippet)."
         },
@@ -83,7 +83,7 @@
     "powerhead": {
       "fields": {
         "watts": {
-          "ours": 6, "verdict": "disagrees", "suggest": 3.5,
+          "ours": 3.5, "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted", "suggest": 3.5,
           "sources": [{"url": "https://www.bulkreefsupply.com/koralia-nano-240.html", "site": "Bulk Reef Supply (Hydor Koralia Nano 240)", "states": "3.5 W (the Nano 425 and 565 also 3.5 W)", "quote": "3.5 Watts"}],
           "note": "Nano 240 suits 10-15 gal marine; the page lists the larger Nano 425 and 565 at the same 3.5 W, so a 40 gal tank still sees ~3.5 W per unit."
         },
@@ -111,7 +111,7 @@
     "roottabs": {
       "fields": {
         "monthly.months": {
-          "ours": 8, "verdict": "disagrees", "suggest": 12,
+          "ours": 12, "verdict": "derived", "decision": "Nathan 2026-10-20: derived, Seachem: 6 tabs per 10 gal every 3-4 months, so 12 a round at 20 gal; a 40-pack lasts about 12 months", "suggest": 12,
           "sources": [
             {"url": "https://www.seachem.com/flourish-tabs.php", "site": "Seachem Flourish Tabs (directions)", "states": "10 gal needs 6 tabs; replace every 3-4 months", "quote": "Add new tablets once every three to four months for optimal plant growth."},
             {"url": "https://fishtanksdirect.com/seachem-flourish-tabs-40-pack-sc05070/", "site": "Fish Tanks Direct (pack size)", "states": "40-pack", "quote": "Seachem Flourish Tabs (40-Pack)"}

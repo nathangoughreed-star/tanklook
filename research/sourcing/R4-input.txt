@@ -1,0 +1,264 @@
+{
+ "firefish": {
+  "name": "Firefish goby",
+  "sci": "Nemateleotris magnifica",
+  "tl": 75,
+  "fields": {
+   "bands": {
+    "ours": {
+     "ok": 1,
+     "good": 2,
+     "great": 2
+    }
+   },
+   "max": {
+    "ours": 2
+   },
+   "minLengthMm": {
+    "ours": 600
+   }
+  }
+ },
+ "coralbeauty": {
+  "name": "Coral beauty angelfish",
+  "sci": "Centropyge bispinosa",
+  "tl": 90,
+  "fields": {
+   "bands": {
+    "ours": {
+     "ok": 1,
+     "good": 1,
+     "great": 1
+    }
+   },
+   "max": {
+    "ours": 1
+   },
+   "minLengthMm": {
+    "ours": 900
+   },
+   "coral": {
+    "ours": 1
+   }
+  }
+ },
+ "watchman": {
+  "name": "Yellow watchman goby",
+  "sci": "Cryptocentrus cinctus",
+  "tl": 90,
+  "fields": {
+   "bands": {
+    "ours": {
+     "ok": 1,
+     "good": 2,
+     "great": 2
+    }
+   },
+   "max": {
+    "ours": 2
+   },
+   "minLengthMm": {
+    "ours": 900
+   }
+  }
+ },
+ "mandarin": {
+  "name": "Mandarin dragonet",
+  "sci": "Synchiropus splendidus",
+  "tl": 60,
+  "fields": {
+   "bands": {
+    "ours": {
+     "ok": 1,
+     "good": 1,
+     "great": 1
+    }
+   },
+   "max": {
+    "ours": 1
+   },
+   "minLengthMm": {
+    "ours": 1000
+   }
+  }
+ },
+ "cleanershrimp": {
+  "name": "Skunk cleaner shrimp",
+  "sci": "Lysmata amboinensis",
+  "tl": 55,
+  "fields": {
+   "bands": {
+    "ours": {
+     "ok": 1,
+     "good": 2,
+     "great": 3
+    }
+   },
+   "max": {
+    "ours": 4
+   },
+   "minLengthMm": {
+    "ours": 600
+   }
+  }
+ },
+ "neon": {
+  "name": "Neon tetra",
+  "sci": "Paracheirodon innesi",
+  "tl": 35,
+  "fields": {
+   "temp": {
+    "ours": [
+     22,
+     25
+    ]
+   },
+   "tol": {
+    "ours": [
+     20,
+     27
+    ]
+   }
+  }
+ },
+ "discus": {
+  "name": "Discus",
+  "sci": "Symphysodon aequifasciatus",
+  "tl": 150,
+  "fields": {
+   "temp": {
+    "ours": [
+     28,
+     30
+    ]
+   },
+   "tol": {
+    "ours": [
+     26,
+     31
+    ]
+   },
+   "slow": {
+    "ours": true
+   }
+  }
+ },
+ "comet": {
+  "name": "Comet goldfish",
+  "sci": "Carassius auratus",
+  "tl": 250,
+  "fields": {
+   "temp": {
+    "ours": [
+     16,
+     22
+    ]
+   },
+   "tol": {
+    "ours": [
+     10,
+     26
+    ]
+   }
+  }
+ },
+ "axolotl": {
+  "name": "Axolotl",
+  "sci": "Ambystoma mexicanum",
+  "tl": 230,
+  "fields": {
+   "temp": {
+    "ours": [
+     16,
+     20
+    ]
+   },
+   "tol": {
+    "ours": [
+     10,
+     22
+    ]
+   }
+  }
+ },
+ "danio": {
+  "name": "Zebra danio",
+  "sci": "Danio rerio",
+  "tl": 50,
+  "fields": {
+   "nip": {
+    "ours": true
+   }
+  }
+ },
+ "tigerbarb": {
+  "name": "Tiger barb",
+  "sci": "Puntigrus tetrazona",
+  "tl": 70,
+  "fields": {
+   "nip": {
+    "ours": true
+   }
+  }
+ },
+ "peapuffer": {
+  "name": "Pea puffer",
+  "sci": "Carinotetraodon travancoricus",
+  "tl": 30,
+  "fields": {
+   "nip": {
+    "ours": true
+   }
+  }
+ },
+ "guppy": {
+  "name": "Guppy",
+  "sci": "Poecilia reticulata",
+  "tl": 30,
+  "fields": {
+   "slow": {
+    "ours": true
+   }
+  }
+ },
+ "betta": {
+  "name": "Betta",
+  "sci": "Betta splendens",
+  "tl": 65,
+  "fields": {
+   "slow": {
+    "ours": true
+   }
+  }
+ },
+ "angel": {
+  "name": "Angelfish",
+  "sci": "Pterophyllum scalare",
+  "tl": 150,
+  "fields": {
+   "slow": {
+    "ours": true
+   }
+  }
+ },
+ "yellowtang": {
+  "name": "Yellow tang",
+  "sci": "Zebrasoma flavescens",
+  "tl": 180,
+  "fields": {
+   "fam": {
+    "ours": "tang"
+   }
+  }
+ },
+ "bluetang": {
+  "name": "Blue tang",
+  "sci": "Paracanthurus hepatus",
+  "tl": 250,
+  "fields": {
+   "fam": {
+    "ours": "tang"
+   }
+  }
+ }
+}

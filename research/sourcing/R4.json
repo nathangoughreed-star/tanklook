@@ -1,0 +1,542 @@
+{
+ "batch": "R4",
+ "agent_notes": "Reef-fish pages give tank volume in gallons, not tank length, so minLengthMm is not-stated throughout. Several sites returned 403/404/429 (fishlore, hepper, liveaquaria slug URLs).",
+ "species": {
+  "firefish": {
+   "sci": "Nemateleotris magnifica",
+   "fields": {
+    "bands": {
+     "ours": {
+      "ok": 1,
+      "good": 2,
+      "great": 2
+     },
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.liveaquaria.com/product/168/?pcatid=168",
+       "site": "LiveAquaria",
+       "states": "mated pair can live peacefully together",
+       "quote": "However, a mated pair can live peacefully together."
+      }
+     ],
+     "note": "Pair supports good=2/great=2; Reef Beauties is more cautious (single fish unless large tank)."
+    },
+    "max": {
+     "ours": 2,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.liveaquaria.com/product/168/?pcatid=168",
+       "site": "LiveAquaria",
+       "states": "pair OK, aggressive to own species otherwise",
+       "quote": "This member of the Gobiidae family is generally not aggressive towards other fish except those of its own species."
+      }
+     ],
+     "note": "Pair OK, more only with care; max=2 consistent."
+    },
+    "minLengthMm": {
+     "ours": 600,
+     "verdict": "kept", "decision": "Nathan 2026-10-21: kept, no opened page states it (reef pages give gallons, not tank length); our estimate",
+     "suggest": null,
+     "sources": [],
+     "note": "Pages give 20 gal minimum, no tank length."
+    }
+   }
+  },
+  "coralbeauty": {
+   "sci": "Centropyge bispinosa",
+   "fields": {
+    "bands": {
+     "ours": {
+      "ok": 1,
+      "good": 1,
+      "great": 1
+     },
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.reefarchive.com/fish/angelfish-dwarf/coral-beauty-angelfish",
+       "site": "Reef Archive",
+       "states": "one dwarf angel per tank",
+       "quote": "Keep only one dwarf angel per tank."
+      }
+     ]
+    },
+    "max": {
+     "ours": 1,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.reefarchive.com/fish/angelfish-dwarf/coral-beauty-angelfish",
+       "site": "Reef Archive",
+       "states": "one dwarf angel per tank",
+       "quote": "Keep only one dwarf angel per tank."
+      }
+     ]
+    },
+    "minLengthMm": {
+     "ours": 900,
+     "verdict": "kept", "decision": "Nathan 2026-10-21: kept, no opened page states it (reef pages give gallons, not tank length); our estimate",
+     "suggest": null,
+     "sources": [],
+     "note": "LiveAquaria 70 gal, Reef Archive 55 gal; no length."
+    },
+    "coral": {
+     "ours": 1,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.liveaquaria.com/products/coral-beauty-angelfish",
+       "site": "LiveAquaria",
+       "states": "reef compatible with caution; nips corals",
+       "quote": "Not a good reef dweller, the Coral Beauty Angelfish is prone to nip at stony and soft corals (sessile invertebrates)."
+      }
+     ]
+    }
+   }
+  },
+  "watchman": {
+   "sci": "Cryptocentrus cinctus",
+   "fields": {
+    "bands": {
+     "ours": {
+      "ok": 1,
+      "good": 2,
+      "great": 2
+     },
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.liveaquaria.com/product/228/?pcatid=228",
+       "site": "LiveAquaria",
+       "states": "fights own kind unless mated pair",
+       "quote": "will fight with its own kind unless they are a mated pair"
+      }
+     ],
+     "note": "Pair is OK so good=2; Reef Beauties advises just one shrimp goby species per tank."
+    },
+    "max": {
+     "ours": 2,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.liveaquaria.com/product/228/?pcatid=228",
+       "site": "LiveAquaria",
+       "states": "fights own kind unless mated pair",
+       "quote": "will fight with its own kind unless they are a mated pair"
+      }
+     ]
+    },
+    "minLengthMm": {
+     "ours": 900,
+     "verdict": "kept", "decision": "Nathan 2026-10-21: kept, no opened page states it (reef pages give gallons, not tank length); our estimate",
+     "suggest": null,
+     "sources": [],
+     "note": "LiveAquaria 30 gal, Reef Beauties 10 gal; no length."
+    }
+   }
+  },
+  "mandarin": {
+   "sci": "Synchiropus splendidus",
+   "fields": {
+    "bands": {
+     "ours": {
+      "ok": 1,
+      "good": 1,
+      "great": 1
+     },
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://fishkeepingworld.com/mandarin-fish/",
+       "site": "Fishkeeping World",
+       "states": "kept separate or as male-female pair",
+       "quote": "should be kept separate or in a male and female pair"
+      }
+     ],
+     "note": "ok=1 fits; source also allows a pair (good could be 2 in a big tank)."
+    },
+    "max": {
+     "ours": 1,
+     "verdict": "disagrees",
+     "suggest": 2,
+     "sources": [
+      {
+       "url": "https://fishkeepingworld.com/mandarin-fish/",
+       "site": "Fishkeeping World",
+       "states": "pair allowed (75 gal)",
+       "quote": "Minimum of 30 gallons for one mandarin fish, or at least 75 gallons for a pair of mandarin fish."
+      }
+     ],
+     "note": "Source allows a male/female pair; ours is 1."
+    },
+    "minLengthMm": {
+     "ours": 1000,
+     "verdict": "kept", "decision": "Nathan 2026-10-21: kept, no opened page states it (reef pages give gallons, not tank length); our estimate",
+     "suggest": null,
+     "sources": [],
+     "note": "30 gal single / 75 gal pair; no length."
+    }
+   }
+  },
+  "cleanershrimp": {
+   "sci": "Lysmata amboinensis",
+   "fields": {
+    "bands": {
+     "ours": {
+      "ok": 1,
+      "good": 2,
+      "great": 3
+     },
+     "verdict": "kept", "decision": "Nathan 2026-10-21: kept, the page says only that they live in groups in the wild; the counts are ours",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.liveaquaria.com/product/696/?pcatid=696",
+       "site": "LiveAquaria",
+       "states": "found in groups in the wild",
+       "quote": "The Scarlet Skunk Cleaner Shrimp is often found in groups amongst live rock or coral."
+      }
+     ],
+     "note": "No stocking number stated."
+    },
+    "max": {
+     "ours": 4,
+     "verdict": "kept", "decision": "Nathan 2026-10-21: kept, no opened page states it; our estimate",
+     "suggest": null,
+     "sources": []
+    },
+    "minLengthMm": {
+     "ours": 600,
+     "verdict": "kept", "decision": "Nathan 2026-10-21: kept, no opened page states it (reef pages give gallons, not tank length); our estimate",
+     "suggest": null,
+     "sources": []
+    }
+   }
+  },
+  "neon": {
+   "sci": "Paracheirodon innesi",
+   "fields": {
+    "temp": {
+     "ours": [
+      22,
+      25
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/paracheirodon-innesi/",
+       "site": "Seriously Fish",
+       "states": "21-25 C",
+       "quote": "Temperature | 21–25°C70–77°F"
+      }
+     ],
+     "note": "Lo end 21 vs ours 22."
+    },
+    "tol": {
+     "ours": [
+      20,
+      27
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Paracheirodon-innesi.html",
+       "site": "FishBase",
+       "states": "20-26 C",
+       "quote": "Tropical; 20°C - 26°C"
+      }
+     ],
+     "note": "Hi end 26 vs ours 27."
+    }
+   }
+  },
+  "discus": {
+   "sci": "Symphysodon aequifasciatus",
+   "fields": {
+    "temp": {
+     "ours": [
+      28,
+      30
+     ],
+     "verdict": "disagrees",
+     "suggest": [
+      26,
+      30
+     ],
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/symphysodon-aequifasciatus/",
+       "site": "Seriously Fish",
+       "states": "26-30 C",
+       "quote": "Temperature | 26–30°C79–86°F"
+      }
+     ],
+     "note": "Lo end 26 vs ours 28."
+    },
+    "tol": {
+     "ours": [
+      26,
+      31
+     ],
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Symphysodon-aequifasciatus.html",
+       "site": "FishBase",
+       "states": "26-30 C",
+       "quote": "Tropical; 26°C - 30°C"
+      }
+     ],
+     "note": "Hi 30 vs ours 31."
+    },
+    "slow": {
+     "ours": true,
+     "verdict": "kept", "decision": "Nathan 2026-10-21: kept, no opened page states it; our estimate",
+     "suggest": null,
+     "sources": [],
+     "note": "Pages found describe nippers targeting long trailing fins, none state discus are a target."
+    }
+   }
+  },
+  "comet": {
+   "sci": "Carassius auratus",
+   "fields": {
+    "temp": {
+     "ours": [
+      16,
+      22
+     ],
+     "verdict": "disagrees",
+     "suggest": [
+      18,
+      22
+     ],
+     "sources": [
+      {
+       "url": "https://www.berrypatchfarms.net/comet-goldfish-temperature/",
+       "site": "Berry Patch Farms",
+       "states": "18-22 C ideal",
+       "quote": "The ideal water temperature range for comet goldfish is 65-72 degrees Fahrenheit (18-22 degrees Celsius)."
+      }
+     ],
+     "note": "Lo end 18 vs ours 16."
+    },
+    "tol": {
+     "ours": [
+      10,
+      26
+     ],
+     "verdict": "disagrees",
+     "suggest": [
+      16,
+      27
+     ],
+     "sources": [
+      {
+       "url": "https://www.berrypatchfarms.net/comet-goldfish-temperature/",
+       "site": "Berry Patch Farms",
+       "states": "60-80 F for limited periods (15.6-26.7 C)",
+       "quote": "Their ideal temperature range is 65-72°F, but they can withstand temperatures from 60-80°F for limited time periods."
+      }
+     ],
+     "note": "Lo 15.6 vs ours 10; FishBase gives 0-41 C for goldfish generally but was not quoted."
+    }
+   }
+  },
+  "axolotl": {
+   "sci": "Ambystoma mexicanum",
+   "fields": {
+    "temp": {
+     "ours": [
+      16,
+      20
+     ],
+     "verdict": "disagrees",
+     "suggest": [
+      15,
+      18
+     ],
+     "sources": [
+      {
+       "url": "https://www.reptiles.swelluk.com/help-guides/axolotl-ambystoma-mexicanum-care-sheet/",
+       "site": "Swell UK",
+       "states": "15-18 C",
+       "quote": "The ideal water temperature for an Axolotl aquarium is between 15-18°C (59-64°F)"
+      }
+     ],
+     "note": "Hi 18 vs ours 20."
+    },
+    "tol": {
+     "ours": [
+      10,
+      22
+     ],
+     "verdict": "kept", "decision": "Nathan 2026-10-21: kept, no opened page states it; our estimate",
+     "suggest": null,
+     "sources": [],
+     "note": "No fetched page states a tolerable range (Axolotl.org 404, theaquariumadviser 429)."
+    }
+   }
+  },
+  "danio": {
+   "sci": "Danio rerio",
+   "fields": {
+    "nip": {
+     "ours": true,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://fishkeepingworld.com/zebra-danio/",
+       "site": "Fishkeeping World",
+       "states": "fin-nippers",
+       "quote": "Don't house zebra danios with slow-swimming, long-finned fish because zebra danios are fin-nippers."
+      }
+     ],
+     "note": "Seriously Fish calls the species peaceful and does not mention nipping."
+    }
+   }
+  },
+  "tigerbarb": {
+   "sci": "Puntigrus tetrazona",
+   "fields": {
+    "nip": {
+     "ours": true,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/puntigrus-tetrazona/",
+       "site": "Seriously Fish",
+       "states": "fin biter",
+       "quote": "notoriously aggressive with a reputation for biting the fins of other fishes"
+      }
+     ]
+    }
+   }
+  },
+  "peapuffer": {
+   "sci": "Carinotetraodon travancoricus",
+   "fields": {
+    "nip": {
+     "ours": true,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/carinotetraodon-travancoricus/",
+       "site": "Seriously Fish",
+       "states": "nips slow/long-finned fish",
+       "quote": "Not usually recommended for the community tank, as it tends to nip the fins of slow-moving or long-finned fish."
+      }
+     ]
+    }
+   }
+  },
+  "guppy": {
+   "sci": "Poecilia reticulata",
+   "fields": {
+    "slow": {
+     "ours": true,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/poecilia-reticulata/",
+       "site": "Seriously Fish",
+       "states": "avoid fin nippers",
+       "quote": "Do not keep with fin-nipping species such as tiger barbs, serpae tetras etc."
+      }
+     ]
+    }
+   }
+  },
+  "betta": {
+   "sci": "Betta splendens",
+   "fields": {
+    "slow": {
+     "ours": true,
+     "verdict": "kept", "decision": "Nathan 2026-10-21: kept, no opened page states it; our estimate",
+     "suggest": null,
+     "sources": [],
+     "note": "Pages say avoid fin nippers generally but none states the betta is a nipper target."
+    }
+   }
+  },
+  "angel": {
+   "sci": "Pterophyllum scalare",
+   "fields": {
+    "slow": {
+     "ours": true,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://fishkeepingworld.com/angelfish/",
+       "site": "Fishkeeping World",
+       "states": "long flowing fins bitten",
+       "quote": "Beware of fin nippers that bite at the long, flowing fins of the leopard angelfish."
+      }
+     ],
+     "note": "Stated for the leopard variety; Seriously Fish silent."
+    }
+   }
+  },
+  "yellowtang": {
+   "sci": "Zebrasoma flavescens",
+   "fields": {
+    "fam": {
+     "ours": "tang",
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.liveaquaria.com/product/6746/?pcatid=6746",
+       "site": "LiveAquaria",
+       "states": "territorial aggression to own species/tangs",
+       "quote": "demonstrates territorial aggression towards its own species, or Tangs in general"
+      }
+     ]
+    }
+   }
+  },
+  "bluetang": {
+   "sci": "Paracanthurus hepatus",
+   "fields": {
+    "fam": {
+     "ours": "tang",
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.liveaquaria.com/product/330/?pcatid=330",
+       "site": "LiveAquaria",
+       "states": "aggressive to own species",
+       "quote": "Though peaceful towards most tankmates, the Pacific Blue will become aggressive towards other fish of its own species."
+      },
+      {
+       "url": "https://www.liveaquaria.com/blogs/species-spotlight/the-blue-tang",
+       "site": "LiveAquaria blog",
+       "states": "keep only one",
+       "quote": "In an aquarium, it is recommended to keep only one."
+      }
+     ],
+     "note": "Stated for own species, not tangs generally."
+    }
+   }
+  }
+ }
+}

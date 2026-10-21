@@ -55,8 +55,8 @@
      "note": "No opened page gave a care level for this species."
     },
     "minL": {
-     "ours": 60,
-     "verdict": "disagrees",
+     "ours": 41,
+     "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted",
      "suggest": 41,
      "sources": [
       {
@@ -256,7 +256,7 @@
     },
     "care": {
      "ours": 2,
-     "verdict": "disagrees",
+     "verdict": "kept", "decision": "Nathan 2026-10-20: kept, often starves in new tanks; the only Easy rating is a genus-wide page (Aquarium Co-Op: sensitive reputation); kept intermediate",
      "suggest": 1,
      "sources": [
       {
@@ -363,8 +363,8 @@
      "note": "Our high end 7.0 is 0.5 above these; Seriously Fish table lists 3.5-7.0."
     },
     "care": {
-     "ours": 2,
-     "verdict": "disagrees",
+     "ours": 1,
+     "verdict": "agrees",
      "suggest": 1,
      "sources": [
       {
@@ -434,8 +434,8 @@
    "sci": "Chromobotia macracanthus",
    "fields": {
     "tl": {
-     "ours": 200,
-     "verdict": "disagrees",
+     "ours": 300,
+     "verdict": "agrees", "use": [0,2], "decision": "Nathan 2026-10-20: adopted",
      "suggest": 300,
      "sources": [
       {
@@ -614,8 +614,8 @@
      ]
     },
     "care": {
-     "ours": 2,
-     "verdict": "disagrees",
+     "ours": 1,
+     "verdict": "agrees",
      "suggest": 1,
      "sources": [
       {
@@ -709,8 +709,8 @@
      ]
     },
     "care": {
-     "ours": 3,
-     "verdict": "disagrees",
+     "ours": 2,
+     "verdict": "kept", "decision": "Nathan 2026-10-20: kept, set to intermediate (was expert): needs cool, fast, oxygen-rich water; the one Easy rating is a generic hillstream-loach page",
      "suggest": 1,
      "sources": [
       {
@@ -724,7 +724,7 @@
     },
     "minL": {
      "ours": 60,
-     "verdict": "disagrees",
+     "verdict": "kept", "decision": "Nathan 2026-10-20: kept, the 55 gal figure is a generic loach page; Seriously Fish gives a 75 x 30 cm base (about 68 L at 30 cm high); kept 60",
      "suggest": 208,
      "sources": [
       {

@@ -9,12 +9,13 @@ import { tankFromModel } from '../data/tanks';
 import { emptyScene } from '../scene/defaults';
 import { placeNew, shuffleFish } from '../scene/scatter';
 import type { Store } from '../scene/store';
-import { stockingMemo } from '../scene/stocking';
 import type { Fish } from '../scene/types';
 import type { Viewer } from '../render/viewer';
+import { gearView } from '../render/gear3d';
 import { attachBuildPick } from './buildPick';
+import { attachStockGallery } from './stockGallery';
 import { onSpaceFork, type SpaceFork } from './fullnessTile';
-import { animalsInTank, animalsOf, bump, forkOptions, isSexed, maxOf, notesOf, planFor, conflictOf, rankTankmates, startPick, tankLabel, totalOf, type Pk, type RoomOption } from './stockPlanLogic';
+import { animalsInTank, animalsOf, bump, forkOptions, isSexed, notesOf, overWarn, planFor, conflictOf, rankTankmates, startPick, tankLabel, totalOf, type Pk, type RoomOption } from './stockPlanLogic';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
@@ -39,16 +40,20 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
     if (hide && app && !app.classList.contains('collapsed')) { app.classList.add('collapsed'); stepped = true; viewer.invalidate(); }
     else if (!hide && stepped && app) { app.classList.remove('collapsed'); stepped = false; viewer.invalidate(); }
   };
-  const close = () => { el.hidden = true; side(false); };
   let picks: Pk[] = [], chosen: string | undefined, mates = false, q = '', shown = '';
+  // the tank is shown bare here: no filter, heater or stand until the build is chosen (the scene keeps its gear; only the view leaves it out)
+  const bare = (on: boolean) => { if (gearView.on === on) { gearView.on = !on; viewer.rebuild(); } };
+  // before the first pick there is no tank on show, only the animals to choose from
+  const gallery = attachStockGallery(view, id => { if (!picks.some(p => p.id === id)) { picks.push(startPick(id)); q = ''; change(); } });
+  const close = () => { el.hidden = true; gallery.show(false); side(false); bare(false); };
 
   // ---------- the scene follows the picks ----------
   const sync = (rebuild = false) => {
-    const plan = planFor(picks, chosen);
+    const plan = planFor(picks, chosen), show = plan.tank ?? (shown ? undefined : plan.need?.tank); // before a choice the first size shown stays; it never follows the picks
     store.update(s => {
       const T = s.tanks[s.active];
-      if (plan.tank && plan.tank.id !== shown) {
-        T.tank = tankFromModel(plan.tank); T.water.on = true; T.water.level = WATER_LEVEL; shown = plan.tank.id; rebuild = true;
+      if (show && show.id !== shown) {
+        T.tank = tankFromModel(show); T.water.on = true; T.water.level = WATER_LEVEL; shown = show.id; rebuild = true;
         T.camera = { ...T.camera, zoom: 0.55, el: 20 }; // looking down a little so the bottom dwellers show on the bare floor // the whole tank in view, beside the panel
       }
       T.water.salt = picks.some(p => getSpecies(p.id)?.salt);
@@ -74,74 +79,81 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
   // ---------- drawing ----------
   const bandClass = (b: string) => `spb-${b}`;
   const pickRow = (p: Pk) => {
-    const sp = getSpecies(p.id)!, nt = notesOf(p), sexed = isSexed(p.id), cap = totalOf(p) >= maxOf(p.id);
+    const sp = getSpecies(p.id)!, nt = notesOf(p), sexed = isSexed(p.id);
     const step = (which: 'n' | 'f', label: string, v: number) =>
-      `<span class="spStep"><span class="spLab">${label}</span><button type="button" data-act="dec" data-id="${p.id}" data-w="${which}" aria-label="One fewer ${esc(label || sp.name)}"${v <= 0 ? ' disabled' : ''}>−</button><b>${v}</b><button type="button" data-act="inc" data-id="${p.id}" data-w="${which}" aria-label="One more ${esc(label || sp.name)}"${cap ? ' disabled' : ''}>+</button></span>`;
+      `<span class="spStep"><span class="spLab">${label}</span><button type="button" data-act="dec" data-id="${p.id}" data-w="${which}" aria-label="One fewer ${esc(label || sp.name)}"${v <= 0 ? ' disabled' : ''}>−</button><b>${v}</b><button type="button" data-act="inc" data-id="${p.id}" data-w="${which}" aria-label="One more ${esc(label || sp.name)}">+</button></span>`;
     return `<li class="spPick"><div class="spName"><b>${esc(sp.name)}</b><i>${esc(sp.sci)}</i><button type="button" class="spX" data-act="del" data-id="${p.id}" aria-label="Take ${esc(sp.name)} out">✕</button></div>
 <div class="spSteps">${sexed ? step('n', 'Males', p.n) + step('f', 'Females', p.f ?? 0) : step('n', '', p.n)}</div>
-${conflictOf(picks, p.id) ? `<div class="spWarn">${esc(conflictOf(picks, p.id)!)}</div>` : ''}<div class="spMsg ${bandClass(nt.band)}">${esc(nt.line)}</div>${nt.ratio ? `<div class="spNote">${esc(nt.ratio)}</div>` : ''}
+${overWarn(p) ? `<div class="spWarn">${esc(overWarn(p)!)}</div>` : ''}${conflictOf(picks, p.id) ? `<div class="spWarn">${esc(conflictOf(picks, p.id)!)}</div>` : ''}<div class="spMsg ${bandClass(nt.band)}">${esc(nt.line)}</div>${nt.ratio ? `<div class="spNote">${esc(nt.ratio)}</div>` : ''}
 ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</div>` : ''}</li>`;
   };
 
-  const mateRows = () => {
-    const list = rankTankmates(picks);
-    if (!list.length) return '<p class="spNote">Nothing else suits this water.</p>';
-    return `<ul class="spMates">${list.map(m => `<li class="${m.ok ? '' : 'no'}"><div><b>${esc(m.sp.name)}</b>${m.ok ? '' : `<span class="spWhy">${esc(m.why)}</span>`}</div>${m.ok ? `<button type="button" data-act="mate" data-id="${m.sp.id}">Add ${m.n}</button>` : ''}</li>`).join('')}</ul>`;
-  };
-
+  const SP_NEAR = 75; // green up to here, amber to 100, red over
+  const bar = (pct: number, what: string) => `<span class="spBar ${pct > 100 ? 'over' : pct >= SP_NEAR ? 'near' : ''}" title="${what}: ${Math.round(pct)} %"><i style="width:${Math.max(2, Math.min(100, pct))}%"></i></span>`;
+  const WHY: Record<string, string> = { space: 'too full', filtration: 'no filter carries it', minimum: 'too small for them', length: 'too short', depth: 'too deep', floor: 'not enough floor' };
+  let sizesTop = 0;
   const tankBlock = () => {
     const animals = animalsOf(picks);
-    if (!animals.length) return '<p class="spNote">Pk an animal and the tank it needs appears in the view.</p>';
+    if (!animals.length) return '';
     const plan = planFor(picks, chosen);
-    if (!plan.tank) return '<p class="spNote">This animal lives on land: choose a terrarium in the editor.</p>';
-    const space = plan.tank.id === plan.need?.tank.id ? plan.need.spacePct : stockingMemo(store.tank).spacePercent;
-    const bar = (pct: number) => `<span class="spBar ${pct > 100 ? 'over' : pct >= 85 ? 'near' : ''}" title="Space used: ${Math.round(pct)} %"><i style="width:${Math.max(2, Math.min(100, pct))}%"></i></span>`;
-    let h = `<div class="spTank"><b>${esc(tankLabel(plan.tank))}</b>${bar(space)}<span class="spPct">${Math.round(space)} % of the space</span></div>`;
-    if (plan.problem) h += `<div class="spWarn">${esc(plan.problem)}</div>`;
-    else if (plan.need && plan.tank.id !== plan.need.tank.id) h += `<div class="spNote">The smallest that holds them is ${esc(tankLabel(plan.need.tank))}.</div>`;
-    if (plan.span) {
-      const { setupUsd: s, minPerWeek: m } = plan.span;
-      h += `<div class="spLive"><span>Set-up about <b>${range(s.cheapest, s.balanced, usd)}</b></span><span>About <b>${range(m.cheapest, m.balanced, n => `${n}`)} min</b> a week</span></div><div class="spNote">Cheapest build to balanced build: tank, filter, light, heater and water care for these animals.</div>`;
-    }
-    if (plan.steps.length) {
-      h += `<div class="spHd">More room</div><ul class="spSteps2">${plan.steps.map(s => `<li><button type="button" data-act="size" data-tank="${s.tank.id}"><span>${esc(tankLabel(s.tank))}</span><b>${signed(s.costDeltaUsd)}</b>${bar(s.spacePct)}<span class="spPct">${Math.round(s.spacePct)} %</span></button></li>`).join('')}</ul>`;
-      if (chosen && plan.need && plan.tank.id !== plan.need.tank.id) h += `<button type="button" class="spLink" data-act="smallest">Back to the smallest</button>`;
-    }
+    if (!plan.options.length) return '<p class="spNote">This animal lives on land: choose a terrarium in the editor.</p>';
+    let h = '';
+    if (plan.tank) {
+      h += `<div class="spTank"><b>${esc(tankLabel(plan.tank))}</b><span class="spPct">Your tank. It stays this size as you add animals.</span></div>`;
+      if (plan.problem) h += `<div class="spWarn">${esc(plan.problem)}</div>`;
+      if (plan.span) {
+        const { setupUsd: s, minPerWeek: m } = plan.span;
+        h += `<div class="spLive"><span>Set-up about <b>${range(s.cheapest, s.balanced, usd)}</b></span><span>About <b>${range(m.cheapest, m.balanced, n => `${n}`)} min</b> a week</span></div><div class="spNote">Cheapest build to balanced build: tank, filter, light, heater and water care for these animals.</div>`;
+      }
+    } else h += plan.need ? '<div class="spNote">Pick a tank. Greyed sizes are too small for the animals you have so far; the bars show how full each would be.</div>' : `<div class="spWarn">${esc(plan.problem ?? '')}</div>`;
+    h += `<div class="spHd">Tank sizes</div><div class="spSizeKey spNote"><span>Fullness</span><span>Tank size</span></div><ul class="spSizes">${plan.options.map(o => {
+      const bad = o.fails.length > 0, on = plan.tank?.id === o.tank.id, full = Math.max(o.spacePct, o.filtrationPct);
+      return `<li><button type="button" data-act="size" data-tank="${o.tank.id}" class="${bad ? 'small' : ''}${on ? ' on' : ''}"${bad && !on ? ' disabled' : ''}><span class="spLbl">${esc(tankLabel(o.tank))}${bad ? `<em>${WHY[o.fails[0]]}</em>` : o.cramped ? '<em class="cr">workable, a bit cramped</em>' : ''}</span>${bar(full, 'Fullness')}<span class="spPct">${Math.round(full)} %</span>${bar(o.minPct, 'Tank size against what the animals need')}<span class="spPct">${Math.round(o.minPct)} %</span></button></li>`;
+    }).join('')}</ul>`;
     return h;
   };
 
   const results = () => {
-    if (!q.trim()) return '';
+    if (!q.trim() || !picks.length) return ''; // with nothing picked the gallery behind the panel is the list
     const have = new Set(picks.map(p => p.id)), list = searchSpecies(q).filter(s => !have.has(s.id)).slice(0, 8);
     return list.length ? `<ul class="spRes">${list.map(s => `<li><button type="button" data-act="add" data-id="${s.id}"><b>${esc(s.name)}</b><i>${esc(s.sci)}</i><span>${CARE[s.id]?.group ? `group of ${CARE[s.id].bands?.ok ?? CARE[s.id].group}+` : ''}</span></button></li>`).join('')}</ul>` : '<p class="spNote">No animal by that name.</p>';
   };
 
   let focusSearch = false;
   const draw = () => {
+    const sz = el.querySelector<HTMLElement>('.spSizes'); if (sz) sizesTop = sz.scrollTop;
     const keep = el.querySelector<HTMLInputElement>('.spQ'), hadFocus = document.activeElement === keep, pos = keep?.selectionStart ?? q.length, scroll = el.scrollTop;
+    el.classList.toggle('spEmpty', !picks.length);
     el.innerHTML = `<div class="spHead"><h2>An animal I want</h2><button type="button" data-act="close" aria-label="Close">✕</button></div>
 <input class="spQ" type="search" placeholder="Search an animal by name (e.g. betta, neon tetra, clownfish)" aria-label="Search animals" value="${esc(q)}" autocomplete="off">
 <div class="spResWrap">${results()}</div>
 ${picks.length ? `<ul class="spPicks">${picks.map(pickRow).join('')}</ul>
 <div class="spHd">Other animals in with them?</div>
-${mates ? `${mateRows()}<button type="button" class="spLink" data-act="nomates">No, just these</button>` : `<div class="spYN"><button type="button" data-act="mates">Yes, show what suits them</button></div>`}` : '<p class="spNote">Start with the animal you have in mind. It goes in at the smallest group it is kept in, and the tank it needs shows in the view.</p>'}
-<div class="spHd">The tank</div>${tankBlock()}
+${mates ? `<p class="spNote">Pick from the pictures on the left; each goes in at the smallest group it is kept in.</p><button type="button" class="primary" data-act="nomates">Done adding</button>` : `<div class="spYN"><button type="button" data-act="mates">Yes, show me what suits them</button></div>`}` : '<p class="spNote">Search for the animal you have in mind, or pick one from the pictures. It goes in at the smallest group it is kept in, and the tank it needs shows in the view.</p>'}
+${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}` : ''}
 <div class="spFoot"><button type="button" class="primary" data-act="builds"${picks.length && planFor(picks, chosen).tank && !planFor(picks, chosen).problem ? '' : ' disabled'}>Continue: three ways to build it</button><button type="button" class="spLink" data-act="done"${picks.length ? '' : ' disabled'}>Open in the editor as it is</button><span class="spNote">Everything stays editable in the editor.</span></div>`;
     const q2 = el.querySelector<HTMLInputElement>('.spQ')!;
+    { const t = planFor(picks, chosen).tank; gallery.mates(mates && picks.length ? rankTankmates(picks, t).map(m => ({ ...m, bigger: m.bigger ? tankLabel(m.bigger) : undefined })) : null, !!t); }
+    gallery.search(q); gallery.show(!el.hidden && (!picks.length || mates));
     if (hadFocus || focusSearch) { q2.focus(); q2.setSelectionRange(pos, pos); focusSearch = false; }
     el.scrollTop = scroll;
+    const list = el.querySelector<HTMLElement>('.spSizes');
+    if (list) { // nothing chosen: show the smallest size that holds the picks; chosen: leave the list where it was
+      const first = list.querySelector<HTMLElement>('button:not(.small)');
+      list.scrollTop = !chosen && first ? Math.max(0, first.offsetTop - list.offsetTop - 28) : sizesTop;
+    }
   };
 
   const change = (rebuild = false) => { sync(rebuild); draw(); };
 
-  el.oninput = e => { const t = e.target as HTMLInputElement; if (t.classList.contains('spQ')) { q = t.value; const w = el.querySelector('.spResWrap'); if (w) w.innerHTML = results(); } };
+  el.oninput = e => { const t = e.target as HTMLInputElement; if (t.classList.contains('spQ')) { q = t.value; gallery.search(q); const w = el.querySelector('.spResWrap'); if (w) w.innerHTML = results(); } };
   el.onclick = e => {
     const b = (e.target as HTMLElement).closest<HTMLElement>('[data-act]'); if (!b) return;
     const id = b.dataset.id!, i = picks.findIndex(p => p.id === id);
     switch (b.dataset.act) {
       case 'close': close(); break;
       case 'done': close(); store.seal(); status('Opened in the editor. The animals and tank are yours to change; Undo steps back.'); break;
-      case 'builds': { const plan = planFor(picks, chosen); if (plan.tank && !plan.problem) { el.hidden = true; builds.open(animalsOf(picks), plan.tank, () => { el.hidden = false; side(true); shown = ''; change(true); }); } break; }
+      case 'builds': { const plan = planFor(picks, chosen); if (plan.tank && !plan.problem) { el.hidden = true; bare(false); builds.open(animalsOf(picks), plan.tank, () => { el.hidden = false; side(true); bare(true); shown = ''; change(true); }); } break; }
       case 'add': if (i < 0) { picks.push(startPick(id)); q = ''; change(); } break;
       case 'mate': if (i < 0) { picks.push(startPick(id)); change(); } break;
       case 'del': if (i >= 0) { picks.splice(i, 1); if (!picks.length) mates = false; change(); } break;
@@ -149,7 +161,6 @@ ${mates ? `${mateRows()}<button type="button" class="spLink" data-act="nomates">
       case 'mates': mates = true; draw(); break;
       case 'nomates': mates = false; draw(); break;
       case 'size': chosen = b.dataset.tank; change(); break;
-      case 'smallest': chosen = undefined; change(); break;
     }
   };
 
@@ -157,9 +168,10 @@ ${mates ? `${mateRows()}<button type="button" class="spLink" data-act="nomates">
   const open = () => {
     const units = store.scene.units, s = emptyScene();
     s.name = 'My animal tank'; s.units = units; s.tanks[0].camera = { ...store.tank.camera };
+    s.tanks[0].stand.show = false; s.tanks[0].stand.need = 'ask'; // no stand yet: the budget still counts a typical one
     store.replace(s);
     picks = []; chosen = undefined; mates = false; q = ''; shown = '';
-    el.hidden = false; side(true); focusSearch = true; draw();
+    el.hidden = false; side(true); bare(true); focusSearch = true; draw();
   };
   openBtn.onclick = () => { (document.getElementById('startDlg') as HTMLDialogElement | null)?.close(); open(); };
   // a different tank loaded (open, undo past the start): the screen has nothing more to say

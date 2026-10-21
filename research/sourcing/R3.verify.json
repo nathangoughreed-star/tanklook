@@ -1,0 +1,236 @@
+[
+ {
+  "id": "cardinal",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/paracheirodon-axelrodi/",
+  "result": "compact",
+  "score": 1,
+  "quote": "At ~54litres~14US gal and a turnover of four to five times the volume an hour, look for a filter rated 215–270 lph."
+ },
+ {
+  "id": "cardinal",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.fishkeepingworld.com/cardinal-tetra/",
+  "result": "exact",
+  "score": 1,
+  "quote": "20 gallons for a small school of six cardinal tetras."
+ },
+ {
+  "id": "ember",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/hyphessobrycon-amandae/",
+  "result": "compact",
+  "score": 1,
+  "quote": "Aquarium base dimensions of at least 45 ∗ 30 cm18 ∗ 12 in or equivalent are suggested."
+ },
+ {
+  "id": "ember",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.fishkeepingworld.com/ember-tetra/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Ember Tetras will need at least a 10-gallon tank."
+ },
+ {
+  "id": "rummynose",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.fishkeepingworld.com/rummy-nose-tetra/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Rummy nose tetras need at least a 20 gallon tank."
+ },
+ {
+  "id": "harlequin",
+  "field": "minL",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/trigonostigma-heteromorpha/",
+  "result": "compact",
+  "score": 1,
+  "quote": "Aquarium base dimensions of 60 ∗ 30 cm24 ∗ 12 in or equivalent should be the smallest considered"
+ },
+ {
+  "id": "harlequin",
+  "field": "minL",
+  "verdict": "disagrees",
+  "url": "https://www.fishkeepingworld.com/harlequin-rasbora/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Harlequin rasboras need a tank of at least 15 gallons for a school of 8-10"
+ },
+ {
+  "id": "chili",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/boraras-brigittae/",
+  "result": "compact",
+  "score": 1,
+  "quote": "Aquarium base 45 × 30cm18 × 12in"
+ },
+ {
+  "id": "chili",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.fishkeepingworld.com/chili-rasbora/",
+  "result": "exact",
+  "score": 1,
+  "quote": "6-8 gallons for a school of 8-10"
+ },
+ {
+  "id": "danio",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/danio-rerio/",
+  "result": "compact",
+  "score": 1,
+  "quote": "An active species so even a small group needs an aquarium with minimum base dimensions of 90 ∗ 30 cm36 ∗ 12 in."
+ },
+ {
+  "id": "danio",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.fishkeepingworld.com/zebra-danio/",
+  "result": "exact",
+  "score": 1,
+  "quote": "The minimum tank size for zebra danios is 10 gallons, plus an additional 2 gallons per extra fish."
+ },
+ {
+  "id": "whitecloud",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/tanichthys-albonubes/",
+  "result": "compact",
+  "score": 1,
+  "quote": "Minimum base dimensions of 60 ∗ 30 cm24 ∗ 12 in or equivalent are required."
+ },
+ {
+  "id": "whitecloud",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.fishkeepingworld.com/white-cloud-mountain-minnow/",
+  "result": "exact",
+  "score": 1,
+  "quote": "A White Cloud Mountain Minnow should be kept in at least a 10-gallon aquarium."
+ },
+ {
+  "id": "cpd",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/danio-margaritatus/",
+  "result": "compact",
+  "score": 1,
+  "quote": "At ~41litres~11US gal and the gentle movement this species wants"
+ },
+ {
+  "id": "cpd",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.fishkeepingworld.com/celestial-pearl-danio/",
+  "result": "compact",
+  "score": 1,
+  "quote": "A [10-gallon tank] is the minimum for a small group, and a 15- to 20-gallon tank is better."
+ },
+ {
+  "id": "cpd",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.fishkeepingworld.com/celestial-pearl-danio/",
+  "result": "exact",
+  "score": 1,
+  "quote": "They are peaceful, but they are small enough to be bullied or outcompeted for food by bigger tank mates."
+ },
+ {
+  "id": "cpd",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/danio-margaritatus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "This timid species should ideally be kept in a heavily-planted set-up"
+ },
+ {
+  "id": "hatchet",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/carnegiella-strigata/",
+  "result": "compact",
+  "score": 1,
+  "quote": "At ~68litres~18US gal and a turnover of four to five times the volume an hour, look for a filter rated 270–340 lph."
+ },
+ {
+  "id": "hatchet",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.liveaquaria.com/products/marble-hatchet",
+  "result": "exact",
+  "score": 1,
+  "quote": "Minimum Tank Size: 20 Gallons"
+ },
+ {
+  "id": "syno",
+  "field": "minL",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/synodontis-njassae/",
+  "result": "compact",
+  "score": 1,
+  "quote": "120 ∗ 30 ∗ 30 cm48 ∗ 12 ∗ 12 in - ~108 litres~29 US gal."
+ },
+ {
+  "id": "pandacory",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.buildyouraquarium.com/panda-cory-catfish/",
+  "result": "exact",
+  "score": 1,
+  "quote": "They’re easy to care for, making them perfect for beginners."
+ },
+ {
+  "id": "pandacory",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.tankarium.com/panda-cory-catfish/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Panda corys are very hardy and adaptable, which makes them extremely easy to look after."
+ },
+ {
+  "id": "regaljumper",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.petsmart.com/learning-center/reptile-care/regal-jumping-spider-care-guide",
+  "result": "exact",
+  "score": 1,
+  "quote": "These spiders can be shy at first, but they’re naturally curious."
+ },
+ {
+  "id": "sixline",
+  "field": "solo",
+  "verdict": "agrees",
+  "url": "https://simstropicalfish.co.uk/product/pyjama-wrasse-pseudocheilinus-hexataenia/",
+  "result": "exact",
+  "score": 1,
+  "quote": "It is recommended to have only one Six Line Wrasse per aquarium to limit aggression, unless breeding is intended."
+ },
+ {
+  "id": "firenewt",
+  "field": "air.rh",
+  "verdict": "agrees",
+  "url": "https://joshsfrogs.com/sp/chinese-fire-bellied-newt---hypselotriton-orientalis--captive-bred--newt002",
+  "result": "exact",
+  "score": 1,
+  "quote": "If kept terrestrially, humidity in the range of 60-80% should be maintained."
+ },
+ {
+  "id": "firenewt",
+  "field": "air.rh",
+  "verdict": "agrees",
+  "url": "https://www.petmd.com/exotic/fire-bellied-newt-care-sheet",
+  "result": "exact",
+  "score": 1,
+  "quote": "Humidity levels should be maintained at 70% and monitored with a hygrometer (humidity gauge)."
+ }
+]

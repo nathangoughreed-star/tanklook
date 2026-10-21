@@ -1,14 +1,14 @@
 {
- "unsourced": 687,
+ "unsourced": 490,
  "constUnsourced": 0,
- "total": 5200,
+ "total": 5202,
  "byStatus": {
-  "cited": 2331,
+  "cited": 2485,
   "fitted": 59,
-  "derived": 11,
-  "researched": 681,
-  "claimed": 679,
-  "assumption": 752,
-  "unsourced": 687
+  "derived": 43,
+  "researched": 682,
+  "claimed": 656,
+  "assumption": 787,
+  "unsourced": 490
  }
 }

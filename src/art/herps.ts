@@ -80,13 +80,13 @@ const TOAD_TORSO: Pt[] = [[1.0, 0.05, 'c'], [0.975, -0.015], [0.91, -0.08], [0.8
   [0.19, 0.02], [0.16, 0.13], [0.2, 0.215], [0.3, 0.245], [0.45, 0.235], [0.62, 0.2], [0.78, 0.15], [0.9, 0.11], [0.97, 0.085]];
 const TOAD_WID: [number, number][] = [[0.17, 0.13], [0.28, 0.2], [0.45, 0.225], [0.62, 0.215], [0.78, 0.19], [0.9, 0.145], [1, 0.08]];
 /** African dwarf frog: flat and low, the head running straight into a long pointed snout, no neck, a flat belly. */
-// dorso-ventrally compressed (Nathan 2026-10-16): the body is flat, its height about half its width. The outline was drawn
+// dorso-ventrally compressed (Nathan 2026-10-16, thickened 2026-10-20): the body is flat, its height about 0.6 of its width. The outline was drawn
 // round, so its heights are squashed toward the belly line, and the width widened a little
-const ADF_FLAT = 0.55, ADF_BELLY = 0.24, adfV = (v: number) => ADF_BELLY - (ADF_BELLY - v) * ADF_FLAT;
+const ADF_FLAT = 0.68, ADF_BELLY = 0.24, adfV = (v: number) => ADF_BELLY - (ADF_BELLY - v) * ADF_FLAT;
 const ADF_TORSO: Pt[] = ([[1.0, 0.1, 'c'], [0.97, 0.06], [0.9, 0.0], [0.8, -0.04], [0.68, -0.06], [0.52, -0.07], [0.36, -0.065], [0.22, -0.035],
   [0.11, 0.04], [0.08, 0.13], [0.12, 0.21], [0.24, 0.24], [0.44, 0.24], [0.62, 0.225], [0.78, 0.19], [0.9, 0.155], [0.97, 0.125]] as Pt[])
   .map(p => (p.length > 2 ? [p[0], adfV(p[1]), 'c'] : [p[0], adfV(p[1])]) as Pt);
-const ADF_WID: [number, number][] = ([[0.1, 0.1], [0.24, 0.15], [0.44, 0.16], [0.62, 0.145], [0.74, 0.115], [0.84, 0.075], [0.92, 0.04], [0.97, 0.02], [1, 0.008]] as [number, number][])
+const ADF_WID: [number, number][] = ([[0.1, 0.1], [0.24, 0.15], [0.44, 0.16], [0.62, 0.145], [0.74, 0.125], [0.84, 0.098], [0.92, 0.07], [0.97, 0.05], [1, 0.028]] as [number, number][])
   .map(([u, w]) => [u, w * 1.12]);
 /** The frog's design height v (ground 0.265) in the card frame of aspect `aspect` (flatter frames squash toward the ground). */
 const frogV = (aspect: number, v: number) => { const g = aspect / 2 - 0.015, k = (g + 0.25) / (0.265 + 0.25); return g - (0.265 - v) * k; };
@@ -176,7 +176,7 @@ const FROGS: Record<string, FrogSpec> = {
   // Hymenochirus boettgeri: olive-grey to brown, finely granular, small dark spots; paler grey belly; small lidless
   // eyes on the sides of the head; webbed fingers and toes
   adf: {
-    aspect: 0.44, skin: ['#5f5a46', '#6e6852', '#9a9682'], leg: ['#635d48', '#6f6953', '#8e8a76'],
+    aspect: 0.44, skin: ['#5f5a46', '#6e6852', '#9a9682'], leg: ['#574e3c', '#645a46', '#8e8a76'],
     iris: ['#a39a6a', '#3b3826'], pupil: 'round', warts: '#4f4a39', torso: ADF_TORSO, wid: ADF_WID, web: 1,
     eye: { u: 0.86, v: adfV(-0.015), r: 0.03, th: 1.05 },
     marks: (l, P, W) => {
@@ -450,12 +450,12 @@ function frogOnGlass3D(s: FrogSpec, fat: number, tone: [number, string][], marks
  */
 function adfLimbs(): Limb3D[] {
   const s = FROGS.adf, V = (v: number) => frogV(s.aspect, v), J = (u: number, v: number, z: number, r: number): Joint => [u, V(v), z, r];
-  const toe = 0.008;
+  const toe = 0.011;
   return [
-    { js: [J(0.16, 0.13, 0.08, 0.06), J(0.3, 0.215, 0.29, 0.04), J(0.1, 0.248, 0.37, 0.022), J(0.03, 0.256, 0.41, 0.015)],
-      toes: [[-0.1, -0.03], [-0.13, 0.01], [-0.13, 0.05], [-0.11, 0.09], [-0.07, 0.115]], toe, thigh: 0.08, blunt: true, web: 1 },
-    { js: [J(0.7, 0.1, 0.09, 0.03), J(0.72, 0.19, 0.2, 0.022), J(0.8, 0.248, 0.26, 0.015)],
-      toes: [[0.07, -0.04], [0.085, 0.0], [0.07, 0.04], [0.035, 0.07]], toe, blunt: true, web: 1 },
+    { js: [J(0.16, 0.13, 0.08, 0.075), J(0.3, 0.215, 0.29, 0.052), J(0.1, 0.248, 0.37, 0.03), J(0.03, 0.256, 0.41, 0.022)],
+      toes: [[-0.14, -0.05], [-0.18, 0.0], [-0.19, 0.05], [-0.17, 0.1], [-0.12, 0.14]], toe, thigh: 0.095, blunt: true, web: 1 },
+    { js: [J(0.7, 0.1, 0.09, 0.036), J(0.72, 0.19, 0.2, 0.028), J(0.8, 0.248, 0.26, 0.02)],
+      toes: [[0.1, -0.05], [0.115, 0.0], [0.1, 0.05], [0.06, 0.085]], toe: 0.009, blunt: true, web: 1 },
   ];
 }
 const FROG_FACE: Mark3D[] = [
@@ -530,9 +530,9 @@ export const HERP3D: Record<string, Herp3D> = {
     // low rounded warts over the back and upper flanks, none on the smooth belly
     warts: { n: 80, u: [0.24, 0.9], a: [0.04, 0.55], r: [0.013, 0.021], h: 0.5, seed: 31 } },
   // olive-grey, paler below; small dark spots; fine granular skin all over the back and flanks
-  adf: { ...frog3D(FROGS.adf, 1, [[0, '#5f5a46'], [0.5, '#6e6852'], [0.7, '#7e7965'], [1, '#a29e8a']], [
-    { k: 'spots', n: 34, u: [0.12, 0.9], a: [0.0, 0.6], r: [0.008, 0.014], c: '#2f2c21', o: 0.75, seed: 41 },
-    { k: 'spots', n: 140, u: [0.1, 0.95], a: [0.0, 0.6], r: [0.005, 0.008], c: '#4f4a39', o: 0.5, seed: 42 },
+  adf: { ...frog3D(FROGS.adf, 1, [[0, '#4f4636'], [0.5, '#5e5442'], [0.7, '#756b58'], [1, '#a29e8a']], [
+    { k: 'spots', n: 70, u: [0.12, 0.95], a: [0.0, 0.65], r: [0.005, 0.01], c: '#2a251b', o: 0.8, seed: 41 },
+    { k: 'spots', n: 260, u: [0.1, 0.97], a: [0.0, 0.65], r: [0.004, 0.007], c: '#3a3226', o: 0.6, seed: 42 },
     { k: 'line', pts: [[0.8, 0.62], [0.9, 0.64], [0.995, 0.6]], c: '#0e100c', o: 0.22, w: 0.003 }, // mouth
   ], { c: '#2f2c21', r: 0.01, n: 14 }),
     limbs: adfLimbs(),
@@ -586,14 +586,14 @@ HERP3D_PERCH.treefrog = (() => {
 // spread out limp and drooping a little (the toe tips set the ground line below the belly)
 HERP3D_FLOAT.adf = (() => {
   const s = FROGS.adf, V = (v: number) => frogV(s.aspect, v), J = (u: number, v: number, z: number, r: number): Joint => [u, V(v), z, r];
-  const toe = 0.008;
+  const toe = 0.011;
   return {
     ...HERP3D.adf,
     limbs: [
-      { js: [J(0.16, 0.13, 0.08, 0.06), J(0.28, 0.2, 0.3, 0.04), J(0.08, 0.26, 0.4, 0.022), J(0.0, 0.3, 0.45, 0.015)],
-        toes: [[-0.1, -0.02], [-0.13, 0.02], [-0.13, 0.06], [-0.1, 0.1], [-0.06, 0.12]], toe, thigh: 0.08, blunt: true, web: 1 },
-      { js: [J(0.7, 0.1, 0.09, 0.03), J(0.74, 0.2, 0.22, 0.022), J(0.8, 0.29, 0.3, 0.015)],
-        toes: [[0.07, -0.03], [0.085, 0.01], [0.07, 0.05], [0.035, 0.08]], toe, blunt: true, web: 1 },
+      { js: [J(0.16, 0.13, 0.08, 0.075), J(0.28, 0.2, 0.3, 0.052), J(0.08, 0.26, 0.4, 0.03), J(0.0, 0.3, 0.45, 0.022)],
+        toes: [[-0.14, -0.04], [-0.18, 0.01], [-0.19, 0.06], [-0.16, 0.11], [-0.11, 0.14]], toe, thigh: 0.095, blunt: true, web: 1 },
+      { js: [J(0.7, 0.1, 0.09, 0.036), J(0.74, 0.2, 0.22, 0.028), J(0.8, 0.29, 0.3, 0.02)],
+        toes: [[0.1, -0.04], [0.115, 0.01], [0.1, 0.055], [0.06, 0.09]], toe, blunt: true, web: 1 },
     ],
     ground: V(0.34), top: V(adfV(-0.07)),
   };
