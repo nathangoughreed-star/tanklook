@@ -5,7 +5,7 @@ deg F) with metric in brackets where the data is metric.
 
 Read first: HANDOFF.md "Start here" (lane rules; run `npm run build` before EVERY push) and the "Source traceability" section (chat
 S168's entries are the latest); research/sourcing/decisions.md; src/data/provenance.ts (the per-value batch loader: verdicts agrees /
-COLLISION RULE (Coordinator 7): lane MM (local_a6c62452-7e37-4135-91e5-e598ab736ba2) owns src/scene/tankMin.ts and the tank-minimum data until it reports done. Build the script and combined.md now, but apply nothing to tankMin.ts or the tank-minimum fields until the coordinator tells you MM has landed; then rebase on origin/main first.
+MM landed 9db5367 (build 1081, Coordinator 7): tankMin.ts, src/data/tankmin.json (made by scripts/tank-min-data.mjs) and fullnessTile.ts are free. Tank-minimum values now live in tankmin.json with sourced / (est) / derived marks: apply tier changes there via the script, not by hand in tankMin.ts.
 derived / kept, `use`, `decision`); src/scene/tankMin.ts (TIERS floor / comfort, MIN_WEIGHTS vol / area / run); src/data/sources.json
 (each site's `kind`).
 
