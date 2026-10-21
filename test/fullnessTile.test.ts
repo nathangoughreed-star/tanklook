@@ -248,3 +248,24 @@ describe('filter gate follow-ups (Nathan 2026-10-21)', () => {
     p1.tech = choose(p1, 'filter', 'hob'); expect(filters(p1)).toBeGreaterThan(0);
   });
 });
+
+describe('Water column and Floor bars (lane HB, Nathan 2026-10-21: Space split in two)', () => {
+  const fishes = (c: Record<string, number>) => Object.entries(c).flatMap(([species, n]) => Array.from({ length: n }, () => species))
+    .map((species, i) => ({ id: i + 1, species, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0 }));
+  const S0 = withFish(), at = (c: Record<string, number>, L = 36, D = 18, H = 16): TankSetup => ({ ...S0, tank: { ...S0.tank, L: L * 25.4, D: D * 25.4, H: H * 25.4 }, fish: fishes(c) });
+  it('a cory-heavy stock: the Floor bar is the fuller one and lists only bottom dwellers; the pill follows the larger', () => {
+    const S = at({ bronzecory: 15, danio: 5 }), r = stockingOf(S), st = tileState(S, r, 'in');
+    expect(st.floor.pct).toBeGreaterThan(st.water.pct); expect(st.spaceBy).toBe('floor');
+    expect(st.topFloor.map(t => t.name)).toEqual(['Bronze corydoras']);
+    expect(st.space.pct).toBeCloseTo(st.floor.pct, 9);
+  });
+  it('midwater fish only: the floor is free', () => {
+    const S = at({ danio: 10 }), st = tileState(S, stockingOf(S), 'in');
+    expect(st.floor.pct).toBe(0); expect(st.topFloor).toEqual([]); expect(st.spaceBy).toBe('water');
+  });
+  it('over on the floor: the reason asks for floor, not water', () => {
+    const S = at({ bronzecory: 10 }, 30, 12, 36), r = stockingOf(S);
+    expect(r.spaceBy).toBe('floor'); expect(r.spacePercent).toBeGreaterThan(100);
+    expect(r.reasons.join(' ')).toMatch(/floor is too small for the bottom dwellers.*sq in of floor/);
+  });
+});

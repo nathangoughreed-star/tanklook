@@ -32,6 +32,8 @@ export interface TileState {
   /** species the tank is too small for (red), by name and unmet measure (scene/tankMin.ts), and advisories (yellow: deeper water than advised); empty when every species has its minimum */
   mins: MinWarn[];
   topSpace: TopRow[]; topFilt: TopRow[]; topMin: TopRow[];
+  /** the two limits behind Space (lane HB): the water limit, the floor limit (bottom dwellers), which binds, and who uses the floor */
+  water: Bar; floor: Bar; spaceBy: 'water' | 'floor'; topFloor: TopRow[];
   /** the larger of the two, for the minimized pill */
   head: Bar;
   reason: string;
@@ -46,9 +48,9 @@ export function bar(pct: number): Bar {
 }
 
 /** The k animals that fill a bar most: by space or by waste load, with their share of it. */
-export function topBy(r: Stocking, by: 'space' | 'load', k = 3): TopRow[] {
+export function topBy(r: Stocking, by: 'space' | 'load' | 'floor', k = 3): TopRow[] {
   const tot = r.contributors.reduce((s, c) => s + c[by], 0);
-  return [...r.contributors].sort((a, b) => b[by] - a[by]).slice(0, k).map(c => ({ name: c.name, n: c.n, share: tot ? c[by] / tot : 0 }));
+  return [...r.contributors].filter(c => c[by] > 0).sort((a, b) => b[by] - a[by]).slice(0, k).map(c => ({ name: c.name, n: c.n, share: tot ? c[by] / tot : 0 }));
 }
 
 const fmtOf = (units: Units) => ({ len: (mm: number) => `${toUnits(mm, units)}${units === 'in' ? '"' : ' cm'}`, area: (cm2: number) => units === 'in' ? `${Math.round(cm2 / 6.4516)} sq in` : `${Math.round(cm2)} cm²`,
@@ -88,8 +90,9 @@ export function topMin(m: TankMinimum, units: Units, k = 3): TopRow[] {
 /** The reason line from space alone, for a tank whose filter is not chosen yet. */
 export function spaceReason(r: Stocking): string {
   if (!r.contributors.length) return '';
-  const p = r.spacePercent, top = topBy(r, 'space', 1)[0];
-  if (p > 100) return `The tank is too small for them (${Math.round(p)}% of its space), mainly the ${plural(top.n, top.name)}: it needs about ${Math.ceil(r.capacity.litres * p / 100)} L of water or fewer animals.`;
+  const p = r.spacePercent, top = topBy(r, r.spaceBy === 'floor' ? 'floor' : 'space', 1)[0];
+  if (p > 100 && r.spaceBy === 'floor') return `The floor is too small for the bottom dwellers (${Math.round(p)}% of it), mainly the ${plural(top.n, top.name)}: no extra height fixes that, it needs about ${Math.ceil(r.floor.usedCm2 / 6.4516)} sq in of floor or fewer bottom dwellers.`;
+  if (p > 100) return `The tank is too small for them (${Math.round(p)}% of its space), mainly the ${plural(top.n, top.name)}: it needs about ${Math.ceil(r.capacity.litres * r.waterPercent / 100)} L of water or fewer animals.`;
   return p >= NEAR_FULL ? 'Near full by space: room for a few small animals, no more.' : `Room for about ${Math.round(100 - p)}% more by space.`;
 }
 export function tileState(S: TankSetup, r: Stocking, units: Units = 'cm'): TileState {
@@ -99,7 +102,8 @@ export function tileState(S: TankSetup, r: Stocking, units: Units = 'cm'): TileS
   return {
     show: S.water.on && (r.contributors.length > 0 || !!limit),
     space: bar(r.spacePercent), filt: bar(r.filtrationPercent), min: minBar(m), mins, head: tooSmall && head.level !== 'over' ? { ...head, level: 'over', text: 'Too small' } : head,
-    topSpace: topBy(r, 'space'), topFilt: topBy(r, 'load'), topMin: topMin(m, units), reason: unset ? spaceReason(r) : r.reasons[0] ?? '', filter,
+    water: bar(r.waterPercent), floor: bar(r.floorPercent), spaceBy: r.spaceBy, topFloor: topBy(r, 'floor'),
+    topSpace: topBy(r, r.spaceBy === 'floor' ? 'floor' : 'space'), topFilt: topBy(r, 'load'), topMin: topMin(m, units), reason: unset ? spaceReason(r) : r.reasons[0] ?? '', filter,
     ...(limit ? { limit, fit } : {}),
   };
 }
@@ -197,10 +201,10 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
   setMin(min, false);
   head.onclick = () => setMin(!min);
 
-  const row = (key: string, label: string, b: Bar, top: TopRow[], what: string, hd = `Most of the ${what}:`, tip = '') =>
+  const row = (key: string, label: string, b: Bar, top: TopRow[], what: string, hd = `Most of the ${what}:`, tip = '', none = 'No animals in the water yet.') =>
     `<div class="ftRow ft-${b.level}" tabindex="0" data-row="${key}"${tip ? ` title="${esc(tip)}"` : ''}><div class="ftLab"><span>${label}</span><b>${b.text}</b></div>`
     + `<div class="ftTrack" role="meter" aria-label="${label}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(Math.min(b.pct, 999))}"><i style="width:${b.fill}%"></i></div>`
-    + `<div class="ftTop">${top.length ? `<div class="ftTopHd">${hd}</div>` + top.map(t => `<div>${esc(plural(t.n, t.name))} <b>${t.note ? esc(t.note) : `${Math.round(t.share * 100)}%`}</b></div>`).join('') : '<div>No animals in the water yet.</div>'}</div></div>`;
+    + `<div class="ftTop">${top.length ? `<div class="ftTopHd">${hd}</div>` + top.map(t => `<div>${esc(plural(t.n, t.name))} <b>${t.note ? esc(t.note) : `${Math.round(t.share * 100)}%`}</b></div>`).join('') : `<div>${none}</div>`}</div></div>`;
 
   let lastSig = '', editing = false;
   const fitWas = new Map<number, boolean>(); // per tank: did it fit the space after the last edit
@@ -216,7 +220,10 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
     pill.textContent = st.fit?.fits === false ? `${st.head.text} · too big` : st.head.text;
     pill.className = `ftPill ft-${st.fit?.fits === false ? 'over' : st.head.level}`;
     const box = (on: boolean) => `<label class="ftNoFilt"><input type="checkbox" class="ftNoFilter"${on ? ' checked' : ''}> No filter: I am keeping this tank filterless (Walstad style)</label>`;
-    bars.innerHTML = row('space', 'Space', st.space, st.topSpace, 'space')
+    // lane HB (Nathan 2026-10-21): Space split into its two limits; the pill and the tank fit use the larger
+    const spaceRows = row('water', 'Water column', st.water, topBy(r, 'space'), 'water column', undefined, 'How full the water is: body size against the litres (fitted to AqAdvisor). More height counts here.')
+      + row('floor', 'Floor', st.floor, st.topFloor, 'floor', 'Most of the floor:', 'Floor the bottom dwellers use: 15 sq in per inch of fish (research/habitat-model.md). A taller tank adds no floor.', 'No bottom dwellers: the floor is free.');
+    bars.innerHTML = spaceRows
       + (st.filter === 'unset' ? `<div class="ftWarn ft-near ftNeedFilter"><b>This tank needs a filter.</b> Add one in Tech › Filtration to see its filtration.${box(false)}</div>`
         : row('filt', 'Filtration', st.filt, st.topFilt, 'waste', undefined, 'Ammonia the filter bacteria can process, after the plants take their share. It does not measure nitrate, oxygen, pH or temperature.')
           + (st.filter === 'filterless' ? `<div class="ftWhy">${box(true)}: bacteria on glass, substrate and decor only.</div>` : ''))

@@ -17,7 +17,7 @@ export function planHtml(p: Plan): string {
   return `<h1>${esc(p.title)}</h1><p class="sheetSub">${esc(p.tank)}: ${esc(p.animals.join(', '))}</p>
 <h2>Does it fit?</h2>
 <p class="planVerdict ${p.fits ? 'ok' : 'bad'}"><b>${p.fits ? 'Yes, it fits.' : 'Not yet.'}</b></p>
-${bar('Space', p.spacePct)}${bar('Filtration', p.filtrationPct)}
+${bar('Water column', p.waterPct)}${bar('Floor', p.floorPct)}${bar('Filtration', p.filtrationPct)}
 <ul class="planTruths">${p.verdict.slice(2).map(v => `<li class="${v.level}"><b>${MARK[v.level]}</b> ${esc(v.text)}</li>`).join('')}${p.missing.map(m => `<li class="bad"><b>${MARK.bad}</b> ${esc(m)}</li>`).join('')}</ul>
 <h2>What to buy, and why</h2>
 <table>${needRows}</table>

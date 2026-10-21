@@ -172,6 +172,41 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 - Tests re-blessed (see the research file); `starter.ts` `litresFor` is a function (one-line hook, import cycle with stocking.ts).
 - Not done: filter-clean bioload scaling; a per-row minutes line for the hose / feeder in the Tech menu (the saving shows in "If picked" and in the water-change / feeding rows).
 
+## Lane HB: Habitat Model (2026-10-21, branch `hb`, worktree `.claude/worktrees/hb`, port 5897; DONE)
+- **Research (step A):** `research/habitat-model.md` (reading notes with every url in `research/habitat/*.md`; 3 Sonnet agents, ~0.25 M tokens).
+  No regulator states a floor area per bottom dweller; hobby / species sources scale with LENGTH: 12-24 sq in of floor per inch of fish
+  (Scotcat "six to eight inches of fish to every square foot of base area"; Seriously Fish group footprints: bronze cory ~20, kuhli ~12,
+  clown loach 10-17). No sourced run-length coefficient (run stays the tank minimum's sourced length), no sourced activity multiplier
+  (activity stays in Filtration), no data on height. **Nathan approved the 7-row table 2026-10-21** ("approved, go ahead with step B").
+- **Engine (step B):** `stockingOf` Space = the larger of WATER (the AqAdvisor-fitted per-litre number, unchanged; median ours / AqAdvisor
+  1.03 before and after) and FLOOR (floor the bottom dwellers use / the tank floor). `FLOOR_SQIN_PER_IN` 15 sq in per inch of
+  mass-equivalent length (`habitatLengthMm`: the length of a 65 mm bronze cory of the same mass, so eel-shaped kuhlis are not overcounted);
+  `FLOOR_SHARE` bottom 1, "all"-zone 0.5 (est), midwater / top 0; invertebrates and land animals 0. New result fields: `waterPercent`,
+  `floorPercent`, `spaceBy`, `floor {areaCm2, usedCm2}`, Contributor `floor`. The 5 `it.todo` in test/spaceaudit.test.ts are plain tests;
+  research/space-audit.md regenerated. Provenance: FLOOR_SQIN_PER_IN fitted, FLOOR_REF derived, FLOOR_SHARE assumption (replaces FLOOR_K);
+  sources `habitat-model`, `scotcat-floor`; ratchet green.
+- **One evaluation (step C):** tankfit has no limit math left: `fitOf` reads `stockingOf` (space incl. floor, filtration) and `tankMinimum`
+  (red lines, plus the new `lengthShort` (strict red-line length) and `tooDeep` / `maxDepthMm` / `depthMm` (GroupCare maxDepthMm, ADF advisory
+  excluded)). FLOOR_K / floorNeedCm2 gone; `needsOf().floorCm2` now comes from `floorUseCm2`. plan.ts hard truths read `tooDeep`.
+  Starters keep a floor budget beside the litre budget (`floorPerAnimal`), and trim semi-aquatic groups (paludarium toads / newts) to it.
+  stepUps skips a bigger tank whose Space does not fall (more water on the same floor). `zoneOf` / `careOf` / `recommendedMin` moved to
+  `src/scene/zone.ts` (tankfit re-exports; tankMin imports from zone.ts: one-line hook in tankMin, not its data).
+- **Tile (step D, Nathan 2026-10-21: "split Space into water column bar and floor bar"):** the Fullness tile shows **Water column** and
+  **Floor** bars in place of Space (Floor lists the bottom dwellers; "No bottom dwellers: the floor is free"); the pill still takes the larger.
+  Reason text asks for sq in of floor when the floor binds. The plan sheet shows the same two bars; its verdict reads "Space: water column X %,
+  floor Y %". Picture: research/habitat/tile-split.png (options shown to Nathan: tile-options.png).
+- **Moved numbers (deliberate; full list research/habitat/moved-numbers.txt, vs main 1740665):** 35 of 1944 starter scenes (kuhli-heavy
+  ones lose 2-4 kuhlis, others gain swimmers; paludariums in 2.5-5 gal drop to 1 toad / 1 newt). 16 tankFor picks: 12 kuhli (2x group) 20 high -> 30 breeder,
+  13 kuhlis in a 20 long now fail on Space (~123 %, Nathan approved; the tank minimum still passes, test in minimum.test.ts); 4 adf 10 -> 15 gal;
+  and a FIX: rummynose, hatchet, tiger barb, bronze cory, sae, firefish, watchman 30 breeder -> 20 long, discus 125 -> 75, coral beauty
+  125 -> 60 breeder: their red-line length is derived from that very tank (765 mm) and the old tankfit check failed it by 0.3 mm (T.L 764.7);
+  the engine compares the rounded floor run. No pinned example-demand number moved (suite unchanged apart from the tests named here).
+- **Gaps:** (1) 15 sq in / inch and FLOOR_SHARE 0.5 are calibrated / estimated, not stated per species; no Seriously Fish otocinclus or bristlenose
+  floor figure was found. (2) Run length is not part of Space (nothing sourced); Hemdal's (L+W)/length ratios are in research/habitat/run.md if
+  wanted later. (3) The stocking screen's tank list ("Space" column) and plan.ts still show one Space number (the larger); only the tile and
+  the plan sheet split it. (4) Floor area is the tank's whole footprint: hardscape covering the floor and land in a paludarium are not
+  subtracted. (5) BMEL 1998 / Swiss TSchV / Austrian THVO primary texts were not readable by the agents.
+
 ## Lane NB: Nitrogen Balance (2026-10-21, branch `nb`, worktree `.claude/worktrees/nb`, port 5871)
 - **Ledger verified** (test/nitrogen.test.ts "nitrogen ledger and water-change states"): per day, the animals' N = plants (ammonium `byPlants` + nitrate `nitrateByPlants`) + what the water change removes + unprocessed, to 1e-9; 4 ppm NO3 a week -> 10 %; plants removed -> every gram ends as nitrate (the plant-free figure). The "2 % a week" is real arithmetic, not a units bug.
 - **The review's tank, pinned** (S183 / S185: 20 gal long 30 x 12 x 12 in, 13 tiger barbs, 77 F, small internal filter, 31 root feeders; the review's other plants are unknown, 13 stems reconstruct its 22-25 mg N plant capacity): 70.8 L, 27 mg N a day (review 25), nitrate-only change 2.6 % a week (the schedule uses the 10 % floor), filter load 16 % with plants vs 39 % without (review 14 vs 34; our TAN is ~10 % higher).
