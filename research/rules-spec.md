@@ -30,8 +30,11 @@ what matters is how each rule behaves, not what the categories are called.
 | `resolution` | Changes that address the actual mechanism | Add frogs (if the tank allows), else a bigger tank, else a different animal |
 | `wording` | The words per band, reviewed with the threshold, never alone | "Social need met; the tank now limits more" at 5+ |
 
-The source registry (the "Source traceability" session) must keep `evidence` (what the source says) apart from `basis`
-(what TankLook did with it), so a citation for "keep in groups" never vouches for "5 or more".
+`evidence` and `basis` come from the provenance rule for the value (src/data/provenance.ts, built by lane ST, 6da4be0): its
+`says` (what the source states) and `src`, and its `basis` (measured / source-stated / interpretation / derived /
+conservative-default), kept on the rule tag, not the page entry, because one page backs many values in different ways.
+A citation for "keep in groups" never vouches for "5 or more". Today 842 of 1277 CARE values are interpretation
+(research/source-coverage.md).
 
 ## 3. Severity, confidence and the response matrix
 Severity: **S3** death, injury, predation, a lethal parameter; **S2** chronic harm (stress, stunting, aggression, shortened
