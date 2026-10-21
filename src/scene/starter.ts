@@ -108,7 +108,7 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
   let next = firstId;
   for (const [sp, n] of count) for (let i = 0; i < n; i++) {
     const f: Fish = { id: next++, species: sp.id, x: T.L / 2, y: 0, depth: T.D / 2, ...randomPose(sp, r, 0), ...(sp.female && i % 2 ? { sex: 'f' as const } : {}) };
-    randomSize(f, sp, 92, r); fish.push(f); ids.add(f.id);
+    randomSize(f, sp, 100, r); fish.push(f); ids.add(f.id);
   }
   const t = { ...s, fish };
   placeNew(t, r, ids);

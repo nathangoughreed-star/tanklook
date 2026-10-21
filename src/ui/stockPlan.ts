@@ -56,7 +56,7 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
     if (!tankView.ghost) return;
     const plan = planFor(picks, chosen), m = plan.need?.tank ?? plan.options.at(-1)?.tank;
     shown = ''; ghost(false);
-    if (m) store.update(s => { const T = s.tanks[s.active]; T.tank = tankFromModel(m); shuffleFish(T, rng(1 + Math.floor(Math.random() * 1e6)), undefined, 92); });
+    if (m) store.update(s => { const T = s.tanks[s.active]; T.tank = tankFromModel(m); shuffleFish(T, rng(1 + Math.floor(Math.random() * 1e6)), undefined, 100); });
   };
   const close = () => { settle(); el.hidden = true; gallery.show(false); side(false); bare(false); };
 
@@ -89,7 +89,7 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
       }
       T.fish = keep;
       const r = rng(1 + Math.floor(Math.random() * 1e6));
-      if (rebuild) shuffleFish(T, r, undefined, 92); else if (added.size) placeNew(T, r, added);
+      if (rebuild) shuffleFish(T, r, undefined, 100); else if (added.size) placeNew(T, r, added);
     }, { coalesce: 'stockplan' });
   };
 
@@ -124,9 +124,9 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
         h += `<div class="spLive"><span>Set-up about <b>${range(s.cheapest, s.balanced, usd)}</b></span><span>About <b>${range(m.cheapest, m.balanced, n => `${n}`)} min</b> a week</span></div><div class="spNote">Cheapest build to balanced build: tank, filter, light, heater and water care for these animals.</div>`;
       }
     } else h += plan.need ? '<div class="spNote">No tank yet: pick one. You can add more animals after, and come back for a bigger tank. Greyed sizes are too small for the animals you have so far; the bars show how full each would be.</div>' : `<div class="spWarn">${esc(plan.problem ?? '')}</div>`;
-    h += `<div class="spHd">Tank sizes</div><div class="spSizeKey spNote"><span>Fullness</span><span>Tank size</span></div><ul class="spSizes">${plan.options.map(o => {
-      const bad = o.fails.length > 0, on = plan.tank?.id === o.tank.id, full = Math.max(o.spacePct, o.filtrationPct);
-      return `<li><button type="button" data-act="size" data-tank="${o.tank.id}" class="${bad ? 'small' : ''}${on ? ' on' : ''}"${bad && !on ? ' disabled' : ''}><span class="spLbl">${esc(tankLabel(o.tank))}${bad ? `<em>${WHY[o.fails[0]]}</em>` : o.cramped ? '<em class="cr">workable, a bit cramped</em>' : ''}</span>${bar(full, 'Fullness')}<span class="spPct">${Math.round(full)} %</span>${bar(o.minPct, 'Tank size against what the animals need')}<span class="spPct">${Math.round(o.minPct)} %</span></button></li>`;
+    h += `<div class="spHd">Tank sizes</div><div class="spSizeKey spNote"><span>Space</span><span>Tank size</span></div><ul class="spSizes">${plan.options.map(o => {
+      const bad = o.fails.length > 0, on = plan.tank?.id === o.tank.id, full = o.spacePct, filt = o.filtrationPct > 70 ? `<em class="${o.filtrationPct > 100 ? 'cr' : ''}">filter load ${Math.round(o.filtrationPct)} % on a basic filter; plants and a stronger one lower it</em>` : '';
+      return `<li><button type="button" data-act="size" data-tank="${o.tank.id}" class="${bad ? 'small' : ''}${on ? ' on' : ''}"${bad && !on ? ' disabled' : ''}><span class="spLbl">${esc(tankLabel(o.tank))}${bad ? `<em>${WHY[o.fails[0]]}</em>` : o.cramped ? '<em class="cr">workable, a bit cramped</em>' : ''}${filt}</span>${bar(full, 'Space: how full the tank is by room, whatever the filter')}<span class="spPct">${Math.round(full)} %</span>${bar(o.minPct, 'Tank size against what the animals need')}<span class="spPct">${Math.round(o.minPct)} %</span></button></li>`;
     }).join('')}</ul>`;
     return h;
   };
@@ -227,7 +227,7 @@ ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}` : ''}
           T.fish = T.fish.filter(x => x.species !== from);
           let next = Math.max(0, ...T.fish.map(x => x.id)) + 1; const added = new Set<number>();
           for (let k = 0; k < sw.n; k++) { T.fish.push({ id: next, species: sw.to.id, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0 }); added.add(next++); }
-          shuffleFish(T, rng(1 + Math.floor(Math.random() * 1e6)), undefined, 92);
+          shuffleFish(T, rng(1 + Math.floor(Math.random() * 1e6)), undefined, 100);
         });
         status(`Swapped for ${sw.to.name}; the tank is now ${o.inSpace.label}.`);
       }

@@ -20,12 +20,13 @@ export function randomPose(sp: Species, r: () => number, dir: number, spread = 8
 }
 const wrap = (a: number) => (a > 180 ? a - 360 : a <= -180 ? a + 360 : a);
 
-/** Body length drawn around `pct` % of adult (normal, sd 8 % of adult, kept within 15–130 %), so no two fish are
- *  quite the same size. Snails and shrimp vary a little less. Stored as no override when it lands on adult. */
+/** Body length drawn around `pct` % of adult (normal, sd 3 % of adult, never more than two sd above the larger of `pct`
+ *  and adult, never under 15 %), so no two animals are quite the same size without any being a juvenile. Callers pass 100
+ *  unless the user picked a smaller size (Nathan 2026-10-21). Snails and shrimp vary a little less. Stored as no override when it lands on adult. */
 export function randomSize(f: Fish, sp: Species, pct: number, r: () => number) {
   const n = Math.sqrt(-2 * Math.log(1 - r())) * Math.cos(2 * Math.PI * r()); // standard normal (Box–Muller)
-  const sd = sp.kind === 'snail' || sp.surfaces ? 5 : 8;
-  const adult = fishTL({ sex: f.sex }, sp), tl = Math.round(adult * clamp(pct + n * sd, 15, 130) / 100);
+  const sd = sp.kind === 'snail' || sp.surfaces ? 2 : 3;
+  const adult = fishTL({ sex: f.sex }, sp), tl = Math.round(adult * clamp(pct + n * sd, 15, Math.max(pct, 100) + 2 * sd) / 100);
   if (tl === adult) delete f.tl; else f.tl = tl;
 }
 

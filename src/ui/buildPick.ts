@@ -25,7 +25,7 @@ export const onBuildPicked = (fn: (e: BuildPicked) => void) => { listeners.add(f
 /** The build's tank with its animals scattered (a fixed seed per build: the picture does not change from one open to the next). */
 export function placedSetup(b: Build): TankSetup {
   const T = structuredClone(b.setup);
-  shuffleFish(T, rng(7 + b.id.length * 31 + T.fish.length), undefined, 92);
+  shuffleFish(T, rng(7 + b.id.length * 31 + T.fish.length), undefined, 100);
   T.camera = { ...T.camera, az: 28, el: 16, zoom: 0.8 };
   return T;
 }
