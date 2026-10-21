@@ -1,0 +1,28 @@
+/* Species data table (species-data.html, internal): same tokens as the model review page */
+:root { --bg:#eef0f3; --panel:#fff; --ink:#1d2330; --muted:#5d6676; --line:#dde1e7; --accent:#1f6feb; --warn:#a85f00; --chip:#f3f5f8; color-scheme: light }
+@media (prefers-color-scheme: dark) { :root { --bg:#15181e; --panel:#1d2129; --ink:#e6e9ef; --muted:#9aa3b2; --line:#2f3540; --accent:#5b9bff; --warn:#f0a43a; --chip:#262b35; color-scheme: dark } }
+* { box-sizing: border-box }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 13px/1.35 system-ui, sans-serif }
+header { position: sticky; top: 0; left: 0; z-index: 5; padding: 8px 16px; background: var(--panel); border-bottom: 1px solid var(--line) }
+h1 { margin: 0; font-size: 18px } .tag { font-size: 11px; font-weight: 600; color: var(--warn); border: 1px solid var(--warn); border-radius: 4px; padding: 1px 6px; vertical-align: middle }
+.hint { color: var(--muted); font-size: 12px }
+.bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 6px }
+input[type=search], select { padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); font: inherit }
+input[type=search] { width: 260px }
+button { padding: 5px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--chip); color: var(--ink); font: inherit; cursor: pointer }
+button.on { background: var(--accent); color: #fff; border-color: var(--accent) }
+.seg { display: inline-flex } .seg button { border-radius: 0 } .seg button:first-child { border-radius: 6px 0 0 6px } .seg button:last-child { border-radius: 0 6px 6px 0 }
+.groups button { font-size: 12px; padding: 3px 8px }
+#wrap { overflow: auto; max-height: calc(100vh - 130px) }
+table { border-collapse: separate; border-spacing: 0; background: var(--panel); min-width: 100% }
+th, td { padding: 3px 8px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); white-space: nowrap; text-align: right }
+td.l, th.l { text-align: left }
+thead th { position: sticky; top: 0; z-index: 3; background: var(--chip); cursor: pointer; user-select: none; font-weight: 600; vertical-align: bottom }
+thead tr.g th { top: 0; text-align: left; font-size: 11px; color: var(--muted); cursor: default; border-bottom: 0 }
+thead tr.h th { top: 22px }
+th.sticky, td.sticky { position: sticky; left: 0; z-index: 2; background: var(--panel); text-align: left; font-weight: 600; box-shadow: 1px 0 0 var(--line) }
+thead th.sticky { z-index: 4; background: var(--chip) }
+tbody tr:hover td { background: var(--chip) } tbody tr:hover td.sticky { background: var(--chip) }
+td .m { color: var(--muted); font-size: 11px } td.na { color: var(--muted) }
+th.sorted::after { content: " \25B2" } th.sorted.desc::after { content: " \25BC" }
+tr.sub td { background: var(--chip); font-style: italic }

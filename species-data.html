@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Species data · TankLook (internal)</title>
+<link rel="stylesheet" href="./src/review/species-data.css">
+</head>
+<body>
+<header>
+  <h1>Species data <span class="tag">internal · dev server only, not in the build</span></h1>
+  <div id="meta" class="hint"></div>
+  <div class="bar">
+    <input id="filter" type="search" placeholder="Filter by name, id, category" aria-label="Filter species">
+    <select id="cat" aria-label="Category"></select>
+    <span class="seg" role="group" aria-label="Units">
+      <button data-units="us" class="on">US units</button><button data-units="metric">Metric</button>
+    </span>
+    <button id="copy">Copy as TSV</button>
+    <span id="count" class="hint"></span>
+  </div>
+  <div id="groups" class="bar groups"></div>
+</header>
+<main><div id="wrap"><table id="t"></table></div></main>
+<script type="module" src="./src/review/species-data.ts"></script>
+</body>
+</html>
