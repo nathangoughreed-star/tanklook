@@ -35,7 +35,7 @@ Rule from Nathan 2026-10-20: he cannot judge the biology; trust the research, es
   "grazers per tank size" figures (Top Shelf: 2-3 turbos per 20-30 gal) and how much supplementary feeding (nori, wafers)
   lifts them, for turbo, nerite, trumpet, oto, bristlenose, SAE and amano; only with stated numbers.
 
-## Proposed: tank-minimum geometry (lane MX, 2026-10-21; WAITING for Nathan)
+## Tank-minimum geometry (lane MX, 2026-10-21; MX1-MX9 DECIDED by Nathan the same day)
 
 Data: research/sourcing/tank-minimum/M1-M9.json (quotes re-fetched: <batch>.verify.json), merged by
 `node scripts/tank-min-sources.mjs` into summary.json and table.md; write-up research/tank-minimum-sources.md. Picks already
@@ -48,7 +48,33 @@ juvenile figures. "Ours" = today's `minLengthMm` / `minL`. Each item below eithe
   Recommended marks and cannot fail; the required minimum then falls back to a DERIVED (est) footprint from the gallon figure.
   Proposal: follow the wording (Recommended), because SF uses both phrasings deliberately. Alternative: count SF's aquarium-size
   line as its minimum whatever the verb.
-- **MX2 Sourced length is LONGER than ours (new failures).** Neon 17.5 -> 23.5 in (SF 60 x 30 cm, "recommended", see MX1); betta
+- **MX1 DECIDED (Nathan 2026-10-21):** "recommended gets the bar into the green happy zone, lower than recommended allowed but
+  give the yellow bar". So Recommended = the green line; between minimum and Recommended = yellow (allowed); below minimum = red.
+  SF "is recommended" footprints are green lines. Their red line is the lowest well-supported figure, which can be another page's
+  gallons turned into length via the catalogue tank (derived, est) when no page states a shorter geometry.
+- **MX2 REVISED (2026-10-21, after Nathan asked "why such a large change? shouldn't we weight the sources together?").** Why
+  large: today's lengths were estimates, and the new ones are mostly ONE Seriously Fish footprint, sometimes for a bigger group.
+  Weighting without averaging (Decision 5) = MX1's two lines: lowest well-supported = red line, stricter credible = green line.
+  Proposed red / green in inches (ours today): neon 20 derived from 10 gal (FKW) / 23.5 SF (17.5); betta 16 derived from 5 gal /
+  17.5 SF (12); bronze cory 30 derived from 20 gal / 31.5 SF (23.5); danio 20 derived from 10 gal for 5 fish / 35.5 SF for 8-10
+  (23.5); boesemani 47 (three pages agree) (35.5); honey gourami 16 derived from 5 gal / 23.5 SF (17.5); bolivian ram 35.5 SF pair /
+  47 SF group of 6-8 (23.5); clown loach 59 Guidarium / 71 SF (47); yellow tang 48 derived from 100 gal (LiveAquaria) / 72 (Saltwater
+  Aquarium Blog) (47); coral beauty 48 derived from 70 gal (two pages); the 47 in page (Gensou) is low-credibility and cannot be
+  re-fetched, so it is dropped (35.5).
+- **MX2-MX9 DECIDED (Nathan 2026-10-21: "yes, apply that rule and push. I agree with your recommendations for these open
+  questions").** Applied in `scripts/tank-min-sources.mjs` (summary.json `lines`: red / green / heightRed / heightGreen / depth):
+  the red / green rule above for every species; MX3 adopted by the rule (cockatoo 23.5 for a pair, comet 35.5 derived from 30 gal,
+  axolotl 17.5 red / 35.5 green); MX4 swordtail red = 31.5 in length AND 558 sq in floor area, no green; MX5 kuhli 23.5 x 12 red,
+  31.5 green; MX6 aquatic invertebrates (shrimp, snails, hermit, turbo, cleaner shrimp) clearance only, royal gramma derived
+  35.5 x 17.5; MX7 depth notes only (angel Recommended tank height 19.5 in, discus advisory 18 in, ADF max water 24 in, kuhli not
+  assessed); MX8 crested gecko (and the harlequin, same species) 18 x 18 floor with 24 in tall red / 36 in green, green anole
+  ReptiFiles 24 x 24 x 24, fire-bellied toad 12 in tall red / 18 green, chaco 20 x 10 red / 28 x 28 derived green, ball python
+  48 x 24 x 24; MX9 volume = advisory, the lowest well-supported figure.
+  Rule details settled while applying: a gallon figure becomes the SMALLEST catalogue tank holding at least that volume (70 gal ->
+  75 gal, 48 in); low-credibility gallon pages never set a line; land animals do not use aquarium tanks once any page states
+  geometry; a "recommended"-only page with no minimum gives a green line and no red (dart frog, fire-bellied toad footprint).
+  Regal jumper: the only footprint page (PetSmart 4 x 4 in) is low-credibility, so it has no line (MX3's 4 in is NOT adopted).
+- **MX2 (first version, superseded by the revision above) Sourced length is LONGER than ours (new failures).** Neon 17.5 -> 23.5 in (SF 60 x 30 cm, "recommended", see MX1); betta
   12 -> 17.5 in (SF 45 x 30); bronze cory 23.5 -> 31.5 in (SF 80 x 30, "recommended"); zebra danio 23.5 -> 35.5 in (SF 90 x 30, for
   a group of 8-10); boesemani 35.5 -> 47 in (SF 120 cm, two more pages say 4 ft); honey gourami 17.5 -> 23.5 in (SF 60 x 30);
   bolivian ram 23.5 -> 35.5 in (SF 90 x 45); clown loach 47 -> 71 in (SF 180 x 60 for an adult group; Guidarium 150 cm = 59 in);

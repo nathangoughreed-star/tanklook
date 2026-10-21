@@ -98,11 +98,13 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
   tokens (quote 0.70 M for M2-M9, actual 0.69 M).
 - Found: 55 sourced footprints, 7 length-only, 22 derived (est) from gallons (incl. all invertebrates, which Decision 3 exempts);
   no page states a required water depth for any species; angelfish tank height 50 cm = Recommended; ADF max depth 24 in advisory.
-- **Waiting on Nathan:** proposals MX1-MX9 in research/sourcing/decisions.md (SF "recommended" footprints, 10 longer and 4 shorter
-  lengths than ours, swordtail, shrimp / gramma, land-animal heights).
-- **For MM:** load summary.json: kind `min` + mark sourced = required; `rec` / `recommended` = Recommended mark; `derived (est)` =
-  derived wording; `advisory` never fails. Do not load MX1-MX8 numbers that flip pass / fail before Nathan answers. No src/ files
-  touched by MX.
+- **MX1-MX9 DECIDED (Nathan 2026-10-21, research/sourcing/decisions.md):** two lines per species. RED = minimum (below = red bar,
+  fails), GREEN = Recommended (at or above = green), between = yellow, allowed. Red = lowest well-supported figure (gallons turned
+  into the smallest catalogue tank holding them compete when fewer than two pages state geometry, marked DERIVED est); green =
+  the strictest credible geometry above it. Never averaged. Aquatic invertebrates: clearance only.
+- **For MM:** load `research/sourcing/tank-minimum/summary.json` `species.<id>.lines` (red, green, heightRed, heightGreen, depth,
+  why); the field list is in research/tank-minimum-sources.md "For lane MM". Volume = advisory only (`measures.volume`). No src/
+  files touched by MX.
 
 ## Lane MW: Minutes a Week (2026-10-21, branch `mw`, worktree `.claude/worktrees/mw`; Nathan approved the proposal in chat)
 - Full write-up with the numbers and sources: `research/minutes-a-week.md` (Result section); agent batches `research/sourcing/minutes/` (not in the globbed folder: they use `items`, not `species`).
