@@ -13,7 +13,7 @@ const CASES: Record<string, AnimalCount[]> = {
   neons: [{ species: 'neon', n: 6 }],
   kribs: [{ species: 'kribensis', n: 2 }],
   oscar: [{ species: 'oscar', n: 1 }],
-  danios: [{ species: 'danio', n: 8 }, { species: 'bristlenose', n: 1 }],
+  danios: [{ species: 'danio', n: 10 }, { species: 'bristlenose', n: 1 }], // 10 since S196 (2026-10-21): 8 + a pleco fit 15 gal, in line with the experts (5 in 10 gal, 6 in 60 L: research/expert-curve.json)
   reef: [{ species: 'ocellaris', n: 2 }],
 };
 const fit = (k: string) => tankFor(CASES[k])!;

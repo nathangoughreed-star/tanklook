@@ -1,0 +1,927 @@
+[
+ {
+  "name": "Aquarium Co-Op 5 gal pea puffer",
+  "source": "Aquarium Co-Op",
+  "author": "Aquarium Co-Op staff (no byline)",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/5-gallon-fish",
+  "gal": 5,
+  "dims_in": null,
+  "salt": false,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "peapuffer",
+    1,
+    1
+   ]
+  ],
+  "standIns": [],
+  "quote": "we generally recommend only one pea puffer in a 5-gallon fish tank",
+  "notes": "Single-species option from a top-5 nano list."
+ },
+ {
+  "name": "Aquarium Co-Op 5 gal green neon school",
+  "source": "Aquarium Co-Op",
+  "author": "Aquarium Co-Op staff (no byline)",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/5-gallon-fish",
+  "gal": 5,
+  "dims_in": null,
+  "salt": false,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "neon",
+    6,
+    6
+   ]
+  ],
+  "standIns": [
+   "Green neon tetra as neon"
+  ],
+  "quote": "get a school of six and provide lots of shelter",
+  "notes": "Single-species option from a top-5 nano list; green neon is slightly smaller than neon."
+ },
+ {
+  "name": "Aquarium Co-Op 10 gal centerpiece gourami",
+  "source": "Aquarium Co-Op",
+  "author": "Aquarium Co-Op staff (no byline)",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/7-best-fish-tank-ideas-for-10-gallon-aquarium",
+  "gal": 10,
+  "dims_in": null,
+  "salt": false,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "honeygourami",
+    1,
+    1
+   ],
+   [
+    "ember",
+    6,
+    8
+   ],
+   [
+    "pygmycory",
+    6,
+    8
+   ]
+  ],
+  "standIns": [],
+  "quote": "Surround the gourami with six to eight schooling nano fish that have a different color.",
+  "notes": "Page says gourami (powder blue or honey) + 6-8 nano schooling fish (ember or neon) + 4-6 panda or 6-8 pygmy corydoras; trumpet/nerite snails counts unspecified (omitted)."
+ },
+ {
+  "name": "Aquarium Co-Op 10 gal cookie cutter betta",
+  "source": "Aquarium Co-Op",
+  "author": "Aquarium Co-Op staff (no byline)",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/cookie-cutter-for-10-gallon-aquarium",
+  "gal": 10,
+  "dims_in": null,
+  "salt": false,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "betta",
+    1,
+    1
+   ],
+   [
+    "chili",
+    8,
+    8
+   ],
+   [
+    "pandacory",
+    4,
+    5
+   ],
+   [
+    "nerite",
+    2,
+    2
+   ]
+  ],
+  "standIns": [],
+  "quote": "A centerpiece fish is a colorful or unusual-looking fish that really captures the attention of the viewer",
+  "notes": "Composed from the page's pick-one menus (centerpiece/middle/bottom/algae eater): betta, chili rasbora 8, panda cory 4-5, nerite 2."
+ },
+ {
+  "name": "Aquarium Co-Op 10 gal aquascape cardinals",
+  "source": "Aquarium Co-Op",
+  "author": "Aquarium Co-Op staff (no byline)",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/cookie-cutter-for-10-gallon-aquarium",
+  "gal": 10,
+  "dims_in": null,
+  "salt": false,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "cardinal",
+    6,
+    6
+   ],
+   [
+    "pygmycory",
+    6,
+    6
+   ],
+   [
+    "nerite",
+    2,
+    2
+   ]
+  ],
+  "standIns": [],
+  "quote": "let's pick a schooling fish for the upper half of the aquarium, bottom dwellers for the lower half",
+  "notes": "Composed from the page's pick-one menus: cardinal 6, pygmy cory 6, nerite 2."
+ },
+ {
+  "name": "Aquarium Co-Op 10 gal white cloud colony",
+  "source": "Aquarium Co-Op",
+  "author": "Aquarium Co-Op staff (no byline)",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/cookie-cutter-for-10-gallon-aquarium",
+  "gal": 10,
+  "dims_in": null,
+  "salt": false,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "whitecloud",
+    10,
+    10
+   ]
+  ],
+  "standIns": [],
+  "quote": "sometimes it can be quite rewarding to set up an aquarium with only one species",
+  "notes": "Species-only option, 10 fish."
+ },
+ {
+  "name": "Aquarium Co-Op 10 gal fancy guppy colony",
+  "source": "Aquarium Co-Op",
+  "author": "Aquarium Co-Op staff (no byline)",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/cookie-cutter-for-10-gallon-aquarium",
+  "gal": 10,
+  "dims_in": null,
+  "salt": false,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "guppy",
+    6,
+    6
+   ]
+  ],
+  "standIns": [],
+  "quote": "sometimes it can be quite rewarding to set up an aquarium with only one species",
+  "notes": "Species-only option: 2 males, 4 females."
+ },
+ {
+  "name": "Aquarium Co-Op 10 gal pea puffers",
+  "source": "Aquarium Co-Op",
+  "author": "Aquarium Co-Op staff (no byline)",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/cookie-cutter-for-10-gallon-aquarium",
+  "gal": 10,
+  "dims_in": null,
+  "salt": false,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "peapuffer",
+    3,
+    3
+   ]
+  ],
+  "standIns": [],
+  "quote": "sometimes it can be quite rewarding to set up an aquarium with only one species",
+  "notes": "Species-only option, 3 pea puffers."
+ },
+ {
+  "name": "Aquarium Co-Op 10 gal African dwarf frogs",
+  "source": "Aquarium Co-Op",
+  "author": "Aquarium Co-Op staff (no byline)",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/cookie-cutter-for-10-gallon-aquarium",
+  "gal": 10,
+  "dims_in": null,
+  "salt": false,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "adf",
+    5,
+    5
+   ]
+  ],
+  "standIns": [],
+  "quote": "sometimes it can be quite rewarding to set up an aquarium with only one species",
+  "notes": "Species-only option, 5 frogs (may add 1-2 mystery snails; omitted)."
+ },
+ {
+  "name": "Aquarium Co-Op 10 gal apistogramma pair",
+  "source": "Aquarium Co-Op",
+  "author": "Aquarium Co-Op staff (no byline)",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/cookie-cutter-for-10-gallon-aquarium",
+  "gal": 10,
+  "dims_in": null,
+  "salt": false,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "cockatoo",
+    2,
+    2
+   ]
+  ],
+  "standIns": [],
+  "quote": "sometimes it can be quite rewarding to set up an aquarium with only one species",
+  "notes": "Species-only option, breeding pair of Apistogramma."
+ },
+ {
+  "name": "Aquarium Co-Op 20 gal neon school look-good",
+  "source": "Aquarium Co-Op",
+  "author": "Aquarium Co-Op staff (no byline)",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/5-best-fish-tank-ideas-for-a-20-gallon-aquarium",
+  "gal": 20,
+  "dims_in": null,
+  "salt": false,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "neon",
+    12,
+    20
+   ],
+   [
+    "kuhli",
+    3,
+    4
+   ]
+  ],
+  "standIns": [],
+  "quote": "Then drop in a school of 12 to 20 neon tetras for maximum impact.",
+  "notes": "Cherry shrimp and nerite snail in the same list have no counts (omitted)."
+ },
+ {
+  "name": "Aquarium Co-Op 20 gal unheated danios",
+  "source": "Aquarium Co-Op",
+  "author": "Aquarium Co-Op staff (no byline)",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/5-best-fish-tank-ideas-for-a-20-gallon-aquarium",
+  "gal": 20,
+  "dims_in": null,
+  "salt": false,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "danio",
+    12,
+    15
+   ],
+   [
+    "bronzecory",
+    5,
+    6
+   ]
+  ],
+  "standIns": [
+   "Salt and pepper cory as bronzecory"
+  ],
+  "quote": "Get 12 to 15 of them to create a kaleidoscope of colors zooming around the tank",
+  "notes": "Corydoras 5-6 salt and pepper; invertebrates unspecified."
+ },
+ {
+  "name": "Aquarium Co-Op 20 gal bristlenose breeding",
+  "source": "Aquarium Co-Op",
+  "author": "Aquarium Co-Op staff (no byline)",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/5-best-fish-tank-ideas-for-a-20-gallon-aquarium",
+  "gal": 20,
+  "dims_in": null,
+  "salt": false,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "bristlenose",
+    2,
+    2
+   ]
+  ],
+  "standIns": [],
+  "quote": "In order for breeding to occur, you need at least one male and one female.",
+  "notes": "Minimum of 2 stated; no maximum."
+ },
+ {
+  "name": "Aquarium Co-Op 29 gal angelfish pair",
+  "source": "Aquarium Co-Op",
+  "author": "Aquarium Co-Op staff (no byline)",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/5-best-fish-tank-ideas-for-a-29-gallon-aquarium",
+  "gal": 29,
+  "dims_in": null,
+  "salt": false,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "angel",
+    2,
+    2
+   ]
+  ],
+  "standIns": [],
+  "quote": "get a nice-looking male and female to pair up in this species-only setup",
+  "notes": "Breeding project, species-only pair."
+ },
+ {
+  "name": "Aquarium Co-Op 29 gal single fancy goldfish",
+  "source": "Aquarium Co-Op",
+  "author": "Aquarium Co-Op staff (no byline)",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/5-best-fish-tank-ideas-for-a-29-gallon-aquarium",
+  "gal": 29,
+  "dims_in": null,
+  "salt": false,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "goldfish",
+    1,
+    1
+   ]
+  ],
+  "standIns": [],
+  "quote": "choosing only one fancy goldfish for this setup",
+  "notes": "Compare Aqueon 29 gal goldfish 3-4."
+ },
+ {
+  "name": "Aquarium Co-Op 20 gal single fancy goldfish (minimum rule)",
+  "source": "Aquarium Co-Op",
+  "author": "Aquarium Co-Op staff (no byline)",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/care-guide-for-fancy-goldfish",
+  "gal": 20,
+  "dims_in": null,
+  "salt": false,
+  "intent": "full",
+  "stock": [
+   [
+    "goldfish",
+    1,
+    1
+   ]
+  ],
+  "standIns": [],
+  "quote": "we recommend 20 gallons of water volume per goldfish, with at least 10 gallons added for every other goldfish.",
+  "notes": "Minimum-tank rule: 1 fancy goldfish per 20 gal, +10 gal per extra fish (30 gal = 2, 40 gal = 3)."
+ },
+ {
+  "name": "Aquarium Co-Op 40 gal saulosi colony",
+  "source": "Aquarium Co-Op",
+  "author": "Aquarium Co-Op staff (no byline)",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/40-gallon-fish",
+  "gal": 40,
+  "dims_in": null,
+  "salt": false,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "demasoni",
+    5,
+    7
+   ]
+  ],
+  "standIns": [
+   "Saulosi cichlid as demasoni (similar 3 in mbuna)"
+  ],
+  "quote": "we recommend getting 1\u20132 males and 4\u20135 females.",
+  "notes": "Species-only Malawi colony, 5-7 fish total."
+ },
+ {
+  "name": "Aquarium Co-Op 40 gal flowerhorn",
+  "source": "Aquarium Co-Op",
+  "author": "Aquarium Co-Op staff (no byline)",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/40-gallon-fish",
+  "gal": 40,
+  "dims_in": null,
+  "salt": false,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "oscar",
+    1,
+    1
+   ]
+  ],
+  "standIns": [
+   "Flowerhorn cichlid as oscar"
+  ],
+  "quote": "we recommend only keeping one in the 40-gallon tank with no other tank mates.",
+  "notes": "Single large cichlid; adult size comparable to oscar."
+ },
+ {
+  "name": "Aquarium Co-Op 55 gal angelfish school",
+  "source": "Aquarium Co-Op",
+  "author": "Aquarium Co-Op staff (no byline)",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/55-gallon-fish",
+  "gal": 55,
+  "dims_in": null,
+  "salt": false,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "angel",
+    6,
+    10
+   ]
+  ],
+  "standIns": [],
+  "quote": "This school can consist of 6\u201310 silver, black, koi, or other type of angel.",
+  "notes": "Page adds a smaller schooling species (lemon tetra or cherry barb) with no count; omitted."
+ },
+ {
+  "name": "Aquarium Co-Op 55 gal tiger barbs",
+  "source": "Aquarium Co-Op",
+  "author": "Aquarium Co-Op staff (no byline)",
+  "url": "https://www.aquariumcoop.com/blogs/aquarium/55-gallon-fish",
+  "gal": 55,
+  "dims_in": null,
+  "salt": false,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "tigerbarb",
+    6,
+    10
+   ]
+  ],
+  "standIns": [],
+  "quote": "Since barbs are schooling fish, get at least 6\u201310 fish per species.",
+  "notes": "Tiger barb tank; 6-10 per species."
+ },
+ {
+  "name": "Fishkeeping World 10 gal tetra centerpiece",
+  "source": "Fishkeeping World",
+  "author": "Robert Woods",
+  "url": "https://fishkeepingworld.com/10-gallon-fish-tank/",
+  "gal": 10,
+  "dims_in": null,
+  "salt": false,
+  "intent": "light",
+  "stock": [
+   [
+    "neon",
+    6,
+    8
+   ],
+   [
+    "betta",
+    1,
+    1
+   ],
+   [
+    "pygmycory",
+    6,
+    6
+   ],
+   [
+    "nerite",
+    1,
+    2
+   ]
+  ],
+  "standIns": [],
+  "quote": "A tetra school plus one centerpiece fish and a few bottom dwellers is a common pattern",
+  "notes": "Article calls 6-8 neons borderline for 10 gal; 'one betta or one dwarf gourami'; pygmy cory '6+' (max unspecified)."
+ },
+ {
+  "name": "Fishkeeping World 10 gal ember school",
+  "source": "Fishkeeping World",
+  "author": "Robert Woods",
+  "url": "https://fishkeepingworld.com/10-gallon-fish-tank/",
+  "gal": 10,
+  "dims_in": null,
+  "salt": false,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "ember",
+    8,
+    10
+   ]
+  ],
+  "standIns": [],
+  "quote": "8-10 for ember tetras in a heavily planted tank",
+  "notes": "Heavily planted condition."
+ },
+ {
+  "name": "Fishkeeping World 30 gal community",
+  "source": "Fishkeeping World",
+  "author": "Robert Woods",
+  "url": "https://fishkeepingworld.com/30-gallon-fish-tank/",
+  "gal": 30,
+  "dims_in": null,
+  "salt": false,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "cherrybarb",
+    6,
+    6
+   ],
+   [
+    "gourami",
+    1,
+    1
+   ],
+   [
+    "bristlenose",
+    1,
+    1
+   ]
+  ],
+  "standIns": [],
+  "quote": "An example of a community tank includes six cherry barbs, one pearl gourami, and a bristlenose pleco.",
+  "notes": ""
+ },
+ {
+  "name": "Fishkeeping World 40 gal community",
+  "source": "Fishkeeping World",
+  "author": "Robert Woods",
+  "url": "https://fishkeepingworld.com/40-gallon-aquarium/",
+  "gal": 40,
+  "dims_in": null,
+  "salt": false,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "neon",
+    8,
+    10
+   ],
+   [
+    "guppy",
+    5,
+    5
+   ],
+   [
+    "danio",
+    6,
+    6
+   ],
+   [
+    "bristlenose",
+    1,
+    1
+   ],
+   [
+    "dwarfgourami",
+    1,
+    1
+   ]
+  ],
+  "standIns": [],
+  "quote": "keep a ratio of one male to two or three females to limit harassment",
+  "notes": "Quote is the guppy note; the mixed-species counts are the article's example. Article warns danios may not suit a calm tank."
+ },
+ {
+  "name": "Fishkeeping World 40 gal guppies only",
+  "source": "Fishkeeping World",
+  "author": "Robert Woods",
+  "url": "https://fishkeepingworld.com/40-gallon-aquarium/",
+  "gal": 40,
+  "dims_in": null,
+  "salt": false,
+  "intent": "full",
+  "stock": [
+   [
+    "guppy",
+    20,
+    20
+   ]
+  ],
+  "standIns": [],
+  "quote": "In a species-only 40-gallon tank you can keep about 20 of them",
+  "notes": "Single-species capacity figure."
+ },
+ {
+  "name": "Fishkeeping World 40 gal mollies only",
+  "source": "Fishkeeping World",
+  "author": "Robert Woods",
+  "url": "https://fishkeepingworld.com/40-gallon-aquarium/",
+  "gal": 40,
+  "dims_in": null,
+  "salt": false,
+  "intent": "full",
+  "stock": [
+   [
+    "molly",
+    8,
+    10
+   ]
+  ],
+  "standIns": [],
+  "quote": "You can keep 8-10 of them in a tank of this volume.",
+  "notes": "Single-species capacity figure."
+ },
+ {
+  "name": "Fishkeeping World 40 gal fancy goldfish",
+  "source": "Fishkeeping World",
+  "author": "Robert Woods",
+  "url": "https://fishkeepingworld.com/40-gallon-aquarium/",
+  "gal": 40,
+  "dims_in": null,
+  "salt": false,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "goldfish",
+    2,
+    3
+   ]
+  ],
+  "standIns": [],
+  "quote": "each goldfish needs about 10 extra gallons after the first 20",
+  "notes": "Quote paraphrases the article's goldfish note (two or three fish)."
+ },
+ {
+  "name": "Aquarium Source 40 gal peaceful community",
+  "source": "Aquarium Source",
+  "author": "Aquarium Source Editorial Staff",
+  "url": "https://www.aquariumsource.com/40-gallon-tank-stocking-ideas/",
+  "gal": 40,
+  "dims_in": null,
+  "salt": false,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "cardinal",
+    12,
+    15
+   ],
+   [
+    "bronzecory",
+    6,
+    8
+   ],
+   [
+    "honeygourami",
+    1,
+    1
+   ]
+  ],
+  "standIns": [
+   "Unspecified single-species Corydoras as bronzecory"
+  ],
+  "quote": "The goal is to create activity at different levels of the water column",
+  "notes": ""
+ },
+ {
+  "name": "Aquarium Source 40 gal planted ember aquascape",
+  "source": "Aquarium Source",
+  "author": "Aquarium Source Editorial Staff",
+  "url": "https://www.aquariumsource.com/40-gallon-tank-stocking-ideas/",
+  "gal": 40,
+  "dims_in": null,
+  "salt": false,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "ember",
+    15,
+    20
+   ],
+   [
+    "cherryshrimp",
+    10,
+    20
+   ],
+   [
+    "nerite",
+    1,
+    3
+   ]
+  ],
+  "standIns": [],
+  "quote": "In this build, plants and hardscape become the main attraction.",
+  "notes": ""
+ },
+ {
+  "name": "Aquarium Source 40 gal German blue ram",
+  "source": "Aquarium Source",
+  "author": "Aquarium Source Editorial Staff",
+  "url": "https://www.aquariumsource.com/40-gallon-tank-stocking-ideas/",
+  "gal": 40,
+  "dims_in": null,
+  "salt": false,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "gbr",
+    1,
+    2
+   ],
+   [
+    "rummynose",
+    12,
+    15
+   ],
+   [
+    "bristlenose",
+    1,
+    1
+   ]
+  ],
+  "standIns": [],
+  "quote": "This build focuses on individual fish behavior rather than maximum species variety.",
+  "notes": "1 individual or established pair of rams; pleco 'with caution'."
+ },
+ {
+  "name": "Aqueon 29 gal fancy goldfish",
+  "source": "Aqueon",
+  "author": "Aqueon (Central Aquatics, no byline)",
+  "url": "https://www.aqueon.com/articles/best-beginner-fish-by-tank-size",
+  "gal": 29,
+  "dims_in": null,
+  "salt": false,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "goldfish",
+    3,
+    4
+   ]
+  ],
+  "standIns": [],
+  "quote": "A 29-gallon aquarium would be a good home for 3-4 of the fancy Ryukin or Oranda varieties.",
+  "notes": "Compare Aquarium Co-Op 29 gal single goldfish."
+ },
+ {
+  "name": "Gensou 55 gal small-tetra planted",
+  "source": "Gensou Aquascaping",
+  "author": "emilynakatani",
+  "url": "https://gensou.sg/?p=34821",
+  "gal": 55,
+  "dims_in": null,
+  "salt": false,
+  "intent": "full",
+  "stock": [
+   [
+    "cardinal",
+    30,
+    30
+   ],
+   [
+    "ember",
+    20,
+    20
+   ]
+  ],
+  "standIns": [],
+  "quote": "Bioload math is directional, not absolute.",
+  "notes": "Vendor guide sized at ~130 cm total fish length; article says 15% reduction for warm climates and starting at 60%."
+ },
+ {
+  "name": "Gensou 55 gal mixed community",
+  "source": "Gensou Aquascaping",
+  "author": "emilynakatani",
+  "url": "https://gensou.sg/?p=34821",
+  "gal": 55,
+  "dims_in": null,
+  "salt": false,
+  "intent": "full",
+  "stock": [
+   [
+    "harlequin",
+    15,
+    15
+   ],
+   [
+    "bronzecory",
+    10,
+    10
+   ],
+   [
+    "bristlenose",
+    1,
+    1
+   ]
+  ],
+  "standIns": [
+   "Sterbai cory as bronzecory"
+  ],
+  "quote": "Bioload math is directional, not absolute.",
+  "notes": "Vendor guide sized at ~132 cm total fish length."
+ },
+ {
+  "name": "Gensou 55 gal combo A rummynose angel",
+  "source": "Gensou Aquascaping",
+  "author": "emilynakatani",
+  "url": "https://gensou.sg/?p=34821",
+  "gal": 55,
+  "dims_in": null,
+  "salt": false,
+  "intent": "full",
+  "stock": [
+   [
+    "rummynose",
+    25,
+    25
+   ],
+   [
+    "bronzecory",
+    10,
+    10
+   ],
+   [
+    "angel",
+    2,
+    2
+   ],
+   [
+    "amano",
+    15,
+    15
+   ]
+  ],
+  "standIns": [
+   "Sterbai cory as bronzecory"
+  ],
+  "quote": "Bioload math is directional, not absolute.",
+  "notes": "Article calls this a stretch example (~184 cm, over its planted budget) needing weekly 40% water changes."
+ },
+ {
+  "name": "Bulk Reef Supply 20 gal starter",
+  "source": "Bulk Reef Supply",
+  "author": "Robert Farnsworth",
+  "url": "https://www.bulkreefsupply.com/content/post/top-10-beginner-fish-beginners-guide-ep-31a",
+  "gal": 20,
+  "dims_in": null,
+  "salt": true,
+  "intent": "unspecified",
+  "stock": [
+   [
+    "ocellaris",
+    2,
+    2
+   ],
+   [
+    "firefish",
+    1,
+    1
+   ],
+   [
+    "royalgramma",
+    1,
+    1
+   ],
+   [
+    "watchman",
+    1,
+    1
+   ]
+  ],
+  "standIns": [
+   "Shrimp goby (paired with pistol shrimp) as watchman"
+  ],
+  "quote": "20 Gallon Starter Stocking List",
+  "notes": "Pistol shrimp (paired with the goby) has no count of its own and is ignored; clownfish are a mated pair."
+ },
+ {
+  "name": "Saltwater Aquarium Blog 40 gal damselfish display",
+  "source": "Saltwater Aquarium Blog",
+  "author": "Albert B Ulrich III",
+  "url": "https://www.saltwateraquariumblog.com/best-saltwater-fish-for-a-40-gallon-tank/",
+  "gal": 40,
+  "dims_in": null,
+  "salt": true,
+  "intent": "full",
+  "stock": [
+   [
+    "chromis",
+    9,
+    12
+   ]
+  ],
+  "standIns": [
+   "Generic damselfish as chromis"
+  ],
+  "quote": "Approximate 9-12 damsels in a 40-gallon tank would be a beautiful display.",
+  "notes": "Fish-only damsel tank."
+ },
+ {
+  "name": "Saltwater Aquarium Blog 55 gal damselfish display",
+  "source": "Saltwater Aquarium Blog",
+  "author": "Albert B Ulrich III",
+  "url": "https://www.saltwateraquariumblog.com/best-saltwater-fish-55-gallon-tank/",
+  "gal": 55,
+  "dims_in": null,
+  "salt": true,
+  "intent": "full",
+  "stock": [
+   [
+    "chromis",
+    15,
+    15
+   ]
+  ],
+  "standIns": [
+   "Generic damselfish as chromis"
+  ],
+  "quote": "A 55 gallon tank could house a lot of damsels\u2013perhaps 15 or more.",
+  "notes": "'15 or more'; fish-only damsel tank."
+ }
+]

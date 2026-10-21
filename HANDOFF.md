@@ -233,6 +233,22 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 - SB / ST: about 90 source disagreements wait for Nathan (research/sourcing/decisions.md); 305 inline engine numbers need a by-hand look. => chat SQ: Source Decisions (prompts/chat-source-decisions.md).
 - TV tank sizes: Walmart Marineland Portrait 5 deal removed 2026-10-20 (listing not available online); Amazon Aqueon SmartClean 20 size still a guess (listing gives a box size). SF sponge filter: Nathan to decide whether the fullness tile starts open on desktop (wait for S164 to land: both edit fullnessTile.ts).
 
+## S196: Expert stocking validation (2026-10-21, branch `s196`, worktree `.claude/worktrees/s196`)
+- **Published lists:** 37 lists (Aquarium Co-Op 20, Fishkeeping World 7, Aquarium Source 3, Gensou 3, Saltwater Aquarium Blog 2, BRS 1, Aqueon 1; 5-55 gal, no 75/125) in `research/expert-stockings.json`. `GEN_EXPERT=1 npx vitest run test/expert.test.ts` writes `research/expert-stockings.md` (table + findings; hand-written findings survive a rerun).
+- **Nathan's decisions 2026-10-21: trust the published experts over AqAdvisor; space has diminishing returns per fish.** Found: each SPACE_FACTOR row was fitted at ONE count (mostly 20 fish in 55 gal) and applied linearly.
+- **Engine (on top of lane HB):** WATER space per species: above SCHOOL_REF 10 fish a group of n counts 10 x (n/10)^SCHOOL_EXP 0.85; up to 10, every fish counts in full. Floor and filtration stay linear. Animals under 2 g count x TINY_EXPERT 0.8. Provenance and the sources.json entry `expert-stockings` are added.
+  - Grid on the pre-HB base: the only setting that lowered both scatters (experts sdlog 0.40 -> 0.37, AqAdvisor-24 0.34 -> 0.23).
+  - Rejected: class factors instead of AqAdvisor rows for nano fish (sdlog 0.47).
+  - Rejected: the uncapped curve (1 fish = 1.41x). Only AqAdvisor reads lone fish higher; it put 1 goldfish in 20 gal at 111 % and a clown pair at 100 % against the experts' rules. Coordinator 7's concern, 2026-10-21.
+- **Moved numbers on the HB base (published max, before -> after):**
+  - Median 81 -> 74 %, over 100 %: 13 -> 11.
+  - Nano schools fall: 6 neon in 5 gal 114 -> 91, cardinals in 10 gal 120 -> 96, 20 neon in 20 gal 134 -> 105, 15 danio in 20 gal 145 -> 121, Gensou small tetras 88 -> 61.
+  - Singles and pairs are unchanged: 1 goldfish in 20 gal 79, clown pair 75, angel pair 63, flowerhorn 111, Aqueon 4 goldfish in 29 gal 223.
+  - Re-blessed: test/tankfit.test.ts `danios` case is now 10 danios + 1 bristlenose (was 8). 8 + a pleco now fit 15 gal, in line with the experts (5 danios in 10 gal, 6 in 60 L).
+  - Not from S196: on main the water readings rose about 1.4x since the S196 snapshot (goldfish space per fish x1.38). The Co-Op 10 gal betta set reads 238 % on main, 194 % after S196.
+- **Expert curve:** 73 count-vs-size points (`research/expert-curve.json` / `.md` / `.svg`). Within one source, count grows as gallons^0.79 (recommended 0.89, maximum 0.73), which confirms 0.85. Calibrating "full = 90 %" was NOT done: the experts' own full / max stockings read a 59 % median (pre-HB) against 101-126 % for their nano lists. The low maximums are temperament caps (dwarf gourami, angel, chromis, barbs).
+- **Next (waiting on Nathan):** temperament caps, sketch `research/temperament-cap-sketch.md` (size-scaled cap per territorial species, warning only, separate from the percent). Data run 2 x ~150-180k Sonnet needs his yes.
+
 ## Source traceability (2026-10-20, side chat in the `stocking` worktree; Nathan: the defence against "AI slop")
 Goal: every advice number traces to a source, a fit, a stated derivation or a labelled assumption; never "made up".
 - `src/data/sources.json` = source registry (id, title, by, url, accessed, kind: primary / reference / consensus / tool / retailer / internal). Never register a page nobody opened.

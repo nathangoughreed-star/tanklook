@@ -68,16 +68,31 @@ export const LU_PER_L = 0.3;
 export function countsAgainstWater(sp: Species) { return sp.habitat !== 'land'; }
 export const SPACE_EXP = 0.45, SPACE_PER_L = 1 / 3.96; // 4.242 before the per-species factors (data/spacefactor.ts); /1.07 re-centres the 24 mixed combinations (median ours / AqAdvisor 1.00)
 /** Fitted-to-AqAdvisor multiplier on a species' space load (data/spacefactor.ts): its own row, else its class (tiny / mid / big fish, invert, amphibian). */
+/** Published stockings (research/expert-stockings.md, 2026-10-21; Nathan: trust the experts over AqAdvisor) read nano schools 100-145 %:
+ *  animals under 2 g count TINY_EXPERT of their AqAdvisor-fitted space. */
+export const TINY_EXPERT = 0.8;
 export function spaceFactor(sp: Species): number {
+  const g = massG(sp.id, sp.tl);
+  return spaceFactorAq(sp, g) * (g < 2 ? TINY_EXPERT : 1);
+}
+function spaceFactorAq(sp: Species, g: number): number {
   const own = SPACE_FACTOR[sp.id];
   if (own) return own[0];
   if (sp.salt) return 1;
-  const g = massG(sp.id, sp.tl), k = sp.cat === 'fw-invert' ? 'invert' : sp.cat === 'amphibian' ? 'amphibian' : sp.cat === 'fw-fish' ? (g < 2 ? 'tiny' : g < 30 ? 'mid' : 'big') : '';
+  const k = sp.cat === 'fw-invert' ? 'invert' : sp.cat === 'amphibian' ? 'amphibian' : sp.cat === 'fw-fish' ? (g < 2 ? 'tiny' : g < 30 ? 'mid' : 'big') : '';
   return SPACE_FACTOR_CLASS[k]?.[0] ?? 1;
 }
 // Snails crawl on the glass and substrate and take no swimming room (2026-10-21: the AqAdvisor fit read 10 trumpet snails as 109 % of a
 // 5 gal); their waste still counts in filtration, which is what limits the big ones (mystery snails).
 export const spaceOf = (sp: Species, tlMm: number) => sp.kind === 'snail' ? 0 : massG(sp.id, tlMm) ** SPACE_EXP * spaceFactor(sp);
+/** Water space is not linear in count (Nathan 2026-10-21): above SCHOOL_REF fish of one species a group of n takes
+ *  SCHOOL_REF x (n / SCHOOL_REF)^SCHOOL_EXP fish's worth of room, so later fish add less; up to SCHOOL_REF each fish counts in full
+ *  (only AqAdvisor reads lone fish higher; the experts' single-fish rules, e.g. one fancy goldfish per 20 gal, do not). Waste
+ *  (filtration) and floor stay linear.
+ *  Fit: published lists + 24 AqAdvisor combinations (research/expert-stockings.md); expert counts across tank sizes grow as
+ *  gallons^0.79 within one source (research/expert-curve.md). */
+export const SCHOOL_EXP = 0.85, SCHOOL_REF = 10;
+export const schoolScale = (n: number) => n > SCHOOL_REF ? (n / SCHOOL_REF) ** (SCHOOL_EXP - 1) : 1;
 /**
  * Floor (lane HB, research/habitat-model.md, Nathan's yes 2026-10-21): a bottom dweller uses FLOOR_SQIN_PER_IN sq in of floor per inch
  * of its length. Sources give 12-24 sq in per inch (Scotcat "six to eight inches of fish to every square foot of base area"; Seriously
@@ -164,8 +179,9 @@ export function stockingOf(S: TankSetup): Stocking {
     load += l;
     const c = by.get(sp.id) ?? { id: sp.id, name: sp.name, n: 0, load: 0, space: 0, share: 0, grams: 0, cls: metClass(sp), floor: 0, spaceFactor: spaceFactor(sp) };
     const fl = floorUseCm2(sp, f.tl ?? sp.tl);
-    c.n++; c.load += l; c.space += spaceOf(sp, f.tl ?? sp.tl); spaceLoad += spaceOf(sp, f.tl ?? sp.tl); c.floor += fl; floorUse += fl; c.grams += massG(sp.id, f.tl ?? sp.tl); by.set(sp.id, c);
+    c.n++; c.load += l; c.space += spaceOf(sp, f.tl ?? sp.tl); c.floor += fl; floorUse += fl; c.grams += massG(sp.id, f.tl ?? sp.tl); by.set(sp.id, c);
   }
+  for (const c of by.values()) { c.space *= schoolScale(c.n); spaceLoad += c.space; }
   const pc = (l: number, cp: number) => cp > 0 ? l / cp * 100 : l > 0 ? Infinity : 0;
   const areaCm2 = floorOf(S.tank).areaCm2, waterPercent = pc(spaceLoad, cap.space), floorPercent = pc(floorUse, areaCm2);
   const spaceBy = floorPercent > waterPercent ? 'floor' as const : 'water' as const, spacePercent = Math.max(waterPercent, floorPercent);
