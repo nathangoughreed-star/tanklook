@@ -23,7 +23,7 @@ import { FILTER_MEDIA_L } from '../src/data/filtermedia';
 import { FRESH_TIERS, REEF_TIERS, NEEDS, isLand } from '../src/scene/lightneeds';
 // @ts-expect-error node only (no node types in this project)
 const { readFileSync } = await import('node:fs');
-import { ENGINE_FILES, EXCLUDED, FORMULAS, RULES, STATUSES, TABLES, type Rule, type Status } from '../src/data/provenance';
+import { BASES, BASIS_NAME, ENGINE_FILES, EXCLUDED, FORMULAS, RULES, STATUSES, TABLES, type Rule, type Status } from '../src/data/provenance';
 
 type Obj = Record<string, unknown>;
 const byId = (rows: Obj[], key = 'id') => Object.fromEntries(rows.map((r, i) => [String(r[key] ?? i), r]));
@@ -148,13 +148,19 @@ export function engineConstants(root = '.'): ConstReport[] {
 
 // ---- registry checks
 export function registryProblems(): string[] {
-  const ids = new Set(Object.keys((sourcesJson as { sources: Obj }).sources)), bad: string[] = [];
+  const reg = (sourcesJson as { sources: Record<string, { kind: string }> }).sources, ids = new Set(Object.keys(reg)), bad: string[] = [];
+  // the source's own words must be kept apart from our use of them (UF 2026-10-21, research/rules-spec.md section 2)
+  const basisProblem = (b: string | undefined, says: string | undefined, src: string[] | undefined) =>
+    !BASES.includes(b as never) ? `no basis (${b})`
+    : ['measured', 'source-stated', 'conservative-default'].includes(b!) && src?.some(s => reg[s] && reg[s].kind !== 'internal') && !says ? `basis ${b} without says (what the source states)` : '';
   for (const [t, rules] of Object.entries(RULES)) for (const r of rules) {
+    const bp = basisProblem(r.basis, r.says, r.src); if (bp) bad.push(`RULES.${t} ${r.path}: ${bp}`);
     for (const s of r.src ?? []) if (!ids.has(s)) bad.push(`RULES.${t} ${r.path}: unknown source ${s}`);
     if (!r.why) bad.push(`RULES.${t} ${r.path}: no why`);
     if (r.status === 'cited' && !r.src?.length) bad.push(`RULES.${t} ${r.path}: cited without a source`);
   }
   for (const f of FORMULAS) {
+    const bp = basisProblem(f.basis, f.says, f.src); if (bp) bad.push(`FORMULAS ${f.file} ${f.symbols}: ${bp}`);
     for (const s of f.src ?? []) if (!ids.has(s)) bad.push(`FORMULAS ${f.file} ${f.symbols}: unknown source ${s}`);
     if (f.status === 'cited' && !f.src?.length) bad.push(`FORMULAS ${f.file} ${f.symbols}: cited without a source`);
   }
@@ -163,11 +169,13 @@ export function registryProblems(): string[] {
 }
 
 // ---- summary and report
-export interface Summary { total: number; unsourced: number; byStatus: Record<string, number>; constUnsourced: number; constDocumented: number; inline: number }
+export interface Summary { total: number; unsourced: number; byStatus: Record<string, number>; byBasis: Record<string, number>; constUnsourced: number; constDocumented: number; inline: number }
 export function summarize(vals = walk(), consts = engineConstants()): Summary {
   const byStatus: Record<string, number> = Object.fromEntries([...STATUSES, 'unsourced'].map(s => [s, 0]));
   for (const v of vals) byStatus[v.status ?? 'unsourced']++;
-  return { total: vals.length, unsourced: byStatus.unsourced, byStatus,
+  const byBasis: Record<string, number> = Object.fromEntries([...BASES, 'unsourced'].map(s => [s, 0]));
+  for (const v of vals) byBasis[v.rule?.basis ?? 'unsourced']++;
+  return { total: vals.length, unsourced: byStatus.unsourced, byStatus, byBasis,
     constUnsourced: consts.reduce((n, c) => n + c.unsourced.length, 0), constDocumented: consts.reduce((n, c) => n + c.documented.length, 0),
     inline: consts.reduce((n, c) => n + c.inline, 0) };
 }
@@ -190,6 +198,16 @@ export function report(vals = walk(), consts = engineConstants()): string {
     const b: Record<string, number> = Object.fromEntries(cols.map(c => [c, 0])); for (const v of vs) b[v.status ?? 'unsourced']++;
     L.push(`| ${t.label} | ${vs.length} | ${cols.map(c => b[c] || '').join(' | ')} | ${pct(strong(b), vs.length)} |`);
   }
+  L.push('', '## Basis: what TankLook did with the source', '', 'Status says how firmly a value is tied to a page; basis says what we did with what the page says (research/rules-spec.md',
+    'section 2). Only measured and source-stated values are the source\'s own claim; an interpretation (a threshold, a band, a pick) is ours even',
+    'when a page is cited beside it, and `says` in src/data/provenance.ts keeps the page\'s words apart.', '',
+    `| | ${[...BASES, 'unsourced'].map(b => b === 'unsourced' ? b : BASIS_NAME[b as keyof typeof BASIS_NAME]).join(' | ')} |`, `|---|${[...BASES, 'unsourced'].map(() => '---').join('|')}|`,
+    `| **all data** | ${[...BASES, 'unsourced'].map(b => `${s.byBasis[b]} (${pct(s.byBasis[b], s.total)})`).join(' | ')} |`);
+  for (const t of TARGETS) {
+    const vs = vals.filter(v => v.target === t.name); if (!vs.length) continue;
+    const b: Record<string, number> = Object.fromEntries([...BASES, 'unsourced'].map(c => [c, 0])); for (const v of vs) b[v.rule?.basis ?? 'unsourced']++;
+    L.push(`| ${t.label} | ${[...BASES, 'unsourced'].map(c => b[c] || '').join(' | ')} |`);
+  }
   L.push('', `Engine constants (top-level numbers in ${ENGINE_FILES.length} engine files): ${s.constDocumented} documented in FORMULAS, ${s.constUnsourced} unsourced.`,
     `Numbers written inline in those files' functions (not counted above, a by-hand review list): ${s.inline}.`, '');
   // ranked work list: unsourced first, then claimed, grouped by field, in target order
@@ -206,7 +224,7 @@ export function report(vals = walk(), consts = engineConstants()): string {
   for (const [k, e] of grouped('claimed')) L.push(`| \`${k}\` | ${e.n} | ${e.why ?? ''} |`);
   L.push('', '## Work list 3: researched values (tie each to the page it came from)', '', '| field | values |', '|---|---|');
   for (const [k, e] of grouped('researched')) L.push(`| \`${k}\` | ${e.n} |`);
-  L.push('', '## Engine formulas', '', '| file | symbols | status | why |', '|---|---|---|---|');
-  for (const f of FORMULAS) L.push(`| ${f.file} | ${f.symbols.join(', ')} | ${f.status} | ${f.why} |`);
+  L.push('', '## Engine formulas', '', '| file | symbols | status | basis | source says | why |', '|---|---|---|---|---|---|');
+  for (const f of FORMULAS) L.push(`| ${f.file} | ${f.symbols.join(', ')} | ${f.status} | ${BASIS_NAME[f.basis]} | ${f.says ?? ''} | ${f.why} |`);
   return L.join('\n') + '\n';
 }

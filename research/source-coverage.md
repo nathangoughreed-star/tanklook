@@ -35,8 +35,40 @@ when it carries the url of the listing it was read from and does not mark the fi
 | Deals (deals.json) | 164 | 160 |  |  |  |  |  | 4 | 98 % |
 | Gear deals (gear-deals.json) | 96 | 96 |  |  |  |  |  |  | 100 % |
 
-Engine constants (top-level numbers in 30 engine files): 92 documented in FORMULAS, 0 unsourced.
-Numbers written inline in those files' functions (not counted above, a by-hand review list): 329.
+## Basis: what TankLook did with the source
+
+Status says how firmly a value is tied to a page; basis says what we did with what the page says (research/rules-spec.md
+section 2). Only measured and source-stated values are the source's own claim; an interpretation (a threshold, a band, a pick) is ours even
+when a page is cited beside it, and `says` in src/data/provenance.ts keeps the page's words apart.
+
+| | measured | source-stated | TankLook interpretation | derived calculation | conservative default | unsourced |
+|---|---|---|---|---|---|---|
+| **all data** | 2 (0 %) | 2519 (46 %) | 2168 (40 %) | 279 (5 %) | 30 (1 %) | 479 (9 %) |
+| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) |  | 335 | 842 | 71 | 28 | 1 |
+| Tank minimum red / green lines, heights, depth notes, advisory gallons (tankmin.json, lane MM) |  | 153 | 48 | 74 |  |  |
+| Adult length per species (species.json tl) |  | 63 | 15 | 30 |  |  |
+| Marine pH band (data/waterchem.ts) |  |  |  |  | 2 |  |
+| Reptile / amphibian floor area, height, groups, growth (data/herpstock.ts) |  |  | 228 |  |  |  |
+| Terrarium air temperature and humidity (data/climate.ts AIR) |  | 28 | 66 | 18 |  |  |
+| Plant and coral light, CO2, fertiliser, dosing (scene/lightneeds.ts) |  |  | 182 |  |  |  |
+| Freshwater PAR tiers |  |  | 10 |  |  |  |
+| Reef PAR tiers |  | 6 | 2 |  |  |  |
+| Body mass (length-weight a, b) for the stocking engine | 2 | 118 | 48 |  |  |  |
+| Per-species space factors |  |  |  | 54 |  |  |
+| Space factor classes |  |  |  | 5 |  |  |
+| Biological media litres per filter (data/filtermedia.ts) |  | 13 |  | 5 |  |  |
+| Gear sizing, minutes, watts, heat loss (tech.json) |  | 8 | 83 | 2 |  | 120 |
+| Category cost / time defaults (demand-defaults.json) |  |  | 215 | 20 |  |  |
+| Shared cost factors: kWh, water, salt, losses (factors.json) |  |  | 6 |  |  | 64 |
+| Per-item retail prices (demand-items.json) |  | 205 | 423 |  |  | 5 |
+| Filter and heater specs (gear-catalog.json) |  | 397 |  |  |  | 141 |
+| Tank sizes and prices (tanks.json) |  | 730 |  |  |  | 144 |
+| Kit specs and prices (kits.json) |  | 207 |  |  |  |  |
+| Deals (deals.json) |  | 160 |  |  |  | 4 |
+| Gear deals (gear-deals.json) |  | 96 |  |  |  |  |
+
+Engine constants (top-level numbers in 30 engine files): 94 documented in FORMULAS, 0 unsourced.
+Numbers written inline in those files' functions (not counted above, a by-hand review list): 328.
 
 ## Work list 1: unsourced values (most user-facing first)
 
@@ -104,7 +136,7 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 
 | file | constants | inline numbers |
 |---|---|---|
-| src/scene/stocking.ts | - | 9 |
+| src/scene/stocking.ts | - | 8 |
 | src/scene/nitrogen.ts | - | 20 |
 | src/scene/lightout.ts | - | 80 |
 | src/scene/kitlight.ts | - | 4 |
@@ -208,66 +240,68 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 
 ## Engine formulas
 
-| file | symbols | status | why |
-|---|---|---|---|
-| src/data/grazers.ts | GRAZE | cited | grazers per tank: the most generous stocking guideline an opened page states (turbo 3 per 20 gal, nerite 1 per 5 gal, oto 6 in a 20 gal, amano 1 per 2 gal) and the feeding it names; quotes checked (research/sourcing/R5-grazers.json) |
-| src/scene/stocking.ts | Q10, T_REF | claimed | waste doubles about every 10 K, 25 C reference; no fish paper recorded |
-| src/scene/stocking.ts | massG | derived | FishBase length-weight: mass g = a (tl cm)^b |
-| src/scene/stocking.ts | MET_CLASS, MET_BY_ID | assumption | our class multipliers after the usual bioload rules of thumb; no page states per-class ratios (looked for, research/sourcing/other/E2.json) |
-| src/scene/stocking.ts | SALT_LOAD | assumption | the hobby rule of thumb "half again" for marine fish; no page states it (looked for, research/sourcing/other/E2.json) |
-| src/scene/stocking.ts | LU_PER_L | fitted | calibrated so the starters keep their old animal counts, which came from a rule of thumb (3 L x (tl/35)^1.6). Outside checks bracket it widely: the AqAdvisor filtration probes imply 0.22, our nitrogen budget about 1.7 (research/sourcing/other/E3-lu-per-l.md); kept, since it now only sizes the starters (the filtration % comes from scene/nitrogen.ts) |
-| src/scene/stocking.ts | SPACE_EXP, SPACE_PER_L | fitted | fit to 24 AqAdvisor combinations (scripts/aq-compare.mjs) |
-| src/scene/stocking.ts | PLANT_MAX, PLANTS_PER_100L_FULL, PATCH_PLANTS | assumption | plants take up nitrogen, so they add some filtration; the size (+25 % at 15 plants per 100 L) is "a documented guess" |
-| src/scene/nitrogen.ts | BASE, TAN_PER_FEED, FEED_PCT, tanOf | researched | fasted TAN 350 x W^-0.25 mg/kg/day and 0.02 g TAN per g feed, +-40 % (research-fish-nitrogen, research-ornamental-excretion) |
-| src/scene/nitrogen.ts | MEDIA_RATE, THROUGH, SURFACE_RATE, warm | researched | nitrification per litre of media, low confidence: ceramic 0.06 g TAN/L/day measured in a fish farm, foam rate extrapolated (research-nitrification) |
-| src/scene/nitrogen.ts | HEADROOM | assumption | run the filter at 70 % of its capacity: a 30 % safety margin |
-| src/scene/nitrogen.ts | NITRATE_TARGET_N | cited | 9 mg N/L = about 40 ppm as NO3 (x 4.43), the bottom of the 40-80 ppm range aquariumscience.org states (research/sourcing/other/E2.json) |
-| src/scene/nitrogen.ts | plantUptake | researched | slow / medium / fast 0.001 / 0.003 / 0.006 g N per 100 g a day, extrapolated from one measured Egeria study (research-plant-nitrogen) |
-| src/scene/nitrogen.ts | RATE_100G, FLOAT_M2, DIE_OFF_RETURN | researched | plant N uptake per 100 g, floaters 0.3 g N/m2/day, 30 % die-off return; classes EXTRAPOLATED from one measured Egeria study (research-plant-nitrogen, research-plant-validation) |
-| src/scene/nitrogen.ts | ROOT_FEEDERS, ROOT_WATER, PLANT_SHARE_MAX | assumption | root feeders draw about half their N from the substrate; plants take at most 60 % of the daily TAN as ammonium (bacteria compete, little uptake at night), the filter always sees the rest: guesses (Nathan 2026-10-20) |
-| src/scene/nitrogen.ts | FERT_N | claimed | nitrate a water-column fert adds: all-in-one about 5 ppm NO3 a week, dosing pump about 10, EI 3 x 20 ppm; typical label doses, no source recorded |
-| src/scene/nitrogen.ts | PLANTS, DEFAULT_PLANT, PATCH_FW, PATCH_PLANTS | assumption | growth class and fresh weight per plant item: guesses at the item's default size |
-| src/scene/nitrogen.ts | NO3_TO_N | derived | ppm as NO3 to mg N/L: the molar masses, N 14.007 / NO3 62.004 g/mol |
-| src/scene/nitrogen.ts | ONE_CHANGE_MAX, CHANGES_MAX, waterChangeState | assumption | Decision 2 (research/tank-minimum-first-principles.md, Nathan via S165): one change over 50 % is high maintenance, split in two a week (linear steady-state model); past two 50 % changes, or tap nitrate at or above the target, is an environmental failure |
-| src/data/filtermedia.ts | MEDIA_L_PER_GPH, SPONGE_L_PER_GAL | derived | media litres per gph from the FILTER_MEDIA_L rows (AquaClear, Fluval), sponge from Hydro-Sponge / Co-Op (research-filter-media-volumes, research-hob-media-derived) |
-| src/scene/lightout.ts | NWATER | cited | refractive index of water 1.333 at 20 C (Engineering Toolbox table, research/sourcing/other/E2.json) |
-| src/scene/lightout.ts | KEEP_SURFACE, KEEP_GLASS | derived | diffuse light totally reflected back in, about 1 - 1/n^2 |
-| src/scene/lightout.ts | KWATER, TINT_SHARE, FRESNEL, GLASS_LID, MESH_LID, WALL_W | claimed | water attenuation, lid and wall transmission: typical optics values, none recorded |
-| src/scene/lightout.ts | LUXW | derived | 683 lm/W x V(lambda) x photon energy per band; checked against the Apogee / Thimijan & Heins lux factors |
-| src/scene/lightout.ts | TECHS | fitted | PPE and eta fitted to graded PAR datasets (reef LED, white LED, T5 HO, metal halide); ESTIMATES: CFL eta, halogen, T8, T12, LED bulb and tube, the 20K split |
-| src/scene/lightout.ts | TUBES, TUBE_ENDS, MH_BULBS | claimed | standard lamp lengths, watts and bulb sizes; maker tables not recorded |
-| src/scene/lightout.ts | TUBE_DIA | derived | a T-number is the tube diameter in eighths of an inch (T5 16 mm, T8 26 mm, T12 38 mm) |
-| src/scene/lightout.ts | FIX_SPEC, BULB_W | assumption | what each fixture style is usually like (hanging height, beam, power): defaults and slider ranges (Nathan 2026-10-15) |
-| src/scene/lightout.ts | SUB_DROP | assumption | a submersible stick hangs 18 mm under the surface (read off the product photos; no spec) |
-| src/scene/lightout.ts | SUB_ALBEDO | assumption | diffuse PAR reflectance per substrate: our estimates; only tan sand is bounded by a page (desert sand 0.40 broadband, Wikipedia albedo; research/sourcing/other/E2.json) |
-| src/scene/lightneeds.ts | FRESH_RANGE, REEF_RANGE | derived | built from the PAR tiers; LPS reaches 50 over its tier because "some LPS take up to 200 (guide)" |
-| src/scene/lightneeds.ts | MIN_PAR | claimed | per-plant minimum PAR for hardy species; the ones marked check are for Nathan to review |
-| src/scene/kitlight.ts | TIER_W_PER_GAL, TIER_W_MIN | claimed | "ESTIMATES from typical hood LEDs (budget hoods ~4-15 W)"; shown with a "rough" confidence label |
-| src/scene/kitlight.ts | LEVEL_MIN | derived | fresh = the FRESH_TIERS lows; reef = midpoints between the wizard reef levels |
-| src/scene/kitlight.ts | MAX_W_PER_GAL | assumption | most LED watts per gallon a swap can ask before the tank is the problem (fresh 2.5, reef 6) |
-| src/scene/plantfit.ts | FIT_PAR | assumption | one representative PAR inside each light level |
-| src/scene/growtime.ts | GROW_RATE | assumption | growth multipliers by feeding and plant speed (CO2 helps stems most); not measured |
-| src/scene/animalfit.ts | MIN_SLACK_PCT | assumption | a species' smallest tank allows 10 % slack: a 5 gal (19 L) takes a 20 L species |
-| src/scene/tankMin.ts | LARGE_BODY_MM | assumption | Decision 3 holds large-bodied swimmers to length + width; which fish count as large-bodied (adult 15 cm / 6 in and over) is our cut, no page states one |
-| src/scene/tankfit.ts | FLOOR_K | claimed | "a documented rule of thumb, not a source of record": a bottom dweller holds about two body lengths square |
-| src/scene/tankfit.ts | FILTRATION_TARGET | assumption | preset filtration targets: cheapest 100 %, balanced 70 % |
-| src/scene/starter.ts | ANIMAL_FILL, KINDS_PER_STOP, LAND_MOST | assumption | how full each starter stop is and how many kinds; land counts kept inside the herp research maxima |
-| src/scene/lightproduct.ts | BAR_CHECK | derived | median of model / published PAR over 9 LED bars (5-65 W) in air at 12-14 in (reference/par-calibration-data.md D3, Portland Aquarium round-up, no method stated): 27 % below for white-LED, 18 % for planted-RGB lamps; pinned by test/lightfollowups.test.ts |
-| src/scene/kitlight.ts | PUBLISHED_PM | assumption | a maker measures PAR at one spot; +-15 % elsewhere in the tank |
-| src/scene/kitlight.ts | SWAP_MAX_RATIO | assumption | over 5x the kit light is a new build, not a swap (UI choice) |
-| src/scene/plantfit.ts | TOO_BRIGHT | assumption | a plant must be 1.4x over its range before it counts as struggling |
-| src/scene/growtime.ts | GROW_RATE_MAX | assumption | cap on the light / ferts / CO2 growth multiplier |
-| src/scene/tech.ts | KWH_USD | cited | same 0.17 USD/kWh as factors.json kwhUsd: EIA table 5.6.A, US residential 18.31 c/kWh July 2026 (research/sourcing/other/E1.json) |
-| src/scene/tech.ts | EST_WIDEN, pricePoint | assumption | estimated rows get a 25 % wider band; one listed price gets +-10 % for sales and other stores |
-| src/demand/prices.ts | EST_WIDEN | assumption | estimated rows get a 25 % wider band |
-| src/demand/engine.ts | RISK_REPEAT | assumption | weight of a repeated risk |
-| src/demand/dealmatch.ts | MIN_SAVING_USD, MIN_SAVING_FRAC, FLOW_OK, HEAT_OK, SIDE_TOL, SIDE_MIN_MM | assumption | when a deal counts as a saving and a fit (product choices) |
-| src/demand/gear.ts | L_PER_GAL | cited | 1 US gal = 3.785 L |
-| src/data/climate.ts | FINE | assumption | a compromise a third of the way into the tolerable margin is still fine long term |
-| src/scene/builds.ts | FILTRATION_LIMIT | assumption | cheapest and least-work builds keep filtration at or under 100 % (the stocking engine limit itself); balanced keeps 70 % or less, headroom for a missed water change (same as tankfit FILTRATION_TARGET) |
-| src/scene/builds.ts | WATER_LEVEL, BASE_PRESET | assumption | tank filled to 90 %; the starting gear is the bare-minimum preset (low-tech fresh, fish-only salt), as in tankfit |
-| src/scene/tankfit.ts | WATER_LEVEL, STEP_RATIO | assumption | tank filled to 90 %; a next size must hold 25 % more water |
-| src/data/tankcheck.ts | VOL_TOL | assumption | catalogue check: interior volume within 8 % of the label |
-| src/scene/weight.ts | DENSITY | cited | water 0.998 kg/L at 20 C, glass 2.4-2.8, gravel / sand 1.56-1.68 dry, porosity 0.36-0.43 (research/sourcing/other/E2.json) |
-| src/scene/weight.ts | LID_GLASS | assumption | lid panels drawn as 4 mm glass |
-| src/data/herpstock.ts | SQFT_MM2 | cited | 1 sq ft = 92903.04 mm2 |
+| file | symbols | status | basis | source says | why |
+|---|---|---|---|---|---|
+| src/data/grazers.ts | GRAZE | cited | source-stated | turbo 3 per 20 gal, nerite 1 per 5 gal, oto 6 in a 20 gal, amano 1 per 2 gal (the most generous guideline each page states) | grazers per tank: the most generous stocking guideline an opened page states (turbo 3 per 20 gal, nerite 1 per 5 gal, oto 6 in a 20 gal, amano 1 per 2 gal) and the feeding it names; quotes checked (research/sourcing/R5-grazers.json) |
+| src/scene/stocking.ts | Q10, T_REF | claimed | TankLook interpretation |  | waste doubles about every 10 K, 25 C reference; no fish paper recorded |
+| src/scene/stocking.ts | massG | derived | derived calculation |  | FishBase length-weight: mass g = a (tl cm)^b |
+| src/scene/stocking.ts | MET_CLASS, MET_BY_ID | assumption | TankLook interpretation |  | our class multipliers after the usual bioload rules of thumb; no page states per-class ratios (looked for, research/sourcing/other/E2.json) |
+| src/scene/stocking.ts | SALT_LOAD | assumption | TankLook interpretation |  | the hobby rule of thumb "half again" for marine fish; no page states it (looked for, research/sourcing/other/E2.json) |
+| src/scene/stocking.ts | LU_PER_L | fitted | derived calculation |  | calibrated so the starters keep their old animal counts, which came from a rule of thumb (3 L x (tl/35)^1.6). Outside checks bracket it widely: the AqAdvisor filtration probes imply 0.22, our nitrogen budget about 1.7 (research/sourcing/other/E3-lu-per-l.md); kept, since it now only sizes the starters (the filtration % comes from scene/nitrogen.ts) |
+| src/scene/stocking.ts | SPACE_EXP, SPACE_PER_L | fitted | derived calculation |  | fit to 24 AqAdvisor combinations (scripts/aq-compare.mjs) |
+| src/scene/stocking.ts | FLOOR_SQIN_PER_IN | fitted | TankLook interpretation | Scotcat: 18-24 sq in of floor per inch of bottom dweller; Seriously Fish group footprints about 10-20 | sources give 12-24 sq in of floor per inch of bottom dweller (Scotcat 18-24; Seriously Fish group footprints: bronze cory ~20, kuhli ~12, clown loach 10-17); 15 is the smallest that reads a shallow-wide tank roomier than a tall one of equal water (test/spaceaudit.test.ts C) and leaves the AqAdvisor median at 1.03 |
+| src/scene/stocking.ts | FLOOR_REF | derived | derived calculation |  | mass-equivalent length: the length of a bronze cory (65 mm, the fish the floor sources measure) of the same mass; keeps 6 kuhlis inside the Seriously Fish minimum tank for them |
+| src/scene/stocking.ts | FLOOR_SHARE | assumption | TankLook interpretation |  | bottom dwellers 1 and midwater / top fish 0 by class (Decision 3); "all"-zone fish 0.5 is our estimate (no source splits their time) |
+| src/scene/stocking.ts | PLANT_MAX, PLANTS_PER_100L_FULL, PATCH_PLANTS | assumption | TankLook interpretation |  | plants take up nitrogen, so they add some filtration; the size (+25 % at 15 plants per 100 L) is "a documented guess" |
+| src/scene/nitrogen.ts | BASE, TAN_PER_FEED, FEED_PCT, tanOf | researched | derived calculation | excretion studies: fasted TAN about 350 x W^-0.25 mg/kg/day; about 0.02 g TAN per g feed | fasted TAN 350 x W^-0.25 mg/kg/day and 0.02 g TAN per g feed, +-40 % (research-fish-nitrogen, research-ornamental-excretion) |
+| src/scene/nitrogen.ts | MEDIA_RATE, THROUGH, SURFACE_RATE, warm | researched | TankLook interpretation | ceramic media nitrified 0.06 g TAN/L/day in one fish farm; foam not measured | nitrification per litre of media, low confidence: ceramic 0.06 g TAN/L/day measured in a fish farm, foam rate extrapolated (research-nitrification) |
+| src/scene/nitrogen.ts | HEADROOM | assumption | conservative default |  | run the filter at 70 % of its capacity: a 30 % safety margin |
+| src/scene/nitrogen.ts | NITRATE_TARGET_N | cited | conservative default | aquariumscience.org: keep nitrate at 40-80 ppm | 9 mg N/L = about 40 ppm as NO3 (x 4.43), the bottom of the 40-80 ppm range aquariumscience.org states (research/sourcing/other/E2.json) |
+| src/scene/nitrogen.ts | plantUptake | researched | TankLook interpretation | one measured Egeria study; the other classes are extrapolated | slow / medium / fast 0.001 / 0.003 / 0.006 g N per 100 g a day, extrapolated from one measured Egeria study (research-plant-nitrogen) |
+| src/scene/nitrogen.ts | RATE_100G, FLOAT_M2, DIE_OFF_RETURN | researched | TankLook interpretation | one measured Egeria study; the other classes are extrapolated | plant N uptake per 100 g, floaters 0.3 g N/m2/day, 30 % die-off return; classes EXTRAPOLATED from one measured Egeria study (research-plant-nitrogen, research-plant-validation) |
+| src/scene/nitrogen.ts | ROOT_FEEDERS, ROOT_WATER, PLANT_SHARE_MAX | assumption | TankLook interpretation |  | root feeders draw about half their N from the substrate; plants take at most 60 % of the daily TAN as ammonium (bacteria compete, little uptake at night), the filter always sees the rest: guesses (Nathan 2026-10-20) |
+| src/scene/nitrogen.ts | FERT_N | claimed | TankLook interpretation |  | nitrate a water-column fert adds: all-in-one about 5 ppm NO3 a week, dosing pump about 10, EI 3 x 20 ppm; typical label doses, no source recorded |
+| src/scene/nitrogen.ts | PLANTS, DEFAULT_PLANT, PATCH_FW, PATCH_PLANTS | assumption | TankLook interpretation |  | growth class and fresh weight per plant item: guesses at the item's default size |
+| src/scene/nitrogen.ts | NO3_TO_N | derived | derived calculation |  | ppm as NO3 to mg N/L: the molar masses, N 14.007 / NO3 62.004 g/mol |
+| src/scene/nitrogen.ts | ONE_CHANGE_MAX, CHANGES_MAX, waterChangeState | assumption | TankLook interpretation |  | Decision 2 (research/tank-minimum-first-principles.md, Nathan via S165): one change over 50 % is high maintenance, split in two a week (linear steady-state model); past two 50 % changes, or tap nitrate at or above the target, is an environmental failure |
+| src/data/filtermedia.ts | MEDIA_L_PER_GPH, SPONGE_L_PER_GAL | derived | derived calculation |  | media litres per gph from the FILTER_MEDIA_L rows (AquaClear, Fluval), sponge from Hydro-Sponge / Co-Op (research-filter-media-volumes, research-hob-media-derived) |
+| src/scene/lightout.ts | NWATER | cited | source-stated | refractive index of water 1.333 at 20 C | refractive index of water 1.333 at 20 C (Engineering Toolbox table, research/sourcing/other/E2.json) |
+| src/scene/lightout.ts | KEEP_SURFACE, KEEP_GLASS | derived | derived calculation |  | diffuse light totally reflected back in, about 1 - 1/n^2 |
+| src/scene/lightout.ts | KWATER, TINT_SHARE, FRESNEL, GLASS_LID, MESH_LID, WALL_W | claimed | TankLook interpretation |  | water attenuation, lid and wall transmission: typical optics values, none recorded |
+| src/scene/lightout.ts | LUXW | derived | derived calculation |  | 683 lm/W x V(lambda) x photon energy per band; checked against the Apogee / Thimijan & Heins lux factors |
+| src/scene/lightout.ts | TECHS | fitted | derived calculation |  | PPE and eta fitted to graded PAR datasets (reef LED, white LED, T5 HO, metal halide); ESTIMATES: CFL eta, halogen, T8, T12, LED bulb and tube, the 20K split |
+| src/scene/lightout.ts | TUBES, TUBE_ENDS, MH_BULBS | claimed | TankLook interpretation |  | standard lamp lengths, watts and bulb sizes; maker tables not recorded |
+| src/scene/lightout.ts | TUBE_DIA | derived | derived calculation |  | a T-number is the tube diameter in eighths of an inch (T5 16 mm, T8 26 mm, T12 38 mm) |
+| src/scene/lightout.ts | FIX_SPEC, BULB_W | assumption | TankLook interpretation |  | what each fixture style is usually like (hanging height, beam, power): defaults and slider ranges (Nathan 2026-10-15) |
+| src/scene/lightout.ts | SUB_DROP | assumption | TankLook interpretation |  | a submersible stick hangs 18 mm under the surface (read off the product photos; no spec) |
+| src/scene/lightout.ts | SUB_ALBEDO | assumption | TankLook interpretation |  | diffuse PAR reflectance per substrate: our estimates; only tan sand is bounded by a page (desert sand 0.40 broadband, Wikipedia albedo; research/sourcing/other/E2.json) |
+| src/scene/lightneeds.ts | FRESH_RANGE, REEF_RANGE | derived | derived calculation |  | built from the PAR tiers; LPS reaches 50 over its tier because "some LPS take up to 200 (guide)" |
+| src/scene/lightneeds.ts | MIN_PAR | claimed | TankLook interpretation |  | per-plant minimum PAR for hardy species; the ones marked check are for Nathan to review |
+| src/scene/kitlight.ts | TIER_W_PER_GAL, TIER_W_MIN | claimed | TankLook interpretation |  | "ESTIMATES from typical hood LEDs (budget hoods ~4-15 W)"; shown with a "rough" confidence label |
+| src/scene/kitlight.ts | LEVEL_MIN | derived | derived calculation |  | fresh = the FRESH_TIERS lows; reef = midpoints between the wizard reef levels |
+| src/scene/kitlight.ts | MAX_W_PER_GAL | assumption | TankLook interpretation |  | most LED watts per gallon a swap can ask before the tank is the problem (fresh 2.5, reef 6) |
+| src/scene/plantfit.ts | FIT_PAR | assumption | TankLook interpretation |  | one representative PAR inside each light level |
+| src/scene/growtime.ts | GROW_RATE | assumption | TankLook interpretation |  | growth multipliers by feeding and plant speed (CO2 helps stems most); not measured |
+| src/scene/animalfit.ts | MIN_SLACK_PCT | assumption | TankLook interpretation |  | a species' smallest tank allows 10 % slack: a 5 gal (19 L) takes a 20 L species |
+| src/scene/tankMin.ts | LARGE_BODY_MM | assumption | TankLook interpretation |  | Decision 3 holds large-bodied swimmers to length + width; which fish count as large-bodied (adult 15 cm / 6 in and over) is our cut, no page states one |
+| src/scene/tankfit.ts | FILTRATION_TARGET | assumption | TankLook interpretation |  | preset filtration targets: cheapest 100 %, balanced 70 % |
+| src/scene/starter.ts | ANIMAL_FILL, KINDS_PER_STOP, LAND_MOST | assumption | TankLook interpretation |  | how full each starter stop is and how many kinds; land counts kept inside the herp research maxima |
+| src/scene/lightproduct.ts | BAR_CHECK | derived | derived calculation |  | median of model / published PAR over 9 LED bars (5-65 W) in air at 12-14 in (reference/par-calibration-data.md D3, Portland Aquarium round-up, no method stated): 27 % below for white-LED, 18 % for planted-RGB lamps; pinned by test/lightfollowups.test.ts |
+| src/scene/kitlight.ts | PUBLISHED_PM | assumption | TankLook interpretation |  | a maker measures PAR at one spot; +-15 % elsewhere in the tank |
+| src/scene/kitlight.ts | SWAP_MAX_RATIO | assumption | TankLook interpretation |  | over 5x the kit light is a new build, not a swap (UI choice) |
+| src/scene/plantfit.ts | TOO_BRIGHT | assumption | TankLook interpretation |  | a plant must be 1.4x over its range before it counts as struggling |
+| src/scene/growtime.ts | GROW_RATE_MAX | assumption | TankLook interpretation |  | cap on the light / ferts / CO2 growth multiplier |
+| src/scene/tech.ts | KWH_USD | cited | TankLook interpretation | EIA table 5.6.A: US residential 18.31 c/kWh in July 2026 | same 0.17 USD/kWh as factors.json kwhUsd: EIA table 5.6.A, US residential 18.31 c/kWh July 2026 (research/sourcing/other/E1.json) |
+| src/scene/tech.ts | EST_WIDEN, pricePoint | assumption | TankLook interpretation |  | estimated rows get a 25 % wider band; one listed price gets +-10 % for sales and other stores |
+| src/demand/prices.ts | EST_WIDEN | assumption | TankLook interpretation |  | estimated rows get a 25 % wider band |
+| src/demand/engine.ts | RISK_REPEAT | assumption | TankLook interpretation |  | weight of a repeated risk |
+| src/demand/dealmatch.ts | MIN_SAVING_USD, MIN_SAVING_FRAC, FLOW_OK, HEAT_OK, SIDE_TOL, SIDE_MIN_MM | assumption | TankLook interpretation |  | when a deal counts as a saving and a fit (product choices) |
+| src/demand/gear.ts | L_PER_GAL | cited | source-stated | 1 US gal = 3.785411784 L (definition) | 1 US gal = 3.785 L |
+| src/data/climate.ts | FINE | assumption | TankLook interpretation |  | a compromise a third of the way into the tolerable margin is still fine long term |
+| src/scene/builds.ts | FILTRATION_LIMIT | assumption | conservative default |  | cheapest and least-work builds keep filtration at or under 100 % (the stocking engine limit itself); balanced keeps 70 % or less, headroom for a missed water change (same as tankfit FILTRATION_TARGET) |
+| src/scene/builds.ts | WATER_LEVEL, BASE_PRESET | assumption | TankLook interpretation |  | tank filled to 90 %; the starting gear is the bare-minimum preset (low-tech fresh, fish-only salt), as in tankfit |
+| src/scene/tankfit.ts | WATER_LEVEL, STEP_RATIO | assumption | TankLook interpretation |  | tank filled to 90 %; a next size must hold 25 % more water |
+| src/data/tankcheck.ts | VOL_TOL | assumption | TankLook interpretation |  | catalogue check: interior volume within 8 % of the label |
+| src/scene/weight.ts | DENSITY | cited | source-stated | water 0.998 kg/L at 20 C; glass 2.4-2.8; dry gravel / sand 1.56-1.68; porosity 0.36-0.43 | water 0.998 kg/L at 20 C, glass 2.4-2.8, gravel / sand 1.56-1.68 dry, porosity 0.36-0.43 (research/sourcing/other/E2.json) |
+| src/scene/weight.ts | LID_GLASS | assumption | TankLook interpretation |  | lid panels drawn as 4 mm glass |
+| src/data/herpstock.ts | SQFT_MM2 | cited | source-stated | 1 sq ft = 92903.04 mm2 (definition) | 1 sq ft = 92903.04 mm2 |
