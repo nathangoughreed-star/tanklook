@@ -9,6 +9,7 @@ import { volume } from '../scene/physics';
 import { spaceFit, tankExtent } from '../scene/space';
 import { buildSpan, stepUps, tankFor, tankLabel, tankOptions, zoneOf, type AnimalCount, type BuildSpan, type TankFit } from '../scene/tankfit';
 import { countsAgainstWater } from '../scene/stocking';
+import { minDataOf } from '../scene/tankMin';
 import type { Fish, SpaceLimit, Tank } from '../scene/types';
 
 /** One species on the list. Usually sexed species (CARE.sexed) carry males in `n` and females in `f`; the rest just `n`. */
@@ -59,11 +60,14 @@ export function notesOf(p: Pk): PickNotes {
     ratio = `Kept ${want}${r.note ? `: ${r.note}` : ''}${off && n > 0 ? '. Your mix is short on females' : ''}`;
   }
   const habitat: string[] = [];
-  if (c?.maxDepthMm) habitat.push(`Shallow water, ${Math.round(c.maxDepthMm / 10)} cm deep at most`);
+  const md = minDataOf(p.id), adv = md?.depth?.maxWaterDepthMm; // lane MM: a sourced maximum depth is an advisory here, with the count picker (ADF, Decision 3)
+  if (adv) habitat.push(`Water no deeper than ${Math.round(adv / 10)} cm (advice, ${md!.depth!.note})`);
+  else if (c?.maxDepthMm) habitat.push(`Shallow water, ${Math.round(c.maxDepthMm / 10)} cm deep at most`);
   if (c?.flow) habitat.push(`${c.flow === 'low' ? 'Gentle' : c.flow === 'high' ? 'Strong' : 'Moderate'} flow`);
   const sp = getSpecies(p.id);
   if (sp) { const z = zoneOf(sp); if (z !== 'all') habitat.push(`Lives in the ${z === 'bottom' ? 'bottom' : z === 'top' ? 'top' : 'middle'} of the tank`); }
-  if (c?.minLengthMm) habitat.push(`Tank at least ${Math.round(c.minLengthMm / 10)} cm long`);
+  if (md?.red) habitat.push(`Tank at least ${Math.round(md.red.L / 10)} cm long${md.red.mark === 'derived (est)' ? ' (estimated from a gallon figure)' : ''}`);
+  if (md?.green) habitat.push(`Recommended: ${Math.round(md.green.L / 10)} cm long (${md.green.site})`);
   return { band, line, ...(ratio ? { ratio } : {}), habitat };
 }
 

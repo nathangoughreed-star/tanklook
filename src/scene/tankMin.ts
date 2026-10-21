@@ -1,60 +1,37 @@
 // The tank's minimum-size gate (Nathan 2026-10-20): separate from stocking density. Density (stocking.ts space / filtration) asks "is
-// the water crowded for THIS many animals"; this asks "is the tank big enough for the species at all, however few": the litres and the
-// tank length the most demanding species in it wants (weighed per kind of animal: floor area, length and water, MIN_WEIGHTS) (CARE.minL, groups.ts minLengthMm). Zebra danios want about a 20 gal long to swim in;
-// once they have it, a bigger school is fine and the density bars decide how many. Percent = what the tank would have to be / what it is,
-// so 100 = exactly the minimum and over 100 = too small, like the other bars.
-import { CARE } from '../data/care';
+// the water crowded for THIS many animals"; this asks "is the tank big enough for the species at all, however few".
+// Lane MM (2026-10-21) moved it onto the lines Nathan decided (research/sourcing/decisions.md MX1-MX9, research/tank-minimum-first-principles.md
+// "Decisions"): per species a RED line, the minimum (below it the species fails), and an optional GREEN line, the Recommended mark (at or
+// above it all is well); between the two = yellow, "below the recommended size", allowed. Data: src/data/tankmin.json (scripts/tank-min-data.mjs
+// from research/sourcing/tank-minimum/summary.json); every value is sourced, sourced (est) or derived (est) from a gallon figure.
+// Each measure is held on its own (no surplus covers a shortfall); water volume is never a gate (Decision 2): it only gives the yellow note.
+// Percent = what the tank would have to be / what it is, so 100 = exactly the line and over 100 = short of it, like the other bars.
+import TM from '../data/tankmin.json';
 import { getSpecies, type Species } from '../data/species';
 import { bioloadLitres } from './starter';
-import { zoneOf, type Zone } from './tankfit';
+import { zoneOf } from './tankfit';
 import { tankExtent } from './space';
 import { footprint } from './shape';
 import { countsAgainstWater } from './stocking';
+import { SUBSTRATE_CAP, volume, waterY } from './physics';
 import type { TankSetup } from './types';
 
-/**
- * Two tiers per species (Nathan 2026-10-20: African dwarf frogs, "absolute minimum a 5.5 gal for a pair, with warnings that they would be
- * happier larger"; zebra danios, "at least a 20 long to swim in, then a medium school"). CARE.minL / minLengthMm are the default for BOTH
- * tiers; a species listed here overrides: `floor` is the least the tool may suggest for the smallest group (red below it), `comfort` the
- * size they are happier in (amber between the two). Keeper-practice estimates, not sourced (data/provenance.ts: 'claimed'); schooling
- * fish, frogs and newts first, other species stay one tier.
- */
-type Size = { litres: number; lengthMm: number };
-export const TIERS: Record<string, { floor?: Size; comfort?: Size }> = {
-  adf: { floor: { litres: 18, lengthMm: 380 } }, // a 5.5 gal for a pair (about 18 L of water at the working fill; bottom dwellers are held to floor area, not run); comfort is CARE 40 L, 45 cm with 5 or more friends
-  danio: { comfort: { litres: 75, lengthMm: 760 } }, // 20 gal long to swim in; CARE 40 L, 60 cm is the floor
-  whitecloud: { floor: { litres: 33, lengthMm: 450 } }, // cool, slow: a 10 gal (about 33 L of water) holds a school; comfort is CARE 40 L, 60 cm
-  tigerbarb: { comfort: { litres: 150, lengthMm: 900 } }, // fast and nippy: a 40 gal breeder to spread out; CARE 80 L, 75 cm is the floor
-  cherrybarb: { comfort: { litres: 110, lengthMm: 750 } },
-  firenewt: { floor: { litres: 33, lengthMm: 450 } }, // a 10 gal for a pair; comfort is CARE 75 L, 60 cm
-  firetoad: { floor: { litres: 33, lengthMm: 450 } },
-};
+/** Where a value comes from (Decision 5): a page states it; a page states it without conditions; or worked out from a gallon figure via the smallest catalogue tank holding it. */
+export type Mark = 'sourced' | 'sourced (est)' | 'derived (est)';
+/** A footprint line, mm (L the longest floor side, W front to back) and, where a page states one "or equivalent", a floor area (cm2). */
+export interface MinLine { L: number; W?: number; areaCm2?: number; mark: Mark; site: string; url: string; states: string; from: string; ref?: string }
+export interface HeightLine { H: number; mark: Mark; site: string; url: string; states: string }
+/** Decision 4 depth notes (no page states a required minimum water depth for any species, MX7). */
+export interface DepthNote { recommendedTankHeightMm?: number; advisoryTankHeightMm?: number; maxWaterDepthMm?: number; mark?: string; note: string }
+export interface MinData { red?: MinLine; green?: MinLine; hRed?: HeightLine; hGreen?: HeightLine; depth?: DepthNote; vol?: { gal: number; mark: string; site: string; url: string }; why: string }
+const lines = (TM as unknown as { species: Record<string, MinData> }).species;
+/** The decided lines of one species; undefined = none (aquatic invertebrates and the regal jumper: never fail on size). */
+export const minDataOf = (id: string): MinData | undefined => lines[id];
 
-/**
- * How much each of the three things a litres figure on a care sheet stands in for counts, by where the animal lives (Nathan 2026-10-20: "3
- * gallons" is shorthand for floor space, which few keepers can state). `vol` weighs the water itself (tank litres against the species'
- * litres): a tall tank on the same floor must not read as roomier for a fish that never uses the height. `area` weighs floor area (cm2, the
- * species' litres taken at REF_DEPTH_CM), `run` the longest floor side against its stated length. A bottom dweller lives on the floor and
- * barely uses the column; surface fish need the length and the surface (floor) under it; midwater swimmers use the whole column, so volume
- * counts for most there, still less than the run. The percent is the largest of the three weighted shares.
- */
-export const MIN_WEIGHTS: Record<Zone, { vol: number; area: number; run: number }> = {
-  bottom: { vol: 0.25, area: 1, run: 0 },
-  top: { vol: 0.4, area: 0.6, run: 1 },
-  middle: { vol: 0.5, area: 0.4, run: 1 },
-  all: { vol: 0.5, area: 0.4, run: 1 },
-};
+/** Decision 3: a large-bodied swimmer is held to the stated front-to-back width as well as the length; smaller swimmers to the length. Adult length at or over this, mm. */
+export const LARGE_BODY_MM = 150;
+const GAL_L = 3.785;
 
-/** Species held to water volume alone (waste dilution, chemistry): no floor-area or length share. A mystery snail grazes glass, plants and decor, not just the floor (Aquarium Co-Op: 5 gal for one, 10 gal more forgiving). */
-export const VOLUME_ONLY = new Set(['mystery']);
-const VOLUME_ONLY_WEIGHTS: { vol: number; area: number; run: number } = { vol: 1, area: 0, run: 0 };
-
-/** A bottom dweller's footprint need, from its litres: a tank holding them at this water depth (cm). Swimmers are held to the run (the longest floor side) instead. */
-export const REF_DEPTH_CM = 30;
-/** Real tanks get deeper as they get bigger (catalogue: about 28 cm of water at 40-70 L, 45 at 200 L, 50-54 at 400 L and up), so a big species' litres are NOT spread over 30 cm of floor: that would ask a 70 gal for more floor than any 75 gal has. Depth ramps from REF_DEPTH_CM at RAMP_FROM_L to DEEP_DEPTH_CM at RAMP_TO_L. */
-export const DEEP_DEPTH_CM = 50, RAMP_FROM_L = 80, RAMP_TO_L = 400;
-export const refDepthCm = (litres: number) => REF_DEPTH_CM + (DEEP_DEPTH_CM - REF_DEPTH_CM) * Math.min(1, Math.max(0, (litres - RAMP_FROM_L) / (RAMP_TO_L - RAMP_FROM_L)));
-export const areaFor = (litres: number) => litres * 1000 / refDepthCm(litres);
 /** The tank's floor area, cm2, any shape (outer footprint); its longest floor side and its shortest (front to back for a rectangle), mm. */
 export function floorOf(T: TankSetup['tank']): { areaCm2: number; runMm: number; widthMm: number } {
   const ring = footprint(T).ring, e = tankExtent(T);
@@ -63,70 +40,135 @@ export function floorOf(T: TankSetup['tank']): { areaCm2: number; runMm: number;
   return { areaCm2: Math.abs(a) / 2 / 100, runMm: Math.max(e.w, e.d), widthMm: Math.min(e.w, e.d) };
 }
 
-/** What a tank offers: water (litres at the working fill), floor area, longest and shortest floor side. */
-export interface Geometry { litres: number; areaCm2: number; lengthMm: number; widthMm: number }
-export const geometryOf = (S: TankSetup): Geometry => { const f = floorOf(S.tank); return { litres: bioloadLitres(S), areaCm2: f.areaCm2, lengthMm: f.runMm, widthMm: f.widthMm }; };
+/** What a tank offers: water (litres at the working fill), floor area, longest and shortest floor side; its height, its usable water depth and its full volume where known. */
+export interface Geometry { litres: number; areaCm2: number; lengthMm: number; widthMm: number; heightMm?: number; /** water level minus substrate, mm (Decision 4); absent = no water */ depthMm?: number; /** the tank's full volume, L, for the gallon advisory (a "10 gal" figure is a tank size); absent = `litres` */ tankLitres?: number }
+export const geometryOf = (S: TankSetup): Geometry => {
+  const f = floorOf(S.tank), T = S.tank, s = S.substrate, cap = T.H * SUBSTRATE_CAP, sub = s?.show ? (Math.min(s.fl, cap) + Math.min(s.fr, cap) + Math.min(s.bl, cap) + Math.min(s.br, cap)) / 4 : 0;
+  return { litres: bioloadLitres(S), areaCm2: f.areaCm2, lengthMm: f.runMm, widthMm: f.widthMm, heightMm: T.H, tankLitres: volume(T).litres,
+    ...(S.water.on ? { depthMm: Math.max(0, waterY(T, S.water.level) - sub) } : {}) };
+};
+/** Usable water depth: the measured one, else 90 % of the tank height (labelled fallback, Decision 4), else the water spread over the floor. */
+const depthOf = (g: Geometry) => g.depthMm ?? (g.heightMm ? 0.9 * g.heightMm : g.litres * 1e4 / Math.max(1, g.areaCm2));
 
-/** The thing that holds a species to this tank size: the constraint with the largest share. */
-export type Limit = 'length' | 'width' | 'floor area' | 'water';
-export interface Measured { pct: number; limiting: Limit; /** what the species wants of the limiting measure and what the tank has, in its own unit (mm, mm, cm2, L) */ need: number; have: number }
+export type Limit = 'length' | 'width' | 'floor area' | 'height' | 'water';
+export interface Measured {
+  pct: number; limiting: Limit;
+  /** what the species wants of the limiting measure and what the tank has, in its own unit (mm, mm, cm2, mm, L) */
+  need: number; have: number;
+  /** where the line comes from; `derived (est)` = estimated from a gallon figure (its failure reads differently) */
+  mark: Mark | 'advisory'; site: string; states: string;
+}
+/** What a species is held to and how it lives: a bottom dweller or land animal lives on the floor, swimmers use the run. */
+export interface Who { floor: boolean; water: boolean; tl: number }
+export const whoOf = (sp: Species): Who => ({ floor: sp.habitat === 'land' || zoneOf(sp) === 'bottom', water: sp.habitat === 'water', tl: sp.tl });
 
+type Check = Omit<Measured, 'pct'>;
 /**
- * One species at one size (`litres`, `lengthMm`, optionally a front-to-back `widthMm` need) against a tank: the largest of the shares.
- * Length and width are the species' own stated needs and count in full; water and floor area are what a care sheet's gallon figure stands
- * for, so they are weighed by MIN_WEIGHTS (the fallback where no dimension is stated). A species with a stated floor area (`areaCm2`:
- * a footprint recommendation that allows an equivalent shape, e.g. 120 x 30 cm) is held to that area in full instead of the area derived
- * from its litres; `widthMm` is a strict front-to-back need (turning room), `lengthMm` a strict length. Over 100 = at least one measure falls short.
+ * The measures one line holds (Decision 3: classes choose which measures to look for, the species' values populate them).
+ * Floor dwellers (bottom zone, land animals): the floor area, and the length and width a page states. Swimmers: the length; the width
+ * too for a large-bodied fish; a stated "or equivalent" floor area (swordtail) on its own. A line DERIVED from a gallon figure gives one
+ * requirement only (Decision 5): the floor area for floor dwellers, the length for swimmers.
  */
-export function measureMinimum(zone: Zone, litres: number, lengthMm: number, widthMm: number, g: Geometry, areaCm2 = 0, volumeOnly = false): Measured {
-  const w = volumeOnly ? VOLUME_ONLY_WEIGHTS : MIN_WEIGHTS[zone];
-  const terms: { limiting: Limit; k: number; need: number; have: number }[] = [
-    { limiting: 'water', k: w.vol, need: litres, have: g.litres },
-    { limiting: 'floor area', k: areaCm2 > 0 ? 1 : w.area, need: areaCm2 > 0 ? areaCm2 : areaFor(litres), have: g.areaCm2 },
-    { limiting: 'length', k: w.run, need: lengthMm, have: g.lengthMm },
-    { limiting: 'width', k: widthMm > 0 ? 1 : 0, need: widthMm, have: g.widthMm },
-  ];
-  let best: Measured = { pct: 0, limiting: 'length', need: 0, have: 0 };
-  for (const t of terms) { const pct = t.k * 100 * (t.have > 0 ? t.need / t.have : 0); if (pct > best.pct) best = { pct, limiting: t.limiting, need: t.need, have: t.have }; }
-  return best;
-}
-/** How a length and a floor area print (cm by default; the tile passes its own units). */
-export interface Fmt { len: (mm: number) => string; area: (cm2: number) => string }
-/** "wants a tank at least 120 cm long, this one is 91 cm": the unmet measure in words. */
-export function reasonOf(m: Measured, f: Fmt = { len: mm => `${Math.round(mm / 10)} cm`, area: cm2 => `${Math.round(cm2)} cm2` }): string {
-  switch (m.limiting) {
-    case 'length': return `wants a tank at least ${f.len(m.need)} long, this one is ${f.len(m.have)}`;
-    case 'width': return `wants a tank at least ${f.len(m.need)} front to back, this one is ${f.len(m.have)}`;
-    case 'floor area': return `wants about ${f.area(m.need)} of floor, this tank has ${f.area(m.have)}`;
-    default: return `wants about ${Math.round(m.need)} L of water, this tank holds ${Math.round(m.have)} L`;
+function checksOf(w: Who, l: MinLine | undefined, h: HeightLine | undefined, g: Geometry): Check[] {
+  const out: Check[] = [];
+  if (l) {
+    const derived = l.mark === 'derived (est)', at = { mark: l.mark, site: l.site, states: l.states };
+    const area = l.areaCm2 ?? (w.floor && l.W ? l.L * l.W / 100 : 0);
+    if (area > 0) out.push({ limiting: 'floor area', need: area, have: g.areaCm2, ...at });
+    if (!(derived && w.floor && area > 0)) out.push({ limiting: 'length', need: l.L, have: g.lengthMm, ...at });
+    if (l.W && !derived && (w.floor || w.tl >= LARGE_BODY_MM)) out.push({ limiting: 'width', need: l.W, have: g.widthMm, ...at });
   }
+  if (h && g.heightMm) out.push({ limiting: 'height', need: h.H, have: g.heightMm, mark: h.mark, site: h.site, states: h.states });
+  return out;
+}
+const worst = (cs: Check[]): Measured => cs.reduce<Measured>((b, c) => { const pct = 100 * (c.have > 0 ? c.need / c.have : Infinity); return pct > b.pct ? { ...c, pct } : b; },
+  { pct: 0, limiting: 'length', need: 0, have: 0, mark: 'sourced', site: '', states: '' });
+
+export interface Lines {
+  /** against the red line (the minimum); pct 0 = no line */
+  red: Measured;
+  /** against the green line (the Recommended mark; the red line where none is stated) and the gallon figure (advisory) */
+  green: Measured;
+  /** false = the tank cannot be judged for this species (Decision 3: kuhli in 2 in of water): not a pass */
+  assessed: boolean;
+  /** usable water depth, mm, and the advisory maximum it is over (ADF: deeper water than advised; never fails), 0 = none */
+  depthMm: number; tooDeepMm: number;
+}
+/** How a length, a floor area and a volume print (cm by default; the tile passes its own units). */
+export interface Fmt { len: (mm: number) => string; area: (cm2: number) => string; vol?: (litres: number) => string }
+const CM: Fmt = { len: mm => `${Math.round(mm / 10)} cm`, area: cm2 => `${Math.round(cm2)} cm2` };
+
+/** One species' lines against a tank geometry. */
+export function measureLines(w: Who, d: MinData | undefined, g: Geometry): Lines {
+  const red = worst(checksOf(w, d?.red, d?.hRed, g));
+  const gc = checksOf(w, d?.green ?? d?.red, d?.hGreen ?? d?.hRed, g);
+  // Decision 2: the gallon figure is husbandry guidance, a Recommended mark (mystery snail 5 gal), never a gate
+  if (d?.vol) gc.push({ limiting: 'water', need: d.vol.gal * GAL_L, have: g.tankLitres ?? g.litres, mark: 'advisory', site: d.vol.site, states: `${d.vol.gal} gal` });
+  const depth = depthOf(g), max = d?.depth?.maxWaterDepthMm ?? 0;
+  // no page states a minimum water depth (MX7): water shallower than the animal is long is not assessed, not a pass
+  return { red, green: worst(gc), assessed: !(w.water && depth < w.tl), depthMm: depth, tooDeepMm: max && depth > max ? max : 0 };
 }
 
-export interface MinRow { id: string; name: string; n: number; /** what the species is held to besides litres: 'run' (longest floor side, swimmers) or 'area' (floor area, bottom dwellers) */ kind: 'run' | 'area'; floorCm2: number; comfortCm2: number; /** its absolute floor over the tank */ pct: number; /** its comfortable size over the tank */ comfortPct: number; floorL: number; floorLengthMm: number; comfortL: number; comfortLengthMm: number; minL: number; minLengthMm: number; /** front-to-back need, mm (0 = none stated) */ minWidthMm: number; /** the measure that holds it to this size, and the sentence for it (absolute floor) */ limiting: Limit; reason: string; /** the absolute-floor measurement behind `reason`, to print in other units */ measure: Measured }
+const what = (m: Measured, f: Fmt, n: number) => m.limiting === 'length' ? `${f.len(n)} long` : m.limiting === 'width' ? `${f.len(n)} front to back`
+  : m.limiting === 'height' ? `${f.len(n)} tall` : m.limiting === 'floor area' ? `${f.area(n)} of floor` : (f.vol ?? (l => `${Math.round(l)} L`))(n);
+const haveOf = (m: Measured, f: Fmt) => m.limiting === 'floor area' ? `this tank has ${what(m, f, m.have)}` : m.limiting === 'water' ? `this tank holds ${what(m, f, m.have)}` : `this one is ${what(m, f, m.have)}`;
+/** The unmet red measure in words. A derived line says it is estimated from a gallon figure (Decision 5), a sourced one names its page. */
+export function reasonOf(m: Measured, f: Fmt = CM): string {
+  if (m.mark === 'derived (est)') return `estimated from a gallon figure (${m.site}: ${m.states.replace(/ -> /, ', the smallest such tank is a ')}): wants about ${what(m, f, m.need)}, ${haveOf(m, f)}`;
+  return `wants ${m.limiting === 'floor area' ? '' : 'a tank '}at least ${what(m, f, m.need)} (${m.site}), ${haveOf(m, f)}`;
+}
+/** The yellow line: below the Recommended mark (allowed). */
+export function recommendedOf(m: Measured, f: Fmt = CM): string {
+  if (m.limiting === 'water') return `below the recommended size: ${m.site} gives ${m.states} of water, ${haveOf(m, f)}; a small volume swings fast`;
+  return `below the recommended size: ${m.site} recommends ${m.mark === 'derived (est)' ? 'about ' : ''}${what(m, f, m.need)}, ${haveOf(m, f)}`;
+}
+/** The red sentence of a row in these units: the unmet measure, or why it is not assessed. */
+export const reasonIn = (x: MinRow, f: Fmt = CM) => x.assessed ? reasonOf(x.measure, f) : `not assessed: ${f.len(x.depthMm)} of water is shallower than its own length (${f.len(x.tl)}), and no source states a minimum water depth`;
+/** Advisories that never fail, in these units. */
+export const notesIn = (x: MinRow, f: Fmt = CM) => x.tooDeepMm ? [`${f.len(x.depthMm)} of water, deeper than advised (${minDataOf(x.id)?.depth?.note})`] : [];
+
+export interface MinRow {
+  id: string; name: string; n: number;
+  /** floor dwellers are held to floor area, swimmers to the run (the longest floor side) */
+  kind: 'run' | 'area';
+  /** against the red line (over 100 = short of the minimum; Infinity = not assessed) and the green line (over 100 = below the recommended size) */
+  pct: number; comfortPct: number;
+  /** the red line's length, mm (0 = no line) */
+  minLengthMm: number;
+  limiting: Limit;
+  /** the sentence for the red line (or "not assessed"), and for the green one, in cm (reasonIn / recommendedOf print other units) */
+  reason: string; comfortReason: string;
+  measure: Measured; comfort: Measured;
+  /** the red line's limiting measure is derived from a gallon figure */
+  derived: boolean;
+  assessed: boolean;
+  /** usable water depth (mm), adult length (mm), the advisory maximum depth it is over (0 = none) */
+  depthMm: number; tl: number; tooDeepMm: number;
+}
 export interface TankMinimum {
-  /** the highest species percent; 0 with no animals in the water */
+  /** the highest species percent; 0 with no animals in the water; Infinity when a species cannot be assessed */
   percent: number;
-  /** the highest comfortable-size percent: over 100 = workable but cramped, they would be happier in a bigger tank */
+  /** the highest Recommended percent: over 100 = below the recommended size for some species (allowed) */
   comfortPercent: number;
   litres: number; lengthMm: number;
   /** species by percent, most demanding first */
   rows: MinRow[];
 }
 
-const careFor = (id: string) => CARE[id] as (typeof CARE)[string] & { minLengthMm?: number; minWidthMm?: number; minAreaCm2?: number } | undefined;
-
-/** One species against a tank (the same answer the Fullness bar, the tank-fit engine, the animal gate and the hard truths all use). */
+/** One species against a tank (the same answer the Fullness tile, the tank-fit engine, the animal gate and the hard truths all use). */
 export function speciesMinimum(sp: Species, g: Geometry): MinRow {
-  const c = careFor(sp.id), minL = c?.minL ?? 0, minLengthMm = c?.minLengthMm ?? 0, minWidthMm = c?.minWidthMm ?? 0, minAreaCm2 = c?.minAreaCm2 ?? 0;
-  const t = TIERS[sp.id], fl = t?.floor?.litres ?? minL, fm = t?.floor?.lengthMm ?? minLengthMm, cl = t?.comfort?.litres ?? minL, cm = t?.comfort?.lengthMm ?? minLengthMm;
-  const vo = VOLUME_ONLY.has(sp.id), zone = zoneOf(sp), floor = measureMinimum(zone, fl, fm, minWidthMm, g, minAreaCm2, vo), comfort = measureMinimum(zone, cl, cm, minWidthMm, g, minAreaCm2, vo);
-  return { id: sp.id, name: sp.name, n: 1, kind: zone === 'bottom' ? 'area' : 'run', floorCm2: minAreaCm2 || areaFor(fl), comfortCm2: minAreaCm2 || areaFor(cl), minL, minLengthMm, minWidthMm, floorL: fl, floorLengthMm: fm, comfortL: cl, comfortLengthMm: cm, pct: floor.pct, comfortPct: comfort.pct, limiting: floor.limiting, reason: reasonOf(floor), measure: floor };
+  const w = whoOf(sp), d = minDataOf(sp.id), r = measureLines(w, d, g);
+  const row: MinRow = { id: sp.id, name: sp.name, n: 1, kind: w.floor ? 'area' : 'run', pct: r.assessed ? r.red.pct : Infinity, comfortPct: r.green.pct, minLengthMm: d?.red?.L ?? 0,
+    limiting: r.red.limiting, reason: '', comfortReason: recommendedOf(r.green), measure: r.red, comfort: r.green,
+    derived: r.red.mark === 'derived (est)', assessed: r.assessed, depthMm: r.depthMm, tl: w.tl, tooDeepMm: r.tooDeepMm };
+  row.reason = reasonIn(row);
+  return row;
 }
 
 export function tankMinimum(S: TankSetup): TankMinimum {
   const g = geometryOf(S), by = new Map<string, MinRow>();
-  for (const f of S.fish) {
-    const sp = getSpecies(f.species);
+  for (const fi of S.fish) {
+    const sp = getSpecies(fi.species);
     if (!sp || !countsAgainstWater(sp)) continue;
     const have = by.get(sp.id);
     if (have) { have.n++; continue; }

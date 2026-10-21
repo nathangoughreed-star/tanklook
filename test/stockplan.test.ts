@@ -29,7 +29,7 @@ describe('stocking screen logic (lane P5, 2026-10-20)', () => {
     expect(notesOf({ id: 'adf', n: 2 }).band).toBe('ok');
     expect(notesOf({ id: 'adf', n: 7 }).band).toBe('great');
     const h = notesOf({ id: 'adf', n: 2 }).habitat.join(' | ');
-    expect(h).toMatch(/Shallow water/); expect(h).toMatch(/flow/);
+    expect(h).toMatch(/no deeper than 61 cm \(advice/); // lane MM: the sourced 24 in maximum, an advisory expect(h).toMatch(/flow/);
     expect(notesOf({ id: 'guppy', n: 1, f: 0 }).ratio).toMatch(/female/);
   });
   it('tankmates: compatible first, never an animal that eats or is eaten, salt stays with salt', () => {

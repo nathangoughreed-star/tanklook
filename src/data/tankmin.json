@@ -1,0 +1,1808 @@
+{
+ "generated": "scripts/tank-min-data.mjs from research/sourcing/tank-minimum/summary.json",
+ "species": {
+  "neon": {
+   "red": {
+    "L": 504,
+    "W": 257,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/neon-tetra/",
+    "states": "10 gal -> 10 gal",
+    "from": "volume",
+    "ref": "g10"
+   },
+   "green": {
+    "L": 600,
+    "W": 300,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/paracheirodon-innesi/",
+    "states": "60 ∗ 30 cm",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 10,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/neon-tetra/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "swordtail": {
+   "red": {
+    "L": 800,
+    "areaCm2": 3600,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "FishBase + Seriously Fish",
+    "url": "https://www.fishbase.net.br/summary/3231",
+    "states": "minimum aquarium size 80 cm; area of 120 x 30 cm \"or equivalent\"",
+    "from": "length + footprint area"
+   },
+   "vol": {
+    "gal": 15,
+    "mark": "sourced",
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/swordtail/"
+   },
+   "why": "MX4: FishBase length and SF floor area, each held on its own"
+  },
+  "betta": {
+   "red": {
+    "L": 398,
+    "W": 195,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/betta-fish-care/",
+    "states": "5 gal -> 5 gal",
+    "from": "volume",
+    "ref": "g5"
+   },
+   "green": {
+    "L": 450,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/betta-splendens/",
+    "states": "45 ∗ 30 cm",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 5,
+    "mark": "sourced",
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/betta-fish-care/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "angel": {
+   "red": {
+    "L": 1000,
+    "W": 400,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/pterophyllum-scalare/",
+    "states": "100 ∗ 40 ∗ 50 cm",
+    "from": "footprint"
+   },
+   "hGreen": {
+    "H": 500,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/pterophyllum-scalare/",
+    "states": "50 cm"
+   },
+   "depth": {
+    "recommendedTankHeightMm": 500,
+    "mark": "sourced",
+    "note": "Seriously Fish: a tall tank of at least 50 cm, for adults; body height 20 cm"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "discus": {
+   "red": {
+    "L": 1220,
+    "W": 458,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/discus-fish/",
+    "states": "60 gal -> 60 gal breeder",
+    "from": "volume",
+    "ref": "g60b"
+   },
+   "hGreen": {
+    "H": 450,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/symphysodon-aequifasciatus/",
+    "states": "45 cm"
+   },
+   "depth": {
+    "advisoryTankHeightMm": 457,
+    "mark": "estimated advisory",
+    "note": "one low-credibility page: 18-20 in of water height; tall body",
+    "est": true
+   },
+   "vol": {
+    "gal": 60,
+    "mark": "sourced",
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/discus-fish/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "oscar": {
+   "red": {
+    "L": 1500,
+    "W": 600,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/astronotus-ocellatus/",
+    "states": "150 ∗ 60 cm",
+    "from": "footprint"
+   },
+   "why": "2 geometry pages: lowest stated minimum"
+  },
+  "bronzecory": {
+   "red": {
+    "L": 765,
+    "W": 324,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Aquariadise",
+    "url": "https://www.aquariadise.com/caresheet-bronze-corydoras/",
+    "states": "20 gal -> 20 gal long",
+    "from": "volume",
+    "ref": "g20l"
+   },
+   "vol": {
+    "gal": 20,
+    "mark": "sourced",
+    "site": "Aquariadise",
+    "url": "https://www.aquariadise.com/caresheet-bronze-corydoras/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "kuhli": {
+   "red": {
+    "L": 600,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/pangio-kuhlii/",
+    "states": "60 ∗ 30 cm",
+    "from": "footprint"
+   },
+   "green": {
+    "L": 800,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Aquariadise",
+    "url": "https://www.aquariadise.com/caresheet-kuhli-loach/",
+    "states": "31.5 inches / 80 cm",
+    "from": "length"
+   },
+   "depth": {
+    "note": "no page states a water depth; the 2 in tray is not assessed"
+   },
+   "vol": {
+    "gal": 20,
+    "mark": "sourced",
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/kuhli-loach/"
+   },
+   "why": "3 geometry pages: lowest stated minimum"
+  },
+  "royalgramma": {
+   "red": {
+    "L": 902,
+    "W": 445,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "LiveAquaria",
+    "url": "https://www.liveaquaria.com/product/53/?pcatid=53",
+    "states": "30 gal -> 30 gal breeder",
+    "from": "volume",
+    "ref": "g30b"
+   },
+   "vol": {
+    "gal": 30,
+    "mark": "sourced",
+    "site": "LiveAquaria",
+    "url": "https://www.liveaquaria.com/product/53/?pcatid=53"
+   },
+   "why": "no geometry page: derived from gallons"
+  },
+  "cleanershrimp": {
+   "vol": {
+    "gal": 20,
+    "mark": "sourced",
+    "site": "Aquariadise",
+    "url": "https://aquariadise.com/cleaner-shrimp/"
+   },
+   "why": "aquatic invertebrate: clearance only (Decision 3)"
+  },
+  "cardinal": {
+   "red": {
+    "L": 600,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/paracheirodon-axelrodi/",
+    "states": "60 ∗ 30 cm",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 20,
+    "mark": "sourced",
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/cardinal-tetra/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "ember": {
+   "red": {
+    "L": 450,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/hyphessobrycon-amandae/",
+    "states": "45 ∗ 30 cm",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 10,
+    "mark": "sourced",
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/ember-tetra/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "rummynose": {
+   "red": {
+    "L": 765,
+    "W": 324,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/rummy-nose-tetra/",
+    "states": "20 gal -> 20 gal long",
+    "from": "volume",
+    "ref": "g20l"
+   },
+   "green": {
+    "L": 900,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/hemigrammus-rhodostomus/",
+    "states": "36 inches/90 cm",
+    "from": "length"
+   },
+   "vol": {
+    "gal": 20,
+    "mark": "sourced",
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/rummy-nose-tetra/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "harlequin": {
+   "red": {
+    "L": 600,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/trigonostigma-heteromorpha/",
+    "states": "60 ∗ 30 cm",
+    "from": "footprint"
+   },
+   "why": "2 geometry pages: lowest stated minimum"
+  },
+  "chili": {
+   "red": {
+    "L": 335,
+    "W": 335,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/chili-rasbora/",
+    "states": "8 gal -> 8 gal cube",
+    "from": "volume",
+    "ref": "g8c"
+   },
+   "green": {
+    "L": 450,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/boraras-brigittae/",
+    "states": "45 ∗ 30 cm",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 8,
+    "mark": "sourced",
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/chili-rasbora/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "danio": {
+   "red": {
+    "L": 504,
+    "W": 257,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/zebra-danio/",
+    "states": "10 gal -> 10 gal",
+    "from": "volume",
+    "ref": "g10"
+   },
+   "green": {
+    "L": 900,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/danio-rerio/",
+    "states": "90 ∗ 30 cm",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 10,
+    "mark": "sourced",
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/zebra-danio/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "whitecloud": {
+   "red": {
+    "L": 504,
+    "W": 257,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/white-cloud-mountain-minnow/",
+    "states": "10 gal -> 10 gal",
+    "from": "volume",
+    "ref": "g10"
+   },
+   "green": {
+    "L": 600,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/tanichthys-albonubes/",
+    "states": "60 ∗ 30 cm",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 10,
+    "mark": "sourced",
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/white-cloud-mountain-minnow/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "cpd": {
+   "red": {
+    "L": 450,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/danio-margaritatus/",
+    "states": "45 × 30cm",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 10,
+    "mark": "sourced",
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/celestial-pearl-danio/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "hatchet": {
+   "red": {
+    "L": 765,
+    "W": 324,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "LiveAquaria",
+    "url": "https://www.liveaquaria.com/products/marble-hatchet",
+    "states": "20 gal -> 20 gal long",
+    "from": "volume",
+    "ref": "g20l"
+   },
+   "vol": {
+    "gal": 20,
+    "mark": "sourced",
+    "site": "LiveAquaria",
+    "url": "https://www.liveaquaria.com/products/marble-hatchet"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "cherrybarb": {
+   "red": {
+    "L": 504,
+    "W": 257,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Aquarium Co-Op",
+    "url": "https://www.aquariumcoop.com/blogs/aquarium/cherry-barb",
+    "states": "10 gal -> 10 gal",
+    "from": "volume",
+    "ref": "g10"
+   },
+   "green": {
+    "L": 600,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/puntius-titteya/",
+    "states": "60 ∗ 30 cm",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 10,
+    "mark": "sourced",
+    "site": "Aquarium Co-Op",
+    "url": "https://www.aquariumcoop.com/blogs/aquarium/cherry-barb"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "tigerbarb": {
+   "red": {
+    "L": 765,
+    "W": 324,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/tiger-barb/",
+    "states": "20 gal -> 20 gal long",
+    "from": "volume",
+    "ref": "g20l"
+   },
+   "vol": {
+    "gal": 20,
+    "mark": "sourced",
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/tiger-barb/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "boesemani": {
+   "red": {
+    "L": 1200,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/melanotaenia-boesemani/",
+    "states": "120 ∗ 30",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 28.5,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/melanotaenia-boesemani/"
+   },
+   "why": "3 geometry pages: lowest stated minimum"
+  },
+  "guppy": {
+   "red": {
+    "L": 398,
+    "W": 195,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/guppies/",
+    "states": "5 gal -> 5 gal",
+    "from": "volume",
+    "ref": "g5"
+   },
+   "green": {
+    "L": 450,
+    "W": 300,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/poecilia-reticulata/",
+    "states": "45 × 30cm",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 5,
+    "mark": "sourced",
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/guppies/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "platy": {
+   "red": {
+    "L": 504,
+    "W": 257,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/platy-fish/",
+    "states": "10 gal -> 10 gal",
+    "from": "volume",
+    "ref": "g10"
+   },
+   "green": {
+    "L": 600,
+    "W": 300,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/xiphophorus-maculatus/",
+    "states": "60 × 30cm",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 10,
+    "mark": "sourced",
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/platy-fish/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "molly": {
+   "red": {
+    "L": 504,
+    "W": 257,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/molly-fish/",
+    "states": "10 gal -> 10 gal",
+    "from": "volume",
+    "ref": "g10"
+   },
+   "green": {
+    "L": 900,
+    "W": 300,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/poecilia-sphenops/",
+    "states": "90 × 30cm",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 10,
+    "mark": "sourced",
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/molly-fish/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "dwarfgourami": {
+   "red": {
+    "L": 504,
+    "W": 257,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Aquarium Co-Op",
+    "url": "https://www.aquariumcoop.com/blogs/aquarium/dwarf-gourami",
+    "states": "10 gal -> 10 gal",
+    "from": "volume",
+    "ref": "g10"
+   },
+   "vol": {
+    "gal": 10,
+    "mark": "sourced",
+    "site": "Aquarium Co-Op",
+    "url": "https://www.aquariumcoop.com/blogs/aquarium/dwarf-gourami"
+   },
+   "why": "no geometry page: derived from gallons"
+  },
+  "honeygourami": {
+   "red": {
+    "L": 398,
+    "W": 195,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Aquarium Co-Op",
+    "url": "https://www.aquariumcoop.com/blogs/aquarium/honey-gourami",
+    "states": "5 gal -> 5 gal",
+    "from": "volume",
+    "ref": "g5"
+   },
+   "green": {
+    "L": 600,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/trichogaster-chuna/",
+    "states": "60 ∗ 30 cm",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 5,
+    "mark": "sourced",
+    "site": "Aquarium Co-Op",
+    "url": "https://www.aquariumcoop.com/blogs/aquarium/honey-gourami"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "gourami": {
+   "red": {
+    "L": 900,
+    "W": 300,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/trichopodus-leerii/",
+    "states": "90 × 30cm",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 30,
+    "mark": "sourced",
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/pearl-gourami/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "gbr": {
+   "red": {
+    "L": 600,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://seriouslyfish.com/species/mikrogeophagus-ramirezi",
+    "states": "60 ∗ 30 cm",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 20,
+    "mark": "sourced",
+    "site": "Aquarium Co-Op",
+    "url": "https://www.aquariumcoop.com/blogs/aquarium/german-blue-ram"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "bolivianram": {
+   "red": {
+    "L": 900,
+    "W": 450,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://seriouslyfish.com/species/mikrogeophagus-altispinosus",
+    "states": "90 ∗ 45 cm",
+    "from": "footprint"
+   },
+   "green": {
+    "L": 1200,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://seriouslyfish.com/species/mikrogeophagus-altispinosus",
+    "states": "120 cm",
+    "from": "length"
+   },
+   "vol": {
+    "gal": 30,
+    "mark": "sourced",
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/bolivian-ram/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "kribensis": {
+   "red": {
+    "L": 600,
+    "W": 375,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/pelvicachromis-pulcher/",
+    "states": "24\" x 15\" x 12\"",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 18.8,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/pelvicachromis-pulcher/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "cockatoo": {
+   "red": {
+    "L": 600,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/apistogramma-cacatuoides/",
+    "states": "60 ∗ 30 cm",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 14.3,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/apistogramma-cacatuoides/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "yellowlab": {
+   "red": {
+    "L": 900,
+    "W": 450,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/labidochromis-caeruleus/",
+    "states": "90 ∗ 45 ∗ 38 cm",
+    "from": "footprint"
+   },
+   "green": {
+    "L": 1219,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/labidochromis-caeruleus/",
+    "states": "48\"",
+    "from": "length"
+   },
+   "vol": {
+    "gal": 39.6,
+    "mark": "sourced",
+    "site": "Guidarium",
+    "url": "https://guidarium.com/fishes/yellow-lab-mbuna"
+   },
+   "why": "2 geometry pages: lowest stated minimum"
+  },
+  "peacock": {
+   "red": {
+    "L": 1200,
+    "W": 450,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://seriouslyfish.com/species/aulonocara-stuartgranti",
+    "states": "120 ∗ 45 cm",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 55,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Guidarium",
+    "url": "https://guidarium.com/fishes/grants-peacock-cichlid"
+   },
+   "why": "2 geometry pages: lowest stated minimum"
+  },
+  "demasoni": {
+   "red": {
+    "L": 1200,
+    "W": 450,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/pseudotropheus-demasoni/",
+    "states": "120 × 45cm",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 52.8,
+    "mark": "sourced",
+    "site": "Guidarium",
+    "url": "https://guidarium.com/fishes/demasoni-cichlid-mbuna"
+   },
+   "why": "2 geometry pages: lowest stated minimum"
+  },
+  "kadango": {
+   "red": {
+    "L": 1200,
+    "mark": "sourced",
+    "site": "Guidarium",
+    "url": "https://guidarium.com/fishes/red-fin-borleyi",
+    "states": "120 cm",
+    "from": "length"
+   },
+   "green": {
+    "L": 1500,
+    "W": 450,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://seriouslyfish.com/species/copadichromis-borleyi",
+    "states": "150 ∗ 45 ∗ 45 cm",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 74,
+    "mark": "sourced",
+    "site": "Guidarium",
+    "url": "https://guidarium.com/fishes/red-fin-borleyi"
+   },
+   "why": "2 geometry pages: lowest stated minimum"
+  },
+  "syno": {
+   "red": {
+    "L": 756,
+    "W": 306,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/synodontis-njassae/",
+    "states": "28.5 gal -> 29 gal",
+    "from": "volume",
+    "ref": "g29"
+   },
+   "green": {
+    "L": 1200,
+    "W": 300,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/synodontis-njassae/",
+    "states": "120 × 30cm",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 28.5,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/synodontis-njassae/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "labeo": {
+   "red": {
+    "L": 1200,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Guidarium",
+    "url": "https://guidarium.com/fishes/trewavas-cichlid",
+    "states": "120 cm",
+    "from": "length"
+   },
+   "vol": {
+    "gal": 52.8,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Guidarium",
+    "url": "https://guidarium.com/fishes/trewavas-cichlid"
+   },
+   "why": "2 geometry pages: lowest stated minimum"
+  },
+  "auratus": {
+   "red": {
+    "L": 1200,
+    "W": 450,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/melanochromis-auratus/",
+    "states": "120 × 45cm",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 52.8,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Guidarium",
+    "url": "https://guidarium.com/fishes/auratus-cichlid-mbuna"
+   },
+   "why": "2 geometry pages: lowest stated minimum"
+  },
+  "livingstonii": {
+   "red": {
+    "L": 1219,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/nimbochromis-livingstonii/",
+    "states": "48\"",
+    "from": "length"
+   },
+   "green": {
+    "L": 1500,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Guidarium",
+    "url": "https://guidarium.com/fishes/livingstons-cichlid",
+    "states": "150 cm",
+    "from": "length"
+   },
+   "vol": {
+    "gal": 124.2,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Guidarium",
+    "url": "https://guidarium.com/fishes/livingstons-cichlid"
+   },
+   "why": "2 geometry pages: lowest stated minimum"
+  },
+  "afra": {
+   "red": {
+    "L": 1200,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Guidarium",
+    "url": "https://guidarium.com/fishes/afra-cichlid",
+    "states": "120 cm",
+    "from": "length"
+   },
+   "vol": {
+    "gal": 52.8,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Guidarium",
+    "url": "https://guidarium.com/fishes/afra-cichlid"
+   },
+   "why": "3 geometry pages: lowest stated minimum"
+  },
+  "goldfish": {
+   "red": {
+    "L": 765,
+    "W": 324,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/fancy-goldfish/",
+    "states": "20 gal -> 20 gal long",
+    "from": "volume",
+    "ref": "g20l"
+   },
+   "vol": {
+    "gal": 20,
+    "mark": "sourced",
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/fancy-goldfish/"
+   },
+   "why": "no geometry page: derived from gallons"
+  },
+  "comet": {
+   "red": {
+    "L": 902,
+    "W": 445,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/goldfish/",
+    "states": "30 gal -> 30 gal breeder",
+    "from": "volume",
+    "ref": "g30b"
+   },
+   "hGreen": {
+    "H": 457,
+    "mark": "sourced",
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/goldfish/",
+    "states": "1.5 feet high"
+   },
+   "vol": {
+    "gal": 30,
+    "mark": "sourced",
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/goldfish/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "pandacory": {
+   "red": {
+    "L": 612,
+    "W": 308,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/corydoras-panda/",
+    "states": "10.8 gal -> 15 gal",
+    "from": "volume",
+    "ref": "g15"
+   },
+   "vol": {
+    "gal": 10.8,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/corydoras-panda/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "pygmycory": {
+   "red": {
+    "L": 504,
+    "W": 257,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/pygmy-cory/",
+    "states": "10 gal -> 10 gal",
+    "from": "volume",
+    "ref": "g10"
+   },
+   "vol": {
+    "gal": 10,
+    "mark": "sourced",
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/pygmy-cory/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "bristlenose": {
+   "red": {
+    "L": 600,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/ancistrus-cf-cirrhosus",
+    "states": "60 ∗ 30 cm",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 14.3,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/ancistrus-cf-cirrhosus"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "oto": {
+   "red": {
+    "L": 450,
+    "mark": "sourced",
+    "site": "Guidarium",
+    "url": "https://guidarium.com/fishes/otocinclus",
+    "states": "45 cm",
+    "from": "length"
+   },
+   "vol": {
+    "gal": 10,
+    "mark": "sourced",
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/otocinclus/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "clownloach": {
+   "red": {
+    "L": 1500,
+    "mark": "sourced",
+    "site": "Guidarium",
+    "url": "https://guidarium.com/fishes/clown-loach",
+    "states": "150 cm",
+    "from": "length"
+   },
+   "green": {
+    "L": 1800,
+    "W": 600,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/chromobotia-macracanthus/",
+    "states": "180 × 60cm",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 132.1,
+    "mark": "sourced",
+    "site": "Guidarium",
+    "url": "https://guidarium.com/fishes/clown-loach"
+   },
+   "why": "2 geometry pages: lowest stated minimum"
+  },
+  "sae": {
+   "red": {
+    "L": 765,
+    "W": 324,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/siamese-algae-eater/",
+    "states": "20 gal -> 20 gal long",
+    "from": "volume",
+    "ref": "g20l"
+   },
+   "green": {
+    "L": 900,
+    "mark": "sourced",
+    "site": "Guidarium",
+    "url": "https://guidarium.com/fishes/siamese-algae-eater",
+    "states": "90 cm",
+    "from": "length"
+   },
+   "vol": {
+    "gal": 20,
+    "mark": "sourced",
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/siamese-algae-eater/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "hillstream": {
+   "red": {
+    "L": 750,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/sewellia-lineolata/",
+    "states": "75 ∗ 30 cm30 ∗ 12 in",
+    "from": "footprint"
+   },
+   "green": {
+    "L": 900,
+    "mark": "sourced",
+    "site": "Guidarium",
+    "url": "https://guidarium.com/fishes/reticulated-hillstream-loach",
+    "states": "90 cm",
+    "from": "length"
+   },
+   "vol": {
+    "gal": 18,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/sewellia-lineolata/"
+   },
+   "why": "2 geometry pages: lowest stated minimum"
+  },
+  "peapuffer": {
+   "red": {
+    "L": 305,
+    "W": 203,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/carinotetraodon-travancoricus/",
+    "states": "12\" x 8\" x 8\"",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 3.3,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/carinotetraodon-travancoricus/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "cherryshrimp": {
+   "vol": {
+    "gal": 5,
+    "mark": "sourced",
+    "site": "Modest Fish",
+    "url": "https://modestfish.com/cherry-shrimp"
+   },
+   "why": "aquatic invertebrate: clearance only (Decision 3)"
+  },
+  "amano": {
+   "vol": {
+    "gal": 10,
+    "mark": "sourced",
+    "site": "Aquarium Source",
+    "url": "https://www.aquariumsource.com/amano-shrimp/"
+   },
+   "why": "aquatic invertebrate: clearance only (Decision 3)"
+  },
+  "nerite": {
+   "vol": {
+    "gal": 2,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Aquarium Co-Op",
+    "url": "https://www.aquariumcoop.com/blogs/aquarium/nerite-snails"
+   },
+   "why": "aquatic invertebrate: clearance only (Decision 3)"
+  },
+  "mystery": {
+   "vol": {
+    "gal": 5,
+    "mark": "sourced",
+    "site": "Aquarium Source",
+    "url": "https://ca.aquariumsource.com/mystery-snail/"
+   },
+   "why": "aquatic invertebrate: clearance only (Decision 3)"
+  },
+  "ramshorn": {
+   "why": "aquatic invertebrate: clearance only (Decision 3)"
+  },
+  "trumpet": {
+   "vol": {
+    "gal": 5,
+    "mark": "sourced",
+    "site": "Aquarium Source",
+    "url": "https://www.aquariumsource.com/malaysian-trumpet-snail/"
+   },
+   "why": "aquatic invertebrate: clearance only (Decision 3)"
+  },
+  "ocellaris": {
+   "red": {
+    "L": 612,
+    "W": 308,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Bulk Reef Supply",
+    "url": "https://www.bulkreefsupply.com/ora-flurry-ocellaris-clownfish-ora.html",
+    "states": "15 gal -> 15 gal",
+    "from": "volume",
+    "ref": "g15"
+   },
+   "vol": {
+    "gal": 15,
+    "mark": "sourced",
+    "site": "Bulk Reef Supply",
+    "url": "https://www.bulkreefsupply.com/ora-flurry-ocellaris-clownfish-ora.html"
+   },
+   "why": "no geometry page: derived from gallons"
+  },
+  "yellowtang": {
+   "red": {
+    "L": 1216,
+    "W": 454,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Saltwater Aquarium Blog",
+    "url": "https://www.saltwateraquariumblog.com/yellow-tang-care-guide/",
+    "states": "90 gal -> 90 gal",
+    "from": "volume",
+    "ref": "g90"
+   },
+   "green": {
+    "L": 1829,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Saltwater Aquarium Blog",
+    "url": "https://www.saltwateraquariumblog.com/yellow-tang-care-guide/",
+    "states": "6-foot (1.8 m)",
+    "from": "length"
+   },
+   "vol": {
+    "gal": 90,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Saltwater Aquarium Blog",
+    "url": "https://www.saltwateraquariumblog.com/yellow-tang-care-guide/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "bluetang": {
+   "red": {
+    "L": 1809,
+    "W": 590,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "LiveAquaria",
+    "url": "https://www.liveaquaria.com/product/330/",
+    "states": "180 gal -> 180 gal",
+    "from": "volume",
+    "ref": "g180"
+   },
+   "vol": {
+    "gal": 180,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "LiveAquaria",
+    "url": "https://www.liveaquaria.com/product/330/"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "firefish": {
+   "red": {
+    "L": 765,
+    "W": 324,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "LiveAquaria",
+    "url": "https://www.liveaquaria.com/product/168/?pcatid=168",
+    "states": "20 gal -> 20 gal long",
+    "from": "volume",
+    "ref": "g20l"
+   },
+   "vol": {
+    "gal": 20,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "LiveAquaria",
+    "url": "https://www.liveaquaria.com/product/168/?pcatid=168"
+   },
+   "why": "no geometry page: derived from gallons"
+  },
+  "banggai": {
+   "red": {
+    "L": 504,
+    "W": 257,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Saltwater Aquarium Blog",
+    "url": "https://www.saltwateraquariumblog.com/banggai-cardinalfish-care-guide/",
+    "states": "10 gal -> 10 gal",
+    "from": "volume",
+    "ref": "g10"
+   },
+   "vol": {
+    "gal": 10,
+    "mark": "sourced",
+    "site": "Saltwater Aquarium Blog",
+    "url": "https://www.saltwateraquariumblog.com/banggai-cardinalfish-care-guide/"
+   },
+   "why": "no geometry page: derived from gallons"
+  },
+  "sixline": {
+   "red": {
+    "L": 902,
+    "W": 445,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Aquariadise",
+    "url": "https://www.aquariadise.com/six-line-wrasse/",
+    "states": "30 gal -> 30 gal breeder",
+    "from": "volume",
+    "ref": "g30b"
+   },
+   "vol": {
+    "gal": 30,
+    "mark": "sourced",
+    "site": "Aquariadise",
+    "url": "https://www.aquariadise.com/six-line-wrasse/"
+   },
+   "why": "no geometry page: derived from gallons"
+  },
+  "chromis": {
+   "red": {
+    "L": 902,
+    "W": 445,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "LiveAquaria",
+    "url": "https://www.liveaquaria.com/product/115/",
+    "states": "30 gal -> 30 gal breeder",
+    "from": "volume",
+    "ref": "g30b"
+   },
+   "vol": {
+    "gal": 30,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "LiveAquaria",
+    "url": "https://www.liveaquaria.com/product/115/"
+   },
+   "why": "no geometry page: derived from gallons"
+  },
+  "coralbeauty": {
+   "red": {
+    "L": 1220,
+    "W": 458,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "LiveAquaria",
+    "url": "https://www.liveaquaria.com/product/438/?pcatid=438",
+    "states": "70 gal -> 75 gal",
+    "from": "volume",
+    "ref": "g75"
+   },
+   "vol": {
+    "gal": 70,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "LiveAquaria",
+    "url": "https://www.liveaquaria.com/product/438/?pcatid=438"
+   },
+   "why": "no geometry page: derived from gallons"
+  },
+  "watchman": {
+   "red": {
+    "L": 765,
+    "W": 324,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Bulk Reef Supply",
+    "url": "https://www.bulkreefsupply.com/content/post/how-to-care-for-watchman-gobies",
+    "states": "20 gal -> 20 gal long",
+    "from": "volume",
+    "ref": "g20l"
+   },
+   "vol": {
+    "gal": 20,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Bulk Reef Supply",
+    "url": "https://www.bulkreefsupply.com/content/post/how-to-care-for-watchman-gobies"
+   },
+   "why": "no geometry page: derived from gallons"
+  },
+  "mandarin": {
+   "red": {
+    "L": 902,
+    "W": 445,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Bulk Reef Supply",
+    "url": "https://www.bulkreefsupply.com/content/post/how-to-care-for-mandarin-dragonets",
+    "states": "30 gal -> 30 gal breeder",
+    "from": "volume",
+    "ref": "g30b"
+   },
+   "vol": {
+    "gal": 30,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Bulk Reef Supply",
+    "url": "https://www.bulkreefsupply.com/content/post/how-to-care-for-mandarin-dragonets"
+   },
+   "why": "no geometry page: derived from gallons"
+  },
+  "turbo": {
+   "why": "aquatic invertebrate: clearance only (Decision 3)"
+  },
+  "hermit": {
+   "vol": {
+    "gal": 10,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Top Shelf Aquatics",
+    "url": "https://topshelfaquatics.com/products/blue-leg-hermit-crab"
+   },
+   "why": "aquatic invertebrate: clearance only (Decision 3)"
+  },
+  "dartfrog": {
+   "green": {
+    "L": 457,
+    "W": 457,
+    "mark": "sourced",
+    "site": "Josh's Frogs",
+    "url": "https://joshsfrogs.com/sp/dendrobates-tinctorius-green-sip-dart034",
+    "states": "18x18x18",
+    "from": "footprint"
+   },
+   "hGreen": {
+    "H": 457,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Josh's Frogs",
+    "url": "https://joshsfrogs.com/sp/dendrobates-tinctorius-green-sip-dart034",
+    "states": "18x18x18"
+   },
+   "vol": {
+    "gal": 10,
+    "mark": "sourced",
+    "site": "Josh's Frogs",
+    "url": "https://joshsfrogs.com/sp/dendrobates-tinctorius-green-sip-dart034"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "treefrog": {
+   "red": {
+    "L": 457,
+    "W": 457,
+    "mark": "sourced",
+    "site": "The Bio Dude",
+    "url": "https://www.thebiodude.com/blogs/frog-caresheets/white-s-tree-frog-caresheet-and-bioactive-maintenance",
+    "states": "18”L x 18”W",
+    "from": "footprint"
+   },
+   "hRed": {
+    "H": 610,
+    "mark": "sourced",
+    "site": "The Bio Dude",
+    "url": "https://www.thebiodude.com/blogs/frog-caresheets/white-s-tree-frog-caresheet-and-bioactive-maintenance",
+    "states": "24”H"
+   },
+   "vol": {
+    "gal": 15,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Reptile Direct",
+    "url": "https://reptiledirect.com/whites-tree-frog/"
+   },
+   "why": "2 geometry pages: lowest stated minimum"
+  },
+  "firetoad": {
+   "green": {
+    "L": 610,
+    "W": 305,
+    "mark": "sourced",
+    "site": "The Vet Desk",
+    "url": "https://thevetdesk.com/pet-breeds/amphibians/oriental-fire-bellied-toad",
+    "states": "24” L x 12” W",
+    "from": "footprint"
+   },
+   "hRed": {
+    "H": 305,
+    "mark": "sourced",
+    "site": "The Vet Desk",
+    "url": "https://thevetdesk.com/pet-breeds/amphibians/oriental-fire-bellied-toad",
+    "states": "12” H"
+   },
+   "hGreen": {
+    "H": 457,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Josh's Frogs",
+    "url": "https://joshsfrogs.com/cms/fire-bellied-toad-care-sheet",
+    "states": "18x18x18"
+   },
+   "vol": {
+    "gal": 10,
+    "mark": "sourced",
+    "site": "The Vet Desk",
+    "url": "https://thevetdesk.com/pet-breeds/amphibians/oriental-fire-bellied-toad"
+   },
+   "why": "MX8: 12 in tall required (vet page), 18 x 18 x 18 Recommended (Josh's Frogs)"
+  },
+  "firenewt": {
+   "red": {
+    "L": 612,
+    "W": 308,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "PetMD",
+    "url": "https://petmd.com/exotic/fire-bellied-newt-care-sheet",
+    "states": "15 gal -> 15 gal",
+    "from": "volume",
+    "ref": "g15"
+   },
+   "vol": {
+    "gal": 15,
+    "mark": "sourced",
+    "site": "PetMD",
+    "url": "https://petmd.com/exotic/fire-bellied-newt-care-sheet"
+   },
+   "why": "no geometry page: derived from gallons"
+  },
+  "adf": {
+   "red": {
+    "L": 398,
+    "W": 195,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Modest Fish",
+    "url": "https://modestfish.com/african-dwarf-frog-care/",
+    "states": "5 gal -> 5 gal",
+    "from": "volume",
+    "ref": "g5"
+   },
+   "depth": {
+    "maxWaterDepthMm": 610,
+    "mark": "advisory",
+    "note": "Modest Fish: no deeper than 2 ft; must reach the surface to breathe",
+    "est": true
+   },
+   "vol": {
+    "gal": 5,
+    "mark": "sourced",
+    "site": "Modest Fish",
+    "url": "https://modestfish.com/african-dwarf-frog-care/"
+   },
+   "why": "no geometry page: derived from gallons"
+  },
+  "axolotl": {
+   "red": {
+    "L": 450,
+    "mark": "sourced",
+    "site": "Axolotl.org",
+    "url": "https://www.axolotl.org/housing.htm",
+    "states": "45 cm",
+    "from": "length"
+   },
+   "green": {
+    "L": 900,
+    "W": 450,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Reptile Centre",
+    "url": "https://www.reptilecentre.com/blogs/reptile-blog/axolotl-tank-size",
+    "states": "90x45cm",
+    "from": "footprint"
+   },
+   "hGreen": {
+    "H": 250,
+    "mark": "sourced",
+    "site": "Axolotl.org",
+    "url": "https://www.axolotl.org/housing.htm",
+    "states": "25 cm tall"
+   },
+   "vol": {
+    "gal": 10,
+    "mark": "sourced",
+    "site": "Axolotl.org",
+    "url": "https://www.axolotl.org/housing.htm"
+   },
+   "why": "2 geometry pages: lowest stated minimum"
+  },
+  "crestedharlequin": {
+   "red": {
+    "L": 457,
+    "W": 457,
+    "mark": "sourced",
+    "site": "Reptiles Magazine",
+    "url": "https://reptilesmagazine.com/crested-gecko-care-sheet/",
+    "states": "18″L x 18″W",
+    "from": "footprint"
+   },
+   "hRed": {
+    "H": 610,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "ReptiFiles",
+    "url": "https://reptifiles.com/wp-content/uploads/2020/10/Crested-Gecko-Care-Sheet-PDF.pdf",
+    "states": "24\""
+   },
+   "hGreen": {
+    "H": 914,
+    "mark": "sourced",
+    "site": "Reptiles Magazine",
+    "url": "https://reptilesmagazine.com/crested-gecko-care-sheet/",
+    "states": "36″"
+   },
+   "why": "same species as crestedgecko (Correlophus ciliatus): its lines"
+  },
+  "crestedgecko": {
+   "red": {
+    "L": 457,
+    "W": 457,
+    "mark": "sourced",
+    "site": "Reptiles Magazine",
+    "url": "https://reptilesmagazine.com/crested-gecko-care-sheet/",
+    "states": "18″L x 18″W",
+    "from": "footprint"
+   },
+   "hRed": {
+    "H": 610,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "ReptiFiles",
+    "url": "https://reptifiles.com/wp-content/uploads/2020/10/Crested-Gecko-Care-Sheet-PDF.pdf",
+    "states": "24\""
+   },
+   "hGreen": {
+    "H": 914,
+    "mark": "sourced",
+    "site": "Reptiles Magazine",
+    "url": "https://reptilesmagazine.com/crested-gecko-care-sheet/",
+    "states": "36″"
+   },
+   "why": "MX8: 18 x 18 x 24 in required (two pages), 36 in tall Recommended"
+  },
+  "greenanole": {
+   "red": {
+    "L": 610,
+    "W": 610,
+    "mark": "sourced",
+    "site": "ReptiFiles",
+    "url": "https://reptifiles.com/green-anole-care-sheet/",
+    "states": "24″L x 24″W",
+    "from": "footprint"
+   },
+   "hRed": {
+    "H": 610,
+    "mark": "sourced",
+    "site": "ReptiFiles",
+    "url": "https://reptifiles.com/green-anole-care-sheet/",
+    "states": "24″H"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "greenanolebrown": {
+   "red": {
+    "L": 610,
+    "W": 610,
+    "mark": "sourced",
+    "site": "ReptiFiles",
+    "url": "https://reptifiles.com/green-anole-care-sheet/",
+    "states": "24″L x 24″W",
+    "from": "footprint"
+   },
+   "hRed": {
+    "H": 610,
+    "mark": "sourced",
+    "site": "ReptiFiles",
+    "url": "https://reptifiles.com/green-anole-care-sheet/",
+    "states": "24″H"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "brownanole": {
+   "red": {
+    "L": 504,
+    "W": 257,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "TheVetDesk",
+    "url": "https://thevetdesk.com/pet-breeds/reptiles/brown-anole",
+    "states": "10 gal -> 10 gal",
+    "from": "volume",
+    "ref": "g10"
+   },
+   "vol": {
+    "gal": 10,
+    "mark": "sourced",
+    "site": "TheVetDesk",
+    "url": "https://thevetdesk.com/pet-breeds/reptiles/brown-anole"
+   },
+   "why": "no geometry page: derived from gallons"
+  },
+  "leopardgecko": {
+   "red": {
+    "L": 914,
+    "W": 457,
+    "mark": "sourced",
+    "site": "ReptiFiles",
+    "url": "https://reptifiles.com/leopard-gecko-care/leopard-gecko-terrarium-size",
+    "states": "36″ x 18″",
+    "from": "footprint"
+   },
+   "hRed": {
+    "H": 457,
+    "mark": "sourced",
+    "site": "ReptiFiles",
+    "url": "https://reptifiles.com/leopard-gecko-care/leopard-gecko-terrarium-size",
+    "states": "18″"
+   },
+   "why": "2 geometry pages: lowest stated minimum"
+  },
+  "regaljumper": {
+   "hGreen": {
+    "H": 203,
+    "mark": "sourced",
+    "site": "The Tarantula Collective",
+    "url": "https://thetarantulacollective.com/care-sheets-2/phidippus-regius",
+    "states": "8-inch"
+   },
+   "why": "no geometry page: derived from gallons"
+  },
+  "ballpython": {
+   "red": {
+    "L": 1219,
+    "W": 610,
+    "mark": "sourced",
+    "site": "ReptiFiles",
+    "url": "https://reptifiles.com/ball-python-care-guide/ball-python-terrarium-size-lighting/",
+    "states": "48″ x 24″",
+    "from": "footprint"
+   },
+   "hRed": {
+    "H": 610,
+    "mark": "sourced",
+    "site": "ReptiFiles",
+    "url": "https://reptifiles.com/ball-python-care-guide/ball-python-terrarium-size-lighting/",
+    "states": "2′"
+   },
+   "vol": {
+    "gal": 40,
+    "mark": "sourced",
+    "site": "PetMD",
+    "url": "https://www.petmd.com/reptile/ball-python-care-sheet"
+   },
+   "why": "MX8 / S168: ReptiFiles 4 x 2 x 2 ft adult kept over the 40 gal retail figure"
+  },
+  "chacogoldenknee": {
+   "red": {
+    "L": 508,
+    "W": 254,
+    "mark": "sourced",
+    "site": "Dubia Roaches",
+    "url": "https://dubiaroaches.com/blogs/invert-care/chaco-golden-knee-tarantula-care-sheet",
+    "states": "20\"L x 10\"W",
+    "from": "footprint"
+   },
+   "green": {
+    "L": 711,
+    "W": 711,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Josh's Frogs",
+    "url": "https://www.joshsfrogs.com/chaco-golden-knee-tarantula-grammostola-pulchripes-captive-bred.html",
+    "states": "four times the spider's diagonal leg span (7 in)",
+    "from": "rule"
+   },
+   "hRed": {
+    "H": 457,
+    "mark": "sourced",
+    "site": "Dubia Roaches",
+    "url": "https://dubiaroaches.com/blogs/invert-care/chaco-golden-knee-tarantula-care-sheet",
+    "states": "18”H"
+   },
+   "vol": {
+    "gal": 15,
+    "mark": "sourced",
+    "site": "Dubia Roaches",
+    "url": "https://dubiaroaches.com/blogs/invert-care/chaco-golden-knee-tarantula-care-sheet"
+   },
+   "why": "MX8: 20 x 10 in floor (Dubia Roaches); Josh's Frogs rule 4 x diagonal leg span, 7 in adult span on the same page = 28 in (derived, est)"
+  }
+ }
+}

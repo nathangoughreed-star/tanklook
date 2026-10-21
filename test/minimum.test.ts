@@ -1,5 +1,5 @@
-// One tank-minimum evaluation (scene/tankMin.ts) is read by the Fullness bar, the tank-fit engine, the animal gate and the hard truths:
-// behavioural invariants, not fixed percentages (Nathan 2026-10-21).
+// One tank-minimum evaluation (scene/tankMin.ts) is read by the Fullness tile, the tank-fit engine, the animal gate and the hard truths:
+// behavioural invariants, not fixed percentages (Nathan 2026-10-21). Lane MM: the red (minimum) / green (Recommended) lines Nathan decided.
 import { describe, expect, it } from 'vitest';
 import { TANK_MODELS, tankFromModel } from '../src/data/tanks';
 import { SPECIES, getSpecies } from '../src/data/species';
@@ -9,8 +9,9 @@ import { hardTruths } from '../src/scene/plan';
 import { volume } from '../src/scene/physics';
 import { tankFor } from '../src/scene/tankfit';
 import { bowlDims } from '../src/scene/shape';
-import { geometryOf, measureMinimum, minFit, speciesMinimum, tankMinimum, type Geometry } from '../src/scene/tankMin';
+import { geometryOf, measureLines, minDataOf, minFit, notesIn, speciesMinimum, tankMinimum, type Geometry, type MinData, type Who } from '../src/scene/tankMin';
 import { withChoice } from '../src/scene/tech';
+import { minWarnings } from '../src/ui/fullnessTile';
 import type { Fish, TankSetup } from '../src/scene/types';
 // @ts-expect-error node only (no node types in this project)
 const { writeFileSync } = await import('node:fs');
@@ -19,6 +20,13 @@ const IDS = ['swordtail', 'oscar', 'danio', 'adf', 'neon', 'bristlenose', 'guppy
 const SP = IDS.map(id => getSpecies(id)!);
 const base: Geometry = { litres: 150, areaCm2: 4000, lengthMm: 900, widthMm: 450 };
 const worse = (a: number, b: number) => a > b + 1e-9;
+const IN_MM = 25.4;
+const src = { site: 'Test page', url: 'https://example.org', states: 'test', from: 'footprint' };
+const sourced = (L: number, W?: number, areaCm2?: number): MinData => ({ red: { L, ...(W ? { W } : {}), ...(areaCm2 ? { areaCm2 } : {}), mark: 'sourced', ...src }, why: 'test' });
+const swimmer: Who = { floor: false, water: true, tl: 50 }, bigSwimmer: Who = { floor: false, water: true, tl: 300 }, dweller: Who = { floor: true, water: true, tl: 50 };
+const fishOf = (ids: string[]): Fish[] => ids.map((species, id) => ({ id: id + 1, species, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0 }));
+const setupOf = (tank: TankSetup['tank'], wet: boolean, level = 0.9): TankSetup => { const S = bareSetup(); S.tank = tank; S.water.on = wet; S.water.level = level; S.water.salt = false; return S; };
+const rectIn = (L: number, D: number, H: number): TankSetup['tank'] => ({ ...bareSetup().tank, shape: 'rect', L: L * IN_MM, D: D * IN_MM, H: H * IN_MM });
 
 describe('the tank minimum is monotonic in each dimension', () => {
   it('more height (only water grows) never worsens it, and stops helping once the footprint dominates', () => {
@@ -36,10 +44,12 @@ describe('the tank minimum is monotonic in each dimension', () => {
       }
     }
   });
-  it('a stated width counts in full: a very long, very narrow tank cannot bypass it', () => {
+  it('a stated width counts in full for floor dwellers and large-bodied swimmers: a very long, very narrow tank cannot bypass it', () => {
     const narrow: Geometry = { litres: 200, areaCm2: 2000, lengthMm: 2000, widthMm: 100 };
-    const m = measureMinimum('middle', 50, 600, 300, narrow);
-    expect(m.pct).toBeGreaterThan(100); expect(m.limiting).toBe('width');
+    for (const w of [dweller, bigSwimmer]) { const m = measureLines(w, sourced(600, 300), narrow).red; expect(m.pct).toBeGreaterThan(100); expect(m.limiting).toBe('width'); }
+  });
+  it('Decision 3: a small swimmer is held to the length, not to a stated width', () => {
+    expect(measureLines(swimmer, sourced(600, 300), { litres: 200, areaCm2: 2000, lengthMm: 2000, widthMm: 100 }).red.pct).toBeLessThanOrEqual(100);
   });
 });
 
@@ -48,17 +58,16 @@ describe('a tall, narrow or tiny-floored tank cannot bypass the horizontal needs
     const tall: Geometry = { litres: 400, areaCm2: 900, lengthMm: 300, widthMm: 300 };
     for (const id of ['swordtail', 'oscar', 'danio']) expect(speciesMinimum(getSpecies(id)!, tall).pct, id).toBeGreaterThan(100);
   });
-  it('a stated floor area is held in full (swordtail: 120 x 30 cm or equivalent), not the area estimated from litres', () => {
+  it('a stated floor area is held in full (swordtail: 120 x 30 cm or equivalent) beside its stated 80 cm length', () => {
     const sw = getSpecies('swordtail')!, breeder: Geometry = { litres: 110, areaCm2: 4186, lengthMm: 910, widthMm: 460 };
-    expect(speciesMinimum(sw, breeder).pct).toBeLessThan(100); // a 36 x 18 breeder: more floor than 120 x 30, less length
+    expect(speciesMinimum(sw, breeder).pct).toBeLessThan(100); // a 36 x 18 breeder: more floor than 120 x 30, longer than 80 cm
     expect(speciesMinimum(sw, { litres: 110, areaCm2: 3000, lengthMm: 1000, widthMm: 300 }).limiting).toBe('floor area');
   });
 });
 
-describe('the Fullness bar, the tank-fit engine, the animal gate and the hard truths agree', () => {
+describe('the Fullness tile, the tank-fit engine, the animal gate and the hard truths agree', () => {
   const tanks = TANK_MODELS.filter(m => !m.terrarium && /^[\d.]+ (gal|ft)/.test(m.name)).filter((_, i) => i % 4 === 0).slice(0, 14);
   const setup = (m: (typeof TANK_MODELS)[number]) => { const S = bareSetup(); S.tank = tankFromModel(m); S.water.on = true; S.water.level = 0.9; return S; };
-  const fishOf = (ids: string[]): Fish[] => ids.map((species, id) => ({ id: id + 1, species, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0 }));
   it('every species and tank: bar percent, gate verdict and hard truths give the same pass / fail', () => {
     for (const m of tanks) for (const sp of SP) {
       const S = { ...setup(m), fish: fishOf([sp.id]) }, row = tankMinimum(S).rows[0], fails = row.pct > MIN_SLACK_PCT;
@@ -77,21 +86,16 @@ describe('the Fullness bar, the tank-fit engine, the animal gate and the hard tr
 });
 
 // Noncompensation (lane MA 2026-10-21, research/tank-minimum-first-principles.md "Decisions", overall rule): each measure is held on its
-// own, surplus in one never covers a shortfall in another, and filtration, volume and height never rescue geometry. The `it.fails` cases
-// are where today's weighted max breaks a Decision; they pass once lane MM (migration) lands and must then turn into plain `it`.
+// own, surplus in one never covers a shortfall in another, and filtration, volume and height never rescue geometry. Lane MM turned MA's
+// five `it.fails` / `it.todo` (the Decisions the old weighted max broke) into the plain tests at the end of this block.
 describe('noncompensation: each measure on its own', () => {
   const roomy: Geometry = { litres: 2000, areaCm2: 40000, lengthMm: 2400, widthMm: 1200 };
   it('a length shortfall fails whatever the surplus in water, floor and width (swimmers)', () => {
-    for (const zone of ['top', 'middle', 'all'] as const) {
-      const m = measureMinimum(zone, 40, 900, 0, { ...roomy, lengthMm: 600 });
-      expect(m.pct, zone).toBeGreaterThan(100); expect(m.limiting, zone).toBe('length');
-    }
+    for (const w of [swimmer, bigSwimmer]) { const m = measureLines(w, sourced(900, 300), { ...roomy, lengthMm: 600 }).red; expect(m.pct).toBeGreaterThan(100); expect(m.limiting).toBe('length'); }
   });
   it('a stated width or stated floor area fails whatever the surplus elsewhere', () => {
-    for (const zone of ['bottom', 'top', 'middle', 'all'] as const) {
-      expect(measureMinimum(zone, 40, 600, 400, { ...roomy, widthMm: 300 }).limiting, zone).toBe('width');
-      expect(measureMinimum(zone, 40, 600, 0, { ...roomy, areaCm2: 3000 }, 3600).limiting, zone).toBe('floor area');
-    }
+    expect(measureLines(dweller, sourced(600, 400), { ...roomy, widthMm: 300 }).red.limiting).toBe('width');
+    for (const w of [dweller, swimmer, bigSwimmer]) expect(measureLines(w, sourced(600, undefined, 3600), { ...roomy, areaCm2: 3000 }).red.limiting).toBe('floor area');
   });
   it('volume never rescues geometry: 100x the water leaves a short tank short', () => {
     for (const id of ['danio', 'swordtail', 'oscar', 'bristlenose', 'kuhli', 'bronzecory']) {
@@ -104,39 +108,97 @@ describe('noncompensation: each measure on its own', () => {
     const S = bareSetup(); S.water.on = true; S.water.level = 0.9;
     S.tank = { ...S.tank, shape: 'rect', L: 300, D: 150, H: 300 };
     for (const id of ['danio', 'swordtail', 'bristlenose', 'kuhli']) {
-      S.fish = [{ id: 1, species: id, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0 }];
+      S.fish = fishOf([id]);
       const low = tankMinimum(S).percent, tall = tankMinimum({ ...S, tank: { ...S.tank, H: 3000 } }).percent;
       expect(low, id).toBeGreaterThan(100); expect(tall, id).toBeGreaterThan(100);
     }
   });
   it('filtration never rescues geometry: the filter choice does not move the minimum', () => {
-    const S = bareSetup(); S.water.on = true; S.water.level = 0.9; S.fish = [{ id: 1, species: 'swordtail', x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0 }];
+    const S = bareSetup(); S.water.on = true; S.water.level = 0.9; S.fish = fishOf(['swordtail']);
     const a = tankMinimum({ ...S, tech: withChoice(S, 'filter', 'none') }).percent, b = tankMinimum({ ...S, tech: withChoice(S, 'filter', 'canister') }).percent;
     expect(b).toBeCloseTo(a, 9);
   });
-  // Decision 2: volume is advisory for the enclosure check and can never fail a species on its own. Today water is a weighted share
-  // (bottom 0.25, swimmers 0.5, VOLUME_ONLY 1), so a tank with ample geometry and little water still fails. For lane MM.
-  // Decision 3: kuhli in 2 in of water is NOT ASSESSED (open question), not a pass. Today it passes at about 85 % (water share 0.25 x
-  // 80 L / 24 L): there is no depth field yet (Decision 4, lane MM), so the tray case cannot be told apart from a real tank.
-  it.todo('Decision 3: kuhli in a 36 x 20 in tray at 2 in of water reads "not assessed", not a pass (needs the depth field)');
-  it.fails('Decision 2: water alone never fails a midwater swimmer (danio, long and wide floor, shallow water)', () => {
+  it('Decision 2: water alone never fails a species (danio, long and wide floor, shallow water: not assessed, never a water failure)', () => {
     const m = speciesMinimum(getSpecies('danio')!, { litres: 12, areaCm2: 6000, lengthMm: 1200, widthMm: 500 });
     expect(m.limiting === 'water' && m.pct > 100).toBe(false);
+    // ample geometry and depth, almost no water: no species fails, the water shortfall is only the yellow advisory
+    const dry: Geometry = { litres: 1, tankLitres: 1, areaCm2: 40000, lengthMm: 2400, widthMm: 1200, heightMm: 2000, depthMm: 550 };
+    for (const sp of SPECIES) { const r = speciesMinimum(sp, dry); expect(r.pct, sp.id).toBeLessThanOrEqual(100); if (minDataOf(sp.id)?.vol) expect(r.comfort.limiting, sp.id).toBe('water'); }
   });
-  it.fails('Decision 2: the mystery snail\'s 5 gal is its Recommended mark, not a failure (VOLUME_ONLY holds it to water in full)', () => {
+  it('Decision 2: the mystery snail\'s 5 gal is its Recommended mark, not a failure', () => {
     const m = speciesMinimum(getSpecies('mystery')!, { litres: 10, areaCm2: 1500, lengthMm: 400, widthMm: 250 });
     expect(m.pct).toBeLessThanOrEqual(100);
+    expect(m.comfortPct).toBeGreaterThan(100); expect(m.comfort.limiting).toBe('water'); expect(m.comfortReason).toMatch(/^below the recommended size: .*5 gal/);
   });
-  // Overall rule + Decision 3: swimmers are held to length; a floor area DERIVED from their gallon figure is an estimate and may not
-  // silently fail them. Today the derived area counts at weight 0.4 (middle / all) or 0.6 (top). For lane MM.
-  it.fails('overall rule: a floor area derived from litres never fails a swimmer that has its length (tiger barb, 48 x 3 in floor, 18 in of water)', () => {
-    const m = speciesMinimum(getSpecies('tigerbarb')!, { litres: 48 * 3 * 18 * 0.016387, areaCm2: 48 * 3 * 6.4516, lengthMm: 48 * 25.4, widthMm: 3 * 25.4 });
+  it('overall rule: a floor area derived from litres never fails a swimmer that has its length (tiger barb, 48 x 3 in floor, 18 in of water)', () => {
+    const m = speciesMinimum(getSpecies('tigerbarb')!, { litres: 48 * 3 * 18 * 0.016387, areaCm2: 48 * 3 * 6.4516, lengthMm: 48 * IN_MM, widthMm: 3 * IN_MM });
     expect(m.limiting === 'floor area' && m.pct > 100).toBe(false);
+    expect(m.pct).toBeLessThanOrEqual(100);
   });
-  // Decision 3: bottom dwellers are held to floor area PLUS length / width where a source states them. Today the run weight is 0 for the
-  // bottom zone, so a stated length is ignored (minLengthMm is stored for all 84; MM must also mark which are sourced, see groups-sources.md).
-  it.fails('Decision 3: a bottom dweller\'s stated length is held (30 x 12 vs 60 x 6 in: same floor, different shape)', () => {
-    expect(measureMinimum('bottom', 40, 760, 0, { litres: 200, areaCm2: 6000, lengthMm: 600, widthMm: 1000 }).pct).toBeGreaterThan(100);
+  it('Decision 3: a bottom dweller\'s stated length is held (30 x 12 vs 60 x 6 in: same floor, different shape)', () => {
+    expect(measureLines(dweller, sourced(760, 300), { litres: 200, areaCm2: 6000, lengthMm: 600, widthMm: 1000 }).red.pct).toBeGreaterThan(100);
+    const kuhli = getSpecies('kuhli')!, g = (L: number, D: number): Geometry => ({ litres: L * D * 12 * 0.016387, areaCm2: L * D * 6.4516, lengthMm: L * IN_MM, widthMm: D * IN_MM });
+    expect(speciesMinimum(kuhli, g(24, 12)).pct).toBeLessThanOrEqual(100); // its sourced 60 x 30 cm (23.5 x 12 in)
+    expect(speciesMinimum(kuhli, g(60, 6)).limiting).toBe('width');
+    expect(speciesMinimum(kuhli, g(60, 6)).pct).toBeGreaterThan(100);
+  });
+  it('Decision 3: kuhli in a 36 x 20 in tray at 2 in of water reads "not assessed", not a pass', () => {
+    const S = { ...setupOf(rectIn(36, 20, 2 / 0.9), true), fish: fishOf(['kuhli']) }, row = tankMinimum(S).rows[0];
+    expect(row.assessed).toBe(false); expect(row.reason).toMatch(/^not assessed/);
+    expect(row.pct).toBeGreaterThan(MIN_SLACK_PCT); // not a pass anywhere: the gate, the tank fit and the hard truths read pct
+    expect(whyAnimal(getSpecies('kuhli')!, volume(S.tank).litres, 3, [], { fit: minFit(S) })?.text).toMatch(/not assessed/);
+    expect(minWarnings(tankMinimum(S), 'in')[0].text).toMatch(/^1 Kuhli loach: not assessed: [\d.]+" of water/);
+  });
+});
+
+// Depth field (Decision 4, lane MM): no page states a minimum water depth (MX7), so nothing fails on depth; a recommended tank height
+// is the Recommended mark (angelfish 50 cm), the ADF's 24 in maximum an advisory; usable depth = water level minus substrate.
+describe('depth field', () => {
+  const at = (id: string, tank: TankSetup['tank'], level = 0.9) => ({ ...setupOf(tank, true, level), fish: fishOf([id]) });
+  it('angelfish: a tank under 50 cm tall is allowed but below the recommended size (yellow), at 50 cm it is green', () => {
+    const low = tankMinimum(at('angel', rectIn(48, 18, 16))).rows[0], tall = tankMinimum(at('angel', rectIn(48, 18, 21))).rows[0];
+    expect(low.pct).toBeLessThanOrEqual(100); expect(low.comfortPct).toBeGreaterThan(100); expect(low.comfort.limiting).toBe('height');
+    expect(low.comfortReason).toMatch(/Seriously Fish recommends 50 cm tall/);
+    expect(tall.comfortPct).toBeLessThanOrEqual(100);
+  });
+  it('ADF: water deeper than 24 in is an advisory, never a failure', () => {
+    const deep = tankMinimum(at('adf', rectIn(48, 18, 36))).rows[0], shallow = tankMinimum(at('adf', rectIn(48, 18, 18))).rows[0];
+    expect(deep.pct).toBeLessThanOrEqual(100); expect(notesIn(deep).join()).toMatch(/deeper than advised/); expect(notesIn(shallow)).toEqual([]);
+    expect(minWarnings(tankMinimum(at('adf', rectIn(48, 18, 36))), 'in').every(w => w.level === 'near')).toBe(true);
+  });
+  it('usable depth is the water level minus the substrate', () => {
+    const S = setupOf(rectIn(24, 12, 12), true); S.substrate = { ...S.substrate, show: true, fl: 50, fr: 50, bl: 50, br: 50 };
+    const bare = setupOf(rectIn(24, 12, 12), true); bare.substrate = { ...bare.substrate, show: false };
+    expect(geometryOf(bare).depthMm! - geometryOf(S).depthMm!).toBeCloseTo(50, 6);
+    expect(geometryOf({ ...S, water: { ...S.water, on: false } }).depthMm).toBeUndefined();
+  });
+});
+
+describe('sourced footprints for land animals (MA item 6)', () => {
+  it('the ball python fits the usual 4 x 2 x 2 ft terrarium, and a land animal is never judged by litres', () => {
+    const t = TANK_MODELS.filter(m => m.terrarium).map(m => ({ m, g: geometryOf(setupOf(tankFromModel(m), false)) }))
+      .find(x => Math.abs(x.g.lengthMm - 48 * IN_MM) < 30 && Math.abs(x.g.widthMm - 24 * IN_MM) < 30 && (x.g.heightMm ?? 0) >= 23 * IN_MM);
+    expect(t, 'a 48 x 24 x 24 in terrarium in the catalogue').toBeDefined();
+    const bp = getSpecies('ballpython')!;
+    expect(speciesMinimum(bp, t!.g).pct).toBeLessThanOrEqual(MIN_SLACK_PCT);
+    expect(speciesMinimum(bp, { ...t!.g, litres: 1, tankLitres: 1 }).pct).toBeCloseTo(speciesMinimum(bp, t!.g).pct, 9);
+    expect(speciesMinimum(bp, { ...t!.g, lengthMm: 36 * IN_MM, areaCm2: 36 * 24 * 6.4516 }).pct).toBeGreaterThan(MIN_SLACK_PCT);
+  });
+});
+
+describe('wording (lane MM)', () => {
+  const one = (id: string, L: number, D: number, H = 12) => ({ ...setupOf(rectIn(L, D, H), true), fish: fishOf([id]) });
+  it('a derived failure says it is estimated from a gallon figure; a sourced one names its page', () => {
+    expect(minDataOf('danio')!.red!.mark).toBe('derived (est)');
+    expect(tankMinimum(one('danio', 12, 8)).rows[0].reason).toMatch(/^estimated from a gallon figure \(Fishkeeping World: 10 gal, the smallest such tank is a 10 gal\): wants about/);
+    expect(minDataOf('kuhli')!.red!.mark).toBe('sourced');
+    expect(tankMinimum(one('kuhli', 12, 8)).rows[0].reason).toMatch(/^wants (a tank )?at least .* \(Seriously Fish\)/);
+  });
+  it('between the lines reads "below the recommended size" (never "comfortable" or "cramped"); green says nothing (AqAdvisor shape)', () => {
+    const w = minWarnings(tankMinimum(one('danio', 24, 12)), 'in');
+    expect(w.length).toBe(1); expect(w[0].level).toBe('near'); expect(w[0].text).toMatch(/^1 Zebra danio: below the recommended size: Seriously Fish recommends 35.4" long/);
+    expect(w.some(x => /comfortable|cramped/.test(x.text))).toBe(false);
+    expect(minWarnings(tankMinimum(one('danio', 48, 13)), 'in')).toEqual([]);
   });
 });
 
@@ -144,9 +206,6 @@ describe('noncompensation: each measure on its own', () => {
 // smallest catalogue tank that passes the gate today and in four extreme shapes. Diagnostic only, NOT a gate: it decides whether the
 // rule is defensible. `GEN_CLEARANCE=1 npx vitest run test/minimum.test.ts` rewrites research/clearance-sweep.md.
 describe('turning-clearance sweep (diagnostic)', () => {
-  const IN_MM = 25.4;
-  const setupOf = (tank: TankSetup['tank'], wet: boolean, level = 0.9): TankSetup => { const S = bareSetup(); S.tank = tank; S.water.on = wet; S.water.level = level; S.water.salt = false; return S; };
-  const rectIn = (L: number, D: number, H: number): TankSetup['tank'] => ({ ...bareSetup().tank, shape: 'rect', L: L * IN_MM, D: D * IN_MM, H: H * IN_MM });
   const EXTREME: { name: string; tank: TankSetup['tank']; level?: number }[] = [
     { name: '36 x 20 in tray, 2 in of water', tank: rectIn(36, 20, 2 / 0.9) },
     { name: '48 x 12 x 12 in long', tank: rectIn(48, 12, 12) },

@@ -8,7 +8,7 @@ import type { Viewer } from '../render/viewer';
 import { defaultSpace, spaceFit, tankExtent, SPACE_MAX, SPACE_MIN, type SpaceFit } from '../scene/space';
 import { stockingMemo, type Stocking } from '../scene/stocking';
 import { MIN_SLACK_PCT } from '../scene/animalfit';
-import { reasonOf, tankMinimum, type MinRow, type TankMinimum } from '../scene/tankMin';
+import { notesIn, reasonIn, recommendedOf, tankMinimum, type MinRow, type TankMinimum } from '../scene/tankMin';
 import { NO3_TO_N, PLANT_SHARE_MAX, type Nitrogen } from '../scene/nitrogen';
 import { filterState, setFilterless, type FilterState } from '../scene/tech';
 import dd from '../data/demand-defaults.json';
@@ -27,7 +27,7 @@ export interface TileState {
   /** anything to show: water on, and animals in it or a space set */
   show: boolean;
   space: Bar; filt: Bar;
-  /** species the tank is too small for (red) or workable but cramped for (amber), by name and unmet measure (scene/tankMin.ts); empty when every species has its minimum */
+  /** species the tank is too small for (red) or below the recommended size for (yellow, allowed), by name and unmet measure (scene/tankMin.ts); empty when every species has its Recommended size */
   mins: MinWarn[];
   topSpace: TopRow[]; topFilt: TopRow[];
   /** the larger of the two, for the minimized pill */
@@ -49,24 +49,24 @@ export function topBy(r: Stocking, by: 'space' | 'load', k = 3): TopRow[] {
   return [...r.contributors].sort((a, b) => b[by] - a[by]).slice(0, k).map(c => ({ name: c.name, n: c.n, share: tot ? c[by] / tot : 0 }));
 }
 
-const fmtOf = (units: Units) => ({ len: (mm: number) => `${toUnits(mm, units)}${units === 'in' ? '"' : ' cm'}`, area: (cm2: number) => units === 'in' ? `${Math.round(cm2 / 6.4516)} sq in` : `${Math.round(cm2)} cm²` });
-
-/** What a species would like instead: "at least 18 L; happier at 40 L, 45 cm long" (floor and comfortable sizes). */
-function comfortNote(x: MinRow, units: Units): string {
-  const f = fmtOf(units), one = (l: number, mm: number, cm2: number) => [l > 0 && `${l} L`, x.kind === 'area' ? cm2 > 0 && `${f.area(cm2)} of floor` : mm > 0 && `${f.len(mm)} long`].filter(Boolean).join(', ');
-  return x.floorL < x.comfortL || x.floorLengthMm < x.comfortLengthMm ? `at least ${one(x.floorL, x.floorLengthMm, x.floorCm2)}; happier at ${one(x.comfortL, x.comfortLengthMm, x.comfortCm2)}` : one(x.comfortL, x.comfortLengthMm, x.comfortCm2);
-}
+const fmtOf = (units: Units) => ({ len: (mm: number) => `${toUnits(mm, units)}${units === 'in' ? '"' : ' cm'}`, area: (cm2: number) => units === 'in' ? `${Math.round(cm2 / 6.4516)} sq in` : `${Math.round(cm2)} cm²`,
+  vol: (l: number) => units === 'in' ? `${Math.round(l / 3.785 * 10) / 10} gal` : `${Math.round(l)} L` });
 
 /**
- * The tank-minimum warnings, the AqAdvisor way (Nathan 2026-10-21): nothing while every species has its minimum; a red line per species
- * whose smallest tank this one falls short of, naming the unmet measure; an amber line for those it holds but would be happier larger.
- * The percentages behind it stay internal: the weights are estimates, so the tile only says over or under. Same 10 % slack as the
- * animal gate and the tank-fit engine (MIN_SLACK_PCT).
+ * The tank-minimum warnings, the AqAdvisor way (Nathan 2026-10-21): nothing while every species has its Recommended size; a red line per
+ * species below its minimum (or that cannot be assessed), naming the unmet measure, sourced or "estimated from a gallon figure"; a yellow
+ * line for those above the minimum but below the recommended size (allowed), and for advisories (deeper water than advised). Lane MM:
+ * the red / green lines are Nathan's decided ones (scene/tankMin.ts). Same 10 % slack as the animal gate and the tank-fit engine
+ * (MIN_SLACK_PCT) on the red line.
  */
 export function minWarnings(m: TankMinimum, units: Units): MinWarn[] {
   const f = fmtOf(units), name = (x: MinRow) => plural(x.n, x.name), out: MinWarn[] = [];
-  for (const x of [...m.rows].sort((a, b) => b.pct - a.pct)) if (x.pct > MIN_SLACK_PCT) out.push({ level: 'over', text: `${name(x)}: ${reasonOf(x.measure, f)}` });
-  for (const x of [...m.rows].sort((a, b) => b.comfortPct - a.comfortPct)) if (x.pct <= MIN_SLACK_PCT && x.comfortPct > 100) out.push({ level: 'near', text: `${name(x)}: workable, but cramped; ${comfortNote(x, units)}` });
+  for (const x of [...m.rows].sort((a, b) => b.pct - a.pct)) if (x.pct > MIN_SLACK_PCT) out.push({ level: 'over', text: `${name(x)}: ${reasonIn(x, f)}` });
+  for (const x of [...m.rows].sort((a, b) => b.comfortPct - a.comfortPct)) {
+    if (x.pct > MIN_SLACK_PCT) continue;
+    if (x.comfortPct > 100) out.push({ level: 'near', text: `${name(x)}: ${recommendedOf(x.comfort, f)}` });
+    for (const n of notesIn(x, f)) out.push({ level: 'near', text: `${name(x)}: ${n}` });
+  }
   return out;
 }
 

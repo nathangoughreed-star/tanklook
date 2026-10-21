@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildsFor } from '../src/scene/builds';
+import { getTankModel } from '../src/data/tanks';
 import { allowedStyles, fakeFor, finSensitive, plantNeeds, rankStyles, scapeOptions, scapeSetup, withPlantMode } from '../src/scene/scapes';
 import { animalsOfSetup, hardTruths, planOf, planText } from '../src/scene/plan';
 import { tankFor, type AnimalCount } from '../src/scene/tankfit';
@@ -109,7 +110,9 @@ describe('the plan', () => {
     const cp = planOf(cold.setup, cold, NOW);
     expect(cp.rows.find(r => r.item.startsWith('Heating') || /Temperature:/.test(r.serves))?.kind).toBe('need');
     expect(cp.missing.join()).not.toMatch(/Heater/);
-    const room = buildOf([{ species: 'whitecloud', n: 8 }]);
+    // lane MM: white clouds now fit a 10 gal (red line derived from Fishkeeping World's 10 gal); the 10 gal build lists a heater nobody
+    // needs ("Nothing here needs it", a builds.ts gap, HANDOFF "Lane MM"), so this case keeps the 15 gal it was written for
+    const wc = [{ species: 'whitecloud', n: 8 }], room = buildsFor(wc, getTankModel('g15')!, NOW)[0];
     expect(planOf(room.setup, room, NOW).rows.some(r => r.item.startsWith('Heating'))).toBe(false);
   });
   it('an overstocked tank does not fit', () => {

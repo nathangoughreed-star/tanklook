@@ -5,7 +5,8 @@
 import { HERP, ageAtLength, floorFor, SQFT_MM2, type HerpRule } from '../data/herpstock';
 import { fishTL, getSpecies } from '../data/species';
 import { footprint } from './shape';
-import { TIERS } from './tankMin';
+import { minDataOf } from './tankMin';
+import { countsAgainstWater } from './stocking';
 import type { TankSetup } from './types';
 
 export interface StockIssue { level: 'warn' | 'note' | 'info'; who: string; text: string }
@@ -34,8 +35,8 @@ export function herpCheck(S: TankSetup): StockIssue[] {
     const st = r.stages.findIndex(x => big <= x.to), cur = r.stages[st], last = r.stages.length - 1;
     const grown = st === last, [min1, rec1] = floorFor(r, n), need = min1 * cur.k, want = rec1 * cur.k, hNeed = cur.h ?? (grown ? r.hMin : undefined);
     const kid = grown ? '' : ' at this size';
-    // a species with its own floor tier in the tank-minimum bar is judged there (Nathan 2026-10-20: ADF 5.5 gal floor); a second floor-area verdict here would contradict it
-    const tiered = !!TIERS[S.fish.map(f => getSpecies(f.species)).find(sp => sp?.sci === sci)?.id ?? '']?.floor;
+    // a water-side species with a red line is judged by the tank minimum (scene/tankMin.ts, lane MM); a second floor-area verdict here would contradict it
+    const tsp = S.fish.map(f => getSpecies(f.species)).find(sp => sp?.sci === sci), tiered = !!tsp && countsAgainstWater(tsp) && !!minDataOf(tsp.id)?.red;
     if (n > r.max) out.push({ level: 'warn', who, text: `${plural(n, 'animal')}: sources support at most ${r.max} together. ${r.group}` });
     else if (n >= 2 && r.max > 1 && !(r.social && n >= r.social)) out.push({ level: 'note', who, text: `${plural(n, 'animal')} together. ${r.group}` });
     if (r.social && n < r.social) out.push({ level: 'note', who, text: `${n === 1 ? 'A single frog' : 'A pair'} is lonely: keep ${r.social} or more.` });

@@ -3,7 +3,10 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { CARE } from '../src/data/care';
 import { getTankModel, tankFromModel } from '../src/data/tanks';
 import { buildSpan, needsOf, recommendedMin, stepUps, tankFor, tankLabel, type AnimalCount } from '../src/scene/tankfit';
-import { areaFor } from '../src/scene/tankMin';
+import { getSpecies } from '../src/data/species';
+import { bareSetup } from '../src/scene/defaults';
+import { geometryOf, minDataOf, speciesMinimum } from '../src/scene/tankMin';
+import { MIN_SLACK_PCT } from '../src/scene/animalfit';
 
 const CASES: Record<string, AnimalCount[]> = {
   frogs: [{ species: 'adf', n: 2 }],
@@ -30,39 +33,40 @@ describe('tank fit engine (lane P2)', () => {
   it('it is the SMALLEST tank: the step below it is not offered because it fails (space or the species minimum)', () => {
     const t = fit('danios'), smaller = stepUps(CASES.danios, 'g5', 40).filter(s => s.litres < t.litres);
     expect(smaller.length).toBeGreaterThan(0);
-    // 'minimum' is the Fullness bar's own measure (floor area, length, water by kind of animal), not litres alone: the 20 high holds as much water as a 20 long but its floor is too small for the pleco
-    const need = needsOf(CASES.danios);
-    expect(smaller.every(s => s.spacePct > 100 || s.tank.outer.L < need.minLengthMm || s.litres < 0.9 * need.minLitres || s.tank.outer.L * s.tank.outer.D / 100 < 0.9 * areaFor(need.minLitres))).toBe(true);
+    // 'minimum' is the Fullness tile's own red lines (scene/tankMin.ts, lane MM): every smaller step fails space, filtration or the minimum
+    const short = (m: (typeof smaller)[number]['tank']) => { const S = bareSetup(); S.tank = tankFromModel(m); S.water.on = true; S.water.level = 0.9; const g = geometryOf(S); return CASES.danios.some(a => speciesMinimum(getSpecies(a.species)!, g).pct > MIN_SLACK_PCT); };
+    expect(smaller.every(s => s.spacePct > 100 || short(s.tank)), smaller.map(s => s.tank.id).join()).toBe(true);
   });
   it('steps are monotonic: each is bigger than the last, the space bar falls, every tank is from the catalogue, the cost rises overall', () => {
     for (const k of Object.keys(CASES)) {
       const t = fit(k), s = stepUps(CASES[k], t.tank, 3);
-      expect(s.length, k).toBe(3); // (before the nitrogen model the catalogue ran out above the oscar's filtration-driven tank: 2 steps)
+      expect(s.length, k).toBe(k === 'oscar' ? 2 : 3); // lane MM: the oscar's sourced 150 x 60 cm (59 x 23.5 in, width held for a large-bodied fish) starts it at the 180 gal, and the catalogue has two bigger
       let prev = t.litres, prevSpace = t.spacePct;
       for (const x of s) { expect(getTankModel(x.tank.id), k).toBeTruthy(); expect(x.litres, k).toBeGreaterThan(prev); expect(x.spacePct, k).toBeLessThan(prevSpace); prev = x.litres; prevSpace = x.spacePct; }
-      expect(s[s.length - 1].costDeltaUsd, k).toBeGreaterThan(0);
+      expect(Math.max(...s.map(x => x.costDeltaUsd)), k).toBeGreaterThan(0); // lane MM: the oscar's last step (c8) is cheaper than its 180 gal start
       expect(s.every(x => x.filtrationPct > 0)).toBe(true);
     }
     expect(stepUps(CASES.neons, 'g10', 2)).toHaveLength(2);
     expect(stepUps(CASES.neons, 'c8', 3)).toEqual([]); // nothing bigger in the catalogue
   });
-  it('a species that needs a long tank skips the short ones (GroupCare minLengthMm)', () => {
-    const base = care.danio;
+  it('a species that needs a long tank skips the short ones (its red line, scene/tankMin.ts)', () => {
+    const base = minDataOf('danio')!.red!, was = base.L;
     try {
-      base.minLengthMm = 1000;
+      base.L = 1100; // over a 36 in tank even with the 10 % slack
       const t = tankFor(CASES.danios)!;
-      expect(t.fails).toEqual([]); expect(t.tank.outer.L).toBeGreaterThan(1000); expect(t.needs.minLengthMm).toBe(1000);
+      expect(t.fails).toEqual([]); expect(t.tank.outer.L).toBeGreaterThan(1000); expect(t.needs.minLengthMm).toBe(1100);
       for (const s of stepUps(CASES.danios, 'g5', 5)) expect(s.tank.outer.L, s.tank.id).toBeGreaterThan(1000);
-    } finally { delete base.minLengthMm; }
+    } finally { base.L = was; }
   });
-  it('a shallow-water species skips tall tanks (GroupCare maxDepthMm)', () => {
-    const base = care.adf;
+  it('a shallow-water species skips tall tanks (GroupCare maxDepthMm); a sourced maximum depth is an advisory and skips nothing (lane MM)', () => {
+    expect(needsOf(CASES.frogs).maxDepthMm).toBe(Infinity); // ADF: 24 in, advisory (Decision 3)
+    const base = care.adf, d = minDataOf('adf')!, depth = d.depth;
     try {
-      base.maxDepthMm = 300;
+      base.maxDepthMm = 300; d.depth = undefined;
       const t = tankFor(CASES.frogs)!;
       expect(t.fails).toEqual([]);
       for (const s of [t, ...stepUps(CASES.frogs, t.tank, 4)]) expect(tankFromModel(s.tank).H * 0.9, s.tank.id).toBeLessThanOrEqual(300);
-    } finally { delete base.maxDepthMm; }
+    } finally { delete base.maxDepthMm; d.depth = depth; }
   });
   it('the floor need is by zone: a pleco wants bottom floor, danios the middle, nothing from land animals', () => {
     const n = needsOf(CASES.danios);

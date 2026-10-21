@@ -20,6 +20,7 @@ import groupsMd from '../../research/groups-sources.md?raw';
 import { CARE } from './care';
 import { AIR } from './climate';
 import speciesJson from './species.json';
+import tankminJson from './tankmin.json';
 
 export type Status = 'cited' | 'fitted' | 'derived' | 'researched' | 'claimed' | 'assumption';
 export const STATUSES: Status[] = ['cited', 'fitted', 'derived', 'researched', 'claimed', 'assumption'];
@@ -45,7 +46,16 @@ const MASS = bm.species as Record<string, { src: string }>;
 const GROUP_ROWS = [...groupsMd.matchAll(/^- \*\*(\w+)\*\*[^:]*: (https?:\S+?)(?: \((est)\))?\.?(?=\s|$)/gm)].map(m => ({ id: m[1], url: m[2], est: !!m[3] }));
 const GROUP_FIELDS = '{bands,max,sexed,maxDepthMm,minLengthMm,minWidthMm,minAreaCm2}.**';
 
+const TANKMIN = (tankminJson as { species: Record<string, Record<string, { mark?: string } | string>> }).species;
 export const RULES: Record<string, Rule[]> = {
+  // lane MM (2026-10-21): the decided tank-minimum lines. A line whose page states its conditions is cited by its own url; "(est)" = the
+  // page states no conditions (researched); "derived (est)" = a gallon figure turned into the smallest catalogue tank holding it.
+  TANKMIN: [
+    { path: '**', status: 'researched', src: ['tank-min-sourcing'], why: 'stated on the page named in the row, but without conditions (est), or a depth note (MX7); quotes re-fetched' },
+    { path: '*.{red,green,hRed,hGreen,vol}.*', status: 'cited', src: ['tank-min-sourcing'], rowUrl: true, why: 'stated on the page named in the row (url, quote re-fetched), decided as a red (minimum) or green (Recommended) line by Nathan, MX1-MX9' },
+    ...Object.entries(TANKMIN).flatMap(([id, d]) => (['red', 'green'] as const).filter(k => typeof d[k] === 'object' && (d[k] as { mark?: string }).mark === 'derived (est)')
+      .map((k): Rule => ({ path: `${id}.${k}.*`, status: 'derived', src: ['tank-min-sourcing'], why: "derived (est): a page's gallon figure as the smallest catalogue tank holding it, inner L x W (scripts/tank-min-sources.mjs refTank)" }))),
+  ],
   SPECIES: [],
   BODYMASS: Object.entries(MASS).map(([id, m]): Rule =>
     m.src === 'fishbase-bayes' ? { path: `${id}.*`, status: 'cited', src: ['fishbase-lw-bayes'], why: 'a, b from the FishBase species summary (scripts/lw-sources.json)' }
@@ -58,7 +68,7 @@ export const RULES: Record<string, Rule[]> = {
     // Kept against the pages (Nathan 2026-10-20: trust the research where independent sources agree; here they split): see research/sourcing/decisions.md.
     { path: 'yellowtang.care', status: 'assumption', why: 'one retailer page (LiveAquaria) says Easy; tangs are disease-prone in practice, so we keep intermediate (2)' },
     { path: 'betta.care', status: 'assumption', why: 'pages split: Seriously Fish says Moderate, Fishkeeping World calls it fine for first-time owners; we keep beginner (1)' },
-    { path: 'mystery.minL', status: 'assumption', why: 'Aquarium Co-Op: 5 US gal (19 L) for one mystery snail, 10 gal more forgiving; held to water volume only (VOLUME_ONLY in scene/tankMin.ts)' },
+    { path: 'mystery.minL', status: 'assumption', why: 'Aquarium Co-Op: 5 US gal (19 L) for one mystery snail, 10 gal more forgiving; the tank-minimum gate no longer reads minL (lane MM: its 5 gal is the advisory Recommended mark in tankmin.json)' },
     { path: 'ballpython.minL', status: 'assumption', why: 'pages split: PetSmart and BeWild accept a 40 gal (about 151 L) tank, Zen Habitats and Reptile Direct call 4x2x2 ft (about 120 gal, 450 L) the adult minimum and the 40 gal rule outdated; we keep the larger modern figure' },
     ...Object.keys(WATER).flatMap((id): Rule[] => ['temp', 'tol'].map(k => ({ path: `${id}.${k}.*`, status: 'researched', src: ['climate-research'], why: 'researched band (data/climatedata.ts) replaces the first guess' }))),
     ...GROUP_ROWS.map(({ id, url, est }): Rule => est
@@ -215,11 +225,8 @@ export const FORMULAS: Formula[] = [
   { file: 'src/scene/kitlight.ts', symbols: ['MAX_W_PER_GAL'], status: 'assumption', why: 'most LED watts per gallon a swap can ask before the tank is the problem (fresh 2.5, reef 6)' },
   { file: 'src/scene/plantfit.ts', symbols: ['FIT_PAR'], status: 'assumption', why: 'one representative PAR inside each light level' },
   { file: 'src/scene/growtime.ts', symbols: ['GROW_RATE'], status: 'assumption', why: 'growth multipliers by feeding and plant speed (CO2 helps stems most); not measured' },
-  { file: 'src/scene/tankMin.ts', symbols: ['REF_DEPTH_CM', 'DEEP_DEPTH_CM', 'RAMP_FROM_L', 'RAMP_TO_L'], status: 'assumption', why: 'the floor-area need of a bottom dweller is its litres spread over 30 cm of water (typical small tank depth), deepening to 50 cm for big tanks as catalogue tanks do (about 54 cm of water at 400 L and up); swimmers are held to the longest floor side instead' },
   { file: 'src/scene/animalfit.ts', symbols: ['MIN_SLACK_PCT'], status: 'assumption', why: "a species' smallest tank allows 10 % slack: a 5 gal (19 L) takes a 20 L species" },
-  { file: 'src/scene/tankMin.ts', symbols: ['MIN_WEIGHTS'], status: 'assumption', why: "how much water and floor area count toward a species minimum by where it lives (a care sheet gallon figure stands in for floor space): a bottom dweller is held to floor area, swimmers mostly to length; the fallback where no footprint is stated; keeper-practice judgement" },
-  { file: 'src/scene/tankMin.ts', symbols: ['VOLUME_ONLY', 'VOLUME_ONLY_WEIGHTS'], status: 'assumption', why: 'species held to water volume alone, no floor-area or length share (mystery snail: grazes glass, plants and decor; Aquarium Co-Op gives 5 gal for one); judgement from one care page' },
-  { file: 'src/scene/tankMin.ts', symbols: ['TIERS'], status: 'claimed', why: 'absolute floor and comfortable tank size per species (adf, danio, whitecloud, tigerbarb, cherrybarb, firenewt, firetoad): keeper-practice judgement from the examples given, no page recorded' },
+  { file: 'src/scene/tankMin.ts', symbols: ['LARGE_BODY_MM'], status: 'assumption', why: 'Decision 3 holds large-bodied swimmers to length + width; which fish count as large-bodied (adult 15 cm / 6 in and over) is our cut, no page states one' },
   { file: 'src/scene/tankfit.ts', symbols: ['FLOOR_K'], status: 'claimed', why: '"a documented rule of thumb, not a source of record": a bottom dweller holds about two body lengths square' },
   { file: 'src/scene/tankfit.ts', symbols: ['FILTRATION_TARGET'], status: 'assumption', why: 'preset filtration targets: cheapest 100 %, balanced 70 %' },
   { file: 'src/scene/starter.ts', symbols: ['ANIMAL_FILL', 'KINDS_PER_STOP', 'LAND_MOST'], status: 'assumption', why: 'how full each starter stop is and how many kinds; land counts kept inside the herp research maxima' },
@@ -247,6 +254,7 @@ export const FORMULAS: Formula[] = [
 ];
 
 export const EXCLUDED: Excluded[] = [
+  { file: 'src/scene/tankMin.ts', symbols: ['CM', 'GAL_L'], why: 'the default print format (cm) and the US gallon in litres (3.785), a unit conversion' },
   { file: 'src/scene/builds.ts', symbols: ['BUILD_BLURB'], why: 'card wording (mentions the 70 % headroom, which FILTRATION_LIMIT documents)' },
   { file: 'src/scene/lightout.ts', symbols: ['AQ_MAX', 'LAMP_Y', 'TUBE_SP_MAX', 'LREF', 'EXPOSE', 'EXP_MIN', 'EXP_MAX'], why: 'render exposure and slider ranges' },
   { file: 'src/scene/propagate.ts', symbols: ['MAX_PLANTS', 'FLOAT_COVER', 'POOL', 'POOL_SEED'], why: 'scatter limits and seeds' },

@@ -8,7 +8,7 @@ import { GRAZE } from '../data/grazers';
 import { HERP } from '../data/herpstock';
 import { SPACE_FACTOR, SPACE_FACTOR_CLASS } from '../data/spacefactor';
 import { MET_CLASS, animalLoad, countsAgainstWater, litresPerAnimal, massG, metClass, spaceFactor, spaceOf } from '../scene/stocking';
-import { MIN_WEIGHTS, TIERS, VOLUME_ONLY, areaFor } from '../scene/tankMin';
+import { LARGE_BODY_MM, minDataOf, whoOf, type MinLine } from '../scene/tankMin';
 import { zoneOf } from '../scene/tankfit';
 import bm from '../data/bodymass.json';
 import aq from '../data/aqadvisor.json';
@@ -36,14 +36,14 @@ const AQ = aq as unknown as Record<string, { aq: string; name: string; standIn?:
 const REC = (manifest as { models: Record<string, { v: number; build: number; date: string }> }).models;
 type CareRow = (typeof CARE)[string] & { zone?: string; maxDepthMm?: number; minLengthMm?: number; minWidthMm?: number; minAreaCm2?: number; bands?: { ok: number; good: number; great: number }; max?: number; sexed?: { ratio: [number, number] }; flow?: string; appeal?: string[] };
 const careOf = (s: Species) => CARE[s.id] as CareRow | undefined;
-const sizes = (s: Species) => {
-  const c = careOf(s), t = TIERS[s.id], minL = c?.minL ?? 0, minLen = c?.minLengthMm ?? 0;
-  return { floorL: t?.floor?.litres ?? minL, floorLen: t?.floor?.lengthMm ?? minLen, comfL: t?.comfort?.litres ?? minL, comfLen: t?.comfort?.lengthMm ?? minLen };
-};
 const wet = (s: Species) => countsAgainstWater(s);
 const air = (s: Species) => AIRDATA[s.id];
-// as measureMinimum applies them today: its VOLUME_ONLY argument is not read (tankMin.ts:122 passes 7 args to a 6-arg function), so the flag changes nothing yet
-const weights = (s: Species) => ({ ...MIN_WEIGHTS[zoneOf(s)], ...(careOf(s)?.minAreaCm2 ? { area: 1 } : {}) });
+// lane MM: the decided red (minimum) / green (Recommended) lines, src/data/tankmin.json; mark: sourced, (est) = no conditions stated, derived = from a gallon figure
+const md = (s: Species) => minDataOf(s.id);
+const mk = (m: string | undefined) => m === 'sourced' ? '' : m === 'derived (est)' ? ' derived' : m ? ' (est)' : '';
+const lineCell = (l: MinLine | undefined): Cell => !l ? null : [l.L, `${len(l.L)![1]}${l.W ? ` x ${len(l.W)![1]}` : ''}${l.areaCm2 ? ` + ${area(l.areaCm2)![1]}` : ''}${mk(l.mark)} · ${l.site}`];
+const held = (s: Species) => { const w = whoOf(s), l = md(s)?.red; if (!l) return 'none (never fails on size)';
+  return l.mark === 'derived (est)' ? (w.floor ? 'floor area' : 'length') : [w.floor || l.areaCm2 ? 'floor area' : '', 'length', l.W && (w.floor || w.tl >= LARGE_BODY_MM) ? 'width' : ''].filter(Boolean).join(' + '); };
 
 const COLS: Col[] = [
   // identity
@@ -95,18 +95,14 @@ const COLS: Col[] = [
   { key: 'maxd', label: 'Max water depth', group: 'Water and air', get: s => len(careOf(s)?.maxDepthMm) },
   // minimum tank
   { key: 'minL', label: 'Care minimum (CARE.minL)', group: 'Minimum tank', get: s => litres(careOf(s)?.minL) },
-  { key: 'floorL', label: 'Floor: water', group: 'Minimum tank', get: s => litres(sizes(s).floorL) },
-  { key: 'floorLen', label: 'Floor: tank length', group: 'Minimum tank', get: s => len(sizes(s).floorLen) },
-  { key: 'comfL', label: 'Comfort: water', group: 'Minimum tank', get: s => litres(sizes(s).comfL) },
-  { key: 'comfLen', label: 'Comfort: tank length', group: 'Minimum tank', get: s => len(sizes(s).comfLen) },
-  { key: 'minW', label: 'Min front to back', group: 'Minimum tank', get: s => len(careOf(s)?.minWidthMm) },
-  { key: 'minA', label: 'Stated floor area', group: 'Minimum tank', get: s => area(careOf(s)?.minAreaCm2) },
-  { key: 'derA', label: 'Floor area from litres', group: 'Minimum tank', get: s => { const l = sizes(s).floorL; return l && !careOf(s)?.minAreaCm2 ? area(areaFor(l)) : null; } },
-  { key: 'tiers', label: 'Two-tier override', group: 'Minimum tank', left: true, get: s => txt(TIERS[s.id] ? Object.keys(TIERS[s.id]).join(' + ') : undefined) },
-  { key: 'wv', label: 'Weight: water', group: 'Minimum tank', get: s => { const w = weights(s).vol; return [w, String(w)]; } },
-  { key: 'wa', label: 'Weight: floor area', group: 'Minimum tank', get: s => { const w = weights(s).area; return [w, String(w)]; } },
-  { key: 'wr', label: 'Weight: length', group: 'Minimum tank', get: s => { const w = weights(s).run; return [w, String(w)]; } },
-  { key: 'vo', label: 'Volume-only flag (not applied yet)', group: 'Minimum tank', get: s => flag(VOLUME_ONLY.has(s.id)) },
+  { key: 'red', label: 'Red: minimum', group: 'Minimum tank', left: true, get: s => lineCell(md(s)?.red) },
+  { key: 'green', label: 'Green: Recommended', group: 'Minimum tank', left: true, get: s => lineCell(md(s)?.green) },
+  { key: 'held', label: 'Red line holds', group: 'Minimum tank', left: true, get: s => txt(held(s)) },
+  { key: 'hred', label: 'Height red / green', group: 'Minimum tank', get: s => { const d = md(s); return d?.hRed || d?.hGreen ? [d.hRed?.H ?? d.hGreen!.H, `${d.hRed ? len(d.hRed.H)![1] : '-'} / ${d.hGreen ? len(d.hGreen.H)![1] : '-'}`] : null; } },
+  { key: 'vol', label: 'Volume (advisory)', group: 'Minimum tank', get: s => { const v = md(s)?.vol; return v ? [v.gal, `${us() ? `${v.gal} gal` : `${Math.round(v.gal * GAL)} L`}${mk(v.mark)} · ${v.site}`] : null; } },
+  { key: 'depth', label: 'Depth note', group: 'Minimum tank', left: true, get: s => txt(md(s)?.depth?.note) },
+  { key: 'mwhy', label: 'Why these lines', group: 'Minimum tank', left: true, get: s => txt(md(s)?.why) },
+  { key: 'minW', label: 'Min front to back (groups, unused)', group: 'Minimum tank', get: s => len(careOf(s)?.minWidthMm) },
   { key: 'herp', label: 'Herp floor min / rec', group: 'Minimum tank', get: s => { const h = HERP[s.sci]; return h ? [h.min, us() ? `${h.min} / ${h.rec} sq ft` : `${f2(h.min * SQFT_M2)} / ${f2(h.rec * SQFT_M2)} m²`] : null; } },
   { key: 'herpe', label: 'Herp floor per extra', group: 'Minimum tank', get: s => { const h = HERP[s.sci]; return h ? [h.each, us() ? `${h.each} sq ft` : `${f2(h.each * SQFT_M2)} m²`] : null; } },
   { key: 'herph', label: 'Herp min height', group: 'Minimum tank', get: s => { const h = HERP[s.sci]; return h?.hMin ? [h.hMin, us() ? `${h.hMin} in` : `${Math.round(h.hMin * 2.54)} cm`] : null; } },

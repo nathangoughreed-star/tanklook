@@ -15,7 +15,7 @@ import { bareSetup } from './defaults';
 import { volume } from './physics';
 import { countsAgainstWater, stockingOf } from './stocking';
 import { MIN_SLACK_PCT } from './animalfit';
-import { tankMinimum } from './tankMin';
+import { minDataOf, tankMinimum } from './tankMin';
 import { applyPreset, optionCost, PRESETS, ROOM_C, rowsFor, stockCapacity, tempFit, withChoice } from './tech';
 import type { Fish, TankSetup } from './types';
 
@@ -43,9 +43,9 @@ export const floorNeedCm2 = (sp: Species, tlMm: number) => FLOOR_K[zoneOf(sp)] *
 export interface Needs {
   /** floor area wanted by zone, cm2 (animals that live in the water only) */
   floorCm2: Record<Zone, number>;
-  /** the longest tank any of them needs, mm (GroupCare minLengthMm); 0 = no demand */
+  /** the longest red-line length any of them has, mm (scene/tankMin.ts lines); 0 = no demand */
   minLengthMm: number;
-  /** the shallowest water any of them tolerates, mm (GroupCare maxDepthMm); Infinity = no limit */
+  /** the shallowest water any of them tolerates, mm (GroupCare maxDepthMm); Infinity = no limit. A sourced maximum depth that is advisory (ADF, Decision 3) is not counted */
   maxDepthMm: number;
   /** the largest smallest-tank any of them has (CARE.minL, litres): below it the tank is not sane even when the space number is */
   minLitres: number;
@@ -62,8 +62,8 @@ export function needsOf(animals: AnimalCount[]): Needs {
   let minLengthMm = 0, maxDepthMm = Infinity, minLitres = 0, salt = false;
   for (const { sp, n, tl } of wet(animals)) {
     floorCm2[zoneOf(sp)] += n * floorNeedCm2(sp, tl);
-    minLengthMm = Math.max(minLengthMm, careOf(sp.id)?.minLengthMm ?? 0); // none until lane P1's data lands
-    maxDepthMm = Math.min(maxDepthMm, careOf(sp.id)?.maxDepthMm ?? Infinity);
+    minLengthMm = Math.max(minLengthMm, minDataOf(sp.id)?.red?.L ?? 0);
+    if (!minDataOf(sp.id)?.depth?.maxWaterDepthMm) maxDepthMm = Math.min(maxDepthMm, careOf(sp.id)?.maxDepthMm ?? Infinity); // lane MM: ADF's 24 in is an advisory with the count picker
     minLitres = Math.max(minLitres, careOf(sp.id)?.minL ?? 0);
     salt ||= !!sp.salt;
   }
@@ -140,8 +140,8 @@ function fitOf(c: Candidate, animals: AnimalCount[], needs: Needs): Fit {
   // the balanced build already takes the strongest catalogue filter when none keeps it at 70 %: still over 100 % means no filter can carry this stocking here
   if (r.filtrationPercent > 100) fails.push('filtration');
   const tm = tankMinimum(S);
-  if (tm.percent > MIN_SLACK_PCT) fails.push('minimum'); // the Fullness bar's own measure (floor area, length, water by kind of animal); 10 % slack: a 10 gal (38 L) takes a 40 L species
-  if (c.T.L < needs.minLengthMm) fails.push('length');
+  if (tm.percent > MIN_SLACK_PCT) fails.push('minimum'); // the Fullness tile's own red lines (length, width, floor area, height; tankMin.ts), 10 % slack
+  if (c.T.L < needs.minLengthMm) fails.push('length'); // the red-line length without slack: step-ups may show a tank over its minimum on space, never a short one
   if (c.T.H * WATER_LEVEL > needs.maxDepthMm) fails.push('depth');
   const floor = c.T.L * c.T.D / 100; // mm2 -> cm2
   const zones = needs.floorCm2;

@@ -10,6 +10,7 @@ import demandItems from '../src/data/demand-items.json';
 import tech from '../src/data/tech.json';
 import gearCatalog from '../src/data/gear-catalog.json';
 import tanks from '../src/data/tanks.json';
+import tankmin from '../src/data/tankmin.json';
 import kits from '../src/data/kits.json';
 import deals from '../src/data/deals.json';
 import gearDeals from '../src/data/gear-deals.json';
@@ -36,6 +37,8 @@ const species = (speciesJson as { species: Obj[] }).species;
 export const TARGETS: Target[] = [
   { name: 'CARE', label: 'Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts)', data: CARE,
     leaf: (k, v) => k !== 'tolEst' && (numBool(k, v) || k === 'fam') },
+  { name: 'TANKMIN', label: 'Tank minimum red / green lines, heights, depth notes, advisory gallons (tankmin.json, lane MM)', data: (tankmin as { species: Obj }).species,
+    leaf: (k, v) => typeof v === 'number' && ['L', 'W', 'areaCm2', 'H', 'gal', 'recommendedTankHeightMm', 'advisoryTankHeightMm', 'maxWaterDepthMm'].includes(k) },
   { name: 'SPECIES', label: 'Adult length per species (species.json tl)', data: byId(species.map(s => ({ id: s.id, tl: s.tl, ...(s.female ? { female: s.female } : {}) }))),
     leaf: (k, v) => k === 'tl' && typeof v === 'number' },
   { name: 'MARINE_PH', label: 'Marine pH band (data/waterchem.ts)', data: MARINE_PH, leaf: num },

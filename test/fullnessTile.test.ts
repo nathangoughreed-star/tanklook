@@ -178,16 +178,16 @@ describe('tank minimum warnings (binary, AqAdvisor style)', () => {
   });
   it('names the species and the unmet measure in red when the tank is under its minimum', () => {
     const S = one('swordtail', 700, 520), w = tileState(S, stockingOf(S)).mins;
-    expect(w).toHaveLength(1); expect(w[0].level).toBe('over'); expect(w[0].text).toMatch(/^1 Swordtail: wants a tank at least 80 cm long, this one is 70 cm/);
+    expect(w).toHaveLength(1); expect(w[0].level).toBe('over'); expect(w[0].text).toMatch(/^1 Swordtail: wants a tank at least 80 cm long \(FishBase \+ Seriously Fish\), this one is 70 cm/);
     expect(tileState(S, stockingOf(S)).head.level).toBe('over');
   });
   it('prints lengths in inches when the scene is in inches', () => {
     const S = one('swordtail', 700, 520), w = tileState(S, stockingOf(S), 'in').mins;
-    expect(w[0].text).toMatch(/at least 31\.5" long, this one is 27\.6"/);
+    expect(w[0].text).toMatch(/at least 31\.5" long \(FishBase \+ Seriously Fish\), this one is 27\.6"/);
   });
-  it('gives an amber note when a species is held but would be happier larger (a danio school: 40 L floor, 75 L comfort)', () => {
+  it('gives a yellow note when a species is above its minimum but below the recommended size (lane MM: danio red 20 in derived, green 35.5 in Seriously Fish)', () => {
     const S = one('danio', 650, 300, 330), w = minWarnings(tankMinimum(S), 'cm');
-    expect(w.every(x => x.level === 'near')).toBe(true); expect(w[0].text).toMatch(/cramped/);
+    expect(w.every(x => x.level === 'near')).toBe(true); expect(w[0].text).toMatch(/below the recommended size: Seriously Fish recommends 90 cm long/);
   });
   it('red and amber never name the same species twice', () => {
     for (const sp of ['swordtail', 'danio', 'adf', 'oscar']) for (const L of [300, 450, 650, 900, 1500]) {
