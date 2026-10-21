@@ -22,7 +22,7 @@ const BARS: { bar: Bar; title: string; tip: string }[] = [
   { bar: 'setup', title: 'To set up', tip: 'What it costs to buy everything in this tank once.' },
   { bar: 'upkeep', title: 'Upkeep a month', tip: 'Power, water, food, filter parts, and replacing what dies.' },
   { bar: 'minutes', title: 'Time a week', tip: 'Minutes a week on average, yearly jobs included.' },
-  { bar: 'risk', title: 'Risk', tip: 'How likely things are to go wrong, for your experience. Safe is under 3, moderate under 6, demanding above.' },
+  { bar: 'risk', title: 'Relative difficulty', tip: 'How hard this tank is likely to be for your experience: the animals and plants you chose, and any problems in the plan (listed with their fixes). Easy under 3, moderate under 6, demanding above.' },
 ];
 const usd = (v: number) => '$' + Math.round(v).toLocaleString();
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
@@ -100,7 +100,7 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
     const S = store.tank, nA = S.fish.length, nP = S.items.filter(i => i.kind === 'plant' || i.kind === 'coral').length;
     q('.dmmode').textContent = nA ? `With ${nA} animal${nA > 1 ? 's' : ''}${B ? `; without them: ${usd(B.totals.setupUsd)} to set up, ${usd(B.totals.upkeepUsdMo)} a month` : ''}`
       : nP ? 'Plants only: what it costs to keep this planted tank running. Add animals and watch it climb.' : 'Empty tank: the gear and upkeep before anything lives in it.';
-    q('.dmsum').textContent = `${usd(D.totals.setupUsd)} · ${usd(D.totals.upkeepUsdMo)}/mo · ${Math.round(D.totals.minPerWeek)} min/wk · risk ${D.totals.risk.toFixed(1)}`;
+    q('.dmsum').textContent = `${usd(D.totals.setupUsd)} · ${usd(D.totals.upkeepUsdMo)}/mo · ${Math.round(D.totals.minPerWeek)} min/wk · difficulty ${D.totals.risk.toFixed(1)}`;
     renderDeals();
     drill.hidden = !open;
     if (open) fillDrill(open);
@@ -152,7 +152,7 @@ Expected ${per(st.value)}.${st.limit !== undefined ? `
 Your limit: ${per(st.limit)}.` : ''}`;
     } else {
       const r = L.risk;
-      value = `${D!.totals.risk.toFixed(1)} / 10`; range = r.label;
+      value = `${D!.totals.risk.toFixed(1)} / 10`; range = r.label === 'safe' ? 'easy' : r.label; // the bar reads as difficulty (Nathan 2026-10-21): safe = easy
       track = `<i class="dmz" style="left:0;width:30%"></i><i class="dmz m" style="left:30%;width:30%"></i><i class="dmz d" style="left:60%;width:40%"></i><i class="dmmean" style="left:${x(D!.totals.risk)}"></i>`;
       el.title = `${b.tip}
 Relative to your stated experience (see Your situation).`;
@@ -188,7 +188,7 @@ Relative to your stated experience (see Your situation).`;
     lim.innerHTML = `<label>What do you want your expected set-up cost to be? <input type="number" min="0" step="10" id="dmSetup" placeholder="no limit" value="${L.setupUsd ?? ''}"> $</label>
       <label>Upkeep <select id="dmUpkeep"><option value="">no limit</option><option value="free">near free (under $10 a month)</option><option value="low">low (under $40 a month)</option><option value="flex">flexible</option></select></label>
       <label>Time <input type="number" min="0" step="5" id="dmMin" placeholder="no limit" value="${L.minPerWeek ?? ''}"> minutes a week</label>
-      <label>Risk <select id="dmRisk"><option value="any">no limit</option><option value="moderate">moderate at most</option><option value="safe">safe only</option></select></label>`;
+      <label>Difficulty <select id="dmRisk"><option value="any">no limit</option><option value="moderate">moderate at most</option><option value="safe">easy only</option></select></label>`;
     (q('#dmUpkeep') as HTMLSelectElement).value = L.upkeep ?? ''; (q('#dmRisk') as HTMLSelectElement).value = L.risk ?? 'any';
     const num = (id: string) => { const v = (q(id) as HTMLInputElement).value; return v === '' ? undefined : Math.max(0, +v); };
     const change = () => {
@@ -201,7 +201,7 @@ Relative to your stated experience (see Your situation).`;
     sit.innerHTML = DOMAIN_LABEL.map(([k, name]) => `<label>${name} <select data-sk="${k}">${SKILL.map((s, i) => `<option value="${i}" ${P.skill[k] === i ? 'selected' : ''}>${s}</option>`).join('')}</select></label>`).join('')
       + `<label>Water for changes <select id="dmWater">${(['tap', 'well', 'bought-ro', 'own-ro'] as const).map(w => `<option value="${w}" ${P.waterSource === w ? 'selected' : ''}>${{ tap: 'Tap', well: 'Well', 'bought-ro': 'Bought RO water', 'own-ro': 'My own RO unit' }[w]}</option>`).join('')}</select></label>
       <label>Electricity <input type="number" id="dmKwh" min="0" step="0.01" placeholder="US average" value="${P.kwhUsd ?? ''}"> $ per kWh</label>
-      <div class="hint">Left alone, you count as new to everything. Each answer changes the risk and money figures.</div>`;
+      <div class="hint">Left alone, you count as new to everything. Each answer changes the difficulty and money figures.</div>`;
     const change = () => {
       sit.querySelectorAll<HTMLSelectElement>('select[data-sk]').forEach(s => { P.skill[s.dataset.sk as keyof UserProfile['skill']] = +s.value as 0 | 1 | 2; });
       P.waterSource = (q('#dmWater') as HTMLSelectElement).value as UserProfile['waterSource'];

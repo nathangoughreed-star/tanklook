@@ -92,7 +92,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
       else if (S.fish.length) chip('good', `Everyone fine at ${room(t)}`);
     }
     if (row === 'heater' && opt !== 'none') { const h = heatLoss(S, t); if (h.n) chip('', `${h.n > 1 ? h.n + ' × ' : ''}${h.heater.watts} W, on ${Math.round(h.duty * 100)} % of the time`, `The tank loses about ${Math.round(h.lossW)} W at ${tempTxt(h.targetC)} in a ${tempTxt(h.roomC)} room; sized for a night ${3} °C colder`); }
-    if ((def?.risk ?? 0) >= 0.25) chip('warn', 'Risk +', def?.note ?? ''); // small risks (a HOB's 0.1) are not worth a flag
+    if ((def?.risk ?? 0) >= 0.25) chip('warn', 'Harder +', def?.note ?? ''); // small risks (a HOB's 0.1) are not worth a flag
     else if ((def?.risk ?? 0) <= -0.15) chip('good', 'Risk −', def?.note ?? '');
     return out.join('');
   };
@@ -155,7 +155,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
       out.push(`<span class="tchip${h.totalW < h.needW ? ' warn' : ''}" title="${esc(`The tank loses about ${Math.round(h.lossW)} W at ${tempTxt(h.targetC)} in a ${tempTxt(h.roomC)} room; a cold night (3 °C colder) needs about ${Math.round(h.needW)} W`)}">${h.totalW} W${h.n > 1 ? ' in all' : ''}, on ${Math.round(h.duty * 100)} % of the time</span>`);
       if (h.totalW < h.needW) out.push(`<span class="tchip warn">Short of the ${Math.round(h.needW)} W a cold night needs</span>`);
       const def = optionDef('heater', cur);
-      if ((def?.risk ?? 0) >= 0.25) out.push(`<span class="tchip warn" title="${esc(def?.note ?? '')}">Risk +</span>`);
+      if ((def?.risk ?? 0) >= 0.25) out.push(`<span class="tchip warn" title="${esc(def?.note ?? '')}">Harder +</span>`);
       html += `<span class="tchips">${out.join('')}</span>`;
     }
     if (adding?.row !== 'heater') return html + `<button type="button" class="tadd" data-act="adding|heater">+ Add ${h.n ? 'another' : 'a'} heater</button>`;
@@ -201,7 +201,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
 
   const delta = (d: Totals, b: Totals) => {
     const part = (v: number, f: (x: number) => string, cut: number) => Math.abs(v) < cut ? '<span class="tz">±0</span>' : `<span class="${v > 0 ? 'tup' : 'tdn'}">${v > 0 ? '+' : '−'}${f(Math.abs(v))}</span>`;
-    return `Setup ${part(d.setup - b.setup, usd, 1)} · Monthly ${part(d.upkeep - b.upkeep, v => usd(v), 0.05)} · Time ${part(d.minutes - b.minutes, v => `${v.toFixed(v < 10 ? 1 : 0)} min/wk`, 0.05)} · Risk ${part(d.risk - b.risk, v => v.toFixed(1), 0.05)}`;
+    return `Setup ${part(d.setup - b.setup, usd, 1)} · Monthly ${part(d.upkeep - b.upkeep, v => usd(v), 0.05)} · Time ${part(d.minutes - b.minutes, v => `${v.toFixed(v < 10 ? 1 : 0)} min/wk`, 0.05)} · Difficulty ${part(d.risk - b.risk, v => v.toFixed(1), 0.05)}`;
   };
 
   function render() {
