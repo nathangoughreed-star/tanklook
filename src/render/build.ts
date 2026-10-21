@@ -1,10 +1,10 @@
 // Builds a three.js scene for one tank from scene data. Rebuilt on every content change (cheap at this scale);
 // textures and card materials are cached across rebuilds.
 import * as THREE from 'three';
-import { LECA, SUBSTRATES, blendTile, maskQuantile } from '../art/placeholder';
+import { GRAIN_ORDER, LECA, SUBSTRATES, blendTile, blendZone, grain3D } from '../art/placeholder';
 import { litterMeshes } from './scatter';
 import { patchHighlight, patchMeshes, patchSel } from './brushmesh';
-import { glassGrains, grainLook, grainMeshes, grainTop } from './grains';
+import { glassGrains, grainLook, grainMeshes, grainPatchy, grainTop } from './grains';
 import { snailAspect } from '../art/snails';
 import { fishTL, leafUp, needsWater, speciesOf, type Species } from '../data/species';
 import { PERCHES, anchors, limbPaths, type Anchor, type Anchors, type V3 } from '../scene/anchors';
@@ -884,7 +884,9 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   };
   // coarse grounds in 3D (render/grains.ts): the painted top and skirt step back from the glass by `gsh`, behind the row
   // of grains pressed against it (both cut it: a seam where the surface sliced the stones, a bare strip where it did not)
-  const gl = sub.show ? grainLook(sub) : null, gsh = gl && !bowl ? (gl.size[0] + gl.size[1]) / 2 * 0.55 : 0;
+  // a blend with sand or mud patches: barely, or the sand there stops short of the glass (its stones then show partly,
+  // pressed into the sand at the glass)
+  const gl = sub.show ? grainLook(sub) : null, gsh = gl && !bowl ? Math.min((gl.size[0] + gl.size[1]) / 2 * 0.55, grainPatchy(sub) ? 2.5 : Infinity) : 0;
   const clipIn = (poly: P[]) => { // keep the part at least gsh from every pane (the outlines are convex)
     if (!gsh) return poly;
     for (const e of footprint(T).edges) {
@@ -965,12 +967,13 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
     g.setAttribute('position', new THREE.Float32BufferAttribute(arr.filter((_, i) => i % 2 === 0).flat(), 3));
     g.setAttribute('uv', new THREE.Float32BufferAttribute(arr.filter((_, i) => i % 2 === 1).flat(), 2));
     const m = new THREE.MeshBasicMaterial({ map: map ?? (sub.type === 'custom' ? blendTexture(sub.custom, 'a') : substrateTexture(sub.type)), color: shade, vertexColors: !!cols?.length, side: THREE.DoubleSide });
-    m.userData.sub = true; if (sub.type === 'custom') blendGrains(m, sub.custom, tile);
+    m.userData.sub = true; if (sub.type === 'custom') blendGrains(m, sub.custom);
     if (wet && terra) wetSheen(m, g, wet);
     sc.add(new THREE.Mesh(g, m));
   };
   // coarse grounds in 3D (render/grains.ts): the painted surface darkened to the shadowed gaps between the grains
-  mk(top, gl ? 0x6e6e6e : 0xffffff, topCol, topNrm, topWet); mk(side, gl ? 0x5a5a5a : 0xb4b4b4, sideCol); // the skirt a touch darker so the layer reads through the glass
+  const gd = gl && !(sub.type === 'custom' && sub.custom.grain2 !== 'none'); // a blend darkens only its stones' patches (blendGrains)
+  mk(top, gd ? 0x6e6e6e : 0xffffff, topCol, topNrm, topWet); mk(side, gd ? 0x5a5a5a : 0xb4b4b4, sideCol); // the skirt a touch darker so the layer reads through the glass
   mk(leca, 0xb4b4b4, lecaCol, undefined, undefined, lecaTexture()); mk(mesh, 0x3a3d38, meshCol, undefined, undefined, meshTexture());
   if (gl) for (const o of [...grainMeshes(S, T, (x, d) => G([x, d])), ...(bowl ? [] : glassGrains(S, T, (x, d) => G([x, d])[1]))]) sc.add(o);
   const gt = grainTop(gl); // litter lies on the grains
@@ -1002,29 +1005,29 @@ if (vAqWet > 0.01) { vec3 aqH = normalize(normalize(vec3(-0.2, 1.0, 0.35)) + nor
  * patches take (1 - mix) of each grain's share and the mixed ground the rest, so the shares hold at any mix: mix 0 =
  * separate patches with a sharp edge, 1 = mixed everywhere. Patches shrink as the mix rises (big drifts to small clumps).
  */
-/** The mask shader's uniforms for a two-grain blend; with `u`, its values are updated in place (patchLook). */
-interface BlendUniforms { uMapB: { value: THREE.Texture }; uMapM: { value: THREE.Texture }; uMask: { value: THREE.Texture }; uZone: { value: THREE.Vector4 }; uOff: { value: THREE.Vector2 } }
-/** Where the patch mask starts for this blend: a hash of its own values, so every blend lays its patches out differently. */
-function maskOffset(b: TankSetup['substrate']['custom']): THREE.Vector2 {
-  let h = 2166136261; for (const c of `${b.color}${b.color2}${b.share}${b.mix}`) h = Math.imul(h ^ c.charCodeAt(0), 16777619);
-  return new THREE.Vector2(((h >>> 0) % 1000) / 1000, ((h >>> 10) % 1000) / 1000);
+/** The mask shader's uniforms for a two-grain blend; with `u`, its values are updated in place (patchLook). `uDark`:
+ *  each tile's shade (first alone, second alone, mixed), dark where 3D stones lie on it (the gaps between them). */
+interface BlendUniforms { uMapB: { value: THREE.Texture }; uMapM: { value: THREE.Texture }; uMask: { value: THREE.Texture }; uZone: { value: THREE.Vector4 }; uOff: { value: THREE.Vector2 }; uDark: { value: THREE.Vector3 } }
+function blendUniforms(b: TankSetup['substrate']['custom'], u?: BlendUniforms): BlendUniforms {
+  const z = blendZone(b), zone = new THREE.Vector4(z.lo, z.hi, z.scale, z.w), off = new THREE.Vector2(z.off[0], z.off[1]);
+  const fineIs3D = b.grain === b.grain2 || GRAIN_ORDER.indexOf(b.grain2 as (typeof GRAIN_ORDER)[number]) > GRAIN_ORDER.indexOf(b.grain) ? grain3D(b.grain) : grain3D(b.grain2);
+  const k = (on: boolean) => (on ? GAPS : 1), dark = new THREE.Vector3(k(grain3D(b.grain)), k(grain3D(b.grain2)), fineIs3D ? GAPS : grain3D(b.grain) || grain3D(b.grain2) ? 0.85 : 1);
+  if (u) { u.uMapB.value = blendTexture(b, 'b'); u.uMapM.value = blendTexture(b, 'm'); u.uZone.value.copy(zone); u.uOff.value.copy(off); u.uDark.value.copy(dark); return u; }
+  return { uMapB: { value: blendTexture(b, 'b') }, uMapM: { value: blendTexture(b, 'm') }, uMask: { value: substrateMaskTexture() }, uZone: { value: zone }, uOff: { value: off }, uDark: { value: dark } };
 }
-function blendUniforms(b: TankSetup['substrate']['custom'], tile: number, u?: BlendUniforms): BlendUniforms {
-  const p2 = b.share / 100, k = 1 - b.mix, period = 900 - 650 * b.mix; // mm per mask repeat
-  const zone = new THREE.Vector4(maskQuantile((1 - p2) * k), maskQuantile(1 - p2 * k), tile / period, 0.012);
-  if (u) { u.uMapB.value = blendTexture(b, 'b'); u.uMapM.value = blendTexture(b, 'm'); u.uZone.value.copy(zone); u.uOff.value.copy(maskOffset(b)); return u; }
-  return { uMapB: { value: blendTexture(b, 'b') }, uMapM: { value: blendTexture(b, 'm') }, uMask: { value: substrateMaskTexture() }, uZone: { value: zone }, uOff: { value: maskOffset(b) } };
-}
-function blendGrains(m: THREE.MeshBasicMaterial, b: TankSetup['substrate']['custom'], tile: number) {
+/** The painted ground under 3D stones, darkened to the shadowed gaps between them (a single grain: the material colour). */
+const GAPS = 0.45;
+function blendGrains(m: THREE.MeshBasicMaterial, b: TankSetup['substrate']['custom']) {
   if (b.grain2 === 'none') return;
-  const uniforms = m.userData.blend = blendUniforms(b, tile); // patchLook updates them in place
+  const uniforms = m.userData.blend = blendUniforms(b); // patchLook updates them in place
   m.userData.post = (sh: THREE.WebGLProgramParametersWithUniforms) => {
     Object.assign(sh.uniforms, uniforms);
-    sh.fragmentShader = sh.fragmentShader.replace('void main() {', `uniform sampler2D uMapB, uMapM, uMask; uniform vec4 uZone; uniform vec2 uOff;
+    sh.fragmentShader = sh.fragmentShader.replace('void main() {', `uniform sampler2D uMapB, uMapM, uMask; uniform vec4 uZone; uniform vec2 uOff; uniform vec3 uDark;
 vec4 aqBlend(vec2 uv) {
   float n = texture2D(uMask, vMapUv * uZone.z + uOff).r;
   float a = 1.0 - smoothstep(uZone.x - uZone.w, uZone.x + uZone.w, n), b = smoothstep(uZone.y - uZone.w, uZone.y + uZone.w, n);
-  return texture2D(map, uv) * a + texture2D(uMapB, uv) * b + texture2D(uMapM, uv) * max(1.0 - a - b, 0.0);
+  vec4 c = texture2D(map, uv) * a * uDark.x + texture2D(uMapB, uv) * b * uDark.y + texture2D(uMapM, uv) * max(1.0 - a - b, 0.0) * uDark.z;
+  return vec4(c.rgb, a + b + max(1.0 - a - b, 0.0));
 }
 void main() {`).replace('texture2D(map, vMapUv);', 'aqBlend(vMapUv);').replace('texture2D(map, uv2)', 'aqBlend(uv2)');
   };
@@ -1132,7 +1135,7 @@ export function patchLook(sc: THREE.Scene, S: TankSetup) {
     else if (m.userData.sub && S.substrate.type === 'custom') {
       m.map = blendTexture(b, 'a');
       const u = m.userData.blend as BlendUniforms | undefined;
-      if (u) blendUniforms(b, blendTile(b), u); // the same uniform objects the program holds
+      if (u) blendUniforms(b, u); // the same uniform objects the program holds
     }
   });
 }

@@ -83,7 +83,9 @@ export function scatter(T: Tank, ground: GroundAt, spec: ScatterSpec): THREE.Ins
     const lk = spec.liftK ? (spec.liftK[0] + lift01 * (spec.liftK[1] - spec.liftK[0])) * size : 0;
     const h = lift + lk + under + top, inc = spec.pile + (spec.pileK ?? 0) * size;
     if (inc) cells(x, d, reach * 0.5, k => { pile[k] = top + inc; });
-    pos.set(g[0] + n.x * h, g[1] + n.y * h, g[2] + n.z * h); scl.set(size, size, mirror ? -size : size);
+    // grains never mirrored: a mirrored copy is inside out in an InstancedMesh (its winding flips, the culling does not),
+    // and big pebbles showed as hollow rings
+    pos.set(g[0] + n.x * h, g[1] + n.y * h, g[2] + n.z * h); scl.set(size, size, mirror && !spec.palette ? -size : size);
     const pm = per[ki]; for (const v of mx.compose(pos, q, scl).elements) pm.push(v);
     const k = spec.shade?.(pos.y) ?? 1;
     if (spec.palette) col.copy(spec.palette[Math.floor(pal * spec.palette.length)]).multiplyScalar(0.85 + shade * 0.3);

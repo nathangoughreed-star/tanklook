@@ -353,7 +353,7 @@ export const GRAIN_LOOK: Record<Grain, { label: string; size: [number, number]; 
   gravel: { label: 'Gravel', size: [1.8, 3.9], tile: 180, round: 0.8, gloss: 0.12 },
   pebble: { label: 'Pebbles', size: [6, 13], tile: 320, round: 0.9, gloss: 0.1 },
 };
-const GRAIN_ORDER: Grain[] = ['mud', 'sand', 'gravel', 'pebble'];
+export const GRAIN_ORDER: Grain[] = ['mud', 'sand', 'gravel', 'pebble'];
 /** Repeat length (mm) of a custom substrate's mixed tile: the coarser grain's. */
 export const blendTile = (b: SubstrateBlend) => Math.max(GRAIN_LOOK[b.grain].tile, b.grain2 === 'none' ? 0 : GRAIN_LOOK[b.grain2].tile);
 export function blendLabel(b: SubstrateBlend) {
@@ -461,7 +461,7 @@ export function drawBlendTile(ctx: Ctx, W: number, b: SubstrateBlend, which: 'a'
   const second = GRAIN_ORDER.indexOf(b.grain2) > GRAIN_ORDER.indexOf(b.grain); // the second grain is the coarser
   const [fine, fc, coarse, cc, cov] = second ? [b.grain, b.color, b.grain2, b.color2, p2] : [b.grain2, b.color2, b.grain, b.color, 1 - p2];
   drawGrain(ctx, W, fine, fc, mmPx, r, 1);
-  drawGrain(ctx, W, coarse, cc, mmPx, r, cov);
+  if (!grain3D(coarse)) drawGrain(ctx, W, coarse, cc, mmPx, r, cov); // gravel and pebbles lie on the bed in 3D
 }
 
 /**
@@ -493,4 +493,27 @@ export function maskQuantile(p: number) {
   if (p <= 0) return -0.01;
   if (p >= 1) return 1.01;
   return s[Math.min(s.length - 1, Math.floor(p * s.length))];
+}
+/** Grains coarse enough to be drawn as 3D stones (render/grains.ts). */
+export const grain3D = (g: Grain | 'none') => g === 'gravel' || g === 'pebble';
+/**
+ * Where a two-grain blend's patches lie (render/build.ts `blendGrains` draws them; render/grains.ts puts its 3D stones on
+ * the same patches): mask thresholds `lo` / `hi`, mask repeats per texture tile `scale`, edge softness `w`, and the
+ * mask's start `off`, a hash of the blend's own values, so every blend lays its patches out differently.
+ */
+export function blendZone(b: SubstrateBlend) {
+  const p2 = b.share / 100, k = 1 - b.mix, period = 900 - 650 * b.mix; // mm per mask repeat
+  let h = 2166136261; for (const c of `${b.color}${b.color2}${b.share}${b.mix}`) h = Math.imul(h ^ c.charCodeAt(0), 16777619);
+  return { lo: maskQuantile((1 - p2) * k), hi: maskQuantile(1 - p2 * k), scale: blendTile(b) / period, w: 0.012, off: [((h >>> 0) % 1000) / 1000, ((h >>> 10) % 1000) / 1000] };
+}
+/** The blend's patch weights at floor point (x, depth) mm, as the ground shader finds them: [first grain alone, second
+ *  alone, mixed], summing to 1. The mask sampled bilinearly with wrap, like the GPU's linear filter. */
+export function blendWeights(b: SubstrateBlend, x: number, d: number, z = blendZone(b)): [number, number, number] {
+  const N = 256, M = substrateMask().data, t = blendTile(b);
+  const u = ((x / t) * z.scale + z.off[0]) * N - 0.5, v = ((d / t) * z.scale + z.off[1]) * N - 0.5, i = Math.floor(u), j = Math.floor(v), fu = u - i, fv = v - j;
+  const at = (a: number, c: number) => M[((((c % N) + N) % N) * N + (((a % N) + N) % N)) * 4] / 255;
+  const n = (at(i, j) * (1 - fu) + at(i + 1, j) * fu) * (1 - fv) + (at(i, j + 1) * (1 - fu) + at(i + 1, j + 1) * fu) * fv;
+  const ss = (e0: number, e1: number) => { const s = Math.min(1, Math.max(0, (n - e0) / (e1 - e0))); return s * s * (3 - 2 * s); };
+  const a = 1 - ss(z.lo - z.w, z.lo + z.w), bb = ss(z.hi - z.w, z.hi + z.w);
+  return [a, bb, Math.max(0, 1 - a - bb)];
 }
