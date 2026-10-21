@@ -96,7 +96,11 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
   };
   // the lead group goes in at any stop above None if it fits under the cap at all (a small tank's Few is then just
   // that one school); the rest join while the stop's share lasts
-  for (const sp of chosen) if (dry(sp)) count.set(sp, landCount(sp, stop));
+  for (const sp of chosen) if (dry(sp)) { // lane HB: semi-aquatic amphibians use the floor too; trim the group to the floor budget
+    let n = landCount(sp, stop);
+    while (n > 1 && usedFloor + groupLitres(sp, 0, n, floorPerAnimal) > cap * floorPerLitre) n--;
+    count.set(sp, n); usedFloor += groupLitres(sp, 0, n, floorPerAnimal);
+  }
   for (const [sp, n] of count) used += groupLitres(sp, 0, n); // semi-aquatic animals in a swamp / paludarium count against the water too (SE2 2026-10-20: Full stays at or under 100 %)
   chosen.forEach((sp, i) => !dry(sp) && add(sp, stocking(sp).start, i === 0 && lead >= 0 ? Math.max(cap, budget) : budget));
   for (let grew = true; grew;) { // grow each group in turn while the budget lasts

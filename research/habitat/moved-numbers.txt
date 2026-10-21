@@ -1,19 +1,647 @@
-starter stones g300 s3: 28 bronzecory, 1 kribensis, 30 kuhli, 4 nerite, 30 platy -> 26 bronzecory, 1 kribensis, 26 kuhli, 4 nerite, 30 platy
-starter stones c6 s3: 20 bronzecory, 1 kribensis, 22 kuhli, 4 nerite, 24 platy -> 18 bronzecory, 1 kribensis, 20 kuhli, 4 nerite, 28 platy
-starter driftwood g65 s1: 10 cardinal, 10 kuhli, 4 nerite, 12 pandacory -> 14 cardinal, 8 kuhli, 4 nerite, 12 pandacory
-starter driftwood g90 s1: 18 cardinal, 14 kuhli, 4 nerite, 16 pandacory -> 22 cardinal, 12 kuhli, 4 nerite, 16 pandacory
-starter driftwood g120 s1: 20 cardinal, 18 kuhli, 4 nerite, 20 pandacory -> 24 cardinal, 16 kuhli, 4 nerite, 20 pandacory
-starter driftwood cor50 s1: 8 cardinal, 8 kuhli, 3 nerite, 8 pandacory -> 10 cardinal, 6 kuhli, 3 nerite, 10 pandacory
-starter driftwood g135 s1: 24 cardinal, 20 kuhli, 4 nerite, 22 pandacory -> 28 cardinal, 18 kuhli, 4 nerite, 22 pandacory
-starter driftwood g150 s1: 24 cardinal, 24 kuhli, 4 nerite, 24 pandacory -> 30 cardinal, 18 kuhli, 4 nerite, 22 pandacory
-starter blackwater c6 s2: 1 bristlenose, 28 cardinal, 26 kuhli, 28 pandacory, 30 rummynose -> 1 bristlenose, 30 cardinal, 24 kuhli, 26 pandacory, 30 rummynose
-tankFor 8 rummynose: g30b -> g20l
+Lane HB moved numbers: origin/main (before) vs lane HB (after). Starters at Full (animal stop 4), every non-land style x generic catalogue tank x seeds 1-3; tankFor for each water species at its recommended group and twice that.
+
+starter stones g10 s1:  -> 6 cherrybarb
+starter stones g10 s2: 4 nerite -> 6 cherrybarb
+starter stones g10 s3: 4 nerite -> 6 cherrybarb
+starter stones g20h s2: 6 platy -> 2 nerite, 6 platy
+starter stones g20h s3: 6 platy -> 2 nerite, 6 platy
+starter stones g29 s2: 1 bristlenose, 6 platy -> 1 bristlenose, 2 nerite, 6 platy
+starter stones g30b s2: 1 bristlenose, 3 nerite, 6 platy -> 1 bristlenose, 4 nerite, 6 platy
+starter stones g37 s2: 1 bristlenose, 3 nerite, 8 platy -> 1 bristlenose, 4 nerite, 8 platy
+starter stones g40b s2: 1 bristlenose, 6 cherrybarb, 3 nerite, 6 platy -> 1 bristlenose, 6 cherrybarb, 4 nerite, 6 platy
+starter stones g65 s2: 1 bristlenose, 8 cherrybarb, 6 kuhli, 3 nerite, 6 platy -> 1 bristlenose, 6 cherrybarb, 6 kuhli, 2 nerite, 8 platy
+starter stones g65 s3: 1 kribensis, 8 kuhli, 3 nerite, 8 platy -> 1 kribensis, 8 kuhli, 4 nerite, 8 platy
+starter stones g75 s2: 1 bristlenose, 8 cherrybarb, 8 kuhli, 4 nerite, 8 platy -> 1 bristlenose, 10 cherrybarb, 8 kuhli, 4 nerite, 8 platy
+starter stones g120 s2: 1 bristlenose, 14 cherrybarb, 12 kuhli, 4 nerite, 12 platy -> 1 bristlenose, 12 cherrybarb, 12 kuhli, 4 nerite, 14 platy
+starter stones bow46 s2: 1 bristlenose, 6 kuhli, 3 nerite, 6 platy -> 1 bristlenose, 6 kuhli, 4 nerite, 6 platy
+starter stones bow72 s2: 1 bristlenose, 6 cherrybarb, 8 kuhli, 4 nerite, 8 platy -> 1 bristlenose, 8 cherrybarb, 8 kuhli, 3 nerite, 8 platy
+starter stones cor50 s3: 1 kribensis, 6 kuhli, 6 platy -> 1 kribensis, 6 kuhli, 2 nerite, 6 platy
+starter stones g125 s2: 1 bristlenose, 12 cherrybarb, 12 kuhli, 4 nerite, 14 platy -> 1 bristlenose, 14 cherrybarb, 12 kuhli, 4 nerite, 14 platy
+starter stones g135 s2: 1 bristlenose, 14 cherrybarb, 14 kuhli, 4 nerite, 14 platy -> 1 bristlenose, 16 cherrybarb, 14 kuhli, 4 nerite, 14 platy
+starter stones g135 s3: 10 bronzecory, 1 kribensis, 12 kuhli, 4 nerite, 12 platy -> 10 bronzecory, 1 kribensis, 12 kuhli, 4 nerite, 14 platy
+starter stones g150 s2: 1 bristlenose, 16 cherrybarb, 16 kuhli, 4 nerite, 16 platy -> 1 bristlenose, 16 cherrybarb, 16 kuhli, 4 nerite, 18 platy
+starter stones g180 s3: 16 bronzecory, 1 kribensis, 16 kuhli, 4 nerite, 16 platy -> 16 bronzecory, 1 kribensis, 16 kuhli, 4 nerite, 18 platy
+starter stones g210 s2: 1 bristlenose, 24 cherrybarb, 22 kuhli, 4 nerite, 24 platy -> 1 bristlenose, 22 cherrybarb, 24 kuhli, 4 nerite, 24 platy
+starter stones g240 s2: 1 bristlenose, 26 cherrybarb, 26 kuhli, 4 nerite, 28 platy -> 1 bristlenose, 26 cherrybarb, 28 kuhli, 4 nerite, 28 platy
+starter stones g240 s3: 22 bronzecory, 1 kribensis, 22 kuhli, 4 nerite, 22 platy -> 22 bronzecory, 1 kribensis, 22 kuhli, 4 nerite, 24 platy
+starter stones g300 s3: 26 bronzecory, 1 kribensis, 28 kuhli, 4 nerite, 28 platy -> 26 bronzecory, 1 kribensis, 26 kuhli, 4 nerite, 30 platy
+starter stones c6 s2: 1 bristlenose, 26 cherrybarb, 24 kuhli, 4 nerite, 24 platy -> 1 bristlenose, 24 cherrybarb, 24 kuhli, 4 nerite, 26 platy
+starter stones c6 s3: 20 bronzecory, 1 kribensis, 20 kuhli, 4 nerite, 20 platy -> 18 bronzecory, 1 kribensis, 20 kuhli, 4 nerite, 24 platy
+starter driftwood g5 s3: 1 honeygourami -> 1 gbr, 1 honeygourami
+starter driftwood g5_5 s1: 9 amano -> 6 amano, 1 gbr
+starter driftwood bow6 s1: 8 amano -> 9 amano
+starter driftwood g6c s1: 6 amano, 1 gbr -> 7 amano, 1 gbr
+starter driftwood g8c s1: 9 amano, 1 gbr -> 10 amano, 1 gbr
+starter driftwood g8c s3: 1 honeygourami, 3 nerite -> 1 gbr, 1 honeygourami, 2 nerite
+starter driftwood g20h s1: 8 cardinal, 6 pandacory -> 8 cardinal, 1 gbr, 6 pandacory
+starter driftwood g20h s2: 1 honeygourami, 10 rummynose -> 1 honeygourami, 12 rummynose
+starter driftwood g20h s3: 12 cardinal, 1 gbr -> 1 bolivianram, 8 cardinal, 1 gbr
+starter driftwood g20l s1: 8 cardinal, 6 pandacory -> 10 cardinal, 6 pandacory
+starter driftwood g29 s1: 10 cardinal, 2 nerite, 8 pandacory -> 10 cardinal, 3 nerite, 8 pandacory
+starter driftwood g29 s3: 1 bristlenose, 12 rummynose -> 1 bristlenose, 14 rummynose
+starter driftwood g30b s1: 10 cardinal, 4 nerite, 8 pandacory -> 12 cardinal, 3 nerite, 8 pandacory
+starter driftwood g30b s3: 1 bristlenose, 14 rummynose -> 1 bristlenose, 16 rummynose
+starter driftwood g37 s1: 12 cardinal, 4 nerite, 10 pandacory -> 12 cardinal, 4 nerite, 12 pandacory
+starter driftwood g37 s2: 1 bolivianram, 1 bristlenose, 14 rummynose -> 1 bolivianram, 1 bristlenose, 16 rummynose
+starter driftwood g40b s1: 8 cardinal, 6 kuhli, 2 nerite, 8 pandacory -> 10 cardinal, 6 kuhli, 2 nerite, 6 pandacory
+starter driftwood g40b s2: 1 bolivianram, 6 kuhli, 10 rummynose -> 1 bolivianram, 6 kuhli, 12 rummynose
+starter driftwood g50b s1: 12 cardinal, 6 kuhli, 3 nerite, 8 pandacory -> 12 cardinal, 6 kuhli, 4 nerite, 8 pandacory
+starter driftwood g55 s2: 1 bolivianram, 1 bristlenose, 6 kuhli, 14 rummynose -> 1 bolivianram, 1 bristlenose, 8 kuhli, 12 rummynose
+starter driftwood g60b s1: 12 cardinal, 8 kuhli, 3 nerite, 10 pandacory -> 12 cardinal, 8 kuhli, 4 nerite, 10 pandacory
+starter driftwood g60b s2: 1 bolivianram, 1 bristlenose, 8 kuhli, 12 rummynose -> 1 bolivianram, 1 bristlenose, 8 kuhli, 14 rummynose
+starter driftwood g65 s3: 1 bristlenose, 8 cardinal, 8 kuhli, 12 rummynose -> 1 bristlenose, 10 cardinal, 8 kuhli, 12 rummynose
+starter driftwood g75 s1: 14 cardinal, 12 kuhli, 4 nerite, 12 pandacory -> 16 cardinal, 12 kuhli, 4 nerite, 12 pandacory
+starter driftwood g75 s2: 1 bolivianram, 1 bristlenose, 12 kuhli, 18 rummynose -> 1 bolivianram, 1 bristlenose, 12 kuhli, 20 rummynose
+starter driftwood g75 s3: 1 bristlenose, 12 cardinal, 10 kuhli, 14 rummynose -> 1 bristlenose, 12 cardinal, 10 kuhli, 16 rummynose
+starter driftwood g90 s1: 18 cardinal, 14 kuhli, 4 nerite, 14 pandacory -> 20 cardinal, 14 kuhli, 4 nerite, 14 pandacory
+starter driftwood g90 s3: 1 bristlenose, 14 cardinal, 12 kuhli, 18 rummynose -> 1 bristlenose, 16 cardinal, 12 kuhli, 18 rummynose
+starter driftwood g120 s1: 20 cardinal, 18 kuhli, 4 nerite, 18 pandacory -> 22 cardinal, 18 kuhli, 4 nerite, 18 pandacory
+starter driftwood g120 s3: 1 bristlenose, 18 cardinal, 16 kuhli, 20 rummynose -> 1 bristlenose, 18 cardinal, 16 kuhli, 22 rummynose
+starter driftwood bow36 s3: 1 bristlenose, 8 cardinal, 10 rummynose -> 1 bristlenose, 8 cardinal, 12 rummynose
+starter driftwood bow46 s1: 10 cardinal, 6 kuhli, 4 nerite, 8 pandacory -> 12 cardinal, 6 kuhli, 3 nerite, 8 pandacory
+starter driftwood bow72 s1: 14 cardinal, 10 kuhli, 4 nerite, 12 pandacory -> 16 cardinal, 10 kuhli, 4 nerite, 12 pandacory
+starter driftwood bow72 s2: 1 bolivianram, 1 bristlenose, 10 kuhli, 18 rummynose -> 1 bolivianram, 1 bristlenose, 12 kuhli, 16 rummynose
+starter driftwood hex35 s1: 8 amano, 1 bristlenose, 10 cardinal, 6 pandacory -> 6 amano, 1 bristlenose, 10 cardinal, 8 pandacory
+starter driftwood hex35 s3: 8 cardinal, 6 pandacory, 10 rummynose -> 8 cardinal, 1 gbr, 6 pandacory, 10 rummynose
+starter driftwood cor50 s1: 10 cardinal, 6 kuhli, 3 nerite, 8 pandacory -> 10 cardinal, 6 kuhli, 3 nerite, 10 pandacory
+starter driftwood g125 s1: 22 cardinal, 18 kuhli, 4 nerite, 20 pandacory -> 22 cardinal, 18 kuhli, 4 nerite, 22 pandacory
+starter driftwood g125 s3: 1 bristlenose, 18 cardinal, 16 kuhli, 22 rummynose -> 1 bristlenose, 20 cardinal, 16 kuhli, 22 rummynose
+starter driftwood g135 s1: 24 cardinal, 20 kuhli, 4 nerite, 20 pandacory -> 26 cardinal, 20 kuhli, 4 nerite, 20 pandacory
+starter driftwood g135 s3: 1 bristlenose, 20 cardinal, 18 kuhli, 22 rummynose -> 1 bristlenose, 20 cardinal, 18 kuhli, 24 rummynose
+starter driftwood g150 s1: 26 cardinal, 22 kuhli, 4 nerite, 26 pandacory -> 30 cardinal, 20 kuhli, 4 nerite, 20 pandacory
+starter driftwood g150 s2: 1 bolivianram, 1 bristlenose, 26 kuhli, 30 rummynose -> 1 bolivianram, 1 bristlenose, 28 kuhli, 30 rummynose
+starter driftwood g150 s3: 1 bristlenose, 22 cardinal, 20 kuhli, 26 rummynose -> 1 bristlenose, 22 cardinal, 22 kuhli, 26 rummynose
+starter driftwood g180 s3: 1 bristlenose, 26 cardinal, 26 kuhli, 30 rummynose -> 1 bristlenose, 28 cardinal, 26 kuhli, 30 rummynose
+starter driftwood g210 s1: 6 angel, 1 bristlenose, 8 kuhli, 3 nerite, 8 pandacory -> 6 angel, 1 bristlenose, 8 kuhli, 4 nerite, 8 pandacory
+starter driftwood g210 s2: 6 angel, 1 bolivianram, 1 bristlenose, 10 kuhli -> 6 angel, 1 bolivianram, 1 bristlenose, 6 kuhli, 10 rummynose
+starter driftwood g240 s3: 6 angel, 1 bristlenose, 10 cardinal, 10 kuhli, 14 rummynose -> 6 angel, 1 bristlenose, 12 cardinal, 10 kuhli, 14 rummynose
+starter driftwood g300 s1: 8 angel, 1 bristlenose, 14 kuhli, 4 nerite, 16 pandacory -> 8 angel, 1 bristlenose, 14 kuhli, 4 nerite, 18 pandacory
+starter driftwood g300 s2: 8 angel, 1 bolivianram, 1 bristlenose, 12 kuhli, 16 rummynose -> 8 angel, 1 bolivianram, 1 bristlenose, 12 kuhli, 18 rummynose
+starter driftwood c8 s1: 10 angel, 1 bristlenose, 20 kuhli, 4 nerite, 22 pandacory -> 10 angel, 1 bristlenose, 20 kuhli, 4 nerite, 24 pandacory
+starter driftwood c8 s3: 10 angel, 1 bristlenose, 16 cardinal, 14 kuhli, 18 rummynose -> 10 angel, 1 bristlenose, 16 cardinal, 14 kuhli, 20 rummynose
+starter planted g5_5 s1: 10 cherryshrimp -> 1 betta, 10 cherryshrimp
+starter planted g8c s1: 8 ember -> 10 ember
+starter planted g8c s2: 8 ember -> 10 ember
+starter planted g8c s3: 8 ember -> 10 ember
+starter planted g10 s1: 6 amano, 8 ember -> 10 cherryshrimp, 8 ember
+starter planted g15 s1: 8 amano, 10 cherryshrimp, 8 ember -> 6 amano, 10 cherryshrimp, 10 ember
+starter planted g15 s2: 8 amano, 8 neon -> 6 amano, 1 betta, 8 neon
+starter planted g20h s2: 8 neon, 6 oto -> 1 betta, 8 neon, 6 oto
+starter planted g20l s3: 1 betta, 8 neon, 6 pandacory -> 1 betta, 10 neon, 6 pandacory
+starter planted g29 s2: 8 amano, 1 betta, 10 neon, 6 oto -> 10 amano, 1 betta, 10 neon, 6 oto
+starter planted g29 s3: 1 betta, 1 bolivianram, 8 neon, 6 pandacory -> 1 betta, 1 bolivianram, 10 neon, 6 pandacory
+starter planted g30b s2: 8 cardinal, 8 neon, 6 oto -> 1 betta, 8 cardinal, 8 neon, 6 oto
+starter planted g37 s2: 8 amano, 1 betta, 8 cardinal, 8 neon, 6 oto -> 6 amano, 1 betta, 8 cardinal, 10 neon, 6 oto
+starter planted g37 s3: 1 betta, 1 bolivianram, 12 neon, 10 pandacory -> 1 betta, 1 bolivianram, 14 neon, 10 pandacory
+starter planted g40b s2: 6 amano, 1 betta, 8 cardinal, 10 neon, 8 oto -> 9 amano, 1 betta, 8 cardinal, 10 neon, 8 oto
+starter planted g40b s3: 1 betta, 1 bolivianram, 14 neon, 12 pandacory -> 1 betta, 1 bolivianram, 16 neon, 12 pandacory
+starter planted g50b s1: 9 amano, 1 bolivianram, 10 cherryshrimp, 1 dwarfgourami, 12 harlequin -> 10 amano, 1 bolivianram, 10 cherryshrimp, 1 dwarfgourami, 12 harlequin
+starter planted g50b s2: 10 amano, 1 betta, 10 cardinal, 12 neon, 8 oto -> 9 amano, 1 betta, 10 cardinal, 12 neon, 10 oto
+starter planted g50b s3: 1 betta, 1 bolivianram, 8 harlequin, 10 neon, 8 pandacory -> 1 betta, 1 bolivianram, 8 harlequin, 12 neon, 8 pandacory
+starter planted g55 s2: 10 amano, 1 betta, 12 cardinal, 12 neon, 10 oto -> 9 amano, 1 betta, 12 cardinal, 14 neon, 10 oto
+starter planted g60b s1: 9 amano, 1 bolivianram, 10 cherryshrimp, 1 dwarfgourami, 16 harlequin -> 10 amano, 1 bolivianram, 10 cherryshrimp, 1 dwarfgourami, 16 harlequin
+starter planted g60b s2: 10 amano, 1 betta, 12 cardinal, 14 neon, 10 oto -> 10 amano, 1 betta, 12 cardinal, 14 neon, 12 oto
+starter planted g65 s2: 10 amano, 1 betta, 12 cardinal, 14 neon, 12 oto -> 10 amano, 1 betta, 14 cardinal, 14 neon, 12 oto
+starter planted g75 s2: 10 amano, 1 betta, 16 cardinal, 18 neon, 16 oto -> 10 amano, 1 betta, 18 cardinal, 18 neon, 16 oto
+starter planted g75 s3: 1 betta, 1 bolivianram, 14 harlequin, 16 neon, 14 pandacory -> 1 betta, 1 bolivianram, 14 harlequin, 18 neon, 14 pandacory
+starter planted g90 s2: 10 amano, 1 betta, 20 cardinal, 22 neon, 18 oto -> 10 amano, 1 betta, 20 cardinal, 22 neon, 20 oto
+starter planted g90 s3: 1 betta, 1 bolivianram, 18 harlequin, 18 neon, 16 pandacory -> 1 betta, 1 bolivianram, 18 harlequin, 20 neon, 16 pandacory
+starter planted g120 s2: 10 amano, 1 betta, 24 cardinal, 26 neon, 24 oto -> 10 amano, 1 betta, 26 cardinal, 26 neon, 24 oto
+starter planted g120 s3: 1 betta, 1 bolivianram, 22 harlequin, 24 neon, 20 pandacory -> 1 betta, 1 bolivianram, 22 harlequin, 24 neon, 22 pandacory
+starter planted bow36 s2: 6 amano, 1 betta, 8 cardinal, 8 neon, 6 oto -> 9 amano, 1 betta, 8 cardinal, 8 neon, 6 oto
+starter planted bow46 s1: 7 amano, 1 bolivianram, 10 cherryshrimp, 1 dwarfgourami, 12 harlequin -> 8 amano, 1 bolivianram, 10 cherryshrimp, 1 dwarfgourami, 12 harlequin
+starter planted bow46 s2: 8 amano, 1 betta, 10 cardinal, 12 neon, 8 oto -> 7 amano, 1 betta, 10 cardinal, 12 neon, 10 oto
+starter planted bow72 s2: 10 amano, 1 betta, 16 cardinal, 16 neon, 14 oto -> 10 amano, 1 betta, 16 cardinal, 18 neon, 14 oto
+starter planted bow72 s3: 1 betta, 1 bolivianram, 14 harlequin, 14 neon, 12 pandacory -> 1 betta, 1 bolivianram, 14 harlequin, 16 neon, 12 pandacory
+starter planted hex35 s2: 7 amano, 8 cardinal, 8 neon, 6 oto -> 6 amano, 1 betta, 8 cardinal, 8 neon, 6 oto
+starter planted hex35 s3: 1 betta, 1 bolivianram, 12 neon, 8 pandacory -> 1 betta, 1 bolivianram, 12 neon, 10 pandacory
+starter planted cor50 s2: 7 amano, 1 betta, 10 cardinal, 12 neon, 8 oto -> 10 amano, 1 betta, 10 cardinal, 12 neon, 8 oto
+starter planted cor50 s3: 1 betta, 1 bolivianram, 8 harlequin, 10 neon, 6 pandacory -> 1 betta, 1 bolivianram, 8 harlequin, 10 neon, 8 pandacory
+starter planted g125 s2: 10 amano, 1 betta, 26 cardinal, 26 neon, 24 oto -> 10 amano, 1 betta, 26 cardinal, 28 neon, 26 oto
+starter planted g125 s3: 1 betta, 1 bolivianram, 22 harlequin, 24 neon, 22 pandacory -> 1 betta, 1 bolivianram, 24 harlequin, 24 neon, 22 pandacory
+starter planted g135 s2: 10 amano, 1 betta, 28 cardinal, 28 neon, 26 oto -> 10 amano, 1 betta, 28 cardinal, 30 neon, 28 oto
+starter planted g135 s3: 1 betta, 1 bolivianram, 24 harlequin, 26 neon, 24 pandacory -> 1 betta, 1 bolivianram, 24 harlequin, 28 neon, 24 pandacory
+starter planted g150 s3: 1 betta, 1 bolivianram, 28 harlequin, 30 neon, 26 pandacory -> 1 betta, 1 bolivianram, 28 harlequin, 30 neon, 28 pandacory
+starter iwagumi g8c s1: 8 cpd -> 10 cpd
+starter iwagumi g8c s2: 8 ember -> 10 ember
+starter iwagumi g8c s3: 8 ember -> 10 ember
+starter iwagumi g10 s1: 6 amano, 8 cpd -> 7 amano, 8 cpd
+starter iwagumi g10 s2: 6 amano, 8 ember -> 7 amano, 8 ember
+starter iwagumi g15 s1: 8 amano, 10 cherryshrimp, 8 cpd -> 9 amano, 10 cherryshrimp, 8 cpd
+starter iwagumi g15 s2: 8 amano, 10 cherryshrimp, 8 ember -> 6 amano, 10 cherryshrimp, 10 ember
+starter iwagumi g15 s3: 8 amano, 8 neon -> 9 amano, 8 neon
+starter iwagumi g20h s2: 7 amano, 10 cherryshrimp, 10 ember, 2 nerite -> 9 amano, 10 cherryshrimp, 10 ember, 2 nerite
+starter iwagumi g20h s3: 7 amano, 10 neon, 2 nerite -> 8 amano, 10 neon, 2 nerite
+starter iwagumi g20l s2: 8 amano, 10 cherryshrimp, 10 ember, 2 nerite -> 7 amano, 10 cherryshrimp, 10 ember, 3 nerite
+starter iwagumi g20l s3: 8 amano, 10 neon, 2 nerite -> 9 amano, 10 neon, 2 nerite
+starter iwagumi g29 s2: 10 amano, 10 cherryshrimp, 14 ember, 4 nerite -> 9 amano, 10 cherryshrimp, 16 ember, 4 nerite
+starter iwagumi g29 s3: 6 amano, 10 neon, 2 nerite, 6 oto -> 8 amano, 10 neon, 2 nerite, 6 oto
+starter iwagumi g30b s1: 8 amano, 10 cherryshrimp, 6 cpd, 8 harlequin -> 9 amano, 10 cherryshrimp, 6 cpd, 8 harlequin
+starter iwagumi g30b s2: 10 amano, 10 cherryshrimp, 16 ember, 4 nerite -> 10 amano, 10 cherryshrimp, 18 ember, 4 nerite
+starter iwagumi g30b s3: 8 amano, 10 neon, 3 nerite, 6 oto -> 8 amano, 10 neon, 2 nerite, 8 oto
+starter iwagumi g37 s1: 8 amano, 10 cherryshrimp, 8 cpd, 10 harlequin -> 9 amano, 10 cherryshrimp, 8 cpd, 10 harlequin
+starter iwagumi g37 s2: 6 amano, 10 cherryshrimp, 8 chili, 8 ember -> 6 amano, 10 cherryshrimp, 8 chili, 10 ember
+starter iwagumi g37 s3: 9 amano, 12 neon, 3 nerite, 8 oto -> 9 amano, 12 neon, 4 nerite, 8 oto
+starter iwagumi g40b s1: 9 amano, 10 cherryshrimp, 8 cpd, 8 harlequin, 6 oto -> 6 amano, 10 cherryshrimp, 6 cpd, 10 harlequin, 6 oto
+starter iwagumi g40b s2: 6 amano, 10 cherryshrimp, 8 chili, 10 ember, 2 nerite -> 9 amano, 10 cherryshrimp, 8 chili, 10 ember, 2 nerite
+starter iwagumi g40b s3: 9 amano, 12 neon, 4 nerite, 10 oto -> 6 amano, 8 harlequin, 8 neon, 2 nerite, 6 oto
+starter iwagumi g50b s1: 10 amano, 10 cherryshrimp, 8 cpd, 10 harlequin, 8 oto -> 9 amano, 10 cherryshrimp, 10 cpd, 10 harlequin, 8 oto
+starter iwagumi g50b s2: 7 amano, 10 cherryshrimp, 10 chili, 10 ember, 3 nerite -> 8 amano, 10 cherryshrimp, 10 chili, 12 ember, 3 nerite
+starter iwagumi g50b s3: 8 amano, 8 harlequin, 10 neon, 2 nerite, 8 oto -> 8 amano, 8 harlequin, 10 neon, 3 nerite, 8 oto
+starter iwagumi g55 s1: 9 amano, 10 cherryshrimp, 10 cpd, 12 harlequin, 8 oto -> 10 amano, 10 cherryshrimp, 10 cpd, 12 harlequin, 8 oto
+starter iwagumi g55 s2: 8 amano, 10 cherryshrimp, 10 chili, 14 ember, 4 nerite -> 8 amano, 10 cherryshrimp, 12 chili, 12 ember, 3 nerite
+starter iwagumi g55 s3: 8 amano, 10 harlequin, 10 neon, 3 nerite, 8 oto -> 10 amano, 10 harlequin, 10 neon, 3 nerite, 8 oto
+starter iwagumi g60b s1: 9 amano, 10 cherryshrimp, 10 cpd, 12 harlequin, 10 oto -> 9 amano, 10 cherryshrimp, 12 cpd, 12 harlequin, 10 oto
+starter iwagumi g60b s2: 9 amano, 10 cherryshrimp, 12 chili, 12 ember, 3 nerite -> 10 amano, 10 cherryshrimp, 12 chili, 12 ember, 4 nerite
+starter iwagumi g60b s3: 8 amano, 10 harlequin, 12 neon, 3 nerite, 8 oto -> 8 amano, 10 harlequin, 12 neon, 4 nerite, 8 oto
+starter iwagumi g65 s1: 9 amano, 10 cherryshrimp, 10 cpd, 14 harlequin, 10 oto -> 10 amano, 10 cherryshrimp, 10 cpd, 14 harlequin, 10 oto
+starter iwagumi g65 s2: 10 amano, 10 cherryshrimp, 12 chili, 14 ember, 4 nerite -> 10 amano, 10 cherryshrimp, 12 chili, 16 ember, 4 nerite
+starter iwagumi g65 s3: 10 amano, 10 harlequin, 12 neon, 3 nerite, 10 oto -> 10 amano, 10 harlequin, 12 neon, 4 nerite, 10 oto
+starter iwagumi g75 s1: 10 amano, 10 cherryshrimp, 16 cpd, 16 harlequin, 14 oto -> 10 amano, 10 cherryshrimp, 18 cpd, 16 harlequin, 14 oto
+starter iwagumi g75 s2: 10 amano, 10 cherryshrimp, 16 chili, 18 ember, 4 nerite -> 10 amano, 10 cherryshrimp, 16 chili, 22 ember, 4 nerite
+starter iwagumi g75 s3: 10 amano, 14 harlequin, 14 neon, 4 nerite, 12 oto -> 9 amano, 14 harlequin, 16 neon, 4 nerite, 12 oto
+starter iwagumi g90 s1: 10 amano, 10 cherryshrimp, 18 cpd, 20 harlequin, 16 oto -> 10 amano, 10 cherryshrimp, 18 cpd, 20 harlequin, 18 oto
+starter iwagumi g90 s2: 10 amano, 10 cherryshrimp, 20 chili, 22 ember, 4 nerite -> 10 amano, 10 cherryshrimp, 20 chili, 26 ember, 4 nerite
+starter iwagumi g90 s3: 10 amano, 16 harlequin, 18 neon, 4 nerite, 14 oto -> 10 amano, 16 harlequin, 18 neon, 4 nerite, 16 oto
+starter iwagumi g120 s1: 10 amano, 10 cherryshrimp, 24 cpd, 24 harlequin, 20 oto -> 10 amano, 10 cherryshrimp, 24 cpd, 24 harlequin, 22 oto
+starter iwagumi g120 s2: 10 amano, 10 cherryshrimp, 24 chili, 30 ember, 4 nerite -> 10 amano, 10 cherryshrimp, 26 chili, 30 ember, 4 nerite
+starter iwagumi g120 s3: 10 amano, 20 harlequin, 22 neon, 4 nerite, 18 oto -> 10 amano, 20 harlequin, 22 neon, 4 nerite, 20 oto
+starter iwagumi bow36 s1: 7 amano, 10 cherryshrimp, 8 cpd, 10 harlequin -> 8 amano, 10 cherryshrimp, 8 cpd, 10 harlequin
+starter iwagumi bow36 s2: 7 amano, 8 chili, 8 ember, 2 nerite -> 8 amano, 10 cherryshrimp, 8 chili, 8 ember
+starter iwagumi bow36 s3: 8 amano, 12 neon, 3 nerite, 8 oto -> 8 amano, 12 neon, 4 nerite, 8 oto
+starter iwagumi bow46 s1: 8 amano, 10 cherryshrimp, 8 cpd, 10 harlequin, 8 oto -> 10 amano, 10 cherryshrimp, 8 cpd, 10 harlequin, 8 oto
+starter iwagumi bow46 s2: 8 amano, 10 cherryshrimp, 10 chili, 10 ember, 2 nerite -> 8 amano, 10 cherryshrimp, 10 chili, 10 ember, 3 nerite
+starter iwagumi bow46 s3: 8 amano, 8 harlequin, 10 neon, 3 nerite, 6 oto -> 8 amano, 8 harlequin, 10 neon, 2 nerite, 8 oto
+starter iwagumi bow72 s1: 10 amano, 10 cherryshrimp, 12 cpd, 16 harlequin, 12 oto -> 10 amano, 10 cherryshrimp, 14 cpd, 16 harlequin, 12 oto
+starter iwagumi bow72 s2: 10 amano, 10 cherryshrimp, 14 chili, 18 ember, 4 nerite -> 10 amano, 10 cherryshrimp, 16 chili, 16 ember, 4 nerite
+starter iwagumi bow72 s3: 9 amano, 12 harlequin, 16 neon, 4 nerite, 10 oto -> 10 amano, 12 harlequin, 14 neon, 4 nerite, 12 oto
+starter iwagumi hex35 s1: 7 amano, 10 cherryshrimp, 6 cpd, 10 harlequin -> 8 amano, 10 cherryshrimp, 6 cpd, 10 harlequin
+starter iwagumi hex35 s2: 6 amano, 8 chili, 10 ember -> 6 amano, 8 chili, 8 ember, 2 nerite
+starter iwagumi hex35 s3: 10 amano, 10 neon, 3 nerite, 8 oto -> 7 amano, 12 neon, 3 nerite, 8 oto
+starter iwagumi cor50 s1: 8 amano, 10 cherryshrimp, 10 cpd, 10 harlequin, 6 oto -> 8 amano, 10 cherryshrimp, 8 cpd, 10 harlequin, 8 oto
+starter iwagumi cor50 s2: 10 amano, 10 cherryshrimp, 8 chili, 12 ember, 3 nerite -> 9 amano, 10 cherryshrimp, 10 chili, 10 ember, 2 nerite
+starter iwagumi cor50 s3: 7 amano, 8 harlequin, 10 neon, 3 nerite, 6 oto -> 8 amano, 8 harlequin, 10 neon, 3 nerite, 6 oto
+starter iwagumi g125 s1: 10 amano, 10 cherryshrimp, 26 cpd, 24 harlequin, 22 oto -> 10 amano, 10 cherryshrimp, 24 cpd, 26 harlequin, 22 oto
+starter iwagumi g125 s2: 10 amano, 10 cherryshrimp, 26 chili, 30 ember, 4 nerite -> 10 amano, 10 cherryshrimp, 28 chili, 28 ember, 4 nerite
+starter iwagumi g125 s3: 10 amano, 20 harlequin, 24 neon, 4 nerite, 20 oto -> 10 amano, 22 harlequin, 22 neon, 4 nerite, 20 oto
+starter iwagumi g135 s1: 10 amano, 10 cherryshrimp, 28 cpd, 26 harlequin, 24 oto -> 10 amano, 10 cherryshrimp, 26 cpd, 28 harlequin, 24 oto
+starter iwagumi g135 s2: 10 amano, 10 cherryshrimp, 28 chili, 30 ember, 4 nerite -> 10 amano, 10 cherryshrimp, 30 chili, 30 ember, 4 nerite
+starter iwagumi g135 s3: 10 amano, 22 harlequin, 24 neon, 4 nerite, 22 oto -> 10 amano, 24 harlequin, 24 neon, 4 nerite, 22 oto
+starter iwagumi g150 s1: 10 amano, 10 cherryshrimp, 30 cpd, 30 harlequin, 28 oto -> 10 amano, 10 cherryshrimp, 30 cpd, 30 harlequin, 30 oto
+starter iwagumi g150 s3: 10 amano, 26 harlequin, 28 neon, 4 nerite, 24 oto -> 10 amano, 26 harlequin, 28 neon, 4 nerite, 26 oto
+starter swamp g8c s1: 8 ember, 2 ramshorn -> 8 ember, 3 ramshorn
+starter swamp g8c s2: 8 ember, 2 ramshorn -> 8 ember, 3 ramshorn
+starter swamp g8c s3: 8 ember, 2 ramshorn -> 8 ember, 3 ramshorn
+starter swamp g20l s1: 6 guppy, 4 ramshorn -> 2 firenewt, 6 guppy
+starter swamp g20l s2: 6 guppy -> 2 firenewt, 6 guppy
+starter swamp g20l s3: 2 dartfrog, 12 ember, 2 firenewt, 3 ramshorn -> 2 dartfrog, 12 ember, 2 firenewt, 4 ramshorn
+starter swamp g29 s3: 3 dartfrog, 12 ember, 4 firenewt, 4 ramshorn -> 4 dartfrog, 12 ember, 3 firenewt, 4 ramshorn
+starter swamp g30b s2: 3 dartfrog, 2 firetoad, 6 guppy -> 2 dartfrog, 2 firenewt, 2 firetoad, 6 guppy
+starter swamp g37 s1: 2 dartfrog, 3 firenewt, 8 guppy, 4 ramshorn -> 3 dartfrog, 3 firenewt, 8 guppy, 3 ramshorn
+starter swamp g40b s1: 3 dartfrog, 4 firenewt, 8 guppy, 4 ramshorn -> 3 dartfrog, 5 firenewt, 8 guppy, 4 ramshorn
+starter swamp g40b s2: 3 dartfrog, 3 firenewt, 2 firetoad, 8 guppy -> 3 dartfrog, 2 firenewt, 3 firetoad, 8 guppy
+starter swamp g50b s1: 4 dartfrog, 4 firenewt, 10 guppy, 4 ramshorn -> 4 dartfrog, 5 firenewt, 10 guppy, 4 ramshorn
+starter swamp g50b s2: 4 dartfrog, 3 firenewt, 4 firetoad, 8 guppy -> 3 dartfrog, 3 firenewt, 3 firetoad, 10 guppy
+starter swamp g55 s1: 4 dartfrog, 4 firenewt, 12 guppy, 4 ramshorn -> 4 dartfrog, 5 firenewt, 12 guppy, 4 ramshorn
+starter swamp g60b s1: 4 dartfrog, 5 firenewt, 12 guppy, 4 ramshorn -> 5 dartfrog, 5 firenewt, 12 guppy, 4 ramshorn
+starter swamp g65 s2: 5 dartfrog, 5 firenewt, 4 firetoad, 10 guppy -> 4 dartfrog, 4 firenewt, 4 firetoad, 12 guppy
+starter swamp g75 s2: 5 dartfrog, 5 firenewt, 5 firetoad, 14 guppy -> 6 dartfrog, 5 firenewt, 5 firetoad, 14 guppy
+starter swamp g90 s1: 6 dartfrog, 6 firenewt, 20 guppy, 4 ramshorn -> 6 dartfrog, 6 firenewt, 22 guppy, 4 ramshorn
+starter swamp g90 s3: 8 ember, 2 firenewt, 2 ramshorn, 2 treefrog -> 2 dartfrog, 8 ember, 2 ramshorn, 2 treefrog
+starter swamp g120 s1: 2 dartfrog, 3 firenewt, 6 guppy, 4 ramshorn, 2 treefrog -> 3 dartfrog, 3 firenewt, 6 guppy, 3 ramshorn, 2 treefrog
+starter swamp bow36 s2: 3 dartfrog, 3 firenewt, 2 firetoad, 6 guppy -> 2 dartfrog, 2 firenewt, 2 firetoad, 8 guppy
+starter swamp bow36 s3: 5 dartfrog, 16 ember, 4 firenewt, 4 ramshorn -> 5 dartfrog, 14 ember, 5 firenewt, 4 ramshorn
+starter swamp bow46 s1: 3 dartfrog, 5 firenewt, 10 guppy, 4 ramshorn -> 4 dartfrog, 4 firenewt, 10 guppy, 4 ramshorn
+starter swamp bow46 s2: 4 dartfrog, 3 firenewt, 3 firetoad, 8 guppy -> 4 dartfrog, 4 firenewt, 3 firetoad, 8 guppy
+starter swamp bow72 s2: 5 dartfrog, 5 firenewt, 5 firetoad, 12 guppy -> 6 dartfrog, 5 firenewt, 5 firetoad, 12 guppy
+starter swamp hex35 s1: 2 dartfrog, 2 firenewt, 2 firetoad, 6 guppy, 4 ramshorn -> 3 dartfrog, 2 firenewt, 2 firetoad, 6 guppy, 3 ramshorn
+starter swamp hex35 s2: 2 dartfrog, 3 firenewt, 2 firetoad, 6 guppy, 2 ramshorn -> 2 dartfrog, 2 firenewt, 3 firetoad, 6 guppy, 2 ramshorn
+starter swamp hex35 s3: 2 dartfrog, 3 firenewt, 2 firetoad, 6 guppy, 2 ramshorn -> 2 dartfrog, 2 firenewt, 3 firetoad, 6 guppy, 2 ramshorn
+starter swamp cor50 s1: 3 dartfrog, 4 firenewt, 10 guppy, 4 ramshorn -> 4 dartfrog, 4 firenewt, 10 guppy, 4 ramshorn
+starter swamp cor50 s3: 6 dartfrog, 20 ember, 6 firenewt, 4 ramshorn -> 6 dartfrog, 22 ember, 6 firenewt, 4 ramshorn
+starter swamp g125 s1: 2 dartfrog, 3 firenewt, 8 guppy, 3 ramshorn, 2 treefrog -> 2 dartfrog, 3 firenewt, 8 guppy, 4 ramshorn, 2 treefrog
+starter swamp g125 s2: 3 dartfrog, 2 firenewt, 2 firetoad, 6 guppy, 2 treefrog -> 3 dartfrog, 3 firenewt, 2 firetoad, 6 guppy, 2 treefrog
+starter swamp g135 s2: 3 dartfrog, 2 firenewt, 3 firetoad, 8 guppy, 2 treefrog -> 3 dartfrog, 3 firenewt, 3 firetoad, 8 guppy, 2 treefrog
+starter swamp g135 s3: 6 dartfrog, 16 ember, 6 firenewt, 4 ramshorn, 2 treefrog -> 6 dartfrog, 18 ember, 6 firenewt, 4 ramshorn, 2 treefrog
+starter swamp g150 s1: 5 dartfrog, 5 firenewt, 12 guppy, 4 ramshorn, 2 treefrog -> 5 dartfrog, 6 firenewt, 12 guppy, 4 ramshorn, 2 treefrog
+starter swamp g150 s3: 2 dartfrog, 10 ember, 2 firenewt, 4 ramshorn, 3 treefrog -> 2 dartfrog, 12 ember, 2 firenewt, 3 ramshorn, 3 treefrog
+starter swamp g180 s1: 3 dartfrog, 4 firenewt, 10 guppy, 4 ramshorn, 3 treefrog -> 4 dartfrog, 4 firenewt, 10 guppy, 4 ramshorn, 3 treefrog
+starter swamp g180 s3: 6 dartfrog, 20 ember, 6 firenewt, 4 ramshorn, 3 treefrog -> 6 dartfrog, 22 ember, 6 firenewt, 4 ramshorn, 3 treefrog
+starter swamp g210 s1: 6 dartfrog, 6 firenewt, 14 guppy, 4 ramshorn, 3 treefrog -> 6 dartfrog, 6 firenewt, 16 guppy, 4 ramshorn, 3 treefrog
+starter swamp g210 s2: 6 dartfrog, 5 firenewt, 5 firetoad, 12 guppy, 3 treefrog -> 6 dartfrog, 6 firenewt, 5 firetoad, 12 guppy, 3 treefrog
+starter swamp g210 s3: 4 dartfrog, 16 ember, 4 firenewt, 4 ramshorn, 4 treefrog -> 4 dartfrog, 14 ember, 5 firenewt, 4 ramshorn, 4 treefrog
+starter swamp g240 s2: 5 dartfrog, 4 firenewt, 4 firetoad, 10 guppy, 4 treefrog -> 4 dartfrog, 4 firenewt, 4 firetoad, 12 guppy, 4 treefrog
+starter swamp g300 s2: 5 dartfrog, 5 firenewt, 5 firetoad, 12 guppy, 5 treefrog -> 6 dartfrog, 5 firenewt, 5 firetoad, 12 guppy, 5 treefrog
+starter swamp c6 s2: 6 dartfrog, 5 firenewt, 6 firetoad, 14 guppy, 3 treefrog -> 6 dartfrog, 6 firenewt, 6 firetoad, 14 guppy, 3 treefrog
+starter swamp c8 s1: 6 dartfrog, 6 firenewt, 26 guppy, 4 ramshorn, 6 treefrog -> 6 dartfrog, 6 firenewt, 28 guppy, 4 ramshorn, 6 treefrog
+starter swamp c8 s2: 6 dartfrog, 6 firenewt, 6 firetoad, 20 guppy, 6 treefrog -> 6 dartfrog, 6 firenewt, 6 firetoad, 22 guppy, 6 treefrog
+starter reef g5 s3: 1 cleanershrimp, 2 hermit -> 2 cleanershrimp, 1 hermit
+starter reef g37 s1: 2 cleanershrimp, 2 hermit, 2 ocellaris -> 2 cleanershrimp, 3 hermit, 2 ocellaris
+starter reef g65 s1: 2 cleanershrimp, 3 hermit, 2 ocellaris, 2 turbo -> 3 cleanershrimp, 3 hermit, 2 ocellaris, 2 turbo
+starter reef bow72 s1: 3 cleanershrimp, 2 hermit, 2 ocellaris, 1 sixline, 2 turbo -> 3 cleanershrimp, 3 hermit, 2 ocellaris, 1 sixline, 2 turbo
+starter nature g8c s1: 8 ember -> 10 ember
+starter nature g8c s2: 8 ember -> 10 ember
+starter nature g10 s2: 8 ember, 2 nerite -> 10 cherryshrimp, 8 ember
+starter nature g15 s2: 10 cherryshrimp, 10 ember, 2 nerite -> 1 betta, 10 cherryshrimp, 8 ember, 2 nerite
+starter nature g20h s3: 1 betta, 8 cpd, 3 nerite, 6 pandacory -> 6 cpd, 6 oto, 6 pandacory
+starter nature g29 s3: 1 betta, 8 cpd, 2 nerite, 6 oto, 6 pandacory -> 1 betta, 8 cpd, 3 nerite, 6 oto, 6 pandacory
+starter nature g30b s2: 8 amano, 1 betta, 10 cherryshrimp, 8 harlequin, 2 nerite -> 6 amano, 1 betta, 10 cherryshrimp, 8 harlequin, 3 nerite
+starter nature g30b s3: 1 betta, 8 cpd, 3 nerite, 6 oto, 8 pandacory -> 1 betta, 8 cpd, 2 nerite, 8 oto, 8 pandacory
+starter nature g37 s2: 8 amano, 1 betta, 10 cherryshrimp, 10 harlequin, 3 nerite -> 9 amano, 1 betta, 10 cherryshrimp, 10 harlequin, 3 nerite
+starter nature g37 s3: 1 betta, 10 cpd, 4 nerite, 8 oto, 8 pandacory -> 1 betta, 10 cpd, 3 nerite, 8 oto, 10 pandacory
+starter nature g40b s1: 1 betta, 8 cardinal, 8 ember, 8 harlequin, 2 nerite -> 1 betta, 8 cardinal, 8 ember, 8 harlequin, 3 nerite
+starter nature g40b s2: 8 amano, 1 betta, 10 cherryshrimp, 12 harlequin, 3 nerite -> 9 amano, 1 betta, 10 cherryshrimp, 12 harlequin, 3 nerite
+starter nature g40b s3: 1 betta, 10 cpd, 3 nerite, 10 oto, 10 pandacory -> 1 betta, 10 cpd, 4 nerite, 10 oto, 10 pandacory
+starter nature g50b s3: 1 betta, 12 cpd, 4 nerite, 12 oto, 12 pandacory -> 1 betta, 14 cpd, 4 nerite, 12 oto, 12 pandacory
+starter nature g55 s1: 1 betta, 10 cardinal, 12 ember, 10 harlequin, 4 nerite -> 1 betta, 10 cardinal, 10 ember, 12 harlequin, 3 nerite
+starter nature g55 s3: 1 betta, 16 cpd, 4 nerite, 12 oto, 14 pandacory -> 1 betta, 14 cpd, 4 nerite, 14 oto, 14 pandacory
+starter nature g60b s1: 1 betta, 10 cardinal, 10 ember, 12 harlequin, 4 nerite -> 1 betta, 10 cardinal, 12 ember, 12 harlequin, 4 nerite
+starter nature g60b s3: 1 betta, 16 cpd, 4 nerite, 14 oto, 14 pandacory -> 1 betta, 16 cpd, 4 nerite, 14 oto, 16 pandacory
+starter nature g65 s1: 1 betta, 12 cardinal, 12 ember, 12 harlequin, 4 nerite -> 1 betta, 12 cardinal, 14 ember, 12 harlequin, 4 nerite
+starter nature g65 s3: 1 betta, 18 cpd, 4 nerite, 14 oto, 16 pandacory -> 1 betta, 18 cpd, 4 nerite, 16 oto, 16 pandacory
+starter nature g75 s1: 1 betta, 14 cardinal, 16 ember, 16 harlequin, 4 nerite -> 1 betta, 16 cardinal, 14 ember, 16 harlequin, 4 nerite
+starter nature g75 s3: 1 betta, 20 cpd, 4 nerite, 20 oto, 20 pandacory -> 1 betta, 22 cpd, 4 nerite, 20 oto, 22 pandacory
+starter nature g90 s1: 1 betta, 20 cardinal, 18 ember, 18 harlequin, 4 nerite -> 1 betta, 18 cardinal, 18 ember, 20 harlequin, 4 nerite
+starter nature g90 s3: 1 betta, 24 cpd, 4 nerite, 24 oto, 24 pandacory -> 1 betta, 26 cpd, 4 nerite, 26 oto, 24 pandacory
+starter nature g120 s1: 1 betta, 22 cardinal, 22 ember, 24 harlequin, 4 nerite -> 1 betta, 22 cardinal, 24 ember, 24 harlequin, 4 nerite
+starter nature bow36 s2: 7 amano, 1 betta, 10 cherryshrimp, 10 harlequin, 3 nerite -> 8 amano, 1 betta, 10 cherryshrimp, 10 harlequin, 3 nerite
+starter nature bow36 s3: 1 betta, 10 cpd, 3 nerite, 8 oto, 8 pandacory -> 1 betta, 10 cpd, 3 nerite, 8 oto, 10 pandacory
+starter nature bow46 s1: 1 betta, 8 cardinal, 10 ember, 10 harlequin, 3 nerite -> 1 betta, 10 cardinal, 8 ember, 10 harlequin, 3 nerite
+starter nature bow46 s3: 1 betta, 14 cpd, 4 nerite, 10 oto, 12 pandacory -> 1 betta, 12 cpd, 4 nerite, 12 oto, 12 pandacory
+starter nature bow72 s1: 1 betta, 14 cardinal, 14 ember, 14 harlequin, 4 nerite -> 1 betta, 16 cardinal, 14 ember, 14 harlequin, 4 nerite
+starter nature bow72 s3: 1 betta, 20 cpd, 4 nerite, 18 oto, 18 pandacory -> 1 betta, 20 cpd, 4 nerite, 18 oto, 20 pandacory
+starter nature hex35 s3: 1 betta, 8 cpd, 3 nerite, 8 oto, 8 pandacory -> 1 betta, 10 cpd, 3 nerite, 8 oto, 8 pandacory
+starter nature cor50 s1: 1 betta, 8 cardinal, 8 ember, 10 harlequin, 3 nerite -> 1 betta, 8 cardinal, 10 ember, 10 harlequin, 3 nerite
+starter nature cor50 s2: 8 amano, 1 betta, 10 cherryshrimp, 14 harlequin, 4 nerite -> 9 amano, 1 betta, 10 cherryshrimp, 14 harlequin, 4 nerite
+starter nature cor50 s3: 1 betta, 12 cpd, 4 nerite, 10 oto, 12 pandacory -> 1 betta, 12 cpd, 4 nerite, 12 oto, 12 pandacory
+starter nature g125 s1: 1 betta, 24 cardinal, 22 ember, 24 harlequin, 4 nerite -> 1 betta, 24 cardinal, 26 ember, 24 harlequin, 4 nerite
+starter nature g135 s1: 1 betta, 26 cardinal, 24 ember, 26 harlequin, 4 nerite -> 1 betta, 26 cardinal, 28 ember, 26 harlequin, 4 nerite
+starter nature g150 s1: 1 betta, 28 cardinal, 30 ember, 30 harlequin, 4 nerite -> 1 betta, 30 cardinal, 30 ember, 30 harlequin, 4 nerite
+starter dutch g20h s3: 9 amano, 10 rummynose -> 10 amano, 10 rummynose
+starter dutch g30b s3: 1 bolivianram, 16 rummynose -> 1 bolivianram, 8 neon, 10 rummynose
+starter dutch g37 s3: 1 bolivianram, 8 neon, 12 rummynose -> 1 bolivianram, 10 neon, 12 rummynose
+starter dutch g40b s3: 1 bolivianram, 6 platy, 10 rummynose -> 1 bolivianram, 6 platy, 12 rummynose
+starter dutch g55 s2: 8 cardinal, 1 dwarfgourami, 6 platy, 1 sae -> 10 cardinal, 1 dwarfgourami, 6 platy, 1 sae
+starter dutch g60b s2: 10 cardinal, 1 dwarfgourami, 6 platy, 1 sae -> 8 cardinal, 1 dwarfgourami, 8 platy, 1 sae
+starter dutch g60b s3: 1 bolivianram, 10 neon, 6 platy, 14 rummynose -> 1 bolivianram, 8 neon, 8 platy, 12 rummynose
+starter dutch g65 s2: 8 cardinal, 1 dwarfgourami, 8 platy, 1 sae -> 10 cardinal, 1 dwarfgourami, 8 platy, 1 sae
+starter dutch g65 s3: 1 bolivianram, 10 neon, 8 platy, 12 rummynose -> 1 bolivianram, 10 neon, 8 platy, 14 rummynose
+starter dutch g75 s1: 1 bolivianram, 1 dwarfgourami, 14 harlequin, 10 oto, 1 sae -> 1 bolivianram, 1 dwarfgourami, 14 harlequin, 12 oto, 1 sae
+starter dutch g75 s3: 1 bolivianram, 8 neon, 8 platy, 12 rummynose, 1 sae -> 1 bolivianram, 10 neon, 8 platy, 12 rummynose, 1 sae
+starter dutch g90 s1: 1 bolivianram, 1 dwarfgourami, 18 harlequin, 14 oto, 1 sae -> 1 bolivianram, 1 dwarfgourami, 18 harlequin, 16 oto, 1 sae
+starter dutch g90 s2: 10 cardinal, 1 dwarfgourami, 10 harlequin, 10 platy, 1 sae -> 12 cardinal, 1 dwarfgourami, 10 harlequin, 10 platy, 1 sae
+starter dutch g90 s3: 1 bolivianram, 12 neon, 10 platy, 14 rummynose, 1 sae -> 1 bolivianram, 12 neon, 10 platy, 16 rummynose, 1 sae
+starter dutch g120 s1: 1 bolivianram, 1 dwarfgourami, 22 harlequin, 22 oto, 1 sae -> 1 bolivianram, 1 dwarfgourami, 24 harlequin, 20 oto, 1 sae
+starter dutch g120 s2: 14 cardinal, 1 dwarfgourami, 14 harlequin, 12 platy, 1 sae -> 16 cardinal, 1 dwarfgourami, 14 harlequin, 12 platy, 1 sae
+starter dutch g120 s3: 1 bolivianram, 14 neon, 14 platy, 18 rummynose, 1 sae -> 1 bolivianram, 16 neon, 14 platy, 18 rummynose, 1 sae
+starter dutch bow36 s3: 1 bolivianram, 8 neon, 12 rummynose -> 1 bolivianram, 10 neon, 12 rummynose
+starter dutch bow46 s3: 1 bolivianram, 8 platy, 12 rummynose -> 1 bolivianram, 8 neon, 6 platy, 10 rummynose
+starter dutch hex35 s3: 10 amano, 1 bolivianram, 14 rummynose -> 6 amano, 1 bolivianram, 8 neon, 10 rummynose
+starter dutch cor50 s2: 1 dwarfgourami, 6 platy, 1 sae -> 1 dwarfgourami, 8 platy, 1 sae
+starter dutch cor50 s3: 1 bolivianram, 6 platy, 14 rummynose -> 1 bolivianram, 8 platy, 12 rummynose
+starter dutch g125 s2: 16 cardinal, 1 dwarfgourami, 14 harlequin, 12 platy, 1 sae -> 14 cardinal, 1 dwarfgourami, 14 harlequin, 14 platy, 1 sae
+starter dutch g125 s3: 1 bolivianram, 16 neon, 14 platy, 18 rummynose, 1 sae -> 1 bolivianram, 18 neon, 14 platy, 20 rummynose, 1 sae
+starter dutch g135 s1: 1 bolivianram, 1 dwarfgourami, 26 harlequin, 24 oto, 1 sae -> 1 bolivianram, 1 dwarfgourami, 26 harlequin, 26 oto, 1 sae
+starter dutch g135 s3: 1 bolivianram, 16 neon, 16 platy, 20 rummynose, 1 sae -> 1 bolivianram, 18 neon, 16 platy, 22 rummynose, 1 sae
+starter dutch g150 s2: 18 cardinal, 1 dwarfgourami, 18 harlequin, 16 platy, 1 sae -> 18 cardinal, 1 dwarfgourami, 18 harlequin, 18 platy, 1 sae
+starter dutch g150 s3: 1 bolivianram, 20 neon, 18 platy, 24 rummynose, 1 sae -> 1 bolivianram, 20 neon, 20 platy, 24 rummynose, 1 sae
+starter dutch g180 s2: 24 cardinal, 1 dwarfgourami, 22 harlequin, 20 platy, 1 sae -> 22 cardinal, 1 dwarfgourami, 22 harlequin, 22 platy, 1 sae
+starter dutch g180 s3: 1 bolivianram, 26 neon, 22 platy, 30 rummynose, 1 sae -> 1 bolivianram, 26 neon, 24 platy, 30 rummynose, 1 sae
+starter dutch g210 s2: 28 cardinal, 1 dwarfgourami, 26 harlequin, 24 platy, 1 sae -> 26 cardinal, 1 dwarfgourami, 26 harlequin, 26 platy, 1 sae
+starter dutch g210 s3: 1 bolivianram, 30 neon, 28 platy, 30 rummynose, 1 sae -> 1 bolivianram, 30 neon, 30 platy, 30 rummynose, 1 sae
+starter dutch g240 s2: 30 cardinal, 1 dwarfgourami, 30 harlequin, 28 platy, 1 sae -> 30 cardinal, 1 dwarfgourami, 30 harlequin, 30 platy, 1 sae
+starter dutch c6 s2: 30 cardinal, 1 dwarfgourami, 26 harlequin, 26 platy, 1 sae -> 30 cardinal, 1 dwarfgourami, 28 harlequin, 26 platy, 1 sae
+starter jungle g5 s1: 1 honeygourami -> 1 gbr, 1 honeygourami
+starter jungle g5 s2: 1 honeygourami -> 1 gbr, 1 honeygourami
+starter jungle g5 s3: 1 honeygourami -> 1 gbr, 1 honeygourami
+starter jungle g8c s3: 1 honeygourami, 3 nerite -> 1 gbr, 1 honeygourami, 2 nerite
+starter jungle g10 s3: 6 hatchet -> 1 gbr, 6 hatchet
+starter jungle g20h s1: 1 honeygourami, 10 rummynose -> 1 honeygourami, 2 nerite, 10 rummynose
+starter jungle g20h s3: 1 bolivianram, 1 gbr, 6 hatchet -> 1 bolivianram, 1 gbr, 6 hatchet, 1 honeygourami
+starter jungle g29 s3: 1 bolivianram, 1 bristlenose, 8 cardinal -> 1 bolivianram, 1 bristlenose, 8 cardinal, 1 gbr
+starter jungle g30b s3: 1 bolivianram, 1 bristlenose, 8 cardinal, 1 gbr -> 6 bronzecory, 8 cardinal
+starter jungle g37 s1: 1 bolivianram, 6 hatchet, 2 nerite, 12 rummynose -> 1 bolivianram, 6 hatchet, 3 nerite, 12 rummynose
+starter jungle g40b s1: 1 bolivianram, 8 hatchet, 3 nerite, 12 rummynose -> 1 bolivianram, 8 hatchet, 4 nerite, 12 rummynose
+starter jungle g40b s2: 1 bolivianram, 1 honeygourami, 4 nerite, 16 rummynose -> 1 bolivianram, 1 honeygourami, 4 nerite, 18 rummynose
+starter jungle g55 s2: 1 bolivianram, 1 honeygourami, 6 kuhli, 4 nerite, 14 rummynose -> 1 bolivianram, 1 honeygourami, 8 kuhli, 3 nerite, 12 rummynose
+starter jungle g60b s2: 1 bolivianram, 1 honeygourami, 8 kuhli, 4 nerite, 12 rummynose -> 1 bolivianram, 1 honeygourami, 8 kuhli, 3 nerite, 14 rummynose
+starter jungle g65 s1: 1 bolivianram, 14 hatchet, 4 nerite, 18 rummynose -> 1 bolivianram, 14 hatchet, 4 nerite, 20 rummynose
+starter jungle g65 s2: 1 bolivianram, 1 honeygourami, 8 kuhli, 4 nerite, 14 rummynose -> 1 bolivianram, 1 honeygourami, 8 kuhli, 4 nerite, 16 rummynose
+starter jungle g75 s1: 1 bolivianram, 18 hatchet, 4 nerite, 24 rummynose -> 1 bolivianram, 20 hatchet, 4 nerite, 24 rummynose
+starter jungle g90 s1: 1 bolivianram, 24 hatchet, 4 nerite, 28 rummynose -> 1 bolivianram, 24 hatchet, 4 nerite, 30 rummynose
+starter jungle g90 s2: 1 bolivianram, 1 honeygourami, 14 kuhli, 4 nerite, 22 rummynose -> 1 bolivianram, 1 honeygourami, 16 kuhli, 4 nerite, 20 rummynose
+starter jungle g90 s3: 1 bolivianram, 1 bristlenose, 14 bronzecory, 18 cardinal, 1 gbr -> 1 bolivianram, 1 bristlenose, 14 bronzecory, 20 cardinal, 1 gbr
+starter jungle g120 s2: 1 bolivianram, 1 honeygourami, 20 kuhli, 4 nerite, 24 rummynose -> 1 bolivianram, 1 honeygourami, 20 kuhli, 4 nerite, 26 rummynose
+starter jungle g120 s3: 1 bolivianram, 1 bristlenose, 18 bronzecory, 22 cardinal, 1 gbr -> 1 bolivianram, 1 bristlenose, 18 bronzecory, 24 cardinal, 1 gbr
+starter jungle bow36 s1: 1 bolivianram, 6 hatchet, 3 nerite, 10 rummynose -> 1 bolivianram, 6 hatchet, 2 nerite, 12 rummynose
+starter jungle bow36 s2: 1 bolivianram, 1 honeygourami, 3 nerite, 14 rummynose -> 1 bolivianram, 1 honeygourami, 4 nerite, 14 rummynose
+starter jungle bow36 s3: 6 bronzecory, 8 cardinal, 1 gbr -> 6 bronzecory, 10 cardinal, 1 gbr
+starter jungle bow46 s1: 1 bolivianram, 8 hatchet, 4 nerite, 14 rummynose -> 1 bolivianram, 10 hatchet, 4 nerite, 14 rummynose
+starter jungle bow72 s1: 1 bolivianram, 16 hatchet, 4 nerite, 22 rummynose -> 1 bolivianram, 18 hatchet, 4 nerite, 22 rummynose
+starter jungle bow72 s3: 1 bolivianram, 1 bristlenose, 10 bronzecory, 14 cardinal, 1 gbr -> 1 bolivianram, 1 bristlenose, 10 bronzecory, 16 cardinal, 1 gbr
+starter jungle hex35 s1: 8 cardinal, 8 hatchet, 1 honeygourami, 6 pandacory -> 8 cardinal, 8 hatchet, 1 honeygourami, 8 pandacory
+starter jungle hex35 s3: 1 bolivianram, 1 bristlenose, 1 honeygourami, 10 rummynose -> 1 bolivianram, 1 bristlenose, 1 honeygourami, 12 rummynose
+starter jungle cor50 s1: 1 bolivianram, 8 hatchet, 4 nerite, 14 rummynose -> 1 bolivianram, 10 hatchet, 4 nerite, 14 rummynose
+starter jungle cor50 s2: 1 bolivianram, 1 honeygourami, 6 kuhli, 3 nerite, 10 rummynose -> 1 bolivianram, 1 honeygourami, 6 kuhli, 2 nerite, 12 rummynose
+starter jungle g125 s2: 1 bolivianram, 1 honeygourami, 20 kuhli, 4 nerite, 26 rummynose -> 1 bolivianram, 1 honeygourami, 20 kuhli, 4 nerite, 28 rummynose
+starter jungle g125 s3: 1 bolivianram, 1 bristlenose, 18 bronzecory, 26 cardinal, 1 gbr -> 1 bolivianram, 1 bristlenose, 20 bronzecory, 22 cardinal, 1 gbr
+starter jungle g135 s2: 1 bolivianram, 1 honeygourami, 22 kuhli, 4 nerite, 28 rummynose -> 1 bolivianram, 1 honeygourami, 22 kuhli, 4 nerite, 30 rummynose
+starter jungle g135 s3: 1 bolivianram, 1 bristlenose, 20 bronzecory, 26 cardinal, 1 gbr -> 1 bolivianram, 1 bristlenose, 22 bronzecory, 24 cardinal, 1 gbr
+starter jungle g150 s3: 1 bolivianram, 1 bristlenose, 24 bronzecory, 28 cardinal, 1 gbr -> 1 bolivianram, 1 bristlenose, 24 bronzecory, 30 cardinal, 1 gbr
+starter jungle g240 s1: 6 angel, 1 bolivianram, 18 hatchet, 4 nerite, 22 rummynose -> 6 angel, 1 bolivianram, 18 hatchet, 4 nerite, 24 rummynose
+starter jungle c8 s1: 10 angel, 1 bolivianram, 28 hatchet, 4 nerite, 30 rummynose -> 12 angel, 1 bolivianram, 10 hatchet, 4 nerite, 16 rummynose
+starter forest g8c s1: 8 cpd -> 6 cpd, 2 nerite
+starter forest g8c s2: 8 cpd -> 6 cpd, 2 nerite
+starter forest g8c s3: 8 cpd -> 10 cpd
+starter forest g15 s2: 8 neon, 3 nerite -> 10 neon, 2 nerite
+starter forest g20h s1: 10 cherryshrimp, 6 cpd, 8 neon -> 10 cherryshrimp, 8 cpd, 8 neon
+starter forest g20h s2: 10 cherryshrimp, 10 neon, 2 nerite -> 6 amano, 10 cherryshrimp, 8 neon, 2 nerite
+starter forest g20l s1: 10 cherryshrimp, 8 cpd, 8 neon -> 10 cherryshrimp, 6 cpd, 10 neon
+starter forest g20l s2: 10 cherryshrimp, 10 neon, 2 nerite -> 7 amano, 10 cherryshrimp, 8 neon, 2 nerite
+starter forest g29 s2: 8 amano, 10 cherryshrimp, 10 neon, 4 nerite -> 8 amano, 10 cherryshrimp, 12 neon, 3 nerite
+starter forest g29 s3: 8 harlequin, 6 oto -> 8 harlequin, 8 oto
+starter forest g30b s1: 10 cherryshrimp, 8 chili, 3 nerite -> 10 cherryshrimp, 8 chili, 6 cpd
+starter forest g30b s2: 6 amano, 10 cherryshrimp, 8 neon, 3 nerite, 6 oto -> 6 amano, 10 cherryshrimp, 10 neon, 2 nerite, 6 oto
+starter forest g37 s2: 7 amano, 10 cherryshrimp, 10 neon, 3 nerite, 8 oto -> 9 amano, 10 cherryshrimp, 10 neon, 3 nerite, 8 oto
+starter forest g40b s1: 10 cherryshrimp, 8 chili, 6 cpd, 8 neon -> 10 cherryshrimp, 8 chili, 8 cpd, 8 neon
+starter forest g40b s2: 8 amano, 10 cherryshrimp, 12 neon, 4 nerite, 8 oto -> 10 amano, 10 cherryshrimp, 12 neon, 4 nerite, 8 oto
+starter forest g40b s3: 10 cherryshrimp, 8 harlequin, 8 neon, 6 oto -> 10 cherryshrimp, 8 harlequin, 8 neon, 8 oto
+starter forest g50b s1: 10 cherryshrimp, 8 chili, 8 cpd, 10 neon, 2 nerite -> 10 cherryshrimp, 10 chili, 6 cpd, 8 neon, 2 nerite
+starter forest g50b s2: 10 amano, 10 cherryshrimp, 14 neon, 4 nerite, 10 oto -> 10 amano, 10 cherryshrimp, 14 neon, 4 nerite, 12 oto
+starter forest g50b s3: 10 cherryshrimp, 10 harlequin, 8 neon, 3 nerite, 6 oto -> 10 cherryshrimp, 10 harlequin, 8 neon, 2 nerite, 8 oto
+starter forest g55 s1: 10 cherryshrimp, 10 chili, 8 cpd, 10 neon, 2 nerite -> 10 cherryshrimp, 10 chili, 8 cpd, 10 neon, 3 nerite
+starter forest g55 s2: 10 amano, 10 cherryshrimp, 16 neon, 4 nerite, 12 oto -> 10 amano, 10 cherryshrimp, 16 neon, 4 nerite, 14 oto
+starter forest g55 s3: 10 cherryshrimp, 10 harlequin, 10 neon, 3 nerite, 8 oto -> 10 cherryshrimp, 10 harlequin, 10 neon, 4 nerite, 8 oto
+starter forest g60b s1: 10 cherryshrimp, 10 chili, 10 cpd, 10 neon, 3 nerite -> 10 cherryshrimp, 10 chili, 10 cpd, 12 neon, 3 nerite
+starter forest g60b s2: 10 amano, 10 cherryshrimp, 16 neon, 4 nerite, 14 oto -> 10 amano, 10 cherryshrimp, 18 neon, 4 nerite, 14 oto
+starter forest g60b s3: 10 cherryshrimp, 10 harlequin, 10 neon, 3 nerite, 10 oto -> 10 cherryshrimp, 12 harlequin, 10 neon, 3 nerite, 8 oto
+starter forest g65 s1: 10 cherryshrimp, 12 chili, 8 cpd, 10 neon, 3 nerite -> 10 cherryshrimp, 12 chili, 8 cpd, 12 neon, 3 nerite
+starter forest g65 s3: 10 cherryshrimp, 12 harlequin, 10 neon, 3 nerite, 10 oto -> 10 cherryshrimp, 12 harlequin, 10 neon, 4 nerite, 10 oto
+starter forest g75 s1: 10 cherryshrimp, 14 chili, 12 cpd, 14 neon, 4 nerite -> 10 cherryshrimp, 14 chili, 12 cpd, 16 neon, 4 nerite
+starter forest g75 s2: 10 amano, 10 cherryshrimp, 24 neon, 4 nerite, 20 oto -> 10 amano, 10 cherryshrimp, 26 neon, 4 nerite, 22 oto
+starter forest g75 s3: 10 cherryshrimp, 14 harlequin, 14 neon, 4 nerite, 12 oto -> 10 cherryshrimp, 14 harlequin, 14 neon, 4 nerite, 14 oto
+starter forest g90 s1: 10 cherryshrimp, 16 chili, 14 cpd, 18 neon, 4 nerite -> 10 cherryshrimp, 18 chili, 16 cpd, 16 neon, 4 nerite
+starter forest g90 s2: 10 amano, 10 cherryshrimp, 30 neon, 4 nerite, 26 oto -> 10 amano, 10 cherryshrimp, 30 neon, 4 nerite, 28 oto
+starter forest g90 s3: 10 cherryshrimp, 18 harlequin, 16 neon, 4 nerite, 14 oto -> 10 cherryshrimp, 18 harlequin, 16 neon, 4 nerite, 16 oto
+starter forest g120 s1: 10 cherryshrimp, 20 chili, 18 cpd, 22 neon, 4 nerite -> 10 cherryshrimp, 22 chili, 18 cpd, 22 neon, 4 nerite
+starter forest g120 s3: 10 cherryshrimp, 22 harlequin, 20 neon, 4 nerite, 18 oto -> 10 cherryshrimp, 22 harlequin, 20 neon, 4 nerite, 20 oto
+starter forest bow36 s1: 10 cherryshrimp, 8 chili, 8 cpd, 2 nerite -> 10 cherryshrimp, 8 chili, 8 neon
+starter forest bow36 s2: 8 amano, 10 cherryshrimp, 10 neon, 4 nerite, 6 oto -> 8 amano, 10 cherryshrimp, 10 neon, 3 nerite, 8 oto
+starter forest bow46 s1: 10 cherryshrimp, 8 chili, 6 cpd, 10 neon, 2 nerite -> 10 cherryshrimp, 10 chili, 6 cpd, 8 neon, 2 nerite
+starter forest bow46 s3: 10 cherryshrimp, 10 harlequin, 8 neon, 2 nerite, 6 oto -> 10 cherryshrimp, 10 harlequin, 8 neon, 3 nerite, 6 oto
+starter forest bow72 s1: 10 cherryshrimp, 12 chili, 12 cpd, 14 neon, 4 nerite -> 10 cherryshrimp, 14 chili, 12 cpd, 12 neon, 4 nerite
+starter forest bow72 s2: 10 amano, 10 cherryshrimp, 22 neon, 4 nerite, 18 oto -> 10 amano, 10 cherryshrimp, 22 neon, 4 nerite, 20 oto
+starter forest bow72 s3: 10 cherryshrimp, 14 harlequin, 12 neon, 4 nerite, 10 oto -> 10 cherryshrimp, 14 harlequin, 12 neon, 4 nerite, 12 oto
+starter forest hex35 s1: 10 cherryshrimp, 8 chili, 6 cpd, 2 nerite -> 10 cherryshrimp, 8 chili, 8 cpd, 2 nerite
+starter forest hex35 s2: 8 amano, 10 cherryshrimp, 10 neon, 3 nerite, 6 oto -> 7 amano, 10 cherryshrimp, 10 neon, 4 nerite, 6 oto
+starter forest cor50 s1: 10 cherryshrimp, 8 chili, 6 cpd, 10 neon, 2 nerite -> 10 cherryshrimp, 8 chili, 8 cpd, 10 neon, 2 nerite
+starter forest cor50 s2: 8 amano, 10 cherryshrimp, 14 neon, 4 nerite, 10 oto -> 10 amano, 10 cherryshrimp, 14 neon, 4 nerite, 10 oto
+starter forest g125 s1: 10 cherryshrimp, 22 chili, 20 cpd, 20 neon, 4 nerite -> 10 cherryshrimp, 22 chili, 20 cpd, 24 neon, 4 nerite
+starter forest g125 s3: 10 cherryshrimp, 22 harlequin, 22 neon, 4 nerite, 20 oto -> 10 cherryshrimp, 22 harlequin, 22 neon, 4 nerite, 22 oto
+starter forest g135 s1: 10 cherryshrimp, 24 chili, 20 cpd, 22 neon, 4 nerite -> 10 cherryshrimp, 24 chili, 24 cpd, 24 neon, 4 nerite
+starter forest g135 s3: 10 cherryshrimp, 24 harlequin, 22 neon, 4 nerite, 22 oto -> 10 cherryshrimp, 24 harlequin, 26 neon, 4 nerite, 22 oto
+starter forest g150 s1: 10 cherryshrimp, 26 chili, 24 cpd, 28 neon, 4 nerite -> 10 cherryshrimp, 28 chili, 24 cpd, 28 neon, 4 nerite
+starter forest g150 s3: 10 cherryshrimp, 28 harlequin, 26 neon, 4 nerite, 24 oto -> 10 cherryshrimp, 28 harlequin, 26 neon, 4 nerite, 26 oto
+starter paludarium g2_5 s1: 5 dartfrog, 4 firenewt, 5 firetoad -> 5 dartfrog, 1 firenewt, 1 firetoad
+starter paludarium g2_5 s2: 5 dartfrog, 4 firenewt, 5 firetoad -> 5 dartfrog, 1 firenewt, 1 firetoad
+starter paludarium g2_5 s3: 5 dartfrog, 4 firenewt, 5 firetoad -> 5 dartfrog, 3 firenewt, 1 firetoad
+starter paludarium g3c s1: 5 dartfrog, 5 firetoad -> 5 dartfrog, 1 firetoad
+starter paludarium g3c s2: 5 dartfrog, 5 firetoad, 3 ramshorn -> 5 dartfrog, 1 firetoad, 3 ramshorn
+starter paludarium g3c s3: 5 dartfrog, 5 firetoad -> 5 dartfrog, 1 firetoad
+starter paludarium g5 s1: 5 dartfrog, 4 firenewt, 5 firetoad -> 5 dartfrog, 1 firenewt, 2 firetoad
+starter paludarium g5 s2: 5 dartfrog, 5 firetoad, 4 treefrog -> 5 dartfrog, 2 firetoad, 4 treefrog
+starter paludarium g5 s3: 5 dartfrog, 4 firenewt, 5 firetoad, 4 treefrog -> 5 dartfrog, 4 firenewt, 1 firetoad, 1 treefrog
+starter paludarium g5_5 s1: 5 dartfrog, 4 firenewt, 5 firetoad -> 5 dartfrog, 1 firenewt, 2 firetoad
+starter paludarium g5_5 s2: 5 dartfrog, 5 firetoad, 4 treefrog -> 5 dartfrog, 2 firetoad, 4 treefrog
+starter paludarium g5_5 s3: 5 dartfrog, 4 firenewt, 5 firetoad, 4 treefrog -> 5 dartfrog, 4 firenewt, 1 firetoad, 1 treefrog
+starter paludarium bow6 s1: 5 dartfrog, 4 firenewt, 5 firetoad -> 5 dartfrog, 1 firenewt, 2 firetoad
+starter paludarium bow6 s2: 5 dartfrog, 5 firetoad, 4 treefrog -> 5 dartfrog, 2 firetoad, 4 treefrog
+starter paludarium bow6 s3: 5 dartfrog, 4 firenewt, 5 firetoad, 4 treefrog -> 5 dartfrog, 4 firenewt, 1 firetoad, 1 treefrog
+starter paludarium g6c s1: 5 dartfrog, 4 firenewt, 5 firetoad -> 1 dartfrog, 1 firenewt, 3 firetoad
+starter paludarium g6c s2: 5 dartfrog, 4 firenewt, 5 firetoad -> 5 dartfrog, 1 firenewt, 3 firetoad
+starter paludarium g6c s3: 5 dartfrog, 4 firenewt, 5 firetoad -> 5 dartfrog, 4 firenewt, 1 firetoad
+starter paludarium g8c s1: 5 dartfrog, 4 firenewt, 5 firetoad -> 5 dartfrog, 1 firenewt, 3 firetoad
+starter paludarium g8c s2: 5 dartfrog, 5 firetoad, 4 treefrog -> 5 dartfrog, 3 firetoad, 4 treefrog
+starter paludarium g8c s3: 5 dartfrog, 4 firenewt, 5 firetoad -> 5 dartfrog, 4 firenewt, 1 firetoad
+starter paludarium g10 s1: 5 dartfrog, 4 firenewt, 5 firetoad -> 1 dartfrog, 1 firenewt, 4 firetoad
+starter paludarium g10 s2: 5 dartfrog, 5 firetoad, 4 treefrog -> 5 dartfrog, 4 firetoad, 4 treefrog
+starter paludarium g10 s3: 5 dartfrog, 4 firenewt, 5 firetoad -> 5 dartfrog, 4 firenewt, 2 firetoad
+starter paludarium g15 s1: 5 dartfrog, 4 firenewt, 5 firetoad -> 5 dartfrog, 2 firenewt, 5 firetoad
+starter paludarium g15 s3: 5 dartfrog, 4 firenewt, 5 firetoad -> 5 dartfrog, 4 firenewt, 4 firetoad
+starter paludarium g20h s1: 5 dartfrog, 4 firenewt, 5 firetoad -> 5 dartfrog, 2 firenewt, 5 firetoad
+starter paludarium g20h s3: 5 dartfrog, 4 firenewt, 5 firetoad -> 5 dartfrog, 4 firenewt, 4 firetoad
+starter paludarium g55 s1: 5 dartfrog, 24 ember, 4 firenewt, 5 firetoad -> 5 dartfrog, 26 ember, 4 firenewt, 5 firetoad
+starter paludarium g65 s1: 8 chili, 5 dartfrog, 4 firenewt, 5 firetoad -> 10 chili, 5 dartfrog, 4 firenewt, 5 firetoad
+starter paludarium g75 s1: 12 chili, 5 dartfrog, 10 ember, 4 firenewt, 5 firetoad -> 12 chili, 5 dartfrog, 12 ember, 4 firenewt, 5 firetoad
+starter paludarium g90 s1: 16 chili, 5 dartfrog, 14 ember, 4 firenewt, 5 firetoad -> 16 chili, 5 dartfrog, 16 ember, 4 firenewt, 5 firetoad
+starter paludarium g120 s1: 20 chili, 5 dartfrog, 24 ember, 4 firenewt, 5 firetoad -> 22 chili, 5 dartfrog, 20 ember, 4 firenewt, 5 firetoad
+starter paludarium bow72 s1: 10 chili, 5 dartfrog, 10 ember, 4 firenewt, 5 firetoad -> 10 chili, 5 dartfrog, 12 ember, 4 firenewt, 5 firetoad
+starter paludarium cor50 s1: 5 dartfrog, 14 ember, 4 firenewt, 5 firetoad -> 5 dartfrog, 16 ember, 4 firenewt, 5 firetoad
+starter paludarium g125 s1: 22 chili, 5 dartfrog, 22 ember, 4 firenewt, 5 firetoad -> 22 chili, 5 dartfrog, 26 ember, 4 firenewt, 5 firetoad
+starter paludarium g135 s1: 24 chili, 5 dartfrog, 26 ember, 4 firenewt, 5 firetoad -> 24 chili, 5 dartfrog, 30 ember, 4 firenewt, 5 firetoad
+starter paludarium g150 s1: 28 chili, 5 dartfrog, 30 ember, 4 firenewt, 5 firetoad -> 30 chili, 5 dartfrog, 30 ember, 4 firenewt, 5 firetoad
+starter paludarium g210 s2: 5 dartfrog, 8 ember, 5 firetoad, 4 treefrog -> 5 dartfrog, 10 ember, 5 firetoad, 4 treefrog
+starter paludarium g240 s2: 5 dartfrog, 16 ember, 5 firetoad, 8 guppy, 4 treefrog -> 5 dartfrog, 10 ember, 5 firetoad, 10 guppy, 4 treefrog
+starter paludarium g240 s3: 8 chili, 5 dartfrog, 4 firenewt, 5 firetoad, 4 treefrog -> 10 chili, 5 dartfrog, 4 firenewt, 5 firetoad, 4 treefrog
+starter paludarium g300 s2: 5 dartfrog, 28 ember, 5 firetoad, 22 guppy, 4 treefrog -> 5 dartfrog, 26 ember, 5 firetoad, 24 guppy, 4 treefrog
+starter paludarium g300 s3: 26 chili, 5 dartfrog, 4 firenewt, 5 firetoad, 4 treefrog -> 28 chili, 5 dartfrog, 4 firenewt, 5 firetoad, 4 treefrog
+starter blackwater g8c s1: 8 ember -> 10 ember
+starter blackwater g8c s2: 8 ember -> 10 ember
+starter blackwater g8c s3: 8 ember -> 10 ember
+starter blackwater g20h s2: 8 cardinal, 6 pandacory -> 8 cardinal, 8 pandacory
+starter blackwater g20l s2: 14 rummynose -> 6 pandacory, 10 rummynose
+starter blackwater g20l s3: 14 rummynose -> 8 ember, 10 rummynose
+starter blackwater g29 s1: 1 bolivianram, 8 cardinal, 10 ember -> 1 bolivianram, 8 cardinal, 12 ember
+starter blackwater g29 s3: 1 bolivianram, 14 rummynose -> 1 bolivianram, 8 ember, 10 rummynose
+starter blackwater g30b s2: 8 cardinal, 12 rummynose -> 10 cardinal, 12 rummynose
+starter blackwater g30b s3: 1 bolivianram, 10 ember, 10 rummynose -> 1 bolivianram, 8 ember, 12 rummynose
+starter blackwater g37 s2: 8 cardinal, 6 pandacory, 12 rummynose -> 8 cardinal, 8 pandacory, 12 rummynose
+starter blackwater g37 s3: 1 bolivianram, 10 ember, 14 rummynose -> 1 bolivianram, 12 ember, 14 rummynose
+starter blackwater g40b s3: 1 bolivianram, 8 cardinal, 10 ember, 10 rummynose -> 1 bolivianram, 8 cardinal, 8 ember, 12 rummynose
+starter blackwater g50b s1: 1 bolivianram, 8 cardinal, 10 ember, 10 harlequin -> 1 bolivianram, 8 cardinal, 12 ember, 10 harlequin
+starter blackwater g50b s3: 1 bolivianram, 8 ember, 6 kuhli, 12 rummynose -> 1 bolivianram, 10 ember, 6 kuhli, 12 rummynose
+starter blackwater g55 s1: 1 bolivianram, 10 cardinal, 14 ember, 10 harlequin -> 1 bolivianram, 12 cardinal, 12 ember, 10 harlequin
+starter blackwater g55 s2: 1 bristlenose, 10 cardinal, 10 pandacory, 14 rummynose -> 1 bristlenose, 12 cardinal, 8 pandacory, 14 rummynose
+starter blackwater g55 s3: 1 bolivianram, 12 ember, 6 kuhli, 14 rummynose -> 1 bolivianram, 10 ember, 8 kuhli, 12 rummynose
+starter blackwater g60b s1: 1 bolivianram, 10 cardinal, 12 ember, 12 harlequin -> 1 bolivianram, 10 cardinal, 14 ember, 12 harlequin
+starter blackwater g60b s2: 1 bristlenose, 12 cardinal, 10 pandacory, 14 rummynose -> 1 bristlenose, 8 cardinal, 6 kuhli, 6 pandacory, 10 rummynose
+starter blackwater g60b s3: 1 bolivianram, 8 cardinal, 8 ember, 6 kuhli, 10 rummynose -> 1 bolivianram, 8 cardinal, 10 ember, 6 kuhli, 10 rummynose
+starter blackwater g65 s1: 1 bolivianram, 12 cardinal, 12 ember, 12 harlequin -> 1 bolivianram, 12 cardinal, 14 ember, 12 harlequin
+starter blackwater g65 s3: 1 bolivianram, 8 cardinal, 8 ember, 6 kuhli, 12 rummynose -> 1 bolivianram, 8 cardinal, 10 ember, 6 kuhli, 12 rummynose
+starter blackwater g75 s1: 1 bolivianram, 14 cardinal, 18 ember, 16 harlequin -> 1 bolivianram, 16 cardinal, 16 ember, 16 harlequin
+starter blackwater g75 s2: 1 bristlenose, 10 cardinal, 8 kuhli, 8 pandacory, 14 rummynose -> 1 bristlenose, 12 cardinal, 8 kuhli, 8 pandacory, 14 rummynose
+starter blackwater g75 s3: 1 bolivianram, 10 cardinal, 14 ember, 8 kuhli, 14 rummynose -> 1 bolivianram, 12 cardinal, 12 ember, 8 kuhli, 14 rummynose
+starter blackwater g90 s1: 1 bolivianram, 18 cardinal, 22 ember, 18 harlequin -> 1 bolivianram, 18 cardinal, 20 ember, 20 harlequin
+starter blackwater g90 s2: 1 bristlenose, 12 cardinal, 10 kuhli, 10 pandacory, 16 rummynose -> 1 bristlenose, 14 cardinal, 10 kuhli, 10 pandacory, 16 rummynose
+starter blackwater g90 s3: 1 bolivianram, 12 cardinal, 16 ember, 10 kuhli, 16 rummynose -> 1 bolivianram, 14 cardinal, 16 ember, 10 kuhli, 16 rummynose
+starter blackwater g120 s1: 1 bolivianram, 24 cardinal, 24 ember, 22 harlequin -> 1 bolivianram, 22 cardinal, 26 ember, 24 harlequin
+starter blackwater g120 s2: 1 bristlenose, 16 cardinal, 12 kuhli, 14 pandacory, 18 rummynose -> 1 bristlenose, 16 cardinal, 12 kuhli, 14 pandacory, 20 rummynose
+starter blackwater g120 s3: 1 bolivianram, 14 cardinal, 18 ember, 14 kuhli, 18 rummynose -> 1 bolivianram, 16 cardinal, 18 ember, 14 kuhli, 18 rummynose
+starter blackwater bow36 s1: 1 bolivianram, 14 ember, 8 harlequin -> 1 bolivianram, 10 ember, 10 harlequin
+starter blackwater bow36 s3: 1 bolivianram, 10 ember, 14 rummynose -> 1 bolivianram, 12 ember, 14 rummynose
+starter blackwater bow46 s1: 1 bolivianram, 10 cardinal, 10 ember, 8 harlequin -> 1 bolivianram, 8 cardinal, 10 ember, 10 harlequin
+starter blackwater bow46 s2: 1 bristlenose, 10 cardinal, 6 pandacory, 12 rummynose -> 1 bristlenose, 10 cardinal, 8 pandacory, 12 rummynose
+starter blackwater bow46 s3: 1 bolivianram, 10 ember, 6 kuhli, 10 rummynose -> 1 bolivianram, 8 ember, 6 kuhli, 12 rummynose
+starter blackwater bow72 s1: 1 bolivianram, 14 cardinal, 16 ember, 14 harlequin -> 1 bolivianram, 14 cardinal, 18 ember, 14 harlequin
+starter blackwater bow72 s2: 1 bristlenose, 10 cardinal, 6 kuhli, 10 pandacory, 14 rummynose -> 1 bristlenose, 10 cardinal, 8 kuhli, 8 pandacory, 12 rummynose
+starter blackwater bow72 s3: 1 bolivianram, 10 cardinal, 10 ember, 8 kuhli, 12 rummynose -> 1 bolivianram, 10 cardinal, 10 ember, 8 kuhli, 14 rummynose
+starter blackwater hex35 s1: 1 bolivianram, 12 ember, 8 harlequin -> 1 bolivianram, 8 ember, 10 harlequin
+starter blackwater hex35 s2: 10 cardinal, 6 kuhli -> 12 cardinal, 6 kuhli
+starter blackwater g125 s1: 1 bolivianram, 24 cardinal, 24 ember, 24 harlequin -> 1 bolivianram, 24 cardinal, 26 ember, 24 harlequin
+starter blackwater g125 s2: 1 bristlenose, 16 cardinal, 12 kuhli, 16 pandacory, 20 rummynose -> 1 bristlenose, 16 cardinal, 14 kuhli, 16 pandacory, 18 rummynose
+starter blackwater g125 s3: 1 bolivianram, 16 cardinal, 16 ember, 14 kuhli, 20 rummynose -> 1 bolivianram, 16 cardinal, 20 ember, 14 kuhli, 20 rummynose
+starter blackwater g135 s1: 1 bolivianram, 26 cardinal, 26 ember, 26 harlequin -> 1 bolivianram, 26 cardinal, 28 ember, 26 harlequin
+starter blackwater g135 s2: 1 bristlenose, 18 cardinal, 14 kuhli, 16 pandacory, 20 rummynose -> 1 bristlenose, 18 cardinal, 14 kuhli, 16 pandacory, 22 rummynose
+starter blackwater g135 s3: 1 bolivianram, 16 cardinal, 20 ember, 16 kuhli, 20 rummynose -> 1 bolivianram, 18 cardinal, 20 ember, 16 kuhli, 20 rummynose
+starter blackwater g150 s1: 1 bolivianram, 28 cardinal, 30 ember, 30 harlequin -> 1 bolivianram, 30 cardinal, 30 ember, 30 harlequin
+starter blackwater g150 s2: 1 bristlenose, 20 cardinal, 16 kuhli, 18 pandacory, 22 rummynose -> 1 bristlenose, 20 cardinal, 16 kuhli, 20 pandacory, 24 rummynose
+starter blackwater g150 s3: 1 bolivianram, 20 cardinal, 20 ember, 18 kuhli, 22 rummynose -> 1 bolivianram, 20 cardinal, 22 ember, 18 kuhli, 24 rummynose
+starter blackwater g180 s2: 1 bristlenose, 24 cardinal, 20 kuhli, 22 pandacory, 26 rummynose -> 1 bristlenose, 24 cardinal, 20 kuhli, 24 pandacory, 28 rummynose
+starter blackwater g180 s3: 1 bolivianram, 24 cardinal, 26 ember, 22 kuhli, 26 rummynose -> 1 bolivianram, 24 cardinal, 28 ember, 22 kuhli, 28 rummynose
+starter blackwater g210 s2: 1 bristlenose, 28 cardinal, 24 kuhli, 24 pandacory, 30 rummynose -> 1 bristlenose, 30 cardinal, 24 kuhli, 26 pandacory, 30 rummynose
+starter blackwater g210 s3: 1 bolivianram, 28 cardinal, 28 ember, 26 kuhli, 30 rummynose -> 1 bolivianram, 30 cardinal, 30 ember, 26 kuhli, 30 rummynose
+starter blackwater g240 s1: 6 angel, 1 bolivianram, 14 cardinal, 18 ember, 14 harlequin -> 6 angel, 1 bolivianram, 14 cardinal, 16 ember, 16 harlequin
+starter blackwater c6 s1: 6 angel, 1 bolivianram, 10 cardinal, 14 ember, 10 harlequin -> 6 angel, 1 bolivianram, 12 cardinal, 12 ember, 10 harlequin
+starter blackwater c6 s2: 1 bristlenose, 28 cardinal, 26 kuhli, 28 pandacory, 30 rummynose -> 1 bristlenose, 30 cardinal, 24 kuhli, 28 pandacory, 30 rummynose
+starter blackwater c8 s1: 10 angel, 1 bolivianram, 20 cardinal, 24 ember, 20 harlequin -> 10 angel, 1 bolivianram, 22 cardinal, 22 ember, 20 harlequin
+starter malawi hex35 s3: 1 afra, 1 auratus, 1 demasoni, 2 nerite, 1 yellowlab -> 1 afra, 1 auratus, 1 demasoni, 3 nerite, 1 yellowlab
+starter stream bow6 s1: 8 amano -> 9 amano
+starter stream bow6 s2: 8 amano -> 9 amano
+starter stream bow6 s3: 8 amano -> 9 amano
+starter stream g8c s1: 8 ember -> 10 ember
+starter stream g8c s2: 8 ember -> 10 ember
+starter stream g10 s1: 2 nerite, 6 whitecloud -> 6 amano, 6 whitecloud
+starter stream g10 s3: 8 whitecloud -> 6 cherrybarb
+starter stream g15 s1: 8 amano, 2 nerite, 6 whitecloud -> 9 amano, 2 nerite, 6 whitecloud
+starter stream g15 s2: 6 amano, 10 ember, 2 nerite -> 7 amano, 10 ember, 2 nerite
+starter stream g15 s3: 7 amano, 6 cherrybarb -> 8 amano, 6 cherrybarb
+starter stream g20h s1: 9 amano, 3 nerite, 8 whitecloud -> 7 amano, 3 nerite, 10 whitecloud
+starter stream g20h s2: 9 amano, 12 ember, 3 nerite -> 7 amano, 12 ember, 4 nerite
+starter stream g20h s3: 7 amano, 6 cherrybarb, 3 nerite -> 8 amano, 6 cherrybarb, 3 nerite
+starter stream g20l s1: 8 amano, 4 nerite, 8 whitecloud -> 8 amano, 3 nerite, 10 whitecloud
+starter stream g20l s2: 7 amano, 12 ember, 4 nerite -> 8 amano, 12 ember, 4 nerite
+starter stream g20l s3: 8 amano, 6 cherrybarb, 3 nerite -> 6 amano, 8 cherrybarb, 2 nerite
+starter stream g29 s1: 10 amano, 4 nerite, 12 whitecloud -> 10 amano, 4 nerite, 14 whitecloud
+starter stream g29 s2: 8 chili, 3 nerite -> 6 amano, 8 chili, 2 nerite
+starter stream g30b s1: 10 amano, 4 nerite, 14 whitecloud -> 10 amano, 4 nerite, 16 whitecloud
+starter stream g30b s2: 6 amano, 8 chili, 3 nerite -> 8 amano, 8 chili, 3 nerite
+starter stream g37 s1: 7 amano, 8 chili, 2 nerite, 6 whitecloud -> 7 amano, 8 chili, 3 nerite, 6 whitecloud
+starter stream g37 s2: 7 amano, 10 chili, 3 nerite -> 7 amano, 8 chili, 2 nerite, 6 oto
+starter stream g37 s3: 7 amano, 6 cherrybarb, 6 kuhli, 3 nerite -> 8 amano, 6 cherrybarb, 6 kuhli, 3 nerite
+starter stream g40b s1: 8 amano, 8 chili, 3 nerite, 8 whitecloud -> 7 amano, 8 chili, 3 nerite, 10 whitecloud
+starter stream g40b s2: 7 amano, 8 chili, 4 nerite, 6 oto -> 6 amano, 10 chili, 2 nerite, 6 oto
+starter stream g40b s3: 8 amano, 8 cherrybarb, 6 kuhli, 3 nerite -> 9 amano, 8 cherrybarb, 6 kuhli, 3 nerite
+starter stream g50b s1: 8 amano, 10 chili, 3 nerite, 10 whitecloud -> 8 amano, 10 chili, 4 nerite, 10 whitecloud
+starter stream g50b s2: 9 amano, 10 chili, 3 nerite, 8 oto -> 9 amano, 10 chili, 4 nerite, 8 oto
+starter stream g50b s3: 9 amano, 8 cherrybarb, 8 kuhli, 4 nerite -> 6 cherrybarb, 8 chili, 6 kuhli
+starter stream g55 s1: 8 amano, 12 chili, 3 nerite, 10 whitecloud -> 8 amano, 12 chili, 4 nerite, 10 whitecloud
+starter stream g55 s2: 6 amano, 8 chili, 6 kuhli, 2 nerite, 6 oto -> 6 amano, 8 chili, 6 kuhli, 3 nerite, 6 oto
+starter stream g55 s3: 7 amano, 6 cherrybarb, 8 chili, 6 kuhli -> 10 amano, 6 cherrybarb, 8 chili, 6 kuhli
+starter stream g60b s1: 10 amano, 12 chili, 4 nerite, 10 whitecloud -> 9 amano, 12 chili, 4 nerite, 12 whitecloud
+starter stream g60b s2: 8 amano, 8 chili, 6 kuhli, 3 nerite, 6 oto -> 8 amano, 8 chili, 6 kuhli, 4 nerite, 6 oto
+starter stream g60b s3: 7 amano, 6 cherrybarb, 8 chili, 6 kuhli, 2 nerite -> 9 amano, 6 cherrybarb, 8 chili, 6 kuhli, 2 nerite
+starter stream g65 s1: 10 amano, 12 chili, 4 nerite, 12 whitecloud -> 10 amano, 12 chili, 4 nerite, 14 whitecloud
+starter stream g65 s2: 8 amano, 10 chili, 6 kuhli, 2 nerite, 6 oto -> 8 amano, 10 chili, 6 kuhli, 3 nerite, 6 oto
+starter stream g65 s3: 7 amano, 8 cherrybarb, 8 chili, 6 kuhli, 2 nerite -> 7 amano, 8 cherrybarb, 8 chili, 6 kuhli, 3 nerite
+starter stream g75 s1: 8 amano, 8 chili, 3 nerite, 8 tigerbarb, 10 whitecloud -> 8 amano, 10 chili, 2 nerite, 8 tigerbarb, 8 whitecloud
+starter stream g75 s2: 7 amano, 12 chili, 8 kuhli, 3 nerite, 8 oto -> 8 amano, 12 chili, 8 kuhli, 4 nerite, 8 oto
+starter stream g75 s3: 9 amano, 8 cherrybarb, 10 chili, 8 kuhli, 4 nerite -> 9 amano, 10 cherrybarb, 10 chili, 8 kuhli, 3 nerite
+starter stream g90 s1: 7 amano, 10 chili, 3 nerite, 10 tigerbarb, 10 whitecloud -> 8 amano, 10 chili, 4 nerite, 10 tigerbarb, 10 whitecloud
+starter stream g90 s2: 9 amano, 12 chili, 10 kuhli, 4 nerite, 12 oto -> 8 amano, 14 chili, 10 kuhli, 4 nerite, 10 oto
+starter stream g90 s3: 10 amano, 10 cherrybarb, 12 chili, 10 kuhli, 3 nerite -> 10 amano, 10 cherrybarb, 12 chili, 10 kuhli, 4 nerite
+starter stream g120 s1: 9 amano, 12 chili, 4 nerite, 12 tigerbarb, 12 whitecloud -> 9 amano, 12 chili, 4 nerite, 12 tigerbarb, 14 whitecloud
+starter stream g120 s2: 10 amano, 16 chili, 12 kuhli, 4 nerite, 12 oto -> 10 amano, 16 chili, 12 kuhli, 4 nerite, 14 oto
+starter stream g120 s3: 10 amano, 12 cherrybarb, 14 chili, 12 kuhli, 4 nerite -> 10 amano, 14 cherrybarb, 14 chili, 12 kuhli, 4 nerite
+starter stream bow36 s1: 6 amano, 8 chili, 2 nerite, 6 whitecloud -> 8 amano, 8 chili, 2 nerite, 6 whitecloud
+starter stream bow36 s2: 6 amano, 10 chili, 3 nerite -> 6 amano, 8 chili, 2 nerite, 6 oto
+starter stream bow36 s3: 8 amano, 6 cherrybarb, 6 kuhli, 2 nerite -> 9 amano, 6 cherrybarb, 6 kuhli, 2 nerite
+starter stream bow46 s1: 10 amano, 10 chili, 3 nerite, 8 whitecloud -> 9 amano, 10 chili, 3 nerite, 10 whitecloud
+starter stream bow46 s2: 7 amano, 10 chili, 3 nerite, 8 oto -> 7 amano, 10 chili, 4 nerite, 8 oto
+starter stream bow46 s3: 10 amano, 8 cherrybarb, 8 kuhli, 3 nerite -> 8 amano, 8 cherrybarb, 8 kuhli, 4 nerite
+starter stream bow72 s1: 7 amano, 8 chili, 3 nerite, 8 tigerbarb, 6 whitecloud -> 8 amano, 8 chili, 2 nerite, 8 tigerbarb, 8 whitecloud
+starter stream bow72 s2: 8 amano, 10 chili, 8 kuhli, 3 nerite, 8 oto -> 8 amano, 10 chili, 8 kuhli, 4 nerite, 8 oto
+starter stream bow72 s3: 9 amano, 8 cherrybarb, 8 chili, 8 kuhli, 4 nerite -> 8 amano, 8 cherrybarb, 10 chili, 8 kuhli, 2 nerite
+starter stream hex35 s1: 8 amano, 8 chili, 6 whitecloud -> 7 amano, 8 chili, 8 whitecloud
+starter stream hex35 s2: 6 amano, 10 chili, 2 nerite -> 8 amano, 10 chili, 2 nerite
+starter stream cor50 s1: 8 amano, 10 chili, 3 nerite, 8 whitecloud -> 7 amano, 10 chili, 3 nerite, 10 whitecloud
+starter stream cor50 s2: 7 amano, 10 chili, 4 nerite, 6 oto -> 8 amano, 10 chili, 3 nerite, 8 oto
+starter stream cor50 s3: 8 amano, 8 cherrybarb, 8 kuhli, 3 nerite -> 9 amano, 8 cherrybarb, 8 kuhli, 3 nerite
+starter stream g125 s1: 10 amano, 12 chili, 4 nerite, 12 tigerbarb, 14 whitecloud -> 10 amano, 14 chili, 4 nerite, 12 tigerbarb, 12 whitecloud
+starter stream g125 s2: 10 amano, 16 chili, 12 kuhli, 4 nerite, 16 oto -> 10 amano, 16 chili, 14 kuhli, 4 nerite, 14 oto
+starter stream g125 s3: 10 amano, 14 cherrybarb, 14 chili, 12 kuhli, 4 nerite -> 9 amano, 14 cherrybarb, 14 chili, 14 kuhli, 4 nerite
+starter stream g135 s1: 10 amano, 14 chili, 4 nerite, 12 tigerbarb, 16 whitecloud -> 10 amano, 14 chili, 4 nerite, 14 tigerbarb, 12 whitecloud
+starter stream g135 s2: 10 amano, 18 chili, 14 kuhli, 4 nerite, 14 oto -> 10 amano, 18 chili, 14 kuhli, 4 nerite, 16 oto
+starter stream g150 s1: 10 amano, 16 chili, 4 nerite, 14 tigerbarb, 18 whitecloud -> 10 amano, 16 chili, 4 nerite, 16 tigerbarb, 14 whitecloud
+starter stream g150 s2: 10 amano, 20 chili, 16 kuhli, 4 nerite, 16 oto -> 10 amano, 20 chili, 16 kuhli, 4 nerite, 18 oto
+starter stream g150 s3: 10 amano, 16 cherrybarb, 18 chili, 16 kuhli, 4 nerite -> 10 amano, 18 cherrybarb, 18 chili, 16 kuhli, 4 nerite
+starter stream g180 s1: 10 amano, 20 chili, 4 nerite, 18 tigerbarb, 18 whitecloud -> 10 amano, 20 chili, 4 nerite, 18 tigerbarb, 20 whitecloud
+starter stream g180 s2: 10 amano, 24 chili, 20 kuhli, 4 nerite, 20 oto -> 10 amano, 24 chili, 20 kuhli, 4 nerite, 22 oto
+starter stream g180 s3: 10 amano, 22 cherrybarb, 20 chili, 20 kuhli, 4 nerite -> 10 amano, 20 cherrybarb, 22 chili, 20 kuhli, 4 nerite
+starter stream g210 s1: 10 amano, 22 chili, 4 nerite, 22 tigerbarb, 20 whitecloud -> 10 amano, 22 chili, 4 nerite, 22 tigerbarb, 24 whitecloud
+starter stream g210 s2: 10 amano, 26 chili, 24 kuhli, 4 nerite, 26 oto -> 10 amano, 28 chili, 24 kuhli, 4 nerite, 26 oto
+starter stream g210 s3: 10 amano, 24 cherrybarb, 24 chili, 24 kuhli, 4 nerite -> 10 amano, 26 cherrybarb, 24 chili, 24 kuhli, 4 nerite
+starter stream g240 s1: 10 amano, 26 chili, 4 nerite, 24 tigerbarb, 28 whitecloud -> 10 amano, 26 chili, 4 nerite, 26 tigerbarb, 24 whitecloud
+starter stream g240 s3: 10 amano, 30 cherrybarb, 28 chili, 26 kuhli, 4 nerite -> 10 amano, 28 cherrybarb, 28 chili, 28 kuhli, 4 nerite
+starter stream c6 s1: 10 amano, 24 chili, 4 nerite, 22 tigerbarb, 24 whitecloud -> 10 amano, 24 chili, 4 nerite, 22 tigerbarb, 28 whitecloud
+starter stream c6 s2: 10 amano, 28 chili, 24 kuhli, 4 nerite, 28 oto -> 10 amano, 28 chili, 26 kuhli, 4 nerite, 28 oto
+starter stream c6 s3: 10 amano, 26 cherrybarb, 26 chili, 24 kuhli, 4 nerite -> 10 amano, 28 cherrybarb, 26 chili, 24 kuhli, 4 nerite
+starter hillstream g29 s2: 10 cherryshrimp, 10 danio, 1 hillstream, 3 nerite -> 10 cherryshrimp, 10 danio, 1 hillstream, 4 nerite
+starter hillstream g37 s3: 8 danio, 1 hillstream, 2 nerite, 6 oto, 8 whitecloud -> 8 danio, 1 hillstream, 3 nerite, 6 oto, 8 whitecloud
+starter hillstream g40b s1: 10 danio, 1 hillstream, 3 nerite, 6 oto, 8 whitecloud -> 10 danio, 1 hillstream, 2 nerite, 8 oto, 8 whitecloud
+starter hillstream g40b s3: 10 danio, 1 hillstream, 3 nerite, 6 oto, 8 whitecloud -> 10 danio, 1 hillstream, 2 nerite, 8 oto, 8 whitecloud
+starter hillstream g50b s1: 12 danio, 1 hillstream, 3 nerite, 8 oto, 10 whitecloud -> 12 danio, 1 hillstream, 4 nerite, 8 oto, 10 whitecloud
+starter hillstream g50b s3: 12 danio, 1 hillstream, 3 nerite, 8 oto, 10 whitecloud -> 12 danio, 1 hillstream, 4 nerite, 8 oto, 10 whitecloud
+starter hillstream g55 s1: 12 danio, 1 hillstream, 4 nerite, 10 oto, 10 whitecloud -> 12 danio, 1 hillstream, 4 nerite, 10 oto, 12 whitecloud
+starter hillstream g55 s3: 12 danio, 1 hillstream, 4 nerite, 10 oto, 10 whitecloud -> 12 danio, 1 hillstream, 4 nerite, 10 oto, 12 whitecloud
+starter hillstream g60b s1: 14 danio, 1 hillstream, 4 nerite, 10 oto, 10 whitecloud -> 14 danio, 1 hillstream, 4 nerite, 10 oto, 12 whitecloud
+starter hillstream g60b s3: 12 danio, 1 hillstream, 4 nerite, 10 oto, 12 whitecloud -> 14 danio, 1 hillstream, 4 nerite, 10 oto, 12 whitecloud
+starter hillstream g75 s1: 18 danio, 1 hillstream, 4 nerite, 14 oto, 16 whitecloud -> 18 danio, 1 hillstream, 4 nerite, 16 oto, 16 whitecloud
+starter hillstream g75 s2: 10 cherryshrimp, 22 danio, 1 hillstream, 4 nerite, 20 oto -> 10 cherryshrimp, 24 danio, 1 hillstream, 4 nerite, 20 oto
+starter hillstream g75 s3: 18 danio, 1 hillstream, 4 nerite, 14 oto, 16 whitecloud -> 18 danio, 1 hillstream, 4 nerite, 16 oto, 16 whitecloud
+starter hillstream g90 s1: 22 danio, 1 hillstream, 4 nerite, 18 oto, 18 whitecloud -> 22 danio, 1 hillstream, 4 nerite, 18 oto, 20 whitecloud
+starter hillstream g90 s2: 10 cherryshrimp, 28 danio, 1 hillstream, 4 nerite, 24 oto -> 10 cherryshrimp, 28 danio, 1 hillstream, 4 nerite, 26 oto
+starter hillstream g90 s3: 20 danio, 1 hillstream, 4 nerite, 18 oto, 20 whitecloud -> 22 danio, 1 hillstream, 4 nerite, 18 oto, 20 whitecloud
+starter hillstream g120 s1: 26 danio, 1 hillstream, 4 nerite, 22 oto, 24 whitecloud -> 26 danio, 1 hillstream, 4 nerite, 24 oto, 24 whitecloud
+starter hillstream g120 s3: 26 danio, 1 hillstream, 4 nerite, 22 oto, 24 whitecloud -> 26 danio, 1 hillstream, 4 nerite, 24 oto, 24 whitecloud
+starter hillstream bow36 s1: 8 danio, 1 hillstream, 2 nerite, 6 oto, 8 whitecloud -> 10 danio, 1 hillstream, 2 nerite, 6 oto, 6 whitecloud
+starter hillstream bow36 s2: 10 cherryshrimp, 10 danio, 1 hillstream, 3 nerite, 6 oto -> 10 cherryshrimp, 10 danio, 1 hillstream, 4 nerite, 6 oto
+starter hillstream bow46 s1: 12 danio, 1 hillstream, 4 nerite, 8 oto, 8 whitecloud -> 12 danio, 1 hillstream, 3 nerite, 8 oto, 10 whitecloud
+starter hillstream bow46 s2: 10 cherryshrimp, 12 danio, 1 hillstream, 4 nerite, 12 oto -> 10 cherryshrimp, 14 danio, 1 hillstream, 4 nerite, 10 oto
+starter hillstream bow46 s3: 10 danio, 1 hillstream, 4 nerite, 8 oto, 10 whitecloud -> 12 danio, 1 hillstream, 3 nerite, 8 oto, 10 whitecloud
+starter hillstream bow72 s1: 16 danio, 1 hillstream, 4 nerite, 14 oto, 14 whitecloud -> 18 danio, 1 hillstream, 4 nerite, 14 oto, 14 whitecloud
+starter hillstream bow72 s2: 10 cherryshrimp, 20 danio, 1 hillstream, 4 nerite, 20 oto -> 10 cherryshrimp, 22 danio, 1 hillstream, 4 nerite, 18 oto
+starter hillstream bow72 s3: 16 danio, 1 hillstream, 4 nerite, 14 oto, 14 whitecloud -> 16 danio, 1 hillstream, 4 nerite, 14 oto, 16 whitecloud
+starter hillstream hex35 s1: 8 danio, 1 hillstream, 2 nerite, 6 oto, 6 whitecloud -> 8 danio, 1 hillstream, 3 nerite, 6 oto, 6 whitecloud
+starter hillstream hex35 s2: 10 cherryshrimp, 10 danio, 1 hillstream, 2 nerite, 6 oto -> 10 cherryshrimp, 10 danio, 1 hillstream, 3 nerite, 6 oto
+starter hillstream hex35 s3: 8 danio, 1 hillstream, 2 nerite, 6 oto, 6 whitecloud -> 8 danio, 1 hillstream, 3 nerite, 6 oto, 6 whitecloud
+starter hillstream cor50 s1: 12 danio, 1 hillstream, 3 nerite, 8 oto, 8 whitecloud -> 12 danio, 1 hillstream, 4 nerite, 8 oto, 8 whitecloud
+starter hillstream cor50 s2: 10 cherryshrimp, 12 danio, 1 hillstream, 4 nerite, 10 oto -> 10 cherryshrimp, 12 danio, 1 hillstream, 4 nerite, 12 oto
+starter hillstream cor50 s3: 10 danio, 1 hillstream, 3 nerite, 8 oto, 10 whitecloud -> 10 danio, 1 hillstream, 4 nerite, 8 oto, 10 whitecloud
+starter hillstream g125 s1: 26 danio, 1 hillstream, 4 nerite, 24 oto, 26 whitecloud -> 28 danio, 1 hillstream, 4 nerite, 24 oto, 26 whitecloud
+starter hillstream g125 s3: 26 danio, 1 hillstream, 4 nerite, 24 oto, 26 whitecloud -> 28 danio, 1 hillstream, 4 nerite, 24 oto, 26 whitecloud
+starter hillstream g135 s1: 30 danio, 1 hillstream, 4 nerite, 26 oto, 26 whitecloud -> 30 danio, 1 hillstream, 4 nerite, 26 oto, 28 whitecloud
+starter hillstream g135 s3: 28 danio, 1 hillstream, 4 nerite, 26 oto, 28 whitecloud -> 30 danio, 1 hillstream, 4 nerite, 26 oto, 28 whitecloud
+starter softreef g5 s3: 1 cleanershrimp, 2 hermit -> 2 cleanershrimp, 1 hermit
+starter softreef g125 s2: 2 banggai, 6 chromis, 1 cleanershrimp, 1 royalgramma -> 2 banggai, 6 chromis, 2 cleanershrimp, 1 royalgramma
+starter spsreef g20l s1: 2 cleanershrimp, 1 firefish, 2 hermit, 1 sixline -> 2 cleanershrimp, 1 firefish, 3 hermit, 1 sixline
+starter spsreef g37 s3: 2 cleanershrimp, 3 hermit, 1 royalgramma, 2 turbo -> 3 cleanershrimp, 3 hermit, 1 royalgramma, 2 turbo
+starter spsreef g120 s2: 6 chromis, 2 cleanershrimp, 1 firefish, 3 hermit, 1 royalgramma -> 6 chromis, 3 cleanershrimp, 1 firefish, 3 hermit, 1 royalgramma
+starter spsreef bow46 s3: 2 cleanershrimp, 3 hermit, 1 royalgramma, 3 turbo -> 3 cleanershrimp, 3 hermit, 1 royalgramma, 3 turbo
+starter clownnano g5 s2: 1 cleanershrimp, 2 hermit -> 2 cleanershrimp, 1 hermit
+starter clownnano g5 s3: 1 cleanershrimp, 2 hermit -> 2 cleanershrimp, 1 hermit
+starter clownnano g40b s1: 2 cleanershrimp, 2 hermit, 2 ocellaris, 1 royalgramma -> 2 cleanershrimp, 3 hermit, 2 ocellaris, 1 royalgramma
+starter clownnano g65 s1: 1 cleanershrimp, 2 hermit, 2 ocellaris, 1 royalgramma, 2 turbo -> 2 cleanershrimp, 1 hermit, 2 ocellaris, 1 royalgramma, 2 turbo
+starter clownnano hex35 s1: 1 cleanershrimp, 1 firefish, 1 hermit, 1 royalgramma, 2 turbo -> 1 cleanershrimp, 1 firefish, 2 hermit, 1 royalgramma, 2 turbo
+starter clownnano hex35 s2: 1 cleanershrimp, 1 firefish, 1 hermit, 1 royalgramma, 2 turbo -> 1 cleanershrimp, 1 firefish, 2 hermit, 1 royalgramma, 2 turbo
+starter clownnano hex35 s3: 1 cleanershrimp, 1 firefish, 1 hermit, 1 royalgramma, 2 turbo -> 1 cleanershrimp, 1 firefish, 2 hermit, 1 royalgramma, 2 turbo
+tankFor 10 rummynose: g30b -> g20l
 tankFor 6 hatchet: g30b -> g20l
 tankFor 12 hatchet: g30b -> g20l
-tankFor 6 tigerbarb: g30b -> g20l
+tankFor 8 tigerbarb: g30b -> g20l
 tankFor 8 discus: g125 -> g75
-tankFor 6 bronzecory: g30b -> g20l
-tankFor 12 kuhli: g20h -> g30b
+tankFor 4 bronzecory: g30b -> g20l
+tankFor 8 bronzecory: g30b -> g20l
+tankFor 10 kuhli: g20h -> g20l
 tankFor 3 sae: g30b -> g20l
 tankFor 1 firefish: g30b -> g20l
 tankFor 2 firefish: g30b -> g20l
@@ -21,3 +649,4 @@ tankFor 1 coralbeauty: g125 -> g60b
 tankFor 2 coralbeauty: g125 -> g60b
 tankFor 1 watchman: g30b -> g20l
 tankFor 2 watchman: g30b -> g20l
+tankFor 4 adf: g10 -> g15
