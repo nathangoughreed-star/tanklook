@@ -181,6 +181,10 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 .climate.open { width: 330px; max-height: calc(100% - 20px); overflow-y: auto }
 .stocking { box-sizing: border-box; padding: 6px 10px; border-radius: 6px; background: color-mix(in srgb, var(--panel) 88%, transparent); border: 1px solid var(--line); font-size: 12px; line-height: 1.4; max-width: 330px; max-height: 40vh; overflow-y: auto }
 .stocking div { margin: 2px 0 }
+.stocking { cursor: pointer }
+.stocking .stHead { color: var(--muted); margin: 0 }
+.stocking .stHead b { color: var(--text, inherit) }
+.stocking .stHead.w b { color: #c0392b }
 .stocking .w b { color: #c0392b }
 .stocking .n b { color: #b9770e }
 .stocking .i b { color: #2e86c1 }

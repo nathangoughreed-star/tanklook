@@ -834,6 +834,8 @@ Cancel, then change the name, to keep both.`)) return;
   $('addFish').onpointerdown = e => { const sp = getSpecies(pickId); if (sp && !$<HTMLButtonElement>('addFish').disabled) dragOut(e, sp.name, { drop: at => at && dropSpecies(sp, sp.female ? previewSex : undefined, at) }); };
   let climateOpen = false;
   $('climate').onclick = () => { climateOpen = !climateOpen; sync(false); };
+  let stockOpen = false; // the herp check folds to a one-line count until clicked (Nathan 2026-10-21)
+  $('stocking').onclick = () => { stockOpen = !stockOpen; sync(false); };
   const anotherMoment = () => {
     if (!S().fish.length) return;
     const seed = Math.random() * 1e9;
@@ -1843,7 +1845,11 @@ Cancel, then change the name, to keep both.`)) return;
       + (rows.some(r => r.bands.length) ? `<div class="clCue">${climateOpen ? '▾ Hide' : '▸ Where this comes from'}</div>` : '');
     const st = $('stocking'), issues = herpCheck(s);
     st.hidden = !issues.length;
-    st.innerHTML = issues.map(i => `<div class="${i.level === 'warn' ? 'w' : i.level === 'info' ? 'i' : 'n'}"><b>${i.who}</b>${i.text}</div>`).join('');
+    { const nw = issues.filter(i => i.level === 'warn').length, nn = issues.length - nw;
+      const head = [nw && `${nw} warning${nw > 1 ? 's' : ''}`, nn && `${nn} note${nn > 1 ? 's' : ''}`].filter(Boolean).join(', ');
+      st.classList.toggle('open', stockOpen);
+      st.innerHTML = `<div class="stHead${nw ? ' w' : ''}">${stockOpen ? '▾' : '▸'} <b>Animal checks</b>${head}</div>`
+        + (stockOpen ? issues.map(i => `<div class="${i.level === 'warn' ? 'w' : i.level === 'info' ? 'i' : 'n'}"><b>${i.who}</b>${i.text}</div>`).join('') : ''); }
     const it0 = store.selectedItem, keys = [
       JSON.stringify([{ ...s, fish: null, items: null, camera: null }, G().name, u, store.split, store.targets, viewer.terrainEdit.on]),
       s.fish.map(f => `${f.species}~${f.sex}~${f.gender}`).join(), s.items.map(i => i.kind).join(), JSON.stringify(s.camera),
