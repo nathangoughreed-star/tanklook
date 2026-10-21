@@ -5,29 +5,47 @@
 import * as THREE from 'three';
 import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng } from '../art/paint';
-import { GRAIN_LOOK, SUBSTRATES, shadesOf } from '../art/placeholder';
+import { GRAIN_LOOK, GRAIN_ORDER, SUBSTRATES, blendWeights, blendZone, grain3D, shadesOf } from '../art/placeholder';
 import { waterY } from '../scene/physics';
 import { footprint } from '../scene/shape';
-import type { Tank, TankSetup } from '../scene/types';
+import type { Grain, Tank, TankSetup } from '../scene/types';
 import { insideIn, scatter, type GroundAt, type ScatterKind } from './scatter';
 
 /** How a ground's grains look in 3D: chips (bark) or stones, diameter range (mm), roundness 0-1, colours, flecked,
- *  darker when wet (terrestrial grounds only). */
-export interface GrainLook { shape: 'stone' | 'chip'; size: [number, number]; round: number; colors: string[]; speckle: boolean; wet: boolean }
-/** The ground's 3D grains, or null for a ground drawn as a surface only. Presets: bark and the gravel kinds; custom: one
- *  grain of gravel or pebbles (a blend with a second grain: not yet). Sizes from the tile art (radius px x mm per px). */
-export function grainLook(sub: TankSetup['substrate']): GrainLook | null {
-  if (sub.type === 'bark') return { shape: 'chip', size: [10, 22], round: 0.3, colors: SUBSTRATES.bark.shades, speckle: false, wet: true };
+ *  darker when wet (terrestrial grounds only); `at`: the share of the floor it covers at a point (a blend's patches;
+ *  absent = everywhere). */
+export interface GrainLook { shape: 'stone' | 'chip'; size: [number, number]; round: number; colors: string[]; speckle: boolean; wet: boolean; at?: (x: number, d: number) => number }
+/** The ground's 3D grains, one look per layer, none for a ground drawn as a surface only. Presets: bark and the gravel
+ *  kinds; custom: its gravel and pebbles, a blend's on the patches the ground shader paints them on (sand and mud stay
+ *  painted). Sizes from the tile art (radius px x mm per px). */
+export function grainLooks(sub: TankSetup['substrate']): GrainLook[] {
+  if (sub.type === 'bark') return [{ shape: 'chip', size: [10, 22], round: 0.3, colors: SUBSTRATES.bark.shades, speckle: false, wet: true }];
   if (sub.type === 'custom') {
-    const b = sub.custom; if (b.grain2 !== 'none' || (b.grain !== 'gravel' && b.grain !== 'pebble')) return null;
-    const G = GRAIN_LOOK[b.grain];
-    return { shape: 'stone', size: [G.size[0] * 2, G.size[1] * 2], round: G.round, colors: shadesOf(b.color, 10, rng(5)), speckle: true, wet: false };
+    const b = sub.custom, look = (g: Grain, color: string, at?: GrainLook['at']): GrainLook => {
+      const G = GRAIN_LOOK[g];
+      return { shape: 'stone', size: [G.size[0] * 2, G.size[1] * 2], round: G.round, colors: shadesOf(color, 10, rng(5)), speckle: true, wet: false, at };
+    };
+    if (b.grain2 === 'none') return grain3D(b.grain) ? [look(b.grain, b.color)] : [];
+    const z = blendZone(b), p2 = b.share / 100, w = (x: number, d: number) => blendWeights(b, x, d, z);
+    // the same grain in two colours: each stone one or the other
+    if (b.grain === b.grain2) return grain3D(b.grain) ? [look(b.grain, b.color, (x, d) => { const [a, , m] = w(x, d); return a + m * (1 - p2); }), look(b.grain, b.color2, (x, d) => { const [, bb, m] = w(x, d); return bb + m * p2; })] : [];
+    // mixed ground: the finer grain the bed, the coarser covering its share of it
+    const second = GRAIN_ORDER.indexOf(b.grain2) > GRAIN_ORDER.indexOf(b.grain), out: GrainLook[] = [];
+    if (grain3D(b.grain)) out.push(look(b.grain, b.color, (x, d) => { const [a, , m] = w(x, d); return a + m * (second ? 1 : 1 - p2); }));
+    if (grain3D(b.grain2)) out.push(look(b.grain2, b.color2, (x, d) => { const [, bb, m] = w(x, d); return bb + m * (second ? p2 : 1); }));
+    return out;
   }
   const t = SUBSTRATES[sub.type];
-  if (t.kind !== 'pebble') return null;
+  if (t.kind !== 'pebble') return [];
   const mmPx = t.tile * 2 / 512; // tile px -> mm
-  return { shape: 'stone', size: [t.size[0] * 2 * mmPx, t.size[1] * 2 * mmPx], round: t.round ?? 0.8, colors: t.shades, speckle: !!t.speckle, wet: !!t.terra };
+  return [{ shape: 'stone', size: [t.size[0] * 2 * mmPx, t.size[1] * 2 * mmPx], round: t.round ?? 0.8, colors: t.shades, speckle: !!t.speckle, wet: !!t.terra }];
 }
+/** The ground's coarsest 3D grain, or null for a ground drawn as a surface only. */
+export function grainLook(sub: TankSetup['substrate']): GrainLook | null {
+  const gs = grainLooks(sub); return gs.length ? gs.reduce((a, g) => (g.size[1] > a.size[1] ? g : a)) : null;
+}
+/** Whether a blend has painted-only patches (sand or mud) beside its 3D stones. */
+export const grainPatchy = (sub: TankSetup['substrate']) => sub.type === 'custom' && sub.custom.grain2 !== 'none' && !(grain3D(sub.custom.grain) && grain3D(sub.custom.grain2));
 /** About how far the grains rise above the painted ground (mm): leaf litter lies on them. */
 export const grainTop = (g: GrainLook | null) => (g ? (g.size[0] + g.size[1]) / 2 * (g.shape === 'chip' ? 0.15 : 0.22) : 0);
 
@@ -117,13 +135,18 @@ function grainKinds(g: GrainLook): ScatterKind[] {
 }
 /** Grains in the top layer: enough to cover the floor about once, sunk in (stones about halfway, chips a little), packed
  *  (a pile grid of a third of a grain), each coloured from the ground's shades; darker under water if terrestrial. */
-export const grainMeshes = (S: TankSetup, T: Tank, ground: GroundAt) => cachedGrains('top', S, T, () => topGrains(S, T, ground));
-function topGrains(S: TankSetup, T: Tank, ground: GroundAt, area = footprint(T).area): THREE.InstancedMesh[] {
-  const g = grainLook(S.substrate); if (!g) return [];
+export const grainMeshes = (S: TankSetup, T: Tank, ground: GroundAt) => cachedGrains('top', S, T, () => grainLooks(S.substrate).flatMap((g, i) => topGrains(S, T, ground, g, i)));
+function topGrains(S: TankSetup, T: Tank, ground: GroundAt, g: GrainLook, layer: number, area = footprint(T).area): THREE.InstancedMesh[] {
   const mean = (g.size[0] + g.size[1]) / 2, foot = Math.PI * (mean / 2) ** 2 * (g.shape === 'chip' ? 0.55 : 0.8);
-  const wy = g.wet && S.water.on ? waterY(T, S.water.level) : -Infinity, chip = g.shape === 'chip';
+  const wy = g.wet && S.water.on ? waterY(T, S.water.level) : -Infinity, chip = g.shape === 'chip', count = Math.min(30000, Math.round(1.25 * area / foot));
+  // a blend's layer: points over the floor kept by its share there (a few spare for the ones scatter turns down)
+  let at: [number, number][] | undefined;
+  if (g.at) {
+    const r = rng(23 + layer), n = Math.round(count * 1.15 * T.L * T.D / area); at = [];
+    for (let i = 0; i < n && at.length < count; i++) { const x = r() * T.L, d = r() * T.D; if (r() < g.at(x, d)) at.push([x, d]); }
+  }
   const out = scatter(T, ground, {
-    seed: 11, count: Math.min(30000, Math.round(1.25 * area / foot)), kinds: grainKinds(g), lift: [0, 0], pile: 0, tilt: chip ? 0.35 : 0.5,
+    seed: 11 + layer, count, at, kinds: grainKinds(g), lift: [0, 0], pile: 0, tilt: chip ? 0.35 : 0.5,
     slope: 0.35, clump: 0, liftK: chip ? [-0.05, 0.05] : [-0.18, 0], pileK: chip ? 0.12 : 0.18, cell: Math.max(1, mean / 3),
     // stones a shade under their tile colours: lit from above, their tops came out near white
     palette: g.colors.map(c => new THREE.Color(c).multiplyScalar(chip ? 1 : 0.8)), shade: y => (y < wy ? 0.55 : 1),
@@ -134,10 +157,9 @@ function topGrains(S: TankSetup, T: Tank, ground: GroundAt, area = footprint(T).
 }
 /** Grains pressed against the inside of each pane, from the tank floor up to the ground: the cross-section seen through
  *  the glass (stones long side along it, chips on edge at a slant). Not in a bowl (its glass curves away from the floor). */
-export const glassGrains = (S: TankSetup, T: Tank, groundY: (x: number, d: number) => number) => cachedGrains('glass', S, T, () => paneGrains(S, T, groundY));
-function paneGrains(S: TankSetup, T: Tank, groundY: (x: number, d: number) => number): THREE.InstancedMesh[] {
-  const g = grainLook(S.substrate); if (!g) return [];
-  const kinds = grainKinds(g), r = rng(17), mean = (g.size[0] + g.size[1]) / 2, chip = g.shape === 'chip';
+export const glassGrains = (S: TankSetup, T: Tank, groundY: (x: number, d: number) => number) => cachedGrains('glass', S, T, () => grainLooks(S.substrate).flatMap((g, i) => paneGrains(S, T, groundY, g, i)));
+function paneGrains(S: TankSetup, T: Tank, groundY: (x: number, d: number) => number, g: GrainLook, layer: number): THREE.InstancedMesh[] {
+  const kinds = grainKinds(g), r = rng(17 + layer), mean = (g.size[0] + g.size[1]) / 2, chip = g.shape === 'chip';
   const per: THREE.Matrix4[][] = kinds.map(() => []), tint: THREE.Color[][] = kinds.map(() => []);
   const pal = g.colors.map(c => new THREE.Color(c)), wy = g.wet && S.water.on ? waterY(T, S.water.level) : -Infinity;
   const q = new THREE.Quaternion(), qa = new THREE.Quaternion(), up = new THREE.Vector3(0, 1, 0), ax = new THREE.Vector3();
@@ -155,6 +177,7 @@ function paneGrains(S: TankSetup, T: Tank, groundY: (x: number, d: number) => nu
       if (top < under + size * 0.15) continue;
       const inset = size * (chip ? 0.2 : 0.36) + 0.4, x = px - e.n[0] * inset, d = pd - e.n[1] * inset;
       if (inBy(x, d) < inset - 0.5) continue; // a corner: the other pane is too near
+      if (g.at && r() >= g.at(px, pd)) continue; // a blend: only on this grain's patches
       const y = Math.min(top - under, size * 0.15 + yy * top);
       qa.setFromAxisAngle(up, yaw + a); ax.set(1, 0, 0).applyQuaternion(qa);
       q.setFromAxisAngle(ax, chip ? Math.PI / 2 * (0.6 + 0.8 * Math.abs(tl)) * Math.sign(tl || 1) : tl * 0.6).multiply(qa);
