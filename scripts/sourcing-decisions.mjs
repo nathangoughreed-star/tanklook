@@ -6,10 +6,12 @@ const dir = 'research/sourcing', out = `${dir}/decisions.md`, MARK = '<!-- GENER
 const batches = [...readdirSync(dir).filter(f => /^[AR]\d+\.json$/.test(f)).sort((a, b) => a[0].localeCompare(b[0]) || parseInt(a.slice(1)) - parseInt(b.slice(1))),
   ...readdirSync(`${dir}/other`).filter(f => /^[A-Z]\d?\.json$/.test(f)).map(f => `other/${f}`)];
 const cell = s => String(s ?? '').replace(/\|/g, '/').replace(/\s+/g, ' ').trim();
+// lane CB (2026-10-21): a field the combined sources settled (research/sourcing/combined.json) is no longer open
+const settled = new Set(Object.entries(JSON.parse(readFileSync(`${dir}/combined.json`, 'utf8')).species).flatMap(([id, sp]) => Object.keys(sp.fields).map(f => `${id}.${f}`)));
 let md = `${MARK}\n`;
 for (const f of batches) {
   const b = JSON.parse(readFileSync(`${dir}/${f}`, 'utf8'));
-  const rows = Object.entries(b.species ?? b.items).flatMap(([id, sp]) => Object.entries(sp.fields).filter(([, v]) => v.verdict === 'disagrees')
+  const rows = Object.entries(b.species ?? b.items).flatMap(([id, sp]) => Object.entries(sp.fields).filter(([k, v]) => v.verdict === 'disagrees' && !settled.has(`${id}.${k}`))
     .map(([k, v]) => `| ${id}.${k} | ${cell(JSON.stringify(v.ours))} | ${cell(v.sources.map(s => `${s.site}: ${s.states}`).join('; '))} | ${v.suggest == null ? 'keep? (split)' : `**${cell(JSON.stringify(v.suggest))}**`} | ${cell(v.note)} |`));
   md += `\n## ${f.replace('.json', '')} (${rows.length})\n\n| field | ours | pages say | suggest | note |\n|---|---|---|---|---|\n${rows.join('\n')}\n`;
 }

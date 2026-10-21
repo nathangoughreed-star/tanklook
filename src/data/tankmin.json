@@ -24,11 +24,24 @@
     "from": "footprint"
    },
    "vol": {
-    "gal": 10,
-    "mark": "sourced (est)",
-    "est": true,
-    "site": "Fishkeeping World",
-    "url": "https://www.fishkeepingworld.com/neon-tetra/"
+    "gal": 14.3,
+    "mark": "combined",
+    "site": "Fishkeeping World + Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/paracheirodon-innesi/",
+    "combined": [
+     {
+      "site": "Fishkeeping World",
+      "url": "https://www.fishkeepingworld.com/neon-tetra/",
+      "gal": 10,
+      "w": 0.7
+     },
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/paracheirodon-innesi/",
+      "gal": 14.3,
+      "w": 1
+     }
+    ]
    },
    "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
   },
@@ -44,12 +57,37 @@
     "from": "length + footprint area"
    },
    "vol": {
-    "gal": 15,
+    "gal": 28.5,
     "mark": "sourced",
-    "site": "Fishkeeping World",
-    "url": "https://www.fishkeepingworld.com/swordtail/"
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/xiphophorus-hellerii/",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/xiphophorus-hellerii/",
+      "gal": 28.5,
+      "w": 1
+     }
+    ]
    },
-   "why": "MX4: FishBase length and SF floor area, each held on its own"
+   "why": "MX4: FishBase length and SF floor area, each held on its own",
+   "green": {
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/xiphophorus-hellerii/",
+    "states": "120 ∗ 30 cm",
+    "mark": "sourced",
+    "from": "combined",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/xiphophorus-hellerii/",
+      "mm": 1200,
+      "w": 1
+     }
+    ],
+    "L": 1200,
+    "W": 300
+   }
   },
   "betta": {
    "red": {
@@ -73,10 +111,18 @@
     "from": "footprint"
    },
    "vol": {
-    "gal": 5,
+    "gal": 10.8,
     "mark": "sourced",
-    "site": "Fishkeeping World",
-    "url": "https://www.fishkeepingworld.com/betta-fish-care/"
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/betta-splendens/",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/betta-splendens/",
+      "gal": 10.8,
+      "w": 1
+     }
+    ]
    },
    "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
   },
@@ -103,7 +149,21 @@
     "mark": "sourced",
     "note": "Seriously Fish: a tall tank of at least 50 cm, for adults; body height 20 cm"
    },
-   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower",
+   "vol": {
+    "gal": 52.8,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/pterophyllum-scalare/",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/pterophyllum-scalare/",
+      "gal": 52.8,
+      "w": 1
+     }
+    ]
+   }
   },
   "discus": {
    "red": {
@@ -132,10 +192,24 @@
     "est": true
    },
    "vol": {
-    "gal": 60,
-    "mark": "sourced",
-    "site": "Fishkeeping World",
-    "url": "https://www.fishkeepingworld.com/discus-fish/"
+    "gal": 67.4,
+    "mark": "combined",
+    "site": "Fishkeeping World + Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/symphysodon-aequifasciatus/",
+    "combined": [
+     {
+      "site": "Fishkeeping World",
+      "url": "https://www.fishkeepingworld.com/discus-fish/",
+      "gal": 60,
+      "w": 0.7
+     },
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/symphysodon-aequifasciatus/",
+      "gal": 67.4,
+      "w": 1
+     }
+    ]
    },
    "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
   },
@@ -149,7 +223,27 @@
     "states": "150 ∗ 60 cm",
     "from": "footprint"
    },
-   "why": "2 geometry pages: lowest stated minimum"
+   "why": "2 geometry pages: lowest stated minimum",
+   "vol": {
+    "gal": 142.7,
+    "mark": "combined",
+    "site": "Seriously Fish + Fishkeeping World",
+    "url": "https://www.seriouslyfish.com/species/astronotus-ocellatus/",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/astronotus-ocellatus/",
+      "gal": 142.7,
+      "w": 1
+     },
+     {
+      "site": "Fishkeeping World",
+      "url": "https://www.fishkeepingworld.com/oscar-fish/",
+      "gal": 143,
+      "w": 0.7
+     }
+    ]
+   }
   },
   "bronzecory": {
    "red": {
@@ -241,10 +335,24 @@
     "from": "footprint"
    },
    "vol": {
-    "gal": 20,
-    "mark": "sourced",
-    "site": "Fishkeeping World",
-    "url": "https://www.fishkeepingworld.com/cardinal-tetra/"
+    "gal": 14.3,
+    "mark": "combined",
+    "site": "Seriously Fish + Fishkeeping World",
+    "url": "https://www.seriouslyfish.com/species/paracheirodon-axelrodi/",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/paracheirodon-axelrodi/",
+      "gal": 14.3,
+      "w": 1
+     },
+     {
+      "site": "Fishkeeping World",
+      "url": "https://www.fishkeepingworld.com/cardinal-tetra/",
+      "gal": 20,
+      "w": 0.7
+     }
+    ]
    },
    "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
   },
@@ -259,10 +367,24 @@
     "from": "footprint"
    },
    "vol": {
-    "gal": 10,
-    "mark": "sourced",
-    "site": "Fishkeeping World",
-    "url": "https://www.fishkeepingworld.com/ember-tetra/"
+    "gal": 10.8,
+    "mark": "combined",
+    "site": "Fishkeeping World + Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/hyphessobrycon-amandae/",
+    "combined": [
+     {
+      "site": "Fishkeeping World",
+      "url": "https://www.fishkeepingworld.com/ember-tetra/",
+      "gal": 10,
+      "w": 0.7
+     },
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/hyphessobrycon-amandae/",
+      "gal": 10.8,
+      "w": 1
+     }
+    ]
    },
    "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
   },
@@ -304,7 +426,27 @@
     "states": "60 ∗ 30 cm",
     "from": "footprint"
    },
-   "why": "2 geometry pages: lowest stated minimum"
+   "why": "2 geometry pages: lowest stated minimum",
+   "vol": {
+    "gal": 14.3,
+    "mark": "combined",
+    "site": "Seriously Fish + Fishkeeping World",
+    "url": "https://www.seriouslyfish.com/species/trigonostigma-heteromorpha/",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/trigonostigma-heteromorpha/",
+      "gal": 14.3,
+      "w": 1
+     },
+     {
+      "site": "Fishkeeping World",
+      "url": "https://www.fishkeepingworld.com/harlequin-rasbora/",
+      "gal": 15,
+      "w": 0.7
+     }
+    ]
+   }
   },
   "chili": {
    "red": {
@@ -328,10 +470,18 @@
     "from": "footprint"
    },
    "vol": {
-    "gal": 8,
+    "gal": 10.8,
     "mark": "sourced",
-    "site": "Fishkeeping World",
-    "url": "https://www.fishkeepingworld.com/chili-rasbora/"
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/boraras-brigittae/",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/boraras-brigittae/",
+      "gal": 10.8,
+      "w": 1
+     }
+    ]
    },
    "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
   },
@@ -357,10 +507,18 @@
     "from": "footprint"
    },
    "vol": {
-    "gal": 10,
+    "gal": 21.4,
     "mark": "sourced",
-    "site": "Fishkeeping World",
-    "url": "https://www.fishkeepingworld.com/zebra-danio/"
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/danio-rerio/",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/danio-rerio/",
+      "gal": 21.4,
+      "w": 1
+     }
+    ]
    },
    "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
   },
@@ -386,10 +544,24 @@
     "from": "footprint"
    },
    "vol": {
-    "gal": 10,
-    "mark": "sourced",
-    "site": "Fishkeeping World",
-    "url": "https://www.fishkeepingworld.com/white-cloud-mountain-minnow/"
+    "gal": 14.3,
+    "mark": "combined",
+    "site": "Fishkeeping World + Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/tanichthys-albonubes/",
+    "combined": [
+     {
+      "site": "Fishkeeping World",
+      "url": "https://www.fishkeepingworld.com/white-cloud-mountain-minnow/",
+      "gal": 10,
+      "w": 0.7
+     },
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/tanichthys-albonubes/",
+      "gal": 14.3,
+      "w": 1
+     }
+    ]
    },
    "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
   },
@@ -404,10 +576,24 @@
     "from": "footprint"
    },
    "vol": {
-    "gal": 10,
-    "mark": "sourced",
-    "site": "Fishkeeping World",
-    "url": "https://www.fishkeepingworld.com/celestial-pearl-danio/"
+    "gal": 10.8,
+    "mark": "combined",
+    "site": "Fishkeeping World + Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/danio-margaritatus/",
+    "combined": [
+     {
+      "site": "Fishkeeping World",
+      "url": "https://www.fishkeepingworld.com/celestial-pearl-danio/",
+      "gal": 10,
+      "w": 0.7
+     },
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/danio-margaritatus/",
+      "gal": 10.8,
+      "w": 1
+     }
+    ]
    },
    "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
   },
@@ -424,10 +610,24 @@
     "ref": "g20l"
    },
    "vol": {
-    "gal": 20,
-    "mark": "sourced",
-    "site": "LiveAquaria",
-    "url": "https://www.liveaquaria.com/products/marble-hatchet"
+    "gal": 18,
+    "mark": "combined",
+    "site": "Seriously Fish + LiveAquaria",
+    "url": "https://www.seriouslyfish.com/species/carnegiella-strigata/",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/carnegiella-strigata/",
+      "gal": 18,
+      "w": 1
+     },
+     {
+      "site": "LiveAquaria",
+      "url": "https://www.liveaquaria.com/products/marble-hatchet",
+      "gal": 20,
+      "w": 0.5
+     }
+    ]
    },
    "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
   },
@@ -453,10 +653,18 @@
     "from": "footprint"
    },
    "vol": {
-    "gal": 10,
+    "gal": 25.1,
     "mark": "sourced",
-    "site": "Aquarium Co-Op",
-    "url": "https://www.aquariumcoop.com/blogs/aquarium/cherry-barb"
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/cherry-barb/",
+    "combined": [
+     {
+      "site": "Fishkeeping World",
+      "url": "https://www.fishkeepingworld.com/cherry-barb/",
+      "gal": 25,
+      "w": 0.7
+     }
+    ]
    },
    "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
   },
@@ -473,10 +681,18 @@
     "ref": "g20l"
    },
    "vol": {
-    "gal": 20,
+    "gal": 29.1,
     "mark": "sourced",
-    "site": "Fishkeeping World",
-    "url": "https://www.fishkeepingworld.com/tiger-barb/"
+    "site": "Aquarium Co-Op",
+    "url": "https://www.aquariumcoop.com/blogs/aquarium/tiger-barb",
+    "combined": [
+     {
+      "site": "Aquarium Co-Op",
+      "url": "https://www.aquariumcoop.com/blogs/aquarium/tiger-barb",
+      "gal": 29,
+      "w": 0.7
+     }
+    ]
    },
    "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
   },
@@ -491,10 +707,18 @@
     "from": "footprint"
    },
    "vol": {
-    "gal": 28.5,
+    "gal": 49.9,
     "mark": "sourced",
-    "site": "Seriously Fish",
-    "url": "https://www.seriouslyfish.com/species/melanotaenia-boesemani/"
+    "site": "Aquarium Source",
+    "url": "https://www.aquariumsource.com/boesemani-rainbowfish/",
+    "combined": [
+     {
+      "site": "Aquarium Source",
+      "url": "https://www.aquariumsource.com/boesemani-rainbowfish/",
+      "gal": 50,
+      "w": 0.7
+     }
+    ]
    },
    "why": "3 geometry pages: lowest stated minimum"
   },
@@ -521,10 +745,18 @@
     "from": "footprint"
    },
    "vol": {
-    "gal": 5,
+    "gal": 10.8,
     "mark": "sourced",
-    "site": "Fishkeeping World",
-    "url": "https://www.fishkeepingworld.com/guppies/"
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/poecilia-reticulata/",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/poecilia-reticulata/",
+      "gal": 10.8,
+      "w": 1
+     }
+    ]
    },
    "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
   },
@@ -581,10 +813,24 @@
     "from": "footprint"
    },
    "vol": {
-    "gal": 10,
-    "mark": "sourced",
-    "site": "Fishkeeping World",
-    "url": "https://www.fishkeepingworld.com/molly-fish/"
+    "gal": 21.4,
+    "mark": "combined",
+    "site": "Aquarium Co-Op + Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/poecilia-sphenops/",
+    "combined": [
+     {
+      "site": "Aquarium Co-Op",
+      "url": "https://www.aquariumcoop.com/blogs/aquarium/molly-fish-care",
+      "gal": 20,
+      "w": 0.7
+     },
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/poecilia-sphenops/",
+      "gal": 21.4,
+      "w": 1
+     }
+    ]
    },
    "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
   },
@@ -601,10 +847,24 @@
     "ref": "g10"
    },
    "vol": {
-    "gal": 10,
-    "mark": "sourced",
-    "site": "Aquarium Co-Op",
-    "url": "https://www.aquariumcoop.com/blogs/aquarium/dwarf-gourami"
+    "gal": 14.8,
+    "mark": "combined",
+    "site": "Aquarium Co-Op + Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/trichogaster-lalius/",
+    "combined": [
+     {
+      "site": "Aquarium Co-Op",
+      "url": "https://www.aquariumcoop.com/blogs/aquarium/dwarf-gourami",
+      "gal": 10,
+      "w": 0.7
+     },
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/trichogaster-lalius/",
+      "gal": 14.8,
+      "w": 1
+     }
+    ]
    },
    "why": "no geometry page: derived from gallons"
   },
@@ -649,10 +909,24 @@
     "from": "footprint"
    },
    "vol": {
-    "gal": 30,
-    "mark": "sourced",
-    "site": "Fishkeeping World",
-    "url": "https://www.fishkeepingworld.com/pearl-gourami/"
+    "gal": 21.4,
+    "mark": "combined",
+    "site": "Seriously Fish + Fishkeeping World",
+    "url": "https://www.seriouslyfish.com/species/trichopodus-leerii/",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/trichopodus-leerii/",
+      "gal": 21.4,
+      "w": 1
+     },
+     {
+      "site": "Fishkeeping World",
+      "url": "https://www.fishkeepingworld.com/pearl-gourami/",
+      "gal": 30,
+      "w": 0.7
+     }
+    ]
    },
    "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
   },
@@ -729,10 +1003,18 @@
     "from": "footprint"
    },
    "vol": {
-    "gal": 14.3,
+    "gal": 30.1,
     "mark": "sourced",
-    "site": "Seriously Fish",
-    "url": "https://www.seriouslyfish.com/species/apistogramma-cacatuoides/"
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/cockatoo-cichlid/",
+    "combined": [
+     {
+      "site": "Fishkeeping World",
+      "url": "https://www.fishkeepingworld.com/cockatoo-cichlid/",
+      "gal": 30,
+      "w": 0.7
+     }
+    ]
    },
    "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
   },
@@ -773,11 +1055,24 @@
     "from": "footprint"
    },
    "vol": {
-    "gal": 55,
-    "mark": "sourced (est)",
-    "est": true,
-    "site": "Guidarium",
-    "url": "https://guidarium.com/fishes/grants-peacock-cichlid"
+    "gal": 64.2,
+    "mark": "combined",
+    "site": "Guidarium + Seriously Fish",
+    "url": "https://seriouslyfish.com/species/aulonocara-stuartgranti",
+    "combined": [
+     {
+      "site": "Guidarium",
+      "url": "https://guidarium.com/fishes/grants-peacock-cichlid",
+      "gal": 55,
+      "w": 0.7
+     },
+     {
+      "site": "Seriously Fish",
+      "url": "https://seriouslyfish.com/species/aulonocara-stuartgranti",
+      "gal": 64.2,
+      "w": 1
+     }
+    ]
    },
    "why": "2 geometry pages: lowest stated minimum"
   },
@@ -801,12 +1096,27 @@
   },
   "kadango": {
    "red": {
-    "L": 1200,
+    "L": 1500,
     "mark": "sourced",
-    "site": "Guidarium",
-    "url": "https://guidarium.com/fishes/red-fin-borleyi",
-    "states": "120 cm",
-    "from": "length"
+    "site": "Seriously Fish",
+    "url": "https://seriouslyfish.com/species/copadichromis-borleyi",
+    "states": "150 ∗ 45 ∗ 45 cm",
+    "from": "combined",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://seriouslyfish.com/species/copadichromis-borleyi",
+      "mm": 1500,
+      "w": 1
+     },
+     {
+      "site": "Guidarium",
+      "url": "https://guidarium.com/fishes/red-fin-borleyi",
+      "mm": 1200,
+      "w": 0.7
+     }
+    ],
+    "W": 450
    },
    "green": {
     "L": 1500,
@@ -980,10 +1290,18 @@
     "states": "1.5 feet high"
    },
    "vol": {
-    "gal": 30,
+    "gal": 75,
     "mark": "sourced",
-    "site": "Fishkeeping World",
-    "url": "https://www.fishkeepingworld.com/goldfish/"
+    "site": "Aquarium Source",
+    "url": "https://www.aquariumsource.com/comet-goldfish/",
+    "combined": [
+     {
+      "site": "Aquarium Source",
+      "url": "https://www.aquariumsource.com/comet-goldfish/",
+      "gal": 75,
+      "w": 0.7
+     }
+    ]
    },
    "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
   },
@@ -1109,10 +1427,18 @@
     "from": "length"
    },
    "vol": {
-    "gal": 20,
+    "gal": 49.9,
     "mark": "sourced",
-    "site": "Fishkeeping World",
-    "url": "https://www.fishkeepingworld.com/siamese-algae-eater/"
+    "site": "Aquarium Co-Op",
+    "url": "https://www.aquariumcoop.com/blogs/aquarium/siamese-algae-eater",
+    "combined": [
+     {
+      "site": "Aquarium Co-Op",
+      "url": "https://www.aquariumcoop.com/blogs/aquarium/siamese-algae-eater",
+      "gal": 50,
+      "w": 0.7
+     }
+    ]
    },
    "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
   },
@@ -1135,10 +1461,18 @@
     "from": "length"
    },
    "vol": {
-    "gal": 18,
+    "gal": 55,
     "mark": "sourced",
-    "site": "Seriously Fish",
-    "url": "https://www.seriouslyfish.com/species/sewellia-lineolata/"
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/hillstream-loach/",
+    "combined": [
+     {
+      "site": "Fishkeeping World",
+      "url": "https://www.fishkeepingworld.com/hillstream-loach/",
+      "gal": 55,
+      "w": 0.7
+     }
+    ]
    },
    "why": "2 geometry pages: lowest stated minimum"
   },
@@ -1153,10 +1487,30 @@
     "from": "footprint"
    },
    "vol": {
-    "gal": 3.3,
-    "mark": "sourced",
-    "site": "Seriously Fish",
-    "url": "https://www.seriouslyfish.com/species/carinotetraodon-travancoricus/"
+    "gal": 5,
+    "mark": "combined",
+    "site": "Seriously Fish + Aquarium Co-Op + Fishkeeping World",
+    "url": "https://www.aquariumcoop.com/blogs/aquarium/pea-puffer",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/carinotetraodon-travancoricus/",
+      "gal": 3.3,
+      "w": 1
+     },
+     {
+      "site": "Aquarium Co-Op",
+      "url": "https://www.aquariumcoop.com/blogs/aquarium/pea-puffer",
+      "gal": 5,
+      "w": 0.7
+     },
+     {
+      "site": "Fishkeeping World",
+      "url": "https://www.fishkeepingworld.com/pea-puffer/",
+      "gal": 5,
+      "w": 0.7
+     }
+    ]
    },
    "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
   },
@@ -1222,10 +1576,18 @@
     "ref": "g15"
    },
    "vol": {
-    "gal": 15,
+    "gal": 30.1,
     "mark": "sourced",
-    "site": "Bulk Reef Supply",
-    "url": "https://www.bulkreefsupply.com/ora-flurry-ocellaris-clownfish-ora.html"
+    "site": "Top Shelf Aquatics",
+    "url": "https://topshelfaquatics.com/products/orange-ocellaris-clownfish",
+    "combined": [
+     {
+      "site": "Top Shelf Aquatics",
+      "url": "https://topshelfaquatics.com/products/orange-ocellaris-clownfish",
+      "gal": 30,
+      "w": 0.5
+     }
+    ]
    },
    "why": "no geometry page: derived from gallons"
   },
@@ -1251,11 +1613,30 @@
     "from": "length"
    },
    "vol": {
-    "gal": 90,
-    "mark": "sourced (est)",
-    "est": true,
-    "site": "Saltwater Aquarium Blog",
-    "url": "https://www.saltwateraquariumblog.com/yellow-tang-care-guide/"
+    "gal": 100.1,
+    "mark": "combined",
+    "site": "Saltwater Aquarium Blog + LiveAquaria + Fish Tank Advisor",
+    "url": "https://www.liveaquaria.com/products/yellow-tang-hawaii",
+    "combined": [
+     {
+      "site": "Saltwater Aquarium Blog",
+      "url": "https://www.saltwateraquariumblog.com/yellow-tang-care-guide/",
+      "gal": 90,
+      "w": 0.7
+     },
+     {
+      "site": "LiveAquaria",
+      "url": "https://www.liveaquaria.com/products/yellow-tang-hawaii",
+      "gal": 100,
+      "w": 0.5
+     },
+     {
+      "site": "Fish Tank Advisor",
+      "url": "https://fishtankadvisor.com/yellow-tang/",
+      "gal": 100,
+      "w": 0.7
+     }
+    ]
    },
    "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
   },
@@ -1314,10 +1695,18 @@
     "ref": "g10"
    },
    "vol": {
-    "gal": 10,
+    "gal": 30.1,
     "mark": "sourced",
-    "site": "Saltwater Aquarium Blog",
-    "url": "https://www.saltwateraquariumblog.com/banggai-cardinalfish-care-guide/"
+    "site": "Reef Exclusive",
+    "url": "https://reefexclusive.com/products/banggai-cardinalfish",
+    "combined": [
+     {
+      "site": "Reef Exclusive",
+      "url": "https://reefexclusive.com/products/banggai-cardinalfish",
+      "gal": 30,
+      "w": 0.5
+     }
+    ]
    },
    "why": "no geometry page: derived from gallons"
   },
@@ -1334,10 +1723,24 @@
     "ref": "g30b"
    },
    "vol": {
-    "gal": 30,
-    "mark": "sourced",
-    "site": "Aquariadise",
-    "url": "https://www.aquariadise.com/six-line-wrasse/"
+    "gal": 57.6,
+    "mark": "combined",
+    "site": "Reef Exclusive + LiveAquaria",
+    "url": "https://www.liveaquaria.com/products/six-line-wrasse",
+    "combined": [
+     {
+      "site": "Reef Exclusive",
+      "url": "https://reefexclusive.com/products/six-line-wrasse",
+      "gal": 55,
+      "w": 0.5
+     },
+     {
+      "site": "LiveAquaria",
+      "url": "https://www.liveaquaria.com/products/six-line-wrasse",
+      "gal": 60,
+      "w": 0.5
+     }
+    ]
    },
    "why": "no geometry page: derived from gallons"
   },
@@ -1396,11 +1799,18 @@
     "ref": "g20l"
    },
    "vol": {
-    "gal": 20,
-    "mark": "sourced (est)",
-    "est": true,
-    "site": "Bulk Reef Supply",
-    "url": "https://www.bulkreefsupply.com/content/post/how-to-care-for-watchman-gobies"
+    "gal": 30.1,
+    "mark": "sourced",
+    "site": "Reef Exclusive",
+    "url": "https://reefexclusive.com/products/yellow-watchman-goby",
+    "combined": [
+     {
+      "site": "Reef Exclusive",
+      "url": "https://reefexclusive.com/products/yellow-watchman-goby",
+      "gal": 30,
+      "w": 0.5
+     }
+    ]
    },
    "why": "no geometry page: derived from gallons"
   },
@@ -1482,11 +1892,24 @@
     "states": "24”H"
    },
    "vol": {
-    "gal": 15,
-    "mark": "sourced (est)",
-    "est": true,
-    "site": "Reptile Direct",
-    "url": "https://reptiledirect.com/whites-tree-frog/"
+    "gal": 17.4,
+    "mark": "combined",
+    "site": "Reptile Direct + Reptiles Magazine",
+    "url": "https://reptiledirect.com/whites-tree-frog/",
+    "combined": [
+     {
+      "site": "Reptile Direct",
+      "url": "https://reptiledirect.com/whites-tree-frog/",
+      "gal": 15,
+      "w": 0.7
+     },
+     {
+      "site": "Reptiles Magazine",
+      "url": "https://reptilesmagazine.com/whites-treefrog-care-sheet/",
+      "gal": 20,
+      "w": 0.7
+     }
+    ]
    },
    "why": "2 geometry pages: lowest stated minimum"
   },
@@ -1536,10 +1959,24 @@
     "ref": "g15"
    },
    "vol": {
-    "gal": 15,
-    "mark": "sourced",
-    "site": "PetMD",
-    "url": "https://petmd.com/exotic/fire-bellied-newt-care-sheet"
+    "gal": 17.4,
+    "mark": "combined",
+    "site": "PetMD + Reptiles Magazine",
+    "url": "https://petmd.com/exotic/fire-bellied-newt-care-sheet",
+    "combined": [
+     {
+      "site": "PetMD",
+      "url": "https://petmd.com/exotic/fire-bellied-newt-care-sheet",
+      "gal": 15,
+      "w": 0.7
+     },
+     {
+      "site": "Reptiles Magazine",
+      "url": "https://reptilesmagazine.com/?p=104985",
+      "gal": 20,
+      "w": 0.7
+     }
+    ]
    },
    "why": "no geometry page: derived from gallons"
   },
@@ -1562,10 +1999,18 @@
     "est": true
    },
    "vol": {
-    "gal": 5,
+    "gal": 10,
     "mark": "sourced",
-    "site": "Modest Fish",
-    "url": "https://modestfish.com/african-dwarf-frog-care/"
+    "site": "LiveAquaria",
+    "url": "https://www.liveaquaria.com/products/dwarf-african-frog",
+    "combined": [
+     {
+      "site": "LiveAquaria",
+      "url": "https://www.liveaquaria.com/products/dwarf-african-frog",
+      "gal": 10,
+      "w": 0.5
+     }
+    ]
    },
    "why": "no geometry page: derived from gallons"
   },
@@ -1596,10 +2041,18 @@
     "states": "25 cm tall"
    },
    "vol": {
-    "gal": 10,
+    "gal": 29.1,
     "mark": "sourced",
-    "site": "Axolotl.org",
-    "url": "https://www.axolotl.org/housing.htm"
+    "site": "Modest Fish",
+    "url": "https://modestfish.com/axolotl-care/",
+    "combined": [
+     {
+      "site": "Modest Fish",
+      "url": "https://modestfish.com/axolotl-care/",
+      "gal": 29,
+      "w": 0.7
+     }
+    ]
    },
    "why": "2 geometry pages: lowest stated minimum"
   },
@@ -1628,7 +2081,21 @@
     "url": "https://reptilesmagazine.com/crested-gecko-care-sheet/",
     "states": "36″"
    },
-   "why": "same species as crestedgecko (Correlophus ciliatus): its lines"
+   "why": "same species as crestedgecko (Correlophus ciliatus): its lines",
+   "vol": {
+    "gal": 33.6,
+    "mark": "sourced",
+    "site": "ReptiFiles PDF",
+    "url": "https://reptifiles.com/wp-content/uploads/2020/10/Crested-Gecko-Care-Sheet-PDF.pdf",
+    "combined": [
+     {
+      "site": "ReptiFiles PDF",
+      "url": "https://reptifiles.com/wp-content/uploads/2020/10/Crested-Gecko-Care-Sheet-PDF.pdf",
+      "gal": 33.6,
+      "w": 1
+     }
+    ]
+   }
   },
   "crestedgecko": {
    "red": {
@@ -1655,7 +2122,21 @@
     "url": "https://reptilesmagazine.com/crested-gecko-care-sheet/",
     "states": "36″"
    },
-   "why": "MX8: 18 x 18 x 24 in required (two pages), 36 in tall Recommended"
+   "why": "MX8: 18 x 18 x 24 in required (two pages), 36 in tall Recommended",
+   "vol": {
+    "gal": 33.6,
+    "mark": "sourced",
+    "site": "ReptiFiles PDF",
+    "url": "https://reptifiles.com/wp-content/uploads/2020/10/Crested-Gecko-Care-Sheet-PDF.pdf",
+    "combined": [
+     {
+      "site": "ReptiFiles PDF",
+      "url": "https://reptifiles.com/wp-content/uploads/2020/10/Crested-Gecko-Care-Sheet-PDF.pdf",
+      "gal": 33.6,
+      "w": 1
+     }
+    ]
+   }
   },
   "greenanole": {
    "red": {
@@ -1674,7 +2155,21 @@
     "url": "https://reptifiles.com/green-anole-care-sheet/",
     "states": "24″H"
    },
-   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower",
+   "vol": {
+    "gal": 10,
+    "mark": "sourced",
+    "site": "PetSmart",
+    "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+    "combined": [
+     {
+      "site": "PetSmart",
+      "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+      "gal": 10,
+      "w": 0.5
+     }
+    ]
+   }
   },
   "greenanolebrown": {
    "red": {
@@ -1693,7 +2188,21 @@
     "url": "https://reptifiles.com/green-anole-care-sheet/",
     "states": "24″H"
    },
-   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower",
+   "vol": {
+    "gal": 10,
+    "mark": "sourced",
+    "site": "PetSmart",
+    "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+    "combined": [
+     {
+      "site": "PetSmart",
+      "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+      "gal": 10,
+      "w": 0.5
+     }
+    ]
+   }
   },
   "brownanole": {
    "red": {
@@ -1732,7 +2241,27 @@
     "url": "https://reptifiles.com/leopard-gecko-care/leopard-gecko-terrarium-size",
     "states": "18″"
    },
-   "why": "2 geometry pages: lowest stated minimum"
+   "why": "2 geometry pages: lowest stated minimum",
+   "vol": {
+    "gal": 20.1,
+    "mark": "combined",
+    "site": "Phoenix Herp + PetMD",
+    "url": "https://www.phoenixherp.com/assistance/reptile-care-guides/leopard-gecko-care-guide.html",
+    "combined": [
+     {
+      "site": "Phoenix Herp",
+      "url": "https://www.phoenixherp.com/assistance/reptile-care-guides/leopard-gecko-care-guide.html",
+      "gal": 20,
+      "w": 0.5
+     },
+     {
+      "site": "PetMD",
+      "url": "https://www.petmd.com/reptile/leopard-gecko-care-sheet",
+      "gal": 20,
+      "w": 0.7
+     }
+    ]
+   }
   },
   "regaljumper": {
    "hGreen": {

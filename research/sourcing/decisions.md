@@ -35,6 +35,26 @@ Rule from Nathan 2026-10-20: he cannot judge the biology; trust the research, es
   "grazers per tank size" figures (Top Shelf: 2-3 turbos per 20-30 gal) and how much supplementary feeding (nori, wafers)
   lifts them, for turbo, nerite, trumpet, oto, bristlenose, SAE and amano; only with stated numbers.
 
+## Combined sources (lane CB, 2026-10-21; DECIDED by Nathan the same day)
+
+`node scripts/source-combine.mjs` weighs every opened page (sources.json kind: primary / reference 1, care sheets 0.7, retailers
+0.5; a genus-wide or generic page x 0.5; one site once; only re-fetched quotes) and combines them: numbers by weighted median
+(ranges end by end), words by weighted vote, tank sizes in two tiers (floor / comfort) when the pages are more than 1.5x apart,
+placed by each site's litres. Table: research/sourcing/combine/approved-2026-10-21.md; research/sourcing/combined.md is the table
+as it stands now (only the kept rows below differ). Applied by `node scripts/source-combine-apply.mjs` (research/sourcing/combined.json).
+- **Applied (Nathan: "apply all except the 11"):** 194 values: 47 adult lengths (the axolotl as picked below), 6 female lengths, 47 minimum volumes (CARE.minL),
+  41 advisory volumes (tankmin vol), 19 pH ranges, 10 group minimums (count bands' `ok` moved with them), 4 care levels, 5
+  temperaments, 4 temperature / 3 tolerance bands, mandarin max 2 (a pair), 2 humidity and 1 basking band, kadango's red line
+  59 x 17.5 in, swordtail's green line 47 x 12 in. The 7 open R3 / R4 disagreements are settled by it: harlequin 54 L, syno 108 L,
+  mandarin pair, discus 26-30 C, comet 18-22 C (tolerance 15.6-26.7), axolotl 15-18 C.
+- **Kept (an earlier decision, labelled as before):** ball python, comet, mandarin and hillstream minimum tanks; oto, hillstream and
+  axolotl care 2; angel and swordtail temperament 1; whitecloud group 6; mystery snail pH.
+- **Kept or picked when the tests showed the moves (Nathan 2026-10-21):** kuhli 100 mm (FishBase's 120 would fit only 10 in the S188
+  20 gal long), oscar 300 mm (FishBase's 45.7 cm is a record), axolotl 300 mm (Reptile Centre, not Modest Fish's 16 in upper end).
+- **Gallon-derived red lines stay** (Nathan: "keep them"): a gallon figure never sets a length, but the MX2 red line (the lower of a
+  stated geometry and the gallon figure's catalogue tank) is kept; 36 species.
+- Not combined (listed in combined.md): SL / SVL / leg-span lengths (not total length), air zones (cool side, night), yes / no flags.
+
 ## Tank-minimum geometry (lane MX, 2026-10-21; MX1-MX9 DECIDED by Nathan the same day)
 
 Data: research/sourcing/tank-minimum/M1-M9.json (quotes re-fetched: <batch>.verify.json), merged by
@@ -178,22 +198,17 @@ juvenile figures. "Ours" = today's `minLengthMm` / `minL`. Each item below eithe
 |---|---|---|---|---|
 
 
-## R3 (2)
+## R3 (0)
 
 | field | ours | pages say | suggest | note |
 |---|---|---|---|---|
-| harlequin.minL | 40 | Seriously Fish: base 60 x 30 cm, ~54 litres (~14 US gal); Fishkeeping World: 15 gallons (56.8 L) for a school of 8-10; 20 gallons better | **54** | Both sources ~54-57 L; ours 40 is below 75% of the lowest (54 L stated by page, 15 gal = 56.8 L). |
-| syno.minL | 200 | Seriously Fish: 120 x 30 x 30 cm, ~108 litres (~29 US gal) | **108** | Only one care source found (Fishkeeping World 404, Planet Catfish forum 403). Page minimum 108 L; ours 200 is almost double. A forum thread (not fetched) suggests larger tanks for breeding groups. |
 
-## R4 (5)
+
+## R4 (0)
 
 | field | ours | pages say | suggest | note |
 |---|---|---|---|---|
-| mandarin.max | 1 | Fishkeeping World: pair allowed (75 gal) | **2** | Source allows a male/female pair; ours is 1. |
-| discus.temp | [28,30] | Seriously Fish: 26-30 C | **[26,30]** | Lo end 26 vs ours 28. |
-| comet.temp | [16,22] | Berry Patch Farms: 18-22 C ideal | **[18,22]** | Lo end 18 vs ours 16. |
-| comet.tol | [10,26] | Berry Patch Farms: 60-80 F for limited periods (15.6-26.7 C) | **[16,27]** | Lo 15.6 vs ours 10; FishBase gives 0-41 C for goldfish generally but was not quoted. |
-| axolotl.temp | [16,20] | Swell UK: 15-18 C | **[15,18]** | Hi 18 vs ours 20. |
+
 
 ## other/C (0)
 

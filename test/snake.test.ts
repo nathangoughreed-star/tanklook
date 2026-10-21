@@ -48,7 +48,7 @@ describe('ball python body plan', () => {
     const sp = getSpecies('ballpython')!;
     expect(sp.cat).toBe('reptile'); expect(sp.habitat).toBe('land'); expect(sp.body).toBe('snake');
     expect(sp.surfaces).toEqual(['floor', 'hardscape']);
-    expect(sp.tl).toBe(1200); expect(sp.rest).toBeCloseTo(snakeGround(SNAKES.ballpython), 9);
+    expect(sp.tl).toBe(1311); expect(sp.rest).toBeCloseTo(snakeGround(SNAKES.ballpython), 9);
   });
   it('the pose family rides in bend: five on a floor, wrap / drape on a limb', () => {
     expect([-1, -0.5, 0, 0.5, 1].map(b => snakePoseOf('floor', undefined, b).pose)).toEqual(['ball', 'extended', 'coiled', 'alert', 'serpentine']);
@@ -152,7 +152,7 @@ describe('snakes in the tank', () => {
     expect(kinds.has('branch')).toBe(true);
   });
   it('a larger tank keeps the adult', () => {
-    const S = scene(); S.tank = { ...S.tank, L: 1500 }; shuffleFish(S, rng(3));
+    const S = scene(); S.tank = { ...S.tank, L: 1830 }; shuffleFish(S, rng(3)); // 6 ft: the adult is 1311 mm since lane CB (ReptiFiles)
     for (const f of S.fish) expect(f.tl).toBeUndefined();
   });
   it('a snake on the floor lies on the substrate, not in it', () => {

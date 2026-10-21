@@ -6,7 +6,7 @@
 // conditions) or 'derived (est)' (a gallon figure turned into the smallest catalogue tank holding it), with the page's site and url;
 // `est: true` marks the values the source audit must not call cited (src/data/provenance.ts TANKMIN).
 // Usage: node scripts/tank-min-data.mjs
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 
 const { species } = JSON.parse(readFileSync('research/sourcing/tank-minimum/summary.json', 'utf8'));
 const est = mark => mark !== 'sourced';
@@ -25,6 +25,13 @@ for (const [id, r] of Object.entries(species)) {
     ...(v?.value && v.credibility !== 'low' ? { vol: { gal: Math.round(v.value * 10) / 10, mark: v.mark, ...(est(v.mark) ? { est: true } : {}), site: v.site, url: v.url } } : {}),
     why: l.why,
   };
+}
+// lane CB (2026-10-21): the combined sources (research/sourcing/combined.md, applied by scripts/source-combine-apply.mjs) replace a
+// line's value and its pages; a combined line keeps the rest of MM's line (width, mark of the page it lands on)
+const OV = 'research/sourcing/combine/tankmin-overlay.json';
+if (existsSync(OV)) for (const [id, o] of Object.entries(JSON.parse(readFileSync(OV, 'utf8')).species)) {
+  if (!out[id]) continue;
+  for (const [k, v] of Object.entries(o)) out[id][k] = k === 'vol' ? v : { ...(out[id][k] ?? {}), ...v };
 }
 writeFileSync('src/data/tankmin.json', JSON.stringify({ generated: 'scripts/tank-min-data.mjs from research/sourcing/tank-minimum/summary.json', species: out }, null, 1) + '\n');
 const n = k => Object.values(out).filter(x => x[k]).length;

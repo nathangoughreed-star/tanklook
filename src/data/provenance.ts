@@ -55,6 +55,10 @@ export const RULES: Record<string, Rule[]> = {
     { path: '*.{red,green,hRed,hGreen,vol}.*', status: 'cited', src: ['tank-min-sourcing'], rowUrl: true, why: 'stated on the page named in the row (url, quote re-fetched), decided as a red (minimum) or green (Recommended) line by Nathan, MX1-MX9' },
     ...Object.entries(TANKMIN).flatMap(([id, d]) => (['red', 'green'] as const).filter(k => typeof d[k] === 'object' && (d[k] as { mark?: string }).mark === 'derived (est)')
       .map((k): Rule => ({ path: `${id}.${k}.*`, status: 'derived', src: ['tank-min-sourcing'], why: "derived (est): a page's gallon figure as the smallest catalogue tank holding it, inner L x W (scripts/tank-min-sources.mjs refTank)" }))),
+    // lane CB (2026-10-21): a value combined from 2+ sites is derived (weighted median, research/sourcing/combined.md); from one site it stays cited by its row url
+    ...Object.entries(TANKMIN).flatMap(([id, d]) => (['red', 'green', 'hRed', 'hGreen', 'vol'] as const)
+      .filter(k => typeof d[k] === 'object' && ((d[k] as { combined?: unknown[] }).combined?.length ?? 0) >= 2)
+      .map((k): Rule => ({ path: `${id}.${k}.*`, status: 'derived', src: ['tank-min-sourcing'], why: `weighted median of ${(d[k] as { combined: unknown[] }).combined.length} sites (lane CB, research/sourcing/combined.md; the pages are in the row's combined list)` }))),
   ],
   SPECIES: [],
   BODYMASS: Object.entries(MASS).map(([id, m]): Rule =>
@@ -142,7 +146,9 @@ export const RULES: Record<string, Rule[]> = {
 interface Src { url: string; quote: string }
 // Nathan's decisions (research/sourcing/decisions.md): an adopted value is 'agrees' and cites only its `use` sources (indices) when
 // given; 'derived' = worked out from the stated values (decision says how); 'kept' = our number stays, an assumption (decision says why).
-interface Field { ours: unknown; verdict: 'agrees' | 'disagrees' | 'not-stated' | 'behaviour-only' | 'derived' | 'kept'; sources: Src[]; use?: number[]; decision?: string }
+// 'combined' (lane CB, research/sourcing/combined.json): the weighted combination of every opened page (research/sourcing/combined.md),
+// quotes checked there; 2+ sites = derived, one site = researched (one source).
+interface Field { ours: unknown; verdict: 'agrees' | 'disagrees' | 'not-stated' | 'behaviour-only' | 'derived' | 'kept' | 'combined'; sources: Src[]; use?: number[]; decision?: string }
 interface Batch { batch: string; species: Record<string, { fields: Record<string, Field> }> }
 interface Check { id: string; field: string; url: string; result: 'exact' | 'compact' | 'label' | 'near' | 'miss' | 'nofetch' }
 const SOURCING = import.meta.glob('../../research/sourcing/*.json', { eager: true, import: 'default' }) as Record<string, unknown>;
@@ -165,7 +171,11 @@ for (const [file, b] of Object.entries(SOURCING)) {
     const used = v.use ? v.use.map(i => v.sources[i]) : v.sources;
     const found = used.filter(s => checks.some(c => c.id === id && c.field === f && c.url === s.url && (c.result === 'exact' || c.result === 'compact')));
     const src = [...new Set(used.map(s => host(s.url)))];
-    if (v.verdict === 'agrees' && found.length)
+    if (v.verdict === 'combined')
+      RULES[target].push(src.length >= 2
+        ? { path, status: 'derived', src, why: `weighted median of ${src.length} sites, every opened page weighted by kind (research/sourcing/combined.md, applied ${name})` }
+        : { path, status: 'researched', src, why: `one source: the only opened page that states it (research/sourcing/combined.md, applied ${name})` });
+    else if (v.verdict === 'agrees' && found.length)
       RULES[target].push({ path, status: 'cited', src: [...new Set(found.map(s => host(s.url)))], why: `stated on ${found.length} opened page(s), quote checked (research/sourcing/${name})` });
     else if (v.verdict === 'agrees')
       RULES[target].push({ path, status: 'researched', src, why: `agrees with the pages in research/sourcing/${name}, but no quote was found on the live page` });

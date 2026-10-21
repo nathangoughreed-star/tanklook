@@ -140,7 +140,7 @@ describe('nitrogen wording (lane NB)', () => {
     return waterChangeText({ ...n, waterChange: waterChangeState(rise, tapPpm * NO3_TO_N) });
   };
   it('labels the figure nitrate-only beside the routine floor, and says mg N', () => {
-    const rows = nitrogenRows(stockingOf(bare(Array(8).fill('goldfish'))).nitrogen);
+    const rows = nitrogenRows(stockingOf(bare(Array(4).fill('goldfish'))).nitrogen); // 4: goldfish are 203 mm since lane CB (8 at 160 mm before)
     expect(rows.at(-1)!.label).toBe('Nitrate-only water change'); expect(rows.at(-1)!.note).toMatch(/routine 10 %/);
     expect(rows[0].value).toMatch(/ mg N$/); expect(rows[0].note).toMatch(/TAN/);
   });

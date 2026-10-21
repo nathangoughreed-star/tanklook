@@ -1,0 +1,2953 @@
+{
+ "batch": "combined",
+ "agent_notes": "Not a research batch: research/sourcing/combined.md (scripts/source-combine.mjs) combined the opened pages of the other batches; the quotes were checked there (exact / compact only). Applied by scripts/source-combine-apply.mjs, Nathan 2026-10-21.",
+ "species": {
+  "cardinal": {
+   "fields": {
+    "ph": {
+     "ours": [
+      3.8,
+      6.8
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Paracheirodon-axelrodi.html",
+       "site": "FishBase",
+       "states": "pH 4.0-6.0",
+       "weight": 1
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/paracheirodon-axelrodi/",
+       "site": "Seriously Fish",
+       "states": "pH 3.5-7.5",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was [3.5,7.5]"
+    },
+    "group": {
+     "ours": 8,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/paracheirodon-axelrodi/",
+       "site": "Seriously Fish",
+       "states": "at least 8-10",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 6"
+    },
+    "minL": {
+     "ours": 54,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/paracheirodon-axelrodi/",
+       "site": "Seriously Fish",
+       "states": "base 60 x 30 cm, ~54 litres (~14 US gal)",
+       "weight": 1
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/cardinal-tetra/",
+       "site": "Fishkeeping World",
+       "states": "20 gallons (75.7 L) for a small school of six",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 60"
+    }
+   }
+  },
+  "rummynose": {
+   "fields": {
+    "group": {
+     "ours": 10,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/hemigrammus-rhodostomus/",
+       "site": "Seriously Fish",
+       "states": "at least 10",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 8"
+    },
+    "minL": {
+     "ours": 76,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/rummy-nose-tetra/",
+       "site": "Fishkeeping World",
+       "states": "20 gallons (75.7 L)",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 60"
+    }
+   }
+  },
+  "harlequin": {
+   "fields": {
+    "tl": {
+     "ours": 50,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Trigonostigma-heteromorpha.html",
+       "site": "FishBase",
+       "states": "5.0 cm TL max",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 45"
+    },
+    "minL": {
+     "ours": 54,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/trigonostigma-heteromorpha/",
+       "site": "Seriously Fish",
+       "states": "base 60 x 30 cm, ~54 litres (~14 US gal)",
+       "weight": 1
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/harlequin-rasbora/",
+       "site": "Fishkeeping World",
+       "states": "15 gallons (56.8 L) for a school of 8-10; 20 gallons better",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 40"
+    }
+   }
+  },
+  "chili": {
+   "fields": {
+    "tl": {
+     "ours": 35,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Boraras-brigittae.html",
+       "site": "FishBase",
+       "states": "3.5 cm TL max; common 1.8 cm SL",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 18"
+    },
+    "minL": {
+     "ours": 23,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/chili-rasbora/",
+       "site": "Fishkeeping World",
+       "states": "6-8 gallons (22.7-30.3 L) for a school of 8-10",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 20"
+    }
+   }
+  },
+  "danio": {
+   "fields": {
+    "group": {
+     "ours": 8,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/danio-rerio/",
+       "site": "Seriously Fish",
+       "states": "at least 8-10",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 6"
+    }
+   }
+  },
+  "whitecloud": {
+   "fields": {
+    "ph": {
+     "ours": [
+      6,
+      8.3
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Tanichthys-albonubes.html",
+       "site": "FishBase",
+       "states": "pH 6.0-8.0",
+       "weight": 1
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/tanichthys-albonubes/",
+       "site": "Seriously Fish",
+       "states": "pH 6.0-8.5",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was [6,8]"
+    },
+    "minL": {
+     "ours": 54,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/white-cloud-mountain-minnow/",
+       "site": "Fishkeeping World",
+       "states": "10-12 gallons (37.9-45.4 L)",
+       "weight": 0.7
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/tanichthys-albonubes/",
+       "site": "Seriously Fish",
+       "states": "min base 60 x 30 cm, ~54 litres (~14 US gal)",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 40"
+    }
+   }
+  },
+  "hatchet": {
+   "fields": {
+    "ph": {
+     "ours": [
+      4.5,
+      7.5
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Carnegiella-strigata.html",
+       "site": "FishBase",
+       "states": "pH 5.0-8.0",
+       "weight": 1
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/carnegiella-strigata/",
+       "site": "Seriously Fish",
+       "states": "pH 4.0-7.0",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was [5,7]"
+    },
+    "minL": {
+     "ours": 68,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/carnegiella-strigata/",
+       "site": "Seriously Fish",
+       "states": "base 75 x 30 cm, ~68 litres (~18 US gal)",
+       "weight": 1
+      },
+      {
+       "url": "https://www.liveaquaria.com/products/marble-hatchet",
+       "site": "LiveAquaria",
+       "states": "20 gallons (75.7 L)",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 60"
+    }
+   }
+  },
+  "cherrybarb": {
+   "fields": {
+    "tl": {
+     "ours": 55,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Puntius-titteya.html",
+       "site": "FishBase",
+       "states": "5.0 cm TL max, male/unsexed; common 2.5 cm TL",
+       "weight": 1
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/puntius-titteya/",
+       "site": "Seriously Fish",
+       "states": "50 mm SL max (about 60 mm TL)",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 50"
+    },
+    "ph": {
+     "ours": [
+      6,
+      8
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Puntius-titteya.html",
+       "site": "FishBase",
+       "states": "pH 6.0-8.0",
+       "weight": 1
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/puntius-titteya/",
+       "site": "Seriously Fish",
+       "states": "6.0-8.0",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was [6,7.5]"
+    },
+    "minL": {
+     "ours": 54,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/cherry-barb",
+       "site": "Aquarium Co-Op",
+       "states": "10-gallon",
+       "weight": 0.7
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/puntius-titteya/",
+       "site": "Seriously Fish",
+       "states": "base 60 x 30 cm, about 54 L",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 60"
+    }
+   }
+  },
+  "tigerbarb": {
+   "fields": {
+    "temper": {
+     "ours": 2,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/puntigrus-tetrazona/",
+       "site": "Seriously Fish",
+       "states": "notoriously aggressive, fin-biter; listed territorial",
+       "weight": 1
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/tiger-barb/",
+       "site": "Fishkeeping World",
+       "states": "reputation for aggression",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 1"
+    },
+    "group": {
+     "ours": 8,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/puntigrus-tetrazona/",
+       "site": "Seriously Fish",
+       "states": "min 8-10",
+       "weight": 1
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/tiger-barb/",
+       "site": "Fishkeeping World",
+       "states": "at least 5, prefer 8-12",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 6"
+    },
+    "ph": {
+     "ours": [
+      6,
+      8
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Puntigrus-tetrazona.html",
+       "site": "FishBase",
+       "states": "6.0-8.0",
+       "weight": 1
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/tiger-barb/",
+       "site": "Fishkeeping World",
+       "states": "6.0-8.0",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was [6,7.5]"
+    },
+    "minL": {
+     "ours": 72,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/puntigrus-tetrazona/",
+       "site": "Seriously Fish",
+       "states": "base 80 x 30 cm, about 72 L",
+       "weight": 1
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/tiger-barb/",
+       "site": "Fishkeeping World",
+       "states": "20 gal (76 L) for up to 5",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 80"
+    }
+   }
+  },
+  "boesemani": {
+   "fields": {
+    "tl": {
+     "ours": 108,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Melanotaenia-boesemani.html",
+       "site": "FishBase",
+       "states": "9.0 cm SL max male/unsexed (about 108 mm TL)",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 100"
+    }
+   }
+  },
+  "guppy": {
+   "fields": {
+    "female.tl": {
+     "ours": 54,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/guppies/",
+       "site": "Fishkeeping World",
+       "states": "females up to 2 1/8 in (54 mm)",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 50"
+    },
+    "ph": {
+     "ours": [
+      7,
+      8.3
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Poecilia-reticulata.html",
+       "site": "FishBase",
+       "states": "7.0-8.0",
+       "weight": 1
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/poecilia-reticulata/",
+       "site": "Seriously Fish",
+       "states": "7.0-8.5",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was [7,8]"
+    },
+    "minL": {
+     "ours": 19,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/guppies/",
+       "site": "Fishkeeping World",
+       "states": "5 gal (19 L) plus 1 gal per additional adult",
+       "weight": 0.7
+      },
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/guppy",
+       "site": "Aquarium Co-Op",
+       "states": "5-gallon",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 40"
+    }
+   }
+  },
+  "platy": {
+   "fields": {
+    "female.tl": {
+     "ours": 60,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Xiphophorus-maculatus.html",
+       "site": "FishBase",
+       "states": "6.0 cm TL female",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 55"
+    },
+    "minL": {
+     "ours": 38,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/platy-fish/",
+       "site": "Fishkeeping World",
+       "states": "10 gal (38 L) for 5-6",
+       "weight": 0.7
+      },
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/platy",
+       "site": "Aquarium Co-Op",
+       "states": "10- to 20-gallon",
+       "weight": 0.7
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/xiphophorus-maculatus/",
+       "site": "Seriously Fish",
+       "states": "base 60 x 30 cm, about 54 L (14 US gal)",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 3 sites; was 60"
+    }
+   }
+  },
+  "molly": {
+   "fields": {
+    "female.tl": {
+     "ours": 96,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/poecilia-sphenops/",
+       "site": "Seriously Fish",
+       "states": "80 mm SL (about 96 mm TL)",
+       "weight": 1
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/molly-fish/",
+       "site": "Fishkeeping World",
+       "states": "adults up to 4.5 in (114 mm)",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 80"
+    },
+    "minL": {
+     "ours": 38,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/molly-fish/",
+       "site": "Fishkeeping World",
+       "states": "10 gal (38 L)",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 80"
+    }
+   }
+  },
+  "swordtail": {
+   "fields": {
+    "tl": {
+     "ours": 140,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Xiphophorus-hellerii.html",
+       "site": "FishBase",
+       "states": "14.0 cm TL max male/unsexed",
+       "weight": 1
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/swordtail/",
+       "site": "Fishkeeping World",
+       "states": "males up to 5.5 in (140 mm)",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 120"
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/swordtail/",
+       "site": "Fishkeeping World",
+       "states": "easy",
+       "weight": 0.7
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/xiphophorus-hellerii/",
+       "site": "Seriously Fish",
+       "states": "Moderate",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 1"
+    },
+    "ph": {
+     "ours": [
+      7,
+      8
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Xiphophorus-hellerii.html",
+       "site": "FishBase",
+       "states": "7.0-8.0",
+       "weight": 1
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/swordtail/",
+       "site": "Fishkeeping World",
+       "states": "7.0-8.4",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was [7,8.3]"
+    },
+    "minL": {
+     "ours": 57,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/swordtail/",
+       "site": "Fishkeeping World",
+       "states": "15 gal (57 L) for a single fish, +5 gal each",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 110"
+    }
+   }
+  },
+  "goldfish": {
+   "fields": {
+    "tl": {
+     "ours": 203,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/goldfish/",
+       "site": "Fishkeeping World",
+       "states": "up to 8 in (203 mm)",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 160"
+    },
+    "ph": {
+     "ours": [
+      6,
+      8
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Carassius-auratus.html",
+       "site": "FishBase",
+       "states": "pH 6.0-8.0 (species, not fancy-specific)",
+       "weight": 1
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/fancy-goldfish/",
+       "site": "Fishkeeping World",
+       "states": "6.5-7.5",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was [6.5,8]"
+    }
+   }
+  },
+  "comet": {
+   "fields": {
+    "ph": {
+     "ours": [
+      6,
+      8
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Carassius-auratus.html",
+       "site": "FishBase",
+       "states": "pH 6.0-8.0",
+       "weight": 1
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/comet-goldfish/",
+       "site": "Fishkeeping World",
+       "states": "6.5-7.5",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was [6.5,8]"
+    },
+    "temp": {
+     "ours": [
+      18,
+      22
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.berrypatchfarms.net/comet-goldfish-temperature/",
+       "site": "Berry Patch Farms",
+       "states": "18-22 C ideal",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was [16,22]"
+    },
+    "tol": {
+     "ours": [
+      15.6,
+      26.7
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.berrypatchfarms.net/comet-goldfish-temperature/",
+       "site": "Berry Patch Farms",
+       "states": "60-80 F for limited periods (15.6-26.7 C)",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was [10,26]"
+    }
+   }
+  },
+  "dwarfgourami": {
+   "fields": {
+    "tl": {
+     "ours": 95,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Trichogaster-lalius.html",
+       "site": "FishBase",
+       "states": "9.5 cm TL male/unsexed",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 80"
+    },
+    "minL": {
+     "ours": 56,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/dwarf-gourami",
+       "site": "Aquarium Co-Op",
+       "states": "10 gal (38 L)",
+       "weight": 0.7
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/trichogaster-lalius/",
+       "site": "Seriously Fish",
+       "states": "56 L pair",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 60"
+    }
+   }
+  },
+  "honeygourami": {
+   "fields": {
+    "tl": {
+     "ours": 50,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/honey-gourami",
+       "site": "Aquarium Co-Op",
+       "states": "about 5 cm",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 45"
+    },
+    "minL": {
+     "ours": 19,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/honey-gourami",
+       "site": "Aquarium Co-Op",
+       "states": "single fish 5 or 10 gal (19-38 L)",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 40"
+    }
+   }
+  },
+  "gourami": {
+   "fields": {
+    "ph": {
+     "ours": [
+      5.5,
+      8
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/pearl-gourami/",
+       "site": "Fishkeeping World",
+       "states": "6-8 captive-bred",
+       "weight": 0.7
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/trichopodus-leerii/",
+       "site": "Seriously Fish",
+       "states": "5.5-8.0",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was [6,8]"
+    },
+    "minL": {
+     "ours": 81,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/trichopodus-leerii/",
+       "site": "Seriously Fish",
+       "states": "~81 L (~21 US gal)",
+       "weight": 1
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/pearl-gourami/",
+       "site": "Fishkeeping World",
+       "states": "30 gal (114 L)",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 110"
+    }
+   }
+  },
+  "gbr": {
+   "fields": {
+    "ph": {
+     "ours": [
+      4,
+      7
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/german-blue-ram/",
+       "site": "Fishkeeping World",
+       "states": "5.0-7.0",
+       "weight": 0.7
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/mikrogeophagus-ramirezi/",
+       "site": "Seriously Fish",
+       "states": "4.0-7.0",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was [5,7]"
+    },
+    "minL": {
+     "ours": 76,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/german-blue-ram",
+       "site": "Aquarium Co-Op",
+       "states": "20 gal pair (76 L)",
+       "weight": 0.7
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/german-blue-ram/",
+       "site": "Fishkeeping World",
+       "states": "20 gal (76 L)",
+       "weight": 0.7
+      },
+      {
+       "url": "https://www.tfhmagazine.com/articles/freshwater/the-german-ram-mikrogeophagus-ramirezi",
+       "site": "Tropical Fish Hobbyist",
+       "states": "29 gallons",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 3 sites; was 60"
+    }
+   }
+  },
+  "bolivianram": {
+   "fields": {
+    "tl": {
+     "ours": 89,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/bolivian-ram/",
+       "site": "Fishkeeping World",
+       "states": "3.5 in (89 mm)",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 80"
+    }
+   }
+  },
+  "cockatoo": {
+   "fields": {
+    "ph": {
+     "ours": [
+      5,
+      6
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/apistogramma-cacatuoides/",
+       "site": "Seriously Fish",
+       "states": "5.0-6.0",
+       "weight": 1
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/cockatoo-cichlid/",
+       "site": "Fishkeeping World",
+       "states": "6.0-7.0",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was [5.5,7]"
+    },
+    "minL": {
+     "ours": 54,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/apistogramma-cacatuoides/",
+       "site": "Seriously Fish",
+       "states": "~54litres",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 60"
+    }
+   }
+  },
+  "discus": {
+   "fields": {
+    "care": {
+     "ours": 2,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/discus-fish/",
+       "site": "Fishkeeping World",
+       "states": "Challenging",
+       "weight": 0.7
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/symphysodon-aequifasciatus/",
+       "site": "Seriously Fish",
+       "states": "Moderate (7 of 8)",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 3"
+    },
+    "temp": {
+     "ours": [
+      26,
+      30
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/symphysodon-aequifasciatus/",
+       "site": "Seriously Fish",
+       "states": "26-30 C",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was [28,30]"
+    },
+    "tol": {
+     "ours": [
+      26,
+      30
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Symphysodon-aequifasciatus.html",
+       "site": "FishBase",
+       "states": "26-30 C",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was [26,31]"
+    }
+   }
+  },
+  "yellowlab": {
+   "fields": {
+    "temper": {
+     "ours": 0,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/labidochromis-caeruleus/",
+       "site": "Seriously Fish",
+       "states": "peaceful; territorial when spawning",
+       "weight": 1
+      },
+      {
+       "url": "https://guidarium.com/fishes/yellow-lab-mbuna",
+       "site": "Guidarium",
+       "states": "semi-aggressive 6/10",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 1"
+    }
+   }
+  },
+  "peacock": {
+   "fields": {
+    "tl": {
+     "ours": 118,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Aulonocara-stuartgranti.html",
+       "site": "FishBase",
+       "states": "11.8 cm TL max",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 130"
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/aulonocara-stuartgranti/",
+       "site": "Seriously Fish",
+       "states": "relatively peaceful; males aggressive to similar colour patterns",
+       "weight": 1
+      },
+      {
+       "url": "https://guidarium.com/fishes/grants-peacock-cichlid",
+       "site": "Guidarium",
+       "states": "semi-aggressive 6/10",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 1"
+    },
+    "ph": {
+     "ours": [
+      7.5,
+      9
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/aulonocara-stuartgranti/",
+       "site": "Seriously Fish",
+       "states": "7.5-9.0",
+       "weight": 1
+      },
+      {
+       "url": "https://guidarium.com/fishes/grants-peacock-cichlid",
+       "site": "Guidarium",
+       "states": "7.8-8.6",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was [7.6,8.6]"
+    },
+    "minL": {
+     "ours": 243,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://guidarium.com/fishes/grants-peacock-cichlid",
+       "site": "Guidarium",
+       "states": "208 L",
+       "weight": 0.7
+      },
+      {
+       "url": "https://seriouslyfish.com/species/aulonocara-stuartgranti",
+       "site": "Seriously Fish",
+       "states": "~243litres",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 200"
+    }
+   }
+  },
+  "kadango": {
+   "fields": {
+    "tl": {
+     "ours": 140,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Copadichromis-borleyi.html",
+       "site": "FishBase",
+       "states": "14.0 cm TL max",
+       "weight": 1
+      },
+      {
+       "url": "https://guidarium.com/fishes/red-fin-borleyi",
+       "site": "Guidarium",
+       "states": "approx 16 cm",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 150"
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/copadichromis-borleyi/",
+       "site": "Seriously Fish",
+       "states": "generally peaceful",
+       "weight": 1
+      },
+      {
+       "url": "https://guidarium.com/fishes/red-fin-borleyi",
+       "site": "Guidarium",
+       "states": "semi-aggressive 6/10",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 1"
+    },
+    "minL": {
+     "ours": 280,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://guidarium.com/fishes/red-fin-borleyi",
+       "site": "Guidarium",
+       "states": "280 L",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 250"
+    }
+   }
+  },
+  "auratus": {
+   "fields": {
+    "female.tl": {
+     "ours": 100,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://tropicalfreshwaterfish.com/species/Melanochromis_auratus.html",
+       "site": "Tropical Freshwater Fish",
+       "states": "females to 4 in (10 cm)",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 90"
+    },
+    "minL": {
+     "ours": 205,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://guidarium.com/fishes/auratus-cichlid-mbuna",
+       "site": "Guidarium",
+       "states": "200 L",
+       "weight": 0.7
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/melanochromis-auratus/",
+       "site": "Seriously Fish",
+       "states": "~205 L absolute minimum",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 250"
+    }
+   }
+  },
+  "pandacory": {
+   "fields": {
+    "tl": {
+     "ours": 46,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Corydoras-panda.html",
+       "site": "FishBase",
+       "states": "3.8 cm SL max (about 46 mm TL)",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 50"
+    }
+   }
+  },
+  "pygmycory": {
+   "fields": {
+    "ph": {
+     "ours": [
+      6.4,
+      7.4
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/corydoras-pygmaeus/",
+       "site": "Seriously Fish",
+       "states": "6.4-7.4",
+       "weight": 1
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/pygmy-cory/",
+       "site": "Fishkeeping World",
+       "states": "6-8",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was [6,7.5]"
+    },
+    "group": {
+     "ours": 6,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/corydoras-pygmaeus/",
+       "site": "Seriously Fish",
+       "states": "at least 6, preferably 10+",
+       "weight": 1
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/pygmy-cory/",
+       "site": "Fishkeeping World",
+       "states": "at least 4, 8 recommended",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 8"
+    },
+    "minL": {
+     "ours": 38,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/pygmy-cory/",
+       "site": "Fishkeeping World",
+       "states": "10 US gal (37.9 L) for 4-8 fish",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 30"
+    }
+   }
+  },
+  "oto": {
+   "fields": {
+    "tl": {
+     "ours": 33,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Otocinclus-vittatus.html",
+       "site": "FishBase",
+       "states": "3.3 cm TL max",
+       "weight": 1
+      },
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/otocinclus-catfish",
+       "site": "Aquarium Co-Op",
+       "states": "4-5 cm (genus)",
+       "weight": 0.35,
+       "generic": true
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 40"
+    }
+   }
+  },
+  "kuhli": {
+   "fields": {
+    "ph": {
+     "ours": [
+      5.5,
+      6.5
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/kuhli-loach/",
+       "site": "Fishkeeping World",
+       "states": "5.5-6.5",
+       "weight": 0.7
+      },
+      {
+       "url": "https://www.fishbase.se/summary/Pangio-kuhlii.html",
+       "site": "FishBase",
+       "states": "5.5-6.5",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was [5.5,7]"
+    },
+    "group": {
+     "ours": 5,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/pangio-kuhlii/",
+       "site": "Seriously Fish",
+       "states": "at least 5-6",
+       "weight": 1
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/kuhli-loach/",
+       "site": "Fishkeeping World",
+       "states": "at least three",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 6"
+    },
+    "tl": {
+     "ours": 100,
+     "verdict": "kept",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Pangio-kuhlii.html",
+       "site": "FishBase",
+       "states": "12.0 cm TL max",
+       "weight": 1
+      }
+     ],
+     "decision": "kept (Nathan 2026-10-21): FishBase states a 12 cm maximum, one site; at 10 cm 13 kuhlis fit a 20 gal long (S188 acceptance), at 12 cm only 10; the combination said 120"
+    }
+   }
+  },
+  "clownloach": {
+   "fields": {
+    "ph": {
+     "ours": [
+      5,
+      7.5
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Chromobotia-macracanthus.html",
+       "site": "FishBase",
+       "states": "5.0-8.0",
+       "weight": 1
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/chromobotia-macracanthus/",
+       "site": "Seriously Fish",
+       "states": "5.0-7.0",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was [6,7.5]"
+    },
+    "minL": {
+     "ours": 284,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/clown-loach/",
+       "site": "Fishkeeping World",
+       "states": "over 75 US gal (284 L); 150 gal (568 L) for five adults",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 400"
+    }
+   }
+  },
+  "sae": {
+   "fields": {
+    "ph": {
+     "ours": [
+      6.5,
+      8
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Crossocheilus-oblongus.html",
+       "site": "FishBase",
+       "states": "6.5-8.0",
+       "weight": 1
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/siamese-algae-eater/",
+       "site": "Fishkeeping World",
+       "states": "ideal 6.5-7.0, tolerates 6.0-8.0",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was [6.5,7.5]"
+    },
+    "minL": {
+     "ours": 93,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/siamese-algae-eater/",
+       "site": "Fishkeeping World",
+       "states": "20 US gal (76 L)",
+       "weight": 0.7
+      },
+      {
+       "url": "https://guidarium.com/fishes/siamese-algae-eater",
+       "site": "Guidarium",
+       "states": "110 L",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 110"
+    }
+   }
+  },
+  "hillstream": {
+   "fields": {
+    "ph": {
+     "ours": [
+      6,
+      7.5
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/sewellia-lineolata/",
+       "site": "Seriously Fish",
+       "states": "6.0-7.5",
+       "weight": 1
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/hillstream-loach/",
+       "site": "Fishkeeping World",
+       "states": "6.5-7.5",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was [6.5,7.5]"
+    }
+   }
+  },
+  "peapuffer": {
+   "fields": {
+    "tl": {
+     "ours": 35,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Carinotetraodon-travancoricus.html",
+       "site": "FishBase",
+       "states": "3.5 cm TL max",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 30"
+    }
+   }
+  },
+  "amano": {
+   "fields": {
+    "tl": {
+     "ours": 51,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.aquariumsource.com/amano-shrimp/",
+       "site": "Aquarium Source",
+       "states": "2 inches",
+       "weight": 0.7
+      },
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/amano-shrimp",
+       "site": "Aquarium Co-Op",
+       "states": "1.5-2 in (4-5 cm)",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 45"
+    },
+    "group": {
+     "ours": 6,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.aquariumsource.com/amano-shrimp/",
+       "site": "Aquarium Source",
+       "states": "groups of 6 or more",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 5"
+    }
+   }
+  },
+  "nerite": {
+   "fields": {
+    "tl": {
+     "ours": 32,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.aquariumsource.com/nerite-snail/",
+       "site": "Aquarium Source",
+       "states": "about 1 inch diameter",
+       "weight": 0.7
+      },
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/nerite-snails",
+       "site": "Aquarium Co-Op",
+       "states": "0.5-1.5 in (1.3-3.8 cm)",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 25"
+    },
+    "minL": {
+     "ours": 8,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.aquariumcoop.com/blogs/aquarium/nerite-snails",
+       "site": "Aquarium Co-Op",
+       "states": "2-3 gallons (7.6-11.4 L)",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 20"
+    }
+   }
+  },
+  "mystery": {
+   "fields": {
+    "tl": {
+     "ours": 51,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://aquaticarts.com/pages/mystery-snail-care-guide",
+       "site": "Aquatic Arts",
+       "states": "2 inches or more diameter max",
+       "weight": 0.5
+      },
+      {
+       "url": "https://ca.aquariumsource.com/mystery-snail/",
+       "site": "Aquarium Source",
+       "states": "~2 inches diameter",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 55"
+    }
+   }
+  },
+  "ramshorn": {
+   "fields": {
+    "tl": {
+     "ours": 25,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.garnelio.de/en/brown-ramshorn-snail-planorbella-duryi-duryi",
+       "site": "Garnelio",
+       "states": "about 2.5 cm",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 20"
+    },
+    "ph": {
+     "ours": [
+      7,
+      8
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.garnelio.de/en/brown-ramshorn-snail-planorbella-duryi-duryi",
+       "site": "Garnelio",
+       "states": "above 6.5",
+       "weight": 0.5
+      },
+      {
+       "url": "https://www.aqualibs.com/aquarium-snails/planorbella-duryi-duryi-brown-ramshorn-snail",
+       "site": "Aqualibs",
+       "states": "7.0-8.0",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was [6.5,8]"
+    },
+    "minL": {
+     "ours": 5,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.garnelio.de/en/brown-ramshorn-snail-planorbella-duryi-duryi",
+       "site": "Garnelio",
+       "states": "5 L or more, 10 L recommended",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 20"
+    }
+   }
+  },
+  "trumpet": {
+   "fields": {
+    "tl": {
+     "ours": 19,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://aquariadise.com/caresheet-malaysian-trumpet-snails/",
+       "site": "Aquariadise",
+       "states": "1/2 to 1 inch",
+       "weight": 0.7
+      },
+      {
+       "url": "https://www.aquariumsource.com/malaysian-trumpet-snail/",
+       "site": "Aquarium Source",
+       "states": "1/4 to 1/2 inch",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 25"
+    }
+   }
+  },
+  "cleanershrimp": {
+   "fields": {
+    "tl": {
+     "ours": 60,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://aquariadise.com/cleaner-shrimp/",
+       "site": "Aquariadise",
+       "states": "2-2.4 in (5-6 cm) without whiskers; up to 2.5 in nose to tail",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 55"
+    }
+   }
+  },
+  "turbo": {
+   "fields": {
+    "tl": {
+     "ours": 70,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://aquariumbreeder.com/?p=5920",
+       "site": "Aquarium Breeder",
+       "states": "up to 5 cm (2 in), old snails 7+ cm",
+       "weight": 0.7
+      },
+      {
+       "url": "https://topshelfaquatics.com/blogs/news/comprehensive-guide-to-turbo-snails-for-your-aquarium",
+       "site": "Top Shelf Aquatics",
+       "states": "up to 2 inches",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 50"
+    }
+   }
+  },
+  "hermit": {
+   "fields": {
+    "tl": {
+     "ours": 25,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://topshelfaquatics.com/products/blue-leg-hermit-crab",
+       "site": "Top Shelf Aquatics",
+       "states": "up to 1 inch shell",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 30"
+    }
+   }
+  },
+  "royalgramma": {
+   "fields": {
+    "tl": {
+     "ours": 80,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Gramma-loreto.html",
+       "site": "FishBase",
+       "states": "8.0 cm TL max",
+       "weight": 1
+      },
+      {
+       "url": "https://www.liveaquaria.com/product/53/?pcatid=53",
+       "site": "LiveAquaria",
+       "states": "3 in max",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 75"
+    }
+   }
+  },
+  "bluetang": {
+   "fields": {
+    "tl": {
+     "ours": 310,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Paracanthurus-hepatus.html",
+       "site": "FishBase",
+       "states": "31.0 cm TL max",
+       "weight": 1
+      },
+      {
+       "url": "https://www.liveaquaria.com/product/330/",
+       "site": "LiveAquaria",
+       "states": "12 in max (305 mm)",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 250"
+    },
+    "minL": {
+     "ours": 681,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.liveaquaria.com/product/330/",
+       "site": "LiveAquaria",
+       "states": "180 gal (681 L)",
+       "weight": 0.5
+      },
+      {
+       "url": "https://reefexclusive.com/products/paracanthurus-hepatus",
+       "site": "Reef Exclusive",
+       "states": "180 gal (681 L)",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 570"
+    }
+   }
+  },
+  "firefish": {
+   "fields": {
+    "tl": {
+     "ours": 90,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Nemateleotris-magnifica.html",
+       "site": "FishBase",
+       "states": "9.0 cm TL max",
+       "weight": 1
+      },
+      {
+       "url": "https://www.liveaquaria.com/product/168/?pcatid=168",
+       "site": "LiveAquaria",
+       "states": "3 in max",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 75"
+    }
+   }
+  },
+  "banggai": {
+   "fields": {
+    "tl": {
+     "ours": 80,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://reefexclusive.com/products/banggai-cardinalfish",
+       "site": "Reef Exclusive",
+       "states": "8 cm (3 in) TL",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 70"
+    },
+    "minL": {
+     "ours": 38,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.saltwateraquariumblog.com/banggai-cardinalfish-care-guide/",
+       "site": "Saltwater Aquarium Blog",
+       "states": "10 gal (37.9 L) for one or a pair",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 115"
+    }
+   }
+  },
+  "sixline": {
+   "fields": {
+    "tl": {
+     "ours": 100,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Pseudocheilinus-hexataenia.html",
+       "site": "FishBase",
+       "states": "10.0 cm TL max",
+       "weight": 1
+      },
+      {
+       "url": "https://reefexclusive.com/products/six-line-wrasse",
+       "site": "Reef Exclusive",
+       "states": "about 3 in total length",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 75"
+    },
+    "minL": {
+     "ours": 114,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.aquariadise.com/six-line-wrasse/",
+       "site": "Aquariadise",
+       "states": "30 gallons",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 208"
+    }
+   }
+  },
+  "chromis": {
+   "fields": {
+    "group": {
+     "ours": 6,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.liveaquaria.com/product/115/",
+       "site": "LiveAquaria",
+       "states": "school of at least six",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 5"
+    }
+   }
+  },
+  "coralbeauty": {
+   "fields": {
+    "tl": {
+     "ours": 115,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Centropyge-bispinosa.html",
+       "site": "FishBase",
+       "states": "11.5 cm TL max",
+       "weight": 1
+      },
+      {
+       "url": "https://reefexclusive.com/products/coral-beauty-angelfish",
+       "site": "Reef Exclusive",
+       "states": "4 in (102 mm) max",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 90"
+    }
+   }
+  },
+  "watchman": {
+   "fields": {
+    "tl": {
+     "ours": 120,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Cryptocentrus-cinctus.html",
+       "site": "FishBase",
+       "states": "10.0 cm SL max (about 12 cm TL)",
+       "weight": 1
+      },
+      {
+       "url": "https://reefexclusive.com/products/yellow-watchman-goby",
+       "site": "Reef Exclusive",
+       "states": "about 4 in (102 mm)",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 90"
+    }
+   }
+  },
+  "mandarin": {
+   "fields": {
+    "tl": {
+     "ours": 70,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Synchiropus-splendidus.html",
+       "site": "FishBase",
+       "states": "7.0 cm TL max",
+       "weight": 1
+      },
+      {
+       "url": "https://reefexclusive.com/products/pterosynchiropus-splendidus",
+       "site": "Reef Exclusive",
+       "states": "usually about 3 in (76 mm), males larger",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 60"
+    },
+    "max": {
+     "ours": 2,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://fishkeepingworld.com/mandarin-fish/",
+       "site": "Fishkeeping World",
+       "states": "pair allowed (75 gal)",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 1"
+    }
+   }
+  },
+  "treefrog": {
+   "fields": {
+    "tl": {
+     "ours": 127,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://reptilesmagazine.com/whites-treefrog-care-sheet/",
+       "site": "Reptiles Magazine",
+       "states": "most females 4-4.5 in SVL (102-114 mm), up to 5 in",
+       "weight": 0.7
+      },
+      {
+       "url": "https://reptiledirect.com/whites-tree-frog/",
+       "site": "Reptile Direct",
+       "states": "average adult 3-5 in (76-127 mm), length type not said",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 100"
+    },
+    "minL": {
+     "ours": 66,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://reptiledirect.com/whites-tree-frog/",
+       "site": "Reptile Direct",
+       "states": "smallest 15 or 20 gal glass terrarium (57-76 L)",
+       "weight": 0.7
+      },
+      {
+       "url": "https://reptilesmagazine.com/whites-treefrog-care-sheet/",
+       "site": "Reptiles Magazine",
+       "states": "20 gal horizontal minimum for 4 young frogs (76 L)",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 76"
+    }
+   }
+  },
+  "firetoad": {
+   "fields": {
+    "tl": {
+     "ours": 51,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://thevetdesk.com/pet-breeds/amphibians/oriental-fire-bellied-toad",
+       "site": "The Vet Desk (PangoVet)",
+       "states": "about 2 in (51 mm), length type not said",
+       "weight": 0.7
+      },
+      {
+       "url": "https://joshsfrogs.com/cms/fire-bellied-toad-care-sheet",
+       "site": "Josh's Frogs",
+       "states": "adult 1-2 in (25-51 mm)",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 45"
+    },
+    "minL": {
+     "ours": 38,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://joshsfrogs.com/cms/fire-bellied-toad-care-sheet",
+       "site": "Josh's Frogs",
+       "states": "10-15 gal for 2-3 toads (38-57 L)",
+       "weight": 0.5
+      },
+      {
+       "url": "https://thevetdesk.com/pet-breeds/amphibians/oriental-fire-bellied-toad",
+       "site": "The Vet Desk (PangoVet)",
+       "states": "10 gal bare minimum for one toad (38 L); 15 gal for 3-5 (57 L)",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 57"
+    }
+   }
+  },
+  "firenewt": {
+   "fields": {
+    "tl": {
+     "ours": 102,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://petmd.com/exotic/fire-bellied-newt-care-sheet",
+       "site": "PetMD",
+       "states": "males 3-4 in (76-102 mm), females 4-5 in (102-127 mm); total length wording 'in length'",
+       "weight": 0.7
+      },
+      {
+       "url": "https://reptilesmagazine.com/?p=104985",
+       "site": "Reptiles Magazine",
+       "states": "adults 2-4 in (51-102 mm)",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 90"
+    },
+    "minL": {
+     "ours": 66,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://petmd.com/exotic/fire-bellied-newt-care-sheet",
+       "site": "PetMD",
+       "states": "15 gal for one adult (57 L)",
+       "weight": 0.7
+      },
+      {
+       "url": "https://reptilesmagazine.com/?p=104985",
+       "site": "Reptiles Magazine",
+       "states": "20 gal for up to four newts (76 L)",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 75"
+    }
+   }
+  },
+  "adf": {
+   "fields": {
+    "tl": {
+     "ours": 64,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.liveaquaria.com/products/dwarf-african-frog",
+       "site": "LiveAquaria",
+       "states": "maximum size 2.5 in (64 mm)",
+       "weight": 0.5
+      },
+      {
+       "url": "https://www.petsmart.com/learning-center/fish-care/African-dwarf-frog-care-guide",
+       "site": "PetSmart",
+       "states": "up to 2 in (51 mm)",
+       "weight": 0.5
+      },
+      {
+       "url": "https://joshsfrogs.com/cms/african-dwarf-frogs-how-to-care-for-the-hymenochiris-genus",
+       "site": "Josh's Frogs",
+       "states": "maximum 3 in (76 mm)",
+       "weight": 0.25,
+       "generic": true
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 3 sites; was 55"
+    },
+    "minL": {
+     "ours": 19,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.petsmart.com/learning-center/fish-care/African-dwarf-frog-care-guide",
+       "site": "PetSmart",
+       "states": "5+ gal (19 L)",
+       "weight": 0.5
+      },
+      {
+       "url": "https://modestfish.com/african-dwarf-frog-care/",
+       "site": "Modest Fish",
+       "states": "5 gallon",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 40"
+    }
+   }
+  },
+  "axolotl": {
+   "fields": {
+    "tl": {
+     "ours": 300,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.reptilecentre.com/blogs/reptile-blog/axolotl-tank-size",
+       "site": "Reptile Centre",
+       "states": "up to 30 cm",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): Nathan 2026-10-21: Reptile Centre's 'up to 30 cm', not Modest Fish's 8-16 in upper end (a record size, like the oscar); was 230"
+    },
+    "temp": {
+     "ours": [
+      15,
+      18
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.reptiles.swelluk.com/help-guides/axolotl-ambystoma-mexicanum-care-sheet/",
+       "site": "Swell UK",
+       "states": "15-18 C",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was [16,20]"
+    },
+    "minL": {
+     "ours": 38,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.axolotl.org/housing.htm",
+       "site": "Axolotl.org",
+       "states": "10 gallons",
+       "weight": 0.7
+      },
+      {
+       "url": "https://www.reptilecentre.com/blogs/reptile-blog/axolotl-tank-size",
+       "site": "Reptile Centre",
+       "states": "one adult minimum 54-75 L (15-20 gal)",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 110"
+    }
+   }
+  },
+  "crestedgecko": {
+   "fields": {
+    "tl": {
+     "ours": 229,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://reptilesmagazine.com/crested-gecko-care-sheet/",
+       "site": "Reptiles Magazine",
+       "states": "4-4.5 in SVL (102-114 mm); 8 in (203 mm) total length",
+       "weight": 0.7
+      },
+      {
+       "url": "https://reptifiles.com/wp-content/uploads/2020/10/Crested-Gecko-Care-Sheet-PDF.pdf",
+       "site": "ReptiFiles PDF",
+       "states": "7-9 in, length type not said",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 200"
+    }
+   }
+  },
+  "crestedharlequin": {
+   "fields": {
+    "tl": {
+     "ours": 229,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://reptifiles.com/wp-content/uploads/2020/10/Crested-Gecko-Care-Sheet-PDF.pdf",
+       "site": "ReptiFiles PDF",
+       "states": "7-9 in (178-229 mm), length not specified TL/SVL",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 200"
+    }
+   }
+  },
+  "greenanole": {
+   "fields": {
+    "tl": {
+     "ours": 200,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://reptifiles.com/green-anole-care-sheet/",
+       "site": "ReptiFiles",
+       "states": "6-8 in / 15-20 cm long",
+       "weight": 1
+      },
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+       "site": "PetSmart",
+       "states": "up to 8 in (203 mm) max, Anolis generally",
+       "weight": 0.25,
+       "generic": true
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 180"
+    },
+    "air.rh": {
+     "ours": [
+      60,
+      70
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://flukerfarms.com/green-anole-care-sheet",
+       "site": "Fluker's",
+       "states": "60-80%",
+       "weight": 0.5
+      },
+      {
+       "url": "https://reptifiles.com/green-anole-care-sheet/",
+       "site": "ReptiFiles",
+       "states": "60-70% daytime average",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was [60,80]"
+    },
+    "minL": {
+     "ours": 38,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+       "site": "PetSmart",
+       "states": "at least 10 gal (40 L) and 18 in tall",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 75"
+    }
+   }
+  },
+  "greenanolebrown": {
+   "fields": {
+    "tl": {
+     "ours": 200,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://reptifiles.com/green-anole-care-sheet/",
+       "site": "ReptiFiles",
+       "states": "6-8 in / 15-20 cm long",
+       "weight": 1
+      },
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+       "site": "PetSmart",
+       "states": "up to 8 in (203 mm) max",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 180"
+    },
+    "minL": {
+     "ours": 38,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+       "site": "PetSmart",
+       "states": "10 gal (40 L), 18 in tall",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 75"
+    }
+   }
+  },
+  "brownanole": {
+   "fields": {
+    "tl": {
+     "ours": 203,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://thevetdesk.com/pet-breeds/reptiles/brown-anole",
+       "site": "The Vet Desk",
+       "states": "6-8 in (152-203 mm)",
+       "weight": 0.7
+      },
+      {
+       "url": "https://reptilesmagazine.com/listings/lizard-care/brown-anole",
+       "site": "Reptiles Magazine",
+       "states": "5-8 in (127-203 mm)",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 180"
+    },
+    "air.rh": {
+     "ours": [
+      40,
+      80
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+       "site": "PetSmart",
+       "states": "60-80%",
+       "weight": 0.5
+      },
+      {
+       "url": "https://thevetdesk.com/pet-breeds/reptiles/brown-anole",
+       "site": "The Vet Desk",
+       "states": "40-80%",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was [60,75]"
+    },
+    "female.tl": {
+     "ours": 150,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://en.wikipedia.org/wiki/Brown_anole",
+       "site": "Wikipedia (Brown anole)",
+       "states": "female Carolina anole total length 7.6–15 cm; brown anole females about that size",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 130"
+    }
+   }
+  },
+  "leopardgecko": {
+   "fields": {
+    "tl": {
+     "ours": 250,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://reptifiles.com/leopard-gecko-care/leopard-gecko-care-sheet/",
+       "site": "ReptiFiles",
+       "states": "7-10 in (17-25 cm), females smaller",
+       "weight": 1
+      },
+      {
+       "url": "https://www.phoenixherp.com/assistance/reptile-care-guides/leopard-gecko-care-guide.html",
+       "site": "Phoenix Herp",
+       "states": "7-10 in",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 220"
+    },
+    "minL": {
+     "ours": 76,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.phoenixherp.com/assistance/reptile-care-guides/leopard-gecko-care-guide.html",
+       "site": "Phoenix Herp",
+       "states": "20-40 gal = 76-151 L for one adult",
+       "weight": 0.5
+      },
+      {
+       "url": "https://www.petmd.com/reptile/leopard-gecko-care-sheet",
+       "site": "PetMD",
+       "states": "20 gal or larger = 76 L+",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 150"
+    }
+   }
+  },
+  "regaljumper": {
+   "fields": {
+    "tl": {
+     "ours": 18,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://joshsfrogs.com/cms/royal-jumping-spider-phidippus-regius-caresheet",
+       "site": "Josh's Frogs",
+       "states": "body 12 mm males, 15 mm females (average)",
+       "weight": 0.5
+      },
+      {
+       "url": "https://thetarantulacollective.com/care-sheets-2/phidippus-regius",
+       "site": "Tarantula Collective",
+       "states": "male body length 0.5-0.7 in (12-18 mm)",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 12"
+    },
+    "female.tl": {
+     "ours": 23,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://joshsfrogs.com/cms/royal-jumping-spider-phidippus-regius-caresheet",
+       "site": "Josh's Frogs",
+       "states": "body 15 mm females (average)",
+       "weight": 0.5
+      },
+      {
+       "url": "https://thetarantulacollective.com/care-sheets-2/phidippus-regius",
+       "site": "Tarantula Collective",
+       "states": "female body length 0.75-0.9 in (19-23 mm)",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 15"
+    }
+   }
+  },
+  "ballpython": {
+   "fields": {
+    "tl": {
+     "ours": 1311,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://reptifiles.com/wp-content/uploads/2020/11/Ball-Python-Care-Sheet-PDF-1.pdf",
+       "site": "ReptiFiles PDF",
+       "states": "males 3.6-4.3 ft (1097-1311 mm), females 3.8-4.5 ft",
+       "weight": 1
+      },
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide",
+       "site": "PetSmart",
+       "states": "grow up to 60 in (1524 mm)",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 1200"
+    },
+    "air.warm": {
+     "ours": [
+      30,
+      32.2
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://reptifiles.com/wp-content/uploads/2020/11/Ball-Python-Care-Sheet-PDF-1.pdf",
+       "site": "ReptiFiles PDF",
+       "states": "basking 86-90 F (30-32.2 C)",
+       "weight": 1
+      },
+      {
+       "url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide",
+       "site": "PetSmart",
+       "states": "basking 90-92 F (32-33 C)",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was [30,33]"
+    }
+   }
+  },
+  "neon": {
+   "fields": {
+    "tl": {
+     "ours": 38,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/neon-tetra/",
+       "site": "Fishkeeping World",
+       "states": "1.5 in (38 mm), length type not said",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 35"
+    },
+    "group": {
+     "ours": 8,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/paracheirodon-innesi/",
+       "site": "Seriously Fish",
+       "states": "at least 8-10",
+       "weight": 1
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/neon-tetra/",
+       "site": "Fishkeeping World",
+       "states": "at least 6",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 6"
+    },
+    "temp": {
+     "ours": [
+      21,
+      25
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/paracheirodon-innesi/",
+       "site": "Seriously Fish",
+       "states": "21-25 C",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was [22,25]"
+    },
+    "tol": {
+     "ours": [
+      20,
+      26
+     ],
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Paracheirodon-innesi.html",
+       "site": "FishBase",
+       "states": "20-26 C",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was [20,27]"
+    },
+    "minL": {
+     "ours": 54,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/neon-tetra/",
+       "site": "Fishkeeping World",
+       "states": "10 US gal = 38 L",
+       "weight": 0.7
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/paracheirodon-innesi/",
+       "site": "Seriously Fish",
+       "states": "54 L / 14 US gal",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 40"
+    }
+   }
+  },
+  "betta": {
+   "fields": {
+    "care": {
+     "ours": 2,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/betta-splendens/",
+       "site": "Seriously Fish",
+       "states": "Moderate",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 1"
+    }
+   }
+  },
+  "bronzecory": {
+   "fields": {
+    "group": {
+     "ours": 4,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/corydoras-aeneus/",
+       "site": "Seriously Fish",
+       "states": "at least 4-6",
+       "weight": 1
+      },
+      {
+       "url": "https://www.aquariadise.com/caresheet-bronze-corydoras/",
+       "site": "Aquariadise",
+       "states": "at least six",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 6"
+    },
+    "minL": {
+     "ours": 72,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/corydoras-aeneus/",
+       "site": "Seriously Fish",
+       "states": "~72 L / 19 US gal",
+       "weight": 1
+      },
+      {
+       "url": "https://www.aquariadise.com/caresheet-bronze-corydoras/",
+       "site": "Aquariadise",
+       "states": "20 US gal long = 80 L",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 80"
+    }
+   }
+  },
+  "kribensis": {
+   "fields": {
+    "tl": {
+     "ours": 110,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Pelvicachromis-pulcher.html",
+       "site": "FishBase",
+       "states": "11 cm TL max",
+       "weight": 1
+      },
+      {
+       "url": "https://www.aquariumsource.com/kribensis-cichlid/",
+       "site": "Aquarium Source",
+       "states": "males ~4 in (102 mm)",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 90"
+    },
+    "minL": {
+     "ours": 71,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/pelvicachromis-pulcher/",
+       "site": "Seriously Fish",
+       "states": "71 L suitable for a single pair",
+       "weight": 1
+      },
+      {
+       "url": "https://www.aquariumsource.com/kribensis-cichlid/",
+       "site": "Aquarium Source",
+       "states": "20-30 US gal = 76-114 L",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 80"
+    }
+   }
+  },
+  "ocellaris": {
+   "fields": {
+    "tl": {
+     "ours": 110,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Amphiprion-ocellaris.html",
+       "site": "FishBase",
+       "states": "11 cm TL max",
+       "weight": 1
+      },
+      {
+       "url": "https://topshelfaquatics.com/products/orange-ocellaris-clownfish",
+       "site": "Top Shelf Aquatics",
+       "states": "4.3 in (109 mm)",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 100"
+    },
+    "minL": {
+     "ours": 57,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.bulkreefsupply.com/ora-flurry-ocellaris-clownfish-ora.html",
+       "site": "Bulk Reef Supply",
+       "states": "15 gallons",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 75"
+    }
+   }
+  },
+  "yellowtang": {
+   "fields": {
+    "tl": {
+     "ours": 200,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Zebrasoma-flavescens.html",
+       "site": "FishBase",
+       "states": "20 cm TL max",
+       "weight": 1
+      },
+      {
+       "url": "https://www.liveaquaria.com/products/yellow-tang-hawaii",
+       "site": "LiveAquaria",
+       "states": "8 in (203 mm)",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 180"
+    },
+    "care": {
+     "ours": 1,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.liveaquaria.com/products/yellow-tang-hawaii",
+       "site": "LiveAquaria",
+       "states": "Easy",
+       "weight": 0.5
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 2"
+    },
+    "minL": {
+     "ours": 379,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.saltwateraquariumblog.com/yellow-tang-care-guide/",
+       "site": "Saltwater Aquarium Blog",
+       "states": "90 gallons",
+       "weight": 0.7
+      },
+      {
+       "url": "https://www.liveaquaria.com/products/yellow-tang-hawaii",
+       "site": "LiveAquaria",
+       "states": "100 US gal = 379 L",
+       "weight": 0.5
+      },
+      {
+       "url": "https://fishtankadvisor.com/yellow-tang/",
+       "site": "Fish Tank Advisor",
+       "states": "100 gallons",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 3 sites; was 455"
+    }
+   }
+  },
+  "oscar": {
+   "fields": {
+    "temper": {
+     "ours": 1,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/oscar-fish/",
+       "site": "Fishkeeping World",
+       "states": "territorial, aggressive tendencies",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 2"
+    },
+    "tl": {
+     "ours": 300,
+     "verdict": "kept",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Astronotus-ocellatus.html",
+       "site": "FishBase",
+       "states": "24 cm TL common, 45.7 cm TL max",
+       "weight": 1
+      },
+      {
+       "url": "https://www.fishkeepingworld.com/oscar-fish/",
+       "site": "Fishkeeping World",
+       "states": "up to 12 in (305 mm)",
+       "weight": 0.7
+      }
+     ],
+     "decision": "kept (Nathan 2026-10-21): FishBase 45.7 cm is a record size and outvoted Fishkeeping World 12 in (30 cm), the size kept oscars reach; two sites split; the combination said 457"
+    }
+   }
+  },
+  "ember": {
+   "fields": {
+    "minL": {
+     "ours": 41,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.fishkeepingworld.com/ember-tetra/",
+       "site": "Fishkeeping World",
+       "states": "10 gallons (37.9 L)",
+       "weight": 0.7
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/hyphessobrycon-amandae/",
+       "site": "Seriously Fish",
+       "states": "base at least 45 x 30 cm, ~41 litres (~11 US gal)",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 30"
+    }
+   }
+  },
+  "labeo": {
+   "fields": {
+    "minL": {
+     "ours": 200,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://guidarium.com/fishes/trewavas-cichlid",
+       "site": "Guidarium",
+       "states": "200 L",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 250"
+    }
+   }
+  },
+  "livingstonii": {
+   "fields": {
+    "minL": {
+     "ours": 470,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://guidarium.com/fishes/livingstons-cichlid",
+       "site": "Guidarium",
+       "states": "470 L",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 400"
+    }
+   }
+  },
+  "afra": {
+   "fields": {
+    "minL": {
+     "ours": 200,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://guidarium.com/fishes/afra-cichlid",
+       "site": "Guidarium",
+       "states": "200 L",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 250"
+    }
+   }
+  },
+  "syno": {
+   "fields": {
+    "minL": {
+     "ours": 108,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/synodontis-njassae/",
+       "site": "Seriously Fish",
+       "states": "120 x 30 x 30 cm, ~108 litres (~29 US gal)",
+       "weight": 1
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): one site; was 200"
+    }
+   }
+  },
+  "bristlenose": {
+   "fields": {
+    "minL": {
+     "ours": 54,
+     "verdict": "combined",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/ancistrus-cf-cirrhosus",
+       "site": "Seriously Fish",
+       "states": "~54 L / 14 US gal",
+       "weight": 1
+      },
+      {
+       "url": "https://www.chewy.com/education/fish/general/bristlenose-pleco-care-guide",
+       "site": "Chewy",
+       "states": "20 US gal = 76 L for one adult",
+       "weight": 0.7
+      }
+     ],
+     "decision": "lane CB 2026-10-21 (Nathan: apply the combined table): weighted median of 2 sites; was 80"
+    }
+   }
+  }
+ }
+}

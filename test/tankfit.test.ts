@@ -93,7 +93,7 @@ describe('tank fit engine (lane P2)', () => {
   });
   it('the span counts a light (both builds) and a heater only where the animals need one', () => {
     const g10 = getTankModel('g10')!;
-    const warm = buildSpan([{ species: 'neon', n: 2 }], g10)!, room = buildSpan([{ species: 'danio', n: 2 }], g10)!; // neon band misses 21 C, danio holds it
+    const warm = buildSpan([{ species: 'betta', n: 1 }], g10)!, room = buildSpan([{ species: 'danio', n: 2 }], g10)!; // betta band misses 21 C, danio holds it (neon holds 21 since lane CB)
     expect(room.setupUsd.cheapest).toBeGreaterThan(200); // tank + filter + light + kit, not the old animal-only $60-odd
     expect(warm.setupUsd.cheapest - room.setupUsd.cheapest).toBeGreaterThan(15); // the heater
   });

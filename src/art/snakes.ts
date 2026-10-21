@@ -67,6 +67,7 @@ export const snakeFoot = (bend: number) => SNAKE_FOOT[Math.min(4, Math.max(0, Ma
 export const SNAKE_STAGES: [string, number][] = [['hatchling', 250], ['juvenile', 500], ['sub-adult', 800], ['adult', 1200]];
 /** The largest stage that fits a tank `L` long (the rule of thumb: the enclosure is as long as the snake), at least a hatchling. */
 export function snakeStageFor(L: number, adult: number) {
+  if (adult <= L) return adult; // lane CB: the species' own adult length (ball python 1311 mm, ReptiFiles), not the table's 1200
   let best = SNAKE_STAGES[0][1];
   for (const [, mm] of SNAKE_STAGES) if (mm <= L && mm <= adult) best = mm;
   return best;

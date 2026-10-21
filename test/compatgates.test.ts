@@ -39,8 +39,8 @@ describe('compatibility gates (lane CG, 2026-10-19)', () => {
     expect(hasCorals([{ kind: 'coral', variant: 'hammer' }])).toBe(true);
   });
   it('group advice under the smallest group', () => {
-    expect(groupShort(sp('neon'), 2)).toBe('group: wants 6 or more, you have 2');
-    expect(groupShort(sp('neon'), 6)).toBeNull();
+    expect(groupShort(sp('neon'), 2)).toBe('group: wants 8 or more, you have 2'); // 8: Seriously Fish / Fishkeeping World combined (lane CB)
+    expect(groupShort(sp('neon'), 8)).toBeNull();
     expect(groupShort(sp('betta'), 1)).toBeNull();
   });
 });

@@ -49,7 +49,7 @@ describe('spider body plan', () => {
     expect(sp.cat).toBe('land-invert'); expect(sp.habitat).toBe('land');
     expect(sp.surfaces).toEqual(['floor', 'glass', 'hardscape']);
     for (const s of [sp, sp.female!]) expect(s.rest).toBeCloseTo(spiderGround(SPIDERS[s.art]), 9);
-    expect(sp.tl).toBe(12); expect(sp.female!.tl).toBe(15); expect(sp.female!.sex).toBe('f');
+    expect(sp.tl).toBe(18); expect(sp.female!.tl).toBe(23); // combined sources (lane CB): the Tarantula Collective's upper ends expect(sp.female!.sex).toBe('f');
   });
   for (const art of Object.keys(SPIDERS)) for (const [surface, R] of [['floor', 0], ['glass', 0], ['perch', 9], ['perch', 30]] as const) for (const alert of [false, true]) {
     it(`${art} ${surface}${R ? ' r ' + R : ''}${alert ? ' alert' : ''}: finite, eight eyes, standing on its surface`, () => {

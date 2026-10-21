@@ -1,0 +1,829 @@
+{
+ "generated": "scripts/source-combine-apply.mjs",
+ "species": {
+  "cardinal": {
+   "vol": {
+    "gal": 14.3,
+    "mark": "combined",
+    "site": "Seriously Fish + Fishkeeping World",
+    "url": "https://www.seriouslyfish.com/species/paracheirodon-axelrodi/",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/paracheirodon-axelrodi/",
+      "gal": 14.3,
+      "w": 1
+     },
+     {
+      "site": "Fishkeeping World",
+      "url": "https://www.fishkeepingworld.com/cardinal-tetra/",
+      "gal": 20,
+      "w": 0.7
+     }
+    ]
+   }
+  },
+  "ember": {
+   "vol": {
+    "gal": 10.8,
+    "mark": "combined",
+    "site": "Fishkeeping World + Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/hyphessobrycon-amandae/",
+    "combined": [
+     {
+      "site": "Fishkeeping World",
+      "url": "https://www.fishkeepingworld.com/ember-tetra/",
+      "gal": 10,
+      "w": 0.7
+     },
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/hyphessobrycon-amandae/",
+      "gal": 10.8,
+      "w": 1
+     }
+    ]
+   }
+  },
+  "harlequin": {
+   "vol": {
+    "gal": 14.3,
+    "mark": "combined",
+    "site": "Seriously Fish + Fishkeeping World",
+    "url": "https://www.seriouslyfish.com/species/trigonostigma-heteromorpha/",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/trigonostigma-heteromorpha/",
+      "gal": 14.3,
+      "w": 1
+     },
+     {
+      "site": "Fishkeeping World",
+      "url": "https://www.fishkeepingworld.com/harlequin-rasbora/",
+      "gal": 15,
+      "w": 0.7
+     }
+    ]
+   }
+  },
+  "chili": {
+   "vol": {
+    "gal": 10.8,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/boraras-brigittae/",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/boraras-brigittae/",
+      "gal": 10.8,
+      "w": 1
+     }
+    ]
+   }
+  },
+  "danio": {
+   "vol": {
+    "gal": 21.4,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/danio-rerio/",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/danio-rerio/",
+      "gal": 21.4,
+      "w": 1
+     }
+    ]
+   }
+  },
+  "whitecloud": {
+   "vol": {
+    "gal": 14.3,
+    "mark": "combined",
+    "site": "Fishkeeping World + Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/tanichthys-albonubes/",
+    "combined": [
+     {
+      "site": "Fishkeeping World",
+      "url": "https://www.fishkeepingworld.com/white-cloud-mountain-minnow/",
+      "gal": 10,
+      "w": 0.7
+     },
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/tanichthys-albonubes/",
+      "gal": 14.3,
+      "w": 1
+     }
+    ]
+   }
+  },
+  "cpd": {
+   "vol": {
+    "gal": 10.8,
+    "mark": "combined",
+    "site": "Fishkeeping World + Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/danio-margaritatus/",
+    "combined": [
+     {
+      "site": "Fishkeeping World",
+      "url": "https://www.fishkeepingworld.com/celestial-pearl-danio/",
+      "gal": 10,
+      "w": 0.7
+     },
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/danio-margaritatus/",
+      "gal": 10.8,
+      "w": 1
+     }
+    ]
+   }
+  },
+  "hatchet": {
+   "vol": {
+    "gal": 18,
+    "mark": "combined",
+    "site": "Seriously Fish + LiveAquaria",
+    "url": "https://www.seriouslyfish.com/species/carnegiella-strigata/",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/carnegiella-strigata/",
+      "gal": 18,
+      "w": 1
+     },
+     {
+      "site": "LiveAquaria",
+      "url": "https://www.liveaquaria.com/products/marble-hatchet",
+      "gal": 20,
+      "w": 0.5
+     }
+    ]
+   }
+  },
+  "cherrybarb": {
+   "vol": {
+    "gal": 25.1,
+    "mark": "sourced",
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/cherry-barb/",
+    "combined": [
+     {
+      "site": "Fishkeeping World",
+      "url": "https://www.fishkeepingworld.com/cherry-barb/",
+      "gal": 25,
+      "w": 0.7
+     }
+    ]
+   }
+  },
+  "tigerbarb": {
+   "vol": {
+    "gal": 29.1,
+    "mark": "sourced",
+    "site": "Aquarium Co-Op",
+    "url": "https://www.aquariumcoop.com/blogs/aquarium/tiger-barb",
+    "combined": [
+     {
+      "site": "Aquarium Co-Op",
+      "url": "https://www.aquariumcoop.com/blogs/aquarium/tiger-barb",
+      "gal": 29,
+      "w": 0.7
+     }
+    ]
+   }
+  },
+  "boesemani": {
+   "vol": {
+    "gal": 49.9,
+    "mark": "sourced",
+    "site": "Aquarium Source",
+    "url": "https://www.aquariumsource.com/boesemani-rainbowfish/",
+    "combined": [
+     {
+      "site": "Aquarium Source",
+      "url": "https://www.aquariumsource.com/boesemani-rainbowfish/",
+      "gal": 50,
+      "w": 0.7
+     }
+    ]
+   }
+  },
+  "guppy": {
+   "vol": {
+    "gal": 10.8,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/poecilia-reticulata/",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/poecilia-reticulata/",
+      "gal": 10.8,
+      "w": 1
+     }
+    ]
+   }
+  },
+  "molly": {
+   "vol": {
+    "gal": 21.4,
+    "mark": "combined",
+    "site": "Aquarium Co-Op + Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/poecilia-sphenops/",
+    "combined": [
+     {
+      "site": "Aquarium Co-Op",
+      "url": "https://www.aquariumcoop.com/blogs/aquarium/molly-fish-care",
+      "gal": 20,
+      "w": 0.7
+     },
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/poecilia-sphenops/",
+      "gal": 21.4,
+      "w": 1
+     }
+    ]
+   }
+  },
+  "swordtail": {
+   "vol": {
+    "gal": 28.5,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/xiphophorus-hellerii/",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/xiphophorus-hellerii/",
+      "gal": 28.5,
+      "w": 1
+     }
+    ]
+   },
+   "green": {
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/xiphophorus-hellerii/",
+    "states": "120 ∗ 30 cm",
+    "mark": "sourced",
+    "from": "combined",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/xiphophorus-hellerii/",
+      "mm": 1200,
+      "w": 1
+     }
+    ],
+    "L": 1200,
+    "W": 300
+   }
+  },
+  "comet": {
+   "vol": {
+    "gal": 75,
+    "mark": "sourced",
+    "site": "Aquarium Source",
+    "url": "https://www.aquariumsource.com/comet-goldfish/",
+    "combined": [
+     {
+      "site": "Aquarium Source",
+      "url": "https://www.aquariumsource.com/comet-goldfish/",
+      "gal": 75,
+      "w": 0.7
+     }
+    ]
+   }
+  },
+  "dwarfgourami": {
+   "vol": {
+    "gal": 14.8,
+    "mark": "combined",
+    "site": "Aquarium Co-Op + Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/trichogaster-lalius/",
+    "combined": [
+     {
+      "site": "Aquarium Co-Op",
+      "url": "https://www.aquariumcoop.com/blogs/aquarium/dwarf-gourami",
+      "gal": 10,
+      "w": 0.7
+     },
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/trichogaster-lalius/",
+      "gal": 14.8,
+      "w": 1
+     }
+    ]
+   }
+  },
+  "gourami": {
+   "vol": {
+    "gal": 21.4,
+    "mark": "combined",
+    "site": "Seriously Fish + Fishkeeping World",
+    "url": "https://www.seriouslyfish.com/species/trichopodus-leerii/",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/trichopodus-leerii/",
+      "gal": 21.4,
+      "w": 1
+     },
+     {
+      "site": "Fishkeeping World",
+      "url": "https://www.fishkeepingworld.com/pearl-gourami/",
+      "gal": 30,
+      "w": 0.7
+     }
+    ]
+   }
+  },
+  "cockatoo": {
+   "vol": {
+    "gal": 30.1,
+    "mark": "sourced",
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/cockatoo-cichlid/",
+    "combined": [
+     {
+      "site": "Fishkeeping World",
+      "url": "https://www.fishkeepingworld.com/cockatoo-cichlid/",
+      "gal": 30,
+      "w": 0.7
+     }
+    ]
+   }
+  },
+  "discus": {
+   "vol": {
+    "gal": 67.4,
+    "mark": "combined",
+    "site": "Fishkeeping World + Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/symphysodon-aequifasciatus/",
+    "combined": [
+     {
+      "site": "Fishkeeping World",
+      "url": "https://www.fishkeepingworld.com/discus-fish/",
+      "gal": 60,
+      "w": 0.7
+     },
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/symphysodon-aequifasciatus/",
+      "gal": 67.4,
+      "w": 1
+     }
+    ]
+   }
+  },
+  "peacock": {
+   "vol": {
+    "gal": 64.2,
+    "mark": "combined",
+    "site": "Guidarium + Seriously Fish",
+    "url": "https://seriouslyfish.com/species/aulonocara-stuartgranti",
+    "combined": [
+     {
+      "site": "Guidarium",
+      "url": "https://guidarium.com/fishes/grants-peacock-cichlid",
+      "gal": 55,
+      "w": 0.7
+     },
+     {
+      "site": "Seriously Fish",
+      "url": "https://seriouslyfish.com/species/aulonocara-stuartgranti",
+      "gal": 64.2,
+      "w": 1
+     }
+    ]
+   }
+  },
+  "kadango": {
+   "red": {
+    "site": "Seriously Fish",
+    "url": "https://seriouslyfish.com/species/copadichromis-borleyi",
+    "states": "150 ∗ 45 ∗ 45 cm",
+    "mark": "sourced",
+    "from": "combined",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://seriouslyfish.com/species/copadichromis-borleyi",
+      "mm": 1500,
+      "w": 1
+     },
+     {
+      "site": "Guidarium",
+      "url": "https://guidarium.com/fishes/red-fin-borleyi",
+      "mm": 1200,
+      "w": 0.7
+     }
+    ],
+    "L": 1500,
+    "W": 450
+   }
+  },
+  "sae": {
+   "vol": {
+    "gal": 49.9,
+    "mark": "sourced",
+    "site": "Aquarium Co-Op",
+    "url": "https://www.aquariumcoop.com/blogs/aquarium/siamese-algae-eater",
+    "combined": [
+     {
+      "site": "Aquarium Co-Op",
+      "url": "https://www.aquariumcoop.com/blogs/aquarium/siamese-algae-eater",
+      "gal": 50,
+      "w": 0.7
+     }
+    ]
+   }
+  },
+  "hillstream": {
+   "vol": {
+    "gal": 55,
+    "mark": "sourced",
+    "site": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/hillstream-loach/",
+    "combined": [
+     {
+      "site": "Fishkeeping World",
+      "url": "https://www.fishkeepingworld.com/hillstream-loach/",
+      "gal": 55,
+      "w": 0.7
+     }
+    ]
+   }
+  },
+  "peapuffer": {
+   "vol": {
+    "gal": 5,
+    "mark": "combined",
+    "site": "Seriously Fish + Aquarium Co-Op + Fishkeeping World",
+    "url": "https://www.aquariumcoop.com/blogs/aquarium/pea-puffer",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/carinotetraodon-travancoricus/",
+      "gal": 3.3,
+      "w": 1
+     },
+     {
+      "site": "Aquarium Co-Op",
+      "url": "https://www.aquariumcoop.com/blogs/aquarium/pea-puffer",
+      "gal": 5,
+      "w": 0.7
+     },
+     {
+      "site": "Fishkeeping World",
+      "url": "https://www.fishkeepingworld.com/pea-puffer/",
+      "gal": 5,
+      "w": 0.7
+     }
+    ]
+   }
+  },
+  "banggai": {
+   "vol": {
+    "gal": 30.1,
+    "mark": "sourced",
+    "site": "Reef Exclusive",
+    "url": "https://reefexclusive.com/products/banggai-cardinalfish",
+    "combined": [
+     {
+      "site": "Reef Exclusive",
+      "url": "https://reefexclusive.com/products/banggai-cardinalfish",
+      "gal": 30,
+      "w": 0.5
+     }
+    ]
+   }
+  },
+  "sixline": {
+   "vol": {
+    "gal": 57.6,
+    "mark": "combined",
+    "site": "Reef Exclusive + LiveAquaria",
+    "url": "https://www.liveaquaria.com/products/six-line-wrasse",
+    "combined": [
+     {
+      "site": "Reef Exclusive",
+      "url": "https://reefexclusive.com/products/six-line-wrasse",
+      "gal": 55,
+      "w": 0.5
+     },
+     {
+      "site": "LiveAquaria",
+      "url": "https://www.liveaquaria.com/products/six-line-wrasse",
+      "gal": 60,
+      "w": 0.5
+     }
+    ]
+   }
+  },
+  "watchman": {
+   "vol": {
+    "gal": 30.1,
+    "mark": "sourced",
+    "site": "Reef Exclusive",
+    "url": "https://reefexclusive.com/products/yellow-watchman-goby",
+    "combined": [
+     {
+      "site": "Reef Exclusive",
+      "url": "https://reefexclusive.com/products/yellow-watchman-goby",
+      "gal": 30,
+      "w": 0.5
+     }
+    ]
+   }
+  },
+  "treefrog": {
+   "vol": {
+    "gal": 17.4,
+    "mark": "combined",
+    "site": "Reptile Direct + Reptiles Magazine",
+    "url": "https://reptiledirect.com/whites-tree-frog/",
+    "combined": [
+     {
+      "site": "Reptile Direct",
+      "url": "https://reptiledirect.com/whites-tree-frog/",
+      "gal": 15,
+      "w": 0.7
+     },
+     {
+      "site": "Reptiles Magazine",
+      "url": "https://reptilesmagazine.com/whites-treefrog-care-sheet/",
+      "gal": 20,
+      "w": 0.7
+     }
+    ]
+   }
+  },
+  "firenewt": {
+   "vol": {
+    "gal": 17.4,
+    "mark": "combined",
+    "site": "PetMD + Reptiles Magazine",
+    "url": "https://petmd.com/exotic/fire-bellied-newt-care-sheet",
+    "combined": [
+     {
+      "site": "PetMD",
+      "url": "https://petmd.com/exotic/fire-bellied-newt-care-sheet",
+      "gal": 15,
+      "w": 0.7
+     },
+     {
+      "site": "Reptiles Magazine",
+      "url": "https://reptilesmagazine.com/?p=104985",
+      "gal": 20,
+      "w": 0.7
+     }
+    ]
+   }
+  },
+  "adf": {
+   "vol": {
+    "gal": 10,
+    "mark": "sourced",
+    "site": "LiveAquaria",
+    "url": "https://www.liveaquaria.com/products/dwarf-african-frog",
+    "combined": [
+     {
+      "site": "LiveAquaria",
+      "url": "https://www.liveaquaria.com/products/dwarf-african-frog",
+      "gal": 10,
+      "w": 0.5
+     }
+    ]
+   }
+  },
+  "axolotl": {
+   "vol": {
+    "gal": 29.1,
+    "mark": "sourced",
+    "site": "Modest Fish",
+    "url": "https://modestfish.com/axolotl-care/",
+    "combined": [
+     {
+      "site": "Modest Fish",
+      "url": "https://modestfish.com/axolotl-care/",
+      "gal": 29,
+      "w": 0.7
+     }
+    ]
+   }
+  },
+  "crestedgecko": {
+   "vol": {
+    "gal": 33.6,
+    "mark": "sourced",
+    "site": "ReptiFiles PDF",
+    "url": "https://reptifiles.com/wp-content/uploads/2020/10/Crested-Gecko-Care-Sheet-PDF.pdf",
+    "combined": [
+     {
+      "site": "ReptiFiles PDF",
+      "url": "https://reptifiles.com/wp-content/uploads/2020/10/Crested-Gecko-Care-Sheet-PDF.pdf",
+      "gal": 33.6,
+      "w": 1
+     }
+    ]
+   }
+  },
+  "crestedharlequin": {
+   "vol": {
+    "gal": 33.6,
+    "mark": "sourced",
+    "site": "ReptiFiles PDF",
+    "url": "https://reptifiles.com/wp-content/uploads/2020/10/Crested-Gecko-Care-Sheet-PDF.pdf",
+    "combined": [
+     {
+      "site": "ReptiFiles PDF",
+      "url": "https://reptifiles.com/wp-content/uploads/2020/10/Crested-Gecko-Care-Sheet-PDF.pdf",
+      "gal": 33.6,
+      "w": 1
+     }
+    ]
+   }
+  },
+  "greenanole": {
+   "vol": {
+    "gal": 10,
+    "mark": "sourced",
+    "site": "PetSmart",
+    "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+    "combined": [
+     {
+      "site": "PetSmart",
+      "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+      "gal": 10,
+      "w": 0.5
+     }
+    ]
+   }
+  },
+  "greenanolebrown": {
+   "vol": {
+    "gal": 10,
+    "mark": "sourced",
+    "site": "PetSmart",
+    "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+    "combined": [
+     {
+      "site": "PetSmart",
+      "url": "https://www.petsmart.com/learning-center/reptile-care/how-to-care-for-your-anolis-lizard/A0160.html",
+      "gal": 10,
+      "w": 0.5
+     }
+    ]
+   }
+  },
+  "leopardgecko": {
+   "vol": {
+    "gal": 20.1,
+    "mark": "combined",
+    "site": "Phoenix Herp + PetMD",
+    "url": "https://www.phoenixherp.com/assistance/reptile-care-guides/leopard-gecko-care-guide.html",
+    "combined": [
+     {
+      "site": "Phoenix Herp",
+      "url": "https://www.phoenixherp.com/assistance/reptile-care-guides/leopard-gecko-care-guide.html",
+      "gal": 20,
+      "w": 0.5
+     },
+     {
+      "site": "PetMD",
+      "url": "https://www.petmd.com/reptile/leopard-gecko-care-sheet",
+      "gal": 20,
+      "w": 0.7
+     }
+    ]
+   }
+  },
+  "neon": {
+   "vol": {
+    "gal": 14.3,
+    "mark": "combined",
+    "site": "Fishkeeping World + Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/paracheirodon-innesi/",
+    "combined": [
+     {
+      "site": "Fishkeeping World",
+      "url": "https://www.fishkeepingworld.com/neon-tetra/",
+      "gal": 10,
+      "w": 0.7
+     },
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/paracheirodon-innesi/",
+      "gal": 14.3,
+      "w": 1
+     }
+    ]
+   }
+  },
+  "betta": {
+   "vol": {
+    "gal": 10.8,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/betta-splendens/",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/betta-splendens/",
+      "gal": 10.8,
+      "w": 1
+     }
+    ]
+   }
+  },
+  "angel": {
+   "vol": {
+    "gal": 52.8,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/pterophyllum-scalare/",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/pterophyllum-scalare/",
+      "gal": 52.8,
+      "w": 1
+     }
+    ]
+   }
+  },
+  "ocellaris": {
+   "vol": {
+    "gal": 30.1,
+    "mark": "sourced",
+    "site": "Top Shelf Aquatics",
+    "url": "https://topshelfaquatics.com/products/orange-ocellaris-clownfish",
+    "combined": [
+     {
+      "site": "Top Shelf Aquatics",
+      "url": "https://topshelfaquatics.com/products/orange-ocellaris-clownfish",
+      "gal": 30,
+      "w": 0.5
+     }
+    ]
+   }
+  },
+  "yellowtang": {
+   "vol": {
+    "gal": 100.1,
+    "mark": "combined",
+    "site": "Saltwater Aquarium Blog + LiveAquaria + Fish Tank Advisor",
+    "url": "https://www.liveaquaria.com/products/yellow-tang-hawaii",
+    "combined": [
+     {
+      "site": "Saltwater Aquarium Blog",
+      "url": "https://www.saltwateraquariumblog.com/yellow-tang-care-guide/",
+      "gal": 90,
+      "w": 0.7
+     },
+     {
+      "site": "LiveAquaria",
+      "url": "https://www.liveaquaria.com/products/yellow-tang-hawaii",
+      "gal": 100,
+      "w": 0.5
+     },
+     {
+      "site": "Fish Tank Advisor",
+      "url": "https://fishtankadvisor.com/yellow-tang/",
+      "gal": 100,
+      "w": 0.7
+     }
+    ]
+   }
+  },
+  "oscar": {
+   "vol": {
+    "gal": 142.7,
+    "mark": "combined",
+    "site": "Seriously Fish + Fishkeeping World",
+    "url": "https://www.seriouslyfish.com/species/astronotus-ocellatus/",
+    "combined": [
+     {
+      "site": "Seriously Fish",
+      "url": "https://www.seriouslyfish.com/species/astronotus-ocellatus/",
+      "gal": 142.7,
+      "w": 1
+     },
+     {
+      "site": "Fishkeeping World",
+      "url": "https://www.fishkeepingworld.com/oscar-fish/",
+      "gal": 143,
+      "w": 0.7
+     }
+    ]
+   }
+  }
+ }
+}

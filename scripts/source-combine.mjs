@@ -167,7 +167,7 @@ for (const f of careFiles) {
   const ver = existsSync(vf) ? JSON.parse(readFileSync(vf, 'utf8')) : [];
   for (const [id, sp] of Object.entries(b.species)) for (const [field, v] of Object.entries(sp.fields)) {
     if (SKIP[field] || !(PARSE[field] || field === 'minL')) continue;
-    if (v.decision) DECIDED[`${id}|${field === 'minL' ? 'minL (floor, L)' : field}`] = `${v.verdict}: ${v.decision.replace(/^Nathan [d-]+: /, '')}`;
+    if (v.decision) DECIDED[`${id}|${field === 'minL' ? 'minL (floor, L)' : field}`] = `${v.verdict}: ${v.decision.replace(/^Nathan [\d-]+: /, '')}`;
     for (const s of v.sources ?? []) {
       const check = ver.find(c => c.id === id && c.field === field && c.url === s.url)?.result ?? 'unchecked';
       if (!ok(check)) continue;
@@ -184,6 +184,9 @@ for (const f of careFiles) {
     }
   }
 }
+// what Nathan decided when the combination was applied (research/sourcing/combined.json, scripts/source-combine-apply.mjs): labels only
+if (existsSync(`${DIR}/combined.json`)) for (const [id, sp] of Object.entries(JSON.parse(readFileSync(`${DIR}/combined.json`, 'utf8')).species))
+  for (const [field, v] of Object.entries(sp.fields)) if (v.verdict === 'kept' || /Nathan 2026-10-21:/.test(v.decision ?? '')) DECIDED[`${id}|${field === 'minL' ? 'minL (floor, L)' : field}`] = `${v.verdict === 'kept' ? 'kept' : 'picked'}: ${v.decision.replace(/^.*?(Nathan 2026-10-21: |kept \(Nathan 2026-10-21\): )/, '')}`;
 // tank-minimum batches M1-M9: values already parsed by the agents (value + unit + kind); the same filters MM decided (Decision 1:
 // adult figures only; low-credibility pages set no line)
 const TO_MM = { mm: 1, cm: 10, in: 25.4, inch: 25.4, inches: 25.4, ft: 304.8, feet: 304.8, m: 1000 };
