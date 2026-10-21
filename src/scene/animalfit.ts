@@ -4,7 +4,7 @@ import { CARE, EXPERTISE_NAME, type Expertise } from '../data/care';
 import type { Species } from '../data/species';
 
 export interface AnimalWhy { kind: 'expertise' | 'size' | 'compat'; text: string }
-/** Do two species share space? A land animal and a water-only one never meet. */
+/** Do two species share space? A land animal and a water-only one never meet: they cannot be kept together, so whyAnimal gates the pair. */
 const meet = (a: Species, b: Species) => !((a.habitat === 'land' && b.habitat === 'water') || (a.habitat === 'water' && b.habitat === 'land'));
 
 const shared = (a: [number, number], b: [number, number]) => Math.min(a[1], b[1]) - Math.max(a[0], b[0]);
@@ -26,7 +26,12 @@ export function whyAnimal(sp: Species, litres: number, expertise: Expertise, pre
     const bad = (t: string) => ({ kind: 'compat' as const, text: `compatibility: ${t} (${o.name})` });
     if (o.id === sp.id) { if (c.solo) return bad('keeps one per tank, you already have one'); continue; }
     if (c.fam && c.fam === oc.fam) return bad(`rivals of its look-alike, keep one ${c.fam}`);
-    if (!meet(sp, o)) continue;
+    if (!meet(sp, o)) {
+      // frogs share a paludarium with fish; reptiles and land invertebrates (snakes, geckos, spiders) need a dry enclosure
+      const dry = (x: Species) => x.habitat === 'land' && (x.cat === 'reptile' || x.cat === 'land-invert');
+      if (dry(sp) || dry(o)) return bad(dry(sp) ? 'needs a dry enclosure, this one lives in the water' : 'lives in the water, it needs a dry enclosure');
+      continue;
+    }
     if (c.prey && c.prey.mm >= o.tl && (!c.prey.cats || c.prey.cats.includes(o.cat))) return bad('would eat it');
     if (oc.prey && oc.prey.mm >= sp.tl && (!oc.prey.cats || oc.prey.cats.includes(sp.cat))) return bad('it would eat this one');
     if (sp.habitat !== 'land' && o.habitat !== 'land') {
