@@ -1,0 +1,142 @@
+{
+ "cpd": {
+  "name": "Celestial pearl danio",
+  "sci": "Danio margaritatus",
+  "tl": 25,
+  "fields": {
+   "female.tl": {
+    "ours": 25
+   }
+  }
+ },
+ "cherrybarb": {
+  "name": "Cherry barb",
+  "sci": "Rohanella (Puntius) titteya",
+  "tl": 50,
+  "fields": {
+   "female.tl": {
+    "ours": 50
+   }
+  }
+ },
+ "dwarfgourami": {
+  "name": "Dwarf gourami",
+  "sci": "Trichogaster lalius",
+  "tl": 80,
+  "fields": {
+   "female.tl": {
+    "ours": 65
+   }
+  }
+ },
+ "honeygourami": {
+  "name": "Honey gourami",
+  "sci": "Trichogaster chuna",
+  "tl": 45,
+  "fields": {
+   "female.tl": {
+    "ours": 50
+   }
+  }
+ },
+ "gourami": {
+  "name": "Pearl gourami",
+  "sci": "Trichopodus leerii",
+  "tl": 120,
+  "fields": {
+   "female.tl": {
+    "ours": 110
+   }
+  }
+ },
+ "gbr": {
+  "name": "German blue ram",
+  "sci": "Mikrogeophagus ramirezi",
+  "tl": 60,
+  "fields": {
+   "female.tl": {
+    "ours": 50
+   }
+  }
+ },
+ "yellowlab": {
+  "name": "Yellow lab cichlid",
+  "sci": "Labidochromis caeruleus",
+  "tl": 100,
+  "fields": {
+   "female.tl": {
+    "ours": 90
+   }
+  }
+ },
+ "peacock": {
+  "name": "Peacock cichlid",
+  "sci": "Aulonocara stuartgranti",
+  "tl": 130,
+  "fields": {
+   "female.tl": {
+    "ours": 100
+   }
+  }
+ },
+ "kadango": {
+  "name": "Kadango (red-fin) cichlid",
+  "sci": "Copadichromis borleyi",
+  "tl": 150,
+  "fields": {
+   "female.tl": {
+    "ours": 120
+   }
+  }
+ },
+ "peapuffer": {
+  "name": "Pea puffer",
+  "sci": "Carinotetraodon travancoricus",
+  "tl": 30,
+  "fields": {
+   "female.tl": {
+    "ours": 30
+   }
+  }
+ },
+ "mandarin": {
+  "name": "Mandarin dragonet",
+  "sci": "Synchiropus splendidus",
+  "tl": 60,
+  "fields": {
+   "female.tl": {
+    "ours": 50
+   }
+  }
+ },
+ "greenanole": {
+  "name": "Green anole",
+  "sci": "Anolis carolinensis",
+  "tl": 180,
+  "fields": {
+   "female.tl": {
+    "ours": 150
+   }
+  }
+ },
+ "brownanole": {
+  "name": "Brown anole",
+  "sci": "Anolis sagrei",
+  "tl": 180,
+  "fields": {
+   "female.tl": {
+    "ours": 130
+   }
+  }
+ },
+ "chacogoldenknee": {
+  "name": "Chaco golden knee tarantula",
+  "sci": "Grammostola pulchripes",
+  "tl": 45,
+  "fields": {
+   "female.tl": {
+    "ours": 50
+   }
+  }
+ }
+}

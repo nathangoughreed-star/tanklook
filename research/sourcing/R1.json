@@ -6,8 +6,8 @@
    "sci": "Dendrobates tinctorius",
    "fields": {
     "temper": {
-     "ours": 0,
-     "verdict": "disagrees",
+     "ours": 1,
+     "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted",
      "suggest": 1,
      "sources": [
       {
@@ -88,7 +88,7 @@
    "fields": {
     "care": {
      "ours": 2,
-     "verdict": "disagrees",
+     "verdict": "kept", "decision": "Nathan 2026-10-20: kept, one retailer page says Easy; it needs cold water (a chiller in a warm room) and is sensitive to water quality, so kept intermediate",
      "suggest": 1,
      "sources": [
       {
@@ -113,8 +113,8 @@
    "sci": "Correlophus ciliatus",
    "fields": {
     "temper": {
-     "ours": 0,
-     "verdict": "disagrees",
+     "ours": 1,
+     "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted",
      "suggest": 1,
      "sources": [
       {
@@ -172,11 +172,8 @@
      ]
     },
     "air.tol": {
-     "ours": [
-      21,
-      31
-     ],
-     "verdict": "disagrees",
+     "ours": [18, 31],
+     "verdict": "derived", "decision": "Nathan 2026-10-20: derived, night low 65 F (18 C) from PetSmart; the high end is ours (not stated)",
      "suggest": [
       18,
       31
@@ -210,11 +207,8 @@
      ]
     },
     "air.tol": {
-     "ours": [
-      21,
-      31
-     ],
-     "verdict": "disagrees",
+     "ours": [18, 31],
+     "verdict": "derived", "decision": "Nathan 2026-10-20: derived, night low 65 F (18 C) from PetSmart; the high end is ours (not stated)",
      "suggest": [
       18,
       31
@@ -272,11 +266,8 @@
      "note": "Generic anole guide, not A. sagrei specific."
     },
     "air.tol": {
-     "ours": [
-      21,
-      32
-     ],
-     "verdict": "disagrees",
+     "ours": [18, 32],
+     "verdict": "derived", "decision": "Nathan 2026-10-20: derived, night not below 65 F (18 C), The Vet Desk; the high end is ours (not stated)",
      "suggest": [
       18,
       32
@@ -297,8 +288,8 @@
    "sci": "Eublepharis macularius",
    "fields": {
     "temper": {
-     "ours": 0,
-     "verdict": "disagrees",
+     "ours": 1,
+     "verdict": "agrees", "decision": "Nathan 2026-10-20: adopted",
      "suggest": 1,
      "sources": [
       {
@@ -336,11 +327,8 @@
      ]
     },
     "air.tol": {
-     "ours": [
-      20,
-      28
-     ],
-     "verdict": "disagrees",
+     "ours": [16, 28],
+     "verdict": "derived", "decision": "Nathan 2026-10-20: derived, night down to 60 F (16 C), ReptiFiles; the high end is ours (not stated)",
      "suggest": [
       16,
       28
@@ -356,11 +344,8 @@
      "note": "Only lo sourced."
     },
     "air.rhTol": {
-     "ours": [
-      20,
-      50
-     ],
-     "verdict": "disagrees",
+     "ours": [20, 80],
+     "verdict": "derived", "decision": "Nathan 2026-10-20: derived, the humid hide at 70-80 % (ReptiFiles) is the shedding peak; the low end is ours",
      "suggest": [
       20,
       80

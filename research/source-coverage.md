@@ -11,12 +11,12 @@ when it carries the url of the listing it was read from and does not mark the fi
 
 | | values | cited | fitted | derived | researched | claimed | assumption | unsourced | strong |
 |---|---|---|---|---|---|---|---|---|---|
-| **all data** | 5169 | 2427 (47 %) | 59 (1 %) | 33 (1 %) | 682 (13 %) | 656 (13 %) | 737 (14 %) | 575 (11 %) | 49 % |
-| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) | 1277 | 368 |  | 4 | 388 | 410 | 37 | 70 | 29 % |
-| Adult length per species (species.json tl) | 108 | 92 |  |  |  |  | 2 | 14 | 85 % |
+| **all data** | 5169 | 2475 (48 %) | 59 (1 %) | 43 (1 %) | 682 (13 %) | 656 (13 %) | 763 (15 %) | 491 (9 %) | 50 % |
+| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) | 1277 | 412 |  | 4 | 388 | 410 | 51 | 12 | 33 % |
+| Adult length per species (species.json tl) | 108 | 94 |  |  |  |  | 14 |  | 87 % |
 | Marine pH band (data/waterchem.ts) | 2 | 2 |  |  |  |  |  |  | 100 % |
 | Reptile / amphibian floor area, height, groups, growth (data/herpstock.ts) | 228 |  |  |  | 228 |  |  |  | 0 % |
-| Terrarium air temperature and humidity (data/climate.ts AIR) | 112 | 32 |  | 2 | 66 |  |  | 12 | 30 % |
+| Terrarium air temperature and humidity (data/climate.ts AIR) | 112 | 34 |  | 12 | 66 |  |  |  | 41 % |
 | Plant and coral light, CO2, fertiliser, dosing (scene/lightneeds.ts) | 182 |  |  |  |  | 182 |  |  | 0 % |
 | Freshwater PAR tiers | 10 |  |  |  |  | 10 |  |  | 0 % |
 | Reef PAR tiers | 8 | 6 |  |  |  | 2 |  |  | 75 % |
@@ -34,32 +34,18 @@ when it carries the url of the listing it was read from and does not mark the fi
 | Deals (deals.json) | 164 | 160 |  |  |  |  |  | 4 | 98 % |
 | Gear deals (gear-deals.json) | 96 | 96 |  |  |  |  |  |  | 100 % |
 
-Engine constants (top-level numbers in 29 engine files): 87 documented in FORMULAS, 0 unsourced.
+Engine constants (top-level numbers in 30 engine files): 89 documented in FORMULAS, 0 unsourced.
 Numbers written inline in those files' functions (not counted above, a by-hand review list): 325.
 
 ## Work list 1: unsourced values (most user-facing first)
 
 | field | values |
 |---|---|
-| `CARE *.minL` | 10 |
-| `CARE *.temp.*` | 8 |
-| `CARE *.tol.*` | 8 |
-| `CARE *.temper` | 6 |
-| `CARE *.bands.ok` | 5 |
-| `CARE *.bands.good` | 5 |
-| `CARE *.bands.great` | 5 |
-| `CARE *.max` | 5 |
-| `CARE *.minLengthMm` | 5 |
-| `CARE *.slow` | 4 |
-| `CARE *.nip` | 3 |
-| `CARE *.care` | 2 |
-| `CARE *.fam` | 2 |
-| `CARE *.solo` | 1 |
-| `CARE *.coral` | 1 |
-| `SPECIES *.female.tl` | 14 |
-| `AIR *.tol.*` | 8 |
-| `AIR *.rhTol.*` | 2 |
-| `AIR *.rh.*` | 2 |
+| `CARE *.temp.*` | 6 |
+| `CARE *.minL` | 2 |
+| `CARE *.tol.*` | 2 |
+| `CARE *.max` | 1 |
+| `CARE *.temper` | 1 |
 | `TECH gear.*.monthly.{lo,mode,hi}` | 18 |
 | `TECH gear.*.ref` | 17 |
 | `TECH rows.*.options.*.risk` | 15 |
@@ -243,6 +229,8 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | src/scene/kitlight.ts | MAX_W_PER_GAL | assumption | most LED watts per gallon a swap can ask before the tank is the problem (fresh 2.5, reef 6) |
 | src/scene/plantfit.ts | FIT_PAR | assumption | one representative PAR inside each light level |
 | src/scene/growtime.ts | GROW_RATE | assumption | growth multipliers by feeding and plant speed (CO2 helps stems most); not measured |
+| src/scene/tankMin.ts | REF_DEPTH_CM | assumption | the floor-area need of a bottom dweller is its litres spread over 30 cm of water, a typical small tank depth; swimmers are held to the longest floor side instead |
+| src/scene/tankMin.ts | TIERS | claimed | absolute floor and comfortable tank size per species (adf, danio, whitecloud, tigerbarb, cherrybarb, firenewt, firetoad): keeper-practice judgement from the examples given, no page recorded |
 | src/scene/tankfit.ts | FLOOR_K | claimed | "a documented rule of thumb, not a source of record": a bottom dweller holds about two body lengths square |
 | src/scene/tankfit.ts | FILTRATION_TARGET | assumption | preset filtration targets: cheapest 100 %, balanced 70 % |
 | src/scene/starter.ts | ANIMAL_FILL, KINDS_PER_STOP, LAND_MOST | assumption | how full each starter stop is and how many kinds; land counts kept inside the herp research maxima |

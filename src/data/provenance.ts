@@ -134,7 +134,7 @@ interface Field { ours: unknown; verdict: 'agrees' | 'disagrees' | 'not-stated' 
 interface Batch { batch: string; species: Record<string, { fields: Record<string, Field> }> }
 interface Check { id: string; field: string; url: string; result: 'exact' | 'compact' | 'label' | 'near' | 'miss' | 'nofetch' }
 const SOURCING = import.meta.glob('../../research/sourcing/*.json', { eager: true, import: 'default' }) as Record<string, unknown>;
-const host = (url: string) => new URL(url).hostname.split('.').slice(-2).join('.');   // ca.aquariumsource.com = aquariumsource.com
+const host = (url: string) => { const h = new URL(url).hostname.split('.'); return h.slice(/^(co|com|org|net|ac)$/.test(h[h.length - 2]) && h.length > 2 ? -3 : -2).join('.'); };   // ca.aquariumsource.com = aquariumsource.com; x.co.uk keeps 3
 const speciesValue = (id: string, f: string) => {
   const sp = (speciesJson as unknown as { species: { id: string; tl: number; female?: { tl?: number } }[] }).species.find(s => s.id === id);
   return f === 'tl' ? sp?.tl : f === 'female.tl' ? sp?.female?.tl : undefined;
@@ -149,7 +149,7 @@ for (const [file, b] of Object.entries(SOURCING)) {
       : f === 'prey' ? CARE[id]?.prey?.mm : (CARE[id] as unknown as Record<string, unknown>)?.[f];
     if (JSON.stringify(now) !== JSON.stringify(v.ours)) continue;   // the value changed since the batch checked it
     const target = isSpecies ? 'SPECIES' : isAir ? 'AIR' : 'CARE';
-    const path = `${id}.${isAir ? `${f.slice(4)}.*` : f === 'prey' ? 'prey.mm' : f === 'ph' ? 'ph.*' : f}`;
+    const path = `${id}.${isAir ? `${f.slice(4)}.*` : f === 'prey' ? 'prey.mm' : now && typeof now === 'object' ? `${f}.*` : f}`;   // a range (ph, temp, tol) or a group (bands) covers its parts
     const used = v.use ? v.use.map(i => v.sources[i]) : v.sources;
     const found = used.filter(s => checks.some(c => c.id === id && c.field === f && c.url === s.url && (c.result === 'exact' || c.result === 'compact')));
     const src = [...new Set(used.map(s => host(s.url)))];

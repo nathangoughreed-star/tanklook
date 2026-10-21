@@ -91,19 +91,34 @@ Rule from Nathan 2026-10-20: he cannot judge the biology; trust the research, es
 |---|---|---|---|---|
 
 
-## R1 (9)
+## R1 (0)
 
 | field | ours | pages say | suggest | note |
 |---|---|---|---|---|
-| dartfrog.temper | 0 | Exo Terra: females aggressive toward other females; territorial behaviour can kill; Exo Terra: territorial behaviour long-term stress/death | **1** | Both quotes are the same page; no second independent source opened. |
-| axolotl.care | 2 | Sims Tropical Fish: Care Level: Easy | **1** | The Vet Desk table also lists Care Level Low (cell split, not quotable). |
-| crestedharlequin.temper | 0 | PetMD: males territorial and fight | **1** | Same page calls them calm and friendly with people; scale rule (males fight = 1) applied. |
-| greenanole.air.tol | [21,31] | PetSmart: night 65-75 F (18-24 C) | **[18,31]** | Only lo (18) is sourced; hi not stated. |
-| greenanolebrown.air.tol | [21,31] | PetSmart: night 65-75 F (18-24 C) | **[18,31]** | Only lo sourced. |
-| brownanole.air.tol | [21,32] | The Vet Desk: night not below 65 F (18 C) | **[18,32]** | Only lo sourced. |
-| leopardgecko.temper | 0 | PetSmart: solitary and territorial, especially males; PetSmart: can become aggressive with each other | **1** | Males-fight rule gives temper 1; PetMD also calls them sociable with handlers. |
-| leopardgecko.air.tol | [20,28] | ReptiFiles: night tolerance down to 60 F (16 C) | **[16,28]** | Only lo sourced. |
-| leopardgecko.air.rhTol | [20,50] | ReptiFiles: humid hide 70-80%; PetMD: ideal under 50% | **[20,80]** | Hi 80 is a humid-hide peak, not whole-enclosure; lo not stated. |
+
+
+## R2 (0)
+
+| field | ours | pages say | suggest | note |
+|---|---|---|---|---|
+
+
+## R3 (2)
+
+| field | ours | pages say | suggest | note |
+|---|---|---|---|---|
+| harlequin.minL | 40 | Seriously Fish: base 60 x 30 cm, ~54 litres (~14 US gal); Fishkeeping World: 15 gallons (56.8 L) for a school of 8-10; 20 gallons better | **54** | Both sources ~54-57 L; ours 40 is below 75% of the lowest (54 L stated by page, 15 gal = 56.8 L). |
+| syno.minL | 200 | Seriously Fish: 120 x 30 x 30 cm, ~108 litres (~29 US gal) | **108** | Only one care source found (Fishkeeping World 404, Planet Catfish forum 403). Page minimum 108 L; ours 200 is almost double. A forum thread (not fetched) suggests larger tanks for breeding groups. |
+
+## R4 (5)
+
+| field | ours | pages say | suggest | note |
+|---|---|---|---|---|
+| mandarin.max | 1 | Fishkeeping World: pair allowed (75 gal) | **2** | Source allows a male/female pair; ours is 1. |
+| discus.temp | [28,30] | Seriously Fish: 26-30 C | **[26,30]** | Lo end 26 vs ours 28. |
+| comet.temp | [16,22] | Berry Patch Farms: 18-22 C ideal | **[18,22]** | Lo end 18 vs ours 16. |
+| comet.tol | [10,26] | Berry Patch Farms: 60-80 F for limited periods (15.6-26.7 C) | **[16,27]** | Lo 15.6 vs ours 10; FishBase gives 0-41 C for goldfish generally but was not quoted. |
+| axolotl.temp | [16,20] | Swell UK: 15-18 C | **[15,18]** | Hi 18 vs ours 20. |
 
 ## other/C (0)
 

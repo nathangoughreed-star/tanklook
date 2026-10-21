@@ -1,0 +1,227 @@
+[
+ {
+  "id": "firefish",
+  "field": "bands",
+  "verdict": "agrees",
+  "url": "https://www.liveaquaria.com/product/168/?pcatid=168",
+  "result": "exact",
+  "score": 1,
+  "quote": "However, a mated pair can live peacefully together."
+ },
+ {
+  "id": "firefish",
+  "field": "max",
+  "verdict": "agrees",
+  "url": "https://www.liveaquaria.com/product/168/?pcatid=168",
+  "result": "exact",
+  "score": 1,
+  "quote": "This member of the Gobiidae family is generally not aggressive towards other fish except those of its own species."
+ },
+ {
+  "id": "coralbeauty",
+  "field": "bands",
+  "verdict": "agrees",
+  "url": "https://www.reefarchive.com/fish/angelfish-dwarf/coral-beauty-angelfish",
+  "result": "exact",
+  "score": 1,
+  "quote": "Keep only one dwarf angel per tank."
+ },
+ {
+  "id": "coralbeauty",
+  "field": "max",
+  "verdict": "agrees",
+  "url": "https://www.reefarchive.com/fish/angelfish-dwarf/coral-beauty-angelfish",
+  "result": "exact",
+  "score": 1,
+  "quote": "Keep only one dwarf angel per tank."
+ },
+ {
+  "id": "coralbeauty",
+  "field": "coral",
+  "verdict": "agrees",
+  "url": "https://www.liveaquaria.com/products/coral-beauty-angelfish",
+  "result": "exact",
+  "score": 1,
+  "quote": "Not a good reef dweller, the Coral Beauty Angelfish is prone to nip at stony and soft corals (sessile invertebrates)."
+ },
+ {
+  "id": "watchman",
+  "field": "bands",
+  "verdict": "agrees",
+  "url": "https://www.liveaquaria.com/product/228/?pcatid=228",
+  "result": "exact",
+  "score": 1,
+  "quote": "will fight with its own kind unless they are a mated pair"
+ },
+ {
+  "id": "watchman",
+  "field": "max",
+  "verdict": "agrees",
+  "url": "https://www.liveaquaria.com/product/228/?pcatid=228",
+  "result": "exact",
+  "score": 1,
+  "quote": "will fight with its own kind unless they are a mated pair"
+ },
+ {
+  "id": "mandarin",
+  "field": "bands",
+  "verdict": "agrees",
+  "url": "https://fishkeepingworld.com/mandarin-fish/",
+  "result": "exact",
+  "score": 1,
+  "quote": "should be kept separate or in a male and female pair"
+ },
+ {
+  "id": "mandarin",
+  "field": "max",
+  "verdict": "disagrees",
+  "url": "https://fishkeepingworld.com/mandarin-fish/",
+  "result": "compact",
+  "score": 1,
+  "quote": "Minimum of 30 gallons for one mandarin fish, or at least 75 gallons for a pair of mandarin fish."
+ },
+ {
+  "id": "cleanershrimp",
+  "field": "bands",
+  "verdict": "behaviour-only",
+  "url": "https://www.liveaquaria.com/product/696/?pcatid=696",
+  "result": "exact",
+  "score": 1,
+  "quote": "The Scarlet Skunk Cleaner Shrimp is often found in groups amongst live rock or coral."
+ },
+ {
+  "id": "neon",
+  "field": "temp",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/paracheirodon-innesi/",
+  "result": "compact",
+  "score": 1,
+  "quote": "Temperature | 21–25°C70–77°F"
+ },
+ {
+  "id": "neon",
+  "field": "tol",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Paracheirodon-innesi.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Tropical; 20°C - 26°C"
+ },
+ {
+  "id": "discus",
+  "field": "temp",
+  "verdict": "disagrees",
+  "url": "https://www.seriouslyfish.com/species/symphysodon-aequifasciatus/",
+  "result": "compact",
+  "score": 1,
+  "quote": "Temperature | 26–30°C79–86°F"
+ },
+ {
+  "id": "discus",
+  "field": "tol",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Symphysodon-aequifasciatus.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Tropical; 26°C - 30°C"
+ },
+ {
+  "id": "comet",
+  "field": "temp",
+  "verdict": "disagrees",
+  "url": "https://www.berrypatchfarms.net/comet-goldfish-temperature/",
+  "result": "exact",
+  "score": 1,
+  "quote": "The ideal water temperature range for comet goldfish is 65-72 degrees Fahrenheit (18-22 degrees Celsius)."
+ },
+ {
+  "id": "comet",
+  "field": "tol",
+  "verdict": "disagrees",
+  "url": "https://www.berrypatchfarms.net/comet-goldfish-temperature/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Their ideal temperature range is 65-72°F, but they can withstand temperatures from 60-80°F for limited time periods."
+ },
+ {
+  "id": "axolotl",
+  "field": "temp",
+  "verdict": "disagrees",
+  "url": "https://www.reptiles.swelluk.com/help-guides/axolotl-ambystoma-mexicanum-care-sheet/",
+  "result": "exact",
+  "score": 1,
+  "quote": "The ideal water temperature for an Axolotl aquarium is between 15-18°C (59-64°F)"
+ },
+ {
+  "id": "danio",
+  "field": "nip",
+  "verdict": "agrees",
+  "url": "https://fishkeepingworld.com/zebra-danio/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Don't house zebra danios with slow-swimming, long-finned fish because zebra danios are fin-nippers."
+ },
+ {
+  "id": "tigerbarb",
+  "field": "nip",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/puntigrus-tetrazona/",
+  "result": "exact",
+  "score": 1,
+  "quote": "notoriously aggressive with a reputation for biting the fins of other fishes"
+ },
+ {
+  "id": "peapuffer",
+  "field": "nip",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/carinotetraodon-travancoricus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Not usually recommended for the community tank, as it tends to nip the fins of slow-moving or long-finned fish."
+ },
+ {
+  "id": "guppy",
+  "field": "slow",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/poecilia-reticulata/",
+  "result": "compact",
+  "score": 1,
+  "quote": "Do not keep with fin-nipping species such as tiger barbs, serpae tetras etc."
+ },
+ {
+  "id": "angel",
+  "field": "slow",
+  "verdict": "agrees",
+  "url": "https://fishkeepingworld.com/angelfish/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Beware of fin nippers that bite at the long, flowing fins of the leopard angelfish."
+ },
+ {
+  "id": "yellowtang",
+  "field": "fam",
+  "verdict": "agrees",
+  "url": "https://www.liveaquaria.com/product/6746/?pcatid=6746",
+  "result": "exact",
+  "score": 1,
+  "quote": "demonstrates territorial aggression towards its own species, or Tangs in general"
+ },
+ {
+  "id": "bluetang",
+  "field": "fam",
+  "verdict": "agrees",
+  "url": "https://www.liveaquaria.com/product/330/?pcatid=330",
+  "result": "exact",
+  "score": 1,
+  "quote": "Though peaceful towards most tankmates, the Pacific Blue will become aggressive towards other fish of its own species."
+ },
+ {
+  "id": "bluetang",
+  "field": "fam",
+  "verdict": "agrees",
+  "url": "https://www.liveaquaria.com/blogs/species-spotlight/the-blue-tang",
+  "result": "exact",
+  "score": 1,
+  "quote": "In an aquarium, it is recommended to keep only one."
+ }
+]

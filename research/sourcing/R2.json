@@ -1,0 +1,188 @@
+{
+ "batch": "R2",
+ "agent_notes": "Seriously Fish pages give no female-specific sizes; ReptiFiles URLs 404; Hepper, iNaturalist, Aquarium Co-Op forum 403. Only anole female TL found via Wikipedia (indirect: brown anole page cites female Carolina anole range).",
+ "species": {
+  "cpd": {
+   "sci": "Danio margaritatus",
+   "fields": {
+    "female.tl": {
+     "ours": 25,
+     "verdict": "kept", "decision": "Nathan 2026-10-21: kept, no opened page states a female size (pages say only that females are smaller or larger); our estimate",
+     "suggest": null,
+     "sources": [],
+     "note": "Seriously Fish: \"They tend to grow a little larger than males\"; no female mm figure (species max 21mm SL)."
+    }
+   }
+  },
+  "cherrybarb": {
+   "sci": "Rohanella (Puntius) titteya",
+   "fields": {
+    "female.tl": {
+     "ours": 50,
+     "verdict": "kept", "decision": "Nathan 2026-10-21: kept, no opened page states a female size (pages say only that females are smaller or larger); our estimate",
+     "suggest": null,
+     "sources": [],
+     "note": "Seriously Fish: males smaller than females; no female mm figure (max 50mm SL)."
+    }
+   }
+  },
+  "dwarfgourami": {
+   "sci": "Trichogaster lalius",
+   "fields": {
+    "female.tl": {
+     "ours": 65,
+     "verdict": "kept", "decision": "Nathan 2026-10-21: kept, no opened page states a female size (pages say only that females are smaller or larger); our estimate",
+     "suggest": null,
+     "sources": [],
+     "note": "Seriously Fish: males a little larger than females; no female mm (max 88mm SL)."
+    }
+   }
+  },
+  "honeygourami": {
+   "sci": "Trichogaster chuna",
+   "fields": {
+    "female.tl": {
+     "ours": 50,
+     "verdict": "kept", "decision": "Nathan 2026-10-21: kept, no opened page states a female size (pages say only that females are smaller or larger); our estimate",
+     "suggest": null,
+     "sources": [],
+     "note": "Seriously Fish: females noticeably larger than males; no female mm (max 55mm SL)."
+    }
+   }
+  },
+  "gourami": {
+   "sci": "Trichopodus leerii",
+   "fields": {
+    "female.tl": {
+     "ours": 110,
+     "verdict": "kept", "decision": "Nathan 2026-10-21: kept, no opened page states a female size (pages say only that females are smaller or larger); our estimate",
+     "suggest": null,
+     "sources": [],
+     "note": "Seriously Fish: females blander and plumper; no female mm (max 120mm SL)."
+    }
+   }
+  },
+  "gbr": {
+   "sci": "Mikrogeophagus ramirezi",
+   "fields": {
+    "female.tl": {
+     "ours": 50,
+     "verdict": "kept", "decision": "Nathan 2026-10-21: kept, no opened page states a female size (pages say only that females are smaller or larger); our estimate",
+     "suggest": null,
+     "sources": [],
+     "note": "Seriously Fish: adult males grow larger than females; no female mm (max 40mm SL). Hepper blocked (403)."
+    }
+   }
+  },
+  "yellowlab": {
+   "sci": "Labidochromis caeruleus",
+   "fields": {
+    "female.tl": {
+     "ours": 90,
+     "verdict": "kept", "decision": "Nathan 2026-10-21: kept, no opened page states a female size (pages say only that females are smaller or larger); our estimate",
+     "suggest": null,
+     "sources": [],
+     "note": "Seriously Fish and Aquariadise: males slightly larger than females; no female size."
+    }
+   }
+  },
+  "peacock": {
+   "sci": "Aulonocara stuartgranti",
+   "fields": {
+    "female.tl": {
+     "ours": 100,
+     "verdict": "kept", "decision": "Nathan 2026-10-21: kept, no opened page states a female size (pages say only that females are smaller or larger); our estimate",
+     "suggest": null,
+     "sources": [],
+     "note": "Seriously Fish: males larger than females; no female size (max 130mm SL)."
+    }
+   }
+  },
+  "kadango": {
+   "sci": "Copadichromis borleyi",
+   "fields": {
+    "female.tl": {
+     "ours": 120,
+     "verdict": "kept", "decision": "Nathan 2026-10-21: kept, no opened page states a female size (pages say only that females are smaller or larger); our estimate",
+     "suggest": null,
+     "sources": [],
+     "note": "Seriously Fish: males larger than females; no female size (max 200mm SL)."
+    }
+   }
+  },
+  "peapuffer": {
+   "sci": "Carinotetraodon travancoricus",
+   "fields": {
+    "female.tl": {
+     "ours": 30,
+     "verdict": "kept", "decision": "Nathan 2026-10-21: kept, no opened page states a female size (pages say only that females are smaller or larger); our estimate",
+     "suggest": null,
+     "sources": [],
+     "note": "Wikipedia: females more rounded and tend to be larger than males; no female length."
+    }
+   }
+  },
+  "mandarin": {
+   "sci": "Synchiropus splendidus",
+   "fields": {
+    "female.tl": {
+     "ours": 50,
+     "verdict": "kept", "decision": "Nathan 2026-10-21: kept, no opened page states a female size (pages say only that females are smaller or larger); our estimate",
+     "suggest": null,
+     "sources": [],
+     "note": "Seriously Fish: females often rounder; no female size (max 25mm SL)."
+    }
+   }
+  },
+  "greenanole": {
+   "sci": "Anolis carolinensis",
+   "fields": {
+    "female.tl": {
+     "ours": 150,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://en.wikipedia.org/wiki/Brown_anole",
+       "site": "Wikipedia (Brown anole)",
+       "states": "female Carolina anole total length 7.6–15 cm",
+       "quote": "Females are also about the size of female Carolina anoles, which range from 7.6–15 cm (3.0–5.9 in)."
+      }
+     ],
+     "note": "Page is the brown anole article; it states the female green (Carolina) anole total length range 7.6-15 cm. Ours 150 mm is at top of range."
+    }
+   }
+  },
+  "brownanole": {
+   "sci": "Anolis sagrei",
+   "fields": {
+    "female.tl": {
+     "ours": 130,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://en.wikipedia.org/wiki/Brown_anole",
+       "site": "Wikipedia (Brown anole)",
+       "states": "female Carolina anole total length 7.6–15 cm; brown anole females about that size",
+       "quote": "Females are also about the size of female Carolina anoles, which range from 7.6–15 cm (3.0–5.9 in)."
+      }
+     ],
+     "note": "Indirect: page says brown anole females are about the size of female Carolina anoles (7.6-15 cm total length); ours 130 mm within. Cayman Wildlife says only males much larger than females."
+    }
+   }
+  },
+  "chacogoldenknee": {
+   "sci": "Grammostola pulchripes",
+   "fields": {
+    "female.tl": {
+     "ours": 50,
+     "verdict": "kept", "decision": "Nathan 2026-10-21: kept, no opened page states a female size (pages say only that females are smaller or larger); our estimate",
+     "suggest": null,
+     "sources": [],
+     "note": "Wikipedia: mature males have longer legs and smaller bodies than females; only legspan given, no female body length."
+    }
+   }
+  }
+ }
+}

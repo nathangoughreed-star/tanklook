@@ -1,0 +1,355 @@
+{
+  "batch": "R3",
+  "agent_notes": "Seriously Fish pages state a Volume row (base x 30 cm height) as well as the base, so litres are the page's own figure, not derived; no default height used. Rummy-nose SF page says base 'not recorded'. Synodontis: no second care sheet found (Fishkeeping World 404; Planet Catfish 403).",
+  "species": {
+    "cardinal": {
+      "sci": "Paracheirodon axelrodi",
+      "fields": {
+        "minL": {
+          "ours": 60,
+          "verdict": "agrees",
+          "suggest": null,
+          "sources": [
+            {
+              "url": "https://www.seriouslyfish.com/species/paracheirodon-axelrodi/",
+              "site": "Seriously Fish",
+              "states": "base 60 x 30 cm, ~54 litres (~14 US gal)",
+              "quote": "At ~54litres~14US gal and a turnover of four to five times the volume an hour, look for a filter rated 215–270 lph."
+            },
+            {
+              "url": "https://www.fishkeepingworld.com/cardinal-tetra/",
+              "site": "Fishkeeping World",
+              "states": "20 gallons (75.7 L) for a small school of six",
+              "quote": "20 gallons for a small school of six cardinal tetras."
+            }
+          ],
+          "note": "SF 54 L (60 x 30 cm base, page volume implies 30 cm height); FW 20 gal = 76 L; ours 60 within span."
+        }
+      }
+    },
+    "ember": {
+      "sci": "Hyphessobrycon amandae",
+      "fields": {
+        "minL": {
+          "ours": 30,
+          "verdict": "agrees",
+          "suggest": null,
+          "sources": [
+            {
+              "url": "https://www.seriouslyfish.com/species/hyphessobrycon-amandae/",
+              "site": "Seriously Fish",
+              "states": "base at least 45 x 30 cm, ~41 litres (~11 US gal)",
+              "quote": "Aquarium base dimensions of at least 45 ∗ 30 cm18 ∗ 12 in or equivalent are suggested."
+            },
+            {
+              "url": "https://www.fishkeepingworld.com/ember-tetra/",
+              "site": "Fishkeeping World",
+              "states": "10 gallons (37.9 L)",
+              "quote": "Ember Tetras will need at least a 10-gallon tank."
+            }
+          ],
+          "note": "SF ~41 L (45 x 30 cm, page volume implies 30 cm height); FW 10 gal = 38 L; ours 30 is within 25% of FW."
+        }
+      }
+    },
+    "rummynose": {
+      "sci": "Hemigrammus rhodostomus",
+      "fields": {
+        "minL": {
+          "ours": 60,
+          "verdict": "agrees",
+          "suggest": null,
+          "sources": [
+            {
+              "url": "https://www.fishkeepingworld.com/rummy-nose-tetra/",
+              "site": "Fishkeeping World",
+              "states": "20 gallons (75.7 L)",
+              "quote": "Rummy nose tetras need at least a 20 gallon tank."
+            }
+          ],
+          "note": "Seriously Fish page (https://www.seriouslyfish.com/species/hemigrammus-rhodostomus/) lists aquarium base as 'not recorded' (only a 90 cm minimum length), so no SF litres; ours 60 is within 25% of 76 L."
+        }
+      }
+    },
+    "harlequin": {
+      "sci": "Trigonostigma heteromorpha",
+      "fields": {
+        "minL": {
+          "ours": 40,
+          "verdict": "disagrees",
+          "suggest": 54,
+          "sources": [
+            {
+              "url": "https://www.seriouslyfish.com/species/trigonostigma-heteromorpha/",
+              "site": "Seriously Fish",
+              "states": "base 60 x 30 cm, ~54 litres (~14 US gal)",
+              "quote": "Aquarium base dimensions of 60 ∗ 30 cm24 ∗ 12 in or equivalent should be the smallest considered"
+            },
+            {
+              "url": "https://www.fishkeepingworld.com/harlequin-rasbora/",
+              "site": "Fishkeeping World",
+              "states": "15 gallons (56.8 L) for a school of 8-10; 20 gallons better",
+              "quote": "Harlequin rasboras need a tank of at least 15 gallons for a school of 8-10"
+            }
+          ],
+          "note": "Both sources ~54-57 L; ours 40 is below 75% of the lowest (54 L stated by page, 15 gal = 56.8 L)."
+        }
+      }
+    },
+    "chili": {
+      "sci": "Boraras brigittae",
+      "fields": {
+        "minL": {
+          "ours": 20,
+          "verdict": "agrees", "use": [1], "decision": "Nathan 2026-10-21: cites Fishkeeping World 6-8 gal; Seriously Fish says base 45 x 30 cm (~41 L)",
+          "suggest": null,
+          "sources": [
+            {
+              "url": "https://www.seriouslyfish.com/species/boraras-brigittae/",
+              "site": "Seriously Fish",
+              "states": "base 45 x 30 cm, ~41 litres (~11 US gal)",
+              "quote": "Aquarium base 45 × 30cm18 × 12in"
+            },
+            {
+              "url": "https://www.fishkeepingworld.com/chili-rasbora/",
+              "site": "Fishkeeping World",
+              "states": "6-8 gallons (22.7-30.3 L) for a school of 8-10",
+              "quote": "6-8 gallons for a school of 8-10"
+            }
+          ],
+          "note": "Sources differ: SF ~41 L vs FW 6-8 gal (23-30 L). Ours 20 is within 25% of 22.7 L (FW low end) but about half of SF."
+        }
+      }
+    },
+    "danio": {
+      "sci": "Danio rerio",
+      "fields": {
+        "minL": {
+          "ours": 40,
+          "verdict": "agrees", "use": [1], "decision": "Nathan 2026-10-21: cites Fishkeeping World 10 gal; Seriously Fish says base 90 x 30 cm (~81 L) for this active swimmer",
+          "suggest": null,
+          "sources": [
+            {
+              "url": "https://www.seriouslyfish.com/species/danio-rerio/",
+              "site": "Seriously Fish",
+              "states": "min base 90 x 30 cm, ~81 litres (~21 US gal)",
+              "quote": "An active species so even a small group needs an aquarium with minimum base dimensions of 90 ∗ 30 cm36 ∗ 12 in."
+            },
+            {
+              "url": "https://www.fishkeepingworld.com/zebra-danio/",
+              "site": "Fishkeeping World",
+              "states": "10 gallons (37.9 L) plus 2 gal per extra fish",
+              "quote": "The minimum tank size for zebra danios is 10 gallons, plus an additional 2 gallons per extra fish."
+            }
+          ],
+          "note": "Sources differ: SF ~81 L (90 cm base) vs FW 10 gal = 38 L; ours 40 agrees with FW only. SF's 90 cm length is a notably larger requirement."
+        }
+      }
+    },
+    "whitecloud": {
+      "sci": "Tanichthys albonubes",
+      "fields": {
+        "minL": {
+          "ours": 40,
+          "verdict": "agrees",
+          "suggest": null,
+          "sources": [
+            {
+              "url": "https://www.seriouslyfish.com/species/tanichthys-albonubes/",
+              "site": "Seriously Fish",
+              "states": "min base 60 x 30 cm, ~54 litres (~14 US gal)",
+              "quote": "Minimum base dimensions of 60 ∗ 30 cm24 ∗ 12 in or equivalent are required."
+            },
+            {
+              "url": "https://www.fishkeepingworld.com/white-cloud-mountain-minnow/",
+              "site": "Fishkeeping World",
+              "states": "10-12 gallons (37.9-45.4 L)",
+              "quote": "A White Cloud Mountain Minnow should be kept in at least a 10-gallon aquarium."
+            }
+          ],
+          "note": "SF 54 L, FW 38-45 L; ours 40 is within the span of FW and within 25% of SF? (40/54 = 0.74, just outside) so agrees via FW."
+        }
+      }
+    },
+    "cpd": {
+      "sci": "Danio margaritatus",
+      "fields": {
+        "minL": {
+          "ours": 40,
+          "verdict": "agrees",
+          "suggest": null,
+          "sources": [
+            {
+              "url": "https://www.seriouslyfish.com/species/danio-margaritatus/",
+              "site": "Seriously Fish",
+              "states": "base 45 x 30 cm, ~41 litres (~11 US gal)",
+              "quote": "At ~41litres~11US gal and the gentle movement this species wants"
+            },
+            {
+              "url": "https://www.fishkeepingworld.com/celestial-pearl-danio/",
+              "site": "Fishkeeping World",
+              "states": "10 gallons (37.9 L), 15-20 better",
+              "quote": "A [10-gallon tank] is the minimum for a small group, and a 15- to 20-gallon tank is better."
+            }
+          ],
+          "note": "SF ~41 L (45 x 30 cm base); FW 10 gal = 38 L; ours 40 agrees."
+        },
+        "temper": {
+          "ours": 0,
+          "verdict": "agrees",
+          "suggest": null,
+          "sources": [
+            {
+              "url": "https://www.fishkeepingworld.com/celestial-pearl-danio/",
+              "site": "Fishkeeping World",
+              "states": "Temperament: Peaceful",
+              "quote": "They are peaceful, but they are small enough to be bullied or outcompeted for food by bigger tank mates."
+            },
+            {
+              "url": "https://www.seriouslyfish.com/species/danio-margaritatus/",
+              "site": "Seriously Fish",
+              "states": "timid; males spar with each other, not with tankmates",
+              "quote": "This timid species should ideally be kept in a heavily-planted set-up"
+            }
+          ],
+          "note": "SF also notes males spar within the group but the behaviour does not normally extend to tankmates; peaceful toward other species."
+        }
+      }
+    },
+    "hatchet": {
+      "sci": "Carnegiella strigata",
+      "fields": {
+        "minL": {
+          "ours": 60,
+          "verdict": "agrees",
+          "suggest": null,
+          "sources": [
+            {
+              "url": "https://www.seriouslyfish.com/species/carnegiella-strigata/",
+              "site": "Seriously Fish",
+              "states": "base 75 x 30 cm, ~68 litres (~18 US gal)",
+              "quote": "At ~68litres~18US gal and a turnover of four to five times the volume an hour, look for a filter rated 270–340 lph."
+            },
+            {
+              "url": "https://www.liveaquaria.com/products/marble-hatchet",
+              "site": "LiveAquaria",
+              "states": "20 gallons (75.7 L)",
+              "quote": "Minimum Tank Size: 20 Gallons"
+            }
+          ],
+          "note": "SF 68 L, LiveAquaria 76 L; ours 60 within 25% of both."
+        }
+      }
+    },
+    "syno": {
+      "sci": "Synodontis njassae",
+      "fields": {
+        "minL": {
+          "ours": 200,
+          "verdict": "disagrees",
+          "suggest": 108,
+          "sources": [
+            {
+              "url": "https://www.seriouslyfish.com/species/synodontis-njassae/",
+              "site": "Seriously Fish",
+              "states": "120 x 30 x 30 cm, ~108 litres (~29 US gal)",
+              "quote": "120 ∗ 30 ∗ 30 cm48 ∗ 12 ∗ 12 in - ~108 litres~29 US gal."
+            }
+          ],
+          "note": "Only one care source found (Fishkeeping World 404, Planet Catfish forum 403). Page minimum 108 L; ours 200 is almost double. A forum thread (not fetched) suggests larger tanks for breeding groups."
+        }
+      }
+    },
+    "pandacory": {
+      "sci": "Corydoras panda",
+      "fields": {
+        "care": {
+          "ours": 1,
+          "verdict": "agrees",
+          "suggest": null,
+          "sources": [
+            {
+              "url": "https://www.buildyouraquarium.com/panda-cory-catfish/",
+              "site": "Build Your Aquarium",
+              "states": "Ease of Care: Easy",
+              "quote": "They’re easy to care for, making them perfect for beginners."
+            },
+            {
+              "url": "https://www.tankarium.com/panda-cory-catfish/",
+              "site": "Tankarium",
+              "states": "Care Level: Beginner/Easy",
+              "quote": "Panda corys are very hardy and adaptable, which makes them extremely easy to look after."
+            }
+          ],
+          "note": "A search snippet (not opened) mentioned one retailer rating it Moderate."
+        }
+      }
+    },
+    "regaljumper": {
+      "sci": "Phidippus regius",
+      "fields": {
+        "temper": {
+          "ours": 0,
+          "verdict": "agrees",
+          "suggest": null,
+          "sources": [
+            {
+              "url": "https://www.petsmart.com/learning-center/reptile-care/regal-jumping-spider-care-guide",
+              "site": "PetSmart",
+              "states": "can be shy at first, naturally curious; rarely bite unless startled",
+              "quote": "These spiders can be shy at first, but they’re naturally curious."
+            }
+          ],
+          "note": "Page does not say docile outright; describes shy, curious, rarely biting (non-aggressive). Tarantula Collective page (opened) says bold/curious/skittish but has no temperament word, so not attached."
+        }
+      }
+    },
+    "sixline": {
+      "sci": "Pseudocheilinus hexataenia",
+      "fields": {
+        "solo": {
+          "ours": true,
+          "verdict": "agrees",
+          "suggest": null,
+          "sources": [
+            {
+              "url": "https://simstropicalfish.co.uk/product/pyjama-wrasse-pseudocheilinus-hexataenia/",
+              "site": "Sims Tropical Fish",
+              "states": "only one per aquarium unless breeding",
+              "quote": "It is recommended to have only one Six Line Wrasse per aquarium to limit aggression, unless breeding is intended."
+            }
+          ],
+          "note": "Only one fetched page states it; the Microcosm page would not load usefully. Page also calls it semi-aggressive."
+        }
+      }
+    },
+    "firenewt": {
+      "sci": "Cynops orientalis",
+      "fields": {
+        "air.rh": {
+          "ours": [
+            60,
+            80
+          ],
+          "verdict": "agrees",
+          "suggest": null,
+          "sources": [
+            {
+              "url": "https://joshsfrogs.com/sp/chinese-fire-bellied-newt---hypselotriton-orientalis--captive-bred--newt002",
+              "site": "Josh's Frogs",
+              "states": "60-80% RH if kept terrestrially",
+              "quote": "If kept terrestrially, humidity in the range of 60-80% should be maintained."
+            },
+            {
+              "url": "https://www.petmd.com/exotic/fire-bellied-newt-care-sheet",
+              "site": "PetMD",
+              "states": "70% (general fire-bellied newt sheet)",
+              "quote": "Humidity levels should be maintained at 70% and monitored with a hygrometer (humidity gauge)."
+            }
+          ],
+          "note": "Josh's Frogs states 60-80% explicitly for this species; PetMD gives 70% for newts generally."
+        }
+      }
+    }
+  }
+}

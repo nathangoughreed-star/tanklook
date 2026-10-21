@@ -61,12 +61,12 @@ export const CARE: Record<string, AnimalCare> = {
   sixline: A(1, 208, 1, [24, 27], { solo: true, prey: { mm: 30, cats: ['sw-invert'] } }), chromis: A(1, 115, 0, [24, 27]),
   coralbeauty: A(1, 265, 1, [24, 27], { solo: true, coral: 1 }), watchman: A(1, 75, 0, [24, 27]), mandarin: A(3, 265, 0, [24, 27]),
   cleanershrimp: A(1, 75, 0, [24, 27]), turbo: A(1, 40, 0, [24, 27]), hermit: A(1, 40, 0, [24, 27], { prey: { mm: 50, cats: ['sw-invert'] } }),
-  dartfrog: A(1, 40, 0), treefrog: A(1, 76, 0, undefined, { prey: { mm: 50, cats: ['amphibian', 'land-invert'] } }), firetoad: A(1, 57, 0), firenewt: A(1, 75, 0),
+  dartfrog: A(1, 40, 1), treefrog: A(1, 76, 0, undefined, { prey: { mm: 50, cats: ['amphibian', 'land-invert'] } }), firetoad: A(1, 57, 0), firenewt: A(1, 75, 0),
   adf: A(2, 40, 0, [22, 27]), axolotl: A(2, 110, 0, [16, 20], { prey: { mm: 80 }, tol: [10, 22] }),
-  crestedgecko: A(1, 127, 0, undefined, { solo: true, prey: { mm: 40, cats: ['land-invert'] } }), crestedharlequin: A(1, 127, 0, undefined, { solo: true, prey: { mm: 40, cats: ['land-invert'] } }),
+  crestedgecko: A(1, 127, 0, undefined, { solo: true, prey: { mm: 40, cats: ['land-invert'] } }), crestedharlequin: A(1, 127, 1, undefined, { solo: true, prey: { mm: 40, cats: ['land-invert'] } }),
   greenanole: A(1, 75, 1, undefined, { prey: { mm: 25, cats: ['land-invert'] } }), greenanolebrown: A(1, 75, 1, undefined, { prey: { mm: 25, cats: ['land-invert'] } }),
   brownanole: A(1, 40, 1, undefined, { prey: { mm: 25, cats: ['land-invert'] } }),
-  leopardgecko: A(1, 150, 0, undefined, { solo: true, prey: { mm: 60, cats: ['land-invert'] } }), regaljumper: A(1, 2, 0, undefined, { solo: true, prey: { mm: 15 } }),
+  leopardgecko: A(1, 150, 1, undefined, { solo: true, prey: { mm: 60, cats: ['land-invert'] } }), regaljumper: A(1, 2, 0, undefined, { solo: true, prey: { mm: 15 } }),
   ballpython: A(2, 450, 0, undefined, { solo: true, prey: { mm: 600 } }), chacogoldenknee: A(1, 57, 0, undefined, { solo: true, prey: { mm: 60 } }),
 };
 // Researched temperature bands (research/climate, 2026-10-19) replace the first-guess ranges above.
