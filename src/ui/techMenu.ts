@@ -20,7 +20,8 @@ import {
 } from '../scene/tech';
 import { FILTER_PRODUCTS, HEATER_PRODUCTS, filtersNear, genericHeaterW, heatersNear, lightProduct, lightsFor, productName, type FilterProduct, type HeaterProduct, type LightProduct } from '../data/gearCatalog';
 import { applyLightProduct, lightProductNote, productOn } from '../scene/lightproduct';
-import { lightOutCached } from '../scene/lightout';
+import { TECHS, lightOutCached } from '../scene/lightout';
+import { integratedKit, lockNote, locksOf } from '../scene/integrated';
 import type { FilterKind } from '../demand/gear';
 import { volume } from '../scene/physics';
 import type { TankSetup } from '../scene/types';
@@ -229,6 +230,8 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
       if (r.id === 'heater' && cur !== 'none') name = heatLoss(S, t).units.map(u => u.product ? productName(u.product) : `Generic heater ${u.watts} W`).join(' + ');
       if (r.id === 'filter' && cur !== 'none') name = filterUnits(t).map(u => filterLabel(S, u)).join(' + ');
       html += `<div class="trow${open === r.id ? ' open' : ''}" data-row="${r.id}"><button type="button" class="thead" aria-expanded="${open === r.id}"><span class="tlab">${esc(r.label)}</span><span class="tcur">${esc(name)}</span>${range(c, coveredOf(S, t, r.id))}</button>`;
+      // an integrated kit's own filter (or heater): shown, not opened (scene/integrated.ts)
+      if ((r.id === 'filter' && locksOf(S)?.filter) || (r.id === 'heater' && locksOf(S)?.heater)) { html += `<div class="hint">${esc(lockNote(S, r.id))}</div></div>`; continue; }
       if (open === r.id && (r.id === 'heater' || r.id === 'filter')) {
         html += `<div class="topts">${r.id === 'heater' ? heaterBody(S, t, cur, c) : filterBody(S, t, cur, c, r)}${def?.note ? `<div class="hint">${esc(def.note)}</div>` : ''}</div></div>`;
         continue;
@@ -278,6 +281,8 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     const el = e.target as HTMLElement, rowEl = el.closest<HTMLElement>('[data-row]'), row = rowEl?.dataset.row;
     const pre = el.closest<HTMLElement>('[data-pre]');
     if (pre) { edit(s => applyPreset(s, pre.dataset.pre!)); return; }
+    const lk = locksOf(store.tank);
+    if (el.closest('.thead') && row && ((row === 'filter' && lk?.filter) || (row === 'heater' && lk?.heater))) return;
     if (el.closest('.thead') && row) { open = open === row ? null : row; adding = null; render(); return; }
     const act = el.closest<HTMLElement>('[data-act]')?.dataset.act;
     if (act) {
@@ -313,9 +318,15 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
   function renderLight() {
     if (!lightMount) return;
     const S = store.tank, l = S.light, cur = productOn(l), inch = (mm: number) => Math.round(mm / 25.4), o = cur ? lightOutCached(S) : null;
-    const key = JSON.stringify([S.lid, S.tank.L, cur?.id, o && Math.round(o.mean), store.scene.units]);
+    const kitLight = locksOf(S)?.light ? integratedKit(S) : undefined;
+    const key = JSON.stringify([S.lid, S.tank.L, cur?.id, o && Math.round(o.mean), store.scene.units, kitLight?.id, l.watts]);
     if (key === lightKey) return;
     lightKey = key;
+    if (kitLight) { // an integrated kit has its own light: no catalogue to pick from
+      const t = TECHS[l.tech ?? kitLight.light.tech];
+      lightMount.innerHTML = `<div class="tunit"><div class="tuh"><span class="tun">${esc(kitLight.name)}: its own light</span></div><div class="hint">${l.watts ?? kitLight.light.watts ?? '?'} W ${esc(t?.label ?? 'LED')}${kitLight.light.spec === 'published' ? '' : ' (from the listing)'}. ${esc(lockNote(S, 'light'))}</div></div>`;
+      return;
+    }
     if (S.lid === 'hood') { lightMount.innerHTML = '<div class="hint">The hood holds its own lamps: take the hood off (Lid) to fit one of the catalogued lights.</div>'; return; }
     const fits = lightsFor(S.tank.L), list = cur && !fits.includes(cur) ? [cur, ...fits] : fits;
     const label = (p: LightProduct) => `${productName(p)} · ${p.watts} W${p.est?.includes('watts') ? ' (est.)' : ''}${p.priceUsd ? ` · ${usd(p.priceUsd)}` : ''}`;

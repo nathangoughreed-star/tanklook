@@ -14,6 +14,7 @@ import { pieSize, radialSize, sameGrid, sampleTerrain, swampTerrain, type Ground
 import { SCENE_VERSION, type BgImage, type BgSide, type Fish, type Item, type LightTech, type Scene, type Tank, type TankSetup } from './types';
 import { adoptImages, sidesTouch } from './images';
 import { parseTech } from './tech';
+import { parseIntegrated } from './integrated';
 import { parseSpace } from './space'; // lane P3: layout.space
 
 const GRAINS = ['mud', 'sand', 'gravel', 'pebble'] as const;
@@ -160,11 +161,11 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
   const tank = (v: unknown, def: Tank): Tank => {
     const o = isObj(v) ? v : {};
     const T: Tank = { L: num(o.L, def.L, LIMITS.tankMin, LIMITS.tankMax), H: num(o.H, def.H, LIMITS.tankMin, LIMITS.tankMax), D: num(o.D, def.D, LIMITS.tankMin, LIMITS.tankMax) };
-    const shape = pick(o.shape, ['rect', 'bow', 'round', 'poly', 'bowl', 'pie'] as const, 'rect'); // v8; older files: rect
+    const shape = pick(o.shape, ['rect', 'bow', 'round', 'poly', 'bowl', 'pie', 'arch'] as const, 'rect'); // v8; older files: rect
     if (shape === 'rect') return T;
     return normTank({ ...T, shape, ...(shape === 'poly' ? { sides: num(o.sides, 6) } : {}), ...(shape === 'bow' ? { bowMin: num(o.bowMin, T.D * 0.75, 0, T.D) } : {}),
       ...(shape === 'bowl' ? { bowlFloor: num(o.bowlFloor, T.L * 0.6, 0, T.L), bowlTop: num(o.bowlTop, T.L * 0.6, 0, T.L) } : {}),
-      ...(shape === 'pie' ? { pieDeg: num(o.pieDeg, 90, 45, 180) } : {}) });
+      ...(shape === 'pie' ? { pieDeg: num(o.pieDeg, 90, 45, 180) } : {}), ...(shape === 'arch' ? { frontBulge: num(o.frontBulge, T.D * 0.08, 0, T.D) } : {}) });
   };
 
   const tankA = tank(raw.tank, d.tank);
@@ -333,6 +334,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
   const te2 = setup.terrain;
   if (te2.h.length && !sameGrid(te2, setup.tank)) setup.terrain = { ...sampleTerrain(setup, setup.tank, te2.cols), on: te2.on };
   { const pt = parsePatches(raw.patches); if (pt) setup.patches = pt; } // lane SB 2026-10-16: painted scatter, absent = none
+  { const ig = parseIntegrated(raw.integrated); if (ig) setup.integrated = ig; } // 2026-10-20: an integrated kit (an all-in-one run on its own gear)
   { const tc = parseTech(raw.tech); if (tc) setup.tech = tc; } // lane TM 2026-10-19: tech level, absent = inferred gear
   keepInWater(setup); fitTable(setup);
   fitFixture(setup.light, setup.tank, false); // 2026-10-15: older lights clamped into their fixture's usual ranges

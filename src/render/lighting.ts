@@ -870,7 +870,7 @@ export function placeSlice(sc: THREE.Scene, T: Tank, S: LightScene & { render: {
   let m = sc.getObjectByName('lightSlice') as THREE.Mesh | undefined;
   const y = S.light.mapSlice ?? 0;
   if (!on || !S.render.beams || !(y > 0)) { if (m) m.visible = false; return; }
-  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.pieDeg}`;
+  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.pieDeg}|${T.frontBulge}`;
   if (!m || m.userData.key !== key) {
     if (m) { m.geometry.dispose(); sc.remove(m); }
     const g = new THREE.ShapeGeometry(new THREE.Shape(footprint(T).ring.map(([x, d]) => new THREE.Vector2(x, d)))).rotateX(-Math.PI / 2);

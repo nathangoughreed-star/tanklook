@@ -61,7 +61,7 @@ const fitCache = new Map<string, P[]>();
  * deterministic starts (farthest-point seeding), keeping the best; cached per outline and count.
  */
 export function fitSpots(T: Tank, n: number): P[] {
-  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.pieDeg}|${n}`;
+  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.pieDeg}|${T.frontBulge}|${n}`;
   const hit = fitCache.get(key);
   if (hit) return hit;
   const g = 48, S: P[] = [];
@@ -259,7 +259,7 @@ export function bestPos(T: Tank, l: LightSettings): number | null {
   const tl = l.type === 'tube' ? tubeLayout(T, { ...l, pos: 0 }) : null, dep = tl ? tl.depth : l.type === 'led' ? ledBarDepth(T, l) : 0;
   if (!dep) return null;
   const pb = productBar(T, l), offs = tl ? tl.zs.map(z => -z - T.D / 2) : pb ? [-pb.wid / 4, pb.wid / 4] : [-0.12 * T.D, 0.12 * T.D]; // rows' depth from the bar's centre
-  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.pieDeg}|${dep}|${offs.join(',')}`;
+  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.pieDeg}|${T.frontBulge}|${dep}|${offs.join(',')}`;
   const hit = posCache.get(key);
   if (hit != null) return hit;
   const g = 64, ds: number[] = [];

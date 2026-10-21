@@ -180,7 +180,7 @@ const cache = new Map<string, THREE.BufferGeometry>();
 export function backdropGeometry(T: Tank, b: BackdropSettings, rim = false, sides: readonly BgSide[] = ['back']): THREE.BufferGeometry | null {
   const depth = backdropDepth(b, T);
   if (!depth || !sides.length) return null;
-  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.bowMin}|${T.pieDeg}|${b.kind}|${depth}|${b.seed}|${rim}|${[...sides].sort()}`;
+  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.bowMin}|${T.pieDeg}|${T.frontBulge}|${b.kind}|${depth}|${b.seed}|${rim}|${[...sides].sort()}`;
   const hit = cache.get(key);
   if (hit) return hit;
   const f = field(b.kind, b.seed), col = new THREE.Color(), gap = 1.5;

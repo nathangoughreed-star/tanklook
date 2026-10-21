@@ -475,7 +475,7 @@ float gritK() {
  * below the opening (its walls flare past the floor disc). Needs the renderer's localClippingEnabled.
  */
 const glassMats = new Map<string, THREE.MeshBasicMaterial>();
-const glassKey = (T: Tank) => `${shapeOf(T)}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}`;
+const glassKey = (T: Tank) => `${shapeOf(T)}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}|${T.frontBulge}`;
 /** The clipping planes and the bowl's sphere cut (a shader patch adding vGlassW) for one tank outline; `vary` alone
  *  declares what the cut needs without cutting (the cap's count passes). */
 function glassClip(T: Tank) {
