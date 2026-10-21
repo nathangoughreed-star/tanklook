@@ -1,0 +1,38 @@
+[
+ {
+  "id": "feeding",
+  "field": "feedings_per_day",
+  "verdict": "agrees",
+  "url": "https://www.petmd.com/fish/tetra-fish-care-sheet",
+  "result": "exact",
+  "score": 1,
+  "quote": "Feed once or twice daily, only what they can eat within one to two minutes."
+ },
+ {
+  "id": "auto-feeder-listing",
+  "field": "price_usd",
+  "verdict": "not-stated",
+  "url": "https://jefferspet.com/products/eheim-everyday-fish-feeder",
+  "result": "exact",
+  "score": 1,
+  "quote": "$21.99"
+ },
+ {
+  "id": "auto-feeder-listing",
+  "field": "refill_interval",
+  "verdict": "disagrees",
+  "url": "https://jefferspet.com/products/eheim-everyday-fish-feeder",
+  "result": "exact",
+  "score": 1,
+  "quote": "Feeding drum volume: 100 ml/3.3fl. oz for up to 6 weeks of feedings"
+ },
+ {
+  "id": "vacation_feeding",
+  "field": "days_fish_can_go_without_food",
+  "verdict": "not-stated",
+  "url": "https://www.buildyouraquarium.com/how-long-can-fish-go-without-food/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Most healthy aquarium fish can go three days to a week without eating."
+ }
+]

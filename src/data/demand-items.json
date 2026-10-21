@@ -1470,6 +1470,20 @@
    "unit": "one 7 x 7 in silk moss mat (lane P4, 2026-10-20); no aquarium silk moss mat listing found: judged from the plastic mats ($7-$14) and silk plants ($6-$14)",
    "url": "",
    "est": true
+  },
+  "gear:wc-hose": {
+   "lo": 59.99,
+   "mode": 64.99,
+   "hi": 80,
+   "unit": "water-change hose that drains and fills from the tap; Python No Spill Clean and Fill 25 ft kit $64.99 (PetSmart $59.99); hi estimated for the longer kits (lane MW, 2026-10-21)",
+   "url": "https://fishtanksdirect.com/python-no-spill-clean-and--fill-kit-25-foot/"
+  },
+  "gear:auto-feeder": {
+   "lo": 21.99,
+   "mode": 28.13,
+   "hi": 45,
+   "unit": "automatic fish feeder; Eheim Everyday Feeder $21.99 Jeffers (out of stock), $28.13 open box at Bulk Reef Supply; hi estimated from programmable feeders (lane MW, 2026-10-21)",
+   "url": "https://www.bulkreefsupply.com/everyday-fish-feeder-eheim.html"
   }
  }
 }

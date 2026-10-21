@@ -26,7 +26,7 @@ const kindsAt = (v: number) => Math.round(v <= 4 ? lerpStops(KINDS_PER_STOP, Mat
 const isInvert = (sp: Species) => sp.kind === 'snail' || sp.cat.endsWith('invert');
 /** Water one animal needs, litres: its load from the stocking engine (FishBase mass^0.75 x metabolism, scene/stocking.ts; lane SE
  *  2026-10-19; the rule of thumb it replaced was 3 L x (tl/35)^1.6 per animal, half again for marine, a third for shrimp and snails). */
-export const litresFor = litresPerAnimal;
+export const litresFor = (sp: Species) => litresPerAnimal(sp); // a function, not an alias: stocking.ts and this file import each other (lane MW 2026-10-21: the demand engine now loads stocking first)
 /** The water the bioload cap is counted on, litres: the tank to its water line (a swamp's shallow pools still count a
  *  third of the tank, for the animals on land). */
 export function bioloadLitres(s: TankSetup) {

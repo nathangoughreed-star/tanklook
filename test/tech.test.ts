@@ -148,8 +148,8 @@ describe('tech menu model (lane TM step 1)', () => {
 describe('demand rows from the tech (lane TM step 3)', () => {
   const NOW = Date.parse('2026-10-19');
   const D = (S: TankSetup) => demandOf(S, defaultProfile(), { now: NOW });
-  it('a file without tech keeps its demand numbers (locked 2026-10-19)', () => {
-    const LOCK: Record<string, number[]> = { planted: [1337.093, 52.933, 54.441, 8.229], iwagumi: [2111.437, 43.006, 67.082, 6.696], betta: [337.872, 9.952, 27.041, 5.64], paludarium: [1645.377, 58.952, 54.649, 8.433], terrarium: [736.198, 19.816, 18.473, 4.294], reef: [3421.776, 156.992, 74.857, 8.65], rainforest: [1463.308, 73.003, 31.583, 4.005], arid: [1380.183, 36.148, 19.883, 3.298], python: [1549.696, 65.682, 19.713, 1.813], blackwater: [1275.347, 51.243, 43.254, 5.613], clownnano: [1579.869, 100.899, 66.678, 7.068] };
+  it('a file without tech keeps its demand numbers (locked 2026-10-19; minutes and upkeep re-blessed 2026-10-21, lane MW: water change from the nitrogen budget, feeding, glass, plant bunches)', () => {
+    const LOCK: Record<string, number[]> = { planted: [1337.093, 52.397, 55.66, 8.229], iwagumi: [2111.437, 42.763, 53.943, 6.696], betta: [337.872, 9.915, 33.815, 5.64], paludarium: [1645.377, 58.623, 58.399, 8.433], terrarium: [736.198, 19.816, 19.991, 4.294], reef: [3421.776, 152.214, 81.767, 8.65], rainforest: [1463.308, 73.003, 36.904, 4.005], arid: [1380.183, 36.148, 20.236, 3.298], python: [1549.696, 65.682, 21.769, 1.813], blackwater: [1275.347, 50.707, 44.674, 5.613], clownnano: [1579.869, 97.703, 73.753, 7.068] };;
     for (const [id, want] of Object.entries(LOCK)) {
       const t = D(tankOf(id)).totals;
       expect([t.setupUsd, t.upkeepUsdMo, t.minPerWeek, t.risk].map(v => Math.round(v * 1000) / 1000), id).toEqual(want);

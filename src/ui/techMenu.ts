@@ -223,6 +223,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     html += `<div class="tprev" aria-live="polite"></div>`;
     for (const r of rows) {
       if (r.id === 'chiller' && !offerChiller(S) && t.rows.chiller !== 'chiller') continue;
+      if (r.qol && !rows.some(x => x.qol && x.id !== r.id && rows.indexOf(x) < rows.indexOf(r))) html += '<div class="hint" style="margin-top:.6em"><b>Quality of life</b>: gear that takes chores off your hands, for a price.</div>';
       const cur = t.rows[r.id] ?? 'none', def = optionDef(r.id, cur), c = optionCost(S, r.id, cur, { tech: t, kwhUsd: kwhUsd() });
       let name = def?.label ?? cur;
       // heaters and filters: the units by name (Nathan 2026-10-20: "Top Fin Submersible Heater 50 W" readily seen)

@@ -11,7 +11,7 @@ when it carries the url of the listing it was read from and does not mark the fi
 
 | | values | cited | fitted | derived | researched | claimed | assumption | unsourced | strong |
 |---|---|---|---|---|---|---|---|---|---|
-| **all data** | 5174 | 2329 (45 %) | 59 (1 %) | 11 (0 %) | 681 (13 %) | 679 (13 %) | 728 (14 %) | 687 (13 %) | 46 % |
+| **all data** | 5200 | 2331 (45 %) | 59 (1 %) | 11 (0 %) | 681 (13 %) | 679 (13 %) | 752 (14 %) | 687 (13 %) | 46 % |
 | Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) | 1277 | 301 |  |  | 387 | 428 | 16 | 145 | 24 % |
 | Adult length per species (species.json tl) | 108 | 82 |  |  |  |  |  | 26 | 76 % |
 | Marine pH band (data/waterchem.ts) | 2 | 2 |  |  |  |  |  |  | 100 % |
@@ -25,9 +25,9 @@ when it carries the url of the listing it was read from and does not mark the fi
 | Space factor classes | 5 |  | 5 |  |  |  |  |  | 100 % |
 | Biological media litres per filter (data/filtermedia.ts) | 18 | 13 |  | 5 |  |  |  |  | 100 % |
 | Gear sizing, minutes, watts, heat loss (tech.json) | 213 | 3 |  | 1 |  | 3 | 80 | 126 | 2 % |
-| Category cost / time defaults (demand-defaults.json) | 215 |  |  | 5 |  |  | 210 |  | 2 % |
+| Category cost / time defaults (demand-defaults.json) | 235 |  |  | 5 |  |  | 230 |  | 2 % |
 | Shared cost factors: kWh, water, salt, losses (factors.json) | 70 | 1 |  |  |  | 2 | 3 | 64 | 1 % |
-| Per-item retail prices (demand-items.json) | 627 | 203 |  |  |  |  | 419 | 5 | 32 % |
+| Per-item retail prices (demand-items.json) | 633 | 205 |  |  |  |  | 423 | 5 | 32 % |
 | Filter and heater specs (gear-catalog.json) | 538 | 397 |  |  |  |  |  | 141 | 74 % |
 | Tank sizes and prices (tanks.json) | 867 | 722 |  |  |  |  |  | 145 | 83 % |
 | Kit specs and prices (kits.json) | 207 | 207 |  |  |  |  |  |  | 100 % |
@@ -35,7 +35,7 @@ when it carries the url of the listing it was read from and does not mark the fi
 | Gear deals (gear-deals.json) | 96 | 96 |  |  |  |  |  |  | 100 % |
 
 Engine constants (top-level numbers in 29 engine files): 83 documented in FORMULAS, 0 unsourced.
-Numbers written inline in those files' functions (not counted above, a by-hand review list): 313.
+Numbers written inline in those files' functions (not counted above, a by-hand review list): 314.
 
 ## Work list 1: unsourced values (most user-facing first)
 
@@ -136,6 +136,7 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | src/scene/lightneeds.ts | - | 1 |
 | src/scene/tech.ts | - | 34 |
 | src/scene/tankfit.ts | - | 2 |
+| src/scene/builds.ts | - | 1 |
 | src/scene/plantfit.ts | - | 4 |
 | src/scene/animalfit.ts | - | 1 |
 | src/scene/propagate.ts | - | 23 |

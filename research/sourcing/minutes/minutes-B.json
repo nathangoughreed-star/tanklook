@@ -1,0 +1,51 @@
+{
+ "batch": "minutes-B",
+ "agent_notes": "Pages mostly state intervals only; no per-job minutes found for any chore. Fetch quotes come from WebFetch summarizer output, re-check if script mismatches. No source found for artificial plant cleaning or floater skim interval beyond 'during water changes'.",
+ "items": {
+  "filter-cleaning": {"fields": {
+   "sponge_interval_weeks": {"ours": null, "verdict": "not-stated", "suggest": null,
+    "sources": [
+     {"url": "https://practicalfishkeeping.co.uk/features/how-often-should-i-clean-my-aquarium-filter/", "site": "Practical Fishkeeping", "states": "every two weeks", "quote": "As a rule of thumb, it’s wise to clean and sponge filters every two weeks."},
+     {"url": "https://fishyhub.com/sg/blogs/blog-detail/aquarium-maintenance-schedule-beginners", "site": "FishyHub", "states": "monthly", "quote": "rinse in old tank water taken from the water change bucket"}],
+    "note": "Interval only. Sponge every 2 weeks (PFK) vs monthly (FishyHub; the quote does not itself contain 'monthly', it is the sponge item under its monthly list - weak). Our 0.5 min/week average vs ~1 min per job every 2 weeks is untestable."},
+   "sponge_job_min": {"ours": 0.5, "verdict": "not-stated", "suggest": null, "sources": [], "note": "No page opened states minutes for a sponge rinse."},
+   "internal_job": {"ours": null, "verdict": "not-stated", "suggest": null, "sources": [], "note": "PFK page explicitly gives no guidance for internal filters; no other opened page does."},
+   "hob_job": {"ours": 1, "verdict": "not-stated", "suggest": null, "sources": [], "note": "PFK page gives nothing for HOB. Search snippets (not opened) said every 2-4 weeks; not citable. Charterhouse says filter monthly generically but no HOB-specific quote."},
+   "canister_job": {"ours": 1.5, "verdict": "not-stated", "suggest": null,
+    "sources": [{"url": "https://practicalfishkeeping.co.uk/features/how-often-should-i-clean-my-aquarium-filter/", "site": "Practical Fishkeeping", "states": "every four weeks (half of biological media)", "quote": "Aim to clean around half of your biological media in aquarium water every four weeks."}],
+    "note": "Interval only: every 4 weeks, half the media, alternating chambers. Minutes not stated. Ours 1.5 min/week = ~6 min per 4-week job, untestable."}
+  }},
+  "glass-algae": {"fields": {
+   "glass_wipe_interval": {"ours": "weekly (2 min base)", "verdict": "agrees", "suggest": null,
+    "sources": [
+     {"url": "https://charterhouse-aquatics.com/blogs/help-guides/the-essential-maintenance-checklist-for-freshwater-aquariums", "site": "Charterhouse Aquatics", "states": "weekly", "quote": "Use an algae scraper or magnetic cleaner to remove algae from the glass."},
+     {"url": "https://fishyhub.com/sg/blogs/blog-detail/aquascape-maintenance", "site": "FishyHub aquascape maintenance", "states": "biweekly (every two weeks)", "quote": "Biweekly Maintenance"}],
+    "note": "Interval: weekly (Charterhouse, listed in its weekly checklist) vs every 2 weeks (FishyHub, under Biweekly). Quotes are weak: neither contains the interval word beside the task. Agrees with weekly or biweekly practice."},
+   "glass_wipe_min": {"ours": 2, "verdict": "not-stated", "suggest": null,
+    "sources": [{"url": "https://fishyhub.com/sg/blogs/blog-detail/aquarium-maintenance-schedule-beginners", "site": "FishyHub", "states": "15-30 minutes (whole weekly session)", "quote": "Most of the work concentrates in a 15–30 minute weekly session."}],
+    "note": "Per-task minutes not stated; only whole weekly session 15-30 min (includes water change)."}
+  }},
+  "plant-trimming": {"fields": {
+   "stem_trim_interval": {"ours": "0.6 min/week per stem plant", "verdict": "agrees", "suggest": null,
+    "sources": [{"url": "https://fishyhub.com/sg/blogs/blog-detail/aquascape-maintenance", "site": "FishyHub aquascape maintenance", "states": "weekly (high-tech tanks)", "quote": "Stem plants (Rotala, Hygrophila, Ludwigia) need weekly trimming in high-tech tanks."}],
+    "note": "Weekly interval matches our per-week assumption; minutes per trim not stated."},
+   "carpet_trim_interval": {"ours": "1 min per 10 plants", "verdict": "not-stated", "suggest": null,
+    "sources": [{"url": "https://fishyhub.com/sg/blogs/blog-detail/aquascape-maintenance", "site": "FishyHub aquascape maintenance", "states": "every 2-3 weeks", "quote": "Carpet plants (HC Cuba, Monte Carlo, dwarf hairgrass) need horizontal trimming every 2–3 weeks."}],
+    "note": "Interval only; minutes not stated."},
+   "floater_skim_interval": {"ours": null, "verdict": "not-stated", "suggest": null,
+    "sources": [{"url": "https://fishyhub.com/sg/blogs/blog-detail/aquascape-maintenance", "site": "FishyHub aquascape maintenance", "states": "by hand during water changes", "quote": "Remove excess by hand during water changes"}],
+    "note": "Page gives no fixed schedule; thin at each water change."},
+   "artificial_plant_clean_interval": {"ours": null, "verdict": "not-stated", "suggest": null,
+    "sources": [{"url": "https://charterhouse-aquatics.com/blogs/help-guides/the-essential-maintenance-checklist-for-freshwater-aquariums", "site": "Charterhouse Aquatics", "states": "monthly, only if algae excessive (decorations)", "quote": "If algae becomes excessive, gently clean decorations using aquarium-safe methods."}],
+    "note": "Decorations generally, listed monthly; artificial plants not named."}
+  }},
+  "testing": {"fields": {
+   "established_tank_test_interval": {"ours": "every week", "verdict": "disagrees", "suggest": "every 1-4 weeks; weekly if cautious, 2-4 weeks typical once established (3+ months)",
+    "sources": [
+     {"url": "https://fishyhub.com/sg/blogs/blog-detail/aquarium-maintenance-schedule-beginners", "site": "FishyHub", "states": "every 2-4 weeks for established tank (3+ months)", "quote": "For an established tank (3+ months), testing every 2–4 weeks is sufficient unless problems are suspected."},
+     {"url": "https://charterhouse-aquatics.com/blogs/help-guides/the-essential-maintenance-checklist-for-freshwater-aquariums", "site": "Charterhouse Aquatics", "states": "weekly", "quote": "Regular testing helps identify issues before they affect fish."}],
+    "note": "Sources disagree: Charterhouse lists testing in its weekly checklist (quote itself has no interval word), FishyHub says 2-4 weeks. Weekly is the conservative end."},
+   "test_kit_min": {"ours": 5, "verdict": "not-stated", "suggest": null, "sources": [], "note": "No opened page states how long a liquid test kit run takes."}
+  }}
+ }
+}

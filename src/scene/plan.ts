@@ -95,6 +95,8 @@ function serve(r: Contribution, S: TankSetup, animals: AnimalCount[], needs: Ret
   if (k.startsWith('plant:')) return { serves: 'They take up some waste and give cover', kind: 'look' };
   if (k.startsWith('animal:')) return { serves: 'The animals you chose', kind: 'need' };
   if (k === 'ato' || k === 'rounit') return { serves: 'Less work: topping up and water by itself', kind: 'look' };
+  if (k === 'wcmethod') return { serves: 'Quality of life: no buckets for the weekly water change', kind: 'extra' };
+  if (k === 'feeder') return { serves: 'Quality of life: no daily feeding trips', kind: 'extra' };
   return { serves: 'Part of the set-up', kind: 'look' };
 }
 

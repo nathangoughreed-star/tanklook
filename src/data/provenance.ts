@@ -84,6 +84,7 @@ export const RULES: Record<string, Rule[]> = {
   // derived; the rest stay our rule of thumb, and the bands the fit disagrees with wait in research/sourcing/decisions.md.
   DEMAND_DEFAULTS: [
     { path: '**', status: 'assumption', why: 'rule-of-thumb band (our judgement); refit to the cited listings in research/sourcing/other/D-cost-defaults.md: either too few listings, a different unit, or the fit disagrees (decision pending)' },
+    { path: 'time.waterChangeFraction.floor', status: 'cited', src: ['americanaquariumproducts.com', 'bulkreefsupply-video'], why: 'a weekly water change of 10-20 % (fresh) or 10 % (salt) is the stated best practice; the model changes at least 10 % (research/sourcing/minutes/minutes-A.json)' },
     { path: '{time,risk}.**', status: 'assumption', why: 'minutes a week and risk points are our model; no listing or page states them' },
     { path: 'gear.{heater,filter}.perGal.mode', status: 'derived', src: ['product-pages'], why: 'least-squares price per gallon over the catalogued heaters (13) / filters (19) agrees within 25 % (scripts/fit-cost-defaults.mjs)' },
     { path: 'animals.{fw-invert,sw-fish,amphibian}.setup.mode', status: 'derived', src: ['kk-prices'], why: 'median of the cited per-species prices scaled to the reference size agrees within 25 % (scripts/fit-cost-defaults.mjs)' },

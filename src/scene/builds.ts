@@ -25,7 +25,7 @@ export type BuildId = 'cheapest' | 'leastWork' | 'balanced';
 export const BUILD_LABEL: Record<BuildId, string> = { cheapest: 'Cheapest', leastWork: 'Least work', balanced: 'Balanced' };
 export const BUILD_BLURB: Record<BuildId, string> = {
   cheapest: 'The lowest price that still keeps these animals within what the filter can clear.',
-  leastWork: 'The fewest minutes a week: gear that cleans and tops up for you where it can.',
+  leastWork: 'The fewest minutes a week, at a cost: quality-of-life gear (a water-change hose, an automatic feeder, an auto top-off on salt) and the filter that is least work to clean.',
   balanced: 'Filter headroom (at 70 % or less of its limit) for a missed water change, at a fair price.',
 };
 
@@ -121,11 +121,17 @@ function filterCandidates(base: TankSetup, now: number): Candidate[] {
   return out;
 }
 
-/** Salt water: an auto top-off takes the daily topping up off the user's hands (the demand model counts the minutes it saves). */
+/** The quality-of-life gear that takes chores off the user's hands (lane MW 2026-10-21): an auto top-off on salt, a water-change hose, an automatic feeder.
+ *  Each is added when the demand model counts fewer minutes with it, so the least-work build pays for exactly the gear that saves time. */
+const QOL_CHOICES: [row: string, option: string][] = [['ato', 'ato'], ['wcmethod', 'hose'], ['feeder', 'auto']];
 const withLessWork = (S: TankSetup, now: number): TankSetup => {
-  if (!S.water.salt || !rowsFor(S).some(r => r.id === 'ato')) return S;
-  const T = { ...S, tech: withChoice(S, 'ato', 'ato') };
-  return price(T, now, undefined, false).D.totals.minPerWeek < price(S, now, undefined, false).D.totals.minPerWeek ? T : S;
+  let out = S, min = price(S, now, undefined, false).D.totals.minPerWeek;
+  for (const [row, option] of QOL_CHOICES) {
+    if (!rowsFor(out).some(r => r.id === row) || (row === 'ato' && !out.water.salt)) continue; // an auto top-off is a reef item
+    const T = { ...out, tech: withChoice(out, row, option) }, m = price(T, now, undefined, false).D.totals.minPerWeek;
+    if (m < min - 0.05) { out = T; min = m; }
+  }
+  return out;
 };
 
 const pick = (list: Candidate[], less: (a: Candidate, b: Candidate) => number) => [...list].sort(less)[0];
@@ -148,7 +154,9 @@ const gearLines = (S: TankSetup): string[] => {
   if (t.rows.heater && t.rows.heater !== 'none' && hs.length) lines.push(`Heater: about ${Math.round(heatLoss(S, t).heater.watts)} W${hs.length > 1 ? ' x ' + hs.length : ''}`);
   else lines.push('No heater: these animals are comfortable at room temperature');
   lines.push(`Light: ${S.light.watts ? Math.round(S.light.watts) + ' W ' : ''}LED`);
-  if (t.rows.ato === 'ato') lines.push('Auto top-off');
+  if (t.rows.ato === 'ato') lines.push('Quality of life: auto top-off');
+  if (t.rows.wcmethod === 'hose') lines.push('Quality of life: water-change hose (drains and fills from the tap)');
+  if (t.rows.feeder === 'auto') lines.push('Quality of life: automatic feeder');
   return lines;
 };
 

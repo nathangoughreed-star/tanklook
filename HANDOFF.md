@@ -46,6 +46,12 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
+## Lane MW: Minutes a Week (2026-10-21, branch `mw`, worktree `.claude/worktrees/mw`; Nathan approved the proposal in chat)
+- Full write-up with the numbers and sources: `research/minutes-a-week.md` (Result section); agent batches `research/sourcing/minutes/` (not in the globbed folder: they use `items`, not `species`).
+- Water changes now follow the nitrogen budget (floor 10 % cited, cap 50 %); new rows for feeding trips, glass wiping, painted live patches; plant trimming in bunches; testing every ~2 weeks; hose and automatic feeder as "Quality of life" tech rows that the least-work build adds. Builds now differ: least work is 4-22 min below cheapest, for $100-370 more. Every minutes-per-job figure is a labelled assumption; intervals and prices are cited.
+- Tests re-blessed (see the research file); `starter.ts` `litresFor` is a function (one-line hook, import cycle with stocking.ts).
+- Not done: filter-clean bioload scaling; a per-row minutes line for the hose / feeder in the Tech menu (the saving shows in "If picked" and in the water-change / feeding rows).
+
 ## Gaps ledger (2026-10-20, coordinator 5: gaps the chats reported; start continuation chats from here)
 - P1 group data: 63 of 84 species rows are estimates, 5 reef rows unverified (firefish, coralbeauty, watchman, mandarin, cleanershrimp): partly covered by the source fleet (SB).
 - P2b: the cost span is only about $10 wide (only the filter differs between builds); widening needs an invented light tier (Nathan to decide).

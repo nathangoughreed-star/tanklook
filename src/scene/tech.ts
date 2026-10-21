@@ -5,7 +5,6 @@
 // demand engine always inferred (inferTech), so its numbers do not move. grow.feed is derived from the CO2 + ferts rows
 // (feedOf); the Plant care slider sets those rows (setFeed).
 import data from '../data/tech.json';
-import dd from '../data/demand-defaults.json';
 import { CARE } from '../data/care';
 import { climateOf } from '../data/climate';
 import { getSpecies } from '../data/species';
@@ -85,7 +84,7 @@ export interface TechOption {
   /** another row's option this one needs (an in-sump skimmer needs the sump) */
   needs?: Record<string, string>;
 }
-export interface TechRow { id: string; label: string; water: Water; options: TechOption[] }
+export interface TechRow { id: string; label: string; water: Water; options: TechOption[]; /** a quality-of-life row: it saves time (water-change hose, automatic feeder) */ qol?: boolean }
 type Num3 = { lo: number; mode: number; hi: number };
 export interface GearDef {
   label: string;
@@ -109,7 +108,9 @@ export interface GearDef {
 }
 export interface Preset { id: string; label: string; water: 'fresh' | 'salt'; rows: Record<string, string>; needs?: { substrate?: string; plants?: string } }
 
-export const TECH_ROWS = data.rows as unknown as TechRow[];
+/** Rows that take chores off the user's hands (lane MW 2026-10-21): listed under "Quality of life" in the Tech menu and added by the least-work build. */
+const QOL_ROWS = new Set(['wcmethod', 'feeder']);
+export const TECH_ROWS = (data.rows as unknown as TechRow[]).map(r => (QOL_ROWS.has(r.id) ? { ...r, qol: true } : r));
 export const GEAR = data.gear as unknown as Record<string, GearDef>;
 export const PRESETS = data.presets as unknown as Preset[];
 export const ROOM_C = data.roomC;
@@ -414,8 +415,11 @@ export interface OptionCost {
 const pricePoint = (usd: number): Range3 => ({ lo: usd * 0.9, mode: usd, hi: usd * 1.1 });
 const DOSING = new Set(['aio', 'ei', 'twopart', 'liquidcarbon']);
 const KWH_USD = 0.17;
-/** Weekly water change in gallons (the demand engine's fraction for this kind of tank). */
-const wcGalWk = (S: TankSetup) => galOf(S) * (dd.time.waterChangeFraction as Record<string, number>)[!S.water.on ? 'terrarium' : isSalt(S) ? 'salt' : S.fish.length ? 'fish' : 'planted'];
+/** Weekly water change in gallons (the nitrogen budget's fraction, scene/stocking.ts). */
+/** Registered by scene/stocking.ts (it imports this file, so this file cannot import it): the share of the tank changed a week. */
+let wcFraction: (S: TankSetup) => number = () => 0.1;
+export const setWaterChangeFraction = (f: (S: TankSetup) => number) => { wcFraction = f; };
+const wcGalWk = (S: TankSetup) => galOf(S) * wcFraction(S);
 
 /** Setup, consumables, power and minutes of one row's option on this tank (every figure sized to it). */
 export function optionCost(S: TankSetup, row: string, opt: string, o: { kwhUsd?: number; tech?: TechSetup } = {}): OptionCost {

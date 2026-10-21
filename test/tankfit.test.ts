@@ -70,7 +70,7 @@ describe('tank fit engine (lane P2)', () => {
     for (const k of Object.keys(CASES)) {
       const b = buildSpan(CASES[k], fit(k).tank)!;
       expect(b.setupUsd.cheapest, k).toBeGreaterThan(50); expect(b.setupUsd.balanced, k).toBeGreaterThanOrEqual(b.setupUsd.cheapest);
-      expect(b.minPerWeek.cheapest, k).toBeGreaterThan(0); expect(b.minPerWeek.balanced, k).toBeGreaterThanOrEqual(b.minPerWeek.cheapest - 1);
+      expect(b.minPerWeek.cheapest, k).toBeGreaterThan(0); expect(b.minPerWeek.balanced, k).toBeGreaterThan(0); // not ordered: a cheap multi-unit filter can cost more minutes than one big one (lane MW)
     }
     expect(buildSpan(CASES.oscar, 'g120')!.setupUsd.balanced).toBeGreaterThan(buildSpan(CASES.oscar, 'g75')!.setupUsd.balanced);
     expect(buildSpan(CASES.reef, 'g20h')!.setupUsd.balanced).toBeGreaterThan(buildSpan(CASES.neons, 'g20h')!.setupUsd.balanced); // salt costs more
