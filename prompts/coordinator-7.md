@@ -49,7 +49,7 @@ Worktrees to clean after archiving (look at git status first): px (keep branch p
 compat-gates-3aa180 and musing-snyder-0e96c4 (old CG leftovers, 4 small real edits each, 129 behind: ask Nathan before removing),
 ft-flaky-tests-e5f039 folder (git entry gone, Windows kept the folder).
 
-IDs: next free S190. Lanes used today: FT, MA, MX, NB, MM (never reuse). Chats Nathan starts by hand land in the stale
+IDs: next free S193 (S190 Collapsible Warnings Box, S191 Decimal Interval Bumping, S192 Discus Stocking in 55 Gallon: hand-started by Nathan, numbered and told to move to .claude/worktrees/s19x by Coordinator 7). Lanes used today: FT, MA, MX, NB, MM (never reuse). Chats Nathan starts by hand land in the stale
 C:\Users\nreed\Glass-Box-stocking (no .git); the lane prompts make them create their own worktree, which works. Hand-started side chats
 that edit files there lose the work (S187 did): tell them to move (git worktree add .claude/worktrees/<id> -b <id> origin/main).
 
