@@ -46,6 +46,17 @@ ranges agree); **C1** weak (one source, estimate, disputed); **C0** unknown (inp
 | **S1** | Inform | Inform | Inform (quietly) | Mention only if asked |
 | **S0** | Show as a tradeoff (cost, look, effort) | same | same | same |
 
+**The matrix is a decision aid, not the whole decision.** What to do about low confidence depends on WHY it is low:
+| Why the result is uncertain | Response |
+|---|---|
+| A relevant input is missing (a tank dimension) | Ask the user to measure it |
+| Pairing status unknown | Ask if known; otherwise keep the uncertainty in the verdict |
+| Husbandry sources disagree | Explain the disagreement and apply a stated policy (which side TankLook takes, and why) |
+| The engine has no suitable model (arboreal habitat, feeding supply) | Report the limitation; never imply another answer from the user would fix it |
+
+**Confidence has one object:** how sure we are that THIS setup carries THE STATED risk, not how reputable the source is.
+A reputable source for "keep in groups" gives low confidence that a group of 4 in this tank is harmed.
+
 "Withhold" means the guided paths will not propose it and the plan sheet will not call it suitable; the editor still lets
 the user build it, with the issue visible. Where several rules fire, each shows; one good score never cancels another
 (low fullness does not hide a dimension, feeding or territory problem).
@@ -67,7 +78,10 @@ the user build it, with the issue visible. Where several rules fire, each shows;
   arboreal animals. Guided recommendations open per habitat type when its model supports them.
 
 ## 5. Benchmark cases (expected verdicts are HYPOTHESES for Nathan to review before they become tests)
-Some cases are held out of any calibration so they can show errors rather than confirm the fit.
+Some cases are held out of any calibration so they can show errors rather than confirm the fit. Cases isolate mechanisms as well as test whole setups: the same group in different tanks (density only), different
+groups in one roomy tank (group only), so a right-looking verdict cannot come from the wrong rule. Today's engine was run
+on these first as a diagnostic baseline: research/benchmark-baseline.md (regenerate with
+`GEN_BENCH=1 npx vitest run test/benchmarkBaseline.test.ts`); compare again after the rules work.
 | Case | Expected behaviour (draft) |
 |---|---|
 | Low waste, poor dimensions (e.g. a long fish in a short tank) | Dimension issue stays visible, S2-S3 by species, despite low fullness |
@@ -79,4 +93,6 @@ Some cases are held out of any calibration so they can show errors rather than c
 | Locked tank + tight budget | No lock changes; the conflict and the smallest changes shown |
 | Expired deal / missing gear data | Cost or confidence changes visibly; missing data never passes |
 | Same plan opened in another path | Identical assessment; scene work kept |
-| Dwarf frog x1 / x3 / x5 / x9 in 10 gal | x1 warn; x3 inform; x5 social need met; x9 tank limits (space) |
+| Dwarf frog x1 / x3 / x5 / x9 in 10 gal (combined) | x1 warn; x3 inform; x5 social need met but the tank limits; x9 tank limits (space) |
+| Dwarf frog x5 in 2.5 / 20 long / 29 / 75 gal (density only) | Group verdict identical in all four; only the tank verdict changes |
+| Neon x3 / x8 / x15 in 40 gal breeder (group only) | Tank verdict identical; only the group verdict changes |
