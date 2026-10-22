@@ -25,7 +25,8 @@
    "a": 0.01023,
    "b": 3.13,
    "src": "fishbase-bayes",
-   "model": 0.67
+   "model": 0.44,
+   "flag": true
   },
   "rummynose": {
    "a": 0.00389,
@@ -269,7 +270,7 @@
    "a": 0.02455,
    "b": 3,
    "src": "fishbase-bayes",
-   "model": 1.25
+   "model": 0.99
   },
   "pandacory": {
    "a": 0.00741,

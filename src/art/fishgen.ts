@@ -65,7 +65,7 @@ export interface Plan {
   // ext: the leading ray runs on past the membrane by this much (widths); w: membrane width x the default
   // flat (3D, pelvic and pec, off by default): the fins held out flat to the sides all the time, as on the glass (hillstream loach)
   pelvic?: { u: number; len: number; tint?: string; thread?: boolean; angle?: number; ext?: number; w?: number; flat?: boolean }; // angle: degrees below horizontal (thread)
-  pec?: { s?: number; v?: number; u?: number; flat?: boolean; w?: number }; // pectoral: size x the default, root height (0 top .. 1 belly, default 0.62), root u (default behind the gill), w: fan width x the default
+  pec?: { s?: number; v?: number; u?: number; flat?: boolean; w?: number; tint?: string }; // pectoral: size x the default, root height (0 top .. 1 belly, default 0.62), root u (default behind the gill), w: fan width x the default, tint: own colour (default: fin mixed with the flank)
   fin: string;        // default membrane tint
   ray?: string;
   marks?: Mark[];     // painted inside the body
@@ -299,7 +299,7 @@ export function pairedFins(p: Plan): PairedFin[] {
   // w (off by default): a broad fan, the trailing edge this many times deeper (hillstream loach)
   const w = p.pec?.w ?? 1, pts: Pt[] = w === 1 ? [[pu, pm - 0.01], [pu - pl, pm + pl * 0.3, 'c'], [pu - pl * 0.7, pm + pl * 0.55], [pu + 0.005, pm + 0.015]]
     : [[pu, pm - 0.01], [pu - pl, pm + pl * 0.3, 'c'], [pu - pl * 0.8, pm + pl * (0.3 + 0.25 * w)], [pu - pl * 0.4, pm + pl * 0.3 * w], [pu + 0.005, pm + 0.015 * w]];
-  out.push({ kind: 'pectoral', pts, root: [pu, pm], tint: mixHex(p.fin, p.shade[1], 0.35), a: 0.45, rays: 5 }); // pectoral takes on some flank colour: it lies against the body
+  out.push({ kind: 'pectoral', pts, root: [pu, pm], tint: p.pec?.tint ?? mixHex(p.fin, p.shade[1], 0.35), a: p.pec?.tint ? 0.8 : 0.45, rays: 5 }); // pectoral takes on some flank colour: it lies against the body
   return out;
 }
 export function drawPairedFin(f: PairedFin, ctx: Ctx, P: Proj, W: number, ray = '#7d7a70') {
@@ -475,6 +475,25 @@ export const PLANS: Record<string, Plan> = {
     marks: [{ k: 'blob', u: 0.93, v: -0.01, ru: 0.09, rv: 0.08, c: '#c4303a', a: 0.95 }],
     finMarks: [{ k: 'bars', us: [0.04, 0.12], w: 0.035, c: '#1e1e20', a: 0.85 }, { k: 'band', u0: 0, u1: 0.2, v0: -0.012, v1: 0.012, c: '#1e1e20', a: 0.85, f: 0.005 }],
     eye: { r: 0.024, iris: ['#d26a54', '#5a1e18'] } },
+  // dwarf pencilfish (Nannostomus marginatus): slim cigar, pointed head and tiny mouth, no adipose; a broad black stripe snout to
+  // tail with a gold line above and below it, red along the top of the stripe mid-body, a lower black belly stripe; red in the dorsal,
+  // anal and pelvic fins (reference photos 2026-10-22)
+  dwarfpencil: { noseCap: 0.02, gape: 0.014, gapeDrop: 0.002, thick: 0.42, depth: 0.19, pedU: 0.19, ped: 0.034, peak: 0.56, back: 0.5, snout: 0.58, mouth: -0.012,
+    shade: ['#5e4e32', '#b89a62', '#f5f2ea'], tail: { type: 'fork', h: 0.135, tint: '#d6cbb6', a: 0.8 }, fin: '#e2d9c8',
+    dorsal: { at: 0.6, len: 0.07, h: 0.085, rake: 0.15, taper: 0.45, lead: 0.6, tip: 'point', trail: 0.04, drop: 0.25, tint: '#d63a2a', a: 0.7 },
+    anal: { at: 0.4, len: 0.08, h: 0.06, rake: 0.1, lead: 0.85, drop: 0.45, trail: 0.02, tint: '#d63a2a', a: 0.8, edge: '#1a1614' },
+    pelvic: { u: 0.55, len: 0.05, tint: '#d8442e' }, pec: { s: 0.7, tint: '#efe8da' },
+    marks: [
+      { k: 'band', u0: 0.18, u1: 0.95, v0: -1, v1: -0.05, c: '#4a3c24', a: 0.5, f: 0.02 },
+      { k: 'band', u0: 0.2, u1: 0.95, v0: -0.054, v1: -0.04, c: '#2a2016', a: 0.7, f: 0.006 },
+      { k: 'band', u0: 0.19, u1: 0.97, v0: -0.04, v1: -0.016, c: '#e8c454', a: 0.95, f: 0.005 },
+      { k: 'band', u0: 0.3, u1: 0.84, v0: -0.036, v1: -0.012, c: '#c8302a', a: 0.8, f: 0.016 },
+      { k: 'band', u0: 0.15, u1: 1, v0: -0.016, v1: 0.02, c: '#15110e', a: 1, f: 0.004 },
+      { k: 'band', u0: 0.2, u1: 0.93, v0: 0.02, v1: 0.032, c: '#f1dc98', a: 0.9, f: 0.004 },
+      { k: 'band', u0: 0.15, u1: 1, v0: 0.032, v1: 1, c: '#f6f3ec', a: 0.85, f: 0.01 },
+      { k: 'band', u0: 0.34, u1: 0.78, v0: 0.046, v1: 0.056, c: '#221a14', a: 0.75, f: 0.008 }],
+    finMarks: [{ k: 'blob', u: 0.17, v: 0.012, ru: 0.02, rv: 0.02, c: '#c8302a', a: 0.55 }],
+    eye: { r: 0.026, iris: ['#d9c27a', '#4a3018'] }, scale: 0.014 },
   // rhomboid: deep at the shoulder, straight back and belly lines to a slender peduncle; the black patch a triangular rear-body wedge
   harlequin: { sharp: true, thick: 0.38, depth: 0.33, pedU: 0.2, ped: 0.03, peak: 0.58, angular: 0.7, snout: 0.3, shade: ['#8a6f58', '#d29a7c', '#e8c3ad'], tail: { type: 'fork', h: 0.16, tint: '#d79c82' }, fin: '#d6a48c',
     dorsal: { u0: 0.47, u1: 0.6, h: 0.09 }, anal: { u0: 0.33, u1: 0.47, h: 0.06 }, pelvic: { u: 0.6, len: 0.06 },
@@ -734,6 +753,21 @@ export const PLANS: Record<string, Plan> = {
     eye: { r: 0.022, iris: ['#c8b890', '#3a3020'] } },
   // ---------- aquatic roster (lane T4, 2026-10-16): new silhouettes, scales and habitats ----------
   // pygmy corydoras: a miniature, slimmer cory; silver-grey with a black stripe snout to tail root, a pale line above it
+  // Sterba's corydoras (Corydoras sterbai): dark grey-black, the head and front of the body covered in cream dots that run together
+  // into broken lengthwise lines behind the dorsal; cream-orange belly; bright orange pectoral spines and pelvic fins; the tail and
+  // dorsal clear, barred and spotted dark (reference photos 2026-10-22)
+  sterbai: { pec: { s: 1.6, v: 0.85, tint: '#c44400' }, plates: true, thick: 0.72, belly: 0.9, wide: 0.5, pedT: 0.3, step: 0.18, noseW: 0.4, depth: 0.31, pedU: 0.19, ped: 0.06, peak: 0.6, back: 0.66, snout: 0.6, mouth: 0.06,
+    shade: ['#1f2326', '#353a3a', '#e8b878'], tail: { type: 'fork', h: 0.17, tint: '#cfcabd', a: 0.85 }, fin: '#d2ccbc',
+    dorsal: { at: 0.7, len: 0.13, h: 0.17, spines: 0.12, nSp: 1, spineH: 0.2, rake: 0.1, drop: 0.3, tint: '#7d7a70', a: 0.65 },
+    anal: { u0: 0.31, u1: 0.4, h: 0.06, tint: '#cfc6b0', a: 0.7 }, adipose: true, pelvic: { u: 0.55, len: 0.09, w: 1.3, tint: '#c44400' },
+    marks: [
+      { k: 'band', u0: 0.55, u1: 0.98, v0: 0.07, v1: 1, c: '#eaa860', a: 0.85, f: 0.035 },
+      ...[-0.1, -0.084, -0.068, -0.052, -0.036, -0.02, -0.004, 0.012, 0.028, 0.044, 0.06].map((v): Mark => ({ k: 'band', u0: 0.18, u1: 0.58, v0: v, v1: v + 0.0055, c: '#d6cbac', a: 0.6, f: 0.006, wave: 0.006 })),
+      { k: 'spots', n: 330, u0: 0.48, u1: 0.98, v0: -0.19, v1: 0.07, r: 0.006, c: '#efe6cf', a: 0.95 },
+      { k: 'spots', n: 120, u0: 0.8, u1: 0.99, v0: -0.15, v1: 0.05, r: 0.0045, c: '#f2ead6', a: 0.95 }],
+    finMarks: [{ k: 'bars', us: [0.025, 0.055, 0.085, 0.115, 0.145, 0.175], w: 0.008, c: '#262828', a: 0.75 },
+      { k: 'spots', n: 40, u0: 0.58, u1: 0.72, v0: -0.4, v1: -0.15, r: 0.007, c: '#262828', a: 0.7 }],
+    barbels: 0.035, eye: { r: 0.032, iris: ['#cdbd95', '#2a2418'], dv: -0.05 } },
   pygmycory: { pec: { s: 1.7, v: 0.85 }, plates: true, thick: 0.7, belly: 0.8, wide: 0.45, pedT: 0.3, step: 0.15, noseW: 0.35, depth: 0.27, pedU: 0.18, ped: 0.05, peak: 0.6, back: 0.64, snout: 0.62, mouth: 0.05, shade: ['#6a6e66', '#b4b6ac', '#e4e2d8'], tail: { type: 'fork', h: 0.14, a: 0.6 }, fin: '#d0cec4',
     dorsal: { at: 0.66, len: 0.12, h: 0.14, spines: 0.12, nSp: 1, spineH: 0.16, rake: 0.1, drop: 0.3, a: 0.65 }, anal: { u0: 0.32, u1: 0.4, h: 0.05, a: 0.6 }, adipose: true, pelvic: { u: 0.55, len: 0.08, w: 1.2 },
     marks: [{ k: 'band', u0: 0.15, u1: 0.97, v0: -0.006, v1: 0.02, c: '#1c1c1a', a: 0.9, f: 0.008 }, { k: 'band', u0: 0.22, u1: 0.9, v0: -0.03, v1: -0.017, c: '#f2f0e6', a: 0.45, f: 0.006 },
