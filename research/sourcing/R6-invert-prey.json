@@ -1,0 +1,49 @@
+{
+ "batch": "R6",
+ "agent_notes": "Lane IP 2026-10-22: invertebrate predation, German blue ram vs shrimp. Quotes from WebFetch extraction output, no verify run yet. No page gives a prey length: gbr prey.mm 30 (an adult cherry shrimp) and prey.young 60 (past an adult Amano) are est.; inverts: 'shrimp' (the rule targets shrimp, so snails are not prey of rams) is est.: no page reports rams eating snails, Aquatic Arts lists snails as safe.",
+ "species": {
+  "gbr": {
+   "sci": "Mikrogeophagus ramirezi",
+   "fields": {
+    "prey": {
+     "ours": 30,
+     "verdict": "behaviour-only",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.ukaps.org/forum/threads/blue-rams-with-shrimp.11392",
+       "site": "UKAPS forum",
+       "states": "rams ate most of a cherry shrimp colony",
+       "quote": "they ate 90% of my cherrys"
+      },
+      {
+       "url": "https://www.ukaps.org/forum/threads/blue-rams-with-shrimp.11392",
+       "site": "UKAPS forum",
+       "states": "rams eat juvenile shrimp",
+       "quote": "I had problems with some stunning rams in a heavily planted 200l eating juvenile shrimp"
+      },
+      {
+       "url": "https://www.ukaps.org/forum/threads/blue-rams-with-shrimp.11392",
+       "site": "UKAPS forum",
+       "states": "larger shrimp fare better",
+       "quote": "If they are larger shrimp they tend to fare a little better and be left alone"
+      },
+      {
+       "url": "https://aquaticarts.com/products/german-blue-ram-cichlids",
+       "site": "Aquatic Arts",
+       "states": "safe with larger shrimp and snails",
+       "quote": "German Blue Ram Cichlids are peaceful and safe to keep with larger species of shrimp, snails"
+      },
+      {
+       "url": "https://guidarium.com/compatibility/cherry-shrimp-and-german-blue-ram",
+       "site": "Guidarium",
+       "states": "cherry shrimp with rams: possible but requires caution",
+       "quote": "Keeping Cherry Shrimp and German Blue Ram together is possible but requires caution"
+      }
+     ],
+     "note": "Pages split (UKAPS: some keepers saw no losses); we flag a cherry colony as eaten (shrimplets always are) and Amanos as large-adults-only. One UKAPS post reports rams hunting Amanos as big as themselves, so the Amano advisory is a floor, not a promise."
+    }
+   }
+  }
+ }
+}

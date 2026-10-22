@@ -2,7 +2,7 @@
 // (data/care.ts). whyAnimal returns the main blocking reason, or null when nothing blocks; whysAnimal returns every reason, blocking
 // ones first, then the material concerns that do not block (`concern`), for the display. Advice only: the list grays it, nothing
 // blocks adding it. Temperature is judged on the whole stocking (temprange.ts), not pair by pair (2026-10-22).
-import { CARE, EXPERTISE_NAME, type Expertise } from '../data/care';
+import { CARE, EXPERTISE_NAME, SHRIMP, type Expertise } from '../data/care';
 import type { Species } from '../data/species';
 import { fmtC, operatingCheck, sharedRange, NARROW_C, type TempEvidence } from './temprange';
 
@@ -24,6 +24,15 @@ const band = (r: [number, number], d = 0) => `${r[0].toFixed(d)}-${r[1].toFixed(
 /** The tank around the animal: `corals`: any coral in it (not macroalgae or the anemone). */
 export interface AnimalEnv { /** the tank's own answer (tankMin.ts minFit): size is judged by floor area, length and water, not litres alone; absent = litres only */ fit?: (sp: Species) => { pct: number; reason: string }; corals?: boolean; /** this tank's water temperature inputs (tech.ts tempEvidence): its target, or with no heater the room it follows */ water?: TempEvidence }
 
+/** Predation between two animals that share space (lane IP 2026-10-22): 'eats' when `pred` takes `prey`, 'young' when only its young
+ *  and small ones are at risk (prey.young: keep large adults). Reads lengths and kinds only, never temperature, so a band edit that
+ *  lets the pair share water cannot hide it. prey.inverts 'shrimp' targets shrimp; without it snails in range are prey too. */
+export function preyRisk(pred: Species, prey: Species): 'eats' | 'young' | null {
+  const p = CARE[pred.id]?.prey;
+  if (!p || pred.id === prey.id || (p.cats && !p.cats.includes(prey.cat)) || (p.inverts === 'shrimp' && prey.cat.endsWith('-invert') && !SHRIMP.has(prey.id))) return null;
+  return p.mm >= prey.tl ? 'eats' : p.young && p.young >= prey.tl ? 'young' : null;
+}
+
 /** `litres`: the tank's volume; `present`: the species already stocked (one entry per species). The main blocking reason, or null. */
 export function whyAnimal(sp: Species, litres: number, expertise: Expertise, present: Species[], env: AnimalEnv = {}): AnimalWhy | null {
   return whysAnimal(sp, litres, expertise, present, env).find(w => !w.concern) ?? null;
@@ -42,7 +51,7 @@ export function whysAnimal(sp: Species, litres: number, expertise: Expertise, pr
   for (const o of present) {
     const oc = CARE[o.id];
     if (!oc) continue;
-    const bad = (t: string) => { out.push({ kind: 'compat', text: `compatibility: ${t} (${o.name})` }); };
+    const bad = (t: string, concern?: true) => { out.push({ kind: 'compat', text: `compatibility: ${t} (${o.name})`, ...(concern ? { concern } : {}) }); };
     if (o.id === sp.id) { if (c.solo) bad('keeps one per tank, you already have one'); continue; }
     if (c.fam && c.fam === oc.fam) bad(`rivals of its look-alike, keep one ${c.fam}`);
     if (!meet(sp, o)) {
@@ -51,8 +60,11 @@ export function whysAnimal(sp: Species, litres: number, expertise: Expertise, pr
       if (dry(sp) || dry(o)) bad(dry(sp) ? 'needs a dry enclosure, this one lives in the water' : 'lives in the water, it needs a dry enclosure');
       continue;
     }
-    if (c.prey && c.prey.mm >= o.tl && (!c.prey.cats || c.prey.cats.includes(o.cat))) bad('would eat it');
-    if (oc.prey && oc.prey.mm >= sp.tl && (!oc.prey.cats || oc.prey.cats.includes(sp.cat))) bad('it would eat this one');
+    const eats = preyRisk(sp, o), eaten = preyRisk(o, sp);   // lane IP: blocking when it takes the adults, a concern when only the young
+    if (eats === 'eats') bad('would eat it');
+    if (eaten === 'eats') bad('it would eat this one');
+    if (eats === 'young') bad('would eat its young and small ones, keep large adults only', true);
+    if (eaten === 'young') bad('it would eat young and small ones of this, keep large adults only', true);
     if (sp.habitat !== 'land' && o.habitat !== 'land') {
       if (c.temper >= 1 && oc.slow || c.nip && oc.slow) bad('would harass its long fins');
       if (oc.temper >= 1 && c.slow || oc.nip && c.slow) bad("it would harass this one's long fins");

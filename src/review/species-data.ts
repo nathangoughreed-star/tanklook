@@ -124,7 +124,7 @@ const COLS: Col[] = [
   { key: 'gmax', label: 'Most per tank', group: 'Compatibility', get: s => { const m = careOf(s)?.max; return m ? [m, String(m)] : null; } },
   { key: 'sexed', label: 'Sex ratio M : F', group: 'Compatibility', get: s => { const r = careOf(s)?.sexed?.ratio; return r ? [r[0] / r[1], `${r[0]} : ${r[1]}`] : null; } },
   { key: 'solo', label: 'One per tank', group: 'Compatibility', left: true, get: s => { const c = careOf(s); return c?.solo ? ['yes', c.fam ? `yes (${c.fam})` : 'yes'] : null; } },
-  { key: 'prey', label: 'Eats animals up to', group: 'Compatibility', get: s => { const p = careOf(s)?.prey; return p ? [p.mm, `${len(p.mm)![1]}${p.cats ? ' of ' + p.cats.join(', ') : ''}`] : null; } },
+  { key: 'prey', label: 'Eats animals up to', group: 'Compatibility', get: s => { const p = careOf(s)?.prey; return p ? [p.mm, `${len(p.mm)![1]}${p.cats ? ' of ' + p.cats.join(', ') : ''}${p.inverts ? `, of invertebrates only ${p.inverts}` : ''}${p.young ? `; young of ones up to ${len(p.young)![1]}` : ''}`] : null; } },
   { key: 'slow', label: 'Long fins (target)', group: 'Compatibility', get: s => flag(careOf(s)?.slow) },
   { key: 'nip', label: 'Nips fins', group: 'Compatibility', get: s => flag(careOf(s)?.nip) },
   { key: 'coral', label: 'Coral', group: 'Compatibility', left: true, get: s => { const c = careOf(s)?.coral; return c ? [c, c === 2 ? 'eats corals' : 'may nip'] : null; } },

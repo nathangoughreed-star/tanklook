@@ -21,8 +21,11 @@ export interface AnimalCare extends GroupCare {
   tol?: [number, number];
   /** the tolerable band rests on thin sources or judgement (low confidence) */
   tolEst?: true;
-  /** eats animals up to this length (mm), optionally only of these groups */
-  prey?: { mm: number; cats?: Category[] };
+  /** eats animals up to this length (mm), optionally only of these groups. `inverts: 'shrimp'`: of the invertebrates it takes only
+   *  shrimp (SHRIMP), since shrimp and snails share 'fw-invert'; without it every invertebrate in range counts, snails included
+   *  (lane IP 2026-10-22). `young`: past `mm` and up to this adult length it still takes the young and small ones, an advisory
+   *  (keep large adults only), not "would eat it". */
+  prey?: { mm: number; cats?: Category[]; inverts?: 'shrimp'; young?: number };
   /** one of its kind per tank (a bonded pair is fine); `fam` extends that to look-alike rivals (tangs) */
   solo?: true;
   fam?: string;
@@ -38,6 +41,8 @@ export interface AnimalCare extends GroupCare {
   /** marine: 1 may nip corals (add with caution), 2 eats corals (not reef-safe). Invertebrate eaters are `prey` with `cats`. */
   coral?: 1 | 2;
 }
+/** The shrimp in the catalogue, for prey.inverts (the catalogue has no shrimp kind; test/invertprey.test.ts keeps this list whole). */
+export const SHRIMP: ReadonlySet<string> = new Set(['cherryshrimp', 'amano', 'cleanershrimp']);
 const A = (care: Expertise, minL: number, temper: 0 | 1 | 2, temp?: [number, number], x: Partial<AnimalCare> = {}): AnimalCare => ({ care, minL, temper, ...(temp ? { temp } : {}), ...x });
 export const CARE: Record<string, AnimalCare> = {
   neon: A(1, 54, 0, [21, 25], { tol: [20, 26] }), cardinal: A(1, 54, 0, [24, 28]), ember: A(1, 41, 0, [23, 28]), rummynose: A(1, 76, 0, [24, 28]),
@@ -45,11 +50,11 @@ export const CARE: Record<string, AnimalCare> = {
   cpd: A(1, 40, 0, [22, 26]), hatchet: A(1, 68, 0, [23, 27]), cherrybarb: A(1, 54, 0, [22, 27]), tigerbarb: A(1, 72, 2, [20, 26], { nip: true }),
   boesemani: A(2, 110, 0, [24, 27]), guppy: A(1, 19, 0, [22, 28], { slow: true }), platy: A(1, 38, 0, [18, 26]), molly: A(1, 80, 0, [22, 28]),
   swordtail: A(2, 57, 1, [18, 26]), betta: A(2, 20, 1, [24, 28], { solo: true, slow: true }), dwarfgourami: A(1, 56, 1, [24, 28]), // not solo since S196 / lane CW: males are limited by groups.ts `males`
-  honeygourami: A(1, 19, 0, [22, 28]), gourami: A(1, 81, 0, [24, 28]), gbr: A(2, 76, 0, [26, 30]), bolivianram: A(2, 110, 0, [22, 26]),
+  honeygourami: A(1, 19, 0, [22, 28]), gourami: A(1, 81, 0, [24, 28]), gbr: A(2, 76, 0, [26, 30], { prey: { mm: 30, cats: ['fw-invert'], inverts: 'shrimp', young: 60 } }), bolivianram: A(2, 110, 0, [22, 26]),
   kribensis: A(1, 71, 1, [22, 26]), cockatoo: A(2, 54, 1, [22, 26]), yellowlab: A(1, 150, 1, [24, 28]),
   peacock: A(2, 243, 0, [24, 28]), demasoni: A(2, 200, 2, [24, 28]), kadango: A(2, 280, 0, [24, 28]), syno: A(2, 108, 1, [24, 28]),
   labeo: A(2, 200, 2, [24, 28]), auratus: A(2, 205, 2, [24, 28]), livingstonii: A(2, 470, 2, [24, 28], { prey: { mm: 80 } }), afra: A(2, 200, 2, [24, 28]),
-  angel: A(1, 200, 1, [24, 28], { prey: { mm: 30 }, slow: true }), discus: A(2, 250, 0, [26, 30], { slow: true, tol: [26, 30] }),
+  angel: A(1, 200, 1, [24, 28], { prey: { mm: 30, inverts: 'shrimp' }, slow: true }), discus: A(2, 250, 0, [26, 30], { slow: true, tol: [26, 30] }),
   oscar: A(2, 540, 1, [22, 28], { prey: { mm: 100 } }), goldfish: A(1, 75, 0, [16, 23]), comet: A(1, 300, 0, [18, 22], { tol: [15.6, 26.7] }),
   bronzecory: A(1, 72, 0, [22, 26]), pandacory: A(1, 41, 0, [20, 24]), pygmycory: A(1, 38, 0, [22, 26]), bristlenose: A(1, 80, 0, [22, 27]),
   oto: A(2, 40, 0, [22, 26]), kuhli: A(1, 80, 0, [24, 28]), clownloach: A(2, 284, 0, [24, 28], { prey: { mm: 30, cats: ['fw-invert'] } }),

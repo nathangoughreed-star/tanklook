@@ -328,6 +328,14 @@
    "kind": "consensus",
    "note": "per-value page url and verbatim quote in research/sourcing/<batch>.json, checked by scripts/verify-quotes.mjs"
   },
+  "ukaps.org": {
+   "title": "UK Aquatic Plant Society forum",
+   "by": "UKAPS forum members",
+   "url": "https://www.ukaps.org/forum",
+   "accessed": "2026-10-22",
+   "kind": "consensus",
+   "note": "keepers' first-hand reports, not a profile; per-value page url and verbatim quote in research/sourcing/<batch>.json"
+  },
   "aquaticarts.com": {
    "title": "Aquatic Arts species listings",
    "by": "Aquatic Arts",
