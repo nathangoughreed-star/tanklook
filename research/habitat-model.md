@@ -113,4 +113,8 @@ the catalogue 20 long (smaller inside) 96 %, cramped but doable, no longer faili
 31 combinations 1.01; the seven new answers are in research/aq-compare.json and the COMBOS of test/aqcompare.test.ts (this tank 1.11).
 Caveat: a lone big fish among many small ones gets the same tank-wide discount as the school; AqAdvisor's curve does the same in effect.
 A load-weighted count is the refinement if a case shows it wrong.
+**2026-10-22, later: a case showed it wrong.** One flat factor on every animal let an added animal LOWER the reading (6 angels in a 55 gal
+79 % -> 65 % with 30 cherry shrimp; 10 angels 131 -> 120 % with 10 embers). Now each animal takes the curve's share for its rank, biggest
+space first (`schoolShare`, scene/stocking.ts): a single species reads exactly as before, a big fish keeps its full count, and no addition
+lowers the reading (test/stocking.test.ts). The AqAdvisor and published-list tests pass unchanged; SPACE_PER_L not re-centred.
 

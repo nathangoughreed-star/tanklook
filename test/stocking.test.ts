@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import { defaultSetup } from '../src/scene/defaults';
 import { IN } from '../src/scene/physics';
-import { loadOf, massG, plural, schoolScale, stockingOf } from '../src/scene/stocking';
+import { loadOf, massG, plural, schoolScale, schoolShare, stockingOf } from '../src/scene/stocking';
 import { withChoice } from '../src/scene/tech';
 import type { Fish, Item, TankSetup } from '../src/scene/types';
 
@@ -128,11 +128,20 @@ describe('tank-wide school discount and the kuhli floor factor (2026-10-22)', ()
     expect(r.percent).toBeGreaterThan(60); expect(r.percent).toBeLessThan(92);
     expect(r.waterPercent).toBeLessThan(92); expect(r.floorPercent).toBeLessThan(70);
   });
-  it('the discount is over all the fish in the water: two schools of 10 read less than the sum of each alone, by schoolScale(20)', () => {
+  it('the discount is over all the fish in the water: two schools of 10 read less than the sum of each alone', () => {
     const a = stockingOf(tank(36, 18, 18, [['neon', 10]])).waterPercent, b = stockingOf(tank(36, 18, 18, [['cardinal', 10]])).waterPercent;
     const ab = stockingOf(tank(36, 18, 18, [['neon', 10], ['cardinal', 10]])).waterPercent;
-    expect(ab).toBeLessThan(a + b); expect(ab).toBeCloseTo((a + b) * schoolScale(20), 6);
+    expect(ab).toBeLessThan(a + b); expect(ab).toBeGreaterThan((a + b) * schoolScale(20) - 1e-9);
     expect(schoolScale(10)).toBe(1); expect(schoolScale(20)).toBeGreaterThan(0.75); expect(schoolScale(20)).toBeLessThan(0.9);
+  });
+  it('one species reads exactly n x schoolScale(n): the ranked shares of n add up to the flat curve', () => {
+    for (const n of [1, 10, 11, 17, 40]) expect(Array.from({ length: n }, (_, i) => schoolShare(i + 1)).reduce((x, y) => x + y)).toBeCloseTo(n * schoolScale(n), 9);
+  });
+  it('adding an animal never lowers the water reading (6 angels + 30 cherry shrimp read 79 -> 65 % with one flat factor)', () => {
+    const w = (st: [string, number][]) => stockingOf(tank(48, 13, 21, st)).waterPercent;
+    expect(w([['angel', 6], ['cherryshrimp', 30]])).toBeGreaterThan(w([['angel', 6]]));
+    expect(w([['angel', 10], ['ember', 10]])).toBeGreaterThan(w([['angel', 10]]));
+    expect(w([['angel', 10], ['ember', 1]])).toBeGreaterThan(w([['angel', 10]]));
   });
   it('snails take no room and do not discount the fish', () => {
     const f = stockingOf(tank(20, 10, 12, [['neon', 12]])).waterPercent, fs = stockingOf(tank(20, 10, 12, [['neon', 12], ['nerite', 10]])).waterPercent;

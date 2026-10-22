@@ -102,6 +102,12 @@ export const spaceOf = (sp: Species, tlMm: number) => sp.kind === 'snail' ? 0 : 
  *  was re-centred with it so the 37 published lists keep their median 74 % at the published max (research/habitat-model.md). */
 export const SCHOOL_EXP = 0.72, SCHOOL_REF = 10;
 export const schoolScale = (n: number) => n > SCHOOL_REF ? (n / SCHOOL_REF) ** (SCHOOL_EXP - 1) : 1;
+/** The k-th animal's share of the curve (1-based): 1 up to SCHOOL_REF, then what the k-th adds to SCHOOL_REF x (k / SCHOOL_REF)^SCHOOL_EXP.
+ *  2026-10-22 (the caveat in research/habitat-model.md, shown wrong): the animals are ranked by their own space, biggest first, so a
+ *  big fish keeps its full count and the small ones take the tail. One flat factor schoolScale(n) on every animal made adding an animal
+ *  LOWER the reading (6 angels in a 55 gal 79 % -> 65 % with 30 cherry shrimp; 10 angels 131 % -> 120 % with 10 embers); ranked, each
+ *  added animal adds at least its own tail share. A single species reads exactly as before (the shares of n sum to n x schoolScale(n)). */
+export const schoolShare = (k: number) => k <= SCHOOL_REF ? 1 : SCHOOL_REF * ((k / SCHOOL_REF) ** SCHOOL_EXP - ((k - 1) / SCHOOL_REF) ** SCHOOL_EXP);
 /**
  * Floor (lane HB, research/habitat-model.md, Nathan's yes 2026-10-21): a bottom dweller uses FLOOR_SQIN_PER_IN sq in of floor per inch
  * of its length. Sources give 12-24 sq in per inch (Scotcat "six to eight inches of fish to every square foot of base area"; Seriously
@@ -220,6 +226,7 @@ export const plural = (n: number, name: string) => n === 1 ? `1 ${name}` : `${n}
 export function stockingOf(S: TankSetup): Stocking {
   const cap = capacityOf(S), salt = !!(S.water.on && S.water.salt), by = new Map<string, Contributor>(), feeding = feedingOf(S);
   let load = 0, spaceLoad = 0, floorUse = 0;
+  const each: { c: Contributor; s: number }[] = [];
   const meanDepthCm = cap.litres * 1000 / Math.max(1e-9, floorOf(S.tank).areaCm2);
   for (const f of S.fish) {
     const sp = getSpecies(f.species), l = !sp || !countsAgainstWater(sp) ? 0 : tanOf(sp, massG(sp.id, f.tl ?? sp.tl), feeding, cap.tempC, salt);
@@ -227,10 +234,12 @@ export function stockingOf(S: TankSetup): Stocking {
     load += l;
     const c = by.get(sp.id) ?? { id: sp.id, name: sp.name, n: 0, load: 0, space: 0, share: 0, grams: 0, cls: metClass(sp), floor: 0, spaceFactor: spaceFactor(sp) };
     const fl = floorUseCm2(sp, f.tl ?? sp.tl);
-    c.n++; c.load += l; c.space += spaceOf(sp, f.tl ?? sp.tl) * heightMul(sp, meanDepthCm); c.floor += fl; floorUse += fl; c.grams += massG(sp.id, f.tl ?? sp.tl); by.set(sp.id, c);
+    const s = spaceOf(sp, f.tl ?? sp.tl) * heightMul(sp, meanDepthCm);
+    if (s > 0) each.push({ c, s });
+    c.n++; c.load += l; c.floor += fl; floorUse += fl; c.grams += massG(sp.id, f.tl ?? sp.tl); by.set(sp.id, c);
   }
-  const inWater = [...by.values()].reduce((a, c) => a + (c.space > 0 ? c.n : 0), 0), school = schoolScale(inWater); // one discount over every fish that takes room (2026-10-22), not per species; snails take none
-  for (const c of by.values()) { c.space *= school; spaceLoad += c.space; }
+  // one school curve over every animal that takes room in the water (2026-10-22), shares by rank, biggest first (schoolShare); snails take none
+  each.sort((a, b) => b.s - a.s).forEach((e, i) => { const v = e.s * schoolShare(i + 1); e.c.space += v; spaceLoad += v; });
   const pc = (l: number, cp: number) => cp > 0 ? l / cp * 100 : l > 0 ? Infinity : 0;
   const areaCm2 = floorOf(S.tank).areaCm2, waterPercent = pc(spaceLoad, cap.space), floorPercent = pc(floorUse, areaCm2);
   const spaceBy = floorPercent > waterPercent ? 'floor' as const : 'water' as const, spacePercent = Math.max(waterPercent, floorPercent);
