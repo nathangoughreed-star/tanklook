@@ -67,6 +67,18 @@ export const SPACE_FACTOR: Record<string, [number, string]> = {
 export const FLOOR_FACTOR: Record<string, [number, string]> = {
   kuhli: [0.6, 'eel-shaped and gregarious: kuhlis pile into one shared cave or root tangle instead of spreading over the floor (Seriously Fish; Aquarium Co-Op keeps 3-6 in a 20 gal and more in bigger tanks). At 1.0, 17 kuhlis read 95 % of a 36 x 18 in floor; the floor stays linear in count (audit F), 2026-10-22'],
   whitecloud: [0, 'upper and middle water (Seriously Fish), never on the floor (2026-10-22). Floor only: its zone stays all, which also sets its height curve and water reading'],
+  cpd: [0, 'swims above the floor (zone audit 2026-10-22, Nathan: floor only); its zone all still sets its height curve'],
+  pygmycory: [0, 'swims above the floor (zone audit 2026-10-22, Nathan: floor only); its zone all still sets its height curve'],
+  peapuffer: [0, 'swims above the floor (zone audit 2026-10-22, Nathan: floor only); its zone all still sets its height curve'],
+  comet: [0, 'swims above the floor (zone audit 2026-10-22, Nathan: floor only); its zone all still sets its height curve'],
+  yellowtang: [0, 'swims above the floor (zone audit 2026-10-22, Nathan: floor only); its zone all still sets its height curve'],
+  bluetang: [0, 'swims above the floor (zone audit 2026-10-22, Nathan: floor only); its zone all still sets its height curve'],
+  demasoni: [0.5, 'rock dweller over every level, not a floor sitter: counts like an all-zone fish on the floor (zone audit 2026-10-22, Nathan: floor only); its zone bottom still sets its height curve'],
+  labeo: [0.5, 'rock dweller over every level, not a floor sitter: counts like an all-zone fish on the floor (zone audit 2026-10-22, Nathan: floor only); its zone bottom still sets its height curve'],
+  auratus: [0.5, 'rock dweller over every level, not a floor sitter: counts like an all-zone fish on the floor (zone audit 2026-10-22, Nathan: floor only); its zone bottom still sets its height curve'],
+  afra: [0.5, 'rock dweller over every level, not a floor sitter: counts like an all-zone fish on the floor (zone audit 2026-10-22, Nathan: floor only); its zone bottom still sets its height curve'],
+  coralbeauty: [0.5, 'rock dweller over every level, not a floor sitter: counts like an all-zone fish on the floor (zone audit 2026-10-22, Nathan: floor only); its zone bottom still sets its height curve'],
+  royalgramma: [0.5, 'rock dweller over every level, not a floor sitter: counts like an all-zone fish on the floor (zone audit 2026-10-22, Nathan: floor only); its zone bottom still sets its height curve'],
 };
 // Hand-set multipliers on top of the AqAdvisor fit (Nathan's targets, not a fit): the species' space load is multiplied by both.
 // Like FLOOR_FACTOR, re-add this block after a rebuild (scripts/space-factors.mjs writes only the tables above).
