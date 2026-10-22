@@ -64,3 +64,9 @@ Run 1, the engine as it stood: median 68 %, 12 lists over 100 %, 8 of them nano 
 - Quotes come from page-fetch summaries; spot-check them.
 - The 10 gal Co-Op sets were composed from "pick one" menus.
 - There are no 75 or 125 gal lists.
+
+## Nano-school check (2026-10-22, after the tank-wide school curve)
+_Trigger: a review read 15 harlequin rasboras in a 20 long (30.25 x 12.5 x 12.75 in) as near full, water column 96 %, and called it a comfortable stocking._
+- Grid over the under-2 g space factor (step 1 / 0.8 / 0.7 / 0.6 / 0.5 and 16 smooth mass curves), each re-centred to the 74 % median: at the current 0.8 the 14 nano lists read median 68 % against 77 % for the 23 others, so nano schools are no longer over-read as a group (the 101-145 % above predates the tank-wide curve). A stronger discount lowers nano further, widens the scatter (sdlog 0.45 -> 0.48 at 0.6) and, through the re-centring, raises the harlequin case (114 % at 0.6). No setting beat 0.8 on both sets. No engine change.
+- Open: the harlequin's own factor (0.71, fitted to AqAdvisor at 20 fish in 55 gal). 10 / 15 / 20 harlequins and 15 neons in a 20 long are in COMBOS (test/aqcompare.test.ts); aqadvisor.com was down, so run `node scripts/aq-compare.mjs` when it is up. If AqAdvisor reads the 20 long clearly below us, refit that one factor.
+- Hobby sources (forums, a retailer) put 10-13 harlequins as comfortable in a 20 long and about 15 as the top, so 96 % is about 25 % above the 74 % a published max should read: inside the +-40 % scatter of the lists themselves.

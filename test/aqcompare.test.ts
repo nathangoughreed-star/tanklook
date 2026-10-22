@@ -47,6 +47,11 @@ export const COMBOS: Combo[] = [
   { name: '50 gal, 17 kuhli 1 danio', tank: [36, 18, 18], stock: [['kuhli', 17], ['danio', 1]] },
   { name: '50 gal, 1 kuhli 15 danio', tank: [36, 18, 18], stock: [['kuhli', 1], ['danio', 15]] },
   { name: '65 gal, 17 kuhli 15 danio', tank: [48, 18, 18], stock: [['kuhli', 17], ['danio', 15]] },
+  // 2026-10-22: a review read 15 harlequins in a 20 long as near full (96 %); what AqAdvisor says for the same tank
+  { name: '20 long, 10 harlequin', tank: [30.25, 12.5, 12.75], stock: [['harlequin', 10]] },
+  { name: '20 long, 15 harlequin', tank: [30.25, 12.5, 12.75], stock: [['harlequin', 15]] },
+  { name: '20 long, 20 harlequin', tank: [30.25, 12.5, 12.75], stock: [['harlequin', 20]] },
+  { name: '20 long, 15 neon', tank: [30.25, 12.5, 12.75], stock: [['neon', 15]] },
 ];
 
 export function comboTank(c: Combo): TankSetup {

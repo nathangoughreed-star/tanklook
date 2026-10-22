@@ -61,6 +61,11 @@ Outside audit: 28 x 15 x 12 in (21.8 gal), 1 male + 3 female pea puffers, 1 male
 - Masses checked (follow-up): not inflated, the notes were for pre-CB lengths; turbo now cites T. cornutus (SeaLifeBase), mystery kept
   at 14.4 g by Nathan (congeners say 23-35 g). Open: filters absorb huge TAN in
   small tanks (before SN, 50 mysteries' 136 mg TAN/day read 98 % in a 10 gal), so Filtration rarely binds tankFor.
+## Nano-school check: no recalibration (2026-10-22, side chat from Glass-Box-stocking, branch `nano-check`)
+- **Why:** 15 harlequins in a 20 long read water column 96 % ("cramped but doable"); a review called it comfortable. Hypothesis was a systematic over-read of nano schools.
+- **Finding:** not on the current engine. Nano lists read median 68 % vs 77 % for larger fish at TINY_EXPERT 0.8; every stronger discount or mass curve fit both sets worse. Details: research/expert-stockings.md, section "Nano-school check". No engine change (Nathan agreed).
+- **Open:** harlequin's AqAdvisor-fitted factor 0.71. Four 20 long combos added to COMBOS with no answers yet (aqadvisor.com down); run `node scripts/aq-compare.mjs`, then `GEN_AQ=1 npx vitest run test/aqcompare.test.ts`, and refit harlequin alone if AqAdvisor reads clearly lower.
+
 ## Kuhli sanity check -> tank-wide school discount + kuhli floor factor (2026-10-22, Nathan's own chat, no lane ID; branch `kuhli-floor-school` in a scratch worktree, pushed to main)
 - **Why:** 17 kuhli + 15 zebra danio in a 50 gal (36 x 18 x 18 in) read Stocking 100 % (water 100, floor 96); AqAdvisor read the same tank 74 %.
   research/habitat-model.md (2026-10-22 section) has the findings, the candidate matrix and the decision.
