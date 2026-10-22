@@ -8,6 +8,7 @@ import { countsAgainstWater, plural } from './stocking';
 import { pairingIn } from './pairs';
 import { whysAnimal } from './animalfit';
 import { floorOf } from './tankMin';
+import { PATCH_PLANTS } from './nitrogen';
 import type { TankSetup } from './types';
 
 export function crowdWarnings(S: TankSetup): string[] {
@@ -61,3 +62,22 @@ export function compatRisks(S: TankSetup): { level: 'high' | 'concern'; items: s
 }
 /** The tile's headline line for compatRisks. */
 export const compatLine = (r: NonNullable<ReturnType<typeof compatRisks>>) => `${r.level === 'high' ? 'High compatibility risk' : 'Compatibility concern'}: ${r.items.join('; ')}.`;
+
+/** Plants per 100 L that read as densely planted for cover (lane CP2): two thirds of the stocking engine's "fully planted" 15. */
+export const DENSE_PLANTS_PER_100L = 10;
+/** Cover the stocked animals need and the scene lacks (lane CP2 2026-10-22, care `cover`): dense planting (live or artificial, so
+ *  sight lines break) or a cave or arch (water dishes do not count). Advice only, one line per species. */
+export function coverAdvice(S: TankSetup): string[] {
+  if (!S.water.on) return [];
+  const litres = volume(S.tank).litres, out: string[] = [];
+  const plants = S.items.filter(i => i.kind === 'plant' || i.kind === 'artificial').length + (S.patches ?? []).filter(p => p.brush.startsWith('plant:')).length * PATCH_PLANTS;
+  const caves = S.items.filter(i => i.kind === 'cave' && i.variant !== 'dish' && i.variant !== 'stonedish').length;
+  for (const id of new Set(S.fish.map(f => f.species))) {
+    const need = CARE[id]?.cover, name = getSpecies(id)?.name;
+    if (!need || !name) continue;
+    const want = Math.ceil(DENSE_PLANTS_PER_100L * litres / 100);
+    if (need === 'plants' && plants < want) out.push(`${name}: plant densely (about ${want} plants for this tank, you have ${plants}) so they can break sight lines and claim spots.`);
+    if (need === 'cave' && !caves) out.push(`${name}: add a cave or arch (Hardscape › Caves): they spawn in one and a pair guards it.`);
+  }
+  return out;
+}

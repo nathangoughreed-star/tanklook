@@ -2,7 +2,8 @@
 // puffers, a male dwarf gourami and a mated kribensis pair: the tile said "Room for about 17% more load" and flagged nothing.
 import { describe, expect, it } from 'vitest';
 import { comboTank } from './aqcompare.test';
-import { compatLine, compatRisks } from '../src/scene/territory';
+import { compatLine, compatRisks, coverAdvice, DENSE_PLANTS_PER_100L } from '../src/scene/territory';
+import type { Item } from '../src/scene/types';
 import { stockingOf } from '../src/scene/stocking';
 import { tileState } from '../src/ui/fullnessTile';
 import { whysAnimal } from '../src/scene/animalfit';
@@ -61,5 +62,35 @@ describe('compatibility risks', () => {
   });
   it('the puffer species-tank note skips invertebrates (the prey rule has them)', () => {
     expect(whysAnimal(sp('peapuffer'), Infinity, 3, [sp('amano')]).some(w => /species-only/.test(w.text))).toBe(false);
+  });
+});
+
+const item = (kind: Item['kind'], variant: string, id: number) => ({ id, kind, variant, seed: 1, x: 0, depth: 0, lift: 0, yaw: 0, pitch: 0, tilt: 0 }) as Item;
+describe('cover advice (lane CP2)', () => {
+  it('a bare audit tank asks for dense planting for the puffers and a cave for the kribs', () => {
+    const S = audit(AUDIT); S.items = [];
+    const t = coverAdvice(S).join('\n');
+    expect(t).toMatch(/Pea puffer: plant densely \(about \d+ plants for this tank, you have 0\)/);
+    expect(t).toMatch(/Kribensis: add a cave or arch/);
+    expect(t).not.toMatch(/Dwarf gourami/);
+  });
+  it('enough plants (live or artificial) and a real cave clear it; a water dish is not a cave', () => {
+    const S = audit(AUDIT), want = Math.ceil(DENSE_PLANTS_PER_100L * 82.5 / 100);
+    S.items = [item('cave', 'dish', 1)];
+    expect(coverAdvice(S).join()).toMatch(/Kribensis: add a cave/);
+    S.items = [item('cave', 'tube', 1), ...Array.from({ length: want + 2 }, (_, i) => item(i % 2 ? 'plant' : 'artificial', 'anubias', i + 2))];
+    expect(coverAdvice(S)).toEqual([]);
+  });
+});
+describe('breeding-floor rule beyond kribs (lane CP2)', () => {
+  const pairWith = (id: string, tank: [number, number, number]) => {
+    const S = comboTank({ name: '', tank, stock: [[id, 2], ['neon', 8]] }); S.fish[0].sex = 'f'; return compatRisks(S);
+  };
+  it('rams and cockatoos in a 10 gal, angels in a 55, not in bigger floors', () => {
+    expect(pairWith('gbr', [20, 10, 12])?.items.join()).toMatch(/German blue ram breeding pair|ram breeding pair/i);
+    expect(pairWith('gbr', [30, 12, 12])?.items.join() ?? '').not.toMatch(/breeding pair/);
+    expect(pairWith('cockatoo', [20, 10, 12])?.items.join()).toMatch(/breeding pair/);
+    expect(pairWith('angel', [48, 13, 21])?.items.join()).toMatch(/breeding pair/);
+    expect(pairWith('angel', [48, 18, 20])?.items.join() ?? '').not.toMatch(/breeding pair/);
   });
 });

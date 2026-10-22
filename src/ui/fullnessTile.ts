@@ -4,7 +4,7 @@
 // (layout.space, scene/space.ts), drawn in the viewer as a dashed outline (render/spaceOutline.ts); an edit that takes
 // the tank past it calls the fork card hook (`onSpaceFork`: make room / swap; the card itself is lane P5's).
 // The tile follows the view: hidden while the Animals Show box is off, faded with the rest while another menu is in focus.
-import { compatLine, compatRisks, crowdWarnings } from '../scene/territory';
+import { compatLine, compatRisks, coverAdvice, crowdWarnings } from '../scene/territory';
 import type { Viewer } from '../render/viewer';
 import { defaultSpace, spaceFit, tankExtent, SPACE_MAX, SPACE_MIN, type SpaceFit } from '../scene/space';
 import { plural, stockingMemo, type Stocking } from '../scene/stocking';
@@ -216,8 +216,8 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
     const S = store.tank, r = stockingMemo(S), u = store.scene.units, st = tileState(S, r, u);
     const animalsHidden = viewer.hidden.has('fish');
     el.hidden = !st.show || animalsHidden || tankView.ghost; // no tank chosen yet on the stocking screen: nothing to be full
-    const crowd = crowdWarnings(S); // S196: fighting limits, a warning only (never in the percents)
-    const sig = JSON.stringify([st, u, editing, !!forkFn, tankExtent(S.tank), crowd]);
+    const crowd = crowdWarnings(S), cover = coverAdvice(S); // S196: fighting limits, a warning only (never in the percents); lane CP2: cover
+    const sig = JSON.stringify([st, u, editing, !!forkFn, tankExtent(S.tank), crowd, cover]);
     if (sig === lastSig) return;
     lastSig = sig;
     el.classList.toggle('over', st.head.level === 'over' || st.fit?.fits === false);
@@ -235,6 +235,7 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
       + (st.topMin.length ? row('min', 'Tank minimum', st.min, st.topMin, 'minimum', 'Smallest tank they want, whatever the count:') : '')
       + st.mins.map(w => `<div class="ftWarn ft-${w.level}">${esc(w.text)}</div>`).join('')
       + crowd.map(t => `<div class="ftWarn ft-near ftCrowd">${esc(t)}</div>`).join('')
+      + cover.map(t => `<div class="ftWarn ft-near ftCover">${esc(t)}</div>`).join('')
       + (st.reason ? `<div class="ftWhy">${esc(st.reason)}</div>` : '');
     const n = r.nitrogen;
     nEl.hidden = !r.contributors.length || n.tan <= 0 || st.filter === 'unset';

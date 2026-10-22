@@ -37,9 +37,12 @@ export interface AnimalCare extends GroupCare {
   feelers?: true;
   /** best kept in a species-only tank (pea puffer): a concern beside any other fish, blocking beside fins or feelers it nips (lane CP) */
   alone?: true;
-  /** a breeding pair defends about this much floor, cm2 (kribensis): a concern when a pair shares a smaller-than-twice floor with
+  /** a breeding pair defends about this much floor, cm2 (kribensis, cockatoo, rams, angel: lane CP2 estimates): a concern when a pair shares a smaller-than-twice floor with
    *  other fish (lane CP 2026-10-22: breeding kribs guard roughly a 2 ft x 1 ft patch around their cave) */
   guard?: number;
+  /** the cover it needs in the scene (lane CP2 2026-10-22): 'plants' = dense planting to break sight lines (pea puffer), 'cave' = a
+   *  cave or arch to spawn in (cave-spawning cichlids); advice when the scene lacks it */
+  cover?: 'plants' | 'cave';
   /** comfortable pH and general hardness (dGH; absent = no hardness check), aquatic species (lane CG, data/waterchem.ts) */
   ph?: [number, number];
   gh?: [number, number];
@@ -57,15 +60,15 @@ export const CARE: Record<string, AnimalCare> = {
   cpd: A(1, 40, 0, [22, 26]), hatchet: A(1, 68, 0, [23, 27]), cherrybarb: A(1, 54, 0, [22, 27]), tigerbarb: A(1, 72, 2, [20, 26], { nip: true }),
   boesemani: A(2, 110, 0, [24, 27]), guppy: A(1, 19, 0, [22, 28], { slow: true }), platy: A(1, 38, 0, [18, 26]), molly: A(1, 80, 0, [22, 28]),
   swordtail: A(2, 57, 1, [18, 26]), betta: A(2, 20, 1, [24, 28], { solo: true, slow: true }), dwarfgourami: A(1, 56, 1, [24, 28], { feelers: true }), // not solo since S196 / lane CW: males are limited by groups.ts `males`
-  honeygourami: A(1, 19, 0, [22, 28], { feelers: true }), gourami: A(1, 81, 0, [24, 28], { feelers: true }), gbr: A(2, 76, 0, [26, 30], { prey: { mm: 30, cats: ['fw-invert'], inverts: 'shrimp', young: 60 } }), bolivianram: A(2, 110, 0, [22, 26]),
-  kribensis: A(1, 71, 1, [22, 26], { guard: 1800 }), cockatoo: A(2, 54, 1, [22, 26]), yellowlab: A(1, 150, 1, [24, 28]),
+  honeygourami: A(1, 19, 0, [22, 28], { feelers: true }), gourami: A(1, 81, 0, [24, 28], { feelers: true }), gbr: A(2, 76, 0, [26, 30], { prey: { mm: 30, cats: ['fw-invert'], inverts: 'shrimp', young: 60 }, guard: 900 }), bolivianram: A(2, 110, 0, [22, 26], { guard: 900 }),
+  kribensis: A(1, 71, 1, [22, 26], { guard: 1800, cover: 'cave' }), cockatoo: A(2, 54, 1, [22, 26], { guard: 900, cover: 'cave' }), yellowlab: A(1, 150, 1, [24, 28]),
   peacock: A(2, 243, 0, [24, 28]), demasoni: A(2, 200, 2, [24, 28]), kadango: A(2, 280, 0, [24, 28]), syno: A(2, 108, 1, [24, 28]),
   labeo: A(2, 200, 2, [24, 28]), auratus: A(2, 205, 2, [24, 28]), livingstonii: A(2, 470, 2, [24, 28], { prey: { mm: 80 } }), afra: A(2, 200, 2, [24, 28]),
-  angel: A(1, 200, 1, [24, 28], { prey: { mm: 30, inverts: 'shrimp' }, slow: true }), discus: A(2, 250, 0, [26, 30], { slow: true, tol: [26, 30] }),
+  angel: A(1, 200, 1, [24, 28], { prey: { mm: 30, inverts: 'shrimp' }, slow: true, guard: 2400 }), discus: A(2, 250, 0, [26, 30], { slow: true, tol: [26, 30] }),
   oscar: A(2, 540, 1, [22, 28], { prey: { mm: 100 } }), goldfish: A(1, 75, 0, [16, 23]), comet: A(1, 300, 0, [18, 22], { tol: [15.6, 26.7] }),
   bronzecory: A(1, 72, 0, [22, 26]), pandacory: A(1, 41, 0, [20, 24]), pygmycory: A(1, 38, 0, [22, 26]), bristlenose: A(1, 80, 0, [22, 27]),
   oto: A(2, 40, 0, [22, 26]), kuhli: A(1, 80, 0, [24, 28]), clownloach: A(2, 284, 0, [24, 28], { prey: { mm: 30, cats: ['fw-invert'] } }),
-  sae: A(1, 93, 0, [22, 26]), hillstream: A(2, 60, 0, [18, 24]), peapuffer: A(2, 20, 2, [24, 28], { prey: { mm: 45, cats: ['fw-invert'] }, nip: true, alone: true }),
+  sae: A(1, 93, 0, [22, 26]), hillstream: A(2, 60, 0, [18, 24]), peapuffer: A(2, 20, 2, [24, 28], { prey: { mm: 45, cats: ['fw-invert'] }, nip: true, alone: true, cover: 'plants' }),
   cherryshrimp: A(1, 20, 0, [18, 26]), amano: A(1, 40, 0, [18, 26]), nerite: A(1, 8, 0, [22, 28]), mystery: A(1, 19, 0, [20, 26]),
   ramshorn: A(1, 5, 0, [18, 28]), trumpet: A(1, 20, 0, [18, 28]),
   ocellaris: A(1, 57, 1, [24, 27]), royalgramma: A(1, 115, 0, [24, 27], { solo: true }), yellowtang: A(1, 379, 1, [24, 27], { solo: true, fam: 'tang' }),
