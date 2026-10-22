@@ -1,6 +1,6 @@
 # Benchmark baseline: what path 1 says TODAY (generated, do not edit)
 
-Tested commit 5c6382e (build 1119), WITH UNCOMMITTED CHANGES: M src/scene/builds.ts;  M src/ui/buildPick.ts;  M src/ui/stockPlan.ts;  M test/benchmarkBaseline.test.ts; RM test/careNeeds.test.ts -> test/path1Rules.test.ts.
+Tested commit 1005b1e (build 1122), clean checkout.
 
 Generated 2026-10-22 by test/benchmarkBaseline.test.ts. Expected verdicts live in research/rules-spec.md section 5; this is the engine's current answer only.
 
