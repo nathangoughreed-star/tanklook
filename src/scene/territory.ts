@@ -1,10 +1,11 @@
 // Fighting limits for the scene's own tank (S196, Nathan 2026-10-22): more of a species whose count is limited by fighting
 // (fightsOverCount: a `territory` rule, one to a tank, or a pair at most) than its size-scaled `territory` rule, else its flat `max`, gives a warning line. A warning only: the stocking percent never reads it (research/territory-caps.md).
 import { CARE } from '../data/care';
-import { fightsOverCount, malesWarning, mostFor, mostMalesFor } from '../data/groups';
+import { fightsOverCount, malesWarning, mostFor, mostMalesFor, pairRule } from '../data/groups';
 import { getSpecies } from '../data/species';
 import { volume } from './physics';
 import { countsAgainstWater, plural } from './stocking';
+import { pairingIn } from './pairs';
 import type { TankSetup } from './types';
 
 export function crowdWarnings(S: TankSetup): string[] {
@@ -14,6 +15,9 @@ export function crowdWarnings(S: TankSetup): string[] {
   for (const [id, k] of n) {
     const c = CARE[id], mx = mostFor(c, litres) ?? (c?.solo ? 1 : undefined), name = getSpecies(id)!.name;
     // fighters only: a school's flat max means "plenty", not fighting; room is the stocking percent's job
+    // two of a pair species: the species' unpaired line until the owner marks them an established pair (TankSetup.pairs, 2026-10-22)
+    const pr = k === 2 && pairRule(id) ? pairingIn(S, id) : undefined;
+    if (pr && pr !== 'established' && c?.msg?.unpaired) { out.push(`${plural(k, name)}: ${c.msg.unpaired}${pr === 'unknown' ? ' (pairing not set: select one to mark them a pair)' : ''}.`); continue; }
     if (c?.beyond && mx && k > mx) { out.push(`${plural(k, name)}: ${c.beyond}.`); continue; }
     if (!mx || k <= mx || !fightsOverCount(c)) {
       const mm = mostMalesFor(c, litres), m = males.get(id) ?? 0; // the scene knows each fish's sex (absent = male)

@@ -17,7 +17,7 @@ import { attachBuildPick } from './buildPick';
 import { attachStockGallery } from './stockGallery';
 import { onSpaceFork, type SpaceFork } from './fullnessTile';
 import { grazerShort } from '../data/grazers';
-import { animalsInTank, animalsOf, bump, FAIL_WORD, groupLineIn, type Pairing, forkOptions, isSexed, notesOf, overWarn, planFor, shownLitres, conflictOf, rankTankmates, startPick, tankLabel, totalOf, type Pk, type Plan, type RoomOption } from './stockPlanLogic';
+import { animalsInTank, animalsOf, bump, writePairs, FAIL_WORD, groupLineIn, type Pairing, forkOptions, isSexed, notesOf, overWarn, planFor, shownLitres, conflictOf, rankTankmates, startPick, tankLabel, totalOf, type Pk, type Plan, type RoomOption } from './stockPlanLogic';
 import { sizeTxt } from '../scene/tankfit';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
@@ -94,6 +94,7 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
         keep.push(...have);
       }
       T.fish = keep;
+      writePairs(T, picks); // saved with the tank for these two animals: survives Save, share links and the build pick
       const r = rng(1 + Math.floor(Math.random() * 1e6));
       if (rebuild) shuffleFish(T, r, undefined, 100); else if (added.size) placeNew(T, r, added);
     }, { coalesce: 'stockplan' });
@@ -184,7 +185,7 @@ ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}` : ''}
       case 'mate': if (i < 0) { picks.push(startPick(id)); change(); } break;
       case 'del': if (i >= 0) { picks.splice(i, 1); if (!picks.length) mates = false; change(); } break;
       case 'inc': case 'dec': if (i >= 0) { picks[i] = bump(picks[i], b.dataset.w as 'n' | 'f' | 'u', b.dataset.act === 'inc' ? 1 : -1); if (!totalOf(picks[i])) picks.splice(i, 1); change(); } break;
-      case 'pair': if (i >= 0) { picks[i] = { ...picks[i], pair: b.dataset.v as Pairing }; draw(); } break;
+      case 'pair': if (i >= 0) { picks[i] = { ...picks[i], pair: b.dataset.v as Pairing }; change(); } break;
       case 'mates': mates = true; draw(); break;
       case 'nomates': mates = false; draw(); break;
       case 'size': chosen = b.dataset.tank; change(); break;

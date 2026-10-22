@@ -1,7 +1,7 @@
 // Pure logic for the stocking screen and the fork card (lane P5, 2026-10-20): picks and counts, tankmate ranking, the tank the picks need,
 // fork options. No DOM; src/ui/stockPlan.ts draws it. Reads CARE (with the P1 group data merged in) and the P2 engine (scene/tankfit.ts).
 import { CARE } from '../data/care';
-import { bandMessage, bandOf, fightsOverCount, malesWarning, mostFor, mostMalesFor, type GroupBand } from '../data/groups';
+import { bandMessage, bandOf, fightsOverCount, malesWarning, mostFor, mostMalesFor, PAIR_FORMERS, pairRule, type GroupBand } from '../data/groups';
 import { needLine, needsOf, type NeedSeverity } from '../data/careNeeds';
 import { getSpecies, SPECIES, type Species } from '../data/species';
 import { TANK_MODELS, tankFromModel, type TankModel } from '../data/tanks';
@@ -11,20 +11,21 @@ import { spaceFit, tankExtent } from '../scene/space';
 import { buildSpan, fitIn, lenTxt, stepUps, tankFor, tankLabel, tankOptions, zoneOf, type AnimalCount, type BuildSpan, type TankFit } from '../scene/tankfit';
 import { countsAgainstWater } from '../scene/stocking';
 import { minDataOf } from '../scene/tankMin';
-import type { Fish, SpaceLimit, Tank, Units } from '../scene/types';
+import { setPairing } from '../scene/pairs';
+import type { Fish, Pairing, SpaceLimit, Tank, TankSetup, Units } from '../scene/types';
 
-/** Pairing, where a rule depends on it (rules-spec section 4): an established pair, one not yet confirmed, or unknown (the default). */
-export type Pairing = 'established' | 'unconfirmed' | 'unknown';
+export type { Pairing };
 /** One species on the list. Sex and pairing are separate inputs (lane RF): species usually kept by sex (CARE.sexed) carry males in `n`,
  *  females in `f` and unsexed animals in `u`; the rest just `n`. `pair` = the pairing status (only asked where pairRule holds). */
 export interface Pk { id: string; n: number; f?: number; u?: number; pair?: Pairing }
 export const isSexed = (id: string) => !!CARE[id]?.sexed;
 export const totalOf = (p: Pk) => p.n + (p.f ?? 0) + (p.u ?? 0);
-/** Species whose advice for two animals assumes a FORMED pair (a bonded or breeding pair in their groups.ts lines; the Bolivian ram per the
- *  rules-spec benchmark "two unpaired cichlids / rams"). Two of them are judged as a pair only when the user says it is established.
- *  test/careNeeds.test.ts keeps it in step: every species whose lines say "bonded" or "male/female pair" must be here. */
-export const PAIR_FORMERS = new Set(['gbr', 'bolivianram', 'kribensis', 'angel', 'discus', 'ocellaris', 'banggai', 'firefish', 'watchman']);
-export const pairRule = (id: string) => PAIR_FORMERS.has(id);
+export { PAIR_FORMERS, pairRule }; // the list lives in data/groups.ts (the editor's warnings read it too)
+/** Write the picks' pairings into the tank they were synced to (after its fish are set): each pair species with two animals keeps the
+ *  status the owner chose, for those two animals (scene/pairs.ts). */
+export function writePairs(T: Pick<TankSetup, 'fish' | 'pairs'>, picks: Pk[]): void {
+  for (const p of picks) if (pairRule(p.id)) setPairing(T, p.id, asksPairing(p) ? p.pair ?? 'unknown' : 'unknown');
+}
 /** The pairing question is asked: a pair species with exactly two animals on the list. */
 export const asksPairing = (p: Pk) => pairRule(p.id) && totalOf(p) === 2;
 /** The most one tank is advised to take (a warning past it, never a block); with the tank's litres, the size-scaled rule (S196). */
@@ -45,8 +46,10 @@ export function startPick(id: string): Pk {
 /** Add `d` (+1 / -1) to one count of a pick, never below 0; males (or the count) 'n', females 'f', unsexed 'u'. Past the species' advised
  *  most it only warns (overWarn). */
 export function bump(p: Pk, which: 'n' | 'f' | 'u', d: number): Pk {
-  const v = Math.max(0, (which === 'n' ? p.n : p[which] ?? 0) + d);
-  return { ...p, [which]: v };
+  const was = which === 'n' ? p.n : p[which] ?? 0, v = Math.max(0, was + d);
+  if (v === was) return p;
+  const { pair: _gone, ...rest } = p; // a different count is a different group: its pairing is unknown again (2026-10-22)
+  return { ...rest, [which]: v };
 }
 
 /** The warning for keeping more of a species than advised (more than the advised most, or more than one of a keep-one animal), else

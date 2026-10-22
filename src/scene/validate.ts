@@ -14,6 +14,8 @@ import { pieSize, radialSize, sameGrid, sampleTerrain, swampTerrain, type Ground
 import { SCENE_VERSION, type BgImage, type BgSide, type Fish, type Item, type LightTech, type Scene, type Tank, type TankSetup } from './types';
 import { adoptImages, sidesTouch } from './images';
 import { parseTech } from './tech';
+import { pairRule } from '../data/groups';
+import { prunePairs } from './pairs';
 import { parseIntegrated } from './integrated';
 import { parseSpace } from './space'; // lane P3: layout.space
 
@@ -133,6 +135,20 @@ export function parseScene(input: unknown): { scene: Scene; warnings: string[] }
 }
 
 /** Background pictures: at most 4, each side under one picture only, a picture's sides touching (else it keeps its first). */
+/** TankSetup.pairs: known pair species, 'established' or 'unconfirmed' (unknown is never stored), for two fish ids that are exactly the
+ *  tank's two animals of that species; anything else (an old save without the field included) loads as unknown. */
+function parsePairs(v: unknown, fish: Fish[]): TankSetup['pairs'] {
+  if (!v || typeof v !== 'object' || Array.isArray(v)) return undefined;
+  const T: Pick<TankSetup, 'fish' | 'pairs'> = { fish };
+  for (const [id, e] of Object.entries(v as Obj)) {
+    if (!isObj(e) || !pairRule(id) || (e.status !== 'established' && e.status !== 'unconfirmed') || !Array.isArray(e.ids) || e.ids.length !== 2) continue;
+    const ids = (e.ids as unknown[]).map(Number);
+    if (!ids.every(Number.isInteger)) continue;
+    T.pairs = { ...T.pairs, [id]: { status: e.status, ids: [Math.min(ids[0], ids[1]), Math.max(ids[0], ids[1])] } };
+  }
+  prunePairs(T);
+  return T.pairs;
+}
 function parseBgImages(v: unknown): BgImage[] {
   if (!Array.isArray(v)) return [];
   const taken = new Set<BgSide>(), out: BgImage[] = [];
@@ -338,6 +354,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
   { const tc = parseTech(raw.tech); if (tc) setup.tech = tc; } // lane TM 2026-10-19: tech level, absent = inferred gear
   if (raw.feeding === 'light' || raw.feeding === 'heavy') setup.feeding = raw.feeding; // lane SE2 2026-10-20, absent = normal
   if (raw.stockFirst === true) setup.stockFirst = true; // 2026-10-21: path 1 tank, no filter drawn until one is added
+  { const pr = parsePairs(raw.pairs, setup.fish); if (pr) setup.pairs = pr; } // 2026-10-22: pairing per pair species, absent = unknown
   keepInWater(setup); fitTable(setup);
   fitFixture(setup.light, setup.tank, false); // 2026-10-15: older lights clamped into their fixture's usual ranges
   return setup;

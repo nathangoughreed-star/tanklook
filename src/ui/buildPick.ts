@@ -7,6 +7,7 @@ import { getSpecies } from '../data/species';
 import { pinDeal } from '../demand/pinned';
 import { emptyScene } from '../scene/defaults';
 import { shuffleFish } from '../scene/scatter';
+import { carryPairs } from '../scene/pairs';
 import type { Store } from '../scene/store';
 import { buildsFor, distinctBuilds, meetsNeeds, type Build } from '../scene/builds';
 import { tankLabel, type AnimalCount } from '../scene/tankfit';
@@ -95,7 +96,9 @@ ${meetsNeeds(b) ? '' : '<div class="spWarn">No filter on the list carries these 
   const pick = (i: number) => {
     const b = builds[i];
     if (b.bundle) pinDeal(b.bundle); // before the load that follows promotes it: the demand panel prices the bundle in place of its parts
-    store.replace(sceneForBuild(b, store.scene.units));
+    const next = sceneForBuild(b, store.scene.units);
+    carryPairs(store.tank, next.tanks[next.active]); // the pairings set on the stocking screen, onto the build's new fish (2026-10-22)
+    store.replace(next);
     close(); store.seal();
     status(`${b.label} build opened in the editor: ${tankLabel(b.tank, store.scene.units)}, ${usd(b.setupUsd)} set-up. The look is yours to change; Undo steps back.`);
     for (const fn of [...listeners]) fn({ build: b, animals });

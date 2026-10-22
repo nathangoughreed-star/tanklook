@@ -5,6 +5,9 @@
 // Aquascape items (scene v9): every rock, piece of wood, cave and plant is its own placeable item.
 
 export const SCENE_VERSION = 9;
+/** Pairing of a pair-forming species, where a rule depends on it (rules-spec section 4): an established pair, one not yet confirmed,
+ *  or unknown (the default). Two animals, even 1 male + 1 female, are never assumed to be a pair. */
+export type Pairing = 'established' | 'unconfirmed' | 'unknown';
 
 export type Units = 'in' | 'cm';
 export type EdgeMode = 'cutout' | 'a2c';
@@ -398,6 +401,10 @@ export interface TankSetup {
   /** Started from path 1, "An animal I want" (Nathan 2026-10-21, no version bump): the view draws no filter until the owner adds one
    *  (render/gear3d.ts; the inferred one is not drawn). Absent = an ordinary tank, inferred gear drawn (DRAW_INFERRED). */
   stockFirst?: boolean;
+  /** Pairing per pair-forming species id (data/groups.ts PAIR_FORMERS), as the owner set it on the stocking screen or in the editor
+   *  (2026-10-22, no version bump), for the two animals `ids` (fish ids, ascending). It applies only while exactly those two are the
+   *  tank's animals of that species (scene/pairs.ts pairingIn); the store prunes it when they change. Absent or missing id = unknown. */
+  pairs?: Record<string, { status: Exclude<Pairing, 'unknown'>; ids: [number, number] }>;
   /** An integrated kit (2026-10-20, Nathan: an all-in-one such as a Fluval Flex runs only on its own light, filter and lid; no version bump).
    *  Picked from the tank picker: the kit's gear is applied once and then held (scene/integrated.ts). Absent = a bare or ordinary tank. */
   integrated?: IntegratedKit;
