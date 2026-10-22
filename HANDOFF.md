@@ -58,8 +58,8 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 - Code: `render/tankView.ts` (`tankView.ghost`, view-only, never saved); `buildTank` skips glass, water, algae, substrate, backdrop, lid,
   doors, light and beams while it is on; the fullness tile hides (nothing to be full). `stockPlan.ts`: ghost until a size is chosen;
   leaving the screen without a choice (Open in the editor, close) sets the smallest holding size as the real tank.
-- Open: Continue stays off while the chosen tank fails (e.g. under the minimum); ask Nathan whether a red minimum should warn instead of
-  block. 13 kuhlis grey out every size below a 60 gal breeder on main today (per-head floor rule, 4 x tl^2): sent to lane MM as an
+- **Decision (Nathan 2026-10-22): a failing tank warns, never blocks.** Continue stays on once a tank is chosen; the problem line reads
+  "... You can still continue." 13 kuhlis grey out every size below a 60 gal breeder on main today (per-head floor rule, 4 x tl^2): sent to lane MM as an
   acceptance case (13 kuhlis in a 20 long: no red minimum, Continue on). The minimap still draws a tank outline in the ghost view.
 
 

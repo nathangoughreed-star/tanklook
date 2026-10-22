@@ -119,7 +119,7 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
     let h = '';
     if (plan.tank) {
       h += `<div class="spTank"><b>${esc(tankLabel(plan.tank, store.scene.units))}</b><span class="spPct">Your tank. It stays this size as you add animals.</span></div>`;
-      if (plan.problem) h += `<div class="spWarn">${esc(plan.problem)}</div>`;
+      if (plan.problem) h += `<div class="spWarn">${esc(plan.problem)}. You can still continue.</div>`;
       if (plan.span) {
         const { setupUsd: s, minPerWeek: m } = plan.span;
         h += `<div class="spLive"><span>Set-up about <b>${range(s.cheapest, s.balanced, usd)}</b></span><span>About <b>${range(m.cheapest, m.balanced, n => `${n}`)} min</b> a week</span></div><div class="spNote">Cheapest build to balanced build: tank, filter, light, heater and water care for these animals.</div>`;
@@ -150,7 +150,7 @@ ${picks.length ? `<ul class="spPicks">${picks.map(p => pickRow(p, shownLitres(pl
 <div class="spHd">Other animals in with them?</div>
 ${mates ? `<p class="spNote">Pick from the pictures on the left; each goes in at the smallest group it is kept in.</p><button type="button" class="primary" data-act="nomates">Done adding</button>` : `<div class="spYN"><button type="button" data-act="mates">Yes, show me what suits them</button></div>`}` : '<p class="spNote">Search for the animal you have in mind, or pick one from the pictures. It goes in at the smallest group it is kept in and shows in the view; then pick a tank for them.</p>'}
 ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}` : ''}
-<div class="spFoot"><button type="button" class="primary" data-act="builds"${picks.length && planFor(picks, chosen).tank && !planFor(picks, chosen).problem ? '' : ' disabled'}>Continue: three ways to build it</button><button type="button" class="spLink" data-act="done"${picks.length ? '' : ' disabled'}>Open in the editor as it is</button><span class="spNote">Everything stays editable in the editor.</span></div>`;
+<div class="spFoot"><button type="button" class="primary" data-act="builds"${picks.length && planFor(picks, chosen).tank ? '' : ' disabled'}>Continue: three ways to build it</button><button type="button" class="spLink" data-act="done"${picks.length ? '' : ' disabled'}>Open in the editor as it is</button><span class="spNote">Everything stays editable in the editor.</span></div>`;
     const q2 = el.querySelector<HTMLInputElement>('.spQ')!;
     { const t = planFor(picks, chosen).tank; gallery.mates(mates && picks.length ? rankTankmates(picks, t).map(m => ({ ...m, bigger: m.bigger ? tankLabel(m.bigger, store.scene.units) : undefined })) : null, !!t); }
     gallery.search(q); gallery.show(!el.hidden && (!picks.length || mates));
@@ -172,7 +172,7 @@ ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}` : ''}
     switch (b.dataset.act) {
       case 'close': close(); break;
       case 'done': close(); store.seal(); status('Opened in the editor. The animals and tank are yours to change; Undo steps back.'); break;
-      case 'builds': { const plan = planFor(picks, chosen); if (plan.tank && !plan.problem) { el.hidden = true; bare(false); settle(); builds.open(animalsOf(picks), plan.tank, () => { el.hidden = false; side(true); bare(true); shown = ''; change(true); }); } break; }
+      case 'builds': { const plan = planFor(picks, chosen); if (plan.tank) { /* warn, never block: the problem line stays on the screen (Nathan 2026-10-22) */ el.hidden = true; bare(false); settle(); builds.open(animalsOf(picks), plan.tank, () => { el.hidden = false; side(true); bare(true); shown = ''; change(true); }); } break; }
       case 'add': if (i < 0) { picks.push(startPick(id)); q = ''; change(); } break;
       case 'mate': if (i < 0) { picks.push(startPick(id)); change(); } break;
       case 'del': if (i >= 0) { picks.splice(i, 1); if (!picks.length) mates = false; change(); } break;
