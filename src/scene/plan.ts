@@ -6,7 +6,8 @@ import { getSpecies } from '../data/species';
 import type { Contribution, Demand } from '../demand/types';
 import { mean3 } from '../demand/range';
 import { GEAR_SLOT_NAME, gearOffers } from '../demand/gearDeals';
-import { whyAnimal } from './animalfit';
+import { whysAnimal } from './animalfit';
+import { rangeLine, setpointCheck, sharedRange } from './temprange';
 import { LIBRARY } from './items';
 import type { Build } from './builds';
 import { finSensitiveNames, plantNeeds, priceScape } from './scapes';
@@ -68,12 +69,20 @@ export function hardTruths(S: TankSetup, animals: AnimalCount[], heater: boolean
   const sp = animals.flatMap(a => { const s = getSpecies(a.species); return s && a.n > 0 ? [s] : []; });
   const litres = volume(S.tank).litres, salt = S.water.on && !!S.water.salt;
   for (const s of sp) {
-    const why = whyAnimal(s, litres, 3, sp.filter(o => o !== s), { corals: S.items.some(it => it.kind === 'coral' && it.variant !== 'macroalgae' && it.variant !== 'anemone'), fit: minFit(S) });
-    if (why) out.push({ text: `${s.name}: ${why.text}`, level: 'bad' }); // size is judged by tankMin (floor area, length, water), with its 10 % slack
+    // every blocking reason, the main one first; temperature is said once for the whole stocking below
+    const why = whysAnimal(s, litres, 3, sp.filter(o => o !== s), { corals: S.items.some(it => it.kind === 'coral' && it.variant !== 'macroalgae' && it.variant !== 'anemone'), fit: minFit(S) }).filter(w => !w.concern && !w.temp);
+    if (why.length) out.push({ text: `${s.name}: ${why[0].text}${why.length > 1 ? `; also ${why.slice(1).map(w => w.text).join('; ')}` : ''}`, level: 'bad' }); // size is judged by tankMin (floor area, length, water), with its 10 % slack
   }
   const tm = tankMinimum({ ...S, fish: sp.map((s, i) => ({ id: i + 1, species: s.id, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0 })) }); // lane HB: the same depth limit the tank fit reads
   if (tm.tooDeep) out.push({ text: `Some of your animals need shallow water (${lenTxt(tm.maxDepthMm, u)} at most); this tank's water is ${lenTxt(tm.depthMm, u)} deep`, level: 'bad' });
   const room = roomOf(S); // the room the user set (Tech menu), else tech.json's 21 C (S207 review)
+  // water temperature, two separate outputs (temprange.ts): the shared range of every aquatic species, then whether the plan runs inside it
+  const shared = sharedRange(sp);
+  if (shared.state !== 'unknown') {
+    out.push({ text: rangeLine(shared), level: shared.state === 'none' ? 'bad' : shared.state === 'narrow' ? 'warn' : 'ok' });
+    const at = setpointCheck(shared, !heater && !salt ? { kind: 'room', c: room, set: S.tech?.roomC !== undefined } : { kind: 'heater' });
+    out.push({ text: at.text, level: at.state === 'outside' ? 'bad' : at.state === 'unchecked' ? 'warn' : 'ok' });
+  }
   if (!heater && !salt) for (const s of sp.filter(x => countsAgainstWater(x))) if (tempFit(s.id, room) === 'out') out.push({ text: `${s.name} is too ${room > (CARE[s.id]?.temp?.[1] ?? Infinity) ? 'warm' : 'cold'} at room temperature (${room} C) and the tank has no heater`, level: 'bad' });
   const longFinned = finSensitiveNames(animals);
   if (longFinned.length && S.items.some(it => it.variant.startsWith('plastic'))) out.push({ text: `Hard plastic leaves can tear the long fins of ${longFinned.join(', ')}: use silk plants`, level: 'warn' });

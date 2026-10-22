@@ -5,7 +5,8 @@ import { bandMessage, bandOf, fightsOverCount, malesWarning, mostFor, mostMalesF
 import { needLine, needsOf, type NeedSeverity } from '../data/careNeeds';
 import { getSpecies, SPECIES, type Species } from '../data/species';
 import { TANK_MODELS, tankFromModel, type TankModel } from '../data/tanks';
-import { whyAnimal } from '../scene/animalfit';
+import { whyAnimal, whysAnimal } from '../scene/animalfit';
+import { rangeLine, setpointCheck, sharedRange } from '../scene/temprange';
 import { volume } from '../scene/physics';
 import { spaceFit, tankExtent } from '../scene/space';
 import { buildSpan, fitIn, lenTxt, stepUps, tankFor, tankLabel, tankOptions, zoneOf, type AnimalCount, type BuildSpan, type TankFit } from '../scene/tankfit';
@@ -120,14 +121,27 @@ export function groupLineIn(nt: PickNotes, plan: Plan): { text: string; held: bo
   return { text: `${nt.line}. That is the group only: this tank fails (${fails.map(f => FAIL_WORD[f] ?? f).join(', ')}), see the tank verdict`, held: true };
 }
 
-/** Why this pick does not suit the others on the list (first reason), or undefined. Advice only: nothing is blocked. */
+/** Why this pick does not suit the others on the list: the main blocking reason, or undefined. Advice only: nothing is blocked. */
 export function conflictOf(picks: Pk[], id: string): string | undefined {
+  const w = conflictsOf(picks, id)[0];
+  return w?.block ? w.text : undefined;
+}
+/** Every reason this pick does not suit the others: the main blocking reason first, then the other material concerns (`block` false:
+ *  a concern that does not block, e.g. a narrow shared temperature range). Empty when nothing is said. */
+export function conflictsOf(picks: Pk[], id: string): { text: string; block: boolean }[] {
   const sp = getSpecies(id), others = picks.filter(p => p.id !== id && totalOf(p) > 0).map(p => getSpecies(p.id)).filter((x): x is Species => !!x);
-  if (!sp || !others.length) return undefined;
+  if (!sp || !others.length) return [];
   const clash = others.find(o => !!o.salt !== !!sp.salt);
-  if (clash) return `${sp.salt ? 'Salt' : 'Fresh'} water: it cannot share a tank with ${clash.name}`;
-  const w = whyAnimal(sp, Infinity, 3, others)?.text;
-  return w?.replace(/^compatibility: /, '');
+  const out = clash ? [{ text: `${sp.salt ? 'Salt' : 'Fresh'} water: it cannot share a tank with ${clash.name}`, block: true }] : [];
+  for (const w of whysAnimal(sp, Infinity, 3, others)) out.push({ text: w.text.replace(/^compatibility: /, ''), block: !w.concern });
+  return out;
+}
+/** The whole list's water temperature, two separate lines (temprange.ts): the shared range of every aquatic pick, then the setpoint,
+ *  which the planner cannot know before a tank is set up (unchecked). Null with no aquatic pick. */
+export function tempLinesOf(picks: Pk[]): { range: string; rangeState: string; setpoint: string } | null {
+  const r = sharedRange(picks.filter(p => totalOf(p) > 0).map(p => getSpecies(p.id)).filter((x): x is Species => !!x));
+  if (r.state === 'unknown' && !r.unrecorded.length) return null;
+  return { range: rangeLine(r), rangeState: r.state, setpoint: setpointCheck(r).text };
 }
 
 // ---------- tankmates ----------

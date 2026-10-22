@@ -170,7 +170,8 @@ export function climateText(r: Climate, us?: boolean) {
     + (score.length ? ` · Agreement ${Math.min(...score)}/100` : '');
 }
 
-const STATUS_TXT: Record<Status, string> = { ideal: 'ideal', fine: 'ok', stretch: 'not long term', unsafe: 'too far' };
+// inside the recorded comfortable range reads 'in range', never 'ideal': the sources bound the range, they do not rate comfort inside it
+const STATUS_TXT: Record<Status, string> = { ideal: 'in range', fine: 'ok', stretch: 'not long term', unsafe: 'too far' };
 /** Bands on one axis, one row per inhabitant (tolerable behind, comfortable in front), the recommendation as a vertical line.
  *  Laid out in °C; `us` only relabels a temperature axis in °F. */
 function axis(title: string, unit: string, fit: Fit, bands: Band[], warm: Record<string, R | undefined>, lo0: number, hi0: number, us = false) {

@@ -20,7 +20,7 @@ import { BACKDROPS } from '../render/backdrop';
 import { gearShown, setGearShown } from '../render/gear3d';
 import { MAP_DIV, MAP_STEP, emitters, mapStepOf } from '../render/lighting';
 import { darkOf, darkStats } from '../render/lightShells';
-import { hasCorals, whyAnimal, type AnimalWhy } from '../scene/animalfit';
+import { hasCorals, whysAnimal, type AnimalWhy } from '../scene/animalfit';
 import { minFit } from '../scene/tankMin';
 import { EXPERTISE_NAME } from '../data/care';
 import { CARE_NAME, FIT_PAR, fitCaption, whyNot, type FitLight } from '../scene/plantfit';
@@ -657,7 +657,7 @@ Cancel, then change the name, to keep both.`)) return;
     3: 'Demanding or delicate animals: tight water parameters with frequent tests and changes, special foods, quarantine for new arrivals, and several hours a week plus a daily check.',
   };
   /** The care gates (Quick Setup): the box is shown while "Stock by care gates" is on; the list is grayed by them when its own box is ticked too. Null while off. */
-  function animalGate(s: TankSetup): ((sp: Species) => AnimalWhy | null) | null {
+  function animalGate(s: TankSetup): ((sp: Species) => (AnimalWhy & { more: string[] }) | null) | null {
     const stock = !!s.layout.gateStock, on = stock && !!s.layout.gateAnimals, ex = (s.layout.expertise ?? 1) as 1 | 2 | 3, hint = $('gateAnimalsHint');
     $<HTMLInputElement>('gateStock').checked = stock; $('gateBox').hidden = !stock;
     $<HTMLInputElement>('gateAnimals').checked = !!s.layout.gateAnimals; setVal('expertise', ex);
@@ -666,7 +666,8 @@ Cancel, then change the name, to keep both.`)) return;
     if (!on) return null;
     const litres = volume(s.tank).litres, present = [...new Set(s.fish.map(f => f.species))].map(getSpecies).filter((x): x is Species => !!x);
     const env = { corals: hasCorals(s.items), unheatedC: unheatedC(s), fit: minFit(s) }; // lane TM: no heater = the room's temperature
-    return sp => whyAnimal(sp, litres, ex, present, env);
+    // the main blocking reason, and how many other material concerns stand under it (all of them in the tooltip)
+    return sp => { const all = whysAnimal(sp, litres, ex, present, env), main = all.find(w => !w.concern); return main ? { ...main, more: all.filter(w => w !== main).map(w => w.text) } : null; };
   }
   $('gateAnimals').onchange = e => store.edit(s => { if ((e.target as HTMLInputElement).checked) s.layout.gateAnimals = true; else delete s.layout.gateAnimals; });
   function renderResults() {
@@ -701,7 +702,7 @@ Cancel, then change the name, to keep both.`)) return;
       b.setAttribute('role', 'option'); b.setAttribute('aria-selected', String(sp.id === pickId));
       b.className = sp.id === pickId ? 'on' : '';
       const tag = speciesTag(sp) ? `<b class="tag">${speciesTag(sp)}</b>` : '';
-      b.innerHTML = `<span class="nm">${esc(sp.name)} ${tag}</span><span>${fmt(sp.tl)}</span><i class="sci" title="${esc(sp.sci)}">${esc(sp.sci)}</i>${gw ? `<small class="why">${esc(gw.text)}</small>` : ''}`;
+      b.innerHTML = `<span class="nm">${esc(sp.name)} ${tag}</span><span>${fmt(sp.tl)}</span><i class="sci" title="${esc(sp.sci)}">${esc(sp.sci)}</i>${gw ? `<small class="why"${gw.more.length ? ` title="${esc(gw.more.join('; '))}"` : ''}>${esc(gw.text)}${gw.more.length ? ` (+${gw.more.length} more)` : ''}</small>` : ''}`;
       if (gw) b.classList.add('gated');
       if (sp.note) b.title = sp.note;
       b.onclick = () => { pickId = sp.id; preview.hidden = false; renderResults(); };
