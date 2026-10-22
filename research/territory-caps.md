@@ -23,6 +23,7 @@ Data: territory-batch1.json (15 species), territory-batch2.json (14). Each rule 
 | royalgramma | fish | 1 | 1 | 1 | 1 | 2 | 2 | 3 | Fishkeeping World: 30 gal one, 50 a pair, 100+ a group |
 | oscar | fish | 1 | 1 | 1 | 1 | 1 | 1 | 1 | one adult; a pair needs more, no number given |
 | peacock | male | 5 | 5 | 5 | 5 | 5 | 5 | 5 | one male per 48 in with 3-6 females; no increment stated |
+| cockatoo | fish | 2 | 3 | 4 | 5 | 6 | 8 | 13 | Seriously Fish: 24 x 12 in (14 gal) a pair; Aquarium Co-Op: 1 male : 2-3 females, 20 gal+ (step at 18 gal: the tool's 20 long is 18.7). +1 per 10 gal is an ESTIMATE (no source states an increment; Nathan 2026-10-22: a 40 breeder, 44.9 gal in the tool, takes 1 male + 4 females). Males: one, a second from 49 gal (ESTIMATE, from "never two males in a small tank"; keeps a 40 breeder at one male) |
 
 ## Clamped
 

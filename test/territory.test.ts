@@ -49,6 +49,24 @@ describe('territory caps', () => {
     expect(overWarn({ id: 'dwarfgourami', n: 2 }, L(29))).toBeUndefined();
     expect(overWarn({ id: 'betta', n: 2 }, L(40))).toMatch(/one to a tank/); // other fighters unchanged
   });
+  it('cockatoo: a pair in 15 gal, a trio from 20, 1 male + 4 females in a 40 breeder; one male through a 40 breeder (Nathan 2026-10-22)', () => {
+    expect([15, 18.7, 29.9, 44.9].map(g => mostFor(CARE.cockatoo, L(g)))).toEqual([2, 3, 4, 5]); // 15, 20 long, 29, 40 breeder as the tool sizes them
+    expect(mostMalesFor(CARE.cockatoo, L(44.9))).toBe(1);
+    expect(mostMalesFor(CARE.cockatoo, L(55))).toBe(2);
+    const harem = comboTank({ name: '', tank: [24, 12, 12], stock: [['cockatoo', 5]] });
+    harem.fish.forEach((x, i) => { if (i) x.sex = 'f'; });
+    expect(crowdWarnings(harem).join()).toMatch(/5 Cockatoo dwarf cichlids: more than about 2 .*may fight \(each female holds her own cave territory/);
+    const pair = comboTank({ name: '', tank: [24, 12, 12], stock: [['cockatoo', 2], ['ember', 8]] });
+    pair.fish.forEach((x, i) => { if (i === 1) x.sex = 'f'; });
+    expect(crowdWarnings(pair)).toEqual([]);
+    const trio = comboTank({ name: '', tank: [30, 12, 12], stock: [['cockatoo', 3]] }); // 20 long
+    trio.fish.forEach((x, i) => { if (i) x.sex = 'f'; });
+    expect(crowdWarnings(trio)).toEqual([]);
+    const breeder = comboTank({ name: '', tank: [36, 18, 16], stock: [['cockatoo', 5]] }); // 40 breeder, 1 male + 4 females
+    breeder.fish.forEach((x, i) => { if (i) x.sex = 'f'; });
+    expect(crowdWarnings(breeder)).toEqual([]);
+    expect(overWarn({ id: 'cockatoo', n: 2 }, L(15))).toMatch(/takes one male/); // unsexed pair: both may be males
+  });
   it('never fall below the group the bands ask for, and only room rules are left out (Coordinator 8, 2026-10-22)', () => {
     expect(overWarn({ id: 'bolivianram', n: 2 }, L(29))).toBeUndefined();      // a pair, bands ok 2
     expect(overWarn({ id: 'tigerbarb', n: 8 }, L(20))).toBeUndefined();        // bands ok 8; "+3 gal per barb" is a room rule
