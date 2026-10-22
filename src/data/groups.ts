@@ -2,24 +2,34 @@
 // appeal tags. Numbers come from hobby sources (one URL per species in research/groups-sources.md; `est` rows there are judgement),
 // advice only. Merged into CARE by the loop at the end of care.ts. The existing CARE.group minimums (lane CG) stay the floor:
 // bands.ok equals them wherever both exist (test/groups.test.ts).
+// Field meanings (lane RF, 2026-10-22). Every field judges ONE thing; none of them is the overall verdict for a tank (that is the tank fit:
+// space, minimum, length, depth, floor, filtration), and none carries a care condition (feeding, maturity, a lid: data/careNeeds.ts).
 export interface GroupCare {
-  /** counts where each band starts: below `ok` = avoid */
+  /** GROUP-SIZE assessment only: the count of this species where each band starts, judged for its social need, never for the tank.
+   *  n < ok = 'avoid' (too few), ok <= n < good = 'ok', good <= n < great = 'good', n >= great = 'great'. Must hold ok <= good <= great,
+   *  and great <= max where a max is given (a "best" group the species should not be kept at is a contradiction). */
   bands?: { ok: number; good: number; great: number };
-  /** one line per band; defaults are generated from the numbers when absent */
+  /** one line per band, about the GROUP only (no tank size, no care condition); defaults are generated from the numbers when absent */
   msg?: { avoid?: string; ok?: string; good?: string; great?: string };
-  /** most per tank (solo species = 1; a bonded pair = 2) */
+  /** the most of this species advised in ONE tank, whatever its size (solo species = 1; a bonded pair = 2). Past it the stocking screen
+   *  warns (overWarn), never blocks. Absent = no stated cap (a `solo` species reads as 1). Not a density: room is the tank fit's job. */
   max?: number;
   /** usually kept by sex in the hobby: recommended males : females, and why */
   sexed?: { ratio: [number, number]; note?: string };
-  /** deepest comfortable water, mm (dwarf frogs surface for every breath) */
+  /** MAXIMUM WATER DEPTH, mm: the deepest water the animal can live in (it must reach the surface to breathe, or the shore). Not a
+   *  recommended depth and not the enclosure height. A hard limit in the tank fit (tankMin tooDeep), EXCEPT where tankmin.json gives a
+   *  sourced depth.maxWaterDepthMm for the species: that one governs, as advice beside the count picker (lane MM Decision 3), and this
+   *  field is then not read. */
   maxDepthMm?: number;
   flow?: 'low' | 'medium' | 'high';
+  /** the part of the tank it lives in; 'all' = no preference */
   zone?: 'bottom' | 'middle' | 'top' | 'all';
-  /** shortest tank length for this species, mm */
+  /** P1's shortest tank length, mm. SUPERSEDED by the tank-minimum lines (tankmin.json red / green, lane MM): the engine does not read
+   *  it; kept for the species review sheet and the comparison in scripts/tank-min-sources.mjs. */
   minLengthMm?: number;
-  /** shortest front-to-back for this species, mm (large or fast bodies need turning room; a long, shallow tank is not the same as a wide one) */
+  /** P1's shortest front-to-back, mm. Superseded like minLengthMm (not read by the engine). */
   minWidthMm?: number;
-  /** smallest floor area, cm2, where the source gives a footprint that allows an equivalent shape (120 x 30 cm = 3600): replaces the area estimated from litres */
+  /** P1's smallest floor area, cm2, where the source gives a footprint (120 x 30 cm = 3600). Superseded like minLengthMm. */
   minAreaCm2?: number;
   /** What keepers like about it, to rank swaps. JUDGEMENT tags, not sourced facts (PX 2026-10-20: the 29 commonly kept species were
    *  sharpened; the rest are still the coarse P1 tags). Meanings: shoal = a tight school is the display; colour; showpiece = centrepiece;

@@ -37,3 +37,15 @@ describe('group-size line beside the tank (lane RF item 2)', () => {
     expect(groupLineIn(nt, planFor([p], roomy.tank.id)).held).toBe(false);
   });
 });
+
+describe('GroupCare fields agree with their documented meaning (lane RF item 3)', () => {
+  // adf: great 7 > max 6 waits for Nathan (which number is the husbandry intent); remove it from here once reconciled
+  const OPEN = new Set(['adf']);
+  it('bands ascend, and the best group never exceeds the most one tank takes', () => {
+    for (const [id, g] of Object.entries(GROUPS)) {
+      const b = g.bands; if (!b) continue;
+      expect(b.ok <= b.good && b.good <= b.great, id).toBe(true);
+      if (g.max !== undefined && !OPEN.has(id)) expect(b.great, id).toBeLessThanOrEqual(g.max);
+    }
+  });
+});
