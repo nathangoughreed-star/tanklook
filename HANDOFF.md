@@ -388,6 +388,12 @@ Software fixes from research/rules-spec.md section 6; no threshold changed. Benc
   - Re-blessed: test/tankfit.test.ts `danios` case is now 10 danios + 1 bristlenose (was 8). 8 + a pleco now fit 15 gal, in line with the experts (5 danios in 10 gal, 6 in 60 L).
   - Not from S196: on main the water readings rose about 1.4x since the S196 snapshot (goldfish space per fish x1.38). The Co-Op 10 gal betta set reads 238 % on main, 194 % after S196.
 - **Expert curve:** 73 count-vs-size points (`research/expert-curve.json` / `.md` / `.svg`). Within one source, count grows as gallons^0.79 (recommended 0.89, maximum 0.73), which confirms 0.85. Calibrating "full = 90 %" was NOT done: the experts' own full / max stockings read a 59 % median (pre-HB) against 101-126 % for their nano lists. The low maximums are temperament caps (dwarf gourami, angel, chromis, barbs).
+- **Fullness review fixes DONE 2026-10-22 (branch shrimp-floor; Nathan: "lets do this", "fix it on that branch", "do the other five").**
+  - Shrimp and crabs take floor: the fish floor rule x INVERT_FLOOR 0.3 (10 cherries per gallon fill the floor; est). Snails keep their footprint rule.
+  - Tank list sizes females at the female length (AnimalCount.f): 1 male + 4 female mollies in a 20 gal high 90 -> 104 %, now matching the tile.
+  - Over is the rounded percent (`isOver`) in the tile, the stocking line and the tank list; near-full advice names the binding limit (no "water changes" when space binds).
+  - White cloud zone all -> middle (floor 0). 16 other `zone: 'all'` species in data/groups.ts not reviewed (pygmy cory's own note says mid-water).
+  - Tile: tank size line at the top; Tank minimum in words (Too small / Meets minimum / Meets recommended), percent in the tip.
 - **Fighting limits DONE 2026-10-22 (Nathan: warn, scaled with the tank; option 1; never in the percent).**
   - Research: 2 Sonnet runs (~247k tokens), 29 species, `research/territory-batch1.json` / `territory-batch2.json`, tables in `research/territory-caps.md`.
   - Data: `GroupCare.territory` {at [gal, animals] steps, each gal per extra, per, note} for 6 species with a stated fighting rule: dwarf gourami 10 gal 3, +5 (note: 2 females per male); Bolivian ram 30 gal 1, +7.5; kribensis 20 gal a pair, +1 pair per 12.5 gal (one retailer page); pea puffer 5 gal 1, +3; royal gramma 1 / 2 at 50 / 3 at 100; coral beauty 1 / 2 at 180.
