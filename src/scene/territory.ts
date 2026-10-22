@@ -14,6 +14,7 @@ export function crowdWarnings(S: TankSetup): string[] {
   for (const [id, k] of n) {
     const c = CARE[id], mx = mostFor(c, litres) ?? (c?.solo ? 1 : undefined), name = getSpecies(id)!.name;
     // fighters only: a school's flat max means "plenty", not fighting; room is the stocking percent's job
+    if (c?.beyond && mx && k > mx) { out.push(`${plural(k, name)}: ${c.beyond}.`); continue; }
     if (!mx || k <= mx || !fightsOverCount(c)) {
       const mm = mostMalesFor(c, litres), m = males.get(id) ?? 0; // the scene knows each fish's sex (absent = male)
       if (mm !== undefined && m > mm) out.push(malesWarning(name, m, mm, true, c!.males!.each));

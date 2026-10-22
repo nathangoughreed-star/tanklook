@@ -18,6 +18,9 @@ export interface GroupCare {
    *  2026-10-22). Past it the app warns, never blocks. Room is never a max: the stocking percent measures it, so schools and other
    *  species whose only limit is room have none (lane CW 2026-10-22, research/count-warnings.md). Absent = no limit. */
   max?: number;
+  /** Where `max` is the edge of what the tool's guided advice covers rather than a sourced fighting limit (gbr, 2026-10-22): the line
+   *  shown past it, in place of the "may fight" warning and the group-size band line. */
+  beyond?: string;
   /** The most before fighting, scaled with the tank (S196, Nathan 2026-10-22; research/territory-caps.md): `at` = [US gal, animals]
    *  steps as the sources state them (fighting limits only: room rules such as "+3 gal per tiger barb" are the stocking percent's
    *  job); past the last step one more animal per `each` gal (`per` at a time, 2 for pairs). Where present
@@ -116,7 +119,7 @@ export const GROUPS: Record<string, GroupCare> = {
   gourami: { bands: { ok: 1, good: 2, great: 4 }, msg: { ok: 'One male only unless tank is 120 cm+; add females' }, sexed: { ratio: [1, 3], note: 'Males are territorial with each other; one male to 2-3 females' }, flow: 'low', zone: 'top', minLengthMm: 900, appeal: ['showpiece', 'finnage', 'personality'] },
   // gbr reviewed 2026-10-22 (Nathan): a single ram is a valid keep, two are a pair only when the user says so. max 2 stays PROVISIONAL:
   // two pairs need room for separate territories, which footprint, layout and pairing decide, not a gallon figure.
-  gbr: { bands: { ok: 1, good: 2, great: 2 }, msg: { ok: 'Suitable singly', good: 'Suitable pair; may defend a breeding territory', great: 'Suitable pair; may defend a breeding territory', unpaired: 'Compatibility unconfirmed; monitor aggression and provide a separation option' }, max: 2, flow: 'low', zone: 'bottom', minLengthMm: 600, appeal: ['showpiece', 'colour', 'hands-on'] },
+  gbr: { bands: { ok: 1, good: 2, great: 2 }, msg: { ok: 'Suitable singly', good: 'Suitable pair; may defend a breeding territory', great: 'Suitable pair; may defend a breeding territory', unpaired: 'Compatibility unconfirmed; monitor aggression and provide a separation option' }, max: 2, beyond: "Guided recommendations currently support one ram or one compatible pair; larger groups aren't evaluated", flow: 'low', zone: 'bottom', minLengthMm: 600, appeal: ['showpiece', 'colour', 'hands-on'] },
   bolivianram: { bands: { ok: 2, good: 4, great: 6 }, msg: { avoid: 'Singles do best only if tank is peaceful; a pair or small group is better' }, max: 8, territory: { at: [[30, 1]], each: 7.5 }, flow: 'low', zone: 'bottom', minLengthMm: 600, appeal: ['personality', 'colour', 'easy'] },
   kribensis: { bands: { ok: 2, good: 2, great: 2 }, msg: { avoid: 'A lone krib is fine but a male/female pair shows the real behaviour' }, max: 2, territory: { at: [[20, 2]], each: 12.5, per: 2 }, sexed: { ratio: [1, 1], note: 'Keep as one male/female pair; breeding pairs are territorial and need hiding caves' }, flow: 'low', zone: 'bottom', minLengthMm: 600, appeal: ['personality', 'colour', 'easy'] },
   cockatoo: { bands: { ok: 2, good: 3, great: 4 }, msg: { avoid: 'A lone male is fine but a harem is the natural way', great: '1 male with 3 females needs dense caves and a 90 cm footprint' }, sexed: { ratio: [1, 3], note: 'One male to 2-3 females; never two males in a small tank; add males after females settle' }, flow: 'low', zone: 'bottom', minLengthMm: 900, appeal: ['personality', 'colour', 'showpiece'] },

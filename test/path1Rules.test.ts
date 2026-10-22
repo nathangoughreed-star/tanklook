@@ -77,6 +77,17 @@ describe('sex and pairing are separate inputs (lane RF item 4)', () => {
     expect(est.band).not.toBe('ok');
     expect(est.line).toMatch(/Suitable pair; may defend a breeding territory/);
     expect(one.needs.some(x => /Breeding territory/.test(x.text))).toBe(true);
+    expect(est.line).not.toMatch(/fight/);
+    // past two: the guided advice says it does not evaluate larger groups, never that they are unsuitable
+    const { overWarn } = await import('../src/ui/stockPlanLogic');
+    for (const n of [3, 4]) {
+      const many = notes({ id: 'gbr', n });
+      expect(many.band).toBe('ok');
+      expect(many.line).toMatch(/one ram or one compatible pair; larger groups aren't evaluated/);
+      expect(overWarn({ id: 'gbr', n }, 200)).toMatch(/larger groups aren't evaluated/);
+      expect(overWarn({ id: 'gbr', n }, 200)).not.toMatch(/fight/);
+    }
+    expect(overWarn({ id: 'gbr', n: 2 }, 200)).toBeUndefined();
   });
   it('the pair list follows the data: every "bonded" or "male/female pair" species is on it', async () => {
     const { PAIR_FORMERS } = await import('../src/ui/stockPlanLogic');

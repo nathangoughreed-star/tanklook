@@ -54,6 +54,7 @@ export function bump(p: Pk, which: 'n' | 'f' | 'u', d: number): Pk {
 export function overWarn(p: Pk, litres?: number): string | undefined {
   const c = CARE[p.id], n = totalOf(p), mx = mostFor(c, litres) ?? (c?.solo ? 1 : undefined);
   const name = getSpecies(p.id)?.name ?? p.id;
+  if (c?.beyond && mx && n > mx) return `${name}: ${c.beyond}`;
   if (!mx || n <= mx || !fightsOverCount(c)) {
     // males past their own limit (lane CW): a sexed species counts its males; an unsexed one may be all males (shops sell mostly males)
     const mm = mostMalesFor(c, litres), males = c?.sexed ? p.n : n - (p.f ?? 0);
@@ -72,8 +73,9 @@ export function notesOf(p: Pk, u: Units = 'cm'): PickNotes {
   const pairing = asksPairing(p) ? pairingOf(p.pair ?? 'unknown') : undefined;
   // two of a pair species not known to be a pair: the species' own `unpaired` line, and never better than 'ok' (gbr review 2026-10-22)
   const unpaired = pairing && pairing.status !== 'established' ? c?.msg?.unpaired : undefined;
-  const band = unpaired && bandOf(c, n) !== 'avoid' ? 'ok' : bandOf(c, n);
-  const msg = unpaired ?? (c?.max && c.max > 1 && n === c.max ? `${bandMessage(c, n)} (the most before they fight: ${c.max})` : bandMessage(c, n));
+  const beyond = c?.beyond && c.max && n > c.max ? c.beyond : undefined; // past what the guided advice covers: no band claim either way
+  const band = (unpaired || beyond) && bandOf(c, n) !== 'avoid' ? 'ok' : bandOf(c, n);
+  const msg = beyond ?? unpaired ?? (c?.max && c.max > 1 && n === c.max && !c.beyond ? `${bandMessage(c, n)} (the most before they fight: ${c.max})` : bandMessage(c, n));
   const line = n === 0 || !msg ? '' : `Group size: ${msg}${pairing && pairing.status !== 'established' && !unpaired ? ' (only if they are a pair)' : ''}`;
   let ratio: string | undefined;
   const r = c?.sexed;
